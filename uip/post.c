@@ -14,7 +14,7 @@
 #include <h/mime.h>
 
 #include <h/tws.h>
-#include <zotnet/mts/mts.h>
+#include <mts/generic/mts.h>
 
 #include <errno.h>
 #include <setjmp.h>

@@ -25,11 +25,11 @@ INCLUDES = -I.. -I$(srcdir) -I$(top_srcdir) $(HESIOD_INCLUDES) $(SASL_INCLUDES)
 LDFLAGS  = @LDFLAGS@
 
 LIBS     = @LIBS@
-MTSLIB   = ../mts/smtp/libsmtp.a
+MTSLIB   = ../mts/libmts.a
 KRB4_LIBS = @KRB4_LIBS@
 SASL_LIBS = @SASL_LIBS@
 HESIOD_LIBS = @HESIOD_LIBS@
-LOCALLIBS = ../config/version.o ../config/config.o $(MTSLIB) ../sbr/libmh.a ../zotnet/libzot.a
+LOCALLIBS = ../config/version.o ../config/config.o ../sbr/libmh.a $(MTSLIB) 
 LINKLIBS = $(LOCALLIBS) $(KRB4_LIBS) $(SASL_LIBS) $(HESIOD_LIBS) $(LIBS)
 
 LINT	= @LINT@

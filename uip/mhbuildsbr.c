@@ -19,7 +19,7 @@
 #include <h/md5.h>
 #include <errno.h>
 #include <signal.h>
-#include <zotnet/mts/mts.h>
+#include <mts/generic/mts.h>
 #include <h/tws.h>
 #include <h/mime.h>
 #include <h/mhparse.h>

@@ -11,7 +11,7 @@
 
 /* High level parsing of addresses:
 
-   The routines in zotnet/mf/mf.c parse the syntactic representations of
+   The routines in sbr/mf.c parse the syntactic representations of
    addresses.  The routines in sbr/addrsbr.c associate semantics with those
    addresses.  
 

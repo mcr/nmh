@@ -9,7 +9,7 @@
 #include <h/dropsbr.h>
 #include <h/rcvmail.h>
 #include <h/tws.h>
-#include <zotnet/mts/mts.h>
+#include <mts/generic/mts.h>
 
 static struct swit switches[] = {
 #define MBOXSW       0

@@ -40,7 +40,7 @@
 #include <h/scansbr.h>
 #include <h/signals.h>
 #include <h/tws.h>
-#include <zotnet/mts/mts.h>
+#include <mts/generic/mts.h>
 #include <errno.h>
 #include <signal.h>
 

@@ -10,7 +10,7 @@
 #include <h/signals.h>
 #include <errno.h>
 #include <signal.h>
-#include <zotnet/mts/mts.h>
+#include <mts/generic/mts.h>
 
 static struct swit switches[] = {
 #define CRETSW         0
