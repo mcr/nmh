@@ -4,6 +4,11 @@ Thu May 11 02:21:34 2000 Shantonu Sen <ssen@mit.edu>
 	seperately and redundantly defined, but so that OBJS is a
 	pattern-substituted version of SRCS with suffix .c -> .o. This
 	should make maintainability easier.
+
+	* Added section to MACHINES indicating what platforms nmh is known
+	to compile and work on, just to give users peace of mind, or
+	something. This is by no means complete or exhaustive, so add
+	whatever you know works.
 	
 Tue May 09 20:38:04 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
