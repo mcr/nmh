@@ -270,6 +270,7 @@ fmt_compile(char *fstring, struct format **fmt)
      * normal processing.
      */
     i = strlen(fstring)/2 + 1;
+		if (i==1) i++;
     next_fp = formatvec = (struct format *)calloc ((size_t) i,
 						   sizeof(struct format));
     if (next_fp == NULL)

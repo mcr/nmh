@@ -1,3 +1,15 @@
+Sun Apr 09 13:03:59 2000 Doug Morris <doug@mhost.com>
+
+	* added check in fmt_compile() to handle a single-character
+	format string. fmt_compile() depends on having an array of
+	format characters with an empty item at the end. A
+	single-character format would cause programs using this
+	function to segfault because the algorithm used to decide on
+	the length of the array mistakenly created a single-item array
+	when the format string was one character. This eventually
+	caused problems when the program attempted to test item+1
+	in the array.
+
 Thu Apr 06 21:53:50 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Richard Coleman threw out a lot of old MH-specific files in nmh.
@@ -542,7 +554,7 @@ Sun Sep 12 09:19:27 1999 Doug Morris <doug@mhost.com>
 	* Added check for <db1/ndbm.h> which is the new location where
 	linux systems appear to be stuffing this header file.
 
-Thu Sep  9 23:15:49 1999 Doug Morris <doug@mhost.com>
+Thu Sep 09 23:15:49 1999 Doug Morris <doug@mhost.com>
 
 	* fixed varous mkstmep bugs introduced in 1.0.1 by me. Whups!
 
@@ -576,7 +588,7 @@ Thu Jul 15 18:37:07 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
 	* Default rcvdistcomps no longer puts a copy of all outgoing
  	messages in outbox.  Added an rcvdistcomps.outbox that does.
 
-Sat Jun  9 12:22:47 1999 Doug Morris <doug@mhost.com>
+Sat Jun 09 12:22:47 1999 Doug Morris <doug@mhost.com>
 
 	* Updated configure to check for mkstemp (available on OpenBSD) and 
 	substitute it for mktemp if available. 
