@@ -39,6 +39,7 @@ static int findlabel(struct format *);
 static void assignlabel(struct format *);
 static char *f_typestr(int);
 static char *c_typestr(int);
+static char *c_flagsstr(int);
 static void litputs(char *);
 static void litputc(char);
 
@@ -163,7 +164,7 @@ dumpone(struct format *fmt)
 		if (fmt->f_comp->c_type)
 			printf(", c_type %s", c_typestr(fmt->f_comp->c_type));
 		if (fmt->f_comp->c_flags)
-			printf(", c_flags %d", fmt->f_comp->c_flags);
+			printf(", c_flags %s", c_flagsstr(fmt->f_comp->c_flags));
 		break;
 
 	case FT_LV_SEC:
@@ -195,7 +196,7 @@ dumpone(struct format *fmt)
 		if (fmt->f_comp->c_type)
 			printf(", c_type %s", c_typestr(fmt->f_comp->c_type));
 		if (fmt->f_comp->c_flags)
-			printf(", c_flags %d", fmt->f_comp->c_flags);
+			printf(", c_flags %s", c_flagsstr(fmt->f_comp->c_flags));
 		break;
 
 	case FT_LS_ADDR:
@@ -217,7 +218,7 @@ dumpone(struct format *fmt)
 		if (fmt->f_comp->c_type)
 			printf(", c_type %s", c_typestr(fmt->f_comp->c_type));
 		if (fmt->f_comp->c_flags)
-			printf(", c_flags %d", fmt->f_comp->c_flags);
+			printf(", c_flags %s", c_flagsstr(fmt->f_comp->c_flags));
 		break;
 
 	case FT_COMPF:
@@ -228,7 +229,7 @@ dumpone(struct format *fmt)
 		if (fmt->f_comp->c_type)
 			printf(", c_type %s", c_typestr(fmt->f_comp->c_type));
 		if (fmt->f_comp->c_flags)
-			printf(", c_flags %d", fmt->f_comp->c_flags);
+			printf(", c_flags %s", c_flagsstr(fmt->f_comp->c_flags));
 		break;
 
 	case FT_STRF:
@@ -452,18 +453,34 @@ c_typestr(int t)
 	static char buf[64];
 
 	buf[0] = '\0';
-	if (t & ~(CT_ADDR|CT_DATE|CT_MYMBOX|CT_ADDRPARSE))
+	if (t & ~(CT_ADDR|CT_DATE))
 		printf(buf, "0x%x ", t);
 	strcat(buf, "<");
 	i = 0;
 	FNORD(CT_ADDR, "ADDR");
 	FNORD(CT_DATE, "DATE");
-	FNORD(CT_MYMBOX, "MYMBOX");
-	FNORD(CT_ADDRPARSE, "ADDRPARSE");
 	strcat(buf, ">");
 	return(buf);
-#undef FNORD
 }
+
+static char *
+c_flagsstr(int t)
+{
+	register int i;
+	static char buf[64];
+
+	buf[0] = '\0';
+	if (t & ~(CF_TRUE|CF_PARSED|CF_DATEFAB))
+		printf(buf, "0x%x ", t);
+	strcat(buf, "<");
+	i = 0;
+	FNORD(CF_TRUE, "TRUE");
+	FNORD(CF_PARSED, "PARSED");
+	FNORD(CF_DATEFAB, "DATEFAB");
+	strcat(buf, ">");
+	return(buf);
+}
+#undef FNORD
 
 static void
 litputs(char *s)

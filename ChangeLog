@@ -1,3 +1,12 @@
+2003-08-10  Jeffrey C Honig  <jch@honig.net>
+
+	* Fix problem where parsing of address/date fields in fmt_compile
+	is optimized to the first instance.  The first instance may be in
+	contitional code which will result in cached data to
+	be used.  Instead, convert c_flags to a flags field from a boolean
+	and parse on the first use.
+	* Remove some unused flag bits.
+
 Fri Jul 01 22:02:00 2003 Glenn Burkhardt <glenn@aoi-industries.com>
 
 	* Applied fixes for configuration problems with Solaris and

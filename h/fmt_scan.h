@@ -34,8 +34,13 @@ struct comp {
  */
 #define	CT_ADDR       (1<<0)	/* referenced as address    */
 #define	CT_DATE       (1<<1)	/* referenced as date       */
-#define	CT_MYMBOX     (1<<2)	/* "mymbox" test being done */
-#define	CT_ADDRPARSE  (1<<3)	/* address parse being done */
+
+/*
+ * c_flags bits
+ */
+#define	CF_TRUE       (1<<0)	/* usually means component is present */
+#define	CF_PARSED     (1<<1)	/* address/date has been parsed */
+#define	CF_DATEFAB    (1<<2)	/* datefield fabricated */
 
 extern int fmt_norm;
 

@@ -423,13 +423,11 @@ do_name(char *sp, int preprocess)
 	if (cm->c_type & CT_ADDR) {
 	    CERROR("component used as both date and address");
 	}
-	if (! (cm->c_type & CT_DATE)) {
-	    cm->c_tws = (struct tws *)
-				calloc((size_t) 1, sizeof(*cm->c_tws));
-	    fp->f_type = preprocess;
-	    PUTCOMP(sp);
-	    cm->c_type |= CT_DATE;
-	}
+	cm->c_tws = (struct tws *)
+	    calloc((size_t) 1, sizeof(*cm->c_tws));
+	fp->f_type = preprocess;
+	PUTCOMP(sp);
+	cm->c_type |= CT_DATE;
 	break;
 
     case FT_MYMBOX:
@@ -437,18 +435,15 @@ do_name(char *sp, int preprocess)
 	    ismymbox ((struct mailname *) 0);
 	    primed++;
 	}
-	cm->c_type |= CT_MYMBOX;
 	/* fall through */
     case FT_PARSEADDR:
 	if (cm->c_type & CT_DATE) {
 	    CERROR("component used as both date and address");
 	}
-	if (! (cm->c_type & CT_ADDRPARSE)) {
-	    cm->c_mn = &fmt_mnull;
-	    fp->f_type = preprocess;
-	    PUTCOMP(sp);
-	    cm->c_type |= (CT_ADDR | CT_ADDRPARSE);
-	}
+	cm->c_mn = &fmt_mnull;
+	fp->f_type = preprocess;
+	PUTCOMP(sp);
+	cm->c_type |= CT_ADDR;
 	break;
 
     case FT_FORMATADDR:

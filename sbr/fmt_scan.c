@@ -296,6 +296,15 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 
     cp = scanl;
     ep = scanl + width - 1;
+
+    for (fmt = format; fmt->f_type != FT_DONE; fmt++)
+	switch (fmt->f_type) {
+	case FT_PARSEADDR:
+	case FT_PARSEDATE:
+	    fmt->f_comp->c_flags &= ~CF_PARSED;
+	    break;
+	}
+
     fmt = format;
 
     while (cp < ep) {
@@ -490,7 +499,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    break;
 
 	case FT_LV_COMPFLAG:
-	    value = fmt->f_comp->c_flags;
+	    value = (fmt->f_comp->c_flags & CF_TRUE) != 0;
 	    break;
 	case FT_LV_COMP:
 	    value = (comp = fmt->f_comp)->c_text ? atoi(comp->c_text) : 0;
@@ -710,13 +719,16 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 
 	case FT_PARSEDATE:
 	    comp = fmt->f_comp;
+	    if (comp->c_flags & CF_PARSED)
+		break;
 	    if ((sp = comp->c_text) && (tws = dparsetime(sp))) {
 		*comp->c_tws = *tws;
-		comp->c_flags = 0;
-	    } else if (comp->c_flags >= 0) {
+		comp->c_flags &= ~CF_TRUE;
+	    } else if ((comp->c_flags & CF_DATEFAB) == 0) {
 		memset ((char *) comp->c_tws, 0, sizeof *comp->c_tws);
-		comp->c_flags = 1;
+		comp->c_flags = CF_TRUE;
 	    }
+	    comp->c_flags |= CF_PARSED;
 	    break;
 
 	case FT_FORMATADDR:
@@ -779,6 +791,8 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 
 	case FT_PARSEADDR:
 	    comp = fmt->f_comp;
+	    if (comp->c_flags & CF_PARSED)
+		break;
 	    if (comp->c_mn != &fmt_mnull)
 		mnfree (comp->c_mn);
 	    if ((sp = comp->c_text) && (sp = getname(sp)) &&
@@ -786,6 +800,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		comp->c_mn = mn;
 		while (getname(""))
 		    ;
+		comp->c_flags |= CF_PARSED;
 	    } else {
 		while (getname(""))		/* XXX */
 		    ;
@@ -805,15 +820,22 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    if ((sp = comp->c_text) && (sp = getname(sp)) &&
 		(mn = getm (sp, NULL, 0, AD_NAME, NULL))) {
 		comp->c_mn = mn;
-		comp->c_flags = ismymbox(mn);
+		if (ismymbox(mn))
+		    comp->c_flags |= CF_TRUE;
+		else
+		    comp->c_flags &= ~CF_TRUE;
 		while ((sp = getname(sp)))
-		    if (comp->c_flags == 0 &&
+		    if ((comp->c_flags & CF_TRUE) == 0 &&
 			(mn = getm (sp, NULL, 0, AD_NAME, NULL)))
-			comp->c_flags |= ismymbox(mn);
+			if (ismymbox(mn))
+			    comp->c_flags |= CF_TRUE;
 	    } else {
 		while (getname(""))		/* XXX */
 		    ;
-		comp->c_flags = (comp->c_text == 0);
+		if (comp->c_text == 0)
+		    comp->c_flags |= CF_TRUE;
+		else
+		    comp->c_flags &= ~CF_TRUE;
 		comp->c_mn = &fmt_mnull;
 	    }
 	    break;

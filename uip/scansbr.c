@@ -331,9 +331,9 @@ finished:
 		if (datecomp->c_tws == NULL)
 		    adios (NULL, "unable to allocate tws buffer");
 		*datecomp->c_tws = *dlocaltime ((time_t *) &st.st_mtime);
-		datecomp->c_flags = -1;
+		datecomp->c_flags |= CF_DATEFAB|CF_TRUE;
 	    } else {
-		datecomp->c_flags = 0;
+		datecomp->c_flags &= ~CF_DATEFAB;
 	    }
 	}
     }
