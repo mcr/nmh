@@ -1,4 +1,4 @@
-Fri May 30 17:51:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Fri May 30 19:21:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* etc/Makefile.in was incorrectly installing mts.conf.in and
  	sendfiles.in -- fixed.  Generated sendfiles script was not a
@@ -12,6 +12,31 @@ Fri May 30 17:51:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* INSTALL never documented the etc/*.old thing.  Documented the
 	new etc/*.prev thing (including a note to watch for diff output).
+
+	* Applied Alec Wolman <wolman@cs.washington.edu>'s dropsbr.c patch:
+
+	    In the map_write routine, a call is made to map_open and this
+ 	    call is supposed to set the "clear" variable to 0 or 1,
+ 	    depending on whether the map file is empty or not.  In
+ 	    mh6.8.3, this worked because map_open would set "clear" by
+ 	    calling the mbx_Xopen routine.  In nmh, the code for mbx_Xopen
+ 	    was merged into mbx_open, but the interface for mbx_open
+ 	    doesn't support the clear variable, so that functionality was
+ 	    lost.  The map_open interface still contains "int *clear" in
+ 	    the prototype, but never sets it.
+
+	    My patch eliminates "clear" from the map_open interface (I
+ 	    checked to make sure that map_write is the only client of
+ 	    map_open).  Furthermore, my patch also sets the "clear"
+ 	    variable properly at the beginning of map_write by calling
+ 	    fstat().  This eliminates the bug in that the value of "clear"
+ 	    being used later in the routine was just stack garbage.
+
+	    Having a bad value of clear causes this next bug to be
+ 	    triggered: The fp file pointer was being opened with fdopen,
+ 	    but in two of the three switch cases it wasn't being closed.
+  	    In certain cases, this was causing packf to run out of file
+ 	    descriptors if you attempted to pack a large folder.
 
 Mon May 29 7:48:15 2000 Shantonu Sen <ssen@mit.edu>
 

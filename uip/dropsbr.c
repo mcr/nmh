@@ -38,7 +38,7 @@ extern int errno;
  */
 static int mbx_chk_mbox (int);
 static int mbx_chk_mmdf (int);
-static int map_open (char *, int *, int);
+static int map_open (char *, int);
 
 
 /*
@@ -565,14 +565,20 @@ map_write (char *mailbox, int md, int id, long last, off_t start,
     register struct drop *dp;
     struct drop d1, d2, *rp;
     register FILE *fp;
+    struct stat st;
 
-    if ((fd = map_open (file = map_name (mailbox), &clear, md)) == NOTOK)
+    if ((fd = map_open (file = map_name (mailbox), md)) == NOTOK)
 	return NOTOK;
+
+    if ((fstat (fd, &st) == OK) && (st.st_size > 0))
+	clear = 0;
+    else
+	clear = 1;
 
     if (!clear && map_chk (file, fd, &d1, pos, noisy)) {
 	unlink (file);
 	mbx_close (file, fd);
-	if ((fd = map_open (file, &clear, md)) == NOTOK)
+	if ((fd = map_open (file, md)) == NOTOK)
 	    return NOTOK;
 	clear++;
     }
@@ -594,6 +600,7 @@ map_write (char *mailbox, int md, int id, long last, off_t start,
 		return NOTOK;
 
 	    case OK:
+		fclose (fp);
 		break;
 
 	    default:
@@ -611,6 +618,7 @@ map_write (char *mailbox, int md, int id, long last, off_t start,
 		    }
 		}
 		free ((char *) rp);
+		fclose (fp);
 		break;
 	}
     }
@@ -651,7 +659,7 @@ map_write (char *mailbox, int md, int id, long last, off_t start,
 
 
 static int
-map_open (char *file, int *clear, int md)
+map_open (char *file, int md)
 {
     mode_t mode;
     struct stat st;
