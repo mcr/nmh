@@ -54,12 +54,6 @@ GENERATED_BIN_FILES = sendfiles
 # non-scripts generated using above GENERATED_FILE_SRCs
 GENERATED_ETC_FILES = mhn.defaults mts.conf
 
-# scripts we need to install (in bin)
-INSTALL_BIN_FILES = $(GENERATED_BIN_FILES)
-
-# non-scripts we need to install (in etc)
-INSTALL_ETC_FILES = $(STATIC_FILES) $(GENERATED_ETC_FILES)
-
 # auxiliary files (included in distribution but not installed)
 AUX = Makefile.in
 
@@ -90,17 +84,22 @@ install: install-bin-files install-etc-files
 
 install-bin-files:
 	$(top_srcdir)/mkinstalldirs $(bindir)
-	for script in $(INSTALL_BIN_FILES); do \
-	  $(INSTALL_PROGRAM) $(srcdir)/$$script $(bindir)/$$script; \
+	for script in $(GENERATED_BIN_FILES); do \
+	  $(INSTALL_PROGRAM) $$script $(bindir)/$$script; \
 	done
 
 install-etc-files:
 	$(top_srcdir)/mkinstalldirs $(etcdir)
-	for file in $(INSTALL_ETC_FILES); do \
+	INSTALL_FILES="$(GENERATED_ETC_FILES)"; \
+	for file in $(STATIC_FILES); do \
+	  INSTALL_FILES="$$INSTALL_FILES $(srcdir)/$$file"; \
+	done; \
+	for path in $$INSTALL_FILES; do \
+	  file=`basename $$path`; \
 	  echo "Installing $$file..."; \
 	  if [ -f $(etcdir)/$$file ]; then \
 	    mv $(etcdir)/$$file $(etcdir)/$$file.prev; \
-	    $(INSTALL_DATA) $(srcdir)/$$file $(etcdir)/$$file; \
+	    $(INSTALL_DATA) $$path $(etcdir)/$$file; \
 	    if diff $(etcdir)/$$file.prev $(etcdir)/$$file; then \
 	      rm $(etcdir)/$$file.prev; \
 	    else \
@@ -112,19 +111,19 @@ install-etc-files:
 	      echo; \
 	    fi; \
 	  else \
-	    $(INSTALL_DATA) $(srcdir)/$$file $(etcdir)/$$file; \
+	    $(INSTALL_DATA) $$path $(etcdir)/$$file; \
 	  fi; \
 	done
 
 uninstall: uninstall-bin-files uninstall-etc-files
 
 uninstall-bin-files:
-	for script in $(INSTALL_BIN_FILES); do \
+	for script in $(GENERATED_BIN_FILES); do \
 	  rm -f $(bindir)/$$script; \
 	done
 
 uninstall-etc-files:
-	for file in $(INSTALL_ETC_FILES); do \
+	for file in $(STATIC_FILES) $(GENERATED_ETC_FILES); do \
 	  rm -f $(etcdir)/$$file; \
 	done
 

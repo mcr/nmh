@@ -1,3 +1,8 @@
+Tue Aug  1 10:48:05 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
+
+	* Fixed install in etc/Makefile.in so it works correctly.
+	Generated files cannot be installed from source directories.
+
 Mon Jul 24 16:20:45 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* When Shantonu wrote the new, more portable dtimep.lex, he left
