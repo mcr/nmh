@@ -61,26 +61,40 @@ need an ANSI C compiler such as gcc.
       want to change this if you wish your e-mail to appear as if it
       originated on the POP server.
 
-   d) "mmailid" is checked to see if nmh should do username
-      masquerading.  If the value of this field is non-zero, then
-      nmh will check if the pw_gecos field in the password file
-      has the form
+   d) "mmailid" allows two different types of email address masquerading
+      when it's set to be non-zero.  The first type is GECOS-based
+      masquerading.  nmh will check if the user's pw_gecos field in the passwd
+      is of the form:
 
           Full Name <fakeusername>
 
-      If the pw_gecos field has this form, then the internal nmh
-      routines that find the username and full name of a user will
-      return "fakeusername" and "Full Name" respectively.  This is
-      useful if you wish messages that you send to appear to come
-      from the username of your POP account, rather than your username
-      on the local machine.
+      If it is, the internal nmh routines that find the username and full
+      name of that user will return "fakeusername" and "Full Name"
+      respectively.  This is useful if you want the messages you send to
+      always appear to come from the name of an MTA alias rather than your
+      actual account name.  For instance, many organizations set up
+      "First.Last" sendmail aliases for all users.  If this is the case,
+      the GECOS field for each user should look like:
 
-   If you compile with POP support, but only want to use it occasionally,
-   then you can always use the `-host' and `-user' options to `inc'
-   and `msgchk' instead of changing `mts.conf'.
+          First [Middle] Last <First.Last>
 
-   Check the `mh-tailor' man page for a list of all the available
-   options for this file.
+      The other type of masquerading that mmailid turns on is envelope
+      "From:" masquerading based on draft contents.  When a user explicitly
+      specifies a "From:" header in a message, nmh uses it rather than
+      constructing its own.  However, the SMTP envelope "From:" and the
+      "Sender:" header are set to the user's real address.  Turning on
+      mmailid prevents this latter behavior.  This is useful when the user
+      wants to pretend to be sending mail "directly" from a remote POP3
+      account, or when remote mail robots incorrectly use the envelope
+      "From:" in preference to the body "From:" (or refuse to take action
+      when the two don't match).
+
+   If you compile with POP support, but don't want to use it exclusively,
+   you can use the `-host' and `-user' options to `inc' and `msgchk'
+   rather than hardcoding values in `mts.conf'.
+
+   Check the `mh-tailor' man page for a list of all the available options
+   for this file.
 
 6) If you have enabled POP support, make sure that `pop3' (or more
    precisely the value of the define POPSERVICE in config.h) is defined

@@ -101,22 +101,33 @@ The end-of-message delimiter for maildrops.
 .ti -.5i
 mmailid: 0
 .br
-If this is non-zero, then activate support for MMailids (username
-masquerading).  When this is activated, \fInmh\fR will check if the
-pw_gecos field in the password file has the form
+If this is non-zero, two different types of email address masquerading are
+allowed ("mmailid" = "masquerade mail ID").  The first type is GECOS-based
+masquerading.  \fInmh\fR will check if the user's pw_gecos field in the passwd
+file is of the form:
 
 .ti +.5i
 Full Name <fakeusername>
 
-If the pw_gecos field has this form, then the internal \fInmh\fR
-routines that find the username and full name of a user will return
-\*(lqfakeusername\*(rq and \*(lqFull Name\*(rq respectively.  If
-the pw_gecos field for a user is not of this form, there will be
-no username masquerading for that user.
+If it is, the internal \fInmh\fR routines that find the username and full name
+of that user will return "fakeusername" and "Full Name" respectively.  This is
+useful if you want the messages you send to always appear to come from the name
+of an MTA alias rather than your actual account name.  For instance, many
+organizations set up "First.Last" sendmail aliases for all users.  If this is
+the case, the GECOS field for each user should look like:
 
-This facility is useful if you are using POP, and wish for messages
-that are sent by users to appear to originate from the username of
-their POP account, rather than their username on the local machine.
+.ti +.5i
+First [Middle] Last <First.Last>
+
+The other type of masquerading that mmailid turns on is envelope "From:"
+masquerading based on draft contents.  When a user explicitly specifies a
+"From:" header in a message, \fInmh\fR uses it rather than constructing its own.
+However, the SMTP envelope "From:" and the "Sender:" header are set to the
+user's real address.  Turning on mmailid prevents this latter behavior.  This is
+useful when the user wants to pretend to be sending mail "directly" from a
+remote POP3 account, or when remote mail robots incorrectly use the envelope
+"From:" in preference to the body "From:" (or refuse to take action when the two
+don't match).
 
 .ti -.5i
 maildelivery: %libdir%/maildelivery
