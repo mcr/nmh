@@ -1,3 +1,9 @@
+Wed Dec 20 16:00:46 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Marked deprecated directories in docs/README.developers
+	as deprecated, with pointers to the new code location.
+	Eventually these deprecated directories should go away.
+
 Tue Dec 19 19:16:37 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* -apop and -noapop were not documented in inc.man.  -snoop was
@@ -8,7 +14,7 @@ Thu Dec 14 14:32:09 2000 Shantonu Sen <ssen@mit.edu>
 	* Updated config.guess and config.sub to the most recent
 	versions on ftp://ftp.gnu.org/pub/gnu/config, dated
 	12-07-00. This should prevent configure from failing
-	on never operating systems because config.{guess,sub}
+	on newer operating systems because config.{guess,sub}
 	couldn't correctly identify them.
 
 Thu Dec 14 1:30:44 2000 Shantonu Sen <ssen@mit.edu>
