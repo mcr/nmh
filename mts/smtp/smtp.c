@@ -13,6 +13,15 @@
 #include <errno.h>
 #endif
 
+#ifdef CYRUS_SASL
+#include <sasl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <errno.h>
+#endif /* CYRUS_SASL */
+
 /*
  * This module implements an interface to SendMail very similar
  * to the MMDF mm_(3) routines.  The sm_() routines herein talk

@@ -8,6 +8,11 @@ Mon Jul 17 13:11:52 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	unnecessary local makes and an out-of-sync stamp-h.in file, but
 	would not cause problems for other people using the CVS files.
 
+	* Ken Hornstein's SASL patch was not integrated properly with
+ 	Ruud's new merged mts/sendmail code.  Kimmo has since fixed nmh so
+ 	it compiles, but according to Ken, the SASL stuff still does not
+ 	work.  Integrating a patch from him for this.
+
 Tue Jul 18 19:36:59 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
 	* Added the answer to Dan's question in README.developers.
