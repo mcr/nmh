@@ -6,6 +6,7 @@
 .SH NAME
 ali \- list mail aliases
 .SH SYNOPSIS
+.HP 5
 .B ali
 .RB [ \-alias
 .IR aliasfile ]
