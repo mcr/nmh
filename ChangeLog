@@ -1,3 +1,20 @@
+Fri Dec 22 19:21:29 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Remove the lex-specific memory hints at the
+	beginning of sbr/dtimep.lex. We've already
+	committed to supporting flex only, since
+	lex does not easily allow us to parse a single
+	string, as well as other problems documented
+	below and on nmh-workers.
+
+	* Added a switch statement to configure.in to
+	test for Mac OS X. If this is the case, LDFLAGS
+	should not contain "-s" since the linker rejects
+	the flag.
+
+	* Updated MACHINES to include Mac OS X Public Beta,
+	as well as Linux 2.4 running glibc 2.2.
+
 Wed Dec 20 16:00:46 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Marked deprecated directories in docs/README.developers
