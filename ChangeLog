@@ -1,3 +1,9 @@
+Tue Mar 06 21:04:27 2001 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Found some historical information about MH in RFC 808.
+  	Supplemented it with info from Jerry Peek's MH book and added it
+ 	to docs/README.about.
+
 Tue Feb 6 20:35:40 2001 Shantonu Sen <ssen@mit.edu>
 
 	* sbr/dtime.c Use the same Y2K correction code as dtimep.lex
