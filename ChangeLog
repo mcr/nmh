@@ -1,4 +1,4 @@
-Sat Jun  9 12:22:47 1999
+Sat Jun  9 12:22:47 1999 Doug Morris <doug@mhost.com>
 
 	* Updated configure to check for mkstemp (available on OpenBSD) and 
 	substitute it for mktemp if available. 
