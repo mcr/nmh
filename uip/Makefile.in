@@ -76,17 +76,18 @@ MISC = ap conflict dp fmtdump install-mh mhl post rcvdist rcvpack \
 SCMDS = inc
 
 # source files
-SRCS = ali.c aliasbr.c anno.c annosbr.c ap.c burst.c comp.c \
-       conflict.c dist.c distsbr.c dp.c dropsbr.c flist.c fmtdump.c \
-       folder.c forw.c ftpsbr.c inc.c install-mh.c mark.c md5.c mhbuild.c \
-       mhbuildsbr.c mhcachesbr.c mhfree.c mhl.c mhlist.c mhlistsbr.c mhlsbr.c \
-       mhmail.c mhmisc.c mhn.c mhoutsbr.c mhparam.c mhparse.c mhpath.c mhshow.c \
-       mhshowsbr.c mhstore.c mhstoresbr.c mhtest.c msgchk.c msh.c mshcmds.c packf.c \
-       pick.c picksbr.c popsbr.c post.c prompter.c rcvdist.c rcvpack.c \
-       rcvstore.c rcvtty.c refile.c repl.c replsbr.c rmf.c rmm.c scan.c \
-       scansbr.c send.c sendsbr.c show.c slocal.c sortm.c spost.c \
-       termsbr.c viamail.c vmh.c vmhsbr.c vmhtest.c whatnow.c whatnowproc.c \
-       whatnowsbr.c whom.c wmh.c
+SRCS = ali.c aliasbr.c anno.c annosbr.c ap.c burst.c comp.c		  \
+	conflict.c dist.c distsbr.c dp.c dropsbr.c flist.c fmtdump.c	  \
+	folder.c forw.c ftpsbr.c inc.c install-mh.c mark.c md5.c mhbuild.c \
+	mhbuildsbr.c mhcachesbr.c mhfree.c mhl.c mhlist.c mhlistsbr.c	  \
+	mhlsbr.c mhmail.c mhmisc.c mhn.c mhoutsbr.c mhparam.c mhparse.c	  \
+	mhpath.c mhshow.c mhshowsbr.c mhstore.c mhstoresbr.c mhtest.c	  \
+	msgchk.c msh.c mshcmds.c packf.c pick.c picksbr.c popi.c popsbr.c \
+	post.c prompter.c rcvdist.c rcvpack.c rcvstore.c rcvtty.c	  \
+	refile.c repl.c replsbr.c rmf.c rmm.c scan.c scansbr.c send.c	  \
+	sendsbr.c show.c slocal.c sortm.c spost.c termsbr.c viamail.c	  \
+	vmh.c vmhsbr.c vmhtest.c whatnow.c whatnowproc.c whatnowsbr.c	  \
+	whom.c wmh.c
 
 # auxiliary files
 AUX = Makefile.in
