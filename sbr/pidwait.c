@@ -17,7 +17,6 @@ int
 pidwait (pid_t id, int sigsok)
 {
     pid_t pid;
-    sigset_t set, oset;
     SIGNAL_HANDLER istat, qstat;
 
 #ifdef WAITINT
