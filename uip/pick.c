@@ -72,7 +72,7 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-static int listsw = 0;
+static int listsw = -1;
 
 
 int
@@ -115,6 +115,7 @@ main (int argc, char **argv)
 	    switch (smatch (cp, switches)) {
 	    case AMBIGSW: 
 		ambigsw (cp, switches);
+		listsw = 0;	/* HACK */
 		done (1);
 	    case UNKWNSW: 
 		adios (NULL, "-%s unknown", cp);
@@ -127,6 +128,7 @@ main (int argc, char **argv)
 		done (1);
 	    case VERSIONSW:
 		print_version(invo_name);
+		listsw = 0;	/* HACK */
 		done (1);
 
 	    case CCSW: 
@@ -163,7 +165,6 @@ main (int argc, char **argv)
 		if (seqp >= NUMATTRS)
 		    adios (NULL, "too many sequences (more than %d) specified", NUMATTRS);
 		seqs[seqp++] = cp;
-		listsw = 0;
 		continue;
 	    case PUBLSW: 
 		publicsw = 1;
@@ -179,7 +180,7 @@ main (int argc, char **argv)
 		continue;
 
 	    case LISTSW: 
-		listsw++;
+		listsw = 1;
 		continue;
 	    case NLISTSW: 
 		listsw = 0;
@@ -240,10 +241,10 @@ main (int argc, char **argv)
 
     /*
      * If we aren't saving the results to a sequence,
-     * we need to list the results.
+     * we default to list the results.
      */
-    if (seqp == 0)
-	listsw++;
+    if (listsw == -1)
+	listsw = !seqp;
 
     if (publicsw == 1 && is_readonly(mp))
 	adios (NULL, "folder %s is read-only, so -public not allowed", folder);

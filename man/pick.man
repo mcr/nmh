@@ -244,9 +244,7 @@ the folder argument to
 .B scan
 as well.
 .PP
-Regardless of the operation of the
-.B \-list
-switch, the
+The
 .B \-sequence
 .I name
 switch may be given once for each sequence the user wishes to define.
@@ -261,15 +259,6 @@ pick\0\-from\0frated\0\-seq\0fred
 .PP
 defines a new message sequence for the current folder called
 \*(lqfred\*(rq which contains exactly those messages that were selected.
-.PP
-Note that whenever
-.B pick
-processes a
-.B \-sequence
-.I name
-switch, it
-sets
-.BR \-nolist .
 .PP
 By default,
 .B pick
