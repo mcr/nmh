@@ -164,7 +164,7 @@ main (int argc, char **argv)
 	}
     }
 
-    done (0);
+    return done (0);
 }
 
 void
