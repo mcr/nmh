@@ -1,3 +1,9 @@
+Thu May 13 16:40:19 1999  Doug Morris <doug@mhost.com>
+
+	* Added config.sub and config.guess and updated acconfig.h and
+	configure.in to automatically detect system type and set the
+	proper #defines.
+
 Wed May 12 23:41:33 1999  Dan Winship  <danw@mit.edu>
 
 	* Released nmh-1.0.1.
