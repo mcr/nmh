@@ -63,6 +63,7 @@ or
 .nf
 .ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
+.fi
 
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -72,19 +73,21 @@ or
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 ^Msg\-Protect:~^To set mode when creating a new message
+.fi
 
 .SH "SEE ALSO"
 inc(1), msh(1), pack(1),
 .I "Proposed Standard for Message Encapsulation"
 (RFC\-934)
 
-.SH "DEFAULTS"
+.SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
 .RB ` \-noinplace '
 .RB ` \-noquiet '
 .RB ` \-noverbose '
+.fi
 
 .SH CONTEXT
 If a folder is given, it will become the current folder.  If

@@ -54,9 +54,7 @@ Here is the default format string used by
 .BR dp :
 .PP
 .RS 5
-.nf
 %<(nodate{text})error: %{text}%|%(putstr(pretty{text}))%>
-.fi
 .RE
 .PP
 which says that if an error was detected, print the error, a `:',
@@ -68,6 +66,7 @@ Otherwise, output the 822\-proper format of the date.
 .nf
 .ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
+.fi
 
 .SH "PROFILE COMPONENTS"
 None
@@ -77,10 +76,11 @@ ap(8),
 .I "Standard for the Format of ARPA Internet Text Messages"
 (RFC\-822)
 
-.SH "DEFAULTS"
+.SH DEFAULTS
 .nf
 .RB ` \-format "' default as described above"
 .RB ` \-width "' default to the width of the terminal"
+.fi
 
 .SH CONTEXT
 None

@@ -41,6 +41,7 @@ for the details.
 .ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/scan.default~^The default format file
+.fi
 
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -48,6 +49,7 @@ for the details.
 .ta 2.4i
 .ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
+.fi
 
 .SH "SEE ALSO"
 mh-format(5), mh-sequences(8)

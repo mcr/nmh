@@ -2,127 +2,200 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MARK %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mark \- manipulate message sequences
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-mark
-\%[+folder] \%[msgs]
-\%[\-sequence\ name\ ...]
-\%[\-add]
-.br
-\%[\-delete] \%[\-list] 
-\%[\-public] \%[\-nopublic]
-\%[\-zero]
-.br
-\%[\-nozero]
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B mark
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-sequence
+.I name
+\&...]
+.RB [ \-add " | " \-delete ]
+.RB [ \-list ] 
+.RB [ \-public " | " \-nopublic ]
+.RB [ \-zero " | " \-nozero ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-The \fImark\fR command manipulates message sequences by adding or deleting
+The
+.B mark
+command manipulates message sequences by adding or deleting
 message numbers from folder\-specific message sequences, or by listing
 those sequences and messages.
-
+.PP
 A message sequence is a keyword, just like one of the \*(lqreserved\*(rq
 message names, such as \*(lqfirst\*(rq or \*(lqnext\*(rq.  Unlike the
 \*(lqreserved\*(rq message names, which have a fixed semantics on
 a per\-folder basis, the semantics of a message sequence may be
 defined, modified, and removed by the user.  Message sequences are
 folder\-specific, e.g., the sequence name \*(lqseen\*(rq in the context
-of folder \*(lq+inbox\*(rq need not have any relation whatsoever to the
+of folder
+.RI \*(lq +inbox \*(rq
+need not have any relation whatsoever to the
 sequence of the same name in a folder of a different name.
-
-Three action switches direct the operation of \fImark\fR.  These switches
+.PP
+Three action switches direct the operation of
+.BR mark .
+These switches
 are mutually exclusive: the last occurrence of any of them overrides
 any previous occurrence of the other two.
-
-The `\-add' switch tells \fImark\fR to add messages to sequences or to
-create a new sequence.  For each sequence named via the `\-sequence\ name'
-argument (which must occur at least once) the messages named via `msgs'
-(which defaults to \*(lqcur\*(rq if no `msgs' are given), are added to the
+.PP
+The
+.B \-add
+switch tells
+.B mark
+to add messages to sequences or to
+create a new sequence.  For each sequence named via the
+.B \-sequence
+.I name
+argument (which must occur at least once) the messages named via
+.I msgs
+(which defaults to \*(lqcur\*(rq if no
+.I msgs
+are given), are added to the
 sequence.  The messages to be added need not be absent from the sequence.
-If the `\-zero' switch is specified, the sequence will be emptied prior
-to adding the messages.  Hence, `\-add\ \-zero' means that each sequence
-should be initialized to the indicated messages, while `\-add\ \-nozero'
+If the
+.B \-zero
+switch is specified, the sequence will be emptied prior
+to adding the messages.  Hence,
+.B \-add
+.B \-zero
+means that each sequence
+should be initialized to the indicated messages, while
+.B \-add
+.B \-nozero
 means that each sequence should be appended to by the indicated messages.
-
-The `\-delete' switch tells \fImark\fR to delete messages from sequences,
-and is the dual of `\-add'.  For each of the named sequences, the
+.PP
+The
+.B \-delete
+switch tells
+.B mark
+to delete messages from sequences, and is the dual of
+.BR \-add .
+For each of the named sequences, the
 named messages are removed from the sequence.  These messages need
-not be already present in the sequence.  If the `\-zero' switch is
+not be already present in the sequence.  If the
+.B \-zero
+switch is
 specified, then all messages in the folder are added to the sequence
 (first creating the sequence, if necessary) before removing the messages.
-Hence, `\-delete\ \-zero' means that each sequence should contain
-all messages except those indicated, while `\-delete\ \-nozero' means
+Hence,
+.B \-delete
+.B \-zero
+means that each sequence should contain
+all messages except those indicated, while
+.B \-delete
+.B \-nozero
+means
 that only the indicated messages should be removed from each sequence.
-As expected, the command `mark\0\-sequence\0foo\0\-delete\0all' deletes
-the sequence \*(lqfoo\*(rq from the current folder.
-
+As expected, the command
+.RB \*(lq mark
+.B \-sequence
+.I foo
+.B \-delete
+.BR \-all \*(rq
+deletes the sequence \*(lqfoo\*(rq from the current folder.
+.PP
 When creating or modifying sequences, you can specify the switches
-`\-public' or `\-nopublic' to force the new or modified sequences to be
-\*(lqpublic\*(rq or \*(lqprivate\*(rq.  The switch `\-public' indicates
+.B \-public
+or
+.B \-nopublic
+to force the new or modified sequences to be
+\*(lqpublic\*(rq or \*(lqprivate\*(rq.  The switch
+.B \-public
+indicates
 that the sequences should be made \*(lqpublic\*(rq.  These sequences
-will then be readable by all \fInmh\fR users with permission to read the
-relevant folders.  In contrast, the `\-nopublic' switch indicates that the
+will then be readable by all
+.B nmh
+users with permission to read the relevant folders.  In contrast, the
+.B \-nopublic
+switch indicates that the
 sequences should be made \*(lqprivate\*(rq, and will only be accessible by
 you.  If neither of these switches is specified, then existing sequences
 will maintain their current status, and new sequences will default to
 \*(lqpublic\*(rq if you have write permission for the relevant folder.
-Check the mh\-sequence(5) man page for more details about the difference
+Check the
+.BR mh\-sequence (5)
+man page for more details about the difference
 between \*(lqpublic\*(rq and \*(lqprivate\*(rq sequences.
-
-The `\-list' switch tells \fImark\fR to list both the sequences defined
+.PP
+The
+.B \-list
+switch tells
+.B mark
+to list both the sequences defined
 for the folder and the messages associated with those sequences.
-\fIMark\fR will list the name of each sequence given by
-`\-sequence\ name' and the messages associated with that sequence.  If the
+.B Mark
+will list the name of each sequence given by
+.B \-sequence
+.I name
+and the messages associated with that sequence.  If the
 sequence is private, this will also be indicated.  If no sequence is
-specified by the `\-sequence' switch, then all sequences for this folder
-will be listed.  The `\-zero' switch does not affect the operation of
-`\-list'.
-
+specified by the
+.B \-sequence
+switch, then all sequences for this folder
+will be listed.  The
+.B \-zero
+switch does not affect the operation of
+.BR \-list .
+.PP
 The current restrictions on sequences are:
-
-.in +.25i
+.PP
+.IP \(bu 2
 The name used to denote a message sequence must consist of an alphabetic
 character followed by zero or more alphanumeric characters, and cannot
 be one of the (reserved) message names \*(lqnew\*(rq, \*(lqfirst\*(rq,
 \*(lqlast\*(rq, \*(lqall\*(rq, \*(lqnext\*(rq, or \*(lqprev\*(rq.
-
+.PP
+.IP \(bu 2
 Only a certain number of sequences may be defined for a given folder.
 This number is usually limited to 26 (10 on small systems).
-
+.PP
+.IP \(bu 2
 Message ranges with user\-defined sequence names are restricted to the
 form \*(lqname:n\*(rq, \*(lqname:+n\*(rq, or \*(lqname:-n\*(rq, and refer
 to the first or last `n' messages of the sequence `name', respectively.
 Constructs of the form \*(lqname1\-name2\*(rq are forbidden for user
 defined sequences.
-.in -.25i
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Sa
+.fi
+
+.SH "SEE ALSO"
 flist(1), pick(1), mh-sequence(5)
-.De
-`+folder' defaults to the current folder
-.Ds
-`\-add' if `\-sequence' is specified, `\-list' otherwise
-.Ds
-`msgs' defaults to cur (or all if `\-list' is specified)
-.Ds
-`\-nozero'
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` \-add "' if " \-sequence " is specified, " \-list " otherwise"
+.RB ` msgs "' defaults to cur (or all if " \-list " is specified)"
+.RB ` \-nozero '
+
+.SH CONTEXT
 If a folder is given, it will become the current folder.
-.Hh
-Use \*(lqflist\*(rq to find folders with a given sequence, and
-\*(lqpick sequence \-list\*(rq to enumerate those messages in
-the sequence (such as for use by a shell script).
-.En
+
+.SH "HELPFUL HINTS"
+Use
+.B flist
+to find folders with a given sequence, and
+.RB \*(lq pick
+.I sequence
+.BR \-list \*(rq
+to enumerate those messages in the sequence (such as for
+use by a shell script).

@@ -2,48 +2,86 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH INSTALL-MH %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 install-mh \- initialize the nmh environment
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-%libdir%/install\-mh
-\%[\-auto]
-.br
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B %libdir%/install\-mh
+.RB [ \-auto ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIInstall\-mh\fR is the \fInmh\fR program to create the initial setup
-for a first\-time \fInmh\fR user.  It is typically invoked by other
-\fInmh\fR commands, and should NOT be directly invoked by the user.
-
-When a user runs any \fInmh\fR program for the first time, the program
-will invoke \fIinstall\-mh\fR (with the `\-auto' switch) to query
-the user for the initial \fInmh\fR environment.  The user is asked
+.B Install\-mh
+is the
+.B nmh
+program to create the initial setup
+for a first\-time
+.B nmh
+user.  It is typically invoked by other
+.B nmh
+commands, and should NOT be directly invoked by the user.
+.PP
+When a user runs any
+.B nmh
+program for the first time, the program will invoke
+.B install\-mh
+(with the `\-auto' switch) to query the user for the initial
+.B nmh
+environment.  The user is asked
 for the name of the directory that will be designated as the user's
-\fInmh\fR directory.  If this directory does not exist, the user is
+.B nmh
+directory.  If this directory does not exist, the user is
 asked if it should be created.  Normally, this directory should be
-under the user's home directory, and has the default name of Mail/.
-After \fIinstall\-mh\fR has written the initial \&.mh\(ruprofile for
-the user, control returns to the original \fInmh\fR program.
+under the user's home directory, and has the default name of
+.RI \*(lq Mail/ \*(rq.
+After
+.B install\-mh
+has written the initial
+.I \&.mh\(ruprofile
+for the user, control returns to the original
+.B nmh
+program.
+.PP
+As with all
+.B nmh
+commands,
+.B install\-mh
+first consults the
+.B $HOME
+environment variable to determine the user's home directory.
+If
+.B $HOME
+is not set, then the
+.I /etc/passwd
+file is consulted.
+.PP
+When creating the users initial
+.IR \&.mh\(ruprofile ,
+.B install\-mh
+will check for the existence of a global profile
+.IR %etcdir%/mh.profile .
+If found, this will be used to initialize the new
+.IR \&.mh\(ruprofile .
 
-As with all \fInmh\fR commands, \fIinstall\-mh\fR first consults the
-\fB$HOME\fR environment variable to determine the user's home directory.
-If \fB$HOME\fR is not set, then the \fI/etc/passwd\fR file is consulted.
-
-When creating the users initial \&.mh\(ruprofile, \fIinstall\-mh\fR will
-check for the existence of a global profile %etcdir%/mh.profile.  If
-found, this will be used to initialize the new \&.mh\(ruprofile.
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mh.profile~^Used to initialize user profile
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To set the user's nmh directory
-.Co
-With `\-auto', the current folder is changed to \*(lqinbox\*(rq.
-.En
+.fi
+
+.SH CONTEXT
+With
+.BR \-auto ,
+the current folder is changed to
+.RI \*(lq inbox \*(rq.

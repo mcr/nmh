@@ -12,10 +12,10 @@ conflict \- search for alias/password conflicts
 .IR directory ]
 .RB [ \-mail
 .IR name ]
-.RI [ aliasfiles
-\&...]
 .RB [ \-version ]
 .RB [ \-help ] 
+.RI [ aliasfiles
+\&...]
 .SH DESCRIPTION
 .B Conflict
 is a program that checks to see if the interface between
@@ -66,6 +66,7 @@ or whenever system accounting takes place.
 ^/etc/group~^List of groups
 ^%bindir%/mhmail~^Program to send mail
 ^%mailspool%/~^Directory of mail drop
+.fi
 
 .SH "PROFILE COMPONENTS"
 None
@@ -76,6 +77,7 @@ mh\-alias(5)
 .SH "DEFAULTS"
 .nf
 .RB ` aliasfiles "' defaults to %etcdir%/MailAliases"
+.fi
 
 .SH CONTEXT
 None

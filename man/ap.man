@@ -52,7 +52,6 @@ In addition to the standard escapes,
 also recognizes the following additional escape:
 .PP
 .RS 5
-.fc ^ ~
 .nf
 .ta \w'Escape  'u +\w'Returns  'u
 .I Escape	Returns	Description
@@ -84,6 +83,7 @@ the address.
 .ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mts.conf~^nmh mts configuration file
+.fi
 
 .SH "PROFILE COMPONENTS"
 None
@@ -93,11 +93,12 @@ dp(8),
 .I "Standard for the Format of ARPA Internet Text Messages"
 (RFC\-822)
 
-.SH "DEFAULTS"
+.SH DEFAULTS
 .nf
 .RB ` \-format "' defaults as described above"
 .RB ` \-normalize '
 .RB ` \-width "' defaults to the width of the terminal"
+.fi
 
 .SH CONTEXT
 None

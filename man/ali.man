@@ -48,10 +48,11 @@ switch is given,
 will
 try to track down the official hostname of the address.
 .PP
-The files specified by the profile entry \*(lqAliasfile:\*(rq and any
-additional alias files given by the
-.RB ` \-alias
-.IR aliasfile '
+The files specified by the profile entry
+.RI \*(lq Aliasfile \*(rq
+and any additional alias files given by the
+.B \-alias
+.I aliasfile
 switch will be read.  Each
 .I alias
 is processed as described in
@@ -64,6 +65,7 @@ is processed as described in
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^/etc/passwd~^List of users
 ^/etc/group~^List of groups
+.fi
 
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -72,16 +74,18 @@ is processed as described in
 .ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
 ^Aliasfile:~^For a default alias file
+.fi
 
 .SH "SEE ALSO"
 mh\-alias(5)
 
-.SH "DEFAULTS"
+.SH DEFAULTS
 .nf
-.RB ` \-alias " %etcdir%/MailAliases'"
+.RB ` aliasfiles "' defaults to %etcdir%/MailAliases"
 .RB ` \-nolist '
 .RB ` \-nonormalize '
 .RB ` \-nouser '
+.fi
 
 .SH CONTEXT
 None

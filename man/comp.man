@@ -34,8 +34,7 @@ is used to create a new message to be mailed.  It copies a
 message form to the draft being composed and then invokes an editor on
 the draft (unless
 .B \-noedit
-is given, in which case the initial edit
-is suppressed).
+is given, in which case the initial edit is suppressed).
 .PP
 The default message form contains the following elements:
 .PP
@@ -162,6 +161,7 @@ will prevent any edit from occurring.)
 ^or <mh\-dir>/components~^Rather than the standard skeleton
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
+.fi
 
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -174,16 +174,18 @@ will prevent any edit from occurring.)
 ^Msg\-Protect:~^To set mode when creating a new message (draft)
 ^fileproc:~^Program to refile the message
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
+.fi
 
 .SH "SEE ALSO"
 dist(1), forw(1), repl(1), send(1), whatnow(1), mh-profile(5)
 
-.SH "DEFAULTS"
+.SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
 .RB ` msg "' defaults to the current message"
 .RB ` \-nodraftfolder '
 .RB ` \-nouse '
+.fi
 
 .SH CONTEXT
 None

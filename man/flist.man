@@ -23,7 +23,6 @@ flist, flists \- list the number of messages in given sequence(s)
 .RB [ \-fast " | " \-nofast ]
 .RB [ \-version ]
 .RB [ \-help ]
-
 .PP
 .HP 5
 .B flists
@@ -181,6 +180,7 @@ puts everything else in the middle in alphabetical order.
 .nf
 .ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
+.fi
 
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -191,11 +191,12 @@ puts everything else in the middle in alphabetical order.
 ^mh-sequences:~^File that contains public sequences
 ^Unseen-Sequence:~^The name of the unseen message sequence
 ^Flist-Order:~^To sort folders by priority
+.fi
 
 .SH "SEE ALSO"
 folder(1), rcvstore(1), slocal(1), mh\-sequence(5)
 
-.SH "DEFAULTS"
+.SH DEFAULTS
 .nf
 .RB ` -sequence "' defaults to Unseen-Sequence profile entry"
 .RB ` \-showzero '
@@ -203,6 +204,7 @@ folder(1), rcvstore(1), slocal(1), mh\-sequence(5)
 .RB ` \-norecurse '
 .RB ` \-noalpha '
 .RB ` \-nofast '
+.fi
 
 .SH CONTEXT
 If

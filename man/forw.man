@@ -339,6 +339,7 @@ User's Manual for more information on making digests.
 ^or <mh\-dir>/mhl.forward~^Rather than the standard filter
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
+.fi
 
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -353,13 +354,14 @@ User's Manual for more information on making digests.
 ^fileproc:~^Program to refile the message
 ^mhlproc:~^Program to filter messages being forwarded
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
+.fi
 
 .SH "SEE ALSO"
 mhbuild(1), comp(1), repl(1), send(1), whatnow(1), mh\-format(5),
 .I "Proposed Standard for Message Encapsulation"
 (RFC\-934)
 
-.SH "DEFAULTS"
+.SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
@@ -369,6 +371,7 @@ mhbuild(1), comp(1), repl(1), send(1), whatnow(1), mh\-format(5),
 .RB ` \-inplace '
 .RB ` \-dashstuffing '
 .RB ` \-nomime '
+.fi
 
 .SH CONTEXT
 If a folder is given, it will become the current folder.

@@ -305,7 +305,6 @@ when viewing the POP transaction with the
 switch.
 %nmhendpop%
 
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -313,6 +312,7 @@ switch.
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mts.conf~^nmh mts configuration file
 ^%mailspool%/$USER~^Location of mail drop
+.fi
 
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -325,11 +325,12 @@ switch.
 ^Folder\-Protect:~^To set mode when creating a new folder
 ^Msg\-Protect:~^To set mode when creating a new message and audit\-file
 ^Unseen\-Sequence:~^To name sequences denoting unseen messages
+.fi
 
 .SH "SEE ALSO"
 mhmail(1), scan(1), mh\-mail(5), post(8)
 
-.SH "DEFAULTS"
+.SH DEFAULTS
 .nf
 .RB ` +folder "' defaulted by \*(lqInbox\*(rq above"
 .RB ` \-noaudit '
@@ -341,6 +342,7 @@ mhmail(1), scan(1), mh\-mail(5), post(8)
 %nmhbeginpop%
 .RB ` \-nopack '
 %nmhendpop%
+.fi
 
 .SH CONTEXT
 The folder into which messages are being incorporated will become the

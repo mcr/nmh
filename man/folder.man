@@ -24,7 +24,7 @@ folder, folders \- set/list current folder/message
 .RB [ \-version ]
 .RB [ \-help ]
 .PP
-.HP
+.HP 5
 .B folders
 is equivalent to
 .B folder
@@ -261,6 +261,7 @@ switches turn off
 .nf
 .ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
+.fi
 
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -272,11 +273,12 @@ switches turn off
 ^Folder\-Protect:~^To set mode when creating a new folder
 ^Folder\-Stack:~^To determine the folder stack
 .\" ^lsproc:~^Program to list the contents of a folder
+.fi
 
 .SH "SEE ALSO"
 refile(1), mhpath(1)
 
-.SH "DEFAULTS"
+.SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
 .RB ` msg "' defaults to none"
@@ -288,6 +290,7 @@ refile(1), mhpath(1)
 .RB ` \-noverbose '
 .RB ` \-print "' is the default if no " \-list ", " \-push ", or " \-pop " is specified"
 .RB ` \-list "' is the default if " \-push ", or " \-pop " is specified"
+.fi
 
 .SH CONTEXT
 If
