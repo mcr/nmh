@@ -61,7 +61,7 @@ static char username[BUFSIZ];
 static char fullname[BUFSIZ];
 
 /* variables for username masquerading */
-static int MMailids = 0;
+int MMailids = 0;  /* used from post.c as well as here */
 static char *mmailid = "0";
 
 
@@ -375,7 +375,8 @@ getfullname (void)
 
 /*
  * Find the user's username and full name, and cache them.
- * It also handles mmailid processing (username masquerading)
+ * Also, handle "mmailid" username masquerading controlled from the GECOS field
+ * of the passwd file. 
  */
 
 static void
@@ -410,9 +411,13 @@ getuserinfo (void)
 
     /*
      * Do mmailid (username masquerading) processing.  The GECOS
-     * field should have the form "Full Name <fakeusername>".
+     * field should have the form "Full Name <fakeusername>".  For instance,
+     * "Dan Harkless <Dan.Harkless>".  Naturally, you'll want your MTA to have
+     * an alias (e.g. in /etc/aliases) from "fakeusername" to your account name.
      */
 #ifndef	GCOS_HACK
+    /* What is this code here for?  As of 2000-01-25, GCOS_HACK doesn't appear
+       anywhere else in nmh.  -- Dan Harkless <dan-nmh@dilvish.speed.net> */
     for (cp = fullname; *np && *np != (MMailids ? '<' : ','); *cp++ = *np++)
 	continue;
 #else
