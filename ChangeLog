@@ -1,3 +1,10 @@
+Tue Nov 1 13:48:10 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Changed the version number from 1.0.3 to 1.0.2+dev.  There was
+	not unanimous support for my proposed even/odd release/developer
+	version number dichotomy.  1.0.2+dev implies release 1.0.2 plus
+	some development.
+
 Fri Oct 29 13:42:51 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Upped the version number to 1.0.3.  If we don't do this, then
