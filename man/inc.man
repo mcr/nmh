@@ -2,227 +2,360 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH INC %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 inc \- incorporate new mail
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-inc
-\%[+folder]
-\%[\-audit\ audit\-file] \%[\-noaudit]
-\%[\-changecur]
-.br
-\%[\-nochangecur]
-\%[\-form\ formatfile]
-\%[\-format\ string]
-.br
-\%[\-file\ name]
-\%[\-silent] \%[\-nosilent]
-\%[\-truncate]
-.br
-\%[\-notruncate]
-\%[\-width\ columns]
+.HP 5
+.B inc
+.RI [ +folder ]
+.RB [ \-audit
+.IR audit\-file ]
+.RB [ \-noaudit ]
+.RB [ \-changecur " | " \-nochangecur ]
+.RB [ \-form
+.IR formfile ]
+..RB [ \-format
+.IR string ]
+.RB [ \-file
+.IR name ]
+.RB [ \-silent " | " \-nosilent ]
+.RB [ \-truncate " | " \-notruncate ]
+.RB [ \-width
+.IR columns ]
 %nmhbeginpop%
-\%[\-host\ hostname]
-.br
-\%[\-user\ username]
-\%[\-pack\ file]
-\%[\-nopack]
-\%[\-apop]
-\%[\-noapop]
-\%[\-kpop]
-\%[\-sasl]
-\%[\-saslmech\ mechanism]
-\%[\-snoop]
-.br
+.RB [ \-host
+.IR hostname ]
+.RB [ \-user
+.IR username ]
+.RB [ \-pack
+.IR file ]
+.RB [ \-nopack ]
+.RB [ \-apop " | " \-noapop ]
+.RB [ \-kpop ]
+.RB [ \-sasl ]
+.RB [ \-saslmech
+.IR mechanism ]
+.RB [ \-snoop ]
 %nmhendpop%
-\%[\-version]
-\%[\-help]
-.in -.5i
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIInc\fR incorporates mail from the user's incoming mail drop into
-an \fInmh\fR folder.
-
-You may specify which folder to use with `+folder'.  If no folder
-is specified, then \fIinc\fR will use either the folder given by a
-(non\-empty) \*(lqInbox:\*(rq entry in the user's profile, or the folder
-named \*(lqinbox\*(rq.  If the specified (or default) folder doesn't
+.B Inc
+incorporates mail from the user's incoming mail drop into
+an
+.B nmh
+folder.
+.PP
+You may specify which folder to use with
+.IR +folder .
+If no folder is specified, then
+.B inc
+will use either the folder given by a (non\-empty)
+.RI \*(lq Inbox \*(rq
+entry in the user's profile, or the folder named
+.RI \*(lq inbox \*(rq.
+If the specified (or default) folder doesn't
 exist, the user will be queried prior to its creation.
-
+.PP
 When the new messages are incorporated into the folder, they are assigned
 numbers starting with the next highest number for the folder.  As the
-messages are processed, a \fIscan\fR listing of the new mail is produced.
-
-If the user's profile contains a \*(lqMsg\-Protect: nnn\*(rq entry, it
+messages are processed, a
+.B scan
+listing of the new mail is produced.
+.PP
+If the user's profile contains a
+.RI \*(lq "Msg\-Protect: nnn" \*(rq
+entry, it
 will be used as the protection on the newly created messages, otherwise
-the \fInmh\fR default of 0644 will be used.  For all subsequent operations
+the
+.B nmh
+default of 0644 will be used.  For all subsequent operations
 on these messages, this initially assigned protection will be preserved.
-
-If the switch `\-audit\ audit\-file' is specified (usually as a default
-switch in the profile), then \fIinc\fR will append a header line and a
+.PP
+If the switch
+.B \-audit
+.I audit\-file
+is specified (usually as a default
+switch in the profile), then
+.B inc
+will append a header line and a
 line per message to the end of the specified audit\-file with the format:
-
+.PP
+.RS 5
 .nf
-.ti 1i
 \*(<<inc\*(>> date
-.ti 1.5i
 <scan line for first message>
-.ti 1.5i
 <scan line for second message>
-.ti 2.5i
 <etc.>
 .fi
-
+.RE
+.PP
 This is useful for keeping track of volume and source of incoming mail.
-Eventually, \fIrepl\fR, \fIforw\fR, \fIcomp\fR, and \fIdist\fR
+Eventually,
+.BR repl ,
+.BR forw ,
+.BR comp ,
+and
+.B dist
 may also produce audits to this (or another) file, perhaps with
-\*(lqMessage\-Id:\*(rq information to keep an exact correspondence
-history.  \*(lqAudit\-file\*(rq will be in the user's nmh directory unless
-a full path is specified.
-
-\fIInc\fR will incorporate even improperly formatted messages into the
+.RI \*(lq Message\-Id \*(rq
+information to keep an exact correspondence
+history.
+.RI \*(lq Audit\-file \*(rq
+will be in the user's nmh directory unless a full path is specified.
+.PP
+.B Inc
+will incorporate even improperly formatted messages into the
 user's nmh folder, inserting a blank line prior to the offending component
 and printing a comment identifying the bad message.
-
+.PP
 In all cases, the user's mail drop will be zeroed, unless the
-`\-notruncate' switch is given.
-
-If the profile entry \*(lqUnseen\-Sequence\*(rq is present and non\-empty,
-then \fIinc\fR will add each of the newly incorporated messages to
-each sequence named by the profile entry.  \fIInc\fR will not zero each
-sequence prior to adding messages.
-
-The interpretation of the `\-form\ formatfile', `\-format\ string', and
-`\-width\ columns' switches is the same as in \fIscan\fR\0(1).
-
-By using the `\-file\ name' switch, one can direct \fIinc\fR to
-incorporate messages from a file other than the user's maildrop.
-Note that the name file will NOT be zeroed, unless the `\-truncate'
+.B \-notruncate
 switch is given.
-
-If the environment variable \fB$MAILDROP\fR is set, then \fIinc\fR
+.PP
+If the profile entry
+.RI \*(lq Unseen\-Sequence \*(rq
+is present and non\-empty, then
+.B inc
+will add each of the newly incorporated messages to
+each sequence named by the profile entry.
+.B Inc
+will not zero each sequence prior to adding messages.
+.PP
+The interpretation of the
+.B \-form
+.IR formatfile ,
+.B \-format
+.IR string ,
+and
+.B \-width
+.I columns
+switches is the same as in
+.BR scan .
+.PP
+By using the
+.B \-file
+.I name
+switch, one can direct
+.B inc
+to incorporate messages from a file other than the user's maildrop.
+Note that the name file will NOT be zeroed, unless the
+.B \-truncate
+switch is given.
+.PP
+If the environment variable
+.B $MAILDROP
+is set, then
+.B inc
 uses it as the location of the user's maildrop instead of the default
-(the `-file\ name' switch still overrides this, however).  If this
-environment variable is not set, then \fIinc\fR will consult the profile
-entry \*(lqMailDrop\*(rq for this information.  If the value found is
-not absolute, then it is interpreted relative to the user's \fInmh\fR
-directory.  If the value is not found, then \fIinc\fR will look in the
-standard system location for the user's maildrop.
-
-The `\-silent' switch directs \fIinc\fR to be quiet and not ask any
-questions at all.  This is useful for putting \fIinc\fR in the background
-and going on to other things.
+(the
+.B -file
+.I name
+switch still overrides this, however).  If this
+environment variable is not set, then
+.B inc
+will consult the profile entry
+.RI \*(lq MailDrop \*(rq
+for this information.  If the value found is
+not absolute, then it is interpreted relative to the user's
+.B nmh
+directory.  If the value is not found, then
+.B inc
+will look in the standard system location for the user's maildrop.
+.PP
+The
+.B \-silent
+switch directs
+.B inc
+to be quiet and not ask any questions at all.  This is useful for putting
+.B inc
+in the background and going on to other things.
 %nmhbeginpop%
-
-.Uh "Using POP"
-\fIinc\fR will normally check local mail drops for mail, as covered above.  But
-if the option \*(lqpophost:\*(rq is set in \*(lqmts.conf\*(rq, or if the
-`\-host\ hostname' switch is given, or if the \fB$MAILHOST\fR environment
-variable is set, then \fIinc\fR will query this POP service host for mail to
-incorporate.  If \fB$MAILHOST\fR is set and \-host is specified as well, the
-commandline switch will override the environment variable.
-
-The default is for \fIinc\fR to assume that your account name on
+.PP
+.SS "Using POP"
+.B inc
+will normally check local mail drops for mail, as covered above.  But
+if the option
+.RI \*(lq pophost \*(rq
+is set in
+.RI \*(lq mts.conf \*(rq,
+or if the
+.B \-host
+.I hostname
+switch is given, or if the
+.B $MAILHOST
+environment variable is set, then
+.B inc
+will query this POP service host for mail to incorporate.  If
+.B $MAILHOST
+is set and
+.B \-host
+is specified as well, the commandline switch will override
+the environment variable.
+.PP
+The default is for
+.B inc
+to assume that your account name on
 the POP server is the same as your current username.  To specify
-a different username, use the `\-user\ username' switch.
-
+a different username, use the
+.B \-user
+.I username
+switch.
+.PP
 When using POP, you will normally need to type the password for
 your account on the POP server, in order to retrieve your messages.
-It is possible to automate this process by creating a \*(lq.netrc\*(rq
+It is possible to automate this process by creating a
+.RI \*(lq .netrc \*(rq
 file containing your login account information for this POP server.
 For each POP server, this file should have a line of the following
-form.  Replace the words mypopserver, mylogin, and mypassword with
-your own account information.
-
-machine mypopserver login mylogin password mypassword
-
-This \*(lq.netrc\*(rq file should be owned and readable only by
-you.
-
-If \fIinc\fR uses POP, then the `\-pack\ file' switch is considered.
-If given, then \fIinc\fR simply uses the POP to \fIpackf\fR\0(1) the
-user's maildrop from the POP service host to the named file.  This switch
-is provided for those users who prefer to use \fImsh\fR to read their
-maildrops.
-
-For debugging purposes, you may give the switch `\-snoop', which will
-allow you to watch the POP transaction take place between you and the
-POP server.
-
-If nmh has been compiled with APOP #defined, the `\-apop' switch will cause
-\fIinc\fR to use APOP rather than standard POP3 authentication.  Under APOP, a
+form.  Replace the words
+.IR mypopserver ,
+.IR mylogin ,
+and
+.I mypassword
+with your own account information.
+.PP
+.RS 5
+.B machine
+.I mypopserver
+.B login
+.I mylogin
+.B password
+.I mypassword
+.RE
+.PP
+This
+.RI \*(lq .netrc \*(rq
+file should be owned and readable only by you.
+.PP
+If
+.B inc
+uses POP, then the
+.B \-pack
+.I file
+switch is considered. If given, then
+.B inc
+simply uses the POP to
+.B packf
+the user's maildrop from the POP service host to the named file.  This switch
+is provided for those users who prefer to use
+.B msh
+to read their maildrops.
+.PP
+For debugging purposes, you may give the switch
+.BR \-snoop ,
+which will allow you to watch the POP transaction take place
+between you and the POP server.
+.PP
+If
+.B nmh
+has been compiled with APOP support, the
+.B \-apop
+switch will cause
+.B inc
+to use APOP rather than standard POP3 authentication.  Under APOP, a
 unique string (generally of the format
-<\fIpid\fR.\fItimestamp\fR@\fIhostname\fR>) is announced by the POP server.
-Rather than `USER \fIuser\fR', `PASS \fIpassword\fR', inc sends `APOP \fIuser\fR
-\fIdigest\fR', where digest is the MD5 hash of the unique string followed by a
+.RI < pid . timestamp @ hostname >
+) is announced by the POP server.
+Rather than `USER
+.IR user ',
+`PASS
+.IR password ',
+.B inc
+sends `APOP
+.I user
+.IR digest ',
+where digest is the MD5 hash of the unique string followed by a
 `secret' shared by client and server, essentially equivalent to the user's
 password (though an APOP-enabled POP3 server could have separate APOP and plain
-POP3 passwords for a single user).  `\-noapop' disables APOP in cases where it'd
-otherwise be used.
-
-If nmh has been compiled with KPOP #defined, the `\-kpop' switch will allow
-\fIinc\fR to use Kerberized POP rather than standard POP3 on a given invocation.
-If POPSERVICE was also #defined to "kpop", \fIinc\fR will be hardwired to always
-use KPOP.
-
-If nmh has been compiled with SASL support, the `\-sasl' switch will enable
+POP3 passwords for a single user).
+.B \-noapop
+disables APOP in cases where it'd otherwise be used.
+.PP
+If
+.B nmh
+has been compiled with KPOP support, the
+.B \-kpop
+switch will allow
+.B inc
+to use Kerberized POP rather than standard POP3 on a given invocation.
+If POPSERVICE was also #defined to "kpop",
+.B inc
+will be hardwired to always use KPOP.
+.PP
+If
+.B nmh
+has been compiled with SASL support, the
+.B \-sasl
+switch will enable
 the use of SASL authentication.  Depending on the SASL mechanism used, this
 may require an additional password prompt from the user (but the
-\*(lq.netrc\*(rq file can be used to store this password).  The
-`\-saslmech' switch can be used to select a particular SASL mechanism.
-
-If SASL authentication is successful, \fIinc\fR will attempt to negotiate
-a security layer for session encryption.  Encrypted traffic is labelled
-with `(encrypted)' and `(decrypted)' when viewing the POP transaction
-with the `\-snoop' switch.
+.RI \*(lq .netrc \*(rq
+file can be used to store this password).  The
+.B \-saslmech
+switch can be used to select a particular SASL mechanism.
+.PP
+If SASL authentication is successful,
+.B inc
+will attempt to negotiate a security layer for session encryption.
+Encrypted traffic is labelled with `(encrypted)' and `(decrypted)'
+when viewing the POP transaction with the
+.B \-snoop
+switch.
 %nmhendpop%
-.Fi
+
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mts.conf~^nmh mts configuration file
 ^%mailspool%/$USER~^Location of mail drop
-.Pr
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Alternate\-Mailboxes:~^To determine the user's mailboxes
-.Ps
 ^Inbox:~^To determine the inbox, default \*(lqinbox\*(rq
-.Ps
 ^Folder\-Protect:~^To set mode when creating a new folder
-.Ps
 ^Msg\-Protect:~^To set mode when creating a new message and audit\-file
-.Ps
 ^Unseen\-Sequence:~^To name sequences denoting unseen messages
-.Sa
+
+.SH "SEE ALSO"
 mhmail(1), scan(1), mh\-mail(5), post(8)
-.De
-`+folder' defaulted by \*(lqInbox\*(rq above
-.Ds
-`\-noaudit'
-.Ds
-`\-changecur'
-.Ds
-`\-format' defaulted as described above
-.Ds
-`\-nosilent'
-.Ds
-`\-truncate' if `\-file\ name' not given, `\-notruncate' otherwise
-.Ds
-`\-width' defaulted to the width of the terminal
+
+.SH "DEFAULTS"
+.nf
+.RB ` +folder "' defaulted by \*(lqInbox\*(rq above"
+.RB ` \-noaudit '
+.RB ` \-changecur '
+.RB ` \-format "' defaulted as described above"
+.RB ` \-nosilent '
+.RB ` \-truncate "' if `" \-file " name' not given, `" \-notruncate "' otherwise"
+.RB ` \-width "' defaulted to the width of the terminal"
 %nmhbeginpop%
-.Ds
-`\-nopack'
+.RB ` \-nopack '
 %nmhendpop%
-.Co
+
+.SH CONTEXT
 The folder into which messages are being incorporated will become the
 current folder.  The first message incorporated will become the current
-message, unless the `\-nochangecur' option is specified.  This leaves
-the context ready for a \fIshow\fR of the first new message.
-.Bu
-The argument to the `\-format' switch must be interpreted as a single
-token by the shell that invokes \fIinc\fR.  Therefore, one must usually
-place the argument to this switch inside double\-quotes.
-.En
+message, unless the
+.B \-nochangecur
+option is specified.  This leaves the context ready for a
+.B show
+of the first new message.
+
+.SH BUGS
+The argument to the
+.B \-format
+switch must be interpreted as a single
+token by the shell that invokes
+.BR inc .
+Therefore, one must usually place the argument to this switch inside
+double\-quotes.
