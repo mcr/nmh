@@ -532,6 +532,18 @@ putfmt (char *name, char *str, FILE *out)
 	    f = mp->m_next; mp->m_next = 0;
 	    putadr( name, f );
 	} else {
+	    /* The author(s) of spost decided that alias substitution wasn't
+	       necessary for the non-HTRY headers.  Unfortunately, one of those
+	       headers is "From:", and having alias substitution work on that is
+	       extremely useful for someone with a lot of POP3 email accounts or
+	       aliases.  post supports aliasing of "From:"...
+
+	       Since "From:"-processing is incompletely implemented in this
+	       unsupported and undocumented spost backend, I'm not going to take
+	       the time to implement my new draft-From:-based email address
+	       masquerading.  If I do ever implement it here, I'd almost
+	       certainly want to implement "From:" line alias processing as
+	       well.  -- Dan Harkless <dan-nmh@dilvish.speed.net> */
 	    fprintf (out, "%s: %s", name, str );
 	}
     }
