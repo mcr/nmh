@@ -257,6 +257,16 @@ dparsetime (char *str)
 					for (i = 0; isdigit(*cp); )
 						i = i*10 + (*cp++ - '0');
 					tw.tw_year = i;
+#ifdef FIX_NON_Y2K_COMPLIANT_MUA_DATES
+					/* handle broken mua's that don't add
+					   1900, or just use the last two
+					   digits.  Assume no email before
+					   1972. */
+					if (tw.tw_year < 72)
+						tw.tw_year += 100;
+					if (tw.tw_year < 1900)
+						tw.tw_year += 1900;
+#endif /* FIX_NON_Y2K_COMPLIANT_MUA_DATES */
 					}
 {D}"-"?{MONTH}({W}at)?{w}               {
                                         tw.tw_mday = CVT1OR2;

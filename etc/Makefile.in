@@ -38,10 +38,10 @@ SED = sed
 
 # format and components files
 DIST_FILES = mhl.body mhl.digest mhl.format mhl.forward mhl.headers \
-             mhl.reply scan.default scan.mailx scan.nomime scan.size scan.time \
-             scan.timely scan.unseen components digestcomps distcomps \
-             forwcomps rcvdistcomps rcvdistcomps.outbox replcomps \
-	     replgroupcomps MailAliases
+             mhl.reply scan.MMDDYY scan.YYYYMMDD scan.default scan.mailx \
+	     scan.nomime scan.size scan.time scan.timely scan.unseen components\
+	     digestcomps distcomps forwcomps rcvdistcomps rcvdistcomps.outbox\
+	     replcomps replgroupcomps MailAliases
 
 # format and configuration files to generate
 GEN_FILES = mhn.defaults mts.conf

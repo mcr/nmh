@@ -1,4 +1,4 @@
-Tue Mar 14 01:14:13 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Tue Mar 14 12:41:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied, after some finessing,
 	Simon Burge <simonb@thistledown.com.au>'s --with-smtpservers patch:
@@ -30,6 +30,22 @@ Tue Mar 14 01:14:13 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	done, then when you reconfigure nmh with new values for
  	--enable-masquerade or --with-smtpservers, you'll fail to get an
  	updated copy of mts.conf.
+
+	* Applied Simon Burge <simonb@thistledown.com.au>'s dtimep.lex patch:
+
+	    It seems that some MUA's didn't handle y2k very well - ELM
+ 	    seems to be one of them, and Ultrix's DXmail (based on MH!).
+  	    I've got a few emails this month that look like:
+
+		    575   Jan 00  Xxxxxx Xxxx       3603  ...
+	    and
+		     22+  Jan 00  Xxx Xxxxx         1771  ...
+
+	    The first has "15 Jan 100" as the date and the second has 
+	    "19 Jan 00" as the date.  The following works around this so 
+	    that scan, show, sortm, etc work ok.
+
+	* Added scan.MMDDYY and scan.YYYYMMDD format files.
 
 Mon Mar 13 21:32:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
