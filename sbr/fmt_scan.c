@@ -729,16 +729,22 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		*cp++ = c;
 	    while (len > wid) {
 		/* try to break at a comma; failing that, break at a
-		 * space, failing that, just split the line.
+		 * space.
 		 */
 		lastb = 0; sp = lp + wid;
 		while (sp > lp && (c = *--sp) != ',') {
 		    if (! lastb && isspace(c))
 			lastb = sp - 1;
 		}
-		if (sp == lp)
-		    if (! (sp = lastb))
+		if (sp == lp) {
+		    if (! (sp = lastb)) {
 			sp = lp + wid - 1;
+			while (*sp && *sp != ',' && !isspace(*sp))
+			    sp++;
+			if (*sp != ',')
+			    sp--;
+		    }
+		}
 		len -= sp - lp + 1;
 		while (cp < ep && lp <= sp)
 		    *cp++ = *lp++;
@@ -747,6 +753,12 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		    *cp++ = ' ';
 		while (isspace(*lp))
 		    lp++, len--;
+		if (*lp) {
+		    if (cp < ep)
+			*cp++ = '\n';
+		    for (i=indent; cp < ep && i > 0; i--)
+			*cp++ = ' ';
+		}
 	    }
 	    PUTS (cp, lp);
 	    }
