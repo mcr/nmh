@@ -325,9 +325,9 @@ show_content (CT ct, int serial, int alternate)
 int
 show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 {
-    int fd, len, buflen;
+    int fd, len, buflen, quoted;
     int	xstdin, xlist, xpause, xtty;
-    char *bp, *file, buffer[BUFSIZ];
+    char *bp, *pp, *file, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
 
     if (!ct->c_ceopenfnx) {
@@ -355,12 +355,15 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 
     /* get buffer ready to go */
     bp = buffer;
-    bp[0] = '\0';
-    buflen = sizeof(buffer);
+    buflen = sizeof(buffer) - 1;
+    bp[0] = bp[buflen] = '\0';
+    quoted = 0;
 
     /* Now parse display string */
-    for ( ; *cp; cp++) {
+    for ( ; *cp && buflen > 0; cp++) {
 	if (*cp == '%') {
+	    pp = bp;
+
 	    switch (*++cp) {
 	    case 'a':
 		/* insert parameters from Content-Type field */
@@ -433,12 +436,54 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 	    len = strlen (bp);
 	    bp += len;
 	    buflen -= len;
+
+	    /* Did we actually insert something? */
+	    if (bp != pp) {
+		/* Insert single quote if not inside quotes already */
+		if (!quoted && buflen) {
+		    len = strlen (pp);
+		    memmove (pp + 1, pp, len);
+		    *pp++ = '\'';
+		    buflen--;
+		    bp++;
+		}
+		/* Escape existing quotes */
+		while ((pp = strchr (pp, '\'')) && buflen > 3) {
+		    len = strlen (pp++);
+		    memmove (pp + 3, pp, len);
+		    *pp++ = '\\';
+		    *pp++ = '\'';
+		    *pp++ = '\'';
+		    buflen -= 3;
+		    bp += 3;
+		}
+		/* If pp is still set, that means we ran out of space. */
+		if (pp)
+		    buflen = 0;
+		if (!quoted && buflen) {
+		    *bp++ = '\'';
+		    *bp = '\0';
+		    buflen--;
+		}
+	    }
 	} else {
 raw:
-	*bp++ = *cp;
-	*bp = '\0';
-	buflen--;
+	    *bp++ = *cp;
+	    *bp = '\0';
+	    buflen--;
+
+	    if (*cp == '\'')
+		quoted = !quoted;
 	}
+    }
+
+    if (buflen <= 0 || (ct->c_termproc && buflen <= strlen(ct->c_termproc))) {
+	/* content_error would provide a more useful error message
+	 * here, except that if we got overrun, it probably would
+	 * too.
+	 */
+	fprintf(stderr, "Buffer overflow constructing show command!\n");
+	return NOTOK;
     }
 
     /* use charset string to modify display method */
@@ -782,9 +827,9 @@ out:
 static int
 show_multi_aux (CT ct, int serial, int alternate, char *cp)
 {
-    int len, buflen;
+    int len, buflen, quoted;
     int xlist, xpause, xtty;
-    char *bp, *file, buffer[BUFSIZ];
+    char *bp, *pp, *file, buffer[BUFSIZ];
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
     CI ci = &ct->c_ctinfo;
@@ -819,8 +864,9 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
 
     /* get buffer ready to go */
     bp = buffer;
-    bp[0] = '\0';
-    buflen = sizeof(buffer);
+    buflen = sizeof(buffer) - 1;
+    bp[0] = bp[buflen] = '\0';
+    quoted = 0;
 
     /* Now parse display string */
     for ( ; *cp; cp++) {
@@ -908,12 +954,54 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
 	    len = strlen (bp);
 	    bp += len;
 	    buflen -= len;
+
+	    /* Did we actually insert something? */
+	    if (bp != pp) {
+		/* Insert single quote if not inside quotes already */
+		if (!quoted && buflen) {
+		    len = strlen (pp);
+		    memmove (pp + 1, pp, len);
+		    *pp++ = '\'';
+		    buflen--;
+		    bp++;
+		}
+		/* Escape existing quotes */
+		while ((pp = strchr (pp, '\'')) && buflen > 3) {
+		    len = strlen (pp++);
+		    memmove (pp + 3, pp, len);
+		    *pp++ = '\\';
+		    *pp++ = '\'';
+		    *pp++ = '\'';
+		    buflen -= 3;
+		    bp += 3;
+		}
+		/* If pp is still set, that means we ran out of space. */
+		if (pp)
+		    buflen = 0;
+		if (!quoted && buflen) {
+		    *bp++ = '\'';
+		    *bp = '\0';
+		    buflen--;
+		}
+	    }
 	} else {
 raw:
-	*bp++ = *cp;
-	*bp = '\0';
-	buflen--;
+	    *bp++ = *cp;
+	    *bp = '\0';
+	    buflen--;
+
+	    if (*cp == '\'')
+		quoted = !quoted;
 	}
+    }
+
+    if (buflen <= 0 || (ct->c_termproc && buflen <= strlen(ct->c_termproc))) {
+	/* content_error would provide a more useful error message
+	 * here, except that if we got overrun, it probably would
+	 * too.
+	 */
+	fprintf(stderr, "Buffer overflow constructing show command!\n");
+	return NOTOK;
     }
 
     /* use charset string to modify display method */

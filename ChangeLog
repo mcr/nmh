@@ -1,3 +1,9 @@
+Sun Feb 20 12:17:15 2000 Ruud de Rooij <ruud@ruud.org>
+
+	* Fix security hole in mhshowsbr.c which allowed untrusted shell
+	  code to be executed.
+	* Released nmh 1.0.3.
+
 Thu Feb 10 10:54:36 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Oops.  %-escapes on mhstore lines in mhn.defaults.sh should not
