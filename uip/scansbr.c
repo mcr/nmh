@@ -353,7 +353,7 @@ finished:
     }
     *--nxtbuf = tmpbuf;
 
-    if (outnum && fclose (scnout) == EOF)
+    if (outnum && (ferror(scnout) || fclose (scnout) == EOF))
 	adios (scnmsg, "write error on");
 
     return (state != FILEEOF ? SCNERR : encrypted ? SCNENC : SCNMSG);

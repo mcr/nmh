@@ -1,3 +1,13 @@
+Mon Feb 28 21:21:31 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Upped the version number to 1.0.3+dev (ideally this should be
+ 	done by whoever makes a release tar file, immediately after doing
+ 	so).
+	
+	* Applied Paul Fox <pgf-spam@foxharp.boston.ma.us>'s scansbr.c
+ 	patch, posted to comp.mail.mh, which he says prevents loss of mail
+ 	when inc'ing into a full filesystem.
+
 Sun Feb 20 12:17:15 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* Fix security hole in mhshowsbr.c which allowed untrusted shell
@@ -71,18 +81,18 @@ Tue Jan 25 22:58:12 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	corrupted, and installation would bomb out on OSes where inc needs
  	to be setgid.
 
-	* Implemented a new kind of email address masquerading.  When a
- 	user writes a custom "From:" header in a draft, nmh uses it rather
- 	than generating one.  However, the user's true address is used in
- 	the SMTP envelope "From:" and is revealed in the "Sender:" header.
-  	Now, when mmailid is set to non-zero, the envelope "From:" uses
- 	the address specified in the draft "From:" header, and there is no
- 	"Sender:" header.  This is useful when sending on behalf of a
- 	remote POP3 account or when remote mail robots incorrectly use the
- 	envelope "From:" in preference to the body "From:".  This
-	processing has only been implemented for post, not for the
-	undocumented spost (which was already missing some "From:"
-	processing that post has).
+	* Implemented a new kind of email address masquerading.  Usually,
+ 	when a user writes a custom "From:" header in a draft, nmh uses it
+ 	rather than generating one.  However, the user's true address is
+ 	used in the SMTP envelope "From:" and is revealed in the "Sender:"
+ 	header.  Now, when mmailid is set to non-zero, the envelope
+ 	"From:" uses the address specified in the draft "From:" header,
+ 	and there is no "Sender:" header.  This is useful when sending on
+ 	behalf of a remote POP3 account or when remote mail robots
+ 	incorrectly use the envelope "From:" in preference to the body
+ 	"From:".  This processing has only been implemented for post, not
+ 	for the undocumented spost (which was already missing some "From:"
+ 	processing that post has).
 
 Mon Jan 24 22:26:06 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
