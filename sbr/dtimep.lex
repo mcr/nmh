@@ -1,10 +1,32 @@
-%option noyywrap
+%e 2000
+%p 5000
+%n 1000
+%a 4000
 %{
 #include <h/nmh.h>
 #include <h/tws.h>
 
+  /* Since we're looking at a string at a time, don't worry about
+   *  wrapping to the next buffer.
+   */
+#define yywrap() 1
+#define YY_SKIP_YYWRAP
+
 #define YY_NO_UNPUT
-#define YY_DECL struct tws * dparsetime(char *lexstr)
+
+  /* This is the tricky thing that makes this function cool.  We
+   *  replace the traditional int yylex(void) declaration with our
+   *  dparsetime() declaration, essentially piggy-backing off the
+   *  utility of the yylex() function and adding what we need to make
+   *  the parsing function useful to us.
+   */
+#define YY_DECL struct tws *dparsetime(char *lexstr)
+
+  /* yyerminate() is called after the input string is matched to
+   * completion (actually, when the lexer reaches an EOF).  The only
+   * thing that really needs to be in this macro function is the
+   * return call, which must be substituted inline into dparsetime.
+   */
 
 #define yyterminate() (void)yy_delete_buffer(lexhandle); \
   if(!(tw.tw_flags & TW_SUCC)) { \
@@ -82,72 +104,88 @@ static int day_map[] = {
 	3	/*11 - Wed */
 };
 
-#define INIT()   { cp = yytext;}
-#define SETWDAY() { cp++; \
-                   tw.tw_wday= day_map[(cp[0] & 7) + (cp[1] & 4)]; \
-                   tw.tw_flags &= ~TW_SDAY; tw.tw_flags |= TW_SEXP; \
-                   SKIPA(); }
-#define SETMON() { cp++; \
-                   tw.tw_mon = month_map[(cp[0] + cp[1]) & 0x1f]; \
-  		   SKIPA(); }
+/* The SET* macros will parse for the appropriate field, and leave the
+ * cp pointer at the first character after the desired field. Be
+ * careful with variable-length fields or alpha-num mixes.
+
+ * The SKIP* macros skip over characters of a particular class and
+ * leave cp at the position of the first character that doesn't match
+ * that class. Correspondingly, SKIPTO* skips until it reaches a
+ * character of a particular class.
+ */
+
+#define INIT()       { cp = yytext;} 
+#define SETWDAY()    { cp++; \
+                       tw.tw_wday= day_map[(cp[0] & 7) + (cp[1] & 4)]; \
+                       tw.tw_flags &= ~TW_SDAY; tw.tw_flags |= TW_SEXP; \
+                       SKIPA(); }
+#define SETMON()     { cp++; \
+                       tw.tw_mon = month_map[(cp[0] + cp[1]) & 0x1f]; \
+  		       SKIPA(); }
 #define SETMON_NUM() { tw.tw_mon = atoi(cp)-1; \
-  		   SKIPD(); }
-#define SETYEAR() { tw.tw_year = atoi(cp); \
-  		   SKIPD(); }
-#define SETDAY() { tw.tw_mday = atoi(cp); \
-                   tw.tw_flags |= TW_YES; \
-  		   SKIPD(); }
-#define SETTIME() { tw.tw_hour = atoi(cp); \
-                    cp += 2; \
-                    SKIPTOD(); \
-                    tw.tw_min = atoi(cp); \
-                    cp += 2; \
-                    if(*cp == ':') { tw.tw_sec = atoi(++cp); SKIPD(); } \
-                    }
-#define SETZONE(x) { tw.tw_zone = ((x)/100)*60+(x)%100; \
-                     tw.tw_flags |= TW_SZEXP; \
-                     SKIPD(); }
-#define SETDST()   { tw.tw_flags |= TW_DST; }
-#define SKIPD()  { while ( isdigit(*cp++) ) ; \
-                      --cp; }
-#define SKIPTOD()  { while ( !isdigit(*cp++) ) ; \
-                      --cp; }
-#define SKIPA()  { while ( isalpha(*cp++) ) ; \
-                      --cp; }
-#define SKIPTOA()  { while ( !isalpha(*cp++) ) ; \
-                      --cp; }
-#define SKIPSP()  { while ( isspace(*cp++) ) ; \
-                      --cp; }
-#define SKIPTOSP()  { while ( !isspace(*cp++) ) ; \
-                      --cp; }
+  		       SKIPD(); }
+#define SETYEAR()    { tw.tw_year = atoi(cp); \
+  		       SKIPD(); }
+#define SETDAY()     { tw.tw_mday = atoi(cp); \
+                       tw.tw_flags |= TW_YES; \
+  		       SKIPD(); }
+#define SETTIME()    { tw.tw_hour = atoi(cp); \
+                       cp += 2; \
+                       SKIPTOD(); \
+                       tw.tw_min = atoi(cp); \
+                       cp += 2; \
+                       if(*cp == ':') { \
+                          tw.tw_sec = atoi(++cp); SKIPD(); } }
+#define SETZONE(x)   { tw.tw_zone = ((x)/100)*60+(x)%100; \
+                       tw.tw_flags |= TW_SZEXP; \
+                       SKIPD(); }
+#define SETDST()     { tw.tw_flags |= TW_DST; }
+#define SKIPD()      { while ( isdigit(*cp++) ) ; \
+                       --cp; }
+#define SKIPTOD()    { while ( !isdigit(*cp++) ) ; \
+                       --cp; }
+#define SKIPA()      { while ( isalpha(*cp++) ) ; \
+                       --cp; }
+#define SKIPTOA()    { while ( !isalpha(*cp++) ) ; \
+                       --cp; }
+#define SKIPSP()     { while ( isspace(*cp++) ) ; \
+                       --cp; }
+#define SKIPTOSP()   { while ( !isspace(*cp++) ) ; \
+                       --cp; }
 %}
 
-sun	(sun(day)?)
-mon	(mon(day)?)
-tue	(tue(sday)?)
-wed	(wed(nesday)?)
-thu	(thu(rsday)?)
-fri	(fri(day)?)
-sat	(sat(urday)?)
+sun	([Ss]un(day)?)
+mon	([Mm]on(day)?)
+tue	([Tt]ue(sday)?)
+wed	([Ww]ed(nesday)?)
+thu	([Tt]hu(rsday)?)
+fri	([Ff]ri(day)?)
+sat	([Ss]at(urday)?)
 
 DAY	({sun}|{mon}|{tue}|{wed}|{thu}|{fri}|{sat})
 
-jan	(jan(uary)?)
-feb	(feb(ruary)?)
-mar	(mar(ch)?)
-apr	(apr(il)?)
-may	(may)
-jun	(jun(e)?)
-jul	(jul(y)?)
-aug	(aug(ust)?)
-sep	(sep(tember)?)
-oct	(oct(ober)?)
-nov	(nov(ember)?)
-dec	(dec(ember)?)
+jan	([Jj]an(uary)?)
+feb	([Ff]eb(ruary)?)
+mar	([Mm]ar(ch)?)
+apr	([Aa]pr(il)?)
+may	([Mm]ay)
+jun	([Jj]un(e)?)
+jul	([Jj]ul(y)?)
+aug	([Aa]ug(ust)?)
+sep	([Ss]ep(tember)?)
+oct	([Oo]ct(ober)?)
+nov	([Nn]ov(ember)?)
+dec	([Dd]ec(ember)?)
 
 MONTH	({jan}|{feb}|{mar}|{apr}|{may}|{jun}|{jul}|{aug}|{sep}|{oct}|{nov}|{dec})
 
 TIME    ({D}:{d}{d}(:{d}{d})?)
+
+     /* The year can either be 2 digits, or 4. However, after
+	Y2K, we found that some MUA were reporting the year 100, hence
+	the middle term here. yyterminate() resolves the actual
+        issues with 2-digit years.
+     */
 
 YEAR    (({d}{d})|(1{d}{d})|({d}{4}))
 
@@ -158,17 +196,20 @@ d	[0-9]
 
 %%
 %{
+  /* This section begins the definition of dparsetime().
+     Put here any local variable definitions and initializations */
   
   YY_BUFFER_STATE lexhandle;
 
-  register char *cp;  /* *cp is internal to the lexing function yylex() */
+  register char *cp;
   static struct tws tw; 
 
   memset(&tw,0,sizeof(struct tws));
+
   lexhandle = yy_scan_string(lexstr);
 %}
 
-{DAY}","?{W}{MONTH}{W}{D}{W}{TIME}{W}{YEAR} {
+{DAY}","?{W}{MONTH}{W}{D}{W}{TIME}{W}{YEAR}   {
                                      INIT();
 				     SETWDAY();
 				     SKIPTOA();
@@ -179,9 +220,9 @@ d	[0-9]
 				     SETTIME();
 				     SKIPTOD();
 				     SETYEAR();
-                                  }
+                                     }
 
-{DAY}","?{W}{D}{W}{MONTH}{W}{YEAR}{W}{TIME}  {
+{DAY}","?{W}{D}{W}{MONTH}{W}{YEAR}{W}{TIME}   {
                                      INIT();
 				     SETWDAY();
 				     SKIPTOD();
@@ -192,8 +233,8 @@ d	[0-9]
 				     SETYEAR();
 				     SKIPTOD();
 				     SETTIME();
-                                  }
-{D}{W}{MONTH}{W}{YEAR}{W}{TIME}         {
+                                     }
+{D}{W}{MONTH}{W}{YEAR}{W}{TIME}               {
                                      INIT();
 				     SETDAY();
 				     SKIPTOA();
@@ -202,8 +243,8 @@ d	[0-9]
 				     SETYEAR();
 				     SKIPTOD();
 				     SETTIME();
-                                  }
-{DAY}","?{W}{MONTH}{W}{D}","?{W}{YEAR}","?{W}{TIME}  {
+                                     }
+{DAY}","?{W}{MONTH}{W}{D}","?{W}{YEAR}","?{W}{TIME} {
                                      INIT();
 				     SETWDAY();
 				     SKIPTOA();
@@ -214,8 +255,8 @@ d	[0-9]
 				     SETYEAR();
 				     SKIPTOD();
 				     SETTIME();
-                                  }
-{DAY}","?{W}{MONTH}{W}{D}","?{W}{YEAR}  {
+                                     }
+{DAY}","?{W}{MONTH}{W}{D}","?{W}{YEAR}        {
                                      INIT();
 				     SETWDAY();
 				     SKIPTOA();
@@ -224,8 +265,8 @@ d	[0-9]
 				     SETDAY();
 				     SKIPTOD();
 				     SETYEAR();
-                                  }
-{MONTH}{W}{D}","?{W}{YEAR}","?{W}{DAY}     {
+                                     }
+{MONTH}{W}{D}","?{W}{YEAR}","?{W}{DAY}        {
                                      INIT();
 				     SETMON();
 				     SKIPTOD();
@@ -234,16 +275,16 @@ d	[0-9]
 				     SETYEAR();
 				     SKIPTOA();
 				     SETWDAY();
-                                  }
-{MONTH}{W}{D}","?{W}{YEAR}          {
+                                     }
+{MONTH}{W}{D}","?{W}{YEAR}                    {
                                      INIT();
 				     SETMON();
 				     SKIPTOD();
 				     SETDAY();
 				     SKIPTOD();
 				     SETYEAR();
-                                  }
-{D}("-"|"/"){D}("-"|"/"){YEAR}{W}{TIME}     {
+                                     }
+{D}("-"|"/"){D}("-"|"/"){YEAR}{W}{TIME}       {
                                      INIT();
 				     if(europeandate) {
 				       /* DD/MM/YY */
@@ -260,8 +301,8 @@ d	[0-9]
 				     SETYEAR();
 				     SKIPTOD();
 				     SETTIME();
-                                  }
-{D}("-"|"/"){D}("-"|"/"){YEAR}     {
+                                     }
+{D}("-"|"/"){D}("-"|"/"){YEAR}                {
                                      INIT();
 				     if(europeandate) {
 				       /* DD/MM/YY */
@@ -276,57 +317,51 @@ d	[0-9]
 				     }
 				     SKIPTOD();
 				     SETYEAR();
-                                  }
+                                     }
 
-"[Aa][Mm]" 
-"[Pp][Mm]"                tw.tw_hour += 12;
+"[Aa][Mm]"
+"[Pp][Mm]"                           tw.tw_hour += 12;
 
-"+"{D}{d}{d}              {
+"+"{D}{d}{d}                                  {
                                     INIT();
                                     SKIPTOD();
                                     SETZONE(atoi(cp));
-                                }
-"-"{D}{d}{d}              {
+                                    }
+"-"{D}{d}{d}                                  {
                                     INIT();
                                     SKIPTOD();
                                     SETZONE(-atoi(cp));
-                                }
-"-"?("ut"|"UT")				INIT(); SETZONE(0);
-"-"?("gmt"|"GMT")			INIT(); SETZONE(0);
-"-"?("jst"|"JST")			INIT(); SETZONE(200);
-"-"?("jdt"|"JDT")			INIT(); SETDST(); SETZONE(2);
-"-"?("est"|"EST")			INIT(); SETZONE(-500);
-"-"?("edt"|"EDT")			INIT(); SETDST(); SETZONE(-500);
-"-"?("cst"|"CST")			INIT(); SETZONE(-600);
-"-"?("cdt"|"CDT")			INIT(); SETDST(); SETZONE(-600);
-"-"?("mst"|"MST")			INIT(); SETZONE(-700);
-"-"?("mdt"|"MDT")			INIT(); SETDST(); SETZONE(-700);
-"-"?("pst"|"PST")			INIT(); SETZONE(-800);
-"-"?("pdt"|"PDT")			INIT(); SETDST(); SETZONE(-800);
-"-"?("nst"|"NST")			INIT(); SETZONE(-330);
-"-"?("ast"|"AST")			INIT(); SETZONE(-400);
-"-"?("adt"|"ADT")			INIT(); SETDST(); SETZONE(-400);
-"-"?("yst"|"YST")			INIT(); SETZONE(-900);
-"-"?("ydt"|"YDT")			INIT(); SETDST(); SETZONE(-900);
-"-"?("hst"|"HST")			INIT(); SETZONE(-1000);
-"-"?("hdt"|"HDT")			INIT(); SETDST(); SETZONE(-1000);
-"-"?("bst"|"BST")			INIT(); SETDST(); SETZONE(-100);
-[a-i]			{
+                                    }
+"-"?("ut"|"UT")			    INIT(); SETZONE(0);
+"-"?("gmt"|"GMT")		    INIT(); SETZONE(0);
+"-"?("jst"|"JST")		    INIT(); SETZONE(200);
+"-"?("jdt"|"JDT")		    INIT(); SETDST(); SETZONE(2);
+"-"?("est"|"EST")		    INIT(); SETZONE(-500);
+"-"?("edt"|"EDT")		    INIT(); SETDST(); SETZONE(-500);
+"-"?("cst"|"CST")		    INIT(); SETZONE(-600);
+"-"?("cdt"|"CDT")		    INIT(); SETDST(); SETZONE(-600);
+"-"?("mst"|"MST")		    INIT(); SETZONE(-700);
+"-"?("mdt"|"MDT")		    INIT(); SETDST(); SETZONE(-700);
+"-"?("pst"|"PST")		    INIT(); SETZONE(-800);
+"-"?("pdt"|"PDT")		    INIT(); SETDST(); SETZONE(-800);
+"-"?("nst"|"NST")		    INIT(); SETZONE(-330);
+"-"?("ast"|"AST")		    INIT(); SETZONE(-400);
+"-"?("adt"|"ADT")		    INIT(); SETDST(); SETZONE(-400);
+"-"?("yst"|"YST")		    INIT(); SETZONE(-900);
+"-"?("ydt"|"YDT")		    INIT(); SETDST(); SETZONE(-900);
+"-"?("hst"|"HST")		    INIT(); SETZONE(-1000);
+"-"?("hdt"|"HDT")		    INIT(); SETDST(); SETZONE(-1000);
+"-"?("bst"|"BST")		    INIT(); SETDST(); SETZONE(-100);
+[a-iA-I]			    {
                                        INIT();
                                        SETZONE(100*(('a'-1) - tolower(*cp)));
-			}
-[k-m]			{
+			            }
+[k-mK-M]			    {
                                        INIT();
                                        SETZONE(100*('a' - tolower(*cp)));
-			}
-[n-y]		        {
+			            }
+[n-yN-Y]		            {
                                        INIT();
                                        SETZONE(100*(tolower(*cp) - 'm'));
-			}
-
-
-\n
-.
-
-
-
+                                    }
+.|\n

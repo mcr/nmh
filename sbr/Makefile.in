@@ -85,7 +85,7 @@ lint: sigmsg.h
 	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
 dtimep.c: dtimep.lex
-	$(LEX) -nit $< > $@
+	$(LEX) -nt $< > $@
 
 pidstatus.o: sigmsg.h
 
