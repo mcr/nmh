@@ -27,10 +27,10 @@ fi
 TMP=/tmp/nmh_temp.$$
 trap "rm -f $TMP" 0 1 2 3 13 15
 
-echo "mhstore-store-text: '%m%P'.txt" >> $TMP
-echo "mhstore-store-text/richtext: '%m%P'.rt" >> $TMP
-echo "mhstore-store-video/mpeg: '%m%P'.mpg" >> $TMP
-echo "mhstore-store-application/PostScript: '%m%P'.ps" >> $TMP
+echo "mhstore-store-text: %m%P.txt" >> $TMP
+echo "mhstore-store-text/richtext: %m%P.rt" >> $TMP
+echo "mhstore-store-video/mpeg: %m%P.mpg" >> $TMP
+echo "mhstore-store-application/PostScript: %m%P.ps" >> $TMP
 
 PGM="`$SEARCHPROG $SEARCHPATH xwud`"
 if [ ! -z "$PGM" ]; then
@@ -65,7 +65,7 @@ fi
 if [ -f "/dev/audioIU" ]; then
     PGM="`$SEARCHPROG $SEARCHPATH recorder`"
     if [ ! -z "$PGM" ]; then
-	echo "mhstore-store-audio/basic: '%m%P'.au" >> $TMP
+	echo "mhstore-store-audio/basic: %m%P.au" >> $TMP
         echo "mhbuild-compose-audio/basic: ${AUDIODIR}recorder '%f' -au -pause > /dev/tty" >> $TMP
         echo "mhshow-show-audio/basic: %p${AUDIODIR}splayer -au" >> $TMP
     fi
@@ -73,8 +73,8 @@ elif [ -f "/dev/audio" ]; then
     PGM="`$SEARCHPROG $SEARCHPATH raw2audio`"
     if [ ! -z "$PGM" ]; then
 	AUDIODIR="`echo $PGM | awk -F/ '{ for(i=2;i<NF;i++)printf "/%s", $i;}'`"/
-	echo "mhstore-store-audio/basic: | ${AUDIODIR}raw2audio -e ulaw -s 8000 -c 1 > '%m%P'.au" >> $TMP
-        echo "mhstore-store-audio/x-next: '%m%P'.au" >> $TMP
+	echo "mhstore-store-audio/basic: | ${AUDIODIR}raw2audio -e ulaw -s 8000 -c 1 > %m%P.au" >> $TMP
+        echo "mhstore-store-audio/x-next: %m%P.au" >> $TMP
 	AUDIOTOOL="`$SEARCHPROG $SEARCHPATH audiotool`"
 	if [ ! -z "$AUDIOTOOL" ]; then
 	    echo "mhbuild-compose-audio/basic: $AUDIOTOOL '%f' && ${AUDIODIR}raw2audio -F < '%f'" >> $TMP

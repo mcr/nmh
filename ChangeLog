@@ -1,3 +1,10 @@
+Thu Feb 10 10:54:36 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Oops.  %-escapes on mhstore lines in mhn.defaults.sh should not
+	be surrounded by single quotes, as a shell is not spawned when
+	just saving files, and the filenames will end up with literal
+	quotes embedded in them.
+
 Fri Feb 04 12:29:12 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Whoever originally added the -help switch to all the commands
