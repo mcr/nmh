@@ -122,7 +122,6 @@ MHN/MHSHOW/MHLIST/MHSTORE
 * add support for Content-Disposition header (rfc1806).
 * merge the two places in which mhshowsbr.c reads display
   strings.
-* split mhn into mhshow, mhlist, mhstore, and mhcache.
 * when storing to a folder, should we save the folder context
   first, so that storage string of "+" stores to the new
   folder?
@@ -213,5 +212,4 @@ GENERAL
 * some of the calls to setjmp/longjmp should be replaced with
   sigsetjmp/siglongjmp.
 * When do we need to add -lresolv for SunOS 4.1.x?
-* replace use of getcpy with strdup.
 * replace use of ftell with fgetpos.
