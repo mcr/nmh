@@ -256,6 +256,18 @@ dnl   AC_SUBST(LORDER)dnl
 dnl   AC_SUBST(TSORT)dnl
 fi
 
+dnl Check whether tsort can deal with loops
+AC_CACHE_CHECK(whether tsort can deal with loops, nmh_cv_tsort_loop,
+  [if test -z "`echo a b b a | tsort 2>/dev/null | grep a`" ; then
+    nmh_cv_tsort_loop=no
+  else
+    nmh_cv_tsort_loop=yes
+  fi])
+if test x$nmh_cv_tsort_loop = xno ; then
+  TSORT=cat
+  AC_SUBST(TSORT)dnl
+fi
+
 dnl Look for `ls'
 pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
 AC_PATH_PROG(lspath, ls, no, [$pathtmp])

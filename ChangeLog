@@ -1,3 +1,8 @@
+Mon Jun  5 22:10:07 CEST 2000 Ruud de Rooij <ruud@ruud.org>
+
+	* Use cat instead of tsort if tsort cannot deal with loops in its
+	input (which is the case for tsort from GNU textutils).
+
 Mon Jun  5 21:14:36 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* If lockfile is present, and its dotlockfile program is setgid,
