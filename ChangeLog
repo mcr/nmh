@@ -1,3 +1,8 @@
+2005-01-21  Oliver Kiddle  <okiddle@yahoo.co.uk>
+
+	* sbr/check_charset.c US-ASCII is a subset of UTF-8 so can be
+	handled directly when UTF-8 is being used
+
 2004-12-17  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* uip/mhmisc.c Fix -part option to mhshow/mhlist/mhstore to
