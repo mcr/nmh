@@ -1,3 +1,17 @@
+Wed Sep 6 22:40:03 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Tracked down the problem in the new dtimep where time
+	zones were being radically misreported. It was because the
+	parser knew about military time zones (such as M or E) but in
+	some cases did not know about the textual representation of
+	some zones (like MET). When it encountered one of these, the
+	date parser misread MET as the military time zone T (well, first
+	zone M, then E, and finally T). I took military zones out, and
+	things seem much better. Also, the default behavior of parsing
+	time zones appears to default to GMT in the absence of better
+	info, which is less bogus than assuming the mail came from the
+	current time zone, which was the behavior in 1.04.
+
 Thu Aug 10 13:22:13 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Decided that limiting the message number columns to 3 on my
