@@ -578,7 +578,7 @@ m_unknown(FILE *iob)
     pat_map = (unsigned char **) calloc (256, sizeof(unsigned char *));
 
     for (cp = (char *) fdelim + 1; cp < (char *) delimend; cp++ )
-	pat_map[(int)*cp] = (unsigned char *) cp;
+	pat_map[(unsigned char)*cp] = (unsigned char *) cp;
 
     if (msg_style == MS_MMDF) {
 	/* flush extra msg hdrs */

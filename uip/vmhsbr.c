@@ -106,7 +106,7 @@ peer2rc (struct record *rc)
     if (fp) {
 	fseek (fp, 0L, SEEK_END);
 	fprintf (fp, "%d: <--- %s %d: \"%*.*s\"\n", (int) getpid(),
-		types[(int)rc->rc_type], rc->rc_len,
+		types[(unsigned char)rc->rc_type], rc->rc_len,
 		rc->rc_len, rc->rc_len, rc->rc_data);
 	fflush (fp);
     }
@@ -127,7 +127,7 @@ rc2peer (char code, int len, char *data)
     if (fp) {
 	fseek (fp, 0L, SEEK_END);
 	fprintf (fp, "%d: ---> %s %d: \"%*.*s\"\n", (int) getpid(),
-		types[(int)rc->rc_type], rc->rc_len,
+		types[(unsigned char)rc->rc_type], rc->rc_len,
 		rc->rc_len, rc->rc_len, data);
 	fflush (fp);
     }
