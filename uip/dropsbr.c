@@ -408,8 +408,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 			strncpy(tmpbuffer, buffer, sizeof(tmpbuffer));
 			ep = "nobody@nowhere";
 			tp = dctime(dlocaltimenow());
-			snprintf (buffer, sizeof(buffer), "From %s  %s", ep, tp);
-			strcat (buffer, tmpbuffer);
+			snprintf (buffer, sizeof(buffer), "From %s  %s%s", ep, tp, tmpbuffer);
 		    }
 		}
 

@@ -1,3 +1,14 @@
+Tue Mar 28 16:17:39 2000 Doug Morris <doug@mhost.com>
+
+	* applied Todd Miller's <Todd.Miller@courtesan.com> patch to
+	dropsbr.c to prevent core dumping on packf. Here's the note
+	from his message:
+
+	  Since sizeof(buffer) == sizeof(tmpbuffer) packf will dump
+	  core on a file w/o a From line with a line >= BUFSIZ.
+	  I noticed this because I had a junk file in my mail
+	  spool somehow.
+
 Fri Mar 17 11:59:33 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* wesley.craig@umich.edu did not document his previous KPOP patch,
