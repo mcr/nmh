@@ -70,14 +70,12 @@ INSTALL_DATA    = @INSTALL_DATA@
 .SUFFIXES:
 
 # all files in this directory included in the distribution
-DIST = README README.developers INSTALL MACHINES COPYRIGHT VERSION DIFFERENCES \
-       FAQ TODO COMPLETION-ZSH COMPLETION-TCSH MAIL.FILTERING \
-       ChangeLog ChangeLog_MH-3_to_MH-6.6 ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
-       install-sh mkinstalldirs Makefile.in aclocal.m4 acconfig.h config.h.in \
-       configure.in configure stamp-h.in config.sub config.guess
+DIST = README INSTALL COPYRIGHT VERSION ChangeLog install-sh \
+       mkinstalldirs Makefile.in aclocal.m4 acconfig.h config.h.in \
+       configure.in configure stamp-h.in config.sub config.guess 
 
 # subdirectories in distribution
-SUBDIRS = h config sbr zotnet mts uip etc man
+SUBDIRS = h config sbr zotnet mts uip etc man docs
 
 # ========== DEPENDENCIES FOR BUILDING AND INSTALLING ==========
 

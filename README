@@ -2,11 +2,6 @@
 # $Id$
 #
 
-[This file currently refers to a bunch of stuff in the docs directory that isn't
- currently there.  Perhaps all that stuff _will_ end up in the docs directory
- (with a change to Makefile.in to match).  In that case, just delete this note
- at that time.  Otherwise, fix the references below...]
-
 Installing
 ----------
 Please read the INSTALL file.
@@ -38,5 +33,5 @@ For More information
 --------------------
 There is more information, including a FAQ and a bit of historical
 information in the docs subdirectory. There are also links to further
-documentation on the nmh website located at http://www.mhost.com/nmh .
+documentation on the nmh website located at http://www.mhost.com/nmh/ .
 

@@ -1,3 +1,8 @@
+Sat May 06 13:13:07 2000 Doug Morris <doug@mhost.com>
+
+	* re-cleaned up nmh documentation and modified Makefile &
+	configure.in to handle the change. 
+
 Mon Apr 17 21:28:40 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Scott Blachowicz pointed out that the configure --help output

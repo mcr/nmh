@@ -4472,7 +4472,7 @@ trap 'rm -fr `echo "Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefil
           zotnet/Makefile zotnet/mts/Makefile zotnet/tws/Makefile \
           zotnet/mf/Makefile zotnet/bboards/Makefile mts/Makefile \
           mts/smtp/Makefile mts/sendmail/Makefile mts/mmdf/Makefile \
-          etc/Makefile man/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+          etc/Makefile docs/Makefile man/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -4603,7 +4603,7 @@ CONFIG_FILES=\${CONFIG_FILES-"Makefile config/Makefile h/Makefile sbr/Makefile u
           zotnet/Makefile zotnet/mts/Makefile zotnet/tws/Makefile \
           zotnet/mf/Makefile zotnet/bboards/Makefile mts/Makefile \
           mts/smtp/Makefile mts/sendmail/Makefile mts/mmdf/Makefile \
-          etc/Makefile man/Makefile"}
+          etc/Makefile docs/Makefile man/Makefile"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
