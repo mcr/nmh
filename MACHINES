@@ -4,8 +4,20 @@
 # $Id$
 #
 
---------------------------------------
+nmh is known to compile on the following platforms (save the
+exceptions noted below), using an ANSI C compiler, such as gcc.
 
+AIX 4.1.5.0.01
+FreeBSD
+IRIX 6.5
+Linux 2.2 and 2.3 (glibc 2.1)
+NetBSD 1.4.2
+OpenBSD
+Solaris 7 and 8 (sparc,x86)
+SunOS 4.1
+
+Known Compilation problems:
+--------------------------------------
 FreeBSD:
 OpenBSD:
 NetBSD:
@@ -28,7 +40,6 @@ option. It appears to find conflicts in the headers only when debugging
 is disabled. With debugging enabled, it compiles and runs happily.
 
 --------------------------------------
-
 HPUX:
 
 Lots of problems have been reported with using HPUX `cc'.  In particular,
@@ -45,7 +56,6 @@ The solution is the added line (minus our indentation):
 after line 15 of the file zotnet/tws/lexstring.c.
 
 --------------------------------------
-
 Irix (SGI):
 
 Irix make is notoriously buggy. If you're using it, you should "touch
@@ -54,7 +64,6 @@ rebuild targets that shouldn't be rebuilt. (Alternately, you can just
 use GNU make instead of Irix make.)
 
 --------------------------------------
-
 Linux:
 
 The configuration script does a test to discover if your vi is broken
@@ -64,7 +73,6 @@ will hang if the program `ex' on your system is a link to the vi clone
 vi clone such as nvi or elvis.
 
 --------------------------------------
-
 Solaris:
 
 With --enable-debug you'll see a lot of warnings. This is even worse
@@ -79,13 +87,12 @@ a better solution. The whole thing is probablly going to be chucked
 with UTC-8 support anyway.
 
 Other than the warnings, it builds ok.
-
 --------------------------------------
-
 SunOS 4.1.1/4.1.3/4.1.4:
 
 You can't use the C compiler that comes with SunOS 4 since
 it isn't ANSI C.  But nmh builds just fine with gcc. With
 --enable-debug you will see a lot of warnings. 
-
 --------------------------------------
+
+
