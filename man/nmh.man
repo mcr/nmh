@@ -295,3 +295,5 @@ program was loaded.
 .PP
 Send bug reports and suggestions to
 .IR nmh-workers@mhost.com .
+.SH "SEE ALSO"
+mh-chart(1)

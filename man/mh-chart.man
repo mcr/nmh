@@ -834,3 +834,6 @@ or
 .RB [ \-help ]
 
 .ad
+
+.SH "SEE ALSO"
+nmh(1)
