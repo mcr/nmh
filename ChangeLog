@@ -1,3 +1,16 @@
+Mon Feb 05 19:39:06 2001 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* -L isn't sufficient for specifying the path of the Cyrus SASL
+	shared library.  That'll allow us to link successfully, but on
+	many/most OSes that won't allow us to find libsasl at runtime.  On
+	Solaris, we need to specify the library path with -R as well (or
+	else the user will have to use the $LD_LIBRARY_PATH kludge, which
+	is considered harmful).  This fix should be extended to other OSes
+	as well.
+
+	* Print whether we have SASL support in the "nmh configuration"
+	summary configure prints out.
+
 Thu Jan 25 21:15:52 2001 Shantonu Sen <ssen@mit.edu>
 
 	* man/mh-chart.man has updated synposes of

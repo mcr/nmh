@@ -95,6 +95,9 @@ AC_ARG_WITH(cyrus-sasl,
 [  --with-cyrus-sasl=<dir> Specify location of Cyrus SASL library for auth])
 if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != "no"; then
   AC_DEFINE(CYRUS_SASL)dnl
+  sasl_support=yes
+else
+  sasl_support=no
 fi
 
 dnl What should be the default editor?
@@ -630,6 +633,15 @@ if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != "no"; then
   if test x"$with_cyrus_sasl" != x"yes"; then
     SASL_INCLUDES="-I$with_cyrus_sasl/include"
     SASL_LIBS="-L$with_cyrus_sasl/lib"
+
+    dnl Do OS-specific hardcoding of SASL shared library path into executables,
+    dnl so user isn't forced to set environment variables like Solaris'
+    dnl LD_LIBRARY_PATH.
+    case "$target_os" in
+      solaris*)
+	SASL_LIBS="$SASL_LIBS -R$with_cyrus_sasl/lib"
+	;;
+    esac
   fi
   save_LDFLAGS="$LDFLAGS"
   LDFLAGS="$LDFLAGS $SASL_LIBS"
@@ -877,5 +889,6 @@ default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
 default pager              : ${pagerpath}
 email address masquerading : ${masquerade}
-pop is enabled             : ${pop_kinds}"
+pop is enabled             : ${pop_kinds}
+SASL support               : ${sasl_support}"
 echo ""
