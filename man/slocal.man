@@ -356,7 +356,7 @@ From      steve     destroy A       \-
 default   \-        file    ?       mailbox
 
 # always run rcvtty
-*         \-        pipe    R       /nmh/lib/rcvtty
+*         \-        pipe    R       %libdir%/rcvtty
 .fi
 
 .SS "Sub-process environment"
