@@ -49,8 +49,8 @@ else
   AC_DEFINE(SMTPMTS)dnl
 fi
 
-AC_SUBST(MTS)
-AC_SUBST(MTSLIB)
+AC_SUBST(MTS)dnl
+AC_SUBST(MTSLIB)dnl
 
 dnl What should be the default editor?
 undefine([editor])dnl
