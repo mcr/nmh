@@ -340,7 +340,11 @@ AC_FUNC_VFORK
 AC_CHECK_LIB(mkstemp,mkstemp)
 AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
                sighold sigrelse writev lstat uname tzset killpg mkstemp \
-               sethostent gethostbyname)
+               sethostent)
+
+dnl solaris screws ths up
+AC_CHECK_FUNC(gethostbyname, [AC_DEFINE(HAVE_GETHOSTBYNAME)],
+  AC_CHECK_LIB(nsl, gethostbyname, [AC_DEFINE(HAVE_GETHOSTBYNAME)] ) )
 
 dnl sigsetjmp may be a macro
 AC_MSG_CHECKING(for sigsetjmp)

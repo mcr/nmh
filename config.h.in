@@ -296,7 +296,7 @@
 /* Define if your system has sigsetjmp */
 #undef HAVE_SIGSETJMP
 
-/* Define if you have the gethostbyname function.  */
+/* Define if your system has gethostbyname */
 #undef HAVE_GETHOSTBYNAME
 
 /* Define if you have the killpg function.  */

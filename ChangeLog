@@ -1,3 +1,8 @@
+Sat Oct 16 02:57:47 1999 Doug Morris <doug@mhost.com>
+
+	* Tweaked configure to handle Solaris and SunOS after the BIND
+	changes. Both need more cleanup.
+
 Sat Oct 16 00:17:36 1999 Doug Morris <doug@mhost.com>
 
 	* Removed BIND define and replaced it with a check for
