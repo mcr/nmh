@@ -1,3 +1,8 @@
+Mon Jul 17 13:11:52 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Moved Kimmo's new "--with-hash-backup" to be output with the
+ 	rest of the --with options in the configure --help output.
+
 Tue Jul 18 19:36:59 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
 	* Added the obvious answer to Dan's question in README.developers;

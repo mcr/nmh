@@ -52,17 +52,6 @@ if test x"$enable_nmh_debug" = x"yes"; then
   enable_debug=yes
 fi
 
-dnl Set the backup prefix
-undefine([backup-prefix])dnl
-AC_ARG_WITH([hash-backup],
-  [  --with-hash-backup      use # as the backup prefix (default: ,)])
-if test x"$with_hash_backup" != x -a x"$with_hash_backup" != x"no"; then
-  backup_prefix="#"
-else
-  backup_prefix=","
-fi
-AC_DEFINE_UNQUOTED(BACKUP_PREFIX, "$backup_prefix")dnl
-
 dnl Allow users to send email from addresses other than their default?
 undefine([masquerade])dnl
 AC_ARG_ENABLE(masquerade,
@@ -94,6 +83,17 @@ dnl The old redundant --enable-nmh-pop is deprecated and undocumented.
 if test x"$enable_nmh_pop" = x"yes"; then
   enable_pop=yes
 fi
+
+dnl Set the backup prefix
+undefine([backup-prefix])dnl
+AC_ARG_WITH([hash-backup],
+  [  --with-hash-backup      use # as the backup prefix (default: ,)])
+if test x"$with_hash_backup" != x -a x"$with_hash_backup" != x"no"; then
+  backup_prefix="#"
+else
+  backup_prefix=","
+fi
+AC_DEFINE_UNQUOTED(BACKUP_PREFIX, "$backup_prefix")dnl
 
 dnl Do you want support for hesiod
 AC_ARG_WITH(hesiod,

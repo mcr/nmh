@@ -16,14 +16,14 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-debug          enable nmh code debugging"
 ac_help="$ac_help
-  --with-hash-backup      use # as the backup prefix (default: ,)"
-ac_help="$ac_help
   --enable-masquerade[='draft_from mmailid username_extension']
                           enable up to 3 types of address masquerading [none]"
 ac_help="$ac_help
   --enable-mhe            enable mhe support (DEFAULT)"
 ac_help="$ac_help
   --enable-pop            enable client-side support for plain POP3"
+ac_help="$ac_help
+  --with-hash-backup      use # as the backup prefix (default: ,)"
 ac_help="$ac_help
   --with-hesiod=PREFIX    specify location of Hesiod"
 ac_help="$ac_help
@@ -693,21 +693,6 @@ if test x"$enable_nmh_debug" = x"yes"; then
   enable_debug=yes
 fi
 
-# Check whether --with-hash-backup or --without-hash-backup was given.
-if test "${with_hash_backup+set}" = set; then
-  withval="$with_hash_backup"
-  :
-fi
-
-if test x"$with_hash_backup" != x -a x"$with_hash_backup" != x"no"; then
-  backup_prefix="#"
-else
-  backup_prefix=","
-fi
-cat >> confdefs.h <<EOF
-#define BACKUP_PREFIX "$backup_prefix"
-EOF
-
 # Check whether --enable-masquerade or --disable-masquerade was given.
 if test "${enable_masquerade+set}" = set; then
   enableval="$enable_masquerade"
@@ -741,6 +726,21 @@ fi
 if test x"$enable_nmh_pop" = x"yes"; then
   enable_pop=yes
 fi
+
+# Check whether --with-hash-backup or --without-hash-backup was given.
+if test "${with_hash_backup+set}" = set; then
+  withval="$with_hash_backup"
+  :
+fi
+
+if test x"$with_hash_backup" != x -a x"$with_hash_backup" != x"no"; then
+  backup_prefix="#"
+else
+  backup_prefix=","
+fi
+cat >> confdefs.h <<EOF
+#define BACKUP_PREFIX "$backup_prefix"
+EOF
 
 # Check whether --with-hesiod or --without-hesiod was given.
 if test "${with_hesiod+set}" = set; then
