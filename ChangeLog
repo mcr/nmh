@@ -1,4 +1,4 @@
-Thu Jul 20 19:30:23 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Thu Jul 20 20:30:52 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Moved Kimmo's new "--with-hash-backup" to be output with the
  	rest of the --with options in the configure --help output.  Also,
@@ -31,6 +31,9 @@ Thu Jul 20 19:30:23 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	Modified inc.man to reflect that along with "pophost:" and -host, 
 	$MAILHOST can now activate POP mail inclusion as well.
+
+	* Fixed warnings from diff on first-time install of nmh.  Also
+	added 'echo's clarifying the etc file installation activities.
 
 Tue Jul 18 19:36:59 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 

@@ -97,13 +97,22 @@ install-bin-files:
 install-etc-files:
 	$(top_srcdir)/mkinstalldirs $(etcdir)
 	for file in $(INSTALL_ETC_FILES); do \
-	  echo $$file; \
+	  echo "Installing $$file..."; \
 	  if [ -f $(etcdir)/$$file ]; then \
 	    mv $(etcdir)/$$file $(etcdir)/$$file.prev; \
-	  fi; \
-	  $(INSTALL_DATA) $(srcdir)/$$file $(etcdir)/$$file; \
-	  if diff $(etcdir)/$$file.prev $(etcdir)/$$file; then \
-	    rm $(etcdir)/$$file.prev; \
+	    $(INSTALL_DATA) $(srcdir)/$$file $(etcdir)/$$file; \
+	    if diff $(etcdir)/$$file.prev $(etcdir)/$$file; then \
+	      rm $(etcdir)/$$file.prev; \
+	    else \
+	      echo; \
+	      echo "  Previous version of $$file saved as $$file.prev due\c";\
+	      echo   " to diffs."; \
+	      echo "  Please merge any local config changes into the new\c"; \
+	      echo   " $$file."; \
+	      echo; \
+	    fi; \
+	  else \
+	    $(INSTALL_DATA) $(srcdir)/$$file $(etcdir)/$$file; \
 	  fi; \
 	done
 
