@@ -7,8 +7,9 @@
 
 #include <h/mh.h>
 
-void
+int
 done (int status)
 {
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }
