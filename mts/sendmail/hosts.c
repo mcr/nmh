@@ -47,7 +47,7 @@ OfficialName (char *name)
     if (!strcasecmp (LocalName(), site))
 	return LocalName();
 
-#ifndef	BIND
+#ifdef	HAVE_SETHOSTENT
     sethostent (1);
 #endif
 

@@ -285,7 +285,7 @@ AC_HEADER_SYS_WAIT
 AC_HEADER_STAT
 AC_CHECK_HEADERS(string.h memory.h stdlib.h unistd.h errno.h fcntl.h \
                  limits.h crypt.h termcap.h termio.h termios.h locale.h \
-                 sys/param.h sys/time.h sys/utsname.h arpa/inet.h \
+                 netdb.h sys/param.h sys/time.h sys/utsname.h arpa/inet.h \
                  arpa/ftp.h)
 
 
@@ -339,7 +339,8 @@ dnl ---------------
 AC_FUNC_VFORK
 AC_CHECK_LIB(mkstemp,mkstemp)
 AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
-               sighold sigrelse writev lstat uname tzset killpg mkstemp)
+               sighold sigrelse writev lstat uname tzset killpg mkstemp \
+               sethostent gethostbyname)
 
 dnl sigsetjmp may be a macro
 AC_MSG_CHECKING(for sigsetjmp)
@@ -583,26 +584,21 @@ case "$target_os" in
     AC_DEFINE(SVR4)
     ;;
   sunos4*)
-    AC_DEFINE(BIND)
     AC_DEFINE(BSD42)
     ;;
   freebsd*)  
-    AC_DEFINE(BIND)
     AC_DEFINE(BSD42)
     AC_DEFINE(BSD44)
     ;;
   netbsd*)
-    AC_DEFINE(BIND)
     AC_DEFINE(BSD42)
     AC_DEFINE(BSD44)
     ;;
   openbsd*)
-    AC_DEFINE(BIND)
     AC_DEFINE(BSD42)
     AC_DEFINE(BSD44)
     ;;
   bsd/os*)
-    AC_DEFINE(BIND)
     AC_DEFINE(BSD42)
     AC_DEFINE(BSD44)
     ;;

@@ -61,7 +61,7 @@ char krb_realm[REALM_SZ];
 char *PrincipalHostname();
 #endif /* KPOP */
 
-#if defined(BIND) && !defined(h_addr)
+#if !defined(h_addr)
 # define h_addr h_addr_list[0]
 #endif
 
@@ -92,7 +92,8 @@ client (char *args, char *protocol, char *service, int rproto,
     char *arguments[MAXARGS];
     register struct hostent *hp;
     register struct servent *sp;
-#ifndef	BIND
+/* we assume netent and getnetbyaddr come with gethostbyname */
+#ifdef	HAVE_GETHOSTBYNAME
     register struct netent *np;
 #endif
 
@@ -143,9 +144,18 @@ client (char *args, char *protocol, char *service, int rproto,
 
     for (ap = arguments; *ap; ap++) {
 	if (**ap == '\01') {
-#ifndef	BIND
+/*
+ * the assumption here is that if the system doesn't have a
+ * gethostbyname() function, it must not use DNS. So we need to look
+ * into the /etc/hosts using gethostent(). There probablly aren't any
+ * systems still like this, but you never know. On every system I have
+ * access to, this section is ignored.
+ */
+#ifndef	HAVE_GETHOSTBYNAME
 	    if ((np = getnetbyname (*ap + 1))) {
+#ifdef HAVE_SETHOSTENT
 		sethostent (1);
+#endif /* HAVE_SETHOSTENT */
 		while ((hp = gethostent()))
 		    if (np->n_addrtype == hp->h_addrtype
 			    && inet (hp, np->n_net)) {
@@ -163,7 +173,7 @@ client (char *args, char *protocol, char *service, int rproto,
 			break;
 		    }
 	    }
-#endif
+#endif /* don't HAVE_GETHOSTBYNAME */
 	    continue;
 	}
 

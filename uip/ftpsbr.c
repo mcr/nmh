@@ -29,7 +29,7 @@ extern int v_verbose;
 #include <netdb.h>
 #include <errno.h>
 
-#if defined(BIND) && !defined(h_addr)
+#if !defined(h_addr)
 # define h_addr	h_addr_list[0]
 #endif
 

@@ -1,3 +1,12 @@
+Sat Oct 16 00:17:36 1999 Doug Morris <doug@mhost.com>
+
+	* Removed BIND define and replaced it with a check for
+	gethostbyname (to determine if the host is DNS aware) and a
+	check for sethostent. This appears to be the right thing to
+	do, but there is no explanation of the reasoning behind the
+	BIND define in the code and it appears to have been used for
+	multiple purposes. 
+
 Wed Oct 13 15:53:53 1999 Doug Morris <doug@mhost.com>
 
 	* Updated manpages Makefile to link mh-profile.5 to

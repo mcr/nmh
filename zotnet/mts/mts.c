@@ -285,9 +285,9 @@ LocalName (void)
 	/* first get our local name */
 	gethostname (buffer, sizeof(buffer));
 #endif
-#ifndef BIND
+#ifdef HAVE_SETHOSTENT
 	sethostent (1);
-#endif
+#endif 
 	/* now fully qualify our name */
 	if ((hp = gethostbyname (buffer)))
 	    strncpy (buffer, hp->h_name, sizeof(buffer));

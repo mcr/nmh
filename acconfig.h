@@ -132,7 +132,6 @@
 
 /* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS -- does
  * PicoBSD have uname? :) */
-#undef BIND
 #undef BSD42
 
 /* Defined for SCO5 */
@@ -252,6 +251,15 @@
 
 /* Define if your system has mkstemp */
 #undef HAVE_MKSTEMP
+
+/* Define if your system has sethostent */
+#undef HAVE_SETHOSTENT
+
+/* Define if your system has gethostbyname */
+#undef HAVE_GETHOSTBYNAME
+
+/* Define if your system has netdb.h */
+#undef HAVE_NETDB_H
 
 /* Define if your system has db1/ndbm.h instead of ndbm.h (ppclinux) */
 #undef HAVE_DB1_NDBM_H
