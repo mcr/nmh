@@ -1,0 +1,480 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH MHSHOW %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+mhshow \- display MIME messages
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+mhshow \%[+folder] \%[msgs] \%[\-file file]
+.br
+\%[\-part number]... \%[\-type content]...
+.br
+\%[\-serialonly] \%[\-noserialonly]
+\%[\-pause] \%[\-nopause]
+.br
+\%[\-check] \%[\-nocheck]
+\%[\-form formfile]
+.br
+\%[\-rcache policy] \%[\-wcache policy]
+.br
+\%[\-verbose] \%[\-noverbose]
+\%[\-version] \%[\-help]
+.in -.5i
+
+.SH DESCRIPTION
+The \fImhshow\fR command display contents of a MIME (multi-media)
+message or collection of messages.
+
+\fImhshow\fR manipulates multi-media messages as specified in
+RFC\-2045 thru RFC\-2049.  Currently \fImhshow\fR only supports
+encodings in message bodies, and does not support the encoding of
+message headers as specified in RFC\-2047.
+
+By default \fImhshow\fR will display all parts of a multipart
+message.  By using the `\-part' and `\-type' switches, you may
+limit the scope of \fImhshow\fR to particular subparts (of a
+multipart content) and/or particular content types.
+
+The option `\-file\ file' directs \fImhshow\fR to use the specified file as
+the source message, rather than a message from a folder.  If you specify
+this file as \*(lq-\*(rq, then \fImhshow\fR will accept the source message
+on the standard input.  Note that the file, or input from standard input
+should be a validly formatted message, just like any other \fInmh\fR
+message.  It should \fBNOT\fR be in mail drop format (to convert a file in
+mail drop format to a folder of \fInmh\fR messages, see \fIinc\fR\0(1)).
+
+A part specification consists of a series of numbers separated by dots.
+For example, in a multipart content containing three parts, these
+would be named as 1, 2, and 3, respectively.  If part 2 was also a
+multipart content containing two parts, these would be named as 2.1 and
+2.2, respectively.  Note that the `\-part' switch is effective for only
+messages containing a multipart content.  If a message has some other
+kind of content, or if the part is itself another multipart content, the
+`\-part' switch will not prevent the content from being acted upon.
+
+A content specification consists of a content type and a subtype.
+The initial list of \*(lqstandard\*(rq content types and subtypes can
+be found in RFC\-2046.
+.ne 18
+A list of commonly used contents is briefly reproduced here:
+.sp
+.nf
+.in +.5i
+.ta \w'application  'u
+Type	Subtypes
+----	--------
+text	plain, enriched
+multipart	mixed, alternative, digest, parallel
+message	rfc822, partial, external-body
+application	octet-stream, postscript
+image	jpeg, gif, png
+audio	basic
+video	mpeg
+.re
+.in -.5i
+.fi
+.sp
+A legal MIME message must contain a subtype specification.
+.PP
+To specify a content, regardless of its subtype, just use the
+name of the content, e.g., \*(lqaudio\*(rq.  To specify a specific
+subtype, separate the two with a slash, e.g., \*(lqaudio/basic\*(rq.
+Note that regardless of the values given to the `\-type' switch, a
+multipart content (of any subtype listed above) is always acted upon.
+Further note that if the `\-type' switch is used, and it is desirable to
+act on a message/external-body content, then the `\-type' switch must
+be used twice: once for message/external-body and once for the content
+externally referenced.
+
+.Uh "Unseen Sequence"
+
+If the profile entry \*(lqUnseen\-Sequence\*(rq is present and
+non\-empty, then \fImhshow\fR will remove each of the messages shown
+from each sequence named by the profile entry.
+
+.Uh "Checking the Contents"
+The `\-check' switch tells \fImhshow\fR to check each content for an
+integrity checksum.  If a content has such a checksum (specified as a
+Content-MD5 header field), then \fImhshow\fR will attempt to verify the
+integrity of the content.
+
+.Uh "Showing the Contents"
+The headers of each message are displayed with the \fImhlproc\fR
+(usually \fImhl\fR), using the standard format file \fImhl.headers\fR.
+You may specify an alternate format file with the `\-form formfile'
+switch.  If the format file \fImhl.null\fR is specified, then the display
+of the message headers is suppressed.
+
+The method used to display the different contents in the messages bodies
+will be determined by a \*(lqdisplay string\*(rq.  To find the display
+string, \fImhshow\fR will first search your profile for an entry of the
+form:
+.sp
+.in +.5i
+mhshow-show-<type>/<subtype>
+.in -.5i
+.sp
+to determine the display string.  If this isn't found, \fImhshow\fR
+will search for an entry of the form:
+.sp
+.in +.5i
+mhshow-show-<type>
+.in -.5i
+.sp
+to determine the display string.
+
+If a display string is found, any escapes (given below) will be expanded.
+The result will be executed under \fB/bin/sh\fR, with the standard input
+set to the content.
+.ne 16
+The display string may contain the following escapes:
+.sp
+.nf
+.in +.5i
+.ta \w'%F  'u
+%a	Insert parameters from Content-Type field
+%e	exclusive execution
+%f	Insert filename containing content
+%F	%e, %f, and stdin is terminal not content
+%l	display listing prior to displaying content
+%p	%l, and ask for confirmation
+%s	Insert content subtype
+%d	Insert content description
+%%	Insert the character %
+.re
+.in -.5i
+.fi
+.sp
+.ne 10
+For those display strings containing the e- or F-escape, \fImhshow\fR will
+execute at most one of these at any given time.  Although the F-escape
+expands to be the filename containing the content, the e-escape has no
+expansion as far as the shell is concerned.
+
+When the p-escape prompts for confirmation, typing INTR (usually
+control-C) will tell \fImhshow\fR not to display that content.
+The p-escape can be disabled by specifying the switch `\-nopause'.
+Further, when \fImhshow\fR is display a content, typing QUIT (usually
+control-\\) will tell \fImhshow\fR to wrap things up immediately.
+
+Note that if the content being displayed is multipart, but not one of
+the subtypes listed above, then the f- and F-escapes expand to multiple
+filenames, one for each subordinate content.  Further, stdin is not
+redirected from the terminal to the content.
+
+If a display string is not found, \fImhshow\fR has several default values:
+.sp
+.nf
+.in +.5i
+mhshow-show-text/plain: %pmoreproc '%F'
+mhshow-show-message/rfc822: %pshow -file '%F'
+.in -.5i
+.fi
+.sp
+If a subtype of type text doesn't have a profile entry, it will be
+treated as text/plain.
+
+\fImhshow\fR has default methods for handling multipart messages of subtype
+mixed, alternative, parallel, and digest.  Any unknown subtype of type
+multipart (without a profile entry), will be treated as multipart/mixed.
+
+If none of these apply, then \fImhshow\fR will check to see if the message
+has an application/octet-stream content with parameter \*(lqtype=tar\*(rq.
+If so, \fImhshow\fR will use an appropriate command.  If not, \fImhshow\fR
+will complain.
+
+.ne 10
+Example entries might be:
+.sp
+.nf
+.in +.5i
+mhshow-show-audio/basic: raw2audio 2>/dev/null | play
+mhshow-show-image: xv '%f'
+mhshow-show-application/PostScript: lpr -Pps
+.in -.5i
+.fi
+.sp
+Note that when using the f- or F-escape, it's a good idea to use
+single-quotes around the escape.  This prevents misinterpretation by
+the shell of any funny characters that might be present in the filename.
+
+Finally, \fImhshow\fR will process each message serially\0--\0it won't start
+showing the next message until all the commands executed to display the
+current message have terminated.  In the case of a multipart content
+(of any subtype listed above), the content contains advice indicating if
+the parts should be displayed serially or in parallel.  Because this may
+cause confusion, particularly on uni-window displays, the `\-serialonly'
+switch can be given to tell \fImhshow\fR to never display parts in parallel.
+
+.Uh "Showing Alternate Character Sets"
+Because a content of type text might be in a non-ASCII character
+set, when \fImhshow\fR encounters a \*(lqcharset\*(rq parameter for
+this content, it checks if your terminal can display this character
+set natively.  \fIMhn\fR checks this by examining the the environment
+variable MM_CHARSET.  If the value of this environment variable is equal
+to the value of the charset parameter, then \fImhshow\fR assumes it can
+display this content without any additional setup.  If this environment
+variable is not set, \fImhshow\fR will assume a value of \*(lqUS-ASCII\*(rq.
+If the character set cannot be displayed natively, then \fImhshow\fR will
+look for an entry of the form:
+.sp
+.in +.5i
+mhshow-charset-<charset>
+.in -.5i
+.sp
+which should contain a command creating an environment to render
+the character set.  This command string should containing a single
+\*(lq%s\*(rq, which will be filled-in with the command to display the
+content.
+
+Example entries might be:
+.sp
+.in +.5i
+mhshow-charset-iso-8859-1: xterm -fn '-*-*-medium-r-normal-*-*-120-*-*-c-*-iso8859-*' -e %s
+.in -.5i
+or
+.in +.5i
+mhshow-charset-iso-8859-1: '%s'
+.in -.5i
+.sp
+The first example tells \fImhshow\fR to start \fIxterm\fR and load the
+appropriate character set for that message content.  The second example
+tells \fImhshow\fR that your pager (or other program handling that content
+type) can handle that character set, and that no special processing is
+needed beforehand.
+.sp
+Note that many pagers strip off the high-order bit or have problems
+displaying text with the high-order bit set.  However, the pager
+\fIless\fR has support for single-octet character sets.  The source
+to \fIless\fR is available on many ftp sites carrying free software.
+In order to view messages sent in the ISO-8859-1 character set using
+\fIless\fR,
+.ne 9
+put these lines in your \&.login file:
+.sp
+.nf
+.in +.5i
+setenv LESSCHARSET latin1
+setenv LESS "-f"
+.in -.5i
+.fi
+.sp
+The first line tells \fIless\fR to use the ISO-8859-1 definition for
+determining whether a character is \*(lqnormal\*(rq, \*(lqcontrol\*(lq,
+or \*(lqbinary\*(rq.  The second line tells \fIless\fR not to warn you
+if it encounters a file that has non-ASCII characters.  Then, simply
+set the \fBmoreproc\fR profile entry to \fIless\fR, and it will get
+called automatically.  (To handle other single-octet character sets,
+look at the \fIless\fR\0(1) manual entry for information about the
+\fBLESSCHARDEF\fR environment variable.)
+
+.Uh "Messages of Type message/partial"
+\fImhshow\fR cannot directly display messages of type partial.
+You must reassemble them first into a normal message using
+\fImhstore\fR.  Check the man page for \fImhstore\fR for details.
+
+.Uh "External Access"
+For contents of type message/external-body,
+.ne 12
+\fImhshow\fR supports these access-types:
+.sp
+.nf
+.in +.5i
+afs
+anon-ftp
+ftp
+local-file
+mail-server
+.in -.5i
+.fi
+.sp
+For the \*(lqanon-ftp\*(rq and \*(lqftp\*(rq access types,
+\fImhshow\fR will look for the \fBnmh-access-ftp\fR
+profile entry,
+.ne 6
+e.g.,
+.sp
+.in +.5i
+nmh-access-ftp: myftp.sh
+.in -.5i
+.sp
+to determine the pathname of a program to perform the FTP retrieval.
+.ne 14
+This program is invoked with these arguments:
+.sp
+.nf
+.in +.5i
+domain name of FTP-site
+username
+password
+remote directory
+remote filename
+local filename
+\*(lqascii\*(rq or \*(lqbinary\*(rq
+.in -.5i
+.fi
+.sp
+The program should terminate with an exit status of zero if the
+retrieval is successful, and a non-zero exit status otherwise.
+
+If this entry is not provided, then \fImhshow\fR will use a simple
+built-in FTP client to perform the retrieval.
+
+.Uh "The Content Cache"
+When \fImhshow\fR encounters an external content containing a
+\*(lqContent-ID:\*(rq field, and if the content allows caching, then
+depending on the caching behavior of \fImhshow\fR, the content might be
+read from or written to a cache.
+
+The caching behavior of \fImhshow\fR is controlled with the `\-rcache'
+and `\-wcache' switches, which define the policy for reading from,
+and writing to, the cache, respectively.  One of four policies may be
+specified: \*(lqpublic\*(rq, indicating that \fImhshow\fR should make use
+of a publically-accessible content cache; \*(lqprivate\*(rq, indicating
+that \fImhshow\fR should make use of the user's private content cache;
+\*(lqnever\*(rq, indicating that \fImhshow\fR should never make use of
+caching; and, \*(lqask\*(rq, indicating that \fImhshow\fR should ask
+the user.
+
+There are two directories where contents may be cached: the profile entry
+\fBnmh-cache\fR names a directory containing world-readable contents, and,
+the profile entry \fBnmh-private-cache\fR names a directory containing
+private contents.  The former should be an absolute (rooted) directory
+name.
+.ne 6
+For example,
+.sp
+.in +.5i
+nmh-cache: /tmp
+.in -.5i
+.sp
+might be used if you didn't care that the cache got wiped after each
+reboot of the system.  The latter is interpreted relative to the user's
+nmh directory, if not rooted,
+.ne 6
+e.g.,
+.sp
+.in +.5i
+nmh-private-cache: .cache
+.in -.5i
+.sp
+(which is the default value).
+
+.Uh "User Environment"
+Because the display environment in which \fImhshow\fR operates may vary for
+different machines, \fImhshow\fR will look for the environment variable
+\fB$MHSHOW\fR.  If present, this specifies the name of an additional
+user profile which should be read.  Hence, when a user logs in on a
+particular display device, this environment variable should be set to
+refer to a file containing definitions useful for the given display device.
+Normally, only entries that deal with the methods to display different
+content type and subtypes
+.sp
+.in +.5i
+mhshow-show-<type>/<subtype>
+.br
+mhshow-show-<type>
+.in -.5i
+.sp
+need be present in this additional profile.
+Finally,
+\fImhshow\fR will attempt to consult one other additional user profile,
+.ne 6
+e.g.,
+.sp
+.in +.5i
+%etcdir%/mhn.defaults
+.in -.5i
+.sp
+which is created automatically during nmh installation.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+^$MHSHOW~^Additional profile entries
+^%etcdir%/mhn.defaults~^System default MIME profile entries
+^%etcdir%/mhl.headers~^The headers template
+.Pr
+^Path:~^To determine the user's nmh directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Ps
+^Unseen\-Sequence:~^To name sequences denoting unseen messages
+.Ps
+^mhlproc:~^Default program to display message headers
+.Ps
+^nmh-access-ftp:~^Program to retrieve contents via FTP
+.Ps
+^nmh-cache~^Public directory to store cached external contents
+.Ps
+^nmh-private-cache~^Personal directory to store cached external contents
+.Ps
+^mhshow-charset-<charset>~^Template for environment to render character sets
+.Ps
+^mhshow-show-<type>*~^Template for displaying contents
+.Ps
+^moreproc:~^Default program to display text/plain content
+.Sa
+mhbuild(1), mhl(1), mhlist(1), mhstore(1), sendfiles(1)
+.br
+RFC\-934:
+.br
+   \fIProposed Standard for Message Encapsulation\fR,
+.br
+RFC\-2045:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part One:
+.br
+   Format of Internet Message Bodies\fR,
+.br
+RFC\-2046:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Two:
+.br
+   Media Types\fR,
+.br
+RFC\-2047:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Three:
+.br
+   Message Header Extensions for Non-ASCII Text\fR,
+.br
+RFC\-2048:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Four:
+.br
+   Registration Procedures\fR,
+.br
+RFC\-2049:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Five:
+.br
+   Conformance Criteria and Examples\fR.
+.De
+`+folder' defaults to the current folder
+.Ds
+`msgs' defaults to cur
+.Ds
+`\-nocheck'
+.Ds
+`\-form mhl.headers'
+.Ds
+`\-pause'
+.Ds
+`\-rcache ask'
+.Ds
+`\-realsize'
+.Ds
+`\-noserialonly'
+.Ds
+`\-noverbose'
+.Ds
+`\-wcache ask'
+.Co
+If a folder is given, it will become the current folder.  The last
+message selected will become the current message.
+.En

@@ -1,0 +1,76 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH RMM %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+rmm \- remove messages
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+rmm
+\%[+folder] \%[msgs]
+\%[\-unlink] \%[\-nounlink]
+.br
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+By default, \fIrmm\fR will remove the specified messages by renaming
+the message files with preceding commas.  Such files will then need to
+be removed in some manner after a certain amount of time.  Many sites
+arrange for \fIcron\fR\0(8) to remove these files once a day, so check
+with your system administrator.
+
+Alternately, if you wish for \fIrmm\fR to really remove the files
+representing these messages, you can use the `-unlink' switch.  But
+messages removed by this method cannot be later recovered.
+
+If you prefer a more sophisticated method of `removing' messages, you
+can define the \fIrmmproc\fR profile component.  For example, you can
+add a profile component such as
+
+	rmmproc:	/home/coleman/bin/rmm_msgs
+
+then instead of simply renaming the message file, \fIrmm\fR will call
+the named program or script to handle the files that represent the
+messages to be deleted.
+
+Some users of csh prefer the following:
+
+	alias rmm 'refile +d'
+
+where folder +d is a folder for deleted messages, and
+
+	alias mexp 'rm `mhpath +d all`'
+
+is used to \*(lqexpunge\*(rq deleted messages.
+
+The current message is not changed by \fIrmm\fR, so a \fInext\fR  will
+advance to the next message in the folder as expected.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's nmh directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Ps
+^rmmproc:~^Program to delete the message
+.Sa
+refile(1), rmf(1)
+.De
+`+folder' defaults to the current folder
+.Ds
+`msgs' defaults to cur
+.Ds
+`-nounlink'
+.Co
+If a folder is given, it will become the current folder.
+.Bu
+Since \fIrefile\fR uses your \fIrmmproc\fP to delete the message,
+the \fIrmmproc\fP must \fBNOT\fP call \fIrefile\fP without specifying
+`\-normmproc', or you will create an infinte loop.
+.En

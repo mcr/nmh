@@ -1,0 +1,73 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH ANNO %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+anno \- annotate messages
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+anno
+\%[+folder] \%[msgs]
+\%[\-component\ field]
+\%[\-inplace]
+.br
+\%[\-noinplace]
+\%[\-date] \%[\-nodate]
+\%[\-text\ body]
+.br
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+\fIAnno\fR annotates the specified messages in the named folder using
+the field and body.
+
+Usually, annotation is performed by the commands \fIdist\fR, \fIforw\fR,
+and \fIrepl\fR, if they are given the `\-anno' switch.  This allows you
+to keep track of your distribution of, forwarding of, and replies to
+a message.
+
+By using \fIanno\fR, you can perform arbitrary annotations of your own.
+Each message selected will be annotated with the lines
+
+    field:\ date
+    field:\ body
+
+The `\-nodate' switch inhibits the date annotation, leaving only the
+body annotation.
+
+If a `\-component\ field' is not specified when \fIanno\fR is invoked,
+\fIanno\fR will prompt the user for the name of field for the annotation.
+
+The field specified should be a valid 822-style message field name,
+which means that it should consist of alphanumerics (or dashes) only.
+The body specified is arbitrary text.
+
+Normally \fIanno\fR does the annotation inplace in order to preserve
+any links to the message.  You may change this by using the `\-noinplace'
+switch.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's nmh directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Sa
+dist (1), forw (1), repl (1)
+.De
+`+folder' defaults to the current folder
+.Ds
+`msgs' defaults to cur
+.Ds
+`\-inplace'
+.Ds
+`\-date'
+.Co
+If a folder is given, it will become the current folder.  The first
+message annotated will become the current message.
+.En

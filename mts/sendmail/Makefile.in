@@ -1,0 +1,89 @@
+#
+# Makefile for mts/sendmail subdirectory
+#
+# $Id$
+#
+
+SHELL = /bin/sh
+
+top_srcdir = @top_srcdir@
+srcdir     = @srcdir@
+VPATH      = @srcdir@
+
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = @bindir@
+libdir      = @libdir@
+etcdir      = @sysconfdir@
+
+CC       = @CC@
+CFLAGS   = @CFLAGS@
+DEFS     = @DEFS@
+INCLUDES = -I../.. -I$(srcdir) -I$(top_srcdir)
+
+LORDER  = @LORDER@
+TSORT   = @TSORT@
+RANLIB  = @RANLIB@
+
+COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
+
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+.c.o:
+	$(COMPILE) $<
+
+# source
+SRCS = hosts.c sendmail.c
+
+# object files in libsend.a
+OBJS = hosts.o sendmail.o
+
+# auxiliary files
+AUX = Makefile.in
+
+# all files in this directory included in the distribution
+DIST = $(SRCS) $(AUX)
+
+# ========= DEPENDENCIES FOR BUILDING AND INSTALLING ==========
+
+all: libsend.a
+
+libsend.a: $(OBJS)
+	rm -f $@
+	ar cr $@ `$(LORDER) $(OBJS) | $(TSORT)`
+	$(RANLIB) $@
+
+install:
+
+uninstall:
+
+# ========== DEPENDENCIES FOR CLEANUP ==========
+
+mostlyclean:
+	rm -f *.o *~
+
+clean: mostlyclean
+	rm -f libsend.a
+
+distclean: clean
+	rm -f Makefile
+
+realclean: distclean
+
+superclean: realclean
+
+# ========== DEPENDENCIES FOR MAINTENANCE ==========
+
+subdir = mts/sendmail
+
+Makefile: Makefile.in ../../config.status
+	cd ../.. && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status
+ 
+distdir = ../../`cat ../../distname`/$(subdir)
+nmhdist: $(DIST)
+	@echo "Copying distribution files in $(subdir)"
+	@for file in $(DIST); do \
+	  cp -p $(srcdir)/$$file $(distdir); \
+	done
+

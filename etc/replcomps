@@ -1,0 +1,21 @@
+%; replcomps
+%;
+%; default form (components) file for `repl'
+%;
+%; Check for the following headers (in this order)
+%; to construct the return address
+%;
+%; Mail-Reply-To
+%; Reply-To
+%; From
+%; Sender
+%; Return-Path
+%;
+%(lit)%(formataddr %<{mail-reply-to}%?{reply-to}%?{from}%?{sender}%?{return-path}%>)\
+%<(nonnull)%(void(width))%(putaddr To: )\n%>\
+%<{fcc}Fcc: %{fcc}\n%>\
+%<{subject}Subject: Re: %{subject}\n%>\
+%<{date}In-Reply-To: Your message of "\
+%<(nodate{date})%{date}%|%(pretty{date})%>."%<{message-id}
+             %{message-id}%>\n%>\
+--------

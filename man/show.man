@@ -1,0 +1,164 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH SHOW %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+show \- show (display) messages
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+show
+\%[+folder] \%[msgs]
+\%[\-showproc\ program]
+.br
+\%[\-showmimeproc\ program]
+\%[\-header] \%[\-noheader]
+.br
+\%[\-draft]
+\%[\-checkmime] \%[\-nocheckmime]
+.br
+\%[switches\ for\ \fIshowproc\fR or \fIshowmimeproc\fR]
+.br
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+\fIShow\fR lists each of the specified messages to the standard output
+(typically, the terminal).
+
+By default, text (non-MIME) messages are filtered and displayed by
+the \fInmh\fR command \fImhl\fR.  This command will display text
+messages in a nice, uniform format.  It also allows you to configure
+the format of the displayed messages and which headers fields are
+shown.  See the \fImhl\fR(1) manual page for the details about this
+command.  This default can be changed by defining the \fIshowproc\fR
+profile component.  Any switches not recognized by \fIshow\fR are
+passed along to that program.  To override the default and the
+\fIshowproc\fR profile component, use the `\-showproc\ program'
+switch.  For example, `\-showproc\ more' will cause the \fImore\fR(1)
+program to list the messages with no reformatting.  Normally, this
+program is specified as the \fIshowproc\fR in the user's
+\&.mh\(ruprofile, rather than using a command line switch.
+
+By default, non-text messages (MIME messages with multi-media
+contents) are processed and displayed by the \fInmh\fR command
+\fImhshow\fR.  See the \fImhshow\fR(1) manual page for details
+about this command.  This default can changed by defining the
+\fIshowmimeproc\fR profile component.  Any switches not recognized
+by \fIshow\fR are passed along to that program.  To override this
+default and the \fIshowmimeproc\fR profile component, use the
+`\-showmimeproc\ program' switch.
+
+Note that in some cases, \fIshow\fR may invoke the \fIshowmimeproc\fR
+even for textual contents.  This will happen for text messages that
+specify a transfer encoding (such as MIME quoted-printable or
+base64) or specify a character set that \fIshow\fR doesn't believe
+can be displayed natively.  The environment variable MM_CHARSET
+should be set to the terminal's native character set to avoid
+gratuitous invocations of the \fIshowmimeproc\fR.  See the
+mh-profile(5) man page for details about this environment variable.
+
+The option `\-checkmime' (set by default) instructs \fIshow\fR to
+test if any of the messages to be displayed are non-text (MIME)
+messages.  If any are non-text, they are displayed by the program
+\fIshowmimeproc\fR, else they are displayed by the program
+\fIshowproc\fR.  The option `-nocheckmime' disables this test and
+instructs \fIshow\fR to use \fIshowproc\fR, regardless of whether
+any of the messages are non-text (MIME) messages.
+
+The `\-noshowproc' switch will disable any formatting or paging of
+messages.  It is equivalent to `-nocheckmime\ -showproc\ cat'.  It
+is still accepted, but should be considered (somewhat) obsolete.
+
+If the environment variable \fBNOMHNPROC\fR is set, the test for
+non-text (MIME) messages will be disabled.  This method is obsolete.
+Use the `-nocheckmime' switch instead.
+
+The `\-header' switch tells \fIshow\fR to display a one\-line
+description of the message being shown.  This description includes
+the folder and the message number.
+
+If no `msgs' are specified, the current message is used.  Although
+it depends on the specific \fIshowproc\fR or \fIshowmimeproc\fR,
+in the default setup when more than one message is specified, you
+will be prompted for a <RETURN> prior to listing each message.
+Each message will be listed a page at a time, and when the end of
+page is reached, the program will wait for a <SPACE> or <RETURN>.
+If a <RETURN> is entered, it will print the next line, whereas
+<SPACE> will print the next screenful.
+
+If the standard output is not a terminal, no queries are made, and
+each file is listed with a one\-line header and two lines of
+separation.
+
+\*(lqshow \-draft\*(rq will list the file <mh\-dir>/draft if it
+exists.
+
+If the profile entry \*(lqUnseen\-Sequence\*(rq is present and
+non\-empty, then \fIshow\fR will remove each of the messages shown
+from each sequence named by the profile entry.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's nmh directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Ps
+^Unseen\-Sequence:~^To name sequences denoting unseen messages
+.Ps
+^showproc:~^Program to show text (non-MIME) messages
+.Ps
+^showmimeproc:~^Program to show non-text (MIME) messages
+.Sa
+mhl(1), mhshow(1), more(1), next(1), prev(1), scan(1)
+.De
+`+folder' defaults to the current folder
+.Ds
+`msgs' defaults to cur
+.Ds
+`\-checkmime'
+.Ds
+`\-header'
+.Co
+If a folder is given, it will become the current folder.  The last
+message shown will become the current message.
+.Bu
+The `\-header' switch doesn't work when `msgs' expands to more than
+one message.  If the \fIshowproc\fR is \fImhl\fR, then is problem can
+be circumvented by referencing the \*(lqmessagename\*(rq field in the
+\fImhl\fR format file.
+
+\fIShow\fR updates the user's context before showing the message.
+Hence \fIshow\fR will mark messages as seen prior to the user actually
+seeing them.  This is generally not a problem, unless the user relies
+on the \*(lqunseen\*(rq messages mechanism, and interrupts \fIshow\fR
+while it is showing \*(lqunseen\*(rq messages.
+
+If your \fIshowproc\fR is \fImhl\fR (the default), then \fIshow\fR uses
+a built\-in \fImhl\fR: it does not actually run the \fImhl\fR program.
+Hence, if you define your own \fIshowproc\fR, don't call it \fImhl\fR
+since \fIshow\fR won't run it.
+
+If your \fIshowproc\fR is the pager \fImore\fR, then avoid running
+\fIshow\fR in the background with only its standard output piped to
+another process, as in
+
+.ti +.5i
+show | imprint &
+
+Due to a bug in \fImore\fR, show will go into a \*(lqtty input\*(rq state.
+To avoid this problem, re\-direct \fIshow\fR's diagnostic output as well.
+For users of \fIcsh\fR:
+
+.ti +.5i
+show |& imprint &
+
+For users of \fIsh\fR:
+
+.ti +.5i
+show 2>&1 | imprint &
+.En

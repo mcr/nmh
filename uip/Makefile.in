@@ -1,0 +1,307 @@
+#
+# Makefile for uip subdirectory
+#
+# $Id$
+#
+
+SHELL = /bin/sh
+
+top_srcdir = @top_srcdir@
+srcdir     = @srcdir@
+VPATH      = @srcdir@
+
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = @bindir@
+libdir      = @libdir@
+etcdir      = @sysconfdir@
+
+CC       = @CC@
+CFLAGS   = @CFLAGS@
+DEFS     = @DEFS@
+HESIOD_INCLUDES = @HESIOD_INCLUDES@
+INCLUDES = -I.. -I$(srcdir) -I$(top_srcdir) $(HESIOD_INCLUDES)
+LDFLAGS  = @LDFLAGS@
+
+LIBS     = @LIBS@
+MTSLIB   = @MTSLIB@
+KRB4_LIBS = @KRB4_LIBS@
+HESIOD_LIBS = @HESIOD_LIBS@
+LOCALLIBS = ../config/version.o ../config/config.o ../sbr/libmh.a ../$(MTSLIB) ../zotnet/libzot.a
+LINKLIBS = $(LOCALLIBS) $(KRB4_LIBS) $(HESIOD_LIBS) $(LIBS)
+
+TERMLIB = @TERMLIB@
+LEXLIB  = @LEXLIB@
+POPLIB  = @POPLIB@
+
+COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
+LINK    = $(CC) $(LDFLAGS) -o $@
+LN = ln
+
+INSTALL         = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+.c.o:
+	$(COMPILE) $<
+
+# commands to build
+CMDS = ali anno burst comp dist flist folder forw inc mark mhbuild \
+       mhlist mhmail mhn mhparam mhpath mhshow mhstore mhtest msgchk \
+       msh packf pick prompter refile repl rmf rmm scan send show \
+       sortm viamail whatnow whom
+
+## removed this from CMDS until I can fix it
+## OTHERCMDS = vmh
+
+# commands that are links to other commands
+LCMDS = flists folders next prev
+
+# misc support binaries
+MISC = ap conflict dp fmtdump install-mh mhl post rcvdist rcvpack \
+       rcvstore rcvtty slocal spost
+
+# source files
+SRCS = ali.c aliasbr.c anno.c annosbr.c ap.c burst.c comp.c \
+       conflict.c dist.c distsbr.c dp.c dropsbr.c flist.c fmtdump.c \
+       folder.c forw.c ftpsbr.c inc.c install-mh.c mark.c md5.c mhbuild.c \
+       mhbuildsbr.c mhcachesbr.c mhfree.c mhl.c mhlist.c mhlistsbr.c mhlsbr.c \
+       mhmail.c mhmisc.c mhn.c mhoutsbr.c mhparam.c mhparse.c mhpath.c mhshow.c \
+       mhshowsbr.c mhstore.c mhstoresbr.c mhtest.c msgchk.c msh.c mshcmds.c packf.c \
+       pick.c picksbr.c popi.c popsbr.c post.c prompter.c rcvdist.c rcvpack.c \
+       rcvstore.c rcvtty.c refile.c repl.c replsbr.c rmf.c rmm.c scan.c \
+       scansbr.c send.c sendsbr.c show.c slocal.c sortm.c spost.c \
+       termsbr.c viamail.c vmh.c vmhsbr.c vmhtest.c whatnow.c whatnowproc.c \
+       whatnowsbr.c whom.c wmh.c
+
+# auxiliary files
+AUX = Makefile.in
+
+# all files in this directory included in the distribution
+DIST = $(SRCS) $(AUX)
+
+# ========== DEFAULT TARGET ==========
+
+all: $(CMDS) $(MISC)
+
+# ========= DEPENDENCIES FOR BUILDING ==========
+
+ali: ali.o aliasbr.o $(LOCALLIBS)
+	$(LINK) ali.o aliasbr.o $(LINKLIBS)
+
+ap: ap.o termsbr.o $(LOCALLIBS)
+	$(LINK) ap.o termsbr.o $(LINKLIBS) $(TERMLIB)
+
+anno: anno.o annosbr.o $(LOCALLIBS)
+	$(LINK) anno.o annosbr.o $(LINKLIBS)
+
+burst: burst.o $(LOCALLIBS)
+	$(LINK) burst.o $(LINKLIBS)
+
+comp: comp.o whatnowproc.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LOCALLIBS)
+	$(LINK) comp.o whatnowproc.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LINKLIBS)
+
+conflict: conflict.o aliasbr.o $(LOCALLIBS)
+	$(LINK) conflict.o aliasbr.o $(LINKLIBS)
+
+dist: dist.o whatnowproc.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LOCALLIBS)
+	$(LINK) dist.o whatnowproc.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LINKLIBS)
+
+dp: dp.o termsbr.o $(LOCALLIBS)
+	$(LINK) dp.o termsbr.o $(LINKLIBS) $(TERMLIB)
+
+flist: flist.o $(LOCALLIBS)
+	$(LINK) flist.o $(LINKLIBS)
+
+fmtdump: fmtdump.o $(LOCALLIBS)
+	$(LINK) fmtdump.o $(LINKLIBS)
+
+folder: folder.o $(LOCALLIBS)
+	$(LINK) folder.o $(LINKLIBS)
+
+forw: forw.o whatnowproc.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LOCALLIBS)
+	$(LINK) forw.o whatnowproc.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LINKLIBS)
+
+inc: inc.o scansbr.o dropsbr.o termsbr.o $(POPLIB) $(LOCALLIBS)
+	$(LINK) inc.o scansbr.o dropsbr.o termsbr.o $(POPLIB) $(LINKLIBS) $(TERMLIB)
+
+install-mh: install-mh.o $(LOCALLIBS)
+	$(LINK) install-mh.o $(LINKLIBS)
+
+mark: mark.o $(LOCALLIBS)
+	$(LINK) mark.o $(LINKLIBS)
+
+mhbuild: mhbuild.o mhbuildsbr.o mhcachesbr.o mhlistsbr.o mhoutsbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LOCALLIBS)
+	$(LINK) mhbuild.o mhbuildsbr.o mhcachesbr.o mhlistsbr.o mhoutsbr.o mhmisc.o mhfree.o ftpsbr.o md5.o $(LINKLIBS) $(TERMLIB)
+
+mhl: mhl.o mhlsbr.o termsbr.o $(LOCALLIBS)
+	$(LINK) mhl.o mhlsbr.o termsbr.o $(LINKLIBS) $(TERMLIB)
+
+mhlist: mhlist.o mhparse.o mhcachesbr.o mhlistsbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LOCALLIBS)
+	$(LINK) mhlist.o mhparse.o mhcachesbr.o mhlistsbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LINKLIBS) $(TERMLIB)
+
+mhmail: mhmail.o $(LOCALLIBS)
+	$(LINK) mhmail.o $(LINKLIBS)
+
+mhn: mhn.o mhparse.o mhcachesbr.o mhshowsbr.o mhlistsbr.o mhstoresbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LOCALLIBS)
+	$(LINK) mhn.o mhparse.o mhcachesbr.o mhshowsbr.o mhlistsbr.o mhstoresbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LINKLIBS) $(TERMLIB)
+
+mhparam: mhparam.o $(LOCALLIBS)
+	$(LINK) mhparam.o $(LINKLIBS)
+
+mhpath: mhpath.o $(LOCALLIBS)
+	$(LINK) mhpath.o $(LINKLIBS)
+
+mhshow: mhshow.o mhparse.o mhcachesbr.o mhshowsbr.o mhlistsbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LOCALLIBS)
+	$(LINK) mhshow.o mhparse.o mhcachesbr.o mhshowsbr.o mhlistsbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LINKLIBS) $(TERMLIB)
+
+mhstore: mhstore.o mhparse.o mhcachesbr.o mhshowsbr.o mhlistsbr.o mhstoresbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LOCALLIBS)
+	$(LINK) mhstore.o mhparse.o mhcachesbr.o mhshowsbr.o mhlistsbr.o mhstoresbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LINKLIBS) $(TERMLIB)
+
+mhtest: mhtest.o mhparse.o mhcachesbr.o mhoutsbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LOCALLIBS)
+	$(LINK) mhtest.o mhparse.o mhcachesbr.o mhoutsbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LINKLIBS) $(TERMLIB)
+
+msgchk: msgchk.o $(POPLIB) $(LOCALLIBS)
+	$(LINK) msgchk.o $(POPLIB) $(LINKLIBS)
+
+msh: msh.o mshcmds.o vmhsbr.o picksbr.o scansbr.o dropsbr.o mhlsbr.o termsbr.o $(LOCALLIBS)
+	$(LINK) msh.o mshcmds.o vmhsbr.o picksbr.o scansbr.o dropsbr.o mhlsbr.o termsbr.o $(LINKLIBS) $(TERMLIB)
+
+packf: packf.o dropsbr.o $(LOCALLIBS)
+	$(LINK) packf.o dropsbr.o $(LINKLIBS)
+
+pick: pick.o picksbr.o $(LOCALLIBS)
+	$(LINK) pick.o picksbr.o $(LINKLIBS)
+
+post: post.o aliasbr.o $(LOCALLIBS)
+	$(LINK) post.o aliasbr.o $(LINKLIBS)
+
+prompter: prompter.o $(LOCALLIBS)
+	$(LINK) prompter.o $(LINKLIBS)
+
+rcvdist: rcvdist.o distsbr.o $(LOCALLIBS)
+	$(LINK) rcvdist.o distsbr.o $(LINKLIBS)
+
+rcvpack: rcvpack.o dropsbr.o $(LOCALLIBS)
+	$(LINK) rcvpack.o dropsbr.o $(LINKLIBS)
+
+rcvstore: rcvstore.o $(LOCALLIBS)
+	$(LINK) rcvstore.o $(LINKLIBS)
+
+rcvtty: rcvtty.o scansbr.o termsbr.o $(LOCALLIBS)
+	$(LINK) rcvtty.o scansbr.o termsbr.o $(LINKLIBS) $(TERMLIB)
+
+refile: refile.o $(LOCALLIBS)
+	$(LINK) refile.o $(LINKLIBS)
+
+repl: repl.o replsbr.o whatnowproc.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LOCALLIBS)
+	$(LINK) repl.o replsbr.o whatnowproc.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LINKLIBS)
+
+rmf: rmf.o $(LOCALLIBS)
+	$(LINK) rmf.o $(LINKLIBS)
+
+rmm: rmm.o $(LOCALLIBS)
+	$(LINK) rmm.o $(LINKLIBS)
+
+scan: scan.o scansbr.o termsbr.o $(LOCALLIBS)
+	$(LINK) scan.o scansbr.o termsbr.o $(LINKLIBS) $(TERMLIB)
+
+send: send.o sendsbr.o annosbr.o distsbr.o $(LOCALLIBS)
+	$(LINK) send.o sendsbr.o annosbr.o distsbr.o $(LINKLIBS)
+
+show: show.o mhlsbr.o termsbr.o $(LOCALLIBS)
+	$(LINK) show.o mhlsbr.o termsbr.o $(LINKLIBS) $(TERMLIB)
+
+slocal: slocal.o aliasbr.o dropsbr.o $(LOCALLIBS)
+	$(LINK) slocal.o aliasbr.o dropsbr.o $(LINKLIBS)
+
+sortm: sortm.o $(LOCALLIBS)
+	$(LINK) sortm.o $(LINKLIBS)
+
+spost: spost.o aliasbr.o $(LOCALLIBS)
+	$(LINK) spost.o aliasbr.o $(LINKLIBS)
+
+viamail: viamail.o mhmisc.o mhoutsbr.o sendsbr.o annosbr.o distsbr.o $(LOCALLIBS)
+	$(LINK) viamail.o mhmisc.o mhoutsbr.o sendsbr.o annosbr.o distsbr.o $(LINKLIBS) $(TERMLIB)
+
+vmh: vmh.o vmhsbr.o $(LOCALLIBS)
+	$(LINK) vmh.o vmhsbr.o $(LINKLIBS) $(TERMLIB)
+
+whatnow: whatnow.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LOCALLIBS)
+	$(LINK) whatnow.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LINKLIBS)
+
+whom: whom.o distsbr.o $(LOCALLIBS)
+	$(LINK) whom.o distsbr.o $(LINKLIBS)
+
+# ========== DEPENDENCIES FOR INSTALLING ==========
+
+# install everything
+install: install-cmds install-lcmds install-misc
+
+# install commands
+install-cmds:
+	$(top_srcdir)/mkinstalldirs $(bindir)
+	for cmd in $(CMDS); do \
+	  $(INSTALL_PROGRAM) $$cmd $(bindir)/$$cmd; \
+	done
+
+# install links
+install-lcmds:
+	rm -f $(bindir)/flists
+	rm -f $(bindir)/folders
+	rm -f $(bindir)/prev
+	rm -f $(bindir)/next
+	$(LN) $(bindir)/flist  $(bindir)/flists
+	$(LN) $(bindir)/folder $(bindir)/folders
+	$(LN) $(bindir)/show   $(bindir)/prev
+	$(LN) $(bindir)/show   $(bindir)/next
+
+# install misc support binaries
+install-misc:
+	$(top_srcdir)/mkinstalldirs $(libdir)
+	for misc in $(MISC); do \
+	  $(INSTALL_PROGRAM) $$misc $(libdir)/$$misc; \
+	done
+
+uninstall:
+	for cmd in $(CMDS); do \
+	  rm -f $(bindir)/$$cmd; \
+	done
+	for lcmd in $(LCMDS); do \
+	  rm -f $(bindir)/$$lcmd; \
+	done
+	for misc in $(MISC); do \
+	  rm -f $(libdir)/$$misc; \
+	done
+
+# ========== DEPENDENCIES FOR CLEANUP ==========
+
+mostlyclean:
+	rm -f *.o *~
+
+clean: mostlyclean
+	rm -f $(CMDS) $(MISC)
+
+distclean: clean
+	rm -f Makefile
+
+realclean: distclean
+
+superclean: realclean
+
+# ========== DEPENDENCIES FOR MAINTENANCE ==========
+
+subdir = uip
+
+Makefile: Makefile.in ../config.status
+	cd .. && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status
+
+distdir = ../`cat ../distname`/$(subdir)
+nmhdist: $(DIST)
+	@echo "Copying distribution files in $(subdir)"
+	@for file in $(DIST); do \
+	  cp -p $(srcdir)/$$file $(distdir); \
+	done
+

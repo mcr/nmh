@@ -1,0 +1,95 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH MSGCHK %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+msgchk \- check for messages
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+msgchk
+\%[\-date] \%[\-nodate]
+\%[\-notify\ all/mail/nomail]
+.br
+\%[\-nonotify\ all/mail/nomail]
+.br
+%nmhbeginpop%
+\%[\-host\ hostname]
+\%[\-user\ username]
+.br
+%nmhendpop%
+\%[users\ ...]
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+The \fImsgchk\fR program checks all known mail drops for mail waiting
+for you.  For those drops which have mail for you, \fImsgchk\fR will
+indicate if it believes that you have seen the mail in question before.
+
+The `\-notify\ type' switch indicates under what circumstances
+\fImsgchk\fR should produce a message.  The default is `\-notify\ all'
+which says that \fImsgchk\fR should always report the status of the
+users maildrop.  Other values for `type' include `mail' which says that
+\fImsgchk\fR should report the status of waiting mail; and, `nomail'
+which says that \fImsgchk\fR should report the status of empty maildrops.
+The `\-nonotify\ type' switch has the inverted sense, so
+`\-nonotify\ all' directs \fImsgchk\fR to never report the status of
+maildrops.  This is useful if the user wishes to check \fImsgchk\fR's
+exit status.  A non\-zero exit status indicates that mail was \fBnot\fR
+waiting for at least one of the indicated users.
+
+If \fImsgchk\fR produces output, then the `\-date' switch directs
+\fImsgchk\fR to print out the last date mail was read, if this can
+be determined.
+%nmhbeginpop%
+ 
+.Uh "Using POP"
+\fImsgchk\fR will normally check all the local mail drops, but if
+the option \*(lqpophost:\*(rq is set in the mts configuration file
+\*(lqmts.conf\*(rq, or if the `\-host\ hostname' switch is given,
+\fImsgchk\fR will query this POP service host as to the status of
+mail waiting.
+
+The default is for \fImsgchk\fR to assume that your account name
+on the POP server is the same as your current username.  To specify
+a different username, use the `\-user\ username' switch.
+
+When using POP, you will normally need to type the password for
+your account on the POP server, in order to retrieve your messages.
+It is possible to automate this process by creating a \*(lq.netrc\*(rq
+file containing your login account information for this POP server.
+For each POP server, this file should have a line of the following
+form.  Replace the words mypopserver, mylogin, and mypassword with
+your own account information.
+
+machine mypopserver login mylogin password mypassword
+
+This \*(lq.netrc\*(rq file should be owned and readable only by
+you.
+
+For debugging purposes, there is also a switch `\-snoop', which will
+allow you to watch the POP transaction take place between you and the
+POP server.
+%nmhendpop%
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+^%etcdir%/mts.conf~^nmh mts configuration file
+^%mailspool%/$USER~^Location of mail drop
+.Pr
+None
+.Sa
+inc(1)
+.De
+`user' defaults to the current user
+.Ds
+`\-date'
+.Ds
+`\-notify\ all'
+.Co
+None
+.En

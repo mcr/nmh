@@ -1,0 +1,580 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH MHBUILD %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+mhbuild \- translate MIME composition draft
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+mhbuild file
+.br
+\%[\-list] \%[-nolist]
+\%[\-realsize] \%[\-norealsize]
+.br
+\%[\-headers] \%[\-noheaders]
+\%[\-ebcdicsafe] \%[\-noebcdicsafe]
+.br
+\%[\-rfc934mode] \%[\-norfc934mode]
+\%[\-verbose] \%[\-noverbose]
+.br
+\%[\-check] \%[\-nocheck]
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+The \fImhbuild\fR command will translate a MIME composition draft into
+a valid MIME message.
+
+\fImhbuild\fR creates multi-media messages as specified in RFC\-2045
+thru RFC\-2049.  Currently \fImhbuild\fR only supports encodings in
+message bodies, and does not support the encoding of message headers as
+specified in RFC\-2047.
+
+If you specify the name of the composition file as \*(lq-\*(rq,
+then \fImhbuild\fR will accept the composition draft on the standard
+input.  If the translation of this input is successful, \fImhbuild\fR
+will output the new MIME message to the standard output.  This argument
+must be the last argument on the command line.
+
+Otherwise if the file argument to \fImhbuild\fR is the name of a valid
+composition file, and the translation is successful, \fImhbuild\fR will
+replace the original file with the new MIME message.  It will rename
+the original file to start with the \*(lq,\*(rq character and end with the
+string \*(lq.orig\*(rq, e.g., if you are editing the file \*(lqdraft\*(rq,
+it will be renamed to \*(lq,draft.orig\*(rq.  This allows you to easily
+recover the \fImhbuild\fR input file.
+
+.Uh "Listing the Contents"
+The `\-list' switch tells \fImhbuild\fR to list the table of contents
+associated with the MIME message that is created.
+
+The `\-headers' switch indicates
+that a one-line banner should be displayed above the listing.  The
+`\-realsize' switch tells \fImhbuild\fR to evaluate the \*(lqnative\*(rq
+(decoded) format of each content prior to listing.  This provides an
+accurate count at the expense of a small delay.  If the `\-verbose' switch
+is present, then the listing will show any \*(lqextra\*(rq information
+that is present in the message, such as comments in the Content-Type header.
+
+.Uh "Translating the Composition File"
+\fImhbuild\fR is essentially a filter to aid in the composition of MIME
+messages.  \fImhbuild\fR will convert an
+\fImhbuild\fR \*(lqcomposition file\*(rq
+into a valid MIME message.  A \fImhbuild\fR \*(lqcomposition file\*(rq
+is just a file containing plain text that is interspersed
+with various \fImhbuild\fR directives.  When this file is processed
+by \fImhbuild\fR, the various directives will be expanded to the
+appropriate content, and will be encoded according to the MIME standards.
+The resulting MIME message can then be sent by electronic mail.
+
+The formal syntax for a \fImhbuild\fR composition file is defined at the
+end of this document, but the ideas behind this format are not complex.
+Basically, the body contains one or more contents.  A content consists of
+either a directive, indicated with a \*(lq#\*(rq as the first character
+of a line; or, plaintext (one or more lines of text).  The continuation
+character, \*(lq\\\*(lq, may be used to enter a single directive on more
+than one line, e.g.,
+.sp
+.nf
+.in +.5i
+#image/png \\
+    /home/foobar/junk/picture.png
+.in -.5i
+.fi
+.sp
+There are four kinds of directives: \*(lqtype\*(rq directives, which
+name the type and subtype of the content; \*(lqexternal-type\*(rq
+directives, which also name the type and subtype of the content; the
+\*(lqmessage\*(rq directive (#forw), which is used to forward one or
+more messages; and, the \*(lqbegin\*(rq directive (#begin), which is
+used to create a multipart content.
+
+The \*(lqtype\*(rq directive is used to directly specify the type and
+subtype of a content.  You may only specify discrete types in this manner
+(can't specify the types multipart or message with this directive).
+You may optionally specify the name of a file containing the contents
+in \*(lqnative\*(rq (decoded) format.  If this filename starts with the
+\*(lq|\*(rq character, then it represents a command to execute whose
+output is captured accordingly.
+For example,
+.sp
+.nf
+.in +.5i
+#audio/basic |raw2audio -F < /usr/lib/sound/giggle.au
+.in -.5i
+.fi
+.sp
+If a filename is not given, \fImhbuild\fR will look for information in the
+user's profile to determine how the different contents should be composed.
+This is accomplished by consulting a composition string, and executing
+it under \fB/bin/sh\fR, with the standard output set to the content.
+If the `\-verbose' switch is given, \fImhbuild\fR will echo any commands
+that are used to create contents in this way.
+.ne 13
+The composition string may contain the following escapes:
+.sp
+.nf
+.in +.5i
+.ta \w'%P  'u
+%a	Insert parameters from directive
+%f	Insert filename containing content
+%F	%f, and stdout is not re-directed
+%s	Insert content subtype
+%%	Insert character %
+.re
+.in -.5i
+.fi
+.sp
+
+First,
+\fImhbuild\fR will look for an entry of the form:
+.sp
+.in +.5i
+mhbuild-compose-<type>/<subtype>
+.in -.5i
+.sp
+to determine the command to use to compose the content.  If this isn't
+found, \fImhbuild\fR will look for an entry of the form:
+.sp
+.in +.5i
+mhbuild-compose-<type>
+.in -.5i
+.sp
+to determine the composition command.
+
+If this isn't found, \fImhbuild\fR
+will complain.
+
+An example entry might be:
+.sp
+.in +.5i
+mhbuild-compose-audio/basic: record | raw2audio -F
+.in -.5i
+.sp
+Because commands like these will vary, depending on the display
+environment used for login, composition strings for different
+contents should probably be put in the file specified by the
+\fB$MHBUILD\fR environment variable, instead of directly in your
+user profile.
+
+The \*(lqexternal-type\*(rq directives are used to provide a MIME
+reference to a content, rather than enclosing the contents itself
+(for instance, by specifying an ftp site).  Hence, instead of
+providing a filename as with the type directives, external-parameters
+are supplied.  These look like regular parameters, so they must be
+separated accordingly.  For example,
+.sp
+.nf
+.in +.5i
+#@application/octet-stream; \\
+    type=tar; \\
+    conversions=compress \\
+    [this is the nmh distribution] \\
+    name="nmh.tar.gz"; \\
+    directory="/pub/nmh"; \\
+    site="ftp.math.gatech.edu"; \\
+    access-type=anon-ftp; \\
+    mode="image"
+.in -.5i
+.fi
+.sp
+You must give a description string to separate the content parameters
+from the external-parameters (although this string may be empty).
+This description string is specified by enclosing it within
+\*(lq[]\*(rq.
+.ne 19
+These parameters are of the form:
+.sp
+.nf
+.in +.5i
+.ta \w'access-type=  'u
+access-type=	usually \fIanon-ftp\fR or \fImail-server\fR
+name=	filename
+permission=	read-only or read-write
+site=	hostname
+directory=	directoryname (optional)
+mode=	usually \fIascii\fR or \fIimage\fR (optional)
+size=	number of octets
+server=	mailbox
+subject=	subject to send
+body=	command to send for retrieval
+.re
+.in -.5i
+.fi
+.sp
+
+The \*(lqmessage\*(rq directive (#forw) is used to specify a message or
+group of messages to include.  You may optionally specify the name of
+the folder and which messages are to be forwarded.  If a folder is not
+given, it defaults to the current folder.  Similarly, if a message is not
+given, it defaults to the current message.  Hence, the message directive
+is similar to the \fIforw\fR\0(1) command, except that the former uses
+the MIME rules for encapsulation rather than those specified in RFC\-934.
+For example,
+.sp
+.nf
+.in +.5i
+#forw +inbox 42 43 99
+.in -.5i
+.fi
+.sp
+If you include a single message, it will be included directly as a content
+of type \*(lqmessage/rfc822\*(rq.  If you include more than one message,
+then \fImhbuild\fR will add a content of type \*(lqmultipart/digest\*(rq
+and include each message as a subpart of this content.
+
+If you are using this directive to include more than one message, you
+may use the `\-rfc934mode' switch.  This switch will indicate that
+\fImhbuild\fR should attempt to utilize the MIME encapsulation rules
+in such a way that the \*(lqmultipart/digest\*(rq that is created
+is (mostly) compatible with the encapsulation specified in RFC\-934.
+If given, then RFC\-934 compliant user-agents should be able to burst the
+message on reception\0--\0providing that the messages being encapsulated
+do not contain encapsulated messages themselves.  The drawback of this
+approach is that the encapsulations are generated by placing an extra
+newline at the end of the body of each message.
+
+The \*(lqbegin\*(rq directive is used to create a multipart content.
+When using the \*(lqbegin\*(rq directive, you must specify at least one
+content between the begin and end pairs.
+.sp
+.nf
+.in +.5i
+#begin
+This will be a multipart with only one part.
+#end
+.in -.5i
+.fi
+.sp
+If you use multiple directives in a composition draft, \fImhbuild\fR will
+automatically encapsulate them inside a multipart content.  Therefore the
+\*(lqbegin\*(rq directive is only necessary if you wish to use nested
+multiparts, or create a multipart message containing only one part.
+
+For all of these directives, the user may include a brief description
+of the content between the \*(lq[\*(rq character and the \*(lq]\*(rq
+character.  This description will be copied into the
+\*(lqContent-Description\*(rq header when the directive is processed.
+.sp
+.nf
+.in +.5i
+#forw [important mail from Bob] +bob 1 2 3 4 5
+.in -.5i
+.fi
+.sp
+By default, \fImhbuild\fR will generate a unique \*(lqContent-ID:\*(rq for
+each directive; however, the user may override this by defining the ID
+using the \*(lq<\*(rq and \*(lq>\*(rq characters.
+
+In addition to the various directives, plaintext can be present.
+Plaintext is gathered, until a directive is found or the draft is
+exhausted, and this is made to form a text content.  If the plaintext
+must contain a \*(lq#\*(rq at the beginning of a line, simply double it,
+.ne 6
+e.g.,
+.sp
+.in +.5i
+##when sent, this line will start with only one #
+.in -.5i
+.sp
+If you want to end the plaintext prior to a directive, e.g., to have two
+plaintext contents adjacent, simply insert a line containing a single
+\*(lq#\*(rq character,
+.ne 10
+e.g.,
+.sp
+.nf
+.in +.5i
+this is the first content
+#
+and this is the second
+.in -.5i
+.fi
+.sp
+Finally,
+if the plaintext starts with a line of the form:
+.sp
+.in +.5i
+Content-Description: text
+.in -.5i
+.sp
+then this will be used to describe the plaintext content.
+You MUST follow this line with a blank line before starting
+your text.
+
+By default, plaintext is captured as a text/plain content.  You can
+override this by starting the plaintext with \*(lq#<\*(rq followed by
+a content-type specification.  For example,
+.ne 11
+e.g.,
+.sp
+.nf
+.in +.5i
+#<text/enriched
+this content will be tagged as text/enriched
+#
+and this content will be tagged as text/plain
+#
+#<application/x-patch [this is a patch]
+and this content will be tagged as application/x-patch
+.in -.5i
+.fi
+.sp
+Note that if you use the \*(lq#<\*(rq plaintext-form, then the
+content-description must be on the same line which identifies the content
+type of the plaintext.
+
+When composing a text content, you may indicate the relevant character
+set by adding the \*(lqcharset\*(rq parameter to the directive.
+.sp
+.in +.5i
+#<text/plain; charset=iso-8859-5
+.in -.5i
+.sp
+If a text content contains any 8bit characters (characters with the
+high bit set) and the character set is not specified as above, then
+\fImhbuild\fR will assume the character set is of the type given by the
+environment variable MM_CHARSET.  If this environment variable is not
+set, then the character set will be labeled as \*(lqx-unknown\*(rq.
+
+If a text content contains only 7bit characters and the character set
+is not specified as above, then the character set will be labeled as
+\*(lqus-ascii\*(rq
+
+Putting this all together,
+.ne 15
+here is an example of a more complicated message draft.  The
+following draft will expand into a multipart/mixed message
+containing five parts:
+.sp
+.nf
+.in +.5i
+To: nobody@nowhere.org
+cc:
+Subject: Look and listen to me!
+--------
+The first part will be text/plain
+#<text/enriched
+The second part will be text/enriched
+#
+This third part will be text/plain
+#audio/basic [silly giggle]  \\
+    |raw2audio -F < /usr/lib/sounds/giggle.au
+#image/gif   [photo of foobar] \\
+                    /home/foobar/lib/picture.gif
+.in -.5i
+.fi
+.sp
+.Uh "Integrity Check"
+If \fImhbuild\fR is given the `-check' switch, then it will also associate
+an integrity check with each \*(lqleaf\*(rq content.  This will add a
+Content-MD5 header field to the content, along with the md5 sum of the
+unencoded contents.  This may be used by the receiver of the message to
+verify that the contents of the message were not changed in transport.
+
+.Uh "Transfer Encodings"
+After \fImhbuild\fR constructs the new MIME message by parsing directives,
+including files, etc., it scans the contents of the message to determine
+which transfer encoding to use.  It will check for 8bit data, long lines,
+spaces at the end of lines, and clashes with multipart boundaries.  It will
+then choose a transfer encoding appropriate for each content type.
+
+If an integrity check is being associated with each content by using
+the `\-check' switch, then \fImhbuild\fR will encode each content with
+a transfer encoding, even it the content contains only 7bit data.  This
+is to increase the likelihood that the content is not changed while in
+transport.
+
+The switch `\-ebcdicsafe' will cause \fImhbuild\fR to slightly change
+the way in which it performs the \*(lqquoted-printable\*(rq transfer
+encoding.  Along with encoding 8bit characters, it will now also encode
+certain common punctuation characters as well.  This slightly reduces the
+readability of the message, but allows the message to pass more reliably
+through mail gateways which involve the EBCDIC character encoding.
+
+.Uh "Invoking mhbuild"
+Typically, \fImhbuild\fR is invoked by the \fIwhatnow\fR program.  This
+command will expect the body of the draft to be formatted as an
+\fImhbuild\fR composition file.  Once you have composed this input file
+using a command such as \fIcomp\fR, \fIrepl\fR, or \fIforw\fR, you invoke
+\fImhbuild\fR at the \*(lqWhat now\*(rq prompt with
+.sp
+.in +.5i
+What now? mime
+.in -.5i
+.sp
+prior to sending the draft.  This will cause \fIwhatnow\fR to execute
+\fImhbuild\fR to translate the composition file into MIME format.
+
+It is also possible to have the \fIwhatnow\fR program invoke \fImhbuild\fR 
+automatically when a message is sent.  To do this, you must add the line
+.sp
+.in +.5i
+automimeproc: 1
+.in -.5i
+.sp
+to your \&.mh\(ruprofile file.
+
+Finally, you should consider adding this line to your profile:
+.sp
+.in +.5i
+lproc: show
+.in -.5i
+.sp
+This way, if you decide to \fBlist\fR after invoking \fImime\fR,
+the command
+.sp
+.in +.5i
+What now? list
+.in -.5i
+.sp
+will work as you expect.
+
+.Uh "User Environment"
+Because the environment in which \fImhbuild\fR operates may vary for a
+user, \fImhbuild\fR will look for the environment variable \fB$MHBUILD\fR.
+If present, this specifies the name of an additional user profile which
+should be read.  Hence, when a user logs in on a particular machine,
+this environment variable should be set to refer to a file containing
+definitions useful for that machine.
+
+Finally, \fImhbuild\fR will attempt to consult a global \fImhbuild\fR
+user profile,
+.ne 6
+e.g.,
+.sp
+.in +.5i
+%etcdir%/mhn.defaults
+.in -.5i
+.sp
+if it exists.
+
+.Uh "Syntax of Composition Files"
+.ne 59
+The following is the formal syntax of a \fImhbuild\fR
+\*(lqcomposition file\*(rq.
+.sp
+.nf
+.in +.5i
+   body         ::=     1*(content | EOL)
+
+   content      ::=     directive | plaintext
+
+   directive    ::=     "#" type "/" subtype
+                            0*(";" attribute "=" value)
+                            [ "(" comment ")" ]
+                            [ "<" id ">" ]
+                            [ "[" description "]" ]
+                            [ filename ]
+                            EOL
+
+                      | "#@" type "/" subtype
+                            0*(";" attribute "=" value)
+                            [ "(" comment ")" ]
+                            [ "<" id ">" ]
+                            [ "[" description "]" ]
+                            external-parameters
+                            EOL
+
+                      | "#forw"
+                            [ "<" id ">" ]
+                            [ "[" description "]" ]
+                            [ "+"folder ] [ 0*msg ]
+                            EOL
+
+                      | "#begin"
+                              [ "<" id ">" ]
+                              [ "[" description "]" ]
+                              [   "alternative"
+                                | "parallel"
+                                | something-else    ]
+                              EOL
+                            1*body
+                        "#end" EOL
+
+   plaintext    ::=     [ "Content-Description:"
+                              description EOL EOL ]
+                            1*line
+                        [ "#" EOL ]
+
+                      | "#<" type "/" subtype
+                            0*(";" attribute "=" value)
+                            [ "(" comment ")" ]
+                            [ "[" description "]" ]
+                            EOL
+                            1*line
+                        [ "#" EOL ]
+
+   line         ::=     "##" text EOL
+                        -- interpreted as "#"text EOL
+                      | text EOL
+.in -.5i
+.fi
+.sp
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+^$MHBUILD~^Additional profile entries
+^%etcdir%/mhn.defaults~^System default MIME profile entries
+.Pr
+^Path:~^To determine the user's nmh directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Ps
+^mhbuild-compose-<type>*~^Template for composing contents
+.Sa
+mhlist(1), mhshow(1), mhstore(1)
+.br
+RFC\-934:
+.br
+   \fIProposed Standard for Message Encapsulation\fR,
+.br
+RFC\-2045:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part One:
+.br
+   Format of Internet Message Bodies\fR,
+.br
+RFC\-2046:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Two:
+.br
+   Media Types\fR,
+.br
+RFC\-2047:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Three:
+.br
+   Message Header Extensions for Non-ASCII Text\fR,
+.br
+RFC\-2048:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Four:
+.br
+   Registration Procedures\fR,
+.br
+RFC\-2049:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Five:
+.br
+   Conformance Criteria and Examples\fR.
+.De
+`\-headers'
+.Ds
+`\-realsize'
+.Ds
+`\-norfc934mode'
+.Ds
+`\-nocheck'
+.Ds
+`\-noebcdicsafe'
+.Ds
+`\-noverbose'
+.Co
+If a folder is given, it will become the current folder.  The last
+message selected will become the current message.
+.En

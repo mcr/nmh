@@ -1,0 +1,84 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH RCVTTY %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+rcvtty  \- report new mail
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+%libdir%/rcvtty
+\%[command]
+.br
+\%[\-form\ formatfile]
+\%[\-format\ string]
+\%[\-width\ columns]
+.br
+\%[\-bell] \%[\-nobell]
+\%[\-newline]
+\%[\-nonewline]
+\%[\-biff]
+.br
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+The \fIrcvtty\fR can be used to report new mail.  It is used primarily
+in conjunction with mail filtering agents such as \fIslocal\fP or
+\fIprocmail\fP.
+
+The \fIrcvtty\fR program executes the named command with the message as
+its standard input, and writes the resulting output on your terminal.
+
+Alternately, if no command is specified (or is bogus), then \fIrcvtty\fR
+will instead write a one\-line scan listing.  The default output format
+of this scan listing may be overridden by using either the
+`\-form\ formatfile' or `\-format\ string' option, similar to the
+equivalent options for \fIscan\fP and \fIinc\fP.
+See \fImh\-format\fP(5) for details.
+
+A newline is output before the message output, and the terminal bell is
+rung after the output.  The `\-nonewline' and `\-nobell' options will
+inhibit these functions.
+
+The switch `\-width\ columns' may be given to specify the width of
+the scan line.  The default is to use the width of the terminal.
+
+In addition to the standard format escapes described in
+\fImh\-format\fR(5), \fIrcvtty\fR also recognizes the following additional
+\fIcomponent\fR escapes:
+.sp 1
+.ne 5
+.nf
+.ta \w'Dtimenow  'u +\w'Returns  'u
+\fIEscape\fR	\fIReturns\fR	\fIDescription\fR
+body	string	the (compressed) first part of the body
+dtimenow	date	the current date
+folder	string	the name of the current folder
+.re
+.fi
+
+By default, \fIrcvtty\fP will send its output to every terminal on the
+local machine that is owned by current user, and that has given write
+permission as granted by the command \fImesg\fP\0(1).  If the option
+`\-biff' is given, then \fIrcvtty\fP will obey the notification status
+set by the command \fIbiff\fP\0(1) instead.
+.Fi
+^%etcdir%/mts.conf~^nmh mts configuration file
+^$HOME/\&.maildelivery~^The file controlling local delivery
+^%etcdir%/maildelivery~^Rather than the standard file
+.De
+`\-width' defaults to the width of the terminal
+.Ds
+`\-newline'
+.Ds
+`\-bell'
+.Sa
+rcvdist(1), rcvpack(1), rcvstore(1), mh\-format(5), slocal(1)
+.Bu
+Only two return codes are meaningful, others should be.
+.En

@@ -1,0 +1,58 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH CONFLICT %manext8% MH.6.8 [%nmhversion%]
+.SH NAME
+conflict \- search for alias/password conflicts
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+%libdir%/conflict
+\%[\-search\ directory]
+.br
+\%[\-mail\ name]
+\%[aliasfiles...]
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+\fIConflict\fR is a program that checks to see if the interface between
+\fInmh\fR and transport system is in good shape
+
+\fIConflict\fR also checks for maildrops in %mailspool% which do not
+belong to a valid user.  It assumes that no user name will start with
+`.', and thus ignores files in %mailspool% which begin with `.'.  It also
+checks for entries in the \fIgroup\fR\0(5) file which do not belong
+to a valid user, and for users who do not have a valid group number.
+In addition duplicate users and groups are noted.
+
+If the `\-mail\ name' switch is used, then the results will be sent
+to the specified \fIname\fR.  Otherwise, the results are sent to the
+standard output.
+
+The `\-search\ directory' switch can be used to search directories
+other than %mailspool% and to report anomalies in those directories.
+The `\-search\ directory' switch can appear more than one time in an
+invocation to \fIconflict\fR.
+
+\fIConflict\fR should be run under  \fIcron\fR\0(8), or whenever system
+accounting takes place.
+.Fi
+^%etcdir%/mts.conf~^nmh mts configuration file
+^/etc/passwd~^List of users
+^/etc/group~^List of groups
+^%bindir%/mhmail~^Program to send mail
+^%mailspool%/~^Directory of mail drop
+.Pr
+None
+.Sa
+mh\-alias(5)
+.De
+`aliasfiles' defaults to %etcdir%/MailAliases
+.Co
+None
+.En

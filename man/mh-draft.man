@@ -1,0 +1,192 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH MH-DRAFT %manext5% MH.6.8 [%nmhversion%]
+.SH NAME
+mh-draft \- draft folder facility for nmh message system
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+any \fInmh\fR command
+.in -.5i
+.SH DESCRIPTION
+
+There are a number of interesting advanced facilities for the composition of
+outgoing mail.
+
+.Uh "The Draft Folder"
+The \fIcomp\fR, \fIdist\fR, \fIforw\fR, and \fIrepl\fR commands have
+two additional switches, `\-draftfolder\ +folder' and `\-draftmessage\ msg'
+which allow you to manipulate the various draft messages you are composing.
+
+If `\-draftfolder\ +folder' is used, these commands are
+directed to construct a draft message in the indicated folder.
+(The \*(lqDraft\-Folder:\*(rq profile entry may be used to declare a
+default draft folder for use with \fIcomp\fR, \fIdist\fR, \fIforw\fR,
+and \fIrepl\fR).
+
+If the swith `\-draftmessage\ msg' is given, the specified draft is used
+to compose the message.  If `\-draftmessage\ msg' is not used, then the
+draft defaults to `new' (create a new draft) unless the user invokes
+\fIcomp\fR with `\-use', in which case the default is `cur'.
+
+Hence, the user may have several message compositions in progress
+simultaneously.  Now, all of the \fInmh\fR tools are available on each of
+the user's message drafts (e.g., \fIshow\fR, \fIscan\fR, \fIpick\fR, and
+so on).  If the folder does not exist, the user is asked if it should be
+created (just like with \fIrefile\fR).  Also, the last draft message
+the user was composing is known as `cur' in the draft folder.
+
+Furthermore, the \fIsend\fR command has these switches as well.  Hence,
+from the shell, the user can send off whatever drafts desired using the
+standard \fInmh\fR `msgs' convention with `\-draftmessage msgs'.  If no
+`msgs' are given, it defaults to `cur'.
+
+In addition, all five programs have a `\-nodraftfolder' switch, which
+undoes the last occurrence of `\-draftfolder\ folder' (useful if the
+latter occurs in the user's \fInmh\fR profile).
+
+If the user does not give the `\-draftfolder\ +folder' switch, then
+all these commands act ``normally''.  Note that the `\-draft' switch
+to \fIsend\fR and \fIshow\fR still refers to the file called `draft'
+in the user's \fInmh\fR directory.  In the interests of economy of
+expression, when using \fIcomp\fR or \fIsend\fR, the user needn't
+prefix the draft `msg' or `msgs' with `\-draftmessage'.  Both of these
+commands accept a `file' or `files' argument, and they will, if given
+`\-draftfolder\ +folder' treat these arguments as `msg' or `msgs'.
+(This may appear to be inconsistent, at first, but it saves a lot of
+typing) Hence,
+
+.ti +.5i
+send -draftf +drafts first
+
+is the same as
+
+.ti +.5i
+send -draftf +drafts -draftm first
+
+To make all this a bit more clear, here are some examples.  Let's assume
+that the following entries are in the \fInmh\fR profile:
+
+.in +.5i
+.nf
+Draft\-Folder: +drafts
+sendf: -draftfolder +drafts
+.fi
+.in -.5i
+
+Furthermore, let's assume that the program \fIsendf\fR is a (symbolic)
+link in the user's \fB$HOME/bin/\fR directory to \fIsend\fR.  Then, any
+of the commands
+
+.in +.5i
+.nf
+comp
+dist
+forw
+repl
+.fi
+.in -.5i
+
+constructs the message draft in the `draft' folder using the `new'
+message number.  Furthermore, they each define `cur' in this folder to
+be that message draft.  If the user were to use the \fIquit\fR option
+at `What now?' level, then later on, if no other draft composition was
+done, the draft could be sent with simply
+
+.ti +.5i
+sendf
+
+Or, if more editing was required, the draft could be edited with
+
+.ti +.5i
+comp -use
+
+Instead, if other drafts had been composed in the meantime, so that this
+message draft was no longer known as `cur' in the `draft' folder, then
+the user could \fIscan\fR the folder to see which message draft in the
+folder should be used for editing or sending.  Clever users could even
+employ a back-quoted \fIpick\fR to do the work:
+
+.ti +.5i
+comp -use `pick +drafts -to nmh-workers`
+
+or
+
+.ti +.5i
+sendf `pick +drafts -to nmh-workers`
+
+Note that in the \fIcomp\fR example, the output from \fIpick\fR must
+resolve to a single message draft (it makes no sense to talk about
+composing two or more drafts with one invocation of \fIcomp\fR).
+In contrast, in the \fIsend\fR example, as many message drafts as desired
+can appear, since \fIsend\fR doesn't mind sending more than one draft
+at a time.
+
+Note that the argument `\-draftfolder\ +folder' is not included in the
+profile entry for \fIsend\fR, since when \fIcomp\fR, et. al., invoke
+\fIsend\fR directly, they supply \fIsend\fR with the UNIX pathname
+of the message draft, and \fBnot\fR a `draftmessage\ msg' argument.
+As far as \fIsend\fR is concerned, a \fIdraft folder\fR is not being used.
+
+It is important to realize that \fInmh\fR treats the draft folder
+like a standard \fInmh\fR folder in nearly all respects.  There are
+two exceptions:
+
+First, under no circumstancs will the `\-draftfolder\ folder' switch cause the
+named folder to become the current folder.
+
+Obviously, if the folder appeared in the context of a standard `+folder'
+argument to an \fInmh\fR program, as in
+
+.ti +.5i
+scan +drafts
+
+it might become the current folder, depending on the context changes of
+the \fInmh\fR program in question.
+
+Second, although conceptually \fIsend\fR deletes the `msgs' named in
+the draft folder, it does not call `delete-prog' to perform the deletion.
+
+.Uh "What Happens if the Draft Exists"
+When the \fIcomp\fR, \fIdist\fR, \fIforw\fR, and \fIrepl\fR commands
+are invoked and the draft you indicated already exists, these programs
+will prompt the user for a reponse directing the program's action.
+The prompt is
+
+.ti +.5i
+Draft ``/home/foobar/nmhbox/draft'' exists (xx bytes).
+.ti +.5i
+Disposition?
+
+The appropriate responses and their meanings are:
+
+.nf
+^replace - deletes the draft and starts afresh
+^list - lists the draft
+^refile - files the draft into a folder and starts afresh
+^quit - leaves the draft intact and exits
+.fi
+
+In addition, if you specified `\-draftfolder\ folder' to the command,
+then one other response will be accepted:
+
+.nf
+^new - finds a new draft,
+.fi
+
+just as if `\-draftmessage\ new' had been given.
+Finally, the \fIcomp\fR command will accept one more response:
+
+.nf
+^use - re-uses the draft
+.fi
+
+just as if `\-use' had been given.
+.Co
+None
+.En

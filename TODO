@@ -1,0 +1,205 @@
+[TODO]
+
+* Write different function to read configuration files, instead
+  of using m_getfld.c
+* convert calls from sprintf/vsprintf to snprintf/vsnprintf
+* convert calls from getcpy to strdup
+* modularize access to context/profile list.
+* add command printm to print messages
+* finish changing to macros for msgstats and msgflags
+* Add support for Mail-Followup-To and Mail-Reply-To
+* Add support for profile entry "Mailing-Lists"
+* let mhn and mhl accept files on standard in, and output to
+  standard out, when filtering files.
+* Add switch -more to `show' to call moreproc.
+* Add new command "show" at WhatNow? prompt.
+
+[POSSIBILITIES]
+
+MAN PAGES
+---------
+* Update mh-tailor man page.
+* generate mh-chart man page from other man pages
+* update default mode in man pages with sed
+
+SEQUENCES
+---------
+* Change so you can have more than 26 sequences.  Unfortunately,
+  given the way that the bit flags for sequences work, this is
+  not easy.
+* Maybe add option gracefully handle empty sequences (-force).
+
+ENVIRONMENT/PROFILE
+-------------------
+* Maybe add profile entry "Pager" to change the default pager?
+* Should nmh check for EDITOR or PAGER environment variable?
+
+POP
+---
+* Clean up uip/spop.c (I dont' think it's needed any longer).
+* Need to decide if want to support APOP, RPOP, MPOP.  APOP
+  and RPOP still work, but need autoconf support added.  Does
+  anyone still use this stuff?
+
+OPTIONS
+-------
+* change switches to accept two dashes (--help)
+* can we move option checking to its own function?  Currently each
+  command is doing that itself.
+* make the option parsing code dynamic, so that there is no limit
+  to the number of command line arguments (this has been done for
+  most all the commands).
+* Add switch descriptions to -help output.
+
+COMP
+----
+*) add option so that prompter can be used to input addresses,
+   before the real editor is called to edit message.
+
+FLIST
+-----
+* add -format option so you can specify the look of the output
+  of flist.
+* add Flist-Exclude profile component
+
+FOLDER
+------
+* add Folder-Order profile component (same as flist)
+* add Folder-Exclude profile component
+
+FORMATS
+-------
+* add escape %(sequence{foobar}) to detect arbitrary sequences.
+
+FORW
+----
+* Decode RFC-2047 headers in messages included when replying
+  or forwarding.
+* Merge code for forw and repl.
+
+INC
+---
+* Add ability to do filtering (call filterproc) when incorporating mail
+* Change inc to use libary function folder_addmsg().
+
+MHBUILD
+-------
+* add ability to specify Content-Transfer-Encoding in composition
+  drafts.
+* add support for Content-Disposition header (rfc1806).
+* remove the code for caching from mhbuild.
+
+MHL
+---
+* remove naming hack in mhlsbr.c for adios and done.
+* add ability to filter parts of the message by calling
+  an external filtering program.
+* fix internal pager for mhl?
+
+MHMAIL
+------
+* add -attach option (send could use this).  This should
+  be done by hooking in mhbuildsbr.c
+
+MHN/MHSHOW/MHLIST/MHSTORE
+-------------------------
+* add way so user can tell mhn to use internal method for
+  handling type, such as multipart/mixed.
+* add way so user can tell mhn to use a certain `proc' such
+  as moreproc, for certain content types.
+* add support for Content-Disposition header (rfc1806).
+* merge the two places in which mhshowsbr.c reads display
+  strings.
+* split mhn into mhshow, mhlist, mhstore, and mhcache.
+* when storing to a folder, should we save the folder context
+  first, so that storage string of "+" stores to the new
+  folder?
+
+MSH
+---
+* change conditional includes in msh.c to use termios.h
+* Add -version to mshcmd.c for each command.
+* Change msh to use mbox style files, instead of mmdf.  Add options -mbox,
+  -mmdf to choose.
+*) There are couple calls to copyip() which should be changed to
+   getarguments().  One problem is freeing the string getcopy'ed by
+   getarguments().
+
+PICK
+----
+* split regex code out into library.
+* replace regex code with Henry Spencer's regex library.
+
+POST
+----
+* make -msgid the default
+* factor msgid code into own function
+
+PROMPTER
+--------
+* maybe add ability to use prompter just for headers, and
+  then use primary editor for editing message.
+
+RCVSTORE
+--------
+* Change rcvstore so that it can store into multiple folders.
+* Add folder locking.
+
+REPL
+----
+* Decode RFC-2047 headers in messages included when replying
+  or forwarding.
+* Merge code for forw and repl.
+
+SEND/SENDSBR
+------------
+* Maybe add `-server' and `-client' to documentation.
+* Add ability for returned messages from "send -push" to be
+  in MIME format (this is actually a change in mhmail).
+* make -msgid the default.
+* Add RFC-2047 encoding support for out-going messages.  This
+  will probably require hooking mhparse into sendsbr.c, and doing
+  a complete MIME parsing.  Then all handling of Content encoding
+  can be on the backend.
+
+SLOCAL
+-----
+* Change slocal to use .slocalrc file, instead of .maildelivery?
+* Add ability to use regular expressions in header matching.
+* Add support for Berkeley db.
+* Clean up output from -debug option.
+* Add -debuglevel to control the amount of debug info that is output.
+* Add -debuglog to specify file to save debugging output.
+* Add -logfile (or -audit) to specify where to record info about successful
+  deliveries.
+
+VMH
+---
+* Fix vmh (or remove it).  vmh seems to be using internal
+  knowledge of curses.
+
+MTA INTERFACE
+-------------
+* Fix locking code.  Add lockfile command.
+* Think about support for DSN (Delivery Status Notification)
+* Test nmh with qmail.  Add qmail's maildir format.
+* Relax restrictions on what can be done with headers in send/post.
+* figure out why smail.c and client.c need their own copies of
+  getcpy, copyip, etc... (funny linking problem)
+
+GENERAL
+-------
+* see if the various versions of copyfile and copyf can be
+  merged.
+* change time functions to use POSIX functions by default.
+* Add MH-6.8.4 features into nmh (mostly done).
+* Maybe should move etcpath to sbr and add to libmh.
+* collect winsize, struct termio, etc... together into a ttyinfo
+  structure.
+* change adios to take exit code argument.
+* use wait3 if not waitpid (maybe)
+* some of the calls to setjmp/longjmp should be replaced with
+  sigsetjmp/siglongjmp.
+* When do we need to add -lresolv for SunOS 4.1.x?
+* replace use of getcpy with strdup.
+* replace use of ftell with fgetpos.

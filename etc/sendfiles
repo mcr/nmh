@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# $Id$
+#
+# Send multiples files and/or directories as a tar/compressed
+# image, in a MIME message.
+#
+
+DELAY=0
+FROM=
+
+case "$1" in
+    -*)	DELAY="`echo $1 | sed -e 's%-%%'`"
+	shift
+	;;
+esac
+
+if [ ! -z "$PERSON" ]; then
+    FROM="-from $PERSON"
+fi
+
+if [ $# -lt 3 ]; then
+    echo 'usage: sendfiles: "mailpath" "subject-string" directory-or-file ...' 1>&2
+    exit 1;
+fi
+
+mailpath="$1"
+echo "mailpath = $mailpath" 1>&2
+shift
+
+subject="$1"
+echo "subject-string = $subject" 1>&2
+shift
+
+echo "files = $*" 1>&2
+
+tar cvf - "$@" | compress | \
+    viamail -to "$mailpath" -subject "$subject" \
+	-parameters "type=tar; x-conversions=compress" \
+	-comment "extract with uncompress | tar xvpf -" \
+	-delay "$DELAY" \
+	-verbose $FROM

@@ -1,0 +1,5 @@
+%4(msg)%<(cur)+%| %>%<(unseen)U%| %>%<{replied}-%?{encrypted}E%| %>\
+%02(mon{date})/%02(mday{date})%<{date} %|*%>\
+%<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>\
+%<(zero)%17(decode(friendly{from}))%>  \
+%(decode{subject})%<{body}<<%{body}>>%>

@@ -1,0 +1,1504 @@
+
+1999-02-06  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-1.0.
+
+	* Merged mbx_open and mbx_Xopen in dropsbr.c.  Fixed
+	  mbx_open so that the mode of zero length maildrops
+	  would not be changed.
+
+	* Replaced the substitute version of snprintf() with the
+	  one from the Apache web server.
+
+	* Changed to default mode for creating new messages to 0600
+	  (this should have been done a long time ago).
+
+	* Changed "flist" to handle searching for multiple sequences
+	  for each folder.  Also flist will now correctly split
+	  Unseen-Sequence if it consists of multiple sequences.
+
+	* Added new switches `-unlink' and `-nounlink' to "refile".
+
+	* Added new switches `-unlink' and `-nounlink' to "rmm".
+
+	* More cleanups of slocal output.  Changed adorn() to
+	  send to stdout, instead of stderr (to match rest of
+	  verbose printing).
+
+	* Merged mbx_create() into mbx_open, so that creating and
+	  opening a nonexistent maildrop is done atomically.  This
+	  removes a bad race condition.
+
+	* Fixed bug that caused slocal to be unable to save to MMDF
+	  style drop file.
+
+	* Added new wrapper function usr_folder() to slocal.c to
+	  handle adding message to folder (currently, it still uses
+	  usr_pipe() to call rcvstore).
+
+	* seq_list() checks for empty folder before scanning for
+	  sequence information.
+
+	* num_digits() in flist.c and folder.c now returns correct
+	  value for 0.  Also added sanity check.
+
+	* folder_delmsgs() now correctly decrements internal message
+	  count.
+
+	* Don't attempt to read sequence information if folder
+	  is empty.
+
+	* Split seq_read into seq_public and seq_private.
+
+	* Small change to sigmsg.awk, since newer versions of gawk
+	  interpret 034 as octal.
+
+	* In flist, don't scan for sequence information in empty folder.
+
+	* Updated mhn.defaults.sh to output profile entries for mhshow,
+	  mhstore, and mhbuild.
+
+	* Changed configuration parameter "mhn-access-ftp" to
+	  "nmh-access-ftp".  Updated man pages
+
+	* Moved the code in InitMultipart to reverse the order of the
+	  parts in a multipart, into its own function "reverse_parts()".
+
+	* Changed code in mhbuildsbr.c to store unencoded content
+	  in the c_cefile structure when building.
+
+	* Changed code in mhoutsbr.c to look for unencoded content
+	  in the c_cefile structure when outputing message.
+
+	* Changed configuration parameter "mhn-cache" and
+	  "mhn-private-cache", to "nmh-cache" and "nmh-private-cache",
+	  since it is used in mhstore, mhlist, and mhshow.  Updated man pages
+
+	* Change configuration parameter "mhn-storage" to
+	  "nmh-storage", since it is now used in mhstore, mhlist,
+	  and mhshow.  Updated man pages
+
+	* Add autoconf support for KPOP (kerberized pop).
+
+	* Add autoconf support for Hesiod.
+
+	* Split routines to output a message given a Content structure
+	  (output_message, output_content, write7Bit, etc..) to a new
+	  file "mhoutsbr.c".
+
+	* Split output_content(), into output_content() and build_headers().
+
+	* Changed copy_some_headers() in mhstoresbr.c, to use the linked
+	  list of header fields, rather than reopening the message.
+
+	* Added free_header() to mhfree.c to free structures containing
+	  header field information.
+
+	* Changed get_content() to use the linked list of header fields
+	  when parsing the various MIME headers (Content-XXX).
+
+	* Changed get_content() to store linked list of header field
+	  values when parsing a content.
+
+	* Changed mhbuild, mhn, mhlist, mhshow, mhstore, to use the
+	  routines in mhcachesbr.c to handle the content cache.
+
+	* Split various funtions (find_cache, find_cache_aux, find_cache_aux2,
+	  cache_content) into new file mhcachesbr.c.
+
+	* More calls to sprintf/strcpy (primarily in mhparse.c
+	  and mhbuildsbr.c) converted to snprintf/strncpy.
+
+	* When a message is displayed with `mhshow', it is now
+	  removed from the "unseen" sequence.
+
+	* Change the default "showmimeproc" to "mhshow".
+
+	* Split "mhn -show" off into separate command "mhshow".
+
+	* Split "mhn -store" off into separate command "mhstore".
+
+	* Split "mhn -list" off into separate command "mhlist".
+
+	* Add sanity checks to context_find(), context_replace(),
+	  and context_del(), to abort if context file hasn't been
+	  read.
+
+	* Add calls to context_read(), to the beginning of all nmh
+	  commands (instead of being called indirectly by context_find).
+
+	* Changes the "substitute" version of vsnprintf/snprintf for
+	  operating systems without native versions, to just call the
+	  native vsprintf(), and ignore the buffer length.   This is
+	  faster, but less secure than the previous version that used
+	  temporary files.  This should only be a problem for systems
+	  which do not have a native snprintf(), and require `inc' to
+	  be setuid/setgid.
+
+	* Lots more calls to sprintf/strcpy converted to snprintf/strncpy.
+
+	* Changes client() routine to take additional parameter, which is
+	  the buffer length of the parameter "response".  Then added
+	  buffer length checks for this parameter.
+
+	* Changed getws() to get_fields(), since that is apparently the
+	  name of a wide character version of gets() on some archetitures.
+
+	* Lots of sprintf/strcpy calls converted to snprintf/strncpy.
+
+	* Change the code in most of the commands that take multiple
+	  message names/sequences/ranges on the command, such that
+	  the msgs array is expanded dynamically.  This removes most
+	  of the limits on the length of command lines.
+
+	* Add additional parameter to copyip(), to specify the
+	  maximum number of strings that can be copied (security
+	  fix).
+
+	* Create new function getarguments(), to massage the argument
+	  vector before parsing it (add any arguments from your
+	  profile to the beginning of the argument vector).  This
+	  also removed the general limit on the number of command line
+	  arguments.
+
+1998-07-04  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.27.
+
+	* Added a new command "delete", that is available during
+	  a "whatnow" session.  It is equivalent to "quit -delete".
+
+	* Added another parameter to editfile (in whatnowsbr.c),
+	  that controls whether editfile should remember the last
+	  program that was exec'ed.  This way the whatnow command
+	  "mime", will not be re-executed if "edit" is later given
+	  with no arguments.
+
+	* Changed whatnowsbr.c, so that whatnow doesn't abort if
+	  mhbuild returns an error.
+
+	* Added parameter to sendsbr(), so you may specify whether to
+	  rename the draft file.
+
+	* Pass delay time to splitmsg() as a parameter, rather than
+	  use a global variable.
+
+	* Moved code to rename draft file after sending message from
+	  splitmsg and sendaux, to sendsbr.
+
+	* Removed all the code in viamail to split messages and then
+	  mail them.  Replaced this with the standard sendsbr.c routines.
+
+	* Changed sendsbr(), so that when splitting messages into
+	  messages of type "message/partial", the header fields that
+	  are copied are more compliant with RFC-2046.
+
+	* Fixed mhbuild to track temporary files better.  They are
+	  now correctly removed when mhbuild aborts.
+
+	* Created a new man page for "sendfiles".  The information
+	  about "mhn -viamail" in the "mhn" man page was moved to
+	  this new page.
+
+	* Changed the name of the "viamail" shell script to
+	  "sendfiles".  Modified "sendfiles" to use the new
+	  viamail program.
+
+	* Moved the functionality for "mhn -viamail" out of mhn,
+	  and into a separate executable called "viamail".
+
+	* When storing MIME contents to a folder using mhn -store,
+	  they are now accumulated in a temporary file, and then added
+	  to the folder using folder_addmsg().
+
+	* Moved code to save content to a folder from store_content
+	  to new function output_content_folder.
+
+	* Moved code to save content to file from store_content to
+	  new function output_content_file.
+
+	* Moved code to parse storage format string from store_content
+	  to new function parse_format_string.
+
+	* Fix copy_some_headers() in mhstoresbr.c, so that the
+	  correct header fields in the first enclosing message/partial
+	  will be copied (according to RFC2046), when using mhn -store
+	  to reassemble messages of type message/partial.
+
+	* Fixed bug to openFTP() in mhparse.c, that caused the
+	  tmp file to not be removed, when transferring a
+	  message/external file from ftp.
+
+	* Moved the code in mhparse.c to process -auto switch (scan
+	  contents for the attribute "name"), to a new function
+	  "get_storeproc" in mhstoresbr.c.
+
+	* Moved routines to free data structures related to MIME
+	  content from mhparse.c and mhbuildsbr.c, to new file
+	  mhfree.c.
+
+	* Moved code to show/display MIME content into new
+	  file mhshowsbr.c.
+
+	* Moved code to store MIME content from into
+	  new file mhstoresbr.c
+
+	* Moved code to parse MIME content into new
+	  file mhparse.c.
+
+	* Moved code to list information about MIME content
+	  into new file mhlistsbr.c.
+
+	* Move part_ok(), type_ok(), content_error(), flush_errors(),
+	  and set_endian() to new file mhmisc.c.
+
+	* Start to isolate the code to show, list, and store MIME
+	  messages.  One side effect is that only one flag (-show,
+	  -list, or -store) can be used at a time now.
+
+	* mhn -store -auto wasn't storing file in correct directory.
+
+	* Removed a few dead variables from sbr/ruserpass.c
+
+	* move code for creating tmp files, and renaming the
+	  the composition draft in mhbuild, from build_mime()
+	  to main().
+
+	* remove left-over code in mhbuild.c, mhbuildsbr.c, for
+	  the -[no]auto switch (which isn't used in mhbuild).
+
+	* split mhn.c into mhn.c and mhnsbr.c (name later changed
+	  to mhparse.c).
+
+	* split mhbuild.c into mhbuild.c and mhbuildsbr.c.
+
+1998-05-25  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.26.
+
+	* Added (unlisted) options [no]dashstuffing to send, post,
+	  and whatnow to determine whether to do RFC934 quoting
+	  (dashstuffing) for encapsulated BCC messages.  The default
+	  is still the same (dashstuffing).
+
+	* Changed the undocumented feature "nodashmunging" in forw
+	  and mhl, into the documented feature "nodashstuffing".  The
+	  default for forw, is still "dashstuffing" for backward
+	  compatibility, although I don't believe that bursting
+	  RFC934 digests is very common anymore.
+
+	* Added an option to define REALLYDUMB in the default config.h.
+	  But it is not on by default.
+
+	* moved creation of config file mts.conf from zotnet/mts
+	  to etc.  This simplified the Makefile in zotnet/mts.
+
+	* simplified directory support/general to etc.
+
+	* removed unneeded directory support/bboards.
+
+	* split getusername() into getusername() and getuserinfo().
+
+	* Changed getusr() routine to getusername().
+
+	* Slight cleanup in folder_pack.c on code that records the new
+	  number of the "cur" message when packing.
+
+1998-05-08  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.25.
+
+	* Change install process, so that hard linking the correct mts
+	  library to libmts.a, is not necessary.  The final link process
+	  uses the original name of the library.
+
+	* Fixed bug in flist.c and folder.c, so that symbolic links which
+	  point to directories, will not decrement the number of directory
+	  links remaining.
+
+	* Split the function list_content (in mhn.c and mhbuild.c) into
+	  list_content and list_debug.
+
+	* Don't pack (folder -pack) an empty folder.
+
+	* Exit gracefully in flist.c, if no sequence is specified,
+	  and no "Unseen-Sequence" is given in nmh profile.
+
+1998-02-27  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.24.
+
+	* Small clarification to the man page for `ali'.
+
+	* Fix bug in inc.c so that if both flags `-file' and `-truncate'
+	  are given, that order doesn't matter.
+
+	* Fix bug in seq_list.c when realloc'ing for
+	  large sequence line.
+
+1998-02-23  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.23.
+
+	* Add new section on "Transfer Encodings" to man page for mhbuild.
+
+	* In mhbuild.c, split compose_content into compose_content
+	  (parse and execute composition string), and scan_content (scan content,
+	  decided transfer encoding, check for clash with boundary string).
+	  I did a good amount of rearranging of this code.
+
+	* Moved definitions for data structures for parsing MIME
+	  messages from mhn.c and mhbuild.c to a new include
+	  file h/mhnsbr.h.
+
+	* Small amount of rearranging in sendsbr.c
+
+	* Small changes to MAIL.FILTERING file.
+
+	* Add the file MAIL.FILTERING to nmh distribution.
+
+	* Add line to packf so that if message begins with
+	  "X-Envelope-From:" field, it is converted to "From ".
+
+	* Fix packf to add "From " line to beginning of message,
+	  even if Return-Path doesn't exist.
+
+	* Add note to MACHINES file that on Linux, configure
+	  doesn't find the functions sigsetjmp/siglongjmp.
+
+	* Fix configuration for machines that don't have (or find)
+	  sigsetjmp/siglongjmp.
+
+1998-02-11  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.22.
+
+	* Add a configure check for sigsetjmp.  Add some conditional
+	  #define's in h/signals.h in case it's not found.
+
+	* Added additional notes about -auto switch in mhn man page.
+
+	* Added note about MM_CHARSET environment variable to
+	  mh-profile(5) man page.
+
+	* Fix signal problem in mhn.c (change setjmp/longjmp to
+	  sigsetjmp/siglongjmp).
+
+1998-02-09  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.22-pre1.
+
+	* Changed the first line in mhl.format from
+	  " -- using template mhl.format -- " to a blank line.
+
+	* Added note about automimeproc to mh-profile man page.
+
+	* Reorganize the main entry point for parsing a MIME message
+	  or file in mhn.  Add new function parse_file() as new main
+	  entry point for parsing MIME files.
+
+	* Add note to mhn man page, that "mhn -file -" will accept the
+	  source message on the standard input.
+
+	* Changed a sanity check in folder_realloc that was too strict.
+
+	* -norfc934mode is now the default for mhbuild,
+	  rather than -rfc934mode.
+
+	* Fix mhbuild, so that Content-Description and RFC-822 comments
+	  from #forw directive will be correctly included if there is
+	  only one message.
+
+	* Change mhn to correctly default parts of multipart/digest to
+	  message/rfc822 (leftover code from rfc934mode was removed).
+
+	* Restore HP specific code to zotnet/tws/lexstring.c.  Apparently
+	  it is still needed.
+
+1998-02-06  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.21.
+
+	* If the file given to mhbuild is "-", then accept the draft on
+	  standard input, and output the MIME message to standard output.
+
+	* Cleaned up code in mhbuild.c that decides what transfer
+	  encoding to use.
+
+	* Cleaned up code in mhbuild.c that decides what character set
+	  to use for text contents.
+
+	* Removed old hpux specific code from zotnet/tws/lexstring.c
+
+1998-02-02  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.21-pre2.
+
+	* Added the "decode" variable to mhl.format and mhl.header.
+
+	* Added new variable "decode" to mhlsbr.c to decode text in
+	  header fields as per RFC-2047.
+
+	* Make sure that when decoding RFC-2047 header fields, that any
+	  spaces at the ends of the encoded text are not ignored, but the
+	  spaces between encoded word are.
+
+	* Removed #ifdef's for MIME.  MIME support is always compiled in.
+
+	* scan/inc will now decode both Subject and From lines as
+	  RFC-2047 encoded header fields.
+
+	* Added new function write_charset_8bit() to sbr.  It returns
+	  the character set to use for 8bit text in composition draft.
+	  Changed mhbuild to use this function.
+
+	* Split mhn man page into man pages for mhn and mhbuild.
+
+	* mhn -show will only now only use default method for content
+	  of type plain, if it is NOT a part of a multipart/alternative.
+
+	* Split mhn -build into mhbuild.  Did some code cleanup.
+
+	* Added support for %(decode) to fmtdump.c.
+
+	* check_charset() now accepts US-ASCII as a subset of any
+	  ISO-8859-X character set.
+
+	* Changed the default "showproc" to mhl, instead of the
+	  pager more.
+
+	* When reading file into mhn composition file, only need read
+	  permissions, not write permissions.
+
+	* Added own version of strcasecmp to distribution, since
+	  nmh calls it frequently with NULL pointers (ughh).
+
+	* Replaced uleq.c with strcasecmp.  Removed uleq.c from
+	  distribution.
+
+1998-01-22  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.21-pre1.
+
+	* If a message is missing charset parameter to text/plain, show
+	  will assume US-ASCII, rather than just calling showmimeproc.
+
+	* Change show.c and mshcmds.c to use check_charset to see if text
+	  message contains valid character set.
+
+	* Added new scan format file "scan.nomime" to support/general
+	  that doesn't do any RFC-2047 decoding.
+
+	* Modified all the scan format files in support/general to do
+	  RFC-2047 decoding of Subject field.
+
+	* Did more work on sbr/fmt_rfc2047.c, so that it will correctly
+	  ignore whitespace between two valid encoded words, but not
+	  between an encoded word and normal text.
+
+	* Created new file sbr/check_charset.c.  Moved code from
+	  fmt_rfc2047.c to check for valid character set to this file.
+
+	* Added format escape %(decode) to decode contents of "str" register
+	  as a RFC-2047 header field.
+
+	* The command install-mh now recognizes the switches -version
+	  and -help.
+
+	* Added a new argument to print_help.c to decide whether to
+	  print profile entries (needed for install-mh to prevent weird
+	  loops).
+
+	* Changed folder_read.c and folder_realloc.c so that mp->lowoff
+	  is initialize to max (mp->lowmsg, 1) rather than always 1.
+
+	* Changed macros for sequence/attribute manipulation so that
+	  message status array doesn't need to always start at 1.
+
+	* Small cleanups in folder_realloc().
+
+1998-01-09  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.20.
+
+	* Added configure option --with-pager=PAGER.
+
+	* Added configure option --with-editor=EDITOR.
+
+	* Changed the default format file for mhl (mhl.format) to
+	  also ignore (not display) the header fields Content-Type,
+	  Content-Transfer-Encoding, and Content-ID
+
+	* Fixed core dump in addrsbr.c when using %(proper) format function
+	  and the To: line was missing.
+
+	* Added the file ZSH.COMPLETION to the distribution.
+
+1998-01-04  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.20-pre2.
+
+	* Added new switch -snoop to both `msgchk' and `inc', so you can
+	  watch the POP transaction.
+
+	* Changed "replgroupcomps" to check for Mail-Followup-To header
+	  first, and use it if available.
+
+	* Changed "replcomps" to check for Mail-Reply-To header
+	  first, and use it if available.
+
+1998-01-03  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.20-pre1.
+
+	* Changed seq_list.c to dynamically enlarge the buffer for
+	  collecting the message ranges in a long sequence line.
+	  This should remove the last hard limit on the size of a
+	  sequence line.
+
+	* Changed seq_read.c so that can read long sequence lines.
+	  It will use multiple calls to m_getfld() when m_getfld()
+	  returns the state FLDPLUS.
+
+	* Changed brkstring.c to dynamically add more space for pointers
+	  if necessary.  This is needed when splitting up large sequence
+	  lines.
+
+	* Did some small cleanups in seq_save.c.
+
+	* Added new switches `-[no]unseen' to rcvstore, to control
+	  whether new messages are added to Unseen-Sequence.
+
+	* Moved locking routines (zotnet/mts/lock.c) to sbr/lock_file.c
+
+	* Changed the internal UNSEEN flag to SELECT_UNSEEN which is
+	  more appropriate.  Changed the MHPATH flag to ALLOW_NEW.
+
+	* Changed "replcomps" to not include CC and TO lines so that
+	  that reply message is only directed at the author of the
+	  message to which you are replying.
+
+	* Added new switch `-group' to command repl, which causes repl
+	  to use new forms file "replgroupcomps".  This is intended for
+	  making group replies.
+
+	* Removed #ifdef for ATHENA.
+
+1997-12-28  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.19.
+
+	* Fix repl,forw so that switch `-form file' will not abort
+	  as ambiguious (silly mistake on my part).
+
+	* Cleaned up the mhn man page.  Added info about a few escapes
+	  for the formatting/display strings that were not documented
+	  (%%, %t).  Moved the BNF grammar for the mime composition file,
+	  to the end of the man page.
+
+	* Added the options -[no]format to the command repl.  The
+	  switch `-format' will filter the message to which you are
+	  replying with the standard message filter "mhl.reply", which
+	  is now included in the distribution.  The `-noformat' option
+	  will negate the use of -format or -filter and not include
+	  the message to which you are replying in the draft.
+
+	* Did some cleaning and reorganization on many of the man
+	  pages.
+
+	* Added debugging switch `-debug' to mhparam, which displays
+	  the values of all `procs' (and some other misc configuration
+	  info) that nmh keeps in global variables.
+
+	* When using `refile -preserve', if a conflict occurs, then use
+	  the next available number above the message number you wish
+	  to preserve.
+
+	* In forw.c, split the code for creating MIME style forwarding
+	  out of copy_draft, and into copy_mime_draft.
+
+	* Move routines in mark.c to print sequences, into new
+	  file sbr/seq_print.c
+
+	* flist will now update the current folder.
+
+	* Added the switches -[no]fast to flist, to replace
+	  -[no]total.  The previous switches are still accepted
+	  but now undocumented.
+
+	* More reorganization in flist of the code for
+	  traversing folders.
+
+	* The command "flist +foo -all" will now scan the folder
+	  "foo" and all its 1st level children.
+
+	* Add missing include file <h/mh.h> to sbr/snprintf.c
+
+	* Fix alarm bug in rcvtty, so that when it calls external
+	  process, the alarm is never longer than 30 minutes.
+
+1997-12-17  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.18.
+
+	* Fixed bug in mark, so that "mark -list -seq foo" will
+	  correctly indicate if "foo" is a private sequence.  I found
+	  this bug mentioned in Jerry Peek's book.
+
+	* Simplified the code in seq_setcur(), since seq_addmsg() now
+	  retains the public/private status of sequences.
+
+	* Changed sequence handling so that if the switches -public
+	  or -nopublic, are not specified for the commands mark, pick,
+	  or rcvstore, then existing sequences will retain their
+	  previous public/private status.
+
+	* mhparam now handles the mh-sequences profile entry
+	  correctly.
+
+	* flist -all will now also check readonly folders (for
+	  private sequences).
+
+	* Improve the leaf optimization for folder command.
+	  It will now track the number of directories in a folder,
+	  and stop stat'ing files once it has hit all the subfolders.
+
+	* Renamed m_getfolder to getfolder.  Changed getfolder to
+	  take option to determine whether it should get current
+	  folder, or just default folder (Inbox).  Changed rcvstore,
+	  inc, and rmf to use the new getfolder.
+
+	* flist now indicates if a sequence is private.
+
+	* Change WUNTRACED to 0, in pidwait.c, so that commands will
+	  wait for stopped processes.
+
+	* conflict will dynamically allocate space for group names,
+	  so it can now handle system with more than 100 groups.
+
+1997-12-09  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.18-pre4.
+
+	* Check if we have enough message status space, before we
+	  call folder_realloc() in burst, mhpath, and m_draft().
+
+	* mhn will now correctly identify a formatting string of "-"
+	  for the option -store, and send content to stdout.
+
+	* Change the way that memory for message status is
+	  allocated.  It is dynamcially allocated separately from
+	  the folder/message structure.  This required changing
+	  folder_read.c, folder_realloc.c, folder_free.c.
+
+	* Removed all the MTR code (experimental code for message
+	  status allocation).
+
+	* Renamed m_readfolder.c to folder_read.c and simplified
+	  the code.
+
+	* Renamed m_freefolder.c to folder_free.c.
+
+	* Add function trim() to slocal.c to pretty print
+	  the debugging output.
+
+	* Changed the name of m_packfolder() to folder_pack().
+	  Changed the name of m_remsg() to folder_realloc().
+
+Wed Dec  3 23:33:38 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.18-pre3.
+
+	* Changed installation to add `flists' which is hard linked
+	  to `flist'.  This is a equivalent to `flist -all'.
+
+	* For flist, -showzero is on by default.
+
+	* Major changes to flist.  Default is now for flist to search
+	  current folder.  The switch `-all' is now used to specify
+	  searching all top level folders.  The new switch `-showzero'
+	  is used to print out folders that don't contain any messages
+	  in the given sequence.
+
+	* Split BuildFolderList in flist.c into 2 functions
+	  (BuildFolderList, BuildFolderListR).  Changed these functions
+	  so that flist now does better leaf optimization, and will stop
+	  stat'ing directory entries when it knows it has hit all the
+	  subdirectories of a given directory.
+
+	* Reorganized code in folder.c, so that all relevant folders
+	  are scanned first and information recorded.  Then all the
+	  folder summaries at printed out at one time.
+
+	* Made the options of folder(s) more orthogonal.  Now
+	  "folder -all -noheader -nototal" will do the right thing.
+
+	* Added `-noall' switch to folder, for completeness.
+
+	* Changed the default mode for creation of new folders
+	  to 0700 (was 0711).
+
+	* Slightly changed the format for flist.  It now indicates
+	  if a folder is current.  Also the width of the various
+	  fields are now calculated at runtime.
+
+	* Changed the format for folder(s).  Folder names
+	  are now left justified.  The width of the various fields
+	  are calculated at runtime.
+
+Sun Nov 30 19:14:53 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.18-pre2.
+
+	* Add paragraph to man page for install-mh and to INSTALL file
+	  about checking for global mh.profile.
+
+	* Renamed m_find() to context_find().
+	  Renamed m_replace() to context_replace().
+	  Renamed m_delete() to context_del().
+	  Renamed m_update() to context_save().
+	  Renamed m_getdefs() to context_read().
+	  Renamed m_foil() to context_foil().
+
+	* Change rcvstore to use routine folder_addmsg(), instead of
+	  adding message to folder itself.
+
+	* Changed refile, so that if the switch -preserve is used,
+	  and a conflict occurs for a particular folder, then folder_addmsg()
+	  will just use next highest available number for that folder,
+	  instead of exiting.
+
+	* Make folder_addmsg() more robust.  It will make repeated
+	  attempts to link file into folder if link returns with
+	  the error EEXIST.
+
+	* Fix bug, so that that if forking sendmail, HELO will be sent
+	  unless clientname: option is defined but empty (so now it
+	  is the same as the direct smtp code).
+
+	* Changed sprintb to snprintb (now we pass the buffer length
+	  to new routine).  Changed code to use new function.
+
+	* Added snprintf to sbr. Added configure check to build it
+	  if you don't have a native version (but haven't changed much
+	  code to use it yet).
+
+Thu Nov 13 18:42:18 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.18-pre1.
+
+	* Fixed alarm bug in slocal, so that alarm is never
+	  called with a value larger than 30 mintues.
+
+	* Fixed race condition in rmm and refile, so that
+	  context is updated before external rmmproc is called.
+
+	* Removed all the OVERHEAD code.
+
+	* Move code to add message to folder from refile.c
+	  to folder_addmsg.c
+
+Fri Jul 25 19:39:29 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Did some rearranging of the internals of inc.c.
+
+	* Make -inplace the default for anno, forw, dist, and repl.
+
+	* Changed --enable-smtp to --with-mts={smtp,sendmail}
+
+	* Created new directory mts/sendmail for direct sendmail
+	  interface (although it currently still uses SMTP).
+
+	* Removed all the TMA (trusted mail agent) code
+
+	* Removed all the TTYD (terminal access daemon) code
+
+	* Removed all the MF (uucp filtering) code.
+
+	* Removed all the code for BERK.
+
+	* Removed all the code for stand-alone delivery (MHMTS).
+
+	* Split the file mts/sendmail/smail.c into sendmail.c and
+	  smtp.c.  Changed the name of the directory to mts/smtp.
+
+	* Changed autoconf to use @sysconfdir@ for location of
+	  configuration files.
+
+	* Changed #define in mhn.c from FTP to BUILTIN_FTP.
+
+Mon Jul 21 03:22:34 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.17.
+
+	* MAKEDEFS weren't passed down to recursive makes correctly.
+
+	* slocal.c now checks for UTMP_FILE and _PATH_UTMP instead
+	  of hard-coding "/etc/utmp".
+
+	* rcvtty.c check for _PATH_UTMP if UTMP_FILE is not
+	  defined.
+
+	* Remove configure checks for ulong and ushort.  Changed
+	  code to just use unsigned {short, long}.
+
+	* Change addmsg function in refile.c to return new
+	  number of refiled message.
+
+	* Added check in get_returnpath for empty unixbuf.
+
+	* Cleanup of sbr/pidstatus to use more POSIX macros
+	  for return value of wait().
+
+	* Change configure to also check /bin for "more".
+
+Sat Jul 12 00:02:23 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.16.
+
+Mon Jun 23 20:13:24 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added automimeproc, which should replace automhnproc.
+
+	* multipart messages will no longer abort for messages
+	  of type 8bit or binary (although we still can't really
+	  deal with binary messages, yet).
+
+	* Fix double free of c_storage.  From John MacMillan.
+
+	* mhn now treats unknown subtypes of "text" as text/plain.
+
+	* mhn changed so that specifying mhn-show-multipart, or
+	  mhn-show-multipart/{mixed, alternate, etc...) will override
+	  the use of the internal method for displaying these types.
+	  Previously mhn would always use the internal method for subtypes
+	  mixed, alternate, digest, and parallel (even if an alternate
+	  method was specified in mhn.defaults).
+
+	* mhn show treats unknown subtypes of multipart, as type
+	  multipart/mixed (as specified RFC2046).
+
+	* mhn checks for the parameter "name" rather than "x-name".
+	  From MH-6.8.4 patch.
+
+	* Fix double free of ctinfo in user_content when using
+	  #forw with single message.  From John MacMillan (and
+	  MH-6.8.4 patch).
+
+	* Changed -mhnproc switch for show, to -showmimeproc.
+
+	* Changed profile entry "mhnproc" to "showmimeproc".
+
+	* Added "mime" option to "whatnow", which calls the program
+	  "buildmimeproc" (default is mhn -build) to process MIME
+	   composition files.
+
+	* Added -build switch to mhn, to process MIME composition
+	  files.
+
+	* Did some reorganizing of mhn.c.
+
+	* Changed casting in mts/sendmail/smail.c from (char) to
+	  (signed char) so SMTP reply codes work correctly for machines
+	  which used unsigned chars by default.
+
+Sat Jun 21 01:21:47 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.15.
+
+	* Added new form "scan.unseen" to distribution.  It marks messages
+	  which are in any sequence in Unseen-Sequence.
+
+	* Do some rearranging of date/time code in zotnet/tws/dtime.c
+
+	* Fix sign extension bugs in fmt_scan.c.
+
+	* Fix m_atoi.c so that strings ending in non-digit characters
+	  return 0.
+
+	* Split code in burst.c so that finding delimiters of digested
+	  messages and bursting a message into multiple messages are
+	  two separate functions (find_delim and burst).
+
+	* Add workaround fo AC_PATH_PROG in configure.in, so
+	  that BSD4.4 machines can find sendmail, vi, more.
+
+	* Added "-width" option to rcvtty.
+
+	* Change a few variable names in zotnet/mts/client.c since
+	  they conflict with defines on AIX.
+
+	* Makefile in zotnet/tws assumes lexing of dtimep.lex was
+	  unsuccessful if resulting file is less than 500 lines long
+	  (rather than 10, which was previous value), since AIX
+	  sed gives mangled file of about 200 lines.
+
+	* Extract code in rcvstore.c to link message into folder,
+	  and put in own subroutine.
+
+	* Extract code in refile.c to link message into folder,
+	  and put in own subroutine.
+
+	* Moved code to remove messages from folder into own
+	  routine "folder_delmsgs" in sbr.  Changed rmm.c and
+	  refile.c to use new routine.
+
+Fri May 16 06:09:31 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Renamed m_seqok to seq_nameok.
+
+	* Changed m_setunseen, msh, mshcmds, flist, and scan to use
+	  seq_getnum.
+
+	* Changed m_seqflag to return the number of a sequence rather
+	  than its bit flag.  Changed its name to seq_getnum and renamed
+	  file to sbr/seq_getnum.c.
+
+	* Removed function m_seqnew and file sbr/m_seqnew.c since it is
+	  no longer used.
+
+	* Added zero switch to m_seqadd function to zero out bits before
+	  adding message to sequence.
+
+	* Renamed function m_setvis to m_setunseen, and renamed
+	  corresponding file in sbr.
+
+	* Renamed function m_setseq to m_setprev, and renamed corresponding
+	  file in sbr.
+
+	* Changed mark.c and pick.c to use m_seqaddsel and m_seqdelsel.
+
+	* Added new function m_seqdelsel to m_seqdel.c, which deletes
+	  all selected messages from a sequence.
+
+	* Added new function m_seqaddsel to m_seqadd.c, which adds all
+	  selected messages to a sequence.
+
+	* Split sbr/m_seqnew.c into m_seqadd.c, m_seqdel.c, m_seqnew.c,
+	  and m_seqok.c.
+
+Thu May 15 00:53:17 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Renamed function pack_folder to m_packfolder, and moved it
+	  from uip/folder.c into its own file sbr/m_packfolder.c
+
+Wed May 14 23:38:00 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed function m_gmsg to m_readfolder.  Renamed file
+	  sbr/m_gmsg.c to sbr/m_readfolder.c.
+
+Mon May  5 19:57:11 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Expanded rcvtty man page, and added small patch from
+	  MH-6.8.4 distribution.
+
+Fri May  2 15:24:34 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.14.
+
+	* Comment out configure test and code for tgetent to allocate its
+	  own termcap buffer when passed a NULL argument.
+
+Sat Apr 26 03:46:38 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added new options `-checkmime', `-nocheckmime', and `-mhnproc'
+	  to show.  Restructured code to handle options to various
+	  `procs' better.  Deprecated `-noshowproc' option and NOMHNPROC
+	  environment variable.
+
+	* Added new man page `mh-draft' which documents the
+	  draft folder facility in nmh.
+
+	* Renamed fmtsbr.h to fmt_scan.h.  Renamed fmtcompile.h
+	  to fmt_compile.h.
+
+	* split fmtsbr.c into fmt_scan.c and fmt_new.c.  Renamed
+	  fmtcompile.c to fmt_compile.c, and formataddr.c to
+	  fmt_addr.c.
+
+	* `send -help' wasn't showing the -(no)mime and -split
+	  options.
+
+Fri Apr 25 02:50:36 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.13.
+
+	* Changed mhpath so it doesn't abort if a message sequence
+	  such as "mhpath all" expands to more than 1000 messages.
+	  Also mhpath now dynamically reallocated space for message
+	  names (The number of command line arguments is still limited
+	  to MAXARGS).
+
+	* Did some general restructuring of the code in folder.c
+	  that checks for folder information, and prints it.
+
+Thu Apr 24 01:04:37 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed `folder' to reallocate space for folder names if
+	  necessary.  So `folders' can now handle more than 300 folders.
+
+Tue Apr 22 14:01:26 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Change configure to use a compile check to see if the tm struct
+	  has tm_gmtoff, rather than using egrep.
+
+Mon Apr 21 02:19:17 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.12.
+
+	* Had set_exists and unset_exists macros backwards.
+
+	* Released nmh-0.11.
+
+Thu Apr 10 02:39:53 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added documentation to mh-profile.man about the various
+	  `procs' (mhlproc, showproc, lproc, etc...).
+
+	* Replace the bit twiddling for SELECTED, UNSEEN, and
+	  mp->attrstats with macros.
+
+	* If system doesn't have SIGEMT (like Linux), then use SIGTERM
+	  in msh.c instead.
+
+	* Change fstat to stat in m_gmsg.c since Linux wants
+	  to hide dd->dd_fd.
+
+	* Merge Linux patch sent in by Michel Oosterhof (original
+	  patch from bsa@kf8nh.wariat.org).
+
+	* Document an undocumented MH feature.  mhn -form mhl.null
+	  will suppress the display of the message header.
+
+	* mhparam will now return "mhparam etcdir".
+
+	* Add catproc to /config/config.c and use that in show.c
+	  and mshcmds.c, rather than hard coding in /bin/cat.
+
+	* Add mhnproc to the list of `procs' in mh-profile.man.
+
+	* Add configure test for lorder and tsort commands.
+
+	* Commented out the padding in the `msgs` struct in h/mh.h
+
+	* Change m_gmsg.c to allocate elements to the `info' array by
+	  500 elements at a time (rather than MAXFOLDERS / 5).
+
+	* Add note to man page for mhmail that zero length messages are
+	  not sent.  Need to use -body "" to send empty messages.
+
+	* zotnet/mts/mts.c : compare character with '\0', not NULL.
+
+	* sbr/getcpy.c : assign '\0' to character, not NULL.
+
+	* add m_fmsg to most programs in uip so that they explicitly free
+	  folder/message structure when done with folder.
+
+	* uip/slocal.c : cleanup processing of sender.  Make sure it is
+	  defined even if message is missing "From " line.
+
+Mon Mar 31 03:37:35 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.10.
+
+Sun Mar 30 21:46:17 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Add configure check for <locale.h>.  Turn on LOCALE support
+	  by default.
+
+Thu Mar 20 03:21:24 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Reversed previous decision to retain "From " lines in slocal.
+	  The "From " line is now removed from all messages.
+
+	* inc now saves the date from the "From " envelope in the
+	  Delivery-Date header for all messages.
+
+	* sbr/m_getfld.c: Clean up processing of Return-Path and
+	  Delivery-Date from the "From " envelope.
+
+Mon Mar 17 19:03:36 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* client.c: cast iaddr to int before comparing return value
+	  of inet_addr with NOTOK.
+
+Tue Mar 11 04:38:10 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Grep test for signal names was failing on some OS'es because
+	  of missing tabs in regex.
+
+Sat Mar  8 01:58:22 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.09.
+
+	* Move config files and format files to *.old before installing.
+
+	* Add configure check for killpg.
+
+	* msh.c: include <termios.h> instead of <termio.h> and
+	  <sys/ioctl.h>.
+
+	* prompter.c: don't include <sys/ioctl.h> anymore.
+
+Thu Mar  6 04:03:24 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added `-mime' and `-nomime' options to `repl'.
+	  From MH-6.8.4 diff.
+
+Tue Mar  4 03:10:37 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* ruserpass.c : removed conflicting prototypes.
+
+	* rcvtty.c : Fixed rcvtty to obey terminal permissions granted
+	  by `mesg' command.  Previously only worked on BSD machines.
+
+Mon Mar  3 00:18:59 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* rcvtty.c : Changed to use #define UTMP_FILE (if exists) rather
+	  than hard coded "/etc/utmp".
+
+	* Released nmh-0.08.
+
+	* Changed slocal to lock .maildelivery (or file given by -maildelivery)
+	  when accessing ndbm/db file for duplicate suppression, instead of
+	  locking database itself.
+
+Thu Feb 27 05:28:09 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added slocal action `mmdf' to deliver to a file in mmdf format.
+
+	* Changed the slocal actions `file' and `>' to always deliver in
+	  mbox (uucp) format rather than be determined by RPATHS config
+	  option.
+
+	* Changed the slocal action `mbox' to deliver in mbox (uucp) format
+	  rather than mmdf format.
+
+	* slocal now adds Delivery-Date field to all messages (previously it
+	  only added it to messages when delivering them to a file). The
+	  "From " line is now retained on all messages if compiling with
+	  RPATHS, rather than being discarded.
+
+	* rcvpack no longer adds the Delivery-Date field to messages.
+
+Sun Feb 23 22:03:54 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Removed the script packmbox, since it's functionality has been
+	  added to packf.
+
+	* Changed packf so that it uses mbox (uucp) format by default
+	  rather than mmdf format.  Added options -mbox and -mmdf to
+	  packf so you can choose the preferred format.
+
+	* Changed rcvpack so that it uses mbox (uucp) format by default
+	  rather than mmdf format.  Added options -mbox and -mmdf to
+	  rcvpack so you can choose the preferred format.
+
+Tue Feb 18 00:01:05 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed nmh to use dot locking by default (although you
+	  can still easily change this in config.h).
+
+	* Simplified locking code.  Removed code allowing setting of
+	  locking type in mts.conf.  Now the locking type and locking
+	  directory (if any) can only be set at compile time.
+
+Fri Feb 14 02:49:18 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Prefer getting timezone information from tm->gmtoff rather
+	  than tzset and external timezone variable.
+
+Thu Feb 13 00:35:45 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Fixed typo in ruserpass.c in the variable toktabs.
+
+	* When ruserpass was added to LIBOBJS, it was missing
+	  the suffix.
+
+	* Released nmh-0.07.
+
+Tue Feb 11 01:29:47 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Add check to configure, so that if ruserpass, or _ruserpass
+	  is not found, build version of ruserpass in sbr.
+
+	* Added define's to discard.c, m_getfld.c, and scansbr.c so
+	  the code that manipulates internals of stdio, will build
+	  on SCO 5.x.
+
+	* Added #define to control whether to compile the simple
+	  built-in FTP client in mhn.
+
+	* Added configure check for ushort and ulong.  Change code
+	  to use ushort/ulong rather than u_short/u_long.
+
+	* A couple of small cleanups in locking code.
+
+	* Added configure check for gmtoff element in struct tm.
+
+	* Added configure check for tzset.
+
+Fri Feb  7 03:01:57 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.06.
+
+	* Removed code for machines that don't have socket
+	  interface (how could they get mail anyway?).
+
+	* Removed code for BSD41 machines.  I don't think there are
+	  many such machines around anymore.
+
+	* Add configure check for function uname, and prefer it
+	  over gethostname.  General cleanup of zotnet/mts/mts.c.
+
+	* Change all `lseek' calls to use POSIX symbolic constants
+	  SEEK_SET, SEEK_CUR, SEEK_END.
+
+Thu Feb  6 01:16:30 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Check lex generated file in zotnet/tws and use
+	  pre-generated version if necessary.
+
+	* Released nmh-0.05.
+
+	* Change to use reliable signals on all platforms that have
+	  sigaction.  Change so that interrupted system calls are
+	  restarted for all signals except SIGALRM.  This fixes alarm
+	  handling code in smail.c for BSD based systems.
+
+	* Added lorder and tsort commands so that created libs can
+	  be linked in one pass.
+
+Tue Feb  4 01:33:00 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed pidwait so that while it is waiting for a child,
+	  it should block signals rather than ignore them.
+
+Mon Feb  3 21:05:30 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Add checks to configure for dbm_open and -lndbm.
+
+Thu Jan 30 05:15:42 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* folder -pop and folder -push were freeing some memory too
+	  quickly, which caused the entry popped from the stack to not
+	  become the current folder.
+
+Wed Jan 29 01:28:02 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.04.
+
+	* Define ospeed and PC in termsbr.c is OS doesn't have
+	  it.
+
+Sun Jan 26 20:25:10 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* editfile will create a symbolic link to the altmsg if it
+	  can't make a link, on any machine supporting lstat.  Formerly
+	  this would happen only on BSD42 based machines.
+
+Sat Jan 25 22:54:26 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* traverse (in popsbr.c) wasn't calling va_start before using
+	  variable argument list.  Fixes core dump in inc when using POP.
+
+Fri Jan 24 03:27:59 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* The variable pass in remotemail needed to be set to
+	  NULL.  (From MH-6.8.4 diff).  Fixes core dump of msgchk when
+	  using POP.
+
+	* inc and msgchk were using -rpop by default when configured
+	  with POP support.  Default is now -norpop.
+
+Thu Jan 23 02:01:17 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* By default, post will now give the SMTP HELO command with
+	  the local hostname.  If you specify a hostname with the
+	  clientname: option in mts.conf file, post will give the
+	  HELO command with that name instead.  If the argument to the
+	  clientname: option is empty, no HELO command is given.
+	  (From the MH-6.8.4 diff)
+
+Wed Jan 22 01:55:45 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* When using `-help' for a command, it will also print its
+	  profile compents from .mh_profile. (From MH-6.8.4 diff)
+
+	* "slocal -file" will now correctly takes its input from
+	  a file (currently need to specify full path).
+
+Sun Jan 19 20:37:21 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* "slocal -debug" will now issue a warning if a non-blank
+	  line in the .maildelivery file has less than 5 fields.
+
+Sat Jan 18 02:26:41 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed slocal so that code for duplicate suppression
+	  (MH config was MSGID) is always built. Added the options
+	  -[no]suppressdup to slocal to turn this on/off.
+
+Thu Jan 16 00:26:34 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.03.
+
+	* Fixed problem where mark would core dump if no
+	  .mh_sequence file existed.
+
+	* Fixed problem where slocal would core dump if -debug
+	  option was given, and certain headers were missing.
+
+	* Added patch to slocal to add `folder' (+) action, which
+	  is shorthand for piping message to rcvstore.  Updated
+	  man page.
+
+Wed Jan 15 21:30:17 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed flist option -unseen to -[no]all.  Cleaned up
+	  flist man page.
+
+Fri Jan 10 20:36:33 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Fixed flist.  Changed the profile component `Folder-Order'
+	  to `Flist-Order.  Added option `-sequence' to flist, so
+	  you can specify the name of the sequence to search for.
+
+Thu Jan  9 00:20:48 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* A few minor portability cleanups.  Changed to use PATH_MAX
+	  rather than MAXPATHLEN.  Don't assume ospeed variable exists
+	  in termsbr.c.  Removed some conflicting prototypes.
+
+Wed Jan  8 11:05:02 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Add configure test to check if tgetent will accept NULL
+	  and allocate its own buffer.  Borrowed from zsh.
+
+	* Changed libpath to etcpath.
+
+Mon Jan  6 04:15:35 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Cleaned up source code and Makefiles, so that if your `make'
+	  supports the VPATH option, you can build nmh in a different
+	  directory from where the source code is located.
+
+Fri Jan  3 05:05:18 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Released nmh-0.02.
+
+Wed Jan  1 17:41:52 1997  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Split mhook man page into man pages for rcvdist, rcvpack,
+	  and rcvtty.
+
+Tue Dec 31 03:07:48 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed code to use strerror, rather than using sys_errlist
+	  and sys_nerr directly.
+
+Mon Dec 30 02:15:25 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* -compat switch from install-mh removed.
+
+	* Changed the default POP port from "pop" to "pop3".
+
+Sat Dec 28 13:25:05 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed mhn_defaults to mhn.defaults.  Changed create_mhn_defaults
+	  (again) to mhn.defaults.sh.  Changed find_program (again) to
+	  mhn.find.sh.  mhn.defaults.sh now takes the search path
+	  as an argument.  Default search path is now specified in Makefile
+	  rather than in script.
+
+Fri Dec 27 16:34:01 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed mtstailor file to mts.conf.  Updated man pages.
+
+	* Changed si_value to si_val in mhn.c, since it conflicts with
+	  macro defined on Solaris.
+
+Thu Dec 26 02:50:15 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added --enable-nmh-mhe (and --disable-nmh-mhe) to enable/disable
+	  support for Emacs front-end mhe.  It is on by default.
+
+	* Added the following configure options: --enable-nmh-pop to
+	  enable client side pop support, --enable-nmh-smtp to enable
+	  SMTP support.  Client-side pop support now compiles.  Man
+	  pages for inc, msgchk, mh-chart now correctly added pop
+	  options if enabled.
+
+Tue Dec 24 14:33:20 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added configure test for bug in C libraries where linker
+	  can't find ruserpass, but can find _ruserpass.
+
+	* Fixed configure test so that termcap variable ospeed is
+	  correctly found.
+
+Mon Dec 23 19:40:17 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Source files converted to ANSI C.
+	
+	* md5 now compiled separately rather than being included
+	  in mhn.c.  Changed md5 to use memset and memcpy.
+
+Fri Dec 20 02:29:37 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Collected the error routines adios, advise, admonish, and advertise
+	  into one file (error.c), and did some rearranging of the code.
+
+Thu Dec 19 19:05:29 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added awk script sigmsg.awk (originally written by
+	  Geoff Wing <mason@werple.apana.org.au> for zsh) to
+	  automatically generate signal messages for pidstatus.c.
+	  Added files sbr/signals.c, h/signals.h.  Code now uses
+	  sigprocmask to block signals (if available).  Code now uses
+	  signal blocking on non-BSD machines.
+
+Wed Dec 18 01:55:17 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Add configure check for ATTVIBUG.  From Soren's mh autoconf work.
+
+	* Released nmh-0.01.
+
+	* Added configure code to check for type of signals functions
+	  you have (POSIX or BSD style signals).  Added function
+	  SIGPROCMASK to simulate sigprocmask on machines that don't
+	  have POSIX signals.
+
+Fri Dec 13 19:40:48 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added -version switch to all commands.  Also added to
+	  their man pages.
+
+Mon Dec  9 16:36:54 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Renamed uip/trmsbr.c to termsbr.c and changed it to use
+	  POSIX termios.h style functions if present.
+
+Tue Dec  3 16:18:39 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Changed support/general/bootmhn.sh to output new mhn_defaults
+	  file to standard output by default (makes it easier for testing).
+	  Changed name of script to create_mhn_defaults.  Changed bootmhn.findit
+	  script to find_program.
+
+Sun Dec  1 10:00:00 1996  Richard Coleman  <coleman@math.gatech.edu>
+
+	* Added patch to uip/folder.c from exmh distribution to
+	  speed up -recurse option.
+
+	* Added flist command from exmh distribution.  It doesn't work
+	  yet, but it compiles :-)
+
+	* Changed default location for install to /usr/local/nmh/{bin,etc,lib,man}.
+	  Split files so that format and configuration files go in nmh/etc, and
+	  support binaries go in nmh/lib.  Of course, all this can now be changed
+	  in the top level Makefile.
+
+	* Started with mh-6.8.3 as based and converted to autoconf.
+	  Rewrote all the Makefiles.  Currently only works with sendmail/smtp.
+	  Pop support and plenty of other things, are now broken.

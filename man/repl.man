@@ -1,0 +1,337 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH REPL %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+repl \- reply to a message
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+repl
+\%[+folder] \%[msg]
+.br
+\%[\-group] \%[\-nogroup]
+\%[\-annotate] \%[\-noannotate]
+.br
+\%[\-cc\ all/to/cc/me] \%[\-nocc\ all/to/cc/me]
+.br
+\%[\-query] \%[\-noquery]
+\%[\-form\ formfile]
+.br
+\%[\-format] \%[\-noformat]
+\%[\-filter\ filterfile]
+.br
+\%[\-inplace] \%[\-noinplace]
+\%[\-mime] \%[\-nomime]
+.br
+\%[\-fcc\ +folder]
+\%[\-width\ columns]
+.br
+\%[\-draftfolder\ +folder] \%[\-draftmessage\ msg]
+.br
+\%[\-nodraftfolder]
+\%[\-editor\ editor] \%[\-noedit]
+.br
+\%[\-whatnowproc\ program] \%[\-nowhatnowproc]
+.br
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+\fIRepl\fR may be used to produce a reply to an existing message.
+
+In its simplest form (with no arguments), \fIrepl\fR will set up a
+message\-form skeleton in reply to the current message in the current
+folder, and invoke the whatnow shell.
+
+In order to construct the message draft of the reply, \fIrepl\fR uses
+a reply template to guide its actions.  A reply template is simply a
+\fImhl\fR format file (see \fImh\-format\fR\0(5) for details).
+
+If the switch `\-nogroup' is given (it is on by default), then \fIrepl\fR
+will use the standard forms file \*(lqreplcomps\*(rq.  This will construct
+a draft message that is intended to be sent only to the author of the
+message to which you are replying.  If a file named \*(lqreplcomps\*(rq
+exists in the user's nmh directory, it will be used instead of this
+default forms file.
+
+The default reply template \*(lqreplcomps\*(rq will direct \fIrepl\fR
+to construct the reply message draft as follows:
+
+.nf
+.in 1i
+To: <Mail\-Reply\-To> or <Reply\-To> or <From>
+Subject: Re: <Subject>
+In\-Reply\-To: Your message of <Date>.
+.ti +\w'In\-Reply\-To: 'u
+<Message\-Id>
+.in .5i
+.fi
+
+where field names enclosed in angle brackets (<\ >) indicate the
+contents of the named field from the message to which the reply is
+being made.
+
+If the switch `\-group' is given, then \fIrepl\fR will use the the
+standard forms file \*(lqreplgroupcomps\*(rq.  This will construct a
+draft message that is intended as a group or followup reply.  If a file
+named \*(lqreplgroupcomps\*(rq exists in the user's nmh directory, it
+will be used instead of this default forms file.
+
+The default group reply template \*(lqreplgroupcomps\*(rq will direct
+\fIrepl\fR to construct the reply message draft as follows:
+
+.nf
+.in 1i
+To: <Mail\-Followup\-To>
+Subject: Re: <Subject>
+In\-Reply\-To: Message from <From> of <Date>.
+.ti +\w'In\-Reply\-To: 'u
+<Message\-Id>
+.in .5i
+.fi
+
+or if the field <Mail\-Followup\-To> is not available:
+
+.nf
+.in 1i
+To: <Mail\-Reply\-To> or <Reply\-To> or <From>
+cc: <To> and <cc> and <personal address>
+Subject: Re: <Subject>
+In\-Reply\-To: Message from <From> of <Date>.
+.ti +\w'In\-Reply\-To: 'u
+<Message\-Id>
+.in .5i
+.fi
+
+In any case, you may specify an alternate forms file with the switch
+`\-form\ formfile'.
+
+You may selectively remove addresses from this default with the
+`\-nocc\ type' switch.  This switch takes an argument (all/to/cc/me)
+which specifies who gets removed from the default \*(lqcc:\*(rq list of
+the reply.  You may give this switch multiple times (with different
+arguments) if you wish to remove multiple types of addresses.
+
+The `\-query' switch modifies the action of `\-nocc\ type' switch by
+interactively asking you if each address that normally would be placed in
+the \*(lqTo:\*(rq and \*(lqcc:\*(rq list should actually be sent a copy.
+This is useful for special\-purpose replies.  Note that the position of
+the `\-cc' and `\-nocc' switches, like all other switches which take a
+positive and negative form, is important.
+
+Lines beginning with the fields \*(lqTo:\*(rq, \*(lqcc:\*(rq, and
+\*(rqBcc:\*(rq will be standardized and have duplicate addresses removed.
+In addition, the `\-width\ columns' switch will guide \fIrepl\fR's
+formatting of these fields.
+
+If the draft already exists, \fIrepl\fR will ask you as to the disposition
+of the draft.  A reply of \fBquit\fR will abort \fIrepl\fR, leaving the
+draft intact; \fBreplace\fR will replace the existing draft with a blank
+skeleton; and \fBlist\fR will display the draft.
+
+See \fIcomp\fR\0(1) for a description of the `\-editor' and `\-noedit'
+switches.  Note that while in the editor, the message being replied
+to is available through a link named \*(lq@\*(rq (assuming the default
+\fIwhatnowproc\fR\0).  In addition, the actual pathname of the message is
+stored in the environment variable \fB$editalt\fR, and the pathname of
+the folder containing the message is stored in the environment variable
+\fB$mhfolder\fR.
+
+Although \fIrepl\fR uses a forms file to direct it how to construct
+the beginning of the draft, it uses a message filter file to direct
+it as to how the message to which you are replying should be filtered
+(re\-formatted) in the body of the draft.  The filter file for \fIrepl\fR
+should be a standard form file for \fImhl\fR, as \fIrepl\fR will invoke
+\fImhl\fR to format the message to which you are replying.
+
+The switches `\-noformat', `\-format', and `\-filter\ filterfile' specify
+which message filter file to use.
+
+If the switch `\-noformat' is given (it is the default), then the message
+to which you are replying is not included in the body of the draft.
+
+If the switch `\-format' is given, then a default message filter file
+is used.  This default message filter should be adequate for most users.
+This default filter \*(lqmhl.reply\*(rq is:
+
+.nf
+.in +.5i
+.ne 10
+.eo
+.so %etcdir%/mhl.reply
+.ec
+.in -.5i
+.fi
+
+which outputs each line of the body of the message prefaced with the
+\*(lq>\*(rq character and a space.
+
+If a file named \*(lqmhl.reply\*(rq exists in the user's nmh directory,
+it will be used instead of this form.  You may specify an alternate
+message filter file with the switch `\-filter\ filterfile'.
+
+Other reply filters are commonly used, such as:
+
+.nf
+.in +.5i
+:
+body:nocomponent,compwidth=9,offset=9
+.in -.5i
+.fi
+
+which says to output a blank line and then the body of the message
+being replied\-to, indented by one tab\-stop.  Another popular format
+is:
+
+.nf
+.in +.5i
+.ie n \{
+message-id:nocomponent,\|nonewline,\\
+formatfield=\*(lqIn message %{text},\ \*(rq \}
+.el message-id:nocomponent,\|nonewline,\|formatfield=\*(lqIn message %{text},\ \*(rq
+from:nocomponent,\|formatfield=\*(lq%(friendly{text}) writes:\*(rq
+body:component=\*(lq>\*(rq,\|overflowtext=\*(lq>\*(rq,\|overflowoffset=0
+.in -.5i
+.fi
+
+This message filter file cites the Message-ID and author of the message
+being replied\-to, and then outputs each line of the body prefaced with
+the \*(lq>\*(rq character.
+
+To use the MIME rules for encapsulation, specify the `\-mime' switch.
+This directs \fIreply\fR to generate an \fImhbuild\fR composition file.
+Note that nmh will not invoke \fImhbuild\fR automatically, unless you
+add this line to your \&.mh\(ruprofile file:
+.sp
+.in +.5i
+automimeproc: 1
+.in -.5i
+.sp
+Otherwise, you must specifically give the command
+.sp
+.in +.5i
+What now? mime
+.in -.5i
+.sp
+prior to sending the draft.
+
+If the `\-annotate' switch is given, the message being replied\-to will
+be annotated with the lines
+
+     Replied:\ date
+     Replied:\ addrs
+
+where the address list contains one line for each addressee.
+The annotation will be done only if the message is sent directly from
+\fIrepl\fR.  If the message is not sent immediately from \fIrepl\fR,
+\*(lqcomp\ \-use\*(rq may be used to re\-edit and send the constructed
+message, but the annotations won't take place.  Normally annotations are
+done inplace in order to preserve any links to the message.  You may use
+the `\-noinplace' switch to change this.
+
+The `\-fcc\ +folder' switch can be used to automatically specify a folder
+to receive Fcc:s.  More than one folder, each preceded by `\-fcc' can
+be named.
+
+In addition to the standard \fImh\-format\fR\0(5) escapes, \fIrepl\fR
+also recognizes the following additional \fIcomponent\fR escape:
+.sp 1
+.nf
+.ta \w'Escape  'u +\w'Returns  'u
+\fIEscape\fR	\fIReturns\fR	\fIDescription\fR
+\fIfcc\fR	string	Any folders specified with `\-fcc\ folder'
+.re
+.fi
+
+To avoid reiteration, \fIrepl\fR strips any leading `Re: ' strings from
+the \fIsubject\fR component.
+
+The `\-draftfolder\ +folder' and `\-draftmessage\ msg' switches invoke
+the \fInmh\fR draft folder facility.  This is an advanced (and highly
+useful) feature.  Consult the \fImh-draft\fR(5) man page for more
+information.
+
+Upon exiting from the editor, \fIrepl\fR will invoke the \fIwhatnow\fR
+program.  See \fIwhatnow\fR\0(1) for a discussion of available
+options.  The invocation of this program can be inhibited by using the
+`\-nowhatnowproc' switch.  (In truth of fact, it is the \fIwhatnow\fR
+program which starts the initial edit.  Hence, `\-nowhatnowproc' will
+prevent any edit from occurring.)
+
+.Fi
+^%etcdir%/replcomps~^The standard reply template
+^or <mh\-dir>/replcomps~^Rather than the standard template
+^%etcdir%/replgroupcomps~^The standard `reply -group' template
+^or <mh\-dir>/replgroupcomps~^Rather than the standard template
+^%etcdir%/mhl.reply~^The standard message filter
+^or <mh\-dir>/mhl.reply~^Rather than the standard filter
+^$HOME/\&.mh\(ruprofile~^The user profile
+^<mh\-dir>/draft~^The draft file
+.Pr
+^Path:~^To determine the user's nmh directory
+.Ps
+^Alternate\-Mailboxes:~^To determine the user's mailboxes
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Ps
+^Draft\-Folder:~^To find the default draft\-folder
+.Ps
+^Editor:~^To override the default editor
+.Ps
+^Msg\-Protect:~^To set mode when creating a new message (draft)
+.Ps
+^fileproc:~^Program to refile the message
+.Ps
+^mhlproc:~^Program to filter message being replied\-to
+.Ps
+^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
+.Sa
+mhbuild(1), comp(1), forw(1), send(1), whatnow(1), mh\-format(5)
+.De
+`+folder' defaults to the current folder
+.Ds
+`msg' defaults to cur
+.Ds
+`\-nogroup'
+.Ds
+`\-cc\ all'
+.Ds
+`\-noannotate'
+.Ds
+`\-nodraftfolder'
+.Ds
+`\-noformat'
+.Ds
+`\-inplace'
+.Ds
+`\-nomime'
+.Ds
+`\-noquery'
+.Ds
+`\-width\ 72'
+.Co
+If a folder is given, it will become the current folder.  The message
+replied\-to will become the current message.
+.Bu
+If any addresses occur in the reply template, addresses in the template
+that do not contain hosts are defaulted incorrectly.  Instead of using
+the localhost for the default, \fIrepl\fR uses the sender's host.
+Moral of the story: if you're going to include addresses in a reply
+template, include the host portion of the address.
+
+The `\-width columns' switch is only used to do address-folding; other
+headers are not line\-wrapped.
+
+If \fIwhatnowproc\fR is \fIwhatnow\fR, then \fIrepl\fR uses a built\-in
+\fIwhatnow\fR, it does not actually run the \fIwhatnow\fR program.
+Hence, if you define your own \fIwhatnowproc\fR, don't call it
+\fIwhatnow\fR since \fIrepl\fR won't run it.
+
+If your current working directory is not writable, the link named
+\*(lq@\*(rq is not available.
+.En

@@ -1,0 +1,36 @@
+%; replgroupcomps
+%;
+%; form (components) file for `repl -group'
+%;
+%; Check the following headers to create reply addresses.
+%;
+%; To: Mail-Followup-To
+%;
+%; OR
+%;
+%; To: Mail-Reply-To   (or)
+%;     Reply-To        (or)
+%;     From            (or)
+%;     Sender          (or)
+%;     Return-Path
+%;
+%; AND
+%;
+%; cc: To              (and)
+%;     cc              (and)
+%;     personal address
+%;
+%(lit)%(formataddr{mail-followup-to})\
+%<(nonnull)%(void(width))%(putaddr To: )\n\
+%|\
+%(lit)%(formataddr %<{mail-reply-to}%?{reply-to}%?{from}%?{sender}%?{return-path}%>)\
+%<(nonnull)%(void(width))%(putaddr To: )\n%>\
+%(lit)%(formataddr{to})%(formataddr{cc})%(formataddr(me))\
+%<(nonnull)%(void(width))%(putaddr cc: )\n%>%>\
+%;
+%<{fcc}Fcc: %{fcc}\n%>\
+%<{subject}Subject: Re: %{subject}\n%>\
+In-Reply-To: Message from %<{from}%{from}%?{sender}%{sender}%|%{return-path}%>\n\
+   of "%<(nodate{date})%{date}%|%(pretty{date})%>."\
+%<{message-id} %{message-id}%>\n\
+--------

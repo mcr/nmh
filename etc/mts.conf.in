@@ -1,0 +1,31 @@
+#
+# nmh mail transport interface customization file.
+# 
+# Check the mh-tailor(5) man page for a list of
+# all the available options for this file.
+#
+
+# Default location of mail drops.  If this option is
+# set, but empty, the user's home directory is used.
+mmdfldir: %mailspool%
+
+# The name of the maildrop file in the directory where maildrops
+# are kept.  If this is empty, the user's login name is used.
+mmdflfil:
+
+# The exceptions file for /etc/hosts used by
+# `post' to try to find official names.
+hostable: %etcdir%/hosts
+
+# List of smtp servers to try if using smtp support
+servers: localhost
+
+# Name of POP server
+# pophost: localhost
+
+# Name that nmh considers `local'.  If not set, nmh will
+# query the system for this value (gethostname, etc...).
+# localname: foo.bar.com
+
+# Uncomment this to turn on username masquerading.
+# mmailid: 1

@@ -1,0 +1,5 @@
+; mhl.reply
+;
+; default message filter for `repl' (repl -format)
+;
+body:component="> ",overflowtext="> ",overflowoffset=0

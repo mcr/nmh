@@ -1,0 +1,1672 @@
+#include <stdio.h>
+static int start_cond = 0;
+#define BEGIN start_cond =
+struct yysvf { 
+	struct yywork *yystoff;
+	struct yysvf *yyother;
+	int *yystops;};
+# define Z 2
+#include <h/nmh.h>
+#include <tws.h>
+#if !defined(HAVE_TM_GMTOFF) && !defined(HAVE_TZSET)
+# include <sys/timeb.h>
+#endif
+
+#if !defined(HAVE_TM_GMTOFF) && defined(HAVE_TZSET)
+extern int  daylight;
+extern long timezone;
+extern char *tzname[];
+#endif
+
+
+# line 49 "./dtimep.lex"
+/*
+ * Patchable flag that says how to interpret NN/NN/NN dates. When
+ * true, we do it European style: DD/MM/YY. When false, we do it
+ * American style: MM/DD/YY.  Of course, these are all non-RFC822
+ * compliant.
+ */
+int europeandate = 0;
+
+
+# line 57 "./dtimep.lex"
+/*
+ * Table to convert month names to numeric month.  We use the
+ * fact that the low order 5 bits of the sum of the 2nd & 3rd
+ * characters of the name is a hash with no collisions for the 12
+ * valid month names.  (The mask to 5 bits maps any combination of
+ * upper and lower case into the same hash value).
+ */
+static int month_map[] = {
+	0,
+	6,	/* 1 - Jul */
+	3,	/* 2 - Apr */
+	5,	/* 3 - Jun */
+	0,
+	10,	/* 5 - Nov */
+	0,
+	1,	/* 7 - Feb */
+	11,	/* 8 - Dec */
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,	/*15 - Jan */
+	0,
+	0,
+	0,
+	2,	/*19 - Mar */
+	0,
+	8,	/*21 - Sep */
+	0,
+	9,	/*23 - Oct */
+	0,
+	0,
+	4,	/*26 - May */
+	0,
+	7	/*28 - Aug */
+};
+
+# line 95 "./dtimep.lex"
+/*
+ * Same trick for day-of-week using the hash function
+ *  (c1 & 7) + (c2 & 4)
+ */
+static int day_map[] = {
+	0,
+	0,
+	0,
+	6,	/* 3 - Sat */
+	4,	/* 4 - Thu */
+	0,
+	5,	/* 6 - Fri */
+	0,	/* 7 - Sun */
+	2,	/* 8 - Tue */
+	1	/* 9 - Mon */,
+	0,
+	3	/*11 - Wed */
+};
+#define SETDAY	{ tw.tw_wday= day_map[(cp[0] & 7) + (cp[1] & 4)];\
+		tw.tw_flags &= ~TW_SDAY; tw.tw_flags |= TW_SEXP;\
+		cp += 2; }
+#define SETMONTH { tw.tw_mon = month_map[(cp[0] + cp[1]) & 0x1f]; gotdate++;\
+		 cp += 2;\
+		 SKIPD;}
+#define	CVT1OR2	(i=(*cp++ - '0'), isdigit(*cp)? i*10 + (*cp++ - '0') : i)
+#define	CVT2	  ((cp[0] - '0')*10 + (cp[1] - '0'))
+#define	CVT4	((((cp[0] - '0')*10 + (cp[1] - '0'))*10 + \
+				      (cp[2] - '0'))*10 + (cp[3] - '0'))
+#define SKIPD	{ while ( !isdigit(*cp++) ) ;  --cp; }
+#define EXPZONE	{ tw.tw_flags &= ~TW_SZONE; tw.tw_flags |= TW_SZEXP; }
+#define ZONE(x)	{ tw.tw_zone=(x); EXPZONE; }
+#define ZONED(x) { ZONE(x); tw.tw_flags |= TW_DST; }
+#define	LC(c)	(isupper (c) ? tolower (c) : (c))
+
+#ifdef DSTXXX
+# ifdef TIME_WITH_SYS_TIME
+#  include <sys/time.h>
+#  include <time.h>
+# else
+#  ifdef HAVE_SYS_TIME_H
+#   include <sys/time.h>
+#  else
+#   include <time.h>
+#  endif
+# endif
+
+static void
+zonehack (struct tws *tw)
+{
+    register struct tm *tm;
+
+    if (dmktime (tw) == (time_t) -1)
+	return;
+
+    tm = localtime (&tw->tw_clock);
+    if (tm->tm_isdst) {
+	tw->tw_flags |= TW_DST;
+	tw->tw_zone -= 60;
+    }
+}
+#endif	/* DSTXXX */
+struct tws *
+dparsetime (char *str)
+{
+	register int i;
+	static struct tws tw;
+	register char *cp;
+	register int gotdate = 0;
+	time_t tclock;
+
+#ifdef HAVE_TM_GMTOFF
+	struct tm *tm;
+	time_t clock;
+#else
+# ifndef HAVE_TZSET
+	struct timeb tb;
+# endif /* not HAVE_TZSET */
+#endif /* HAVE_TM_GMTOFF */
+
+	start_cond = 0;
+
+	/* Zero out the struct. */
+	memset( (char *) &tw, 0, sizeof(tw));
+
+	/* Set default time zone. */
+#ifdef HAVE_TM_GMTOFF
+	time (&clock);
+	tm = localtime(&clock);
+	tw.tw_zone = tm->tm_gmtoff / 60;
+	if (tm->tm_isdst)			/* if DST is in effect */
+		tw.tw_zone -= 60;		/* reset to normal offset */
+#else
+# ifdef HAVE_TZSET
+	tzset();
+	tw.tw_zone = -(timezone / 60);
+# else
+	ftime(&tb);
+	tw.tw_zone = -tb.timezone;
+# endif /* HAVE_TZSET */
+#endif /* HAVE_TM_GMTOFF */
+
+	while (isspace(*str))
+		str++;
+	while (1)
+		switch (cp = str, *cp ? lex_string( &str, start_cond) : 0) {
+
+		case -1:
+			if (!gotdate || tw.tw_year == 0)
+				return (struct tws *)0;
+			/* fall through */
+		case 0:
+			if (tw.tw_year == 0) {
+				/* Set default year. */
+				time (&tclock);
+				tw.tw_year = localtime(&tclock)->tm_year + 1900;
+			} else if (tw.tw_year < 100) {
+				/* assume no 2-digit years > 1999 */
+				tw.tw_year += 1900;
+			}
+			return &tw;
+
+#ifdef __cplusplus
+/* to avoid CC and lint complaining yyfussy not being used ...*/
+static int __lex_hack = 0;
+if (__lex_hack) goto yyfussy;
+#endif
+case 1:
+
+# line 219 "./dtimep.lex"
+			SETDAY;
+break;
+case 2:
+
+# line 220 "./dtimep.lex"
+		{
+					cp++;
+					SETDAY;
+					}
+break;
+case 3:
+
+# line 224 "./dtimep.lex"
+{
+					if (europeandate) {
+						/* European: DD/MM/YY */
+						tw.tw_mday = CVT1OR2;
+						cp++;
+						tw.tw_mon  = CVT1OR2 - 1;
+					} else {
+						/* American: MM/DD/YY */
+						tw.tw_mon  = CVT1OR2 - 1;
+						cp++;
+						tw.tw_mday = CVT1OR2;
+					}
+					cp++;
+					for (i = 0; isdigit(*cp); )
+						i = i*10 + (*cp++ - '0');
+					tw.tw_year = i;
+					gotdate++;	/* XXX */
+					}
+break;
+case 4:
+
+# line 242 "./dtimep.lex"
+		{
+					if (europeandate) {
+						tw.tw_mday = CVT1OR2; cp++;
+						tw.tw_mon  = CVT1OR2 - 1;
+					} else {
+						tw.tw_mon = CVT1OR2 - 1; cp++;
+						tw.tw_mday  = CVT1OR2;
+					}
+					gotdate++;
+					}
+break;
+case 5:
+
+# line 252 "./dtimep.lex"
+{
+					tw.tw_mday = CVT1OR2;
+					while ( !isalpha(*cp++) )
+						;
+					SETMONTH;
+					for (i = 0; isdigit(*cp); )
+						i = i*10 + (*cp++ - '0');
+					tw.tw_year = i;
+					}
+break;
+case 6:
+
+# line 261 "./dtimep.lex"
+              {
+                                        tw.tw_mday = CVT1OR2;
+                                        while ( ! isalpha( *cp++ ) )
+                                                ;
+                                        SETMONTH;
+                                        }
+break;
+case 7:
+
+# line 267 "./dtimep.lex"
+{
+					cp++;
+					SETMONTH;
+					tw.tw_mday = CVT1OR2;
+					SKIPD;
+					for (i = 0; isdigit(*cp); )
+						i = i*10 + (*cp++ - '0');
+					tw.tw_year = i;
+					}
+break;
+case 8:
+
+# line 276 "./dtimep.lex"
+		{
+					cp++;
+					SETMONTH;
+					tw.tw_mday = CVT1OR2;
+					}
+break;
+case 9:
+
+# line 282 "./dtimep.lex"
+	{	/* hack: ctime w/o TZ */
+					tw.tw_hour = CVT1OR2; cp++;
+					tw.tw_min  = CVT1OR2; cp++;
+					tw.tw_sec  = CVT1OR2;
+					SKIPD;
+					tw.tw_year = CVT4; cp+=4;
+					}
+break;
+case 10:
+
+# line 289 "./dtimep.lex"
+			{
+					tw.tw_hour = CVT1OR2; cp++;
+					tw.tw_min  = CVT1OR2; cp++;
+					tw.tw_sec  = CVT1OR2;
+					BEGIN Z;
+					}
+break;
+case 11:
+
+# line 295 "./dtimep.lex"
+			{
+					tw.tw_hour = CVT1OR2; cp++;
+					tw.tw_min = CVT1OR2;
+					BEGIN Z;
+					}
+break;
+case 12:
+
+# line 300 "./dtimep.lex"
+			{
+					tw.tw_hour = CVT1OR2; cp++;
+					if (tw.tw_hour == 12)
+						tw.tw_hour = 0;
+					tw.tw_min  = CVT1OR2;
+					BEGIN Z;
+					}
+break;
+case 13:
+
+# line 307 "./dtimep.lex"
+		{
+					tw.tw_hour = CVT1OR2; cp++;
+					if (tw.tw_hour == 12)
+						tw.tw_hour = 0;
+					tw.tw_min  = CVT1OR2; cp++;
+					tw.tw_sec  = CVT1OR2;
+					BEGIN Z;
+					}
+break;
+case 14:
+
+# line 315 "./dtimep.lex"
+			{
+					tw.tw_hour = CVT1OR2; cp++;
+					if (tw.tw_hour != 12)
+						tw.tw_hour += 12;
+					tw.tw_min  = CVT1OR2;
+					BEGIN Z;
+					}
+break;
+case 15:
+
+# line 322 "./dtimep.lex"
+		{
+					tw.tw_hour = CVT1OR2; cp++;
+					if (tw.tw_hour != 12)
+						tw.tw_hour += 12;
+					tw.tw_min  = CVT1OR2; cp++;
+					tw.tw_sec  = CVT1OR2;
+					BEGIN Z;
+					}
+break;
+case 16:
+
+# line 330 "./dtimep.lex"
+		{
+					tw.tw_hour = CVT2; cp+=2;
+					tw.tw_min  = CVT2; cp+=2;
+					tw.tw_sec  = CVT2; cp+=2;
+					BEGIN Z;
+					}
+break;
+case 17:
+
+# line 336 "./dtimep.lex"
+			{
+					/*
+					 * Luckly, 4 digit times in the range
+					 * 1960-1999 aren't legal as hour
+					 * and minutes.
+					 */
+					tw.tw_year = CVT4; cp+=4;
+					}
+break;
+case 18:
+
+# line 344 "./dtimep.lex"
+		{
+					if (tw.tw_hour || tw.tw_min 
+							    || tw.tw_sec) {
+					    tw.tw_year = CVT4; cp+=4;
+					    tw.tw_zone = 0;
+					} else {
+					    tw.tw_hour = CVT2; cp+=2;
+					    tw.tw_min  = CVT2; cp+=2;
+					    BEGIN Z;
+					}
+					}
+break;
+case 19:
+
+# line 355 "./dtimep.lex"
+			ZONE(0 * 60);
+break;
+case 20:
+
+# line 356 "./dtimep.lex"
+			ZONE(0 * 60);
+break;
+case 21:
+
+# line 357 "./dtimep.lex"
+			ZONE(2 * 60);
+break;
+case 22:
+
+# line 358 "./dtimep.lex"
+			ZONED(2 * 60);
+break;
+case 23:
+
+# line 359 "./dtimep.lex"
+			ZONE(-5 * 60);
+break;
+case 24:
+
+# line 360 "./dtimep.lex"
+			ZONED(-5 * 60);
+break;
+case 25:
+
+# line 361 "./dtimep.lex"
+			ZONE(-6 * 60);
+break;
+case 26:
+
+# line 362 "./dtimep.lex"
+			ZONED(-6 * 60);
+break;
+case 27:
+
+# line 363 "./dtimep.lex"
+			ZONE(-7 * 60);
+break;
+case 28:
+
+# line 364 "./dtimep.lex"
+			ZONED(-7 * 60);
+break;
+case 29:
+
+# line 365 "./dtimep.lex"
+			ZONE(-8 * 60);
+break;
+case 30:
+
+# line 366 "./dtimep.lex"
+			ZONED(-8 * 60);
+break;
+case 31:
+
+# line 367 "./dtimep.lex"
+			ZONE(-(3 * 60 + 30));
+break;
+case 32:
+
+# line 368 "./dtimep.lex"
+			ZONE(-4 * 60);
+break;
+case 33:
+
+# line 369 "./dtimep.lex"
+			ZONED(-4 * 60);
+break;
+case 34:
+
+# line 370 "./dtimep.lex"
+			ZONE(-9 * 60);
+break;
+case 35:
+
+# line 371 "./dtimep.lex"
+			ZONED(-9 * 60);
+break;
+case 36:
+
+# line 372 "./dtimep.lex"
+			ZONE(-10 * 60);
+break;
+case 37:
+
+# line 373 "./dtimep.lex"
+			ZONED(-10 * 60);
+break;
+case 38:
+
+# line 374 "./dtimep.lex"
+			ZONED(-1 * 60);
+break;
+case 39:
+
+# line 375 "./dtimep.lex"
+			{
+					tw.tw_zone = 60 * (('a'-1) - LC(*cp));
+					EXPZONE; 
+					}
+break;
+case 40:
+
+# line 379 "./dtimep.lex"
+			{
+					tw.tw_zone = 60 * ('a' - LC(*cp));
+					EXPZONE; 
+					}
+break;
+case 41:
+
+# line 383 "./dtimep.lex"
+			{
+					tw.tw_zone = 60 * (LC(*cp) - 'm');
+					EXPZONE; 
+					}
+break;
+case 42:
+
+# line 387 "./dtimep.lex"
+		{
+					cp++;
+					tw.tw_zone = ((cp[0] * 10 + cp[1])
+						     -('0' * 10   + '0'))*60
+						    +((cp[2] * 10 + cp[3])
+						     -('0' * 10   + '0'));
+					EXPZONE;
+#ifdef	DSTXXX
+					zonehack (&tw);
+#endif	/* DSTXXX */
+					cp += 4;
+					}
+break;
+case 43:
+
+# line 399 "./dtimep.lex"
+		{
+					cp++;
+					tw.tw_zone = (('0' * 10   + '0')
+						     -(cp[0] * 10 + cp[1]))*60
+						    +(('0' * 10   + '0')
+						     -(cp[2] * 10 + cp[3]));
+					EXPZONE;
+#ifdef	DSTXXX
+					zonehack (&tw);
+#endif	/* DSTXXX */
+					cp += 4;
+					}
+break;
+case 44:
+
+# line 411 "./dtimep.lex"
+		{
+					SKIPD;
+					tw.tw_year = CVT4; cp+=4;
+					}
+break;
+case 45:
+
+# line 415 "./dtimep.lex"
+case 46:
+
+# line 416 "./dtimep.lex"
+;
+break;
+	default: return(0);
+} }
+/* end of yylex */
+int yyvstop[] = {
+0,
+
+46,
+0,
+
+45,
+0,
+
+46,
+0,
+
+39,
+0,
+
+39,
+0,
+
+39,
+0,
+
+39,
+0,
+
+39,
+0,
+
+39,
+0,
+
+39,
+0,
+
+39,
+0,
+
+39,
+0,
+
+40,
+0,
+
+40,
+0,
+
+41,
+0,
+
+41,
+0,
+
+41,
+0,
+
+41,
+0,
+
+41,
+0,
+
+41,
+0,
+
+41,
+0,
+
+41,
+0,
+
+41,
+0,
+
+19,
+0,
+
+4,
+0,
+
+4,
+0,
+
+11,
+0,
+
+1,
+0,
+
+1,
+0,
+
+1,
+0,
+
+1,
+0,
+
+1,
+0,
+
+1,
+0,
+
+1,
+0,
+
+33,
+0,
+
+32,
+0,
+
+38,
+0,
+
+26,
+0,
+
+25,
+0,
+
+24,
+0,
+
+23,
+0,
+
+20,
+0,
+
+37,
+0,
+
+36,
+0,
+
+22,
+0,
+
+21,
+0,
+
+28,
+0,
+
+27,
+0,
+
+31,
+0,
+
+30,
+0,
+
+29,
+0,
+
+35,
+0,
+
+34,
+0,
+
+4,
+0,
+
+4,
+0,
+
+4,
+0,
+
+18,
+0,
+
+11,
+0,
+
+11,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+6,
+0,
+
+17,
+18,
+0,
+
+1,
+0,
+
+2,
+0,
+
+18,
+0,
+
+10,
+0,
+
+12,
+0,
+
+14,
+0,
+
+6,
+0,
+
+17,
+18,
+0,
+
+8,
+0,
+
+44,
+0,
+
+42,
+0,
+
+43,
+0,
+
+2,
+0,
+
+3,
+0,
+
+16,
+0,
+
+10,
+0,
+
+10,
+0,
+
+5,
+0,
+
+8,
+0,
+
+8,
+0,
+
+1,
+0,
+
+3,
+0,
+
+3,
+0,
+
+13,
+0,
+
+15,
+0,
+
+6,
+0,
+
+5,
+0,
+
+5,
+0,
+
+5,
+0,
+
+5,
+0,
+
+7,
+0,
+
+9,
+0,
+
+7,
+0,
+
+7,
+0,
+0};
+# define YYTYPE int
+struct yywork { YYTYPE verify, advance; } yycrank[] = {
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	1,5,	1,6,	
+5,5,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	1,5,	0,0,	5,5,	
+3,21,	3,6,	0,0,	0,0,	
+0,0,	1,7,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	1,8,	1,9,	1,8,	
+1,10,	1,10,	1,10,	1,10,	
+1,10,	1,10,	1,10,	3,21,	
+9,63,	22,83,	22,83,	0,0,	
+0,0,	0,0,	0,0,	3,7,	
+0,0,	0,0,	3,22,	0,0,	
+3,23,	0,0,	0,0,	3,8,	
+3,9,	3,8,	3,10,	3,10,	
+3,10,	3,10,	3,10,	3,10,	
+3,10,	10,64,	10,64,	10,64,	
+10,64,	10,64,	10,64,	10,64,	
+10,64,	10,64,	10,64,	0,0,	
+0,0,	0,0,	1,11,	15,72,	
+59,143,	1,12,	14,70,	1,13,	
+12,67,	13,68,	17,75,	1,14,	
+19,79,	20,81,	1,15,	1,16,	
+1,17,	15,73,	11,65,	16,74,	
+1,18,	1,19,	13,69,	11,66,	
+1,20,	19,80,	14,71,	25,99,	
+3,24,	3,25,	3,26,	3,27,	
+3,28,	3,29,	3,30,	3,31,	
+3,32,	3,33,	3,34,	3,34,	
+3,35,	3,36,	3,37,	3,38,	
+3,39,	3,39,	3,40,	3,41,	
+3,42,	3,39,	3,43,	3,39,	
+3,44,	7,45,	8,50,	18,76,	
+26,100,	28,102,	30,104,	18,77,	
+7,46,	24,97,	42,114,	45,117,	
+31,105,	21,21,	7,47,	7,48,	
+23,84,	23,84,	7,49,	26,101,	
+28,103,	24,65,	38,112,	18,78,	
+24,98,	8,50,	24,66,	31,106,	
+36,74,	46,118,	49,123,	56,139,	
+36,111,	57,140,	55,137,	60,144,	
+21,21,	38,113,	8,51,	55,138,	
+8,52,	8,53,	8,53,	8,53,	
+8,53,	8,53,	8,53,	8,53,	
+8,53,	8,53,	8,53,	8,54,	
+21,82,	21,82,	21,82,	21,82,	
+21,82,	21,82,	21,82,	21,82,	
+21,82,	21,82,	47,119,	61,145,	
+62,146,	23,85,	23,86,	23,87,	
+44,115,	23,88,	35,72,	23,89,	
+23,90,	35,109,	23,91,	50,50,	
+33,70,	23,92,	23,93,	33,107,	
+23,94,	58,141,	47,120,	44,116,	
+35,73,	23,95,	65,148,	48,121,	
+35,110,	23,96,	8,55,	51,124,	
+66,149,	8,56,	33,108,	8,57,	
+33,71,	67,150,	50,50,	8,58,	
+48,122,	58,142,	8,59,	8,60,	
+8,61,	68,151,	69,152,	70,153,	
+8,62,	73,158,	71,154,	50,124,	
+71,155,	74,159,	51,124,	52,134,	
+52,134,	52,134,	52,134,	52,134,	
+52,134,	52,134,	52,134,	52,134,	
+52,134,	75,160,	76,161,	77,162,	
+78,163,	79,164,	51,133,	51,133,	
+51,133,	51,133,	51,133,	51,133,	
+51,133,	51,133,	51,133,	51,133,	
+53,135,	53,135,	53,135,	53,135,	
+53,135,	53,135,	53,135,	53,135,	
+53,135,	53,135,	54,136,	54,136,	
+54,136,	54,136,	54,136,	54,136,	
+54,136,	54,136,	54,136,	54,136,	
+72,156,	80,165,	81,166,	50,125,	
+93,111,	85,97,	50,126,	72,157,	
+50,127,	97,170,	91,107,	92,109,	
+50,128,	64,50,	98,171,	50,129,	
+50,130,	50,131,	99,172,	51,55,	
+85,98,	50,132,	51,56,	100,173,	
+51,57,	91,108,	92,110,	101,174,	
+51,58,	102,175,	103,176,	51,59,	
+51,60,	51,61,	104,177,	105,178,	
+64,50,	51,62,	63,135,	63,135,	
+63,135,	63,135,	63,135,	63,135,	
+63,147,	63,147,	63,147,	63,147,	
+106,179,	64,51,	107,180,	64,52,	
+82,167,	82,167,	82,167,	82,167,	
+82,167,	82,167,	82,167,	82,167,	
+82,167,	82,167,	64,54,	83,168,	
+83,168,	83,168,	83,168,	83,168,	
+83,168,	83,168,	83,168,	83,168,	
+83,168,	84,169,	84,169,	84,169,	
+84,169,	84,169,	84,169,	84,169,	
+84,169,	84,169,	84,169,	108,181,	
+109,182,	110,183,	111,184,	112,185,	
+113,186,	115,187,	116,188,	117,189,	
+118,190,	119,191,	120,192,	121,193,	
+122,194,	123,195,	124,124,	126,198,	
+125,196,	64,55,	127,199,	128,200,	
+64,56,	125,197,	64,57,	129,202,	
+130,203,	131,204,	64,58,	132,205,	
+133,206,	64,59,	64,60,	64,61,	
+137,216,	138,217,	139,218,	64,62,	
+140,219,	124,124,	141,220,	128,201,	
+134,206,	135,210,	135,210,	135,210,	
+135,210,	135,210,	135,210,	135,210,	
+135,210,	135,210,	135,210,	133,206,	
+142,221,	143,223,	142,222,	144,225,	
+145,226,	146,227,	153,236,	155,157,	
+143,224,	158,238,	159,239,	134,206,	
+133,207,	160,240,	162,242,	133,208,	
+133,208,	133,208,	133,208,	133,208,	
+133,208,	133,208,	133,208,	133,208,	
+133,208,	148,229,	134,207,	134,209,	
+134,209,	134,209,	134,209,	134,209,	
+134,209,	134,209,	134,209,	134,209,	
+134,209,	136,211,	147,228,	147,228,	
+147,228,	147,228,	147,228,	147,228,	
+147,228,	147,228,	147,228,	147,228,	
+148,229,	149,229,	124,125,	150,229,	
+154,229,	124,126,	163,243,	124,127,	
+190,252,	192,254,	196,258,	124,128,	
+136,211,	191,250,	124,129,	124,130,	
+124,131,	151,229,	156,229,	152,234,	
+124,132,	157,229,	161,234,	164,234,	
+149,229,	165,234,	150,229,	154,229,	
+136,212,	136,212,	136,212,	136,212,	
+136,212,	136,212,	136,212,	136,212,	
+136,212,	136,212,	136,213,	166,234,	
+151,229,	156,229,	152,234,	194,250,	
+157,229,	161,234,	164,234,	189,250,	
+165,234,	195,250,	193,250,	197,259,	
+198,260,	199,261,	152,234,	200,262,	
+203,267,	161,234,	164,234,	201,263,	
+165,234,	201,264,	166,234,	167,247,	
+167,247,	167,247,	167,247,	167,247,	
+167,247,	167,247,	167,247,	167,247,	
+167,247,	148,230,	166,234,	204,268,	
+205,269,	136,214,	168,248,	168,248,	
+168,248,	168,248,	168,248,	168,248,	
+168,248,	168,248,	168,248,	168,248,	
+206,206,	191,253,	208,207,	209,207,	
+136,215,	212,213,	214,274,	150,232,	
+169,249,	169,249,	169,249,	169,249,	
+169,249,	169,249,	169,249,	169,249,	
+169,249,	169,249,	189,251,	202,265,	
+156,237,	149,231,	152,235,	206,206,	
+210,271,	211,211,	202,266,	215,275,	
+154,157,	194,256,	195,257,	220,283,	
+222,224,	225,285,	151,233,	193,255,	
+226,286,	227,287,	230,157,	231,290,	
+164,244,	232,291,	161,241,	165,245,	
+233,292,	235,293,	236,294,	210,271,	
+211,211,	237,157,	238,295,	239,296,	
+166,246,	207,270,	207,270,	207,270,	
+207,270,	207,270,	207,270,	207,270,	
+207,270,	207,270,	207,270,	210,272,	
+210,272,	210,272,	210,272,	210,272,	
+210,272,	210,272,	210,272,	210,272,	
+210,272,	213,273,	213,273,	213,273,	
+213,273,	213,273,	213,273,	213,273,	
+213,273,	213,273,	213,273,	240,297,	
+228,288,	234,234,	241,298,	242,299,	
+243,300,	244,301,	245,302,	216,276,	
+246,303,	247,304,	247,304,	247,304,	
+247,304,	247,304,	247,304,	247,304,	
+247,304,	247,304,	247,304,	250,307,	
+251,308,	252,309,	217,276,	228,288,	
+234,234,	253,310,	254,311,	255,312,	
+256,313,	211,214,	216,276,	257,314,	
+276,330,	258,266,	260,266,	279,224,	
+218,276,	265,266,	280,332,	281,333,	
+282,334,	283,335,	284,224,	216,277,	
+211,215,	217,276,	216,278,	216,278,	
+216,278,	216,278,	216,278,	216,278,	
+216,278,	216,278,	216,278,	216,278,	
+258,266,	260,266,	217,277,	218,276,	
+265,266,	217,278,	217,278,	217,278,	
+217,278,	217,278,	217,278,	217,278,	
+217,278,	217,278,	217,278,	219,276,	
+218,277,	259,266,	285,336,	218,278,	
+218,278,	218,278,	218,278,	218,278,	
+218,278,	218,278,	218,278,	218,278,	
+218,278,	264,266,	263,266,	286,337,	
+287,338,	290,157,	291,342,	292,343,	
+293,344,	294,345,	219,276,	296,346,	
+259,266,	221,276,	266,266,	271,271,	
+297,347,	274,274,	262,266,	216,279,	
+298,348,	299,349,	301,350,	219,277,	
+264,266,	263,266,	219,278,	219,278,	
+219,278,	219,278,	219,278,	219,278,	
+219,278,	219,278,	219,278,	219,278,	
+221,276,	266,266,	271,271,	223,276,	
+274,274,	262,266,	260,317,	265,320,	
+218,281,	258,315,	217,280,	261,266,	
+268,266,	221,277,	269,266,	275,275,	
+221,278,	221,278,	221,278,	221,278,	
+221,278,	221,278,	221,278,	221,278,	
+221,278,	221,278,	223,276,	302,351,	
+303,352,	224,276,	267,266,	288,288,	
+308,353,	310,354,	261,266,	268,266,	
+312,355,	269,266,	275,275,	223,277,	
+229,229,	313,356,	223,278,	223,278,	
+223,278,	223,278,	223,278,	223,278,	
+223,278,	223,278,	223,278,	223,278,	
+224,276,	267,266,	288,288,	314,357,	
+219,282,	264,266,	315,266,	316,358,	
+317,359,	259,316,	318,360,	229,229,	
+319,361,	224,277,	320,266,	321,362,	
+224,278,	224,278,	224,278,	224,278,	
+224,278,	224,278,	224,278,	224,278,	
+224,278,	224,278,	263,266,	229,289,	
+229,289,	229,289,	229,289,	229,289,	
+229,289,	229,289,	229,289,	229,289,	
+229,289,	221,224,	262,319,	322,363,	
+323,364,	223,284,	248,305,	248,305,	
+248,305,	248,305,	248,305,	248,305,	
+248,305,	248,305,	248,305,	248,305,	
+249,306,	249,306,	249,306,	249,306,	
+249,306,	249,306,	249,306,	249,306,	
+249,306,	249,306,	268,322,	328,368,	
+261,318,	329,369,	330,370,	332,224,	
+273,326,	269,323,	267,321,	270,324,	
+270,324,	270,324,	270,324,	270,324,	
+270,324,	270,324,	270,324,	270,324,	
+270,324,	272,325,	272,325,	272,325,	
+272,325,	272,325,	272,325,	272,325,	
+272,325,	272,325,	272,325,	273,326,	
+333,373,	334,374,	277,277,	278,331,	
+278,331,	278,331,	278,331,	278,331,	
+278,331,	278,331,	278,331,	278,331,	
+278,331,	324,365,	325,325,	273,327,	
+273,327,	273,327,	273,327,	273,327,	
+273,327,	273,327,	273,327,	273,327,	
+273,327,	277,277,	335,375,	336,376,	
+289,339,	337,377,	338,378,	341,340,	
+342,380,	343,381,	344,234,	345,157,	
+324,365,	325,325,	346,382,	347,157,	
+348,383,	277,278,	277,278,	277,278,	
+277,278,	277,278,	277,278,	277,278,	
+277,278,	277,278,	277,278,	289,339,	
+324,366,	324,366,	324,366,	324,366,	
+324,366,	324,366,	324,366,	324,366,	
+324,366,	324,366,	326,326,	289,340,	
+273,328,	327,326,	331,371,	289,341,	
+289,341,	289,341,	289,341,	289,341,	
+289,341,	289,341,	289,341,	289,341,	
+289,341,	339,339,	340,379,	273,329,	
+349,384,	350,385,	352,386,	353,250,	
+354,387,	326,326,	355,388,	357,389,	
+327,326,	331,371,	358,266,	359,390,	
+360,391,	361,392,	362,393,	363,394,	
+364,395,	365,365,	367,396,	373,399,	
+339,339,	340,379,	326,367,	374,400,	
+375,224,	331,372,	331,372,	331,372,	
+331,372,	331,372,	331,372,	331,372,	
+331,372,	331,372,	331,372,	368,368,	
+369,369,	370,370,	371,371,	376,401,	
+365,365,	366,365,	366,365,	366,365,	
+366,365,	366,365,	366,365,	366,365,	
+366,365,	366,365,	366,365,	377,224,	
+378,402,	384,404,	386,405,	389,406,	
+390,407,	391,408,	368,368,	369,369,	
+370,370,	371,371,	392,266,	379,379,	
+393,409,	394,266,	395,410,	397,412,	
+402,413,	410,415,	326,328,	398,371,	
+412,412,	327,328,	372,398,	372,398,	
+372,398,	372,398,	372,398,	372,398,	
+372,398,	372,398,	372,398,	372,398,	
+0,0,	326,329,	379,379,	0,0,	
+327,329,	396,411,	396,411,	396,411,	
+396,411,	0,0,	398,371,	412,412,	
+0,0,	0,0,	0,0,	414,417,	
+417,417,	0,0,	379,403,	379,403,	
+379,403,	379,403,	379,403,	379,403,	
+379,403,	379,403,	379,403,	379,403,	
+403,414,	403,414,	403,414,	403,414,	
+403,414,	403,414,	403,414,	403,414,	
+403,414,	403,414,	414,417,	417,417,	
+0,0,	0,0,	371,397,	411,416,	
+411,416,	411,416,	411,416,	411,416,	
+411,416,	411,416,	411,416,	411,416,	
+411,416,	0,0,	414,418,	414,418,	
+414,418,	414,418,	414,418,	414,418,	
+414,418,	414,418,	414,418,	414,418,	
+418,417,	418,417,	418,417,	418,417,	
+418,417,	418,417,	418,417,	418,417,	
+418,417,	418,417,	0,0,	0,0,	
+0,0};
+struct yysvf yysvec[] = {
+0,	0,	0,
+yycrank+1,	0,		0,	
+yycrank+0,	yysvec+1,	0,	
+yycrank+27,	0,		0,	
+yycrank+0,	yysvec+3,	0,	
+yycrank+3,	0,		yyvstop+1,
+yycrank+0,	0,		yyvstop+3,
+yycrank+47,	0,		0,	
+yycrank+141,	0,		0,	
+yycrank+3,	yysvec+8,	0,	
+yycrank+37,	yysvec+8,	0,	
+yycrank+2,	0,		0,	
+yycrank+3,	0,		0,	
+yycrank+4,	0,		0,	
+yycrank+5,	0,		0,	
+yycrank+2,	0,		0,	
+yycrank+4,	0,		0,	
+yycrank+7,	0,		0,	
+yycrank+54,	0,		0,	
+yycrank+4,	0,		0,	
+yycrank+8,	0,		0,	
+yycrank+152,	0,		yyvstop+5,
+yycrank+13,	0,		0,	
+yycrank+116,	0,		0,	
+yycrank+57,	0,		yyvstop+7,
+yycrank+8,	0,		yyvstop+9,
+yycrank+52,	0,		yyvstop+11,
+yycrank+0,	yysvec+12,	yyvstop+13,
+yycrank+53,	0,		yyvstop+15,
+yycrank+0,	yysvec+13,	yyvstop+17,
+yycrank+45,	0,		yyvstop+19,
+yycrank+60,	0,		yyvstop+21,
+yycrank+0,	0,		yyvstop+23,
+yycrank+127,	0,		0,	
+yycrank+0,	0,		yyvstop+25,
+yycrank+121,	0,		yyvstop+27,
+yycrank+65,	0,		yyvstop+29,
+yycrank+0,	yysvec+17,	yyvstop+31,
+yycrank+70,	0,		yyvstop+33,
+yycrank+0,	0,		yyvstop+35,
+yycrank+0,	yysvec+18,	yyvstop+37,
+yycrank+0,	yysvec+19,	yyvstop+39,
+yycrank+42,	0,		yyvstop+41,
+yycrank+0,	yysvec+20,	yyvstop+43,
+yycrank+116,	0,		yyvstop+45,
+yycrank+45,	0,		0,	
+yycrank+66,	0,		0,	
+yycrank+113,	0,		0,	
+yycrank+131,	0,		0,	
+yycrank+77,	0,		0,	
+yycrank+214,	0,		0,	
+yycrank+230,	0,		0,	
+yycrank+215,	0,		0,	
+yycrank+240,	yysvec+8,	0,	
+yycrank+250,	0,		0,	
+yycrank+70,	0,		0,	
+yycrank+78,	0,		0,	
+yycrank+80,	0,		0,	
+yycrank+132,	0,		0,	
+yycrank+3,	0,		0,	
+yycrank+72,	0,		0,	
+yycrank+112,	0,		0,	
+yycrank+111,	0,		0,	
+yycrank+298,	yysvec+8,	0,	
+yycrank+312,	0,		0,	
+yycrank+120,	0,		0,	
+yycrank+137,	0,		0,	
+yycrank+146,	0,		0,	
+yycrank+155,	0,		0,	
+yycrank+149,	0,		0,	
+yycrank+145,	0,		0,	
+yycrank+150,	0,		0,	
+yycrank+194,	0,		0,	
+yycrank+147,	0,		0,	
+yycrank+143,	0,		0,	
+yycrank+157,	0,		0,	
+yycrank+158,	0,		0,	
+yycrank+163,	0,		0,	
+yycrank+166,	0,		0,	
+yycrank+160,	0,		0,	
+yycrank+208,	0,		0,	
+yycrank+210,	0,		0,	
+yycrank+312,	0,		0,	
+yycrank+323,	0,		0,	
+yycrank+333,	0,		0,	
+yycrank+213,	0,		0,	
+yycrank+0,	yysvec+25,	0,	
+yycrank+0,	yysvec+26,	0,	
+yycrank+0,	yysvec+28,	0,	
+yycrank+0,	yysvec+30,	0,	
+yycrank+0,	yysvec+31,	0,	
+yycrank+218,	0,		0,	
+yycrank+219,	0,		0,	
+yycrank+197,	0,		0,	
+yycrank+0,	yysvec+38,	0,	
+yycrank+0,	yysvec+42,	0,	
+yycrank+0,	yysvec+44,	0,	
+yycrank+201,	0,		0,	
+yycrank+206,	0,		0,	
+yycrank+210,	0,		0,	
+yycrank+215,	0,		0,	
+yycrank+219,	0,		0,	
+yycrank+221,	0,		0,	
+yycrank+222,	0,		0,	
+yycrank+226,	0,		0,	
+yycrank+227,	0,		0,	
+yycrank+240,	0,		0,	
+yycrank+242,	0,		0,	
+yycrank+275,	0,		0,	
+yycrank+276,	0,		0,	
+yycrank+277,	0,		0,	
+yycrank+278,	0,		0,	
+yycrank+279,	0,		0,	
+yycrank+280,	0,		0,	
+yycrank+0,	0,		yyvstop+47,
+yycrank+281,	0,		0,	
+yycrank+282,	0,		0,	
+yycrank+294,	0,		0,	
+yycrank+290,	0,		0,	
+yycrank+285,	0,		0,	
+yycrank+292,	0,		0,	
+yycrank+286,	0,		0,	
+yycrank+303,	0,		0,	
+yycrank+305,	0,		0,	
+yycrank+397,	0,		0,	
+yycrank+296,	0,		0,	
+yycrank+306,	0,		0,	
+yycrank+309,	0,		0,	
+yycrank+314,	0,		0,	
+yycrank+318,	0,		0,	
+yycrank+305,	0,		0,	
+yycrank+318,	0,		0,	
+yycrank+318,	0,		0,	
+yycrank+411,	0,		yyvstop+49,
+yycrank+423,	0,		yyvstop+51,
+yycrank+385,	0,		0,	
+yycrank+472,	0,		yyvstop+53,
+yycrank+310,	0,		0,	
+yycrank+322,	0,		0,	
+yycrank+327,	0,		0,	
+yycrank+330,	0,		0,	
+yycrank+320,	0,		0,	
+yycrank+336,	0,		0,	
+yycrank+331,	0,		0,	
+yycrank+329,	0,		0,	
+yycrank+332,	0,		0,	
+yycrank+337,	0,		0,	
+yycrank+434,	0,		0,	
+yycrank+460,	0,		0,	
+yycrank+484,	0,		0,	
+yycrank+486,	0,		0,	
+yycrank+500,	0,		0,	
+yycrank+502,	0,		yyvstop+55,
+yycrank+333,	yysvec+149,	0,	
+yycrank+487,	0,		0,	
+yycrank+350,	yysvec+150,	0,	
+yycrank+501,	0,		0,	
+yycrank+504,	0,		0,	
+yycrank+353,	yysvec+152,	yyvstop+57,
+yycrank+353,	yysvec+150,	0,	
+yycrank+346,	yysvec+157,	0,	
+yycrank+505,	0,		yyvstop+59,
+yycrank+342,	yysvec+157,	0,	
+yycrank+398,	yysvec+152,	yyvstop+61,
+yycrank+506,	0,		yyvstop+63,
+yycrank+508,	0,		yyvstop+65,
+yycrank+522,	0,		yyvstop+67,
+yycrank+507,	0,		0,	
+yycrank+522,	0,		0,	
+yycrank+540,	0,		0,	
+yycrank+0,	0,		yyvstop+69,
+yycrank+0,	0,		yyvstop+71,
+yycrank+0,	0,		yyvstop+73,
+yycrank+0,	0,		yyvstop+75,
+yycrank+0,	0,		yyvstop+77,
+yycrank+0,	0,		yyvstop+79,
+yycrank+0,	0,		yyvstop+81,
+yycrank+0,	0,		yyvstop+83,
+yycrank+0,	0,		yyvstop+85,
+yycrank+0,	0,		yyvstop+87,
+yycrank+0,	0,		yyvstop+89,
+yycrank+0,	0,		yyvstop+91,
+yycrank+0,	0,		yyvstop+93,
+yycrank+0,	0,		yyvstop+95,
+yycrank+0,	0,		yyvstop+97,
+yycrank+0,	0,		yyvstop+99,
+yycrank+0,	0,		yyvstop+101,
+yycrank+0,	0,		yyvstop+103,
+yycrank+0,	0,		yyvstop+105,
+yycrank+498,	0,		0,	
+yycrank+400,	yysvec+189,	0,	
+yycrank+464,	0,		0,	
+yycrank+401,	yysvec+189,	0,	
+yycrank+501,	0,		0,	
+yycrank+494,	0,		0,	
+yycrank+500,	0,		0,	
+yycrank+388,	0,		0,	
+yycrank+440,	0,		0,	
+yycrank+445,	0,		0,	
+yycrank+447,	0,		0,	
+yycrank+437,	0,		0,	
+yycrank+443,	0,		0,	
+yycrank+485,	0,		0,	
+yycrank+430,	0,		0,	
+yycrank+451,	0,		0,	
+yycrank+456,	0,		0,	
+yycrank+571,	0,		yyvstop+107,
+yycrank+585,	0,		0,	
+yycrank+537,	yysvec+206,	yyvstop+109,
+yycrank+536,	yysvec+206,	yyvstop+111,
+yycrank+595,	0,		yyvstop+113,
+yycrank+596,	0,		yyvstop+115,
+yycrank+527,	yysvec+211,	yyvstop+117,
+yycrank+605,	0,		0,	
+yycrank+477,	0,		0,	
+yycrank+498,	0,		0,	
+yycrank+662,	0,		yyvstop+119,
+yycrank+677,	0,		yyvstop+121,
+yycrank+691,	0,		yyvstop+123,
+yycrank+726,	0,		yyvstop+125,
+yycrank+494,	yysvec+217,	yyvstop+127,
+yycrank+752,	0,		yyvstop+129,
+yycrank+511,	yysvec+218,	yyvstop+131,
+yycrank+778,	0,		yyvstop+133,
+yycrank+804,	0,		yyvstop+135,
+yycrank+512,	yysvec+218,	yyvstop+137,
+yycrank+505,	yysvec+224,	yyvstop+139,
+yycrank+501,	yysvec+224,	yyvstop+141,
+yycrank+655,	yysvec+210,	yyvstop+143,
+yycrank+815,	0,		0,	
+yycrank+510,	0,		0,	
+yycrank+504,	0,		0,	
+yycrank+512,	0,		0,	
+yycrank+507,	0,		0,	
+yycrank+656,	0,		yyvstop+146,
+yycrank+528,	0,		0,	
+yycrank+529,	0,		0,	
+yycrank+525,	0,		0,	
+yycrank+533,	0,		0,	
+yycrank+522,	0,		0,	
+yycrank+565,	0,		0,	
+yycrank+552,	0,		0,	
+yycrank+566,	0,		0,	
+yycrank+571,	0,		0,	
+yycrank+554,	0,		0,	
+yycrank+570,	0,		0,	
+yycrank+571,	0,		0,	
+yycrank+625,	0,		0,	
+yycrank+830,	0,		0,	
+yycrank+840,	0,		0,	
+yycrank+639,	0,		yyvstop+148,
+yycrank+587,	0,		0,	
+yycrank+588,	0,		0,	
+yycrank+575,	0,		0,	
+yycrank+593,	0,		0,	
+yycrank+576,	0,		0,	
+yycrank+592,	0,		0,	
+yycrank+594,	0,		0,	
+yycrank+688,	yysvec+216,	0,	
+yycrank+728,	yysvec+217,	0,	
+yycrank+689,	yysvec+218,	0,	
+yycrank+786,	yysvec+219,	0,	
+yycrank+757,	yysvec+217,	0,	
+yycrank+741,	yysvec+221,	0,	
+yycrank+740,	yysvec+218,	0,	
+yycrank+692,	yysvec+223,	0,	
+yycrank+753,	yysvec+224,	0,	
+yycrank+805,	yysvec+218,	0,	
+yycrank+787,	yysvec+224,	0,	
+yycrank+789,	yysvec+224,	0,	
+yycrank+859,	0,		0,	
+yycrank+754,	0,		yyvstop+150,
+yycrank+869,	0,		0,	
+yycrank+895,	0,		yyvstop+152,
+yycrank+756,	0,		yyvstop+154,
+yycrank+790,	0,		yyvstop+156,
+yycrank+599,	yysvec+224,	yyvstop+158,
+yycrank+921,	0,		0,	
+yycrank+883,	0,		0,	
+yycrank+591,	0,		0,	
+yycrank+587,	0,		0,	
+yycrank+594,	0,		0,	
+yycrank+587,	0,		0,	
+yycrank+608,	0,		0,	
+yycrank+602,	0,		0,	
+yycrank+629,	0,		0,	
+yycrank+653,	0,		0,	
+yycrank+651,	0,		0,	
+yycrank+806,	0,		yyvstop+160,
+yycrank+947,	0,		yyvstop+163,
+yycrank+637,	0,		0,	
+yycrank+656,	0,		0,	
+yycrank+658,	0,		0,	
+yycrank+635,	0,		0,	
+yycrank+643,	0,		0,	
+yycrank+0,	yysvec+293,	0,	
+yycrank+661,	0,		0,	
+yycrank+663,	0,		0,	
+yycrank+668,	0,		0,	
+yycrank+660,	0,		0,	
+yycrank+0,	yysvec+293,	0,	
+yycrank+670,	0,		0,	
+yycrank+714,	0,		0,	
+yycrank+697,	0,		0,	
+yycrank+0,	0,		yyvstop+165,
+yycrank+0,	0,		yyvstop+167,
+yycrank+0,	0,		yyvstop+169,
+yycrank+0,	0,		yyvstop+171,
+yycrank+695,	0,		0,	
+yycrank+0,	yysvec+308,	0,	
+yycrank+717,	0,		0,	
+yycrank+0,	yysvec+308,	0,	
+yycrank+720,	0,		0,	
+yycrank+728,	0,		0,	
+yycrank+724,	0,		0,	
+yycrank+734,	0,		0,	
+yycrank+728,	0,		0,	
+yycrank+735,	0,		0,	
+yycrank+729,	0,		0,	
+yycrank+751,	0,		0,	
+yycrank+746,	0,		0,	
+yycrank+742,	0,		0,	
+yycrank+777,	0,		0,	
+yycrank+775,	0,		0,	
+yycrank+932,	0,		yyvstop+173,
+yycrank+933,	0,		yyvstop+175,
+yycrank+981,	0,		yyvstop+177,
+yycrank+984,	0,		yyvstop+179,
+yycrank+790,	0,		0,	
+yycrank+792,	0,		0,	
+yycrank+786,	0,		0,	
+yycrank+985,	0,		yyvstop+181,
+yycrank+787,	0,		0,	
+yycrank+830,	0,		0,	
+yycrank+832,	0,		0,	
+yycrank+840,	0,		0,	
+yycrank+857,	0,		0,	
+yycrank+856,	0,		0,	
+yycrank+849,	0,		0,	
+yycrank+996,	0,		yyvstop+183,
+yycrank+997,	0,		0,	
+yycrank+915,	yysvec+339,	yyvstop+185,
+yycrank+859,	0,		0,	
+yycrank+847,	0,		0,	
+yycrank+918,	yysvec+234,	yyvstop+187,
+yycrank+842,	0,		0,	
+yycrank+865,	0,		0,	
+yycrank+853,	0,		0,	
+yycrank+871,	0,		0,	
+yycrank+910,	0,		0,	
+yycrank+912,	0,		0,	
+yycrank+0,	yysvec+293,	0,	
+yycrank+910,	0,		0,	
+yycrank+970,	0,		0,	
+yycrank+915,	0,		0,	
+yycrank+917,	0,		0,	
+yycrank+0,	yysvec+308,	0,	
+yycrank+915,	0,		0,	
+yycrank+902,	0,		0,	
+yycrank+921,	0,		0,	
+yycrank+923,	0,		0,	
+yycrank+907,	0,		0,	
+yycrank+924,	0,		0,	
+yycrank+922,	0,		0,	
+yycrank+915,	0,		0,	
+yycrank+1016,	0,		yyvstop+189,
+yycrank+1001,	yysvec+324,	yyvstop+191,
+yycrank+969,	0,		0,	
+yycrank+1034,	0,		yyvstop+193,
+yycrank+1035,	0,		yyvstop+195,
+yycrank+1036,	0,		yyvstop+197,
+yycrank+1037,	0,		yyvstop+199,
+yycrank+1034,	yysvec+331,	yyvstop+201,
+yycrank+926,	0,		0,	
+yycrank+917,	0,		0,	
+yycrank+911,	0,		0,	
+yycrank+946,	0,		0,	
+yycrank+945,	0,		0,	
+yycrank+962,	0,		0,	
+yycrank+1062,	0,		0,	
+yycrank+0,	yysvec+347,	0,	
+yycrank+0,	yysvec+345,	0,	
+yycrank+0,	yysvec+347,	0,	
+yycrank+0,	yysvec+293,	0,	
+yycrank+960,	0,		0,	
+yycrank+0,	yysvec+293,	0,	
+yycrank+965,	0,		0,	
+yycrank+0,	yysvec+308,	0,	
+yycrank+0,	yysvec+308,	0,	
+yycrank+966,	0,		0,	
+yycrank+963,	0,		0,	
+yycrank+951,	0,		0,	
+yycrank+949,	0,		0,	
+yycrank+971,	0,		0,	
+yycrank+959,	0,		0,	
+yycrank+976,	0,		0,	
+yycrank+1043,	0,		0,	
+yycrank+959,	0,		0,	
+yycrank+1070,	0,		yyvstop+203,
+yycrank+0,	yysvec+377,	0,	
+yycrank+0,	yysvec+375,	0,	
+yycrank+0,	yysvec+377,	0,	
+yycrank+975,	0,		0,	
+yycrank+1072,	0,		0,	
+yycrank+0,	yysvec+347,	0,	
+yycrank+0,	yysvec+293,	0,	
+yycrank+0,	yysvec+308,	0,	
+yycrank+0,	yysvec+394,	0,	
+yycrank+0,	yysvec+392,	0,	
+yycrank+0,	yysvec+394,	0,	
+yycrank+976,	0,		0,	
+yycrank+1087,	0,		0,	
+yycrank+1071,	0,		yyvstop+205,
+yycrank+0,	yysvec+377,	0,	
+yycrank+1098,	0,		yyvstop+207,
+yycrank+0,	yysvec+394,	0,	
+yycrank+0,	0,		yyvstop+209,
+yycrank+1099,	0,		yyvstop+211,
+yycrank+1108,	yysvec+414,	yyvstop+213,
+0,	0,	0};
+struct yywork *yytop = yycrank+1165;
+struct yysvf *yybgin = yysvec+1;
+char yymatch[] = {
+  0,   1,   1,   1,   1,   1,   1,   1, 
+  1,   9,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  9,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+ 48,  48,  50,  51,  51,  51,  54,  54, 
+ 54,  54,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,  97,  97,  97,  97,  97,  97,  97, 
+ 97,  97,   1, 107, 107, 107, 110, 110, 
+110, 110, 110, 110, 110, 110, 110, 110, 
+110, 110,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+0};
+char yyextra[] = {
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0};
+/*	Copyright (c) 1989 AT&T	*/
+/*	  All Rights Reserved  	*/
+
+/*	THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T	*/
+/*	The copyright notice above does not evidence any   	*/
+/*	actual or intended publication of such source code.	*/
+
+#pragma ident	"@(#)ncform	6.8	95/02/11 SMI"
+

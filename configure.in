@@ -1,0 +1,512 @@
+dnl
+dnl configure.in -- autoconf template for nmh
+dnl
+dnl $Id$
+dnl
+
+AC_INIT(h/nmh.h)
+AC_CONFIG_HEADER(config.h)
+
+dnl What version of nmh are we building?
+VERSION=`sed -e 's/nmh-//' ${srcdir}/VERSION`
+echo "configuring for nmh-$VERSION"
+AC_SUBST(VERSION)dnl
+
+dnl -------------------------
+dnl CHECK COMMAND LINE OPTION
+dnl -------------------------
+dnl What method of posting should post use?
+undefine([mts])dnl
+AC_ARG_WITH(mts,
+[  --with-mts=MTS          specify the mail transport agent])
+
+if test x$with_mts = xsmtp; then
+  MTS="smtp"
+  MTSLIB="mts/smtp/libsmtp.a"
+  AC_DEFINE(SMTPMTS)dnl
+elif test x$with_mts = xsendmail; then
+  MTS="sendmail"
+  MTSLIB="mts/sendmail/libsend.a"
+  AC_DEFINE(SENDMTS)dnl
+else
+  MTS="smtp"
+  MTSLIB="mts/smtp/libsmtp.a"
+  AC_DEFINE(SMTPMTS)dnl
+fi
+
+AC_SUBST(MTS)
+AC_SUBST(MTSLIB)
+
+dnl What should be the default editor?
+undefine([editor])dnl
+AC_ARG_WITH(editor,
+[  --with-editor=EDITOR    specify the default editor])
+
+if test -n "$with_editor"; then
+  editorpath="$with_editor"
+fi
+
+dnl What should be the default pager?
+undefine([pager])dnl
+AC_ARG_WITH(pager,
+[  --with-pager=PAGER      specify the default pager])
+
+if test -n "$with_pager"; then
+  pagerpath="$with_pager"
+fi
+
+dnl Do you want mhe support?
+undefine([nmh-mhe])dnl
+AC_ARG_ENABLE(nmh-mhe,
+[  --enable-nmh-mhe        enable mhe support (DEFAULT)])
+
+dnl mhe support is on by default, so define it unless
+dnl explicitly disabled.
+if test x$enable_nmh_mhe != xno; then
+  AC_DEFINE(MHE)dnl
+fi
+
+dnl Do you want client-side support for pop
+undefine([nmh-pop])dnl
+AC_ARG_ENABLE(nmh-pop,
+[  --enable-nmh-pop        enable client-side support for pop])
+if test x$enable_nmh_pop = xyes; then
+  AC_DEFINE(POP)dnl
+  POPLIB=popsbr.o
+  POPSED='/^%nmhbeginpop%/d;/^%nmhendpop%/d'
+else
+  POPSED='/^%nmhbeginpop%/,/^%nmhendpop%/d'
+fi
+AC_SUBST(POPLIB)dnl
+AC_SUBST(POPSED)dnl
+
+dnl Do you want client-side support for kpop
+AC_ARG_WITH(krb4,
+[  --with-krb4=PREFIX      specify location of Kerberos V4 for kpop support])
+if test x$with_krb4 != x -a x$with_krb4 != xno; then
+  AC_DEFINE(KPOP)dnl
+  AC_DEFINE(KPOP_PRINCIPAL, "pop")dnl
+fi
+
+dnl Do you want support for hesiod
+AC_ARG_WITH(hesiod,
+[  --with-hesiod=PREFIX    specify location of Hesiod])
+if test x$with_hesiod != x -a x$with_hesiod != xno; then
+  AC_DEFINE(HESIOD)dnl
+fi
+
+dnl Do you want to debug nmh?
+undefine([nmh-debug])dnl
+AC_ARG_ENABLE(nmh-debug,
+[  --enable-nmh-debug      enable nmh code debugging])
+
+dnl ----------------------------------------------------
+dnl Default location is /usr/local/nmh/{bin,etc,lib,man}
+dnl ----------------------------------------------------
+AC_PREFIX_DEFAULT(/usr/local/nmh)
+
+dnl ------------------
+dnl CHECK THE COMPILER
+dnl ------------------
+dnl We want these before the checks,
+dnl so the checks can modify their values.
+test -z "$CFLAGS" && CFLAGS= auto_cflags=1
+if test x$enable_nmh_debug = xyes; then
+  test -z "$LDFLAGS" && LDFLAGS=-g
+fi
+
+AC_PROG_CC
+
+dnl if the user hasn't specified CFLAGS, then
+dnl   if compiler is gcc, then
+dnl     use -O2 and some warning flags
+dnl   else use -O
+if test -n "$auto_cflags"; then
+  if test x$enable_nmh_debug = xyes; then
+    if test -n "$GCC"; then
+      test -z "$CFLAGS" && CFLAGS="-Wall -g" || CFLAGS="$CFLAGS -Wall -g"
+    else
+      test -z "$CFLAGS" && CFLAGS=-g || CFLAGS="$CFLAGS -g"
+    fi
+  else
+    test -z "$LDFLAGS" && LDFLAGS=-s
+    if test -n "$GCC"; then
+      test -z "$CFLAGS" && CFLAGS=-O2 || CFLAGS="$CFLAGS -O2"
+    else
+      test -z "$CFLAGS" && CFLAGS=-O  || CFLAGS="$CFLAGS -O"
+    fi
+  fi
+fi
+
+AC_C_CONST              dnl Does compiler support `const'.
+
+dnl ------------------
+dnl CHECK FOR PROGRAMS
+dnl ------------------
+AC_PROG_MAKE_SET	dnl Does make define $MAKE
+AC_PROG_INSTALL		dnl Check for BSD compatible `install'
+AC_PROG_RANLIB		dnl Check for `ranlib'
+AC_PROG_AWK             dnl Check for mawk,gawk,nawk, then awk
+AC_PROG_LEX             dnl Check for lex/flex
+
+dnl Check for lorder and tsort commands
+AC_CHECK_PROG(LORDER, lorder, lorder, no)dnl
+AC_CHECK_PROG(TSORT, tsort, tsort, no)dnl
+
+dnl If either doesn't exist, replace them with echo and cat
+if test x$ac_cv_prog_LORDER != xlorder -o x$ac_cv_prog_TSORT != xtsort; then
+  LORDER=echo
+  TSORT=cat
+  AC_SUBST(LORDER)dnl
+  AC_SUBST(TSORT)dnl
+fi
+
+dnl Look for `sendmail'
+pathtmp=/usr/lib:/usr/sbin:/usr/etc:/usr/ucblib:/usr/bin:/bin
+AC_PATH_PROG(sendmailpath, sendmail, no, [$pathtmp])
+
+dnl Look for `more'
+pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
+AC_PATH_PROG(morepath, more, no, [$pathtmp])
+
+dnl If pager is not specified yet,
+dnl then use `more' as the default.
+if test -z "$pagerpath"; then
+  pagerpath="$morepath"
+fi
+AC_SUBST(pagerpath)dnl
+
+dnl Look for `vi'
+pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
+AC_PATH_PROG(vipath, vi, no, [$pathtmp])
+
+dnl If editor is not specified yet,
+dnl then use `vi' as the default.
+if test -z "$editorpath"; then
+  editorpath="$vipath"
+fi
+AC_SUBST(editorpath)dnl
+
+dnl Check for broken vi
+AC_CACHE_CHECK(for broken vi, nmh_cv_attvibug,
+[if echo 'r /nonexist-file
+q' | ex > /dev/null 2>&1
+then
+        nmh_cv_attvibug=no
+else
+        nmh_cv_attvibug=yes
+fi])
+ 
+if test "$nmh_cv_attvibug" = yes; then
+  AC_DEFINE(ATTVIBUG)
+fi
+
+dnl ---------------
+dnl FIND MAIL SPOOL
+dnl ---------------
+AC_CACHE_CHECK(where mail spool is located, nmh_cv_mailspool,
+[for mailspool in /var/mail        dnl
+                  /var/spool/mail  dnl
+                  /usr/spool/mail  dnl
+                  /dev/null;       dnl Just in case we fall through
+do
+  test -d $mailspool && break
+done
+nmh_cv_mailspool=$mailspool
+])
+mailspool=$nmh_cv_mailspool
+AC_SUBST(mailspool)dnl
+
+dnl ------------------
+dnl CHECK HEADER FILES
+dnl ------------------
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_TIME
+AC_HEADER_SYS_WAIT
+AC_HEADER_STAT
+AC_CHECK_HEADERS(string.h memory.h stdlib.h unistd.h errno.h fcntl.h \
+                 limits.h crypt.h termcap.h termio.h termios.h locale.h \
+                 sys/param.h sys/time.h sys/utsname.h arpa/inet.h \
+                 arpa/ftp.h)
+
+AC_CACHE_CHECK(POSIX termios, nmh_cv_sys_posix_termios,
+[AC_TRY_LINK([#include <sys/types.h>
+#include <unistd.h>
+#include <termios.h>],
+[/* SunOS 4.0.3 has termios.h but not the library calls.  */
+tcgetattr(0, 0);],
+  nmh_cv_sys_posix_termios=yes, nmh_cv_sys_posix_termios=no)])
+ 
+if test $nmh_cv_sys_posix_termios = yes; then
+  AC_CACHE_CHECK(TIOCGWINSZ in termios.h,
+  nmh_cv_header_termios_h_tiocgwinsz,
+  [AC_TRY_LINK([#include <sys/types.h>
+#include <termios.h>],
+  [int x = TIOCGWINSZ;],
+  nmh_cv_header_termios_h_tiocgwinsz=yes,
+  nmh_cv_header_termios_h_tiocgwinsz=no)])
+else
+  nmh_cv_header_termios_h_tiocgwinsz=no
+fi
+ 
+if test $nmh_cv_header_termios_h_tiocgwinsz = no; then
+  AC_CACHE_CHECK(TIOCGWINSZ in sys/ioctl.h,
+  nmh_cv_header_sys_ioctl_h_tiocgwinsz,
+  [AC_TRY_LINK([#include <sys/types.h>
+#include <sys/ioctl.h>],
+  [int x = TIOCGWINSZ;],
+  nmh_cv_header_sys_ioctl_h_tiocgwinsz=yes,
+  nmh_cv_header_sys_ioctl_h_tiocgwinsz=no)])
+  if test $nmh_cv_header_sys_ioctl_h_tiocgwinsz = yes; then
+    AC_DEFINE(GWINSZ_IN_SYS_IOCTL)
+  fi
+fi
+ 
+AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM))
+
+dnl ---------------
+dnl CHECK FUNCTIONS
+dnl ---------------
+AC_FUNC_VFORK
+AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
+               sighold sigrelse writev lstat uname tzset killpg \
+               sigsetjmp)
+
+AC_REPLACE_FUNCS(snprintf strerror strdup)
+
+dnl -------------------
+dnl CHECK FOR LIBRARIES
+dnl -------------------
+dnl Checks for network libraries (nsl, socket)
+AC_CHECK_NETLIBS
+
+dnl Check for bug in libraries such that ruserpass
+dnl needs to be linked as _ruserpass.
+AC_CHECK_RUSERPASS
+
+termcap_curses_order="termcap curses ncurses"
+for lib in $termcap_curses_order; do
+  AC_CHECK_LIB(${lib}, tgetent, [TERMLIB="-l$lib"; break])
+done
+AC_SUBST(TERMLIB)dnl
+
+dnl --------------
+dnl CHECK FOR NDBM
+dnl --------------
+dnl Checks for ndbm
+AC_CHECK_FUNC(dbm_open, ,
+  AC_CHECK_LIB(ndbm, dbm_open, ,
+    AC_CHECK_LIB(dbm, dbm_open)))
+
+dnl ----------------
+dnl CHECK FOR HESIOD
+dnl ----------------
+if test x$with_hesiod != x -a x$with_hesiod != xno; then
+  if test x$with_hesiod != xyes; then
+    HESIOD_INCLUDES="-I$with_hesiod/include"
+    HESIOD_LIBS="-L$with_hesiod/lib"
+  fi
+  AC_CHECK_FUNC(res_send, ,
+    AC_CHECK_LIB(resolv, res_send))
+  AC_CHECK_LIB(hesiod, hes_resolve, [HESIOD_LIBS="$HESIOD_LIBS -lhesiod"],
+    [AC_MSG_ERROR(Hesiod library not found)], $HESIOD_LIBS)
+fi
+AC_SUBST(HESIOD_INCLUDES)dnl
+AC_SUBST(HESIOD_LIBS)dnl
+
+dnl ----------------------------------
+dnl CHECK FOR KRB4 (Kerberos4 support)
+dnl ----------------------------------
+if test x$with_krb4 != x -a x$with_krb4 != xno; then
+  if test x$with_krb4 != xyes; then
+    KRB4_INCLUDES="-I$with_krb4/include"
+    if test -d "$with_krb4/include/kerberosIV"; then
+      KRB4_INCLUDES="$KRB4_INCLUDES -I$with_krb4/include/kerberosIV"
+    fi
+    KRB4_LIBS="-L$with_krb4/lib"
+  elif test -d /usr/include/kerberosIV; then
+    KRB4_INCLUDES="-I/usr/include/kerberosIV"
+  fi
+  AC_CHECK_LIB(krb4, krb_rd_req,
+    [KRB4_LIBS="$KRB4_LIBS -lkrb4 -ldes425 -lkrb5 -lcrypto -lcom_err"],
+    [AC_CHECK_LIB(krb, krb_rd_req,
+      [KRB4_LIBS="-lkrb -ldes"],
+      [AC_MSG_ERROR(Kerberos 4 libraries not found)],
+      $KRB4_LIBS -ldes)],
+    $KRB4_LIBS -ldes425 -lkrb5 -lcrypto -lcom_err)
+fi
+AC_SUBST(KRB4_INCLUDES)dnl
+AC_SUBST(KRB4_LIBS)dnl
+
+dnl ---------------------
+dnl CHECK TERMCAP LIBRARY
+dnl ---------------------
+
+dnl Add the termcap library, so that the following configure
+dnl tests will find it when it tries to link test programs.
+nmh_save_LIBS="$LIBS"
+LIBS="$TERMLIB $LIBS"
+
+dnl Checks for external variable ospeed in the termcap library.
+AC_CACHE_CHECK(if an include file defines ospeed,
+nmh_cv_decl_ospeed_include_defines,
+[AC_TRY_LINK(
+[#include <sys/types.h>
+#if HAVE_TERMIOS_H
+#include <termios.h>
+#endif
+#if HAVE_TERMCAP_H
+#include <termcap.h>
+#endif], [ospeed = 0;],
+nmh_cv_decl_ospeed_include_defines=yes,
+nmh_cv_decl_ospeed_include_defines=no)])
+ 
+if test $nmh_cv_decl_ospeed_include_defines = no; then
+  AC_CACHE_CHECK(if you must define ospeed,
+  nmh_cv_decl_ospeed_must_define,
+  [AC_TRY_LINK( ,[extern short ospeed; ospeed = 0;],
+  nmh_cv_decl_ospeed_must_define=yes,
+  nmh_cv_decl_ospeed_must_define=no)])
+fi
+ 
+if test $nmh_cv_decl_ospeed_include_defines = yes; then
+  AC_DEFINE(HAVE_OSPEED)
+elif test $nmh_cv_decl_ospeed_must_define = yes; then
+  AC_DEFINE(HAVE_OSPEED)
+  AC_DEFINE(MUST_DEFINE_OSPEED)
+fi
+
+dnl dnl Checks if tgetent accepts NULL and will
+dnl dnl allocate its own termcap buffer.
+dnl AC_CACHE_CHECK(if tgetent accepts NULL,
+dnl nmh_cv_func_tgetent_accepts_null,
+dnl [AC_TRY_RUN([main(){int i = tgetent((char*)0,"vt100");exit(!i || i == -1);}],
+dnl   nmh_cv_func_tgetent_accepts_null=yes,
+dnl   nmh_cv_func_tgetent_accepts_null=no,
+dnl   nmh_cv_func_tgetent_accepts_null=no)])
+dnl if test $nmh_cv_func_tgetent_accepts_null = yes; then
+dnl   AC_DEFINE(TGETENT_ACCEPTS_NULL)
+dnl fi
+
+dnl Now put the libraries back to what it was before we
+dnl starting checking the termcap library.
+LIBS="$nmh_save_LIBS"
+
+dnl --------------
+dnl CHECK TYPEDEFS
+dnl --------------
+AC_TYPE_SIGNAL
+AC_TYPE_PID_T
+AC_TYPE_OFF_T
+AC_TYPE_UID_T
+AC_TYPE_MODE_T
+AC_TYPE_SIZE_T
+
+dnl Check for sigset_t.  Currently I'm looking in
+dnl <sys/types.h> and <signal.h>.  Others might need
+dnl to be added.
+AC_CACHE_CHECK(for sigset_t, nmh_cv_type_sigset_t,
+[AC_TRY_COMPILE(
+[#include <sys/types.h>
+#include <signal.h>], [sigset_t tempsigset;],
+  nmh_cv_type_sigset_t=yes, nmh_cv_type_sigset_t=no)])
+if test $nmh_cv_type_sigset_t = no; then
+  AC_DEFINE(sigset_t, unsigned int)
+fi
+
+dnl ----------------
+dnl CHECK STRUCTURES
+dnl ----------------
+AC_STRUCT_ST_BLKSIZE
+
+AC_CACHE_CHECK(for tm_gmtoff in struct tm, nmh_cv_struct_tm_gmtoff,
+[AC_TRY_COMPILE(
+[#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef TM_IN_SYS_TIME
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif],
+[struct tm temptm; temptm.tm_gmtoff = 0;],
+  nmh_cv_struct_tm_gmtoff=yes, nmh_cv_struct_tm_gmtoff=no)])
+if test $nmh_cv_struct_tm_gmtoff = yes; then
+  AC_DEFINE(HAVE_TM_GMTOFF)
+fi
+
+dnl -------------
+dnl CHECK SIGNALS
+dnl -------------
+dnl What style of signal do you have (POSIX, BSD, or SYSV)?
+AC_MSG_CHECKING(what style of signals to use)
+if test $ac_cv_func_sigaction = yes -a $ac_cv_func_sigprocmask = yes; then
+  signals_style=POSIX_SIGNALS
+  AC_DEFINE(POSIX_SIGNALS)
+  AC_DEFINE(RELIABLE_SIGNALS)
+elif test $ac_cv_func_sigblock = yes -a $ac_cv_func_sigsetmask = yes; then
+  signals_style=BSD_SIGNALS
+  AC_DEFINE(BSD_SIGNALS)
+  AC_DEFINE(RELIABLE_SIGNALS)
+elif test $ac_cv_func_sighold = yes -a $ac_cv_func_sigrelse = yes; then
+  signals_style=SYSV_SIGNALS
+  AC_DEFINE(SYSV_SIGNALS)
+else
+  signals_style=NO_SIGNAL_BLOCKING
+  AC_DEFINE(NO_SIGNAL_BLOCKING)
+fi
+
+AC_MSG_RESULT($signals_style)
+
+dnl Where is <signal.h> located?  Needed as input for signames.awk
+AC_CACHE_CHECK(where signal.h is located, nmh_cv_path_signal_h,
+[for SIGNAL_H in /usr/include/bsd/sys/signal.h  dnl Next
+                 /usr/include/asm/signal.h      dnl Linux 1.3.0 and above
+                 /usr/include/asm/signum.h      dnl some versions of Linux/Alpha
+                 /usr/include/linux/signal.h    dnl Linux up to 1.2.11
+                 /usr/include/sys/signal.h      dnl Almost everybody else
+                 /dev/null;                     dnl Just in case we fall through
+do
+  test -f $SIGNAL_H && \
+  grep '#[ 	]*define[ 	][ 	]*SIG[0-9A-Z]*[ 	]*[0-9][0-9]*' $SIGNAL_H > /dev/null && \
+  break
+done
+nmh_cv_path_signal_h=$SIGNAL_H
+])
+SIGNAL_H=$nmh_cv_path_signal_h
+AC_SUBST(SIGNAL_H)dnl
+
+dnl ----------------
+dnl OUTPUT MAKEFILES
+dnl ----------------
+AC_OUTPUT(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
+          zotnet/Makefile zotnet/mts/Makefile zotnet/tws/Makefile \
+          zotnet/mf/Makefile zotnet/bboards/Makefile mts/Makefile \
+          mts/smtp/Makefile mts/sendmail/Makefile mts/mmdf/Makefile \
+          etc/Makefile man/Makefile, \
+          [test -z "$CONFIG_HEADERS" || echo > stamp-h])
+
+eval "nmhbin=${bindir}";         eval "nmhbin2=${nmhbin}"
+eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf2=${nmhsysconf}"
+eval "nmhlib=${libdir}";         eval "nmhlib2=${nmhlib}"
+eval "nmhman=${mandir}"
+
+echo "
+nmh configuration
+-----------------
+nmh version               : ${VERSION}
+compiler                  : ${CC}
+compiler flags            : ${CFLAGS}
+linker flags              : ${LDFLAGS}
+source code location      : ${srcdir}
+binary install path       : ${nmhbin2}
+libary install path       : ${nmhlib2}
+config files install path : ${nmhsysconf2}
+man page install path     : ${nmhman}
+transport system          : ${MTS}
+default editor            : ${editorpath}
+default pager             : ${pagerpath}"
+echo ""

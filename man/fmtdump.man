@@ -1,0 +1,42 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH FMTDUMP %manext8% MH.6.8 [%nmhversion%]
+.SH NAME
+fmtdump \- decode nmh format files
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+%libdir%/fmtdump
+\%[\-form\ formatfile]
+.br
+\%[\-format\ string]
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+\fIFmtdump\fR is a program that parses an \fInmh\fP format file and
+produces a pseudo-language listing of the how \fInmh\fP interprets
+the file.  This is useful when debugging a complicated format file.
+
+The `\-format\ string' and `\-form\ formatfile' switches may be
+used to specify a format string or format file to read.  The string
+is simply a format string and the file is simply a format file.
+See \fImh-format\fR\|(5) for the details.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+^%etcdir%/scan.default~^The default format file
+.Pr
+^Path:~^To determine the user's nmh directory
+.Sa
+mh-format(5), mh-sequences(8)
+.Co
+None
+.Bu
+The output may not be useful unless you are familiar
+with the internals of the mh-format subroutines.
+.En

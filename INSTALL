@@ -1,0 +1,229 @@
+#
+# INSTALL -- installation instructions
+#
+# $Id$
+#
+
+--------------
+Installing nmh
+--------------
+Please read all of the following instructions before you begin
+building nmh.
+
+You should check the MACHINES file to see if there are any specific
+build instructions for your operating system.  To build nmh, you will
+need an ANSI C compiler such as gcc.
+
+1) Run the command
+
+   sh configure [options]
+
+   This will check the configuration of your OS, and create
+   the include file config.h, as well as the various Makefiles.
+
+   The configure script accepts various options.  The options of
+   most interest are listed below.  To see the list of all available
+   options, you can run
+
+   sh configure --help
+
+2) (IMPORTANT)  Edit the user configuration section at the beginning
+   of the generated include file `config.h'.  Currently, not everything
+   is auto-configured, so some #defines must be set manually.
+
+3) Edit the user configuration section at the top of the main Makefile.
+
+4) make
+
+5) make install
+
+6) Edit the file `mts.conf' (installed in the nmh `etc' directory)
+   and make any necessary changes for the mail transport interface
+   you are using.
+
+   The default `mts.conf' file assumes you retrieve new mail from
+   a local (or NFS mounted) maildrop, and send outgoing mail by
+   injecting the message to a mail transfer agent (such as sendmail)
+   on the local machine via SMTP.
+
+   If you have enabled POP support and you want this to be the
+   default method of accessing new mail, you will need to change
+   the values of the variables "servers", "pophost", "localname",
+   and possibly "mmailid".
+
+   a) "servers" defines the server to which you send outgoing SMTP
+      traffic.
+
+   b) "pophost" defines the server that runs the POP daemon, and to
+      which `inc' and `msgchk' will query for new mail.
+
+   c) "localname" defines the hostname that nmh considers local.
+      If not set, then nmh queries your OS for this value.  You may
+      want to change this if you wish your e-mail to appear as if it
+      originated on the POP server.
+
+   d) "mmailid" is checked to see if nmh should do username
+      masquerading.  If the value of this field is non-zero, then
+      nmh will check if the pw_gecos field in the password file
+      has the form
+
+          Full Name <fakeusername>
+
+      If the pw_gecos field has this form, then the internal nmh
+      routines that find the username and full name of a user will
+      return "fakeusername" and "Full Name" respectively.  This is
+      useful if you wish messages that you send to appear to come
+      from the username of your POP account, rather than your username
+      on the local machine.
+
+   If you compile with POP support, but only want to use it occasionally,
+   then you can always use the `-host' and `-user' options to `inc'
+   and `msgchk' instead of changing `mts.conf'.
+
+   Check the `mh-tailor' man page for a list of all the available
+   options for this file.
+
+7) If you have enabled POP support, make sure that `pop3' (or more
+   precisely the value of the define POPSERVICE in config.h) is defined
+   in the /etc/services file (or its NIS/NIS+ equivalent) on the client
+   machine.  It should be something equivalent to "110/tcp".  This might
+   have already been done when the pop daemon was installed.
+
+8) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
+   This file contains the default profile entries for the nmh command
+   `mhn' and is created by the script `mhn.defaults.sh'.  This script
+   will search a generic path (essentially your $PATH) for programs to
+   handle various content types (for example, xv to display images).
+   You can re-run this script and give it a more tailored path.  You may
+   want to re-run this script later if you install new programs to
+   display content.  An example of this is:
+
+   cd support/general
+   ./mhn.defaults.sh /usr/local/bin:/usr/X11/bin:/usr/ucb > mhn.defaults
+
+   and then move `mhn.defaults' into the nmh `etc' directory.
+
+   The `mhn.defaults.sh' script only searches for a simple set of programs.
+   If you have specialized programs to handle various types, you will need
+   to edit the `mhn.defaults' file manually.  The syntax of this file is
+   described in the man page for `mhn', and in section 9.4 of the book
+   "MH & xmh: Email for Users and Programmers", 3rd edition, by Jerry Peek.
+
+9) Add an optional global mh.profile, if desired.  This profile should be
+   placed in the nmh `etc' directory with the name `mh.profile'.  This
+   file will be used to construct the initial .mh_profile of a new nmh
+   user, but will not be consulted after that.
+
+-----------------------------------------------
+Compiler options, or using a different compiler
+-----------------------------------------------
+By default, configure will use the "gcc" compiler if found.  You can use a
+different compiler, or add unusual options for compiling or linking that
+the "configure" script does not know about, by either editing the user
+configuration section of the top level Makefile (after running configure)
+or giving "configure" initial values for these variables by setting them
+in the environment.  Using a Bourne-compatible shell (such as sh,ksh,zsh),
+ 
+you can do that on the command line like this:
+    CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
+ 
+Or on systems that have the "env" program, you can do it like this:
+    env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
+
+----------------------------------------
+Building nmh on additional architectures
+----------------------------------------
+To build nmh on additional architectures, you can do a "make distclean".
+This should restore the nmh source distribution back to its original
+state.  You can then configure nmh as above on other architectures in
+which you wish to build nmh.  Or alternatively, you can use a different
+build directory for each architecture.
+ 
+---------------------------------
+Using a different build directory
+---------------------------------
+You can compile the nmh in a different directory from the one containing
+the source code.  Doing so allows you to compile it on more than one
+architecture at the same time.  To do this, you must use a version of
+"make" that supports the "VPATH" variable, such as GNU "make".  "cd" to
+the directory where you want the object files and executables to go and
+run the "configure" script.  "configure" automatically checks for the
+source code in the directory that "configure" is in.  For example,
+ 
+    cd /usr/local/solaris/nmh
+    /usr/local/src/nmh-1.0/configure
+    make
+
+---------------------
+Options for configure
+---------------------
+--prefix=DIR     (DEFAULT is /usr/local/nmh)
+     This will change the base prefix for the installation location
+     for the various parts of nmh.  Unless overridden, nmh is installed
+     in ${prefix}/bin, ${prefix}/etc, ${prefix}/lib, ${prefix}/man.
+
+--bindir=DIR     (DEFAULT is ${prefix}/bin)
+     nmh's binaries (show, inc, comp, ...) are installed here.
+
+--libdir=DIR     (DEFAULT is ${prefix}/lib)
+     nmh's support binaries (post, slocal, mhl, ...) are installed here.
+
+--sysconfdir=DIR     (DEFAULT is ${prefix}/etc)
+     nmh's config files (mts.conf, mhn.defaults, ...) are installed here.
+
+--mandir=DIR     (DEFAULT is ${prefix}/man)
+     nmh's man pages are installed here.
+
+--with-mts=MTS   (DEFAULT is smtp)
+     specify the mail transport system you want to use.  The two
+     acceptable options are "smtp" (which is the default), and
+     "sendmail".
+
+     If you use "smtp", this will enable a direct SMTP (simple
+     mail transport protocol) interface in nmh.  When sending
+     mail, instead of passing the message to the mail transport
+     agent, `post' will open a socket connection to the mail
+     port on the machine specified in the `mts.conf' file
+     (default is localhost), and speak SMTP directly.
+
+     If you use "sendmail", then `post' will send messages by
+     passing forking a local copy of sendmail.  Currently it
+     will still speak SMTP with this local copy of sendmail.
+
+     If you wish to use a transport agent other than sendmail, you will
+     need to use a `sendmail wrapper'.
+
+--with-editor=EDITOR  (DEFAULT is vi)
+     specify the full path of the default editor to use.  If this
+     option is not given, then the configuration process will search
+     for the `vi' command and use it as the default.  If you wish to
+     specify an interface which is compatible with MH, then use the
+     nmh command `prompter'.  If you specify `prompter', then you don't
+     need to give the full pathname.
+
+--with-pager=PAGER    (DEFAULT is more)
+     specify the default pager (file lister) to use.  If this option
+     is not given, then the configuration process will search for the
+     command `more' and use it as the default.
+
+--enable-nmh-mhe    (DEFAULT)
+     Add support for the Emacs front-end `mhe'.
+
+--enable-nmh-pop
+    Enable client-side support for pop.
+
+--with-krb4=PREFIX
+    Specify the location of Kerberos V4 for KPOP support.  You will
+    also need to specify the option `--enable-nmh-pop'.  After running
+    configure, you will probably need to change the POPSERVICE define
+    in config.h.  See the comments inside config.h for details.
+
+--with-hesiod=PREFIX
+    Specify the location of Hesiod.
+
+--enable-nmh-debug
+    Enable debugging support.
+
+--
+Richard Coleman
+coleman@math.gatech.edu

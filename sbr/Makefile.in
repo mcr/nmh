@@ -1,0 +1,130 @@
+#
+# Makefile for sbr subdirectory
+#
+# $Id$
+#
+
+SHELL = /bin/sh
+
+top_srcdir = @top_srcdir@
+srcdir     = @srcdir@
+VPATH      = @srcdir@
+
+CC       = @CC@
+CFLAGS   = @CFLAGS@
+DEFS     = @DEFS@
+INCLUDES = -I.. -I. -I$(top_srcdir)
+
+AWK    = @AWK@
+LORDER = @LORDER@
+TSORT  = @TSORT@
+RANLIB = @RANLIB@
+
+LIBOBJS = @LIBOBJS@
+
+COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
+
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+.c.o:
+	$(COMPILE) $<
+
+# this header file is parsed to generate signal messages (sigmsg.h)
+SIGNAL_H = @SIGNAL_H@
+
+# source for library functions
+SRCS =	add.c addrsbr.c ambigsw.c atooi.c brkstring.c check_charset.c \
+	closefds.c concat.c context_del.c context_find.c context_foil.c \
+	context_read.c context_replace.c context_save.c copy.c \
+	copyip.c cpydata.c cpydgst.c discard.c done.c error.c \
+	fdcompare.c folder_addmsg.c folder_delmsgs.c folder_free.c \
+	folder_pack.c folder_read.c folder_realloc.c gans.c \
+	getans.c getanswer.c getarguments.c getcpy.c getfolder.c fmt_addr.c \
+	fmt_compile.c fmt_new.c fmt_rfc2047.c fmt_scan.c lock_file.c \
+	m_atoi.c m_backup.c m_convert.c m_draft.c m_getfld.c m_gmprot.c \
+	m_maildir.c m_name.c m_scratch.c m_tmpfil.c makedir.c \
+	path.c peekc.c pidwait.c pidstatus.c print_help.c \
+	print_sw.c print_version.c push.c putenv.c pwd.c refile.c \
+	remdir.c r1bindex.c readconfig.c seq_add.c seq_bits.c seq_del.c \
+	seq_getnum.c seq_list.c seq_nameok.c seq_print.c seq_read.c \
+	seq_save.c seq_setcur.c seq_setprev.c seq_setunseen.c showfile.c \
+	signals.c smatch.c snprintb.c ssequal.c strcasecmp.c strindex.c \
+	trimcpy.c uprf.c vfgets.c fmt_def.c m_msgdef.c
+
+# source for compatibility functions
+COMPAT = snprintf.c strdup.c strerror.c ruserpass.c
+
+OBJS =	add.o addrsbr.o ambigsw.o atooi.o brkstring.o check_charset.o \
+	closefds.o concat.o context_del.o context_find.o context_foil.o \
+	context_read.o context_replace.o context_save.o copy.o \
+	copyip.o cpydata.o cpydgst.o discard.o done.o error.o \
+	fdcompare.o folder_addmsg.o folder_delmsgs.o folder_free.o \
+	folder_pack.o folder_read.o folder_realloc.o gans.o \
+	getans.o getanswer.o getarguments.o getcpy.o getfolder.o fmt_addr.o \
+	fmt_compile.o fmt_new.o fmt_rfc2047.o fmt_scan.o lock_file.o \
+	m_atoi.o m_backup.o m_convert.o m_draft.o m_getfld.o m_gmprot.o \
+	m_maildir.o m_name.o m_scratch.o m_tmpfil.o makedir.o \
+	path.o peekc.o pidwait.o pidstatus.o print_help.o \
+	print_sw.o print_version.o push.o putenv.o pwd.o refile.o \
+	remdir.o r1bindex.o readconfig.o seq_add.o seq_bits.o seq_del.o \
+	seq_getnum.o seq_list.o seq_nameok.o seq_print.o seq_read.o \
+	seq_save.o seq_setcur.o seq_setprev.o seq_setunseen.o showfile.o \
+	signals.o smatch.o snprintb.o ssequal.o strcasecmp.o strindex.o \
+	trimcpy.o uprf.o vfgets.o fmt_def.o m_msgdef.o \
+	$(LIBOBJS)
+
+# auxiliary files
+AUX = Makefile.in sigmsg.awk
+
+# all files in this directory included in the distribution
+DIST = $(SRCS) $(COMPAT) $(AUX)
+
+# ========= DEPENDENCIES FOR BUILDING ==========
+
+# default target
+all: libmh.a
+
+sigmsg.h: sigmsg.awk
+	$(AWK) -f $(srcdir)/sigmsg.awk $(SIGNAL_H) > $@
+
+pidstatus.o: sigmsg.h
+
+libmh.a: $(OBJS)
+	rm -f libmh.a
+	ar cr libmh.a `$(LORDER) $(OBJS) | $(TSORT)`
+	$(RANLIB) libmh.a
+
+install:
+
+uninstall:
+
+# ========== DEPENDENCIES FOR CLEANUP ==========
+
+mostlyclean:
+	rm -f *.o *~
+
+clean: mostlyclean
+	rm -f libmh.a sigmsg.h
+
+distclean: clean
+	rm -f Makefile
+
+realclean: distclean
+
+superclean: realclean
+
+# ========== DEPENDENCIES FOR MAINTENANCE ==========
+
+subdir = sbr
+
+Makefile: Makefile.in ../config.status
+	cd .. && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status
+ 
+distdir = ../`cat ../distname`/$(subdir)
+nmhdist: $(DIST)
+	@echo "Copying distribution files in $(subdir)"
+	@for file in $(DIST); do \
+	  cp -p $(srcdir)/$$file $(distdir); \
+	done
+

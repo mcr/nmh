@@ -1,0 +1,167 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH MHLIST %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+mhlist \- list information about MIME messages
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+mhlist \%[+folder] \%[msgs] \%[\-file file]
+.br
+\%[\-part number]... \%[\-type content]...
+.br
+\%[\-headers] \%[\-noheaders]
+\%[\-realsize] \%[\-norealsize]
+.br
+\%[\-rcache policy] \%[\-wcache policy]
+\%[\-check] \%[\-nocheck]
+.br
+\%[\-verbose] \%[\-noverbose]
+\%[\-version]
+\%[\-help]
+.in -.5i
+
+.SH DESCRIPTION
+The \fImhlist\fR command allows you to list information (essentially
+a table of contents) about the various parts of a collection of
+MIME (multi-media) messages.
+
+\fImhlist\fR manipulates MIME (multi-media messages) as specified
+in RFC\-2045 thru RFC\-2049.
+
+The `\-headers' switch indicates that a one-line banner should be
+displayed above the listing.
+
+The `\-realsize' switch tells \fImhlist\fR to evaluate the
+\*(lqnative\*(rq (decoded) format of each content prior to listing.
+This provides an accurate count at the expense of a small delay.
+
+If the `\-verbose' switch is present, then the listing will show
+any \*(lqextra\*(rq information that is present in the message,
+such as comments in the Content-Type header.
+
+The option `\-file\ file' directs \fImhlist\fR to use the specified
+file as the source message, rather than a message from a folder.
+If you specify this file as \*(lq-\*(rq, then \fImhlist\fR will
+accept the source message on the standard input.  Note that the
+file, or input from standard input should be a validly formatted
+message, just like any other \fInmh\fR message.  It should \fBNOT\fR
+be in mail drop format (to convert a file in mail drop format to
+a folder of \fInmh\fR messages, see \fIinc\fR\0(1)).
+
+By default, \fImhlist\fR will list information about the entire
+message (all of its parts).  By using the `\-part' and `\-type'
+switches, you may limit the scope of this command to particular
+subparts (of a multipart content) and/or particular content types.
+
+A part specification consists of a series of numbers separated by dots.
+For example, in a multipart content containing three parts, these
+would be named as 1, 2, and 3, respectively.  If part 2 was also a
+multipart content containing two parts, these would be named as 2.1 and
+2.2, respectively.  Note that the `\-part' switch is effective for only
+messages containing a multipart content.  If a message has some other
+kind of content, or if the part is itself another multipart content, the
+`\-part' switch will not prevent the content from being acted upon.
+
+A content specification consists of a content type and a subtype.
+The initial list of \*(lqstandard\*(rq content types and subtypes can
+be found in RFC\-2046.
+.ne 18
+A list of commonly used contents is briefly reproduced here:
+.sp
+.nf
+.in +.5i
+.ta \w'application  'u
+Type	Subtypes
+----	--------
+text	plain, enriched
+multipart	mixed, alternative, digest, parallel
+message	rfc822, partial, external-body
+application	octet-stream, postscript
+image	jpeg, gif, png
+audio	basic
+video	mpeg
+.re
+.in -.5i
+.fi
+.sp
+A legal MIME message must contain a subtype specification.
+.PP
+To specify a content, regardless of its subtype, just use the
+name of the content, e.g., \*(lqaudio\*(rq.  To specify a specific
+subtype, separate the two with a slash, e.g., \*(lqaudio/basic\*(rq.
+Note that regardless of the values given to the `\-type' switch, a
+multipart content (of any subtype listed above) is always acted upon.
+Further note that if the `\-type' switch is used, and it is desirable to
+act on a message/external-body content, then the `\-type' switch must
+be used twice: once for message/external-body and once for the content
+externally referenced.
+
+.Uh "Checking the Contents"
+The `\-check' switch tells \fImhlist\fR to check each content for an
+integrity checksum.  If a content has such a checksum (specified as a
+Content-MD5 header field), then \fImhlist\fR will attempt to verify the
+integrity of the content.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's nmh directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Sa
+mhbuild(1), mhshow(1), mhstore(1), sendfiles(1)
+.br
+RFC\-2045:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part One:
+.br
+   Format of Internet Message Bodies\fR,
+.br
+RFC\-2046:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Two:
+.br
+   Media Types\fR,
+.br
+RFC\-2047:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Three:
+.br
+   Message Header Extensions for Non-ASCII Text\fR,
+.br
+RFC\-2048:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Four:
+.br
+   Registration Procedures\fR,
+.br
+RFC\-2049:
+.br
+   \fIMultipurpose Internet Mail Extensions (MIME) Part Five:
+.br
+   Conformance Criteria and Examples\fR.
+.De
+`+folder' defaults to the current folder
+.Ds
+`msgs' defaults to cur
+.Ds
+`\-nocheck'
+.Ds
+`\-headers'
+.Ds
+`\-realsize'
+.Ds
+`\-rcache ask'
+.Ds
+`\-wcache ask'
+.Ds
+`\-noverbose'
+.Co
+If a folder is given, it will become the current folder.  The last
+message selected will become the current message.
+.En

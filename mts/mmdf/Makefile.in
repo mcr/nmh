@@ -1,0 +1,64 @@
+#
+# Makefile for mts/mmdf subdirectory
+#
+# $Id$
+#
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+VPATH  = @srcdir@
+
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = @bindir@
+libdir      = @libdir@
+etcdir      = @sysconfdir@
+
+.SUFFIXES:
+
+# source files
+SRC = hosts.c
+
+# auxiliary files
+AUX = Makefile.in
+
+# all files in this directory included in the distribution
+DIST = $(SRC) $(AUX)
+
+# ========= DEPENDENCIES FOR BUILDING ==========
+
+all:
+
+install:
+
+uninstall:
+
+# ========== DEPENDENCIES FOR CLEANUP ==========
+
+mostlyclean:
+	rm -f *~
+
+clean: mostlyclean
+
+distclean: clean
+	rm -f Makefile
+
+realclean: distclean
+
+superclean: realclean
+
+# ========== DEPENDENCIES FOR MAINTENANCE ==========
+
+subdir = mts/mmdf
+
+Makefile: Makefile.in ../../config.status
+	cd ../.. && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status
+ 
+distdir = ../../`cat ../../distname`/$(subdir)
+nmhdist: $(DIST)
+	@echo "Copying distribution files in $(subdir)"
+	@for file in $(DIST); do \
+	  cp -p $(srcdir)/$$file $(distdir); \
+	done
+

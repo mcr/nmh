@@ -1,0 +1,81 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH MHPARAM %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+mhparam \- print nmh profile components
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+mhparam
+\%[components]
+\%[-all]
+\%[-component] \%[-nocomponent]
+.br
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+\fIMhparam\fR writes the value of the specified profile component to the
+standard output separated by newlines.  If the profile component is not
+present, the default value (or nothing if there is no default) is printed.
+
+If the switch `\-component' is given, then the component name is displayed
+along with the profile components value.  This can be disabled with the
+switch `\-nocomponent'.
+
+If more than one component is specified in the `components' list, then
+the switch `\-component' is on by default.  If only one component is
+specified, then the switch `\-nocomponent' is on by default.
+
+If `\-all' is specified, then all components in the nmh profile are
+displayed and other arguments are ignored.
+
+Examples:
+
+.nf
+.ta \w'AliasFile:'u+2n
+.in +.5i
+% mhparam path
+Mail
+
+% mhparam mhlproc
+%libdir%/mhl
+
+% mhparam \-component path
+Path: Mail
+
+% mhparam AliasFile rmmproc
+AliasFile: aliases
+rmmproc: rmmproc
+
+% mhparam \-nocomponent AliasFile rmmproc
+aliases
+rmmproc
+.in -.5i
+.fi
+
+\fIMhparam\fR is also useful in back\-quoted operations:
+
+.nf
+.in +.5i
+% fgrep cornell.edu `mhpath +`/`mhparam aliasfile`
+
+.in -.5i
+.fi
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Sa
+mh-profile\|(5)
+.De
+`\-nocomponent' if only one component is specified
+`\-component' if more than one component is specified
+.Ds
+`components' defaults to none
+.Co
+None
+.En

@@ -1,0 +1,278 @@
+
+The following are the differences between nmh and MH-6.8.3.  UCI has
+since released MH-6.8.4.  Most of the new features it adds have
+also been added to nmh, but those differences are not listed here.
+There are a few new features in MH-6.8.4 that are missing from nmh,
+but they are primarily undocumented in MH-6.8.4 (and no one has
+ever asked me for them).
+
+GENERAL
+-------
+*) nmh has been converted to autoconf (configure) and should be
+   more portable and easier to install than MH.  In particular, nmh
+   will now compile on Linux.
+*) All of MH's Makefiles have been rewritten for nmh.  You can now
+   use GNU make without any problems.  Also, if your make supports
+   the VPATH variable (such as GNU make), you can now compile in a
+   different directory from the one containing the source code.
+*) The source code for nmh has been substantially cleaned up.
+   It now requires an ANSI C compiler (gcc is fine) to compile.
+*) A new option `-version' has been added to all the commands.
+*) The POP server (popd) has been removed from the distribution.
+   But the client-side support for POP and KPOP is still present.
+   Also nmh doesn't currently support some of the alternate forms of
+   POP such as APOP or RPOP that are contained in MH (although they
+   could easily be resurrected, if necessary).
+*) The support for MH-style bulletin boards has been removed
+   (NNTP makes this obsolete anyway).
+*) Currently nmh doesn't support using shared libraries for libmh.
+   This may return in the future, but is not a high priority, since
+   the nmh commands are not that large, and disk space gets cheaper
+   every day.
+*) Almost all of the commands in nmh have been modified to accept
+   an arbitrary number of command line arguments (most MH commands
+   will not accept more than 1000 arguments on the command line).
+*) nmh should be more secure than MH.  Hundreds of buffer overflow
+   problems have been fixed in the source code.  Of course, I still
+   don't make any guarantees.
+
+DOCUMENTATION
+-------------
+*) Many of the man pages have been cleaned up or clarified.
+*) The mhook man page has been split into separate man pages for
+   rcvtty, rcvdist, and rcvpack.
+*) Added new man page `mh-draft' which discusses the nmh draft
+   folder facility.
+*) The various `procs' (rmmproc, moreproc, showmimeproc, etc...)
+   are now documented in the "mh-profile" man page.  Many of these
+   were previously undocumented.
+
+FORMATTING
+----------
+*) Added a new formatting string escape %(decode) to decode and
+   display RFC-2047 encoded header fields.
+
+SEQUENCES
+---------
+*) The is no longer a limitation on the length of lines in the file
+   containing your public sequences (.mh_sequences).  That should be
+   the end of the error message ".mh_sequences is poorly formatted".
+
+ANNO
+----
+*) The switch -inplace is now on by default.
+
+CONFLICT
+--------
+*) Conflict now works on systems that define more
+   than 100 groups.
+
+DIST
+----
+*) The switch -inplace is now on by default.
+
+FLIST
+-----
+*) A new command `flist' has been added to nmh, that will list the
+   folders that contain messages in a given sequence (such as the
+   unseen sequence).  This was a much needed command in the MH suite
+   of programs.
+
+FOLDER
+------
+*) `folder -all' now dynamically allocates space for folder names and can
+   handle more than 300 folders.
+*) `folder' now uses the standard Unix trick of looking at the number of
+   links to a directory entry, in order to avoid doing a stat(2) call
+   on messages in folders with no subfolders.  This greatly increases
+   the speed of `folder -all -recurse' on large mail setups.
+*) The switches `-header' and `-total' are more orthogonal.  The command
+   `folder -all -noheader -nototal' now does the right thing.
+
+FORW
+----
+*) The switch -inplace is now on by default.
+*) Added switches `-dashstuffing' and `-nodashstuffing', to determine
+   whether forwarded messages are RFC934 quotes (dashstuffed).
+   (This corresponds to the undocumented switch "nodashmunging"
+   in MH).
+
+INC
+---
+*) If compiled with RPATHS, a Delivery-Date header is now added to all
+   messages incorporated with `inc'.
+*) Using the new format string escape %(decode), the scan lines for `inc'
+   will correctly decode RFC-2047 encoded headers.
+
+MARK
+----
+*) If neither of the switches -public/-nopublic are specified, then
+   existing sequences will retain their current public/private status,
+   instead of being changed to public.
+*) The command "mark -list -sequence foo" will now indicate if the
+   sequence "foo" is a private sequence.
+
+MHBUILD
+-------
+*) The functionality in `mhn' to create MIME messages, has been cleaned
+   up substantially, and moved to separate command `mhbuild'.
+*) If given a file argument of "-", mhbuild will now accept the MIME
+   composition file on the standard input, and output the new MIME
+   message to the standard output.  This makes it much easier to use
+   this functionality in shell scripts.
+*) The switch -norfc934mode is now the default.
+
+MHL
+---
+*) There is a new variable "decode" which instructs `mhl' to decode
+   a component as a RFC-2047 encoded header field.
+
+MHLIST
+------
+*) The functionality of `mhn -list' has been moved to the new
+   command `mhlist'.
+
+MHN
+---
+*) mhn is now obsolete.  It has been split into the commands mhbuild,
+   mhlist, mhshow, mhstore, and viamail.  mhn still exists for
+   backward compatibility, but the new commands should be preferred.
+*) Changed the profile entry automhnproc to automimeproc
+   (which has slightly different semantics).
+
+MHPATH
+------
+*) `mhpath all' will no longer abort if the folder has more than
+   998 messages.
+
+MHSHOW
+------
+*) The functionality of `mhn -show' has been moved to the new
+   command `mhshow'.
+*) mhshow now correctly treats unknown subtypes of text as
+   text/plain, as specified by RFC-2046.
+*) mhshow now correctly treats unknown subtypes of multipart as
+   multipart/mixed, as specified by RFC-2046.
+*) You can now override the default method by which mhshow handles
+   subtypes of multipart that are known internally (mixed, alternate,
+   etc...).  Previously the behavior on these types could not be
+   changed.
+
+MHSTORE
+-------
+*) The functionality of `mhn -store' has been moved to the new
+   command `mhstore'.
+*) mhstore will now correctly identify a formatting string of "-"
+   and send the content to stdout.
+
+PACKF
+-----
+*) When packing a folder, the default format is now `mbox' format, rather
+   than `mmdf' format.  The options -mbox and -mmdf have been added to
+   `packf' so you can choose the desired format.
+
+PACKMBOX
+--------
+*) The script packmbox has been removed from the nmh distribution, since
+   its functionality has been added to the command packf.
+
+PICK
+----
+*) If neither of the switches -public/-nopublic are specified, then
+   existing sequences will retain their current public/private status,
+   instead of being changed to public.
+
+RCVPACK
+-------
+*) The default format for `rcvpack' is now `mbox' format, rather than
+   `mmdf' format.  The options -mbox and -mmdf have been added to
+   `rcvpack' so you can choose the desired format.
+*) Rcvpack no longer adds the field "Delivery-Date", as that is added
+   by `slocal'.
+
+RCVSTORE
+--------
+*) Added new switches -unseen/-nounseen to control whether new messages
+   are added to the Unseen-Sequence.
+
+RCVTTY
+------
+*) The option `-width' has been added.
+
+REFILE
+------
+*) If an conflict occurs when using the `-preserve' switch,
+   then refile will search for and use the next available
+   message number above the one you wish to preserve, rather
+   than aborting with an error.
+*) Added new options `-unlink' and `-nounlink' which specify
+   that that messages "removed" from the source folder should
+   just be unlinked, rather than moved to name with prefix.
+
+REPL
+----
+*) Added new options `-format' and `-noformat'.  The switch `-format'
+   will filter the message to which you are replying with a standard
+   message filter "mhl.reply" which is included in the distribution.
+   The switch `-noformat' will negate `-format' and `-filter', so that
+   the message to which you are replying is not included in the draft.
+*) Added new options `-group' and `-nogroup'.  These switches direct
+   repl as to whether or not this is a group reply.  A group reply uses
+   a different forms (components) file (default is replgroupcomps).
+*) The standard forms files "replcomps" and "replgroupcomps" now have
+   support for the "Mail-Reply-To:" and "Mail-Followup-To:" header fields.
+*) The switch -inplace is now on by default.
+
+RMM
+---
+*) Added new options `-unlink' and `-nounlink' which specify
+   that that "removed" messages should just be unlinked, rather
+   than moved to name with prefix.
+
+SCAN
+----
+*) Using the new format string escape %(decode), the scan lines created
+   by `scan' will correctly decode RFC-2047 encoded headers.
+
+SHOW/NEXT/PREV
+--------------
+*) Added new options `-checkmime' and `-nocheckmime' which allow you
+   to enable and disable the test for MIME messages.
+*) The "mhnproc" profile entry has been changed to "showmimeproc".
+*) Added `-showmimeproc' switch to specify the showmimeproc at the
+   command line.
+*) The default "showproc" has been changed to `mhl'.
+*) The default "showmimeproc" is now `mhshow'.
+*) `show' is better at handling alternate character sets.  It knows that
+   US-ASCII is a subset of any ISO-8859-X character set.
+
+SLOCAL
+------
+*) Added new action `folder' or `+' to slocal, which adds new message
+   to a nmh folder.  Currently, this is handled by piping the new
+   message to rcvstore, although this may change in the future.
+*) The action `mbox' now delivers to a file in mbox format.  Previously
+   it delivered to a file in mmdf format.
+*) Added new action `mmdf' to deliver to a file in mmdf format.
+*) Added new options -[no]suppressdup to slocal to check for duplicate
+   messages.  The code for suppression of duplicate messages (MH config
+   was MSGID) is now always built into slocal.
+*) Improved the debugging of slocal ".maildelivery" files.  It will now
+   warn when an entry in this file is skipped because there are not
+   enough fields.  Also the debugging output of slocal has been cleaned up,
+   so that it is much easier to read.
+*) Slocal now adds the Delivery-Date header to all delivered messages.
+   Previously it only added them to messages delivered to a file.
+
+VIAMAIL
+-------
+*) The functionality of this new command, was formerly part of
+   `mhn' as the (undocumented) option `mhn -viamail'.
+
+WHATNOW
+-------
+*) Added new action "mime" to whatnow, which causes whatnow to call
+   program specified by "buildmimeproc" profile entry, to process
+   MIME composition files (default is mhbuild).
+*) Added new action "delete" to whatnow, which deletes draft file
+   and exits.

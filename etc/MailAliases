@@ -1,0 +1,29 @@
+;
+; MailAliases -- nmh global aliases file
+;
+; $Id$
+;
+; This file is used to define aliases that are valid for all mh users.
+; This file is almost empty as MH now supports personal aliases.
+;
+; If you need to define system wide aliases such as "everyone", it is
+; preferable that this be done as the mail transport level, so that they
+; will be valid for users of other mail clients.
+
+; everyone: *
+
+; Blank lines and lines beginning with a ; are ignored.
+; < file	-> read more aliases from "file"
+; foo: fum      -> simple replacement
+; foo: fum, fie -> list replacement
+; foo: < file   -> list replacement from "file"
+; foo: = group  -> list replacement from UNIX group
+; foo: + group  -> list replacement by ALL users in /etc/passwd
+;		      with gid == group
+; foo: *        -> list replacement by ALL users in /etc/passwd
+;                     with uid >= 200
+; foo*: fum     -> matches foo<string> (including the empty string)
+;
+; using a ';' instead of a ':' indicates that the alias should be displayed
+; along with the addresses used (normally, the addresses replace the alias
+; completely)

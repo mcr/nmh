@@ -1,0 +1,56 @@
+#
+# README -- I love README files.
+#
+# $Id$
+#
+
+-----------
+what is it?
+-----------
+nmh (new MH) is an electronic mail handling system.  It was
+originally based on the package MH-6.8.3, and is intended to be
+a (mostly) compatible drop-in replacement for MH.
+
+Although development of nmh is ongoing, it appears to be generally
+stable and is in current use.  But it is possible that I may break
+things as changes are made.
+
+--------------
+installing nmh
+--------------
+To install nmh, check the INSTALL and MACHINES files.  If you have
+previously used MH, check the file DIFFERENCES for a list of the
+differences between nmh and MH.
+
+--------------------------------
+ftp and web sites, mailing lists
+--------------------------------
+To find out about the mailing lists, ftp sites, and web page
+for nmh, check the FAQ included in this distribution.
+
+---------------
+nmh maintenance
+---------------
+nmh is currently being developed and maintained by
+Richard Coleman <coleman@math.gatech.edu>.  Please send bug reports
+and suggestions to the nmh development mailing list at
+nmh-workers@math.gatech.edu.
+
+----------------
+acknowledgments
+----------------
+I would like to give credit where it is due.  nmh could never have
+been developed without all the hard work that the RAND Corporation
+and the University of California put into the development of the
+MH message system, that nmh is based on.
+
+Also, since I've used the version of (v)snprintf() from the
+Apache web server, I need to make the following acknowlegement:
+
+This product includes software developed by the Apache Group
+for use in the Apache HTTP server project (http://www.apache.org/).
+
+--
+Richard Coleman
+coleman@math.gatech.edu
+http://www.math.gatech.edu/~coleman/

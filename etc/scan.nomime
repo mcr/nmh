@@ -1,0 +1,10 @@
+%; scan.nomime
+%;
+%; This file is a modification of the standard (non-UK version)
+%; format for scan, that doesn't do any RFC-2047 decoding of
+%; header components.
+%;
+%4(msg)%<(cur)+%| %>%<{replied}-%?{encrypted}E%| %>\
+%02(mon{date})/%02(mday{date})%<{date} %|*%>\
+%<(mymbox{from})%<{to}To:%14(friendly{to})%>%>%<(zero)%17(friendly{from})%>  \
+%{subject}%<{body}<<%{body}>>%>

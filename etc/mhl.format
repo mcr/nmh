@@ -1,0 +1,17 @@
+; mhl.format
+;
+; default message filter for `show'
+;
+:
+overflowtext="***",overflowoffset=5
+leftadjust,compwidth=9
+ignores=msgid,message-id,received,content-type,content-transfer-encoding,content-id
+Date:formatfield="%<(nodate{text})%{text}%|%(pretty{text})%>"
+To:
+cc:
+From:decode
+Subject:decode
+:
+extras:nocomponent
+:
+body:nocomponent,overflowtext=,overflowoffset=0,noleftadjust

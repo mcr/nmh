@@ -1,0 +1,67 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH PACKF %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+packf \- pack messages in nmh folder into a single file
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+packf
+\%[+folder] \%[msgs]
+\%[\-file\ name]
+\%[\-mbox] \%[-mmdf]
+.br
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+\fIPackf\fR will pack copies of messages from a folder, into a single
+file.
+
+If the `-mbox' switch is given (the default), then the messages are
+separated using mbox (uucp) style delimiters.  This is the format used
+by most mail clients (elm, mailx, etc.).
+
+If the `-mmdf' switch is given, then the messages are separated by
+mmdf style delimiters.  Each message in the file is separated by four
+CTRL\-A's and a newline.
+
+You may specify the name of the file in which to use with the
+`\-file\ name' switch.  If you do specify the name of the file, it
+will default to `msgbox'.
+
+If the given file name points to an existing file, then the specified
+messages will be appended to the end of the file, otherwise the file
+will be created and the messages appended.
+
+Messages that are packed by \fIpackf\fR can be unpacked using
+\fIinc\fR.
+
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+^\&.msgbox\&.map~^A binary index of the file
+.Pr
+^Path:~^To determine the user's nmh directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Ps
+^Msg\-Protect:~^To set mode when creating a new `file'
+.Sa
+inc(1)
+.De
+`+folder' defaults to the current folder
+.Ds
+`msgs' defaults to all
+.Ds
+`\-mbox'
+.Ds
+`\-file ./msgbox' 
+.Co
+If a folder is given, it will become the current folder.  The first
+message packed will become the current message.
+.En

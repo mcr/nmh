@@ -1,0 +1,60 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.\" include the -mh macro file
+.so %etcdir%/tmac.h
+.\"
+.TH RCVDIST %manext1% MH.6.8 [%nmhversion%]
+.SH NAME
+rcvdist \- asynchronously redistribute new mail
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+%libdir%/rcvdist
+\%[\-form\ formfile]
+.br
+\%[switches\ for\ \fIpostproc\fR]
+address1\ ...
+.br
+\%[\-version]
+\%[\-help]
+.in -.5i
+.SH DESCRIPTION
+The \fIrcvdist\fR program will accept a message on its standard input
+and resend a copy of this message to all of the addresses listed on its
+command line.
+
+When a message is redistributed with the \fIrcvdist\fR command, the
+format of the Resent-xxx header fields is controlled by the forms files
+"rcvdistcomps".  If a file named "rcvdistcomps" exists in the user's nmh
+directory, it will be used instead of the default one.  You may specify
+an alternate forms file with the switch `\-form\ formfile'.
+
+The "rcvdistcomps" file uses the format string facility described in
+\fImh\-format\fR(5).  In addition to the standard format escapes,
+\fIrcvdist\fP also recognizes the following additional \fIcomponent\fR
+escape:
+.sp 1
+.ne 5
+.nf
+.ta \w'Dtimenow  'u +\w'Returns  'u
+\fIEscape\fR     \fIReturns\fR   \fIDescription\fR
+addresses  string    the addresses to distribute to
+.re
+.fi
+
+By default, \fIrcvdist\fR uses the program \fIpost\fR(8) to do the actual
+delivery of the message, although this can be changed by defining the
+\fIpostproc\fR profile component.
+.Fi
+^%etcdir%/rcvdistcomps~^Default message skeleton
+^or <mh\-dir>/rcvdistcomps~^Rather than standard message skeleton
+^%etcdir%/mts.conf~^nmh mts configuration file
+^$HOME/\&.maildelivery~^The file controlling local delivery
+^%etcdir%/maildelivery~^Rather than the standard file
+.Sa
+rcvpack(1), rcvstore(1), rcvtty(1), mh\-format(5), slocal(1)
+.Bu
+Only two return codes are meaningful, others should be.
+.En

@@ -1,0 +1,92 @@
+#
+# MACHINE -- operating system specific information
+#
+# $Id$
+#
+
+--------------------------------------
+
+FreeBSD:
+OpenBSD:
+NetBSD:
+
+Some BSD4.4 machines have problems when running nmh's configure script.
+They will be unable to find the location of vi and sendmail.  This is
+due to POSIX features (breakage?) in the shell sh.  The solution is to
+run the configure script under the shell `bash'
+
+bash configure
+
+--------------------------------------
+
+HPUX:
+
+Lots of problems have been reported with using HPUX `cc'.  In particular,
+problems with `scan' giving incorrect dates (everything is 01/00).
+It is highly recommended that you use `gcc' instead.
+
+Also, new versions of HPUX (10.20?) will core dump in `scan' because
+of some workaround code in zotnet/tws/lexstring.c.  This workaround is
+needed for older versions of HPUX, but causes problems on newer versions.
+The solution is the added the line
+
+#undef hpux
+
+after line 15 of the file zotnet/tws/lexstring.c.
+
+--------------------------------------
+
+Irix (SGI):
+
+If you are compiling nmh with POP support, then the configuration
+process will search for (and find) the Irix version of "ruserpass".
+Unfortunately, this version is buggy and causes core dumps.  The best
+bet is to use the version that comes with nmh.  After running configure,
+edit the Makefile in the "sbr" directory, and add "ruserpass.o" to the
+LIBOBJS line.  Then run "make" as normal.
+
+--------------------------------------
+
+Linux:
+
+Make sure you uncomment the Linux section in the config.h file after
+running configure.
+
+The configuration script does a test to discover the functions
+sigsetjmp/siglongjmp.  Since they are macros on Linux, the configuration
+process doesn't find them.  After running configure, you should change
+the line in config.h to define HAVE_SIGSETJMP.
+
+For some Linux distributions, the configure script doesn't find the
+ndbm/gdbm library (dbm_open, dbm_close).  In this case, you should try to
+configure nmh like this:
+
+    LIBS=-lgdbm ./configure [configure options]
+
+The configuration script does a test to discover if your vi is broken
+(if it reports non-zero exit codes on certain pseudo-errors).  This test
+will hang if the program `ex' on your system is a link to the vi clone
+`vile'.  The workaround is to replace the command ex as a link to another
+vi clone such as nvi or elvis.
+
+--------------------------------------
+
+SCO:
+
+Make sure you uncomment the SCO section in the config.h file after
+running configure.
+
+--------------------------------------
+
+Solaris:
+
+Builds ok.
+
+--------------------------------------
+
+SunOS 4.1.3:
+
+You can't use the C compiler that comes with SunOS 4.1.3 since
+it isn't ANSI C.  But nmh builds just fine with gcc.
+
+--------------------------------------
