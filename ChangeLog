@@ -1,5 +1,7 @@
 2005-01-27  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* Added -proxy option to inc and msgchk
+
 	* On systems where it is available, use nl_langinfo to get the
 	character set if MM_CHARSET is unset
 
