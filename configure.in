@@ -49,7 +49,6 @@ fi
 AC_SUBST(APOPLIB)dnl
 
 dnl Do you want to debug nmh?
-undefine([debug])dnl
 AC_ARG_ENABLE(debug,
 [  --enable-debug          enable nmh code debugging])
 dnl The old redundant --enable-nmh-debug is deprecated and undocumented.
@@ -58,7 +57,6 @@ if test x"$enable_nmh_debug" = x"yes"; then
 fi
 
 dnl Allow users to send email from addresses other than their default?
-undefine([masquerade])dnl
 AC_ARG_ENABLE(masquerade,
   [  --enable-masquerade[='draft_from mmailid username_extension']
                           enable up to 3 types of address masquerading [none]],
@@ -70,7 +68,6 @@ AC_ARG_ENABLE(masquerade,
 AC_SUBST(masquerade)dnl
 
 dnl Do you want mhe support?
-undefine([mhe])dnl
 AC_ARG_ENABLE(mhe,
 [  --enable-mhe            enable mhe support (DEFAULT)])
 
@@ -81,7 +78,6 @@ if test x"$enable_mhe" != x"no" -a x"$enable_nmh_mhe" != x"no"; then
 fi
 
 dnl Do you want client-side support for pop?
-undefine([pop])dnl
 AC_ARG_ENABLE(pop,
 [  --enable-pop            enable client-side support for plain POP3])
 dnl The old redundant --enable-nmh-pop is deprecated and undocumented.
@@ -101,7 +97,6 @@ else
 fi
 
 dnl What should be the default editor?
-undefine([editor])dnl
 AC_ARG_WITH(editor,
 [  --with-editor=EDITOR    specify the default editor])
 
@@ -110,7 +105,6 @@ if test -n "$with_editor"; then
 fi
 
 dnl Set the backup prefix
-undefine([backup-prefix])dnl
 AC_ARG_WITH([hash-backup],
   [  --with-hash-backup      use # as the backup prefix (default: ,)])
 if test x"$with_hash_backup" != x -a x"$with_hash_backup" != x"no"; then
@@ -148,7 +142,6 @@ AC_SUBST(POPLIB)dnl
 AC_SUBST(POPSED)dnl
 
 dnl What method of locking to use?
-undefine([locking])dnl
 AC_ARG_WITH(locking,
 [  --with-locking=LOCKTYPE specify the file locking method
                           (one of dot, fcntl, flock, lockf)])
@@ -171,7 +164,6 @@ else
 fi
 
 dnl What method of posting should post use?
-undefine([mts])dnl
 AC_ARG_WITH(mts,
 [  --with-mts=MTS          specify the default mail transport agent/service])
 
@@ -188,7 +180,6 @@ dnl Both the smtp and sendmail mail transport services use the smtp code
 AC_DEFINE(SMTPMTS)dnl
 
 dnl What should be the default pager?
-undefine([pager])dnl
 AC_ARG_WITH(pager,
 [  --with-pager=PAGER      specify the default pager])
 
@@ -197,7 +188,6 @@ if test -n "$with_pager"; then
 fi
 
 dnl What should be the default mail server(s)?
-undefine([smtpservers])dnl
 AC_ARG_WITH(smtpservers,
 [  --with-smtpservers='SMTPSERVER1[ SMTPSERVER2...]'
                           specify the default SMTP server(s) [localhost]])
