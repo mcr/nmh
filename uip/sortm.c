@@ -443,24 +443,23 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 
 	    cp = subjcomp;
 	    cp2 = subjcomp;
-	    if (strcmp (subjsort, "subject") == 0)
+	    if (strcmp (subjsort, "subject") == 0) {
 		while ((c = *cp)) {
 		    if (! isspace(c)) {
 			if(uprf(cp, "re:"))
 			    cp += 2;
-			else {
-			    if (isalnum(c))
-				*cp2++ = isupper(c) ? tolower(c) : c;
+			else
 			    break;
-			}
 		    }
 		    cp++;
 		}
+	    }
+
 	    while ((c = *cp++)) {
 		if (isalnum(c))
 		    *cp2++ = isupper(c) ? tolower(c) : c;
-
 	    }
+
 	    *cp2 = '\0';
 	}
 	else
