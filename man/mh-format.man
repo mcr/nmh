@@ -421,7 +421,7 @@ a slash. Next,
 .PP
 .RS 5
 .nf
-%<{date} %|*>
+%<{date} %|*%>
 .fi
 .RE
 .PP
