@@ -1263,7 +1263,7 @@ if test -n "$RANLIB"; then
 else
   echo "$ac_t""no" 1>&6
 fi
-		for ac_prog in mawk gawk nawk awk
+		for ac_prog in gawk mawk nawk awk
 do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -4470,9 +4470,9 @@ ac_given_INSTALL="$INSTALL"
 
 trap 'rm -fr `echo "Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
           zotnet/Makefile zotnet/mts/Makefile zotnet/tws/Makefile \
-          zotnet/mf/Makefile zotnet/bboards/Makefile mts/Makefile \
-          mts/smtp/Makefile mts/sendmail/Makefile mts/mmdf/Makefile \
-          etc/Makefile docs/Makefile man/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+          zotnet/mf/Makefile mts/Makefile mts/smtp/Makefile \
+	  mts/sendmail/Makefile mts/mmdf/Makefile etc/Makefile \
+	  docs/Makefile man/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -4601,9 +4601,9 @@ cat >> $CONFIG_STATUS <<EOF
 
 CONFIG_FILES=\${CONFIG_FILES-"Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
           zotnet/Makefile zotnet/mts/Makefile zotnet/tws/Makefile \
-          zotnet/mf/Makefile zotnet/bboards/Makefile mts/Makefile \
-          mts/smtp/Makefile mts/sendmail/Makefile mts/mmdf/Makefile \
-          etc/Makefile docs/Makefile man/Makefile"}
+          zotnet/mf/Makefile mts/Makefile mts/smtp/Makefile \
+	  mts/sendmail/Makefile mts/mmdf/Makefile etc/Makefile \
+	  docs/Makefile man/Makefile"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
