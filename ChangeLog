@@ -1,11 +1,4 @@
-Fri Apr 14 18:16:34 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
-
-	* Added new files README.developers, ChangeLog_MH-3_to_MH-6.6, and
-	ChangeLog_MH-6.7.0_to_MH-6.8.4.html to DIST target in Makefile.in.
-	
-	* Released nmh-1.0.4.
-
-Fri Apr 14 17:50:36 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Fri Apr 14 18:21:34 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Added new files README.developers, ChangeLog_MH-3_to_MH-6.6, and
 	ChangeLog_MH-6.7.0_to_MH-6.8.4.html to DIST target in Makefile.in.
