@@ -342,7 +342,6 @@ lkopen_kernel (char *file, int access, mode_t mode)
 
 	j = errno;
 	close (fd);
-	admonish (file, "lock did not succeed, waiting");
 	sleep (5);
     }
 
