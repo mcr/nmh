@@ -1,3 +1,13 @@
+Thu Aug 10 13:22:13 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Decided that limiting the message number columns to 3 on my
+ 	scan.MMDDYY and scan.YYYYMMDD (to try to regain space taken by
+ 	extra date info) was ill-conceived.  It's not that tough to get
+ 	past 999 messages, though I imagine it's rather rare to exceed
+ 	9999.  Changed these to 4.  I had already removed the "replied /
+ 	encrypted" column in YYYYMMDD, but this time I removed it on
+ 	MMDDYY as well (I've never seen it used...).
+
 Mon Aug  7 20:11:09 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* Modify umask set by mhshow to enable user execute bit, so that

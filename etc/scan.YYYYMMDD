@@ -1,10 +1,10 @@
 %; scan.YYYYMMDD
 %;
 %; Like scan.default, but the date is printed in YYYY-MM-DD format rather than
-%; MM/DD.  Allows one less column for the message number and leaves out the
-%; apparently little-used replied/encrypted column in order to make space.
+%; MM/DD.  Leaves out the apparently little-used replied/encrypted column in
+%; order to make space.
 %;
-%3(msg)%<(cur)+%| %>\
+%4(msg)%<(cur)+%| %>\
 %4(year{date})-%02(mon{date})-%02(mday{date})%<{date} %|*%>\
 %<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>\
 %<(zero)%17(decode(friendly{from}))%>  \
