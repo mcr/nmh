@@ -945,7 +945,7 @@ static int day_map[] = {
 #define SKIPTOSP()   { while ( !isspace(*cp++) ) ; \
                        --cp; }
 
-#ifdef DSTXXX
+#ifdef ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 # ifdef TIME_WITH_SYS_TIME
 #  include <sys/time.h>
 #  include <time.h>
@@ -971,7 +971,7 @@ zonehack (struct tws *tw)
 	tw->tw_zone -= 60;
     }
 }
-#endif	/* DSTXXX */
+#endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
 /* The year can either be 2 digits, or 4. However, after
 Y2K, we found that some MUA were reporting the year 100, hence
 the middle term here. yyterminate() resolves the actual
@@ -1386,9 +1386,9 @@ YY_RULE_SETUP
                                     INIT();
                                     SKIPTOD();
                                     SETZONE(atoi(cp));
-#ifdef	DSTXXX
+#ifdef	ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 				    zonehack (&tw);
-#endif	/* DSTXXX */
+#endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
                                     }
 	YY_BREAK
 case 13:
@@ -1398,9 +1398,9 @@ YY_RULE_SETUP
                                     INIT();
                                     SKIPTOD();
                                     SETZONE(-atoi(cp));
-#ifdef	DSTXXX
+#ifdef	ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 				    zonehack (&tw);
-#endif	/* DSTXXX */
+#endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
                                     }
 	YY_BREAK
 case 14:

@@ -154,7 +154,7 @@ static int day_map[] = {
 #define SKIPTOSP()   { while ( !isspace(*cp++) ) ; \
                        --cp; }
 
-#ifdef DSTXXX
+#ifdef ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 # ifdef TIME_WITH_SYS_TIME
 #  include <sys/time.h>
 #  include <time.h>
@@ -180,7 +180,7 @@ zonehack (struct tws *tw)
 	tw->tw_zone -= 60;
     }
 }
-#endif	/* DSTXXX */
+#endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
 %}
 
 sun	([Ss]un(day)?)
@@ -355,17 +355,17 @@ d	[0-9]
                                     INIT();
                                     SKIPTOD();
                                     SETZONE(atoi(cp));
-#ifdef	DSTXXX
+#ifdef	ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 				    zonehack (&tw);
-#endif	/* DSTXXX */
+#endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
                                     }
 "-"{D}{d}{d}                                  {
                                     INIT();
                                     SKIPTOD();
                                     SETZONE(-atoi(cp));
-#ifdef	DSTXXX
+#ifdef	ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 				    zonehack (&tw);
-#endif	/* DSTXXX */
+#endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
                                     }
 "-"?("ut"|"UT")			    INIT(); SETZONE(0);
 "-"?("gmt"|"GMT")		    INIT(); SETZONE(0);
