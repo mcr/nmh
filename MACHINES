@@ -53,47 +53,15 @@ config.h.in" before configuring to prevent a problem where it tries to
 rebuild targets that shouldn't be rebuilt. (Alternately, you can just
 use GNU make instead of Irix make.)
 
-If you are compiling nmh with POP support, then the configuration
-process will search for (and find) the Irix version of "ruserpass".
-Unfortunately, this version is buggy and causes core dumps.  The best
-bet is to use the version that comes with nmh.  After running configure,
-edit the Makefile in the "sbr" directory, and add "ruserpass.o" to the
-LIBOBJS line.  Then run "make" as normal.
-
 --------------------------------------
 
 Linux:
-
-*** No longer necessary ***
-Make sure you uncomment the Linux section in the config.h file after
-running configure. 
-
-*** This test has been updated and should work now ***
-The configuration script does a test to discover the functions
-sigsetjmp/siglongjmp.  Since they are macros on Linux, the configuration
-process doesn't find them.  After running configure, you should change
-the line in config.h to define HAVE_SIGSETJMP. 
-
-*** This test has been updated and should work now ***
-For some Linux distributions, the configure script doesn't find the
-ndbm/gdbm library (dbm_open, dbm_close).  In this case, you should try to
-configure nmh like this:
-
-    LIBS=-lgdbm ./configure [configure options]
 
 The configuration script does a test to discover if your vi is broken
 (if it reports non-zero exit codes on certain pseudo-errors).  This test
 will hang if the program `ex' on your system is a link to the vi clone
 `vile'.  The workaround is to replace the command ex as a link to another
 vi clone such as nvi or elvis.
-
---------------------------------------
-
-SCO:
-
-*** currently handled by config.guess ***
-Make sure you uncomment the SCO section in the config.h file after
-running configure.
 
 --------------------------------------
 
