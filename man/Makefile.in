@@ -71,9 +71,9 @@ MAN5SRC = mh-alias. mh-draft. mh-format.	\
 MAN8SRC = ap. conflict. dp. fmtdump.		\
        mh-mts. post.
 
-MAN1 := $(MAN1SRC:.=.$(manext1))
-MAN5 := $(MAN5SRC:.=.$(manext5))
-MAN8 := $(MAN8SRC:.=.$(manext8))
+MAN1 = $(MAN1SRC:.=.$(manext1))
+MAN5 = $(MAN5SRC:.=.$(manext5))
+MAN8 = $(MAN8SRC:.=.$(manext8))
 
 # Since vmh is not built or distributed, neither should vmh.1 be
 # MANEXTRA = vmh. 
