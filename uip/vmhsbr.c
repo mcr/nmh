@@ -164,11 +164,13 @@ fmt2peer (char code, char *fmt, ...)
 int
 err2peer (char code, char *what, char *fmt, ...)
 {
+    int     return_value;
     va_list ap;
 
     va_start(ap, fmt);
-    verr2peer(code, what, fmt, ap);
+    return_value = verr2peer(code, what, fmt, ap);
     va_end(ap);
+    return return_value;  /* This routine returned garbage before 1999-07-15. */
 }
 
 
