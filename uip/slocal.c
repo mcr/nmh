@@ -38,6 +38,8 @@
 
 #include <utmp.h>
 
+extern int  initgroups(char*, int);  /* def'd in libc.a but no .h on AIX 4.1 */
+
 #ifndef UTMP_FILE
 # ifdef _PATH_UTMP
 #  define UTMP_FILE _PATH_UTMP
