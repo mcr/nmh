@@ -1,3 +1,34 @@
+Fri Sep 8 00:36:48 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Moved zotnet/mts to mts/generic. This code reorganization
+	makes the entire zotnet tree deprecated -- bboards is unneeded,
+	mf was was moved to sbr, tws was rewritten and moved to sbr, and
+	now finally mts.
+
+	* Created a new static library called libmts.a used during
+	compilation which includes the generic mts code and the
+	smtp/sendmail code. This supercedes the functionality of the
+	old libsmtp.a and the remains of libzot.a.
+
+	* Updated header includes to reference the new location of mts.h
+	in mts/generic/mts.h. Also, update the configure and top-level
+	Makefile not to descend into zotnet. Also, they don't descend
+	into mts/mmdf and mts/sendmail (the sendmail code has been
+	merged into the smtp code).
+
+	* Added #include <h/nmh.h> to h/md5.h, since my compile was
+	complaining about implicitly-declared memcpy and memset, which
+	appear to be in strings.h. In any event, nmh.h should take care
+	of it for us.
+
+	* When doing a "make nmhdist", notice that the generated
+	snapshot does not include zotnet of the mts directories as noted
+	above. Since they are no longer compiled, and I don't see any
+	obvious code path to get to them, end-users should probably
+	not need them. If you think otherwise, turn Makefile generation
+	back on in configure.in and turn on recursion into those dirs
+	in the appropriate Makefile.in
+
 Wed Sep 6 22:40:03 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Tracked down the problem in the new dtimep where time
