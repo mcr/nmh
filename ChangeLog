@@ -1,3 +1,16 @@
+Thu Jul 15 18:37:07 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* slocal -debug used to leave a file in /tmp for each message
+	processed.  Very bad for people have slocal -debug in their .forward!
+
+	* Got rid of a ton of compilation warnings.  Most were "junk"
+ 	warnings due to the use of gcc -Wall (without -Wno-parentheses),
+ 	but a few represented real bugs.  There remain many warnings to be
+ 	tackled that are due to missing function prototypes (e.g. snprintf()).
+
+	* Default rcvdistcomps no longer puts a copy of all outgoing
+ 	messages in outbox.  Added an rcvdistcomps.outbox that does.
+
 Sat Jun  9 12:22:47 1999 Doug Morris <doug@mhost.com>
 
 	* Updated configure to check for mkstemp (available on OpenBSD) and 
