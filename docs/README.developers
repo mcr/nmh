@@ -51,9 +51,14 @@ The correct procedure to commit the configure-related files is:
 
 The reason that the commits need to be split up is that the RCS Id strings
 in the files change when you commit, which can apparently mess up the
-dependencies.  [How?  -- Dan Harkless <dan-nmh@dilvish.speed.net>]  If this were
-not the case, you could commit with a single make followed by a
+dependencies.  [How?  -- Dan Harkless <dan-nmh@dilvish.speed.net> // CVS
+updates the strings to have the new version number, the modification time
+of the file gets updated by the OS.  -- Kimmo Suominen <kim@tac.nyc.ny.us>]
+If this were not the case, you could commit with a single make followed by a
 cvs commit acconfig.h aclocal.m4 config.h.in configure.in configure stamp-h.in.
+[But since we have the RCS Id strings in the files, isn't it useless to even
+mention this?  The fix would be to remove the strings, and I don't think that
+would be good.  -- Kimmo Suominen <kim@tac.nyc.ny.us>]
 
 If you haven't changed all the files noted above, just commit the ones you have,
 in the stated order (for instance, configure.in, then configure, then
