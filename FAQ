@@ -16,9 +16,13 @@
 
 3) Who is developing nmh?
 
-   Richard Coleman
-   coleman@math.gatech.edu
-   http://www.math.gatech.edu/~coleman
+   Richard Coleman (coleman@math.gatech.edu) started the nmh project.
+   After he grew too busy to continue maintaining it, it was handed off
+   to the net at large. Doug Morris (doug@mhost.com) is hosting the
+   mailing lists, web pages, and CVS repository for nmh now.
+
+   This FAQ was originally written by Richard, and the "I"s in it
+   refer to him.
 
 4) Why are you developing nmh?
 
@@ -37,11 +41,11 @@
    nmh is distributed under a variant of the classical BSD copyright.
    Check the COPYRIGHT file in the nmh distribution for the details.
    There are some specific files which were contributed to the original
-   MH package that are copyrighted by their original author.  I have
+   MH package that are copyrighted by their original author.  We have
    retained the copyright notices of these authors in these files.
 
    Essentially, you can do anything you want with the nmh package as long
-   as you don't blame me if it trashes all your mail.
+   as you don't blame us if it trashes all your mail.
 
 6) What is the difference between nmh and MH?
 
@@ -51,28 +55,27 @@
 7) Where do I get nmh?
 
     The latest version of nmh is available at
-    ftp://ftp.math.gatech.edu/pub/nmh/nmh.tar.gz
+    ftp://ftp.mhost.com/pub/nmh/nmh.tar.gz
 
 8) Where is the nmh web page?
 
     The nmh home page is located at
-    http://www.math.gatech.edu/nmh/
+    http://www.mhost.com/nmh/
 
 9) Where is the nmh mailing list?
 
     There is a mailing list for nmh development at:
-    nmh-workers@math.gatech.edu
+    nmh-workers@mhost.com
 
     To subscribe, send e-mail to the administrative address:
-    nmh-workers-request@math.gatech.edu
+    nmh-workers-request@mhost.com
 
-    with the subject "subscribe e-mail-address"
-    (without the quotes).
+    with the subject "subscribe" (without the quotes).
 
 10) Where do I report bugs in nmh?
 
     Send bug reports and suggestions to
-    nmh-workers@math.gatech.edu
+    nmh-workers@mhost.com
 
 11) Which mail transfer agents (MTA's) are supported?
 
