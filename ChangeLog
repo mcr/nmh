@@ -1,3 +1,9 @@
+Thu Jun 08 19:36:57 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* New dtimep.lex didn't parse day names properly.  Fixed.  Also
+ 	clarified ambiguous comments preceding day_map[] array (from old
+ 	dtimep.lex) that probably led to the erroneous cp++ being added.
+
 Wed Jun  7 20:52:33 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* Added one more mkstemp invocation to uip/spost.c (which was in a
@@ -32,7 +38,7 @@ Wed May 31 7:19:30 2000 Shantonu Sen <ssen@mit.edu>
 
 Wed May 31 07:40:45 2000 Doug Morris <doug@mhost.com>
 
-	* added a lint target to the Makefiles and a check in autoconf
+	* Added a lint target to the Makefiles and a check in autoconf
 	to determine whether lint or lclint exists on the system. 
 
 Fri May 30 19:21:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
@@ -81,13 +87,13 @@ Mon May 29 7:48:15 2000 Shantonu Sen <ssen@mit.edu>
 	tws.h to h/). Updated all source files to reflect to new location
 	of tws.h.
 
-	* Rewrote dparsetime (dtimep.c) to replace the old
-	zotnet/tws/dtimep.c, lexstring.c, lexedit.c, and
-	dtimep.c-lexed. It should now work with flex (although untested
-	with lex), and requires no sed-ing. For now, I have the lexed
-	version in the distribution, so that end-users don't need to worry
-	about running it through flex/lex. I have not added back support
-	for guessing the time zone when it's not specified.
+	* Rewrote dparsetime (in dtimep.lex -> dtimep.c) to replace the
+ 	old zotnet/tws/dtimep.c, dtimep.lex, lexstring.c, lexedit.c, and
+ 	dtimep.c-lexed. It should now work with flex (although untested
+ 	with lex), and requires no sed-ing. For now, I have the lexed
+ 	version in the distribution, so that end-users don't need to worry
+ 	about running it through flex/lex. I have not added back support
+ 	for guessing the time zone when it's not specified.
 	
 Sun May 28 17:44:15 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 

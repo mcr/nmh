@@ -86,8 +86,10 @@ static int month_map[] = {
 };
 
 /*
- * Same trick for day-of-week using the hash function
- *  (c1 & 7) + (c2 & 4)
+ * Lookup table for day-of-week using the same hash trick as for above name-of-
+ * month table, but using the first and second character, not second and third.
+ *
+ * Compute index into table using: (day_name[0] & 7) + (day_name[1] & 4)
  */
 static int day_map[] = {
 	0,
@@ -115,8 +117,7 @@ static int day_map[] = {
  */
 
 #define INIT()       { cp = yytext;} 
-#define SETWDAY()    { cp++; \
-                       tw.tw_wday= day_map[(cp[0] & 7) + (cp[1] & 4)]; \
+#define SETWDAY()    { tw.tw_wday= day_map[(cp[0] & 7) + (cp[1] & 4)]; \
                        tw.tw_flags &= ~TW_SDAY; tw.tw_flags |= TW_SEXP; \
                        SKIPA(); }
 #define SETMON()     { cp++; \
