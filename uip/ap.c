@@ -8,7 +8,7 @@
 #include <h/mh.h>
 #include <h/addrsbr.h>
 #include <h/fmt_scan.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 
 #define	NADDRS	100
 

@@ -9,7 +9,7 @@
 #include <h/fmt_scan.h>
 #include <h/rcvmail.h>
 #include <h/tws.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 
 static struct swit switches[] = {
 #define	FORMSW       0

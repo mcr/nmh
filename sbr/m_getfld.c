@@ -6,7 +6,7 @@
  */
 
 #include <h/mh.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 
 /* This module has a long and checkered history.  First, it didn't burst
    maildrops correctly because it considered two CTRL-A:s in a row to be

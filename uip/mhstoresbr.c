@@ -12,7 +12,7 @@
 #include <errno.h>
 #include <setjmp.h>
 #include <signal.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 #include <h/tws.h>
 #include <h/mime.h>
 #include <h/mhparse.h>

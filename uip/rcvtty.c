@@ -15,7 +15,7 @@
 #include <h/rcvmail.h>
 #include <h/scansbr.h>
 #include <h/tws.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 #include <signal.h>
 #include <fcntl.h>
 

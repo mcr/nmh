@@ -6,7 +6,7 @@
  */
 
 #include <h/mh.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 #include <h/tws.h>
 #include <pwd.h>
 

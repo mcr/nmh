@@ -6,7 +6,7 @@
 
 #include <h/mh.h>
 #include "smtp.h"
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 #include <signal.h>
 #include <h/signals.h>
 #ifdef MPOP

@@ -24,7 +24,7 @@ LIBTOOL = @LIBTOOL@
 GNU_LIBTOOL = @GNU_LIBTOOL@
 
 # object files that go into libmts.a
-OBJS =  generic/client.o generic/mts.o smtp/hosts.o smtp/smtp.o
+OBJS =  smtp/hosts.o smtp/smtp.o
 
 # auxiliary files
 AUX = Makefile.in
@@ -33,7 +33,7 @@ AUX = Makefile.in
 DIST = $(AUX)
 
 # subdirectories
-SUBDIRS = smtp generic
+SUBDIRS = smtp
 
 # mail transport agent we are using (currently always smtp)
 # MTS = smtp

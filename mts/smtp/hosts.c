@@ -13,7 +13,7 @@
  */
 
 #include <h/mh.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 #include <netdb.h>
 
 static struct host {

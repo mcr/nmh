@@ -8,7 +8,7 @@
 #include <h/mh.h>
 #include <h/addrsbr.h>
 #include <h/aliasbr.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 
 /*
  * maximum number of names

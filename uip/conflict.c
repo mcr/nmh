@@ -8,7 +8,7 @@
 #include <h/mh.h>
 #include <fcntl.h>
 #include <h/aliasbr.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 #include <grp.h>
 #include <pwd.h>
 

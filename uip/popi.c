@@ -8,7 +8,7 @@
 #include <h/mh.h>
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 #include <errno.h>
 
 #ifndef	RPOP
@@ -515,7 +515,7 @@ msh (void)
 
 
 #ifdef SMTPMTS
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 #include <mts/smtp/smtp.h>
 
 static int

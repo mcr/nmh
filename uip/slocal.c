@@ -27,7 +27,7 @@
 #include <h/rcvmail.h>
 #include <h/signals.h>
 #include <h/tws.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 
 #include <pwd.h>
 #include <signal.h>

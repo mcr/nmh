@@ -11,7 +11,7 @@
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
 #include <h/tws.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 #include <errno.h>
 #include <setjmp.h>
 #include <signal.h>

@@ -17,7 +17,7 @@
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
 #include <h/tws.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 
 #ifdef HAVE_TERMIOS_H
 # include <termios.h>

@@ -14,7 +14,7 @@
 #include <h/aliasbr.h>
 #include <h/dropsbr.h>
 #include <h/tws.h>
-#include <mts/generic/mts.h>
+#include <h/mts.h>
 
 #define	uptolow(c)	((isalpha(c) && isupper (c)) ? tolower (c) : c)
 
