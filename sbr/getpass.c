@@ -35,7 +35,7 @@
 
 #include <stdio.h>
 #include <termios.h>
-#include <unistd.h>   /* for ttyname() */
+#include <unistd.h>   /* for isatty() */
 #include "h/mh.h"     /* for adios() */
 
 /* We don't use MAX_PASS here because the maximum password length on a remote
@@ -52,21 +52,21 @@ nmh_getpass(const char *prompt)
 {
   struct termios oterm, term;
   int ch;
-  char *p, *ttystring;
+  char *p;
   FILE *fout, *fin;
   static char  buf[MAX_PASSWORD_LEN + 1];
+  int istty = isatty(fileno(stdin));
 
   /* Find if stdin is connect to a terminal. If so, read directly from
    * the terminal, and turn off echo. Otherwise read from stdin.
    */
 
-  if((ttystring = (char *)ttyname(fileno(stdin))) == NULL) {
+  if (!istty || !(fout = fin = fopen("/dev/tty", "w+"))) {
     fout = stderr;
     fin = stdin;
   }
   else /* Reading directly from terminal here */
     {
-      fout = fin = fopen(ttystring, "w+");
       (void)tcgetattr(fileno(fin), &oterm);
       term = oterm; /* Save original info */
       term.c_lflag &= ~ECHO;
@@ -81,7 +81,7 @@ nmh_getpass(const char *prompt)
     *p++ = ch;
   *p = '\0';
 
-  if(ttystring != NULL) {
+  if (istty) {
     (void)tcsetattr(fileno(fin), TCSANOW, &oterm);
     rewind(fout);
     (void)fputc('\n', fout);
