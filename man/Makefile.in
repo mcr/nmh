@@ -58,39 +58,33 @@ HDR = tmac.h
 DIST_HDR = tmac.h.in
 
 # man pages to install in $(mandir)/$(manext1)
-MAN1 = ali.$(manext1) anno.$(manext1) burst.$(manext1) comp.$(manext1) \
-       dist.$(manext1) flist.$(manext1) folder.$(manext1) forw.$(manext1) \
-       inc.$(manext1) mark.$(manext1) mh-chart.$(manext1) nmh.$(manext1) \
-       mhbuild.$(manext1) mhl.$(manext1) mhlist.$(manext1) mhmail.$(manext1) \
-       mhn.$(manext1) mhparam.$(manext1) mhpath.$(manext1) mhshow.$(manext1) \
-       mhstore.$(manext1) msgchk.$(manext1) msh.$(manext1) \
-       next.$(manext1) packf.$(manext1) pick.$(manext1) prev.$(manext1) \
-       prompter.$(manext1) rcvdist.$(manext1) rcvpack.$(manext1) \
-       rcvstore.$(manext1) rcvtty.$(manext1) refile.$(manext1) \
-       repl.$(manext1) rmf.$(manext1) rmm.$(manext1) scan.$(manext1) \
-       send.$(manext1) sendfiles.$(manext1) show.$(manext1) slocal.$(manext1) \
-       sortm.$(manext1) vmh.$(manext1) whatnow.$(manext1) whom.$(manext1)
+MAN1SRC = ali. anno. burst. comp.		\
+       dist. flist. flists. folder. folders.	\
+       forw. inc. mark. mh-chart. nmh.		\
+       mhbuild. mhl. mhlist. mhmail.		\
+       mhn. mhparam. mhpath. mhshow.		\
+       mhstore. msgchk. msh.			\
+       next. packf. pick. prev.			\
+       prompter. rcvdist. rcvpack.		\
+       rcvstore. rcvtty. refile.		\
+       repl. rmf. rmm. scan.			\
+       send. sendfiles. show. slocal.		\
+       sortm. vmh. whatnow. whom.
 
-MAN5 = mh-alias.$(manext5) mh-draft.$(manext5) mh-format.$(manext5) \
-       mh-mail.$(manext5) mh-profile.$(manext5) mh-sequence.$(manext5) \
-       mh-tailor.$(manext5) mts.conf.$(manext5)
+MAN5SRC = mh-alias. mh-draft. mh-format.	\
+       mh-mail. mh-profile. mh-sequence.	\
+       mh-tailor. mts.conf.
 
-MAN8 = ap.$(manext8) conflict.$(manext8) dp.$(manext8) \
-       fmtdump.$(manext8) install-mh.$(manext8) mh-mts.$(manext8) \
-       post.$(manext8)
+MAN8SRC = ap. conflict. dp. fmtdump.		\
+       install-mh. mh-mts. post.
+
+MAN1 = $(MAN1SRC:.=.$(manext1))
+MAN5 = $(MAN5SRC:.=.$(manext5))
+MAN8 = $(MAN8SRC:.=.$(manext8))
 
 # source for man pages
-DIST_MAN = ali.man anno.man ap.man burst.man comp.man conflict.man \
-           dist.man dp.man flist.man fmtdump.man folder.man forw.man \
-           inc.man install-mh.man mark.man mh-alias.man mh-chart.man \
-           mh-draft.man mh-format.man mh-mail.man mh-mts.man mh-profile.man \
-           mh-sequence.man mh-tailor.man nmh.man mhbuild.man mhl.man \
-           mhlist.man mhmail.man mhn.man mhparam.man mhpath.man \
-           mhshow.man mhstore.man msgchk.man msh.man mts.conf.man \
-           next.man packf.man pick.man post.man prev.man prompter.man \
-           rcvdist.man rcvpack.man rcvstore.man rcvtty.man refile.man \
-           repl.man rmf.man rmm.man scan.man send.man sendfiles.man show.man \
-           slocal.man sortm.man vmh.man whatnow.man whom.man
+DIST_MANSRC = $(MAN1SRC) $(MAN5SRC) $(MAN8SRC)
+DIST_MAN = $(DIST_MANSRC:.=.man)
 
 # auxiliary files
 AUX = Makefile.in
