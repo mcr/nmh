@@ -4,9 +4,11 @@ Thu Aug 10 13:22:13 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	scan.MMDDYY and scan.YYYYMMDD (to try to regain space taken by
  	extra date info) was ill-conceived.  It's not that tough to get
  	past 999 messages, though I imagine it's rather rare to exceed
- 	9999.  Changed these to 4.  I had already removed the "replied /
- 	encrypted" column in YYYYMMDD, but this time I removed it on
- 	MMDDYY as well (I've never seen it used...).
+ 	9999.  Changed these to 4.  Also put the "replied / encrypted"
+	column back in YYYYMMDD -- I've never seen it show anything but a
+	space, but that space is useful if you use scan, grep, and awk
+	(with the default field separator) to grab message numbers (I know
+	-- pick should really be used for these purposes...).
 
 Mon Aug  7 20:11:09 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 
