@@ -320,7 +320,7 @@ main (int argc, char **argv)
 
 	    switch (state = scan (in, msgnum, 0, nfs, width,
 			msgnum == mp->curmsg, unseen,
-			hdrflag ? folder : NULL, 0L, 1)) {
+			folder, 0L, 1)) {
 		case SCNMSG: 
 		case SCNENC: 
 		case SCNERR: 
