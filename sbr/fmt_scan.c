@@ -89,46 +89,6 @@ match (char *str, char *sub)
  * macros to format data
  */
 
-#define PUTDF(cp, num, wid, fill)\
-	if (cp + wid < ep) {\
-	    if ((i = (num)) < 0)\
-		i = -(num);\
-	    if ((c = (wid)) < 0)\
-		c = -c;\
-	    sp = cp + c;\
-	    do {\
-		*--sp = (i % 10) + '0';\
-		i /= 10;\
-	    } while (i > 0 && sp > cp);\
-	    if (i > 0)\
-		*sp = '?';\
-	    else if ((num) < 0 && sp > cp)\
-		*--sp = '-';\
-	    while (sp > cp)\
-		*--sp = fill;\
-	    cp += c;\
-	    }
-
-#define PUTD(cp, num)\
-	if (cp < ep) {\
-	    if ((i = (num)) == 0)\
-		*cp++ = '0';\
-	    else {\
-		if ((i = (num)) < 0) {\
-		    *cp++ = '-';\
-		    i = -(num);\
-		    }\
-		c = 10;\
-		while (c <= i) \
-		    c *= 10;\
-		while (cp < ep && c > 1) {\
-		    c /= 10;\
-		    *cp++ = (i / c) + '0';\
-		    i %= c;\
-		    }\
-		}\
-	    }
-
 #ifdef LOCALE
 #define PUTSF(cp, str, wid, fill) {\
 		ljust = 0;\
@@ -286,7 +246,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
     char *cp, *ep, *sp;
     char *savestr, *str = NULL;
     char buffer[BUFSIZ], buffer2[BUFSIZ];
-    int i, c, ljust;
+    int i, c, ljust, n;
     int value = 0;
     time_t t;
     struct format *fmt;
@@ -346,10 +306,16 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    adios (NULL, "internal error (FT_STRFW)");
 
 	case FT_NUM:
-	    PUTD (cp, value);
+	    n = snprintf(cp, ep - cp, "%d", value);
+	    if (n >= 0) cp += n;
 	    break;
 	case FT_NUMF:
-	    PUTDF (cp, value, fmt->f_width, fmt->f_fill);
+	    n = snprintf(cp, ep - cp, "%d", value);
+	    if (n >= 0) {
+		cp += n;
+	    } else n = 0;
+	    c = abs(fmt->f_width) - n;
+	    for (; c && cp < ep; c--) *cp++ = fmt->f_fill;
 	    break;
 
 	case FT_CHAR:
@@ -511,7 +477,10 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    value = dat[fmt->f_value];
 	    break;
 	case FT_LV_STRLEN:
-	    value = strlen(str);
+	    if (str != NULL)
+		    value = strlen(str);
+	    else
+		    value = 0;
 	    break;
 	case FT_LV_CHAR_LEFT:
 	    value = width - (cp - scanl);
