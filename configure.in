@@ -29,6 +29,11 @@ VERSION=`sed -e 's/nmh-//' ${srcdir}/VERSION`
 echo "configuring for nmh-$VERSION"
 AC_SUBST(VERSION)dnl
 
+dnl What date of nmh are we building?
+DATE=`cat ${srcdir}/DATE`
+echo "configuring for nmh dated $DATE"
+AC_SUBST(DATE)dnl
+
 dnl --------------------------
 dnl CHECK COMMAND LINE OPTIONS
 dnl --------------------------
