@@ -6,5 +6,831 @@
 .SH NAME
 mh-chart \- Chart of nmh Commands
 .SH SYNOPSIS
+.na
+.HP 5
+.B ali
+.RB [ \-alias
+.IR aliasfile ]
+.RB [ \-list " | " \-nolist ]
+.RB [ \-normalize " | " \-nonormalize ]
+.RB [ \-user " | " \-nouser ]
+.RB [ \-version ]
+.RB [ \-help ] 
+.RI [ aliases " ...]"
 
-This man page will contain the SYNOPSIS section of all nmh commands
+.HP 5
+.B anno
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-component
+.IR field ]
+.RB [ \-inplace " | " \-noinplace ]
+.RB [ \-date " | " \-nodate ]
+.RB [ \-version ]
+.RB [ \-help ]
+.RB [ \-text
+.IR body ]
+
+.HP 5
+.B %libdir%/ap
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR string ]
+.RB [ \-normalize " | " \-nonormalize ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-version ]
+.RB [ \-help ] 
+.I addrs
+\&...
+
+.HP 5
+.B burst
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-inplace " | " \-noinplace ]
+.RB [ \-quiet " | " \-noquiet ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B comp 
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-use " | " \-nouse ]
+.RB [ \-file
+.IR file ]
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RB [ \-editor
+.IR editor ]
+.RB [ \-noedit ]
+.RB [ \-whatnowproc
+.IR program ]
+.RB [ \-nowhatnowproc ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/conflict
+.RB [ \-search
+.IR directory ]
+.RB [ \-mail
+.IR name ]
+.RB [ \-version ]
+.RB [ \-help ] 
+.RI [ aliasfiles
+\&...]
+
+.HP 5
+.B dist
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-annotate " | " \-noannotate ] 
+.RB [ \-inplace " | " \-noinplace ] 
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RB [ \-editor
+.IR editor ]
+.RB [ \-noedit ]
+.RB [ \-whatnowproc
+.IR program ]
+.RB [ \-nowhatnowproc ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/dp
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR string ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-version ]
+.RB [ \-help ] 
+.I dates
+\&...
+
+.HP 5
+.B flist
+.RI [ +folder1
+.RI [ +folder2
+\&...]]
+.RB [ \-sequence
+.I name1
+.RB [ \-sequence
+.I name2
+\&...]]
+.RB [ \-all " | " \-noall ]
+.RB [ \-showzero " | " \-noshowzero ]
+.RB [ \-recurse " | " \-norecurse ]
+.RB [ \-fast " | " \-nofast ]
+.RB [ \-alpha " | " \-noalpha ]
+.RB [ \-version ]
+.RB [ \-help ]
+.PP
+.HP 5
+.B flists
+is equivalent to
+.B flist
+.B \-all
+
+.HP 5
+.B %libdir%/fmtdump
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR string ]
+.RB [ \-version ]
+.RB [ \-help ] 
+
+.HP 5
+.B folder
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-all " | " \-noall ]
+.RB [ \-create " | " \-nocreate ]
+.RB [ \-fast " | " \-nofast ]
+.RB [ \-header " | " \-noheader ]
+.RB [ \-recurse " | " \-norecurse ]
+.RB [ \-total " | " \-nototal ]
+.RB [ \-list " | " \-nolist ]
+.RB [ \-push " | " \-pop ]
+.RB [ \-pack " | " \-nopack ]
+.RB [ \-print ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-version ]
+.RB [ \-help ]
+.PP
+.HP 5
+.B folders
+is equivalent to
+.B folder
+.B \-all
+
+.HP 5
+.B forw
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-annotate " | " \-noannotate ] 
+.RB [ \-form
+.IR formfile ]
+.RB [ \-format " | " \-noformat ]
+.RB [ \-filter
+.IR filterfile ]
+.RB [ \-inplace " | " \-noinplace ]
+.RB [ \-mime " | " \-nomime ]
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RB [ \-editor
+.IR editor ]
+.RB [ \-noedit ]
+.RB [ \-whatnowproc
+.IR program ]
+.RB [ \-nowhatnowproc ]
+.RB [ \-dashstuffing " | " \-nodashstuffing ]
+.RB [ \-build ]
+.RB [ \-file
+.IR msgfile ]
+.RB [ \-version ]
+.RB [ \-help ]
+.PP
+.HP 5
+.B forw
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-digest
+.IR list ]
+.RB [ \-issue
+.IR number ]
+.RB [ \-volume
+.IR number ]
+[other\ switches\ for\ 
+.BR forw ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B inc
+.RI [ +folder ]
+.RB [ \-audit
+.IR audit\-file ]
+.RB [ \-noaudit ]
+.RB [ \-changecur " | " \-nochangecur ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-format
+.IR string ]
+.RB [ \-file
+.IR name ]
+.RB [ \-silent " | " \-nosilent ]
+.RB [ \-truncate " | " \-notruncate ]
+.RB [ \-width
+.IR columns ]
+%nmhbeginpop%
+.RB [ \-host
+.IR hostname ]
+.RB [ \-user
+.IR username ]
+.RB [ \-pack
+.IR file ]
+.RB [ \-nopack ]
+.RB [ \-apop " | " \-noapop ]
+.RB [ \-kpop ]
+.RB [ \-sasl ]
+.RB [ \-saslmech
+.IR mechanism ]
+.RB [ \-snoop ]
+%nmhendpop%
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/install\-mh
+.RB [ \-auto ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B mark
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-sequence
+.I name
+\&...]
+.RB [ \-add " | " \-delete ]
+.RB [ \-list ] 
+.RB [ \-public " | " \-nopublic ]
+.RB [ \-zero " | " \-nozero ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B mhlist
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-file
+.IR file ]
+.RB [ \-part
+.IR number ]
+\&...
+.RB [ \-type
+.IR content ]
+\&...
+.RB [ \-headers " | " \-noheaders ]
+.RB [ \-realsize " | " \-norealsize ]
+.RB [ \-rcache
+.IR policy ]
+.RB [ \-wcache
+.IR policy ]
+.RB [ \-check " | " \-nocheck ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/mhl
+.RB [ \-bell " | " \-nobell ]
+.RB [ \-clear " | " \-noclear ]
+.RB [ \-folder
+.IR +folder ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-length
+.IR lines ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-moreproc
+.IR program ]
+.RB [ \-nomoreproc ]
+.RI [ files
+.IR \&... ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B mhmail
+.RI [ addrs
+\&...]
+.RB [ \-body
+.IR text ]
+.RB [ \-cc
+.I addrs
+...]
+.RB [ \-from
+.IR addr ]
+.RB [ \-subject
+.IR subject ]
+.RB [ \-version ]
+.RB [ \-help ] 
+
+.HP 5
+.B mhn
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-file
+.IR file ]
+.RB [ \-part
+.IR number ]
+\&...
+.RB [ \-type
+.IR content ]
+\&...
+.RB [ \-show " | " \-noshow ]
+.RB [ \-list " | " \-nolist ]
+.RB [ \-store " | " \-nostore ]
+.RB [ \-cache " | " \-nocache ]
+.RB [ \-headers " | " \-noheaders ]
+.RB [ \-realsize " | " \-norealsize ]
+.RB [ \-serialonly " | " \-noserialonly ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-pause " | " \-nopause ]
+.RB [ \-auto " | " \-noauto ]
+.RB [ \-rcache
+.IR policy ]
+.RB [ \-wcache
+.IR policy ]
+.RB [ \-check " | " \-nocheck ]
+.RB [ \-version ]
+.RB [ \-help ]
+.PP
+.HP 5
+.B mhn
+.B \-build
+.I file
+.RB [ \-ebcdicsafe " | " \-noebcdicsafe ]
+.RB [ \-rfc934mode " | " \-norfc934mode ]
+
+.HP 5
+.B mhpath
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B mhshow
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-file
+.IR file ]
+.RB [ \-part
+.IR number ]
+\&...
+.RB [ \-type
+.IR content ]
+\&...
+.RB [ \-serialonly " | " \-noserialonly ]
+.RB [ \-pause " | " \-nopause ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-rcache
+.IR policy ]
+.RB [ \-wcache
+.IR policy ]
+.RB [ \-check " | " \-nocheck ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B mhstore
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-file
+.IR file ]
+.RB [ \-part
+.IR number ]
+\&...
+.RB [ \-type
+.IR content ]
+\&...
+.RB [ \-auto " | " \-noauto ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-rcache
+.IR policy ]
+.RB [ \-wcache
+.IR policy ]
+.RB [ \-check " | " \-nocheck ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B msgchk
+.RB [ \-date " | " \-nodate ]
+.RB [ \-notify
+all/mail/nomail ]
+.RB [ \-nonotify
+all/mail/nomail ]
+%nmhbeginpop%
+.RB [ \-host
+.IR hostname ]
+.RB [ \-user
+.IR username ]
+.RB [ \-apop " | " \-noapop ]
+.RB [ \-kpop ]
+.RB [ \-sasl ]
+.RB [ \-saslmech
+.IR mechanism ]
+.RB [ \-snoop ]
+%nmhendpop%
+.RI [ users
+... ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B msh
+.RB [ \-prompt
+.IR string ]
+.RB [ \-scan " | " \-noscan ]
+.RB [ \-topcur " | " \-notopcur ]
+.RI [ file ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B next 
+.RI [ +folder ]
+.RB [\-showproc
+.IR program ]
+.RB [ \-showmimeproc
+.IR program ]
+.RB [ \-header " | " \-noheader ]
+.RB [ \-checkmime " | " \-nocheckmime ]
+[switches\ for
+.I showproc
+or
+.IR showmimeproc ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B packf
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-file
+.IR name ]
+.RB [ \-mbox ]
+.RB [ \-mmdf ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B pick
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-and
+\&...]
+.RB [ \-or
+\&...]
+.RB [ \-not
+\&...]
+.RB [ \-lbrace
+\&...
+.BR \-rbrace ]
+.RB [ \-\|\-component
+.IR pattern ]
+.RB [ \-cc
+.IR pattern ]
+.RB [ \-date
+.IR pattern ]
+.RB [ \-from
+.IR pattern ]
+.RB [ \-search
+.IR pattern ]
+.RB [ \-subject
+.IR pattern ]
+.RB [ \-to
+.IR pattern ]
+.RB [ \-after
+.IR date ]
+.RB [ \-before
+.IR date ]
+.RB [ \-datefield
+.IR field ]
+.RB [ \-sequence
+.I name
+\&...]
+.RB [ \-public " | " \-nopublic ]
+.RB [ \-zero " | " \-nozero ]
+.RB [ \-list " | " \-nolist ] 
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/post 
+.RB [ \-alias
+.IR aliasfile ]
+.RB [ \-filter
+.IR filterfile ]
+.RB [ \-nofilter ]
+.RB [ \-format " | " \-noformat ]
+.RB [ \-mime " | " \-nomime ]
+.RB [ \-msgid " | " \-nomsgid ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-watch " | " \-nowatch ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-sasl ]
+.RB [ \-saslmech
+.IR mechanism ]
+.RB [ \-user
+.IR username ]
+.I file
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B prev 
+.RI [ +folder ]
+.RB [\-showproc
+.IR program ]
+.RB [ \-showmimeproc
+.IR program ]
+.RB [ \-header " | " \-noheader ]
+.RB [ \-checkmime " | " \-nocheckmime ]
+[switches\ for
+.I showproc
+or
+.IR showmimeproc ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/rcvdist
+.RB [ \-form
+.IR formfile ]
+[switches\ for
+.IR postproc ]
+.I address1
+\&...
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/rcvpack
+.I file
+.RB [ \-mbox ]
+.RB [ \-mmdf ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/rcvstore
+.RI [ +folder ]
+.RB [ \-create " | " \-nocreate ]
+.RB [ \-unseen " | " \-nounseen ]
+.RB [ \-zero " | " \-nozero ]
+.RB [ \-sequence
+.I name
+\&...]
+.RB [ \-public " | " \-nopublic ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/rcvtty
+.RI [ command ]
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR string ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-bell " | " \-nobell ]
+.RB [ \-newline " | " \-nonewline ]
+.RB [ \-biff ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B refile 
+.RI [ msgs ]
+.RB [ \-draft ]
+.RB [ \-link " | " \-nolink ]
+.RB [ \-preserve " | " \-nopreserve ]
+.RB [ \-unlink " | " \-nounlink ]
+.RB [ \-src
+.IR +folder ]
+.RB [ \-file
+.IR file ]
+.RB [ \-rmmproc
+.IR program ]
+.RB [ \-normmproc ]
+.I +folder1
+\&...
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B repl
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-annotate " | " \-noannotate ] 
+.RB [ \-group " | " \-nogroup ]
+.RB [ \-cc
+all/to/cc/me]
+.RB [ \-nocc
+all/to/cc/me]
+.RB [ \-query " | " \-noquery ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-format " | " \-noformat ]
+.RB [ \-filter
+.IR filterfile ]
+.RB [ \-inplace " | " \-noinplace ]
+.RB [ \-mime " | " \-nomime ]
+.RB [ \-fcc
+.IR +folder ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RB [ \-editor
+.IR editor ]
+.RB [ \-noedit ]
+.RB [ \-whatnowproc
+.IR program ]
+.RB [ \-nowhatnowproc ]
+.RB [ \-build ]
+.RB [ \-file
+.IR msgfile ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B rmf 
+.RI [ +folder ]
+.RB [ \-interactive " | " \-nointeractive ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B rmm
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-link " | " \-nolink ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B scan
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-clear " | " \-noclear ]
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR string ]
+.RB [ \-header " | " \-noheader ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-reverse " | " \-noreverse ]
+.RB [ \-file
+.IR filename ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B send
+.RB [ \-alias
+.IR aliasfile ]
+.RB [ \-draft ]
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RB [ \-filter
+.IR filterfile ]
+.RB [ \-nofilter ]
+.RB [ \-format " | " \-noformat ]
+.RB [ \-forward " | " \-noforward ]
+.RB [ \-mime " | " \-nomime ]
+.RB [ \-msgid " | " \-nomsgid ]
+.RB [ \-push " | " \-nopush ]
+.RB [ \-split
+.IR seconds ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-watch " | " \-nowatch ]
+.RB [ \-sasl ]
+.RB [ \-saslmech
+.IR mechanism ]
+.RB [ \-user
+.IR username ]
+.RB [ \-width
+.IR columns ]
+.RB [ file
+\&...] 
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B show
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-draft ]
+.RB [\-showproc
+.IR program ]
+.RB [ \-showmimeproc
+.IR program ]
+.RB [ \-header " | " \-noheader ]
+.RB [ \-checkmime " | " \-nocheckmime ]
+[switches\ for
+.I showproc
+or
+.IR showmimeproc ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B %libdir%/slocal
+[address\ info\ sender]
+.RB [ \-addr
+.IR address ]
+.RB [ \-info
+.IR data ]
+.RB [ \-sender
+.IR sender ]
+.RB [ \-user
+.IR username ]
+.RB [ \-mailbox
+.IR mbox ]
+.\" \%[\-home\ homedir]
+.RB [ \-file
+.IR file ]
+.RB [ \-maildelivery
+.IR deliveryfile ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-suppressdup " | " \-nosuppressdup ]
+.RB [ \-debug ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B sortm
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-datefield
+.IR field ]
+.RB [ \-textfield
+.IR field ]
+.RB [ \-notextfield ]
+.RB [ \-limit
+.IR days ]
+.RB [ \-nolimit ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B whatnow
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RB [ \-editor
+.IR editor ]
+.RB [ \-noedit ]
+.RB [ \-prompt
+.IR string ]
+.RI [ file ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B whom
+.RB [ \-alias
+.IR aliasfile ]
+.RB [ \-check " | " \-nocheck ]
+.RB [ \-draft ]
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RI [ file ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.ad
