@@ -247,7 +247,7 @@ else
 fi])
  
 if test "$nmh_cv_attvibug" = yes; then
-  AC_DEFINE(ATTVIBUG)
+  AC_DEFINE(ATTVIBUG)dnl
 fi
 
 dnl ----------------------------------------------------------
