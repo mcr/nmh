@@ -12,16 +12,6 @@
  */
 
 /*
- * Define to 1 if you need to make `inc' set-group-id
- * because your mail spool is not world writable.  This
- * will add some extra security checks, although I can't
- * guarantee it is safe.  Also, you will need to change the
- * group and add the setgid bit to `inc' manually after
- * installation.
- */
-/* #define MAILGROUP  1 */
-
-/*
  * Turn on locale (setlocale) support
  */
 #define LOCALE  1
@@ -230,6 +220,13 @@
  * non-zero exit codes on `pseudo-errors'.
  */
 #undef ATTVIBUG
+
+/*
+ * Define to 1 if you need to make `inc' set-group-id because your mail spool is
+ * not world writable.  There are no guarantees as to the safety of doing this,
+ * but this #define will add some extra security checks.
+ */
+#undef MAILGROUP
 
 /* Define ruserpass as _ruserpass if your libraries have a bug *
  * such that it can't find ruserpass, but can find _ruserpass. */

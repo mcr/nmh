@@ -151,6 +151,10 @@ AC_PROG_RANLIB		dnl Check for `ranlib'
 AC_PROG_AWK             dnl Check for mawk,gawk,nawk, then awk
 AC_PROG_LEX             dnl Check for lex/flex
 
+dnl Look for `cut'
+pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
+AC_PATH_PROG(cutpath, cut, no, [$pathtmp])
+
 dnl Check for lorder and tsort commands
 AC_CHECK_PROG(LORDER, lorder, lorder, no)dnl
 AC_CHECK_PROG(TSORT, tsort, tsort, no)dnl
@@ -163,9 +167,9 @@ if test x$ac_cv_prog_LORDER != xlorder -o x$ac_cv_prog_TSORT != xtsort; then
   AC_SUBST(TSORT)dnl
 fi
 
-dnl Look for `sendmail'
-pathtmp=/usr/lib:/usr/sbin:/usr/etc:/usr/ucblib:/usr/bin:/bin
-AC_PATH_PROG(sendmailpath, sendmail, no, [$pathtmp])
+dnl Look for `ls'
+pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
+AC_PATH_PROG(lspath, ls, no, [$pathtmp])
 
 dnl Look for `more'
 pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
@@ -177,6 +181,10 @@ if test -z "$pagerpath"; then
   pagerpath="$morepath"
 fi
 AC_SUBST(pagerpath)dnl
+
+dnl Look for `sendmail'
+pathtmp=/usr/lib:/usr/sbin:/usr/etc:/usr/ucblib:/usr/bin:/bin
+AC_PATH_PROG(sendmailpath, sendmail, no, [$pathtmp])
 
 dnl Look for `vi'
 pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
@@ -203,9 +211,9 @@ if test "$nmh_cv_attvibug" = yes; then
   AC_DEFINE(ATTVIBUG)
 fi
 
-dnl ---------------
-dnl FIND MAIL SPOOL
-dnl ---------------
+dnl ----------------------------------------------------------
+dnl FIND MAIL SPOOL AND SEE IF WE NEED TO MAKE inc SETGID MAIL
+dnl ----------------------------------------------------------
 AC_CACHE_CHECK(where mail spool is located, nmh_cv_mailspool,
 [for mailspool in /var/mail        dnl
                   /var/spool/mail  dnl
@@ -218,6 +226,24 @@ nmh_cv_mailspool=$mailspool
 ])
 mailspool=$nmh_cv_mailspool
 AC_SUBST(mailspool)dnl
+
+dnl See whether the mail spool directory is world-writable.
+if test "$lspath" != "no" -a "$cutpath" != "no"; then
+  AC_CACHE_CHECK(whether the mail spool is world-writable, 
+		 nmh_cv_mailspool_world_writable,
+  [if test "`$lspath -dl $mailspool | $cutpath -c9`" = "-"; then
+    nmh_cv_mailspool_world_writable=no
+  else
+    nmh_cv_mailspool_world_writable=yes
+  fi])
+fi
+
+dnl ...If it's not, we need to #define MAILGROUP to 1 and make inc setgid mail.
+if test "$nmh_cv_mailspool_world_writable" = "no"; then
+  AC_DEFINE(MAILGROUP)
+  SETGID_MAIL=1
+fi
+AC_SUBST(SETGID_MAIL)dnl
 
 dnl ------------------
 dnl CHECK HEADER FILES
