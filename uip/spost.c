@@ -181,6 +181,8 @@ extern char *sendmail;
 extern char *getfullname (void);
 extern char *getusername (void);
 
+extern boolean  draft_from_masquerading;  /* defined in mts.c */
+
 /*
  * static prototypes
  */
@@ -578,10 +580,19 @@ finish_headers (FILE *out)
 	case normal: 
 	    if (!(msgflags & MDAT))
 		fprintf (out, "Date: %s\n", dtimenow (0));
-	    if (msgflags & MFRM)
-		fprintf (out, "Sender: %s\n", from);
+	    
+	    if (msgflags & MFRM) {
+		/* There was already a From: in the draft.  Don't add one. */
+		if (!draft_from_masquerading)
+		    /* mts.conf didn't contain "masquerade:[...]draft_from[...]"
+		       so we'll reveal the user's actual account@thismachine
+		       address in a Sender: header (and use it as the envelope
+		       From: later). */
+		    fprintf (out, "Sender: %s\n", from);
+	    }
 	    else
 		fprintf (out, "From: %s\n", signature);
+	   
 #ifdef notdef
 	    if (!(msgflags & MVIS))
 		fprintf (out, "Bcc: Blind Distribution List: ;\n");
@@ -591,9 +602,17 @@ finish_headers (FILE *out)
 	case resent: 
 	    if (!(msgflags & MRDT))
 		fprintf (out, "Resent-Date: %s\n", dtimenow(0));
-	    if (msgflags & MRFM)
-		fprintf (out, "Resent-Sender: %s\n", from);
+	    if (msgflags & MRFM) {
+		/* There was already a Resent-From: in draft.  Don't add one. */
+		if (!draft_from_masquerading)
+		    /* mts.conf didn't contain "masquerade:[...]draft_from[...]"
+		       so we'll reveal the user's actual account@thismachine
+		       address in a Sender: header (and use it as the envelope
+		       From: later). */
+		    fprintf (out, "Resent-Sender: %s\n", from);
+	    }
 	    else
+		/* Construct a Resent-From: header. */
 		fprintf (out, "Resent-From: %s\n", signature);
 #ifdef notdef
 	    if (!(msgflags & MVIS))
