@@ -1,3 +1,10 @@
+Fri Sep 8 01:36:23 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Took out bad time textual time zones like BST and JST.
+	I found them online somewhere, but am not sure if they're
+	correct.
+	
+	
 Fri Sep 8 00:36:48 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Moved zotnet/mts to mts/generic. This code reorganization
