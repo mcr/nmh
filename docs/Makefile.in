@@ -10,10 +10,10 @@ srcdir = @srcdir@
 VPATH  = @srcdir@
 
 # header files included in distribution
-FILES = COMPLETION-TCSH COMPLETION-ZSH ChangeLog_MH-3_to_MH-6.6 \
-        ChangeLog_MH-6.7.0_to_MH-6.8.4.html DIFFERENCES FAQ \
-        MAIL.FILTERING MAILING-LISTS README.about \
-        README.developers TODO 
+FILES = COMPLETION-TCSH COMPLETION-ZSH ChangeLog_MH-3_to_MH-6.6	\
+        ChangeLog_MH-6.7.0_to_MH-6.8.4.html DIFFERENCES FAQ	\
+        MAIL.FILTERING MAILING-LISTS README.about		\
+        README.developers README.manpages TODO
 
 # auxiliary files
 AUX = Makefile.in
