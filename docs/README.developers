@@ -76,6 +76,10 @@ config/
     Contains utility files for the `configure' process.  Ordinarily nothing in
     here needs to be messed with.
 
+doc/
+    Contains more specialized documentation, such as this file and
+    the FAQ.
+
 etc/
     Contains files, file templates, and scripts to generate files that will be
     installed in the ${prefix}/etc directory.  Stuff like replcomps.
@@ -92,11 +96,11 @@ mts/
     "mts" stands for "Message Transfer Service".  Source files specific to the
     different MTSs go in the subdirectories.
 
-mts/mmdf/
+mts/mmdf/ (deprecated)
     "mmdf" stands for "Multichannel Memorandum Distribution Facility".  It is an
     alternative to sendmail used primarily on SCO UNIX.
 
-mts/sendmail/
+mts/sendmail/ (deprecated: handled by mts.conf)
     When nmh is configured --with-mts=sendmail, the files in this directory are
     used. 
 
@@ -117,26 +121,26 @@ uip/
     <command>sbr.c which contains additional subroutines called from <command>.c
     (which would contain not much else besides main()).
 
-zotnet/
+zotnet/ (deprecated)
     Files in this hierarchy were either written by or moved here by UCI
     (University of California, Irvine) after they took over MH from the Rand
     Corporation.  "Zot!" is the sound effect made by the anteater in the "B.C."
     comic strip when its tongue lashes out at ants.  The anteater is UCI's
     official mascot.  Not sure whether UCInet was once called ZotNet...
 
-zotnet/bboards/
+zotnet/bboards/ (deprecated)
     UCI added Bulletin Board functionality to MH with the `bbc' command.  This
     functionality has been removed from nmh but apparently files in this
     directory are still needed for other purposes.
 
-zotnet/mf/
+zotnet/mf/ (deprecated, now in sbr/)
     "mf" stands for "Mail Filter".  The filtering in this case apparently refers
     to translation between different address and mailbox formats.
 
-zotnet/mts/
+zotnet/mts/ (deprecated, now in sbr/)
     MTS code not specific to any single MTS apparently goes here.
 
-zotnet/tws/
+zotnet/tws/ (deprecated, now in sbr/)
     "tws" apparently stands for "time with structure", a rather odd phrase.
     This directory used to be the place for date and time manipulation code, but
     currently nothing in here is compiled.  There are new, more portable
