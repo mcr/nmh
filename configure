@@ -16,7 +16,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-debug          enable nmh code debugging"
 ac_help="$ac_help
-  --with-backup-prefix=,  set the backup prefix [,]"
+  --with-hash-backup      use # as the backup prefix (default: ,)"
 ac_help="$ac_help
   --enable-masquerade[='draft_from mmailid username_extension']
                           enable up to 3 types of address masquerading [none]"
@@ -693,14 +693,14 @@ if test x"$enable_nmh_debug" = x"yes"; then
   enable_debug=yes
 fi
 
-# Check whether --with-backup-prefix or --without-backup-prefix was given.
-if test "${with_backup_prefix+set}" = set; then
-  withval="$with_backup_prefix"
+# Check whether --with-hash-backup or --without-hash-backup was given.
+if test "${with_hash_backup+set}" = set; then
+  withval="$with_hash_backup"
   :
 fi
 
-if test x"$with_backup_prefix" != x -a x"$with_backup_prefix" != x"no"; then
-  backup_prefix="$with_backup_prefix"
+if test x"$with_hash_backup" != x -a x"$with_hash_backup" != x"no"; then
+  backup_prefix="#"
 else
   backup_prefix=","
 fi
@@ -5118,8 +5118,8 @@ binary install path        : ${nmhbin2}
 libary install path        : ${nmhlib2}
 config files install path  : ${nmhsysconf2}
 man page install path      : ${nmhman}
-transport system           : ${MTS}
 backup prefix              : ${backup_prefix}
+transport system           : ${MTS}
 default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
 default pager              : ${pagerpath}

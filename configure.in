@@ -52,10 +52,10 @@ fi
 
 dnl Set the backup prefix
 undefine([backup-prefix])dnl
-AC_ARG_WITH([backup-prefix],
-  [  --with-backup-prefix=,  set the backup prefix [,]])
-if test x"$with_backup_prefix" != x -a x"$with_backup_prefix" != x"no"; then
-  backup_prefix="$with_backup_prefix"
+AC_ARG_WITH([hash-backup],
+  [  --with-hash-backup      use # as the backup prefix (default: ,)])
+if test x"$with_hash_backup" != x -a x"$with_hash_backup" != x"no"; then
+  backup_prefix="#"
 else
   backup_prefix=","
 fi
@@ -817,8 +817,8 @@ binary install path        : ${nmhbin2}
 libary install path        : ${nmhlib2}
 config files install path  : ${nmhsysconf2}
 man page install path      : ${nmhman}
-transport system           : ${MTS}
 backup prefix              : ${backup_prefix}
+transport system           : ${MTS}
 default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
 default pager              : ${pagerpath}
