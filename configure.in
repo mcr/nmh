@@ -171,6 +171,21 @@ dnl Look for `ls'
 pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
 AC_PATH_PROG(lspath, ls, no, [$pathtmp])
 
+dnl See how we get ls to display the owner and the group
+if test "$lspath" != "no"; then
+  AC_CACHE_CHECK(how to get ls to show us the group ownership of a file, 
+		 nmh_cv_ls_grpopt,
+  [if test x"`$lspath -dl / | $AWK '{print $9}'`" = x"/"; then
+    dnl There were 9 parameters, so unless this is a really bizarre, nonstandard
+    dnl ls, it would seem -l gave us both the user and group.  On this type of
+    dnl ls, -g makes _only_ the group be displayed (and not the user).
+    nmh_cv_ls_grpopt="-l"
+  else
+    dnl Looks like -l only gave us the user, so we need -g to get the group too.
+    nmh_cv_ls_grpopt="-lg"
+  fi])
+fi
+
 dnl Look for `more'
 pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
 AC_PATH_PROG(morepath, more, no, [$pathtmp])
@@ -238,26 +253,27 @@ if test "$lspath" != "no" -a "$cutpath" != "no"; then
   fi])
 fi
 
-dnl see if we can determine which group owns the mail spool dir
-undefine([nmh_grp_mailspool])dnl
-AC_CACHE_CHECK(what group owns the mail spool, nmh_group_mailspool,
-[ nmh_group_mailspool=`ls -lgd $mailspool | awk '{print $4}'`
-  if test x$nmh_group_mailspool = xmail; then
-    MAILGROUP="mail"
-  elif test x$nmh_group_mailspool = xwheel; then
-    MAILGROUP="wheel"
-  else
-    MAILGROUP="'0'"
-  fi])
-AC_SUBST(MAILGROUP)
-
-dnl ...If it's not, we need to #define MAILGROUP to 1 and make inc setgid mail.
-if test "$nmh_cv_mailspool_world_writable" = "no"; then
-dnl do we really need both of these?
+dnl ...If it's not, we need to #define MAILGROUP to 1 and make inc setgid.
+if test x"$nmh_cv_mailspool_world_writable" = x"no"; then
+  dnl do we really need both of these?
   AC_DEFINE(MAILGROUP)
   SETGID_MAIL=1
 fi
 AC_SUBST(SETGID_MAIL)dnl
+
+dnl see if we can determine which group owns the mail spool dir
+AC_CACHE_CHECK(what group owns the mail spool, nmh_cv_ls_mail_grp,
+[nmh_cv_ls_mail_grp=`$lspath -d $nmh_cv_ls_grpopt $mailspool |$AWK '{print $4}'`
+ dnl Should we just set it to whatever ls reports, rather than only allowing
+ dnl certain values...?
+ if test x$nmh_cv_ls_mail_grp = xmail; then
+   MAIL_SPOOL_GRP="mail"
+ elif test x$nmh_cv_ls_mail_grp = xwheel; then
+   MAIL_SPOOL_GRP="wheel"
+ else
+   MAIL_SPOOL_GRP="'0'"
+ fi])
+AC_SUBST(MAIL_SPOOL_GRP)dnl
 
 dnl ------------------
 dnl CHECK HEADER FILES
