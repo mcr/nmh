@@ -779,10 +779,8 @@ dnl ----------------
 dnl OUTPUT MAKEFILES
 dnl ----------------
 AC_OUTPUT(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
-          zotnet/Makefile zotnet/mts/Makefile \
-          mts/Makefile mts/smtp/Makefile \
-	  mts/sendmail/Makefile mts/mmdf/Makefile etc/Makefile \
-	  docs/Makefile man/Makefile, \
+          mts/generic/Makefile mts/Makefile mts/smtp/Makefile \
+	  etc/Makefile docs/Makefile man/Makefile, \
           [test -z "$CONFIG_HEADERS" || echo > stamp-h])
 
 dnl Umm, what's the point of these assignments??  -- <dan-nmh@dilvish.speed.net>
