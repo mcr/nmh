@@ -1,7 +1,29 @@
+Sun Dec 24 10:06:30 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Updated INSTALL with information about the
+	--with-locking option.
+
+	* Fixed the Hesiod tests in configure.in. In
+	systems where res_send was in -lresolv, this
+	information was not being communicated to the
+	HESIOD_LIBS var. Now, if res_send is not found
+	in the default libraries, it's assumed to be
+	in -lresolv, and thus -lresolv is appended to
+	HESIOD_LIBS, which will need that to avoid
+	undefined symbols problems.
+
+	* Fixed the Kerberos tests in configure.in. New
+	versions of Kerberos 5 have renamed -lcrypto
+	to -lk5crypto (circa krb5 1.1 or thereabouts). The
+	new test tries to determine if -lk5crypto exists. If so,
+	this is a new krb5 system. If not, test for -lcrypto
+	and the rest of old krb5. If that fails, look
+	for a genuine krb4 installation.
+	
 Fri Dec 22 22:08:51 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
-	* -apop and -noapop were not documented in msgchk.man.  -snoop was
- 	documented but didn't appear in the usage SYNOPSIS.
+	* -apop and -noapop were not documented in msgchk.man.
+	-snoop was documented but didn't appear in the usage SYNOPSIS.
 
 Fri Dec 22 23:42:16 2000 Shantonu Sen <ssen@mit.edu>
 
