@@ -39,6 +39,12 @@ struct node {
 
 struct swit {
     char *sw;
+
+    /* The minchars field is apparently used like this:
+
+       -# : Switch can be abbreviated to # characters; switch hidden in -help.
+       0  : Switch can't be abbreviated;               switch shown in -help.
+       #  : Switch can be abbreviated to # characters; switch shown in -help. */
     int minchars;
 };
 
