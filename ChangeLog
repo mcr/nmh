@@ -1,7 +1,12 @@
+Tue Aug 17 16:06:29 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Automated #define of MAILGROUP and installation of inc as setgid mail
+	when the mail spool directory isn't world-writable.
+
 Thu Jul 15 18:37:07 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* slocal -debug used to leave a file in /tmp for each message
-	processed.  Very bad for people have slocal -debug in their .forward!
+	processed.  Very bad for folks with slocal -debug in their .forward!
 
 	* Got rid of a ton of compilation warnings.  Most were "junk"
  	warnings due to the use of gcc -Wall (without -Wno-parentheses),

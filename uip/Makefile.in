@@ -41,6 +41,8 @@ LN = ln
 INSTALL         = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
+SETGID_MAIL = @SETGID_MAIL@
+
 .SUFFIXES:
 .SUFFIXES: .c .o
 
@@ -48,7 +50,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 	$(COMPILE) $<
 
 # commands to build
-CMDS = ali anno burst comp dist flist folder forw inc mark mhbuild \
+CMDS = ali anno burst comp dist flist folder forw mark mhbuild \
        mhlist mhmail mhn mhparam mhpath mhshow mhstore mhtest msgchk \
        msh packf pick prompter refile repl rmf rmm scan send show \
        sortm viamail whatnow whom
@@ -62,6 +64,9 @@ LCMDS = flists folders next prev
 # misc support binaries
 MISC = ap conflict dp fmtdump install-mh mhl post rcvdist rcvpack \
        rcvstore rcvtty slocal spost
+
+# commands with 'S'pecial installation needs
+SCMDS = inc
 
 # source files
 SRCS = ali.c aliasbr.c anno.c annosbr.c ap.c burst.c comp.c \
@@ -84,7 +89,7 @@ DIST = $(SRCS) $(AUX)
 
 # ========== DEFAULT TARGET ==========
 
-all: $(CMDS) $(MISC)
+all: $(CMDS) $(MISC) $(SCMDS)
 
 # ========= DEPENDENCIES FOR BUILDING ==========
 
@@ -238,7 +243,7 @@ whom: whom.o distsbr.o $(LOCALLIBS)
 # ========== DEPENDENCIES FOR INSTALLING ==========
 
 # install everything
-install: install-cmds install-lcmds install-misc
+install: install-cmds install-lcmds install-misc install-scmds
 
 # install commands
 install-cmds:
@@ -265,6 +270,14 @@ install-misc:
 	  $(INSTALL_PROGRAM) $$misc $(libdir)/$$misc; \
 	done
 
+# install commands with special installation needs (thus no $(SCMDS) use here)
+install-scmds:
+	if test x$(SETGID_MAIL) = x1; then \
+	  $(INSTALL_PROGRAM) -g mail -m 2755 inc $(bindir)/$$cmd; \
+	else \
+	  $(INSTALL_PROGRAM)                 inc $(bindir)/$$cmd; \
+	fi
+
 uninstall:
 	for cmd in $(CMDS); do \
 	  rm -f $(bindir)/$$cmd; \
@@ -275,6 +288,9 @@ uninstall:
 	for misc in $(MISC); do \
 	  rm -f $(libdir)/$$misc; \
 	done
+	for cmd in $(SCMDS); do \
+	  rm -f $(bindir)/$$cmd; \
+	done
 
 # ========== DEPENDENCIES FOR CLEANUP ==========
 
@@ -282,7 +298,7 @@ mostlyclean:
 	rm -f *.o *~
 
 clean: mostlyclean
-	rm -f $(CMDS) $(MISC)
+	rm -f $(CMDS) $(MISC) $(SCMDS)
 
 distclean: clean
 	rm -f Makefile
