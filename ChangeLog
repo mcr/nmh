@@ -1,3 +1,13 @@
+Mon Mar 06 12:20:20 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Applied Neil W Rickert <rickert+nmh@cs.niu.edu>'s msh.c patch:
+
+	      I finally tracked down the problem in msh that was causing errors
+              whenever I tried to examine a 'mmdf' style mailbox.
+
+	      It turns out that not enough memory was being allocated with
+              calloc(), causing memory pointers to be overwritten and corrupted.
+		
 Fri Mar 03 16:07:33 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Changed the new "plussed_user" option to mts.conf's

@@ -754,7 +754,7 @@ setup (char *file)
     if (!(mp = (struct msgs  *) calloc ((size_t) 1, sizeof(*mp))))
 	padios (NULL, "unable to allocate folder storage");
 
-    if (!(mp->msgstats = calloc ((size_t) 1, msgp + 3)))
+    if (!(mp->msgstats = calloc ((size_t) msgp + 3, sizeof(*(mp->msgstats)))))
 	padios (NULL, "unable to allocate message status storage");
 
     mp->hghmsg = msgp;
