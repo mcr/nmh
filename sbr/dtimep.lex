@@ -153,6 +153,34 @@ static int day_map[] = {
                        --cp; }
 #define SKIPTOSP()   { while ( !isspace(*cp++) ) ; \
                        --cp; }
+
+#ifdef DSTXXX
+# ifdef TIME_WITH_SYS_TIME
+#  include <sys/time.h>
+#  include <time.h>
+# else
+#  ifdef HAVE_SYS_TIME_H
+#   include <sys/time.h>
+#  else
+#   include <time.h>
+#  endif
+# endif
+
+static void
+zonehack (struct tws *tw)
+{
+    register struct tm *tm;
+
+    if (dmktime (tw) == (time_t) -1)
+	return;
+
+    tm = localtime (&tw->tw_clock);
+    if (tm->tm_isdst) {
+	tw->tw_flags |= TW_DST;
+	tw->tw_zone -= 60;
+    }
+}
+#endif	/* DSTXXX */
 %}
 
 sun	([Ss]un(day)?)
@@ -327,11 +355,17 @@ d	[0-9]
                                     INIT();
                                     SKIPTOD();
                                     SETZONE(atoi(cp));
+#ifdef	DSTXXX
+				    zonehack (&tw);
+#endif	/* DSTXXX */
                                     }
 "-"{D}{d}{d}                                  {
                                     INIT();
                                     SKIPTOD();
                                     SETZONE(-atoi(cp));
+#ifdef	DSTXXX
+				    zonehack (&tw);
+#endif	/* DSTXXX */
                                     }
 "-"?("ut"|"UT")			    INIT(); SETZONE(0);
 "-"?("gmt"|"GMT")		    INIT(); SETZONE(0);

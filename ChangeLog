@@ -1,3 +1,11 @@
+Mon Jul 24 15:52:55 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* When Shantonu wrote the new, more portable dtimep.lex, he left
+	out the #ifdef DSTXXX stuff for some reason.  Not a good idea, as
+	that code is required for proper printing of numeric-offset
+	timezones that have daylight saving time.  Without that code,
+	-0700 during DST gets printed as MST instead of PDT.
+
 Thu Jul 20 20:30:52 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Moved Kimmo's new "--with-hash-backup" to be output with the
