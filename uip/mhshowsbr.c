@@ -136,7 +136,9 @@ show_single_message (CT ct, char *form)
     union wait status;
 #endif
 
-    umask (ct->c_umask);
+    /* Allow user executable bit so that temporary directories created by
+     * the viewer (e.g., lynx) are going to be accessible */
+    umask (ct->c_umask & ~(0100));
 
     /*
      * If you have a format file, then display

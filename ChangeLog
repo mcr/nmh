@@ -1,3 +1,9 @@
+Mon Aug  7 20:11:09 CEST 2000 Ruud de Rooij <ruud@ruud.org>
+
+	* Modify umask set by mhshow to enable user execute bit, so that
+	viewers that create temporary directories (e.g., lynx) will be
+	able to access them.
+
 Thu Aug 03 17:14:08 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* TODO: Allow multiple simultaneous differing contexts, probably
