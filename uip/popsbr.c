@@ -89,7 +89,7 @@ pop_auth (char *user, char *pass)
 	return NULL;
     }
 
-    *++lp = NULL;
+    *(++lp) = '\0';
     snprintf (buffer, sizeof(buffer), "%s%s", cp, pass);
 
     MD5Init (&mdContext);
@@ -110,7 +110,7 @@ pop_auth (char *user, char *pass)
 	cp += 2;
 	buflen -= 2;
     }
-    *cp = NULL;
+    *cp = '\0';
 
     return buffer;
 }
@@ -139,8 +139,9 @@ pop_init (char *host, char *user, char *pass, int snoop, int rpop, int kpop)
 	}
     } else {
 # endif /* KPOP */
-	if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response, sizeof(response))) == NOTOK)
+      if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response, sizeof(response))) == NOTOK) {
 	    return NOTOK;
+      }
 # ifdef KPOP
    }
 # endif /* KPOP */
