@@ -1,4 +1,4 @@
-Tue May 09 17:01:47 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Tue May 09 20:38:04 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Alphabetized Shantonu's $pop_kinds output on configure's "pop is
 	enabled" line.  If POP3 is the only kind of POP enabled, say so,
@@ -35,6 +35,22 @@ Tue May 09 17:01:47 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Prepended "Portions of this code are" to the copyright message
 	in ruserpass.c also.
+
+	* Added mts.conf.5 page per Neil W Rickert <rickert+nmh@cs.niu.edu>'s
+	report:
+	
+	    This happens on solaris:
+
+		     % man mts.conf
+		     windex entry incorrect:  mts.conf(5) not found.
+		     No manual entry for mts.conf.
+
+	    It is fixed by
+
+		     % echo ".so man5/mh-tailor.5" > mts.conf.5
+
+	    done in the man5 directory.  We need to add 'mts.conf.5' as a
+	    reference sourcing mh-tailor.5.
 	
 Mon May 08 23:51:55 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 

@@ -72,7 +72,7 @@ MAN1 = ali.$(manext1) anno.$(manext1) burst.$(manext1) comp.$(manext1) \
 
 MAN5 = mh-alias.$(manext5) mh-draft.$(manext5) mh-format.$(manext5) \
        mh-mail.$(manext5) mh-profile.$(manext5) mh-sequence.$(manext5) \
-       mh-tailor.$(manext5)
+       mh-tailor.$(manext5) mts.conf.$(manext5)
 
 MAN8 = ap.$(manext8) conflict.$(manext8) dp.$(manext8) \
        fmtdump.$(manext8) install-mh.$(manext8) mh-mts.$(manext8) \
@@ -85,7 +85,7 @@ DIST_MAN = ali.man anno.man ap.man burst.man comp.man conflict.man \
            mh-draft.man mh-format.man mh-mail.man mh-mts.man mh-profile.man \
            mh-sequence.man mh-tailor.man nmh.man mhbuild.man mhl.man \
            mhlist.man mhmail.man mhn.man mhparam.man mhpath.man \
-           mhshow.man mhstore.man msgchk.man msh.man \
+           mhshow.man mhstore.man msgchk.man msh.man mts.conf.man \
            next.man packf.man pick.man post.man prev.man prompter.man \
            rcvdist.man rcvpack.man rcvstore.man rcvtty.man refile.man \
            repl.man rmf.man rmm.man scan.man send.man sendfiles.man show.man \
