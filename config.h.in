@@ -465,8 +465,5 @@
 /* Define if you have the nsl library (-lnsl).  */
 #undef HAVE_LIBNSL
 
-/* Define if you have the resolv library (-lresolv).  */
-#undef HAVE_LIBRESOLV
-
 /* Define if you have the socket library (-lsocket).  */
 #undef HAVE_LIBSOCKET
