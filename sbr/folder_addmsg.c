@@ -25,7 +25,6 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
     int infd, outfd, linkerr, first_time, msgnum;
     char *nmsg, newmsg[BUFSIZ];
     char oldmsg[BUFSIZ];
-    struct msgs *op;
     struct msgs *mp;
     struct stat st1, st2;
 
@@ -143,9 +142,7 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 	if (link (msgfile, newmsg) != -1) {
 
 	    if (deleting) {
-		op = folder_read(getfolder(1));
 		(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", pwd(), msgfile);
-		folder_free(op);
 		(void)ext_hook("ref-hook", oldmsg, newmsg);
 	    }
 	    else
