@@ -5,6 +5,14 @@
  * $Id$
  */
 
+/* Modified by Ruud de Rooij to support Miquel van Smoorenburg's liblockfile
+ *
+ * Since liblockfile locking shares most of its code with dot locking, it
+ * is enabled by defining both DOT_LOCKING and HAVE_LIBLOCKFILE.
+ *
+ * Ruud de Rooij <ruud@debian.org>  Sun, 28 Mar 1999 15:34:03 +0200
+ */
+ 
 #include <h/mh.h>
 #include <h/signals.h>
 
@@ -40,6 +48,10 @@
 
 #include <signal.h>
 
+#if defined(HAVE_LIBLOCKFILE)
+#include <lockfile.h>
+#endif
+
 extern int errno;
 
 #ifdef LOCKDIR
@@ -56,7 +68,9 @@ char *lockdir = LOCKDIR;
 /* struct for getting name of lock file to create */
 struct lockinfo {
     char curlock[BUFSIZ];
+#if !defined(HAVE_LIBLOCKFILE)
     char tmplock[BUFSIZ];
+#endif
 };
 
 /*
@@ -65,11 +79,13 @@ struct lockinfo {
  */
 #define	NSECS 20
 
+#if !defined(HAVE_LIBLOCKFILE)
 /*
  * How old does a lock file need to be
  * before we remove it.
  */
 #define RSECS 180
+#endif /* HAVE_LIBLOCKFILE */
 
 /* struct for recording and updating locks */
 struct lock {
@@ -156,9 +172,13 @@ lkclose (int fd, char *file)
 
 #ifdef DOT_LOCKING
     lockname (file, &lkinfo, 0);	/* get name of lock file */
+#if !defined(HAVE_LIBLOCKFILE)
     unlink (lkinfo.curlock);		/* remove lock file      */
+#else
+    lockfile_remove(lkinfo.curlock);
+#endif /* HAVE_LIBLOCKFILE */
     timerOFF (fd);			/* turn off lock timer   */
-#endif
+#endif /* DOT_LOCKING */
 
     return (close (fd));
 }
@@ -231,9 +251,13 @@ lkfclose (FILE *fp, char *file)
 
 #ifdef DOT_LOCKING
     lockname (file, &lkinfo, 0);	/* get name of lock file */
+#if !defined(HAVE_LIBLOCKFILE)
     unlink (lkinfo.curlock);		/* remove lock file      */
+#else
+    lockfile_remove(lkinfo.curlock);
+#endif /* HAVE_LIBLOCKFILE */
     timerOFF (fileno(fp));		/* turn off lock timer   */
-#endif
+#endif /* DOT_LOCKING */
 
     return (fclose (fp));
 }
@@ -336,6 +360,7 @@ lkopen_dot (char *file, int access, mode_t mode)
      */
     lockname (file, &lkinfo, 1);
 
+#if !defined(HAVE_LIBLOCKFILE)
     for (i = 0;;) {
 	/* attempt to create lock file */
 	if (lockit (&lkinfo) == 0) {
@@ -363,8 +388,19 @@ lkopen_dot (char *file, int access, mode_t mode)
 	    }
 	}
     }
+#else
+    if (lockfile_create(lkinfo.curlock, 5, 0) == L_SUCCESS) {
+        timerON(lkinfo.curlock, fd);
+        return fd;
+    }
+    else {
+        close(fd);
+        return -1;
+    }
+#endif /* HAVE_LIBLOCKFILE */
 }
 
+#if !defined(HAVE_LIBLOCKFILE)
 /*
  * Routine that actually tries to create
  * the lock file.
@@ -404,6 +440,7 @@ lockit (struct lockinfo *li)
 
     return (fd == -1 ? -1 : 0);
 }
+#endif /* HAVE_LIBLOCKFILE */
 
 /*
  * Get name of lock file, and temporary lock file
@@ -453,6 +490,7 @@ lockname (char *file, struct lockinfo *li, int isnewlock)
 
     snprintf (bp, sizeof(li->curlock) - bplen, "%s.lock", cp);
 
+#if !defined(HAVE_LIBLOCKFILE)
     /*
      * If this is for a new lock, create a name for
      * the temporary lock file for lockit()
@@ -476,6 +514,7 @@ lockname (char *file, struct lockinfo *li, int isnewlock)
 
 	unlink (li->tmplock);	/* remove any stray */
     }
+#endif
 }
 
 
@@ -565,8 +604,12 @@ alrmser (int sig)
     /* update the ctime of all the lock files */
     for (lp = l_top; lp; lp = lp->l_next) {
 	lockfile = lp->l_lock;
+#if !defined(HAVE_LIBLOCKFILE)
 	if (*lockfile && (j = creat (lockfile, 0600)) != -1)
 	    close (j);
+#else
+    lockfile_touch(lockfile);
+#endif
     }
 
     /* restart the alarm */

@@ -470,6 +470,8 @@ for lib in $termcap_curses_order; do
 done
 AC_SUBST(TERMLIB)dnl
 
+dnl Check for liblockfile (as found on Debian systems)
+AC_CHECK_HEADER(lockfile.h, AC_CHECK_LIB(lockfile, maillock) )
 
 dnl --------------
 dnl CHECK FOR NDBM

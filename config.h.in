@@ -453,6 +453,9 @@
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
 
+/* Define if you have the lockfile library (-llockfile).  */
+#undef HAVE_LIBLOCKFILE
+
 /* Define if you have the m library (-lm).  */
 #undef HAVE_LIBM
 
