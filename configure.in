@@ -139,6 +139,28 @@ fi
 AC_SUBST(POPLIB)dnl
 AC_SUBST(POPSED)dnl
 
+dnl What method of locking to use?
+undefine([locking])dnl
+AC_ARG_WITH(locking,
+[  --with-locking=LOCKTYPE specify the file locking method])
+
+if test x"$with_locking" = x"dot"; then
+  LOCKTYPE="dot"
+  AC_DEFINE(DOT_LOCKING)dnl
+elif test x"$with_locking" = x"flock"; then
+  LOCKTYPE="flock"
+  AC_DEFINE(FLOCK_LOCKING)dnl
+elif test x"$with_locking" = x"lockf"; then
+  LOCKTYPE="lockf"
+  AC_DEFINE(LOCKF_LOCKING)dnl
+elif test x"$with_locking" = x"fcntl"; then
+  LOCKTYPE="fcntl"
+  AC_DEFINE(FCNTL_LOCKING)dnl
+else
+  LOCKTYPE="dot"
+  AC_DEFINE(DOT_LOCKING)dnl
+fi
+
 dnl What method of posting should post use?
 undefine([mts])dnl
 AC_ARG_WITH(mts,
@@ -828,6 +850,7 @@ config files install path  : ${nmhsysconf2}
 man page install path      : ${nmhman}
 backup prefix              : ${backup_prefix}
 transport system           : ${MTS}
+file locking type          : ${LOCKTYPE}
 default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
 default pager              : ${pagerpath}
