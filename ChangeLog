@@ -1,3 +1,8 @@
+Sat Jun  9 12:22:47 1999
+
+	* Updated configure to check for mkstemp (available on OpenBSD) and 
+	substitute it for mktemp if available. 
+
 Thu May 13 16:40:19 1999  Doug Morris <doug@mhost.com>
 
 	* Added config.sub and config.guess and updated acconfig.h and
