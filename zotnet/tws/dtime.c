@@ -5,6 +5,7 @@
  * $Id$
  */
 
+#include "h/mh.h"   /* for snprintf() */
 #include <h/nmh.h>
 #include <tws.h>
 

@@ -5,6 +5,7 @@
  * $Id$
  */
 
+#include "h/mh.h"   /* for snprintf() */
 #include <h/nmh.h>
 
 #define nmhetcdir(file) NMHETCDIR#file
