@@ -30,11 +30,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $ID$
+ * $Id$
  */
 
 #include <stdio.h>
-#include <unistd.h>
 #include <termios.h>
 
 #define PASSWORD_LEN 128
@@ -43,18 +42,22 @@
 #define TCSANOW 0
 #endif
 
-char *getpass(const char *prompt)
+char *
+getpass(char *prompt)
 {
   struct termios oterm, term;
-  int ch;
-  char *p, *ttystring, buf[PASSWORD_LEN+1];
+  char ch;
+  char *p, *ttystring, *buf;
   FILE *fout, *fin;
+
+  if(!(buf = (char *)calloc((size_t)(PASSWORD_LEN+1), sizeof(char))))
+    adios(NULL, "unable to allocate string storage");
 
   /* Find if stdin is connect to a terminal. If so, read directly from
    * the terminal, and turn off echo. Otherwise read from stdin.
    */
 
-  if((ttystring = ttyname(fileno(stdin))) == NULL) {
+  if((ttystring = (char *)ttyname(fileno(stdin))) == NULL) {
     fout = stderr;
     fin = stdin;
   }
@@ -80,5 +83,5 @@ char *getpass(const char *prompt)
     (void)fputc('\n', fout);
     (void)fclose(fin);
   }
-  return(buf);
+  return((char *)buf);
 }
