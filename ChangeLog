@@ -1,3 +1,8 @@
+Tue Jan 23 20:26:15 2001 Shantonu Sen <ssen@mit.edu>
+
+	* etc/digestcomps tried to force dates into a
+	19xx when it's not necessary.
+	
 Fri Jan 19 21:22:08 2001 Shantonu Sen <ssen@mit.edu>
 
 	* First round of manpage updates finished. They
