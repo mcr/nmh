@@ -120,10 +120,6 @@ sm_init (char *client, char *server, int watch, int verbose,
 	    client = LocalName();	/* no clientname -> LocalName */
     }
 
-    if (sasl)
-	return sm_ierror("SASL authentication not supported with the "
-			 "Sendmail MTA");
-
 #ifdef ZMAILER
     if (client == NULL || *client == '\0')
 	client = "localhost";
