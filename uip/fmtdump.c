@@ -24,7 +24,7 @@ static struct swit switches[] = {
 
 /* for assignlabel */
 static struct format *lvec[128];
-static lused = 0;
+static int lused = 0;
 
 /*
  * static prototypes

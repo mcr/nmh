@@ -1,21 +1,57 @@
+Sun Sep 12 15:50:34 1999 Doug Morris <doug@mhost.com>
+
+	* updated Makefile.in so it recognized COMPLETION-TCSH and
+	COMPLETION-ZSH (only used in make nmhdist). 
+
+	* added prototype for ruserpas to <h/prototypes.h>. Fixes
+	warnings in mhparse.c and mhbuildsbr.c.
+
+	* added include checks for <time.h> and <sys/time.h> to
+	prevent warnings in fmt_compile.c, fmt_scan.c, lock_file.c,
+	sendsbr.c, mhbuildsbr.c, mhcachesbr.c, picksbr.c, and post.c.
+
+	* added include for <zotnet/mts/mts.h> to ali.c, scan.c, ap.c,
+	rcvdist.c, rcvstore.c, rcvtty.c, and spost.c to remove
+	warnings about implicit definition of mts_init().
+
+	* added <grps.h> to slocal.c to prevent warnings about
+	function initgroups.
+
+	* added <h/signals.h> to prevent warning about missing SIGNAL
+	function.
+
+	* added function prototypes to smtp.c, whatnowproc.c,
+	mhbuildsbr.c, mhparse.c, mshcmds.c, show.c, whatnow.c, mhl.c
+	to fix warnings.
+
+	* explicitly declared mbx_style in mshcmds.c and lused in
+	fmtdump.c as type static int instead of just static to
+	prevent warnings.
+	
+	* various code cleanups to prevent ambiguous statements
+	(brackets for if/thens and parens for complicated if
+	statements).
+
+
 Sun Sep 12 09:19:27 1999 Doug Morris <doug@mhost.com>
 
 	* commented out _cleanup() in mf.c because it's the only
- 	  location in all of the source code where it exists. 
+ 	location in all of the source code where it exists. 
 
 	* Added check for <db1/ndbm.h> which is the new location where
-	  linux systems appear to be stuffing this header file.
+	linux systems appear to be stuffing this header file.
 
 Thu Sep  9 23:15:49 1999 Doug Morris <doug@mhost.com>
 
 	* fixed varous mkstmep bugs introduced in 1.0.1 by me. Whups!
 
 	* added mh_profile SEGV patch from Richard Cohen
-          <richard@jubjub.demon.co.uk> that prevents crashing when
+        <richard@jubjub.demon.co.uk> that prevents crashing when
+        mh_profile doesn't end in a newline. A similar patch was
+	previously sent in by Andrew Bettison <andrewb@zip.com.au>.
 
-          mh_profile doesn't end in a newline.
 	* fixed bug in associated with MAILGROUP #define (group "mail"
-	  is not universal) -- hard to believe, but true.
+	is not universal) -- hard to believe, but true.
 
 Tue Sep 7 16:47:03 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
 

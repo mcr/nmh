@@ -7,6 +7,9 @@
 
 #include <h/mh.h>
 
+/* prototype from mhlsbr.c */
+int mhl (int, char **);
+
 
 int
 main (int argc, char **argv)

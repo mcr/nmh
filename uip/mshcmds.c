@@ -68,6 +68,8 @@ static int process (int, char *, int, char **);
 static void copy_message (int, FILE *);
 static void copy_digest (int, FILE *);
 
+/* from mhlsbr.c */
+int mhlsbr (int, char **, FILE *(*)());
 
 void
 forkcmd (char **args, char *pgm)
@@ -1456,7 +1458,7 @@ static struct swit packswit[] = {
     { NULL, 0 }
 };
 
-static mbx_style = MMDF_FORMAT;
+static int mbx_style = MMDF_FORMAT;
 
 void
 packcmd (char **args)

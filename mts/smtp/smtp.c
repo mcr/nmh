@@ -9,9 +9,12 @@
 #include "smtp.h"
 #include <zotnet/mts/mts.h>
 #include <signal.h>
+#include <h/signals.h>
 #ifdef MPOP
 #include <errno.h>
 #endif
+
+
 
 /*
  * This module implements an interface to SendMail very similar
@@ -104,6 +107,8 @@ static int smail_brkany (char, char *);
 char **smail_copyip (char **, char **, int);
 #endif
 
+/* from zotnet/mts/client.c */
+int client (char *, char *, char *, int, char *, int);
 
 int
 sm_init (char *client, char *server, int watch, int verbose,
@@ -125,11 +130,13 @@ sm_init (char *client, char *server, int watch, int verbose,
     if (sm_rfp != NULL && sm_wfp != NULL)
 	goto send_options;
 
-    if (client == NULL || *client == '\0')
-	if (clientname)
+    if (client == NULL || *client == '\0') {
+	if (clientname) {
 	    client = clientname;
-	else
+	} else {
 	    client = LocalName();	/* no clientname -> LocalName */
+	}
+    }
 
 #ifdef ZMAILER
     if (client == NULL || *client == '\0')

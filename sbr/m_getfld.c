@@ -390,7 +390,8 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 		*cp++ = j = *(iob->_ptr + c);
 		c = _filbuf(iob);
 #endif
-                if (c == EOF || (j == '\0' || j == '\n') && c != ' ' && c != '\t') {
+                if (c == EOF || 
+		  ((j == '\0' || j == '\n') && c != ' ' && c != '\t')) {
 		    if (c != EOF) {
 #ifdef LINUX_STDIO
 			--iob->_IO_read_ptr;

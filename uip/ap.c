@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/addrsbr.h>
 #include <h/fmt_scan.h>
+#include <zotnet/mts/mts.h>
 
 #define	NADDRS	100
 

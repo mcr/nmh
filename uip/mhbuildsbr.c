@@ -24,6 +24,17 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef TM_IN_SYS_TIME
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
 #endif

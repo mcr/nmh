@@ -94,6 +94,7 @@ char *pwd (void);
 char *r1bindex(char *, int);
 void readconfig (struct node **, FILE *, char *, int);
 int refile (char **, char *);
+int ruserpass(char *, char **, char **);
 int remdir (char *);
 int seq_addmsg (struct msgs *, char *, int, int, int);
 int seq_addsel (struct msgs *, char *, int, int);

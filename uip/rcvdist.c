@@ -9,6 +9,7 @@
 #include <h/fmt_scan.h>
 #include <h/rcvmail.h>
 #include <zotnet/tws/tws.h>
+#include <zotnet/mts/mts.h>
 
 static struct swit switches[] = {
 #define	FORMSW       0

@@ -11,6 +11,17 @@
 #include <h/fmt_scan.h>
 #include <h/fmt_compile.h>
 
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef TM_IN_SYS_TIME
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
 /*
  * hash table for deciding if a component is "interesting"
  */

@@ -8,6 +8,7 @@
 #include <h/mh.h>
 #include <h/addrsbr.h>
 #include <h/aliasbr.h>
+#include <zotnet/mts/mts.h>
 
 /*
  * maximum number of names

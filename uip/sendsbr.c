@@ -12,6 +12,17 @@
 #include <fcntl.h>
 #include <h/mime.h>
 
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef TM_IN_SYS_TIME
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
 int debugsw = 0;		/* global */
 int forwsw  = 1;
 int inplace = 1;

@@ -9,6 +9,17 @@
 #include <zotnet/tws/tws.h>
 #include <h/picksbr.h>
 
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef TM_IN_SYS_TIME
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
 static struct swit parswit[] = {
 #define	PRAND                   0
     { "and", 0 },

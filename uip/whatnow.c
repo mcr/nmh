@@ -7,6 +7,9 @@
 
 #include <h/mh.h>
 
+/* from whatnowsbr.c */
+int WhatNow (int, char **);
+
 
 int
 main (int argc, char **argv)

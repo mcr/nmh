@@ -49,6 +49,9 @@ static struct swit switches[] = {
  */
 static int is_nontext(char *);
 
+/* prototype from mhlsbr.c */
+int mhl (int, char **);
+
 #define	SHOW  0
 #define	NEXT  1
 #define	PREV  2

@@ -28,6 +28,7 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <grp.h>
 
 #ifdef HAVE_DB1_NDBM_H
 #include <db1/ndbm.h>
