@@ -278,6 +278,9 @@ AC_REPLACE_FUNCS(snprintf strerror strdup)
 dnl -------------------
 dnl CHECK FOR LIBRARIES
 dnl -------------------
+dnl Check location of modf
+AC_CHECK_FUNC(modf, , AC_CHECK_LIB(m, modf))
+
 dnl Checks for network libraries (nsl, socket)
 AC_CHECK_NETLIBS
 
