@@ -1,3 +1,7 @@
+Tue Sep 7 16:47:03 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Renamed ZSH.COMPLETION to COMPLETION-ZSH and added COMPLETION-TCSH.
+
 Tue Aug 17 16:06:29 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Automated #define of MAILGROUP and installation of inc as setgid mail
