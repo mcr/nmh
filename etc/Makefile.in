@@ -123,7 +123,7 @@ mostlyclean:
 	rm -f *~
 
 clean: mostlyclean
-	rm -f $(GENERATED_ETC_FILES)
+	rm -f $(GENERATED_ETC_FILES) $(GENERATED_BIN_FILES)
 
 distclean: clean
 	rm -f Makefile
