@@ -11,6 +11,8 @@ AIX 4.1.5.0.01
 FreeBSD
 IRIX 6.5
 Linux 2.2 and 2.3 (glibc 2.1)
+Linux 2.4 (glibc 2.2)
+Mac OS X Public Beta
 NetBSD 1.4.2
 OpenBSD
 Solaris 7 and 8 (sparc,x86)
