@@ -1,9 +1,14 @@
+Wed Jan 26 02:22:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Added documentation on both types of masquerading to post's man
+ 	page.
+
 Tue Jan 25 22:58:12 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Doug's portability fix of my setgid inc autodetection had a
  	caching bug -- if you re-ran configure, uip/Makefile would be
- 	corrupted, and installation would fail on OSes where inc needs to
- 	be setgid.
+ 	corrupted, and installation would bomb out on OSes where inc needs
+ 	to be setgid.
 
 	* Implemented a new kind of email address masquerading.  When a
  	user writes a custom "From:" header in a draft, nmh uses it rather
@@ -13,7 +18,10 @@ Tue Jan 25 22:58:12 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	the address specified in the draft "From:" header, and there is no
  	"Sender:" header.  This is useful when sending on behalf of a
  	remote POP3 account or when remote mail robots incorrectly use the
- 	envelope "From:" in preference to the body "From:".
+ 	envelope "From:" in preference to the body "From:".  This
+	processing has only been implemented for post, not for the
+	undocumented spost (which was already missing some "From:"
+	processing that post has).
 
 Mon Jan 24 22:26:06 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
