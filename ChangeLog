@@ -1,3 +1,7 @@
+Sat Jul 15 23:13:49 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
+
+	* Add configure option --with-backup-prefix so it can be set easily.
+
 Tue Jul 11 14:18:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Clarified post.man and send.man for those not completely up on
@@ -5,7 +9,7 @@ Tue Jul 11 14:18:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	SMTP" means that encryption is supported for the authentication
 	but not for the subsequent data stream.
 
-Sat Jul  8 01:36:19 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
+Sat Jul  8 01:36:19 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
 	* Applied Ken Hornstein <kenh@cmf.nrl.navy.mil>'s patches
  	implementing SASL support for POP3 and SMTP.  If nmh is compiled
