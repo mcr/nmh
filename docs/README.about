@@ -1,5 +1,5 @@
 #
-# README -- I love README files.
+# README.about -- about nmh
 #
 # $Id$
 #
@@ -9,18 +9,13 @@ what is it?
 -----------
 nmh (new MH) is an electronic mail handling system.  It was
 originally based on the package MH-6.8.3, and is intended to be
-a (mostly) compatible drop-in replacement for MH.
-
-Although development of nmh is ongoing, it appears to be generally
-stable and is in current use.  But it is possible that we may
-break things as changes are made.
-
---------------
-installing nmh
---------------
-To install nmh, check the INSTALL and MACHINES files.  If you have
+a (mostly) compatible drop-in replacement for MH.  If you have
 previously used MH, check the file DIFFERENCES for a list of the
-differences between nmh and MH.
+differences between nmh and MH (not up-to-date as of this writing).
+
+Although development of nmh is ongoing, it is generally stable and 
+is in current use.  But it is possible that we may break things as 
+changes are made. 
 
 --------------------------------
 ftp and web sites, mailing lists
