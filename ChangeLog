@@ -47,6 +47,11 @@ Tue Mar 14 12:41:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Added scan.MMDDYY and scan.YYYYMMDD format files.
 
+	* Changed strdup() in strdup.c to take a _const_ char*.  Don't
+ 	know why this didn't hit anyone before, but I wasn't able to
+ 	compile on Solaris 2.6 without doing this, due to a "previous
+ 	declaration" error.
+
 Mon Mar 13 21:32:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied Sullivan N. Beck <sbeck@cise.ufl.edu>'s mhshow-suffix patch:

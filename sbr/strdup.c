@@ -9,7 +9,7 @@
 
 
 char *
-strdup (char *str)
+strdup (const char *str)
 {
     char *cp;
     size_t len;
