@@ -7,6 +7,9 @@
 
 #include <h/mh.h>
 
+extern int  client(char *args, char *protocol, char *service, int rproto,
+		   char *response, int len_response);
+
 #if defined(NNTP) && !defined(PSHSBR)
 # undef NNTP
 #endif
