@@ -53,19 +53,21 @@ folder_pack (struct msgs **mpp, int verbose)
 		if (verbose)
 		    printf ("message %s becomes %s\n", oldmsg, newmsg);
 
-		/* move the message file */
-		if (rename (oldmsg, newmsg) == -1) {
-		    advise (newmsg, "unable to rename %s to", oldmsg);
-		    return -1;
-		}
-
 		/*
 		 * Invoke the external refile hook for each message being renamed.
+		 * This is done before the file is renamed so that the old message
+		 * file is around for the hook.
 		 */
 
 		(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%d", mp->foldpath, msgnum);
 		(void)snprintf(newmsg, sizeof (newmsg), "%s/%d", mp->foldpath, hole);
 		ext_hook("ref-hook", oldmsg, newmsg);
+
+		/* move the message file */
+		if (rename (oldmsg, newmsg) == -1) {
+		    advise (newmsg, "unable to rename %s to", oldmsg);
+		    return -1;
+		}
 
 		/* check if this is the current message */
 		if (msgnum == mp->curmsg)
