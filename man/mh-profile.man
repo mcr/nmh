@@ -2,184 +2,257 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MH-PROFILE %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-profile \- user profile customization for nmh message handler
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-\&\fI.mh\(ruprofile\fP
-.in -.5i
+.I $HOME/.mh\(ruprofile
 .SH DESCRIPTION
-Each user of \fInmh\fR is expected to have a file named
-\fI\&.mh\(ruprofile\fR in his or her home directory.  This file contains
-a set of user parameters used by some or all of the \fInmh\fR family
-of programs.  Each entry in the file is of the format
-
-    \fIprofile\-component\fR: \fIvalue\fR
-
+Each user of
+.B nmh
+is expected to have a file named
+.I \&.mh\(ruprofile
+in his or her home directory.  This file contains
+a set of user parameters used by some or all of the
+.B nmh
+family of programs.  Each entry in the file is of the format
+.PP
+.RS 5
+.IR profile\-component ": " value
+.RE
+.PP
 If the text of profile entry is long, you may extend it across several
-real lines by indenting the continuation lines with leading spaces
-or tabs.
+real lines by indenting the continuation lines with leading spaces or tabs.
 
-.Uh "Standard Profile Entries"
+.SS "Standard Profile Entries"
 The possible profile components are exemplified below.  The only mandatory
 entry is `Path:'.  The others are optional; some have default values if
 they are not present.  In the notation used below, (profile, default)
-indicates whether the information is kept in the user's \fInmh\fR profile
-or \fInmh\fR context, and indicates what the default value is.
-
-.in +1i
-.ti -1i
-Path: Mail
-.br
-Locates \fInmh\fR transactions in directory \*(lqMail\*(rq.  This is the
+indicates whether the information is kept in the user's
+.B nmh
+profile or
+.B nmh
+context, and indicates what the default value is.
+.PP
+.BR Path :
+Mail
+.RS 5
+Locates
+.B nmh
+transactions in directory \*(lqMail\*(rq.  This is the
 only mandatory profile entry.  (profile, no default)
-
-.ti -1i
-context: context
-.br
-Declares the location of the \fInmh\fR context file.  This is
-overridden by the environment variable \fBMHCONTEXT\fR.
-See the \fBHISTORY\fR section below.
+.RE
+.PP
+.BR context :
+context
+.RS 5
+Declares the location of the
+.B nmh
+context file.  This is overridden by the environment variable
+.BR $MHCONTEXT .
+See the
+.B HISTORY
+section below.
 (profile, default: <nmh\-dir>/context)
-
-.ti -1i
-Current\-Folder:\ inbox
-.br
+.RE
+.PP
+.BR Current\-Folder :
+inbox
+.RS 5
 Keeps track of the current open folder.
 (context, default: folder specified by \*(lqInbox\*(rq)
-
-.ti -1i
-Inbox: inbox
-.br
+.RE
+.PP
+.BR Inbox :
+inbox
+.RS 5
 Defines the name of your default inbox.
 (profile, default: inbox)
-
-.ti -1i
-Previous\-Sequence:\ pseq
-.br
+.RE
+.PP
+.BR Previous\-Sequence :
+.I pseq
+.RS 5
 Names the sequence or sequences which should be defined as the `msgs' or
-`msg' argument given to any \fInmh\fR command.  If not present or empty,
+`msg' argument given to any
+.B nmh
+command.  If not present or empty,
 no such sequences are defined.  Otherwise, for each name given, the
 sequence is first zero'd and then each message is added to the sequence.
-Read the mh\-sequence(5) man page for the details about this sequence.
-(profile, no default)
-
-.ti -1i
-Sequence\-Negation:\ not
-.br
+Read the
+.BR mh\-sequence (5)
+man page for the details about this sequence. (profile, no default)
+.RE
+.PP
+.BR Sequence\-Negation :
+not
+.RS 5
 Defines the string which, when prefixed to a sequence name, negates
 that sequence.  Hence, \*(lqnotseen\*(rq means all those messages that
-are not a member of the sequence \*(lqseen\*(rq.  Read the mh\-sequence(5)
+are not a member of the sequence \*(lqseen\*(rq.  Read the
+.BR mh\-sequence (5)
 man page for the details.  (profile, no default)
-
-.ti -1i
-Unseen\-Sequence:\ unseen
-.br
+.RE
+.PP
+.BR Unseen\-Sequence :
+unseen
+.RS 5
 Names the sequence or sequences which should be defined as those
-messages which are unread.  The commands \fIinc\fR, \fIrcvstore\fR,
-\fImhshow\fR, and \fIshow\fR will add or remove messages from these
+messages which are unread.  The commands
+.BR inc ,
+.BR rcvstore ,
+.BR mhshow ,
+and
+.B show
+will add or remove messages from these
 sequences when they are incorporated or read.  If not present or
 empty, no such sequences are defined.  Otherwise, each message is
 added to, or removed from, each sequence name given.  Read the
-mh\-sequence(5) man page for the details about this sequence.
+.BR mh\-sequence (5)
+man page for the details about this sequence.
 (profile, no default)
-
-.ti -1i
-mh\-sequences:\ \&.mh\(rusequences
-.br
+.RE
+.PP
+.BR mh\-sequences :
+\&.mh\(rusequences
+.RS 5
 The name of the file in each folder which defines public sequences.
 To disable the use of public sequences, leave the value portion of this
 entry blank.  (profile, default: \&.mh\(rusequences)
-
-.ti -1i
-atr\-\fIseq\fR\-\fIfolder\fR:\ 172\0178\-181\0212
-.br
-Keeps track of the private sequence called \fIseq\fR in the specified
+.RE
+.PP
+.BI atr\- seq \- folder :
+172\0178\-181\0212
+.RS 5
+Keeps track of the private sequence called \*(lqseq\*(rq in the specified
 folder.  Private sequences are generally used for read\-only folders.
-See the mh\-sequence(5) man page for details about private sequences.
+See the
+.BR mh\-sequence (5)
+man page for details about private sequences.
 (context, no default)
-
-.ti -1i
-Editor:\ /usr/bin/vi
-.br
-Defines the editor to be used by the commands \fIcomp\fR\0(1),
-\fIdist\fR\0(1), \fIforw\fR\0(1), and \fIrepl\fR\0(1).  (profile, default:
-%default_editor%)
-
-.ti -1i
-automimeproc:
-.br
-If defined and set to 1, then the \fIwhatnow\fR program will automatically
+.RE
+.PP
+.BR Editor :
+/usr/bin/vi
+.RS 5
+Defines the editor to be used by the commands
+.BR comp ,
+.BR dist ,
+.BR forw ,
+and
+.BR repl .
+(profile, default: %default_editor%)
+.RE
+.PP
+.BR automimeproc :
+.RS 5
+If defined and set to 1, then the
+.B whatnow
+program will automatically
 invoke the buildmimeproc (discussed below) to process each message as a MIME
 composition draft before it is sent.
 (profile, no default)
-
-.ti -1i
-Msg\-Protect:\ 644
-.br
+.RE
+.PP
+.BR Msg\-Protect :
+644
+.RS 5
 An octal number which defines the permission bits for new message files.
-See \fIchmod\fR\0(1) for an explanation of the octal number.
+See
+.BR chmod (1)
+for an explanation of the octal number.
 (profile, default: 0644)
-
-.ti -1i
-Folder\-Protect:\ 750
-.br
+.RE
+.PP
+.BR Folder\-Protect :
+750
+.RS 5
 An octal number which defines the permission bits for new folder
-directories.  See \fIchmod\fR\0(1) for an explanation of the octal number.
+directories.  See
+.BR chmod (1)
+for an explanation of the octal number.
 (profile, default: 700)
-
-.ti -1i
-\fIprogram\fR:\ default switches
-.br
-Sets default switches to be used whenever the mh program \fIprogram\fR
-is invoked.  For example, one could override the \fIEditor\fR: profile
+.RE
+.PP
+.IR program :
+.I default switches
+.RS 5
+Sets default switches to be used whenever the mh program
+.I program
+is invoked.  For example, one could override the \*(lqEditor:\*(rq profile
 component when replying to messages by adding a component such as:
-.br
-	repl: \-editor /bin/ed
-.br
+.PP
+.RS 5
+repl: \-editor /bin/ed
+.RE
+.PP
 (profile, no defaults)
-
-.ti -1i
-\fIlasteditor\fR\-next:\ nexteditor
-.br
+.RE
+.PP
+.IB lasteditor "-next:"
+.I nexteditor
+.RS 5
 Names \*(lqnexteditor\*(rq to be the default editor after using
 \*(lqlasteditor\*(rq.  This takes effect at \*(lqWhat now?\*(rq prompt
-in \fIcomp\fR, \fIdist\fR, \fIforw\fR, and \fIrepl\fR.  After editing
+in
+.BR comp ,
+.BR dist ,
+.BR forw ,
+and
+.BR repl .
+After editing
 the draft with \*(lqlasteditor\*(rq, the default editor is set to be
 \*(lqnexteditor\*(rq.  If the user types \*(lqedit\*(rq without any
 arguments to \*(lqWhat now?\*(rq, then \*(lqnexteditor\*(rq is used.
 (profile, no default)
-
-.ti -1i
-bboards: system
-.br
-Tells \fIbbc\fR which BBoards you are interested in.  (profile, default:
-system)
-
-.ti -1i
-Folder\-Stack: \fIfolders\fR
-.br
-The contents of the folder-stack for the \fIfolder\fR command.
+.RE
+.PP
+.BR bboards :
+system
+.RS 5
+Tells
+.B bbc
+which BBoards you are interested in.  (profile, default: system)
+.RE
+.PP
+.BR Folder\-Stack :
+.I folders
+.RS 5
+The contents of the folder-stack for the
+.B folder
+command.
 (context, no default)
-
-.ti -1i
-mhe:
-.br
-If present, tells \fIinc\fR to compose an \fIMHE\fR auditfile in addition
-to its other tasks.  \fIMHE\fR is Brian Reid's \fIEmacs\fR front-end
-for \fInmh\fR.  (profile, no default)
-
-.ti -1i
-Alternate\-Mailboxes: mh@uci\-750a, bug-mh*
-.br
-Tells \fIrepl\fR and \fIscan\fR which addresses are really yours.
-In this way, \fIrepl\fR knows which addresses should be included in the
-reply, and \fIscan\fR knows if the message really originated from you.
+.RE
+.PP
+.BR mhe :
+.RS 5
+If present, tells
+.B inc
+to compose an
+.I MHE
+auditfile in addition to its other tasks. 
+.I MHE
+is Brian Reid's 
+.B emacs
+front-end for
+.BR nmh .
+(profile, no default)
+.RE
+.PP
+.BR Alternate\-Mailboxes :
+mh@uci\-750a, bug-mh*
+.RS 5
+Tells
+.B repl
+and
+.B scan
+which addresses are really yours.
+In this way,
+.B repl
+knows which addresses should be included in the
+reply, and
+scan
+knows if the message really originated from you.
 Addresses must be separated by a comma, and the hostnames listed should
 be the \*(lqofficial\*(rq hostnames for the mailboxes you indicate, as
 local nicknames for hosts are not replaced with their official site names.
@@ -187,401 +260,708 @@ For each address, if a host is not given, then that address on any host is
 considered to be you.  In addition, an asterisk (`*') may appear at either
 or both ends of the mailbox and host to indicate wild-card matching.
 (profile, default: your user-id)
-
-.ti -1i
-Aliasfile: aliases other-alias
-.br
-Indicates aliases files for \fIali\fR, \fIwhom\fR, and \fIsend\fR.
-This may be used instead of the `\-alias file' switch.  (profile, no
-default)
-
-.ti -1i
-Draft\-Folder: drafts
-.br
-Indicates a default draft folder for \fIcomp\fR, \fIdist\fR, \fIforw\fR,
-and \fIrepl\fR.  Read the mh\-draft (5) man page for details.
-(profile, no default)
-
-.ti -1i
-digest\-issue\-\fIlist\fR:\ 1
-.br
-Tells \fIforw\fR the last issue of the last volume sent for the digest
-\fIlist\fR.  (context, no default)
-
-.ti -1i
-digest\-volume\-\fIlist\fR:\ 1
-.br
-Tells \fIforw\fR the last volume sent for the digest \fIlist\fR.
+.RE
+.PP
+.BR Aliasfile :
+aliases
+.I other-alias
+.RS 5
+Indicates aliases files for
+.BR ali ,
+.BR whom ,
+and
+.BR send .
+This may be used instead of the
+.B \-alias
+.I file
+switch.  (profile, no default)
+.RE
+.PP
+.BR Draft\-Folder :
+drafts
+.RS 5
+Indicates a default draft folder for
+.BR comp ,
+.BR dist ,
+.BR forw ,
+and
+.BR repl .
+Read the
+.BR mh\-draft (5)
+man page for details. (profile, no default)
+.RE
+.PP
+.BI digest\-issue\- list :
+1
+.RS 5
+Tells
+.B forw
+the last issue of the last volume sent for the digest
+.IR list .
 (context, no default)
-
-.ti -1i
-MailDrop: .mail
-.br
-Tells \fIinc\fR your maildrop, if different from the default.  This is
-superseded by the environment variable \fBMAILDROP\fR.  (profile, default:
-%mailspool%/$USER)
-
-.ti -1i
-Signature: RAND MH System (agent: Marshall Rose)
-.br
-Tells \fIsend\fR your mail signature.  This is superseded by the
-environment variable \fBSIGNATURE\fR.  If \fBSIGNATURE\fR is not set and
-this profile entry is not present, the \*(lqgcos\*(rq field of
+.RE
+.PP
+.BI digest\-volume\- list :
+1
+.RS 5
+Tells
+.B forw
+the last volume sent for the digest
+.IR list .
+(context, no default)
+.RE
+.PP
+.BR MailDrop :
+\&.mail
+.RS 5
+Tells
+.B inc
+your maildrop, if different from the default.  This is
+superseded by the environment variable
+.BR $MAILDROP .
+(profile, default: %mailspool%/$USER)
+.RE
+.PP
+.BR Signature :
+RAND MH System (agent: Marshall Rose)
+.RS 5
+Tells
+.B send
+your mail signature.  This is superseded by the
+environment variable
+.BR $SIGNATURE .
+If
+.B $SIGNATURE
+is not set and this profile entry is not present, the \*(lqgcos\*(rq field of
 the \fI/etc/passwd\fP file will be used; otherwise, on hosts where
-\fInmh\fR was configured with the UCI option, the file $HOME/.signature
-is consulted.  Your signature will be added to the address \fIsend\fP
+.B nmh
+was configured with the UCI option, the file
+.I $HOME/.signature
+is consulted.  Your signature will be added to the address
+.B send
 puts in the \*(lqFrom:\*(rq header; do not include an address in the
 signature text.  (profile, no default)
-.in -1i
+.RE
 
-.Uh "Process Profile Entries"
-The following profile elements are used whenever an \fInmh\fR
-program invokes some other program such as \fImore\fR\0(1).  The
-\fI\&.mh\(ruprofile\fR can be used to select alternate programs if the
+.SS "Process Profile Entries"
+The following profile elements are used whenever an
+.B nmh
+program invokes some other program such as
+.BR more .
+The
+.I \&.mh\(ruprofile
+can be used to select alternate programs if the
 user wishes.  The default values are given in the examples.
-
-.in +1i
-.ti -1i
-buildmimeproc: %bindir%/mhbuild
-.br
-This is the program used by \fIwhatnow\fR to process drafts which
-are MIME composition files.
-
-.ti -1i
-fileproc: %bindir%/refile
-.br
+.RE
+.PP
+.BR buildmimeproc :
+%bindir%/mhbuild
+.RS 5
+This is the program used by
+.B whatnow
+to process drafts which are MIME composition files.
+.RE
+.PP
+.BR fileproc :
+%bindir%/refile
+.RS 5
 This program is used to refile or link a message to another folder.
-It is used by \fIpost\fR to file a copy of a message into a folder given
+It is used by
+.B post
+to file a copy of a message into a folder given
 by a \*(lqFcc:\*(rq field.  It is used by the draft folder facility in
-\fIcomp\fR, \fIdist\fR, \fIforw\fR, and \fIrepl\fR to refile a draft
+.BR comp ,
+.BR dist ,
+.BR forw ,
+and
+.B repl
+to refile a draft
 message into another folder.  It is used to refile a draft message in
-response to the `refile' directive at the \*(lqWhat now?\*(rq prompt.
-
-.ti -1i
-incproc: %bindir%/inc
-.br
-Program called by \fImhmail\fR to incorporate new mail when it
+response to the
+.B refile
+directive at the \*(lqWhat now?\*(rq prompt.
+.RE
+.PP
+.BR incproc :
+%bindir%/inc
+.RS 5
+Program called by
+.B mhmail
+to incorporate new mail when it
 is invoked with no arguments.
-
-.ti -1i
-installproc: %libdir%/install\-mh
-.br
+.RE
+.PP
+.BR installproc :
+%libdir%/install\-mh
+.RS 5
 This program is called to initialize the environment for
-new users of nmh.
-
-.ti -1i
-lproc: %default_pager%
-.br
+new users of
+.BR nmh .
+.RE
+.PP
+.BR lproc :
+%default_pager%
+.RS 5
 This program is used to list the contents of a message in response
-to the `list' directive at the \*(lqWhat now?\*(rq prompt.  It is
-also used by the draft folder facility in \fIcomp\fR, \fIdist\fR,
-\fIforw\fR, and \fIrepl\fR to display the draft message.
-
-.ti -1i
-mailproc: %bindir%/mhmail
-.br
+to the
+.B list
+directive at the \*(lqWhat now?\*(rq prompt.  It is
+also used by the draft folder facility in
+.BR comp ,
+.BR dist ,
+.BR forw ,
+and
+.B repl
+to display the draft message.
+.RE
+.PP
+.BR mailproc :
+%bindir%/mhmail
+.RS 5
 This is the program used to automatically mail various messages
-and notifications.  It is used by \fIconflict\fR when using the
-`-mail' option.  It is used by \fIsend\fR to post failure notices.
+and notifications.  It is used by
+.B conflict
+when using the
+.B \-mail
+option.  It is used by
+.B send
+to post failure notices.
 It is used to retrieve an external-body with access-type `mail-server'
-(such as when storing the body with \fImhstore\fR).
-
-.ti -1i
-mhlproc: %libdir%/mhl
-.br
+(such as when storing the body with
+.BR mhstore ).
+.RE
+.PP
+.BR mhlproc :
+%libdir%/mhl
+.RS 5
 This is the program used to filter messages in various ways.  It
-is used by \fImhshow\fR to filter and display the message headers
-of MIME messages.  When the `-format' or `-filter' option is used
-by \fIforw\fR or \fIrepl\fR, the mhlproc is used to filter the
+is used by
+.B mhshow
+to filter and display the message headers
+of MIME messages.  When the
+.B \-format
+or
+.B \-filter
+option is used
+by
+.B forw
+or
+.BR repl ,
+the
+.I mhlproc
+is used to filter the
 message that you are forwarding, or to which you are replying.
-When the `-filter' option is given to \fIsend\fR or \fIpost\fR,
-the mhlproc is used by \fIpost\fR to filter the copy of the message
+When the
+.B \-filter
+option is given to
+.B send
+or
+.BR post ,
+the
+.I mhlproc
+is used by
+.B post
+to filter the copy of the message
 that is sent to \*(lqBcc:\*(rq recipients.
-
-.ti -1i
-moreproc: %default_pager%
-.br
-This is the program used by \fImhl\fR to page the \fImhl\fR formatted
-message when displaying to a terminal.  It is also the default
-program used by \fImhshow\fR to display message bodies (or message
-parts) of type text/plain.
-
-.ti -1i
-mshproc: %bindir%/msh
-.br
+.RE
+.PP
+.BR moreproc :
+%default_pager%
+.RS 5
+This is the program used by
+.B mhl
+to page the
+.B mhl
+formatted message when displaying to a terminal.  It is also the default
+program used by
+.B mhshow
+to display message bodies (or message parts) of type text/plain.
+.RE
+.PP
+.BR mshproc :
+%bindir%/msh
+.RS 5
 Currently not used.
-
-.ti -1i
-packproc: %bindir%/packf
-.br
+.RE
+.PP
+.BR packproc :
+%bindir%/packf
+.RS 5
 Currently not used.
-
-.ti -1i
-postproc: %libdir%/post
-.br
-This is the program used by \fIsend\fR, \fImhmail\fR, \fIrcvdist\fR,
-and \fIviamail\fR (used by the \fIsendfiles\fR shell script) to
+.RE
+.PP
+.BR postproc :
+%libdir%/post
+.RS 5
+This is the program used by
+.BR send ,
+.BR mhmail ,
+.BR rcvdist ,
+and
+.B viamail
+(used by the
+.B sendfiles
+shell script) to
 post a message to the mail transport system.  It is also called by
-\fIwhom\fR (called with the switches `-whom' and `-library') to do
-address verification.
-
-.ti -1i
-rmmproc: none
-.br
-This is the program used by \fIrmm\fR and \fIrefile\fR to delete
-a message from a folder.
-
-.ti -1i
-rmfproc: %bindir%/rmf
-.br
+.B whom
+(called with the switches
+.B \-whom
+and
+.BR \-library )
+to do address verification.
+.RE
+.PP
+.BR rmmproc :
+none
+.RS 5
+This is the program used by
+.B rmm
+and
+.B refile
+to delete a message from a folder.
+.RE
+.PP
+.BR rmfproc :
+%bindir%/rmf
+.RS 5
 Currently not used.
+.RE
+.PP
+.BR sendproc :
+%bindir%/send
+.RS 5
+This is the program to use by
+.B whatnow
+to actually send the message
+.RE
+.PP
+.BR showmimeproc :
+%bindir%/mhshow
+.RS 5
+This is the program used by
+.B show
+to process and display non-text (MIME) messages.
+.RE
+.PP
+.BR showproc :
+%libdir%/mhl
+.RS 5
+This is the program used by
+.B show
+to filter and display text (non-MIME) messages.
+.RE
+.PP
+.BR whatnowproc :
+%bindir%/whatnow
+.RS 5
+This is the program invoked by
+.BR comp ,
+.BR forw ,
+.BR dist ,
+and
+.B repl
+to query about the disposition of a composed draft message.
+.RE
+.PP
+.BR whomproc :
+%bindir%/whom
+.RS 5
+This is the program used by
+.B whatnow
+to determine to whom a message would be sent.
+.RE
 
-.ti -1i
-sendproc: %bindir%/send
-.br
-This is the program to use by \fIwhatnow\fR to actually
-send the message
-
-.ti -1i
-showmimeproc: %bindir%/mhshow
-.br
-This is the program used by \fIshow\fR to process and display
-non-text (MIME) messages.
-
-.ti -1i
-showproc: %libdir%/mhl
-.br
-This is the program used by \fIshow\fR to filter and display text
-(non-MIME) messages.
-
-.ti -1i
-whatnowproc: %bindir%/whatnow
-.br
-This is the program invoked by \fIcomp\fR, \fIforw\fR, \fIdist\fR, and
-\fIrepl\fR to query about the disposition of a composed draft message.
-
-.ti -1i
-whomproc: %bindir%/whom
-.br
-This is the program used by \fIwhatnow\fR to determine to whom a
-message would be sent.
-
-.Uh "Environment Variables"
-The operation of nmh and its commands it also controlled by the
+.SS "Environment Variables"
+The operation of
+.B nmh
+and its commands it also controlled by the
 presence of certain environment variables.
-
+.PP
 Many of these environment variables are used internally by the
 \*(lqWhat now?\*(rq interface.  It's amazing all the information
 that has to get passed via environment variables to make the
-\*(lqWhat now?\*(rq interface look squeaky clean to the \fInmh\fR
-user, isn't it?  The reason for all this is that the \fInmh\fR user
-can select \fIany\fR program as the \fIwhatnowproc\fR, including
+\*(lqWhat now?\*(rq interface look squeaky clean to the
+.B nmh
+user, isn't it?  The reason for all this is that the
+.B nmh
+user
+can select
+.B any
+program as the
+.IR whatnowproc ,
+including
 one of the standard shells.  As a result, it's not possible to pass
 information via an argument list.
-
-If the WHATNOW option was set during \fInmh\fR configuration, and
-if this environment variable is set, then if the commands \fIrefile\fR,
-\fIsend\fR, \fIshow\fR, or \fIwhom\fR are not given any `msgs'
+.PP
+If the
+.B WHATNOW
+option was set during
+.B nmh
+configuration, and
+if this environment variable is set, then if the commands
+.BR refile\ ,
+.BR send ,
+.BR show ,
+or
+.B whom
+are not given any `msgs'
 arguments, then they will default to using the file indicated by
-\fBmhdraft\fR.  This is useful for getting the default behavior
-supplied by the default \fIwhatnowproc\fR.
-
-.in +.5i
-.ti -.5i
-\fBMH\fR\0: With this environment variable, you can specify a profile
-other than \fI\&.mh\(ruprofile\fR to be read by the \fInmh\fR programs
-that you invoke.  If the value of \fBMH\fR is not absolute, (i.e., does
-not begin with a \fB/\fR\0), it will be presumed to start from the current
-working directory.  This is one of the very few exceptions in \fInmh\fR
+.BR mh\-draft (5).
+This is useful for getting the default behavior
+supplied by the default
+.IR whatnowproc .
+.PP
+.B $MH
+.RS 5
+With this environment variable, you can specify a profile
+other than
+.I \&.mh\(ruprofile
+to be read by the
+.B nmh
+programs
+that you invoke.  If the value of
+.B $MH
+is not absolute, (i.e., does
+not begin with a \*(lq/\*(rq), it will be presumed to start from the current
+working directory.  This is one of the very few exceptions in
+.B nmh
 where non-absolute pathnames are not considered relative to the user's
-\fInmh\fR directory.
-
-.ti -.5i
-\fBMHCONTEXT\fR\0: With this environment variable, you can specify a
+.B nmh
+directory.
+.RE
+.PP
+.B $MHCONTEXT
+.RS 5
+With this environment variable, you can specify a
 context other than the normal context file (as specified in
-the \fInmh\fR profile).  As always, unless the value of \fBMHCONTEXT\fR
-is absolute, it will be presumed to start from your \fInmh\fR directory.
-
-.ti -.5i
-\fBMM_CHARSET\fR\0: With this environment variable, you can specify
+the
+.B nmh
+profile).  As always, unless the value of
+.B $MHCONTEXT
+is absolute, it will be presumed to start from your
+.B nmh
+directory.
+.RE
+.PP
+.B $MM_CHARSET
+.RS 5
+With this environment variable, you can specify
 the native character set you are using.  You must be able to display
 this character set on your terminal.
-
+.PP
 This variable is checked to see if a RFC-2047 header field should be
-decoded (in \fIinc\fR, \fIscan\fR, \fImhl\fR).  This variable is
-checked by \fIshow\fR to see if the showproc or showmimeproc should
+decoded (in
+.BR inc ,
+.BR scan ,
+.BR mhl ).
+This variable is
+checked by
+.B show
+to see if the
+.I showproc
+or
+.I showmimeproc
+should
 be called, since showmimeproc will be called if a text message uses
-a character set that doesn't match MM_CHARSET.  This variable is
-checked by \fImhshow\fR for matches against the charset parameter
+a character set that doesn't match
+.BR $MM_CHARSET .
+This variable is
+checked by
+.B mhshow
+for matches against the charset parameter
 of text contents to decide it the text content can be displayed
 without modifications to your terminal.  This variable is checked by
-\fImhbuild\fR to decide what character set to specify in the charset
-parameter of text contents containing 8bit characters.
-
-When decoding text in such an alternate character set, \fInmh\fR
+.B mhbuild
+to decide what character set to specify in the charset
+parameter of text contents containing 8\-bit characters.
+.PP
+When decoding text in such an alternate character set,
+.B nmh
 must be able to determine which characters are alphabetic, which
 are control characters, etc.  For many operating systems, this
 will require enabling the support for locales (such as setting
-the environment variable LC_CTYPE to iso_8859_1).
-
-.ti -.5i
-\fBMAILDROP\fR\0: tells \fIinc\fR the default maildrop
-.br
-This supersedes the \*(lqMailDrop:\*(rq profile entry.
-
-.ti -.5i
-\fBSIGNATURE\fR\0: tells \fIsend\fR and \fIpost\fR your mail signature
-.br
-This supersedes the \*(lqSignature:\*(rq profile entry.
-
-.ti -.5i
-\fBHOME\fR\0: tells all \fInmh\fR programs your home directory
-
-.ti -.5i
-\fBSHELL\fR\0: tells \fIbbl\fR the default shell to run
-
-.ti -.5i
-\fBTERM\fR\0: tells \fInmh\fR your terminal type
-.br
-The environment variable \fBTERMCAP\fR is also consulted.  In particular,
-these tell \fIscan\fR and \fImhl\fR how to clear your terminal, and how
-many columns wide your terminal is.  They also tell \fImhl\fR how many
+the environment variable
+.B $LC_CTYPE
+to iso_8859_1).
+.RE
+.PP
+.B $MAILDROP
+.RS 5
+This variable tells
+.B inc
+the default maildrop. This supersedes the \*(lqMailDrop\*(rq profile entry.
+.RE
+.PP
+.B $SIGNATURE
+.RS 5
+This variable tells
+.B send
+and
+.B post
+your mail signature. This supersedes the \*(lqSignature\*(rq profile entry.
+.RE
+.PP
+.B $HOME
+.RS 5
+This variable tells all
+.B nmh
+programs your home directory
+.RE
+.PP
+.B $SHELL
+.RS 5
+This variable tells
+.B bbl
+the default shell to run
+.RE
+.PP
+.B $TERM
+.RS 5
+This variable tells
+.B nmh
+your terminal type.
+.PP
+The environment variable
+.B $TERMCAP
+is also consulted.  In particular,
+these tell
+.B scan
+and
+.B mhl
+how to clear your terminal, and how
+many columns wide your terminal is.  They also tell
+.B mhl
+how many
 lines long your terminal screen is.
-
-.ti -.5i
-\fBeditalt\fR\0: the alternate message
-.br
-This is set by \fIdist\fR and \fIrepl\fR during edit sessions so you can
+.RE
+.PP
+.B $editalt
+.RS 5
+This is the alternate message.
+.PP
+This is set by
+.B dist
+and
+.B repl
+during edit sessions so you can
 peruse the message being distributed or replied to.  The message is also
 available through a link called \*(lq@\*(rq in the current directory if
 your current working directory and the folder the message lives in are
 on the same UNIX filesystem.
-
-.ti -.5i
-\fBmhdraft\fR\0: the path to the working draft
-.br
-This is set by \fIcomp\fR, \fIdist\fR, \fIforw\fR, and \fIrepl\fR
-to tell the \fIwhatnowproc\fR which file to ask \*(lqWhat now?\*(rq
+.RE
+.PP
+.B $mhdraft
+.RS 5
+This is the path to the working draft.
+.PP
+This is set by
+.BR comp ,
+.BR dist ,
+.BR forw ,
+and
+.B repl
+to tell the
+.I whatnowproc
+which file to ask \*(lqWhat now?\*(rq
 questions about.
-
-.ti -.5i
-\fBmhfolder\fR\0:
-.br
-This is set by \fIdist\fR, \fIforw\fR, and \fIrepl\fR,
+.RE
+.PP
+.B $mhfolder
+.RS 5
+This is set by
+.BR dist ,
+.BR forw ,
+and
+.BR repl ,
 if appropriate.
-
-.ti -.5i
-\fBmhaltmsg\fR\0:
-.br
-\fIdist\fR and \fIrepl\fR set \fBmhaltmsg\fR to tell the
-\fIwhatnowproc\fR about an alternate message associated with the
+.RE
+.PP
+.B $mhaltmsg
+.RS 5
+.B dist
+and
+.B repl
+set
+.B $mhaltmsg
+to tell the
+.I whatnowproc
+about an alternate message associated with the
 draft (the message being distributed or replied to).
-
-.ti -.5i
-\fBmhdist\fR\0:
-.br
-\fIdist\fR sets \fBmhdist\fR to tell the \fIwhatnowproc\fR that
-message re-distribution is occurring.
-
-.ti -.5i
-\fBmheditor\fR\0:
-.br
-This is set to tell the \fIwhatnowproc\fR the user's choice of
-editor (unless overridden by `\-noedit').
-
-.ti -.5i
-\fBmhuse\fR\0:
-.br
-This may be set by \fIcomp\fR.
-
-.ti -.5i
-\fBmhmessages\fR\0:
-.br
-This is set by \fIdist\fR, \fIforw\fR, and \fIrepl\fR if annotations
-are to occur.
-
-.ti -.5i
-\fBmhannotate\fR\0:
-.br
-This is set by \fIdist\fR, \fIforw\fR, and \fIrepl\fR if annotations
-are to occur.
-
-.ti -.5i
-\fBmhinplace\fR\0:
-.br
-This is set by \fIdist\fR, \fIforw\fR, and \fIrepl\fR if annotations
-are to occur.
-
-.ti -.5i
-\fBmhfolder\fR\0: the folder containing the alternate message
-.br
-This is set by \fIdist\fR and \fIrepl\fR during edit sessions so you
+.RE
+.PP
+.B $mhdist
+.RS 5
+.B dist
+sets
+.B $mhdist
+to tell the
+.I whatnowproc
+that message re-distribution is occurring.
+.RE
+.PP
+.B $mheditor
+.RS 5
+This is set to tell the
+.I whatnowproc
+the user's choice of
+editor (unless overridden by
+.BR \-noedit ).
+.RE
+.PP
+.B $mhuse
+.RS 5
+This may be set by
+.BR comp .
+.RE
+.PP
+.B $mhmessages
+.RS 5
+This is set by
+.BR dist ,
+.BR forw ,
+and
+.B repl
+if annotations are to occur.
+.RE
+.PP
+.B $mhannotate
+.RS 5
+This is set by
+.BR dist ,
+.BR forw ,
+and
+.B repl
+if annotations are to occur.
+.RE
+.PP
+.B $mhinplace
+.RS 5
+This is set by
+.BR dist ,
+.BR forw ,
+and
+.B repl
+if annotations are to occur.
+.RE
+.PP
+.B $mhfolder
+.RS 5
+This is the folder containing the alternate message.
+.PP
+This is set by
+.B dist
+and
+.B repl
+during edit sessions so you
 can peruse other messages in the current folder besides the one being
-distributed or replied to.  The environment variable \fBmhfolder\fR is
-also set by \fIshow\fR, \fIprev\fR, and \fInext\fR for use by \fImhl\fR.
-.in -.5i
+distributed or replied to.  The environment variable
+.B $mhfolder
+is also set by
+.BR show ,
+.BR prev ,
+and
+.B next
+for use by
+.BR mhl .
+.RE
 
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^or $MH~^Rather than the standard profile
 ^<mh\-dir>/context~^The user context
 ^or $MHCONTEXT~^Rather than the standard context
 ^<folder>/\&.mh\(rusequences~^Public sequences for <folder>
-.Pr
-All
-.Sa
-mh(1), environ(5), mh-sequence(5)
-.De
-None
-.Co
-All
-.Hi
-The \fI\&.mh\(ruprofile\fR contains only static information, which
-\fInmh\fR programs will \fBNOT\fR update.  Changes in context are
-made to the \fIcontext\fR file kept in the users nmh \fIdirectory\fR.
+
+.SH "SEE ALSO"
+nmh(1), environ(5), mh-sequence(5)
+
+.SH HISTORY
+The
+.I \&.mh\(ruprofile
+contains only static information, which
+.B nmh
+programs will
+.B NOT
+update.  Changes in context are made to the
+.I context
+file kept in the users
+.B nmh
+directory.
 This includes, but is not limited to: the \*(lqCurrent\-Folder\*(rq entry
 and all private sequence information.  Public sequence information is
 kept in each folder in the file determined by the \*(lqmh\-sequences\*(rq
-profile entry (default is \fI\&.mh\(rusequences\fR).
-
-The \fI\&.mh\(ruprofile\fR may override the path of the \fIcontext\fR
+profile entry (default is
+.IR \&.mh\(rusequences ).
+.PP
+The
+.I \&.mh\(ruprofile
+may override the path of the
+.I context
 file, by specifying a \*(lqcontext\*(rq entry (this must be in
 lower-case).  If the entry is not absolute (does not start with a
-\fB/\fR\0), then it is interpreted relative to the user's \fInmh\fR
+\*(lq/\*(rq), then it is interpreted relative to the user's
+.B nmh
 directory.  As a result, you can actually have more than one set of
 private sequences by using different context files.
-.Bu
-The shell quoting conventions are not available in the \&.mh\(ruprofile.
-Each token is separated by whitespace.
 
+.SH BUGS
+The shell quoting conventions are not available in the
+.IR \&.mh\(ruprofile .
+Each token is separated by whitespace.
+.PP
 There is some question as to what kind of arguments should be placed
 in the profile as options.  In order to provide a clear answer, recall
-command line semantics of all \fInmh\fR programs: conflicting switches
-(e.g., `\-header and `\-noheader') may occur more than one time on the
+command line semantics of all
+.B nmh
+programs: conflicting switches
+(e.g.
+.B \-header
+and
+.BR \-noheader )
+may occur more than one time on the
 command line, with the last switch taking effect.  Other arguments, such
 as message sequences, filenames and folders, are always remembered on
 the invocation line and are not superseded by following arguments of
 the same type.  Hence, it is safe to place only switches (and their
 arguments) in the profile.
-
-If one finds that an \fInmh\fR program is being invoked again and again
+.PP
+If one finds that an
+.B nmh
+program is being invoked again and again
 with the same arguments, and those arguments aren't switches, then there
 are a few possible solutions to this problem.  The first is to create a
-(soft) link in your \fI$HOME/bin\fR directory to the \fInmh\fR program
+(soft) link in your
+.I $HOME/bin
+directory to the
+.B nmh
+program
 of your choice.  By giving this link a different name, you can create
 a new entry in your profile and use an alternate set of defaults for
-the \fInmh\fR command.  Similarly, you could create a small shell script
-which called the \fInmh\fR program of your choice with an alternate set
+the
+.B nmh
+command.  Similarly, you could create a small shell script
+which called the
+.B nmh
+program of your choice with an alternate set
 of invocation line switches (using links and an alternate profile entry
 is preferable to this solution).
-
-Finally, the \fIcsh\fR user could create an alias for the command of the form:
-
-.ti +.5i
+.PP
+Finally, the
+.B csh
+user could create an alias for the command of the form:
+.PP
+.RS 5
 alias cmd 'cmd arg1 arg2 ...'
-
+.RE
+.PP
 In this way, the user can avoid lengthy type-in to the shell, and still
-give \fInmh\fR commands safely.  (Recall that some \fInmh\fR commands
+give
+.B nmh
+commands safely.  (Recall that some
+.B nmh
+commands
 invoke others, and that in all cases, the profile is read, meaning that
 aliases are disregarded beyond an initial command invocation)
-.En

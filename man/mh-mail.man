@@ -2,63 +2,65 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MH-MAIL %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-mail \- message format for nmh message system
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-any \fInmh\fR command
-.in -.5i
+any
+.B nmh
+command
 .SH DESCRIPTION
-\fInmh\fR processes messages in a particular format.  It should be noted
+.B nmh
+processes messages in a particular format.  It should be noted
 that although neither Bell nor Berkeley mailers produce message files
-in the format that \fInmh\fR prefers, \fInmh\fR can read message files in
-that antiquated format.
-
+in the format that
+.B nmh
+prefers,
+.B nmh
+can read message files in that antiquated format.
+.PP
 Each user possesses a mail drop box which initially receives all messages
-processed by \fIpost\fR\0(8).  \fIInc\fR\0(1) will read from that drop
+processed by
+.BR post .
+.B Inc
+will read from that drop
 box and incorporate the new messages found there into the user's own
-mail folders (typically `+inbox').  The mail drop box consists of one
-or more messages.
-
+mail folders (typically
+.RI \*(lq +inbox \*(rq).
+The mail drop box consists of one or more messages.
+.PP
 Messages are expected to consist of lines of text.  Graphics and binary
 data are not handled.  No data compression is accepted.  All text is
 clear ASCII 7-bit data.
-
+.PP
 The general \*(lqmemo\*(rq framework of RFC\-822 is used.  A message
 consists of a block of information in a rigid format, followed by
 general text with no specified format.  The rigidly formatted first
 part of a message is called the header, and the free-format portion is
 called the body.  The header must always exist, but the body is optional.
 These parts are separated by an empty line, i.e., two consecutive newline
-characters.  Within \fInmh\fR, the header and body may be separated by
-a line consisting of dashes:
-
+characters.  Within
+.B nmh ,
+the header and body may be separated by a line consisting of dashes:
+.PP
+.RS 5
 .nf
-.in +.5i
-.ne 10
-.eo
-.so %etcdir%/components
-.ec
-.in -.5i
+%components%
 .fi
-
+.RE
+.PP
 The header is composed of one or more header items.  Each header item can
 be viewed as a single logical line of ASCII characters.  If the text of
 a header item extends across several real lines, the continuation lines
 are indicated by leading spaces or tabs.
-
+.PP
 Each header item is called a component and is composed of a keyword or
 name, along with associated text.  The keyword begins at the left margin,
 may NOT contain spaces or tabs, may not exceed 63 characters (as specified
 by RFC\-822), and is terminated by a colon (`:').  Certain components
 (as identified by their keywords) must follow rigidly defined formats
 in their text portions.
-
+.PP
 The text for most formatted components (e.g., \*(lqDate:\*(rq and
 \*(lqMessage\-Id:\*(rq) is produced automatically.  The only ones entered
 by the user are address fields such as \*(lqTo:\*(rq, \*(lqcc:\*(rq,
@@ -67,169 +69,210 @@ specifications.  The rough format is \*(lqlocal@domain\*(rq, such as
 \*(lqMH@UCI\*(rq, or \*(lqMH@UCI\-ICSA.ARPA\*(rq.  Multiple addresses
 are separated by commas.  A missing host/domain is assumed to be the
 local host/domain.
-
+.PP
 As mentioned above, a blank line (or a line of dashes) signals that all
 following text up to the end of the file is the body.  No formatting is
 expected or enforced within the body.
-
+.PP
 Following is a list of header components that are considered
-meaningful to various nmh programs.
-
-.in +.5i
-.ti -.5i
-Date:
-.br
-Added by \fIpost\fR\0(8), contains date and time of the message's entry
+meaningful to various
+.B nmh
+programs.
+.PP
+.BR Date :
+.RS 5
+Added by
+.BR post ,
+contains date and time of the message's entry
 into the mail transport system.
-
-.ti -.5i
-From:
-.br
-Added by \fIpost\fR\0(8), contains the address of the author or authors
+.RE
+.PP
+.BR From :
+.RS 5
+Added by
+.BR post ,
+contains the address of the author or authors
 (may be more than one if a \*(lqSender:\*(rq field is present).  For a
-standard reply (using \fIrepl\fR), the reply address is constructed by
+standard reply (using
+.BR repl ,
+the reply address is constructed by
 checking the following headers (in this order): \*(lqMail-Reply\-To:\*(rq,
 \*(lqReply\-To:\*(rq, \*(lqFrom:\*(rq, \*(lqSender:\*(rq.
-
-.ti -.5i
-Mail\-Reply\-To:
-.br
-For a standard reply (using \fIrepl\fR), the reply address is
+.RE
+.PP
+.BR Mail\-Reply\-To :
+.RS 5
+For a standard reply (using
+.BR repl ),
+the reply address is
 constructed by checking the following headers (in this order):
 \*(lqMail-Reply\-To:\*(rq, \*(lqReply\-To:\*(rq, \*(lqFrom:\*(rq,
 \*(lqSender:\*(rq.
-
-.ti -.5i
-Mail\-Followup\-To:
-.br
-When making a \*(lqgroup\*(rq reply (using \fIrepl\fR -group), any
-addresses in this field will take precedence, and no other reply address
+.RE
+.PP
+.BR Mail\-Followup\-To :
+.RS 5
+When making a \*(lqgroup\*(rq reply (using
+.B repl
+.BR \-group ),
+any addresses in this field will take precedence, and no other reply address
 will be added to the draft.  If this header is not available, then the
 return addresses will be constructed from the \*(lqMail-Reply\-To:\*(rq,
 or \*(lqReply\-To:\*(rq, or \*(lqFrom:\*(rq, along with adding the
 addresses from the headers \*(lqTo:\*(rq, \*(lqcc:\*(rq, as well as
 adding your personal address.
-
-.ti -.5i
-Reply\-To:
-.br
-For a standard reply (using \fIrepl\fR), the reply address is
+.RE
+.PP
+.BR Reply\-To :
+.RS 5
+For a standard reply (using
+.BR repl ),
+the reply address is
 constructed by checking the following headers (in this order):
 \*(lqMail-Reply\-To:\*(rq, \*(lqReply\-To:\*(rq, \*(lqFrom:\*(rq,
 \*(lqSender:\*(rq.
-
-.ti -.5i
-Sender:
-.br
-Added by \fIpost\fR\0(8) in the event that the message already has a
+.RE
+.PP
+.BR Sender :
+.RS 5
+Added by
+.B post
+in the event that the message already has a
 \*(lqFrom:\*(rq line.  This line contains the address of the actual
 sender.
-
-.ti -.5i
-To:
-.br
+.RE
+.PP
+.BR To :
+.RS 5
 Contains addresses of primary recipients.
-
-.ti -.5i
-cc:
-.br
+.RE
+.PP
+.BR cc :
+.RS 5
 Contains addresses of secondary recipients.
-
-.ti -.5i
+.RE
+.PP
 Bcc:
-.br
+.RS 5
 Still more recipients.  However, the \*(lqBcc:\*(rq line is not
 copied onto the message as delivered, so these recipients are not
-listed.  \fInmh\fR uses an encapsulation method for blind copies, see
-\fIsend\fR\0(1).
-
-.ti -.5i
-Fcc:
-.br
-Causes \fIpost\fR\0(8) to copy the message into the specified folder for the
-sender,
+listed.
+.B nmh
+uses an encapsulation method for blind copies, see
+.BR send .
+.RE
+.PP
+.BR Fcc :
+.RS 5
+Causes
+.B post
+to copy the message into the specified folder for the sender,
 if the message was successfully given to the transport system.
-
-.ti -.5i
-Message\-ID:
-.br
-A unique message identifier added by \fIpost\fR\0(8) if the `\-msgid' flag
-is set.
-
-.ti -.5i
-Subject:
-.br
-Sender's commentary.  It is displayed by \fIscan\fR\0(1).
-
-.ti -.5i
-In\-Reply\-To:
-.br
-A commentary line added by \fIrepl\fR\0(1) when replying to a message.
-
-.ti -.5i
-Resent\-Date:
-.br
-Added when redistributing a message by \fIpost\fR\0(8).
-
-.ti -.5i
-Resent\-From:
-.br
-Added when redistributing a message by \fIpost\fR\0(8).
-
-.ti -.5i
-Resent\-To:
-.br
-New recipients for a message resent by \fIdist\fR\0(1).
-
-.ti -.5i
-Resent\-cc:
-.br
-Still more recipients.
-See \*(lqcc:\*(rq and \*(lqResent\-To:\*(rq.
-
-.ti -.5i
-Resent\-Bcc:
-.br
-Even more recipients.
-See \*(lqBcc:\*(rq and \*(lqResent\-To:\*(rq.
-
-.ti -.5i
-Resent\-Fcc:
-.br
+.RE
+.PP
+.BR Message\-ID :
+.RS 5
+A unique message identifier added by
+.B post
+if the
+.B \-msgid
+flag is set.
+.RE
+.PP
+.BR Subject :
+.RS 5
+Sender's commentary.  It is displayed by
+.BR scan .
+.RE
+.PP
+.BR In\-Reply\-To :
+.RS 5
+A commentary line added by
+.B repl
+when replying to a message.
+.RE
+.PP
+.BR Resent\-Date :
+.RS 5
+Added when redistributing a message by
+.BR post .
+.RE
+.PP
+.BR Resent\-From :
+.RS 5
+Added when redistributing a message by
+.BR post .
+.RE
+.PP
+.BR Resent\-To:
+.RS 5
+New recipients for a message resent by
+.BR dist .
+.RE
+.PP
+.BR Resent\-cc :
+.RS 5
+Still more recipients. See \*(lqcc:\*(rq and \*(lqResent\-To:\*(rq.
+.RE
+.PP
+.BR Resent\-Bcc :
+.RS 5
+Even more recipients. See \*(lqBcc:\*(rq and \*(lqResent\-To:\*(rq.
+.RE
+.PP
+.BR Resent\-Fcc :
+.RS 5
 Copy resent message into a folder.
 See \*(lqFcc:\*(rq and \*(lqResent\-To:\*(rq.
-
-.ti -.5i
-Resent\-Message\-Id:
-.br
-A unique identifier glued on by \fIpost\fR\0(8) if the `\-msgid' flag
-is set.
+.RE
+.PP
+.BR Resent\-Message\-Id :
+.RS 5
+A unique identifier glued on by
+.B post
+if the
+.B \-msgid
+flag is set.
 See \*(lqMessage\-Id:\*(rq and \*(lqResent\-To:\*(rq.
+.RE
+.PP
+.BR Resent :
+.RS 5
+Annotation for
+.B dist
+under the
+.B \-annotate
+option.
+.RE
+.PP
+.BR Forwarded :
+.RS 5
+Annotation for
+.B forw
+under the
+.B \-annotate
+option.
+.RE
+.PP
+.BR Replied :
+.RS 5
+Annotation for
+.B repl
+under the
+.B \-annotate
+option.
+.RE
 
-.ti -.5i
-Resent:
-.br
-Annotation for \fIdist\fR\0(1) under the `\-annotate' option.
-
-.ti -.5i
-Forwarded:
-.br
-Annotation for \fIforw\fR\0(1) under the `\-annotate' option.
-
-.ti -.5i
-Replied:
-.br
-Annotation for \fIrepl\fR\0(1) under the `\-annotate' option.
-.in -.5i
-.sp
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^%mailspool%/$USER~^Location of mail drop
-.Pr
+.fi
+
+.SH "SEE ALSO"
+.I "Standard for the Format of ARPA Internet Text Messages
+(RFC\-822)
+
+.SH CONTEXT
 None
-.Sa
-RFC\-822:\fIStandard for the Format of ARPA Internet Text Messages\fR
-.De
-None
-.Co
-None
-.En
