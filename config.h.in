@@ -230,6 +230,14 @@
 #undef POP
 
 /*
+ * Define this to compile client-side support for apop into
+ * inc and msgchk. Do not change this value manually. You
+ * must run configure with the '--enable-apop' option to
+ * correctly build the apop client support.
+ */
+#undef APOP
+
+/*
  * Define this to compile client-side support for kpop
  * (kerberized pop) into inc and msgchk.  Do not change this
  * value manually.  You must run configure with the option
@@ -293,10 +301,6 @@
  * but this #define will add some extra security checks.
  */
 #undef MAILGROUP
-
-/* Define ruserpass as _ruserpass if your libraries have a bug *
- * such that it can't find ruserpass, but can find _ruserpass. */
-#undef ruserpass
 
 /* Define if your system defines TIOCGWINSZ in sys/ioctl.h.  */
 #undef GWINSZ_IN_SYS_IOCTL
