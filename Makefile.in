@@ -75,7 +75,7 @@ DIST = ChangeLog COPYRIGHT INSTALL MACHINES README VERSION ChangeLog install-sh\
        configure.in configure stamp-h.in config.sub config.guess 
 
 # subdirectories in distribution
-SUBDIRS = h config sbr zotnet mts uip etc man docs
+SUBDIRS = h config sbr mts uip etc man docs
 
 # ========== DEPENDENCIES FOR BUILDING AND INSTALLING ==========
 
