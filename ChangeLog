@@ -1,3 +1,10 @@
+Fri May 30 17:18:22 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* etc/Makefile.in was incorrectly installing mts.conf.in and
+ 	sendfiles.in -- fixed.  Changed the suffix for the backed-up
+ 	previous versions of the etc files from the ambiguous .old to
+ 	.prev.  Use diff and only keep the .prev file around if different.
+
 Mon May 29 7:48:15 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Moved the date parsing routines from zotnet/tws to sbr/ (and

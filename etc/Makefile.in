@@ -36,32 +36,35 @@ SED = sed
 
 .SUFFIXES:
 
-# format and components files
-DIST_FILES = MailAliases components digestcomps distcomps forwcomps	\
-	     mhl.body mhl.digest mhl.format mhl.forward mhl.headers	\
-             mhl.reply mts.conf.in rcvdistcomps rcvdistcomps.outbox	\
-	     replcomps replgroupcomps scan.MMDDYY scan.YYYYMMDD		\
-	     scan.default scan.mailx scan.nomime scan.size scan.time	\
-	     scan.timely scan.unseen sendfiles.in
+# static configuration, format, and components files
+STATIC_FILES =  MailAliases components digestcomps distcomps forwcomps	\
+		mhl.body mhl.digest mhl.format mhl.forward mhl.headers	\
+		mhl.reply rcvdistcomps rcvdistcomps.outbox		\
+	       	replcomps replgroupcomps scan.MMDDYY scan.YYYYMMDD	\
+	       	scan.default scan.mailx scan.nomime scan.size scan.time	\
+	       	scan.timely scan.unseen
 
-# format and configuration files to generate
-GEN_FILES = mhn.defaults mts.conf sendfiles
+# templates and scripts from which non-static files are generated
+GENERATED_FILE_SRCS = mhn.defaults.sh mhn.find.sh mts.conf.in sendfiles.in
 
-# data files we need to install
-FILES = $(DIST_FILES) $(GEN_FILES)
+# files generated using above GENERATED_FILE_SRCs
+GENERATED_FILES = mhn.defaults mts.conf sendfiles
 
-# scripts to install
+# data files we need to install (in etc)
+INSTALL_FILES = $(STATIC_FILES) $(GENERATED_FILES)
+
+# scripts we need to install (in bin)
 SCRIPTS = sendfiles
 
-# auxiliary files
-AUX = Makefile.in mhn.defaults.sh mhn.find.sh
+# auxiliary files (included in distribution but not installed)
+AUX = Makefile.in
 
-# all files in this directory included in the distribution
-DIST = $(DIST_FILES) $(SCRIPTS) $(AUX)
+# all non-generated files in this directory are included in the distribution
+DIST = $(STATIC_FILES) $(GENERATED_FILE_SRCS) $(SCRIPTS) $(AUX)
 
 # ========= DEPENDENCIES FOR BUILDING ==========
 
-all: $(GEN_FILES)
+all: $(GENERATED_FILES)
 
 mhn.defaults: $(srcdir)/mhn.defaults.sh $(MHNSEARCHPROG)
 	rm -f $@
@@ -82,17 +85,15 @@ install: install-files install-scripts
 
 install-files:
 	$(top_srcdir)/mkinstalldirs $(etcdir)
-	for file in $(DIST_FILES); do \
+	for file in $(INSTALL_FILES); do \
+	  echo $$file; \
 	  if [ -f $(etcdir)/$$file ]; then \
-	    mv $(etcdir)/$$file $(etcdir)/$$file.old; \
+	    mv $(etcdir)/$$file $(etcdir)/$$file.prev; \
 	  fi; \
 	  $(INSTALL_DATA) $(srcdir)/$$file $(etcdir)/$$file; \
-	done
-	for file in $(GEN_FILES); do \
-	  if [ -f $(etcdir)/$$file ]; then \
-	    mv $(etcdir)/$$file $(etcdir)/$$file.old; \
+	  if diff $(etcdir)/$$file.prev $(etcdir)/$$file; then \
+	    rm $(etcdir)/$$file.prev; \
 	  fi; \
-	  $(INSTALL_DATA) $$file $(etcdir)/$$file; \
 	done
 
 install-scripts:
@@ -104,7 +105,7 @@ install-scripts:
 uninstall: uninstall-files uninstall-scripts
 
 uninstall-files:
-	for file in $(FILES); do \
+	for file in $(INSTALL_FILES); do \
 	  rm -f $(etcdir)/$$file; \
 	done
 
@@ -119,7 +120,7 @@ mostlyclean:
 	rm -f *~
 
 clean: mostlyclean
-	rm -f $(GEN_FILES)
+	rm -f $(GENERATED_FILES)
 
 distclean: clean
 	rm -f Makefile
