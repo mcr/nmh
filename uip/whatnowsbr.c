@@ -607,6 +607,12 @@ check_draft (char *msgnam)
 }
 
 
+#ifndef CYRUS_SASL
+# define SASLminc(a) (a)
+#else /* CYRUS_SASL */
+# define SASLminc(a)  0
+#endif /* CYRUS_SASL */
+
 static struct swit  sendswitches[] = {
 #define	ALIASW            0
     { "alias aliasfile", 0 },
@@ -680,6 +686,12 @@ static struct swit  sendswitches[] = {
     { "draftmessage msg", -6 },
 #define SNDRFSW          35
     { "nodraftfolder", -3 },
+#define SASLSW           36
+    { "sasl", SASLminc(-4) },
+#define SASLMECHSW       37
+    { "saslmech", SASLminc(-5) },
+#define USERSW           38
+    { "user", SASLminc(-4) },
     { NULL, 0 }
 };
 
@@ -830,6 +842,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case SSNDSW: 
 		case SOMLSW: 
 		case SNOOPSW: 
+		case SASLSW:
 		    vec[vecp++] = --cp;
 		    continue;
 
@@ -838,6 +851,8 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case WIDTHSW: 
 		case CLIESW: 
 		case SERVSW: 
+		case SASLMECHSW:
+		case USERSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-') {
 			advise (NULL, "missing argument to %s", argp[-2]);

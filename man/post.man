@@ -24,6 +24,7 @@ post \- deliver a message
 \%[\-noverbose]
 \%[\-watch] \%[\-nowatch]
 \%[\-width\ columns]
+\%[\-sasl] \%[\-saslmech\ mechanism] \%[\-user\ username]
 .br
 file
 \%[\-version]
@@ -115,6 +116,17 @@ header.  This is useful in pretending to send mail "directly" from a remote POP3
 account, or when remote email robots give improper precedence to the envelope
 "From:".  Note that your MTA may still reveal your real identity (e.g.
 sendmail's "X\-Authentication\-Warning:" header). 
+
+If nmh has been compiled with SASL support, the `\-sasl' switch will enable
+the use of SASL authentication with the SMTP MTA.  Depending on the
+SASL mechanism used, this may require an additional password prompt from the
+user (but the \*(lq.netrc\*(rq file can be used to store this password).
+`\-saslmech' switch can be used to select a particular SASL mechanism,
+and the the `\-user' switch can be used to select a authorization userid
+to provide to SASL other than the default.
+
+Currently SASL security layers are not supported for SMTP.  The SASL
+SMTP code in nmh will always negotiate an unencrypted connection.
 
 .Fi
 ^%etcdir%/mts.conf~^nmh mts configuration file

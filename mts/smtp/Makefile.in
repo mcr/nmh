@@ -19,7 +19,8 @@ etcdir      = @sysconfdir@
 CC       = @CC@
 CFLAGS   = @CFLAGS@
 DEFS     = @DEFS@
-INCLUDES = -I../.. -I$(srcdir) -I$(top_srcdir)
+SASL_INCLUDES = @SASL_INCLUDES@
+INCLUDES = -I../.. -I$(srcdir) -I$(top_srcdir) $(SASL_INCLUDES)
 
 LORDER  = @LORDER@
 TSORT   = @TSORT@

@@ -242,6 +242,12 @@
 #undef KPOP_PRINCIPAL
 
 /*
+ * Define this to use the Cyrus SASL library for authentication of
+ * POP and SMTP
+ */
+#undef CYRUS_SASL
+
+/*
  * Define this to compile support for using Hesiod to locate
  * pop servers into inc and msgchk.  Do not change this value
  * manually.  You must run configure with the option

@@ -44,6 +44,12 @@
 # define uptolow(c) ((isalpha(c) && isupper (c)) ? tolower (c) : (c))
 #endif
 
+#ifndef CYRUS_SASL
+# define SASLminc(a) (a)
+#else /* CYRUS_SASL */
+# define SASLminc(a)  0
+#endif /* CYRUS_SASL */
+
 #define FCCS		10	/* max number of fccs allowed */
 
 /* In the following array of structures, the numeric second field of the
@@ -128,6 +134,12 @@ static struct swit switches[] = {
     { "partno", -6 },
 #define	QUEUESW                  36
     { "queued", -6 },
+#define SASLSW                   37
+    { "sasl", SASLminc(-4) },
+#define SASLMECHSW               38
+    { "saslmech", SASLminc(-5) },
+#define USERSW                   39
+    { "user", SASLminc(-4) },
     { NULL, 0 }
 };
 
@@ -227,6 +239,9 @@ static int whomsw = 0;		/* we are whom not post                  */
 static int checksw = 0;		/* whom -check                           */
 static int linepos=0;		/* putadr()'s position on the line       */
 static int nameoutput=0;	/* putadr() has output header name       */
+static int sasl=0;		/* Use SASL auth for SMTP                */
+static char *saslmech=NULL;	/* Force use of particular SASL mech     */
+static char *user=NULL;		/* Authenticate as this user             */
 
 static unsigned msgflags = 0;	/* what we've seen */
 
@@ -516,6 +531,20 @@ main (int argc, char **argv)
 
 		case QUEUESW:
 		    queued++;
+		    continue;
+		
+		case SASLSW:
+		    sasl++;
+		    continue;
+		
+		case SASLMECHSW:
+		    if (!(saslmech = *argp++) || *saslmech == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    continue;
+		
+		case USERSW:
+		    if (!(user = *argp++) || *user == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 	    }
 	}
@@ -1406,7 +1435,8 @@ post (char *file, int bccque, int talk)
     sigon ();
 
     if (rp_isbad (retval = sm_init (clientsw, serversw, watch, verbose,
-				    snoop, onex, queued))
+				    snoop, onex, queued, sasl, saslmech,
+				    user))
 	    || rp_isbad (retval = sm_winit (smtpmode, from)))
 	die (NULL, "problem initializing server; %s", rp_string (retval));
 
@@ -1443,7 +1473,8 @@ verify_all_addresses (int talk)
     sigon ();
 
     if (!whomsw || checksw)
-	if (rp_isbad (retval = sm_init (clientsw, serversw, 0, 0, snoop, 0, 0))
+	if (rp_isbad (retval = sm_init (clientsw, serversw, 0, 0, snoop, 0,
+					0, 0, 0, 0))
 		|| rp_isbad (retval = sm_winit (smtpmode, from)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 

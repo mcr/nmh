@@ -1,4 +1,3 @@
-
 /*
  * smtp.c -- nmh SMTP interface
  *
@@ -423,6 +422,14 @@ rclient (char *server, char *protocol, char *service)
     return NOTOK;
 }
 
+#ifdef CYRUS_SASL
+#include <sasl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <errno.h>
+#endif /* CYRUS_SASL */
 
 int
 sm_winit (int mode, char *from)
@@ -1006,6 +1013,306 @@ no_dice:
 }
 #endif /* MPOP */
 
+
+#ifdef CYRUS_SASL
+/*
+ * This function implements SASL authentication for SMTP.  If this function
+ * completes successfully, then authentication is successful and we've
+ * (optionally) negotiated a security layer.
+ *
+ * Right now we don't support session encryption.
+ */
+static int
+sm_auth_sasl(char *user, char *mechlist, char *host)
+{
+    int result, status, outlen;
+    unsigned int buflen;
+    char *buf, outbuf[BUFSIZ];
+    const char *chosen_mech;
+    sasl_security_properties_t secprops;
+    sasl_external_properties_t extprops;
+    sasl_ssf_t *ssf;
+    int *outbufmax;
+
+    /*
+     * Initialize the callback contexts
+     */
+
+    if (user == NULL)
+	user = getusername();
+
+    callbacks[SM_SASL_N_CB_USER].context = user;
+
+    /*
+     * This is a _bit_ of a hack ... but if the hostname wasn't supplied
+     * to us on the command line, then call getpeername and do a
+     * reverse-address lookup on the IP address to get the name.
+     */
+
+    if (!host) {
+	struct sockaddr_in sin;
+	int len = sizeof(sin);
+	struct hostent *hp;
+
+	if (getpeername(fileno(sm_wfp), (struct sockaddr *) &sin, &len) < 0) {
+	    sm_ierror("getpeername on SMTP socket failed: %s",
+		      strerror(errno));
+	    return NOTOK;
+	}
+
+	if ((hp = gethostbyaddr((void *) &sin.sin_addr, sizeof(sin.sin_addr),
+				sin.sin_family)) == NULL) {
+	    sm_ierror("DNS lookup on IP address %s failed",
+		      inet_ntoa(sin.sin_addr));
+	    return NOTOK;
+	}
+
+	host = strdup(hp->h_name);
+    }
+
+    sasl_pw_context[0] = host;
+    sasl_pw_context[1] = user;
+
+    callbacks[SM_SASL_N_CB_PASS].context = sasl_pw_context;
+
+    result = sasl_client_init(callbacks);
+
+    if (result != SASL_OK) {
+	sm_ierror("SASL library initialization failed: %s",
+		  sasl_errstring(result, NULL, NULL));
+	return NOTOK;
+    }
+
+    result = sasl_client_new("smtp", host, NULL, SASL_SECURITY_LAYER, &conn);
+
+    if (result != SASL_OK) {
+	sm_ierror("SASL client initialization failed: %s",
+		  sasl_errstring(result, NULL, NULL));
+	return NOTOK;
+    }
+
+    /*
+     * Initialize the security properties
+     */
+
+    memset(&secprops, 0, sizeof(secprops));
+    secprops.maxbufsize = BUFSIZ;
+    secprops.max_ssf = 0;	/* XXX change this when we do encryption */
+    memset(&extprops, 0, sizeof(extprops));
+
+    result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
+
+    if (result != SASL_OK) {
+	sm_ierror("SASL security property initialization failed: %s",
+		  sasl_errstring(result, NULL, NULL));
+	return NOTOK;
+    }
+
+    result = sasl_setprop(conn, SASL_SSF_EXTERNAL, &extprops);
+
+    if (result != SASL_OK) {
+	sm_ierror("SASL external property initialization failed: %s",
+		  sasl_errstring(result, NULL, NULL));
+	return NOTOK;
+    }
+
+    /*
+     * Start the actual protocol.  Feed the mech list into the library
+     * and get out a possible initial challenge
+     */
+
+    result = sasl_client_start(conn, mechlist, NULL, NULL, &buf, &buflen,
+			       &chosen_mech);
+
+    if (result != SASL_OK && result != SASL_CONTINUE) {
+	sm_ierror("SASL client start failed: %s",
+		  sasl_errstring(result, NULL, NULL));
+	return NOTOK;
+    }
+
+    /*
+     * If we got an initial challenge, send it as part of the AUTH
+     * command; otherwise, just send a plain AUTH command.
+     */
+
+    if (buflen) {
+	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
+	free(buf);
+	if (status != SASL_OK) {
+	    sm_ierror("SASL base64 encode failed: %s",
+		      sasl_errstring(status, NULL, NULL));
+	    return NOTOK;
+	}
+
+	status = smtalk(SM_AUTH, "AUTH %s %s", chosen_mech, outbuf);
+    } else
+	status = smtalk(SM_AUTH, "AUTH %s", chosen_mech);
+
+    /*
+     * Now we loop until we either fail, get a SASL_OK, or a 235
+     * response code.  Receive the challenges and process them until
+     * we're all done.
+     */
+
+    while (result == SASL_CONTINUE) {
+
+	/*
+	 * If we get a 235 response, that means authentication has
+	 * succeeded and we need to break out of the loop (yes, even if
+	 * we still get SASL_CONTINUE from sasl_client_step()).
+	 *
+	 * Otherwise, if we get a message that doesn't seem to be a
+	 * valid response, then abort
+	 */
+
+	if (status == 235)
+	    break;
+	else if (status < 300 || status > 399)
+	    return RP_BHST;
+	
+	/*
+	 * Special case; a zero-length response from the SMTP server
+	 * is returned as a single =.  If we get that, then set buflen
+	 * to be zero.  Otherwise, just decode the response.
+	 */
+	
+	if (strcmp("=", sm_reply.text) == 0) {
+	    outlen = 0;
+	} else {
+	    result = sasl_decode64(sm_reply.text, sm_reply.length,
+				   outbuf, &outlen);
+	
+	    if (result != SASL_OK) {
+		smtalk(SM_AUTH, "*");
+		sm_ierror("SASL base64 decode failed: %s",
+			  sasl_errstring(result, NULL, NULL));
+		return NOTOK;
+	    }
+	}
+
+	result = sasl_client_step(conn, outbuf, outlen, NULL, &buf, &buflen);
+
+	if (result != SASL_OK && result != SASL_CONTINUE) {
+	    smtalk(SM_AUTH, "*");
+	    sm_ierror("SASL client negotiation failed: %s",
+		      sasl_errstring(result, NULL, NULL));
+	    return NOTOK;
+	}
+
+	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
+	free(buf);
+
+	if (status != SASL_OK) {
+	    smtalk(SM_AUTH, "*");
+	    sm_ierror("SASL base64 encode failed: %s",
+		      sasl_errstring(status, NULL, NULL));
+	    return NOTOK;
+	}
+	
+	status = smtalk(SM_AUTH, outbuf);
+    }
+
+    /*
+     * Make sure that we got the correct response
+     */
+
+    if (status < 200 || status > 299)
+	return RP_BHST;
+
+    /*
+     * Depending on the mechanism, we need to do a FINAL call to
+     * sasl_client_step().  Do that now.
+     */
+
+    result = sasl_client_step(conn, NULL, 0, NULL, &buf, &buflen);
+
+    if (result != SASL_OK) {
+	sm_ierror("SASL final client negotiation failed: %s",
+		  sasl_errstring(result, NULL, NULL));
+	return NOTOK;
+    }
+
+    /*
+     * We _should_ have completed the authentication successfully.
+     * Get a few properties from the authentication exchange.
+     */
+
+    result = sasl_getprop(conn, SASL_MAXOUTBUF, (void **) &outbufmax);
+
+    if (result != SASL_OK) {
+	sm_ierror("Cannot retrieve SASL negotiated output buffer size: %s",
+		  sasl_errstring(result, NULL, NULL));
+	return NOTOK;
+    }
+
+    maxoutbuf = *outbufmax;
+
+    result = sasl_getprop(conn, SASL_SSF, (void **) &ssf);
+
+    sasl_ssf = *ssf;
+
+    if (result != SASL_OK) {
+	sm_ierror("Cannot retrieve SASL negotiated security strength "
+		  "factor: %s", sasl_errstring(result, NULL, NULL));
+	return NOTOK;
+    }
+
+    if (maxoutbuf == 0 || maxoutbuf > BUFSIZ)
+	maxoutbuf = BUFSIZ;
+
+    sasl_complete = 1;
+
+    return RP_OK;
+}
+
+/*
+ * Our callback functions to feed data to the SASL library
+ */
+
+static int
+sm_get_user(void *context, int id, const char **result, unsigned *len)
+{
+    char *user = (char *) context;
+
+    if (! result || id != SASL_CB_USER)
+	return SASL_BADPARAM;
+
+    *result = user;
+    if (len)
+	*len = strlen(user);
+
+    return SASL_OK;
+}
+
+static int
+sm_get_pass(sasl_conn_t *conn, void *context, int id,
+	    sasl_secret_t **psecret)
+{
+    char **pw_context = (char **) context;
+    char *pass = NULL;
+    int len;
+
+    if (! psecret || id != SASL_CB_PASS)
+	return SASL_BADPARAM;
+
+    ruserpass(pw_context[0], &(pw_context[1]), &pass);
+
+    len = strlen(pass);
+
+    *psecret = (sasl_secret_t *) malloc(sizeof(sasl_secret_t) + len);
+
+    if (! *psecret) {
+	free(pass);
+	return SASL_NOMEM;
+    }
+
+    (*psecret)->len = len;
+    strcpy((*psecret)->data, pass);
+/*    free(pass); */
+
+    return SASL_OK;
+}
+#endif /* CYRUS_SASL */
 
 static int
 sm_ierror (char *fmt, ...)

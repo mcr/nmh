@@ -33,6 +33,8 @@ inc
 \%[\-pack\ file]
 \%[\-nopack]
 \%[\-kpop]
+\%[\-sasl]
+\%[\-saslmech\ mechanism]
 .br
 %nmhendpop%
 \%[\-version]
@@ -151,6 +153,17 @@ If nmh has been compiled with KPOP #defined, the `\-kpop' switch will allow
 \fIinc\fR to use Kerberized POP rather than standard POP3 on a given invocation.
 If POPSERVICE was also #defined to "kpop", \fIinc\fR will be hardwired to always
 use KPOP.
+
+If nmh has been compiled with SASL support, the `\-sasl' switch will enable
+the use of SASL authentication.  Depending on the SASL mechanism used, this
+may require an additional password prompt from the user (but the
+\*(lq.netrc\*(rq file can be used to store this password).  The
+`\-saslmech' switch can be used to select a particular SASL mechanism.
+
+If SASL authentication is successful, \fIinc\fR will attempt to negotiate
+a security layer for session encryption.  Encrypted traffic is labelled
+with `(encrypted)' and `(decrypted)' when viewing the POP transaction
+with the `\-snoop' switch.
 %nmhendpop%
 .Fi
 ^$HOME/\&.mh\(ruprofile~^The user profile

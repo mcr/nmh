@@ -31,6 +31,7 @@ send
 .br
 \%[\-verbose] \%[\-noverbose]
 \%[\-watch] \%[\-nowatch]
+\%[\-sasl] \%[\-saslmech\ mechanism] \%[\-user\ username]
 .br
 \%[\-width\ columns]
 \%[file\ ...] 
@@ -131,6 +132,17 @@ will be removed from all outgoing copies of the message.
 
 By using the `\-width\ columns' switch, the user can direct \fIsend\fR
 as to how long it should make header lines containing addresses.
+
+If nmh has been compiled with SASL support, the `\-sasl' switch will enable
+the use of SASL authentication with the SMTP MTA.  Depending on the
+SASL mechanism used, this may require an additional password prompt from the
+user (but the \*(lq.netrc\*(rq file can be used to store this password).
+`\-saslmech' switch can be used to select a particular SASL mechanism,
+and the the `\-user' switch can be used to select a authorization userid
+to provide to SASL other than the default.
+
+Currently SASL security layers are not supported for SMTP.  The SASL
+SMTP code in nmh will always negotiate an unencrypted connection.
 
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
 additional alias files given by the `\-alias aliasfile' switch will be

@@ -68,6 +68,12 @@
 # define KPOPminc(a)  0
 #endif
 
+#ifndef CYRUS_SASL
+# define SASLminc(a) (a)
+#else
+# define SASLminc(a)  0
+#endif
+
 static struct swit switches[] = {
 #define	AUDSW                      0
     { "audit audit-file", 0 },
@@ -117,6 +123,10 @@ static struct swit switches[] = {
     { "snoop", -5 },
 #define KPOPSW                    23
     { "kpop", KPOPminc (-4) },
+#define SASLSW                    24
+    { "sasl", SASLminc(-4) },
+#define SASLMECHSW                25
+    { "saslmech", SASLminc(-8) },
     { NULL, 0 }
 };
 
@@ -421,6 +431,15 @@ main (int argc, char **argv)
 	    case SNOOPSW:
 		snoop++;
 		continue;
+	
+	    case SASLSW:
+		sasl++;
+		continue;
+	
+	    case SASLMECHSW:
+		if (!(saslmech = *argp++) || *saslmech == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -469,7 +488,7 @@ main (int argc, char **argv)
 	if ( strcmp( POPSERVICE, "kpop" ) == 0 ) {
 	    kpop = 1;
 	}
-	if (kpop || ( rpop > 0))
+	if (kpop || sasl || ( rpop > 0))
 	    pass = getusername ();
 	else
 	    ruserpass (host, &user, &pass);
@@ -477,7 +496,8 @@ main (int argc, char **argv)
 	/*
 	 * initialize POP connection
 	 */
-	if (pop_init (host, user, pass, snoop, kpop ? 1 : rpop, kpop) == NOTOK)
+	if (pop_init (host, user, pass, snoop, kpop ? 1 : rpop, kpop,
+		      sasl, saslmech) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */

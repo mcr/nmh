@@ -99,7 +99,7 @@ static RETSIGTYPE alrmser (int);
 
 int
 sm_init (char *client, char *server, int watch, int verbose,
-         int debug, int onex, int queued)
+         int debug, int onex, int queued, int sasl, char *saslmech, char *user)
 {
     int i, result, vecp;
     int pdi[2], pdo[2];
@@ -119,6 +119,10 @@ sm_init (char *client, char *server, int watch, int verbose,
 	else
 	    client = LocalName();	/* no clientname -> LocalName */
     }
+
+    if (sasl)
+	return sm_ierror("SASL authentication not supported with the "
+			 "Sendmail MTA");
 
 #ifdef ZMAILER
     if (client == NULL || *client == '\0')
