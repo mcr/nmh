@@ -16,6 +16,13 @@
   standard out, when filtering files.
 * Add switch -more to `show' to call moreproc.
 * Add new command "show" at WhatNow? prompt.
+* Add command to reverse the action of rmm [-nounlink] -- "urmm"?  "umm"?  "um"?
+* Allow user customization of which kinds of text parts in multipart/alternative
+  messages are preferred.  It would be nice if one selectable behavior would be
+  to be prompted at runtime for which version to show.
+* Add a new %-escape that makes temp files more permanent than %f, so that you
+  can use gnuclient -q or netscape -remote on message parts.  Put netscape
+  -remote in mhn.defaults for text/html once this is done.
 
 [POSSIBILITIES]
 
