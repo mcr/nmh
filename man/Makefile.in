@@ -198,6 +198,8 @@ realclean: distclean
 
 superclean: realclean
 
+lint:
+
 # ========== DEPENDENCIES FOR MAINTENANCE ==========
 
 subdir = man

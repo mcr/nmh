@@ -121,6 +121,13 @@ mostlyclean-recursive clean-recursive distclean-recursive realclean-recursive su
 
 # ========== DEPENDENCIES FOR MAINTENANCE ==========
 
+lint:
+	for subdir in $(SUBDIRS); do \
+	  ( cd $$subdir && $(MAKE) $(MAKEDEFS) lint ) || exit 1; \
+	done
+
+# ========== DEPENDENCIES FOR MAINTENANCE ==========
+
 Makefile: Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= ./config.status
 

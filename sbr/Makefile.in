@@ -22,6 +22,9 @@ TSORT  = @TSORT@
 RANLIB = @RANLIB@
 LIBTOOL = @LIBTOOL@
 GNU_LIBTOOL = @GNU_LIBTOOL@
+LINT	= @LINT@
+LINTFLAGS = @LINTFLAGS@ 
+
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
 
@@ -77,6 +80,9 @@ all: libmh.a
 
 sigmsg.h: sigmsg.awk
 	$(AWK) -f $(srcdir)/sigmsg.awk $(SIGNAL_H) > $@
+
+lint: sigmsg.h
+	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
 dtimep.c: dtimep.lex
 	$(LEX) -nit $< > $@

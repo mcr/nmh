@@ -21,6 +21,8 @@ AWK = @AWK@
 # LEX = @LEX@
 LEX = lex
 SED = sed
+LINT = @LINT@
+LINTFLAGS = @LINTFLAGS@
 
 .SUFFIXES:
 .SUFFIXES: .c .o
@@ -82,6 +84,11 @@ realclean: distclean
 	rm -f dtimep.c-lexed
 
 superclean: realclean
+
+# ========== DEPENDENCIES FOR LINT =================
+
+lint: 
+	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
 # ========== DEPENDENCIES FOR MAINTENANCE ==========
 

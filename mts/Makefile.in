@@ -62,6 +62,13 @@ mostlyclean-recursive clean-recursive distclean-recursive realclean-recursive su
 	  (cd $$subdir && $(MAKE) $(MAKEDEFS) $$target) || exit 1; \
 	done
 
+# ========== DEPENDENCIES FOR LINT =================
+
+lint:
+	for subdir in $(SUBDIRS); do \
+	  ( cd $$subdir && $(MAKE) $(MAKEDEFS) lint ) || exit 1; \
+	done
+
 # ========== DEPENDENCIES FOR MAINTENANCE ==========
 
 subdir = mts

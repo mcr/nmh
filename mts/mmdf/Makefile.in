@@ -15,6 +15,9 @@ bindir      = @bindir@
 libdir      = @libdir@
 etcdir      = @sysconfdir@
 
+LINT	    = @LINT@
+LINTFLAGS   = @LINTFLAGS@
+
 .SUFFIXES:
 
 # source files
@@ -47,6 +50,11 @@ distclean: clean
 realclean: distclean
 
 superclean: realclean
+
+# ========== DEPENDENCIES FOR LINT =================
+
+lint: 
+	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
 # ========== DEPENDENCIES FOR MAINTENANCE ==========
 

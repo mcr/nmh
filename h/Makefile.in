@@ -29,6 +29,8 @@ install:
 
 uninstall:
 
+lint:
+
 # ========== DEPENDENCIES FOR CLEANUP ==========
 
 mostlyclean:

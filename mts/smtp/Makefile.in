@@ -26,6 +26,8 @@ TSORT   = @TSORT@
 RANLIB  = @RANLIB@
 LIBTOOL = @LIBTOOL@
 GNU_LIBTOOL = @GNU_LIBTOOL@
+LINT	= @LINT@
+LINTFLAGS = @LINTFLAGS@
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
 
@@ -81,6 +83,11 @@ distclean: clean
 realclean: distclean
 
 superclean: realclean
+
+# ========== DEPENDENCIES FOR LINT =================
+
+lint: 
+	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
 # ========== DEPENDENCIES FOR MAINTENANCE ==========
 

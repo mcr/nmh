@@ -15,6 +15,9 @@ CFLAGS     = @CFLAGS@
 DEFS       = @DEFS@
 INCLUDES   = -I../.. -I$(srcdir) -I$(top_srcdir)
 
+LINT	   = @LINT@
+LINTFLAGS  = @LINTFLAGS@
+
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
 
 .SUFFIXES:
@@ -59,6 +62,11 @@ distclean: clean
 realclean: distclean
 
 superclean: realclean
+
+# ========== DEPENDENCIES FOR LINT =================
+
+lint: 
+	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
 # ========== DEPENDENCIES FOR MAINTENANCE ==========
 

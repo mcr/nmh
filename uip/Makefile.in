@@ -30,6 +30,9 @@ HESIOD_LIBS = @HESIOD_LIBS@
 LOCALLIBS = ../config/version.o ../config/config.o ../sbr/libmh.a ../$(MTSLIB) ../zotnet/libzot.a
 LINKLIBS = $(LOCALLIBS) $(KRB4_LIBS) $(HESIOD_LIBS) $(LIBS)
 
+LINT	= @LINT@
+LINTFLAGS = @LINTFLAGS@
+
 TERMLIB = @TERMLIB@
 LEXLIB  = @LEXLIB@
 APOPLIB = @APOPLIB@
@@ -308,6 +311,11 @@ distclean: clean
 realclean: distclean
 
 superclean: realclean
+
+# ========== DEPENDENCIES FOR LINT  ================
+
+lint: 
+	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
 # ========== DEPENDENCIES FOR MAINTENANCE ==========
 

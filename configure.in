@@ -214,6 +214,25 @@ dnl Look for `cut'
 pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
 AC_PATH_PROG(cutpath, cut, no, [$pathtmp])
 
+dnl ----------------------------------------------
+dnl check for lclint, and lint if it doesn't exist
+dnl ----------------------------------------------
+AC_CHECK_PROG(linttmp1, lclint, lclint, no)dnl
+if test x$ac_cv_prog_linttmp1 != xno ; then
+  LINT=$ac_cv_prog_linttmp1
+  LINTFLAGS="-weak +posixlib -macrovarprefixexclude"
+else
+  AC_CHECK_PROG(linttmp2, lint, lint, no)dnl
+  if test x$ac_cv_prog_linttmp2 != xno ; then
+    LINT=$ac_cv_prog_linttmp2
+    LINTFLAGS=""
+  else
+    LINT="echo 'No lint program found'"
+    LINTFLAGS=""
+  fi
+fi
+AC_SUBST(LINT)
+AC_SUBST(LINTFLAGS)
 
 dnl try to figure out which one we've got
 AC_CHECK_PROG(LIBTOOL, libtool, libtool, , [$pathtmp])
