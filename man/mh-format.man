@@ -2,7 +2,7 @@
 .\" THIS FILE HAS BEEN AUTOMATICALLY GENERATED.  DO NOT EDIT.
 .\" $Id$
 .\"
-.TH MH-FORMAT 5 "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH MH-FORMAT %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-format \- format file for nmh message system
 .SH DESCRIPTION
