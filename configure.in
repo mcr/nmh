@@ -247,8 +247,8 @@ else
     LINTFLAGS=""
   fi
 fi
-AC_SUBST(LINT)
-AC_SUBST(LINTFLAGS)
+AC_SUBST(LINT)dnl
+AC_SUBST(LINTFLAGS)dnl
 
 dnl try to figure out which one we've got
 AC_CHECK_PROG(LIBTOOL, libtool, libtool, , [$pathtmp])
