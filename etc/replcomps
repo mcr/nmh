@@ -1,6 +1,6 @@
-%; replcomps
+%; $Id$
 %;
-%; default form (components) file for `repl'
+%; replcomps: default form (components) file for `repl'
 %;
 %; Check for the following headers (in this order)
 %; to construct the return address
@@ -23,8 +23,16 @@
 %<(nonnull)%(void(width))%(putaddr cc: )\n%>\
 %<{fcc}Fcc: %{fcc}\n%>\
 %<{subject}Subject: Re: %{subject}\n%>\
-%<{date}In-Reply-To: Your message of "\
-%<(nodate{date})%{date}%|%(pretty{date})%>."%<{message-id}
-             %{message-id}%>\n%>\
-%<{message-id}References: %<{references} %{references}%> %{message-id}\n%>\
+%;
+%; Make References: and In-reply-to: fields for threading.
+%; Use (void), (trim) and (putstr) to eat trailing whitespace.
+%;
+%<{message-id}In-reply-to: %{message-id}\n%>\
+%<{message-id}References: \
+%<{references}%(void{references})%(trim)%(putstr) %>\
+%(void{message-id})%(trim)%(putstr)\n%>\
+Comments: In-reply-to \
+%<{from}%(void{from})%?(void{apparently-from})%|%(void{sender})%>\
+%(trim)%(putstr)\n\
+   message dated "%<(nodate{date})%{date}%|%(tws{date})%>."
 --------
