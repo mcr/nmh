@@ -401,6 +401,7 @@ lkopen_dot (char *file, int access, mode_t mode)
 		else
 		    sleep (5);
 	    }
+	    lockname (file, &lkinfo, 1);
 	}
     }
 #else
