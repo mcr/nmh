@@ -1,0 +1,113 @@
+#
+# FAQ -- frequently asked questions
+#
+# $Id$
+#
+
+1) What is nmh?
+
+    nmh (new MH) is an electronic mail handling system.  It is based on
+    version 6.8.3 of the MH message system originally developed by the
+    RAND Corporation and the University of California.
+
+2) Is it nmh, Nmh, nMH, NMH?
+
+   It's nmh.  I hate capital letters.
+
+3) Who is developing nmh?
+
+   Richard Coleman
+   coleman@math.gatech.edu
+   http://www.math.gatech.edu/~coleman
+
+4) Why are you developing nmh?
+
+   For several reasons.
+   a) It's an interesting project.
+   b) I like using MH/nmh.
+   c) I wanted to increase the portability of MH.
+   d) I wanted to make MH easier to install (convert to autoconf).
+   e) I wanted to remove all the unnecessary junk from the
+      MH distribution (pop daemon, bulletin board support, etc...).
+   f) UCI seems to have abandoned MH, so someone needed to pick up
+      the slack.
+
+5) What is the copyright status of nmh?
+
+   nmh is distributed under a variant of the classical BSD copyright.
+   Check the COPYRIGHT file in the nmh distribution for the details.
+   There are some specific files which were contributed to the original
+   MH package that are copyrighted by their original author.  I have
+   retained the copyright notices of these authors in these files.
+
+   Essentially, you can do anything you want with the nmh package as long
+   as you don't blame me if it trashes all your mail.
+
+6) What is the difference between nmh and MH?
+
+   Check the file DIFFERENCES in the nmh distribution for the
+   (ever growing) list of differences between nmh and MH.
+
+7) Where do I get nmh?
+
+    The latest version of nmh is available at
+    ftp://ftp.math.gatech.edu/pub/nmh/nmh.tar.gz
+
+8) Where is the nmh web page?
+
+    The nmh home page is located at
+    http://www.math.gatech.edu/nmh/
+
+9) Where is the nmh mailing list?
+
+    There is a mailing list for nmh development at:
+    nmh-workers@math.gatech.edu
+
+    To subscribe, send e-mail to the administrative address:
+    nmh-workers-request@math.gatech.edu
+
+    with the subject "subscribe e-mail-address"
+    (without the quotes).
+
+10) Where do I report bugs in nmh?
+
+    Send bug reports and suggestions to
+    nmh-workers@math.gatech.edu
+
+11) Which mail transfer agents (MTA's) are supported?
+
+   The default setup for nmh is to use SMTP, so nmh should work with
+   most MTA's that provide a standard SMTP connection on port 25.
+   Also you may configure nmh to use a sendmail interface (still
+   uses SMTP) by using the configure option --with-mts=sendmail.
+   There is also an option (--enable-nmh-pop) to include client-side
+   support for POP.
+
+12) Why does `folder' and `flist' overlook some of my subfolders?
+
+    There was a bug in these commands which caused them to quit
+    searching a folder for subfolders too early, if the folder contained
+    subfolders which were symbolic links.  This has been improved in
+    nmh-0.25, but `folder' and `flist' will still not recurse into
+    folders that contain only symbolic links.
+
+13) Why doesn't the (X)Emacs package `mh-e' work with
+    nmh?
+
+    In nmh, the default location of things have changed.  Also the MH
+    lib directory has been split into a `etc' directory (containing
+    configuration files and components), and a `lib' directory
+    (containing support binaries).  So sometimes mh-e has trouble
+    finding the components skeleton for composing new mail or replies.
+    Depending on the install location of nmh at your site, you will
+    need to add something similar to the following to your .emacs file.
+    The lines for `mh-comp-formfile' and `mh-repl-formfile' should point
+    to your personal copies of these files (if you have them) or else
+    point to the default nmh versions.
+
+    ;; set a few mh-e variables for nmh
+    (setq mh-progs "/usr/local/nmh/bin/")
+    (setq mh-lib "/usr/local/nmh/lib/")
+    (setq mh-comp-formfile "/usr/local/nmh/etc/components")
+    (setq mh-repl-formfile "/usr/local/nmh/etc/replcomps")
+
