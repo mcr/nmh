@@ -83,7 +83,7 @@
    most MTA's that provide a standard SMTP connection on port 25.
    Also you may configure nmh to use a sendmail interface (still
    uses SMTP) by using the configure option --with-mts=sendmail.
-   There is also an option (--enable-nmh-pop) to include client-side
+   There is also an option (--enable-pop) to include client-side
    support for POP.
 
 12) Why does `folder' and `flist' overlook some of my subfolders?
