@@ -4788,20 +4788,19 @@ eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf2=${nmhsysconf}"
 eval "nmhlib=${libdir}";         eval "nmhlib2=${nmhlib}"
 eval "nmhman=${mandir}"
 
-pop_kinds="no"
+pop_kinds=no
 if test x"$enable_pop" = x"yes"; then
-        pop_kinds="yes (pop"
-        if test x"$enable_apop" = x"yes"; then
-                pop_kinds="${pop_kinds} apop"
-        fi
-	if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
-                pop_kinds="${pop_kinds} kpop"
-        fi
-        if test "$pop_kinds" = "yes (pop"; then
-                pop_kinds="yes"
-        else
-                pop_kinds="${pop_kinds})"
-        fi
+  pop_kinds="yes ("
+
+  if test x"$enable_apop" = x"yes"; then
+    pop_kinds="${pop_kinds}APOP "
+  fi
+
+  if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
+    pop_kinds="${pop_kinds}KPOP "
+  fi
+
+  pop_kinds="${pop_kinds}POP3)"
 fi
 
 echo "
