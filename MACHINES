@@ -38,6 +38,11 @@ after line 15 of the file zotnet/tws/lexstring.c.
 
 Irix (SGI):
 
+Irix make is notoriously buggy. If you're using it, you should "touch
+config.h.in" before configuring to prevent a problem where it tries to
+rebuild targets that shouldn't be rebuilt. (Alternately, you can just
+use GNU make instead of Irix make.)
+
 If you are compiling nmh with POP support, then the configuration
 process will search for (and find) the Irix version of "ruserpass".
 Unfortunately, this version is buggy and causes core dumps.  The best
