@@ -287,5 +287,5 @@ try_it_again:
 	done (0);
     what_now (ed, nedit, NOUSE, drft, msgnam, 1, mp,
 	anot ? "Resent" : NULL, inplace, cwd);
-    done (1);
+    return done (1);
 }

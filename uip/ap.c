@@ -146,7 +146,7 @@ main (int argc, char **argv)
     for (addrp = 0; addrs[addrp]; addrp++)
 	status += process (addrs[addrp], width, normalize);
 
-    done (status);
+    return done (status);
 }
 
 struct pqpair {

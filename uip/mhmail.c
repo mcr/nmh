@@ -187,6 +187,8 @@ main (int argc, char **argv)
 	perror (postproc);
 	_exit (-1);
     }
+
+    return 0;  /* dead code to satisfy the compiler */
 }
 
 

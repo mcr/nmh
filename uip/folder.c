@@ -421,7 +421,7 @@ main (int argc, char **argv)
     print_folders();
 
     context_save ();	/* save the context file */
-    done (0);
+    return done (0);
 }
 
 /*

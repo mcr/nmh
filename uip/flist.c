@@ -278,7 +278,7 @@ main(int argc, char **argv)
     ScanFolders();
     qsort(folders, nFolders, sizeof(struct Folder), (qsort_comp) CompareFolders);
     PrintFolders();
-    done (0);
+    return done (0);
 }
 
 /*

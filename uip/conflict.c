@@ -134,7 +134,7 @@ main (int argc, char **argv)
 #endif	/* UCI */
     maildrops ();
 
-    done (0);
+    return done (0);
 }
 
 

@@ -447,7 +447,7 @@ try_it_again:
 	done (0);
     what_now (ed, nedit, NOUSE, drft, NULL, 0, mp,
 	anot ? "Forwarded" : NULL, inplace, cwd);
-    done (1);
+    return done (1);
 }
 
 

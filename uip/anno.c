@@ -178,7 +178,7 @@ main (int argc, char **argv)
     seq_save (mp);	/* synchronize message sequences */
     folder_free (mp);	/* free folder/message structure */
     context_save ();	/* save the context file         */
-    done (0);
+    return done (0);
 }
 
 
