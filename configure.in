@@ -206,7 +206,16 @@ if test -n "$auto_cflags"; then
       test -z "$CFLAGS" && CFLAGS=-g || CFLAGS="$CFLAGS -g"
     fi
   else
-    test -z "$LDFLAGS" && LDFLAGS=-s
+    if test -z "$LDFLAGS"; then
+      case "$build_os" in
+	darwin*)
+ 	  LDFLAGS=
+          ;;
+	*)
+	  LDFLAGS=-s
+	  ;;
+      esac
+    fi
     if test -n "$GCC"; then
       test -z "$CFLAGS" && CFLAGS="-Wall -O2" || CFLAGS="$CFLAGS -Wall -O2"
     else
