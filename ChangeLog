@@ -1,3 +1,10 @@
+Thu May 11 02:21:34 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Simplified sbr/Makefile.in so that both SRCS and OBJS aren't
+	seperately and redundantly defined, but so that OBJS is a
+	pattern-substituted version of SRCS with suffix .c -> .o. This
+	should make maintainability easier.
+	
 Tue May 09 20:38:04 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Alphabetized Shantonu's $pop_kinds output on configure's "pop is
