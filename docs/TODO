@@ -29,6 +29,8 @@
 * Add some way to configure whether you prefer to see text/plain or text/html
   parts of multipart/alternative messages.
 * Flag bogus/misspelled mts.conf "masquerade:" / --enable-masquerade options.
+* Allow multiple simultaneous differing contexts, probably each tied to a parent
+  (terminal) process.
 
 [POSSIBILITIES]
 

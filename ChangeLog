@@ -1,3 +1,8 @@
+Thu Aug 03 17:14:08 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* TODO: Allow multiple simultaneous differing contexts, probably
+ 	each tied to a parent (terminal) process.
+
 Tue Aug  1 10:48:05 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
 	* Fixed install in etc/Makefile.in so it works correctly.
