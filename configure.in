@@ -364,7 +364,7 @@ AC_SUBST(editorpath)dnl
 dnl Check for broken vi
 AC_CACHE_CHECK(for broken vi, nmh_cv_attvibug,
 [if echo 'r /nonexist-file
-q' | ex > /dev/null 2>&1
+q' | ex > /dev/null
 then
         nmh_cv_attvibug=no
 else
@@ -553,12 +553,15 @@ dnl --------------
 dnl Checks for ndbm
 AC_CHECK_FUNC(dbm_open, ,
   AC_CHECK_LIB(ndbm, dbm_open, ,
-    AC_CHECK_LIB(dbm, dbm_open)))
+    AC_CHECK_LIB(dbm, dbm_open, ,
+      AC_CHECK_LIB(db1, dbm_open, ,
+        AC_CHECK_LIB(gdbm, dbm_open)))))
 
 dnl ----------------
 dnl CHECK FOR NDBM.H
 dnl ----------------
-AC_CHECK_HEADERS(db1/ndbm.h)
+
+AC_CHECK_HEADERS(db1/ndbm.h gdbm/ndbm.h, break, )
 
 dnl ----------------
 dnl CHECK FOR HESIOD
