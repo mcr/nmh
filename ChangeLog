@@ -1,8 +1,31 @@
+Wed Apr 05 21:09:28 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Applied Eric Schnoebelen <eric@cirr.com>'s mhshowsbr.c patch
+ 	fixing apparent bugs in Dan Winship's new security quoting code:
+	
+            Since upgrading, I've been getting the following errors
+            while attempting to process some MIME messages:
+
+                (1) Syntax error: Unterminated quoted string
+                    exit 2
+	
+            and:
+
+                (2) line 1/10 (END)Segmentation fault (core dumped)
+
+	    (2) appears to be due to the testing of an unset pointer in
+	    mhshowsbr.c:show_multi_aux().  (1) appears to be caused by
+	    mis-quoting a filename being handed to the shell in
+	    mhshowsbr.c:show_content_aux().
+
+	    Resolving the pointer reference issue in
+ 	    mhshowsbr.c:show_multi_aux() turned up a similar mis-quoting
+ 	    problem in the routine.
+
 Tue Mar 28 16:17:39 2000 Doug Morris <doug@mhost.com>
 
-	* Applied Todd Miller <Todd.Miller@courtesan.com>'s patch to
-	dropsbr.c to prevent core dumping on packf. Here's the note
-	from his message:
+	* Applied Todd.Miller@courtesan.com's patch to dropsbr.c to
+ 	prevent core dumping on packf. Here's the note from his message:
 
 	    Since sizeof(buffer) == sizeof(tmpbuffer) packf will dump
 	    core on a file w/o a From line with a line >= BUFSIZ.

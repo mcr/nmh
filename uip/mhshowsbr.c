@@ -405,7 +405,16 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 
 	    case 'f':
 		/* insert filename containing content */
-		snprintf (bp, buflen, "%s", file);
+		snprintf (bp, buflen, "'%s'", file);
+		/* since we've quoted the file argument, set things up
+		 * to look past it, to avoid problems with the quoting
+		 * logic below.  (I know, I should figure out what's
+		 * broken with the quoting logic, but..)
+		 */
+		len = strlen(bp);
+		buflen -= len;
+		bp += len;
+		pp = bp;
 		break;
 
 	    case 'p':
@@ -869,8 +878,9 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
     quoted = 0;
 
     /* Now parse display string */
-    for ( ; *cp; cp++) {
+    for ( ; *cp && buflen > 0; cp++) {
 	if (*cp == '%') {
+	    pp = bp;
 	    switch (*++cp) {
 	    case 'a':
 		/* insert parameters from Content-Type field */
@@ -923,6 +933,10 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
 		    buflen -= len;
 		    s = " ";
 		}
+		/* set our starting pointer back to bp, to avoid
+		 * requoting the filenames we just added
+		 */
+		pp = bp;
 	    }
 	    break;
 
