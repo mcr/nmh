@@ -1020,7 +1020,7 @@ annoaux (int fd)
 	if (is_selected(mp, msgnum)) {
 	    if (debugsw)
 		advise (NULL, "annotate message %d", msgnum);
-	    annotate (m_name (msgnum), annotext, cp, inplace, 1, 0, 0);
+	    annotate (m_name (msgnum), annotext, cp, inplace, 1, -1, 0);
 	}
     }
 
