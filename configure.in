@@ -555,13 +555,14 @@ AC_CHECK_FUNC(dbm_open, ,
   AC_CHECK_LIB(ndbm, dbm_open, ,
     AC_CHECK_LIB(dbm, dbm_open, ,
       AC_CHECK_LIB(db1, dbm_open, ,
-        AC_CHECK_LIB(gdbm, dbm_open)))))
+        AC_CHECK_LIB(gdbm, dbm_open, ,
+          AC_CHECK_LIB(db, __db_ndbm_open))))))
 
 dnl ----------------
 dnl CHECK FOR NDBM.H
 dnl ----------------
 
-AC_CHECK_HEADERS(db1/ndbm.h gdbm/ndbm.h, break, )
+AC_CHECK_HEADERS(db1/ndbm.h gdbm/ndbm.h db.h, break, )
 
 dnl ----------------
 dnl CHECK FOR HESIOD

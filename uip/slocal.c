@@ -55,7 +55,12 @@ extern int  initgroups(char*, int);
 #ifdef HAVE_GDBM_NDBM_H
 #include <gdbm/ndbm.h>
 #else
+#if defined(HAVE_DB_H) && defined(HAVE_LIBDB)
+#define DB_DBM_HSEARCH 1
+#include <db.h>
+#else
 #include <ndbm.h>
+#endif
 #endif
 #endif
 
