@@ -1,3 +1,7 @@
+Fri Apr 14 18:50:11 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Upped the version number to 1.0.4+dev for further development.
+	
 Fri Apr 14 18:21:34 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Added new files README.developers, ChangeLog_MH-3_to_MH-6.6, and
