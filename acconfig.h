@@ -2,53 +2,14 @@
 /****** BEGIN USER CONFIGURATION SECTION *****/
 
 /*
- * IMPORTANT: UNCOMMENT THE DEFINES FOR YOUR OPERATING SYSTEM
+ * IMPORTANT: You should no longer need to edit this file to handle
+ * your operating system. That should be handled and set correctly by
+ * configure now.
  *
  * These are slowly being phased out, but currently
  * not everyone is auto-configured.  Then decide if you
  * wish to change the features that are compiled into nmh.
  */
-
-/*
- *  Solaris 2.x
- *  Irix
- *  OSF/1
- *  HP-UX
- *  AIX
- */
-/* #define SYS5  1 */
-/* #define SVR4  1 */
-
-/*
- *  SunOS 4.1.x
- */
-/* #define BIND     1 */
-/* #define BSD42    1 */
-
-/*
- *  Linux
- */
-/* #define LINUX_STDIO  1 */
-
-/*
- *  FreeBSD 2.x
- *  NetBSD 1.x,
- *  OpenBSD 2.x
- *  BSD/OS 2.x
- */
-/* #define BIND     1 */
-/* #define BSD42    1 */
-/* #define BSD44    1 */
-
-/*
- *  SCO 4.x
- *  SCO 5.x
- *
- * I believe the second `define' is only necessary
- * for SCO 5.x, not SCO 4.x
- */
-/* #define SYS5         1 */
-/* #define SCO_5_STDIO  1 */
 
 /*
  * Define to 1 if you need to make `inc' set-group-id
@@ -167,6 +128,27 @@
 
 /***** END USER CONFIGURATION SECTION *****/
 @TOP@
+
+/* Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX, SCO5 */
+#undef SYS5
+
+/* Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX */
+#undef SVR4
+
+/* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS -- does
+ * PicoBSD have uname? :) */
+#undef BIND
+#undef BSD42
+
+/* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS */
+#undef BSD44
+
+/* Defined for SCO5 */
+#undef SCO_5_STDIO
+
+/* Defined for Linux */
+#undef LINUX_STDIO
+
 
 /*
  * Define this if you want SMTP (simple mail transport protocol)

@@ -7,6 +7,8 @@ dnl
 AC_INIT(h/nmh.h)
 AC_CONFIG_HEADER(config.h)
 
+AC_CANONICAL_SYSTEM
+
 dnl What version of nmh are we building?
 VERSION=`sed -e 's/nmh-//' ${srcdir}/VERSION`
 echo "configuring for nmh-$VERSION"
@@ -487,6 +489,61 @@ SIGNAL_H=$nmh_cv_path_signal_h
 AC_SUBST(SIGNAL_H)dnl
 
 dnl ----------------
+dnl OS SPECIFIC DEFINES
+dnl ----------------
+case "$target_os" in
+
+  solaris2*)
+    AC_DEFINE(SYS5)
+    AC_DEFINE(SVR4)
+    ;;
+  irix*)
+    AC_DEFINE(SYS5)
+    AC_DEFINE(SVR4)
+    ;;
+  osf*)
+    AC_DEFINE(SYS5)
+    AC_DEFINE(SVR4)
+    ;;
+  aix*)
+    AC_DEFINE(SYS5)
+    AC_DEFINE(SVR4)
+    ;;
+  sunos4*)
+    AC_DEFINE(BIND)
+    AC_DEFINE(BSD42)
+    ;;
+  linux*)
+    AC_DEFINE(LINUX_STDIO)
+    ;;
+  freebsd*)  
+    AC_DEFINE(BIND)
+    AC_DEFINE(BSD42)
+    AC_DEFINE(BSD44)
+    ;;
+  netbsd*)
+    AC_DEFINE(BIND)
+    AC_DEFINE(BSD42)
+    AC_DEFINE(BSD44)
+    ;;
+  openbsd*)
+    AC_DEFINE(BIND)
+    AC_DEFINE(BSD42)
+    AC_DEFINE(BSD44)
+    ;;
+  bsd/os*)
+    AC_DEFINE(BIND)
+    AC_DEFINE(BSD42)
+    AC_DEFINE(BSD44)
+    ;;
+  sco5*)
+    AC_DEFINE(SYS5)
+    AC_DEFINE(SCO_5_STDIO)
+    ;;
+esac
+
+
+dnl ----------------
 dnl OUTPUT MAKEFILES
 dnl ----------------
 AC_OUTPUT(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
@@ -505,6 +562,7 @@ echo "
 nmh configuration
 -----------------
 nmh version               : ${VERSION}
+target os                 : ${target}
 compiler                  : ${CC}
 compiler flags            : ${CFLAGS}
 linker flags              : ${LDFLAGS}
