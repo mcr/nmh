@@ -2,207 +2,353 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MSH %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 msh \- nmh shell (and BBoard reader)
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-msh
-\%[\-prompt\ string]
-\%[\-scan] \%[\-noscan]
-\%[\-topcur] \%[\-notopcur]
-\%[file]
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B msh
+.RB [ \-prompt
+.IR string ]
+.RB [ \-scan " | " \-noscan ]
+.RB [ \-topcur " | " \-notopcur ]
+.RI [ file ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fImsh\fR is an interactive program that implements a subset of the normal
-\fInmh\fR commands operating on a single file in \fIpackf\fR'd format.
-That is, \fImsh\fR is used to read a file that contains a number
-of messages, as opposed to the standard \fInmh\fR style of reading
+.B msh
+is an interactive program that implements a subset of the normal
+.B nmh
+commands operating on a single file in
+.BR packf 'd format.
+That is,
+.B msh
+is used to read a file that contains a number
+of messages, as opposed to the standard
+.B nmh
+style of reading
 a number of files, each file being a separate message in a folder.
-\fImsh\fR's chief advantage is that the normal \fInmh\fR style does not
-allow a file to have more than one message in it.  Hence, \fImsh\fR is
-ideal for reading \fIBBoards\fR, as these files are delivered by the
-transport system in this format.  In addition, \fImsh\fR can be used on
-other files, such as message archives which have been \fIpack\fRed (see
-\fIpackf\fR\0(1)).  Finally, \fImsh\fR is an excellent \fInmh\fR tutor.
-As the only commands available to the user are \fInmh\fR commands, this
-allows \fInmh\fR beginners to concentrate on how commands to \fInmh\fR
+.BR msh 's
+chief advantage is that the normal
+.B nmh
+style does not
+allow a file to have more than one message in it.  Hence,
+.B msh
+is
+ideal for reading BBoards, as these files are delivered by the
+transport system in this format.  In addition,
+.B msh
+can be used on
+other files, such as message archives which have been
+.BR pack ed
+(see
+.BR packf (1)).
+Finally,
+.B msh
+is an excellent
+.B nmh
+tutor.
+As the only commands available to the user are
+.B nmh
+commands, this
+allows
+.B nmh
+beginners to concentrate on how commands to
+.B nmh
 are formed and (more or less) what they mean.
-
-When invoked, \fImsh\fR reads the named file, and enters a command loop.
-The user may type most of the normal \fInmh\fR commands.  The syntax and
-semantics of these commands typed to \fImsh\fR are identical to their
-\fInmh\fR counterparts.  In cases where the nature of \fImsh\fR would be
-inconsistent (e.g., specifying a `+folder' with some commands), \fImsh\fR
-will duly inform the user.  The commands that \fImsh\fR currently supports
+.PP
+When invoked,
+.B msh
+reads the named file, and enters a command loop.
+The user may type most of the normal
+.B nmh
+commands.  The syntax and
+semantics of these commands typed to
+.B msh
+are identical to their
+.B nmh
+counterparts.  In cases where the nature of
+.B msh
+would be
+inconsistent (e.g., specifying a
+.I +folder
+with some commands),
+.B msh
+will duly inform the user.  The commands that
+.B msh
+currently supports
 (in some slightly modified or restricted forms) are:
-.sp 1
-.in +.5i
-ali
-.br
-burst
-.br
-comp
-.br
-dist
-.br
-folder
-.br
-forw
-.br
-inc
-.br
-mark
-.br
-mhmail
-.br
-mhn
-.br
-msgchk
-.br
-next
-.br
-packf
-.br
-pick
-.br
-prev
-.br
-refile
-.br
-repl
-.br
-rmm
-.br
-scan
-.br
-send
-.br
-show
-.br
-sortm
-.br
-whatnow
-.br
-whom
-.in -.5i
-
-In addition, \fImsh\fR has a \*(lqhelp\*(rq command which gives a
-brief overview.  To terminate \fImsh\fR, type CTRL\-D, or use the
-\*(lqquit\*(rq command.  If \fImsh\fR is being invoked from \fIbbc\fR,
-then typing CTRL\-D will also tell \fIbbc\fR to exit as well, while
-using the \*(lqquit\*(rq command will return control to \fIbbc\fR, and
-\fIbbc\fR will continue examining the list of BBoards that it is scanning.
-
-If the file is writable and has been modified, then using \*(lqquit\*(rq
-will query the user if the file should be updated.
-
-The `\-prompt string' switch sets the prompting string for \fImsh\fR.
-
-You may wish to use an alternate \fInmh\fR profile for the commands that
-\fImsh\fR executes; see \fImh-profile\fR\0(5) for details about the
-\fB$MH\fR environment variable.
-
-When invoked from \fIbbc\fR, two special features are enabled:
-First, the `\-scan' switch directs \fImsh\fR to do a `scan\0unseen'
-on start\-up if new items are present in the BBoard.  This feature is
-best used from \fIbbc\fR, which correctly sets the stage.  Second, the
-\fImark\fR command in \fImsh\fR acts specially when you are reading a
-BBoard, since \fImsh\fR will consult the sequence \*(lqunseen\*(rq in
-determining what messages you have actually read.  When \fImsh\fR exits,
-it reports this information to \fIbbc\fR.  In addition, if you give the
-\fImark\fR command with no arguments, \fImsh\fR will interpret it as
-`mark\0\-sequence\0unseen\0\-delete\0\-nozero\0all' Hence, to discard
-all of the messages in the current BBoard you're reading, just use the
-\fImark\fR command with no arguments.
-
-Normally, the \*(lqexit\*(rq command is identical to the \*(lqquit\*(rq
-command in \fImsh\fR.  When run under \fIbbc\fR however, \*(lqexit\*(rq
-directs \fImsh\fR to mark all messages as seen and then \*(lqquit\*(rq.
-For speedy type\-in, this command is often abbreviated as just
-\*(lqe\*(rq.
-
-When invoked from \fIvmh\fR, another special feature is enabled:
-The `topcur' switch directs \fImsh\fR to have the current message
-\*(lqtrack\*(rq the top line of the \fIvmh\fR scan window.  Normally,
-\fImsh\fR has the current message \*(lqtrack\*(rq the center of the window
-(under `\-notopcur', which is the default).
-
-\fImsh\fR supports an output redirection facility.  Commands may be
-followed by one of
-
+.PP
+.RS 5
 .nf
-.in +.5i
+ali
+burst
+comp
+dist
+folder
+forw
+inc
+mark
+mhmail
+mhn
+msgchk
+next
+packf
+pick
+prev
+refile
+repl
+rmm
+scan
+send
+show
+sortm
+whatnow
+whom
+.fi
+.RE
+.PP
+In addition,
+.B msh
+has a
+.B help
+command which gives a
+brief overview.  To terminate
+.BR msh ,
+type CTRL\-D, or use the
+.B quit
+command.  If
+.B msh
+is being invoked from
+.BR bbc ,
+then typing CTRL\-D will also tell
+.B bbc
+to exit as well, while
+using the
+.B quit
+command will return control to
+.BR bbc ,
+and
+.B bbc
+will continue examining the list of BBoards that it is scanning.
+.PP
+If the file is writable and has been modified, then using
+.B quit
+will query the user if the file should be updated.
+.PP
+The
+.B \-prompt
+.I string
+switch sets the prompting string for
+.BR msh .
+.PP
+You may wish to use an alternate
+.B nmh
+profile for the commands that
+.B msh
+executes; see
+.BR mh-profile (5)
+for details about the
+.B $MH
+environment variable.
+.PP
+When invoked from
+.BR bbc ,
+two special features are enabled:
+First, the
+.B \-scan
+switch directs
+.B msh
+to do a
+.RB \*(lq scan
+.BR unseen \*(rq
+on start\-up if new items are present in the BBoard.  This feature is
+best used from
+.BR bbc ,
+which correctly sets the stage.  Second, the
+.B mark
+command in
+.B msh
+acts specially when you are reading a
+BBoard, since
+.B msh
+will consult the sequence \*(lqunseen\*(rq in
+determining what messages you have actually read.  When
+.B msh
+exits,
+it reports this information to
+.BR bbc .
+In addition, if you give the
+.B mark
+command with no arguments,
+.B msh
+will interpret it as
+.RB \*(lq mark
+.B \-sequence
+.B unseen
+.B \-delete
+.B \-nozero
+.BR all \*(rq
+Hence, to discard
+all of the messages in the current BBoard you're reading, just use the
+.B mark
+command with no arguments.
+.PP
+Normally, the
+.B exit
+command is identical to the
+.B quit
+command in
+.BR msh .
+When run under
+.B bbc
+however,
+.B exit
+directs
+.B msh
+to mark all messages as seen and then
+.BR quit .
+For speedy type\-in, this command is often abbreviated as just
+.BR qe .
+.PP
+When invoked from
+.BR vmh ,
+another special feature is enabled:
+The `topcur' switch directs
+.B msh
+to have the current message
+\*(lqtrack\*(rq the top line of the
+.B vmh
+scan window.  Normally,
+.B msh
+has the current message \*(lqtrack\*(rq the center of the window
+(under
+.BR \-notopcur ,
+which is the default).
+.PP
+.B msh
+supports an output redirection facility.  Commands may be
+followed by one of
+.PP
+.RS 5
+.nf
 .ta \w'| \fIcommand\fR  'u
 ^> \fIfile\fR~^write output to \fIfile\fR
 ^>> \fIfile\fR~^append output to \fIfile\fR
 ^| \fIcommand\fR~^pipe output to UNIX \fIcommand\fR
-.re
-.in -.5i
 .fi
-
-If \fIfile\fR starts with a `\~' (tilde), then a \fIcsh\fR-like expansion
-takes place.  Note that \fIcommand\fR is interpreted by \fIsh\fR\0(1).
-Also note that \fImsh\fR does NOT support history substitutions, variable
+.RE
+.PP
+If
+.I file
+starts with a \*(lq\~\*(rq (tilde), then a
+.BR csh \-like
+expansion
+takes place.  Note that
+.I command
+is interpreted by
+.BR sh .
+Also note that
+.B msh
+does NOT support history substitutions, variable
 substitutions, or alias substitutions.
-
-When parsing commands to the left of any redirection symbol, \fImsh\fR
+.PP
+When parsing commands to the left of any redirection symbol,
+.B msh
 will honor `\\' (back\-slash) as the quote next\-character symbol, and
-`"' (double\-quote) as quote\-word delimiters.  All other input tokens
+`\*(lq' (double\-quote) as quote\-word delimiters.  All other input tokens
 are separated by whitespace (spaces and tabs).
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mts.conf~^nmh mts configuration file
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Msg\-Protect:~^To set mode when creating a new `file'
-.Ps
 ^fileproc:~^Program to file messages
-.Ps
 ^showproc:~^Program to show messages
-.Sa
+.fi
+
+.SH "SEE ALSO"
 bbc(1)
-.De
-`file' defaults to \*(lq./msgbox\*(rq
-.Ds
-`\-prompt\ (msh)\ '
-.Ds
-`\-noscan'
-.Ds
-`\-notopcur'
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` file "' defaults to \*(lq./msgbox\*(rq"
+.RB ` "\-prompt\ (msh)\ "'
+.RB ` \-noscan '
+.RB ` \-notopcur '
+.fi
+
+.SH CONTEXT
 None
-.Bu
-The argument to the `\-prompt' switch must be interpreted as a single
-token by the shell that invokes \fImsh\fR.  Therefore, one must usually
+
+.SH BUGS
+The argument to the
+.B \-prompt
+switch must be interpreted as a single
+token by the shell that invokes
+.BR msh .
+Therefore, one must usually
 place the argument to this switch inside double\-quotes.
-
-There is a strict limit of messages per file in \fIpackf\fR'd format
-which \fImsh\fR can handle.  Usually, this limit is 1000 messages.
-
-Please remember that \fImsh\fR is not the \fICShell\fR, and that a lot of
+.PP
+There is a strict limit of messages per file in
+.BR packf 'd
+format which
+.B msh
+can handle.  Usually, this limit is 1000 messages.
+.PP
+Please remember that
+.B msh
+is not the C\-Shell, and that a lot of
 the nice facilities provided by the latter are not present in the former.
-
-In particular, \fImsh\fR does not understand back\-quoting, so the only
-effective way to use \fIpick\fR inside \fImsh\fR is to always use the
-`\-seq\0select' switch.  Clever users of \fInmh\fR will put the line
-
-.ti +.5i
+.PP
+In particular,
+.B msh
+does not understand back\-quoting, so the only
+effective way to use
+.B pick
+inside
+.B msh
+is to always use the
+.B \-seq
+.I select
+switch.  Clever users of
+.B nmh
+will put the line
+.P
+.RS 5
 pick:\0\-seq\0select\0\-list
-
-in their \&.mh\(ruprofile file so that \fIpick\fR works equally well
-from both the shell and \fImsh\fR.
-
-\fIsortm\fR always uses \*(lq\-noverbose\*(rq and if
-\*(lq\-textfield\ field\*(lq is used, \*(lq\-limit 0\*(rq.
-
-The \fImsh\fR program inherits most (if not all) of the bugs from the
-\fInmh\fR commands it implements.
-.En
+.RE
+.PP
+in their
+.I \&.mh\(ruprofile
+file so that
+.B pick
+works equally well from both the shell and
+.BR msh .
+.PP
+.B sortm
+always uses
+.B \-noverbose
+and if
+.B \-textfield
+.I field
+is used,
+.B \-limit
+.IR 0 .
+.PP
+The
+.B msh
+program inherits most (if not all) of the bugs from the
+.B nmh
+commands it implements.

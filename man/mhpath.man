@@ -2,54 +2,60 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MHPATH %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mhpath \- print full pathnames of nmh messages and folders
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-mhpath
-\%[+folder] \%[msgs]
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B mhpath
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIMhpath\fR expands and sorts the message list `msgs' and writes the full
+.B Mhpath
+expands and sorts the message list `msgs' and writes the full
 pathnames of the messages to the standard output separated by newlines.
-If no `msgs' are specified, \fImhpath\fR outputs the folder pathname
-instead.  If the only argument is `+', your nmh \fIPath\fR is output;
-this can be useful is shell scripts.
-
-Contrasted with other nmh commands, a message argument to \fImhpath\fR
-may often be intended for \fIwriting\fR.  Because of this:
-.sp
-1) the name \*(lqnew\*(rq has been added to \fImhpath\fR's list of
+If no `msgs' are specified,
+.B mhpath
+outputs the folder pathname
+instead.  If the only argument is `+', your
+.B nmh
+\*(lqPath\*(rq is output; this can be useful is shell scripts.
+.PP
+Contrasted with other
+.B nmh
+commands, a message argument to
+.B mhpath
+may often be intended for writing.  Because of this:
+.PP
+.IP 1) 4
+the name \*(lqnew\*(rq has been added to
+.BR mhpath 's
+list of
 reserved message names (the others are \*(lqfirst\*(rq, \*(lqlast\*(rq,
 \*(lqprev\*(rq, \*(lqnext\*(rq, \*(lqcur\*(rq, and \*(lqall\*(rq).
 The new message is equivalent to the message after the last message
 in a folder (and equivalent to 1 in a folder without messages).
 The \*(lqnew\*(rq message may not be used as part of a message range.
-.sp
-2) Within a message list, the following designations may refer to messages
+.IP 2) 4
+Within a message list, the following designations may refer to messages
 that do not exist: a single numeric message name, the single message name
 \*(lqcur\*(rq, and (obviously) the single message name \*(lqnew\*(rq.
 All other message designations must refer to at least one existing
 message.
-.sp
-3) An empty folder is not in itself an error.
-
+.IP 3) 4
+An empty folder is not in itself an error.
+.PP
 Message numbers greater than the highest existing message in a folder
 as part of a range designation are replaced with the next free message
 number.
-
+.PP
 Examples: The current folder foo contains messages 3 5 6.
 Cur is 4.
-
+.PP
+.RS 5
 .nf
-.in +.5i
 % mhpath
 /r/phyl/Mail/foo
 
@@ -89,48 +95,76 @@ no messages in range \*(lq1\-2\*(rq.
 % mhpath 1 2
 /r/phyl/Mail/foo/1
 /r/phyl/Mail/foo/2
-.in -.5i
 .fi
-
-\fImhpath\fR is also useful in back\-quoted operations:
-
+.RE
+.PP
+.B mhpath
+is also useful in back\-quoted operations:
+.PP
+.RS 5
 .nf
-.in +.5i
 % cd `mhpath +inbox`
 
 % echo `mhpath +`
 /r/phyl/Mail
-.in -.5i
 .fi
-.Fi
+.RE
+.PP
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Sa
+.fi
+
+.SH "SEE ALSO"
 folder(1)
-.De
-`+folder' defaults to the current folder
-.Ds
-`msgs' defaults to none
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msgs "' defaults to none"
+.fi
+
+.SH CONTEXT
 None
-.Bu
-Like all nmh commands, \fImhpath\fR expands and sorts \%[msgs].  So don't
+
+.SH BUGS
+Like all
+.B nmh
+commands,
+.B mhpath
+expands and sorts
+.RI [ msgs ].
+So don't
 expect
-
-.ti +.5i
+.PP
+.RS 5
+.nf
 mv `mhpath 501 500`
-
+.fi
+.RE
+.PP
 to move 501 to 500.
 Quite the reverse.  But
-
-.ti +.5i
+.PP
+.RS 5
+.nf
 mv `mhpath 501` `mhpath 500`
-
+.fi
+.RE
+.PP
 will do the trick.
-
+.PP
 Out of range message 0 is treated far more severely than large out of
 range message numbers.
-.En

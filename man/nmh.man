@@ -2,144 +2,202 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
-.if '\*(ZZ'-man' \{\
 .TH NMH %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 nmh \- new MH message system
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-any \fInmh\fR command
-.in -.5i
+any
+.B nmh
+command
 .SH DESCRIPTION
-\fInmh\fR is the name of a powerful message handling system.  Rather than
-being a single comprehensive program, \fInmh\fR consists of a collection
+.B nmh
+is the name of a powerful message handling system.  Rather than
+being a single comprehensive program,
+.B nmh
+consists of a collection
 of fairly simple single-purpose programs to send, retrieve, save,
 and manipulate messages.
-
-Unlike most mail clients in UNIX, \fInmh\fR is not a closed system which
+.PP
+Unlike most mail clients in UNIX,
+.B nmh
+is not a closed system which
 must be explicitly run, then exited when you wish to return to the shell.
-You may freely intersperse \fInmh\fR commands with other shell commands,
+You may freely intersperse
+.B nmh
+commands with other shell commands,
 allowing you to read and answer your mail while you have (for example)
 a compilation running, or search for a file or run programs as needed
 to find the answer to someone's question before answering their mail.
-
+.PP
 The rest of this manual entry is a quick tutorial which will teach you
-the basics of \fInmh\fR.  You should read the manual entries for the
+the basics of
+.BR nmh .
+You should read the manual entries for the
 individual programs for complete documentation.
-
-To get started using \fInmh\fR, put the directory \fB%bindir%\fR on your
-\fB$PATH\fR.  This is best done in one of the files: \fB\&.profile\fR,
-\fB\&.login\fR, or \fB\&.cshrc\fR in your home directory.  (Check the
+.PP
+To get started using
+.BR nmh ,
+put the directory
+.I %bindir%
+on your
+.BR $PATH .
+This is best done in one of the files:
+.IR \&.profile ,
+.IR \&.login ,
+or
+.I \&.cshrc
+in your home directory.  (Check the
 manual entry for the shell you use, in case you don't know how to
-do this.)  Run the \fIinc\fR command.  If you've never used \fInmh\fR
+do this.)  Run the
+.B inc
+command.  If you've never used
+.B nmh
 before, it will create the necessary default files and directories after
 asking you if you wish it to do so.
-
-\fIinc\fR moves mail from your system maildrop into your \fInmh\fR
+.PP
+.B inc
+moves mail from your system maildrop into your
+.B nmh
 `+inbox' folder, breaking it up into separate files and converting it
-to \fInmh\fR format as it goes.  It prints one line for each message it
+to
+.B nmh
+format as it goes.  It prints one line for each message it
 processes, containing the from field, the subject field and as much of
 the first line of the message as will fit.  It leaves the first message
-it processes as your current message.  You'll need to run \fIinc\fR each
-time you wish to incorporate new mail into your \fInmh\fR file.
-
-\fIscan\fR prints a list of the messages in your current folder.
-
-The commands: \fIshow\fR, \fInext\fR, and \fIprev\fR are used to read
-specific messages from the current folder.  \fIshow\fR displays the
+it processes as your current message.  You'll need to run
+.B inc
+each
+time you wish to incorporate new mail into your
+.B nmh
+file.
+.PP
+.B scan
+.B prints a list of the messages in your current folder.
+.PP
+The commands:
+.BR show ,
+.BR next ,
+and
+.B prev
+are used to read
+specific messages from the current folder.
+.B show
+displays the
 current message, or a specific message, which may be specified by its
-number, which you pass as an argument to \fIshow\fR.  \fInext\fR and
-\fIprev\fR display, respectively, the message numerically after or before
+number, which you pass as an argument to
+.BR show .
+.B next
+and
+.B prev
+display, respectively, the message numerically after or before
 the current message.  In all cases, the message displayed becomes the
-current message.  If there is no current message, \fIshow\fR may be
-called with an argument, or \fInext\fR may be used to advance to the
+current message.  If there is no current message,
+.B show
+may be
+called with an argument, or
+.B next
+may be used to advance to the
 first message.
-
-\fIrmm\fR (remove message) deletes the current message.  It may be called
+.PP
+.B rmm
+(remove message) deletes the current message.  It may be called
 with message numbers passed as arguments, to delete specific messages.
-
-\fIrepl\fR is used to respond to the current message (by default).
+.PP
+.B repl
+is used to respond to the current message (by default).
 It places you in the editor with a prototype response form.  While you're
 in the editor, you may peruse the item you're responding to by reading
-the file \fB@\fR.  After completing your response, type \fBl\fR to list
-(review) it, or \fBs\fR to send it.
-
-\fIcomp\fR allows you to compose a message by putting you in the editor
+the file
+.IR @ .
+After completing your response, type
+.B l
+to
+.B list
+(review) it, or
+.B s
+to
+.B send
+it.
+.PP
+.B comp
+allows you to compose a message by putting you in the editor
 on a prototype message form, and then lets you send it.
-
-All the \fInmh\fR commands may be run with the single argument: `\-help',
+.PP
+All the
+.B nmh
+commands may be run with the single argument:
+.BR \-help ,
 which causes them to print a list of the arguments they may be invoked
 with and then exit.
-
-All the \fInmh\fR commands may be run with the single argument:
-`\-version', which cause them to print the version number of the \fInmh\fR
+.PP
+All the
+.B nmh
+commands may be run with the single argument:
+.BR \-version ,
+which cause them to print the version number of the
+.B nmh
 distribution, and then exit.
-
-Commands which take a message number as an argument (\fIscan\fR,
-\fIshow\fR, \fIrepl\fR, ...)  also take one of the words: \fIfirst\fR,
-\fIprev\fR, \fIcur\fR, \fInext\fR, or \fIlast\fR to indicate
+.PP
+Commands which take a message number as an argument (
+.BR scan ,
+.BR show ,
+.BR repl ,
+\&...)  also take one of the words: \*(lqfirst\*(rq,
+\*(lqprev\*(rq, \*(lqcur\*(rq, \*(lqnext\*(rq, or \*(lqlast\*(rq to indicate
 (respectively) the first, previous, current, next, or last message in
 the current folder (assuming they are defined).
 
-Commands which take a range of message numbers (\fIrmm\fR, \fIscan\fR,
-\fIshow\fR, ...)  also take any of the abbreviations:
-.sp
-.in +5
-.ti -3
-.I <num1>-<num2>
-- Indicates all messages in the range <num1> to <num2>, inclusive. The range
-.B must
-be nonempty.
-.sp
-.ti -3
-.I <num>:+N
-.ti -3
-.I <num>:-N
-- Up to
+Commands which take a range of message numbers (
+.BR rmm ,
+.BR scan ,
+.BR show ,
+\&...)  also take any of the abbreviations:
+.PP
+.RS 5
+.IP \fI<num1>\fR\-\fI<num2>\fR 15
+Indicates all messages in the range <num1> to <num2>, inclusive. The range must be nonempty.
+.IP \fI<num>\fR:+\fIN\fR 15
+.IP \fI<num>\fR:\-\fIN\fR 15
+Up to
 .I N
 messages beginning with (or ending with) message
-.I num.
+.IR num .
 .I Num
 may be any of the pre-defined symbols:
-.I first, prev, cur, next
+.IR first ,
+.IR prev ,
+.IR cur ,
+.I next
 or
-.I last.
-.sp
-.ti -3
-.I first:N
-.ti -3
-.I prev:N
-.ti -3
-.I next:N
-.ti -3
-.I last:N
-- The first, previous, next or last
-.I N
+.IR last .
+.IP first:\fIN\fR 15
+.IP prev:\fIN\fR 15
+.IP next:\fIN\fR 15
+.IP last:\fIN\fR 15
+The first, previous, next or last
 messages, if they exist.
-.in -5
-
+.RE
+.PP
 There are many other possibilities such as creating multiple folders
 for different topics, and automatically refiling messages according to
 subject, source, destination, or content.  These are beyond the scope
 of this manual entry.
-
-Following is a list of all the \fInmh\fR commands:
-.\}
-
+,PP
+Following is a list of all the
+.B nmh
+commands:
+.PP
+.RS 5
+.fc ^ ~
 .nf
-.in .5i
 .ta 1.5i
 ^ali (1)~^\- list mail aliases
 ^anno (1)~^\- annotate messages
 ^burst (1)~^\- explode digests into messages
 ^comp (1)~^\- compose a message 
 ^dist (1)~^\- redistribute a message to additional addresses
-^flist (1)~^\- list folders that contain messages in given sequence(s)
-^flists (1)~^\- list all folders that contain messages in given sequence(s)
+^flist (1)~^\- list folders with messages in given sequence(s)
+^flists (1)~^\- list all folders with messages in given sequence(s)
 ^folder (1)~^\- set/list current folder/message
 ^folders (1)~^\- list all folders
 ^forw (1)~^\- forward messages
@@ -177,59 +235,62 @@ Following is a list of all the \fInmh\fR commands:
 ^sortm (1)~^\- sort messages
 ^whatnow (1)~^\- prompting front\-end for send
 ^whom (1)~^\- report to whom a message would go
-.if '\*(ZZ'-man' \{\
-.sp 1
+.sp
 ^mh\-alias (5)~^\- alias file for nmh message system
 ^mh\-draft (5)~^\- draft folder facility
 ^mh\-format (5)~^\- format file for nmh message system
 ^mh\-mail (5)~^\- message format for nmh message system
 ^mh\-profile (5)~^\- user customization for nmh message system
 ^mh\-sequence (5)~^\- sequence specification for nmh message system
-.sp 1
+^mh\-tailor (5)~^\- mail transport customization for nmh message system
+.sp
 ^ap (8)~^\- parse addresses 822\-style
 ^conflict (8)~^\- search for alias/password conflicts
 ^dp (8)~^\- parse dates 822\-style
 ^fmtdump (8)~^\- decode \fInmh\fP format files
 ^install\-mh (8)~^\- initialize the nmh environment
 ^post (8)~^\- deliver a message
-.\}
 .fi
-.re
+.RE
 
-.if '\*(ZZ'-man' \{\
-.Fi
-^%bindir%~^directory containing \fInmh\fR commands
-^%etcdir%~^directory containing \fInmh\fR format files
-^%libdir%~^\fInmh\fR library commands
-.Bu
-If problems are encountered with an \fInmh\fR program, the problems should
-be reported to the local maintainers of \fInmh\fR.  When doing this, the
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+^%bindir%~^contains \fInmh\fR commands
+^%etcdir%~^contains \fInmh\fR format files
+^%libdir%~^contains \fInmh\fR library commands
+^$HOME/\&.mh\(ruprofile~^The user profile
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
+^Path:~^To determine the user's nmh directory
+.fi
+
+.SH BUGS
+If problems are encountered with an
+.B nmh
+program, the problems should
+be reported to the local maintainers of
+.BR nmh .
+When doing this, the
 name of the program should be reported, along with the version information
 for the program.
 .br
-To find out what version of an \fInmh\fR program is being run, invoke
-the program with the `\-version' switch.  This information includes
-the version of \fInmh\fR, the host it was generated on, and the date the
+To find out what version of an
+.B nmh
+program is being run, invoke
+the program with the
+.B \-version
+switch.  This information includes
+the version of
+.BR nmh ,
+the host it was generated on, and the date the
 program was loaded.
-
-Send bug reports and suggestions to \fBnmh-workers@mhost.com\fR.
-.Fi
-^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
-^Path:~^To determine the user's nmh directory
-.\" .Ps
-.\" for each additional profile entry
-.\" .Sa
-.\" the see\-also's go here
-.\" .De
-.\" the first default goes here
-.\" .Ds
-.\" for each additional default
-.\" .Co
-.\" context changes go here
-.\" You can also have
-.\" .Hh \- the helpful hints section
-.\" .Hi \- the history section
-.\" .Bu \- the bugs section
-.En
-.\}
+.PP
+Send bug reports and suggestions to
+.IR nmh-workers@mhost.com .

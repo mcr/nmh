@@ -2,165 +2,249 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH POST %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 post \- deliver a message
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-%libdir%/post 
-\%[\-alias\ aliasfile]
-.br
-\%[\-filter\ filterfile] \%[\-nofilter]
-\%[\-format] \%[\-noformat]
-.br
-\%[\-mime] \%[\-nomime]
-\%[\-msgid] \%[\-nomsgid]
-\%[\-verbose]
-.br
-\%[\-noverbose]
-\%[\-watch] \%[\-nowatch]
-\%[\-width\ columns]
-\%[\-sasl] \%[\-saslmech\ mechanism] \%[\-user\ username]
-.br
-file
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B %libdir%/post 
+.RB [ \-alias
+.IR aliasfile ]
+.RB [ \-filter
+.IR filterfile ]
+.RB [ \-nofilter ]
+.RB [ \-format " | " \-noformat ]
+.RB [ \-mime " | " \-nomime ]
+.RB [ \-msgid " | " \-nomsgid ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-watch " | " \-nowatch ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-sasl ]
+.RB [ \-saslmech
+.IR mechanism ]
+.RB [ \-user
+.IR username ]
+.I file
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIPost\fR is the default program called by \fIsend\fR\0(1) to deliver
-the message in \fIfile\fR to local and remote users.  In fact, most of
-the features attributed to \fIsend\fR in its manual page are performed by
-\fIpost\fR, with \fIsend\fR acting as a relatively simple preprocessor.
-Thus, it is \fIpost\fR which parses the various header fields, appends
-From: and Date: lines, and interacts with the mail transport system.
-\fIPost\fR will not normally be called directly by the user.
-
-\fIPost\fR searches the \*(lqTo:\*(rq, \*(lqcc:\*(rq, \*(lqBcc:\*(rq,
+.B Post
+is the default program called by
+.B send
+to deliver
+the message in
+.I file
+to local and remote users.  In fact, most of
+the features attributed to
+.B send
+in its manual page are performed by
+.BR post ,
+with
+.B send
+acting as a relatively simple preprocessor.
+Thus, it is
+.B post
+which parses the various header fields, appends
+\*(lqFrom:\*(rq and \*(lqDate:\*(rq lines, and interacts with the mail transport system.
+.B Post
+will not normally be called directly by the user.
+.PP
+.B Post
+searches the \*(lqTo:\*(rq, \*(lqcc:\*(rq, \*(lqBcc:\*(rq,
 \*(lqFcc:\*(rq, and \*(lqResent\-xxx:\*(rq header lines of the specified
 message for destination addresses, checks these addresses for validity,
 and formats them so as to conform to ARPAnet Internet Message Format
-protocol, unless the `\-noformat' flag is set.  This will normally cause
+protocol, unless the
+.B \-noformat
+flag is set.  This will normally cause
 \*(lq@\fIlocal\-site\fR\*(rq to be appended to each local destination
-address, as well as any local return addresses.  The `\-width\ columns'
+address, as well as any local return addresses.  The
+.B \-width
+.I columns
 switch can be used to indicate the preferred length of the header
 components that contain addresses.
-
+.PP
 If a \*(lqBcc:\*(rq field is encountered, its addresses will be used for
 delivery, and the \*(lqBcc:\*(rq field will be removed from the message
 sent to sighted recipients.  The blind recipients will receive an entirely
 new message with a minimal set of headers.  Included in the body of the
 message will be a copy of the message sent to the sighted recipients.
-If `\-filter\ filterfile' is specified, then this copy is filtered
-(re\-formatted) by \fImhl\fR prior to being sent to the blind recipients.
-Alternately, if the `\-mime' switch is given, then \fIpost\fR will use
+If
+.B \-filter
+.I filterfile
+is specified, then this copy is filtered
+(re\-formatted) by
+.B mhl
+prior to being sent to the blind recipients.
+Alternately, if the
+.B \-mime
+switch is given, then
+.B post
+will use
 the MIME rules for encapsulation.
-
-The `\-alias\ aliasfile' switch can be used to specify a file that post
+.PP
+The
+.B \-alias
+.I aliasfile
+switch can be used to specify a file that post
 should take aliases from.  More than one file can be specified, each
-being preceded with `\-alias'.  In any event, the primary alias file is
+being preceded with
+.BR \-alias .
+In any event, the primary alias file is
 read first.
-
-The `\-msgid' switch indicates that a \*(lqMessage\-ID:\*(rq or
+.PP
+The
+.B \-msgid
+switch indicates that a \*(lqMessage\-ID:\*(rq or
 \*(lqResent\-Message\-ID:\*(rq field should be added to the header.
-
-The `\-verbose' switch indicates that the user should be informed of
+.PP
+The
+.B \-verbose
+switch indicates that the user should be informed of
 each step of the posting/filing process.
-
-The `\-watch' switch indicates that the user would like to watch the
+.PP
+The
+.B \-watch
+switch indicates that the user would like to watch the
 transport system's handling of the message (e.g., local and \*(lqfast\*(rq
 delivery).
-
-Under normal circumstances, \fIpost\fR constructs the "From:" line of the
+.PP
+Under normal circumstances,
+.B post
+constructs the \*(lqFrom:\*(rq line of the
 message from the user's login name, the full name from the GECOS field of the
-passwd file, and the fully\-qualified name of the local machine (or the value of
-"localname" in mts.conf, if set).  An example is "From: Dan Harkless
-<dan@machine.company.com>".  There are four ways to override these values,
-however.  Note that they apply equally to "Resent\-From:" lines in messages sent
-with \fIdist\fR.
-
-The first way is GECOS\-based username masquerading.  If the "masquerade:" line
-in mts.conf contains "mmailid", this processing is activated.  If a user's GECOS
-field in the passwd file is of the form "Full Name <fakename>" then "fakename"
-will be used in place of the real username.  For instance, a GECOS field of "Dan
-Harkless <Dan.Harkless>" would result in "From: Dan Harkless
-<Dan.Harkless@machine.company.com>".  Naturally if you were doing something like
+passwd file, and the fully\-qualified name of the local machine (or the
+value of
+\*(lqlocalname\*(rq in
+.IR mts.conf ,
+if set).  An example is \*(lqFrom: Dan Harkless
+<dan@machine.company.com>\*(rq.  There are four ways to override these values,
+however.  Note that they apply equally to \*(lqResent\-From:\*(rq lines in messages sent
+with
+.BR dist .
+.PP
+The first way is GECOS\-based username masquerading.  If the \*(lqmasquerade:\*(rq line
+in
+.I mts.conf
+contains \*(lqmmailid\*(rq, this processing is activated.  If a user's GECOS
+field in the passwd file is of the form \*(lqFull Name <fakename>\*(rq then \*(lqfakename\*(rq
+will be used in place of the real username.  For instance, a GECOS field of \*(lqDan
+Harkless <Dan.Harkless>\*(rq would result in \*(lqFrom: Dan Harkless
+<Dan.Harkless@machine.company.com>\*(rq.  Naturally if you were doing something like
 this you'd want to set up an MTA alias (e.g. in /etc/aliases) from, for
-instance, "Dan.Harkless" to "dan".
-
-The second way to override default construction of "From:" is to set the
-\fB$SIGNATURE\fR environment variable.  This variable overrides the full name
+instance, \*(lqDan.Harkless\*(rq to \*(lqdan\*(rq.
+.PP
+The second way to override default construction of \*(lqFrom:\*(rq is to set the
+.B $SIGNATURE
+environment variable.  This variable overrides the full name
 from the GECOS field, even if GECOS\-based masquerading is being done.  This
-processing is always active, and does not need to be enabled from mts.conf.
-
-The third way is controlled by the "user_extension" value of "masquerade:" line
-of mts.conf.  When that's turned on, setting the \fB$USERNAME_EXTENSION\fR
+processing is always active, and does not need to be enabled from
+.IR mts.conf .
+.PP
+The third way is controlled by the \*(lquser_extension\*(rq value of \*(lqmasquerade:\*(rq line
+of
+.IR mts.conf .
+When that's turned on, setting the
+.B $USERNAME_EXTENSION
 environment variable will result in its value being appended the user's login
-name.  For instance, if I set \fB$USERNAME_EXTENSION\fR to "+www", my "From:"
-line will contain "Dan Harkless <dan+www@machine.company.com>" (or
-"Dan.Harkless+www" if I'm using mmailid masquerading as well).  Recent versions
-of sendmail automatically deliver all mail sent to \fIuser\fR+\fIstring\fR to
-\fIuser\fR.  qmail has a similar feature which uses '\-' as the delimiter by
+name.  For instance, if I set
+.B $USERNAME_EXTENSION
+to \*(lq+www\*(rq, my \*(lqFrom:\*(rq
+line will contain \*(lqDan Harkless <dan+www@machine.company.com>\*(rq (or
+\*(lqDan.Harkless+www\*(rq if I'm using mmailid masquerading as well).  Recent versions
+of
+.B sendmail
+automatically deliver all mail sent to
+.IR user + string
+to
+.IR user .
+.B qmail
+has a similar feature which uses '\-' as the delimiter by
 default, but can use other characters as well.
-
-The fourth method of address masquerading is to specify a "From:" line manually
+.PP
+The fourth method of address masquerading is to specify a \*(lqFrom:\*(rq line manually
 in the message draft.  It will be used as provided (after alias substitution),
-but normally, to discourage email forgery, the user's \fIreal\fR address will be
-used in the SMTP envelope "From:" and in a "Sender:" header.  However, if the
-"masquerade:" line of mts.conf contains "draft_from", the SMTP envelope "From:"
-will use the address given in the draft "From:", and there will be no "Sender:"
-header.  This is useful in pretending to send mail "directly" from a remote POP3
+but normally, to discourage email forgery, the user's
+.B real
+address will be
+used in the SMTP envelope \*(lqFrom:\*(rq and in a \*(lqSender:\*(rq header.  However, if the
+\*(lqmasquerade:\*(rq line of
+.I mts.conf
+contains \*(lqdraft_from\*(rq, the SMTP envelope \*(lqFrom:\*(rq
+will use the address given in the draft \*(lqFrom:\*(rq, and there will be no \*(lqSender:\*(rq
+header.  This is useful in pretending to send mail \*(lqdirectly\*(rq from a remote POP3
 account, or when remote email robots give improper precedence to the envelope
-"From:".  Note that your MTA may still reveal your real identity (e.g.
-sendmail's "X\-Authentication\-Warning:" header). 
-
-If nmh has been compiled with SASL support, the `\-sasl' switch will enable
+\*(lqFrom:\*(rq.  Note that your MTA may still reveal your real identity (e.g.
+.BR sendmail 's
+\*(lqX\-Authentication\-Warning:\*(rq header). 
+.PP
+If
+.B nmh
+has been compiled with SASL support, the
+.B \-sasl
+switch will enable
 the use of SASL authentication with the SMTP MTA.  Depending on the
 SASL mechanism used, this may require an additional password prompt from the
-user (but the \*(lq.netrc\*(rq file can be used to store this password).
-`\-saslmech' switch can be used to select a particular SASL mechanism,
-and the the `\-user' switch can be used to select a authorization userid
+user (but the
+.RI \*(lq \&.netrc \*(rq
+file can be used to store this password).
+.B \-saslmech
+switch can be used to select a particular SASL mechanism,
+and the the
+.B \-user
+switch can be used to select a authorization userid
 to provide to SASL other than the default.
-
-Currently SASL security layers are not supported for SMTP.  nmh's SMTP SASL code
+.PP
+Currently SASL security layers are not supported for SMTP.
+.BR nmh 's
+SMTP SASL code
 will always negotiate an unencrypted connection.  This means that while the SMTP
 authentication can be encrypted, the subsequent data stream can not.  This is in
-contrast to nmh's POP3 SASL support, where encryption is supported for both the
+contrast to
+.BR nmh 's
+POP3 SASL support, where encryption is supported for both the
 authentication and the data stream.
 
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^%etcdir%/mts.conf~^nmh mts configuration file
 ^%etcdir%/MailAliases~^global nmh alias file
 ^%bindir%/refile~^Program to process Fcc:s
 ^%libdir%/mhl~^Program to process Bcc:s
-.Pr
-\fIpost\fR does \fBNOT\fR consult the user's \&.mh\(ruprofile
-.Sa
-\fIStandard for the Format of ARPA Internet Text Messages\fR (RFC\-822),
-.br
-mhmail(1), send(1), mh\-mail(5), mh\-alias(5), mh\-tailor(5)
-.De
-`\-alias %etcdir%/MailAliases'
-.Ds
-`\-format'
-.Ds
-`\-nomime'
-.Ds
-`\-nomsgid'
-.Ds
-`\-noverbose'
-.Ds
-`\-nowatch'
-.Ds
-`\-width\ 72'
-.Ds
-`\-nofilter'
-.Co
+.fi
+
+.SH "PROFILE COMPONENTS"
+.B post
+does
+.B NOT
+consult the user's
+.I \&.mh\(ruprofile
+
+.SH "SEE ALSO"
+mhmail(1), send(1), mh\-mail(5), mh\-alias(5), mh\-tailor(5),
+.I "Standard for the Format of ARPA Internet Text Messages"
+(RFC\-822)
+
+.SH DEFAULTS
+.nf
+.RB ` \-alias "' defaults to %etcdir%/MailAliases"
+.RB ` \-format '
+.RB ` \-nomime '
+.RB ` \-nomsgid '
+.RB ` \-noverbose '
+.RB ` \-nowatch '
+.RB ` "\-width\ 72" '
+.RB ` \-nofilter '
+.fi
+
+.SH CONTEXT
 None
+
 .Bu
 \*(lqReply\-To:\*(rq fields are allowed to have groups in them according
-to the 822 specification, but \fIpost\fR won't let you use them.
-.En
+to the 822 specification, but
+.B post
+won't let you use them.

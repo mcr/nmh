@@ -2,37 +2,42 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MHL %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mhl \- produce formatted listings of nmh messages
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-%libdir%/mhl
-\%[\-bell] \%[\-nobell]
-\%[\-clear]
-.br
-\%[\-noclear]
-\%[\-folder\ +folder]
-\%[\-form\ formfile]
-.br
-\%[\-length\ lines] \%[\-width\ columns] 
-\%[\-moreproc\ program]
-.br
-\%[\-nomoreproc]
-\%[files\ ...]
-\%[\-version]
-\%[\-help] 
-.in -.5i
+.HP 5
+.B %libdir%/mhl
+.RB [ \-bell " | " \-nobell ]
+.RB [ \-clear " | " \-noclear ]
+.RB [ \-folder
+.IR +folder ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-length
+.IR lines ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-moreproc
+.IR program ]
+.RB [ \-nomoreproc ]
+.RI [ files
+.IR \&... ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIMhl\fR is a \fInmh\fR command for filtering and/or displaying text
+.B Mhl
+is an
+.B nmh
+command for filtering and/or displaying text
 messages.  It is the default method of displaying text messages for
-\fInmh\fR (it is the default \fIshowproc\fR).
-
-As with \fImore\fR, each of the messages specified as arguments (or
+.B nmh
+(it is the default
+.IR showproc ).
+.PP
+As with
+.BR more ,
+each of the messages specified as arguments (or
 the standard input) will be output.  If more than one message file is
 specified, the user will be prompted prior to each one, and a <RETURN>
 or <EOT> will begin the output, with <RETURN> clearing the screen (if
@@ -40,90 +45,168 @@ appropriate), and <EOT> (usually CTRL\-D) suppressing the screen clear.
 An <INTERRUPT> (usually CTRL\-C) will abort the current message output,
 prompting for the next message (if there is one), and a <QUIT> (usually
 CTRL-\\) will terminate the program (without core dump).
-
-The `\-bell' option tells \fImhl\fR to ring the terminal's bell at the
-end of each page, while the `\-clear' option tells \fImhl\fR to clear the
-scree at the end of each page (or output a formfeed after each message).
+.PP
+The
+.B \-bell
+option tells
+.B mhl
+to ring the terminal's bell at the
+end of each page, while the
+.B \-clear
+option tells
+.B mhl
+to clear the
+screen at the end of each page (or output a formfeed after each message).
 Both of these switches (and their inverse counterparts) take effect only
-if the profile entry \fImoreproc\fR is defined but empty, and \fImhl\fR
-is outputting to a terminal.  If the \fImoreproc\fR entry is defined and
-non-empty, and \fImhl\fR is outputting to a terminal, then \fImhl\fR will
-cause the \fImoreproc\fR to be placed between the terminal and \fImhl\fR
-and the switches are ignored.  Furthermore, if the `\-clear' switch is
-used and \fImhl's\fR output is directed to a terminal, then \fImhl\fR
-will consult the \fB$TERM\fR and \fB$TERMCAP\fR environment variables
+if the profile entry
+.I moreproc
+is defined but empty, and
+.B mhl
+is outputting to a terminal.  If the
+.I moreproc
+entry is defined and
+non-empty, and
+.B mhl
+is outputting to a terminal, then
+.B mhl
+will
+cause the
+.I moreproc
+to be placed between the terminal and
+.B mhl
+and the switches are ignored.  Furthermore, if the
+.B \-clear
+switch is
+used and \fImhl's\fR output is directed to a terminal, then
+.B mhl
+will consult the
+.B $TERM
+and
+.B $TERMCAP
+environment variables
 to determine the user's terminal type in order to find out how to clear
-the screen.  If the `\-clear' switch is used and \fImhl's\fR output is
-not directed to a terminal (e.g., a pipe or a file), then \fImhl\fR will
+the screen.  If the
+.B \-clear
+switch is used and
+.BR mhl 's
+output is
+not directed to a terminal (e.g., a pipe or a file), then
+.B mhl
+will
 send a formfeed after each message.
-
-To override the default \fImoreproc\fR and the profile entry, use the
-`\-moreproc\ program' switch.  Note that \fImhl\fR will never start a
-\fImoreproc\fR if invoked on a hardcopy terminal.
-
-The `\-length\ length' and `\-width\ width' switches set the screen
-length and width, respectively.  These default to the values indicated
-by \fB$TERMCAP\fR, if appropriate, otherwise they default to 40 and
-80, respectively.
-
-The default format file used by \fImhl\fR is called \*(lqmhl.format\*(rq.
-\fImhl\fR will first search for this file in the user's \fInmh\fR
-directory, and will then search in the directory %etcdir%.  This default
-can be changed by using the `\-form\ formatfile' switch.
-
-Finally, the `\-folder\ +folder' switch sets the \fInmh\fR folder name,
+.PP
+To override the default
+.I moreproc
+and the profile entry, use the
+.B \-moreproc
+.I program
+switch.  Note that
+.B mhl
+will never start a
+.I moreproc
+if invoked on a hardcopy terminal.
+.PP
+The
+.B \-length
+.I length
+and
+.B \-width
+.I width
+switches set the screen
+length and width, respectively.  These default to the values indicated by
+.BR $TERMCAP ,
+if appropriate, otherwise they default to 40 and 80, respectively.
+.PP
+The default format file used by
+.B mhl
+is called
+.RI \*(lq mhl.format \*(rq.
+.B mhl
+will first search for this file in the user's
+.B nmh
+directory, and will then search in the directory
+.IR %etcdir% .
+This default
+can be changed by using the
+.B \-form
+.I formatfile
+switch.
+.PP
+Finally, the
+.B \-folder
+.I +folder
+switch sets the
+.B nmh
+folder name,
 which is used for the \*(lqmessagename:\*(rq field described below.  The
-environment variable \fB$mhfolder\fR is consulted for the default value,
-which \fIshow\fR, \fInext\fR, and \fIprev\fR initialize appropriately.
-
-\fIMhl\fR operates in two phases: 1) read and parse the format file, and
+environment variable
+.B $mhfolder
+is consulted for the default value,
+which
+.BR show ,
+.BR next ,
+and
+.B prev
+initialize appropriately.
+.PP
+.B Mhl
+operates in two phases: 1) read and parse the format file, and
 2) process each message (file).  During phase 1, an internal description
 of the format is produced as a structured list.  In phase 2, this list
 is walked for each message, outputting message information under the
 format constraints from the format file.
-
+.PP
 The format file can contain information controlling screen clearing,
 screen size, wrap\-around control, transparent text, component ordering,
 and component formatting.  Also, a list of components to ignore may be
 specified, and a couple of \*(lqspecial\*(rq components are defined
 to provide added functionality.  Message output will be in the order
 specified by the order in the format file.
-
+.PP
 Each line of a format file has one of the following forms:
-
-     ;comment
-     :cleartext
-     variable[,variable...]
-     component:[variable,...]
-
+.PP
+.RS 5
+.nf
+;comment
+:cleartext
+variable[,variable...]
+component:[variable,...]
+.fi
+.RE
+.PP
+.IP \(bu 4
 A line beginning with a `;' is a comment, and is ignored.
-A line beginning with a `:' is clear text,
-and is output exactly as is.
+.IP \(bu 4
+A line beginning with a `:' is clear text, and is output exactly as is.
+.IP \(bu 4
 A line containing only a `:' produces a blank line in the output.
+.IP \(bu 4
 A line beginning with \*(lqcomponent:\*(rq defines the format for the specified
 component,
-and finally, remaining lines define the global environment.
-
+.IP \(bu 4
+Remaining lines define the global environment.
+.PP
 For example, the line:
-
-.ti +.5i
+.PP
+.RS 5
 width=80,length=40,clearscreen,overflowtext="***",overflowoffset=5
-
+.RE
+.PP
 defines the screen size to be 80 columns by 40 rows, specifies that the
 screen should be cleared prior to each page, that the overflow indentation
 is 5, and that overflow text should be flagged with \*(lq***\*(rq.
-
+.PP
 Following are all of the current variables and their arguments.  If they
 follow a component, they apply only to that component, otherwise, their
 affect is global.  Since the whole format is parsed before any output
 processing, the last global switch setting for a variable applies to
 the whole message if that variable is used in a global context (i.e.,
 bell, clearscreen, width, length).
-
+.PP
+.RS 5
 .nf
-.in +.5i
 .ta \w'noclearscreen  'u +\w'integer/G  'u
-\fIvariable\fR	\fItype\fR	\fIsemantics\fR
+.I variable	type	semantics
 width	integer	screen width or component width
 length	integer	screen length or component length
 offset	integer	positions to indent \*(lqcomponent: \*(rq
@@ -164,83 +247,106 @@ decode	flag	decode text as RFC-2047 encoded
 		header field
 addrfield	flag	field contains addresses
 datefield	flag	field contains dates
-.re
-.in -.5i
 .fi
-
+.RE
+.PP
 To specify the value of integer\-valued and string\-valued variables,
 follow their name with an equals\-sign and the value.  Integer\-valued
 variables are given decimal values, while string\-valued variables
 are given arbitrary text bracketed by double\-quotes.  If a value is
 suffixed by \*(lq/G\*(rq or \*(lq/L\*(rq, then its value is useful in
 a global\-only or local\-only context (respectively).
-
+.PP
 A line of the form:
-
-    ignores=component,...
-
+.PP
+.RS 5
+ignores=component,...
+.RE
+.PP
 specifies a list of components which are never output.
-
+.PP
 The component \*(lqMessageName\*(rq (case\-insensitive) will output the
 actual message name (file name) preceded by the folder name if one is
 specified or found in the environment.  The format is identical to that
-produced by the `\-header' option to \fIshow\fR.
-
+produced by the
+.B \-header
+option to
+.BR show .
+.PP
 The component \*(lqExtras\*(rq will output all of the components of the
 message which were not matched by explicit components, or included in
 the ignore list.  If this component is not specified, an ignore list is
 not needed since all non\-specified components will be ignored.
-
+.PP
 If \*(lqnocomponent\*(rq is NOT specified, then the component name will
 be output as it appears in the format file.
-
+.PP
 The default format file is:
-
+.PP
+.RS 5
 .nf
-.in +.5i
-.ne 15
-.eo
-.so %etcdir%/mhl.format
-.ec
-.in -.5i
+%mhl_format%
 .fi
-
+.RE
+.PP
 The variable \*(lqformatfield\*(rq specifies a format string (see
-\fImh\-format\fR\0(5)).  The flag variables \*(lqaddrfield\*(rq and
-\*(lqdatefield\*(rq (which are mutually exclusive), tell \fImhl\fR
+.BR mh\-format (5)).
+The flag variables \*(lqaddrfield\*(rq and
+\*(lqdatefield\*(rq (which are mutually exclusive), tell
+.B mhl
 to interpret the escapes in the format string as either addresses or
 dates, respectively.
-
-By default, \fImhl\fR does not apply any formatting string to fields
-containing address or dates (see \fImh\-mail\fR\0(5) for a list of these
-fields).  Note that this results in faster operation since \fImhl\fR
+.PP
+By default,
+.B mhl
+does not apply any formatting string to fields
+containing address or dates (see
+.BR mh\-mail (5)
+for a list of these
+fields).  Note that this results in faster operation since
+.B mhl
 must parse both addresses and dates in order to apply a format string
-to them.  If desired, \fImhl\fR can be given a default format string for
+to them.  If desired,
+.B mhl
+can be given a default format string for
 either address or date fields (but not both).  To do this, on a global
 line specify: either the flag addrfield or datefield, along with the
 appropriate formatfield variable string.
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^%etcdir%/mhl.format~^The message template
 ^or <mh\-dir>/mhl.format~^Rather than the standard template
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^moreproc:~^Program to use as interactive front\-end
-.Sa
+.fi
+
+.SH "SEE ALSO"
 show(1), ap(8), dp(8)
-.De
-`\-bell'
-.Ds
-`\-noclear'
-.Ds
-`\-length 40'
-.Ds
-`\-width 80'
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` \-bell '
+.RB ` \-noclear '
+.RB ` \-length 40 '
+.RB ` \-width 80 '
+.fi
+
+.SH CONTEXT
 None
-.Bu
+
+.SH BUGS
 There should be some way to pass `bell' and `clear' information to the 
 front\-end.
-
+.PP
 The \*(lqnonewline\*(rq option interacts badly with \*(lqcompress\*(rq
 and \*(lqsplit\*(rq.
-.En

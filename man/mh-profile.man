@@ -874,6 +874,7 @@ for use by
 ^<mh\-dir>/context~^The user context
 ^or $MHCONTEXT~^Rather than the standard context
 ^<folder>/\&.mh\(rusequences~^Public sequences for <folder>
+.fi
 
 .SH "SEE ALSO"
 nmh(1), environ(5), mh-sequence(5)

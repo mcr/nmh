@@ -15,7 +15,7 @@ inc \- incorporate new mail
 .RB [ \-changecur " | " \-nochangecur ]
 .RB [ \-form
 .IR formfile ]
-..RB [ \-format
+.RB [ \-format
 .IR string ]
 .RB [ \-file
 .IR name ]

@@ -419,6 +419,7 @@ your site, and set the appropriate values.
 .nf
 .ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^%etcdir%/mts.conf~^nmh mts configuration file
+.fi
 
 .SH "PROFILE COMPONENTS"
 None

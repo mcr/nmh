@@ -7,7 +7,7 @@
 mh-sequence \- sequence specification for nmh message system
 .SH SYNOPSIS
 most
-/B nmh
+.B nmh
 commands
 .SH DESCRIPTION
 A sequence (or sequence set) is a symbolic name representing a

@@ -2,70 +2,114 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MHMAIL %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mhmail \- send or read mail
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-mhmail
-\%[
-addrs\ ... 
-\%[\-body\ text]
-\%[\-cc\ addrs\ ...]
-.br
-\%[\-from\ addr]
-\%[\-subject subject]]
-.br
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B mhmail
+.RI [ addrs
+\&...]
+.RB [ \-body
+.IR text ]
+.RB [ \-cc
+.I addrs
+...]
+.RB [ \-from
+.IR addr ]
+.RB [ \-subject
+.IR subject ]
+.RB [ \-version ]
+.RB [ \-help ] 
 .SH DESCRIPTION
-\fImhmail\fR is intended as a replacement for the standard Berkeley
-mail program (\fImail\fR(1) or \fImailx\fR(1)), which is compatible
-with \fInmh\fR.  This program is intended for the use of programs such
-as \fIcron\fR(1), which expect to send mail automatically to various
-users.  It is also used by various \fInmh\fR commands to mail various
-error notifications.  Although \fImhmail\fR can be used interactively,
-it is recommended that \fIcomp\fR(1) and \fIsend\fR(1) be used instead
-to send messages.
-
-When invoked without arguments, it simply invokes \fIinc\fR(1) to
-incorporate new messages from the user's maildrop.  When one or more users
+.B mhmail
+is intended as a replacement for the standard Berkeley
+mail program
+.RB ( mail
+or
+.BR mailx ),
+which is compatible with
+.BR nmh .
+This program is intended for the use of programs such as
+.BR cron ,
+which expect to send mail automatically to various
+users.  It is also used by various
+.B nmh
+commands to mail various
+error notifications.  Although
+.B mhmail
+can be used interactively,
+it is recommended that
+.B comp
+and
+.B send
+be used instead to send messages.
+.PP
+When invoked without arguments, it simply invokes
+.B inc
+to incorporate new messages from the user's maildrop.  When one or more users
 is specified, a message is read from the standard input and spooled to
-a temporary file.  \fImhmail\fR then invokes \fIpost\fR(8) with the
+a temporary file.
+.B mhmail
+then invokes
+.B post
+with the
 name of the temporary file as its argument to deliver the message to
 the specified user.
-
-The `\-subject\ subject' switch can be used to specify the
+.PP
+The
+.B \-subject
+.I subject
+switch can be used to specify the
 \*(lqSubject:\*(rq field of the message.
-
-By default, \fImhmail\fR will read the message to be sent from the
+.PP
+By default,
+.B mhmail
+will read the message to be sent from the
 standard input.  You can specify the text of the message at the command
-line with the `\-body\ text' switch.  If the standard input has zero
-length, \fImhmail\fR will not send the message.  You can use the switch
-`\-body\ ""' to force an empty message.
-
+line with the
+.B \-body
+.I text
+switch.  If the standard input has zero
+length,
+.B mhmail
+will not send the message.  You can use the switch
+.B \-body
+\*(lr\*(rq to force an empty message.
+.PP
 Normally, addresses appearing as arguments are put in the \*(lqTo:\*(rq
-field.  If the `\-cc' switch is used, all addresses following it are
+field.  If the
+.B \-cc
+switch is used, all addresses following it are
 placed in the \*(lqcc:\*(rq field.
-
-By using `\-from\ addr', you can specify the \*(lqFrom:\*(rq header of
-the draft.  Naturally, \fIpost\fR will fill\-in the \*(lqSender:\*(rq
+.PP
+By using
+.B \-from
+.IR addr ,
+you can specify the \*(lqFrom:\*(rq header of
+the draft.  Naturally,
+.B post
+will fill\-in the \*(lqSender:\*(rq
 header correctly.
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^%bindir%/inc~^Program to incorporate maildrop into folder
 ^%libdir%/post~^Program to deliver a message
 ^/tmp/mhmail*~^Temporary copy of message
-.Pr
-None
-.Sa
+.fi
+
+.SH "SEE ALSO"
 inc(1), post(8)
-.De
+
+.SH DEFAULTS
 None
-.Co
-If \fIinc\fR is invoked, then \fIinc\fR's context changes occur.
-.En
+
+.SH CONTEXT
+If
+.B inc
+is invoked, then
+.BR inc 's
+context changes occur.

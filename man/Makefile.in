@@ -126,6 +126,8 @@ man.sed: Makefile
 	echo ' s,%forwcomps%,,g' >> $@
 	echo '/%mhl_forward%/r $(top_srcdir)/etc/mhl.forward' >> $@
 	echo ' s,%mhl_forward%,,g' >> $@
+	echo '/%mhl_format%/r $(top_srcdir)/etc/mhl.format' >> $@
+	echo ' s,%mhl_format%,,g' >> $@
 
 # ========= INSTALL TARGETS =========
 

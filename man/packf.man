@@ -2,73 +2,91 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH PACKF %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 packf \- pack messages in nmh folder into a single file
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-packf
-\%[+folder] \%[msgs]
-\%[\-file\ name]
-\%[\-mbox] \%[-mmdf]
-.br
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B packf
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-file
+.IR name ]
+.RB [ \-mbox ]
+.RB [ \-mmdf ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIPackf\fR will pack copies of messages from a folder, into a single
+.B Packf
+will pack copies of messages from a folder, into a single
 file.
-
-If the `-mbox' switch is given (the default), then the messages are
+.PP
+If the
+.B \-mbox
+switch is given (the default), then the messages are
 separated using mbox (uucp) style delimiters.  This is the format used
 by most mail clients (elm, mailx, etc.).
-
-If the `-mmdf' switch is given, then the messages are separated by
+.PP
+If the
+.B \-mmdf
+switch is given, then the messages are separated by
 mmdf style delimiters.  Each message in the file is separated by four
 CTRL\-A's and a newline.
-
+.PP
 You may specify the name of the file in which to use with the
-`\-file\ name' switch.  If you do not specify the name of the file, it
-will default to `msgbox'.
-
+.B \-file
+.I name
+switch.  If you do not specify the name of the file, it
+will default to
+.RI \*(lq msgbox \*(rq.
+.PP
 If the given file name points to an existing file, then the specified
 messages will be appended to the end of the file, otherwise the file
 will be created and the messages appended.
-
-\fIpackf\fR makes an mbox-style delimiter by examining the first line
-of the message.  If the first line is a \*(lqReturn-Path:\*(rq
+.PP
+.B packf
+makes an mbox-style delimiter by examining the first line
+of the message.  If the first line is a \*(lqReturn-Path\*(rq
 field, its address and the current date and time are used.  Otherwise,
-if the first line has an \*(lqX-Envelope-From:\*(rq field, its
+if the first line has an \*(lqX-Envelope-From\*(rq field, its
 contents (which should already be in the correct format) are used. 
 Otherwise, a dummy address and the current date and time are used.
+.PP
+Messages that are packed by
+.B packf
+can be unpacked using
+.BR inc .
 
-Messages that are packed by \fIpackf\fR can be unpacked using
-\fIinc\fR.
-
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^\&.msgbox\&.map~^A binary index of the file
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Ps
 ^Msg\-Protect:~^To set mode when creating a new `file'
-.Sa
+.fi
+
+.SH "SEE ALSO"
 inc(1)
-.De
-`+folder' defaults to the current folder
-.Ds
-`msgs' defaults to all
-.Ds
-`\-mbox'
-.Ds
-`\-file ./msgbox' 
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msgs "' defaults to all"
+.RB ` \-mbox '
+.RB ` "\-file ./msgbox" '
+.fi
+
+.SH CONTEXT
 If a folder is given, it will become the current folder.  The first
 message packed will become the current message.
 .En

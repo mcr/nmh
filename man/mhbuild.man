@@ -602,6 +602,7 @@ line         ::=     "##" text EOL
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^$MHBUILD~^Additional profile entries
 ^%etcdir%/mhn.defaults~^System default MIME profile entries
+.fi
 
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -611,6 +612,7 @@ line         ::=     "##" text EOL
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 ^mhbuild-compose-<type>*~^Template for composing contents
+.fi
 
 .SH "SEE ALSO"
 mhlist(1), mhshow(1), mhstore(1),
@@ -641,6 +643,7 @@ mhlist(1), mhshow(1), mhstore(1),
 .RB ` \-nocheck '
 .RB ` \-noebcdicsafe '
 .RB ` \-noverbose '
+.fi
 
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last

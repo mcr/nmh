@@ -2,70 +2,99 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MHSTORE %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mhstore \- store contents of MIME messages into files
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-mhstore \%[+folder] \%[msgs] \%[\-file file]
-.br
-\%[\-part number]... \%[\-type content]...
-.br
-\%[\-auto] \%[\-noauto]
-\%[\-check] \%[\-nocheck]
-.br
-\%[\-rcache policy] \%[\-wcache policy]
-.br
-\%[\-verbose] \%[\-noverbose]
-\%[\-version]
-\%[\-help]
-.in -.5i
-
+.HP 5
+.B mhstore
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-file
+.IR file ]
+.RB [ \-part
+.IR number ]
+\&...
+.RB [ \-type
+.IR content ]
+\&...
+.RB [ \-auto " | " \-noauto ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-rcache
+.IR policy ]
+.RB [ \-wcache
+.IR policy ]
+.RB [ \-check " | " \-nocheck ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-The \fImhstore\fR command allows you to store the contents of a
+The
+.B mhstore
+command allows you to store the contents of a
 collection of MIME (multi-media) messages into files or other
 messages.
-
-\fImhstore\fR manipulates multi-media messages as specified in
+.PP
+.B mhstore
+manipulates multi-media messages as specified in
 RFC\-2045 thru RFC\-2049.
-
-By default, \fImhstore\fR will store all the parts of each message.
+.PP
+By default,
+.B mhstore
+will store all the parts of each message.
 Each part will be store in a separate file.  The header fields of
-the message are not stored.  By using the `\-part' and `\-type'
-switches, you may limit the scope of \fImhstore\fR to particular
+the message are not stored.  By using the
+.B \-part
+and
+.B \-type
+switches, you may limit the scope of
+.B mhstore
+to particular
 subparts (of a multipart content) and/or particular content types.
-
-The option `\-file\ file' directs \fImhstore\fR to use the specified
+.PP
+The option
+.B \-file
+.I file
+directs
+.B mhstore
+to use the specified
 file as the source message, rather than a message from a folder.
-If you specify this file as \*(lq-\*(rq, then \fImhstore\fR will
+If you specify this file as \*(lq-\*(rq, then
+.B mhstore
+will
 accept the source message on the standard input.  Note that the
 file, or input from standard input should be a validly formatted
-message, just like any other \fInmh\fR message.  It should \fBNOT\fR
+message, just like any other
+.B nmh
+message.  It should
+.B NOT
 be in mail drop format (to convert a file in mail drop format to
-a folder of \fInmh\fR messages, see \fIinc\fR\0(1)).
-
+a folder of
+.B nmh
+messages, see
+.BR inc (1)).
+.PP
 A part specification consists of a series of numbers separated by
 dots.  For example, in a multipart content containing three parts,
 these would be named as 1, 2, and 3, respectively.  If part 2 was
 also a multipart content containing two parts, these would be named
-as 2.1 and 2.2, respectively.  Note that the `\-part' switch is
+as 2.1 and 2.2, respectively.  Note that the
+.B \-part
+switch is
 effective for only messages containing a multipart content.  If a
 message has some other kind of content, or if the part is itself
-another multipart content, the `\-part' switch will not prevent
+another multipart content, the
+.B \-part
+switch will not prevent
 the content from being acted upon.
-
+.PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes
 can be found in RFC\-2046.
-.ne 18
+.PP
 A list of commonly used contents is briefly reproduced here:
-.sp
+.PP
+.RS 5
 .nf
-.in +.5i
 .ta \w'application  'u
 Type	Subtypes
 ----	--------
@@ -76,101 +105,127 @@ application	octet-stream, postscript
 image	jpeg, gif, png
 audio	basic
 video	mpeg
-.re
-.in -.5i
 .fi
-.sp
+.RE
+.PP
 A legal MIME message must contain a subtype specification.
 .PP
 To specify a content, regardless of its subtype, just use the name
 of the content, e.g., \*(lqaudio\*(rq.  To specify a specific
 subtype, separate the two with a slash, e.g., \*(lqaudio/basic\*(rq.
-Note that regardless of the values given to the `\-type' switch,
+Note that regardless of the values given to the
+.B \-type
+switch,
 a multipart content (of any subtype listed above) is always acted
-upon.  Further note that if the `\-type' switch is used, and it is
+upon.  Further note that if the
+.B \-type
+switch is used, and it is
 desirable to act on a message/external-body content, then the
-`\-type' switch must be used twice: once for message/external-body
+.B \-type
+switch must be used twice: once for message/external-body
 and once for the content externally referenced.
-
-.Uh "Checking the Contents"
-The `\-check' switch tells \fImhstore\fR to check each content for
+.SS "Checking the Contents"
+The
+.B \-check
+switch tells
+.B mhstore
+to check each content for
 an integrity checksum.  If a content has such a checksum (specified
-as a Content-MD5 header field), then \fImhstore\fR will attempt to
+as a Content-MD5 header field), then
+.B mhstore
+will attempt to
 verify the integrity of the content.
-
-.Uh "Storing the Contents"
-The \fImhstore\fR will store the contents of the named messages in
+.SS "Storing the Contents"
+The
+.B mhstore
+will store the contents of the named messages in
 \*(lqnative\*(rq (decoded) format.  Two things must be determined:
 the directory to store the content, and the filenames.  Files are
-written in the directory given by the \fBnmh-storage\fR profile
-entry,
-.ne 6
-e.g.,
-.sp
-.in +.5i
+written in the directory given by the \*(lqnmh-storage\*(rq profile
+entry, e.g.,
+.PP
+.RS 5
 nmh-storage: /tmp
-.in -.5i
-.sp
+.RE
+.PP
 If this entry isn't present,
 the current working directory is used.
-
-If the `\-auto' switch is given, then \fImhstore\fR will check if
+.PP
+If the
+.B \-auto
+switch is given, then
+.B mhstore
+will check if
 the message contains information indicating the filename that should
 be used to store the content.  This information should be specified
-as the attribute \*(lqname=filename\*(rq in the Content-Type header
+as the attribute \*(lqname=filename\*(rq in the \*(lqContent-Type\*(rq header
 for the content you are storing.  For security reasons, this filename
 will be ignored if it begins with the character '/', '.', '|', or
 '!', or if it contains the character '%'.  For the sake of security,
 this switch is not the default, and it is recommended that you do
-NOT put the `\-auto' switch in your \&.mh\(ruprofile file.
-
-If the `\-auto' switch is not given (or is being ignored for security
-reasons) then \fImhstore\fR will look in the user's profile for a
+NOT put the
+.B \-auto
+switch in your
+.I \&.mh\(ruprofile
+file.
+.PP
+If the
+.B \-auto
+switch is not given (or is being ignored for security
+reasons) then
+.B mhstore
+will look in the user's profile for a
 \*(lqformatting string\*(rq to determine how the different contents
-should be stored.  First, \fImhstore\fR will look for an entry of
+should be stored.  First,
+.B mhstore
+will look for an entry of
 the form:
-.sp
-.in +.5i
+.PP
+.RS 5
 mhstore-store-<type>/<subtype>
-.in -.5i
-.sp
-to determine the formatting string.  If this isn't found, \fImhstore\fR
+.RE
+.PP
+to determine the formatting string.  If this isn't found,
+.B mhstore
 will look for an entry of the form:
-.sp
-.in +.5i
+.PP
+.RS 5
 mhstore-store-<type>
-.in -.5i
-.sp
+.RE
+.PP
 to determine the formatting string.
-
+.PP
 If the formatting string starts with a \*(lq+\*(rq character, then
 content is stored in the named folder.  A formatting string consisting
 solely of a \*(lq+\*(rq character is interpreted to be the current
 folder.
-
+.PP
 If the formatting string consists solely of a \*(lq-\*(rq character,
 then the content is sent to the standard output.
-
+.PP
 If the formatting string starts with a '|', then the display string
-will represent a command for \fImhstore\fR to execute which should
+will represent a command for
+.B mhstore
+to execute which should
 ultimately store the content.  The content will be passed to the
 standard input of the command.  Before the command is executed,
-\fImhstore\fR will change to the appropriate directory, and any
+.B mhstore
+will change to the appropriate directory, and any
 escapes (given below) in the display string will be expanded.
-
+.PP
 Otherwise the formatting string will represent a pathname in which
 to store the content.  If the formatting string starts with a '/',
 then the content will be stored in the full path given, else the
-file name will be relative to the value of \fBnmh-storage\fR or
+file name will be relative to the value of \*(lqnmh-storage\*(rq or
 the current working directory.  Any escapes (given below) will be
 expanded, except for the a-escape.
-
+.PP
 A command or pathname formatting string may contain the following
 escapes.  If the content isn't part of a multipart (of any subtype
 listed above) content, the p-escapes are ignored.
-.sp
+.PP
+.RS 5
 .nf
-.in +.5i
 .ta \w'%P  'u
 %a	Parameters from Content-type  (only valid with command)
 %m	Insert message number
@@ -179,47 +234,56 @@ listed above) content, the p-escapes are ignored.
 %t	Insert content type
 %s	Insert content subtype
 %%	Insert character %
-.re
-.in -.5i
 .fi
-.sp
-If no formatting string is found, \fImhstore\fR will check to see
+.RE
+.PP
+If no formatting string is found,
+.B mhstore
+will check to see
 if the content is application/octet-stream with parameter
-\*(lqtype=tar\*(rq.  If so, \fImhstore\fR will choose an appropriate
+\*(lqtype=tar\*(rq.  If so,
+.B mhstore
+will choose an appropriate
 filename.  If the content is not application/octet-stream, then
-\fImhstore\fR will check to see if the content is a message.  If
-so, \fImhstore\fR will use the value \*(lq+\*(rq.  As a last resort,
-\fImhstore\fR will use the value \*(lq%m%P.%s\*(rq.
-
-.ne 10
+.B mhstore
+will check to see if the content is a message.  If
+so,
+.B mhstore
+will use the value \*(lq+\*(rq.  As a last resort,
+.B mhstore
+will use the value \*(lq%m%P.%s\*(rq.
+.PP
 Example profile entries might be:
-.sp
+.PP
+.RS 5
 .nf
-.in +.5i
 mhstore-store-text: %m%P.txt
 mhstore-store-text: +inbox
 mhstore-store-message/partial: +
 mhstore-store-audio/basic: | raw2audio -e ulaw -s 8000 -c 1 > %m%P.au
 mhstore-store-image/jpeg: %m%P.jpg
 mhstore-store-application/PostScript: %m%P.ps
-.in -.5i
 .fi
-.sp
-.Uh "Reassembling Messages of Type message/partial"
-\fImhstore\fR is also able to reassemble messages that have been
+.RE
+.PP
+.SS "Reassembling Messages of Type message/partial"
+.B mhstore
+is also able to reassemble messages that have been
 split into multiple messages of type \*(lqmessage/partial\*(rq.
-
+.PP
 When asked to store a content containing a partial message,
-\fImhstore\fR will try to locate all of the portions and combine
+.B mhstore
+will try to locate all of the portions and combine
 them accordingly.  The default is to store the combined parts as
 a new message in the current folder, although this can be changed
 using formatting strings as discussed above.  Thus, if someone has
 sent you a message in several parts (such as the output from
-\fIsendfiles\fR), you can easily reassemble them all into a single
+.BR sendfiles ),
+you can easily reassemble them all into a single
 message in the following fashion:
-.sp
+.PP
+.RS 5
 .nf
-.in +.5i
 % mhlist 5-8
  msg part  type/subtype             size description
    5       message/partial           47K part 1 of 4
@@ -234,47 +298,48 @@ reassembling partials 5,6,7,8 to folder inbox as message 9
              (extract with uncompress | tar xvpf -)
              type=tar
              conversions=compress
-.in -.5i
 .fi
-.sp
+.RE
+.PP
 This will store exactly one message, containing the sum of the
 parts.  It doesn't matter whether the partials are specified in
-order, since \fImhstore\fR will sort the partials, so that they
-are combined in the correct order.  But if \fImhstore\fR can not
+order, since
+.B mhstore
+will sort the partials, so that they
+are combined in the correct order.  But if
+.B mhstore
+can not
 locate every partial necessary to reassemble the message, it will
 not store anything.
-
-.Uh "External Access"
+.SS "External Access"
 For contents of type message/external-body,
-.ne 12
 \fImhstore\fR supports these access-types:
-.sp
-.nf
-.in +.5i
+.PP
+.IP \(bu 4
 afs
+.IP \(bu 4
 anon-ftp
+.IP \(bu 4
 ftp
+.IP \(bu 4
 local-file
+.IP \(bu 4
 mail-server
-.in -.5i
-.fi
-.sp
+.PP
 For the \*(lqanon-ftp\*(rq and \*(lqftp\*(rq access types,
-\fImhstore\fR will look for the \fBnmh-access-ftp\fR
-profile entry,
-.ne 6
-e.g.,
-.sp
-.in +.5i
+.B mhstore
+will look for the \*(lqnmh-access-ftp\*(rq
+profile entry, e.g.,
+.PP
+.RS 5
 nmh-access-ftp: myftp.sh
-.in -.5i
-.sp
+.RE
+.PP
 to determine the pathname of a program to perform the FTP retrieval.
-.ne 14
 This program is invoked with these arguments:
-.sp
+.PP
+.RS 5
 .nf
-.in +.5i
 domain name of FTP-site
 username
 password
@@ -282,139 +347,132 @@ remote directory
 remote filename
 local filename
 \*(lqascii\*(rq or \*(lqbinary\*(rq
-.in -.5i
 .fi
-.sp
+.RE
+.PP
 The program should terminate with an exit status of zero if the
 retrieval is successful, and a non-zero exit status otherwise.
-
-If this entry is not provided, then \fImhstore\fR will use a simple
+.PP
+If this entry is not provided, then
+.B mhstore
+will use a simple
 built-in FTP client to perform the retrieval.
-
-.Uh "The Content Cache"
-When \fImhstore\fR encounters an external content containing a
+.SS "The Content Cache"
+When
+.B mhstore
+encounters an external content containing a
 \*(lqContent-ID:\*(rq field, and if the content allows caching, then
-depending on the caching behavior of \fImhstore\fR, the content might be
-read from or written to a cache.
-
-The caching behavior of \fImhstore\fR is controlled with the `\-rcache'
-and `\-wcache' switches, which define the policy for reading from,
+depending on the caching behavior of
+.BR mhstore ,
+the content might be read from or written to a cache.
+.PP
+The caching behavior of
+.B mhstore
+is controlled with the
+.B \-rcache
+and
+.B \-wcache
+switches, which define the policy for reading from,
 and writing to, the cache, respectively.  One of four policies may be
-specified: \*(lqpublic\*(rq, indicating that \fImhstore\fR should make use
+specified: \*(lqpublic\*(rq, indicating that
+.B mhstore
+should make use
 of a publically-accessible content cache; \*(lqprivate\*(rq, indicating
-that \fImhstore\fR should make use of the user's private content cache;
-\*(lqnever\*(rq, indicating that \fImhstore\fR should never make use of
-caching; and, \*(lqask\*(rq, indicating that \fImhstore\fR should ask
-the user.
-
+that
+.B mhstore
+should make use of the user's private content cache;
+\*(lqnever\*(rq, indicating that
+.B mhstore
+should never make use of
+caching; and, \*(lqask\*(rq, indicating that
+.B mhstore
+should ask the user.
+.PP
 There are two directories where contents may be cached: the profile entry
-\fBnmh-cache\fR names a directory containing world-readable contents, and,
-the profile entry \fBnmh-private-cache\fR names a directory containing
+\*(lqnmh-cache\*(rq names a directory containing world-readable contents, and,
+the profile entry \*(lqnmh-private-cache\*(rq names a directory containing
 private contents.  The former should be an absolute (rooted) directory
 name.
-.ne 6
+.PP
 For example,
-.sp
-.in +.5i
+.PP
+.RS 5
 nmh-cache: /tmp
-.in -.5i
-.sp
+.RE
+.PP
 might be used if you didn't care that the cache got wiped after each
 reboot of the system.  The latter is interpreted relative to the user's
-nmh directory, if not rooted,
-.ne 6
-e.g.,
-.sp
-.in +.5i
+nmh directory, if not rooted, e.g.,
+.PP
+.RS 5
 nmh-private-cache: .cache
-.in -.5i
-.sp
+.RE
+.PP
 (which is the default value).
-
-.Uh "User Environment"
-Because the environment in which \fImhstore\fR operates may vary
-for different machines, \fImhstore\fR will look for the environment
-variable \fB$MHSTORE\fR.  If present, this specifies the name of
-an additional user profile which should be read.  Hence, when a
-user logs in on a machine, this environment variable should be set
-to refer to a file containing definitions useful for that machine.
-Finally, \fImhstore\fR will attempt to consult one other additional
-user profile,
-.ne 6
-e.g.,
-.sp
-.in +.5i
+.SS "User Environment"
+Because the display environment in which
+.B mhstore
+operates may vary for
+different machines,
+.B mhstore
+will look for the environment variable
+.BE $MHSTORE .
+If present, this specifies the name of an additional
+user profile which should be read.  Hence, when a user logs in on a
+particular machine, this environment variable should be set to
+refer to a file containing definitions useful for that machine.
+Finally,
+.B mhstore
+will attempt to consult one other additional
+user profile, e.g.,
+.PP
+.RS 5
 %etcdir%/mhn.defaults
-.in -.5i
-.sp
-which is created automatically during nmh installation.
-.Fi
+.RE
+.PP
+which is created automatically during
+.B nmh
+installation.
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^$MHSTORE~^Additional profile entries
 ^%etcdir%/mhn.defaults~^System default MIME profile entries
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Ps
 ^nmh-access-ftp:~^Program to retrieve contents via FTP
-.Ps
 ^nmh-cache~^Public directory to store cached external contents
-.Ps
 ^nmh-private-cache~^Personal directory to store cached external contents
-.Ps
 ^nmh-storage~^Directory to store contents
-.Ps
 ^mhstore-store-<type>*~^Template for storing contents
-.Sa
+.fi
+
+.SH "SEE ALSO"
 mhbuild(1), mhlist(1), mhshow(1), sendfiles(1)
-.br
-RFC\-2045:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part One:
-.br
-   Format of Internet Message Bodies\fR,
-.br
-RFC\-2046:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part Two:
-.br
-   Media Types\fR,
-.br
-RFC\-2047:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part Three:
-.br
-   Message Header Extensions for Non-ASCII Text\fR,
-.br
-RFC\-2048:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part Four:
-.br
-   Registration Procedures\fR,
-.br
-RFC\-2049:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part Five:
-.br
-   Conformance Criteria and Examples\fR.
-.De
-`+folder' defaults to the current folder
-.Ds
-`msgs' defaults to cur
-.Ds
-`\-noauto'
-.Ds
-`\-nocheck'
-.Ds
-`\-rcache ask'
-.Ds
-`\-wcache ask'
-.Ds
-`\-noverbose'
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msgs "' defaults to cur"
+.RB ` \-noauto '
+.RB ` \-nocheck '
+.RB ` \-rcache ask '
+.RB ` \-wcache ask '
+.RB ` \-noverbose '
+
+.SH CONTEXT
 If a folder is given, it will become the current folder.  The last
 message selected will become the current message.
-.Bu
+
+.SH BUGS
 Partial messages contained within a multipart content are not reassembled.
-.En

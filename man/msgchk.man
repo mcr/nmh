@@ -2,127 +2,223 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MSGCHK %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 msgchk \- check for messages
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-msgchk
-\%[\-date] \%[\-nodate]
-\%[\-notify\ all/mail/nomail]
-.br
-\%[\-nonotify\ all/mail/nomail]
-.br
+.HP 5
+.B msgchk
+.RB [ \-date " | " \-nodate ]
+.RB [ \-notify
+all/mail/nomail ]
+.RB [ \-nonotify
+all/mail/nomail ]
 %nmhbeginpop%
-\%[\-host\ hostname]
-\%[\-user\ username]
-\%[\-apop]
-\%[\-noapop]
-\%[\-kpop]
-\%[\-sasl]
-\%[\-saslmech \mechanism]
-\%[\-snoop]
-.br
+.RB [ \-host
+.IR hostname ]
+.RB [ \-user
+.IR username ]
+.RB [ \-apop " | " \-noapop ]
+.RB [ \-kpop ]
+.RB [ \-sasl ]
+.RB [ \-saslmech
+.IR mechanism ]
+.RB [ \-snoop ]
 %nmhendpop%
-\%[users\ ...]
-\%[\-version]
-\%[\-help]
-.in -.5i
+.RI [ users
+... ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-The \fImsgchk\fR program checks all known mail drops for mail waiting
-for you.  For those drops which have mail for you, \fImsgchk\fR will
+The
+.B msgchk
+program checks all known mail drops for mail waiting
+for you.  For those drops which have mail for you,
+.B msgchk
+will
 indicate if it believes that you have seen the mail in question before.
-
-The `\-notify\ type' switch indicates under what circumstances
-\fImsgchk\fR should produce a message.  The default is `\-notify\ all'
-which says that \fImsgchk\fR should always report the status of the
+.PP
+The
+.B \-notify
+.I type
+switch indicates under what circumstances
+.B msgchk
+should produce a message.  The default is
+.B \-notify
+.I all
+which says that
+.B msgchk
+should always report the status of the
 users maildrop.  Other values for `type' include `mail' which says that
-\fImsgchk\fR should report the status of waiting mail; and, `nomail'
-which says that \fImsgchk\fR should report the status of empty maildrops.
-The `\-nonotify\ type' switch has the inverted sense, so
-`\-nonotify\ all' directs \fImsgchk\fR to never report the status of
-maildrops.  This is useful if the user wishes to check \fImsgchk\fR's
-exit status.  A non\-zero exit status indicates that mail was \fBnot\fR
+.B msgchk
+should report the status of waiting mail; and, `nomail'
+which says that
+.B msgchk
+should report the status of empty maildrops.
+The
+.B \-nonotify
+.I type
+switch has the inverted sense, so
+.B \-nonotify
+.I all
+directs
+.B msgchk
+to never report the status of
+maildrops.  This is useful if the user wishes to check
+.BR msgchk 's
+exit status.  A non\-zero exit status indicates that mail was
+.B not
 waiting for at least one of the indicated users.
-
-If \fImsgchk\fR produces output, then the `\-date' switch directs
-\fImsgchk\fR to print out the last date mail was read, if this can
+.PP
+If
+.B msgchk
+produces output, then the
+.B \-date
+switch directs
+.B msgchk
+to print out the last date mail was read, if this can
 be determined.
 %nmhbeginpop%
  
-.Uh "Using POP"
-\fImsgchk\fR will normally check all the local mail drops, but if
+.SS "Using POP"
+.B msgchk
+will normally check all the local mail drops, but if
 the option \*(lqpophost:\*(rq is set in the mts configuration file
-\*(lqmts.conf\*(rq, or if the `\-host\ hostname' switch is given,
-\fImsgchk\fR will query this POP service host as to the status of
+\*(lqmts.conf\*(rq, or if the
+.B \-host
+.I hostname
+switch is given,
+.B msgchk
+will query this POP service host as to the status of
 mail waiting.
-
-The default is for \fImsgchk\fR to assume that your account name
+.PP
+The default is for
+.B msgchk
+to assume that your account name
 on the POP server is the same as your current username.  To specify
 a different username, use the `\-user\ username' switch.
-
+.PP
 When using POP, you will normally need to type the password for
 your account on the POP server, in order to retrieve your messages.
-It is possible to automate this process by creating a \*(lq.netrc\*(rq
+It is possible to automate this process by creating a
+.RI \*(lq \&.netrc \*(rq
 file containing your login account information for this POP server.
 For each POP server, this file should have a line of the following
-form.  Replace the words mypopserver, mylogin, and mypassword with
+form.  Replace the words
+.IR mypopserver ,
+.IR mylogin ,
+and
+.I mypassword
+with
 your own account information.
-
-machine mypopserver login mylogin password mypassword
-
-This \*(lq.netrc\*(rq file should be owned and readable only by
-you.
-
-For debugging purposes, there is also a switch `\-snoop', which will
+.PP
+.RS 5
+machine
+.I mypopserver
+login
+.I mylogin
+password
+.I mypassword
+.RE
+.PP
+This
+.RI \*(lq \&.netrc \*(rq
+file should be owned and readable only by you.
+.PP
+For debugging purposes, there is also a switch
+.BR \-snoop ,
+which will
 allow you to watch the POP transaction take place between you and the
 POP server.
-
-If nmh has been compiled with APOP #defined, the `\-apop' switch will cause
-\fImsgchk\fR to use APOP rather than standard POP3 authentication.  Under APOP,
+.PP
+If
+.B nmh
+has been compiled with APOP support, the
+.B \-apop
+switch will cause
+.B msgchk
+to use APOP rather than standard POP3 authentication.  Under APOP,
 a unique string (generally of the format
-<\fIpid\fR.\fItimestamp\fR@\fIhostname\fR>) is announced by the POP server.
-Rather than `USER \fIuser\fR', `PASS \fIpassword\fR', msgchk sends `APOP
-\fIuser\fR \fIdigest\fR', where digest is the MD5 hash of the unique string
+.RI < pid . timestamp @ hostname >)
+is announced by the POP server.
+Rather than `USER
+.IR user ',
+`PASS
+.IR password ',
+.B msgchk
+sends `APOP
+.I user
+.IR digest ',
+where digest is the MD5 hash of the unique string
 followed by a `secret' shared by client and server, essentially equivalent to
 the user's password (though an APOP-enabled POP3 server could have separate APOP
-and plain POP3 passwords for a single user).  `\-noapop' disables APOP in cases
+and plain POP3 passwords for a single user). 
+.B \-noapop
+disables APOP in cases
 where it'd otherwise be used.
-
-If nmh has been compiled with KPOP #defined, the `\-kpop' switch will allow
-\fImsgchk\fR to use Kerberized POP rather than standard POP3 on a given
-invocation.  If POPSERVICE was also #defined to "kpop", \fImsgchk\fR will be
+.PP
+If
+.B nmh
+has been compiled with KPOP support, the
+.B \-kpop
+switch will allow
+.B msgchk
+to use Kerberized POP rather than standard POP3 on a given
+invocation.  If
+.B POPSERVICE
+was also #defined to "kpop",
+.B msgchk
+will be
 hardwired to always use KPOP.
-
-If nmh has been compiled with SASL support, the `\-sasl' switch will enable
+.PP
+If
+.B nmh
+has been compiled with SASL support, the
+.B \-sasl
+switch will enable
 the use of SASL authentication.  Depending on the SASL mechanism used, this
 may require an additional password prompt from the user (but the
-\*(lq.netrc\*(rq file can be used to store this password).  The
-`\-saslmech' switch can be used to select a particular SASL mechanism.
-
-If SASL authentication is successful, \fIinc\fR will attempt to negotiate
+.RI \*(lq \&.netrc \*(rq
+file can be used to store this password).  The
+.B \-saslmech
+switch can be used to select a particular SASL mechanism.
+.PP
+If SASL authentication is successful,
+.B inc
+will attempt to negotiate
 a security layer for session encryption.  Encrypted traffic is labelled
 with `(encrypted)' and `(decrypted)' when viewing the POP transaction
-with the `\-snoop' switch.
+with the
+.B \-snoop
+switch.
 %nmhendpop%
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mts.conf~^nmh mts configuration file
 ^%mailspool%/$USER~^Location of mail drop
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 None
-.Sa
+.fi
+
+.SH "SEE ALSO"
 inc(1)
-.De
-`user' defaults to the current user
-.Ds
-`\-date'
-.Ds
-`\-notify\ all'
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` user "' defaults to the current user"
+.RB ` \-date '
+.RB ` "\-notify\ all" '
+.fi
+
+.SH CONTEXT
 None
-.En
