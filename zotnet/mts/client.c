@@ -92,8 +92,7 @@ client (char *args, char *protocol, char *service, int rproto,
     char *arguments[MAXARGS];
     register struct hostent *hp;
     register struct servent *sp;
-/* we assume netent and getnetbyaddr come with gethostbyname */
-#ifdef	HAVE_GETHOSTBYNAME
+#ifndef	HAVE_GETHOSTBYNAME
     register struct netent *np;
 #endif
 
