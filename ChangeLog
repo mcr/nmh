@@ -23,8 +23,10 @@ Thu Aug 03 17:14:08 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 Tue Aug  1 10:48:05 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
-	* Fixed install in etc/Makefile.in so it wouldn't fail when
-	configuring and building outside the source tree.
+	* Makefile install rules should not look for generated files in
+ 	the source tree -- this will happen to work when configuring and
+ 	building inside the source tree but will fail when using an
+ 	external build tree.  Fixed etc/Makefile.in.
 
 Mon Jul 24 16:20:45 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
