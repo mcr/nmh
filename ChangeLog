@@ -1,3 +1,11 @@
+Wed Jun  7 20:52:33 CEST 2000 Ruud de Rooij <ruud@ruud.org>
+
+	* Added one more mkstemp invocation to uip/spost.c (which was in a
+	#if 0 block).
+
+	* Applied patch from Peter Maydell to clean up permissions handling
+	and error handling in uip/inc.c.
+
 Mon Jun  5 22:10:07 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* Use cat instead of tsort if tsort cannot deal with loops in its

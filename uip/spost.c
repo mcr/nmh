@@ -727,9 +727,15 @@ make_bcc_file (void)
     char *vec[6];
     FILE * in, *out;
 
+#ifdef HAVE_MKSTEMP
+    fd = mkstemp(bccfil);
+    if (fd == -1 || (out = fdopen(fd, "w")) == NULL)
+	adios (bccfil, "unable to create");
+#else
     mktemp (bccfil);
     if ((out = fopen (bccfil, "w")) == NULL)
 	adios (bccfil, "unable to create");
+#endif
     chmod (bccfil, 0600);
 
     fprintf (out, "Date: %s\n", dtimenow (0));

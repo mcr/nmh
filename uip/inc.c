@@ -14,6 +14,13 @@
  *
  * Fri Feb  7 16:04:57 PST 1992		John Romine <bug-mh@ics.uci.edu>
  *   NB: I'm not 100% sure that this setgid stuff is secure even now.
+ *
+ * See the *GROUPPRIVS() macros later. I'm reasonably happy with the setgid
+ * attribute. Running setuid root is probably not a terribly good idea, though.
+ *       -- Peter Maydell <pmaydell@chiark.greenend.org.uk>, 04/1998
+ *
+ * Peter Maydell's patch slightly modified for nmh 0.28-pre2.
+ * Ruud de Rooij <ruud@debian.org>  Wed, 22 Jul 1998 13:24:22 +0200
  */
 #endif
 
@@ -138,13 +145,63 @@ static int pd = NOTOK;
 static FILE *pf = NULL;
 #endif /* POP */
 
+/* This is an attempt to simplify things by putting all the
+ * privilege ops into macros.
+ * *GROUPPRIVS() is related to handling the setgid MAIL property,
+ * and only applies if MAILGROUP is defined.
+ * *USERPRIVS() is related to handling the setuid root property,
+ * and only applies if POP is defined [why does POP => setuid root?]
+ * Basically, SAVEGROUPPRIVS() is called right at the top of main()
+ * to initialise things, and then DROPGROUPPRIVS() and GETGROUPPRIVS()
+ * do the obvious thing. TRYDROPGROUPPRIVS() has to be safe to call
+ * before DROPUSERPRIVS() is called [this is needed because setgid()
+ * sets both effective and real uids if euid is root.]
+ *
+ * There's probably a better implementation if we're allowed to use
+ * BSD-style setreuid() rather than using POSIX saved-ids.
+ * Anyway, if you're euid root it's a bit pointless to drop the group
+ * permissions...
+ *
+ * I'm pretty happy that the security is good provided we aren't setuid root.
+ * The only things we trust with group=mail privilege are lkfopen()
+ * and lkfclose().
+ */
 
 /*
  * For setting and returning to "mail" gid
  */
 #ifdef MAILGROUP
 static int return_gid;
+#ifndef POP
+/* easy case; we're not setuid root, so can drop group privs
+ * immediately.
+ */
+#define TRYDROPGROUPPRIVS() DROPGROUPPRIVS()
+#else /* POP ie we are setuid root */
+#define TRYDROPGROUPPRIVS() \
+if (geteuid() != 0) DROPGROUPPRIVS()
 #endif
+#define DROPGROUPPRIVS() setgid(getgid())
+#define GETGROUPPRIVS() setgid(return_gid)
+#define SAVEGROUPPRIVS() return_gid = getegid()
+#else
+/* define *GROUPPRIVS() as null; this avoids having lots of "#ifdef MAILGROUP"s */
+#define TRYDROPGROUPPRIVS()
+#define DROPGROUPPRIVS()
+#define GETGROUPPRIVS()
+#define SAVEGROUPPRIVS()
+#endif /* not MAILGROUP */
+
+#ifdef POP
+#define DROPUSERPRIVS() setuid(getuid())
+#else
+#define DROPUSERPRIVS()
+#endif
+
+/* these variables have to be globals so that done() can correctly clean up the lockfile */
+static int locked = 0;
+static char *newmail;
+static FILE *in;
 
 /*
  * prototypes
@@ -163,17 +220,17 @@ int
 main (int argc, char **argv)
 {
     int chgflag = 1, trnflag = 1;
-    int noisy = 1, width = 0, locked = 0;
+    int noisy = 1, width = 0;
     int rpop, i, hghnum, msgnum;
     int kpop = 0;
     char *cp, *maildir, *folder = NULL;
     char *format = NULL, *form = NULL;
-    char *newmail, *host = NULL, *user = NULL;
+    char *host = NULL, *user = NULL;
     char *audfile = NULL, *from = NULL;
     char buf[BUFSIZ], **argp, *nfs, **arguments;
     struct msgs *mp;
     struct stat st, s1;
-    FILE *in, *aud = NULL;
+    FILE *aud = NULL;
 
 #ifdef POP
     int nmsgs, nbytes, p = 0;
@@ -188,6 +245,12 @@ main (int argc, char **argv)
     struct hes_postoffice *po;
     char *tmphost;
 #endif
+
+/* absolutely the first thing we do is save our privileges,
+ * and drop them if we can.
+ */
+    SAVEGROUPPRIVS();
+    TRYDROPGROUPPRIVS();
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -370,17 +433,18 @@ main (int argc, char **argv)
 	}
     }
 
-#ifdef MAILGROUP
-    return_gid = getegid();  /* Save effective gid, assuming we'll use it */
-    setgid(getgid());        /* Turn off extraordinary privileges         */
-#endif	/* MAILGROUP */
-
+    /* NOTE: above this point you should use TRYDROPGROUPPRIVS(),
+     * not DROPGROUPPRIVS().
+     */
 #ifdef POP
     if (host && !*host)
 	host = NULL;
     if (from || !host || rpop <= 0)
-	setuid (getuid ());
+	DROPUSERPRIVS();
 #endif /* POP */
+
+    /* guarantee dropping group priveleges; we might not have done so earlier */
+    DROPGROUPPRIVS();
 
     /*
      * Where are we getting the new mail?
@@ -421,7 +485,7 @@ main (int argc, char **argv)
 	    adios (NULL, "%s", response);
 
 	if (rpop > 0)
-	    setuid (getuid ());
+	    DROPUSERPRIVS();
 	if (nmsgs == 0) {
 	    pop_quit();
 	    adios (NULL, "no mail to incorporate");
@@ -492,17 +556,11 @@ go_to_it:
 		SIGNAL (SIGTERM, SIG_IGN);
 	    }
 
-#ifdef MAILGROUP
-	    setgid(return_gid);	/* Reset gid to lock mail file */
-#endif /* MAILGROUP */
-
-	    /* lock and fopen the mail spool */
-	    if ((in = lkfopen (newmail, "r")) == NULL)
+            GETGROUPPRIVS();       /* Reset gid to lock mail file */
+            in = lkfopen (newmail, "r");
+            DROPGROUPPRIVS();
+            if (in == NULL)
 		adios (NULL, "unable to lock and fopen %s", newmail);
-
-#ifdef MAILGROUP
-	    setgid(getgid());	/* Return us to normal privileges */
-#endif /* MAILGROUP */
 	    fstat (fileno(in), &s1);
 	} else {
 	    trnflag = 0;
@@ -511,9 +569,8 @@ go_to_it:
 	}
     }
 
-#ifdef MAILGROUP
-    setgid(getgid());	/* Return us to normal privileges */
-#endif /* MAILGROUP */
+    /* This shouldn't be necessary but it can't hurt. */
+    DROPGROUPPRIVS();
 
     if (audfile) {
 	if ((i = stat (audfile, &st)) == NOTOK)
@@ -772,19 +829,11 @@ go_to_it:
     if (i < 0) {		/* error */
 #endif
 	if (locked) {
-#ifdef MAILGROUP
-	    /* Be sure we can unlock mail file */
-	    setgid(return_gid);
-#endif /* MAILGROUP */
-
-	    lkfclose (in, newmail);
-
-#ifdef MAILGROUP
-	    /* And then return us to normal privileges */
-	    setgid(getgid());
-#endif /* MAILGROUP */
+            GETGROUPPRIVS();      /* Be sure we can unlock mail file */
+            (void) lkfclose (in, newmail); in = NULL;
+            DROPGROUPPRIVS();    /* And then return us to normal privileges */
 	} else {
-	    fclose (in);
+	    fclose (in); in = NULL;
 	}
 	adios (NULL, "failed");
     }
@@ -843,17 +892,11 @@ go_to_it:
      */
     if (inc_type == INC_FILE) {
 	if (locked) {
-#ifdef MAILGROUP
-	    setgid(return_gid);	/* Be sure we can unlock mail file */
-#endif /* MAILGROUP */
-
-	    lkfclose (in, newmail);
-
-#ifdef MAILGROUP
-	    setgid(getgid());	/* And then return us to normal privileges */
-#endif /* MAILGROUP */
+           GETGROUPPRIVS();        /* Be sure we can unlock mail file */
+           (void) lkfclose (in, newmail); in = NULL;
+           DROPGROUPPRIVS();       /* And then return us to normal privileges */
 	} else {
-	    fclose (in);
+	    fclose (in); in = NULL;
 	}
     }
 
@@ -897,17 +940,24 @@ cpymsg (FILE *in, FILE *out)
 #endif /* if 0 */
 
 
-#ifdef POP
 int
 done (int status)
 {
+#ifdef POP
     if (packfile && pd != NOTOK)
 	mbx_close (packfile, pd);
-
+#endif /* POP */
+    if (locked)
+    {
+        GETGROUPPRIVS();
+        lkfclose(in, newmail);
+        DROPGROUPPRIVS();
+    }
     exit (status);
     return 1;  /* dead code to satisfy the compiler */
 }
 
+#ifdef POP
 static int
 pop_action (char *s)
 {
