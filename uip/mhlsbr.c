@@ -499,7 +499,7 @@ mhl_format (char *file, int length, int width)
     static ino_t ino = 0;
     static time_t mtime = 0;
 
-    if (fmthd != NULL)
+    if (fmthd != NULL) {
 	if (stat (etcpath (file), &st) != NOTOK
 		&& mtime == st.st_mtime
 		&& dev == st.st_dev
@@ -507,6 +507,7 @@ mhl_format (char *file, int length, int width)
 	    goto out;
 	else
 	    free_queue (&fmthd, &fmttl);
+    }
 
     if ((fp = fopen (etcpath (file), "r")) == NULL)
 	adios (file, "unable to open format file");
@@ -585,7 +586,7 @@ mhl_format (char *file, int length, int width)
 		    if (evalvar (c1))
 			adios (NULL, "format file syntax error: %s", bp);
 		}
-		if (!c1->c_nfs && global.c_nfs)
+		if (!c1->c_nfs && global.c_nfs) {
 		    if (c1->c_flags & DATEFMT) {
 			if (global.c_flags & DATEFMT)
 			    c1->c_nfs = getcpy (global.c_nfs);
@@ -595,6 +596,7 @@ mhl_format (char *file, int length, int width)
 			    if (global.c_flags & ADDRFMT)
 				c1->c_nfs = getcpy (global.c_nfs);
 			}
+		}
 		continue;
 
 	    default: 
@@ -1263,13 +1265,14 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 		*cp = toupper (*cp);
 
     count = 0;
-    if (cchdr)
+    if (cchdr) {
 	if (flag == TWOCOMP)
 	    count = (c1->c_cwidth >= 0) ? c1->c_cwidth
 			: strlen (c2->c_name) + 2;
 	else
 	    count = (c1->c_cwidth >= 0) ? c1->c_cwidth
 			: strlen (c1->c_text ? c1->c_text : c1->c_name) + 2;
+    }
     count += c1->c_offset;
 
     if ((cp = oneline (c2->c_text, c1->c_flags)))
@@ -1344,7 +1347,7 @@ oneline (char *stuff, long flags)
 static void
 putstr (char *string)
 {
-    if (!column && lm > 0)
+    if (!column && lm > 0) {
 	while (lm > 0)
 	    if (lm >= 8) {
 		putch ('\t');
@@ -1354,6 +1357,7 @@ putstr (char *string)
 		putch (' ');
 		lm--;
 	    }
+    }
     lm = 0;
     while (*string)
 	putch (*string++);
