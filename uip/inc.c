@@ -245,6 +245,7 @@ main (int argc, char **argv)
     struct msgs *mp;
     struct stat st, s1;
     FILE *aud = NULL;
+    char	b[MAXPATHLEN + 1];
 
 #ifdef POP
     int nmsgs, nbytes, p = 0;
@@ -802,7 +803,6 @@ go_to_it:
 	    /* link message into folder */
 	    newmsg = folder_addmsg(mp, tmpfilenam);
 #endif
-
 	    /* create scanline for new message */
 	    switch (i = scan (in, msgnum + 1, msgnum + 1, nfs, width,
 			      msgnum == hghnum && chgflag, 1, NULL, 0L, noisy)) {
@@ -826,6 +826,13 @@ go_to_it:
 
 	    case SCNMSG:
 	    case SCNENC:
+		/*
+		 *  Run the external program hook on the message.
+		 */
+
+		(void)snprintf(b, sizeof (b), "%s/%d", maildir, msgnum + 1);
+		(void)ext_hook("add-hook", b, (char *)0);
+
 		if (aud)
 		    fputs (scanl, aud);
 #ifdef MHE

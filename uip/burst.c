@@ -42,7 +42,7 @@ struct smsg {
  * static prototypes
  */
 static int find_delim (int, struct smsg *);
-static void burst (struct msgs **, int, struct smsg *, int, int, int);
+static void burst (struct msgs **, int, struct smsg *, int, int, int, char *);
 static void cpybrst (FILE *, FILE *, char *, char *, int);
 
 
@@ -156,7 +156,7 @@ main (int argc, char **argv)
 		if (verbosw)
 		    printf ("%d message%s exploded from digest %d\n",
 			    numburst, numburst > 1 ? "s" : "", msgnum);
-		burst (&mp, msgnum, smsgs, numburst, inplace, verbosw);
+		burst (&mp, msgnum, smsgs, numburst, inplace, verbosw, maildir);
 	    } else {
 		if (numburst == 0) {
 		    if (!quietsw)
@@ -256,7 +256,7 @@ find_delim (int msgnum, struct smsg *smsgs)
 
 static void
 burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
-	int inplace, int verbosw)
+	int inplace, int verbosw, char *maildir)
 {
     int i, j, mode;
     char *msgnam;
@@ -296,6 +296,9 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
      * If -inplace is given, renumber the messages after the
      * source message, to make room for each of the messages
      * contained within the digest.
+     *
+     * This is equivalent to refiling a message from the point
+     * of view of the external hooks.
      */
     if (inplace) {
 	for (i = mp->hghmsg; j > msgnum; i--, j--) {
@@ -307,6 +310,11 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
 
 		if (rename (f2, f1) == NOTOK)
 		    admonish (f1, "unable to rename %s to", f2);
+
+		(void)snprintf(f1, sizeof (f1), "%s/%d", maildir, i);
+		(void)snprintf(f2, sizeof (f2), "%s/%d", maildir, j);
+		ext_hook("ref-hook", f1, f2);
+
 		copy_msg_flags (mp, i, j);
 		clear_msg_flags (mp, j);
 		mp->msgflags |= SEQMOD;
@@ -316,7 +324,25 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
     
     unset_selected (mp, msgnum);
 
-    /* new hghmsg is hghmsg + numburst */
+    /* new hghmsg is hghmsg + numburst
+     *
+     * At this point, there is an array of numburst smsgs, each element of
+     * which contains the starting and stopping offsets (seeks) of the message
+     * in the digest.  The inplace flag is set if the original digest is replaced
+     * by a message containing the table of contents.  smsgs[0] is that table of
+     * contents.  Go through the message numbers in reverse order (high to low).
+     *
+     * Set f1 to the name of the destination message, f2 to the name of a scratch
+     * file.  Extract a message from the digest to the scratch file.  Move the
+     * original message to a backup file if the destination message number is the
+     * same as the number of the original message, which only happens if the
+     * inplace flag is set.  Then move the scratch file to the destination message.
+     *
+     * Moving the original message to the backup file is equivalent to deleting the
+     * message from the point of view of the external hooks.  And bursting each
+     * message is equivalent to adding a new message.
+     */
+
     i = inplace ? msgnum + numburst : mp->hghmsg;
     for (j = numburst; j >= (inplace ? 0 : 1); i--, j--) {
 	strncpy (f1, m_name (i), sizeof(f1));
@@ -336,9 +362,16 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
 	    strncpy (f3, m_backup (f1), sizeof(f3));
 	    if (rename (f1, f3) == NOTOK)
 		admonish (f3, "unable to rename %s to", f1);
+
+	    (void)snprintf(f3, sizeof (f3), "%s/%d", maildir, i);
+	    ext_hook("del-hook", f3, (char *)0);
 	}
 	if (rename (f2, f1) == NOTOK)
 	    admonish (f1, "unable to rename %s to", f2);
+
+	(void)snprintf(f3, sizeof (f3), "%s/%d", maildir, i);
+	ext_hook("add-hook", f3, (char *)0);
+
 	copy_msg_flags (mp, i, msgnum);
 	mp->msgflags |= SEQMOD;
     }

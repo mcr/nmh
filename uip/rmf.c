@@ -152,6 +152,12 @@ rmf (char *folder)
 	adios (NULL, "unable to read folder +%s", folder);
     others = 0;
 
+    /*
+     *	Run the external delete hook program.
+     */
+
+    (void)ext_hook("del-hook", maildir, (char *)0);
+
     j = strlen(BACKUP_PREFIX);
     while ((dp = readdir (dd))) {
 	switch (dp->d_name[0]) {

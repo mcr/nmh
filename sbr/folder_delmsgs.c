@@ -22,11 +22,12 @@
  */
 
 int
-folder_delmsgs (struct msgs *mp, int unlink_msgs)
+folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 {
     pid_t pid;
     int msgnum, vecp, retval = 0;
     char buf[100], *dp, **vec;
+    char	msgpath[BUFSIZ];
 
     /*
      * If "rmmproc" is defined, exec it to remove messages.
@@ -82,6 +83,19 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs)
 	    /* unselect message */
 	    unset_selected (mp, msgnum);
 	    mp->numsel--;
+
+	    /*
+	     *	Run the external hook on the message if one was specified in the context.
+	     *	All we have is the message number; we have changed to the directory
+	     *	containing the message.  So, we need to extract that directory to form
+	     *	the complete path.  Note that the caller knows the directory, but has
+	     *	no way of passing that to us.
+	     */
+
+	    if (!nohook) {
+		    (void)snprintf(msgpath, sizeof (msgpath), "%s/%d", getcwd(msgpath, sizeof (msgpath)), msgnum);
+		    (void)ext_hook("del-hook", msgpath, (char *)0);
+		}
 
 	    dp = m_name (msgnum);
 

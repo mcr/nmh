@@ -1,0 +1,111 @@
+$Id$
+
+Jon Steinhart's (jon@fourwinds.com) External Program Hooks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This blurb describes a changes to nmh that implement an interface
+to external programs.  This interface is different than the limited
+interface provided by things like the rmmproc context entry.
+
+
+Why Did I Do This?
+~~~~~~~~~~~~~~~~~~
+
+I'm working on a project (grokmail) that will get released via GPL sometime
+soon.  This project keeps a database synchronized with the messages in the
+mail system.  New functionality is built on top of this database.  This
+functionality allows fast searching, and searching based on interest
+criteria.  The latter can be used for spam filtering.
+
+The changes to nmh allow external programs to be run whenever a message is
+added to a folder, removed from a folder, or refiled.  The changes are
+implemented in a general way so that it can be used for other purposes than
+mine.
+
+What Are The Changes?
+~~~~~~~~~~~~~~~~~~~~~
+
+The changes add four new profile components:
+
+add-hook:	This is the full pathname of a program that is invoked
+		whenever a message is added to a folder.  The program
+		is passed one argument which is the full pathname of the
+		message file.  The program is executed after the message
+		is written so that it can act upon that message.
+
+del-hook:	This is the full pathname of a program that is invoked
+		whenever a message is deleted from a folder.  The program
+		is passed one argument which is the full pathname of the
+		message file.  The program is executed before the message
+		is written so that it can act upon that message.
+
+ref-hook:	This is the full pathname of a program that is invoked
+		whenever a message is refiled.  The program is passed two
+		arguments:  the first is the full pathname of the original
+		message file, the second is the full pathname of the final
+		message file.  The program is executed after the message
+		is written.
+	
+msg-hook:	This is a text message that is output if the execution of
+		one of the external hook programs fails.  There is a built-in
+		default message if none is specified.
+
+The definition of refiling is a bit tricky.  The refile hook is executed if a
+message is moved from one place to another.  So, for example, the command
+
+	refile -link
+
+causes the add hook to be executed, not the refile hook, because a new message
+is created, the old one isn't moved.
+
+These changes affect the following commands:
+
+burst:		The add hook is executed for messages burst from a digest, and
+		for the table of contents if -inplace is specified.  The delete
+		hook is executed for the original message if -inplace is
+		specified.  The refile hook is executed for messages that are
+		moved.
+
+folder:		The refile hook is executed for -pack.
+
+inc:		The add hook is executed when messages are incorporated.
+
+refile:		Either the add or refile hooks are executed.
+
+rmf:		The delete hook is executed when messages are deleted.
+
+rmm:		The delete hook is executed when messages are deleted.
+
+sortm:		The refile hook is executed for each message moved.  Note that
+		a magic temporary message number of 2147483647 is used to hold
+		messages as they are being shuffled.
+
+
+
+Did I Do This Correctly?
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Well, sort of.  This all works, but I'm not really happy with it.  The issue
+is that an examination of the nmh code shows that message handling is scattered
+all over the place.  Although there are library routines such as folder_addmsg
+and folder_delmsgs, they are not used consistently.  Long term, I think that it
+would be better to make all message handling go through the same choke points.
+
+Also, I added a function to run the external programs.  This sort of stuff is
+also scattered around the nmh code, for example in the code to run the rmmproc.
+Again, I'd like to make this more consistent in the long term.
+
+What Files Did I Change?
+~~~~~~~~~~~~~~~~~~~~~~~~
+uip/
+	burst.c
+	inc.c
+	refile.c
+	rmf.c
+	sortm.c
+
+sbr/
+	folder_addmsg.c
+	folder_delmsgs.c
+	folder_pack.c
+	ext_hook.c	(new file)

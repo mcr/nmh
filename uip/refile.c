@@ -66,7 +66,7 @@ struct st_fold {
 static void opnfolds (struct st_fold *, int);
 static void clsfolds (struct st_fold *, int);
 static void remove_files (int, char **);
-static int m_file (char *, struct st_fold *, int, int);
+static int m_file (char *, struct st_fold *, int, int, int);
 
 
 int
@@ -213,7 +213,7 @@ main (int argc, char **argv)
 	    adios (NULL, "use -file or some messages, not both");
 	opnfolds (folders, foldp);
 	for (i = 0; i < filep; i++)
-	    if (m_file (files[i], folders, foldp, preserve))
+	    if (m_file (files[i], folders, foldp, preserve, 0))
 		done (1);
 	/* If -nolink, then "remove" files */
 	if (!linkf)
@@ -247,11 +247,16 @@ main (int argc, char **argv)
     /* create folder structures for each destination folder */
     opnfolds (folders, foldp);
 
-    /* Link all the selected messages into destination folders */
+    /* Link all the selected messages into destination folders.
+     *
+     * This causes the add hook to be run for messages that are
+     * linked into another folder.  The refile hook is run for
+     * messages that are moved to another folder.
+     */
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	if (is_selected (mp, msgnum)) {
 	    cp = getcpy (m_name (msgnum));
-	    if (m_file (cp, folders, foldp, preserve))
+	    if (m_file (cp, folders, foldp, preserve, !linkf))
 		done (1);
 	    free (cp);
 	}
@@ -269,9 +274,13 @@ main (int argc, char **argv)
 	fflush (stdout);
     }
 
-    /* If -nolink, then "remove" messages from source folder */
+    /* If -nolink, then "remove" messages from source folder.
+     *
+     * Note that folder_delmsgs does not call the delete hook
+     * because the message has already been handled above.
+     */
     if (!linkf) {
-	folder_delmsgs (mp, unlink_msgs);
+	folder_delmsgs (mp, unlink_msgs, 1);
     }
 
     clsfolds (folders, foldp);
@@ -387,13 +396,13 @@ remove_files (int filep, char **files)
  */
 
 static int
-m_file (char *msgfile, struct st_fold *folders, int nfolders, int preserve)
+m_file (char *msgfile, struct st_fold *folders, int nfolders, int preserve, int refile)
 {
     int msgnum;
     struct st_fold *fp, *ep;
 
     for (fp = folders, ep = folders + nfolders; fp < ep; fp++) {
-	if ((msgnum = folder_addmsg (&fp->f_mp, msgfile, 1, 0, preserve)) == -1)
+	if ((msgnum = folder_addmsg (&fp->f_mp, msgfile, 1, 0, preserve, nfolders == 1 && refile)) == -1)
 	    return 1;
     }
     return 0;

@@ -59,6 +59,14 @@ folder_pack (struct msgs **mpp, int verbose)
 		    return -1;
 		}
 
+		/*
+		 * Invoke the external refile hook for each message being renamed.
+		 */
+
+		(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%d", mp->foldpath, msgnum);
+		(void)snprintf(newmsg, sizeof (newmsg), "%s/%d", mp->foldpath, hole);
+		ext_hook("ref-hook", oldmsg, newmsg);
+
 		/* check if this is the current message */
 		if (msgnum == mp->curmsg)
 		    newcurrent = hole;

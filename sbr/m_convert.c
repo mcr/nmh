@@ -225,7 +225,7 @@ single:
 
 /*
  * Convert the various message names to
- * there numeric value.
+ * their numeric values.
  *
  * n     (integer)
  * prev

@@ -232,7 +232,7 @@ main (int argc, char **argv)
 
     if (verbose) {	/* announce what we're doing */
 	if (subjsort)
-	    printf ("sorting by %s-major %s-minor\n", 
+	    printf ("sorting by %s-major %s-minor\n",
 		submajor ? subjsort : datesw,
 		submajor ? datesw : subjsort);
 	else
@@ -240,7 +240,7 @@ main (int argc, char **argv)
     }
 
     /* first sort by date, or by subject-major, date-minor */
-    qsort ((char *) dlist, nmsgs, sizeof(*dlist), 
+    qsort ((char *) dlist, nmsgs, sizeof(*dlist),
 	    (qsort_comp) (submajor && subjsort ? txtsort : dsort));
 
     /*
@@ -292,7 +292,7 @@ main (int argc, char **argv)
 	     */
 	    while (*s && (*s)->s_subj[0] &&
 		   strcmp((*s)->s_subj, s[-1]->s_subj) == 0 &&
-		   (datelimit == 0 || 
+		   (datelimit == 0 ||
 		   (*s)->s_clock - s[-1]->s_clock <= datelimit)) {
 		il[(*s)->s_msg] = 0;
 		*fp++ = *s++;
@@ -303,6 +303,12 @@ main (int argc, char **argv)
 	free (dlist);
 	dlist = flist;
     }
+
+    /*
+     * At this point, dlist is a sorted array of pointers to smsg structures,
+     * each of which contains a message number.
+     */
+
     rename_msgs (mp, dlist);
 
     context_replace (pfolder, folder);	/* update current folder         */
@@ -312,7 +318,7 @@ main (int argc, char **argv)
     return done (0);
 }
 
-static int 
+static int
 read_hdrs (struct msgs *mp, char *datesw)
 {
     int msgnum;
@@ -431,7 +437,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	    /*
 	     * try to make the subject "canonical": delete
 	     * leading "re:", everything but letters & smash
-	     * letters to lower case. 
+	     * letters to lower case.
 	     */
 	    register char  *cp, *cp2, c;
 
@@ -472,7 +478,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 /*
  * sort on dates.
  */
-static int 
+static int
 dsort (struct smsg **a, struct smsg **b)
 {
     if ((*a)->s_clock < (*b)->s_clock)
@@ -488,7 +494,7 @@ dsort (struct smsg **a, struct smsg **b)
 /*
  * sort on subjects.
  */
-static int 
+static int
 subsort (struct smsg **a, struct smsg **b)
 {
     register int i;
@@ -499,7 +505,7 @@ subsort (struct smsg **a, struct smsg **b)
     return (dsort (a, b));
 }
 
-static int 
+static int
 txtsort (struct smsg **a, struct smsg **b)
 {
     register int i;
@@ -517,6 +523,7 @@ rename_chain (struct msgs *mp, struct smsg **mlist, int msg, int endmsg)
 {
     int nxt, old, new;
     char *newname, oldname[BUFSIZ];
+    char newbuf[MAXPATHLEN + 1];
 
     for (;;) {
 	nxt = mlist[msg] - smsgs;	/* mlist[msg] is a ptr into smsgs */
@@ -531,11 +538,15 @@ rename_chain (struct msgs *mp, struct smsg **mlist, int msg, int endmsg)
 	if (rename (oldname, newname) == NOTOK)
 	    adios (newname, "unable to rename %s to", oldname);
 
+	(void)snprintf(oldname, sizeof (oldname), "%s/%d", mp->foldpath, old);
+	(void)snprintf(newbuf, sizeof (newbuf), "%s/%d", mp->foldpath, new);
+	ext_hook("ref-hook", oldname, newbuf);
+
 	copy_msg_flags (mp, new, old);
 	if (mp->curmsg == old)
 	    seq_setcur (mp, new);
 
-	if (nxt == endmsg) 
+	if (nxt == endmsg)
 	    break;
 
 	msg = nxt;
@@ -550,12 +561,13 @@ rename_msgs (struct msgs *mp, struct smsg **mlist)
     int i, j, old, new;
     seqset_t tmpset;
     char f1[BUFSIZ], tmpfil[BUFSIZ];
+    char newbuf[MAXPATHLEN + 1];
     struct smsg *sp;
 
     strncpy (tmpfil, m_name (mp->hghmsg + 1), sizeof(tmpfil));
 
     for (i = 0; i < nmsgs; i++) {
-	if (! (sp = mlist[i])) 
+	if (! (sp = mlist[i]))
 	    continue;   /* did this one */
 
 	j = sp - smsgs;
@@ -576,11 +588,30 @@ rename_msgs (struct msgs *mp, struct smsg **mlist)
 
 	if (rename (f1, tmpfil) == NOTOK)
 	    adios (tmpfil, "unable to rename %s to ", f1);
+
+	/*
+	 *	Run the external hook to refile the old message as message
+	 *	number 2147483647.  This is our way of making a temporary
+	 *	message number.  I don't really like this.
+	 */
+
+	(void)snprintf(f1, sizeof (f1), "%s/%d", mp->foldpath, old);
+	(void)snprintf(newbuf, sizeof (newbuf), "%s/2147483647", mp->foldpath);
+	ext_hook("ref-hook", f1, newbuf);
+
 	get_msg_flags (mp, &tmpset, old);
 
 	rename_chain (mp, mlist, j, i);
 	if (rename (tmpfil, m_name(new)) == NOTOK)
 	    adios (m_name(new), "unable to rename %s to", tmpfil);
+
+	/*
+	 *	Run the external hook to refile the temorary message number
+	 *	to the real place.
+	 */
+
+	(void)snprintf(f1, sizeof (f1), "%s/%d", mp->foldpath, new);
+	ext_hook("ref-hook", newbuf, f1);
 
 	set_msg_flags (mp, &tmpset, new);
 	mp->msgflags |= SEQMOD;

@@ -145,7 +145,7 @@ main (int argc, char **argv)
     }
 
     /* "remove" the SELECTED messages */
-    folder_delmsgs (mp, unlink_msgs);
+    folder_delmsgs (mp, unlink_msgs, 0);
 
     seq_save (mp);		/* synchronize message sequences  */
     context_replace (pfolder, folder);	/* update current folder   */
