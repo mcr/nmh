@@ -63,10 +63,18 @@ if test x"$enable_mhe" != x"no" -a x"$enable_nmh_mhe" != x"no"; then
   AC_DEFINE(MHE)dnl
 fi
 
+dnl Do you want client-side support for pop?
+undefine([pop])dnl
+AC_ARG_ENABLE(pop,
+[  --enable-pop            enable client-side support for pop])
+dnl The old redundant --enable-nmh-pop is deprecated and undocumented.
+if test x"$enable_nmh_pop" = x"yes"; then
+  enable_pop=yes
+fi
+
 dnl Do you want client-side support for apop?
-dnl Note that this appears before pop so that we can enforce enable-pop
 AC_ARG_ENABLE(apop,
-[  --enable-apop            enable client-side support for apop])
+[  --enable-apop           enable client-side support for apop])
 if test x"$enable_apop" = x"yes"; then
   AC_DEFINE(APOP)dnl
   APOPLIB=md5.o
@@ -90,14 +98,7 @@ if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
   AC_DEFINE(KPOP_PRINCIPAL, "pop")dnl
 fi
 
-dnl Do you want client-side support for pop?
-undefine([pop])dnl
-AC_ARG_ENABLE(pop,
-[  --enable-pop            enable client-side support for pop])
-dnl The old redundant --enable-nmh-pop is deprecated and undocumented.
-if test x"$enable_nmh_pop" = x"yes"; then
-  enable_pop=yes
-fi
+dnl After we know if we're including apop and kpop support, do pop stuff
 if test x"$enable_pop" = x"yes"; then
   AC_DEFINE(POP)dnl
   POPLIB=popsbr.o
