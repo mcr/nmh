@@ -154,9 +154,11 @@ main (int argc, char **argv)
 			    numburst, numburst > 1 ? "s" : "", msgnum);
 		burst (&mp, msgnum, smsgs, numburst, inplace, verbosw);
 	    } else {
-		if (numburst == 0)
+		if (numburst == 0) {
 		    if (!quietsw)
-			admonish (NULL, "message %d not in digest format", msgnum);
+			admonish (NULL, "message %d not in digest format",
+				  msgnum);
+		}  /* this pair of braces was missing before 1999-07-15 */
 		else
 		    adios (NULL, "burst() botch -- you lose big");
 	    }
@@ -183,7 +185,7 @@ main (int argc, char **argv)
     seq_save (mp);	/* synchronize message sequences */
     context_save ();	/* save the context file         */
     folder_free (mp);	/* free folder/message structure */
-    done (0);
+    return done (0);
 }
 
 
