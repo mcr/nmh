@@ -127,11 +127,11 @@ See \fIchmod\fR\0(1) for an explanation of the octal number.
 (profile, default: 0644)
 
 .ti -1i
-Folder\-Protect:\ 700
+Folder\-Protect:\ 750
 .br
 An octal number which defines the permission bits for new folder
 directories.  See \fIchmod\fR\0(1) for an explanation of the octal number.
-(profile, default: 0700)
+(profile, default: 700)
 
 .ti -1i
 \fIprogram\fR:\ default switches

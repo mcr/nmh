@@ -1,3 +1,18 @@
+Wed Mar 15 14:20:20 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* When I fixed the long-standing makedir() bugs in January, I had
+ 	the code call strtoul(..., 0), which I believed to be safe as all
+ 	modes specified as ASCII constants in the nmh code started with a
+ 	leading zero (signifying octal), which I did as it would work if
+ 	internal constants were ever changed to hex.  Unfortunately I was
+ 	unaware of the "Folder-Protect:" .mh_profile entry, which
+ 	mh-profile.man documents as an octal-only constant, with no
+ 	leading zero required.  I've changed the strtoul() call to an
+ 	atooi() call and removed the misleading leading zeroes on the
+ 	ASCII octal constants in the code and man pages.  Also changed the
+ 	"Folder-Protect:" example in the man page to something more
+ 	interesting than a duplication of the default.
+
 Tue Mar 14 12:41:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied, after some finessing,
@@ -215,11 +230,12 @@ Fri Jan 28 17:39:24 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 Thu Jan 27 12:22:25 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
-	* makedir() had multiple bugs dating back to MH.  It passed an
-	octal constant to atoi(), which interpreted it as decimal,
-	resulting in directories with no user read or execute permissions,
-	making nested directory creation fail.  Also, when creating a
-	nested directory, correct permissions were only set on the inner one.
+	* makedir() had multiple bugs dating back to MH.  An octal
+ 	constant was apparently being interpreted as decimal, resulting in
+ 	directories with no user read or execute permissions, making
+ 	nested directory creation fail.  And there wasn't even an
+ 	_attempt_ to set desired permissions (e.g. from "Folder-Protect:"
+ 	in .mh_profile) on the outer directories of a nested directory.
 
 	* A second `make install' would always fail because the check for
 	whether mh_profile.5 existed was written incorrectly.

@@ -30,13 +30,16 @@ makedir (char *dir)
     fflush(stdout);
 
     if (!(folder_perms_ASCII = context_find ("folder-protect")))
-	folder_perms_ASCII = foldprot;  /* defaults to "0700" */
+	folder_perms_ASCII = foldprot;  /* defaults to "700" */
     
-    /* Call strtoul() with radix=0, which means it'll determine the base by
-       looking at the first digit.  That way it'll know "0700" is an octal
-       constant (and if someone gets wacky and changes the representation to hex
-       it'll still work). */
-    folder_perms = strtoul(folder_perms_ASCII, NULL, 0);
+    /* Because mh-profile.man documents "Folder-Protect:" as an octal constant,
+       and we don't want to force the user to remember to include a leading
+       zero, we call atooi(folder_perms_ASCII) here rather than
+       strtoul(folder_perms_ASCII, NULL, 0).  Therefore, if anyone ever tries to
+       specify a mode in say, hex, they'll get garbage.  (I guess nmh uses its
+       atooi() function rather than calling strtoul() with a radix of 8 because
+       some ancient platforms are missing that functionality. */
+    folder_perms = atooi(folder_perms_ASCII);
 
     /* Folders have definite desired permissions that are set -- we don't want
        to interact with the umask.  Clear it temporarily. */

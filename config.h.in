@@ -112,8 +112,8 @@
 /*
  * Define the default creation modes for folders and messages.
  */
-#define DEFAULT_FOLDER_MODE "0700"
-#define DEFAULT_MESSAGE_MODE "0600"
+#define DEFAULT_FOLDER_MODE "700"
+#define DEFAULT_MESSAGE_MODE "600"
 
 /*
  * The prefix which is prepended to the name of messages when they
