@@ -27,19 +27,86 @@ VERSION=`sed -e 's/nmh-//' ${srcdir}/VERSION`
 echo "configuring for nmh-$VERSION"
 AC_SUBST(VERSION)dnl
 
-dnl -------------------------
-dnl CHECK COMMAND LINE OPTION
-dnl -------------------------
+dnl --------------------------
+dnl CHECK COMMAND LINE OPTIONS
+dnl --------------------------
+
+dnl Allow users to send email from addresses other than their default?
+undefine([masquerade])dnl
+AC_ARG_ENABLE(masquerade,
+  [  --enable-masquerade[='draft_from[ mmailid[ username_extension]]']
+                          enable 3 types of email address masquerading [none]],
+  [if test x"$enable_masquerade" = x"yes"; then
+    masquerade="draft_from mmailid username_extension"
+  else
+    masquerade="$enable_masquerade"
+  fi])
+AC_SUBST(masquerade)dnl
+
+dnl Do you want to debug nmh?
+undefine([nmh-debug])dnl
+AC_ARG_ENABLE(nmh-debug,
+[  --enable-nmh-debug      enable nmh code debugging])
+
+dnl Do you want mhe support?
+undefine([nmh-mhe])dnl
+AC_ARG_ENABLE(nmh-mhe,
+[  --enable-nmh-mhe        enable mhe support (DEFAULT)])
+
+dnl mhe support is on by default, so define it unless
+dnl explicitly disabled.
+if test x$"enable_nmh_mhe" != x"no"; then
+  AC_DEFINE(MHE)dnl
+fi
+
+dnl Do you want client-side support for pop
+undefine([nmh-pop])dnl
+AC_ARG_ENABLE(nmh-pop,
+[  --enable-nmh-pop        enable client-side support for pop])
+if test x"$enable_nmh_pop" = x"yes"; then
+  AC_DEFINE(POP)dnl
+  POPLIB=popsbr.o
+  POPSED='/^%nmhbeginpop%/d;/^%nmhendpop%/d'
+else
+  POPSED='/^%nmhbeginpop%/,/^%nmhendpop%/d'
+fi
+AC_SUBST(POPLIB)dnl
+AC_SUBST(POPSED)dnl
+
+dnl What should be the default editor?
+undefine([editor])dnl
+AC_ARG_WITH(editor,
+[  --with-editor=EDITOR    specify the default editor])
+
+if test -n "$with_editor"; then
+  editorpath="$with_editor"
+fi
+
+dnl Do you want support for hesiod
+AC_ARG_WITH(hesiod,
+[  --with-hesiod=PREFIX    specify location of Hesiod])
+if test x"$with_hesiod" != x -a x"$with_hesiod" != x"no"; then
+  AC_DEFINE(HESIOD)dnl
+fi
+
+dnl Do you want client-side support for kpop
+AC_ARG_WITH(krb4,
+[  --with-krb4=PREFIX      specify location of Kerberos V4 for kpop support])
+if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
+  AC_DEFINE(KPOP)dnl
+  AC_DEFINE(KPOP_PRINCIPAL, "pop")dnl
+fi
+
 dnl What method of posting should post use?
 undefine([mts])dnl
 AC_ARG_WITH(mts,
 [  --with-mts=MTS          specify the mail transport agent])
 
-if test x$with_mts = xsmtp; then
+if test x"$with_mts" = x"smtp"; then
   MTS="smtp"
   MTSLIB="mts/smtp/libsmtp.a"
   AC_DEFINE(SMTPMTS)dnl
-elif test x$with_mts = xsendmail; then
+elif test x"$with_mts" = x"sendmail"; then
   MTS="sendmail"
   MTSLIB="mts/sendmail/libsend.a"
   AC_DEFINE(SENDMTS)dnl
@@ -52,15 +119,6 @@ fi
 AC_SUBST(MTS)dnl
 AC_SUBST(MTSLIB)dnl
 
-dnl What should be the default editor?
-undefine([editor])dnl
-AC_ARG_WITH(editor,
-[  --with-editor=EDITOR    specify the default editor])
-
-if test -n "$with_editor"; then
-  editorpath="$with_editor"
-fi
-
 dnl What should be the default pager?
 undefine([pager])dnl
 AC_ARG_WITH(pager,
@@ -70,50 +128,17 @@ if test -n "$with_pager"; then
   pagerpath="$with_pager"
 fi
 
-dnl Do you want mhe support?
-undefine([nmh-mhe])dnl
-AC_ARG_ENABLE(nmh-mhe,
-[  --enable-nmh-mhe        enable mhe support (DEFAULT)])
-
-dnl mhe support is on by default, so define it unless
-dnl explicitly disabled.
-if test x$enable_nmh_mhe != xno; then
-  AC_DEFINE(MHE)dnl
-fi
-
-dnl Do you want client-side support for pop
-undefine([nmh-pop])dnl
-AC_ARG_ENABLE(nmh-pop,
-[  --enable-nmh-pop        enable client-side support for pop])
-if test x$enable_nmh_pop = xyes; then
-  AC_DEFINE(POP)dnl
-  POPLIB=popsbr.o
-  POPSED='/^%nmhbeginpop%/d;/^%nmhendpop%/d'
+dnl What should be the default mail server(s)?
+undefine([smtpservers])dnl
+AC_ARG_WITH(smtpservers,
+[  --with-smtpservers='SMTPSERVER1[ SMTPSERVER2...]'
+                          specify the default smtp server(s) [localhost]])
+if test -n "$with_smtpservers"; then
+  smtpservers="$with_smtpservers"
 else
-  POPSED='/^%nmhbeginpop%/,/^%nmhendpop%/d'
+  smtpservers="localhost"
 fi
-AC_SUBST(POPLIB)dnl
-AC_SUBST(POPSED)dnl
-
-dnl Do you want client-side support for kpop
-AC_ARG_WITH(krb4,
-[  --with-krb4=PREFIX      specify location of Kerberos V4 for kpop support])
-if test x$with_krb4 != x -a x$with_krb4 != xno; then
-  AC_DEFINE(KPOP)dnl
-  AC_DEFINE(KPOP_PRINCIPAL, "pop")dnl
-fi
-
-dnl Do you want support for hesiod
-AC_ARG_WITH(hesiod,
-[  --with-hesiod=PREFIX    specify location of Hesiod])
-if test x$with_hesiod != x -a x$with_hesiod != xno; then
-  AC_DEFINE(HESIOD)dnl
-fi
-
-dnl Do you want to debug nmh?
-undefine([nmh-debug])dnl
-AC_ARG_ENABLE(nmh-debug,
-[  --enable-nmh-debug      enable nmh code debugging])
+AC_SUBST(smtpservers)dnl
 
 dnl ----------------------------------------------------
 dnl Default location is /usr/local/nmh/{bin,etc,lib,man}
@@ -126,7 +151,7 @@ dnl ------------------
 dnl We want these before the checks,
 dnl so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS= auto_cflags=1
-if test x$enable_nmh_debug = xyes; then
+if test x"$enable_nmh_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
@@ -137,7 +162,7 @@ dnl   if compiler is gcc, then
 dnl     use -O2 and some warning flags
 dnl   else use -O
 if test -n "$auto_cflags"; then
-  if test x$enable_nmh_debug = xyes; then
+  if test x"$enable_nmh_debug" = x"yes"; then
     if test -n "$GCC"; then
       test -z "$CFLAGS" && CFLAGS="-Wall -g" || CFLAGS="$CFLAGS -Wall -g"
     else
@@ -426,8 +451,8 @@ AC_CHECK_HEADERS(db1/ndbm.h)
 dnl ----------------
 dnl CHECK FOR HESIOD
 dnl ----------------
-if test x$with_hesiod != x -a x$with_hesiod != xno; then
-  if test x$with_hesiod != xyes; then
+if test x"$with_hesiod" != x -a x"$with_hesiod" != x"no"; then
+  if test x"$with_hesiod" != x"yes"; then
     HESIOD_INCLUDES="-I$with_hesiod/include"
     HESIOD_LIBS="-L$with_hesiod/lib"
   fi
@@ -442,8 +467,8 @@ AC_SUBST(HESIOD_LIBS)dnl
 dnl ----------------------------------
 dnl CHECK FOR KRB4 (Kerberos4 support)
 dnl ----------------------------------
-if test x$with_krb4 != x -a x$with_krb4 != xno; then
-  if test x$with_krb4 != xyes; then
+if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
+  if test x"$with_krb4" != x"yes"; then
     KRB4_INCLUDES="-I$with_krb4/include"
     if test -d "$with_krb4/include/kerberosIV"; then
       KRB4_INCLUDES="$KRB4_INCLUDES -I$with_krb4/include/kerberosIV"
@@ -660,6 +685,7 @@ AC_OUTPUT(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
           etc/Makefile man/Makefile, \
           [test -z "$CONFIG_HEADERS" || echo > stamp-h])
 
+dnl Umm, what's the point of these assignments??  -- <dan-nmh@dilvish.speed.net>
 eval "nmhbin=${bindir}";         eval "nmhbin2=${nmhbin}"
 eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf2=${nmhsysconf}"
 eval "nmhlib=${libdir}";         eval "nmhlib2=${nmhlib}"
@@ -668,17 +694,19 @@ eval "nmhman=${mandir}"
 echo "
 nmh configuration
 -----------------
-nmh version               : ${VERSION}
-target os                 : ${target}
-compiler                  : ${CC}
-compiler flags            : ${CFLAGS}
-linker flags              : ${LDFLAGS}
-source code location      : ${srcdir}
-binary install path       : ${nmhbin2}
-libary install path       : ${nmhlib2}
-config files install path : ${nmhsysconf2}
-man page install path     : ${nmhman}
-transport system          : ${MTS}
-default editor            : ${editorpath}
-default pager             : ${pagerpath}"
+nmh version                : ${VERSION}
+target os                  : ${target}
+compiler                   : ${CC}
+compiler flags             : ${CFLAGS}
+linker flags               : ${LDFLAGS}
+source code location       : ${srcdir}
+binary install path        : ${nmhbin2}
+libary install path        : ${nmhlib2}
+config files install path  : ${nmhsysconf2}
+man page install path      : ${nmhman}
+transport system           : ${MTS}
+default smtp servers       : ${smtpservers}
+default editor             : ${editorpath}
+default pager              : ${pagerpath}
+email address masquerading : ${masquerade}"
 echo ""

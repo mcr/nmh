@@ -13,9 +13,9 @@ hostable: %etcdir%/hosts
 # query the system for this value (gethostname, etc...).
 #localname: foo.bar.com
 
-# Uncomment the following line to allow username masquerading.  Any or all of
-# the three types of masquerading may be used (see mh-tailor(5) for details).
-#masquerade: draft_from mmailid username_extension
+# The following directive allows email address masquerading.  The string
+# "draft_from mmailid username_extension" will allow all three types.
+masquerade: %masquerade%
 
 # Default location of mail drops.  If this option is
 # set, but empty, the user's home directory is used.
@@ -29,4 +29,4 @@ mmdflfil:
 #pophost: localhost
 
 # List of smtp servers to try if using smtp support
-servers: localhost
+servers: %smtpservers%

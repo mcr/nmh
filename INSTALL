@@ -18,12 +18,12 @@ need an ANSI C compiler such as gcc.
 
    sh configure [options]
 
-   This will check the configuration of your OS, and create
-   the include file config.h, as well as the various Makefiles.
+   This will check the configuration of your OS, and create the 
+   include file config.h, as well as the various Makefiles.
 
-   The configure script accepts various options.  The options of
-   most interest are listed below.  To see the list of all available
-   options, you can run
+   The configure script accepts various options.  The options of 
+   most interest are listed in a section below.  To see the list 
+   of all available options, you can run
 
    sh configure --help
 
@@ -159,8 +159,46 @@ Options for configure
 --mandir=DIR     (DEFAULT is ${prefix}/man)
      nmh's man pages are installed here.
 
+--enable-masquerade[='draft_from[ mmailid[ username_extension]]']    
+     If this option is not specified, the mts.conf file will contain the line
+     "masquerade: " (with no value), which may be manually edited later.  You
+     may find it convenient to specify a value at configure-time, however, so
+     that each time nmh is reinstalled, the right value will be there.
+
+     Any subset of "draft_from mmailid username_extension" may be given.  As a
+     shortcut, simply doing `configure --enable-masquerade' will enable all 3.
+
+     See the mh-tailor(5) man page for full documentation of "masquerade:".
+
+--enable-nmh-debug
+     Enable debugging support.
+
+--enable-nmh-mhe    (DEFAULT)
+     Add support for the Emacs front-end `mhe'.
+
+--enable-nmh-pop
+     Enable client-side support for pop.
+
+--with-editor=EDITOR  (DEFAULT is vi)
+     specify the full path of the default editor to use.  If this
+     option is not given, then the configuration process will search
+     for the `vi' command and use it as the default.  If you wish to
+     specify an interface which is compatible with MH, then use the
+     nmh command `prompter'.  If you specify `prompter', then you don't
+     need to give the full pathname.
+
+--with-hesiod=PREFIX
+     Specify the location of Hesiod.
+
+--with-krb4=PREFIX
+     Specify the location of Kerberos V4 for KPOP support.  You will also need
+     to specify the option `--enable-nmh-pop'.  After running configure, you
+     will need to change the POPSERVICE #define in config.h if you want to use
+     KPOP exclusively (rather than being able to switch between KPOP and normal
+     POP3).  See the comments inside config.h for details.
+
 --with-mts=MTS   (DEFAULT is smtp)
-     specify the mail transport system you want to use.  The two
+     Specify the mail transport system you want to use.  The two
      acceptable options are "smtp" (which is the default), and
      "sendmail".
 
@@ -178,37 +216,18 @@ Options for configure
      If you wish to use a transport agent other than sendmail, you will
      need to use a `sendmail wrapper'.
 
---with-editor=EDITOR  (DEFAULT is vi)
-     specify the full path of the default editor to use.  If this
-     option is not given, then the configuration process will search
-     for the `vi' command and use it as the default.  If you wish to
-     specify an interface which is compatible with MH, then use the
-     nmh command `prompter'.  If you specify `prompter', then you don't
-     need to give the full pathname.
-
 --with-pager=PAGER    (DEFAULT is more)
-     specify the default pager (file lister) to use.  If this option
+     Specify the default pager (file lister) to use.  If this option
      is not given, then the configuration process will search for the
      command `more' and use it as the default.
 
---enable-nmh-mhe    (DEFAULT)
-     Add support for the Emacs front-end `mhe'.
+--with-smtpservers='SMTPSERVER1[ SMTPSERVER2...]'    (DEFAULT is localhost)
+     If this option is not specified, the mts.conf file will contain the line
+     "servers: localhost", which may be manually edited later.  You may find it
+     convenient to specify a value at configure-time, however, so that each time
+     nmh is reinstalled, the right value will be there.
 
---enable-nmh-pop
-    Enable client-side support for pop.
-
---with-krb4=PREFIX
-    Specify the location of Kerberos V4 for KPOP support.  You will also need to
-    specify the option `--enable-nmh-pop'.  After running configure, you will
-    need to change the POPSERVICE #define in config.h if you want to use KPOP
-    exclusively (rather than being able to switch between KPOP and normal POP3).
-    See the comments inside config.h for details.
-
---with-hesiod=PREFIX
-    Specify the location of Hesiod.
-
---enable-nmh-debug
-    Enable debugging support.
+     See the mh-tailor(5) man page for full documentation of "servers:".
 
 --
 The nmh team

@@ -1,3 +1,36 @@
+Tue Mar 14 01:14:13 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Applied, after some finessing,
+	Simon Burge <simonb@thistledown.com.au>'s --with-smtpservers patch:
+
+	    Here's a patch that allows you to add
+
+		    --with-smtpservers=<some.host.name>
+
+	    to the ./configure command line to set the "servers: " line in
+ 	    etc/mts.conf.  Around here, we use "mailhost" so that all
+ 	    machines in the current domain just talk to a central machine
+ 	    and nothing else runs an MTA.  Now, I can use
+
+		    --with-smtpservers=mailhost
+
+	    instead of having to remember to fix this by hand (and often
+ 	    forgetting to do so!).
+
+	* Inspired by Simon's patch, added an --enable-masquerade option
+	to configure.  It will set the "masquerade:" line of mts.conf.
+	You may specify a subset of the three types of masquerading, like
+	--enable-masquerade="draft_from mmailid", or leave off explicit
+	arguments to enable all three types.
+
+	* Alphabetized the --enable and --with options in configure.in and
+	INSTALL and added documentation of the two new options to the latter.
+
+	* Added new dependency for mts.conf: Makefile.  If this isn't
+ 	done, then when you reconfigure nmh with new values for
+ 	--enable-masquerade or --with-smtpservers, you'll fail to get an
+ 	updated copy of mts.conf.
+
 Mon Mar 13 21:32:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied Sullivan N. Beck <sbeck@cise.ufl.edu>'s mhshow-suffix patch:

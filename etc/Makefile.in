@@ -16,7 +16,9 @@ bindir      = @bindir@
 libdir      = @libdir@
 etcdir      = @sysconfdir@
 
-mailspool    = @mailspool@
+mailspool   = @mailspool@
+masquerade  = @masquerade@
+smtpservers = @smtpservers@
 
 INSTALL         = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -64,10 +66,12 @@ mhn.defaults: $(srcdir)/mhn.defaults.sh $(MHNSEARCHPROG)
 	rm -f $@
 	$(srcdir)/mhn.defaults.sh $(MHNSEARCHPATH) $(MHNSEARCHPROG) > $@
 
-mts.conf: $(srcdir)/mts.conf.in
+mts.conf: $(srcdir)/mts.conf.in Makefile
 	rm -f $@
 	$(SED) -e 's,%mailspool%,$(mailspool),' \
-	       -e 's,%etcdir%,$(etcdir),' < $(srcdir)/mts.conf.in > $@
+	       -e 's,%etcdir%,$(etcdir),' \
+	       -e 's,%masquerade%,$(masquerade),' \
+	       -e 's,%smtpservers%,$(smtpservers),' < $(srcdir)/mts.conf.in > $@
 
 install: install-files install-scripts
 
