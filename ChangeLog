@@ -45,12 +45,10 @@ Tue Mar 14 12:41:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	    "19 Jan 00" as the date.  The following works around this so 
 	    that scan, show, sortm, etc work ok.
 
-	* Added scan.MMDDYY and scan.YYYYMMDD format files.
+        * Created new dtimep.c-lexed with Simon's change using dtimep.lex
+          lexed on Solaris 2.6.
 
-	* Changed strdup() in strdup.c to take a _const_ char*.  Don't
- 	know why this didn't hit anyone before, but I wasn't able to
- 	compile on Solaris 2.6 without doing this, due to a "previous
- 	declaration" error.
+	* Added scan.MMDDYY and scan.YYYYMMDD format files.
 
 Mon Mar 13 21:32:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
