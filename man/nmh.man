@@ -183,7 +183,7 @@ There are many other possibilities such as creating multiple folders
 for different topics, and automatically refiling messages according to
 subject, source, destination, or content.  These are beyond the scope
 of this manual entry.
-,PP
+.PP
 Following is a list of all the
 .B nmh
 commands:
