@@ -70,7 +70,7 @@ folder_read (char *name)
 	adios (NULL, "unable to allocate storage");
 
     while ((dp = readdir (dd))) {
-	if ((msgnum = m_atoi (dp->d_name))) {
+	if ((msgnum = m_atoi (dp->d_name)) && msgnum > 0) {
 	    /*
 	     * Check if we need to allocate more
 	     * temporary elements for message names.

@@ -1,5 +1,8 @@
 2005-02-23  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* sbr/folder_read.c fix Debian bug #202667: crash when a
+	message's filename overflows an int when converted
+
 	* Updated config.guess and config.sub to the most recent
 	versions (from automake 1.9.5)
 
