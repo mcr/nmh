@@ -45,6 +45,10 @@ Tue Mar 14 12:41:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	    "19 Jan 00" as the date.  The following works around this so 
 	    that scan, show, sortm, etc work ok.
 
+	I put Simon's patch under the control of a new #define called
+	FIX_NON_Y2K_COMPLIANT_MUA_DATES.  There's some commentary in
+	acconfig.h about when you might not want to #define it.
+
 	* Created new dtimep.c-lexed with Simon's change using dtimep.lex
 	lexed on Solaris 2.6.  Added missing dependency in
 	zotnet/tws/Makefile.in for dtimep.c: dtimep.c-lexed.
