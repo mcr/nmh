@@ -147,9 +147,10 @@ For debugging purposes, you may give the switch `\-snoop', which will
 allow you to watch the POP transaction take place between you and the
 POP server.
 
-If nmh has been compiled with KPOP #defined, but without POPSERVICE being set to
-"kpop", the -kpop switch may be specified to cause the use of Kerberized POP
-rather than standard POP3 during a given invocation of \fIinc\fR.
+If nmh has been compiled with KPOP #defined, the `\-kpop' switch will allow
+\fIinc\fR to use Kerberized POP rather than standard POP3 on a given invocation.
+If POPSERVICE was also #defined to "kpop", \fIinc\fR will be hardwired to always
+use KPOP.
 %nmhendpop%
 .Fi
 ^$HOME/\&.mh\(ruprofile~^The user profile

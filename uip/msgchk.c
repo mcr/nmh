@@ -259,6 +259,9 @@ main (int argc, char **argv)
 
 #ifdef POP
     if (host) {
+	if ( strcmp( POPSERVICE, "kpop" ) == 0 ) {
+	    kpop = 1;
+	}
 	if (vecp == 0) {
 	    status = remotemail (host, user, rpop, kpop, notifysw, 1, snoop);
 	} else {

@@ -1,3 +1,16 @@
+Fri Mar 17 11:59:33 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* wesley.craig@umich.edu did not document his previous KPOP patch,
+	so I did so, and asked him to check what I wrote.  Unfortunately
+	he didn't notice my misunderstanding of his patch.  I wrote that
+	if you #define POPSERVICE "kpop", inc and msgchk will use KPOP
+	exclusively, but if you leave it as "pop3", you can use Wesley's
+	new -kpop switch on a given invocation.  Instead, however, -kpop
+	turned out to be necessary on every invocation, and a KPOP user
+	complained.  Applied Wesley's new patch, which makes things work
+	like I thought his original patch did.  After that, did one more
+	clarifying pass to the documentation in inc.man and msgchk.man.
+
 Wed Mar 15 18:45:45 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* When I fixed the long-standing makedir() bugs in January, I had

@@ -402,6 +402,9 @@ main (int argc, char **argv)
     if (inc_type == INC_POP) {
 	if (user == NULL)
 	    user = getusername ();
+	if ( strcmp( POPSERVICE, "kpop" ) == 0 ) {
+	    kpop = 1;
+	}
 	if (kpop || ( rpop > 0))
 	    pass = getusername ();
 	else
