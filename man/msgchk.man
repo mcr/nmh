@@ -20,9 +20,12 @@ msgchk
 %nmhbeginpop%
 \%[\-host\ hostname]
 \%[\-user\ username]
+\%[\-apop]
+\%[\-noapop]
 \%[\-kpop]
 \%[\-sasl]
 \%[\-saslmech \mechanism]
+\%[\-snoop]
 .br
 %nmhendpop%
 \%[users\ ...]
@@ -78,6 +81,17 @@ you.
 For debugging purposes, there is also a switch `\-snoop', which will
 allow you to watch the POP transaction take place between you and the
 POP server.
+
+If nmh has been compiled with APOP #defined, the `\-apop' switch will cause
+\fImsgchk\fR to use APOP rather than standard POP3 authentication.  Under APOP,
+a unique string (generally of the format
+<\fIpid\fR.\fItimestamp\fR@\fIhostname\fR>) is announced by the POP server.
+Rather than `USER \fIuser\fR', `PASS \fIpassword\fR', msgchk sends `APOP
+\fIuser\fR \fIdigest\fR', where digest is the MD5 hash of the unique string
+followed by a `secret' shared by client and server, essentially equivalent to
+the user's password (though an APOP-enabled POP3 server could have separate APOP
+and plain POP3 passwords for a single user).  `\-noapop' disables APOP in cases
+where it'd otherwise be used.
 
 If nmh has been compiled with KPOP #defined, the `\-kpop' switch will allow
 \fImsgchk\fR to use Kerberized POP rather than standard POP3 on a given

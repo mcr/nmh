@@ -1,3 +1,8 @@
+Fri Dec 22 22:08:51 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* -apop and -noapop were not documented in msgchk.man.  -snoop was
+ 	documented but didn't appear in the usage SYNOPSIS.
+
 Fri Dec 22 23:42:16 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Made a new ./configure option called
