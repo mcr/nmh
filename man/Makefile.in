@@ -124,6 +124,10 @@ man.sed: Makefile
 	echo 's,%manext5%,$(manext5),g' >> $@
 	echo 's,%manext8%,$(manext8),g' >> $@
 	echo '$(POPSED)' >> $@
+	echo '/%components%/r $(top_srcdir)/etc/components' >> $@
+	echo ' s,%components%,,g' >> $@
+	echo '/%distcomps%/r $(top_srcdir)/etc/distcomps' >> $@
+	echo ' s,%distcomps%,,g' >> $@
 
 # ========= INSTALL TARGETS =========
 
