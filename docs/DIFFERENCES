@@ -22,7 +22,7 @@ GENERAL
    It now requires an ANSI C compiler (gcc is fine) to compile.
 *) A new option `-version' has been added to all the commands.
 *) The POP server (popd) has been removed from the distribution.
-   But the client-side support for POP, APOP, and KPOP is still present.
+   RPOP on the client side is not currently supported.
 *) The support for MH-style bulletin boards has been removed
    (NNTP makes this obsolete anyway).
 *) Currently nmh doesn't support using shared libraries for libmh.

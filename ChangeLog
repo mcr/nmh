@@ -1,4 +1,4 @@
-Mon May 08 23:46:29 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Mon May 08 23:51:55 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Doug informed me that the way I had restored the "lost" version
 	histories was wrong, because `cvs checkout's of old versions of
@@ -25,6 +25,9 @@ Mon May 08 23:46:29 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	tree to make sure no files got left out, and then to chown the
  	files so that they're owned by root, preventing a Trojaning attack
  	by a malicious remote user with a UID matching yours.
+
+	* Changed DIFFERENCES to say that RPOP is not currently supported
+	rather than implying it by saying that APOP, KPOP, and POP[3] are.
 
 Sat May 06 08:28:09 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
