@@ -195,7 +195,7 @@ which your shell might interpret.
 
 .ti -1i
 \fIfolder\fR or \fI\+\fR 	Store the message in the nmh folder named
-by \fBstring\fR.  Currently his is handled by piping the message to the nmh
+by \fBstring\fR.  Currently this is handled by piping the message to the nmh
 program `rcvstore', although this may change in the future.
 
 .in -1i
