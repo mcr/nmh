@@ -5,6 +5,7 @@
 #
 
 VERSION = @VERSION@
+DATE = @DATE@
 
 SHELL = /bin/sh
 
@@ -110,6 +111,7 @@ tmac.h: man.sed tmac.h.in
 man.sed: Makefile
 	echo 's,%nmhwarning%,THIS FILE HAS BEEN AUTOMATICALLY GENERATED.  DO NOT EDIT.,g' > $@
 	echo 's,%nmhversion%,nmh-$(VERSION),g' >> $@
+	echo 's,%nmhdate%,$(DATE),g' >> $@
 	echo 's,%bindir%,$(bindir),g' >> $@
 	echo 's,%etcdir%,$(etcdir),g' >> $@
 	echo 's,%libdir%,$(libdir),g' >> $@

@@ -2,68 +2,93 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
-.TH ALI %manext1% MH.6.8 [%nmhversion%]
+.TH ALI %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 ali \- list mail aliases
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-ali
-\%[\-alias\ aliasfile]
-\%[\-list] \%[\-nolist]
-\%[\-normalize]
-.br
-\%[\-nonormalize]
-\%[\-user] \%[\-nouser]
-\%[aliases\ ...]
-.br
-\%[\-version]
-\%[\-help] 
-.in -.5i
+.B ali
+.RB [ \-alias
+.IR aliasfile ]
+.RB [ \-list " | " \-nolist ]
+.RB [ \-normalize " | " \-nonormalize ]
+.RB [ \-user " | " \-nouser ]
+.RB [ \-version ]
+.RB [ \-help ] 
+.RI [ aliases " ...]"
 .SH DESCRIPTION
-\fIAli\fR searches the named mail alias files for each of the given
-\fIaliases\fR.  It creates a list of addresses for those \fIaliases\fR,
+.B Ali
+searches the named mail alias files for each of the given
+.IR aliases .
+It creates a list of addresses for those
+.IR aliases ,
 and writes that list on standard output.  If no arguments are given,
-\fIali\fR outputs all alias entries.
-
+.B ali
+outputs all alias entries.
+.PP
 By default, when an aliases expands to multiple addresses, the addresses
 are separated by commas and printed on as few lines as possible.  If the
-`\-list' option is specified, then when an address expands to multiple
+.B \-list
+option is specified, then when an address expands to multiple
 addresses, each address will appear on a separate line.
-
-The switch `\-user' directs \fIali\fR to perform its processing in
+.PP
+The switch
+.B \-user
+directs
+.B ali
+to perform its processing in
 an inverted fashion: instead of listing the addresses that each given
-alias expands to, \fIali\fR will list the aliases that expand to each
-given address.  If the `\-normalize' switch is given, \fIali\fR will
+alias expands to,
+.B ali
+will list the aliases that expand to each
+given address.  If the
+.B \-normalize
+switch is given,
+.B ali
+will
 try to track down the official hostname of the address.
-
+.PP
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
-additional alias files given by the `\-alias aliasfile' switch will be
-read.  Each \fIalias\fR is processed as described in \fImh\-alias\fR\0(5).
-.Fi
+additional alias files given by the
+.RB ` \-alias
+.IR aliasfile '
+switch will be read.  Each
+.I alias
+is processed as described in
+.BR mh\-alias (5).
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^/etc/passwd~^List of users
 ^/etc/group~^List of groups
-.Pr
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Aliasfile:~^For a default alias file
-.Sa
+
+.SH "SEE ALSO"
 mh\-alias(5)
-.De
-`\-alias %etcdir%/MailAliases'
-.Ds
-`\-nolist'
-.Ds
-`\-nonormalize'
-.Ds
-`\-nouser'
-.Co
+
+.SH "DEFAULTS"
+.nf
+.RB ` \-alias " %etcdir%/MailAliases'"
+.RB ` \-nolist '
+.RB ` \-nonormalize '
+.RB ` \-nouser '
+
+.SH CONTEXT
 None
-.Bu
-The `\-user' option with `\-nonormalize' is not entirely accurate, as it
+
+.SH BUGS
+The
+.B \-user
+option with
+.B \-nonormalize
+is not entirely accurate, as it
 does not replace local nicknames for hosts with their official site names.
-.En
