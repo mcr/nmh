@@ -1,3 +1,58 @@
+Fri May  7 17:18:28 1999  Dan Winship  <danw@mit.edu>
+
+	* Fixed flist to properly deal with relative folder names.
+	Problem noted by Jerry Peek <jpeek@jpeek.com>.
+
+	* Fixed --with-krb4 to work with original Kerberos 4 libraries as
+	well as the Kerberos 5 compat libraries. Based on a patch from
+	Assar Westerlund <assar@sics.se>.
+
+	* Added a check in configure.in to test if modf is in libc and
+	link with libm if not. This is needed by at least Digital UNIX. 
+	Problem pointed out by Kevin Oberman <oberman@es.net>.
+
+	* Fix a bug from the "mhn -show" to "mhshow" renaming that
+	made the "list" command in whatnow not work for some users.
+	From Ruud de Rooij <r.c.m.derooij@twi.tudelft.nl>.
+
+	* Replaced "extern int errno" with "#include <errno.h>" in a
+	number of files. Suggested by Stephen Wilson Bailey
+	<swb@nconnect.net>.
+
+	* Fixed a problem in how "packf -mbox" translated "Return-Path:"
+	lines. From Kimmo Suominen <kim@tac.nyc.ny.us>.
+
+	* Fixed a segmentation fault in inc. Patch originally from Ruud de
+	Rooij <r.c.m.derooij@twi.tudelft.nl>.
+
+	* Allow display of 8bit encoded messages. From Kimmo Suominen
+	<kim@tac.nyc.ny.us>.
+
+	* Fixed repl to not add line breaks in the middle of long
+	addresses when building a reply. From Ruud de Rooij
+	<r.c.m.derooij@twi.tudelft.nl>.
+
+	* Added -library switch to spost so it can parse user aliases like
+	post does. From Ruud de Rooij <r.c.m.derooij@twi.tudelft.nl>.
+
+	* Changed configure.in's check for sigsetjmp to properly deal
+	with systems like Linux where it is a macro. From
+	<elleron@servtech.com>.
+
+	* Fixed a bug in whatnow that could cause it to sometimes exit
+	without prompting the user. Based on a patch by Richard Geiger
+	<rmg@netapp.com>.
+
+	* Added code to deal with SIGPIPE in mhl so it doesn't print
+	"Broken pipe" if you quit out of the moreproc.
+
+	* Documentation: Added a note to MACHINES about Irix make. Added a
+	pointer to the online copy of the MH book in INSTALL. Added
+	some additional information to the whatnow and packf man pages,
+	suggested by Jerry Peek <jpeek@jpeek.com>.
+
+	* Updated INSTALL, FAQ, etc to not refer to Richard as the
+	maintainer or math.gatech.edu as the home any more.
 
 1999-02-06  Richard Coleman  <coleman@math.gatech.edu>
 
