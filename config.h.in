@@ -117,6 +117,32 @@
  */
 #define WAITINT 1
 
+/* The following are autoconfigured, but you may wish to override the
+ * decisions of autoconf (and AC_CANONICAL_SYSTEM) and do your own
+ * thing. If so, you can modify the definitions. The Comments are as
+ * useful as ever. */
+
+/* Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX, SCO5 */
+#undef SYS5
+
+/* Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX */
+#undef SVR4
+
+/* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS -- does
+ * PicoBSD have uname? :) */
+#undef BIND
+#undef BSD42
+
+/* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS */
+#undef BSD44
+
+/* Defined for SCO5 */
+#undef SCO_5_STDIO
+
+/* Defined for Linux */
+#undef LINUX_STDIO
+
+
 /***** END USER CONFIGURATION SECTION *****/
 
 /* Define to empty if the keyword does not work.  */
@@ -166,26 +192,6 @@
 
 /* Define vfork as fork if vfork does not work.  */
 #undef vfork
-
-/* Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX, SCO5 */
-#undef SYS5
-
-/* Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX */
-#undef SVR4
-
-/* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS -- does
- * PicoBSD have uname? :) */
-#undef BIND
-#undef BSD42
-
-/* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS */
-#undef BSD44
-
-/* Defined for SCO5 */
-#undef SCO_5_STDIO
-
-/* Defined for Linux */
-#undef LINUX_STDIO
 
 /*
  * Define this if you want SMTP (simple mail transport protocol)

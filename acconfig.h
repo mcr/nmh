@@ -116,8 +116,10 @@
  */
 #define WAITINT 1
 
-/***** END USER CONFIGURATION SECTION *****/
-@TOP@
+/* The following are autoconfigured, but you may wish to override the
+ * decisions of autoconf (and AC_CANONICAL_SYSTEM) and do your own
+ * thing. If so, you can modify the definitions. The Comments are as
+ * useful as ever. */
 
 /* Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX, SCO5 */
 #undef SYS5
@@ -138,6 +140,10 @@
 
 /* Defined for Linux */
 #undef LINUX_STDIO
+
+
+/***** END USER CONFIGURATION SECTION *****/
+@TOP@
 
 
 /*
