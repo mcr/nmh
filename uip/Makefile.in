@@ -29,7 +29,7 @@ MTSLIB   = ../mts/libmts.a
 KRB4_LIBS = @KRB4_LIBS@
 SASL_LIBS = @SASL_LIBS@
 HESIOD_LIBS = @HESIOD_LIBS@
-LOCALLIBS = ../config/version.o ../config/config.o ../sbr/libmh.a $(MTSLIB) 
+LOCALLIBS = ../config/version.o ../config/config.o $(MTSLIB) ../sbr/libmh.a
 LINKLIBS = $(LOCALLIBS) $(KRB4_LIBS) $(SASL_LIBS) $(HESIOD_LIBS) $(LIBS)
 
 LINT	= @LINT@

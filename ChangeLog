@@ -1,3 +1,14 @@
+Mon Dec 11 22:08:07 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* When Shantonu made the new libmts.a, he swapped $(MTSLIB) and
+ 	libmh.a in sbr/Makefile.in so that libmh.a comes first, but this
+ 	causes the build to fail on Solaris, because libmts.a has to get
+ 	ruserpass() out of libmh.a.  Swapping them back to the way Ken
+ 	Hornstein's patch (which I applied on Jul 20) put them, with
+ 	libmh.a correctly coming second.  If there are times when libmts.a
+ 	needs to come second, then it would appear there's a circular
+	dependency and someone (Shantonu?) did an mts merge incorrectly.
+
 Fri Sep 8 01:36:23 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Took out bad time textual time zones like BST and JST.
