@@ -1,0 +1,35 @@
+#
+# $Id$
+#
+
+There are currently three mailing lists, related to nmh. 
+
+nmh-bugs@mhost.com
+------------------
+This an open-submission list for reporting bugs. It is moderated to
+prevent being spammed. Any nmh-related mail is approved.
+
+nmh-announce@mhost.com
+----------------------
+This is a very low-traffic mailing list for announcing new releases,
+patches, and important events related to nmh. 
+
+nmh-workers@mhost.com
+---------------------
+This is the main list for discussing work on nmh. Both of the above
+mailing lists are forwarded to this one. 
+
+mail archives
+-------------
+The mail archives are only available to people subscribed to the
+mailing list. This restriction is in place to prevent harvesting of
+email addresses by spammers. To access the archives, you need to send
+mail to nmh-workers-request with an archive access command. You can
+get a current list of commands the archive server understands by
+sending a message to nmh-workers-request@mhost.com with the subject
+"archive help". 
+
+Of interest in the archive are the directories "latest" which contains
+everything since the nmh-workers mailing list has been hosted on
+mhost.com, and "old-list" which contians all the mail from when the
+list was formerly hosted at math.gatech.edu.

@@ -1,52 +1,37 @@
 #
-# README -- I love README files.
-#
 # $Id$
 #
 
------------
-what is it?
------------
-nmh (new MH) is an electronic mail handling system.  It was
-originally based on the package MH-6.8.3, and is intended to be
-a (mostly) compatible drop-in replacement for MH.
+Installing
+----------
+Please read the INSTALL file.
 
-Although development of nmh is ongoing, it appears to be generally
-stable and is in current use.  But it is possible that we may
-break things as changes are made.
+Copying
+-------
+nmh uses a BSD-style license, which should be in the top-level of the
+distribution in a file named COPYRIGHT.
 
---------------
-installing nmh
---------------
-To install nmh, check the INSTALL and MACHINES files.  If you have
-previously used MH, check the file DIFFERENCES for a list of the
-differences between nmh and MH.
+Developers
+----------
+Information of interest to nmh developers can be found in
+the README.developers file in the docs subdirectory of this
+distribution.  If you're hacking on the code, you should also
+definately subscribe to the nmh-workers mailing list. To do so, send
+mail to nmh-workers-request@mhost.com with the subject "subscribe". If
+you're interested in working on nmh, but aren't sure what to do, see
+the TODO file in the docs subdirectory. There's plenty of work there.
 
---------------------------------
-ftp and web sites, mailing lists
---------------------------------
-To find out about the mailing lists, ftp sites, and web page
-for nmh, check the FAQ included in this distribution.
+Working with your shell
+-----------------------
+The files COMPLETION-TCSH and COMPLETION-ZSH in the docs subdirectory
+give cookbook examples of how to use the enhanced features of
+these shells with nmh. There is also a section in Jerry Peek's book
+covering nmh/MH and working with the shell. The section is available
+online here: http://www.ics.uci.edu/~mh/book/mh/mhanthsh.htm
 
----------------
-nmh maintenance
----------------
-nmh is currently being developed and maintained by a loosely organized
-group of volunteers. Please send bug reports and suggestions to the
-nmh development mailing list at nmh-workers@mhost.com.
+For More information
+--------------------
+There is more information, including a FAQ and a bit of historical
+information in the docs subdirectory. There are also links to further
+documentation on the nmh website located at http://www.mhost.com/nmh .
 
-----------------
-acknowledgments
-----------------
-The original MH system was developed by the RAND Corporation and the
-University of California.
-
-nmh was started by Richard Coleman (coleman@math.gatech.edu) after
-development on MH mostly stopped. He did the original autoconfiscation
-and most of the other work up until version 1.0.
-
-nmh uses (v)snprintf code from the Apache web server, so we need to
-make the following acknowlegement:
-
-This product includes software developed by the Apache Group
-for use in the Apache HTTP server project (http://www.apache.org/).
