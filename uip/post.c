@@ -632,7 +632,7 @@ main (int argc, char **argv)
     if (verbose)
 	printf (partno ? "Partial Message #%s Processed\n" : "Message Processed\n",
 		partno);
-    done (0);
+    return done (0);
 }
 
 
@@ -690,7 +690,7 @@ putfmt (char *name, char *str, FILE *out)
 
 	if ((cp = strrchr(str, '\n')))
 	    *cp = 0;
-	for (cp = pp = str; cp = strchr(pp, ','); pp = cp) {
+	for (cp = pp = str; (cp = strchr(pp, ',')); pp = cp) {
 	    *cp++ = 0;
 	    insert_fcc (hdr, pp);
 	}
@@ -704,7 +704,7 @@ putfmt (char *name, char *str, FILE *out)
     }
 
     tmpaddrs.m_next = NULL;
-    for (count = 0; cp = getname (str); count++)
+    for (count = 0; (cp = getname (str)); count++)
 	if ((mp = getm (cp, NULL, 0, AD_HOST, NULL))) {
 	    if (tmpaddrs.m_next)
 		np->m_next = mp;
@@ -916,7 +916,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flag
 
     if (mp->m_mbox == NULL || ((flags & HTRY) && !insert (mp)))
 	return 0;
-    if (!fill_in && (flags & (HBCC | HDCC)) || mp->m_ingrp)
+    if ((!fill_in && (flags & (HBCC | HDCC))) || mp->m_ingrp)
 	return 1;
 
     if (!nameoutput) {
@@ -938,13 +938,14 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flag
     }
     len = strlen (cp);
 
-    if (linepos != nameoutput)
+    if (linepos != nameoutput) {
 	if (len + linepos + 2 > outputlinelen)
 	    fprintf (out, ",\n%*s", linepos = nameoutput, "");
 	else {
 	    fputs (", ", out);
 	    linepos += 2;
 	}
+    }
 
     fputs (cp, out);
     linepos += len;
@@ -972,7 +973,7 @@ putgrp (char *name, char *group, FILE *out, unsigned int flags)
     cp = fill_in ? group : concat (group, ";", NULL);
     len = strlen (cp);
 
-    if (linepos > nameoutput)
+    if (linepos > nameoutput) {
 	if (len + linepos + 2 > outputlinelen) {
 	    fprintf (out, ",\n%*s", nameoutput, "");
 	    linepos = nameoutput;
@@ -981,6 +982,7 @@ putgrp (char *name, char *group, FILE *out, unsigned int flags)
 	    fputs (", ", out);
 	    linepos += 2;
 	}
+    }
 
     fputs (cp, out);
     linepos += len;

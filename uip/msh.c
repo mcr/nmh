@@ -408,7 +408,7 @@ main (int argc, char **argv)
 
     m_reset ();
     
-    done (0);
+    return done (0);
 }
 
 
@@ -1549,7 +1549,7 @@ parse (char *buffer, struct Cmd *cmdp)
     cmdp->direction = STDIO;
     cmdp->stream = NULL;
 
-    for (cp = buffer; c = *cp; cp++) {
+    for (cp = buffer; (c = *cp); cp++) {
 	if (!isspace (c))
 	    break;
     }
@@ -1615,7 +1615,7 @@ parse (char *buffer, struct Cmd *cmdp)
 		    cp++;
 		}
 		cmdp->redirect = pp + 1;/* sigh */
-		for (; c = *cp; cp++)
+		for (; (c = *cp); cp++)
 		    if (!isspace (c))
 			break;
 		if (c == 0) {
@@ -1936,6 +1936,8 @@ pINI (void)
 	    fmt2peer (RC_ERR, "pINI protocol screw-up");
 	    done (1);		/* NOTREACHED */
     }
+
+    return 1;  /* dead code to satisfy the compiler */
 }
 
 
@@ -2067,11 +2069,12 @@ pQRY2 (void)
     for (msgnum = mp->curmsg; msgnum <= mp->hghmsg; msgnum++)
 	if (does_exist (mp, msgnum))
 	    i++;
-    if (i-- > 0)
+    if (i-- > 0) {
 	if (topcur)
 	    k = i >= k ? 1 : k - i;
 	else
 	    k -= i > j ? j : i;
+    }
 
     i = j = 0;
     n = 1;
@@ -2292,6 +2295,8 @@ ttyR (struct Cmd *cmdp)
 	    fmt2peer (RC_ERR, "pTTY protocol screw-up");
 	    done (1);		/* NOTREACHED */
     }
+
+    return 1;  /* dead code to satisfy compiler */
 }
 
 

@@ -241,14 +241,15 @@ store_application (CT ct)
 	if (tarP) {
 	    ct->c_showproc = add (zP ? "%euncompress | tar tvf -"
 				  : "%etar tvf -", NULL);
-	    if (!ct->c_storeproc)
+	    if (!ct->c_storeproc) {
 		if (autosw) {
 		    ct->c_storeproc = add (zP ? "| uncompress | tar xvpf -"
 					   : "| tar xvpf -", NULL);
 		    ct->c_umask = 0022;
 		} else {
-		    ct->c_storeproc = add (zP ? "%m%P.tar.Z" : "%m%P.tar", NULL);
+		    ct->c_storeproc= add (zP ? "%m%P.tar.Z" : "%m%P.tar", NULL);
 		}
+	    }
 	}
     }
 

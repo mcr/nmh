@@ -161,7 +161,7 @@ main (int argc, char **argv)
 	adios (NULL, "missing -viamail \"mailpath\" switch");
 
     via_mail (f1, f2, f3, f4, f5, delay, f7);
-    /* NOTREACHED */
+    return 0;  /* dead code to satisfy the compiler */
 }
 
 
@@ -245,5 +245,5 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     fclose (fp);
     if (unlink (tmpfil) == -1)
 	advise (NULL, "unable to remove temp file %s", tmpfil);
-    done (status);
+    return done (status);
 }

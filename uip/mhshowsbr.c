@@ -734,11 +734,12 @@ show_multi_internal (CT ct, int serial, int alternate)
 	for (part = m->mp_parts; part; part = part->mp_next) {
 	    p = part->mp_part;
 
-	    if (p->c_pid > OK)
+	    if (p->c_pid > OK) {
 		if (kill (p->c_pid, 0) == NOTOK)
 		    p->c_pid = 0;
 		else
 		    kids++;
+	    }
 	}
 
 	while (kids > 0 && (pid = wait (&status)) != NOTOK) {

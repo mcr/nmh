@@ -691,7 +691,7 @@ foldcmd (char **args)
 		    packsw = 0;
 		    continue;
 	    }
-	if (*cp == '+' || *cp == '@')
+	if (*cp == '+' || *cp == '@') {
 	    if (folder) {
 		advise (NULL, "only one folder at a time!\n");
 		return;
@@ -699,6 +699,7 @@ foldcmd (char **args)
 	    else
 		folder = fmsh ? path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF)
 			    : cp + 1;
+	}
 	else
 	    if (msg) {
 		advise (NULL, "only one message at a time!\n");
@@ -1192,7 +1193,7 @@ markcmd (char **args)
 	}
     }
 
-    if (!addsw && !deletesw && !listsw)
+    if (!addsw && !deletesw && !listsw) {
 	if (seqp)
 	    addsw++;
 	else
@@ -1205,6 +1206,7 @@ markcmd (char **args)
 		if (!msgp)
 		    msgs[msgp++] = "all";
 	    }
+    }
 
     if (!msgp)
 	msgs[msgp++] = listsw ? "all" :"cur";

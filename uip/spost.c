@@ -454,6 +454,7 @@ main (int argc, char **argv)
     }
     execv ( sendmail, sargv);
     adios ( sendmail, "can't exec");
+    return 0;  /* dead code to satisfy the compiler */
 }
 
 /* DRAFT GENERATION */
@@ -489,7 +490,7 @@ putfmt (char *name, char *str, FILE *out)
     if (hdr->flags & HFCC) {
 	if ((cp = strrchr(str, '\n')))
 	    *cp = 0;
-	for (cp = pp = str; cp = strchr(pp, ','); pp = cp) {
+	for (cp = pp = str; (cp = strchr(pp, ',')); pp = cp) {
 	    *cp++ = 0;
 	    insert_fcc (hdr, pp);
 	}
@@ -504,7 +505,7 @@ putfmt (char *name, char *str, FILE *out)
     }
 #endif	/* notdef */
 
-    if (*str != '\n' && *str != '\0')
+    if (*str != '\n' && *str != '\0') {
 	if (aliasflg && hdr->flags & HTRY) {
 	    /* this header contains address(es) that we have to do
 	     * alias expansion on.  Because of the saved state in
@@ -531,6 +532,7 @@ putfmt (char *name, char *str, FILE *out)
 	} else {
 	    fprintf (out, "%s: %s", name, str );
 	}
+    }
 }
 
 

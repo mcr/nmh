@@ -94,7 +94,7 @@ make_intermediates (char *file)
 {
     char *cp;
 
-    for (cp = file + 1; cp = strchr(cp, '/'); cp++) {
+    for (cp = file + 1; (cp = strchr(cp, '/')); cp++) {
 	struct stat st;
 
 	*cp = '\0';

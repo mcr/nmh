@@ -227,8 +227,7 @@ pidcheck (int status)
 
     fflush (stdout);
     fflush (stderr);
-    done (1);
-    /* NOTREACHED */
+    return done (1);
 }
 
 
@@ -2662,7 +2661,7 @@ losing_ftp:
 	    goto losing_ftp;
 #endif
 
-    if (cachefile[0])
+    if (cachefile[0]) {
 	if (caching)
 	    chmod (cachefile, cachetype ? m_gmprot () : 0444);
 	else {
@@ -2676,7 +2675,7 @@ losing_ftp:
 
 		fseek (gp, 0L, SEEK_SET);
 
-		while ((cc = fread (buffer, sizeof(*buffer), sizeof(buffer), gp))
+		while ((cc= fread (buffer, sizeof(*buffer), sizeof(buffer), gp))
 		           > 0)
 		    fwrite (buffer, sizeof(*buffer), cc, fp);
 		fflush (fp);
@@ -2694,6 +2693,7 @@ losing_ftp:
 	    }
 	    umask (mask);
 	}
+    }
 
     fseek (ce->ce_fp, 0L, SEEK_SET);
     *file = ce->ce_file;
@@ -3159,11 +3159,12 @@ use_forw:
 	/* search the arguments for a folder name */
 	for (ap = arguments; *ap; ap++) {
 	    cp = *ap;
-	    if (*cp == '+' || *cp == '@')
+	    if (*cp == '+' || *cp == '@') {
 		if (folder)
 		    adios (NULL, "only one folder per #forw directive");
 		else
 		    folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+	    }
 	}
 
 	/* else, use the current folder */

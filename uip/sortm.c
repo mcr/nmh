@@ -226,13 +226,14 @@ main (int argc, char **argv)
 	dlist[i] = &smsgs[i];
     dlist[nmsgs] = 0;
 
-    if (verbose) 	/* announce what we're doing */
+    if (verbose) {	/* announce what we're doing */
 	if (subjsort)
 	    printf ("sorting by %s-major %s-minor\n", 
 		submajor ? subjsort : datesw,
 		submajor ? datesw : subjsort);
 	else
 	    printf ("sorting by datefield %s\n", datesw);
+    }
 
     /* first sort by date, or by subject-major, date-minor */
     qsort ((char *) dlist, nmsgs, sizeof(*dlist), 
@@ -304,7 +305,7 @@ main (int argc, char **argv)
     seq_save (mp);			/* synchronize message sequences */
     context_save ();			/* save the context file         */
     folder_free (mp);			/* free folder/message structure */
-    done (0);
+    return done (0);
 }
 
 static int 

@@ -569,7 +569,7 @@ vcommand (const char *fmt, va_list ap)
     char *cp, buffer[BUFSIZ];
 
     vsnprintf (buffer, sizeof(buffer), fmt, ap);
-    if (poprint)
+    if (poprint) {
 	if (pophack) {
 	    if ((cp = strchr (buffer, ' ')))
 		*cp = 0;
@@ -580,6 +580,7 @@ vcommand (const char *fmt, va_list ap)
 	}
 	else
 	    fprintf (stderr, "---> %s\n", buffer);
+    }
 
     if (putline (buffer, output) == NOTOK)
 	return NOTOK;

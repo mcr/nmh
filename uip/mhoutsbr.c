@@ -73,7 +73,7 @@ int writeBase64aux (FILE *, FILE *);
  * static prototypes
  */
 static int output_content (CT, FILE *);
-static int output_headers (CT, FILE *);
+static void output_headers (CT, FILE *);
 static int writeExternalBody (CT, FILE *);
 static int write8Bit (CT, FILE *);
 static int writeQuoted (CT, FILE *);
@@ -219,7 +219,7 @@ output_content (CT ct, FILE *out)
  * Output all the header fields for a content
  */
 
-static int
+static void
 output_headers (CT ct, FILE *out)
 {
     HF hp;

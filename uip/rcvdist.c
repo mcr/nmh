@@ -28,7 +28,7 @@ static char tmpfil[BUFSIZ] = "";
  * prototypes
  */
 static void rcvdistout (FILE *, char *, char *);
-void done (int);
+int done (int);
 
 
 int
@@ -117,7 +117,8 @@ main (int argc, char **argv)
 	default: 
 	    done (pidXwait(child_id, postproc));
     }
-/* NOTREACHED */
+
+    return 0;  /* dead code to satisfy the compiler */
 }
 
 /* very similar to routine in replsbr.c */
@@ -205,13 +206,14 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 			    }
 			    else {
 				i = strlen (cp = cptr->c_text) - 1;
-				if (cp[i] == '\n')
+				if (cp[i] == '\n') {
 				    if (cptr->c_type & CT_ADDR) {
 					cp[i] = 0;
 					cp = add (",\n\t", cp);
 				    }
 				    else
 					cp = add ("\t", cp);
+				}
 				cptr->c_text = add (tmpbuf, cp);
 			    }
 			    while (state == FLDPLUS) {
@@ -252,7 +254,7 @@ finished: ;
     fclose (out);
 
     free (scanl);
-    for (nxtbuf = compbuffers, i = ncomps; cptr = *savecomp++; nxtbuf++, i--)
+    for (nxtbuf = compbuffers, i = ncomps; (cptr = *savecomp++); nxtbuf++, i--)
 	free (cptr->c_text);
     while (i-- > 0)
         free (*nxtbuf++);
@@ -261,7 +263,7 @@ finished: ;
 }
 
 
-void
+int
 done (int status)
 {
     if (backup[0])
@@ -272,4 +274,5 @@ done (int status)
 	unlink (tmpfil);
 
     exit (status ? RCV_MBX : RCV_MOK);
+    return 1;  /* dead code to satisfy the compiler */
 }

@@ -160,13 +160,14 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 				tmpbuf = *nxtbuf++;
 			    } else {
 				i = strlen (cp = cptr->c_text) - 1;
-				if (cp[i] == '\n')
+				if (cp[i] == '\n') {
 				    if (cptr->c_type & CT_ADDR) {
 					cp[i] = '\0';
 					cp = add (",\n\t", cp);
 				    } else {
 					cp = add ("\t", cp);
 				    }
+				}
 				cptr->c_text = add (tmpbuf, cp);
 			    }
 			    while (state == FLDPLUS) {
@@ -252,7 +253,7 @@ finished:
 
     /* return dynamically allocated buffers */
     free (scanl);
-    for (nxtbuf = compbuffers, i = ncomps; cptr = *savecomp++; nxtbuf++, i--)
+    for (nxtbuf = compbuffers, i = ncomps; (cptr = *savecomp++); nxtbuf++, i--)
 	free (cptr->c_text);	/* if not nxtbuf, nxtbuf already freed */
     while ( i-- > 0)
         free (*nxtbuf++);	/* free unused nxtbufs */
@@ -334,7 +335,7 @@ formataddr (char *orig, char *str)
     }
 
     /* concatenate all the new addresses onto 'buf' */
-    for (isgroup = 0; cp = getname (str); ) {
+    for (isgroup = 0; (cp = getname (str)); ) {
 	if ((mp = getm (cp, dfhost, dftype, AD_NAME, error)) == NULL) {
 	    snprintf (baddr, sizeof(baddr), "\t%s -- %s\n", cp, error);
 	    badaddrs = add (baddr, badaddrs);

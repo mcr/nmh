@@ -641,14 +641,15 @@ plist
 		ebp = ibuf + strlen (ibuf);
 	    }
 	    c = *p2++;
-	    if (lf && c != '\n')
+	    if (lf && c != '\n') {
 		if (c != ' ' && c != '\t') {
 		    --p2;
 		    break;
 		}
 		else
 		    lf = 0;
-	    if (c == '\n')
+	    }
+	    if (c == '\n') {
 		if (body)
 		    break;
 		else {
@@ -659,6 +660,7 @@ plist
 		    lf++;
 		    c = ' ';
 		}
+	    }
 	    if (c && p1 < &linebuf[LBSIZE - 1])
 		*p1++ = c;
 	}
