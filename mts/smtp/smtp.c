@@ -56,6 +56,7 @@
 #define	SM_DOT	180
 #define	SM_QUIT	 30
 #define	SM_CLOS	 10
+#define	SM_AUTH  45
 
 static int sm_addrs = 0;
 static int sm_alarmed = 0;
@@ -71,6 +72,28 @@ static FILE *sm_wfp = NULL;
 static int sm_ispool = 0;
 static char sm_tmpfil[BUFSIZ];
 #endif /* MPOP */
+
+#ifdef CYRUS_SASL
+/*
+ * Some globals needed by SASL
+ */
+
+static sasl_conn_t *conn = NULL;	/* SASL connection state */
+static int sasl_complete = 0;		/* Has authentication succeded? */
+static sasl_ssf_t sasl_ssf;		/* Our security strength factor */
+static char *sasl_pw_context[2];	/* Context to pass into sm_get_pass */
+static int maxoutbuf;			/* Maximum crypto output buffer */
+static int sm_get_user(void *, int, const char **, unsigned *);
+static int sm_get_pass(sasl_conn_t *, void *, int, sasl_secret_t **);
+
+static sasl_callback_t callbacks[] = {
+    { SASL_CB_USER, sm_get_user, NULL },
+#define SM_SASL_N_CB_USER 0
+    { SASL_CB_PASS, sm_get_pass, NULL },
+#define SM_SASL_N_CB_PASS 1
+    { SASL_CB_LIST_END, NULL, NULL },
+};
+#endif /* CYRUS_SASL */
 
 static char *sm_noreply = "No reply text given";
 static char *sm_moreply = "; ";
@@ -109,16 +132,25 @@ static int smail_brkany (char, char *);
 char **smail_copyip (char **, char **, int);
 #endif
 
+#ifdef CYRUS_SASL
+/*
+ * Function prototypes needed for SASL
+ */
+
+static int sm_auth_sasl(char *, char *, char *);
+#endif /* CYRUS_SASL */
+
 /* from zotnet/mts/client.c */
 int client (char *, char *, char *, int, char *, int);
 
 int
 sm_init (char *client, char *server, int watch, int verbose,
-         int debug, int onex, int queued)
+         int debug, int onex, int queued, int sasl, char *saslmech,
+         char *user)
 {
     if (sm_mts == MTS_SMTP)
 	return smtp_init (client, server, watch, verbose,
-			  debug, onex, queued);
+			  debug, onex, queued, sasl, saslmech, user);
     else
 	return sendmail_init (client, server, watch, verbose,
 			      debug, onex, queued);
@@ -126,8 +158,12 @@ sm_init (char *client, char *server, int watch, int verbose,
 
 static int
 smtp_init (char *client, char *server, int watch, int verbose,
-           int debug, int onex, int queued)
+	   int debug, int onex, int queued, int sasl, char *saslmech,
+	   char *user)
 {
+#ifdef CYRUS_SASL
+    char *server_mechs;
+#endif /* CYRUS_SASL */
     int result, sd1, sd2;
 
     if (watch)
@@ -225,6 +261,35 @@ all_done: ;
 	    return RP_RPLY;
 	}
     }
+
+#ifdef CYRUS_SASL
+    /*
+     * If the user asked for SASL, then check to see if the SMTP server
+     * supports it.  Otherwise, error out (because the SMTP server
+     * might have been spoofed; we don't want to just silently not
+     * do authentication
+     */
+
+    if (sasl) {
+	if (! (server_mechs = EHLOset("AUTH"))) {
+	    sm_end(NOTOK);
+	    return sm_ierror("SMTP server does not support SASL");
+	}
+
+	if (saslmech && stringdex(saslmech, server_mechs) == -1) {
+	    sm_end(NOTOK);
+	    return sm_ierror("Requested SASL mech \"%s\" is not in the "
+			     "list of supported mechanisms:\n%s",
+			     saslmech, server_mechs);
+	}
+
+	if (sm_auth_sasl(user, saslmech ? saslmech : server_mechs,
+			 server) != RP_OK) {
+	    sm_end(NOTOK);
+	    return NOTOK;
+	}
+    }
+#endif /* CYRUS_SASL */
 
 send_options: ;
     if (watch && EHLOset ("XVRB"))
@@ -651,9 +716,13 @@ sm_end (int type)
 	alarm (0);
     }
 
-    if (sm_mts == MTS_SMTP)
+    if (sm_mts == MTS_SMTP) {
 	status = 0;
-    else {
+#ifdef CYRUS_SASL
+	if (conn)
+	    sasl_dispose(&conn);
+#endif /* CYRUS_SASL */
+    } else {
 	status = pidwait (sm_child, OK);
 	sm_child = NOTOK;
     }
