@@ -1,28 +1,26 @@
-%; $Id$
+%; $Header$
 %;
-%; replcomps: default form (components) file for `repl'
+%; These next lines slurp in lots of addresses for To: and cc:.
+%; Use with repl -query or else you may get flooded with addresses!
 %;
-%; Check for the following headers (in this order)
-%; to construct the return address
+%; If no To:/cc:/Fcc: text, we output empty fields for prompter to fill in.
 %;
-%; Mail-Reply-To
-%; Reply-To
-%; From
-%; Sender
-%; Return-Path
-%;
-%; AND
-%;
-%; cc: To              (and)
-%;     cc              (and)
-%;     personal address
-%;
-%(lit)%(formataddr %<{mail-reply-to}%?{reply-to}%?{from}%?{sender}%?{return-path}%>)\
-%<(nonnull)%(void(width))%(putaddr To: )\n%>\
-%(lit)%(formataddr{to})%(formataddr{cc})%(formataddr(me))\
-%<(nonnull)%(void(width))%(putaddr cc: )\n%>\
-%<{fcc}Fcc: %{fcc}\n%>\
-%<{subject}Subject: Re: %{subject}\n%>\
+%(lit)%(formataddr{reply-to})\
+%(formataddr %<{from}%(void{from})%|%(void{apparently-from})%>)\
+%(formataddr{resent-to})\
+%(formataddr{prev-resent-to})\
+%(formataddr{x-to})\
+%(formataddr{apparently-to})\
+%(void(width))%(putaddr To: )
+%(lit)%(formataddr{to})\
+%(formataddr{cc})\
+%(formataddr{x-cc})\
+%(formataddr{resent-cc})\
+%(formataddr{prev-resent-cc})\
+%(formataddr(me))\
+%(void(width))%(putaddr cc: )
+Fcc: %<{fcc}%{fcc}%|+outbox%>
+Subject: %<{subject}Re: %{subject}%>
 %;
 %; Make References: and In-reply-to: fields for threading.
 %; Use (void), (trim) and (putstr) to eat trailing whitespace.

@@ -1,6 +1,6 @@
-%; $Id$
+%; replgroupcomps
 %;
-%; replgroupcomps:  form (components) file for `repl -group'
+%; form (components) file for `repl -group'
 %;
 %; Check the following headers to create reply addresses.
 %;
@@ -28,8 +28,8 @@
 %(lit)%(formataddr{to})%(formataddr{cc})%(formataddr(me))\
 %<(nonnull)%(void(width))%(putaddr cc: )\n%>%>\
 %;
-%<{fcc}Fcc: %{fcc}\n%>\
-%<{subject}Subject: Re: %{subject}\n%>\
+Fcc: %<{fcc}%{fcc}%|+outbox%>
+Subject: %<{subject}Re: %{subject}%>
 %;
 %; Make References: and In-reply-to: fields for threading.
 %; Use (void), (trim) and (putstr) to eat trailing whitespace.
