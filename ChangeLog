@@ -1,3 +1,7 @@
+Wed May 12 23:41:33 1999  Dan Winship  <danw@mit.edu>
+
+	* Released nmh-1.0.1.
+
 Fri May  7 17:18:28 1999  Dan Winship  <danw@mit.edu>
 
 	* Fixed flist to properly deal with relative folder names.
