@@ -162,7 +162,7 @@ done:
 	char *mypass;
 
 	snprintf(prompt, sizeof(prompt), "Password (%s:%s): ", host, *aname);
-	mypass = (char *)getpass (prompt);
+	mypass = nmh_getpass(prompt);
 	
 	if (*mypass == '\0') {
 	    mypass = *aname;

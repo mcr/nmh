@@ -513,7 +513,7 @@ ldrchk (struct bboard *b)
 	return 1;
 
     if (strcmp (b->bb_passwd,
-		crypt (getpass ("Password: "), b->bb_passwd)) == 0)
+		crypt (nmh_getpass ("Password: "), b->bb_passwd)) == 0)
 	return 1;
 
     fprintf (stderr, "Sorry\n");

@@ -130,6 +130,21 @@ zotnet/tws/
     "time".  Date and time manipulation routines go here.
 
 
+-------------------------------------------------------
+nmh-local functions to use in preference to OS versions
+-------------------------------------------------------
+
+For some system functions whose availability or behavior varies from OS to OS,
+nmh conditionally uses a local definition with the same name as the OS function
+(e.g. snprintf()).  For other functions, developers need to avoid the OS
+versions and always use the nmh-supplied function.  Here is a list of such
+functions: 
+
+OS function  nmh-local version to use instead
+===========  ================================
+getpass()    nmh_getpass()
+
+
 -------------
 releasing nmh
 -------------

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1988, 1993
+ * Portions of this code are Copyright (c) 1988, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,27 +34,27 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>   /* for calloc() */
 #include <termios.h>
 #include <unistd.h>   /* for ttyname() */
 #include "h/mh.h"     /* for adios() */
 
-#define PASSWORD_LEN 128
+/* We don't use MAX_PASS here because the maximum password length on a remote
+   POP daemon will have nothing to do with the length on our OS.  256 is
+   arbitrary but hopefully big enough to accomodate everyone. */
+#define MAX_PASSWORD_LEN 256
 
 #ifndef TCSANOW
 #define TCSANOW 0
 #endif
 
 char *
-getpass(const char *prompt)
+nmh_getpass(const char *prompt)
 {
   struct termios oterm, term;
   int ch;
-  char *p, *ttystring, *buf;
+  char *p, *ttystring;
   FILE *fout, *fin;
-
-  if(!(buf = (char *)calloc((size_t)(PASSWORD_LEN+1), sizeof(char))))
-    adios(NULL, "unable to allocate string storage");
+  static char  buf[MAX_PASSWORD_LEN + 1];
 
   /* Find if stdin is connect to a terminal. If so, read directly from
    * the terminal, and turn off echo. Otherwise read from stdin.
@@ -75,9 +75,10 @@ getpass(const char *prompt)
       (void)tcsetattr(fileno(fin), TCSANOW, &term);
     }
 
-  for (p = buf; (ch = getc(fin)) != EOF && ch != '\n';)
-    if (p < buf + PASSWORD_LEN)
-      *p++ = ch;
+  for (p = buf; (ch = getc(fin)) != EOF &&
+                 ch != '\n' &&
+	         p < buf + MAX_PASSWORD_LEN;)
+    *p++ = ch;
   *p = '\0';
 
   if(ttystring != NULL) {
@@ -86,5 +87,5 @@ getpass(const char *prompt)
     (void)fputc('\n', fout);
     (void)fclose(fin);
   }
-  return((char *)buf);
+  return buf;
 }

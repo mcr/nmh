@@ -1,4 +1,4 @@
-Tue May 09 01:13:52 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Tue May 09 14:38:32 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Alphabetized Shantonu's $pop_kinds output on configure's "pop is
 	enabled" line.  If POP3 is the only kind of POP enabled, say so,
@@ -12,6 +12,26 @@ Tue May 09 01:13:52 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	* Added steps to README.developers saying to change the version
 	number to X.Y.Z+dev.  Did a little rearranging and changed the FTP
 	dir from /home/ftp to /var/ftp to reflect Doug's new machine.
+
+	* Changed configure.in to use gcc -Wall even without
+	--enable-debug, to prevent developers compiling optimized from
+	introducing warnings, and to give end-users a warm, fuzzy feeling
+	as they (hopefully) see no warnings come out (except perhaps on
+	the lex output file) even with -Wall.
+
+	* Renamed getpass() to nmh_getpass() since the prototype for
+ 	getpass() varies from OS to OS, and we want to _always_ use our
+ 	version of the function.  Fixed all the callers to use
+ 	nmh_getpass() and added it to prototypes.h.  Semi-arbitrarily
+ 	upped MAX_PASSWORD_LEN from 128 to 256.  buf was being calloc()'d
+ 	and the memory leaked -- should have just been declared as static
+ 	char array.  Prepended "Portions of this code are" to the
+ 	copyright message, as this version has been changed significantly
+ 	from the BSD version.
+
+	* Added "nmh-local functions to use in preference to OS versions"
+	section to README.developers (currently just says to use
+	nmh_getpass() instead of system getpass()).
 	
 Mon May 08 23:51:55 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 

@@ -1063,7 +1063,7 @@ if test -n "$auto_cflags"; then
   else
     test -z "$LDFLAGS" && LDFLAGS=-s
     if test -n "$GCC"; then
-      test -z "$CFLAGS" && CFLAGS=-O2 || CFLAGS="$CFLAGS -O2"
+      test -z "$CFLAGS" && CFLAGS="-Wall -O2" || CFLAGS="$CFLAGS -Wall -O2"
     else
       test -z "$CFLAGS" && CFLAGS=-O  || CFLAGS="$CFLAGS -O"
     fi
