@@ -22,11 +22,10 @@
 #include <h/popsbr.h>
 #include <h/signals.h>
 #include <signal.h>
+#include <errno.h>
 
 #define	TRM	"."
 #define	TRMLEN	(sizeof TRM - 1)
-
-extern int errno;
 
 static int poprint = 0;
 static int pophack = 0;

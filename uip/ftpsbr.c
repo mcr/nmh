@@ -27,6 +27,7 @@ extern int v_verbose;
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <errno.h>
 
 #if defined(BIND) && !defined(h_addr)
 # define h_addr	h_addr_list[0]
@@ -34,8 +35,6 @@ extern int v_verbose;
 
 #define	inaddr_copy(hp,sin) \
     memcpy((char *) &((sin)->sin_addr), (hp)->h_addr, (hp)->h_length)
-
-extern int errno;
 
 #define	start_tcp_client(sock,priv) \
     	socket (AF_INET, SOCK_STREAM, 0)

@@ -12,6 +12,7 @@
 
 #include <h/mh.h>
 #include <h/vmhsbr.h>
+#include <errno.h>
 
 static char *types[] = {
     "OK",
@@ -23,8 +24,6 @@ static	FILE *fp = NULL;
 
 static int PEERrfd = NOTOK;
 static int PEERwfd = NOTOK;
-
-extern int  errno;
 
 /*
  * static prototypes

@@ -35,8 +35,6 @@
 #define	MAXNETS      5
 #define	MAXHOSTS    25
 
-extern int errno;
-
 struct addrent {
     int a_addrtype;		/* assumes AF_INET for inet_netof () */
     union {

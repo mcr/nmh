@@ -9,6 +9,9 @@
 #include <mts/smtp/smtp.h>
 #include <zotnet/mts/mts.h>
 #include <signal.h>
+#ifdef MPOP
+#include <errno.h>
+#endif
 
 /*
  * This module implements an interface to SendMail very similar
@@ -73,10 +76,6 @@ static char *sm_noreply = "No reply text given";
 static char *sm_moreply = "; ";
 
 struct smtp sm_reply;		/* global... */
-
-#ifdef MPOP
-extern int errno;
-#endif
 
 static int doingEHLO;
 

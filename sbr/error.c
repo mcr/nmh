@@ -12,7 +12,7 @@
 # include <sys/uio.h>
 #endif
 
-extern int errno;
+#include <errno.h>
 
 
 /*
