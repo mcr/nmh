@@ -57,7 +57,7 @@ SETGID_MAIL    = @SETGID_MAIL@
 	$(COMPILE) $<
 
 # commands to build
-CMDS = ali anno burst comp dist flist folder forw mark mhbuild \
+CMDS = ali anno burst comp dist flist folder forw install-mh mark mhbuild \
        mhlist mhmail mhn mhparam mhpath mhshow mhstore msgchk \
        msh packf pick prompter refile repl rmf rmm scan send show \
        sortm whatnow whom
@@ -69,7 +69,7 @@ CMDS = ali anno burst comp dist flist folder forw mark mhbuild \
 LCMDS = flists folders next prev
 
 # misc support binaries
-MISC = ap conflict dp fmtdump install-mh mhl post rcvdist rcvpack \
+MISC = ap conflict dp fmtdump mhl post rcvdist rcvpack \
        rcvstore rcvtty slocal spost viamail mhtest
 
 # commands with 'S'pecial installation needs
@@ -270,7 +270,7 @@ install-lcmds:
 	$(LN) $(bindir)/folder $(bindir)/folders
 	$(LN) $(bindir)/show   $(bindir)/prev
 	$(LN) $(bindir)/show   $(bindir)/next
-	$(LN) $(libdir)/install-mh   $(bindir)/install-mh
+	$(LN) $(bindir)/install-mh   $(libdir)/install-mh
 
 # install misc support binaries
 install-misc:
