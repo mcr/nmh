@@ -739,7 +739,7 @@ if test "${with_cyrus_sasl+set}" = set; then
   :
 fi
 
-if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != "no"; then
+if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"; then
   cat >> confdefs.h <<\EOF
 #define CYRUS_SASL 1
 EOF
@@ -4179,7 +4179,7 @@ fi
 
 fi
 
-if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != "no"; then
+if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"; then
   if test x"$with_cyrus_sasl" != x"yes"; then
     SASL_INCLUDES="-I$with_cyrus_sasl/include"
     SASL_LIBS="-L$with_cyrus_sasl/lib"
