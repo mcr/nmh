@@ -144,7 +144,7 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 
 	    if (deleting) {
 		op = folder_read(getfolder(1));
-		(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", op->foldpath, msgfile);
+		(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", pwd(), msgfile);
 		folder_free(op);
 		(void)ext_hook("ref-hook", oldmsg, newmsg);
 	    }
