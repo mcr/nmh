@@ -415,12 +415,16 @@ getuserinfo (void)
      * "Dan Harkless <Dan.Harkless>".  Naturally, you'll want your MTA to have
      * an alias (e.g. in /etc/aliases) from "fakeusername" to your account name.
      */
-#ifndef	GCOS_HACK
-    /* What is this code here for?  As of 2000-01-25, GCOS_HACK doesn't appear
-       anywhere else in nmh.  -- Dan Harkless <dan-nmh@dilvish.speed.net> */
+#ifndef BSD42
     for (cp = fullname; *np && *np != (MMailids ? '<' : ','); *cp++ = *np++)
 	continue;
-#else
+#else /* BSD42 */
+    /* On BSD(-derived) systems, the system utilities that deal with the GECOS
+       field (finger, mail, sendmail, etc.) translate any '&' character in it to
+       the login name, with the first letter capitalized.  So, for instance,
+       fingering a user "bob" with the GECOS field "& Jones" would reveal him to
+       be "In real life: Bob Jones".  Surprisingly, though, the OS doesn't do
+       the translation for you, so we have to do it manually here. */
     for (cp = fullname; *np && *np != (MMailids ? '<' : ','); ) {
 	if (*np == '&')	{	/* blech! */
 	    strcpy (cp, pw->pw_name);
@@ -432,7 +436,7 @@ getuserinfo (void)
 	    *cp++ = *np++;
 	}
     }
-#endif
+#endif /* BSD42 */
 
     *cp = '\0';
     if (MMailids) {

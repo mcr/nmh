@@ -34,7 +34,8 @@
 #else
 /* On AIX 4.1, initgroups() is defined and even documented (giving the parameter
    types as char* and int), but doesn't have a prototype in any of the system
-   header files.  AIX 4.3 and SunOS 4.1.3 have the same problem. */
+   header files.  AIX 4.3, SunOS 4.1.3, and ULTRIX 4.2A have the same
+   problem. */
 extern int  initgroups(char*, int);
 #endif
 

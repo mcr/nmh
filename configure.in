@@ -370,9 +370,9 @@ AC_TRY_LINK([#include <setjmp.h>], [sigsetjmp((void *)0, 0);],
 
 AC_REPLACE_FUNCS(snprintf strerror strdup)
 
-dnl Look for the initgroups() declaration.  On AIX 4.[13] and Solaris 4.1.3,
-dnl the function is defined in libc but there's no declaration in any system
-dnl header.  
+dnl Look for the initgroups() declaration.  On AIX 4.[13], Solaris 4.1.3, and
+dnl ULTRIX 4.2A the function is defined in libc but there's no declaration in
+dnl any system header.  
 dnl
 dnl On Solaris 2.[456], the declaration is in <grp.h>.  On HP-UX 9-11 and
 dnl (reportedly) FreeBSD 3.[23], it's in <unistd.h>.  Any other locations we

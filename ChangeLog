@@ -1,3 +1,12 @@
+Wed Mar 01 23:30:50 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Changed the GECOS-field '&' translation behavior to be
+ 	controlled by the BSD42 #define rather than GCOS_HACK, since it's
+ 	apparently always appropriate on OSes where BSD42 is #defined, and
+ 	never appropriate on any other OSes.  Thanks to Kimmo Suominen for
+ 	responding to my "What is this code here for?" comment in mts.c
+ 	and explaining the feature.
+	
 Mon Feb 28 21:50:29 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Upped the version number to 1.0.3+dev (ideally this should be

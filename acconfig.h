@@ -265,8 +265,8 @@
 #undef HAVE_DB1_NDBM_H
 
 /* Define to the header containing the declaration of initgroups() on your
-   system, if any.  AIX 4.[13] and SunOS 4.1.3 have the function in libc but
-   don't have a declaration anywhere. */
+   system, if any.  AIX 4.[13], SunOS 4.1.3, and ULTRIX 4.2A have the function
+   in libc but don't have a declaration anywhere. */
 #undef INITGROUPS_HEADER
 
 /* Define if your system actually has a prototype for snprintf() in <stdio.h>

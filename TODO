@@ -28,6 +28,9 @@
 
 MAN PAGES
 ---------
+* Change all man pages to group all the commandline options together in one
+  section with each as a separate mini-heading.  Having to dig through prose to
+  find what a particular option does is a pain in the nads.
 * Update mh-tailor man page.
 * generate mh-chart man page from other man pages
 * update default mode in man pages with sed
