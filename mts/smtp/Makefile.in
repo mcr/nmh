@@ -25,6 +25,7 @@ LORDER  = @LORDER@
 TSORT   = @TSORT@
 RANLIB  = @RANLIB@
 LIBTOOL = @LIBTOOL@
+GNU_LIBTOOL = @GNU_LIBTOOL@
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
 
@@ -55,7 +56,7 @@ all: libsmtp.a
 
 libsmtp.a: $(OBJS)
 	rm -f $@
-	if test x$(LIBTOOL) != xno ; then \
+	if test x$(LIBTOOL) != xno -a x$(GNU_LIBTOOL) = x ; then \
 	  $(LIBTOOL) -static -c $(OBJS) -o $@  ; \
 	else \
 	  ar cr $@ `$(LORDER) $(OBJS) | $(TSORT)`  ; \

@@ -20,6 +20,7 @@ LORDER = @LORDER@
 TSORT  = @TSORT@
 RANLIB = @RANLIB@
 LIBTOOL = @LIBTOOL@
+GNU_LIBTOOL = @GNU_LIBTOOL@
 
 LIBOBJS = @LIBOBJS@
 
@@ -93,8 +94,8 @@ pidstatus.o: sigmsg.h
 
 libmh.a: $(OBJS)
 	rm -f $@
-	if test x$(LIBTOOL) != xno ; then \
-	  $(LIBTOOL) -static -c $(OBJS) -o libmh.a  ; \
+	if test x$(LIBTOOL) != xno -a x$(GNU_LIBTOOL) = x ; then \
+	  $(LIBTOOL) -static -c -o libmh.a $(OBJS) ; \
 	else \
 	  ar cr libmh.a `$(LORDER) $(OBJS) | $(TSORT)`  ; \
 	  $(RANLIB) libmh.a  ; \

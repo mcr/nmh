@@ -1,3 +1,12 @@
+Tue Oct 26 22:57:00 1999 Doug Morris <doug@mhost.com>
+	
+	* Added check for whether "libtool" is in fact gnu libtool. If
+	it is, it is not used. This is the wrong behavior. If vendor
+	XYZ later on decides to create yet another libtool, we'll be
+	caught again. This works for now.
+
+	* Minor updates to MACHINES refering to Mac OS X.
+
 Thu Oct 21 20:45:37 1999 Doug Morris <doug@mhost.com>
 
 	* Added check for "libtool" (a ranlib type tool for Mac OS X)

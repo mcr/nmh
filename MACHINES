@@ -9,7 +9,6 @@
 FreeBSD:
 OpenBSD:
 NetBSD:
-Mac OS X/Rhapsody 5:
 
 Some BSD4.4 machines have problems when running nmh's configure script.
 They will be unable to find the location of vi and sendmail.  This is
@@ -17,6 +16,16 @@ due to POSIX features (breakage?) in the shell sh.  The solution is to
 run the configure script under the shell `bash'
 
 bash configure
+
+--------------------------------------
+Mac OS X/Rhapsody 5:
+
+Version 5.3 at least has the same sh/bash bug as the *BSD systems
+above. This appears to be fixed in 5.5.
+
+Will not compile correctly unless you configure with the --enable-nmh-debug
+option. It appears to find conflicts in the headers only when debugging
+is disabled. With debugging enabled, it compiles and runs happily.
 
 --------------------------------------
 

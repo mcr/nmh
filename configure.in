@@ -9,6 +9,19 @@ AC_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_SYSTEM
 
+dnl ---------------------
+dnl define a macro or two
+dnl ---------------------
+
+AC_DEFUN(NMH_PROG_GNU_LIBTOOL, [
+  tmptest=`$LIBTOOL --version 2>&1 | grep GNU`
+  if test x"$tmptest" != x  ; then
+    GNU_LIBTOOL=1
+    AC_SUBST(GNU_LIBTOOL)
+  fi
+] )
+  
+
 dnl What version of nmh are we building?
 VERSION=`sed -e 's/nmh-//' ${srcdir}/VERSION`
 echo "configuring for nmh-$VERSION"
@@ -155,9 +168,10 @@ dnl Look for `cut'
 pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
 AC_PATH_PROG(cutpath, cut, no, [$pathtmp])
 
-dnl Look for libtool. A ranlib replacement on Mac OS X/Rhapsody where
-dnl either ranlib or ar is broken (not sure which)
-AC_PATH_PROG(LIBTOOL, libtool, no [$pathtmp])
+
+dnl try to figure out which one we've got
+AC_CHECK_PROG(LIBTOOL, libtool, libtool, , [$pathtmp])
+NMH_PROG_GNU_LIBTOOL
 
 dnl Check for lorder and tsort commands
 AC_CHECK_PROG(LORDER, lorder, lorder, no)dnl
