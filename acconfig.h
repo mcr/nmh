@@ -246,3 +246,6 @@
 
 /* Define if your system has mkstemp */
 #undef HAVE_MKSTEMP
+
+/* Define if your system has db1/ndbm.h instead of ndbm.h (ppclinux) */
+#undef HAVE_DB1_NDBM_H

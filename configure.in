@@ -351,6 +351,11 @@ AC_CHECK_FUNC(dbm_open, ,
     AC_CHECK_LIB(dbm, dbm_open)))
 
 dnl ----------------
+dnl CHECK FOR NDBM.H
+dnl ----------------
+AC_CHECK_HEADERS(db1/ndbm.h)
+
+dnl ----------------
 dnl CHECK FOR HESIOD
 dnl ----------------
 if test x$with_hesiod != x -a x$with_hesiod != xno; then

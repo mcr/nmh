@@ -31,7 +31,9 @@ getcpy (char *s)
     register char *p;
 
     if (!s) {
-	_cleanup();
+/* causes compiles to blow up because the symbol _cleanup is undefined 
+   where did this ever come from? */
+	/* _cleanup(); */
 	abort();
 	for(;;)
 	    pause();

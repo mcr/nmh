@@ -27,8 +27,13 @@
 #include <pwd.h>
 #include <signal.h>
 #include <sys/ioctl.h>
-#include <ndbm.h>
 #include <fcntl.h>
+
+#ifdef HAVE_DB1_NDBM_H
+#include <db1/ndbm.h>
+#else
+#include <ndbm.h>
+#endif
 
 #include <utmp.h>
 

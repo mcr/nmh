@@ -351,6 +351,9 @@
 /* Define if you have the <crypt.h> header file.  */
 #undef HAVE_CRYPT_H
 
+/* Define if you have the <db1/ndbm.h> header file.  */
+#undef HAVE_DB1_NDBM_H
+
 /* Define if you have the <dirent.h> header file.  */
 #undef HAVE_DIRENT_H
 
