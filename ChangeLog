@@ -1,3 +1,9 @@
+Sun May 28 14:39:31 CEST 2000 Ruud de Rooij <ruud@ruud.org>
+
+	* Fixed m_getfld bug which caused segmentation faults when
+	incorporating messages which ended in multiple linefeeds crossing
+	a buffer boundary.
+
 Fri May 26 13:21:59 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* msh has been unable to show MIME messages ever since 1.0.  Alec

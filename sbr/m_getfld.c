@@ -730,7 +730,8 @@ matchc(int patln, char *pat, int strln, char *str)
 		while (pc != *str++)
 			if (str > es)
 				return 0;
-
+		if (str > es+1)
+			return 0;
 		sp = str; pp = pat;
 		while (pp < ep && *sp++ == *pp)
 			pp++;
