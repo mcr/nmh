@@ -1,3 +1,10 @@
+Fri May 26 13:21:59 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* msh has been unable to show MIME messages ever since 1.0.  Alec
+	Wolman <wolman@cs.washington.edu> tracked down the problem to the
+	-show flag being passed to mhshow.  mhshow is equivalent to the
+	old mhn -show, so we don't need the -show anymore.  Removed it.
+
 Fri May 12 02:51:21 2000 Shantonu Sen <ssen@mit.edu>
 
 	* zotnet/bboards is not longer built by default. Goal is to move

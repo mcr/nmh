@@ -2387,7 +2387,6 @@ showcmd (char **args)
 	for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)
 	    if (is_selected (mp, msgnum) && is_nontext (msgnum)) {
 		proc = showmimeproc;
-		vec[vecp++] = "-show";
 		vec[vecp++] = "-file";
 		vec[vecp] = NULL;
 		goto finish;
