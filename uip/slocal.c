@@ -334,18 +334,29 @@ main (int argc, char **argv)
 	if ((fd = copy_message (fileno (stdin), tmpfil, 1)) == -1)
 	    adios (NULL, "unable to create temporary file");
     }
+
     if (debug)
 	debug_printf ("temporary file=\"%s\"\n", tmpfil);
-    else
-	unlink (tmpfil);
+
+    /* Delete the temp file now or a copy of every single message passed through
+       slocal will be left in the /tmp directory until deleted manually!  This
+       unlink() used to be under an 'else' of the 'if (debug)' above, but since
+       some people like to always run slocal with -debug and log the results,
+       the /tmp directory would get choked over time.  Of course, now that we
+       always delete the temp file, the "temporary file=" message above is
+       somewhat pointless -- someone watching debug output wouldn't have a
+       chance to 'tail -f' or 'ln' the temp file before it's unlinked.  The best
+       thing would be to delay this unlink() until later if debug == 1, but I'll
+       leave that for someone who cares about the temp-file-accessing
+       functionality (they'll have to watch out for cases where we adios()). */
+    unlink (tmpfil);
 
     if (!(fp = fdopen (fd, "r+")))
 	adios (NULL, "unable to access temporary file");
 
     /*
      * If no sender given, extract it
-     * from envelope information.
-     */
+     * from envelope information.  */
     if (sender == NULL)
 	get_sender (envelope, &sender);
 
@@ -373,7 +384,7 @@ main (int argc, char **argv)
     /* deliver the message */
     status = localmail (fd, mdlvr);
 
-    done (status != -1 ? RCV_MOK : RCV_MBX);
+    return done (status != -1 ? RCV_MOK : RCV_MBX);
 }
 
 
@@ -740,7 +751,7 @@ parse (int fd)
 		for (p = hdrs; p->p_name; p++) {
 		    if (!strcasecmp (p->p_name, name)) {
 			if (!(p->p_flags & P_HID)) {
-			    if ((cp = p->p_value))
+			    if ((cp = p->p_value)) {
 				if (p->p_flags & P_ADR) {
 				    dp = cp + strlen (cp) - 1;
 				    if (*dp == '\n')
@@ -749,6 +760,7 @@ parse (int fd)
 				} else {
 				    cp = add ("\t", cp);
 				}
+			    }
 			    p->p_value = add (lp, cp);
 			}
 			free (lp);
