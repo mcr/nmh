@@ -124,9 +124,9 @@ context_read (void)
 
     ctxpath = getcpy (m_maildir (cp));
 
-    if ((ib = fopen (ctxpath, "r"))) {
+    if ((ib = lkfopen (ctxpath, "r"))) {
 	readconfig ((struct node **) 0, ib, cp, 1);
-	fclose (ib);
+	lkfclose (ib);
     }
 
     return;

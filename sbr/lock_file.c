@@ -201,10 +201,22 @@ lkfopen (char *file, char *mode)
 
     if (strcmp (mode, "r") == 0)
 	access = O_RDONLY;
-    else
+    else if (strcmp (mode, "r+") == 0)
 	access = O_RDWR;
+    else if (strcmp (mode, "w") == 0)
+	access = O_WRONLY | O_CREAT | O_TRUNC;
+    else if (strcmp (mode, "w+") == 0)
+	access = O_RDWR | O_CREAT | O_TRUNC;
+    else if (strcmp (mode, "a") == 0)
+	access = O_WRONLY | O_CREAT | O_APPEND;
+    else if (strcmp (mode, "a+") == 0)
+	access = O_RDWR | O_CREAT | O_APPEND;
+    else {
+	errno = EINVAL;
+	return NULL;
+    }
 
-    if ((fd = lkopen (file, access, 0)) == -1)
+    if ((fd = lkopen (file, access, 0666)) == -1)
 	return NULL;
 
     if ((fp = fdopen (fd, mode)) == NULL) {
@@ -314,7 +326,8 @@ lkopen_kernel (char *file, int access, mode_t mode)
 # endif
 
 # ifdef FLOCK_LOCKING
-	if (flock (fd, LOCK_EX | LOCK_NB) != -1)
+	if (flock (fd, (((access & 03) == O_RDONLY) ? LOCK_SH : LOCK_EX)
+		   | LOCK_NB) != -1)
 	    return fd;
 # endif
 
@@ -329,6 +342,7 @@ lkopen_kernel (char *file, int access, mode_t mode)
 
 	j = errno;
 	close (fd);
+	admonish (file, "lock did not succeed, waiting");
 	sleep (5);
     }
 

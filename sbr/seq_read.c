@@ -22,7 +22,7 @@ static void seq_private (struct msgs *);
 
 /*
  * Get the sequence information for this folder from
- * .mh_sequence (or equivalent specified in .mh_profile)
+ * .mh_sequences (or equivalent specified in .mh_profile)
  * or context file (for private sequences).
  */
 
@@ -73,7 +73,7 @@ seq_public (struct msgs *mp)
     /* get filename of sequence file */
     snprintf (seqfile, sizeof(seqfile), "%s/%s", mp->foldpath, mh_seq);
 
-    if ((fp = fopen (seqfile, "r")) == NULL)
+    if ((fp = lkfopen (seqfile, "r")) == NULL)
 	return;
 
     /* Use m_getfld to scan sequence file */
@@ -111,7 +111,7 @@ seq_public (struct msgs *mp)
 	break;	/* break from for loop */
     }
 
-    fclose (fp);
+    lkfclose (fp, seqfile);
 }
 
 
