@@ -1,3 +1,8 @@
+Tue Dec 19 19:16:37 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* -apop and -noapop were not documented in inc.man.  -snoop was
+	documented but didn't appear in the usage SYNOPSIS.
+
 Thu Dec 14 14:32:09 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Updated config.guess and config.sub to the most recent
