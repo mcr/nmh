@@ -212,7 +212,7 @@ the program with the `\-version' switch.  This information includes
 the version of \fInmh\fR, the host it was generated on, and the date the
 program was loaded.
 
-Send bug reports and suggestions to \fBnmh-workers@math.gatech.edu\fR.
+Send bug reports and suggestions to \fBnmh-workers@mhost.com\fR.
 .Fi
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .Pr
