@@ -1,3 +1,17 @@
+Tue Jan 9 6:01:22 2001 Shantonu Sen <ssen@mit.edu>
+
+	* Finished manpages ali-prev
+
+	* Removed deprecated files from the repository.
+	Specifically, those rooted in zotnet/ and mts/sendmail
+	mts/mmdf. "cvs update -dP" will give a pruned directory
+	structure.
+
+	* Updated docs/Makefile.in to include README.manpages, and
+	uip/Makefile.in to include popi.c (which isn't being built,
+	though). This allows "make nmhdist" to create an archive that
+	is file-for-file identical to the current cvs repository.
+
 Sun Dec 31 20:48:50 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Create docs/README.manpages, which details
