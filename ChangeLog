@@ -1,3 +1,18 @@
+Fri Dec 22 23:42:16 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Made a new ./configure option called
+	"--with-locking" that allows the file
+	locking mechanism to be chosen there instead of
+	requiring a manual edit of config.h.
+
+	* If the option is not explicitly set, or an
+	invalid option is specified, "dot" locking is
+	chosen. Valid options are "dot", "fcntl",
+	"flock", and "lockf". We need a way to tell
+	the user that these are the valid options, and
+	change the flag "--with-locking" if it's not
+	descriptive enough.
+
 Fri Dec 22 19:21:29 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Remove the lex-specific memory hints at the
