@@ -41,8 +41,8 @@ LN = ln
 INSTALL         = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 
-SETGID_MAIL = @SETGID_MAIL@
-MAILGROUP   = @MAILGROUP@
+MAIL_SPOOL_GRP = @MAIL_SPOOL_GRP@
+SETGID_MAIL    = @SETGID_MAIL@
 
 .SUFFIXES:
 .SUFFIXES: .c .o
@@ -274,7 +274,7 @@ install-misc:
 # install commands with special installation needs (thus no $(SCMDS) use here)
 install-scmds:
 	if test x$(SETGID_MAIL) = x1; then \
-	  $(INSTALL_PROGRAM) -g $(MAILGROUP) -m 2755 inc $(bindir)/$$cmd; \
+	  $(INSTALL_PROGRAM) -g $(MAIL_SPOOL_GRP) -m 2755 inc $(bindir)/$$cmd; \
 	else \
 	  $(INSTALL_PROGRAM)                 inc $(bindir)/$$cmd; \
 	fi
