@@ -855,7 +855,7 @@ finish_headers (FILE *out)
 	    fprintf (out, "Date: %s\n", dtime (&tclock, 0));
 	    if (msgid)
 		fprintf (out, "Message-ID: <%d.%ld@%s>\n",
-			(int) getpid (), tclock, LocalName ());
+			(int) getpid (), (long) tclock, LocalName ());
 	    if (msgflags & MFRM)
 		fprintf (out, "Sender: %s\n", from);
 	    else
@@ -886,7 +886,7 @@ finish_headers (FILE *out)
 	    fprintf (out, "Resent-Date: %s\n", dtime (&tclock, 0));
 	    if (msgid)
 		fprintf (out, "Resent-Message-ID: <%d.%ld@%s>\n",
-			(int) getpid (), tclock, LocalName ());
+			(int) getpid (), (long) tclock, LocalName ());
 	    if (msgflags & MRFM)
 		fprintf (out, "Resent-Sender: %s\n", from);
 	    else
@@ -1131,7 +1131,7 @@ make_bcc_file (int dashstuff)
     fprintf (out, "Date: %s\n", dtime (&tclock, 0));
     if (msgid)
 	fprintf (out, "Message-ID: <%d.%ld@%s>\n",
-		(int) getpid (), tclock, LocalName ());
+		(int) getpid (), (long) tclock, LocalName ());
     fprintf (out, "From: %s\n", signature);
     if (subject)
 	fprintf (out, "Subject: %s", subject);
