@@ -144,7 +144,7 @@ static int return_gid;
 char *map_name(char *);
 
 #ifdef POP
-void done(int);
+int done(int);
 static int pop_action(char *);
 static int pop_pack(char *);
 static int map_count(void);
@@ -848,7 +848,7 @@ go_to_it:
     seq_setunseen (mp, 0);	/* set the Unseen-Sequence */
     seq_save (mp);		/* synchronize sequences   */
     context_save ();		/* save the context file   */
-    done (0);
+    return done (0);
 }
 
 
@@ -886,13 +886,14 @@ cpymsg (FILE *in, FILE *out)
 
 
 #ifdef POP
-void
+int
 done (int status)
 {
     if (packfile && pd != NOTOK)
 	mbx_close (packfile, pd);
 
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }
 
 static int
@@ -900,6 +901,7 @@ pop_action (char *s)
 {
     fprintf (pf, "%s\n", s);
     stop += strlen (s) + 1;
+    return 0;  /* Is return value used?  This was missing before 1999-07-15. */
 }
 
 static int
@@ -915,6 +917,7 @@ pop_pack (char *s)
 	continue;
     fputs (buffer, pf);
     size += strlen (buffer) + 1;
+    return 0;  /* Is return value used?  This was missing before 1999-07-15. */
 }
 
 static int
