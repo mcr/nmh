@@ -45,8 +45,9 @@ Tue Mar 14 12:41:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	    "19 Jan 00" as the date.  The following works around this so 
 	    that scan, show, sortm, etc work ok.
 
-        * Created new dtimep.c-lexed with Simon's change using dtimep.lex
-          lexed on Solaris 2.6.
+	* Created new dtimep.c-lexed with Simon's change using dtimep.lex
+	lexed on Solaris 2.6.  Added missing dependency in
+	zotnet/tws/Makefile.in for dtimep.c: dtimep.c-lexed.
 
 	* Added scan.MMDDYY and scan.YYYYMMDD format files.
 

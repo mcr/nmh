@@ -49,7 +49,7 @@ all: $(OBJS)
 
 # This will bomb if lex is really flex, so check
 # file and use pre-generated version if necessary
-dtimep.c: $(srcdir)/dtimep.lex $(srcdir)/lexedit.sed
+dtimep.c: $(srcdir)/dtimep.c-lexed $(srcdir)/dtimep.lex $(srcdir)/lexedit.sed
 	$(LEX) -nt $(srcdir)/dtimep.lex | $(SED) -f $(srcdir)/lexedit.sed > $@
 	-@len=`wc -l $@ | $(AWK) ' { print $$1 } '`; \
 	if [ $$len -gt 500 ]; \
