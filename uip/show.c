@@ -474,7 +474,7 @@ invalid:
 				*bp = '\0';
 			} else {
 			    for (bp = dp; *bp; bp++)
-				if (isspace (*bp)) {
+				if (!istoken (*bp)) {
 				    *bp = '\0';
 				    break;
 				}
