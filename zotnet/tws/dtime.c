@@ -247,7 +247,7 @@ dgmtime (time_t *clock)
 char *
 dctime (struct tws *tw)
 {
-    static char buffer[25];
+    static char buffer[26];
 
     if (!tw)
 	return NULL;
