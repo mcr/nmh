@@ -48,8 +48,8 @@ SRCS =	add.c addrsbr.c ambigsw.c atooi.c brkstring.c check_charset.c \
 	m_maildir.c m_name.c m_scratch.c m_tmpfil.c makedir.c \
 	path.c peekc.c pidwait.c pidstatus.c print_help.c \
 	print_sw.c print_version.c push.c putenv.c pwd.c refile.c \
-	remdir.c r1bindex.c readconfig.c seq_add.c seq_bits.c seq_del.c \
-	seq_getnum.c seq_list.c seq_nameok.c seq_print.c seq_read.c \
+	remdir.c r1bindex.c readconfig.c ruserpass.c seq_add.c seq_bits.c \
+	seq_del.c seq_getnum.c seq_list.c seq_nameok.c seq_print.c seq_read.c \
 	seq_save.c seq_setcur.c seq_setprev.c seq_setunseen.c showfile.c \
 	signals.c smatch.c snprintb.c ssequal.c strcasecmp.c strindex.c \
 	trimcpy.c uprf.c vfgets.c fmt_def.c m_msgdef.c
@@ -69,8 +69,8 @@ OBJS =	add.o addrsbr.o ambigsw.o atooi.o brkstring.o check_charset.o \
 	m_maildir.o m_name.o m_scratch.o m_tmpfil.o makedir.o \
 	path.o peekc.o pidwait.o pidstatus.o print_help.o \
 	print_sw.o print_version.o push.o putenv.o pwd.o refile.o \
-	remdir.o r1bindex.o readconfig.o seq_add.o seq_bits.o seq_del.o \
-	seq_getnum.o seq_list.o seq_nameok.o seq_print.o seq_read.o \
+	remdir.o r1bindex.o readconfig.o ruserpass.o seq_add.o seq_bits.o \
+	seq_del.o seq_getnum.o seq_list.o seq_nameok.o seq_print.o seq_read.o \
 	seq_save.o seq_setcur.o seq_setprev.o seq_setunseen.o showfile.o \
 	signals.o smatch.o snprintb.o ssequal.o strcasecmp.o strindex.o \
 	trimcpy.o uprf.o vfgets.o fmt_def.o m_msgdef.o \
