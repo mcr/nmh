@@ -13,9 +13,9 @@ NetBSD:
 Some BSD4.4 machines have problems when running nmh's configure script.
 They will be unable to find the location of vi and sendmail.  This is
 due to POSIX features (breakage?) in the shell sh.  The solution is to
-run the configure script under the shell `bash'
+run the configure script under the shell `bash':
 
-bash configure
+    % bash configure
 
 --------------------------------------
 Mac OS X/Rhapsody 5:
@@ -38,9 +38,9 @@ It is highly recommended that you use `gcc' instead.
 Also, new versions of HPUX (10.20?) will core dump in `scan' because
 of some workaround code in zotnet/tws/lexstring.c.  This workaround is
 needed for older versions of HPUX, but causes problems on newer versions.
-The solution is the added the line
+The solution is the added line (minus our indentation):
 
-#undef hpux
+    #undef hpux
 
 after line 15 of the file zotnet/tws/lexstring.c.
 
