@@ -54,6 +54,13 @@
 
 #define FCCS		10	/* max number of fccs allowed */
 
+/* In the following array of structures, the numeric second field of the
+   structures (minchars) is apparently used like this:
+
+   -# : Switch can be abbreviated to # characters; switch hidden in -help.
+   0  : Switch can't be abbreviated;               switch shown in -help.
+   #  : Switch can be abbreviated to # characters; switch shown in -help. */
+
 static struct swit switches[] = {
 #define	ALIASW                    0
     { "alias aliasfile", 0 },
@@ -98,7 +105,7 @@ static struct swit switches[] = {
 #define VERSIONSW                20
     { "version", 0 },
 #define	HELPSW                   21
-    { "help", 4 },
+    { "help", 0 },
 #define BITSTUFFSW               22
     { "dashstuffing", -12 },		/* should we dashstuff BCC messages? */
 #define NBITSTUFFSW              23
@@ -275,6 +282,8 @@ static int fill_up = 0;
 static char *fill_in = NULL;
 static char *partno = NULL;
 static int queued = 0;
+
+extern int  MMailids;
 
 /*
  * static prototypes
@@ -717,6 +726,14 @@ putfmt (char *name, char *str, FILE *out)
     tmpaddrs.m_next = NULL;
     for (count = 0; (cp = getname (str)); count++)
 	if ((mp = getm (cp, NULL, 0, AD_HOST, NULL))) {
+	    if (MMailids && (hdr->set & MFRM))
+		/* The user manually specified a From: address in their draft
+		   and mts.conf turned on "mmailid", so we'll set things up to
+		   use the actual email address embedded in the draft From:
+		   (without the GECOS full name or angle brackets) as the
+		   envelope From:. */
+		strncpy(from, auxformat(mp, 0), sizeof(from) - 1);
+
 	    if (tmpaddrs.m_next)
 		np->m_next = mp;
 	    else
@@ -856,9 +873,16 @@ finish_headers (FILE *out)
 	    if (msgid)
 		fprintf (out, "Message-ID: <%d.%ld@%s>\n",
 			(int) getpid (), (long) tclock, LocalName ());
-	    if (msgflags & MFRM)
-		fprintf (out, "Sender: %s\n", from);
+	    if (msgflags & MFRM) {
+		/* There was already a From: in the draft.  Don't add one. */
+		if (!MMailids)
+		    /* mts.conf didn't turn on mmailid, so we'll reveal the
+		       user's actual account@thismachine address in a Sender:
+		       header (and use it as the envelope From: later). */
+		    fprintf (out, "Sender: %s\n", from);
+	    }
 	    else
+		/* Construct a From: header. */
 		fprintf (out, "From: %s\n", signature);
 	    if (whomsw)
 		break;
