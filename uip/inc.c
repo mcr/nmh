@@ -844,6 +844,7 @@ go_to_it:
 
 		msgnum++;
 		mp->hghmsg++;
+		mp->nummsg++;
 		clear_msg_flags (mp, msgnum);
 		set_exists (mp, msgnum);
 		set_unseen (mp, msgnum);
