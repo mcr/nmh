@@ -129,10 +129,13 @@ int get_returnpath (char *, int, char *, int);
 /*
  * prototypes for compatibility functions in library
  */
-#ifndef HAVE_SNPRINTF
+#ifndef HAVE_SNPRINTF_PROTOTYPE
 int snprintf (char *, size_t, const char *, ...);
 int vsnprintf (char *, size_t, const char *, va_list);
 #endif
+
+int strcasecmp (const char *s1, const char *s2);
+int strncasecmp (const char *s1, const char *s2, size_t n);
 
 #ifndef HAVE_STRERROR
 char *strerror (int);
