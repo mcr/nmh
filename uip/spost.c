@@ -311,8 +311,15 @@ main (int argc, char **argv)
 		    continue;
 
 		case LIBSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    /* create a minimal context */
+		    if (context_foil (cp) == -1)
+			done(1);
+		    continue;
+
 		case ANNOSW:
-		    /* -library & -idanno switch ignored */
+		    /* -idanno switch ignored */
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
