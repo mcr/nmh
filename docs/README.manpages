@@ -1,0 +1,173 @@
+NMH MANPAGE STYLE GUIDE
+
+nmh manpages should be in this general form:
+
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.TH COMP %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.SH NAME
+comp \- compose a message
+.SH SYNOPSIS
+.HP 5
+.B comp 
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-use " | " \-nouse ]
+.RB [ \-version ]
+.RB [ \-help ]
+.SH DESCRIPTION
+.B Comp
+is used to create a new message to be mailed.  It copies something.
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+^%etcdir%/components~^The standard message skeleton
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
+^Path:~^To determine the user's nmh directory
+
+.SH "SEE ALSO"
+dist(1), forw(1), repl(1), send(1), whatnow(1), mh-profile(5)
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder"
+
+.SH CONTEXT
+None
+
+.SH BUGS
+None
+
+---------------------------------------
+In the FILES section, use a spacer of "/usr/local/nmh/etc" for now,
+we'll parametrize that into %etcdir% later.
+
+
+Source files
+
+	There should be no ".so" commands to source an external file,
+	since these break on Linux, where the man program does not
+	allow source files outside the man/ hierarchy. Instead, insert
+	this fragment:
+
+		.PP
+		.RS 5
+		.nf
+		%components%
+		.fi
+		.RE
+		.PP
+
+	Of course, replace "components" with a unique identifier that
+	reflects the content being included, like "mts_conf" for
+	etc/mts.conf. Then, add two lines to the man.sed target in
+	Makefile.in like:
+
+	        echo '/%components%/r $(top_srcdir)/etc/components' >> $@
+	        echo ' s,%components%,,g' >> $@
+
+	At compile time, the contents of the file will physically
+	incorporated into the body of the man page. This is somewhat
+	unfortunate, since later modifications won't be reflected in
+	the manpage, but on the other hand, the manpage will show the
+	default configuration and not local modifications.
+
+Program names
+
+	All nmh program names should be bolded. If there is punctuation
+	after the name, use a .BR construct to avoid the automatic
+	space that's inserted with just a .B:
+
+		.B comp
+		.BR comp ,
+
+	If this is a manpage reference (outside of the SEE ALSO
+	section, which just uses regular text), use:
+
+		.BR mh-draft (5)
+
+SYNPOSIS section
+
+	Literal text (such as flags) should be in bold. Parameters
+	should be italicized. Mutually exclusive options (like
+	"-foo" and "-nofoo") should be grouped together and seperated
+	by a "|":
+
+		.RI [ +folder ]              <---- parameter
+		.RI [ msgs ]                 <---- parameter
+		.RB [ \-version ]            <---- flag
+		.RB [ \-editor               <---- flag with
+		.IR editor ]                       parameter
+		.RB [ \-use " | " \-nouse ]  <---- exclusive parameters
+
+	References to these flags or parameters in the body text of the
+	manpage should reflect these conventions:
+
+		You may not supply both a
+		.B \-form
+		.I formfile
+		and a
+		.I +folder
+		or
+		.I msg
+		argument.
+
+	In particular, don't enclose them in single quotes (except
+	in the DEFAULT section, which might be inconsistent, but
+	seems a little clearer.
+
+	For "-flag param" situations, try to use a .B/.I combination
+	instead of a single .BI, since it allows more flexibility in
+	case of punctuation, and we get an automatic space between
+	flag and param for free, without having to manual force it.
+
+Subsections
+
+	Use ".SS" to denote a subsection
+
+Tables
+
+	The folder manpage has an example of a table.
+
+	.PP
+	.RS 5
+	.nf
+	.ta \w'/rnd/phyl/Mail/EP 'u +\w'has ddd messages 'u +\w'(ddd\-ddd); 'u
+	FOLDER  \0\0\0\0\0\0# MESSAGES  RANGE   CUR     (OTHERS)
+	ff      has \0no messages.
+	inbox+  has \016 messages       (\03\-\022);    cur=\05.
+	mh      has \076 messages       (15\-\076);     cur=70.
+	.fi
+	.RE
+	.PP
+
+Other italicized text
+
+	Italicize file names, profile entries, and folder names:
+
+		If a file named
+		.RI \*(lq components \*(rq
+		exists in the user's nmh directory,
+
+		If the user's profile contains a
+		.RI \*(lq "Msg\-Protect: nnn" \*(rq
+		entry, it
+
+		The \*(lq+\*(rq after
+		.I inbox
+		indicates that it is the current folder.
+
+	Enclose the file names and profile entries in lq/rq
+	quotes, too.
+
