@@ -1,4 +1,4 @@
-Mon May 08 21:47:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Mon May 08 23:46:29 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Doug informed me that the way I had restored the "lost" version
 	histories was wrong, because `cvs checkout's of old versions of
@@ -11,7 +11,21 @@ Mon May 08 21:47:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	file in that directory).  `cvs diff' will no longer be able to
 	diff pre-move versions vs. post-move versions -- you'll have to do
 	a lot of manual gyrations with `cvs checkout' and then use `diff'.
-	
+
+	* I had alphabetized the --configure options in the --help output
+ 	awhile back, but Shantonu added --enable-apop just under
+ 	--enable-pop.  Put it in alphabetical order and clarified what
+ 	--enable-apop does vs. --enable-pop and --with-krb4.  Also changed
+	--with-mts help line from "mail transport agent" to "mail
+	transport agent/service" so the 's' in "mts" doesn't seem to come
+	out of nowhere.
+
+	* Added two steps to "releasing nmh" in README.developers.  After
+ 	making the tarball, it's a good idea to diff the tree vs. the CVS
+ 	tree to make sure no files got left out, and then to chown the
+ 	files so that they're owned by root, preventing a Trojaning attack
+ 	by a malicious remote user with a UID matching yours.
+
 Sat May 06 08:28:09 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Restored lost version histories for those moved files by doing a

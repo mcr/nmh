@@ -137,36 +137,51 @@ releasing nmh
 To make a public release of nmh (we'll use version 1.0.4 and my mhost.com
 account, danh, as examples here):
 
-1. % echo 1.0.4 > VERSION
+ 1. % echo 1.0.4 > VERSION
 
-2. Put a comment like "Released nmh-1.0.4." in the ChangeLog.
+ 2. Put a comment like "Released nmh-1.0.4." in the ChangeLog.
 
-3. % cvs commit ChangeLog VERSION
+ 3. % cvs commit ChangeLog VERSION
 
-4. % cvs tag nmh-1_0_4
-   (cvs treats dots specially, so underscores are substituted here.)
+ 4. % cvs tag nmh-1_0_4
+    (cvs treats dots specially, so underscores are substituted here.)
 
-5. % make nmhdist
+ 5. % make nmhdist
 
-6. Preferably make an MD5 hash and/or a PGP signature of nmh-1.0.4.tar.gz.
+ 6. Untar nmh-1.0.4.tar.gz and `diff -r' it vs. your CVS tree.  Make sure no
+    files got left out of the distribution that should be in it (due to someone
+    forgetting to update the DIST variables in the makefiles).
 
-7. Preferably test out the tarball, making sure you can uncompress and untar it,
-   and configure, make, install, and use nmh from it.
+ 7. If you have root access on your machine, it's good at this point to do:
 
-8. % scp -p nmh-1.0.4.tar.gz* danh@mhost.com:/home/ftp/pub/nmh
+    % chown -R 0:0 nmh-1.0.4
+    % tar cvf nmh-1.0.4.tar nmh-1.0.4
+    % gzip nmh-1.0.4.tar
 
-9. Send an announcement to exmh-users@redhat.com, exmh-workers@redhat.com,
-   mh-users@ics.uci.edu, and nmh-announce@mhost.com.  If the release fixes
-   significant security holes, also send an announcement to
-   bugtraq@securityfocus.com.  The exmh lists require you to be subscribed in
-   order to post.  Note that you don't need to post separately to comp.mail.mh,
-   as the mh-users mailing list is apparently bidirectionally gatewayed to it.
+    If you leave the files in the archive as being owned by yourself, your UID
+    may coincide with one of a user on a machine where nmh is being installed,
+    making it possible for that user to Trojan the nmh code before the system
+    administrator finishes installing it.
 
-   Preferably, the announcement should contain the MD5 hash generated above, and
-   should be PGP-signed.  It should include the FTP URL for the tarball as well
-   as the URL of the website.  It should contain a brief summary of visible
-   changes, as well as the URL of the cvsweb diff page that would show a
-   detailed list of changes.  The changes between 1.0.3 and 1.0.4 would be shown
-   by:
+ 8. Preferably make an MD5 hash and/or a PGP signature of nmh-1.0.4.tar.gz.
 
-       http://www.mhost.com/cgi-bin/cvsweb/nmh/ChangeLog?r1=1.40&r2=1.71
+ 9. Preferably test out the tarball, making sure you can uncompress and untar
+    it, and configure, make, install, and use nmh from it.
+
+10. % scp -p nmh-1.0.4.tar.gz* danh@mhost.com:/home/ftp/pub/nmh
+
+11. Send an announcement to exmh-users@redhat.com, exmh-workers@redhat.com,
+    mh-users@ics.uci.edu, and nmh-announce@mhost.com.  If the release fixes
+    significant security holes, also send an announcement to
+    bugtraq@securityfocus.com.  The exmh lists require you to be subscribed in
+    order to post.  Note that you don't need to post separately to comp.mail.mh,
+    as the mh-users mailing list is apparently bidirectionally gatewayed to it.
+
+    Preferably, the announcement should contain the MD5 hash generated above,
+    and should be PGP-signed.  It should include the FTP URL for the tarball as
+    well as the URL of the website.  It should contain a brief summary of
+    visible changes, as well as the URL of the cvsweb diff page that would show
+    a detailed list of changes.  The changes between 1.0.3 and 1.0.4 would be
+    shown by:
+
+        http://www.mhost.com/cgi-bin/cvsweb/nmh/ChangeLog?r1=1.40&r2=1.71

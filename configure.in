@@ -31,6 +31,16 @@ dnl --------------------------
 dnl CHECK COMMAND LINE OPTIONS
 dnl --------------------------
 
+dnl Do you want client-side support for apop?
+AC_ARG_ENABLE(apop,
+[  --enable-apop           enable client-side support for POP3 and APOP])
+if test x"$enable_apop" = x"yes"; then
+  AC_DEFINE(APOP)dnl
+  APOPLIB=md5.o
+  enable_pop=yes
+fi
+AC_SUBST(APOPLIB)dnl
+
 dnl Do you want to debug nmh?
 undefine([debug])dnl
 AC_ARG_ENABLE(debug,
@@ -66,21 +76,11 @@ fi
 dnl Do you want client-side support for pop?
 undefine([pop])dnl
 AC_ARG_ENABLE(pop,
-[  --enable-pop            enable client-side support for pop])
+[  --enable-pop            enable client-side support for plain POP3])
 dnl The old redundant --enable-nmh-pop is deprecated and undocumented.
 if test x"$enable_nmh_pop" = x"yes"; then
   enable_pop=yes
 fi
-
-dnl Do you want client-side support for apop?
-AC_ARG_ENABLE(apop,
-[  --enable-apop           enable client-side support for apop])
-if test x"$enable_apop" = x"yes"; then
-  AC_DEFINE(APOP)dnl
-  APOPLIB=md5.o
-  enable_pop=yes
-fi
-AC_SUBST(APOPLIB)dnl
 
 dnl Do you want support for hesiod
 AC_ARG_WITH(hesiod,
@@ -91,7 +91,7 @@ fi
 
 dnl Do you want client-side support for kpop
 AC_ARG_WITH(krb4,
-[  --with-krb4=PREFIX      specify location of Kerberos V4 for kpop support])
+[  --with-krb4=PREFIX      specify location of Kerberos V4 for KPOP support])
 if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
   enable_pop=yes
   AC_DEFINE(KPOP)dnl
@@ -121,7 +121,7 @@ fi
 dnl What method of posting should post use?
 undefine([mts])dnl
 AC_ARG_WITH(mts,
-[  --with-mts=MTS          specify the mail transport agent])
+[  --with-mts=MTS          specify the mail transport agent/service])
 
 if test x"$with_mts" = x"smtp"; then
   MTS="smtp"
@@ -153,7 +153,7 @@ dnl What should be the default mail server(s)?
 undefine([smtpservers])dnl
 AC_ARG_WITH(smtpservers,
 [  --with-smtpservers='SMTPSERVER1[ SMTPSERVER2...]'
-                          specify the default smtp server(s) [localhost]])
+                          specify the default SMTP server(s) [localhost]])
 if test -n "$with_smtpservers"; then
   smtpservers="$with_smtpservers"
 else
