@@ -38,6 +38,9 @@ repl
 .br
 \%[\-whatnowproc\ program] \%[\-nowhatnowproc]
 .br
+\%[\-build]
+\%[-file msgfile]
+.br
 \%[\-version]
 \%[\-help]
 .in -.5i
@@ -270,6 +273,20 @@ options.  The invocation of this program can be inhibited by using the
 `\-nowhatnowproc' switch.  (In truth of fact, it is the \fIwhatnow\fR
 program which starts the initial edit.  Hence, `\-nowhatnowproc' will
 prevent any edit from occurring.)
+
+The `\-build' switch is intended to be used by the Emacs mh-e interface
+to \fInmh\fR, and is only present if \fInmh\fR was compiled with support
+for mh-e. It implies `\-nowhatnowproc'. It causes a file <mh\-dir>/reply
+to be created, containing the draft message that would normally be presented
+to the user for editing.
+No mail is actually sent. Note that this switch is not guaranteed to
+be present or to have the same effects in future versions of \fInmh\fR:
+it is documented here only for completeness.
+
+The `\-file\ msgfile' switch specifies the message to be replied to as an 
+exact filename rather than as an \fInmh\fR folder and message number. It is 
+intended to be used by the \fImsh\fR\0(1) interface to \fInmh\fR. 
+The same caveats apply to this option as to the `\-build' switch.
 
 .Fi
 ^%etcdir%/replcomps~^The standard reply template

@@ -64,11 +64,11 @@ static struct swit switches[] = {
 #define	HELPSW                26
     { "help", 4 },
 #define	FILESW                27
-    { "file file", -4 },		/* interface from msh */
+    { "file file", 4 },			/* interface from msh */
 
 #ifdef MHE
 #define	BILDSW                28
-    { "build", -5 },			/* interface from mhe */
+    { "build", 5 },			/* interface from mhe */
 #endif
 
     { NULL, 0 }
@@ -108,9 +108,9 @@ static struct swit aqrl[] = {
     { NULL, 0 }
 };
 
-short ccto = 0;		/* global for replsbr */
-short cccc = 0;
-short ccme = 0;
+short ccto = -1;		/* global for replsbr */
+short cccc = -1;
+short ccme = -1;
 short querysw = 0;
 
 short outputlinelen = OUTPUTLINELEN;
@@ -177,11 +177,9 @@ main (int argc, char **argv)
 
 		case GROUPSW:
 		    groupreply++;
-		    ccto = cccc = ccme = 1;
 		    continue;
 		case NGROUPSW:
 		    groupreply = 0;
-		    ccto = cccc = ccme = 0;
 		    continue;
 
 		case ANNOSW: 
@@ -324,6 +322,13 @@ main (int argc, char **argv)
 		msg = cp;
 	}
     }
+
+    if (ccto == -1) 
+	ccto = groupreply;
+    if (cccc == -1)
+	cccc = groupreply;
+    if (ccme == -1)
+	ccme = groupreply;
 
     cwd = getcpy (pwd ());
 

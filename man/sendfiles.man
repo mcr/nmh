@@ -19,7 +19,7 @@ The shell script \fIsendfiles\fR, is used to send a collection
 of files and directories via electronic mail.
 .sp
 .in +.5i
-%libdir%/sendfiles mailpath \*(lqsubject\*(rq files\0...
+sendfiles mailpath \*(lqsubject\*(rq files\0...
 .in -.5i
 .sp
 \fIsendfiles\fR will archive the files and directories you name
@@ -37,7 +37,7 @@ interpreted as the number of seconds to pause in between postings,
 e.g.,
 .sp
 .in +.5i
-%libdir%/sendfiles -30 mailpath \*(lqsubject\*(rq files\0...
+sendfiles -30 mailpath \*(lqsubject\*(rq files\0...
 .in -.5i
 .sp
 will pause 30 seconds in between each posting.

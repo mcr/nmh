@@ -87,9 +87,9 @@ install-files:
 	done
 
 install-scripts:
-	$(top_srcdir)/mkinstalldirs $(libdir)
+	$(top_srcdir)/mkinstalldirs $(bindir)
 	for script in $(SCRIPTS); do \
-	  $(INSTALL_PROGRAM) $(srcdir)/$$script $(libdir)/$$script; \
+	  $(INSTALL_PROGRAM) $(srcdir)/$$script $(bindir)/$$script; \
 	done
 
 uninstall: uninstall-files uninstall-scripts
@@ -101,7 +101,7 @@ uninstall-files:
 
 uninstall-scripts:
 	for script in $(SCRIPTS); do \
-	  rm -f $(libdir)/$$script; \
+	  rm -f $(bindir)/$$script; \
 	done
 
 # ========== DEPENDENCIES FOR CLEANUP ==========

@@ -64,11 +64,11 @@ static struct swit switches[] = {
 #define	HELPSW                23
     { "help", 4 },
 #define	FILESW                24
-    { "file file", -4 },		/* interface from msh */
+    { "file file", 4 },			/* interface from msh */
 
 #ifdef MHE
 #define	BILDSW                25
-    { "build", -5 },			/* interface from mhe */
+    { "build", 5 },			/* interface from mhe */
 #endif /* MHE */
 
     { NULL, 0 }

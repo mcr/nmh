@@ -1,3 +1,17 @@
+Sun Jan 2 23:42:18 2000 Ruud de Rooij <ruud@ruud.org>
+
+	* Move mhtest from bindir to libdir.
+
+	* Move sendfiles from libdir to bindir.
+
+	* Updated sendfiles manpage to reflect this change.
+
+	* Added documentation for -build and -file switches to repl and 
+	  forw manpages (patch from Peter Maydell).
+
+	* Fixed interaction between specifying -cc in profile and -group on 
+	  command-line.
+
 Tue Nov 1 13:48:10 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Changed the version number from 1.0.3 to 1.0.2+dev.  There was
