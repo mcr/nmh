@@ -44,17 +44,20 @@ around with `touch'.
 The correct procedure to commit the configure-related files is:
 
     % cvs commit acconfig.h aclocal.m4 configure.in
-    % autoconf && autoheader
+    % autoconf && autoheader                          # or simply "make"
     % cvs commit config.h.in configure
-    % make stamp-h.in
+    % make stamp-h.in                                 # or simply "make"
     % cvs commit stamp-h.in
 
-If you haven't changed all of those files, just commit the rest in the stated
-order (e.g. cvs commit acconfig.h config.h.in stamp-h.in).  The reason for
-the sequence is the RCS Id strings in the edited files -- they change when
-you commit the changes.
+The reason that the commits need to be split up is that the RCS Id strings
+in the files change when you commit, which can apparently mess up the
+dependencies.  [How?  -- Dan Harkless <dan-nmh@dilvish.speed.net>]  If this were
+not the case, you could commit with a single make followed by a
+cvs commit acconfig.h aclocal.m4 config.h.in configure.in configure stamp-h.in.
 
-You can run just "make" instead of the other commands in between cvs commits.
+If you haven't changed all the files noted above, just commit the ones you have,
+in the stated order (for instance, configure.in, then configure, then
+stamp-h.in).
 
 
 -------------------
