@@ -108,7 +108,8 @@ char *EHLOkeys[MAXEHLO + 1];
 /*
  * static prototypes
  */
-static int smtp_init (char *, char *, int, int, int, int, int);
+static int smtp_init (char *, char *, int, int, int, int, int, int,
+		      char *, char *);
 static int sendmail_init (char *, char *, int, int, int, int, int);
 
 static int rclient (char *, char *, char *);
