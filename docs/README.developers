@@ -49,16 +49,12 @@ The correct procedure to commit the configure-related files is:
     % make stamp-h.in                                 # or simply "make"
     % cvs commit stamp-h.in
 
-The reason that the commits need to be split up is that the RCS Id strings
-in the files change when you commit, which can apparently mess up the
-dependencies.  [How?  -- Dan Harkless <dan-nmh@dilvish.speed.net> // CVS
-updates the strings to have the new version number, the modification time
-of the file gets updated by the OS.  -- Kimmo Suominen <kim@tac.nyc.ny.us>]
-If this were not the case, you could commit with a single make followed by a
-cvs commit acconfig.h aclocal.m4 config.h.in configure.in configure stamp-h.in.
-[But since we have the RCS Id strings in the files, isn't it useless to even
-mention this?  The fix would be to remove the strings, and I don't think that
-would be good.  -- Kimmo Suominen <kim@tac.nyc.ny.us>]
+The reason that the commits need to be split up is that the timestamps on the
+files change when the commits are done and the RCS Ids change.  If one committed
+all the files in one fell swoop (in the above relative order), timestamps would
+cause unnecessary autoconf regeneration on 'make's after the commit, which would
+waste your time and would cause your local stamp-h.in to be out-of-sync with the
+one checked into CVS (not the end of the world, but...).
 
 If you haven't changed all the files noted above, just commit the ones you have,
 in the stated order (for instance, configure.in, then configure, then

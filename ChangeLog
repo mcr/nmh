@@ -3,10 +3,14 @@ Mon Jul 17 13:11:52 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	* Moved Kimmo's new "--with-hash-backup" to be output with the
  	rest of the --with options in the configure --help output.
 
+	* One more pass at README.developers now that it's clear that my
+	previously-suggested one-line autoconf-file commit can cause
+	unnecessary local makes and an out-of-sync stamp-h.in file, but
+	would not cause problems for other people using the CVS files.
+
 Tue Jul 18 19:36:59 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
-	* Added the obvious answer to Dan's question in README.developers;
-	I'm not sure why we don't just have this discussion in e-mail.
+	* Added the answer to Dan's question in README.developers.
 
 Mon Jul 17 19:10:36 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
