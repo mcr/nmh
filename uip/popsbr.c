@@ -27,6 +27,7 @@ extern int  client(char *args, char *protocol, char *service, int rproto,
 
 #ifdef CYRUS_SASL
 # include <sasl.h>
+# include <saslutil.h>
 #endif /* CYRUS_SASL */
 
 #include <h/popsbr.h>
@@ -77,6 +78,7 @@ static sasl_callback_t callbacks[] = {
 #define POP_SASL_CB_N_USER 0
     { SASL_CB_PASS, sasl_get_pass, NULL },
 #define POP_SASL_CB_N_PASS 1
+    { SASL_CB_LOG, NULL, NULL },
     { SASL_CB_LIST_END, NULL, NULL },
 };
 #else /* CYRUS_SASL */
@@ -163,12 +165,11 @@ pop_auth (char *user, char *pass)
 int
 pop_auth_sasl(char *user, char *host, char *mech)
 {
-    int result, status, sasl_capability = 0, outlen;
-    unsigned int buflen;
+    int result, status, sasl_capability = 0;
+    unsigned int buflen, outlen;
     char server_mechs[256], *buf, outbuf[BUFSIZ];
     const char *chosen_mech;
     sasl_security_properties_t secprops;
-    sasl_external_properties_t extprops;
     struct pass_context p_context;
     sasl_ssf_t *ssf;
     int *moutbuf;
@@ -240,7 +241,7 @@ pop_auth_sasl(char *user, char *host, char *mech)
 	return NOTOK;
     }
 
-    result = sasl_client_new("pop", host, NULL, SASL_SECURITY_LAYER, &conn);
+    result = sasl_client_new("pop", host, NULL, NULL, NULL, 0, &conn);
 
     if (result != SASL_OK) {
 	snprintf(response, sizeof(response), "SASL client initialization "
@@ -255,23 +256,12 @@ pop_auth_sasl(char *user, char *host, char *mech)
     memset(&secprops, 0, sizeof(secprops));
     secprops.maxbufsize = BUFSIZ;
     secprops.max_ssf = UINT_MAX;
-    memset(&extprops, 0, sizeof(extprops));
 
     result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
 
     if (result != SASL_OK) {
 	snprintf(response, sizeof(response), "SASL security property "
-		 "initialization failed: %s",
-		 sasl_errstring(result, NULL, NULL));
-	return NOTOK;
-    }
-
-    result = sasl_setprop(conn, SASL_SSF_EXTERNAL, &extprops);
-
-    if (result != SASL_OK) {
-	snprintf(response, sizeof(response), "SASL external property "
-		 "initialization failed: %s",
-		 sasl_errstring(result, NULL, NULL));
+		 "initialization failed: %s", sasl_errdetail(conn));
 	return NOTOK;
     }
 
@@ -280,18 +270,19 @@ pop_auth_sasl(char *user, char *host, char *mech)
      * and get out a possible initial challenge
      */
 
-    result = sasl_client_start(conn, mech ? mech : server_mechs,
-			       NULL, NULL, &buf, &buflen, &chosen_mech);
+    result = sasl_client_start(conn,
+			       (const char *) (mech ? mech : server_mechs),
+			       NULL, (const char **) &buf,
+			       &buflen, &chosen_mech);
 
     if (result != SASL_OK && result != SASL_CONTINUE) {
 	snprintf(response, sizeof(response), "SASL client start failed: %s",
-		 sasl_errstring(result, NULL, NULL));
+		 sasl_errdetail(conn));
 	return NOTOK;
     }
 
     if (buflen) {
 	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
-	free(buf);
 	if (status != SASL_OK) {
 	    snprintf(response, sizeof(response), "SASL base64 encode "
 		     "failed: %s", sasl_errstring(status, NULL, NULL));
@@ -327,7 +318,7 @@ pop_auth_sasl(char *user, char *host, char *mech)
 	}
 
 	result = sasl_decode64(response + 2, strlen(response + 2),
-			       outbuf, &outlen);
+			       outbuf, sizeof(outbuf), &outlen);
 	
 	if (result != SASL_OK) {
 	    command("*");
@@ -336,17 +327,17 @@ pop_auth_sasl(char *user, char *host, char *mech)
 	    return NOTOK;
 	}
 
-	result = sasl_client_step(conn, outbuf, outlen, NULL, &buf, &buflen);
+	result = sasl_client_step(conn, outbuf, outlen, NULL,
+				  (const char **) &buf, &buflen);
 
 	if (result != SASL_OK && result != SASL_CONTINUE) {
 	    command("*");
 	    snprintf(response, sizeof(response), "SASL client negotiaton "
-		     "failed: %s", sasl_errstring(result, NULL, NULL));
+		     "failed: %s", sasl_errdetail(conn));
 	    return NOTOK;
 	}
 
 	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
-	free(buf);
 
 	if (status != SASL_OK) {
 	    command("*");
@@ -367,41 +358,27 @@ pop_auth_sasl(char *user, char *host, char *mech)
 	return NOTOK;
 
     /*
-     * Depending on the mechanism, we might need to call sasl_client_step()
-     * one more time.  Do that now.
-     */
-
-    result = sasl_client_step(conn, NULL, 0, NULL, &buf, &buflen);
-
-    if (result != SASL_OK) {
-	snprintf(response, sizeof(response), "SASL final client negotiaton "
-		 "failed: %s", sasl_errstring(result, NULL, NULL));
-	return NOTOK;
-    }
-
-    /*
      * We _should_ be okay now.  Get a few properties now that negotiation
      * has completed.
      */
 
-    result = sasl_getprop(conn, SASL_MAXOUTBUF, (void **) &moutbuf);
+    result = sasl_getprop(conn, SASL_MAXOUTBUF, (const void **) &moutbuf);
 
     if (result != SASL_OK) {
 	snprintf(response, sizeof(response), "Cannot retrieve SASL negotiated "
-		 "output buffer size: %s", sasl_errstring(result, NULL, NULL));
+		 "output buffer size: %s", sasl_errdetail(conn));
 	return NOTOK;
     }
 
     maxoutbuf = *moutbuf;
 
-    result = sasl_getprop(conn, SASL_SSF, (void **) &ssf);
+    result = sasl_getprop(conn, SASL_SSF, (const void **) &ssf);
 
     sasl_ssf = *ssf;
 
     if (result != SASL_OK) {
 	snprintf(response, sizeof(response), "Cannot retrieve SASL negotiated "
-		 "security strength factor: %s",
-		 sasl_errstring(result, NULL, NULL));
+		 "security strength factor: %s", sasl_errdetail(conn));
 	return NOTOK;
     }
 
@@ -461,7 +438,7 @@ sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
 	return SASL_NOMEM;
 
     (*psecret)->len = len;
-    strcpy((*psecret)->data, pass);
+    strcpy((char *) (*psecret)->data, pass);
 
     return SASL_OK;
 }
@@ -1076,16 +1053,16 @@ putline (char *s, FILE *iop)
 	outbuf[sizeof(outbuf) - 3] = '\0';   /* Just in case */
 	strcat(outbuf, "\r\n");
 
-	result = sasl_encode(conn, outbuf, strlen(outbuf), &buf, &buflen);
+	result = sasl_encode(conn, outbuf, strlen(outbuf),
+			     (const char **) &buf, &buflen);
 
 	if (result != SASL_OK) {
 	    snprintf(response, sizeof(response), "SASL encoding error: %s",
-		     sasl_errstring(result, NULL, NULL));
+		     sasl_errdetail(conn));
 	    return NOTOK;
 	}
 
 	fwrite(buf, buflen, 1, iop);
-	free(buf);
     }
 #endif /* CYRUS_SASL */
 
@@ -1151,11 +1128,12 @@ sasl_fgetc(FILE *f)
 
 	} else {
 
-	    result = sasl_decode(conn, tmpbuf, cc, &retbuf, &retbufsize);
+	    result = sasl_decode(conn, tmpbuf, cc,
+				 (const char **) &retbuf, &retbufsize);
 
 	    if (result != SASL_OK) {
 		snprintf(response, sizeof(response), "Error during SASL "
-			 "decoding: %s", sasl_errstring(result, NULL, NULL));
+			 "decoding: %s", sasl_errdetail(conn));
 		return -2;
 	    }
 	}
@@ -1174,8 +1152,6 @@ sasl_fgetc(FILE *f)
     memcpy(buffer, retbuf, retbufsize);
     ptr = buffer + 1;
     cnt = retbufsize - 1;
-    if (sasl_complete)
-	free(retbuf);
 
     return (int) buffer[0];
 }

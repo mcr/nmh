@@ -1,0 +1,34 @@
+#
+# README.SASL - Readme about SASL support in nmh
+#
+# $Id$
+#
+
+SASL is short for the Simple Authentication and Security Layer.  Is is
+a framework for adding authentication and encryption to network protocols.
+It is described in IETF RFC 2222.
+
+This release of nmh supports SASL for POP and SMTP.  The SASL support
+is implemented using the Cyrus-SASL library.  This library can be found
+at ftp://ftp.andrew.cmu.edu/pub/cyrus-mail.  Obviously, SASL support only
+works if you use --enable-pop and the SMTP mail transport.
+
+This release of NMH only supports "Version 2" of the Cyrus SASL library.
+It should work with any newer Cyrus SASL release, but it was tested with
+Cyrus SASL 2.1.12.  In particular, the CRAM-MD5 and GSSAPI (Kerberos 5)
+mechanisms were tested.
+
+Currently, security layers ("encryption" in SASL-speak) are only supported
+for POP.  This means that if your POP server _and_ the selected GSSAPI
+mechanism supports it, POP communications will be encrypted.  Currently
+SMTP does NOT support security layers; this may be added in a future
+release.
+
+If you are curious as to whether or not your communications are actually
+encrypted or not, you can use the -snoop flag to the POP utilities.
+Communication that is encrypted is preceeded by an (*).
+
+If you would like to use the GSSAPI SASL mechanism (Kerberos V), you
+should read very carefully the documentation that comes with
+Cyrus-SASL, specifically the GSSAPI documentation.  Getting the GSSAPI
+plugin to work correctly with SASL can be "interesting" to say the least.

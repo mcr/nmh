@@ -18,8 +18,11 @@
 
    Richard Coleman (coleman@math.gatech.edu) started the nmh project.
    After he grew too busy to continue maintaining it, it was handed off
-   to the net at large. Doug Morris (doug@mhost.com) is hosting the
-   mailing lists, web pages, and CVS repository for nmh now.
+   to the net at large. Doug Morris (doug@mhost.com) hosted the web
+   site and mailing lists, web pages, and CVS repository for a long
+   time.  More recently, the CVS repository has moved to Savannah
+   (http://savannah.gnu.org/projects/nmh) and Ken Hornstein 
+   (kenh@pobox.com) is the project maintainer.
 
 4) Why did Richard start the nmh project?
 
@@ -54,12 +57,12 @@
 7) Where do I get nmh?
 
     The latest version of nmh is available at
-    ftp://ftp.mhost.com/pub/nmh/nmh.tar.gz
+    http://savannah.gnu.org/download/nmh
 
 8) Where is the nmh web page?
 
     The nmh home page is located at
-    http://www.mhost.com/nmh/
+    http://savannah.gnu.org/projects/nmh/
 
 9) Where is the nmh mailing list?
 

@@ -19,6 +19,7 @@
 
 #ifdef CYRUS_SASL
 #include <sasl.h>
+#include <saslutil.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -1108,12 +1109,11 @@ no_dice:
 static int
 sm_auth_sasl(char *user, char *mechlist, char *host)
 {
-    int result, status, outlen;
-    unsigned int buflen;
+    int result, status;
+    unsigned int buflen, outlen;
     char *buf, outbuf[BUFSIZ];
     const char *chosen_mech;
     sasl_security_properties_t secprops;
-    sasl_external_properties_t extprops;
     sasl_ssf_t *ssf;
     int *outbufmax;
 
@@ -1166,7 +1166,7 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	return NOTOK;
     }
 
-    result = sasl_client_new("smtp", host, NULL, SASL_SECURITY_LAYER, &conn);
+    result = sasl_client_new("smtp", host, NULL, NULL, NULL, 0, &conn);
 
     if (result != SASL_OK) {
 	sm_ierror("SASL client initialization failed: %s",
@@ -1181,7 +1181,6 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
     memset(&secprops, 0, sizeof(secprops));
     secprops.maxbufsize = BUFSIZ;
     secprops.max_ssf = 0;	/* XXX change this when we do encryption */
-    memset(&extprops, 0, sizeof(extprops));
 
     result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
 
@@ -1191,21 +1190,13 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	return NOTOK;
     }
 
-    result = sasl_setprop(conn, SASL_SSF_EXTERNAL, &extprops);
-
-    if (result != SASL_OK) {
-	sm_ierror("SASL external property initialization failed: %s",
-		  sasl_errstring(result, NULL, NULL));
-	return NOTOK;
-    }
-
     /*
      * Start the actual protocol.  Feed the mech list into the library
      * and get out a possible initial challenge
      */
 
-    result = sasl_client_start(conn, mechlist, NULL, NULL, &buf, &buflen,
-			       &chosen_mech);
+    result = sasl_client_start(conn, mechlist, NULL, (const char **) &buf,
+			       &buflen, (const char **) &chosen_mech);
 
     if (result != SASL_OK && result != SASL_CONTINUE) {
 	sm_ierror("SASL client start failed: %s",
@@ -1220,7 +1211,6 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 
     if (buflen) {
 	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
-	free(buf);
 	if (status != SASL_OK) {
 	    sm_ierror("SASL base64 encode failed: %s",
 		      sasl_errstring(status, NULL, NULL));
@@ -1263,7 +1253,7 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	    outlen = 0;
 	} else {
 	    result = sasl_decode64(sm_reply.text, sm_reply.length,
-				   outbuf, &outlen);
+				   outbuf, sizeof(outbuf), &outlen);
 	
 	    if (result != SASL_OK) {
 		smtalk(SM_AUTH, "*");
@@ -1273,7 +1263,8 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	    }
 	}
 
-	result = sasl_client_step(conn, outbuf, outlen, NULL, &buf, &buflen);
+	result = sasl_client_step(conn, outbuf, outlen, NULL,
+				  (const char **) &buf, &buflen);
 
 	if (result != SASL_OK && result != SASL_CONTINUE) {
 	    smtalk(SM_AUTH, "*");
@@ -1283,7 +1274,6 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	}
 
 	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
-	free(buf);
 
 	if (status != SASL_OK) {
 	    smtalk(SM_AUTH, "*");
@@ -1303,24 +1293,11 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	return RP_BHST;
 
     /*
-     * Depending on the mechanism, we need to do a FINAL call to
-     * sasl_client_step().  Do that now.
-     */
-
-    result = sasl_client_step(conn, NULL, 0, NULL, &buf, &buflen);
-
-    if (result != SASL_OK) {
-	sm_ierror("SASL final client negotiation failed: %s",
-		  sasl_errstring(result, NULL, NULL));
-	return NOTOK;
-    }
-
-    /*
      * We _should_ have completed the authentication successfully.
      * Get a few properties from the authentication exchange.
      */
 
-    result = sasl_getprop(conn, SASL_MAXOUTBUF, (void **) &outbufmax);
+    result = sasl_getprop(conn, SASL_MAXOUTBUF, (const void **) &outbufmax);
 
     if (result != SASL_OK) {
 	sm_ierror("Cannot retrieve SASL negotiated output buffer size: %s",
@@ -1330,7 +1307,7 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 
     maxoutbuf = *outbufmax;
 
-    result = sasl_getprop(conn, SASL_SSF, (void **) &ssf);
+    result = sasl_getprop(conn, SASL_SSF, (const void **) &ssf);
 
     sasl_ssf = *ssf;
 
@@ -1390,7 +1367,7 @@ sm_get_pass(sasl_conn_t *conn, void *context, int id,
     }
 
     (*psecret)->len = len;
-    strcpy((*psecret)->data, pass);
+    strcpy((char *) (*psecret)->data, pass);
 /*    free(pass); */
 
     return SASL_OK;

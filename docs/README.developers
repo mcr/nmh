@@ -17,7 +17,8 @@ autoconf files
 
 If you wish to change the `configure' script or its related files, you'll need
 to first install GNU m4, available from <ftp://ftp.gnu.org/pub/gnu/m4/> and then
-GNU autoconf (<ftp://ftp.gnu.org/pub/gnu/autoconf/>).
+GNU autoconf (<ftp://ftp.gnu.org/pub/gnu/autoconf/>).  Nmh is currently using
+a minimum of autoconf 2.54.
 
 Most of the configure-related files are automatically generated.  The only files
 you should need to manually edit are acconfig.h and configure.in.  Don't, for
@@ -25,41 +26,14 @@ instance, edit config.h.in.  Though it is an input file from the point of view
 of the users (and the configure script) it is an output file from the point of
 view of the developers (and the autoconf script).
 
-If you do change acconfig.h or configure.in and want to `cvs commit' them, be
-sure to regenerate the output files and commit them as well.  The easiest way to
-regenerate the files is to simply run `make' -- it'll do the necessary calls of
-autoconf and autoheader and will do a `./config.status --recheck', which will
-exercise your new configure script.
+Note that the automatically generated autoconf files (such as config.h.in,
+stamp-h.in, and configure), are NOT kept in CVS.  Thus, when you check out
+a CVS tree, you need to do the following things before you can build
+anything:
 
-When you commit the configure-related files, it's very important to commit them
-in the right order.  The timestamps on the files in the CVS archive are based on
-the current time at the moment they were committed -- the timestamps from the
-local files you commit are not copied over.  If you commit the files in the
-wrong order, you'll cause unnecessary calls of `autoconf' to occur when people
-try to `make' their copies of the latest CVS source.  These people may be
-end-users who don't have any interest in changing the configure-related files
-and don't have autoconf installed.  They'll be unable to make without playing
-around with `touch'.
-
-The correct procedure to commit the configure-related files is:
-
-    % cvs commit acconfig.h aclocal.m4 configure.in
-    % autoheader; autoconf; \date > stamp-h.in
-    % cvs commit config.h.in configure stamp-h.in
-
-The reason for the three-step commit is that configure.in contains the RCS $Id
-keyword, so when you commit it, a new version is written locally.  Therefore,
-the autoconf regeneration should be held off until after the commit, or your
-local stamp-h.in will become out-of-sync with the CVS version (granted, not that
-big a deal).  For the second step, you're doing the same commands as a 
-`make reset' would do, but using that command would require extra configure runs
-to make Makefile be up-to-date.  The reason for the backslash on `date' is in
-case you have `date' aliased in your shell to use a nonstandard format.
-
-If you haven't changed all the files noted above, just commit the ones you have
-changed, in the stated order (for instance, configure.in, then configure and
-stamp-h.in).
-
+	% autoheader
+	% autoconf
+	% date > stamp-h.in
 
 -------------------
 directory structure
