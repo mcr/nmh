@@ -155,6 +155,10 @@ dnl Look for `cut'
 pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
 AC_PATH_PROG(cutpath, cut, no, [$pathtmp])
 
+dnl Look for libtool. A ranlib replacement on Mac OS X/Rhapsody where
+dnl either ranlib or ar is broken (not sure which)
+AC_PATH_PROG(LIBTOOL, libtool, no [$pathtmp])
+
 dnl Check for lorder and tsort commands
 AC_CHECK_PROG(LORDER, lorder, lorder, no)dnl
 AC_CHECK_PROG(TSORT, tsort, tsort, no)dnl
@@ -165,6 +169,12 @@ if test x$ac_cv_prog_LORDER != xlorder -o x$ac_cv_prog_TSORT != xtsort; then
   TSORT=cat
   AC_SUBST(LORDER)dnl
   AC_SUBST(TSORT)dnl
+dnl Mac OS X has lorder, but sh is too broken for it to work
+dnl elif test -z "`lorder config/config.c 2>&1 | grep config/config.c`" ; then
+dnl   LORDER=echo
+dnl   TSORT=cat
+dnl   AC_SUBST(LORDER)dnl
+dnl   AC_SUBST(TSORT)dnl
 fi
 
 dnl Look for `ls'

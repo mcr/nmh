@@ -9,6 +9,7 @@
 FreeBSD:
 OpenBSD:
 NetBSD:
+Mac OS X/Rhapsody 5:
 
 Some BSD4.4 machines have problems when running nmh's configure script.
 They will be unable to find the location of vi and sendmail.  This is
@@ -54,14 +55,17 @@ LIBOBJS line.  Then run "make" as normal.
 
 Linux:
 
+*** No longer necessary ***
 Make sure you uncomment the Linux section in the config.h file after
-running configure.
+running configure. 
 
+*** This test has been updated and should work now ***
 The configuration script does a test to discover the functions
 sigsetjmp/siglongjmp.  Since they are macros on Linux, the configuration
 process doesn't find them.  After running configure, you should change
-the line in config.h to define HAVE_SIGSETJMP.
+the line in config.h to define HAVE_SIGSETJMP. 
 
+*** This test has been updated and should work now ***
 For some Linux distributions, the configure script doesn't find the
 ndbm/gdbm library (dbm_open, dbm_close).  In this case, you should try to
 configure nmh like this:
@@ -78,6 +82,7 @@ vi clone such as nvi or elvis.
 
 SCO:
 
+*** currently handled by config.guess ***
 Make sure you uncomment the SCO section in the config.h file after
 running configure.
 
@@ -85,13 +90,25 @@ running configure.
 
 Solaris:
 
-Builds ok.
+With --enable-nmh-debug you'll see a lot of warnings. This is even
+worse when compiling using the Sun Workshop compiler since it issues a
+warning for every instance of a problem instead of summarizing them.
+The main one concerns arrays with an index of type char. This is ok.
+The array itself is a hash of chars, so the array size and the type
+match. There isn't another safe and portable way to do this at the
+moment. An explicit cast would get rid of the warnings, but I think
+it's better to leave it complaining for now until we come up with
+a better solution. The whole thing is probablly going to be chucked
+with UTC-8 support anyway.
+
+Other than the warnings, it builds ok.
 
 --------------------------------------
 
-SunOS 4.1.3:
+SunOS 4.1.1/4.1.3/4.1.4:
 
-You can't use the C compiler that comes with SunOS 4.1.3 since
-it isn't ANSI C.  But nmh builds just fine with gcc.
+You can't use the C compiler that comes with SunOS 4 since
+it isn't ANSI C.  But nmh builds just fine with gcc. With
+--enable-nmh-debug you will see a lot of warnings. 
 
 --------------------------------------

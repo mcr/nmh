@@ -1,5 +1,7 @@
 [TODO]
 
+* Add IPv6 support.
+* Check/fix compilation on 64-bit systems.
 * Write different function to read configuration files, instead
   of using m_getfld.c
 * convert calls from sprintf/vsprintf to snprintf/vsnprintf
@@ -53,8 +55,10 @@ OPTIONS
 
 COMP
 ----
-*) add option so that prompter can be used to input addresses,
-   before the real editor is called to edit message.
+* add option so that prompter can be used to input addresses,
+  before the real editor is called to edit message.
+* fix -nowhatnowproc switch. Right now whatnowproc starts the edit
+  session instead of comp, so -nowhatnowproc does nothing.
 
 FLIST
 -----

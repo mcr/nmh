@@ -1,3 +1,8 @@
+Thu Oct 21 20:45:37 1999 Doug Morris <doug@mhost.com>
+
+	* Added check for "libtool" (a ranlib type tool for Mac OS X)
+ 	and modified Makefiles so that nmh will build under Mac OS X.
+
 Sun Oct 17 08:28:56 1999 Ruud de Rooij <ruud@ruud.org>
 
 	* Changed repl defaults to partly revert to MH behaviour,

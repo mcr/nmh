@@ -12,6 +12,7 @@ VPATH  = @srcdir@
 LORDER = @LORDER@
 TSORT  = @TSORT@
 RANLIB = @RANLIB@
+LIBTOOL = @LIBTOOL@
 
 # flags passed to recursive makes in subdirectories
 MAKEDEFS = CC='$(CC)' CPPFLAGS='$(CPPFLAGS)' DEFS='$(DEFS)' \
@@ -41,9 +42,13 @@ SUBDIRS = mts tws mf bboards
 all: all-recursive libzot.a
 
 libzot.a: $(OBJS)
-	rm -f libzot.a
-	ar cr libzot.a `$(LORDER) $(OBJS) | $(TSORT)`
-	$(RANLIB) libzot.a
+	rm -f $@
+	if test x$(LIBTOOL) != xno ; then \
+	  $(LIBTOOL) -static -c $(OBJS) -o $@  ; \
+	else \
+	  ar cr $@ `$(LORDER) $(OBJS) | $(TSORT)`  ; \
+	  $(RANLIB) $@  ; \
+	fi 
 
 all-recursive:
 	for subdir in $(SUBDIRS); do \

@@ -24,6 +24,7 @@ INCLUDES = -I../.. -I$(srcdir) -I$(top_srcdir)
 LORDER  = @LORDER@
 TSORT   = @TSORT@
 RANLIB  = @RANLIB@
+LIBTOOL = @LIBTOOL@
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
 
@@ -51,8 +52,12 @@ all: libsend.a
 
 libsend.a: $(OBJS)
 	rm -f $@
-	ar cr $@ `$(LORDER) $(OBJS) | $(TSORT)`
-	$(RANLIB) $@
+	if test x$(LIBTOOL) != xno ; then \
+	  $(LIBTOOL) -static -c $(OBJS) -o $@  ; \
+	else \
+	  ar cr $@ `$(LORDER) $(OBJS) | $(TSORT)`  ; \
+	  $(RANLIB) $@  ; \
+	fi 
 
 install:
 

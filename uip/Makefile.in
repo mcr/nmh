@@ -273,7 +273,7 @@ install-misc:
 
 # install commands with special installation needs (thus no $(SCMDS) use here)
 install-scmds:
-	if test x$(SETGID_MAIL) = x1; then \
+	if test x$(SETGID_MAIL) != x; then \
 	  $(INSTALL_PROGRAM) -g $(MAIL_SPOOL_GRP) -m 2755 inc $(bindir)/$$cmd; \
 	else \
 	  $(INSTALL_PROGRAM)                 inc $(bindir)/$$cmd; \
