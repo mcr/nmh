@@ -33,4 +33,5 @@
 In-Reply-To: Message from %<{from}%{from}%?{sender}%{sender}%|%{return-path}%>\n\
    of "%<(nodate{date})%{date}%|%(pretty{date})%>."\
 %<{message-id} %{message-id}%>\n\
+%<{message-id}References: %<{references} %{references}%> %{message-id}\n%>\
 --------

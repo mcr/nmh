@@ -197,8 +197,8 @@ message_fd (char **vec)
     unlink (mktemp (strncpy (tmpfil, "/tmp/rcvttyXXXXX", sizeof(tmpfil))));
     if ((fd = open (tmpfil, O_RDWR | O_CREAT | O_TRUNC, 0600)) == NOTOK)
 	return header_fd ();
-    unlink (tmpfil);
 #endif
+    unlink (tmpfil);
 
     if ((child_id = vfork()) == NOTOK) {
 	/* fork error */

@@ -50,9 +50,11 @@ static int dat[5];			/* aux. data for format routine    */
 
 char *scanl = 0;			/* text of most recent scanline    */
 
+#define DIEWRERR() adios (scnmsg, "write error on")
+
 #define FPUTS(buf) {\
 		if (mh_fputs(buf,scnout) == EOF)\
-		    adios (scnmsg, "write error on");\
+		    DIEWRERR();\
 		}
 
 /*
@@ -187,7 +189,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		compnum++;
 		if (outnum) {
 		    FPUTS (name);
-		    putc (':', scnout);
+		    if ( putc (':', scnout) == EOF) DIEWRERR();
 		    FPUTS (tmpbuf);
 		}
 		/*
@@ -228,7 +230,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		    state = FILEEOF; /* stop now if scan cmd */
 		    goto finished;
 		}
-		putc ('\n', scnout);
+		if (putc ('\n', scnout) == EOF) DIEWRERR();
 		FPUTS (tmpbuf);
 		/*
 		 * performance hack: some people like to run "inc" on
@@ -249,7 +251,7 @@ body:;
 		    if (scnout->_cnt <= 0) {
 #endif
 			if (fflush(scnout) == EOF)
-			    adios (scnmsg, "write error on");
+			    DIEWRERR ();
 		    }
 #ifdef LINUX_STDIO
 		    state = m_getfld(state, name, scnout->_IO_write_ptr,
@@ -274,7 +276,7 @@ body:;
 		if (outnum) {
 		    FPUTS ("\n\nBAD MSG:\n");
 		    FPUTS (name);
-		    putc ('\n', scnout);
+		    if (putc ('\n', scnout) == EOF) DIEWRERR();
 		    state = BODY;
 		    goto body;
 		}
@@ -306,7 +308,10 @@ finished:
     if (size)
 	dat[2] = size;
     else if (outnum > 0)
+    {
 	dat[2] = ftell(scnout);
+	if (dat[2] == EOF) DIEWRERR();
+    }
 
     if ((datecomp && !datecomp->c_text) || (!size && !outnum)) {
 	struct stat st;
@@ -354,7 +359,7 @@ finished:
     *--nxtbuf = tmpbuf;
 
     if (outnum && (ferror(scnout) || fclose (scnout) == EOF))
-	adios (scnmsg, "write error on");
+	DIEWRERR();
 
     return (state != FILEEOF ? SCNERR : encrypted ? SCNENC : SCNMSG);
 }

@@ -55,7 +55,7 @@ SETGID_MAIL    = @SETGID_MAIL@
 CMDS = ali anno burst comp dist flist folder forw mark mhbuild \
        mhlist mhmail mhn mhparam mhpath mhshow mhstore msgchk \
        msh packf pick prompter refile repl rmf rmm scan send show \
-       sortm viamail whatnow whom
+       sortm whatnow whom
 
 ## removed this from CMDS until I can fix it
 ## OTHERCMDS = vmh
@@ -65,7 +65,7 @@ LCMDS = flists folders next prev
 
 # misc support binaries
 MISC = ap conflict dp fmtdump install-mh mhl post rcvdist rcvpack \
-       rcvstore rcvtty slocal spost mhtest
+       rcvstore rcvtty slocal spost viamail mhtest
 
 # commands with 'S'pecial installation needs
 SCMDS = inc

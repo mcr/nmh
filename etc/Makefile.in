@@ -44,7 +44,7 @@ DIST_FILES = mhl.body mhl.digest mhl.format mhl.forward mhl.headers \
 	     replcomps replgroupcomps MailAliases
 
 # format and configuration files to generate
-GEN_FILES = mhn.defaults mts.conf
+GEN_FILES = mhn.defaults mts.conf sendfiles
 
 # data files we need to install
 FILES = $(DIST_FILES) $(GEN_FILES)
@@ -72,6 +72,10 @@ mts.conf: $(srcdir)/mts.conf.in Makefile
 	       -e 's,%etcdir%,$(etcdir),' \
 	       -e 's,%masquerade%,$(masquerade),' \
 	       -e 's,%smtpservers%,$(smtpservers),' < $(srcdir)/mts.conf.in > $@
+
+sendfiles: $(srcdir)/sendfiles.in Makefile
+	rm -f $@
+	$(SED) -e 's,%libdir%,$(libdir),' < $(srcdir)/sendfiles.in > $@
 
 install: install-files install-scripts
 

@@ -1,0 +1,84 @@
+#!/bin/sh
+#
+# $Id$
+#
+# Send multiples files and/or directories as a tar/compressed
+# image, in a MIME message.
+#
+
+DELAY=0
+FROM=
+
+# compression method (none, gzip or compress)
+METHOD=none
+# compression filter
+COMPRESS=cat
+# uncompression filter
+UNCOMPRESS=cat
+# compression description to append to content-type
+CONVERSION=
+
+# default compression method based on installed software
+# prefer compress over gzip for backward compatibility
+if command -v compress >/dev/null 2>&1 ; then
+    METHOD=compress
+elif command -v gzip >/dev/null 2>&1 ; then
+    METHOD=gzip
+fi
+
+# handle command-line options to override compression method and delay
+while [ $# -gt 3 ]; do
+    case "$1" in
+        -gzip) METHOD=gzip
+	       shift
+	       ;;
+	-compress) METHOD=compress
+	           shift
+		   ;;
+        -none) METHOD=none
+	       shift
+	       ;;
+	-*) DELAY="`echo $1 | sed -e 's%-%%'`"
+	    shift
+	    ;;
+	*) break
+	   ;;
+    esac
+done
+
+# set variables based on chosen compression method
+if [ $METHOD = compress ]; then
+    COMPRESS=compress
+    UNCOMPRESS=uncompress
+    CONVERSION="; x-conversions=compress"
+elif [ $METHOD = gzip ]; then
+    COMPRESS="gzip -c"
+    UNCOMPRESS="gzip -dc"
+    CONVERSION="; x-conversions=gzip"
+fi
+
+if [ ! -z "$PERSON" ]; then
+    FROM="-from $PERSON"
+fi
+
+if [ $# -lt 3 ]; then
+    echo 'usage: sendfiles: "mailpath" "subject-string" directory-or-file ...' 1>&2
+    exit 1;
+fi
+
+mailpath="$1"
+echo "mailpath = $mailpath" 1>&2
+shift
+
+subject="$1"
+echo "subject-string = $subject" 1>&2
+shift
+
+echo "files = $*" 1>&2
+
+tar cvf - "$@" | $COMPRESS | \
+    %libdir%/viamail -to "$mailpath" -subject "$subject" \
+	-parameters "type=tar$CONVERSION" \
+	-comment "extract with $UNCOMPRESS | tar xvpf -" \
+	-delay "$DELAY" \
+	-verbose $FROM

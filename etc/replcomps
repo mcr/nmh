@@ -26,4 +26,5 @@
 %<{date}In-Reply-To: Your message of "\
 %<(nodate{date})%{date}%|%(pretty{date})%>."%<{message-id}
              %{message-id}%>\n%>\
+%<{message-id}References: %<{references} %{references}%> %{message-id}\n%>\
 --------

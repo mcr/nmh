@@ -1,3 +1,14 @@
+Sun May 28 14:58:49 CEST 2000 Ruud de Rooij <ruud@ruud.org>
+
+	* Applied patch from Peter Maydell to uip/scansbr.c for more
+	  checks for write failures.
+	* Unlink temporary file properly in uip/rcvtty.c.
+	* Moved viamail from bindir to libdir.
+	* Changed sendfiles into sendfiles.in, so that path to viamail
+	  is patched in.
+	* Added gzip support to sendfiles.
+	* Added References header to replcomps and replgroupcomps.
+
 Sun May 28 14:39:31 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* Fixed m_getfld bug which caused segmentation faults when
