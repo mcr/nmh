@@ -1,7 +1,17 @@
+Sat May 06 08:28:09 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Restored lost version histories for those moved files by doing a
+	manual `mv' in the CVSROOT on mhost.  CVS badly needs a `cvs mv'
+	command so that you can move files (without having physical access
+	to the CVSROOT) without losing versioning.  Put MACHINES back at
+	the top level as it needs to be read before building.  Fixed DIST
+	variable in {.,docs}/Makefile.in to reflect that and to add
+	missing entry for "INSTALL" file.
+
 Sat May 06 13:13:07 2000 Doug Morris <doug@mhost.com>
 
-	* re-cleaned up nmh documentation and modified Makefile &
-	configure.in to handle the change. 
+	* Re-cleaned up nmh documentation (by moving things to docs
+ 	subdir) and modified Makefile & configure.in to handle the change.
 
 Mon Apr 17 21:28:40 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
