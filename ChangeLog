@@ -1,4 +1,4 @@
-Thu Feb 03 17:22:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Thu Feb 03 17:52:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied wesley.craig@umich.edu's KPOP patches.  According to him:
 
@@ -11,6 +11,8 @@ Thu Feb 03 17:22:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	  KPOP server.
 
 	* Modified inc.man and msgchk.man to document Wesley's new -kpop.
+
+	* Modified INSTALL and config.h.in to reflect the new -kpop feature.
 
 Fri Jan 28 17:39:24 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 

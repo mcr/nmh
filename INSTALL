@@ -227,10 +227,11 @@ Options for configure
     Enable client-side support for pop.
 
 --with-krb4=PREFIX
-    Specify the location of Kerberos V4 for KPOP support.  You will
-    also need to specify the option `--enable-nmh-pop'.  After running
-    configure, you will probably need to change the POPSERVICE define
-    in config.h.  See the comments inside config.h for details.
+    Specify the location of Kerberos V4 for KPOP support.  You will also need to
+    specify the option `--enable-nmh-pop'.  After running configure, you will
+    need to change the POPSERVICE #define in config.h if you want to use KPOP
+    exclusively (rather than being able to switch between KPOP and normal POP3).
+    See the comments inside config.h for details.
 
 --with-hesiod=PREFIX
     Specify the location of Hesiod.
