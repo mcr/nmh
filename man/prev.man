@@ -7,6 +7,7 @@
 prev \- show the previous message
 .SH SYNOPSIS
 .HP 5
+.na
 .B prev 
 .RI [ +folder ]
 .RB [\-showproc
@@ -21,6 +22,7 @@ or
 .IR showmimeproc ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Prev
 performs a

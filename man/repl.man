@@ -7,6 +7,7 @@
 repl \- reply to a message
 .SH SYNOPSIS
 .HP 5
+.na
 .B repl
 .RI [ +folder ]
 .RI [ msgs ]
@@ -44,6 +45,7 @@ all/to/cc/me]
 .IR msgfile ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Repl
 may be used to produce a reply to an existing message.

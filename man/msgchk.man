@@ -7,6 +7,7 @@
 msgchk \- check for messages
 .SH SYNOPSIS
 .HP 5
+.na
 .B msgchk
 .RB [ \-date " | " \-nodate ]
 .RB [ \-notify
@@ -29,6 +30,7 @@ all/mail/nomail ]
 ... ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 The
 .B msgchk

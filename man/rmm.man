@@ -7,12 +7,14 @@
 rmm \- remove messages
 .SH SYNOPSIS
 .HP 5
+.na
 .B rmm
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-link " | " \-nolink ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 By default,
 .B rmm

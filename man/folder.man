@@ -7,6 +7,7 @@
 folder, folders \- set/list current folder/message
 .SH SYNOPSIS
 .HP 5
+.na
 .B folder
 .RI [ +folder ]
 .RI [ msgs ]
@@ -29,6 +30,7 @@ folder, folders \- set/list current folder/message
 is equivalent to
 .B folder
 .B \-all
+.ad
 .SH DESCRIPTION
 Since the
 .B nmh

@@ -7,6 +7,7 @@
 mhlist \- list information about MIME messages
 .SH SYNOPSIS
 .HP 5
+.na
 .B mhlist
 .RI [ +folder ]
 .RI [ msgs ]
@@ -27,6 +28,7 @@ mhlist \- list information about MIME messages
 .RB [ \-check " | " \-nocheck ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 The
 .B mhlist

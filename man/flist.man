@@ -7,6 +7,7 @@
 flist, flists \- list the number of messages in given sequence(s)
 .SH SYNOPSIS
 .HP 5
+.na
 .B flist
 .RI [ +folder1
 .RI [ +folder2
@@ -19,8 +20,8 @@ flist, flists \- list the number of messages in given sequence(s)
 .RB [ \-all " | " \-noall ]
 .RB [ \-showzero " | " \-noshowzero ]
 .RB [ \-recurse " | " \-norecurse ]
-.RB [ \-alpha " | " \-noalpha ]
 .RB [ \-fast " | " \-nofast ]
+.RB [ \-alpha " | " \-noalpha ]
 .RB [ \-version ]
 .RB [ \-help ]
 .PP
@@ -29,6 +30,7 @@ flist, flists \- list the number of messages in given sequence(s)
 is equivalent to
 .B flist
 .B \-all
+.ad
 .SH DESCRIPTION
 .B Flist
 is used to search a list of folders and display the number

@@ -7,6 +7,7 @@
 forw \- forward messages
 .SH SYNOPSIS
 .HP 5
+.na
 .B forw
 .RI [ +folder ]
 .RI [ msgs ]
@@ -50,6 +51,7 @@ forw \- forward messages
 .BR forw ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Forw
 may be used to prepare a message containing other messages.

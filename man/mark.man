@@ -7,6 +7,7 @@
 mark \- manipulate message sequences
 .SH SYNOPSIS
 .HP 5
+.na
 .B mark
 .RI [ +folder ]
 .RI [ msgs ]
@@ -19,6 +20,7 @@ mark \- manipulate message sequences
 .RB [ \-zero " | " \-nozero ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 The
 .B mark

@@ -7,6 +7,7 @@
 fmtdump \- decode nmh format files
 .SH SYNOPSIS
 .HP 5
+.na
 .B %libdir%/fmtdump
 .RB [ \-form
 .IR formatfile ]
@@ -14,6 +15,7 @@ fmtdump \- decode nmh format files
 .IR string ]
 .RB [ \-version ]
 .RB [ \-help ] 
+.ad
 .SH DESCRIPTION
 .B Fmtdump
 is a program that parses an

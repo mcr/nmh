@@ -7,6 +7,7 @@
 next \- show the next message
 .SH SYNOPSIS
 .HP 5
+.na
 .B next 
 .RI [ +folder ]
 .RB [\-showproc
@@ -21,6 +22,7 @@ or
 .IR showmimeproc ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Next
 performs a

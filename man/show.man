@@ -7,6 +7,7 @@
 show \- show (display) messages
 .SH SYNOPSIS
 .HP 5
+.na
 .B show
 .RI [ +folder ]
 .RI [ msgs ]
@@ -23,6 +24,7 @@ or
 .IR showmimeproc ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Show
 lists each of the specified messages to the standard output

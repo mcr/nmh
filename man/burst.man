@@ -7,6 +7,7 @@
 burst \- explode digests into messages
 .SH SYNOPSIS
 .HP 5
+.na
 .B burst
 .RI [ +folder ]
 .RI [ msgs ]
@@ -15,6 +16,7 @@ burst \- explode digests into messages
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Burst
 considers the specified messages in the named folder to be

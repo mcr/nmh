@@ -7,6 +7,7 @@
 rcvtty  \- report new mail
 .SH SYNOPSIS
 .HP 5
+.na
 .B %libdir%/rcvtty
 .RI [ command ]
 .RB [ \-form
@@ -20,6 +21,7 @@ rcvtty  \- report new mail
 .RB [ \-biff ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 The
 .B rcvtty

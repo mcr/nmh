@@ -7,6 +7,7 @@
 comp \- compose a message
 .SH SYNOPSIS
 .HP 5
+.na
 .B comp 
 .RI [ +folder ]
 .RI [ msgs ]
@@ -28,6 +29,7 @@ comp \- compose a message
 .RB [ \-nowhatnowproc ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Comp
 is used to create a new message to be mailed.  It copies a

@@ -7,6 +7,7 @@
 ap \- parse addresses 822-style
 .SH SYNOPSIS
 .HP 5
+.na
 .B %libdir%/ap
 .RB [ \-form
 .IR formatfile ]
@@ -19,6 +20,7 @@ ap \- parse addresses 822-style
 .RB [ \-help ] 
 .I addrs
 \&...
+.ad
 .SH DESCRIPTION
 .B Ap
 is a program that parses addresses according to the ARPA

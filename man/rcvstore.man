@@ -7,6 +7,7 @@
 rcvstore \- asynchronously incorporate mail into a folder
 .SH SYNOPSIS
 .HP 5
+.na
 .B %libdir%/rcvstore
 .RI [ +folder ]
 .RB [ \-create " | " \-nocreate ]
@@ -18,6 +19,7 @@ rcvstore \- asynchronously incorporate mail into a folder
 .RB [ \-public " | " \-nopublic ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Rcvstore
 incorporates a message from the standard input into an

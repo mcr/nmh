@@ -6,6 +6,7 @@
 .SH NAME
 mhbuild \- translate MIME composition draft
 .SH SYNOPSIS
+.na
 .HP 5
 .B mhbuild
 .I file
@@ -18,6 +19,7 @@ mhbuild \- translate MIME composition draft
 .RB [ \-check " | " \-nocheck ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 The
 .B mhbuild

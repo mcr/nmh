@@ -7,6 +7,7 @@
 sendfiles \- send multiple files via a MIME message
 .SH SYNOPSIS
 .HP
+.na
 .B sendfiles
 .RB [ delay ]
 .I mailpath
@@ -14,6 +15,7 @@ sendfiles \- send multiple files via a MIME message
 .I file1
 .RI [ file2
 \&...]
+.ad
 .SH DESCRIPTION
 The shell script
 .BR sendfiles ,

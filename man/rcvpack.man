@@ -7,12 +7,14 @@
 rcvpack \- append message to file
 .SH SYNOPSIS
 .HP 5
+.na
 .B %libdir%/rcvpack
 .I file
 .RB [ \-mbox ]
 .RB [ \-mmdf ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 The
 .B rcvpack

@@ -7,11 +7,13 @@
 rmf \- remove an nmh folder
 .SH SYNOPSIS
 .HP 5
+.na
 .B rmf 
 .RI [ +folder ]
 .RB [ \-interactive " | " \-nointeractive ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Rmf
 removes all of the messages (files) within the specified

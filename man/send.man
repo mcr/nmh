@@ -7,6 +7,7 @@
 send \- send a message
 .SH SYNOPSIS
 .HP 5
+.na
 .B send
 .RB [ \-alias
 .IR aliasfile ]
@@ -39,6 +40,7 @@ send \- send a message
 \&...] 
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Send
 will cause each of the specified files to be delivered

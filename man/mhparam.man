@@ -6,12 +6,14 @@
 .SH NAME
 mhparam \- print nmh profile components
 .SH SYNOPSIS
+.na
 .B mhparam
 .RI [ components ]
 .RB [ \-all ]
 .RB [ \-component " | " \-nocomponent ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Mhparam
 writes the value of the specified profile component to the

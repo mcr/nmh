@@ -7,6 +7,7 @@
 packf \- pack messages in nmh folder into a single file
 .SH SYNOPSIS
 .HP 5
+.na
 .B packf
 .RI [ +folder ]
 .RI [ msgs ]
@@ -16,6 +17,7 @@ packf \- pack messages in nmh folder into a single file
 .RB [ \-mmdf ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Packf
 will pack copies of messages from a folder, into a single

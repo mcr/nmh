@@ -7,6 +7,7 @@
 mhmail \- send or read mail
 .SH SYNOPSIS
 .HP 5
+.na
 .B mhmail
 .RI [ addrs
 \&...]
@@ -21,6 +22,7 @@ mhmail \- send or read mail
 .IR subject ]
 .RB [ \-version ]
 .RB [ \-help ] 
+.ad
 .SH DESCRIPTION
 .B mhmail
 is intended as a replacement for the standard Berkeley

@@ -7,11 +7,13 @@
 mhpath \- print full pathnames of nmh messages and folders
 .SH SYNOPSIS
 .HP 5
+.na
 .B mhpath
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Mhpath
 expands and sorts the message list `msgs' and writes the full

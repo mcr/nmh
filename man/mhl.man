@@ -7,6 +7,7 @@
 mhl \- produce formatted listings of nmh messages
 .SH SYNOPSIS
 .HP 5
+.na
 .B %libdir%/mhl
 .RB [ \-bell " | " \-nobell ]
 .RB [ \-clear " | " \-noclear ]
@@ -25,6 +26,7 @@ mhl \- produce formatted listings of nmh messages
 .IR \&... ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Mhl
 is an

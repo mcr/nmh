@@ -7,6 +7,7 @@
 scan \- produce a one line per message scan listing
 .SH SYNOPSIS
 .HP 5
+.na
 .B scan
 .RI [ +folder ]
 .RI [ msgs ]
@@ -23,6 +24,7 @@ scan \- produce a one line per message scan listing
 .IR filename ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Scan
 produces a one\-line\-per\-message listing of the specified

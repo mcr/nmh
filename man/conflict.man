@@ -7,6 +7,7 @@
 conflict \- search for alias/password conflicts
 .SH SYNOPSIS
 .HP 5
+.na
 .B %libdir%/conflict
 .RB [ \-search
 .IR directory ]
@@ -16,6 +17,7 @@ conflict \- search for alias/password conflicts
 .RB [ \-help ] 
 .RI [ aliasfiles
 \&...]
+.ad
 .SH DESCRIPTION
 .B Conflict
 is a program that checks to see if the interface between

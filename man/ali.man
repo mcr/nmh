@@ -7,6 +7,7 @@
 ali \- list mail aliases
 .SH SYNOPSIS
 .HP 5
+.na
 .B ali
 .RB [ \-alias
 .IR aliasfile ]
@@ -16,6 +17,7 @@ ali \- list mail aliases
 .RB [ \-version ]
 .RB [ \-help ] 
 .RI [ aliases " ...]"
+.ad
 .SH DESCRIPTION
 .B Ali
 searches the named mail alias files for each of the given

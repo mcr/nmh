@@ -7,6 +7,7 @@
 whatnow \- prompting front-end for sending messages
 .SH SYNOPSIS
 .HP 5
+.na
 .B whatnow
 .RB [ \-draftfolder
 .IR +folder ]
@@ -21,6 +22,7 @@ whatnow \- prompting front-end for sending messages
 .RI [ file ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Whatnow
 is the default program that queries the user about

@@ -7,6 +7,7 @@
 prompter \- prompting editor front-end for nmh
 .SH SYNOPSIS
 .HP 5
+.na
 .B prompter
 .RB [ \-erase
 .IR chr ]
@@ -18,6 +19,7 @@ prompter \- prompting editor front-end for nmh
 .I file
 .RB [ \-version ]
 .RB [ \-help ]
+.fi
 .SH DESCRIPTION
 .B Prompter
 is an editor front\-end for

@@ -7,6 +7,7 @@
 sortm \- sort messages
 .SH SYNOPSIS
 .HP 5
+.na
 .B sortm
 .RI [ +folder ]
 .RI [ msgs ]
@@ -21,6 +22,7 @@ sortm \- sort messages
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Sortm
 sorts the specified messages in the named folder according

@@ -7,6 +7,7 @@
 inc \- incorporate new mail
 .SH SYNOPSIS
 .HP 5
+.na
 .B inc
 .RI [ +folder ]
 .RB [ \-audit
@@ -40,6 +41,7 @@ inc \- incorporate new mail
 %nmhendpop%
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Inc
 incorporates mail from the user's incoming mail drop into

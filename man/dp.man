@@ -7,6 +7,7 @@
 dp \- parse dates 822-style
 .SH SYNOPSIS
 .HP 5
+.na
 .B %libdir%/dp
 .RB [ \-form
 .IR formatfile ]
@@ -18,6 +19,7 @@ dp \- parse dates 822-style
 .RB [ \-help ] 
 .I dates
 \&...
+.ad
 .SH DESCRIPTION
 .B Dp
 is a program that parses dates according to the ARPA Internet standard.
