@@ -8,7 +8,9 @@ Tue Apr 11 21:37:03 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	    to the program, quoting them means that xterm thinks they're
  	    part of the program's name.
 
-	%s doesn't come from MIME headers, so not quoting it is safe.
+	This %s isn't the same as the "Insert content subtype" one from
+	mhshow-show-* -- it doesn't come from MIME headers and is safe not
+	to quote.
 
 Sun Apr 09 13:03:59 2000 Doug Morris <doug@mhost.com>
 
