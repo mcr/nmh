@@ -237,7 +237,7 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     if (verbsw)
 	vec[vecp++] = "-verbose";
 
-    switch (sendsbr (vec, vecp, tmpfil, &st, 0)) {
+    switch (sendsbr (vec, vecp, tmpfil, &st, 0, (char *)0)) {
 	case DONE:
 	case NOTOK:
 	    status++;

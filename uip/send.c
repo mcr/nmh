@@ -102,6 +102,8 @@ static struct swit switches[] = {
     { "saslmech", SASLminc(-5) },
 #define USERSW                39
     { "user", SASLminc(-4) },
+#define ATTACHSW              40
+    { "attach", 6 },
     { NULL, 0 }
 };
 
@@ -140,6 +142,7 @@ main (int argc, char **argv)
     char *msgs[MAXARGS], *vec[MAXARGS];
     struct msgs *mp;
     struct stat st;
+    char	*attach = (char *)0;	/* header field name for attachments */
 #ifdef UCI
     FILE *fp;
 #endif /* UCI */
@@ -272,6 +275,11 @@ main (int argc, char **argv)
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    vec[vecp++] = cp;
+		    continue;
+		
+		case ATTACHSW:
+		    if (!(attach = *argp++) || *attach == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 	    }
 	} else {
@@ -436,7 +444,7 @@ go_to_it:
     closefds (3);
 
     for (msgnum = 0; msgnum < msgp; msgnum++) {
-	switch (sendsbr (vec, vecp, msgs[msgnum], &st, 1)) {
+	switch (sendsbr (vec, vecp, msgs[msgnum], &st, 1, attach)) {
 	    case DONE: 
 		done (++status);
 	    case NOTOK: 

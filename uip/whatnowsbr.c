@@ -7,6 +7,37 @@
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.
+ *
+ *  Several options have been added to ease the inclusion of attachments
+ *  using the header field name mechanism added to anno and send.  The
+ *  -attach option is used to specify the header field name for attachments.
+ *
+ *  Several commands have been added at the whatnow prompt:
+ *
+ *	cd [ directory ]	This option works just like the shell's
+ *				cd command and lets the user change the
+ *				directory from which attachments are
+ *				taken so that long path names are not
+ *				needed with every file.
+ *
+ *	ls [ ls-options ]	This option works just like the normal
+ *				ls command and exists to allow the user
+ *				to verify file names in the directory.
+ *
+ *	pwd			This option works just like the normal
+ *				pwd command and exists to allow the user
+ *				to verify the directory.
+ *
+ *	attach files		This option attaches the named files to
+ *				the draft.
+ *
+ *	alist [-ln]		This option lists the attachments on the
+ *				draft.  -l gets long listings, -n gets
+ *				numbered listings.
+ *
+ *	detach files		This option removes attachments from the
+ *	detach -n numbers	draft.  This can be done by file name or
+ *				by attachment number.
  */
 
 #include <h/mh.h>
@@ -31,6 +62,8 @@ static struct swit whatnowswitches[] = {
     { "version", 0 },
 #define	HELPSW                  7
     { "help", 0 },
+#define	ATTACHSW                8
+    { "attach header-field-name", 0 },
     { NULL, 0 }
 };
 
@@ -58,6 +91,18 @@ static struct swit aleqs[] = {
     { "quit [-delete]", 0 },
 #define DELETESW                       9
     { "delete", 0 },
+#define	CDCMDSW			      10
+    { "cd [directory]", 0 },
+#define	PWDCMDSW		      11
+    { "pwd", 0 },
+#define	LSCMDSW			      12
+    { "ls", 0 },
+#define	ATTACHCMDSW		      13
+    { "attach", 0 },
+#define	DETACHCMDSW		      14
+    { "detach [-n]", 2 },
+#define	ALISTCMDSW		      15
+    { "alist [-ln] ", 2 },
     { NULL, 0 }
 };
 
@@ -89,6 +134,13 @@ WhatNow (int argc, char **argv)
     char buf[BUFSIZ], prompt[BUFSIZ];
     char **argp, **arguments;
     struct stat st;
+    char	*attach = (char *)0;	/* attachment header field name */
+    char	cwd[MAXPATHLEN + 1];	/* current working directory */
+    char	file[MAXPATHLEN + 1];	/* file name buffer */
+    char	shell[MAXPATHLEN + 1];	/* shell response buffer */
+    FILE	*f;			/* read pointer for bgnd proc */
+    char	*l;			/* set on -l to alist  command */
+    int		n;			/* set on -n to alist command */
 
     invo_name = r1bindex (argv[0], '/');
 
@@ -98,16 +150,24 @@ WhatNow (int argc, char **argv)
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
+    /*
+     *	Get the initial current working directory.
+     */
+
+    if (getcwd(cwd, sizeof (cwd)) == (char *)0) {
+	adios("getcwd", "could not get working directory");
+    }
+
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, whatnowswitches)) {
-	    case AMBIGSW: 
+	    case AMBIGSW:
 		ambigsw (cp, whatnowswitches);
 		done (1);
-	    case UNKWNSW: 
+	    case UNKWNSW:
 		adios (NULL, "-%s unknown", cp);
 
-	    case HELPSW: 
+	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [switches] [file]", invo_name);
 		print_help (buf, whatnowswitches, 1);
 		done (1);
@@ -115,7 +175,7 @@ WhatNow (int argc, char **argv)
 		print_version(invo_name);
 		done (1);
 
-	    case DFOLDSW: 
+	    case DFOLDSW:
 		if (dfolder)
 		    adios (NULL, "only one draft folder at a time!");
 		if (!(cp = *argp++) || *cp == '-')
@@ -123,28 +183,35 @@ WhatNow (int argc, char **argv)
 		dfolder = path (*cp == '+' || *cp == '@' ? cp + 1 : cp,
 				*cp != '@' ? TFOLDER : TSUBCWF);
 		continue;
-	    case DMSGSW: 
+	    case DMSGSW:
 		if (dmsg)
 		    adios (NULL, "only one draft message at a time!");
 		if (!(dmsg = *argp++) || *dmsg == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
-	    case NDFLDSW: 
+	    case NDFLDSW:
 		dfolder = NULL;
 		isdf = NOTOK;
 		continue;
 
-	    case EDITRSW: 
+	    case EDITRSW:
 		if (!(ed = *argp++) || *ed == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		nedit = 0;
 		continue;
-	    case NEDITSW: 
+	    case NEDITSW:
 		nedit++;
 		continue;
 
 	    case PRMPTSW:
 		if (!(myprompt = *argp++) || *myprompt == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
+
+	    case ATTACHSW:
+		if (attach != (char *)0)
+		    adios(NULL, "only one attachment header field name at a time!");
+		if (!(attach = *argp++) || *attach == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
 	    }
@@ -200,7 +267,7 @@ WhatNow (int argc, char **argv)
 		done (1);
 	    break;
 
-	case LISTSW: 
+	case LISTSW:
 	    /* display the draft file */
 	    showfile (++argp, drft);
 	    break;
@@ -232,18 +299,258 @@ WhatNow (int argc, char **argv)
 		done (1);
 	    break;
 
-	case SENDSW: 
+	case SENDSW:
 	    /* Send draft */
 	    sendfile (++argp, drft, 0);
 	    break;
 
-	case REFILEOPT: 
+	case REFILEOPT:
 	    /* Refile the draft */
 	    if (refile (++argp, drft) == 0)
 		done (0);
 	    break;
 
-	default: 
+	case CDCMDSW:
+	    /* Change the working directory for attachments
+	     *
+	     *	Run the directory through the user's shell so that
+	     *	we can take advantage of any syntax that the user
+	     *	is accustomed to.  Read back the absolute path.
+	     */
+
+	    if (*++argp == (char *)0) {
+		(void)sprintf(buf, "$SHELL -c \"cd;pwd\"");
+	    }
+	    else if (strlen(*argp) >= BUFSIZ) {
+		adios((char *)0, "arguments too long");
+	    }
+	    else {
+		(void)sprintf(buf, "$SHELL -c \"cd %s;cd %s;pwd\"", cwd, *argp);
+	    }
+	    if ((f = popen(buf, "r")) != (FILE *)0) {
+		fgets(cwd, sizeof (cwd), f);
+
+		if (strchr(cwd, '\n') != (char *)0)
+			*strchr(cwd, '\n') = '\0';
+
+		pclose(f);
+	    }
+	    else {
+		advise("popen", "could not get directory");
+	    }
+
+	    break;
+
+	case PWDCMDSW:
+	    /* Print the working directory for attachments */
+	    printf("%s\n", cwd);
+	    break;
+
+	case LSCMDSW:
+	    /* List files in the current attachment working directory
+	     *
+	     *	Use the user's shell so that we can take advantage of any
+	     *	syntax that the user is accustomed to.
+	     */
+
+	    cp = buf + sprintf(buf, "$SHELL -c \" cd %s;ls", cwd);
+
+	    while (*++argp != (char *)0) {
+		if (cp + strlen(*argp) + 2 >= buf + BUFSIZ)
+		    adios((char *)0, "arguments too long");
+
+		cp += sprintf(cp, " %s", *argp);
+	    }
+
+	    (void)strcat(cp, "\"");
+	    (void)system(buf);
+	    break;
+
+	case ALISTCMDSW:
+	    /*
+	     *	List attachments on current draft.  Options are:
+	     *
+	     *	 -l	long listing (full path names)
+	     *	 -n	numbers listing
+	     */
+
+	    if (attach == (char *)0) {
+		advise((char *)0, "can't list because no header field name was given.");
+		break;
+	    }
+
+	    l = (char *)0;
+	    n = 0;
+
+	    while (*++argp != (char *)0) {
+		if (strcmp(*argp, "-l") == 0)
+		    l = "/";
+
+		else if (strcmp(*argp, "-n") == 0)
+		    n = 1;
+
+		else if (strcmp(*argp, "-ln") == 0 || strcmp(*argp, "-nl") == 0) {
+		    l = "/";
+		    n = 1;
+		}
+
+		else {
+		    n = -1;
+		    break;
+		}
+	    }
+
+	    if (n == -1)
+		advise((char *)0, "usage is alist [-ln].");
+
+	    else
+		annolist(drft, attach, l, n);
+
+	    break;
+
+	case ATTACHCMDSW:
+	    /*
+	     *	Attach files to current draft.
+	     */
+
+	    if (attach == (char *)0) {
+		advise((char *)0, "can't attach because no header field name was given.");
+		break;
+	    }
+
+	    /*
+	     *	Build a command line that causes the user's shell to list the file name
+	     *	arguments.  This handles and wildcard expansion, tilde expansion, etc.
+	     */
+
+	    cp = buf + sprintf(buf, "$SHELL -c \" cd %s;ls", cwd);
+
+	    while (*++argp != (char *)0) {
+		if (cp + strlen(*argp) + 3 >= buf + BUFSIZ)
+		    adios((char *)0, "arguments too long");
+
+		cp += sprintf(cp, " %s", *argp);
+	    }
+
+	    (void)strcat(cp, "\"");
+
+	    /*
+	     *	Read back the response from the shell, which contains a number of lines
+	     *	with one file name per line.  Remove off the newline.  Determine whether
+	     *	we have an absolute or relative path name.  Prepend the current working
+	     *	directory to relative path names.  Add the attachment annotation to the
+	     *	draft.
+	     */
+
+	    if ((f = popen(buf, "r")) != (FILE *)0) {
+		while (fgets(shell, sizeof (shell), f) != (char *)0) {
+		    *(strchr(shell, '\n')) = '\0';
+
+		    if (*shell == '/')
+			(void)annotate(drft, attach, shell, 1, 0, -1, 1);
+		    else {
+			(void)sprintf(file, "%s/%s", cwd, shell);
+			(void)annotate(drft, attach, file, 1, 0, -1, 1);
+		    }
+		}
+
+		pclose(f);
+	    }
+	    else {
+		advise("popen", "could not get file from shell");
+	    }
+
+	    break;
+
+	case DETACHCMDSW:
+	    /*
+	     *	Detach files from current draft.
+	     */
+
+	    if (attach == (char *)0) {
+		advise((char *)0, "can't detach because no header field name was given.");
+		break;
+	    }
+
+	    /*
+	     *	Scan the arguments for a -n.  Mixed file names and numbers aren't allowed,
+	     *	so this catches a -n anywhere in the argument list.
+	     */
+
+	    for (n = 0, arguments = argp + 1; *arguments != (char *)0; arguments++) {
+		if (strcmp(*arguments, "-n") == 0) {
+			n = 1;
+			break;
+		}
+	    }
+
+	    /*
+	     *	A -n was found so interpret the arguments as attachment numbers.
+	     *	Decrement any remaining argument number that is greater than the one
+	     *	just processed after processing each one so that the numbering stays
+	     *	correct.
+	     */
+
+	    if (n == 1) {
+		for (arguments = argp + 1; *arguments != (char *)0; arguments++) {
+		    if (strcmp(*arguments, "-n") == 0)
+			continue;
+
+		    if (**arguments != '\0') {
+			n = atoi(*arguments);
+			(void)annotate(drft, attach, (char *)0, 1, 0, n, 1);
+
+			for (argp = arguments + 1; *argp != (char *)0; argp++) {
+			    if (atoi(*argp) > n) {
+				if (atoi(*argp) == 1)
+				    *argp = "";
+				else
+				    (void)sprintf(*argp, "%d", atoi(*argp) - 1);
+			    }
+			}
+		    }
+		}
+	    }
+
+	    /*
+	     *	The arguments are interpreted as file names.  Run them through the
+	     *	user's shell for wildcard expansion and other goodies.  Do this from
+	     *	the current working directory if the argument is not an absolute path
+	     *	name (does not begin with a /).
+	     */
+
+	    else {
+		for (arguments = argp + 1; *arguments != (char *)0; arguments++) {
+		    if (**arguments == '/') {
+			if (strlen(*arguments) + sizeof ("$SHELL -c \"ls \"") >= sizeof (buf))
+			    adios((char *)0, "arguments too long");
+
+			(void)sprintf(buf, "$SHELL -c \"ls %s\"", *arguments);
+		    }
+		    else {
+			if (strlen(cwd) + strlen(*arguments) + sizeof ("$SHELL -c \" cd ; ls \"") >= sizeof (buf))
+			    adios((char *)0, "arguments too long");
+
+			(void)sprintf(buf, "$SHELL -c \" cd %s;ls %s\"", cwd, *arguments);
+		    }
+
+		    if ((f = popen(buf, "r")) != (FILE *)0) {
+			while (fgets(shell, sizeof (cwd), f) != (char *)0) {
+			    *(strchr(shell, '\n')) = '\0';
+			    (void)annotate(drft, attach, shell, 1, 0, 0, 1);
+			}
+
+			pclose(f);
+		    }
+		    else {
+			advise("popen", "could not get file from shell");
+		    }
+		}
+	    }
+
+	    break;
+
+	default:
 	    /* Unknown command */
 	    advise (NULL, "say what?");
 	    break;
@@ -330,12 +637,12 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
     fflush (stdout);
 
     switch (pid = vfork ()) {
-	case NOTOK: 
+	case NOTOK:
 	    advise ("fork", "unable to");
 	    status = NOTOK;
 	    break;
 
-	case OK: 
+	case OK:
 	    if (cwd)
 		chdir (cwd);
 	    if (altmsg) {
@@ -357,7 +664,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    perror (*ed);
 	    _exit (-1);
 
-	default: 
+	default:
 	    if ((status = pidwait (pid, NOTOK))) {
 #ifdef ATTVIBUG
 		if ((cp = r1bindex (*ed, '/'))
@@ -492,9 +799,9 @@ sendfile (char **arg, char *file, int pushsw)
     for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
     switch (child_id) {
-	case NOTOK: 
+	case NOTOK:
 	    advise (NULL, "unable to fork, so sending directly...");
-	case OK: 
+	case OK:
 	    vecp = 0;
 	    vec[vecp++] = invo_name;
 	    if (pushsw)
@@ -510,7 +817,7 @@ sendfile (char **arg, char *file, int pushsw)
 	    perror (sendproc);
 	    _exit (-1);
 
-	default: 
+	default:
 	    if (pidwait(child_id, OK) == 0)
 		done (0);
 	    return 1;
@@ -696,6 +1003,8 @@ static struct swit  sendswitches[] = {
     { "saslmech", SASLminc(-5) },
 #define USERSW           38
     { "user", SASLminc(-4) },
+#define SNDATTACHSW       39
+    { "attach file", 6 },
     { NULL, 0 }
 };
 
@@ -720,6 +1029,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
     char *cp, buf[BUFSIZ], **argp;
     char **arguments, *vec[MAXARGS];
     struct stat st;
+    char	*attach = (char *)0;	/* attachment header field name */
 
 #ifndef	lint
     int	distsw = 0;
@@ -777,14 +1087,14 @@ sendit (char *sp, char **arg, char *file, int pushed)
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, sendswitches)) {
-		case AMBIGSW: 
+		case AMBIGSW:
 		    ambigsw (cp, sendswitches);
 		    return;
-		case UNKWNSW: 
+		case UNKWNSW:
 		    advise (NULL, "-%s unknown\n", cp);
 		    return;
 
-		case SHELPSW: 
+		case SHELPSW:
 		    snprintf (buf, sizeof(buf), "%s [switches]", sp);
 		    print_help (buf, sendswitches, 1);
 		    return;
@@ -792,34 +1102,34 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    print_version (invo_name);
 		    return;
 
-		case SPSHSW: 
+		case SPSHSW:
 		    pushed++;
 		    continue;
-		case NSPSHSW: 
+		case NSPSHSW:
 		    pushed = 0;
 		    continue;
 
-		case SPLITSW: 
+		case SPLITSW:
 		    if (!(cp = *argp++) || sscanf (cp, "%d", &splitsw) != 1) {
 			advise (NULL, "missing argument to %s", argp[-2]);
 			return;
 		    }
 		    continue;
 
-		case UNIQSW: 
+		case UNIQSW:
 		    unique++;
 		    continue;
-		case NUNIQSW: 
+		case NUNIQSW:
 		    unique = 0;
 		    continue;
-		case FORWSW: 
+		case FORWSW:
 		    forwsw++;
 		    continue;
-		case NFORWSW: 
+		case NFORWSW:
 		    forwsw = 0;
 		    continue;
 
-		case VERBSW: 
+		case VERBSW:
 		    verbsw++;
 		    vec[vecp++] = --cp;
 		    continue;
@@ -828,33 +1138,33 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    vec[vecp++] = --cp;
 		    continue;
 
-		case DEBUGSW: 
+		case DEBUGSW:
 		    debugsw++;	/* fall */
-		case NFILTSW: 
-		case FRMTSW: 
-		case NFRMTSW: 
+		case NFILTSW:
+		case FRMTSW:
+		case NFRMTSW:
 		case BITSTUFFSW:
 		case NBITSTUFFSW:
-		case MIMESW: 
-		case NMIMESW: 
-		case MSGDSW: 
-		case NMSGDSW: 
-		case WATCSW: 
-		case NWATCSW: 
-		case MAILSW: 
-		case SAMLSW: 
-		case SSNDSW: 
-		case SOMLSW: 
-		case SNOOPSW: 
+		case MIMESW:
+		case NMIMESW:
+		case MSGDSW:
+		case NMSGDSW:
+		case WATCSW:
+		case NWATCSW:
+		case MAILSW:
+		case SAMLSW:
+		case SSNDSW:
+		case SOMLSW:
+		case SNOOPSW:
 		case SASLSW:
 		    vec[vecp++] = --cp;
 		    continue;
 
-		case ALIASW: 
-		case FILTSW: 
-		case WIDTHSW: 
-		case CLIESW: 
-		case SERVSW: 
+		case ALIASW:
+		case FILTSW:
+		case WIDTHSW:
+		case CLIESW:
+		case SERVSW:
 		case SASLMECHSW:
 		case USERSW:
 		    vec[vecp++] = --cp;
@@ -865,13 +1175,20 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    vec[vecp++] = cp;
 		    continue;
 
-		case SDRFSW: 
-		case SDRMSW: 
+		case SDRFSW:
+		case SDRMSW:
 		    if (!(cp = *argp++) || *cp == '-') {
 			advise (NULL, "missing argument to %s", argp[-2]);
 			return;
 		    }
-		case SNDRFSW: 
+		case SNDRFSW:
+		    continue;
+
+		case SNDATTACHSW:
+		    if (!(attach = *argp++) || *attach == '-') {
+			advise (NULL, "missing argument to %s", argp[-2]);
+			return;
+		    }
 		    continue;
 	    }
 	}
@@ -938,7 +1255,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
     vec[0] = r1bindex (postproc, '/');
     closefds (3);
 
-    if (sendsbr (vec, vecp, file, &st, 1) == OK)
+    if (sendsbr (vec, vecp, file, &st, 1, attach) == OK)
 	done (0);
 }
 
@@ -957,11 +1274,11 @@ whomfile (char **arg, char *file)
     fflush (stdout);
 
     switch (pid = vfork ()) {
-	case NOTOK: 
+	case NOTOK:
 	    advise ("fork", "unable to");
 	    return 1;
 
-	case OK: 
+	case OK:
 	    vecp = 0;
 	    vec[vecp++] = r1bindex (whomproc, '/');
 	    vec[vecp++] = file;
@@ -975,7 +1292,7 @@ whomfile (char **arg, char *file)
 	    perror (whomproc);
 	    _exit (-1);		/* NOTREACHED */
 
-	default: 
+	default:
 	    return (pidwait (pid, NOTOK) & 0377 ? 1 : 0);
     }
 }

@@ -22,6 +22,8 @@ whatnow \- prompting front-end for sending messages
 .RI [ file ]
 .RB [ \-version ]
 .RB [ \-help ]
+.RB [ \-attach
+.IR header-field-name ]
 .ad
 .SH DESCRIPTION
 .B Whatnow
@@ -45,18 +47,18 @@ repetitively prompts the user with \*(lqWhat now?\*(rq
 and awaits a response.  The valid responses are:
 .PP
 .RS 5
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B edit
 re\-edit using the same editor that was used on the
 preceding round unless a profile entry
 \*(lq<lasteditor>\-next: <editor>\*(rq names an alternate editor
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B edit <editor>
 invoke <editor> for further editing
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B refile +folder
 refile the draft into the given folder
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B mime
 process the draft as MIME composition file using
 the
@@ -64,38 +66,56 @@ the
 command
 .RB ( mhbuild
 by default)
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B display
 list the message being distributed/replied\-to
 on the terminal
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B list
 list the draft on the terminal
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B send
 send the message
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B send \-watch
 send the message and monitor the delivery process
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B push
 send the message in the background
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B whom
 list the addresses that the message will go to
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B whom \-check
 list the addresses and verify that they are
 acceptable to the transport service
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B quit
 preserve the draft and exit
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B quit \-delete
 delete the draft and exit
-.TP \w'refilezzfolderz'u
+.TP \w'refilezzzzfolderz'u
 .B delete
 delete the draft and exit
+.TP \w'refilezzzzfolderz'u
+.B cd directory
+use the directory when interpreting attachment file names
+.TP \w'refilezzzzfolderz'u
+.B pwd
+print the working directory for attachment files
+.TP \w'refilezzzzfolderz'u
+.B ls [ls-options]
+list files in the attachment working directory using the ls command
+.TP \w'refilezzzzfolderz'u
+.B attach files
+add the named files to the draft as MIME attachments
+.TP \w'refilezzzzfolderz'u
+.B alist [-ln]
+list the MIME attachments, either short, long [-l] or numbered [-n]
+.TP \w'refilezzzzfolderz'u
+.B detach [-n] files-or-numbers
+remove MIME attachments, either by file name or by number with -n
 .RE
 .PP
 When entering your response, you need only type enough characters

@@ -154,11 +154,12 @@ char *OfficialName(char *);
 /*
  * prototypes for some routines in uip
  */
-int annotate (char *, char *, char *, int, int);
+int annotate (char *, char *, char *, int, int, int, int);
+void annolist(char *, char *, char *, int);
 int distout (char *, char *, char *);
 void replout (FILE *, char *, char *, struct msgs *, int,
 	int, char *, char *, char *);
-int sendsbr (char **, int, char *, struct stat *, int);
+int sendsbr (char **, int, char *, struct stat *, int, char *);
 int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *);
 

@@ -15,6 +15,12 @@ anno \- annotate messages
 .IR field ]
 .RB [ \-inplace " | " \-noinplace ]
 .RB [ \-date " | " \-nodate ]
+.RB [ \-draft ]
+.RB [ \-append ]
+.RB [ \-list ]
+.RB [ \-delete ]
+.RB [ \-number
+.IR [ num ]]
 .RB [ \-version ]
 .RB [ \-help ]
 .RB [ \-text
@@ -22,8 +28,22 @@ anno \- annotate messages
 .ad
 .SH DESCRIPTION
 .B Anno
-annotates the specified messages in the named folder using
-the field and body.
+manipulates header fields or
+.I annotations
+in messages.
+Header fields consist of a field name and an optional field body
+as defined by RFC-2822.
+The
+.B -component
+option specifies the field name, and the
+.B -text
+option specifies the field body.
+.PP
+The messages are either the
+.I msgs
+in the named folder, or the draft if invoked with the
+.B -draft
+option.
 .PP
 Usually, annotation is performed by the commands
 .BR dist ,
@@ -48,6 +68,13 @@ The
 switch inhibits the date annotation, leaving only the
 body annotation.
 .PP
+By default,
+.B anno
+prepends the annotations to the message.
+Annotations are instead appended if the
+.B -append
+option is specified.
+.PP
 If a
 .B \-component
 .I field
@@ -57,8 +84,8 @@ is invoked,
 .B anno
 will prompt the user for the name of field for the annotation.
 .PP
-The field specified should be a valid 822-style message field name,
-which means that it should consist of alphanumerics (or dashes) only.
+The field specified must be a valid 2822-style message field name,
+which means that it may only consist of alphanumerics and dashes,
 The body specified is arbitrary text.
 .PP
 Normally
@@ -67,7 +94,45 @@ does the annotation inplace in order to preserve
 any links to the message.  You may change this by using the
 .B \-noinplace
 switch.
-
+.PP
+The
+.B -list
+option produces a listing of the field bodies for header fields with
+names matching the specified component, one per line.
+The listing is numbered, starting at 1, if the
+.B -number
+option is also used.
+A tab character separates the number and the field body.
+The field body is treated as if it is a file name, and only the final
+path name component is listed.
+The complete field body is listed if the
+.B -text
+option is used, the contents of the text are ignored.
+.PP
+The
+.B -delete
+option removes header fields from messages.
+The first header field whose name matches the component is deleted if
+no other options are specified.
+If the
+.B -text
+option is used in conjunction with the
+.B -delete
+option, the first header field whose name matches the component and
+whose body matches the text is deleted.
+The text is treated as if it was a file name; if it begins with a
+slash, the entire field body must match the text, otherwise just the
+last path name component of the field body must match.
+If the
+.B -number
+option is used in conjuction with the
+.B -delete
+option, header field
+.I num
+whose name matches the component is deleted.
+The number matches that which is produced by the
+.B -list
+option.
 .SH FILES
 .fc ^ ~
 .nf

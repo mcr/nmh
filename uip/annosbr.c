@@ -19,41 +19,142 @@ extern int  errno;
 /*
  * static prototypes
  */
-static int annosbr (int, char *, char *, char *, int, int);
+static int annosbr (int, char *, char *, char *, int, int, int, int);
 
 
 int
-annotate (char *file, char *comp, char *text, int inplace, int datesw)
+annotate (char *file, char *comp, char *text, int inplace, int datesw, int delete, int append)
 {
     int i, fd;
 
     /* open and lock the file to be annotated */
     if ((fd = lkopen (file, O_RDWR, 0)) == NOTOK) {
 	switch (errno) {
-	    case ENOENT: 
+	    case ENOENT:
 		break;
 
-	    default: 
+	    default:
 		admonish (file, "unable to lock and open");
 		break;
 	}
 	return 1;
     }
 
-    i = annosbr (fd, file, comp, text, inplace, datesw);
+    i = annosbr (fd, file, comp, text, inplace, datesw, delete, append);
     lkclose (fd, file);
     return i;
 }
 
+/*
+ *  Produce a listing of all header fields (annotations) whose field name matches
+ *  comp.  Number the listing if number is set.  Treate the field bodies as path
+ *  names and just output the last component unless text is non-NULL.  We don't
+ *  care what text is set to.
+ */
+
+void
+annolist(char *file, char *comp, char *text, int number)
+{
+    int		c;		/* current character */
+    int		count;		/* header field (annotation) counter */
+    char	*cp;		/* miscellaneous character pointer */
+    char	*field;		/* buffer for header field */
+    int		field_size;	/* size of field buffer */
+    FILE	*fp;		/* file pointer made from locked file descriptor */
+    int		length;		/* length of field name */
+    int		n;		/* number of bytes written */
+    char	*sp;		/* another miscellaneous character pointer */
+
+    if ((fp = fopen(file, "r")) == (FILE *)0)
+	adios(file, "unable to open");
+
+    /*
+     *  Allocate a buffer to hold the header components as they're read in.
+     *  This buffer might need to be quite large, so we grow it as needed.
+     */
+
+    if ((field = (char *)malloc(field_size = 256)) == (char *)0)
+	adios(NULL, "can't allocate field buffer.");
+
+    /*
+     *  Get the length of the field name since we use it often.
+     */
+
+    length = strlen(comp);
+
+    count = 0;
+
+    do {
+	/*
+	 *	Get a line from the input file, growing the field buffer as needed.  We do this
+	 *	so that we can fit an entire line in the buffer making it easy to do a string
+	 *	comparison on both the field name and the field body which might be a long path
+	 *	name.
+	 */
+
+	for (n = 0, cp = field; (c = getc(fp)) != EOF; *cp++ = c) {
+	    if (c == '\n' && (c = getc(fp)) != ' ' && c != '\t') {
+		(void)ungetc(c, fp);
+		c = '\n';
+		break;
+	    }
+
+	    if (++n >= field_size - 1) {
+		if ((field = (char *)realloc((void *)field, field_size += 256)) == (char *)0)
+		    adios(NULL, "can't grow field buffer.");
+		
+		cp = field + n - 1;
+	    }
+	}
+
+	/*
+	 *	NUL-terminate the field..
+	 */
+
+	*cp = '\0';
+
+	if (strncasecmp(field, comp, length) == 0 && field[length] == ':') {
+	    for (cp = field + length + 1; *cp == ' ' || *cp == '\t'; cp++)
+		;
+
+	    if (number)
+		(void)printf("%d\t", ++count);
+
+	    if (text == (char *)0 && (sp = strrchr(cp, '/')) != (char *)0)
+		cp = sp + 1;
+
+	    (void)printf("%s\n", cp);
+	}
+
+    } while (*field != '\0' && *field != '-');
+
+    /*
+     *	Clean up.
+     */
+
+    free(field);
+
+    (void)fclose(fp);
+
+    return;
+}
+
 
 static int
-annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw)
+annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, int delete, int append)
 {
     int mode, tmpfd;
     char *cp, *sp;
     char buffer[BUFSIZ], tmpfil[BUFSIZ];
     struct stat st;
-    FILE *tmp;
+    FILE	*tmp;
+    int		c;		/* current character */
+    int		count;		/* header field (annotation) counter */
+    char	*field;		/* buffer for header field */
+    int		field_size;	/* size of field buffer */
+    FILE	*fp;		/* file pointer made from locked file descriptor */
+    int		length;		/* length of field name */
+    int		n;		/* number of bytes written */
 
     mode = fstat (fd, &st) != NOTOK ? (st.st_mode & 0777) : m_gmprot ();
 
@@ -65,29 +166,217 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw)
     }
     chmod (tmpfil, mode);
 
-    if (datesw)
-	fprintf (tmp, "%s: %s\n", comp, dtimenow (0));
-    if ((cp = text)) {
-	do {
-	    while (*cp == ' ' || *cp == '\t')
-		cp++;
-	    sp = cp;
-	    while (*cp && *cp++ != '\n')
-		continue;
-	    if (cp - sp)
-		fprintf (tmp, "%s: %*.*s", comp, cp - sp, cp - sp, sp);
-	} while (*cp);
-	if (cp[-1] != '\n' && cp != text)
-	    putc ('\n', tmp);
+    /*
+     *  We're going to need to copy some of the message file to the temporary
+     *	file while examining the contents.  Convert the message file descriptor
+     *	to a file pointer since it's a lot easier and more efficient to use
+     *	stdio for this.  Also allocate a buffer to hold the header components
+     *	as they're read in.  This buffer is grown as needed later.
+     */
+
+    if (delete >= 0 || append != 0) {
+	if ((fp = fdopen(fd, "r")) == (FILE *)0)
+	    adios(NULL, "unable to fdopen file.");
+
+	if ((field = (char *)malloc(field_size = 256)) == (char *)0)
+	    adios(NULL, "can't allocate field buffer.");
     }
+
+    /*
+     *	We're trying to delete a header field (annotation )if the delete flag is
+     *	non-negative.  A  value greater than zero means that we're deleting the
+     *	nth header field that matches the field (component) name.  A value of
+     *	zero means that we're deleting the first field in which both the field
+     *	name matches the component name and the field body matches the text.
+     *	The text is matched in its entirety if it begins with a slash; otherwise
+     *	the text is matched against whatever portion of the field body follows
+     *	the last slash.  This allows matching of both absolute and relative path
+     *	names.  This is because this functionality was added to support attachments.
+     *	It might be worth having a separate flag to indicate path name matching to
+     *	make it more general.
+     */
+
+    if (delete >= 0) {
+	/*
+	 *  Get the length of the field name since we use it often.
+	 */
+
+	length = strlen(comp);
+
+	/*
+	 *  Initialize the field counter.  This is only used if we're deleting by
+	 *  number.
+	 */
+
+	count = 0;
+
+	/*
+	 *  Copy lines from the input file to the temporary file until we either find the one
+	 *  that we're looking for (which we don't copy) or we reach the end of the headers.
+	 *  Both a blank line and a line beginning with a - terminate the headers so that we
+	 *  can handle both drafts and RFC-2822 format messages.
+	 */
+
+	do {
+	    /*
+	     *	Get a line from the input file, growing the field buffer as needed.  We do this
+	     *	so that we can fit an entire line in the buffer making it easy to do a string
+	     *	comparison on both the field name and the field body which might be a long path
+	     *	name.
+	     */
+
+	    for (n = 0, cp = field; (c = getc(fp)) != EOF; *cp++ = c) {
+		if (c == '\n' && (c = getc(fp)) != ' ' && c != '\t') {
+		    (void)ungetc(c, fp);
+		    c = '\n';
+		    break;
+		}
+
+		if (++n >= field_size - 1) {
+		    if ((field = (char *)realloc((void *)field, field_size *= 2)) == (char *)0)
+			adios(NULL, "can't grow field buffer.");
+		    
+		    cp = field + n - 1;
+		}
+	    }
+
+	    /*
+	     *	NUL-terminate the field..
+	     */
+
+	    *cp = '\0';
+
+	    /*
+	     *	Check for a match on the field name.  We delete the line by not copying it to the
+	     *	temporary file if
+	     *
+	     *	 o  The delete flag is 0, meaning that we're going to delete the first matching
+	     *	    field, and the text is NULL meaning that we don't care about the field body.
+	     *
+	     *	 o  The delete flag is 0, meaning that we're going to delete the first matching
+	     *	    field, and the text begins with a / meaning that we're looking for a full
+	     *	    path name, and the text matches the field body.
+	     *
+	     *	 o  The delete flag is 0, meaning that we're going to delete the first matching
+	     *	    field, the text does not begin with a / meaning that we're looking for the
+	     *	    last path name component, and the last path name component matches the text.
+	     *
+	     *   o  The delete flag is non-zero meaning that we're going to delete the nth field
+	     *	    with a matching field name, and this is the nth matching field name.
+	     */
+
+	    if (strncasecmp(field, comp, length) == 0 && field[length] == ':') {
+		if (delete == 0) {
+		    if (text == (char *)0)
+			break;
+
+		    for (cp = field + length + 1; *cp == ' ' || *cp == '\t'; cp++)
+			;
+
+		    if (*text == '/') {
+			if (strcmp(cp, text) == 0)
+				break;
+		    }
+		    else {
+			if ((sp = strrchr(cp, '/')) != (char *)0)
+			    cp = sp + 1;
+
+			if (strcmp(cp, text) == 0)
+			    break;
+		    }
+		}
+
+		else if (++count == delete)
+		    break;
+	    }
+
+	    /*
+	     *	This line wasn't a match so copy it to the temporary file.
+	     */
+
+	    if ((n = fputs(field, tmp)) == EOF || (c == '\n' && fputc('\n', tmp) == EOF))
+		adios(NULL, "unable to write temporary file.");
+
+	} while (*field != '\0' && *field != '-');
+
+	/*
+	 *  Get rid of the field buffer because we're done with it.
+	 */
+
+	free((void *)field);
+    }
+
+    else {
+	/*
+	 *  Find the end of the headers before adding the annotations if we're
+	 *  appending instead of the default prepending.
+	 */
+
+	if (append) {
+	    /*
+	     *	Copy lines from the input file to the temporary file until we
+	     *  reach the end of the headers.
+	     */
+
+	    while ((c = getc(fp)) != EOF) {
+		(void)putc(c, tmp);
+
+		if (c == '\n') {
+		    (void)ungetc(c = getc(fp), fp);
+
+		    if (c == '\n' || c == '-')
+			break;
+		}
+	    }
+	}
+
+	if (datesw)
+	    fprintf (tmp, "%s: %s\n", comp, dtimenow (0));
+	if ((cp = text)) {
+	    do {
+		while (*cp == ' ' || *cp == '\t')
+		    cp++;
+		sp = cp;
+		while (*cp && *cp++ != '\n')
+		    continue;
+		if (cp - sp)
+		    fprintf (tmp, "%s: %*.*s", comp, cp - sp, cp - sp, sp);
+	    } while (*cp);
+	    if (cp[-1] != '\n' && cp != text)
+		putc ('\n', tmp);
+	}
+    }
+
     fflush (tmp);
+
+    /*
+     *	We've been messing with the input file position.  Move the input file
+     *  descriptor to the current place in the file because the stock data
+     *	copying routine uses the descriptor, not the pointer.
+     */
+
+    if (append || delete >= 0) {
+	if (lseek(fd, (off_t)ftell(fp), SEEK_SET) == (off_t)-1)
+	    adios(NULL, "can't seek.");
+    }
+
     cpydata (fd, fileno (tmp), file, tmpfil);
     fclose (tmp);
 
     if (inplace) {
 	if ((tmpfd = open (tmpfil, O_RDONLY)) == NOTOK)
 	    adios (tmpfil, "unable to open for re-reading");
+
 	lseek (fd, (off_t) 0, SEEK_SET);
+
+	/*
+	 *  We're making the file shorter if we're deleting a header field
+	 *  so the file has to be truncated or it will contain garbage.
+	 */
+
+	if (delete >= 0 && ftruncate(fd, 0) == -1)
+	    adios(tmpfil, "unable to truncate.");
+
 	cpydata (tmpfd, fd, tmpfil, file);
 	close (tmpfd);
 	unlink (tmpfil);
@@ -110,6 +399,15 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw)
 	    return 1;
 	}
     }
+
+    /*
+     *	Close the delete file so that we don't run out of file pointers if
+     *	we're doing piles of files.  Note that this will make the close() in
+     *	lkclose() fail, but that failure is ignored so it's not a problem.
+     */
+
+    if (delete >= 0)
+	(void)fclose(fp);
 
     return 0;
 }

@@ -42,10 +42,18 @@ char *distfile = NULL;
 static int armed = 0;
 static jmp_buf env;
 
+static	char	body_file_name[MAXPATHLEN + 1];		/* name of temporary file for body content */
+static	char	composition_file_name[MAXPATHLEN + 1];	/* name of mhbuild composition temporary file */
+static	int	field_size;				/* size of header field buffer */
+static	char	*field;					/* header field buffer */
+static	FILE	*draft_file;				/* draft file pointer */
+static	FILE	*body_file;				/* body file pointer */
+static	FILE	*composition_file;			/* composition file pointer */
+
 /*
  * external prototypes
  */
-int sendsbr (char **, int, char *, struct stat *, int);
+int sendsbr (char **, int, char *, struct stat *, int, char *);
 int done (int);
 char *getusername (void);
 
@@ -59,17 +67,54 @@ static void annoaux (int);
 static int splitmsg (char **, int, char *, struct stat *, int);
 static int sendaux (char **, int, char *, struct stat *);
 
+static	int	attach(char *, char *);
+static	void	clean_up_temporary_files(void);
+static	int	get_line(void);
+static	void	make_mime_composition_file_entry(char *);
+
 
 /*
  * Entry point into (back-end) routines to send message.
  */
 
 int
-sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft)
+sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, char *attachment_header_field_name)
 {
     int status;
     char buffer[BUFSIZ], file[BUFSIZ];
     struct stat sts;
+    char	*original_draft;		/* name of original draft file */
+    char	*p;				/* string pointer for building file name */
+
+    /*
+     *	Save the original name of the draft file.  The name of the draft file is changed
+     *	to a temporary file containing the built MIME message if there are attachments.
+     *	We need the original name so that it can be renamed after the message is sent.
+     */
+
+    original_draft = drft;
+
+    /*
+     *	There might be attachments if a header field name for attachments is supplied.
+     *	Convert the draft to a MIME message.  Use the mhbuild composition file for the
+     *	draft if there was a successful conversion because that now contains the MIME
+     *	message.  A nice side effect of this is that it leaves the original draft file
+     *	untouched so that it can be retrieved and modified if desired.
+     */
+
+    if (attachment_header_field_name != (char *)0) {
+	switch (attach(attachment_header_field_name, drft)) {
+	case OK:
+	    drft = composition_file_name;
+	    break;
+
+	case NOTOK:
+	    return (NOTOK);
+
+	case DONE:
+	    break;
+	}
+    }
 
     armed++;
     switch (setjmp (env)) {
@@ -98,7 +143,7 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft)
 
 	/* rename the original draft */
 	if (rename_drft && status == OK &&
-		rename (drft, strncpy (buffer, m_backup (drft), sizeof(buffer))) == NOTOK)
+		rename (original_draft, strncpy (buffer, m_backup (original_draft), sizeof(buffer))) == NOTOK)
 	    advise (buffer, "unable to rename %s to", drft);
 	break;
 
@@ -111,9 +156,340 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft)
     if (distfile)
 	unlink (distfile);
 
+    /*
+     *	Get rid of any temporary files that we created for attachments.  Also get rid of
+     *	the renamed composition file that mhbuild leaves as a turd.  It looks confusing,
+     *	but we use the body file name to help build the renamed composition file name.
+     */
+
+    if (drft == composition_file_name) {
+	clean_up_temporary_files();
+
+	if (strlen(composition_file_name) >= sizeof (composition_file_name) - 6)
+	    advise((char *)0, "unable to remove original composition file.");
+
+	else {
+	    if ((p = strrchr(composition_file_name, '/')) == (char *)0)
+		p = composition_file_name;
+	    else
+		p++;
+	    
+	    (void)strcpy(body_file_name, p);
+	    *p++ = ',';
+	    (void)strcpy(p, body_file_name);
+	    (void)strcat(p, ".orig");
+	    
+	    (void)unlink(composition_file_name);
+	}
+    }
+
     return status;
 }
 
+static	int
+attach(char *attachment_header_field_name, char *draft_file_name)
+{
+    char		buf[MAXPATHLEN + 6];	/* miscellaneous buffer */
+    int			c;			/* current character for body copy */
+    int			has_attachment;		/* draft has at least one attachment */
+    int			has_body;		/* draft has a message body */
+    int			length;			/* length of attachment header field name */
+    char		*p;			/* miscellaneous string pointer */
+
+    /*
+     *	Open up the draft file.
+     */
+
+    if ((draft_file = fopen(draft_file_name, "r")) == (FILE *)0)
+	adios((char *)0, "can't open draft file `%s'.", draft_file_name);
+
+    /*
+     *  Allocate a buffer to hold the header components as they're read in.
+     *  This buffer might need to be quite large, so we grow it as needed.
+     */
+
+    if ((field = (char *)malloc(field_size = 256)) == (char *)0)
+	adios(NULL, "can't allocate field buffer.");
+
+    /*
+     *	Scan the draft file for a header field name that matches the -attach
+     *	argument.  The existence of one indicates that the draft has attachments.
+     *	Bail out if there are no attachments because we're done.  Read to the
+     *	end of the headers even if we have no attachments.
+     */
+
+    length = strlen(attachment_header_field_name);
+
+    has_attachment = 0;
+
+    while (get_line() != EOF && *field != '\0' && *field != '-')
+	if (strncasecmp(field, attachment_header_field_name, length) == 0 && field[length] == ':')
+	    has_attachment = 1;
+
+    if (has_attachment == 0)
+	return (DONE);
+
+    /*
+     *	We have at least one attachment.  Look for at least one non-blank line
+     *	in the body of the message which indicates content in the body.
+     */
+
+    has_body = 0;
+
+    while (get_line() != EOF) {
+	for (p = field; *p != '\0'; p++) {
+	    if (*p != ' ' && *p != '\t') {
+		has_body = 1;
+		break;
+	    }
+	}
+
+	if (has_body)
+	    break;
+    }
+
+    /*
+     *	Make names for the temporary files.
+     */
+
+    (void)strncpy(body_file_name, m_scratch("", m_maildir(invo_name)), sizeof (body_file_name));
+    (void)strncpy(composition_file_name, m_scratch("", m_maildir(invo_name)), sizeof (composition_file_name));
+
+    if (has_body)
+	body_file = fopen(body_file_name, "w");
+
+    composition_file = fopen(composition_file_name, "w");
+
+    if ((has_body && body_file == (FILE *)0) || composition_file == (FILE *)0) {
+	clean_up_temporary_files();
+	adios((char *)0, "unable to open all of the temporary files.");
+    }
+
+    /*
+     *	Start at the beginning of the draft file.  Copy all non-attachment header fields
+     *	to the temporary composition file.  Then add the dashed line separator.
+     */
+
+    rewind(draft_file);
+
+    while (get_line() != EOF && *field != '\0' && *field != '-')
+	if (strncasecmp(field, attachment_header_field_name, length) != 0 || field[length] != ':')
+	    (void)fprintf(composition_file, "%s\n", field);
+
+    (void)fputs("--------\n", composition_file);
+
+    /*
+     *	Copy the message body to a temporary file.
+     */
+
+    if (has_body) {
+	while ((c = getc(draft_file)) != EOF)
+		putc(c, body_file);
+
+	(void)fclose(body_file);
+    }
+
+    /*
+     *	Add a mhbuild MIME composition file line for the body if there was one.
+     */
+
+    if (has_body)
+	make_mime_composition_file_entry(body_file_name);
+
+    /*
+     *	Now, go back to the beginning of the draft file and look for header fields
+     *	that specify attachments.  Add a mhbuild MIME composition file for each.
+     */
+
+    rewind(draft_file);
+
+    while (get_line() != EOF && *field != '\0' && *field != '-') {
+	if (strncasecmp(field, attachment_header_field_name, length) == 0 && field[length] == ':') {
+	    for (p = field + length + 1; *p == ' ' || *p == '\t'; p++)
+		;
+
+	    make_mime_composition_file_entry(p);
+	}
+    }
+
+    (void)fclose(composition_file);
+
+    /*
+     *	We're ready to roll!  Run mhbuild on the composition file.  Note that mhbuild
+     *	is in the context as buildmimeproc.
+     */
+
+    (void)sprintf(buf, "%s %s", buildmimeproc, composition_file_name);
+
+    if (system(buf) != 0) {
+	clean_up_temporary_files();
+	return (NOTOK);
+    }
+
+    return (OK);
+}
+
+static	void
+clean_up_temporary_files(void)
+{
+    (void)unlink(body_file_name);
+    (void)unlink(composition_file_name);
+
+    return;
+}
+
+static	int
+get_line(void)
+{
+    int		c;	/* current character */
+    int		n;	/* number of bytes in buffer */
+    char	*p;	/* buffer pointer */
+
+    /*
+     *	Get a line from the input file, growing the field buffer as needed.  We do this
+     *	so that we can fit an entire line in the buffer making it easy to do a string
+     *	comparison on both the field name and the field body which might be a long path
+     *	name.
+     */
+
+    for (n = 0, p = field; (c = getc(draft_file)) != EOF; *p++ = c) {
+	if (c == '\n' && (c = getc(draft_file)) != ' ' && c != '\t') {
+	    (void)ungetc(c, draft_file);
+	    c = '\n';
+	    break;
+	}
+
+	if (++n >= field_size - 1) {
+	    if ((field = (char *)realloc((void *)field, field_size += 256)) == (char *)0)
+		adios(NULL, "can't grow field buffer.");
+
+	    p = field + n - 1;
+	}
+    }
+
+    /*
+     *	NUL-terminate the field..
+     */
+
+    *p = '\0';
+
+    return (c);
+}
+
+static	void
+make_mime_composition_file_entry(char *file_name)
+{
+    int			binary;			/* binary character found flag */
+    int			c;			/* current character */
+    char		cmd[MAXPATHLEN + 6];	/* file command buffer */
+    char		*content_type;		/* mime content type */
+    FILE		*fp;			/* content and pipe file pointer */
+    struct	node	*np;			/* context scan node pointer */
+    char		*p;			/* miscellaneous string pointer */
+    struct	stat	st;			/* file status buffer */
+
+    content_type = (char *)0;
+
+    /*
+     *	Check the file name for a suffix.  Scan the context for that suffix on a
+     *	mhshow-suffix- entry.  We use these entries to be compatible with mhnshow,
+     *	and there's no reason to make the user specify each suffix twice.  Context
+     *	entries of the form "mhshow-suffix-contenttype" in the name have the suffix
+     *	in the field, including the dot.
+     */
+
+    if ((p = strrchr(file_name, '.')) != (char *)0) {
+	for (np = m_defs; np; np = np->n_next) {
+	    if (strncasecmp(np->n_name, "mhshow-suffix-", 14) == 0 && strcasecmp(p, np->n_field) == 0) {
+		content_type = np->n_name + 14;
+		break;
+	    }
+	}
+    }
+
+    /*
+     *	No content type was found, either because there was no matching entry in the
+     *	context or because the file name has no suffix.  Open the file and check for
+     *	non-ASCII characters.  Choose the content type based on this check.
+     */
+
+    if (content_type == (char *)0) {
+	if ((fp = fopen(file_name, "r")) == (FILE *)0) {
+	    clean_up_temporary_files();
+	    adios((char *)0, "unable to access file \"%s\"", file_name);
+	}
+
+	binary = 0;
+
+	while ((c = getc(fp)) != EOF) {
+	    if (c > 127 || c < 0) {
+		binary = 1;
+		break;
+	    }
+	}
+
+	(void)fclose(fp);
+
+	content_type = binary ? "application/octet-stream" : "text/plain";
+    }
+
+    /*
+     *	Make sure that the attachment file exists and is readable.  Append a mhbuild
+     *	directive to the draft file.  This starts with the content type.  Append a
+     *	file name attribute and a private x-unix-mode attribute.  Also append a
+     *	description obtained (if possible) by running the "file" command on the file.
+     */
+
+    if (stat(file_name, &st) == -1 || access(file_name, R_OK) != 0) {
+	clean_up_temporary_files();
+	adios((char *)0, "unable to access file \"%s\"", file_name);
+    }
+
+    (void)fprintf(composition_file, "#%s; name=\"%s\"; x-unix-mode=0%.3ho",
+     content_type, ((p = strrchr(file_name, '/')) == (char *)0) ? file_name : p + 1, (unsigned short)(st.st_mode & 0777));
+
+    if (strlen(file_name) > MAXPATHLEN) {
+	clean_up_temporary_files();
+	adios((char *)0, "attachment file name `%s' too long.", file_name);
+    }
+
+    (void)sprintf(cmd, "file '%s'", file_name);
+
+    if ((fp = popen(cmd, "r")) != (FILE *)0 && fgets(cmd, sizeof (cmd), fp) != (char *)0) {
+	*strchr(cmd, '\n') = '\0';
+
+	/*
+	 *  The output of the "file" command is of the form
+	 *
+	 *  	file:	description
+	 *
+	 *  Strip off the "file:" and subsequent white space.
+	 */
+
+	for (p = cmd; *p != '\0'; p++) {
+	    if (*p == ':') {
+		for (p++; *p != '\0'; p++) {
+		    if (*p != '\t')
+			break;
+		}
+		break;
+	    }
+	}
+
+	if (*p != '\0')
+	    (void)fprintf(composition_file, " [ %s ]", p);
+
+	(void)pclose(fp);
+    }
+
+    /*
+     *	Finish up with the file name.
+     */
+
+    (void)fprintf(composition_file, " %s\n", file_name);
+
+    return;
+}
 
 /*
  * Split large message into several messages of
@@ -644,7 +1020,7 @@ annoaux (int fd)
 	if (is_selected(mp, msgnum)) {
 	    if (debugsw)
 		advise (NULL, "annotate message %d", msgnum);
-	    annotate (m_name (msgnum), annotext, cp, inplace, 1);
+	    annotate (m_name (msgnum), annotext, cp, inplace, 1, 0, 0);
 	}
     }
 
