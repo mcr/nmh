@@ -534,6 +534,11 @@ main (int argc, char **argv)
 	}
 	if (stat (newmail, &s1) == NOTOK || s1.st_size == 0)
 	    adios (NULL, "no mail to incorporate");
+
+	if ((cp = strdup(newmail)) == (char *)0)
+	    adios (maildir, "error allocating memory to copy newmail");
+
+	newmail = cp;
     }
 
 #ifdef POP
