@@ -28,9 +28,9 @@
   if(!(tw.tw_flags & TW_SUCC)) { \
     return (struct tws *)NULL; \
   } \
-  if(tw.tw_year < 1960) \
+  if(tw.tw_year < 1970) \
     tw.tw_year += 1900; \
-  if(tw.tw_year < 1960) \
+  if(tw.tw_year < 1970) \
     tw.tw_year += 100; \
   return(&tw)
 
@@ -218,6 +218,7 @@ w	([ \t]*)
 W	([ \t]+)
 D	([0-9]?[0-9])
 d	[0-9]
+nl      [ \t\n()]
 
 %%
 %{
@@ -354,7 +355,7 @@ d	[0-9]
 #ifdef	ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 				    zonehack (&tw);
 #endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
-				    //				    yyterminate();
+				    yyterminate();
                                     }
 "-"{D}{d}{d}                                  {
                                     INIT();
@@ -363,23 +364,28 @@ d	[0-9]
 #ifdef	ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 				    zonehack (&tw);
 #endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
-				    //				    yyterminate();
+				    yyterminate();
 				    
                                     }
-"-"?("ut"|"UT")			    INIT(); SETZONE(0);
-"-"?("gmt"|"GMT")		    INIT(); SETZONE(0);
-"-"?("est"|"EST")		    INIT(); SETZONE(-500);
-"-"?("edt"|"EDT")		    INIT(); SETDST(); SETZONE(-500);
-"-"?("cst"|"CST")		    INIT(); SETZONE(-600);
-"-"?("cdt"|"CDT")		    INIT(); SETDST(); SETZONE(-600);
-"-"?("mst"|"MST")		    INIT(); SETZONE(-700);
-"-"?("mdt"|"MDT")		    INIT(); SETDST(); SETZONE(-700);
-"-"?("pst"|"PST")		    INIT(); SETZONE(-800);
-"-"?("pdt"|"PDT")		    INIT(); SETDST(); SETZONE(-800);
-"-"?("nst"|"NST")		    INIT(); SETZONE(-330);
-"-"?("ast"|"AST")		    INIT(); SETZONE(-400);
-"-"?("adt"|"ADT")		    INIT(); SETDST(); SETZONE(-400);
-"-"?("hst"|"HST")		    INIT(); SETZONE(-1000);
-"-"?("hdt"|"HDT")		    INIT(); SETDST(); SETZONE(-1000);
-"-"?([a-z]{3}|[A-Z]{3})		    ;
+{nl}("ut"|"UT")                     INIT(); SETZONE(0); yyterminate();
+{nl}("gmt"|"GMT")		    INIT(); SETZONE(0); yyterminate();
+{nl}("est"|"EST")		    INIT(); SETZONE(-500); yyterminate();
+{nl}("edt"|"EDT")		    { INIT(); SETDST(); SETZONE(-500);
+                                      yyterminate(); }
+{nl}("cst"|"CST")		    INIT(); SETZONE(-600); yyterminate();
+{nl}("cdt"|"CDT")		    { INIT(); SETDST(); SETZONE(-600);
+                                      yyterminate(); }
+{nl}("mst"|"MST")		    INIT(); SETZONE(-700); yyterminate();
+{nl}("mdt"|"MDT")		    { INIT(); SETDST(); SETZONE(-700);
+                                      yyterminate(); }
+{nl}("pst"|"PST")		    INIT(); SETZONE(-800); yyterminate();
+{nl}("pdt"|"PDT")		    { INIT(); SETDST(); SETZONE(-800);
+                                      yyterminate(); }
+{nl}("nst"|"NST")		    INIT(); SETZONE(-330); yyterminate();
+{nl}("ast"|"AST")		    INIT(); SETZONE(-400); yyterminate();
+{nl}("adt"|"ADT")		    { INIT(); SETDST(); SETZONE(-400);
+                                      yyterminate(); }
+{nl}("hst"|"HST")		    INIT(); SETZONE(-1000); yyterminate();
+{nl}("hdt"|"HDT")		    { INIT(); SETDST(); SETZONE(-1000);
+                                      yyterminate(); }
 .|\n

@@ -412,8 +412,11 @@ dmktime (struct tws *tw)
     year = tw->tw_year;
 
     result = 0;
-    if (year < 100)
-	year += 1900;
+    if (year < 1970)
+      year += 1900;
+
+    if (year < 1970)
+      year += 100;
 
     for (i = 1970; i < year; i++)
 	result += dysize (i);
