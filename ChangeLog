@@ -5,10 +5,13 @@ Tue Jul 11 14:18:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	SMTP" means that encryption is supported for the authentication
 	but not for the subsequent data stream.
 
-Sat Jul  8 01:36:19 EDT 2000 Ken Hornstein <kenh@cmf.nrl.navy.mil>
+Sat Jul  8 01:36:19 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
-	* Added SASL support for IMAP, POP and SMTP.  SASL encryption
-	layers are not supported over SMTP.
+	* Applied Ken Hornstein <kenh@cmf.nrl.navy.mil>'s patches
+ 	implementing SASL support for POP3 and SMTP.  If nmh is compiled
+ 	with SASL support, using the -sasl switch on the inc, msgchk,
+ 	post, and send commands will enable authentication encryption for
+ 	SMTP, and both authentication and data stream encryption for POP3.
 
 Sat Jun 10 18:37:59 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 
