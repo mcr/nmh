@@ -2,161 +2,257 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH SCAN %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 scan \- produce a one line per message scan listing
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-scan
-\%[+folder] \%[msgs]
-\%[\-clear] \%[\-noclear]
-\%[\-form\ formatfile]
-\%[\-format\ string]
-\%[\-header] \%[\-noheader]
-\%[\-width\ columns]
-\%[\-reverse] \%[\-noreverse]
-\%[\-file filename]
-.br
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B scan
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-clear " | " \-noclear ]
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR string ]
+.RB [ \-header " | " \-noheader ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-reverse " | " \-noreverse ]
+.RB [ \-file
+.IR filename ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIScan\fR produces a one\-line\-per\-message listing of the specified
-folder or messages.  Each \fIscan\fR line contains the message number
+.B Scan
+produces a one\-line\-per\-message listing of the specified
+folder or messages.  Each
+.B scan
+line contains the message number
 (name), the date, the \*(lqFrom:\*(rq field, the \*(lqSubject\*(rq field,
 and, if room allows, some of the body of the message.  For example:
-
+.PP
+.RS 5
 .nf
-.in +.5i
 .ta \w'15+- 'u +\w'07/\|05x 'u +\w'Dcrocker  'u
 15+	10/\|05 crocker	nned\0\0\*(<<Last week I asked some of
 16\-	10/\|05 crocker	message id format\0\0\*(<<I recommend
 18	10/\|06 brien	Re: Exit status from mkdir
 19	10/\|07*brien	\*(lqscan\*(rq listing format in nmh
-.re
-.in -.5i
 .fi
-
+.RE
+.PP
 The `+' on message 15 indicates that it is the current message.
-
+.PP
 The `\-' on message 16 indicates that it has been replied to, as indicated
-by a \*(lqReplied:\*(rq component (produced by the `\-annotate' switch
-to the \fIrepl\fR command).
-
+by a \*(lqReplied:\*(rq component (produced by the
+.B \-annotate
+switch
+to the
+.B repl
+command).
+.PP
 The `*' on message 19 indicates that no \*(lqDate:\*(rq header was
 present.  The time of last modification of the message is given instead.
-
-If there is sufficient room left on the \fIscan\fR line after the
+.PP
+If there is sufficient room left on the
+.B scan
+line after the
 subject, the line will be filled with text from the body, preceded by
-<<, and terminated by >> if the body is sufficiently short.  \fIScan\fR
+\*(lq<<\*(rq, and terminated by \*(lq>>\*(rq if the body is sufficiently short.
+.B Scan
 actually reads each of the specified messages and parses them to extract
 the desired fields.  During parsing, appropriate error messages will be
 produced if there are format errors in any of the messages.
-
-By default, \fIscan\fR will decode RFC-2047 (MIME) encoding in
-these scan listings.  \fIScan\fR will only decode these fields if your
+.PP
+By default,
+.B scan
+will decode RFC-2047 (MIME) encoding in
+these scan listings.
+.B Scan
+will only decode these fields if your
 terminal can natively display the character set used in the encoding.
 You should set the MM_CHARSET environment variable to your native
 character set, if it is not US-ASCII.  See the mh-profile(5) man
 page for details about this environment variable.
-
-The switch `\-reverse', makes \fIscan\fR list the messages in reverse
+.PP
+The switch
+.BR \-reverse ,
+makes
+.B scan
+list the messages in reverse
 order.
-
-The `\-file filename' switch allows the user to obtain a \fIscan\fP
-listing of a maildrop file as produced by \fIpackf\fP.  This listing
+.PP
+The
+.B \-file
+.I filename
+switch allows the user to obtain a
+.B scan
+listing of a maildrop file as produced by
+.BR packf .
+This listing
 includes every message in the file (you can't scan individual messages).
-The switch `\-reverse' is ignored with this option.
-
-The switch `\-width\ columns' may be used to specify the width of
+The switch
+.B \-reverse
+is ignored with this option.
+.PP
+The switch
+.B \-width
+.I columns
+may be used to specify the width of
 the scan line.  The default is to use the width of the terminal.
-
-The `\-header' switch produces a header line prior to the \fIscan\fR
+.PP
+The
+.B \-header
+switch produces a header line prior to the
+.B scan
 listing.  Currently, the name of the folder and the current date and
-time are output (see the \fBHISTORY\fR section for more information).
-
-If the `\-clear' switch is used and \fIscan's\fR output is directed
-to a terminal, then \fIscan\fR will consult the environment variables
-\fB$TERM\fR and \fB$TERMCAP\fR to determine your terminal type in order
-to find out how to clear the screen prior to exiting.  If the `\-clear'
-switch is used and \fIscan's\fR output is not directed to a terminal
-(e.g., a pipe or a file), then \fIscan\fR will send a formfeed prior
+time are output (see the
+.B HISTORY
+section for more information).
+.PP
+If the
+.B \-clear
+switch is used and
+.BR scan 's
+output is directed
+to a terminal, then
+.B scan
+will consult the environment variables
+.B $TERM
+and
+.B $TERMCAP
+to determine your terminal type in order
+to find out how to clear the screen prior to exiting.  If the
+.B \-clear
+switch is used and
+.BR scan 's
+output is not directed to a terminal
+(e.g., a pipe or a file), then
+.B scan
+will send a formfeed prior
 to exiting.
-
+.PP
 For example, the command:
-
-.ti +.5i
+.PP
+.RS 5
 (scan \-clear \-header; show all \-show pr \-f) | lpr
-
+.RE
+.PP
 produces a scan listing of the current folder, followed by a formfeed,
 followed by a formatted listing of all messages in the folder, one
-per page.  Omitting `\-show\ pr\ \-f' will cause the messages to be
+per page.  Omitting
+.RB \*(lq "\-show\ pr\ \-f" \*(rq
+will cause the messages to be
 concatenated, separated by a one\-line header and two blank lines.
-
-To override the output format used by \fIscan\fR, the `\-format\ string'
-or `\-form\ file' switches are used.  This permits individual fields of
+.PP
+To override the output format used by
+.BR scan ,
+the
+.B \-format
+.I string
+or
+.B \-form
+.I file
+switches are used.  This permits individual fields of
 the scan listing to be extracted with ease.  The string is simply a format
-string and the file is simply a format file.  See \fImh\-format\fR(5)
+string and the file is simply a format file.  See
+.BR mh\-format (5)
 for the details.
-
-In addition to the standard \fImh\-format\fR(5) escapes, \fIscan\fR
-also recognizes the following additional \fIcomponent\fR escapes:
-.sp 1
+.PP
+In addition to the standard
+.BR mh\-format (5)
+escapes,
+.B scan
+also recognizes the following additional
+.I component
+escapes:
+.PP
+.RS 5
 .nf
 .ta \w'Dtimenow  'u +\w'Returns  'u
-\fIEscape\fR	\fIReturns\fR	\fIDescription\fR
+.I Escape	Returns	Description
 body	string	the (compressed) first part of the body
 dtimenow	date	the current date
 folder	string	the name of the current folder
-.re
+.fi
+.RE
+.PP
+If no date header is present in the message, the
+.I function
+escapes
+which operate on
+.RB { date }
+will return values for the date of last
+modification of the message file itself.  This feature is handy for
+scanning a draft folder, as message drafts usually aren't allowed
+to have dates in them.
+.PP
+.B scan
+will update the
+.B nmh
+context prior to starting the listing,
+so interrupting a long
+.B scan
+listing preserves the new context.
+.B nmh
+purists hate this idea.
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
 
-If no date header is present in the message, the \fIfunction\fR escapes
-which operate on {\fIdate\fP\|} will return values for the date of last
-modification of the message file itself.  This feature is handy for
-scanning a \fIdraft folder\fR, as message drafts usually aren't allowed
-to have dates in them.
-
-\fIscan\fR will update the \fInmh\fR context prior to starting the listing,
-so interrupting a long \fIscan\fR listing preserves the new context.
-\fInmh\fR purists hate this idea.
-.Fi
-^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Alternate\-Mailboxes:~^To determine the user's mailboxes
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Sa
+.fi
+
+.SH "SEE ALSO"
 inc(1), pick(1), show(1), mh\-format(5)
-.De
-`+folder' defaults to the current folder
-.Ds
-`msgs' defaults to all
-.Ds
-`\-format' defaulted as described above
-.Ds
-`\-noheader'
-.Ds
-`\-width' defaulted to the width of the terminal
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msgs "' defaults to all"
+.RB ` \-format "' defaulted as described above"
+.RB ` \-noheader '
+.RB ` \-width "' defaulted to the width of the terminal"
+.fi
+
+.SH CONTEXT
 If a folder is given, it will become the current folder.
-.Hi
-Prior to using the format string mechanism, `\-header' used to generate
+
+.SH HISTORY
+Prior to using the format string mechanism,
+.B \-header
+used to generate
 a heading saying what each column in the listing was.  Format strings
 prevent this from happening.
-.Bu
-The argument to the `\-format' switch must be interpreted as a single
-token by the shell that invokes \fIscan\fR.  Therefore, one must usually
-place the argument to this switch inside double\-quotes.
 
-The value of each \fIcomponent\fR escape is set by \fIscan\fR to the
-contents of the first message header \fIscan\fR encounters with the
+.SH BUGS
+The argument to the
+.B \-format
+switch must be interpreted as a single
+token by the shell that invokes
+.BR scan .
+Therefore, one must usually
+place the argument to this switch inside double\-quotes.
+.PP
+The value of each
+.I component
+escape is set by
+.B scan
+to the
+contents of the first message header
+.B scan
+encounters with the
 corresponding component name; any following headers with the same
 component name are ignored.
-.En

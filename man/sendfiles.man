@@ -2,57 +2,74 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH SENDFILES %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 sendfiles \- send multiple files via a MIME message
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-sendfiles \%[delay] mailpath subject file1 \%[file2]...
-.in -.5i
-
+.HP
+.B sendfiles
+.RB [ delay ]
+.I mailpath
+.I subject
+.I file1
+.RI [ file2
+\&...]
 .SH DESCRIPTION
-The shell script \fIsendfiles\fR, is used to send a collection
+The shell script
+.BR sendfiles ,
+is used to send a collection
 of files and directories via electronic mail.
-.sp
-.in +.5i
+.PP
+.RS 5
 sendfiles mailpath \*(lqsubject\*(rq files\0...
-.in -.5i
-.sp
-\fIsendfiles\fR will archive the files and directories you name
-with the \fItar\fR\0(1) command, and then mail the compressed
-archive to the `mailpath' with the given `subject'.  The archive
+.RE
+.PP
+.B Isendfiles
+will archive the files and directories you name
+with the
+.B tar
+command, and then mail the compressed
+archive to the \*(lqmailpath\*(rq with the given \*(lqsubject\*(rq.
+The archive
 will be automatically split up into as many messages as necessary
 in order to get past most mailers.
-
-Sometimes you want \fIsendfiles\fR to pause after posting a partial
-message.  This is usually the case when you are running \fIsendmail\fR
+.PP
+Sometimes you want
+.B sendfiles
+to pause after posting a partial
+message.  This is usually the case when you are running
+.B sendmail
 and expect to generate a lot of partial messages.  If the first
-argument given to \fIsendfiles\fR starts with a dash, then it is
+argument given to
+.B sendfiles
+starts with a dash, then it is
 interpreted as the number of seconds to pause in between postings,
-.ne 6
 e.g.,
-.sp
-.in +.5i
+.PP
+.RS 5
 sendfiles -30 mailpath \*(lqsubject\*(rq files\0...
-.in -.5i
-.sp
+.RE
+.PP
 will pause 30 seconds in between each posting.
-
-.Uh "Extracting the Received Files"
-When these messages are received, invoke \fImhstore\fR once for
-the list of messages.  The default is for \fImhstore\fR to store
+.PP
+.SS "Extracting the Received Files"
+When these messages are received, invoke
+.B mhstore
+once for
+the list of messages.  The default is for
+.B mhstore
+to store
 the combined parts as a new message in the current folder, although
 this can be changed using storage formatting strings.  You can then
-use \fImhlist\fR to find out what's inside; possibly followed by
-\fImhstore\fR again to write the archive to a file where you can
+use
+.B mhlist
+to find out what's inside; possibly followed by
+.B mhstore
+again to write the archive to a file where you can
 subsequently uncompress and untar it.  For instance:
-.sp
+.PP
+.RS 5
 .nf
-.in +.5i
 % mhlist 5-8
  msg part  type/subtype             size description
    5       message/partial           47K part 1 of 4
@@ -69,14 +86,17 @@ reassembling partials 5,6,7,8 to folder inbox as message 9
              conversions=compress
 % mhstore 9
 % uncompress < 9.tar.Z | tar xvpf -
-.in -.5i
 .fi
-.sp
-Alternately, by using the `\-auto' switch, \fImhstore\fR will
-automatically do the extraction for you:
-.sp
+.RE
+.PP
+Alternately, by using the
+.B \-auto
+switch,
+.B mhstore
+will automatically do the extraction for you:
+.PP
+.RS 5
 .nf
-.in +.5i
 % mhlist 5-8
  msg part  type/subtype             size description
    5       message/partial           47K part 1 of 4
@@ -92,59 +112,50 @@ reassembling partials 5,6,7,8 to folder inbox as message 9
              type=tar
              conversions=compress
 % mhstore -auto 9
--- \fItar\fR listing appears here as files are extracted
-.in -.5i
+-- tar listing appears here as files are extracted
 .fi
-.sp
-As the second \fItar\fR listing is generated, the files are extracted.
-A prudent user will never put `\-auto' in the \&.mh\(ruprofile
-file.  The correct procedure is to first use \fImhlist\fR to find
-out what will be extracted.  Then \fImhstore\fR can be invoked with
-`\-auto' to perform the extraction.
-.Fi
+.RE
+.PP
+As the second
+.B tar
+listing is generated, the files are extracted.
+A prudent user will never put
+.B \-auto
+in the
+.I \&.mh\(ruprofile
+file.  The correct procedure is to first use
+.B mhlist
+to find out what will be extracted.  Then
+.B mhstore
+can be invoked with
+.B \-auto
+to perform the extraction.
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Sa
-mhbuild(1), mhlist(1), mhshow(1), mhstore(1)
-.br
-RFC\-934:
-.br
-   \fIProposed Standard for Message Encapsulation\fR,
-.br
-RFC\-2045:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part One:
-.br
-   Format of Internet Message Bodies\fR,
-.br
-RFC\-2046:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part Two:
-.br
-   Media Types\fR,
-.br
-RFC\-2047:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part Three:
-.br
-   Message Header Extensions for Non-ASCII Text\fR,
-.br
-RFC\-2048:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part Four:
-.br
-   Registration Procedures\fR,
-.br
-RFC\-2049:
-.br
-   \fIMultipurpose Internet Mail Extensions (MIME) Part Five:
-.br
-   Conformance Criteria and Examples\fR.
-.De
-`\-noverbose'
-.Co
-None.
-.En
+.fi
+
+.SH "SEE ALSO"
+mhbuild(1), mhlist(1), mhshow(1), mhstore(1). 
+.I "Proposed Standard for Message Encapsulation"
+(RFC\-934)
+
+.SH DEFAULTS
+.nf
+.RB ` \-noverbose '
+.fi
+
+.SH CONTEXT
+None

@@ -2,69 +2,98 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH RMF %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 rmf \- remove an nmh folder
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-rmf 
-\%[+folder]
-\%[\-interactive] \%[\-nointeractive]
-.br
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B rmf 
+.RI [ +folder ]
+.RB [ \-interactive " | " \-nointeractive ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIRmf\fR removes all of the messages (files) within the specified
+.B Rmf
+removes all of the messages (files) within the specified
 (or default) folder, and then removes the folder (directory) itself.
-
+.PP
 If there are any files within the folder which are not a part of
-\fInmh\fR, they will \fInot\fR be removed, and an error will be produced.
-If the folder is given explicitly or the `\-nointeractive' option is
+.BR nmh ,
+they will
+.B not
+be removed, and an error will be produced.
+If the folder is given explicitly or the
+.B \-nointeractive
+option is
 given, then the folder will be removed without confirmation.  Otherwise,
-the user will be asked for confirmation.  If \fIrmf\fR can't find the
+the user will be asked for confirmation.  If
+.B rmf
+can't find the
 current folder, for some reason, the folder to be removed defaults to
 `+inbox' (unless overridden by user's profile entry \*(lqInbox\*(rq)
 with confirmation.
-
+.PP
 If the folder being removed is a subfolder, the parent folder will become
-the new current folder, and \fIrmf\fR will produce a message telling the
+the new current folder, and
+.B rmf
+will produce a message telling the
 user this has happened.  This provides an easy mechanism for selecting
 a set of messages, operating on the list, then removing the list and
 returning to the current folder from which the list was extracted.
-
-If \fIrmf\fR is used on a read\-only folder, it will delete all the
+.PP
+If
+.B rmf
+s used on a read\-only folder, it will delete all the
 (private) sequences
-(i.e., \*(lqatr\-\fIseq\fR\-\fIfolder\fR\*(rq entries) for this folder
+(i.e.,
+.RI \*(lqatr\- seq \- folder \*(rq
+entries) for this folder
 from your context without affecting the folder itself.
-
-\fIRmf\fR irreversibly deletes messages that don't have other links, so
+.PP
+.B Rmf
+irreversibly deletes messages that don't have other links, so
 use it with caution.
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Ps
 ^Inbox:~^To find the default inbox
-.Sa
+.fi
+
+.SH "SEE ALSO"
 rmm(1)
-.De
-`+folder' defaults to the current folder, usually with confirmation
-.Ds
-`\-interactive' if +folder' not given, `\-nointeractive' otherwise
-.Co
-\fIRmf\fR will set the current folder to the parent folder if a
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder, usually with confirmation"
+.RB ` \-interactive "' if +folder' not given, `\-nointeractive' otherwise"
+.fi
+
+.SH CONTEXT
+.B Rmf
+will set the current folder to the parent folder if a
 subfolder is removed; or if the current folder is removed, it will make
 \*(lqinbox\*(rq current.  Otherwise, it doesn't change the current folder
 or message.
-.Bu
-Although intuitively one would suspect that \fIrmf\fR works recursively,
+
+.SH BUGS
+Although intuitively one would suspect that
+.B rmf
+works recursively,
 it does not.  Hence if you have a sub\-folder within a folder, in order
-to \fIrmf\fR the parent, you must first \fIrmf\fR each of the children.
-.En
+to
+.B rmf
+the parent, you must first
+.B rmf
+each of the children.

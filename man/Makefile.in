@@ -128,6 +128,8 @@ man.sed: Makefile
 	echo ' s,%mhl_forward%,,g' >> $@
 	echo '/%mhl_format%/r $(top_srcdir)/etc/mhl.format' >> $@
 	echo ' s,%mhl_format%,,g' >> $@
+	echo '/%mhl_reply%/r $(top_srcdir)/etc/mhl.reply' >> $@
+	echo ' s,%mhl_reply%,,g' >> $@
 
 # ========= INSTALL TARGETS =========
 

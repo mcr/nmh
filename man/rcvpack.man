@@ -2,44 +2,56 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH RCVPACK %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 rcvpack \- append message to file
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-%libdir%/rcvpack
-file
-\%[-mbox] \%[-mmdf]
-.br
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B %libdir%/rcvpack
+.I file
+.RB [ \-mbox ]
+.RB [ \-mmdf ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-The \fIrcvpack\fR program will append a copy of the message to the file
+The
+.B rcvpack
+program will append a copy of the message to the file
 listed on its command line.
-
-If the `-mbox' switch is given (the default), then the messages are
+.PP
+If the
+.B \-mbox
+switch is given (the default), then the messages are
 separated using mbox (uucp) style delimiters.  This is the format used
 by most mail clients (elm, mailx, etc.).
- 
-If the `-mmdf' switch is given, then the messages are separated by
+.PP 
+If the
+.B \-mmdf
+switch is given, then the messages are separated by
 mmdf style delimiters.  Each message in the file is separated by four
 CTRL\-A's and a newline.
-
-\fIrcvpack\fR will correctly lock and unlock the file to serialize
-access to the file, when running multiple copies of \fIrcvpack\fR.
-
-In general, its use is obsoleted by the \*(lqfile\*(rq action of
-\fIslocal\fR, although it might still have occasional uses in various
+.PP
+.B rcvpack
+will correctly lock and unlock the file to serialize
+access to the file, when running multiple copies of
+.B rcvpack .
+.PP
+In general, its use is obsoleted by the
+.B file
+action of
+.BR slocal ,
+although it might still have occasional uses in various
 shell scripts.
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^%etcdir%/mts.conf~^nmh mts configuration file
-.Sa
+.fi
+
+.SH "SEE ALSO"
 rcvdist(1), rcvstore(1), rcvtty(1), slocal(1)
-.Bu
+
+.SH BUGS
 Only two return codes are meaningful, others should be.
-.En

@@ -2,75 +2,117 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH RMM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 rmm \- remove messages
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-rmm
-\%[+folder] \%[msgs]
-\%[\-unlink] \%[\-nounlink]
-.br
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B rmm
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-link " | " \-nolink ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-By default, \fIrmm\fR will remove the specified messages by renaming
+By default,
+.B rmm
+will remove the specified messages by renaming
 the message files with preceding commas.  Such files will then need to
 be removed in some manner after a certain amount of time.  Many sites
-arrange for \fIcron\fR\0(8) to remove these files once a day, so check
+arrange for
+.B cron
+to remove these files once a day, so check
 with your system administrator.
-
-Alternately, if you wish for \fIrmm\fR to really remove the files
-representing these messages, you can use the `-unlink' switch.  But
+.PP
+Alternately, if you wish for
+.B rmm
+to really remove the files
+representing these messages, you can use the
+.B \-unlink
+switch.  But
 messages removed by this method cannot be later recovered.
-
+.PP
 If you prefer a more sophisticated method of `removing' messages, you
-can define the \fIrmmproc\fR profile component.  For example, you can
+can define the
+.I rmmproc
+profile component.  For example, you can
 add a profile component such as
-
-	rmmproc:	/home/coleman/bin/rmm_msgs
-
-then instead of simply renaming the message file, \fIrmm\fR will call
+.PP
+.RS 5
+rmmproc:	/home/foouser/bin/rmm_msgs
+.RE
+.PP
+then instead of simply renaming the message file,
+.B rmm
+will call
 the named program or script to handle the files that represent the
 messages to be deleted.
-
-Some users of csh prefer the following:
-
-	alias rmm 'refile +d'
-
-where folder +d is a folder for deleted messages, and
-
-	alias mexp 'rm `mhpath +d all`'
-
+.PP
+Some users of
+.B csh
+prefer the following:
+.PP
+.RS 5
+alias rmm 'refile +d'
+.RE
+.PP
+where folder `+d' is a folder for deleted messages, and
+.PP
+.RS 5
+alias mexp 'rm `mhpath +d all`'
+.RE
+.PP
 is used to \*(lqexpunge\*(rq deleted messages.
-
-The current message is not changed by \fIrmm\fR, so a \fInext\fR  will
+.PP
+The current message is not changed by
+.BR rmm ,
+so a
+.B next
+ will
 advance to the next message in the folder as expected.
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Ps
 ^rmmproc:~^Program to delete the message
-.Sa
+.fi
+
+.SH "SEE ALSO"
 refile(1), rmf(1)
-.De
-`+folder' defaults to the current folder
-.Ds
-`msgs' defaults to cur
-.Ds
-`-nounlink'
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msgs "' defaults to cur"
+.RB ` -nounlink '
+.fi
+
+.SH CONTEXT
 If a folder is given, it will become the current folder.
-.Bu
-Since \fIrefile\fR uses your \fIrmmproc\fP to delete the message,
-the \fIrmmproc\fP must \fBNOT\fP call \fIrefile\fP without specifying
-`\-normmproc', or you will create an infinte loop.
-.En
+
+.SH BUGS
+Since
+.B refile
+uses your
+.I rmmproc
+to delete the message,
+the
+.I rmmproc
+must
+.B NOT
+call
+.B refile
+without specifying
+.BR \-normmproc ,
+or you will create an infinte loop.

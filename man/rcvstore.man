@@ -2,99 +2,142 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH RCVSTORE %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 rcvstore \- asynchronously incorporate mail into a folder
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-%libdir%/rcvstore
-\%[+folder]
-.br
-\%[\-create] \%[\-nocreate]
-\%[\-unseen] \%[\-nounseen]
-.br
-\%[\-zero] \%[\-nozero]
-\%[\-public] \%[\-nopublic]
-.br
-\%[\-sequence\ name\ ...]
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B %libdir%/rcvstore
+.RI [ +folder ]
+.RB [ \-create " | " \-nocreate ]
+.RB [ \-unseen " | " \-nounseen ]
+.RB [ \-zero " | " \-nozero ]
+.RB [ \-sequence
+.I name
+\&...]
+.RB [ \-public " | " \-nopublic ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIRcvstore\fR incorporates a message from the standard input into an
-\fInmh\fR folder.  This command is typically used in conjunction with
-mail filtering programs such as \fIslocal\fR and \fIprocmail\fR, to
-filter your mail into different folders.
-
-You may specify which folder to use with `+folder'.  If no folder is
-specified, \fIrcvstore\fP will use the folder given by a non\-empty
+.B Rcvstore
+incorporates a message from the standard input into an
+.B nmh
+folder.  This command is typically used in conjunction with
+mail filtering programs such as
+.B slocal
+and
+.BR procmail ,
+to filter your mail into different folders.
+.PP
+You may specify which folder to use with
+.IR +folder .
+If no folder is specified,
+.B rcvstore
+will use the folder given by a non\-empty
 \*(lqInbox:\*(rq entry in the user's profile, else it will use the folder
 named \*(lqinbox\*(rq.
-
-If the switch `\-create' is given (it is the default) and if the specified
+.PP
+If the switch
+.B \-create
+is given (it is the default) and if the specified
 (or default) folder does not exist, then it will be created.  You may
-disable this with the `\-nocreate' option.  In this case \fIrcvstore\fP
+disable this with the
+.B \-nocreate
+option.  In this case
+.B rcvstore
 will exit if the specified folder does not exist.
-
+.PP
 When the new message is incorporated into the folder, it is assigned
 the next highest number for that folder.
-
-\fIRcvstore\fR will incorporate anything except zero length messages
-into the user's nmh folder.  It will not change the message in any
+.PP
+.B Rcvstore
+will incorporate anything except zero length messages
+into the user's
+.B nmh
+folder.  It will not change the message in any
 way.
-
+.PP
 If the user's profile contains a \*(lqMsg\-Protect: nnn\*(rq entry, it
 will be used as the protection on the newly created message, otherwise
-the \fInmh\fR default of 0644 will be used.  For all subsequent operations
+the
+.B nmh
+default of 0644 will be used.  For all subsequent operations
 on this message, this initially assigned protection will be preserved.
-
-If the switch `\-unseen' is given (it is on by default), and if the
+.PP
+If the switch
+.B \-unseen
+is given (it is on by default), and if the
 profile entry \*(lqUnseen\-Sequence\*(rq is present and non\-empty, then
-\fIrcvstore\fR will add the newly incorporated message to each sequence
-named by this profile entry.  You may use the switch `\-nounseen' to
-disable this.  These sequences will not be zero'ed by \fIrcvstore\fR
+.B rcvstore
+will add the newly incorporated message to each sequence
+named by this profile entry.  You may use the switch
+.B \-nounseen
+to disable this.  These sequences will not be zero'ed by
+.B rcvstore
 prior to adding the new message.
-
+.PP
 Furthermore, the incoming message may be added to additional sequences
-as they arrive by the use of the `\-sequence' switch.  As with the
-commands \fIpick\fP and \fImark\fP, you may also use the switches
-`\-zero' and `\-nozero' to specify whether to zero old sequences or not.
-Similarly, use of the `\-public' and `\-nopublic switches may be used
+as they arrive by the use of the
+.B \-sequence
+switch.  As with the
+commands
+.B pick
+and
+.BR mark ,
+you may also use the switches
+.B \-zero
+and
+.B \-nozero
+to specify whether to zero old sequences or not.
+Similarly, use of the
+.B \-public
+and
+.B \-nopublic
+switches may be used
 to force these sequences to be public or private sequences.
 
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Folder\-Protect:~^To set mode when creating a new folder
-.Ps
 ^Inbox:~^To find the default inbox
-.Ps
 ^Msg\-Protect:~^To set mode when creating a new message
-.Ps
 ^Unseen\-Sequence:~^To name sequences denoting unseen messages
-.Sa
+.fi
+
+.SH "SEE ALSO"
 rcvdist(1), rcvpack(1), rcvtty(1), mh\-sequence(5)
-.De
-`+folder' defaults to \*(lqInbox\*(rq profile entry
-.Ds
-`\-create'
-.Ds
-`\-unseen'
-.Ds
-`\-nozero'
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to \*(lqInbox\*(rq profile entry"
+.RB ` \-create '
+.RB ` \-unseen '
+.RB ` \-nozero '
+.fi
+
+.SH CONTEXT
 No context changes will be attempted, with the exception of
 sequence manipulation.
-.Bu
-If you use the \*(lqUnseen\-Sequence\*(rq profile entry, \fIrcvstore\fP
-could try to update the context while another \fInmh\fP process
+
+.SH BUGS
+If you use the \*(lqUnseen\-Sequence\*(rq profile entry,
+.B rcvstore
+could try to update the context while another
+.B nmh
+process
 is also trying to do so.  This can cause the context to become
-corrupted.  To avoid this, do not use \fIrcvstore\fP if you use the
+corrupted.  To avoid this, do not use
+.B rcvstore
+if you use the
 \*(lqUnseen\-Sequence\*(rq profile entry.
-.En
