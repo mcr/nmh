@@ -137,7 +137,7 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 	 * Then run the external hook on the message if one was specified in the context.
 	 * Run the refile hook if we're moving the message from one place to another.
 	 * We have to construct the from path name for this because it's not there.
-	 * Run the add hook if the message is getting copied or lined somewhere else.
+	 * Run the add hook if the message is getting copied or linked somewhere else.
 	 */
 	if (link (msgfile, newmsg) != -1) {
 
@@ -197,8 +197,10 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 		    close (infd);
 		    close (outfd);
 
-		    if (deleting)
-		        (void)ext_hook("ref-hook", newmsg, msgfile);
+		    if (deleting) {
+			(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", pwd(), msgfile);
+			(void)ext_hook("ref-hook", oldmsg, newmsg);
+		    }
 		    else
 		        (void)ext_hook("add-hook", newmsg, (char *)0);
 
