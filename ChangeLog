@@ -1,8 +1,13 @@
-Tue May 09 00:11:55 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Tue May 09 00:50:39 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Alphabetized Shantonu's $pop_kinds output on configure's "pop is
 	enabled" line.  If POP3 is the only kind of POP enabled, say so,
 	rather than just saying "yes" (which is ambiguous).
+
+	* Got rid of four warnings in Shantonu's new getpass.c.  Needed to
+ 	#include <stdlib.h> for calloc(), <unistd.h> for ttyname(), and
+ 	"h/mh.h" for adios().  Also changed ch from char to int to get rid
+	of "comparison is always 1 due to limited range of data type" on EOF.
 	
 Mon May 08 23:51:55 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 

@@ -34,7 +34,10 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>   /* for calloc() */
 #include <termios.h>
+#include <unistd.h>   /* for ttyname() */
+#include "h/mh.h"     /* for adios() */
 
 #define PASSWORD_LEN 128
 
@@ -43,10 +46,10 @@
 #endif
 
 char *
-getpass(char *prompt)
+getpass(const char *prompt)
 {
   struct termios oterm, term;
-  char ch;
+  int ch;
   char *p, *ttystring, *buf;
   FILE *fout, *fin;
 
