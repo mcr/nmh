@@ -111,6 +111,44 @@ You may specify an alternate format file with the `\-form formfile'
 switch.  If the format file \fImhl.null\fR is specified, then the display
 of the message headers is suppressed.
 
+Next, the contents are extracted from the message and are stored in
+a temporary file.  Usually, the name of the temporary file the
+word "mhshow" followed by a string of characters.  Occasionally,
+the method used to display a content (described next), requires that
+the file end in a specific suffix.  For example, the \fIsoffice\fR
+command (part of the StarOffice package) can be used to display
+MicroSoft Word content, but it uses the suffix to determine how to display
+the file.  If no suffix is present, the file is not correctly loaded.
+Similarily, older versions of the \fIgs\fR command append a ".ps" suffix to
+the filename if one was missing.  As a result, these cannot be used to read
+the default temporary file.
+
+To get around this, your profile can contain lines of the form:
+.sp
+.in +.5i
+mhshow-suffix-<type>/<subtype>: <suffix>
+.in -.5i
+.sp
+or
+.sp
+.in +.5i
+mhshow-suffix-<type>: <suffix>
+.in -.5i
+.sp
+to specify a suffix which can be automatically added to the temporary
+file created for a specific content type.  For example, the following
+lines might appear in your profile:
+.sp
+.nf
+.in +.5i
+mhshow-suffix-text: .txt
+mhshow-suffix-application/msword: .doc
+mhshow-suffix-application/PostScript: .ps
+.in -.5i
+.fi
+.sp
+to automatically append a suffix to the temporary files.
+
 The method used to display the different contents in the messages bodies
 will be determined by a \*(lqdisplay string\*(rq.  To find the display
 string, \fImhshow\fR will first search your profile for an entry of the

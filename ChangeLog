@@ -1,12 +1,30 @@
+Mon Mar 13 18:26:03 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Applied Sullivan N. Beck <sbeck@cise.ufl.edu>'s mhshow-suffix patch:
+
+            With the patch below, you can add lines like:
+
+                mhshow-suffix-application/msword: .doc
+                mhshow-suffix-application/PostScript: .ps
+
+            to the mhn.defaults file to append the given suffix to a
+ 	    scratch file.  This allows applications which require a
+ 	    certain suffix to run properly.
+
+	* Removed -force_html from lynx entry in mhn.defaults.sh (I
+ 	believe older versions of lynx lack that option) and added
+ 	"mhshow-suffix-text/html: .html".
+		
 Mon Mar 06 12:20:20 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied Neil W Rickert <rickert+nmh@cs.niu.edu>'s msh.c patch:
 
-	      I finally tracked down the problem in msh that was causing errors
-              whenever I tried to examine a 'mmdf' style mailbox.
+            I finally tracked down the problem in msh that was causing
+ 	    errors whenever I tried to examine a 'mmdf' style mailbox.
 
-	      It turns out that not enough memory was being allocated with
-              calloc(), causing memory pointers to be overwritten and corrupted.
+	    It turns out that not enough memory was being allocated with
+ 	    calloc(), causing memory pointers to be overwritten and
+ 	    corrupted.
 		
 Fri Mar 03 16:07:33 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 

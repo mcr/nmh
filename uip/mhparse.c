@@ -1568,6 +1568,8 @@ openBase64 (CT ct, char **file)
     unsigned long bits;
     unsigned char value, *b, *b1, *b2, *b3;
     char *cp, *ep, buffer[BUFSIZ];
+    /* sbeck -- handle prefixes */
+    CI ci;
     CE ce;
     MD5_CTX mdContext;
 
@@ -1597,6 +1599,19 @@ openBase64 (CT ct, char **file)
 	ce->ce_file = add (*file, NULL);
 	ce->ce_unlink = 0;
     }
+
+    /* sbeck@cise.ufl.edu -- handle suffixes */
+    ci = &ct->c_ctinfo;
+    snprintf (buffer, sizeof(buffer), "%s-suffix-%s/%s",
+              invo_name, ci->ci_type, ci->ci_subtype);
+    cp = context_find (buffer);
+    if (cp == NULL || *cp == '\0') {
+        snprintf (buffer, sizeof(buffer), "%s-suffix-%s", invo_name,
+                  ci->ci_type);
+        cp = context_find (buffer);
+    }
+    if (cp != NULL && *cp != '\0')
+        ce->ce_file = add (cp, ce->ce_file);
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
 	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");
@@ -1767,6 +1782,8 @@ openQuoted (CT ct, char **file)
     char buffer[BUFSIZ];
     unsigned char mask;
     CE ce;
+    /* sbeck -- handle prefixes */
+    CI ci;
     MD5_CTX mdContext;
 
     ce = ct->c_cefile;
@@ -1789,6 +1806,24 @@ openQuoted (CT ct, char **file)
     } else {
 	ce->ce_file = add (*file, NULL);
 	ce->ce_unlink = 0;
+    }
+
+    /* sbeck@cise.ufl.edu -- handle suffixes */
+    ci = &ct->c_ctinfo;
+    snprintf (buffer, sizeof(buffer), "%s-suffix-%s/%s",
+              invo_name, ci->ci_type, ci->ci_subtype);
+    cp = context_find (buffer);
+    if (cp == NULL || *cp == '\0') {
+        snprintf (buffer, sizeof(buffer), "%s-suffix-%s", invo_name,
+                  ci->ci_type);
+        cp = context_find (buffer);
+    }
+    if (cp != NULL && *cp != '\0')
+        ce->ce_file = add (cp, ce->ce_file);
+
+    if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
+	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");
+	return NOTOK;
     }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
@@ -1965,6 +2000,9 @@ open7Bit (CT ct, char **file)
 {
     int	cc, fd, len;
     char buffer[BUFSIZ];
+    /* sbeck -- handle prefixes */
+    char *cp;
+    CI ci;
     CE ce;
 
     ce = ct->c_cefile;
@@ -1988,6 +2026,19 @@ open7Bit (CT ct, char **file)
 	ce->ce_file = add (*file, NULL);
 	ce->ce_unlink = 0;
     }
+
+    /* sbeck@cise.ufl.edu -- handle suffixes */
+    ci = &ct->c_ctinfo;
+    snprintf (buffer, sizeof(buffer), "%s-suffix-%s/%s",
+              invo_name, ci->ci_type, ci->ci_subtype);
+    cp = context_find (buffer);
+    if (cp == NULL || *cp == '\0') {
+        snprintf (buffer, sizeof(buffer), "%s-suffix-%s", invo_name,
+                  ci->ci_type);
+        cp = context_find (buffer);
+    }
+    if (cp != NULL && *cp != '\0')
+        ce->ce_file = add (cp, ce->ce_file);
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
 	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");

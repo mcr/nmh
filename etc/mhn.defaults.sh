@@ -126,13 +126,15 @@ if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-application/x-ivs: %p$PGM -o '%F'" >> $TMP
 fi
 
+echo "mhshow-suffix-text/html: .html" >> $TMP
+
 # I'd like to check if netscape is available and use it preferentially to lynx,
 # but only once I've added a new %-escape that makes more permanent temp files,
 # so netscape -remote can be used (without -remote you get a complaint dialog
 # that another netscape is already running and certain things can't be done).
 PGM="`$SEARCHPROG $SEARCHPATH lynx`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-text/html: %p$PGM -force_html '%F'" >> $TMP
+	echo "mhshow-show-text/html: %p$PGM '%F'" >> $TMP
 fi
 
 PGM="`$SEARCHPROG $SEARCHPATH richtext`"
@@ -143,6 +145,13 @@ else
     if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-text/richtext: %p$PGM < '%f' | fmt -78 | more" >> $TMP
     fi
+fi
+
+# staroffice to read .doc files
+PGM="`$SEARCHPROG $SEARCHPATH soffice`"
+if [ ! -z "$PGM" ]; then
+	echo "mhshow-show-application/msword: %psoffice '%F'" >> $TMP
+	echo "mhshow-suffix-application/msword: .doc" >> $TMP
 fi
 
 PGM="`$SEARCHPROG $SEARCHPATH xterm`"
@@ -164,6 +173,7 @@ else
     PGM="`$SEARCHPROG $SEARCHPATH gs`"
     if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-application/PostScript: %p$PGM -- '%F'" >> $TMP
+	echo "mhshow-suffix-application/PostScript: .ps" >> $TMP
     fi
 fi
 
