@@ -41,12 +41,20 @@ end-users who don't have any interest in changing the configure-related files
 and don't have autoconf installed.  They'll be unable to make without playing
 around with `touch'.
 
-The correct order to commit the configure-related files is:
+The correct procedure to commit the configure-related files is:
 
-% cvs commit acconfig.h aclocal.m4 config.h.in configure.in configure stamp-h.in
+    % cvs commit acconfig.h aclocal.m4 configure.in
+    % autoconf && autoheader
+    % cvs commit config.h.in configure
+    % make stamp-h.in
+    % cvs commit stamp-h.in
 
-If you haven't changed all of those files, just commit the rest in the
-stated order (e.g. cvs commit acconfig.h config.h.in stamp-h.in).
+If you haven't changed all of those files, just commit the rest in the stated
+order (e.g. cvs commit acconfig.h config.h.in stamp-h.in).  The reason for
+the sequence is the RCS Id strings in the edited files -- they change when
+you commit the changes.
+
+You can run just "make" instead of the other commands in between cvs commits.
 
 
 -------------------
