@@ -511,7 +511,10 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    value = dat[fmt->f_value];
 	    break;
 	case FT_LV_STRLEN:
-	    value = strlen(str);
+	    if (str != NULL)
+		    value = strlen(str);
+	    else
+		    value = 0;
 	    break;
 	case FT_LV_CHAR_LEFT:
 	    value = width - (cp - scanl);
