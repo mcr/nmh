@@ -44,20 +44,19 @@ around with `touch'.
 The correct procedure to commit the configure-related files is:
 
     % cvs commit acconfig.h aclocal.m4 configure.in
-    % autoconf && autoheader                          # or simply "make"
-    % cvs commit config.h.in configure
-    % make stamp-h.in                                 # or simply "make"
-    % cvs commit stamp-h.in
+    % autoheader; autoconf; date > stamp-h.in
+    % cvs commit config.h.in configure stamp-h.in
 
-The reason that the commits need to be split up is that the timestamps on the
-files change when the commits are done and the RCS Ids change.  If one committed
-all the files in one fell swoop (in the above relative order), timestamps would
-cause unnecessary autoconf regeneration on 'make's after the commit, which would
-waste your time and would cause your local stamp-h.in to be out-of-sync with the
-one checked into CVS (not the end of the world, but...).
+The reason for the three-step commit is that configure.in contains the RCS $Id
+keyword, so when you commit it, a new version is written locally.  Therefore,
+the autoconf regeneration should be held off until after the commit, or your
+local stamp-h.in will become out-of-sync with the CVS version (granted, not that
+big a deal).  For the second step, you're doing the same commands as a 
+`make reset' would do, but using that command would require extra configure runs
+to make Makefile be up-to-date.
 
-If you haven't changed all the files noted above, just commit the ones you have,
-in the stated order (for instance, configure.in, then configure, then
+If you haven't changed all the files noted above, just commit the ones you have
+changed, in the stated order (for instance, configure.in, then configure and
 stamp-h.in).
 
 

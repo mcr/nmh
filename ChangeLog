@@ -1,4 +1,4 @@
-Mon Jul 17 13:53:26 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Thu Jul 20 19:24:17 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Moved Kimmo's new "--with-hash-backup" to be output with the
  	rest of the --with options in the configure --help output.  Also,
@@ -14,6 +14,10 @@ Mon Jul 17 13:53:26 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	Ruud's new merged mts/sendmail code.  Kimmo has since fixed nmh so
  	it compiles, but according to Ken, the SASL stuff still does not
  	work.  Integrating a patch from him for this.
+
+	* Last pass at README.developers -- Kimmo's 5-step commit was
+ 	overkill.  You only need 3 steps, since configure.in is the only
+ 	autoconf file with the RCS $Id keyword.
 
 Tue Jul 18 19:36:59 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
