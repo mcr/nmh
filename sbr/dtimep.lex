@@ -358,6 +358,7 @@ d	[0-9]
 #ifdef	ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 				    zonehack (&tw);
 #endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
+				    //				    yyterminate();
                                     }
 "-"{D}{d}{d}                                  {
                                     INIT();
@@ -366,6 +367,8 @@ d	[0-9]
 #ifdef	ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
 				    zonehack (&tw);
 #endif	/* ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST */
+				    //				    yyterminate();
+				    
                                     }
 "-"?("ut"|"UT")			    INIT(); SETZONE(0);
 "-"?("gmt"|"GMT")		    INIT(); SETZONE(0);
@@ -387,16 +390,5 @@ d	[0-9]
 "-"?("hst"|"HST")		    INIT(); SETZONE(-1000);
 "-"?("hdt"|"HDT")		    INIT(); SETDST(); SETZONE(-1000);
 "-"?("bst"|"BST")		    INIT(); SETDST(); SETZONE(-100);
-[a-iA-I]			    {
-                                       INIT();
-                                       SETZONE(100*(('a'-1) - tolower(*cp)));
-			            }
-[k-mK-M]			    {
-                                       INIT();
-                                       SETZONE(100*('a' - tolower(*cp)));
-			            }
-[n-yN-Y]		            {
-                                       INIT();
-                                       SETZONE(100*(tolower(*cp) - 'm'));
-                                    }
+"-"?([a-z]{3}|[A-Z]{3})		    ;
 .|\n
