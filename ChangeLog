@@ -1,3 +1,17 @@
+Mon May 29 7:48:15 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Moved the date parsing routines from zotnet/tws to sbr/ (and
+	tws.h to h/). Updated all source files to reflect to new location
+	of tws.h.
+
+	* Rewrote dparsetime (dtimep.c) to replace the old
+	zotnet/tws/dtimep.c, lexstring.c, lexedit.c, and
+	dtimep.c-lexed. It should now work with flex (although untested
+	with lex), and requires no sed-ing. For now, I have the lexed
+	version in the distribution, so that end-users don't need to worry
+	about running it through flex/lex. I have not added back support
+	for guessing the time zone when it's not specified.
+	
 Sun May 28 17:44:15 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* Added autoconf check for getutent().
