@@ -36,6 +36,12 @@
 # define APOPminc(a)  0
 #endif
 
+#ifndef	KPOP
+# define KPOPminc(a) (a)
+#else
+# define KPOPminc(a)  0
+#endif
+
 static struct swit switches[] = {
 #define	DATESW                   0
     { "date", 0 },
@@ -63,6 +69,8 @@ static struct swit switches[] = {
     { "help", 4 },
 #define SNOOPSW                 12
     { "snoop", -5 },
+#define KPOPSW                  13
+    { "kpop", KPOPminc (-4) },
     { NULL, 0 }
 };
 
@@ -93,7 +101,7 @@ static int donote (char *, int);
 static int checkmail (char *, char *, int, int, int);
 
 #ifdef POP
-static int remotemail (char *, char *, int, int, int, int);
+static int remotemail (char *, char *, int, int, int, int, int);
 #endif
 
 
@@ -102,6 +110,7 @@ main (int argc, char **argv)
 {
     int datesw = 1, notifysw = NT_ALL;
     int rpop, status = 0;
+    int kpop = 0;
     int snoop = 0, vecp = 0;
     uid_t uid;
     char *cp, *host = NULL, *user, buf[BUFSIZ];
@@ -133,11 +142,7 @@ main (int argc, char **argv)
 	snoop++;
 #endif
 
-#ifdef KPOP
-    rpop = 1;
-#else
     rpop = 0;
-#endif
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -202,6 +207,10 @@ main (int argc, char **argv)
 		    rpop = 0;
 		    continue;
 
+		case KPOPSW:
+		    kpop = 1;
+		    continue;
+
 		case SNOOPSW:
 		    snoop++;
 		    continue;
@@ -251,10 +260,10 @@ main (int argc, char **argv)
 #ifdef POP
     if (host) {
 	if (vecp == 0) {
-	    status = remotemail (host, user, rpop, notifysw, 1, snoop);
+	    status = remotemail (host, user, rpop, kpop, notifysw, 1, snoop);
 	} else {
 	    for (vecp = 0; vec[vecp]; vecp++)
-		status += remotemail (host, vec[vecp], rpop, notifysw, 0, snoop);
+		status += remotemail (host, vec[vecp], rpop, kpop, notifysw, 0, snoop);
 	}
     } else {
 #endif /* POP */
@@ -375,20 +384,20 @@ checkmail (char *user, char *home, int datesw, int notifysw, int personal)
 extern char response[];
 
 static int
-remotemail (char *host, char *user, int rpop, int notifysw, int personal, int snoop)
+remotemail (char *host, char *user, int rpop, int kpop, int notifysw, int personal, int snoop)
 {
     int nmsgs, nbytes, status;
     char *pass = NULL;
 
     if (user == NULL)
 	user = getusername ();
-    if (rpop > 0)
+    if (kpop || (rpop > 0))
 	pass = getusername ();
     else
 	ruserpass (host, &user, &pass);
 
     /* open the POP connection */
-    if (pop_init (host, user, pass, snoop, rpop) == NOTOK
+    if (pop_init (host, user, pass, snoop, kpop ? 1 : rpop, kpop) == NOTOK
 	    || pop_stat (&nmsgs, &nbytes) == NOTOK	/* check for messages  */
 	    || pop_quit () == NOTOK) {			/* quit POP connection */
 	advise (NULL, "%s", response);

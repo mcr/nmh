@@ -118,7 +118,7 @@ pop_auth (char *user, char *pass)
 
 
 int
-pop_init (char *host, char *user, char *pass, int snoop, int rpop)
+pop_init (char *host, char *user, char *pass, int snoop, int rpop, int kpop)
 {
     int fd1, fd2;
     char buffer[BUFSIZ];
@@ -131,16 +131,23 @@ pop_init (char *host, char *user, char *pass, int snoop, int rpop)
 #endif
 
 #ifndef NNTP
-# ifndef KPOP
-    if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response, sizeof(response))) == NOTOK)
-# else	/* KPOP */
-    snprintf (buffer, sizeof(buffer), "%s/%s", KPOP_PRINCIPAL, POPSERVICE);
-    if ((fd1 = client (host, "tcp", buffer, rpop, response, sizeof(response))) == NOTOK)
-# endif
+# ifdef KPOP
+    if ( kpop ) {
+	snprintf (buffer, sizeof(buffer), "%s/%s", KPOP_PRINCIPAL, "kpop");
+	if ((fd1 = client (host, "tcp", buffer, 0, response, sizeof(response))) == NOTOK) {
+	    return NOTOK;
+	}
+    } else {
+# endif /* KPOP */
+	if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response, sizeof(response))) == NOTOK)
+	    return NOTOK;
+# ifdef KPOP
+   }
+# endif /* KPOP */
 #else	/* NNTP */
     if ((fd1 = client (host, "tcp", "nntp", rpop, response, sizeof(response))) == NOTOK)
-#endif
 	return NOTOK;
+#endif
 
     if ((fd2 = dup (fd1)) == NOTOK) {
 	char *s;

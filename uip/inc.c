@@ -55,6 +55,12 @@
 # define APOPminc(a)  0
 #endif
 
+#ifndef	KPOP
+# define KPOPminc(a) (a)
+#else
+# define KPOPminc(a)  0
+#endif
+
 static struct swit switches[] = {
 #define	AUDSW                      0
     { "audit audit-file", 0 },
@@ -102,6 +108,8 @@ static struct swit switches[] = {
     { "help", 4 },
 #define SNOOPSW                   22
     { "snoop", -5 },
+#define KPOPSW                    23
+    { "kpop", KPOPminc (-4) },
     { NULL, 0 }
 };
 
@@ -157,6 +165,7 @@ main (int argc, char **argv)
     int chgflag = 1, trnflag = 1;
     int noisy = 1, width = 0, locked = 0;
     int rpop, i, hghnum, msgnum;
+    int kpop = 0;
     char *cp, *maildir, *folder = NULL;
     char *format = NULL, *form = NULL;
     char *newmail, *host = NULL, *user = NULL;
@@ -218,11 +227,7 @@ main (int argc, char **argv)
 	snoop++;
 #endif /* POP */
 
-#ifdef KPOP
-    rpop = 1;
-#else
     rpop = 0;
-#endif
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -346,6 +351,10 @@ main (int argc, char **argv)
 		rpop = 0;
 		continue;
 
+	    case KPOPSW:
+		kpop = 1;
+		continue;
+
 	    case SNOOPSW:
 		snoop++;
 		continue;
@@ -393,7 +402,7 @@ main (int argc, char **argv)
     if (inc_type == INC_POP) {
 	if (user == NULL)
 	    user = getusername ();
-	if (rpop > 0)
+	if (kpop || ( rpop > 0))
 	    pass = getusername ();
 	else
 	    ruserpass (host, &user, &pass);
@@ -401,7 +410,7 @@ main (int argc, char **argv)
 	/*
 	 * initialize POP connection
 	 */
-	if (pop_init (host, user, pass, snoop, rpop) == NOTOK)
+	if (pop_init (host, user, pass, snoop, kpop ? 1 : rpop, kpop) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */

@@ -208,6 +208,7 @@ rcaux (struct servent *sp, struct hostent *hp, int rproto,
 
 #ifdef KPOP
     int rem;
+    struct hostent *hp2;
 #endif	/* KPOP */
 
     for (ap = nets; ap < n1; ap++)
@@ -256,7 +257,11 @@ rcaux (struct servent *sp, struct hostent *hp, int rproto,
     if (kservice) {	/* "pop" */
 	char *instance;
 
-	if ((instance = strdup (hp->h_name)) == NULL) {
+	if (( hp2 = gethostbyaddr( hp->h_addr, hp->h_length, hp->h_addrtype ))
+		== NULL ) {
+	    return NOTOK;
+	}
+	if ((instance = strdup (hp2->h_name)) == NULL) {
 	    close (sd);
 	    strncpy (response, "Out of memory.", len_response);
 	    return OOPS2;
