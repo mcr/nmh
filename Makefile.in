@@ -70,7 +70,7 @@ INSTALL_DATA    = @INSTALL_DATA@
 .SUFFIXES:
 
 # all files in this directory included in the distribution
-DIST = README INSTALL COPYRIGHT VERSION ChangeLog install-sh \
+DIST = ChangeLog COPYRIGHT INSTALL MACHINES README VERSION ChangeLog install-sh\
        mkinstalldirs Makefile.in aclocal.m4 acconfig.h config.h.in \
        configure.in configure stamp-h.in config.sub config.guess 
 
