@@ -43,11 +43,10 @@ around with `touch'.
 
 The correct order to commit the configure-related files is:
 
-    % cvs commit acconfig.h config.h.in configure.in configure stamp-h.in
+% cvs commit acconfig.h aclocal.m4 config.h.in configure.in configure stamp-h.in
 
 If you haven't changed all of those files, just commit the rest in the
-stated order (e.g. cvs commit acconfig.h config.h.in stamp-h.in). If
-you change aclocal.m4, put that after acconfig.h.
+stated order (e.g. cvs commit acconfig.h config.h.in stamp-h.in).
 
 
 -------------------
@@ -159,9 +158,9 @@ account, danh, as examples here):
 9. Send an announcement to exmh-users@redhat.com, exmh-workers@redhat.com,
    mh-users@ics.uci.edu, and nmh-announce@mhost.com.  If the release fixes
    significant security holes, also send an announcement to
-   bugtraq@securityfocus.com.  None of these lists require you to be subscribed
-   to post.  Note that you don't need to post separately to comp.mail.mh, as the
-   mh-users mailing list is apparently bidirectionally gatewayed to it.
+   bugtraq@securityfocus.com.  The exmh lists require you to be subscribed in
+   order to post.  Note that you don't need to post separately to comp.mail.mh,
+   as the mh-users mailing list is apparently bidirectionally gatewayed to it.
 
    Preferably, the announcement should contain the MD5 hash generated above, and
    should be PGP-signed.  It should include the FTP URL for the tarball as well
