@@ -1,3 +1,17 @@
+Mon May 08 21:47:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Doug informed me that the way I had restored the "lost" version
+	histories was wrong, because `cvs checkout's of old versions of
+	nmh wouldn't work properly.  It occurs to me that this could be
+	fixed by simply deleting those tags in the new-location *,v files,
+	but oh well.  I'm putting everything back to the way Doug
+	originally had it.  To get the old version history for a file that
+	used to be in the top directory, you'll need to "blindly" do a
+	`cvs log' there (even though you won't have a local copy of the
+	file in that directory).  `cvs diff' will no longer be able to
+	diff pre-move versions vs. post-move versions -- you'll have to do
+	a lot of manual gyrations with `cvs checkout' and then use `diff'.
+	
 Sat May 06 08:28:09 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Restored lost version histories for those moved files by doing a
