@@ -5,6 +5,11 @@
  * $Id$
  */
 
+/* Changed to use getutent() and friends.  Assumes that when getutent() exists,
+ * a number of other things also exist.  Please check.
+ * Ruud de Rooij <ruud@ruud.org>  Sun, 28 May 2000 17:28:55 +0200
+ */
+
 #include <h/mh.h>
 #include <h/signals.h>
 #include <h/rcvmail.h>
@@ -15,11 +20,14 @@
 #include <fcntl.h>
 
 #include <utmp.h>
-#ifndef UTMP_FILE
-# ifdef _PATH_UTMP
-#  define UTMP_FILE _PATH_UTMP
-# else
-#  define UTMP_FILE "/etc/utmp"
+
+#ifndef HAVE_GETUTENT
+# ifndef UTMP_FILE
+#  ifdef _PATH_UTMP
+#   define UTMP_FILE _PATH_UTMP
+#  else
+#   define UTMP_FILE "/etc/utmp"
+#  endif
 # endif
 #endif
 
@@ -80,8 +88,12 @@ main (int argc, char **argv)
     int md, vecp = 0;
     char *cp, *user, buf[BUFSIZ], tty[BUFSIZ];
     char **argp, **arguments, *vec[MAXARGS];
+#ifdef HAVE_GETUTENT
+    struct utmp * utp;
+#else
     struct utmp ut;
     register FILE *uf;
+#endif
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -156,17 +168,31 @@ main (int argc, char **argv)
 	exit (RCV_MBX);
 
     user = getusername();
+
+#ifdef HAVE_GETUTENT
+    setutent();
+    while ((utp = getutent()) != NULL) {
+        if (utp->ut_type == USER_PROCESS 
+               && utp->ut_user[0] != 0
+               && utp->ut_line[0] != 0
+               && strncmp (user, utp->ut_user, sizeof(utp->ut_user)) == 0) {
+            strncpy (tty, utp->ut_line, sizeof(utp->ut_line));
+	    alert (tty, md);
+        }
+    }
+    endutent();
+#else
     if ((uf = fopen (UTMP_FILE, "r")) == NULL)
 	exit (RCV_MBX);
-
     while (fread ((char *) &ut, sizeof(ut), 1, uf) == 1)
 	if (ut.ut_name[0] != 0
 		&& strncmp (user, ut.ut_name, sizeof(ut.ut_name)) == 0) {
 	    strncpy (tty, ut.ut_line, sizeof(ut.ut_line));
 	    alert (tty, md);
 	}
-
     fclose (uf);
+#endif
+
     exit (RCV_MOK);
     return 0;  /* dead code to satisfy the compiler */
 }

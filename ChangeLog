@@ -1,3 +1,10 @@
+Sun May 28 17:44:15 CEST 2000 Ruud de Rooij <ruud@ruud.org>
+
+	* Added autoconf check for getutent().
+	* Changed uip/rcvtty.c and uip/slocal.c to use getutent() and
+	  friends.  Since I can only check on Linux, please check if
+	  this works on other systems.
+
 Sun May 28 14:58:49 CEST 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* Applied patch from Peter Maydell to uip/scansbr.c for more

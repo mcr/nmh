@@ -17,6 +17,11 @@
  *
  */
 
+/* Changed to use getutent() and friends.  Assumes that when getutent() exists,
+ * a number of other things also exist.  Please check.
+ * Ruud de Rooij <ruud@ruud.org>  Sun, 28 May 2000 17:28:55 +0200
+ */
+
 #include <h/mh.h>
 #include <h/dropsbr.h>
 #include <h/rcvmail.h>
@@ -48,11 +53,13 @@ extern int  initgroups(char*, int);
 
 #include <utmp.h>
 
-#ifndef UTMP_FILE
-# ifdef _PATH_UTMP
-#  define UTMP_FILE _PATH_UTMP
-# else
-#  define UTMP_FILE "/etc/utmp"
+#ifndef HAVE_GETUTENT
+# ifndef UTMP_FILE
+#  ifdef _PATH_UTMP
+#   define UTMP_FILE _PATH_UTMP
+#  else
+#   define UTMP_FILE "/etc/utmp"
+#  endif
 # endif
 #endif
 
@@ -931,6 +938,32 @@ lookup (struct pair *pairs, char *key)
  * logged in.
  */
 
+#ifdef HAVE_GETUTENT
+static int
+logged_in (void)
+{
+    struct utmp * utp;
+
+    if (utmped)
+        return utmped;
+
+    setutent();
+
+    while ((utp = getutent()) != NULL) {
+        if (utp->ut_type == USER_PROCESS
+                && utp->ut_user[0] != 0
+                && strncmp (user, utp->ut_user, sizeof(utp->ut_user)) == 0) {
+            if (debug)
+                continue;
+            endutent();
+            return (utmped = DONE);
+        }
+    }
+
+    endutent();
+    return (utmped = NOTOK);
+}
+#else
 static int
 logged_in (void)
 {
@@ -956,7 +989,7 @@ logged_in (void)
     fclose (uf);
     return (utmped = NOTOK);
 }
-
+#endif
 
 #define	check(t,a,b)		if (t < a || t > b) return -1
 #define	cmpar(h1,m1,h2,m2)	if (h1 < h2 || (h1 == h2 && m1 < m2)) return 0
