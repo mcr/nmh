@@ -69,7 +69,7 @@ If found, this will be used to initialize the new
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mh.profile~^Used to initialize user profile
 .fi

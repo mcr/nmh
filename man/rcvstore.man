@@ -101,7 +101,7 @@ to force these sequences to be public or private sequences.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
 

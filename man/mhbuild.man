@@ -600,7 +600,7 @@ line         ::=     "##" text EOL
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^$MHBUILD~^Additional profile entries
 ^%etcdir%/mhn.defaults~^System default MIME profile entries

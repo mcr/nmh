@@ -256,7 +256,7 @@ commands:
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^%bindir%~^contains \fInmh\fR commands
 ^%etcdir%~^contains \fInmh\fR format files
 ^%libdir%~^contains \fInmh\fR library commands

@@ -318,7 +318,7 @@ appropriate formatfield variable string.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^%etcdir%/mhl.format~^The message template
 ^or <mh\-dir>/mhl.format~^Rather than the standard template
 ^$HOME/\&.mh\(ruprofile~^The user profile

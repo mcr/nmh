@@ -332,7 +332,7 @@ User's Manual for more information on making digests.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^%etcdir%/forwcomps~^The standard message skeleton
 ^or <mh\-dir>/forwcomps~^Rather than the standard skeleton
 ^%etcdir%/digestcomps~^The message skeleton if `\-digest' is given

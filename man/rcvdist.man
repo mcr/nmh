@@ -68,7 +68,7 @@ profile component.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^%etcdir%/rcvdistcomps~^Default message skeleton
 ^or <mh\-dir>/rcvdistcomps~^Rather than standard message skeleton
 ^%etcdir%/mts.conf~^nmh mts configuration file

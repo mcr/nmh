@@ -142,7 +142,7 @@ the draft file, and subsequent non\-flag arguments are ignored.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^/tmp/prompter*~^Temporary copy of message
 .fi

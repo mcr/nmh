@@ -264,7 +264,7 @@ profile.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/context~^The user context
 ^<folder>/\&.mh\(rusequences~^File for public sequences

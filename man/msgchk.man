@@ -198,7 +198,7 @@ switch.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mts.conf~^nmh mts configuration file
 ^%mailspool%/$USER~^Location of mail drop

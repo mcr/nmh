@@ -48,7 +48,7 @@ shell scripts.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^%etcdir%/mts.conf~^nmh mts configuration file
 .fi
 

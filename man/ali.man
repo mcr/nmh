@@ -63,7 +63,7 @@ is processed as described in
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^/etc/passwd~^List of users
 ^/etc/group~^List of groups

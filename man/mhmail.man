@@ -97,7 +97,7 @@ header correctly.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^%bindir%/inc~^Program to incorporate maildrop into folder
 ^%libdir%/post~^Program to deliver a message
 ^/tmp/mhmail*~^Temporary copy of message

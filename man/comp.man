@@ -158,7 +158,7 @@ will prevent any edit from occurring.)
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^%etcdir%/components~^The standard message skeleton
 ^or <mh\-dir>/components~^Rather than the standard skeleton
 ^$HOME/\&.mh\(ruprofile~^The user profile

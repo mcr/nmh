@@ -453,7 +453,7 @@ switch.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
+.ta \w'%etcdir%/ExtraBigFileName  'u
 ^%etcdir%/replcomps~^The standard reply template
 ^or <mh\-dir>/replcomps~^Rather than the standard template
 ^%etcdir%/replgroupcomps~^The standard `reply -group' template
