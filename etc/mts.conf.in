@@ -27,5 +27,5 @@ servers: localhost
 # query the system for this value (gethostname, etc...).
 # localname: foo.bar.com
 
-# Uncomment this to turn on username masquerading.
+# Uncomment this to allow the two types of username masquerading.
 # mmailid: 1
