@@ -10,6 +10,12 @@
  */
 
 /*
+ * Use include for nmh/mh
+ */
+
+#include <h/nmh.h>
+
+/*
  * Use prototypes for nmh/mh
  */
 #define PROTOTYPES 1
