@@ -2,72 +2,84 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH FOLDER %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 folder, folders \- set/list current folder/message
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-folder
-\%[+folder] \%[msg]
-\%[\-all] \%[\-noall]
-.br
-\%[\-create] \%[\-nocreate]
-\%[\-fast] \%[\-nofast]
-.br
-\%[\-header] \%[\-noheader]
-\%[\-recurse]
-\%[\-norecurse]
-.br
-\%[\-total] \%[\-nototal]
-\%[\-list] \%[\-nolist]
-.br
-\%[\-push] \%[\-pop]
-\%[\-pack] \%[\-nopack]
-\%[\-print]
-.br
-\%[\-verbose]
-\%[\-noverbose]
-\%[\-version]
-\%[\-help]
-
-.ti .5i
-folders is equivalent to folder -all
-.in -.5i
+.HP 5
+.B folder
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-all " | " \-noall ]
+.RB [ \-create " | " \-nocreate ]
+.RB [ \-fast " | " \-nofast ]
+.RB [ \-header " | " \-noheader ]
+.RB [ \-recurse " | " \-norecurse ]
+.RB [ \-total " | " \-nototal ]
+.RB [ \-list " | " \-nolist ]
+.RB [ \-push " | " \-pop ]
+.RB [ \-pack " | " \-nopack ]
+.RB [ \-print ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-version ]
+.RB [ \-help ]
+.PP
+.HP
+.B folders
+is equivalent to
+.B folder
+.B \-all
 .SH DESCRIPTION
-
-Since the \fInmh\fR environment is the shell, it is easy to lose track
-of the current folder from day to day.  When \fIfolder\fR is given the
-`\-print' switch (the default), \fIfolder\fR will list the current folder,
+Since the
+.B nmh
+environment is the shell, it is easy to lose track
+of the current folder from day to day.  When
+.B folder
+is given the
+.B \-print
+switch (the default),
+.B folder
+will list the current folder,
 the number of messages in it, the range of the messages (low\-high),
 and the current message within the folder, and will flag extra files if
 they exist.  An example of this summary is:
-
+.PP
+.RS 5
 .nf
-.if t .in +.5i
 .ta \w'/rnd/phyl/Mail/EP 'u +\w'has ddd messages 'u +\w'(ddd\-ddd); 'u
 inbox+	has \016 messages	(\0\03\-\022);	cur=\0\05.
-.re
-.if t .in -.5i
 .fi
-
-If a `+folder' and/or `msg' are specified, they will become the current
-folder and/or message.  By comparison, when a `+folder' argument is given,
-this corresponds to a \*(lqcd\*(rq operation in the \fIshell\fR; when no
-`+folder' argument is given, this corresponds roughly to a \*(lqpwd\*(rq
-operation in the \fIshell\fR.
-
+.RE
+.PP
+If a
+.I +folder
+and/or
+.I msg
+are specified, they will become the current
+folder and/or message.  By comparison, when a
+.I +folder
+argument is given, this corresponds to a \*(lqcd\*(rq operation
+in the shell; when no
+.I +folder
+argument is given, this corresponds roughly to a \*(lqpwd\*(rq
+operation in the shell.
+.PP
 If the specified (or default) folder doesn't exist, the default action
 is to query the user as to whether the folder should be created; when
 standard input is not a tty, the answer to the query is assumed to be
 \*(lqyes\*(rq.
-
-Specifying `\-create' will cause \fIfolder\fP to create new folders
+.PP
+Specifying
+.B \-create
+will cause
+.B folder
+to create new folders
 without any query.  (This is the easy way to create an empty folder for
-use later.)  Specifying `\-nocreate' will cause \fIfolder\fP to exit
+use later.)  Specifying
+.B \-nocreate
+will cause
+.B folder
+to exit
 without creating a non-existant folder.
 .\"
 .\" note - this doesn't work at present
@@ -75,17 +87,30 @@ without creating a non-existant folder.
 .\" a `+folder' and/or `msg' may still be specified
 .\" to set the current folder and/or message,
 .\" but the folder summary will not be printed.
-.Uh "Multiple Folders"
-Specifying `\-all' will produce a summary line for each top-level folder
-in the user's nmh directory, sorted alphabetically.  (If \fIfolder\fR
-is invoked by a name ending with \*(lqs\*(rq (e.g., \fIfolders\fR\0),
-`\-all' is assumed).  Specifying `\-recurse' with `\-all' will also
+
+.SS "Multiple Folders"
+Specifying
+.B \-all
+will produce a summary line for each top-level folder
+in the user's nmh directory, sorted alphabetically.  (If
+.B folder
+is invoked by a name ending with \*(lqs\*(rq (e.g.
+.BR folders ),
+.B \-all
+is assumed).  Specifying
+.B \-recurse
+with
+.B \-all
+will also
 produce a line for all sub-folders.  These folders are all preceded by
-the read\-only folders, which occur as \*(lqatr\-cur\-\*(rq entries in
-the user's \fInmh\fR context.  For example,
-.ne 9
+the read\-only folders, which occur as
+.RI \*(lq atr\-cur\- \*(rq
+entries in the user's
+.B nmh
+context.  For example:
+.PP
+.RS 5
 .nf
-.if t .in +.5i
 .ta \w'/rnd/phyl/Mail/EP 'u +\w'has ddd messages 'u +\w'(ddd\-ddd); 'u
 FOLDER	\0\0\0\0\0\0# MESSAGES	RANGE	CUR     (OTHERS)
 /var/work/folder	has \035 messages	(\01\-\035);	cur=23.
@@ -98,102 +123,182 @@ ucom	has 124 messages	(\01\-124);	cur=\06; (others).
 .ta \w'/rnd/phyl/Mail/EP has 'u
 
 TOTAL = 339 messages in 7 folders
-.re
-.if t .in -.5i
 .fi
-
+.RE
+.PP
 The \*(lq+\*(rq after inbox indicates that it is the current folder.
-The \*(lq(others)\*(rq indicates that the folder `ucom' has files which
+The \*(lq(others)\*(rq indicates that the folder
+.I ucom
+has files which
 aren't messages.  These files may either be sub\-folders, or files that
 don't belong under the nmh file naming scheme.
-
-The header is output if either a `\-all' or a `\-header' switch is
-specified.  It is suppressed by `\-noheader'.
-
-The folder and message totals are output if either a `\-all' or a
-`\-total' switch is specified.  It is suppressed by `\-nototal'.
-
-If `\-fast' is given, only the folder name (or names in the case of
-`\-all') will be listed.  (This is faster because the folders need not
+.PP
+The header is output if either a
+.B \-all
+or a
+.B \-header
+switch is specified.  It is suppressed by
+.BR \-noheader .
+.PP
+The folder and message totals are output if either a
+.B \-all
+or a
+.B \-total
+switch is specified.  It is suppressed by
+.BR \-nototal .
+.PP
+If
+.B \-fast
+is given, only the folder name (or names in the case of
+.BR \-all )
+will be listed.  (This is faster because the folders need not
 be read.)
-
-If a `+folder' is given along with the `\-all' switch, \fIfolder\fR will,
-in addition to setting the current folder, list the top\-level subfolders
-for the current folder (with `\-norecurse') or list all sub-folders under
-the current folder recursively (with `\-recurse').  In this case, if a
-`msg' is also supplied, it will become the current message of `+folder'.
-
-The `\-recurse' switch lists each folder recursively, so use of this
-option effectively defeats the speed enhancement of the `\-fast' option,
+.PP
+If a
+.I +folder
+is given along with the
+.B \-all
+switch,
+.B folder
+will, in addition to setting the current folder, list the top\-level subfolders
+for the current folder (with
+.BR \-norecurse )
+or list all sub-folders under the current folder recursively (with
+.BR \-recurse ).
+In this case, if a
+.I msg
+is also supplied, it will become the current message of
+.IR +folder .
+.PP
+The
+.B \-recurse
+switch lists each folder recursively, so use of this
+option effectively defeats the speed enhancement of the
+.B \-fast
+option,
 since each folder must be searched for subfolders.  Nevertheless, the
 combination of these options is useful.
-
-.Uh "Compacting a Folder"
-The `\-pack' switch will compress the message names in the designated
-folders, removing holes in message numbering.  The `\-verbose' switch
-directs \fIfolder\fR to tell the user the general actions that it is
+.PP
+.SS "Compacting a Folder"
+The
+.B \-pack
+switch will compress the message names in the designated
+folders, removing holes in message numbering.  The
+.B \-verbose
+switch directs
+.B folder
+to tell the user the general actions that it is
 taking to compress the folder.
-
-.Uh "The Folder Stack"
-The `\-push' switch directs \fIfolder\fR to push the current folder
-onto the \fIfolder\-stack\fR, and make the `+folder' argument the
-current folder.  If `+folder' is not given, the current folder and the
-top of the \fIfolder\-stack\fR are exchanged.  This corresponds to the
-\*(lqpushd\*(rq operation in the \fICShell\fR.
-
-The `\-pop' switch directs \fIfolder\fR to discard the top of the
-\fIfolder\-stack\fR, after setting the current folder to that value.
-No `+folder' argument is allowed.  This corresponds to the \*(lqpopd\*(rq
-operation in the \fICShell\fR.  The `\-push' switch and the `\-pop' switch
+.PP
+.SS "The Folder Stack"
+The
+.B \-push
+switch directs
+.B folder
+to push the current folder
+onto the
+.IR folder\-stack ,
+and make the
+.I +folder
+argument the current folder.  If
+.I +folder
+is not given, the current folder and the
+top of the
+.I folder\-stack
+are exchanged.  This corresponds to the
+\*(lqpushd\*(rq operation in the shell.
+.PP
+The
+.B \-pop
+switch directs
+.B folder
+to discard the top of the
+.IR folder\-stack ,
+after setting the current folder to that value.
+No
+.I +folder
+argument is allowed.  This corresponds to the \*(lqpopd\*(rq
+operation in the shell.  The
+.B \-push
+switch and the
+.B \-pop
+switch
 are mutually exclusive: the last occurrence of either one overrides
 any previous occurrence of the other.  Both of these switches also set
-`\-list' by default.
+.B \-list
+by default.
+.PP
+The
+.B \-list
+switch directs
+.B folder
+to list the contents of
+the
+.IR folder\-stack .
+No
+.I +folder
+argument is allowed.  After a successful
+.B \-push
+or
+.BR \-pop ,
+the
+.B \-list
+action is taken, unless a
+.B \-nolist
+switch follows them on the command line.  This corresponds
+to the \*(lqdirs\*(rq operation in the shell.  The
+.BR \-push ,
+.BR \-pop ,
+and
+.B \-list
+switches turn off
+.BR \-print .
 
-The `\-list' switch directs \fIfolder\fR to list the contents of
-the \fIfolder\-stack\fR.  No `+folder' argument is allowed.  After a
-successful `\-push' or `\-pop', the `\-list' action is taken, unless a
-`\-nolist' switch follows them on the command line.  This corresponds
-to the \*(lqdirs\*(rq operation in the \fICShell\fR.  The `\-push',
-`\-pop', and `\-list' switches turn off `\-print'.
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Ps
 ^Folder\-Protect:~^To set mode when creating a new folder
-.Ps
 ^Folder\-Stack:~^To determine the folder stack
-.\" .Ps
 .\" ^lsproc:~^Program to list the contents of a folder
-.Sa
+
+.SH "SEE ALSO"
 refile(1), mhpath(1)
-.De
-`+folder' defaults to the current folder
-.Ds
-`msg' defaults to none
-.Ds
-`\-nofast'
-.Ds
-`\-noheader'
-.Ds
-`\-nototal'
-.Ds
-`\-nopack'
-.Ds
-`\-norecurse'
-.Ds
-`\-noverbose'
-.Ds
-`\-print' is the default if no `\-list', `\-push', or `\-pop' is specified
-.Ds
-`\-list' is the default if `\-push', or `\-pop' is specified
-.Co
-If `+folder' and/or `msg' are given, they will become the
-current folder and/or message.
-.Bu
+
+.SH "DEFAULTS"
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msg "' defaults to none"
+.RB ` \-nofast '
+.RB ` \-noheader '
+.RB ` \-nototal '
+.RB ` \-nopack '
+.RB ` \-norecurse '
+.RB ` \-noverbose '
+.RB ` \-print "' is the default if no " \-list ", " \-push ", or " \-pop " is specified"
+.RB ` \-list "' is the default if " \-push ", or " \-pop " is specified"
+
+.SH CONTEXT
+If
+.I +folder
+and/or
+.I msg
+are given, they will become the current folder and/or message.
+
+.SH BUGS
 There is no way to restore the default behavior 
 (to ask the user whether to create a non-existant folder)
-after `\-create' or `\-nocreate' is given.
-.En
+after
+.B \-create
+or
+.B \-nocreate
+is given.

@@ -2,205 +2,335 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH FORW %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 forw \- forward messages
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-forw
-\%[+folder] \%[msgs]
-.br
-\%[\-annotate] \%[\-noannotate]
-\%[\-form\ formfile]
-.br
-\%[\-format] \%[\-noformat]
-\%[\-filter\ filterfile]
-.br
-\%[\-inplace] \%[\-noinplace]
-\%[\-mime] \%[\-nomime]
-.br
-\%[\-draftfolder\ +folder] \%[\-draftmessage\ msg]
-.br
-\%[\-nodraftfolder]
-\%[\-editor\ editor] \%[\-noedit]
-.br
-\%[\-whatnowproc\ program] \%[\-nowhatnowproc]
-.br
-\%[\-dashstuffing] \%[\-nodashstuffing]
-.br
-\%[\-build]
-\%[\-file msgfile]
-.br
-\%[\-version]
-\%[\-help]
-
-.ti .5i
-forw
-\%[+folder] \%[msgs]
-\%[\-digest\ list] \%[\-issue\ number]
-.br
-\%[\-volume\ number]
-\%[other\ switches\ for\ \fIforw\fR]
-\%[\-help]
-.in -.5i
+.HP 5
+.B forw
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-annotate " | " \-noannotate ] 
+.RB [ \-form
+.IR formfile ]
+.RB [ \-format " | " \-noformat ]
+.RB [ \-filter
+.IR filterfile ]
+.RB [ \-inplace " | " \-noinplace ]
+.RB [ \-mime " | " \-nomime ]
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RB [ \-editor
+.IR editor ]
+.RB [ \-noedit ]
+.RB [ \-whatnowproc
+.IR program ]
+.RB [ \-nowhatnowproc ]
+.RB [ \-dashstuffing " | " \-nodashstuffing ]
+.RB [ \-build ]
+.RB [ \-file
+.IR msgfile ]
+.RB [ \-version ]
+.RB [ \-help ]
+.PP
+.HP 5
+.B forw
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-digest
+.IR list ]
+.RB [ \-issue
+.IR number ]
+.RB [ \-volume
+.IR number ]
+[other\ switches\ for\ 
+.BR forw ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIForw\fR may be used to prepare a message containing other messages.
-
+.B Forw
+may be used to prepare a message containing other messages.
+.PP
 It constructs the new message from a forms (components) file, with a
 body composed of the message(s) to be forwarded.  An editor is invoked
-as in \fIcomp\fR, and after editing is complete, the user is prompted
+as in
+.BR comp ,
+and after editing is complete, the user is prompted
 before the message is sent.
-
+.PP
 The default message form contains the following elements:
-
+.PP
+.RS 5
 .nf
-.in +.5i
-.ne 10
-.eo
-.so %etcdir%/forwcomps
-.ec
-.in -.5i
+%forwcomps%
 .fi
-
-If a file named \*(lqforwcomps\*(rq exists in the user's nmh directory,
+.RE
+.PP
+If a file named
+.RI \*(lq forwcomps \*(rq
+exists in the user's nmh directory,
 it will be used instead of this default form.  You may also specify an
-alternate forms file with the switch `\-form\ formfile'.
-
-When If the draft already exists, \fIforw\fR will ask you as to the disposition
-of the draft.  A reply of \fBquit\fR will abort \fIforw\fR, leaving the
-draft intact; \fBreplace\fR will replace the existing draft with a blank
-skeleton; and \fBlist\fR will display the draft.
-
-If the `\-annotate' switch is given, each message being forwarded will
-be annotated with the lines
+alternate forms file with the switch
+.B \-form
+.IR formfile .
+.PP
+If the draft already exists,
+.B forw
+will ask you as to the disposition
+of the draft.  A reply of
+.B quit
+will abort
+.BR forw ,
+leaving the draft intact;
+.B replace
+will replace the existing draft with a blank skeleton; and
+.B list
+will display the draft.
+.PP
+If the
+.B \-annotate
+switch is given, each message being forwarded will
+be annotated with the lines:
 
      Forwarded:\ date
      Forwarded:\ addrs
 
 where each address list contains as many lines as required.  This
 annotation will be done only if the message is sent directly from
-\fIforw\fR.  If the message is not sent immediately from \fIforw\fR,
-\*(lqcomp\ \-use\*(rq may be used to re\-edit and send the constructed
+.BR forw .
+If the message is not sent immediately from
+.BR forw ,
+.RB \*(lq comp
+.BR \-use \*(rq
+may be used to re\-edit and send the constructed
 message, but the annotations won't take place.  Normally annotations
 are done inplace in order to preserve any links to the message.  You may
-change this by using the '\-noinplace' switch.
-
-See \fIcomp\fR\0(1) for a description of the `\-editor' and `\-noedit'
+change this by using the
+.B \-noinplace
+switch.
+.PP
+See
+.BR comp (1)
+for a description of the
+.B \-editor
+and
+.B \-noedit
 switches.
-
-Although \fIforw\fR uses a forms (components) file to direct it how to
+.PP
+Although
+.B forw
+uses a forms (components) file to direct it how to
 construct the beginning of the draft, it uses a message filter file to
 direct it as to how each forwarded message should be formatted in the
 body of the draft.  The filter file for \fIforw\fR should be a standard
-form file for \fImhl\fR, as \fIforw\fR will invoke \fImhl\fR to filter
-(re\-format) the forwarded messages prior to being output to the body
-of the draft.
-
-The switches `\-noformat', `\-format', and `\-filter\ filterfile' specify
-which message filter file to use.
-
-If `\-noformat' is specified (this is the default), then each forwarded
-message is output into the draft exactly as it appears with no \fImhl\fR
+form file for
+.BR mhl ,
+as
+.B forw
+will invoke
+.B mhl
+to filter (re\-format) the forwarded messages prior to being output to
+the body of the draft.
+.PP
+The switches
+.BR \-noformat ,
+.BR \-format ,
+and
+.B \-filter
+.I filterfile
+specify which message filter file to use.
+.PP
+If
+.B \-noformat
+is specified (this is the default), then each forwarded
+message is output into the draft exactly as it appears with no
+.B mhl
 filtering.
-
-If `\-format' is specified, then a default message filter file is used.
+.PP
+If
+.B \-format
+is specified, then a default message filter file is used.
 This default message filter should be adequate for most users.
-This default filter \*(lqmhl.forward\*(rq is:
-
+This default filter
+.RI \*(lq mhl.forward \*(rq
+is:
+.PP
+.RS 5
 .nf
-.in +.5i
-.ne 10
-.eo
-.so %etcdir%/mhl.forward
-.ec
-.in -.5i
+%mhl_forward%
 .fi
-
-If a file named \*(lqmhl.forward\*(rq exists in the user's nmh
+.RE
+.PP
+If a file named
+.RI \*(lq mhl.forward \*(rq
+exists in the user's nmh
 directory, it will be used instead of this form.  You may specify an
-alternate message filter file with the switch `\-filter\ filterfile'.
-
+alternate message filter file with the switch
+.B \-filter
+.IR filterfile .
+.PP
 Each forwarded message is separated with an encapsulation delimiter.
 By default, any dashes in the first column of the forwarded messages
 will be prepended with `\-\ ' so that when received, the message is
-suitable for bursting by \fIburst\fR\0(1).  This follows the Internet
-RFC\-934 guidelines.  You may use the flag `\-nodashstuffing' in order
+suitable for bursting by
+.BR burst .
+This follows the Internet RFC\-934 guidelines.  You may use the flag
+.B \-nodashstuffing
+in order
 to suppress this form of quoting to the forwarded messages.
-
-For users of \fIprompter\fR\0(1), by specifying prompter's `-prepend'
-switch in the \&.mh\(ruprofile file, any commentary text is entered
+.PP
+For users of
+.BR prompter ,
+by specifying
+.BR prompter 's
+.B \-prepend
+switch in the
+.I \&.mh\(ruprofile
+file, any commentary text is entered
 before the forwarded messages.  (A major win!)
-
-To use the MIME rules for encapsulation, specify the `\-mime' switch.
-This directs \fIforw\fR to generate an \fImhbuild\fR composition file.
-Note that nmh will not invoke \fImhbuild\fR automatically, unless you
-add this line to your \&.mh\(ruprofile file:
-.sp
-.in +.5i
+.PP
+To use the MIME rules for encapsulation, specify the
+.B \-mime
+switch. This directs
+.B forw
+to generate an
+.B mhbuild
+composition file. Note that
+.B nmh
+will not invoke
+.B mhbuild
+automatically, unless you
+add this line to your
+.I \&.mh\(ruprofile
+file:
+.PP
+.RS 5
+.nf
 automimeproc: 1
-.in -.5i
-.sp
-Otherwise,
-you must specifically give the command
-.sp
-.in +.5i
+.fi
+.RE
+.PP
+Otherwise, you must specifically give the command
+.PP
+.RS 5
+.nf
 What now? mime
-.in -.5i
-.sp
+.fi
+.RE
+.PP
 prior to sending the draft.
-
-The `\-draftfolder\ +folder' and `\-draftmessage\ msg' switches invoke
-the \fInmh\fR draft folder facility.  This is an advanced (and highly
-useful) feature.  Consult the \fImh-draft\fR(5) man page for more
-information.
-
-Upon exiting from the editor, \fIforw\fR will invoke the \fIwhatnow\fR
-program.  See \fIwhatnow\fR\0(1) for a discussion of available
-options.  The invocation of this program can be inhibited by using the
-`\-nowhatnowproc' switch.  (In truth of fact, it is the \fIwhatnow\fR
-program which starts the initial edit.  Hence, `\-nowhatnowproc' will
-prevent any edit from occurring.)
-
-The `\-build' switch is intended to be used by the Emacs mh-e interface
-to \fInmh\fR, and is only present if \fInmh\fR was compiled with support
-for mh-e. It implies `\-nowhatnowproc'. It causes a file <mh\-dir>/draft
+.PP
+The
+.B \-draftfolder
+.I +folder
+and
+.B \-draftmessage
+.I msg
+switches invoke the
+.B nmh
+draft folder facility.  This is an advanced (and highly
+useful) feature.  Consult the
+.BR mh-draft (5)
+man page for more information.
+.PP
+The
+.B \-editor
+.I editor
+switch indicates the editor to use for the
+initial edit.  Upon exiting from the editor,
+.B comp
+will invoke the
+.B whatnow
+program.  See
+.BR whatnow (1)
+for a discussion of
+available options.  The invocation of this program can be inhibited
+by using the
+.B \-nowhatnowproc
+switch.  (In truth of fact, it is
+the
+.I whatnow
+program which starts the initial edit.  Hence,
+.B \-nowhatnowproc
+will prevent any edit from occurring.)
+.PP
+The
+.B \-build
+switch is intended to be used by the Emacs mh-e interface to
+.BR nmh ,
+and is only present if
+.B nmh
+was compiled with support for mh-e. It implies
+.BR \-nowhatnowproc .
+It causes a file <mh\-dir>/draft
 to be created, containing the draft message that would normally be presented
 to the user for editing.
 No mail is actually sent. Note that this switch is not guaranteed to
-be present or to have the same effects in future versions of \fInmh\fR:
+be present or to have the same effects in future versions of
+.BR nmh :
 it is documented here only for completeness.
-
-The `\-file\ msgfile' switch specifies the message to be forwarded as an 
-exact filename rather than as an \fInmh\fR folder and message number. It is 
-intended to be used by the \fImsh\fR\0(1) interface to \fInmh\fR. 
-This switch implies `-noannotate'. The forwarded message is simply
+.PP
+The
+.B \-file
+.I msgfile
+switch specifies the message to be forwarded as an 
+exact filename rather than as an
+.B nmh
+folder and message number. It is 
+intended to be used by the
+.B msh
+interface to
+.BR nmh . 
+This switch implies
+.BR \-noannotate .
+The forwarded message is simply
 copied verbatim into the draft; the processing implied by
-the `-filter', `-mime' and `-digest' switches is bypassed, and the
-usual leading and trailing 'Forwarded Message' delimiters are not
-added.
-The same caveats apply to this option as to the `\-build' switch.
-
-The `\-digest\ list', `\-issue\ number', and `\-volume\ number' switches
-implement a digest facility for \fInmh\fR.  Specifying these switches
-enables and/or overloads the following escapes:
-
-.sp 1
+the
+.BR \-filter ,
+.BR \-mime ,
+and
+.B \-digest
+switches is bypassed, and the usual leading and trailing
+'Forwarded Message' delimiters are not added.
+The same caveats apply to this option as to the
+.B \-build
+switch.
+.PP
+The
+.B \-digest
+.IR list ,
+.B \-issue
+.IR number ,
+and
+.B \-volume
+.I number
+switches implement a digest facility for
+.BR nmh .
+Specifying these switches enables and/or overloads the following escapes:
+.PP
+.RS 5
 .nf
 .ta \w'Component  'u +\w'Escape  'u +\w'Returns  'u
-\fIType\fR	\fIEscape\fR	\fIReturns\fR	\fIDescription\fR
-\fIcomponent\fR	\fIdigest\fR	string	Argument to `\-digest'
-\fIfunction\fR	\fIcur\fR	integer	Argument to `\-volume'
-\fIfunction\fR	\fImsg\fR	integer	Argument to `\-issue'
-.re
+.I Type	Escape	Returns	Description
+component	digest	string	Argument to `\-digest'
+function	cur	integer	Argument to `\-volume'
+function	msg	integer	Argument to `\-issue'
 .fi
+.RE
+.PP
+Consult the
+.I "Advanced Features"
+section of the
+.B nmh
+User's Manual for more information on making digests.
 
-Consult the \fBAdvanced Features\fR section of 
-the \fInmh\fR User's Manual for more information on making digests.
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^%etcdir%/forwcomps~^The standard message skeleton
 ^or <mh\-dir>/forwcomps~^Rather than the standard skeleton
 ^%etcdir%/digestcomps~^The message skeleton if `\-digest' is given
@@ -209,55 +339,78 @@ the \fInmh\fR User's Manual for more information on making digests.
 ^or <mh\-dir>/mhl.forward~^Rather than the standard filter
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
-.Pr
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Current\-Folder:~^To find the default current folder
-.Ps
 ^Draft\-Folder:~^To find the default draft\-folder
-.Ps
 ^Editor:~^To override the default editor
-.Ps
 ^Msg\-Protect:~^To set mode when creating a new message (draft)
-.Ps
 ^fileproc:~^Program to refile the message
-.Ps
 ^mhlproc:~^Program to filter messages being forwarded
-.Ps
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
-.Sa
-\fIProposed Standard for Message Encapsulation\fR (RFC\-934),
-.br
-mhbuild(1), comp(1), repl(1), send(1), whatnow(1), mh\-format(5)
-.De
-`+folder' defaults to the current folder
-`msgs' defaults to cur
-.Ds
-`\-noannotate'
-.Ds
-`\-nodraftfolder'
-.Ds
-`\-noformat'
-.Ds
-`\-inplace'
-.Ds
-`\-dashstuffing'
-.Ds
-`\-nomime'
-.Co
+
+.SH "SEE ALSO"
+mhbuild(1), comp(1), repl(1), send(1), whatnow(1), mh\-format(5),
+.I "Proposed Standard for Message Encapsulation"
+(RFC\-934)
+
+.SH "DEFAULTS"
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msgs "' defaults to cur"
+.RB ` \-noannotate '
+.RB ` \-nodraftfolder '
+.RB ` \-noformat '
+.RB ` \-inplace '
+.RB ` \-dashstuffing '
+.RB ` \-nomime '
+
+.SH CONTEXT
 If a folder is given, it will become the current folder.
 The first message forwarded will become the current message.
-.Bu
 
-If \fIwhatnowproc\fR is \fIwhatnow\fR, then \fIforw\fR uses a built\-in
-\fIwhatnow\fR, it does not actually run the \fIwhatnow\fR program.
-Hence, if you define your own \fIwhatnowproc\fR, don't call it
-\fIwhatnow\fR since \fIforw\fR won't run it.
-
-When \fIforw\fR is told to annotate the messages it forwards, it
+.SH BUGS
+If
+.I whatnowproc
+is
+.BR whatnow ,
+then
+.B forw
+uses a built\-in
+.BR whatnow ,
+it does not actually run the
+.B whatnow
+program.
+Hence, if you define your own
+.IR whatnowproc ,
+don't call it
+.B whatnow
+since
+.B forw
+won't run it.
+.PP
+When
+.B forw
+is told to annotate the messages it forwards, it
 doesn't actually annotate them until the draft is successfully sent.
-If from the \fIwhatnowproc\fR, you \fIpush\fR instead of \fIsend\fR,
-it's possible to confuse \fIforw\fR by re\-ordering the file (e.g.,
-by using `folder\0\-pack') before the message is successfully sent.
-\fIDist\fR and \fIrepl\fR don't have this problem.
-.En
+If from the
+.IR whatnowproc ,
+you
+.B push
+instead of
+.BR send ,
+it's possible to confuse
+.B forw
+by re\-ordering the file (e.g. by using
+.RB \*(lq folder
+.BR \-pack \*(rq)
+before the message is successfully sent.
+.B Dist
+and
+.B repl
+don't have this problem.

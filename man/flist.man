@@ -28,7 +28,8 @@ flist, flists \- list the number of messages in given sequence(s)
 .HP 5
 .B flists
 is equivalent to
-.B flist -all
+.B flist
+.B \-all
 .SH DESCRIPTION
 .B Flist
 is used to search a list of folders and display the number

@@ -122,6 +122,10 @@ man.sed: Makefile
 	echo ' s,%components%,,g' >> $@
 	echo '/%distcomps%/r $(top_srcdir)/etc/distcomps' >> $@
 	echo ' s,%distcomps%,,g' >> $@
+	echo '/%forwcomps%/r $(top_srcdir)/etc/forwcomps' >> $@
+	echo ' s,%forwcomps%,,g' >> $@
+	echo '/%mhl_forward%/r $(top_srcdir)/etc/mhl.forward' >> $@
+	echo ' s,%mhl_forward%,,g' >> $@
 
 # ========= INSTALL TARGETS =========
 

@@ -132,7 +132,7 @@ draft folder facility.  This is an advanced (and highly
 useful) feature.  Consult the
 .BR mh-draft (5)
 man page for more information.
-
+.PP
 The
 .B \-editor
 .I editor
