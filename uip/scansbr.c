@@ -9,7 +9,7 @@
 #include <h/addrsbr.h>
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 
 #ifdef _FSTDIO
 # define _ptr _p                /* Gag    */

@@ -13,7 +13,7 @@
 #include <h/dropsbr.h>
 #include <h/mime.h>
 
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <zotnet/mts/mts.h>
 
 #include <errno.h>

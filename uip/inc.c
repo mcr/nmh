@@ -32,7 +32,7 @@
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
 #include <h/signals.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <zotnet/mts/mts.h>
 #include <errno.h>
 #include <signal.h>

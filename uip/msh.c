@@ -16,7 +16,7 @@
 #include <h/dropsbr.h>
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <zotnet/mts/mts.h>
 
 #ifdef HAVE_TERMIOS_H

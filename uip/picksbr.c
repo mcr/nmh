@@ -6,7 +6,7 @@
  */
 
 #include <h/mh.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <h/picksbr.h>
 
 #ifdef TIME_WITH_SYS_TIME

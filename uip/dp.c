@@ -7,7 +7,7 @@
 
 #include <h/mh.h>
 #include <h/fmt_scan.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 
 #define	NDATES 100
 

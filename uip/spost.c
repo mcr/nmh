@@ -13,7 +13,7 @@
 #include <h/addrsbr.h>
 #include <h/aliasbr.h>
 #include <h/dropsbr.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <zotnet/mts/mts.h>
 
 #define	uptolow(c)	((isalpha(c) && isupper (c)) ? tolower (c) : c)

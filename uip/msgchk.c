@@ -7,7 +7,7 @@
 
 #include <h/mh.h>
 #include <zotnet/mts/mts.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <pwd.h>
 
 #ifdef POP

@@ -8,7 +8,7 @@
 #include <h/mh.h>
 #include <fcntl.h>
 #include <h/fmt_scan.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 
 
 #define	IFORMAT	"digest-issue-%s"

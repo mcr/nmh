@@ -11,7 +11,7 @@
 # include <h/mh.h>
 # include <h/dropsbr.h>
 # include <zotnet/mts/mts.h>
-# include <zotnet/tws/tws.h>
+# include <h/tws.h>
 #else
 # include "dropsbr.h"
 # include "strings.h"

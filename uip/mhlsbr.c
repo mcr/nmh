@@ -9,7 +9,7 @@
 #include <h/signals.h>
 #include <h/addrsbr.h>
 #include <h/fmt_scan.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <setjmp.h>
 #include <signal.h>
 

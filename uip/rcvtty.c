@@ -14,7 +14,7 @@
 #include <h/signals.h>
 #include <h/rcvmail.h>
 #include <h/scansbr.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <zotnet/mts/mts.h>
 #include <signal.h>
 #include <fcntl.h>

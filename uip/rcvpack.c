@@ -8,7 +8,7 @@
 #include <h/mh.h>
 #include <h/dropsbr.h>
 #include <h/rcvmail.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <zotnet/mts/mts.h>
 
 static struct swit switches[] = {

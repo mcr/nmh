@@ -12,7 +12,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <zotnet/mts/mts.h>
-#include <zotnet/tws/tws.h>
+#include <h/tws.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
