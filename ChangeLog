@@ -1,3 +1,15 @@
+Tue Apr 11 21:37:03 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Applied Brian Campbell <bacam@tardis.ed.ac.uk>'s mhn.defaults.sh
+	patch:
+
+	    It appears that there shouldn't be quotes around the %s in the
+ 	    iso-8859-1 charset entry; xterm passes the remaining arguments
+ 	    to the program, quoting them means that xterm thinks they're
+ 	    part of the program's name.
+
+	%s doesn't come from MIME headers, so not quoting it is safe.
+
 Sun Apr 09 13:03:59 2000 Doug Morris <doug@mhost.com>
 
 	* added check in fmt_compile() to handle a single-character

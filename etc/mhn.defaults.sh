@@ -156,7 +156,7 @@ fi
 
 PGM="`$SEARCHPROG $SEARCHPATH xterm`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-charset-iso-8859-1: xterm -fn '-*-*-medium-r-normal-*-*-120-*-*-c-*-iso8859-*' -e '%s'" >> $TMP
+	echo "mhshow-charset-iso-8859-1: xterm -fn '-*-*-medium-r-normal-*-*-120-*-*-c-*-iso8859-*' -e %s" >> $TMP
 fi
 
 # output a sorted version of the file
