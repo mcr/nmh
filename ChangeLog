@@ -1,3 +1,32 @@
+Thu Apr 06 21:53:50 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Richard Coleman threw out a lot of old MH-specific files in nmh.
+  	Much of the stuff, indeed, is not worth saving, but there are
+ 	nuggets that are very worthwhile, and should probably be added
+ 	back in.  Most important, IMHO, are the MH change logs, as they
+ 	can help answer questions like "Why is this code like this?" or
+ 	"How long has this been broken?" or "What was this ever used for?"
+
+	I've added a new file to the nmh tree called
+ 	ChangeLog_MH-3_to_MH-6.6.  It's cobbled together from the
+ 	mh-6.8.4/papers/mh*/MHCHANGES files.  I've re-ordered the entries
+ 	to go from newest at the top to oldest at the bottom to match the
+ 	ChangeLog convention.  Unfortunately there are no change logs for
+ 	versions of MH prior to 3 in the MH tar files available at
+ 	<ftp://ftp.ics.uci.edu/pub/mh>.  Also, it appears to me that there
+ 	are MH-6.6 changes that aren't documented in the logs.
+
+	I've also added ChangeLog_MH-6.7.0_to_MH-6.8.4.html.  This is
+ 	based on mh-6.8.4/papers/changes/mh-changes.ms.  The nroff format
+ 	and its "catman"-type output are a pain to deal with, but I was
+ 	loath to throw away the formatting, so I converted the file to
+ 	HTML.  The only actual markup in the body are the "<B>" and "<U>"
+ 	tags, and "&lt;" and "&gt;" instead of '<' and '>', so it's quite
+ 	doable to view the file in plain ASCII mode as well.  Note that
+ 	some of the changes this file documents as having been made in
+ 	MH-6.8.4 may not be present in nmh -- Richard started with 6.8.3
+	and later put in certain 6.8.4 stuff.
+	
 Wed Apr 05 21:09:28 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied Eric Schnoebelen <eric@cirr.com>'s mhshowsbr.c patch
