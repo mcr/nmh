@@ -1,3 +1,12 @@
+Mon Jan 24 22:26:06 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Got rid of the rest of the warnings that I didn't have time for
+ 	on 1999-07-15 (and, it would seem, some new ones people introduced
+ 	since then).  The primary ones were the warnings that default
+ 	prototypes were being used for [v]snprintf() and str[n]casecmp().
+  	As of right now, there are _no_ compilation warnings except on the
+ 	lex output file (at least under AIX 4.1.5 and Solaris 2.6).
+
 Sun Jan 2 23:42:18 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* Move mhtest from bindir to libdir.
