@@ -1,12 +1,14 @@
 Fri May 30 17:51:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* etc/Makefile.in was incorrectly installing mts.conf.in and
- 	sendfiles.in -- fixed.  Changed the suffix for the backed-up
- 	previous versions of the etc files from the ambiguous .old to
- 	.prev.  Added call to diff -- only keep the .prev files around if
- 	different from the newly-installed versions (intentionally didn't
- 	redirect output to /dev/null so you'll notice when your changed
- 	versions are getting moved aside).
+ 	sendfiles.in -- fixed.  Generated sendfiles script was not a
+ 	dependency of the `all' target, and was incorrectly included in
+ 	the distribution.  Changed the suffix for the backed-up previous
+ 	versions of the etc files from the ambiguous .old to .prev.  Added
+ 	call to diff -- only keep the .prev files around if different from
+ 	the newly-installed versions (intentionally didn't redirect output
+ 	to /dev/null so you'll notice when your changed versions are
+ 	getting moved aside).
 
 	* INSTALL never documented the etc/*.old thing.  Documented the
 	new etc/*.prev thing (including a note to watch for diff output).

@@ -47,24 +47,27 @@ STATIC_FILES =  MailAliases components digestcomps distcomps forwcomps	\
 # templates and scripts from which non-static files are generated
 GENERATED_FILE_SRCS = mhn.defaults.sh mhn.find.sh mts.conf.in sendfiles.in
 
-# files generated using above GENERATED_FILE_SRCs
-GENERATED_FILES = mhn.defaults mts.conf sendfiles
+# scripts generated using above GENERATED_FILE_SRCs
+GENERATED_BIN_FILES = sendfiles
 
-# data files we need to install (in etc)
-INSTALL_FILES = $(STATIC_FILES) $(GENERATED_FILES)
+# non-scripts generated using above GENERATED_FILE_SRCs
+GENERATED_ETC_FILES = mhn.defaults mts.conf
 
 # scripts we need to install (in bin)
-SCRIPTS = sendfiles
+INSTALL_BIN_FILES = $(GENERATED_BIN_FILES)
+
+# non-scripts we need to install (in etc)
+INSTALL_ETC_FILES = $(STATIC_FILES) $(GENERATED_ETC_FILES)
 
 # auxiliary files (included in distribution but not installed)
 AUX = Makefile.in
 
 # all non-generated files in this directory are included in the distribution
-DIST = $(STATIC_FILES) $(GENERATED_FILE_SRCS) $(SCRIPTS) $(AUX)
+DIST = $(STATIC_FILES) $(GENERATED_FILE_SRCS) $(AUX)
 
 # ========= DEPENDENCIES FOR BUILDING ==========
 
-all: $(GENERATED_FILES)
+all: $(GENERATED_BIN_FILES) $(GENERATED_ETC_FILES)
 
 mhn.defaults: $(srcdir)/mhn.defaults.sh $(MHNSEARCHPROG)
 	rm -f $@
@@ -81,11 +84,17 @@ sendfiles: $(srcdir)/sendfiles.in Makefile
 	rm -f $@
 	$(SED) -e 's,%libdir%,$(libdir),' < $(srcdir)/sendfiles.in > $@
 
-install: install-files install-scripts
+install: install-bin-files install-etc-files
 
-install-files:
+install-bin-files:
+	$(top_srcdir)/mkinstalldirs $(bindir)
+	for script in $(INSTALL_BIN_FILES); do \
+	  $(INSTALL_PROGRAM) $(srcdir)/$$script $(bindir)/$$script; \
+	done
+
+install-etc-files:
 	$(top_srcdir)/mkinstalldirs $(etcdir)
-	for file in $(INSTALL_FILES); do \
+	for file in $(INSTALL_ETC_FILES); do \
 	  echo $$file; \
 	  if [ -f $(etcdir)/$$file ]; then \
 	    mv $(etcdir)/$$file $(etcdir)/$$file.prev; \
@@ -96,22 +105,16 @@ install-files:
 	  fi; \
 	done
 
-install-scripts:
-	$(top_srcdir)/mkinstalldirs $(bindir)
-	for script in $(SCRIPTS); do \
-	  $(INSTALL_PROGRAM) $(srcdir)/$$script $(bindir)/$$script; \
-	done
+uninstall: uninstall-bin-files uninstall-etc-files
 
-uninstall: uninstall-files uninstall-scripts
-
-uninstall-files:
-	for file in $(INSTALL_FILES); do \
-	  rm -f $(etcdir)/$$file; \
-	done
-
-uninstall-scripts:
-	for script in $(SCRIPTS); do \
+uninstall-bin-files:
+	for script in $(INSTALL_BIN_FILES); do \
 	  rm -f $(bindir)/$$script; \
+	done
+
+uninstall-etc-files:
+	for file in $(INSTALL_ETC_FILES); do \
+	  rm -f $(etcdir)/$$file; \
 	done
 
 # ========== DEPENDENCIES FOR CLEANUP ==========
@@ -120,7 +123,7 @@ mostlyclean:
 	rm -f *~
 
 clean: mostlyclean
-	rm -f $(GENERATED_FILES)
+	rm -f $(GENERATED_ETC_FILES)
 
 distclean: clean
 	rm -f Makefile
