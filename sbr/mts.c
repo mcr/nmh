@@ -27,8 +27,6 @@
 #define	NOTOK   (-1)
 #define	OK        0
 
-extern int errno;
-
 /*
  * static prototypes
  */

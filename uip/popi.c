@@ -80,7 +80,6 @@ static char mailname[BUFSIZ];
 static char *nfs = NULL;
 static struct msgs *mp;
 
-extern int errno;
 extern char response[];
 
 /*

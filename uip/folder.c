@@ -66,8 +66,6 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-extern int errno;
-
 static int fshort   = 0;	/* output only folder names                 */
 static int fcreat   = 0;	/* should we ask to create new folders?     */
 static int fpack    = 0;	/* are we packing the folder?               */

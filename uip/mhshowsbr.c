@@ -35,7 +35,6 @@
 # define siglongjmp(env,val) longjmp(env,val)
 #endif
 
-extern int errno;
 extern int debugsw;
 
 int pausesw  = 1;

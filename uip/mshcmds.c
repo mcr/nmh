@@ -22,7 +22,6 @@
 #include <h/msh.h>
 #include <h/picksbr.h>
 
-extern int errno;
 
 static char delim3[] = "-------";	/* from burst.c */
 
@@ -3009,7 +3008,6 @@ process (int msgnum, char *proc, int vecp, char **vec)
     strncpy (tmpfil, m_scratch ("", invo_name), sizeof(tmpfil));
     if ((out = fopen (tmpfil, "w")) == NULL) {
 	int olderr;
-	extern int errno;
 	char newfil[80];
 
 	olderr = errno;

@@ -26,7 +26,6 @@
 #endif
 
 
-extern int errno;
 extern int debugsw;
 
 extern int endian;	/* mhmisc.c     */

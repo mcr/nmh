@@ -64,7 +64,6 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-extern int errno;
 
 #ifdef HAVE_TERMIOS_H
 static struct termios tio;

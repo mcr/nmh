@@ -42,7 +42,6 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-extern int errno;
 
 /*
  * name of temporary file to store incoming message

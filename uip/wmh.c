@@ -128,7 +128,6 @@ static struct tchars tc;
 #define	WERASC ltc.t_werasc
 static struct ltchars ltc;
 
-extern int errno;
 
 int ALRMser (), PIPEser (), SIGser ();
 int ADJser (), REFser ();

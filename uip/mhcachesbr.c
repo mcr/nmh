@@ -37,8 +37,6 @@
 # include <sys/wait.h>
 #endif
 
-
-extern int errno;
 extern int debugsw;
 
 extern pid_t xpid;	/* mhshowsbr.c or mhbuildsbr.c */

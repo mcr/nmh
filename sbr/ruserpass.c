@@ -66,7 +66,6 @@ ruserpass(char *host, char **aname, char **apass)
     char *hdir, buf[BUFSIZ];
     int t, usedefault = 0;
     struct stat stb;
-    extern int errno;
 
     hdir = getenv("HOME");
     if (hdir == NULL)

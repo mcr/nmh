@@ -67,8 +67,6 @@ static struct swit switches[] = {
 };
 
 
-extern int errno;
-
 int ebcdicsw = 0;	/* hack for linking purposes */
 
 /* mhparse.c */

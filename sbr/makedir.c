@@ -17,8 +17,6 @@
 #include <errno.h>
 #include <sys/param.h>
 #include <sys/file.h>
-
-extern int errno;
 	
 int
 makedir (char *dir)

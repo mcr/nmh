@@ -28,8 +28,6 @@
 #include <errno.h>				/* system call errors */
 #include <pwd.h>				/* structure for getpwuid() results */
 
-extern	int	errno;				/* system call error number */
-
 void
 context_read (void)
 {

@@ -21,7 +21,6 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 
-extern int errno;
 
 /*
  * The list of top-level contents to display

@@ -35,8 +35,6 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-extern int errno;
-
 static int md = NOTOK;
 static int mbx_style = MBOX_FORMAT;
 static int mapping = 0;

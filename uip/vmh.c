@@ -203,7 +203,6 @@ static RETSIGTYPE TSTPser(int);
 
 
 					/* MISCELLANY */
-extern int errno;
 
 /*
  * static prototypes

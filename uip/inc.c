@@ -134,8 +134,6 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-extern int errno;
-
 /*
  * flags for the mail source
  */

@@ -12,8 +12,6 @@
 #include <h/mh.h>
 #include <errno.h>
 
-extern int errno;
-
 
 char *
 m_draft (char *folder, char *msg, int use, int *isdf)

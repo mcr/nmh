@@ -14,7 +14,6 @@
 #include <fcntl.h>
 #include <errno.h>
 
-extern int  errno;
 
 /*
  * static prototypes

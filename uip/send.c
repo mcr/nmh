@@ -129,7 +129,6 @@ extern char *altmsg;		/*  .. */
 extern char *annotext;
 extern char *distfile;
 
-extern int   errno;
 
 int
 main (int argc, char **argv)

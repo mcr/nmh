@@ -69,8 +69,6 @@ static struct swit switches[] = {
 };
 
 
-extern int errno;
-
 /* mhparse.c */
 extern int checksw;
 extern char *tmp;	/* directory to place temp files */

@@ -52,7 +52,6 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-extern int errno;
 extern int debugsw;
 extern int splitsw;
 extern int verbsw;

@@ -51,7 +51,6 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-extern int errno;
 
 /*
  * global for sbr/formatsbr.c - yech!

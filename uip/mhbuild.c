@@ -68,8 +68,6 @@ static struct swit switches[] = {
 };
 
 
-extern int errno;
-
 /* mhbuildsbr.c */
 extern int checksw;
 extern char *tmp;	/* directory to place temp files */

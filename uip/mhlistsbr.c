@@ -20,8 +20,6 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 
-extern int errno;
-
 /* mhmisc.c */
 int part_ok (CT, int);
 int type_ok (CT, int);

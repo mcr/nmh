@@ -51,8 +51,6 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-extern int errno;
-
 static char maildir[BUFSIZ];
 
 struct st_fold {

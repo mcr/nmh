@@ -56,8 +56,6 @@
 #include <lockfile.h>
 #endif
 
-extern int errno;
-
 #ifdef LOCKDIR
 char *lockdir = LOCKDIR;
 #endif

@@ -26,7 +26,6 @@
 #endif
 
 
-extern int errno;
 extern int ebcdicsw;
 
 static char ebcdicsafe[0x100] = {

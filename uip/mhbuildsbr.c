@@ -44,8 +44,6 @@
 #endif
 
 
-extern int errno;
-
 extern int debugsw;
 extern int verbosw;
 

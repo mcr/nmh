@@ -15,8 +15,6 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 
-extern int errno;
-
 /*
  * prototypes
  */

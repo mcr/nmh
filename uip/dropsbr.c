@@ -35,8 +35,6 @@
 
 #include <fcntl.h>
 
-extern int errno;
-
 /*
  * static prototypes
  */
