@@ -47,6 +47,7 @@ struct home *seek_home (char *);
 #endif
 
 
+/* Do mh alias substitution on 's' and return the results. */
 char *
 akvalue (char *s)
 {
