@@ -1,3 +1,22 @@
+Sat Dec 30 9:50:13 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Created a new file "DATE" to hold the date
+	of the most recent nmh release. This date will be
+	used in the manpages.
+
+	* Updated docs/README.developers to add the step
+	of updating DATE. Also, updated configure to
+	read in the contents of the file as the variable
+	$DATE.
+
+	* Started work on updating man pages, with only
+	ali finished so far. Changes: 1) no dependence
+	on an external macro file, 2) uses only
+	-man macros (although I may be mistaken in this),
+	3) syntax in the SYNOPSIS is a little more
+	in line with standard UNIX documentation, such as
+	bold flags and italicized parameters.
+
 Sun Dec 24 10:06:30 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Updated INSTALL with information about the
