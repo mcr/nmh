@@ -26,6 +26,8 @@
 * Change all man pages to group all the commandline options together in one
   section with each as a separate mini-heading.  Having to dig through prose to
   find what a particular option does is a pain in the nads.
+* Add some way to configure whether you prefer to see text/plain or text/html
+  parts of multipart/alternative messages.
 
 [POSSIBILITIES]
 
