@@ -2,220 +2,298 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH MH-TAILOR %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-tailor, mts.conf \- mail transport customization for nmh message handler
-
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-\fI%etcdir%/mts.conf\fP
-.in -.5i
+.I %etcdir%/mts.conf
 .SH DESCRIPTION
-The file %etcdir%/mts.conf defines run-time options for those \fInmh\fR
+The file
+.I %etcdir%/mts.conf
+defines run-time options for those
+.B nmh
 programs which interact (in some form) with the message transport system.
-At present, these (user) programs are: \fIap\fR, \fIconflict\fR,
-\fIinc\fR, \fImsgchk\fR, \fImsh\fR, \fIpost\fR, \fIrcvdist\fR, and
-\fIrcvpack\fR.
-
+At present, these (user) programs are:
+.BR ap ,
+.BR conflict ,
+.BR inc ,
+.BR msgchk ,
+.BR msh ,
+.BR post ,
+.BR rcvdist ,
+and
+.BR rcvpack .
+.PP
 Each option should be given on a single line.  Blank lines and lines
 which begin with `#' are ignored.  The options available along with
 default values and a description of their meanings are listed below:
-
-.in +.5i
-.ti -.5i
-mts:
-.br
-The mail transport method to use.  The two acceptable options are \fBsmtp\fP
-(which is the default), and \fBsendmail\fP.
-
-If you use \fBsmtp\fP, this will enable a direct SMTP (simple mail transport
-protocol) interface in \fInmh\fR.  When sending mail, instead of passing the
-message to the mail transport agent, \fIpost\fR will open a socket connection
-to the mail port on the machine specified in the \fIservers\fR entry.
-
-If you use \fBsendmail\fP, then \fIpost\fR will send messages by forking a
-local copy of sendmail.  Currently it will still speak SMTP with this local
-copy of sendmail.
-
-.ti -.5i
-localname:
-.br
-The hostname \fInmh\fR considers local.  It should typically be a fully
+.PP
+.BR mts :
+.RS 5
+The mail transport method to use.  The two acceptable options are
+.B smtp
+(which is the default), and
+.BR sendmail .
+.PP
+If you use
+.BR smtp ,
+this will enable a direct SMTP (simple mail transport
+protocol) interface in
+.BR nmh .
+When sending mail, instead of passing the
+message to the mail transport agent,
+.B post
+will open a socket connection
+to the mail port on the machine specified in the
+.B servers
+entry.
+.PP
+If you use
+.BR sendmail ,
+then
+.B post
+will send messages by forking a
+local copy of
+.BR sendmail .
+Currently it will still speak SMTP with this local
+copy of
+.BR sendmail .
+.RE
+.PP
+.BR localname :
+.RS 5
+The hostname
+.B nmh
+considers local.  It should typically be a fully
 qualified hostname.  If this is not set, depending on the version of
-UNIX you're running, \fInmh\fR will query the system for this value
-(e.g., uname, gethostname, etc.), and attempt to fully qualify this
+UNIX you're running,
+.B nmh
+will query the system for this value
+(e.g. uname, gethostname, etc.), and attempt to fully qualify this
 value.
-
+.PP
 If you are using POP to retrieve new messages, you may want to set this
 value to the name of the POP server, so that outgoing message appear to
 have originated on the POP server.
-
-.ti -.5i
-localdomain:
-.br
+.RE
+.PP
+.BR localdomain :
+.RS 5
 If this is set, a `.' followed by this string will be appended to your
 hostname.
-
-This should only be needed, if for some reason \fInmh\fR is not able to
-fully qualify the hostname returned by the system (e.g., uname,
+.PP
+This should only be needed, if for some reason
+.B nmh
+is not able to
+fully qualify the hostname returned by the system (e.g. uname,
 gethostname, etc.).
-
-.ti -.5i
-clientname:
-.br
-This option specifies the host name that \fInmh\fP will give in the
-SMTP \fBHELO\fP (and \fBEHLO\fP) command, when posting mail.  If not
-set, the default is to use the host name that \fInmh\fR considers local
-(see \*(lqlocalname\*(rq above).  If this option is set, but empty, no
-\fBHELO\fP command will be given.
-
-.sp
-Although the \fBHELO\fP command is required by RFC\-821, many SMTP servers
-do not require it.  Early versions of SendMail will fail if the hostname
-given in the \fBHELO\fP command is the local host.  Later versions of
-SendMail will complain if you omit the \fBHELO\fP command.  If you run
-SendMail, find out what your system expects and set this field if needed.
-
-.ti -.5i
-systemname:
-.br
+.RE
+.PP
+.BR clientname :
+.RS 5
+This option specifies the host name that
+.B nmh
+will give in the
+SMTP
+.B HELO
+(and
+.BR EHLO )
+command, when posting mail.  If not
+set, the default is to use the host name that
+.B nmh
+considers local
+(see
+.B localname
+above).  If this option is set, but empty, no
+.B HELO
+command will be given.
+.PP
+Although the
+/B HELO
+command is required by RFC\-821, many SMTP servers
+do not require it.  Early versions of
+.I SendMail
+will fail if the hostname
+given in the
+.B HELO
+command is the local host.  Later versions of
+.I SendMail
+will complain if you omit the
+.B HELO
+command.  If you run
+.IR SendMail ,
+find out what your system expects and set this field if needed.
+.RE
+.PP
+.BR systemname :
+.RS 5
 This option is only used for UUCP mail.  It specifies the name of the
-local host in the \fIUUCP\fR \*(lqdomain\*(rq.  If not set, depending
-on the version of UNIX you're running, \fInmh\fR will query the system
-for this value.  This has no equivalent in the \fInmh\fR configuration
+local host in the UUCP \*(lqdomain\*(rq.  If not set, depending
+on the version of UNIX you're running,
+.B nmh
+will query the system
+for this value.  This has no equivalent in the
+.B nmh
+configuration
 file.
-
-.ti -.5i
-mmdfldir: %mailspool%
-.br
+.RE
+.PP
+.BR mmdfldir :
+%mailspool%
+.RS 5
 The directory where maildrops are kept.  If this option is set, but empty,
 the user's home directory is used.  This overrides the default value
 chosen at the time of compilation.
-
-.ti -.5i
-mmdflfil: 
-.br
+.RE
+.PP
+.BR mmdflfil :
+.RS 5
 The name of the maildrop file in the directory where maildrops are kept.
 If this is empty, the user's login name is used.  This overrides the default
 value (which is empty).
-
-.ti -.5i
-mmdelim1: \\001\\001\\001\\001\\n
-.br
+.RE
+.PP
+.BR mmdelim1 :
+\&\\001\\001\\001\\001\\n
+.RS 5
 The beginning-of-message delimiter for maildrops.
-
-.ti -.5i
-mmdelim2: \\001\\001\\001\\001\\n
-.br
+.RE
+.PP
+.BR mmdelim2 :
+\&\\001\\001\\001\\001\\n
+.RS 5
 The end-of-message delimiter for maildrops.
-
-.ti -.5i
-masquerade:
-.br
+.RE
+.PP
+.BR masquerade:
+.RS 5
 This directive controls three different types of email address masquerading.
 The three possible values, which may be specified in any combination on the
-line, separated by spaces, are "draft_from", "mmailid", and
-"username_extension".
-
-"mmailid" was the only type of masquerading in the original MH package, and
-apparently stands for "masquerade mail identification".  This type of
+line, separated by spaces, are \*(lqdraft_from\*(rq, \*(lqmmailid\*(rq, and
+\*(lqusername_extension\*(rq.
+.PP
+\*(lqmmailid\*(rq was the only type of masquerading in the original MH package, and
+apparently stands for \*(lqmasquerade mail identification\*(rq.  This type of
 masquerading keys off of the GECOS field of the passwd file.  When enabled,
-\fInmh\fR will check if the user's pw_gecos field in the passwd file is of the
+.B nmh
+will check if the user's pw_gecos field in the passwd file is of the
 form:
-
-.ti +.5i
+.PP
+.RS 5
 Full Name <fakeusername>
-
-If it is, the internal \fInmh\fR routines that find the username and full name
-of that user will return "fakeusername" and "Full Name" respectively.  This is
+.RE
+.PP
+If it is, the internal
+.B nmh
+routines that find the username and full name
+of that user will return \*(lqfakeusername\*(rq and \*(lqFull Name\*(rq respectively.  This is
 useful if you want the messages you send to always appear to come from the name
 of an MTA alias rather than your actual account name.  For instance, many
-organizations set up "First.Last" sendmail aliases for all users.  If this is
+organizations set up \*(lqFirst.Last\*(rq sendmail aliases for all users.  If this is
 the case, the GECOS field for each user should look like:
-
-.ti +.5i
+.PP
+.RS 5
 First [Middle] Last <First.Last>
-
-"username_extension", when specified on the "masquerade:" line, allows a second
-type of username masquerading.  If the user sets the \fB$USERNAME_EXTENSION\fR
+.RE
+.PP
+\*(lqusername_extension\*(rq, when specified on the \*(lqmasquerade:\*(rq line, allows a second
+type of username masquerading.  If the user sets the
+.B $USERNAME_EXTENSION
 environment variable, its value will be appended to the actual login name.  For
-instance, if I am dan@company.com, and I set \fB$USERNAME_EXTENSION\fR to
-"\-www", my mail will appear to come from "dan\-www@company.com".  This is meant
-to interact with qmail's "user\-extension" feature, where mail sent to
-\fIuser\fR\-\fIstring\fR will be delivered to \fIuser\fR.  Likewise, those using
-versions of sendmail for which "plussed user" processing is active can set
-\fB$USERNAME_EXTENSION\fR to "+\fIstring\fR".  These MTA features are useful
+instance, if I am \*(lqdan@company.com\*(rq, and I set
+.B $USERNAME_EXTENSION
+to \*(lq\-www\*(rq, my mail will appear to come from \*(lqdan\-www@company.com\*(rq.  This is meant
+to interact with qmail's \*(lquser\-extension\*(rq feature, where mail sent to
+.IR user \- string
+will be delivered to
+.IR user .
+Likewise, those using
+versions of sendmail for which \*(lqplussed user\*(rq processing is active can set
+.B $USERNAME_EXTENSION
+to \*(lq+\fIstring\fR\*(rq.  These MTA features are useful
 because they allow one to use different email addresses in different situations
 (to aid in automatic mail filtering or in determining where spammers got one's
 address) while only actually having a single account.  Note that
-\fB$USERNAME_EXTENSION\fR is only appended to the username when \fIpost\fR is
-generating "[Resent\-]From:" lines and the SMTP envelope "From:".  \fIinc\fR,
-for instance, will not try to read from a maildrop file called "dan\-www" (to
+.B $USERNAME_EXTENSION
+is only appended to the username when \fIpost\fR is
+generating \*(lq[Resent\-]From:\*(rq lines and the SMTP envelope
+\*(lqFrom:\*(rq.
+.BR inc ,
+for instance, will not try to read from a maildrop file called \*(lqdan\-www\*(rq (to
 recall the earlier example).
-
-"draft_from" controls the most powerful type of address masquerading.  Normally,
-when a user explicitly specifies a "From:" header in a draft, \fInmh\fR uses it
+.PP
+\*(lqdraft_from\*(rq controls the most powerful type of address masquerading.  Normally,
+when a user explicitly specifies a \*(lqFrom:\*(rq header in a draft,
+.B nmh
+uses it
 rather than constructing its own.  However, to discourage email forgery, the
-SMTP envelope "From:" and a "Sender:" header are set to the user's real address.
-When "draft_from" is turned on, though, the envelope "From:" will use the
-address specified in the draft, and there will be no "Sender:" header.  This is
-useful when a user wants to pretend to be sending mail "directly" from a remote
-POP3 account, or when remote mail robots incorrectly use the envelope "From:" in
-preference to the body "From:" (or refuse to take action when the two don't
+SMTP envelope \*(lqFrom:\*(rq and a \*(lqSender:\*(rq header are set to the user's real address.
+When \*(lqdraft_from\*(rq is turned on, though, the envelope \*(lqFrom:\*(rq will use the
+address specified in the draft, and there will be no \*(lqSender:\*(rq header.  This is
+useful when a user wants to pretend to be sending mail \*(lqdirectly\*(rq from a remote
+POP3 account, or when remote mail robots incorrectly use the envelope \*(lqFrom:\*(rq in
+preference to the body \*(lqFrom:\*(rq (or refuse to take action when the two don't
 match).  Note that the MTA may still reveal the user's real identity (e.g.
-sendmail's "X\-Authentication\-Warning:" header).
-
-.ti -.5i
-maildelivery: %libdir%/maildelivery
-.br
-The name of the system-wide default \fI\&.maildelivery\fR file.
-See \fIslocal\fR\0(1) for the details.
-
-.ti -.5i
-everyone: 200
-.br
+.BR sendmail 's
+\*(lqX\-Authentication\-Warning:\*(rq header).
+.RE
+.PP
+.BR maildelivery :
+%libdir%/maildelivery
+.RS 5
+The name of the system-wide default
+.I maildelivery
+file.
+See
+.BR slocal (1)
+for the details.
+.RE
+.PP
+.BR everyone :
+200
+.RS 5
 The highest user-id which should NOT receive mail addressed to
 \*(lqeveryone\*(rq.
-
-.ti -.5i
-noshell: 
-.br
+.RE
+.PP
+.BR noshell :
+.RS 5
 If set, then each user-id greater than \*(lqeveryone\*(rq that has a
 login shell equivalent to the given value (e.g., \*(lq/bin/csh\*(rq)
 indicates that mail for \*(lqeveryone\*(rq should not be sent to them.
 This is useful for handling admin, dummy, and guest logins.
-
-.in -.5i
-.Uh "SMTP support"
-These options are only available if you set \fImts\fR to \fBsmtp\fP.
-
-.in +.5i
-.ti -.5i
-hostable: %etcdir%/hosts
-.br
-The exceptions file for /etc/hosts used by \fIpost\fR to try to find
+.RE
+.SS "SMTP support"
+These options are only available if you set
+.B mts
+to
+.BR smtp .
+.PP
+.BR hostable :
+%etcdir%/hosts
+.RS 5
+The exceptions file for /etc/hosts used by
+.B post
+to try to find
 official names.  The format of this file is quite simple:
-
-.in +.5i
-1. Comments are surrounded by sharp (`#') and newline.
-.br
-2. Words are surrounded by white space.
-.br
-3. The first word on the line is the official name of a host.
-.br
-4. All words following the official names are aliases for that host.
-.in -.5i
-
-.ti -.5i
-servers: localhost \\01localnet
-.br
+.PP
+.IP 1. 4
+Comments are surrounded by sharp (`#') and newline.
+.IP 2. 4
+Words are surrounded by white space.
+.IP 3. 4
+The first word on the line is the official name of a host.
+.IP 4. 4
+All words following the official names are aliases for that host.
+.RE
+.PP
+.BR servers :
+localhost \\01localnet
+.RS 5
 A lists of hosts and networks which to look for SMTP servers when
 posting local mail.  It turns out this is a major win for hosts which
-don't run an message transport system.  The value of \*(lqservers\*(rq
+don't run an message transport system.  The value of
+.B servers
 should be one or more items.  Each item is the name of either a host
 or a net (in the latter case, precede the name of the net by a \\01).
 This list is searched when looking for a smtp server to post mail.
@@ -223,114 +301,130 @@ If a host is present, the SMTP port on that host is tried.  If a net
 is present, the SMTP port on each host in that net is tried.  Note that
 if you are running with the BIND code, then any networks specified are
 ignored (sorry, the interface went away under BIND).
-
-.in -.5i
-.Uh "SendMail"
-This option is only available if you set \fImts\fR to \fBsendmail\fP.
-
-.in +.5i
-.ti -.5i
-sendmail: %sendmailpath%
-.br
-The pathname to the \fIsendmail\fR program.
-
-.in -.5i
-.Uh "Post Office Protocol"
-This option is only available if you have compiled \fInmh\fP with POP
-support enabled (i.e., \*(lq--enable-pop\*(rq).
-
-.in +.5i
-.ti -.5i
-pophost:
-.br
+.SS "SendMail"
+This option is only available if you set
+.B mts
+to
+.BR sendmail .
+.PP
+.BR sendmail :
+%sendmailpath%
+.RS 5
+The pathname to the
+.B sendmail
+program.
+.RE
+.SS "Post Office Protocol"
+This option is only available if you have compiled
+.B nmh
+with POP support enabled (i.e., \*(lq--enable-pop\*(rq).
+.PP
+.BR pophost :
+.RS 5
 The name of the default POP service host.  If this is not set, then
-\fInmh\fR looks in the standard maildrop areas for waiting mail, otherwise
+.B nmh
+looks in the standard maildrop areas for waiting mail, otherwise
 the named POP service host is consulted.
+.RE
+\"  .SS "BBoards Delivery"
+\"  This option is only available if you compiled \fInmh\fP with
+\"  \*(lqbbdelivery:\ on\*(rq.
+\"  .PP
+\"  .BR bbdomain :
+\"  .RS 5
+\"  The local BBoards domain (a UCI hack).
+\"  .RE
 
-.in -.5i
-.Uh "BBoards Delivery"
-This option is only available if you compiled \fInmh\fP with
-\*(lqbbdelivery:\ on\*(rq.
+\"  .SS "BBoards & The POP"
+\"  These options are only available if you compiled \fInmh\fP with
+\"  \*(lqbboards:\ pop\*(rq and \*(lqpop:\ on\*(rq.
 
-.in +.5i
-.ti -.5i
-bbdomain:
-.br
-The local BBoards domain (a UCI hack).
+\"  .PP
+\"  .BR popbbhost :
+\"  .RS 5
+\"  The POP service host which also acts as a BBoard server.  This variable
+\"  should be set on the POP BBoards client host.
+\"  .RE
+\"  .PP
+\"  .BR popbbuser :
+\"  .RS 5
+\"  The guest account on the POP/BB service host.  This should be a different
+\"  login ID than either the POP user or the BBoards user.  (The user-id
+\"  \*(lqftp\*(rq is highly recommended.)  This variable should be set on
+\"  both the POP BBoards client and service hosts.
+\"  .RE
+\"  .PP
+\"  .BR popbblist :
+\"  %etcdir%/hosts.popbb
+\"  .RS 5
+\"  A file containing of lists of hosts that are allowed to use the POP
+\"  facility to access BBoards using the guest account.  If this file is not
+\"  present, then no check is made.  This variable should be set on the POP
+\"  BBoards service host.
+\"  .RE
 
-.in -.5i
-.Uh "BBoards & The POP"
-These options are only available if you compiled \fInmh\fP with
-\*(lqbboards:\ pop\*(rq and \*(lqpop:\ on\*(rq.
-
-.in +.5i
-.ti -.5i
-popbbhost:
-.br
-The POP service host which also acts as a BBoard server.  This variable
-should be set on the POP BBoards client host.
-
-.ti -.5i
-popbbuser:
-.br
-The guest account on the POP/BB service host.  This should be a different
-login ID than either the POP user or the BBoards user.  (The user-id
-\*(lqftp\*(rq is highly recommended.)  This variable should be set on
-both the POP BBoards client and service hosts.
-
-.ti -.5i
-popbblist: %etcdir%/hosts.popbb
-.br
-A file containing of lists of hosts that are allowed to use the POP
-facility to access BBoards using the guest account.  If this file is not
-present, then no check is made.  This variable should be set on the POP
-BBoards service host.
-
-.in -.5i
-.if n .ne 8
-.Uh "BBoards & The NNTP"
-This option is only available if you compiled \fInmh\fP with
-\*(lqbboards:\ nntp\*(rq and \*(lqpop:\ on\*(rq.
-
-.in +.5i
-.ti -.5i
-nntphost:
-.br
-The host which provides the NNTP service.  This variable should be set
-on the NNTP BBoards client host.
-
-.in -.5i
-.Uh "File Locking"
-A few words on locking: \fInmh\fR has several methods for creating locks
-on files.  When configuring \fInmh\fR, you will need to decide on the
+\"  .SS "BBoards & The NNTP"
+\"  This option is only available if you compiled \fInmh\fP with
+\"  \*(lqbboards:\ nntp\*(rq and \*(lqpop:\ on\*(rq.
+\"  .PP
+\"  .BR nntphost :
+\"  .RS 5
+\"  The host which provides the NNTP service.  This variable should be set
+\"  on the NNTP BBoards client host.
+\"  .RE
+.SS "File Locking"
+A few words on locking:
+.B nmh
+has several methods for creating locks
+on files.  When configuring
+.BR nmh ,
+you will need to decide on the
 locking style and locking directory (if any).  The first controls the
 method of locking, the second says where lock files should be created.
-
-To configure \fInmh\fR for kernel locking, define \fBFLOCK_LOCKING\fP if
-you want to use the \fIflock\fP system call; define \fBLOCKF_LOCKING\fP if
-you want to use the \fIlockf\fP system call; or define \fBFCNTL_LOCKING\fP
-if you want to use the \fIfcntl\fP system call for kernel-level locking.
-
-Instead of kernel locking, you can configure \fInmh\fR to use dot
-locking by defining \fBDOT_LOCKING\fP.  Dot locking specifies that
+.PP
+To configure
+.B nmh
+for kernel locking, use the \*(lq--with-locking=flock\*(rq configure option if
+you want to use the
+.B flock
+system call; use \*(lq--with-locking=lockf\*(rq if
+you want to use the
+.B lockf
+system call; or use \*(lq--with-locking=fcntl\*(rq
+if you want to use the
+.B fcntl
+system call for kernel-level locking.
+.PP
+Instead of kernel locking, you can configure
+.B nmh
+to use dot locking by using \*(lq--with-locking=dot\*(rq.  Dot locking
+specifies that
 a file should be created whose existence means \*(lqlocked\*(rq and
 whose non-existence means \*(lqunlocked\*(rq.  The name of this file is
 constructed by appending \*(lq.lock\*(rq to the name of the file being
-locked.  If \fBLOCKDIR\fP is not specified, lock files will be created
+locked.  If
+.B LOCKDIR
+is not specified, lock files will be created
 in the directory where the file being locked resides.  Otherwise, lock
-files will be created in the directory specified by \fBLOCKDIR\fP.
-
-Prior to installing \fInmh\fR, you should see how locking is done at
+files will be created in the directory specified by
+.BR LOCKDIR .
+.PP
+Prior to installing
+.BR nmh ,
+you should see how locking is done at
 your site, and set the appropriate values.
 
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^%etcdir%/mts.conf~^nmh mts configuration file
-.Pr
+
+.SH "PROFILE COMPONENTS"
 None
-.Sa
+
+.SH "SEE ALSO"
 mh\-mts(8), post(8)
-.De
+
+.SH DEFAULTS
 As listed above
-.Co
-None
-.En
