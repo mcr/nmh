@@ -2,6 +2,7 @@ Sat Jul 15 23:13:49 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
 	* Add configure option --with-hash-backup so the backup prefix can
 	be easily changed from "," to "#".
+	* Simplified sbr/Makefile.in so that it works with any make.
 
 Tue Jul 11 14:18:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
