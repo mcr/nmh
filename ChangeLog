@@ -1,4 +1,4 @@
-Wed Mar 15 15:43:51 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Wed Mar 15 18:45:45 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* When I fixed the long-standing makedir() bugs in January, I had
  	the code call strtoul(..., 0), which I believed to be safe as all
@@ -21,6 +21,16 @@ Wed Mar 15 15:43:51 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Added a line to the "nmh configuration" output saying whether
 	POP is enabled.
+
+	* Added a new README.developers file.  From the file:
+
+	    This file is intended to provide a few tips for anyone doing
+ 	    development on nmh.  Developers who learn things "the hard
+ 	    way" about the nmh codebase (as opposed to local info best
+ 	    encoded in a comment) are encouraged to share their wisdom
+ 	    here.
+
+	Currently the topics are "autoconf files" and "directory structure".
 
 Tue Mar 14 12:41:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
