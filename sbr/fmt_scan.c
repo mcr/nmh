@@ -315,7 +315,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		cp += n;
 	    } else n = 0;
 	    c = abs(fmt->f_width) - n;
-	    for (; c && cp < ep; c--) *cp++ = fmt->f_fill;
+	    for (; (c > 0) && (cp < ep); c--) *cp++ = fmt->f_fill;
 	    break;
 
 	case FT_CHAR:
