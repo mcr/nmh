@@ -1,3 +1,21 @@
+2003-9-30  Glenn Burkhardt <glenn@aoi-industries.com>
+	* Fix 'pick' so handling of options "-list" and "-seq" are
+	independent.
+	* Fix 'inc' realloc error when bringing in more than 100 msgs
+	to empty folder.
+	* Patches submitted by Nick Rusnov from Debian archive applied:
+
+	Debian Bug#
+	   136976 - Handle binary content messages
+	   143427 - mh-format.man typo
+	   144098 - 'spost; should have same behavior as 'post'
+	            w.r.t. mts.conf masquerade line
+	   149745 - slocal ignores 'N' result of previous command
+	   152728 - increase SMTP timeouts to conform to RFC 1123
+	            The timeouts suggested by the RFC seem long
+		    to me - but the RFC is still listed as active.
+	   181867 - typo for nmh.man
+	
 2003-08-10  Jeffrey C Honig  <jch@honig.net>
 
 	* Fix problem where parsing of address/date fields in fmt_compile
