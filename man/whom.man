@@ -2,68 +2,100 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH WHOM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 whom \- report to whom a message would go
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-whom
-\%[\-alias\ aliasfile]
-\%[\-check] \%[\-nocheck]
-\%[\-draft]
-.br
-\%[\-draftfolder\ +folder] \%[\-draftmessage\ msg]
-.br
-\%[\-nodraftfolder]
-\%[file]
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B whom
+.RB [ \-alias
+.IR aliasfile ]
+.RB [ \-check " | " \-nocheck ]
+.RB [ \-draft ]
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RI [ file ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIWhom\fR is used to expand the headers of a message into a set of
+.B Whom
+is used to expand the headers of a message into a set of
 addresses and optionally verify that those addresses are deliverable at
-that time (if `\-check' is given).
-
-The `\-draftfolder\ +folder' and `\-draftmessage\ msg' switches invoke
-the \fInmh\fR draft folder facility.  This is an advanced (and highly
-useful) feature.  Consult the \fImh-draft\fR(5) man page for more
-information.
-
+that time (if
+.B \-check
+is given).
+.PP
+The
+.B \-draftfolder
+.I +folder
+and
+.B \-draftmessage
+.I msg
+switches invoke
+the
+.B nmh
+draft folder facility.  This is an advanced (and highly
+useful) feature.  Consult the
+.BR mh-draft (5)
+man page for more information.
+.PP
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
-additional alias files given by the `\-alias aliasfile' switch will be
-read (more than one file, each preceded by `\-alias', can be named).
-See \fImh\-alias\fR\0(5) for more information.
+additional alias files given by the
+.B \-alias
+.I aliasfile
+switch will be
+read (more than one file, each preceded by
+.BR \-alias ,
+can be named). See
+.BR mh\-alias (5)
+for more information.
 
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Draft\-Folder:~^To find the default draft\-folder
-.Ps
 ^Aliasfile:~^For a default alias file
-.Ps
 ^postproc:~^Program to post the message
-.Sa
+.fi
+
+.SH "SEE ALSO"
 mh\-alias(5), post(8)
-.De
-`file' defaults to <mh\-dir>/draft
-.Ds
-`\-nocheck'
-.Ds
-`\-alias %etcdir%/MailAliases'
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` file "' defaults to <mh\-dir>/draft"
+.RB ` \-nocheck '
+.RB ` \-alias "' defaults to  %etcdir%/MailAliases"
+.fi
+
+.SH CONTEXT
 None
-.Bu
-With the `\-check' option, \fIwhom\fR makes no guarantees that the
+
+.SH BUGS
+With the
+.B \-check
+option,
+.B whom
+makes no guarantees that the
 addresses listed as being ok are really deliverable, rather, an address
-being listed as ok means that at the time that \fIwhom\fR was run
+being listed as ok means that at the time that
+.B whom
+was run
 the address was thought to be deliverable by the transport service.
 For local addresses, this is absolute; for network addresses, it means
 that the host is known; for uucp addresses, it (often) means that the
-\fIUUCP\fR network is available for use.
-.En
+.B UUCP
+network is available for use.

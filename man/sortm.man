@@ -2,100 +2,152 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH SORTM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 sortm \- sort messages
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-sortm
-\%[+folder] \%[msgs]
-\%[\-datefield\ field]
-\%[\-textfield\ field]
-.br
-\%[\-notextfield]
-\%[\-limit days] \%[\-nolimit]
-\%[\-verbose]
-.br
-\%[\-noverbose]
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B sortm
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-datefield
+.IR field ]
+.RB [ \-textfield
+.IR field ]
+.RB [ \-notextfield ]
+.RB [ \-limit
+.IR days ]
+.RB [ \-nolimit ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fISortm\fR sorts the specified messages in the named folder according
+.B Sortm
+sorts the specified messages in the named folder according
 to the chronological order of the \*(lqDate:\*(rq field of each message.
-
-The `\-verbose' switch directs \fIsortm\fR to tell the user the general
+.PP
+The
+.B \-verbose
+switch directs
+.B sortm
+to tell the user the general
 actions that it is taking to place the folder in sorted order.
-
-The `\-datefield\ field' switch tells \fIsortm\fR the name of the field to
+.PP
+The
+.B \-datefield
+.I field
+switch tells
+.B sortm
+the name of the field to
 use when making the date comparison.  If the user has a special field in
 each message, such as \*(lqBB\-Posted:\*(rq or \*(lqDelivery\-Date:\*(rq,
-then the `\-datefield' switch can be used to direct \fIsortm\fR which
-field to examine.
-
-The `\-textfield\ field' switch causes \fIsortm\fR to sort messages
+then the
+.B \-datefield
+switch can be used to direct
+.B sortm
+which field to examine.
+.PP
+The
+.B \-textfield
+.I field
+switch causes
+.B sortm
+to sort messages
 by the specified text field.  If this field is \*(lqsubject\*(rq, any
 leading "re:" is stripped off.  In any case, all characters except
 letters and numbers are stripped and the resulting strings are sorted
 datefield\-major, textfield\-minor, using a case insensitive comparison.
-
-With `\-textfield\ field', if `\-limit\ days' is specified, messages
+.PP
+With
+.B \-textfield
+.IR field ,
+if
+.B \-limit
+.I days
+is specified, messages
 with similar textfields that are dated within `days' of each other
-appear together.  Specifying `\-nolimit' makes the limit infinity.
-With `\-limit 0', the sort is instead made textfield\-major, date\-minor.
-
-.\"Ex
+appear together.  Specifying
+.B \-nolimit
+makes the limit infinity.
+With
+.B \-limit
+.IR 0 ,
+the sort is instead made textfield\-major, date\-minor.
+.PP
 For example, to order a folder by date-major, subject-minor, use:
-
-.ti +.5i
+.PP
+.RS 5
 sortm -textfield subject +folder
+.RE
 
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
-^Path:~^To determine the user's nmh directory
-.Ps
-^Current\-Folder:~^To find the default current folder
-.Sa
-folder (1)
-.De
-`+folder' defaults to the current folder
-.Ds
-`msgs' defaults to all
-.Ds
-`\-datefield date'
-.Ds
-`\-notextfield'
-.Ds
-`\-noverbose'
-.Ds
-`\-nolimit'
-.Co
-If a folder is given, it will become the current folder.  If the current
-message is moved, \fIsortm\fR will preserve its status as current.
-.Hi
-Timezones used to be ignored when comparing dates: they aren't any more.
+.fi
 
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
+^Path:~^To determine the user's nmh directory
+^Current\-Folder:~^To find the default current folder
+.fi
+
+.SH "SEE ALSO"
+folder(1)
+
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msgs"' defaults to all"
+.RB ` \-datefield "' defaults to date"
+.RB ` \-notextfield '
+.RB ` \-noverbose '
+.RB ` \-nolimit '
+.fi
+
+.SH CONTEXT
+If a folder is given, it will become the current folder.  If the current
+message is moved,
+.B sortm
+ will preserve its status as current.
+
+.SH HISTORY
+Timezones used to be ignored when comparing dates: they aren't any more.
+.PP
 Messages which were in the folder, but not specified by `msgs', used to
 be moved to the end of the folder; now such messages are left untouched.
-
-\fISortm\fP sometimes did not preserve the message numbering in a folder
+.PP
+.B Sortm
+sometimes did not preserve the message numbering in a folder
 (e.g., messages 1, 3, and 5, might have been renumbered to 1, 2, 3 after
 sorting).  This was a bug, and has been fixed.  To compress the message
-numbering in a folder, use \*(lq\fIfolder\ \-pack\fR\|\*(rq as always.
-.Bu
-If \fIsortm\fR encounters a message without a date\-field, or if the
-message has a date\-field that \fIsortm\fR cannot parse, then \fIsortm\fR
+numbering in a folder, use
+.RB \*(lq "folder\ \-pack" \*(rq
+as always.
+
+.SH BUGS
+If
+.B sortm
+encounters a message without a date\-field, or if the
+message has a date\-field that
+.B sortm
+cannot parse, then
+.B sortm
 attempts to keep the message in the same relative position.  This does
 not always work.  For instance, if the first message encountered lacks
 a date which can be parsed, then it will usually be placed at the end
 of the messages being sorted.
-
-When \fIsortm\fR complains about a message which it can't temporally
-order, it complains about the message number \fIprior\fR to sorting.
-It should indicate what the message number will be \fIafter\fR sorting.
-.En
+.PP
+When
+.B sortm
+complains about a message which it can't temporally
+order, it complains about the message number
+.B prior
+to sorting.
+It should indicate what the message number will be
+.B after
+sorting.

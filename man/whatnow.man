@@ -2,144 +2,277 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH WHATNOW %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 whatnow \- prompting front-end for sending messages
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-whatnow
-\%[\-draftfolder\ +folder] \%[\-draftmessage\ msg]
-.br
-\%[\-nodraftfolder]
-\%[\-editor\ editor] \%[\-noedit]
-.br
-\%[\-prompt\ string]
-\%[file]
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B whatnow
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RB [ \-editor
+.IR editor ]
+.RB [ \-noedit ]
+.RB [ \-prompt
+.IR string ]
+.RI [ file ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIWhatnow\fR is the default program that queries the user about
+.B Whatnow
+is the default program that queries the user about
 the disposition of a composed draft.  It is normally automatically
-invoked by one of the \fInmh\fR commands \fIcomp\fR, \fIdist\fR,
-\fIforw\fR, or \fIrepl\fR after the initial edit.
-
-When started, the editor is started on the draft (unless `\-noedit'
+invoked by one of the
+.B nmh
+commands
+.BR comp ,
+.BR dist ,
+.BR forw ,
+or
+.B repl
+after the initial edit.
+.PP
+When started, the editor is started on the draft (unless
+.B \-noedit
 is given, in which case the initial edit is suppressed).  Then,
-\fIwhatnow\fR repetitively prompts the user with \*(lqWhat now?\*(rq
+.B whatnow
+repetitively prompts the user with \*(lqWhat now?\*(rq
 and awaits a response.  The valid responses are:
-
-.nf
-.in .5i
-.ta \w'\fBrefile +folder\fR  'u
-^\fBedit\fR~^re\-edit using the same editor that was used on the
-^~^preceding round unless a profile entry
-^~^\*(lq<lasteditor>\-next: <editor>\*(rq names an alternate editor
-^\fBedit <editor>\fR~^invoke <editor> for further editing
-^\fBrefile +folder\fR~^refile the draft into the given folder
-^\fBmime\fR~^process the draft as MIME composition file using
-^~^the "buildmimeproc" command (mhbuild by default)
-^\fBdisplay\fR~^list the message being distributed/replied\-to
-^~^on the terminal
-^\fBlist\fR~^list the draft on the terminal
-^\fBsend\fR~^send the message
-^\fBsend \-watch\fR~^send the message and monitor the delivery process
-^\fBpush\fR~^send the message in the background
-^\fBwhom\fR~^list the addresses that the message will go to
-^\fBwhom \-check\fR~^list the addresses and verify that they are
-^~^acceptable to the transport service
-^\fBquit\fR~^preserve the draft and exit
-^\fBquit \-delete\fR~^delete the draft and exit
-^\fBdelete\fR~^delete the draft and exit
-.fi
-.re
-
+.PP
+.RS 5
+.TP \w'refilezzfolderz'u
+.B edit
+re\-edit using the same editor that was used on the
+preceding round unless a profile entry
+\*(lq<lasteditor>\-next: <editor>\*(rq names an alternate editor
+.TP \w'refilezzfolderz'u
+.B edit <editor>
+invoke <editor> for further editing
+.TP \w'refilezzfolderz'u
+.B refile +folder
+refile the draft into the given folder
+.TP \w'refilezzfolderz'u
+.B mime
+process the draft as MIME composition file using
+the
+.I buildmimeproc
+command
+.RB ( mhbuild
+by default)
+.TP \w'refilezzfolderz'u
+.B display
+list the message being distributed/replied\-to
+on the terminal
+.TP \w'refilezzfolderz'u
+.B list
+list the draft on the terminal
+.TP \w'refilezzfolderz'u
+.B send
+send the message
+.TP \w'refilezzfolderz'u
+.B send \-watch
+send the message and monitor the delivery process
+.TP \w'refilezzfolderz'u
+.B push
+send the message in the background
+.TP \w'refilezzfolderz'u
+.B whom
+list the addresses that the message will go to
+.TP \w'refilezzfolderz'u
+.B whom \-check
+list the addresses and verify that they are
+acceptable to the transport service
+.TP \w'refilezzfolderz'u
+.B quit
+preserve the draft and exit
+.TP \w'refilezzfolderz'u
+.B quit \-delete
+delete the draft and exit
+.TP \w'refilezzfolderz'u
+.B delete
+delete the draft and exit
+.RE
+.PP
 When entering your response, you need only type enough characters
 to uniquely identify the response.
-
-For the \fBedit\fR response, any valid switch to the editor is valid.
-
-For the \fBsend\fR and \fBpush\fR responses, any valid switch to
-\fIsend\fR\0(1) are valid (as \fBpush\fR merely invokes \fIsend\fR
-with the `\-push' option).
-
-For the \fBwhom\fR response, any valid switch to \fIwhom\fR\0(1)
+.PP
+For the
+.B edit
+response, any valid switch to the editor is valid.
+.PP
+For the
+.B send
+and
+.B push
+responses, any valid switch to
+.BR send (1)
+is valid (as
+.B push
+merely invokes
+.B send
+with the
+.B \-push
+option).
+.PP
+For the
+.B whom
+response, any valid switch to
+.BR whom (1)
 is valid.
-
-For the \fBrefile\fR response, any valid switch to the \fIfileproc\fR
+.PP
+For the
+.B refile
+response, any valid switch to the
+.I fileproc
 is valid.
-
-For the \fBdisplay\fR and \fBlist\fR responses, any valid argument to
-the \fIlproc\fR is valid.  If any non\-switch arguments are present, then
+.PP
+For the
+.B display
+and
+.B list
+responses, any valid argument to
+the
+.I lproc
+is valid.  If any non\-switch arguments are present, then
 the pathname of the draft will be excluded from the argument list given
-to the \fIlproc\fR (this is useful for listing another \fInmh\fR message).
-
-See \fImh\-profile\fR\0(5) for further information about how editors
-are used by nmh.  It also discusses how environment variables can be
-used to direct \fIwhatnow\fR's actions in complex ways.
-
-The `\-prompt\ string' switch sets the prompting string for \fIwhatnow\fR.
-
-The `\-draftfolder\ +folder' and `\-draftmessage\ msg' switches invoke
-the \fInmh\fR draft folder facility.  This is an advanced (and highly
-useful) feature.  Consult the \fImh-draft\fR(5) man page for more
+to the
+.I lproc
+(this is useful for listing another
+.B nmh
+message).
+.PP
+See
+.BR mh\-profile (5)
+for further information about how editors
+are used by
+.BR nmh .
+It also discusses how environment variables can be
+used to direct
+.BR whatnow 's
+actions in complex ways.
+.PP
+The
+.B \-prompt
+.I string
+switch sets the prompting string for
+.BR whatnow .
+.PP
+The
+.B \-draftfolder
+.I +folder
+and
+.B \-draftmessage
+.I msg
+switches invoke
+the
+.B nmh
+draft folder facility.  This is an advanced (and highly
+useful) feature.  Consult the
+.BR mh-draft (5)
+man page for more
 information.
 
-.Fi
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
-.Pr
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Draft\-Folder:~^To find the default draft\-folder
-.Ps
 ^Editor:~^To override the default editor
-.Ps
 ^<lasteditor>\-next:~^To name an editor to be used after exit
 ^~^from <lasteditor>
-.Ps
 ^automimeproc:~^If value is 1, and the draft is a MIME
 ^~^composition file, then automatically call
 ^~^buildmimeproc prior to sending.
-.Ps
 ^buildmimeproc:~^Program to translate MIME composition files
-.Ps
 ^fileproc:~^Program to refile the message
-.Ps
 ^lproc:~^Program to list the contents of a message
-.Ps
 ^sendproc:~^Program to use to send the message
-.Ps
 ^whomproc:~^Program to determine who a message would go to
-.Sa
+.fi
+
+.SH "SEE ALSO"
 send(1), whom(1)
-.De
-`\-prompt\ \*(lqWhat\ Now?\ \*(rq'
-.Co
+
+.SH DEFAULTS
+.nf
+.RB ` \-prompt "' defaults to \*(lqWhat\ Now?\ \*(rq"
+.fi
+
+.SH CONTEXT
 None
-.Bu
-The argument to the `\-prompt' switch must be interpreted as a single
-token by the shell that invokes \fIwhatnow\fR.  Therefore, one must
+
+.SH BUGS
+The argument to the
+.B \-prompt
+switch must be interpreted as a single
+token by the shell that invokes
+.BR whatnow .
+Therefore, one must
 usually place the argument to this switch inside double\-quotes.
-
-If the initial edit fails, \fIwhatnow\fR deletes your draft (by renaming
+.PP
+If the initial edit fails,
+.B whatnow
+deletes your draft (by renaming
 it with a leading comma); failure of a later edit preserves the draft.
-
-If the \fIbuildmimeproc\fR fails (returns a nonzero status), \fIwhatnow\fR
-simply prints a \*(lqWhat now?\*(rq prompt.  \fIwhatnow\fR depends on the
-\fIbuildmimeproc\fR to tell the user that something went wrong.
-
-If \fIwhatnowproc\fR is \fIwhatnow\fR, then \fIcomp\fR, \fIdist\fP,
-\fIforw\fP, and \fIrepl\fP use a built\-in \fIwhatnow\fR, and do not
-actually run the \fIwhatnow\fR program.  Hence, if you define your own
-\fIwhatnowproc\fR, don't call it \fIwhatnow\fR since it won't be run.
-
-If \fIsendproc\fR is \fIsend\fR, then \fIwhatnow\fR uses a built\-in
-\fIsend\fR, it does not actually run the \fIsend\fR program.  Hence, if
-you define your own \fIsendproc\fR, don't call it \fIsend\fR since
-\fIwhatnow\fR won't run it.
-.En
+.PP
+If the
+.I buildmimeproc
+fails (returns a nonzero status),
+.B whatnow
+simply prints a \*(lqWhat now?\*(rq prompt.
+.B whatnow
+depends on the
+.I buildmimeproc
+to tell the user that something went wrong.
+.PP
+If
+.I whatnowproc
+is
+.BR whatnow ,
+then
+.BR comp ,
+.BR dist ,
+.BR forw ,
+and
+.B repl
+use a built\-in
+.BR whatnow ,
+and do not actually run the
+.B whatnow
+program.  Hence, if you define your own
+.IR whatnowproc ,
+don't call it
+.B whatnow
+since it won't be run.
+.PP
+If
+.I sendproc
+is
+.BR send ,
+then
+.B whatnow
+uses a built\-in
+.BR send ,
+it does not actually run the
+.B send
+program.  Hence, if
+you define your own
+.IR sendproc ,
+don't call it
+.B send
+since
+.B whatnow
+won't run it.
