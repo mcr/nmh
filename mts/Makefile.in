@@ -17,6 +17,15 @@ etcdir='$(etcdir)' libdir='$(libdir)' mandir='$(mandir)' \
 mailspool='$(mailspool)' sendmailpath='$(sendmailpath)' \
 default_editor='$(default_editor)' default_pager='$(default_pager)'
 
+LORDER = @LORDER@
+TSORT  = @TSORT@
+RANLIB = @RANLIB@
+LIBTOOL = @LIBTOOL@
+GNU_LIBTOOL = @GNU_LIBTOOL@
+
+# object files that go into libmts.a
+OBJS =  generic/client.o generic/mts.o smtp/hosts.o smtp/smtp.o
+
 # auxiliary files
 AUX = Makefile.in
 
@@ -24,17 +33,31 @@ AUX = Makefile.in
 DIST = $(AUX)
 
 # subdirectories
-SUBDIRS = smtp sendmail mmdf
+SUBDIRS = smtp generic
 
 # mail transport agent we are using (currently always smtp)
-MTS = smtp
+# MTS = smtp
+# DEPRECATED: smtp/sendmail functionality handled by mts.conf
 
 # ========= DEPENDENCIES FOR BUILDING AND INSTALLING ==========
 
-all install uninstall:
-	for subdir in $(MTS); do \
-	  (cd $$subdir && $(MAKE) $(MAKEDEFS) $@) || exit 1; \
+all: all-recursive libmts.a
+
+all-recursive:
+	for subdir in $(SUBDIRS); do \
+	  (cd $$subdir && $(MAKE) $(MAKEDEFS) all) || exit 1; \
 	done
+
+libmts.a: $(OBJS)
+	rm -f $@
+	if test x$(LIBTOOL) != x -a x$(GNU_LIBTOOL) = x ; then \
+	  $(LIBTOOL) -static -c $(OBJS) -o $@  ; \
+	else \
+	  ar cr $@ `$(LORDER) $(OBJS) | $(TSORT)`  ; \
+	  $(RANLIB) $@  ; \
+	fi 
+
+install uninstall:
 
 # ========== DEPENDENCIES FOR CLEANUP ==========
 
@@ -48,7 +71,7 @@ mostlyclean-local:
 	rm -f *~
 
 clean-local: mostlyclean-local
-
+	rm -f libmts.a
 distclean-local: clean-local
 	rm -f Makefile
 

@@ -7,7 +7,7 @@
 
 #include <h/mh.h>
 #include <mts/smtp/smtp.h>
-#include <zotnet/mts/mts.h>
+#include <mts/generic/mts.h>
 #include <signal.h>
 #include "h/signals.h"  /* for SIGNAL() */
 #ifdef MPOP

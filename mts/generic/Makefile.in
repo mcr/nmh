@@ -1,5 +1,5 @@
 #
-# Makefile for mts/smtp subdirectory
+# Makefile for mts/generic subdirectory
 #
 # $Id$
 #
@@ -16,15 +16,23 @@ bindir      = @bindir@
 libdir      = @libdir@
 etcdir      = @sysconfdir@
 
-CC       = @CC@
-CFLAGS   = @CFLAGS@
-DEFS     = @DEFS@
-SASL_INCLUDES = @SASL_INCLUDES@
-INCLUDES = -I../.. -I$(srcdir) -I$(top_srcdir) $(SASL_INCLUDES)
-LINT	= @LINT@
-LINTFLAGS = @LINTFLAGS@
+mailspool    = @mailspool@
+sendmailpath = @sendmailpath@
 
-COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
+CC         = @CC@
+CFLAGS     = @CFLAGS@
+DEFS       = @DEFS@
+KRB4_INCLUDES = @KRB4_INCLUDES@
+HESIOD_INCLUDES = @HESIOD_INCLUDES@
+INCLUDES   = -I../.. -I$(srcdir) -I$(top_srcdir) $(KRB4_INCLUDES) $(HESIOD_INCLUDES)
+CONFIGDEFS = -DNMHETCDIR='"$(etcdir)"' -DMAILSPOOL='"$(mailspool)"' -DSENDMAILPATH='"$(sendmailpath)"'
+LINT	   = @LINT@
+LINTFLAGS  = @LINTFLAGS@
+
+COMPILE  = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
+COMPILE2 = $(CC) -c $(DEFS) $(CONFIGDEFS) $(INCLUDES) $(CFLAGS)
+
+SED = sed
 
 .SUFFIXES:
 .SUFFIXES: .c .o
@@ -33,13 +41,13 @@ COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
 	$(COMPILE) $<
 
 # header files
-HDRS = smtp.h
+HDRS = mts.h
 
-# source
-SRCS = hosts.c smtp.c
+# source files
+SRCS = mts.c client.c
 
-# object files in libsmtp.a
-OBJS = hosts.o smtp.o
+# object files
+OBJS = mts.o client.o
 
 # auxiliary files
 AUX = Makefile.in
@@ -50,6 +58,9 @@ DIST = $(HDRS) $(SRCS) $(AUX)
 # ========= DEPENDENCIES FOR BUILDING AND INSTALLING ==========
 
 all: $(OBJS)
+
+mts.o: mts.c
+	$(COMPILE2) $<
 
 install:
 
@@ -69,14 +80,14 @@ realclean: distclean
 
 superclean: realclean
 
-# ========== DEPENDENCIES FOR LINT =================
+# ========== DEPENDENCIES FOR LINT ================
 
 lint: 
 	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
 # ========== DEPENDENCIES FOR MAINTENANCE ==========
 
-subdir = mts/smtp
+subdir = mts/generic
 
 Makefile: Makefile.in ../../config.status
 	cd ../.. && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status

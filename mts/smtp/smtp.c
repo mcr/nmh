@@ -6,7 +6,7 @@
 
 #include <h/mh.h>
 #include "smtp.h"
-#include <zotnet/mts/mts.h>
+#include <mts/generic/mts.h>
 #include <signal.h>
 #include <h/signals.h>
 #ifdef MPOP
@@ -150,7 +150,7 @@ char **smail_copyip (char **, char **, int);
 static int sm_auth_sasl(char *, char *, char *);
 #endif /* CYRUS_SASL */
 
-/* from zotnet/mts/client.c */
+/* from mts/generic/client.c */
 int client (char *, char *, char *, int, char *, int);
 
 int

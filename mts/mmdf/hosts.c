@@ -14,7 +14,7 @@
 # include "dm.h"
 #endif /* MMDFII */
 
-#include "../../zotnet/mts.h"
+#include <mts/generic/mts.h>
 
 /* 
  * We really should be careful with the number of fd's that this routine

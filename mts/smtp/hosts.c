@@ -13,7 +13,7 @@
  */
 
 #include <h/mh.h>
-#include <zotnet/mts/mts.h>
+#include <mts/generic/mts.h>
 #include <netdb.h>
 
 static struct host {
