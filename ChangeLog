@@ -1,3 +1,8 @@
+Thu Jan 25 21:15:52 2001 Shantonu Sen <ssen@mit.edu>
+
+	* man/mh-chart.man has updated synposes of
+	all nmh commands.
+
 Tue Jan 23 20:26:15 2001 Shantonu Sen <ssen@mit.edu>
 
 	* etc/digestcomps tried to force dates into a
