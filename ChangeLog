@@ -1,3 +1,15 @@
+Fri Feb 04 12:29:12 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Whoever originally added the -help switch to all the commands
+ 	got too cute and had the option itself print out as "-(help)" in
+ 	the -help output.  I guess the idea was to make reference to the
+ 	fact that clearly you know about the -help option since you're
+ 	currently looking at its output.  I think it's a bad idea to
+ 	overload the meaning of the parentheses, however -- they're
+ 	supposed to indicate what abbreviated prefix of the switch you're
+ 	allowed to specify.  It doesn't make sense to show that you're
+ 	allowed to "abbreviate" the switch to its entire length.
+
 Thu Feb 03 17:52:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied wesley.craig@umich.edu's KPOP patches.  According to him:
