@@ -160,7 +160,7 @@ unique string (generally of the format
 Rather than `USER \fIuser\fR', `PASS \fIpassword\fR', inc sends `APOP \fIuser\fR
 \fIdigest\fR', where digest is the MD5 hash of the unique string followed by a
 `secret' shared by client and server, essentially equivalent to the user's
-password (though an APOP-enabled POP3 server can have separate APOP and plain
+password (though an APOP-enabled POP3 server could have separate APOP and plain
 POP3 passwords for a single user).  `\-noapop' disables APOP in cases where it'd
 otherwise be used.
 
