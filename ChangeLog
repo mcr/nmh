@@ -1,9 +1,22 @@
+Mon Jul 17 19:10:36 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Clarified and made some corrections to Kimmo's README.developers
+	changes (BTW, if anyone can explain why the RCS Ids are able to cause
+	problems with the dependencies, please fill in the explanation --
+	I never encountered a problem with the old single-commit method).
+
 Sat Jul 15 23:13:49 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
 	* Add configure option --with-hash-backup so the backup prefix can
 	be easily changed from "," to "#".
+
 	* Simplified sbr/Makefile.in so that it works with any make.
+
 	* Use mkstemp in sbr/lock_file.c.
+
+	* Commits of autoconf-related files apparently can't all be done
+	in one shot due to RCS Ids changing when committing -- updated
+	README.developers.
 
 Tue Jul 11 14:18:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
