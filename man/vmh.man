@@ -2,9 +2,6 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
 .TH VMH %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 vmh \- visual front-end to nmh
