@@ -1,4 +1,4 @@
-Mon Mar 13 21:10:16 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Mon Mar 13 21:32:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied Sullivan N. Beck <sbeck@cise.ufl.edu>'s mhshow-suffix patch:
 
@@ -23,6 +23,13 @@ Mon Mar 13 21:10:16 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	mailbox called, for instance, "dan-nmh" (where username was "dan"
 	and $USERNAME_EXTENSION was "-nmh").
 		
+	* Applied Simon Burge <simonb@thistledown.com.au>'s dtime.c patch:
+	
+	    There's a wrap-around problem that affects the implementation
+	    of Zeller's congruence in dtime.c.  This causes the day-of-week
+	    calculations to fail for dates after Feb 29, 2000 (probably up
+	    until some year far in the future).
+
 Mon Mar 06 12:20:20 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied Neil W Rickert <rickert+nmh@cs.niu.edu>'s msh.c patch:

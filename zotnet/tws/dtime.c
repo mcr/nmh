@@ -460,6 +460,8 @@ set_dotw (struct tws *tw)
     tw->tw_wday =
 	((26 * month - 2) / 10 + day + year + year / 4
 	    - 3 * century / 4 + 1) % 7;
+    if (tw->tw_wday < 0)
+	tw->tw_wday += 7;
 
     tw->tw_flags &= ~TW_SDAY, tw->tw_flags |= TW_SIMP;
 }
