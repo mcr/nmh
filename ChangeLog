@@ -1,3 +1,14 @@
+Thu Jan 27 12:22:25 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* makedir() had multiple bugs dating back to MH.  It passed an
+	octal constant to atoi(), which interpreted it as decimal,
+	resulting in directories with no user read or execute permissions,
+	making nested directory creation fail.  Also, when creating a
+	nested directory, correct permissions were only set on the inner one.
+
+	* A second `make install' would always fail because the check for
+	whether mh_profile.5 existed was written incorrectly.
+	
 Wed Jan 26 02:22:00 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Added documentation on both types of masquerading to post's man
