@@ -447,7 +447,7 @@ if test $nmh_cv_header_termios_h_tiocgwinsz = no; then
   nmh_cv_header_sys_ioctl_h_tiocgwinsz=yes,
   nmh_cv_header_sys_ioctl_h_tiocgwinsz=no)])
   if test $nmh_cv_header_sys_ioctl_h_tiocgwinsz = yes; then
-    AC_DEFINE(GWINSZ_IN_SYS_IOCTL)
+    AC_DEFINE(GWINSZ_IN_SYS_IOCTL)dnl
   fi
 fi
  
