@@ -932,7 +932,11 @@ forwcmd (char **args)
 
 					/* foil search of .mh_profile */
     snprintf (buf, sizeof(buf), "%sXXXXXX", invo_name);
+#ifdef HAVE_MKSTEMP
+    vec[0] = (char *)mkstemp (buf);
+#else
     vec[0] = (char *)mktemp (buf);
+#endif
     vec[vecp++] = "-file";
     vec[vecp] = NULL;
     if (!msgp)

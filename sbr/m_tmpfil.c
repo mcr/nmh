@@ -14,7 +14,11 @@ m_tmpfil (char *template)
     static char tmpfil[BUFSIZ];
 
     snprintf (tmpfil, sizeof(tmpfil), "/tmp/%sXXXXXX", template);
+#ifdef HAVE_MKSTEMP
+    unlink(mkstemp(tmpfil));
+#else
     unlink(mktemp(tmpfil));
+#endif
 
     return tmpfil;
 }

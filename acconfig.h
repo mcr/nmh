@@ -246,3 +246,6 @@
 
 /* Define if your system has sigsetjmp */
 #undef HAVE_SIGSETJMP
+
+/* Define if your system has mkstemp */
+#undef HAVE_MKSTEMP

@@ -452,7 +452,12 @@ lockname (char *file, struct lockinfo *li, int isnewlock)
 	else
 	    snprintf (li->tmplock, sizeof(li->tmplock), "%.*s,LCK.XXXXXX",
 		     cp - li->curlock, li->curlock);
+#ifdef HAVE_MKSTEMP
+	mkstemp (li->tmplock);
+#else
 	mktemp (li->tmplock);
+#endif
+
 	unlink (li->tmplock);	/* remove any stray */
     }
 }

@@ -15,7 +15,11 @@ m_scratch (char *file, char *template)
     static char buffer[BUFSIZ], tmpfil[BUFSIZ];
 
     snprintf (tmpfil, sizeof(tmpfil), "%sXXXXXX", template);
+#ifdef HAVE_MKSTEMP
+    mkstemp (tmpfil);
+#else
     mktemp (tmpfil);
+#endif
     if ((cp = r1bindex (file, '/')) == file)
 	strncpy (buffer, tmpfil, sizeof(buffer));
     else

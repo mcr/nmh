@@ -346,7 +346,11 @@ main (int argc, char **argv)
 	out = stdout;
     }
     else {
+#ifdef HAVE_MKSTEMP
+	    mkstemp (tmpfil);
+#else
 	    mktemp (tmpfil);
+#endif
 	    if ((out = fopen (tmpfil, "w")) == NULL)
 		adios (tmpfil, "unable to create");
 	    chmod (tmpfil, 0600);

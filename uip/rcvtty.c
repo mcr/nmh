@@ -189,7 +189,11 @@ message_fd (char **vec)
     char tmpfil[BUFSIZ];
     struct stat st;
 
+#ifdef HAVE_MKSTEMP
+    unlink (mkstemp (strncpy (tmpfil, "/tmp/rcvttyXXXXX", sizeof(tmpfil))));
+#else
     unlink (mktemp (strncpy (tmpfil, "/tmp/rcvttyXXXXX", sizeof(tmpfil))));
+#endif
     if ((fd = open (tmpfil, O_RDWR | O_CREAT | O_TRUNC, 0600)) == NOTOK)
 	return header_fd ();
     unlink (tmpfil);
