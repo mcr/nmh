@@ -307,6 +307,9 @@
 /* Define to 1 if struct tm has gmtoff */
 #undef HAVE_TM_GMTOFF
 
+/* Define if your system has sigsetjmp */
+#undef HAVE_SIGSETJMP
+
 /* Define if you have the killpg function.  */
 #undef HAVE_KILLPG
 
@@ -327,9 +330,6 @@
 
 /* Define if you have the sigrelse function.  */
 #undef HAVE_SIGRELSE
-
-/* Define if you have the sigsetjmp function.  */
-#undef HAVE_SIGSETJMP
 
 /* Define if you have the sigsetmask function.  */
 #undef HAVE_SIGSETMASK

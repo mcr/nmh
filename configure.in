@@ -270,8 +270,12 @@ dnl CHECK FUNCTIONS
 dnl ---------------
 AC_FUNC_VFORK
 AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
-               sighold sigrelse writev lstat uname tzset killpg \
-               sigsetjmp)
+               sighold sigrelse writev lstat uname tzset killpg)
+
+dnl sigsetjmp may be a macro
+AC_MSG_CHECKING(for sigsetjmp)
+AC_TRY_LINK([#include <setjmp.h>], [sigsetjmp((void *)0, 0);],
+        [AC_DEFINE(HAVE_SIGSETJMP) AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
 
 AC_REPLACE_FUNCS(snprintf strerror strdup)
 

@@ -261,3 +261,6 @@
 
 /* Define to 1 if struct tm has gmtoff */
 #undef HAVE_TM_GMTOFF
+
+/* Define if your system has sigsetjmp */
+#undef HAVE_SIGSETJMP
