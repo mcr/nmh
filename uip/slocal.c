@@ -460,7 +460,7 @@ localmail (int fd, char *mdlvr)
 static int
 usr_delivery (int fd, char *delivery, int su)
 {
-    int i, accept, status, won, vecp, next;
+    int i, accept, status=1, won, vecp, next;
     char *field, *pattern, *action, *result, *string;
     char buffer[BUFSIZ], tmpbuf[BUFSIZ];
     char *cp, *vec[NVEC];
@@ -663,6 +663,8 @@ usr_delivery (int fd, char *delivery, int su)
 		status = 0;
 		break;
 	}
+
+	if (status) next = 0;	/* action failed, mark for 'N' result */
 
 	if (accept && status == 0)
 	    won++;
