@@ -1,3 +1,17 @@
+Fri Jan 19 21:22:08 2001 Shantonu Sen <ssen@mit.edu>
+
+	* First round of manpage updates finished. They
+	are standardized on -man macros, with minimal
+	roff mark-up.
+
+	* man/tmac.h.in is no longer needed, since the
+	manpages do not depend on them anymore. Note:
+	strict "man" programs that didn't allow ".so"
+	sourcing outside the man tree will now format
+	the man pages correctly.
+
+	* man/vmh.1 is no longer built, since uip/vmh isn't
+	
 Tue Jan 9 6:01:22 2001 Shantonu Sen <ssen@mit.edu>
 
 	* Finished manpages ali-prev
