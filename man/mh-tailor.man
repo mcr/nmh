@@ -136,7 +136,11 @@ versions of sendmail for which "plussed user" processing is active can set
 \fB$USERNAME_EXTENSION\fR to "+\fIstring\fR".  These MTA features are useful
 because they allow one to use different email addresses in different situations
 (to aid in automatic mail filtering or in determining where spammers got one's
-address) while only actually having a single account.
+address) while only actually having a single account.  Note that
+\fB$USERNAME_EXTENSION\fR is only appended to the username when \fIpost\fR is
+generating "[Resent\-]From:" lines and the SMTP envelope "From:".  \fIinc\fR,
+for instance, will not try to read from a maildrop file called "dan\-www" (to
+recall the earlier example).
 
 "draft_from" controls the most powerful type of address masquerading.  Normally,
 when a user explicitly specifies a "From:" header in a draft, \fInmh\fR uses it

@@ -70,6 +70,10 @@ static char *note = NULL;
 static char err[BUFSIZ];
 static char adr[BUFSIZ];
 
+
+extern boolean  username_extension_masquerading;  /* defined in mts.c */
+
+
 /*
  * external prototypes
  */
@@ -310,30 +314,55 @@ auxformat (struct mailname *mp, int extras)
  */
 
 char *
-adrsprintf (char *local, char *domain)
+adrsprintf (char *username, char *domain)
 {
-    static char addr[BUFSIZ];
+    int          snprintf_return;
+    static char  addr[BUFSIZ];
 
-    if (local == NULL)
+    if (username == NULL)
+	username = getusername();
+
+    if (username_extension_masquerading) {
+	/* mts.conf contains "masquerade:[...]username_extension[...]", so tack
+	   on the value of the $USERNAME_EXTENSION environment variable, if set,
+	   to username. */
+	char*        extension = getenv("USERNAME_EXTENSION");
+	static char  username_with_extension[BUFSIZ];
+
+	if (extension != NULL && *extension != '\0') {
+	    snprintf_return = snprintf(username_with_extension,
+				       sizeof(username_with_extension),
+				       "%s%s", username, extension);
+	    
+	    if (snprintf_return < 0 ||
+		snprintf_return >= sizeof(username_with_extension))
+		adios(NULL, "snprintf() error writing username (%d chars) and"
+		      " $USERNAME_EXTENSION (%d chars) to array of BUFSIZ (%d)"
+		      " chars",
+		      strlen(username), strlen(extension), BUFSIZ);
+	    
+	    username = username_with_extension;
+	}
+    }
+
 #ifdef REALLYDUMB
-	return getusername ();
-    else
-#endif /* REALLYDUMB */
-	local = getusername ();
+    return username;
+#endif
 
     if (domain == NULL)
-#ifdef REALLYDUMB
-	return local;
-    else
-#endif /* REALLYDUMB */
-	domain = LocalName ();
+	domain = LocalName();
 
 #ifndef	BANG
-    snprintf (addr, sizeof(addr), "%s@%s", local, domain);
+    snprintf_return = snprintf (addr, sizeof(addr), "%s@%s", username, domain);
 #else /* BANG */
-    snprintf (addr, sizeof(addr), "%s!%s", domain, local);
+    snprintf_return = snprintf (addr, sizeof(addr), "%s!%s", domain, username);
 #endif /* BANG */
 
+    if (snprintf_return < 0 || snprintf_return >= sizeof(addr))
+	adios(NULL, "snprintf() error writing username (%d chars), domain (%d"
+	      " chars), and 1 separator char to array of BUFSIZ (%d) chars",
+	      strlen(username), strlen(domain), BUFSIZ);
+    
     return addr;
 }
 

@@ -1,4 +1,4 @@
-Mon Mar 13 18:26:03 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Mon Mar 13 21:10:16 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Applied Sullivan N. Beck <sbeck@cise.ufl.edu>'s mhshow-suffix patch:
 
@@ -14,6 +14,14 @@ Mon Mar 13 18:26:03 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	* Removed -force_html from lynx entry in mhn.defaults.sh (I
  	believe older versions of lynx lack that option) and added
  	"mhshow-suffix-text/html: .html".
+		
+	* Modified username_extension masquerading to only use the
+	extended address on generated [Resent-]From: lines and SMTP
+	envelope From:.  With Neil's original implementation, nmh's global
+	idea of the username was changed, which would result in inc lying
+	and saying you had no new mail because it was looking for a
+	mailbox called, for instance, "dan-nmh" (where username was "dan"
+	and $USERNAME_EXTENSION was "-nmh").
 		
 Mon Mar 06 12:20:20 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 

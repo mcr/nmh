@@ -63,7 +63,7 @@ static char fullname[BUFSIZ];
 /* Variables for username masquerading: */
        boolean  draft_from_masquerading = FALSE;  /* also used from post.c */
 static boolean  mmailid_masquerading = FALSE;
-static boolean  username_extension_masquerading = FALSE;
+       boolean  username_extension_masquerading = FALSE;  /* " from addrsbr.c */
 static char*    masquerade = "";
 
 
@@ -495,18 +495,6 @@ getuserinfo (void)
     }
     if (!mmailid_masquerading || *np == '\0')
 	strncpy (username, pw->pw_name, sizeof(username));
-
-    if (username_extension_masquerading) {
-	char*  username_extension = getenv("USERNAME_EXTENSION");
-
-	if (username_extension != NULL && *username_extension != '\0')
-	    /* $USERNAME_EXTENSION environment variable has been set, so tack on
-	       its value to the actual username.  This is meant to interact with
-	       qmail's "user-extension" feature and sendmail's "plussed user"
-	       feature. */
-	    snprintf(username, sizeof(username), "%s%s",
-		     username, username_extension);
-    }
 
     /* The $SIGNATURE environment variable overrides the GECOS field's idea of
        your real name. */
