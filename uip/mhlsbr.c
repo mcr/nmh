@@ -434,6 +434,7 @@ mhl (int argc, char **argv)
 		SIGNAL (SIGINT, SIG_IGN);
 		SIGNAL2 (SIGQUIT, quitser);
 	    }
+	    SIGNAL2 (SIGPIPE, pipeser);
 	    m_popen (moreproc);
 	    ontty = PITTY;
 	} else {
