@@ -620,7 +620,7 @@ if test $nmh_cv_decl_ospeed_include_defines = no; then
 fi
  
 if test $nmh_cv_decl_ospeed_include_defines = yes; then
-  AC_DEFINE(HAVE_OSPEED)
+  AC_DEFINE(HAVE_OSPEED)dnl
 elif test $nmh_cv_decl_ospeed_must_define = yes; then
   AC_DEFINE(HAVE_OSPEED)
   AC_DEFINE(MUST_DEFINE_OSPEED)
