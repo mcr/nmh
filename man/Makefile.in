@@ -145,6 +145,8 @@ install-man5:
 	for file in $(MAN5); do \
 	  $(INSTALL_DATA) $$file $(mandir)/man$(manext5) ; \
 	done
+	( cd $(mandir)/man$(manext5) ; ln mh-profile.$(manext5) \
+          mh_profile.$(manext5) )
 
 # install the man pages in man8
 install-man8:

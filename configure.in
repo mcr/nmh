@@ -288,6 +288,7 @@ AC_CHECK_HEADERS(string.h memory.h stdlib.h unistd.h errno.h fcntl.h \
                  sys/param.h sys/time.h sys/utsname.h arpa/inet.h \
                  arpa/ftp.h)
 
+
 AC_CACHE_CHECK(POSIX termios, nmh_cv_sys_posix_termios,
 [AC_TRY_LINK([#include <sys/types.h>
 #include <unistd.h>
@@ -321,6 +322,15 @@ if test $nmh_cv_header_termios_h_tiocgwinsz = no; then
   fi
 fi
  
+dnl
+dnl Checks for _IO_write_ptr. A Linuxism used by nmh on linux. We
+dnl really use a whole set of them, but this check should be
+dnl sufficient.
+dnl
+AC_CHECK_HEADER(libio.h, [
+  AC_EGREP_HEADER(_IO_write_ptr, libio.h, [
+    AC_DEFINE(LINUX_STDIO) ]) ]) 
+
 AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM))
 
 dnl ---------------
@@ -575,9 +585,6 @@ case "$target_os" in
   sunos4*)
     AC_DEFINE(BIND)
     AC_DEFINE(BSD42)
-    ;;
-  linux*)
-    AC_DEFINE(LINUX_STDIO)
     ;;
   freebsd*)  
     AC_DEFINE(BIND)

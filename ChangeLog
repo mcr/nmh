@@ -1,3 +1,13 @@
+Wed Oct 13 15:53:53 1999 Doug Morris <doug@mhost.com>
+
+	* Updated manpages Makefile to link mh-profile.5 to
+	mh_profile.5 after installation. Suggestion from Richard Cohen
+        <richard@jubjub.demon.co.uk>.
+
+	* Modified configure.in to check for _IO_write_ptr and libio.h
+	to determine whether to define LINUX_STDIO instead of using 
+	config.guess.
+
 Mon Oct 4 15:22:46 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Added '-L' to the calls of 'ls' in configure.in -- I have seen
@@ -35,7 +45,7 @@ Mon Sep 13 21:20:10 1999 Doug Morris <doug@mhost.com>
 	it's needed for ioctl() anyway. This prevents a warning about
 	implicit definition of ioctl().
 
-	* Moved guesses preformed by AC_CANONICAL_SYSTEM back into the
+	* Moved guesses performed by AC_CANONICAL_SYSTEM back into the
 	"User Configuration" section of config.h (moved @TOP@ in
 	acconfig.h) so they're easier to find, should someone actually
 	want to mess with them.

@@ -121,24 +121,24 @@
  * thing. If so, you can modify the definitions. The Comments are as
  * useful as ever. */
 
+/* these three are only used in vmh.c, which currently is not being
+ * built anyway. -Doug */
 /* Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX, SCO5 */
 #undef SYS5
-
 /* Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX */
 #undef SVR4
+/* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS */
+#undef BSD44
 
 /* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS -- does
  * PicoBSD have uname? :) */
 #undef BIND
 #undef BSD42
 
-/* Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS */
-#undef BSD44
-
 /* Defined for SCO5 */
 #undef SCO_5_STDIO
 
-/* Defined for Linux */
+/* This tells nmh to use the Linux _IO_*_ptr defines from libio.h */ 
 #undef LINUX_STDIO
 
 
