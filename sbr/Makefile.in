@@ -57,7 +57,7 @@ SRCS = add.c addrsbr.c ambigsw.c atooi.c brkstring.c			\
 	context_find.c context_foil.c context_read.c			\
 	context_replace.c context_save.c copy.c				\
 	copyip.c cpydata.c cpydgst.c discard.c done.c dtime.c dtimep.c	\
-	error.c	ext_hook.o fdcompare.c folder_addmsg.c folder_delmsgs.c	\
+	error.c	ext_hook.c fdcompare.c folder_addmsg.c folder_delmsgs.c	\
 	folder_free.c folder_pack.c folder_read.c			\
 	folder_realloc.c gans.c	getans.c getanswer.c			\
 	getarguments.c getcpy.c getfolder.c getpass.c			\
