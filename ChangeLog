@@ -1,3 +1,15 @@
+Thu Dec 14 1:30:44 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Fixed the circular dependency created when I moved
+	zotnet/mts to mts/generic and merged them into libmts.
+	mts/generic/client.c and mts/generic/mts.c are now in sbr/
+	(and thus in libmh), which makes libmh self-contained and
+	not depending on an external archive.
+
+	* All include statements now look for mts.h in h/. The
+	Makefiles and configure script have been modified so that
+	mts/generic is no longer built.
+
 Mon Dec 11 22:08:07 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* When Shantonu made the new libmts.a, he swapped $(MTSLIB) and
