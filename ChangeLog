@@ -1,4 +1,4 @@
-Fri May 30 17:18:22 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Fri May 30 17:51:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* etc/Makefile.in was incorrectly installing mts.conf.in and
  	sendfiles.in -- fixed.  Changed the suffix for the backed-up
@@ -7,6 +7,9 @@ Fri May 30 17:18:22 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	different from the newly-installed versions (intentionally didn't
  	redirect output to /dev/null so you'll notice when your changed
  	versions are getting moved aside).
+
+	* INSTALL never documented the etc/*.old thing.  Documented the
+	new etc/*.prev thing (including a note to watch for diff output).
 
 Mon May 29 7:48:15 2000 Shantonu Sen <ssen@mit.edu>
 
