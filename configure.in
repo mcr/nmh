@@ -714,7 +714,7 @@ if test x"$enable_pop" = x"yes"; then
         if test x"$enable_apop" = x"yes"; then
                 pop_kinds="${pop_kinds} apop"
         fi
-        if test x"$with_krb4" = x"yes"; then
+	if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
                 pop_kinds="${pop_kinds} kpop"
         fi
         if test "$pop_kinds" = "yes (pop"; then
