@@ -1,4 +1,4 @@
-Mon Feb 05 19:39:06 2001 Dan Harkless <dan-nmh@dilvish.speed.net>
+Mon Feb 05 20:22:54 2001 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* -L isn't sufficient for specifying the path of the Cyrus SASL
 	shared library.  That'll allow us to link successfully, but on
@@ -10,6 +10,10 @@ Mon Feb 05 19:39:06 2001 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Print whether we have SASL support in the "nmh configuration"
 	summary configure prints out.
+
+	* Say in README.developers to use `\date' in case anyone is like
+ 	me and has `date' aliased in their shell to use a nonstandard (but
+ 	subjectively more readable) format.
 
 Thu Jan 25 21:15:52 2001 Shantonu Sen <ssen@mit.edu>
 

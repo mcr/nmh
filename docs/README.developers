@@ -44,7 +44,7 @@ around with `touch'.
 The correct procedure to commit the configure-related files is:
 
     % cvs commit acconfig.h aclocal.m4 configure.in
-    % autoheader; autoconf; date > stamp-h.in
+    % autoheader; autoconf; \date > stamp-h.in
     % cvs commit config.h.in configure stamp-h.in
 
 The reason for the three-step commit is that configure.in contains the RCS $Id
@@ -53,7 +53,8 @@ the autoconf regeneration should be held off until after the commit, or your
 local stamp-h.in will become out-of-sync with the CVS version (granted, not that
 big a deal).  For the second step, you're doing the same commands as a 
 `make reset' would do, but using that command would require extra configure runs
-to make Makefile be up-to-date.
+to make Makefile be up-to-date.  The reason for the backslash on `date' is in
+case you have `date' aliased in your shell to use a nonstandard format.
 
 If you haven't changed all the files noted above, just commit the ones you have
 changed, in the stated order (for instance, configure.in, then configure and
