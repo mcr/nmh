@@ -19,23 +19,3 @@ AC_DEFUN(AC_CHECK_NETLIBS,
 AC_CHECK_FUNC(socket, ,
   AC_CHECK_LIB(socket, socket))
 ])
-
-
-# This checks for the function ruserpass.
-#
-# 1) first, check for ruserpass
-# 2) else, check for _ruserpass
-# 3) else, check for _ruserpass in libsocket
-# 4) else, build version of ruserpass in nmh/sbr
-AC_DEFUN(AC_CHECK_RUSERPASS,
-[AC_CHECK_FUNC(ruserpass, ,
-  AC_CHECK_FUNC(_ruserpass, ,
-    AC_CHECK_LIB(socket, _ruserpass)))
-if test x$ac_cv_func_ruserpass = xno; then
-  if test x$ac_cv_func__ruserpass = xyes -o x$ac_cv_lib_socket__ruserpass = xyes; then
-    AC_DEFINE(ruserpass, _ruserpass)
-  else
-    LIBOBJS="$LIBOBJS ruserpass.o"
-  fi
-fi
-])
