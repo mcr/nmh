@@ -342,8 +342,25 @@ if test "$lspath" != "no" -a "$cutpath" != "no"; then
   fi])
 fi
 
-dnl ...If it's not, we need to #define MAILGROUP to 1 and make inc setgid.
-if test x"$nmh_cv_mailspool_world_writable" = x"no"; then
+dnl Also, check for liblockfile (as found on Debian systems)
+AC_CHECK_HEADER(lockfile.h, AC_CHECK_LIB(lockfile, lockfile_create) )
+
+dnl and whether its companion program dotlockfile is setgid
+AC_PATH_PROG(dotlockfilepath, dotlockfile, no)
+if test "$ac_cv_lib_lockfile_lockfile_create" != "no" ; then
+  if test "$ac_cv_path_dotlockfilepath" != "no" ; then
+    AC_CACHE_CHECK(whether dotlockfile is setgid, nmh_cv_dotlockfile_setgid,
+    [ if test -g "$ac_cv_path_dotlockfilepath" ; then
+        nmh_cv_dotlockfile_setgid=yes
+      else
+        nmh_cv_dotlockfile_setgid=no
+      fi])
+  fi
+fi
+
+dnl If mailspool is not world-writable and dotlockfile is not setgid,
+dnl we need to #define MAILGROUP to 1 and make inc setgid.
+if test x"$nmh_cv_mailspool_world_writable" = x"no" -a x"$nmh_cv_dotlockfile_setgid" != x"yes" ; then
   dnl do we really need both of these?
   AC_DEFINE(MAILGROUP)dnl
   SETGID_MAIL=1
@@ -469,9 +486,6 @@ for lib in $termcap_curses_order; do
   AC_CHECK_LIB(${lib}, tgetent, [TERMLIB="-l$lib"; break])
 done
 AC_SUBST(TERMLIB)dnl
-
-dnl Check for liblockfile (as found on Debian systems)
-AC_CHECK_HEADER(lockfile.h, AC_CHECK_LIB(lockfile, maillock) )
 
 dnl --------------
 dnl CHECK FOR NDBM
