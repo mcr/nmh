@@ -1,6 +1,9 @@
-Fri Apr 14 18:50:11 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Fri Apr 14 23:10:44 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
-	* Upped the version number to 1.0.4+dev for further development.
+	* Upped the version number to 1.0.4+dev until the next nmh release.
+
+	* Added a "releasing nmh" section to README.developers, while the
+ 	process was fresh in my mind.
 	
 Fri Apr 14 18:21:34 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
