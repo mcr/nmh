@@ -244,6 +244,7 @@ main (int argc, char **argv)
     struct stat st, s1;
     FILE *aud = NULL;
     char	b[MAXPATHLEN + 1];
+    char	*maildir_copy;		/* copy of mail directory because the static gets overwritten */
 
 #ifdef POP
     int nmsgs, nbytes, p = 0;
@@ -547,6 +548,9 @@ main (int argc, char **argv)
 	folder = getfolder (0);
     maildir = m_maildir (folder);
 
+    if ((maildir_copy = strdup(maildir)) == (char *)0)
+        adios (maildir, "error allocating memory to copy maildir");
+
     if (stat (maildir, &st) == NOTOK) {
 	if (errno != ENOENT)
 	    adios (maildir, "error on folder");
@@ -828,7 +832,7 @@ go_to_it:
 		 *  Run the external program hook on the message.
 		 */
 
-		(void)snprintf(b, sizeof (b), "%s/%d", maildir, msgnum + 1);
+		(void)snprintf(b, sizeof (b), "%s/%d", maildir_copy, msgnum + 1);
 		(void)ext_hook("add-hook", b, (char *)0);
 
 		if (aud)
