@@ -18,7 +18,7 @@ VPATH  = @srcdir@
 # If `make' is executed in the directory containing this Makefile,
 # any changes made in this section will override the values of
 # these parameters in makefiles in any of the subdirectories.
- 
+
 prefix      = @prefix@
 exec_prefix = @exec_prefix@
 
@@ -33,7 +33,7 @@ etcdir      = @sysconfdir@
 
 # location of man pages
 mandir      = @mandir@
- 
+
 # location of incoming mail
 mailspool   = @mailspool@
 
@@ -52,7 +52,7 @@ DEFS     = @DEFS@
 CFLAGS   = @CFLAGS@
 LDFLAGS  = @LDFLAGS@
 LIBS     = @LIBS@
- 
+
 # ========== YOU SHOULDN'T HAVE TO CHANGE ANYTHING BELOW HERE ==========
 
 # flags passed to recursive makes in subdirectories
