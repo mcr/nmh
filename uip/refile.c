@@ -400,7 +400,7 @@ m_file (char *msgfile, struct st_fold *folders, int nfolders, int preserve, int 
     struct st_fold *fp, *ep;
 
     for (fp = folders, ep = folders + nfolders; fp < ep; fp++) {
-	if ((msgnum = folder_addmsg (&fp->f_mp, msgfile, 1, 0, preserve, nfolders == 1 && refile)) == -1)
+	if ((msgnum = folder_addmsg (&fp->f_mp, msgfile, 1, 0, preserve, nfolders == 1 && refile, maildir)) == -1)
 	    return 1;
     }
     return 0;

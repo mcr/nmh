@@ -20,7 +20,7 @@
 
 int
 folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
-               int unseen, int preserve, int deleting)
+               int unseen, int preserve, int deleting, char *from_dir)
 {
     int infd, outfd, linkerr, first_time, msgnum;
     char *nmsg, newmsg[BUFSIZ];
@@ -142,7 +142,7 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 	if (link (msgfile, newmsg) != -1) {
 
 	    if (deleting) {
-		(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", pwd(), msgfile);
+		(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", from_dir, msgfile);
 		(void)ext_hook("ref-hook", oldmsg, newmsg);
 	    }
 	    else
@@ -198,7 +198,7 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 		    close (outfd);
 
 		    if (deleting) {
-			(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", pwd(), msgfile);
+			(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", from_dir, msgfile);
 			(void)ext_hook("ref-hook", oldmsg, newmsg);
 		    }
 		    else

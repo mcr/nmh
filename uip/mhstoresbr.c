@@ -920,7 +920,7 @@ output_content_folder (char *folder, char *filename)
     /* Read the folder. */
     if ((mp = folder_read (folder))) {
 	/* Link file into folder */
-	msgnum = folder_addmsg (&mp, filename, 0, 0, 0, 0);
+	msgnum = folder_addmsg (&mp, filename, 0, 0, 0, 0, (char *)0);
     } else {
 	advise (NULL, "unable to read folder %s", folder);
 	return NOTOK;

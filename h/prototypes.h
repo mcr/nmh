@@ -51,7 +51,7 @@ void discard (FILE *);
 int done (int);
 int ext_hook(char *, char *, char *);
 int fdcompare (int, int);
-int folder_addmsg (struct msgs **, char *, int, int, int, int);
+int folder_addmsg (struct msgs **, char *, int, int, int, int, char *);
 int folder_delmsgs (struct msgs *, int, int);
 void folder_free (struct msgs *);
 int folder_pack (struct msgs **, int);
