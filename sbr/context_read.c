@@ -126,7 +126,7 @@ context_read (void)
 
     if ((ib = lkfopen (ctxpath, "r"))) {
 	readconfig ((struct node **) 0, ib, cp, 1);
-	lkfclose (ib);
+	lkfclose (ib, ctxpath);
     }
 
     return;
