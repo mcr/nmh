@@ -12,8 +12,8 @@ originally based on the package MH-6.8.3, and is intended to be
 a (mostly) compatible drop-in replacement for MH.
 
 Although development of nmh is ongoing, it appears to be generally
-stable and is in current use.  But it is possible that I may break
-things as changes are made.
+stable and is in current use.  But it is possible that we may
+break things as changes are made.
 
 --------------
 installing nmh
@@ -31,26 +31,22 @@ for nmh, check the FAQ included in this distribution.
 ---------------
 nmh maintenance
 ---------------
-nmh is currently being developed and maintained by
-Richard Coleman <coleman@math.gatech.edu>.  Please send bug reports
-and suggestions to the nmh development mailing list at
-nmh-workers@math.gatech.edu.
+nmh is currently being developed and maintained by a loosely organized
+group of volunteers. Please send bug reports and suggestions to the
+nmh development mailing list at nmh-workers@mhost.com.
 
 ----------------
 acknowledgments
 ----------------
-I would like to give credit where it is due.  nmh could never have
-been developed without all the hard work that the RAND Corporation
-and the University of California put into the development of the
-MH message system, that nmh is based on.
+The original MH system was developed by the RAND Corporation and the
+University of California.
 
-Also, since I've used the version of (v)snprintf() from the
-Apache web server, I need to make the following acknowlegement:
+nmh was started by Richard Coleman (coleman@math.gatech.edu) after
+development on MH mostly stopped. He did the original autoconfiscation
+and most of the other work up until version 1.0.
+
+nmh uses (v)snprintf code from the Apache web server, so we need to
+make the following acknowlegement:
 
 This product includes software developed by the Apache Group
 for use in the Apache HTTP server project (http://www.apache.org/).
-
---
-Richard Coleman
-coleman@math.gatech.edu
-http://www.math.gatech.edu/~coleman/

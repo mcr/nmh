@@ -107,7 +107,8 @@ need an ANSI C compiler such as gcc.
    If you have specialized programs to handle various types, you will need
    to edit the `mhn.defaults' file manually.  The syntax of this file is
    described in the man page for `mhn', and in section 9.4 of the book
-   "MH & xmh: Email for Users and Programmers", 3rd edition, by Jerry Peek.
+   "MH & xmh: Email for Users and Programmers", 3rd edition, by Jerry Peek,
+   on the Internet at <http://www.ics.uci.edu/~mh/book/mh/confmhn.htm>.
 
 9) Add an optional global mh.profile, if desired.  This profile should be
    placed in the nmh `etc' directory with the name `mh.profile'.  This
@@ -225,5 +226,5 @@ Options for configure
     Enable debugging support.
 
 --
-Richard Coleman
-coleman@math.gatech.edu
+The nmh team
+nmh-workers@mhost.com
