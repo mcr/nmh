@@ -184,6 +184,7 @@ static int (*eom_action)() = NULL;
 # define _ptr    _p		/* Gag   */
 # define _cnt    _r		/* Retch */
 # define _filbuf __srget	/* Puke  */
+# define DEFINED__FILBUF_TO_SOMETHING_SPECIFIC
 #endif
 
 #ifdef SCO_5_STDIO
@@ -191,6 +192,11 @@ static int (*eom_action)() = NULL;
 # define _cnt  __cnt
 # define _base __base
 # define _filbuf(fp)  ((fp)->__cnt = 0, __filbuf(fp))
+# define DEFINED__FILBUF_TO_SOMETHING_SPECIFIC
+#endif
+
+#ifndef DEFINED__FILBUF_TO_SOMETHING_SPECIFIC
+extern int  _filbuf(FILE*);
 #endif
 
 
@@ -572,7 +578,7 @@ m_unknown(FILE *iob)
     pat_map = (unsigned char **) calloc (256, sizeof(unsigned char *));
 
     for (cp = (char *) fdelim + 1; cp < (char *) delimend; cp++ )
-	pat_map[*cp] = (unsigned char *) cp;
+	pat_map[(int)*cp] = (unsigned char *) cp;
 
     if (msg_style == MS_MMDF) {
 	/* flush extra msg hdrs */
