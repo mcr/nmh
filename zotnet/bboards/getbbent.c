@@ -5,6 +5,7 @@
  * $Id$
  */
 
+#include "h/mh.h"   /* for snprintf() */
 #include <h/nmh.h>
 
 #ifdef MMDFONLY
@@ -91,7 +92,7 @@ static void BBread (void);
 static int getbbitem (struct bboard *, char *, int (*)());
 static int  bblose (char *, ...);
 static char *bbskip (char *, char);
-static char *getcpy (char *);
+static char *our_getcpy (char *);
 
 
 int
@@ -533,19 +534,19 @@ getbbcpy (struct bboard *bp)
     if (b == NULL)
 	return NULL;
 
-    b->bb_name = getcpy (bp->bb_name);
-    b->bb_file = getcpy (bp->bb_file);
-    b->bb_archive = getcpy (bp->bb_archive);
-    b->bb_info = getcpy (bp->bb_info);
-    b->bb_map = getcpy (bp->bb_map);
-    b->bb_passwd = getcpy (bp->bb_passwd);
+    b->bb_name = our_getcpy (bp->bb_name);
+    b->bb_file = our_getcpy (bp->bb_file);
+    b->bb_archive = our_getcpy (bp->bb_archive);
+    b->bb_info = our_getcpy (bp->bb_info);
+    b->bb_map = our_getcpy (bp->bb_map);
+    b->bb_passwd = our_getcpy (bp->bb_passwd);
     b->bb_flags = bp->bb_flags;
     b->bb_count = bp->bb_count;
     b->bb_maxima = bp->bb_maxima;
-    b->bb_date = getcpy (bp->bb_date);
-    b->bb_addr = getcpy (bp->bb_addr);
-    b->bb_request = getcpy (bp->bb_request);
-    b->bb_relay = getcpy (bp->bb_relay);
+    b->bb_date = our_getcpy (bp->bb_date);
+    b->bb_addr = our_getcpy (bp->bb_addr);
+    b->bb_request = our_getcpy (bp->bb_request);
+    b->bb_relay = our_getcpy (bp->bb_relay);
 
     for (p = bp->bb_aka; *p; p++)
 	continue;
@@ -553,7 +554,7 @@ getbbcpy (struct bboard *bp)
 	q = (char **) calloc ((unsigned) (p - bp->bb_aka + 1), sizeof *q);
     if (q == NULL)
 	return NULL;
-    for (p = bp->bb_aka; *p; *q++ = getcpy (*p++))
+    for (p = bp->bb_aka; *p; *q++ = our_getcpy (*p++))
 	continue;
     *q = NULL;
 
@@ -563,7 +564,7 @@ getbbcpy (struct bboard *bp)
 	q = (char **) calloc ((unsigned) (p - bp->bb_leader + 1), sizeof *q);
     if (q == NULL)
 	return NULL;
-    for (p = bp->bb_leader; *p; *q++ = getcpy (*p++))
+    for (p = bp->bb_leader; *p; *q++ = our_getcpy (*p++))
 	continue;
     *q = NULL;
 
@@ -573,7 +574,7 @@ getbbcpy (struct bboard *bp)
 	q = (char **) calloc ((unsigned) (p - bp->bb_dist + 1), sizeof *q);
     if (q == NULL)
 	return NULL;
-    for (p = bp->bb_dist; *p; *q++ = getcpy (*p++))
+    for (p = bp->bb_dist; *p; *q++ = our_getcpy (*p++))
 	continue;
     *q = NULL;
 
@@ -718,7 +719,7 @@ bbskip (char *p, char c)
 
 
 static char *
-getcpy (char *s)
+our_getcpy (char *s)
 {
     register char *p;
     size_t len;
