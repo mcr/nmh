@@ -35,12 +35,13 @@ need an ANSI C compiler such as gcc.
 
 4) make install
 
-   Note that if you have [n]mh files in your install directories with the same
-   names as the files being installed, the old ones will get overwritten without
-   any warning.  The only directory that isn't true for is the `etc' directory
-   -- in that directory, the previous copy of each <file> will be backed up as
-   <file>.prev if it differs from the newly-installed copy.  Watch for any diff
-   output while make is processing that directory to see if you need to merge
+   Note that if you have [n]mh files in your install directories with
+   the same names as the files being installed, the old ones will get
+   overwritten without any warning.  The only directory that isn't
+   true for is the `etc' directory -- in that directory, the previous
+   copy of each <file> will be backed up as <file>.prev if it differs
+   from the newly-installed copy.  Watch for any diff output while
+   make is processing that directory to see if you need to merge
    changes from *.prev files into the new versions.
 
 5) Edit the file `mts.conf' (installed in the nmh `etc' directory)
@@ -207,6 +208,21 @@ Options for configure
      config.h if you want to use KPOP exclusively (rather than being able
      to switch between KPOP and normal POP3).  See the comments inside
      config.h for details.
+
+--with-locking=LOCKTYPE    (DEFAULT is dot)
+     Specify the locking mechanism when attempting to "inc" or
+     "msgchk" a local mail spool. Valid options are "dot",
+     "fcntl", "flock", and "lockf". Of the four, dot-locking
+     requires no special kernel or filesystem support, and simply
+     creates a file called "FILE.lock" to indicate that "FILE" is
+     locked.
+
+     In order to be effective, you should contact the site
+     administrator to find out what locking mechanisms other
+     mail delivery and user programs respect. The most common
+     reason not to use dot-locking is if the mail spool directory
+     is not world- or user-writeable, and thus a lock file cannot
+     be created.
 
 --with-mts=MTS   (DEFAULT is smtp)
      Specify the default mail transport system you want to use.  The two
