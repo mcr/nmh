@@ -509,10 +509,11 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 		read (fileno (stdout), prompt, sizeof(prompt));
 	    }
 	    SIGNAL (SIGINT, istat);
-	    if (intr != OK) {
+	    if (intr != OK || prompt[0] == 'n') {
 		(*ct->c_ceclosefnx) (ct);
 		return (alternate ? DONE : NOTOK);
 	    }
+	    if (prompt[0] == 'q') done(OK);
 	}
     }
 

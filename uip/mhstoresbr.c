@@ -218,7 +218,7 @@ store_application (CT ct)
      * attribute/value pairs which specify if this a tar file.
      */
     if (!ct->c_storeproc && ct->c_subtype == APPLICATION_OCTETS) {
-	int tarP = 0, zP = 0;
+	int tarP = 0, zP = 0, gzP = 0;
 
 	for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
 	    /* check for "type=tar" attribute */
@@ -236,18 +236,28 @@ store_application (CT ct)
 		zP = 1;
 		continue;
 	    }
+	    /* check for "conversions=gzip" attribute */
+	    if ((!strcasecmp (*ap, "conversions") || !strcasecmp (*ap, "x-conversions"))
+		&& (!strcasecmp (*ep, "gzip") || !strcasecmp (*ep, "x-gzip"))) {
+		gzP = 1;
+		continue;
+	    }
 	}
 
 	if (tarP) {
 	    ct->c_showproc = add (zP ? "%euncompress | tar tvf -"
-				  : "%etar tvf -", NULL);
+				  : (gzP ? "%egzip -dc | tar tvf -"
+				     : "%etar tvf -"), NULL);
 	    if (!ct->c_storeproc) {
 		if (autosw) {
 		    ct->c_storeproc = add (zP ? "| uncompress | tar xvpf -"
-					   : "| tar xvpf -", NULL);
+					   : (gzP ? "| gzip -dc | tar xvpf -"
+					      : "| tar xvpf -"), NULL);
 		    ct->c_umask = 0022;
 		} else {
-		    ct->c_storeproc= add (zP ? "%m%P.tar.Z" : "%m%P.tar", NULL);
+		    ct->c_storeproc= add (zP ? "%m%P.tar.Z"
+				          : (gzP ? "%m%P.tar.gz"
+					     : "%m%P.tar"), NULL);
 		}
 	    }
 	}

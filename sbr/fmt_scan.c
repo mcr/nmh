@@ -760,9 +760,6 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		len -= sp - lp + 1;
 		while (cp < ep && lp <= sp)
 		    *cp++ = *lp++;
-		*cp++ = '\n';
-		for (i=indent; cp < ep && i > 0; i--)
-		    *cp++ = ' ';
 		while (isspace(*lp))
 		    lp++, len--;
 		if (*lp) {

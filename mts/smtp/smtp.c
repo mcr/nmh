@@ -1011,16 +1011,17 @@ sm_wstream (char *buffer, int len)
 }
 
 
-#ifdef _AIX
 /*
- * AIX by default will inline the strlen and strcpy commands by redefining
- * them as __strlen and __strcpy respectively.  This causes compile problems
- * with the #ifdef MPOP in the middle.  Should the #ifdef MPOP be removed,
- * remove these #undefs.
+ * On some systems, strlen and strcpy are defined as preprocessor macros.  This
+ * causes compile problems with the #ifdef MPOP in the middle.  Should the
+ * #ifdef MPOP be removed, remove these #undefs.
  */
+#ifdef strlen
 # undef strlen
+#endif
+#ifdef strcpy
 # undef strcpy
-#endif /* _AIX */
+#endif
 
 static int
 sm_werror (void)

@@ -73,7 +73,7 @@ INSTALL_DATA    = @INSTALL_DATA@
 DIST = README INSTALL MACHINES COPYRIGHT VERSION DIFFERENCES FAQ \
        TODO COMPLETION-ZSH COMPLETION-TCSH MAIL.FILTERING \
        ChangeLog install-sh mkinstalldirs Makefile.in aclocal.m4 \
-       acconfig.h config.h.in configure.in configure stamp-h.in
+       acconfig.h config.h.in configure.in configure stamp-h.in config.sub config.guess
 
 # subdirectories in distribution
 SUBDIRS = h config sbr zotnet mts uip etc man

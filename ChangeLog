@@ -1,3 +1,20 @@
+Sat Sep 25 18:40:43 1999 Ruud de Rooij <ruud@ruud.org>
+
+	* Added config.sub and config.guess to the list of files to be
+	distributed.
+
+	* Fixed bug in sbr/fmt_scan.c where an extra newline would be
+	added if a list of addresses was split over several header lines.
+
+	* In mts/smtp/smtp.c, undefine strlen and strcpy if they are
+	macros, regardless of platform.
+
+	* Allow q to quit mhshow, and n to skip to next part.  Patch from
+	Kimmo Suominen <kim@tac.nyc.ny.us>.
+
+	* Modified mhstore to recognize attachments created by sendfiles
+	with x-conversions=gzip.
+
 Mon Sep 13 21:20:10 1999 Doug Morris <doug@mhost.com>
 
 	* added explicit cast to long from time_t for tclock in
