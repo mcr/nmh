@@ -15,7 +15,7 @@ hostable: %etcdir%/hosts
 
 # Uncomment the following line to allow username masquerading.  Any or all of
 # the three types of masquerading may be used (see mh-tailor(5) for details).
-#masquerade: draft_from mmailid plussed_user
+#masquerade: draft_from mmailid username_extension
 
 # Default location of mail drops.  If this option is
 # set, but empty, the user's home directory is used.

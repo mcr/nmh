@@ -1,3 +1,12 @@
+Fri Mar 03 16:07:33 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Changed the new "plussed_user" option to mts.conf's
+ 	"masquerade:" to "username_extension" after getting feedback from
+ 	qmail users, who use '-' as a separator rather than '+'.  Removed
+ 	checking of $USERPLUS variable.  Now check $USERNAME_EXTENSION,
+ 	which needs to include the appropriate separator for your MTA
+ 	('-', '+', or whatever) as its first character.
+		
 Thu Mar 02 23:04:30 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Added a new "boolean" type to mh.h and TRUE and FALSE constants.
