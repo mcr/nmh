@@ -1,3 +1,11 @@
+Mon Apr 17 19:01:00 2000 Shantonu Sen <ssen@mit.edu>
+
+	* APOP support can be compiled in to inc and msgchk using
+	--enable-apop.
+
+	* To access an APOP host, specify -apop on the command line
+	along with any -host or -user option.
+
 Fri Apr 14 23:10:44 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Upped the version number to 1.0.4+dev until the next nmh release.
