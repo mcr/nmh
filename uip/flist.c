@@ -232,9 +232,11 @@ main(int argc, char **argv)
 			(size_t) (maxfolders * sizeof(*foldersToDo)))))
 		    adios (NULL, "unable to reallocate folder name storage");
 	    }
-	    if (*cp == '+')
-		++cp;
-	    foldersToDo[numfolders++] = cp;
+	    if (*cp == '+' || *cp == '@') {
+		foldersToDo[numfolders++] =
+		    path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+	    } else
+		foldersToDo[numfolders++] = cp;
 	}
     }
 
