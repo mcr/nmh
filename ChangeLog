@@ -1,3 +1,20 @@
+Tue Jan 25 22:58:12 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Doug's portability fix of my setgid inc autodetection had a
+ 	caching bug -- if you re-ran configure, uip/Makefile would be
+ 	corrupted, and installation would fail on OSes where inc needs to
+ 	be setgid.
+
+	* Implemented a new kind of email address masquerading.  When a
+ 	user writes a custom "From:" header in a draft, nmh uses it rather
+ 	than generating one.  However, the user's true address is used in
+ 	the SMTP envelope "From:" and is revealed in the "Sender:" header.
+  	Now, when mmailid is set to non-zero, the envelope "From:" uses
+ 	the address specified in the draft "From:" header, and there is no
+ 	"Sender:" header.  This is useful when sending on behalf of a
+ 	remote POP3 account or when remote mail robots incorrectly use the
+ 	envelope "From:" in preference to the body "From:".
+
 Mon Jan 24 22:26:06 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Got rid of the rest of the gcc -Wall warnings that I didn't have
