@@ -819,7 +819,7 @@ static char *yy_last_accepting_cpos;
 char *yytext;
 #line 1 "dtimep.lex"
 #define INITIAL 0
-#line 6 "dtimep.lex"
+#line 2 "dtimep.lex"
 #include <h/nmh.h>
 #include <h/tws.h>
 
@@ -1153,7 +1153,7 @@ YY_DECL
 	register char *yy_cp = NULL, *yy_bp = NULL;
 	register int yy_act;
 
-#line 226 "dtimep.lex"
+#line 222 "dtimep.lex"
 
 
   /* This section begins the definition of dparsetime().
@@ -1253,7 +1253,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 241 "dtimep.lex"
+#line 237 "dtimep.lex"
 {
                                      INIT();
 				     SETWDAY();
@@ -1269,7 +1269,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 254 "dtimep.lex"
+#line 250 "dtimep.lex"
 {
                                      INIT();
 				     SETWDAY();
@@ -1285,7 +1285,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 266 "dtimep.lex"
+#line 262 "dtimep.lex"
 {
                                      INIT();
 				     SETDAY();
@@ -1299,7 +1299,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 276 "dtimep.lex"
+#line 272 "dtimep.lex"
 {
                                      INIT();
 				     SETWDAY();
@@ -1315,7 +1315,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 288 "dtimep.lex"
+#line 284 "dtimep.lex"
 {
                                      INIT();
 				     SETWDAY();
@@ -1329,7 +1329,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 298 "dtimep.lex"
+#line 294 "dtimep.lex"
 {
                                      INIT();
 				     SETMON();
@@ -1343,7 +1343,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 308 "dtimep.lex"
+#line 304 "dtimep.lex"
 {
                                      INIT();
 				     SETMON();
@@ -1355,7 +1355,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 316 "dtimep.lex"
+#line 312 "dtimep.lex"
 {
                                      INIT();
 				     if(europeandate) {
@@ -1377,7 +1377,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 334 "dtimep.lex"
+#line 330 "dtimep.lex"
 {
                                      INIT();
 				     if(europeandate) {
@@ -1397,17 +1397,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 351 "dtimep.lex"
+#line 347 "dtimep.lex"
 
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 352 "dtimep.lex"
+#line 348 "dtimep.lex"
 tw.tw_hour += 12;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 354 "dtimep.lex"
+#line 350 "dtimep.lex"
 {
                                     INIT();
                                     SKIPTOD();
@@ -1420,7 +1420,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 363 "dtimep.lex"
+#line 359 "dtimep.lex"
 {
                                     INIT();
                                     SKIPTOD();
@@ -1434,92 +1434,92 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 373 "dtimep.lex"
+#line 369 "dtimep.lex"
 INIT(); SETZONE(0);
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 374 "dtimep.lex"
+#line 370 "dtimep.lex"
 INIT(); SETZONE(0);
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 375 "dtimep.lex"
+#line 371 "dtimep.lex"
 INIT(); SETZONE(-500);
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 376 "dtimep.lex"
+#line 372 "dtimep.lex"
 INIT(); SETDST(); SETZONE(-500);
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 377 "dtimep.lex"
+#line 373 "dtimep.lex"
 INIT(); SETZONE(-600);
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 378 "dtimep.lex"
+#line 374 "dtimep.lex"
 INIT(); SETDST(); SETZONE(-600);
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 379 "dtimep.lex"
+#line 375 "dtimep.lex"
 INIT(); SETZONE(-700);
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 380 "dtimep.lex"
+#line 376 "dtimep.lex"
 INIT(); SETDST(); SETZONE(-700);
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 381 "dtimep.lex"
+#line 377 "dtimep.lex"
 INIT(); SETZONE(-800);
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 382 "dtimep.lex"
+#line 378 "dtimep.lex"
 INIT(); SETDST(); SETZONE(-800);
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 383 "dtimep.lex"
+#line 379 "dtimep.lex"
 INIT(); SETZONE(-330);
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 384 "dtimep.lex"
+#line 380 "dtimep.lex"
 INIT(); SETZONE(-400);
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 385 "dtimep.lex"
+#line 381 "dtimep.lex"
 INIT(); SETDST(); SETZONE(-400);
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 386 "dtimep.lex"
+#line 382 "dtimep.lex"
 INIT(); SETZONE(-1000);
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 387 "dtimep.lex"
+#line 383 "dtimep.lex"
 INIT(); SETDST(); SETZONE(-1000);
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 388 "dtimep.lex"
+#line 384 "dtimep.lex"
 ;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 389 "dtimep.lex"
+#line 385 "dtimep.lex"
 
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 390 "dtimep.lex"
+#line 386 "dtimep.lex"
 ECHO;
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -2407,4 +2407,4 @@ int main()
 	return 0;
 	}
 #endif
-#line 390 "dtimep.lex"
+#line 386 "dtimep.lex"

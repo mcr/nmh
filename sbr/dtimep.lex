@@ -1,7 +1,3 @@
-%e 2000
-%p 5000
-%n 1000
-%a 4000
 %{
 #include <h/nmh.h>
 #include <h/tws.h>
