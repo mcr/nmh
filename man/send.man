@@ -141,8 +141,11 @@ user (but the \*(lq.netrc\*(rq file can be used to store this password).
 and the the `\-user' switch can be used to select a authorization userid
 to provide to SASL other than the default.
 
-Currently SASL security layers are not supported for SMTP.  The SASL
-SMTP code in nmh will always negotiate an unencrypted connection.
+Currently SASL security layers are not supported for SMTP.  nmh's SMTP SASL code
+will always negotiate an unencrypted connection.  This means that while the SMTP
+authentication can be encrypted, the subsequent data stream can not.  This is in
+contrast to nmh's POP3 SASL support, where encryption is supported for both the
+authentication and the data stream.
 
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
 additional alias files given by the `\-alias aliasfile' switch will be

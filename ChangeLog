@@ -1,3 +1,10 @@
+Tue Jul 11 14:18:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Clarified post.man and send.man for those not completely up on
+	SASL terminology.  "SASL encryption layers are not supported for
+	SMTP" means that encryption is supported for the authentication
+	but not for the subsequent data stream.
+
 Sat Jul  8 01:36:19 EDT 2000 Ken Hornstein <kenh@cmf.nrl.navy.mil>
 
 	* Added SASL support for IMAP, POP and SMTP.  SASL encryption
