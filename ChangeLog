@@ -1,3 +1,9 @@
+Fri May 12 02:51:21 2000 Shantonu Sen <ssen@mit.edu>
+
+	* zotnet/bboards is not longer built by default. Goal is to move
+	the assorted functions in zotnet into sbr or some more logical
+	place.
+
 Thu May 11 02:21:34 2000 Shantonu Sen <ssen@mit.edu>
 
 	* Simplified sbr/Makefile.in so that both SRCS and OBJS aren't
