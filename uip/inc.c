@@ -245,6 +245,7 @@ main (int argc, char **argv)
 #ifdef POP
     int nmsgs, nbytes, p = 0;
     char *pass = NULL;
+    char *MAILHOST_env_variable;
 #endif
 
 #ifdef MHE
@@ -253,7 +254,6 @@ main (int argc, char **argv)
 
 #ifdef HESIOD
     struct hes_postoffice *po;
-    char *tmphost;
 #endif
 
 /* absolutely the first thing we do is save our privileges,
@@ -275,7 +275,6 @@ main (int argc, char **argv)
     argp = arguments;
 
 #ifdef POP
-# ifdef HESIOD
     /*
      * Scheme is:
      *        use MAILHOST environment variable if present,
@@ -283,8 +282,9 @@ main (int argc, char **argv)
      *  If that fails, use the default (if any)
      *  provided by mts.conf in mts_init()
      */
-    if ((tmphost = getenv("MAILHOST")) != NULL)
-	pophost = tmphost;
+    if ((MAILHOST_env_variable = getenv("MAILHOST")) != NULL)
+	pophost = MAILHOST_env_variable;
+# ifdef HESIOD
     else if ((po = hes_getmailhost(getusername())) != NULL &&
 	     strcmp(po->po_type, "POP") == 0)
 	pophost = po->po_host;

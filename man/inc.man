@@ -116,11 +116,12 @@ and going on to other things.
 %nmhbeginpop%
 
 .Uh "Using POP"
-\fIinc\fR will normally check local mail drops for mail, as given
-above.  But if the option \*(lqpophost:\*(rq is set in the mts
-configuration file \*(lqmts.conf\*(rq, or if the `\-host\ hostname'
-switch is given, then \fIinc\fR will query this POP service host
-for mail to incorporate.
+\fIinc\fR will normally check local mail drops for mail, as covered above.  But
+if the option \*(lqpophost:\*(rq is set in \*(lqmts.conf\*(rq, or if the
+`\-host\ hostname' switch is given, or if the \fB$MAILHOST\fR environment
+variable is set, then \fIinc\fR will query this POP service host for mail to
+incorporate.  If \fB$MAILHOST\fR is set and \-host is specified as well, the
+commandline switch will override the environment variable.
 
 The default is for \fIinc\fR to assume that your account name on
 the POP server is the same as your current username.  To specify

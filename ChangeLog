@@ -1,4 +1,4 @@
-Thu Jul 20 19:24:17 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Thu Jul 20 19:30:23 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Moved Kimmo's new "--with-hash-backup" to be output with the
  	rest of the --with options in the configure --help output.  Also,
@@ -18,6 +18,19 @@ Thu Jul 20 19:24:17 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	* Last pass at README.developers -- Kimmo's 5-step commit was
  	overkill.  You only need 3 steps, since configure.in is the only
  	autoconf file with the RCS $Id keyword.
+
+	* Applied Kurt J. Lidl <lidl@eng.us.uu.net>'s $MAILHOST patch:
+
+	    I have a small patch that would be nice to be included --
+ 	    basically, it allows the usage of the "MAILHOST" environment
+ 	    variable, without having to have HESIOD turned on.  I need
+ 	    this functionality for my environment, where we have identical
+ 	    /usr/local on all my machines (so I cannot just hardcode into
+ 	    the mts.conf file), and I have multiple POP mail servers for
+ 	    my users.
+
+	Modified inc.man to reflect that along with "pophost:" and -host, 
+	$MAILHOST can now activate POP mail inclusion as well.
 
 Tue Jul 18 19:36:59 EDT 2000 Kimmo Suominen <kim@tac.nyc.ny.us>
 
