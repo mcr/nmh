@@ -76,13 +76,15 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     register char **nxtbuf;
     register char **ap;
     register struct comp **savecomp;
-    int	char_read = 0, format_len;
+    int	char_read = 0, format_len, mask;
     char name[NAMESZ], *scanl, *cp;
     FILE *out;
 
-    umask(~m_gmprot());
+    mask = umask(~m_gmprot());
     if ((out = fopen (drft, "w")) == NULL)
 	adios (drft, "unable to create");
+
+    umask(mask);
 
     /* get new format string */
     cp = new_fs (form, NULL, NULL);
