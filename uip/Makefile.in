@@ -266,6 +266,7 @@ install-lcmds:
 	rm -f $(bindir)/folders
 	rm -f $(bindir)/prev
 	rm -f $(bindir)/next
+	rm -f $(libdir)/install-mh
 	$(LN) $(bindir)/flist  $(bindir)/flists
 	$(LN) $(bindir)/folder $(bindir)/folders
 	$(LN) $(bindir)/show   $(bindir)/prev
