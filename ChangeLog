@@ -1,3 +1,10 @@
+Wed May 31 7:19:30 2000 Shantonu Sen <ssen@mit.edu>
+	
+	* Fixed up dtimep.lex a bit. Added back memory options for AIX to
+	increase available memory.  Took out %option noyywrap, which
+	wasn't understood by AT&T lex, as well as the -i
+	case-insensitivity flag.
+
 Wed May 31 07:40:45 2000 Doug Morris <doug@mhost.com>
 
 	* added a lint target to the Makefiles and a check in autoconf
