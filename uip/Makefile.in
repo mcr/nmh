@@ -251,7 +251,7 @@ whom: whom.o distsbr.o $(LOCALLIBS)
 # ========== DEPENDENCIES FOR INSTALLING ==========
 
 # install everything
-install: install-cmds install-lcmds install-misc install-scmds
+install: install-cmds install-misc install-lcmds install-scmds
 
 # install commands
 install-cmds:
@@ -270,6 +270,7 @@ install-lcmds:
 	$(LN) $(bindir)/folder $(bindir)/folders
 	$(LN) $(bindir)/show   $(bindir)/prev
 	$(LN) $(bindir)/show   $(bindir)/next
+	$(LN) $(libdir)/install-mh   $(bindir)/install-mh
 
 # install misc support binaries
 install-misc:

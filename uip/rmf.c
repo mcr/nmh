@@ -223,10 +223,6 @@ rma (char *folder)
     register char *cp;
     register struct node *np, *pp;
 
-    /* sanity check - check that context has been read */
-    if (defpath == NULL)
-	adios (NULL, "oops, context hasn't been read yet");
-
     alen = strlen ("atr-");
     plen = strlen (cp = m_mailpath (folder)) + 1;
 

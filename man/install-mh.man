@@ -10,6 +10,13 @@ install-mh \- initialize the nmh environment
 .na
 .B %libdir%/install\-mh
 .RB [ \-auto ]
+.RB [ \-check ]
+.RB [ \-version ]
+.RB [ \-help ]
+.HP 5
+.B install\-mh
+.RB [ \-auto ]
+.RB [ \-check ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -20,38 +27,34 @@ is the
 program to create the initial setup
 for a first\-time
 .B nmh
-user.  It is typically invoked by other
-.B nmh
-commands, and should NOT be directly invoked by the user.
+user.
+.B Install\-mh
+lives in two places for historical reasons.
 .PP
-When a user runs any
-.B nmh
-program for the first time, the program will invoke
-.B install\-mh
-(with the `\-auto' switch) to query the user for the initial
-.B nmh
-environment.  The user is asked
+The \fB\-auto\fP option does things as automatically as possible and
+makes \fBinstall\-mh\fP less chatty.
+.PP
+The user is asked
 for the name of the directory that will be designated as the user's
 .B nmh
 directory.  If this directory does not exist, the user is
 asked if it should be created.  Normally, this directory should be
 under the user's home directory, and has the default name of
-.RI \*(lq Mail/ \*(rq.
-After
-.B install\-mh
-has written the initial
+\fI``Mail''\fP.
+.B Install\-mh
+writes an initial
 .I \&.mh\(ruprofile
-for the user, control returns to the original
-.B nmh
-program.
+for the user.
 .PP
 As with all
 .B nmh
 commands,
 .B install\-mh
-first consults the
+first checks for the existence of the \fB$MH\fP environment variable
+since that gives the profile path if set.
+If it isn't set, the
 .B $HOME
-environment variable to determine the user's home directory.
+environment variable is consulted to determine the user's home directory.
 If
 .B $HOME
 is not set, then the
@@ -65,6 +68,11 @@ will check for the existence of a global profile
 .IR %etcdir%/mh.profile .
 If found, this will be used to initialize the new
 .IR \&.mh\(ruprofile .
+.PP
+The \fB\-check\fP option can be used to check whether or not nmh has
+been installed.
+This can be used by other programs to determine whether or not nmh has
+been installed without their having to know the internals of nmh.
 
 .SH FILES
 .fc ^ ~

@@ -1,4 +1,3 @@
-
 /*
  * install-mh.c -- initialize the nmh environment of a new user
  *
@@ -9,8 +8,8 @@
  * complete copyright information.
  */
 
-#include <h/mh.h>
-#include <pwd.h>
+#include <h/mh.h>				/* mh internals */
+#include <pwd.h>				/* structure for getpwuid() results */
 
 static struct swit switches[] = {
 #define AUTOSW     0
@@ -19,16 +18,9 @@ static struct swit switches[] = {
     { "version", 0 },
 #define HELPSW     2
     { "help", 0 },
+#define CHECKSW     3
+    { "check", 1 },
     { NULL, 0 }
-};
-
-static char *message[] = {
-    "Prior to using nmh, it is necessary to have a file in your login",
-    "directory (%s) named %s which contains information",
-    "to direct certain nmh operations.  The only item which is required",
-    "is the path to use for all nmh folder operations.  The suggested nmh",
-    "path for you is %s/Mail...",
-    NULL
 };
 
 /*
@@ -40,13 +32,14 @@ static char *geta(void);
 int
 main (int argc, char **argv)
 {
-    int i, autof = 0;
-    char *cp, *path, buf[BUFSIZ];
+    int autof = 0;
+    char *cp, *pathname, buf[BUFSIZ];
     char *dp, **arguments, **argp;
     struct node *np;
     struct passwd *pw;
     struct stat st;
     FILE *in, *out;
+    int		check;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -54,6 +47,8 @@ main (int argc, char **argv)
     invo_name = r1bindex (argv[0], '/');
     arguments = getarguments (invo_name, argc, argv, 0);
     argp = arguments;
+
+    check = 0;
 
     while ((dp = *argp++)) {
 	if (*dp == '-') {
@@ -75,44 +70,68 @@ main (int argc, char **argv)
 		case AUTOSW:
 		    autof++;
 		    continue;
+
+		case CHECKSW:
+		    check = 1;
+		    continue;
 	    }
 	} else {
 	    adios (NULL, "%s is invalid argument", dp);
 	}
     }
 
-    /* straight from context_read ... */
-    if (mypath == NULL) {
-	if ((mypath = getenv ("HOME"))) {
-	    mypath = getcpy (mypath);
-	} else {
-	    if ((pw = getpwuid (getuid ())) == NULL
-		    || pw->pw_dir == NULL
-		    || *pw->pw_dir == 0)
-		adios (NULL, "no HOME envariable");
-	    else
-		mypath = getcpy (pw->pw_dir);
-	}
-	if ((cp = mypath + strlen (mypath) - 1) > mypath && *cp == '/')
-	    *cp = 0;
+    /*
+     *	Find user's home directory.  Try the HOME environment variable first,
+     *	the home directory field in the password file if that's not found.
+     */
+
+    if ((mypath = getenv("HOME")) == (char *)0) {
+	if ((pw = getpwuid(getuid())) == (struct passwd *)0 || *pw->pw_dir == '\0')
+	    adios(NULL, "cannot determine your home directory");
+	else
+	    mypath = pw->pw_dir;
     }
-    defpath = concat (mypath, "/", mh_profile, NULL);
+
+    /*
+     *	Find the user's profile.  Check for the existence of an MH environment
+     *	variable first with non-empty contents.  Convert any relative path name
+     *	found there to an absolute one.  Look for the profile in the user's home
+     *	directory if the MH environment variable isn't set.
+     */
+
+    if ((cp = getenv("MH")) && *cp != '\0')
+	defpath = path(cp, TFILE);
+    else
+	defpath = concat(mypath, "/", mh_profile, NULL);
+
+    /*
+     *	Check for the existence of the profile file.  It's an error if it exists and
+     *	this isn't an installation check.  An installation check fails if it does not
+     *	exist, succeeds if it does.
+     */
 
     if (stat (defpath, &st) != NOTOK) {
-	if (autof)
+	if (check)
+	    done(0);
+
+	else if (autof)
 	    adios (NULL, "invocation error");
 	else
-	    adios (NULL,
-		    "You already have an nmh profile, use an editor to modify it");
+	    adios (NULL, "You already have an nmh profile, use an editor to modify it");
+    }
+    else if (check) {
+	done(1);
     }
 
     if (!autof && gans ("Do you want help? ", anoyes)) {
-	putchar ('\n');
-	for (i = 0; message[i]; i++) {
-	    printf (message[i], mypath, mh_profile);
-	    putchar ('\n');
-	}
-	putchar ('\n');
+	(void)printf(
+	 "\n"
+	 "Prior to using nmh, it is necessary to have a file in your login\n"
+	 "directory (%s) named %s which contains information\n"
+	 "to direct certain nmh operations.  The only item which is required\n"
+	 "is the path to use for all nmh folder operations.  The suggested nmh\n"
+	 "path for you is %s/Mail...\n"
+	 "\n", mypath, mh_profile, mypath);
     }
 
     cp = concat (mypath, "/", "Mail", NULL);
@@ -121,7 +140,7 @@ main (int argc, char **argv)
 	    cp = concat ("You already have the standard nmh directory \"",
 		    cp, "\".\nDo you want to use it for nmh? ", NULL);
 	    if (gans (cp, anoyes))
-		path = "Mail";
+		pathname = "Mail";
 	    else
 		goto query;
 	} else {
@@ -134,26 +153,26 @@ main (int argc, char **argv)
 	    cp = concat ("Do you want the standard nmh path \"",
 		    mypath, "/", "Mail\"? ", NULL);
 	if (autof || gans (cp, anoyes))
-	    path = "Mail";
+	    pathname = "Mail";
 	else {
 query:
 	    if (gans ("Do you want a path below your login directory? ",
 			anoyes)) {
 		printf ("What is the path?  %s/", mypath);
-		path = geta ();
+		pathname = geta ();
 	    } else {
 		printf ("What is the whole path?  /");
-		path = concat ("/", geta (), NULL);
+		pathname = concat ("/", geta (), NULL);
 	    }
 	}
     }
 
     chdir (mypath);
-    if (chdir (path) == NOTOK) {
-	cp = concat ("\"", path, "\" doesn't exist; Create it? ", NULL);
+    if (chdir (pathname) == NOTOK) {
+	cp = concat ("\"", pathname, "\" doesn't exist; Create it? ", NULL);
 	if (autof || gans (cp, anoyes))
-	    if (makedir (path) == 0)
-		adios (NULL, "unable to create %s", path);
+	    if (makedir (pathname) == 0)
+		adios (NULL, "unable to create %s", pathname);
     } else {
 	printf ("[Using existing directory]\n");
     }
@@ -165,7 +184,7 @@ query:
 	adios (NULL, "unable to allocate profile storage");
     np = m_defs;
     np->n_name = getcpy ("Path");
-    np->n_field = getcpy (path);
+    np->n_field = getcpy (pathname);
     np->n_context = 0;
     np->n_next = NULL;
 

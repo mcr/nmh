@@ -21,10 +21,6 @@ context_del (char *key)
 {
     register struct node *np, *pp;
 
-    /* sanity check - check that context has been read */
-    if (defpath == NULL)
-	adios (NULL, "oops, context hasn't been read yet");
-
     for (np = m_defs, pp = NULL; np; pp = np, np = np->n_next) {
 	if (!strcasecmp (np->n_name, key)) {
 	    if (!np->n_context)

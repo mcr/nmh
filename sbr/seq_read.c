@@ -29,10 +29,6 @@ static void seq_private (struct msgs *);
 void
 seq_read (struct msgs *mp)
 {
-    /* sanity check - check that context has been read */
-    if (defpath == NULL)
-	adios (NULL, "oops, context hasn't been read yet");
-
     /*
      * Initialize the list of sequence names.  Go ahead and
      * add the "cur" sequence to the list of sequences.

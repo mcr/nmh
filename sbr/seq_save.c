@@ -31,10 +31,6 @@ seq_save (struct msgs *mp)
     FILE *fp;
     sigset_t set, oset;
 
-    /* sanity check - check that context has been read */
-    if (defpath == NULL)
-	adios (NULL, "oops, context hasn't been read yet");
-
     /* check if sequence information has changed */
     if (!(mp->msgflags & SEQMOD))
 	return;

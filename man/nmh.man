@@ -44,12 +44,13 @@ on your
 This is best done in one of the files:
 .IR \&.profile ,
 .IR \&.login ,
+.IR \&.bashrc ,
 or
 .I \&.cshrc
 in your home directory.  (Check the
 manual entry for the shell you use, in case you don't know how to
 do this.)  Run the
-.B inc
+.B install-mh
 command.  If you've never used
 .B nmh
 before, it will create the necessary default files and directories after

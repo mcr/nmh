@@ -17,10 +17,6 @@ context_replace (char *key, char *value)
 {
     register struct node *np;
 
-    /* sanity check - check that context has been read */
-    if (defpath == NULL)
-	adios (NULL, "oops, context hasn't been read yet");
-
     /*
      * If list is emtpy, allocate head of profile/context list.
      */

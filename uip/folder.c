@@ -818,10 +818,6 @@ readonly_folders (void)
     char atrcur[BUFSIZ];
     register struct node *np;
 
-    /* sanity check - check that context has been read */
-    if (defpath == NULL)
-	adios (NULL, "oops, context hasn't been read yet");
-
     snprintf (atrcur, sizeof(atrcur), "atr-%s-", current);
     atrlen = strlen (atrcur);
 
