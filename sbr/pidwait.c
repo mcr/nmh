@@ -11,6 +11,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
+#include <errno.h>
 #include <signal.h>
 
 #ifdef HAVE_SYS_WAIT_H
@@ -36,7 +37,8 @@ pidwait (pid_t id, int sigsok)
     }
 
 #ifdef HAVE_WAITPID
-    pid = waitpid(id, &status, 0);
+    while ((pid = waitpid(id, &status, 0)) == -1 && errno == EINTR)
+	;
 #else
     while ((pid = wait(&status)) != -1 && pid != id)
 	continue;
