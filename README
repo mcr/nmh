@@ -2,6 +2,11 @@
 # $Id$
 #
 
+[This file currently refers to a bunch of stuff in the docs directory that isn't
+ currently there.  Perhaps all that stuff _will_ end up in the docs directory
+ (with a change to Makefile.in to match).  In that case, just delete this note
+ at that time.  Otherwise, fix the references below...]
+
 Installing
 ----------
 Please read the INSTALL file.
