@@ -1,3 +1,13 @@
+Tue Feb 6 20:35:40 2001 Shantonu Sen <ssen@mit.edu>
+
+	* sbr/dtime.c Use the same Y2K correction code as dtimep.lex
+
+	* sbr/dtimep.lex Restrict the parser to accept either
+	a numerical timezone offset, or a symbolic one (e.g. EST),
+	but not both (Since "2000 -400 EDT" might cause a double
+	subtraction of 60 minutes if both are parsed. One should be
+	enough).
+
 Mon Feb 05 20:22:54 2001 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* -L isn't sufficient for specifying the path of the Cyrus SASL
