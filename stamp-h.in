@@ -1,1 +1,8 @@
+Just adding some text to this file so that cvs will see a difference and let me check it in.  Every time acconfig.h or configure.in are changed (which I just
+did), the timestamp on this file needs to be updated or when people do a make
+an unnecessary `cd . && autoheader` will be done, and not everybody has the
+autoconf tools installed.  The next person to change those two files (or
+aclocal.m4) will need to change this text, maybe just to a message saying which
+dependency files were changed and by whom.  
 
+-- Dan Harkless <dan-nmh@dilvish.speed.net>
