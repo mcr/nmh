@@ -138,13 +138,13 @@ stamp-h: config.h.in config.status
 config.h.in: stamp-h.in
 stamp-h.in: configure.in acconfig.h aclocal.m4
 	cd $(srcdir) && autoheader
-	echo > $@
+	date > $@
 
 # rebuild all autoconf files
 reset:
 	cd $(srcdir) && autoheader
 	cd $(srcdir) && autoconf
-	cd $(srcdir) && echo > stamp-h.in
+	cd $(srcdir) && date > stamp-h.in
 
 # name of new nmh distribution tar file
 tarfile = nmh-$(VERSION).tar.gz

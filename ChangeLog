@@ -1,4 +1,4 @@
-Mon Feb 28 21:21:31 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Mon Feb 28 21:50:29 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Upped the version number to 1.0.3+dev (ideally this should be
  	done by whoever makes a release tar file, immediately after doing
@@ -8,10 +8,21 @@ Mon Feb 28 21:21:31 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	patch, posted to comp.mail.mh, which he says prevents loss of mail
  	when inc'ing into a full filesystem.
 
+	* Changed "echo > stamp-h.in" in Makefile.in to "date > stamp-h.in"
+	so that stamp-h.in will be different each time configure.in and
+	related files are changed, making it easier to check it in (which
+	is necessary to prevent unnecessary autoconf calls).
+
+	* My declaration of initgroups() in slocal.c to eliminate the "no
+ 	prototype" warning wasn't portable (FreeBSD 3.[23] choked).  Now
+ 	use AC_EGREP_HEADER to see where initgroups() is declared, if
+ 	anywhere.
+
 Sun Feb 20 12:17:15 2000 Ruud de Rooij <ruud@ruud.org>
 
 	* Fix security hole in mhshowsbr.c which allowed untrusted shell
 	  code to be executed.
+	
 	* Released nmh 1.0.3.
 
 Thu Feb 10 10:54:36 2000 Dan Harkless <dan-nmh@dilvish.speed.net>

@@ -29,14 +29,15 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 
-#include <grp.h>     /* initgroups() is here on Solaris 2.6 */
-#include <unistd.h>  /* initgroups() is here on HP-UX 10.20 */
-
+#ifdef INITGROUPS_HEADER
+#include INITGROUPS_HEADER
+#else
 /* On AIX 4.1, initgroups() is defined and even documented (giving the parameter
-   types as "char*" and "int"), but doesn't have a prototype in any of the
-   system header files.  On other OSes, this should be a duplicate prototype
-   that won't cause any errors or warnings. */
-extern int  initgroups(const char*, gid_t);
+   types as char* and int), but doesn't have a prototype in any of the system
+   header files.  AIX 4.3 and SunOS 4.1.3 have the same problem. */
+extern int  initgroups(char*, int);
+#endif
+
 
 #ifdef HAVE_DB1_NDBM_H
 #include <db1/ndbm.h>

@@ -87,11 +87,11 @@
 #define BUILTIN_FTP 1
 
 /*
- * If you enable POP support, this is the the port name that nmh will use.  Make
- * sure this is defined in your /etc/services file (or its NIS/NIS+ equivalent).
- * If you are using KPOP, you will need to change this to "kpop" unless you want
- * to be able to use both POP3 _and_ Kerberized POP and plan to use inc and
- * msgchk's -kpop switch every time in the latter case.
+ * If you enable POP support, this is the the port name
+ * that nmh will use.  Make sure this is defined in your
+ * /etc/services file (or its NIS/NIS+ equivalent).  If you
+ * are using KPOP, you will probably need to change this
+ * to "kpop".
  */
 #define POPSERVICE "pop3"
 
@@ -298,6 +298,11 @@
 
 /* Define if your system has gethostbyname */
 #undef HAVE_GETHOSTBYNAME
+
+/* Define to the header containing the declaration of initgroups() on your
+   system, if any.  AIX 4.[13] and SunOS 4.1.3 have the function in libc but
+   don't have a declaration anywhere. */
+#undef INITGROUPS_HEADER
 
 /* Define if your system actually has a prototype for snprintf() in <stdio.h>
    (or a file it includes) rather than just having a "stealth" definition of it

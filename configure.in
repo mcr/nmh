@@ -359,7 +359,7 @@ AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
                sighold sigrelse writev lstat uname tzset killpg mkstemp \
                sethostent)
 
-dnl solaris screws ths up
+dnl solaris screws this up
 AC_CHECK_FUNC(gethostbyname, [AC_DEFINE(HAVE_GETHOSTBYNAME)],
   AC_CHECK_LIB(nsl, gethostbyname, [AC_DEFINE(HAVE_GETHOSTBYNAME)] ) )
 
@@ -369,6 +369,17 @@ AC_TRY_LINK([#include <setjmp.h>], [sigsetjmp((void *)0, 0);],
         [AC_DEFINE(HAVE_SIGSETJMP) AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
 
 AC_REPLACE_FUNCS(snprintf strerror strdup)
+
+dnl Look for the initgroups() declaration.  On AIX 4.[13] and Solaris 4.1.3,
+dnl the function is defined in libc but there's no declaration in any system
+dnl header.  
+dnl
+dnl On Solaris 2.[456], the declaration is in <grp.h>.  On HP-UX 9-11 and
+dnl (reportedly) FreeBSD 3.[23], it's in <unistd.h>.  Any other locations we
+dnl need to check? 
+AC_EGREP_HEADER(initgroups, grp.h, AC_DEFINE(INITGROUPS_HEADER, <grp.h>),
+                AC_EGREP_HEADER(initgroups, unistd.h, 
+                                AC_DEFINE(INITGROUPS_HEADER, <unistd.h>)))
 
 dnl On AIX 4.1, snprintf() is defined in libc.a but there's no prototype in
 dnl <stdio.h> or elsewhere.  Apparently it's not officially supported (though it
