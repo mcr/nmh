@@ -224,7 +224,7 @@ The pathname to the \fIsendmail\fR program.
 .in -.5i
 .Uh "Post Office Protocol"
 This option is only available if you have compiled \fInmh\fP with POP
-support enabled (i.e., \*(lq--enable-nmh-pop\*(rq).
+support enabled (i.e., \*(lq--enable-pop\*(rq).
 
 .in +.5i
 .ti -.5i

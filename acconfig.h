@@ -177,8 +177,8 @@
 /*
  * Define this to compile client-side support for pop into
  * inc and msgchk.  Do not change this value manually.  You
- * must run configure with the '--enable-nmh-pop' option
- * to correctly build the pop client support.
+ * must run configure with the '--enable-pop' option to
+ * correctly build the pop client support.
  */
 #undef POP
 

@@ -159,6 +159,9 @@ Options for configure
 --mandir=DIR     (DEFAULT is ${prefix}/man)
      nmh's man pages are installed here.
 
+--enable-debug
+     Enable debugging support.
+
 --enable-masquerade[='draft_from[ mmailid[ username_extension]]']    
      If this option is not specified, the mts.conf file will contain the line
      "masquerade: " (with no value), which may be manually edited later.  You
@@ -170,13 +173,10 @@ Options for configure
 
      See the mh-tailor(5) man page for full documentation of "masquerade:".
 
---enable-nmh-debug
-     Enable debugging support.
-
---enable-nmh-mhe    (DEFAULT)
+--enable-mhe    (DEFAULT)
      Add support for the Emacs front-end `mhe'.
 
---enable-nmh-pop
+--enable-pop
      Enable client-side support for pop.
 
 --with-editor=EDITOR  (DEFAULT is vi)
@@ -192,9 +192,9 @@ Options for configure
 
 --with-krb4=PREFIX
      Specify the location of Kerberos V4 for KPOP support.  You will also need
-     to specify the option `--enable-nmh-pop'.  After running configure, you
-     will need to change the POPSERVICE #define in config.h if you want to use
-     KPOP exclusively (rather than being able to switch between KPOP and normal
+     to specify the option `--enable-pop'.  After running configure, you will
+     need to change the POPSERVICE #define in config.h if you want to use KPOP
+     exclusively (rather than being able to switch between KPOP and normal
      POP3).  See the comments inside config.h for details.
 
 --with-mts=MTS   (DEFAULT is smtp)

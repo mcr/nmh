@@ -31,6 +31,15 @@ dnl --------------------------
 dnl CHECK COMMAND LINE OPTIONS
 dnl --------------------------
 
+dnl Do you want to debug nmh?
+undefine([debug])dnl
+AC_ARG_ENABLE(debug,
+[  --enable-debug          enable nmh code debugging])
+dnl The old redundant --enable-nmh-debug is deprecated and undocumented.
+if test x"$enable_nmh_debug" = x"yes"; then
+  enable_debug=yes
+fi
+
 dnl Allow users to send email from addresses other than their default?
 undefine([masquerade])dnl
 AC_ARG_ENABLE(masquerade,
@@ -43,27 +52,26 @@ AC_ARG_ENABLE(masquerade,
   fi])
 AC_SUBST(masquerade)dnl
 
-dnl Do you want to debug nmh?
-undefine([nmh-debug])dnl
-AC_ARG_ENABLE(nmh-debug,
-[  --enable-nmh-debug      enable nmh code debugging])
-
 dnl Do you want mhe support?
-undefine([nmh-mhe])dnl
-AC_ARG_ENABLE(nmh-mhe,
-[  --enable-nmh-mhe        enable mhe support (DEFAULT)])
+undefine([mhe])dnl
+AC_ARG_ENABLE(mhe,
+[  --enable-mhe            enable mhe support (DEFAULT)])
 
-dnl mhe support is on by default, so define it unless
-dnl explicitly disabled.
-if test x$"enable_nmh_mhe" != x"no"; then
+dnl mhe support is on by default, so define it unless --disable-mhe or the
+dnl deprecated, undocumented --disable-nmh-mhe are specified.
+if test x"$enable_mhe" != x"no" -a x"$enable_nmh_mhe" != x"no"; then
   AC_DEFINE(MHE)dnl
 fi
 
-dnl Do you want client-side support for pop
-undefine([nmh-pop])dnl
-AC_ARG_ENABLE(nmh-pop,
-[  --enable-nmh-pop        enable client-side support for pop])
+dnl Do you want client-side support for pop?
+undefine([pop])dnl
+AC_ARG_ENABLE(pop,
+[  --enable-pop            enable client-side support for pop])
+dnl The old redundant --enable-nmh-pop is deprecated and undocumented.
 if test x"$enable_nmh_pop" = x"yes"; then
+  enable_pop=yes
+fi
+if test x"$enable_pop" = x"yes"; then
   AC_DEFINE(POP)dnl
   POPLIB=popsbr.o
   POPSED='/^%nmhbeginpop%/d;/^%nmhendpop%/d'
@@ -151,7 +159,7 @@ dnl ------------------
 dnl We want these before the checks,
 dnl so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS= auto_cflags=1
-if test x"$enable_nmh_debug" = x"yes"; then
+if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
@@ -162,7 +170,7 @@ dnl   if compiler is gcc, then
 dnl     use -O2 and some warning flags
 dnl   else use -O
 if test -n "$auto_cflags"; then
-  if test x"$enable_nmh_debug" = x"yes"; then
+  if test x"$enable_debug" = x"yes"; then
     if test -n "$GCC"; then
       test -z "$CFLAGS" && CFLAGS="-Wall -g" || CFLAGS="$CFLAGS -Wall -g"
     else
@@ -691,6 +699,10 @@ eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf2=${nmhsysconf}"
 eval "nmhlib=${libdir}";         eval "nmhlib2=${nmhlib}"
 eval "nmhman=${mandir}"
 
+if test x"$enable_pop" = x; then
+  enable_pop=no
+fi
+
 echo "
 nmh configuration
 -----------------
@@ -708,5 +720,6 @@ transport system           : ${MTS}
 default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
 default pager              : ${pagerpath}
-email address masquerading : ${masquerade}"
+email address masquerading : ${masquerade}
+pop is enabled             : ${enable_pop}"
 echo ""

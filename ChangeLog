@@ -1,4 +1,4 @@
-Wed Mar 15 14:20:20 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Wed Mar 15 15:43:51 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* When I fixed the long-standing makedir() bugs in January, I had
  	the code call strtoul(..., 0), which I believed to be safe as all
@@ -12,6 +12,15 @@ Wed Mar 15 14:20:20 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	ASCII octal constants in the code and man pages.  Also changed the
  	"Folder-Protect:" example in the man page to something more
  	interesting than a duplication of the default.
+
+	* When I added my --enable-masquerade option, you'll note that I
+ 	didn't make it --enable-nmh-masquerade.  I find the --enable-nmh-*
+ 	options too wordy and I'm not sure why Richard went that route.
+  	I've renamed them to just --enable-*, but the old versions will
+ 	still work as well (they just aren't advertised).
+
+	* Added a line to the "nmh configuration" output saying whether
+	POP is enabled.
 
 Tue Mar 14 12:41:48 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
