@@ -1,3 +1,9 @@
+Fri Jan 28 14:05:02 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* All %-escapes in mhn.defaults that actually expand to something
+	should be surrounded by single quotes.  Added quotes to the ones
+	in mhn.defaults.sh that were missing them.
+
 Thu Jan 27 12:22:25 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* makedir() had multiple bugs dating back to MH.  It passed an
