@@ -22,8 +22,6 @@ RANLIB = @RANLIB@
 LIBTOOL = @LIBTOOL@
 GNU_LIBTOOL = @GNU_LIBTOOL@
 
-LIBOBJS = @LIBOBJS@
-
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
 
 .SUFFIXES:
@@ -61,31 +59,9 @@ SRCS = add.c addrsbr.c ambigsw.c atooi.c brkstring.c		\
 	m_msgdef.c
 
 # source for compatibility functions
-COMPAT = snprintf.c strdup.c strerror.c ruserpass.c
+COMPAT = snprintf.c strdup.c strerror.c
 
-OBJS =	add.o addrsbr.o ambigsw.o atooi.o brkstring.o		\
-	check_charset.o closefds.o concat.o context_del.o	\
-	context_find.o context_foil.o context_read.o		\
-	context_replace.o context_save.o copy.o copyip.o	\
-	cpydata.o cpydgst.o discard.o done.o error.o		\
-	fdcompare.o folder_addmsg.o folder_delmsgs.o		\
-	folder_free.o folder_pack.o folder_read.o		\
-	folder_realloc.o gans.o getans.o getanswer.o		\
-	getarguments.o getcpy.o getfolder.o getpass.o		\
-	fmt_addr.o fmt_compile.o fmt_new.o fmt_rfc2047.o	\
-	fmt_scan.o lock_file.o m_atoi.o m_backup.o m_convert.o	\
-	m_draft.o m_getfld.o m_gmprot.o m_maildir.o m_name.o	\
-	m_scratch.o m_tmpfil.o makedir.o path.o peekc.o		\
-	pidwait.o pidstatus.o print_help.o print_sw.o		\
-	print_version.o push.o putenv.o pwd.o refile.o		\
-	remdir.o r1bindex.o readconfig.o ruserpass.o		\
-	seq_add.o seq_bits.o seq_del.o seq_getnum.o		\
-	seq_list.o seq_nameok.o seq_print.o seq_read.o		\
-	seq_save.o seq_setcur.o seq_setprev.o seq_setunseen.o	\
-	showfile.o signals.o smatch.o snprintb.o ssequal.o	\
-	strcasecmp.o strindex.o trimcpy.o uprf.o vfgets.o	\
-	fmt_def.o m_msgdef.o					\
-	$(LIBOBJS)
+OBJS =	$(patsubst %.c,%.o,$(SRCS))
 
 # auxiliary files
 AUX = Makefile.in sigmsg.awk
