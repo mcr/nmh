@@ -83,6 +83,17 @@ Mon May 08 23:51:55 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	* Changed DIFFERENCES to say that RPOP is not currently supported
 	rather than implying it by saying that APOP, KPOP, and POP[3] are.
 
+Sun May 07 18:16:43 2000 Shantonu Sen <ssen@mit.edu>
+
+	* Imported NetBSD version of getpass() and made extensive
+	revisions for compatibility with programs that pipe the password
+	to stdin, such as exmh.
+
+	* Removed tests for system ruserpass() which sometimes gave
+	phantom positive results. Also, bext to use internal functions if
+	we ever want to change .netrc format to something else, or access
+	other files.
+
 Sat May 06 08:28:09 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Restored lost version histories for those moved files by doing a
