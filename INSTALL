@@ -14,9 +14,9 @@ You should check the MACHINES file to see if there are any specific
 build instructions for your operating system.  To build nmh, you will
 need an ANSI C compiler such as gcc.
 
-1) Run the command
+1) From the top-level source directory, run the command
 
-   sh configure [options]
+   ./configure [options]
 
    This will check the configuration of your OS, and create the 
    include file config.h, as well as the various Makefiles.
@@ -25,11 +25,10 @@ need an ANSI C compiler such as gcc.
    most interest are listed in a section below.  To see the list 
    of all available options, you can run
 
-   sh configure --help
+   ./configure --help
 
 2) Look through the user configuration section at the beginning
-   of the generated include file `config.h'.  All system-specific
-   definitions should be sensed automatically now, but you may
+   of the generated include file `config.h'. You may
    want to customize some #defines for your environment.
 
 3) make
@@ -180,6 +179,9 @@ Options for configure
 --enable-pop
      Enable client-side support for pop.
 
+--enable-apop
+     Enable client-side support for apop (Authenticated POP).
+
 --with-editor=EDITOR  (DEFAULT is vi)
      specify the full path of the default editor to use.  If this
      option is not given, then the configuration process will search
@@ -192,11 +194,11 @@ Options for configure
      Specify the location of Hesiod.
 
 --with-krb4=PREFIX
-     Specify the location of Kerberos V4 for KPOP support.  You will also need
-     to specify the option `--enable-pop'.  After running configure, you will
-     need to change the POPSERVICE #define in config.h if you want to use KPOP
-     exclusively (rather than being able to switch between KPOP and normal
-     POP3).  See the comments inside config.h for details.
+     Specify the location of Kerberos V4 for KPOP support. After
+     running configure, you will need to change the POPSERVICE #define in
+     config.h if you want to use KPOP exclusively (rather than being able
+     to switch between KPOP and normal POP3).  See the comments inside
+     config.h for details.
 
 --with-mts=MTS   (DEFAULT is smtp)
      Specify the mail transport system you want to use.  The two
@@ -223,10 +225,11 @@ Options for configure
      command `more' and use it as the default.
 
 --with-smtpservers='SMTPSERVER1[ SMTPSERVER2...]'    (DEFAULT is localhost)
-     If this option is not specified, the mts.conf file will contain the line
-     "servers: localhost", which may be manually edited later.  You may find it
-     convenient to specify a value at configure-time, however, so that each time
-     nmh is reinstalled, the right value will be there.
+     If this option is not specified, the mts.conf file will contain
+     the line "servers: localhost", which may be manually edited later.
+     You may find it convenient to specify a value at configure-time,
+     however, so that each time nmh is reinstalled, the right value will be
+     there.
 
      See the mh-tailor(5) man page for full documentation of "servers:".
 
