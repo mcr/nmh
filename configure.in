@@ -43,7 +43,7 @@ fi
 dnl Allow users to send email from addresses other than their default?
 undefine([masquerade])dnl
 AC_ARG_ENABLE(masquerade,
-  [  --enable-masquerade[='draft_from[ mmailid[ username_extension]]']
+  [  --enable-masquerade[='draft_from mmailid username_extension']
                           enable 3 types of email address masquerading [none]],
   [if test x"$enable_masquerade" = x"yes"; then
     masquerade="draft_from mmailid username_extension"

@@ -162,14 +162,15 @@ Options for configure
 --enable-debug
      Enable debugging support.
 
---enable-masquerade[='draft_from[ mmailid[ username_extension]]']    
+--enable-masquerade[='draft_from mmailid username_extension']    
      If this option is not specified, the mts.conf file will contain the line
      "masquerade: " (with no value), which may be manually edited later.  You
      may find it convenient to specify a value at configure-time, however, so
      that each time nmh is reinstalled, the right value will be there.
 
-     Any subset of "draft_from mmailid username_extension" may be given.  As a
-     shortcut, simply doing `configure --enable-masquerade' will enable all 3.
+     The above usage shows all three masquerade options being specified, but any
+     subset of the three may be specified.  If you do want to enable all three,
+     you can simply use `configure --enable-masquerade' as a shortcut.
 
      See the mh-tailor(5) man page for full documentation of "masquerade:".
 

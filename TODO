@@ -28,6 +28,7 @@
   find what a particular option does is a pain in the nads.
 * Add some way to configure whether you prefer to see text/plain or text/html
   parts of multipart/alternative messages.
+* Flag bogus/misspelled mts.conf "masquerade:" / --enable-masquerade options.
 
 [POSSIBILITIES]
 
