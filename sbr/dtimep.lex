@@ -372,8 +372,6 @@ d	[0-9]
                                     }
 "-"?("ut"|"UT")			    INIT(); SETZONE(0);
 "-"?("gmt"|"GMT")		    INIT(); SETZONE(0);
-"-"?("jst"|"JST")		    INIT(); SETZONE(200);
-"-"?("jdt"|"JDT")		    INIT(); SETDST(); SETZONE(2);
 "-"?("est"|"EST")		    INIT(); SETZONE(-500);
 "-"?("edt"|"EDT")		    INIT(); SETDST(); SETZONE(-500);
 "-"?("cst"|"CST")		    INIT(); SETZONE(-600);
@@ -385,10 +383,7 @@ d	[0-9]
 "-"?("nst"|"NST")		    INIT(); SETZONE(-330);
 "-"?("ast"|"AST")		    INIT(); SETZONE(-400);
 "-"?("adt"|"ADT")		    INIT(); SETDST(); SETZONE(-400);
-"-"?("yst"|"YST")		    INIT(); SETZONE(-900);
-"-"?("ydt"|"YDT")		    INIT(); SETDST(); SETZONE(-900);
 "-"?("hst"|"HST")		    INIT(); SETZONE(-1000);
 "-"?("hdt"|"HDT")		    INIT(); SETDST(); SETZONE(-1000);
-"-"?("bst"|"BST")		    INIT(); SETDST(); SETZONE(-100);
 "-"?([a-z]{3}|[A-Z]{3})		    ;
 .|\n
