@@ -45,13 +45,17 @@ int
 part_ok (CT ct, int sP)
 {
     char **ap;
+    int len;
 
     if (npart == 0 || (ct->c_type == CT_MULTIPART && (sP || ct->c_subtype)))
 	return 1;
 
-    for (ap = parts; *ap; ap++)
-	if (!strcmp (*ap, ct->c_partno))
-	    return 1;
+    for (ap = parts; *ap; ap++) {
+        len = strlen(*ap);
+        if (!strncmp (*ap, ct->c_partno, len) &&
+                (!ct->c_partno[len] || ct->c_partno[len] == '.' ))
+            return 1;
+    }
 
     return 0;
 }

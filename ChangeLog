@@ -1,3 +1,8 @@
+2004-12-17  Oliver Kiddle  <okiddle@yahoo.co.uk>
+
+	* uip/mhmisc.c Fix -part option to mhshow/mhlist/mhstore to
+	find sub-parts of the specified part
+
 2003-9-30  Glenn Burkhardt <glenn@aoi-industries.com>
 	* Fix 'pick' so handling of options "-list" and "-seq" are
 	independent.
