@@ -1,8 +1,11 @@
-Fri Jan 28 14:05:02 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Fri Jan 28 17:39:24 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* All %-escapes in mhn.defaults that actually expand to something
 	should be surrounded by single quotes.  Added quotes to the ones
 	in mhn.defaults.sh that were missing them.
+
+	* Added check for lynx to write mhshow-show-text/html line in
+	mhn.defaults.sh.
 
 Thu Jan 27 12:22:25 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 

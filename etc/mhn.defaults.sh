@@ -126,6 +126,15 @@ if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-application/x-ivs: %p$PGM -o '%F'" >> $TMP
 fi
 
+# I'd like to check if netscape is available and use it preferentially to lynx,
+# but only once I've added a new %-escape that makes more permanent temp files,
+# so netscape -remote can be used (without -remote you get a complaint dialog
+# that another netscape is already running and certain things can't be done).
+PGM="`$SEARCHPROG $SEARCHPATH lynx`"
+if [ ! -z "$PGM" ]; then
+	echo "mhshow-show-text/html: %p$PGM -force_html '%F'" >> $TMP
+fi
+
 PGM="`$SEARCHPROG $SEARCHPATH richtext`"
 if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-text/richtext: %p$PGM -p '%F'" >> $TMP
