@@ -88,6 +88,25 @@ match (char *str, char *sub)
 /*
  * macros to format data
  */
+#define PUTDF(cp, num, wid, fill)\
+	if (cp + wid < ep) {\
+	    if ((i = (num)) < 0)\
+		i = -(num);\
+	    if ((c = (wid)) < 0)\
+		c = -c;\
+	    sp = cp + c;\
+	    do {\
+		*--sp = (i % 10) + '0';\
+		i /= 10;\
+	    } while (i > 0 && sp > cp);\
+	    if (i > 0)\
+		*sp = '?';\
+	    else if ((num) < 0 && sp > cp)\
+		*--sp = '-';\
+	    while (sp > cp)\
+		*--sp = fill;\
+	    cp += c;\
+	    }
 
 #ifdef LOCALE
 #define PUTSF(cp, str, wid, fill) {\
@@ -310,12 +329,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    if (n >= 0) cp += n;
 	    break;
 	case FT_NUMF:
-	    n = snprintf(cp, ep - cp, "%d", value);
-	    if (n >= 0) {
-		cp += n;
-	    } else n = 0;
-	    c = abs(fmt->f_width) - n;
-	    for (; (c > 0) && (cp < ep); c--) *cp++ = fmt->f_fill;
+	    PUTDF (cp, value, fmt->f_width, fmt->f_fill);
 	    break;
 
 	case FT_CHAR:
