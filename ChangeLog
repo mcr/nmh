@@ -1,3 +1,12 @@
+Fri Oct 29 13:42:51 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Upped the version number to 1.0.3.  If we don't do this, then
+	when people report bugs against 1.0.2, we won't know "which" 1.0.2
+	they're talking about (since the development source is publically
+	available via CVS).  I think the Linux kernel version numbers are
+	a good model, so the next time we roll a tarball, it should be
+	version 1.0.4 (or higher -- anyhow, an even-numbered version).
+
 Fri Oct 29 06:41:08 1999 Doug Morris <doug@mhost.com>
 
 	* Released nmh-1.0.2.
