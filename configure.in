@@ -377,6 +377,15 @@ AC_TRY_LINK([#include <setjmp.h>], [sigsetjmp((void *)0, 0);],
 
 AC_REPLACE_FUNCS(snprintf strerror strdup)
 
+dnl On AIX 4.1, snprintf() is defined in libc.a but there's no prototype in
+dnl <stdio.h> or elsewhere.  Apparently it's not officially supported (though it
+dnl seems to work perfectly and IBM apparently uses it in internal code).
+dnl Anyhow, if we omit our own snprintf() and vsnprintf() prototypes when we
+dnl HAVE_SNPRINTF, we get a billion warnings at compile time.  Use the C
+dnl preprocessor to preprocess stdio.h and make sure that there's actually a 
+dnl prototype. 
+AC_EGREP_HEADER(snprintf, stdio.h, AC_DEFINE(HAVE_SNPRINTF_PROTOTYPE))
+
 dnl -------------------
 dnl CHECK FOR LIBRARIES
 dnl -------------------

@@ -263,3 +263,8 @@
 
 /* Define if your system has db1/ndbm.h instead of ndbm.h (ppclinux) */
 #undef HAVE_DB1_NDBM_H
+
+/* Define if your system actually has a prototype for snprintf() in <stdio.h>
+   (or a file it includes) rather than just having a "stealth" definition of it
+   in libc.a the way AIX 4.1 does. */
+#undef HAVE_SNPRINTF_PROTOTYPE
