@@ -1,3 +1,8 @@
+Mon Apr 17 21:28:40 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Scott Blachowicz pointed out that the configure --help output
+	for --enable-masquerade was misleading.  Clarified.
+	
 Mon Apr 17 19:01:00 2000 Shantonu Sen <ssen@mit.edu>
 
 	* APOP support can be compiled in to inc and msgchk using

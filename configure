@@ -15,7 +15,7 @@ ac_help="$ac_help
   --enable-debug          enable nmh code debugging"
 ac_help="$ac_help
   --enable-masquerade[='draft_from mmailid username_extension']
-                          enable 3 types of email address masquerading [none]"
+                          enable up to 3 types of address masquerading [none]"
 ac_help="$ac_help
   --enable-mhe            enable mhe support (DEFAULT)"
 ac_help="$ac_help
