@@ -1,3 +1,12 @@
+Thu Sep  9 23:15:49 1999 Doug Morris <doug@mhost.com>
+
+	* fixed varous mkstmep bugs introduced in 1.0.1 by me. Whups!
+	* added mh_profile SEGV patch from Richard Cohen
+          <richard@jubjub.demon.co.uk> that prevents crashing when
+          mh_profile doesn't end in a newline.
+	* fixed bug in associated with MAILGROUP #define (group "mail"
+	  is not universal) -- hard to believe, but true.
+
 Tue Sep 7 16:47:03 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Renamed ZSH.COMPLETION to COMPLETION-ZSH and added COMPLETION-TCSH.

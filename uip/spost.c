@@ -347,13 +347,14 @@ main (int argc, char **argv)
     }
     else {
 #ifdef HAVE_MKSTEMP
-	    mkstemp (tmpfil);
+	    if ((out = fdopen( mkstemp (tmpfil), "w" )) == NULL )
+		adios (tmpfil, "unable to create");
 #else
 	    mktemp (tmpfil);
-#endif
 	    if ((out = fopen (tmpfil, "w")) == NULL)
 		adios (tmpfil, "unable to create");
 	    chmod (tmpfil, 0600);
+#endif
 	}
 
     hdrtab = (msgstate == normal) ? NHeaders : RHeaders;

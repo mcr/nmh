@@ -248,15 +248,15 @@ rclient (char *server, char *protocol, char *service)
 		    *--dp = NULL;
 		snprintf (sm_tmpfil, sizeof(sm_tmpfil), "%s/smtpXXXXXX", *ap);
 #ifdef HAVE_MKSTEMP
-		mkstemp (sm_tmpfil);
+		sd = mkstemp (sm_tmpfil);
 #else
 		mktemp (sm_tmpfil);
-#endif
 
 		if ((sd = creat (sm_tmpfil, 0600)) != NOTOK) {
 		    sm_ispool = 1;
 		    break;
 		}
+#endif
 	    }
 
 	free (cp);

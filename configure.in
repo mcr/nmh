@@ -238,8 +238,22 @@ if test "$lspath" != "no" -a "$cutpath" != "no"; then
   fi])
 fi
 
+dnl see if we can determine which group owns the mail spool dir
+undefine([nmh_grp_mailspool])dnl
+AC_CACHE_CHECK(what group owns the mail spool, nmh_group_mailspool,
+[ nmh_group_mailspool=`ls -lgd $mailspool | awk '{print $4}'`
+  if test x$nmh_group_mailspool = xmail; then
+    MAILGROUP="mail"
+  elif test x$nmh_group_mailspool = xwheel; then
+    MAILGROUP="wheel"
+  else
+    MAILGROUP="'0'"
+  fi])
+AC_SUBST(MAILGROUP)
+
 dnl ...If it's not, we need to #define MAILGROUP to 1 and make inc setgid mail.
 if test "$nmh_cv_mailspool_world_writable" = "no"; then
+dnl do we really need both of these?
   AC_DEFINE(MAILGROUP)
   SETGID_MAIL=1
 fi
