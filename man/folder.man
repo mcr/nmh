@@ -126,7 +126,9 @@ TOTAL = 339 messages in 7 folders
 .fi
 .RE
 .PP
-The \*(lq+\*(rq after inbox indicates that it is the current folder.
+The \*(lq+\*(rq after
+.I inbox
+indicates that it is the current folder.
 The \*(lq(others)\*(rq indicates that the folder
 .I ucom
 has files which

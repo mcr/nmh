@@ -5,7 +5,7 @@
 .\" include the -mh macro file
 .so %etcdir%/tmac.h
 .\"
-.TH INSTALL-MH %manext8% MH.6.8 [%nmhversion%]
+.TH INSTALL-MH %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 install-mh \- initialize the nmh environment
 .SH SYNOPSIS

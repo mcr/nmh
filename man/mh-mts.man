@@ -5,7 +5,7 @@
 .\" include the -mh macro file
 .so %etcdir%/tmac.h
 .\"
-.TH MH-MTS %manext8% MH.6.8 [%nmhversion%]
+.TH MH-MTS %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-mts \- the nmh interface to the message transport system
 .SH SYNOPSIS

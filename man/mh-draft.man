@@ -5,7 +5,7 @@
 .\" include the -mh macro file
 .so %etcdir%/tmac.h
 .\"
-.TH MH-DRAFT %manext5% MH.6.8 [%nmhversion%]
+.TH MH-DRAFT %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-draft \- draft folder facility for nmh message system
 .SH SYNOPSIS
