@@ -1,13 +1,13 @@
 Tue Mar 28 16:17:39 2000 Doug Morris <doug@mhost.com>
 
-	* applied Todd Miller's <Todd.Miller@courtesan.com> patch to
+	* Applied Todd Miller <Todd.Miller@courtesan.com>'s patch to
 	dropsbr.c to prevent core dumping on packf. Here's the note
 	from his message:
 
-	  Since sizeof(buffer) == sizeof(tmpbuffer) packf will dump
-	  core on a file w/o a From line with a line >= BUFSIZ.
-	  I noticed this because I had a junk file in my mail
-	  spool somehow.
+	    Since sizeof(buffer) == sizeof(tmpbuffer) packf will dump
+	    core on a file w/o a From line with a line >= BUFSIZ.
+	    I noticed this because I had a junk file in my mail
+	    spool somehow.
 
 Fri Mar 17 11:59:33 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
@@ -238,13 +238,18 @@ Fri Feb 04 12:29:12 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Whoever originally added the -help switch to all the commands
  	got too cute and had the option itself print out as "-(help)" in
- 	the -help output.  I guess the idea was to make reference to the
- 	fact that clearly you know about the -help option since you're
- 	currently looking at its output.  I think it's a bad idea to
- 	overload the meaning of the parentheses, however -- they're
+ 	the -help output.  One theory is that they were making reference
+ 	to the fact that clearly you know about the -help option since
+ 	you're currently looking at its output.  I think it's a bad idea
+ 	to overload the meaning of the parentheses, however -- they're
  	supposed to indicate what abbreviated prefix of the switch you're
- 	allowed to specify.  It doesn't make sense to show that you're
- 	allowed to "abbreviate" the switch to its entire length.
+ 	allowed to specify.
+
+	The other theory is that because you can say something like
+	"mhstore -" and get "mhstore: - ambiguous.  It matches" followed
+	by the same list of switches you get with -help, they were saying
+	you can "sorta" abbreviate "-help" as "-".  You don't get the
+	"Usage:" string, though, so it's not really the same thing.
 
 Thu Feb 03 17:52:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
@@ -255,8 +260,8 @@ Thu Feb 03 17:52:01 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
  	      also makes "-kpop" a command line option, for users who
  	      would like to use both "kpop" and "pop".
 
-	  Did no testing of the new features, as I don't have access to a
- 	  KPOP server.
+	Did no testing of the new features, as I don't have access to a
+ 	KPOP server.
 
 	* Modified inc.man and msgchk.man to document Wesley's new -kpop.
 
