@@ -21,7 +21,7 @@ static struct swit switches[] = {
 #define VERSIONSW          4
     { "version", 0 },
 #define	HELPSW             5
-    { "help", 4 },
+    { "help", 0 },
 #define	RESNDSW            6
     { "resent", -6 },
 #define	QUEUESW            7

@@ -26,7 +26,7 @@ static struct swit whatnowswitches[] = {
 #define VERSIONSW               6
     { "version", 0 },
 #define	HELPSW                  7
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -655,7 +655,7 @@ static struct swit  sendswitches[] = {
 #define SVERSIONSW       22
     { "version", 0 },
 #define	SHELPSW          23
-    { "help", 4 },
+    { "help", 0 },
 #define BITSTUFFSW       24
     { "dashstuffing", -12 },
 #define NBITSTUFFSW      25

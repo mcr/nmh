@@ -60,7 +60,7 @@ static struct swit switches[] = {
 #define VERSIONSW              14
     { "version", 0 },
 #define	HELPSW                 15
-    { "help", 4 },
+    { "help", 0 },
 
 /*
  * switches for moreproc/mhlproc

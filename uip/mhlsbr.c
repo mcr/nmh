@@ -72,7 +72,7 @@ static struct swit mhlswitches[] = {
 #define VERSIONSW     15
     { "version", 0 },
 #define	HELPSW        16
-    { "help", 4 },
+    { "help", 0 },
 #define	FORW1SW       17
     { "forward", -7 },		/* interface from forw */
 #define	FORW2SW       18

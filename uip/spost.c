@@ -55,7 +55,7 @@ struct swit switches[] = {
 #define VERSIONSW           15
     { "version", 0 },
 #define	HELPSW              16
-    { "help", 4 },
+    { "help", 0 },
 #define	DEBUGSW             17
     { "debug", -5 },
 #define	DISTSW              18

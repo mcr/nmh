@@ -62,7 +62,7 @@ static struct swit switches[] = {
 #define VERSIONSW             22
     { "version", 0 },
 #define	HELPSW                23
-    { "help", 4 },
+    { "help", 0 },
 #define	FILESW                24
     { "file file", 4 },			/* interface from msh */
 

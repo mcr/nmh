@@ -52,7 +52,7 @@ static struct swit switches[] = {
 #define VERSIONSW              10
     { "version", 0 },
 #define	HELPSW                 11
-    { "help", 4 },
+    { "help", 0 },
 
 /*
  * switches for debugging

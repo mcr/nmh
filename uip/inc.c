@@ -105,7 +105,7 @@ static struct swit switches[] = {
 #define VERSIONSW                 20
     { "version", 0 },
 #define	HELPSW                    21
-    { "help", 4 },
+    { "help", 0 },
 #define SNOOPSW                   22
     { "snoop", -5 },
 #define KPOPSW                    23

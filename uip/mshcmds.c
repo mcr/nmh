@@ -139,7 +139,7 @@ static struct swit distswit[] = {
 #define	DINWTSW                  11
     { "nowhatnowproc", 0 },
 #define	DIHELP                   12
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -240,7 +240,7 @@ static struct swit explswit[] = {
 #define	EXNVBSW        5
     { "noverbose", 0 },
 #define	EXHELP	       6
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -469,7 +469,7 @@ static struct swit fileswit[] = {
 #define	FINPRC               8
     { "normmproc", 0 },
 #define	FIHELP               9
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -633,7 +633,7 @@ static struct swit foldswit[] = {
 #define	FLLISW        14
     { "list", 0 },
 #define	FLHELP        15
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -852,7 +852,7 @@ static struct swit forwswit[] = {
 #define	FONWTSW                 16
     { "nowhatnow", 0 },
 #define	FOHELP                  17
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -1120,7 +1120,7 @@ static struct swit markswit[] = {
 #define	MNZERSW            7
     { "nozero", 0 },
 #define	MHELP              8
-    { "help", 4 },
+    { "help", 0 },
 #define	MDBUGSW            9
     { "debug", -5 },
     { NULL, 0 }
@@ -1339,7 +1339,7 @@ static struct swit mhnswit[] = {
 #define	MHNNVERBSW	   23
     { "noverbose", 0 },
 #define	MHNHELPSW	   24
-    { "help", 4 },
+    { "help", 0 },
 #define	MHNPROGSW	   25
     { "moreproc program", -4 },
 #define	MHNNPROGSW	   26
@@ -1454,7 +1454,7 @@ static struct swit packswit[] = {
 #define	PAFISW         0
     { "file name", 0 },
 #define	PAHELP         1
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -1632,7 +1632,7 @@ static struct swit pickswit[] = {
 #define	PINLISW              21
     { "nolist", 0 },
 #define	PIHELP               22
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -1819,7 +1819,7 @@ static struct swit replswit[] = {
 #define	REWIDSW                19
     { "width columns", 0 },
 #define	REHELP                 20
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -1915,7 +1915,7 @@ replcmd (char **args)
 
 static struct swit rmmswit[] = {
 #define	RMHELP    0
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -2044,7 +2044,7 @@ static struct swit scanswit[] = {
 #define	SCWID              6
     { "width columns", 0 },
 #define	SCHELP             7
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -2294,7 +2294,7 @@ static struct swit showswit[] = {
 #define SHNHEAD               9
     { "noheader", 3 },
 #define	SHHELP               10
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
@@ -2726,7 +2726,7 @@ static struct swit sortswit[] = {
 #define	SONVERB              6
     { "noverbose", 0 },
 #define	SOHELP               7
-    { "help", 4 },
+    { "help", 0 },
     { NULL, 0 }
 };
 
