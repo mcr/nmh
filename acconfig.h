@@ -115,12 +115,6 @@
 #define DEFAULT_MESSAGE_MODE "600"
 
 /*
- * The prefix which is prepended to the name of messages when they
- * are "removed" by rmm.  This should typically be `,' or `#'
- */
-#define BACKUP_PREFIX ","
-
-/*
  * Name of link to file to which you are replying.
  */
 #define LINK "@"
@@ -157,6 +151,12 @@
 
 /***** END USER CONFIGURATION SECTION *****/
 @TOP@
+
+/*
+ * The prefix which is prepended to the name of messages when they
+ * are "removed" by rmm.  This should typically be `,' or `#'
+ */
+#define BACKUP_PREFIX ","
 
 /*
  * Define this if you want SMTP (simple mail transport protocol)

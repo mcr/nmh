@@ -50,6 +50,17 @@ if test x"$enable_nmh_debug" = x"yes"; then
   enable_debug=yes
 fi
 
+dnl Set the backup prefix
+undefine([backup-prefix])dnl
+AC_ARG_WITH([backup-prefix],
+  [  --with-backup-prefix=,  set the backup prefix [,]])
+if test x"$with_backup_prefix" != x -a x"$with_backup_prefix" != x"no"; then
+  backup_prefix="$with_backup_prefix"
+else
+  backup_prefix=","
+fi
+AC_DEFINE_UNQUOTED(BACKUP_PREFIX, "$backup_prefix")dnl
+
 dnl Allow users to send email from addresses other than their default?
 undefine([masquerade])dnl
 AC_ARG_ENABLE(masquerade,
@@ -807,12 +818,10 @@ libary install path        : ${nmhlib2}
 config files install path  : ${nmhsysconf2}
 man page install path      : ${nmhman}
 transport system           : ${MTS}
+backup prefix              : ${backup_prefix}
 default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
 default pager              : ${pagerpath}
 email address masquerading : ${masquerade}
 pop is enabled             : ${pop_kinds}"
 echo ""
-
-
-
