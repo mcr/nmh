@@ -45,8 +45,9 @@ The correct order to commit the configure-related files is:
 
     % cvs commit acconfig.h config.h.in configure.in configure stamp-h.in
 
-If you haven't changed all of those files, just commit the rest in the stated
-order (e.g. cvs commit acconfig.h config.h.in stamp-h.in).
+If you haven't changed all of those files, just commit the rest in the
+stated order (e.g. cvs commit acconfig.h config.h.in stamp-h.in). If
+you change aclocal.m4, put that after acconfig.h.
 
 
 -------------------
