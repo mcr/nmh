@@ -315,6 +315,14 @@ go_to_it: ;
 	vec[vecp] = NULL;
     }
 
+    /* If the "proc" is "mhshow", add "-file" if showing file or draft.
+     */
+    if (strcmp (r1bindex (proc, '/'), "mhshow") == 0 && (draftsw || file) ) {
+       vec[vecp] = vec[vecp - 1];
+       vec[vecp - 1] = "-file";
+       vec[++vecp] = NULL;
+    }
+
     /*
      * If "proc" is mhl, then run it internally
      * rather than exec'ing it.
