@@ -171,3 +171,12 @@ Other italicized text
 	Enclose the file names and profile entries in lq/rq
 	quotes, too.
 
+Pointer manpages
+
+	Certain manpages are shared between one or more programs
+	(such as folder/folders). The secondary program should
+	have a man page that only contains:
+
+		.so man1/folder.1
+
+	Also, add this manpage to the appropriate section in Makefile.in
