@@ -1,14 +1,10 @@
 .\"
-.\" %nmhwarning%
+.\" THIS FILE HAS BEEN AUTOMATICALLY GENERATED.  DO NOT EDIT.
 .\" $Id$
 .\"
-.TH MH-FORMAT %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH MH-FORMAT 5 "30 Jun 2003" MH.6.8 [nmh-1.1]
 .SH NAME
 mh-format \- format file for nmh message system
-.SH SYNOPSIS
-some
-.B nmh
-commands
 .SH DESCRIPTION
 Several
 .B nmh
@@ -24,21 +20,14 @@ for each message;
 uses a format file which directs it
 how to generate the reply to a message, and so on.
 .PP
-Format strings are designed to be efficiently parsed by
-.B nmh
-which means they are not necessarily simple to write and understand.
-This means that novice, casual, or even advanced users of
-.B nmh
-should not have to deal with them.
-.PP
 There are a few alternate scan listing formats available
 in
-.IR %etcdir%/scan.time ,
-.IR %etcdir%/scan.size ,
+.IR nmh/etc/scan.time ,
+.IR nmh/etc/scan.size ,
 and
-.IR %etcdir%/scan.timely .
+.IR nmh/etc/scan.timely .
 Look in
-.I %etcdir%
+.I nmh/etc
 for other
 .B scan
 and
@@ -54,19 +43,24 @@ do that.  Note: familiarity with the C
 routine is assumed.
 .PP
 A format string consists of ordinary text, and special multi-character
-escapesequences which begin with `%'.  When specifying a format
+escape sequences which begin with `%'.  When specifying a format
 string, the usual C backslash characters are honored: `\\b', `\\f',
 `\\n', `\\r', and `\\t'.  Continuation lines in format files end with
 `\\' followed by the newline character.
 
 .\" TALK ABOUT SYNTAX FIRST, THEN SEMANTICS
 .SS SYNTAX
+Format strings are built around
+.IR "escape sequences" .
 There are three types of escape sequences: header
 .IR components ,
 built-in
 .IR functions ,
 and flow
 .IR control .
+Comments may be inserted in most places where a function argument is
+not expected.  A comment begins with `%;' and ends with a (non-escaped)
+newline.
 .PP
 A
 .I component
@@ -87,8 +81,21 @@ A
 escape is specified as
 .RI `%( function )'.
 All functions are built-in, and most have a string or numeric value.
+A function escape may have an
+.IR argument .
+The argument follows the function escape: separating
+whitespace is discarded:
+.RI `%( function " " argument )'.
+.PP
+In addition to literal numbers or strings, 
+the argument to a function escape can be another function, a component,
+or a control escape.  When the argument is a function or a
+component, they are listed without a leading `%'.  When control escapes
+are used as function arguments, they written as normally, with
+a leading `%';
 
-.SS "Control-flow escapes"
+.SS "Control escapes"
+.PP
 A
 .I control
 escape is one of: `%<', `%?', `%|', or `%>'. 
@@ -96,15 +103,10 @@ These are combined into the conditional execution construct:
 .PP
 .RS 5
 .nf
-%<condition
-.RI "	" "format text 1"
-%?condition2
-.RI "	" "format text 2"
-%?condition3
-.RI "	" "format text 3"
-\&...
-%|
-.RI "	" "format text N"
+.RI "%< " condition " " "format-text"
+.RI "%? " condition " " "format-text"
+    \&...
+.RI "%| " "format-text"
 %>
 .fi
 .RE
@@ -113,64 +115,46 @@ Extra white space is shown here only for clarity.  These
 constructs may be nested without ambiguity.  They form a general
 .B if\-elseif\-else\-endif
 block where only one of the
-.I format text
-segments is interpreted.
+format-texts
+is interpreted.  In other 
+words, `%<' is like the "if", `%?' is like the "elseif", `%|' is like 
+"else", and `%>' is like "endif".
 .PP
-The `%<' and `%?' control escapes causes a condition to be evaluated.  
-This condition may be either a
+A `%<' or `%?' control escape causes its condition to be evaluated.  
+This condition is a
 .I component
-or a
+or
 .IR function .
-The four constructs have the following syntax:
+For integer valued functions or components, the condition is true
+if the function return or component value is non-zero, and false if zero.
+For string valued functions or components, the condition is true
+if the function return or component value is 
+a non-empty string, and false for an empty string.
+
 .PP
-.RS 5
-.nf
-%<{component}
-%<(function)
-%?{component}
-%?(function)
-.fi
-.RE
-.PP
-These control escapes test whether the function or component value is
-non-zero (for integer-valued escapes), or non-empty (for string-valued
-escapes).
-.PP
-If this test evaulates true, then the format text up to the next
-corresponding control escape (one of `%|', `%?', or `%>') is interpreted
-normally.  Next, all format text (if any) up to the corresponding `%>'
-control escape is skipped.  The `%>' control escape is not interpreted;
-normal interpretation resumes after the `%>' escape.
-.PP
-If the test evaluates false, however, then the format text up to
-the next corresponding control escape (again, one of `%|', `%?', or
-`%>') is skipped, instead of being interpreted.  If the control escape
-encountered was `%?', then the condition associated with that control
-escape is evaluated, and interpretation proceeds after that test as
-described in the previous paragraph.  If the control escape encountered
-was `%|', then the format text up to the corresponding `%>' escape is
-interpreted normally.  As above, the `%>' escape is not interpreted and
-normal interpretation resumes after the `%>' escape.
-.PP
-The `%?' control escape and its following format text is optional, and may
-be included zero or more times.  The `%|' control escape and its following
-format text is also optional, and may be included zero or one times.
+The `%?' control escape is optional, and may there may be more
+than one `%?' control escape in a conditional block.
+The `%|' control escape
+is also optional, but may be included at most once.
 
 .SS "Function escapes"
-Most functions expect an argument of a particular type:
+Functions expecting an argument generally
+require an argument of a particular type.
+In addition to the number and string types,
+these include:
 .PP
 .RS 5
 .nf
 .ta +\w'Argument 'u +\w'An optional component, 'u
 .I Argument	Description	Example Syntax
-literal	A literal number,	%(\fIfunc\fR 1234)
+literal	A literal number	%(\fIfunc\fR 1234)
 	or string		%(\fIfunc\fR text string)
-comp	Any header component	%(\fIfunc\fR\^{\fIin-reply-to\fR\^})
+comp	Any component		%(\fIfunc\fR\^{\fIin-reply-to\fR\^})
 date	A date component	%(\fIfunc\fR\^{\fIdate\fR\^})
 addr	An address component	%(\fIfunc\fR\^{\fIfrom\fR\^})
-expr	An optional component,	%(\fIfunc\fR\^(\fIfunc2\fR\^))
-	function or control,	%(\fIfunc\fR %<{\fIreply-to\fR\^}%|%{\fIfrom\fR\^}%>)
-	perhaps nested		%(\fIfunc\fR\^(\fIfunc2\fR\^{\fIcomp\fR\^}))
+expr	Nothing	%(\fIfunc\fR)
+	or a subexpression	%(\fIfunc\fR\^(\fIfunc2\fR\^))
+	or control escape	%(\fIfunc\fR %<{\fIreply-to\fR\^}%|%{\fIfrom\fR\^}%>)
 .fi
 .RE
 .PP
@@ -183,28 +167,54 @@ have the same syntax as
 but require that the header component be a date string, or address
 string, respectively.
 .PP
-All arguments except those of type
+Most arguments not of type
 .IR expr
-are required.  For the
-.I expr
-argument type, the leading `%' must be omitted for component
-and function escape arguments, and must be present (with a leading space)
-for control escape arguments.
+are required.
+When escapes are nested (via expr arguments), evaluation is done from inner-most to outer-most.
+As noted above, for the
+expr
+argument type, 
+functions and components are written without a
+leading `%'.
+Control escape arguments must use a leading `%', preceded by a space.
 .PP
-The evaluation of format strings is based on a simple virtual machine
-with an integer register
+For example,
+.PP
+.RS 5
+.nf
+%<(mymbox{from}) To: %{to}%>
+.fi
+.RE
+.PP
+writes  the  value of the header component \*(lqFrom:\*(rq to the
+internal register named str; then (\fImymbox\fR\^) reads str and
+writes its result to the internal register named 
+.IR num ; 
+then the control escape evaluates 
+.IR num .  
+If
 .IR num
-, and a text string register
+is non-zero, the
+string \*(lqTo:\*(rq is printed  followed  by  the  value  of  the
+header component \*(lqTo:\*(rq.
+.SS Evaluation
+The evaluation of format strings is performed
+by a small virtual machine.
+The machine is capable of evaluating nested expressions
+as described above, and in addition
+has an integer register
+.IR num ,
+and a text string register
 .IR str .
-When a function escape is processed, if it accepts an optional
-.I expr
-argument which is not present, it reads the current value of either
+When a function escape that
+accepts an optional argument is processed,
+and the argument is not present, the current value of either
 .I num
 or
 .I str
-as appropriate.
-
-.SS "Return values"
+is used as the argument: which register is
+used depends on the function, as listed below.
+.PP
 Component escapes write the value of their message header in
 .IR str .
 Function escapes write their return value in
@@ -213,29 +223,31 @@ for functions returning integer or boolean values, and in
 .I str
 for functions returning string values.  (The boolean type is a subset
 of integers with usual values 0=false and 1=true.)  Control escapes
-return a boolean value, and set
-.IR num .
+return a boolean value, setting
+.I num
+to 1 if the last explicit condition
+evaluated by a `%<' or `%?' control
+succeeded, and 0 otherwise.
 .PP
 All component escapes, and those function escapes which return an
-integer or string value, pass this value back to their caller
-in addition to setting
-I str
+integer or string value, evaluate to their value as well as setting
+.I str
 or
 .IR num .
-These escapes will print
-out this value unless called as part of an argument to another escape
-sequence.  Escapes which return a boolean value do pass this value
-back to their caller in
-.IR num ,
-but will never print out the value.
+Outermost escape expressions in
+these forms will print
+their value, but outermost escapes which return a boolean value
+do not result in printed output.
+.SS Functions
+The function escapes may be roughly grouped into a few categories.
 .PP
 .RS 5
 .nf
-.ta \w'Formataddr 'u +\w'Argument 'u +\w'Rboolean 'u
-.I Function	Argument	Return	Description
+.ta \w'Fformataddr 'u +\w'Aboolean 'u +\w'Rboolean 'u
+.I Function	Argument   Result	Description
 msg		integer	message number
-cur		integer	message is current
-unseen		integer	message is unseen
+cur		integer	message is current (0 or 1)
+unseen		integer	message is unseen (0 or 1)
 size		integer	size of message
 strlen		integer	length of \fIstr\fR
 width		integer	output buffer size in bytes
@@ -251,10 +263,13 @@ plus	literal	integer	\fIarg\fR plus \fInum\fR
 minus	literal	integer	\fIarg\fR minus \fInum\fR
 divide	literal	integer	\fInum\fR divided by \fIarg\fR
 modulo	literal	integer	\fInum\fR modulo \fIarg\fR
-num	literal	integer	Set \fInum\fR to \fIarg\fR
-lit 	literal	string	Set \fIstr\fR to \fIarg\fR
+num	literal	integer	Set \fInum\fR to \fIarg\fR.
+num		integer	Set \fInum\fR to zero.
+lit 	literal	string	Set \fIstr\fR to \fIarg\fR.
+lit		string	Clear \fIstr\fR.
 getenv 	literal	string	Set \fIstr\fR to environment value of \fIarg\fR
-profile	literal	string	Set \fIstr\fR to profile component \fIarg\fR value
+profile	literal	string	Set \fIstr\fR to profile component \fIarg\fR 
+			value
 .\" dat	literal	int	return value of dat[arg]
 nonzero	expr	boolean	\fInum\fR is non-zero
 zero	expr	boolean	\fInum\fR is zero
@@ -265,21 +280,28 @@ comp	comp	string	Set \fIstr\fR to component text
 compval	comp	integer	Set \fInum\fR to \*(lq\fBatoi\fR(\fIcomp\fR\^)\*(rq
 .\" compflag	comp	integer	Set \fInum\fR to component flags bits (internal)
 .\" decodecomp	comp	string	Set \fIstr\fR to RFC-2047 decoded component text
-decode	expr	string	decode \fIstr\fR as RFC-2047 component
+decode	expr	string	decode \fIstr\fR as RFC-2047 (MIME-encoded) 
+			component
 trim	expr		trim trailing white-space from \fIstr\fR
 putstr	expr		print \fIstr\fR
 putstrf	expr		print \fIstr\fR in a fixed width
 putnum	expr		print \fInum\fR
 putnumf	expr		print \fInum\fR in a fixed width
 .\" addtoseq literal    add msg to sequence (LBL option)
+nodate	string	integer	Argument not a date string (0 or 1)
+formataddr	expr		append \fIarg\fR to \fIstr\fR as a
+			(comma separated) address list
+putaddr	literal		print \fIstr\fR address list with
+			\fIarg\fR as optional label;
+			get line width from \fInum\fR
 .fi
 .RE
 .PP
-These functions require a date component as an argument:
+The following functions require a date component as an argument:
 .PP
 .RS 5
 .nf
-.ta \w'Formataddr 'u +\w'Argument 'u +\w'Rboolean 'u
+.ta \w'Fformataddr 'u +\w'Aboolean 'u +\w'Rboolean 'u
 .I Function	Argument	Return	Description
 sec	date	integer	seconds of the minute
 min	date	integer	minutes of the hour
@@ -288,7 +310,7 @@ wday	date	integer	day of the week (Sun=0)
 day	date	string	day of the week (abbrev.)
 weekday	date	string	day of the week
 sday	date	integer	day of the week known?
-			(0=implicit,\-1=unknown)
+			(1=explicit,0=implicit,\-1=unknown)
 mday	date	integer	day of the month
 yday	date	integer	day of the year
 mon	date	integer	month of the year
@@ -298,25 +320,24 @@ year	date	integer	year (may be > 100)
 zone	date	integer	timezone in hours
 tzone	date	string	timezone string
 szone	date	integer	timezone explicit?
-			(0=implicit,\-1=unknown)
+			(1=explicit,0=implicit,\-1=unknown)
 date2local	date		coerce date to local timezone
 date2gmt	date		coerce date to GMT
-dst	date	integer	daylight savings in effect?
+dst	date	integer	daylight savings in effect? (0 or 1)
 clock	date	integer	seconds since the UNIX epoch
 rclock	date	integer	seconds prior to current time
 tws	date	string	official 822 rendering
 pretty	date	string	user-friendly rendering
-nodate	date	integer	\fIstr\fR not a date string
 .fi
 .RE
 .PP
 These functions require an address component as an argument.  
-The return value of functions noted with `*' pertain only to
+The return value of functions noted with `*' is computed from
 the first address present in the header component.
 .PP
 .RS 5
 .nf
-.ta \w'Formataddr 'u +\w'Argument 'u +\w'Rboolean 'u
+.ta \w'Fformataddr 'u +\w'Aboolean 'u +\w'Rboolean 'u
 .I Function	Argument	Return	Description
 proper	addr	string	official 822 rendering
 friendly	addr	string	user-friendly rendering
@@ -324,54 +345,26 @@ addr	addr	string	mbox@host or host!mbox rendering*
 pers	addr	string	the personal name*
 note	addr	string	commentary text*
 mbox	addr	string	the local mailbox*
-mymbox	addr	integer	the user's addresses? (0=no,1=yes)
+mymbox	addr	integer	List has the user's address? (0 or 1)
 host	addr	string	the host domain*
-nohost	addr	integer	no host was present*
+nohost	addr	integer	no host was present (0 or 1)*
 type	addr	integer	host type* (0=local,1=network,
 			\-1=uucp,2=unknown)
 path	addr	string	any leading host route*
-ingrp	addr	integer	address was inside a group*
+ingrp	addr	integer	address was inside a group (0 or 1)*
 gname	addr	string	name of group*
-formataddr	expr		append \fIarg\fR to \fIstr\fR as a
-			(comma separated) address list
-putaddr	literal		print \fIstr\fR address list with
-			\fIarg\fR as optional label;
-			get line width from \fInum\fR
 .fi
 .RE
 .PP
-When escapes are nested, evaluation is done from inner-most to outer-most.
-The outer-most escape must begin with `%'; the inner escapes must not.
-For example,
-.PP
-.RS 5
-.nf
-%<(mymbox{from}) To: %{to}%>
-.fi
-.RE
-.PP
-writes the value of the header component \*(lqFrom:\*(rq to
-.IR str ;
-then (\fImymbox\fR\^) reads
-.I str
-and writes its result to
-.IR num ;
-then the control escape evaluates
-.IR num .
-If
-.I num
-is non-zero, the string \*(lqTo:\*(rq is printed followed by the value of the header
-component \*(lqTo:\*(rq.
-.PP
-A minor explanation of (\fImymbox\fR\^{\fIcomp\fR\^}) is in order.
-In general, it checks each of the addresses in the header component
+(A clarification on (\fImymbox\fR\^{\fIcomp\fR\^}) is in order.
+This function checks each of the addresses in the header component
 \*(lq\fIcomp\fR\*(rq against the user's mailbox name and any
 .RI \*(lq Alternate-Mailboxes \*(rq.
 It returns true if any address matches,
 however, it also returns true if the \*(lq\fIcomp\fR\*(rq header is not
 present in the message.  If needed, the (\fInull\fR\^) function can be
-used to explicitly test for this condition.
-.PP
+used to explicitly test for this case.)
+.SS Formatting
 When a function or component escape is interpreted and the result will
 be immediately printed, an optional field width can be specified to
 print the field in exactly a given number of characters.  For example, a
@@ -382,7 +375,7 @@ characters and truncate at the end.  Short fields are padded at the right
 with the fill character (normally, a blank).  If the field width argument
 begins with a leading zero, then the fill character is set to a zero.
 .PP
-As above, the functions (\fIputnumf\fR\^) and (\fIputstrf\fR\^)
+The functions (\fIputnumf\fR\^) and (\fIputstrf\fR\^)
 print their result in exactly the number of characters
 specified by their leading field width argument.  For example,
 %06(\fIputnumf\fR\^(\fIsize\fR\^)) will print the message
@@ -391,17 +384,14 @@ size in a field six characters wide filled with leading zeros;
 component in fourteen characters with trailing spaces added as needed.
 For \fIputstrf\fR, using a negative value for the field width causes
 right-justification of the string within the field, with padding on
-the left up to the field width.  The functions (\fIputnum\fR\^) and
-(\fIputstr\fR\^) print their result in the minimum number of characters
+the left up to the field width.
+The functions (\fIputnum\fR\^) and
+(\fIputstr\fR\^) are somewhat special: they print their result in the minimum number of characters
 required, and ignore any leading field width argument.
 .PP
 The available output width is kept in an internal register; any output
 past this width will be truncated.
-.PP
-Comments may be inserted in most places where a function argument is
-not expected.  A comment begins with `%;' and ends with a (non-escaped)
-newline.
-.PP
+.SS Examples
 With all this in mind,
 here's the default format string for
 .BR scan .
@@ -414,9 +404,9 @@ The first part is:
 .fi
 .RE
 .PP
-which says that the message number should be printed in four digits,
-if the message is the current message then a `+' else a space should
-be printed, and if a \*(lqReplied:\*(rq field is present then a `\-'
+which says that the message number should be printed in four digits.
+If the message is the current message then a `+' else a space should
+be printed; if a \*(lqReplied:\*(rq field is present then a `\-'
 else if an \*(lqEncrypted:\*(rq field is present then an `E' otherwise
 a space should be printed.  Next:
 .PP
@@ -441,37 +431,37 @@ Next,
 .PP
 .RS 5
 .nf
-%<(mymbox{from})%<{to}To:%14(friendly{to})%>%>
+%<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>
 .fi
 .RE
 .PP
-if the message is from me,
-and there is a \*(lqTo:\*(rq header,
-print `To:' followed by a \*(lquser-friendly\*(rq rendering of the 
-first address in the \*(lqTo:\*(rq field.
+if the message is from me, and there is a \*(lqTo:\*(rq header,
+print \*(lqTo:\*(rq followed by a \*(lquser-friendly\*(rq rendering of the
+first address in the \*(lqTo:\*(rq field; any MIME-encoded
+characters are decoded into the actual characters.
 Continuing,
 .PP
 .RS 5
 .nf
-%<(zero)%17(friendly{from})%>
+%<(zero)%17(decode(friendly{from}))%>
 .fi
 .RE
 .PP
 if either of the above two tests failed,
 then the \*(lqFrom:\*(rq address is printed
-in a \*(lquser-friendly\*(rq format.
+in a mime-decoded, \*(lquser-friendly\*(rq format.
 And finally,
 .PP
 .RS 5
 .nf
-%{subject}%<{body}<<%{body}%>
+%(decode{subject})%<{body}<<%{body}>>%>
 .fi
 .RE
 .PP
-the subject and initial body (if any) are printed.
+the mime-decoded subject and initial body (if any) are printed.
 .PP
 For a more complicated example, next consider
-the default
+a possible
 .I replcomps
 format file.
 .PP
@@ -553,17 +543,17 @@ a suitable reply subject is output.
 .PP
 .RS 5
 .nf
-%<{date}In-reply-to: Your message of "\\
-%<(nodate{date})%{date}%|%(pretty{date})%>."%<{message-id}
-             %{message-id}%>\\n%>\\
+%<{message-id}In-Reply-To: %{message-id}\\n%>\\
+%<{message-id}References: %<{references} %{references}%>\\
+%{message-id}\\n%>
 \-\-\-\-\-\-\-\-
 .fi
 .RE
 .PP
-If a date component was present, an \*(lqIn-Reply-To:\*(rq header is
-output with the preface \*(lqYour message of \*(rq.  If the date was
-parseable, it is output in a user-friendly format, otherwise it is
-output as-is.  The message-id is included if present.  As with all
+If a message-id component was present, an \*(lqIn-Reply-To:\*(rq header is
+output including the message-id, followed by a \*(lqReferences:\*(rq
+header with references, if present, and the message-id.
+As with all
 plain-text, the row of dashes are output as-is.
 .PP
 This last part is a good example for a little more elaboration.
@@ -572,28 +562,61 @@ Here's that part again in pseudo-code:
 .RS 5
 .nf
 .ta .5i 1i 1.5i 2i
-if (comp_exists(date))  then
-	print (\*(lqIn-reply-to: Your message of \\\*(lq\*(rq)
-	if (not_date_string(date.value) then
-		print (date.value)
-	else
-		print (pretty(date.value))
+if (comp_exists(message-id))  then
+	print (\*(lqIn-reply-to: \*(rq)
+	print (message-id.value)
+	print (\*(lq\\n\*(rq)
+endif
+if (comp_exists(message-id)) then
+	print (\*(lqReferences: \*(rq)
+	if (comp_exists(references)) then
+	      print(references.value);
 	endif
-	print (\*(lq\\\*(rq\*(rq)
-	if (comp_exists(message-id)) then
-		print (\*(lq\\n\\t\*(rq)
-		print (message-id.value)
-	endif
+	print (message-id.value)
 	print (\*(lq\\n\*(rq)
 endif
 .fi
 .RE
 .PP
-Although this seems complicated,
-in point of fact,
-this method is flexible enough to extract individual fields and print them in
-any format the user desires.
-
+.\" (Note that this pseudocode begs the question ``why not just
+.\" support this syntax?''  MH has been hacked on for a long time...)
+.\".PP
+One more example: Currently,
+.B nmh
+supports very
+large message numbers, and it is not uncommon for a folder
+to have far more than 10000 messages.
+.\" (Indeed, the original MH
+.\" tutorial document by Rose and Romine is entitled "How to
+.\" process 200 messages a day and still get some real work
+.\" done."  The authors apparently only planned to get
+.\" real work done for about 50 days per folder.)
+Nontheless (as noted above)
+the various scan format strings are inherited
+from older MH versions, and are generally hard-coded to 4
+digits of message number before formatting problems
+start to occur.  
+The nmh format strings can be modified to behave more sensibly with larger
+message numbers:
+.PP
+.RS
+.nf
+%(void(msg))%<(gt 9999)%(msg)%|%4(msg)%>
+.fi
+.RE
+.PP
+The current message number is placed in \fInum\fP.
+(Note that
+.RI ( msg )
+is an int function, not a component.)
+The
+.RI ( gt )
+conditional
+is used to test whether the message number
+has 5
+or more digits.
+If so, it is printed at full width: otherwise
+at 4 digits.
 .SH "SEE ALSO"
 scan(1), repl(1), ap(8), dp(8)
 
