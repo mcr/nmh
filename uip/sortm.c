@@ -534,12 +534,12 @@ rename_chain (struct msgs *mp, struct smsg **mlist, int msg, int endmsg)
 	if (verbose)
 	    printf ("message %d becomes message %d\n", old, new);
 
-	if (rename (oldname, newname) == NOTOK)
-	    adios (newname, "unable to rename %s to", oldname);
-
 	(void)snprintf(oldname, sizeof (oldname), "%s/%d", mp->foldpath, old);
 	(void)snprintf(newbuf, sizeof (newbuf), "%s/%d", mp->foldpath, new);
 	ext_hook("ref-hook", oldname, newbuf);
+
+	if (rename (oldname, newname) == NOTOK)
+	    adios (newname, "unable to rename %s to", oldname);
 
 	copy_msg_flags (mp, new, old);
 	if (mp->curmsg == old)
@@ -585,24 +585,22 @@ rename_msgs (struct msgs *mp, struct smsg **mlist)
 	if (verbose)
 	    printf ("renaming message chain from %d to %d\n", old, new);
 
-	if (rename (f1, tmpfil) == NOTOK)
-	    adios (tmpfil, "unable to rename %s to ", f1);
-
 	/*
-	 *	Run the external hook to refile the old message as message
-	 *	number 2147483647.  This is our way of making a temporary
-	 *	message number.  I don't really like this.
+	 *	Run the external hook to refile the old message as the
+	 *	temporary message number that is off of the end of the
+	 *	messages in the folder.
 	 */
 
 	(void)snprintf(f1, sizeof (f1), "%s/%d", mp->foldpath, old);
-	(void)snprintf(newbuf, sizeof (newbuf), "%s/2147483647", mp->foldpath);
+	(void)snprintf(newbuf, sizeof (newbuf), "%s/%d", mp->foldpath, mp->hghmsg + 1);
 	ext_hook("ref-hook", f1, newbuf);
+
+	if (rename (f1, tmpfil) == NOTOK)
+	    adios (tmpfil, "unable to rename %s to ", f1);
 
 	get_msg_flags (mp, &tmpset, old);
 
 	rename_chain (mp, mlist, j, i);
-	if (rename (tmpfil, m_name(new)) == NOTOK)
-	    adios (m_name(new), "unable to rename %s to", tmpfil);
 
 	/*
 	 *	Run the external hook to refile the temorary message number
@@ -611,6 +609,9 @@ rename_msgs (struct msgs *mp, struct smsg **mlist)
 
 	(void)snprintf(f1, sizeof (f1), "%s/%d", mp->foldpath, new);
 	ext_hook("ref-hook", newbuf, f1);
+
+	if (rename (tmpfil, m_name(new)) == NOTOK)
+	    adios (m_name(new), "unable to rename %s to", tmpfil);
 
 	set_msg_flags (mp, &tmpset, new);
 	mp->msgflags |= SEQMOD;
