@@ -1,3 +1,8 @@
+Fri Oct 1 22:36:56 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Fixed a portability problem in Doug's fix of a portability
+	problem in my MAILGROUP autoconf support ('ls -l' vs. 'ls -lg'). 
+
 Sat Sep 25 18:40:43 1999 Ruud de Rooij <ruud@ruud.org>
 
 	* Added config.sub and config.guess to the list of files to be
