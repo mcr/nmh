@@ -690,7 +690,7 @@ plist
 	if (*p2 == CCHR) {
 	    c = p2[1];
 	    do {
-		if (*p1 == c || cc[*p1] == c)
+		if (*p1 == c || cc[(int)*p1] == c)
 		    if (advance (p1, p2))
 			return 1;
 	    } while (*p1++);
@@ -715,7 +715,7 @@ advance (char *alp, char *aep)
     for (;;)
 	switch (*ep++) {
 	    case CCHR: 
-		if (*ep++ == *lp++ || ep[-1] == cc[lp[-1]])
+		if (*ep++ == *lp++ || ep[-1] == cc[(int)lp[-1]])
 		    continue;
 		return 0;
 
@@ -754,7 +754,7 @@ advance (char *alp, char *aep)
 
 	    case CCHR | STAR: 
 		curlp = lp;
-		while (*lp++ == *ep || cc[lp[-1]] == *ep)
+		while (*lp++ == *ep || cc[(int)lp[-1]] == *ep)
 		    continue;
 		ep++;
 		goto star;
