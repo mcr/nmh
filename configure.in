@@ -444,8 +444,8 @@ AC_HEADER_SYS_WAIT
 AC_HEADER_STAT
 AC_CHECK_HEADERS(string.h memory.h stdlib.h unistd.h errno.h fcntl.h \
                  limits.h crypt.h termcap.h termio.h termios.h locale.h \
-                 netdb.h sys/param.h sys/time.h sys/utsname.h arpa/inet.h \
-                 arpa/ftp.h)
+                 langinfo.h netdb.h sys/param.h sys/time.h sys/utsname.h \
+                 arpa/inet.h arpa/ftp.h)
 
 
 AC_CACHE_CHECK(POSIX termios, nmh_cv_sys_posix_termios,
@@ -499,7 +499,7 @@ AC_FUNC_VFORK
 AC_CHECK_LIB(mkstemp,mkstemp)
 AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
                sighold sigrelse writev lstat uname tzset killpg mkstemp \
-               sethostent getutent)
+               sethostent getutent nl_langinfo)
 
 dnl solaris screws this up
 AC_CHECK_FUNC(gethostbyname, [AC_DEFINE(HAVE_GETHOSTBYNAME)],

@@ -10,6 +10,25 @@
  */
 
 #include <h/mh.h>
+#ifdef HAVE_LANGINFO_H
+# include <langinfo.h>
+#endif
+
+
+/*
+ * Get the current character set
+ */
+char *
+get_charset ()
+{
+    char *charset = getenv ("MM_CHARSET");
+#if defined(HAVE_NL_LANGINFO) && defined(CODESET)
+    if (!charset)
+	charset = norm_charmap(nl_langinfo (CODESET));
+#endif
+    return charset;
+}
+
 
 /*
  * Check if we can display a given character set natively.
@@ -28,7 +47,7 @@ check_charset (char *str, int len)
 
     /* Cache the name of our default character set */
     if (!mm_charset) {
-	if (!(mm_charset = getenv ("MM_CHARSET")))
+	if (!(mm_charset = get_charset ()))
 	    mm_charset = "US-ASCII";
 	mm_len = strlen (mm_charset);
 
@@ -63,7 +82,7 @@ write_charset_8bit (void)
      * Cache the name of the character set to
      * use for 8bit text.
      */
-    if (!mm_charset && !(mm_charset = getenv ("MM_CHARSET")))
+    if (!mm_charset && !(mm_charset = get_charset ()))
 	    mm_charset = "x-unknown";
 
     return mm_charset;

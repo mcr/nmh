@@ -83,6 +83,7 @@ char *m_tmpfil (char *);
 void m_unknown(FILE *);
 int makedir (char *);
 char *nmh_getpass(const char *);
+char *norm_charmap(char *);
 char *new_fs (char *, char *, char *);
 char *path(char *, int);
 int peekc(FILE *ib);
