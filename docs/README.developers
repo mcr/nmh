@@ -150,7 +150,7 @@ account, danh, as examples here):
 
  6. Untar nmh-1.0.4.tar.gz and `diff -r' it vs. your CVS tree.  Make sure no
     files got left out of the distribution that should be in it (due to someone
-    forgetting to update the DIST variables in the makefiles).
+    forgetting to update the DIST variables in the Makefiles).
 
  7. If you have root access on your machine, it's good at this point to do:
 
@@ -163,14 +163,23 @@ account, danh, as examples here):
     making it possible for that user to Trojan the nmh code before the system
     administrator finishes installing it.
 
- 8. Preferably make an MD5 hash and/or a PGP signature of nmh-1.0.4.tar.gz.
+ 8. Make sure your new tarball uncompresses and untars with no problem.  Make
+    sure you can configure, make, and install nmh from it.
 
- 9. Preferably test out the tarball, making sure you can uncompress and untar
-    it, and configure, make, install, and use nmh from it.
+ 9. If all is well and your tarball is final, go back to your CVS tree and do:
 
-10. % scp -p nmh-1.0.4.tar.gz* danh@mhost.com:/home/ftp/pub/nmh
+    % echo 1.0.4+dev > VERSION
 
-11. Send an announcement to exmh-users@redhat.com, exmh-workers@redhat.com,
+10. Put a comment like "Upped the version number to 1.0.4+dev until the next nmh
+    release." in the ChangeLog.
+
+11. % cvs commit ChangeLog VERSION
+
+12. If possible, make an MD5 hash and/or a PGP signature of nmh-1.0.4.tar.gz.
+
+13. % scp -p nmh-1.0.4.tar.gz* danh@mhost.com:/var/ftp/pub/nmh
+
+14. Send an announcement to exmh-users@redhat.com, exmh-workers@redhat.com,
     mh-users@ics.uci.edu, and nmh-announce@mhost.com.  If the release fixes
     significant security holes, also send an announcement to
     bugtraq@securityfocus.com.  The exmh lists require you to be subscribed in
