@@ -45,62 +45,33 @@ need an ANSI C compiler such as gcc.
    injecting the message to a mail transfer agent (such as sendmail)
    on the local machine via SMTP.
 
-   If you have enabled POP support and you want this to be the
-   default method of accessing new mail, you will need to change
-   the values of the variables "servers", "pophost", "localname",
-   and possibly "mmailid".
+   If, instead, all your mail sending and receiving occurs on a 
+   remote POP/SMTP server, you will need to look at the values of the 
+   variables "localname", "pophost", and "servers":
 
-   a) "servers" defines the server to which you send outgoing SMTP
-      traffic.
+    a) "localname" defines the hostname that nmh considers local.
+       If not set, then nmh queries your OS for this value.  You will
+       want to change this if you wish your e-mail to appear as if it
+       originated on the POP server.
 
-   b) "pophost" defines the server that runs the POP daemon, and to
-      which `inc' and `msgchk' will query for new mail.
+    b) "pophost" defines the server that runs the POP daemon, and to
+       which `inc' and `msgchk' will always query for new mail.
 
-   c) "localname" defines the hostname that nmh considers local.
-      If not set, then nmh queries your OS for this value.  You may
-      want to change this if you wish your e-mail to appear as if it
-      originated on the POP server.
-
-   d) "mmailid" allows two different types of email address masquerading
-      when it's set to be non-zero.  The first type is GECOS-based
-      masquerading.  nmh will check if the user's pw_gecos field in the passwd
-      is of the form:
-
-          Full Name <fakeusername>
-
-      If it is, the internal nmh routines that find the username and full
-      name of that user will return "fakeusername" and "Full Name"
-      respectively.  This is useful if you want the messages you send to
-      always appear to come from the name of an MTA alias rather than your
-      actual account name.  For instance, many organizations set up
-      "First.Last" sendmail aliases for all users.  If this is the case,
-      the GECOS field for each user should look like:
-
-          First [Middle] Last <First.Last>
-
-      The other type of masquerading that mmailid turns on is envelope
-      "From:" masquerading based on draft contents.  When a user explicitly
-      specifies a "From:" header in a message, nmh uses it rather than
-      constructing its own.  However, the SMTP envelope "From:" and the
-      "Sender:" header are set to the user's real address.  Turning on
-      mmailid prevents this latter behavior.  This is useful when the user
-      wants to pretend to be sending mail "directly" from a remote POP3
-      account, or when remote mail robots incorrectly use the envelope
-      "From:" in preference to the body "From:" (or refuse to take action
-      when the two don't match).
+    c) "servers" defines the server to which you send outgoing SMTP
+       traffic.
 
    If you compile with POP support, but don't want to use it exclusively,
    you can use the `-host' and `-user' options to `inc' and `msgchk'
-   rather than hardcoding values in `mts.conf'.
+   rather than hardcoding pophost in `mts.conf'.
 
    Check the `mh-tailor' man page for a list of all the available options
-   for this file.
+   for this file ("masquerade" may be of particular interest).
 
 6) If you have enabled POP support, make sure that `pop3' (or more
    precisely the value of the define POPSERVICE in config.h) is defined
    in the /etc/services file (or its NIS/NIS+ equivalent) on the client
    machine.  It should be something equivalent to "110/tcp".  This might
-   have already been done when the pop daemon was installed.
+   have already been done when the POP daemon was installed.
 
 7) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
    This file contains the default profile entries for the nmh command
@@ -111,8 +82,8 @@ need an ANSI C compiler such as gcc.
    want to re-run this script later if you install new programs to
    display content.  An example of this is:
 
-   cd support/general
-   ./mhn.defaults.sh /usr/local/bin:/usr/X11/bin:/usr/ucb > mhn.defaults
+    % cd support/general
+    % ./mhn.defaults.sh /usr/local/bin:/usr/X11/bin:/usr/ucb > mhn.defaults
 
    and then move `mhn.defaults' into the nmh `etc' directory.
 

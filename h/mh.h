@@ -21,6 +21,14 @@
 #define DMAXFOLDER     4	/* typical number of digits             */
 #define MAXFOLDER   1000	/* message increment                    */
 
+#ifndef FALSE
+#define FALSE 0
+#endif
+#ifndef TRUE
+#define TRUE 1
+#endif
+typedef unsigned char  boolean;  /* not int so we can pack in a structure */
+
 /*
  * user context/profile structure
  */

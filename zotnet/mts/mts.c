@@ -60,9 +60,11 @@ char *mmdlm2 = "\001\001\001\001\n";
 static char username[BUFSIZ];
 static char fullname[BUFSIZ];
 
-/* variables for username masquerading */
-int MMailids = 0;  /* used from post.c as well as here */
-static char *mmailid = "0";
+/* Variables for username masquerading: */
+       boolean  draft_from_masquerading = FALSE;  /* also used from post.c */
+static boolean  mmailid_masquerading = FALSE;
+static boolean  plussed_user_masquerading = FALSE;
+static char*    masquerade = "";
 
 
 /*
@@ -128,7 +130,7 @@ static struct bind binds[] = {
     { "uucplfil", &uucplfil },
     { "mmdelim1", &mmdlm1 },
     { "mmdelim2", &mmdlm2 },
-    { "mmailid", &mmailid },
+    { "masquerade", &masquerade },
 
 #if defined(SENDMTS) || defined(SMTPMTS)
     { "hostable", &hostable },
@@ -196,8 +198,17 @@ mts_init (char *name)
     }
 
     fclose (fp);
-    MMailids = atoi (mmailid);
+
     Everyone = atoi (everyone);
+
+    if (strstr(masquerade, "draft_from") != NULL)
+	draft_from_masquerading = TRUE;
+
+    if (strstr(masquerade, "mmailid") != NULL)
+	mmailid_masquerading = TRUE;
+
+    if (strstr(masquerade, "plussed_user") != NULL)
+	plussed_user_masquerading = TRUE;
 }
 
 
@@ -400,7 +411,6 @@ getuserinfo (void)
 	    || pw->pw_name == NULL
 	    || *pw->pw_name == '\0') {
 #endif /* KPOP */
-
 	strncpy (username, "unknown", sizeof(username));
 	snprintf (fullname, sizeof(fullname), "The Unknown User-ID (%d)",
 		(int) getuid ());
@@ -409,15 +419,26 @@ getuserinfo (void)
 
     np = pw->pw_gecos;
 
-    /*
-     * Do mmailid (username masquerading) processing.  The GECOS
-     * field should have the form "Full Name <fakeusername>".  For instance,
-     * "Dan Harkless <Dan.Harkless>".  Naturally, you'll want your MTA to have
-     * an alias (e.g. in /etc/aliases) from "fakeusername" to your account name.
-     */
+    /* Get the user's real name from the GECOS field.  Stop once we hit a ',',
+       which some OSes use to separate other 'finger' information in the GECOS
+       field, like phone number.  Also, if mmailid masquerading is turned on due
+       to "mmailid" appearing on the "masquerade:" line of mts.conf, stop if we
+       hit a '<' (which should precede any ','s). */
 #ifndef BSD42
-    for (cp = fullname; *np && *np != (MMailids ? '<' : ','); *cp++ = *np++)
-	continue;
+    if (mmailid_masquerading)
+	/* Stop at ',' or '<'. */
+	for (cp = fullname; *np != '\0' && *np != ',' && *np != '<';
+	     *cp++ = *np++)
+	    continue;
+    else
+	/* Allow '<' as a legal character of the user's name.  This code is
+	   basically a duplicate of the code above the "else" -- we don't
+	   collapse it down to one copy and put the mmailid_masquerading check
+	   inside the loop with "(x ? y : z)" because that's inefficient and the
+	   value'll never change while it's in there. */
+	for (cp = fullname; *np != '\0' && *np != ',';
+	     *cp++ = *np++)
+	    continue;
 #else /* BSD42 */
     /* On BSD(-derived) systems, the system utilities that deal with the GECOS
        field (finger, mail, sendmail, etc.) translate any '&' character in it to
@@ -425,30 +446,69 @@ getuserinfo (void)
        fingering a user "bob" with the GECOS field "& Jones" would reveal him to
        be "In real life: Bob Jones".  Surprisingly, though, the OS doesn't do
        the translation for you, so we have to do it manually here. */
-    for (cp = fullname; *np && *np != (MMailids ? '<' : ','); ) {
-	if (*np == '&')	{	/* blech! */
-	    strcpy (cp, pw->pw_name);
-	    *cp = toupper(*cp);
-	    while (*cp)
-		cp++;
-	    np++;
-	} else {
-	    *cp++ = *np++;
+    if (mmailid_masquerading)
+	/* Stop at ',' or '<'. */
+	for (cp = fullname;
+	     *np != '\0' && *np != ',' && *np != '<';) {
+	    if (*np == '&')	{	/* blech! */
+		strcpy (cp, pw->pw_name);
+		*cp = toupper(*cp);
+		while (*cp)
+		    cp++;
+		np++;
+	    } else {
+		*cp++ = *np++;
+	    }
 	}
-    }
+    else
+	/* Allow '<' as a legal character of the user's name.  This code is
+	   basically a duplicate of the code above the "else" -- we don't
+	   collapse it down to one copy and put the mmailid_masquerading check
+	   inside the loop with "(x ? y : z)" because that's inefficient and the
+	   value'll never change while it's in there. */
+	for (cp = fullname;
+	     *np != '\0' && *np != ',';) {
+	    if (*np == '&')	{	/* blech! */
+		strcpy (cp, pw->pw_name);
+		*cp = toupper(*cp);
+		while (*cp)
+		    cp++;
+		np++;
+	    } else {
+		*cp++ = *np++;
+	    }
+	}
 #endif /* BSD42 */
-
     *cp = '\0';
-    if (MMailids) {
+
+    if (mmailid_masquerading) {
+	/* Do mmailid processing.  The GECOS field should have the form
+	   "Full Name <fakeusername>".  For instance,
+	   "Dan Harkless <Dan.Harkless>".  Naturally, you'll want your MTA to
+	   have an alias (e.g. in /etc/aliases) from "fakeusername" to your
+	   account name.  */ 
 	if (*np)
 	    np++;
 	for (cp = username; *np && *np != '>'; *cp++ = *np++)
 	    continue;
 	*cp = '\0';
     }
-    if (MMailids == 0 || *np == '\0')
+    if (!mmailid_masquerading || *np == '\0')
 	strncpy (username, pw->pw_name, sizeof(username));
 
+    if (plussed_user_masquerading) {
+	/* Tack on '+' and $USERPLUS environment variable to actual username.
+	   Presumably the local MTA (e.g. sendmail) has been set up to deliver
+	   all mail sent to <user>+<string> to <user>. */
+	char*  plussed_user_addon = getenv("USERPLUS");
+
+	if (plussed_user_addon != NULL && *plussed_user_addon != '\0') 
+	    snprintf(username, sizeof(username), "%s+%s",
+		     username, plussed_user_addon);
+    }
+
+    /* The $SIGNATURE environment variable overrides the GECOS field's idea of
+       your real name. */
     if ((cp = getenv ("SIGNATURE")) && *cp)
 	strncpy (fullname, cp, sizeof(fullname));
 

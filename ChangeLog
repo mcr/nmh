@@ -1,3 +1,29 @@
+Thu Mar 02 23:04:30 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Added a new "boolean" type to mh.h and TRUE and FALSE constants.
+		
+	* Added a note to DIFFERENCES stating that it's out-of-date
+	(Richard was the last one to update it) and that we should
+ 	consider only documenting incompatibilities with MH there.
+
+	* Implemented (and documented) a third kind of username
+ 	masquerading: "plussed user" masquerading.  This one was suggested
+ 	by Neil Rickert <rickert@cs.niu.edu>.  It's based on sendmail's
+ 	"plussed user" feature, where mail sent to <user>+<string> will be
+ 	delivered to <user>.  When it's enabled, it's controlled by the
+ 	$USERPLUS environment variable.  How is it enabled?  Well, that
+	leads me to:
+
+	* Renamed the "mmailid:" setting in mts.conf to "masquerade:", and
+ 	changed it so that rather than being a boolean, it can be set to
+ 	any combination of the three values "draft_from", "mmailid", and
+ 	"plussed_user".  Thus it is now possible to enable the three types
+	of masquerading individually.
+
+	* Fixed a bug with "mmailid" masquerading (dating back to MH?)
+ 	where if it was turned on, ','s would no longer be considered
+	GECOS field delimiters.
+	
 Wed Mar 01 23:30:50 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Changed the GECOS-field '&' translation behavior to be

@@ -283,7 +283,7 @@ static char *fill_in = NULL;
 static char *partno = NULL;
 static int queued = 0;
 
-extern int  MMailids;
+extern boolean  draft_from_masquerading;  /* defined in mts.c */
 
 /*
  * static prototypes
@@ -768,15 +768,16 @@ putfmt (char *name, char *str, FILE *out)
 		    continue;
 		}
 
-		if (MMailids && ((msgstate == RESENT)
-				 ? (hdr->set & MRFM)
-				 : (hdr->set & MFRM)))
+		if (draft_from_masquerading && ((msgstate == RESENT)
+						? (hdr->set & MRFM)
+						: (hdr->set & MFRM)))
 		    /* The user manually specified a [Resent-]From: address in
-		       their draft and mts.conf turned on "mmailid", so we'll
-		       set things up to use the actual email address embedded in
-		       the draft [Resent-]From: (after alias substitution, and
-		       without the GECOS full name or angle brackets) as the
-		       envelope From:. */
+		       their draft and the "masquerade:" line in mts.conf
+		       doesn't contain "draft_from", so we'll set things up to
+		       use the actual email address embedded in the draft
+		       [Resent-]From: (after alias substitution, and without the
+		       GECOS full name or angle brackets) as the envelope
+		       From:. */
 		    strncpy(from, auxformat(mp, 0), sizeof(from) - 1);
 
 		if (hdr->flags & HBCC)
@@ -799,14 +800,16 @@ putfmt (char *name, char *str, FILE *out)
 	}
 	else {
 	    /* Address includes a host, so no alias substitution is needed. */
-	    if (MMailids && ((msgstate == RESENT)
-			     ? (hdr->set & MRFM)
-			     : (hdr->set & MFRM)))
-		/* The user manually specified a [Resent-]From: address in their
-		   draft and mts.conf turned on "mmailid", so we'll set things
-		   up to use the actual email address embedded in the draft
-		   [Resent-]From: (without the GECOS full name or angle
-		   brackets) as the envelope From:. */
+	    if (draft_from_masquerading && ((msgstate == RESENT)
+					    ? (hdr->set & MRFM)
+					    : (hdr->set & MFRM)))
+		/* The user manually specified a [Resent-]From: address in
+		   their draft and the "masquerade:" line in mts.conf
+		   doesn't contain "draft_from", so we'll set things up to
+		   use the actual email address embedded in the draft
+		   [Resent-]From: (after alias substitution, and without the
+		   GECOS full name or angle brackets) as the envelope
+		   From:. */
 		strncpy(from, auxformat(mp, 0), sizeof(from) - 1);
 
 	    if (hdr->flags & HBCC)
@@ -891,10 +894,11 @@ finish_headers (FILE *out)
 			(int) getpid (), (long) tclock, LocalName ());
 	    if (msgflags & MFRM) {
 		/* There was already a From: in the draft.  Don't add one. */
-		if (!MMailids)
-		    /* mts.conf didn't turn on mmailid, so we'll reveal the
-		       user's actual account@thismachine address in a Sender:
-		       header (and use it as the envelope From: later). */
+		if (!draft_from_masquerading)
+		    /* mts.conf didn't contain "masquerade:[...]draft_from[...]"
+		       so we'll reveal the user's actual account@thismachine
+		       address in a Sender: header (and use it as the envelope
+		       From: later). */
 		    fprintf (out, "Sender: %s\n", from);
 	    }
 	    else
@@ -929,11 +933,11 @@ finish_headers (FILE *out)
 			(int) getpid (), (long) tclock, LocalName ());
 	    if (msgflags & MRFM) {
 		/* There was already a Resent-From: in draft.  Don't add one. */
-		if (!MMailids)
-		    /* mts.conf didn't turn on mmailid, so we'll reveal the
-		       user's actual account@thismachine address in a
-		       Resent-Sender: header (and use it as the envelope From:
-		       later). */
+		if (!draft_from_masquerading)
+		    /* mts.conf didn't contain "masquerade:[...]draft_from[...]"
+		       so we'll reveal the user's actual account@thismachine
+		       address in a Sender: header (and use it as the envelope
+		       From: later). */
 		    fprintf (out, "Resent-Sender: %s\n", from);
 	    }
 	    else

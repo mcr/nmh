@@ -5,6 +5,18 @@
 # all the available options for this file.
 #
 
+# The exceptions file for /etc/hosts used by
+# `post' to try to find official names.
+hostable: %etcdir%/hosts
+
+# Name that nmh considers `local'.  If not set, nmh will
+# query the system for this value (gethostname, etc...).
+#localname: foo.bar.com
+
+# Uncomment the following line to allow username masquerading.  Any or all of
+# the three types of masquerading may be used (see mh-tailor(5) for details).
+#masquerade: draft_from mmailid plussed_user
+
 # Default location of mail drops.  If this option is
 # set, but empty, the user's home directory is used.
 mmdfldir: %mailspool%
@@ -13,19 +25,8 @@ mmdfldir: %mailspool%
 # are kept.  If this is empty, the user's login name is used.
 mmdflfil:
 
-# The exceptions file for /etc/hosts used by
-# `post' to try to find official names.
-hostable: %etcdir%/hosts
+# Hardcoded POP server name (prevents inc'ing from local mail spool).
+#pophost: localhost
 
 # List of smtp servers to try if using smtp support
 servers: localhost
-
-# Name of POP server
-# pophost: localhost
-
-# Name that nmh considers `local'.  If not set, nmh will
-# query the system for this value (gethostname, etc...).
-# localname: foo.bar.com
-
-# Uncomment this to allow the two types of username masquerading.
-# mmailid: 1

@@ -74,36 +74,45 @@ transport system's handling of the message (e.g., local and \*(lqfast\*(rq
 delivery).
 
 Under normal circumstances, \fIpost\fR constructs the "From:" line of the
-message from the user's UNIX username, the full name from the GECOS field of the
-passwd file, and the fully-qualified name of the local machine (e.g. `From: "Dan
-Harkless" <dan@machine.company.com>').  However, there are three ways to
-override these values.  Note that they apply equally to "Resent-From:" lines in
-messages sent with \fIdist\fR.
+message from the user's login name, the full name from the GECOS field of the
+passwd file, and the fully-qualified name of the local machine (or the value of
+"localname" in mts.conf, if set).  An example is "From: Dan Harkless
+<dan@machine.company.com>".  There are four ways to override these values,
+however.  Note that they apply equally to "Resent-From:" lines in messages sent
+with \fIdist\fR.
 
-The first way is GECOS-based username masquerading.  If "mmailid" in the
-mts.conf file has been set to non-zero, this processing is activated.  If a
-user's GECOS field in the passwd file is of the form "Full Name <fakename>" then
-"fakename" will be used in place of the real username.  For instance, a GECOS
-field of "Dan Harkless <Dan.Harkless>" would result in `From: "Dan Harkless"
-<Dan.Harkless@machine.company.com>'.  Naturally if you were doing something like
+The first way is GECOS-based username masquerading.  If the "masquerade:" line
+in mts.conf contains "mmailid", this processing is activated.  If a user's GECOS
+field in the passwd file is of the form "Full Name <fakename>" then "fakename"
+will be used in place of the real username.  For instance, a GECOS field of "Dan
+Harkless <Dan.Harkless>" would result in "From: Dan Harkless
+<Dan.Harkless@machine.company.com>".  Naturally if you were doing something like
 this you'd want to set up an MTA alias (e.g. in /etc/aliases) from, for
 instance, "Dan.Harkless" to "dan".
 
 The second way to override default construction of "From:" is to set the
 \fB$SIGNATURE\fR environment variable.  This variable overrides the full name
-from the GECOS field, even if GECOS-based masquerading is being done.
+from the GECOS field, even if GECOS-based masquerading is being done.  This
+processing is always active, and does not need to be enabled from mts.conf.
 
-The third way, which will override either of the previous two, is to specify a
-"From:" line manually in the message draft.  It will be used as provided (after
-alias substitution), but to discourage email forgery, the user's real address
-will be used in the SMTP envelope "From:" and in the "Sender:" line.  However,
-if the system administrator has allowed address masquerading by setting
-"mmailid" to non-zero in mts.conf, the SMTP envelope "From:" will use the
-address given in the draft "From:", and there will be no "Sender:" header.  This
-is useful in pretending to send mail "directly" from a remote POP3 account, or
-when remote email robots give improper precedence to the envelope "From:".  Note
-that your MTA may still reveal your real identity (e.g. sendmail's
-"X-Authentication-Warning:" header).
+The third way is controlled by the "plussed_user" value of "masquerade:" line of
+mts.conf.  When that's turned on, setting the $USERPLUS environment variable
+will result in its value being tacked onto the user's login name, following 
+a '+' sign.  For instance, if I set $USERPLUS to "www", my "From:" line will
+contain "Dan Harkless <dan+www@machine.company.com>" (or "Dan.Harkless+www" if
+I'm using mmailid masquerading as well).  Recent versions of sendmail
+automatically deliver all mail sent to \fIuser\fR+\fIstring\fR to \fIuser\fR.
+
+The fourth method of address masquerading is to specify a "From:" line manually
+in the message draft.  It will be used as provided (after alias substitution),
+but normally, to discourage email forgery, the user's \fIreal\fR address will be
+used in the SMTP envelope "From:" and in a "Sender:" header.  However, if the
+"masquerade:" line of mts.conf contains "draft_from", the SMTP envelope "From:"
+will use the address given in the draft "From:", and there will be no "Sender:"
+header.  This is useful in pretending to send mail "directly" from a remote POP3
+account, or when remote email robots give improper precedence to the envelope
+"From:".  Note that your MTA may still reveal your real identity (e.g.
+sendmail's "X-Authentication-Warning:" header). 
 
 .Fi
 ^%etcdir%/mts.conf~^nmh mts configuration file

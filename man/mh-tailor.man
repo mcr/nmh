@@ -99,12 +99,17 @@ mmdelim2: \\001\\001\\001\\001\\n
 The end-of-message delimiter for maildrops.
 
 .ti -.5i
-mmailid: 0
+masquerade:
 .br
-If this is non-zero, two different types of email address masquerading are
-allowed ("mmailid" = "masquerade mail ID").  The first type is GECOS-based
-masquerading.  \fInmh\fR will check if the user's pw_gecos field in the passwd
-file is of the form:
+This directive controls three different types of email address masquerading.
+The three possible values, which may be specified in any combination on the
+line, are "draft_from", "mmailid", and "plussed_user".
+
+"mmailid" was the only type of masquerading in the original MH package, and
+apparently stands for "masquerade mail identification".  This type of
+masquerading keys off of the GECOS field of the passwd file.  When enabled,
+\fInmh\fR will check if the user's pw_gecos field in the passwd file is of the
+form:
 
 .ti +.5i
 Full Name <fakeusername>
@@ -119,15 +124,28 @@ the case, the GECOS field for each user should look like:
 .ti +.5i
 First [Middle] Last <First.Last>
 
-The other type of masquerading that mmailid turns on is envelope "From:"
-masquerading based on draft contents.  When a user explicitly specifies a
-"From:" header in a message, \fInmh\fR uses it rather than constructing its own.
-However, the SMTP envelope "From:" and the "Sender:" header are set to the
-user's real address.  Turning on mmailid prevents this latter behavior.  This is
-useful when the user wants to pretend to be sending mail "directly" from a
-remote POP3 account, or when remote mail robots incorrectly use the envelope
-"From:" in preference to the body "From:" (or refuse to take action when the two
-don't match).
+"plussed_user", when specified on the "masquerade:" line, allows a second type
+of username masquerading.  If the user sets the \fB$USERPLUS\fR environment
+variable, its value will be tacked onto the actual login name, following a '+'
+sign.  For instance, if I am dan@company.com, and I set \fB$USERPLUS\fR to
+"www", my mail will appear to come from "dan+www@company.com".  This feature is
+meant to interact with MTA features like the one in sendmail that automatically
+delivers all mail sent to \fIuser\fR+\fIstring\fR to \fIuser\fR.  One can use
+different email addresses in different situations (to aid in automatic mail
+filtering or in determining where spammers got your address) while only actually
+having a single account.
+
+"draft_from" controls the most powerful type of address masquerading.  Normally,
+when a user explicitly specifies a "From:" header in a draft, \fInmh\fR uses it
+rather than constructing its own.  However, to discourage email forgery, the
+SMTP envelope "From:" and a "Sender:" header are set to the user's real address.
+When "draft_from" is turned on, though, the envelope "From:" will use the
+address specified in the draft, and there will be no "Sender:" header.  This is
+useful when a user wants to pretend to be sending mail "directly" from a remote
+POP3 account, or when remote mail robots incorrectly use the envelope "From:" in
+preference to the body "From:" (or refuse to take action when the two don't
+match).  Note that your MTA may still reveal the user's real identity (e.g.
+sendmail's "X-Authentication-Warning:" header).
 
 .ti -.5i
 maildelivery: %libdir%/maildelivery
@@ -290,7 +308,7 @@ your site, and set the appropriate values.
 .Pr
 None
 .Sa
-mh\-mts(8)
+mh\-mts(8), post(8)
 .De
 As listed above
 .Co
