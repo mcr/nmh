@@ -444,51 +444,150 @@ sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
 }
 #endif /* CYRUS_SASL */
 
+
+/*
+ * Split string containing proxy command into an array of arguments
+ * suitable for passing to exec. Returned array must be freed. Shouldn't
+ * be possible to call this with host set to NULL.
+ */
+char **
+parse_proxy(char *proxy, char *host)
+{
+    char **pargv, **p;
+    int pargc = 2;
+    int hlen = strlen(host);
+    int plen = 1;
+    char *cur, *pro;
+    char *c;
+    
+    /* skip any initial space */
+    for (pro = proxy; isspace(*pro); pro++)
+        continue;
+    
+    /* calculate required size for argument array */
+    for (cur = pro; *cur; cur++) {
+        if (isspace(*cur) && cur[1] && !isspace(cur[1]))
+	    plen++, pargc++;
+	else if (*cur == '%' && cur[1] == 'h') {
+	    plen += hlen;
+            cur++;
+	} else if (!isspace(*cur))
+	    plen++;
+    }
+
+   /* put together list of arguments */
+    p = pargv = malloc(pargc * sizeof(char *));
+    c = *pargv = malloc(plen * sizeof(char));
+    for (cur = pro; *cur; cur++) {
+        if (isspace(*cur) && cur[1] && !isspace(cur[1])) {
+	    *c++ = '\0';
+	    *++p = c;
+	} else if (*cur == '%' && cur[1] == 'h') {
+	    strcpy (c, host);
+	    c += hlen;
+	    cur++;
+	} else if (!isspace(*cur))
+	    *c++ = *cur;
+    }
+    *++p = NULL;
+    return pargv;
+}
+
 int
-pop_init (char *host, char *user, char *pass, int snoop, int rpop, int kpop,
-	  int sasl, char *mech)
+pop_init (char *host, char *user, char *pass, char *proxy, int snoop,
+          int rpop, int kpop, int sasl, char *mech)
 {
     int fd1, fd2;
     char buffer[BUFSIZ];
 
-#ifdef APOP
-    int apop;
+    if (proxy && *proxy) {
+       int pid;
+       int inpipe[2];	  /* for reading from the server */
+       int outpipe[2];    /* for sending to the server */
 
-    if ((apop = rpop) < 0)
-	rpop = 0;
+       /* first give up any root priviledges we may have for rpop */
+       setuid(getuid());
+
+       pipe(inpipe);
+       pipe(outpipe);
+
+       pid=fork();
+       if (pid==0) {
+	   char **argv;
+	   
+	   /* in child */
+	   close(0);  
+	   close(1);
+	   dup2(outpipe[0],0);  /* connect read end of connection */
+	   dup2(inpipe[1], 1);  /* connect write end of connection */
+	   if(inpipe[0]>1) close(inpipe[0]);
+	   if(inpipe[1]>1) close(inpipe[1]);
+	   if(outpipe[0]>1) close(outpipe[0]);
+	   if(outpipe[1]>1) close(outpipe[1]);
+
+	   /* run the proxy command */
+	   argv=parse_proxy(proxy, host);
+	   execvp(argv[0],argv);
+
+	   perror(argv[0]);
+	   close(0);
+	   close(1);
+	   free(*argv);
+	   free(argv);
+	   exit(10);
+       }
+
+       /* okay in the parent we do some stuff */
+       close(inpipe[1]);  /* child uses this */
+       close(outpipe[0]); /* child uses this */
+
+       /* we read on fd1 */
+       fd1=inpipe[0];
+
+       /* and write on fd2 */
+       fd2=outpipe[1];
+
+    } else {
+
+#ifdef APOP
+	int apop;
+
+	if ((apop = rpop) < 0)
+	    rpop = 0;
 #endif
 
 #ifndef NNTP
 # ifdef KPOP
-    if ( kpop ) {
-	snprintf (buffer, sizeof(buffer), "%s/%s", KPOP_PRINCIPAL, "kpop");
-	if ((fd1 = client (host, "tcp", buffer, 0, response, sizeof(response))) == NOTOK) {
-	    return NOTOK;
-	}
-    } else {
+	if ( kpop ) {
+	    snprintf (buffer, sizeof(buffer), "%s/%s", KPOP_PRINCIPAL, "kpop");
+	    if ((fd1 = client (host, "tcp", buffer, 0, response, sizeof(response))) == NOTOK) {
+		return NOTOK;
+	    }
+	} else {
 # endif /* KPOP */
-      if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response, sizeof(response))) == NOTOK) {
-	    return NOTOK;
-      }
+	    if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response, sizeof(response))) == NOTOK) {
+		return NOTOK;
+	    }
 # ifdef KPOP
-   }
+	}
 # endif /* KPOP */
 #else	/* NNTP */
-    if ((fd1 = client (host, "tcp", "nntp", rpop, response, sizeof(response))) == NOTOK)
-	return NOTOK;
+	if ((fd1 = client (host, "tcp", "nntp", rpop, response, sizeof(response))) == NOTOK)
+	    return NOTOK;
 #endif
 
-    if ((fd2 = dup (fd1)) == NOTOK) {
-	char *s;
+	if ((fd2 = dup (fd1)) == NOTOK) {
+	    char *s;
 
-	if ((s = strerror(errno)))
-	    snprintf (response, sizeof(response),
-		"unable to dup connection descriptor: %s", s);
-	else
-	    snprintf (response, sizeof(response),
-		"unable to dup connection descriptor: unknown error");
-	close (fd1);
-	return NOTOK;
+	    if ((s = strerror(errno)))
+		snprintf (response, sizeof(response),
+		    "unable to dup connection descriptor: %s", s);
+	    else
+		snprintf (response, sizeof(response),
+		    "unable to dup connection descriptor: unknown error");
+	    close (fd1);
+	    return NOTOK;
+	}
     }
 #ifndef NNTP
     if (pop_set (fd1, fd2, snoop) == NOTOK)
@@ -866,7 +965,7 @@ pop_xtnd (int (*action)(), char *fmt, ...)
     return NOTOK;	/* unknown XTND command */
 #endif /* NNTP */
 }
-#endif BPOP
+#endif /* BPOP */
 
 
 int
@@ -984,7 +1083,7 @@ multiline (void)
 #endif /* CYRUS_SASL */
 	fprintf (stderr, "<--- %s\n", response);
     }
-#endif DEBUG
+#endif /* DEBUG */
     if (strncmp (buffer, TRM, TRMLEN) == 0) {
 	if (buffer[TRMLEN] == 0)
 	    return DONE;

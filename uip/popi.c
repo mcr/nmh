@@ -214,7 +214,7 @@ main (int argc, char **argv)
     }
     snprintf (mailname, sizeof(mailname), "PO box for %s@%s", user, host);
 
-    if (pop_init (host, user, pass, snoop, rpop) == NOTOK)
+    if (pop_init (host, user, pass, NULL, snoop, rpop) == NOTOK)
 	adios (NULL, "%s", response);
     if (rpop > 0)
 	setuid (getuid ());

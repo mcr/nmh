@@ -32,6 +32,8 @@ inc \- incorporate new mail
 .RB [ \-pack
 .IR file ]
 .RB [ \-nopack ]
+.RB [ \-proxy
+.IR command ]
 .RB [ \-apop " | " \-noapop ]
 .RB [ \-kpop ]
 .RB [ \-sasl ]
@@ -230,6 +232,16 @@ with your own account information.
 This
 .RI \*(lq .netrc \*(rq
 file should be owned and readable only by you.
+.PP
+If passed the
+.B \-proxy
+.I command
+switch,
+.B inc
+will use the specified command to establish the connection to the POP
+server. The string
+.IR %h
+in the command will be substituted by the hostname to connect to.
 .PP
 If
 .B inc

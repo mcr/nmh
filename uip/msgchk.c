@@ -85,6 +85,8 @@ static struct swit switches[] = {
     { "sasl", SASLminc(-4) },
 #define SASLMECHSW		15
     { "saslmech", SASLminc(-5) },
+#define PROXYSW 		16
+    { "proxy command", POPminc(-5) },
     { NULL, 0 }
 };
 
@@ -115,7 +117,7 @@ static int donote (char *, int);
 static int checkmail (char *, char *, int, int, int);
 
 #ifdef POP
-static int remotemail (char *, char *, int, int, int, int, int, int, char *);
+static int remotemail (char *, char *, char *, int, int, int, int, int, int, char *);
 #endif
 
 
@@ -127,7 +129,8 @@ main (int argc, char **argv)
     int kpop = 0, sasl = 0;
     int snoop = 0, vecp = 0;
     uid_t uid;
-    char *cp, *host = NULL, *user, buf[BUFSIZ], *saslmech = NULL; 
+    char *cp, *host = NULL, *user, *proxy = NULL; 
+    char buf[BUFSIZ], *saslmech = NULL; 
     char **argp, **arguments, *vec[MAXVEC];
     struct passwd *pw;
 
@@ -237,6 +240,11 @@ main (int argc, char **argv)
 		    if (!(saslmech = *argp++) || *saslmech == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
+
+		case PROXYSW:
+		    if (!(proxy = *argp++) || *proxy == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    continue;
 	    }
 	}
 	if (vecp >= MAXVEC-1)
@@ -286,12 +294,12 @@ main (int argc, char **argv)
 	    kpop = 1;
 	}
 	if (vecp == 0) {
-	    status = remotemail (host, user, rpop, kpop, notifysw, 1, snoop,
-				 sasl, saslmech);
+	    status = remotemail (host, user, proxy, rpop, kpop, notifysw, 1,
+				 snoop, sasl, saslmech);
 	} else {
 	    for (vecp = 0; vec[vecp]; vecp++)
-		status += remotemail (host, vec[vecp], rpop, kpop, notifysw, 0,
-				      snoop, sasl, saslmech);
+		status += remotemail (host, vec[vecp], proxy, rpop, kpop,
+		                      notifysw, 0, snoop, sasl, saslmech);
 	}
     } else {
 #endif /* POP */
@@ -412,7 +420,7 @@ checkmail (char *user, char *home, int datesw, int notifysw, int personal)
 extern char response[];
 
 static int
-remotemail (char *host, char *user, int rpop, int kpop, int notifysw, int personal, int snoop, int sasl, char *saslmech)
+remotemail (char *host, char *user, char *proxy, int rpop, int kpop, int notifysw, int personal, int snoop, int sasl, char *saslmech)
 {
     int nmsgs, nbytes, status;
     char *pass = NULL;
@@ -425,7 +433,7 @@ remotemail (char *host, char *user, int rpop, int kpop, int notifysw, int person
 	ruserpass (host, &user, &pass);
 
     /* open the POP connection */
-    if (pop_init (host, user, pass, snoop, kpop ? 1 : rpop, kpop,
+    if (pop_init (host, user, pass, proxy, snoop, kpop ? 1 : rpop, kpop,
 		  sasl, saslmech) == NOTOK
 	    || pop_stat (&nmsgs, &nbytes) == NOTOK	/* check for messages  */
 	    || pop_quit () == NOTOK) {			/* quit POP connection */

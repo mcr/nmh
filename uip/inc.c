@@ -131,6 +131,8 @@ static struct swit switches[] = {
     { "sasl", SASLminc(-4) },
 #define SASLMECHSW                25
     { "saslmech", SASLminc(-8) },
+#define PROXYSW                   26
+    { "proxy command", POPminc(-5) },
     { NULL, 0 }
 };
 
@@ -237,7 +239,7 @@ main (int argc, char **argv)
     int kpop = 0, sasl = 0;
     char *cp, *maildir, *folder = NULL;
     char *format = NULL, *form = NULL;
-    char *host = NULL, *user = NULL;
+    char *host = NULL, *user = NULL, *proxy = NULL;
     char *audfile = NULL, *from = NULL, *saslmech = NULL;
     char buf[BUFSIZ], **argp, *nfs, **arguments;
     struct msgs *mp;
@@ -444,6 +446,10 @@ main (int argc, char **argv)
 		if (!(saslmech = *argp++) || *saslmech == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
+	    case PROXYSW:
+		if (!(proxy = *argp++) || *proxy == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -500,7 +506,7 @@ main (int argc, char **argv)
 	/*
 	 * initialize POP connection
 	 */
-	if (pop_init (host, user, pass, snoop, kpop ? 1 : rpop, kpop,
+	if (pop_init (host, user, pass, proxy, snoop, kpop ? 1 : rpop, kpop,
 		      sasl, saslmech) == NOTOK)
 	    adios (NULL, "%s", response);
 
