@@ -2,71 +2,92 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
-.TH DP %manext8% MH.6.8 [%nmhversion%]
+.TH DP %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 dp \- parse dates 822-style
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-%libdir%/dp
-\%[\-form\ formatfile]
-.br
-\%[\-format\ string]
-\%[\-width\ columns]
-dates\ ...
-.br
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B %libdir%/dp
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR string ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-version ]
+.RB [ \-help ] 
+.I dates
+\&...
 .SH DESCRIPTION
-\fIDp\fR is a program that parses dates according to the ARPA Internet
-standard.
+.B Dp
+is a program that parses dates according to the ARPA Internet standard.
 It also understands many non\-standard formats,
 such as those produced by TOPS\-20 sites and some UNIX sites using
-\fIctime\fR(3).
-It is useful for seeing how \fInmh\fR will interpret a date.
-
-The \fIdp\fR program treats each argument as a single date,
+.BR ctime (3).
+It is useful for seeing how
+.B nmh
+will interpret a date.
+.PP
+The
+.B dp
+program treats each argument as a single date,
 and prints the date out in the official 822\-format.
 Hence, it is usually best to enclose each argument in double\-quotes for the
 shell.
-
-To override the output format used by \fIdp\fR,
-the `\-format\ string' or `\-format\ file' switches are used.
+.PP
+To override the output format used by
+.BR dp ,
+the
+.B \-format
+.I string
+or
+.B \-format
+.I file
+switches are used.
 This permits individual fields of the address to be extracted with ease.
 The string is simply a format string and the file is simply a format file.
-See \fImh\-format\fR(5) for the details.
-
-Here is the default format string used by \fIdp\fR:
-
+See
+.BR mh\-format (5)
+for the details.
+.PP
+Here is the default format string used by
+.BR dp :
+.PP
+.RS 5
 .nf
-.ti +.5i
 %<(nodate{text})error: %{text}%|%(putstr(pretty{text}))%>
 .fi
-
+.RE
+.PP
 which says that if an error was detected, print the error, a `:',
 and the date in error.
 Otherwise, output the 822\-proper format of the date.
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+
+.SH "PROFILE COMPONENTS"
 None
-.Sa
-ap(8)
-.br
-\fIStandard for the Format of ARPA Internet Text Messages\fR (RFC\-822)
-.De
-`\-format' default as described above
-.Ds
-`\-width' default to the width of the terminal
-.Co
+
+.SH "SEE ALSO"
+ap(8),
+.I "Standard for the Format of ARPA Internet Text Messages"
+(RFC\-822)
+
+.SH "DEFAULTS"
+.nf
+.RB ` \-format "' default as described above"
+.RB ` \-width "' default to the width of the terminal"
+
+.SH CONTEXT
 None
-.Bu
-The argument to the `\-format' switch must be interpreted as a single token
-by the shell that invokes \fIdp\fR.
-Therefore,
-one must usually place the argument to this switch inside double\-quotes.
-.En
+
+.SH BUGS
+The argument to the
+.B \-format
+switch must be interpreted as a single token by the shell that invokes
+.BR dp .
+Therefore, one must usually place the argument to this switch inside double\-quotes.

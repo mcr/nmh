@@ -5,7 +5,7 @@
 .\" include the -mh macro file
 .so %etcdir%/tmac.h
 .\"
-.TH MHSHOW %manext1% MH.6.8 [%nmhversion%]
+.TH MHSHOW %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mhshow \- display MIME messages
 .SH SYNOPSIS

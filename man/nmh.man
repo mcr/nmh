@@ -6,7 +6,7 @@
 .so %etcdir%/tmac.h
 .\"
 .if '\*(ZZ'-man' \{\
-.TH NMH %manext1% MH.6.8 [%nmhversion%]
+.TH NMH %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 nmh \- new MH message system
 .SH SYNOPSIS

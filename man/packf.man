@@ -5,7 +5,7 @@
 .\" include the -mh macro file
 .so %etcdir%/tmac.h
 .\"
-.TH PACKF %manext1% MH.6.8 [%nmhversion%]
+.TH PACKF %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 packf \- pack messages in nmh folder into a single file
 .SH SYNOPSIS

@@ -2,145 +2,210 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
-.TH FLIST %manext1% MH.6.8 [%nmhversion%]
+.TH FLIST %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 flist, flists \- list the number of messages in given sequence(s)
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-flist
-\%[+folder1 [+folder2 ...]]
-.br
-\%[\-sequence\ name1 [\-sequence\ name2 ...]]
-.br
-\%[\-all] \%[\-noall]
-\%[\-showzero] \%[\-noshowzero]
-.br
-\%[\-recurse] \%[\-norecurse]
-\%[\-alpha] \%[\-noalpha]
-.br
-\%[\-fast] \%[\-nofast]
-\%[\-version]
-\%[\-help]
+.HP 5
+.B flist
+.RI [ +folder1
+.RI [ +folder2
+\&...]]
+.RB [ \-sequence
+.I name1
+.RB [ \-sequence
+.I name2
+\&...]]
+.RB [ \-all " | " \-noall ]
+.RB [ \-showzero " | " \-noshowzero ]
+.RB [ \-recurse " | " \-norecurse ]
+.RB [ \-alpha " | " \-noalpha ]
+.RB [ \-fast " | " \-nofast ]
+.RB [ \-version ]
+.RB [ \-help ]
 
-.ti .5i
-flists is equivalent to flist -all
-.in -.5i
+.PP
+.HP 5
+.B flists
+is equivalent to
+.B flist -all
 .SH DESCRIPTION
-This program is used to search a list of folders and display the number
+.B Flist
+is used to search a list of folders and display the number
 of messages in these folders that are in a given sequence or set of
-sequences (for example the \*(lqunseen\*(rq sequence). This is especially
-useful if you use some mechanism such as \fIslocal\fP or \fIprocmail\fP
-(typically in conjunction with \fIrcvstore\fP) to pre-sort your mail into
-different folders before you view it.
-
-By default, the command \fIflist\fR will search the current folder for
-the given sequence or sequences (usually \*(lqunseen\*(rq).  If (possibly
-multiple) folders are specified on the command line with `+folder', then
-all these folders are searched for the given sequence(s).  \fIFlist\fR will
-display for each folder searched, the number of messages in each of the
+sequences (for example the
+.RI \*(lq unseen \*(rq
+sequence). This is especially
+useful if you use some mechanism such as
+.B slocal
+or
+.B procmail
+(typically in conjunction with
+.BR rcvstore )
+to pre-sort your mail into different folders before you view it.
+.PP
+By default, the command
+.B flist
+will search the current folder for the given sequence or sequences (usually
+.RI \*(lq unseen \*(rq).
+If (possibly multiple) folders are specified on the command line with
+.IR +folder ,
+then all these folders are searched for the given sequence(s).
+.B Flist
+will display for each folder searched, the number of messages in each of the
 specified sequences, and the total number of messages.
-
-The option `\-sequence' is used to specify the name of a sequence in
+.PP
+The option
+.B \-sequence
+is used to specify the name of a sequence in
 which to search for.  This option may be used multiple times to specify
 multiple sequences.  If this is not given, then the default is to search
-for all the sequences specified by the "Unseen-Sequence" profile component.
-For more details about sequences, read the mh\-sequence(5) man page.
-
-Typically, \fIflist\fR will produce a line for each sequence, for every
+for all the sequences specified by the
+.RI \*(lq Unseen-Sequence \*(rq
+profile component. For more details about sequences, read the
+.BR mh\-sequence (5)
+man page.
+.PP
+Typically,
+.B flist
+will produce a line for each sequence, for every
 folder that is searched, even those which do not contain any messages in
-the given sequence.  Specifying `\-noshowzero' will cause \fIflist\fR to
-print only those folder/sequence combinations such the folder has a non-zero
+the given sequence.  Specifying
+.B \-noshowzero
+will cause
+.B flist
+to print only those folder/sequence combinations such the folder has a non-zero
 number of messages in the given specified sequence.
-
-If `\-recurse' is given, then for each folder that is search, \fIflist\fR
+.PP
+If
+.B \-recurse
+is given, then for each folder that is search,
+.B flist
 will also recursively descend into those folders to search subfolders
 for the given sequence.
-
-If `\-fast' is given, only the names of the folders searched will
-be displayed, and \fIflist\fR will suppress all other output.  If this
-option is used in conjunction with `\-noshowzero', then \fIflist\fR will
-only print the names of those folders searched that contain messages in
+.PP
+If
+.B \-fast
+is given, only the names of the folders searched will be displayed, and
+.B flist
+will suppress all other output.  If this option is used in conjunction with
+.BR \-noshowzero ,
+then
+.B flist
+will only print the names of those folders searched that contain messages in
 in at least one of the specified sequences.
 
-.Uh "Multiple Folders"
-If the option `\-all' is given (and no folders are specified with
-`+folder'), then \fIflist\fR will search all the folders in the top
+.SS "Multiple Folders"
+If the option
+.B \-all
+is given (and no folders are specified with
+.IR +folder ),
+then
+.B flist
+will search all the folders in the top
 level of the users nmh directory.  These folders are all preceded by
-the read\-only folders, which occur as \*(lqatr\-cur\-\*(rq entries
-in the user's \fInmh\fR context.
-
-An example of the output of `flist \-all' is:
-
+the read\-only folders, which occur as
+.RI \*(lq atr\-cur\- \*(rq
+entries in the user's
+.B nmh
+context.
+.PP
+An example of the output of
+.B flist
+.B \-all
+is:
+.PP
+.RS 5
 .nf
-.if t .in +.5i
-.ta \w'/rnd/phyl/Mail/EP 'u +\w'ddd 'u +\w'new out of 'u +\w'ddd 'u
 /work/Mail  has  5 in sequence unseen (private); out of  46
 inbox+      has 10 in sequence unseen          ; out of 153
 junklist    has  0 in sequence unseen          ; out of  63
 postmaster  has  1 in sequence unseen          ; out of   3
-.re
-.if t .in -.5i
 .fi
-
-The \*(lq+\*(rq after inbox indicates that it is the current folder.
-
+.RE
+.PP
+The \*(lq+\*(rq after
+.I inbox
+indicates that it is the current folder.
+.PP
 The \*(lqprivate\*(rq flag indicates that the given sequence for
-that folder is private.  See the mh\-sequence(5) man page for details
-about private sequences.
-
-If the option `\-all' and `+folder' are both specified, then \fIflist\fR
+that folder is private.  See the
+.BR mh\-sequence (5)
+man page for details about private sequences.
+.PP
+If the option
+.B \-all
+and
+.I +folder
+are both specified, then
+.B flist
 will search this folder, and all its first level subfolders for the
 given sequence.  You may specify multiple folders in this way.
-
-If \fIflist\fR is invoked by a name ending with \*(lqs\*(rq
-(e.g., \fIflists\fR\0), then the switch `\-all' is assumed by
-default.
-
-The sorting order for the listing is alphabetical (with '\-alpha'),
-or in a priority order defined by the Flist-Order profile entry (with
-'\-noalpha').  Each item in the Flist-Order is a folder name or a
+.PP
+If
+.B flist
+is invoked by a name ending with \*(lqs\*(rq
+(e.g.
+.BR flists ),
+then the switch
+.B \-all
+is assumed by default.
+.PP
+The sorting order for the listing is alphabetical (with
+.BR \-alpha ),
+or in a priority order defined by the
+.RI \*(lq Flist-Order \*(rq
+profile entry (with
+.BR \-noalpha ).
+Each item in the
+.RI \*(lq Flist-Order \*(rq
+is a folder name or a
 folder name pattern that uses * to match zero or more characters.
 Longer matching patterns have precedence over shorter matching patterns.
 For example:
-
+.PP
+.RS 5
 .nf
 Flist-Order: personal petproject mh* * admin *junk
 .fi
-
+.RE
+.PP
 This order puts a few interesting folders first, such as those with mail
 addressed to you personally, those about a pet project, and those about
 mh-related things.  It places uninteresting folders at the end, and it
 puts everything else in the middle in alphabetical order.
-.Fi
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-.Pr
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^mh-sequences:~^File that contains public sequences
-.Ps
 ^Unseen-Sequence:~^The name of the unseen message sequence
-.Ps
 ^Flist-Order:~^To sort folders by priority
-.Sa
+
+.SH "SEE ALSO"
 folder(1), rcvstore(1), slocal(1), mh\-sequence(5)
-.De
-`-sequence' defaults to Unseen-Sequence profile entry
-.Ds
-`\-showzero'
-.Ds
-`\-noall'
-.Ds
-`\-norecurse'
-.Ds
-`\-noalpha'
-.Ds
-`\-nofast'
-.Co
-If `+folder' is given, it will become the current folder.
+
+.SH "DEFAULTS"
+.nf
+.RB ` -sequence "' defaults to Unseen-Sequence profile entry"
+.RB ` \-showzero '
+.RB ` \-noall '
+.RB ` \-norecurse '
+.RB ` \-noalpha '
+.RB ` \-nofast '
+
+.SH CONTEXT
+If
+.I +folder
+is given, it will become the current folder.
 If multiple folders are given, the last one specified will
 become the current folder.
-.En

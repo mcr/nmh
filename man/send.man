@@ -5,7 +5,7 @@
 .\" include the -mh macro file
 .so %etcdir%/tmac.h
 .\"
-.TH SEND %manext1% MH.6.8 [%nmhversion%]
+.TH SEND %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 send \- send a message
 .SH SYNOPSIS

@@ -2,123 +2,208 @@
 .\" %nmhwarning%
 .\" $Id$
 .\"
-.\" include the -mh macro file
-.so %etcdir%/tmac.h
-.\"
-.TH COMP %manext1% MH.6.8 [%nmhversion%]
+.TH COMP %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 comp \- compose a message
 .SH SYNOPSIS
-.in +.5i
-.ti -.5i
-comp 
-\%[+folder] \%[msg]
-.br
-.br
-\%[\-form\ formfile]
-\%[\-use] \%[\-nouse]
-\%[\-file\ file]
-.br
-\%[\-draftfolder\ +folder]
-\%[\-draftmessage\ msg]
-.br
-\%[\-nodraftfolder]
-\%[\-editor\ editor]
-\%[\-noedit]
-.br
-\%[\-whatnowproc\ program] \%[\-nowhatnowproc]
-.br
-\%[\-version]
-\%[\-help]
-.in -.5i
+.HP 5
+.B comp 
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-use " | " \-nouse ]
+.RB [ \-file
+.IR file ]
+.RB [ \-draftfolder
+.IR +folder ]
+.RB [ \-draftmessage
+.IR msg ]
+.RB [ \-nodraftfolder ]
+.RB [ \-editor
+.IR editor ]
+.RB [ \-noedit ]
+.RB [ \-whatnowproc
+.IR program ]
+.RB [ \-nowhatnowproc ]
+.RB [ \-version ]
+.RB [ \-help ]
 .SH DESCRIPTION
-\fIComp\fR is used to create a new message to be mailed.  It copies a
+.B Comp
+is used to create a new message to be mailed.  It copies a
 message form to the draft being composed and then invokes an editor on
-the draft (unless `\-noedit' is given, in which case the initial edit
+the draft (unless
+.B \-noedit
+is given, in which case the initial edit
 is suppressed).
-
+.PP
 The default message form contains the following elements:
-
+.PP
+.RS 5
 .nf
-.in +.5i
-.ne 10
-.eo
-.so %etcdir%/components
-.ec
-.in -.5i
+%components%
 .fi
-
-If a file named \*(lqcomponents\*(rq exists in the user's nmh directory,
+.RE
+.PP
+If a file named
+.RI \*(lq components \*(rq
+exists in the user's nmh directory,
 it will be used instead of this form.  You may specify an alternate
-forms file with the switch `\-form\ formfile'.
-
-You may also start \fIcomp\fR using the contents of an existing message
-as the form.  If you supply either a `+folder' or `msg' argument, that
+forms file with the switch
+.B \-form
+.IR formfile .
+.PP
+You may also start
+.B comp
+using the contents of an existing message
+as the form.  If you supply either a
+.I +folder
+or
+.I msg
+argument, that
 message will be used as the message form.  You may not supply both a
-`\-form\ formfile' and a `+folder' or \&`msg' argument.  The line of
+.B \-form
+.I formfile
+and a
+.I +folder
+or
+.I msg
+argument.  The line of
 dashes or a blank line must be left between the header and the body of
 the message for the message to be identified properly when it is sent
-(see \fIsend\fR(1)).
+(see
+.BR send (1)).
+.PP
+The switch
+.B \-use
+directs
+.B comp
+to continue editing an already
+started message.  That is, if a
+.B comp
+(or
+.BR dist ,
+.BR repl ,
+or
+.BR forw )
+is terminated without sending the draft, the draft can
+be edited again via
+.RB \*(lq comp
+.BR \-use \*(rq.
+.PP
+The
+.B \-file
+.I file
+switch says to use the named file as the message draft.
+.PP
+If the draft already exists,
+.B comp
+will ask you as to the disposition
+of the draft.  A reply of
+.B quit
+will abort
+.BR comp ,
+leaving the draft intact;
+.B replace
+will replace the existing draft with
+the appropriate form;
+.B list
+will display the draft;
+.B use
+will use the draft for further composition; and
+.B refile
+.I +folder
+will file the draft in the given folder, and give you a new draft with the
+appropriate form.  (The
+.I +folder
+argument to
+.B refile
+is required.)
+.PP
+The
+.B \-draftfolder
+.I +folder
+and
+.B \-draftmessage
+.I msg
+switches invoke the
+.B nmh
+draft folder facility.  This is an advanced (and highly
+useful) feature.  Consult the
+.BR mh-draft (5)
+man page for more information.
 
-The switch `\-use' directs \fIcomp\fR to continue editing an already
-started message.  That is, if a \fIcomp\fR (or \fIdist\fR, \fIrepl\fR,
-or \fIforw\fR\0) is terminated without sending the draft, the draft can
-be edited again via \*(lqcomp\ \-use\*(rq.
-
-The `\-file\ file' switch says to use the named file as the message draft.
-
-If the draft already exists, \fIcomp\fR will ask you as to the disposition
-of the draft.  A reply of \fBquit\fR will abort \fIcomp\fR, leaving
-the draft intact; \fBreplace\fR will replace the existing draft with
-the appropriate form; \fBlist\fR will display the draft; \fBuse\fR will
-use the draft for further composition; and \fBrefile\ +folder\fR will
-file the draft in the given folder, and give you a new draft with the
-appropriate form.  (The `+folder' argument to \fBrefile\fR is required.)
-
-The `\-draftfolder\ +folder' and `\-draftmessage\ msg' switches invoke
-the \fInmh\fR draft folder facility.  This is an advanced (and highly
-useful) feature.  Consult the \fImh-draft\fR(5) man page for more
-information.
-
-The `\-editor\ editor' switch indicates the editor to use for the
-initial edit.  Upon exiting from the editor, \fIcomp\fR will invoke
-the \fIwhatnow\fR program.  See \fIwhatnow\fR\0(1) for a discussion of
+The
+.B \-editor
+.I editor
+switch indicates the editor to use for the
+initial edit.  Upon exiting from the editor,
+.B comp
+will invoke the
+.B whatnow
+program.  See
+.BR whatnow (1)
+for a discussion of
 available options.  The invocation of this program can be inhibited
-by using the `\-nowhatnowproc' switch.  (In truth of fact, it is
-the \fIwhatnow\fR program which starts the initial edit.  Hence,
-`\-nowhatnowproc' will prevent any edit from occurring.)
-.Fi
+by using the
+.B \-nowhatnowproc
+switch.  (In truth of fact, it is
+the
+.I whatnow
+program which starts the initial edit.  Hence,
+.B \-nowhatnowproc
+will prevent any edit from occurring.)
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
 ^%etcdir%/components~^The standard message skeleton
 ^or <mh\-dir>/components~^Rather than the standard skeleton
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
-.Pr
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
-.Ps
 ^Draft\-Folder:~^To find the default draft\-folder
-.Ps
 ^Editor:~^To override the default editor
-.Ps
 ^Msg\-Protect:~^To set mode when creating a new message (draft)
-.Ps
 ^fileproc:~^Program to refile the message
-.Ps
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
-.Sa
+
+.SH "SEE ALSO"
 dist(1), forw(1), repl(1), send(1), whatnow(1), mh-profile(5)
-.De
-`+folder' defaults to the current folder
-.Ds
-`msg' defaults to the current message
-.Ds
-`\-nodraftfolder'
-.Ds
-`\-nouse'
-.Co
+
+.SH "DEFAULTS"
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msg "' defaults to the current message"
+.RB ` \-nodraftfolder '
+.RB ` \-nouse '
+
+.SH CONTEXT
 None
-.Bu
-If \fIwhatnowproc\fR is \fIwhatnow\fR, then \fIcomp\fR uses a built\-in
-\fIwhatnow\fR, it does not actually run the \fIwhatnow\fR program.
-Hence, if you define your own \fIwhatnowproc\fR, don't call it
-\fIwhatnow\fR since \fIcomp\fR won't run it.
-.En
+
+.SH BUGS
+If
+.I whatnowproc
+is
+.BR whatnow ,
+then
+.B comp
+uses a built\-in
+.BR whatnow ,
+it does not actually run the
+.B whatnow
+program.
+Hence, if you define your own
+.IR whatnowproc ,
+don't call it
+.B whatnow
+since
+.B comp
+won't run it.

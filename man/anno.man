@@ -26,7 +26,8 @@ the field and body.
 Usually, annotation is performed by the commands
 .BR dist ,
 .BR forw ,
-.RB "and " repl ,
+and
+.BR repl ,
 if they are given the
 .B \-anno
 switch.  This allows you to keep track of your distribution of,
@@ -46,7 +47,8 @@ switch inhibits the date annotation, leaving only the
 body annotation.
 
 If a
-.BI \-component " field"
+.B \-component
+.I field
 is not specified when
 .B anno
 is invoked,

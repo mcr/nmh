@@ -75,7 +75,8 @@ or
 
 .SH "SEE ALSO"
 inc(1), msh(1), pack(1),
-.IR "Proposed Standard for Message Encapsulation" " (RFC\-934)"
+.I "Proposed Standard for Message Encapsulation"
+(RFC\-934)
 
 .SH "DEFAULTS"
 .nf

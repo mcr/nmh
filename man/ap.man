@@ -17,7 +17,8 @@ ap \- parse addresses 822-style
 .IR columns ]
 .RB [ \-version ]
 .RB [ \-help ] 
-.IR addrs " ..."
+.I addrs
+\&...
 .SH DESCRIPTION
 .B Ap
 is a program that parses addresses according to the ARPA
@@ -35,9 +36,11 @@ usually best to enclose each argument in double\-quotes for the shell.
 To override the output format used by
 .BR ap ,
 the
-.BI \-format " string"
+.B \-format
+.I string
 or
-.BI \-format " file"
+.B \-format
+.I file
 switches are used.  This permits individual fields of
 the address to be extracted with ease.  The string is simply a format
 string, and the file is simply a format file.  See
@@ -87,7 +90,8 @@ None
 
 .SH "SEE ALSO"
 dp(8),
-.IR "Standard for the Format of ARPA Internet Text Messages" " (RFC\-822)"
+.I "Standard for the Format of ARPA Internet Text Messages"
+(RFC\-822)
 
 .SH "DEFAULTS"
 .nf

@@ -5,7 +5,7 @@
 .\" include the -mh macro file
 .so %etcdir%/tmac.h
 .\"
-.TH MSH %manext1% MH.6.8 [%nmhversion%]
+.TH MSH %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 msh \- nmh shell (and BBoard reader)
 .SH SYNOPSIS

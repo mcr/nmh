@@ -5,7 +5,7 @@
 .\" include the -mh macro file
 .so %etcdir%/tmac.h
 .\"
-.TH RCVPACK %manext1% MH.6.8 [%nmhversion%]
+.TH RCVPACK %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 rcvpack \- append message to file
 .SH SYNOPSIS
