@@ -726,14 +726,6 @@ putfmt (char *name, char *str, FILE *out)
     tmpaddrs.m_next = NULL;
     for (count = 0; (cp = getname (str)); count++)
 	if ((mp = getm (cp, NULL, 0, AD_HOST, NULL))) {
-	    if (MMailids && (hdr->set & MFRM))
-		/* The user manually specified a From: address in their draft
-		   and mts.conf turned on "mmailid", so we'll set things up to
-		   use the actual email address embedded in the draft From:
-		   (without the GECOS full name or angle brackets) as the
-		   envelope From:. */
-		strncpy(from, auxformat(mp, 0), sizeof(from) - 1);
-
 	    if (tmpaddrs.m_next)
 		np->m_next = mp;
 	    else
@@ -764,7 +756,8 @@ putfmt (char *name, char *str, FILE *out)
 
     for (grp = 0, mp = tmpaddrs.m_next; mp; mp = np)
 	if (mp->m_nohost) {	/* also used to test (hdr->flags & HTRY) */
-	    pp = akvalue (mp->m_mbox);
+	    /* The address doesn't include a host, so it might be an alias. */
+	    pp = akvalue (mp->m_mbox);  /* do mh alias substitution */
 	    qp = akvisible () ? mp->m_mbox : "";
 	    np = mp;
 	    if (np->m_gname)
@@ -774,6 +767,18 @@ putfmt (char *name, char *str, FILE *out)
 		    badadr++;
 		    continue;
 		}
+
+		if (MMailids && ((msgstate == RESENT)
+				 ? (hdr->set & MRFM)
+				 : (hdr->set & MFRM)))
+		    /* The user manually specified a [Resent-]From: address in
+		       their draft and mts.conf turned on "mmailid", so we'll
+		       set things up to use the actual email address embedded in
+		       the draft [Resent-]From: (after alias substitution, and
+		       without the GECOS full name or angle brackets) as the
+		       envelope From:. */
+		    strncpy(from, auxformat(mp, 0), sizeof(from) - 1);
+
 		if (hdr->flags & HBCC)
 		    mp->m_bcc++;
 		if (np->m_ingrp)
@@ -793,6 +798,17 @@ putfmt (char *name, char *str, FILE *out)
 	    mnfree (mp);
 	}
 	else {
+	    /* Address includes a host, so no alias substitution is needed. */
+	    if (MMailids && ((msgstate == RESENT)
+			     ? (hdr->set & MRFM)
+			     : (hdr->set & MFRM)))
+		/* The user manually specified a [Resent-]From: address in their
+		   draft and mts.conf turned on "mmailid", so we'll set things
+		   up to use the actual email address embedded in the draft
+		   [Resent-]From: (without the GECOS full name or angle
+		   brackets) as the envelope From:. */
+		strncpy(from, auxformat(mp, 0), sizeof(from) - 1);
+
 	    if (hdr->flags & HBCC)
 		mp->m_bcc++;
 	    if (mp->m_gname)
@@ -911,9 +927,17 @@ finish_headers (FILE *out)
 	    if (msgid)
 		fprintf (out, "Resent-Message-ID: <%d.%ld@%s>\n",
 			(int) getpid (), (long) tclock, LocalName ());
-	    if (msgflags & MRFM)
-		fprintf (out, "Resent-Sender: %s\n", from);
+	    if (msgflags & MRFM) {
+		/* There was already a Resent-From: in draft.  Don't add one. */
+		if (!MMailids)
+		    /* mts.conf didn't turn on mmailid, so we'll reveal the
+		       user's actual account@thismachine address in a
+		       Resent-Sender: header (and use it as the envelope From:
+		       later). */
+		    fprintf (out, "Resent-Sender: %s\n", from);
+	    }
 	    else
+		/* Construct a Resent-From: header. */
 		fprintf (out, "Resent-From: %s\n", signature);
 	    if (whomsw)
 		break;
