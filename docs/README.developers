@@ -171,10 +171,12 @@ To make a public release of nmh (we'll use version 1.0.4 and my mhost.com
 account, danh, as examples here):
 
  1. % echo 1.0.4 > VERSION
+    % date +"%e %B %Y" > DATE
+    (DATE should contain something like "30 December 2000")
 
  2. Put a comment like "Released nmh-1.0.4." in the ChangeLog.
 
- 3. % cvs commit ChangeLog VERSION
+ 3. % cvs commit ChangeLog VERSION DATE
 
  4. % cvs tag nmh-1_0_4
     (cvs treats dots specially, so underscores are substituted here.)
