@@ -65,6 +65,7 @@ to construct the reply message draft as follows:
 .nf
 .in 1i
 To: <Mail\-Reply\-To> or <Reply\-To> or <From>
+cc: <To> and <cc> and <personal address>
 Subject: Re: <Subject>
 In\-Reply\-To: Your message of <Date>.
 .ti +\w'In\-Reply\-To: 'u
@@ -75,6 +76,12 @@ In\-Reply\-To: Your message of <Date>.
 where field names enclosed in angle brackets (<\ >) indicate the
 contents of the named field from the message to which the reply is
 being made.
+
+By default, the \*(lqcc:\*(rq field is empty.  You may selectively add
+addresses to this default with the `\-cc\ type' switch.  This switch takes an
+argument (all/to/cc/me) which specifies who gets added to the default
+\*(lqcc:\*(rq list of the reply.  You may give this switch multiple times (with
+different arguments) if you wish to add multiple types of addresses.
 
 If the switch `\-group' is given, then \fIrepl\fR will use the the
 standard forms file \*(lqreplgroupcomps\*(rq.  This will construct a
@@ -108,14 +115,15 @@ In\-Reply\-To: Message from <From> of <Date>.
 .in .5i
 .fi
 
+By default, the \*(lqcc:\*(rq contains all the addresses shown.  You may
+selectively remove addresses from this default with the `\-nocc\ type' switch.
+This switch takes an argument (all/to/cc/me) which specifies who gets removed
+from the default \*(lqcc:\*(rq list of the reply.  You may give this switch
+multiple times (with different arguments) if you wish to remove multiple types
+of addresses.
+
 In any case, you may specify an alternate forms file with the switch
 `\-form\ formfile'.
-
-You may selectively remove addresses from this default with the
-`\-nocc\ type' switch.  This switch takes an argument (all/to/cc/me)
-which specifies who gets removed from the default \*(lqcc:\*(rq list of
-the reply.  You may give this switch multiple times (with different
-arguments) if you wish to remove multiple types of addresses.
 
 The `\-query' switch modifies the action of `\-nocc\ type' switch by
 interactively asking you if each address that normally would be placed in
@@ -299,7 +307,7 @@ mhbuild(1), comp(1), forw(1), send(1), whatnow(1), mh\-format(5)
 .Ds
 `\-nogroup'
 .Ds
-`\-cc\ all'
+`\-nocc\ all' with `\-nogroup', `\-cc\ all' with `\-group'
 .Ds
 `\-noannotate'
 .Ds

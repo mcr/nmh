@@ -1,3 +1,12 @@
+Sun Oct 17 08:28:56 1999 Ruud de Rooij <ruud@ruud.org>
+
+	* Changed repl defaults to partly revert to MH behaviour,
+	  "-cc all" is now only implied with -group.
+
+	* The replcomps template includes cc: header again (as in MH).
+
+	* Updated repl man page to reflect these changes.
+
 Sat Oct 16 02:57:47 1999 Doug Morris <doug@mhost.com>
 
 	* Tweaked configure to handle Solaris and SunOS after the BIND

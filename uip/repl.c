@@ -108,9 +108,9 @@ static struct swit aqrl[] = {
     { NULL, 0 }
 };
 
-short ccto = 1;		/* global for replsbr */
-short cccc = 1;
-short ccme = 1;
+short ccto = 0;		/* global for replsbr */
+short cccc = 0;
+short ccme = 0;
 short querysw = 0;
 
 short outputlinelen = OUTPUTLINELEN;
@@ -177,9 +177,11 @@ main (int argc, char **argv)
 
 		case GROUPSW:
 		    groupreply++;
+		    ccto = cccc = ccme = 1;
 		    continue;
 		case NGROUPSW:
 		    groupreply = 0;
+		    ccto = cccc = ccme = 0;
 		    continue;
 
 		case ANNOSW: 
