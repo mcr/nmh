@@ -9,6 +9,7 @@
 #include <mts/smtp/smtp.h>
 #include <zotnet/mts/mts.h>
 #include <signal.h>
+#include "h/signals.h"  /* for SIGNAL() */
 #ifdef MPOP
 #include <errno.h>
 #endif
