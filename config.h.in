@@ -327,6 +327,9 @@
    in libc.a the way AIX 4.1 does. */
 #undef HAVE_SNPRINTF_PROTOTYPE
 
+/* Define if you have the getutent function.  */
+#undef HAVE_GETUTENT
+
 /* Define if you have the killpg function.  */
 #undef HAVE_KILLPG
 
