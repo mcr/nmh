@@ -347,5 +347,5 @@ main (int argc, char **argv)
     if (clearflag)
 	clear_screen ();
 
-    done (0);
+    return done (0);
 }

@@ -430,7 +430,7 @@ try_it_again:
 	done (0);
     what_now (ed, nedit, NOUSE, drft, msg, 0, mp,
 	    anot ? "Replied" : NULL, inplace, cwd);
-    done (1);
+    return done (1);
 }
 
 void

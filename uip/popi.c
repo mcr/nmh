@@ -255,9 +255,7 @@ main (int argc, char **argv)
     seq_setunseen (mp, 0);		/* set the Unseen-Sequence */
     seq_save (mp);
     context_save ();			/* save the context file   */
-    done (0);
-
-    /* NOTREACHED */
+    return done (0);
 }
 
 

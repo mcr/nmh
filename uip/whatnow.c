@@ -14,5 +14,5 @@ main (int argc, char **argv)
 #ifdef LOCALE
     setlocale(LC_ALL, "");
 #endif
-    WhatNow (argc, argv);
+    return WhatNow (argc, argv);
 }

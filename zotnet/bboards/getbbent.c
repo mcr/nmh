@@ -393,11 +393,12 @@ BBread (void)
     r = strchr(bb->bb_addr, '@');
     BBRequest[0] = 0;
 
-    if (*bb->bb_request == '-')
+    if (*bb->bb_request == '-') {
 	if (p == NULL && r && *r == '@')
 	    snprintf (BBRequest, sizeof(BBRequest), "%s%s%s", bb->bb_name, bb->bb_request, r);
 	else
 	    snprintf (BBRequest, sizeof(BBRequest), "%s%s", bb->bb_name, bb->bb_request);
+    }
     else
 	if (p == NULL && r && *r == '@' && *bb->bb_request)
 	    snprintf (BBRequest, sizeof(BBRequest), "%s%s", bb->bb_request, r);

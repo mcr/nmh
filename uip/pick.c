@@ -303,14 +303,15 @@ main (int argc, char **argv)
     seq_save (mp);			/* synchronize message sequences */
     context_save ();			/* save the context file         */
     folder_free (mp);			/* free folder/message structure */
-    done (0);
+    return done (0);
 }
 
 
-void
+int
 done (int status)
 {
     if (listsw && status && !isatty (fileno (stdout)))
 	printf ("0\n");
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }

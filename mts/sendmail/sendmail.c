@@ -112,11 +112,12 @@ sm_init (char *client, char *server, int watch, int verbose,
     if (sm_rfp != NULL && sm_wfp != NULL)
 	return RP_OK;
 
-    if (client == NULL || *client == '\0')
+    if (client == NULL || *client == '\0') {
 	if (clientname)
 	    client = clientname;
 	else
 	    client = LocalName();	/* no clientname -> LocalName */
+    }
 
 #ifdef ZMAILER
     if (client == NULL || *client == '\0')

@@ -197,12 +197,13 @@ main (int argc, char **argv)
     seq_save (mp);
     context_save ();			/* save the context file         */
     folder_free (mp);			/* free folder/message structure */
-    done (0);
+    return done (0);
 }
 
-void
+int
 done (int status)
 {
     mbx_close (file, md);
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }

@@ -88,7 +88,7 @@ main (int argc, char **argv)
     pINI ();
     pLOOP ();
 
-    done (0);
+    return done (0);
 }
 
 

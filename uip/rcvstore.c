@@ -218,16 +218,17 @@ main (int argc, char **argv)
     unlink (tmpfilenam);	/* remove temporary file                  */
     tmpfilenam = NULL;
 
-    done (0);
+    return done (0);
 }
 
 /*
  * Clean up and exit
  */
-void
+int
 done(int status)
 {
     if (tmpfilenam && *tmpfilenam)
 	unlink (tmpfilenam);
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }

@@ -185,5 +185,5 @@ main (int argc, char **argv)
 	    done (status);
     }
 
-    exit (-1);	/* NOT REACHED */
+    return 0;  /* dead code to satisfy the compiler */
 }

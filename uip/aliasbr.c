@@ -450,11 +450,12 @@ getalias (char *addrs)
     if (*qp == ',')
 	*qp++ = 0;
     for (cp = qp, qp--; qp > pp; qp--)
-	if (*qp != 0)
+	if (*qp != 0) {
 	    if (isspace (*qp))
 		*qp = 0;
 	    else
 		break;
+	}
 
     return pp;
 }

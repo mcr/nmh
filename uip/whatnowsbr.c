@@ -363,13 +363,14 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 		else {
 #endif
 		if (((status & 0xff00) != 0xff00)
-			&& (!reedit || (status & 0x00ff)))
+		    && (!reedit || (status & 0x00ff))) {
 		    if (!use && (status & 0xff00) &&
 			    (rename (file, cp = m_backup (file)) != NOTOK)) {
 			advise (NULL, "problems with edit--draft left in %s", cp);
 		    } else {
 			advise (NULL, "problems with edit--%s preserved", file);
 		    }
+		}
 		status = -2;	/* maybe "reedit ? -2 : -1"? */
 		break;
 #ifdef ATTVIBUG

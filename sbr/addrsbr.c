@@ -285,7 +285,7 @@ auxformat (struct mailname *mp, int extras)
     if (!extras)
 	return addr;
 
-    if (mp->m_pers || mp->m_path)
+    if (mp->m_pers || mp->m_path) {
 	if (mp->m_note)
 	    snprintf (buffer, sizeof(buffer), "%s %s <%s>",
 		    legal_person (mp->m_pers ? mp->m_pers : mp->m_mbox),
@@ -294,6 +294,7 @@ auxformat (struct mailname *mp, int extras)
 	    snprintf (buffer, sizeof(buffer), "%s <%s>",
 		    legal_person (mp->m_pers ? mp->m_pers : mp->m_mbox),
 		    addr);
+    }
     else
 	if (mp->m_note)
 	    snprintf (buffer, sizeof(buffer), "%s %s", addr, mp->m_note);

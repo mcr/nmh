@@ -353,6 +353,7 @@ go_to_it: ;
     vec[0] = r1bindex (proc, '/');
     execvp (proc, vec);
     adios (proc, "unable to exec");
+    return 0;  /* dead code to satisfy the compiler */
 }
 
 /*

@@ -428,5 +428,5 @@ go_to_it:
     }
 
     context_save ();	/* save the context file */
-    done (status);
+    return done (status);
 }

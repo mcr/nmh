@@ -177,7 +177,7 @@ main(int argc, char **argv)
 	}
     }
     
-    done (missed);
+    return done (missed);
 }
 
 

@@ -234,7 +234,7 @@ get_x400_friendly (char *mbox, char *buffer, int buffer_len)
 	return NULL;
 
     if (get_x400_comp (mbox, "/PN=", buffer, buffer_len)) {
-	for (mbox = buffer; mbox = strchr(mbox, '.'); )
+	for (mbox = buffer; (mbox = strchr(mbox, '.')); )
 	    *mbox++ = ' ';
 
 	return buffer;
@@ -636,7 +636,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    }
 	    if (fmt->f_type == FT_LS_ADDR)
 		goto unfriendly;
-	    if ((str = mn->m_pers) == NULL)
+	    if ((str = mn->m_pers) == NULL) {
 	        if ((str = mn->m_note)) {
 	            strncpy (buffer, str, sizeof(buffer));
 	            str = buffer;
@@ -674,6 +674,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 			break;
 		  }
 		}
+	    }
 	    break;
 
 	case FT_LOCALDATE:

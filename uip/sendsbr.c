@@ -31,7 +31,7 @@ static jmp_buf env;
  * external prototypes
  */
 int sendsbr (char **, int, char *, struct stat *, int);
-void done (int);
+int done (int);
 char *getusername (void);
 
 /*
@@ -640,11 +640,12 @@ oops:
 }
 
 
-void
+int
 done (int status)
 {
     if (armed)
 	longjmp (env, status ? status : NOTOK);
 
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }

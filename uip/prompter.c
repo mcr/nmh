@@ -397,7 +397,7 @@ no_body:
     unlink (tmpfil);
 
     context_save ();	/* save the context file */
-    done (0);
+    return done (0);
 }
 
 

@@ -170,7 +170,7 @@ sc_length (void)
 static int
 outc (int c)
 {
-    putchar(c);
+    return putchar(c);
 }
 
 

@@ -200,7 +200,7 @@ main (int argc, char **argv)
 
     vmh ();
 
-    done (0);
+    return done (0);
 }
 
 
@@ -1285,7 +1285,7 @@ SIGser (int sig)
 }
 
 
-void
+int
 done (int status)
 {
     if (dfd != NOTOK)
@@ -1294,6 +1294,7 @@ done (int status)
     pFIN ();
 
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }
 
 

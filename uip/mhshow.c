@@ -475,8 +475,7 @@ do_cache:
 	context_save ();		  /* save the context file  */
     }
 
-    done (0);
-    /* NOTREACHED */
+    return done (0);
 }
 
 
@@ -495,7 +494,7 @@ pipeser (int i)
 }
 
 
-void
+int
 done (int status)
 {
     CT *ctp;
@@ -505,4 +504,5 @@ done (int status)
 	    free_content (*ctp);
 
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }

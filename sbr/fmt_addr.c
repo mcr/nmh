@@ -82,7 +82,7 @@ formataddr (char *orig, char *str)
     }
 
     /* concatenate all the new addresses onto 'buf' */
-    for (isgroup = 0; cp = getname (str); ) {
+    for (isgroup = 0; (cp = getname (str)); ) {
 	if ((mp = getm (cp, NULL, 0, fmt_norm, NULL)) == NULL)
 	    continue;
 

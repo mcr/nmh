@@ -278,7 +278,7 @@ main (int argc, char **argv)
 
     vmh ();
 
-    done (0);
+    return done (0);
 }
 
 
@@ -1432,13 +1432,14 @@ TSTPser (int sig)
 
 /* MISCELLANY */
 
-void
+int
 done (int status)
 {
     TTYoff ();
     pFIN ();
 
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }
 
 

@@ -363,12 +363,11 @@ main (int argc, char **argv)
     unlink_outfile = 0;
 
     free_content (ct);
-    done (0);
-    /* NOT REACHED */
+    return done (0);
 }
 
 
-void
+int
 done (int status)
 {
     /*
@@ -381,4 +380,5 @@ done (int status)
 	unlink (outfile);
 
     exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }

@@ -163,7 +163,7 @@ uucpadrx (char *addrs)
 	return NULL;
     }
 
-    if ((wp = strchr(cp, ',')) == NULL)
+    if ((wp = strchr(cp, ',')) == NULL) {
 	if ((wp = strchr(cp, ' ')) != NULL) {
 	    xp = wp;
 	    while (isspace (*xp))
@@ -172,11 +172,12 @@ uucpadrx (char *addrs)
 		yp = xp + 4;
 		while (isspace (*yp))
 		    yp++;
-		if (*yp != 0)
+		if (*yp != 0) {
 		    if ((zp = strchr(yp, ' ')) != NULL)
 			*zp = 0, tp = ++zp;
 		    else
 			tp = NULL;
+		}
 		else
 		    *wp = 0, tp = ++wp;
 	    }
@@ -185,6 +186,7 @@ uucpadrx (char *addrs)
 	}
 	else
 	    tp = NULL;
+    }
     else
 	*wp = 0, tp = ++wp;
 
@@ -951,7 +953,7 @@ mfgets (FILE *in, char **bp)
 		*cp++ = i;
 		break;
 	}
-	if (cp >= ep)
+	if (cp >= ep) {
 	    if (!(dp = realloc (pp, (size_t) (len += BUFSIZ)))) {
 		free (pp);
 		pp = NULL;
@@ -959,5 +961,6 @@ mfgets (FILE *in, char **bp)
 	    }
 	    else
 		cp += dp - pp, ep = (pp = cp) + len - 2;
+	}
     }
 }

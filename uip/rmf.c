@@ -115,7 +115,7 @@ main (int argc, char **argv)
 	context_replace (pfolder, newfolder);	/* update current folder */
     }
     context_save ();	/* save the context file */
-    done (0);
+    return done (0);
 }
 
 static int
