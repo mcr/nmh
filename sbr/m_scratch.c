@@ -25,7 +25,7 @@ m_scratch (char *file, char *template)
 /*
 #endif
 */
-/* nasty - this really means: if there is no '/' in the path */
+    /* nasty - this really means: if there is no '/' in the path */
     if ((cp = r1bindex (file, '/')) == file)
 	strncpy (buffer, tmpfil, sizeof(buffer));
     else

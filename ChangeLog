@@ -666,9 +666,9 @@ Fri May  7 17:18:28 1999  Dan Winship  <danw@mit.edu>
 	* Add new section on "Transfer Encodings" to man page for mhbuild.
 
 	* In mhbuild.c, split compose_content into compose_content
-	  (parse and execute composition string), and scan_content (scan content,
-	  decided transfer encoding, check for clash with boundary string).
-	  I did a good amount of rearranging of this code.
+	  (parse and execute composition string), and scan_content (scan
+ 	  content, decided transfer encoding, check for clash with boundary
+ 	  string).  I did a good amount of rearranging of this code.
 
 	* Moved definitions for data structures for parsing MIME
 	  messages from mhn.c and mhbuild.c to a new include
@@ -1817,10 +1817,11 @@ Sun Dec  1 10:00:00 1996  Richard Coleman  <coleman@math.gatech.edu>
 	* Added flist command from exmh distribution.  It doesn't work
 	  yet, but it compiles :-)
 
-	* Changed default location for install to /usr/local/nmh/{bin,etc,lib,man}.
-	  Split files so that format and configuration files go in nmh/etc, and
-	  support binaries go in nmh/lib.  Of course, all this can now be changed
-	  in the top level Makefile.
+	* Changed default location for install to
+	  /usr/local/nmh/{bin,etc,lib,man}.  Split files so that format
+	  and configuration files go in nmh/etc, and support binaries go
+	  in nmh/lib.  Of course, all this can now be changed in the top
+	  level Makefile. 
 
 	* Started with mh-6.8.3 as based and converted to autoconf.
 	  Rewrote all the Makefiles.  Currently only works with sendmail/smtp.
