@@ -1,3 +1,9 @@
+Mon Oct 4 15:22:46 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
+
+	* Added '-L' to the calls of 'ls' in configure.in -- I have seen
+ 	multiple machines in the past where the mail spool was a symlink
+ 	to a directory on another device with more free space.
+
 Fri Oct 1 22:36:56 1999 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Fixed a portability problem in Doug's fix of a portability

@@ -1640,7 +1640,7 @@ echo "configure:1640: checking whether the mail spool is world-writable" >&5
 if eval "test \"`echo '$''{'nmh_cv_mailspool_world_writable'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
-  if test "`$lspath -dl $mailspool | $cutpath -c9`" = "-"; then
+  if test "`$lspath -dlL $mailspool | $cutpath -c9`" = "-"; then
     nmh_cv_mailspool_world_writable=no
   else
     nmh_cv_mailspool_world_writable=yes
@@ -1663,7 +1663,7 @@ echo "configure:1663: checking what group owns the mail spool" >&5
 if eval "test \"`echo '$''{'nmh_cv_ls_mail_grp'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
-  nmh_cv_ls_mail_grp=`$lspath -d $nmh_cv_ls_grpopt $mailspool |$AWK '{print $4}'`
+  nmh_cv_ls_mail_grp=`$lspath -dL $nmh_cv_ls_grpopt $mailspool|$AWK '{print $4}'`
    if test x$nmh_cv_ls_mail_grp = xmail; then
    MAIL_SPOOL_GRP="mail"
  elif test x$nmh_cv_ls_mail_grp = xwheel; then

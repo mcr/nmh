@@ -246,7 +246,7 @@ dnl See whether the mail spool directory is world-writable.
 if test "$lspath" != "no" -a "$cutpath" != "no"; then
   AC_CACHE_CHECK(whether the mail spool is world-writable, 
 		 nmh_cv_mailspool_world_writable,
-  [if test "`$lspath -dl $mailspool | $cutpath -c9`" = "-"; then
+  [if test "`$lspath -dlL $mailspool | $cutpath -c9`" = "-"; then
     nmh_cv_mailspool_world_writable=no
   else
     nmh_cv_mailspool_world_writable=yes
@@ -263,7 +263,7 @@ AC_SUBST(SETGID_MAIL)dnl
 
 dnl see if we can determine which group owns the mail spool dir
 AC_CACHE_CHECK(what group owns the mail spool, nmh_cv_ls_mail_grp,
-[nmh_cv_ls_mail_grp=`$lspath -d $nmh_cv_ls_grpopt $mailspool |$AWK '{print $4}'`
+[nmh_cv_ls_mail_grp=`$lspath -dL $nmh_cv_ls_grpopt $mailspool|$AWK '{print $4}'`
  dnl Should we just set it to whatever ls reports, rather than only allowing
  dnl certain values...?
  if test x$nmh_cv_ls_mail_grp = xmail; then
