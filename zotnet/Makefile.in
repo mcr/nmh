@@ -25,8 +25,7 @@ default_editor='$(default_editor)' default_pager='$(default_pager)'
 
 # object files in libzot.a
 OBJS = mts/mts.o mts/client.o \
-       tws/dtime.o tws/dtimep.o tws/lexstring.o \
-       mf/mf.o
+       tws/dtime.o tws/dtimep.o tws/lexstring.o
 
 # auxiliary files
 AUX = Makefile.in
@@ -35,7 +34,7 @@ AUX = Makefile.in
 DIST = $(AUX)
 
 # subdirectories
-SUBDIRS = mts tws mf
+SUBDIRS = mts tws
 
 # ========= DEPENDENCIES FOR BUILDING AND INSTALLING ==========
 

@@ -7,7 +7,7 @@
 
 #include <h/mh.h>
 #include <h/addrsbr.h>
-#include <zotnet/mf/mf.h>
+#include <h/mf.h>
 
 /* High level parsing of addresses:
 

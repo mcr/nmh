@@ -697,7 +697,7 @@ dnl OUTPUT MAKEFILES
 dnl ----------------
 AC_OUTPUT(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
           zotnet/Makefile zotnet/mts/Makefile zotnet/tws/Makefile \
-          zotnet/mf/Makefile mts/Makefile mts/smtp/Makefile \
+          mts/Makefile mts/smtp/Makefile \
 	  mts/sendmail/Makefile mts/mmdf/Makefile etc/Makefile \
 	  docs/Makefile man/Makefile, \
           [test -z "$CONFIG_HEADERS" || echo > stamp-h])

@@ -4470,7 +4470,7 @@ ac_given_INSTALL="$INSTALL"
 
 trap 'rm -fr `echo "Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
           zotnet/Makefile zotnet/mts/Makefile zotnet/tws/Makefile \
-          zotnet/mf/Makefile mts/Makefile mts/smtp/Makefile \
+          mts/Makefile mts/smtp/Makefile \
 	  mts/sendmail/Makefile mts/mmdf/Makefile etc/Makefile \
 	  docs/Makefile man/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
@@ -4601,7 +4601,7 @@ cat >> $CONFIG_STATUS <<EOF
 
 CONFIG_FILES=\${CONFIG_FILES-"Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
           zotnet/Makefile zotnet/mts/Makefile zotnet/tws/Makefile \
-          zotnet/mf/Makefile mts/Makefile mts/smtp/Makefile \
+          mts/Makefile mts/smtp/Makefile \
 	  mts/sendmail/Makefile mts/mmdf/Makefile etc/Makefile \
 	  docs/Makefile man/Makefile"}
 EOF
