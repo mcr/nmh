@@ -94,7 +94,7 @@ pidstatus.o: sigmsg.h
 
 libmh.a: $(OBJS)
 	rm -f $@
-	if test x$(LIBTOOL) != xno -a x$(GNU_LIBTOOL) = x ; then \
+	if test x$(LIBTOOL) != x -a x$(GNU_LIBTOOL) = x ; then \
 	  $(LIBTOOL) -static -c -o libmh.a $(OBJS) ; \
 	else \
 	  ar cr libmh.a `$(LORDER) $(OBJS) | $(TSORT)`  ; \

@@ -44,7 +44,7 @@ all: all-recursive libzot.a
 
 libzot.a: $(OBJS)
 	rm -f $@
-	if test x$(LIBTOOL) != xno -a x$(GNU_LIBTOOL) = x ; then \
+	if test x$(LIBTOOL) != x -a x$(GNU_LIBTOOL) = x ; then \
 	  $(LIBTOOL) -static -c $(OBJS) -o $@  ; \
 	else \
 	  ar cr $@ `$(LORDER) $(OBJS) | $(TSORT)`  ; \
