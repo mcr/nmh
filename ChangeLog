@@ -1,7 +1,9 @@
-Mon Jul 17 13:11:52 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Mon Jul 17 13:53:26 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Moved Kimmo's new "--with-hash-backup" to be output with the
- 	rest of the --with options in the configure --help output.
+ 	rest of the --with options in the configure --help output.  Also,
+	people did not preserve my alphabetization of the --with options
+	when they added new ones.  Re-alphabetized.
 
 	* One more pass at README.developers now that it's clear that my
 	previously-suggested one-line autoconf-file commit can cause

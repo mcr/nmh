@@ -84,6 +84,23 @@ if test x"$enable_nmh_pop" = x"yes"; then
   enable_pop=yes
 fi
 
+dnl Do you want client-side support for using SASL for authentication?
+dnl Note that this code will be enabled for both POP and SMTP
+AC_ARG_WITH(cyrus-sasl,
+[  --with-cyrus-sasl=<dir> Specify location of Cyrus SASL library for auth])
+if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != "no"; then
+  AC_DEFINE(CYRUS_SASL)dnl
+fi
+
+dnl What should be the default editor?
+undefine([editor])dnl
+AC_ARG_WITH(editor,
+[  --with-editor=EDITOR    specify the default editor])
+
+if test -n "$with_editor"; then
+  editorpath="$with_editor"
+fi
+
 dnl Set the backup prefix
 undefine([backup-prefix])dnl
 AC_ARG_WITH([hash-backup],
@@ -121,23 +138,6 @@ else
 fi
 AC_SUBST(POPLIB)dnl
 AC_SUBST(POPSED)dnl
-
-dnl What should be the default editor?
-undefine([editor])dnl
-AC_ARG_WITH(editor,
-[  --with-editor=EDITOR    specify the default editor])
-
-if test -n "$with_editor"; then
-  editorpath="$with_editor"
-fi
-
-dnl Do you want client-side support for using SASL for authentication?
-dnl Note that this code will be enabled for both POP and SMTP
-AC_ARG_WITH(cyrus-sasl,
-[  --with-cyrus-sasl=<dir> Specify location of Cyrus SASL library for auth])
-if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != "no"; then
-  AC_DEFINE(CYRUS_SASL)dnl
-fi
 
 dnl What method of posting should post use?
 undefine([mts])dnl

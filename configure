@@ -23,15 +23,15 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-pop            enable client-side support for plain POP3"
 ac_help="$ac_help
+  --with-cyrus-sasl=<dir> Specify location of Cyrus SASL library for auth"
+ac_help="$ac_help
+  --with-editor=EDITOR    specify the default editor"
+ac_help="$ac_help
   --with-hash-backup      use # as the backup prefix (default: ,)"
 ac_help="$ac_help
   --with-hesiod=PREFIX    specify location of Hesiod"
 ac_help="$ac_help
   --with-krb4=PREFIX      specify location of Kerberos V4 for KPOP support"
-ac_help="$ac_help
-  --with-editor=EDITOR    specify the default editor"
-ac_help="$ac_help
-  --with-cyrus-sasl=<dir> Specify location of Cyrus SASL library for auth"
 ac_help="$ac_help
   --with-mts=MTS          specify the default mail transport agent/service"
 ac_help="$ac_help
@@ -727,6 +727,29 @@ if test x"$enable_nmh_pop" = x"yes"; then
   enable_pop=yes
 fi
 
+# Check whether --with-cyrus-sasl or --without-cyrus-sasl was given.
+if test "${with_cyrus_sasl+set}" = set; then
+  withval="$with_cyrus_sasl"
+  :
+fi
+
+if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != "no"; then
+  cat >> confdefs.h <<\EOF
+#define CYRUS_SASL 1
+EOF
+fi
+
+# Check whether --with-editor or --without-editor was given.
+if test "${with_editor+set}" = set; then
+  withval="$with_editor"
+  :
+fi
+
+
+if test -n "$with_editor"; then
+  editorpath="$with_editor"
+fi
+
 # Check whether --with-hash-backup or --without-hash-backup was given.
 if test "${with_hash_backup+set}" = set; then
   withval="$with_hash_backup"
@@ -778,29 +801,6 @@ EOF
   POPSED='/^%nmhbeginpop%/d;/^%nmhendpop%/d'
 else
   POPSED='/^%nmhbeginpop%/,/^%nmhendpop%/d'
-fi
-
-# Check whether --with-editor or --without-editor was given.
-if test "${with_editor+set}" = set; then
-  withval="$with_editor"
-  :
-fi
-
-
-if test -n "$with_editor"; then
-  editorpath="$with_editor"
-fi
-
-# Check whether --with-cyrus-sasl or --without-cyrus-sasl was given.
-if test "${with_cyrus_sasl+set}" = set; then
-  withval="$with_cyrus_sasl"
-  :
-fi
-
-if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != "no"; then
-  cat >> confdefs.h <<\EOF
-#define CYRUS_SASL 1
-EOF
 fi
 
 # Check whether --with-mts or --without-mts was given.
