@@ -27,17 +27,16 @@ need an ANSI C compiler such as gcc.
 
    sh configure --help
 
-2) (IMPORTANT)  Edit the user configuration section at the beginning
-   of the generated include file `config.h'.  Currently, not everything
-   is auto-configured, so some #defines must be set manually.
+2) Look through the user configuration section at the beginning
+   of the generated include file `config.h'.  All system-specific
+   definitions should be sensed automatically now, but you may
+   want to customize some #defines for your environment.
 
-3) Edit the user configuration section at the top of the main Makefile.
+3) make
 
-4) make
+4) make install
 
-5) make install
-
-6) Edit the file `mts.conf' (installed in the nmh `etc' directory)
+5) Edit the file `mts.conf' (installed in the nmh `etc' directory)
    and make any necessary changes for the mail transport interface
    you are using.
 
@@ -83,13 +82,13 @@ need an ANSI C compiler such as gcc.
    Check the `mh-tailor' man page for a list of all the available
    options for this file.
 
-7) If you have enabled POP support, make sure that `pop3' (or more
+6) If you have enabled POP support, make sure that `pop3' (or more
    precisely the value of the define POPSERVICE in config.h) is defined
    in the /etc/services file (or its NIS/NIS+ equivalent) on the client
    machine.  It should be something equivalent to "110/tcp".  This might
    have already been done when the pop daemon was installed.
 
-8) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
+7) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
    This file contains the default profile entries for the nmh command
    `mhn' and is created by the script `mhn.defaults.sh'.  This script
    will search a generic path (essentially your $PATH) for programs to
