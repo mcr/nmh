@@ -3,6 +3,10 @@
  * m_convert.c -- parse a message range or sequence and set SELECTED
  *
  * $Id$
+ *
+ * This code is Copyright (c) 2002, by the authors of nmh.  See the
+ * COPYRIGHT file in the root directory of the nmh distribution for
+ * complete copyright information.
  */
 
 #include <h/mh.h>

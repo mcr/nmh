@@ -6,6 +6,10 @@
  * Jeffrey C Honig <Jeffrey_C_Honig@cornell.edu>
  *
  * $Id$
+ *
+ * This code is Copyright (c) 2002, by the authors of nmh.  See the
+ * COPYRIGHT file in the root directory of the nmh distribution for
+ * complete copyright information.
  */
 
 #include <h/mh.h>
