@@ -1,5 +1,6 @@
 [TODO]
 
+* fix msh/mmdf problems.
 * Add IPv6 support.
 * Check/fix compilation on 64-bit systems.
 * Write different function to read configuration files, instead
