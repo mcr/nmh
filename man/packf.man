@@ -32,12 +32,19 @@ mmdf style delimiters.  Each message in the file is separated by four
 CTRL\-A's and a newline.
 
 You may specify the name of the file in which to use with the
-`\-file\ name' switch.  If you do specify the name of the file, it
+`\-file\ name' switch.  If you do not specify the name of the file, it
 will default to `msgbox'.
 
 If the given file name points to an existing file, then the specified
 messages will be appended to the end of the file, otherwise the file
 will be created and the messages appended.
+
+\fIpackf\fR makes an mbox-style delimiter by examining the first line
+of the message.  If the first line is a \*(lqReturn-Path:\*(rq
+field, its address and the current date and time are used.  Otherwise,
+if the first line has an \*(lqX-Envelope-From:\*(rq field, its
+contents (which should already be in the correct format) are used. 
+Otherwise, a dummy address and the current date and time are used.
 
 Messages that are packed by \fIpackf\fR can be unpacked using
 \fIinc\fR.

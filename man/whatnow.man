@@ -129,6 +129,10 @@ usually place the argument to this switch inside double\-quotes.
 If the initial edit fails, \fIwhatnow\fR deletes your draft (by renaming
 it with a leading comma); failure of a later edit preserves the draft.
 
+If the \fIbuildmimeproc\fR fails (returns a nonzero status), \fIwhatnow\fR
+simply prints a \*(lqWhat now?\*(rq prompt.  \fIwhatnow\fR depends on the
+\fIbuildmimeproc\fR to tell the user that something went wrong.
+
 If \fIwhatnowproc\fR is \fIwhatnow\fR, then \fIcomp\fR, \fIdist\fP,
 \fIforw\fP, and \fIrepl\fP use a built\-in \fIwhatnow\fR, and do not
 actually run the \fIwhatnow\fR program.  Hence, if you define your own
