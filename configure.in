@@ -331,7 +331,7 @@ if test x$with_krb4 != x -a x$with_krb4 != xno; then
   AC_CHECK_LIB(krb4, krb_rd_req,
     [KRB4_LIBS="$KRB4_LIBS -lkrb4 -ldes425 -lkrb5 -lcrypto -lcom_err"],
     [AC_CHECK_LIB(krb, krb_rd_req,
-      [KRB4_LIBS="-lkrb -ldes"],
+      [KRB4_LIBS="$KRB4_LIBS -lkrb -ldes"],
       [AC_MSG_ERROR(Kerberos 4 libraries not found)],
       $KRB4_LIBS -ldes)],
     $KRB4_LIBS -ldes425 -lkrb5 -lcrypto -lcom_err)
