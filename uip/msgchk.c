@@ -283,7 +283,7 @@ main (int argc, char **argv)
     }		/* host == NULL */
 #endif
 
-    done (status);
+    return done (status);
 }
 
 
@@ -315,6 +315,8 @@ donote (char *cp, int ntflag)
 	case NNMAISW: 
 	    return NT_NMAI;
     }
+
+    return 0; /* Before 1999-07-15, garbage was returned if control got here. */
 }
 
 
