@@ -259,7 +259,7 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 		bp = sp = (unsigned char *) iob->_ptr - 1;
 		j = (cnt = iob->_cnt+1) < i ? cnt : i;
 #endif
-		while ((c = *bp++) != ':' && c != '\n' && --j >= 0)
+		while (--j >= 0 && (c = *bp++) != ':' && c != '\n')
 		    *cp++ = c;
 
 		j = bp - sp;
@@ -538,7 +538,7 @@ m_unknown(FILE *iob)
 	    ;
 #else /* RPATHS */
 	cp = unixbuf;
-	while ((c = getc (iob)) != '\n')
+	while ((c = getc (iob)) != '\n' && cp - unixbuf < BUFSIZ - 1)
 	    *cp++ = c;
 	*cp = 0;
 #endif /* RPATHS */
@@ -639,7 +639,7 @@ m_Eom (int c, FILE *iob)
 		break;
 #else /* RPATHS */
 	cp = unixbuf;
-	while ((c = getc (iob)) != '\n' && c >= 0)
+	while ((c = getc (iob)) != '\n' && c >= 0 && cp - unixbuf < BUFSIZ - 1)
 	    *cp++ = c;
 	*cp = 0;
 #endif /* RPATHS */
