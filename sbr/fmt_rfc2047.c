@@ -10,6 +10,10 @@
  */
 
 #include <h/mh.h>
+#ifdef HAVE_ICONV
+#  include <iconv.h>
+#  include <errno.h>
+#endif
 
 static signed char hexindex[] = {
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -61,6 +65,12 @@ decode_rfc2047 (char *str, char *dst)
     int between_encodings = 0;	/* are we between two encodings?          */
     int equals_pending = 0;	/* is there a '=' pending?                */
     int whitespace = 0;		/* how much whitespace between encodings? */
+#ifdef HAVE_ICONV
+    int use_iconv = 0;          /* are we converting encoding with iconv? */
+    iconv_t cd;
+    int fromutf8;
+    char *saveq, *convbuf;
+#endif
 
     if (!str)
 	return 0;
@@ -73,6 +83,14 @@ decode_rfc2047 (char *str, char *dst)
 	return 0;
 
     for (p = str, q = dst; *p; p++) {
+
+        /* reset iconv */
+#ifdef HAVE_ICONV
+        if (use_iconv) {
+	    iconv_close(cd);
+	    use_iconv = 0;
+        }
+#endif
 	/*
 	 * If we had an '=' character pending from
 	 * last iteration, then add it first.
@@ -106,9 +124,20 @@ decode_rfc2047 (char *str, char *dst)
 	    if (!*pp)
 		continue;
 
-	    /* Check if character set is OK */
-	    if (!check_charset(startofmime, pp - startofmime))
+	    /* Check if character set can be handled natively */
+	    if (!check_charset(startofmime, pp - startofmime)) {
+#ifdef HAVE_ICONV
+	        /* .. it can't. We'll use iconv then. */
+		*pp = '\0';
+	        cd = iconv_open(get_charset(), startofmime);
+		fromutf8 = !strcasecmp(startofmime, "UTF-8");
+		*pp = '?';
+                if (cd == (iconv_t)-1) continue;
+		use_iconv = 1;
+#else
 		continue;
+#endif
+	    }
 
 	    startofmime = pp + 1;
 
@@ -158,6 +187,14 @@ decode_rfc2047 (char *str, char *dst)
 	     */
 	    if (between_encodings)
 		q -= whitespace;
+
+#ifdef HAVE_ICONV
+	    if (use_iconv) {
+	        saveq = q;
+		if (!(q = convbuf = (char *)malloc(endofmime - startofmime)))
+		    continue;
+            }
+#endif
 
 	    /* Now decode the text */
 	    if (quoted_printable) {
@@ -218,6 +255,35 @@ decode_rfc2047 (char *str, char *dst)
 		}
 	    }
 
+#ifdef HAVE_ICONV
+            /* Convert to native character set */
+	    if (use_iconv) {
+		size_t inbytes = q - convbuf;
+		size_t outbytes = BUFSIZ;
+		ICONV_CONST char *start = convbuf;
+		
+		while (inbytes) {
+		    if (iconv(cd, &start, &inbytes, &saveq, &outbytes) ==
+		            (size_t)-1) {
+			if (errno != EILSEQ) break;
+			/* character couldn't be converted. we output a `?'
+			 * and try to carry on which won't work if
+			 * either encoding was stateful */
+			iconv (cd, 0, 0, &saveq, &outbytes);
+			*saveq++ = '?';
+                        /* skip to next input character */
+			if (fromutf8) {
+			    for (start++;(*start & 192) == 128;start++)
+			        inbytes--;
+			} else
+			    start++, inbytes--;
+		    }
+		}
+		q = saveq;
+		free(convbuf);
+	    }
+#endif
+	    
 	    /*
 	     * Now that we are done decoding this particular
 	     * encoded word, advance string to trailing '='.
@@ -229,6 +295,9 @@ decode_rfc2047 (char *str, char *dst)
 	    whitespace = 0;		/* re-initialize amount of whitespace */
 	}
     }
+#ifdef HAVE_ICONV
+    if (use_iconv) iconv_close(cd);
+#endif
 
     /* If an equals was pending at end of string, add it now. */
     if (equals_pending)

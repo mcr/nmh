@@ -1,5 +1,8 @@
 2005-02-23  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* use iconv to convert RFC-2047 encoded headers to the
+	character set used by the current locale
+
 	* sbr/folder_read.c fix Debian bug #202667: crash when a
 	message's filename overflows an int when converted
 

@@ -130,7 +130,7 @@ match (char *str, char *sub)
 				sp++;\
 			}\
 			while ((c = (unsigned char) *sp++) && --i >= 0 && cp < ep)\
-				if (isgraph(c)) \
+				if (!iscntrl(c) && !isspace(c)) \
 				    *cp++ = c;\
 				else {\
 					while ((c = (unsigned char) *sp) && (iscntrl(c) || isspace(c)))\
@@ -148,7 +148,7 @@ match (char *str, char *sub)
 		    while ((c = (unsigned char) *sp) && (iscntrl(c) || isspace(c)))\
 			sp++;\
 		    while((c = (unsigned char) *sp++) && cp < ep)\
-			if (isgraph(c)) \
+		        if (!iscntrl(c) && !isspace(c)) \
 			    *cp++ = c;\
 			else {\
 			    while ((c = (unsigned char) *sp) && (iscntrl(c) || isspace(c)))\

@@ -61,6 +61,7 @@ int gans (char *, struct swit *);
 char **getans (char *, struct swit *);
 int getanswer (char *);
 char **getarguments (char *, int, char **, int);
+char *get_charset();
 char *getcpy (char *);
 char *getfolder(int);
 int lkclose(int, char*);
