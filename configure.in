@@ -121,24 +121,19 @@ fi
 dnl What method of posting should post use?
 undefine([mts])dnl
 AC_ARG_WITH(mts,
-[  --with-mts=MTS          specify the mail transport agent/service])
+[  --with-mts=MTS          specify the default mail transport agent/service])
 
 if test x"$with_mts" = x"smtp"; then
   MTS="smtp"
-  MTSLIB="mts/smtp/libsmtp.a"
-  AC_DEFINE(SMTPMTS)dnl
 elif test x"$with_mts" = x"sendmail"; then
   MTS="sendmail"
-  MTSLIB="mts/sendmail/libsend.a"
-  AC_DEFINE(SENDMTS)dnl
 else
   MTS="smtp"
-  MTSLIB="mts/smtp/libsmtp.a"
-  AC_DEFINE(SMTPMTS)dnl
 fi
-
 AC_SUBST(MTS)dnl
-AC_SUBST(MTSLIB)dnl
+
+dnl Both the smtp and sendmail mail transport services use the smtp code
+AC_DEFINE(SMTPMTS)dnl
 
 dnl What should be the default pager?
 undefine([pager])dnl
@@ -264,7 +259,9 @@ AC_CACHE_CHECK(whether tsort can deal with loops, nmh_cv_tsort_loop,
     nmh_cv_tsort_loop=yes
   fi])
 if test x$nmh_cv_tsort_loop = xno ; then
+  LORDER=echo
   TSORT=cat
+  AC_SUBST(LORDER)dnl
   AC_SUBST(TSORT)dnl
 fi
 

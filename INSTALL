@@ -209,20 +209,23 @@ Options for configure
      config.h for details.
 
 --with-mts=MTS   (DEFAULT is smtp)
-     Specify the mail transport system you want to use.  The two
+     Specify the default mail transport system you want to use.  The two
      acceptable options are "smtp" (which is the default), and
-     "sendmail".
+     "sendmail".  This value will be put into the mts.conf file.  You
+     may find it convenient to specify a value at configure-time,
+     however, so that each time nmh is reinstalled, the right value will
+     be there.
 
-     If you use "smtp", this will enable a direct SMTP (simple
-     mail transport protocol) interface in nmh.  When sending
-     mail, instead of passing the message to the mail transport
-     agent, `post' will open a socket connection to the mail
-     port on the machine specified in the `mts.conf' file
-     (default is localhost), and speak SMTP directly.
+     If you use "smtp", this will enable a direct SMTP (simple mail
+     transport protocol) interface in nmh.  When sending mail, instead
+     of passing the message to the mail transport agent, `post' will
+     open a socket connection to the mail port on the machine specified
+     in the `mts.conf' file (default is localhost), and speak SMTP
+     directly.
 
-     If you use "sendmail", then `post' will send messages by
-     passing forking a local copy of sendmail.  Currently it
-     will still speak SMTP with this local copy of sendmail.
+     If you use "sendmail", then `post' will send messages by forking a
+     local copy of sendmail.  Currently it will still speak SMTP with
+     this local copy of sendmail.
 
      If you wish to use a transport agent other than sendmail, you will
      need to use a `sendmail wrapper'.

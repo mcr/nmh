@@ -158,21 +158,11 @@
 /***** END USER CONFIGURATION SECTION *****/
 @TOP@
 
-
 /*
  * Define this if you want SMTP (simple mail transport protocol)
- * support.  When sending mail, instead of passing the message to
- * the mail transport agent (typically sendmail), nmh will open a
- * socket connection to the mail port on the machine specified in
- * the `mts.conf' file (default is localhost), and speak SMTP directly.
+ * support.  This is currently always enabled.
  */
-#undef SMTPMTS
-
-/*
- * Use sendmail as transport agent.  Post messages by piping
- * them directly to sendmail.
- */
-#undef SENDMTS
+#define SMTPMTS 1
 
 /*
  * Define this to compile client-side support for pop into

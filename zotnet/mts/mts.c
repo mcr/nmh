@@ -66,11 +66,12 @@ static boolean  mmailid_masquerading = FALSE;
        boolean  username_extension_masquerading = FALSE;  /* " from addrsbr.c */
 static char*    masquerade = "";
 
-
 /*
  * MTS specific variables
  */
-#if defined(SENDMTS) || defined(SMTPMTS)
+#if defined(SMTPMTS)
+static char *sm_method = "smtp";
+int  sm_mts    = MTS_SMTP;
 char *hostable = nmhetcdir(/hosts);
 char *sendmail = SENDMAILPATH;
 #endif
@@ -132,12 +133,10 @@ static struct bind binds[] = {
     { "mmdelim2", &mmdlm2 },
     { "masquerade", &masquerade },
 
-#if defined(SENDMTS) || defined(SMTPMTS)
-    { "hostable", &hostable },
-#endif
-
-#ifdef SENDMTS
-    { "sendmail", &sendmail },
+#if defined(SMTPMTS)
+    { "mts",      &sm_method },
+    { "hostable", &hostable  },
+    { "sendmail", &sendmail  },
 #endif
 
     { "clientname",  &clientname },
@@ -209,6 +208,17 @@ mts_init (char *name)
 
     if (strstr(masquerade, "username_extension") != NULL)
 	username_extension_masquerading = TRUE;
+
+#ifdef SMTPMTS
+    if (strcmp(sm_method, "smtp") == 0)
+        sm_mts = MTS_SMTP;
+    else if (strcmp(sm_method, "sendmail") == 0)
+        sm_mts = MTS_SENDMAIL;
+    else {
+        advise(NULL, "unsupported \"mts\" value in mts.conf: %s", sm_method);
+        sm_mts = MTS_SMTP;
+    }
+#endif
 }
 
 

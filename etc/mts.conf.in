@@ -5,6 +5,12 @@
 # all the available options for this file.
 #
 
+# The delivery method to use.  Supported values are `smtp' and `sendmail'.
+# When `smtp', nmh will open a socket connection to the mail port on the
+# machine specified below, and speak SMTP directly.
+# When `sendmail', nmh will pipe messages directly to the sendmail program.
+mts: %mts%
+
 # The exceptions file for /etc/hosts used by
 # `post' to try to find official names.
 hostable: %etcdir%/hosts

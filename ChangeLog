@@ -1,3 +1,13 @@
+Sat Jun 10 18:37:59 CEST 2000 Ruud de Rooij <ruud@ruud.org>
+
+	* Merged mts/sendmail functionality into mts/smtp; switching between
+	smtp and sendmail delivery method is now controlled by mts.conf.
+
+	* If tsort cannot deal with loops, in addition to defining tsort as
+	cat, also define lorder as echo.
+	
+	* Removed uip/popi.c from list of sources.
+
 Thu Jun 08 19:36:57 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* New dtimep.lex didn't parse day names properly.  Fixed.  Also

@@ -26,8 +26,8 @@ DIST = $(AUX)
 # subdirectories
 SUBDIRS = smtp sendmail mmdf
 
-# mail transport agent we are using
-MTS = @MTS@
+# mail transport agent we are using (currently always smtp)
+MTS = smtp
 
 # ========= DEPENDENCIES FOR BUILDING AND INSTALLING ==========
 

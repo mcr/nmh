@@ -57,12 +57,13 @@ OfficialName (char *name)
     }
     if (hosts.h_name || init_hs ()) {
 	for (h = hosts.h_next; h; h = h->h_next)
-	    if (!strcasecmp (h->h_name, q))
+	    if (!strcasecmp (h->h_name, q)) {
 		return h->h_name;
-	    else
+	    } else {
 		for (r = h->h_aliases; *r; r++)
 		    if (!strcasecmp (*r, q))
 			return h->h_name;
+	    }
     }
 
     strncpy (buffer, site, sizeof(buffer));

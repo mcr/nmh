@@ -5,14 +5,14 @@
  * $Id$
  */
 
-#if defined(SENDMTS) || defined(SMTPMTS)
+#if defined(SMTPMTS)
 # include <ctype.h>
 # include <errno.h>
 # include <setjmp.h>
 # include <stdio.h>
 # include <sys/types.h>
 # include <mts/smtp/smtp.h>
-#endif /* SENDMTS || SMTPMTS */
+#endif /* SMTPMTS */
 
 #ifdef MMDFMTS
 # include <mts/mmdf/util.h>
@@ -20,10 +20,10 @@
 #endif /* MMDFMTS */
 
 
-#if defined(SENDMTS) || defined(SMTPMTS)
+#if defined(SMTPMTS)
 # define RCV_MOK	0
 # define RCV_MBX	1
-#endif /* SENDMTS || SMTPMTS */
+#endif /* SMTPMTS */
 
 #ifdef MMDFI
 # define RCV_MOK	RP_MOK

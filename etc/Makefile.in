@@ -16,6 +16,7 @@ bindir      = @bindir@
 libdir      = @libdir@
 etcdir      = @sysconfdir@
 
+MTS         = @MTS@
 mailspool   = @mailspool@
 masquerade  = @masquerade@
 smtpservers = @smtpservers@
@@ -75,7 +76,8 @@ mhn.defaults: $(srcdir)/mhn.defaults.sh $(MHNSEARCHPROG)
 
 mts.conf: $(srcdir)/mts.conf.in Makefile
 	rm -f $@
-	$(SED) -e 's,%mailspool%,$(mailspool),' \
+	$(SED) -e 's,%mts%,$(MTS),' \
+	       -e 's,%mailspool%,$(mailspool),' \
 	       -e 's,%etcdir%,$(etcdir),' \
 	       -e 's,%masquerade%,$(masquerade),' \
 	       -e 's,%smtpservers%,$(smtpservers),' < $(srcdir)/mts.conf.in > $@

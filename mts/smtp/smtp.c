@@ -14,8 +14,6 @@
 #include <errno.h>
 #endif
 
-
-
 /*
  * This module implements an interface to SendMail very similar
  * to the MMDF mm_(3) routines.  The sm_() routines herein talk
@@ -44,6 +42,8 @@
 #define	TRUE	1
 #define	FALSE	0
 
+#define	NBITS ((sizeof (int)) * 8)
+
 /*
  * these codes must all be different!
  */
@@ -60,6 +60,7 @@
 
 static int sm_addrs = 0;
 static int sm_alarmed = 0;
+static int sm_child = NOTOK;
 static int sm_debug = 0;
 static int sm_nl = TRUE;
 static int sm_verbose = 0;
@@ -77,7 +78,6 @@ static char *sm_moreply = "; ";
 
 struct smtp sm_reply;		/* global... */
 
-
 #define	MAXEHLO	20
 
 static int doingEHLO;
@@ -86,6 +86,9 @@ char *EHLOkeys[MAXEHLO + 1];
 /*
  * static prototypes
  */
+static int smtp_init (char *, char *, int, int, int, int, int);
+static int sendmail_init (char *, char *, int, int, int, int, int);
+
 static int rclient (char *, char *, char *);
 static int sm_ierror (char *fmt, ...);
 static int smtalk (int time, char *fmt, ...);
@@ -113,6 +116,18 @@ int client (char *, char *, char *, int, char *, int);
 int
 sm_init (char *client, char *server, int watch, int verbose,
          int debug, int onex, int queued)
+{
+    if (sm_mts == MTS_SMTP)
+	return smtp_init (client, server, watch, verbose,
+			  debug, onex, queued);
+    else
+	return sendmail_init (client, server, watch, verbose,
+			      debug, onex, queued);
+}
+
+static int
+smtp_init (char *client, char *server, int watch, int verbose,
+           int debug, int onex, int queued)
 {
     int result, sd1, sd2;
 
@@ -223,6 +238,138 @@ send_options: ;
     return RP_OK;
 }
 
+int
+sendmail_init (char *client, char *server, int watch, int verbose,
+               int debug, int onex, int queued)
+{
+    int i, result, vecp;
+    int pdi[2], pdo[2];
+    char *vec[15];
+
+    if (watch)
+	verbose = TRUE;
+
+    sm_verbose = verbose;
+    sm_debug = debug;
+    if (sm_rfp != NULL && sm_wfp != NULL)
+	return RP_OK;
+
+    if (client == NULL || *client == '\0') {
+	if (clientname)
+	    client = clientname;
+	else
+	    client = LocalName();	/* no clientname -> LocalName */
+    }
+
+#ifdef ZMAILER
+    if (client == NULL || *client == '\0')
+	client = "localhost";
+#endif
+
+    if (pipe (pdi) == NOTOK)
+	return sm_ierror ("no pipes");
+    if (pipe (pdo) == NOTOK) {
+	close (pdi[0]);
+	close (pdi[1]);
+	return sm_ierror ("no pipes");
+    }
+
+    for (i = 0; (sm_child = fork ()) == NOTOK && i < 5; i++)
+	sleep (5);
+
+    switch (sm_child) {
+	case NOTOK: 
+	    close (pdo[0]);
+	    close (pdo[1]);
+	    close (pdi[0]);
+	    close (pdi[1]);
+	    return sm_ierror ("unable to fork");
+
+	case OK: 
+	    if (pdo[0] != fileno (stdin))
+		dup2 (pdo[0], fileno (stdin));
+	    if (pdi[1] != fileno (stdout))
+		dup2 (pdi[1], fileno (stdout));
+	    if (pdi[1] != fileno (stderr))
+		dup2 (pdi[1], fileno (stderr));
+	    for (i = fileno (stderr) + 1; i < NBITS; i++)
+		close (i);
+
+	    vecp = 0;
+	    vec[vecp++] = r1bindex (sendmail, '/');
+	    vec[vecp++] = "-bs";
+#ifndef ZMAILER
+	    vec[vecp++] = watch ? "-odi" : queued ? "-odq" : "-odb";
+	    vec[vecp++] = "-oem";
+	    vec[vecp++] = "-om";
+# ifndef RAND
+	    if (verbose)
+		vec[vecp++] = "-ov";
+# endif /* not RAND */
+#endif /* not ZMAILER */
+	    vec[vecp++] = NULL;
+
+	    setgid (getegid ());
+	    setuid (geteuid ());
+	    execvp (sendmail, vec);
+	    fprintf (stderr, "unable to exec ");
+	    perror (sendmail);
+	    _exit (-1);		/* NOTREACHED */
+
+	default: 
+	    SIGNAL (SIGALRM, alrmser);
+	    SIGNAL (SIGPIPE, SIG_IGN);
+
+	    close (pdi[1]);
+	    close (pdo[0]);
+	    if ((sm_rfp = fdopen (pdi[0], "r")) == NULL
+		    || (sm_wfp = fdopen (pdo[1], "w")) == NULL) {
+		close (pdi[0]);
+		close (pdo[1]);
+		sm_rfp = sm_wfp = NULL;
+		return sm_ierror ("unable to fdopen");
+	    }
+	    sm_alarmed = 0;
+	    alarm (SM_OPEN);
+	    result = smhear ();
+	    alarm (0);
+	    switch (result) {
+		case 220: 
+		    break;
+
+		default: 
+		    sm_end (NOTOK);
+		    return RP_RPLY;
+	    }
+
+	    if (client && *client) {
+		doingEHLO = 1;
+		result = smtalk (SM_HELO, "EHLO %s", client);
+		doingEHLO = 0;
+
+		if (500 <= result && result <= 599)
+		    result = smtalk (SM_HELO, "HELO %s", client);
+
+		switch (result) {
+		    case 250:
+		        break;
+
+		    default:
+			sm_end (NOTOK);
+			return RP_RPLY;
+		}
+	    }
+
+#ifndef ZMAILER
+	    if (onex)
+		smtalk (SM_HELO, "ONEX");
+#endif
+	    if (watch)
+		smtalk (SM_HELO, "VERB on");
+
+	    return RP_OK;
+    }
+}
 
 #ifdef MPOP
 # define MAXARGS  1000
@@ -435,6 +582,17 @@ sm_end (int type)
     int status;
     struct smtp sm_note;
 
+    if (sm_mts == MTS_SENDMAIL) {
+	switch (sm_child) {
+	    case NOTOK: 
+	    case OK: 
+		return RP_OK;
+
+	    default: 
+		break;
+	}
+    }
+
     if (sm_rfp == NULL && sm_wfp == NULL)
 	return RP_OK;
 
@@ -449,7 +607,13 @@ sm_end (int type)
 	case DONE: 
 	    if (smtalk (SM_RSET, "RSET") == 250 && type == DONE)
 		return RP_OK;
-	    smtalk (SM_QUIT, "QUIT");
+	    if (sm_mts == MTS_SMTP)
+		smtalk (SM_QUIT, "QUIT");
+	    else {
+		kill (sm_child, SIGKILL);
+		discard (sm_rfp);
+		discard (sm_wfp);
+	    }
 	    if (type == NOTOK) {
 		sm_reply.code = sm_note.code;
 		strncpy (sm_reply.text, sm_note.text, sm_reply.length = sm_note.length);
@@ -480,7 +644,13 @@ sm_end (int type)
 	alarm (0);
     }
 
-    status = 0;
+    if (sm_mts == MTS_SMTP)
+	status = 0;
+    else {
+	status = pidwait (sm_child, OK);
+	sm_child = NOTOK;
+    }
+
     sm_rfp = sm_wfp = NULL;
     return (status ? RP_BHST : RP_OK);
 }
@@ -871,7 +1041,7 @@ smtalk (int time, char *fmt, ...)
 
 #ifdef MPOP
     if (sm_ispool) {
-	char    file[BUFSIZ];
+	char file[BUFSIZ];
 
 	if (strcmp (buffer, ".") == 0)
 	    time = SM_DOT;
@@ -888,7 +1058,7 @@ smtalk (int time, char *fmt, ...)
 		    char *bp;
 
 		    snprintf (sm_reply.text, sizeof(sm_reply.text),
-			    "error renaming %s to %s: ", sm_tmpfil, file);
+			"error renaming %s to %s: ", sm_tmpfil, file);
 		    bp = sm_reply.text;
 		    len = strlen (bp);
 		    bp += len;
@@ -1125,9 +1295,10 @@ again: ;
 
 	if ((i = min (bc, rc)) > 0) {
 	    strncpy (rp, bp, i);
-	    rp += i, rc -= i;
+	    rp += i;
+	    rc -= i;
 	    if (more && rc > strlen (sm_moreply) + 1) {
-		strcpy (sm_reply.text + rc, sm_moreply);
+		strncpy (sm_reply.text + rc, sm_moreply, sizeof(sm_reply.text) - rc);
 		rc += strlen (sm_moreply);
 	    }
 	}
@@ -1175,11 +1346,18 @@ sm_rrecord (char *buffer, int *len)
 static int
 sm_rerror (void)
 {
-    sm_reply.length =
-	strlen (strcpy (sm_reply.text, sm_rfp == NULL ? "no socket opened"
-	    : sm_alarmed ? "read from socket timed out"
-	    : feof (sm_rfp) ? "premature end-of-file on socket"
-	    : "error reading from socket"));
+    if (sm_mts == MTS_SMTP)
+	sm_reply.length =
+	    strlen (strcpy (sm_reply.text, sm_rfp == NULL ? "no socket opened"
+		: sm_alarmed ? "read from socket timed out"
+		: feof (sm_rfp) ? "premature end-of-file on socket"
+		: "error reading from socket"));
+    else
+	sm_reply.length =
+	    strlen (strcpy (sm_reply.text, sm_rfp == NULL ? "no pipe opened"
+		: sm_alarmed ? "read from pipe timed out"
+		: feof (sm_rfp) ? "premature end-of-file on pipe"
+		: "error reading from pipe"));
 
     return (sm_reply.code = NOTOK);
 }

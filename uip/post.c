@@ -36,15 +36,7 @@
 # include <mts/mmdf/mmdf.h>
 #endif
 
-/*
- * Currently smtp and sendmail use
- * the same interface for posting.
- */
 #ifdef SMTPMTS
-# define SENDMTS
-#endif
-
-#ifdef SENDMTS
 # include <mts/smtp/smtp.h>
 #endif
 
@@ -267,14 +259,14 @@ static char *submitmode = "m";		/* deliver to mailbox only    */
 static char submitopts[6] = "vl";	/* initial options for submit */
 #endif /* MMDFMTS */
 
-#ifdef SENDMTS
+#ifdef SMTPMTS
 static int snoop      = 0;
 static int smtpmode   = S_MAIL;
 static char *clientsw = NULL;
 static char *serversw = NULL;
 
 extern struct smtp sm_reply;
-#endif /* SENDMTS */
+#endif /* SMTPMTS */
 
 static char prefix[] = "----- =_aaaaaaaaaa";
 
@@ -475,7 +467,7 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 
-#ifndef	SENDMTS
+#ifndef	SMTPMTS
 		case CLIESW:
 		case SERVSW:
 		    if (!(cp = *argp++) || *cp == '-')
@@ -484,7 +476,7 @@ main (int argc, char **argv)
 
 		case SNOOPSW:
 		    continue;
-#else /* SENDMTS */
+#else /* SMTPMTS */
 		case MAILSW:
 		    smtpmode = S_MAIL;
 		    continue;
@@ -508,7 +500,7 @@ main (int argc, char **argv)
 		case SNOOPSW:
 		    snoop++;
 		    continue;
-#endif /* SENDMTS */
+#endif /* SMTPMTS */
 
 		case FILLSW:
 		    if (!(fill_in = *argp++) || *fill_in == '-')
@@ -1378,10 +1370,10 @@ do_addresses (int bccque, int talk)
 	die (NULL, "problem ending addresses [%s]\n", rp_valstr (retval));
 #endif /* MMDFMTS */
 
-#ifdef SENDMTS
+#ifdef SMTPMTS
     if (rp_isbad (retval = sm_waend ()))
 	die (NULL, "problem ending addresses; %s", rp_string (retval));
-#endif /* SENDMTS */
+#endif /* SMTPMTS */
 }
 
 
@@ -1394,7 +1386,7 @@ do_addresses (int bccque, int talk)
  * SENDMAIL/SMTP routines
  */
 
-#ifdef SENDMTS
+#ifdef SMTPMTS
 
 static void
 post (char *file, int bccque, int talk)
@@ -1577,7 +1569,7 @@ do_text (char *file, int fd)
     }
 }
 
-#endif /* SENDMTS */
+#endif /* SMTPMTS */
 
 /*
  * MMDF routines
@@ -1870,10 +1862,10 @@ sigser (int i)
 	mm_end (NOTOK);
 #endif /* MMDFMTS */
 
-#ifdef SENDMTS
+#ifdef SMTPMTS
     if (!whomsw || checksw)
 	sm_end (NOTOK);
-#endif /* SENDMTS */
+#endif /* SMTPMTS */
 
     done (1);
 }
@@ -1994,10 +1986,10 @@ die (char *what, char *fmt, ...)
 	mm_end (NOTOK);
 #endif /* MMDFMTS */
 
-#ifdef SENDMTS
+#ifdef SMTPMTS
     if (!whomsw || checksw)
 	sm_end (NOTOK);
-#endif /* SENDMTS */
+#endif /* SMTPMTS */
 
     va_start(ap, fmt);
     advertise (what, NULL, fmt, ap);

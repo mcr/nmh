@@ -27,6 +27,21 @@ default values and a description of their meanings are listed below:
 
 .in +.5i
 .ti -.5i
+mts:
+.br
+The mail transport method to use.  The two acceptable options are \fBsmtp\fP
+(which is the default), and \fBsendmail\fP.
+
+If you use \fBsmtp\fP, this will enable a direct SMTP (simple mail transport
+protocol) interface in \fInmh\fR.  When sending mail, instead of passing the
+message to the mail transport agent, \fIpost\fR will open a socket connection
+to the mail port on the machine specified in the \fIservers\fR entry.
+
+If you use \fBsendmail\fP, then \fIpost\fR will send messages by forking a
+local copy of sendmail.  Currently it will still speak SMTP with this local
+copy of sendmail.
+
+.ti -.5i
 localname:
 .br
 The hostname \fInmh\fR considers local.  It should typically be a fully
@@ -176,8 +191,7 @@ This is useful for handling admin, dummy, and guest logins.
 
 .in -.5i
 .Uh "SMTP support"
-These options are only available if you compiled \fInmh\fP with the
-\*(lq/smtp\*(rq support.
+These options are only available if you set \fImts\fR to \fBsmtp\fP.
 
 .in +.5i
 .ti -.5i
@@ -212,8 +226,7 @@ ignored (sorry, the interface went away under BIND).
 
 .in -.5i
 .Uh "SendMail"
-This option is only available if you compiled \fInmh\fP to use
-\fISendMail\fP as your delivery agent.
+This option is only available if you set \fImts\fR to \fBsendmail\fP.
 
 .in +.5i
 .ti -.5i
