@@ -1433,9 +1433,9 @@ InitMessage (CT ct)
     struct k2v *kv;
     CI ci = &ct->c_ctinfo;
 
-    if (ct->c_encoding != CE_7BIT) {
+    if ((ct->c_encoding != CE_7BIT) && (ct->c_encoding != CE_8BIT)) {
 	admonish (NULL,
-		  "\"%s/%s\" type in message %s should be encoded in 7bit",
+		  "\"%s/%s\" type in message %s should be encoded in 7bit or 8bit",
 		  ci->ci_type, ci->ci_subtype, ct->c_file);
 	return NOTOK;
     }
