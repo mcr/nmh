@@ -1,3 +1,11 @@
+Fri Jul 01 22:02:00 2003 Glenn Burkhardt <glenn@aoi-industries.com>
+
+	* Applied fixes for configuration problems with Solaris and
+	systems with gdbm instead of db1 (includes bug #2024)
+	* Fixes for bugs #578, 1393, 1650, 1730, 3356
+	* Revised man page for mh-format (bug #2031)
+	* New replcomps, etc, with Fcc: +outbox in default versions
+	
 Sat Mar 17 03:18:15 2001 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Ken Hornstein's configure.in Cyrus SASL checks were doing 
