@@ -28,7 +28,15 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-#include <grp.h>
+
+#include <grp.h>     /* initgroups() is here on Solaris 2.6 */
+#include <unistd.h>  /* initgroups() is here on HP-UX 10.20 */
+
+/* On AIX 4.1, initgroups() is defined and even documented (giving the parameter
+   types as "char*" and "int"), but doesn't have a prototype in any of the
+   system header files.  On other OSes, this should be a duplicate prototype
+   that won't cause any errors or warnings. */
+extern int  initgroups(const char*, gid_t);
 
 #ifdef HAVE_DB1_NDBM_H
 #include <db1/ndbm.h>
@@ -37,8 +45,6 @@
 #endif
 
 #include <utmp.h>
-
-extern int  initgroups(char*, int);  /* def'd in libc.a but no .h on AIX 4.1 */
 
 #ifndef UTMP_FILE
 # ifdef _PATH_UTMP
