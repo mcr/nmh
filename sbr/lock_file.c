@@ -419,9 +419,18 @@ lockit (struct lockinfo *li)
     curlock = li->curlock;
     tmplock = li->tmplock;
 
+#ifdef HAVE_MKSTEMP
+    if ((fd = mkstemp(tmplock)) == -1)
+	return -1;
+#else
+    if (mktemp(tmplock) == NULL)
+	return -1;
+    if (unlink(tmplock) == -1 && errno != ENOENT)
+	return -1;
     /* create the temporary lock file */
     if ((fd = creat(tmplock, 0600)) == -1)
 	return -1;
+#endif
 
 #if 0
     /* write our process id into lock file */
@@ -501,18 +510,6 @@ lockname (char *file, struct lockinfo *li, int isnewlock)
 	else
 	    snprintf (li->tmplock, sizeof(li->tmplock), "%.*s,LCK.XXXXXX",
 		     cp - li->curlock, li->curlock);
-/*
-  Mkstemp work postponed until later -Doug
-#ifdef HAVE_MKSTEMP
-	mkstemp (li->tmplock);
-#else
-*/
-	mktemp (li->tmplock);
-/*
-#endif
-*/
-
-	unlink (li->tmplock);	/* remove any stray */
     }
 #endif
 }
