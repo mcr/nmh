@@ -85,10 +85,13 @@ to construct the reply message draft as follows:
 .nf
 To: <Mail\-Reply\-To> or <Reply\-To> or <From>
 cc: <To> and <cc> and <personal address>
+Fcc: {fcc switch} or +outbox
 Subject: Re: <Subject>
-In\-Reply\-To: Your message of <Date>.
-.ti +\w'In\-Reply\-To: 'u
-<Message\-Id>
+In\-Reply\-To: <Message\-Id>
+References: <Message\-Id>
+Comments: In\-Reply\-To <From> or <apparently from> or <Sender>
+.ti +3 
+message dated <date>
 --------
 .fi
 .RE
@@ -353,11 +356,14 @@ the
 .B \-noinplace
 switch to change this.
 .PP
-The
+Although the default template specifies that a copy of the reply will be
+put in
+the folder 'outbox',
+if the
 .B \-fcc
 .I +folder
-switch can be used to automatically specify a folder
-to receive Fcc:s.  More than one folder, each preceded by
+switch is given it will override the default value.
+More than one folder, each preceded by
 .B \-fcc
 can
 be named.
