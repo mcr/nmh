@@ -52,7 +52,11 @@ extern int  initgroups(char*, int);
 #ifdef HAVE_DB1_NDBM_H
 #include <db1/ndbm.h>
 #else
+#ifdef HAVE_GDBM_NDBM_H
+#include <gdbm/ndbm.h>
+#else
 #include <ndbm.h>
+#endif
 #endif
 
 #include <utmp.h>
