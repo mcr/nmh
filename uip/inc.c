@@ -232,11 +232,11 @@ main (int argc, char **argv)
     int chgflag = 1, trnflag = 1;
     int noisy = 1, width = 0;
     int rpop, i, hghnum, msgnum;
-    int kpop = 0;
+    int kpop = 0, sasl = 0;
     char *cp, *maildir, *folder = NULL;
     char *format = NULL, *form = NULL;
     char *host = NULL, *user = NULL;
-    char *audfile = NULL, *from = NULL;
+    char *audfile = NULL, *from = NULL, *saslmech = NULL;
     char buf[BUFSIZ], **argp, *nfs, **arguments;
     struct msgs *mp;
     struct stat st, s1;
