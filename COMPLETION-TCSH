@@ -1,0 +1,48 @@
+# This file, to be sourced by tcsh, contains useful command completions for nmh.
+
+# [There's lots more that can be done -- folder name completion is just the most
+#  useful ...]
+
+# Note that if you use nested folders, the below completions will not find
+# them.  If you are in this boat, you might want to use something like:
+#
+#     set nmh_mail_dirs = `folder -all -fast -recurse`
+#
+#     complete anno		c%+%"($nmh_mail_dirs)"%
+#     [...]
+#
+# The problem with that is that new folders you create won't be available for
+# completion until you re-source this file.
+#
+# Note also that if you use '%'s in your folder names, you'll need to use a
+# different separator character below.
+
+set nmh_mail_dir = $HOME/`mhparam Path`
+
+complete anno		c%+%D:$nmh_mail_dir%
+complete burst		c%+%D:$nmh_mail_dir%
+complete comp		c%+%D:$nmh_mail_dir%
+complete dist		c%+%D:$nmh_mail_dir%
+complete flist		c%+%D:$nmh_mail_dir%
+complete folder		c%+%D:$nmh_mail_dir%
+complete forw		c%+%D:$nmh_mail_dir%
+complete inc		c%+%D:$nmh_mail_dir%
+complete mark		c%+%D:$nmh_mail_dir%
+complete mhl		c%+%D:$nmh_mail_dir%
+complete mhn		c%+%D:$nmh_mail_dir%
+complete mhpath		c%+%D:$nmh_mail_dir%
+complete next		c%+%D:$nmh_mail_dir%
+complete packf		c%+%D:$nmh_mail_dir%
+complete pick		c%+%D:$nmh_mail_dir%
+complete prev		c%+%D:$nmh_mail_dir%
+complete rcvstore	c%+%D:$nmh_mail_dir%
+complete refile		c%+%D:$nmh_mail_dir%
+complete repl		c%+%D:$nmh_mail_dir%
+complete rmf		c%+%D:$nmh_mail_dir%
+complete rmm		c%+%D:$nmh_mail_dir%
+complete scan		c%+%D:$nmh_mail_dir%
+complete send		c%+%D:$nmh_mail_dir%
+complete show		c%+%D:$nmh_mail_dir%
+complete sortm		c%+%D:$nmh_mail_dir%
+complete whatnow	c%+%D:$nmh_mail_dir%
+complete whom		c%+%D:$nmh_mail_dir%
