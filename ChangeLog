@@ -1,4 +1,4 @@
-Tue May 09 14:38:32 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
+Tue May 09 17:01:47 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
 	* Alphabetized Shantonu's $pop_kinds output on configure's "pop is
 	enabled" line.  If POP3 is the only kind of POP enabled, say so,
@@ -32,6 +32,9 @@ Tue May 09 14:38:32 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 	* Added "nmh-local functions to use in preference to OS versions"
 	section to README.developers (currently just says to use
 	nmh_getpass() instead of system getpass()).
+
+	* Prepended "Portions of this code are" to the copyright message
+	in ruserpass.c also.
 	
 Mon May 08 23:51:55 2000 Dan Harkless <dan-nmh@dilvish.speed.net>
 
