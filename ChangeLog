@@ -32,7 +32,58 @@
 	* uip/mhmisc.c Fix -part option to mhshow/mhlist/mhstore to
 	find sub-parts of the specified part
 
-2003-9-30  Glenn Burkhardt <glenn@aoi-industries.com>
+2004-11-19  Jon Steinhart  <jon@fourwinds.com>
+
+	* h/prototypes.h, sbr/folder_addmsg.c, uip/mhstoresbr.c,
+	uip/rcvstore.c, uip/refile.c: Added mail directory argument to
+	folder_addmsg in order to make it possible to provide a path to
+	the ext_hook call that is mailpath-based.  A problem existed when
+	a folder was a symbolic link and the pwd call would return the
+	path relative to the filesystem, not to mailpath.  A new argument
+	was needed because there was otherwise no reasonable way to get
+	that path.
+
+2004-11-16  Jon Steinhart  <jon@fourwinds.com>
+
+	* sbr/folder_pack.c: Fixed problem where the refile hook was being
+	called after a message was renamed so that it wasn't around for
+	the hook.  The hook is now called before the message file is
+	renamed.
+
+	* sbr/folder_addmsg.c: Fixed wrong directory for hook when
+	refiling with -src option.
+
+2004-10-15  Jon Steinhart  <jon@fourwinds.com>
+
+	* uip/sortm.c: Fixed calling of external hooks.
+
+2004-10-12  Jon Steinhart  <jon@fourwinds.com>
+
+	* uip/inc.c: Fixed another weird bug caused by the static
+	mailpath being overwritten.
+
+	* uip/sendsbr.c: Fixed bug that caused anno to mangle headers.
+
+	* sbr/lock_file.c: Fixed strange bug that prevented a lock from
+	ever being obtained if getting it failed the first time.  The
+	problem was that the string of XXXXXX that is required by
+	mkstemp() was overwritten the first time through, and so all
+	subsequent times failed because mkstemp() failed.  The fix
+	reinitializes the tmp file string.
+
+	* uip/inc.c: Fixed bug in which the static maildir was overwritted
+	if a format string was read from the profile.
+
+	* sbr/folder_delmsgs.c: Fixed bug that was producing an incorrect
+	path for the external hook.
+
+2003-10-06  Glenn Burkhardt <glenn@aoi-industries.com>
+
+	* uip/slocal.c, configure.in: db configuration fix for Debian; yet
+	  another location for ndbm.
+
+2003-09-30  Glenn Burkhardt <glenn@aoi-industries.com>
+
 	* Fix 'pick' so handling of options "-list" and "-seq" are
 	independent.
 	* Fix 'inc' realloc error when bringing in more than 100 msgs
