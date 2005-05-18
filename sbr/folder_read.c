@@ -57,7 +57,7 @@ folder_read (char *name)
     mp->numsel = 0;
     mp->nummsg = 0;
 
-    if (access (name, W_OK) == -1 || st.st_uid != getuid())
+    if (access (name, W_OK) == -1)
 	set_readonly (mp);
     prefix_len = strlen(BACKUP_PREFIX);
 

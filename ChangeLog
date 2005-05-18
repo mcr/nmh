@@ -1,5 +1,9 @@
 2005-05-18  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* savannah@brisammon.fastmail.fm: sbr/folder_read.c: fix a bug
+	affecting AFS where nmh was setting the READONLY flag for a
+	folder even when you do have write access to the folder
+
 	* Carl Mummert: h/fmt_compile.h, man/mh-format.man,
 	sbr/fmt_compile.c, sbr/fmt_scan.c: add unquote() function for
 	removing quotes from RFC-2822 encoded headers
