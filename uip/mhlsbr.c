@@ -480,6 +480,11 @@ mhl (int argc, char **argv)
 		    vecp > 1 ? "s" : "");
     }
 
+    fflush(stdout);
+    if(ferror(stdout)){
+	    adios("output", "error writing");
+    }
+    
     if (clearflg > 0 && ontty == NOTTY)
 	clear_screen ();
 

@@ -1,5 +1,8 @@
 2005-05-18  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* Debian Bug# 261592: Harald Geyer: uip/mhlsbr.c, uip/replsbr.c:
+	test/report error writing to stdout
+
 	* mts/smtp/smtp.c, uip/popsbr.c: correct SASL include file locations
 
 	* docs/COMPLETION-BASH: bash completion definitions from Debian

@@ -253,6 +253,7 @@ finished:
 		     mp->foldpath, m_name (mp->lowsel));
     }
 
+    fflush(out);
     if (ferror (out))
 	adios (drft, "error writing");
     fclose (out);
