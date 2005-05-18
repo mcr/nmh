@@ -149,6 +149,8 @@ static struct ftable functable[] = {
      { "mymbox",     TF_COMP,	FT_LV_COMPFLAG,	FT_MYMBOX,	TFL_PUTN },
      { "addtoseq",   TF_STR,	FT_ADDTOSEQ,	0,		0 },
 
+     { "unquote",   TF_EXPR, 	FT_LS_UNQUOTE,	0,		TFL_PUTS},
+
      { NULL,         0,		0,		0,		0 }
 };
 

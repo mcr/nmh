@@ -70,40 +70,41 @@
 #define FT_LS_FRIENDLY	58	/* set "str" to "friendly" format addr */
 #define FT_LV_HOSTTYPE	59	/* set "value" to addr host type       */
 #define FT_LV_INGRPF	60	/* set "value" to addr in-group flag   */
-#define FT_LV_NOHOSTF	61	/* set "value" to addr no-host flag    */
+#define FT_LS_UNQUOTE	61	/* remove RFC 2822 quotes from "str"   */
+#define FT_LV_NOHOSTF	62	/* set "value" to addr no-host flag */
 
 /* Date Coercion */
-#define FT_LOCALDATE	62	/* Coerce date to local timezone */
-#define FT_GMTDATE	63	/* Coerce date to gmt            */
+#define FT_LOCALDATE	63	/* Coerce date to local timezone */
+#define FT_GMTDATE	64	/* Coerce date to gmt            */
 
 /* pre-format processing */
-#define FT_PARSEDATE	64	/* parse comp into a date (tws) struct */
-#define FT_PARSEADDR	65	/* parse comp into a mailaddr struct   */
-#define FT_FORMATADDR	66	/* let external routine format addr    */
-#define FT_MYMBOX	67	/* do "mymbox" test on comp            */
+#define FT_PARSEDATE	65	/* parse comp into a date (tws) struct */
+#define FT_PARSEADDR	66	/* parse comp into a mailaddr struct   */
+#define FT_FORMATADDR	67	/* let external routine format addr    */
+#define FT_MYMBOX	68	/* do "mymbox" test on comp            */
 
 /* misc. */		/* ADDTOSEQ only works if you include "options LBL" */
-#define FT_ADDTOSEQ	68	/* add current msg to a sequence       */
+#define FT_ADDTOSEQ	69	/* add current msg to a sequence       */
 
 /* conditionals & control flow (must be last) */
-#define FT_SAVESTR	69	/* save current str reg               */
-#define FT_DONE		70	/* stop formatting                    */
-#define FT_PAUSE	71	/* pause                              */
-#define FT_NOP		72	/* nop                                */
-#define FT_GOTO		73	/* (relative) goto                    */
-#define FT_IF_S_NULL	74	/* test if "str" null                 */
-#define FT_IF_S		75	/* test if "str" non-null             */
-#define FT_IF_V_EQ	76	/* test if "value" = literal          */
-#define FT_IF_V_NE	77	/* test if "value" != literal         */
-#define FT_IF_V_GT	78	/* test if "value" > literal          */
-#define FT_IF_MATCH	79	/* test if "str" contains literal     */
-#define FT_IF_AMATCH	80	/* test if "str" starts with literal  */
-#define FT_S_NULL	81	/* V = 1 if "str" null                */
-#define FT_S_NONNULL	82	/* V = 1 if "str" non-null            */
-#define FT_V_EQ		83	/* V = 1 if "value" = literal         */
-#define FT_V_NE		84	/* V = 1 if "value" != literal        */
-#define FT_V_GT		85	/* V = 1 if "value" > literal         */
-#define FT_V_MATCH	86	/* V = 1 if "str" contains literal    */
-#define FT_V_AMATCH	87	/* V = 1 if "str" starts with literal */
+#define FT_SAVESTR	70	/* save current str reg               */
+#define FT_DONE		71	/* stop formatting                    */
+#define FT_PAUSE	72	/* pause                              */
+#define FT_NOP		73	/* nop                                */
+#define FT_GOTO		74	/* (relative) goto                    */
+#define FT_IF_S_NULL	75	/* test if "str" null                 */
+#define FT_IF_S		76	/* test if "str" non-null             */
+#define FT_IF_V_EQ	77	/* test if "value" = literal          */
+#define FT_IF_V_NE	78	/* test if "value" != literal         */
+#define FT_IF_V_GT	79	/* test if "value" > literal          */
+#define FT_IF_MATCH	80	/* test if "str" contains literal     */
+#define FT_IF_AMATCH	81	/* test if "str" starts with literal  */
+#define FT_S_NULL	82	/* V = 1 if "str" null                */
+#define FT_S_NONNULL	83	/* V = 1 if "str" non-null            */
+#define FT_V_EQ		84	/* V = 1 if "value" = literal         */
+#define FT_V_NE		85	/* V = 1 if "value" != literal        */
+#define FT_V_GT		86	/* V = 1 if "value" > literal         */
+#define FT_V_MATCH	87	/* V = 1 if "str" contains literal    */
+#define FT_V_AMATCH	88	/* V = 1 if "str" starts with literal */
 
 #define IF_FUNCS FT_S_NULL	/* start of "if" functions */

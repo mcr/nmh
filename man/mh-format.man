@@ -282,6 +282,7 @@ compval	comp	integer	Set \fInum\fR to \*(lq\fBatoi\fR(\fIcomp\fR\^)\*(rq
 .\" decodecomp	comp	string	Set \fIstr\fR to RFC-2047 decoded component text
 decode	expr	string	decode \fIstr\fR as RFC-2047 (MIME-encoded) 
 			component
+unquote	expr	string	remove RFC-2822 quotes from \fIstr\fR
 trim	expr		trim trailing white-space from \fIstr\fR
 putstr	expr		print \fIstr\fR
 putstrf	expr		print \fIstr\fR in a fixed width

@@ -682,6 +682,38 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		  }
 		}
 	    }
+	    break;  
+
+
+		/* UNQUOTEs RFC-2822 quoted-string and quoted-pair */
+	case FT_LS_UNQUOTE:
+	    if (str) {	  	
+		int m;
+		strncpy(buffer, str, sizeof(buffer));
+		str = buffer;
+	
+		/* we will parse from buffer to buffer2 */
+		n = 0; /* n is the input position in str */
+		m = 0; /* m is the ouput position in buffer2 */
+
+		while ( str[n] != '\0') {
+		    switch ( str[n] ) {
+			case '\\':
+			    n++;
+			    if ( str[n] != '\0') 
+				buffer2[m++] = str[n++];
+			    break;
+			case '"':
+			    n++;
+			    break;
+			default:
+			    buffer2[m++] = str[n++];
+			    break;
+			}		 
+		}
+		buffer2[m] = '\0';
+		str = buffer2;
+            }
 	    break;
 
 	case FT_LOCALDATE:
