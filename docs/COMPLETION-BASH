@@ -1,0 +1,165 @@
+# nmh completion for bash
+# Copyright 2003 "Wade Richards" <wade@wabyn.net>
+# Permission granted to redistribute under the BSD license
+
+have show &&
+_nmh()
+{
+    # args: command comp-word prev-word
+    local command current prev folder origfolder i orig_opts
+
+    COMPREPLY=()
+    current=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    command=$1
+
+    orig_opts=$(shopt -p extglob) 
+    shopt -s extglob
+
+    # Get the folder, if specified
+    for (( i=0; i < ${#COMP_WORDS}-1; i++ ))
+    do
+        case "${COMP_WORDS[i]}" in
+        \++([a-zA-Z_]) )
+            folder=${COMP_WORDS[i]} 
+            origfolder=$( folder -f )
+            ;;
+        esac
+    done
+
+    case $current in 
+    -* ) 
+        # Command-line switches for the most common commands.
+        case $command in
+        ali ) 
+            # no sequences or messages
+            options=(-alias -list -nolist -normalize -nonormalize -user
+                    -nouser -version -help)
+            ;;
+        burst ) 
+            options=(-inplace -noinplace -quiet -noquiet -verbose
+                    -noverbose -version -help)
+            ;;
+        comp )
+            options=(-form -use -nouse -file -draftfolder -draftmessage
+                    -nodraftfolder -editor -noedit -whatnowproc -nowhatnowproc
+                    -version -help )
+           ;; 
+        flist* )
+            options=(-sequence -all -noall -showzero -noshowzero
+                    -recurse -norecurse -fast -nofast -alpha -noalpha -version
+                    -help)
+            ;;
+        folder* )
+            options=(-all -noall -create -nocreate -fast -nofast -header
+                    -noheader -recurse -norecurse -total -nototal -list -nolist
+                    -push -pop -pack -nopack -print -verbose -noverbose -version
+                    -help)
+            ;;
+        forw )
+            options=(-annotate -noannotate -form -format -noformat
+                    -filter -inplace -noinplace -mime -nomime -draftfolder
+                    -draftmessage -nodraftfolder -editor -noedit -whatnowproc
+                    -nowhatnowproc -dashstuffing -nodashstuffing -build -file
+                    -version -help)
+            ;;
+        inc )
+            options=(-audit -noaudit -changecur -nochangecur -form -format
+                    -file -silent -nosilent -truncate -notruncate -width -host
+                    -user -pack -nopack -apop -noapop -kpop -sasl -saslmech -snoop
+                    -version -help)
+            ;;
+        mark )
+            options=(-sequence -add -delete -list -public -nopublic
+                    -zero -nozero -version -help)
+            ;;
+        next )
+            options=(-showmimeproc -header -noheader -checkmime
+                    -nocheckmime -version -help)
+            ;;
+        packf )
+            options=(-file -mbox -mmdf -version -help)
+            ;;
+        pick )
+            options=(-and -or -not -lbrace -rbrace --component -cc
+                    -date -from -search -subject -to -after -before -datefield
+                    -sequence -public -nopublic -zero -nozero -list -nolist
+                    -version -help)
+            ;;
+        prev )
+            options=(-showproc -showmimeproc -header -noheader -checkmime
+                    -nocheckmime -version -help)
+            ;;
+        refile )
+            options=(-draft -link -nolink -preserve -nopreserve -unlink
+                    -nounlink -src -file -rmmproc -normmproc -version -help)
+            ;;
+        repl )
+            options=(-annotate -noannotate -group -nogroup -cc
+                    -nocc -query -noquery -form -format -noformat -filter
+                    -inplace -noinplace -mime -nomime -fcc -width -draftfolder
+                    -draftmessage -nodraftfolder -editor -noedit -whatnowproc
+                    -nowhatnowproc -build -file -version -help)
+            ;;
+        rmf )
+            options=(-interactive -nointeractive -version -help)
+            ;;
+        rmm )
+            options=(-link -nolink -version -help)
+            ;;
+        scan )
+            options=(-clear -noclear -form -format -header -noheader
+                    -width -reverse -noreverse -file -version -help )
+            ;;
+        show )
+            options=(-draft -showproc -showmimeproc -header -noheader
+                    -checkmime -nocheckmime -version -help)
+            ;;
+        sortm )
+            options=(-datefield -textfield -notextfield -limit -nolimit
+                    -verbose -noverbose -version -help)
+            ;;
+        whom )
+            options=(-alias -check -nocheck -draft -draftfolder
+                    -draftmessage -nodraftfolder -version -help)
+            ;;
+        * )
+            options=(-help -version -seq)
+            ;;
+        esac
+        ;;
+
+    +* )
+        # Folders
+        options=( $( folder -all -r -fast | grep -v "^\." | sed "s/^/+/" ) )
+        ;;
+
+    +([0-9a-z])-* )
+        # Partial range
+        start=${current/%-*/}
+        options=( $( scan $folder -format "%(msg)" "${start}-last" ) first prev cur next last )
+        options=( ${options[@]//#/${start}-} )
+        ;;
+
+    +([0-9]) )
+        # Message number, or start of range
+        options=( $( scan $folder -format "%(msg)" ) first prev cur next last )
+        options=( ${options[@]} ${options[@]//%/-} )
+        ;;
+
+    [fpcnlu]* )
+        # special message aliases
+        options=( first prev cur next last unseen )
+        ;;
+
+        # What about sequences?  I can't quite see how to get the list of possible sequences, so I
+        # guess the user will have to type them in the old-fashioned way.
+
+    esac
+
+    eval $orig_opts
+
+    COMPREPLY=( $( compgen -W "${options[*]}" -- $current ) )
+    return 0
+}
+[ "$have" ] && complete -F _nmh ali anno burst comp dist flist flists folder folders forw inc mark mhbuild mhl mhlist mhmail mhn mhparam mhpath mhshow mhstore msgchk msh next packf pick prev prompter rcvdist rcvpack rcvstore rcvtty  refile repl rmf rmm scan send sendfiles show slocal sortm whatnow whom 
