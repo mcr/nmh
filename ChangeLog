@@ -1,5 +1,8 @@
 2005-05-18  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* Debian Bug# 143485: Nick Rusnov: h/mh.h: use fork instead of
+	vfork on Linux
+
 	* Debian Bug# 261592: Harald Geyer: uip/mhlsbr.c, uip/replsbr.c:
 	test/report error writing to stdout
 
