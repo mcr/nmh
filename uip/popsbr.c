@@ -26,8 +26,8 @@ extern int  client(char *args, char *protocol, char *service, int rproto,
 #endif
 
 #ifdef CYRUS_SASL
-# include <sasl.h>
-# include <saslutil.h>
+# include <sasl/sasl.h>
+# include <sasl/saslutil.h>
 #endif /* CYRUS_SASL */
 
 #include <h/popsbr.h>

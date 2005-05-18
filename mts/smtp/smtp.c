@@ -18,8 +18,8 @@
 #endif
 
 #ifdef CYRUS_SASL
-#include <sasl.h>
-#include <saslutil.h>
+#include <sasl/sasl.h>
+#include <sasl/saslutil.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -501,15 +501,6 @@ rclient (char *server, char *protocol, char *service)
     sm_ierror ("%s", response);
     return NOTOK;
 }
-
-#ifdef CYRUS_SASL
-#include <sasl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <errno.h>
-#endif /* CYRUS_SASL */
 
 int
 sm_winit (int mode, char *from)

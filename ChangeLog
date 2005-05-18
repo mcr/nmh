@@ -1,5 +1,7 @@
 2005-05-18  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* mts/smtp/smtp.c, uip/popsbr.c: correct SASL include file locations
+
 	* docs/COMPLETION-BASH: bash completion definitions from Debian
 
 	* patch #2863: savannah@brisammon.fastmail.fm: sbr/folder_read.c:
