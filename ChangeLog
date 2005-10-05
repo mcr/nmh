@@ -1,3 +1,8 @@
+2005-10-05  Oliver Kiddle  <okiddle@yahoo.co.uk>
+
+	* Harald Geyer: h/mh.h, uip/replsbr.c: back out previous change
+	(fork/vfork) and replace with code that handles the issue directly
+
 2005-05-18  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* Debian Bug# 143485: Nick Rusnov: h/mh.h: use fork instead of

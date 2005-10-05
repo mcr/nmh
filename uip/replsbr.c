@@ -13,6 +13,7 @@
 #include <h/addrsbr.h>
 #include <h/fmt_scan.h>
 #include <sys/file.h>		/* L_SET */
+#include <errno.h>
 
 extern short ccto;		/* from repl.c */
 extern short cccc;
@@ -247,6 +248,10 @@ finished:
      * or add mhn directives
      */
     if (filter) {
+	fflush(out);
+	if (ferror (out))
+	    adios (drft, "error writing");
+	
 	replfilter (inb, out, filter);
     } else if (mime && mp) {
 	    fprintf (out, "#forw [original message] +%s %s\n",
@@ -413,6 +418,8 @@ insert (struct mailname *np)
 
 /*
  * Call the mhlproc
+ *
+ * This function expects that argument out has been fflushed by the caller.
  */
 
 static void
@@ -420,6 +427,7 @@ replfilter (FILE *in, FILE *out, char *filter)
 {
     int	pid;
     char *mhl;
+    char *errstr;
 
     if (filter == NULL)
 	return;
@@ -431,7 +439,6 @@ replfilter (FILE *in, FILE *out, char *filter)
 
     rewind (in);
     lseek (fileno(in), (off_t) 0, SEEK_SET);
-    fflush (out);
 
     switch (pid = vfork ()) {
 	case NOTOK: 
@@ -443,8 +450,12 @@ replfilter (FILE *in, FILE *out, char *filter)
 	    closefds (3);
 
 	    execlp (mhlproc, mhl, "-form", filter, "-noclear", NULL);
-	    fprintf (stderr, "unable to exec ");
-	    perror (mhlproc);
+	    errstr = strerror(errno);
+	    write(2, "unable to exec ", 15);
+	    write(2, mhlproc, strlen(mhlproc));
+	    write(2, ": ", 2);
+	    write(2, errstr, strlen(errstr));
+	    write(2, "\n", 1);
 	    _exit (-1);
 
 	default: 

@@ -7,15 +7,6 @@
 
 #include <h/nmh.h>
 
-/* A quick fix for Linux systems. According to the vfork manual page, 
-   there is little difference in performance, so we aren't losing much.
-   But this fixes a minor message bug so why not? On NetBSD, this should
-   probably not happen. */
-#ifdef linux
-#define vfork fork
-#endif
-
-
 /*
  * Well-used constants
  */
