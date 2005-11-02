@@ -557,20 +557,21 @@ pop_init (char *host, char *user, char *pass, char *proxy, int snoop,
 #endif
 
 #ifndef NNTP
-# ifdef KPOP
 	if ( kpop ) {
+# ifdef KPOP
 	    snprintf (buffer, sizeof(buffer), "%s/%s", KPOP_PRINCIPAL, "kpop");
 	    if ((fd1 = client (host, "tcp", buffer, 0, response, sizeof(response))) == NOTOK) {
 		return NOTOK;
 	    }
-	} else {
+# else  /* KPOP */
+	    snprintf (response, sizeof(response), "this version of nmh compiled without KPOP support");
+	    return NOTOK;
 # endif /* KPOP */
+	} else {
 	    if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response, sizeof(response))) == NOTOK) {
 		return NOTOK;
 	    }
-# ifdef KPOP
 	}
-# endif /* KPOP */
 #else	/* NNTP */
 	if ((fd1 = client (host, "tcp", "nntp", rpop, response, sizeof(response))) == NOTOK)
 	    return NOTOK;
