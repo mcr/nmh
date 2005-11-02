@@ -100,7 +100,7 @@ lint: sigmsg.h
 	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
 dtimep.c: dtimep.lex
-	$(LEX) -nt $< > $@
+	$(LEX) -o $@ $<
 
 client.o: client.c
 	$(COMPILE2) $<
