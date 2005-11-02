@@ -401,7 +401,7 @@ BuildFolderList(char *dirName, int searchdepth)
 void
 BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
 {
-    char *base, name[PATH_MAX];
+    char *base, *n, name[PATH_MAX];
     int nlinks;
     DIR *dir;
     struct dirent *dp;
@@ -431,6 +431,12 @@ BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
 	    continue;
 	}
 	if (dp->d_name[0] == '.')
+	    continue;
+	/* Check to see if the name of the file is a number
+	 * if it is, we assume it's a mail file and skip it
+	 */
+	for (n = dp->d_name; *n && isdigit(*n); n++);
+	if (!*n)
 	    continue;
 	strncpy (name, base, sizeof(name) - 2);
 	if (*base)

@@ -1,5 +1,8 @@
 2005-11-02  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* patch #1155: uip/flist.c: speed up flist by skipping stat on
+	files with numbers as names
+
 	* docs/Makefile.in: include new files in distribution
 
 2005-10-11  Bill Wohler  <wohler@newt.com>
