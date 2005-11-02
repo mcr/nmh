@@ -1,3 +1,11 @@
+2005-11-02  Oliver Kiddle  <okiddle@yahoo.co.uk>
+
+	* docs/Makefile.in: include new files in distribution
+
+2005-10-11  Bill Wohler  <wohler@newt.com>
+
+	* docs/FAQ: fold questions into MH FAQ and distribute that instead
+
 2005-10-05  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* Harald Geyer: h/mh.h, uip/replsbr.c: back out previous change
