@@ -16,10 +16,11 @@ Developers
 Information of interest to nmh developers can be found in
 the README.developers file in the docs subdirectory of this
 distribution.  If you're hacking on the code, you should also
-definately subscribe to the nmh-workers mailing list. To do so, send
-mail to nmh-workers-request@mhost.com with the subject "subscribe". If
-you're interested in working on nmh, but aren't sure what to do, see
-the TODO file in the docs subdirectory. There's plenty of work there.
+definately subscribe to the nmh-workers mailing list. To do so, please
+visit the nmh-workers info page at
+http://lists.nongnu.org/mailman/listinfo/nmh-workers
+If you're interested in working on nmh, but aren't sure what to do, see the
+TODO file in the docs subdirectory. There's plenty of work there.
 
 Working with your shell
 -----------------------
