@@ -99,8 +99,10 @@ sigmsg.h: sigmsg.awk
 lint: sigmsg.h
 	$(LINT) $(LINTFLAGS) $(INCLUDES) $(DEFS) $(SRCS)
 
+# Note that some lexes (for example flex 2.5.4) require that there
+# be no space between -o and the output filename.
 dtimep.c: dtimep.lex
-	$(LEX) -o $@ $<
+	$(LEX) -o$@ $<
 
 client.o: client.c
 	$(COMPILE2) $<

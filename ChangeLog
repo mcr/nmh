@@ -1,5 +1,8 @@
 2005-11-06  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* sbr/Makefile.in: adjust lex command to work on both old and
+	new versions of flex.
+
 	* configure.in: add an AC_PREREQ() so autoconf 2.13 gives a helpful
 	error message and the Debian autoconf-version-guessing wrapper
 	doesn't guess wrongly.
