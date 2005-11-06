@@ -259,7 +259,6 @@ parse_mime (char *file)
     if (!(ct = get_content (fp, file, 1))) {
 	if (is_stdin)
 	    unlink (file);
-	fclose (fp);
 	advise (NULL, "unable to decode %s", file);
 	return NULL;
     }
@@ -293,6 +292,7 @@ parse_mime (char *file)
  * toplevel =  0   # we are inside message type or multipart type
  *                 # other than multipart/digest
  * toplevel = -1   # we are inside multipart/digest
+ * NB: on failure we will fclose(in)!
  */
 
 static CT
@@ -1056,7 +1056,6 @@ next_part:
 
 	    if (!(p = get_content (fp, ct->c_file,
 			ct->c_subtype == MULTI_DIGEST ? -1 : 0))) {
-		fclose (ct->c_fp);
 		ct->c_fp = NULL;
 		return NOTOK;
 	    }
@@ -1285,7 +1284,6 @@ invalid_param:
 		fseek (fp = ct->c_fp, ct->c_begin, SEEK_SET);
 
 		if (!(p = get_content (fp, ct->c_file, 0))) {
-		    fclose (ct->c_fp);
 		    ct->c_fp = NULL;
 		    return NOTOK;
 		}

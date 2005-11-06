@@ -1,5 +1,9 @@
 2005-11-06  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* Debian Bug# 245932, RedHat Bug# 172388: uip/mhparse.c: don't
+	crash when handling a multipart MIME message with an invalid
+	Content-Type header (file handle was being fclose()d twice).
+
 	* sbr/Makefile.in: adjust lex command to work on both old and
 	new versions of flex.
 
