@@ -1,5 +1,8 @@
 2005-11-06  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* uip/popsbr.c: fix compile error which only showed up if nmh
+	was configured with --enable-apop.
+
 	* Debian Bug# 245932, RedHat Bug# 172388: uip/mhparse.c: don't
 	crash when handling a multipart MIME message with an invalid
 	Content-Type header (file handle was being fclose()d twice).

@@ -500,6 +500,13 @@ pop_init (char *host, char *user, char *pass, char *proxy, int snoop,
     int fd1, fd2;
     char buffer[BUFSIZ];
 
+#ifdef APOP
+    int apop;
+
+    if ((apop = rpop) < 0)
+	rpop = 0;
+#endif
+
     if (proxy && *proxy) {
        int pid;
        int inpipe[2];	  /* for reading from the server */
@@ -548,13 +555,6 @@ pop_init (char *host, char *user, char *pass, char *proxy, int snoop,
        fd2=outpipe[1];
 
     } else {
-
-#ifdef APOP
-	int apop;
-
-	if ((apop = rpop) < 0)
-	    rpop = 0;
-#endif
 
 #ifndef NNTP
 	if ( kpop ) {
