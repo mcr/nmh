@@ -1,3 +1,9 @@
+2005-11-06  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* configure.in: add an AC_PREREQ() so autoconf 2.13 gives a helpful
+	error message and the Debian autoconf-version-guessing wrapper
+	doesn't guess wrongly.
+
 2005-11-02  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* Debian Bug# 320069: Nick Rusnov: uip/popsbr.c: fail when

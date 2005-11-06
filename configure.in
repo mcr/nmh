@@ -4,6 +4,12 @@ dnl
 dnl $Id$
 dnl
 
+dnl 2.13 definitely chokes; 2.53 is the earliest version I've tested. 
+dnl 2.50 is the major breakpoint between the old autoconf and the new,
+dnl so require that. If there are bug reports about 2.50-2.52 not working
+dnl we can always move this up a little.
+AC_PREREQ(2.50)
+
 AC_INIT(h/nmh.h)
 AC_CONFIG_HEADER(config.h)
 
