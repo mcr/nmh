@@ -55,8 +55,11 @@ unqp (unsigned char byte1, unsigned char byte2)
  * Decode the string as a RFC-2047 header field
  */
 
+/* Add character to the destination buffer, and bomb out if it fills up */
+#define ADDCHR(C) do { *q++ = (C); dstlen--; if (!dstlen) goto buffull; } while (0)
+
 int
-decode_rfc2047 (char *str, char *dst) 
+decode_rfc2047 (char *str, char *dst, size_t dstlen)
 {
     char *p, *q, *pp;
     char *startofmime, *endofmime;
@@ -68,8 +71,9 @@ decode_rfc2047 (char *str, char *dst)
 #ifdef HAVE_ICONV
     int use_iconv = 0;          /* are we converting encoding with iconv? */
     iconv_t cd;
-    int fromutf8;
-    char *saveq, *convbuf;
+    int fromutf8 = 0;
+    char *saveq, *convbuf = NULL;
+    size_t savedstlen;
 #endif
 
     if (!str)
@@ -96,7 +100,7 @@ decode_rfc2047 (char *str, char *dst)
 	 * last iteration, then add it first.
 	 */
 	if (equals_pending) {
-	    *q++ = '=';
+	    ADDCHR('=');
 	    equals_pending = 0;
 	    between_encodings = 0;	/* we have added non-whitespace text */
 	}
@@ -107,7 +111,7 @@ decode_rfc2047 (char *str, char *dst)
 		whitespace++;
 	    else
 		between_encodings = 0;	/* we have added non-whitespace text */
-	    *q++ = *p;
+	    ADDCHR(*p);
 	    continue;
 	}
 
@@ -185,15 +189,25 @@ decode_rfc2047 (char *str, char *dst)
 	     * We will roll back the buffer the number of whitespace
 	     * characters we've seen since last encoded word.
 	     */
-	    if (between_encodings)
+	    if (between_encodings) {
 		q -= whitespace;
+		dstlen += whitespace;
+	    }
 
 #ifdef HAVE_ICONV
 	    if (use_iconv) {
-	        saveq = q;
+		saveq = q;
+		savedstlen = dstlen;
 		if (!(q = convbuf = (char *)malloc(endofmime - startofmime)))
 		    continue;
             }
+/* ADDCHR2 is for adding characters when q is or might be convbuf:
+ * in this case on buffer-full we want to run iconv before returning.
+ * I apologise for the dreadful name.
+ */
+#define ADDCHR2(C) do { *q++ = (C); dstlen--; if (!dstlen) goto iconvbuffull; } while (0)
+#else
+#define ADDCHR2(C) ADDCHR(C)
 #endif
 
 	    /* Now decode the text */
@@ -207,9 +221,9 @@ decode_rfc2047 (char *str, char *dst)
 			    *q++ = c;
 			pp += 2;
 		    } else if (*pp == '_') {
-			*q++ = ' ';
+			ADDCHR2(' ');
 		    } else {
-			*q++ = *pp;
+			ADDCHR2(*pp);
 		    }
 		}
 	    } else {
@@ -231,7 +245,7 @@ decode_rfc2047 (char *str, char *dst)
 			pp++;
 		    }
 		    if (pp < endofmime && c1 != -1 && c2 != -1) {
-			*q++ = (c1 << 2) | (c2 >> 4);
+			ADDCHR2((c1 << 2) | (c2 >> 4));
 			pp++;
 		    }
 		    /* 4 + 4 bits */
@@ -240,7 +254,7 @@ decode_rfc2047 (char *str, char *dst)
 			pp++;
 		    }
 		    if (pp < endofmime && c2 != -1 && c3 != -1) {
-			*q++ = ((c2 & 0xF) << 4) | (c3 >> 2);
+			ADDCHR2(((c2 & 0xF) << 4) | (c3 >> 2));
 			pp++;
 		    }
 		    /* 2 + 6 bits */
@@ -249,37 +263,54 @@ decode_rfc2047 (char *str, char *dst)
 			pp++;
 		    }
 		    if (pp < endofmime && c3 != -1 && c4 != -1) {
-			*q++ = ((c3 & 0x3) << 6) | (c4);
+			ADDCHR2(((c3 & 0x3) << 6) | (c4));
 			pp++;
 		    }
 		}
 	    }
 
 #ifdef HAVE_ICONV
+	iconvbuffull:
+	    /* NB that the string at convbuf is not necessarily NUL terminated here:
+	     * q points to the first byte after the valid part.
+	     */
             /* Convert to native character set */
 	    if (use_iconv) {
 		size_t inbytes = q - convbuf;
-		size_t outbytes = BUFSIZ;
 		ICONV_CONST char *start = convbuf;
 		
 		while (inbytes) {
-		    if (iconv(cd, &start, &inbytes, &saveq, &outbytes) ==
+		    if (iconv(cd, &start, &inbytes, &saveq, &savedstlen) ==
 		            (size_t)-1) {
 			if (errno != EILSEQ) break;
 			/* character couldn't be converted. we output a `?'
 			 * and try to carry on which won't work if
 			 * either encoding was stateful */
-			iconv (cd, 0, 0, &saveq, &outbytes);
+			iconv (cd, 0, 0, &saveq, &savedstlen);
+			if (!savedstlen)
+			    break;
 			*saveq++ = '?';
-                        /* skip to next input character */
+			savedstlen--;
+			if (!savedstlen)
+			    break;
+			/* skip to next input character */
 			if (fromutf8) {
-			    for (start++;(*start & 192) == 128;start++)
+			    for (start++;(start < q) && ((*start & 192) == 128);start++)
 			        inbytes--;
 			} else
 			    start++, inbytes--;
+			if (start >= q)
+			    break;
 		    }
 		}
 		q = saveq;
+		/* Stop now if (1) we hit the end of the buffer trying to do
+		 * MIME decoding and have just iconv-converted a partial string
+		 * or (2) our iconv-conversion hit the end of the buffer.
+		 */
+		if (!dstlen || !savedstlen)
+		    goto buffull;
+		dstlen = savedstlen;
 		free(convbuf);
 	    }
 #endif
@@ -301,8 +332,14 @@ decode_rfc2047 (char *str, char *dst)
 
     /* If an equals was pending at end of string, add it now. */
     if (equals_pending)
-	*q++ = '=';
+	ADDCHR('=');
     *q = '\0';
 
+    return encoding_found;
+
+  buffull:
+    /* q is currently just off the end of the buffer, so rewind to NUL terminate */
+    q--;
+    *q = '\0';
     return encoding_found;
 }

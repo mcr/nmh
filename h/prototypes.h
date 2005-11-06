@@ -46,7 +46,7 @@ char *copy (char *, char *);
 char **copyip (char **, char **, int);
 void cpydata (int, int, char *, char *);
 void cpydgst (int, int, char *, char *);
-int decode_rfc2047 (char *, char *);
+int decode_rfc2047 (char *, char *, size_t);
 void discard (FILE *);
 int done (int);
 int ext_hook(char *, char *, char *);

@@ -1,5 +1,9 @@
 2005-11-06  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* sbr/fmt_rfc2047.c, sbr/fmt_scan.c, h/prototypes.h: fix various
+	possible overruns of the buffers in fmt_scan() which would cause
+	crashes if scan was run with '-width 16536' or similar.
+
 	* uip/popsbr.c: fix compile error which only showed up if nmh
 	was configured with --enable-apop.
 

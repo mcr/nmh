@@ -442,14 +442,14 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    break;
 
 	case FT_LS_DECODECOMP:
-	    if (decode_rfc2047(fmt->f_comp->c_text, buffer2))
+	    if (decode_rfc2047(fmt->f_comp->c_text, buffer2, sizeof(buffer2)))
 		str = buffer2;
 	    else
 		str = fmt->f_comp->c_text;
 	    break;
 
 	case FT_LS_DECODE:
-	    if (str && decode_rfc2047(str, buffer2))
+	    if (str && decode_rfc2047(str, buffer2, sizeof(buffer2)))
 		str = buffer2;
 	    break;
 
@@ -458,6 +458,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		    char *xp;
 
 		    strncpy(buffer, str, sizeof(buffer));
+		    buffer[sizeof(buffer)-1] = '\0';
 		    str = buffer;
 		    while (isspace(*str))
 			    str++;
@@ -646,6 +647,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    if ((str = mn->m_pers) == NULL) {
 	        if ((str = mn->m_note)) {
 	            strncpy (buffer, str, sizeof(buffer));
+		    buffer[sizeof(buffer)-1] = '\0';
 	            str = buffer;
 	            if (*str == '(')
 	            	str++;
@@ -690,6 +692,8 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    if (str) {	  	
 		int m;
 		strncpy(buffer, str, sizeof(buffer));
+		/* strncpy doesn't NUL-terminate if it fills the buffer */
+		buffer[sizeof(buffer)-1] = '\0';
 		str = buffer;
 	
 		/* we will parse from buffer to buffer2 */
