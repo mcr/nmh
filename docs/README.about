@@ -27,14 +27,9 @@ for nmh, check the FAQ included in this distribution.
 nmh maintenance
 ---------------
 nmh is currently being developed and maintained by a loosely organized
-group of volunteers.  Please send bug reports and suggestions to
-nmh-bugs@mhost.com.  This list is moderated (to prevent spamming) but
-allows submissions from anyone.  General discussion of the development
-work is available by subscribing to the nmh development mailing list
-at nmh-workers@mhost.com.  Note that you can only post to this list if
-you are subscribed as well.  To subscribe, send a message to
-nmh-workers-request@mhost.com with "subscribe" in the subject. You do
-not need to provide anything in the message body.
+group of volunteers. General discussion of the development work takes
+place on the nmh-workers@nongnu.org mailing list. Please send bug
+reports and suggestions there.
 
 ----------------
 acknowledgments

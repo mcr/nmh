@@ -294,6 +294,6 @@ the host it was generated on, and the date the
 program was loaded.
 .PP
 Send bug reports and suggestions to
-.IR nmh-workers@mhost.com .
+.IR nmh-workers@nongnu.org .
 .SH "SEE ALSO"
 mh-chart(1)
