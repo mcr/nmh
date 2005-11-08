@@ -1,5 +1,8 @@
 2005-11-08  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* bug #10230: etc/Makefile.in, man/Makefile.in, uip/Makefile.in:
+	Michael De La Rue: prepend DESTDIR to install locations
+
 	* configure.in, */Makefile.in, mts/smtp/smtp.c: replace obsolete
 	autoconf macros
 

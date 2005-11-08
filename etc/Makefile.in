@@ -83,13 +83,13 @@ sendfiles: $(srcdir)/sendfiles.in Makefile
 install: install-bin-files install-etc-files
 
 install-bin-files:
-	$(top_srcdir)/mkinstalldirs $(bindir)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(bindir)
 	for script in $(GENERATED_BIN_FILES); do \
-	  $(INSTALL_PROGRAM) $$script $(bindir)/$$script; \
+	  $(INSTALL_PROGRAM) $$script $(DESTDIR)$(bindir)/$$script; \
 	done
 
 install-etc-files:
-	$(top_srcdir)/mkinstalldirs $(etcdir)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(etcdir)
 	INSTALL_FILES="$(GENERATED_ETC_FILES)"; \
 	for file in $(STATIC_FILES); do \
 	  INSTALL_FILES="$$INSTALL_FILES $(srcdir)/$$file"; \
@@ -97,11 +97,11 @@ install-etc-files:
 	for path in $$INSTALL_FILES; do \
 	  file=`basename $$path`; \
 	  echo "Installing $$file..."; \
-	  if [ -f $(etcdir)/$$file ]; then \
-	    mv $(etcdir)/$$file $(etcdir)/$$file.prev; \
-	    $(INSTALL_DATA) $$path $(etcdir)/$$file; \
-	    if diff $(etcdir)/$$file.prev $(etcdir)/$$file; then \
-	      rm $(etcdir)/$$file.prev; \
+	  if [ -f $(DESTDIR)$(etcdir)/$$file ]; then \
+	    mv $(DESTDIR)$(etcdir)/$$file $(DESTDIR)$(etcdir)/$$file.prev; \
+	    $(INSTALL_DATA) $$path $(DESTDIR)$(etcdir)/$$file; \
+	    if diff $(DESTDIR)$(etcdir)/$$file.prev $(DESTDIR)$(etcdir)/$$file; then \
+	      rm $(DESTDIR)$(etcdir)/$$file.prev; \
 	    else \
 	      echo; \
 	      echo "  Previous version of $$file saved as $$file.prev due\c";\
@@ -111,7 +111,7 @@ install-etc-files:
 	      echo; \
 	    fi; \
 	  else \
-	    $(INSTALL_DATA) $$path $(etcdir)/$$file; \
+	    $(INSTALL_DATA) $$path $(DESTDIR)$(etcdir)/$$file; \
 	  fi; \
 	done
 
@@ -119,12 +119,12 @@ uninstall: uninstall-bin-files uninstall-etc-files
 
 uninstall-bin-files:
 	for script in $(GENERATED_BIN_FILES); do \
-	  rm -f $(bindir)/$$script; \
+	  rm -f $(DESTDIR)$(bindir)/$$script; \
 	done
 
 uninstall-etc-files:
 	for file in $(STATIC_FILES) $(GENERATED_ETC_FILES); do \
-	  rm -f $(etcdir)/$$file; \
+	  rm -f $(DESTDIR)$(etcdir)/$$file; \
 	done
 
 # ========== DEPENDENCIES FOR CLEANUP ==========

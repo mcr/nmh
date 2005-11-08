@@ -255,51 +255,51 @@ install: install-cmds install-misc install-lcmds install-scmds
 
 # install commands
 install-cmds:
-	$(top_srcdir)/mkinstalldirs $(bindir)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(bindir)
 	for cmd in $(CMDS); do \
-	  $(INSTALL_PROGRAM) $$cmd $(bindir)/$$cmd; \
+	  $(INSTALL_PROGRAM) $$cmd $(DESTDIR)$(bindir)/$$cmd; \
 	done
 
 # install links
 install-lcmds:
-	rm -f $(bindir)/flists
-	rm -f $(bindir)/folders
-	rm -f $(bindir)/prev
-	rm -f $(bindir)/next
-	rm -f $(libdir)/install-mh
-	$(LN) $(bindir)/flist  $(bindir)/flists
-	$(LN) $(bindir)/folder $(bindir)/folders
-	$(LN) $(bindir)/show   $(bindir)/prev
-	$(LN) $(bindir)/show   $(bindir)/next
-	$(LN) $(bindir)/install-mh   $(libdir)/install-mh
+	rm -f $(DESTDIR)$(bindir)/flists
+	rm -f $(DESTDIR)$(bindir)/folders
+	rm -f $(DESTDIR)$(bindir)/prev
+	rm -f $(DESTDIR)$(bindir)/next
+	rm -f $(DESTDIR)$(libdir)/install-mh
+	$(LN) $(DESTDIR)$(bindir)/flist  $(DESTDIR)$(bindir)/flists
+	$(LN) $(DESTDIR)$(bindir)/folder $(DESTDIR)$(bindir)/folders
+	$(LN) $(DESTDIR)$(bindir)/show   $(DESTDIR)$(bindir)/prev
+	$(LN) $(DESTDIR)$(bindir)/show   $(DESTDIR)$(bindir)/next
+	$(LN) $(DESTDIR)$(bindir)/install-mh   $(DESTDIR)$(libdir)/install-mh
 
 # install misc support binaries
 install-misc:
-	$(top_srcdir)/mkinstalldirs $(libdir)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(libdir)
 	for misc in $(MISC); do \
-	  $(INSTALL_PROGRAM) $$misc $(libdir)/$$misc; \
+	  $(INSTALL_PROGRAM) $$misc $(DESTDIR)$(libdir)/$$misc; \
 	done
 
 # install commands with special installation needs (thus no $(SCMDS) use here)
 install-scmds:
 	if test x$(SETGID_MAIL) != x; then \
-	  $(INSTALL_PROGRAM) -g $(MAIL_SPOOL_GRP) -m 2755 inc $(bindir)/$$cmd; \
+	  $(INSTALL_PROGRAM) -g $(MAIL_SPOOL_GRP) -m 2755 inc $(DESTDIR)$(bindir)/$$cmd; \
 	else \
-	  $(INSTALL_PROGRAM)                 inc $(bindir)/$$cmd; \
+	  $(INSTALL_PROGRAM)                 inc $(DESTDIR)$(bindir)/$$cmd; \
 	fi
 
 uninstall:
 	for cmd in $(CMDS); do \
-	  rm -f $(bindir)/$$cmd; \
+	  rm -f $(DESTDIR)$(bindir)/$$cmd; \
 	done
 	for lcmd in $(LCMDS); do \
-	  rm -f $(bindir)/$$lcmd; \
+	  rm -f $(DESTDIR)$(bindir)/$$lcmd; \
 	done
 	for misc in $(MISC); do \
-	  rm -f $(libdir)/$$misc; \
+	  rm -f $(DESTDIR)$(libdir)/$$misc; \
 	done
 	for cmd in $(SCMDS); do \
-	  rm -f $(bindir)/$$cmd; \
+	  rm -f $(DESTDIR)$(bindir)/$$cmd; \
 	done
 
 # ========== DEPENDENCIES FOR CLEANUP ==========

@@ -130,27 +130,27 @@ install: install-man1 install-man5 install-man8
 
 # install the man pages in man1
 install-man1:
-	$(top_srcdir)/mkinstalldirs $(mandir)/man$(manext1)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(mandir)/man$(manext1)
 	for file in $(MAN1); do \
-	  $(INSTALL_DATA) $$file $(mandir)/man$(manext1) ; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(mandir)/man$(manext1) ; \
 	done
 
 # install the man pages in man5
 install-man5:
-	$(top_srcdir)/mkinstalldirs $(mandir)/man$(manext5)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(mandir)/man$(manext5)
 	for file in $(MAN5); do \
-	  $(INSTALL_DATA) $$file $(mandir)/man$(manext5) ; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(mandir)/man$(manext5) ; \
 	done
-	if [ ! -f $(mandir)/man$(manext5)/mh_profile.$(manext5) ] ; then \
-	  ( cd $(mandir)/man$(manext5) ; ln mh-profile.$(manext5) \
+	if [ ! -f $(DESTDIR)$(mandir)/man$(manext5)/mh_profile.$(manext5) ] ; then \
+	  ( cd $(DESTDIR)$(mandir)/man$(manext5) ; ln mh-profile.$(manext5) \
             mh_profile.$(manext5) ) \
 	fi
 
 # install the man pages in man8
 install-man8:
-	$(top_srcdir)/mkinstalldirs $(mandir)/man$(manext8)
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(mandir)/man$(manext8)
 	for file in $(MAN8); do \
-	  $(INSTALL_DATA) $$file $(mandir)/man$(manext8) ; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(mandir)/man$(manext8) ; \
 	done
 
 # ========= UNINSTALL TARGETS =========
@@ -160,19 +160,19 @@ uninstall: uninstall-man1 uninstall-man5 uninstall-man8
 # uninstall the man pages in man1
 uninstall-man1:
 	for file in $(MAN1); do \
-	  rm -f $(mandir)/man$(manext1)/$$file; \
+	  rm -f $(DESTDIR)$(mandir)/man$(manext1)/$$file; \
 	done
 
 # uninstall the man pages in man5
 uninstall-man5:
 	for file in $(MAN5); do \
-	  rm -f $(mandir)/man$(manext5)/$$file; \
+	  rm -f $(DESTDIR)$(mandir)/man$(manext5)/$$file; \
 	done
 
 # uninstall the man pages in man8
 uninstall-man8:
 	for file in $(MAN8); do \
-	  rm -f $(mandir)/man$(manext8)/$$file; \
+	  rm -f $(DESTDIR)$(mandir)/man$(manext8)/$$file; \
 	done
 
 # ========== DEPENDENCIES FOR CLEANUP ==========
