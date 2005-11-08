@@ -327,7 +327,7 @@ lint:
 subdir = uip
 
 Makefile: Makefile.in ../config.status
-	cd .. && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status
+	cd .. && ./config.status $(subdir)/$@
 
 distdir = ../`cat ../distname`/$(subdir)
 nmhdist: $(DIST)

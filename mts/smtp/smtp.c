@@ -959,7 +959,7 @@ bad_data:
     free (cp);
 
     {
-#ifdef HAVE_ST_BLKSIZE
+#ifdef HAVE_STRUCT_STAT_ST_BLKSIZE
 	struct stat st;
 
 	if (fstat (fileno (sm_wfp), &st) == NOTOK || (cc = st.st_blksize) < BUFSIZ)

@@ -10,10 +10,11 @@ dnl so require that. If there are bug reports about 2.50-2.52 not working
 dnl we can always move this up a little.
 AC_PREREQ(2.50)
 
-AC_INIT(h/nmh.h)
+AC_INIT(nmh, m4_normalize(m4_include([VERSION])))
+AC_CONFIG_SRCDIR(h/nmh.h)
 AC_CONFIG_HEADER(config.h)
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 
 dnl ---------------------
 dnl define a macro or two
@@ -29,11 +30,8 @@ if test -n "$LIBTOOL" ; then
 fi
 ] )
   
-
-dnl What version of nmh are we building?
-VERSION=`sed -e 's/nmh-//' ${srcdir}/VERSION`
-echo "configuring for nmh-$VERSION"
-AC_SUBST(VERSION)dnl
+echo "configuring for AC_PACKAGE_NAME-AC_PACKAGE_VERSION"
+AC_SUBST(VERSION,AC_PACKAGE_VERSION)dnl
 
 dnl What date of nmh are we building?
 DATE=`cat ${srcdir}/DATE`
@@ -451,25 +449,24 @@ AC_HEADER_STAT
 AC_CHECK_HEADERS(string.h memory.h stdlib.h unistd.h errno.h fcntl.h \
                  limits.h crypt.h termcap.h termio.h termios.h locale.h \
                  langinfo.h netdb.h sys/param.h sys/time.h sys/utsname.h \
-                 iconv.h arpa/inet.h arpa/ftp.h)
+                 iconv.h sys/stream.h arpa/inet.h arpa/ftp.h)
 
 
 AC_CACHE_CHECK(POSIX termios, nmh_cv_sys_posix_termios,
-[AC_TRY_LINK([#include <sys/types.h>
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 #include <unistd.h>
-#include <termios.h>],
-[/* SunOS 4.0.3 has termios.h but not the library calls.  */
-tcgetattr(0, 0);],
-  nmh_cv_sys_posix_termios=yes, nmh_cv_sys_posix_termios=no)])
+#include <termios.h>]],
+[[/* SunOS 4.0.3 has termios.h but not the library calls.  */
+tcgetattr(0, 0);]])],
+nmh_cv_sys_posix_termios=yes, nmh_cv_sys_posix_termios=no)])
  
 if test $nmh_cv_sys_posix_termios = yes; then
   AC_CACHE_CHECK(TIOCGWINSZ in termios.h,
   nmh_cv_header_termios_h_tiocgwinsz,
-  [AC_TRY_LINK([#include <sys/types.h>
-#include <termios.h>],
-  [int x = TIOCGWINSZ;],
-  nmh_cv_header_termios_h_tiocgwinsz=yes,
-  nmh_cv_header_termios_h_tiocgwinsz=no)])
+  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
+#include <termios.h>]],
+  [[int x = TIOCGWINSZ;]])],
+  nmh_cv_header_termios_h_tiocgwinsz=yes,nmh_cv_header_termios_h_tiocgwinsz=no)])
 else
   nmh_cv_header_termios_h_tiocgwinsz=no
 fi
@@ -477,11 +474,10 @@ fi
 if test $nmh_cv_header_termios_h_tiocgwinsz = no; then
   AC_CACHE_CHECK(TIOCGWINSZ in sys/ioctl.h,
   nmh_cv_header_sys_ioctl_h_tiocgwinsz,
-  [AC_TRY_LINK([#include <sys/types.h>
-#include <sys/ioctl.h>],
-  [int x = TIOCGWINSZ;],
-  nmh_cv_header_sys_ioctl_h_tiocgwinsz=yes,
-  nmh_cv_header_sys_ioctl_h_tiocgwinsz=no)])
+  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
+#include <sys/ioctl.h>]],
+  [[int x = TIOCGWINSZ;]])],
+  nmh_cv_header_sys_ioctl_h_tiocgwinsz=yes,nmh_cv_header_sys_ioctl_h_tiocgwinsz=no)])
   if test $nmh_cv_header_sys_ioctl_h_tiocgwinsz = yes; then
     AC_DEFINE(GWINSZ_IN_SYS_IOCTL)dnl
   fi
@@ -496,7 +492,11 @@ AC_CHECK_HEADER(libio.h, [
   AC_EGREP_HEADER(_IO_write_ptr, libio.h, [
     AC_DEFINE(LINUX_STDIO) ]) ]) 
 
-AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM))
+AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM),,
+[[#if HAVE_SYS_STREAM_H
+#  include <sys/stream.h>
+#endif
+]])
 
 dnl ---------------
 dnl CHECK FUNCTIONS
@@ -513,8 +513,9 @@ AC_CHECK_FUNC(gethostbyname, [AC_DEFINE(HAVE_GETHOSTBYNAME)],
 
 dnl sigsetjmp may be a macro
 AC_MSG_CHECKING(for sigsetjmp)
-AC_TRY_LINK([#include <setjmp.h>], [sigsetjmp((void *)0, 0);],
-        [AC_DEFINE(HAVE_SIGSETJMP) AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <setjmp.h>]],
+  [[sigsetjmp((void *)0, 0);]])],[AC_DEFINE(HAVE_SIGSETJMP) AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)])
 
 AC_REPLACE_FUNCS(snprintf strerror strdup)
 
@@ -568,6 +569,11 @@ if test "x$ac_cv_header_iconv_h" = "xyes"; then
     if test "x$ac_found_iconv" != "xno"; then
       LIBS="-liconv $LIBS"
     fi
+  else
+    dnl Handle case where there is a native iconv but iconv.h is from libiconv
+    AC_CHECK_DECL(_libiconv_version,
+      [ AC_CHECK_LIB(iconv, libiconv, LIBS="-liconv $LIBS") ],,
+      [ #include <iconv.h> ])
   fi
 fi
 if test "x$ac_found_iconv" = xyes; then
@@ -705,23 +711,21 @@ LIBS="$TERMLIB $LIBS"
 dnl Checks for external variable ospeed in the termcap library.
 AC_CACHE_CHECK(if an include file defines ospeed,
 nmh_cv_decl_ospeed_include_defines,
-[AC_TRY_LINK(
-[#include <sys/types.h>
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 #if HAVE_TERMIOS_H
 #include <termios.h>
 #endif
 #if HAVE_TERMCAP_H
 #include <termcap.h>
-#endif], [ospeed = 0;],
-nmh_cv_decl_ospeed_include_defines=yes,
-nmh_cv_decl_ospeed_include_defines=no)])
+#endif]], [[ospeed = 0;]])],
+nmh_cv_decl_ospeed_include_defines=yes,nmh_cv_decl_ospeed_include_defines=no)])
  
 if test $nmh_cv_decl_ospeed_include_defines = no; then
   AC_CACHE_CHECK(if you must define ospeed,
   nmh_cv_decl_ospeed_must_define,
-  [AC_TRY_LINK( ,[extern short ospeed; ospeed = 0;],
-  nmh_cv_decl_ospeed_must_define=yes,
-  nmh_cv_decl_ospeed_must_define=no)])
+  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],
+  [[extern short ospeed; ospeed = 0;]])],
+  nmh_cv_decl_ospeed_must_define=yes,nmh_cv_decl_ospeed_must_define=no)])
 fi
  
 if test $nmh_cv_decl_ospeed_include_defines = yes; then
@@ -761,10 +765,9 @@ dnl Check for sigset_t.  Currently I'm looking in
 dnl <sys/types.h> and <signal.h>.  Others might need
 dnl to be added.
 AC_CACHE_CHECK(for sigset_t, nmh_cv_type_sigset_t,
-[AC_TRY_COMPILE(
-[#include <sys/types.h>
-#include <signal.h>], [sigset_t tempsigset;],
-  nmh_cv_type_sigset_t=yes, nmh_cv_type_sigset_t=no)])
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
+#include <signal.h>]], [[sigset_t tempsigset;]])],
+nmh_cv_type_sigset_t=yes,nmh_cv_type_sigset_t=no)])
 if test $nmh_cv_type_sigset_t = no; then
   AC_DEFINE(sigset_t, unsigned int)
 fi
@@ -772,11 +775,10 @@ fi
 dnl ----------------
 dnl CHECK STRUCTURES
 dnl ----------------
-AC_STRUCT_ST_BLKSIZE
+AC_CHECK_MEMBERS(struct stat.st_blksize)
 
 AC_CACHE_CHECK(for tm_gmtoff in struct tm, nmh_cv_struct_tm_gmtoff,
-[AC_TRY_COMPILE(
-[#ifdef TIME_WITH_SYS_TIME
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
 #else
@@ -785,9 +787,8 @@ AC_CACHE_CHECK(for tm_gmtoff in struct tm, nmh_cv_struct_tm_gmtoff,
 # else
 #  include <time.h>
 # endif
-#endif],
-[struct tm temptm; temptm.tm_gmtoff = 0;],
-  nmh_cv_struct_tm_gmtoff=yes, nmh_cv_struct_tm_gmtoff=no)])
+#endif]], [[struct tm temptm; temptm.tm_gmtoff = 0;]])],
+nmh_cv_struct_tm_gmtoff=yes,nmh_cv_struct_tm_gmtoff=no)])
 if test $nmh_cv_struct_tm_gmtoff = yes; then
   AC_DEFINE(HAVE_TM_GMTOFF)
 fi
@@ -883,10 +884,11 @@ esac
 dnl ----------------
 dnl OUTPUT MAKEFILES
 dnl ----------------
-AC_OUTPUT(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
-          mts/Makefile mts/smtp/Makefile \
-	  etc/Makefile docs/Makefile man/Makefile, \
-          [test -z "$CONFIG_HEADERS" || echo > stamp-h])
+AC_CONFIG_FILES(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
+                mts/Makefile mts/smtp/Makefile \
+	        etc/Makefile docs/Makefile man/Makefile)
+AC_CONFIG_COMMANDS([stamp],[test -z "$CONFIG_HEADERS" || echo > stamp-h])
+AC_OUTPUT
 
 dnl Umm, what's the point of these assignments??  -- <dan-nmh@dilvish.speed.net>
 eval "nmhbin=${bindir}";         eval "nmhbin2=${nmhbin}"
@@ -912,7 +914,7 @@ fi
 echo "
 nmh configuration
 -----------------
-nmh version                : ${VERSION}
+nmh version                : AC_PACKAGE_VERSION
 target os                  : ${target}
 compiler                   : ${CC}
 compiler flags             : ${CFLAGS}

@@ -1,3 +1,8 @@
+2005-11-08  Oliver Kiddle  <okiddle@yahoo.co.uk>
+
+	* configure.in, */Makefile.in, mts/smtp/smtp.c: replace obsolete
+	autoconf macros
+
 2005-11-06  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* sbr/fmt_rfc2047.c, sbr/fmt_scan.c, h/prototypes.h: fix various

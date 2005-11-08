@@ -131,7 +131,7 @@ mostlyclean:
 	rm -f *.o *~
 
 clean: mostlyclean
-	rm -f libmh.a sigmsg.h
+	rm -f libmh.a sigmsg.h dtimep.c
 
 distclean: clean
 	rm -f Makefile
@@ -145,7 +145,7 @@ superclean: realclean
 subdir = sbr
 
 Makefile: Makefile.in ../config.status
-	cd .. && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status
+	cd .. && ./config.status $(subdir)/$@
  
 distdir = ../`cat ../distname`/$(subdir)
 nmhdist: $(DIST)
