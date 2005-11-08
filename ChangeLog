@@ -1,5 +1,8 @@
 2005-11-08  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* Simon Burge: acconfig.h, configure.in, uip/rcvtty.c, uip/slocal.c:
+	fix to handle getutent() on NetBSD
+
 	* INSTALL, README, docs/README.about, man/nmh.man: update most
 	references to the web page and mailing list locations
 

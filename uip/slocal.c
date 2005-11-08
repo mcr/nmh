@@ -965,9 +965,13 @@ logged_in (void)
     setutent();
 
     while ((utp = getutent()) != NULL) {
-        if (utp->ut_type == USER_PROCESS
-                && utp->ut_user[0] != 0
-                && strncmp (user, utp->ut_user, sizeof(utp->ut_user)) == 0) {
+        if (
+#ifdef HAVE_UTMP_UT_TYPE
+		utp->ut_type == USER_PROCESS
+                &&
+#endif
+		utp->ut_name[0] != 0
+                && strncmp (user, utp->ut_name, sizeof(utp->ut_name)) == 0) {
             if (debug)
                 continue;
             endutent();

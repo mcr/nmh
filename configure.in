@@ -793,6 +793,15 @@ if test $nmh_cv_struct_tm_gmtoff = yes; then
   AC_DEFINE(HAVE_TM_GMTOFF)
 fi
 
+AC_CACHE_CHECK(for ut_type in struct utmp, nmh_cv_struct_utmp_ut_type,
+[AC_TRY_COMPILE(
+[#include <utmp.h>],
+[struct utmp temputmp; temputmp.ut_type = 0;],
+  nmh_cv_struct_utmp_ut_type=yes, nmh_cv_struct_utmp_ut_type=no)])
+if test $nmh_cv_struct_utmp_ut_type = yes; then
+  AC_DEFINE(HAVE_UTMP_UT_TYPE)
+fi
+
 dnl -------------
 dnl CHECK SIGNALS
 dnl -------------

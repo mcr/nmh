@@ -176,10 +176,14 @@ main (int argc, char **argv)
 #ifdef HAVE_GETUTENT
     setutent();
     while ((utp = getutent()) != NULL) {
-        if (utp->ut_type == USER_PROCESS 
-               && utp->ut_user[0] != 0
+        if (
+#ifdef HAVE_UTMP_UT_TYPE
+	       utp->ut_type == USER_PROCESS 
+	       &&
+#endif
+               utp->ut_name[0] != 0
                && utp->ut_line[0] != 0
-               && strncmp (user, utp->ut_user, sizeof(utp->ut_user)) == 0) {
+               && strncmp (user, utp->ut_name, sizeof(utp->ut_name)) == 0) {
             strncpy (tty, utp->ut_line, sizeof(utp->ut_line));
 	    alert (tty, md);
         }
