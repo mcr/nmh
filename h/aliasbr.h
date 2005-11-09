@@ -37,7 +37,7 @@ struct home {
 };
 
 #ifndef	MMDFMTS
-struct home *seek_home ();
+struct home *seek_home (char *);
 #endif /* MMDFMTS */
 
 /*

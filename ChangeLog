@@ -1,3 +1,7 @@
+2005-11-09  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* h/aliasbr.h: fix a non-ANSI prototype.
+
 2005-11-08  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* Simon Burge: acconfig.h, configure.in, uip/rcvtty.c, uip/slocal.c:
