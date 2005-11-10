@@ -1,3 +1,8 @@
+2005-11-10  Josh Bressers  <josh@bress.net>
+
+	* Fedora Bug #172838: configure.in: Fix the AC_PATH_PROG default when
+	sendmail isn't found during build.
+
 2005-11-09  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* h/aliasbr.h: fix a non-ANSI prototype.
