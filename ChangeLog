@@ -1,3 +1,8 @@
+2005-11-09  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* sbr/mf.c: fix buffer overrun with absurdly long addresses
+	(only causes crashes if scan is run with '-width 16536' or similar)
+
 2005-11-13  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* bug #7833: uip/Makefile.in: remove link to install-mh that caused

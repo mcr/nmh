@@ -771,8 +771,12 @@ route (char *buffer)
 static int
 my_lex (char *buffer)
 {
+    /* buffer should be at least BUFSIZ bytes long */
     int i, gotat = 0;
     register char c, *bp;
+
+/* Add C to the buffer bp. After use of this macro *bp is guaranteed to be within the buffer. */
+#define ADDCHR(C) do { *bp++ = (C); if ((bp - buffer) == (BUFSIZ-1)) goto my_lex_buffull; } while (0)
 
     bp = buffer;
     *bp = 0;
@@ -788,27 +792,28 @@ my_lex (char *buffer)
 	return (last_lex = LX_END);
     }
 
-    if (c == '(')
-	for (*bp++ = c, i = 0;;)
+    if (c == '(') {
+	ADDCHR(c);
+	for (i = 0;;)
 	    switch (c = *cp++) {
 		case 0: 
 		    cp = NULL;
 		    return (last_lex = LX_ERR);
 		case QUOTE: 
-		    *bp++ = c;
+		    ADDCHR(c);
 		    if ((c = *cp++) == 0) {
 			cp = NULL;
 			return (last_lex = LX_ERR);
 		    }
-		    *bp++ = c;
+		    ADDCHR(c);
 		    continue;
 		case '(': 
 		    i++;
 		default: 
-		    *bp++ = c;
+		    ADDCHR(c);
 		    continue;
 		case ')': 
-		    *bp++ = c;
+		    ADDCHR(c);
 		    if (--i < 0) {
 			*bp = 0;
 			note = note ? add (buffer, add (" ", note))
@@ -816,50 +821,55 @@ my_lex (char *buffer)
 			return my_lex (buffer);
 		    }
 	    }
+    }
 
-    if (c == '"')
-	for (*bp++ = c;;)
+    if (c == '"') {
+	ADDCHR(c);
+	for (;;)
 	    switch (c = *cp++) {
 		case 0: 
 		    cp = NULL;
 		    return (last_lex = LX_ERR);
 		case QUOTE: 
-		    *bp++ = c;
+		    ADDCHR(c);
 		    if ((c = *cp++) == 0) {
 			cp = NULL;
 			return (last_lex = LX_ERR);
 		    }
 		default: 
-		    *bp++ = c;
+		    ADDCHR(c);
 		    continue;
 		case '"': 
-		    *bp++ = c;
+		    ADDCHR(c);
 		    *bp = 0;
 		    return (last_lex = LX_QSTR);
 	    }
-
-    if (c == '[')
-	for (*bp++ = c;;)
+    }
+    
+    if (c == '[') {
+	ADDCHR(c);
+	for (;;)
 	    switch (c = *cp++) {
 		case 0: 
 		    cp = NULL;
 		    return (last_lex = LX_ERR);
 		case QUOTE: 
-		    *bp++ = c;
+		    ADDCHR(c);
 		    if ((c = *cp++) == 0) {
 			cp = NULL;
 			return (last_lex = LX_ERR);
 		    }
 		default: 
-		    *bp++ = c;
+		    ADDCHR(c);
 		    continue;
 		case ']': 
-		    *bp++ = c;
+		    ADDCHR(c);
 		    *bp = 0;
 		    return (last_lex = LX_DLIT);
 	    }
-
-    *bp++ = c;
+    }
+    
+    ADDCHR(c);
     *bp = 0;
     for (i = 0; special[i].lx_chr != 0; i++)
 	if (c == special[i].lx_chr)
@@ -876,7 +886,7 @@ my_lex (char *buffer)
 		goto got_atom;
 	if (iscntrl (c) || isspace (c))
 	    break;
-	*bp++ = c;
+	ADDCHR(c);
     }
 got_atom: ;
     if (c == 0)
@@ -887,6 +897,11 @@ got_atom: ;
     last_lex = !gotat || cp == NULL || strchr(cp, '<') != NULL
 	? LX_ATOM : LX_AT;
     return last_lex;
+
+ my_lex_buffull:
+    /* Out of buffer space. *bp is the last byte in the buffer */
+    *bp = 0;
+    return (last_lex = LX_ERR);
 }
 
 
