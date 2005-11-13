@@ -9,6 +9,10 @@
 	takes up to a minute in some locking configurations and makes post
 	very slow).
 
+	* patch #3913: uip/post.c: pass some globals into sm_init() so that
+	it uses SASL if	necessary. (This bug was preventing Bcc'd emails
+	from being sent via SASL authenticated SMTP.)
+
 2005-11-13  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* bug #7833: uip/Makefile.in: remove link to install-mh that caused

@@ -1477,8 +1477,8 @@ verify_all_addresses (int talk)
     sigon ();
 
     if (!whomsw || checksw)
-	if (rp_isbad (retval = sm_init (clientsw, serversw, 0, 0, snoop, 0,
-					0, 0, 0, 0))
+	if (rp_isbad (retval = sm_init (clientsw, serversw, watch, verbose, snoop, 0,
+					queued, sasl, saslmech, user))
 		|| rp_isbad (retval = sm_winit (smtpmode, from)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
