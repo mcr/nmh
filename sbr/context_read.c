@@ -120,6 +120,12 @@ context_read (void)
     if ((cp = getenv ("MHCONTEXT")) == (char *)0 || *cp == '\0')
 	cp = context;
 
+    /* context is NULL if context_foil() was called to disable use of context */
+    if (!cp) {
+	ctxpath = NULL;
+	return;
+    }
+    
     ctxpath = getcpy (m_maildir (cp));
 
     if ((ib = lkfopen (ctxpath, "r"))) {

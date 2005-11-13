@@ -25,6 +25,10 @@ context_save (void)
     register struct node *np;
     FILE *out;
     sigset_t set, oset;
+    
+    /* No context in use -- silently ignore any changes! */
+    if (!ctxpath)
+       return;
 
     if (!(ctxflags & CTXMOD))
 	return;
