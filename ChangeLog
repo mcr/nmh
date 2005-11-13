@@ -3,10 +3,11 @@
 	* sbr/mf.c: fix buffer overrun with absurdly long addresses
 	(only causes crashes if scan is run with '-width 16536' or similar)
 
-	* sbr/context_foil.c, sbr/context_read.c, sbr/context_save.c:
-	mark 'no context' with NULL rather than "/dev/null" so we don't
-	inadvertently try to lock /dev/null (which takes up to a minute
-	in some locking configurations and makes post very slow).
+	* bug #7917: sbr/context_foil.c, sbr/context_read.c,
+	sbr/context_save.c: mark 'no context' with NULL rather than
+	"/dev/null" so we don't	inadvertently try to lock /dev/null (which
+	takes up to a minute in some locking configurations and makes post
+	very slow).
 
 2005-11-13  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
