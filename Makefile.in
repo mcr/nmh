@@ -88,7 +88,12 @@ all-recursive:
 	  (cd $$subdir && $(MAKE) $(MAKEDEFS) all) || exit 1; \
 	done
 
-install uninstall:
+install: all
+	for subdir in $(SUBDIRS); do \
+	  (cd $$subdir && $(MAKE) $(MAKEDEFS) $@) || exit 1; \
+	done
+
+uninstall:
 	for subdir in $(SUBDIRS); do \
 	  (cd $$subdir && $(MAKE) $(MAKEDEFS) $@) || exit 1; \
 	done

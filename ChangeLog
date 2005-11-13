@@ -1,3 +1,8 @@
+2005-11-13  Oliver Kiddle  <okiddle@yahoo.co.uk>
+
+	* bug #739: Makefile.in: install target now depends on all to avoid
+	problem on case-insensitive file systems with the INSTALL file
+
 2005-11-10  Josh Bressers  <josh@bress.net>
 
 	* Fedora Bug #172838: configure.in: Fix the AC_PATH_PROG default when
