@@ -1,5 +1,8 @@
 2005-11-13  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* bug #7833: uip/Makefile.in: remove link to install-mh that caused
+	problems on some systems
+
 	* bug #739: Makefile.in: install target now depends on all to avoid
 	problem on case-insensitive file systems with the INSTALL file
 

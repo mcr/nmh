@@ -271,7 +271,6 @@ install-lcmds:
 	$(LN) $(DESTDIR)$(bindir)/folder $(DESTDIR)$(bindir)/folders
 	$(LN) $(DESTDIR)$(bindir)/show   $(DESTDIR)$(bindir)/prev
 	$(LN) $(DESTDIR)$(bindir)/show   $(DESTDIR)$(bindir)/next
-	$(LN) $(DESTDIR)$(bindir)/install-mh   $(DESTDIR)$(libdir)/install-mh
 
 # install misc support binaries
 install-misc:
