@@ -114,9 +114,12 @@ main (int argc, char **argv)
 	free (cp);
     }
 
-    if (rmf (folder) == OK && strcmp (context_find (pfolder), newfolder)) {
-	printf ("[+%s now current]\n", newfolder);
-	context_replace (pfolder, newfolder);	/* update current folder */
+    if (rmf (folder) == OK) {
+	char *cfolder = context_find(pfolder);
+	if (cfolder && strcmp (cfolder, newfolder)) {
+	    printf ("[+%s now current]\n", newfolder);
+	    context_replace (pfolder, newfolder);	/* update current folder */
+	}
     }
     context_save ();	/* save the context file */
     return done (0);

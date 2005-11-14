@@ -13,6 +13,9 @@
 	it uses SASL if	necessary. (This bug was preventing Bcc'd emails
 	from being sent via SASL authenticated SMTP.)
 
+	* bug #9813: uip/rmf.c: don't crash if there's no Current-Folder
+	entry in the context file.
+
 2005-11-13  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* bug #7833: uip/Makefile.in: remove link to install-mh that caused
