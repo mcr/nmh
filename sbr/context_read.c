@@ -120,8 +120,11 @@ context_read (void)
     if ((cp = getenv ("MHCONTEXT")) == (char *)0 || *cp == '\0')
 	cp = context;
 
-    /* context is NULL if context_foil() was called to disable use of context */
-    if (!cp) {
+    /* context is NULL if context_foil() was called to disable use of context
+     * We also support users setting explicitly setting MHCONTEXT to /dev/null.
+     * (if this wasn't specialcased then the locking would be liable to fail)
+     */
+    if (!cp || (strcmp(cp,"/dev/null") == 0)) {
 	ctxpath = NULL;
 	return;
     }

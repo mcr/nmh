@@ -1,3 +1,8 @@
+2005-11-19  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* bug #14977: sbr/context_read.c: special case an MHCONTEXT of
+	"/dev/null" and don't try to lock it.
+
 2005-11-09  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* sbr/mf.c: fix buffer overrun with absurdly long addresses
