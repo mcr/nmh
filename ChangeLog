@@ -3,6 +3,10 @@
 	* bug #14977: sbr/context_read.c: special case an MHCONTEXT of
 	"/dev/null" and don't try to lock it.
 
+	* bug #9228, debian bug #146449: man/mh-profile.man: make it clearer
+	that lower case environment variables (and in particular mheditor)
+	are internal to nmh and not intended to be set by the user.
+
 2005-11-09  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* sbr/mf.c: fix buffer overrun with absurdly long addresses

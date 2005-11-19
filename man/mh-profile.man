@@ -591,7 +591,10 @@ program as the
 .IR whatnowproc ,
 including
 one of the standard shells.  As a result, it's not possible to pass
-information via an argument list.
+information via an argument list. The convention is that environment
+variables whose names are all upper-case are user-settable; those
+whose names are lower-case only are used internally by nmh and should
+not generally be set by the user.
 .PP
 If the
 .B WHATNOW
@@ -801,7 +804,13 @@ that message re-distribution is occurring.
 .PP
 .B $mheditor
 .RS 5
-This is set to tell the
+This is set by
+.BR comp ,
+.BR repl ,
+.BR forw ,
+and
+.B dist
+to tell the
 .I whatnowproc
 the user's choice of
 editor (unless overridden by
