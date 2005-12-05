@@ -356,7 +356,7 @@ AC_PATH_PROG(sendmailpath, sendmail, /usr/sbin/sendmail, [$pathtmp])
 
 dnl Look for `vi'
 pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
-AC_PATH_PROG(vipath, vi, no, [$pathtmp])
+AC_PATH_PROG(vipath, vi, /bin/vi, [$pathtmp])
 
 dnl If editor is not specified yet,
 dnl then use `vi' as the default.

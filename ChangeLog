@@ -1,3 +1,8 @@
+2005-12-05  Josh Bressers  <josh@bress.net>
+
+	* Fedora Bug #174983: configure.in: Fix the AC_PATH_PROG default when
+	vi isn't found during build.
+
 2005-11-19  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* bug #14977: sbr/context_read.c: special case an MHCONTEXT of
