@@ -159,6 +159,7 @@ char *OfficialName(char *);
  */
 int annotate (char *, char *, char *, int, int, int, int);
 void annolist(char *, char *, char *, int);
+void annopreserve(int);
 int distout (char *, char *, char *);
 void replout (FILE *, char *, char *, struct msgs *, int,
 	int, char *, char *, char *);

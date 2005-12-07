@@ -13,6 +13,7 @@
 #include <h/tws.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <utime.h>
 
 
 /*
@@ -20,11 +21,19 @@
  */
 static int annosbr (int, char *, char *, char *, int, int, int, int);
 
+/*
+ *	This "local" global and the annopreserve() function are a hack that allows additional
+ *	functionality to be added to anno without piling on yet another annotate() argument.
+ */
+
+static	int	preserve_actime_and_modtime = 0;	/* set to preserve access and modification times on annotated message */
 
 int
 annotate (char *file, char *comp, char *text, int inplace, int datesw, int delete, int append)
 {
-    int i, fd;
+    int			i, fd;
+    struct utimbuf	b;
+    struct stat		s;
 
     /* open and lock the file to be annotated */
     if ((fd = lkopen (file, O_RDWR, 0)) == NOTOK) {
@@ -39,7 +48,19 @@ annotate (char *file, char *comp, char *text, int inplace, int datesw, int delet
 	return 1;
     }
 
+    if (stat(file, &s) == -1) {
+	advise("can't get access and modification times for %s", file);
+    	preserve_actime_and_modtime = 0;
+    }
+
+    b.actime = s.st_atime;
+    b.modtime = s.st_mtime;
+
     i = annosbr (fd, file, comp, text, inplace, datesw, delete, append);
+
+    if (preserve_actime_and_modtime && utime(file, &b) == -1)
+	advise("can't set access and modification times for %s", file);
+
     lkclose (fd, file);
     return i;
 }
@@ -138,6 +159,16 @@ annolist(char *file, char *comp, char *text, int number)
     return;
 }
 
+/*
+ *	Set the preserve-times flag.  This hack eliminates the need for an additional argument to annotate().
+ */
+
+void
+annopreserve(int preserve)
+{
+	preserve_actime_and_modtime = preserve;
+	return;
+}
 
 static int
 annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, int delete, int append)
@@ -173,7 +204,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
      *	as they're read in.  This buffer is grown as needed later.
      */
 
-    if (delete >= 0 || append != 0) {
+    if (delete >= -1 || append != 0) {
 	if ((fp = fdopen(fd, "r")) == (FILE *)0)
 	    adios(NULL, "unable to fdopen file.");
 
@@ -183,7 +214,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 
     /*
      *	We're trying to delete a header field (annotation )if the delete flag is
-     *	non-negative.  A  value greater than zero means that we're deleting the
+     *	not -2 or less.  A  value greater than zero means that we're deleting the
      *	nth header field that matches the field (component) name.  A value of
      *	zero means that we're deleting the first field in which both the field
      *	name matches the component name and the field body matches the text.
@@ -192,10 +223,10 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
      *	the last slash.  This allows matching of both absolute and relative path
      *	names.  This is because this functionality was added to support attachments.
      *	It might be worth having a separate flag to indicate path name matching to
-     *	make it more general.
+     *	make it more general.  A value of -1 means to delete all matching fields.
      */
 
-    if (delete >= 0) {
+    if (delete >= -1) {
 	/*
 	 *  Get the length of the field name since we use it often.
 	 */
@@ -234,7 +265,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 		if (++n >= field_size - 1) {
 		    if ((field = (char *)realloc((void *)field, field_size *= 2)) == (char *)0)
 			adios(NULL, "can't grow field buffer.");
-		    
+		
 		    cp = field + n - 1;
 		}
 	    }
@@ -260,8 +291,11 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 	     *	    field, the text does not begin with a / meaning that we're looking for the
 	     *	    last path name component, and the last path name component matches the text.
 	     *
-	     *   o  The delete flag is non-zero meaning that we're going to delete the nth field
+	     *   o  The delete flag is positive meaning that we're going to delete the nth field
 	     *	    with a matching field name, and this is the nth matching field name.
+	     *
+	     *   o  The delete flag is -1 meaning that we're going to delete all fields with a
+	     *      matching field name.
 	     */
 
 	    if (strncasecmp(field, comp, length) == 0 && field[length] == ':') {
@@ -284,6 +318,9 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 			    break;
 		    }
 		}
+
+		else if (delete == -1)
+			continue;
 
 		else if (++count == delete)
 		    break;
@@ -308,7 +345,8 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
     else {
 	/*
 	 *  Find the end of the headers before adding the annotations if we're
-	 *  appending instead of the default prepending.
+	 *  appending instead of the default prepending.  A special check for
+	 *  no headers is needed if appending.
 	 */
 
 	if (append) {
@@ -317,14 +355,21 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 	     *  reach the end of the headers.
 	     */
 
-	    while ((c = getc(fp)) != EOF) {
-		(void)putc(c, tmp);
+	    if ((c = getc(fp)) == '\n')
+		rewind(fp);
 
-		if (c == '\n') {
-		    (void)ungetc(c = getc(fp), fp);
+	    else {
+	        (void)putc(c, tmp);
 
-		    if (c == '\n' || c == '-')
-			break;
+	        while ((c = getc(fp)) != EOF) {
+		    (void)putc(c, tmp);
+
+		    if (c == '\n') {
+		        (void)ungetc(c = getc(fp), fp);
+
+		        if (c == '\n' || c == '-')
+			    break;
+		    }
 		}
 	    }
 	}
@@ -354,7 +399,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
      *	copying routine uses the descriptor, not the pointer.
      */
 
-    if (append || delete >= 0) {
+    if (append || delete >= -1) {
 	if (lseek(fd, (off_t)ftell(fp), SEEK_SET) == (off_t)-1)
 	    adios(NULL, "can't seek.");
     }
@@ -373,7 +418,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 	 *  so the file has to be truncated or it will contain garbage.
 	 */
 
-	if (delete >= 0 && ftruncate(fd, 0) == -1)
+	if (delete >= -1 && ftruncate(fd, 0) == -1)
 	    adios(tmpfil, "unable to truncate.");
 
 	cpydata (tmpfd, fd, tmpfil, file);
@@ -405,7 +450,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
      *	lkclose() fail, but that failure is ignored so it's not a problem.
      */
 
-    if (delete >= 0)
+    if (delete >= -1)
 	(void)fclose(fp);
 
     return 0;

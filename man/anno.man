@@ -20,7 +20,8 @@ anno \- annotate messages
 .RB [ \-list ]
 .RB [ \-delete ]
 .RB [ \-number
-.IR [ num ]]
+.IR [ num|all ]]
+.RB [ \-preserve " | " \-nopreserve ]
 .RB [ \-version ]
 .RB [ \-help ]
 .RB [ \-text
@@ -133,6 +134,23 @@ whose name matches the component is deleted.
 The number matches that which is produced by the
 .B -list
 option.
+The special value
+.B all
+can be used for the number, and causes all components that match the
+name to be deleted.
+.PP
+By default,
+.B anno
+changes the last-accessed and last-modified times on annotate messages
+to the time at which the annotation occurs.
+.B Anno
+preserves the original times if the
+.B -preserve
+option is used.
+A matching
+.B -nopreserve
+option exists that allows time preservation to be turned off if enabled
+in the profile.
 .SH FILES
 .fc ^ ~
 .nf

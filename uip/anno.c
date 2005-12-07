@@ -81,6 +81,10 @@ static struct swit switches[] = {
     { "number", 2 },
 #define	APPENDSW		12
     { "append", 1 },
+#define	PRESERVESW		13
+    { "preserve", 1 },
+#define	NOPRESERVESW		14
+    { "nopreserve", 3 },
     { NULL, 0 }
 };
 
@@ -100,7 +104,7 @@ main (int argc, char **argv)
     char **argp, **arguments, **msgs;
     struct msgs *mp;
     int		append = 0;		/* append annotations instead of default prepend */
-    int		delete = -1;		/* delete header element if set */
+    int		delete = -2;		/* delete header element if set */
     char	*draft = (char *)0;	/* draft file name */
     int		isdf = 0;		/* return needed for m_draft() */
     int		list = 0;		/* list header elements if set */
@@ -190,15 +194,30 @@ main (int argc, char **argv)
 
 		    if (argp - arguments == argc - 1 || **argp == '-')
 			number = 1;
+		    
+		    else {
+		    	if (strcmp(*argp, "all") == 0)
+		    	    number = -1;
 
-		    else if (!(number = atoi(*argp++)))
-			adios (NULL, "missing argument to %s", argp[-2]);
+		    	else if (!(number = atoi(*argp)))
+			    adios (NULL, "missing argument to %s", argp[-2]);
+
+			argp++;
+		    }
 
 		    delete = number;
 		    continue;
 
 		case APPENDSW:		/* append annotations instead of default prepend */
 		    append = 1;
+		    continue;
+
+		case PRESERVESW:	/* preserve access and modification times on annotated message */
+		    annopreserve(1);
+		    continue;
+
+		case NOPRESERVESW:	/* don't preserve access and modification times on annotated message (default) */
+		    annopreserve(0);
 		    continue;
 	    }
 	}
