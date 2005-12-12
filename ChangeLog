@@ -1,3 +1,8 @@
+2005-12-12  Josh Bressers <josh@bress.net>
+
+	* uip/sendsbr.c (annoaux): Fix the call to annotate() fixing a bug
+	which prevented repl from properly annotating messages.
+
 2005-12-07  Jon Steinhart <nmh@fourwinds.com>
 
 	o  Fixed a bug where anno -append put the headers in the wrong place
