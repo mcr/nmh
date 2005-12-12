@@ -447,10 +447,10 @@ WhatNow (int argc, char **argv)
 		    *(strchr(shell, '\n')) = '\0';
 
 		    if (*shell == '/')
-			(void)annotate(drft, attach, shell, 1, 0, -1, 1);
+			(void)annotate(drft, attach, shell, 1, 0, -2, 1);
 		    else {
 			(void)sprintf(file, "%s/%s", cwd, shell);
-			(void)annotate(drft, attach, file, 1, 0, -1, 1);
+			(void)annotate(drft, attach, file, 1, 0, -2, 1);
 		    }
 		}
 
