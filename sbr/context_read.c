@@ -39,6 +39,13 @@ context_read (void)
     register	FILE		*ib;		/* profile and context file pointer */
 
     /*
+     *  If this routine _is_ called again (despite the wanings in the
+     *  comments above), return immediately.
+     */
+    if ( m_defs != 0 )
+        return;
+
+    /*
      *	Find user's home directory.  Try the HOME environment variable first,
      *	the home directory field in the password file if that's not found.
      */

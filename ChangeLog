@@ -1,3 +1,8 @@
+2005-12-13  Michael Forrest <mef@computer.org>
+
+	* Fedora Bug #163760: sbr/context_read.c (context_read): Ensure that
+	the context is only read once.
+
 2005-12-12  Josh Bressers <josh@bress.net>
 
 	* uip/sendsbr.c (annoaux): Fix the call to annotate() fixing a bug
