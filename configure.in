@@ -599,22 +599,36 @@ if test "x$ac_found_iconv" = "xyes"; then
     [Define as const if the declaration of iconv() needs const.])
 fi
 
-dnl --------------
-dnl CHECK FOR NDBM
-dnl --------------
-dnl Checks for ndbm
-AC_CHECK_FUNC(dbm_open, ,
-  AC_CHECK_LIB(ndbm, dbm_open, ,
-    AC_CHECK_LIB(dbm, dbm_open, ,
-      AC_CHECK_LIB(db1, dbm_open, ,
-        AC_CHECK_LIB(gdbm, dbm_open, ,
-          AC_CHECK_LIB(db, __db_ndbm_open))))))
-
 dnl ----------------
 dnl CHECK FOR NDBM.H
 dnl ----------------
 
 AC_CHECK_HEADERS(db1/ndbm.h gdbm/ndbm.h db.h, break, )
+
+dnl --------------
+dnl CHECK FOR NDBM
+dnl --------------
+dnl Checks for ndbm; we use our own autoconf macro rather than
+dnl using AC_CHECK_LIB because on later versions of libdb
+dnl the dbm_open() function is provided via a #define and
+dnl we don't want to hardcode searching for the internal
+dnl function that lies behind it.
+dnl This *must* come after the ndbm headers check!
+
+dnl Note the special-casing of the gdbm_compat case:
+dnl if we find gdbm_open in -lgdbm and dbm_open in
+dnl -lgdbm_compat -lgdbm then we want to have both libraries
+dnl in LIBS in that order.
+NMH_CHECK_DBM(,,
+  NMH_CHECK_DBM(ndbm,,
+    NMH_CHECK_DBM(dbm,,
+      NMH_CHECK_DBM(db1,,
+        NMH_CHECK_DBM(db,,
+          NMH_CHECK_DBM(gdbm,,
+            AC_CHECK_LIB(gdbm,gdbm_open,
+              NMH_CHECK_DBM(gdbm_compat,LIBS="-lgdbm_compat -lgdbm $LIBS",
+                 AC_MSG_ERROR([cannot find a library providing dbm_open()]),-lgdbm),
+              AC_MSG_ERROR([cannot find a library providing dbm_open()]))))))))
 
 dnl ----------------
 dnl CHECK FOR HESIOD

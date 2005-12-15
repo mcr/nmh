@@ -1,3 +1,10 @@
+2005-12-15  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* Improve checking for Berkeley db libraries: configure should now
+	find a suitable library on systems with new gdbm where
+	compatibility functions are in the gdbm_compat library, and on
+	systems with libdb4.
+
 2005-12-13  Michael Forrest <mef@computer.org>
 
 	* Fedora Bug #163760: sbr/context_read.c (context_read): Ensure that
