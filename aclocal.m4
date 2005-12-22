@@ -44,7 +44,7 @@ dnl defining its own bogus prototype rather than pulling in
 dnl the right header files.)
 AC_DEFUN(NMH_CHECK_DBM,
 [
-if test "x$1" == "x"; then
+if test "x$1" = "x"; then
    nmh_libs=
    dnl this is just for the benefit of AC_CACHE_CHECK's message
    nmh_testname=libc

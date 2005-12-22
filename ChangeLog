@@ -1,3 +1,8 @@
+2005-12-21  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* Fix stupid accidental dependence on a bash quirk in previous
+	configure script change.
+
 2005-12-15  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* Improve checking for Berkeley db libraries: configure should now
