@@ -1,3 +1,11 @@
+2005-12-24  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* Completely redo db library checking -- we now check for working
+	(include file, library) pairs rather than checking for headers and
+	libraries separately. We also now provide --with-ndbm=lib and
+	--with-ndbmheader=header options to configure to handle situations
+	where configure's autodetection fails.
+
 2005-12-21  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* Fix stupid accidental dependence on a bash quirk in previous

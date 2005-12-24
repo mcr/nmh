@@ -48,20 +48,14 @@
 extern int  initgroups(char*, int);
 #endif
 
-
-#ifdef HAVE_DB1_NDBM_H
-#include <db1/ndbm.h>
-#else
-#ifdef HAVE_GDBM_NDBM_H
-#include <gdbm/ndbm.h>
-#else
-#if defined(HAVE_DB_H)
+/* This define is needed for Berkeley db v2 and above to
+ * make the header file expose the 'historical' ndbm APIs.
+ * We define it unconditionally because this is simple and
+ * harmless.
+ */
 #define DB_DBM_HSEARCH 1
-#include <db.h>
-#else
-#include <ndbm.h>
-#endif
-#endif
+#ifdef NDBM_HEADER
+#include NDBM_HEADER
 #endif
 
 #include <utmp.h>

@@ -599,36 +599,68 @@ if test "x$ac_found_iconv" = "xyes"; then
     [Define as const if the declaration of iconv() needs const.])
 fi
 
-dnl ----------------
-dnl CHECK FOR NDBM.H
-dnl ----------------
-
-AC_CHECK_HEADERS(db1/ndbm.h gdbm/ndbm.h db.h, break, )
-
 dnl --------------
 dnl CHECK FOR NDBM
 dnl --------------
-dnl Checks for ndbm; we use our own autoconf macro rather than
-dnl using AC_CHECK_LIB because on later versions of libdb
-dnl the dbm_open() function is provided via a #define and
-dnl we don't want to hardcode searching for the internal
-dnl function that lies behind it.
-dnl This *must* come after the ndbm headers check!
 
-dnl Note the special-casing of the gdbm_compat case:
-dnl if we find gdbm_open in -lgdbm and dbm_open in
-dnl -lgdbm_compat -lgdbm then we want to have both libraries
-dnl in LIBS in that order.
-NMH_CHECK_DBM(,,
-  NMH_CHECK_DBM(ndbm,,
-    NMH_CHECK_DBM(dbm,,
-      NMH_CHECK_DBM(db1,,
-        NMH_CHECK_DBM(db,,
-          NMH_CHECK_DBM(gdbm,,
-            AC_CHECK_LIB(gdbm,gdbm_open,
-              NMH_CHECK_DBM(gdbm_compat,LIBS="-lgdbm_compat -lgdbm $LIBS",
-                 AC_MSG_ERROR([cannot find a library providing dbm_open()]),-lgdbm),
-              AC_MSG_ERROR([cannot find a library providing dbm_open()]))))))))
+AC_ARG_WITH([ndbm],AS_HELP_STRING([--with-ndbm=ARG],[use -lARG to link with ndbm]),
+            [nmh_ndbm=$withval],[nmh_ndbm=autodetect])
+AC_ARG_WITH([ndbmheader],AS_HELP_STRING([--with-ndbmheader=ARG],[#include <ARG> to use ndbm]),
+            [nmh_ndbmheader=$withval],[nmh_ndbmheader=autodetect])
+
+if test "$nmh_ndbm" = "autodetect"; then
+  if test "$nmh_ndbmheader" != "autodetect"; then
+    AC_MSG_ERROR([must specify both --with-ndbm and --with-ndbmheader or neither])
+  else
+
+    dnl There are at least four implementations of ndbm, and
+    dnl several of those can be in different places at the whim
+    dnl of the system integrator. A good summary of this mess
+    dnl can be found at http://www.unixpapa.com/incnote/dbm.html
+
+    dnl Classic ndbm with no library required (eg NetBSD): try this
+    dnl first so we don't accidentally link in a pointless but harmless
+    dnl library in one of the later ndbm.h+libfoo tests:
+    NMH_CHECK_NDBM(ndbm.h,,,
+    dnl Berkeley DBv2 emulating ndbm: header in db.h:
+      NMH_CHECK_NDBM(db.h,db,,
+    dnl Berkeley DBv1 emulating ndbm:
+        NMH_CHECK_NDBM(ndbm.h,db,,
+          NMH_CHECK_NDBM(ndbm.h,db1,,
+    dnl Classic ndbm:
+            NMH_CHECK_NDBM(ndbm.h,ndbm,,
+    dnl glibc2.1 systems put db1 in a subdir:
+              NMH_CHECK_NDBM(db1/ndbm.h,db1,,
+    dnl GNU gdbm emulating ndbm, with header possibly in gdbm/
+    dnl and possibly needing gbdm_compat library:
+                NMH_CHECK_NDBM(gdbm/ndbm.h,gdbm,,
+                  NMH_CHECK_NDBM(gdbm/ndbm.h,gdbm_compat -lgdbm,,
+                    NMH_CHECK_NDBM(ndbm.h,gdbm,,
+                      NMH_CHECK_NDBM(ndbm.h,gdbm_compat -lgdbm))))))))))
+
+  fi
+else
+  dnl We don't really need to check that the user-specified values work,
+  dnl but it is a convenience to the user to bomb out early rather than
+  dnl after configure and half the compile process.
+  NMH_CHECK_NDBM([$nmh_ndbmheader],[$nmh_ndbm])
+fi
+
+if test "$nmh_ndbm_found" = "no"; then
+  AC_MSG_ERROR([could not find a working ndbm library/header combination])
+else
+  dnl Now export the lib/header to our makefile/config.h:
+  if test x"$nmh_ndbmheader" != x; then
+    AC_DEFINE_UNQUOTED(NDBM_HEADER, <$nmh_ndbmheader>)
+  fi
+  if test x"$nmh_ndbm" != x; then
+    NDBM_LIBS="-l$nmh_ndbm"
+  else
+    NDBM_LIBS=
+  fi
+  AC_SUBST(NDBM_LIBS)
+fi
+
 
 dnl ----------------
 dnl CHECK FOR HESIOD

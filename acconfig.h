@@ -278,13 +278,13 @@
 /* Define if your system has netdb.h */
 #undef HAVE_NETDB_H
 
-/* Define if your system has db1/ndbm.h instead of ndbm.h (ppclinux) */
-#undef HAVE_DB1_NDBM_H
-
 /* Define to the header containing the declaration of initgroups() on your
    system, if any.  AIX 4.[13], SunOS 4.1.3, and ULTRIX 4.2A have the function
    in libc but don't have a declaration anywhere. */
 #undef INITGROUPS_HEADER
+
+/* Define to the header containing the ndbm API prototypes */
+#undef NDBM_HEADER
 
 /* Define if your system actually has a prototype for snprintf() in <stdio.h>
    (or a file it includes) rather than just having a "stealth" definition of it

@@ -246,6 +246,17 @@ Options for configure
      If you wish to use a transport agent other than sendmail, you will
      need to use a `sendmail wrapper'.
 
+--with-ndbm=LIB    (DEFAULT is to autodetect)
+--with-ndbmheader=HEADER     (DEFAULT is to autodetect)
+     Specify the header file (eg ndbm.h) and library (eg ndbm) to use
+     to compile against the ndbm database library. By default, configure
+     will try various possibilities until it finds one that works; this
+     option only needs to be specified if the autodetection fails or
+     makes the wrong choice.
+
+     If either of these options is given then the other must also be
+     specified.
+
 --with-pager=PAGER    (DEFAULT is more)
      Specify the default pager (file lister) to use.  If this option
      is not given, then the configuration process will search for the
