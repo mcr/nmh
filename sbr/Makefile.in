@@ -102,13 +102,13 @@ lint: sigmsg.h
 # Note that some lexes (for example flex 2.5.4) require that there
 # be no space between -o and the output filename.
 dtimep.c: dtimep.lex
-	$(LEX) -o$@ $<
+	$(LEX) -o$@ dtimep.lex
 
 client.o: client.c
-	$(COMPILE2) $<
+	$(COMPILE2) client.c
 
 mts.o: mts.c
-	$(COMPILE2) $<
+	$(COMPILE2) mts.c
 
 pidstatus.o: sigmsg.h
 

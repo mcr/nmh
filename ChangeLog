@@ -1,5 +1,12 @@
 2005-12-24  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* Bug #15285: Don't use $< in target rules in makefiles, as POSIX
+	says it's only defined in inference rules. (BSD make was expanding
+	$< to the empty string in the rule for building sbr/dtimep.c, which
+	causes lex to apparently hang because it's reading from stdin.)
+
+2005-12-24  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
 	* Completely redo db library checking -- we now check for working
 	(include file, library) pairs rather than checking for headers and
 	libraries separately. We also now provide --with-ndbm=lib and
