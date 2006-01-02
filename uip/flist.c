@@ -228,9 +228,8 @@ main(int argc, char **argv)
 	     */
 	    if (numfolders >= maxfolders) {
 		maxfolders += MAXFOLDERS;
-		if (!(foldersToDo = (char **) realloc (foldersToDo,
-			(size_t) (maxfolders * sizeof(*foldersToDo)))))
-		    adios (NULL, "unable to reallocate folder name storage");
+		foldersToDo = (char **) mh_xrealloc (foldersToDo,
+		    (size_t) (maxfolders * sizeof(*foldersToDo)));
 	    }
 	    if (*cp == '+' || *cp == '@') {
 		foldersToDo[numfolders++] =
@@ -655,7 +654,7 @@ AllocFolders(struct Folder **f, int *nfa, int n)
 	*f = (struct Folder *) mh_xmalloc (*nfa * (sizeof(struct Folder)));
     } else {
 	*nfa *= 2;
-	*f = (struct Folder *) realloc (*f, *nfa * (sizeof(struct Folder)));
+	*f = (struct Folder *) mh_xrealloc (*f, *nfa * (sizeof(struct Folder)));
     }
 }
 

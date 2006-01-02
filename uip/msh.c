@@ -22,6 +22,7 @@
 #include <h/scansbr.h>
 #include <h/tws.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 #ifdef HAVE_TERMIOS_H
 # include <termios.h>
@@ -941,9 +942,7 @@ m_gMsgs (int n)
 	return;
 
     nmsgs = nMsgs + n + MAXFOLDER / 2;
-    Msgs = (struct Msg *) realloc ((char *) Msgs, (size_t) (nmsgs + 2) * sizeof *Msgs);
-    if (Msgs == NULL)
-	padios (NULL, "unable to reallocate Msgs structure");
+    Msgs = (struct Msg *) mh_xrealloc ((char *) Msgs, (size_t) (nmsgs + 2) * sizeof *Msgs);
     memset((char *) (Msgs + nMsgs + 2), 0, (size_t) ((nmsgs - nMsgs) * sizeof *Msgs));
 
     nMsgs = nmsgs;

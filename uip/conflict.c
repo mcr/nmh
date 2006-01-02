@@ -205,9 +205,8 @@ grp_names (void)
 	if (i >= numgroups) {
 	    if (numgroups >= maxgroups) {
 		maxgroups += NGRPS;
-		if (!(grps = (char **) realloc(grps,
-			(size_t) (maxgroups * sizeof(*grps)))))
-		    adios (NULL, "unable to reallocate group name storage");
+		grps = (char **) mh_xrealloc(grps,
+		    (size_t) (maxgroups * sizeof(*grps)));
 	    }
 	    grps[numgroups++] = getcpy (gr->gr_name);
 	}

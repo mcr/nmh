@@ -75,8 +75,7 @@ seq_list(struct msgs *mp, char *seqname)
 	    char *newbuf;
 
 	    len += MAXBUFFER;
-	    if (!(newbuf = realloc (buffer, (size_t) len)))
-		adios (NULL, "unable to realloc storage in seq_list");
+	    newbuf = mh_xrealloc (buffer, (size_t) len);
 	    bp = newbuf + (bp - buffer);
 	    buffer = newbuf;
 	}

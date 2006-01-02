@@ -27,3 +27,18 @@ mh_xmalloc(size_t size)
 
     return memory;
 }
+
+void *
+mh_xrealloc(void *ptr, size_t size)
+{
+    void *memory;
+
+    if (size == 0)
+        adios(NULL, "Tried to realloc 0bytes");
+
+    memory = realloc(ptr, size);
+    if (!memory)
+        adios(NULL, "Realloc failed");
+
+    return memory;
+}

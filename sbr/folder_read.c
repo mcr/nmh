@@ -76,10 +76,7 @@ folder_read (char *name)
 	     */
 	    if (mp->nummsg >= len) {
 		len += NUMMSGS;
-		if (!(mi = (int *) realloc (mi,
-			(size_t) (len * sizeof(*mi))))) {
-		    adios (NULL, "unable to allocate storage");
-		}
+		mi = (int *) mh_xrealloc (mi, (size_t) (len * sizeof(*mi)));
 	    }
 
 	    /* Check if this is the first message we've seen */

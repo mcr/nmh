@@ -975,13 +975,8 @@ mfgets (FILE *in, char **bp)
 		break;
 	}
 	if (cp >= ep) {
-	    if (!(dp = realloc (pp, (size_t) (len += BUFSIZ)))) {
-		free (pp);
-		pp = NULL;
-		return NOTOK;
-	    }
-	    else
-		cp += dp - pp, ep = (pp = cp) + len - 2;
+	    dp = mh_xrealloc (pp, (size_t) (len += BUFSIZ));
+	    cp += dp - pp, ep = (pp = cp) + len - 2;
 	}
     }
 }

@@ -1644,8 +1644,7 @@ doface (struct mcomp *c1)
 		if (cp) {
 		    int j;
 		    char *dp;
-		    if ((dp = realloc (cp, (unsigned) (j = len + i))) == NULL)
-			adios (NULL, "unable to allocate face storage");
+		    dp = mh_xrealloc (cp, (unsigned) (j = len + i));
 		    memcpy(dp + len, buffer, i);
 		    cp = dp, len = j;
 		}

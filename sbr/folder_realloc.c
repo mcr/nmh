@@ -47,10 +47,7 @@ folder_realloc (struct msgs *mp, int lo, int hi)
 	 * status array.  So we don't have to move anything and can
 	 * just realloc the message status array.
 	 */
-	if (!(mp->msgstats = realloc (mp->msgstats, MSGSTATSIZE(mp, lo, hi)))) {
-	    advise (NULL, "unable to reallocate message storage");
-	    return NULL;
-	}
+	mp->msgstats = mh_xrealloc (mp->msgstats, MSGSTATSIZE(mp, lo, hi));
     } else {
 	/*
 	 * We are changing the offset of the message status

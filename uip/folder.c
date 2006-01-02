@@ -469,8 +469,7 @@ get_folder_info (char *fold, char *msg)
      */
     if (total_folders >= maxFolderInfo) {
 	maxFolderInfo += NUMFOLDERS;
-	if ((fi = realloc (fi, maxFolderInfo * sizeof(*fi))) == NULL)
-	    adios (NULL, "unable to re-allocate storage for folder info");
+	fi = mh_xrealloc (fi, maxFolderInfo * sizeof(*fi));
     }
 
     fi[i].name   = fold;
@@ -774,8 +773,7 @@ addfold (char *fold)
     /* if necessary, reallocate the space for folder names */
     if (foldp >= maxfolders) {
 	maxfolders += NUMFOLDERS;
-	if ((folds = realloc (folds, maxfolders * sizeof(char *))) == NULL)
-	    adios (NULL, "unable to re-allocate storage for folder names");
+	folds = mh_xrealloc (folds, maxfolders * sizeof(char *));
     }
 
     cp = getcpy (fold);

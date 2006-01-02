@@ -291,11 +291,9 @@ static unsigned int bufsiz=0;	/* current size of buf */
 		int i = dst - buf;\
 		int n = last_dst - buf;\
 		bufsiz += ((dst + len - bufend) / BUFINCR + 1) * BUFINCR;\
-		buf = realloc (buf, bufsiz);\
+		buf = mh_xrealloc (buf, bufsiz);\
 		dst = buf + i;\
 		last_dst = buf + n;\
-		if (! buf)\
-		    adios (NULL, "formataddr: couldn't get buffer space");\
 		bufend = buf + bufsiz;\
 	    }
 

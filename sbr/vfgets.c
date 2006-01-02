@@ -66,12 +66,9 @@ wrong_guess:
 	if (cp >= ep) {
 	    int curlen = cp - pp;
 
-	    if (!(dp = realloc (pp, (size_t) (len += BUFSIZ)))) {
-		adios (NULL, "unable to allocate string storage");
-	    } else {
-		cp = dp + curlen;
-		ep = (pp = dp) + len - 1;
-	    }
+	    dp = mh_xrealloc (pp, (size_t) (len += BUFSIZ));
+	    cp = dp + curlen;
+	    ep = (pp = dp) + len - 1;
 	}
     }
 }

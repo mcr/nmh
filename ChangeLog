@@ -1,5 +1,10 @@
 2006-01-01  Josh Bressers <josh@bress.net>
 
+	* patch #3967: Create a mh_xrealloc function to prevent mistakes when
+	calling realloc.
+
+2006-01-01  Josh Bressers <josh@bress.net>
+
 	* patch #3966: Create a mh_xmalloc function to prevent mistakes when
 	calling malloc.
 

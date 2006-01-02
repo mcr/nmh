@@ -48,8 +48,7 @@ brkstring (char *str, char *brksep, char *brkterm)
 	/* enlarge pointer array, if necessary */
 	if (i >= len) {
 	    len += NUMBROKEN;
-	    if (!(broken = realloc (broken, (size_t) (len * sizeof(*broken)))))
-		adios (NULL, "unable to realloc array in brkstring");
+	    broken = mh_xrealloc (broken, (size_t) (len * sizeof(*broken)));
 	}
 
 	while (brkany (c = *s, brksep))

@@ -360,8 +360,7 @@ get_line(void)
 	}
 
 	if (++n >= field_size - 1) {
-	    if ((field = (char *)realloc((void *)field, field_size += 256)) == (char *)0)
-		adios(NULL, "can't grow field buffer.");
+	    field = (char *)mh_xrealloc((void *)field, field_size += 256);
 
 	    p = field + n - 1;
 	}

@@ -1238,12 +1238,7 @@ sasl_fgetc(FILE *f)
     }
 
     if (retbufsize > size) {
-	buffer = realloc(buffer, retbufsize);
-	if (!buffer) {
-	    snprintf(response, sizeof(response), "Error during realloc in "
-		     "read routine: %s", strerror(errno));
-	    return -2;
-	}
+	buffer = mh_xrealloc(buffer, retbufsize);
 	size = retbufsize;
     }
 

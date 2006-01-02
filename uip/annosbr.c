@@ -120,8 +120,7 @@ annolist(char *file, char *comp, char *text, int number)
 	    }
 
 	    if (++n >= field_size - 1) {
-		if ((field = (char *)realloc((void *)field, field_size += 256)) == (char *)0)
-		    adios(NULL, "can't grow field buffer.");
+		field = (char *) mh_xrealloc((void *)field, field_size += 256);
 		
 		cp = field + n - 1;
 	    }
@@ -262,8 +261,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 		}
 
 		if (++n >= field_size - 1) {
-		    if ((field = (char *)realloc((void *)field, field_size *= 2)) == (char *)0)
-			adios(NULL, "can't grow field buffer.");
+		    field = (char *) mh_xrealloc((void *)field, field_size *= 2);
 		
 		    cp = field + n - 1;
 		}

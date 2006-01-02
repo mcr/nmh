@@ -233,9 +233,8 @@ main (int argc, char **argv)
 	     */
 	    if (nummsgs >= maxmsgs) {
 		maxmsgs += MAXMSGS;
-		if (!(msgs = (char **) realloc (msgs,
-			(size_t) (maxmsgs * sizeof(*msgs)))))
-		    adios (NULL, "unable to reallocate msgs storage");
+		msgs = (char **) mh_xrealloc (msgs,
+		    (size_t) (maxmsgs * sizeof(*msgs)));
 	    }
 	    msgs[nummsgs++] = cp;
 	}

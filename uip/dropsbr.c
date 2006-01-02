@@ -10,6 +10,7 @@
  */
 
 #include <h/nmh.h>
+#include <h/utils.h>
 
 #ifndef	MMDFONLY
 # include <h/mh.h>
@@ -224,14 +225,8 @@ mbx_read (FILE *fp, long pos, struct drop **drops, int noisy)
 	if (dp >= ep) {
 	    register int    curlen = dp - pp;
 
-	    cp = (struct drop *) realloc ((char *) pp,
+	    cp = (struct drop *) mh_xrealloc ((char *) pp,
 		                    (size_t) (len += MAXFOLDER) * sizeof(*pp));
-	    if (cp == NULL) {
-		if (noisy)
-		    admonish (NULL, "unable to allocate drop storage");
-		free ((char *) pp);
-		return 0;
-	    }
 	    dp = cp + curlen, ep = (pp = cp) + len - 1;
 	}
     }
