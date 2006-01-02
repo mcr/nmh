@@ -14,6 +14,7 @@
 #include <h/addrsbr.h>
 #include <h/fmt_scan.h>
 #include <h/tws.h>
+#include <h/utils.h>
 #include <setjmp.h>
 #include <signal.h>
 
@@ -955,8 +956,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			continue;
 		    }
 		    if (dobody && !strcasecmp (c1->c_name, "body")) {
-			if ((holder.c_text = malloc (sizeof(buf))) == NULL)
-			    adios (NULL, "unable to allocate buffer memory");
+			holder.c_text = mh_xmalloc (sizeof(buf));
 			strncpy (holder.c_text, buf, sizeof(buf));
 			while (state == BODY) {
 			    putcomp (c1, &holder, BODYCOMP);
@@ -1650,8 +1650,7 @@ doface (struct mcomp *c1)
 		    cp = dp, len = j;
 		}
 		else {
-		    if ((cp = malloc ((unsigned) i)) == NULL)
-			adios (NULL, "unable to allocate face storage");
+		    cp = mh_xmalloc ((unsigned) i);
 		    memcpy(cp, buffer, i);
 		    len = i;
 		}

@@ -14,6 +14,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 
 char *
@@ -24,12 +25,10 @@ getcpy (char *str)
 
     if (str) {
 	len = strlen(str) + 1;
-	if (!(cp = malloc (len)))
-	    adios (NULL, "unable to allocate string storage");
+	cp = mh_xmalloc (len);
 	memcpy (cp, str, len);
     } else {
-	if (!(cp = malloc ((size_t) 1)))
-	    adios (NULL, "unable to allocate string storage");
+	cp = mh_xmalloc ((size_t) 1);
 	*cp = '\0';
     }
     return cp;

@@ -16,6 +16,7 @@
 
 #include <h/mh.h>
 #include <h/vmhsbr.h>
+#include <h/utils.h>
 #include <errno.h>
 
 static char *types[] = {
@@ -98,8 +99,7 @@ peer2rc (struct record *rc)
     if (read (PEERrfd, (char *) rc_head (rc), RHSIZE (rc)) != RHSIZE (rc))
 	return rclose (rc, "read from peer lost(1)");
     if (rc->rc_len) {
-	if ((rc->rc_data = malloc ((unsigned) rc->rc_len + 1)) == NULL)
-	    return rclose (rc, "malloc of %d lost", rc->rc_len + 1);
+	rc->rc_data = mh_xmalloc ((unsigned) rc->rc_len + 1);
 	if (read (PEERrfd, rc->rc_data, rc->rc_len) != rc->rc_len)
 	    return rclose (rc, "read from peer lost(2)");
 	rc->rc_data[rc->rc_len] = 0;

@@ -12,6 +12,7 @@
 #include <h/mf.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <h/utils.h>
 
 /*
  * static prototypes
@@ -42,8 +43,8 @@ getcpy (char *s)
 	for(;;)
 	    pause();
     }
-    if ((p = malloc ((size_t) (strlen (s) + 2))))
-	strcpy (p, s);
+    p = mh_xmalloc ((size_t) (strlen (s) + 2));
+    strcpy (p, s);
     return p;
 }
 
@@ -56,8 +57,8 @@ add (char *s1, char *s2)
     if (!s2)
 	return getcpy (s1);
 
-    if ((p = malloc ((size_t) (strlen (s1) + strlen (s2) + 2))))
-	sprintf (p, "%s%s", s2, s1);
+    p = mh_xmalloc ((size_t) (strlen (s1) + strlen (s2) + 2));
+    sprintf (p, "%s%s", s2, s1);
     free (s2);
     return p;
 }
@@ -934,8 +935,7 @@ mfgets (FILE *in, char **bp)
     static char *pp = NULL;
 
     if (pp == NULL)
-	if (!(pp = malloc ((size_t) (len = BUFSIZ))))
-	    return NOTOK;
+	pp = mh_xmalloc ((size_t) (len = BUFSIZ));
 
     for (ep = (cp = pp) + len - 2;;) {
 	switch (i = getc (in)) {

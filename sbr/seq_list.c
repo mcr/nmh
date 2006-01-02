@@ -11,6 +11,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /* allocate this much buffer space at a time */
 #define MAXBUFFER 1024
@@ -29,8 +30,7 @@ seq_list(struct msgs *mp, char *seqname)
     /* On first invocation, allocate initial buffer space */
     if (!buffer) {
 	len = MAXBUFFER;
-	if (!(buffer = malloc ((size_t) len)))
-	    adios (NULL, "unable to malloc storage in seq_list");
+	buffer = mh_xmalloc ((size_t) len);
     }
 
     /*

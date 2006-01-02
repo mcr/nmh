@@ -44,6 +44,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <h/mime.h>
+#include <h/utils.h>
 
 static struct swit whatnowswitches[] = {
 #define	DFOLDSW                 0
@@ -843,8 +844,7 @@ buildfile (char **argp, char *file)
 	while (argp[i])
 	    i++;
     }
-    if ((args = (char **) malloc((i + 2) * sizeof(char *))) == NULL)
-	adios (NULL, "unable to malloc memory");
+    args = (char **) mh_xmalloc((i + 2) * sizeof(char *));
 
     /*
      * For backward compatibility, we need to add -build

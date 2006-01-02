@@ -12,6 +12,7 @@
 #include <h/mh.h>
 #include <h/addrsbr.h>
 #include <h/fmt_scan.h>
+#include <h/utils.h>
 #include <sys/file.h>		/* L_SET */
 #include <errno.h>
 
@@ -104,8 +105,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     *--savecomp = NULL;		/* point at zero'd end minus 1 */
 
     for (i = ncomps; i--; )
-	if (!(*nxtbuf++ = malloc(SBUFSIZ)))
-	    adios (NULL, "unable to allocate component buffer");
+	*nxtbuf++ = mh_xmalloc(SBUFSIZ);
 
     nxtbuf = compbuffers;		/* point at start */
     tmpbuf = *nxtbuf++;
@@ -230,7 +230,7 @@ finished:
 	}
     }
     i = format_len + char_read + 256;
-    scanl = malloc ((size_t) i + 2);
+    scanl = mh_xmalloc ((size_t) i + 2);
     dat[0] = 0;
     dat[1] = 0;
     dat[2] = 0;
@@ -324,9 +324,7 @@ formataddr (char *orig, char *str)
 
     /* if we don't have a buffer yet, get one */
     if (bufsiz == 0) {
-	buf = malloc (BUFINCR);
-	if (! buf)
-	    adios (NULL, "formataddr: couldn't allocate buffer space");
+	buf = mh_xmalloc (BUFINCR);
 	last_dst = buf;		/* XXX */
 	bufsiz = BUFINCR - 6;  /* leave some slop */
 	bufend = buf + bufsiz;

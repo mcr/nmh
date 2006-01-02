@@ -1,3 +1,8 @@
+2006-01-01  Josh Bressers <josh@bress.net>
+
+	* patch #3966: Create a mh_xmalloc function to prevent mistakes when
+	calling malloc.
+
 2005-12-24  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* Bug #15285: Don't use $< in target rules in makefiles, as POSIX

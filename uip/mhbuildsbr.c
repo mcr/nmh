@@ -27,6 +27,7 @@
 #include <h/tws.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
+#include <h/utils.h>
 
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -785,8 +786,7 @@ add_header (CT ct, char *name, char *value)
     HF hp;
 
     /* allocate header field structure */
-    if (!(hp = malloc (sizeof(*hp))))
-	adios (NULL, "out of memory");
+    hp = mh_xmalloc (sizeof(*hp));
 
     /* link data into header structure */
     hp->name = name;
@@ -1553,8 +1553,7 @@ invalid_param:
 			goto no_body;
 		    }
 		    
-		    if ((e->eb_body = bp = malloc ((unsigned) size)) == NULL)
-			adios (NULL, "out of memory");
+		    e->eb_body = bp = mh_xmalloc ((unsigned) size);
 		    fseek (p->c_fp, p->c_begin, SEEK_SET);
 		    while (size > 0)
 			switch (cc = fread (bp, sizeof(*bp), size, p->c_fp)) {

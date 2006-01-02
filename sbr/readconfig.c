@@ -11,6 +11,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 struct procstr {
     char *procname;
@@ -65,8 +66,7 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 	    case FLD:
 	    case FLDPLUS:
 	    case FLDEOF:
-		if (!(np = (struct node *) malloc (sizeof(*np))))
-		    adios (NULL, "unable to allocate profile storage");
+		np = (struct node *) mh_xmalloc (sizeof(*np));
 		*npp = np;
 		*(npp = &np->n_next) = NULL;
 		np->n_name = getcpy (name);

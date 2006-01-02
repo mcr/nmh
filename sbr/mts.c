@@ -11,6 +11,7 @@
 
 #include <h/mh.h>   /* for snprintf() */
 #include <h/nmh.h>
+#include <h/utils.h>
 
 #define nmhetcdir(file) NMHETCDIR#file
 
@@ -271,8 +272,8 @@ tailor_value (char *s)
     *bp = 0;
 
     len = strlen (buffer) + 1;
-    if ((bp = malloc (len)))
-	memcpy (bp, buffer, len);
+    bp = mh_xmalloc (len);
+    memcpy (bp, buffer, len);
 
     return bp;
 }

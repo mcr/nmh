@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 
 void
@@ -21,8 +22,7 @@ context_replace (char *key, char *value)
      * If list is emtpy, allocate head of profile/context list.
      */
     if (!m_defs) {
-	if (!(m_defs = (struct node *) malloc (sizeof(*np))))
-	    adios (NULL, "unable to allocate profile storage");
+	m_defs = (struct node *) mh_xmalloc (sizeof(*np));
 
 	np = m_defs;
 	np->n_name = getcpy (key);
@@ -56,9 +56,7 @@ context_replace (char *key, char *value)
     /*
      * Else add this new entry at the end
      */
-    np->n_next = (struct node *) malloc (sizeof(*np));
-    if (!np->n_next)
-	adios (NULL, "unable to allocate profile storage");
+    np->n_next = (struct node *) mh_xmalloc (sizeof(*np));
 
     np = np->n_next;
     np->n_name = getcpy (key);

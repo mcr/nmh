@@ -13,6 +13,7 @@
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
 #include <h/mts.h>
+#include <h/utils.h>
 #include <errno.h>
 
 #ifndef	RPOP
@@ -402,8 +403,7 @@ popi (void)
 			if (*dp == '\\' || *dp == '"' || *dp == '\n')
 			    i++;
 		    i++;
-		    if ((ep = malloc ((unsigned) i)) == NULL)
-			adios (NULL, "out of memory");
+		    ep = mh_xmalloc ((unsigned) i);
 		    for (dp = nfs, fp = ep; *dp; dp++) {
 			if (*dp == '\n') {
 			    *fp++ = '\\', *fp++ = 'n';

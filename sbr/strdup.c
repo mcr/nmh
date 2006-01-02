@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 
 char *
@@ -22,8 +23,7 @@ strdup (const char *str)
 	return NULL;
 
     len = strlen(str) + 1;
-    if (!(cp = malloc (len)))
-	return NULL;
+    cp = mh_xmalloc (len);
     memcpy (cp, str, len);
     return cp;
 }

@@ -17,6 +17,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 #define FALSE   0
 #define TRUE    1
@@ -148,8 +149,7 @@ main(int argc, char **argv)
     /* allocate the initial space to record the folder names */
     numfolders = 0;
     maxfolders = MAXFOLDERS;
-    if (!(foldersToDo = (char **) malloc ((size_t) (maxfolders * sizeof(*foldersToDo)))))
-	adios (NULL, "unable to allocate folder storage");
+    foldersToDo = (char **) mh_xmalloc ((size_t) (maxfolders * sizeof(*foldersToDo)));
 
     /* no sequences yet */
     numsequences = 0;
@@ -306,7 +306,7 @@ GetFolderOrder(void)
 	    AllocFolders(&orders, &nOrdersAlloced, nOrders + 1);
 	    o = &orders[nOrders++];
 	    o->priority = priority++;
-	    o->name = (char *) malloc(p - s + 1);
+	    o->name = (char *) mh_xmalloc(p - s + 1);
 	    strncpy(o->name, s, p - s);
 	    o->name[p - s] = 0;
 	} else
@@ -652,7 +652,7 @@ AllocFolders(struct Folder **f, int *nfa, int n)
 	return;
     if (*f == NULL) {
 	*nfa = 10;
-	*f = (struct Folder *) malloc (*nfa * (sizeof(struct Folder)));
+	*f = (struct Folder *) mh_xmalloc (*nfa * (sizeof(struct Folder)));
     } else {
 	*nfa *= 2;
 	*f = (struct Folder *) realloc (*f, *nfa * (sizeof(struct Folder)));

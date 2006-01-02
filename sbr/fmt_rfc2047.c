@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 #ifdef HAVE_ICONV
 #  include <iconv.h>
 #  include <errno.h>
@@ -198,8 +199,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	    if (use_iconv) {
 		saveq = q;
 		savedstlen = dstlen;
-		if (!(q = convbuf = (char *)malloc(endofmime - startofmime)))
-		    continue;
+                q = convbuf = (char *) mh_xmalloc(endofmime - startofmime);
             }
 /* ADDCHR2 is for adding characters when q is or might be convbuf:
  * in this case on buffer-full we want to run iconv before returning.

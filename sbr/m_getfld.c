@@ -11,6 +11,7 @@
 
 #include <h/mh.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 /* This module has a long and checkered history.  First, it didn't burst
    maildrops correctly because it considered two CTRL-A:s in a row to be
@@ -562,7 +563,7 @@ m_unknown(FILE *iob)
 	msg_style = MS_MMDF;
     }
     c = strlen (delimstr);
-    fdelim = (unsigned char *) malloc((size_t) (c + 3));
+    fdelim = (unsigned char *) mh_xmalloc((size_t) (c + 3));
     *fdelim++ = '\0';
     *fdelim = '\n';
     msg_delim = (char *)fdelim+1;

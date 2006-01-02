@@ -11,6 +11,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /* allocate this number of pointers at a time */
 #define NUMBROKEN 256
@@ -33,8 +34,7 @@ brkstring (char *str, char *brksep, char *brkterm)
     /* allocate initial space for pointers on first call */
     if (!broken) {
 	len = NUMBROKEN;
-	if (!(broken = (char **) malloc ((size_t) (len * sizeof(*broken)))))
-	    adios (NULL, "unable to malloc array in brkstring");
+	broken = (char **) mh_xmalloc ((size_t) (len * sizeof(*broken)));
     }
 
     /*

@@ -14,6 +14,7 @@
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
 #include <h/tws.h>
+#include <h/utils.h>
 
 #ifdef _FSTDIO
 # define _ptr _p                /* Gag    */
@@ -96,8 +97,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		width = MAXSCANL;
 	}
 	dat[3] = slwidth = width;
-	if ((scanl = (char *) malloc((size_t) (slwidth + 2) )) == NULL)
-	    adios (NULL, "unable to malloc scan line (%d bytes)", slwidth+2);
+	scanl = (char *) mh_xmalloc((size_t) (slwidth + 2) );
 	if (outnum)
 	    umask(~m_gmprot());
 
@@ -133,8 +133,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	used_buf += ncomps+1; *--used_buf = 0;
 	rlwidth = bodycomp && (width > SBUFSIZ) ? width : SBUFSIZ;
 	for (i = ncomps; i--; )
-	    if ((*nxtbuf++ = malloc(rlwidth)) == NULL)
-		adios (NULL, "unable to allocate component buffer");
+	    *nxtbuf++ = mh_xmalloc(rlwidth);
     }
 
     /*

@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 extern char **environ;
 
@@ -27,8 +28,7 @@ m_putenv (char *name, char *value)
     register int i;
     register char **ep, **nep, *cp;
 
-    if (!(cp = malloc ((size_t) (strlen (name) + strlen (value) + 2))))
-	return 1;
+    cp = mh_xmalloc ((size_t) (strlen (name) + strlen (value) + 2));
 
     sprintf (cp, "%s=%s", name, value);
 
@@ -38,8 +38,7 @@ m_putenv (char *name, char *value)
 	    return 0;
 	}
 
-    if (!(nep = (char **) malloc ((size_t) ((i + 2) * sizeof(*nep)))))
-	return 1;
+    nep = (char **) mh_xmalloc ((size_t) ((i + 2) * sizeof(*nep)));
 
     for (ep = environ, i = 0; *ep; nep[i++] = *ep++)
 	continue;

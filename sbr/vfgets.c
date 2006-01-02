@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 #define	QUOTE	'\\'
 
@@ -23,8 +24,7 @@ vfgets (FILE *in, char **bp)
     static char *pp = NULL;
 
     if (pp == NULL)
-	if (!(pp = malloc ((size_t) (len = BUFSIZ))))
-	    adios (NULL, "unable to allocate string storage");
+	pp = mh_xmalloc ((size_t) (len = BUFSIZ));
 
     for (ep = (cp = pp) + len - 1;;) {
 	if (fgets (cp, ep - cp + 1, in) == NULL) {

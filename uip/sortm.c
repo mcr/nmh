@@ -11,6 +11,7 @@
 
 #include <h/mh.h>
 #include <h/tws.h>
+#include <h/utils.h>
 
 /*
  * We allocate space for messages (msgs array)
@@ -99,8 +100,7 @@ main (int argc, char **argv)
      */
     nummsgs = 0;
     maxmsgs = MAXMSGS;
-    if (!(msgs = (char **) malloc ((size_t) (maxmsgs * sizeof(*msgs)))))
-	adios (NULL, "unable to allocate storage");
+    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     /*
      * Parse arguments
@@ -223,9 +223,7 @@ main (int argc, char **argv)
     /*
      * sort a list of pointers to our "messages to be sorted".
      */
-    dlist = (struct smsg **) malloc ((nmsgs+1) * sizeof(*dlist));
-    if (! dlist)
-	adios (NULL, "couldn't allocate sort memory");
+    dlist = (struct smsg **) mh_xmalloc ((nmsgs+1) * sizeof(*dlist));
     for (i = 0; i < nmsgs; i++)
 	dlist[i] = &smsgs[i];
     dlist[nmsgs] = 0;
@@ -252,9 +250,7 @@ main (int argc, char **argv)
 	struct smsg **slist, **flist;
 	register struct smsg ***il, **fp, **dp;
 
-	slist = (struct smsg **) malloc ((nmsgs+1) * sizeof(*slist));
-	if (! slist)
-	    adios (NULL, "couldn't allocate sort memory");
+	slist = (struct smsg **) mh_xmalloc ((nmsgs+1) * sizeof(*slist));
 	memcpy((char *)slist, (char *)dlist, (nmsgs+1)*sizeof(*slist));
 	qsort((char *)slist, nmsgs, sizeof(*slist), (qsort_comp) subsort);
 
@@ -272,9 +268,7 @@ main (int argc, char **argv)
 	 * make up the final list, chronological but with
 	 * all the same subjects grouped together.
 	 */
-	flist = (struct smsg **) malloc ((nmsgs+1) * sizeof(*flist));
-	if (! flist)
-	    adios (NULL, "couldn't allocate msg list");
+	flist = (struct smsg **) mh_xmalloc ((nmsgs+1) * sizeof(*flist));
 	fp = flist;
 	for (dp = dlist; *dp;) {
 	    register struct smsg **s = il[(*dp++)->s_msg];

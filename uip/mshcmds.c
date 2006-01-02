@@ -21,6 +21,7 @@
 #include <signal.h>
 #include <h/msh.h>
 #include <h/picksbr.h>
+#include <h/utils.h>
 
 
 static char delim3[] = "-------";	/* from burst.c */
@@ -2160,8 +2161,7 @@ scancmd (char **args)
 		if (*dp == '\\' || *dp == '"' || *dp == '\n')
 		    i++;
 	    i++;
-	    if ((ep = malloc ((unsigned) i)) == NULL)
-		adios (NULL, "out of memory");
+	    ep = mh_xmalloc ((unsigned) i);
 	    for (dp = nfs, fp = ep; *dp; dp++) {
 		if (*dp == '\n') {
 		    *fp++ = '\\', *fp++ = 'n';

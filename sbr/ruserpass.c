@@ -19,6 +19,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 #include <pwd.h>
 #include <errno.h>
 
@@ -100,7 +101,7 @@ match:
 		switch(t) {
 		case LOGIN:
 		    if (token() && *aname == 0) {
-			*aname = malloc((size_t) strlen(tokval) + 1);
+			*aname = mh_xmalloc((size_t) strlen(tokval) + 1);
 			strcpy(*aname, tokval);
 		    }
 		    break;
@@ -112,7 +113,7 @@ match:
 			goto bad;
 		    }
 		    if (token() && *apass == 0) {
-			*apass = malloc((size_t) strlen(tokval) + 1);
+			*apass = mh_xmalloc((size_t) strlen(tokval) + 1);
 			strcpy(*apass, tokval);
 		    }
 		    break;
@@ -153,7 +154,7 @@ done:
 	    myname = tmp;
 	}
 
-	*aname = malloc((size_t) strlen(myname) + 1);
+	*aname = mh_xmalloc((size_t) strlen(myname) + 1);
 	strcpy (*aname, myname);
     }
 
@@ -168,7 +169,7 @@ done:
 	    mypass = *aname;
 	}
 
-	*apass = malloc((size_t) strlen(mypass) + 1);
+	*apass = mh_xmalloc((size_t) strlen(mypass) + 1);
 	strcpy (*apass, mypass);
     }
 

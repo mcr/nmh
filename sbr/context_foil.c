@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /*
  * Foil search of users .mh_profile
@@ -45,10 +46,7 @@ context_foil (char *path)
      * If path is given, create a minimal profile/context list
      */
     if (path) {
-	if (!(m_defs = (struct node *) malloc (sizeof(*np)))) {
-	    advise (NULL, "unable to allocate profile storage");
-	    return -1;
-	}
+	m_defs = (struct node *) mh_xmalloc (sizeof(*np));
 
 	np = m_defs;
 	if (!(np->n_name = strdup ("Path"))) {

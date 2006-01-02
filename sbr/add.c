@@ -15,6 +15,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 char *
 add (char *s2, char *s1)
@@ -28,8 +29,7 @@ add (char *s2, char *s1)
 	len2 = strlen (s2);
 
 
-    if (!(cp = malloc (len1 + len2 + 1)))
-	adios (NULL, "unable to allocate string storage");
+    cp = mh_xmalloc (len1 + len2 + 1);
 
     /* Copy s1 and free it */
     if (s1) {

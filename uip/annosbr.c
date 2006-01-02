@@ -11,6 +11,7 @@
 
 #include <h/mh.h>
 #include <h/tws.h>
+#include <h/utils.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <utime.h>
@@ -93,8 +94,7 @@ annolist(char *file, char *comp, char *text, int number)
      *  This buffer might need to be quite large, so we grow it as needed.
      */
 
-    if ((field = (char *)malloc(field_size = 256)) == (char *)0)
-	adios(NULL, "can't allocate field buffer.");
+    field = (char *)mh_xmalloc(field_size = 256);
 
     /*
      *  Get the length of the field name since we use it often.
@@ -208,8 +208,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 	if ((fp = fdopen(fd, "r")) == (FILE *)0)
 	    adios(NULL, "unable to fdopen file.");
 
-	if ((field = (char *)malloc(field_size = 256)) == (char *)0)
-	    adios(NULL, "can't allocate field buffer.");
+	field = (char *)mh_xmalloc(field_size = 256);
     }
 
     /*

@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /*
  * Reallocate some of the space in the folder
@@ -58,10 +59,7 @@ folder_realloc (struct msgs *mp, int lo, int hi)
 	seqset_t *tmpstats;
 
 	/* first allocate the new message status space */
-	if (!(tmpstats = malloc (MSGSTATSIZE(mp, lo, hi)))) {
-	    advise (NULL, "unable to reallocate message storage");
-	    return NULL;
-	}
+	tmpstats = mh_xmalloc (MSGSTATSIZE(mp, lo, hi));
 
 	/* then copy messages status array with shift */
 	if (mp->nummsg > 0) {

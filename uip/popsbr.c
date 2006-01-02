@@ -9,6 +9,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 extern int  client(char *args, char *protocol, char *service, int rproto,
 		   char *response, int len_response);
@@ -432,10 +433,7 @@ sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
 
     len = strlen(pass);
 
-    *psecret = (sasl_secret_t *) malloc(sizeof(sasl_secret_t) + len);
-
-    if (! *psecret)
-	return SASL_NOMEM;
+    *psecret = (sasl_secret_t *) mh_xmalloc(sizeof(sasl_secret_t) + len);
 
     (*psecret)->len = len;
     strcpy((char *) (*psecret)->data, pass);
@@ -476,8 +474,8 @@ parse_proxy(char *proxy, char *host)
     }
 
    /* put together list of arguments */
-    p = pargv = malloc(pargc * sizeof(char *));
-    c = *pargv = malloc(plen * sizeof(char));
+    p = pargv = mh_xmalloc(pargc * sizeof(char *));
+    c = *pargv = mh_xmalloc(plen * sizeof(char));
     for (cur = pro; *cur; cur++) {
         if (isspace(*cur) && cur[1] && !isspace(cur[1])) {
 	    *c++ = '\0';

@@ -12,6 +12,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /*
  * We allocate space for messages (msgs array)
@@ -81,8 +82,7 @@ main (int argc, char **argv)
      */
     nummsgs = 0;
     maxmsgs = MAXMSGS;
-    if (!(msgs = (char **) malloc ((size_t) (maxmsgs * sizeof(*msgs)))))
-	adios (NULL, "unable to allocate storage");
+    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     /*
      * Parse arguments

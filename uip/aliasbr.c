@@ -11,6 +11,7 @@
 
 #include <h/mh.h>
 #include <h/aliasbr.h>
+#include <h/utils.h>
 #include <grp.h>
 #include <pwd.h>
 
@@ -475,9 +476,7 @@ add_aka (struct aka *ak, char *pp)
 	if (!strcmp (pp, ad->ad_text))
 	    return;
 
-    ad = (struct adr *) malloc (sizeof(*ad));
-    if (ad == NULL)
-	return;
+    ad = (struct adr *) mh_xmalloc (sizeof(*ad));
     ad->ad_text = getcpy (pp);
     ad->ad_local = strchr(pp, '@') == NULL && strchr(pp, '!') == NULL;
     ad->ad_next = NULL;
@@ -522,8 +521,7 @@ akalloc (char *id)
 {
     register struct aka *p;
 
-    if (!(p = (struct aka *) malloc (sizeof(*p))))
-	return NULL;
+    p = (struct aka *) mh_xmalloc (sizeof(*p));
 
     p->ak_name = getcpy (id);
     p->ak_visible = 0;
@@ -544,8 +542,7 @@ hmalloc (struct passwd *pw)
 {
     register struct home *p;
 
-    if (!(p = (struct home *) malloc (sizeof(*p))))
-	return NULL;
+    p = (struct home *) mh_xmalloc (sizeof(*p));
 
     p->h_name = getcpy (pw->pw_name);
     p->h_uid = pw->pw_uid;

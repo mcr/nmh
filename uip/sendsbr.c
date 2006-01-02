@@ -15,6 +15,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <h/mime.h>
+#include <h/utils.h>
 
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -208,8 +209,7 @@ attach(char *attachment_header_field_name, char *draft_file_name)
      *  This buffer might need to be quite large, so we grow it as needed.
      */
 
-    if ((field = (char *)malloc(field_size = 256)) == (char *)0)
-	adios(NULL, "can't allocate field buffer.");
+    field = (char *)mh_xmalloc(field_size = 256);
 
     /*
      *	Scan the draft file for a header field name that matches the -attach

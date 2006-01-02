@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 #define QUOTE '\\'
 
@@ -41,8 +42,7 @@ new_fs (char *form, char *format, char *default_fs)
 	if (fstat (fileno (fp), &st) == -1)
 	    adios (form, "unable to stat format file");
 
-	if (!(formats = malloc ((size_t) st.st_size + 1)))
-	    adios (form, "unable to allocate space for format");
+	formats = mh_xmalloc ((size_t) st.st_size + 1);
 
 	if (read (fileno(fp), formats, (int) st.st_size) != st.st_size)
 	    adios (form, "error reading format file");

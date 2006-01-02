@@ -20,6 +20,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
+#include <h/utils.h>
 
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
@@ -169,8 +170,7 @@ main (int argc, char **argv)
      */
     nummsgs = 0;
     maxmsgs = MAXMSGS;
-    if (!(msgs = (char **) malloc ((size_t) (maxmsgs * sizeof(*msgs)))))
-	adios (NULL, "unable to allocate storage");
+    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     /*
      * Parse arguments

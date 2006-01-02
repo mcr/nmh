@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <h/aliasbr.h>
 #include <h/mts.h>
+#include <h/utils.h>
 #include <grp.h>
 #include <pwd.h>
 
@@ -189,8 +190,7 @@ grp_names (void)
     /* allocate space NGRPS at a time */
     numgroups = 0;
     maxgroups = NGRPS;
-    if (!(grps = (char **) malloc((size_t) (maxgroups * sizeof(*grps)))))
-	adios (NULL, "unable to allocate group name storage");
+    grps = (char **) mh_xmalloc((size_t) (maxgroups * sizeof(*grps)));
 
     setgrent ();
     while ((gr = getgrent ())) {

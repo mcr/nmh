@@ -11,6 +11,7 @@
 
 #include <h/mh.h>
 #include <h/mts.h>
+#include <h/utils.h>
 #include <errno.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -270,7 +271,7 @@ rcaux (struct servent *sp, struct hostent *hp, int rproto,
 	    strncpy (response, "Out of memory.", len_response);
 	    return OOPS2;
 	}
-	ticket = (KTEXT) malloc (sizeof(KTEXT_ST));
+	ticket = (KTEXT) mh_xmalloc (sizeof(KTEXT_ST));
 	rem = krb_sendauth (0L, sd, ticket, kservice, instance,
 			   (char *) krb_realmofhost (instance),
 			   (unsigned long) 0, &msg_data, &cred, schedule,
@@ -474,8 +475,7 @@ client_getcpy (char *str)
     size_t len;
 
     len = strlen(str) + 1;
-    if (!(cp = malloc(len)))
-	return NULL;
+    cp = mh_xmalloc(len);
 
     memcpy (cp, str, len);
     return cp;

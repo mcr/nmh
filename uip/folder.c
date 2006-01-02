@@ -12,6 +12,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 #include <errno.h>
 
 static struct swit switches[] = {
@@ -353,13 +354,11 @@ main (int argc, char **argv)
 
     /* Allocate initial space to record folder names */
     maxfolders = NUMFOLDERS;
-    if ((folds = malloc (maxfolders * sizeof(char *))) == NULL)
-	adios (NULL, "unable to allocate storage for folder names");
+    folds = mh_xmalloc (maxfolders * sizeof(char *));
 
     /* Allocate initial space to record folder information */
     maxFolderInfo = NUMFOLDERS;
-    if ((fi = malloc (maxFolderInfo * sizeof(*fi))) == NULL)
-	adios (NULL, "unable to allocate storage for folder info");
+    fi = mh_xmalloc (maxFolderInfo * sizeof(*fi));
 
     /*
      * Scan the folders

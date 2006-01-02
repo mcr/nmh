@@ -11,6 +11,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 
 char *
@@ -26,8 +27,7 @@ concat (char *s1, ...)
 	len += strlen (cp);
     va_end(list);
 
-    if (!(dp = sp = malloc(len)))
-	adios (NULL, "unable to allocate string storage");
+    dp = sp = mh_xmalloc(len);
 
     sp = copy(s1, sp);
 

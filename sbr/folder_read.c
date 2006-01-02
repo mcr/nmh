@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /* We allocate the `mi' array 1024 elements at a time */
 #define	NUMMSGS  1024
@@ -44,8 +45,7 @@ folder_read (char *name)
     }
 
     /* Allocate the main structure for folder information */
-    if (!(mp = (struct msgs *) malloc ((size_t) sizeof(*mp))))
-	adios (NULL, "unable to allocate folder storage");
+    mp = (struct msgs *) mh_xmalloc ((size_t) sizeof(*mp));
 
     clear_folder_flags (mp);
     mp->foldpath = name;
@@ -66,8 +66,7 @@ folder_read (char *name)
      * name of the messages in this folder.
      */
     len = NUMMSGS;
-    if (!(mi = (int *) malloc ((size_t) (len * sizeof(*mi)))))
-	adios (NULL, "unable to allocate storage");
+    mi = (int *) mh_xmalloc ((size_t) (len * sizeof(*mi)));
 
     while ((dp = readdir (dd))) {
 	if ((msgnum = m_atoi (dp->d_name)) && msgnum > 0) {
@@ -138,8 +137,7 @@ folder_read (char *name)
     /*
      * Allocate space for status of each message.
      */
-    if (!(mp->msgstats = malloc (MSGSTATSIZE(mp, mp->lowoff, mp->hghoff))))
-	adios (NULL, "unable to allocate storage for msgstats");
+    mp->msgstats = mh_xmalloc (MSGSTATSIZE(mp, mp->lowoff, mp->hghoff));
 
     /*
      * Clear all the flag bits for all the message

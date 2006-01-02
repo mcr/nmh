@@ -9,6 +9,7 @@
  */
 
 #include <h/mh.h>				/* mh internals */
+#include <h/utils.h>
 #include <pwd.h>				/* structure for getpwuid() results */
 
 static struct swit switches[] = {
@@ -180,8 +181,7 @@ query:
     /*
      * Add some initial elements to the profile/context list
      */
-    if (!(m_defs = (struct node *) malloc (sizeof *np)))
-	adios (NULL, "unable to allocate profile storage");
+    m_defs = (struct node *) mh_xmalloc (sizeof *np);
     np = m_defs;
     np->n_name = getcpy ("Path");
     np->n_field = getcpy (pathname);

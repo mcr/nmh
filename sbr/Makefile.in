@@ -75,7 +75,7 @@ SRCS = add.c addrsbr.c ambigsw.c atooi.c brkstring.c			\
 	seq_setprev.c seq_setunseen.c showfile.c signals.c		\
 	smatch.c snprintb.c ssequal.c strcasecmp.c			\
 	strindex.c trimcpy.c uprf.c vfgets.c fmt_def.c			\
-	m_msgdef.c mf.c
+	m_msgdef.c mf.c utils.c
 
 # source for compatibility functions
 COMPAT = snprintf.c strdup.c strerror.c

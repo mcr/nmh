@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <h/fmt_scan.h>
 #include <h/tws.h>
+#include <h/utils.h>
 
 
 #define	IFORMAT	"digest-issue-%s"
@@ -688,8 +689,7 @@ build_form (char *form, char *digest, int volume, int issue)
     if ((in = dup (fileno (tmp))) == NOTOK)
 	adios ("dup", "unable to");
 
-    if ((line = malloc ((unsigned) fmtsize)) == NULL)
-	adios (NULL, "unable to allocate format line storage");
+    line = mh_xmalloc ((unsigned) fmtsize);
     fmt_scan (fmt, line, fmtsize, dat);
     fputs (line, tmp);
     free (line);

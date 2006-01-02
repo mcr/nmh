@@ -12,6 +12,7 @@
 #include <h/mh.h>
 #include <h/addrsbr.h>
 #include <h/fmt_scan.h>
+#include <h/utils.h>
 
 static char *buf;		/* our current working buffer  */
 static char *bufend;		/* end of working buffer       */
@@ -63,9 +64,7 @@ formataddr (char *orig, char *str)
 
     /* if we don't have a buffer yet, get one */
     if (bufsiz == 0) {
-	buf = malloc (BUFINCR);
-	if (! buf)
-	    adios (NULL, "formataddr: couldn't allocate buffer space");
+	buf = mh_xmalloc (BUFINCR);
 	last_dst = buf;		/* XXX */
 	bufsiz = BUFINCR - 6;  /* leave some slop */
 	bufend = buf + bufsiz;

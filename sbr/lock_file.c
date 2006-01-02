@@ -19,6 +19,7 @@
  
 #include <h/mh.h>
 #include <h/signals.h>
+#include <h/utils.h>
 
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -542,15 +543,11 @@ timerON (char *curlock, int fd)
     struct lock *lp;
     size_t len;
 
-    if (!(lp = (struct lock *) malloc (sizeof(*lp))))
-	return;
+    lp = (struct lock *) mh_xmalloc (sizeof(*lp));
 
     len = strlen(curlock) + 1;
     lp->l_fd = fd;
-    if (!(lp->l_lock = malloc (len))) {
-	free ((char *) lp);
-	return;
-    }
+    lp->l_lock = mh_xmalloc (len);
     memcpy (lp->l_lock, curlock, len);
     lp->l_next = l_top;
 

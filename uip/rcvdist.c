@@ -14,6 +14,7 @@
 #include <h/rcvmail.h>
 #include <h/tws.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 static struct swit switches[] = {
 #define	FORMSW       0
@@ -181,8 +182,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
     *--savecomp = 0;
 
     for (i = ncomps; i--;)
-	if (!(*nxtbuf++ = malloc (SBUFSIZ)))
-	    adios (NULL, "unable to allocate component buffer");
+	*nxtbuf++ = mh_xmalloc (SBUFSIZ);
     nxtbuf = compbuffers;
     tmpbuf = *nxtbuf++;
 
@@ -248,7 +248,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 finished: ;
 
     i = format_len + char_read + 256;
-    scanl = malloc ((size_t) i + 2);
+    scanl = mh_xmalloc ((size_t) i + 2);
     dat[0] = dat[1] = dat[2] = dat[4] = 0;
     dat[3] = outputlinelen;
     fmt_scan (fmt, scanl, i, dat);

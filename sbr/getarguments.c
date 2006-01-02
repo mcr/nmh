@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 char **
 getarguments (char *invo_name, int argc, char **argv, int check_context)
@@ -30,8 +31,7 @@ getarguments (char *invo_name, int argc, char **argv, int check_context)
 	    n++;
     }
 
-    if (!(arguments = (char **) malloc ((argc + n) * sizeof(*arguments))))
-	adios (NULL, "unable to malloc argument storage");
+    arguments = (char **) mh_xmalloc ((argc + n) * sizeof(*arguments));
     bp = arguments;
 
     /* Copy any arguments from profile/context */
