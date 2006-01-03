@@ -1,3 +1,7 @@
+2006-01-02  Josh Bressers <josh@bress.net>
+
+	* Remove sbr/pwd.c file, moving the pwd() function into sbr/utils.c.
+
 2006-01-01  Josh Bressers <josh@bress.net>
 
 	* patch #3967: Create a mh_xrealloc function to prevent mistakes when

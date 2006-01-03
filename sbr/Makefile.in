@@ -68,7 +68,7 @@ SRCS = add.c addrsbr.c ambigsw.c atooi.c brkstring.c			\
 	makedir.c mts.c norm_charmap.c                                  \
 	path.c peekc.c pidwait.c pidstatus.c		                \
 	print_help.c print_sw.c print_version.c push.c			\
-	putenv.c pwd.c refile.c	remdir.c r1bindex.c			\
+	putenv.c refile.c	remdir.c r1bindex.c			\
 	readconfig.c ruserpass.c seq_add.c seq_bits.c			\
 	seq_del.c seq_getnum.c seq_list.c seq_nameok.c			\
 	seq_print.c seq_read.c seq_save.c seq_setcur.c			\

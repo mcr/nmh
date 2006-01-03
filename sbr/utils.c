@@ -9,7 +9,7 @@
  * complete copyright information.
  */
 
-#include <h/nmh.h>
+#include <h/mh.h>
 #include <h/utils.h>
 #include <stdlib.h>
 
@@ -41,4 +41,25 @@ mh_xrealloc(void *ptr, size_t size)
         adios(NULL, "Realloc failed");
 
     return memory;
+}
+char *
+pwd(void)
+{
+    register char *cp;
+    static char curwd[PATH_MAX];
+
+    if (!getcwd (curwd, PATH_MAX)) {
+        admonish (NULL, "unable to determine working directory");
+        if (!mypath || !*mypath
+                || (strcpy (curwd, mypath), chdir (curwd)) == -1) {
+            strcpy (curwd, "/");
+            chdir (curwd);
+        }
+        return curwd;
+    }
+
+    if ((cp = curwd + strlen (curwd) - 1) > curwd && *cp == '/')
+        *cp = '\0';
+
+    return curwd;
 }
