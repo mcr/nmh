@@ -13,6 +13,9 @@
 #include <h/utils.h>
 #include <stdlib.h>
 
+/*
+ * Safely call malloc
+ */
 void *
 mh_xmalloc(size_t size)
 {
@@ -28,6 +31,9 @@ mh_xmalloc(size_t size)
     return memory;
 }
 
+/*
+ * Safely call realloc
+ */
 void *
 mh_xrealloc(void *ptr, size_t size)
 {
@@ -42,6 +48,11 @@ mh_xrealloc(void *ptr, size_t size)
 
     return memory;
 }
+
+/*
+ * Return the present working directory, if the current directory does not
+ * exist, or is too long, make / the pwd.
+ */
 char *
 pwd(void)
 {
