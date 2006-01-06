@@ -11,6 +11,7 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
+#include <h/utils.h>
 
 static int  hdrfd = NOTOK;
 static int  txtfd = NOTOK;

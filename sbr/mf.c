@@ -18,7 +18,6 @@
  * static prototypes
  */
 static char *getcpy (char *);
-static char *add (char *, char *);
 static void compress (char *, char *);
 static int isat (char *);
 static int parse_address (void);
@@ -48,20 +47,6 @@ getcpy (char *s)
     return p;
 }
 
-
-static char *
-add (char *s1, char *s2)
-{
-    register char *p;
-
-    if (!s2)
-	return getcpy (s1);
-
-    p = mh_xmalloc ((size_t) (strlen (s1) + strlen (s2) + 2));
-    sprintf (p, "%s%s", s2, s1);
-    free (s2);
-    return p;
-}
 
 int
 isfrom(char *string)

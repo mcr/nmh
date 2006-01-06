@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
+#include <h/utils.h>
 
 extern int debugsw;
 

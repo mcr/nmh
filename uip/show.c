@@ -11,6 +11,7 @@
 
 #include <h/mh.h>
 #include <h/mime.h>
+#include <h/utils.h>
 
 static struct swit switches[] = {
 #define CHECKMIMESW          0

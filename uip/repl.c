@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 
 static struct swit switches[] = {

@@ -21,6 +21,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/mhcachesbr.h>
+#include <h/utils.h>
 
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>

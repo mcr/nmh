@@ -1,3 +1,9 @@
+2006-01-06  Josh Bressers <josh@bress.net>
+
+	* patch #3968: Move the add() function from its own file (add.c) and
+	into utils.c. There was also a duplicate add() function in mf.c which
+	has been removed.
+
 2006-01-02  Josh Bressers <josh@bress.net>
 
 	* Remove sbr/pwd.c file, moving the pwd() function into sbr/utils.c.

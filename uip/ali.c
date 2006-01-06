@@ -13,6 +13,7 @@
 #include <h/addrsbr.h>
 #include <h/aliasbr.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 /*
  * maximum number of names

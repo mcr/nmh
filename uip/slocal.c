@@ -32,6 +32,7 @@
 #include <h/signals.h>
 #include <h/tws.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 #include <pwd.h>
 #include <signal.h>

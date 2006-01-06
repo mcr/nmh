@@ -20,6 +20,7 @@
 #include <h/tws.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
+#include <h/utils.h>
 
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>

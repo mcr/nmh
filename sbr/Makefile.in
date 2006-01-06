@@ -52,7 +52,7 @@ COMPILE2 = $(CC) -c $(DEFS) $(CONFIGDEFS) $(INCLUDES) $(KRB4_INCLUDES) $(HESIOD_
 SIGNAL_H = @SIGNAL_H@
 
 # source for library functions
-SRCS = add.c addrsbr.c ambigsw.c atooi.c brkstring.c			\
+SRCS = addrsbr.c ambigsw.c atooi.c brkstring.c			\
 	check_charset.c client.c closefds.c concat.c context_del.c	\
 	context_find.c context_foil.c context_read.c			\
 	context_replace.c context_save.c copy.c				\

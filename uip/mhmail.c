@@ -11,6 +11,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
+#include <h/utils.h>
 #include <signal.h>
 
 static struct swit switches[] = {

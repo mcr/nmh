@@ -19,6 +19,7 @@
 #include <h/dropsbr.h>
 #include <h/tws.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 #define	uptolow(c)	((isalpha(c) && isupper (c)) ? tolower (c) : c)
 
