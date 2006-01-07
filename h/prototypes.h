@@ -140,10 +140,6 @@ int vsnprintf (char *, size_t, const char *, va_list);
 int strcasecmp (const char *s1, const char *s2);
 int strncasecmp (const char *s1, const char *s2, size_t n);
 
-#ifndef HAVE_STRERROR
-char *strerror (int);
-#endif
-
 
 /*
  * some prototypes for address parsing system

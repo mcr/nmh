@@ -78,7 +78,7 @@ SRCS = addrsbr.c ambigsw.c atooi.c brkstring.c			\
 	m_msgdef.c mf.c utils.c
 
 # source for compatibility functions
-COMPAT = snprintf.c strdup.c strerror.c
+COMPAT = snprintf.c strdup.c
 
 OBJS =	$(SRCS:.c=.o)
 
