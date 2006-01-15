@@ -1,3 +1,8 @@
+2006-01-14  Josh Bressers <josh@bress.net>
+
+	* sbr/fmt_scan.c: Turn the PUTSF macro into a function capable of
+	handling multi column characters.
+
 2006-01-07  Josh Bressers <josh@bress.net>
 
 	* Remove sbr/strerror.c -- strerror(3) is defined in C89.

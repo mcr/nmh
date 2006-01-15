@@ -108,40 +108,35 @@ match (char *str, char *sub)
 	    cp += c;\
 	    }
 
-#ifdef LOCALE
-#define PUTSF(cp, str, wid, fill) {\
-		ljust = 0;\
-		if ((i = (wid)) < 0) {\
-			i = -i;\
-			ljust++;\
-		}\
-		if ((sp = (str))) {\
-			if (ljust) {\
-				c = strlen(sp);\
-				if (c > i)\
-					sp += c - i;\
-				else {\
-					while( --i >= c && cp < ep)\
-						*cp++ = fill;\
-					i++;\
-				}\
-			} else {\
-			    while ((c = (unsigned char) *sp) && (iscntrl(c) || isspace(c)))\
-				sp++;\
-			}\
-			while ((c = (unsigned char) *sp++) && --i >= 0 && cp < ep)\
-				if (!iscntrl(c) && !isspace(c)) \
-				    *cp++ = c;\
-				else {\
-					while ((c = (unsigned char) *sp) && (iscntrl(c) || isspace(c)))\
-						sp++;\
-					    *cp++ = ' ';\
-				}\
-		}\
-		if (!ljust)\
-		while( --i >= 0 && cp < ep)\
-		    *cp++ = fill;\
-	}
+char * PUTSF(char *cp, char *str, unsigned int wid, char fill) {
+
+    unsigned int i, j;
+    unsigned int char_len;
+    unsigned int term_len = 0;
+    wchar_t wide_char;
+
+    for (i = 0 ; i < wid && i < strlen(str) && term_len < wid; ) {
+        char_len = mblen(str + i, strlen(str + i));
+        if (char_len <= 0) {
+            continue;
+        }
+        mbtowc(&wide_char, str + i, strlen(str + i));
+        term_len += wcwidth(wide_char);
+
+        for (j = 0 ; j < char_len ; j++) {
+            *(cp + i) = *(str + i);
+            i++;
+        }
+    }
+
+    if (term_len < wid) {
+        for (j = term_len ; j <= wid ; j++) {
+            *(cp + i++) = fill;
+        }
+    }
+
+    return cp + i;
+}
 
 #define PUTS(cp, str) {\
 		if ((sp = (str))) {\
@@ -157,59 +152,6 @@ match (char *str, char *sub)
 			}\
 		}\
 	}
-
-#else /* LOCALE */
-#define PUTSF(cp, str, wid, fill) {\
-		ljust = 0;\
-		if ((i = (wid)) < 0) {\
-			i = -i;\
-			ljust++;\
-		}\
-		if (sp = (str)) {\
-			if (ljust) {\
-				c = strlen(sp);\
-				if (c > i)\
-					sp += c - i;\
-				else {\
-					while( --i >= c && cp < ep)\
-						*cp++ = fill;\
-					i++;\
-				}\
-			} else {\
-		    while ((c = *sp) && c <= 32)\
-			sp++;\
-			}\
-			while ((c = *sp++) && --i >= 0 && cp < ep)\
-				if (c > 32) \
-			    *cp++ = c;\
-			else {\
-					while ((c = *sp) && c <= 32)\
-				sp++;\
-			    *cp++ = ' ';\
-			}\
-		}\
-		if (!ljust)\
-		while( --i >= 0 && cp < ep)\
-		    *cp++ = fill;\
-		}
-
-#define PUTS(cp, str) {\
-		if (sp = (str)) {\
-		    while ((c = *sp) && c <= 32)\
-			sp++;\
-		    while( (c = *sp++) && cp < ep)\
-			if ( c > 32 ) \
-			    *cp++ = c;\
-			else {\
-			    while ( (c = *sp) && c <= 32 )\
-				sp++;\
-			    *cp++ = ' ';\
-			}\
-		}\
-		}
-
-#endif /* LOCALE */
-
 
 static char *lmonth[] = { "January",  "February","March",   "April",
 			  "May",      "June",    "July",    "August",
@@ -293,7 +235,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    PUTS (cp, fmt->f_comp->c_text);
 	    break;
 	case FT_COMPF:
-	    PUTSF (cp, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill);
+	    cp = PUTSF(cp, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill);
 	    break;
 
 	case FT_LIT:
@@ -319,7 +261,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    PUTS (cp, str);
 	    break;
 	case FT_STRF:
-	    PUTSF (cp, str, fmt->f_width, fmt->f_fill);
+	    cp =PUTSF (cp, str, fmt->f_width, fmt->f_fill);
 	    break;
 	case FT_STRFW:
 	    adios (NULL, "internal error (FT_STRFW)");
