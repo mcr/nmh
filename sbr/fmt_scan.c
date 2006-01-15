@@ -133,6 +133,7 @@ char * PUTSF(char *cp, char *str, unsigned int wid, char fill) {
         for (j = term_len ; j <= wid ; j++) {
             *(cp + i++) = fill;
         }
+        i--;
     }
 
     return cp + i;
