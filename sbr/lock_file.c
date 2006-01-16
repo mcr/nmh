@@ -36,11 +36,6 @@
 # include <errno.h>
 #endif
 
-#ifdef MMDFONLY
-# include <mmdfonly.h>
-# include <lockonly.h>
-#endif /* MMDFONLY */
-
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
 #else

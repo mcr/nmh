@@ -36,9 +36,7 @@ struct home {
     struct home *h_next;	/* next home in list                     */
 };
 
-#ifndef	MMDFMTS
 struct home *seek_home (char *);
-#endif /* MMDFMTS */
 
 /*
  * prototypes

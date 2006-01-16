@@ -12,16 +12,10 @@
 #include <h/nmh.h>
 #include <h/utils.h>
 
-#ifndef	MMDFONLY
-# include <h/mh.h>
-# include <h/dropsbr.h>
-# include <h/mts.h>
-# include <h/tws.h>
-#else
-# include "dropsbr.h"
-# include "strings.h"
-# include "mmdfonly.h"
-#endif
+#include <h/mh.h>
+#include <h/dropsbr.h>
+#include <h/mts.h>
+#include <h/tws.h>
 
 #ifdef HAVE_ERRNO_H
 # include <errno.h>

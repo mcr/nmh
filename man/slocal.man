@@ -120,44 +120,22 @@ is taking, as well as check for syntax errors in your
 file.
 
 .SS "Message Transfer Agents"
-If your MTA is
+Most modern MTAs including
 .BR sendmail ,
-you should include the line
+.BR postfix
+and
+.BR exim
+support a \&.forward file for directing incoming mail.
+You should include the line
 .PP
 .RS 5
 \*(lq|\ %libdir%/slocal\ \-user\ username\*(rq
 .RE
 .PP
 in your \&.forward file in your home directory.  This will cause
-.B sendmail
-to invoke
+your MTA to invoke
 .B slocal
 on your behalf when a message arrives.
-.PP
-If your MTA is
-.BR MMDF-I ,
-you should (symbolically) link
-.B %libdir%/slocal
-to the file
-.B bin/rcvmail
-in your home directory.  This will
-cause
-.B MMDF-I
-to invoke
-.B slocal
-on your behalf with the correct
-.RI \*(lq "address\ info\ sender" \*(rq
-arguments.
-.PP
-If your MTA is
-.BR MMDF-II ,
-then you should not use
-.B slocal.
-An equivalent functionality is already provided by
-.BR MMDF-II ;
-see
-.BR maildelivery (5)
-for details.
 
 .SS "The Maildelivery File"
 The

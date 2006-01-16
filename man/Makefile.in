@@ -69,7 +69,7 @@ MAN5SRC = mh-alias. mh-draft. mh-format.	\
        mh-tailor. mts.conf.
 
 MAN8SRC = ap. conflict. dp. fmtdump.		\
-       mh-mts. post.
+       post.
 
 MAN1 = $(MAN1SRC:.=.$(manext1))
 MAN5 = $(MAN5SRC:.=.$(manext5))

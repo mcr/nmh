@@ -36,17 +36,8 @@
 # endif
 #endif
 
-#ifdef MMDFMTS
-# include <mts/mmdf/util.h>
-# include <mts/mmdf/mmdf.h>
-#endif
-
 #ifdef SMTPMTS
 # include <mts/smtp/smtp.h>
-#endif
-
-#ifndef	MMDFMTS
-# define uptolow(c) ((isalpha(c) && isupper (c)) ? tolower (c) : (c))
 #endif
 
 #ifndef CYRUS_SASL
@@ -211,11 +202,7 @@ static struct headers RHeaders[] = {
     { "Resent-Fcc",        HFCC,                0 },
     { "Reply-To",          HADR,                0 },
     { "From",              HADR|HNGR,           MFRM },
-#ifdef MMDFI
-    { "Sender",            HADR|HNGR|HMNG,      0 },
-#else
     { "Sender",            HADR|HNGR,           0 },
-#endif
     { "Date",              HNOP,                MDAT },
     { "To",                HADR|HNIL,           0 },
     { "cc",                HADR|HNIL,           0 },
@@ -273,11 +260,6 @@ static struct mailname localaddrs={NULL};	/* local addrs     */
 static struct mailname netaddrs={NULL};		/* network addrs   */
 static struct mailname uuaddrs={NULL};		/* uucp addrs      */
 static struct mailname tmpaddrs={NULL};		/* temporary queue */
-
-#ifdef MMDFMTS
-static char *submitmode = "m";		/* deliver to mailbox only    */
-static char submitopts[6] = "vl";	/* initial options for submit */
-#endif /* MMDFMTS */
 
 #ifdef SMTPMTS
 static int snoop      = 0;
@@ -346,10 +328,6 @@ main (int argc, char **argv)
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 0);
     argp = arguments;
-
-#if defined(MMDFMTS) && defined(MMDFII)
-    mmdf_init (invo_name);
-#endif /* MMDFMTS and MMDFII */
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -468,19 +446,6 @@ main (int argc, char **argv)
 		    if ((pfd = atoi (cp)) <= 2)
 			adios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
-
-#ifdef MMDFMTS
-		case MAILSW:
-		    submitmode = "m";
-		    continue;
-		case SOMLSW:	/* for right now, sigh... */
-		case SAMLSW:
-		    submitmode = "b";
-		    continue;
-		case SENDSW:
-		    submitmode = "y";
-		    continue;
-#endif /* MMDFMTS */
 
 		case DLVRSW:
 		    if (!(cp = *argp++) || *cp == '-')
@@ -653,12 +618,6 @@ main (int argc, char **argv)
 	    verify_all_addresses (1);
 	done (0);
     }
-
-#ifdef MMDFMTS
-    strcat (submitopts, submitmode);
-    if (watch)
-	strcat (submitopts, "nw");
-#endif /* MMDFMTS */
 
     if (msgflags & MINV) {
 	make_bcc_file (dashstuff);
@@ -948,10 +907,6 @@ finish_headers (FILE *out)
 	    }
 	    if (whomsw && !fill_up)
 		break;
-
-#ifdef MMDFI			/* sigh */
-	    fprintf (out, "Sender: %s\n", from);
-#endif /* MMDFI */
 
 	    fprintf (out, "Resent-Date: %s\n", dtime (&tclock, 0));
 	    if (msgid)
@@ -1399,11 +1354,6 @@ do_addresses (int bccque, int talk)
 
     chkadr ();
 
-#ifdef MMDFMTS
-    if (rp_isbad (retval = mm_waend ()))
-	die (NULL, "problem ending addresses [%s]\n", rp_valstr (retval));
-#endif /* MMDFMTS */
-
 #ifdef SMTPMTS
     if (rp_isbad (retval = sm_waend ()))
 	die (NULL, "problem ending addresses; %s", rp_string (retval));
@@ -1607,276 +1557,6 @@ do_text (char *file, int fd)
 
 #endif /* SMTPMTS */
 
-/*
- * MMDF routines
- */
-
-#ifdef MMDFMTS
-
-static void
-post (char *file, int bccque, int talk)
-{
-    int fd, onex;
-    int	retval;
-#ifdef RP_NS
-    int	len;
-    struct rp_bufstruct reply;
-#endif /* RP_NS */
-
-    onex = !(msgflags & MINV) || bccque;
-    if (verbose) {
-	if (msgflags & MINV)
-	    printf (" -- Posting for %s Recipients --\n",
-		    bccque ? "Blind" : "Sighted");
-	else
-	    printf (" -- Posting for All Recipients --\n");
-    }
-
-    sigon ();
-
-    if (rp_isbad (retval = mm_init ())
-	    || rp_isbad (retval = mm_sbinit ())
-	    || rp_isbad (retval = mm_winit (NULL, submitopts, from)))
-	die (NULL, "problem initializing MMDF system [%s]",
-		rp_valstr (retval));
-#ifdef RP_NS
-	if (rp_isbad (retval = mm_rrply (&reply, &len)))
-	    die (NULL, "problem with sender address [%s]",
-		    rp_valstr (retval));
-#endif /* RP_NS */
-
-    do_addresses (bccque, talk && verbose);
-    if ((fd = open (file, O_RDONLY)) == NOTOK)
-	die (file, "unable to re-open");
-    do_text (file, fd);
-    close (fd);
-    fflush (stdout);
-
-    mm_sbend ();
-    mm_end (OK);
-    sigoff ();
-
-    if (verbose)
-	if (msgflags & MINV)
-	    printf (" -- %s Recipient Copies Posted --\n",
-		    bccque ? "Blind" : "Sighted");
-	else
-	    printf (" -- Recipient Copies Posted --\n");
-    fflush (stdout);
-}
-
-
-/* Address Verification */
-
-static void
-verify_all_addresses (int talk)
-{
-    int retval;
-    struct mailname *lp;
-
-#ifdef RP_NS
-    int	len;
-    struct rp_bufstruct reply;
-#endif /* RP_NS */
-
-    sigon ();
-
-    if (!whomsw || checksw) {
-	if (rp_isbad (retval = mm_init ())
-		|| rp_isbad (retval = mm_sbinit ())
-		|| rp_isbad (retval = mm_winit (NULL, submitopts, from)))
-	    die (NULL, "problem initializing MMDF system [%s]",
-		    rp_valstr (retval));
-#ifdef RP_NS
-	if (rp_isbad (retval = mm_rrply (&reply, &len)))
-	    die (NULL, "problem with sender address [%s]", rp_valstr (retval));
-#endif /* RP_NS */
-    }
-
-    if (talk && !whomsw)
-	printf (" -- Address Verification --\n");
-    if (talk && localaddrs.m_next)
-	printf ("  -- Local Recipients --\n");
-    for (lp = localaddrs.m_next; lp; lp = lp->m_next)
-	do_an_address (lp, talk);
-
-    if (talk && uuaddrs.m_next)
-	printf ("  -- UUCP Recipients --\n");
-    for (lp = uuaddrs.m_next; lp; lp = lp->m_next)
-	do_an_address (lp, talk);
-
-    if (talk && netaddrs.m_next)
-	printf ("  -- Network Recipients --\n");
-    for (lp = netaddrs.m_next; lp; lp = lp->m_next)
-	do_an_address (lp, talk);
-
-    chkadr ();
-    if (talk && !whomsw)
-	printf (" -- Address Verification Successful --\n");
-
-    if (!whomsw || checksw)
-	mm_end (NOTOK);
-
-    fflush (stdout);
-    sigoff ();
-}
-
-
-static void
-do_an_address (struct mailname *lp, int talk)
-{
-    int len, retval;
-    char *mbox, *host, *text, *path;
-    char addr[BUFSIZ];
-    struct rp_bufstruct reply;
-
-    switch (lp->m_type) {
-	case LOCALHOST: 
-	    mbox = lp->m_mbox;
-	    host = LocalName ();
-	    strncpy (addr, mbox, sizeof(addr));
-	    break;
-
-	case UUCPHOST: 
-	    fprintf (talk ? stdout : stderr, "  %s!%s: %s\n",
-		lp->m_host, lp->m_mbox, "not supported; UUCP address");
-	    unkadr++;
-	    fflush (stdout);
-	    return;
-
-	default: 		/* let MMDF decide if the host is bad */
-	    mbox = lp->m_mbox;
-	    host = lp->m_host;
-	    snprintf (addr, sizeof(addr), "%s at %s", mbox, host);
-	    break;
-    }
-
-    if (talk)
-	printf ("  %s%s", addr, whomsw && lp->m_bcc ? "[BCC]" : "");
-
-    if (whomsw && !checksw) {
-	putchar ('\n');
-	return;
-    }
-    if (talk)
-	printf (": ");
-    fflush (stdout);
-
-#ifdef MMDFII
-    if (lp->m_path)
-	path = concat (lp->m_path, mbox, "@", host, NULL);
-    else
-#endif /* MMDFII */
-	path = NULL;
-    if (rp_isbad (retval = mm_wadr (path ? NULL : host, path ? path : mbox))
-	    || rp_isbad (retval = mm_rrply (&reply, &len)))
-	die (NULL, "problem submitting address [%s]", rp_valstr (retval));
-
-    switch (rp_gval (reply.rp_val)) {
-	case RP_AOK: 
-	    if (talk)
-		printf ("address ok\n");
-	    fflush (stdout);
-	    return;
-
-#ifdef RP_DOK
-	case RP_DOK: 
-	    if (talk)
-		printf ("nameserver timeout - queued for checking\n");
-	    fflush (stdout);
-	    return;
-#endif /* RP_DOK */
-
-	case RP_NO: 
-	    text = "you lose";
-	    break;
-
-#ifdef RP_NS
-	case RP_NS: 
-	    text = "temporary nameserver failure";
-	    break;
-
-#endif /* RP_NS */
-
-	case RP_USER: 
-	case RP_NDEL: 
-	    text = "not deliverable";
-	    break;
-
-	case RP_AGN: 
-	    text = "try again later";
-	    break;
-
-	case RP_NOOP: 
-	    text = "nothing done";
-	    break;
-
-	default: 
-	    if (!talk)
-		fprintf (stderr, "  %s: ", addr);
-	    text = "unexpected response";
-	    die (NULL, "%s;\n    [%s] -- %s", text,
-		    rp_valstr (reply.rp_val), reply.rp_line);
-    }
-
-    if (!talk)
-	fprintf (stderr, "  %s: ", addr);
-    fprintf (talk ? stdout : stderr, "%s;\n    %s\n", text, reply.rp_line);
-    unkadr++;
-
-    fflush (stdout);
-}
-
-
-static void
-do_text (char *file, int fd)
-{
-    int retval, state;
-    char buf[BUFSIZ];
-    struct rp_bufstruct reply;
-
-    lseek (fd, (off_t) 0, SEEK_SET);
-
-    while ((state = read (fd, buf, sizeof(buf))) > 0) {
-	if (rp_isbad (mm_wtxt (buf, state)))
-	    die (NULL, "problem writing text [%s]\n", rp_valstr (retval));
-    }
-
-    if (state == NOTOK)
-	die (file, "problem reading from");
-
-    if (rp_isbad (retval = mm_wtend ()))
-	die (NULL, "problem ending text [%s]\n", rp_valstr (retval));
-
-    if (rp_isbad (retval = mm_rrply (&reply, &state)))
-	die (NULL, "problem getting submission status [%s]\n",
-		rp_valstr (retval));
-
-    switch (rp_gval (reply.rp_val)) {
-	case RP_OK: 
-	case RP_MOK: 
-	    break;
-
-	case RP_NO: 
-	    die (NULL, "you lose; %s", reply.rp_line);
-
-	case RP_NDEL: 
-	    die (NULL, "no delivery occurred; %s", reply.rp_line);
-
-	case RP_AGN: 
-	    die (NULL, "try again later; %s", reply.rp_line);
-
-	case RP_NOOP: 
-	    die (NULL, "nothing done; %s", reply.rp_line);
-
-	default: 
-	    die (NULL, "unexpected response;\n\t[%s] -- %s",
-		    rp_valstr (reply.rp_val), reply.rp_line);
-    }
-}
-
-#endif /* MMDFMTS */
-
 
 /*
  * SIGNAL HANDLING
@@ -1892,11 +1572,6 @@ sigser (int i)
     unlink (tmpfil);
     if (msgflags & MINV)
 	unlink (bccfil);
-
-#ifdef MMDFMTS
-    if (!whomsw || checksw)
-	mm_end (NOTOK);
-#endif /* MMDFMTS */
 
 #ifdef SMTPMTS
     if (!whomsw || checksw)
@@ -2017,11 +1692,6 @@ die (char *what, char *fmt, ...)
     if (msgflags & MINV)
 	unlink (bccfil);
 
-#ifdef MMDFMTS
-    if (!whomsw || checksw)
-	mm_end (NOTOK);
-#endif /* MMDFMTS */
-
 #ifdef SMTPMTS
     if (!whomsw || checksw)
 	sm_end (NOTOK);
@@ -2032,27 +1702,3 @@ die (char *what, char *fmt, ...)
     va_end(ap);
     done (1);
 }
-
-
-#ifdef MMDFMTS
-/* 
- * err_abrt() is used by the mm_ routines
- *    	 do not, under *ANY* circumstances, remove it from post,
- *	 or you will lose *BIG*
- */
-
-void
-err_abrt (int code, char *fmt, ...)
-{
-    char buffer[BUFSIZ];
-    va_list ap;
-
-    snprintf (buffer, sizeof(buffer), "[%s]", rp_valstr (code));
-
-    va_start(ap, fmt);
-    advertise (buffer, NULL, fmt, ap);
-    va_end(ap);
-
-    done (1);
-}
-#endif /* MMDFMTS */

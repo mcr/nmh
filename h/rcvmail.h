@@ -14,21 +14,11 @@
 # include <mts/smtp/smtp.h>
 #endif /* SMTPMTS */
 
-#ifdef MMDFMTS
-# include <mts/mmdf/util.h>
-# include <mts/mmdf/mmdf.h>
-#endif /* MMDFMTS */
-
 
 #if defined(SMTPMTS)
 # define RCV_MOK	0
 # define RCV_MBX	1
 #endif /* SMTPMTS */
-
-#ifdef MMDFI
-# define RCV_MOK	RP_MOK
-# define RCV_MBX	RP_MECH
-#endif /* MMDFI */
 
 
 #ifdef NRTC			/* sigh */

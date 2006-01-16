@@ -16,9 +16,6 @@
  *
  *  to their $HOME/.forward file.
  *
- *  Under MMDF-I, users should (symbolically) link
- *  /usr/local/nmh/lib/slocal to $HOME/bin/rcvmail.
- *
  */
 
 /* Changed to use getutent() and friends.  Assumes that when getutent() exists,
@@ -1191,10 +1188,6 @@ usr_pipe (int fd, char *cmd, char *pgm, char **vec, int suppress)
 		status = pidwait (child_id, 0);
 		alarm (0);
 
-#ifdef MMDFI
-		if (status == RP_MOK || status == RP_OK)
-		    status = 0;
-#endif
 		if (verbose) {
 		    if (status == 0)
 			verbose_printf (", success.\n");

@@ -47,9 +47,7 @@ static char *getalias (char *);
 static void add_aka (struct aka *, char *);
 static struct aka *akalloc (char *);
 static struct home *hmalloc (struct passwd *);
-#ifndef MMDFMTS
 struct home *seek_home (char *);
-#endif
 
 
 /* Do mh alias substitution on 's' and return the results. */
@@ -561,7 +559,6 @@ hmalloc (struct passwd *pw)
 }
 
 
-#ifndef	MMDFMTS
 struct home *
 seek_home (char *name)
 {
@@ -598,4 +595,3 @@ seek_home (char *name)
 	
     return NULL;
 }
-#endif	/* MMDFMTS */

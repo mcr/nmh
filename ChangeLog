@@ -1,7 +1,11 @@
 2006-01-16  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* h/aliasbr.h, h/rcvmail.h, man/Makefile.in, man/slocal.man,
+	sbr/lock_file.c, uip/aliasbr.c, uip/dropsbr.c, uip/post.c,
+	uip/slocal.c, man/mh-mts.man: remove remnants of code for MMDF
+
 	* uip/scansbr.c: multiply buffer size by MB_CUR_MAX so multi-byte
-        chars fit
+	chars fit
 
 2006-01-14  Josh Bressers <josh@bress.net>
 
