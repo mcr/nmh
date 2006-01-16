@@ -97,7 +97,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		width = MAXSCANL;
 	}
 	dat[3] = slwidth = width;
-	scanl = (char *) mh_xmalloc((size_t) MB_CUR_MAX * ((slwidth + 2) );
+	scanl = (char *) mh_xmalloc((size_t) MB_CUR_MAX * (slwidth + 2) );
 	if (outnum)
 	    umask(~m_gmprot());
 
