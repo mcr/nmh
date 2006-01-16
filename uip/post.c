@@ -48,6 +48,8 @@
 
 #define FCCS		10	/* max number of fccs allowed */
 
+#define	uptolow(c)	((isalpha(c) && isupper (c)) ? tolower (c) : c)
+
 /* In the following array of structures, the numeric second field of the
    structures (minchars) is apparently used like this:
 

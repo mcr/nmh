@@ -21,8 +21,6 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
-#define	uptolow(c)	((isalpha(c) && isupper (c)) ? tolower (c) : c)
-
 #define MAX_SM_FIELD	1476	/* < largest hdr field sendmail will accept */
 #define FCCS		10	/* max number of fccs allowed */
 
