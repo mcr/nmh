@@ -1,3 +1,8 @@
+2006-01-16  Oliver Kiddle  <okiddle@yahoo.co.uk>
+
+	* uip/scansbr.c: multiply buffer size by MB_CUR_MAX so multi-byte
+        chars fit
+
 2006-01-14  Josh Bressers <josh@bress.net>
 
 	* sbr/fmt_scan.c: Turn the PUTSF macro into a function capable of
