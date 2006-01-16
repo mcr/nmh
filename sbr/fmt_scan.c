@@ -14,6 +14,7 @@
 #include <h/fmt_scan.h>
 #include <h/tws.h>
 #include <h/fmt_compile.h>
+#include <wchar.h>
 
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
