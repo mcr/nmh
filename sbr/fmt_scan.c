@@ -14,7 +14,6 @@
 #include <h/fmt_scan.h>
 #include <h/tws.h>
 #include <h/fmt_compile.h>
-#include <wchar.h>
 
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -26,6 +25,7 @@
 #  include <time.h>
 # endif
 #endif
+#include <wchar.h>
 
 #define	NFMTS MAXARGS
 
@@ -87,73 +87,146 @@ match (char *str, char *sub)
 }
 
 /*
- * macros to format data
+ * copy a number to the destination subject to a maximum width
  */
-#define PUTDF(cp, num, wid, fill)\
-	if (cp + wid < ep) {\
-	    if ((i = (num)) < 0)\
-		i = -(num);\
-	    if ((c = (wid)) < 0)\
-		c = -c;\
-	    sp = cp + c;\
-	    do {\
-		*--sp = (i % 10) + '0';\
-		i /= 10;\
-	    } while (i > 0 && sp > cp);\
-	    if (i > 0)\
-		*sp = '?';\
-	    else if ((num) < 0 && sp > cp)\
-		*--sp = '-';\
-	    while (sp > cp)\
-		*--sp = fill;\
-	    cp += c;\
-	    }
+static void
+cpnumber(char **dest, int num, unsigned int wid, char fill, size_t n) {
+    int i, c;
+    char *sp;
+    char *cp = *dest;
+    char *ep = cp + n;
 
-char * PUTSF(char *cp, char *str, unsigned int wid, char fill) {
-
-    unsigned int i, j;
-    unsigned int char_len;
-    unsigned int term_len = 0;
-    wchar_t wide_char;
-
-    for (i = 0 ; i < wid && i < strlen(str) && term_len < wid; ) {
-        char_len = mblen(str + i, strlen(str + i));
-        if (char_len <= 0) {
-            continue;
-        }
-        mbtowc(&wide_char, str + i, strlen(str + i));
-        term_len += wcwidth(wide_char);
-
-        for (j = 0 ; j < char_len ; j++) {
-            *(cp + i) = *(str + i);
-            i++;
-        }
+    if (cp + wid < ep) {
+	if ((i = (num)) < 0)
+	    i = -(num);
+	if ((c = (wid)) < 0)
+	    c = -c;
+	sp = cp + c;
+	do {
+	    *--sp = (i % 10) + '0';
+	    i /= 10;
+	} while (i > 0 && sp > cp);
+	if (i > 0)
+	    *sp = '?';
+	else if ((num) < 0 && sp > cp)
+	    *--sp = '-';
+	while (sp > cp)
+	    *--sp = fill;
+	cp += c;
     }
-
-    if (term_len < wid) {
-        for (j = term_len ; j <= wid ; j++) {
-            *(cp + i++) = fill;
-        }
-        i--;
-    }
-
-    return cp + i;
+    *dest = cp;
 }
 
-#define PUTS(cp, str) {\
-		if ((sp = (str))) {\
-		    while ((c = (unsigned char) *sp) && (iscntrl(c) || isspace(c)))\
-			sp++;\
-		    while((c = (unsigned char) *sp++) && cp < ep)\
-		        if (!iscntrl(c) && !isspace(c)) \
-			    *cp++ = c;\
-			else {\
-			    while ((c = (unsigned char) *sp) && (iscntrl(c) || isspace(c)))\
-				sp++;\
-			    *cp++ = ' ';\
-			}\
-		}\
+/*
+ * copy string from str to dest padding with the fill character to a size
+ * of wid characters. if wid is negative, the string is right aligned
+ * no more than n bytes are copied
+ */
+static void
+cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
+    int remaining;     /* remaining output width available */
+    int c, ljust, w;
+    int end;           /* number of input bytes remaining in str */
+    int char_len;      /* bytes in current character */
+    wchar_t wide_char;
+    char *sp;          /* current position in source string */
+    char *cp = *dest;  /* current position in destination string */
+    char *ep = cp + n; /* end of destination buffer */
+    int prevCtrl = 1;
+
+    /* get alignment */
+    ljust = 0;
+    if ((remaining = (wid)) < 0) {
+	remaining = -remaining;
+	ljust++;
+    }
+    if ((sp = (str))) {
+	mbtowc(NULL, NULL, 0); /* reset shift state */
+	end = strlen(str);
+	while (*sp && remaining > 0 && end > 0) {
+	    char_len = mbtowc(&wide_char, sp, end);
+	    if (char_len <= 0 || (cp + char_len > ep))
+		break;
+
+	    end -= char_len;
+
+	    if (iswcntrl(wide_char) || iswspace(wide_char)) {
+		sp += char_len;
+		if (!prevCtrl) {
+		    *cp++ = ' ';
+		    remaining--;
+		}
+
+		prevCtrl = 1;
+		continue;
+	    }
+	    prevCtrl = 0;
+
+	    w = wcwidth(wide_char);
+	    if (w >= 0 && remaining >= w) {
+		strncpy(cp, sp, char_len);
+		cp += char_len;
+		remaining -= w;
+	    }
+	    sp += char_len;
 	}
+    }
+
+    if (ljust) {
+	if (cp + remaining > ep)
+	    remaining = ep - cp;
+	ep = cp + remaining;
+	if (remaining > 0) {
+	    /* copy string to the right */
+	    while (--cp >= *dest)
+		*(cp + remaining) = *cp;
+	    /* add padding at the beginning */
+	    cp += remaining;
+	    for (c=remaining; c>0; c--)
+		*cp-- = fill;
+	}
+	*dest = ep;
+    } else {
+	/* pad remaining space */
+	while (remaining-- > 0 && cp < ep)
+		*cp++ = fill;
+	*dest = cp;
+    }
+}
+
+static void
+cpstripped (char **start, char *end, char *str)
+{
+    int c;
+    char *s = str;
+
+    if (!s)
+	return;
+
+    /* skip any initial control characters or spaces */
+    while ((c = (unsigned char) *s) &&
+#ifdef LOCALE
+	    (iscntrl(c) || isspace(c)))
+#else
+	    (c <= 32))
+#endif
+	s++;
+
+    /* compact repeated control characters and spaces into a single space */
+    while((c = (unsigned char) *s++) && *start < end)
+	if (!iscntrl(c) && !isspace(c))
+	    *(*start)++ = c;
+	else {
+	    while ((c = (unsigned char) *s) &&
+#ifdef LOCALE
+		    (iscntrl(c) || isspace(c)))
+#else
+		    (c <= 32))
+#endif
+		s++;
+	    *(*start)++ = ' ';
+	}
+}
 
 static char *lmonth[] = { "January",  "February","March",   "April",
 			  "May",      "June",    "July",    "August",
@@ -234,10 +307,10 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	switch (fmt->f_type) {
 
 	case FT_COMP:
-	    PUTS (cp, fmt->f_comp->c_text);
+	    cpstripped (&cp, ep, fmt->f_comp->c_text);
 	    break;
 	case FT_COMPF:
-	    cp = PUTSF(cp, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill);
+	    cptrimmed (&cp, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill, ep - cp);
 	    break;
 
 	case FT_LIT:
@@ -260,10 +333,10 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    break;
 
 	case FT_STR:
-	    PUTS (cp, str);
+	    cpstripped (&cp, ep, str);
 	    break;
 	case FT_STRF:
-	    cp =PUTSF (cp, str, fmt->f_width, fmt->f_fill);
+	    cptrimmed (&cp, str, fmt->f_width, fmt->f_fill, ep - cp);
 	    break;
 	case FT_STRFW:
 	    adios (NULL, "internal error (FT_STRFW)");
@@ -273,7 +346,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    if (n >= 0) cp += n;
 	    break;
 	case FT_NUMF:
-	    PUTDF (cp, value, fmt->f_width, fmt->f_fill);
+	    cpnumber (&cp, value, fmt->f_width, fmt->f_fill, ep - cp);
 	    break;
 
 	case FT_CHAR:
@@ -628,7 +701,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		  }
 		}
 	    }
-	    break;  
+	    break;
 
 
 		/* UNQUOTEs RFC-2822 quoted-string and quoted-pair */
@@ -648,7 +721,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		    switch ( str[n] ) {
 			case '\\':
 			    n++;
-			    if ( str[n] != '\0') 
+			    if ( str[n] != '\0')
 				buffer2[m++] = str[n++];
 			    break;
 			case '"':
@@ -657,7 +730,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 			default:
 			    buffer2[m++] = str[n++];
 			    break;
-			}		 
+			}
 		}
 		buffer2[m] = '\0';
 		str = buffer2;
@@ -748,7 +821,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 			*cp++ = ' ';
 		}
 	    }
-	    PUTS (cp, lp);
+	    cpstripped (&cp, ep, lp);
 	    }
 	    break;
 
@@ -770,7 +843,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 		comp->c_mn = &fmt_mnull;
 	    }
 	    break;
-	    
+
 	case FT_MYMBOX:
 	    /*
 	     * if there's no component, we say true.  Otherwise we
@@ -828,7 +901,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
     while (fmt->f_type != FT_DONE)
 	fmt++;
 
-    finished:;    
+    finished:;
     *cp = '\0';
     return (fmt->f_value ? ++fmt : (struct format *) 0);
 
