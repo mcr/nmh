@@ -1,5 +1,7 @@
 2006-01-18  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* configure.in: use AS_HELP_STRING for formatting help messages
+
 	* configure.in, sbr/fmt_scan.c: add autoconf magic to support
 	old systems that don't support multibyte character sets
 
