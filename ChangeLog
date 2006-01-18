@@ -1,3 +1,8 @@
+2006-01-18  Oliver Kiddle  <okiddle@yahoo.co.uk>
+
+	* sbr/fmt_scan.c: fix bug with insertion of newline being wrong if
+	the num function was used at the end of the format buffer
+
 2006-01-17  David Levine <levinedl@acm.org>
 
 	* uip/post.c, uip/spost.c: in make_bcc_file (), use same
