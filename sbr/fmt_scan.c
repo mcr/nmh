@@ -25,7 +25,10 @@
 #  include <time.h>
 # endif
 #endif
-#include <wchar.h>
+#ifdef MULTIBYTE_SUPPORT
+#  include <wctype.h>
+#  include <wchar.h>
+#endif
 
 #define	NFMTS MAXARGS
 
@@ -127,8 +130,10 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
     int remaining;     /* remaining output width available */
     int c, ljust, w;
     int end;           /* number of input bytes remaining in str */
+#ifdef MULTIBYTE_SUPPORT
     int char_len;      /* bytes in current character */
     wchar_t wide_char;
+#endif
     char *sp;          /* current position in source string */
     char *cp = *dest;  /* current position in destination string */
     char *ep = cp + n; /* end of destination buffer */
@@ -144,6 +149,7 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
 	mbtowc(NULL, NULL, 0); /* reset shift state */
 	end = strlen(str);
 	while (*sp && remaining > 0 && end > 0) {
+#ifdef MULTIBYTE_SUPPORT
 	    char_len = mbtowc(&wide_char, sp, end);
 	    if (char_len <= 0 || (cp + char_len > ep))
 		break;
@@ -152,6 +158,11 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
 
 	    if (iswcntrl(wide_char) || iswspace(wide_char)) {
 		sp += char_len;
+#else
+	    end--;
+	    if (iscntrl(*sp) || isspace(*sp)) {
+		sp++;
+#endif
 		if (!prevCtrl) {
 		    *cp++ = ' ';
 		    remaining--;
@@ -162,6 +173,7 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
 	    }
 	    prevCtrl = 0;
 
+#ifdef MULTIBYTE_SUPPORT
 	    w = wcwidth(wide_char);
 	    if (w >= 0 && remaining >= w) {
 		strncpy(cp, sp, char_len);
@@ -169,6 +181,10 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
 		remaining -= w;
 	    }
 	    sp += char_len;
+#else
+	    *cp++ = *sp++;
+	    remaining--;
+#endif
 	}
     }
 

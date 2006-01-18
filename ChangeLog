@@ -1,5 +1,8 @@
 2006-01-18  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
+	* configure.in, sbr/fmt_scan.c: add autoconf magic to support
+	old systems that don't support multibyte character sets
+
 	* sbr/fmt_scan.c: fix bug with insertion of newline being wrong if
 	the num function was used at the end of the format buffer
 
