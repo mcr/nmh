@@ -761,7 +761,18 @@ make_bcc_file (void)
     chmod (bccfil, 0600);
 
     fprintf (out, "Date: %s\n", dtimenow (0));
-    fprintf (out, "From: %s\n", signature);
+    if (msgflags & MFRM) {
+      /* There was already a From: in the draft.  Don't add one. */
+      if (!draft_from_masquerading)
+        /* mts.conf didn't contain "masquerade:[...]draft_from[...]"
+           so we'll reveal the user's actual account@thismachine
+           address in a Sender: header (and use it as the envelope
+           From: later). */
+        fprintf (out, "Sender: %s\n", from);
+    }
+    else
+      /* Construct a From: header. */
+      fprintf (out, "From: %s\n", signature);
     if (subject)
 	fprintf (out, "Subject: %s", subject);
     fprintf (out, "BCC:\n\n------- Blind-Carbon-Copy\n\n");

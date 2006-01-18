@@ -1,3 +1,12 @@
+2006-01-17  David Levine <levinedl@acm.org>
+
+	* uip/post.c, uip/spost.c: in make_bcc_file (), use same
+	logic as in finish_headers () to detect whether there is an
+	existing From: line in the draft.  If draft_from masquerade
+	flag is enabled, this allows the From: to be obeyed in the
+	Bcc, instead of the old behavior of always replacing it with
+	the signature.
+
 2006-01-17  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* sbr/fmt_scan.c: more robust multi-byte/column support for field
