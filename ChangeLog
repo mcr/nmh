@@ -1,3 +1,8 @@
+2006-01-29  Oliver Kiddle  <okiddle@yahoo.co.uk>
+
+	* bug 4360: uip/replsbr.c: remove trailing newlines from components
+	to fix bug with spaces at the end of Subject/References in replies
+
 2006-01-18  Oliver Kiddle  <okiddle@yahoo.co.uk>
 
 	* configure.in: use AS_HELP_STRING for formatting help messages
