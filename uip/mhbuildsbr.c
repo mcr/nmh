@@ -51,6 +51,7 @@ extern int verbosw;
 extern int ebcdicsw;
 extern int listsw;
 extern int rfc934sw;
+extern int contentidsw;
 
 extern int endian;	/* mhmisc.c */
 
@@ -3932,9 +3933,9 @@ build_headers (CT ct)
     add_header (ct, np, vp);
 
     /*
-     * output the Content-ID
+     * output the Content-ID, unless disabled by -nocontentid
      */
-    if (ct->c_id) {
+    if (contentidsw && ct->c_id) {
 	np = add (ID_FIELD, NULL);
 	vp = concat (" ", ct->c_id, NULL);
 	add_header (ct, np, vp);

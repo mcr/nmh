@@ -15,6 +15,7 @@ mhbuild \- translate MIME composition draft
 .RB [ \-headers " | " \-noheaders ]
 .RB [ \-ebcdicsafe " | " \-noebcdicsafe ]
 .RB [ \-rfc934mode " | " \-norfc934mode ]
+.RB [ \-contentid " | " \-nocontentid ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-check " | " \-nocheck ]
 .RB [ \-version ]
@@ -312,9 +313,13 @@ character.  This description will be copied into the
 .PP
 By default,
 .B mhbuild
-will generate a unique \*(lqContent-ID:\*(rq for
-each directive; however, the user may override this by defining the ID
-using the \*(lq<\*(rq and \*(lq>\*(rq characters.
+will generate a unique \*(lqContent-ID:\*(rq for each directive,
+corresponding to each message part; however, the user may override
+this by defining the ID using the \*(lq<\*(rq and \*(lq>\*(rq
+characters.  The
+.B \-nocontentid
+switch suppresses creation of all \*(lqContent-ID:\*(rq headers,
+even in the top level of the message.
 .PP
 In addition to the various directives, plaintext can be present.
 Plaintext is gathered, until a directive is found or the draft is
@@ -642,6 +647,7 @@ mhlist(1), mhshow(1), mhstore(1),
 .RB ` \-headers '
 .RB ` \-realsize '
 .RB ` \-norfc934mode '
+.RB ` \-contentid '
 .RB ` \-nocheck '
 .RB ` \-noebcdicsafe '
 .RB ` \-noverbose '

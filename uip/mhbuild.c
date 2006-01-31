@@ -59,11 +59,15 @@ static struct swit switches[] = {
     { "rcache policy", 0 },
 #define	WCACHESW               15
     { "wcache policy", 0 },
-#define VERSIONSW              16
+#define	CONTENTIDSW            16
+    { "contentid", 0 },
+#define	NCONTENTIDSW           17
+    { "nocontentid", 0 },
+#define VERSIONSW              18
     { "version", 0 },
-#define	HELPSW                 17
+#define	HELPSW                 19
     { "help", 0 },
-#define	DEBUGSW                18
+#define	DEBUGSW                20
     { "debug", -5 },
     { NULL, 0 }
 };
@@ -85,6 +89,7 @@ int verbosw = 0;
 int ebcdicsw = 0;
 int listsw   = 0;
 int rfc934sw = 0;
+int contentidsw = 1;
 
 /*
  * Temporary files
@@ -217,6 +222,13 @@ main (int argc, char **argv)
 		continue;
 	    case NSIZESW:
 		sizesw = 0;
+		continue;
+
+	    case CONTENTIDSW:
+		contentidsw = 1;
+		continue;
+	    case NCONTENTIDSW:
+		contentidsw = 0;
 		continue;
 
 	    case VERBSW: 
