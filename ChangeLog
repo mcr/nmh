@@ -1,3 +1,8 @@
+2006-02-12  David Levine <levinedl@acm.org>
+
+	* docs/TODO: added RFC2183 to reference of RFC1806 for
+	Content-Disposition header.
+
 2006-01-17  David Levine <levinedl@acm.org>
 
 	* uip/mhbuild.c, uip/mhbuildsbr.c, man/mhbuild.man:  added
