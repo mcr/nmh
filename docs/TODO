@@ -106,7 +106,6 @@ MHBUILD
 -------
 * add ability to specify Content-Transfer-Encoding in composition
   drafts.
-* add support for Content-Disposition header (rfc1806, rfc2183).
 * remove the code for caching from mhbuild.
 
 MHL

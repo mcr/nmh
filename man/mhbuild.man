@@ -212,6 +212,7 @@ separated accordingly.  For example,
     type=tar; \\
     conversions=compress \\
     [this is the nmh distribution] \\
+    {application; filename="nmh.tar.gz"} \\
     name="nmh.tar.gz"; \\
     directory="/pub/nmh"; \\
     site="ftp.math.gatech.edu"; \\
@@ -223,7 +224,8 @@ separated accordingly.  For example,
 You must give a description string to separate the content parameters
 from the external-parameters (although this string may be empty).
 This description string is specified by enclosing it within
-\*(lq[]\*(rq.
+\*(lq[]\*(rq.  A disposition string, to appear in a
+Content-Disposition header, may appear in the optional \*(lq{}\*(rq.
 .PP
 These parameters are of the form:
 .PP
@@ -308,6 +310,29 @@ character.  This description will be copied into the
 .RS 5
 .nf
 #forw [important mail from Bob] +bob 1 2 3 4 5
+.fi
+.RE
+.PP
+Similarly, a disposition string may optionally be provided between
+\*(lq{\*(rq and \*(lq}\*(rq characters; it will be copied into the
+\*(lqContent-Disposition\*(rq header when the directive is processed.
+If a disposition string is provided that does not contain a filename
+parameter, and a filename is provided in the directive, it will be
+added to the \*(lqContent-Disposition\*(rq header.  For example, the
+following directive:
+.PP
+.RS 5
+.nf
+#text/plain; charset=iso-8859-1 <>{attachment} /tmp/summary.txt
+.fi
+.RE
+.PP
+creates these message part headers:
+.PP
+.RS 5
+.nf
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: attachment; filename="summary.txt"
 .fi
 .RE
 .PP
@@ -555,6 +580,7 @@ directive    ::=     "#" type "/" subtype
                          [ "(" comment ")" ]
                          [ "<" id ">" ]
                          [ "[" description "]" ]
+                         [ "{" disposition "}" ]
                          [ filename ]
                          EOL
 
@@ -563,18 +589,21 @@ directive    ::=     "#" type "/" subtype
                          [ "(" comment ")" ]
                          [ "<" id ">" ]
                          [ "[" description "]" ]
+                         [ "{" disposition "}" ]
                          external-parameters
                          EOL
 
                    | "#forw"
                          [ "<" id ">" ]
                          [ "[" description "]" ]
+                         [ "{" disposition "}" ]
                          [ "+"folder ] [ 0*msg ]
                          EOL
 
                    | "#begin"
                            [ "<" id ">" ]
                            [ "[" description "]" ]
+                           [ "{" disposition "}" ]
                            [   "alternative"
                              | "parallel"
                              | something-else    ]
@@ -591,6 +620,7 @@ plaintext    ::=     [ "Content-Description:"
                          0*(";" attribute "=" value)
                          [ "(" comment ")" ]
                          [ "[" description "]" ]
+                         [ "{" disposition "}" ]
                          EOL
                          1*line
                      [ "#" EOL ]

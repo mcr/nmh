@@ -1,3 +1,14 @@
+2006-02-18  David Levine <levinedl@acm.org>
+
+        * h/mime.h, h/mhparse.h, uip/mhbuildsbr.c, uip/mhfree.c,
+        man/mhbuild.man, docs/TODO:  added support for an optional
+        Content-Disposition header in mhbuild (only).  Its contents
+        are supplied between {}, positioned after the optional [], in
+        a mhbuild directive.  If the contents do not contain a
+        "filename=" parameter, and the directive has a filename, or
+        something else that ends with "name=", then that will be used
+        to add a "filename=" parameter to the header.
+
 2006-02-12  David Levine <levinedl@acm.org>
 
 	* docs/TODO: added RFC2183 to reference of RFC1806 for

@@ -186,6 +186,8 @@ static int scan_content (CT);
 static int build_headers (CT);
 static char *calculate_digest (CT, int);
 static int readDigest (CT, char *);
+static char *incl_name_value (char *, char *, char *);
+static char *extract_name_value (char *, char *);
 
 /*
  * Structures for mapping (content) types to
@@ -651,6 +653,16 @@ get_content (FILE *in, char *file, int toplevel)
 		goto got_header;
 	    }
 
+	    /* Get Content-Disposition field */
+	    if (!strcasecmp (name, DISPO_FIELD)) {
+		ct->c_dispo = add (buf, ct->c_dispo);
+		while (state == FLDPLUS) {
+		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		    ct->c_dispo = add (buf, ct->c_dispo);
+		}
+		goto got_header;
+	    }
+
 	    /* Get Content-MD5 field */
 	    if (!strcasecmp (name, MD5_FIELD)) {
 		char *cp, *dp, *ep;
@@ -1058,11 +1070,51 @@ bad_quote:
     }
 
     /*
+     * Get any {Content-Disposition} given in buffer.
+     */
+    if (magic && *cp == '{') {
+        ct->c_dispo = ++cp;
+	for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
+	    if (*dp == '}')
+		break;
+	if (dp < cp) {
+	    advise (NULL, "invalid disposition in message %s", ct->c_file);
+	    ct->c_dispo = NULL;
+	    return NOTOK;
+	}
+	
+	c = *dp;
+	*dp = '\0';
+	if (*ct->c_dispo)
+	    ct->c_dispo = concat (ct->c_dispo, "\n", NULL);
+	else
+	    ct->c_dispo = NULL;
+	*dp++ = c;
+	cp = dp;
+
+	while (isspace (*cp))
+	    cp++;
+    }
+
+    /*
      * Check if anything is left over
      */
     if (*cp) {
-	if (magic)
+        if (magic) {
 	    ci->ci_magic = add (cp, NULL);
+
+            /* If there is a Content-Disposition header and it doesn't
+               have a *filename=, extract it from the magic contents.
+               The r1bindex call skips any leading directory
+               components. */
+            if (ct->c_dispo)
+              ct->c_dispo =
+                incl_name_value (ct->c_dispo,
+                                 "filename",
+                                 r1bindex (extract_name_value ("name",
+                                                               ci->ci_magic),
+                                           '/'));
+        }
 	else
 	    advise (NULL,
 		    "extraneous information in message %s's %s: field\n%*.*s(%s)",
@@ -2311,6 +2363,8 @@ open7Bit (CT ct, char **file)
 	    fprintf (ce->ce_fp, "%s:%s", ID_FIELD, ct->c_id);
 	if (ct->c_descr)
 	    fprintf (ce->ce_fp, "%s:%s", DESCR_FIELD, ct->c_descr);
+	if (ct->c_dispo)
+	    fprintf (ce->ce_fp, "%s:%s", DISPO_FIELD, ct->c_dispo);
 	fprintf (ce->ce_fp, "\n");
     }
 
@@ -2943,6 +2997,29 @@ again_descr:
 
 		case '#':
 		    adios (NULL, "#-directive after %s: field in plaintext", DESCR_FIELD);
+		    /* NOTREACHED */
+
+		default:
+		    break;
+		}
+	    }
+
+	    if (headers >= 0 && uprf (buffer, DISPO_FIELD)
+		&& buffer[i = strlen (DISPO_FIELD)] == ':') {
+		headers = 1;
+
+again_dispo:
+		ct->c_dispo = add (buffer + i + 1, ct->c_dispo);
+		if (!fgetstr (buffer, sizeof(buffer) - 1, in))
+		    adios (NULL, "end-of-file after %s: field in plaintext", DISPO_FIELD);
+		switch (buffer[0]) {
+		case ' ':
+		case '\t':
+		    i = -1;
+		    goto again_dispo;
+
+		case '#':
+		    adios (NULL, "#-directive after %s: field in plaintext", DISPO_FIELD);
 		    /* NOTREACHED */
 
 		default:
@@ -3868,10 +3945,10 @@ build_headers (CT ct)
 
     /*
      * Skip the output of Content-Type, parameters, content
-     * description, and Content-ID if the content is of type
-     * "message" and the rfc934 compatibility flag is set
-     * (which means we are inside multipart/digest and the
-     * switch -rfc934mode was given).
+     * description and disposition, and Content-ID if the
+     * content is of type "message" and the rfc934 compatibility
+     * flag is set (which means we are inside multipart/digest
+     * and the switch -rfc934mode was given).
      */
     if (ct->c_type == CT_MESSAGE && ct->c_rfc934)
 	goto skip_headers;
@@ -3947,6 +4024,15 @@ build_headers (CT ct)
     if (ct->c_descr) {
 	np = add (DESCR_FIELD, NULL);
 	vp = concat (" ", ct->c_descr, NULL);
+	add_header (ct, np, vp);
+    }
+
+    /*
+     * output the Content-Disposition
+     */
+    if (ct->c_dispo) {
+	np = add (DISPO_FIELD, NULL);
+	vp = concat (" ", ct->c_dispo, NULL);
 	add_header (ct, np, vp);
     }
 
@@ -4227,4 +4313,68 @@ invalid_digest:
     }
 
     return OK;
+}
+
+
+/* Make sure that buf contains at least one appearance of name,
+   followed by =.  If not, append both name and value.  Note that name
+   should not contain a trailing =.  And quotes will be added around
+   the value.  Typical usage:  make sure that a Content-Disposition
+   header contains filename="foo".  If it doesn't and value does, use
+   value from that. */
+static char *
+incl_name_value (char *buf, char *name, char *value) {
+  char *newbuf = buf;
+
+  /* Assume that name is non-null. */
+  if (buf && value) {
+    char *name_plus_equal = concat (name, "=", NULL);
+
+    if (! strstr (buf, name_plus_equal)) {
+      char *appendage;
+      char *cp;
+
+      /* Trim trailing space, esp. newline. */
+      for (cp = &buf[strlen (buf) - 1]; cp >= buf && isspace (*cp); --cp) {
+        *cp = '\0';
+      }
+
+      appendage = concat ("; ", name, "=", "\"", value, "\"\n", NULL);
+      newbuf = add (appendage, buf);
+      free (appendage);
+    }
+
+    free (name_plus_equal);
+  }
+
+  return newbuf;
+}
+
+
+/* Extract just name_suffix="foo", if any, from value.  If there isn't
+   one, return the entire value.  Note that, for example, a name_suffix
+   of name will match filename="foo", and return foo. */
+static char *
+extract_name_value (char *name_suffix, char *value) {
+  char *extracted_name_value = value;
+  char *name_suffix_plus_quote = concat (name_suffix, "=\"", NULL);
+  char *name_suffix_equals = strstr (value, name_suffix_plus_quote);
+  char *cp;
+
+  free (name_suffix_plus_quote);
+  if (name_suffix_equals) {
+    char *name_suffix_begin;
+
+    /* Find first \". */
+    for (cp = name_suffix_equals; *cp != '"'; ++cp) /* empty */;
+    name_suffix_begin = ++cp;
+    /* Find second \". */
+    for (; *cp != '"'; ++cp) /* empty */;
+
+    extracted_name_value = mh_xmalloc (cp - name_suffix_begin + 1);
+    memcpy (extracted_name_value, name_suffix_begin, cp - name_suffix_begin);
+    extracted_name_value[cp - name_suffix_begin] = '\0';
+  }
+
+  return extracted_name_value;
 }

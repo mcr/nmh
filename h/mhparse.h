@@ -90,6 +90,7 @@ struct Content {
     char *c_celine;		/* Content-Transfer-Encoding:        */
     char *c_id;			/* Content-ID:                       */
     char *c_descr;		/* Content-Description:              */
+    char *c_dispo;		/* Content-Disposition:              */
     char *c_partno;		/* within multipart content          */
 
     /* Content-Type info */

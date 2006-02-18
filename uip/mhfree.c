@@ -101,6 +101,8 @@ free_content (CT ct)
 	free (ct->c_id);
     if (ct->c_descr)
 	free (ct->c_descr);
+    if (ct->c_dispo)
+	free (ct->c_dispo);
 
     if (ct->c_file) {
 	if (ct->c_unlink)

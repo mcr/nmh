@@ -12,6 +12,7 @@
 #define	ENCODING_FIELD	"Content-Transfer-Encoding"
 #define	ID_FIELD	"Content-ID"
 #define	DESCR_FIELD	"Content-Description"
+#define	DISPO_FIELD	"Content-Disposition"
 #define	MD5_FIELD	"Content-MD5"
 
 #define	isatom(c)   (!isspace (c) && !iscntrl (c) && (c) != '(' \
