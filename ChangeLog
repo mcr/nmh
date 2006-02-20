@@ -1,13 +1,19 @@
+2006-02-19  Josh Bressers <josh@bress.net>
+
+	* sbr/m_draft.c, sbr/utils.c, uip/folder.c, uip/inc.c,
+	uip/mhstoresbr.c, uip/popi.c, uip/refile.c: Add create_folder()
+	function, replacing duplicate code during folder creation.
+
 2006-02-18  David Levine <levinedl@acm.org>
 
-        * h/mime.h, h/mhparse.h, uip/mhbuildsbr.c, uip/mhfree.c,
-        man/mhbuild.man, docs/TODO:  added support for an optional
-        Content-Disposition header in mhbuild (only).  Its contents
-        are supplied between {}, positioned after the optional [], in
-        a mhbuild directive.  If the contents do not contain a
-        "filename=" parameter, and the directive has a filename, or
-        something else that ends with "name=", then that will be used
-        to add a "filename=" parameter to the header.
+	* h/mime.h, h/mhparse.h, uip/mhbuildsbr.c, uip/mhfree.c,
+	man/mhbuild.man, docs/TODO:  added support for an optional
+	Content-Disposition header in mhbuild (only).  Its contents
+	are supplied between {}, positioned after the optional [], in
+	a mhbuild directive.  If the contents do not contain a
+	"filename=" parameter, and the directive has a filename, or
+	something else that ends with "name=", then that will be used
+	to add a "filename=" parameter to the header.
 
 2006-02-12  David Levine <levinedl@acm.org>
 

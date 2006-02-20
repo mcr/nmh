@@ -562,16 +562,10 @@ main (int argc, char **argv)
     if ((maildir_copy = strdup(maildir)) == (char *)0)
         adios (maildir, "error allocating memory to copy maildir");
 
-    if (stat (maildir, &st) == NOTOK) {
-	if (errno != ENOENT)
-	    adios (maildir, "error on folder");
-	cp = concat ("Create folder \"", maildir, "\"? ", NULL);
-	if (noisy && !getanswer (cp))
-	    done (1);
-	free (cp);
-	if (!makedir (maildir))
-	    adios (NULL, "unable to create folder %s", maildir);
-    }
+    if (noisy)
+        create_folder(maildir, 0, done);
+    else
+        done (1);
 
     if (chdir (maildir) == NOTOK)
 	adios (maildir, "unable to change directory to");

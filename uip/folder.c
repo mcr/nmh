@@ -393,22 +393,7 @@ main (int argc, char **argv)
 	 * Check if folder exists.  If not, then see if
 	 * we should create it, or just exit.
 	 */
-	if (stat (strncpy (buf, m_maildir (folder), sizeof(buf)), &st) == -1) {
-	    if (errno != ENOENT)
-		adios (buf, "error on folder");
-	    if (fcreat == 0) {
-		/* ask before creating folder */
-		cp = concat ("Create folder \"", buf, "\"? ", NULL);
-		if (!getanswer (cp))
-		    done (1);
-		free (cp);
-	    } else if (fcreat == -1) {
-		/* do not create, so exit */
-		done (1);
-	    }
-	    if (!makedir (buf))
-		adios (NULL, "unable to create folder %s", buf);
-	}
+        create_folder (m_maildir (folder), fcreat, done);
 
 	if (get_folder_info (folder, msg) && argfolder) {
 	    /* update current folder */

@@ -229,16 +229,7 @@ main (int argc, char **argv)
 	folder = getfolder (0);
     maildir = m_maildir (folder);
 
-    if (stat (maildir, &st) == NOTOK) {
-	if (errno != ENOENT)
-	    adios (maildir, "error on folder");
-	cp = concat ("Create folder \"", maildir, "\"? ", NULL);
-	if (noisy && !getanswer (cp))
-	    done (1);
-	free (cp);
-	if (!makedir (maildir))
-	    adios (NULL, "unable to create folder %s", maildir);
-    }
+    create_folder(maildir, 0, done);
 
     if (chdir (maildir) == NOTOK)
 	adios (maildir, "unable to change directory to");

@@ -75,7 +75,6 @@ static int store_external (CT);
 static int ct_compar (CT *, CT *);
 static int store_content (CT, CT);
 static int output_content_file (CT, int);
-static int check_folder (char *);
 static int output_content_folder (char *, char *);
 static int parse_format_string (CT, char *, char *, int, char *);
 static void get_storeproc (CT);
@@ -571,8 +570,7 @@ store_content (CT ct, CT p)
 	    folder = getfolder (1);
 
 	/* Check if folder exists */
-	if (check_folder (folder) == NOTOK)
-	    return NOTOK;
+	create_folder(folder, 0, exit);
 
 	/* Record the folder name */
 	ct->c_folder = add (folder, NULL);
@@ -859,47 +857,6 @@ losing:
     fclose (fp);
     fclose (ct->c_fp);
     ct->c_fp = NULL;
-    return OK;
-}
-
-
-/*
- * Check if folder exists, and create
- * if necessary.
- */
-
-static int
-check_folder (char *folder)
-{
-    char *folderdir;
-    struct stat st;
-
-    /* expand path to the folder */
-    folderdir = m_mailpath (folder);
-
-    /* Check if folder exists */
-    if (stat (folderdir, &st) == NOTOK) {
-	int answer;
-	char *ep;
-
-	if (errno != ENOENT) {
-	    advise (folderdir, "error on folder");
-	    return NOTOK;
-	}
-
-	ep = concat ("Create folder \"", folderdir, "\"? ", NULL);
-	answer = getanswer (ep);
-	free (ep);
-
-	if (!answer)
-	    return NOTOK;
-
-	if (!makedir (folderdir)) {
-	    advise (NULL, "unable to create folder %s", folderdir);
-	    return NOTOK;
-	}
-    }
-
     return OK;
 }
 

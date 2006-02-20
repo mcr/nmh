@@ -12,6 +12,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <stdlib.h>
+#include <errno.h>
 
 /*
  * Safely call malloc
@@ -110,4 +111,33 @@ add (char *s2, char *s1)
     cp[len1 + len2] = '\0';
 
     return cp;
+}
+
+/*
+ * create_folder
+ *      Check to see if a folder exists, if not, prompt the user to create
+ *      it.
+ */
+void create_folder(char *folder, int autocreate, void (*done_callback)())
+{
+    struct stat st;
+    extern int errno;
+    char *cp;
+
+    if (stat (folder, &st) == -1) {
+        if (errno != ENOENT)
+            adios (folder, "error on folder");
+        if (autocreate == 0) {
+            /* ask before creating folder */
+            cp = concat ("Create folder \"", folder, "\"? ", NULL);
+            if (!getanswer (cp))
+                done_callback (1);
+            free (cp);
+        } else if (autocreate == -1) {
+            /* do not create, so exit */
+            done_callback (1);
+        }
+        if (!makedir (folder))
+            adios (NULL, "unable to create folder %s", folder);
+    }
 }

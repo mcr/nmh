@@ -34,16 +34,8 @@ m_draft (char *folder, char *msg, int use, int *isdf)
     
     chdir (m_maildir (""));
     strncpy (buffer, m_maildir (folder), sizeof(buffer));
-    if (stat (buffer, &st) == -1) {
-	if (errno != ENOENT)
-	    adios (buffer, "error on folder");
-	cp = concat ("Create folder \"", buffer, "\"? ", NULL);
-	if (!getanswer (cp))
-	    done (0);
-	free (cp);
-	if (!makedir (buffer))
-	    adios (NULL, "unable to create folder %s", buffer);
-    }
+
+    create_folder (buffer, 0, done);
 
     if (chdir (buffer) == -1)
 	adios (buffer, "unable to change directory to");

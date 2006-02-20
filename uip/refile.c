@@ -312,16 +312,7 @@ opnfolds (struct st_fold *folders, int nfolders)
 	chdir (m_maildir (""));
 	strncpy (nmaildir, m_maildir (fp->f_name), sizeof(nmaildir));
 
-	if (stat (nmaildir, &st) == NOTOK) {
-	    if (errno != ENOENT)
-		adios (nmaildir, "error on folder");
-	    cp = concat ("Create folder \"", nmaildir, "\"? ", NULL);
-	    if (!getanswer (cp))
-		done (1);
-	    free (cp);
-	    if (!makedir (nmaildir))
-		adios (NULL, "unable to create folder %s", nmaildir);
-	}
+    create_folder (nmaildir, 0, done);
 
 	if (chdir (nmaildir) == NOTOK)
 	    adios (nmaildir, "unable to change directory to");
