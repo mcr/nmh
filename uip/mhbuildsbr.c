@@ -1108,17 +1108,18 @@ bad_quote:
                The r1bindex call skips any leading directory
                components. */
             if (ct->c_dispo)
-              ct->c_dispo =
-                incl_name_value (ct->c_dispo,
-                                 "filename",
-                                 r1bindex (extract_name_value ("name",
-                                                               ci->ci_magic),
-                                           '/'));
+                ct->c_dispo =
+                    incl_name_value (ct->c_dispo,
+                                     "filename",
+                                     r1bindex (extract_name_value ("name",
+                                                                   ci->
+                                                                   ci_magic),
+                                               '/'));
         }
 	else
 	    advise (NULL,
 		    "extraneous information in message %s's %s: field\n%*.*s(%s)",
-		ct->c_file, TYPE_FIELD, i, i, "", cp);
+                    ct->c_file, TYPE_FIELD, i, i, "", cp);
     }
 
     return OK;
@@ -4317,64 +4318,85 @@ invalid_digest:
 
 
 /* Make sure that buf contains at least one appearance of name,
-   followed by =.  If not, append both name and value.  Note that name
-   should not contain a trailing =.  And quotes will be added around
-   the value.  Typical usage:  make sure that a Content-Disposition
-   header contains filename="foo".  If it doesn't and value does, use
-   value from that. */
+   followed by =.  If not, insert both name and value, just after
+   first semicolon, if any.  Note that name should not contain a
+   trailing =.	And quotes will be added around the value.  Typical
+   usage:  make sure that a Content-Disposition header contains
+   filename="foo".  If it doesn't and value does, use value from
+   that. */
 static char *
 incl_name_value (char *buf, char *name, char *value) {
-  char *newbuf = buf;
+    char *newbuf = buf;
 
-  /* Assume that name is non-null. */
-  if (buf && value) {
-    char *name_plus_equal = concat (name, "=", NULL);
+    /* Assume that name is non-null. */
+    if (buf && value) {
+	char *name_plus_equal = concat (name, "=", NULL);
 
-    if (! strstr (buf, name_plus_equal)) {
-      char *appendage;
-      char *cp;
+	if (! strstr (buf, name_plus_equal)) {
+	    char *insertion;
+	    char *cp;
+	    char *prefix, *suffix;
 
-      /* Trim trailing space, esp. newline. */
-      for (cp = &buf[strlen (buf) - 1]; cp >= buf && isspace (*cp); --cp) {
-        *cp = '\0';
-      }
+	    /* Trim trailing space, esp. newline. */
+	    for (cp = &buf[strlen (buf) - 1];
+		 cp >= buf && isspace (*cp);
+		 --cp) {
+		*cp = '\0';
+	    }
 
-      appendage = concat ("; ", name, "=", "\"", value, "\"\n", NULL);
-      newbuf = add (appendage, buf);
-      free (appendage);
+	    insertion = concat ("; ", name, "=", "\"", value, "\"", NULL);
+
+	    /* Insert at first semicolon, if any.  If none, append to
+	       end. */
+	    prefix = add (buf, NULL);
+	    if ((cp = strchr (prefix, ';'))) {
+		suffix = concat (cp, NULL);
+		*cp = '\0';
+		newbuf = concat (prefix, insertion, suffix, "\n", NULL);
+		free (suffix);
+	    } else {
+		/* Append to end. */
+		newbuf = concat (buf, insertion, "\n", NULL);
+	    }
+
+	    free (prefix);
+	    free (insertion);
+	    free (buf);
+	}
+
+	free (name_plus_equal);
     }
 
-    free (name_plus_equal);
-  }
-
-  return newbuf;
+    return newbuf;
 }
 
 
-/* Extract just name_suffix="foo", if any, from value.  If there isn't
+/* Extract just name_suffix="foo", if any, from value.	If there isn't
    one, return the entire value.  Note that, for example, a name_suffix
    of name will match filename="foo", and return foo. */
 static char *
 extract_name_value (char *name_suffix, char *value) {
-  char *extracted_name_value = value;
-  char *name_suffix_plus_quote = concat (name_suffix, "=\"", NULL);
-  char *name_suffix_equals = strstr (value, name_suffix_plus_quote);
-  char *cp;
+    char *extracted_name_value = value;
+    char *name_suffix_plus_quote = concat (name_suffix, "=\"", NULL);
+    char *name_suffix_equals = strstr (value, name_suffix_plus_quote);
+    char *cp;
 
-  free (name_suffix_plus_quote);
-  if (name_suffix_equals) {
-    char *name_suffix_begin;
+    free (name_suffix_plus_quote);
+    if (name_suffix_equals) {
+	char *name_suffix_begin;
 
-    /* Find first \". */
-    for (cp = name_suffix_equals; *cp != '"'; ++cp) /* empty */;
-    name_suffix_begin = ++cp;
-    /* Find second \". */
-    for (; *cp != '"'; ++cp) /* empty */;
+	/* Find first \". */
+	for (cp = name_suffix_equals; *cp != '"'; ++cp) /* empty */;
+	name_suffix_begin = ++cp;
+	/* Find second \". */
+	for (; *cp != '"'; ++cp) /* empty */;
 
-    extracted_name_value = mh_xmalloc (cp - name_suffix_begin + 1);
-    memcpy (extracted_name_value, name_suffix_begin, cp - name_suffix_begin);
-    extracted_name_value[cp - name_suffix_begin] = '\0';
-  }
+	extracted_name_value = mh_xmalloc (cp - name_suffix_begin + 1);
+	memcpy (extracted_name_value,
+		name_suffix_begin,
+		cp - name_suffix_begin);
+	extracted_name_value[cp - name_suffix_begin] = '\0';
+    }
 
-  return extracted_name_value;
+    return extracted_name_value;
 }

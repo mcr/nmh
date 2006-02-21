@@ -54,7 +54,7 @@ static	FILE	*composition_file;			/* composition file pointer */
 /*
  * external prototypes
  */
-int sendsbr (char **, int, char *, struct stat *, int, char *);
+int sendsbr (char **, int, char *, struct stat *, int, char *, int);
 int done (int);
 char *getusername (void);
 
@@ -68,10 +68,10 @@ static void annoaux (int);
 static int splitmsg (char **, int, char *, struct stat *, int);
 static int sendaux (char **, int, char *, struct stat *);
 
-static	int	attach(char *, char *);
+static	int	attach(char *, char *, int);
 static	void	clean_up_temporary_files(void);
 static	int	get_line(void);
-static	void	make_mime_composition_file_entry(char *);
+static	void	make_mime_composition_file_entry(char *, int);
 
 
 /*
@@ -79,7 +79,7 @@ static	void	make_mime_composition_file_entry(char *);
  */
 
 int
-sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, char *attachment_header_field_name)
+sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, char *attachment_header_field_name, int attachformat)
 {
     int status;
     char buffer[BUFSIZ], file[BUFSIZ];
@@ -104,7 +104,7 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, cha
      */
 
     if (attachment_header_field_name != (char *)0) {
-	switch (attach(attachment_header_field_name, drft)) {
+	switch (attach(attachment_header_field_name, drft, attachformat)) {
 	case OK:
 	    drft = composition_file_name;
 	    break;
@@ -188,7 +188,8 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, cha
 }
 
 static	int
-attach(char *attachment_header_field_name, char *draft_file_name)
+attach(char *attachment_header_field_name, char *draft_file_name,
+       int attachformat)
 {
     char		buf[MAXPATHLEN + 6];	/* miscellaneous buffer */
     int			c;			/* current character for body copy */
@@ -294,7 +295,7 @@ attach(char *attachment_header_field_name, char *draft_file_name)
      */
 
     if (has_body)
-	make_mime_composition_file_entry(body_file_name);
+	make_mime_composition_file_entry(body_file_name, attachformat);
 
     /*
      *	Now, go back to the beginning of the draft file and look for header fields
@@ -308,7 +309,7 @@ attach(char *attachment_header_field_name, char *draft_file_name)
 	    for (p = field + length + 1; *p == ' ' || *p == '\t'; p++)
 		;
 
-	    make_mime_composition_file_entry(p);
+	    make_mime_composition_file_entry(p, attachformat);
 	}
     }
 
@@ -376,7 +377,7 @@ get_line(void)
 }
 
 static	void
-make_mime_composition_file_entry(char *file_name)
+make_mime_composition_file_entry(char *file_name, int attachformat)
 {
     int			binary;			/* binary character found flag */
     int			c;			/* current character */
@@ -444,41 +445,64 @@ make_mime_composition_file_entry(char *file_name)
 	adios((char *)0, "unable to access file \"%s\"", file_name);
     }
 
-    (void)fprintf(composition_file, "#%s; name=\"%s\"; x-unix-mode=0%.3ho",
-     content_type, ((p = strrchr(file_name, '/')) == (char *)0) ? file_name : p + 1, (unsigned short)(st.st_mode & 0777));
+    switch (attachformat) {
+    case 0:
+        /* Insert name, file mode, and Content-Id. */
+        (void)fprintf(composition_file, "#%s; name=\"%s\"; x-unix-mode=0%.3ho",
+            content_type, ((p = strrchr(file_name, '/')) == (char *)0) ? file_name : p + 1, (unsigned short)(st.st_mode & 0777));
 
-    if (strlen(file_name) > MAXPATHLEN) {
-	clean_up_temporary_files();
-	adios((char *)0, "attachment file name `%s' too long.", file_name);
-    }
+        if (strlen(file_name) > MAXPATHLEN) {
+            clean_up_temporary_files();
+            adios((char *)0, "attachment file name `%s' too long.", file_name);
+        }
 
-    (void)sprintf(cmd, "file '%s'", file_name);
+        (void)sprintf(cmd, "file '%s'", file_name);
 
-    if ((fp = popen(cmd, "r")) != (FILE *)0 && fgets(cmd, sizeof (cmd), fp) != (char *)0) {
-	*strchr(cmd, '\n') = '\0';
+        if ((fp = popen(cmd, "r")) != (FILE *)0 && fgets(cmd, sizeof (cmd), fp) != (char *)0) {
+            *strchr(cmd, '\n') = '\0';
 
-	/*
-	 *  The output of the "file" command is of the form
-	 *
-	 *  	file:	description
-	 *
-	 *  Strip off the "file:" and subsequent white space.
-	 */
+            /*
+             *  The output of the "file" command is of the form
+             *
+             *  	file:	description
+             *
+             *  Strip off the "file:" and subsequent white space.
+             */
 
-	for (p = cmd; *p != '\0'; p++) {
-	    if (*p == ':') {
-		for (p++; *p != '\0'; p++) {
-		    if (*p != '\t')
-			break;
-		}
-		break;
-	    }
-	}
+            for (p = cmd; *p != '\0'; p++) {
+                if (*p == ':') {
+                    for (p++; *p != '\0'; p++) {
+                        if (*p != '\t')
+                            break;
+                    }
+                    break;
+                }
+            }
 
-	if (*p != '\0')
-	    (void)fprintf(composition_file, " [ %s ]", p);
+            if (*p != '\0')
+                /* Insert Content-Description. */
+                (void)fprintf(composition_file, " [ %s ]", p);
 
-	(void)pclose(fp);
+            (void)pclose(fp);
+        }
+
+        break;
+    case 1:
+        /* Suppress Content-Id, insert simple Content-Disposition. */
+        (void) fprintf (composition_file, "#%s <>{attachment}", content_type);
+
+        break;
+    case 2:
+        /* Suppress Content-Id, insert Content-Disposition with
+           modification date. */
+        (void) fprintf (composition_file,
+                        "#%s <>{attachment; modification-date=\"%s\"}",
+                        content_type,
+                        dtime (&st.st_mtim, 0));
+
+        break;
+    default:
+        adios ((char *)0, "unsupported attachformat %d", attachformat);
     }
 
     /*

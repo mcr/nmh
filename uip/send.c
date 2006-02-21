@@ -104,6 +104,8 @@ static struct swit switches[] = {
     { "user", SASLminc(-4) },
 #define ATTACHSW              40
     { "attach", 6 },
+#define ATTACHFORMATSW        41
+    { "attachformat", 7 },
     { NULL, 0 }
 };
 
@@ -142,6 +144,7 @@ main (int argc, char **argv)
     struct msgs *mp;
     struct stat st;
     char	*attach = (char *)0;	/* header field name for attachments */
+    int attachformat = 0; /* mhbuild format specifier for attachments */
 #ifdef UCI
     FILE *fp;
 #endif /* UCI */
@@ -279,6 +282,21 @@ main (int argc, char **argv)
 		case ATTACHSW:
 		    if (!(attach = *argp++) || *attach == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
+		    continue;
+
+		case ATTACHFORMATSW:
+		    if (! *argp || **argp == '-')
+			adios (NULL, "missing argument to %s", argp[-1]);
+		    else {
+			attachformat = atoi (*argp);
+			if (attachformat < 0 ||
+			    attachformat > ATTACHFORMATS - 1) {
+			    advise (NULL, "unsupported attachformat %d",
+				    attachformat);
+			    continue;
+			}
+		    }
+		    ++argp;
 		    continue;
 	    }
 	} else {
@@ -443,7 +461,8 @@ go_to_it:
     closefds (3);
 
     for (msgnum = 0; msgnum < msgp; msgnum++) {
-	switch (sendsbr (vec, vecp, msgs[msgnum], &st, 1, attach)) {
+	switch (sendsbr (vec, vecp, msgs[msgnum], &st, 1, attach,
+			 attachformat)) {
 	    case DONE: 
 		done (++status);
 	    case NOTOK: 

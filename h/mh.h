@@ -58,6 +58,8 @@ struct swit {
 
 extern struct swit anoyes[];	/* standard yes/no switches */
 
+#define ATTACHFORMATS 3		/* Number of send attach formats. */
+
 /*
  * general folder attributes
  */

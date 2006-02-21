@@ -1,5 +1,11 @@
 2006-02-20  David Levine <levinedl@acm.org>
 
+	* h/mh.h, h/prototypes.h, uip/mhbuildsbr.c, uip/send.c,
+	uip/sendsbr.c, uip/viamail.c, uip/whatnowsbr.c, man/send.man:
+	added -attachformat switch to send, to support alternate MIME
+	header contents when using -attach.  See send man page for
+	description.
+
 	* man/mhbuild.man: wrapped one appearance of "Content-Disposition"
 	with quotes, to be consistent with others.
 

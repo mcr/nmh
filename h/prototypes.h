@@ -158,7 +158,7 @@ void annopreserve(int);
 int distout (char *, char *, char *);
 void replout (FILE *, char *, char *, struct msgs *, int,
 	int, char *, char *, char *);
-int sendsbr (char **, int, char *, struct stat *, int, char *);
+int sendsbr (char **, int, char *, struct stat *, int, char *, int);
 int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *);
 

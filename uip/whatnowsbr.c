@@ -1005,6 +1005,8 @@ static struct swit  sendswitches[] = {
     { "user", SASLminc(-4) },
 #define SNDATTACHSW       39
     { "attach file", 6 },
+#define SNDATTACHFORMAT   40
+    { "attachformat", 7 },
     { NULL, 0 }
 };
 
@@ -1030,6 +1032,8 @@ sendit (char *sp, char **arg, char *file, int pushed)
     char **arguments, *vec[MAXARGS];
     struct stat st;
     char	*attach = (char *)0;	/* attachment header field name */
+    int		attachformat = 0;	/* mhbuild format specifier for
+					   attachments */
 
 #ifndef	lint
     int	distsw = 0;
@@ -1190,6 +1194,21 @@ sendit (char *sp, char **arg, char *file, int pushed)
 			return;
 		    }
 		    continue;
+
+		case SNDATTACHFORMAT:
+		    if (! *argp || **argp == '-')
+			adios (NULL, "missing argument to %s", argp[-1]);
+		    else {
+			attachformat = atoi (*argp);
+			if (attachformat < 0 ||
+			    attachformat > ATTACHFORMATS - 1) {
+			    advise (NULL, "unsupported attachformat %d",
+				    attachformat);
+			    continue;
+			}
+		    }
+		    ++argp;
+		    continue;
 	    }
 	}
 	advise (NULL, "usage: %s [switches]", sp);
@@ -1255,7 +1274,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
     vec[0] = r1bindex (postproc, '/');
     closefds (3);
 
-    if (sendsbr (vec, vecp, file, &st, 1, attach) == OK)
+    if (sendsbr (vec, vecp, file, &st, 1, attach, attachformat) == OK)
 	done (0);
 }
 
