@@ -130,6 +130,7 @@ values:
 .nf
 -attachformat 0:
 Content-Type: text/plain; name="VERSION"; x-unix-mode="0644";
+	charset="us-ascii"
 Content-Description: ASCII text 
 
 -attachformat 1:
