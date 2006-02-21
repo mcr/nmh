@@ -225,7 +225,8 @@ You must give a description string to separate the content parameters
 from the external-parameters (although this string may be empty).
 This description string is specified by enclosing it within
 \*(lq[]\*(rq.  A disposition string, to appear in a
-Content-Disposition header, may appear in the optional \*(lq{}\*(rq.
+\*(lqContent-Disposition\*(rq header, may appear in the optional
+\*(lq{}\*(rq.
 .PP
 These parameters are of the form:
 .PP

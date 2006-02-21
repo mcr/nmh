@@ -1,3 +1,8 @@
+2006-02-20  David Levine <levinedl@acm.org>
+
+	* man/mhbuild.man: wrapped one appearance of "Content-Disposition"
+	with quotes, to be consistent with others.
+
 2006-02-20  Josh Bressers <josh@bress.net>
 
 	* h/utils.h, sbr/utils.c, uip/flist.c, uip/folder.c: Move duplicate
@@ -25,13 +30,13 @@
 	* docs/TODO: added RFC2183 to reference of RFC1806 for
 	Content-Disposition header.
 
-2006-01-17  David Levine <levinedl@acm.org>
+2006-01-31  David Levine <levinedl@acm.org>
 
 	* uip/mhbuild.c, uip/mhbuildsbr.c, man/mhbuild.man:  added
 	-nocontentid switch, to disable generation of Content-ID:
 	header in MIME messages.  (Also added -contentid for
 	symmetry.)  The default configuration of Microsoft Outlook,
-	Build 10.0.3416, in particular, doesn't see attachments in
+	Build 10.0.3416 in particular, doesn't see attachments in
 	incoming messages if there are Content-ID headers, see
 	http://home.cwru.edu/~wrv/eudoraoutlookfix.html.  This allows
 	users to easily accomodate that by adding
