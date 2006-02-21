@@ -121,7 +121,6 @@ static int maxFolderInfo;
 static void dodir (char *);
 static int get_folder_info (char *, char *);
 static void print_folders (void);
-static int num_digits (int);
 static int sfold (struct msgs *, char *);
 static void addir (char *);
 static void addfold (char *);
@@ -638,29 +637,6 @@ print_folders (void)
     }
 
     fflush (stdout);
-}
-
-/*
- * Calculate the number of digits in a nonnegative integer
- */
-int
-num_digits (int n)
-{
-    int ndigits = 0;
-
-    /* Sanity check */
-    if (n < 0)
-	adios (NULL, "oops, num_digits called with negative value");
-
-    if (n == 0)
-	return 1;
-
-    while (n) {
-	n /= 10;
-	ndigits++;
-    }
-
-    return ndigits;
 }
 
 /*

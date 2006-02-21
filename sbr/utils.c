@@ -141,3 +141,27 @@ void create_folder(char *folder, int autocreate, void (*done_callback)())
             adios (NULL, "unable to create folder %s", folder);
     }
 }
+
+/*
+ * num_digits
+ *      Return the number of digits in a nonnegative integer.
+ */
+int
+num_digits (int n)
+{
+    int ndigits = 0;
+
+    /* Sanity check */
+    if (n < 0)
+        adios (NULL, "oops, num_digits called with negative value");
+
+    if (n == 0)
+        return 1;
+
+    while (n) {
+        n /= 10;
+        ndigits++;
+    }
+
+    return ndigits;
+}

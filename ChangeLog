@@ -1,3 +1,8 @@
+2006-02-20  Josh Bressers <josh@bress.net>
+
+	* h/utils.h, sbr/utils.c, uip/flist.c, uip/folder.c: Move duplicate
+	function num_digits into utils.c
+
 2006-02-19  Josh Bressers <josh@bress.net>
 
 	* sbr/m_draft.c, sbr/utils.c, uip/folder.c, uip/inc.c,

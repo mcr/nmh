@@ -114,7 +114,6 @@ int AddFolder(char *, int);
 void BuildFolderList(char *, int);
 void BuildFolderListRecurse(char *, struct stat *, int);
 void PrintFolders(void);
-static int num_digits (int);
 void AllocFolders(struct Folder **, int *, int);
 int AssignPriority(char *);
 static void do_readonly_folders(void);
@@ -602,29 +601,6 @@ PrintFolders(void)
 	    }
 	}
     }
-}
-
-/*
- * Calculate the number of digits in a nonnegative integer
- */
-static int
-num_digits (int n)
-{
-    int ndigits = 0;
-
-    /* Sanity check */
-    if (n < 0)
-	adios (NULL, "oops, num_digits called with negative value");
-
-    if (n == 0)
-	return 1;
-
-    while (n) {
-	n /= 10;
-	ndigits++;
-    }
-
-    return ndigits;
 }
 
 /*
