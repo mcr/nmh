@@ -15,6 +15,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <h/mime.h>
+#include <h/tws.h>
 #include <h/utils.h>
 
 #ifdef TIME_WITH_SYS_TIME
@@ -498,7 +499,7 @@ make_mime_composition_file_entry(char *file_name, int attachformat)
         (void) fprintf (composition_file,
                         "#%s <>{attachment; modification-date=\"%s\"}",
                         content_type,
-                        dtime (&st.st_mtim, 0));
+                        dtime (&st.st_mtime, 0));
 
         break;
     default:
