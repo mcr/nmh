@@ -1,3 +1,10 @@
+2006-03-04  Peter Maydell <pmaydell@chiark.greenend.org.uk>
+
+	* etc/Makefile.in: use INSTALL_SCRIPT to install scripts;
+	this allows INSTALL_PROGRAM to be set to 'install -s' so
+	binaries are stripped on installation. Apparently the BSDs
+	do this.
+
 2006-02-25  David Levine <levinedl@acm.org>
 
 	* uip/sendsbr.c: replaced st_mtim with st_mtime, that's what

@@ -23,6 +23,7 @@ smtpservers = @smtpservers@
 
 INSTALL         = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_SCRIPT  = @INSTALL_SCRIPT@
 INSTALL_DATA    = @INSTALL_DATA@
 
 # Path to search for programs to handle MIME
@@ -48,7 +49,9 @@ STATIC_FILES =  MailAliases components digestcomps distcomps forwcomps	\
 # templates and scripts from which non-static files are generated
 GENERATED_FILE_SRCS = mhn.defaults.sh mhn.find.sh mts.conf.in sendfiles.in
 
-# scripts generated using above GENERATED_FILE_SRCs
+# scripts generated using above GENERATED_FILE_SRCs; don't add binaries
+# to this list, as they'll get installed with INSTALL_SCRIPT and won't
+# be stripped.
 GENERATED_BIN_FILES = sendfiles
 
 # non-scripts generated using above GENERATED_FILE_SRCs
@@ -85,7 +88,7 @@ install: install-bin-files install-etc-files
 install-bin-files:
 	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(bindir)
 	for script in $(GENERATED_BIN_FILES); do \
-	  $(INSTALL_PROGRAM) $$script $(DESTDIR)$(bindir)/$$script; \
+	  $(INSTALL_SCRIPT) $$script $(DESTDIR)$(bindir)/$$script; \
 	done
 
 install-etc-files:
