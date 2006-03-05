@@ -196,6 +196,13 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	    }
 
 #ifdef HAVE_ICONV
+	    /*
+	     * empty encoded text. This ensures that we don't
+	     * malloc 0 bytes but skip on to the end
+	     */
+	    if (endofmime == startofmime)
+		use_iconv = 0;
+
 	    if (use_iconv) {
 		saveq = q;
 		savedstlen = dstlen;

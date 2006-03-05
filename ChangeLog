@@ -1,3 +1,8 @@
+2006-03-05  Oliver Kiddle <okiddle@yahoo.co.uk>
+
+	* sbr/fmt_rfc2047.c: don't try to malloc 0 bytes if an RFC2047
+	encoded block is empty
+
 2006-03-04  Peter Maydell <pmaydell@chiark.greenend.org.uk>
 
 	* etc/Makefile.in: use INSTALL_SCRIPT to install scripts;
