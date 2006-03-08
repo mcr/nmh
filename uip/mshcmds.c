@@ -2310,10 +2310,10 @@ showcmd (char **args)
     char *cp, *proc = showproc, buf[BUFSIZ];
     char *msgs[MAXARGS], *vec[MAXARGS];
 
-    if (!strcasecmp (cmd_name, "next"))
+    if (!mh_strcasecmp (cmd_name, "next"))
 	mode = 1;
     else
-	if (!strcasecmp (cmd_name, "prev"))
+	if (!mh_strcasecmp (cmd_name, "prev"))
 	    mode = -1;
     while ((cp = *args++)) {
 	if (*cp == '-')
@@ -2565,7 +2565,7 @@ is_nontext (int msgnum)
 	    /*
 	     * Check Content-Type field
 	     */
-	    if (!strcasecmp (name, TYPE_FIELD)) {
+	    if (!mh_strcasecmp (name, TYPE_FIELD)) {
 		int passno;
 		char c;
 
@@ -2620,7 +2620,7 @@ invalid:
 		if (!*bp)
 		    goto invalid;
 		if (passno > 1) {
-		    if ((result = (strcasecmp (bp, "plain") != 0)))
+		    if ((result = (mh_strcasecmp (bp, "plain") != 0)))
 			goto out;
 		    *dp = c;
 		    for (dp++; isspace (*dp); dp++)
@@ -2652,7 +2652,7 @@ invalid:
 		    /* Check the character set */
 		    result = !check_charset (dp, strlen (dp));
 		} else {
-		    if (!(result = (strcasecmp (bp, "text") != 0))) {
+		    if (!(result = (mh_strcasecmp (bp, "text") != 0))) {
 			*dp = c;
 			bp = dp;
 			passno = 2;
@@ -2671,7 +2671,7 @@ out:
 	    /*
 	     * Check Content-Transfer-Encoding field
 	     */
-	    if (!strcasecmp (name, ENCODING_FIELD)) {
+	    if (!mh_strcasecmp (name, ENCODING_FIELD)) {
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    state = m_getfld (state, name, buf, sizeof buf, fp);
@@ -2682,9 +2682,9 @@ out:
 		for (dp = bp; istoken (*dp); dp++)
 		    continue;
 		*dp = '\0';
-		result = (strcasecmp (bp, "7bit")
-		       && strcasecmp (bp, "8bit")
-		       && strcasecmp (bp, "binary"));
+		result = (mh_strcasecmp (bp, "7bit")
+		       && mh_strcasecmp (bp, "8bit")
+		       && mh_strcasecmp (bp, "binary"));
 
 		free (cp);
 		if (result) {
@@ -2868,7 +2868,7 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 	    case FLD: 
 	    case FLDEOF: 
 	    case FLDPLUS: 
-		if (!strcasecmp (name, datesw)) {
+		if (!mh_strcasecmp (name, datesw)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
 			state = m_getfld (state, name, buf, sizeof buf, zp);
@@ -2885,7 +2885,7 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 			break;		/* all done! */
 		    gotdate++;
 		}
-		else if (subjsw && !strcasecmp(name, subjsw)) {
+		else if (subjsw && !mh_strcasecmp(name, subjsw)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
 			state = m_getfld (state, name, buf, sizeof buf, zp);
@@ -2965,7 +2965,7 @@ sosmash (char *subj, char *s)
     if (s) {
 	cp = s;
 	dp = s;	/* dst pointer */
-	if (!strcasecmp (subj, "subject"))
+	if (!mh_strcasecmp (subj, "subject"))
 	    while ((c = *cp)) {
 		if (! isspace(c)) {
 		    if(uprf(cp, "re:"))

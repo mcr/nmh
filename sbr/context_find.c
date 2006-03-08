@@ -18,7 +18,7 @@ context_find (char *str)
     struct node *np;
 
     for (np = m_defs; np; np = np->n_next)
-	if (!strcasecmp (np->n_name, str))
+	if (!mh_strcasecmp (np->n_name, str))
 	    return (np->n_field);
 
     return NULL;

@@ -191,7 +191,7 @@ p_find(char *str)
     struct proc *ps;
 
     for (ps = procs; ps->p_name; ps++)
-	if (!strcasecmp (ps->p_name, str))
+	if (!mh_strcasecmp (ps->p_name, str))
 	    return (*ps->p_field);
 
     return NULL;

@@ -48,7 +48,7 @@ OfficialName (char *name)
     *q = '\0';
     q = site;
 
-    if (!strcasecmp (LocalName(), site))
+    if (!mh_strcasecmp (LocalName(), site))
 	return LocalName();
 
 #ifdef	HAVE_SETHOSTENT
@@ -61,11 +61,11 @@ OfficialName (char *name)
     }
     if (hosts.h_name || init_hs ()) {
 	for (h = hosts.h_next; h; h = h->h_next)
-	    if (!strcasecmp (h->h_name, q)) {
+	    if (!mh_strcasecmp (h->h_name, q)) {
 		return h->h_name;
 	    } else {
 		for (r = h->h_aliases; *r; r++)
-		    if (!strcasecmp (*r, q))
+		    if (!mh_strcasecmp (*r, q))
 			return h->h_name;
 	    }
     }

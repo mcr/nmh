@@ -563,7 +563,7 @@ mhl_format (char *file, int length, int width)
 		 * Split this list of fields to ignore, and copy
 		 * it to the end of the current "ignores" list.
 		 */
-		if (!strcasecmp (name, "ignores")) {
+		if (!mh_strcasecmp (name, "ignores")) {
 		    char **tmparray, **p;
 		    int n = 0;
 
@@ -667,17 +667,17 @@ evalvar (struct mcomp *c1)
 	return 0;
     strncpy (name, parse(), sizeof(name));
 
-    if (!strcasecmp (name, "component")) {
+    if (!mh_strcasecmp (name, "component")) {
 	if (ptos (name, &c1->c_text))
 	    return 1;
 	c1->c_flags &= ~NOCOMPONENT;
 	return 0;
     }
 
-    if (!strcasecmp (name, "overflowtext"))
+    if (!mh_strcasecmp (name, "overflowtext"))
 	return ptos (name, &c1->c_ovtxt);
 
-    if (!strcasecmp (name, "formatfield")) {
+    if (!mh_strcasecmp (name, "formatfield")) {
 	char *nfs;
 
 	if (ptos (name, &cp))
@@ -688,7 +688,7 @@ evalvar (struct mcomp *c1)
 	return 0;
     }
 
-    if (!strcasecmp (name, "decode")) {
+    if (!mh_strcasecmp (name, "decode")) {
 	char *nfs;
 
 	nfs = new_fs (NULL, NULL, "%(decode{text})");
@@ -697,21 +697,21 @@ evalvar (struct mcomp *c1)
 	return 0;
     }
 
-    if (!strcasecmp (name, "offset"))
+    if (!mh_strcasecmp (name, "offset"))
 	return ptoi (name, &c1->c_offset);
-    if (!strcasecmp (name, "overflowoffset"))
+    if (!mh_strcasecmp (name, "overflowoffset"))
 	return ptoi (name, &c1->c_ovoff);
-    if (!strcasecmp (name, "width"))
+    if (!mh_strcasecmp (name, "width"))
 	return ptoi (name, &c1->c_width);
-    if (!strcasecmp (name, "compwidth"))
+    if (!mh_strcasecmp (name, "compwidth"))
 	return ptoi (name, &c1->c_cwidth);
-    if (!strcasecmp (name, "length"))
+    if (!mh_strcasecmp (name, "length"))
 	return ptoi (name, &c1->c_length);
-    if (!strcasecmp (name, "nodashstuffing"))
+    if (!mh_strcasecmp (name, "nodashstuffing"))
 	return (dashstuff = -1);
 
     for (ap = triples; ap->t_name; ap++)
-	if (!strcasecmp (ap->t_name, name)) {
+	if (!mh_strcasecmp (ap->t_name, name)) {
 	    c1->c_flags |= ap->t_on;
 	    c1->c_flags &= ~ap->t_off;
 	    return 0;
@@ -904,7 +904,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 	    case FLD: 
 	    case FLDPLUS: 
 		for (ip = ignores; *ip; ip++)
-		    if (!strcasecmp (name, *ip)) {
+		    if (!mh_strcasecmp (name, *ip)) {
 			while (state == FLDPLUS)
 			    state = m_getfld (state, name, buf, sizeof(buf), fp);
 			break;
@@ -913,12 +913,12 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    continue;
 
 		for (c2 = fmthd; c2; c2 = c2->c_next)
-		    if (!strcasecmp (c2->c_name, name))
+		    if (!mh_strcasecmp (c2->c_name, name))
 			break;
 		c1 = NULL;
 		if (!((c3 = c2 ? c2 : &global)->c_flags & SPLIT))
 		    for (c1 = msghd; c1; c1 = c1->c_next)
-			if (!strcasecmp (c1->c_name, c3->c_name)) {
+			if (!mh_strcasecmp (c1->c_name, c3->c_name)) {
 			    c1->c_text =
 				mcomp_add (c1->c_flags, buf, c1->c_text);
 			    break;
@@ -941,7 +941,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			putcomp (c1, c1, ONECOMP);
 			continue;
 		    }
-		    if (!strcasecmp (c1->c_name, "messagename")) {
+		    if (!mh_strcasecmp (c1->c_name, "messagename")) {
 			holder.c_text = concat ("(Message ", mname, ")\n",
 					    NULL);
 			putcomp (c1, &holder, ONECOMP);
@@ -949,13 +949,13 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			holder.c_text = NULL;
 			continue;
 		    }
-		    if (!strcasecmp (c1->c_name, "extras")) {
+		    if (!mh_strcasecmp (c1->c_name, "extras")) {
 			for (c2 = msghd; c2; c2 = c2->c_next)
 			    if (c2->c_flags & EXTRA)
 				putcomp (c1, c2, TWOCOMP);
 			continue;
 		    }
-		    if (dobody && !strcasecmp (c1->c_name, "body")) {
+		    if (dobody && !mh_strcasecmp (c1->c_name, "body")) {
 			holder.c_text = mh_xmalloc (sizeof(buf));
 			strncpy (holder.c_text, buf, sizeof(buf));
 			while (state == BODY) {
@@ -968,7 +968,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			continue;
 		    }
 		    for (c2 = msghd; c2; c2 = c2->c_next)
-			if (!strcasecmp (c2->c_name, c1->c_name)) {
+			if (!mh_strcasecmp (c2->c_name, c1->c_name)) {
 			    putcomp (c1, c2, ONECOMP);
 			    if (!(c1->c_flags & SPLIT))
 				break;
@@ -1006,7 +1006,7 @@ mcomp_flags (char *name)
     struct pair *ap;
 
     for (ap = pairs; ap->p_name; ap++)
-	if (!strcasecmp (ap->p_name, name))
+	if (!mh_strcasecmp (ap->p_name, name))
 	    return (ap->p_flags);
 
     return 0;

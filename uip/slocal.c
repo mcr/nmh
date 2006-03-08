@@ -554,7 +554,7 @@ usr_delivery (int fd, char *delivery, int su)
 	}
 
 	if (vecp > 5) {
-	    if (!strcasecmp (vec[5], "select")) {
+	    if (!mh_strcasecmp (vec[5], "select")) {
 		if (logged_in () != -1)
 		    continue;
 		if (vecp > 7 && timely (vec[6], vec[7]) == -1)
@@ -573,7 +573,7 @@ usr_delivery (int fd, char *delivery, int su)
 	     * "default" matches only if the message hasn't
 	     * been delivered yet.
 	     */
-		if (!strcasecmp (field, "default")) {
+		if (!mh_strcasecmp (field, "default")) {
 		    if (won)
 			continue;
 		    break;
@@ -603,7 +603,7 @@ usr_delivery (int fd, char *delivery, int su)
 	switch (*action) {
 	    case 'q':
 		/* deliver to quoted pipe */
-		if (strcasecmp (action, "qpipe"))
+		if (mh_strcasecmp (action, "qpipe"))
 		    continue;	/* else fall */
 	    case '^':
 		expand (tmpbuf, string, fd);
@@ -614,7 +614,7 @@ usr_delivery (int fd, char *delivery, int su)
 
 	    case 'p': 
 		/* deliver to pipe */
-		if (strcasecmp (action, "pipe"))
+		if (mh_strcasecmp (action, "pipe"))
 		    continue;	/* else fall */
 	    case '|': 
 		vec[2] = "sh";
@@ -627,12 +627,12 @@ usr_delivery (int fd, char *delivery, int su)
 
 	    case 'f': 
 		/* mbox format */
-		if (!strcasecmp (action, "file")) {
+		if (!mh_strcasecmp (action, "file")) {
 		    status = usr_file (fd, string, MBOX_FORMAT);
 		    break;
 		}
 		/* deliver to nmh folder */
-		else if (strcasecmp (action, "folder"))
+		else if (mh_strcasecmp (action, "folder"))
 		    continue;	/* else fall */
 	    case '+':
 		status = usr_folder (fd, string);
@@ -640,12 +640,12 @@ usr_delivery (int fd, char *delivery, int su)
 
 	    case 'm':
 		/* mmdf format */
-		if (!strcasecmp (action, "mmdf")) {
+		if (!mh_strcasecmp (action, "mmdf")) {
 		    status = usr_file (fd, string, MMDF_FORMAT);
 		    break;
 		}
 		/* mbox format */
-		else if (strcasecmp (action, "mbox"))
+		else if (mh_strcasecmp (action, "mbox"))
 		    continue;	/* else fall */
 
 	    case '>': 
@@ -655,7 +655,7 @@ usr_delivery (int fd, char *delivery, int su)
 
 	    case 'd': 
 		/* ignore message */
-		if (strcasecmp (action, "destroy"))
+		if (mh_strcasecmp (action, "destroy"))
 		    continue;
 		status = 0;
 		break;
@@ -779,7 +779,7 @@ parse (int fd)
 		    lp = add (field, lp);
 		}
 		for (p = hdrs; p->p_name; p++) {
-		    if (!strcasecmp (p->p_name, name)) {
+		    if (!mh_strcasecmp (p->p_name, name)) {
 			if (!(p->p_flags & P_HID)) {
 			    if ((cp = p->p_value)) {
 				if (p->p_flags & P_ADR) {
@@ -933,7 +933,7 @@ static struct pair *
 lookup (struct pair *pairs, char *key)
 {
     for (; pairs->p_name; pairs++)
-	if (!strcasecmp (pairs->p_name, key))
+	if (!mh_strcasecmp (pairs->p_name, key))
 	    return pairs;
 
     return NULL;
@@ -1537,7 +1537,7 @@ suppress_duplicates (int fd, char *file)
 	    case FLDPLUS:
 	    case FLDEOF:
 		/* Search for the message ID */
-		if (strcasecmp (name, "Message-ID")) {
+		if (mh_strcasecmp (name, "Message-ID")) {
 		    while (state == FLDPLUS)
 			state = m_getfld (state, name, buf, sizeof(buf), in);
 		    continue;

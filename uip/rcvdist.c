@@ -202,7 +202,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 	    case FLDPLUS: 
 		if ((cptr = wantcomp[CHASH (name)]))
 		    do {
-			if (!strcasecmp (name, cptr->c_name)) {
+			if (!mh_strcasecmp (name, cptr->c_name)) {
 			    char_read += msg_count;
 			    if (!cptr->c_text) {
 				cptr->c_text = tmpbuf;

@@ -263,7 +263,7 @@ writeExternalBody (CT ct, FILE *out)
 
 	    case 'N':
 		for (ap = ci2->ci_attrs, ep = ci2->ci_values; *ap; ap++, ep++)
-		    if (!strcasecmp (*ap, "name")) {
+		    if (!mh_strcasecmp (*ap, "name")) {
 			fprintf (out, "%s", *ep);
 			break;
 		    }

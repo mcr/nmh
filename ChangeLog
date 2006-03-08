@@ -1,3 +1,8 @@
+2006-03-08  Josh Bressers <josh@bress.net>
+
+	* (mh_strcasecmp): Rename the private strcasecmp function to
+	mh_strcasecmp.  This keeps the newer gnu linker happy.
+
 2006-03-05  Oliver Kiddle <okiddle@yahoo.co.uk>
 
 	* sbr/fmt_rfc2047.c: don't try to malloc 0 bytes if an RFC2047

@@ -137,7 +137,7 @@ int snprintf (char *, size_t, const char *, ...);
 int vsnprintf (char *, size_t, const char *, va_list);
 #endif
 
-int strcasecmp (const char *s1, const char *s2);
+int mh_strcasecmp (const char *s1, const char *s2);
 int strncasecmp (const char *s1, const char *s2, size_t n);
 
 

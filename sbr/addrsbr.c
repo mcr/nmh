@@ -206,18 +206,18 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
     }
 
     if (wanthost == AD_NHST)
-	mp->m_type = !strcasecmp (LocalName (), mp->m_host)
+	mp->m_type = !mh_strcasecmp (LocalName (), mp->m_host)
 	    ? LOCALHOST : NETHOST;
 #ifdef DUMB
     else
-	mp->m_type = strcasecmp (LocalName(), mp->m_host) ?  NETHOST : LOCALHOST;
+	mp->m_type = mh_strcasecmp (LocalName(), mp->m_host) ?  NETHOST : LOCALHOST;
 #else /* not DUMB */
     else
 	if (pp = OfficialName (mp->m_host)) {
     got_real_host: ;
 	    free (mp->m_host);
 	    mp->m_host = getcpy (pp);
-	    mp->m_type = strcasecmp (LocalName(), mp->m_host) ? NETHOST : LOCALHOST;
+	    mp->m_type = mh_strcasecmp (LocalName(), mp->m_host) ? NETHOST : LOCALHOST;
 	}
 	else {
 	    if (dp = strchr(mp->m_host, '.')) {
@@ -456,11 +456,11 @@ ismymbox (struct mailname *np)
 	    goto local_test;
 
 	case UUCPHOST:
-	    if (strcasecmp (np->m_host, SystemName()))
+	    if (mh_strcasecmp (np->m_host, SystemName()))
 		break;		/* fall */
 	case LOCALHOST:
 local_test: ;
-	    if (!strcasecmp (np->m_mbox, mq.m_mbox))
+	    if (!mh_strcasecmp (np->m_mbox, mq.m_mbox))
 		return 1;
 	    break;
 
@@ -481,11 +481,11 @@ local_test: ;
 	    continue;
 	switch (mp->m_type & W_MBOX) {
 	    case W_NIL: 
-		if (strcasecmp (cp, pp))
+		if (mh_strcasecmp (cp, pp))
 		    continue;
 		break;
 	    case W_MBEG: 
-		if (strcasecmp (cp + len - i, pp))
+		if (mh_strcasecmp (cp + len - i, pp))
 		    continue;
 		break;
 	    case W_MEND: 
@@ -507,11 +507,11 @@ local_test: ;
 	    continue;
 	switch (mp->m_type & W_HOST) {
 	    case W_NIL: 
-		if (strcasecmp (cp, pp))
+		if (mh_strcasecmp (cp, pp))
 		    continue;
 		break;
 	    case W_HBEG: 
-		if (strcasecmp (cp + len - i, pp))
+		if (mh_strcasecmp (cp + len - i, pp))
 		    continue;
 		break;
 	    case W_HEND: 

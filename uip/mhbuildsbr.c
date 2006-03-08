@@ -300,15 +300,15 @@ build_mime (char *infile)
 	    compnum++;
 
 	    /* abort if draft has Mime-Version header field */
-	    if (!strcasecmp (name, VRSN_FIELD))
+	    if (!mh_strcasecmp (name, VRSN_FIELD))
 		adios (NULL, "draft shouldn't contain %s: field", VRSN_FIELD);
 
 	    /* abort if draft has Content-Transfer-Encoding header field */
-	    if (!strcasecmp (name, ENCODING_FIELD))
+	    if (!mh_strcasecmp (name, ENCODING_FIELD))
 		adios (NULL, "draft shouldn't contain %s: field", ENCODING_FIELD);
 
 	    /* ignore any Content-Type fields in the header */
-	    if (!strcasecmp (name, TYPE_FIELD)) {
+	    if (!mh_strcasecmp (name, TYPE_FIELD)) {
 		while (state == FLDPLUS)
 		    state = m_getfld (state, name, buf, sizeof(buf), in);
 		goto finish_field;
@@ -497,7 +497,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    compnum++;
 
 	    /* Get MIME-Version field */
-	    if (!strcasecmp (name, VRSN_FIELD)) {
+	    if (!mh_strcasecmp (name, VRSN_FIELD)) {
 		int ucmp;
 		char c, *cp, *dp;
 
@@ -533,7 +533,7 @@ get_content (FILE *in, char *file, int toplevel)
 		for (dp = cp; istoken (*dp); dp++)
 		    continue;
 		c = *dp, *dp = '\0';
-		ucmp = !strcasecmp (cp, VRSN_VALUE);
+		ucmp = !mh_strcasecmp (cp, VRSN_VALUE);
 		*dp = c;
 		if (!ucmp)
 		    admonish (NULL,
@@ -543,7 +543,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    }
 
 	    /* Get Content-Type field */
-	    if (!strcasecmp (name, TYPE_FIELD)) {
+	    if (!mh_strcasecmp (name, TYPE_FIELD)) {
 		char *cp;
 		struct str2init *s2i;
 		CI ci = &ct->c_ctinfo;
@@ -574,7 +574,7 @@ get_content (FILE *in, char *file, int toplevel)
 		 * flag for this content type.
 		 */
 		for (s2i = str2cts; s2i->si_key; s2i++)
-		    if (!strcasecmp (ci->ci_type, s2i->si_key))
+		    if (!mh_strcasecmp (ci->ci_type, s2i->si_key))
 			break;
 		if (!s2i->si_key && !uprf (ci->ci_type, "X-"))
 		    s2i++;
@@ -584,7 +584,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    }
 
 	    /* Get Content-Transfer-Encoding field */
-	    if (!strcasecmp (name, ENCODING_FIELD)) {
+	    if (!mh_strcasecmp (name, ENCODING_FIELD)) {
 		char *cp, *dp;
 		char c;
 		struct str2init *s2i;
@@ -620,7 +620,7 @@ get_content (FILE *in, char *file, int toplevel)
 		 * for this transfer encoding.
 		 */
 		for (s2i = str2ces; s2i->si_key; s2i++)
-		    if (!strcasecmp (cp, s2i->si_key))
+		    if (!mh_strcasecmp (cp, s2i->si_key))
 			break;
 		if (!s2i->si_key && !uprf (cp, "X-"))
 		    s2i++;
@@ -634,7 +634,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    }
 
 	    /* Get Content-ID field */
-	    if (!strcasecmp (name, ID_FIELD)) {
+	    if (!mh_strcasecmp (name, ID_FIELD)) {
 		ct->c_id = add (buf, ct->c_id);
 		while (state == FLDPLUS) {
 		    state = m_getfld (state, name, buf, sizeof(buf), in);
@@ -644,7 +644,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    }
 
 	    /* Get Content-Description field */
-	    if (!strcasecmp (name, DESCR_FIELD)) {
+	    if (!mh_strcasecmp (name, DESCR_FIELD)) {
 		ct->c_descr = add (buf, ct->c_descr);
 		while (state == FLDPLUS) {
 		    state = m_getfld (state, name, buf, sizeof(buf), in);
@@ -654,7 +654,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    }
 
 	    /* Get Content-Disposition field */
-	    if (!strcasecmp (name, DISPO_FIELD)) {
+	    if (!mh_strcasecmp (name, DISPO_FIELD)) {
 		ct->c_dispo = add (buf, ct->c_dispo);
 		while (state == FLDPLUS) {
 		    state = m_getfld (state, name, buf, sizeof(buf), in);
@@ -664,7 +664,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    }
 
 	    /* Get Content-MD5 field */
-	    if (!strcasecmp (name, MD5_FIELD)) {
+	    if (!mh_strcasecmp (name, MD5_FIELD)) {
 		char *cp, *dp, *ep;
 
 		cp = add (buf, NULL);
@@ -1220,7 +1220,7 @@ InitText (CT ct)
 
     /* match subtype */
     for (kv = SubText; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
+	if (!mh_strcasecmp (ci->ci_subtype, kv->kv_key))
 	    break;
     ct->c_subtype = kv->kv_value;
 
@@ -1234,14 +1234,14 @@ InitText (CT ct)
 
     /* scan for charset parameter */
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-	if (!strcasecmp (*ap, "charset"))
+	if (!mh_strcasecmp (*ap, "charset"))
 	    break;
 
     /* check if content specified a character set */
     if (*ap) {
 	/* match character set or set to CHARSET_UNKNOWN */
 	for (kv = Charset; kv->kv_key; kv++)
-	    if (!strcasecmp (*ep, kv->kv_key))
+	    if (!mh_strcasecmp (*ep, kv->kv_key))
 		break;
 	t->tx_charset = kv->kv_value;
     }
@@ -1282,7 +1282,7 @@ InitMultiPart (CT ct)
 
     /* match subtype */
     for (kv = SubMultiPart; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
+	if (!mh_strcasecmp (ci->ci_subtype, kv->kv_key))
 	    break;
     ct->c_subtype = kv->kv_value;
 
@@ -1291,7 +1291,7 @@ InitMultiPart (CT ct)
      * required for multipart messages.
      */
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!strcasecmp (*ap, "boundary")) {
+	if (!mh_strcasecmp (*ap, "boundary")) {
 	    bp = *ep;
 	    break;
 	}
@@ -1512,7 +1512,7 @@ InitMessage (CT ct)
 
     /* match subtype */
     for (kv = SubMessage; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
+	if (!mh_strcasecmp (ci->ci_subtype, kv->kv_key))
 	    break;
     ct->c_subtype = kv->kv_value;
 
@@ -1531,11 +1531,11 @@ InitMessage (CT ct)
 
 		/* scan for parameters "id", "number", and "total" */
 		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		    if (!strcasecmp (*ap, "id")) {
+		    if (!mh_strcasecmp (*ap, "id")) {
 			p->pm_partid = add (*ep, NULL);
 			continue;
 		    }
-		    if (!strcasecmp (*ap, "number")) {
+		    if (!mh_strcasecmp (*ap, "number")) {
 			if (sscanf (*ep, "%d", &p->pm_partno) != 1
 			        || p->pm_partno < 1) {
 invalid_param:
@@ -1547,7 +1547,7 @@ invalid_param:
 			}
 			continue;
 		    }
-		    if (!strcasecmp (*ap, "total")) {
+		    if (!mh_strcasecmp (*ap, "total")) {
 			if (sscanf (*ep, "%d", &p->pm_maxno) != 1
 			        || p->pm_maxno < 1)
 			    goto invalid_param;
@@ -1668,12 +1668,12 @@ params_external (CT ct, int composing)
     CI ci = &ct->c_ctinfo;
 
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!strcasecmp (*ap, "access-type")) {
+	if (!mh_strcasecmp (*ap, "access-type")) {
 	    struct str2init *s2i;
 	    CT p = e->eb_content;
 
 	    for (s2i = str2methods; s2i->si_key; s2i++)
-		if (!strcasecmp (*ep, s2i->si_key))
+		if (!mh_strcasecmp (*ep, s2i->si_key))
 		    break;
 
 	    if (!s2i->si_key) {
@@ -1691,39 +1691,39 @@ params_external (CT ct, int composing)
 		return NOTOK;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "name")) {
+	if (!mh_strcasecmp (*ap, "name")) {
 	    e->eb_name = *ep;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "permission")) {
+	if (!mh_strcasecmp (*ap, "permission")) {
 	    e->eb_permission = *ep;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "site")) {
+	if (!mh_strcasecmp (*ap, "site")) {
 	    e->eb_site = *ep;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "directory")) {
+	if (!mh_strcasecmp (*ap, "directory")) {
 	    e->eb_dir = *ep;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "mode")) {
+	if (!mh_strcasecmp (*ap, "mode")) {
 	    e->eb_mode = *ep;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "size")) {
+	if (!mh_strcasecmp (*ap, "size")) {
 	    sscanf (*ep, "%lu", &e->eb_size);
 	    continue;
 	}
-	if (!strcasecmp (*ap, "server")) {
+	if (!mh_strcasecmp (*ap, "server")) {
 	    e->eb_server = *ep;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "subject")) {
+	if (!mh_strcasecmp (*ap, "subject")) {
 	    e->eb_subject = *ep;
 	    continue;
 	}
-	if (composing && !strcasecmp (*ap, "body")) {
+	if (composing && !mh_strcasecmp (*ap, "body")) {
 	    e->eb_body = getcpy (*ep);
 	    continue;
 	}
@@ -1752,7 +1752,7 @@ InitApplication (CT ct)
 
     /* match subtype */
     for (kv = SubApplication; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
+	if (!mh_strcasecmp (ci->ci_subtype, kv->kv_key))
 	    break;
     ct->c_subtype = kv->kv_value;
 
@@ -2503,7 +2503,7 @@ openFile (CT ct, char **file)
 	return NOTOK;
     }
 
-    if ((!e->eb_permission || strcasecmp (e->eb_permission, "read-write"))
+    if ((!e->eb_permission || mh_strcasecmp (e->eb_permission, "read-write"))
 	    && find_cache (NULL, wcachesw, &cachetype, e->eb_content->c_id,
 		cachefile, sizeof(cachefile)) != NOTOK) {
 	int mask;
@@ -2651,7 +2651,7 @@ openFTP (CT ct, char **file)
     ce->ce_unlink = (*file == NULL);
     caching = 0;
     cachefile[0] = '\0';
-    if ((!e->eb_permission || strcasecmp (e->eb_permission, "read-write"))
+    if ((!e->eb_permission || mh_strcasecmp (e->eb_permission, "read-write"))
 	    && find_cache (NULL, wcachesw, &cachetype, e->eb_content->c_id,
 		cachefile, sizeof(cachefile)) != NOTOK) {
 	if (*file == NULL) {
@@ -2687,7 +2687,7 @@ openFTP (CT ct, char **file)
 	vec[vecp++] = e->eb_dir;
 	vec[vecp++] = e->eb_name;
 	vec[vecp++] = ce->ce_file,
-	vec[vecp++] = e->eb_mode && !strcasecmp (e->eb_mode, "ascii")
+	vec[vecp++] = e->eb_mode && !mh_strcasecmp (e->eb_mode, "ascii")
 	    		? "ascii" : "binary";
 	vec[vecp] = NULL;
 
@@ -2724,7 +2724,7 @@ losing_ftp:
     else
 	if (ftp_get (e->eb_site, user, pass, e->eb_dir, e->eb_name,
 		     ce->ce_file,
-		     e->eb_mode && !strcasecmp (e->eb_mode, "ascii"), 0)
+		     e->eb_mode && !mh_strcasecmp (e->eb_mode, "ascii"), 0)
 	        == NOTOK)
 	    goto losing_ftp;
 #endif
@@ -3056,7 +3056,7 @@ rock_and_roll:
 	    done (1);
 
 	for (s2i = str2cts; s2i->si_key; s2i++)
-	    if (!strcasecmp (ci->ci_type, s2i->si_key))
+	    if (!mh_strcasecmp (ci->ci_type, s2i->si_key))
 		break;
 	if (!s2i->si_key && !uprf (ci->ci_type, "X-"))
 	    s2i++;
@@ -3066,7 +3066,7 @@ rock_and_roll:
 	 */
 	switch (ct->c_type = s2i->si_val) {
 	case CT_MESSAGE:
-	    if (!strcasecmp (ci->ci_subtype, "rfc822")) {
+	    if (!mh_strcasecmp (ci->ci_subtype, "rfc822")) {
 		ct->c_encoding = CE_7BIT;
 		goto call_init;
 	    }
@@ -3102,7 +3102,7 @@ call_init:
 
     /* check directive against the list of MIME types */
     for (s2i = str2cts; s2i->si_key; s2i++)
-	if (!strcasecmp (ci->ci_type, s2i->si_key))
+	if (!mh_strcasecmp (ci->ci_type, s2i->si_key))
 	    break;
 
     /*
@@ -3123,10 +3123,10 @@ call_init:
 	    /* NOTREACHED */
 
 	case CT_MESSAGE:
-	    if (!strcasecmp (ci->ci_subtype, "partial"))
+	    if (!mh_strcasecmp (ci->ci_subtype, "partial"))
 		adios (NULL, "sorry, \"#%s/%s\" isn't supported",
 		       ci->ci_type, ci->ci_subtype);
-	    if (!strcasecmp (ci->ci_subtype, "external-body"))
+	    if (!mh_strcasecmp (ci->ci_subtype, "external-body"))
 		adios (NULL, "use \"#@type/subtype ... [] ...\" instead of \"#%s/%s\"",
 		       ci->ci_type, ci->ci_subtype);
 use_forw:
@@ -3233,7 +3233,7 @@ use_forw:
      * Message directive
      * #forw [+folder] [msgs]
      */
-    if (!strcasecmp (ci->ci_type, "forw")) {
+    if (!mh_strcasecmp (ci->ci_type, "forw")) {
 	int msgnum;
 	char *folder, *arguments[MAXARGS];
 	struct msgs *mp;
@@ -3339,7 +3339,7 @@ use_forw:
     /*
      * #end
      */
-    if (!strcasecmp (ci->ci_type, "end")) {
+    if (!mh_strcasecmp (ci->ci_type, "end")) {
 	free_content (ct);
 	*ctp = NULL;
 	return DONE;
@@ -3348,14 +3348,14 @@ use_forw:
     /*
      * #begin [ alternative | parallel ]
      */
-    if (!strcasecmp (ci->ci_type, "begin")) {
+    if (!mh_strcasecmp (ci->ci_type, "begin")) {
 	if (!ci->ci_magic) {
 	    vrsn = MULTI_MIXED;
 	    cp = SubMultiPart[vrsn - 1].kv_key;
-	} else if (!strcasecmp (ci->ci_magic, "alternative")) {
+	} else if (!mh_strcasecmp (ci->ci_magic, "alternative")) {
 	    vrsn = MULTI_ALTERNATE;
 	    cp = SubMultiPart[vrsn - 1].kv_key;
-	} else if (!strcasecmp (ci->ci_magic, "parallel")) {
+	} else if (!mh_strcasecmp (ci->ci_magic, "parallel")) {
 	    vrsn = MULTI_PARALLEL;
 	    cp = SubMultiPart[vrsn - 1].kv_key;
 	} else if (uprf (ci->ci_magic, "digest")) {
@@ -3973,7 +3973,7 @@ build_headers (CT ct)
      * the end of the Content-Type line.
      */
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (mailbody && !strcasecmp (*ap, "body"))
+	if (mailbody && !mh_strcasecmp (*ap, "body"))
 	    continue;
 
 	vp = add (";", vp);

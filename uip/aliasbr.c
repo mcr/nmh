@@ -574,7 +574,7 @@ seek_home (char *name)
 #endif /* DBMPWD */
 
     for (hp = homehead; hp; hp = hp->h_next)
-	if (!strcasecmp (name, hp->h_name))
+	if (!mh_strcasecmp (name, hp->h_name))
 	    return hp;
 
 #ifdef DBMPWD

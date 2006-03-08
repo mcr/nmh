@@ -1225,7 +1225,7 @@ readid (int msgnum)
 	    case FLD: 
 	    case FLDEOF: 
 	    case FLDPLUS: 
-		if (!strcasecmp (name, BBoard_ID)) {
+		if (!mh_strcasecmp (name, BBoard_ID)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
 			state = m_getfld (state, name, buf, sizeof(buf), zp);

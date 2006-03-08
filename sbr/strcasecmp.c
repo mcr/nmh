@@ -18,7 +18,7 @@
  */
 
 int
-strcasecmp (const char *s1, const char *s2) 
+mh_strcasecmp (const char *s1, const char *s2) 
 {
     const unsigned char *us1, *us2;
 
@@ -38,7 +38,7 @@ strcasecmp (const char *s1, const char *s2)
  
 
 int
-strncasecmp (const char *s1, const char *s2, size_t n)
+mh_strncasecmp (const char *s1, const char *s2, size_t n)
 {
     const unsigned char *us1, *us2;
 

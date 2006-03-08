@@ -203,7 +203,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		 */
 		if ((cptr = wantcomp[CHASH(name)])) {
 		    do {
-			if (!strcasecmp(name, cptr->c_name)) {
+			if (!mh_strcasecmp(name, cptr->c_name)) {
 			    if (! cptr->c_text) {
 				cptr->c_text = tmpbuf;
 				for (cp = tmpbuf + strlen (tmpbuf) - 1; 

@@ -225,8 +225,8 @@ store_application (CT ct)
 
 	for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
 	    /* check for "type=tar" attribute */
-	    if (!strcasecmp (*ap, "type")) {
-		if (strcasecmp (*ep, "tar"))
+	    if (!mh_strcasecmp (*ap, "type")) {
+		if (mh_strcasecmp (*ep, "tar"))
 		    break;
 
 		tarP = 1;
@@ -234,14 +234,14 @@ store_application (CT ct)
 	    }
 
 	    /* check for "conversions=compress" attribute */
-	    if ((!strcasecmp (*ap, "conversions") || !strcasecmp (*ap, "x-conversions"))
-		&& (!strcasecmp (*ep, "compress") || !strcasecmp (*ep, "x-compress"))) {
+	    if ((!mh_strcasecmp (*ap, "conversions") || !mh_strcasecmp (*ap, "x-conversions"))
+		&& (!mh_strcasecmp (*ep, "compress") || !mh_strcasecmp (*ep, "x-compress"))) {
 		zP = 1;
 		continue;
 	    }
 	    /* check for "conversions=gzip" attribute */
-	    if ((!strcasecmp (*ap, "conversions") || !strcasecmp (*ap, "x-conversions"))
-		&& (!strcasecmp (*ep, "gzip") || !strcasecmp (*ep, "x-gzip"))) {
+	    if ((!mh_strcasecmp (*ap, "conversions") || !mh_strcasecmp (*ap, "x-conversions"))
+		&& (!mh_strcasecmp (*ep, "gzip") || !mh_strcasecmp (*ep, "x-gzip"))) {
 		gzP = 1;
 		continue;
 	    }
@@ -1041,7 +1041,7 @@ get_storeproc (CT ct)
      * the storeproc.
      */
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!strcasecmp (*ap, "name")
+	if (!mh_strcasecmp (*ap, "name")
 	    && *(cp = *ep) != '/'
 	    && *cp != '.'
 	    && *cp != '|'
@@ -1072,10 +1072,10 @@ copy_some_headers (FILE *out, CT ct)
 	 * messages are not copied.
 	 */
 	if (!uprf (hp->name, XXX_FIELD_PRF)
-		&& strcasecmp (hp->name, VRSN_FIELD)
-		&& strcasecmp (hp->name, "Subject")
-		&& strcasecmp (hp->name, "Encrypted")
-		&& strcasecmp (hp->name, "Message-ID"))
+		&& mh_strcasecmp (hp->name, VRSN_FIELD)
+		&& mh_strcasecmp (hp->name, "Subject")
+		&& mh_strcasecmp (hp->name, "Encrypted")
+		&& mh_strcasecmp (hp->name, "Message-ID"))
 	    fprintf (out, "%s:%s", hp->name, hp->value);
 	hp = hp->next;	/* next header field */
     }

@@ -159,7 +159,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 		 */
 		if ((cptr = wantcomp[CHASH(name)]))
 		    do {
-			if (!strcasecmp(name, cptr->c_name)) {
+			if (!mh_strcasecmp(name, cptr->c_name)) {
 			    char_read += msg_count;
 			    if (! cptr->c_text) {
 				i = strlen(cptr->c_text = tmpbuf) - 1;
@@ -391,8 +391,8 @@ insert (struct mailname *np)
 	return 0;
 
     for (mp = &mq; mp->m_next; mp = mp->m_next) {
-	if (!strcasecmp (np->m_host, mp->m_next->m_host)
-		&& !strcasecmp (np->m_mbox, mp->m_next->m_mbox))
+	if (!mh_strcasecmp (np->m_host, mp->m_next->m_host)
+		&& !mh_strcasecmp (np->m_mbox, mp->m_next->m_mbox))
 	    return 0;
     }
     if (!ccme && ismymbox (np))

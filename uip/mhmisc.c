@@ -74,7 +74,7 @@ type_ok (CT ct, int sP)
 
     snprintf (buffer, sizeof(buffer), "%s/%s", ci->ci_type, ci->ci_subtype);
     for (ap = types; *ap; ap++)
-	if (!strcasecmp (*ap, ci->ci_type) || !strcasecmp (*ap, buffer))
+	if (!mh_strcasecmp (*ap, ci->ci_type) || !mh_strcasecmp (*ap, buffer))
 	    return 1;
 
     return 0;

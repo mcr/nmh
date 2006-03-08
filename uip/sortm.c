@@ -365,7 +365,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	case FLDEOF:
 	case FLDPLUS:
 	    compnum++;
-	    if (!strcasecmp (nam, datesw)) {
+	    if (!mh_strcasecmp (nam, datesw)) {
 		datecomp = add (buf, datecomp);
 		while (state == FLDPLUS) {
 		    state = m_getfld (state, nam, buf, sizeof(buf), in);
@@ -373,7 +373,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 		}
 		if (!subjsort || subjcomp)
 		    break;
-	    } else if (subjsort && !strcasecmp (nam, subjsort)) {
+	    } else if (subjsort && !mh_strcasecmp (nam, subjsort)) {
 		subjcomp = add (buf, subjcomp);
 		while (state == FLDPLUS) {
 		    state = m_getfld (state, nam, buf, sizeof(buf), in);

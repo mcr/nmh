@@ -631,7 +631,7 @@ get_header (char *header, struct headers *table)
     struct headers *h;
 
     for (h = table; h->value; h++)
-	if (!strcasecmp (header, h->value))
+	if (!mh_strcasecmp (header, h->value))
 	    return (h - table);
 
     return NOTOK;

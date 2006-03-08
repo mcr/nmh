@@ -53,7 +53,7 @@ check_charset (char *str, int len)
 
 	/* US-ASCII is a subset of the ISO-8859-X and UTF-8 character sets */
 	if (!strncasecmp("ISO-8859-", mm_charset, 9) ||
-		!strcasecmp("UTF-8", mm_charset)) {
+		!mh_strcasecmp("UTF-8", mm_charset)) {
 	    alt_charset = "US-ASCII";
 	    alt_len = strlen (alt_charset);
 	}

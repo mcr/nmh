@@ -869,19 +869,19 @@ tws_special (char *ap)
     register struct tws *tw;
 
     time (&clock);
-    if (!strcasecmp (ap, "today"))
+    if (!mh_strcasecmp (ap, "today"))
 	return dlocaltime (&clock);
-    if (!strcasecmp (ap, "yesterday")) {
+    if (!mh_strcasecmp (ap, "yesterday")) {
 	clock -= (long) (60 * 60 * 24);
 	return dlocaltime (&clock);
     }
-    if (!strcasecmp (ap, "tomorrow")) {
+    if (!mh_strcasecmp (ap, "tomorrow")) {
 	clock += (long) (60 * 60 * 24);
 	return dlocaltime (&clock);
     }
 
     for (i = 0; tw_ldotw[i]; i++)
-	if (!strcasecmp (ap, tw_ldotw[i]))
+	if (!mh_strcasecmp (ap, tw_ldotw[i]))
 	    break;
     if (tw_ldotw[i]) {
 	if ((tw = dlocaltime (&clock)) == NULL)
@@ -922,7 +922,7 @@ plist
 		    state = m_getfld (state, name, buf, sizeof buf, fp);
 		    bp = add (buf, bp);
 		}
-		if (!strcasecmp (name, n->n_datef))
+		if (!mh_strcasecmp (name, n->n_datef))
 		    break;
 		if (state != FLDEOF)
 		    continue;

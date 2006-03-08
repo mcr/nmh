@@ -928,20 +928,20 @@ pop_xtnd (int (*action)(), char *fmt, ...)
     snprintf (buffer, sizeof(buffer), fmt, a, b, c, d);
     ap = brkstring (buffer, " ", "\n");	/* a hack, i know... */
 
-    if (!strcasecmp(ap[0], "x-bboards")) {	/* XTND "X-BBOARDS group */
+    if (!mh_strcasecmp(ap[0], "x-bboards")) {	/* XTND "X-BBOARDS group */
 	/* most of these parameters are meaningless under NNTP. 
 	 * bbc.c was modified to set AKA and LEADERS as appropriate,
 	 * the rest are left blank.
 	 */
 	return OK;
     }
-    if (!strcasecmp (ap[0], "archive") && ap[1]) {
+    if (!mh_strcasecmp (ap[0], "archive") && ap[1]) {
 	snprintf (xtnd_name, sizeof(xtnd_name), "%s", ap[1]);	/* save the name */
 	xtnd_last = 0;
 	xtnd_first = 1;		/* setup to fail in pop_stat */
 	return OK;
     }
-    if (!strcasecmp (ap[0], "bboards")) {
+    if (!mh_strcasecmp (ap[0], "bboards")) {
 
 	if (ap[1]) {			/* XTND "BBOARDS group" */
 	    snprintf (xtnd_name, sizeof(xtnd_name), "%s", ap[1]);	/* save the name */
