@@ -1,3 +1,8 @@
+2006-03-09  Josh Bressers <josh@bress.net>
+
+	* sbr/fmt_rfc2047.c (decode_rfc2047): Don't close the iconv descriptor
+	if it isn't valid.
+
 2006-03-08  Josh Bressers <josh@bress.net>
 
 	* (mh_strcasecmp): Rename the private strcasecmp function to

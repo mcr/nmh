@@ -200,7 +200,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	     * empty encoded text. This ensures that we don't
 	     * malloc 0 bytes but skip on to the end
 	     */
-	    if (endofmime == startofmime) {
+	    if (endofmime == startofmime && use_iconv) {
 		use_iconv = 0;
 		iconv_close(cd);
             }
