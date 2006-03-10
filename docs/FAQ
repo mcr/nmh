@@ -36,7 +36,7 @@ Posting-Frequency: monthly
   them to Bill Wohler <wohler at newt.com>.
 
   Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-            2001, 2004, 2005 Bill Wohler
+            2001, 2004, 2005, 2006 Bill Wohler
 
   Permission to use, copy, distribute, and translate this document for
   any non-commercial purpose is hereby granted, provided that this
@@ -61,12 +61,12 @@ __________________
  01.01 Why should I use MH?
 !01.02 What is the current version/status of MH?
  01.03 Where can I get MH?
- 01.04 What references exist for MH?
+!01.04 What references exist for MH?
  01.05 What other MH software is available?
  01.06 How can I print a MH manual?
  01.07 How should I report bugs?
  01.08 How can I convert from my mailer to MH?
-+01.09 What is the copyright status of nmh?
+ 01.09 What is the copyright status of nmh?
 _________________
 
 02.00 Building MH
@@ -114,7 +114,7 @@ ________________________
  03.20 How do I view HTML attachments with Netscape?
  03.21 Fixing folders: unable to allocate storage for msgstats
  03.22 How do I recursively list message attachments?
-+03.23 Why do folder and flist overlook some of my sub-folders?
+ 03.23 Why do folder and flist overlook some of my sub-folders?
 ____________
 
 04.00 Filing
@@ -144,7 +144,7 @@ __________________________
  05.12 How can I send multi-media (MIME) attachments?
  05.13 What's the best way to send mail to a long list of people?
  05.14 What is the Dcc header?
- 05.15 How can I make sense of the replcomps file?
+!05.15 How can I make sense of the replcomps file?
  05.16 How can I convert quoted-printable to 8bit in quoted text in replies?
  05.17 Can I have aliases include aliases?
  05.18 Why doesn't mhmail understand aliases?
@@ -155,6 +155,7 @@ __________________________
  05.23 How can I remove those "=20" characters when forwarding?
  05.24 Can I use mh-format substitution with forw?
  05.25 How can I keep repl from breaking long lines?
++05.26 How do I fix a bogus In-Reply-To or missing References field?
 _____________
 
 06.00 Posting
@@ -173,7 +174,7 @@ _____________
        end-of-file on socket"
  06.10 Fixing "Sender didn't use the HELO protocol"
  06.11 Fixing "post: problem initializing server; [RPLY] 553 Local
-       configuration error, hostname not recognized as local
+       configuration error, hostname not recognized as local"
 __________________
 
 07.00 Mail Filters
@@ -313,7 +314,7 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
   
 Subject: !01.02 What is the current version/status of MH.
 From: Bill Wohler <wohler at newt.com>
-Date: Tue, 28 Sep 2004 23:51:02 -0700
+Date: Thu, 9 Mar 2006 21:53:33 -0800
 
   The current official version of MH is 6.8.3, although a beta of
   6.8.4 is available.
@@ -338,10 +339,9 @@ Date: Tue, 28 Sep 2004 23:51:02 -0700
   repository for a long time. Ken Hornstein <kenh at pobox.com> picked
   up the torch in 2002 and moved development to Savannah where Jon
   Steinhart <nmh at fourwinds.com> joined him as a project maintainer.
-  See http://www.nongnu.org/nmh/. The stable version of nmh is 1.0.4,
-  but 1.1-RC4 is also available. The file DIFFERENCES in the nmh
-  distribution contains an ever-growing list of differences between
-  nmh and MH.
+  See http://www.nongnu.org/nmh/. The stable version of nmh is 1.2.
+  The file DIFFERENCES in the nmh distribution contains an
+  ever-growing list of differences between nmh and MH.
 
   GNU mailutils (version 0.6) is a collection of mail-related
   utilities. At the core of mailutils is libmailbox, a library which
@@ -351,7 +351,7 @@ Date: Tue, 28 Sep 2004 23:51:02 -0700
 
 ------------------------------
   
-Subject: !01.03 Where can I get MH?
+Subject: 01.03 Where can I get MH?
 From: Bill Wohler <wohler at newt.com>
 Date: Thu, 19 May 2005 21:05:17 -0700
 
@@ -377,7 +377,7 @@ Date: Thu, 19 May 2005 21:05:17 -0700
 
   Download MH:
 
-    http://savannah.nongnu.org/download/nmh/nmh-1.1-RC4.tar.gz		761kB
+    http://download.savannah.nongnu.org/releases/nmh/nmh-1.2.tar.gz	831kB
     ftp://ftp.ics.uci.edu/pub/mh/mh-6.8.tar.Z				2MB
     ftp://ftp.uu.net/networking/mail/mh/mh-6.8.tar.Z			2MB
     ftp://ftp.efd.lth.se/pub/mail/mh-6.8.3.tar.gz			1.3MB
@@ -389,9 +389,9 @@ Date: Thu, 19 May 2005 21:05:17 -0700
 
 ------------------------------
   
-Subject: 01.04 What references exist for MH?
+Subject: !01.04 What references exist for MH?
 From: Bill Wohler <wohler at newt.com>
-Date: Wed, 29 Sep 2004 00:21:51 -0700
+Date: Thu, 9 Mar 2006 21:57:18 -0800
 
   The Web:
     http://www.ics.uci.edu/~mh/
@@ -498,16 +498,16 @@ Date: Wed, 29 Sep 2004 00:21:51 -0700
       http://www.rosat.mpe-garching.mpg.de/mailing-lists/mhonarc/
 
   This document:
-    http://www.faqs.org/faqs/mail/mh-faq/part1/preamble.html
+    http://www.newt.com/faq/mh.html
     http://www.cs.ruu.nl/wais/html/na-dir/mail/mh-faq/part1.html
 
   MH-E documentation:
-    GNU Emacs 19.29 comes with a version of MH-E that now includes
-    online (Texinfo) documentation.  Try "C-h i m mh-e RET".  It is
-    also available online at http://www.ics.uci.edu/~mh/book/mh-e/.
-    See also "What other MH software is available?" to see where you
-    can get the latest version of MH-E which includes the
-    documentation sources.
+    GNU Emacs 19.29 comes with a version of MH-E that includes online
+    (Texinfo) documentation. Try "C-h i m mh-e RET". It is also
+    available in HTML and PDF formats at
+    http://mh-e.sourceforge.net/manual/. See also "What other MH
+    software is available?" to see where you can get the latest
+    version of MH-E which includes the documentation sources.
 
   exmh:
     The FAQ is available at http://www.beedub.com/exmh/exmh-faq.html.
@@ -549,7 +549,7 @@ Date: Thu, 19 May 2005 21:20:57 -0700
       * multiple personalities
       * signing and encrypting
       * spam filter interaction
-      * XFace, Face header field support
+      * XFace, Face, X-Image-URL header field support with picons
 
   The GNU Emacs distribution includes MH-E.
 
@@ -1297,7 +1297,7 @@ Date: Sun, 8 Sep 1996 15:57:25 -0700
 
   When compiling, you can ignore the following warning:
 
-    fmtcompile.c", line 238: warning: semantics of "/" change in ANSI C;
+    fmtcompile.c, line 238: warning: semantics of "/" change in ANSI C;
     use explicit cast
 
   If you're using AFS, you'll have to replace any occurrence of "ln"
@@ -2257,7 +2257,7 @@ Date: 31 Oct 2001 00:36:14 +1100
 
 ------------------------------
   
-Subject: +03.23 Why do folder and flist overlook some of my sub-folders?
+Subject: 03.23 Why do folder and flist overlook some of my sub-folders?
 From: Richard Coleman <coleman at math.gatech.edu>
 Date: Mon, 10 Oct 2005 18:14:24 -0700
 
@@ -2421,7 +2421,7 @@ Date: Sun, 17 Oct 2004 13:04:57 -0700
 
   If it's too late, you might be interested in mhfinddup, attached
   below, which is an embellishment of the Perl script in (see
-  "Removing dupicate messages (Perl)).
+  "Removing duplicate messages (Perl)").
 
 From: Jerry Peek <jpeek at jpeek.com>
 Date: 20 Nov 1995 18:51:24 GMT
@@ -2433,8 +2433,8 @@ Date: 20 Nov 1995 18:51:24 GMT
   folder.  Use a script (shell, Perl, etc.) to weed out the
   duplicates.  (See "Removing duplicate messages (Bourne)").
 
-  The Perl script in (see "Removing dupicate messages (Perl)) does not
-  require that you first sort the folder.
+  The Perl script in (see "Removing duplicate messages (Perl)") does
+  not require that you first sort the folder.
 
 ------------------------------
   
@@ -3023,46 +3023,79 @@ From: John Romine <jromine at yoyodyne.ICS.UCI.EDU>
 
 ------------------------------
   
-Subject: 05.15 How can I make sense of the replcomps file?
+Subject: !05.15 How can I make sense of the replcomps file?
 From: Bill Wohler <wohler at newt.com>
-Date: Sun, 26 Nov 1995 19:25:14 -0800
+Date: Thu, 9 Mar 2006 19:27:14 -0800
 
   The best thing to do is curl up with the mh-format(5) man page, or
   Section 11.2 of the MH book, or the URL:
 
     http://www.ics.uci.edu/~mh/book/mh/mhstr.htm
 
-  These will explain the following replcomps file.  Don't start with the
-  first four lines--the latter group of lines are much easier to understand.
+  These will explain the default replcomps file, included here. Don't
+  start with the first four lines--the latter group of lines are much
+  easier to understand.
 
-    %(lit)%(formataddr %<{reply-to}%?{from}%?{sender}%?{return-path}%>)\
-    %<(nonnull)%(void(width))%(putaddr To: )\n%>\
-    %(lit)%(formataddr{to})%(formataddr{cc})%(formataddr(me))\
-    %<(nonnull)%(void(width))%(putaddr cc: )\n%>\
-    Organization: Newt Software
-    %<{fcc}Fcc: %{fcc}\n%>\
-    %<{subject}Subject: Re: %{subject}\n%>\
-    %<{date}In-reply-to: Your message of "\
-    %<(nodate{date})%{date}%|%(pretty{date})%>."%<{message-id}
-		 %{message-id}%>\n%>\
+    %; $Header$
+    %;
+    %; These next lines slurp in lots of addresses for To: and cc:.
+    %; Use with repl -query or else you may get flooded with addresses!
+    %;
+    %; If no To:/cc:/Fcc: text, we output empty fields for prompter to fill in.
+    %;
+    %(lit)%(formataddr{reply-to})\
+    %(formataddr %<{from}%(void{from})%|%(void{apparently-from})%>)\
+    %(formataddr{resent-to})\
+    %(formataddr{prev-resent-to})\
+    %(formataddr{x-to})\
+    %(formataddr{apparently-to})\
+    %(void(width))%(putaddr To: )
+    %(lit)%(formataddr{to})\
+    %(formataddr{cc})\
+    %(formataddr{x-cc})\
+    %(formataddr{resent-cc})\
+    %(formataddr{prev-resent-cc})\
+    %(formataddr(me))\
+    %(void(width))%(putaddr cc: )
+    Fcc: %<{fcc}%{fcc}%|+outbox%>
+    Subject: %<{subject}Re: %{subject}%>
+    %;
+    %; Make References: and In-reply-to: fields for threading.
+    %; Use (void), (trim) and (putstr) to eat trailing whitespace.
+    %;
+    %<{message-id}In-reply-to: %{message-id}\n%>\
+    %<{message-id}References: \
+    %<{references}%(void{references})%(trim)%(putstr) %>\
+    %(void{message-id})%(trim)%(putstr)\n%>\
+    Comments: In-reply-to \
+    %<{from}%(void{from})%?(void{apparently-from})%|%(void{sender})%>\
+    %(trim)%(putstr)\n\
+       message dated "%<(nodate{date})%{date}%|%(tws{date})%>."
     --------
 
   In particular, note the following:
 
-    \	consider the following line to be part of the current line
-    \n	inject an actual newline into the reply.  Note that inserting
-	    a field without a trailing backslash (\) will cause
-	    that field to be emitted in the reply as well.
-    %<{field}, %?{field}, %|, %>	if field exists, else if field exists,
-					else, endif
+    \   consider the following line to be part of the current line. If
+	this continuation character is absent, a newline (\n) will
+	always be inserted. Note that if the field is conditional, and
+	the condition is false, and there isn't a trailing backslash,
+	then a blank line will appear in your reply. Since the rest of
+	the header will now be considered to be part of the body, this
+	is probably not what you want.
+    \n  inject an actual newline into the reply. Note that inserting a
+	field without a trailing backslash (\) will cause that field
+	to be emitted in the reply as well.
+    %<{field}, %?{field}, %|, %>
+        if field exists, else if field exists, else, endif.
+	Conditional fields nearly always contain an explicit newline
+	(\n) and end with a continuation character (\).
     %(command)	mh-format commands
     %{field}	value of the header field inserted at this point
 
   To add new fields, you can either add fields based on whether
   certain fields exist in the original message (e.g.,
-  %<{message-id}...), or hard-code them, as in the Organization field
-  above.  Note that you can either use a "\n\" pair, or nothing at the
-  end of a line to insert a newline in the reply.
+  %<{message-id}...), or hard-code them, as in the Fcc, Subject, or
+  Comments fields above.
 
 ------------------------------
   
@@ -3270,6 +3303,26 @@ Date: Fri, 14 May 1999 11:15:07 -0400
 
   Try adding width=10000 (or so) to your replcomps. It should work
   unless you have messages with lines longer than that...
+
+------------------------------
+
+Subject: +05.26 How do I fix a bogus In-Reply-To or missing References field?
+From: Bill Wohler <wohler at newt.com>
+Date: Thu, 9 Mar 2006 21:42:21 -0800
+
+  In the past, the In-reply-to header field looked as it does in the
+  new Comments field (see "How can I make sense of the replcomps
+  file?"). However, the old format is no longer allowable under RFC
+  2822 which specifies that this field should only include the
+  Message-ID. You can fix the replcomps and replgroupcomps files by
+  upgrading to nmh 1.1 (be sure to update your personal copies if
+  applicable) or simply by fixing the In-reply-to field in your own
+  replcomps file using the example in the question referenced in this
+  paragraph.
+
+  In addition, older replcomps files lacked the References field which
+  enables threading in capable UIs. You can get it in the same fashion
+  as the In-reply-to field--by upgrading or copying.
 
 ------------------------------
 
@@ -3599,7 +3652,7 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
 
 ------------------------------
   
-Subject: 06.11 Fixing "post: problem initializing server; [RPLY] 553 Local configuration error, hostname not recognized as local
+Subject: 06.11 Fixing "post: problem initializing server; [RPLY] 553 Local configuration error, hostname not recognized as local"
 From: "Matthew V. J. Whalen" <whalenm at aol.net>
 Date: Mon, 1 May 1995 00:00:00 -0800
 
