@@ -60,7 +60,7 @@ __________________
 
  01.01 Why should I use MH?
 !01.02 What is the current version/status of MH?
- 01.03 Where can I get MH?
+!01.03 Where can I get MH?
 !01.04 What references exist for MH?
  01.05 What other MH software is available?
  01.06 How can I print a MH manual?
@@ -351,9 +351,9 @@ Date: Thu, 9 Mar 2006 21:53:33 -0800
 
 ------------------------------
   
-Subject: 01.03 Where can I get MH?
+Subject: !01.03 Where can I get MH?
 From: Bill Wohler <wohler at newt.com>
-Date: Thu, 19 May 2005 21:05:17 -0700
+Date: Fri, 10 Mar 2006 00:55:37 -0800
 
   MH comes standard with:
   
