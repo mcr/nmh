@@ -489,17 +489,35 @@ make_mime_composition_file_entry(char *file_name, int attachformat)
 
         break;
     case 1:
-        /* Suppress Content-Id, insert simple Content-Disposition. */
-        (void) fprintf (composition_file, "#%s <>{attachment}", content_type);
+        if (stringdex (m_maildir(invo_name), file_name) == 0) {
+            /* Content had been placed by send into a temp file.
+               Don't generate Content-Disposition header, because
+               it confuses Microsoft Outlook, Build 10.0.6626, at
+               least. */
+            (void) fprintf (composition_file, "#%s <>", content_type);
+        } else {
+            /* Suppress Content-Id, insert simple Content-Disposition. */
+            (void) fprintf (composition_file,
+                            "#%s <>{attachment}",
+                            content_type);
+        }
 
         break;
     case 2:
-        /* Suppress Content-Id, insert Content-Disposition with
-           modification date. */
-        (void) fprintf (composition_file,
-                        "#%s <>{attachment; modification-date=\"%s\"}",
-                        content_type,
-                        dtime (&st.st_mtime, 0));
+        if (stringdex (m_maildir(invo_name), file_name) == 0) {
+            /* Content had been placed by send into a temp file.
+               Don't generate Content-Disposition header, because
+               it confuses Microsoft Outlook, Build 10.0.6626, at
+               least. */
+            (void) fprintf (composition_file, "#%s <>", content_type);
+        } else {
+            /* Suppress Content-Id, insert Content-Disposition with
+               modification date. */
+            (void) fprintf (composition_file,
+                            "#%s <>{attachment; modification-date=\"%s\"}",
+                            content_type,
+                            dtime (&st.st_mtime, 0));
+        }
 
         break;
     default:

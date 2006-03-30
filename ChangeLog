@@ -1,3 +1,11 @@
+2006-03-30  David Levine <levinedl@acm.org>
+
+	* uip/sendsbr.c: with attachformat values of 1 or 2, only
+	generate Content-Disposition headers for MIME attachments, not
+	for the message contents themselves.  Microsoft Outlook Build
+	10.0.6626, at least, doesn't show the message contents if they
+	have Content-Disposition.
+
 2006-03-09  Josh Bressers <josh@bress.net>
 
 	* sbr/fmt_rfc2047.c (decode_rfc2047): Don't close the iconv descriptor
