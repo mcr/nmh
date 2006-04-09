@@ -441,7 +441,7 @@ This third part will be text/plain
 .RE
 .SS "Integrity Check"
 If
-.B Imhbuild
+.B mhbuild
 is given the
 .B \-check
 switch, then it will also associate
