@@ -26,13 +26,6 @@
 # include <sys/wait.h>
 #endif
 
-/*
- * We allocate space for message names (msgs array)
- * this number of elements at a time.
- */
-#define MAXMSGS  256
-
-
 static struct swit switches[] = {
 #define	CHECKSW                 0
     { "check", 0 },
@@ -130,10 +123,11 @@ int
 main (int argc, char **argv)
 {
     int sizesw = 1, headsw = 1;
-    int nummsgs, maxmsgs, msgnum, *icachesw;
+    int msgnum, *icachesw;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
-    char **arguments, **msgs;
+    char **arguments;
+    struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp = NULL;
     CT ct, *ctp;
 
@@ -147,14 +141,6 @@ main (int argc, char **argv)
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
-
-    /*
-     * Allocate the initial space to record message
-     * names, ranges, and sequences.
-     */
-    nummsgs = 0;
-    maxmsgs = MAXMSGS;
-    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     /*
      * Parse arguments
@@ -257,18 +243,8 @@ do_cache:
 		adios (NULL, "only one folder at a time!");
 	    else
 		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
-	} else {
-	    /*
-	     * Check if we need to allocate more space
-	     * for message names/ranges/sequences.
-	     */
-	    if (nummsgs >= maxmsgs) {
-		maxmsgs += MAXMSGS;
-		msgs = (char **) mh_xrealloc (msgs,
-		    (size_t) (maxmsgs * sizeof(*msgs)));
-	    }
-	    msgs[nummsgs++] = cp;
-	}
+	} else
+		app_msgarg(&msgs, cp);
     }
 
     /* null terminate the list of acceptable parts/types */
@@ -299,7 +275,7 @@ do_cache:
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
 
-    if (file && nummsgs)
+    if (file && msgs.size)
 	adios (NULL, "cannot specify msg and file at same time!");
 
     /*
@@ -316,8 +292,8 @@ do_cache:
 	/*
 	 * message(s) are coming from a folder
 	 */
-	if (!nummsgs)
-	    msgs[nummsgs++] = "cur";
+	if (!msgs.size)
+	    app_msgarg(&msgs, "cur");
 	if (!folder)
 	    folder = getfolder (1);
 	maildir = m_maildir (folder);
@@ -334,8 +310,8 @@ do_cache:
 	    adios (NULL, "no messages in %s", folder);
 
 	/* parse all the message ranges/sequences and set SELECTED */
-	for (msgnum = 0; msgnum < nummsgs; msgnum++)
-	    if (!m_convert (mp, msgs[msgnum]))
+	for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	    if (!m_convert (mp, msgs.msgs[msgnum]))
 		done (1);
 	seq_setprev (mp);	/* set the previous-sequence */
 

@@ -15,6 +15,12 @@
 #include <errno.h>
 
 /*
+ * We allocate space for messages (msgs array)
+ * this number of elements at a time.
+ */
+#define MAXMSGS 256
+
+/*
  * Safely call malloc
  */
 void *
@@ -164,4 +170,17 @@ num_digits (int n)
     }
 
     return ndigits;
+}
+
+/*
+ * Append a message arg to an array of them, resizing it if necessary.
+ * The function is written to suit the arg parsing code it was extracted
+ * from, and will probably be changed when the other code is cleaned up.
+ */
+void
+app_msgarg(struct msgs_array *msgs, char *cp)
+{
+	if(msgs->size >= msgs->max)
+		msgs->msgs = mh_xrealloc(msgs->msgs, (msgs->max+=MAXMSGS)*sizeof(*msgs->msgs));
+	msgs->msgs[msgs->size++] = cp;
 }

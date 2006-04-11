@@ -48,13 +48,6 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-/*
- * We allocate space for messages (msgs array)
- * this number of elements at a time.
- */
-#define MAXMSGS  256
-
-
 static struct swit switches[] = {
 #define	COMPSW	0
     { "component field", 0 },
@@ -99,10 +92,11 @@ int
 main (int argc, char **argv)
 {
     int inplace = 1, datesw = 1;
-    int nummsgs, maxmsgs, msgnum;
+    int msgnum;
     char *cp, *maildir, *comp = NULL;
     char *text = NULL, *folder = NULL, buf[BUFSIZ];
-    char **argp, **arguments, **msgs;
+    char **argp, **arguments;
+    struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
     int		append = 0;		/* append annotations instead of default prepend */
     int		delete = -2;		/* delete header element if set */
@@ -121,14 +115,6 @@ main (int argc, char **argv)
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
-
-    /*
-     * Allocate the initial space to record message
-     * names and ranges.
-     */
-    nummsgs = 0;
-    maxmsgs = MAXMSGS;
-    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -226,18 +212,8 @@ main (int argc, char **argv)
 		adios (NULL, "only one folder at a time!");
 	    else
 		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
-	} else {
-	    /*
-	     * Check if we need to allocate more space
-	     * for message name/ranges.
-	     */
-	    if (nummsgs >= maxmsgs) {
-		maxmsgs += MAXMSGS;
-		msgs = (char **) mh_xrealloc (msgs,
-		    (size_t) (maxmsgs * sizeof(*msgs)));
-	    }
-	    msgs[nummsgs++] = cp;
-	}
+	} else
+		app_msgarg(&msgs, cp);
     }
 
     /*
@@ -247,7 +223,7 @@ main (int argc, char **argv)
      */
 
     if (draft != (char *)0) {
-	if (nummsgs != 0)
+	if (msgs.size != 0)
 	    adios(NULL, "can only have message numbers or -draft.");
 
 	draft = getcpy(m_draft(folder, (char *)0, 1, &isdf));
@@ -269,8 +245,8 @@ main (int argc, char **argv)
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
-    if (!nummsgs)
-	msgs[nummsgs++] = "cur";
+    if (!msgs.size)
+	app_msgarg(&msgs, "cur");
     if (!folder)
 	folder = getfolder (1);
     maildir = m_maildir (folder);
@@ -287,8 +263,8 @@ main (int argc, char **argv)
 	adios (NULL, "no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
-    for (msgnum = 0; msgnum < nummsgs; msgnum++)
-	if (!m_convert (mp, msgs[msgnum]))
+    for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	if (!m_convert (mp, msgs.msgs[msgnum]))
 	    done (1);
 
     make_comp (&comp);

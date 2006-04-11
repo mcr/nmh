@@ -20,20 +20,14 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-/*
- * Add space for message/sequence names
- * by MAXMSGS at a time.
- */
-#define MAXMSGS 256
-
-
 int
 main(int argc, char **argv)
 {
-    int i, maxmsgs, nummsgs;
+    int i;
     char *cp, *maildir, *folder = NULL;
-    char **argp, **msgs;
+    char **argp;
     char **arguments, buf[BUFSIZ];
+    struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
 
 #ifdef LOCALE
@@ -46,14 +40,6 @@ main(int argc, char **argv)
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
-
-    /*
-     * Allocate initial space to record message
-     * and sequence names
-     */
-    nummsgs = 0;
-    maxmsgs = MAXMSGS;
-    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     /*
      * Parse arguments
@@ -82,18 +68,8 @@ main(int argc, char **argv)
 		adios (NULL, "only one folder at a time!");
 	    else
 		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
-	} else {
-	    /*
-	     * if necessary, reallocate space for
-	     * message/sequence names
-	     */
-	    if (nummsgs >= maxmsgs) {
-		maxmsgs += MAXMSGS;
-		msgs = (char **) mh_xrealloc (msgs,
-		    (size_t) (maxmsgs * sizeof(*msgs)));
-	    }
-	    msgs[nummsgs++] = cp;
-	}
+	} else
+		app_msgarg(&msgs, cp);
     }
 
     if (!context_find ("path"))
@@ -104,7 +80,7 @@ main(int argc, char **argv)
     maildir = m_maildir (folder);
 
     /* If no messages are given, print folder pathname */
-    if (!nummsgs) {
+    if (!msgs.size) {
 	printf ("%s\n", maildir);
 	done (0);
     }
@@ -133,8 +109,8 @@ main(int argc, char **argv)
     mp->msgflags |= ALLOW_NEW;	/* allow the "new" sequence */
 
     /* parse all the message ranges/sequences and set SELECTED */
-    for (i = 0; i < nummsgs; i++)
-	if (!m_convert (mp, msgs[i]))
+    for (i = 0; i < msgs.size; i++)
+	if (!m_convert (mp, msgs.msgs[i]))
 	    done (1);
 
     seq_setprev (mp);	/* set the previous-sequence */

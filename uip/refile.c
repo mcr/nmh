@@ -15,13 +15,6 @@
 #include <fcntl.h>
 #include <errno.h>
 
-/*
- * We allocate spaces for messages (msgs array)
- * this number of elements at a time.
- */
-#define MAXMSGS  256
-
-
 static struct swit switches[] = {
 #define	DRAFTSW          0
     { "draft", 0 },
@@ -73,12 +66,13 @@ main (int argc, char **argv)
 {
     int	linkf = 0, preserve = 0, filep = 0;
     int foldp = 0, isdf = 0, unlink_msgs = 0;
-    int i, msgnum, nummsgs, maxmsgs;
+    int i, msgnum;
     char *cp, *folder = NULL, buf[BUFSIZ];
-    char **argp, **arguments, **msgs;
+    char **argp, **arguments;
     char *filevec[NFOLDERS + 2];
     char **files = &filevec[1];	   /* leave room for remove_files:vec[0] */
     struct st_fold folders[NFOLDERS + 1];
+    struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
 
 #ifdef LOCALE
@@ -91,14 +85,6 @@ main (int argc, char **argv)
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
-
-    /*
-     * Allocate the initial space to record message
-     * names, ranges, and sequences.
-     */
-    nummsgs = 0;
-    maxmsgs = MAXMSGS;
-    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     /*
      * Parse arguments
@@ -178,18 +164,8 @@ main (int argc, char **argv)
 		adios (NULL, "only %d folders allowed!", NFOLDERS);
 	    folders[foldp++].f_name =
 		path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
-	} else {
-	    /*
-	     * Check if we need to allocate more space
-	     * for message names, ranges, and sequences.
-	     */
-	    if (nummsgs >= maxmsgs) {
-		maxmsgs += MAXMSGS;
-		msgs = (char **) mh_xrealloc (msgs,
-		    (size_t) (maxmsgs * sizeof(*msgs)));
-	    }
-	    msgs[nummsgs++] = cp;
-	}
+	} else
+		app_msgarg(&msgs, cp);
     }
 
     if (!context_find ("path"))
@@ -198,7 +174,7 @@ main (int argc, char **argv)
 	adios (NULL, "no folder specified");
 
 #ifdef WHATNOW
-    if (!nummsgs && !foldp && !filep && (cp = getenv ("mhdraft")) && *cp)
+    if (!msgs.size && !foldp && !filep && (cp = getenv ("mhdraft")) && *cp)
 	files[filep++] = cp;
 #endif /* WHATNOW */
 
@@ -206,7 +182,7 @@ main (int argc, char **argv)
      * We are refiling a file to the folders
      */
     if (filep > 0) {
-	if (folder || nummsgs)
+	if (folder || msgs.size)
 	    adios (NULL, "use -file or some messages, not both");
 	opnfolds (folders, foldp);
 	for (i = 0; i < filep; i++)
@@ -218,8 +194,8 @@ main (int argc, char **argv)
 	done (0);
     }
 
-    if (!nummsgs)
-	msgs[nummsgs++] = "cur";
+    if (!msgs.size)
+	app_msgarg(&msgs, "cur");
     if (!folder)
 	folder = getfolder (1);
     strncpy (maildir, m_maildir (folder), sizeof(maildir));
@@ -236,8 +212,8 @@ main (int argc, char **argv)
 	adios (NULL, "no messages in %s", folder);
 
     /* parse the message range/sequence/name and set SELECTED */
-    for (msgnum = 0; msgnum < nummsgs; msgnum++)
-	if (!m_convert (mp, msgs[msgnum]))
+    for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	if (!m_convert (mp, msgs.msgs[msgnum]))
 	    done (1);
     seq_setprev (mp);	/* set the previous-sequence */
 

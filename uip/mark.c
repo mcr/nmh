@@ -14,13 +14,6 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-/*
- * We allocate space for messages (msgs array)
- * this number of elements at a time.
- */
-#define MAXMSGS  256
-
-
 static struct swit switches[] = {
 #define	ADDSW               0
     { "add", 0 },
@@ -59,10 +52,11 @@ main (int argc, char **argv)
 {
     int addsw = 0, deletesw = 0, debugsw = 0;
     int listsw = 0, publicsw = -1, zerosw = 0;
-    int seqp = 0, msgnum, nummsgs, maxmsgs;
+    int seqp = 0, msgnum;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
     char **argp, **arguments;
-    char *seqs[NUMATTRS + 1], **msgs;
+    char *seqs[NUMATTRS + 1];
+    struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
 
 #ifdef LOCALE
@@ -75,14 +69,6 @@ main (int argc, char **argv)
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
-
-    /*
-     * Allocate the initial space to record message
-     * names, ranges, and sequences.
-     */
-    nummsgs = 0;
-    maxmsgs = MAXMSGS;
-    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     /*
      * Parse arguments
@@ -152,18 +138,8 @@ main (int argc, char **argv)
 		adios (NULL, "only one folder at a time!");
 	    else
 		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
-	} else {
-	    /*
-	     * Check if we need to allocate more space
-	     * for message names/ranges/sequences.
-	     */
-	    if (nummsgs >= maxmsgs) {
-		maxmsgs += MAXMSGS;
-		msgs = (char **) mh_xrealloc (msgs,
-		    (size_t) (maxmsgs * sizeof(*msgs)));
-	    }
-	    msgs[nummsgs++] = cp;
-	}
+	} else
+		app_msgarg(&msgs, cp);
     }
 
     /*
@@ -180,8 +156,8 @@ main (int argc, char **argv)
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
-    if (!nummsgs)
-	msgs[nummsgs++] = listsw ? "all" :"cur";
+    if (!msgs.size)
+	app_msgarg(&msgs, listsw ? "all" :"cur");
     if (!folder)
 	folder = getfolder (1);
     maildir = m_maildir (folder);
@@ -202,8 +178,8 @@ main (int argc, char **argv)
 	adios (NULL, "no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
-    for (msgnum = 0; msgnum < nummsgs; msgnum++)
-	if (!m_convert (mp, msgs[msgnum]))
+    for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	if (!m_convert (mp, msgs.msgs[msgnum]))
 	    done (1);
 
     if (publicsw == 1 && is_readonly(mp))

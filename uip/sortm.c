@@ -13,13 +13,6 @@
 #include <h/tws.h>
 #include <h/utils.h>
 
-/*
- * We allocate space for messages (msgs array)
- * this number of elements at a time.
- */
-#define MAXMSGS  256
-
-
 static struct swit switches[] = {
 #define DATESW                 0
      { "datefield field", 0 },
@@ -76,10 +69,11 @@ static void rename_msgs (struct msgs *, struct smsg **);
 int
 main (int argc, char **argv)
 {
-    int	nummsgs, maxmsgs, i, msgnum;
+    int	i, msgnum;
     char *cp, *maildir, *datesw = NULL;
     char *folder = NULL, buf[BUFSIZ], **argp;
-    char **arguments, **msgs;
+    char **arguments;
+    struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
     struct smsg **dlist;
 
@@ -93,14 +87,6 @@ main (int argc, char **argv)
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
-
-    /*
-     * Allocate the initial space to record message
-     * names and ranges.
-     */
-    nummsgs = 0;
-    maxmsgs = MAXMSGS;
-    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     /*
      * Parse arguments
@@ -175,24 +161,14 @@ main (int argc, char **argv)
 		adios (NULL, "only one folder at a time!");
 	    else
 		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
-	} else {
-	    /*
-	     * Check if we need to allocate more space
-	     * for message names/ranges.
-	     */
-	    if (nummsgs >= maxmsgs) {
-		maxmsgs += MAXMSGS;
-		msgs = (char **) mh_xrealloc (msgs,
-                    (size_t) (maxmsgs * sizeof(*msgs)));
-	    }
-	    msgs[nummsgs++] = cp;
-	}
+	} else
+		app_msgarg(&msgs, cp);
     }
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
-    if (!nummsgs)
-	msgs[nummsgs++] = "all";
+    if (!msgs.size)
+	app_msgarg(&msgs, "all");
     if (!datesw)
 	datesw = "date";
     if (!folder)
@@ -211,8 +187,8 @@ main (int argc, char **argv)
 	adios (NULL, "no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
-    for (msgnum = 0; msgnum < nummsgs; msgnum++)
-	if (!m_convert (mp, msgs[msgnum]))
+    for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	if (!m_convert (mp, msgs.msgs[msgnum]))
 	    done (1);
     seq_setprev (mp);	/* set the previous sequence */
 

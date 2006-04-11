@@ -17,13 +17,6 @@
 #include <h/utils.h>
 #include <errno.h>
 
-/*
- * We allocate space for message names (msgs array)
- * this number of elements at a time.
- */
-#define MAXMSGS  256
-
-
 static struct swit switches[] = {
 #define	CLRSW	0
     { "clear", 0 },
@@ -71,11 +64,12 @@ main (int argc, char **argv)
 {
     int clearflag = 0, hdrflag = 0, ontty;
     int width = 0, revflag = 0;
-    int i, state, msgnum, nummsgs, maxmsgs;
+    int i, state, msgnum;
     int seqnum[NUMATTRS], unseen, num_unseen_seq = 0;
     char *cp, *maildir, *file = NULL, *folder = NULL;
     char *form = NULL, *format = NULL, buf[BUFSIZ];
-    char **argp, *nfs, **arguments, **msgs;
+    char **argp, *nfs, **arguments;
+    struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
     FILE *in;
 
@@ -90,14 +84,6 @@ main (int argc, char **argv)
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
-
-    /*
-     * Allocate the initial space to record message
-     * names, ranges, and sequences.
-     */
-    nummsgs = 0;
-    maxmsgs = MAXMSGS;
-    msgs = (char **) mh_xmalloc ((size_t) (maxmsgs * sizeof(*msgs)));
 
     /*
      * Parse arguments
@@ -170,18 +156,8 @@ main (int argc, char **argv)
 		adios (NULL, "only one folder at a time!");
 	    else
 		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
-	} else {
-	    /*
-	     * Check if we need to allocate more space
-	     * for message names/ranges/sequences.
-	     */
-	    if (nummsgs >= maxmsgs) {
-		maxmsgs += MAXMSGS;
-		msgs = (char **) mh_xrealloc (msgs,
-                    (size_t) (maxmsgs * sizeof(*msgs)));
-	    }
-	    msgs[nummsgs++] = cp;
-	}
+	} else
+		app_msgarg(&msgs, cp);
     }
 
     if (!context_find ("path"))
@@ -196,7 +172,7 @@ main (int argc, char **argv)
      * We are scanning a maildrop file
      */
     if (file) {
-	if (nummsgs)
+	if (msgs.size)
 	    adios (NULL, "\"msgs\" not allowed with -file");
 	if (folder)
 	    adios (NULL, "\"+folder\" not allowed with -file");
@@ -231,8 +207,8 @@ main (int argc, char **argv)
      * We are scanning a folder
      */
 
-    if (!nummsgs)
-	msgs[nummsgs++] = "all";
+    if (!msgs.size)
+	app_msgarg(&msgs, "all");
     if (!folder)
 	folder = getfolder (1);
     maildir = m_maildir (folder);
@@ -249,8 +225,8 @@ main (int argc, char **argv)
 	adios (NULL, "no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
-    for (msgnum = 0; msgnum < nummsgs; msgnum++)
-	if (!m_convert (mp, msgs[msgnum]))
+    for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	if (!m_convert (mp, msgs.msgs[msgnum]))
 	    done(1);
     seq_setprev (mp);			/* set the Previous-Sequence */
 
