@@ -1,4 +1,10 @@
+Makefile
 autom4te.cache
-configure
+config.h
 config.h.in
+config.log
+config.status
+configure
+configure.lineno
+stamp-h
 stamp-h.in
