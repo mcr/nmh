@@ -51,8 +51,8 @@ extern struct aka *akahead;
 /*
  * prototypes
  */
-void print_aka (char *, int, int);
-void print_usr (char *, int, int);
+static void print_aka (char *, int, int);
+static void print_usr (char *, int, int);
 
 
 int
@@ -173,7 +173,7 @@ main (int argc, char **argv)
     return done (0);
 }
 
-void
+static void
 print_aka (char *p, int list, int margin)
 {
     char c;
@@ -213,7 +213,7 @@ print_aka (char *p, int list, int margin)
     pos = 1;
 }
 
-void
+static void
 print_usr (char *s, int list, int norm)
 {
     register char *cp, *pp, *vp;
