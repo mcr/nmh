@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 #include <errno.h>
 
 
@@ -18,7 +19,6 @@ m_draft (char *folder, char *msg, int use, int *isdf)
 {
     register char *cp;
     register struct msgs *mp;
-    struct stat st;
     static char buffer[BUFSIZ];
 
     if (*isdf == -1 || folder == NULL || *folder == '\0') {

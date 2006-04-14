@@ -135,7 +135,6 @@ main (int argc, char **argv)
     int pushsw = 0, popsw = 0;
     char *cp, *dp, *msg = NULL, *argfolder = NULL;
     char **ap, **argp, buf[BUFSIZ], **arguments;
-    struct stat st;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");

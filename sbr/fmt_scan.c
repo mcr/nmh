@@ -359,11 +359,12 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 
 	case FT_NUM:
 	    n = snprintf(cp, ep - cp + 1, "%d", value);
-	    if (n >= 0)
+	    if (n >= 0) {
 		if (n >= ep - cp) {
 		    cp = ep;
 		} else
 		    cp += n;
+	    }
 	    break;
 	case FT_NUMF:
 	    cpnumber (&cp, value, fmt->f_width, fmt->f_fill, ep - cp);

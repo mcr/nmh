@@ -29,6 +29,7 @@
 #endif
 
 #include <h/mh.h>
+#include <h/utils.h>
 #include <fcntl.h>
 
 #ifdef POP

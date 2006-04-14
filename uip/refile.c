@@ -278,11 +278,9 @@ main (int argc, char **argv)
 static void
 opnfolds (struct st_fold *folders, int nfolders)
 {
-    register char *cp;
     char nmaildir[BUFSIZ];
     register struct st_fold *fp, *ep;
     register struct msgs *mp;
-    struct stat st;
 
     for (fp = folders, ep = folders + nfolders; fp < ep; fp++) {
 	chdir (m_maildir (""));
