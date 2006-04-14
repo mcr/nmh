@@ -202,8 +202,8 @@ greater than 200, and all aliases of the form
 The key thing to understand about aliasing in
 .B nmh
 is that aliases in
-/B nmh
-lias files are expanded into the headers of messages posted.
+.B nmh
+alias files are expanded into the headers of messages posted.
 This aliasing occurs first, at posting time, without the knowledge of the
 message transport system.  In contrast, once the message transport system
 is given a message to deliver to a list of addresses, for each address
