@@ -12,6 +12,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include <errno.h>
 
 /*
@@ -183,4 +184,20 @@ app_msgarg(struct msgs_array *msgs, char *cp)
 	if(msgs->size >= msgs->max)
 		msgs->msgs = mh_xrealloc(msgs->msgs, (msgs->max+=MAXMSGS)*sizeof(*msgs->msgs));
 	msgs->msgs[msgs->size++] = cp;
+}
+
+/* Open a form or components file */
+int
+open_form(char **form, char *def)
+{
+	int in;
+	if (*form) {
+		if ((in = open (etcpath (*form), O_RDONLY)) == NOTOK)
+			adios (*form, "unable to open form file");
+	} else {
+		if ((in = open (etcpath (def), O_RDONLY)) == NOTOK)
+			adios (def, "unable to open default components file");
+		*form = def;
+	}
+	return in;
 }

@@ -18,3 +18,4 @@ struct msgs_array {
 };
 
 void app_msgarg(struct msgs_array *, char *);
+int open_form(char **, char *);

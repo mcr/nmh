@@ -393,16 +393,8 @@ try_it_again:
 	if (!form)
 	    form = digestcomps;
 	in = build_form (form, digest, volume, issue);
-    } else {
-	if (form) {
-	    if ((in = open (etcpath (form), O_RDONLY)) == NOTOK)
-		adios (form, "unable to open form file");
-	} else {
-	    if ((in = open (etcpath (forwcomps), O_RDONLY)) == NOTOK)
-		adios (forwcomps, "unable to open default components file");
-	    form = forwcomps;
-	}
-    }
+    } else
+	in = open_form(&form, forwcomps);
 
     if ((out = creat (drft, m_gmprot ())) == NOTOK)
 	adios (drft, "unable to create");

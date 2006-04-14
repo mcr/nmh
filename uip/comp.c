@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 #include <fcntl.h>
 
 static struct swit switches[] = {
@@ -227,19 +228,8 @@ main (int argc, char **argv)
 
 	if ((in = open (form = getcpy (m_name (mp->lowsel)), O_RDONLY)) == NOTOK)
 	    adios (form, "unable to open message");
-    } else {
-	/*
-	 * Open a component or forms file
-	 */
-	if (form) {
-	    if ((in = open (etcpath (form), O_RDONLY)) == NOTOK)
-		adios (form, "unable to open form file");
-	} else {
-	    if ((in = open (etcpath (components), O_RDONLY)) == NOTOK)
-		adios (components, "unable to open default components file");
-	    form = components;
-	}
-    }
+    } else
+	in = open_form(&form, components);
 
 try_it_again:
     strncpy (drft, m_draft (dfolder, file, use, &isdf), sizeof(drft));
