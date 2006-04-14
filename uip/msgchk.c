@@ -307,13 +307,12 @@ main (int argc, char **argv)
     if (vecp == 0) {
 	char *home;
 
-	home = (uid = geteuid()) ? home = getenv ("HOME") : NULL;
-	if (home == NULL) {
+        /* Not sure this check makes sense... */
+	if (!geteuid() || NULL == (home = getenv("HOME"))) {
 	    pw = getpwnam (user);
 	    if (pw == NULL)
 		adios (NULL, "unable to get information about user");
-	    if (home == NULL)
-		home = pw->pw_dir;
+	    home = pw->pw_dir;
 	}
 	status = checkmail (user, home, datesw, notifysw, 1);
     } else {
