@@ -575,7 +575,7 @@ gcompile (struct nexus *n, char *astr)
 {
     register int c;
     int cclcnt;
-    register char *ep, *dp, *sp, *lastep = 0;
+    register unsigned char *ep, *dp, *sp, *lastep = 0;
 
     dp = (ep = n->n_expbuf) + sizeof n->n_expbuf;
     sp = astr;
@@ -614,7 +614,7 @@ gcompile (struct nexus *n, char *astr)
 	    case '[': 
 		*ep++ = CCL;
 		*ep++ = 0;
-		cclcnt = 1;
+		cclcnt = 0;
 		if ((c = *sp++) == '^') {
 		    c = *sp++;
 		    ep[-2] = NCCL;
@@ -639,6 +639,8 @@ gcompile (struct nexus *n, char *astr)
 			    goto cerror;
 		    }
 		} while ((c = *sp++) != ']');
+		if (cclcnt > 255)
+		    goto cerror;
 		lastep[1] = cclcnt;
 		continue;
 
@@ -744,14 +746,14 @@ plist
 static int
 advance (char *alp, char *aep)
 {
-    register char *lp, *ep, *curlp;
+    register unsigned char *lp, *ep, *curlp;
 
-    lp = alp;
-    ep = aep;
+    lp = (unsigned char *)alp;
+    ep = (unsigned char *)aep;
     for (;;)
 	switch (*ep++) {
 	    case CCHR: 
-		if (*ep++ == *lp++ || ep[-1] == cc[(unsigned char)lp[-1]])
+		if (*ep++ == *lp++ || ep[-1] == cc[lp[-1]])
 		    continue;
 		return 0;
 
@@ -770,14 +772,14 @@ advance (char *alp, char *aep)
 
 	    case CCL: 
 		if (cclass (ep, *lp++, 1)) {
-		    ep += *ep;
+		    ep += *ep + 1;
 		    continue;
 		}
 		return 0;
 
 	    case NCCL: 
 		if (cclass (ep, *lp++, 0)) {
-		    ep += *ep;
+		    ep += *ep + 1;
 		    continue;
 		}
 		return 0;
@@ -790,7 +792,7 @@ advance (char *alp, char *aep)
 
 	    case CCHR | STAR: 
 		curlp = lp;
-		while (*lp++ == *ep || cc[(unsigned char)lp[-1]] == *ep)
+		while (*lp++ == *ep || cc[lp[-1]] == *ep)
 		    continue;
 		ep++;
 		goto star;
@@ -800,7 +802,7 @@ advance (char *alp, char *aep)
 		curlp = lp;
 		while (cclass (ep, *lp++, ep[-1] == (CCL | STAR)))
 		    continue;
-		ep += *ep;
+		ep += *ep + 1;
 		goto star;
 
 	star: 
@@ -819,19 +821,18 @@ advance (char *alp, char *aep)
 
 
 static int
-cclass (char *aset, int ac, int af)
+cclass (unsigned char *aset, int ac, int af)
 {
-    register int    n;
-    register char   c,
-                   *set;
+    register unsigned int    n;
+    register unsigned char   c, *set;
 
     set = aset;
     if ((c = ac) == 0)
 	return (0);
 
     n = *set++;
-    while (--n)
-	if (*set++ == c || set[-1] == cc[(unsigned char)c])
+    while (n--)
+	if (*set++ == c || set[-1] == cc[c])
 	    return (af);
 
     return (!af);
