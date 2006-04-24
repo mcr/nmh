@@ -12,6 +12,14 @@
 #include <h/mh.h>
 
 /*
+ * THIS CODE DOES NOT WORK AS ADVERTISED.
+ * It is actually checking if s1 is a PREFIX of s2.
+ * All calls to this function need to be checked to see
+ * if that needs to be changed. Prefix checking is cheaper, so
+ * should be kept if it's sufficient.
+ */
+
+/*
  * Check if s1 is a substring of s2.
  * If yes, then return 1, else return 0.
  */
