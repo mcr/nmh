@@ -565,7 +565,7 @@ store_content (CT ct, CT p)
 
 	/* Get the folder name */
 	if (cp[1])
-	    folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+	    folder = pluspath (cp);
 	else
 	    folder = getfolder (1);
 

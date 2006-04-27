@@ -98,7 +98,7 @@ main (int argc, char **argv)
 	if (*cp == '+' || *cp == '@') {
 	    if (folder)
 		adios (NULL, "only one folder at a time!");
-	    folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+	    folder = pluspath (cp);
 	} else
 		app_msgarg(&msgs, cp);
     }

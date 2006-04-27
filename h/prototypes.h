@@ -89,6 +89,7 @@ char *path(char *, int);
 int peekc(FILE *ib);
 int pidwait (pid_t, int);
 int pidstatus (int, FILE *, char *);
+char *pluspath(char *);
 void print_help (char *, struct swit *, int);
 void print_sw (char *, struct swit *, char *);
 void print_version (char *);

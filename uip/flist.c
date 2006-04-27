@@ -232,7 +232,7 @@ main(int argc, char **argv)
 	    }
 	    if (*cp == '+' || *cp == '@') {
 		foldersToDo[numfolders++] =
-		    path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+		    pluspath (cp);
 	    } else
 		foldersToDo[numfolders++] = cp;
 	}

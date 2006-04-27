@@ -163,7 +163,7 @@ main (int argc, char **argv)
 	    if (foldp > NFOLDERS)
 		adios (NULL, "only %d folders allowed!", NFOLDERS);
 	    folders[foldp++].f_name =
-		path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+		pluspath (cp);
 	} else
 		app_msgarg(&msgs, cp);
     }

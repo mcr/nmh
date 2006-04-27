@@ -593,7 +593,7 @@ filehak (char **args)
 	if (cwd == NULL)
 	    cwd = getcpy (pwd ());
 	chdir (m_maildir (""));
-	cp = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+	cp = pluspath (cp);
 	if (access (m_maildir (cp), F_OK) == NOTOK)
 	    result = OK;
 	free (cp);
@@ -703,7 +703,7 @@ foldcmd (char **args)
 		return;
 	    }
 	    else
-		folder = fmsh ? path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF)
+		folder = fmsh ? pluspath (cp)
 			    : cp + 1;
 	}
 	else

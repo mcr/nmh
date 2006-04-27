@@ -457,7 +457,7 @@ main (int argc, char **argv)
 	    if (folder)
 		adios (NULL, "only one folder at a time!");
 	    else
-		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+		folder = pluspath (cp);
 	} else {
 	    adios (NULL, "usage: %s [+folder] [switches]", invo_name);
 	}

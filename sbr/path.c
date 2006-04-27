@@ -26,6 +26,11 @@ static char *pwds;
 static char *expath(char *,int);
 static void compath(char *);
 
+char *
+pluspath(char *name)
+{
+	return path(name + 1, *name == '+' ? TFOLDER : TSUBCWF);
+}
 
 char *
 path(char *name, int flag)

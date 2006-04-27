@@ -259,7 +259,7 @@ main (int argc, char **argv)
 	    if (argfolder)
 		adios (NULL, "only one folder at a time!");
 	    else
-		argfolder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+		argfolder = pluspath (cp);
 	} else {
 	    if (msg)
 		adios (NULL, "only one (current) message at a time!");
