@@ -570,7 +570,7 @@ store_content (CT ct, CT p)
 	    folder = getfolder (1);
 
 	/* Check if folder exists */
-	create_folder(folder, 0, exit);
+	create_folder(m_mailpath(folder), 0, exit);
 
 	/* Record the folder name */
 	ct->c_folder = add (folder, NULL);
