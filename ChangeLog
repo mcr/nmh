@@ -1,3 +1,8 @@
+2006-08-26  Josh Bressers <josh@bress.net>
+
+	* configure.in: If we're not using dotlocking, there is no need to set
+	inc sgid.
+
 2006-03-30  David Levine <levinedl@acm.org>
 
 	* uip/sendsbr.c: with attachformat values of 1 or 2, only

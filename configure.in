@@ -426,7 +426,7 @@ fi
 
 dnl If mailspool is not world-writable and dotlockfile is not setgid,
 dnl we need to #define MAILGROUP to 1 and make inc setgid.
-if test x"$nmh_cv_mailspool_world_writable" = x"no" -a x"$nmh_cv_dotlockfile_setgid" != x"yes" ; then
+if test x"$LOCKTYPE" = x"dot" -a x"$nmh_cv_mailspool_world_writable" = x"no" -a x"$nmh_cv_dotlockfile_setgid" != x"yes" ; then
   dnl do we really need both of these?
   AC_DEFINE(MAILGROUP)dnl
   SETGID_MAIL=1
