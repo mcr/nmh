@@ -1,3 +1,10 @@
+2006-10-24  David Levine <levinedl@acm.org>
+
+	* uip/sendsbr.c: with attachformat values of 1 or 2, add
+	name= portion to Content-Type header.  This makes them
+	consistent with attachformat value 0.  And it allows mhstore
+	to use that (file)name when extracting attachments.
+
 2006-08-26  Josh Bressers <josh@bress.net>
 
 	* configure.in: If we're not using dotlocking, there is no need to set
