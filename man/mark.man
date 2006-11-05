@@ -98,7 +98,7 @@ As expected, the command
 .B \-sequence
 .I foo
 .B \-delete
-.BR \-all \*(rq
+all\*(rq
 deletes the sequence \*(lqfoo\*(rq from the current folder.
 .PP
 When creating or modifying sequences, you can specify the switches
