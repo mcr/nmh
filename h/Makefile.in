@@ -13,7 +13,7 @@ VPATH  = @srcdir@
 HDRS = 	addrsbr.h aliasbr.h dropsbr.h fmt_compile.h fmt_scan.h		\
 	md5.h mf.h mh.h mhcachesbr.h mhparse.h mime.h msh.h mts.h	\
 	netdb.h nmh.h nntp.h picksbr.h popsbr.h prototypes.h rcvmail.h	\
-	scansbr.h signals.h tws.h vmhsbr.h
+	scansbr.h signals.h tws.h vmhsbr.h utils.h
 
 # auxiliary files
 AUX = Makefile.in
