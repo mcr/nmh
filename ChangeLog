@@ -1,3 +1,12 @@
+2007-03-12  Peter Maydell <pmaydell@chiark.greenend.org.uk>
+
+	* bug #15212: configure.in, acconfig.h: remove configure test for
+	broken AT&T vi. This test was broken (it was always returning
+	failure even for non-broken vi implementations) and
+	unfixable. Nobody should be using AT&T vi any more so I have
+	simply moved it back to being a setting you can put manually into
+	acconfig.h if you must.
+
 2006-10-24  David Levine <levinedl@acm.org>
 
 	* uip/sendsbr.c: with attachformat values of 1 or 2, add

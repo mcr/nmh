@@ -148,6 +148,12 @@
 /* This tells nmh to use the Linux _IO_*_ptr defines from libio.h */ 
 #undef LINUX_STDIO
 
+/*
+ * Define to 1 if your vi has ATT bug, such that it returns
+ * non-zero exit codes on `pseudo-errors'.
+ */
+#undef ATTVIBUG
+
 
 /***** END USER CONFIGURATION SECTION *****/
 @TOP@
@@ -237,12 +243,6 @@
 
 /* Define to `unsigned int' if <sys/types.h> or <signal.h> doesn't define */
 #undef sigset_t
-
-/*
- * Define to 1 if your vi has ATT bug, such that it returns
- * non-zero exit codes on `pseudo-errors'.
- */
-#undef ATTVIBUG
 
 /*
  * Define to 1 if you need to make `inc' set-group-id because your mail spool is

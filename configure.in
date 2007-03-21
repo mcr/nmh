@@ -367,20 +367,6 @@ if test -z "$editorpath"; then
 fi
 AC_SUBST(editorpath)dnl
 
-dnl Check for broken vi
-AC_CACHE_CHECK(for broken vi, nmh_cv_attvibug,
-[if echo 'r /nonexist-file
-q' | ex > /dev/null
-then
-        nmh_cv_attvibug=no
-else
-        nmh_cv_attvibug=yes
-fi])
- 
-if test "$nmh_cv_attvibug" = yes; then
-  AC_DEFINE(ATTVIBUG)dnl
-fi
-
 dnl ----------------------------------------------------------
 dnl FIND MAIL SPOOL AND SEE IF WE NEED TO MAKE inc SETGID MAIL
 dnl ----------------------------------------------------------
