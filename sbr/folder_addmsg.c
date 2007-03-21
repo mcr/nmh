@@ -180,11 +180,11 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 	     */
 	    if (linkerr == EXDEV) {
 		if (stat (newmsg, &st1) == 0) {
-		    advise (NULL, "message %s:%s already exists", newmsg);
+		    advise (NULL, "message %s:%s already exists", mp->foldpath, newmsg);
 		    return -1;
 		} else {
 		    if ((infd = open (msgfile, O_RDONLY)) == -1) {
-			advise (msgfile, "unable to open message %s");
+			advise (msgfile, "unable to open message %s", msgfile);
 			return -1;
 		    }
 		    fstat (infd, &st1);

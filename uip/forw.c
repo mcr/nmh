@@ -508,7 +508,7 @@ mhl_draft (int out, char *digest, int volume, int issue,
 
 	    if (mp->numsel >= MAXARGS - i)
 		adios (NULL, "more than %d messages for %s exec",
-			vec[0], MAXARGS - i);
+			MAXARGS - i, vec[0]);
 
 	    /*
 	     * Now add the message names to filter.  We can only

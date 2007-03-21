@@ -113,7 +113,7 @@ context_read (void)
 	free (cp);
 
 	if (!makedir (nd))
-	    adios (NULL, "unable to create", nd);
+	    adios (NULL, "unable to create %s", nd);
     }
 
     else if ((st.st_mode & S_IFDIR) == 0)

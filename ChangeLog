@@ -1,5 +1,10 @@
 2007-03-12  Peter Maydell <pmaydell@chiark.greenend.org.uk>
 
+	* bug #18630, #18631, #18632, #18634: various patches from
+	Craig Leres fixing error message argument problems.
+
+2007-03-12  Peter Maydell <pmaydell@chiark.greenend.org.uk>
+
 	* bug #15212: configure.in, acconfig.h: remove configure test for
 	broken AT&T vi. This test was broken (it was always returning
 	failure even for non-broken vi implementations) and

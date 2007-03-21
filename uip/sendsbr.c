@@ -1010,7 +1010,7 @@ annoaux (int fd)
     }
     if (!(mp = folder_read (folder))) {
 	if (debugsw)
-	    admonish (NULL, "unable to read folder %s");
+	    admonish (NULL, "unable to read folder %s", folder);
 	return;
     }
 
