@@ -1112,7 +1112,7 @@ last_part:
 	char partnam[BUFSIZ];
 
 	if (ct->c_partno) {
-	    snprintf (partnam, sizeof(partnum), "%s.", ct->c_partno);
+	    snprintf (partnam, sizeof(partnam), "%s.", ct->c_partno);
 	    pp = partnam + strlen (partnam);
 	} else {
 	    pp = partnam;
