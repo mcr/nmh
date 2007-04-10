@@ -245,7 +245,7 @@ mhmail(1), send(1), mh\-mail(5), mh\-alias(5), mh\-tailor(5),
 .SH CONTEXT
 None
 
-.Bu
+.SH BUGS
 \*(lqReply\-To:\*(rq fields are allowed to have groups in them according
 to the 822 specification, but
 .B post
