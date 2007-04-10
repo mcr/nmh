@@ -1298,6 +1298,8 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	if (term == '\n')
 	    putstr ("\n");
     }
+    if (flag == BODYCOMP && term == '\n')
+	c1->c_flags &= ~HDROUTPUT;		/* Buffer ended on a newline */
 }
 
 
