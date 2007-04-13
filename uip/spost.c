@@ -191,7 +191,7 @@ static void finish_headers (FILE *);
 static int get_header (char *, struct headers *);
 static void putadr (char *, struct mailname *);
 static int putone (char *, int, int);
-static void insert_fcc (struct headers *, char *);
+static void insert_fcc (struct headers *, unsigned char *);
 static void file (char *);
 static void fcc (char *, char *);
 
@@ -720,9 +720,9 @@ putone (char *adr, int pos, int indent)
 
 
 static void
-insert_fcc (struct headers *hdr, char *pp)
+insert_fcc (struct headers *hdr, unsigned char *pp)
 {
-    char   *cp;
+    unsigned char   *cp;
 
     for (cp = pp; isspace (*cp); cp++)
 	continue;

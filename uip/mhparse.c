@@ -127,8 +127,8 @@ CT parse_mime (char *);
  */
 static CT get_content (FILE *, char *, int);
 static int add_header (CT, char *, char *);
-static int get_ctinfo (char *, CT);
-static int get_comment (CT, char **, int);
+static int get_ctinfo (unsigned char *, CT);
+static int get_comment (CT, unsigned char **, int);
 static int InitGeneric (CT);
 static int InitText (CT);
 static int InitMultiPart (CT);
@@ -377,7 +377,8 @@ get_content (FILE *in, char *file, int toplevel)
 	/* Get MIME-Version field */
 	if (!mh_strcasecmp (hp->name, VRSN_FIELD)) {
 	    int ucmp;
-	    char c, *cp, *dp;
+	    char c;
+	    unsigned char *cp, *dp;
 
 	    if (ct->c_vrsn) {
 		advise (NULL, "message %s has multiple %s: fields",
@@ -444,7 +445,8 @@ get_content (FILE *in, char *file, int toplevel)
 	}
 	else if (!mh_strcasecmp (hp->name, ENCODING_FIELD)) {
 	/* Get Content-Transfer-Encoding field */
-	    char c, *cp, *dp;
+	    char c;
+	    unsigned char *cp, *dp;
 	    struct str2init *s2i;
 
 	    /*
@@ -485,7 +487,8 @@ get_content (FILE *in, char *file, int toplevel)
 	}
 	else if (!mh_strcasecmp (hp->name, MD5_FIELD)) {
 	/* Get Content-MD5 field */
-	    char *cp, *dp, *ep;
+	    unsigned char *cp, *dp;
+	    char *ep;
 
 	    if (!checksw)
 		goto next_header;
@@ -611,10 +614,11 @@ add_header (CT ct, char *name, char *value)
  */
 
 static int
-get_ctinfo (char *cp, CT ct)
+get_ctinfo (unsigned char *cp, CT ct)
 {
     int	i;
-    char *dp, **ap, **ep;
+    unsigned char *dp;
+    char **ap, **ep;
     char c;
     CI ci;
 
@@ -708,7 +712,8 @@ magic_skip:
      */
     ep = (ap = ci->ci_attrs) + NPARMS;
     while (*cp == ';') {
-	char *vp, *up;
+	char *vp;
+	unsigned char *up;
 
 	if (ap >= ep) {
 	    advise (NULL,
@@ -812,10 +817,11 @@ bad_quote:
 
 
 static int
-get_comment (CT ct, char **ap, int istype)
+get_comment (CT ct, unsigned char **ap, int istype)
 {
     int i;
-    char *bp, *cp;
+    char *bp;
+    unsigned char *cp;
     char c, buffer[BUFSIZ], *dp;
     CI ci;
 
@@ -956,7 +962,8 @@ InitMultiPart (CT ct)
 {
     int	inout;
     long last, pos;
-    char *cp, *dp, **ap, **ep;
+    unsigned char *cp, *dp;
+    char **ap, **ep;
     char *bp, buffer[BUFSIZ];
     struct multipart *m;
     struct k2v *kv;
@@ -1568,7 +1575,8 @@ openBase64 (CT ct, char **file)
     int fd, len, skip;
     unsigned long bits;
     unsigned char value, *b, *b1, *b2, *b3;
-    char *cp, *ep, buffer[BUFSIZ];
+    unsigned char *cp, *ep;
+    char buffer[BUFSIZ];
     /* sbeck -- handle prefixes */
     CI ci;
     CE ce;
@@ -1779,7 +1787,7 @@ static int
 openQuoted (CT ct, char **file)
 {
     int	cc, digested, len, quoted;
-    char *cp, *ep;
+    unsigned char *cp, *ep;
     char buffer[BUFSIZ];
     unsigned char mask;
     CE ce;

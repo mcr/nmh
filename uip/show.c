@@ -385,7 +385,8 @@ static int
 is_nontext (char *msgnam)
 {
     int	result, state;
-    char *bp, *cp, *dp;
+    unsigned char *bp, *dp;
+    char *cp;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
 

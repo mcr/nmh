@@ -1570,7 +1570,8 @@ static int
 smhear (void)
 {
     int i, code, cont, bc, rc, more;
-    char *bp, *rp;
+    unsigned char *bp;
+    char *rp;
     char **ehlo, buffer[BUFSIZ];
 
     if (doingEHLO) {

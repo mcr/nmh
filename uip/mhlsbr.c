@@ -230,7 +230,7 @@ static int wid;
 
 static char *ovtxt;
 
-static char *onelp;
+static unsigned char *onelp;
 
 static char *parptr;
 
@@ -1185,7 +1185,7 @@ static void
 putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 {
     int count, cchdr;
-    char *cp;
+    unsigned char *cp;
 
     cchdr = 0;
     lm = 0;

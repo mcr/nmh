@@ -73,7 +73,7 @@ struct adrx {
  * prototypes
  */
 int isfrom(char *);
-int lequal (char *, char *);
+int lequal (unsigned char *, unsigned char *);
 int mfgets (FILE *, char **);
 char *legal_person (char *);
 struct adrx *seekadrx (char *);

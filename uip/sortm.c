@@ -70,7 +70,8 @@ int
 main (int argc, char **argv)
 {
     int	i, msgnum;
-    char *cp, *maildir, *datesw = NULL;
+    unsigned char *cp;
+    char *maildir, *datesw = NULL;
     char *folder = NULL, buf[BUFSIZ], **argp;
     char **arguments;
     struct msgs_array msgs = { 0, 0, NULL };
@@ -408,7 +409,8 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	     * leading "re:", everything but letters & smash
 	     * letters to lower case.
 	     */
-	    register char  *cp, *cp2, c;
+	    register char  *cp, *cp2;
+	    register unsigned char c;
 
 	    cp = subjcomp;
 	    cp2 = subjcomp;

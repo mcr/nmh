@@ -74,7 +74,8 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
       int unseen, char *folder, long size, int noisy)
 {
     int i, compnum, encrypted, state;
-    char *cp, *tmpbuf, **nxtbuf;
+    unsigned char *cp, *tmpbuf;
+    char **nxtbuf;
     char *saved_c_text;
     struct comp *cptr;
     struct comp **savecomp;

@@ -40,7 +40,8 @@ int
 m_convert (struct msgs *mp, char *name)
 {
     int first, last, found, range, err;
-    char *bp, *cp;
+    unsigned char *bp;
+    char *cp;
 
     /* check if user defined sequence */
     err = attr (mp, cp = name);
@@ -240,8 +241,8 @@ static int
 m_conv (struct msgs *mp, char *str, int call)
 {
     register int i;
-    register char *cp, *bp;
-    char buf[16];
+    register unsigned char *cp, *bp;
+    unsigned char buf[16];
 
     convdir = 1;
     cp = bp = str;
@@ -326,7 +327,7 @@ m_conv (struct msgs *mp, char *str, int call)
 static int
 attr (struct msgs *mp, char *cp)
 {
-    register char *dp;
+    register unsigned char *dp;
     char *bp = NULL;
     register int i, j;
     int found,

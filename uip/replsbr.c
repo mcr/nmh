@@ -79,7 +79,8 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     register char **ap;
     register struct comp **savecomp;
     int	char_read = 0, format_len, mask;
-    char name[NAMESZ], *scanl, *cp;
+    char name[NAMESZ], *scanl;
+    unsigned char *cp;
     FILE *out;
 
     mask = umask(~m_gmprot());

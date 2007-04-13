@@ -1544,7 +1544,8 @@ static int
 parse (char *buffer, struct Cmd *cmdp)
 {
     int argp = 0;
-    char c, *cp, *pp;
+    unsigned char c, *cp;
+    char *pp;
 
     cmdp->line[0] = 0;
     pp = cmdp->args[argp++] = cmdp->line;
@@ -1891,7 +1892,7 @@ static int
 pINI (void)
 {
     int i, vrsn;
-    char *bp;
+    unsigned char *bp;
     struct record rcs, *rc;
 
     rc = &rcs;

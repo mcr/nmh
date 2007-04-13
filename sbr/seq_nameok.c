@@ -13,9 +13,9 @@
 
 
 int
-seq_nameok (char *s)
+seq_nameok (unsigned char *s)
 {
-    char *pp;
+    unsigned char *pp;
 
     if (s == NULL || *s == '\0') {
 	advise (NULL, "empty sequence name");

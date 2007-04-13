@@ -18,7 +18,7 @@ int
 m_atoi (char *str)
 {
     int i;
-    char *cp;
+    unsigned char *cp;
 
     for (i = 0, cp = str; *cp; cp++) {
 #ifdef LOCALE

@@ -30,7 +30,8 @@ int
 distout (char *drft, char *msgnam, char *backup)
 {
     int state;
-    register char *dp, *resent;
+    register unsigned char *dp;
+    register char *resent;
     char name[NAMESZ], buffer[BUFSIZ];
     register FILE *ifp, *ofp;
 

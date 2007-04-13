@@ -227,7 +227,7 @@ nl      [ \t\n()]
   
   YY_BUFFER_STATE lexhandle;
 
-  register char *cp;
+  register unsigned char *cp;
   static struct tws tw; 
 
   memset(&tw,0,sizeof(struct tws));

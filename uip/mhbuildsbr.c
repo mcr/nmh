@@ -152,8 +152,8 @@ int pidcheck (int);
  */
 static CT get_content (FILE *, char *, int);
 static int add_header (CT, char *, char *);
-static int get_ctinfo (char *, CT, int);
-static int get_comment (CT, char **, int);
+static int get_ctinfo (unsigned char *, CT, int);
+static int get_comment (CT, unsigned char **, int);
 static int InitGeneric (CT);
 static int InitText (CT);
 static int InitMultiPart (CT);
@@ -186,7 +186,7 @@ static int scan_content (CT);
 static int build_headers (CT);
 static char *calculate_digest (CT, int);
 static int readDigest (CT, char *);
-static char *incl_name_value (char *, char *, char *);
+static char *incl_name_value (unsigned char *, char *, char *);
 static char *extract_name_value (char *, char *);
 
 /*
@@ -499,7 +499,8 @@ get_content (FILE *in, char *file, int toplevel)
 	    /* Get MIME-Version field */
 	    if (!mh_strcasecmp (name, VRSN_FIELD)) {
 		int ucmp;
-		char c, *cp, *dp;
+		char c;
+		unsigned char *cp, *dp;
 
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
@@ -585,7 +586,7 @@ get_content (FILE *in, char *file, int toplevel)
 
 	    /* Get Content-Transfer-Encoding field */
 	    if (!mh_strcasecmp (name, ENCODING_FIELD)) {
-		char *cp, *dp;
+		unsigned char *cp, *dp;
 		char c;
 		struct str2init *s2i;
 
@@ -665,7 +666,8 @@ get_content (FILE *in, char *file, int toplevel)
 
 	    /* Get Content-MD5 field */
 	    if (!mh_strcasecmp (name, MD5_FIELD)) {
-		char *cp, *dp, *ep;
+		unsigned char *cp, *dp;
+		char *ep;
 
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
@@ -828,10 +830,11 @@ add_header (CT ct, char *name, char *value)
  */
 
 static int
-get_ctinfo (char *cp, CT ct, int magic)
+get_ctinfo (unsigned char *cp, CT ct, int magic)
 {
     int	i;
-    char *dp, **ap, **ep;
+    unsigned char *dp;
+    char **ap, **ep;
     char c;
     CI ci;
 
@@ -926,7 +929,8 @@ magic_skip:
      */
     ep = (ap = ci->ci_attrs) + NPARMS;
     while (*cp == ';') {
-	char *vp, *up;
+	char *vp;
+	unsigned char *up;
 
 	if (ap >= ep) {
 	    advise (NULL,
@@ -1127,10 +1131,11 @@ bad_quote:
 
 
 static int
-get_comment (CT ct, char **ap, int istype)
+get_comment (CT ct, unsigned char **ap, int istype)
 {
     int i;
-    char *bp, *cp;
+    char *bp;
+    unsigned char *cp;
     char c, buffer[BUFSIZ], *dp;
     CI ci;
 
@@ -1259,7 +1264,8 @@ InitMultiPart (CT ct)
 {
     int	inout;
     long last, pos;
-    char *cp, *dp, **ap, **ep;
+    unsigned char *cp, *dp;
+    char **ap, **ep;
     char *bp, buffer[BUFSIZ];
     struct multipart *m;
     struct k2v *kv;
@@ -1895,7 +1901,8 @@ openBase64 (CT ct, char **file)
     int fd, len, skip;
     unsigned long bits;
     unsigned char value, *b, *b1, *b2, *b3;
-    char *cp, *ep, buffer[BUFSIZ];
+    unsigned char *cp, *ep;
+    char buffer[BUFSIZ];
     CE ce;
     MD5_CTX mdContext;
 
@@ -2091,7 +2098,7 @@ static int
 openQuoted (CT ct, char **file)
 {
     int	cc, digested, len, quoted;
-    char *cp, *ep;
+    unsigned char *cp, *ep;
     char buffer[BUFSIZ];
     unsigned char mask;
     CE ce;
@@ -2918,7 +2925,8 @@ static int
 user_content (FILE *in, char *file, char *buf, CT *ctp)
 {
     int	extrnal, vrsn;
-    char *cp, **ap;
+    unsigned char *cp;
+    char **ap;
     char buffer[BUFSIZ];
     struct multipart *m;
     struct part **pp;
@@ -3702,7 +3710,7 @@ scan_content (CT ct)
     int checkboundary, boundaryclash = 0; /* check if clashes with multipart boundary   */
     int checklinespace, linespace = 0;	  /* check if any line ends with space          */
     int checkebcdic, ebcdicunsafe = 0;	  /* check if contains ebcdic unsafe characters */
-    char *cp, buffer[BUFSIZ];
+    unsigned char *cp, buffer[BUFSIZ];
     struct text *t;
     FILE *in;
     CE ce = ct->c_cefile;
@@ -4325,7 +4333,7 @@ invalid_digest:
    filename="foo".  If it doesn't and value does, use value from
    that. */
 static char *
-incl_name_value (char *buf, char *name, char *value) {
+incl_name_value (unsigned char *buf, char *name, char *value) {
     char *newbuf = buf;
 
     /* Assume that name is non-null. */
@@ -4334,7 +4342,7 @@ incl_name_value (char *buf, char *name, char *value) {
 
 	if (! strstr (buf, name_plus_equal)) {
 	    char *insertion;
-	    char *cp;
+	    unsigned char *cp;
 	    char *prefix, *suffix;
 
 	    /* Trim trailing space, esp. newline. */

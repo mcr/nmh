@@ -683,7 +683,7 @@ static int
 split (char *cp, char **vec)
 {
     int i;
-    char *s;
+    unsigned char *s;
 
     s = cp;
 
@@ -1232,8 +1232,8 @@ static void
 get_sender (char *envelope, char **sender)
 {
     int i;
-    char *cp;
-    char buffer[BUFSIZ];
+    unsigned char *cp;
+    unsigned char buffer[BUFSIZ];
 
     if (envelope == NULL) {
 	*sender = getcpy ("");
@@ -1412,7 +1412,7 @@ static char *
 trim (char *cp)
 {
     char buffer[BUFSIZ*4];
-    char *bp, *sp;
+    unsigned char *bp, *sp;
 
     if (cp == NULL)
 	return NULL;

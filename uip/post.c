@@ -294,7 +294,7 @@ static int insert (struct mailname *);
 static void pl (void);
 static void anno (void);
 static int annoaux (struct mailname *);
-static void insert_fcc (struct headers *, char *);
+static void insert_fcc (struct headers *, unsigned char *);
 static void make_bcc_file (int);
 static void verify_all_addresses (int);
 static void chkadr (void);
@@ -830,7 +830,7 @@ putfmt (char *name, char *str, FILE *out)
 static void
 start_headers (void)
 {
-    char  *cp;
+    unsigned char  *cp;
     char myhost[BUFSIZ], sigbuf[BUFSIZ];
     struct mailname *mp;
 
@@ -1128,9 +1128,9 @@ annoaux (struct mailname *mp)
 
 
 static void
-insert_fcc (struct headers *hdr, char *pp)
+insert_fcc (struct headers *hdr, unsigned char *pp)
 {
-    char *cp;
+    unsigned char *cp;
 
     for (cp = pp; isspace (*cp); cp++)
 	continue;
@@ -1299,7 +1299,7 @@ find_prefix (void)
     result = OK;
     while (fgets (buffer, sizeof(buffer) - 1, in))
 	if (buffer[0] == '-' && buffer[1] == '-') {
-	    char *cp;
+	    unsigned char *cp;
 
 	    for (cp = buffer + strlen (buffer) - 1; cp >= buffer; cp--)
 		if (!isspace (*cp))

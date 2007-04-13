@@ -295,8 +295,10 @@ get_x400_comp (char *mbox, char *key, char *buffer, int buffer_len)
 struct format *
 fmt_scan (struct format *format, char *scanl, int width, int *dat)
 {
-    char *cp, *ep, *sp;
-    char *savestr, *str = NULL;
+    char *cp, *ep;
+    unsigned char *sp;
+    char *savestr;
+    unsigned char *str = NULL;
     char buffer[BUFSIZ], buffer2[BUFSIZ];
     int i, c, ljust, n;
     int value = 0;
@@ -493,7 +495,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 
 	case FT_LS_TRIM:
 	    if (str) {
-		    char *xp;
+		    unsigned char *xp;
 
 		    strncpy(buffer, str, sizeof(buffer));
 		    buffer[sizeof(buffer)-1] = '\0';
@@ -801,7 +803,8 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	     * (e.g., "To: ")
 	     */
 	    {
-	    char *lp, *lastb;
+	    unsigned char *lp;
+	    char *lastb;
 	    int indent, wid, len;
 
 	    lp = str;

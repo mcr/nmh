@@ -15,9 +15,9 @@
 
 
 char *
-trimcpy (char *cp)
+trimcpy (unsigned char *cp)
 {
-    char *sp;
+    unsigned char *sp;
 
     /* skip over leading whitespace */
     while (isspace(*cp))

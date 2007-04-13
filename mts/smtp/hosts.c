@@ -36,7 +36,8 @@ static int init_hs(void);
 char *
 OfficialName (char *name)
 {
-    char *p, *q, site[BUFSIZ];
+    unsigned char *p;
+    char *q, site[BUFSIZ];
     struct hostent *hp;
 
     static char buffer[BUFSIZ];
@@ -85,7 +86,8 @@ OfficialName (char *name)
 static int
 init_hs (void)
 {
-    char  *cp, *dp, **q, **r;
+    unsigned char  *cp;
+    char *dp, **q, **r;
     char buffer[BUFSIZ], *aliases[NALIASES];
     register struct host *h;
     register FILE  *fp;

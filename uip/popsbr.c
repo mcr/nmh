@@ -455,7 +455,7 @@ parse_proxy(char *proxy, char *host)
     int pargc = 2;
     int hlen = strlen(host);
     int plen = 1;
-    char *cur, *pro;
+    unsigned char *cur, *pro;
     char *c;
     
     /* skip any initial space */

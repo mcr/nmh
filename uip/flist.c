@@ -287,7 +287,7 @@ main(int argc, char **argv)
 void
 GetFolderOrder(void)
 {
-    char *p, *s;
+    unsigned char *p, *s;
     int priority = 1;
     struct Folder *o;
 
@@ -399,7 +399,8 @@ BuildFolderList(char *dirName, int searchdepth)
 void
 BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
 {
-    char *base, *n, name[PATH_MAX];
+    char *base, name[PATH_MAX];
+    unsigned char *n;
     int nlinks;
     DIR *dir;
     struct dirent *dp;

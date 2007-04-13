@@ -183,7 +183,7 @@ static struct ftable functable[] = {
 #define PUTC(c)			NEW(FT_CHAR,0,0); fp->f_char = (c);
 
 static char *format_string;
-static char *usr_fstring;	/* for CERROR */
+static unsigned char *usr_fstring;	/* for CERROR */
 
 #define CERROR(str) compile_error (str, cp)
 

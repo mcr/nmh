@@ -31,7 +31,7 @@
 /*
  * static prototypes
  */
-static char *tailor_value (char *);
+static char *tailor_value (unsigned char *);
 static void getuserinfo (void);
 
 /*
@@ -172,7 +172,8 @@ static struct bind binds[] = {
 void
 mts_init (char *name)
 {
-    char *bp, *cp, buffer[BUFSIZ];
+    unsigned char *bp;
+    char *cp, buffer[BUFSIZ];
     struct bind *b;
     FILE *fp;
     static int inited = 0;
@@ -233,7 +234,7 @@ mts_init (char *name)
  */
 
 static char *
-tailor_value (char *s)
+tailor_value (unsigned char *s)
 {
     int i, r;
     char *bp;
@@ -406,7 +407,8 @@ getfullname (void)
 static void
 getuserinfo (void)
 {
-    register char *cp, *np;
+    register unsigned char *cp;
+    register char *np;
     register struct passwd *pw;
 
 #ifdef KPOP

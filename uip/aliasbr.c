@@ -36,7 +36,7 @@ char *akerror (int);
 
 static  char *akval (struct aka *, char *);
 static int aleq (char *, char *);
-static char *scanp (char *);
+static char *scanp (unsigned char *);
 static char *getp (char *);
 static char *seekp (char *, char *, char **);
 static int addfile (struct aka *, char *);
@@ -279,7 +279,7 @@ akerror (int i)
 
 
 static char *
-scanp (char *p)
+scanp (unsigned char *p)
 {
     while (isspace (*p))
 	p++;
@@ -290,7 +290,7 @@ scanp (char *p)
 static char *
 getp (char *p)
 {
-    register char  *cp = scanp (p);
+    register unsigned char  *cp = scanp (p);
 
     p = cp;
     while (!isspace (*cp) && *cp)
@@ -304,7 +304,7 @@ getp (char *p)
 static char *
 seekp (char *p, char *c, char **a)
 {
-    register char *cp;
+    register unsigned char *cp;
 
     p = cp = scanp (p);
     while (!isspace (*cp) && *cp && *cp != ':' && *cp != ';')
@@ -436,7 +436,7 @@ addall (struct aka *ak)
 static char *
 getalias (char *addrs)
 {
-    register char *pp, *qp;
+    register unsigned char *pp, *qp;
     static char *cp = NULL;
 
     if (cp == NULL)
@@ -566,7 +566,8 @@ seek_home (char *name)
 #ifdef DBMPWD
     struct passwd *pw;
     char lname[32];
-    char *c,*c1;
+    unsigned char *c;
+    char *c1;
 #else  /* DBMPWD */
 
     if (homehead == NULL)

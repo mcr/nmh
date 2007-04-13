@@ -475,7 +475,7 @@ getreply (int complete, int expecteof)
 	bp = buffer;
 
 	for (;;) {
-	    char c;
+	    unsigned char c;
 
 	    if (read_tcp_socket (ftp_fd, &c, 1) < 1) {
 		if (expecteof)

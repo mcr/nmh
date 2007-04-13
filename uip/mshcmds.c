@@ -2547,7 +2547,8 @@ static int
 is_nontext (int msgnum)
 {
     int	result, state;
-    char *bp, *cp, *dp;
+    unsigned char *bp, *dp;
+    char *cp;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
 
@@ -2960,7 +2961,8 @@ subsort (struct Msg *a, struct Msg *b)
 static char *
 sosmash (char *subj, char *s)
 {
-    register char *cp, *dp, c;
+    register char *cp, *dp;
+    register unsigned char c;
 
     if (s) {
 	cp = s;

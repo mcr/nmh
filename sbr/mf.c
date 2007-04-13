@@ -18,7 +18,7 @@
  * static prototypes
  */
 static char *getcpy (char *);
-static void compress (char *, char *);
+static void compress (char *, unsigned char *);
 static int isat (char *);
 static int parse_address (void);
 static int phrase (char *);
@@ -57,7 +57,7 @@ isfrom(char *string)
 
 
 int
-lequal (char *a, char *b)
+lequal (unsigned char *a, unsigned char *b)
 {
     for (; *a; a++, b++)
 	if (*b == 0)
@@ -133,7 +133,8 @@ seekadrx (char *addrs)
 struct adrx *
 uucpadrx (char *addrs)
 {
-    register char *cp, *wp, *xp, *yp, *zp;
+    register unsigned char *cp, *wp, *xp, *yp;
+    register char *zp;
     register struct adrx *adrxp = &adrxs1;
 
     if (vp == NULL) {
@@ -206,9 +207,10 @@ uucpadrx (char *addrs)
 
 
 static void
-compress (char *fp, char *tp)
+compress (char *fp, unsigned char *tp)
 {
-    register char c, *cp;
+    register char c;
+    register unsigned char *cp;
 
     for (c = ' ', cp = tp; (*tp = *fp++) != 0;)
 	if (isspace (*tp)) {
@@ -333,8 +335,8 @@ static int ingrp = 0;
 static int last_lex = LX_END;
 
 static char *dp = NULL;
-static char *cp = NULL;
-static char *ap = NULL;
+static unsigned char *cp = NULL;
+static unsigned char *ap = NULL;
 static char *pers = NULL;
 static char *mbox = NULL;
 static char *host = NULL;
@@ -759,7 +761,8 @@ my_lex (char *buffer)
 {
     /* buffer should be at least BUFSIZ bytes long */
     int i, gotat = 0;
-    register char c, *bp;
+    register unsigned char c;
+    register char *bp;
 
 /* Add C to the buffer bp. After use of this macro *bp is guaranteed to be within the buffer. */
 #define ADDCHR(C) do { *bp++ = (C); if ((bp - buffer) == (BUFSIZ-1)) goto my_lex_buffull; } while (0)
