@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rm -rf `cat test-temp-dir`
+rm -f test-temp-dir

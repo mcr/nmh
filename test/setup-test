@@ -1,0 +1,30 @@
+#!/bin/sh
+
+TEMPDIR=`mktemp -d /tmp/nmh-test-XXXXXXXX`
+echo $TEMPDIR > test-temp-dir
+
+pushd ..
+aclocal
+autoheader
+autoconf
+./configure --prefix=$TEMPDIR --with-locking=fcntl
+make install
+
+echo "Path: $TEMPDIR/Mail" > $TEMPDIR/mh_profile
+mkdir $TEMPDIR/Mail
+
+MH=$TEMPDIR/mh_profile $TEMPDIR/bin/folder -create +inbox
+
+for i in `seq 1 10`;
+do
+    cat > $TEMPDIR/Mail/inbox/$i <<EOF
+From: Test$i <test$i@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message $i
+
+This is message number $i
+EOF
+done
+
+popd

@@ -1,0 +1,14 @@
+#!/bin/sh
+######################################################
+#
+# Test the -total switch
+#
+######################################################
+
+BINDIR=$MH_TEST_DIR/bin
+
+
+output=`folder -total +inbox`
+if test x"$output" != x'TOTAL = 10 messages in 1 folder.' ; then
+    exit 1
+fi

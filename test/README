@@ -1,0 +1,29 @@
+nmh unit test suite.
+
+The purpose of these tests is to verify the functionality of the nmh
+commands.  The goal of the suite is to create an environment where testing
+nmh commands is easy and useful.  Each test is a shell script, and is
+launched via the 'sh' command.
+
+The Suite is arranged as such:
+
+setup-test
+    Create the unit test framework.  This will re-generate your configure
+    script and make files.
+
+teardown-test
+    Remove the temporary files created as part of the unit tests.
+
+runtest
+    Run a single test.
+
+runalltests
+    Run all tests in the suite
+
+tests
+    Directory containing the tests.  All files found in this and all
+    subsequent directories which have the name test-* will be treated as a
+    single test.
+
+Complex tests may be given their own directory as long as there is a file
+named 'test-*' in the directory which will launch the test.

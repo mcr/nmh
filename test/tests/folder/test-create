@@ -1,0 +1,20 @@
+#!/bin/sh
+######################################################
+#
+# Test the creation and removal of a folder.
+#
+######################################################
+
+BINDIR=$MH_TEST_DIR/bin
+
+
+folder -create +testfolder > /dev/null
+if [ ! -d "$MH_TEST_DIR/Mail/testfolder" ]; then
+    exit 1
+fi
+
+rmf +testfolder > /dev/null
+if [ -d "$MH_TEST_DIR/Mail/testfolder" ]; then
+    # Test failed
+    exit 1
+fi

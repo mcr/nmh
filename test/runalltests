@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for i in `find tests -name 'test-*' -type f`;
+do
+    ./runtest $i
+done
