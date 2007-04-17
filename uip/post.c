@@ -1288,7 +1288,7 @@ static int
 find_prefix (void)
 {
     int	len, result;
-    char buffer[BUFSIZ];
+    unsigned char buffer[BUFSIZ];
     FILE *in;
 
     if ((in = fopen (tmpfil, "r")) == NULL)
