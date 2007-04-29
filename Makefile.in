@@ -48,7 +48,7 @@ default_pager = @pagerpath@
 
 CC       = @CC@
 CPPFLAGS = @CPPFLAGS@
-DEFS     = @DEFS@
+DEFS     = @DEFS@ @OURDEFS@
 CFLAGS   = @CFLAGS@
 LDFLAGS  = @LDFLAGS@
 LIBS     = @LIBS@
