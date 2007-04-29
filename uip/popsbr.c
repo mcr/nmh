@@ -106,7 +106,7 @@ static int sasl_fgetc(FILE *);
 
 static int traverse (int (*)(), const char *, ...);
 static int vcommand(const char *, va_list);
-static int getline (char *, int, FILE *);
+static int sasl_getline (char *, int, FILE *);
 static int putline (char *, FILE *);
 
 
@@ -597,7 +597,7 @@ pop_init (char *host, char *user, char *pass, char *proxy, int snoop,
 
     SIGNAL (SIGPIPE, SIG_IGN);
 
-    switch (getline (response, sizeof response, input)) {
+    switch (sasl_getline (response, sizeof response, input)) {
 	case OK: 
 	    if (poprint)
 		fprintf (stderr, "<--- %s\n", response);
@@ -1041,7 +1041,7 @@ vcommand (const char *fmt, va_list ap)
 	fprintf(stderr, "(decrypted) ");
 #endif /* CYRUS_SASL */
 
-    switch (getline (response, sizeof response, input)) {
+    switch (sasl_getline (response, sizeof response, input)) {
 	case OK: 
 	    if (poprint)
 		fprintf (stderr, "<--- %s\n", response);
@@ -1072,7 +1072,7 @@ multiline (void)
 {
     char buffer[BUFSIZ + TRMLEN];
 
-    if (getline (buffer, sizeof buffer, input) != OK)
+    if (sasl_getline (buffer, sizeof buffer, input) != OK)
 	return NOTOK;
 #ifdef DEBUG
     if (poprint) {
@@ -1101,7 +1101,7 @@ multiline (void)
  */
 
 static int
-getline (char *s, int n, FILE *iop)
+sasl_getline (char *s, int n, FILE *iop)
 {
     int c;
     char *p;
