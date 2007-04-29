@@ -221,14 +221,29 @@ fi
 
 AC_PROG_CC
 
+AC_CACHE_CHECK(whether compiler supports -Wno-pointer-sign, nmh_cv_has_noptrsign,
+[nmh_saved_cflags="$CFLAGS"
+ CFLAGS="$CFLAGS -Wno-pointer-sign"
+ AC_TRY_COMPILE([],[],nmh_cv_has_noptrsign=yes,nmh_cv_has_noptrsign=no)
+ CFLAGS="$nmh_saved_cflags"])
+
 dnl if the user hasn't specified CFLAGS, then
 dnl   if compiler is gcc, then
 dnl     use -O2 and some warning flags
 dnl   else use -O
+dnl We use -Wall; if the compiler supports it we also use -Wno-pointer-sign,
+dnl because gcc 4 now produces a lot of new warnings which are probably mostly
+dnl spurious and which in any case we don't want to deal with now.
+if test "$nmh_cv_has_noptrsign" = "yes"; then
+        nmh_gcc_warnflags="-Wall -Wno-pointer-sign"
+else
+        nmh_gcc_warnflags="-Wall"
+fi
+
 if test -n "$auto_cflags"; then
   if test x"$enable_debug" = x"yes"; then
     if test -n "$GCC"; then
-      test -z "$CFLAGS" && CFLAGS="-Wall -g" || CFLAGS="$CFLAGS -Wall -g"
+      test -z "$CFLAGS" && CFLAGS="$nmh_gcc_warnflags -g" || CFLAGS="$CFLAGS $nmh_gcc_warnflags -g"
     else
       test -z "$CFLAGS" && CFLAGS=-g || CFLAGS="$CFLAGS -g"
     fi
@@ -244,7 +259,7 @@ if test -n "$auto_cflags"; then
       esac
     fi
     if test -n "$GCC"; then
-      test -z "$CFLAGS" && CFLAGS="-Wall -O2" || CFLAGS="$CFLAGS -Wall -O2"
+      test -z "$CFLAGS" && CFLAGS="$nmh_gcc_warnflags -O2" || CFLAGS="$CFLAGS $nmh_gcc_warnflags -O2"
     else
       test -z "$CFLAGS" && CFLAGS=-O  || CFLAGS="$CFLAGS -O"
     fi
