@@ -196,9 +196,9 @@ static int cclass();
 static int tcompile();
 
 static struct nexus *parse();
-static struct nexus *exp1();
-static struct nexus *exp2();
-static struct nexus *exp3();
+static struct nexus *nexp1();
+static struct nexus *nexp2();
+static struct nexus *nexp3();
 static struct nexus *newnexus();
 
 static int ORaction();
@@ -239,7 +239,7 @@ parse (void)
     register char  *cp;
     register struct nexus *n, *o;
 
-    if ((n = exp1 ()) == NULL || (cp = nxtarg ()) == NULL)
+    if ((n = nexp1 ()) == NULL || (cp = nxtarg ()) == NULL)
 	return n;
 
     if (*cp != '-') {
@@ -275,12 +275,12 @@ header: ;
 }
 
 static struct nexus *
-exp1 (void)
+nexp1 (void)
 {
     register char *cp;
     register struct nexus *n, *o;
 
-    if ((n = exp2 ()) == NULL || (cp = nxtarg ()) == NULL)
+    if ((n = nexp2 ()) == NULL || (cp = nxtarg ()) == NULL)
 	return n;
 
     if (*cp != '-') {
@@ -303,7 +303,7 @@ exp1 (void)
 	case PRAND: 
 	    o = newnexus (ANDaction);
 	    o->n_L_child = n;
-	    if ((o->n_R_child = exp1 ()))
+	    if ((o->n_R_child = nexp1 ()))
 		return o;
 	    padvise (NULL, "missing conjunctive");
 	    return NULL;
@@ -317,7 +317,7 @@ header: ;
 
 
 static struct nexus *
-exp2 (void)
+nexp2 (void)
 {
     register char *cp;
     register struct nexus *n;
@@ -327,7 +327,7 @@ exp2 (void)
 
     if (*cp != '-') {
 	prvarg ();
-	return exp3 ();
+	return nexp3 ();
     }
 
     if (*++cp == '-')
@@ -344,7 +344,7 @@ exp2 (void)
 
 	case PRNOT: 
 	    n = newnexus (NOTaction);
-	    if ((n->n_L_child = exp3 ()))
+	    if ((n->n_L_child = nexp3 ()))
 		return n;
 	    padvise (NULL, "missing negation");
 	    return NULL;
@@ -352,12 +352,12 @@ exp2 (void)
 header: ;
 	default: 
 	    prvarg ();
-	    return exp3 ();
+	    return nexp3 ();
     }
 }
 
 static struct nexus *
-exp3 (void)
+nexp3 (void)
 {
     int i;
     register char *cp, *dp;
@@ -448,7 +448,7 @@ exp3 (void)
 		padvise (NULL, "missing argument to %s", argp[-2]);
 		return NULL;
 	    }
-	    return exp3 ();
+	    return nexp3 ();
 
 	case PRAFTR: 
 	case PRBEFR: 
