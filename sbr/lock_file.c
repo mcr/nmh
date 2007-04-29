@@ -105,13 +105,15 @@ static int lkopen_kernel (char *, int, mode_t);
 
 #ifdef DOT_LOCKING
 static int lkopen_dot (char *, int, mode_t);
-static int lockit (struct lockinfo *);
 static void lockname (char *, struct lockinfo *, int);
 static void timerON (char *, int);
 static void timerOFF (int);
 static RETSIGTYPE alrmser (int);
 #endif
 
+#if !defined(HAVE_LIBLOCKFILE)
+static int lockit (struct lockinfo *);
+#endif
 
 /*
  * Base routine to open and lock a file,
@@ -356,10 +358,8 @@ lkopen_kernel (char *file, int access, mode_t mode)
 static int
 lkopen_dot (char *file, int access, mode_t mode)
 {
-    int i, fd;
-    time_t curtime;
+    int fd;
     struct lockinfo lkinfo;
-    struct stat st;
 
     /* open the file */
     if ((fd = open (file, access, mode)) == -1)
@@ -372,32 +372,37 @@ lkopen_dot (char *file, int access, mode_t mode)
     lockname (file, &lkinfo, 1);
 
 #if !defined(HAVE_LIBLOCKFILE)
-    for (i = 0;;) {
-	/* attempt to create lock file */
-	if (lockit (&lkinfo) == 0) {
-	    /* if successful, turn on timer and return */
-	    timerON (lkinfo.curlock, fd);
-	    return fd;
-	} else {
-	    /*
-	     * Abort locking, if we fail to lock after 5 attempts
-	     * and are never able to stat the lock file.
-	     */
-	    if (stat (lkinfo.curlock, &st) == -1) {
-		if (i++ > 5)
-		    return -1;
-		sleep (5);
+    {
+	int i;
+	for (i = 0;;) {
+	    /* attempt to create lock file */
+	    if (lockit (&lkinfo) == 0) {
+		/* if successful, turn on timer and return */
+		timerON (lkinfo.curlock, fd);
+		return fd;
 	    } else {
-		i = 0;
-		time (&curtime);
-
-		/* check for stale lockfile, else sleep */
-		if (curtime > st.st_ctime + RSECS)
-		    unlink (lkinfo.curlock);
-		else
+		/*
+		 * Abort locking, if we fail to lock after 5 attempts
+		 * and are never able to stat the lock file.
+		 */
+		struct stat st;
+		if (stat (lkinfo.curlock, &st) == -1) {
+		    if (i++ > 5)
+			return -1;
 		    sleep (5);
+		} else {
+		    time_t curtime;
+		    i = 0;
+		    time (&curtime);
+		    
+		    /* check for stale lockfile, else sleep */
+		    if (curtime > st.st_ctime + RSECS)
+			unlink (lkinfo.curlock);
+		    else
+			sleep (5);
+		}
+		lockname (file, &lkinfo, 1);
 	    }
-	    lockname (file, &lkinfo, 1);
 	}
     }
 #else
@@ -598,7 +603,6 @@ timerOFF (int fd)
 static RETSIGTYPE
 alrmser (int sig)
 {
-    int j;
     char *lockfile;
     struct lock *lp;
 
@@ -610,8 +614,11 @@ alrmser (int sig)
     for (lp = l_top; lp; lp = lp->l_next) {
 	lockfile = lp->l_lock;
 #if !defined(HAVE_LIBLOCKFILE)
-	if (*lockfile && (j = creat (lockfile, 0600)) != -1)
-	    close (j);
+	{
+	    int j;
+	    if (*lockfile && (j = creat (lockfile, 0600)) != -1)
+		close (j);
+	}
 #else
     lockfile_touch(lockfile);
 #endif
