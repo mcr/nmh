@@ -27,7 +27,7 @@ char **
 getans (char *prompt, struct swit *ansp)
 {
     int i;
-    SIGNAL_HANDLER istat;
+    SIGNAL_HANDLER istat = NULL;
     char *cp, **cpp;
 
     if (!(setjmp (sigenv))) {
