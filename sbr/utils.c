@@ -121,6 +121,29 @@ add (char *s2, char *s1)
 }
 
 /*
+ * folder_exists
+ *      Check to see if a folder exists.
+ */
+int folder_exists(char *folder)
+{
+    struct stat st;
+    int exists = 0;
+
+    if (stat (folder, &st) == -1) {
+        /* The folder either doesn't exist, or we hit an error.  Either way
+         * return a failure.
+         */
+        exists = 0;
+    } else {
+        /* We can see a folder with the right name */
+        exists = 1;
+    }
+
+    return exists;
+}
+
+
+/*
  * create_folder
  *      Check to see if a folder exists, if not, prompt the user to create
  *      it.

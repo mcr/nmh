@@ -1,3 +1,8 @@
+2007-08-21  Josh Bressers <josh@bress.net>
+
+	* Red Hat Bug #253342: inc.c, utils.c, utils.h: When inc is run with
+	the -silent flag, don't exit(1) for no apparent reason.
+
 2007-03-12  Peter Maydell <pmaydell@chiark.greenend.org.uk>
 
 	* bug #18630, #18631, #18632, #18634: various patches from

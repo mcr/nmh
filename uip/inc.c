@@ -563,10 +563,15 @@ main (int argc, char **argv)
     if ((maildir_copy = strdup(maildir)) == (char *)0)
         adios (maildir, "error allocating memory to copy maildir");
 
-    if (noisy)
-        create_folder(maildir, 0, done);
-    else
-        done (1);
+    if (!folder_exists(maildir)) {
+        /* If the folder doesn't exist, and we're given the -silent flag,
+         * just fail.
+         */
+        if (noisy)
+            create_folder(maildir, 0, done);
+        else
+            done (1);
+    }
 
     if (chdir (maildir) == NOTOK)
 	adios (maildir, "unable to change directory to");
