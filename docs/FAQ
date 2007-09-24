@@ -18,15 +18,15 @@ Version: $Revision$
 Posting-Frequency: monthly
 
   This is a living list of frequently asked questions on the mailer
-  user interface, Mail Handler, or MH.  The point of this is to
+  user interface, Mail Handler, or MH. The point of this is to
   circulate existing information, and avoid rehashing old answers.
-  Better to build on top than start again.  Please read this document
+  Better to build on top than start again. Please read this document
   before ever posting to this newsgroup.
 
-  This article is posted monthly.  If it has already expired and
-  you're not reading this, you can hope that you saved the
-  instructions to retrieve the FAQ (see "Where can I get MH") so that
-  you can get a copy through other means.
+  This article is posted monthly. If it has already expired and you're
+  not reading this, you can hope that you saved the instructions to
+  retrieve the FAQ (see "Where can I get MH") so that you can get a
+  copy through other means.
 
   Please do not post an answer when someone posts a frequently asked
   question; rather, email the relevant section of the FAQ to eliminate
@@ -36,15 +36,15 @@ Posting-Frequency: monthly
   them to Bill Wohler <wohler at newt.com>.
 
   Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-            2001, 2004, 2005, 2006 Bill Wohler
+            2001, 2004, 2005, 2006, 2007 Bill Wohler
 
   Permission to use, copy, distribute, and translate this document for
   any non-commercial purpose is hereby granted, provided that this
-  copyright notice appears in all copies.  Commercial distributions
+  copyright notice appears in all copies. Commercial distributions
   require prior written consent.
 
-  This article is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  This article is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 ----------------------------------------------------------------------
@@ -63,7 +63,7 @@ __________________
 !01.03 Where can I get MH?
 !01.04 What references exist for MH?
  01.05 What other MH software is available?
- 01.06 How can I print a MH manual?
+!01.06 How can I print a MH manual?
  01.07 How should I report bugs?
  01.08 How can I convert from my mailer to MH?
  01.09 What is the copyright status of nmh?
@@ -87,7 +87,7 @@ _________________
  02.14 How can I build MH on OS/2?
  02.15 Do any POP/IMAP servers handle MH format?
  02.16 How can I build MH on Windows?
- 02.17 How can I build MH on a Mac?
+!02.17 How can I build MH on a Mac?
 ________________________
 
 03.00 Scanning & Reading
@@ -123,7 +123,7 @@ ____________
  04.02 Can I append MH messages to a GNU Emacs rmail BABYL-format file?
  04.03 Why do I get ".../.mh_sequences is poorly formatted?"
  04.04 How can you save News articles into an MH folder?
- 04.05 Are there any good tools to archive MH messages?
+!04.05 Are there any good tools to archive MH messages?
  04.06 How can I remove duplicate messages?
  04.07 How can I remove holes in numbering?
 __________________________
@@ -144,7 +144,7 @@ __________________________
  05.12 How can I send multi-media (MIME) attachments?
  05.13 What's the best way to send mail to a long list of people?
  05.14 What is the Dcc header?
-!05.15 How can I make sense of the replcomps file?
+ 05.15 How can I make sense of the replcomps file?
  05.16 How can I convert quoted-printable to 8bit in quoted text in replies?
  05.17 Can I have aliases include aliases?
  05.18 Why doesn't mhmail understand aliases?
@@ -155,7 +155,7 @@ __________________________
  05.23 How can I remove those "=20" characters when forwarding?
  05.24 Can I use mh-format substitution with forw?
  05.25 How can I keep repl from breaking long lines?
-+05.26 How do I fix a bogus In-Reply-To or missing References field?
+ 05.26 How do I fix a bogus In-Reply-To or missing References field?
 _____________
 
 06.00 Posting
@@ -221,19 +221,19 @@ From: Bill Wohler <wohler at newt.com>
 Date: Mon, 27 Nov 1995 14:44:19 -0800
 
   To skip to a particular question with Subject or number xx, use
-  "/^S.*xx" with most pagers.  In GNU Emacs type "M-C-s ^S.*xx", (or
+  "/^S.*xx" with most pagers. In GNU Emacs type "M-C-s ^S.*xx", (or
   C-r to search backwards), followed by ESC to end the search.
 
-  To skip to new or changed questions, use "/^S.*[!+]" with most pagers and
-  "M-C-s ^S.*[!+]" in GNU Emacs.
+  To skip to new or changed questions, use "/^S.*[!+]" with most
+  pagers and "M-C-s ^S.*[!+]" in GNU Emacs.
 
-  This article is in digest format.  nn may have already broken this
-  message into separate articles; if not, then type "G %".  In rn, use
+  This article is in digest format. nn may have already broken this
+  message into separate articles; if not, then type "G %". In rn, use
   ^G to skip sections.
 
-  This article is treated as an outline when edited by GNU Emacs.  Run
-  "M-x describe-mode" to see available outline-mode commands.  Useful
-  commands are "M-x hide-body",  "C-c C-s" (show-subtree) and "M-x
+  This article is treated as an outline when edited by GNU Emacs. Run
+  "M-x describe-mode" to see available outline-mode commands. Useful
+  commands are "M-x hide-body", "C-c C-s" (show-subtree) and "M-x
   show-all"
 
   Check out the Usenet Hypertext FAQ Archive (see "What references
@@ -241,14 +241,14 @@ Date: Mon, 27 Nov 1995 14:44:19 -0800
   pages, as well as cross-references like the one in this paragraph
   are just a click away.
 
-  A "Date" field whose time is 00:00:00 is approximate.  The month and
+  A "Date" field whose time is 00:00:00 is approximate. The month and
   year in these fields represent the time they were added to the FAQ,
   rather than when they were contributed by the author, as is the case
   since November, 1995.
 
   If you should need the Internet address, use nslookup or dig if you
-  have them, or send mail to <dns at grasp.insa-lyon.fr> with
-  "help" for a Subject.
+  have them, or send mail to <dns at grasp.insa-lyon.fr> with "help"
+  for a Subject.
 
   References to $MHLIB refer to the directory that contains MH support
   files and routines. This directory is usually /usr/lib/mh or
@@ -279,32 +279,31 @@ From: Jerry Peek <jpeek at jpeek.com>
 Date: Fri, 1 Mar 1991 13:03:15 -0800
 
   The MH message handling system is a set of electronic mail programs
-  in the public domain.  If your computer runs Unix, it can probably
+  in the public domain. If your computer runs Unix, it can probably
   run MH.
 
   The big difference between MH and most other "mail user agents" is
-  that you can use MH from a Unix shell prompt.  In MH, each command
-  is a separate program, and the shell is used as an interpreter.  So,
-  all the power of Unix shells (pipes, redirection, history, aliases,
-  and so on) works with MH--you don't have to learn a new interface.
-  Other mail agents have their own command interpreter for their
-  individual mail commands (although the mush mail agent simulates a
-  Unix shell).
+  that you can use MH from a Unix shell prompt. In MH, each command is
+  a separate program, and the shell is used as an interpreter. So, all
+  the power of Unix shells (pipes, redirection, history, aliases, and
+  so on) works with MH--you don't have to learn a new interface. Other
+  mail agents have their own command interpreter for their individual
+  mail commands (although the mush mail agent simulates a Unix shell).
 
   Because MH commands aren't part of a monolithic mail system, you can
   use them at any time; you don't have to start or quit the mail
-  agent.  Because you use them from a shell prompt, you can use all
-  the power of the shell.
+  agent. Because you use them from a shell prompt, you can use all the
+  power of the shell.
 
   If your shell has time-saving aliases or functions (and most do),
-  you'll be able to use them with MH, of course.  And because MH isn't
+  you'll be able to use them with MH, of course. And because MH isn't
   a monolithic mail agent, you can use MH commands in Unix shell
   scripts, or call them from programs in high-level languages like C.
 
   Unlike most mail agents, MH keeps each message in a separate file.
-  The filename is the message number.  To rearrange the messages, MH
-  just changes the filenames.  MH can use standard Unix file system
-  operations such as removing, copying and linking messages.  The
+  The filename is the message number. To rearrange the messages, MH
+  just changes the filenames. MH can use standard Unix file system
+  operations such as removing, copying and linking messages. The
   message files are grouped into one or more folders, which are
   actually Unix directories.
 
@@ -314,22 +313,22 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
   
 Subject: !01.02 What is the current version/status of MH.
 From: Bill Wohler <wohler at newt.com>
-Date: Thu, 9 Mar 2006 21:53:33 -0800
+Date: Sun, 23 Sep 2007 23:51:52 -0700
 
   The current official version of MH is 6.8.3, although a beta of
   6.8.4 is available.
 
   This version includes MIME, a multi-media MH package that implements
-  the new IETF work on Multi-media 822 (MIME).  This allows you to
+  the new IETF work on Multi-media 822 (MIME). This allows you to
   include things like audio, graphics, and the like, in your mail
-  messages.  --Marshall Rose <mrose at dbc.mtview.ca.us>
+  messages. --Marshall Rose <mrose at dbc.mtview.ca.us>
 
   MH now works with Kerberos as well.
 
   In addition, a new program called mhparam extracts arguments from
   .mh_profile which is useful in shell scripts.
 
-  Please see the file CHANGES in the distribution for more details. 
+  Please see the file CHANGES in the distribution for more details.
 
   Due to the languishing state of MH, Richard Coleman <coleman at
   math.gatech.edu> created another version of MH called nmh based upon
@@ -343,7 +342,7 @@ Date: Thu, 9 Mar 2006 21:53:33 -0800
   The file DIFFERENCES in the nmh distribution contains an
   ever-growing list of differences between nmh and MH.
 
-  GNU mailutils (version 0.6) is a collection of mail-related
+  GNU mailutils (version 1.2) is a collection of mail-related
   utilities. At the core of mailutils is libmailbox, a library which
   provides access to various forms of mailbox files (including remote
   mailboxes via popular protocols and MH). See
@@ -353,14 +352,14 @@ Date: Thu, 9 Mar 2006 21:53:33 -0800
   
 Subject: !01.03 Where can I get MH?
 From: Bill Wohler <wohler at newt.com>
-Date: Fri, 10 Mar 2006 00:55:37 -0800
+Date: Sun, 23 Sep 2007 23:51:46 -0700
 
   MH comes standard with:
   
 	Berkeley Software Design BSD/386  . . . . MH 6.8.3
 	Control Data Corp. CDC4680-MP . . . . . . EMH 1.4.2 (modified MH)
-	Debian GNU/Linux 3.1  . . . . . . . . . . nmh 1.1-RC3
-	Debian GNU/Linux 3.1  . . . . . . . . . . mailutils 0.6.1
+	Debian GNU/Linux 4.0  . . . . . . . . . . nmh 1.1-RC4
+	Debian GNU/Linux 4.0  . . . . . . . . . . mailutils 1.1
 	DEC Ultrix 3.1  . . . . . . . . . . . . . MH 6.5
 	DEC Ultrix 4.2A.4 . . . . . . . . . . . . MH 6.7.1
 	DEC OSF/1 . . . . . . . . . . . . . . . . MH 6.7
@@ -373,28 +372,23 @@ Date: Fri, 10 Mar 2006 00:55:37 -0800
 	SGI Irix 6.2 Freeware 2.0 CDROM . . . . . MH 6.8.3
 	Sony NEWS-OS 4.3  . . . . . . . . . . . . MH 6.7.2
 	Tektronix UTek  . . . . . . . . . . . . . MH (Version Unknown)
-	Table maintained by: "James R. Hamilton" <jrh at interlog.com>
 
   Download MH:
 
     http://download.savannah.nongnu.org/releases/nmh/nmh-1.2.tar.gz	831kB
-    ftp://ftp.ics.uci.edu/pub/mh/mh-6.8.tar.Z				2MB
-    ftp://ftp.uu.net/networking/mail/mh/mh-6.8.tar.Z			2MB
-    ftp://ftp.efd.lth.se/pub/mail/mh-6.8.3.tar.gz			1.3MB
-    ftp://ftp.ics.uci.edu/pub/mh/updates/MH.6.8.4.Z			46kB
 
   Download GNU mailutils:
   
-    http://ftp.gnu.org/gnu/mailutils/mailutils-0.6.tar.gz		2.7MB
+    http://ftp.gnu.org/gnu/mailutils/mailutils-1.2.tar.gz		3.4MB
 
 ------------------------------
   
 Subject: !01.04 What references exist for MH?
 From: Bill Wohler <wohler at newt.com>
-Date: Thu, 9 Mar 2006 21:57:18 -0800
+Date: Sun, 23 Sep 2007 23:51:41 -0700
 
   The Web:
-    http://www.ics.uci.edu/~mh/
+    http://rand-mh.sourceforge.net/
     http://www.nongnu.org/nmh/
     http://www.gnu.org/software/mailutils/
     http://mh-e.sourceforge.net/
@@ -407,26 +401,13 @@ Date: Thu, 9 Mar 2006 21:57:18 -0800
     Out of print as of August, 1996.
 
     References to "the MH book" in this document refer to the third
-    edition of this book (section numbers for the second edition
-    appear in parentheses).  Links to the online edition are to the
-    updated third edition at http://www.ics.uci.edu/~mh/book/.
-
-    This book is also available online in the following locations:
-    http://www.ics.uci.edu/~mh/book/ (western USA, Web)
-    http://www.tac.nyc.ny.us/mirrors/mh-book/ (eastern USA, Web)
-    http://www.fan.net.au/mirrors/freebooks/mh/ (Australia, Web)
-    http://www.huygens.org/~eijk/mh_book/ (the Netherlands, Web)
-    http://www.funet.fi/index/MH/book/ (Finland, Web)
-    ftp://ftp.ics.uci.edu/pub/mh/book/index.htm (western USA, FTP)
-    ftp://ftp.funet.fi/index/MH/book/index.htm (Finland, FTP)
-
-    Examples from this book are in:
-    ftp://ftp.uu.net/published/oreilly/nutshell/MHxmh/MHxmh3.tar.Z	114k
-    ftp://ftp.ics.uci.edu/pub/mh/book/download/MHxmh3.tar.Z  (updated)  115k
+    edition (plus updates) of this book online at
+    http://rand-mh.sourceforge.net/book/. Section numbers for the
+    second edition may appear in parentheses.
 
     There is another book that contains a number of examples of
     advanced mail handing using MH as the example message handler.
-    It's also quite a good reference on email in general.  
+    It's also quite a good reference on email in general.
 
     The Internet Message.  Marshall T. Rose
     ISBN 0-13-092941-7.  396 pages.
@@ -455,51 +436,24 @@ Date: Thu, 9 Mar 2006 21:57:18 -0800
     The page for each list contains a link to the archives.
       
   MH-users archives:
-    The files are in packf(1) format, compressed with compress(1).  To
-    get them, use anonymous ftp and set "binary" transfer mode.
+    Current archives can be found at:
 
-      current archive, uncompressed:
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.mbox
+      http://lists.nongnu.org/archive/html/nmh-workers/
 
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.95.Z		1724k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.95.scan.Z		113k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.94.Z		1669k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.94.scan.Z		57k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.93.Z		1507k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.93.scan.Z		51k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.92.Z		1251k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.92.scan.Z		43k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.91.Z		858k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.91.scan.Z		36k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.90.Z		393k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.90.scan.Z		21k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.89.Z		89k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.89.scan.Z		5k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.88.Z		178k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.88.scan.Z		11k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.87.Z		54k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.87.scan.Z		3k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.86.Z		8k
-      ftp://ftp.ics.uci.edu/pub/mh/mh-users/mh-users.86.scan.Z		771
+    Older archive can be found in the mh-users and mh-workers archives
+    at:
 
-    There are directions in ftp://ftp.ics.uci.edu/pub/mh/mh-users/README.
-    Basically, you can use either "msh" or the individual commands
-    "inc -file" to get the messages into a folder, and then "scan",
-    "pick", "show", and so on (or your favorite commands in xmh, MH-E,
-    etc.).  --Jerry Peek <jpeek at jpeek.com>
+      http://sourceforge.net/project/showfiles.php?group_id=143658&package_id=188462
 
-    Achim Bohnet <ach at rosat.mpe-garching.mpg.de> has created an
-    excellent indexed version of the archive, plus some other archives
-    besides.
-
-      http://www.rosat.mpe-garching.mpg.de/mailing-lists/mh-users/
-      http://www.rosat.mpe-garching.mpg.de/mailing-lists/exmh/
-      http://www.rosat.mpe-garching.mpg.de/mailing-lists/procmail/
-      http://www.rosat.mpe-garching.mpg.de/mailing-lists/mhonarc/
+    There are directions in the release notes. Basically, you can use
+    either "msh" or the individual commands "inc -file" to get the
+    messages into a folder, and then "scan", "pick", "show", and so on
+    (or your favorite commands in xmh, MH-E, etc.). --Jerry Peek
+    <jpeek at jpeek.com>
 
   This document:
     http://www.newt.com/faq/mh.html
-    http://www.cs.ruu.nl/wais/html/na-dir/mail/mh-faq/part1.html
+    http://faqs.cs.uu.nl/na-dir/mail/mh-faq/part1.html
 
   MH-E documentation:
     GNU Emacs 19.29 comes with a version of MH-E that includes online
@@ -513,7 +467,7 @@ Date: Thu, 9 Mar 2006 21:57:18 -0800
     The FAQ is available at http://www.beedub.com/exmh/exmh-faq.html.
     The online exmh sections from the MH book can be found at
 
-      http://www.ics.uci.edu/~mh/book/exmh/tocs/jump.htm.
+      http://rand-mh.sourceforge.net/book/index.html#chTourexmh
 
   Signature and Finger FAQ:
     http://www.faqs.org/faqs/usenet/signature-faq/
@@ -604,7 +558,7 @@ Date: Fri, 26 Jan 1996 13:51:08 +0100
     ftp://ftp.aist-nara.ac.jp/pub/elisp/Mew/mew-current.tar.gz
 
   [MH-E has had these capabilities since version 7.0 so mew is
-  obsolete if you use MH-E.--Ed]
+  obsolete if you use MH-E. --Ed]
 
 From: James Perkins <jamesp at sp-eug.com> 
 Date: Fri, 1 Jan 1993 00:00:00 -0800
@@ -766,8 +720,8 @@ Date: Fri, 1 Jan 1993 00:00:00 -0800
 From: Barbara Dyker <dyker at teal.csn.org>
 Date: Fri, 1 Jan 1993 00:00:00 -0800
 
-  QuemeMH is an email based service request and tracking system
-  based on the Rand Mail Handler.
+  QueueMH is an email based service request and tracking system based
+  on the Rand Mail Handler.
 
     ftp://ftp.cs.colorado.edu/pub/cs/sysadmin/utilities/queuemh.tar.Z   98k
 
@@ -834,12 +788,12 @@ Date: Sun, 11 Mar 2001 00:23:21 -0800
       FAX:   +1 714-727-3922
       Internet: info at netix.com
 
-    In addition, you might try Wollongong, to see if they have something you
-    can get.
+    In addition, you might try Wollongong, to see if they have
+    something you can get.
 
-    [This information appears to be out of date.  Please send me
-    pointers to valid information.  Potential sites include
-    jessica.stanford.edu.--Ed]
+    [This information appears to be out of date. Please send me
+    pointers to valid information. Potential sites include
+    jessica.stanford.edu. --Ed]
 
     Two other potential methods to run MH under Windows: Run Unix
     under Windows with VMware (http://www.vmware.com/) or try to
@@ -847,40 +801,27 @@ Date: Sun, 11 Mar 2001 00:23:21 -0800
 
 ------------------------------
   
-Subject: 01.06 How can I print a MH manual?
+Subject: !01.06 How can I print a MH manual?
 From: Bill Wohler <wohler at newt.com>, Jos Vos <jos at bull.nl>
-Date: Mon, 9 Sep 1996 01:21:49 -0700
+Date: Sun, 23 Sep 2007 23:51:33 -0700
 
-  First, check out the documents available on http://www.ics.uci.edu/~mh/.
+  Documentation in text and PostScript format is found in the
+  MH-doc.tgz tarball on:
+    
+    http://sourceforge.net/project/showfiles.php?group_id=143658&package_id=188464
 
-  To order a copy by mail, see the section on how to get MH by mail
-  (see "Where can I get MH?" and "What references exist for MH?").
-
-  To print your own copy, first obtain the MH sources (see "Where can
-  I get MH?") if you don't already have it.  Go into the "doc"
-  directory and run "make guide" to create the administrators guide
-  and "make manual" to create a user's manual which includes tutorials
-  and man pages.  If the doc directory is empty or is missing the
-  Makefile, you'll have to run "mhconfig MH" in the conf directory so
-  that the documentation with correct local information is created.
+  To generate your own copy for printing, first obtain the MH sources
+  (see "Where can I get MH?") if you don't already have it. Go into
+  the "doc" directory and run "make guide" to create the
+  administrators guide and "make manual" to create a user's manual
+  which includes tutorials and man pages. If the doc directory is
+  empty or is missing the Makefile, you'll have to run "mhconfig MH"
+  in the conf directory so that the documentation with correct local
+  information is created.
 
   For properly formatting the documentation (at least the manual
   pages) you might even have to install MH, because a reference to a
   tmac.h file in the MH lib directory is made in the manual pages.
-
-  You can also ftp the ASCII or postscript versions:
-
-    ftp://ftp.ics.uci.edu/pub/mh/doc/tutorial.ps.Z			65k
-    ftp://ftp.ics.uci.edu/pub/mh/doc/ADMIN.ps.Z				56k
-    ftp://ftp.ics.uci.edu/pub/mh/doc/MH.ps.Z (man pages)		261k
-    ftp://ftp.uu.net/networking/mail/mh/doc/tutorial.ps.Z
-    ftp://ftp.uu.net/networking/mail/mh/doc/ADMIN.ps.Z
-    ftp://ftp.uu.net/networking/mail/mh/doc/MH.ps.Z (man pages)
-
-  Or, you can send a note to <mail-server at NL.net> with a body
-  containing the following:
-
-    send /mail/mh/papers-ps/tutorial.ps.Z
 
 ------------------------------
   
@@ -908,28 +849,27 @@ From: Jerry Peek <jpeek at jpeek.com>
 Date: Fri, 1 Mar 1991 13:03:15 -0800
 
   If you use one of a mail agent like 'mail', 'mailx', 'elm' or
-  'mush', converting to MH is easy.  When you run the 'inc' command,
-  it reads all new messages from the system mailbox into your 'inbox'
-  folder.  Those mail agents also have separate files or "folders"
-  that hold messages in the same format as the system mailbox.  You
-  can read them with the 'inc -file' command.  For example, to read
-  the messages from your 'mbox' mail file into your MH 'inbox' folder,
-  you'd type:
+  'mush', converting to MH is easy. When you run the 'inc' command, it
+  reads all new messages from the system mailbox into your 'inbox'
+  folder. Those mail agents also have separate files or "folders" that
+  hold messages in the same format as the system mailbox. You can read
+  them with the 'inc -file' command. For example, to read the messages
+  from your 'mbox' mail file into your MH 'inbox' folder, you'd type:
 
     % cd
     % cp mbox mbox.backup
     % inc -file mbox
 
   If you see the usual "Incorporating new mail into inbox..." message
-  and a scan listing, the messages probably were converted.  Read some
-  or all of them (with the 'show' command) and be sure.  The 'inc'
+  and a scan listing, the messages probably were converted. Read some
+  or all of them (with the 'show' command) and be sure. The 'inc'
   won't remove your mbox unless you use '-truncate'.
 
 From: "Jason R. Mastaler" <jason at Mastaler.COM>
 Date: Mon, 1 May 1995 00:00:00 -0800
 
-  You can also specify an alternate folder to inc.  Here's how you
-  can convert all your folders en masse:
+  You can also specify an alternate folder to inc. Here's how you can
+  convert all your folders en masse:
 
     for arg in `cat flist`; do
 	echo "converting $arg"
@@ -940,7 +880,7 @@ Date: Mon, 1 May 1995 00:00:00 -0800
   convert mail files to MH folders: babyl2mh to convert from rmail's
   BABYL format; vmsmail2mh to convert from VMS's mail (see "What
   references exist for MH") to see where the book's examples can be
-  ftped from).  These scripts aren't in the third edition but are in
+  ftped from). These scripts aren't in the third edition but are in
   its archive file.
 
 From: Vivek Khera <khera at cs.duke.edu>
@@ -952,12 +892,12 @@ Date: Fri, 1 Jan 1993 00:00:00 -0800
 From: Juergen Nickelsen <nickel at cs.tu-berlin.de>
 Date: Fri, 1 Jan 1993 00:00:00 -0800
 
-  You can remove the second to last second line ("> $input"), so
-  that the script doesn't zero out your RMAIL file.
+  You can remove the second to last second line ("> $input"), so that
+  the script doesn't zero out your RMAIL file.
 
   Another alternative is to replace this line with "inc -file $tmpmbox
   $folder && > $input", so that the RMAIL is only zeroed if inc
-  successfully incorporated the mail.  Finally one could add a switch
+  successfully incorporated the mail. Finally one could add a switch
   -z, so that the RMAIL file is only zeroed if the switch is given.
   (See "Appendix inco".)
 
@@ -995,7 +935,7 @@ Subject: 02.01 What machines does MH run on?
 From: Bill Wohler <wohler at newt.com>
 Date: Thu, 19 May 2005 21:22:55 -0700
 
-  MH isn't just for Unix any more.  Versions are reported to run on
+  MH isn't just for Unix any more. Versions are reported to run on
   OS/2 (see "How can I build MH on OS/2?"), Windows (see "How can I
   build MH on Windows?"), and Mac (see "How can I build MH on Mac?").
   Oh yeah, the Mac is now Unix. Maybe Windows Longhorn will be built
@@ -1024,7 +964,8 @@ Date: Sun, 8 Sep 1996 15:13:12 -0700
 
   If you're having troubles building MH, it could be that the problem
   has already been fixed, but hasn't yet gotten into an official
-  release.  Please see http://www.gw.com/mail/mh/patches/ for more info.
+  release. Please see http://www.gw.com/mail/mh/patches/ for more
+  info.
 
 ------------------------------
   
@@ -1034,36 +975,36 @@ Date: Tue, 1 Dec 1992 00:00:00 -0800
 
   BERK: Do NOT include the BERK option (in versions 6.7 or later)!
   BERK breaks the mh-format functions that take apart address lines,
-  for example mbox, from, and friendly.  This would really put a crimp
+  for example mbox, from, and friendly. This would really put a crimp
   on my replcomps file.
 
   LOCKF: if you have NFS, you need to lock your mailbox with lockf()
-  so the lock will be honored by all machines on the local network.
-  If you have the lockf() system call, include LOCKF.
+  so the lock will be honored by all machines on the local network. If
+  you have the lockf() system call, include LOCKF.
 
-  JQ Johnson <jqj at duff.uoregon.edu> makes the point that one
-  should use this option carefully since it requires a robust lockf()
-  call. For example, this option caused serious problems on his SunOS
-  4.1.1. He suggested using LOK_BELL instead, and adding "lockstyle:
-  1" to $MHLIB/mts.conf (mtstailor).
+  JQ Johnson <jqj at duff.uoregon.edu> makes the point that one should
+  use this option carefully since it requires a robust lockf() call.
+  For example, this option caused serious problems on his SunOS 4.1.1.
+  He suggested using LOK_BELL instead, and adding "lockstyle: 1" to
+  $MHLIB/mts.conf (mtstailor).
 
-  ATZ: makes your timezones print like "EST" instead of "-0500".  Much
-  prettier.  --Stephen Gildea <gildea at stop.mail-abuse.org>
+  ATZ: makes your timezones print like "EST" instead of "-0500". Much
+  prettier. --Stephen Gildea <gildea at stop.mail-abuse.org>
 
-  However, Tony Landells <ahl at technix.oz.au> replies: "Yes;
-  very pretty.  How unfortunate that timezone names are so ambiguous,
-  so that EST can be interpreted, at a minimum, as (American) Eastern
+  However, Tony Landells <ahl at technix.oz.au> replies: "Yes; very
+  pretty. How unfortunate that timezone names are so ambiguous, so
+  that EST can be interpreted, at a minimum, as (American) Eastern
   Standard Time, (Australian) Eastern Standard Time, or (Australian)
   Eastern Summer Time (and yes, I think it's dumb having the same
   acronym for both normal and Summer time, but that's a different
-  problem).  While the numeric timezones may not look as nice, they
-  are, at least, reasonably unambiguous.  I would urge anyone who ever
+  problem). While the numeric timezones may not look as nice, they
+  are, at least, reasonably unambiguous. I would urge anyone who ever
   intends/hopes/expects to use email outside the U.S. to NOT use ATZ
   (sorry Stephen)."
 
   At any rate, the conf/examples directory has been updated and
   contains many examples show you which options are required on your
-  platform and which are optional (in the upcoming version MH 6.8).  At
+  platform and which are optional (in the upcoming version MH 6.8). At
   any rate, it is recommended that you examine the options in the
   example configuration files, and read about them in READ-ME.
 
@@ -1119,67 +1060,67 @@ From: Tim Showalter <tjs at andrew.cmu.edu>, John Prevost <visigoth at cs.cmu.ed
 Date: Wed, 25 Sep 1996 21:34:56 -0400
 
   We are developing fmh and intend to support as much of MH as is
-  feasible.  However, MH and IMAP don't necessarily agree as to what
-  things are going to look like.  MH has static message numbers until
+  feasible. However, MH and IMAP don't necessarily agree as to what
+  things are going to look like. MH has static message numbers until
   you pack a folder; IMAP keeps two numbers on a message, one which is
   absolutely static and one which is relative to the top of a mailbox.
-  Messages in IMAP are essentially immutable.  IMAP doesn't
-  (currently) allow message annotations.  fmh will keep state with a
-  background daemon instead of writing it to disk, and will probably
-  try and keep as little on disk as possible.
+  Messages in IMAP are essentially immutable. IMAP doesn't (currently)
+  allow message annotations. fmh will keep state with a background
+  daemon instead of writing it to disk, and will probably try and keep
+  as little on disk as possible.
 
   fmh doesn't understand MH folders at the moment, and probably won't
-  for a really long time, if ever.  As I said before, we're mostly
+  for a really long time, if ever. As I said before, we're mostly
   interested in the IMAP aspects as we're using a networked file
   system and saving stuff on the local disk just isn't an option.
 
-  fmh is not MH at a very fundamental level.  It is very unlikely that
+  fmh is not MH at a very fundamental level. It is very unlikely that
   it will be merged, as we're not quite as interested in creating
   something that is MH and IMAP as we are in writing a good IMAP
-  client.  Also, the MH code isn't going to take the introduction of
+  client. Also, the MH code isn't going to take the introduction of
   IMAP without a near complete rewrite.
 
-  It is not available yet.  Inquiries are welcome at
-  <tjs+fmh at andrew.cmu.edu>.
+  It is not available yet. Inquiries are welcome at <tjs+fmh at
+  andrew.cmu.edu>.
 
 From: Rahul Dhesi <dhesi at rahul.net>
 Date: 23 Sep 1996 08:39:52 GMT
 
   What prevents people from doing a telnet to their mail server,
-  logging in, and firing up MH directly?  Site policy?  An operating
-  system that does not let MH compile or run?  Overloaded machine with
-  insufficient processing power for MH?  All these are site-specific
+  logging in, and firing up MH directly? Site policy? An operating
+  system that does not let MH compile or run? Overloaded machine with
+  insufficient processing power for MH? All these are site-specific
   problems and the solution lies in solving them locally, not in
   forcing MH to go over IMAP.
 
-  IMAP was never designed to emulate a filesytem.  MH was designed to
-  make direct advantage of the filesytem structure.  There is no
-  compatibility between the two.  By the time IMAP is revised enough
-  to support MH you will have reinvented NFS.
+  IMAP was never designed to emulate a filesytem. MH was designed to
+  make direct advantage of the filesytem structure. There is no
+  compatibility between the two. By the time IMAP is revised enough to
+  support MH you will have reinvented NFS.
 
-  There *is* scope for redesign here, though.  It would be nice to
-  have a single-user filesystem.  Create a binary telnet session to
-  the filesystem server, log in as yourself, and then over that
-  session run a filesystem protocol.  Normal filesystem protections at
-  the other end will be sufficient for all permissions checking, so
-  the filesystem protocol would need to do no other permissions
-  checking.  The question of whom to export directories to would go
-  away: They are exported to whoever completes a successful login, and
-  accessible to the user if he would be able to access them on the
-  server as his login id.  You could even use challenge-response for
-  the initial login, coupled with ssh-based encryption, so you
-  automatically have a secure filesystem without even trying.
+  There *is* scope for redesign here, though. It would be nice to have
+  a single-user filesystem. Create a binary telnet session to the
+  filesystem server, log in as yourself, and then over that session
+  run a filesystem protocol. Normal filesystem protections at the
+  other end will be sufficient for all permissions checking, so the
+  filesystem protocol would need to do no other permissions checking.
+  The question of whom to export directories to would go away: They
+  are exported to whoever completes a successful login, and accessible
+  to the user if he would be able to access them on the server as his
+  login id. You could even use challenge-response for the initial
+  login, coupled with ssh-based encryption, so you automatically have
+  a secure filesystem without even trying.
 
   IMAP is too restricted in its scope to be easily modifiable to
-  emulate such a filesystem.  It would have to be a redesign from
+  emulate such a filesystem. It would have to be a redesign from
   scratch.
 
 From: John Romine <jromine at ics.uci.edu>
 Date: Sun, 8 Sep 1996 15:45:27 -0700
 
-  No.  MH only supports retrieving mail using POP3.  POP3 is on the
+  No. MH only supports retrieving mail using POP3. POP3 is on the
   "standards track"--it is now an elective Internet Draft Standard
-  (see RFC 1939 for more details).  At this point, IMAP[23] are
+  (see RFC 1939 for more details). At this point, IMAP[23] are
   "experimental, limited use" protocols; it is unlikely that MH will
   support them.
 
@@ -1187,24 +1128,24 @@ From: Bill Wohler <wohler at newt.com>
 Date: Sun, 8 Sep 1996 15:45:32 -0700
 
   Since John posted the message above, IMAP has progressed from an
-  "experiemental, limited use" protocol.  While IMAP is not universal,
+  "experiemental, limited use" protocol. While IMAP is not universal,
   many vendors now have implementations.
 
-  I've found several things which might help.  First, a definition
+  I've found several things which might help. First, a definition
   lifted from the Pine FAQ:
 
   What is IMAP?
 
-  IMAP stands for "Internet Message Access Protocol".  An IMAP client
+  IMAP stands for "Internet Message Access Protocol". An IMAP client
   program on any platform at any location on the Internet can access
-  email folders on an IMAP server.  While the messages appear to be
+  email folders on an IMAP server. While the messages appear to be
   local, they reside on the server until the client explicitly moves
-  or deletes them.  The IMAP protocol is a superset of POP, containing
-  all POP commands plus more.  For a comparison of IMAP and POP, see
+  or deletes them. The IMAP protocol is a superset of POP, containing
+  all POP commands plus more. For a comparison of IMAP and POP, see
   the paper Comparing Two Approaches to Remote Mailbox Access: IMAP
-  vs. POP (in ftp.cac.washington.edu:/mail/imap.vs.pop).  IMAP is what
+  vs. POP (in ftp.cac.washington.edu:/mail/imap.vs.pop). IMAP is what
   allows Pine (or any other IMAP client) to get to email on a central
-  campus email server.  There are current IETF working groups revising
+  campus email server. There are current IETF working groups revising
   IMAP and readying it to become an Internet standard. A copy of the
   latest IMAP draft may be obtained from:
   
@@ -1216,9 +1157,9 @@ Date: Sun, 8 Sep 1996 15:45:32 -0700
 From: David L Miller <dlm at cac.washington.edu>
 Date: Mon, 1 Aug 1994 00:00:00 -0800
 
-  ipop3d from the UW IMAP toolkit can operate in a couple modes.  As a
+  ipop3d from the UW IMAP toolkit can operate in a couple modes. As a
   straight POP3 server, it uses the same C-client library as imapd, so
-  it co-exists comfortably with imapd.  It can also operate as a
+  it co-exists comfortably with imapd. It can also operate as a
   POP-to-IMAP gateway so that your POP-only clients can access IMAP
   services.
 
@@ -1238,15 +1179,15 @@ From: John Romine <jromine at ics.uci.edu>
 Date: Fri, 1 Jan 1993 00:00:00 -0800
 
   If "mailgroup" is set, inc is made set-group-id to this group name.
-  Some SYS5 systems want this to be set to "mail".  Set this if
-  /usr/spool/mail (or /usr/mail) is not world-writable.  These
-  changes were contributed by Peter Marvit, and "inc" is very careful
-  about its use of the set-gid privilege.
+  Some SYS5 systems want this to be set to "mail". Set this if
+  /usr/spool/mail (or /usr/mail) is not world-writable. These changes
+  were contributed by Peter Marvit, and "inc" is very careful about
+  its use of the set-gid privilege.
 
   Note that slocal doesn't know how to deal with this, and will not
   work under these systems; just making it set-group-id will open a
   security hole (since it doesn't know when to drop the set-gid
-  privileges).  If you're using "mailgroup", you should remove slocal
+  privileges). If you're using "mailgroup", you should remove slocal
   (and its man page) from your system.
 
   Alternatives to slocal include deliver, procmail, and mailagent.
@@ -1270,11 +1211,11 @@ From: Neil Rickert <rickert at cs.niu.edu>,
 	Casper H.S. Dik <casper at fwi.uva.nl>
 Date: Sun, 8 Sep 1996 15:57:25 -0700
 
-  First, don't use the BSD compatible stuff.  Make sure that the Sun
-  or GNU compiler appear before the BSD compiler in your PATH (e.g.,
+  First, don't use the BSD compatible stuff. Make sure that the Sun or
+  GNU compiler appear before the BSD compiler in your PATH (e.g.,
   /usr/ccs/bin).
 
-  Second, don't use GNU make.  Make sure that the Sun make appears
+  Second, don't use GNU make. Make sure that the Sun make appears
   before the GNU make in your PATH.
 
   Use conf/examples/solaris2.sun.com and fix the paths, if necessary.
@@ -1289,7 +1230,7 @@ Date: Sun, 8 Sep 1996 15:57:25 -0700
 
     http://www.gw.com/mail/mh/patches/solaris/si_value_2.3.
 
-  Optionally incorporate the Content-Length header fix.  (See "How can
+  Optionally incorporate the Content-Length header fix. (See "How can
   I get MH to interpret the Content-Length field?")
 
   Linking with /usr/ucblib/libucb.so is incompatible with including
@@ -1301,8 +1242,8 @@ Date: Sun, 8 Sep 1996 15:57:25 -0700
     use explicit cast
 
   If you're using AFS, you'll have to replace any occurrence of "ln"
-  with "ln -s" wherever the make dies when it tries to make a link
-  "on a different file system."
+  with "ln -s" wherever the make dies when it tries to make a link "on
+  a different file system."
 
   See also ftp://ftp.fwi.uva.nl/pub/solaris/solaris2.faq.
 
@@ -1320,7 +1261,7 @@ Date: Mon, 1 May 1995 00:00:00 -0800
 From: "Jason R. Mastaler" <jason at Mastaler.COM>
 Date: Mon, 25 Sep 1995 17:35:13 -0400
 
-  Don't use "ldoptions -s" with gcc.  It may cause the compile to fail
+  Don't use "ldoptions -s" with gcc. It may cause the compile to fail
   with:
 
     gcc: Internal compiler error: program ld got fatal signal 11
@@ -1348,7 +1289,8 @@ Date: Tue, 20 Jan 1998 02:19:58 -0500
 From: Bill Wohler <wohler at newt.com>
 Date: Tue, 9 Feb 1999 23:04:53 -0800
 
-  The Debian distribution of Linux comes with an MH and nmh packages.  See
+  The Debian distribution of Linux comes with an MH and nmh packages.
+  See
 
     http://www.debian.org/.
 
@@ -1357,9 +1299,9 @@ Date: Tue, 9 Feb 1999 23:04:53 -0800
 From: "James A. Robinson" <jimr at simons-rock.edu>
 Date: 17 Apr 96 20:39:02 GMT
 
-  Somebody on Debian ported it to Linux ELF.  Look on
+  Somebody on Debian ported it to Linux ELF. Look on
   ftp://ftp.debian.org/debian/stable/binary/mail/mh_6.8.4-13.deb for
-  the .deb package of MH (it's a compressed tar file).  The source is
+  the .deb package of MH (it's a compressed tar file). The source is
   in ftp://ftp.debian.org/debian/stable/source/mail/mh_6.8.4-orig.tar.gz
   and mh_6.8.4-13.diff.gz.
 
@@ -1367,23 +1309,22 @@ From: Brian Kirouac <bri at psa.pencom.com>
 Date: 18 Apr 96 14:00:20 GMT
 
   If you are running Redhat and have rpm available you can also use
-  ftp://???/pub/redhat-3.0.3/i386/RedHat/RPMS/mh-6.8.3-5.i386.rpm.
-  The source code is in
+  ftp://???/pub/redhat-3.0.3/i386/RedHat/RPMS/mh-6.8.3-5.i386.rpm. The
+  source code is in
   ftp://???/pub/redhat-3.0.3/i386/SRPMS/mh-6.8.3-5.i386.rpm
 
 From: "Brandon S. Allbery" <bsa at kf8nh.wariat.org>
 Date: Sun, 26 Nov 1995 16:18:50 -0800
 
-  The current patch is the first one listed below.  The old patch only
-  works with libc-4.4, which is no longer used.  The current patch is
+  The current patch is the first one listed below. The old patch only
+  works with libc-4.4, which is no longer used. The current patch is
   split into two pieces, as with the previous patch, but now the
   divisions are purely functional: the first diff enables MH to
-  compile, the second allows creation of a shared library. [Ed: The
-  paths are up to date, but I think the info in this paragraph is
-  old.]
+  compile, the second allows creation of a shared library. [The paths
+  are up to date, but I think the info in this paragraph is old. --Ed]
 
-  Recent versions of GNU make choke on MH's makefiles.  Unfortunately,
-  the shared library patches depend on "export".  If you have problems
+  Recent versions of GNU make choke on MH's makefiles. Unfortunately,
+  the shared library patches depend on "export". If you have problems
   building MH, remove the "export" lines from all of the makefiles (if
   you applied the shared library patches) and try using BSD pmake
   instead.
@@ -1417,8 +1358,8 @@ From: Arne K. Frick <frick at info.uni-karlsruhe.de>
 Date: 06 Jun 1995 18:30:01 GMT
 
   There is a file at viz.tamu.edu:/pub/sgi (see FAQ) containing a diff
-  and sample configuration.  If you cannot locate it, I can mail it to
-  you.  Note, however, that I had tremendous difficulties with them
+  and sample configuration. If you cannot locate it, I can mail it to
+  you. Note, however, that I had tremendous difficulties with them
   under 5.3:
 
   1. Be sure to use /bin/make, NOT GNU make.
@@ -1449,7 +1390,7 @@ Date: Sun, 8 Sep 1996 15:38:30 -0700
 
   Apply http://www.gw.com/mail/mh/patches/solaris/content_length to
   your MH distribution and add the configuration option
-  "CONTENT_LENGTH".  It also includes the si_ fix in
+  "CONTENT_LENGTH". It also includes the si_ fix in
 
     http://www.gw.com/mail/mh/patches/solaris/si_value_2.3
 
@@ -1498,10 +1439,10 @@ Date: 18 Aug 1995 23:51:48 -0400
   fields, you'll need to modify the MH source.
 
   The relevant source has to do with the REALLYDUMB option in
-  sbr/addrsbr.c.  Essentially what you need to do is set it up so
+  sbr/addrsbr.c. Essentially what you need to do is set it up so
   REALLYDUMB is turned on (normally, it's turned off if you have MMDF
-  or SMTP turned on).  This will do what you want.  I did this at our
-  site, and it's been working great.  The stuff for REALLYDUMB starts
+  or SMTP turned on). This will do what you want. I did this at our
+  site, and it's been working great. The stuff for REALLYDUMB starts
   around line 613.
 
 ------------------------------
@@ -1513,14 +1454,13 @@ Date: Sat, 3 Mar 2001 13:40:35 -0800
   The MH Patch Archive has been opened at
 
     http://www.gw.com/mail/mh/patches/
-    ftp://ftp.gw.com/mail/mh/patches/
 
   It is a collection of patches to MH (the RAND MH Message Handling
   System), a set of electronic mail programs in the public domain.
   Since the last complete release of MH (version 6.8.3) UNIX systems
-  have evolved making changes in the MH code necessary.  Several new
+  have evolved making changes in the MH code necessary. Several new
   UNIX systems have emerged requiring new configuration templates and
-  examples.  This archive tries to collect all these fixes and
+  examples. This archive tries to collect all these fixes and
   enhancements that in the past have been available only through
   word-of-mouth and occasional reposts to newsgroups or mailing lists.
 
@@ -1529,10 +1469,11 @@ Date: Sat, 3 Mar 2001 13:40:35 -0800
 
   I will be the primary maintainer of the archive. Even though I will
   be monitoring several sources for new material (mainly the
-  comp.mail.mh newsgroup but also the mailing lists
-  <mh-workers at ics.uci.edu>, <mh-e-users at lists.sourceforge.net> and
-  <exmh-workers at redhat.com>), I'd like to encourage everyone to submit
-  patches also directly to the archive at <mh-archive at gw.com>.
+  comp.mail.mh newsgroup but also the mailing lists <mh-workers at
+  ics.uci.edu>, <mh-e-users at lists.sourceforge.net> and
+  <exmh-workers at redhat.com>), I'd like to encourage everyone to
+  submit patches also directly to the archive at <mh-archive at
+  gw.com>.
 
 ------------------------------
   
@@ -1549,12 +1490,12 @@ From: "Carl S. Gutekunst" <csg at eng.sun.com>
 Date: 27 May 1997 07:24:34 GMT
 
   The University of Washington POP3 and IMAP servers can be backended
-  by a variety of stores, including MH.  This is the basis for
+  by a variety of stores, including MH. This is the basis for
   Netscape's store, curiously enough. I haven't looked closely at how
   Mark Crispin implemented support for the new IMAP4 features when
   using an MH backend; it seems like there is a lot of computation
   when opening a folder for the first time, writing in the UID fields
-  and such.  But it basically appears to work.
+  and such. But it basically appears to work.
 
 From: Lyndon Nerenberg <lyndon at MessagingDirect.COM>
 Date: 27 Jul 1999 11:36:25 -0600
@@ -1644,16 +1585,18 @@ Date: 24 May 99 17:20:27 GMT
 
 ------------------------------
   
-Subject: 02.17 How can I build MH on a Mac?
+Subject: !02.17 How can I build MH on a Mac?
 From: Dr Eberhard W Lisse <el at lisse.na>
-Date: Wed, 19 Jan 2005 08:52:47 +0200
+Date: Sun, 05 Jun 2005 13:43:19 +0100
 
-  nmh compiles on the G4 iBook running Mac OS X 10.3.7 more or less out
-  of the box with the powerpc HOST option. Use make all install.
-  A fink package is available to make this even easier.
+  nmh compiles on the G4 iBook running Mac OS X 10.3.7 more or less
+  out of the box with the powerpc HOST option. Use make all install.
 
-  metamail does not work out of the box. I received a patch that did
-  get it to run.
+  Use fink to install the nmh package on Max OS X 10.3.9 (and 10.4.1).
+
+  metamail does not work out of the box. However,
+  metamail-2.7.19-1030.src.rpm (SuSE) which compiles and installs
+  cleanly.
 
   For exmh, first use fink to install the tcltk package. Then use fink
   to install exmh.
@@ -1695,19 +1638,18 @@ Subject: 03.02 How would one go about reading Usenet with MH?
 From: Bill Wohler <wohler at newt.com>
 Date: Sun, 26 Nov 1995 12:32:09 -0800
 
-  You can post via mail.  Send your article to
-  <mail2news at news.demon.co.uk> with a legitimate Newsgroups
-  field.
+  You can post via mail. Send your article to <mail2news at
+  news.demon.co.uk> with a legitimate Newsgroups field.
 
 From: Jerry Peek <jpeek at jpeek.com>
 Date: Tue, 1 Nov 1994 00:00:00 -0800
 
   You can save articles in the news readers for later perusal with MH.
 
-  First, create a symbolic link from your mail directory (e.g., usenet) to
-  your news directory (e.g., "ln -s ~/News ~/Mail/usenet").  You can then
-  treat your news directory as a mail folder.  Thus, to select a news
-  group, use "folder +usenet/comp/mail/mh".
+  First, create a symbolic link from your mail directory (e.g.,
+  usenet) to your news directory (e.g., "ln -s ~/News ~/Mail/usenet").
+  You can then treat your news directory as a mail folder. Thus, to
+  select a news group, use "folder +usenet/comp/mail/mh".
 
   To set the default save location correctly in rn, use:
 
@@ -1727,9 +1669,9 @@ Date: Tue, 1 Nov 1994 00:00:00 -0800
     next
     ...
 
-  You can also use sequences to keep track of what you've read.  MH
+  You can also use sequences to keep track of what you've read. MH
   will automatically set a "cur" sequence in each newsgroup you read
-  that way.  So, to continue reading the newsgroup sometime later,
+  that way. So, to continue reading the newsgroup sometime later,
   after you've read some other folder, you can do:
 
     next +/usr/spool/news/comp/mail/mh
@@ -1745,42 +1687,41 @@ Date: Tue, 1 Nov 1994 00:00:00 -0800
   Don't try that on a folder full of mail (a folder that isn't
   read-only), though... in that case, it'll remove all the messages!
 
-  I haven't looked into posting.  It seems like it shouldn't be hard.
+  I haven't looked into posting. It seems like it shouldn't be hard.
   You could set up a "sendproc" that would look at outgoing email
-  messages.  If the message had a Newsgroups: header field, your
-  sendproc could call inews(1) instead of post(8).  I haven't seen
-  much in the MH manpages or documentation about sendprocs (though I
-  haven't looked for a couple of years...).  See the "mysend"
-  script in the MH book section 7.1.4 (13.13), or the URL:
+  messages. If the message had a Newsgroups: header field, your
+  sendproc could call inews(1) instead of post(8). I haven't seen much
+  in the MH manpages or documentation about sendprocs (though I
+  haven't looked for a couple of years...). See the "mysend" script in
+  the MH book section 7.1.4 (13.13), or the URL:
 
-    http://www.ics.uci.edu/~mh/book/mh/senove.htm#ASAtDm
+    http://rand-mh.sourceforge.net/book/mh/senove.html#ASAtDm
 
   A threaded news reader like trn or tin is so much nicer, though,
   that reading news with MH may not be worth the hassle.
 
   See also MH book section 9.9 (8.7), or the URL:
 
-    http://www.ics.uci.edu/~mh/book/mh/shafol.htm
+    http://rand-mh.sourceforge.net/book/mh/shafol.html
 
 From: Stephen Gildea <gildea at stop.mail-abuse.org>
 Date: Fri, 1 Mar 1991 13:03:15 -0800
 
-  Although news readers are better, if one really wants to use
-  MH, bbc will do the job.  For example, "bbc comp.mail.mh" reads this
-  newsgroup.  To enable bbc, you have to specify "bboards" when you
+  Although news readers are better, if one really wants to use MH, bbc
+  will do the job. For example, "bbc comp.mail.mh" reads this
+  newsgroup. To enable bbc, you have to specify "bboards" when you
   build MH.
 
 From: Kimmo Suominen <kim at tac.nyc.ny.us>
 Date: 15 Aug 1996 18:18:10 GMT
 
   Sendmail v8 comes with MAILER(pop) which was written for the MH
-  spop.  Since I use bboards with NNTP, I never looked at the bboards
+  spop. Since I use bboards with NNTP, I never looked at the bboards
   setup.
 
 Date: Tue, 1 Nov 1994 00:00:00 -0800
 
-  See mhunify in (see also "What other MH software is
-  available?").
+  See mhunify in (see also "What other MH software is available?").
 
 ------------------------------
   
@@ -1804,15 +1745,15 @@ Date: Mon, 1 Mar 1993 00:00:00 -0800
     > do refile -src +$f -link all +ln
     > done
 
-  and in the future, refile messages with "refile +folder +ln".  To
+  and in the future, refile messages with "refile +folder +ln". To
   find something, use:
 
     % pick [switches] +ln
 
   See MH book sections 8.2.9 (7.2.9), 8.9.3 (7.8.3), or the URLs:
 
-    http://www.ics.uci.edu/~mh/book/mh/finpic.htm#SeMTOnFo
-    http://www.ics.uci.edu/~mh/book/mh/usilin.htm#AFoFuoLi
+    http://rand-mh.sourceforge.net/book/mh/finpic.html#SeMTOnFo
+    http://rand-mh.sourceforge.net/book/mh/usilin.html#AFoFuoLi
 
 ------------------------------
   
@@ -1821,7 +1762,7 @@ From: Anthony Baxter <anthony at aaii.oz.au>
 Date: Sun, 1 May 1994 00:00:00 -0800
 
   The BERK option disables address parsing and therefore functions
-  such as %(friendly).  Recompile MH without the BERK option.
+  such as %(friendly). Recompile MH without the BERK option.
 
 ------------------------------
   
@@ -1844,12 +1785,12 @@ Date: Mon, 1 Aug 1994 00:00:00 -0800
 
       mhshow-show-<type>/<subtype>
 
-    to determine the command to use to display the content.  If this
+    to determine the command to use to display the content. If this
     isn't found, mhshow will look for an entry of the form:
 
       mhshow-show-<type>
 
-    to determine the display command.  If this isn't found, mhshow has
+    to determine the display command. If this isn't found, mhshow has
     two default values:
 
       mhshow-show-text/plain: %pmoreproc '%F'
@@ -1881,9 +1822,9 @@ Date: Mon, 1 Aug 1994 00:00:00 -0800
 
   See also MH book sections 6.2.3, 9.4.4, 9.4.5, or the URLs:
 
-    http://www.ics.uci.edu/~mh/book/mh/remime.htm#HomhShMe
-    http://www.ics.uci.edu/~mh/book/mh/confmhn.htm#ShComhsh
-    http://www.ics.uci.edu/~mh/book/mh/confmhn.htm#DiOChSmc
+    http://rand-mh.sourceforge.net/book/mh/remime.html#HomhShMe
+    http://rand-mh.sourceforge.net/book/mh/confmhn.html#ShComhsh
+    http://rand-mh.sourceforge.net/book/mh/confmhn.html#DiOChSmc
 
 From: Michael K. Neylon <mneylon at engin.umich.edu>
 Date: Tue, 1 Nov 1994 00:00:00 -0800
@@ -1900,15 +1841,15 @@ Subject: 03.06 Can I get show not to run "less" so much on MIME messages?
 From: Richard Coleman <coleman at math.gatech.edu>
 Date: Tue, 20 Jan 1998 02:19:58 -0500
 
-  On nmh, you can do this just by "show -nocheckmime".  This will disable
-  the detection of MIME messages.
+  On nmh, you can do this just by "show -nocheckmime". This will
+  disable the detection of MIME messages.
 
 From: Bill Wohler <wohler at newt.com>
 Date: Tue, 1 Nov 1994 00:00:00 -0800
 
   If you say, "show all," and one of the messages was a MIME message,
   your pager will be run several times on each message, rather than
-  once on all the messages as a whole.  If you find this annoying, set
+  once on all the messages as a whole. If you find this annoying, set
   the environment variable NOMHNPROC:
 
     % setenv NOMHNPROC ""			# csh
@@ -1917,8 +1858,8 @@ Date: Tue, 1 Nov 1994 00:00:00 -0800
 
   See also MH book sections 6.2.3, 6.2.10, or the URLs:
 
-    http://www.ics.uci.edu/~mh/book/mh/remime.htm#HomhShMe
-    http://www.ics.uci.edu/~mh/book/mh/remime.htm#Alttomhn
+    http://rand-mh.sourceforge.net/book/mh/remime.html#HomhShMe
+    http://rand-mh.sourceforge.net/book/mh/remime.html#Alttomhn
 
 ------------------------------
   
@@ -1946,12 +1887,12 @@ Subject: 03.08 How can I automatically delete MH backup files?
 From: mccammaa at expt05.stp.xfi.bp.com (Andy McCammont)
 Date: 22 May 1995 06:27:36 -0400
 
-  On System V system, add this to your crontab.  If you don't have
-  one, put this in a file, and run "crontab file".  If your system
-  does not support personal crontab files, get your system
-  administrator to add an equivalent line to the system crontab file
-  or daily clean-up script.  Note that some administrators set the
-  prefix character to '#'.
+  On System V system, add this to your crontab. If you don't have one,
+  put this in a file, and run "crontab file". If your system does not
+  support personal crontab files, get your system administrator to add
+  an equivalent line to the system crontab file or daily clean-up
+  script. Note that some administrators set the prefix character to
+  '#'.
 
     # Remove old MH files
     5 5 * * * find /PATH/TO/HOME/Mail -name ",*" -mtime +5 -exec rm {} \;
@@ -1969,16 +1910,16 @@ Date: Mon, 30 Sep 96 15:00:16 +0200
     lockstyle: 1
 
   This prevents MH from using kernel level locking, and uses lock
-  files instead.  It solved the problem for me on two different
-  architectures.  When the lockldir entry is left empty as above, the
+  files instead. It solved the problem for me on two different
+  architectures. When the lockldir entry is left empty as above, the
   lock file is put in the same directory as the file to be locked. If
   another directory is wanted, its name should be put here.
 
 From: alhy at MAILBOX.SLAC.Stanford.EDU
 Date: Mon, 9 Sep 1996 01:01:16 -0700
 
-  Often, this is caused by an NFS file lock.  Don't ask me how it got
-  there in the first place.  To remove the file lock, do the following:
+  Often, this is caused by an NFS file lock. Don't ask me how it got
+  there in the first place. To remove the file lock, do the following:
 
     # cd /var/spool/mail
     # cp user /tmp/user.tmp; rm user	# save mail; remove locked file
@@ -1986,8 +1927,8 @@ Date: Mon, 9 Sep 1996 01:01:16 -0700
     # su - user
     user% inc -file user.tmp		# incorporate user's old mail
 
-  Any mail that you receive in the fraction of a second that the second
-  set of commands takes will be lost.
+  Any mail that you receive in the fraction of a second that the
+  second set of commands takes will be lost.
 
   (See also "Why does inc hang (on Sun)?")
 
@@ -2008,7 +1949,7 @@ Date: Sat, 09 Oct 2004 12:41:03 -0400
     from an email client, including strong MIME support, address
     books, and folder manipulation.
 
-  No MH support.  Unless you're willing to write it...
+  No MH support. Unless you're willing to write it...
 
 From: J C Lawrence <claw at kanga.nu>
 Date: Wed, 10 Dec 2003 09:54:15 -0500
@@ -2071,7 +2012,7 @@ Date: Mon, 1 May 1995 00:00:00 -0800
 
   Replace the hostname, login and password with your own, of course.
   The hostname probably has to be fully qualified (i.e., include the
-  full domain name).  This example assumes that you can send mail by
+  full domain name). This example assumes that you can send mail by
   other means (e.g., with SMTP).
 
 ------------------------------
@@ -2138,17 +2079,17 @@ From: Larry Daffner <ldaffner at convex.com>
 Date: 27 Mar 1996 16:53:39 -0600
 
   The "part xxx" message is controlled by the -list switch to mhn so
-  add "mhn: -nolist" to your .mh_profile.  To remove the pause, add an
+  add "mhn: -nolist" to your .mh_profile. To remove the pause, add an
   entry for "mhn-show-text/plain: more '%F'" to override the default
-  which includes the "%p" escape.  All of this is covered in the mhn
-  man page (sort of--you need to add 2+2).  It's a bit long, but well
+  which includes the "%p" escape. All of this is covered in the mhn
+  man page (sort of--you need to add 2+2). It's a bit long, but well
   worth reading.
 
 ------------------------------
   
 Subject: 03.16 Why is inc splitting messages improperly?
-From:    Mayank Choudhary <micky at eng.sun.com>
-Date:    Mon, 29 Apr 1996 09:39:29 -0700
+From: Mayank Choudhary <micky at eng.sun.com>
+Date: Mon, 29 Apr 1996 09:39:29 -0700
 
   MH considers "From " lines as message separators, so if this string
   is found within the body, inc splits the message.
@@ -2167,7 +2108,7 @@ Subject: 03.17 Can MH thread messages?
 From: "John W. Coomes" <jcoomes at delirius.cs.uiuc.edu>
 Date: 30 Apr 1997 13:02:10 -0500
 
-  Sort of.  You can resort your folders by Subject with:
+  Sort of. You can resort your folders by Subject with:
 
     sortm -textfield subject
 
@@ -2209,8 +2150,8 @@ Date: Mon, 5 Mar 2001 09:58:05 -0800
     mhshow-show-text/html: %lnetscape -remote 'openURL(file:%f, new-window)'
     mhn-show-text/html: %lnetscape -remote 'openURL(file:%f, new-window)'
 
-  The % escapes are described in the mhshow (mhn) man page. The
-  ", new-window" argument in the netscape invocation is optional, but
+  The % escapes are described in the mhshow (mhn) man page. The ",
+  new-window" argument in the netscape invocation is optional, but
   handy. After reading the message, you can dismiss the window with
   M-w and go back to reading mail.
 
@@ -2242,16 +2183,16 @@ Date: 31 Oct 2001 00:36:14 +1100
 
     mhstore-store-message/rfc822: | mhstore -file -
 
-  With that, mhstore will happily recurse down storing everything on its
-  way. Not very discriminate, but the line can be altered to limit
+  With that, mhstore will happily recurse down storing everything on
+  its way. Not very discriminate, but the line can be altered to limit
   without destroying the recursion:
 
     mhstore-store-message/rfc822: | mhstore -auto -type message/rfc822 -type image/jpeg -file -
 
   which also names the files automatically for good measure.
 
-  And, FWIW, I engage this by putting it in a separate file and invoking
-  mhstore like
+  And, FWIW, I engage this by putting it in a separate file and
+  invoking mhstore like
 
     env MHSTORE=mhn.rec mhstore
 
@@ -2292,8 +2233,8 @@ Subject: 04.02 Can I append MH messages to a GNU Emacs rmail BABYL-format file?
 From: Bill Wohler <wohler at newt.com>
 Date: Fri, 1 Mar 1991 13:03:15 -0800
 
-  To convert your MH folders to BABYL folders, first run the following script
-  on your Mail directory.
+  To convert your MH folders to BABYL folders, first run the following
+  script on your Mail directory.
 
     #!/bin/sh
 
@@ -2308,12 +2249,13 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
 	fi
     done
 
-  This assumes you don't have nested folders.  Your rmail folders will be
-  left in $HOME/Mail-rmail in MMDF format which rmail can read.  Then run
-  rmail-input for each folder, which converts each folder into BABYL format.
+  This assumes you don't have nested folders. Your rmail folders will
+  be left in $HOME/Mail-rmail in MMDF format which rmail can read.
+  Then run rmail-input for each folder, which converts each folder
+  into BABYL format.
 
-  Be sure not to append any messages before they are converted from MMDF
-  to BABYL, since there may be really strange results.
+  Be sure not to append any messages before they are converted from
+  MMDF to BABYL, since there may be really strange results.
 
 ------------------------------
   
@@ -2321,13 +2263,13 @@ Subject: 04.03 Why do I get ".../.mh_sequences is poorly formatted?"
 From: Richard Coleman <coleman at math.gatech.edu>
 Date: Tue, 20 Jan 1998 02:19:58 -0500
 
-  This bug has been fixed in nmh (as of version 0.20).  There are no
+  This bug has been fixed in nmh (as of version 0.20). There are no
   limitations on the length of an entry in the .mh_sequences file.
 
 From: Jerry Peek <jpeek at jpeek.com>
 Date: Mon, 1 Aug 1994 00:00:00 -0800
 
-  There is a line length limit in this file.  When sequences are
+  There is a line length limit in this file. When sequences are
   unbroken (without gaps in numbering), that makes short entries in
   the .mh_sequences file, like this:
 
@@ -2338,30 +2280,32 @@ Date: Mon, 1 Aug 1994 00:00:00 -0800
     inftex: 76 79-81 87 95-96 105 109 120 124 135 141 158 163...
 
   That's when you run into problems, and why it's good to keep the
-  folder packed when you can.  Simply run "folder -pack +folder".
+  folder packed when you can. Simply run "folder -pack +folder".
 
   If you're refiling a lot of messages in a large folder, you might
-  not be able to use sequences.  Use backquotes to give the message
-  numbers directly to "refile".  For example:
+  not be able to use sequences. Use backquotes to give the message
+  numbers directly to "refile". For example:
 
     refile +tex/info-tex `pick -to info-tex`
 
-  That can still generate a long list of arguments to the "refile" command,
-  and some Unixes can't handle that.  In that case, use xargs(1):
+  That can still generate a long list of arguments to the "refile"
+  command, and some Unixes can't handle that. In that case, use
+  xargs(1):
 
     pick -to info-tex | xargs refile +tex/info-tex
 
-  If worse comes to worst, fire up a Bourne shell and use a "while" loop:
+  If worse comes to worst, fire up a Bourne shell and use a "while"
+  loop:
 
     pick -to info-tex | fmt | while read nums; do
 	refile +tex/info-tex $nums
     done
 
   The fmt(1) command breaks long lines into manageable chunks of 72
-  characters or so, splitting arguments at whitespace.  When you redirect
-  the input of a while loop, a "read" command will read the incoming text
-  and store it in a shell variable line by line.  This is a quick-&-dirty
-  way to write xargs(1) if you don't have it.
+  characters or so, splitting arguments at whitespace. When you
+  redirect the input of a while loop, a "read" command will read the
+  incoming text and store it in a shell variable line by line. This is
+  a quick-&-dirty way to write xargs(1) if you don't have it.
 
 ------------------------------
   
@@ -2369,8 +2313,8 @@ Subject: 04.04 How can you save News articles into an MH folder?
 From: Jerry Peek <jpeek at jpeek.com>
 Date: Mon, 1 May 1995 00:00:00 -0800
 
-  If your newsreader handles backquotes on its command line, you can use
-  the mhpath command.  For instance, if your "save" command is "s":
+  If your newsreader handles backquotes on its command line, you can
+  use the mhpath command. For instance, if your "save" command is "s":
 
     s `mhpath new +somefolder`
 
@@ -2378,8 +2322,8 @@ Date: Mon, 1 May 1995 00:00:00 -0800
   aliases, you could define that as a command.
 
   If your newsreader can pipe an article to the standard input of a
-  program, use the "rcvstore" command (in the MH library).  For instance,
-  if your "pipe" command is "|":
+  program, use the "rcvstore" command (in the MH library). For
+  instance, if your "pipe" command is "|":
 
     | $MHLIB/rcvstore +somefolder
 
@@ -2387,7 +2331,23 @@ Date: Mon, 1 May 1995 00:00:00 -0800
 
 ------------------------------
   
-Subject: 04.05 Are there any good tools to archive MH messages?
+Subject: !04.05 Are there any good tools to archive MH messages?
+From: Bill Wohler <wohler at newt.com>
+Date: Sun, 23 Sep 2007 18:35:53 -0700
+
+  For those of lesser means, I have three shell scripts for archiving,
+  seeking, and extracting MH messages that I had been using for a
+  couple of decades. Send mail if interested.
+
+  However, now that disk space is cheap and one can index years worth
+  of mail in a minute or two, I haven't run those scripts in a few
+  years. I intend to update them to index and archive a years-worth of
+  mail at some point.
+
+  Since glimpse is no longer free (as in speech), I've switched to
+  swish++. Other indexing tools (which are also compatible with MH-E)
+  include mairix and namazu.
+
 From: glimpse at cs.arizona.edu
 Date: Sun, 4 Mar 2001 10:26:24 -0800
 
@@ -2397,14 +2357,6 @@ Date: Sun, 4 Mar 2001 10:26:24 -0800
   organizations for large data collections.
 
     http://www.webglimpse.org/
-
-From: Bill Wohler <wohler at newt.com>
-Date: Sun, 26 Nov 1995 17:10:59 -0800
-
-  For those of lesser means, I have three shell scripts for archiving,
-  seeking, and extracting MH messages that I have been using for
-  almost 10 years.  Send mail if interested.  Note that I intend to
-  switch to Glimpse if I get a moment.
 
 ------------------------------
   
@@ -2430,8 +2382,8 @@ Date: 20 Nov 1995 18:51:24 GMT
   field using the sortm(1) command.
 
   After the sort, each message should be next to its duplicates in the
-  folder.  Use a script (shell, Perl, etc.) to weed out the
-  duplicates.  (See "Removing duplicate messages (Bourne)").
+  folder. Use a script (shell, Perl, etc.) to weed out the duplicates.
+  (See "Removing duplicate messages (Bourne)").
 
   The Perl script in (see "Removing duplicate messages (Perl)") does
   not require that you first sort the folder.
@@ -2464,8 +2416,8 @@ Subject: 05.02 How do I include messages in repl with or without ">"?
 From: Richard Coleman <coleman at math.gatech.edu>
 Date: Tue, 20 Jan 1998 02:19:58 -0500
 
-  In nmh, to include a message in a reply with a leading ">", just
-  use "repl -format".
+  In nmh, to include a message in a reply with a leading ">", just use
+  "repl -format".
 
 From: Alan Thew <qq11 at liv.ac.uk>, Mike Schwager <schwager at cs.uiuc.edu>,
 	James T Perkins <jamesp at sp-eug.com>
@@ -2476,7 +2428,7 @@ Date: Fri, 1 Jan 1993 00:00:00 -0800
     repl -filter repl.format
 
   This filter file must be in your MH mail directory (usually "Mail",
-  in your home directory).  Here are a couple of example repl.format
+  in your home directory). Here are a couple of example repl.format
   files:
 
     overflowtext="",overflowoffset=0
@@ -2492,29 +2444,29 @@ Date: Fri, 1 Jan 1993 00:00:00 -0800
     body:component="> ",overflowtext="> ",overflowoffset=0
 
   Setting overflowoffset to 0 keeps MH from doing anything to
-  extra-long lines in the headers.  In the body, however, this
-  behavior is overridden so that long lines are automatically broken
-  and a ">" is inserted before every line.  You could put almost
-  whatever you want between those quotes, although the "standard" ">"
-  makes it easier to read notes that have been included several times.
-  The examples differ with the descriptive text that is inserted
-  before the included body.
+  extra-long lines in the headers. In the body, however, this behavior
+  is overridden so that long lines are automatically broken and a ">"
+  is inserted before every line. You could put almost whatever you
+  want between those quotes, although the "standard" ">" makes it
+  easier to read notes that have been included several times. The
+  examples differ with the descriptive text that is inserted before
+  the included body.
 
   It is suggested not to use the "prompter" editor in this case, since
   it is likely that you'll not want to use all of the included
-  message.  Indeed, it is proper etiquette to edit out all unnecessary
+  message. Indeed, it is proper etiquette to edit out all unnecessary
   include verbiage so readers don't have to wade through the morass to
   read your pearls of wisdom.
 
-  WARNING: the '>' appears on the first line ONLY in versions prior
-  to 6.7.2.  Upgrade to MH 6.8.
+  WARNING: the '>' appears on the first line ONLY in versions prior to
+  6.7.2. Upgrade to MH 6.8.
 
-  See also MH book sections 7.8.4 (6.7.4), 7.8.5 (6.7.5), 10.4.1 (9.4.1),
-  or the URLs:
+  See also MH book sections 7.8.4 (6.7.4), 7.8.5 (6.7.5), 10.4.1
+  (9.4.1), or the URLs:
 
-    http://www.ics.uci.edu/~mh/book/mh/reprep-2.htm#ReaEdi
-    http://www.ics.uci.edu/~mh/book/mh/reprep-2.htm#Inc
-    http://www.ics.uci.edu/~mh/book/mh/verrep.htm#IncRep
+    http://rand-mh.sourceforge.net/book/mh/reprep-2.html#ReaEdi
+    http://rand-mh.sourceforge.net/book/mh/reprep-2.html#Inc
+    http://rand-mh.sourceforge.net/book/mh/verrep.html#IncRep
 
 ------------------------------
   
@@ -2542,13 +2494,13 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
 
   - (See also "How can I save a copy of all messages I send?").
 
-    For more info, see the man pages comp(1),
-    repl(1), forw(1), dist(1) and mh-mail(5).
+    For more info, see the man pages comp(1), repl(1), forw(1),
+    dist(1) and mh-mail(5).
 
   See also MH book sections 7.8.2 (6.7.2), 9.8 (8.6), or the URLs:
 
-    http://www.ics.uci.edu/~mh/book/mh/reprep-2.htm#Sel
-    http://www.ics.uci.edu/~mh/book/mh/defmai.htm
+    http://rand-mh.sourceforge.net/book/mh/reprep-2.html#Sel
+    http://rand-mh.sourceforge.net/book/mh/defmai.html
 
 From: Alec Wolman <wolman at crl.dec.com>
 Date: Fri, 1 Mar 1991 13:03:15 -0800
@@ -2576,8 +2528,8 @@ Date: Tue, 1 Nov 1994 00:00:00 -0800
 
   1) The MH way.
 
-  1a) In your Mail directory, create files that
-      include your signature into the format of the message.
+  1a) In your Mail directory, create files that include your signature
+      into the format of the message.
 
       ~/Mail/components:
 	To:
@@ -2600,7 +2552,7 @@ Date: Tue, 1 Nov 1994 00:00:00 -0800
        repl: -filter replfmt
 
      When comp is used, your signature is already there along with my
-     headers.  When repl is used, the mhl program takes the body of
+     headers. When repl is used, the mhl program takes the body of
      the letter you're replying to, prepends '> ' to each line and
      then adds your signature at the end (available after version
      6.7).
@@ -2609,18 +2561,18 @@ Date: Tue, 1 Nov 1994 00:00:00 -0800
       signature when desired or create a frontend to post (use the
       .mh_profile line "postproc: postproc" to call it) that always
       appends the .signature file before calling post to mail the
-      message.  David J. Fiander <david at golem.uucp>, David A.
-      Truesdell <truesdel at nas.nasa.gov> and Tom Wilmore
-      <sastjw at unx.sas.com> have sample scripts to do these.
+      message. David J. Fiander <david at golem.uucp>, David A.
+      Truesdell <truesdel at nas.nasa.gov> and Tom Wilmore <sastjw at
+      unx.sas.com> have sample scripts to do these.
 
 From: Jerry Peek <jpeek at jpeek.com>
 Date: Tue, 1 Sep 1992 00:00:00 -0800
 
-  1c) mysend, a sendproc script, processes a message after
-      "What now? send".  See "What references exist for MH" to see
-      where the MH book scripts can be ftped from.  The script is
-      explained in MH book Section 7.1.4 (13.13), or the URL:
-      http://www.ics.uci.edu/~mh/book/mh/senove.htm#ASAtDm
+  1c) mysend, a sendproc script, processes a message after "What now?
+      send". See "What references exist for MH" to see where the MH
+      book scripts can be ftped from. The script is explained in MH
+      book Section 7.1.4 (13.13), or the URL:
+      http://rand-mh.sourceforge.net/book/mh/senove.html#ASAtDm
 
   2) Using your editor.  If you use vi, you can use something like:
 
@@ -2629,7 +2581,7 @@ Date: Tue, 1 Sep 1992 00:00:00 -0800
      to load your signature out of .signature every time you
      hit 'S'.
 
-  3) Use your windowing system.  xterm, for example, can provide key
+  3) Use your windowing system. xterm, for example, can provide key
      and button mappings for the utterly lazy.
 
   4) If you use Emacs with MH-E:
@@ -2655,15 +2607,15 @@ Date: Mon, 1 May 1995 00:00:00 -0800
 From: Tom Christiansen <tchrist at perl.com>
 Date: Tue, 1 Nov 1994 00:00:00 -0800
 
-  Tired of the same old signature?  Want different signatures for
-  different newsgroups?  Here's a program to help you out.
+  Tired of the same old signature? Want different signatures for
+  different newsgroups? Here's a program to help you out.
 
   The way it works is to have .signature be a named pipe, so if you
   don't have named pipes, just say 'n'.
 
-  The sigrand program then feeds stuff down the pipe every time someone
-  wants to read it.  That way it works for more than just news, but
-  for anything that wants to read your .signature, like a mailer.
+  The sigrand program then feeds stuff down the pipe every time
+  someone wants to read it. That way it works for more than just news,
+  but for anything that wants to read your .signature, like a mailer.
 
   You have your choice of three kinds of signatures:
 
@@ -2711,13 +2663,14 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
 
   See also MH book sections 7.9.7 (6.8.7), 8.10 (7.9), or the URLs:
 
-    http://www.ics.uci.edu/~mh/book/mh/forfor-2.htm#CreDig
-    http://www.ics.uci.edu/~mh/book/mh/burdig.htm
+    http://rand-mh.sourceforge.net/book/mh/forfor-2.html#CreDig
+    http://rand-mh.sourceforge.net/book/mh/burdig.html
 
 From: Glenn Vanderburg <glv at utdallas.edu>
 Date: Tue, 1 Nov 1994 00:00:00 -0800
 
-  There's another way, which is better if the recipient understands MIME.
+  There's another way, which is better if the recipient understands
+  MIME.
 
     forw -mime messages +folder
 
@@ -2725,11 +2678,10 @@ Date: Tue, 1 Nov 1994 00:00:00 -0800
   profile, or type "edit mhn" to whatnow before you send it.)
 
   This bundles each message in a MIME message/rfc822 part, and then
-  bundles the whole mess up in a multipart/digest part.  You can still
-  add your own text at the beginning.  The MH burst program can also
-  understand these messages and split them apart with no problem.
-  This works beautifully with MIME-capable mail readers, especially
-  exmh.
+  bundles the whole mess up in a multipart/digest part. You can still
+  add your own text at the beginning. The MH burst program can also
+  understand these messages and split them apart with no problem. This
+  works beautifully with MIME-capable mail readers, especially exmh.
 
 ------------------------------
   
@@ -2755,9 +2707,9 @@ Date: Mon, 27 Nov 1995 11:40:50 -0800
 
   With either of the following solutions, you'll need to add an
   Alternate-Mailboxes entry in your MH profile so that scan prints
-  "To: recipient" rather than your faked address.  For example, if
-  your real address is user@somedomain.com and you've added a From
-  field of:
+  "To: recipient" rather than your faked address. For example, if your
+  real address is user@somedomain.com and you've added a From field
+  of:
 
     From: Joe Bob <joe.bob@somedomain.com>
 
@@ -2777,8 +2729,8 @@ From: Jerry Peek <jpeek at jpeek.com>
 Date: Tue, 1 Dec 1992 00:00:00 -0800
 
   Just put a "From:" header in your "components", "replcomps" and
-  "forwcomps" files.  MH will add a "Sender:" header with what it thinks
-  is your real address.
+  "forwcomps" files. MH will add a "Sender:" header with what it
+  thinks is your real address.
 
 ------------------------------
   
@@ -2788,12 +2740,12 @@ Date: Mon, 18 Dec 1995 17:51:33 -0800
 
   I suggest the use of the Dcc: field (See "What is the Dcc header?"),
   since the use of "Dcc:" solves the issue of having the same
-  Message-Id.  The warning about using Dcc: in general contexts
-  doesn't apply to self-blind-carbon copies, and if "Dcc:" is used and
-  you are automatically sorting messages into folders based on mailing
-  lists, messages which you send will get refiled in the same way.
-  Some may prefer all outgoing messages to be segregated; others
-  (including myself) prefer not to segregate outgoing messages.
+  Message-Id. The warning about using Dcc: in general contexts doesn't
+  apply to self-blind-carbon copies, and if "Dcc:" is used and you are
+  automatically sorting messages into folders based on mailing lists,
+  messages which you send will get refiled in the same way. Some may
+  prefer all outgoing messages to be segregated; others (including
+  myself) prefer not to segregate outgoing messages.
 
 From: Bill Wohler <wohler at newt.com>, Jerry Peek <jpeek at jpeek.com>
 Date: Mon, 1 Aug 1994 00:00:00 -0800
@@ -2804,7 +2756,7 @@ Date: Mon, 1 Aug 1994 00:00:00 -0800
 
     Fcc: +out
 
-  All outgoing messages will then be saved in the +out folder.  If you
+  All outgoing messages will then be saved in the +out folder. If you
   make a distcomps file, it needs "Resent-Fcc:".
 
 From: Jeppe Sigbrandt <jay at elec.gla.ac.uk>
@@ -2826,7 +2778,7 @@ Date: 30 Oct 1995 10:23:55 -0500
 
     send: -msgid
 
-  to your .mh_profile.  Unfortunately, this Message-ID isn't as useful
+  to your .mh_profile. Unfortunately, this Message-ID isn't as useful
   as sendmail's--it doesn't include the date.
 
 ------------------------------
@@ -2835,12 +2787,12 @@ Subject: 05.10 Can the folder in Fcc: be dynamically specified?
 From: Andy Rabagliati <andyr at wizzy.com>
 Date: Mon, 1 Aug 1994 00:00:00 -0800
 
-  My suggestion would be to run Tom Christiansen's rfi script.  If you
+  My suggestion would be to run Tom Christiansen's rfi script. If you
   cannot find it on *.sources archive sites (please try first), I can
   mail it to you.
 
   One good idea would be to write a whatnowproc that files the mail
-  based on a procmail or deliver file.  Then you can use the same file
+  based on a procmail or deliver file. Then you can use the same file
   for incoming and outgoing mail.
 
 ------------------------------
@@ -2854,19 +2806,19 @@ Date: Thu, 19 May 2005 18:06:39 -0700
 From: Bill Wohler <wohler at newt.com>
 Date: Mon, 5 Mar 2001 05:30:43 -0800
 
-  PGP keys can be obtained via mail from <pgp-public-keys at pgp.mit.edu>,
-  and via the Web at http://www.pgp.net/pgpnet/pks-commands.html.
-  Many PGP front-ends (e.g., mailcrypt) automatically obtain keys for
-  you.
+  PGP keys can be obtained via mail from <pgp-public-keys at
+  pgp.mit.edu>, and via the Web at
+  http://www.pgp.net/pgpnet/pks-commands.html. Many PGP front-ends
+  (e.g., mailcrypt) automatically obtain keys for you.
 
   See http://www.pgp.net/ for more info.
 
 From: Vivek Khera <khera at kciLink.com>
 Date: 19 Jun 1995 22:06:37 GMT
 
-  A much more robust Perl script I wrote is appended below [Ed: Send a
-  note to Vivek for the script].  It works its way through aliases,
-  and avoids problems with full names in the headers.
+  A much more robust Perl script I wrote is appended below. [Send a
+  note to Vivek for the script. --Ed] It works its way through
+  aliases, and avoids problems with full names in the headers.
 
   Here is my mhn profile entry to display the messages.
 
@@ -2875,31 +2827,31 @@ Date: 19 Jun 1995 22:06:37 GMT
 
   to use the script, after you edit the message, at the What now?
   prompt, type "edit pgpmail" for plain ascii encryption or "pgpmail
-  -m" for a MIME formatted encryption.  If you want to add a digital
+  -m" for a MIME formatted encryption. If you want to add a digital
   signature, give the script the -s flag also.
 
 From: Jeffrey C. Ollie <jeff at ollie.clive.ia.us>
 Date: Mon, 1 May 1995 00:00:00 -0800
 
   TIS has a free, draft-standard compliant public key system that
-  works with MH (PEM).  Check it out on ftp.tis.com.
+  works with MH (PEM). Check it out on ftp.tis.com.
 
 From: Kimmo Suominen <kim at tac.nyc.ny.us>
 Date: Mon, 1 May 1995 00:00:00 -0800
 
   You could try looking at the URL http://www.tac.nyc.ny.us/ and
-  following the link from the cover page.  Everything you need for
-  PGP to work with MH is there (scripts and mhn entries).
+  following the link from the cover page. Everything you need for PGP
+  to work with MH is there (scripts and mhn entries).
 
 From: mathew at mantis.co.uk
 Date: Mon, 1 May 1995 00:00:00 -0800
 
-  Excellent stuff.  I've tried altering it to conform to
+  Excellent stuff. I've tried altering it to conform to
   draft-borenstein-pgp-mime-00.txt.
 
   Unfortunately, I can't get mhn to tag PGP-armoured text as
   application/pgp; format=text without it insisting on base64 encoding
-  it.  So I can't quite manage to implement the standard.  *sigh*
+  it. So I can't quite manage to implement the standard. *sigh*
 
   Presumably mhn thinks that anything which isn't text/* must be
   encoded.
@@ -2909,7 +2861,7 @@ Date: Wed, 16 Apr 1997 00:06:59 -0700
 
   Premail, in conjunction with MH, can display and compose security
   multiparts (e.g., multipart/signed and multipart/encrypted PGP mail,
-  non-MIME PGP, and some S/MIME).  Check out
+  non-MIME PGP, and some S/MIME). Check out
 
     http://www.c2.org/~raph/premail/
 
@@ -2925,21 +2877,21 @@ Date: Mon, 09 Oct 1995 08:05:55 -0400
 
   1. Compose a letter using comp.
 
-  2. When you get to a point where you want to include a MIME attachment, type
-     the following to include a GIF image (note: the '#' must be in
-     the first column):
+  2. When you get to a point where you want to include a MIME
+     attachment, type the following to include a GIF image (note: the
+     '#' must be in the first column):
 
 	#image/gif [Pictures at an Exhibition] /usr/lib/pictures/exhibition.gif
 
   3. Finish your letter, adding more text or attachments as needed.
 
-  4. Save your letter and exit the editor.  At the Whatnow prompt
-     type "edit mhn".  mhn will automatically format your letter with
-     the MIME attachments leaving the original letter in ,##,orig
-     where ## is the letter number.
+  4. Save your letter and exit the editor. At the Whatnow prompt type
+     "edit mhn". mhn will automatically format your letter with the
+     MIME attachments leaving the original letter in ,##,orig where ##
+     is the letter number.
 
   5. Type "send" at the Whatnow prompt, and poof, you have just sent
-     MIME mail.  I strongly recommend you practice sending yourself
+     MIME mail. I strongly recommend you practice sending yourself
      MIME mail first.
 
   For more information, see the mhn(1) man page,
@@ -2947,7 +2899,7 @@ Date: Mon, 09 Oct 1995 08:05:55 -0400
   for a list of allowed media types in addition to image/gif, and
   Chapter 3 in the MH book or the URL:
 
-    http://www.ics.uci.edu/~mh/book/overall/tocs/intmime.htm
+    http://rand-mh.sourceforge.net/book/overall/tocs/intmime.html
 
 ------------------------------
   
@@ -2959,13 +2911,13 @@ Date: Thu, 12 Oct 1995 07:53:53 -0700
   everyone's header.
 
   If you're planning on mailing to these people regularly, the best
-  way is to create an alias in /etc/aliases (/usr/lib/aliases).  That
+  way is to create an alias in /etc/aliases (/usr/lib/aliases). That
   way, recipients can send and reply to the list as well.
 
   The other two ways allow you to manage the list privately, but the
   recipients cannot send to the list (unless you set something up with
-  your deliver or procmail script).  One is with a group list.  It
-  looks like this:
+  your deliver or procmail script). One is with a group list. It looks
+  like this:
 
     To: All-members: member1, member2, member3, ..., membern;
 
@@ -2979,7 +2931,7 @@ Date: Thu, 12 Oct 1995 07:53:53 -0700
   blind carbon copies?").
 
   Or you could also use the undocumented Dcc field which is used like
-  the Bcc field, but doesn't inject the "Blind-Carbon-Copy."  Warning:
+  the Bcc field, but doesn't inject the "Blind-Carbon-Copy." Warning:
   (See "What is the Dcc header?")
 
 ------------------------------
@@ -2994,11 +2946,11 @@ Date: 14 Sep 96 05:51:13 GMT
 
     Apparently-to: <someaddress>
 
-  and it might even list several addresses.  To avoid that, use a To:
-  field with some address (like yours) in it.  I use a comment that
+  and it might even list several addresses. To avoid that, use a To:
+  field with some address (like yours) in it. I use a comment that
   tells people what's really happening--like this, more or less:
 
-    To: "Faculty members, c/o" <super@wierdlmpc.msci.memphis.edu>
+    To: "Faculty members, c/o" <super@wierdlmpc.msci.memphis.edu> 
     dcc: faculty
 
   There are some other choices, like using an un-replyable group list
@@ -3008,29 +2960,29 @@ Date: Wed, 27 Sep 1995 09:46:37 -0700
 From: John Romine <jromine at yoyodyne.ICS.UCI.EDU>
 
   The Dcc (Distribution Carbon Copy) field behaves much like the Bcc
-  field, but does not add the "Blind-Carbon-Copy" notice.  This header
+  field, but does not add the "Blind-Carbon-Copy" notice. This header
   is removed before posting the message,and a copy of the message is
-  distributed to each listed address.  This could be considered a form
+  distributed to each listed address. This could be considered a form
   of Blind Carbon Copy which is best used for sending to an address
   which would never reply (such as an auto-archiver).
 
   People should not be using Dcc as a substitute-Bcc to send to other
-  people.  When users use Dcc as a substitute for Bcc, there is *no*
+  people. When users use Dcc as a substitute for Bcc, there is *no*
   indication to the "blind" recipients that they have received a blind
-  copy.  If those recipients should reply (and they have no indication
+  copy. If those recipients should reply (and they have no indication
   why they shouldn't), the original author could be very embarassed
   (or worse).
 
 ------------------------------
   
-Subject: !05.15 How can I make sense of the replcomps file?
+Subject: 05.15 How can I make sense of the replcomps file?
 From: Bill Wohler <wohler at newt.com>
 Date: Thu, 9 Mar 2006 19:27:14 -0800
 
   The best thing to do is curl up with the mh-format(5) man page, or
   Section 11.2 of the MH book, or the URL:
 
-    http://www.ics.uci.edu/~mh/book/mh/mhstr.htm
+    http://rand-mh.sourceforge.net/book/mh/mhstr.html
 
   These will explain the default replcomps file, included here. Don't
   start with the first four lines--the latter group of lines are much
@@ -3104,11 +3056,11 @@ From: Jarle F. Greipsland <jarle at idt.unit.no>
 Date: 22 Aug 1995 10:42:07 +0200
 
   The idea behind the solution is that I need mhn to store the
-  contents of the mail in the native iso8859-1 format somewhere.  I
-  did this by creating a custom editor that is invoked when I reply to
-  a message.  This editor extracts the body of the message (sorry, no
+  contents of the mail in the native iso8859-1 format somewhere. I did
+  this by creating a custom editor that is invoked when I reply to a
+  message. This editor extracts the body of the message (sorry, no
   multipart stuff), indents it with '> ', appends it to the draft
-  message and invokes the ordinary editor on it.  Here are the details:
+  message and invokes the ordinary editor on it. Here are the details:
 
   `isorepl' is a symbolic link from my $HOME/bin-directory to `repl'.
 
@@ -3133,8 +3085,8 @@ Date: 22 Aug 1995 10:42:07 +0200
     %<{message-id}In message %{message-id} %>\
     %<{from}%(friendly{from}) writes%|You write%>:
 
-  This is a "Usenet-like" quoting style.  Modify to suit your own
-  taste.  This form will setup the proper header, as well as the first
+  This is a "Usenet-like" quoting style. Modify to suit your own
+  taste. This form will setup the proper header, as well as the first
   line of the new message (In <mmmmbbbb> nnnn writes etc.).
 
   The first editor, `isoextract', looks like this:
@@ -3165,20 +3117,21 @@ Date: 22 Aug 1995 10:42:07 +0200
 			 -e 's/^\([>|]\)\(.*\)$/>\1\2/' \
 			 -e 's/^\([^>|].*\)$/> \1/'
 
-  This tells mhn to pipe the message to stdout, where the sed commands will
-  do the reformatting/quoting. (Note: the first pair of square brackets
-  contains a space and a tab.)
+  This tells mhn to pipe the message to stdout, where the sed commands
+  will do the reformatting/quoting. (Note: the first pair of square
+  brackets contains a space and a tab.)
 
   So, when I do a `isorepl' to a message, `repl' will create the draft
-  message with the proper headers (based on the `isoreplcomps' format file),
-  fire off its first editor, `isoextract', with the name of the draft file as
-  its parameter. `isoextract' then invokes mhn in a suitable environment,
-  tells it that it is to use the file $editalt as its source, and orders it
-  to store the contents.  The store-text rule in the custom MHN-file tells it
-  to just pipe the message (in native iso8859-1 form) through a small set of
-  sed commands, and `isoextract' uses the normal shell construct to append
-  the result to the draft file.  Then, if there's defined a `isoextract-next'
-  entry in the .mh_profile, isoextract exec's this editor.
+  message with the proper headers (based on the `isoreplcomps' format
+  file), fire off its first editor, `isoextract', with the name of the
+  draft file as its parameter. `isoextract' then invokes mhn in a
+  suitable environment, tells it that it is to use the file $editalt
+  as its source, and orders it to store the contents. The store-text
+  rule in the custom MHN-file tells it to just pipe the message (in
+  native iso8859-1 form) through a small set of sed commands, and
+  `isoextract' uses the normal shell construct to append the result to
+  the draft file. Then, if there's defined a `isoextract-next' entry
+  in the .mh_profile, isoextract exec's this editor.
 
 ------------------------------
   
@@ -3188,9 +3141,9 @@ Date: Fri, 16 Aug 1996 14:26:12 +1000
 
   Indeed, you can.
 
-  You just need to remember the way MH expands aliases.  In
-  particular, the right hand sides are only expanded by the aliases
-  below them in your aliases file.  So, if you put in:
+  You just need to remember the way MH expands aliases. In particular,
+  the right hand sides are only expanded by the aliases below them in
+  your aliases file. So, if you put in:
 
     dead-men: presidents, authors
     presidents: washington, lincoln, jefferson, roosevelt
@@ -3204,8 +3157,8 @@ Date: Fri, 16 Aug 1996 14:26:12 +1000
 
     washington, lincoln, jefferson, roosevelt, thoreau, irving, london
 
-  If you had the dead-men line after the presidents and authors aliases, the
-  response would be:
+  If you had the dead-men line after the presidents and authors
+  aliases, the response would be:
 
     presidents, authors
 
@@ -3215,9 +3168,9 @@ Subject: 05.18 Why doesn't mhmail understand aliases?
 From: "John L. Romine" <jromine at yoyodyne.ics.uci.edu>
 Date: 25 Apr 1996 16:34:10 GMT
 
-  One way that mhmail might be run is from a shell script.  This means
+  One way that mhmail might be run is from a shell script. This means
   that the user running it might not use MH, and would not have a
-  .mh_profile, etc.  If you want to use aliases with mhmail, expand
+  .mh_profile, etc. If you want to use aliases with mhmail, expand
   them before passing them as arguments (e.g., "mhmail `ali joe`").
 
 ------------------------------
@@ -3242,7 +3195,7 @@ Date: Mon, 9 Sep 1996 00:32:14 -0700
   If you don't want the "Blind-Carbon-Copy" message, use the Dcc
   field, but this is discouraged in true blind carbon copies since the
   warning may prevent the recipient from embarrassing someone
-  inadvertently.  Read the warning in (see "What is the Dcc header?").
+  inadvertently. Read the warning in (see "What is the Dcc header?").
 
 ------------------------------
   
@@ -3252,7 +3205,7 @@ Date: Sun, 17 Nov 1996 20:16:31 -0800
 
   Obtain forwedit.
 
-    ftp://ftp.ics.uci.edu/pub/mh/contrib/jpeek/forwedit
+    http://rand-mh.sourceforge.net/book/examples/mh/bin/forwedit
 
 ------------------------------
   
@@ -3306,7 +3259,7 @@ Date: Fri, 14 May 1999 11:15:07 -0400
 
 ------------------------------
 
-Subject: +05.26 How do I fix a bogus In-Reply-To or missing References field?
+Subject: 05.26 How do I fix a bogus In-Reply-To or missing References field?
 From: Bill Wohler <wohler at newt.com>
 Date: Thu, 9 Mar 2006 21:42:21 -0800
 
@@ -3337,8 +3290,8 @@ From: John Romine <jromine at ics.uci.edu>
 Date: Mon, 1 May 1995 00:00:00 -0800
 
   If your users are using an AT&T version of "vi", it's exiting with
-  non-zero status (supposedly a count of the "errors" during the edit).
-  Move "vi" to "broken_vi" and put it its place :
+  non-zero status (supposedly a count of the "errors" during the
+  edit). Move "vi" to "broken_vi" and put it its place :
 
     #! /bin/sh
     /usr/ucb/broken_vi "$@"
@@ -3346,8 +3299,7 @@ Date: Mon, 1 May 1995 00:00:00 -0800
 
   Alternatively, compile MH with the ATTVIBUG option.
 
-  Then complain to your vendor that "vi" is broken, and they should
-  fix it.
+  Then complain to your vendor that "vi" is broken, and they shouldfix it.
 
 ------------------------------
   
@@ -3355,7 +3307,7 @@ Subject: 06.02 Can I run my message through a program (e.g., ispell) before send
 From: Jerry Peek <jpeek at jpeek.com>
 Date: Fri, 1 Mar 1991 13:03:15 -0800
 
-  It's pretty simple.  If your speller is called myspell, use:
+  It's pretty simple. If your speller is called myspell, use:
 
     What now? edit myspell
 
@@ -3363,13 +3315,13 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
 
     myspell /your-mail-draft-directory/draftfile
 
-  and give the entire draft message to your speller.  The header will
+  and give the entire draft message to your speller. The header will
   probably be "misspelled," of course, though you might be able to
   tell the speller to ignore it--or you could hack up a little shell
   script to run the speller on just the message body, then tack the
   corrected body back onto the header before sending.
 
-  You can automate this some more.  For example, if you want your
+  You can automate this some more. For example, if you want your
   speller to run after your first edit with "prompter" and also after
   you leave the "vi" editor, add these lines to your MH profile:
 
@@ -3380,10 +3332,10 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
 
       What now? e
 
-  your speller will run.  For more info, see the mh-profile(5) man
-  page or section 7.2.1 (6.2.1) of the MH book, or the URL:
+  your speller will run. For more info, see the mh-profile(5) man page
+  or section 7.2.1 (6.2.1) of the MH book, or the URL:
 
-    http://www.ics.uci.edu/~mh/book/mh/chaedi.htm#Edi
+    http://rand-mh.sourceforge.net/book/mh/chaedi.html#Edi
 
 ------------------------------
   
@@ -3397,7 +3349,7 @@ Date: Fri, 1 Jan 1993 00:00:00 -0800
     after local-part (Bar), continuing...
 
   The unquoted dot causes "Mr. Foo" to be parsed as the local part of
-  the address.  Either remove the dot, or rewrite the address as
+  the address. Either remove the dot, or rewrite the address as
   follows:
 
     "Mr. Foo Bar" <fb@somewhere.edu>
@@ -3411,7 +3363,7 @@ From: Peter Marvit <marvit at hplabs.hpl.hp.com>,
 	Eric Bracken <bracken at bacon.performance.com>
 Date: Tue, 1 Nov 1994 00:00:00 -0800
 
-  The error message itself is essentially correct.  However, what this
+  The error message itself is essentially correct. However, what this
   really means is: MH's post cannot connect to a running sendmail over
   an SMTP port (MH configured with SMTP and SENDMTS).
 
@@ -3441,12 +3393,13 @@ Date: Sun, 1 May 1994 00:00:00 -0800
 From: Larry Daffner <ldaffner at convex.com>
 Date: 3 Mar 1996 14:39:54 -0600
 
-  5. Your load average is so high that sendmail is refusing connections.
+  5. Your load average is so high that sendmail is refusing
+     connections.
 
      Solution: Change your configuration from "mta: sendmail/smtp" to
      "mta: sendmail" so that a sendmail processes is spawned to
-     deliver the message.  This is a double-edged sword since the
-     extra process only makes the load worse.
+     deliver the message. This is a double-edged sword since the extra
+     process only makes the load worse.
 
 From: Corbin Covault <cec8 at po.cwru.edu>
 Date: Sun, 02 Sep 2001 02:13:42 -0400
@@ -3497,12 +3450,13 @@ Date: Mon, 1 Aug 1994 00:00:00 -0800
 
   o Use a hostname (other than the local host) instead of localhost in
     the "servers" entry of the $MHLIB/mts.conf (mtstailor) file.
-  o Recompile MH with sendmail instead of sendmail/smtp (not very elegant).
+  o Recompile MH with sendmail instead of sendmail/smtp (not very
+    elegant).
 
   A better fix would be to define your tcp interface.
 
   Here, you run ifconfig and route (as root) to define the loopback
-  device and route.  You should add them to rc.local so they are
+  device and route. You should add them to rc.local so they are
   effected at every boot.
 
     # ifconfig lo 127.0.0.1			# Linux
@@ -3510,8 +3464,8 @@ Date: Mon, 1 Aug 1994 00:00:00 -0800
 
     # route 127.0.0.1
 
-  If all is well, "ifconfig lo" (or lo0), will show something like this
-  (on my Linux system):
+  If all is well, "ifconfig lo" (or lo0), will show something like
+  this (on my Linux system):
 
     lo        Link encap Local Loopback
 	      inet addr 127.0.0.1  Bcast 127.255.255.255  Mask 255.0.0.0
@@ -3530,25 +3484,25 @@ Date: Mon, 1 Aug 1994 00:00:00 -0800
 
     127.0.0.1	your_host_name localhost 	# loopback address
 
-  Note: put your name FIRST on the localhost line.  This official name
+  Note: put your name FIRST on the localhost line. This official name
   is used by sendmail to determine your return address.
 
   If you are on a network and running DNS, you might find that putting
   your host name in the localhost entry might gum up other things, in
   which case you'll want your hostname to have its own proper address.
 
-  This might not do it though.  David Youatt <dpy at sgi.com> says that
+  This might not do it though. David Youatt <dpy at sgi.com> says that
   his network was happy but he still had the problem until he upgraded
-  his system and got the latest revision of sendmail as well.  He
-  says: "Turns out that that the problem I was having seems to be
-  caused (at least partly, maybe entirely) by the version of sendmail
-  that is shipped with IRIX 5.2 (sendmail 5.65, I think).  The version
-  shipped w/IRIX 5.3 (in beta) is sendmail 8.6.9 and works fine."
+  his system and got the latest revision of sendmail as well. He says:
+  "Turns out that that the problem I was having seems to be caused (at
+  least partly, maybe entirely) by the version of sendmail that is
+  shipped with IRIX 5.2 (sendmail 5.65, I think). The version shipped
+  w/IRIX 5.3 (in beta) is sendmail 8.6.9 and works fine."
 
   I'm not entirely happy with this section, so please give me some
-  feedback.  If you have this problem, please send me
-  <wohler at newt.com> a brief description so I'll know which problems
-  and solutions seem to be the most prevalent.
+  feedback. If you have this problem, please send me <wohler at
+  newt.com> a brief description so I'll know which problems and
+  solutions seem to be the most prevalent.
 
 ------------------------------
   
@@ -3576,10 +3530,9 @@ Subject: 06.09 Fixing "post: problem initializing server; [BHST] premature end-o
 From: Ginko <gianluca at noroboter.rotoni.com>
 Date: Thu, 8 Mar 2001 09:18:14 +0000 (UTC)
 
-  I have sendmail under control of tcpwrapper started by inetd 
-  and didn't want to take it away, the very simple fix to this 
-  problem was to allow the localhost on /etc/hosts.allow on the
-  sendmail entry.
+  I have sendmail under control of tcpwrapper started by inetd and
+  didn't want to take it away, the very simple fix to this problem was
+  to allow the localhost on /etc/hosts.allow on the sendmail entry.
 
 From: Stefan Huebner <sh at muc.de>
 Date: Wed, 11 Sep 1996 20:06:49 +0200
@@ -3593,7 +3546,7 @@ From: Chuck Mattern <cmattern at mindspring.com>
 Date: Mon, 1 May 1995 00:00:00 -0800
 
   If you are running sendmail instead of smail, make sure that all
-  smtp entries in /etc/inetd.conf are commented out.  If you do edit
+  smtp entries in /etc/inetd.conf are commented out. If you do edit
   /etc/inetd.conf, don't forget to run to restart inetd with "kill -1
   <inetd PID>".
 
@@ -3643,8 +3596,9 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
     X-Authentication-Warning: screamer.rtp.ericsson.se: Host
     rcur7.rtp.ericsson.se didn't use HELO protocol
 
-  Easy possibilities are:  apply the patch to MH that comes with Sendmail
-  8.X.X and makes it use HELO, or comment out the line that says
+  Easy possibilities are: apply the patch to MH that comes with
+  Sendmail 8.X.X and makes it use HELO, or comment out the line that
+  says
 
     Opauthwarnings
 
@@ -3684,33 +3638,33 @@ From: Bill Wohler <wohler at newt.com>
 Date: Sun, 11 Mar 2001 10:27:24 -0800
 
   The list currently includes slocal (included with MH), deliver,
-  procmail and mailagent.  They are briefly described here.  Slocal is
+  procmail and mailagent. They are briefly described here. Slocal is
   probably the most popular by virtue of being included in the
-  distribution.  The next most popular entry is procmail, followed by
+  distribution. The next most popular entry is procmail, followed by
   deliver.
 
-  Slocal comes with MH.  It can be used to process incoming mail based
-  on the contents of any of the headers.  Actions include filing
+  Slocal comes with MH. It can be used to process incoming mail based
+  on the contents of any of the headers. Actions include filing
   messages, running commands, printing messages on your terminal and
-  so on.  The configuration is made in ~/.maildelivery.  People seem to
+  so on. The configuration is made in ~/.maildelivery. People seem to
   have trouble with slocal bugs, and you can't use it if you don't
   have write permission on your system maildrop so a lot of people
   have opted for the alternatives, but it's easy to use and comes with
   MH.
 
   procmail is quite popular and has a very powerful configuration
-  file.  However, the syntax is its own, but it is easy to learn given
-  a couple of good examples.  Its advantages are its small size and
-  speed.  Like deliver, procmail may be installed as a delivery agent
+  file. However, the syntax is its own, but it is easy to learn given
+  a couple of good examples. Its advantages are its small size and
+  speed. Like deliver, procmail may be installed as a delivery agent
   so you would not even have to have a .forward file.
 
   Deliver can run any script or program (called ~/.deliver), so you
-  really can do anything you want to incoming mail.  One feature that
+  really can do anything you want to incoming mail. One feature that
   it sports that no other does is that you can install it as a local
-  mailer in place of /bin/mail.  If it's the local mailer, you don't
-  need to have a .forward--~/.deliver is run anyway.  In addition, it
+  mailer in place of /bin/mail. If it's the local mailer, you don't
+  need to have a .forward--~/.deliver is run anyway. In addition, it
   allows the system administrator to write some programs to filter
-  everybody's mail.  It came with my Linux system, so installation was
+  everybody's mail. It came with my Linux system, so installation was
   non-existent.
 
   I started with slocal, and then moved to deliver. I switched to
@@ -3720,7 +3674,7 @@ Date: Sun, 11 Mar 2001 10:27:24 -0800
 
   I am still using procmail and probably will do so indefinitely since
   it is powerful, there are many spam filters written in it, and it
-  coexists with MH and gnus so well.
+  coexists with MH and Gnus so well.
 
   My recommendation is to use the one that is installed on your system
   or get procmail. Here are the URLs for the filters mentioned in this
@@ -3751,11 +3705,10 @@ Date: Tue, 28 Jul 1998 13:22:07 +0200
   let you do anything with your mail. It has all the features you may
   expect from a filter: mailing lists sorting, forwarding to MTA or to
   inews, pre-processing of message before saving into folder, vacation
-  mode, etc.  It was initially written as an Elm-filter replacement,
-  but has now enough power to also supplant MMDF's
-  .maildelivery. There is also a support for @SH mail hooks, which
-  allows you to automatically distribute patches or software via
-  command mails.
+  mode, etc. It was initially written as an Elm-filter replacement,
+  but has now enough power to also supplant MMDF's .maildelivery.
+  There is also a support for @SH mail hooks, which allows you to
+  automatically distribute patches or software via command mails.
 
   The mailagent was designed to make mail filtering as easy as it can
   be. It is highly configurable and fairly complete. Rules are
@@ -3778,7 +3731,7 @@ Subject: 07.02 Why slocal writes messages to system mailbox that from(1) can't r
 From: Bill Wohler <wohler at newt.com>
 Date: Mon, 1 May 1995 00:00:00 -0800
 
-  Upgrade to MH 6.8 and set the RPATHS option.  Better yet, use a more
+  Upgrade to MH 6.8 and set the RPATHS option. Better yet, use a more
   MH-like command instead of from: "scan -file $MAIL".
 
 ------------------------------
@@ -3804,12 +3757,12 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
 
     "| $MHLIB/slocal -user your_login"
 
-  In some implementations, the "-user your_login" is not needed.  If
+  In some implementations, the "-user your_login" is not needed. If
   not, manually running slocal with the flag will produce an error.
 
   See also chapter 12 (11) in the MH book, or the URL:
 
-    http://www.ics.uci.edu/~mh/book/mh/tocs/prmaau.htm
+    http://rand-mh.sourceforge.net/book/mh/tocs/prmaau.html
 
   Alternatives to slocal include deliver, procmail, and mailagent.
   (See "What mail filters are available?")
@@ -3840,7 +3793,7 @@ Date: Mon, 1 Mar 1993 00:00:00 -0800
 
   See also MH book section 12.11 (11.11), or the URL:
 
-    http://www.ics.uci.edu/~mh/book/mh/debugti.htm
+    http://rand-mh.sourceforge.net/book/mh/debugti.html
 
 ------------------------------
   
@@ -3852,12 +3805,12 @@ Date: Mon, 1 Mar 1993 00:00:00 -0800
 
     $MHLIB/slocal -user your_login -verbose < file
 
-  where "file" is some message in a mail folder.  If you get something
+  where "file" is some message in a mail folder. If you get something
   like:
 
     .maildelivery: ownership/modes bad (0, 154,154,0100666)
 
-  your .maildelivery is writable by too many people.  Make it writable
+  your .maildelivery is writable by too many people. Make it writable
   only by you by running "chmod 644 .maildelivery".
 
   See also "How do I debug my .maildelivery file?"
@@ -3878,8 +3831,8 @@ From: Richard Coleman <coleman at math.gatech.edu>
 Date: 07 Jul 1997 03:31:42 -0400
 
   nmh (new MH) has an additional command (flist) that will tell you
-  which folders have unseen messages.  I can't imagine using MH
-  without it.
+  which folders have unseen messages. I can't imagine using MH without
+  it.
 
 From: crow at tivoli.com (David L. Crow)
 Date: 7 Jul 97 09:36:32 GMT
@@ -3983,15 +3936,15 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
 From: Andrew Wason <aw at bae.bellcore.com>
 Date: Fri, 1 Mar 1991 13:03:15 -0800
 
-  As of R5, xmh has a new action proc called XmhShellCommand.  A
-  string parameter will be executed as a shell command with the
-  currently selected messages as parameters (or the current message if
-  there are no selected messages).
+  As of R5, xmh has a new action proc called XmhShellCommand. A string
+  parameter will be executed as a shell command with the currently
+  selected messages as parameters (or the current message if there are
+  no selected messages).
 
   Using this new action, a couple of shell scripts, a window version
   of emacs (e.g. xemacs) and some elisp code, xmh can use emacs as its
-  editor instead of the built in Athena text widget editor.  This
-  doesn't require any source code changes to xmh.  These are included
+  editor instead of the built in Athena text widget editor. This
+  doesn't require any source code changes to xmh. These are included
   in the Appendix "Switching xmh's editor".
 
 ------------------------------
@@ -4010,14 +3963,14 @@ Date: Fri, 1 Mar 1991 13:03:15 -0800
 From: John Cooper <jsc at saxon.Eng.Sun.COM>
 Date: Fri, 1 Mar 1991 13:03:15 -0800
 
-  The R5 version of xmh does *not* handle nested sub-folders.  If you
-  create a folder as 'grab/some/bandwidth', xmh displays this
-  folder name for the remainder of the session where it was created,
-  BUT if you later re-run xmh, the folder is no longer visible to xmh.
+  The R5 version of xmh does *not* handle nested sub-folders. If you
+  create a folder as 'grab/some/bandwidth', xmh displays this folder
+  name for the remainder of the session where it was created, BUT if
+  you later re-run xmh, the folder is no longer visible to xmh.
 
   See also MH book section 15.6.2 (15.6.2), or the URL:
 
-    http://www.ics.uci.edu/~mh/book/xmh/orgfol.htm#FolaSub
+    http://rand-mh.sourceforge.net/book/xmh/orgfol.html#FolaSub
 
 ------------------------------
   
@@ -4037,14 +3990,14 @@ From: Andy Linton <andy.linton at comp.vuw.ac.nz>
 Date: Fri, 1 Mar 1991 13:03:15 -0800
 
   Using this means that you can chose to insert the original by use of
-  the "Insert" button in the Draft message pane.  See "How do I
-  include messages in repl with or without ">"?" to find examples of
+  the "Insert" button in the Draft message pane. See "How do I include
+  messages in repl with or without ">"?" to find examples of
   repl.filter.
 
   See also MH book sections 15.1.4 (15.1.4), 16.3.3 (16.3.3), or the URLs:
 
-    http://www.ics.uci.edu/~mh/book/xmh/senmai.htm#MorRep
-    http://www.ics.uci.edu/~mh/book/xmh/resfun.htm#Rep
+    http://rand-mh.sourceforge.net/book/xmh/senmai.html#MorRep
+    http://rand-mh.sourceforge.net/book/xmh/resfun.html#Rep
 
 ------------------------------
 
