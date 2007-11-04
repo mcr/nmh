@@ -111,6 +111,7 @@ void free_content (CT);
  * static prototypes
  */
 static RETSIGTYPE pipeser (int);
+static int freectp_done (int);
 
 
 int
@@ -124,6 +125,8 @@ main (int argc, char **argv)
     struct msgs *mp = NULL;
     CT ct, *ctp;
     FILE *fp;
+
+    done=freectp_done;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -403,8 +406,8 @@ pipeser (int i)
 }
 
 
-int
-done (int status)
+static int
+freectp_done (int status)
 {
     CT *ctp;
 

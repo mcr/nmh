@@ -34,7 +34,7 @@ static char tmpfil[BUFSIZ] = "";
  * prototypes
  */
 static void rcvdistout (FILE *, char *, char *);
-int done (int);
+static int unlink_done (int);
 
 
 int
@@ -45,6 +45,8 @@ main (int argc, char **argv)
     char *addrs = NULL, *cp, *form = NULL, buf[BUFSIZ];
     char **argp, **arguments, *vec[MAXARGS];
     register FILE *fp;
+
+    done=unlink_done;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -268,8 +270,8 @@ finished: ;
 }
 
 
-int
-done (int status)
+static int
+unlink_done (int status)
 {
     if (backup[0])
 	unlink (backup);

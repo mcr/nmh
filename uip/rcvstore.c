@@ -48,6 +48,7 @@ static struct swit switches[] = {
  */
 static char *tmpfilenam = NULL;
 
+static int unlink_done(int);
 
 int
 main (int argc, char **argv)
@@ -59,6 +60,8 @@ main (int argc, char **argv)
     char **argp, **arguments, *seqs[NUMATTRS+1];
     struct msgs *mp;
     struct stat st;
+
+    done=unlink_done;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -228,8 +231,8 @@ main (int argc, char **argv)
 /*
  * Clean up and exit
  */
-int
-done(int status)
+static int
+unlink_done(int status)
 {
     if (tmpfilenam && *tmpfilenam)
 	unlink (tmpfilenam);

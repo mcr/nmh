@@ -223,8 +223,8 @@ static FILE *in;
  */
 char *map_name(char *);
 
+static int inc_done(int);
 #ifdef POP
-int done(int);
 static int pop_action(char *);
 static int pop_pack(char *);
 static int map_count(void);
@@ -262,6 +262,8 @@ main (int argc, char **argv)
 #ifdef HESIOD
     struct hes_postoffice *po;
 #endif
+
+    done=inc_done;
 
 /* absolutely the first thing we do is save our privileges,
  * and drop them if we can.
@@ -987,8 +989,8 @@ cpymsg (FILE *in, FILE *out)
 #endif /* if 0 */
 
 
-int
-done (int status)
+static int
+inc_done (int status)
 {
 #ifdef POP
     if (packfile && pd != NOTOK)

@@ -33,6 +33,8 @@ static int md = NOTOK;
 static int mbx_style = MBOX_FORMAT;
 static int mapping = 0;
 
+static int mbxclose_done(int);
+
 char *file = NULL;
 
 
@@ -45,6 +47,8 @@ main (int argc, char **argv)
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
     struct stat st;
+
+    done=mbxclose_done;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -178,8 +182,8 @@ main (int argc, char **argv)
     return done (0);
 }
 
-int
-done (int status)
+static int
+mbxclose_done (int status)
 {
     mbx_close (file, md);
     exit (status);

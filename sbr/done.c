@@ -11,8 +11,10 @@
 
 #include <h/mh.h>
 
+int (*done) (int) = default_done;
+
 int
-done (int status)
+default_done (int status)
 {
     exit (status);
     return 1;  /* dead code to satisfy the compiler */

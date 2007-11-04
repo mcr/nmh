@@ -41,7 +41,6 @@ char *altmsg   = NULL;		/*  .. */
 char *annotext = NULL;
 char *distfile = NULL;
 
-static int armed = 0;
 static jmp_buf env;
 
 static	char	body_file_name[MAXPATHLEN + 1];		/* name of temporary file for body content */
@@ -56,12 +55,12 @@ static	FILE	*composition_file;			/* composition file pointer */
  * external prototypes
  */
 int sendsbr (char **, int, char *, struct stat *, int, char *, int);
-int done (int);
 char *getusername (void);
 
 /*
  * static prototypes
  */
+static int armed_done (int);
 static void alert (char *, int);
 static int tmp_fd (void);
 static void anno (int, struct stat *);
@@ -118,7 +117,7 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, cha
 	}
     }
 
-    armed++;
+    done=armed_done;
     switch (setjmp (env)) {
     case OK: 
 	/*
@@ -154,7 +153,7 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, cha
 	break;
     }
 
-    armed = 0;
+    done=default_done;
     if (distfile)
 	unlink (distfile);
 
@@ -1075,11 +1074,10 @@ oops:
 }
 
 
-int
-done (int status)
+static int
+armed_done (int status)
 {
-    if (armed)
-	longjmp (env, status ? status : NOTOK);
+    longjmp (env, status ? status : NOTOK);
 
     exit (status);
     return 1;  /* dead code to satisfy the compiler */

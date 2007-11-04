@@ -68,6 +68,7 @@ static struct swit switches[] = {
 
 static int listsw = -1;
 
+static int putzero_done (int);
 
 int
 main (int argc, char **argv)
@@ -80,6 +81,8 @@ main (int argc, char **argv)
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
     register FILE *fp;
+
+    done=putzero_done;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -287,8 +290,8 @@ main (int argc, char **argv)
 }
 
 
-int
-done (int status)
+static int
+putzero_done (int status)
 {
     if (listsw && status && !isatty (fileno (stdout)))
 	printf ("0\n");

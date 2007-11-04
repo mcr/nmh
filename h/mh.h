@@ -336,5 +336,7 @@ extern char *vmhproc;
 extern char *whatnowproc;
 extern char *whomproc;
 
+extern int (*done) (int);
+
 #include <h/prototypes.h>
 

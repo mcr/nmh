@@ -100,6 +100,7 @@ static int unlink_infile  = 0;
 static char outfile[BUFSIZ];
 static int unlink_outfile = 0;
 
+static int unlink_done (int);
 
 /* mhbuildsbr.c */
 CT build_mime (char *);
@@ -125,6 +126,8 @@ main (int argc, char **argv)
     char **argp, **arguments;
     CT ct, cts[2];
     FILE *fp;
+
+    done=unlink_done;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -382,8 +385,8 @@ main (int argc, char **argv)
 }
 
 
-int
-done (int status)
+static int
+unlink_done (int status)
 {
     /*
      * Check if we need to remove stray
