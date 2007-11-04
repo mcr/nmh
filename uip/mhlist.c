@@ -93,9 +93,6 @@ pid_t xpid  = 0;
 int debugsw = 0;
 int verbosw = 0;
 
-/* The list of top-level contents to display */
-CT *cts = NULL;
-
 #define	quitser	pipeser
 
 /* mhparse.c */
@@ -112,12 +109,13 @@ void list_all_messages (CT *, int, int, int, int);
 
 /* mhfree.c */
 void free_content (CT);
+extern CT *cts;
+int freects_done (int);
 
 /*
  * static prototypes
  */
 static RETSIGTYPE pipeser (int);
-static int freectp_done (int);
 
 
 int
@@ -132,7 +130,7 @@ main (int argc, char **argv)
     struct msgs *mp = NULL;
     CT ct, *ctp;
 
-    done=freectp_done;
+    done=freects_done;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -391,18 +389,4 @@ pipeser (int i)
 
     done (1);
     /* NOTREACHED */
-}
-
-
-static int
-freectp_done (int status)
-{
-    CT *ctp;
-
-    if ((ctp = cts))
-	for (; *ctp; ctp++)
-	    free_content (*ctp);
-
-    exit (status);
-    return 1;  /* dead code to satisfy the compiler */
 }

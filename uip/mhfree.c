@@ -15,6 +15,9 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 
+/* The list of top-level contents to display */
+CT *cts = NULL;
+
 /*
  * prototypes
  */
@@ -22,6 +25,7 @@ void free_content (CT);
 void free_header (CT);
 void free_ctinfo (CT);
 void free_encoding (CT, int);
+int freects_done (int);
 
 /*
  * static prototypes
@@ -280,4 +284,18 @@ free_encoding (CT ct, int toplevel)
     } else {
 	ct->c_ceopenfnx = NULL;
     }
+}
+
+
+int
+freects_done (int status)
+{
+    CT *ctp;
+
+    if ((ctp = cts))
+	for (; *ctp; ctp++)
+	    free_content (*ctp);
+
+    exit (status);
+    return 1;  /* dead code to satisfy the compiler */
 }
