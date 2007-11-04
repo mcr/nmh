@@ -412,7 +412,8 @@ main (int argc, char **argv)
     /* deliver the message */
     status = localmail (fd, mdlvr);
 
-    return done (status != -1 ? RCV_MOK : RCV_MBX);
+    done (status != -1 ? RCV_MOK : RCV_MBX);
+    return 1;
 }
 
 

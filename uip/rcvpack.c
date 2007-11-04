@@ -103,5 +103,6 @@ main (int argc, char **argv)
     if (mbx_close (file, md) == NOTOK)
 	done (RCV_MBX);
 
-    return done (RCV_MOK);
+    done (RCV_MOK);
+    return 1;
 }

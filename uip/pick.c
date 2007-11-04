@@ -68,7 +68,7 @@ static struct swit switches[] = {
 
 static int listsw = -1;
 
-static int putzero_done (int);
+static void putzero_done (int);
 
 int
 main (int argc, char **argv)
@@ -286,15 +286,15 @@ main (int argc, char **argv)
     seq_save (mp);			/* synchronize message sequences */
     context_save ();			/* save the context file         */
     folder_free (mp);			/* free folder/message structure */
-    return done (0);
+    done (0);
+    return 1;
 }
 
 
-static int
+static void
 putzero_done (int status)
 {
     if (listsw && status && !isatty (fileno (stdout)))
 	printf ("0\n");
     exit (status);
-    return 1;  /* dead code to satisfy the compiler */
 }

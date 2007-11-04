@@ -181,7 +181,8 @@ main(int argc, char **argv)
 	}
     }
     
-    return done (missed);
+    done (missed);
+    return 1;
 }
 
 

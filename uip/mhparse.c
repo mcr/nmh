@@ -209,7 +209,8 @@ pidcheck (int status)
 
     fflush (stdout);
     fflush (stderr);
-    return done (1);
+    done (1);
+    return 1;
 }
 
 

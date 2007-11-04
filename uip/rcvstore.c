@@ -48,7 +48,7 @@ static struct swit switches[] = {
  */
 static char *tmpfilenam = NULL;
 
-static int unlink_done(int);
+static void unlink_done(int);
 
 int
 main (int argc, char **argv)
@@ -225,17 +225,17 @@ main (int argc, char **argv)
     unlink (tmpfilenam);	/* remove temporary file                  */
     tmpfilenam = NULL;
 
-    return done (0);
+    done (0);
+    return 1;
 }
 
 /*
  * Clean up and exit
  */
-static int
+static void
 unlink_done(int status)
 {
     if (tmpfilenam && *tmpfilenam)
 	unlink (tmpfilenam);
     exit (status);
-    return 1;  /* dead code to satisfy the compiler */
 }

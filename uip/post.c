@@ -639,7 +639,8 @@ main (int argc, char **argv)
     if (verbose)
 	printf (partno ? "Partial Message #%s Processed\n" : "Message Processed\n",
 		partno);
-    return done (0);
+    done (0);
+    return 1;
 }
 
 

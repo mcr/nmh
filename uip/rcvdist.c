@@ -34,7 +34,7 @@ static char tmpfil[BUFSIZ] = "";
  * prototypes
  */
 static void rcvdistout (FILE *, char *, char *);
-static int unlink_done (int);
+static void unlink_done (int);
 
 
 int
@@ -270,7 +270,7 @@ finished: ;
 }
 
 
-static int
+static void
 unlink_done (int status)
 {
     if (backup[0])
@@ -281,5 +281,4 @@ unlink_done (int status)
 	unlink (tmpfil);
 
     exit (status ? RCV_MBX : RCV_MOK);
-    return 1;  /* dead code to satisfy the compiler */
 }

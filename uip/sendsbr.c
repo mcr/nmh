@@ -60,7 +60,7 @@ char *getusername (void);
 /*
  * static prototypes
  */
-static int armed_done (int);
+static void armed_done (int);
 static void alert (char *, int);
 static int tmp_fd (void);
 static void anno (int, struct stat *);
@@ -153,7 +153,7 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, cha
 	break;
     }
 
-    done=default_done;
+    done=exit;
     if (distfile)
 	unlink (distfile);
 
@@ -1074,11 +1074,10 @@ oops:
 }
 
 
-static int
+static void
 armed_done (int status)
 {
     longjmp (env, status ? status : NOTOK);
 
     exit (status);
-    return 1;  /* dead code to satisfy the compiler */
 }

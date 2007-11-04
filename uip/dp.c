@@ -136,7 +136,8 @@ main (int argc, char **argv)
 	status += process (dates[datep], width);
 
     context_save ();	/* save the context file */
-    return done (status);
+    done (status);
+    return 1;
 }
 
 

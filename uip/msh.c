@@ -413,7 +413,8 @@ main (int argc, char **argv)
 
     m_reset ();
     
-    return done (0);
+    done (0);
+    return 1;
 }
 
 

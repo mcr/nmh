@@ -122,7 +122,8 @@ main (int argc, char **argv)
 	}
     }
     context_save ();	/* save the context file */
-    return done (0);
+    done (0);
+    return 1;
 }
 
 static int

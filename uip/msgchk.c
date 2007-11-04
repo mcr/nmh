@@ -327,7 +327,8 @@ main (int argc, char **argv)
     }		/* host == NULL */
 #endif
 
-    return done (status);
+    done (status);
+    return 1;
 }
 
 

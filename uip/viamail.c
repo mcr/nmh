@@ -248,5 +248,6 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     fclose (fp);
     if (unlink (tmpfil) == -1)
 	advise (NULL, "unable to remove temp file %s", tmpfil);
-    return done (status);
+    done (status);
+    return 1;
 }

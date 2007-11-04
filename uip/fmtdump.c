@@ -106,7 +106,8 @@ main (int argc, char **argv)
     ncomps = fmt_compile(nfs, &fmt);
 
     fmt_dump(fmt);
-    return done(0);
+    done(0);
+    return 1;
 }
 
 static void

@@ -33,7 +33,7 @@ static int md = NOTOK;
 static int mbx_style = MBOX_FORMAT;
 static int mapping = 0;
 
-static int mbxclose_done(int);
+static void mbxclose_done(int);
 
 char *file = NULL;
 
@@ -179,13 +179,13 @@ main (int argc, char **argv)
     seq_save (mp);
     context_save ();			/* save the context file         */
     folder_free (mp);			/* free folder/message structure */
-    return done (0);
+    done (0);
+    return 1;
 }
 
-static int
+static void
 mbxclose_done (int status)
 {
     mbx_close (file, md);
     exit (status);
-    return 1;  /* dead code to satisfy the compiler */
 }

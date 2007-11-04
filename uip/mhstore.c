@@ -104,7 +104,7 @@ void store_all_messages (CT *);
 /* mhfree.c */
 void free_content (CT);
 extern CT *cts;
-int freects_done (int);
+void freects_done (int);
 
 /*
  * static prototypes
@@ -385,7 +385,8 @@ do_cache:
 	context_save ();		  /* save the context file  */
     }
 
-    return done (0);
+    done (0);
+    return 1;
 }
 
 

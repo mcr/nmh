@@ -213,7 +213,8 @@ query:
 	    fprintf (out, "%s: %s\n", np->n_name, np->n_field);
     }
     fclose (out);
-    return done (0);
+    done (0);
+    return 1;
 }
 
 

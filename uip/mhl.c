@@ -21,7 +21,8 @@ main (int argc, char **argv)
 #ifdef LOCALE
     setlocale(LC_ALL, "");
 #endif
-    return done (mhl (argc, argv));
+    done (mhl (argc, argv));
+    return 1;
 }
 
 

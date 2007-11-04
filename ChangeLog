@@ -1,3 +1,10 @@
+2007-11-04  Joel Reicher <joel@panacea.null.org>
+
+	* Changed done() link overriding to function pointer. Return type
+	is now void so that exit() can be used as done() callback. Dead
+	code return from all done()s removed, with return 1 in main()
+	following done() (should never be reached).
+
 2007-08-21  Josh Bressers <josh@bress.net>
 
 	* Red Hat Bug #253342: inc.c, utils.c, utils.h: When inc is run with

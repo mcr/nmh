@@ -25,7 +25,7 @@ void free_content (CT);
 void free_header (CT);
 void free_ctinfo (CT);
 void free_encoding (CT, int);
-int freects_done (int);
+void freects_done (int);
 
 /*
  * static prototypes
@@ -287,7 +287,7 @@ free_encoding (CT ct, int toplevel)
 }
 
 
-int
+void
 freects_done (int status)
 {
     CT *ctp;
@@ -297,5 +297,4 @@ freects_done (int status)
 	    free_content (*ctp);
 
     exit (status);
-    return 1;  /* dead code to satisfy the compiler */
 }

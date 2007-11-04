@@ -236,7 +236,8 @@ main (int argc, char **argv)
 	else
 	    annotate (draft, comp, text, inplace, datesw, delete, append);
 
-	return (done(0));
+	done(0);
+	return 1;
     }
 
 #ifdef UCI
@@ -285,7 +286,8 @@ main (int argc, char **argv)
     seq_save (mp);	/* synchronize message sequences */
     folder_free (mp);	/* free folder/message structure */
     context_save ();	/* save the context file         */
-    return done (0);
+    done (0);
+    return 1;
 }
 
 static void

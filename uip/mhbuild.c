@@ -100,7 +100,7 @@ static int unlink_infile  = 0;
 static char outfile[BUFSIZ];
 static int unlink_outfile = 0;
 
-static int unlink_done (int);
+static void unlink_done (int);
 
 /* mhbuildsbr.c */
 CT build_mime (char *);
@@ -381,11 +381,12 @@ main (int argc, char **argv)
     unlink_outfile = 0;
 
     free_content (ct);
-    return done (0);
+    done (0);
+    return 1;
 }
 
 
-static int
+static void
 unlink_done (int status)
 {
     /*
@@ -398,5 +399,4 @@ unlink_done (int status)
 	unlink (outfile);
 
     exit (status);
-    return 1;  /* dead code to satisfy the compiler */
 }

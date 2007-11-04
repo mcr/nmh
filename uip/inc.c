@@ -223,7 +223,7 @@ static FILE *in;
  */
 char *map_name(char *);
 
-static int inc_done(int);
+static void inc_done(int);
 #ifdef POP
 static int pop_action(char *);
 static int pop_pack(char *);
@@ -952,7 +952,8 @@ go_to_it:
     seq_setunseen (mp, 0);	/* set the Unseen-Sequence */
     seq_save (mp);		/* synchronize sequences   */
     context_save ();		/* save the context file   */
-    return done (0);
+    done (0);
+    return 1;
 }
 
 
@@ -989,7 +990,7 @@ cpymsg (FILE *in, FILE *out)
 #endif /* if 0 */
 
 
-static int
+static void
 inc_done (int status)
 {
 #ifdef POP
@@ -1003,7 +1004,6 @@ inc_done (int status)
         DROPGROUPPRIVS();
     }
     exit (status);
-    return 1;  /* dead code to satisfy the compiler */
 }
 
 #ifdef POP

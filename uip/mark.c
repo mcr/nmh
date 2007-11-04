@@ -228,7 +228,8 @@ main (int argc, char **argv)
     context_replace (pfolder, folder);	/* update current folder         */
     context_save ();			/* save the context file         */
     folder_free (mp);			/* free folder/message structure */
-    return done (0);
+    done (0);
+    return 1;
 }
 
 
