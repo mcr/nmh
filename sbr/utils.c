@@ -148,7 +148,7 @@ int folder_exists(char *folder)
  *      Check to see if a folder exists, if not, prompt the user to create
  *      it.
  */
-void create_folder(char *folder, int autocreate, void (*done_callback)())
+void create_folder(char *folder, int autocreate, void (*done_callback)(int))
 {
     struct stat st;
     extern int errno;

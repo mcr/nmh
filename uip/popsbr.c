@@ -104,7 +104,7 @@ static int pop_auth_sasl(char *, char *, char *);
 static int sasl_fgetc(FILE *);
 #endif /* CYRUS_SASL */
 
-static int traverse (int (*)(), const char *, ...);
+static int traverse (int (*)(char *), const char *, ...);
 static int vcommand(const char *, va_list);
 static int sasl_getline (char *, int, FILE *);
 static int putline (char *, FILE *);
@@ -823,7 +823,7 @@ pop_list (int msgno, int *nmsgs, int *msgs, int *bytes)
 
 
 int
-pop_retr (int msgno, int (*action)())
+pop_retr (int msgno, int (*action)(char *))
 {
 #ifndef NNTP
     return traverse (action, "RETR %d", (targ_t) msgno);
@@ -834,7 +834,7 @@ pop_retr (int msgno, int (*action)())
 
 
 static int
-traverse (int (*action)(), const char *fmt, ...)
+traverse (int (*action)(char *), const char *fmt, ...)
 {
     int result;
     va_list ap;
@@ -895,7 +895,7 @@ pop_rset (void)
 
 
 int
-pop_top (int msgno, int lines, int (*action)())
+pop_top (int msgno, int lines, int (*action)(char *))
 {
 #ifndef NNTP
     return traverse (action, "TOP %d %d", (targ_t) msgno, (targ_t) lines);

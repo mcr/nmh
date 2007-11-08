@@ -71,7 +71,7 @@ int m_atoi (char *);
 char *m_backup (char *);
 int m_convert (struct msgs *, char *);
 char *m_draft (char *, char *, int, int *);
-void m_eomsbr (int (*)());
+void m_eomsbr (int (*)(int));
 int m_getfld (int, unsigned char *, unsigned char *, int, FILE *);
 int m_gmprot (void);
 char *m_maildir (char *);

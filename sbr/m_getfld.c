@@ -183,7 +183,7 @@ static int fdelimlen;
 static unsigned char *edelim;
 static int edelimlen;
 
-static int (*eom_action)() = NULL;
+static int (*eom_action)(int) = NULL;
 
 #ifdef _FSTDIO
 # define _ptr    _p		/* Gag   */
@@ -596,7 +596,7 @@ m_unknown(FILE *iob)
 
 
 void
-m_eomsbr (int (*action)())
+m_eomsbr (int (*action)(int))
 {
     if ((eom_action = action)) {
 	msg_style = MS_MSH;
