@@ -119,7 +119,7 @@ show_all_messages (CT *cts)
 	ct = *ctp;
 
 	/* if top-level type is ok, then display message */
-	if (type_ok (ct, 0))
+	if (type_ok (ct, 1))
 	    show_single_message (ct, formsw);
     }
 }

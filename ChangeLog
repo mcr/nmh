@@ -1,3 +1,8 @@
+2008-01-25  Josh Bressers <josh@bress.net>
+
+	* uip/mhshowsbr.c (show_all_messages): Be more generous when parsing
+	multipart messages.
+
 2007-11-04  Joel Reicher <joel@panacea.null.org>
 
 	* Changed done() link overriding to function pointer. Return type
