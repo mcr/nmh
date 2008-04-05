@@ -90,7 +90,7 @@ expath (char *name, int flag)
 	name += NCWD;
 
     if (strcmp (name, DOTDOT) == 0 || strcmp (name, PWD) == 0) {
-	snprintf (buffer, sizeof(buffer), "%.*s", cp - pwds, pwds);
+	snprintf (buffer, sizeof(buffer), "%.*s", (int)(cp - pwds), pwds);
 	return getcpy (buffer);
     }
 
@@ -99,7 +99,7 @@ expath (char *name, int flag)
     else
 	cp = ep;
 
-    snprintf (buffer, sizeof(buffer), "%.*s/%s", cp - pwds, pwds, name);
+    snprintf (buffer, sizeof(buffer), "%.*s/%s", (int)(cp - pwds), pwds, name);
     return getcpy (buffer);
 }
 

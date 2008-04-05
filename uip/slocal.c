@@ -1361,11 +1361,11 @@ you_lose:
 		    /* return path for UUCP style addressing */
 		    ep = strchr(++hp, '\n');
 		    snprintf (buffer, sizeof(buffer), "Return-Path: %.*s!%.*s\n",
-			ep - hp, hp, cp - fp, fp);
+			(int)(ep - hp), hp, (int)(cp - fp), fp);
 		} else {
 		    /* return path for standard domain addressing */
 		    snprintf (buffer, sizeof(buffer), "Return-Path: %.*s\n",
-			cp - fp, fp);
+			(int)(cp - fp), fp);
 		}
 
 		/* Add Return-Path header to message */

@@ -1,3 +1,8 @@
+2008-04-05  Peter Maydell <pmaydell@chiark.greenend.org.uk>
+
+	* bug #20028 (Debian bug 399271): fix code assuming that pointer
+	differences were 32 bits -- thanks to Dean Gaudet for the patch.
+
 2008-01-25  Josh Bressers <josh@bress.net>
 
 	* uip/mhshowsbr.c (show_all_messages): Be more generous when parsing

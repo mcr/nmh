@@ -288,7 +288,7 @@ get_x400_comp (char *mbox, char *key, char *buffer, int buffer_len)
 	    || !(cp = strchr(mbox += idx + strlen (key), '/')))
 	return 0;
 
-    snprintf (buffer, buffer_len, "%*.*s", cp - mbox, cp - mbox, mbox);
+    snprintf (buffer, buffer_len, "%*.*s", (int)(cp - mbox), (int)(cp - mbox), mbox);
     return 1;
 }
 

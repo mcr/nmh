@@ -494,7 +494,7 @@ lockname (char *file, struct lockinfo *li, int isnewlock)
     bplen += tmplen;
 #else
     if (cp != file) {
-	snprintf (bp, sizeof(li->curlock), "%.*s", cp - file, file);
+	snprintf (bp, sizeof(li->curlock), "%.*s", (int)(cp - file), file);
 	tmplen = strlen (bp);
 	bp    += tmplen;
 	bplen += tmplen;
@@ -526,7 +526,7 @@ lockname (char *file, struct lockinfo *li, int isnewlock)
 	    strncpy (li->tmplock, ",LCK.XXXXXX", sizeof(li->tmplock));
 	else
 	    snprintf (li->tmplock, sizeof(li->tmplock), "%.*s,LCK.XXXXXX",
-		     cp - li->curlock, li->curlock);
+		     (int)(cp - li->curlock), li->curlock);
     }
 #endif
 }

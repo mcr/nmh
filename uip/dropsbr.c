@@ -376,7 +376,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 			    fp = strchr(ep + 1, '\n');
 			tp = dctime(dlocaltimenow());
 			snprintf (buffer, sizeof(buffer), "From %.*s  %s",
-				fp - ep, ep, tp);
+				(int)(fp - ep), ep, tp);
 		    } else if (!strncmp (buffer, "X-Envelope-From:", 16)) {
 			/*
 			 * Change the "X-Envelope-From:" field
@@ -488,10 +488,10 @@ map_name (char *file)
     if ((dp = strchr(cp = r1bindex (file, '/'), '.')) == NULL)
 	dp = cp + strlen (cp);
     if (cp == file)
-	snprintf (buffer, sizeof(buffer), ".%.*s%s", dp - cp, cp, ".map");
+	snprintf (buffer, sizeof(buffer), ".%.*s%s", (int)(dp - cp), cp, ".map");
     else
 	snprintf (buffer, sizeof(buffer), "%.*s.%.*s%s",
-		cp - file, file, dp - cp, cp, ".map");
+		(int)(cp - file), file, (int)(dp - cp), cp, ".map");
 
     return buffer;
 }

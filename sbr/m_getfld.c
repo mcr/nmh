@@ -700,10 +700,10 @@ get_returnpath (char *rp, int rplen, char *dd, int ddlen)
     if (cp) {
 	/* return path for UUCP style addressing */
 	dp = strchr (++cp, '\n');
-	snprintf (rp, rplen, "%.*s!%.*s\n", dp - cp, cp, bp - ap, ap);
+	snprintf (rp, rplen, "%.*s!%.*s\n", (int)(dp - cp), cp, (int)(bp - ap), ap);
     } else {
 	/* return path for standard domain addressing */
-	snprintf (rp, rplen, "%.*s\n", bp - ap, ap);
+	snprintf (rp, rplen, "%.*s\n", (int)(bp - ap), ap);
     }
 
     /*

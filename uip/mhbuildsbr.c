@@ -4309,7 +4309,7 @@ invalid_digest:
 	    while (*cp)
 		cp++;
 	    fprintf (stderr, "invalid MD5 digest (got %d octets)\n",
-		     cp - bp);
+		     (int)(cp - bp));
 	}
 
 	return NOTOK;

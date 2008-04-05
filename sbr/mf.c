@@ -421,7 +421,7 @@ getadrx (char *addrs)
     while (isspace (*ap))
 	ap++;
     if (cp)
-	sprintf (adr, "%.*s", cp - ap, ap);
+	sprintf (adr, "%.*s", (int)(cp - ap), ap);
     else
 	strcpy (adr, ap);
     bp = adr + strlen (adr) - 1;

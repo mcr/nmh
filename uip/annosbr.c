@@ -381,7 +381,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 		while (*cp && *cp++ != '\n')
 		    continue;
 		if (cp - sp)
-		    fprintf (tmp, "%s: %*.*s", comp, cp - sp, cp - sp, sp);
+		    fprintf (tmp, "%s: %*.*s", comp, (int)(cp - sp), (int)(cp - sp), sp);
 	    } while (*cp);
 	    if (cp[-1] != '\n' && cp != text)
 		putc ('\n', tmp);

@@ -33,7 +33,7 @@ m_scratch (char *file, char *template)
     if ((cp = r1bindex (file, '/')) == file)
 	strncpy (buffer, tmpfil, sizeof(buffer));
     else
-	snprintf (buffer, sizeof(buffer), "%.*s%s", cp - file, file, tmpfil);
+	snprintf (buffer, sizeof(buffer), "%.*s%s", (int)(cp - file), file, tmpfil);
     unlink (buffer);
 
     return buffer;
