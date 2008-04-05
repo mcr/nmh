@@ -173,7 +173,7 @@ main (int argc, char **argv)
 
     if (child_id == NOTOK) {
 	/* report failure and then send it */
-	admonish (NULL, "unable to fork");
+	adios (NULL, "unable to fork");
     } else if (child_id) {
 	/* parent process */
 	if ((status = pidXwait(child_id, postproc))) {

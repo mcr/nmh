@@ -1,5 +1,11 @@
 2008-04-05  Peter Maydell <pmaydell@chiark.greenend.org.uk>
 
+	* bug #18655: fix use of admonish() for a fatal error (should
+	be adios(); only actual effect would be wrong exit code).
+	Thanks to Craig Leres for spotting this.
+
+2008-04-05  Peter Maydell <pmaydell@chiark.greenend.org.uk>
+
 	* bug #20028 (Debian bug 399271): fix code assuming that pointer
 	differences were 32 bits -- thanks to Dean Gaudet for the patch.
 
