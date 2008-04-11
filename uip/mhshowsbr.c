@@ -134,10 +134,10 @@ show_single_message (CT ct, char *form)
 {
     sigset_t set, oset;
 
-#ifdef WAITINT
-    int status;
-#else
+#ifdef HAVE_UNION_WAIT
     union wait status;
+#else
+    int status;
 #endif
 
     /* Allow user executable bit so that temporary directories created by
@@ -172,10 +172,10 @@ show_single_message (CT ct, char *form)
     SIGPROCMASK (SIG_BLOCK, &set, &oset);
 
     while (wait (&status) != NOTOK) {
-#ifdef WAITINT
-	pidcheck (status);
-#else
+#ifdef HAVE_UNION_WAIT
 	pidcheck (status.w_status);
+#else
+	pidcheck (status);
 #endif
 	continue;
     }
@@ -785,10 +785,10 @@ show_multi_internal (CT ct, int serial, int alternate)
     if (serial && !nowserial) {
 	pid_t pid;
 	int kids;
-#ifdef WAITINT
-	int status;
-#else
+#ifdef HAVE_UNION_WAIT
 	union wait status;
+#else
+	int status;
 #endif
 
 	kids = 0;
@@ -804,10 +804,10 @@ show_multi_internal (CT ct, int serial, int alternate)
 	}
 
 	while (kids > 0 && (pid = wait (&status)) != NOTOK) {
-#ifdef WAITINT
-	    pidcheck (status);
-#else
+#ifdef HAVE_UNION_WAIT
 	    pidcheck (status.w_status);
+#else
+	    pidcheck (status);
 #endif
 
 	    for (part = m->mp_parts; part; part = part->mp_next) {

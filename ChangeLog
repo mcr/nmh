@@ -1,3 +1,10 @@
+2008-04-11  Oliver Kiddle <okiddle@yahoo.co.uk>
+
+	* acconfig.h, configure.in, sbr/dtime.c, sbr/pidwait.c,
+	uip/mhshowsbr.c, uip/rcvtty.c, uip/slocal.c, uip/termsbr.c:
+	move most remaining macros out of acconfig.h which is an
+	obsolete feature of autoconf
+
 2008-04-05  Peter Maydell <pmaydell@chiark.greenend.org.uk>
 
 	* bug #18655: fix use of admonish() for a fatal error (should

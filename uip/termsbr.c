@@ -105,10 +105,10 @@ read_termcap(void)
  * If possible, we let tgetent allocate its own termcap buffer
  */
 #ifdef TGETENT_ACCEPTS_NULL
-    if (tgetent (NULL, term) <= 0)
-	return
+    if (tgetent (NULL, term) != TGETENT_SUCCESS)
+	return;
 #else
-    if (tgetent (termbuf, term) <= 0)
+    if (tgetent (termbuf, term) != TGETENT_SUCCESS)
 	return;
 #endif
 

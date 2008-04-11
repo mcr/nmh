@@ -24,10 +24,10 @@ pidwait (pid_t id, int sigsok)
     pid_t pid;
     SIGNAL_HANDLER istat, qstat;
 
-#ifdef WAITINT
-    int status;
-#else
+#ifdef HAVE_UNION_WAIT
     union wait status;
+#else
+    int status;
 #endif
 
     if (sigsok == -1) {
@@ -50,9 +50,9 @@ pidwait (pid_t id, int sigsok)
 	SIGNAL (SIGQUIT, qstat);
     }
 
-#ifdef WAITINT
-    return (pid == -1 ? -1 : status);
-#else
+#ifdef HAVE_UNION_WAIT
     return (pid == -1 ? -1 : status.w_status);
+#else
+    return (pid == -1 ? -1 : status);
 #endif
 }

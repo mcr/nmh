@@ -13,7 +13,7 @@
 #include <h/nmh.h>
 #include <h/tws.h>
 
-#if !defined(HAVE_TM_GMTOFF) && !defined(HAVE_TZSET)
+#if !defined(HAVE_STRUCT_TM_TM_GMTOFF) && !defined(HAVE_TZSET)
 # include <sys/timeb.h>
 #endif
 
@@ -28,7 +28,7 @@
 # endif
 #endif
 
-#if !defined(HAVE_TM_GMTOFF) && defined(HAVE_TZSET)
+#if !defined(HAVE_STRUCT_TM_TM_GMTOFF) && defined(HAVE_TZSET)
 extern int daylight;
 extern long timezone;
 extern char *tzname[];
@@ -142,7 +142,7 @@ dlocaltime (time_t *clock)
     static struct tws tw;
     struct tm *tm;
 
-#if !defined(HAVE_TM_GMTOFF) && !defined(HAVE_TZSET)
+#if !defined(HAVE_STRUCT_TM_TM_GMTOFF) && !defined(HAVE_TZSET)
     struct timeb tb;
 #endif
 

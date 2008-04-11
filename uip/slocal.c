@@ -959,7 +959,7 @@ logged_in (void)
 
     while ((utp = getutent()) != NULL) {
         if (
-#ifdef HAVE_UTMP_UT_TYPE
+#ifdef HAVE_STRUCT_UTMP_UT_TYPE
 		utp->ut_type == USER_PROCESS
                 &&
 #endif
