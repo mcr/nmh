@@ -1,5 +1,7 @@
 2008-04-27  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* Updated some of the 'how to do a release' documentation.
+
 	* Upped the VERSION string to '1.3-dev', since 1.3-RC1 has
 	been branched off.
 

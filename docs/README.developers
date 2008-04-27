@@ -143,7 +143,8 @@ releasing nmh
 -------------
 
 To make a public release of nmh (we'll use version 1.0.4 and my mhost.com
-account, danh, as examples here):
+account, danh, as examples here; the convention for release candidates
+is to use something like "1.0.4-RC1"):
 
  1. % echo 1.0.4 > VERSION
     % date +"%e %B %Y" > DATE
@@ -186,10 +187,24 @@ account, danh, as examples here):
 11. % cvs commit ChangeLog VERSION
 
 12. If possible, make an MD5 hash and/or a PGP signature of nmh-1.0.4.tar.gz.
+    Assuming you have gpg set up, this should be:
+    % gpg --output nmh-1.0.4.tar.gz.sig --detach-sig nmh-1.0.4.tar.gz
 
-13. % scp -p nmh-1.0.4.tar.gz* danh@mhost.com:/var/ftp/pub/nmh
+    You can verify the signature with
+    % gpg --verify nmh-1.0.4.tar.gz.sig nmh-1.0.4.tar.gz
 
-14. Send an announcement to exmh-users@redhat.com, exmh-workers@redhat.com,
+13. Upload the files to savannah. First make sure they are mode 664 so
+    they will have the right permissions on the server end
+    (see https://savannah.gnu.org/maintenance/SharedDownloadArea)
+    % chmod 664 nmh-1.0.4.tar.gz*
+
+    Then scp them across:
+    % scp -p nmh-1.0.4.tar.gz* youruser@dl.sv.nongnu.org:/releases/nmh/
+
+14. FIXME -- I suspect that at least some of the mailing lists here are not
+    correct any more. Needs checking.
+
+    Send an announcement to exmh-users@redhat.com, exmh-workers@redhat.com,
     mh-users@ics.uci.edu, and nmh-announce@mhost.com.  If the release fixes
     significant security holes, also send an announcement to
     bugtraq@securityfocus.com.  The exmh lists require you to be subscribed in
@@ -204,3 +219,6 @@ account, danh, as examples here):
     shown by:
 
         http://www.mhost.com/cgi-bin/cvsweb/nmh/ChangeLog?r1=1.40&r2=1.71
+
+15. Add a news item to the savannah nmh page. You'll have to submit it first
+    and then separately approve it (under News->Manage).
