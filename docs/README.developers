@@ -222,3 +222,6 @@ is to use something like "1.0.4-RC1"):
 
 15. Add a news item to the savannah nmh page. You'll have to submit it first
     and then separately approve it (under News->Manage).
+
+16. Update the http://www.nongnu.org/nmh/ homepage. (It lives in the 'webpages
+    repository'; see https://savannah.nongnu.org/cvs/?group=nmh)
