@@ -1246,7 +1246,7 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	    result = sasl_decode64(sm_reply.text, sm_reply.length,
 				   outbuf, sizeof(outbuf), &outlen);
 	
-	    if (result != SASL_OK) {
+	    if (result != SASL_OK && result != SASL_CONTINUE) {
 		smtalk(SM_AUTH, "*");
 		sm_ierror("SASL base64 decode failed: %s",
 			  sasl_errstring(result, NULL, NULL));

@@ -1,3 +1,8 @@
+2008-04-29  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* Cope with sasl_decode64() returning SASL_CONTINUE, as
+	happens with newer sasl libraries and LOGIN auth.
+
 2008-04-27  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* Updated some of the 'how to do a release' documentation.
