@@ -8,6 +8,12 @@
 	(the SASL libraries now care if you pass in the wrong
 	length).
 
+	* Correct various places in smtp.c where the reply string
+	might not have been correctly NUL-terminated. Includes a
+	fix for a particularly nasty and long standing screwup
+	where the buffer length counting in smhear() was totally
+	broken for continued lines from the server.
+
 2008-04-29  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* Cope with sasl_decode64() returning SASL_CONTINUE, as

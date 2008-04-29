@@ -139,6 +139,7 @@ static RETSIGTYPE alrmser (int);
 static char *EHLOset (char *);
 
 #ifdef MPOP
+static int sm_perror (char *fmt, ...);
 /*
  * smtp.c's own static copy of several nmh library subroutines
  */
@@ -509,7 +510,7 @@ sm_winit (int mode, char *from)
 
 #ifdef MPOP
     if (sm_ispool && !sm_wfp) {
-	strlen (strcpy (sm_reply.text, "unable to create new spool file"));
+	sm_reply.length = strlen (strcpy (sm_reply.text, "unable to create new spool file"));
 	sm_reply.code = NOTOK;
 	return RP_BHST;
     }
@@ -681,7 +682,8 @@ sm_end (int type)
 
 	case NOTOK: 
 	    sm_note.code = sm_reply.code;
-	    strncpy (sm_note.text, sm_reply.text, sm_note.length = sm_reply.length);/* fall */
+	    sm_note.length = sm_reply.length;
+	    memcpy (sm_note.text, sm_reply.text, sm_reply.length + 1);/* fall */
 	case DONE: 
 	    if (smtalk (SM_RSET, "RSET") == 250 && type == DONE)
 		return RP_OK;
@@ -694,7 +696,8 @@ sm_end (int type)
 	    }
 	    if (type == NOTOK) {
 		sm_reply.code = sm_note.code;
-		strncpy (sm_reply.text, sm_note.text, sm_reply.length = sm_note.length);
+		sm_reply.length = sm_note.length;
+		memcpy (sm_reply.text, sm_note.text, sm_note.length + 1);
 	    }
 	    break;
     }
@@ -752,20 +755,7 @@ sm_bulk (char *file)
     gp = NULL;
     k = strlen (file) - sizeof(".bulk");
     if ((fp = fopen (file, "r")) == NULL) {
-	int len;
-
-	snprintf (sm_reply.text, sizeof(sm_reply.text),
-		"unable to read %s: ", file);
-	bp = sm_reply.text;
-	len = strlen (bp);
-	bp += len;
-	if ((s = strerror (errno)))
-	    strncpy (bp, s, sizeof(sm_reply.text) - len);
-	else
-	    snprintf (bp, sizeof(sm_reply.text) - len, "Error %d", errno);
-	sm_reply.length = strlen (sm_reply.text);
-	sm_reply.code = NOTOK;
-	return RP_BHST;
+	return sm_perror("unable to read %s: ", file);
     }
     if (sm_debug) {
 	printf ("reading file %s\n", file);
@@ -826,17 +816,7 @@ losing2:
 	if ((cc = write (fileno (sm_wfp), dp, i)) == NOTOK) {
 	    int len;
 losing3:
-	    strcpy (sm_reply.text, "error writing to server: ",
-		sizeof(sm_reply.text));
-	    bp = sm_reply.text;
-	    len = strlen (bp);
-	    bp += len;
-	    if ((s = strerror (errno)))
-		strncpy (bp, s, sizeof(sm_reply.text) - len);
-	    else
-		snprintf (bp, sizeof(sm_reply.text) - len,
-			"unknown error %d", errno);
-	    sm_reply.length = strlen (sm_reply.text);
+	    sm_perror("error writing to server: ");
 	    goto losing2;
 	}
 	else
@@ -981,19 +961,7 @@ bad_data:
 	for (dp = cp, i = cc; i > 0; dp += j, i -= j)
 	    if ((j = fread (cp, sizeof(*cp), i, fp)) == OK) {
 		if (ferror (fp)) {
-		    int len;
-
-		    snprintf (sm_reply.text, sizeof(sm_reply.text),
-			"error reading %s: ", file);
-		    bp = sm_reply.text;
-		    len = strlen (bp);
-		    bp += len;
-		    if ((s = strerror (errno)))
-			strncpy (bp, s, sizeof(sm_reply.text) - len);
-		    else
-			snprintf (bp, sizeof(sm_reply.text) - len,
-				"unknown error %d", errno);
-		    sm_reply.length = strlen (sm_reply.text);
+		    sm_perror("error reading %s: ", file);
 		    goto losing2;
 		}
 		cc = dp - cp;
@@ -1380,6 +1348,36 @@ sm_ierror (char *fmt, ...)
     return RP_BHST;
 }
 
+#ifdef MPOP
+static int
+sm_perror (char *fmt, ...)
+{
+    /* Fill in sm_reply with a suitable error string based on errno.
+     * This isn't particularly MPOP specific, it just happens that that's
+     * the only code that uses it currently.
+     */
+    char *bp, *s;
+    int len, eno = errno;
+
+    va_list ap;
+    va_start(ap,fmt);
+    vsnprintf (sm_reply.text, sizeof(sm_reply.text), fmt, ap);
+    va_end(ap);
+
+    bp = sm_reply.text;
+    len = strlen(bp);
+    bp += len;
+    if ((s = strerror(eno)))
+	snprintf(bp, sizeof(sm_reply.text) - len, "%s", s);
+    else
+	snprintf(bp, sizeof(sm_reply.text) - len, "unknown error %d", eno);
+    
+    sm_reply.length = strlen (sm_reply.text);
+    sm_reply.code = NOTOK;
+
+    return RP_BHST;
+}
+#endif
 
 static int
 smtalk (int time, char *fmt, ...)
@@ -1412,22 +1410,7 @@ smtalk (int time, char *fmt, ...)
 		snprintf (file, sizeof(file), "%s%c.bulk", sm_tmpfil,
 				(char) (sm_ispool + 'a' - 1));
 		if (rename (sm_tmpfil, file) == NOTOK) {
-		    int len;
-		    char *bp;
-
-		    snprintf (sm_reply.text, sizeof(sm_reply.text),
-			"error renaming %s to %s: ", sm_tmpfil, file);
-		    bp = sm_reply.text;
-		    len = strlen (bp);
-		    bp += len;
-		    if ((s = strerror (errno)))
-			strncpy (bp, s, sizeof(sm_reply.text) - len);
-		    else
-			snprintf (bp, sizeof(sm_reply.text) - len,
-				"unknown error %d", errno);
-		    sm_reply.length = strlen (sm_reply.text);
-		    sm_reply.code = NOTOK;
-		    return RP_BHST;
+		    return sm_perror("error renaming %s to %s: ", sm_tmpfil, file);
 		}
 		fclose (sm_wfp);
 		if (sm_wfp = fopen (sm_tmpfil, "w"))
@@ -1646,6 +1629,7 @@ again: ;
 	    sm_reply.code = code;
 	    more = cont;
 	    if (bc <= 0) {
+		/* can never fail to 0-terminate because of size of buffer vs fixed string */
 		strncpy (buffer, sm_noreply, sizeof(buffer));
 		bp = buffer;
 		bc = strlen (sm_noreply);
@@ -1653,12 +1637,14 @@ again: ;
 	}
 
 	if ((i = min (bc, rc)) > 0) {
-	    strncpy (rp, bp, i);
+	    memcpy (rp, bp, i);
 	    rp += i;
 	    rc -= i;
-	    if (more && rc > strlen (sm_moreply) + 1) {
-		strncpy (sm_reply.text + rc, sm_moreply, sizeof(sm_reply.text) - rc);
-		rc += strlen (sm_moreply);
+	    i = strlen(sm_moreply);
+	    if (more && rc > i + 1) {
+		memcpy (rp, sm_moreply, i); /* safe because of check in if() */
+		rp += i;
+		rc -= i;
 	    }
 	}
 	if (more)
@@ -1672,6 +1658,7 @@ again: ;
 	}
 
 	sm_reply.length = rp - sm_reply.text;
+	sm_reply.text[sm_reply.length] = 0;
 	return sm_reply.code;
     }
     return NOTOK;

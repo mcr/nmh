@@ -11,6 +11,9 @@
 #define	S_SOML	2
 #define	S_SAML	3
 
+/* length is the length of the string in text[], which is also NUL
+ * terminated, so s.text[s.length] should always be 0.
+ */
 struct smtp {
     int code;
     int length;
