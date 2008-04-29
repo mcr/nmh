@@ -1688,15 +1688,17 @@ sm_rrecord (char *buffer, int *len)
 
     fgets (buffer, BUFSIZ, sm_rfp);
     *len = strlen (buffer);
-    if (ferror (sm_rfp) || feof (sm_rfp))
+    /* *len should be >0 except on EOF, but check for safety's sake */
+    if (ferror (sm_rfp) || feof (sm_rfp) || (*len == 0))
 	return sm_rerror ();
     if (buffer[*len - 1] != '\n')
 	while (getc (sm_rfp) != '\n' && !ferror (sm_rfp) && !feof (sm_rfp))
 	    continue;
     else
-	if (buffer[*len - 2] == '\r')
+	if ((*len > 1) && (buffer[*len - 2] == '\r'))
 	    *len -= 1;
-    buffer[*len - 1] = 0;
+    *len -= 1;
+    buffer[*len] = 0;
 
     return OK;
 }
