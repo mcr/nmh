@@ -1,3 +1,10 @@
+2008-04-30  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* mts/smtp/smtp.c: provide a callback for SASL_CB_AUTHNAME
+	(fixes issue with SASL sending the wrong username in some
+	circumstances). Thanks to <der_wachtmeister@freenet.de>
+	for the patch.
+
 2008-04-29  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* Revert previous attempt at fix for SASL issue as it

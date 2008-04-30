@@ -105,6 +105,8 @@ static sasl_callback_t callbacks[] = {
 #define SM_SASL_N_CB_USER 0
     { SASL_CB_PASS, sm_get_pass, NULL },
 #define SM_SASL_N_CB_PASS 1
+    { SASL_CB_AUTHNAME, sm_get_user, NULL },
+#define SM_SASL_N_CB_AUTHNAME 2
     { SASL_CB_LIST_END, NULL, NULL },
 };
 #endif /* CYRUS_SASL */
@@ -1084,6 +1086,7 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	user = getusername();
 
     callbacks[SM_SASL_N_CB_USER].context = user;
+    callbacks[SM_SASL_N_CB_AUTHNAME].context = user;
 
     /*
      * This is a _bit_ of a hack ... but if the hostname wasn't supplied
@@ -1293,7 +1296,7 @@ sm_get_user(void *context, int id, const char **result, unsigned *len)
 {
     char *user = (char *) context;
 
-    if (! result || id != SASL_CB_USER)
+    if (! result || ((id != SASL_CB_USER) && (id != SASL_CB_AUTHNAME)))
 	return SASL_BADPARAM;
 
     *result = user;
