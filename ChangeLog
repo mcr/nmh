@@ -1,3 +1,16 @@
+2008-05-04  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* bug #23163: various minor fixes for the benefit of
+	older Unixes (specifically SunOS 4):
+	reintroduce strerror() substitute implementation
+	provide memmove() substitute implementation
+
+	* bug #23163: fix accidentally broken 'build outside
+	source directory' feature
+	
+	* bug #23162: sbr/dtime.c: fix stray HAVE_TM_GMTOFF that
+	wasn't updated to the new macro name.
+
 2008-04-30  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* mts/smtp/smtp.c: provide a callback for SASL_CB_AUTHNAME

@@ -34,6 +34,8 @@ GNU_LIBTOOL = @GNU_LIBTOOL@
 LINT	= @LINT@
 LINTFLAGS = @LINTFLAGS@ 
 
+LIBOBJS = @LIBOBJS@
+
 mailspool    = @mailspool@
 sendmailpath = @sendmailpath@
 
@@ -78,9 +80,9 @@ SRCS = addrsbr.c ambigsw.c atooi.c brkstring.c			\
 	m_msgdef.c mf.c utils.c
 
 # source for compatibility functions
-COMPAT = snprintf.c strdup.c
+COMPAT = memmove.c snprintf.c strdup.c strerror.c
 
-OBJS =	$(SRCS:.c=.o)
+OBJS =	$(SRCS:.c=.o) $(LIBOBJS)
 
 # auxiliary files
 AUX = Makefile.in sigmsg.awk dtimep.lex
@@ -102,13 +104,13 @@ lint: sigmsg.h
 # Note that some lexes (for example flex 2.5.4) require that there
 # be no space between -o and the output filename.
 dtimep.c: dtimep.lex
-	$(LEX) -o$@ dtimep.lex
+	$(LEX) -o$@ $<
 
 client.o: client.c
-	$(COMPILE2) client.c
+	$(COMPILE2) $<
 
 mts.o: mts.c
-	$(COMPILE2) mts.c
+	$(COMPILE2) $<
 
 pidstatus.o: sigmsg.h
 

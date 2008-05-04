@@ -169,7 +169,7 @@ dlocaltime (time_t *clock)
     if (tm->tm_isdst)
 	tw.tw_flags |= TW_DST;
 
-#ifdef HAVE_TM_GMTOFF
+#ifdef HAVE_STRUCT_TM_TM_GMTOFF
     tw.tw_zone = tm->tm_gmtoff / 60;
     if (tm->tm_isdst)			/* if DST is in effect */
 	tw.tw_zone -= 60;		/* reset to normal offset */

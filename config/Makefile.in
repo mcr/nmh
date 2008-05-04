@@ -58,7 +58,7 @@ version.c:
 	${srcdir}/version.sh $(VERSION) > version.c
 
 config.o: config.c
-	$(COMPILE2) config.c
+	$(COMPILE2) $<
 
 install:
 
