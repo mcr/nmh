@@ -61,7 +61,7 @@ static struct toktab toktabs[] = {
 static int token(void);
 
 
-int
+void
 ruserpass(char *host, char **aname, char **apass)
 {
     char *hdir, buf[BUFSIZ];
@@ -108,9 +108,9 @@ match:
 		case PASSWD:
 		    if (fstat(fileno(cfile), &stb) >= 0 &&
 			(stb.st_mode & 077) != 0) {
-			fprintf(stderr, "Error - .netrc file not correct mode.\n");
-			fprintf(stderr, "Remove password or correct mode.\n");
-			goto bad;
+			/* We make this a fatal error to force the user to correct it */
+			advise(NULL, "Error - ~/.netrc file must not be world or group readable.");
+			adios(NULL, "Remove password or correct file permissions.");
 		    }
 		    if (token() && *apass == 0) {
 			*apass = mh_xmalloc((size_t) strlen(tokval) + 1);
@@ -173,10 +173,6 @@ done:
 	strcpy (*apass, mypass);
     }
 
-    return(0);
-bad:
-    fclose(cfile);
-    return(-1);
 }
 
 static int

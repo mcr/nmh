@@ -1,5 +1,10 @@
 2008-05-04  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* bug #23167: sbr/ruserpass.c (ruserpass): make bad permissions
+	on .netrc be an instantly fatal error. Previously we returned
+	an error value; however, no caller was checking it. So now
+	ruserpass() has a void return type.
+
 	* bug #23163: various minor fixes for the benefit of
 	older Unixes (specifically SunOS 4):
 	reintroduce strerror() substitute implementation
