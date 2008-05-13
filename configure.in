@@ -70,7 +70,8 @@ AC_ARG_ENABLE(masquerade,
     masquerade="draft_from mmailid username_extension"
   else
     masquerade="$enable_masquerade"
-  fi])
+  fi],
+  masquerade="draft_from mmailid username_extension")
 AC_SUBST(masquerade)dnl
 
 dnl Do you want mhe support?

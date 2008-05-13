@@ -1,3 +1,13 @@
+2008-05-13  David Levine <levinedl@acm.org>
+
+	* configure.in, INSTALL: if --enable-masquerade is not
+	specified to configure, enable all supported masquerade forms.
+	This allows users to masquerade with the default
+	configuration.	That seems to be more worthwhile now than
+	trying to prevent users from using it, especially with
+	single-user installations or those where a user can edit
+	etc/mts.conf.
+
 2008-05-04  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* bug #23167: sbr/ruserpass.c (ruserpass): make bad permissions
