@@ -1,3 +1,8 @@
+2008-05-16  Oliver Kiddle <okiddle@yahoo.co.uk>
+
+	* sbr/Makefile.in, config/Makefile.in: Don't use $< in target rules
+	in makefiles, as POSIX says it's only defined in inference rules.
+
 2008-05-13  David Levine <levinedl@acm.org>
 
 	* configure.in, INSTALL: if --enable-masquerade is not
