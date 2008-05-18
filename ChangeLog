@@ -1,3 +1,9 @@
+2008-05-18  David Levine <levinedl@acm.org>
+
+	* sbr/addrsbr.c: removed "err" from conditional, because gcc
+	correctly warned that it would always evaluate as true.  It's
+	the address of a static array.
+
 2008-05-16  Oliver Kiddle <okiddle@yahoo.co.uk>
 
 	* sbr/Makefile.in, config/Makefile.in: Don't use $< in target rules

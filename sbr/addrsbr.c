@@ -119,7 +119,7 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
     char *dp;
 #endif /* not DUMB */
 
-    if (err && err[0]) {
+    if (err[0]) {
 	if (eresult)
 	    strcpy (eresult, err);
 	else
