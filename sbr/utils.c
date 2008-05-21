@@ -47,6 +47,10 @@ mh_xrealloc(void *ptr, size_t size)
 {
     void *memory;
 
+    /* Some non-POSIX realloc()s don't cope with realloc(NULL,sz) */
+    if (!ptr)
+        return mh_xmalloc(size);
+
     if (size == 0)
         adios(NULL, "Tried to realloc 0bytes");
 

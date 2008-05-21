@@ -1,5 +1,8 @@
 2008-05-21  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* sbr/utils.c (mh_xrealloc): don't assume realloc() can
+	handle NULL pointers; some non-POSIX realloc()s can't.
+
 	* sbr/dtimep.lex: add some table size declarations for the
 	benefit of elderly lexes with small defaults.
 
