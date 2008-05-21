@@ -1,3 +1,12 @@
+/* dtimep.lex exceeds the default table capacities for some old versions
+ * of lex (and the minimum defaults as specified by POSIX).  The following
+ * choices meet or exceed the lex defaults for older SunOS4.x, Solaris,
+ * HPUX, and AIX.
+ */
+%e4000
+%p7000
+%n2500
+%a5000
 %{
 #include <h/nmh.h>
 #include <h/tws.h>
