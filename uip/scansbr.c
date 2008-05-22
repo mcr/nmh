@@ -68,6 +68,11 @@ char *scanl = 0;			/* text of most recent scanline    */
 int sc_width (void);			/* from termsbr.c */
 static int mh_fputs(char *, FILE *);
 
+#ifdef MULTIBYTE_SUPPORT
+#define SCAN_CHARWIDTH MB_CUR_MAX
+#else
+#define SCAN_CHARWIDTH 1
+#endif
 
 int
 scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
@@ -98,7 +103,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		width = MAXSCANL;
 	}
 	dat[3] = slwidth = width;
-	scanl = (char *) mh_xmalloc((size_t) MB_CUR_MAX * (slwidth + 2) );
+	scanl = (char *) mh_xmalloc((size_t) SCAN_CHARWIDTH * (slwidth + 2) );
 	if (outnum)
 	    umask(~m_gmprot());
 

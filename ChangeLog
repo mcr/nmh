@@ -1,5 +1,8 @@
 2008-05-22  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* uip/scansbr.c: don't use MB_CUR_MAX if we aren't compiled
+	with multibyte support.
+
 	* uip/whatnowsbr.c: factor out common code for writing ls
 	shell command, and make it do more sensible buffer length
 	checks. Also avoid relying on the return value of sprintf(),
