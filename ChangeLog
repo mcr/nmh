@@ -1,3 +1,10 @@
+2008-05-22  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* uip/whatnowsbr.c: factor out common code for writing ls
+	shell command, and make it do more sensible buffer length
+	checks. Also avoid relying on the return value of sprintf(),
+	as some old systems don't return number of characters written.
+
 2008-05-21  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* sbr/utils.c (mh_xrealloc): don't assume realloc() can

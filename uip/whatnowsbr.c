@@ -120,6 +120,7 @@ static int buildfile (char **, char *);
 static int check_draft (char *);
 static int whomfile (char **, char *);
 static int removefile (char *);
+static void writelscmd(char *, int, char *, char **);
 
 #ifdef HAVE_LSTAT
 static int copyf (char *, char *);
@@ -353,17 +354,7 @@ WhatNow (int argc, char **argv)
 	     *	Use the user's shell so that we can take advantage of any
 	     *	syntax that the user is accustomed to.
 	     */
-
-	    cp = buf + sprintf(buf, "$SHELL -c \" cd %s;ls", cwd);
-
-	    while (*++argp != (char *)0) {
-		if (cp + strlen(*argp) + 2 >= buf + BUFSIZ)
-		    adios((char *)0, "arguments too long");
-
-		cp += sprintf(cp, " %s", *argp);
-	    }
-
-	    (void)strcat(cp, "\"");
+	    writelscmd(buf, sizeof(buf), cwd, argp);
 	    (void)system(buf);
 	    break;
 
@@ -423,17 +414,7 @@ WhatNow (int argc, char **argv)
 	     *	Build a command line that causes the user's shell to list the file name
 	     *	arguments.  This handles and wildcard expansion, tilde expansion, etc.
 	     */
-
-	    cp = buf + sprintf(buf, "$SHELL -c \" cd %s;ls", cwd);
-
-	    while (*++argp != (char *)0) {
-		if (cp + strlen(*argp) + 3 >= buf + BUFSIZ)
-		    adios((char *)0, "arguments too long");
-
-		cp += sprintf(cp, " %s", *argp);
-	    }
-
-	    (void)strcat(cp, "\"");
+	    writelscmd(buf, sizeof(buf), cwd, argp);
 
 	    /*
 	     *	Read back the response from the shell, which contains a number of lines
@@ -558,6 +539,40 @@ WhatNow (int argc, char **argv)
 	}
     }
     /*NOTREACHED*/
+}
+
+
+/*
+ * Build a command line that causes the user's shell to list the file name
+ * arguments.  This handles and wildcard expansion, tilde expansion, etc.
+ */
+static void
+writelscmd(char *buf, int bufsz, char *cwd, char **argp)
+{
+    char *cp;
+    int ln = snprintf(buf, bufsz, "$SHELL -c \" cd %s;ls", cwd);
+    /* NB that some snprintf() return -1 on overflow rather than the
+     * new C99 mandated 'number of chars that would have been written'
+     */
+    /* length checks here and inside the loop allow for the
+     * trailing " and NUL
+     */
+    if (ln < 0 || ln + 2 > bufsz)
+	adios((char *)0, "arguments too long");
+    
+    cp = buf + ln;
+    
+    while (*++argp != (char *)0) {
+	ln = strlen(*argp);
+	/* +3 for leading space and trailing quote and NUL */
+	if (ln + 3 > bufsz - (cp-buf))
+	    adios((char *)0, "arguments too long");
+	*cp++ = ' ';
+	memcpy(cp, *argp, ln+1);
+	cp += ln;
+    }
+    *cp++ = '"';
+    *cp = 0;
 }
 
 /*
