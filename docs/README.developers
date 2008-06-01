@@ -201,27 +201,32 @@ is to use something like "1.0.4-RC1"):
     Then scp them across:
     % scp -p nmh-1.0.4.tar.gz* youruser@dl.sv.nongnu.org:/releases/nmh/
 
-14. FIXME -- I suspect that at least some of the mailing lists here are not
-    correct any more. Needs checking.
-
-    Send an announcement to exmh-users@redhat.com, exmh-workers@redhat.com,
-    mh-users@ics.uci.edu, and nmh-announce@mhost.com.  If the release fixes
-    significant security holes, also send an announcement to
-    bugtraq@securityfocus.com.  The exmh lists require you to be subscribed in
-    order to post.  Note that you don't need to post separately to comp.mail.mh,
-    as the mh-users mailing list is apparently bidirectionally gatewayed to it.
-
-    Preferably, the announcement should contain the MD5 hash generated above,
-    and should be PGP-signed.  It should include the FTP URL for the tarball as
-    well as the URL of the website.  It should contain a brief summary of
-    visible changes, as well as the URL of the cvsweb diff page that would show
-    a detailed list of changes.  The changes between 1.0.3 and 1.0.4 would be
-    shown by:
-
-        http://www.mhost.com/cgi-bin/cvsweb/nmh/ChangeLog?r1=1.40&r2=1.71
+14. Update the http://www.nongnu.org/nmh/ homepage. (It lives in the 'webpages
+    repository'; see https://savannah.nongnu.org/cvs/?group=nmh)
 
 15. Add a news item to the savannah nmh page. You'll have to submit it first
     and then separately approve it (under News->Manage).
 
-16. Update the http://www.nongnu.org/nmh/ homepage. (It lives in the 'webpages
-    repository'; see https://savannah.nongnu.org/cvs/?group=nmh)
+16. Send the release announcement email to the following places:
+     nmh-workers@nongnu.org
+     nmh-announce@nongnu.org
+     exmh-users@redhat.com
+     exmh-workers@redhat.com
+     mh-e-users@lists.sourceforge.net
+     mh-users@ics.uci.edu *or* comp.mail.mh (there is a bidirectional gateway)
+
+    If the release fixes significant security holes, also send an announcement
+    to bugtraq@securityfocus.com.  The exmh lists require you to be subscribed
+    in order to post.  Note that you don't need to post separately to
+    comp.mail.mh, as the mh-users mailing list is apparently bidirectionally
+    gatewayed to it.
+
+    Preferably, the announcement should contain the MD5 hash generated above,
+    and should be PGP-signed.  It should include the URL for the tarball as
+    well as the URL of the website.  It should contain a brief summary of
+    visible changes, as well as the URL of the cvsweb diff page that would show
+    a detailed list of changes.  The changes between 1.2 and 1.3 would be
+    shown by:
+
+        http://cvs.savannah.gnu.org/viewvc/nmh/ChangeLog?root=nmh&r1=1.215&r2=1.254.2.13
+

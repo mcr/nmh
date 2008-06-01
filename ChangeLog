@@ -1,3 +1,8 @@
+2008-06-01  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* docs/README.developers: update the bits about doing a
+	release announcement, now I've actually done one.
+
 2008-05-22  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* uip/scansbr.c: don't use MB_CUR_MAX if we aren't compiled
