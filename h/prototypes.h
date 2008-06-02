@@ -5,15 +5,6 @@
  * $Id$
  */
 
-/* If we're using gcc then give it some information about
- * functions that abort.
- */
-#if __GNUC__ > 2
-#define NORETURN __attribute__((__noreturn__)
-#else
-#define NORETURN
-#endif
-
 /*
  * missing system prototypes
  */
@@ -34,7 +25,7 @@ char *etcpath(char *);
 /*
  * prototypes from the nmh subroutine library
  */
-void adios (char *, char *, ...) NORETURN;
+void adios (char *, char *, ...);
 void admonish (char *, char *, ...);
 void advertise (char *, char *, char *, va_list);
 void advise (char *, char *, ...);
