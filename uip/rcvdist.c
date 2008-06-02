@@ -34,7 +34,7 @@ static char tmpfil[BUFSIZ] = "";
  * prototypes
  */
 static void rcvdistout (FILE *, char *, char *);
-static void unlink_done (int);
+static void unlink_done (int) NORETURN;
 
 
 int

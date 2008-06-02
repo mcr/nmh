@@ -223,7 +223,7 @@ static FILE *in;
  */
 char *map_name(char *);
 
-static void inc_done(int);
+static void inc_done(int) NORETURN;
 #ifdef POP
 static int pop_action(char *);
 static int pop_pack(char *);

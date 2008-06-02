@@ -68,7 +68,7 @@ static struct swit switches[] = {
 
 static int listsw = -1;
 
-static void putzero_done (int);
+static void putzero_done (int) NORETURN;
 
 int
 main (int argc, char **argv)

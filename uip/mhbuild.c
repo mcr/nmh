@@ -100,7 +100,7 @@ static int unlink_infile  = 0;
 static char outfile[BUFSIZ];
 static int unlink_outfile = 0;
 
-static void unlink_done (int);
+static void unlink_done (int) NORETURN;
 
 /* mhbuildsbr.c */
 CT build_mime (char *);

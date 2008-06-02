@@ -33,7 +33,7 @@ static int md = NOTOK;
 static int mbx_style = MBOX_FORMAT;
 static int mapping = 0;
 
-static void mbxclose_done(int);
+static void mbxclose_done(int) NORETURN;
 
 char *file = NULL;
 

@@ -60,7 +60,7 @@ char *getusername (void);
 /*
  * static prototypes
  */
-static void armed_done (int);
+static void armed_done (int) NORETURN;
 static void alert (char *, int);
 static int tmp_fd (void);
 static void anno (int, struct stat *);

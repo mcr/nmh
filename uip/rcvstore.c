@@ -48,7 +48,7 @@ static struct swit switches[] = {
  */
 static char *tmpfilenam = NULL;
 
-static void unlink_done(int);
+static void unlink_done(int) NORETURN;
 
 int
 main (int argc, char **argv)

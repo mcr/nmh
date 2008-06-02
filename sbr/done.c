@@ -11,4 +11,4 @@
 
 #include <h/mh.h>
 
-void (*done) (int) = exit;
+void (*done) (int) NORETURN = exit;

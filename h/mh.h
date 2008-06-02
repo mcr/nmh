@@ -29,6 +29,15 @@
 #endif
 typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 
+/* If we're using gcc then give it some information about
+ * functions that abort.
+ */
+#if __GNUC__ > 2
+#define NORETURN __attribute__((__noreturn__))
+#else
+#define NORETURN
+#endif
+
 /*
  * user context/profile structure
  */
@@ -336,7 +345,7 @@ extern char *vmhproc;
 extern char *whatnowproc;
 extern char *whomproc;
 
-extern void (*done) (int);
+extern void (*done) (int) NORETURN;
 
 #include <h/prototypes.h>
 

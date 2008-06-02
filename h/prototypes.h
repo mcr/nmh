@@ -25,7 +25,7 @@ char *etcpath(char *);
 /*
  * prototypes from the nmh subroutine library
  */
-void adios (char *, char *, ...);
+void adios (char *, char *, ...) NORETURN;
 void admonish (char *, char *, ...);
 void advertise (char *, char *, char *, va_list);
 void advise (char *, char *, ...);

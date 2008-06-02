@@ -110,7 +110,7 @@ void list_all_messages (CT *, int, int, int, int);
 /* mhfree.c */
 void free_content (CT);
 extern CT *cts;
-void freects_done (int);
+void freects_done (int) NORETURN;
 
 /*
  * static prototypes

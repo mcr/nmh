@@ -1,3 +1,13 @@
+2008-06-02  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* h/mh.h, h/prototypes.h, sbr/done.c, uip/inc.c,
+	uip/mhbuild.c, uip/mhlist.c, uip/mhn.c, uip/mhshow.c,
+	uip/mhstore.c, uip/mhtest.c, uip/packf.c, uip/pick.c,
+	uip/rcvdist.c, uip/rcvstore.c, uip/sendsbr.c: when
+	building on gcc, use the noreturn attribute on various
+	functions (should improve code and avoid some spurious
+	'uninitialized variable' warnings).
+
 2008-06-01  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* docs/README.developers: update the bits about doing a
