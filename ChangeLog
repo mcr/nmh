@@ -1,3 +1,9 @@
+2008-06-02  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* h/prototypes.h: mark adios() as not returning, so gcc
+	can make a better job of avoiding spurious "uninitialized
+	variable" warnings.
+
 2008-06-01  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* docs/README.developers: update the bits about doing a
