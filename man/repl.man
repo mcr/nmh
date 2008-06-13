@@ -295,7 +295,7 @@ is:
 .nf
 message-id:nocomponent,\|nonewline,\\
 formatfield=\*(lqIn message %{text},\ \*(rq
-from:nocomponent,\|formatfield=\*(lq%(friendly{text}) writes:\*(rq
+from:nocomponent,\|formatfield=\*(lq%(decode(friendly{text})) writes:\*(rq
 body:component=\*(lq>\*(rq,\|overflowtext=\*(lq>\*(rq,\|overflowoffset=0
 .fi
 .RE

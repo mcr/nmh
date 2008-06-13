@@ -1,3 +1,7 @@
+2008-06-12  Josh Bressers <josh@bress.net>
+	* man/repl.man, etc/mhl.reply:
+	Add an attribution line when replying to messages.
+
 2008-06-02  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* h/mh.h, h/prototypes.h, sbr/done.c, uip/inc.c,
