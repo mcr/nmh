@@ -1,3 +1,22 @@
+2008-07-24  Eric Gillespie  <epg@pretzelnet.org>
+
+	* test/runtest: cat test-temp-dir only once.  Destroy and create
+	test Mail hierarchy here, so each test has its own independent
+	test data.
+
+	* test/setup-test: Drop needless pushd/popd, which don't exist in
+	sh anyway.  Don't use aclocal, which is part of automake.
+	Don't create Mail hierarchy here (see test/runtest).
+
+	* test/tests/folder/test-create, tests/folder/test-total: Drop
+	unused BINDIR.
+
+	* tests/pick/test-pick: Remove failing no-op test.
+
+	* test/tests/scan/test-scan: Write expected and actual output to
+	files and diff them.  This way, if the output differs, diff
+	provides the FAILing exit code and shows the differences.
+
 2008-06-12  Josh Bressers <josh@bress.net>
 	* man/repl.man, etc/mhl.reply:
 	Add an attribution line when replying to messages.

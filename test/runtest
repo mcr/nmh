@@ -1,9 +1,28 @@
 #!/bin/sh
 
-export MH=`cat test-temp-dir`/mh_profile
 export MH_TEST_DIR=`cat test-temp-dir`
+export MH=$MH_TEST_DIR/mh_profile
 export PATH=$MH_TEST_DIR/bin:$PATH
 
+# clean old test data
+rm -rf $MH_TEST_DIR/Mail
+# setup test data
+mkdir $MH_TEST_DIR/Mail
+folder -create +inbox > /dev/null
+# create 10 basic messages
+for i in `seq 1 10`;
+do
+    cat > $MH_TEST_DIR/Mail/inbox/$i <<EOF
+From: Test$i <test$i@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message $i
+
+This is message number $i
+EOF
+done
+
+# now run the test
 /bin/sh $1
 
 return_value=$?

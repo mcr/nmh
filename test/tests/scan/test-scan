@@ -1,18 +1,21 @@
 #!/bin/sh
 
-expected_text="   1  09/29*Test1              Testing message 1<<This is message number 1 >>
-   2  09/29*Test2              Testing message 2<<This is message number 2 >>
-   3  09/29*Test3              Testing message 3<<This is message number 3 >>
-   4  09/29*Test4              Testing message 4<<This is message number 4 >>
-   5  09/29*Test5              Testing message 5<<This is message number 5 >>
-   6  09/29*Test6              Testing message 6<<This is message number 6 >>
-   7  09/29*Test7              Testing message 7<<This is message number 7 >>
-   8  09/29*Test8              Testing message 8<<This is message number 8 >>
-   9  09/29*Test9              Testing message 9<<This is message number 9 >>
-  10  09/29*Test10             Testing message 10<<This is message number 10 >>"
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
 
-output=`scan -width 80 +inbox`
+cat > $expected <<EOF
+   1  09/29 Test1              Testing message 1<<This is message number 1 >>
+   2  09/29 Test2              Testing message 2<<This is message number 2 >>
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>
+   5  09/29 Test5              Testing message 5<<This is message number 5 >>
+   6  09/29 Test6              Testing message 6<<This is message number 6 >>
+   7  09/29 Test7              Testing message 7<<This is message number 7 >>
+   8  09/29 Test8              Testing message 8<<This is message number 8 >>
+   9  09/29 Test9              Testing message 9<<This is message number 9 >>
+  10  09/29 Test10             Testing message 10<<This is message number 10 >>
+EOF
 
-if test x"$output" != x"$expected_text" ; then
-    exit 1
-fi
+scan -width 80 +inbox > $actual
+
+diff -u $expected $actual

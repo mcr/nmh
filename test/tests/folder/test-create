@@ -5,9 +5,6 @@
 #
 ######################################################
 
-BINDIR=$MH_TEST_DIR/bin
-
-
 folder -create +testfolder > /dev/null
 if [ ! -d "$MH_TEST_DIR/Mail/testfolder" ]; then
     exit 1
