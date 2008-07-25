@@ -1,5 +1,9 @@
 2008-07-24  Eric Gillespie  <epg@pretzelnet.org>
 
+	* test/setup-test: Run 'make clean' before building
+
+2008-07-24  Eric Gillespie  <epg@pretzelnet.org>
+
 	* test/runtest: cat test-temp-dir only once.  Destroy and create
 	test Mail hierarchy here, so each test has its own independent
 	test data.

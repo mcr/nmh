@@ -6,6 +6,7 @@ echo $TEMPDIR > test-temp-dir
 cd ..
 autoheader && autoconf && date > stamp-h.in
 ./configure --prefix=$TEMPDIR --with-locking=fcntl
+make clean
 make install
 
 echo "Path: $TEMPDIR/Mail" > $TEMPDIR/mh_profile
