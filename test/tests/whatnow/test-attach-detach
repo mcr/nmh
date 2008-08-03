@@ -1,0 +1,38 @@
+#!/bin/sh
+######################################################
+#
+# Test that whatnow's "ls" copes with directory names
+# which have spaces in them (see bug #23319)
+#
+######################################################
+
+set -e
+
+cd "$MH_TEST_DIR"
+rm -f "baz's boz"
+touch "baz's boz"
+# whatnow's attach stuff needs a draft to work on
+cp "$MH_TEST_DIR/Mail/inbox/1" "$MH_TEST_DIR/Mail/draft"
+
+expectederr=$MH_TEST_DIR/$$.expectederr
+actualerr=$MH_TEST_DIR/$$.actualerr
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+rm -f $expected $expectederr $actual $actualerr
+touch $expected $expectederr $actual $actualerr
+
+cat > $expected <<EOF
+baz's boz
+EOF
+
+# whatnow's exit status is always 1 so that is not a failure
+set +e
+echo "attach baz\\'s\\ boz" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+echo "alist" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+echo "detach baz\\'s\\ boz" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+echo "alist" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+set -e
+
+diff -u $expectederr $actualerr
+diff -u $expected $actual

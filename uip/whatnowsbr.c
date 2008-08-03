@@ -120,7 +120,11 @@ static int buildfile (char **, char *);
 static int check_draft (char *);
 static int whomfile (char **, char *);
 static int removefile (char *);
-static void writelscmd(char *, int, char *, char **);
+static void writelscmd(char *, int, char **);
+static void writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp);
+static FILE* popen_in_dir(const char *dir, const char *cmd, const char *type);
+static int system_in_dir(const char *dir, const char *cmd);
+
 
 #ifdef HAVE_LSTAT
 static int copyf (char *, char *);
@@ -320,16 +324,13 @@ WhatNow (int argc, char **argv)
 	     *	is accustomed to.  Read back the absolute path.
 	     */
 
-	    if (*++argp == (char *)0) {
+	    if (*(argp+1) == (char *)0) {
 		(void)sprintf(buf, "$SHELL -c \"cd;pwd\"");
 	    }
-	    else if (strlen(*argp) >= BUFSIZ) {
-		adios((char *)0, "arguments too long");
-	    }
 	    else {
-		(void)sprintf(buf, "$SHELL -c \"cd %s;cd %s;pwd\"", cwd, *argp);
+		writesomecmd(buf, BUFSIZ, "cd", "pwd", argp);
 	    }
-	    if ((f = popen(buf, "r")) != (FILE *)0) {
+	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
 		fgets(cwd, sizeof (cwd), f);
 
 		if (strchr(cwd, '\n') != (char *)0)
@@ -354,8 +355,8 @@ WhatNow (int argc, char **argv)
 	     *	Use the user's shell so that we can take advantage of any
 	     *	syntax that the user is accustomed to.
 	     */
-	    writelscmd(buf, sizeof(buf), cwd, argp);
-	    (void)system(buf);
+	    writelscmd(buf, sizeof(buf), argp);
+	    (void)system_in_dir(cwd, buf);
 	    break;
 
 	case ALISTCMDSW:
@@ -414,7 +415,7 @@ WhatNow (int argc, char **argv)
 	     *	Build a command line that causes the user's shell to list the file name
 	     *	arguments.  This handles and wildcard expansion, tilde expansion, etc.
 	     */
-	    writelscmd(buf, sizeof(buf), cwd, argp);
+	    writelscmd(buf, sizeof(buf), argp);
 
 	    /*
 	     *	Read back the response from the shell, which contains a number of lines
@@ -424,7 +425,7 @@ WhatNow (int argc, char **argv)
 	     *	draft.
 	     */
 
-	    if ((f = popen(buf, "r")) != (FILE *)0) {
+	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
 		while (fgets(shell, sizeof (shell), f) != (char *)0) {
 		    *(strchr(shell, '\n')) = '\0';
 
@@ -499,35 +500,19 @@ WhatNow (int argc, char **argv)
 	     *	user's shell for wildcard expansion and other goodies.  Do this from
 	     *	the current working directory if the argument is not an absolute path
 	     *	name (does not begin with a /).
+	     *
+	     * We feed all the file names to the shell at once, otherwise you can't
+	     * provide a file name with a space in it.
 	     */
-
-	    else {
-		for (arguments = argp + 1; *arguments != (char *)0; arguments++) {
-		    if (**arguments == '/') {
-			if (strlen(*arguments) + sizeof ("$SHELL -c \"ls \"") >= sizeof (buf))
-			    adios((char *)0, "arguments too long");
-
-			(void)sprintf(buf, "$SHELL -c \"ls %s\"", *arguments);
-		    }
-		    else {
-			if (strlen(cwd) + strlen(*arguments) + sizeof ("$SHELL -c \" cd ; ls \"") >= sizeof (buf))
-			    adios((char *)0, "arguments too long");
-
-			(void)sprintf(buf, "$SHELL -c \" cd %s;ls %s\"", cwd, *arguments);
-		    }
-
-		    if ((f = popen(buf, "r")) != (FILE *)0) {
-			while (fgets(shell, sizeof (cwd), f) != (char *)0) {
-			    *(strchr(shell, '\n')) = '\0';
-			    (void)annotate(drft, attach, shell, 1, 0, 0, 1);
-			}
-
-			pclose(f);
-		    }
-		    else {
-			advise("popen", "could not get file from shell");
-		    }
+	    writelscmd(buf, sizeof(buf), argp);
+	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
+		while (fgets(shell, sizeof (shell), f) != (char *)0) {
+		    *(strchr(shell, '\n')) = '\0';
+		    (void)annotate(drft, attach, shell, 1, 0, 0, 1);
 		}
+		pclose(f);
+	    } else {
+		advise("popen", "could not get file from shell");
 	    }
 
 	    break;
@@ -542,38 +527,94 @@ WhatNow (int argc, char **argv)
 }
 
 
-/*
- * Build a command line that causes the user's shell to list the file name
- * arguments.  This handles and wildcard expansion, tilde expansion, etc.
- */
+
+/* Build a command line of the form $SHELL -c "cd 'cwd'; cmd argp ... ; trailcmd". */
 static void
-writelscmd(char *buf, int bufsz, char *cwd, char **argp)
+writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
 {
     char *cp;
-    int ln = snprintf(buf, bufsz, "$SHELL -c \" cd %s;ls", cwd);
+    /* Note that we do not quote -- the argp from the user
+     * is assumed to be quoted as they desire. (We can't treat
+     * it as pure literal as that would prevent them using ~,
+     * wildcards, etc.) The buffer produced by this function
+     * should be given to popen_in_dir() or system_in_dir() so
+     * that the current working directory is set correctly.
+     */
+    int ln = snprintf(buf, bufsz, "$SHELL -c \"%s", cmd);
     /* NB that some snprintf() return -1 on overflow rather than the
      * new C99 mandated 'number of chars that would have been written'
      */
     /* length checks here and inside the loop allow for the
-     * trailing " and NUL
+     * trailing ';', trailcmd, '"' and NUL
      */
-    if (ln < 0 || ln + 2 > bufsz)
+    int trailln = strlen(trailcmd) + 3;
+    if (ln < 0 || ln + trailln > bufsz)
 	adios((char *)0, "arguments too long");
     
     cp = buf + ln;
     
     while (*++argp != (char *)0) {
 	ln = strlen(*argp);
-	/* +3 for leading space and trailing quote and NUL */
-	if (ln + 3 > bufsz - (cp-buf))
+	/* +1 for leading space */
+	if (ln + trailln + 1 > bufsz - (cp-buf))
 	    adios((char *)0, "arguments too long");
 	*cp++ = ' ';
 	memcpy(cp, *argp, ln+1);
 	cp += ln;
     }
+    if (*trailcmd) {
+	*cp++ = ';';
+	strcpy(cp, trailcmd);
+	cp += trailln - 3;
+    }
     *cp++ = '"';
     *cp = 0;
 }
+
+/*
+ * Build a command line that causes the user's shell to list the file name
+ * arguments.  This handles and wildcard expansion, tilde expansion, etc.
+ */
+static void
+writelscmd(char *buf, int bufsz, char **argp)
+{
+    writesomecmd(buf, bufsz, "ls", "", argp);
+}
+
+/* Like system(), but run the command in directory dir.
+ * This assumes the program is single-threaded!
+ */
+static int
+system_in_dir(const char *dir, const char *cmd)
+{
+    char olddir[BUFSIZ];
+    int r;
+    if (getcwd(olddir, sizeof(olddir)) == 0)
+	adios("getcwd", "could not get working directory");
+    if (chdir(dir) != 0)
+	adios("chdir", "could not change working directory");
+    r = system(cmd);
+    if (chdir(olddir) != 0)
+	adios("chdir", "could not change working directory");
+    return r;
+}
+
+/* ditto for popen() */
+static FILE*
+popen_in_dir(const char *dir, const char *cmd, const char *type)
+{
+    char olddir[BUFSIZ];
+    FILE *f;
+    if (getcwd(olddir, sizeof(olddir)) == 0)
+	adios("getcwd", "could not get working directory");
+    if (chdir(dir) != 0)
+	adios("chdir", "could not change working directory");
+    f = popen(cmd, type);
+    if (chdir(olddir) != 0)
+	adios("chdir", "could not change working directory");
+    return f;
+}
+
 
 /*
  * EDIT

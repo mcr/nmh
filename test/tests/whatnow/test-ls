@@ -1,0 +1,33 @@
+#!/bin/sh
+######################################################
+#
+# Test that whatnow's "ls" copes with directory names
+# which have spaces and quotes in them (see bug #23319)
+#
+######################################################
+
+set -e
+SPDIR="$MH_TEST_DIR/foo's bar"
+rm -rf "$SPDIR"
+mkdir "$SPDIR"
+cd "$SPDIR"
+touch baz boz
+
+expectederr=$MH_TEST_DIR/$$.expectederr
+actualerr=$MH_TEST_DIR/$$.actualerr
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+cat > $expected <<EOF
+baz
+boz
+EOF
+
+cat > $expectederr <<EOF
+EOF
+
+# NB use of sort as the order of output of ls is not guaranteed
+echo 'ls' | whatnow -noedit -prompt '' 2> "$actualerr" | sort > "$actual"
+
+diff -u $expectederr $actualerr
+diff -u $expected $actual

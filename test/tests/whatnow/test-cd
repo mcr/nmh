@@ -1,0 +1,34 @@
+#!/bin/sh
+######################################################
+#
+# Test that whatnow's "ls" copes with directory names
+# which have spaces and quotes in them (see bug #23319)
+#
+######################################################
+
+set -e
+SPDIR="$MH_TEST_DIR/foo's bar"
+rm -rf "$SPDIR"
+mkdir "$SPDIR"
+cd "$SPDIR"
+touch baz boz
+cd
+
+expectederr=$MH_TEST_DIR/$$.expectederr
+actualerr=$MH_TEST_DIR/$$.actualerr
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+cat > $expected <<EOF
+$SPDIR
+EOF
+
+cat > $expectederr <<EOF
+EOF
+
+# ||true to ignore whatnow's exit status
+# watch the quoting -- shell and printf and then the shell run inside whatnow
+printf "cd $MH_TEST_DIR/foo\\\\'s\\\\ bar\npwd\n" | whatnow -noedit -prompt '' 2> "$actualerr" > "$actual" || true
+
+diff -u $expectederr $actualerr
+diff -u $expected $actual

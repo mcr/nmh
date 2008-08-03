@@ -1,5 +1,14 @@
 2008-08-03  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* test/setup-test: use 'set -e' so we stop on compile failure.
+	Configure --enable-debug for convenience in debugging.
+
+	* uip/whatnowsbr.c: bug #23319: rework the way we handle the working
+	directory when invoking the user's shell, so that we don't have
+	issues when the cwd contains a space or shell special character.
+	* test/tests/whatnow/test-attach-detach, test/tests/whatnow/test-cd,
+	test/tests/whatnow/test-ls: test cases for this.
+
 	* sbr/fmt_compile.c: add 'do { ... } while (0)' wrappers
 	to various multi-statement macros to avoid nasty surprises
 	if the macros are used in if() clauses.
