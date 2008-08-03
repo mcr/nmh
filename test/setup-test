@@ -1,11 +1,13 @@
 #!/bin/sh
 
+set -e
+
 TEMPDIR=`mktemp -d /tmp/nmh-test-XXXXXXXX`
 echo $TEMPDIR > test-temp-dir
 
 cd ..
 autoheader && autoconf && date > stamp-h.in
-./configure --prefix=$TEMPDIR --with-locking=fcntl
+./configure --prefix=$TEMPDIR --with-locking=fcntl --enable-debug
 make clean
 make install
 
