@@ -1,3 +1,12 @@
+2008-08-03  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* sbr/fmt_compile.c: when doing an if-test on the result
+	of a function which returns a string result, check whether
+	the string is non-empty (as the documentation says we do).
+	Previously we were always testing the integer 'value'. Bug
+	spotted by Eric Gillespie.
+	* test/tests/repl/test-if-str: test case for this bug.
+
 2008-07-24  Eric Gillespie  <epg@pretzelnet.org>
 
 	* test/setup-test: Run 'make clean' before building

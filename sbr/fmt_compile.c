@@ -53,6 +53,9 @@ extern struct mailname fmt_mnull;
 #define	TF_NOP     8	    /* like expr but no result            */
 
 /* ftable->flags */
+/* NB that TFL_PUTS is also used to decide whether the test
+ * in a "%<(function)..." should be a string or numeric one.
+ */
 #define	TFL_PUTS   1	    /* implicit putstr if top level */
 #define	TFL_PUTN   2	    /* implicit putnum if top level */
 
@@ -610,7 +613,14 @@ do_if(char *sp)
 		if (ftbl->f_type >= IF_FUNCS)
 		    fp->f_type = ftbl->extra;
 		else {
-		    LV (FT_IF_V_NE, 0);
+		    /* Put out a string test or a value test depending
+		     * on what this function's return type is.
+		     */
+		    if (ftbl->flags & TFL_PUTS) {
+			LV (FT_IF_S, 0);
+		    } else {
+			LV (FT_IF_V_NE, 0);
+		    }
 		}
 	    }
 	    else {
