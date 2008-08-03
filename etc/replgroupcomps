@@ -29,7 +29,7 @@
 %<(nonnull)%(void(width))%(putaddr cc: )\n%>%>\
 %;
 Fcc: %<{fcc}%{fcc}%|+outbox%>
-Subject: %<{subject}Re: %{subject}%>
+Subject: %<{subject}Re: %(void{subject})%(trim)%(putstr)%>
 %;
 %; Make References: and In-reply-to: fields for threading.
 %; Use (void), (trim) and (putstr) to eat trailing whitespace.
