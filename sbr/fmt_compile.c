@@ -158,32 +158,35 @@ static struct ftable functable[] = {
 };
 
 /* Add new component to the hash table */
-#define NEWCOMP(cm,name)\
+#define NEWCOMP(cm,name) do { \
 	cm = ((struct comp *) calloc(1, sizeof (struct comp)));\
 	cm->c_name = name;\
 	ncomp++;\
 	i = CHASH(name);\
 	cm->c_next = wantcomp[i];\
-	wantcomp[i] = cm;
+	wantcomp[i] = cm; \
+	} while (0)
 
 #define NEWFMT (next_fp++)
-#define NEW(type,fill,wid)\
-	fp=NEWFMT; fp->f_type=(type); fp->f_fill=(fill); fp->f_width=(wid);
+#define NEW(type,fill,wid) do {\
+	fp=NEWFMT; fp->f_type=(type); fp->f_fill=(fill); fp->f_width=(wid); \
+	} while (0)
 
 /* Add (possibly new) component to the hash table */
-#define ADDC(name)\
+#define ADDC(name) do { \
 	FINDCOMP(cm, name);\
 	if (!cm) {\
 	    NEWCOMP(cm,name);\
 	}\
-	fp->f_comp = cm;
+	fp->f_comp = cm; \
+	} while (0)
 
-#define LV(type, value)		NEW(type,0,0); fp->f_value = (value);
-#define LS(type, str)		NEW(type,0,0); fp->f_text = (str);
+#define LV(type, value)		do { NEW(type,0,0); fp->f_value = (value); } while (0)
+#define LS(type, str)		do { NEW(type,0,0); fp->f_text = (str); } while (0)
 
-#define PUTCOMP(comp)		NEW(FT_COMP,0,0); ADDC(comp);
-#define PUTLIT(str)		NEW(FT_LIT,0,0); fp->f_text = (str);
-#define PUTC(c)			NEW(FT_CHAR,0,0); fp->f_char = (c);
+#define PUTCOMP(comp)		do { NEW(FT_COMP,0,0); ADDC(comp); } while (0)
+#define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = (str); } while (0)
+#define PUTC(c)			do { NEW(FT_CHAR,0,0); fp->f_char = (c); } while (0)
 
 static char *format_string;
 static unsigned char *usr_fstring;	/* for CERROR */

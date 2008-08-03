@@ -1,5 +1,17 @@
 2008-08-03  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* sbr/fmt_compile.c: add 'do { ... } while (0)' wrappers
+	to various multi-statement macros to avoid nasty surprises
+	if the macros are used in if() clauses.
+
+	* bug #23436: man/scan.man, man/forw.man, man/inc.man,
+	man/mh-chart.man, man/mhmail.man, man/mhshow.man,
+	man/mhstore.man, man/msgchk.man, man/packf.man, man/scan.man:
+	fix minor syntax errors groff warns about.
+	* test/runtest, test/README: allow test cases to report
+	that they have been SKIPped as well as PASS/FAIL
+	* test/tests/manpages/test-manpages - new test which runs groff
+	on the manpages and checks that there are no warnings.
 	* test/runalltests: ignore editor backup files
 
 2008-08-03  Eric Gillespie  <epg@pretzelnet.org>
