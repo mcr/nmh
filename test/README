@@ -3,7 +3,14 @@ nmh unit test suite.
 The purpose of these tests is to verify the functionality of the nmh
 commands.  The goal of the suite is to create an environment where testing
 nmh commands is easy and useful.  Each test is a shell script, and is
-launched via the 'sh' command.
+launched via the 'sh' command. The script should run the test and report
+the result by one of:
+
+  * for a test pass: exit with status 0
+  * where a test has been skipped (perhaps because it depends on an
+    external program which can't be found): print "Test $0 SKIP (reason)"
+    and exit with status 120
+  * for a test fail: exit with some status other than 0 or 120
 
 The Suite is arranged as such:
 

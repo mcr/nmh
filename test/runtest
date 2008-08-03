@@ -29,6 +29,11 @@ return_value=$?
 
 if [ $return_value -eq 0 ] ; then
     echo Test $1 PASS
+elif [ $return_value -eq 120 ]; then
+    # indicates test was skipped (eg needed program not found)
+    # test itself should have printed a message about this,
+    # so print nothing here.
+    :
 else
     echo Test $1 FAIL
 fi
