@@ -1,6 +1,7 @@
 #!/bin/sh
 
-for i in `find tests -name 'test-*' -type f`;
+# Note that we ignore *~ files as these are probably editor backups
+for i in `find tests -name 'test-*[!~]' -type f`;
 do
     ./runtest $i
 done

@@ -1,3 +1,7 @@
+2008-08-03  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* test/runalltests: ignore editor backup files
+
 2008-08-03  Eric Gillespie  <epg@pretzelnet.org>
 
 	* etc/replcomps, etc/replgroupcomps: Trim trailing whitespace from
