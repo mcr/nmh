@@ -331,7 +331,7 @@ is equivalent to
 .IR text ]
 .RB [ \-cc
 .I addrs
-...]
+\&...]
 .RB [ \-from
 .IR addr ]
 .RB [ \-subject
@@ -450,7 +450,7 @@ all/mail/nomail ]
 .RB [ \-snoop ]
 %nmhendpop%
 .RI [ users
-... ]
+\&... ]
 .RB [ \-version ]
 .RB [ \-help ]
 

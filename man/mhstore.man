@@ -162,8 +162,8 @@ the message contains information indicating the filename that should
 be used to store the content.  This information should be specified
 as the attribute \*(lqname=filename\*(rq in the \*(lqContent-Type\*(rq header
 for the content you are storing.  For security reasons, this filename
-will be ignored if it begins with the character '/', '.', '|', or
-'!', or if it contains the character '%'.  For the sake of security,
+will be ignored if it begins with the character '/', '.', '|', or '!',
+or if it contains the character '%'.  For the sake of security,
 this switch is not the default, and it is recommended that you do
 NOT put the
 .B \-auto
@@ -418,7 +418,7 @@ operates may vary for
 different machines,
 .B mhstore
 will look for the environment variable
-.BE $MHSTORE .
+.BR $MHSTORE .
 If present, this specifies the name of an additional
 user profile which should be read.  Hence, when a user logs in on a
 particular machine, this environment variable should be set to

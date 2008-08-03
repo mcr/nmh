@@ -15,7 +15,7 @@ mhmail \- send or read mail
 .IR text ]
 .RB [ \-cc
 .I addrs
-...]
+\&...]
 .RB [ \-from
 .IR addr ]
 .RB [ \-subject
@@ -77,7 +77,7 @@ length,
 .B mhmail
 will not send the message.  You can use the switch
 .B \-body
-\*(lr\*(rq to force an empty message.
+\*(lq\*(rq to force an empty message.
 .PP
 Normally, addresses appearing as arguments are put in the \*(lqTo:\*(rq
 field.  If the

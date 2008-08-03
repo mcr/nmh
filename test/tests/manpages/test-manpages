@@ -1,0 +1,53 @@
+#!/bin/sh
+######################################################
+#
+# Test that the manpages don't have any syntax errors
+# as detected by groff.
+#
+######################################################
+
+# First find out whether we have a groff on the path:
+
+# portable implementation of 'which' utility
+findprog()
+{
+  FOUND=
+  PROG="$1"
+  IFS_SAVE="$IFS"
+  IFS=:
+  for D in $PATH; do
+    if [ -z "$D" ]; then
+      D=.
+    fi
+    if [ -f "$D/$PROG" ] && [ -x "$D/$PROG" ]; then
+      printf '%s\n' "$D/$PROG"
+      break
+    fi
+  done
+  IFS="$IFS_SAVE"
+}
+
+if [ -z "$(findprog groff)" ]; then
+  echo "Test $0 SKIP (missing groff)"
+  exit 120
+fi
+
+cd $MH_TEST_DIR/share/man
+
+# groff will still exit with status zero even if warnings
+# were emitted, so we have to jump through hoops to
+# find out if any were emitted.
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+# There aren't any expected warnings at the moment but
+# this mechanism does let us add them if necessary later.
+rm -f "$expected" "$actual"
+touch "$expected" "$actual"
+
+for manpage in man?/*.?; do
+  groff -Tutf8 -mandoc -wmac "$manpage" > /dev/null 2>>"$actual"
+done
+
+diff -u "$expected" "$actual"

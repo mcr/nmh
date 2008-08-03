@@ -96,10 +96,14 @@ If the
 .B \-annotate
 switch is given, each message being forwarded will
 be annotated with the lines:
-
-     Forwarded:\ date
-     Forwarded:\ addrs
-
+.PP
+.RS 5
+.nf
+Forwarded:\ date
+Forwarded:\ addrs
+.fi
+.RE
+.PP
 where each address list contains as many lines as required.  This
 annotation will be done only if the message is sent directly from
 .BR forw .
@@ -295,8 +299,8 @@ the
 .BR \-mime ,
 and
 .B \-digest
-switches is bypassed, and the usual leading and trailing
-'Forwarded Message' delimiters are not added.
+switches is bypassed, and the usual leading and
+trailing 'Forwarded Message' delimiters are not added.
 The same caveats apply to this option as to the
 .B \-build
 switch.

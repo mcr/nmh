@@ -529,7 +529,7 @@ operates may vary for
 different machines,
 .B mhshow
 will look for the environment variable
-.BE $MHSHOW .
+.BR $MHSHOW .
 If present, this specifies the name of an additional
 user profile which should be read.  Hence, when a user logs in on a
 particular display device, this environment variable should be set to

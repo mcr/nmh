@@ -88,7 +88,7 @@ line per message to the end of the specified audit\-file with the format:
 .PP
 .RS 5
 .nf
-\*(<<inc\*(>> date
+<<inc>> date
 <scan line for first message>
 <scan line for second message>
 <etc.>

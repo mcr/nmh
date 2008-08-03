@@ -27,7 +27,7 @@ all/mail/nomail ]
 .RB [ \-snoop ]
 %nmhendpop%
 .RI [ users
-... ]
+\&... ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
