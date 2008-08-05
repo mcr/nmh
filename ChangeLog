@@ -1,6 +1,12 @@
 2008-08-04  Eric Gillespie  <epg@pretzelnet.org>
 
-	* uip/folder.c: Simplify dodir/addir/addfold.
+	* uip/folder.c: Simplify dodir/addir/addfold.  Dump hacky
+	over-optimization in addir that tried to avoid readdir after all
+	child directories had been read; this was also trying to support
+	symlinks to directories, but would have been failing (because
+	nlink may have gone to 0 with symlinks to directories remaining)
+	had the lstat usage been correct (lstat doesn't fail for normal
+	directories; should have used S_ISLNK).
 
 2008-08-03  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 

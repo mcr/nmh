@@ -665,16 +665,11 @@ sfold (struct msgs *mp, char *msg)
 static void
 addir (char *name)
 {
-    int nlink;
     char *prefix, *child;
     struct stat st;
     struct dirent *dp;
     DIR * dd;
 
-   /* short-cut to see if directory has any sub-directories */
-    if (stat (name, &st) != -1 && st.st_nlink == 2)
-        return;
- 
     if (!(dd = opendir (name))) {
 	admonish (name, "unable to read directory ");
 	return;
@@ -686,25 +681,12 @@ addir (char *name)
 	prefix = concat (name, "/", (void *)NULL);
     }
 
-    /*
-     * Keep track of the number of directories we've seen
-     * so we can quit stat'ing early, if we've seen them all.
-     */
-    nlink = st.st_nlink;
-
-    while (nlink && (dp = readdir (dd))) {
+    while ((dp = readdir (dd))) {
 	if (!strcmp (dp->d_name, ".") || !strcmp (dp->d_name, "..")) {
-	    nlink--;
 	    continue;
 	}
 	child = concat (prefix, dp->d_name, (void *)NULL);
 	if (stat (child, &st) != -1 && S_ISDIR(st.st_mode)) {
-	    /*
-	     * Check if this was really a symbolic link pointing at
-	     * a directory.  If not, then decrement link count.
-	     */
-	    if (lstat (child, &st) == -1)
-		nlink--;
 	    /* addfold saves child in the list, don't free it */
 	    addfold (child);
 	} else {
