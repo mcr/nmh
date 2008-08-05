@@ -950,6 +950,8 @@ if test "$nmh_cv_union_wait" = yes; then
 fi
 AC_MSG_RESULT($nmh_cv_union_wait)
 
+CHECK_TYPE_STRUCT_DIRENT_D_TYPE()
+
 dnl -------------
 dnl CHECK SIGNALS
 dnl -------------

@@ -1,3 +1,16 @@
+2008-08-05  Eric Gillespie  <epg@pretzelnet.org>
+
+	* uip/folder.c: chdir(nmhdir) in main rather than in dodir, which
+	is called many times.  Drop the chdir in get_folder_info, which
+	served no purpose at all.  If struct stat has d_type (BSD), use
+	that to skip processing (strcmp, stat, and so on) of message
+	files, mostly undoing the slow-down from the last change.
+
+	* configure.in: Call CHECK_TYPE_STRUCT_DIRENT_D_TYPE.
+
+	* aclocal.m4: Add CHECK_TYPE_STRUCT_DIRENT_D_TYPE from
+	GNU coreutils.
+
 2008-08-04  Eric Gillespie  <epg@pretzelnet.org>
 
 	* uip/folder.c: Simplify dodir/addir/addfold.  Dump hacky

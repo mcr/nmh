@@ -365,6 +365,9 @@ main (int argc, char **argv)
 	/*
 	 * If no folder is given, do them all
 	 */
+	/* change directory to base of nmh directory for dodir */
+	if (chdir (nmhdir) == NOTOK)
+	    adios (nmhdir, "unable to change directory to");
 	if (!argfolder) {
 	    if (msg)
 		admonish (NULL, "no folder given for message %s", msg);
@@ -422,10 +425,6 @@ dodir (char *dir)
 
     start = foldp;
 
-    /* change directory to base of nmh directory */
-    if (chdir (nmhdir) == NOTOK)
-	adios (nmhdir, "unable to change directory to");
-
     addir (dir);
 
     for (i = start; i < foldp; i++) {
@@ -441,7 +440,6 @@ static int
 get_folder_info (char *fold, char *msg)
 {
     int	i, retval = 1;
-    char *mailfile;
     struct msgs *mp = NULL;
 
     i = total_folders++;
@@ -463,42 +461,36 @@ get_folder_info (char *fold, char *msg)
     fi[i].others = 0;
     fi[i].error  = 0;
 
-    mailfile = m_maildir (fold);
-
-    if (!chdir (mailfile)) {
-	if ((ftotal > 0) || !fshort || msg || fpack) {
-	    /*
-	     * create message structure and get folder info
-	     */
-	    if (!(mp = folder_read (fold))) {
-		admonish (NULL, "unable to read folder %s", fold);
-		return 0;
-	    }
-
-	    /* set the current message */
-	    if (msg && !sfold (mp, msg))
-		retval = 0;
-
-	    if (fpack) {
-		if (folder_pack (&mp, fverb) == -1)
-		    done (1);
-		seq_save (mp);		/* synchronize the sequences */
-		context_save ();	/* save the context file     */
-	    }
-
-	    /* record info for this folder */
-	    if ((ftotal > 0) || !fshort) {
-		fi[i].nummsg = mp->nummsg;
-		fi[i].curmsg = mp->curmsg;
-		fi[i].lowmsg = mp->lowmsg;
-		fi[i].hghmsg = mp->hghmsg;
-		fi[i].others = other_files (mp);
-	    }
-
-	    folder_free (mp); /* free folder/message structure */
+    if ((ftotal > 0) || !fshort || msg || fpack) {
+	/*
+	 * create message structure and get folder info
+	 */
+	if (!(mp = folder_read (fold))) {
+	    admonish (NULL, "unable to read folder %s", fold);
+	    return 0;
 	}
-    } else {
-	fi[i].error = 1;
+
+	/* set the current message */
+	if (msg && !sfold (mp, msg))
+	    retval = 0;
+
+	if (fpack) {
+	    if (folder_pack (&mp, fverb) == -1)
+		done (1);
+	    seq_save (mp);		/* synchronize the sequences */
+	    context_save ();	/* save the context file     */
+	}
+
+	/* record info for this folder */
+	if ((ftotal > 0) || !fshort) {
+	    fi[i].nummsg = mp->nummsg;
+	    fi[i].curmsg = mp->curmsg;
+	    fi[i].lowmsg = mp->lowmsg;
+	    fi[i].hghmsg = mp->hghmsg;
+	    fi[i].others = other_files (mp);
+	}
+
+	folder_free (mp); /* free folder/message structure */
     }
 
     if (frecurse && (fshort || fi[i].others) && (fi[i].error == 0))
@@ -669,6 +661,7 @@ addir (char *name)
     struct stat st;
     struct dirent *dp;
     DIR * dd;
+    int child_is_folder;
 
     if (!(dd = opendir (name))) {
 	admonish (name, "unable to read directory ");
@@ -682,11 +675,26 @@ addir (char *name)
     }
 
     while ((dp = readdir (dd))) {
+	/* If the system supports it, try to skip processing of children we
+	 * know are not directories or symlinks. */
+	child_is_folder = -1;
+#if defined(HAVE_STRUCT_DIRENT_D_TYPE)
+	if (dp->d_type == DT_DIR) {
+	    child_is_folder = 1;
+	} else if (dp->d_type != DT_LNK && dp->d_type != DT_UNKNOWN) {
+	    continue;
+	}
+#endif
 	if (!strcmp (dp->d_name, ".") || !strcmp (dp->d_name, "..")) {
 	    continue;
 	}
 	child = concat (prefix, dp->d_name, (void *)NULL);
-	if (stat (child, &st) != -1 && S_ISDIR(st.st_mode)) {
+	/* If we have no d_type or d_type is DT_LNK or DT_UNKNOWN, stat the
+	 * child to see what it is. */
+	if (child_is_folder == -1) {
+	    child_is_folder = (stat (child, &st) != -1 && S_ISDIR(st.st_mode));
+	}
+	if (child_is_folder) {
 	    /* addfold saves child in the list, don't free it */
 	    addfold (child);
 	} else {
