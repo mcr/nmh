@@ -419,7 +419,6 @@ dodir (char *dir)
     int i;
     int os = start;
     int of = foldp;
-    char buffer[BUFSIZ];
 
     start = foldp;
 
@@ -427,7 +426,7 @@ dodir (char *dir)
     if (chdir (nmhdir) == NOTOK)
 	adios (nmhdir, "unable to change directory to");
 
-    addir (strncpy (buffer, dir, sizeof(buffer)));
+    addir (dir);
 
     for (i = start; i < foldp; i++) {
 	get_folder_info (folds[i], NULL);
@@ -667,20 +666,10 @@ static void
 addir (char *name)
 {
     int nlink;
-    char *base, *cp;
+    char *prefix, *child;
     struct stat st;
     struct dirent *dp;
     DIR * dd;
-
-    cp = name + strlen (name);
-    *cp++ = '/';
-    *cp = '\0';
-
-    /*
-     * A hack to skip over a leading
-     * "./" in folder names.
-     */
-    base = strcmp (name, "./") ? name : name + 2;
 
    /* short-cut to see if directory has any sub-directories */
     if (stat (name, &st) != -1 && st.st_nlink == 2)
@@ -689,6 +678,12 @@ addir (char *name)
     if (!(dd = opendir (name))) {
 	admonish (name, "unable to read directory ");
 	return;
+    }
+
+    if (strcmp (name, ".") == 0) {
+	prefix = getcpy ("");
+    } else {
+	prefix = concat (name, "/", (void *)NULL);
     }
 
     /*
@@ -702,22 +697,23 @@ addir (char *name)
 	    nlink--;
 	    continue;
 	}
-	if (cp + NLENGTH(dp) + 2 >= name + BUFSIZ)
-	    continue;
-	strcpy (cp, dp->d_name);
-	if (stat (name, &st) != -1 && S_ISDIR(st.st_mode)) {
+	child = concat (prefix, dp->d_name, (void *)NULL);
+	if (stat (child, &st) != -1 && S_ISDIR(st.st_mode)) {
 	    /*
 	     * Check if this was really a symbolic link pointing at
 	     * a directory.  If not, then decrement link count.
 	     */
-	    if (lstat (name, &st) == -1)
+	    if (lstat (child, &st) == -1)
 		nlink--;
-	    addfold (base);
+	    /* addfold saves child in the list, don't free it */
+	    addfold (child);
+	} else {
+	    free (child);
 	}
     }
 
     closedir (dd);
-    *--cp = '\0';
+    free(prefix);
 }
 
 /*
@@ -729,7 +725,6 @@ static void
 addfold (char *fold)
 {
     register int i, j;
-    register char *cp;
 
     /* if necessary, reallocate the space for folder names */
     if (foldp >= maxfolders) {
@@ -737,17 +732,16 @@ addfold (char *fold)
 	folds = mh_xrealloc (folds, maxfolders * sizeof(char *));
     }
 
-    cp = getcpy (fold);
     for (i = start; i < foldp; i++)
-	if (compare (cp, folds[i]) < 0) {
+	if (compare (fold, folds[i]) < 0) {
 	    for (j = foldp - 1; j >= i; j--)
 		folds[j + 1] = folds[j];
 	    foldp++;
-	    folds[i] = cp;
+	    folds[i] = fold;
 	    return;
 	}
 
-    folds[foldp++] = cp;
+    folds[foldp++] = fold;
 }
 
 

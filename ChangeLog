@@ -1,3 +1,7 @@
+2008-08-04  Eric Gillespie  <epg@pretzelnet.org>
+
+	* uip/folder.c: Simplify dodir/addir/addfold.
+
 2008-08-03  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* test/setup-test: use 'set -e' so we stop on compile failure.
