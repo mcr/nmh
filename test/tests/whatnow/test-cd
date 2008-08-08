@@ -1,7 +1,7 @@
 #!/bin/sh
 ######################################################
 #
-# Test that whatnow's "ls" copes with directory names
+# Test that whatnow's "cd" copes with directory names
 # which have spaces and quotes in them (see bug #23319)
 #
 ######################################################
