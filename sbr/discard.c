@@ -55,7 +55,7 @@ discard (FILE *io)
 # endif
 #endif
 
-#ifdef _FSTDIO
+#if defined(_FSTDIO) || defined(__DragonFly__)
     fpurge (io);
 #else
 # ifdef LINUX_STDIO

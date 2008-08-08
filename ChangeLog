@@ -1,3 +1,8 @@
+2008-08-08  Eric Gillespie  <epg@pretzelnet.org>
+
+	* sbr/discard.c, sbr/m_getfld.c, uip/scansbr.c: Add support for
+	DragonFlyBSD stdio (from NetBSD pkgsrc).
+
 2008-08-05  Eric Gillespie  <epg@pretzelnet.org>
 
 	* uip/folder.c: chdir(nmhdir) in main rather than in dodir, which
