@@ -22,6 +22,10 @@ need an ANSI C compiler such as gcc.
 
    ./autogen.sh
 
+   (Note that if you're doing nmh development, you should look at
+   docs/README.developers, since there is other developer-friendly
+   advice there as well.)
+
 1) From the top-level source directory, run the command
 
    ./configure [options]
