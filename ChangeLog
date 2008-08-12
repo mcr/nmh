@@ -1,3 +1,13 @@
+2008-08-12  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* autogen.sh (new file): add script for running the GNU
+	autotools in the right order
+	* INSTALL: mention that you need to run autogen.sh if you
+	got nmh from CVS
+	* docs/README.developers: mention autogen.sh rather than
+	suggesting running autoheader and autoconf by hand.
+	* test/setup-test: run autotools via autogen.sh
+
 2008-08-08  Eric Gillespie  <epg@pretzelnet.org>
 
 	* sbr/discard.c, sbr/m_getfld.c, uip/scansbr.c: Add support for

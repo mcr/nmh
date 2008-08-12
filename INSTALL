@@ -14,6 +14,14 @@ You should check the MACHINES file to see if there are any specific
 build instructions for your operating system.  To build nmh, you will
 need an ANSI C compiler such as gcc.
 
+0) If you have obtained nmh by checking it out of CVS, you will
+   need to run the GNU autotools to regenerate some files.
+   (If your directory already contains a file 'config.h.in'
+   then this has already been done and you do not need to do it.)
+   You can regenerate the files by running the command
+
+   ./autogen.sh
+
 1) From the top-level source directory, run the command
 
    ./configure [options]

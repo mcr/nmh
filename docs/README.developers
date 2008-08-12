@@ -28,12 +28,10 @@ view of the developers (and the autoconf script).
 
 Note that the automatically generated autoconf files (such as config.h.in,
 stamp-h.in, and configure), are NOT kept in CVS.  Thus, when you check out
-a CVS tree, you need to do the following things before you can build
+a CVS tree, you need to run the autogen.sh script before you can build
 anything:
 
-	% autoheader
-	% autoconf
-	% date > stamp-h.in
+	% ./autogen.sh
 
 -------------------
 directory structure
