@@ -1,4 +1,9 @@
 #!/bin/sh
+######################################################
+#
+# Test a simple scan.
+#
+######################################################
 
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual

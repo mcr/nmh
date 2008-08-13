@@ -1,4 +1,9 @@
 #!/bin/sh
+######################################################
+#
+# Test bogus headers (no blank line before body).
+#
+######################################################
 
 # TODO: Move to a common file tests can source; need more framework...
 failed=0
