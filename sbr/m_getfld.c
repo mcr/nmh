@@ -314,10 +314,35 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 		 *  . hit the end of the buffer. (loop)
 		 */
 		if (c == '\n') {
-		    *cp = *buf = 0;
-		    advise (NULL, "eol encountered in field \"%s\"", name);
-		    state = FMTERR;
-		    goto finish;
+		    /* We hit the end of the line without seeing ':' to
+		     * terminate the field name.  This is usually (always?)
+		     * spam.  But, blowing up is lame, especially when
+		     * scan(1)ing a folder with such messages.  Pretend such
+		     * lines are the first of the body (at least mutt also
+		     * handles it this way). */
+
+		    /* See if buf can hold this line, since we were assuming
+		     * we had a buffer of NAMESZ, not bufsz. */
+		    /* + 1 for the newline */
+		    if (bufsz < j + 1) {
+			/* No, it can't.  Oh well, guess we'll blow up. */
+			*cp = *buf = 0;
+			advise (NULL, "eol encountered in field \"%s\"", name);
+			state = FMTERR;
+			goto finish;
+		    }
+		    memcpy (buf, name, j - 1);
+		    buf[j - 1] = '\n';
+		    buf[j] = '\0';
+		    /* mhparse.c:get_content wants to find the position of the
+		     * body start, but it thinks there's a blank line between
+		     * the header and the body (naturally!), so seek back so
+		     * that things line up even though we don't have that
+		     * blank line in this case.  Simpler parsers (e.g. mhl)
+		     * get extra newlines, but that should be harmless enough,
+		     * right?  This is a corrupt message anyway. */
+		    fseek (iob, ftell (iob) - 2, SEEK_SET);
+		    return BODY;
 		}
 		if ((i -= j) <= 0) {
 		    *cp = *buf = 0;

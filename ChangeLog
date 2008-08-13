@@ -1,3 +1,12 @@
+2008-08-13  Eric Gillespie  <epg@pretzelnet.org>
+
+	* test/tests/bad-input/test-header: Add test for it.
+
+	* sbr/m_getfld.c: If we reach the end of the line without finding
+	a ':' when parsing a header field, treat that line as the
+	beginning of the body rather than blowing up.  These messages are
+	usually spam, but it's nice to be able to at least scan them.
+
 2008-08-12  Eric Gillespie  <epg@pretzelnet.org>
 
 	* test/tests/mhshow/test-qp: Test various valid and invalid

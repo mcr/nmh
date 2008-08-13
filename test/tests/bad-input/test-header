@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# TODO: Move to a common file tests can source; need more framework...
+failed=0
+check() {
+    diff -u $expected $actual
+    if [ $? -ne 0 ]; then
+        failed=$((failed + 1))
+    fi
+}
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+# Write message with bogus header field (missing blank line, really).
+msgfile=$(mhpath new)
+msgnum=$(basename $msgfile)
+cat > $msgfile <<EOF
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+From: foo@example.edu
+To: bar@example.edu
+Subject: test
+This is a multi-part message in MIME format.
+
+I am a stupid spammer.
+EOF
+
+# check scan
+cat > $expected <<EOF
+  11  12/18 foo@example.edu    test<<This is a multi-part message in MIME forma
+EOF
+scan $msgnum > $actual 2>&1
+check
+
+# check show (mhl)
+cat > $expected <<EOF
+(Message inbox:11)
+
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test
+
+
+This is a multi-part message in MIME format.
+
+
+I am a stupid spammer.
+EOF
+show $msgnum > $actual 2>&1
+check
+
+# check mhshow
+cat > $expected <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test
+
+
+part       text/plain                  70
+
+This is a multi-part message in MIME format.
+
+I am a stupid spammer.
+EOF
+mhshow -nopause $msgnum > $actual 2>&1
+check
