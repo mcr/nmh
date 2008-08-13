@@ -1859,8 +1859,6 @@ openQuoted (CT ct, char **file)
 
     fseek (ct->c_fp, ct->c_begin, SEEK_SET);
     while (len > 0) {
-	char *dp;
-
 	if (fgets (buffer, sizeof(buffer) - 1, ct->c_fp) == NULL) {
 	    content_error (NULL, ct, "premature eof");
 	    goto clean_up;
@@ -1876,79 +1874,67 @@ openQuoted (CT ct, char **file)
 	*++ep = '\n', ep++;
 
 	for (; cp < ep; cp++) {
-	    if (quoted) {
-		if (quoted > 1) {
-		    if (!isxdigit (*cp)) {
-invalid_hex:
-			dp = "expecting hexidecimal-digit";
-			goto invalid_encoding;
-		    }
+	    if (quoted > 0) {
+		/* in an escape sequence */
+		if (quoted == 1) {
+		    /* at byte 1 of an escape sequence */
+		    mask = hex2nib[*cp & 0x7f];
+		    /* next is byte 2 */
+		    quoted = 2;
+		} else {
+		    /* at byte 2 of an escape sequence */
 		    mask <<= 4;
 		    mask |= hex2nib[*cp & 0x7f];
 		    putc (mask, ce->ce_fp);
 		    if (digested)
 			MD5Update (&mdContext, &mask, 1);
-		} else {
-		    switch (*cp) {
-		    case ':':
-			putc (*cp, ce->ce_fp);
-			if (digested)
-			    MD5Update (&mdContext, (unsigned char *) ":", 1);
-			break;
-
-		    default:
-			if (!isxdigit (*cp))
-			    goto invalid_hex;
-			mask = hex2nib[*cp & 0x7f];
-			quoted = 2;
-			continue;
+		    if (ferror (ce->ce_fp)) {
+			content_error (ce->ce_file, ct, "error writing to");
+			goto clean_up;
 		    }
+		    /* finished escape sequence; next may be literal or a new
+		     * escape sequence */
+		    quoted = 0;
 		}
-
-		if (ferror (ce->ce_fp)) {
-		    content_error (ce->ce_file, ct, "error writing to");
-		    goto clean_up;
-		}
-		quoted = 0;
+		/* on to next byte */
 		continue;
 	    }
 
-	    switch (*cp) {
-	    default:
-		if (*cp < '!' || *cp > '~') {
-		    int	i;
-		    dp = "expecting character in range [!..~]";
-
-invalid_encoding:
-		    i = strlen (invo_name) + 2;
-		    content_error (NULL, ct,
-				   "invalid QUOTED-PRINTABLE encoding -- %s,\n%*.*sbut got char 0x%x",
-				   dp, i, i, "", *cp);
-		    goto clean_up;
+	    /* not in an escape sequence */
+	    if (*cp == '=') {
+		/* starting an escape sequence, or invalid '='? */
+		if (cp + 1 < ep && cp[1] == '\n') {
+		    /* "=\n" soft line break, eat the \n */
+		    cp++;
+		    continue;
 		}
-		/* and fall...*/
-	    case ' ':
-	    case '\t':
-	    case '\n':
-		putc (*cp, ce->ce_fp);
-		if (digested) {
-		    if (*cp == '\n')
-			MD5Update (&mdContext, (unsigned char *) "\r\n",2);
-		    else
-			MD5Update (&mdContext, (unsigned char *) cp, 1);
-		}
-		if (ferror (ce->ce_fp)) {
-		    content_error (ce->ce_file, ct, "error writing to");
-		    goto clean_up;
-		}
-		break;
-
-	    case '=':
-		if (*++cp != '\n') {
+		if (cp + 1 >= ep || cp + 2 >= ep) {
+		    /* We don't have 2 bytes left, so this is an invalid
+		     * escape sequence; just show the raw bytes (below). */
+		} else if (isxdigit (cp[1]) && isxdigit (cp[2])) {
+		    /* Next 2 bytes are hex digits, making this a valid escape
+		     * sequence; let's decode it (above). */
 		    quoted = 1;
-		    cp--;
+		    continue;
+		} else {
+		    /* One or both of the next 2 is out of range, making this
+		     * an invalid escape sequence; just show the raw bytes
+		     * (below). */
 		}
-		break;
+	    }
+
+	    /* Just show the raw byte. */
+	    putc (*cp, ce->ce_fp);
+	    if (digested) {
+		if (*cp == '\n') {
+		    MD5Update (&mdContext, (unsigned char *) "\r\n",2);
+		} else {
+		    MD5Update (&mdContext, (unsigned char *) cp, 1);
+		}
+	    }
+	    if (ferror (ce->ce_fp)) {
+		content_error (ce->ce_file, ct, "error writing to");
+		goto clean_up;
 	    }
 	}
     }

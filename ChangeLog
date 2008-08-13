@@ -1,3 +1,12 @@
+2008-08-12  Eric Gillespie  <epg@pretzelnet.org>
+
+	* test/tests/mhshow/test-qp: Test various valid and invalid
+	escape sequences.
+
+	* uip/mhparse.c (openQuoted): Simplify the decode-or-show for loop by
+	peeking ahead to the next byte(s) when encountering '=', and just let
+	invalid escape sequences through as literals (fixes bug #15245).
+
 2008-08-12  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* autogen.sh (new file): add script for running the GNU

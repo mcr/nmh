@@ -1,0 +1,58 @@
+#!/bin/sh
+
+set -e
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+# Write message with bogus quoted-printable data.
+msgfile=$(mhpath new)
+msgnum=$(basename $msgfile)
+cat > $msgfile <<EOF
+From: foo@example.edu
+To: bar@example.edu
+Subject: test
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+=3D
+=3d
+ignored space at end 
+ignored tab at end	
+just a newline =
+
+==3d ====3D
+=	just a tab
+= just a space
+=cl
+=l with a space
+=l
+= ^H (backspace) character, probably erased = in diff output
+EOF
+
+# check it
+cat > $expected <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test
+
+MIME-Version: 1.0
+
+part       text/plain                 181
+=
+=
+ignored space at end
+ignored tab at end
+just a newline 
+== ====
+=	just a tab
+= just a space
+=cl
+=l with a space
+=l
+= ^H (backspace) character, probably erased = in diff output
+EOF
+mhshow -nopause $msgnum > $actual 2>&1
+diff -u $expected $actual
