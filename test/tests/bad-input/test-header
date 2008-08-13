@@ -71,3 +71,5 @@ I am a stupid spammer.
 EOF
 mhshow -nopause $msgnum > $actual 2>&1
 check
+
+exit $failed
