@@ -1058,7 +1058,7 @@ static int
 InitText (CT ct)
 {
     char buffer[BUFSIZ];
-    char *chset;
+    char *chset = NULL;
     char **ap, **ep, *cp;
     struct k2v *kv;
     struct text *t;
@@ -1087,9 +1087,12 @@ InitText (CT ct)
     /* check if content specified a character set */
     if (*ap) {
 	/* match character set or set to CHARSET_UNKNOWN */
-	for (kv = Charset; kv->kv_key; kv++)
-	    if (!mh_strcasecmp (*ep, kv->kv_key))
+	for (kv = Charset; kv->kv_key; kv++) {
+	    if (!mh_strcasecmp (*ep, kv->kv_key)) {
+		chset = *ep;
 		break;
+	    }
+	}
 	t->tx_charset = kv->kv_value;
     } else {
 	t->tx_charset = CHARSET_UNSPECIFIED;
