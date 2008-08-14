@@ -153,6 +153,10 @@ main (int argc, char **argv)
 		/* check if too many sequences specified */
 		if (seqp >= NUMATTRS)
 		    adios (NULL, "too many sequences (more than %d) specified", NUMATTRS);
+
+                if (!seq_nameok (cp))
+                  done (1);
+
 		seqs[seqp++] = cp;
 		continue;
 	    case PUBLSW: 
