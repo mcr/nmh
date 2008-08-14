@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * This code is Copyright (c) 2002, by the authors of nmh.  See the
+ * This code is Copyright (c) 2002, 2008, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.
  */
@@ -233,6 +233,11 @@ main (int argc, char **argv)
     lo = mp->lowsel;
     hi = mp->hghsel;
 
+    /* If printing message numbers to standard out, force line buffering on.
+     */
+    if (listsw)
+	setvbuf (stdout, NULL, _IOLBF, 0);
+
     /*
      * Scan through all the SELECTED messages and check for a
      * match.  If the message does not match, then unselect it.
@@ -246,6 +251,9 @@ main (int argc, char **argv)
 		    lo = msgnum;
 		if (msgnum > hi)
 		    hi = msgnum;
+
+		if (listsw)
+		    printf ("%s\n", m_name (msgnum));
 	    } else {
 		/* if it doesn't match, then unselect it */
 		unset_selected (mp, msgnum);
@@ -272,13 +280,9 @@ main (int argc, char **argv)
 	    done (1);
 
     /*
-     * Print the name of all the matches
+     * Print total matched if not printing each matched message number.
      */
-    if (listsw) {
-	for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)
-	    if (is_selected (mp, msgnum))
-		printf ("%s\n", m_name (msgnum));
-    } else {
+    if (!listsw) {
 	printf ("%d hit%s\n", mp->numsel, mp->numsel == 1 ? "" : "s");
     }
 

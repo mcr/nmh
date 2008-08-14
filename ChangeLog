@@ -1,5 +1,10 @@
 2008-08-13  Eric Gillespie  <epg@pretzelnet.org>
 
+	* uip/pick.c: Print matching messages immediately, instead of
+	waiting until the very end to print anything.
+
+2008-08-13  Eric Gillespie  <epg@pretzelnet.org>
+
 	* uip/Makefile.in, uip/popi.c: Remove popi.c, which has been dead
 	since PatchSet 257 (2000/06/12 11:07:34 UTC).
 
