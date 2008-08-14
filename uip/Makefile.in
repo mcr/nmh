@@ -147,8 +147,8 @@ install-mh: install-mh.o $(LOCALLIBS)
 mark: mark.o $(LOCALLIBS)
 	$(LINK) mark.o $(LINKLIBS)
 
-mhbuild: mhbuild.o mhbuildsbr.o mhcachesbr.o mhlistsbr.o mhoutsbr.o mhmisc.o mhfree.o ftpsbr.o termsbr.o md5.o $(LOCALLIBS)
-	$(LINK) mhbuild.o mhbuildsbr.o mhcachesbr.o mhlistsbr.o mhoutsbr.o mhmisc.o mhfree.o ftpsbr.o md5.o $(LINKLIBS) $(TERMLIB)
+mhbuild: mhbuild.o mhbuildsbr.o mhcachesbr.o mhlistsbr.o mhoutsbr.o mhmisc.o mhfree.o mhparse.o ftpsbr.o termsbr.o md5.o $(LOCALLIBS)
+	$(LINK) mhbuild.o mhbuildsbr.o mhcachesbr.o mhlistsbr.o mhoutsbr.o mhmisc.o mhfree.o mhparse.o ftpsbr.o md5.o $(LINKLIBS) $(TERMLIB)
 
 mhl: mhl.o mhlsbr.o termsbr.o $(LOCALLIBS)
 	$(LINK) mhl.o mhlsbr.o termsbr.o $(LINKLIBS) $(TERMLIB)

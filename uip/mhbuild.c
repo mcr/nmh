@@ -74,7 +74,6 @@ static struct swit switches[] = {
 
 
 /* mhbuildsbr.c */
-extern int checksw;
 extern char *tmp;	/* directory to place temp files */
 
 /* mhcachesbr.c */

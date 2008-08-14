@@ -1,5 +1,38 @@
 2008-08-13  Eric Gillespie  <epg@pretzelnet.org>
 
+	* h/mhparse.h: Move interfaces also used by mhbuildsbr.c here
+	from mhparse.c.
+
+	* uip/Makefile.in (mhbuild): Build with mhparse.o.
+
+	* uip/mhbuildsbr.c: Drop the duplication of mhparse.c.
+
+	* uip/mhbuild.c, uip/mhlist.c, uip/mhn.c, uip/mhshow.c,
+	uip/mhstore.c, uip/mhtest.c: Drop check swdeclaration, which is
+	now in mhparse.h.
+
+	* uip/mhparse.c: Move some declarations to mhparse.h, and remove
+	'static' from the definitions here.
+	(get_ctinfo): Take magic mhbuild support from mhbuildsbr.c's copy,
+	and adapt callers.
+	(incl_name_value, extract_name_value): Move from mhbuildsbr.c to
+	support get_ctinfo change).
+	(get_content, open7Bit): Add Content-Disposition support, added to
+	mhbuildsbr.c's copy in mhbuildsbr.c r1.12 (PatchSet 549).
+	(InitText): Default to CHARSET_UNSPECIFIED instead of "US-ASCII",
+	as mhbuildsbr.c's copy did.  Explain termproc.
+	(openBase64, openQuoted, open7Bit): Fix comment from r1.5:
+	suffixes, not prefixes.
+	(openMail): Explain showproc.
+
+	* test/tests/mhshow/test-cte-binary: Add test for
+	Content-Transfer-Encoding: binary (Debian #136976).
+
+	* test/tests/mhbuild/test-forw: Add an mhbuild test, testing forw
+	with and without RFC-934 mode.  More mhbuild tests would be nice.
+
+2008-08-13  Eric Gillespie  <epg@pretzelnet.org>
+
 	* test/tests/bad-input/test-header: Add test for it.
 
 	* sbr/m_getfld.c: If we reach the end of the line without finding

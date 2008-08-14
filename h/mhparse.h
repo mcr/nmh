@@ -244,3 +244,42 @@ struct exbody {
 #define	APPLICATION_OCTETS	0x01
 #define	APPLICATION_POSTSCRIPT	0x02
 
+
+/*
+ * Structures for mapping types to their internal flags
+ */
+struct k2v {
+    char *kv_key;
+    int	  kv_value;
+};
+extern struct k2v SubText[];
+extern struct k2v Charset[];
+extern struct k2v SubMultiPart[];
+extern struct k2v SubMessage[];
+extern struct k2v SubApplication[];
+
+/*
+ * Structures for mapping (content) types to
+ * the functions to handle them.
+ */
+struct str2init {
+    char *si_key;
+    int	  si_val;
+    InitFunc si_init;
+};
+extern struct str2init str2cts[];
+extern struct str2init str2ces[];
+extern struct str2init str2methods[];
+
+/*
+ * prototypes
+ */
+int pidcheck (int);
+CT parse_mime (char *);
+int add_header (CT, char *, char *);
+int get_ctinfo (unsigned char *, CT, int);
+int params_external (CT, int);
+int open7Bit (CT, char **);
+void close_encoding (CT);
+
+extern int checksw;	/* Add Content-MD5 field */

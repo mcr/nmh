@@ -64,7 +64,6 @@ static struct swit switches[] = {
 int ebcdicsw = 0;	/* hack for linking purposes */
 
 /* mhparse.c */
-extern int checksw;
 extern char *tmp;	/* directory to place temp files */
 
 /* mhcachesbr.c */

@@ -1,0 +1,42 @@
+#!/bin/sh
+######################################################
+#
+# Test Content-Transfer-Encoding: binary (Debian #136976).
+#
+######################################################
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+# Write message with Content-Transfer-Encoding: binary text.
+msgfile=$(mhpath new)
+msgnum=$(basename $msgfile)
+cat > $msgfile <<EOF
+Content-Transfer-Encoding: binary
+To: bar@example.edu
+Content-Type: text/plain
+Subject: test
+From: foo@example.edu
+MIME-Version: 1.0
+Content-Disposition: inline
+Message-Id: <20698507875204@example.com>
+Date: Tue, 05 Mar 2002 18:20:35 +0000
+
+This is a test; this is the body.
+EOF
+
+# check it
+cat > $expected <<EOF
+Date:    Tue, 05 Mar 2002 18:20:35 GMT
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test
+
+MIME-Version: 1.0
+Content-Disposition: inline
+
+part       text/plain                  34
+This is a test; this is the body.
+EOF
+mhshow -nopause $msgnum > $actual 2>&1
+diff -u $expected $actual

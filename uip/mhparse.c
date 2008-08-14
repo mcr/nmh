@@ -46,24 +46,16 @@ int checksw = 0;	/* check Content-MD5 field */
 char *tmp;
 
 /*
- * Structure for mapping types to their internal flags
- */
-struct k2v {
-    char *kv_key;
-    int	  kv_value;
-};
-
-/*
  * Structures for TEXT messages
  */
-static struct k2v SubText[] = {
+struct k2v SubText[] = {
     { "plain",    TEXT_PLAIN },
     { "richtext", TEXT_RICHTEXT },  /* defined in RFC-1341    */
     { "enriched", TEXT_ENRICHED },  /* defined in RFC-1896    */
     { NULL,       TEXT_UNKNOWN }    /* this one must be last! */
 };
 
-static struct k2v Charset[] = {
+struct k2v Charset[] = {
     { "us-ascii",   CHARSET_USASCII },
     { "iso-8859-1", CHARSET_LATIN },
     { NULL,         CHARSET_UNKNOWN }  /* this one must be last! */
@@ -72,7 +64,7 @@ static struct k2v Charset[] = {
 /*
  * Structures for MULTIPART messages
  */
-static struct k2v SubMultiPart[] = {
+struct k2v SubMultiPart[] = {
     { "mixed",       MULTI_MIXED },
     { "alternative", MULTI_ALTERNATE },
     { "digest",      MULTI_DIGEST },
@@ -83,7 +75,7 @@ static struct k2v SubMultiPart[] = {
 /*
  * Structures for MESSAGE messages
  */
-static struct k2v SubMessage[] = {
+struct k2v SubMessage[] = {
     { "rfc822",        MESSAGE_RFC822 },
     { "partial",       MESSAGE_PARTIAL },
     { "external-body", MESSAGE_EXTERNAL },
@@ -93,7 +85,7 @@ static struct k2v SubMessage[] = {
 /*
  * Structure for APPLICATION messages
  */
-static struct k2v SubApplication[] = {
+struct k2v SubApplication[] = {
     { "octet-stream", APPLICATION_OCTETS },
     { "postscript",   APPLICATION_POSTSCRIPT },
     { NULL,           APPLICATION_UNKNOWN }	/* this one must be last! */
@@ -117,34 +109,24 @@ void free_content (CT);
 void free_encoding (CT, int);
 
 /*
- * prototypes
- */
-int pidcheck (int);
-CT parse_mime (char *);
-
-/*
  * static prototypes
  */
 static CT get_content (FILE *, char *, int);
-static int add_header (CT, char *, char *);
-static int get_ctinfo (unsigned char *, CT);
 static int get_comment (CT, unsigned char **, int);
+
 static int InitGeneric (CT);
 static int InitText (CT);
 static int InitMultiPart (CT);
 static void reverse_parts (CT);
 static int InitMessage (CT);
-static int params_external (CT, int);
 static int InitApplication (CT);
 static int init_encoding (CT, OpenCEFunc);
-static void close_encoding (CT);
 static unsigned long size_encoding (CT);
 static int InitBase64 (CT);
 static int openBase64 (CT, char **);
 static int InitQuoted (CT);
 static int openQuoted (CT, char **);
 static int Init7Bit (CT);
-static int open7Bit (CT, char **);
 static int openExternal (CT, CT, CE, char **, int *);
 static int InitFile (CT);
 static int openFile (CT, char **);
@@ -154,17 +136,7 @@ static int InitMail (CT);
 static int openMail (CT, char **);
 static int readDigest (CT, char *);
 
-/*
- * Structures for mapping (content) types to
- * the functions to handle them.
- */
-struct str2init {
-    char *si_key;
-    int	  si_val;
-    InitFunc si_init;
-};
-
-static struct str2init str2cts[] = {
+struct str2init str2cts[] = {
     { "application", CT_APPLICATION, InitApplication },
     { "audio",	     CT_AUDIO,	     InitGeneric },
     { "image",	     CT_IMAGE,	     InitGeneric },
@@ -176,7 +148,7 @@ static struct str2init str2cts[] = {
     { NULL,	     CT_UNKNOWN,     NULL },
 };
 
-static struct str2init str2ces[] = {
+struct str2init str2ces[] = {
     { "base64",		  CE_BASE64,	InitBase64 },
     { "quoted-printable", CE_QUOTED,	InitQuoted },
     { "8bit",		  CE_8BIT,	Init7Bit },
@@ -191,7 +163,7 @@ static struct str2init str2ces[] = {
  *
  * si_key is 1 if access method is anonymous.
  */
-static struct str2init str2methods[] = {
+struct str2init str2methods[] = {
     { "afs",         1,	InitFile },
     { "anon-ftp",    1,	InitFTP },
     { "ftp",         0,	InitFTP },
@@ -429,7 +401,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    }
 
 	    /* Parse the Content-Type field */
-	    if (get_ctinfo (hp->value, ct) == NOTOK)
+	    if (get_ctinfo (hp->value, ct, 0) == NOTOK)
 		goto out;
 
 	    /*
@@ -534,6 +506,10 @@ get_content (FILE *in, char *file, int toplevel)
 	/* Get Content-Description field */
 	    ct->c_descr = add (hp->value, ct->c_descr);
 	}
+	else if (!mh_strcasecmp (hp->name, DISPO_FIELD)) {
+	/* Get Content-Disposition field */
+	    ct->c_dispo = add (hp->value, ct->c_dispo);
+	}
 
 next_header:
 	hp = hp->next;	/* next header field */
@@ -550,7 +526,7 @@ next_header:
 	 * so default type is message/rfc822
 	 */
 	if (toplevel < 0) {
-	    if (get_ctinfo ("message/rfc822", ct) == NOTOK)
+	    if (get_ctinfo ("message/rfc822", ct, 0) == NOTOK)
 		goto out;
 	    ct->c_type = CT_MESSAGE;
 	    ct->c_ctinitfnx = InitMessage;
@@ -558,7 +534,7 @@ next_header:
 	    /*
 	     * Else default type is text/plain
 	     */
-	    if (get_ctinfo ("text/plain", ct) == NOTOK)
+	    if (get_ctinfo ("text/plain", ct, 0) == NOTOK)
 		goto out;
 	    ct->c_type = CT_TEXT;
 	    ct->c_ctinitfnx = InitText;
@@ -583,7 +559,7 @@ out:
  * small routine to add header field to list
  */
 
-static int
+int
 add_header (CT ct, char *name, char *value)
 {
     HF hp;
@@ -609,13 +585,95 @@ add_header (CT ct, char *name, char *value)
 }
 
 
-/*
- * Parse Content-Type line and fill in the
- * information of the CTinfo structure.
- */
+/* Make sure that buf contains at least one appearance of name,
+   followed by =.  If not, insert both name and value, just after
+   first semicolon, if any.  Note that name should not contain a
+   trailing =.	And quotes will be added around the value.  Typical
+   usage:  make sure that a Content-Disposition header contains
+   filename="foo".  If it doesn't and value does, use value from
+   that. */
+static char *
+incl_name_value (unsigned char *buf, char *name, char *value) {
+    char *newbuf = buf;
 
-static int
-get_ctinfo (unsigned char *cp, CT ct)
+    /* Assume that name is non-null. */
+    if (buf && value) {
+	char *name_plus_equal = concat (name, "=", NULL);
+
+	if (! strstr (buf, name_plus_equal)) {
+	    char *insertion;
+	    unsigned char *cp;
+	    char *prefix, *suffix;
+
+	    /* Trim trailing space, esp. newline. */
+	    for (cp = &buf[strlen (buf) - 1];
+		 cp >= buf && isspace (*cp);
+		 --cp) {
+		*cp = '\0';
+	    }
+
+	    insertion = concat ("; ", name, "=", "\"", value, "\"", NULL);
+
+	    /* Insert at first semicolon, if any.  If none, append to
+	       end. */
+	    prefix = add (buf, NULL);
+	    if ((cp = strchr (prefix, ';'))) {
+		suffix = concat (cp, NULL);
+		*cp = '\0';
+		newbuf = concat (prefix, insertion, suffix, "\n", NULL);
+		free (suffix);
+	    } else {
+		/* Append to end. */
+		newbuf = concat (buf, insertion, "\n", NULL);
+	    }
+
+	    free (prefix);
+	    free (insertion);
+	    free (buf);
+	}
+
+	free (name_plus_equal);
+    }
+
+    return newbuf;
+}
+
+/* Extract just name_suffix="foo", if any, from value.	If there isn't
+   one, return the entire value.  Note that, for example, a name_suffix
+   of name will match filename="foo", and return foo. */
+static char *
+extract_name_value (char *name_suffix, char *value) {
+    char *extracted_name_value = value;
+    char *name_suffix_plus_quote = concat (name_suffix, "=\"", NULL);
+    char *name_suffix_equals = strstr (value, name_suffix_plus_quote);
+    char *cp;
+
+    free (name_suffix_plus_quote);
+    if (name_suffix_equals) {
+	char *name_suffix_begin;
+
+	/* Find first \". */
+	for (cp = name_suffix_equals; *cp != '"'; ++cp) /* empty */;
+	name_suffix_begin = ++cp;
+	/* Find second \". */
+	for (; *cp != '"'; ++cp) /* empty */;
+
+	extracted_name_value = mh_xmalloc (cp - name_suffix_begin + 1);
+	memcpy (extracted_name_value,
+		name_suffix_begin,
+		cp - name_suffix_begin);
+	extracted_name_value[cp - name_suffix_begin] = '\0';
+    }
+
+    return extracted_name_value;
+}
+
+/*
+ * Parse Content-Type line and (if `magic' is non-zero) mhbuild composition
+ * directives.  Fills in the information of the CTinfo structure.
+ */
+int
+get_ctinfo (unsigned char *cp, CT ct, int magic)
 {
     int	i;
     unsigned char *dp;
@@ -672,7 +730,8 @@ get_ctinfo (unsigned char *cp, CT ct)
 	return NOTOK;
 
     if (*cp != '/') {
-	ci->ci_subtype = add ("", NULL);
+	if (!magic)
+	    ci->ci_subtype = add ("", NULL);
 	goto magic_skip;
     }
 
@@ -806,11 +865,108 @@ bad_quote:
     }
 
     /*
+     * Get any <Content-Id> given in buffer
+     */
+    if (magic && *cp == '<') {
+	if (ct->c_id) {
+	    free (ct->c_id);
+	    ct->c_id = NULL;
+	}
+	if (!(dp = strchr(ct->c_id = ++cp, '>'))) {
+	    advise (NULL, "invalid ID in message %s", ct->c_file);
+	    return NOTOK;
+	}
+	c = *dp;
+	*dp = '\0';
+	if (*ct->c_id)
+	    ct->c_id = concat ("<", ct->c_id, ">\n", NULL);
+	else
+	    ct->c_id = NULL;
+	*dp++ = c;
+	cp = dp;
+
+	while (isspace (*cp))
+	    cp++;
+    }
+
+    /*
+     * Get any [Content-Description] given in buffer.
+     */
+    if (magic && *cp == '[') {
+	ct->c_descr = ++cp;
+	for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
+	    if (*dp == ']')
+		break;
+	if (dp < cp) {
+	    advise (NULL, "invalid description in message %s", ct->c_file);
+	    ct->c_descr = NULL;
+	    return NOTOK;
+	}
+	
+	c = *dp;
+	*dp = '\0';
+	if (*ct->c_descr)
+	    ct->c_descr = concat (ct->c_descr, "\n", NULL);
+	else
+	    ct->c_descr = NULL;
+	*dp++ = c;
+	cp = dp;
+
+	while (isspace (*cp))
+	    cp++;
+    }
+
+    /*
+     * Get any {Content-Disposition} given in buffer.
+     */
+    if (magic && *cp == '{') {
+        ct->c_dispo = ++cp;
+	for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
+	    if (*dp == '}')
+		break;
+	if (dp < cp) {
+	    advise (NULL, "invalid disposition in message %s", ct->c_file);
+	    ct->c_dispo = NULL;
+	    return NOTOK;
+	}
+	
+	c = *dp;
+	*dp = '\0';
+	if (*ct->c_dispo)
+	    ct->c_dispo = concat (ct->c_dispo, "\n", NULL);
+	else
+	    ct->c_dispo = NULL;
+	*dp++ = c;
+	cp = dp;
+
+	while (isspace (*cp))
+	    cp++;
+    }
+
+    /*
      * Check if anything is left over
      */
     if (*cp) {
-	advise (NULL, "extraneous information in message %s's %s: field\n%*.*s(%s)",
-	    ct->c_file, TYPE_FIELD, i, i, "", cp);
+        if (magic) {
+	    ci->ci_magic = add (cp, NULL);
+
+            /* If there is a Content-Disposition header and it doesn't
+               have a *filename=, extract it from the magic contents.
+               The r1bindex call skips any leading directory
+               components. */
+            if (ct->c_dispo)
+                ct->c_dispo =
+                    incl_name_value (ct->c_dispo,
+                                     "filename",
+                                     r1bindex (extract_name_value ("name",
+                                                                   ci->
+                                                                   ci_magic),
+                                               '/'));
+        }
+	else
+	    advise (NULL,
+		    "extraneous information in message %s's %s: field\n%*.*s(%s)",
+                    ct->c_file, TYPE_FIELD, i, i, "", cp);
     }
 
     return OK;
@@ -918,7 +1074,7 @@ InitText (CT ct)
 	    break;
     ct->c_subtype = kv->kv_value;
 
-    /* allocate text structure */
+    /* allocate text character set structure */
     if ((t = (struct text *) calloc (1, sizeof(*t))) == NULL)
 	adios (NULL, "out of memory");
     ct->c_ctparams = (void *) t;
@@ -928,23 +1084,25 @@ InitText (CT ct)
 	if (!mh_strcasecmp (*ap, "charset"))
 	    break;
 
-    if (*ap)
-	chset = *ep;
-    else
-	chset = "US-ASCII";	/* default for text */
-
-    /* match character set, or set to unknown */
-    for (kv = Charset; kv->kv_key; kv++)
-	if (!mh_strcasecmp (chset, kv->kv_key))
-	    break;
-    t->tx_charset = kv->kv_value;
+    /* check if content specified a character set */
+    if (*ap) {
+	/* match character set or set to CHARSET_UNKNOWN */
+	for (kv = Charset; kv->kv_key; kv++)
+	    if (!mh_strcasecmp (*ep, kv->kv_key))
+		break;
+	t->tx_charset = kv->kv_value;
+    } else {
+	t->tx_charset = CHARSET_UNSPECIFIED;
+    }
 
     /*
      * If we can not handle character set natively,
      * then check profile for string to modify the
      * terminal or display method.
+     *
+     * termproc is for mhshow, though mhlist -debug prints it, too.
      */
-    if (!check_charset (chset, strlen (chset))) {
+    if (chset != NULL && !check_charset (chset, strlen (chset))) {
 	snprintf (buffer, sizeof(buffer), "%s-charset-%s", invo_name, chset);
 	if ((cp = context_find (buffer)))
 	    ct->c_termproc = getcpy (cp);
@@ -1364,7 +1522,7 @@ no_body:
 }
 
 
-static int
+int
 params_external (CT ct, int composing)
 {
     char **ap, **ep;
@@ -1484,7 +1642,7 @@ init_encoding (CT ct, OpenCEFunc openfnx)
 }
 
 
-static void
+void
 close_encoding (CT ct)
 {
     CE ce;
@@ -1578,7 +1736,7 @@ openBase64 (CT ct, char **file)
     unsigned char value, *b, *b1, *b2, *b3;
     unsigned char *cp, *ep;
     char buffer[BUFSIZ];
-    /* sbeck -- handle prefixes */
+    /* sbeck -- handle suffixes */
     CI ci;
     CE ce;
     MD5_CTX mdContext;
@@ -1792,7 +1950,7 @@ openQuoted (CT ct, char **file)
     char buffer[BUFSIZ];
     unsigned char mask;
     CE ce;
-    /* sbeck -- handle prefixes */
+    /* sbeck -- handle suffixes */
     CI ci;
     MD5_CTX mdContext;
 
@@ -1991,12 +2149,12 @@ Init7Bit (CT ct)
 }
 
 
-static int
+int
 open7Bit (CT ct, char **file)
 {
     int	cc, fd, len;
     char buffer[BUFSIZ];
-    /* sbeck -- handle prefixes */
+    /* sbeck -- handle suffixes */
     char *cp;
     CI ci;
     CE ce;
@@ -2083,6 +2241,8 @@ open7Bit (CT ct, char **file)
 	    fprintf (ce->ce_fp, "%s:%s", ID_FIELD, ct->c_id);
 	if (ct->c_descr)
 	    fprintf (ce->ce_fp, "%s:%s", DESCR_FIELD, ct->c_descr);
+	if (ct->c_dispo)
+	    fprintf (ce->ce_fp, "%s:%s", DISPO_FIELD, ct->c_dispo);
 	fprintf (ce->ce_fp, "\n");
     }
 
@@ -2596,6 +2756,8 @@ openMail (CT ct, char **file)
 	return NOTOK;
     }
 
+    /* showproc is for mhshow and mhstore, though mhlist -debug
+     * prints it, too. */
     if (ct->c_showproc)
 	free (ct->c_showproc);
     ct->c_showproc = add ("true", NULL);

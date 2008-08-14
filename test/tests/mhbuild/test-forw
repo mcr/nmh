@@ -1,0 +1,114 @@
+#!/bin/sh
+######################################################
+#
+# Test forwarding messages (including RFC-934 mode).
+#
+######################################################
+
+# TODO: Move to a common file tests can source; need more framework...
+failed=0
+check() {
+    diff -u $expected $actual
+    if [ $? -ne 0 ]; then
+        failed=$((failed + 1))
+    fi
+}
+
+# Make a draft file forwarding two messages.
+mkdraft() {
+    cat > $draft <<EOF
+To:
+cc:
+Fcc: +outbox
+Subject:
+--------
+#forw [forwarded messages] +inbox 1 2
+EOF
+}
+
+# Munge the Content-Id from the draft after mhbuild, so we have a reliable
+# value to check.
+mungedraft() {
+    sed 's/\(Content-ID:\) <[^>][^>]*>/\1 <TESTID>/' $draft > $actual
+}
+
+draft=$MH_TEST_DIR/$$.draft
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+# check mhbuild
+cat > $expected <<EOF
+To:
+cc:
+Fcc: +outbox
+Subject:
+MIME-Version: 1.0
+Content-Type: multipart/digest; boundary="----- =_aaaaaaaaaa0"
+Content-ID: <TESTID>
+Content-Description: forwarded messages
+
+------- =_aaaaaaaaaa0
+Content-Type: message/rfc822
+
+From: Test1 <test1@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message 1
+
+This is message number 1
+
+------- =_aaaaaaaaaa0
+Content-Type: message/rfc822
+
+From: Test2 <test2@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message 2
+
+This is message number 2
+
+------- =_aaaaaaaaaa0--
+EOF
+mkdraft
+mhbuild $draft
+mungedraft
+check
+
+# check mhbuild -rfc934
+cat > $expected <<EOF
+To:
+cc:
+Fcc: +outbox
+Subject:
+MIME-Version: 1.0
+Content-Type: multipart/digest; boundary="----- =_aaaaaaaaaa0"
+Content-ID: <TESTID>
+Content-Description: forwarded messages
+
+
+------- =_aaaaaaaaaa0
+
+From: Test1 <test1@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message 1
+
+This is message number 1
+
+------- =_aaaaaaaaaa0
+
+From: Test2 <test2@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message 2
+
+This is message number 2
+
+------- =_aaaaaaaaaa0--
+EOF
+mkdraft
+mhbuild -rfc934 $draft
+mungedraft
+check
+
+exit $failed
