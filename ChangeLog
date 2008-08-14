@@ -1,5 +1,20 @@
 2008-08-13  Eric Gillespie  <epg@pretzelnet.org>
 
+	* sbr/ambigsw.c: Send print_sw output to stderr.  This avoids
+	strange problems with scan `pick -bogus`, not to mention being
+	nicer anyway.
+
+	* sbr/getans.c, sbr/print_help.c, uip/msh.c: Send print_sw output
+	to stdout.
+
+	* h/prototypes.h, sbr/print_sw.c (print_sw): Add FILE * argument
+	and send output there rather than to stdout.
+
+	* test/tests/pick/test-stderr: Add test that error messages don't
+	end up going to stdout.
+
+2008-08-13  Eric Gillespie  <epg@pretzelnet.org>
+
 	* uip/pick.c: Print matching messages immediately, instead of
 	waiting until the very end to print anything.
 	Ensure valid sequence name as soon as we parse it from command,

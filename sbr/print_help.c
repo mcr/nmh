@@ -23,7 +23,7 @@ print_help (char *str, struct swit *swp, int print_context)
 
     /* print all the switches */
     printf ("  switches are:\n");
-    print_sw (ALL, swp, "-");
+    print_sw (ALL, swp, "-", stdout);
 
     /*
      * check if we should print any profile entries

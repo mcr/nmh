@@ -1,0 +1,24 @@
+#!/bin/sh
+######################################################
+#
+# Test that errors are not written to stdout.
+#
+######################################################
+
+expected_err=$MH_TEST_DIR/$$.expected_err
+expected_out=$MH_TEST_DIR/$$.expected_out
+actual_err=$MH_TEST_DIR/$$.actual_err
+actual_out=$MH_TEST_DIR/$$.actual_out
+
+# Error message should go to stderr.
+cat > $expected_err <<EOF
+pick: -a ambiguous.  It matches
+  -and
+  -after date
+EOF
+# Nothing should to go stdout.
+cat /dev/null > $expected_out
+
+pick -a > $actual_out 2> $actual_err
+diff -u $expected_err $actual_err
+diff -u $expected_out $actual_out

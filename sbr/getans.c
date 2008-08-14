@@ -50,7 +50,7 @@ getans (char *prompt, struct swit *ansp)
 	*cp = '\0';
 	if (ansbuf[0] == '?' || cp == ansbuf) {
 	    printf ("Options are:\n");
-	    print_sw (ALL, ansp, "");
+	    print_sw (ALL, ansp, "", stdout);
 	    continue;
 	}
 	cpp = brkstring (ansbuf, " ", NULL);

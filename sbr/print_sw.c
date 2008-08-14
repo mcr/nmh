@@ -13,7 +13,7 @@
 
 
 void
-print_sw (char *substr, struct swit *swp, char *prefix)
+print_sw (char *substr, struct swit *swp, char *prefix, FILE *fp)
 {
     int len, optno;
     register int i;
@@ -45,10 +45,11 @@ print_sw (char *substr, struct swit *swp, char *prefix)
 		    *cp++ = *cp1++;
 		*cp++ = ')';
 		while ((*cp++ = *cp1++));
-		printf ("  %s%s\n", prefix, buf);
+		fprintf (fp, "  %s%s\n", prefix, buf);
 	    } else {
 		if (!swp->minchars)
-		    printf(optno ? "  %s[no]%s\n" : "  %s%s\n", prefix, swp->sw);
+		    fprintf(fp, optno ? "  %s[no]%s\n" : "  %s%s\n",
+                            prefix, swp->sw);
 	    }
 	    if (optno)
 		swp++;	/* skip -noswitch */

@@ -16,5 +16,5 @@ void
 ambigsw (char *arg, struct swit *swp)
 {
     advise (NULL, "-%s ambiguous.  It matches", arg);
-    print_sw (arg, swp, "-");
+    print_sw (arg, swp, "-", stderr);
 }

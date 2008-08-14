@@ -1475,7 +1475,7 @@ getargs (char *prompt, struct swit *sw, struct Cmd *cmdp)
 	    continue;
 	if (buffer[0] == '?') {
 	    printf ("commands:\n");
-	    print_sw (ALL, sw, "");
+	    print_sw (ALL, sw, "", stdout);
 	    printf ("type CTRL-D or use ``quit'' to leave %s\n",
 		    invo_name);
 	    continue;
@@ -2142,7 +2142,7 @@ pCMD (char *str, struct swit *sw, struct Cmd *cmdp)
 
 	    case OK: 
 		printf ("commands:\n");
-		print_sw (ALL, sw, "");
+		print_sw (ALL, sw, "", stdout);
 		printf ("type ``quit'' to leave %s\n", invo_name);
 		fflush (stdout);
 		fflush (stderr);

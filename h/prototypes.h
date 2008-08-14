@@ -91,7 +91,7 @@ int pidwait (pid_t, int);
 int pidstatus (int, FILE *, char *);
 char *pluspath(char *);
 void print_help (char *, struct swit *, int);
-void print_sw (char *, struct swit *, char *);
+void print_sw (char *, struct swit *, char *, FILE *);
 void print_version (char *);
 void push (void);
 char *pwd (void);
