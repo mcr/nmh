@@ -2,13 +2,23 @@
 
 set -e
 
+if TEMPDIR=`cat test-temp-dir 2> /dev/null` \
+   && [ -e $TEMPDIR/bld/Makefile ]; then
+    (cd $TEMPDIR/bld && make all install)
+    exit
+fi
+
 TEMPDIR=`mktemp -d /tmp/nmh-test-XXXXXXXX`
 echo $TEMPDIR > test-temp-dir
 
 cd ..
-./autogen.sh
-./configure --prefix=$TEMPDIR --with-locking=fcntl --enable-debug
-make clean
+if ! [ -e configure ]; then
+    ./autogen.sh
+fi
+srcdir=$PWD
+mkdir $TEMPDIR/bld
+cd $TEMPDIR/bld
+$srcdir/configure --prefix=$TEMPDIR --with-locking=fcntl --enable-debug
 make install
 
 echo "Path: $TEMPDIR/Mail" > $TEMPDIR/mh_profile

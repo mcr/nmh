@@ -1,3 +1,10 @@
+2008-08-14  Eric Gillespie  <epg@pretzelnet.org>
+
+	* test/setup-test: Don't run autogen.sh unless needed.  Build in a
+	blddir under the temporary directory so as not to interfere with
+	whatever the developer may be doing in the source directory.
+	If the temporary directory already exists, rebuild and install it.
+
 2008-08-13  Eric Gillespie  <epg@pretzelnet.org>
 
 	* sbr/ambigsw.c: Send print_sw output to stderr.  This avoids
