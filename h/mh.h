@@ -223,7 +223,15 @@ struct msgs {
  * m_getfld() message parsing
  */
 
-#define NAMESZ  128		/* Limit on component name size     */
+#define NAMESZ  999		/* Limit on component name size.
+				   RFC 2822 limits line lengths to
+				   998 characters, so a header name
+				   can be at most that long.
+				   m_getfld limits header names to 2
+				   less than NAMESZ, which is fine,
+				   because header names must be
+				   followed by a colon.	 Add one for
+				   terminating NULL. */
 
 #define LENERR  (-2)		/* Name too long error from getfld  */
 #define FMTERR  (-3)		/* Message Format error             */

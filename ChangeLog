@@ -1,5 +1,13 @@
 2008-10-23  David Levine <levinedl@acm.org>
 
+	* h/mh.h: raised NAMESZ from 128 to 999.  RFC 2822 limits line
+	lengths to 998 characters, so a header name can be at most that long.
+	m_getfld limits header names to 2 less than NAMESZ, which is fine,
+	because header names must be followed by a colon.  Add one for
+	terminating NULL.
+
+2008-10-23  David Levine <levinedl@acm.org>
+
 	* sbr/m_getfld.c: in warning message, use NAMESZ-2 instead of
 	NAMESZ-1 bytes because the message says "exceeds", not
 	"is greater than or equal to".
