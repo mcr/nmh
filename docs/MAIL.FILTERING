@@ -43,6 +43,11 @@ If you do not rewrite the "From " line into this format, the `packf'
 command will still work.  But it may create fake "From " lines which
 are not the same as the originals.
 
+Alternatively, you might be able to suppress generation of the "From "
+line.  If your procmail invocation includes the -f or -r option,
+remove.  Those options add a "From " line to incoming beginning of
+messages that do not have them.
+
 Here is a typical .procmailrc file for using procmail in conjunction
 with nmh.  For more information, see the manual pages for procmail,
 procmailrc and procmailex.
