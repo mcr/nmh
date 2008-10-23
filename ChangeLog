@@ -1,5 +1,11 @@
 2008-10-23  David Levine <levinedl@acm.org>
 
+	* sbr/m_getfld.c: in warning message, use NAMESZ-2 instead of
+	NAMESZ-1 bytes because the message says "exceeds", not
+	"is greater than or equal to".
+
+2008-10-23  David Levine <levinedl@acm.org>
+
 	* docs/MAIL.FILTERING: added note on removing procmail -f or
 	-r options to try to suppress generation of a "From " line on
 	incoming messages.

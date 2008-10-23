@@ -346,7 +346,7 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 		}
 		if ((i -= j) <= 0) {
 		    *cp = *buf = 0;
-		    advise (NULL, "field name \"%s\" exceeds %d bytes", name, NAMESZ - 1);
+		    advise (NULL, "field name \"%s\" exceeds %d bytes", name, NAMESZ - 2);
 		    state = LENERR;
 		    goto finish;
 		}
