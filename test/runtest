@@ -1,6 +1,20 @@
 #!/bin/sh
 
+set -e
+
+if [ ! -e test-temp-dir ]; then
+   echo "test-temp-dir not found: running setup-test"
+   ./setup-test
+fi
+
 export MH_TEST_DIR=`cat test-temp-dir`
+
+if [ ! -e "$MH_TEST_DIR/bld/Makefile" ]; then
+   echo "temporary directory missing or broken: running setup-test"
+   ./setup-test
+   export MH_TEST_DIR=`cat test-temp-dir`
+fi   
+
 export MH=$MH_TEST_DIR/mh_profile
 export PATH=$MH_TEST_DIR/bin:$PATH
 
@@ -23,9 +37,10 @@ EOF
 done
 
 # now run the test
+set +e
 /bin/sh $1
-
 return_value=$?
+set -e
 
 if [ $return_value -eq 0 ] ; then
     echo Test $1 PASS

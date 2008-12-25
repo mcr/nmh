@@ -1,3 +1,8 @@
+2008-08-03  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* test/runtest: automatically run setup-test if it hasn't already
+	been done. Improve error handling in test script with 'set -e'.
+
 2008-10-23  David Levine <levinedl@acm.org>
 
 	* h/mh.h: raised NAMESZ from 128 to 999.  RFC 2822 limits line
