@@ -1,4 +1,10 @@
-2008-08-03  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+2008-12-26  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
+
+	* test/common.sh: new file for common utility functions for the
+	test scripts. Moved findprog out of manpage test script into this
+	new file.
+
+2008-12-25  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* test/runtest: automatically run setup-test if it hasn't already
 	been done. Improve error handling in test script with 'set -e'.

@@ -6,31 +6,9 @@
 #
 ######################################################
 
-# First find out whether we have a groff on the path:
+. common.sh
 
-# portable implementation of 'which' utility
-findprog()
-{
-  FOUND=
-  PROG="$1"
-  IFS_SAVE="$IFS"
-  IFS=:
-  for D in $PATH; do
-    if [ -z "$D" ]; then
-      D=.
-    fi
-    if [ -f "$D/$PROG" ] && [ -x "$D/$PROG" ]; then
-      printf '%s\n' "$D/$PROG"
-      break
-    fi
-  done
-  IFS="$IFS_SAVE"
-}
-
-if [ -z "$(findprog groff)" ]; then
-  echo "Test $0 SKIP (missing groff)"
-  exit 120
-fi
+require_prog groff
 
 cd $MH_TEST_DIR/share/man
 
