@@ -31,3 +31,22 @@ require_prog ()
     test_skip "missing $1"
   fi
 }
+
+# Some stuff for doing silly progress indicators
+progress_update ()
+{
+  THIS="$1"
+  FIRST="$2"
+  LAST="$3"
+  RANGE="$(($LAST - $FIRST))"
+  PROG="$(($THIS - $FIRST))"
+  # this automatically rounds to nearest integer
+  PERC="$(((100 * $PROG) / $RANGE))"
+  # note \r so next update will overwrite
+  printf "%3d%%\r" $PERC
+}
+
+progress_done ()
+{
+  printf "100%%\n"
+}

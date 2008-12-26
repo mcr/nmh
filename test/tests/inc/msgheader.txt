@@ -1,0 +1,5 @@
+From: Test <test@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message
+

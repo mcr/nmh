@@ -1,8 +1,17 @@
 2008-12-26  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
+	* sbr/m_getfld.c: fix two bugs which could cause us to walk off
+	the beginning of the stdio or prefix-string buffer when checking
+	for presence of the end-of-message delimiter in some situations.
+	This might cause inc to dump core if you were unlucky. (This was
+	Debian bug 359167.)
+	* test/tests/inc/{md5sums,msgheader.txt,test-deb359167,
+	test-eom-align,fromline.txt,filler.txt,deb359167.mbox}: new tests
+	both for the specific problem and to try to check various alignments
+	of the eom string with the stdio buffer ending.
 	* test/common.sh: new file for common utility functions for the
 	test scripts. Moved findprog out of manpage test script into this
-	new file.
+	new file. Added some functions for doing progress indicators.
 
 2008-12-25  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 

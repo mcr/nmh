@@ -522,22 +522,35 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 		    ep = bp + c - 1;
 		    if ((sp = pat_map[*ep])) {
 			do {
-			    cp = sp;
-			    while (*--ep == *--cp)
-			    ;
-			    if (cp < fdelim) {
-				if (ep >= bp)
-				    /*
-				     * ep < bp means that all the buffer
-				     * contains is a prefix of delim.
-				     * If this prefix is really a delim, the
-				     * m_eom call at entry should have found
-				     * it.  Thus it's not a delim and we can
-				     * take all of it.
+			    /* This if() is true unless (a) the buffer is too
+			     * small to contain this delimiter prefix, or
+			     * (b) it contains exactly enough chars for the
+			     * delimiter prefix.
+			     * For case (a) obviously we aren't going to match.
+			     * For case (b), if the buffer really contained exactly
+			     * a delim prefix, then the m_eom call at entry
+			     * should have found it.  Thus it's not a delim
+			     * and we know we won't get a match.
+			     */
+			    if (((sp - fdelim) + 2) <= c) {
+				cp = sp;
+				/* Unfortunately although fdelim has a preceding NUL
+				 * we can't use this as a sentinel in case the buffer
+				 * contains a NUL in exactly the wrong place (this
+				 * would cause us to run off the front of fdelim).
+				 */
+				while (*--ep == *--cp)
+				    if (cp < fdelim)
+					break;
+				if (cp < fdelim) {
+				    /* we matched the entire delim prefix,
+				     * so only take the buffer up to there.
+				     * we know ep >= bp -- check above prevents underrun
 				     */
 				    c = (ep - bp) + 2;
-			    break;
-			}
+				    break;
+				}
+			    }
 			    /* try matching one less char of delim string */
 			    ep = bp + c - 1;
 			} while (--sp > fdelim);

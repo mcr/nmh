@@ -1,0 +1,123 @@
+#!/bin/sh
+# Test all combinations of alignment of the end-of-message delimiter
+# with the end of a stdio buffer
+
+set -e
+
+. common.sh
+
+THISDIR="tests/inc"
+
+if [ ! -z "$VALGRIND_ME" ]; then
+    require_prog valgrind
+    # Lack of quotes here is important
+    VALGRIND="valgrind --quiet --error-exitcode=1"
+    echo "Running tests under valgrind: takes ages!"
+else
+    VALGRIND=
+fi
+
+# First check that all our various pieces of text are
+# intact. (Since we're dealing in exact byte alignment
+# minor corruptions such as line ending changes could
+# render the tests useless.)
+(cd "$THISDIR" && md5sum *.txt > "$MH_TEST_DIR/inctest.md5sums")
+diff -u "$THISDIR/md5sums" "$MH_TEST_DIR/inctest.md5sums"
+
+FILLER="$THISDIR/filler.txt"
+FROMLINE="$THISDIR/fromline.txt"
+HDR="$THISDIR/msgheader.txt"
+
+if grep -q From "$FILLER"; then
+   echo "Somebody's messed with $FILLER -- it must not contain"
+   echo "anything that might look like a message delimiter!"
+   exit 1
+fi
+
+# a sort of worst-case guess for the buffer size;
+# obviously a buffer boundary for this will be a boundary
+# for any smaller power of two size.
+# If you need to increase this you'll need to make filler.txt
+# bigger as well.
+STDIO_BUFSZ=16384
+
+FROMLINESZ="$(wc -c "$FROMLINE" | cut -d ' ' -f 1)"
+HDRSZ="$(wc -c "$HDR" | cut -d ' ' -f 1)"
+
+# makembox_A mboxname sz
+# Assemble a mailbox into file mboxname, with two messages, such
+# that the first is exactly sz bytes long (including its header
+# and its initial 'From' line and the newline which terminates it
+# but not the newline which mbox format demands after each message)
+# We also leave the body of message one in mboxname.body
+# (the body of message two is always $FILLER in its entirety)
+makembox_A () {
+  MBOX="$1"
+  SZ=$2
+
+  WANTSZ="$(($SZ - $HDRSZ - $FROMLINESZ - 1))"
+  dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
+  echo >> "$MBOX.body"
+  cat "$FROMLINE" "$HDR" "$MBOX.body" > "$MBOX"
+  echo >> "$MBOX"
+  cat "$FROMLINE" "$HDR" "$FILLER" >> "$MBOX"
+  echo >> "$MBOX"
+}
+
+# make_mbox_B mboxname sz
+# Test B makes a mailbox with one message of sz bytes long,
+# which ends in a partial mbox delimiter (ie part of the string
+# \n\nFrom '). To both do this and be a valid mbox this means
+# it has to end with two newlines (one of which is in the message
+# body and one of which is the mbox format mandated one)
+makembox_B () {
+  MBOX="$1"
+  SZ=$2
+
+  WANTSZ="$(($SZ - $HDRSZ - $FROMLINESZ - 1))"
+  dd if="$FILLER" of="$MBOX.body" bs="$WANTSZ" count=1 2>/dev/null
+  echo >> "$MBOX.body"
+  cat "$FROMLINE" "$HDR" "$MBOX.body" > "$MBOX"
+  echo >> "$MBOX"
+}
+
+# do_one_test_A sz
+# Do a single test with message one's body of size sz.
+do_one_test_A () {
+  SZ=$1
+  makembox_A "$MH_TEST_DIR/eom-align.mbox" $STDIO_BUFSZ
+  $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
+  # We know the messages should be 11 and 12 in inbox
+  # Now get the bodies back out.
+  sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/11" > "$MH_TEST_DIR/eom-align.inbox.body1"
+  sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/12" > "$MH_TEST_DIR/eom-align.inbox.body2"
+  diff -u "$MH_TEST_DIR/eom-align.mbox.body" "$MH_TEST_DIR/eom-align.inbox.body1"
+  diff -u "$FILLER" "$MH_TEST_DIR/eom-align.inbox.body2"
+  rmm 11 12
+}
+
+# do_one_test_B sz
+# Do a test type B
+do_one_test_B () {
+  SZ=$1
+  makembox_B "$MH_TEST_DIR/eom-align.mbox" $STDIO_BUFSZ
+  $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
+  # We know the message should be 11 in the inbox
+  sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/11" > "$MH_TEST_DIR/eom-align.inbox.body1"
+  diff -u "$MH_TEST_DIR/eom-align.mbox.body" "$MH_TEST_DIR/eom-align.inbox.body1"
+  rmm 11
+}
+
+
+# Cover a decent range around the stdio buffer size to make sure we catch
+# any corner cases whether they relate to total message size equal to
+# buffer size or to body size equal to buffer size.
+START=$(($STDIO_BUFSZ - 16))
+FINISH=$(($STDIO_BUFSZ + $HDRSZ + $FROMLINESZ + 32))
+echo "Testing inc of files with various alignments of eom marker with buffer size..."
+for sz in $(seq $START $FINISH); do
+  progress_update $sz $START $FINISH
+  do_one_test_A $sz
+  do_one_test_B $sz
+done
+progress_done
