@@ -111,9 +111,10 @@ client (char *args, char *service, char *response, int len_response, int debug)
 
 	    close(sd);
 	}
+
+    	freeaddrinfo(res);
     }
 
-    freeaddrinfo(res);
     client_freelist(ap);
     strncpy (response, "no servers available", len_response);
     return NOTOK;
