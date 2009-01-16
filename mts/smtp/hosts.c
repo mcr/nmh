@@ -38,7 +38,7 @@ OfficialName (char *name)
 {
     unsigned char *p;
     char *q, site[BUFSIZ];
-    struct hostent *hp;
+    struct addrinfo hints, *res;
 
     static char buffer[BUFSIZ];
     char **r;
@@ -52,12 +52,14 @@ OfficialName (char *name)
     if (!mh_strcasecmp (LocalName(), site))
 	return LocalName();
 
-#ifdef	HAVE_SETHOSTENT
-    sethostent (1);
-#endif
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_flags = AI_CANONNAME;
+    hints.ai_family = PF_UNSPEC;
 
-    if ((hp = gethostbyname (q))) {
-	strncpy (buffer, hp->h_name, sizeof(buffer));
+    if (getaddrinfo(q, NULL, &hints, &res) == 0) {
+	strncpy (buffer, res->ai_canonname, sizeof(buffer));
+	buffer[sizeof(buffer) - 1] = '\0';
+	freeaddrinfo(res);
 	return buffer;
     }
     if (hosts.h_name || init_hs ()) {

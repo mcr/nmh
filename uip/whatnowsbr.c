@@ -1044,7 +1044,7 @@ static struct swit  sendswitches[] = {
 #define	CLIESW           30
     { "client host", -6 },
 #define	SERVSW           31
-    { "server host", -6 },
+    { "server host", 6 },
 #define	SNOOPSW          32
     { "snoop", -5 },
 #define SDRFSW           33
@@ -1058,11 +1058,13 @@ static struct swit  sendswitches[] = {
 #define SASLMECHSW       37
     { "saslmech", SASLminc(-5) },
 #define USERSW           38
-    { "user", SASLminc(-4) },
+    { "user", SASLminc(4) },
 #define SNDATTACHSW       39
     { "attach file", 6 },
 #define SNDATTACHFORMAT   40
     { "attachformat", 7 },
+#define PORTSW		  41
+    { "port server-port-name/number", 4 },
     { NULL, 0 }
 };
 

@@ -138,6 +138,8 @@ static struct swit switches[] = {
     { "saslmech", SASLminc(-5) },
 #define USERSW                   39
     { "user", SASLminc(-4) },
+#define PORTSW			 40
+    { "port server port name/number", 4 },
     { NULL, 0 }
 };
 
@@ -236,6 +238,7 @@ static int nameoutput=0;	/* putadr() has output header name       */
 static int sasl=0;		/* Use SASL auth for SMTP                */
 static char *saslmech=NULL;	/* Force use of particular SASL mech     */
 static char *user=NULL;		/* Authenticate as this user             */
+static char *port="smtp";	/* Name of server port for SMTP		 */
 
 static unsigned msgflags = 0;	/* what we've seen */
 
@@ -516,6 +519,11 @@ main (int argc, char **argv)
 		
 		case USERSW:
 		    if (!(user = *argp++) || *user == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    continue;
+
+		case PORTSW:
+		    if (!(port = *argp++) || *port == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 	    }
@@ -1403,7 +1411,7 @@ post (char *file, int bccque, int talk)
 
     sigon ();
 
-    if (rp_isbad (retval = sm_init (clientsw, serversw, watch, verbose,
+    if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch, verbose,
 				    snoop, onex, queued, sasl, saslmech,
 				    user))
 	    || rp_isbad (retval = sm_winit (smtpmode, from)))
@@ -1442,8 +1450,9 @@ verify_all_addresses (int talk)
     sigon ();
 
     if (!whomsw || checksw)
-	if (rp_isbad (retval = sm_init (clientsw, serversw, watch, verbose, snoop, 0,
-					queued, sasl, saslmech, user))
+	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
+					verbose, snoop, 0, queued, sasl,
+					saslmech, user))
 		|| rp_isbad (retval = sm_winit (smtpmode, from)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 

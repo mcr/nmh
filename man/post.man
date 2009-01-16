@@ -181,6 +181,16 @@ account, or when remote email robots give improper precedence to the envelope
 .BR sendmail 's
 \*(lqX\-Authentication\-Warning:\*(rq header). 
 .PP
+If nmh is using the SMTP MTA, the
+.B \-server
+and the
+.B \-port
+switches can be used to override the default mail server (defined by the
+.RI servers
+entry in
+.I %etcdir%/mts.conf
+).
+.PP
 If
 .B nmh
 has been compiled with SASL support, the
@@ -198,15 +208,13 @@ and the the
 switch can be used to select a authorization userid
 to provide to SASL other than the default.
 .PP
-Currently SASL security layers are not supported for SMTP.
-.BR nmh 's
-SMTP SASL code
-will always negotiate an unencrypted connection.  This means that while the SMTP
-authentication can be encrypted, the subsequent data stream can not.  This is in
-contrast to
-.BR nmh 's
-POP3 SASL support, where encryption is supported for both the
-authentication and the data stream.
+If SASL authentication is successful, 
+.BR nmh
+will attempt to negotiate a security layer for session encryption.
+Encrypted data is labelled with `(encrypted)' and `(decrypted)' when
+viewing the SMTP transaction with the
+.B \-snoop
+switch.
 
 .SH FILES
 .fc ^ ~

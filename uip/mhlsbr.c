@@ -291,7 +291,6 @@ int SOprintf (char *, ...);           /* from termsbr.c */
 int sc_width (void);                  /* from termsbr.c */
 int sc_length (void);                 /* from termsbr.c */
 int sc_hardcopy (void);               /* from termsbr.c */
-struct hostent *gethostbystring ();
 
 
 int
@@ -1526,17 +1525,16 @@ static int
 doface (struct mcomp *c1)
 {
     int	result, sd;
-    struct sockaddr_in in_socket;
-    struct sockaddr_in *isock = &in_socket;
     static int inited = OK;
-    static int addrlen;
-    static struct in_addr addr;
-    static unsigned short portno;
+    static struct sockaddr_storage ss;
+    static socklen_t socklen;
+    static int socktype;
+    static int protocol;
 
     if (inited == OK) {
 	char *cp;
 	char **ap = brkstring (cp = getcpy (faceproc), " ", "\n");
-	struct hostent *hp;
+	struct addrinfo hints, *res;
 
 	if (ap[0] == NULL || ap[1] == NULL) {
 bad_faceproc: ;
@@ -1544,27 +1542,30 @@ bad_faceproc: ;
 	    return (inited = NOTOK);
 	}
 
-	if (!(hp = gethostbystring (ap[0])))
-	    goto bad_faceproc;
-	memcpy((char *) &addr, hp->h_addr, addrlen = hp->h_length);
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_flags = AI_ADDRCONFIG;
+	hints.ai_family = PF_UNSPEC;
+	hints.ai_socktype = SOCK_DGRAM;
 
-	portno = htons ((unsigned short) atoi (ap[1]));
-	free (cp);
+	if (getaddrinfo(ap[0], ap[1], &hints, &res) != 0)
+	    goto bad_faceproc;
+
+	memcpy(&ss, res->ai_addr, res->ai_addrlen);
+	socklen = res->ai_addrlen;
+	socktype = res->ai_socktype;
+	protocol = res->ai_protocol;
+	freeaddrinfo(res);
 
 	inited = DONE;
     }
     if (inited == NOTOK)
 	return NOTOK;
 
-    isock->sin_family = AF_INET;
-    isock->sin_port = portno;
-    memcpy((char *) &isock->sin_addr, (char *) &addr, addrlen);
-
-    if ((sd = socket (AF_INET, SOCK_DGRAM, 0)) == NOTOK)
+    if ((sd = socket (ss.ss_family, socktype, protocol)) == NOTOK)
 	return NOTOK;
 
     result = sendto (sd, c1->c_text, strlen (c1->c_text), 0,
-		(struct sockaddr *) isock, sizeof(*isock));
+		(struct sockaddr *) &ss, socklen);
 
     close (sd);
 

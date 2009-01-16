@@ -29,6 +29,10 @@ send \- send a message
 .IR seconds ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-watch " | " \-nowatch ]
+.RB [ \-server
+.IR servername ]
+.RB [ \-port
+.IR port-name/number ]
 .RB [ \-sasl ]
 .RB [ \-saslmech
 .IR mechanism ]
@@ -315,6 +319,16 @@ switch, the user can direct
 .B send
 as to how long it should make header lines containing addresses.
 .PP
+If nmh is using the SMTP MTA, the
+.B \-server
+and the
+.B \-port
+switches can be used to override the default mail server (defined by the
+.RI servers
+entry in
+.I %etcdir%/mts.conf
+).
+.PP
 If
 .B nmh
 has been compiled with SASL support, the
@@ -332,15 +346,13 @@ and the the
 switch can be used to select a authorization userid
 to provide to SASL other than the default.
 .PP
-Currently SASL security layers are not supported for SMTP.
-.BR nmh 's
-SMTP SASL code
-will always negotiate an unencrypted connection.  This means that while the SMTP
-authentication can be encrypted, the subsequent data stream can not.  This is in
-contrast to
-.BR nmh 's
-POP3 SASL support, where encryption is supported for both the
-authentication and the data stream.
+If SASL authentication is successful, 
+.BR nmh
+will attempt to negotiate a security layer for session encryption.
+Encrypted data is labelled with `(encrypted)' and `(decrypted)' when
+viewing the SMTP transaction with the
+.B \-snoop
+switch.
 .PP
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
 additional alias files given by the

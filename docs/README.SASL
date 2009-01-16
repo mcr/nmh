@@ -15,18 +15,22 @@ works if you use --enable-pop and the SMTP mail transport.
 
 This release of NMH only supports "Version 2" of the Cyrus SASL library.
 It should work with any newer Cyrus SASL release, but it was tested with
-Cyrus SASL 2.1.12.  In particular, the CRAM-MD5 and GSSAPI (Kerberos 5)
-mechanisms were tested.
+Cyrus SASL 2.1.22.  In particular, the CRAM-MD5 and GSSAPI (Kerberos 5)
+mechanisms were tested.  Older versions of Cyrus-SASL had a bug which
+could manifest when negotiating encrypting depending on the encryption
+type you used, so a newer version of Cyrus-SASL is recommended.
 
-Currently, security layers ("encryption" in SASL-speak) are only supported
-for POP.  This means that if your POP server _and_ the selected GSSAPI
-mechanism supports it, POP communications will be encrypted.  Currently
-SMTP does NOT support security layers; this may be added in a future
-release.
+Currently, security layers ("encryption" in SASL-speak) are supported
+for both POP and SMTP.  This means that if your POP or SMTP server
+_and_ the selected SASL mechanism supports it, client-server
+communications will be encrypted.  In theory this should work with
+any SASL mechanism that supports security layers; it has only been
+tested with the GSSAPI mechanism.
 
 If you are curious as to whether or not your communications are actually
-encrypted or not, you can use the -snoop flag to the POP utilities.
-Communication that is encrypted is preceeded by an (*).
+encrypted or not, you can use the -snoop flag to the POP or SMTP utilities.
+Communication that is encrypted is preceeded by an (encrypted) or
+(decrypted), depending on the direction of communication.
 
 If you would like to use the GSSAPI SASL mechanism (Kerberos V), you
 should read very carefully the documentation that comes with

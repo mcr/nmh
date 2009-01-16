@@ -11,9 +11,6 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-extern int  client(char *args, char *protocol, char *service, int rproto,
-		   char *response, int len_response);
-
 #if defined(NNTP) && !defined(PSHSBR)
 # undef NNTP
 #endif
@@ -81,6 +78,8 @@ static sasl_callback_t callbacks[] = {
 #define POP_SASL_CB_N_PASS 1
     { SASL_CB_LOG, NULL, NULL },
     { SASL_CB_LIST_END, NULL, NULL },
+
+#define SASL_BUFFER_SIZE 262144
 };
 #else /* CYRUS_SASL */
 # define sasl_fgetc fgetc
@@ -255,7 +254,7 @@ pop_auth_sasl(char *user, char *host, char *mech)
      */
 
     memset(&secprops, 0, sizeof(secprops));
-    secprops.maxbufsize = BUFSIZ;
+    secprops.maxbufsize = SASL_BUFFER_SIZE;
     secprops.max_ssf = UINT_MAX;
 
     result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
@@ -384,7 +383,8 @@ pop_auth_sasl(char *user, char *host, char *mech)
     }
 
     /*
-     * Limit this to what we can deal with.
+     * Limit this to what we can deal with.  Shouldn't matter much because
+     * this is only outgoing data (which should be small)
      */
 
     if (maxoutbuf == 0 || maxoutbuf > BUFSIZ)
@@ -459,7 +459,7 @@ parse_proxy(char *proxy, char *host)
     char *c;
     
     /* skip any initial space */
-    for (pro = proxy; isspace(*pro); pro++)
+    for (pro = (unsigned char *) proxy; isspace(*pro); pro++)
         continue;
     
     /* calculate required size for argument array */
@@ -566,12 +566,12 @@ pop_init (char *host, char *user, char *pass, char *proxy, int snoop,
 	    return NOTOK;
 # endif /* KPOP */
 	} else {
-	    if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response, sizeof(response))) == NOTOK) {
+	    if ((fd1 = client (host, POPSERVICE, response, sizeof(response), snoop)) == NOTOK) {
 		return NOTOK;
 	    }
 	}
 #else	/* NNTP */
-	if ((fd1 = client (host, "tcp", "nntp", rpop, response, sizeof(response))) == NOTOK)
+	if ((fd1 = client (host, "nntp", response, sizeof(response), snoop)) == NOTOK)
 	    return NOTOK;
 #endif
 
@@ -1186,7 +1186,7 @@ sasl_fgetc(FILE *f)
     static int cnt = 0;
     unsigned int retbufsize = 0;
     int cc, result;
-    char *retbuf, tmpbuf[BUFSIZ];
+    char *retbuf, tmpbuf[SASL_BUFFER_SIZE];
 
     /*
      * If we have some leftover data, return that

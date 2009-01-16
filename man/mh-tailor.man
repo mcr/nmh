@@ -288,19 +288,14 @@ All words following the official names are aliases for that host.
 .RE
 .PP
 .BR servers :
-localhost \\01localnet
+localhost
 .RS 5
 A lists of hosts and networks which to look for SMTP servers when
 posting local mail.  It turns out this is a major win for hosts which
 don't run an message transport system.  The value of
 .B servers
-should be one or more items.  Each item is the name of either a host
-or a net (in the latter case, precede the name of the net by a \\01).
-This list is searched when looking for a smtp server to post mail.
-If a host is present, the SMTP port on that host is tried.  If a net
-is present, the SMTP port on each host in that net is tried.  Note that
-if you are running with the BIND code, then any networks specified are
-ignored (sorry, the interface went away under BIND).
+should be one or more items.  Each item is the name of a host which
+is (hopefully) running a SMTP server.
 .SS "SendMail"
 This option is only available if you set
 .B mts

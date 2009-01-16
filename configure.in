@@ -521,12 +521,9 @@ AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
                getutent nl_langinfo mbtowc wcwidth)
 
 dnl solaris has these in the nsl library
-AC_SEARCH_LIBS(gethostbyname, nsl,
-  [AC_DEFINE(HAVE_GETHOSTBYNAME,1,
-    [Define to 1 if you have the `gethostbyname' function.])])
-AC_SEARCH_LIBS(sethostent, nsl,
-  [AC_DEFINE(HAVE_SETHOSTENT,1,
-    [Define to 1 if you have the `sethostent' function.])])
+AC_SEARCH_LIBS(getaddrinfo, nsl,
+  [AC_DEFINE(HAVE_GETADDRINFO,1,
+    [Define to 1 if you have the `getaddrinfo' function.])])
 
 dnl sigsetjmp may be a macro
 AC_MSG_CHECKING(for sigsetjmp)

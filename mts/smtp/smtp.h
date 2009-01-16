@@ -24,7 +24,7 @@ struct smtp {
  * prototypes
  */
 /* int client (); */
-int sm_init (char *, char *, int, int, int, int, int, int, char *, char *);
+int sm_init (char *, char *, char *, int, int, int, int, int, int, char *, char *);
 int sm_winit (int, char *);
 int sm_wadr (char *, char *, char *);
 int sm_waend (void);
@@ -32,11 +32,6 @@ int sm_wtxt (char *, int);
 int sm_wtend (void);
 int sm_end (int);
 char *rp_string (int);
-
-#ifdef MPOP
-int sm_bulk (char *);
-#endif
-
 
 /* The remainder of this file is derived from "mmdf.h" */
 

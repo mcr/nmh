@@ -13,9 +13,6 @@
 #include <h/mts.h>
 #include <signal.h>
 #include <h/signals.h>
-#ifdef MPOP
-#include <errno.h>
-#endif
 
 #ifdef CYRUS_SASL
 #include <sasl/sasl.h>
@@ -82,11 +79,6 @@ static int sm_verbose = 0;
 static FILE *sm_rfp = NULL;
 static FILE *sm_wfp = NULL;
 
-#ifdef MPOP
-static int sm_ispool = 0;
-static char sm_tmpfil[BUFSIZ];
-#endif /* MPOP */
-
 #ifdef CYRUS_SASL
 /*
  * Some globals needed by SASL
@@ -97,8 +89,14 @@ static int sasl_complete = 0;		/* Has authentication succeded? */
 static sasl_ssf_t sasl_ssf;		/* Our security strength factor */
 static char *sasl_pw_context[2];	/* Context to pass into sm_get_pass */
 static int maxoutbuf;			/* Maximum crypto output buffer */
+static char *sasl_outbuffer;		/* SASL output buffer for encryption */
+static int sasl_outbuflen;		/* Current length of data in outbuf */
+static char *sasl_inbuffer;		/* SASL input buffer for encryption */
+static char *sasl_inptr;		/* Pointer to current inbuf position */
+static int sasl_inbuflen;		/* Current length of data in inbuf */
 static int sm_get_user(void *, int, const char **, unsigned *);
 static int sm_get_pass(sasl_conn_t *, void *, int, sasl_secret_t **);
+static int sm_fgetc(FILE *);
 
 static sasl_callback_t callbacks[] = {
     { SASL_CB_USER, sm_get_user, NULL },
@@ -109,6 +107,10 @@ static sasl_callback_t callbacks[] = {
 #define SM_SASL_N_CB_AUTHNAME 2
     { SASL_CB_LIST_END, NULL, NULL },
 };
+
+#define SASL_MAXRECVBUF 65536
+#else /* CYRUS_SASL */
+#define sm_fgetc fgetc
 #endif /* CYRUS_SASL */
 
 static char *sm_noreply = "No reply text given";
@@ -124,11 +126,11 @@ char *EHLOkeys[MAXEHLO + 1];
 /*
  * static prototypes
  */
-static int smtp_init (char *, char *, int, int, int, int, int, int,
+static int smtp_init (char *, char *, char *, int, int, int, int, int, int,
 		      char *, char *);
 static int sendmail_init (char *, char *, int, int, int, int, int);
 
-static int rclient (char *, char *, char *);
+static int rclient (char *, char *);
 static int sm_ierror (char *fmt, ...);
 static int smtalk (int time, char *fmt, ...);
 static int sm_wrecord (char *, int);
@@ -136,19 +138,15 @@ static int sm_wstream (char *, int);
 static int sm_werror (void);
 static int smhear (void);
 static int sm_rrecord (char *, int *);
-static int sm_rerror (void);
+static int sm_rerror (int);
 static RETSIGTYPE alrmser (int);
 static char *EHLOset (char *);
-
-#ifdef MPOP
-static int sm_perror (char *fmt, ...);
-/*
- * smtp.c's own static copy of several nmh library subroutines
- */
-static char **smail_brkstring (char *, char *, char *);
-static int smail_brkany (char, char *);
-char **smail_copyip (char **, char **, int);
-#endif
+static int sm_fwrite(char *, int);
+static int sm_fputs(char *);
+static int sm_fputc(int);
+static int sm_getc(void);
+static void sm_fflush(void);
+static int sm_fgets(char *, int, FILE *);
 
 #ifdef CYRUS_SASL
 /*
@@ -158,16 +156,13 @@ char **smail_copyip (char **, char **, int);
 static int sm_auth_sasl(char *, char *, char *);
 #endif /* CYRUS_SASL */
 
-/* from mts/generic/client.c */
-int client (char *, char *, char *, int, char *, int);
-
 int
-sm_init (char *client, char *server, int watch, int verbose,
+sm_init (char *client, char *server, char *port, int watch, int verbose,
          int debug, int onex, int queued, int sasl, char *saslmech,
          char *user)
 {
     if (sm_mts == MTS_SMTP)
-	return smtp_init (client, server, watch, verbose,
+	return smtp_init (client, server, port, watch, verbose,
 			  debug, onex, queued, sasl, saslmech, user);
     else
 	return sendmail_init (client, server, watch, verbose,
@@ -175,7 +170,7 @@ sm_init (char *client, char *server, int watch, int verbose,
 }
 
 static int
-smtp_init (char *client, char *server, int watch, int verbose,
+smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	   int debug, int onex, int queued, int sasl, char *saslmech,
 	   char *user)
 {
@@ -189,11 +184,6 @@ smtp_init (char *client, char *server, int watch, int verbose,
 
     sm_verbose = verbose;
     sm_debug = debug;
-
-#ifdef MPOP
-    if (sm_ispool)
-	goto all_done;
-#endif
 
     if (sm_rfp != NULL && sm_wfp != NULL)
 	goto send_options;
@@ -211,27 +201,15 @@ smtp_init (char *client, char *server, int watch, int verbose,
 	client = "localhost";
 #endif
 
-    if ((sd1 = rclient (server, "tcp", "smtp")) == NOTOK)
-	return RP_BHST;
+#ifdef CYRUS_SASL
+    sasl_inbuffer = malloc(SASL_MAXRECVBUF);
+    if (!sasl_inbuffer)
+	return sm_ierror("Unable to allocate %d bytes for read buffer",
+			 SASL_MAXRECVBUF);
+#endif /* CYRUS_SASL */
 
-#ifdef MPOP
-    if (sm_ispool) {
-	if (sm_rfp) {
-	    alarm (SM_CLOS);
-	    fclose (sm_rfp);
-	    alarm (0);
-	    sm_rfp = NULL;
-	}
-	if ((sm_wfp = fdopen (sd1, "w")) == NULL) {
-	    unlink (sm_tmpfil);
-	    close (sd1);
-	    return sm_ierror ("unable to fdopen");
-	}
-all_done: ;
-	sm_reply.text[sm_reply.length = 0] = NULL;
-	return (sm_reply.code = RP_OK);
-    }
-#endif /* MPOP */
+    if ((sd1 = rclient (server, port)) == NOTOK)
+	return RP_BHST;
 
     if ((sd2 = dup (sd1)) == NOTOK) {
 	close (sd1);
@@ -453,53 +431,15 @@ sendmail_init (char *client, char *server, int watch, int verbose,
     }
 }
 
-#ifdef MPOP
-# define MAXARGS  1000
-#endif /* MPOP */
-
 static int
-rclient (char *server, char *protocol, char *service)
+rclient (char *server, char *service)
 {
     int sd;
     char response[BUFSIZ];
-#ifdef MPOP
-    char *cp;
-#endif /* MPOP */
 
-    if ((sd = client (server, protocol, service, FALSE, response, sizeof(response))) != NOTOK)
+    if ((sd = client (server, service, response, sizeof(response),
+		      sm_debug)) != NOTOK)
 	return sd;
-
-#ifdef MPOP
-    if (!server && servers && (cp = strchr(servers, '/'))) {
-	char **ap;
-	char *arguments[MAXARGS];
-
-	smail_copyip (smail_brkstring (cp = getcpy (servers), " ", "\n"), arguments, MAXARGS);
-
-	for (ap = arguments; *ap; ap++)
-	    if (**ap == '/') {
-		char *dp;
-
-		if ((dp = strrchr(*ap, '/')) && *++dp == NULL)
-		    *--dp = NULL;
-		snprintf (sm_tmpfil, sizeof(sm_tmpfil), "%s/smtpXXXXXX", *ap);
-#ifdef HAVE_MKSTEMP
-		sd = mkstemp (sm_tmpfil);
-#else
-		mktemp (sm_tmpfil);
-
-		if ((sd = creat (sm_tmpfil, 0600)) != NOTOK) {
-		    sm_ispool = 1;
-		    break;
-		}
-#endif
-	    }
-
-	free (cp);
-	if (sd != NOTOK)
-	    return sd;
-    }
-#endif /* MPOP */
 
     sm_ierror ("%s", response);
     return NOTOK;
@@ -509,14 +449,6 @@ int
 sm_winit (int mode, char *from)
 {
     char *smtpcom;
-
-#ifdef MPOP
-    if (sm_ispool && !sm_wfp) {
-	sm_reply.length = strlen (strcpy (sm_reply.text, "unable to create new spool file"));
-	sm_reply.code = NOTOK;
-	return RP_BHST;
-    }
-#endif /* MPOP */
 
     switch (mode) {
 	case S_MAIL:
@@ -704,18 +636,6 @@ sm_end (int type)
 	    break;
     }
 
-#ifdef MPOP
-    if (sm_ispool) {
-	sm_ispool = 0;
-
-	if (sm_wfp) {
-	    unlink (sm_tmpfil);
-	    fclose (sm_wfp);
-	    sm_wfp = NULL;
-	}
-    }
-#endif /* MPOP */
-
     if (sm_rfp != NULL) {
 	alarm (SM_CLOS);
 	fclose (sm_rfp);
@@ -730,8 +650,14 @@ sm_end (int type)
     if (sm_mts == MTS_SMTP) {
 	status = 0;
 #ifdef CYRUS_SASL
-	if (conn)
+	if (conn) {
 	    sasl_dispose(&conn);
+	    if (sasl_outbuffer) {
+		free(sasl_outbuffer);
+	    }
+	}
+	if (sasl_inbuffer)
+	    free(sasl_inbuffer);
 #endif /* CYRUS_SASL */
     } else {
 	status = pidwait (sm_child, OK);
@@ -742,337 +668,18 @@ sm_end (int type)
     return (status ? RP_BHST : RP_OK);
 }
 
-
-#ifdef MPOP
-
-int
-sm_bulk (char *file)
-{
-    int	cc, i, j, k, result;
-    long pos;
-    char *dp, *bp, *cp, s;
-    char buffer[BUFSIZ], sender[BUFSIZ];
-    FILE *fp, *gp;
-
-    gp = NULL;
-    k = strlen (file) - sizeof(".bulk");
-    if ((fp = fopen (file, "r")) == NULL) {
-	return sm_perror("unable to read %s: ", file);
-    }
-    if (sm_debug) {
-	printf ("reading file %s\n", file);
-	fflush (stdout);
-    }
-
-    i = j = 0;
-    while (fgets (buffer, sizeof(buffer), fp)) {
-	if (j++ == 0)
-	    strncpy (sender, buffer + sizeof("MAIL FROM:") - 1, sizeof(sender));
-	if (strcmp (buffer, "DATA\r\n") == 0) {
-	    i = 1;
-	    break;
-	}
-    }
-    if (i == 0) {
-	if (sm_debug) {
-	    printf ("no DATA...\n");
-	    fflush (stdout);
-	}
-losing0:
-	snprintf (buffer, sizeof(buffer), "%s.bad", file);
-	rename (file, buffer);
-	if (gp) {
-	    snprintf (buffer, sizeof(buffer), "%*.*sA.bulk", k, k, file);
-	    unlink (buffer);
-	    fclose (gp);
-	}
-	fclose (fp);
-	return RP_OK;
-    }
-    if (j < 3) {
-	if (sm_debug) {
-	    printf ("no %srecipients...\n", j < 1 ? "sender or " : "");
-	    fflush (stdout);
-	}
-	goto losing0;
-    }
-
-    if ((cp = malloc ((size_t) (cc = (pos = ftell (fp)) + 1))) == NULL) {
-	sm_reply.length = strlen (strcpy (sm_reply.text, "out of memory"));
-losing1: ;
-	sm_reply.code = NOTOK;
-	fclose (fp);
-	return RP_BHST;
-    }
-    fseek (fp, 0L, SEEK_SET);
-    for (dp = cp, i = 0; i++ < j; dp += strlen (dp))
-	if (fgets (dp, cc - (dp - cp), fp) == NULL) {
-	    sm_reply.length = strlen (strcpy (sm_reply.text, "premature eof"));
-losing2:
-	    free (cp);
-	    goto losing1;
-	}
-    *dp = NULL;
-
-    for (dp = cp, i = cc - 1; i > 0; dp += cc, i -= cc)
-	if ((cc = write (fileno (sm_wfp), dp, i)) == NOTOK) {
-	    int len;
-losing3:
-	    sm_perror("error writing to server: ");
-	    goto losing2;
-	}
-	else
-	    if (sm_debug) {
-		printf ("wrote %d octets to server\n", cc);
-		fflush (stdout);
-	    }
-
-    for (dp = cp, i = 0; i++ < j; dp = strchr(dp, '\n'), dp++) {
-	if (sm_debug) {
-	    if (bp = strchr(dp, '\r'))
-		*bp = NULL;
-	    printf ("=> %s\n", dp);
-	    fflush (stdout);
-	    if (bp)
-		*bp = '\r';
-	}
-
-	switch (smhear () + (i == 1 ? 1000 : i != j ? 2000 : 3000)) {
-	    case 1000 + 250:
-	        sm_addrs = 0;
-	        result = RP_OK;
-		break;
-
-	    case 1000 + 500: 
-	    case 1000 + 501: 
-	    case 1000 + 552: 
-	    case 2000 + 500: 
-	    case 2000 + 501:
-		result = RP_PARM;
-		smtalk (SM_RSET, "RSET");
-		free (cp);
-		goto losing0;
-
-	    case 2000 + 250:
-	    case 2000 + 251:
-		sm_addrs++;
-	        result = RP_OK;
-		break;
-
-	    case 2000 + 451: 
-#ifdef SENDMAILBUG
-		sm_addrs++;
-		result = RP_OK;
-		break;
-#endif
-	    case 2000 + 421: 
-	    case 2000 + 450: 
-	    case 2000 + 452: 
-		result = RP_NO;
-		goto bad_addr;
-
-	    case 2000 + 550: 
-	    case 2000 + 551: 
-	    case 2000 + 552: 
-	    case 2000 + 553: 
-		result = RP_USER;
-bad_addr:
-		if (k <= 0 || strcmp (sender, "<>\r\n") == 0)
-		    break;
-		if (gp == NULL) {
-		    int	    l;
-		    snprintf (buffer, sizeof(buffer), "%*.*sA.bulk", k, k, file);
-		    if ((gp = fopen (buffer, "w+")) == NULL)
-			goto bad_data;
-		    fprintf (gp, "MAIL FROM:<>\r\nRCPT TO:%sDATA\r\n", sender);
-		    l = strlen (sender);
-		    fprintf (gp,
-			     "To: %*.*s\r\nSubject: Invalid addresses (%s)\r\n",
-			     l - 4, l - 4, sender + 1, file);
-		    fprintf (gp, "Date: %s\r\nFrom: Postmaster@%s\r\n\r\n",
-			     dtimenow (0), LocalName ());
-		}
-		if (bp = strchr(dp, '\r'))
-		    *bp = NULL;
-		fprintf (gp, "=>        %s\r\n", dp);
-		if (bp)
-		    *bp = '\r';
-		fprintf (gp, "<= %s\r\n", rp_string (result));
-		fflush (gp);
-		break;
-
-	    case 3000 + 354: 
-#ifdef SENDMAILBUG
-ok_data:
-#endif
-		result = RP_OK;
-		break;
-
-	    case 3000 + 451: 
-#ifdef SENDMAILBUG
-		goto ok_data;
-#endif
-	    case 3000 + 421:
-		result = RP_NO;
-bad_data:
-		smtalk (SM_RSET, "RSET");
-		free (cp);
-		if (gp) {
-		    snprintf (buffer, sizeof(buffer), "%*.*sA.bulk", k, k, file);
-		    unlink (buffer);
-		    fclose (gp);
-		}
-		fclose (fp);
-		return result;
-
-	    case 3000 + 500: 
-	    case 3000 + 501: 
-	    case 3000 + 503: 
-	    case 3000 + 554: 
-		smtalk (SM_RSET, "RSET");
-		free (cp);
-		goto no_dice;
-
-	    default:
-		result = RP_RPLY;
-		goto bad_data;
-	}
-    }
-    free (cp);
-
-    {
-#ifdef HAVE_STRUCT_STAT_ST_BLKSIZE
-	struct stat st;
-
-	if (fstat (fileno (sm_wfp), &st) == NOTOK || (cc = st.st_blksize) < BUFSIZ)
-	    cc = BUFSIZ;
-#else
-	cc = BUFSIZ;
-#endif
-	if ((cp = malloc ((size_t) cc)) == NULL) {
-	    smtalk (SM_RSET, "RSET");
-	    sm_reply.length = strlen (strcpy (sm_reply.text, "out of memory"));
-	    goto losing1;
-	}
-    }
-
-    fseek (fp, pos, SEEK_SET);
-    for (;;) {
-	int eof = 0;
-
-	for (dp = cp, i = cc; i > 0; dp += j, i -= j)
-	    if ((j = fread (cp, sizeof(*cp), i, fp)) == OK) {
-		if (ferror (fp)) {
-		    sm_perror("error reading %s: ", file);
-		    goto losing2;
-		}
-		cc = dp - cp;
-		eof = 1;
-		break;
-	    }
-
-	for (dp = cp, i = cc; i > 0; dp += j, i -= j)
-	    if ((j = write (fileno (sm_wfp), dp, i)) == NOTOK)
-		goto losing3;
-	    else
-		if (sm_debug) {
-		    printf ("wrote %d octets to server\n", j);
-		    fflush (stdout);
-		}
-
-	if (eof)
-	    break;
-    }
-    free (cp);
-
-    switch (smhear ()) {
-	case 250: 
-	case 251: 
-#ifdef SENDMAILBUG
-ok_dot:
-#endif
-	    result = RP_OK;
-	    unlink (file);
-	    break;
-
-	case 451: 
-#ifdef SENDMAILBUG
-	    goto ok_dot;
-#endif
-	case 452: 
-	default: 
-	    result = RP_NO;
-	    if (gp) {
-		snprintf (buffer, sizeof(buffer), "%*.*sA.bulk", k, k, file);
-		unlink (buffer);
-		fclose (gp);
-		gp = NULL;
-	    }
-	    break;
-
-	case 552: 
-	case 554: 
-no_dice:
-	    result = RP_NDEL;
-	    if (k <= 0 || strcmp (sender, "<>\r\n") == 0) {
-		unlink (file);
-		break;
-	    }
-	    if (gp) {
-		fflush (gp);
-		ftruncate (fileno (gp), 0L);
-		fseek (gp, 0L, SEEK_SET);
-	    }
-    	    else {
-		snprintf (buffer, sizeof(buffer), "%*.*sA.bulk", k, k, file);
-		if ((gp = fopen (buffer, "w")) == NULL)
-		    break;
-	    }
-	    fprintf (gp, "MAIL FROM:<>\r\nRCPT TO:%sDATA\r\n", sender);
-	    i = strlen (sender);
-	    fprintf (gp, "To: %*.*s\r\nSubject: Failed mail (%s)\r\n",
-		     i - 4, i - 4, sender + 1, file);
-            fprintf (gp, "Date: %s\r\nFrom: Postmaster@%s\r\n\r\n",
-		     dtimenow (0), LocalName ());
-	    break;
-    }
-
-    if (gp) {
-	fputs ("\r\n------- Begin Returned message\r\n\r\n", gp);
-	fseek (fp, pos, SEEK_SET);
-	while (fgets (buffer, sizeof(buffer), fp)) {
-	    if (buffer[0] == '-')
-		fputs ("- ", gp);
-	    if (strcmp (buffer, ".\r\n"))
-		fputs (buffer, gp);
-	}
-	fputs ("\r\n------- End Returned Message\r\n\r\n.\r\n", gp);
-	fflush (gp);
-	if (!ferror (gp))
-	    unlink (file);
-	fclose (gp);
-    }
-    fclose (fp);
-
-    return result;
-}
-#endif /* MPOP */
-
-
 #ifdef CYRUS_SASL
 /*
  * This function implements SASL authentication for SMTP.  If this function
  * completes successfully, then authentication is successful and we've
  * (optionally) negotiated a security layer.
- *
- * Right now we don't support session encryption.
  */
 static int
-sm_auth_sasl(char *user, char *mechlist, char *host)
+sm_auth_sasl(char *user, char *mechlist, char *inhost)
 {
     int result, status;
     unsigned int buflen, outlen;
-    char *buf, outbuf[BUFSIZ];
+    char *buf, outbuf[BUFSIZ], host[NI_MAXHOST];
     const char *chosen_mech;
     sasl_security_properties_t secprops;
     sasl_ssf_t *ssf;
@@ -1094,10 +701,12 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
      * reverse-address lookup on the IP address to get the name.
      */
 
-    if (!host) {
-	struct sockaddr_in sin;
-	int len = sizeof(sin);
-	struct hostent *hp;
+    memset(host, 0, sizeof(host));
+
+    if (!inhost) {
+	struct sockaddr_storage sin;
+	socklen_t len = sizeof(sin);
+	int result;
 
 	if (getpeername(fileno(sm_wfp), (struct sockaddr *) &sin, &len) < 0) {
 	    sm_ierror("getpeername on SMTP socket failed: %s",
@@ -1105,14 +714,15 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	    return NOTOK;
 	}
 
-	if ((hp = gethostbyaddr((void *) &sin.sin_addr, sizeof(sin.sin_addr),
-				sin.sin_family)) == NULL) {
-	    sm_ierror("DNS lookup on IP address %s failed",
-		      inet_ntoa(sin.sin_addr));
+	result = getnameinfo((struct sockaddr *) &sin, len, host, sizeof(host),
+			     NULL, 0, NI_NAMEREQD);
+	if (result != 0) {
+	    sm_ierror("Unable to look up name of connected host: %s",
+		      gai_strerror(result));
 	    return NOTOK;
 	}
-
-	host = strdup(hp->h_name);
+    } else {
+	strncpy(host, inhost, sizeof(host) - 1);
     }
 
     sasl_pw_context[0] = host;
@@ -1141,8 +751,8 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
      */
 
     memset(&secprops, 0, sizeof(secprops));
-    secprops.maxbufsize = BUFSIZ;
-    secprops.max_ssf = 0;	/* XXX change this when we do encryption */
+    secprops.maxbufsize = SASL_MAXRECVBUF;
+    secprops.max_ssf = UINT_MAX;
 
     result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
 
@@ -1161,8 +771,7 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 			       &buflen, (const char **) &chosen_mech);
 
     if (result != SASL_OK && result != SASL_CONTINUE) {
-	sm_ierror("SASL client start failed: %s",
-		  sasl_errstring(result, NULL, NULL));
+	sm_ierror("SASL client start failed: %s", sasl_errdetail(conn));
 	return NOTOK;
     }
 
@@ -1279,8 +888,30 @@ sm_auth_sasl(char *user, char *mechlist, char *host)
 	return NOTOK;
     }
 
-    if (maxoutbuf == 0 || maxoutbuf > BUFSIZ)
-	maxoutbuf = BUFSIZ;
+    if (sasl_ssf > 0) {
+	sasl_outbuffer = malloc(maxoutbuf);
+
+	if (sasl_outbuffer == NULL) {
+		sm_ierror("Unable to allocate %d bytes for SASL output "
+			  "buffer", maxoutbuf);
+		return NOTOK;
+	}
+	sasl_outbuflen = 0;
+
+	sasl_inbuffer = malloc(SASL_MAXRECVBUF);
+
+	if (sasl_inbuffer == NULL) {
+		sm_ierror("Unable to allocate %d bytes for SASL input "
+			  "buffer", SASL_MAXRECVBUF);
+		free(sasl_outbuffer);
+		return NOTOK;
+	}
+	sasl_inbuflen = 0;
+	sasl_inptr = sasl_inbuffer;
+    } else {
+	sasl_outbuffer = NULL;
+	sasl_inbuffer = NULL;
+    }
 
     sasl_complete = 1;
 
@@ -1351,37 +982,6 @@ sm_ierror (char *fmt, ...)
     return RP_BHST;
 }
 
-#ifdef MPOP
-static int
-sm_perror (char *fmt, ...)
-{
-    /* Fill in sm_reply with a suitable error string based on errno.
-     * This isn't particularly MPOP specific, it just happens that that's
-     * the only code that uses it currently.
-     */
-    char *bp, *s;
-    int len, eno = errno;
-
-    va_list ap;
-    va_start(ap,fmt);
-    vsnprintf (sm_reply.text, sizeof(sm_reply.text), fmt, ap);
-    va_end(ap);
-
-    bp = sm_reply.text;
-    len = strlen(bp);
-    bp += len;
-    if ((s = strerror(eno)))
-	snprintf(bp, sizeof(sm_reply.text) - len, "%s", s);
-    else
-	snprintf(bp, sizeof(sm_reply.text) - len, "unknown error %d", eno);
-    
-    sm_reply.length = strlen (sm_reply.text);
-    sm_reply.code = NOTOK;
-
-    return RP_BHST;
-}
-#endif
-
 static int
 smtalk (int time, char *fmt, ...)
 {
@@ -1394,68 +994,13 @@ smtalk (int time, char *fmt, ...)
     va_end(ap);
 
     if (sm_debug) {
+#ifdef CYRUS_SASL
+	if (sasl_ssf)
+		printf("(encrypted) ");
+#endif /* CYRUS_SASL */
 	printf ("=> %s\n", buffer);
 	fflush (stdout);
     }
-
-#ifdef MPOP
-    if (sm_ispool) {
-	char file[BUFSIZ];
-
-	if (strcmp (buffer, ".") == 0)
-	    time = SM_DOT;
-	fprintf (sm_wfp, "%s\r\n", buffer);
-	switch (time) {
-	    case SM_DOT:
-	        fflush (sm_wfp);
-	        if (ferror (sm_wfp))
-		    return sm_werror ();
-		snprintf (file, sizeof(file), "%s%c.bulk", sm_tmpfil,
-				(char) (sm_ispool + 'a' - 1));
-		if (rename (sm_tmpfil, file) == NOTOK) {
-		    return sm_perror("error renaming %s to %s: ", sm_tmpfil, file);
-		}
-		fclose (sm_wfp);
-		if (sm_wfp = fopen (sm_tmpfil, "w"))
-		    chmod (sm_tmpfil, 0600);
-		sm_ispool++;
-		/* and fall... */
-
-	    case SM_MAIL:
-	    case SM_RCPT:
-	        result = 250;
-		break;
-
-	    case SM_RSET:
-		fflush (sm_wfp);
-		ftruncate (fileno (sm_wfp), 0L);
-		fseek (sm_wfp, 0L, SEEK_SET);
-	        result = 250;
-		break;
-
-	    case SM_DATA:
-	        result = 354;
-		break;
-
-	    case SM_QUIT:
-		unlink (sm_tmpfil);
-		sm_ispool = 0;
-	        result = 221;
-		break;
-
-	    default:
-		result = 500;
-		break;
-	}
-	if (sm_debug) {
-	    printf ("<= %d\n", result);
-	    fflush (stdout);
-	}
-
-	sm_reply.text[sm_reply.length = 0] = NULL;
-	return (sm_reply.code = result);
-    }
-#endif /* MPOP */
 
     sm_alarmed = 0;
     alarm ((unsigned) time);
@@ -1477,9 +1022,9 @@ sm_wrecord (char *buffer, int len)
     if (sm_wfp == NULL)
 	return sm_werror ();
 
-    fwrite (buffer, sizeof(*buffer), len, sm_wfp);
-    fputs ("\r\n", sm_wfp);
-    fflush (sm_wfp);
+    sm_fwrite (buffer, len);
+    sm_fputs ("\r\n");
+    sm_fflush ();
 
     return (ferror (sm_wfp) ? sm_werror () : OK);
 }
@@ -1496,7 +1041,7 @@ sm_wstream (char *buffer, int len)
 
     if (buffer == NULL && len == 0) {
 	if (lc != '\n')
-	    fputs ("\r\n", sm_wfp);
+	    sm_fputs ("\r\n");
 	lc = '\0';
 	return (ferror (sm_wfp) ? sm_werror () : OK);
     }
@@ -1505,16 +1050,16 @@ sm_wstream (char *buffer, int len)
 	switch (*bp) {
 	    case '\n': 
 		sm_nl = TRUE;
-		fputc ('\r', sm_wfp);
+		sm_fputc ('\r');
 		break;
 
 	    case '.': 
 		if (sm_nl)
-		    fputc ('.', sm_wfp);/* FALL THROUGH */
+		    sm_fputc ('.');/* FALL THROUGH */
 	    default: 
 		sm_nl = FALSE;
 	}
-	fputc (*bp, sm_wfp);
+	sm_fputc (*bp);
 	if (ferror (sm_wfp))
 	    return sm_werror ();
     }
@@ -1524,18 +1069,93 @@ sm_wstream (char *buffer, int len)
     return (ferror (sm_wfp) ? sm_werror () : OK);
 }
 
+/*
+ * Write out to the network, but do buffering for SASL (if enabled)
+ */
+
+static int
+sm_fwrite(char *buffer, int len)
+{
+#ifdef CYRUS_SASL
+    const char *output;
+    unsigned int outputlen;
+
+    if (sasl_complete == 0 || sasl_ssf == 0)
+#endif /* CYRUS_SASL */
+	fwrite(buffer, sizeof(*buffer), len, sm_wfp);
+#ifdef CYRUS_SASL
+    else {
+	while (len >= maxoutbuf - sasl_outbuflen) {
+	    memcpy(sasl_outbuffer + sasl_outbuflen, buffer,
+		   maxoutbuf - sasl_outbuflen);
+	    len -= maxoutbuf - sasl_outbuflen;
+	    sasl_outbuflen = 0;
+
+	    if (sasl_encode(conn, sasl_outbuffer, maxoutbuf,
+			    &output, &outputlen) != SASL_OK) {
+		sm_ierror("Unable to SASL encode connection data: %s",
+			  sasl_errdetail(conn));
+		return NOTOK;
+	    }
+
+	    fwrite(output, sizeof(*output), outputlen, sm_wfp);
+	}
+
+	if (len > 0) {
+	    memcpy(sasl_outbuffer + sasl_outbuflen, buffer, len);
+	    sasl_outbuflen += len;
+	}
+    }
+#endif /* CYRUS_SASL */
+    return ferror(sm_wfp) ? NOTOK : RP_OK;
+}
 
 /*
- * On some systems, strlen and strcpy are defined as preprocessor macros.  This
- * causes compile problems with the #ifdef MPOP in the middle.  Should the
- * #ifdef MPOP be removed, remove these #undefs.
+ * Convenience functions to replace occurences of fputs() and fputc()
  */
-#ifdef strlen
-# undef strlen
-#endif
-#ifdef strcpy
-# undef strcpy
-#endif
+
+static int
+sm_fputs(char *buffer)
+{
+    return sm_fwrite(buffer, strlen(buffer));
+}
+
+static int
+sm_fputc(int c)
+{
+    char h = c;
+
+    return sm_fwrite(&h, 1);
+}
+
+/*
+ * Flush out any pending data on the connection
+ */
+
+static void
+sm_fflush(void)
+{
+#ifdef CYRUS_SASL
+    const char *output;
+    unsigned int outputlen;
+    int result;
+
+    if (sasl_complete == 1 && sasl_ssf > 0 && sasl_outbuflen > 0) {
+	result = sasl_encode(conn, sasl_outbuffer, sasl_outbuflen,
+			     &output, &outputlen);
+	if (result != SASL_OK) {
+	    sm_ierror("Unable to SASL encode connection data: %s",
+		      sasl_errdetail(conn));
+	    return;
+	}
+
+	fwrite(output, sizeof(*output), outputlen, sm_wfp);
+	sasl_outbuflen = 0;
+    }
+#endif /* CYRUS_SASL */
+
+    fflush(sm_wfp);
+}
 
 static int
 sm_werror (void)
@@ -1543,9 +1163,6 @@ sm_werror (void)
     sm_reply.length =
 	strlen (strcpy (sm_reply.text, sm_wfp == NULL ? "no socket opened"
 	    : sm_alarmed ? "write to socket timed out"
-#ifdef MPOP
-	    : sm_ispool ? "error writing to spool file"
-#endif
 	    : "error writing to socket"));
 
     return (sm_reply.code = NOTOK);
@@ -1585,8 +1202,13 @@ again: ;
     rp = sm_reply.text;
     rc = sizeof(sm_reply.text) - 1;
 
-    for (more = FALSE; sm_rrecord (bp = buffer, &bc) != NOTOK;) {
+    for (more = FALSE; sm_rrecord ((char *) (bp = (unsigned char *) buffer),
+				   &bc) != NOTOK ; ) {
 	if (sm_debug) {
+#ifdef CYRUS_SASL
+	    if (sasl_ssf > 0)
+		printf("(decrypted) ");
+#endif /* CYRUS_SASL */
 	    printf ("<= %s\n", buffer);
 	    fflush (stdout);
 	}
@@ -1613,7 +1235,7 @@ again: ;
 	    continue;
 
 	cont = FALSE;
-	code = atoi (bp);
+	code = atoi ((char *) bp);
 	bp += 3, bc -= 3;
 	for (; bc > 0 && isspace (*bp); bp++, bc--)
 	    continue;
@@ -1634,7 +1256,7 @@ again: ;
 	    if (bc <= 0) {
 		/* can never fail to 0-terminate because of size of buffer vs fixed string */
 		strncpy (buffer, sm_noreply, sizeof(buffer));
-		bp = buffer;
+		bp = (unsigned char *) buffer;
 		bc = strlen (sm_noreply);
 	    }
 	}
@@ -1671,18 +1293,22 @@ again: ;
 static int
 sm_rrecord (char *buffer, int *len)
 {
+    int retval;
+
     if (sm_rfp == NULL)
-	return sm_rerror ();
+	return sm_rerror(0);
 
     buffer[*len = 0] = 0;
 
-    fgets (buffer, BUFSIZ, sm_rfp);
+    if ((retval = sm_fgets (buffer, BUFSIZ, sm_rfp)) != RP_OK)
+	return retval;
     *len = strlen (buffer);
     /* *len should be >0 except on EOF, but check for safety's sake */
-    if (ferror (sm_rfp) || feof (sm_rfp) || (*len == 0))
-	return sm_rerror ();
+    if (*len == 0)
+	return sm_rerror (RP_EOF);
     if (buffer[*len - 1] != '\n')
-	while (getc (sm_rfp) != '\n' && !ferror (sm_rfp) && !feof (sm_rfp))
+	while ((retval = sm_fgetc (sm_rfp)) != '\n' && retval != EOF &&
+	       retval != -2)
 	    continue;
     else
 	if ((*len > 1) && (buffer[*len - 2] == '\r'))
@@ -1693,21 +1319,118 @@ sm_rrecord (char *buffer, int *len)
     return OK;
 }
 
+/*
+ * Our version of fgets, which calls our private fgetc function
+ */
 
 static int
-sm_rerror (void)
+sm_fgets(char *buffer, int size, FILE *f)
+{
+    int c;
+
+     do {
+	c = sm_fgetc(f);
+
+	if (c == EOF)
+	    return RP_EOF;
+
+	if (c == -2)
+	    return NOTOK;
+
+	*buffer++ = c;
+     } while (size > 1 && c != '\n');
+
+     *buffer = '\0';
+
+     return RP_OK;
+}
+
+
+#ifdef CYRUS_SASL
+/*
+ * Read from the network, but do SASL encryption
+ */
+
+static int
+sm_fgetc(FILE *f)
+{
+    char tmpbuf[BUFSIZ], *retbuf;
+    unsigned int retbufsize = 0;
+    int cc, result;
+
+    /*
+     * If we have leftover data, return it
+     */
+
+    if (sasl_inbuflen) {
+	sasl_inbuflen--;
+	return (int) *sasl_inptr++;
+    }
+
+    /*
+     * If not, read from the network until we have some data to return
+     */
+
+    while (retbufsize == 0) {
+
+	cc = read(fileno(f), tmpbuf, sizeof(tmpbuf));
+
+	if (cc == 0)
+	    return EOF;
+
+	if (cc < 0) {
+	    sm_ierror("Unable to read from network: %s", strerror(errno));
+	    return -2;
+	}
+
+	/*
+	 * Don't call sasl_decode unless sasl is complete and we have
+	 * encryption working
+	 */
+
+	if (sasl_complete == 0 || sasl_ssf == 0) {
+	    retbuf = tmpbuf;
+	    retbufsize = cc;
+	} else {
+	    result = sasl_decode(conn, tmpbuf, cc, (const char **) &retbuf,
+				 &retbufsize);
+
+	    if (result != SASL_OK) {
+		sm_ierror("Unable to decode SASL network data: %s",
+			  sasl_errdetail(conn));
+		return -2;
+	    }
+	}
+    }
+
+    if (retbufsize > SASL_MAXRECVBUF) {
+	sm_ierror("Received data (%d bytes) is larger than the buffer "
+		  "size (%d bytes)", retbufsize, SASL_MAXRECVBUF);
+	return -2;
+    }
+
+    memcpy(sasl_inbuffer, retbuf, retbufsize);
+    sasl_inptr = sasl_inbuffer + 1;
+    sasl_inbuflen = retbufsize - 1;
+
+    return (int) sasl_inbuffer[0];
+}
+#endif /* CYRUS_SASL */
+
+static int
+sm_rerror (int rc)
 {
     if (sm_mts == MTS_SMTP)
 	sm_reply.length =
 	    strlen (strcpy (sm_reply.text, sm_rfp == NULL ? "no socket opened"
 		: sm_alarmed ? "read from socket timed out"
-		: feof (sm_rfp) ? "premature end-of-file on socket"
+		: rc == RP_EOF ? "premature end-of-file on socket"
 		: "error reading from socket"));
     else
 	sm_reply.length =
 	    strlen (strcpy (sm_reply.text, sm_rfp == NULL ? "no pipe opened"
 		: sm_alarmed ? "read from pipe timed out"
-		: feof (sm_rfp) ? "premature end-of-file on pipe"
+		: rc == RP_EOF ? "premature end-of-file on pipe"
 		: "error reading from pipe"));
 
     return (sm_reply.code = NOTOK);
@@ -1779,70 +1502,6 @@ rp_string (int code)
 		text, sm_reply.code, sm_reply.text);
     return buffer;
 }
-
-
-#ifdef MPOP
-
-static char *broken[MAXARGS + 1];
-
-static char **
-smail_brkstring (char *strg, char *brksep, char *brkterm)
-{
-    int bi;
-    char c, *sp;
-
-    sp = strg;
-
-    for (bi = 0; bi < MAXARGS; bi++) {
-	while (smail_brkany (c = *sp, brksep))
-	    *sp++ = 0;
-	if (!c || smail_brkany (c, brkterm)) {
-	    *sp = 0;
-	    broken[bi] = 0;
-	    return broken;
-	}
-
-	broken[bi] = sp;
-	while ((c = *++sp) && !smail_brkany (c, brksep) && !smail_brkany (c, brkterm))
-	    continue;
-    }
-    broken[MAXARGS] = 0;
-
-    return broken;
-}
-
-
-/*
- * returns 1 if chr in strg, 0 otherwise
- */
-static int
-smail_brkany (char chr, char *strg)
-{
-    char *sp;
- 
-    if (strg)
-	for (sp = strg; *sp; sp++)
-	    if (chr == *sp)
-		return 1;
-    return 0;
-}
-
-/*
- * copy a string array and return pointer to end
- */
-char **
-smail_copyip (char **p, char **q, int len_q)
-{
-    while (*p && --len_q > 0)
-	*q++ = *p++;
-
-    *q = NULL;
- 
-    return q;
-}
-
-#endif /* MPOP */
-
 
 static char *
 EHLOset (char *s)

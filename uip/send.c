@@ -93,19 +93,21 @@ static struct swit switches[] = {
 #define	CLIESW                34
     { "client host", -6 },
 #define	SERVSW                35
-    { "server host", -6 },
+    { "server host", 6 },
 #define	SNOOPSW               36
-    { "snoop", -5 },
+    { "snoop", 5 },
 #define SASLSW                37
-    { "sasl", SASLminc(-4) },
+    { "sasl", SASLminc(4) },
 #define SASLMECHSW            38
-    { "saslmech", SASLminc(-5) },
+    { "saslmech mechanism", SASLminc(-5) },
 #define USERSW                39
-    { "user", SASLminc(-4) },
+    { "user username", SASLminc(-4) },
 #define ATTACHSW              40
     { "attach", 6 },
 #define ATTACHFORMATSW        41
     { "attachformat", 7 },
+#define PORTSW		      42
+    { "port server-port-name/number" , 4 },
     { NULL, 0 }
 };
 
@@ -273,6 +275,7 @@ main (int argc, char **argv)
 		case SERVSW: 
 		case SASLMECHSW:
 		case USERSW:
+		case PORTSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);

@@ -33,6 +33,7 @@ void ambigsw (char *, struct swit *);
 int atooi(char *);
 char **brkstring (char *, char *, char *);
 int check_charset (char *, int);
+int client(char *, char *, char *, int, int);
 void closefds(int);
 char *concat (char *, ...);
 int context_del (char *);

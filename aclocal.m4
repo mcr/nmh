@@ -13,9 +13,9 @@
 # BIND 4.9.5 installed.
 
 AC_DEFUN(AC_CHECK_NETLIBS,
-[AC_CHECK_FUNC(gethostbyname, ,
-  AC_CHECK_LIB(nsl, gethostbyname, ,
-    AC_CHECK_LIB(resolv, gethostbyname)))
+[AC_CHECK_FUNC(getaddrinfo, ,
+  AC_CHECK_LIB(nsl, getaddrinfo, ,
+    AC_CHECK_LIB(resolv, getaddrinfo)))
 AC_CHECK_FUNC(socket, ,
   AC_CHECK_LIB(socket, socket))
 ])

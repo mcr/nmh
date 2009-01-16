@@ -1,4 +1,3 @@
-
 /*
  * ftpsbr.c -- simple FTP client library
  *
@@ -33,23 +32,15 @@ extern int v_verbose;
 #include <netdb.h>
 #include <errno.h>
 
-#if !defined(h_addr)
-# define h_addr	h_addr_list[0]
-#endif
+#define	start_tcp_client(res) \
+    	socket (res->ai_family, res->ai_socktype, res->ai_protocol)
 
-#define	inaddr_copy(hp,sin) \
-    memcpy((char *) &((sin)->sin_addr), (hp)->h_addr, (hp)->h_length)
-
-#define	start_tcp_client(sock,priv) \
-    	socket (AF_INET, SOCK_STREAM, 0)
-
-#define	join_tcp_server(fd, sock) \
-    	connect ((fd), (struct sockaddr *) (sock), sizeof *(sock))
+#define	join_tcp_server(fd, sock, len) \
+    	connect ((fd), (struct sockaddr *) (sock), len)
 
 /*
  * prototypes
  */
-struct hostent *gethostbystring ();
 int ftp_get (char *, char *, char *, char *, char *, char *, int, int);
 int ftp_trans (char *, char *, char *, char *, char *, char *, char *, int, int);
 
@@ -157,32 +148,32 @@ ftp_trans (char *host, char *user, char *password, char *cwd, char *remote,
     }
 
     if (ftp_fd == NOTOK) {
-	struct sockaddr_in in_socket;
-	register struct hostent *hp;
-	register struct servent *sp;
+	struct addrinfo hints, *res;
 
-	if ((sp = getservbyname ("ftp", "tcp")) == NULL) {
-	    fprintf (stderr, "tcp/ftp: unknown service");
-	    return NOTOK;
-	}
-	if ((hp = gethostbystring (host)) == NULL) {
-	    fprintf (stderr, "%s: unknown host\n", host);
-	    return NOTOK;
-	}
-	in_socket.sin_family = hp->h_addrtype;
-	inaddr_copy (hp, &in_socket);
-	in_socket.sin_port = sp->s_port;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_flags = AI_ADDRCONFIG;
+	hints.ai_family = PF_INET;
+	hints.ai_socktype = SOCK_STREAM;
 
-	if ((ftp_fd = start_tcp_client ((struct sockaddr_in *) NULL, 0))
-	        == NOTOK) {
-	    perror (host);
+	result = getaddrinfo(host, "ftp", &hints, &res);
+
+	if (result) {
+	    fprintf(stderr, "%s/ftp: %s\n", host, gai_strerror(result));
 	    return NOTOK;
 	}
-	if (join_tcp_server (ftp_fd, &in_socket) == NOTOK) {
+
+	if ((ftp_fd = start_tcp_client (res)) == NOTOK) {
 	    perror (host);
+	    freeaddrinfo(res);
+	    return NOTOK;
+	}
+	if (join_tcp_server (ftp_fd, res->ai_addr, res->ai_addrlen) == NOTOK) {
+	    perror (host);
+	    freeaddrinfo(res);
 	    close_tcp_socket (ftp_fd), ftp_fd = NOTOK;
 	    return NOTOK;
 	}
+	freeaddrinfo(res);
 	getreply (1, 0);
 
 	if (v_verbose) {

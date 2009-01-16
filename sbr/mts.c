@@ -287,8 +287,7 @@ char *
 LocalName (void)
 {
     static char buffer[BUFSIZ] = "";
-    struct hostent *hp;
-
+    struct addrinfo hints, *res;
 #ifdef HAVE_UNAME
     struct utsname name;
 #endif
@@ -303,20 +302,24 @@ LocalName (void)
     if (*localname) {
 	strncpy (buffer, localname, sizeof(buffer));
     } else {
+	memset(buffer, 0, sizeof(buffer));
 #ifdef HAVE_UNAME
 	/* first get our local name */
 	uname (&name);
-	strncpy (buffer, name.nodename, sizeof(buffer));
+	strncpy (buffer, name.nodename, sizeof(buffer) - 1);
 #else
 	/* first get our local name */
-	gethostname (buffer, sizeof(buffer));
+	gethostname (buffer, sizeof(buffer) - 1);
 #endif
-#ifdef HAVE_SETHOSTENT
-	sethostent (1);
-#endif 
 	/* now fully qualify our name */
-	if ((hp = gethostbyname (buffer)))
-	    strncpy (buffer, hp->h_name, sizeof(buffer));
+
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_flags = AI_CANONNAME;
+	hints.ai_family = PF_UNSPEC;
+	if (getaddrinfo(buffer, NULL, &hints, &res) == 0) {
+	    strncpy(buffer, res->ai_canonname, sizeof(buffer) - 1);
+	    freeaddrinfo(res);
+	}
     }
 
     /*
