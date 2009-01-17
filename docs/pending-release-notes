@@ -9,3 +9,8 @@ Things to add to the release notes for the next full release:
   the ftp client) now supports IPv6.
 - Support for prefixing a \01 in the "servers" entry in mts.conf to
   connect to all servers on a particular named net has been removed.
+- New commands 'new', 'fnext', 'fprev', and 'unseen' for showing folders with
+  unseen mail (or mail in any specified sequence), changing to next such
+  folder, changing to previous such folder, and scanning all such folders,
+  respectively.  This is based on Luke Mewburn's 'new':
+  http://www.mewburn.net/luke/src/new
