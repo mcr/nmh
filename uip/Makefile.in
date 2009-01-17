@@ -60,7 +60,7 @@ SETGID_MAIL    = @SETGID_MAIL@
 # commands to build
 CMDS = ali anno burst comp dist flist folder forw install-mh mark mhbuild \
        mhlist mhmail mhn mhparam mhpath mhshow mhstore msgchk \
-       msh packf pick prompter refile repl rmf rmm scan send show \
+       msh new packf pick prompter refile repl rmf rmm scan send show \
        sortm whatnow whom
 
 ## removed this from CMDS until I can fix it
@@ -83,7 +83,7 @@ SRCS = ali.c aliasbr.c anno.c annosbr.c ap.c burst.c comp.c		  \
 	mhbuildsbr.c mhcachesbr.c mhfree.c mhl.c mhlist.c mhlistsbr.c	  \
 	mhlsbr.c mhmail.c mhmisc.c mhn.c mhoutsbr.c mhparam.c mhparse.c	  \
 	mhpath.c mhshow.c mhshowsbr.c mhstore.c mhstoresbr.c mhtest.c	  \
-	msgchk.c msh.c mshcmds.c packf.c pick.c picksbr.c popsbr.c \
+	msgchk.c msh.c mshcmds.c new.c packf.c pick.c picksbr.c popsbr.c \
 	post.c prompter.c rcvdist.c rcvpack.c rcvstore.c rcvtty.c	  \
 	refile.c repl.c replsbr.c rmf.c rmm.c scan.c scansbr.c send.c	  \
 	sendsbr.c show.c slocal.c sortm.c spost.c termsbr.c viamail.c	  \
@@ -183,6 +183,9 @@ msgchk: msgchk.o $(POPLIB) $(LOCALLIBS)
 msh: msh.o mshcmds.o vmhsbr.o picksbr.o scansbr.o dropsbr.o mhlsbr.o termsbr.o $(LOCALLIBS)
 	$(LINK) msh.o mshcmds.o vmhsbr.o picksbr.o scansbr.o dropsbr.o mhlsbr.o termsbr.o $(LINKLIBS) $(TERMLIB)
 
+new: new.o $(LOCALLIBS)
+	$(LINK) new.o $(LINKLIBS)
+
 packf: packf.o dropsbr.o $(LOCALLIBS)
 	$(LINK) packf.o dropsbr.o $(LINKLIBS)
 
@@ -265,11 +268,17 @@ install-cmds:
 install-lcmds:
 	rm -f $(DESTDIR)$(bindir)/flists
 	rm -f $(DESTDIR)$(bindir)/folders
+	rm -f $(DESTDIR)$(bindir)/fnext
+	rm -f $(DESTDIR)$(bindir)/fprev
+	rm -f $(DESTDIR)$(bindir)/unseen
 	rm -f $(DESTDIR)$(bindir)/prev
 	rm -f $(DESTDIR)$(bindir)/next
 	rm -f $(DESTDIR)$(libdir)/install-mh
 	$(LN) $(DESTDIR)$(bindir)/flist  $(DESTDIR)$(bindir)/flists
 	$(LN) $(DESTDIR)$(bindir)/folder $(DESTDIR)$(bindir)/folders
+	$(LN) $(DESTDIR)$(bindir)/new    $(DESTDIR)$(bindir)/fnext
+	$(LN) $(DESTDIR)$(bindir)/new    $(DESTDIR)$(bindir)/fprev
+	$(LN) $(DESTDIR)$(bindir)/new    $(DESTDIR)$(bindir)/unseen
 	$(LN) $(DESTDIR)$(bindir)/show   $(DESTDIR)$(bindir)/prev
 	$(LN) $(DESTDIR)$(bindir)/show   $(DESTDIR)$(bindir)/next
 

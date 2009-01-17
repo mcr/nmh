@@ -13,15 +13,18 @@ if [ ! -e "$MH_TEST_DIR/bld/Makefile" ]; then
    echo "temporary directory missing or broken: running setup-test"
    ./setup-test
    export MH_TEST_DIR=`cat test-temp-dir`
-fi   
+fi
 
-export MH=$MH_TEST_DIR/mh_profile
+export MH=$MH_TEST_DIR/Mail/.mh_profile
 export PATH=$MH_TEST_DIR/bin:$PATH
+
+export MH_TEST_COMMON=$PWD/common.sh
 
 # clean old test data
 rm -rf $MH_TEST_DIR/Mail
 # setup test data
 mkdir $MH_TEST_DIR/Mail
+echo "Path: $MH_TEST_DIR/Mail" > $MH
 folder -create +inbox > /dev/null
 # create 10 basic messages
 for i in `seq 1 10`;

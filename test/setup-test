@@ -20,5 +20,3 @@ mkdir $TEMPDIR/bld
 cd $TEMPDIR/bld
 $srcdir/configure --prefix=$TEMPDIR --with-locking=fcntl --enable-debug
 make install
-
-echo "Path: $TEMPDIR/Mail" > $TEMPDIR/mh_profile

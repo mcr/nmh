@@ -57,6 +57,7 @@ MAN1SRC = ali. anno. burst. comp.		\
        nmh. mhbuild. mhl. mhlist. mhmail.	\
        mhn. mhparam. mhpath. mhshow.		\
        mhstore. msgchk. msh.			\
+       new. fnext. fprev. unseen.		\
        next. packf. pick. prev.			\
        prompter. rcvdist. rcvpack.		\
        rcvstore. rcvtty. refile.		\

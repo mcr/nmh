@@ -2,7 +2,7 @@
 # Test a variant of a mailbox which caused debian bug 359167.
 set -e
 
-. common.sh
+. $MH_TEST_COMMON
 
 THISDIR="tests/inc"
 

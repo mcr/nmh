@@ -1,0 +1,110 @@
+.\"
+.\" %nmhwarning%
+.\" $Id$
+.\"
+.TH NEW %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+
+.SH NAME
+new \- report on folders with new messages
+.PP
+fnext \- set current folder to next folder with new messages
+.PP
+fprev \- set current folder to previous folder with new messages
+.PP
+unseen \- scan new messages in all folders with new messages
+
+.SH SYNOPSIS
+.HP 5
+.na
+.B new
+.RI [ sequences ]
+.RB [ \-mode
+.IR mode ]
+.RB [ \-folders
+.IR foldersfile ]
+.RB [ \-version ]
+.RB [ \-help ]
+.PP
+.HP 5
+.B fnext
+is equivalent to
+.B new \-mode fnext
+.PP
+.HP 5
+.B fprev
+is equivalent to
+.B new \-mode fprev
+.PP
+.HP 5
+.B unseen
+is equivalent to
+.B new \-mode unseen
+.ad
+
+.SH DESCRIPTION
+.B New
+in its default mode produces a one\-line\-per\-folder listing of all
+folders containing messages in the listed
+.IR sequences
+or in the sequences listed in the profile entry
+.RI \*(lq Unseen-Sequence \*(rq.
+Each line contains the folder, the number of messages in the desired
+sequences, and the message lists from the .mh_sequences file.  For example:
+.PP
+.RS 5
+.nf
+foo     11.* 40\-50
+bar    380.  760\-772 824\-828
+ total    391.
+.fi
+.RE
+.PP
+The `*' on foo indicates that it is the current folder.  The last line shows
+the total number of messages in the desired sequences.
+.PP
+.B New
+crawls the folder hierarchy recursively to find all folders, and prints them
+in lexicographic order.  Override this behavior by providing
+.IR foldersfile
+containing the pre-sorted list of folders
+.B new
+should check, one per line.
+.PP
+In
+.B fnext
+and
+.B fprev
+modes,
+.B new
+instead changes to the next or previous matching folder, respectively.
+.PP
+In
+.B unseen
+mode,
+.B new
+executes
+.B scan sequences
+for each matching folder.
+
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'%etcdir%/ExtraBigFileName  'u
+^$HOME/\&.mh\(ruprofile~^The user profile
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
+^Path:~^To determine the user's nmh directory
+^Current\-Folder:~^To find the default current folder
+^Unseen-Sequence:~^The name of the unseen message sequence
+.fi
+
+.SH "SEE ALSO"
+scan(1), mh\-format(5)
+
+.SH HISTORY
+Based on Luke Mewburn's new (http://www.mewburn.net/luke/src/new).

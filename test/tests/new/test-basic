@@ -1,0 +1,164 @@
+#!/bin/sh
+
+# TODO: Move to a common file tests can source; need more framework...
+failed=0
+check() {
+    diff -u $expected $actual
+    if [ $? -ne 0 ]; then
+        failed=$((failed + 1))
+    fi
+}
+
+folders=$MH_TEST_DIR/Mail/.folders
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+# make second folder
+cp -r $MH_TEST_DIR/Mail/inbox $MH_TEST_DIR/Mail/foo1
+cp -r $MH_TEST_DIR/Mail/inbox $MH_TEST_DIR/Mail/foo2
+# but only list inbox and foo2 in .folders, and sorted differently
+cat > $folders <<EOF
+inbox
+foo2
+EOF
+
+# test with no sequence
+cat > $expected <<EOF
+new: must specify sequences or set Unseen-Sequence
+EOF
+new > $actual 2>&1
+check
+
+# test with no desired messages
+cat > $expected <<EOF
+ total      0.
+EOF
+new aseq > $actual 2>&1
+check
+new -folders $folders aseq > $actual 2>&1
+check
+
+# test fnext/fprev with no desired messages
+cat /dev/null > $expected
+fnext aseq > $actual 2>&1
+check
+fprev aseq > $actual 2>&1
+check
+
+# add 1 desired message in each folder
+echo 'aseq: 1' > $MH_TEST_DIR/Mail/inbox/.mh_sequences
+echo 'aseq: 1' > $MH_TEST_DIR/Mail/foo1/.mh_sequences
+echo 'aseq: 1' > $MH_TEST_DIR/Mail/foo2/.mh_sequences
+
+# test with all folders
+cat > $expected <<EOF
+foo1       1.  1
+foo2       1.  1
+inbox      1.* 1
+ total      3.
+EOF
+new aseq > $actual 2>&1
+check
+
+# test with .folders
+cat > $expected <<EOF
+inbox      1.* 1
+foo2       1.  1
+ total      2.
+EOF
+new -folders $folders aseq > $actual 2>&1
+check
+
+# add 2 desired messages to another sequence in each folder
+echo 'bseq: 3-4' >> $MH_TEST_DIR/Mail/inbox/.mh_sequences
+echo 'bseq: 3-4' >> $MH_TEST_DIR/Mail/foo1/.mh_sequences
+echo 'bseq: 3-4' >> $MH_TEST_DIR/Mail/foo2/.mh_sequences
+
+# test listing aseq and bseq
+cat > $expected <<EOF
+foo1       3.  1 3-4
+foo2       3.  1 3-4
+inbox      3.* 1 3-4
+ total      9.
+EOF
+new aseq bseq > $actual 2>&1
+check
+
+# set aseq bseq as unseen
+echo 'Unseen-Sequence: aseq bseq' >> $MH
+new > $actual 2>&1
+check
+
+# test unseen
+cat > $expected <<EOF
+
+3 aseq bseq messages in foo1
+   1  09/29 Test1              Testing message 1<<This is message number 1 >>
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>
+
+3 aseq bseq messages in foo2
+   1  09/29 Test1              Testing message 1<<This is message number 1 >>
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>
+
+3 aseq bseq messages in inbox (*: current folder)
+   1  09/29 Test1              Testing message 1<<This is message number 1 >>
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>
+EOF
+unseen > $actual 2>&1
+check
+
+# test fnext with the current folder not in the list
+echo 'Current-Folder: foo1' > $MH_TEST_DIR/Mail/context
+echo 'inbox  1 3-4' > $expected
+fnext -folders $folders > $actual 2>&1
+check
+
+# test fprev with the current folder not in the list
+echo 'Current-Folder: foo1' > $MH_TEST_DIR/Mail/context
+echo 'inbox  1 3-4' > $expected
+fprev -folders $folders > $actual 2>&1
+check
+
+# test fnext with current folder in the middle of the list
+echo 'Current-Folder: foo2' > $MH_TEST_DIR/Mail/context
+echo 'inbox  1 3-4' > $expected
+fnext > $actual 2>&1
+check
+
+# test fprev with current folder in the middle of the list
+echo 'Current-Folder: foo2' > $MH_TEST_DIR/Mail/context
+echo 'foo1  1 3-4' > $expected
+fprev > $actual 2>&1
+check
+
+# test fprev with current folder at the beginning of the list
+echo 'Current-Folder: foo1' > $MH_TEST_DIR/Mail/context
+echo 'inbox  1 3-4' > $expected
+fprev > $actual 2>&1
+check
+
+# test fnext with current folder at the end of the list
+echo 'Current-Folder: inbox' > $MH_TEST_DIR/Mail/context
+echo 'foo1  1 3-4' > $expected
+fnext > $actual 2>&1
+check
+
+# test fnext with no current folder
+rm $MH_TEST_DIR/Mail/context
+echo 'foo1  1 3-4' > $expected
+fnext > $actual 2>&1
+check
+
+# test fnext with only one folder in the list
+cat > $folders <<EOF
+inbox
+EOF
+echo 'inbox  1 3-4' > $expected
+fnext -folders $folders > $actual 2>&1
+check
+
+exit $failed

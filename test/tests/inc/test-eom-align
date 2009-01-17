@@ -4,7 +4,7 @@
 
 set -e
 
-. common.sh
+. $MH_TEST_COMMON
 
 THISDIR="tests/inc"
 

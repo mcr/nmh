@@ -1,3 +1,24 @@
+2009-01-16  Eric Gillespie  <epg@pretzelnet.org>
+
+	* test/runtest, test/tests/inc/test-deb359167,
+	test/tests/inc/test-eom-align, test/tests/manpages/test-manpages:
+	Load common.sh via absolute path, otherwise some /bin/sh
+	(e.g. dash) can't load it.
+
+	* uip/Makefile.in, uip/new.c, test/tests/new/test-basic: Add new
+	program, and fn/fp/unseen symlinks.
+
+	* test/{runtest,setup-test}: Move MH profile under Mail directory
+	so each test script will have its own to muck with, if needed.
+
+	* h/Makefile.in, h/crawl_folders.h, sbr/Makefile.in,
+	sbr/crawl_folders.c, uip/folder.c: Extract the folder crawling
+	code from folder.c into new crawl_folders function, using a
+	callback to assemble the folder info in folder.c.  Drop compare
+	function and use strcmp instead.  Rename addfold and addir to
+	add_folder and add_children (add dir vs. add folder?
+	confusing names).
+
 2008-12-26  Peter Maydell  <pmaydell@chiark.greenend.org.uk>
 
 	* sbr/m_getfld.c: fix two bugs which could cause us to walk off

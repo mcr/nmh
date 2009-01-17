@@ -6,12 +6,13 @@
  *
  * $Id$
  *
- * This code is Copyright (c) 2002, by the authors of nmh.  See the
+ * This code is Copyright (c) 2002, 2008, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.
  */
 
 #include <h/mh.h>
+#include <h/crawl_folders.h>
 #include <h/utils.h>
 #include <errno.h>
 
@@ -78,21 +79,9 @@ static int all      = 0;	/* should we output all folders             */
 
 static int total_folders = 0;	/* total number of folders                  */
 
-static int start = 0;
-static int foldp = 0;
-
 static char *nmhdir;
 static char *stack = "Folder-Stack";
 static char folder[BUFSIZ];
-
-#define NUMFOLDERS 100
-
-/*
- * This is how many folders we currently can hold in the array
- * `folds'.  We increase this amount by NUMFOLDERS at a time.
- */
-static int maxfolders;
-static char **folds;
 
 /*
  * Structure to hold information about
@@ -118,13 +107,10 @@ static int maxFolderInfo;
 /*
  * static prototypes
  */
-static void dodir (char *);
 static int get_folder_info (char *, char *);
+static crawl_callback_t get_folder_info_callback;
 static void print_folders (void);
 static int sfold (struct msgs *, char *);
-static void addir (char *);
-static void addfold (char *);
-static int compare (char *, char *);
 static void readonly_folders (void);
 
 
@@ -350,12 +336,8 @@ main (int argc, char **argv)
 	    done (0);
     }
 
-    /* Allocate initial space to record folder names */
-    maxfolders = NUMFOLDERS;
-    folds = mh_xmalloc (maxfolders * sizeof(char *));
-
     /* Allocate initial space to record folder information */
-    maxFolderInfo = NUMFOLDERS;
+    maxFolderInfo = CRAWL_NUMFOLDERS;
     fi = mh_xmalloc (maxFolderInfo * sizeof(*fi));
 
     /*
@@ -365,7 +347,7 @@ main (int argc, char **argv)
 	/*
 	 * If no folder is given, do them all
 	 */
-	/* change directory to base of nmh directory for dodir */
+	/* change directory to base of nmh directory for crawl_folders */
 	if (chdir (nmhdir) == NOTOK)
 	    adios (nmhdir, "unable to change directory to");
 	if (!argfolder) {
@@ -373,7 +355,7 @@ main (int argc, char **argv)
 		admonish (NULL, "no folder given for message %s", msg);
 	    readonly_folders (); /* do any readonly folders */
 	    strncpy (folder, (cp = context_find (pfolder)) ? cp : "", sizeof(folder));
-	    dodir (".");
+	    crawl_folders (".", get_folder_info_callback, NULL);
 	} else {
 	    strncpy (folder, argfolder, sizeof(folder));
 	    if (get_folder_info (argfolder, msg)) {
@@ -385,7 +367,7 @@ main (int argc, char **argv)
 	     * we still need to list all level-1 sub-folders.
 	     */
 	    if (!frecurse)
-		dodir (folder);
+		crawl_folders (folder, get_folder_info_callback, NULL);
 	}
     } else {
 	strncpy (folder, argfolder ? argfolder : getfolder (1), sizeof(folder));
@@ -412,32 +394,8 @@ main (int argc, char **argv)
     return 1;
 }
 
-/*
- * Base routine for scanning a folder
- */
-
-static void
-dodir (char *dir)
-{
-    int i;
-    int os = start;
-    int of = foldp;
-
-    start = foldp;
-
-    addir (dir);
-
-    for (i = start; i < foldp; i++) {
-	get_folder_info (folds[i], NULL);
-	fflush (stdout);
-    }
-
-    start = os;
-    foldp = of;
-}
-
 static int
-get_folder_info (char *fold, char *msg)
+get_folder_info_body (char *fold, char *msg, boolean *crawl_children)
 {
     int	i, retval = 1;
     struct msgs *mp = NULL;
@@ -449,7 +407,7 @@ get_folder_info (char *fold, char *msg)
      * for folder information
      */
     if (total_folders >= maxFolderInfo) {
-	maxFolderInfo += NUMFOLDERS;
+	maxFolderInfo += CRAWL_NUMFOLDERS;
 	fi = mh_xrealloc (fi, maxFolderInfo * sizeof(*fi));
     }
 
@@ -493,8 +451,32 @@ get_folder_info (char *fold, char *msg)
 	folder_free (mp); /* free folder/message structure */
     }
 
-    if (frecurse && (fshort || fi[i].others) && (fi[i].error == 0))
-	dodir (fold);
+    *crawl_children = (frecurse && (fshort || fi[i].others)
+		       && (fi[i].error == 0));
+    return retval;
+}
+
+static boolean
+get_folder_info_callback (char *fold, void *baton)
+{
+    boolean crawl_children;
+    get_folder_info_body (fold, NULL, &crawl_children);
+    fflush (stdout);
+    return crawl_children;
+}
+
+static int
+get_folder_info (char *fold, char *msg)
+{
+    boolean crawl_children;
+    int retval;
+
+    retval = get_folder_info_body (fold, msg, &crawl_children);
+
+    if (crawl_children) {
+	crawl_folders (fold, get_folder_info_callback, NULL);
+    }
+
     return retval;
 }
 
@@ -653,99 +635,6 @@ sfold (struct msgs *mp, char *msg)
     return 1;
 }
 
-
-static void
-addir (char *name)
-{
-    char *prefix, *child;
-    struct stat st;
-    struct dirent *dp;
-    DIR * dd;
-    int child_is_folder;
-
-    if (!(dd = opendir (name))) {
-	admonish (name, "unable to read directory ");
-	return;
-    }
-
-    if (strcmp (name, ".") == 0) {
-	prefix = getcpy ("");
-    } else {
-	prefix = concat (name, "/", (void *)NULL);
-    }
-
-    while ((dp = readdir (dd))) {
-	/* If the system supports it, try to skip processing of children we
-	 * know are not directories or symlinks. */
-	child_is_folder = -1;
-#if defined(HAVE_STRUCT_DIRENT_D_TYPE)
-	if (dp->d_type == DT_DIR) {
-	    child_is_folder = 1;
-	} else if (dp->d_type != DT_LNK && dp->d_type != DT_UNKNOWN) {
-	    continue;
-	}
-#endif
-	if (!strcmp (dp->d_name, ".") || !strcmp (dp->d_name, "..")) {
-	    continue;
-	}
-	child = concat (prefix, dp->d_name, (void *)NULL);
-	/* If we have no d_type or d_type is DT_LNK or DT_UNKNOWN, stat the
-	 * child to see what it is. */
-	if (child_is_folder == -1) {
-	    child_is_folder = (stat (child, &st) != -1 && S_ISDIR(st.st_mode));
-	}
-	if (child_is_folder) {
-	    /* addfold saves child in the list, don't free it */
-	    addfold (child);
-	} else {
-	    free (child);
-	}
-    }
-
-    closedir (dd);
-    free(prefix);
-}
-
-/*
- * Add the folder name into the
- * list in a sorted fashion.
- */
-
-static void
-addfold (char *fold)
-{
-    register int i, j;
-
-    /* if necessary, reallocate the space for folder names */
-    if (foldp >= maxfolders) {
-	maxfolders += NUMFOLDERS;
-	folds = mh_xrealloc (folds, maxfolders * sizeof(char *));
-    }
-
-    for (i = start; i < foldp; i++)
-	if (compare (fold, folds[i]) < 0) {
-	    for (j = foldp - 1; j >= i; j--)
-		folds[j + 1] = folds[j];
-	    foldp++;
-	    folds[i] = fold;
-	    return;
-	}
-
-    folds[foldp++] = fold;
-}
-
-
-static int
-compare (char *s1, char *s2)
-{
-    register int i;
-
-    while (*s1 || *s2)
-	if ((i = *s1++ - *s2++))
-	    return i;
-
-    return 0;
-}
 
 /*
  * Do the read only folders

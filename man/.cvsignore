@@ -10,9 +10,11 @@ dp.8
 flist.1
 flists.1
 fmtdump.8
+fnext.1
 folder.1
 folders.1
 forw.1
+fprev.1
 inc.1
 install-mh.1
 man.sed
@@ -37,6 +39,7 @@ mhstore.1
 msgchk.1
 msh.1
 mts.conf.5
+new.1
 next.1
 nmh.1
 packf.1
@@ -58,5 +61,6 @@ sendfiles.1
 show.1
 slocal.1
 sortm.1
+unseen.1
 whatnow.1
 whom.1

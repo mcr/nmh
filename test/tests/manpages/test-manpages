@@ -6,7 +6,7 @@
 #
 ######################################################
 
-. common.sh
+. $MH_TEST_COMMON
 
 require_prog groff
 
