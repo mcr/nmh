@@ -14,3 +14,5 @@ Things to add to the release notes for the next full release:
   folder, changing to previous such folder, and scanning all such folders,
   respectively.  This is based on Luke Mewburn's 'new':
   http://www.mewburn.net/luke/src/new
+- nmh will no longer attempt to install a mhn.defaults file that causes mhshow
+  to open its own xterms.
