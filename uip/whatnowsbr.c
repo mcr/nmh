@@ -1229,6 +1229,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case SERVSW:
 		case SASLMECHSW:
 		case USERSW:
+		case PORTSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-') {
 			advise (NULL, "missing argument to %s", argp[-2]);

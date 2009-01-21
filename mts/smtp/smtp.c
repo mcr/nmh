@@ -144,7 +144,7 @@ static char *EHLOset (char *);
 static int sm_fwrite(char *, int);
 static int sm_fputs(char *);
 static int sm_fputc(int);
-static int sm_getc(void);
+static int sm_fgetc(FILE *);
 static void sm_fflush(void);
 static int sm_fgets(char *, int, FILE *);
 
@@ -325,6 +325,13 @@ sendmail_init (char *client, char *server, int watch, int verbose,
     if (client == NULL || *client == '\0')
 	client = "localhost";
 #endif
+
+#ifdef CYRUS_SASL
+    sasl_inbuffer = malloc(SASL_MAXRECVBUF);
+    if (!sasl_inbuffer)
+	return sm_ierror("Unable to allocate %d bytes for read buffer",
+			 SASL_MAXRECVBUF);
+#endif /* CYRUS_SASL */
 
     if (pipe (pdi) == NOTOK)
 	return sm_ierror ("no pipes");

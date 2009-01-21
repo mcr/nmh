@@ -85,7 +85,7 @@ client (char *args, char *service, char *response, int len_response, int debug)
 		char address[NI_MAXHOST];
 
 		rc = getnameinfo(ai->ai_addr, ai->ai_addrlen, address,
-				 sizeof(address), NULL, NULL, NI_NUMERICHOST);
+				 sizeof(address), NULL, 0, NI_NUMERICHOST);
 
 		fprintf(stderr, "Connecting to %s...\n",
 			rc ? "unknown" : address);
