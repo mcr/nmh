@@ -144,7 +144,6 @@ static char *EHLOset (char *);
 static int sm_fwrite(char *, int);
 static int sm_fputs(char *);
 static int sm_fputc(int);
-static int sm_fgetc(FILE *);
 static void sm_fflush(void);
 static int sm_fgets(char *, int, FILE *);
 
