@@ -903,20 +903,12 @@ sm_auth_sasl(char *user, char *mechlist, char *inhost)
 		return NOTOK;
 	}
 	sasl_outbuflen = 0;
-
-	sasl_inbuffer = malloc(SASL_MAXRECVBUF);
-
-	if (sasl_inbuffer == NULL) {
-		sm_ierror("Unable to allocate %d bytes for SASL input "
-			  "buffer", SASL_MAXRECVBUF);
-		free(sasl_outbuffer);
-		return NOTOK;
-	}
 	sasl_inbuflen = 0;
 	sasl_inptr = sasl_inbuffer;
     } else {
 	sasl_outbuffer = NULL;
-	sasl_inbuffer = NULL;
+        /* Don't NULL out sasl_inbuffer because it could be used in
+           sm_fgetc (). */
     }
 
     sasl_complete = 1;

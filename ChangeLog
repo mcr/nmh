@@ -1,3 +1,10 @@
+2009-12-21  David Levine <levinedl@acm.org>
+
+	* mts/smtp/smtp.c: In sm_auth_sasl (), removed zeroing of
+	sasl_inbuffer because it could be used in sm_fget ().  Also,
+	removed allocation of sasl_inbuffer because that was done in
+	either smtp_init () or sendmail_init ().
+
 2009-01-17  Eric Gillespie  <epg@pretzelnet.org>
 
 	* etc/mhn.defaults.sh: Never try to make mhshow start xterm.
