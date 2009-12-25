@@ -545,7 +545,7 @@ main (int argc, char **argv)
 	    adios (NULL, "no mail to incorporate");
 
 	if ((cp = strdup(newmail)) == (char *)0)
-	    adios (maildir, "error allocating memory to copy newmail");
+	    adios (NULL, "error allocating memory to copy newmail");
 
 	newmail = cp;
     }

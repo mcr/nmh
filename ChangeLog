@@ -1,3 +1,10 @@
+2009-12-25  David Levine <levinedl@acm.org>
+
+	* uip/inc.c: gcc 4.4.1 noticed that maildir could have been
+	used before initialization.  In fact, if that code was ever
+	reached, maildir would never have been initialized.  It's in
+	an adios call, so replaced with NULL.
+
 2009-12-21  David Levine <levinedl@acm.org>
 
 	* mts/smtp/smtp.c: In sm_auth_sasl (), removed zeroing of
