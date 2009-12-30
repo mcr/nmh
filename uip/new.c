@@ -374,7 +374,7 @@ doit(char *cur, char *folders, char *sequences[])
             total += count;
 
             printf("%-*s %6d.%c %s\n",
-                   folder_len, node->n_name,
+                   (int) folder_len, node->n_name,
                    count,
                    (strcmp(node->n_name, cur) == 0 ? '*' : ' '),
                    node->n_field);
@@ -388,7 +388,7 @@ doit(char *cur, char *folders, char *sequences[])
     }
 
     if (run_mode == NEW) {
-        printf("%-*s %6d.\n", folder_len, " total", total);
+        printf("%-*s %6d.\n", (int) folder_len, " total", total);
     }
 
     return cur_node;

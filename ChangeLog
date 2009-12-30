@@ -1,3 +1,8 @@
+2009-12-29  David Levine <levinedl@acm.org>
+
+	* uip/new.c: cast folder_len to int to avoid warning on
+	64-bit about passing a size_t to an int conversion specifier.
+
 2009-12-25  David Levine <levinedl@acm.org>
 
 	* uip/inc.c: gcc 4.4.1 noticed that maildir could have been
