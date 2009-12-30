@@ -263,7 +263,8 @@ list_debug (CT ct)
 
     /* print internal flags for type/subtype */
     fprintf (stderr, "    type 0x%x subtype 0x%x params 0x%x\n",
-	     ct->c_type, ct->c_subtype, (unsigned int) ct->c_ctparams);
+	     ct->c_type, ct->c_subtype,
+	     (unsigned int)(unsigned long) ct->c_ctparams);
 
     fprintf (stderr, "    showproc  \"%s\"\n", empty (ct->c_showproc));
     fprintf (stderr, "    termproc  \"%s\"\n", empty (ct->c_termproc));
@@ -275,7 +276,7 @@ list_debug (CT ct)
 
     /* print internal flags for transfer encoding */
     fprintf (stderr, "    transfer encoding 0x%x params 0x%x\n",
-	     ct->c_encoding, (unsigned int) ct->c_cefile);
+	     ct->c_encoding, (unsigned int)(unsigned long) ct->c_cefile);
 
     /* print Content-ID */
     if (ct->c_id)
@@ -286,7 +287,7 @@ list_debug (CT ct)
 	fprintf (stderr, "  %s:%s", DESCR_FIELD, ct->c_descr);
 
     fprintf (stderr, "    read fp 0x%x file \"%s\" begin %ld end %ld\n",
-	     (unsigned int) ct->c_fp, empty (ct->c_file),
+	     (unsigned int)(unsigned long) ct->c_fp, empty (ct->c_file),
 	     ct->c_begin, ct->c_end);
 
     /* print more information about transfer encoding */
@@ -425,7 +426,8 @@ list_encoding (CT ct)
 
     if ((ce = ct->c_cefile))
 	fprintf (stderr, "    decoded fp 0x%x file \"%s\"\n",
-		 (unsigned int) ce->ce_fp, ce->ce_file ? ce->ce_file : "");
+		 (unsigned int)(unsigned long) ce->ce_fp,
+		 ce->ce_file ? ce->ce_file : "");
 
     return OK;
 }

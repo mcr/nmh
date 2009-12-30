@@ -1,5 +1,10 @@
 2009-12-29  David Levine <levinedl@acm.org>
 
+	* uip/mhlistsbr.c, uip/mhlsbr.c, uip/picksbr.c: cast
+	pointers to unsigned long before casting to unsigned int
+	to avoid warnings on 64-bit about casting from pointer
+	to int of different size.
+
 	* uip/new.c: cast folder_len to int to avoid warning on
 	64-bit about passing a size_t to an int conversion specifier.
 
