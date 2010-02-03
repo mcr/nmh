@@ -1,3 +1,21 @@
+2010-02-02  Earl Hood <earl@earlhood.com>
+	* mts/smtp/smtp.c: added SASL support if mts configuration
+	  setting is set to "sendmail".  This is useful if sendmail
+	  conf option is to a custom script that creates a proxy
+	  connection to an smtp server.
+
+	* sbr/mts.c: added support for MHMTSCONF and MHMTSUSERCONF
+	  envvars.  The former specifies an alternative system
+	  mts.conf to use.  The later specifies a user-specific
+	  mts.conf to use.  This one will be read after the system
+	  conf, so the user's conf only needs to set options they
+	  want to override.  The MHMTSUSERCONF allows a user to set
+	  personal alternative mail submission methods w/o affecting
+	  other users on the system.
+
+	* uip/whom.c: added SASL-based options so address checking
+	  can work against a server that requires SASL.
+
 2009-12-29  David Levine <levinedl@acm.org>
 
 	* uip/mhlistsbr.c, uip/mhlsbr.c, uip/picksbr.c: cast

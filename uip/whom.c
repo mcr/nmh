@@ -13,6 +13,12 @@
 #include <h/signals.h>
 #include <signal.h>
 
+#ifndef CYRUS_SASL
+# define SASLminc(a) (a)
+#else /* CYRUS_SASL */
+# define SASLminc(a)  0
+#endif /* CYRUS_SASL */
+
 static struct swit switches[] = {
 #define	ALIASW              0
     { "alias aliasfile", 0 },
@@ -38,6 +44,14 @@ static struct swit switches[] = {
     { "server host", -6 },
 #define	SNOOPSW            11
     { "snoop", -5 },
+#define SASLSW             12
+    { "sasl", SASLminc(4) },
+#define SASLMECHSW         13
+    { "saslmech mechanism", SASLminc(-5) },
+#define USERSW             14
+    { "user username", SASLminc(-4) },
+#define PORTSW		   15
+    { "port server port name/number", 4 },
     { NULL, 0 }
 };
 
@@ -88,6 +102,7 @@ main (int argc, char **argv)
 		case CHKSW: 
 		case NOCHKSW: 
 		case SNOOPSW:
+		case SASLSW:
 		    vec[vecp++] = --cp;
 		    continue;
 
@@ -117,6 +132,9 @@ main (int argc, char **argv)
 		case ALIASW: 
 		case CLIESW: 
 		case SERVSW: 
+		case USERSW:
+		case PORTSW:
+		case SASLMECHSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);

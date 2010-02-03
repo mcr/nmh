@@ -128,7 +128,8 @@ char *EHLOkeys[MAXEHLO + 1];
  */
 static int smtp_init (char *, char *, char *, int, int, int, int, int, int,
 		      char *, char *);
-static int sendmail_init (char *, char *, int, int, int, int, int);
+static int sendmail_init (char *, char *, int, int, int, int, int, int,
+                          char *, char *);
 
 static int rclient (char *, char *);
 static int sm_ierror (char *fmt, ...);
@@ -165,13 +166,13 @@ sm_init (char *client, char *server, char *port, int watch, int verbose,
 			  debug, onex, queued, sasl, saslmech, user);
     else
 	return sendmail_init (client, server, watch, verbose,
-			      debug, onex, queued);
+                              debug, onex, queued, sasl, saslmech, user);
 }
 
 static int
 smtp_init (char *client, char *server, char *port, int watch, int verbose,
-	   int debug, int onex, int queued, int sasl, char *saslmech,
-	   char *user)
+	   int debug, int onex, int queued,
+           int sasl, char *saslmech, char *user)
 {
 #ifdef CYRUS_SASL
     char *server_mechs;
@@ -299,8 +300,12 @@ send_options: ;
 
 int
 sendmail_init (char *client, char *server, int watch, int verbose,
-               int debug, int onex, int queued)
+               int debug, int onex, int queued,
+               int sasl, char *saslmech, char *user)
 {
+#ifdef CYRUS_SASL
+    char *server_mechs;
+#endif /* CYRUS_SASL */
     int i, result, vecp;
     int pdi[2], pdo[2];
     char *vec[15];
@@ -426,6 +431,35 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 		}
 	    }
 
+#ifdef CYRUS_SASL
+    /*
+     * If the user asked for SASL, then check to see if the SMTP server
+     * supports it.  Otherwise, error out (because the SMTP server
+     * might have been spoofed; we don't want to just silently not
+     * do authentication
+     */
+
+    if (sasl) {
+	if (! (server_mechs = EHLOset("AUTH"))) {
+	    sm_end(NOTOK);
+	    return sm_ierror("SMTP server does not support SASL");
+	}
+
+	if (saslmech && stringdex(saslmech, server_mechs) == -1) {
+	    sm_end(NOTOK);
+	    return sm_ierror("Requested SASL mech \"%s\" is not in the "
+			     "list of supported mechanisms:\n%s",
+			     saslmech, server_mechs);
+	}
+
+	if (sm_auth_sasl(user, saslmech ? saslmech : server_mechs,
+			 server) != RP_OK) {
+	    sm_end(NOTOK);
+	    return NOTOK;
+	}
+    }
+#endif /* CYRUS_SASL */
+
 #ifndef ZMAILER
 	    if (onex)
 		smtalk (SM_HELO, "ONEX");
@@ -454,7 +488,7 @@ rclient (char *server, char *service)
 int
 sm_winit (int mode, char *from)
 {
-    char *smtpcom;
+    char *smtpcom = NULL;
 
     switch (mode) {
 	case S_MAIL:
@@ -472,6 +506,10 @@ sm_winit (int mode, char *from)
 	case S_SAML:
 	    smtpcom = "SAML";
 	    break;
+
+        default:
+            /* Hopefully, we do not get here. */
+            break;
     }
 
     switch (smtalk (SM_MAIL, "%s FROM:<%s>", smtpcom, from)) {
@@ -1173,7 +1211,7 @@ smhear (void)
     int i, code, cont, bc, rc, more;
     unsigned char *bp;
     char *rp;
-    char **ehlo, buffer[BUFSIZ];
+    char **ehlo = NULL, buffer[BUFSIZ];
 
     if (doingEHLO) {
 	static int at_least_once = 0;

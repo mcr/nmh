@@ -33,6 +33,9 @@
  */
 static char *tailor_value (unsigned char *);
 static void getuserinfo (void);
+static const char *get_mtsconf_pathname(void);
+static const char *get_mtsuserconf_pathname(void);
+static void mts_read_conf_file (FILE *fp);
 
 /*
  * *mmdfldir and *uucpldir are the maildrop directories.  If maildrops
@@ -172,35 +175,21 @@ static struct bind binds[] = {
 void
 mts_init (char *name)
 {
-    unsigned char *bp;
-    char *cp, buffer[BUFSIZ];
-    struct bind *b;
+    const char *cp;
     FILE *fp;
     static int inited = 0;
 
-    if (inited++ || (fp = fopen (mtsconf, "r")) == NULL)
+    if (inited++ || (fp = fopen (get_mtsconf_pathname(), "r")) == NULL)
 	return;
-
-    while (fgets (buffer, sizeof(buffer), fp)) {
-	if (!(cp = strchr(buffer, '\n')))
-	    break;
-	*cp = 0;
-	if (*buffer == '#' || *buffer == '\0')
-	    continue;
-	if (!(bp = strchr(buffer, ':')))
-	    break;
-	*bp++ = 0;
-	while (isspace (*bp))
-	    *bp++ = 0;
-
-	for (b = binds; b->keyword; b++)
-	    if (!strcmp (buffer, b->keyword))
-		break;
-	if (b->keyword && (cp = tailor_value (bp)))
-	    *b->value = cp;
-    }
-
+    mts_read_conf_file(fp);
     fclose (fp);
+
+    cp = get_mtsuserconf_pathname();
+    if (cp != NULL &&
+            ((fp = fopen (get_mtsuserconf_pathname(), "r")) != NULL)) {
+        mts_read_conf_file(fp);
+        fclose (fp);
+    }
 
     Everyone = atoi (everyone);
 
@@ -528,4 +517,51 @@ getuserinfo (void)
     }
 
     return;
+}
+
+static const char*
+get_mtsconf_pathname (void)
+{
+    const char *cp = getenv ( "MHMTSCONF ");
+    if (cp != NULL && *cp != '\0') {
+        return cp;
+    }
+    return mtsconf;
+}
+
+static const char*
+get_mtsuserconf_pathname (void)
+{
+    const char *cp = getenv ( "MHMTSUSERCONF" );
+    if (cp != NULL && *cp != '\0') {
+        return cp;
+    }
+    return NULL;
+}
+
+static void
+mts_read_conf_file (FILE *fp)
+{
+    unsigned char *bp;
+    char *cp, buffer[BUFSIZ];
+    struct bind *b;
+
+    while (fgets (buffer, sizeof(buffer), fp)) {
+	if (!(cp = strchr(buffer, '\n')))
+	    break;
+	*cp = 0;
+	if (*buffer == '#' || *buffer == '\0')
+	    continue;
+	if (!(bp = strchr(buffer, ':')))
+	    break;
+	*bp++ = 0;
+	while (isspace (*bp))
+	    *bp++ = 0;
+
+	for (b = binds; b->keyword; b++)
+	    if (!strcmp (buffer, b->keyword))
+		break;
+	if (b->keyword && (cp = tailor_value (bp)))
+	    *b->value = cp;
+    }
 }
