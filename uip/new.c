@@ -300,7 +300,7 @@ doit(char *cur, char *folders, char *sequences[])
     struct node *first, *cur_node, *node, *last, *prev;
     size_t folder_len;
     int count, total = 0;
-    char *command, *sequences_s;
+    char *command = NULL, *sequences_s = NULL;
 
     if (cur == NULL || cur[0] == '\0') {
         cur = "inbox";

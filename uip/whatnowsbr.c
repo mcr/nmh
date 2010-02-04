@@ -634,7 +634,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
     struct stat st;
 
 #ifdef HAVE_LSTAT
-    int	slinked;
+    int	slinked = 0;
 #if 0
     int oumask;	/* PJS: for setting permissions on symlinks. */
 #endif
@@ -1315,7 +1315,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 #endif /* not lint */
 	    && altmsg) {
 	vec[vecp++] = "-dist";
-	distfile = getcpy (m_scratch (altmsg, invo_name));
+	distfile = getcpy (m_mktemp2(altmsg, invo_name, NULL, NULL));
 	if (link (altmsg, distfile) == NOTOK)
 	    adios (distfile, "unable to link %s to", altmsg);
     } else {

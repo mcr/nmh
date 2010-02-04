@@ -204,12 +204,14 @@ parse_mime (char *file)
      * Check if file is actually standard input
      */
     if ((is_stdin = !(strcmp (file, "-")))) {
-	file = add (m_tmpfil (invo_name), NULL);
-	if ((fp = fopen (file, "w+")) == NULL) {
-	    advise (file, "unable to fopen for writing and reading");
-	    return NULL;
-	}
+        char *tfile = m_mktemp2(NULL, invo_name, NULL, &fp);
+        if (tfile == NULL) {
+            advise("mhparse", "unable to create temporary file");
+            return NULL;
+        }
+	file = add (tfile, NULL);
 	chmod (file, 0600);
+
 	while (fgets (buffer, sizeof(buffer), stdin))
 	    fputs (buffer, fp);
 	fflush (fp);
@@ -1764,7 +1766,7 @@ openBase64 (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_scratch ("", tmp), NULL);
+	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -1781,8 +1783,21 @@ openBase64 (CT ct, char **file)
                   ci->ci_type);
         cp = context_find (buffer);
     }
-    if (cp != NULL && *cp != '\0')
-        ce->ce_file = add (cp, ce->ce_file);
+    if (cp != NULL && *cp != '\0') {
+        if (ce->ce_unlink) {
+            // Temporary file already exists, so we rename to
+            // version with extension.
+            char *file_org = strdup(ce->ce_file);
+            ce->ce_file = add (cp, ce->ce_file);
+            if (rename(file_org, ce->ce_file)) {
+                adios (ce->ce_file, "unable to rename %s to ", file_org);
+            }
+            free(file_org);
+
+        } else {
+            ce->ce_file = add (cp, ce->ce_file);
+        }
+    }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
 	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");
@@ -1972,7 +1987,7 @@ openQuoted (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_scratch ("", tmp), NULL);
+	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -1989,8 +2004,21 @@ openQuoted (CT ct, char **file)
                   ci->ci_type);
         cp = context_find (buffer);
     }
-    if (cp != NULL && *cp != '\0')
-        ce->ce_file = add (cp, ce->ce_file);
+    if (cp != NULL && *cp != '\0') {
+        if (ce->ce_unlink) {
+            // Temporary file already exists, so we rename to
+            // version with extension.
+            char *file_org = strdup(ce->ce_file);
+            ce->ce_file = add (cp, ce->ce_file);
+            if (rename(file_org, ce->ce_file)) {
+                adios (ce->ce_file, "unable to rename %s to ", file_org);
+            }
+            free(file_org);
+
+        } else {
+            ce->ce_file = add (cp, ce->ce_file);
+        }
+    }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
 	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");
@@ -2177,7 +2205,7 @@ open7Bit (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_scratch ("", tmp), NULL);
+	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -2194,8 +2222,21 @@ open7Bit (CT ct, char **file)
                   ci->ci_type);
         cp = context_find (buffer);
     }
-    if (cp != NULL && *cp != '\0')
-        ce->ce_file = add (cp, ce->ce_file);
+    if (cp != NULL && *cp != '\0') {
+        if (ce->ce_unlink) {
+            // Temporary file already exists, so we rename to
+            // version with extension.
+            char *file_org = strdup(ce->ce_file);
+            ce->ce_file = add (cp, ce->ce_file);
+            if (rename(file_org, ce->ce_file)) {
+                adios (ce->ce_file, "unable to rename %s to ", file_org);
+            }
+            free(file_org);
+
+        } else {
+            ce->ce_file = add (cp, ce->ce_file);
+        }
+    }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
 	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");
@@ -2545,7 +2586,7 @@ openFTP (CT ct, char **file)
     else if (caching)
 	ce->ce_file = add (cachefile, NULL);
     else
-	ce->ce_file = add (m_scratch ("", tmp), NULL);
+	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
 	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");
@@ -2747,7 +2788,7 @@ openMail (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_scratch ("", tmp), NULL);
+	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);

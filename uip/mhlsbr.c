@@ -794,8 +794,8 @@ parse (void)
 static void
 process (char *folder, char *fname, int ofilen, int ofilec)
 {
-    char *cp;
-    FILE *fp;
+    char *cp = NULL;
+    FILE *fp = NULL;
     struct mcomp *c1;
 
     switch (setjmp (env)) {
@@ -1687,8 +1687,8 @@ doface (struct mcomp *c1)
 int
 mhlsbr (int argc, char **argv, FILE *(*action)())
 {
-    SIGNAL_HANDLER istat, pstat, qstat;
-    char *cp;
+    SIGNAL_HANDLER istat = NULL, pstat = NULL, qstat = NULL;
+    char *cp = NULL;
     struct mcomp *c1;
 
     switch (setjmp (mhlenv)) {

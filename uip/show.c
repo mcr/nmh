@@ -71,7 +71,7 @@ main (int argc, char **argv)
     char *cp, *maildir, *file = NULL, *folder = NULL, *proc;
     char buf[BUFSIZ], **argp, **arguments;
     char *msgs[MAXARGS], *vec[MAXARGS];
-    struct msgs *mp;
+    struct msgs *mp = NULL;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");

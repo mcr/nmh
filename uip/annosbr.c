@@ -179,20 +179,15 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
     FILE	*tmp;
     int		c;		/* current character */
     int		count;		/* header field (annotation) counter */
-    char	*field;		/* buffer for header field */
-    int		field_size;	/* size of field buffer */
-    FILE	*fp;		/* file pointer made from locked file descriptor */
+    char	*field = NULL;	/* buffer for header field */
+    int		field_size = 0;	/* size of field buffer */
+    FILE	*fp = NULL;	/* file pointer made from locked file descriptor */
     int		length;		/* length of field name */
     int		n;		/* number of bytes written */
 
     mode = fstat (fd, &st) != NOTOK ? (st.st_mode & 0777) : m_gmprot ();
 
-    strncpy (tmpfil, m_scratch (file, "annotate"), sizeof(tmpfil));
-
-    if ((tmp = fopen (tmpfil, "w")) == NULL) {
-	admonish (tmpfil, "unable to create");
-	return 1;
-    }
+    strncpy (tmpfil, m_mktemp2(file, "annotate", NULL, &tmp), sizeof(tmpfil));
     chmod (tmpfil, mode);
 
     /*

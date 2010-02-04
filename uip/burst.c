@@ -347,12 +347,11 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
     i = inplace ? msgnum + numburst : mp->hghmsg;
     for (j = numburst; j >= (inplace ? 0 : 1); i--, j--) {
 	strncpy (f1, m_name (i), sizeof(f1));
-	strncpy (f2, m_scratch ("", invo_name), sizeof(f2));
+	strncpy (f2, m_mktemp(invo_name, NULL, &out), sizeof(f2));
+
 	if (verbosw && i != msgnum)
 	    printf ("message %d of digest %d becomes message %d\n", j, msgnum, i);
 
-	if ((out = fopen (f2, "w")) == NULL)
-	    adios (f2, "unable to write message");
 	chmod (f2, mode);
 	fseek (in, smsgs[j].s_start, SEEK_SET);
 	cpybrst (in, out, msgnam, f2,

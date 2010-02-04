@@ -15,7 +15,7 @@
 char **
 getarguments (char *invo_name, int argc, char **argv, int check_context)
 {
-    char *cp, **ap, **bp, **arguments;
+    char *cp = NULL, **ap = NULL, **bp = NULL, **arguments = NULL;
     int n = 0;
 
     /*
@@ -35,7 +35,7 @@ getarguments (char *invo_name, int argc, char **argv, int check_context)
     bp = arguments;
 
     /* Copy any arguments from profile/context */
-    if (n > 0) {
+    if (ap != NULL && n > 0) {
 	while (*ap)
 	    *bp++ = *ap++;
      }

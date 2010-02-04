@@ -1,4 +1,3 @@
-
 /*
  * m_tmpfil.c -- construct a temporary file
  *
@@ -11,7 +10,10 @@
 
 #include <h/mh.h>
 
-
+/***************************************************************************
+ * DO NOT USE THIS FUNCTION!  IT WILL BE REMOVED IN THE FUTURE.
+ * THIS FUNCTION IS INSECURE.  USE THE FUNCTIONS DEFINED IN m_mktemp.c.
+ ***************************************************************************/
 char *
 m_tmpfil (char *template)
 {

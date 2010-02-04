@@ -52,6 +52,7 @@ main (int argc, char **argv)
     char *from = NULL, *body = NULL, **argp, **arguments;
     char *vec[5], buf[BUFSIZ];
     FILE *out;
+    char *tfile = NULL;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -125,10 +126,11 @@ main (int argc, char **argv)
 
     if (tolist == NULL)
 	adios (NULL, "usage: %s addrs ... [switches]", invo_name);
-    strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
-    if ((out = fopen (tmpfil, "w")) == NULL)
-	adios (tmpfil, "unable to write");
-    chmod (tmpfil, 0600);
+
+    tfile = m_mktemp2(NULL, invo_name, NULL, &out);
+    if (tfile == NULL) adios("mhmail", "unable to create temporary file");
+    chmod(tfile, 0600);
+    strncpy (tmpfil, tfile, sizeof(tmpfil));
 
     SIGNAL2 (SIGINT, intrser);
 

@@ -125,8 +125,11 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, cha
 	 * rename the draft file.  I'm not quite sure why.
 	 */
 	if (pushsw && unique) {
-	    if (rename (drft, strncpy (file, m_scratch (drft, invo_name), sizeof(file)))
-		    == NOTOK)
+            char *cp = m_mktemp2(drft, invo_name, NULL, NULL);
+            if (cp == NULL) {
+                adios ("sendsbr", "unable to create temporary file");
+            }
+	    if (rename (drft, strncpy(file, cp, sizeof(file))) == NOTOK)
 		adios (file, "unable to rename %s to", drft);
 	    drft = file;
 	}
@@ -253,8 +256,12 @@ attach(char *attachment_header_field_name, char *draft_file_name,
      *	Make names for the temporary files.
      */
 
-    (void)strncpy(body_file_name, m_scratch("", m_maildir(invo_name)), sizeof (body_file_name));
-    (void)strncpy(composition_file_name, m_scratch("", m_maildir(invo_name)), sizeof (composition_file_name));
+    (void)strncpy(body_file_name,
+                  m_mktemp(m_maildir(invo_name), NULL, NULL),
+                  sizeof (body_file_name));
+    (void)strncpy(composition_file_name,
+                  m_mktemp(m_maildir(invo_name), NULL, NULL),
+                  sizeof (composition_file_name));
 
     if (has_body)
 	body_file = fopen(body_file_name, "w");
@@ -676,9 +683,11 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 	char tmpdrf[BUFSIZ];
 	FILE *out;
 
-	strncpy (tmpdrf, m_scratch (drft, invo_name), sizeof(tmpdrf));
-	if ((out = fopen (tmpdrf, "w")) == NULL)
-	    adios (tmpdrf, "unable to open for writing");
+	char *cp = m_mktemp2(drft, invo_name, NULL, &out);
+        if (cp == NULL) {
+	    adios (drft, "unable to create temporary file for");
+        }
+	strncpy(tmpdrf, cp, sizeof(tmpdrf));
 	chmod (tmpdrf, 0600);
 
 	/*
@@ -919,16 +928,17 @@ static int
 tmp_fd (void)
 {
     int fd;
-    char tmpfil[BUFSIZ];
+    char *tfile = NULL;
 
-    strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
-    if ((fd = open (tmpfil, O_RDWR | O_CREAT | O_TRUNC, 0600)) == NOTOK)
-	return NOTOK;
+    tfile = m_mktemp2(NULL, invo_name, &fd, NULL);
+    if (tfile == NULL) return NOTOK;
+    fchmod(fd, 0600);
+
     if (debugsw)
-	advise (NULL, "temporary file %s selected", tmpfil);
+	advise (NULL, "temporary file %s selected", tfile);
     else
-	if (unlink (tmpfil) == NOTOK)
-	    advise (tmpfil, "unable to remove");
+	if (unlink (tfile) == NOTOK)
+	    advise (tfile, "unable to remove");
 
     return fd;
 }

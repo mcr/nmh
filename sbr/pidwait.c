@@ -22,7 +22,7 @@ int
 pidwait (pid_t id, int sigsok)
 {
     pid_t pid;
-    SIGNAL_HANDLER istat, qstat;
+    SIGNAL_HANDLER istat = NULL, qstat = NULL;
 
 #ifdef HAVE_UNION_WAIT
     union wait status;

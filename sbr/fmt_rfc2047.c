@@ -71,7 +71,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
     int whitespace = 0;		/* how much whitespace between encodings? */
 #ifdef HAVE_ICONV
     int use_iconv = 0;          /* are we converting encoding with iconv? */
-    iconv_t cd;
+    iconv_t cd = NULL;
     int fromutf8 = 0;
     char *saveq, *convbuf = NULL;
     size_t savedstlen;

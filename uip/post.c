@@ -554,13 +554,14 @@ main (int argc, char **argv)
 	    if ((out = fopen (fill_in ? fill_in : "/dev/null", "w")) == NULL)
 		adios ("/dev/null", "unable to open");
 	} else {
-	    strncpy (tmpfil, m_scratch ("", m_maildir (invo_name)),
-		sizeof(tmpfil));
-	    if ((out = fopen (tmpfil, "w")) == NULL) {
-		strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
-		if ((out = fopen (tmpfil, "w")) == NULL)
-		    adios (tmpfil, "unable to create");
-	    }
+            char *cp = m_mktemp(m_maildir(invo_name), NULL, &out);
+            if (cp == NULL) {
+                cp = m_mktemp2(NULL, invo_name, NULL, &out);
+                if (cp == NULL) {
+		    adios ("post", "unable to create temporary file");
+                }
+            }
+            strncpy(tmpfil, cp, sizeof(tmpfil));
 	    chmod (tmpfil, 0600);
 	}
     }
@@ -662,7 +663,7 @@ putfmt (char *name, char *str, FILE *out)
     int count, grp, i, keep;
     char *cp, *pp, *qp;
     char namep[BUFSIZ];
-    struct mailname *mp, *np;
+    struct mailname *mp = NULL, *np = NULL;
     struct headers *hdr;
 
     while (*str == ' ' || *str == '\t')
@@ -1166,11 +1167,12 @@ make_bcc_file (int dashstuff)
     pid_t child_id;
     char *vec[6];
     FILE *out;
+    char *tfile = NULL;
 
-    strncpy (bccfil, m_tmpfil ("bccs"), sizeof(bccfil));
-    if ((out = fopen (bccfil, "w")) == NULL)
-	adios (bccfil, "unable to create");
+    tfile = m_mktemp2(NULL, "bccs", NULL, &out);
+    if (tfile == NULL) adios("bcc", "unable to create temporary file");
     chmod (bccfil, 0600);
+    strncpy (bccfil, tfile, sizeof(bccfil));
 
     fprintf (out, "Date: %s\n", dtime (&tclock, 0));
     if (msgid)

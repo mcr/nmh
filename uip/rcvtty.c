@@ -287,12 +287,12 @@ static int
 header_fd (void)
 {
     int fd;
-    char *nfs, tmpfil[BUFSIZ];
+    char *nfs;
+    char *tfile = NULL;
 
-    strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
-    if ((fd = open (tmpfil, O_RDWR | O_CREAT | O_TRUNC, 0600)) == NOTOK)
-	return NOTOK;
-    unlink (tmpfil);
+    tfile = m_mktemp2(NULL, invo_name, &fd, NULL);
+    if (tfile == NULL) return NOTOK;
+    unlink (tfile);
 
     rewind (stdin);
 

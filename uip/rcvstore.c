@@ -173,9 +173,10 @@ main (int argc, char **argv)
     SIGNAL (SIGTERM, SIG_IGN);
 
     /* create a temporary file */
-    tmpfilenam = m_scratch ("", invo_name);
-    if ((fd = creat (tmpfilenam, m_gmprot ())) == NOTOK)
-	adios (tmpfilenam, "unable to create");
+    tmpfilenam = m_mktemp (invo_name, &fd, NULL);
+    if (tmpfilenam == NULL) {
+	adios ("rcvstore", "unable to create temporary file");
+    }
     chmod (tmpfilenam, m_gmprot());
 
     /* copy the message from stdin into temp file */

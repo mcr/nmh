@@ -44,7 +44,8 @@ main (int argc, char **argv)
     int i, vecp = 1;
     char *addrs = NULL, *cp, *form = NULL, buf[BUFSIZ];
     char **argp, **arguments, *vec[MAXARGS];
-    register FILE *fp;
+    FILE *fp;
+    char *tfile = NULL;
 
     done=unlink_done;
 
@@ -94,12 +95,18 @@ main (int argc, char **argv)
 	    invo_name);
 
     umask (~m_gmprot ());
-    strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
-    if ((fp = fopen (tmpfil, "w+")) == NULL)
-	adios (tmpfil, "unable to create");
+
+    tfile = m_mktemp2(NULL, invo_name, NULL, &fp);
+    if (tfile == NULL) adios("rcvdist", "unable to create temporary file");
+    strncpy (tmpfil, tfile, sizeof(tmpfil));
+
     cpydata (fileno (stdin), fileno (fp), "message", tmpfil);
     fseek (fp, 0L, SEEK_SET);
-    strncpy (drft, m_tmpfil (invo_name), sizeof(drft));
+
+    tfile = m_mktemp2(NULL, invo_name, NULL, NULL);
+    if (tfile == NULL) adios("forw", "unable to create temporary file");
+    strncpy (drft, tfile, sizeof(tmpfil));
+
     rcvdistout (fp, form, addrs);
     fclose (fp);
 

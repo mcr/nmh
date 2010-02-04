@@ -1103,7 +1103,7 @@ multiline (void)
 static int
 sasl_getline (char *s, int n, FILE *iop)
 {
-    int c;
+    int c = -2;
     char *p;
 
     p = s;

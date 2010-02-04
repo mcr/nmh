@@ -81,11 +81,11 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
     int i, compnum, encrypted, state;
     unsigned char *cp, *tmpbuf;
     char **nxtbuf;
-    char *saved_c_text;
+    char *saved_c_text = NULL;
     struct comp *cptr;
     struct comp **savecomp;
-    char *scnmsg;
-    FILE *scnout;
+    char *scnmsg = NULL;
+    FILE *scnout = NULL;
     char name[NAMESZ];
     static int rlwidth, slwidth;
 

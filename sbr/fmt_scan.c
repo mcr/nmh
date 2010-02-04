@@ -297,7 +297,7 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 {
     char *cp, *ep;
     unsigned char *sp;
-    char *savestr;
+    char *savestr = NULL;
     unsigned char *str = NULL;
     char buffer[BUFSIZ], buffer2[BUFSIZ];
     int i, c, ljust, n;

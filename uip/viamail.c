@@ -181,13 +181,14 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     char *vec[MAXARGS];
     struct stat st;
     FILE *fp;
+    char *tfile = NULL;
 
     umask (~m_gmprot ());
 
-    strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
-    if ((fp = fopen (tmpfil, "w+")) == NULL)
-	adios (tmpfil, "unable to open for writing");
-    chmod (tmpfil, 0600);
+    tfile = m_mktemp2(NULL, invo_name, NULL, &fp);
+    if (tfile == NULL) adios("viamail", "unable to create temporary file");
+    chmod(tfile, 0600);
+    strncpy (tmpfil, tfile, sizeof(tmpfil));
 
     if (!strchr(mailsw, '@'))
 	mailsw = concat (mailsw, "@", LocalName (), NULL);

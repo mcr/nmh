@@ -81,6 +81,8 @@ char *m_name (int);
 int m_putenv (char *, char *);
 char *m_scratch (char *, char *);
 char *m_tmpfil (char *);
+char *m_mktemp(const char *, int *, FILE **);
+char *m_mktemp2(const char *, const char *, int *, FILE **);
 void m_unknown(FILE *);
 int makedir (char *);
 char *nmh_getpass(const char *);

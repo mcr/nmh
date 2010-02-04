@@ -104,6 +104,7 @@ static void unlink_done (int) NORETURN;
 /* mhbuildsbr.c */
 CT build_mime (char *);
 int output_message (CT, char *);
+int output_message_fp (CT, FILE *, char*);
 
 /* mhlistsbr.c */
 int list_all_messages (CT *, int, int, int, int);
@@ -124,7 +125,8 @@ main (int argc, char **argv)
     char buffer[BUFSIZ], *compfile = NULL;
     char **argp, **arguments;
     CT ct, cts[2];
-    FILE *fp;
+    FILE *fp = NULL;
+    FILE *fp_out = NULL;
 
     done=unlink_done;
 
@@ -305,11 +307,8 @@ main (int argc, char **argv)
      * Process the composition file from standard input.
      */
     if (compfile[0] == '-' && compfile[1] == '\0') {
-
 	/* copy standard input to temporary file */
-	strncpy (infile, m_scratch ("", invo_name), sizeof(infile));
-	if ((fp = fopen (infile, "w")) == NULL)
-	    adios (infile, "unable to open");
+	strncpy (infile, m_mktemp(invo_name, NULL, &fp), sizeof(infile));
 	while (fgets (buffer, BUFSIZ, stdin))
 	    fputs (buffer, fp);
 	fclose (fp);
@@ -321,11 +320,12 @@ main (int argc, char **argv)
 	cts[1] = NULL;
 
 	/* output MIME message to this temporary file */
-	strncpy (outfile, m_scratch ("", invo_name), sizeof(outfile));
+	strncpy (outfile, m_mktemp(invo_name, NULL, &fp_out), sizeof(outfile));
 	unlink_outfile = 1;
 
 	/* output the message */
-	output_message (ct, outfile);
+	output_message_fp (ct, fp_out, outfile);
+        fclose(fp_out);
 
 	/* output the temp file to standard output */
 	if ((fp = fopen (outfile, "r")) == NULL)
@@ -354,11 +354,13 @@ main (int argc, char **argv)
     cts[1] = NULL;
 
     /* output MIME message to this temporary file */
-    strncpy (outfile, m_scratch (compfile, invo_name), sizeof(outfile));
+    strncpy(outfile, m_mktemp2(compfile, invo_name, NULL, &fp_out),
+            sizeof(outfile));
     unlink_outfile = 1;
 
     /* output the message */
-    output_message (ct, outfile);
+    output_message_fp (ct, fp_out, outfile);
+    fclose(fp_out);
 
     /*
      * List the message info
@@ -368,12 +370,13 @@ main (int argc, char **argv)
 
     /* Rename composition draft */
     snprintf (buffer, sizeof(buffer), "%s.orig", m_backup (compfile));
-    if (rename (compfile, buffer) == NOTOK)
-	adios (compfile, "unable to rename %s to", buffer);
+    if (rename (compfile, buffer) == NOTOK) {
+	adios (compfile, "unable to rename comp draft %s to", buffer);
+    }
 
     /* Rename output file to take its place */
     if (rename (outfile, compfile) == NOTOK) {
-	advise (outfile, "unable to rename %s to", compfile);
+	advise (outfile, "unable to rename output %s to", compfile);
 	rename (buffer, compfile);
 	done (1);
     }

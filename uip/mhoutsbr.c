@@ -70,6 +70,7 @@ static char nib2b64[0x40+1] =
  * prototypes
  */
 int output_message (CT, char *);
+int output_message_fp (CT, FILE *, char *);
 int writeBase64aux (FILE *, FILE *);
 
 /*
@@ -90,25 +91,31 @@ static int writeBase64 (CT, FILE *);
  */
 
 int
+output_message_fp (CT ct, FILE *fp, char *file)
+{
+    if (output_content (ct, fp) == NOTOK)
+	return NOTOK;
+
+    if (fflush (fp)) {
+	advise ((file?file:"<FILE*>"), "error writing to");
+	return NOTOK;
+    }
+    return OK;
+}
+
+int
 output_message (CT ct, char *file)
 {
     FILE *fp;
+    int status;
 
     if ((fp = fopen (file, "w")) == NULL) {
 	advise (file, "unable to open for writing");
 	return NOTOK;
     }
-
-    if (output_content (ct, fp) == NOTOK)
-	return NOTOK;
-
-    if (fflush (fp)) {
-	advise (file, "error writing to");
-	return NOTOK;
-    }
-    fclose (fp);
-
-    return OK;
+    status = output_message_fp(ct, fp, file);
+    fclose(fp);
+    return status;
 }
 
 

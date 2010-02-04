@@ -236,18 +236,18 @@ main (int argc, char **argv)
 {
     int chgflag = 1, trnflag = 1;
     int noisy = 1, width = 0;
-    int rpop, i, hghnum, msgnum;
+    int rpop, i, hghnum = 0, msgnum = 0;
     int kpop = 0, sasl = 0;
-    char *cp, *maildir, *folder = NULL;
+    char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
     char *host = NULL, *user = NULL, *proxy = NULL;
     char *audfile = NULL, *from = NULL, *saslmech = NULL;
     char buf[BUFSIZ], **argp, *nfs, **arguments;
-    struct msgs *mp;
+    struct msgs *mp = NULL;
     struct stat st, s1;
     FILE *aud = NULL;
-    char	b[MAXPATHLEN + 1];
-    char	*maildir_copy;		/* copy of mail directory because the static gets overwritten */
+    char b[MAXPATHLEN + 1];
+    char *maildir_copy = NULL;	/* copy of mail directory because the static gets overwritten */
 
 #ifdef POP
     int nmsgs, nbytes, p = 0;

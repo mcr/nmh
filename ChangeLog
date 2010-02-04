@@ -1,4 +1,19 @@
+2010-02-03  Earl Hood <earl@earlhood.com>
+
+	* Bug #15213, #18635: The use of the insecure m_scratch() and
+	  m_tmpfil() functions have been replaced by m_mktemp()
+	  or m_mktemp2() functions (defined in sbr/m_mktemp.c).
+	  The new functions use mkstemp() to securely create
+	  temporary files to avoid the numerous race conditions
+	  that exist with the old functions.  This does assume
+	  that mkstemp() is available.  Unsure if we need to
+	  create an alternative implementation if mkstemp() is
+	  not available.  More information about new temp file
+	  functions in m_mktemp.c, including the support for
+	  MHTMPDIR, TMPDIR, and TMP envvars.
+
 2010-02-02  Earl Hood <earl@earlhood.com>
+
 	* mts/smtp/smtp.c: added SASL support if mts configuration
 	  setting is set to "sendmail".  This is useful if sendmail
 	  conf option is to a custom script that creates a proxy

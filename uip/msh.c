@@ -733,10 +733,10 @@ setup (char *file)
 
 #ifdef BPOP
     if (pmsh) {
-	strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
-	if ((fp = fopen (tmpfil, "w+")) == NULL)
-	    padios (tmpfil, "unable to create");
-	unlink (tmpfil);
+        char *tfile = m_mktemp2(NULL, invo_name, NULL, &fp);
+        if (tfile == NULL) padios("msh", "unable to create temporary file");
+        unlink(tfile);
+	strncpy(tmpfil, tfile, sizeof(tmpfil));
     }
     else
 #endif /* BPOP */
@@ -996,10 +996,10 @@ msh_ready (int msgnum, int full)
 	if (Msgs[msgnum].m_top == 0)
 	    padios (NULL, "msh_ready (%d, %d) botch", msgnum, full);
 	if (!full) {
-	    strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
-	    if ((yp = fopen (tmpfil, "w+")) == NULL)
-		padios (tmpfil, "unable to create");
-	    unlink (tmpfil);
+            char *tfile = m_mktemp2(NULL, invo_name, NULL, &yp);
+            if (tfile == NULL) padios("msh", "unable to create temporary file");
+            unlink(tfile);
+            strncpy(tmpfil, tfile, sizeof(tmpfil));
 
 	    if (pop_top (Msgs[msgnum].m_top, 4, pop_action) == NOTOK)
 		padios (NULL, "%s", response);
@@ -1163,7 +1163,7 @@ scanstring (char *arg)
 void
 readids (int id)
 {
-    register int cur, seqnum, i, msgnum;
+    register int cur, seqnum, i=0, msgnum;
 
     if (mp->curmsg == 0)
 	seq_setcur (mp, mp->lowmsg);

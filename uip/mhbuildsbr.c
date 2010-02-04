@@ -414,13 +414,14 @@ user_content (FILE *in, char *file, char *buf, CT *ctp)
 	long pos;
 	char content[BUFSIZ];
 	FILE *out;
+        char *cp;
+
+        cp = m_mktemp2(NULL, invo_name, NULL, &out);
+        if (cp == NULL) adios("mhbuildsbr", "unable to create temporary file");
 
 	/* use a temp file to collect the plain text lines */
-	ce->ce_file = add (m_tmpfil (invo_name), NULL);
+	ce->ce_file = add (cp, NULL);
 	ce->ce_unlink = 1;
-
-	if ((out = fopen (ce->ce_file, "w")) == NULL)
-	    adios (ce->ce_file, "unable to open for writing");
 
 	if (buf[0] == '#' && buf[1] == '<') {
 	    strncpy (content, buf + 2, sizeof(content));
@@ -1007,11 +1008,16 @@ compose_content (CT ct)
 	    char *vec[4], buffer[BUFSIZ];
 	    FILE *out;
 	    CI ci = &ct->c_ctinfo;
+            char *tfile = NULL;
 
 	    if (!(cp = ci->ci_magic))
 		adios (NULL, "internal error(5)");
 
-	    ce->ce_file = add (m_tmpfil (invo_name), NULL);
+            tfile = m_mktemp2(NULL, invo_name, NULL, NULL);
+            if (tfile == NULL) {
+                adios("mhbuildsbr", "unable to create temporary file");
+            }
+	    ce->ce_file = add (tfile, NULL);
 	    ce->ce_unlink = 1;
 
 	    xstdout = 0;
@@ -1152,14 +1158,14 @@ static int
 scan_content (CT ct)
 {
     int len;
-    int check8bit, contains8bit = 0;	  /* check if contains 8bit data                */
-    int checklinelen, linelen = 0;	  /* check for long lines                       */
-    int checkboundary, boundaryclash = 0; /* check if clashes with multipart boundary   */
-    int checklinespace, linespace = 0;	  /* check if any line ends with space          */
-    int checkebcdic, ebcdicunsafe = 0;	  /* check if contains ebcdic unsafe characters */
-    unsigned char *cp, buffer[BUFSIZ];
-    struct text *t;
-    FILE *in;
+    int check8bit = 0, contains8bit = 0;  /* check if contains 8bit data                */
+    int checklinelen = 0, linelen = 0;	  /* check for long lines                       */
+    int checkboundary = 0, boundaryclash = 0; /* check if clashes with multipart boundary   */
+    int checklinespace = 0, linespace = 0;  /* check if any line ends with space          */
+    int checkebcdic = 0, ebcdicunsafe = 0;  /* check if contains ebcdic unsafe characters */
+    unsigned char *cp = NULL, buffer[BUFSIZ];
+    struct text *t = NULL;
+    FILE *in = NULL;
     CE ce = ct->c_cefile;
 
     /*

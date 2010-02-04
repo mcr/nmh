@@ -867,6 +867,8 @@ forwcmd (char **args)
     int	msgp = 0, vecp = 1, msgnum;
     char *cp, *filter = NULL, buf[BUFSIZ];
     char *msgs[MAXARGS], *vec[MAXARGS];
+    char *tfile = NULL;
+    char tmpfil[BUFSIZ];
 
     if (fmsh) {
 	forkcmd (args, cmd_name);
@@ -939,16 +941,12 @@ forwcmd (char **args)
 
 					/* foil search of .mh_profile */
     snprintf (buf, sizeof(buf), "%sXXXXXX", invo_name);
-/*
-  Mkstemp work postponed until later -Doug
-#ifdef HAVE_MKSTEMP
-    vec[0] = (char *)mkstemp (buf);
-#else
-*/
-    vec[0] = (char *)mktemp (buf);
-/*
-#endif
-*/
+
+    tfile = m_mktemp(buf, NULL, NULL);
+    if (tfile == NULL) adios("forwcmd", "unable to create temporary file");
+    strncpy (tmpfil, tfile, sizeof(tmpfil));
+    vec[0] = tmpfil;
+
     vec[vecp++] = "-file";
     vec[vecp] = NULL;
     if (!msgp)
@@ -979,10 +977,14 @@ static void
 forw (char *proc, char *filter, int vecp, char **vec)
 {
     int i, child_id, msgnum, msgcnt;
-    char tmpfil[80], *args[MAXARGS];
+    char tmpfil[BUFSIZ], *args[MAXARGS];
     FILE *out;
+    char *tfile = NULL;
 
-    strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
+    tfile = m_mktemp2(NULL, invo_name, NULL, NULL);
+    if (tfile == NULL) adios("forw", "unable to create temporary file");
+    strncpy (tmpfil, tfile, sizeof(tmpfil));
+
     interrupted = 0;
     if (filter)
 	switch (child_id = fork ()) {
@@ -2995,8 +2997,9 @@ static int
 process (int msgnum, char *proc, int vecp, char **vec)
 {
     int	child_id, status;
-    char tmpfil[80];
+    char tmpfil[BUFSIZ];
     FILE *out;
+    char *cp;
 
     if (fmsh) {
 	strncpy (tmpfil, m_name (msgnum), sizeof(tmpfil));
@@ -3007,23 +3010,20 @@ process (int msgnum, char *proc, int vecp, char **vec)
 	goto ready;
     }
 
-    strncpy (tmpfil, m_scratch ("", invo_name), sizeof(tmpfil));
-    if ((out = fopen (tmpfil, "w")) == NULL) {
-	int olderr;
-	char newfil[80];
-
-	olderr = errno;
-	strncpy (newfil, m_tmpfil (invo_name), sizeof(newfil));
-	if ((out = fopen (newfil, "w")) == NULL) {
+    cp = m_mktemp(invo_name, NULL, &out);
+    if (cp == NULL) {
+        /* Try again, but try to create under /tmp */
+	int olderr = errno;
+        cp = m_mktemp2(NULL, invo_name, NULL, &out);
+        if (cp == NULL) {
 	    errno = olderr;
-	    advise (tmpfil, "unable to create temporary file");
+	    advise (NULL, "unable to create temporary file");
 	    return NOTOK;
-	} else {
-	    strncpy (tmpfil, newfil, sizeof(tmpfil));
 	}
     }
     copy_message (msgnum, out);
     fclose (out);
+    strncpy(tmpfil, cp, sizeof(tmpfil));
 
 ready: ;
     fflush (stdout);
@@ -3089,7 +3089,7 @@ static void
 copy_digest (int msgnum, FILE *out)
 {
     char c;
-    long pos;
+    long pos = 0L;
     static char buffer[BUFSIZ];
     register FILE *zp;
 

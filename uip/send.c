@@ -423,7 +423,7 @@ go_to_it:
 	    && (distsw = atoi (cp))
 	    && altmsg) {
 	vec[vecp++] = "-dist";
-	distfile = getcpy (m_scratch (altmsg, invo_name));
+	distfile = getcpy (m_mktemp2 (altmsg, invo_name, NULL, NULL));
 	if (link (altmsg, distfile) == NOTOK) {
 	    if (errno != EXDEV
 #ifdef EISREMOTE
@@ -432,7 +432,7 @@ go_to_it:
 		)
 		adios (distfile, "unable to link %s to", altmsg);
 	    free (distfile);
-	    distfile = getcpy (m_tmpfil (invo_name));
+	    distfile = getcpy (m_mktemp2(NULL, invo_name, NULL, NULL));
 	    {
 		int in, out;
 		struct stat st;

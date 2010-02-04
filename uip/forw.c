@@ -650,10 +650,11 @@ build_form (char *form, char *digest, int volume, int issue)
     int fmtsize;
     register char *nfs;
     char *line, tmpfil[BUFSIZ];
-    register FILE *tmp;
+    FILE *tmp;
     register struct comp *cptr;
     struct format *fmt;
     int dat[5];
+    char *cp = NULL;
 
     /* Get new format string */
     nfs = new_fs (form, NULL, NULL);
@@ -675,9 +676,9 @@ build_form (char *form, char *digest, int volume, int issue)
     dat[3] = fmtsize;
     dat[4] = 0;
 
-    strncpy (tmpfil, m_tmpfil (invo_name), sizeof(tmpfil));
-    if ((tmp = fopen (tmpfil, "w+")) == NULL)
-	adios (tmpfil, "unable to create");
+    cp = m_mktemp2(NULL, invo_name, NULL, &tmp);
+    if (cp == NULL) adios("forw", "unable to create temporary file");
+    strncpy (tmpfil, cp, sizeof(tmpfil));
     unlink (tmpfil);
     if ((in = dup (fileno (tmp))) == NOTOK)
 	adios ("dup", "unable to");

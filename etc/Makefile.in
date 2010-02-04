@@ -100,18 +100,12 @@ install-etc-files:
 	for path in $$INSTALL_FILES; do \
 	  file=`basename $$path`; \
 	  echo "Installing $$file..."; \
-	  if [ -f $(DESTDIR)$(etcdir)/$$file ]; then \
-	    mv $(DESTDIR)$(etcdir)/$$file $(DESTDIR)$(etcdir)/$$file.prev; \
-	    $(INSTALL_DATA) $$path $(DESTDIR)$(etcdir)/$$file; \
-	    if diff $(DESTDIR)$(etcdir)/$$file.prev $(DESTDIR)$(etcdir)/$$file; then \
-	      rm $(DESTDIR)$(etcdir)/$$file.prev; \
+	  if [ -f "$(DESTDIR)$(etcdir)/$$file" ]; then \
+	    if cmp -s "$$path" "$(DESTDIR)$(etcdir)/$$file"; then \
+	      echo "$(DESTDIR)$(etcdir)/$$file unchanged, skipped"; \
 	    else \
-	      echo; \
-	      echo "  Previous version of $$file saved as $$file.prev due\c";\
-	      echo   " to diffs."; \
-	      echo "  Please merge any local config changes into the new\c"; \
-	      echo   " $$file."; \
-	      echo; \
+	      $(INSTALL_DATA) "$$path" "$(DESTDIR)$(etcdir)/$$file.dist"; \
+	      echo "INFO: $(DESTDIR)$(etcdir)/$$file installed with .dist extension"; \
 	    fi; \
 	  else \
 	    $(INSTALL_DATA) $$path $(DESTDIR)$(etcdir)/$$file; \

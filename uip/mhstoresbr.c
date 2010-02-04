@@ -482,7 +482,7 @@ ct_compar (CT *a, CT *b)
 static int
 store_content (CT ct, CT p)
 {
-    int appending = 0, msgnum;
+    int appending = 0, msgnum = 0;
     int is_partial = 0, first_partial = 0;
     int last_partial = 0;
     char *cp, buffer[BUFSIZ];
@@ -560,7 +560,7 @@ store_content (CT ct, CT p)
 	char *tmpfilenam, *folder;
 
 	/* Store content in temporary file for now */
-	tmpfilenam = m_scratch ("", invo_name);
+	tmpfilenam = m_mktemp(invo_name, NULL, NULL);
 	ct->c_storage = add (tmpfilenam, NULL);
 
 	/* Get the folder name */

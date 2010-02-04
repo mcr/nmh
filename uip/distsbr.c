@@ -132,6 +132,7 @@ ready_msg (char *msgnam)
     int state, out;
     char name[NAMESZ], buffer[BUFSIZ], tmpfil[BUFSIZ];
     register FILE *ifp, *ofp;
+    char *cp = NULL;
 
     if (hdrfd != NOTOK)
 	close (hdrfd), hdrfd = NOTOK;
@@ -141,9 +142,12 @@ ready_msg (char *msgnam)
     if ((ifp = fopen (msgnam, "r")) == NULL)
 	adios (msgnam, "unable to open message");
 
-    strncpy (tmpfil, m_tmpfil ("dist"), sizeof(tmpfil));
-    if ((hdrfd = open (tmpfil, O_RDWR | O_CREAT | O_TRUNC, 0600)) == NOTOK)
-	adios (tmpfil, "unable to re-open temporary file");
+    cp = m_mktemp2(NULL, "dist", &hdrfd, NULL);
+    if (cp == NULL) {
+        adios("distsbr", "unable to create temporary file");
+    }
+    fchmod(hdrfd, 0600);
+    strncpy(tmpfil, cp, sizeof(tmpfil));
     if ((out = dup (hdrfd)) == NOTOK
 	    || (ofp = fdopen (out, "w")) == NULL)
 	adios (NULL, "no file descriptors -- you lose big");
@@ -171,9 +175,12 @@ ready_msg (char *msgnam)
 	    case BODYEOF: 
 		fclose (ofp);
 
-		strncpy (tmpfil, m_tmpfil ("dist"), sizeof(tmpfil));
-		if ((txtfd = open (tmpfil, O_RDWR | O_CREAT | O_TRUNC, 0600)) == NOTOK)
-		    adios (tmpfil, "unable to open temporary file");
+                cp = m_mktemp2(NULL, "dist", &txtfd, NULL);
+                if (cp == NULL) {
+                    adios("distsbr", "unable to create temporary file");
+                }
+                fchmod(txtfd, 0600);
+		strncpy (tmpfil, cp, sizeof(tmpfil));
 		if ((out = dup (txtfd)) == NOTOK
 			|| (ofp = fdopen (out, "w")) == NULL)
 		    adios (NULL, "no file descriptors -- you lose big");

@@ -1274,12 +1274,12 @@ copy_message (int qd, char *tmpfil, int fold)
     int i, first = 1, fd1, fd2;
     char buffer[BUFSIZ];
     FILE *qfp, *ffp;
+    char *tfile = NULL;
 
-    strcpy (tmpfil, m_tmpfil (invo_name));
-
-    /* open temporary file to put message in */
-    if ((fd1 = open (tmpfil, O_RDWR | O_CREAT | O_TRUNC, 0600)) == -1)
-	return -1;
+    tfile = m_mktemp2(NULL, invo_name, &fd1, NULL);
+    if (tfile == NULL) return -1;
+    fchmod(fd1, 0600);
+    strncpy (tmpfil, tfile, BUFSIZ);
 
     if (!fold) {
 	while ((i = read (qd, buffer, sizeof(buffer))) > 0)
