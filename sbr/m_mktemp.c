@@ -109,6 +109,7 @@ m_mktemp2 (
 {
     static char buffer[BUFSIZ];
     char *cp;
+    int n;
 
     if (dir_in == NULL) {
         if (pfx_in == NULL) {
@@ -122,7 +123,7 @@ m_mktemp2 (
         /* No directory component */
         return m_mktemp(pfx_in, fd_ret, fp_ret);
     }
-    int n = (int)(cp-dir_in-1); /* Length of dir component */
+    n = (int)(cp-dir_in-1); /* Length of dir component */
     snprintf(buffer, sizeof(buffer), "%.*s%s", n, dir_in, pfx_in);
     return m_mktemp(buffer, fd_ret, fp_ret);
 }
