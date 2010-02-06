@@ -1544,7 +1544,9 @@ bad_faceproc: ;
 	}
 
 	memset(&hints, 0, sizeof(hints));
+#ifdef AI_ADDRCONFIG
 	hints.ai_flags = AI_ADDRCONFIG;
+#endif
 	hints.ai_family = PF_UNSPEC;
 	hints.ai_socktype = SOCK_DGRAM;
 

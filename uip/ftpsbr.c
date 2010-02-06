@@ -151,7 +151,9 @@ ftp_trans (char *host, char *user, char *password, char *cwd, char *remote,
 	struct addrinfo hints, *res;
 
 	memset(&hints, 0, sizeof(hints));
+#ifdef AI_ADDRCONFIG
 	hints.ai_flags = AI_ADDRCONFIG;
+#endif
 	hints.ai_family = PF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 
