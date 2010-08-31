@@ -1,3 +1,7 @@
+2010-08-31  David Levine <levinedl@acm.org>
+
+	* uip/.cvsignore:  added "new".
+
 2010-02-03  Earl Hood <earl@earlhood.com>
 
 	* Bug #15213, #18635: The use of the insecure m_scratch() and
