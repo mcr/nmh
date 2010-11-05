@@ -1208,7 +1208,7 @@ sm_werror (void)
 static int
 smhear (void)
 {
-    int i, code, cont, bc, rc, more;
+    int i, code, cont, bc = 0, rc, more;
     unsigned char *bp;
     char *rp;
     char **ehlo = NULL, buffer[BUFSIZ];
