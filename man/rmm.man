@@ -11,7 +11,7 @@ rmm \- remove messages
 .B rmm
 .RI [ +folder ]
 .RI [ msgs ]
-.RB [ \-link " | " \-nolink ]
+.RB [ \-unlink " | " \-nounlink ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad

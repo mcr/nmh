@@ -1,3 +1,8 @@
+2010-11-09  Peter Maydell <pmaydell@chiark.greenend.org.uk>
+
+	* man/rmm.man: fix error in synopsis: the option is
+	  [no]unlink, not [no]link.
+
 2010-08-31  David Levine <levinedl@acm.org>
 
 	* uip/.cvsignore:  added "new".
