@@ -1057,11 +1057,17 @@ AC_CONFIG_FILES(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
 AC_CONFIG_COMMANDS([stamp],[test -z "$CONFIG_HEADERS" || echo > stamp-h])
 AC_OUTPUT
 
-dnl Umm, what's the point of these assignments??  -- <dan-nmh@dilvish.speed.net>
-eval "nmhbin=${bindir}";         eval "nmhbin2=${nmhbin}"
-eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf2=${nmhsysconf}"
-eval "nmhlib=${libdir}";         eval "nmhlib2=${nmhlib}"
-eval "nmhman=${mandir}"
+dnl These odd looking assignments are done to expand out unexpanded
+dnl variables in bindir et al (for instance mandir is '${datarootdir}/man',
+dnl but expanding that gives '${prefix}/share/man', so we need to expand
+dnl again to get the final answer.
+dnl We only use the expanded versions to print the install paths in
+dnl the final summary and should use them nowhere else (see the autoconf
+dnl docs for the rationale for bindir etc being unexpanded).
+eval "nmhbin=${bindir}";         eval "nmhbin=${nmhbin}"
+eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf=${nmhsysconf}"
+eval "nmhlib=${libdir}";         eval "nmhlib=${nmhlib}"
+eval "nmhman=${mandir}";         eval "nmhman=${nmhman}"
 
 pop_kinds=no
 if test x"$enable_pop" = x"yes"; then
@@ -1088,9 +1094,9 @@ compiler flags             : ${CFLAGS}
 linker flags               : ${LDFLAGS}
 definitions                : ${OURDEFS}
 source code location       : ${srcdir}
-binary install path        : ${nmhbin2}
-libary install path        : ${nmhlib2}
-config files install path  : ${nmhsysconf2}
+binary install path        : ${nmhbin}
+library install path       : ${nmhlib}
+config files install path  : ${nmhsysconf}
 man page install path      : ${nmhman}
 backup prefix              : ${backup_prefix}
 transport system           : ${MTS}

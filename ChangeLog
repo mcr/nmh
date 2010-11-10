@@ -1,3 +1,9 @@
+2010-11-10  Peter Maydell <pmaydell@chiark.greenend.org.uk>
+
+	* configure.in: add a level of expansion for mandir
+	  when printing the end-of-configure install path
+	  summary.
+
 2010-11-09  Peter Maydell <pmaydell@chiark.greenend.org.uk>
 
 	* man/rmm.man: fix error in synopsis: the option is
