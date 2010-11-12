@@ -191,9 +191,10 @@ Matching is case-insensitive, but does not use regular expressions.
 The action to take to deliver the message.  When a message is delivered,
 a \*(lqDelivery\-Date:\ date\*(rq header is added which indicates the date
 and time that message was delivered.
-.TP \w'qpipezorztzzz'u
+.TP 4
 .I destroy
 This action always succeeds.
+.TP 4
 .IR file ", " mbox ", or " >
 Append the message to the file named by
 .IR string .
@@ -201,12 +202,12 @@ The message is
 appended to the file in mbox (uucp) format.  This is the format used by most
 other mail clients (such as mailx, elm).  If the message can be appended to
 the file, then this action succeeds.
-.TP \w'qpipezorztzzz'u
+.TP 4
 .I mmdf
 Identical to
 .IR file ,
 but always appends the message using the MMDF mailbox format.
-.TP \w'qpipezorztzzz'u
+.TP 4
 .IR pipe " or " |
 Pipe the message as the standard input to the command named by
 .IR string ,
@@ -215,7 +216,7 @@ using the Bourne shell
 to interpret the string.
 Prior to giving the string to the shell, it is expanded with the following
 built-in variables:
-.RS \w'qpipezorztzzz'u
+.RS
 .TP \w'zzreplyztozaaa'u
 $(sender)
 the out-of-band sender information
@@ -232,8 +233,7 @@ either the \*(lqReply\-To:\*(rq or \*(lqFrom:\*(rq field of the message
 $(info)
 the out-of-band information specified
 .RE
-.PP
-.TP \w'qpipezorztzzz'u
+.TP 4
 .IR qpipe " or " ^
 Similar to
 .IR pipe ,
@@ -241,7 +241,7 @@ but executes the command
 directly, after built-in variable expansion, without assistance from
 the shell.  This action can be used to avoid quoting special characters
 which your shell might interpret.
-.TP \w'qpipezorztzzz'u
+.TP 4
 .IR folder " or " +
 Store the message in the
 .B nmh

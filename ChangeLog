@@ -1,3 +1,8 @@
+2010-11-12  Peter Maydell <pmaydell@chiark.greenend.org.uk>
+
+	* man/slocal.man: fix formatting error that meant a
+	  subsection heading wasn't displayed as such.
+
 2010-11-10  Peter Maydell <pmaydell@chiark.greenend.org.uk>
 
 	* configure.in: add a level of expansion for mandir
