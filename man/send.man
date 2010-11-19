@@ -354,6 +354,16 @@ viewing the SMTP transaction with the
 .B \-snoop
 switch.
 .PP
+If
+.B nmh
+has been compiled with TLS support, the
+.B \-tls
+switch will require the negotiation of TLS support when connecting to the
+SMTP MTA.  Encrypted data is labelled with `(tls-encrypted)' and
+`(tls-decrypted)' when viewing the SMTP transction with the
+.B \-snoop
+switch.
+.PP
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
 additional alias files given by the
 .B \-alias

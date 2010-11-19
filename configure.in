@@ -4,12 +4,8 @@ dnl
 dnl $Id$
 dnl
 
-dnl 2.13 definitely chokes; 2.53 is the earliest version I've tested.
-dnl 2.58 needed for help string macro but that only affects help output
-dnl 2.50 is the major breakpoint between the old autoconf and the new,
-dnl so require that. If there are bug reports about 2.50-2.52 not working
-dnl we can always move this up a little.
-AC_PREREQ(2.50)
+dnl Move this up a bit
+AC_PREREQ(2.61)
 
 AC_INIT(nmh, m4_normalize(m4_include([VERSION])))
 AC_CONFIG_SRCDIR(h/nmh.h)
@@ -106,14 +102,23 @@ AC_DEFINE(LOCALE)
 
 dnl Do you want client-side support for using SASL for authentication?
 dnl Note that this code will be enabled for both POP and SMTP
-AC_ARG_WITH(cyrus-sasl, AS_HELP_STRING([--with-cyrus-sasl=DIR],
-  [specify location of Cyrus SASL library]))
+AC_ARG_WITH(cyrus-sasl, AS_HELP_STRING([--with-cyrus-sasl],
+  [Enable SASL support via the Cyrus SASL library]))
 if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"; then
   AC_DEFINE(CYRUS_SASL, 1,
     [Define to use the Cyrus SASL library for authentication of POP and SMTP.])dnl
   sasl_support=yes
 else
   sasl_support=no
+fi
+
+dnl Do you want client-side support for encryption with TLS?
+AC_ARG_WITH(tls, AS_HELP_STRING([--with-tls], [Enable TLS support]))
+if test x"$with_tls" != x -a x"$with_tls" != x"no"; then
+  AC_DEFINE(TLS_SUPPORT, 1, [Support TLS for session encryption.])dnl
+  tls_support=yes
+else
+  tls_support=no
 fi
 
 dnl What should be the default editor?
@@ -140,16 +145,6 @@ AC_ARG_WITH(hesiod,
   AS_HELP_STRING([--with-hesiod=DIR],[specify location of Hesiod]))
 if test x"$with_hesiod" != x -a x"$with_hesiod" != x"no"; then
   AC_DEFINE(HESIOD,1,[Define this to compile support for using Hesiod.])dnl
-fi
-
-dnl Do you want client-side support for kpop
-AC_ARG_WITH(krb4, AS_HELP_STRING([--with-krb4=DIR],
-  [specify location of Kerberos V4 for KPOP support]))
-if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
-  enable_pop=yes
-  AC_DEFINE(KPOP, 1,
-    [Define to compile client-side support for kpop (kerberized pop) into inc and msgchk.])dnl
-  AC_DEFINE(KPOP_PRINCIPAL, "pop", [Define this to "pop" when using Kerberos V4])dnl
 fi
 
 dnl After we know if we're including apop and kpop support, do pop stuff
@@ -520,11 +515,6 @@ AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
                sighold sigrelse writev lstat uname tzset killpg mkstemp \
                getutent nl_langinfo mbtowc wcwidth)
 
-dnl solaris has these in the nsl library
-AC_SEARCH_LIBS(getaddrinfo, nsl,
-  [AC_DEFINE(HAVE_GETADDRINFO,1,
-    [Define to 1 if you have the `getaddrinfo' function.])])
-
 dnl sigsetjmp may be a macro
 AC_MSG_CHECKING(for sigsetjmp)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <setjmp.h>]],
@@ -709,66 +699,25 @@ fi
 AC_SUBST(HESIOD_INCLUDES)dnl
 AC_SUBST(HESIOD_LIBS)dnl
 
-dnl ----------------------------------
-dnl CHECK FOR KRB4 (Kerberos4 support)
-dnl ----------------------------------
-if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
-  if test x"$with_krb4" != x"yes"; then
-    KRB4_INCLUDES="-I$with_krb4/include"
-    if test -d "$with_krb4/include/kerberosIV"; then
-      KRB4_INCLUDES="$KRB4_INCLUDES -I$with_krb4/include/kerberosIV"
-    fi
-    KRB4_LIBS="-L$with_krb4/lib"
-  elif test -d /usr/include/kerberosIV; then
-    KRB4_INCLUDES="-I/usr/include/kerberosIV"
-  fi
-dnl First, check if we have -lk5crypto, since that means we have a recent krb5
-
-  AC_CHECK_LIB(k5crypto, krb5_encrypt,
-	[AC_CHECK_LIB(krb4, krb_rd_req,
-		[KRB4_LIBS="$KRB4_LIBS -lkrb4 -ldes425 -lkrb5 -lk5crypto -lcom_err"],
-	        [AC_MSG_ERROR(Kerberos 4 compatibility libraries not found)],
-		$KRB4_LIBS -ldes425 -lkrb5 -lk5crypto -lcom_err)],
-
-  	[AC_CHECK_LIB(krb4, krb_rd_req,
-	    [KRB4_LIBS="$KRB4_LIBS -lkrb4 -ldes425 -lkrb5 -lcrypto -lcom_err"],
-	    [AC_CHECK_LIB(krb, krb_rd_req,
-	      [KRB4_LIBS="$KRB4_LIBS -lkrb -ldes"],
-	      [AC_MSG_ERROR(Kerberos 4 libraries not found)],
-	      $KRB4_LIBS -ldes)],
-	    $KRB4_LIBS -ldes425 -lkrb5 -lcrypto -lcom_err)],
-	$KRB4_LIBS)
-
-fi
-AC_SUBST(KRB4_INCLUDES)dnl
-AC_SUBST(KRB4_LIBS)dnl
-
 dnl --------------------
-dnl CHECK FOR CYRUS SASL
+dnl CHECK FOR CYRUS-SASL
 dnl --------------------
-if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"; then
-  if test x"$with_cyrus_sasl" != x"yes"; then
-    SASL_INCLUDES="-I$with_cyrus_sasl/include"
-    SASL_LIBS="-L$with_cyrus_sasl/lib"
 
-    dnl Do OS-specific hardcoding of SASL shared library path into executables,
-    dnl so user isn't forced to set environment variables like Solaris'
-    dnl LD_LIBRARY_PATH.
-    case "$target_os" in
-      solaris*)
-	SASL_LIBS="$SASL_LIBS -R$with_cyrus_sasl/lib"
-	;;
-    esac
-  fi
-  save_LDFLAGS="$LDFLAGS"
-  LDFLAGS="$LDFLAGS $SASL_LIBS"
-  AC_CHECK_LIB(sasl2, sasl_client_new,
-    [SASL_LIBS="$SASL_LIBS -lsasl2"],
-    [AC_MSG_ERROR(Cyrus SASL library not found)])
-  LDFLAGS="$save_LDFLAGS"
-fi
-AC_SUBST(SASL_INCLUDES)dnl
-AC_SUBST(SASL_LIBS)dnl
+AS_IF([test x"$sasl_support" = x"yes"],[
+  AC_CHECK_HEADER([sasl.h], , [AC_MSG_ERROR([sasl.h not found])])
+  AC_CHECK_LIB([sasl2], [sasl_client_new], ,
+    [AC_MSG_ERROR([Cyrus SASL library not found])])])
+
+dnl -----------------
+dnl CHECK FOR OPENSSL
+dnl -----------------
+
+AS_IF([test x"$tls_support" = x"yes"],[
+  AC_CHECK_HEADER([openssl/ssl.h], , [AC_MSG_ERROR([openssl/ssl.h not found])])
+  AC_CHECK_LIB([crypto], [BIO_write], ,
+    [AC_MSG_ERROR([OpenSSL crypto library not found])])
+  AC_CHECK_LIB([ssl], [SSL_library_init], ,
+    [AC_MSG_ERROR([OpenSSL library not found])])])
 
 dnl ---------------------
 dnl CHECK TERMCAP LIBRARY
@@ -1077,10 +1026,6 @@ if test x"$enable_pop" = x"yes"; then
     pop_kinds="${pop_kinds}APOP "
   fi
 
-  if test x"$with_krb4" != x -a x"$with_krb4" != x"no"; then
-    pop_kinds="${pop_kinds}KPOP "
-  fi
-
   pop_kinds="${pop_kinds}POP3)"
 fi
 
@@ -1106,5 +1051,6 @@ default editor             : ${editorpath}
 default pager              : ${pagerpath}
 email address masquerading : ${masquerade}
 pop is enabled             : ${pop_kinds}
-SASL support               : ${sasl_support}"
+SASL support               : ${sasl_support}
+TLS support                : ${tls_support}"
 echo ""

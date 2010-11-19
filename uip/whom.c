@@ -19,6 +19,12 @@
 # define SASLminc(a)  0
 #endif /* CYRUS_SASL */
 
+#ifndef TLS_SUPPORT
+# define TLSminc(a)  (a)
+#else /* TLS_SUPPORT */
+# define TLSminc(a)   0
+#endif /* TLS_SUPPORT */
+
 static struct swit switches[] = {
 #define	ALIASW              0
     { "alias aliasfile", 0 },
@@ -52,6 +58,8 @@ static struct swit switches[] = {
     { "user username", SASLminc(-4) },
 #define PORTSW		   15
     { "port server port name/number", 4 },
+#define TLSSW		   16
+    { "tls", TLSminc(-3) },
     { NULL, 0 }
 };
 

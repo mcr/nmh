@@ -24,6 +24,11 @@
 #include <errno.h>
 #endif /* CYRUS_SASL */
 
+#ifdef TLS_SUPPORT
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#endif /* TLS_SUPPORT */
+
 /*
  * This module implements an interface to SendMail very similar
  * to the MMDF mm_(3) routines.  The sm_() routines herein talk
@@ -91,12 +96,8 @@ static char *sasl_pw_context[2];	/* Context to pass into sm_get_pass */
 static int maxoutbuf;			/* Maximum crypto output buffer */
 static char *sasl_outbuffer;		/* SASL output buffer for encryption */
 static int sasl_outbuflen;		/* Current length of data in outbuf */
-static char *sasl_inbuffer;		/* SASL input buffer for encryption */
-static char *sasl_inptr;		/* Pointer to current inbuf position */
-static int sasl_inbuflen;		/* Current length of data in inbuf */
 static int sm_get_user(void *, int, const char **, unsigned *);
 static int sm_get_pass(sasl_conn_t *, void *, int, sasl_secret_t **);
-static int sm_fgetc(FILE *);
 
 static sasl_callback_t callbacks[] = {
     { SASL_CB_USER, sm_get_user, NULL },
@@ -108,10 +109,28 @@ static sasl_callback_t callbacks[] = {
     { SASL_CB_LIST_END, NULL, NULL },
 };
 
-#define SASL_MAXRECVBUF 65536
 #else /* CYRUS_SASL */
-#define sm_fgetc fgetc
+int sasl_ssf = 0;
 #endif /* CYRUS_SASL */
+
+#ifdef TLS_SUPPORT
+static SSL_CTX *sslctx = NULL;
+static SSL *ssl = NULL;
+static BIO *sbior = NULL;
+static BIO *sbiow = NULL;
+#endif /* TLS_SUPPORT */
+
+#if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
+#define SASL_MAXRECVBUF 65536
+static int sm_fgetc(FILE *);
+static char *sasl_inbuffer;		/* SASL input buffer for encryption */
+static char *sasl_inptr;		/* Pointer to current inbuf position */
+static int sasl_inbuflen;		/* Current length of data in inbuf */
+#else
+#define sm_fgetc fgetc
+#endif
+
+static int tls_active = 0;
 
 static char *sm_noreply = "No reply text given";
 static char *sm_moreply = "; ";
@@ -127,7 +146,7 @@ char *EHLOkeys[MAXEHLO + 1];
  * static prototypes
  */
 static int smtp_init (char *, char *, char *, int, int, int, int, int, int,
-		      char *, char *);
+		      char *, char *, int);
 static int sendmail_init (char *, char *, int, int, int, int, int, int,
                           char *, char *);
 
@@ -159,11 +178,11 @@ static int sm_auth_sasl(char *, char *, char *);
 int
 sm_init (char *client, char *server, char *port, int watch, int verbose,
          int debug, int onex, int queued, int sasl, char *saslmech,
-         char *user)
+         char *user, int tls)
 {
     if (sm_mts == MTS_SMTP)
 	return smtp_init (client, server, port, watch, verbose,
-			  debug, onex, queued, sasl, saslmech, user);
+			  debug, onex, queued, sasl, saslmech, user, tls);
     else
 	return sendmail_init (client, server, watch, verbose,
                               debug, onex, queued, sasl, saslmech, user);
@@ -172,7 +191,7 @@ sm_init (char *client, char *server, char *port, int watch, int verbose,
 static int
 smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	   int debug, int onex, int queued,
-           int sasl, char *saslmech, char *user)
+           int sasl, char *saslmech, char *user, int tls)
 {
 #ifdef CYRUS_SASL
     char *server_mechs;
@@ -196,17 +215,19 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	}
     }
 
-#ifdef ZMAILER
+    /*
+     * Last-ditch check just in case client still isn't set to anything
+     */
+
     if (client == NULL || *client == '\0')
 	client = "localhost";
-#endif
 
-#ifdef CYRUS_SASL
+#if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
     sasl_inbuffer = malloc(SASL_MAXRECVBUF);
     if (!sasl_inbuffer)
 	return sm_ierror("Unable to allocate %d bytes for read buffer",
 			 SASL_MAXRECVBUF);
-#endif /* CYRUS_SASL */
+#endif /* CYRUS_SASL || TLS_SUPPORT */
 
     if ((sd1 = rclient (server, port)) == NOTOK)
 	return RP_BHST;
@@ -227,6 +248,8 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	return sm_ierror ("unable to fdopen");
     }
 
+    tls_active = 0;
+
     sm_alarmed = 0;
     alarm (SM_OPEN);
     result = smhear ();
@@ -244,19 +267,107 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     /*
      * Give EHLO or HELO command
      */
-    if (client && *client) {
+
+    doingEHLO = 1;
+    result = smtalk (SM_HELO, "EHLO %s", client);
+    doingEHLO = 0;
+
+    if (result >= 500 && result <= 599)
+	result = smtalk (SM_HELO, "HELO %s", client);
+
+    if (result != 250) {
+	sm_end (NOTOK);
+	return RP_RPLY;
+    }
+
+#ifdef TLS_SUPPORT
+    /*
+     * If the user requested TLS support, then try to do the STARTTLS command
+     * as part of the initial dialog.  Assuming this works, we then need to
+     * restart the EHLO dialog after TLS negotiation is complete.
+     */
+
+    if (tls) {
+	if (! EHLOset("STARTTLS")) {
+	    sm_end(NOTOK);
+	    return sm_ierror("SMTP server does not support TLS");
+	}
+
+	result = smtalk(SM_HELO, "STARTTLS");
+
+	if (result != 220) {
+	    sm_end(NOTOK);
+	    return RP_RPLY;
+	}
+
+	/*
+	 * Okay, the other side should be waiting for us to start TLS
+	 * negotiation.  Oblige them.
+	 */
+
+	if (! sslctx) {
+	    SSL_METHOD *method;
+
+	    SSL_library_init();
+	    SSL_load_error_strings();
+
+	    method = TLSv1_client_method();	/* Not sure about this */
+
+	    sslctx = SSL_CTX_new(method);
+
+	    if (! sslctx) {
+		sm_end(NOTOK);
+		return sm_ierror("Unable to initialize OpenSSL context: %s",
+				 ERR_error_string(ERR_get_error(), NULL));
+	    }
+	}
+
+	ssl = SSL_new(sslctx);
+
+	if (! ssl) {
+	    sm_end(NOTOK);
+	    return sm_ierror("Unable to create SSL connection: %s",
+			     ERR_error_string(ERR_get_error(), NULL));
+	}
+
+	sbior = BIO_new_socket(fileno(sm_rfp), BIO_NOCLOSE);
+	sbiow = BIO_new_socket(fileno(sm_wfp), BIO_NOCLOSE);
+
+	if (sbior == NULL || sbiow == NULL) {
+	    sm_end(NOTOK);
+	    return sm_ierror("Unable to create BIO endpoints: %s",
+			     ERR_error_string(ERR_get_error(), NULL));
+	}
+
+	SSL_set_bio(ssl, sbior, sbiow);
+
+	if (SSL_connect(ssl) < 1) {
+	    sm_end(NOTOK);
+	    return sm_ierror("Unable to negotiate SSL connection: %s",
+			     ERR_error_string(ERR_get_error(), NULL));
+	}
+
+	if (sm_debug) {
+	    SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
+	    printf("SSL negotiation successful: %s(%d) %s\n",
+		   SSL_CIPHER_get_name(cipher),
+		   SSL_CIPHER_get_bits(cipher, NULL),
+		   SSL_CIPHER_get_version(cipher));
+
+	}
+
+	tls_active = 1;
+
 	doingEHLO = 1;
 	result = smtalk (SM_HELO, "EHLO %s", client);
 	doingEHLO = 0;
-
-	if (result >= 500 && result <= 599)
-	    result = smtalk (SM_HELO, "HELO %s", client);
 
 	if (result != 250) {
 	    sm_end (NOTOK);
 	    return RP_RPLY;
 	}
     }
+#endif /* TLS_SUPPORT */
 
 #ifdef CYRUS_SASL
     /*
@@ -325,10 +436,12 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 	    client = LocalName();	/* no clientname -> LocalName */
     }
 
-#ifdef ZMAILER
+    /*
+     * Last-ditch check just in case client still isn't set to anything
+     */
+
     if (client == NULL || *client == '\0')
 	client = "localhost";
-#endif
 
 #ifdef CYRUS_SASL
     sasl_inbuffer = malloc(SASL_MAXRECVBUF);
@@ -369,7 +482,6 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 	    vecp = 0;
 	    vec[vecp++] = r1bindex (sendmail, '/');
 	    vec[vecp++] = "-bs";
-#ifndef ZMAILER
 	    vec[vecp++] = watch ? "-odi" : queued ? "-odq" : "-odb";
 	    vec[vecp++] = "-oem";
 	    vec[vecp++] = "-om";
@@ -377,7 +489,6 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 	    if (verbose)
 		vec[vecp++] = "-ov";
 # endif /* not RAND */
-#endif /* not ZMAILER */
 	    vec[vecp++] = NULL;
 
 	    setgid (getegid ());
@@ -413,22 +524,20 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 		    return RP_RPLY;
 	    }
 
-	    if (client && *client) {
-		doingEHLO = 1;
-		result = smtalk (SM_HELO, "EHLO %s", client);
-		doingEHLO = 0;
+	    doingEHLO = 1;
+	    result = smtalk (SM_HELO, "EHLO %s", client);
+	    doingEHLO = 0;
 
-		if (500 <= result && result <= 599)
-		    result = smtalk (SM_HELO, "HELO %s", client);
+	    if (500 <= result && result <= 599)
+		result = smtalk (SM_HELO, "HELO %s", client);
 
-		switch (result) {
-		    case 250:
-		        break;
+	    switch (result) {
+		case 250:
+		    break;
 
-		    default:
-			sm_end (NOTOK);
-			return RP_RPLY;
-		}
+		default:
+		    sm_end (NOTOK);
+		    return RP_RPLY;
 	    }
 
 #ifdef CYRUS_SASL
@@ -460,10 +569,8 @@ sendmail_init (char *client, char *server, int watch, int verbose,
     }
 #endif /* CYRUS_SASL */
 
-#ifndef ZMAILER
 	    if (onex)
 		smtalk (SM_HELO, "ONEX");
-#endif
 	    if (watch)
 		smtalk (SM_HELO, "VERB on");
 
@@ -680,6 +787,11 @@ sm_end (int type)
 	    break;
     }
 
+    if (tls_active) {
+	SSL_shutdown(ssl);
+	SSL_free(ssl);
+    }
+
     if (sm_rfp != NULL) {
 	alarm (SM_CLOS);
 	fclose (sm_rfp);
@@ -791,12 +903,13 @@ sm_auth_sasl(char *user, char *mechlist, char *inhost)
     }
 
     /*
-     * Initialize the security properties
+     * Initialize the security properties.  But if TLS is active, then
+     * don't negotiate encryption here.
      */
 
     memset(&secprops, 0, sizeof(secprops));
     secprops.maxbufsize = SASL_MAXRECVBUF;
-    secprops.max_ssf = UINT_MAX;
+    secprops.max_ssf = tls_active ? 0 : UINT_MAX;
 
     result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
 
@@ -1030,10 +1143,10 @@ smtalk (int time, char *fmt, ...)
     va_end(ap);
 
     if (sm_debug) {
-#ifdef CYRUS_SASL
 	if (sasl_ssf)
-		printf("(encrypted) ");
-#endif /* CYRUS_SASL */
+		printf("(sasl-encrypted) ");
+	if (tls_active)
+		printf("(tls-encrypted) ");
 	printf ("=> %s\n", buffer);
 	fflush (stdout);
     }
@@ -1116,11 +1229,24 @@ sm_fwrite(char *buffer, int len)
     const char *output;
     unsigned int outputlen;
 
-    if (sasl_complete == 0 || sasl_ssf == 0)
+    if (sasl_complete == 0 || sasl_ssf == 0) {
 #endif /* CYRUS_SASL */
+#ifdef TLS_SUPPORT
+	if (tls_active) {
+	    int ret;
+
+	    ret = SSL_write(ssl, buffer, len);
+
+	    if (SSL_get_error(ssl, ret) != SSL_ERROR_NONE) {
+		sm_ierror("TLS error during write: %s",
+			  ERR_error_string(ERR_get_error(), NULL));
+		return NOTOK;
+	    }
+	} else
+#endif /* TLS_SUPPORT */
 	fwrite(buffer, sizeof(*buffer), len, sm_wfp);
 #ifdef CYRUS_SASL
-    else {
+    } else {
 	while (len >= maxoutbuf - sasl_outbuflen) {
 	    memcpy(sasl_outbuffer + sasl_outbuflen, buffer,
 		   maxoutbuf - sasl_outbuflen);
@@ -1241,10 +1367,10 @@ again: ;
     for (more = FALSE; sm_rrecord ((char *) (bp = (unsigned char *) buffer),
 				   &bc) != NOTOK ; ) {
 	if (sm_debug) {
-#ifdef CYRUS_SASL
 	    if (sasl_ssf > 0)
-		printf("(decrypted) ");
-#endif /* CYRUS_SASL */
+		printf("(sasl-decrypted) ");
+	    if (tls_active)
+		printf("(tls-decrypted) ");
 	    printf ("<= %s\n", buffer);
 	    fflush (stdout);
 	}
@@ -1382,9 +1508,9 @@ sm_fgets(char *buffer, int size, FILE *f)
 }
 
 
-#ifdef CYRUS_SASL
+#if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
 /*
- * Read from the network, but do SASL encryption
+ * Read from the network, but do SASL or TLS encryption
  */
 
 static int
@@ -1408,6 +1534,28 @@ sm_fgetc(FILE *f)
      */
 
     while (retbufsize == 0) {
+
+#ifdef TLS_SUPPORT
+	if (tls_active) {
+	    cc = SSL_read(ssl, tmpbuf, sizeof(tmpbuf));
+
+	    if (cc == 0) {
+		result = SSL_get_error(ssl, cc);
+
+		if (result != SSL_ERROR_ZERO_RETURN) {
+		    sm_ierror("TLS peer aborted connection");
+		}
+
+		return EOF;
+	    }
+
+	    if (cc < 0) {
+		sm_ierror("SSL_read failed: %s",
+			  ERR_error_string(ERR_get_error(), NULL));
+		return -2;
+	    }
+	} else
+#endif /* TLS_SUPPORT */
 
 	cc = read(fileno(f), tmpbuf, sizeof(tmpbuf));
 
@@ -1451,7 +1599,7 @@ sm_fgetc(FILE *f)
 
     return (int) sasl_inbuffer[0];
 }
-#endif /* CYRUS_SASL */
+#endif /* CYRUS_SASL || TLS_SUPPORT */
 
 static int
 sm_rerror (int rc)

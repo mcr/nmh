@@ -46,6 +46,12 @@
 # define SASLminc(a)  0
 #endif /* CYRUS_SASL */
 
+#ifndef TLS_SUPPORT
+# define TLSminc(a)  (a)
+#else /* TLS_SUPPORT */
+# define TLSminc(a)   0
+#endif /* TLS_SUPPORT */
+
 #define FCCS		10	/* max number of fccs allowed */
 
 #define	uptolow(c)	((isalpha(c) && isupper (c)) ? tolower (c) : c)
@@ -140,6 +146,8 @@ static struct swit switches[] = {
     { "user", SASLminc(-4) },
 #define PORTSW			 40
     { "port server port name/number", 4 },
+#define TLSSW			 41
+    { "tls", TLSminc(-3) },
     { NULL, 0 }
 };
 
@@ -239,6 +247,7 @@ static int sasl=0;		/* Use SASL auth for SMTP                */
 static char *saslmech=NULL;	/* Force use of particular SASL mech     */
 static char *user=NULL;		/* Authenticate as this user             */
 static char *port="smtp";	/* Name of server port for SMTP		 */
+static int tls=0;		/* Use TLS for encryption		 */
 
 static unsigned msgflags = 0;	/* what we've seen */
 
@@ -525,6 +534,10 @@ main (int argc, char **argv)
 		case PORTSW:
 		    if (!(port = *argp++) || *port == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
+		    continue;
+
+		case TLSSW:
+		    tls++;
 		    continue;
 	    }
 	}
@@ -1415,7 +1428,7 @@ post (char *file, int bccque, int talk)
 
     if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch, verbose,
 				    snoop, onex, queued, sasl, saslmech,
-				    user))
+				    user, tls))
 	    || rp_isbad (retval = sm_winit (smtpmode, from)))
 	die (NULL, "problem initializing server; %s", rp_string (retval));
 
@@ -1454,7 +1467,7 @@ verify_all_addresses (int talk)
     if (!whomsw || checksw)
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, 0, queued, sasl,
-					saslmech, user))
+					saslmech, user, tls))
 		|| rp_isbad (retval = sm_winit (smtpmode, from)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 

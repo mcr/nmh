@@ -24,7 +24,7 @@ struct smtp {
  * prototypes
  */
 /* int client (); */
-int sm_init (char *, char *, char *, int, int, int, int, int, int, char *, char *);
+int sm_init (char *, char *, char *, int, int, int, int, int, int, char *, char *, int);
 int sm_winit (int, char *);
 int sm_wadr (char *, char *, char *);
 int sm_waend (void);

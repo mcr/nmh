@@ -980,6 +980,12 @@ check_draft (char *msgnam)
 # define SASLminc(a)  0
 #endif /* CYRUS_SASL */
 
+#ifndef TLS_SUPPORT
+# define TLSminc(a)  (a)
+#else /* TLS_SUPPORT */
+# define TLSminc(a)   0
+#endif /* TLS_SUPPORT */
+
 static struct swit  sendswitches[] = {
 #define	ALIASW            0
     { "alias aliasfile", 0 },
@@ -1058,13 +1064,15 @@ static struct swit  sendswitches[] = {
 #define SASLMECHSW       37
     { "saslmech", SASLminc(-5) },
 #define USERSW           38
-    { "user", SASLminc(4) },
+    { "user", SASLminc(-4) },
 #define SNDATTACHSW       39
     { "attach file", 6 },
 #define SNDATTACHFORMAT   40
     { "attachformat", 7 },
 #define PORTSW		  41
     { "port server-port-name/number", 4 },
+#define TLSSW		  42
+    { "tls", TLSminc(-3) },
     { NULL, 0 }
 };
 
@@ -1219,6 +1227,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case SOMLSW:
 		case SNOOPSW:
 		case SASLSW:
+		case TLSSW:
 		    vec[vecp++] = --cp;
 		    continue;
 

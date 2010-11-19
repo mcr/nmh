@@ -21,6 +21,12 @@
 # define SASLminc(a)  0
 #endif /* CYRUS_SASL */
 
+#ifndef TLS_SUPPORT
+# define TLSminc(a)  (a)
+#else /* TLS_SUPPORT */
+# define TLSminc(a)   0
+#endif /* TLS_SUPPORT */
+
 static struct swit switches[] = {
 #define	ALIASW                 0
     { "alias aliasfile", 0 },
@@ -108,6 +114,8 @@ static struct swit switches[] = {
     { "attachformat", 7 },
 #define PORTSW		      42
     { "port server-port-name/number" , 4 },
+#define TLSSW		      43
+    { "tls", TLSminc(-3) },
     { NULL, 0 }
 };
 
@@ -265,6 +273,7 @@ main (int argc, char **argv)
 		case SOMLSW: 
 		case SNOOPSW: 
 		case SASLSW:
+		case TLSSW:
 		    vec[vecp++] = --cp;
 		    continue;
 

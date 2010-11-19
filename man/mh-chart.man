@@ -553,6 +553,7 @@ or
 .RB [ \-user
 .IR username ]
 .I file
+.RB [ \-tls ]
 .RB [ \-version ]
 .RB [ \-help ]
 
@@ -737,6 +738,7 @@ all/to/cc/me]
 .IR mechanism ]
 .RB [ \-user
 .IR username ]
+.RB [ \-tls ]
 .RB [ \-width
 .IR columns ]
 .RB [ file
