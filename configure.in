@@ -107,6 +107,10 @@ AC_ARG_WITH(cyrus-sasl, AS_HELP_STRING([--with-cyrus-sasl],
 if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"; then
   AC_DEFINE(CYRUS_SASL, 1,
     [Define to use the Cyrus SASL library for authentication of POP and SMTP.])dnl
+  if test x"$with_cyrus_sasl" != xyes; then
+    AC_MSG_WARN([Arguments to --with-cyrus-sasl now ignored])
+    AC_MSG_WARN([Please pass the appropriate arguments to CPPFLAGS/LDFLAGS])
+  fi
   sasl_support=yes
 else
   sasl_support=no
