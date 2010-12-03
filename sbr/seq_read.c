@@ -3,8 +3,6 @@
  * seq_read.c -- read the .mh_sequence file and
  *            -- initialize sequence information
  *
- * $Id$
- *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.

@@ -1,8 +1,6 @@
 
 /*
  * prototypes.h -- various prototypes
- *
- * $Id$
  */
 
 /*

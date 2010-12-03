@@ -12,8 +12,6 @@
  * control laws. This software is made available AS IS, and Xerox Corporation
  * makes no warranty about the software, its performance or its conformity to
  * any specification.
- *
- *  $Id$
  */
 
 #include <h/mh.h>

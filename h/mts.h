@@ -1,8 +1,6 @@
 
 /*
  * mts.h -- definitions for the mail system
- *
- * $Id$
  */
 
 /*

@@ -1,8 +1,6 @@
 
 /*
  * dropsbr.h -- definitions for maildrop-style files
- *
- * $Id$
  */
 
 /*

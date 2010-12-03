@@ -1,8 +1,6 @@
 
 /*
  * signals.h -- header file for nmh signal interface
- *
- * $Id$
  */
 
 #include <config.h>

@@ -1,8 +1,6 @@
 
 /*
  * smtp.h -- definitions for the nmh SMTP Interface
- *
- * $Id$
  */
 
 /* various modes for SMTP */

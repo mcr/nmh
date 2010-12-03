@@ -4,8 +4,6 @@
  *          -- return the numeric value of the message.  If the string
  *          -- contains any non-digit characters, then return 0.
  *
- * $Id$
- *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.

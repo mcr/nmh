@@ -1,7 +1,5 @@
 #!/bin/sh
 #
-# $Id$
-#
 # Send multiples files and/or directories as a tar/compressed
 # image, in a MIME message.
 #

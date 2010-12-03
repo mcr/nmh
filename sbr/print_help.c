@@ -3,8 +3,6 @@
  * print_help.c -- print a help message, and possibly the
  *              -- profile/context entries for this command
  *
- * $Id$
- *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.

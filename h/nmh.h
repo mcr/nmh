@@ -1,8 +1,6 @@
 
 /*
  * nmh.h -- system configuration header file
- *
- * $Id$
  */
 
 #include <config.h>

@@ -3,8 +3,6 @@
 #
 # provided by Geoff Wing <mason@werple.apana.org.au>
 #
-# $Id$
-#
 # On SunOS 4.1.3 - user-functions don't work properly, also \" problems
 # Without 0 + hacks some nawks compare numbers as strings
 #

@@ -2,8 +2,6 @@
 /*
  * mhparse.h -- definitions for parsing/building of MIME content
  *           -- (mhparse.c/mhbuildsbr.c)
- *
- * $Id$
  */
 
 #define	NPARTS	50

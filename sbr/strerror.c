@@ -1,8 +1,6 @@
 
 /*
  * strerror.c -- get error message string
- *
- * $Id$
  */
 
 #include <h/mh.h>

@@ -1,8 +1,6 @@
 #
 # README.developers
 #
-# $Id$
-#
 
 This file is intended to provide a few tips for anyone doing development on nmh.
 Developers who learn things "the hard way" about the nmh codebase (as opposed to

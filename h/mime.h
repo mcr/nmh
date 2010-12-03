@@ -1,8 +1,6 @@
 
 /*
  * mime.h -- definitions for MIME
- *
- * $Id$
  */
 
 #define	VRSN_FIELD	"MIME-Version"

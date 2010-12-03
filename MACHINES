@@ -1,8 +1,6 @@
 #
 # MACHINE -- operating system specific information
 #
-# $Id$
-#
 
 nmh is known to compile on the following platforms (save the
 exceptions noted below), using an ANSI C compiler, such as gcc.

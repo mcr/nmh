@@ -1,8 +1,6 @@
 
 /*
  * scansbr.h -- definitions for scan()
- *
- * $Id$
  */
 
 extern char *scanl;

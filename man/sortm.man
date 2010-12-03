@@ -1,6 +1,5 @@
 .\"
 .\" %nmhwarning%
-.\" $Id$
 .\"
 .TH SORTM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME

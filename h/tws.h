@@ -1,8 +1,6 @@
 
 /*
  * tws.h
- *
- * $Id$
  */
 
 /* If the following is #defined, a timezone given as a numeric-only offset will

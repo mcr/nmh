@@ -1,8 +1,6 @@
 #
 # Makefile for mts subdirectory
 #
-# $Id$
-#
 
 SHELL = /bin/sh
 

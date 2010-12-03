@@ -1,8 +1,6 @@
 /*
  * nntp.h -- Response codes for NNTP server
  *
- * $Id$
- *
  * First digit:
  *
  *	1xx	Informative message

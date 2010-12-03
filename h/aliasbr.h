@@ -2,7 +2,6 @@
 /*
  * aliasbr.h -- definitions for the aliasing system
  *
- * $Id$
  */
 
 extern char *AliasFile;		/* mh-alias(5)             */

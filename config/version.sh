@@ -4,8 +4,6 @@
 #
 # You need to pass the script the version number to use.
 #
-# $Id$
-#
 
 if [ -z "$1" ]; then
     echo "usage: version.sh VERSION" 1>&2

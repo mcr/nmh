@@ -1,8 +1,6 @@
 
 /*
  * msh.h -- definitions for msh
- *
- * $Id$
  */
 
 /* flags for stream */

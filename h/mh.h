@@ -1,8 +1,6 @@
 
 /*
  * mh.h -- main header file for all of nmh
- *
- * $Id$
  */
 
 #include <h/nmh.h>

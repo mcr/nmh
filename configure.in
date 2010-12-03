@@ -1,8 +1,6 @@
 dnl
 dnl configure.in -- autoconf template for nmh
 dnl
-dnl $Id$
-dnl
 
 dnl Move this up a bit
 AC_PREREQ(2.61)

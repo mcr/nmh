@@ -1,4 +1,4 @@
-/*	$Id$
+/*
  *
  *	Run a program that hooks into some other system.  The first argument is
  *	name of the hook to use, the second is the full path name of a mail message.

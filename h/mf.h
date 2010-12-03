@@ -1,8 +1,6 @@
 
 /*
  * mf.h -- include file for mailbox filters
- *
- * $Id$
  */
 
 #include <h/nmh.h>

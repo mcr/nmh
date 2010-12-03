@@ -4,8 +4,6 @@
  *       -- as fnext,  move to next folder with unseen messages
  *       -- as fprev,  move to previous folder with unseen messages
  *       -- as unseen, scan all unseen messages
- * $Id$
- *
  * This code is Copyright (c) 2008, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.

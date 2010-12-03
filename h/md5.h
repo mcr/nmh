@@ -1,8 +1,6 @@
 /*
  * md5.h -- header file for md5 message digest
  *          taken from RFC-1321/Appendices A.1/A.2
- *
- * $Id$
  */
 
 /*

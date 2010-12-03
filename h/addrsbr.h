@@ -1,8 +1,6 @@
 
 /*
  * addrsbr.h -- definitions for the address parsing system
- *
- * $Id$
  */
 
 #define	AD_HOST	1		/* getm(): lookup official hostname    */

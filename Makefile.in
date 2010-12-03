@@ -1,8 +1,6 @@
 #
 # Makefile for top level of nmh distribution
 #
-# $Id$
-#
 
 # nmh version
 VERSION = @VERSION@

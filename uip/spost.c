@@ -5,8 +5,6 @@
  * This is a simpler, faster, replacement for "post" for use
  * when "sendmail" is the transport system.
  *
- * $Id$
- *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.

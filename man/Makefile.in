@@ -1,8 +1,6 @@
 #
 # Makefile for man subdirectory
 #
-# $Id$
-#
 
 VERSION = @VERSION@
 DATE = @DATE@

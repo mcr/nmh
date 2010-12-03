@@ -1,8 +1,6 @@
 
 /*
  * rcvmail.h -- rcvmail hook definitions
- *
- * $Id$
  */
 
 #if defined(SMTPMTS)

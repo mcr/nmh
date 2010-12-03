@@ -1,8 +1,6 @@
 #
 # README.SASL - Readme about SASL support in nmh
 #
-# $Id$
-#
 
 SASL is short for the Simple Authentication and Security Layer.  Is is
 a framework for adding authentication and encryption to network protocols.

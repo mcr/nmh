@@ -1,8 +1,6 @@
 
 /*
  * vmhsbr.h -- definitions for the vmh protocol
- *
- * $Id$
  */
 
 #define	RC_VRSN	1

@@ -1,8 +1,6 @@
 
 /*
  * popsbr.h -- header for POP client subroutines
- *
- * $Id$
  */
 
 #if 0

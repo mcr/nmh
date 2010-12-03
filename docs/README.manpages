@@ -4,7 +4,6 @@ nmh manpages should be in this general form:
 
 .\"
 .\" %nmhwarning%
-.\" $Id$
 .\"
 .TH COMP %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME

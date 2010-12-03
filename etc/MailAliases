@@ -1,8 +1,6 @@
 ;
 ; MailAliases -- nmh global aliases file
 ;
-; $Id$
-;
 ; This file is used to define aliases that are valid for all mh users.
 ; This file is almost empty as MH now supports personal aliases.
 ;

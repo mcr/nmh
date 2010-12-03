@@ -1,8 +1,6 @@
 #
 # Makefile for etc subdirectory
 #
-# $Id$
-#
 
 SHELL = /bin/sh
 

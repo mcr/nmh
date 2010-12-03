@@ -3,8 +3,6 @@
  * cpydgst.c -- copy from one fd to another in encapsulating mode
  *           -- (do dashstuffing of input data).
  *
- * $Id$
- *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.

@@ -2,8 +2,6 @@
 #
 # mhn.defaults.sh -- create extra profile file for MIME handling
 #
-# $Id$
-#
 # USAGE: mhn.defaults.sh [ search-path [ search-prog ]]
 
 # If a search path is passed to the script, we

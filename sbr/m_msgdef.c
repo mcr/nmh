@@ -2,8 +2,6 @@
 /*
  * m_msgdef.c -- some defines for sbr/m_getfld.c
  *
- * $Id$
- *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.

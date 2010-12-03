@@ -2,7 +2,6 @@
 #
 # mhn.find.sh -- check if a particular command is available
 #
-# $Id$
 
 if test -z "$2"; then
     echo "usage: mhn.find.sh search-path program" 1>&2

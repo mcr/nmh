@@ -1,8 +1,6 @@
 
 /*
  * fmt_compile.h -- format types
- *
- * $Id$
  */
 
 /* types that output text */

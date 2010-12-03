@@ -1,8 +1,6 @@
 #
 # Makefile for mts/smtp subdirectory
 #
-# $Id$
-#
 
 SHELL = /bin/sh
 
