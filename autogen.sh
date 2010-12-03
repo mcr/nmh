@@ -5,6 +5,5 @@
 # building from a distributed tarball.
 
 set -e
-autoheader
-autoconf
+autoreconf
 date > stamp-h.in
