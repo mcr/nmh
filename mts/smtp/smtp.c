@@ -787,10 +787,12 @@ sm_end (int type)
 	    break;
     }
 
+#ifdef TLS_SUPPORT
     if (tls_active) {
 	SSL_shutdown(ssl);
 	SSL_free(ssl);
     }
+#endif /* TLS_SUPPORT */
 
     if (sm_rfp != NULL) {
 	alarm (SM_CLOS);
