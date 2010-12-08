@@ -409,6 +409,11 @@ WhatNow (int argc, char **argv)
 		break;
 	    }
 
+	    if (*(argp+1) == (char *)0) {
+		advise((char *)0, "attach command requires file argument(s).");
+		break;
+	    }
+
 	    /*
 	     *	Build a command line that causes the user's shell to list the file name
 	     *	arguments.  This handles and wildcard expansion, tilde expansion, etc.
