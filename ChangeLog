@@ -1,3 +1,10 @@
+2010-12-08  David Levine <levinedl@acm.org>
+
+	* man/send.man: added name= portion to Content-Type
+	  headers to reflect 2006-10-24 change to uip/sendsbr.c.
+	  That change allowed mhstore to use the (file)name when
+	  extracting attachments.
+
 2010-11-12  Peter Maydell <pmaydell@chiark.greenend.org.uk>
 
 	* man/slocal.man: fix formatting error that meant a
