@@ -17,7 +17,6 @@ etcdir      = @sysconfdir@
 CC       = @CC@
 CFLAGS   = @CFLAGS@
 DEFS     = @DEFS@
-HESIOD_INCLUDES = @HESIOD_INCLUDES@  # for mts
 CONFIGDEFS = -DNMHETCDIR='"$(etcdir)"' -DMAILSPOOL='"$(mailspool)"' -DSENDMAILPATH='"$(sendmailpath)"'
 INCLUDES = -I.. -I. -I$(top_srcdir) @CPPFLAGS@
 
@@ -37,7 +36,7 @@ mailspool    = @mailspool@
 sendmailpath = @sendmailpath@
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
-COMPILE2 = $(CC) -c $(DEFS) $(CONFIGDEFS) $(INCLUDES) $(HESIOD_INCLUDES) $(CFLAGS)
+COMPILE2 = $(CC) -c $(DEFS) $(CONFIGDEFS) $(INCLUDES) $(CFLAGS)
 
 
 

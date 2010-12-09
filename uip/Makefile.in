@@ -17,24 +17,21 @@ etcdir      = @sysconfdir@
 CC       = @CC@
 CFLAGS   = @CFLAGS@
 DEFS     = @DEFS@
-HESIOD_INCLUDES = @HESIOD_INCLUDES@
-INCLUDES = -I.. -I$(srcdir) -I$(top_srcdir) $(HESIOD_INCLUDES) @CPPFLAGS@
+INCLUDES = -I.. -I$(srcdir) -I$(top_srcdir) @CPPFLAGS@
 LDFLAGS  = @LDFLAGS@
 
 LIBS     = @LIBS@
 MTSLIB   = ../mts/libmts.a
-HESIOD_LIBS = @HESIOD_LIBS@
 NDBM_LIBS = @NDBM_LIBS@
 LOCALLIBS = ../config/version.o ../config/config.o $(MTSLIB) ../sbr/libmh.a
-LINKLIBS = $(LOCALLIBS) $(HESIOD_LIBS) $(LIBS)
+LINKLIBS = $(LOCALLIBS) $(LIBS)
 
 LINT	= @LINT@
 LINTFLAGS = @LINTFLAGS@
 
 TERMLIB = @TERMLIB@
 LEXLIB  = @LEXLIB@
-APOPLIB = @APOPLIB@
-POPLIB  = @POPLIB@ $(APOPLIB)
+POPLIB  = @POPLIB@
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CFLAGS)
 LINK    = $(CC) $(LDFLAGS) -o $@

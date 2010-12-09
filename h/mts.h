@@ -61,20 +61,6 @@ extern char *servers;
 extern char *pophost;
 
 /*
- * BBoards-specific variables
- */
-extern char *bb_domain;
-
-/*
- * POP BBoards-specific variables
- */
-#ifdef BPOP
-extern char *popbbhost;
-extern char *popbbuser;
-extern char *popbblist;
-#endif /* BPOP */
-
-/*
  * Global MailDelivery File
  */
 extern char *maildelivery;

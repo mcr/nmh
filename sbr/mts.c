@@ -88,21 +88,6 @@ char *servers    = "localhost \01localnet";
 char *pophost    = "";
 
 /*
- * BBoards-specific variables
- */
-char *bb_domain = "";
-
-
-/*
- * POP BBoards-specific variables
- */
-#ifdef	BPOP
-char *popbbhost = "";
-char *popbbuser = "";
-char *popbblist = nmhetcdir(/hosts.popbb);
-#endif /* BPOP */
-
-/*
  * Global MailDelivery file
  */
 char *maildelivery = nmhetcdir(/maildelivery);
@@ -146,17 +131,6 @@ static struct bind binds[] = {
     { "clientname",  &clientname },
     { "servers", &servers },
     { "pophost", &pophost },
-    { "bbdomain", &bb_domain },
-
-#ifdef BPOP
-    { "popbbhost", &popbbhost },
-    { "popbbuser", &popbbuser },
-    { "popbblist", &popbblist },
-#endif
-
-#ifdef NNTP
-    { "nntphost", &popbbhost },
-#endif
 
     { "maildelivery", &maildelivery },
     { "everyone", &everyone },
@@ -401,21 +375,9 @@ getuserinfo (void)
     register char *np;
     register struct passwd *pw;
 
-#ifdef KPOP
-    uid_t uid;
-
-    uid = getuid ();
-    if (uid == geteuid () && (cp = getenv ("USER")) != NULL
-	&& (pw = getpwnam (cp)) != NULL)
-      strncpy (username, cp, sizeof(username));
-    else if ((pw = getpwuid (uid)) == NULL
-	     || pw->pw_name == NULL
-	     || *pw->pw_name == '\0') {
-#else /* KPOP */
     if ((pw = getpwuid (getuid ())) == NULL
 	    || pw->pw_name == NULL
 	    || *pw->pw_name == '\0') {
-#endif /* KPOP */
 	strncpy (username, "unknown", sizeof(username));
 	snprintf (fullname, sizeof(fullname), "The Unknown User-ID (%d)",
 		(int) getuid ());

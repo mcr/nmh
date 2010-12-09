@@ -357,15 +357,6 @@ the named POP service host is consulted.
 \"  BBoards service host.
 \"  .RE
 
-\"  .SS "BBoards & The NNTP"
-\"  This option is only available if you compiled \fInmh\fP with
-\"  \*(lqbboards:\ nntp\*(rq and \*(lqpop:\ on\*(rq.
-\"  .PP
-\"  .BR nntphost :
-\"  .RS 5
-\"  The host which provides the NNTP service.  This variable should be set
-\"  on the NNTP BBoards client host.
-\"  .RE
 .SS "File Locking"
 A few words on locking:
 .B nmh

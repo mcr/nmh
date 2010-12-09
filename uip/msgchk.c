@@ -16,32 +16,10 @@
 # include <h/popsbr.h>
 #endif
 
-#ifdef HESIOD
-# include <hesiod.h>
-#endif
-
 #ifndef	POP
 # define POPminc(a) (a)
 #else
 # define POPminc(a)  0
-#endif
-
-#ifndef	RPOP
-# define RPOPminc(a) (a)
-#else
-# define RPOPminc(a)  0
-#endif
-
-#ifndef	APOP
-# define APOPminc(a) (a)
-#else
-# define APOPminc(a)  0
-#endif
-
-#ifndef	KPOP
-# define KPOPminc(a) (a)
-#else
-# define KPOPminc(a)  0
 #endif
 
 #ifndef CYRUS_SASL
@@ -63,22 +41,14 @@ static struct swit switches[] = {
     { "host hostname", POPminc (-4) },
 #define	USERSW                   5
     { "user username", POPminc (-4) },
-#define	APOPSW                   6
-    { "apop", APOPminc (-4) },
-#define	NAPOPSW                  7
-    { "noapop", APOPminc (-6) },
-#define	RPOPSW                   8
-    { "rpop", RPOPminc (-4) },
-#define	NRPOPSW                  9
-    { "norpop", RPOPminc (-6) },
+#define PORTSW			 8
+    { "port name/number", POPminc(-4) },
 #define VERSIONSW               10
     { "version", 0 },
 #define	HELPSW                  11
     { "help", 0 },
 #define SNOOPSW                 12
     { "snoop", -5 },
-#define KPOPSW                  13
-    { "kpop", KPOPminc (-4) },
 #define SASLSW                  14
     { "sasl", SASLminc(-4) },
 #define SASLMECHSW		15
@@ -115,7 +85,8 @@ static int donote (char *, int);
 static int checkmail (char *, char *, int, int, int);
 
 #ifdef POP
-static int remotemail (char *, char *, char *, int, int, int, int, int, int, char *);
+static int remotemail (char *, char *, char *, char *, int, int, int, int,
+		       char *);
 #endif
 
 
@@ -123,11 +94,10 @@ int
 main (int argc, char **argv)
 {
     int datesw = 1, notifysw = NT_ALL;
-    int rpop, status = 0;
-    int kpop = 0, sasl = 0;
+    int status = 0, sasl = 0;
     int snoop = 0, vecp = 0;
     uid_t uid;
-    char *cp, *host = NULL, *user, *proxy = NULL; 
+    char *cp, *host = NULL, *port = NULL, *user, *proxy = NULL; 
     char buf[BUFSIZ], *saslmech = NULL; 
     char **argp, **arguments, *vec[MAXVEC];
     struct passwd *pw;
@@ -156,8 +126,6 @@ main (int argc, char **argv)
     if ((cp = getenv ("MHPOPDEBUG")) && *cp)
 	snoop++;
 #endif
-
-    rpop = 0;
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -199,6 +167,12 @@ main (int argc, char **argv)
 		    if (!(host = *argp++) || *host == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
+
+		case PORTSW:
+		    if (!(port = *argp++) || *port == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
+
 		case USERSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -206,24 +180,6 @@ main (int argc, char **argv)
 			adios (NULL, "you can only check %d users at a time", MAXVEC-1);
 		    else
 			vec[vecp++] = cp;
-		    continue;
-
-		case APOPSW: 
-		    rpop = -1;
-		    continue;
-		case NAPOPSW:
-		    rpop = 0;
-		    continue;
-
-		case RPOPSW: 
-		    rpop = 1;
-		    continue;
-		case NRPOPSW: 
-		    rpop = 0;
-		    continue;
-
-		case KPOPSW:
-		    kpop = 1;
 		    continue;
 
 		case SNOOPSW:
@@ -256,20 +212,6 @@ main (int argc, char **argv)
      * If -host is not specified by user
      */
     if (!host || !*host) {
-# ifdef HESIOD
-	/*
-	 * Scheme is:
-	 *        use MAILHOST environment variable if present,
-	 *  else try Hesiod.
-	 *  If that fails, use the default (if any)
-	 *  provided by mts.conf in mts_init()
-	 */
-	if ((tmphost = getenv("MAILHOST")) != NULL)
-	    pophost = tmphost;
-	else if ((po = hes_getmailhost(vecp ? vec[0] : user)) != NULL &&
-		strcmp(po->po_type, "POP") == 0)
-	    pophost = po->po_host;
-# endif /* HESIOD */
 	/*
 	 * If "pophost" is specified in mts.conf,
 	 * use it as default value.
@@ -279,8 +221,6 @@ main (int argc, char **argv)
     }
     if (!host || !*host)
 	host = NULL;
-    if (!host || rpop <= 0)
-	setuid (uid);
 #endif /* POP */
 
     if (vecp != 0)
@@ -288,16 +228,13 @@ main (int argc, char **argv)
 
 #ifdef POP
     if (host) {
-	if ( strcmp( POPSERVICE, "kpop" ) == 0 ) {
-	    kpop = 1;
-	}
 	if (vecp == 0) {
-	    status = remotemail (host, user, proxy, rpop, kpop, notifysw, 1,
+	    status = remotemail (host, port, user, proxy, notifysw, 1,
 				 snoop, sasl, saslmech);
 	} else {
 	    for (vecp = 0; vec[vecp]; vecp++)
-		status += remotemail (host, vec[vecp], proxy, rpop, kpop,
-		                      notifysw, 0, snoop, sasl, saslmech);
+		status += remotemail (host, port, vec[vecp], proxy, notifysw, 0,
+				      snoop, sasl, saslmech);
 	}
     } else {
 #endif /* POP */
@@ -418,21 +355,21 @@ checkmail (char *user, char *home, int datesw, int notifysw, int personal)
 extern char response[];
 
 static int
-remotemail (char *host, char *user, char *proxy, int rpop, int kpop, int notifysw, int personal, int snoop, int sasl, char *saslmech)
+remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
+	    int personal, int snoop, int sasl, char *saslmech)
 {
     int nmsgs, nbytes, status;
     char *pass = NULL;
 
     if (user == NULL)
 	user = getusername ();
-    if (kpop || sasl || (rpop > 0))
+    if (sasl)
 	pass = getusername ();
     else
 	ruserpass (host, &user, &pass);
 
     /* open the POP connection */
-    if (pop_init (host, user, pass, proxy, snoop, kpop ? 1 : rpop, kpop,
-		  sasl, saslmech) == NOTOK
+    if (pop_init (host, user, port, pass, proxy, snoop, sasl, saslmech) == NOTOK
 	    || pop_stat (&nmsgs, &nbytes) == NOTOK	/* check for messages  */
 	    || pop_quit () == NOTOK) {			/* quit POP connection */
 	advise (NULL, "%s", response);

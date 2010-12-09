@@ -1,3 +1,12 @@
+2010-12-09  Ken Hornstein <kenh@pobox.com>
+
+	* h/nntp.h, configure.in, h/Makefile.in, h/mts.h, h/popsbr.h,
+	  man/inc.man, man/mh-chart.man, man/mh-tailor.man, man/msgchk.man,
+	  sbr/Makefile.in, sbr/mts.c, uip/Makefile.in, uip/inc.c, uip/msgchk.c,
+	  uip/msh.c, uip/mshcmds.c, uip/popsbr.c: Massive garbage collection.
+	  Remove functionality for APOP, RPOP, all NNTP support (including
+	  bboards), and MPOP.
+
 2010-12-08  David Levine <levinedl@acm.org>
 
 	* uip/whatnowsbr.c: enforce requirement of at least one file
@@ -9,6 +18,25 @@
 	  headers to reflect 2006-10-24 change to uip/sendsbr.c.
 	  That change allowed mhstore to use the (file)name when
 	  extracting attachments.
+
+2010-12-03  Ken Hornstein <kenh@pobox.com>
+
+	* Everything: remove RCS keywords from files, since they no longer
+	  work after git migration.
+
+2010-12-02  Ken Hornstein <kenh@pobox.com>
+
+	* .cvsignore, .gitignore, autogen.sh, */.cvsignore: Update files
+	  for git conversion.
+
+2010-12-19  Ken Hornstein <kenh@pobox.com>
+
+	* aclocal.m4, config/Makefile.in, configure.in, man/mh-chart.man,
+	  man/post.man, man/send.man, mts/smtp/Makefile.in, mts/smtp/smtp.c,
+	  mts/smtp/smtp.h, sbr/Makefile.in, uip/Makefile.in, uip/post.c,
+	  uip/send.c, uip/whatnowsbr.c, uip/whom.c: Clean up autoconf
+	  code for handling of compiler flags for SASL, and add support
+	  for TLS to the SMTP MTA.
 
 2010-11-12  Peter Maydell <pmaydell@chiark.greenend.org.uk>
 

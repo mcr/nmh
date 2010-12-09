@@ -18,8 +18,6 @@ all/mail/nomail ]
 .IR hostname ]
 .RB [ \-user
 .IR username ]
-.RB [ \-apop " | " \-noapop ]
-.RB [ \-kpop ]
 .RB [ \-sasl ]
 .RB [ \-saslmech
 .IR mechanism ]
@@ -131,46 +129,6 @@ For debugging purposes, there is also a switch
 which will
 allow you to watch the POP transaction take place between you and the
 POP server.
-.PP
-If
-.B nmh
-has been compiled with APOP support, the
-.B \-apop
-switch will cause
-.B msgchk
-to use APOP rather than standard POP3 authentication.  Under APOP,
-a unique string (generally of the format
-.RI < pid . timestamp @ hostname >)
-is announced by the POP server.
-Rather than `USER
-.IR user ',
-`PASS
-.IR password ',
-.B msgchk
-sends `APOP
-.I user
-.IR digest ',
-where digest is the MD5 hash of the unique string
-followed by a `secret' shared by client and server, essentially equivalent to
-the user's password (though an APOP-enabled POP3 server could have separate APOP
-and plain POP3 passwords for a single user). 
-.B \-noapop
-disables APOP in cases
-where it'd otherwise be used.
-.PP
-If
-.B nmh
-has been compiled with KPOP support, the
-.B \-kpop
-switch will allow
-.B msgchk
-to use Kerberized POP rather than standard POP3 on a given
-invocation.  If
-.B POPSERVICE
-was also #defined to "kpop",
-.B msgchk
-will be
-hardwired to always use KPOP.
 .PP
 If
 .B nmh

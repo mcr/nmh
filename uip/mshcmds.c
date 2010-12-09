@@ -27,17 +27,6 @@ static char delim3[] = "-------";	/* from burst.c */
 static int mhlnum;
 static FILE *mhlfp;
 
-#if defined(NNTP) && defined(MPOP)
-# undef	MPOP
-#endif
-
-#ifdef MPOP
-# ifdef BPOP
-extern int pmsh;
-extern char response[];
-# endif
-#endif /* MPOP */
-
 /*
  * Type for a compare function for qsort.  This keeps
  * the compiler happy.
@@ -1999,12 +1988,6 @@ rmm (void)
 	if (is_selected (mp, msgnum)) {
 	    set_deleted (mp, msgnum);
 	    unset_exists (mp, msgnum);
-#ifdef	MPOP
-#ifdef	BPOP
-	    if (pmsh && pop_dele (msgnum) != OK)
-		fprintf (stderr, "%s", response);
-#endif
-#endif /* MPOP */
 	}
 
     if ((mp->nummsg -= mp->numsel) <= 0) {
@@ -2063,11 +2046,6 @@ scancmd (char **args)
     char *cp, *form = NULL, *format = NULL;
     char buf[BUFSIZ], *nfs, *msgs[MAXARGS];
     register FILE *zp;
-#ifdef	MPOP
-#ifdef	BPOP
-    static int p_optim = 0;
-#endif
-#endif /* MPOP */
     static int s_optim = 0;
     static char *s_form = NULL, *s_format = NULL;
 
@@ -2148,78 +2126,9 @@ scancmd (char **args)
 	s_form = form ? getcpy (form) : NULL;
 	s_format = format ? getcpy (format) : NULL;
 
-#ifdef MPOP
-#ifdef BPOP
-	if (pmsh) {
-	    int	i;
-	    char *dp, *ep, *fp;
-
-	    if (width == 0)
-		width = sc_width ();
-
-	    for (dp = nfs, i = 0; *dp; dp++, i++)
-		if (*dp == '\\' || *dp == '"' || *dp == '\n')
-		    i++;
-	    i++;
-	    ep = mh_xmalloc ((unsigned) i);
-	    for (dp = nfs, fp = ep; *dp; dp++) {
-		if (*dp == '\n') {
-		    *fp++ = '\\', *fp++ = 'n';
-		    continue;
-		}
-		if (*dp == '"' || *dp == '\\')
-		    *fp++ = '\\';
-		*fp++ = *dp;
-	    }
-	    *fp = NULL;
-
-	    if (pop_command ("XTND SCAN %d \"%s\"", width, ep) == OK)
-		p_optim = 1;
-
-	    free (ep);
-	}
-#endif
-#endif	/* MPOP */
     }
     else
 	optim = equiv (s_form, form) && equiv (s_format, format);
-
-#ifdef	MPOP
-#ifdef	BPOP
-    if (p_optim && optim) {
-	for (msgnum = mp->lowmsg; msgnum <= mp->hghmsg; msgnum++)
-	    if (!is_selected(mp, msgnum) || Msgs[msgnum].m_scanl)
-		break;
-	if (msgnum > mp->hghmsg && pop_command ("LIST") == OK) {
-	    fprintf (stderr, "Stand-by...");
-	    fflush (stderr);
-
-	    for (;;) {
-		int	size;
-
-		switch (pop_multiline ()) {
-		    case NOTOK:
-		        fprintf (stderr, "%s", response);
-		        /* and fall... */
-		    case DONE:
-		        fprintf (stderr,"\n");
-		        break;
-
-		    case OK:
-			if (sscanf (response, "%d %d", &msgnum, &size) == 2
-			        && mp->lowmsg <= msgnum
-			        && msgnum <= mp->hghmsg
-			        && (cp = strchr(response, '#'))
-			        && *++cp)
-			    Msgs[msgnum].m_scanl = concat (cp, "\n", NULL);
-			continue;
-		}
-		break;
-	    }
-	}
-    }
-#endif
-#endif /* MPOP */
 
     interrupted = 0;
     for (msgnum = mp->lowsel;
@@ -2229,20 +2138,6 @@ scancmd (char **args)
 	    if (optim && Msgs[msgnum].m_scanl)
 		printf ("%s", Msgs[msgnum].m_scanl);
 	    else {
-#ifdef	MPOP
-#ifdef	BPOP
-		if (p_optim
-		        && optim
-			&& is_virtual (mp, msgnum)
-		        && pop_command ("LIST %d", msgnum) == OK
-			&& (cp = strchr(response, '#'))
-		        && *++cp) {
-		    Msgs[msgnum].m_scanl = concat (cp, "\n", NULL);
-		    printf ("%s", Msgs[msgnum].m_scanl);		    
-		    continue;
-		}
-#endif
-#endif /* MPOP */
 
 		zp = msh_ready (msgnum, 0);
 		switch (state = scan (zp, msgnum, 0, nfs, width,

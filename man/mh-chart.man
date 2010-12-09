@@ -250,8 +250,6 @@ is equivalent to
 .RB [ \-pack
 .IR file ]
 .RB [ \-nopack ]
-.RB [ \-apop " | " \-noapop ]
-.RB [ \-kpop ]
 .RB [ \-sasl ]
 .RB [ \-saslmech
 .IR mechanism ]
@@ -441,8 +439,6 @@ all/mail/nomail ]
 .IR hostname ]
 .RB [ \-user
 .IR username ]
-.RB [ \-apop " | " \-noapop ]
-.RB [ \-kpop ]
 .RB [ \-sasl ]
 .RB [ \-saslmech
 .IR mechanism ]

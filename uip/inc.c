@@ -35,10 +35,6 @@
 # include <h/popsbr.h>
 #endif
 
-#ifdef HESIOD
-# include <hesiod.h>
-#endif
-
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
 #include <h/signals.h>
@@ -51,24 +47,6 @@
 # define POPminc(a) (a)
 #else
 # define POPminc(a)  0
-#endif
-
-#ifndef	RPOP
-# define RPOPminc(a) (a)
-#else
-# define RPOPminc(a)  0
-#endif
-
-#ifndef	APOP
-# define APOPminc(a) (a)
-#else
-# define APOPminc(a)  0
-#endif
-
-#ifndef	KPOP
-# define KPOPminc(a) (a)
-#else
-# define KPOPminc(a)  0
 #endif
 
 #ifndef CYRUS_SASL
@@ -100,14 +78,8 @@ static struct swit switches[] = {
     { "pack file", POPminc (-4) },
 #define	NPACKSW                   10
     { "nopack", POPminc (-6) },
-#define	APOPSW                    11
-    { "apop", APOPminc (-4) },
-#define	NAPOPSW                   12
-    { "noapop", APOPminc (-6) },
-#define	RPOPSW                    13
-    { "rpop", RPOPminc (-4) },
-#define	NRPOPSW                   14
-    { "norpop", RPOPminc (-6) },
+#define PORTSW			  13
+    { "port name/number", POPminc (-4) },
 #define	SILSW                     15
     { "silent", 0 },
 #define	NSILSW                    16
@@ -124,8 +96,6 @@ static struct swit switches[] = {
     { "help", 0 },
 #define SNOOPSW                   22
     { "snoop", -5 },
-#define KPOPSW                    23
-    { "kpop", KPOPminc (-4) },
 #define SASLSW                    24
     { "sasl", SASLminc(-4) },
 #define SASLMECHSW                25
@@ -205,12 +175,6 @@ if (geteuid() != 0) DROPGROUPPRIVS()
 #define SAVEGROUPPRIVS()
 #endif /* not MAILGROUP */
 
-#ifdef POP
-#define DROPUSERPRIVS() setuid(getuid())
-#else
-#define DROPUSERPRIVS()
-#endif
-
 /* these variables have to be globals so that done() can correctly clean up the lockfile */
 static int locked = 0;
 static char *newmail;
@@ -234,11 +198,11 @@ main (int argc, char **argv)
 {
     int chgflag = 1, trnflag = 1;
     int noisy = 1, width = 0;
-    int rpop, i, hghnum = 0, msgnum = 0;
-    int kpop = 0, sasl = 0;
+    int i, hghnum = 0, msgnum = 0;
+    int sasl = 0;
     char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
-    char *host = NULL, *user = NULL, *proxy = NULL;
+    char *host = NULL, *port = NULL, *user = NULL, *proxy = NULL;
     char *audfile = NULL, *from = NULL, *saslmech = NULL;
     char buf[BUFSIZ], **argp, *nfs, **arguments;
     struct msgs *mp = NULL;
@@ -255,10 +219,6 @@ main (int argc, char **argv)
 
 #ifdef MHE
     FILE *mhe = NULL;
-#endif
-
-#ifdef HESIOD
-    struct hes_postoffice *po;
 #endif
 
     done=inc_done;
@@ -291,11 +251,6 @@ main (int argc, char **argv)
      */
     if ((MAILHOST_env_variable = getenv("MAILHOST")) != NULL)
 	pophost = MAILHOST_env_variable;
-# ifdef HESIOD
-    else if ((po = hes_getmailhost(getusername())) != NULL &&
-	     strcmp(po->po_type, "POP") == 0)
-	pophost = po->po_host;
-# endif /* HESIOD */
     /*
      * If there is a valid "pophost" entry in mts.conf,
      * then use it as the default host.
@@ -306,8 +261,6 @@ main (int argc, char **argv)
     if ((cp = getenv ("MHPOPDEBUG")) && *cp)
 	snoop++;
 #endif /* POP */
-
-    rpop = 0;
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -397,6 +350,12 @@ main (int argc, char **argv)
 		if (!(host = *argp++) || *host == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
+
+	    case PORTSW:
+		if (!(host = *argp++) || *port == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
+
 	    case USERSW:
 		if (!(user = *argp++) || *user == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
@@ -415,24 +374,6 @@ main (int argc, char **argv)
 #ifdef POP
 		packfile = NULL;
 #endif /* POP */
-		continue;
-
-	    case APOPSW:
-		rpop = -1;
-		continue;
-	    case NAPOPSW:
-		rpop = 0;
-		continue;
-
-	    case RPOPSW:
-		rpop = 1;
-		continue;
-	    case NRPOPSW:
-		rpop = 0;
-		continue;
-
-	    case KPOPSW:
-		kpop = 1;
 		continue;
 
 	    case SNOOPSW:
@@ -469,8 +410,6 @@ main (int argc, char **argv)
 #ifdef POP
     if (host && !*host)
 	host = NULL;
-    if (from || !host || rpop <= 0)
-	DROPUSERPRIVS();
 #endif /* POP */
 
     /* guarantee dropping group priveleges; we might not have done so earlier */
@@ -496,10 +435,7 @@ main (int argc, char **argv)
     if (inc_type == INC_POP) {
 	if (user == NULL)
 	    user = getusername ();
-	if ( strcmp( POPSERVICE, "kpop" ) == 0 ) {
-	    kpop = 1;
-	}
-	if (kpop || sasl || ( rpop > 0))
+	if (sasl)
 	    pass = getusername ();
 	else
 	    ruserpass (host, &user, &pass);
@@ -507,16 +443,14 @@ main (int argc, char **argv)
 	/*
 	 * initialize POP connection
 	 */
-	if (pop_init (host, user, pass, proxy, snoop, kpop ? 1 : rpop, kpop,
-		      sasl, saslmech) == NOTOK)
+	if (pop_init (host, port, user, pass, proxy, snoop, sasl,
+		      saslmech) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */
 	if (pop_stat (&nmsgs, &nbytes) == NOTOK)
 	    adios (NULL, "%s", response);
 
-	if (rpop > 0)
-	    DROPUSERPRIVS();
 	if (nmsgs == 0) {
 	    pop_quit();
 	    adios (NULL, "no mail to incorporate");
@@ -620,10 +554,9 @@ go_to_it:
 
 #ifdef POP
 	fprintf (aud, from ? "<<inc>> %s -ms %s\n"
-		 : host ? "<<inc>> %s -host %s -user %s%s\n"
+		 : host ? "<<inc>> %s -host %s -user %s\n"
 		 : "<<inc>> %s\n",
-		 dtimenow (0), from ? from : host, user,
-		 rpop < 0 ? " -apop" : rpop > 0 ? " -rpop" : "");
+		 dtimenow (0), from ? from : host, user);
 #else /* POP */
 	fprintf (aud, from ? "<<inc>> %s  -ms %s\n" : "<<inc>> %s\n",
 		 dtimenow (0), from);

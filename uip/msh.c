@@ -118,11 +118,6 @@ static int windows[NWIN + 1];
 
 static jmp_buf peerenv;
 
-#ifdef BPOP
-int pmsh = 0;			/* BPOP enabled */
-extern char response[];
-#endif /* BPOP */
-
 /*
  * PARENT
  */
@@ -193,14 +188,6 @@ static void msh (int);
 static int read_map (char *, long);
 static int read_file (long, int);
 
-#ifdef BPOP
-# ifdef NNTP
-static int pop_statmsg (char *);
-# endif /* NNTP */
-static int read_pop (void);
-static int pop_action (char *);
-#endif /* BPOP */
-
 static void m_gMsgs (int);
 FILE *msh_ready (int, int);
 static int check_folder (int);
@@ -240,9 +227,6 @@ main (int argc, char **argv)
     int	id = 0, scansw = 0, vmh1 = 0, vmh2 = 0;
     char *cp, *file = NULL, *folder = NULL;
     char **argp, **arguments, buf[BUFSIZ];
-#ifdef BPOP
-    int	pmsh1 = 0, pmsh2 = 0;
-#endif
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -324,18 +308,10 @@ main (int argc, char **argv)
 		case PREADSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-#ifdef BPOP
-		    if ((pmsh1 = atoi (cp)) < 1)
-			adios (NULL, "bad argument %s %s", argp[-2], cp);
-#endif /* BPOP */
 		    continue;
 		case PWRITSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-#ifdef BPOP
-		    if ((pmsh2 = atoi (cp)) < 1)
-			adios (NULL, "bad argument %s %s", argp[-2], cp);
-#endif /* BPOP */
 		    continue;
 
 		case TCURSW:
@@ -385,20 +361,6 @@ main (int argc, char **argv)
 	tstat = SIGNAL (SIGTSTP, SIG_IGN);
 #endif /* SIGTSTP */
     }
-
-#ifdef BPOP
-    if (pmsh = pmsh1 && pmsh2) {
-	cp = getenv ("MHPOPDEBUG");
-#ifdef NNTP
-	if (pop_set (pmsh1, pmsh2, cp && *cp, myname) == NOTOK)
-#else /* NNTP */
-	if (pop_set (pmsh1, pmsh2, cp && *cp) == NOTOK)
-#endif /* NNTP */
-	    padios (NULL, "%s", response);
-	if (folder)
-	    file = folder, folder = NULL;
-    }
-#endif /* BPOP */
 
     if (folder)
 	fsetup (folder);
@@ -725,19 +687,6 @@ setup (char *file)
 {
     int i, msgp;
     struct stat st;
-#ifdef BPOP
-    char tmpfil[BUFSIZ];
-#endif
-
-#ifdef BPOP
-    if (pmsh) {
-        char *tfile = m_mktemp2(NULL, invo_name, NULL, &fp);
-        if (tfile == NULL) padios("msh", "unable to create temporary file");
-        unlink(tfile);
-	strncpy(tmpfil, tfile, sizeof(tmpfil));
-    }
-    else
-#endif /* BPOP */
     if ((fp = fopen (file, "r")) == NULL)
 	padios (file, "unable to read");
 #ifdef FIOCLEX
@@ -768,41 +717,13 @@ setup (char *file)
     mp->foldpath = getcpy (myname ? myname : file);
     clear_folder_flags (mp);
 
-#ifdef BPOP
-    if (pmsh)
-	set_readonly (mp);
-    else {
-#endif /* BPOP */
 	stat (file, &st);
 	if (st.st_uid != getuid () || access (file, W_OK) == NOTOK)
 	    set_readonly (mp);
-#ifdef BPOP
-    }
-#endif	/* BPOP */
 
     mp->lowoff = 1;
     mp->hghoff = mp->hghmsg + 1;
 
-#ifdef BPOP
-    if (pmsh) {
-#ifndef	NNTP
-	for (i = mp->lowmsg; i <= mp->hghmsg; i++) {
-	    Msgs[i].m_top = i;
-	    clear_msg_flags (mp, i);
-	    set_exists (mp, i);
-	    set_virtual (mp, i);
-	}
-#else /* NNTP */
-	for (i = mp->lowmsg; i <= mp->hghmsg; i++) {
-	    if (Msgs[i].m_top)			/* set in read_pop() */
-		clear_msg_flags (mp, i);
-		set_exists (mp, i);
-		set_virtual (mp, i);
-	}
-#endif /* NNTP */
-    }
-    else
-#endif	/* BPOP */
     for (i = mp->lowmsg; i <= mp->hghmsg; i++) {
 	clear_msg_flags (mp, i);
 	set_exists (mp, i);
@@ -826,11 +747,6 @@ read_map (char *file, long size)
     register int i, msgp;
     register struct drop *dp, *mp;
     struct drop *rp;
-
-#ifdef BPOP
-    if (pmsh)
-	return read_pop ();
-#endif /* BPOP */
 
     if ((i = map_read (file, size, &rp, 1)) == 0)
 	return 0;
@@ -859,11 +775,6 @@ read_file (long pos, int msgp)
     register struct drop *dp, *mp;
     struct drop *rp;
 
-#ifdef BPOP
-    if (pmsh)
-	return (msgp - 1);
-#endif /* BPOP */
-
     if ((i = mbx_read (fp, pos, &rp, 1)) <= 0)
 	return (msgp - 1);
 
@@ -881,47 +792,6 @@ read_file (long pos, int msgp)
 
     return (msgp - 1);
 }
-
-
-#ifdef BPOP
-#ifdef NNTP
-static int pop_base = 0;
-
-static int
-pop_statmsg (char *s)
-{
-    register int i, n;
-
-    n = (i = atoi (s)) - pop_base;	 /* s="nnn header-line..." */
-    Msgs[n].m_top = Msgs[n].m_bboard_id = i;
-}
-
-#endif /* NNTP */
-
-static int
-read_pop (void)
-{
-    int	nmsgs, nbytes;
-
-    if (pop_stat (&nmsgs, &nbytes) == NOTOK)
-	padios (NULL, "%s", response);
-
-    m_gMsgs (nmsgs);
-
-#ifdef NNTP	/* this makes read_pop() do some real work... */
-    pop_base = nbytes - 1; 	/* nmsgs=last-first+1, nbytes=first */
-    pop_exists (pop_statmsg);
-#endif /* NNTP */
-    return nmsgs;
-}
-
-
-static int
-pop_action (char *s)
-{
-    fprintf (yp, "%s\n", s);
-}
-#endif /* BPOP */
 
 
 static void
@@ -954,10 +824,6 @@ msh_ready (int msgnum, int full)
     register int msgp;
     int fd;
     char *cp;
-#ifdef BPOP
-    char tmpfil[BUFSIZ];
-    long pos1, pos2;
-#endif
 
     if (yp) {
 	fclose (yp);
@@ -989,50 +855,6 @@ msh_ready (int msgnum, int full)
 	return yp;
     }
 
-#ifdef BPOP
-    if (pmsh && is_virtual (mp, msgnum)) {
-	if (Msgs[msgnum].m_top == 0)
-	    padios (NULL, "msh_ready (%d, %d) botch", msgnum, full);
-	if (!full) {
-            char *tfile = m_mktemp2(NULL, invo_name, NULL, &yp);
-            if (tfile == NULL) padios("msh", "unable to create temporary file");
-            unlink(tfile);
-            strncpy(tmpfil, tfile, sizeof(tmpfil));
-
-	    if (pop_top (Msgs[msgnum].m_top, 4, pop_action) == NOTOK)
-		padios (NULL, "%s", response);
-
-	    m_eomsbr ((int (*)()) 0);	/* XXX */
-	    msg_style = MS_DEFAULT;	/*  .. */
-	    fseek (yp, 0L, SEEK_SET);
-	    return yp;
-	}
-
-	fseek (fp, 0L, SEEK_END);
-	fwrite (mmdlm1, 1, strlen (mmdlm1), fp);
-	if (fflush (fp))
-	    padios ("temporary file", "write error on");
-	fseek (fp, 0L, SEEK_END);
-	pos1 = ftell (fp);
-
-	yp = fp;
-	if (pop_retr (Msgs[msgnum].m_top, pop_action) == NOTOK)
-	    padios (NULL, "%s", response);
-	yp = NULL;
-
-	fseek (fp, 0L, SEEK_END);
-	pos2 = ftell (fp);
-	fwrite (mmdlm2, 1, strlen (mmdlm2), fp);
-	if (fflush (fp))
-	    padios ("temporary file", "write error on");
-
-	Msgs[msgnum].m_start = pos1;
-	Msgs[msgnum].m_stop = pos2;
-
-	unset_virtual (mp, msgnum);
-    }
-#endif /* BPOP */
-
     m_eomsbr ((int (*)()) 0);	/* XXX */
     fseek (fp, Msgs[msgnum].m_start, SEEK_SET);
     return fp;
@@ -1044,11 +866,6 @@ check_folder (int scansw)
 {
     int seqnum, i, low, hgh, msgp;
     struct stat st;
-
-#ifdef BPOP
-    if (pmsh)
-	return 0;
-#endif /* BPOP */
 
     if (fmsh) {
 	if (stat (mp->foldpath, &st) == NOTOK)
@@ -1202,21 +1019,9 @@ readid (int msgnum)
     int i, state;
     char *bp, buf[BUFSIZ], name[NAMESZ];
     register FILE *zp;
-#ifdef	BPOP
-    int	arg1, arg2, arg3;
-#endif
 
     if (Msgs[msgnum].m_bboard_id)
 	return Msgs[msgnum].m_bboard_id;
-#ifdef	BPOP
-    if (pmsh) {
-	if (Msgs[msgnum].m_top == 0)
-	    padios (NULL, "readid (%d) botch", msgnum);
-	if (pop_list (Msgs[msgnum].m_top, (int *) 0, &arg1, &arg2, &arg3) == OK
-		&& arg3 > 0)
-	    return (Msgs[msgnum].m_bboard_id = arg3);
-    }
-#endif	/* BPOP */
 
     zp = msh_ready (msgnum, 0);
     for (state = FLD;;)
@@ -1798,12 +1603,6 @@ m_reset (void)
     write_ids ();
     folder_free (mp);	/* free folder/message structure */
     myname = NULL;
-#ifdef	BPOP
-    if (pmsh) {
-	pop_done ();
-	pmsh = 0;
-    }
-#endif	/* BPOP */
 }
 
 
