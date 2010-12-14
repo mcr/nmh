@@ -78,29 +78,29 @@ static struct swit switches[] = {
     { "pack file", POPminc (-4) },
 #define	NPACKSW                   10
     { "nopack", POPminc (-6) },
-#define PORTSW			  13
+#define PORTSW			  11
     { "port name/number", POPminc (-4) },
-#define	SILSW                     15
+#define	SILSW                     12
     { "silent", 0 },
-#define	NSILSW                    16
+#define	NSILSW                    13
     { "nosilent", 0 },
-#define	TRNCSW                    17
+#define	TRNCSW                    14
     { "truncate", 0 },
-#define	NTRNCSW                   18
+#define	NTRNCSW                   15
     { "notruncate", 0 },
-#define	WIDTHSW                   19
+#define	WIDTHSW                   16
     { "width columns", 0 },
-#define VERSIONSW                 20
+#define VERSIONSW                 17
     { "version", 0 },
-#define	HELPSW                    21
+#define	HELPSW                    18
     { "help", 0 },
-#define SNOOPSW                   22
+#define SNOOPSW                   19
     { "snoop", -5 },
-#define SASLSW                    24
+#define SASLSW                    20
     { "sasl", SASLminc(-4) },
-#define SASLMECHSW                25
+#define SASLMECHSW                21
     { "saslmech", SASLminc(-8) },
-#define PROXYSW                   26
+#define PROXYSW                   22
     { "proxy command", POPminc(-5) },
     { NULL, 0 }
 };

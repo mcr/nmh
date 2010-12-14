@@ -41,19 +41,19 @@ static struct swit switches[] = {
     { "host hostname", POPminc (-4) },
 #define	USERSW                   5
     { "user username", POPminc (-4) },
-#define PORTSW			 8
+#define PORTSW			 6
     { "port name/number", POPminc(-4) },
-#define VERSIONSW               10
+#define VERSIONSW                7
     { "version", 0 },
-#define	HELPSW                  11
+#define	HELPSW                   8
     { "help", 0 },
-#define SNOOPSW                 12
+#define SNOOPSW                  9
     { "snoop", -5 },
-#define SASLSW                  14
+#define SASLSW                  10
     { "sasl", SASLminc(-4) },
-#define SASLMECHSW		15
+#define SASLMECHSW		11
     { "saslmech", SASLminc(-5) },
-#define PROXYSW 		16
+#define PROXYSW 		12
     { "proxy command", POPminc(-5) },
     { NULL, 0 }
 };
