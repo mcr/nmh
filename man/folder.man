@@ -9,7 +9,7 @@ folder, folders \- set/list current folder/message
 .na
 .B folder
 .RI [ +folder ]
-.RI [ msgs ]
+.RI [ msg ]
 .RB [ \-all " | " \-noall ]
 .RB [ \-create " | " \-nocreate ]
 .RB [ \-fast " | " \-nofast ]
@@ -168,10 +168,17 @@ for the current folder (with
 .BR \-norecurse )
 or list all sub-folders under the current folder recursively (with
 .BR \-recurse ).
-In this case, if a
+.PP
+If
 .I msg
-is also supplied, it will become the current message of
-.IR +folder .
+is supplied, together with
+.IR +folder
+or without
+.BR \-all ,
+it will become the current message of
+.IR +folder
+(if it had been supplied)
+or the current folder.
 .PP
 The
 .B \-recurse
