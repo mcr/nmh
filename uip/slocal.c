@@ -1065,7 +1065,11 @@ usr_file (int fd, char *mailbox, int mbx_style)
     }
 
     /* close and unlock file */
-    mbx_close (mailbox, md);
+    if (mbx_close (mailbox, md) == NOTOK) {
+        if (verbose)
+	    adorn ("", "error closing:");
+        return -1;
+    }
 
     if (verbose)
 	verbose_printf (", success.\n");

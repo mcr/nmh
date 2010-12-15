@@ -467,8 +467,9 @@ mbx_size (int md, off_t start, off_t stop)
 int
 mbx_close (char *mailbox, int md)
 {
-    lkclose (md, mailbox);
-    return OK;
+    if (lkclose (md, mailbox) == 0)
+        return OK;
+    return NOTOK;
 }
 
 
