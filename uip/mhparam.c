@@ -148,7 +148,7 @@ main(int argc, char **argv)
 	for (np = m_defs; np; np = np->n_next)
 	    printf("%s: %s\n", np->n_name, np->n_field);
 
-    } if (debug) {
+    } else if (debug) {
 	struct proc *ps;
 
 	/*
