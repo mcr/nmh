@@ -3,7 +3,7 @@
 .\"
 .TH MHPARAM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
-mhparam \- print nmh profile components
+mhparam \- print nmh profile and context components
 .SH SYNOPSIS
 .na
 .B mhparam
@@ -14,7 +14,7 @@ mhparam \- print nmh profile components
 .RB [ \-help ]
 .ad
 .SH DESCRIPTION
-.B Mhparam
+.B mhparam
 writes the value of the specified profile component to the
 standard output separated by newlines.  If the profile component is not
 present, the default value (or nothing if there is no default) is printed.
@@ -62,24 +62,41 @@ rmmproc: rmmproc
 % mhparam \-nocomponent AliasFile rmmproc
 aliases
 rmmproc
+
+% mhparam path nonexistent context
+Path: Mail
+context: context
 .fi
 .RE
 .PP
-.B Mhparam
+.B mhparam
 is also useful in back\-quoted operations:
 .PP
 .RS 5
 .nf
 % fgrep cornell.edu `mhpath +`/`mhparam aliasfile`
 .fi
-.RE
-.PP
+
+.SH "EXIT STATUS"
+.B mhparam
+returns the number of components that were not found.
 
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
+^$HOME/.mh_profile~^The user profile
+^or $MH~^Rather than the standard profile
+^<mh-dir>/context~^The user context
+^or $MHCONTEXT~^Rather than the standard context
+.fi
+
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
+^context:~^To determine the context file
 .fi
 
 .SH "SEE ALSO"
