@@ -14,15 +14,15 @@ mhpath \- print full pathnames of nmh messages and folders
 .RB [ \-help ]
 .ad
 .SH DESCRIPTION
-.B Mhpath
+.B mhpath
 expands and sorts the message list `msgs' and writes the full
 pathnames of the messages to the standard output separated by newlines.
 If no `msgs' are specified,
 .B mhpath
-outputs the folder pathname
+outputs the current mail folder's pathname
 instead.  If the only argument is `+', your
 .B nmh
-\*(lqPath\*(rq is output; this can be useful is shell scripts.
+\*(lqPath\*(rq is output; this can be useful in shell scripts.
 .PP
 Contrasted with other
 .B nmh
@@ -44,7 +44,7 @@ Within a message list, the following designations may refer to messages
 that do not exist: a single numeric message name, the single message name
 \*(lqcur\*(rq, and (obviously) the single message name \*(lqnew\*(rq.
 All other message designations must refer to at least one existing
-message.
+message, if the folder contains messages.
 .IP 3) 4
 An empty folder is not in itself an error.
 .PP
