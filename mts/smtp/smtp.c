@@ -441,12 +441,12 @@ sendmail_init (char *client, char *server, int watch, int verbose,
     if (client == NULL || *client == '\0')
 	client = "localhost";
 
-#ifdef CYRUS_SASL
+#if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
     sasl_inbuffer = malloc(SASL_MAXRECVBUF);
     if (!sasl_inbuffer)
 	return sm_ierror("Unable to allocate %d bytes for read buffer",
 			 SASL_MAXRECVBUF);
-#endif /* CYRUS_SASL */
+#endif /* CYRUS_SASL || TLS_SUPPORT */
 
     if (pipe (pdi) == NOTOK)
 	return sm_ierror ("no pipes");
@@ -1572,6 +1572,7 @@ sm_fgetc(FILE *f)
 	 * encryption working
 	 */
 
+#ifdef CYRUS_SASL
 	if (sasl_complete == 0 || sasl_ssf == 0) {
 	    retbuf = tmpbuf;
 	    retbufsize = cc;
@@ -1585,6 +1586,10 @@ sm_fgetc(FILE *f)
 		return -2;
 	    }
 	}
+#else /* ! CYRUS_SASL */
+	retbuf = tmpbuf;
+	retbufsize = cc;
+#endif /* CYRUS_SASL */
     }
 
     if (retbufsize > SASL_MAXRECVBUF) {
