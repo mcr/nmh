@@ -218,6 +218,8 @@ crawl_callback(char *folder, void *baton)
  * `cur' points to the name of the current folder, `folders' points to the
  * name of a .folder (if NULL, crawl all folders), and `sequences' points to
  * the array of sequences for which to look.
+ *
+ * An empty list is returned as first=last=NULL.
  */
 static void
 check_folders(struct node **first, struct node **last,
@@ -229,7 +231,7 @@ check_folders(struct node **first, struct node **last,
     char *line;
     size_t len;
 
-    *first = *cur_node = NULL;
+    *first = *last = *cur_node = NULL;
     *maxlen = 0;
 
     b.first = first;
