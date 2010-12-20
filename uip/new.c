@@ -308,7 +308,10 @@ doit(char *cur, char *folders, char *sequences[])
 		  folders, sequences);
 
     if (run_mode == FNEXT || run_mode == FPREV) {
-	if (first->n_next == NULL) {
+	if (first == NULL) {
+	    /* No folders at all... */
+	    return NULL;
+	} else if (first->n_next == NULL) {
 	    /* We have only one node; any desired messages in it? */
 	    if (first->n_field == NULL) {
 		return NULL;
