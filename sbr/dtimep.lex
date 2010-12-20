@@ -17,7 +17,7 @@
 #define yywrap() 1
 #define YY_SKIP_YYWRAP
 
-#define YY_NO_UNPUT
+#define YY_NO_INPUT
 
   /* This is the tricky thing that makes this function cool.  We
    *  replace the traditional int yylex(void) declaration with our
@@ -398,3 +398,16 @@ nl      [ \t\n()]
 {nl}("hdt"|"HDT")		    { INIT(); SETDST(); SETZONE(-1000);
                                       yyterminate(); }
 .|\n
+
+%%
+/* This is a portable way to squash a warning about the yyunput()
+ * function being static but never used. It costs us a tiny amount
+ * of extra code in the binary but the other options are:
+ *  "%option nounput" which is flex-specific
+ *  makefile hackery just to compile dtimep.c with different flags
+ */
+void dtimep_yyunput(int c)
+{
+    unput(c);
+}
+
