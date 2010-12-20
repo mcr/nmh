@@ -20,39 +20,30 @@ int
 folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
                int unseen, int preserve, int deleting, char *from_dir)
 {
-    int infd, outfd, linkerr, first_time, msgnum;
+    int infd, outfd, linkerr, msgnum;
     char *nmsg, newmsg[BUFSIZ];
     char oldmsg[BUFSIZ];
     struct msgs *mp;
     struct stat st1, st2;
 
-    first_time = 1;	/* this is first attempt */
     mp = *mpp;
 
+    /* should we preserve the numbering of the message? */
+    if (preserve && (msgnum = m_atoi (msgfile)) > 0) {
+	;
+    } else if (mp->nummsg == 0) {
+	/* check if we are adding to empty folder */
+	msgnum = 1;
+    } else {
+	/* else use highest message number + 1 */
+	msgnum = mp->hghmsg + 1;
+    }
+     
     /*
      * We might need to make several attempts
      * in order to add the message to the folder.
      */
-    for (;;) {
-	/*
-	 * Get the message number we will attempt to add.
-	 */
-	if (first_time) {
-	    /* should we preserve the numbering of the message? */
-	    if (preserve && (msgnum = m_atoi (msgfile)) > 0) {
-		;
-	    } else if (mp->nummsg == 0) {
-		/* check if we are adding to empty folder */
-		msgnum = 1;
-	    } else {
-		/* else use highest message number + 1 */
-		msgnum = mp->hghmsg + 1;
-	    }
-	    first_time = 0;
-	} else {
-	    /* another attempt, so try next higher message number */
-	    msgnum++;
-	}
+    for (;; msgnum++) {
 
 	/*
 	 * See if we need more space.  If we need space at the
