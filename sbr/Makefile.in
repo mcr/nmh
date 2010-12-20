@@ -118,7 +118,7 @@ libmh.a: $(OBJS)
 	if test x$(LIBTOOL) != x -a x$(GNU_LIBTOOL) = x ; then \
 	  $(LIBTOOL) -static -c -o libmh.a $(OBJS) ; \
 	else \
-	  ar cr libmh.a `$(LORDER) $(OBJS) | $(TSORT)`  ; \
+	  ar cr libmh.a `$(LORDER) $(OBJS) | $(TSORT) 2>/dev/null`  ; \
 	  $(RANLIB) libmh.a  ; \
 	fi
 

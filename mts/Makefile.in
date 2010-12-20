@@ -51,7 +51,7 @@ libmts.a: $(OBJS)
 	if test x$(LIBTOOL) != x -a x$(GNU_LIBTOOL) = x ; then \
 	  $(LIBTOOL) -static -c $(OBJS) -o $@  ; \
 	else \
-	  ar cr $@ `$(LORDER) $(OBJS) | $(TSORT)`  ; \
+	  ar cr $@ `$(LORDER) $(OBJS) | $(TSORT) 2>/dev/null`  ; \
 	  $(RANLIB) $@  ; \
 	fi 
 
