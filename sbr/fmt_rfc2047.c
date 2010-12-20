@@ -236,6 +236,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	    } else {
 		/* base64 */
 		int c1, c2, c3, c4;
+		c1 = c2 = c3 = c4 = -1;
 
 		pp = startofmime;
 		while (pp < endofmime) {
