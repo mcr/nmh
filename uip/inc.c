@@ -198,8 +198,9 @@ main (int argc, char **argv)
 {
     int chgflag = 1, trnflag = 1;
     int noisy = 1, width = 0;
-    int i, hghnum = 0, msgnum = 0;
+    int hghnum = 0, msgnum = 0;
     int sasl = 0;
+    int incerr = 0; /* <0 if inc hits an error which means it should not truncate mailspool */
     char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
     char *host = NULL, *port = NULL, *user = NULL, *proxy = NULL;
@@ -212,7 +213,7 @@ main (int argc, char **argv)
     char *maildir_copy = NULL;	/* copy of mail directory because the static gets overwritten */
 
 #ifdef POP
-    int nmsgs, nbytes, p = 0;
+    int nmsgs, nbytes;
     char *pass = NULL;
     char *MAILHOST_env_variable;
 #endif
@@ -545,6 +546,7 @@ go_to_it:
     DROPGROUPPRIVS();
 
     if (audfile) {
+	int i;
 	if ((i = stat (audfile, &st)) == NOTOK)
 	    advise (NULL, "Creating Receive-Audit: %s", audfile);
 	if ((aud = fopen (audfile, "a")) == NULL)
@@ -565,6 +567,7 @@ go_to_it:
 
 #ifdef MHE
     if (context_find ("mhe")) {
+	int i;
 	cp = concat (maildir, "/++", NULL);
 	i = stat (cp, &st);
 	if ((mhe = fopen (cp, "a")) == NULL)
@@ -589,6 +592,7 @@ go_to_it:
      * Get the mail from a POP server
      */
     if (inc_type == INC_POP) {
+	int i;
 	if (packfile) {
 	    packfile = path (packfile, TFILE);
 	    if (stat (packfile, &st) == NOTOK) {
@@ -648,7 +652,7 @@ go_to_it:
 		    adios (cp, "write error on");
 		fseek (pf, 0L, SEEK_SET);
 	    }
-	    switch (p = scan (pf, msgnum, 0, nfs, width,
+	    switch (incerr = scan (pf, msgnum, 0, nfs, width,
 			      packfile ? 0 : msgnum == mp->hghmsg + 1 && chgflag,
 			      1, NULL, stop - start, noisy)) {
 	    case SCNEOF: 
@@ -724,7 +728,7 @@ go_to_it:
     if (inc_type == INC_FILE) {
 	m_unknown (in);		/* the MAGIC invocation... */
 	hghnum = msgnum = mp->hghmsg;
-	for (i = 0;;) {
+	for (;;) {
 	    /*
 	     * Check if we need to allocate more space for message status.
 	     * If so, then add space for an additional 100 messages.
@@ -732,7 +736,7 @@ go_to_it:
 	    if (msgnum >= mp->hghoff
 		&& !(mp = folder_realloc (mp, mp->lowoff, mp->hghoff + 100))) {
 		advise (NULL, "unable to allocate folder storage");
-		i = NOTOK;
+		incerr = NOTOK;
 		break;
 	    }
 
@@ -750,7 +754,7 @@ go_to_it:
 	    newmsg = folder_addmsg(mp, tmpfilenam);
 #endif
 	    /* create scanline for new message */
-	    switch (i = scan (in, msgnum + 1, msgnum + 1, nfs, width,
+	    switch (incerr = scan (in, msgnum + 1, msgnum + 1, nfs, width,
 			      msgnum == hghnum && chgflag, 1, NULL, 0L, noisy)) {
 	    case SCNFAT:
 	    case SCNEOF: 
@@ -767,7 +771,7 @@ go_to_it:
 		break;
 
 	    default: 
-		advise (NULL, "BUG in %s, scan() botch (%d)", invo_name, i);
+		advise (NULL, "BUG in %s, scan() botch (%d)", invo_name, incerr);
 		break;
 
 	    case SCNMSG:
@@ -799,15 +803,14 @@ go_to_it:
 		mp->msgflags |= SEQMOD;
 		continue;
 	    }
+	    /* If we get here there was some sort of error from scan(),
+	     * so stop processing anything more from the spool.
+	     */
 	    break;
 	}
     }
 
-#ifdef POP
-    if (p < 0) {		/* error */
-#else
-    if (i < 0) {		/* error */
-#endif
+    if (incerr < 0) {		/* error */
 	if (locked) {
             GETGROUPPRIVS();      /* Be sure we can unlock mail file */
             (void) lkfclose (in, newmail); in = NULL;
@@ -842,8 +845,9 @@ go_to_it:
 	    if (stat (newmail, &st) != NOTOK && s1.st_mtime != st.st_mtime)
 		advise (NULL, "new messages have arrived!\007");
 	    else {
-		if ((i = creat (newmail, 0600)) != NOTOK)
-		    close (i);
+		int newfd;
+		if ((newfd = creat (newmail, 0600)) != NOTOK)
+		    close (newfd);
 		else
 		    admonish (newmail, "error zero'ing");
 		unlink(map_name(newmail));
