@@ -78,7 +78,9 @@ sortm:		The refile hook is executed for each message moved.  Note that
 		a magic temporary message number of 2147483647 is used to hold
 		messages as they are being shuffled.
 
+rcvstore:	The add hook is executed when messages are stored.
 
+mhstore:	The add hook is executed when messages are stored.
 
 Did I Do This Correctly?
 ~~~~~~~~~~~~~~~~~~~~~~~~
