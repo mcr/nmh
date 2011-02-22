@@ -25,8 +25,8 @@ of the users (and the configure script) it is an output file from the point of
 view of the developers (and the autoconf script).
 
 Note that the automatically generated autoconf files (such as config.h.in,
-stamp-h.in, and configure), are NOT kept in CVS.  Thus, when you check out
-a CVS tree, you need to run the autogen.sh script before you can build
+stamp-h.in, and configure), are NOT kept in git.  Thus, when you check out
+a git tree, you need to run the autogen.sh script before you can build
 anything:
 
 	% ./autogen.sh
@@ -117,6 +117,18 @@ zotnet/tws/ (deprecated, now in sbr/)
     currently nothing in here is compiled.  There are new, more portable
     versions of the key files in h/ and sbr/, and this directory will soon go
     away completely.
+
+
+---
+git
+---
+
+As of December 2010, nmh has switched to using git for revision control
+instead of CVS.  While the topic of git is beyond the scope of this FAQ,
+to get started with git & nmh, you can run the following command to checkout
+the nmh repository:
+
+    % git clone git://git.savannah.nongnu.org/nmh.git
 
 
 -------------------------------------------------------
