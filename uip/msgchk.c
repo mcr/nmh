@@ -369,7 +369,7 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 	ruserpass (host, &user, &pass);
 
     /* open the POP connection */
-    if (pop_init (host, user, port, pass, proxy, snoop, sasl, saslmech) == NOTOK
+    if (pop_init (host, port, user, pass, proxy, snoop, sasl, saslmech) == NOTOK
 	    || pop_stat (&nmsgs, &nbytes) == NOTOK	/* check for messages  */
 	    || pop_quit () == NOTOK) {			/* quit POP connection */
 	advise (NULL, "%s", response);
