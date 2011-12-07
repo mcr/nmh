@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <h/mts.h>
 #include <pwd.h>
+#include <sys/socket.h>
 #include <netdb.h>
 
 #ifdef HAVE_SYS_UTSNAME_H

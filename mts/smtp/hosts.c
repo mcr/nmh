@@ -16,6 +16,7 @@
 
 #include <h/mh.h>
 #include <h/mts.h>
+#include <sys/socket.h>
 #include <netdb.h>
 
 static struct host {

@@ -47,6 +47,14 @@ incorporates mail from the user's incoming mail drop into
 an
 .B nmh
 folder.
+If the mail drop is a file, it can be in
+.B mbox
+or
+.B MMDF
+format.
+If the mail drop is a directory it will considered to be a
+.B Maildir
+format mail drop.
 .PP
 You may specify which folder to use with
 .IR +folder .

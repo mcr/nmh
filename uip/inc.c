@@ -112,21 +112,28 @@ static struct swit switches[] = {
 #define INC_POP   1
 
 static int inc_type;
+static struct Maildir_entry {
+	char *filename;
+	time_t mtime;
+} *Maildir = NULL;
+static int num_maildir_entries = 0;
 static int snoop = 0;
 
 #ifdef POP
 extern char response[];
 
-static char *packfile = NULL;
 static int size;
 static long pos;
-static long start;
-static long stop;
 
 static int mbx_style = MMDF_FORMAT;
 static int pd = NOTOK;
-static FILE *pf = NULL;
 #endif /* POP */
+
+static long start;
+static long stop;
+
+static char *packfile = NULL;
+static FILE *pf = NULL;
 
 /* This is an attempt to simplify things by putting all the
  * privilege ops into macros.
@@ -192,6 +199,17 @@ static int pop_pack(char *);
 static int map_count(void);
 #endif
 
+int
+maildir_srt(const void *va, const void *vb)
+{
+    const struct Maildir_entry *a = va, *b = vb;
+    if (a->mtime > b->mtime)
+      return 1;
+    else if (a->mtime < b->mtime)
+      return -1;
+    else
+      return 0;
+}
 
 int
 main (int argc, char **argv)
@@ -476,6 +494,55 @@ main (int argc, char **argv)
 	}
 	if (stat (newmail, &s1) == NOTOK || s1.st_size == 0)
 	    adios (NULL, "no mail to incorporate");
+ 	if (s1.st_mode & S_IFDIR) {
+ 	    DIR *md;
+ 	    struct dirent *de;
+ 	    struct stat ms;
+ 	    int i;
+ 	    i = 0;
+ 	    cp = concat (newmail, "/new", NULL);
+ 	    if ((md = opendir(cp)) == NULL)
+ 		adios (NULL, "unable to open %s", cp);
+ 	    while ((de = readdir (md)) != NULL) {
+ 		if (de->d_name[0] == '.')
+ 		    continue;
+ 		if (i >= num_maildir_entries) {
+ 		    if ((Maildir = realloc(Maildir, sizeof(*Maildir) * (2*i+16))) == NULL)
+ 			adios(NULL, "not enough memory for %d messages", 2*i+16);
+ 		    num_maildir_entries = 2*i+16;
+ 		}
+ 		Maildir[i].filename = concat (cp, "/", de->d_name, NULL);
+ 		if (stat(Maildir[i].filename, &ms) != 0)
+ 	           adios (Maildir[i].filename, "couldn't get delivery time");
+ 		Maildir[i].mtime = ms.st_mtime;
+ 		i++;
+ 	    }
+ 	    free (cp);
+ 	    closedir (md);
+ 	    cp = concat (newmail, "/cur", NULL);
+ 	    if ((md = opendir(cp)) == NULL)
+ 		adios (NULL, "unable to open %s", cp);
+ 	    while ((de = readdir (md)) != NULL) {
+ 		if (de->d_name[0] == '.')
+ 		    continue;
+ 		if (i >= num_maildir_entries) {
+ 		    if ((Maildir = realloc(Maildir, sizeof(*Maildir) * (2*i+16))) == NULL)
+ 			adios(NULL, "not enough memory for %d messages", 2*i+16);
+ 		    num_maildir_entries = 2*i+16;
+ 		}
+ 		Maildir[i].filename = concat (cp, "/", de->d_name, NULL);
+ 		if (stat(Maildir[i].filename, &ms) != 0)
+ 	           adios (Maildir[i].filename, "couldn't get delivery time");
+ 		Maildir[i].mtime = ms.st_mtime;
+ 		i++;
+ 	    }
+ 	    free (cp);
+ 	    closedir (md);
+ 	    if (i == 0)
+ 	        adios (NULL, "no mail to incorporate");
+ 	    num_maildir_entries = i;
+ 	    qsort (Maildir, num_maildir_entries, sizeof(*Maildir), maildir_srt);
+ 	}
 
 	if ((cp = strdup(newmail)) == (char *)0)
 	    adios (NULL, "error allocating memory to copy newmail");
@@ -519,7 +586,7 @@ main (int argc, char **argv)
 go_to_it:
 #endif /* POP */
 
-    if (inc_type == INC_FILE) {
+    if (inc_type == INC_FILE && Maildir == NULL) {
 	if (access (newmail, W_OK) != NOTOK) {
 	    locked++;
 	    if (trnflag) {
@@ -725,7 +792,7 @@ go_to_it:
     /*
      * Get the mail from file (usually mail spool)
      */
-    if (inc_type == INC_FILE) {
+    if (inc_type == INC_FILE && Maildir == NULL) {
 	m_unknown (in);		/* the MAGIC invocation... */
 	hghnum = msgnum = mp->hghmsg;
 	for (;;) {
@@ -808,6 +875,110 @@ go_to_it:
 	     */
 	    break;
 	}
+    } else { /* Maildir inbox to process */
+	char *sp;
+	FILE *sf;
+	int i;
+
+	hghnum = msgnum = mp->hghmsg;
+	for (i = 0; i < num_maildir_entries; i++) {
+	    msgnum++;
+	    /*
+	     * Check if we need to allocate more space for message status.
+	     * If so, then add space for an additional 100 messages.
+	     */
+	    if (msgnum >= mp->hghoff
+		&& !(mp = folder_realloc (mp, mp->lowoff, mp->hghoff + 100))) {
+		advise (NULL, "unable to allocate folder storage");
+		incerr = NOTOK;
+		break;
+	    }
+
+	    sp = Maildir[i].filename;
+	    cp = getcpy (m_name (msgnum));
+	    pf = NULL;
+	    if (!trnflag || link(sp, cp) == -1) {
+		static char buf[65536];
+		size_t nrd;
+
+		if ((sf = fopen (sp, "r")) == NULL)
+	    	    adios (sp, "unable to read for copy");
+		if ((pf = fopen (cp, "w+")) == NULL)
+		    adios (cp, "unable to write for copy");
+		while ((nrd = fread(buf, 1, sizeof(buf), sf)) > 0)
+		    if (fwrite(buf, 1, nrd, pf) != nrd)
+			break;
+		if (ferror(sf) || fflush(pf) || ferror(pf)) {
+			int e = errno;
+			fclose(pf); fclose(sf); unlink(cp);
+			errno = e;
+			adios(cp, "copy error %s -> %s", sp, cp);
+		}
+		fclose (sf);
+		sf = NULL;
+	    } 
+	    if (pf == NULL && (pf = fopen (cp, "r")) == NULL)
+	        adios (cp, "not available");
+	    chmod (cp, m_gmprot ());
+
+	    fseek (pf, 0L, SEEK_SET);
+	    switch (incerr = scan (pf, msgnum, 0, nfs, width,
+			      msgnum == mp->hghmsg + 1 && chgflag,
+			      1, NULL, stop - start, noisy)) {
+	    case SCNEOF: 
+		printf ("%*d  empty\n", DMAXFOLDER, msgnum);
+		break;
+
+	    case SCNFAT:
+		trnflag = 0;
+		noisy++;
+		/* advise (cp, "unable to read"); already advised */
+		/* fall thru */
+
+	    case SCNERR:
+	    case SCNNUM: 
+		break;
+
+	    case SCNMSG: 
+	    case SCNENC:
+	    default: 
+		/*
+		 *  Run the external program hook on the message.
+		 */
+
+		(void)snprintf(b, sizeof (b), "%s/%d", maildir_copy, msgnum + 1);
+		(void)ext_hook("add-hook", b, (char *)0);
+
+		if (aud)
+		    fputs (scanl, aud);
+# ifdef MHE
+		if (mhe)
+		    fputs (scanl, mhe);
+# endif /* MHE */
+		if (noisy)
+		    fflush (stdout);
+		if (!packfile) {
+		    clear_msg_flags (mp, msgnum);
+		    set_exists (mp, msgnum);
+		    set_unseen (mp, msgnum);
+		    mp->msgflags |= SEQMOD;
+		}
+		break;
+	    }
+	    if (ferror(pf) || fclose (pf)) {
+		int e = errno;
+		unlink (cp);
+		errno = e;
+		adios (cp, "write error on");
+	    }
+	    pf = NULL;
+	    free (cp);
+
+	    if (trnflag && unlink (sp) == NOTOK)
+		adios (sp, "couldn't unlink");
+	    free (sp); /* Free Maildir[i]->filename */
+	}
+	free (Maildir); /* From now on Maildir is just a flag - don't dref! */
     }
 
     if (incerr < 0) {		/* error */
@@ -840,7 +1011,7 @@ go_to_it:
     /*
      * truncate file we are incorporating from
      */
-    if (inc_type == INC_FILE) {
+    if (inc_type == INC_FILE && Maildir == NULL) {
 	if (trnflag) {
 	    if (stat (newmail, &st) != NOTOK && s1.st_mtime != st.st_mtime)
 		advise (NULL, "new messages have arrived!\007");
@@ -874,7 +1045,7 @@ go_to_it:
     /*
      * unlock the mail spool
      */
-    if (inc_type == INC_FILE) {
+    if (inc_type == INC_FILE && Maildir == NULL) {
 	if (locked) {
            GETGROUPPRIVS();        /* Be sure we can unlock mail file */
            (void) lkfclose (in, newmail); in = NULL;
