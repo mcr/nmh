@@ -75,6 +75,7 @@
 /uip/viamail
 /uip/whatnow
 /uip/whom
+/nmh-*.tar.gz
 *.o
 *.1
 *.5
