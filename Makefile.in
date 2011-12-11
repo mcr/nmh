@@ -111,6 +111,7 @@ clean-local: mostlyclean-local
 
 distclean-local: clean-local
 	rm -f Makefile config.h config.status config.log config.cache stamp-h distname
+	$(RM) -r RPM
 
 realclean-local: distclean-local
 
@@ -195,3 +196,12 @@ nmhrelease:
 	cd $(ftpdir) && ln -s $(tarfile) nmh.tar.gz
 	cd $(ftpdir) && md5sum *.gz > MD5SUM
 
+# Create binary and source RPMs.  Be care if using any existing build
+# (make) products:  it's usually a good idea to run make realclean first.
+# _topdir puts build area in the RPM/ directory below the current one.
+# _tmppath uses the specified local TMP.
+rpm: all nmhdist
+	@rpmbuild --define '_topdir $(shell pwd)/RPM' \
+          --define '_tmppath %{_topdir}/TMP' \
+          --define 'srcdir $(shell pwd)' \
+          -ba nmh.spec
