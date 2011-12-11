@@ -96,7 +96,6 @@ main (int argc, char **argv)
     int datesw = 1, notifysw = NT_ALL;
     int status = 0, sasl = 0;
     int snoop = 0, vecp = 0;
-    uid_t uid;
     char *cp, *host = NULL, *port = NULL, *user, *proxy = NULL; 
     char buf[BUFSIZ], *saslmech = NULL; 
     char **argp, **arguments, *vec[MAXVEC];
@@ -116,7 +115,6 @@ main (int argc, char **argv)
     context_read();
 
     mts_init (invo_name);
-    uid = getuid ();
     user = getusername();
 
     arguments = getarguments (invo_name, argc, argv, 1);

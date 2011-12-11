@@ -45,7 +45,6 @@ static void litputc(char);
 int
 main (int argc, char **argv)
 {
-    int ncomps;
     char *cp, *form = NULL, *format = NULL;
     char buf[BUFSIZ], *nfs, **argp, **arguments;
     struct format *fmt;
@@ -101,7 +100,7 @@ main (int argc, char **argv)
      * Get new format string.  Must be before chdir().
      */
     nfs = new_fs (form, format, FORMAT);
-    ncomps = fmt_compile(nfs, &fmt);
+    (void) fmt_compile(nfs, &fmt);
 
     fmt_dump(fmt);
     done(0);

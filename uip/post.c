@@ -1309,16 +1309,13 @@ make_bcc_file (int dashstuff)
 static int
 find_prefix (void)
 {
-    int	len, result;
+    int	result = OK;
     unsigned char buffer[BUFSIZ];
     FILE *in;
 
     if ((in = fopen (tmpfil, "r")) == NULL)
 	adios (tmpfil, "unable to re-open");
 
-    len = strlen (prefix);
-
-    result = OK;
     while (fgets (buffer, sizeof(buffer) - 1, in))
 	if (buffer[0] == '-' && buffer[1] == '-') {
 	    unsigned char *cp;
