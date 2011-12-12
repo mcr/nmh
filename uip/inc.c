@@ -875,7 +875,7 @@ go_to_it:
 	     */
 	    break;
 	}
-    } else { /* Maildir inbox to process */
+    } else if (inc_type == INC_FILE) { /* Maildir inbox to process */
 	char *sp;
 	FILE *sf;
 	int i;
