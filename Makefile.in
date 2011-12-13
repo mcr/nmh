@@ -204,10 +204,10 @@ nmhrelease:
 # tarfile and version are as specified in this file.  rpmbuild does
 #   not allow Version to contain any dashes.
 rpm: all nmhdist
-	@rpmbuild --define '_topdir $(shell pwd)/RPM' \
+	@rpmbuild --define '_topdir '`pwd`'/RPM' \
           --define '_tmppath %{_topdir}/TMP' \
-          --define 'srcdir $(shell pwd)' \
+          --define 'srcdir '`pwd` \
           --define 'tarfile $(tarfile)' \
-          --define 'version $(shell echo $(VERSION) | sed "s/-/_/g")' \
+          --define 'version '`echo $(VERSION) | sed "s/-/_/g"` \
           -ba nmh.spec
 	@$(RM) $(tarfile)
