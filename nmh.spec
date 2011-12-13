@@ -1,17 +1,24 @@
-# Assumes that rpmbuild was invoked main nmh directory using "make rpm".
-# "make rpm" uses an RPM directory below the current directory.
+# Assumes that rpmbuild was invoked in main nmh directory using "make
+# rpm".  Therefore, configure must already have been run.  "make rpm"
+# uses an RPM directory below the current directory.
+#
+# This file is intended to be zero maintenance, that's why it relies
+# on the Makefile (and specifically on the nmhdist target).  If you
+# really want to start with rpmbuild from a clean distribution, look
+# at the rpm target in the main Makefile.in to see what it does.
+#
 # Note that Version cannot contain any dashes.
 
 Name:        nmh
-Version:     1.4.dev
-Release:     1%{?dist}
+Version:     %version
+Release:     0%{?dist}
 Summary:     A capable mail handling system with a command line interface.
-
 Group:       Applications/Internet
 License:     BSD
 URL:         http://savannah.nongnu.org/projects/nmh
-Source0:     nmh-1.4-dev.tar.gz
-BuildRoot:   %{_tmppath}/%{name}-%{version}-%{release}-build
+Source:      %tarfile
+# This should already be defined in /usr/lib/rpm/macros:
+# BuildRoot:   %{_buildrootdir}/%{name}-%{version}-%{release}.%{_arch}
 
 %description
 Nmh is an email system based on the MH email system and is intended to
@@ -25,7 +32,8 @@ email user agent, you'll want to also install exmh to provide a user
 interface for it--nmh only has a command line interface.
 
 %prep
-cp -p %{srcdir}/nmh-1.4-dev.tar.gz $RPM_SOURCE_DIR
+#### The tarfile is only needed for the source rpm.
+cp -p %srcdir/%tarfile $RPM_SOURCE_DIR
 
 
 %build
@@ -33,32 +41,24 @@ cp -p %{srcdir}/nmh-1.4-dev.tar.gz $RPM_SOURCE_DIR
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-#### Assumes that configure was run with --prefix=/usr, at least.
-#### The directory placements need to be cleaned up.
-(cd %{srcdir}  &&  \
- make install DESTDIR=$RPM_BUILD_ROOT SETGID_MAIL=)
-
-#### Not sure why .gz needs to be appended to man file names here.
-#### But without it, the man files don't show the .gz extension:
-find $RPM_BUILD_ROOT ! -type d -print | sed "s#^$RPM_BUILD_ROOT##g" > files
+(cd %srcdir  &&  make install DESTDIR=$RPM_BUILD_ROOT SETGID_MAIL=)
+find $RPM_BUILD_ROOT ! -type d -print | sed "s#^$RPM_BUILD_ROOT##g" > nmh_files
 
 #### Should do the following with an install target in docs/Makefile.
-#### Note that these are excluded from files above because they're
-#### added with doc's in the %files section below.
+#### These are excluded from nmh_files above because they're added
+#### with doc's in the %files section below.
 mkdir -p docs
-cp -p %{srcdir}/VERSION %{srcdir}/COPYRIGHT .
+cp -p %srcdir/VERSION %srcdir/COPYRIGHT .
 for i in COMPLETION-* DIFFERENCES FAQ MAIL.FILTERING README* TODO; do
-  cp -p %{srcdir}/docs/$i docs
+  cp -p %srcdir/docs/$i docs
 done
 
 
 %clean
-rm -rf files $RPM_BUILD_ROOT docs COPYRIGHT VERSION
+rm -rf $RPM_BUILD_ROOT $RPM_SOURCE_DIR/%tarfile nmh_files docs COPYRIGHT VERSION
 
 
-%files -f files
+%files -f nmh_files
 %defattr(-,root,root,-)
-%doc COPYRIGHT VERSION
 %doc docs/COMPLETION-* docs/DIFFERENCES docs/FAQ docs/MAIL.FILTERING
-%doc docs/README* docs/TODO
+%doc docs/README* docs/TODO COPYRIGHT VERSION
