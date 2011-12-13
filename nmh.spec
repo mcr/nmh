@@ -40,25 +40,18 @@ cp -p %srcdir/%tarfile $RPM_SOURCE_DIR
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT doc
 (cd %srcdir  &&  make install DESTDIR=$RPM_BUILD_ROOT SETGID_MAIL=)
-find $RPM_BUILD_ROOT ! -type d -print | sed "s#^$RPM_BUILD_ROOT##g" > nmh_files
-
-#### Should do the following with an install target in docs/Makefile.
-#### These are excluded from nmh_files above because they're added
-#### with doc's in the %files section below.
-mkdir -p docs
-cp -p %srcdir/VERSION %srcdir/COPYRIGHT .
-for i in COMPLETION-* DIFFERENCES FAQ MAIL.FILTERING README* TODO; do
-  cp -p %srcdir/docs/$i docs
-done
+#### Exclude docs from nmh_files because its files are added with the
+#### %doc directive in the %files section below.
+mv `find $RPM_BUILD_ROOT -type d -name doc` .
+find $RPM_BUILD_ROOT ! -type d -print | sed "s#^$RPM_BUILD_ROOT##" > nmh_files
 
 
 %clean
-rm -rf $RPM_BUILD_ROOT $RPM_SOURCE_DIR/%tarfile nmh_files docs COPYRIGHT VERSION
+rm -rf $RPM_BUILD_ROOT $RPM_SOURCE_DIR/%tarfile nmh_files doc
 
 
 %files -f nmh_files
 %defattr(-,root,root,-)
-%doc docs/COMPLETION-* docs/DIFFERENCES docs/FAQ docs/MAIL.FILTERING
-%doc docs/README* docs/TODO COPYRIGHT VERSION
+%doc doc/*

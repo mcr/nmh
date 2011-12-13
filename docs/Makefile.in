@@ -4,15 +4,20 @@
 
 SHELL = /bin/sh
 
+top_srcdir = @top_srcdir@
 srcdir = @srcdir@
+docdir = @docdir@
 VPATH  = @srcdir@
 
-# header files included in distribution
-FILES = COMPLETION-BASH COMPLETION-TCSH COMPLETION-ZSH               \
-        ChangeLog_MH-3_to_MH-6.6 ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
-        DIFFERENCES FAQ MAIL.FILTERING MAILING-LISTS README.about    \
-        README-ATTACHMENTS README-HOOKS README.SASL                  \
-        README.developers README.manpages TODO
+# files included in distribution
+TOPDIR_FILES_TO_INSTALL = COPYRIGHT VERSION
+FILES_TO_INSTALL = COMPLETION-BASH COMPLETION-TCSH COMPLETION-ZSH \
+                   DIFFERENCES FAQ MAIL.FILTERING MAILING-LISTS   \
+                   README-ATTACHMENTS README-HOOKS README.about   \
+                   README.SASL README.developers README.manpages  \
+                   TODO
+FILES = $(FILES_TO_INSTALL) \
+        ChangeLog_MH-3_to_MH-6.6 ChangeLog_MH-6.7.0_to_MH-6.8.4.html
 
 # auxiliary files
 AUX = Makefile.in
@@ -20,13 +25,26 @@ AUX = Makefile.in
 # all files in this directory included in the distribution
 DIST = $(FILES) $(AUX)
 
+INSTALL         = @INSTALL@
+INSTALL_DATA    = @INSTALL_DATA@
+
 # ========== DEPENDENCIES FOR BUILDING AND INSTALLING ==========
 
 all:
 
-install:
+install: all
+	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(docdir)
+	for file in $(TOPDIR_FILES_TO_INSTALL); do \
+	  $(INSTALL_DATA) $(top_srcdir)/$$file $(DESTDIR)$(docdir); \
+	done
+	for file in $(FILES_TO_INSTALL); do \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(docdir); \
+	done
 
 uninstall:
+	for file in $(TOPDIR_FILES_TO_INSTALL) $(FILES_TO_INSTALL); do \
+	  $(RM) $(DESTDIR)$(docdir)/$$file; \
+	done
 
 lint:
 
@@ -50,11 +68,10 @@ subdir = docs
 
 Makefile: Makefile.in ../config.status
 	cd .. && ./config.status $(subdir)/$@
- 
+
 distdir = ../`cat ../distname`/$(subdir)
-nmhdist: 
+nmhdist:
 	@echo "Copying distribution files in $(subdir)"
 	@for file in $(DIST); do \
 	  cp -p $(srcdir)/$$file $(distdir); \
 	done
-
