@@ -4,10 +4,13 @@
 #
 # This file is intended to be zero maintenance, that's why it relies
 # on the Makefile (and specifically on the nmhdist target).  If you
-# really want to start with rpmbuild from a clean distribution, look
-# at the rpm target in the main Makefile.in to see what it does.
+# really want to start with rpmbuild from a clean distribution, you'll
+# need to first run configure, make, and make nmhdist.
 #
 # Note that Version cannot contain any dashes.
+#
+# The description, summary, and a few other tags were taken from the
+# nmh.spec used to build the Fedora 15 nmh rpm.
 
 Name:        nmh
 Version:     %version
@@ -30,6 +33,7 @@ intersperse nmh commands with other shell commands or write custom
 scripts which utilize nmh commands.  If you want to use nmh as a true
 email user agent, you'll want to also install exmh to provide a user
 interface for it--nmh only has a command line interface.
+
 
 %prep
 #### The tarfile is only needed for the source rpm.
