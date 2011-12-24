@@ -1,6 +1,5 @@
 # Assumes that rpmbuild was invoked in main nmh directory using "make
-# rpm".  Therefore, configure must already have been run.  "make rpm"
-# uses an RPM directory below the current directory.
+# rpm".  Therefore, configure must already have been run.
 #
 # This file is intended to be zero maintenance, that's why it relies
 # on the Makefile (and specifically on the nmhdist target).  If you
@@ -53,7 +52,7 @@ find $RPM_BUILD_ROOT ! -type d -print | sed "s#^$RPM_BUILD_ROOT##" > nmh_files
 
 
 %clean
-rm -rf $RPM_BUILD_ROOT $RPM_SOURCE_DIR/%tarfile nmh_files doc
+rm -rf $RPM_BUILD_ROOT doc $RPM_SOURCE_DIR/%tarfile nmh_files
 
 
 %files -f nmh_files

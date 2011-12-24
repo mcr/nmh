@@ -659,6 +659,18 @@ else
   AC_SUBST(NDBM_LIBS)
 fi
 
+dnl ------------------
+dnl Set RPM build root
+dnl ------------------
+dnl nmhrpm is used in the final summary, see below.  The default value is
+dnl reported there as ./RPM, consistent with the reporting of the default
+dnl source code location as ., but its absolute path is used in the Makefile.
+AC_ARG_WITH(rpmdir,
+  AS_HELP_STRING([--with-rpmdir=RPMDIR], [RPM build directory @<:@RPM@:>@]))
+  AS_IF([test x"$with_rpmdir" = x], [rpmdir='$(abs_srcdir)/RPM'; nmhrpm=./RPM],
+          [rpmdir="$with_rpmdir"; eval "nmhrpm=${rpmdir}"])
+AC_SUBST(rpmdir)
+
 
 dnl --------------------
 dnl CHECK FOR CYRUS-SASL
@@ -978,6 +990,7 @@ eval "nmhbin=${bindir}";         eval "nmhbin=${nmhbin}"
 eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf=${nmhsysconf}"
 eval "nmhlib=${libdir}";         eval "nmhlib=${nmhlib}"
 eval "nmhman=${mandir}";         eval "nmhman=${nmhman}"
+eval "nmhrpm=${nmhrpm}";
 
 pop_kinds=no
 if test x"$enable_pop" = x"yes"; then
@@ -1004,6 +1017,7 @@ binary install path        : ${nmhbin}
 library install path       : ${nmhlib}
 config files install path  : ${nmhsysconf}
 man page install path      : ${nmhman}
+RPM build root             : ${nmhrpm}
 backup prefix              : ${backup_prefix}
 transport system           : ${MTS}
 file locking type          : ${LOCKTYPE}

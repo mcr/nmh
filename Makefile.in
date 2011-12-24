@@ -9,6 +9,7 @@ SHELL = /bin/sh
 @SET_MAKE@
 
 srcdir = @srcdir@
+abs_srcdir = @abs_srcdir@
 VPATH  = @srcdir@
 
 # ========== USER CONFIGURATION SECTION ==========
@@ -31,6 +32,9 @@ etcdir      = @sysconfdir@
 
 # location of man pages
 mandir      = @mandir@
+
+# RPM build root
+rpmdir      = @rpmdir@
 
 # location of incoming mail
 mailspool   = @mailspool@
@@ -198,15 +202,15 @@ nmhrelease:
 
 # Create binary and source RPMs.  Assumes that configure had already
 # been run.  Otherwise, there wouldn't be a Makefile.
-# _topdir puts build area in the RPM/ directory below the current one.
-# _tmppath uses the specified local TMP.
-# srcdir is this current, top level nmh directory.
+# _topdir is the specified RPM build root.
+# _tmppath is TMP below _topdir.
+# srcdir is the top level nmh source directory.
 # tarfile and version are as specified in this file.  rpmbuild does
 #   not allow Version to contain any dashes.
 rpm: all nmhdist
-	@rpmbuild --define '_topdir '`pwd`'/RPM' \
+	@rpmbuild --define '_topdir $(rpmdir)' \
           --define '_tmppath %{_topdir}/TMP' \
-          --define 'srcdir '`pwd` \
+          --define 'srcdir $(abs_srcdir)' \
           --define 'tarfile $(tarfile)' \
           --define 'version '`echo $(VERSION) | sed "s/-/_/g"` \
           -ba nmh.spec
