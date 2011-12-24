@@ -20,10 +20,6 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-#ifdef HAVE_SYS_UTSNAME_H
-# include <sys/utsname.h>
-#endif
-
 #define	NOTOK   (-1)
 #define	OK        0
 
@@ -250,9 +246,6 @@ LocalName (void)
 {
     static char buffer[BUFSIZ] = "";
     struct addrinfo hints, *res;
-#ifdef HAVE_UNAME
-    struct utsname name;
-#endif
 
     /* check if we have cached the local name */
     if (buffer[0])
@@ -265,14 +258,8 @@ LocalName (void)
 	strncpy (buffer, localname, sizeof(buffer));
     } else {
 	memset(buffer, 0, sizeof(buffer));
-#ifdef HAVE_UNAME
-	/* first get our local name */
-	uname (&name);
-	strncpy (buffer, name.nodename, sizeof(buffer) - 1);
-#else
 	/* first get our local name */
 	gethostname (buffer, sizeof(buffer) - 1);
-#endif
 	/* now fully qualify our name */
 
 	memset(&hints, 0, sizeof(hints));
@@ -307,10 +294,6 @@ SystemName (void)
 {
     static char buffer[BUFSIZ] = "";
 
-#ifdef HAVE_UNAME
-    struct utsname name;
-#endif
-
     /* check if we have cached the system name */
     if (buffer[0])
 	return buffer;
@@ -323,12 +306,7 @@ SystemName (void)
 	return buffer;
     }
 
-#ifdef HAVE_UNAME
-    uname (&name);
-    strncpy (buffer, name.nodename, sizeof(buffer));
-#else
     gethostname (buffer, sizeof(buffer));
-#endif
 
     return buffer;
 }
