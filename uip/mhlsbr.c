@@ -1515,10 +1515,7 @@ face_format (struct mcomp *c1)
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
+#include <arpa/inet.h>
 
 static int
 doface (struct mcomp *c1)

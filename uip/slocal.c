@@ -1206,7 +1206,7 @@ usr_pipe (int fd, char *cmd, char *pgm, char **vec, int suppress)
 		 * Ruthlessly kill the child and anything
 		 * else in its process group.
 		 */
-		KILLPG(child_id, SIGKILL);
+		killpg(child_id, SIGKILL);
 		if (verbose)
 		    verbose_printf (", timed-out; terminated\n");
 		return -1;

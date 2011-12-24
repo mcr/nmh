@@ -5,11 +5,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_UNISTD_H
-# include <sys/types.h>
-# include <unistd.h>
-#endif
-
+#include <unistd.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/stat.h>
@@ -31,34 +27,16 @@
 # endif
 #endif
 
-#ifdef HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-
+#include <stdlib.h>
 #include <stdarg.h>
-
-#if STDC_HEADERS || HAVE_STRING_H
-# include <string.h>
-/* An ANSI string.h and pre-ANSI memory.h might conflict.  */
-# if !STDC_HEADERS && HAVE_MEMORY_H
-#  include <memory.h>
-# endif /* not STDC_HEADERS and HAVE_MEMORY_H */
-#else   /* not STDC_HEADERS and not HAVE_STRING_H */
-# include <strings.h>
-/* memory.h and strings.h conflict on some systems.  */
-#endif /* not STDC_HEADERS and not HAVE_STRING_H */
+#include <string.h>
 
 #ifdef HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
-#ifdef HAVE_LOCALE_H
 # include <locale.h>
-#endif
-
-#ifdef HAVE_LIMITS_H
 # include <limits.h>
-#endif
 
 /*
  * symbolic constants for lseek and fseek
@@ -114,12 +92,6 @@
 #define bcopy(b1,b2,length)     memcpy (b2, b1, length)
 #define bcpy(b1,b2,length)      memcmp (b1, b2, length)
 #define bzero(b,length)         memset (b, 0, length)
-
-#ifdef HAVE_KILLPG
-# define KILLPG(pgrp,sig) killpg(pgrp,sig);
-#else
-# define KILLPG(pgrp,sig) kill((-pgrp),sig);
-#endif
 
 /*
  * If your stat macros are broken,

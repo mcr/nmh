@@ -14,10 +14,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
+#include <arpa/inet.h>
 
 #define	TRUE         1
 #define	FALSE        0

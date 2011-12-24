@@ -263,7 +263,7 @@ message_fd (char **vec)
 	     * Ruthlessly kill the child and anything
 	     * else in its process group.
 	     */
-	    KILLPG(child_id, SIGKILL);
+	    killpg(child_id, SIGKILL);
 	}
 	close (fd);
 	return header_fd ();
