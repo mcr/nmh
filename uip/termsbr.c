@@ -34,19 +34,27 @@
 # define TXTSIZ BUFSIZ
 #endif
 
+#ifdef notdef_lyndon_posix
+
+/*
+	XXX No current termcap should need this.  If your compile barfs,
+	email details to lyndon@orthanc.ca.  This code will vanish soon ...
+*/
 /*
  * These variables are sometimes defined in,
  * and needed by the termcap library.
  */
-#ifdef HAVE_OSPEED
-# ifdef MUST_DEFINE_OSPEED
+# ifdef HAVE_OSPEED
+#  ifdef MUST_DEFINE_OSPEED
 extern short ospeed;
 extern char PC;
-# endif
-#else
+#  endif
+# else
 short ospeed;
 char PC;
-#endif
+# endif
+
+#endif notdef_lyndon_posix
 
 static long speedcode;
 
