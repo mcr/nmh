@@ -9,7 +9,11 @@
 #include <h/mh.h>
 #include <h/mime.h>
 
-#ifdef HAVE_ARPA_FTP_H
+#ifdef notdef_lyndon_posix
+/*
+ * Does this get included indirectly?  Let's find out.  It's not
+ * part of Posix.  Mail lyndon@orthanc.ca if this breaks your build.
+ */
 # include <arpa/ftp.h>
 #endif
 
