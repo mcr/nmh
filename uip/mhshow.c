@@ -20,10 +20,6 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
-
 static struct swit switches[] = {
 #define	CHECKSW                 0
     { "check", 0 },

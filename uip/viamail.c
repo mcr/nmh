@@ -18,10 +18,6 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
-
 static struct swit switches[] = {
 #define	TOSW                    0
     { "to mailpath", 0 },

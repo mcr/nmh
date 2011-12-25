@@ -38,10 +38,6 @@
 # endif
 #endif
 
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
-
 
 extern int debugsw;
 extern int verbosw;

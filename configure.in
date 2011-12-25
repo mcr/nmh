@@ -806,34 +806,6 @@ AC_CHECK_MEMBERS(struct tm.tm_gmtoff,,,
 
 AC_CHECK_MEMBERS(struct utmp.ut_type,,,[#include <utmp.h>])
 
-AC_MSG_CHECKING(for union wait)
-AC_CACHE_VAL(nmh_cv_union_wait, [dnl
-  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
-#include <sys/wait.h>]],
-    [[union wait status; int pid; pid = wait (&status);
-#ifdef WEXITSTATUS
-/* Some POSIXoid systems have both the new-style macros and the old
-   union wait type, and they do not work together.  If union wait
-   conflicts with WEXITSTATUS et al, we don't want to use it at all.  */
-        if (WEXITSTATUS (status) != 0) pid = -1;
-#ifdef WTERMSIG
-        /* If we have WEXITSTATUS and WTERMSIG, just use them on ints.  */
-        -- blow chunks here --
-#endif
-#endif
-#ifdef HAVE_WAITPID
-        /* Make sure union wait works with waitpid.  */
-        pid = waitpid (-1, &status, 0);
-#endif
-      ]])],
-    [nmh_cv_union_wait=yes],
-    [nmh_cv_union_wait=no])])
-if test "$nmh_cv_union_wait" = yes; then
-  AC_DEFINE(HAVE_UNION_WAIT, 1,
-    [Define to 1 if you have the \`union wait' type in <sys/wait.h>.])
-fi
-AC_MSG_RESULT($nmh_cv_union_wait)
-
 CHECK_TYPE_STRUCT_DIRENT_D_TYPE()
 
 dnl -------------

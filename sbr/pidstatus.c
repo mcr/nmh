@@ -14,10 +14,6 @@
  */
 #include <sigmsg.h>
 
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
-
 #ifndef WTERMSIG
 # define WTERMSIG(s) ((int)((s) & 0x7F))
 #endif

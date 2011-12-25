@@ -32,10 +32,6 @@
 # endif
 #endif
 
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
-
 extern int debugsw;
 
 extern pid_t xpid;	/* mhshowsbr.c or mhbuildsbr.c */

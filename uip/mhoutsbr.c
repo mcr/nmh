@@ -19,10 +19,6 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
-
 
 extern int ebcdicsw;
 

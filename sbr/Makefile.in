@@ -61,7 +61,7 @@ SRCS = addrsbr.c ambigsw.c atooi.c brkstring.c			\
 	fmt_addr.c fmt_compile.c fmt_new.c fmt_rfc2047.c		\
 	fmt_scan.c lock_file.c m_atoi.c m_backup.c			\
 	m_convert.c m_draft.c m_getfld.c m_gmprot.c			\
-	m_maildir.c m_name.c m_scratch.c m_tmpfil.c			\
+	m_maildir.c m_name.c						\
 	makedir.c mts.c norm_charmap.c                                  \
 	path.c peekc.c pidwait.c pidstatus.c		                \
 	print_help.c print_sw.c print_version.c push.c			\

@@ -350,15 +350,8 @@ main (int argc, char **argv)
 	out = stdout;
     }
     else {
-#ifdef HAVE_MKSTEMP
 	    if ((out = fdopen( mkstemp (tmpfil), "w" )) == NULL )
 		adios (tmpfil, "unable to create");
-#else
-	    mktemp (tmpfil);
-	    if ((out = fopen (tmpfil, "w")) == NULL)
-		adios (tmpfil, "unable to create");
-	    chmod (tmpfil, 0600);
-#endif
 	}
 
     hdrtab = (msgstate == normal) ? NHeaders : RHeaders;
@@ -747,15 +740,9 @@ make_bcc_file (void)
     char *vec[6];
     FILE * in, *out;
 
-#ifdef HAVE_MKSTEMP
     fd = mkstemp(bccfil);
     if (fd == -1 || (out = fdopen(fd, "w")) == NULL)
 	adios (bccfil, "unable to create");
-#else
-    mktemp (bccfil);
-    if ((out = fopen (bccfil, "w")) == NULL)
-	adios (bccfil, "unable to create");
-#endif
     chmod (bccfil, 0600);
 
     fprintf (out, "Date: %s\n", dtimenow (0));
