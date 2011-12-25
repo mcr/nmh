@@ -7,6 +7,7 @@
  * complete copyright information.
  */
 
+#include <sys/wait.h>
 #include <h/mh.h>
 
 /*
