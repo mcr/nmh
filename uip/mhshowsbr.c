@@ -744,7 +744,7 @@ show_multi_internal (CT ct, int serial, int alternate)
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
 
-	if (part_ok (p, 0) && type_ok (p, 0)) {
+	if (part_ok (p, 1) && type_ok (p, 1)) {
 	    int	inneresult;
 
 	    inneresult = show_switch (p, nowserial, nowalternate);
