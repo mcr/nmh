@@ -55,9 +55,6 @@ CMDS = ali anno burst comp dist flist folder forw install-mh mark mhbuild \
        msh new packf pick prompter refile repl rmf rmm scan send show \
        sortm whatnow whom
 
-## removed this from CMDS until I can fix it
-## OTHERCMDS = vmh
-
 # commands that are links to other commands
 LCMDS = flists folders next prev
 
@@ -79,8 +76,7 @@ SRCS = ali.c aliasbr.c anno.c annosbr.c ap.c burst.c comp.c		  \
 	post.c prompter.c rcvdist.c rcvpack.c rcvstore.c rcvtty.c	  \
 	refile.c repl.c replsbr.c rmf.c rmm.c scan.c scansbr.c send.c	  \
 	sendsbr.c show.c slocal.c sortm.c spost.c termsbr.c viamail.c	  \
-	vmh.c vmhsbr.c vmhtest.c whatnow.c whatnowproc.c whatnowsbr.c	  \
-	whom.c wmh.c
+	vmhsbr.c whatnow.c whatnowproc.c whatnowsbr.c whom.c
 
 # auxiliary files
 AUX = Makefile.in
@@ -234,9 +230,6 @@ spost: spost.o aliasbr.o $(LOCALLIBS)
 
 viamail: viamail.o mhmisc.o mhoutsbr.o sendsbr.o annosbr.o distsbr.o $(LOCALLIBS)
 	$(LINK) viamail.o mhmisc.o mhoutsbr.o sendsbr.o annosbr.o distsbr.o $(LINKLIBS) $(TERMLIB)
-
-vmh: vmh.o vmhsbr.o $(LOCALLIBS)
-	$(LINK) vmh.o vmhsbr.o $(LINKLIBS) $(TERMLIB)
 
 whatnow: whatnow.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LOCALLIBS)
 	$(LINK) whatnow.o whatnowsbr.o sendsbr.o annosbr.o distsbr.o $(LINKLIBS)

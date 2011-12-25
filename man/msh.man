@@ -212,21 +212,6 @@ to mark all messages as seen and then
 For speedy type\-in, this command is often abbreviated as just
 .BR qe .
 .PP
-When invoked from
-.BR vmh ,
-another special feature is enabled:
-The `topcur' switch directs
-.B msh
-to have the current message
-\*(lqtrack\*(rq the top line of the
-.B vmh
-scan window.  Normally,
-.B msh
-has the current message \*(lqtrack\*(rq the center of the window
-(under
-.BR \-notopcur ,
-which is the default).
-.PP
 .B msh
 supports an output redirection facility.  Commands may be
 followed by one of
