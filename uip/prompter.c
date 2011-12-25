@@ -14,15 +14,7 @@
 #include <signal.h>
 #include <setjmp.h>
 
-#ifdef HAVE_TERMIOS_H
-# include <termios.h>
-#else
-# ifdef HAVE_TERMIO_H
-#  include <termio.h>
-# else
-#  include <sgtty.h>
-# endif
-#endif
+#include <termios.h>
 
 #define	QUOTE '\\'
 
@@ -63,25 +55,10 @@ static struct swit switches[] = {
 };
 
 
-#ifdef HAVE_TERMIOS_H
 static struct termios tio;
-# define ERASE tio.c_cc[VERASE]
-# define KILL  tio.c_cc[VKILL]
-# define INTR  tio.c_cc[VINTR]
-#else
-# ifdef HAVE_TERMIO_H
-static struct termio tio;
-#  define ERASE tio.c_cc[VERASE]
-#  define KILL  tio.c_cc[VKILL]
-#  define INTR  tio.c_cc[VINTR]
-# else
-static struct sgttyb tio;
-static struct tchars tc;
-#  define ERASE tio.sg_erase
-#  define KILL  tio.sg_kill
-#  define INTR  tc.t_intrc
-# endif
-#endif
+#define ERASE tio.c_cc[VERASE]
+#define KILL  tio.c_cc[VKILL]
+#define INTR  tio.c_cc[VINTR]
 
 static int wtuser = 0;
 static int sigint = 0;
@@ -193,23 +170,10 @@ main (int argc, char **argv)
      * Are we changing the kill or erase character?
      */
     if (killp || erasep) {
-#ifdef HAVE_TERMIOS_H
 	cc_t save_erase, save_kill;
-#else
-	int save_erase, save_kill;
-#endif
 
 	/* get the current terminal attributes */
-#ifdef HAVE_TERMIOS_H
 	tcgetattr(0, &tio);
-#else
-# ifdef HAVE_TERMIO_H
-	ioctl(0, TCGETA, &tio);
-# else
-	ioctl (0, TIOCGETP, (char *) &tio);
-	ioctl (0, TIOCGETC, (char *) &tc);
-# endif
-#endif
 
 	/* save original kill, erase character for later */
 	save_kill = KILL;
@@ -220,15 +184,7 @@ main (int argc, char **argv)
 	ERASE = erasep ? chrcnv (erasep) : save_erase;
 
 	/* set the new terminal attributes */
-#ifdef HAVE_TERMIOS_H
 	 tcsetattr(0, TCSADRAIN, &tio);
-#else
-# ifdef HAVE_TERMIO_H
-	ioctl(0, TCSETAW, &tio);
-# else
-	ioctl (0, TIOCSETN, (char *) &tio);
-# endif
-#endif
 
 	/* print out new kill erase characters */
 	chrdsp ("erase", ERASE);
@@ -283,15 +239,7 @@ main (int argc, char **argv)
 		    if (i == -1) {
 abort:
 			if (killp || erasep) {
-#ifdef HAVE_TERMIOS_H
 			    tcsetattr(0, TCSADRAIN, &tio);
-#else
-# ifdef HAVE_TERMIO
-			    ioctl (0, TCSETA, &tio);
-# else
-			    ioctl (0, TIOCSETN, (char *) &tio);
-# endif
-#endif
 			}
 			unlink (tmpfil);
 			done (1);
@@ -378,15 +326,7 @@ no_body:
     SIGNAL (SIGINT, SIG_IGN);
 
     if (killp || erasep) {
-#ifdef HAVE_TERMIOS_H
 	 tcsetattr(0, TCSADRAIN, &tio);
-#else
-# ifdef HAVE_TERMIO_H
-	ioctl (0, TCSETAW, &tio);
-# else
-	ioctl (0, TIOCSETN, (char *) &tio);
-# endif
-#endif
     }
 
     if ((fdi = open (tmpfil, O_RDONLY)) == NOTOK)

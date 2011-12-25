@@ -22,15 +22,7 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
-#ifdef HAVE_TERMIOS_H
-# include <termios.h>
-#else
-# ifdef HAVE_TERMIO_H
-#  include <termio.h>
-# else
-#  include <sgtty.h>
-# endif
-#endif
+#include <termios.h>
 
 #include <pwd.h>
 #include <setjmp.h>

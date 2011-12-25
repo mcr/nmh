@@ -9,15 +9,7 @@
 
 #include <h/mh.h>
 
-#ifdef HAVE_TERMIOS_H
-# include <termios.h>
-#else
-# ifdef HAVE_TERMIO_H
-#  include <termio.h>
-# else
-#  include <sgtty.h>
-# endif
-#endif
+#include <termios.h>
 
 #ifdef HAVE_TERMCAP_H
 # include <termcap.h>
@@ -81,16 +73,7 @@ read_termcap(void)
     char termbuf[TXTSIZ];
 #endif
 
-#ifdef HAVE_TERMIOS_H
     struct termios tio;
-#else
-# ifdef HAVE_TERMIO_H
-    struct termio tio;
-# else
-    struct sgttyb tio;
-# endif
-#endif
-
     static int inited = 0;
 
     if (inited++)
@@ -110,15 +93,7 @@ read_termcap(void)
 	return;
 #endif
 
-#ifdef HAVE_TERMIOS_H
     speedcode = cfgetospeed(&tio);
-#else
-# ifdef HAVE_TERMIO_H
-    speedcode = ioctl(fileno(stdout), TCGETA, &tio) != NOTOK ? tio.c_cflag & CBAUD : 0;
-# else
-    speedcode = ioctl(fileno(stdout), TIOCGETP, (char *) &tio) != NOTOK ? tio.sg_ospeed : 0;
-# endif
-#endif
 
     HC = tgetflag ("hc");
 

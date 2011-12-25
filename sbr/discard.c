@@ -9,15 +9,7 @@
 
 #include <h/mh.h>
 
-#ifdef HAVE_TERMIOS_H
-# include <termios.h>
-#else
-# ifdef HAVE_TERMIO_H
-#  include <termio.h>
-# else
-#  include <sgtty.h>
-# endif
-#endif
+#include <termios.h>
 
 #ifdef SCO_5_STDIO
 # define _ptr  __ptr
@@ -30,28 +22,10 @@
 void
 discard (FILE *io)
 {
-#ifndef HAVE_TERMIOS_H
-# ifdef HAVE_TERMIO_H
-    struct termio tio;
-# else
-    struct sgttyb tio;
-# endif
-#endif
-
     if (io == NULL)
 	return;
 
-#ifdef HAVE_TERMIOS_H
     tcflush (fileno(io), TCOFLUSH);
-#else
-# ifdef HAVE_TERMIO_H
-    if (ioctl (fileno(io), TCGETA, &tio) != -1)
-	ioctl (fileno(io), TCSETA, &tio);
-# else
-    if (ioctl (fileno(io), TIOCGETP, (char *) &tio) != -1)
-	ioctl (fileno(io), TIOCSETP, (char *) &tio);
-# endif
-#endif
 
 #if defined(_FSTDIO) || defined(__DragonFly__)
     fpurge (io);
