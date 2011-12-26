@@ -25,19 +25,6 @@
 # include <limits.h>
 
 /*
- * symbolic constants for lseek and fseek
- */
-#ifndef SEEK_SET
-# define SEEK_SET 0
-#endif
-#ifndef SEEK_CUR
-# define SEEK_CUR 1
-#endif
-#ifndef SEEK_END
-# define SEEK_END 2
-#endif
-
-/*
  * we should be getting this value from pathconf(_PC_PATH_MAX)
  */
 #ifndef PATH_MAX
@@ -78,41 +65,3 @@
 #define bcopy(b1,b2,length)     memcpy (b2, b1, length)
 #define bcpy(b1,b2,length)      memcmp (b1, b2, length)
 #define bzero(b,length)         memset (b, 0, length)
-
-/*
- * If your stat macros are broken,
- * we will just undefine them.
- */
-#ifdef STAT_MACROS_BROKEN
-# ifdef S_ISBLK
-#  undef S_ISBLK
-# endif 
-# ifdef S_ISCHR
-#  undef S_ISCHR
-# endif 
-# ifdef S_ISDIR
-#  undef S_ISDIR
-# endif 
-# ifdef S_ISFIFO
-#  undef S_ISFIFO
-# endif 
-# ifdef S_ISLNK
-#  undef S_ISLNK
-# endif 
-# ifdef S_ISMPB
-#  undef S_ISMPB
-# endif 
-# ifdef S_ISMPC
-#  undef S_ISMPC
-# endif 
-# ifdef S_ISNWK
-#  undef S_ISNWK
-# endif 
-# ifdef S_ISREG
-#  undef S_ISREG
-# endif 
-# ifdef S_ISSOCK
-#  undef S_ISSOCK
-# endif 
-#endif  /* STAT_MACROS_BROKEN.  */
-
