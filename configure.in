@@ -487,16 +487,7 @@ AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
 dnl ---------------
 dnl CHECK FUNCTIONS
 dnl ---------------
-AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
-               sighold sigrelse writev lstat uname tzset mkstemp \
-               getutent nl_langinfo mbtowc wcwidth)
-
-dnl sigsetjmp may be a macro
-AC_MSG_CHECKING(for sigsetjmp)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <setjmp.h>]],
-  [[sigsetjmp((void *)0, 0);]])],[AC_DEFINE(HAVE_SIGSETJMP, 1,
-    [Define to 1 if you have the `sigsetjmp'.]) AC_MSG_RESULT(yes)],
-  [AC_MSG_RESULT(no)])
+AC_CHECK_FUNCS(writev lstat tzset getutent nl_langinfo)
 
 dnl Look for the initgroups() declaration.  On AIX 4.[13], Solaris 4.1.3, and
 dnl ULTRIX 4.2A the function is defined in libc but there's no declaration in

@@ -20,16 +20,6 @@
 #include <h/mhparse.h>
 #include <h/utils.h>
 
-/*
- * Just use sigjmp/longjmp on older machines that
- * don't have sigsetjmp/siglongjmp.
- */
-#ifndef HAVE_SIGSETJMP
-# define sigjmp_buf jmp_buf
-# define sigsetjmp(env,mask) setjmp(env)
-# define siglongjmp(env,val) longjmp(env,val)
-#endif
-
 extern int debugsw;
 
 int pausesw  = 1;
