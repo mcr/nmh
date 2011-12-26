@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <stdio.h>
 
 #ifdef MHRC
 # include <pwd.h>
