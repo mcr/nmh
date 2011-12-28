@@ -200,18 +200,15 @@ nmhrelease:
 	cd $(ftpdir) && ln -s $(tarfile) nmh.tar.gz
 	cd $(ftpdir) && md5sum *.gz > MD5SUM
 
-# Create binary and source RPMs.  Assumes that configure had already
-# been run.  Otherwise, there wouldn't be a Makefile.
+# Create binary and source RPMs.
 # _topdir is the specified RPM build root.
 # _tmppath is TMP below _topdir.
-# srcdir is the top level nmh source directory.
-# tarfile and version are as specified in this file.  rpmbuild does
-#   not allow Version to contain any dashes.
-rpm: all nmhdist
+rpm: nmhdist
+	@test -d $(rpmdir)/SOURCES  ||  mkdir -p $(rpmdir)/SOURCES
+	@test -d $(rpmdir)/SPECS  ||  mkdir -p $(rpmdir)/SPECS
+	@mv -f $(tarfile) $(rpmdir)/SOURCES
+	@cp -p VERSION $(rpmdir)/SOURCES
+	@cp -p nmh.spec $(rpmdir)/SPECS
 	@rpmbuild --define '_topdir $(rpmdir)' \
           --define '_tmppath %{_topdir}/TMP' \
-          --define 'srcdir $(abs_srcdir)' \
-          --define 'tarfile $(tarfile)' \
-          --define 'version '`echo $(VERSION) | sed "s/-/_/g"` \
-          -ba nmh.spec
-	@$(RM) $(tarfile)
+          -ba $(rpmdir)/SPECS/nmh.spec
