@@ -107,10 +107,10 @@ static void lockname (char *, struct lockinfo *, int);
 static void timerON (char *, int);
 static void timerOFF (int);
 static RETSIGTYPE alrmser (int);
-#endif
 
 #if !defined(HAVE_LIBLOCKFILE)
 static int lockit (struct lockinfo *);
+#endif
 #endif
 
 /*
