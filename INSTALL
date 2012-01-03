@@ -24,6 +24,11 @@ need an ANSI C compiler such as gcc.
    docs/README.developers, since there is other developer-friendly
    advice there as well.)
 
+   If you have obtained nmh in the form of a tar archive and are
+   trying to unpack it with cpio:  due to an apparent bug in cpio, it
+   might fail with "Malformed number" error messages.  Try another
+   tool to unpack, such as tar or pax.
+
 1) From the top-level source directory, run the command
 
    ./configure [options]
