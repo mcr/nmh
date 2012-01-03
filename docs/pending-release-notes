@@ -1,2 +1,4 @@
 Things to add to the release notes for the next full release:
 
+- Switched to buffered output when performing TLS encryption in the SMTP
+  MTA to increase performance.
