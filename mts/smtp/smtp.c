@@ -116,6 +116,7 @@ static SSL_CTX *sslctx = NULL;
 static SSL *ssl = NULL;
 static BIO *sbior = NULL;
 static BIO *sbiow = NULL;
+static BIO *io = NULL;
 #endif /* TLS_SUPPORT */
 
 #if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
@@ -286,6 +287,8 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
      */
 
     if (tls) {
+	BIO *ssl_bio;
+
 	if (! EHLOset("STARTTLS")) {
 	    sm_end(NOTOK);
 	    return sm_ierror("SMTP server does not support TLS");
@@ -338,8 +341,36 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	}
 
 	SSL_set_bio(ssl, sbior, sbiow);
+	SSL_set_connect_state(ssl);
 
-	if (SSL_connect(ssl) < 1) {
+	/*
+	 * Set up a BIO to handle buffering for us
+	 */
+
+	io = BIO_new(BIO_f_buffer());
+
+	if (! io) {
+	    sm_end(NOTOK);
+	    return sm_ierror("Unable to create a buffer BIO: %s",
+			     ERR_error_string(ERR_get_error(), NULL));
+	}
+
+	ssl_bio = BIO_new(BIO_f_ssl());
+
+	if (! ssl_bio) {
+	    sm_end(NOTOK);
+	    return sm_ierror("Unable to create a SSL BIO: %s",
+			     ERR_error_string(ERR_get_error(), NULL));
+	}
+
+	BIO_set_ssl(ssl_bio, ssl, BIO_CLOSE);
+	BIO_push(io, ssl_bio);
+
+	/*
+	 * Try doing the handshake now
+	 */
+
+	if (BIO_do_handshake(io) < 1) {
 	    sm_end(NOTOK);
 	    return sm_ierror("Unable to negotiate SSL connection: %s",
 			     ERR_error_string(ERR_get_error(), NULL));
@@ -787,8 +818,8 @@ sm_end (int type)
 
 #ifdef TLS_SUPPORT
     if (tls_active) {
-	SSL_shutdown(ssl);
-	SSL_free(ssl);
+	BIO_ssl_shutdown(io);
+	BIO_free_all(io);
     }
 #endif /* TLS_SUPPORT */
 
@@ -1235,9 +1266,9 @@ sm_fwrite(char *buffer, int len)
 	if (tls_active) {
 	    int ret;
 
-	    ret = SSL_write(ssl, buffer, len);
+	    ret = BIO_write(io, buffer, len);
 
-	    if (SSL_get_error(ssl, ret) != SSL_ERROR_NONE) {
+	    if (ret <= 0) {
 		sm_ierror("TLS error during write: %s",
 			  ERR_error_string(ERR_get_error(), NULL));
 		return NOTOK;
@@ -1315,6 +1346,12 @@ sm_fflush(void)
 	sasl_outbuflen = 0;
     }
 #endif /* CYRUS_SASL */
+
+#ifdef TLS_SUPPORT
+    if (tls_active) {
+    	(void) BIO_flush(io);
+    }
+#endif /* TLS_SUPPORT */
 
     fflush(sm_wfp);
 }
