@@ -467,11 +467,9 @@ AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_HEADER_STAT
 AC_HEADER_TIOCGWINSZ
-AC_CHECK_HEADERS(string.h memory.h stdlib.h unistd.h errno.h fcntl.h \
-                 limits.h crypt.h termcap.h termio.h termios.h locale.h \
+AC_CHECK_HEADERS(errno.h fcntl.h crypt.h termcap.h termio.h termios.h \
                  langinfo.h wchar.h wctype.h iconv.h netdb.h \
-                 sys/param.h sys/time.h sys/stream.h \
-                 arpa/inet.h arpa/ftp.h)
+                 sys/param.h sys/time.h sys/stream.h arpa/ftp.h)
  
 dnl
 dnl Checks for _IO_write_ptr. A Linuxism used by nmh on linux. We
@@ -495,7 +493,7 @@ dnl ---------------
 AC_FUNC_VFORK
 AC_CHECK_LIB(mkstemp,mkstemp)
 AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
-               sighold sigrelse writev lstat uname tzset killpg mkstemp \
+               sighold sigrelse writev lstat uname tzset mkstemp \
                getutent nl_langinfo mbtowc wcwidth)
 
 dnl sigsetjmp may be a macro
