@@ -490,7 +490,6 @@ AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
 dnl ---------------
 dnl CHECK FUNCTIONS
 dnl ---------------
-AC_FUNC_VFORK
 AC_CHECK_LIB(mkstemp,mkstemp)
 AC_CHECK_FUNCS(waitpid wait3 sigaction sigprocmask sigblock sigsetmask \
                sighold sigrelse writev lstat uname tzset mkstemp \
