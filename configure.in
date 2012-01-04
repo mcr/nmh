@@ -470,7 +470,7 @@ AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS(string.h memory.h stdlib.h unistd.h errno.h fcntl.h \
                  limits.h crypt.h termcap.h termio.h termios.h locale.h \
                  langinfo.h wchar.h wctype.h iconv.h netdb.h \
-                 sys/param.h sys/time.h sys/utsname.h sys/stream.h \
+                 sys/param.h sys/time.h sys/stream.h \
                  arpa/inet.h arpa/ftp.h)
  
 dnl
