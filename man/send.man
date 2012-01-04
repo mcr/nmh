@@ -37,6 +37,7 @@ send \- send a message
 .IR mechanism ]
 .RB [ \-user
 .IR username ]
+.RB [ \-tls ]
 .RB [ \-width
 .IR columns ]
 .RB [ file

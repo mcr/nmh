@@ -25,6 +25,7 @@ post \- deliver a message
 .IR mechanism ]
 .RB [ \-user
 .IR username ]
+.RB [ \-tls ]
 .I file
 .RB [ \-version ]
 .RB [ \-help ]
