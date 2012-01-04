@@ -794,7 +794,7 @@ AC_CHECK_MEMBERS(struct tm.tm_gmtoff,,,
 
 AC_CHECK_MEMBERS(struct utmp.ut_type,,,[#include <utmp.h>])
 
-CHECK_TYPE_STRUCT_DIRENT_D_TYPE()
+AC_STRUCT_DIRENT_D_TYPE
 
 dnl -------------
 dnl CHECK SIGNALS
