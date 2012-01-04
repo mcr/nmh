@@ -467,7 +467,7 @@ AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_HEADER_STAT
 AC_HEADER_TIOCGWINSZ
-AC_CHECK_HEADERS(errno.h fcntl.h crypt.h termcap.h termio.h termios.h \
+AC_CHECK_HEADERS(errno.h fcntl.h crypt.h termcap.h \
                  langinfo.h wchar.h wctype.h iconv.h netdb.h \
                  sys/param.h sys/time.h sys/stream.h arpa/ftp.h)
  
