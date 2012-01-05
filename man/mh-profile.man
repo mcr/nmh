@@ -366,7 +366,7 @@ to process drafts which are MIME composition files.
 .RS 5
 This program is used to refile or link a message to another folder.
 It is used by
-.B post
+.B send
 to file a copy of a message into a folder given
 by a \*(lqFcc:\*(rq field.  It is used by the draft folder facility in
 .BR comp ,
@@ -453,14 +453,10 @@ message that you are forwarding, or to which you are replying.
 When the
 .B \-filter
 option is given to
-.B send
-or
-.BR post ,
+.BR send ,
 the
 .I mhlproc
-is used by
-.B post
-to filter the copy of the message
+is used to filter the copy of the message
 that is sent to \*(lqBcc:\*(rq recipients.
 .RE
 .PP

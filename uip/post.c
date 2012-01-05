@@ -146,6 +146,10 @@ static struct swit switches[] = {
     { "port server port name/number", 4 },
 #define TLSSW			 41
     { "tls", TLSminc(-3) },
+#define FILEPROCSW		 42
+    { "fileproc", -4 },
+#define MHLPROCSW		 43
+    { "mhlproc", -3 },
     { NULL, 0 }
 };
 
@@ -536,6 +540,18 @@ main (int argc, char **argv)
 
 		case TLSSW:
 		    tls++;
+		    continue;
+
+		case FILEPROCSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    fileproc = cp;
+		    continue;
+
+		case MHLPROCSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    mhlproc = cp;
 		    continue;
 	    }
 	}
