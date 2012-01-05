@@ -153,9 +153,6 @@ main (int argc, char **argv)
     struct stat st;
     char	*attach = (char *)0;	/* header field name for attachments */
     int attachformat = 0; /* mhbuild format specifier for attachments */
-#ifdef UCI
-    FILE *fp;
-#endif /* UCI */
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -401,18 +398,6 @@ go_to_it:
     if ((cp = getenv ("SIGNATURE")) == NULL || *cp == 0)
 	if ((cp = context_find ("signature")) && *cp)
 	    m_putenv ("SIGNATURE", cp);
-#ifdef UCI
-	else {
-	    snprintf (buf, sizeof(buf), "%s/.signature", mypath);
-	    if ((fp = fopen (buf, "r")) != NULL
-		&& fgets (buf, sizeof buf, fp) != NULL) {
-		    fclose (fp);
-		    if (cp = strchr (buf, '\n'))
-			*cp = 0;
-		    m_putenv ("SIGNATURE", buf);
-	    }
-	}
-#endif /* UCI */
 
     for (msgnum = 0; msgnum < msgp; msgnum++)
 	if (stat (msgs[msgnum], &st) == NOTOK)

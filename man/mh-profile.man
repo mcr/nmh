@@ -317,11 +317,8 @@ environment variable
 If
 .B $SIGNATURE
 is not set and this profile entry is not present, the \*(lqgcos\*(rq field of
-the \fI/etc/passwd\fP file will be used; otherwise, on hosts where
-.B nmh
-was configured with the UCI option, the file
-.I $HOME/.signature
-is consulted.  Your signature will be added to the address
+the \fI/etc/passwd\fP file will be used.
+Your signature will be added to the address
 .B send
 puts in the \*(lqFrom:\*(rq header; do not include an address in the
 signature text.  (profile, no default)

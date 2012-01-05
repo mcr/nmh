@@ -1107,9 +1107,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
 #ifndef	lint
     int	distsw = 0;
 #endif
-#ifdef UCI
-    FILE *fp;
-#endif
 
     /*
      * Make sure these are defined.  In particular, we need
@@ -1300,18 +1297,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
     if ((cp = getenv ("SIGNATURE")) == NULL || *cp == 0)
 	if ((cp = context_find ("signature")) && *cp)
 	    m_putenv ("SIGNATURE", cp);
-#ifdef UCI
-	else {
-	    snprintf (buf, sizeof(buf), "%s/.signature", mypath);
-	    if ((fp = fopen (buf, "r")) != NULL
-		&& fgets (buf, sizeof(buf), fp) != NULL) {
-		    fclose (fp);
-		    if (cp = strchr (buf, '\n'))
-			*cp = 0;
-		    m_putenv ("SIGNATURE", buf);
-	    }
-	}
-#endif /* UCI */
 
     if ((annotext = getenv ("mhannotate")) == NULL || *annotext == 0)
 	annotext = NULL;

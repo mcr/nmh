@@ -238,11 +238,6 @@ main (int argc, char **argv)
 	return 1;
     }
 
-#ifdef UCI
-    if (strcmp(invo_name, "fanno") == 0)	/* ugh! */
-	datesw = 0;
-#endif	/* UCI */
-
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
     if (!msgs.size)

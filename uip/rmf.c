@@ -169,10 +169,6 @@ rmf (char *folder)
 		    continue;	/* else fall */
 
 	    case ',': 
-#ifdef UCI
-	    case '_': 
-	    case '#': 
-#endif /* UCI */
 		break;
 
 	    default: 
