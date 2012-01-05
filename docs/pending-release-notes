@@ -2,3 +2,6 @@ Things to add to the release notes for the next full release:
 
 - Switched to buffered output when performing TLS encryption in the SMTP
   MTA to increase performance.
+- mh-e support has been changed so that it is always compiled into nmh;
+  old features that were previously enabled by the MHE option have been
+  garbage collected.
