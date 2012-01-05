@@ -88,6 +88,9 @@ main (int argc, char **argv)
     vec[vecp++] = "-library";
     vec[vecp++] = getcpy (m_maildir (""));
 
+    /* Don't need to feed fileproc or mhlproc to post because
+       it doesn't use them when used for whom. */
+
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
