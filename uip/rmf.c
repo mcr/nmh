@@ -169,9 +169,6 @@ rmf (char *folder)
 		    continue;	/* else fall */
 
 	    case ',': 
-#ifdef MHE
-	    case '+': 
-#endif /* MHE */
 #ifdef UCI
 	    case '_': 
 	    case '#': 

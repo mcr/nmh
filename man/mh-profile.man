@@ -223,21 +223,6 @@ command.
 (context, no default)
 .RE
 .PP
-.BR mhe :
-.RS 5
-If present, tells
-.B inc
-to compose an
-.I MHE
-auditfile in addition to its other tasks. 
-.I MHE
-is Brian Reid's 
-.B emacs
-front-end for
-.BR nmh .
-(profile, no default)
-.RE
-.PP
 .BR Alternate\-Mailboxes :
 mh@uci\-750a, bug-mh*
 .RS 5

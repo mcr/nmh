@@ -68,11 +68,8 @@ static struct swit switches[] = {
     { "help", 0 },
 #define	FILESW                27
     { "file file", 4 },			/* interface from msh */
-
-#ifdef MHE
 #define	BILDSW                28
     { "build", 5 },			/* interface from mhe */
-#endif
 
     { NULL, 0 }
 };
@@ -145,9 +142,7 @@ main (int argc, char **argv)
     struct stat st;
     FILE *in;
 
-#ifdef MHE
     int buildsw = 0;
-#endif /* MHE */
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -217,10 +212,8 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    nwhat = 0;
 		    continue;
-#ifdef MHE
 		case BILDSW: 
 		    buildsw++;	/* fall... */
-#endif /* MHE */
 		case NWHATSW: 
 		    nwhat++;
 		    continue;
@@ -342,18 +335,11 @@ main (int argc, char **argv)
 
 try_it_again:
 
-#ifdef MHE
     strncpy (drft, buildsw ? m_maildir ("reply")
 			  : m_draft (dfolder, NULL, NOUSE, &isdf), sizeof(drft));
 
     /* Check if a draft exists */
     if (!buildsw && stat (drft, &st) != NOTOK) {
-#else
-    strncpy (drft, m_draft (dfolder, dmsg, NOUSE, &isdf), sizeof(drft));
-
-    /* Check if a draft exists */
-    if (stat (drft, &st) != NOTOK) {
-#endif /* MHE */
 	printf ("Draft \"%s\" exists (%ld bytes).", drft, (long) st.st_size);
 	for (i = LISTDSW; i != YESW;) {
 	    if (!(argp = getans ("\nDisposition? ", isdf ? aqrnl : aqrl)))

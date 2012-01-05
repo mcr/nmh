@@ -56,17 +56,6 @@ AC_ARG_ENABLE(masquerade,
   fi], [masquerade="draft_from mmailid username_extension"])
 AC_SUBST(masquerade)dnl
 
-dnl Do you want mhe support?
-AC_ARG_ENABLE(mhe,
-  AS_HELP_STRING([--disable-mhe],[disable mhe support]))
-
-dnl mhe support is on by default, so define it unless --disable-mhe or the
-dnl deprecated, undocumented --disable-nmh-mhe are specified.
-if test x"$enable_mhe" != x"no" -a x"$enable_nmh_mhe" != x"no"; then
-  AC_DEFINE(MHE, 1,
-    [Define to compile in support for the Emacs front-end mh-e.])dnl
-fi
-
 dnl Do you want client-side support for pop?
 AC_ARG_ENABLE(pop,
   AS_HELP_STRING([--enable-pop], [enable client-side support for plain POP3]))

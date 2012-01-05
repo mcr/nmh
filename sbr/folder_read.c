@@ -99,9 +99,6 @@ folder_read (char *name)
 	    switch (dp->d_name[0]) {
 		case '.': 
 		case ',': 
-#ifdef MHE
-		case '+': 
-#endif /* MHE */
 		    continue;
 
 		default: 

@@ -236,10 +236,6 @@ main (int argc, char **argv)
     char *MAILHOST_env_variable;
 #endif
 
-#ifdef MHE
-    FILE *mhe = NULL;
-#endif
-
     done=inc_done;
 
 /* absolutely the first thing we do is save our privileges,
@@ -632,20 +628,6 @@ go_to_it:
 #endif /* POP */
     }
 
-#ifdef MHE
-    if (context_find ("mhe")) {
-	int i;
-	cp = concat (maildir, "/++", NULL);
-	i = stat (cp, &st);
-	if ((mhe = fopen (cp, "a")) == NULL)
-	    admonish (cp, "unable to append to");
-	else
-	    if (i == NOTOK)
-		chmod (cp, m_gmprot ());
-	free (cp);
-    }
-#endif /* MHE */
-
     /* Get new format string */
     nfs = new_fs (form, format, FORMAT);
 
@@ -741,10 +723,6 @@ go_to_it:
 	    default: 
 		if (aud)
 		    fputs (scanl, aud);
-# ifdef MHE
-		if (mhe)
-		    fputs (scanl, mhe);
-# endif /* MHE */
 		if (noisy)
 		    fflush (stdout);
 		if (!packfile) {
@@ -852,10 +830,6 @@ go_to_it:
 
 		if (aud)
 		    fputs (scanl, aud);
-#ifdef MHE
-		if (mhe)
-		    fputs (scanl, mhe);
-#endif /* MHE */
 		if (noisy)
 		    fflush (stdout);
 
@@ -951,10 +925,6 @@ go_to_it:
 
 		if (aud)
 		    fputs (scanl, aud);
-# ifdef MHE
-		if (mhe)
-		    fputs (scanl, mhe);
-# endif /* MHE */
 		if (noisy)
 		    fflush (stdout);
 		if (!packfile) {
@@ -994,11 +964,6 @@ go_to_it:
 
     if (aud)
 	fclose (aud);
-
-#ifdef MHE
-    if (mhe)
-	fclose (mhe);
-#endif /* MHE */
 
     if (noisy)
 	fflush (stdout);

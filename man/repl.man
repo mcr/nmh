@@ -425,20 +425,14 @@ The
 .B \-build
 switch is intended to be used by the Emacs mh-e interface
 to
-.BR nmh ,
-and is only present if
-.B nmh
-was compiled with support
-for mh-e. It implies
+.BR nmh .
+It implies
 .BR \-nowhatnowproc .
 It causes a file
 .I <mh\-dir>/reply
 to be created, containing the draft message that would normally be presented
 to the user for editing.
-No mail is actually sent. Note that this switch is not guaranteed to
-be present or to have the same effects in future versions of
-.BR nmh :
-it is documented here only for completeness.
+No mail is actually sent.
 .PP
 The
 .B \-file
