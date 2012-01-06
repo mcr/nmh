@@ -12,12 +12,6 @@
  */
 
 /*
- * Define this if your passwords are stored in some type of
- * distributed name service, such as NIS, or NIS+.
- */
-#define DBMPWD  1
-
-/*
  * Directs nmh not to try and rewrite addresses
  * to their official form.  You probably don't
  * want to change this without good reason.

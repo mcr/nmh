@@ -350,29 +350,20 @@ addgroup (struct aka *ak, char *grp)
 	return 0;
     }
 
-#ifndef DBMPWD
-    if (homehead == NULL)
-	init_pw ();
-#endif /* DBMPWD */
-
     while ((gp = *gr->gr_mem++))
-#ifdef DBMPWD
     {
 	struct passwd *pw;
-#endif /* DBMPWD */
 	for (hm = homehead; hm; hm = hm->h_next)
 	    if (!strcmp (hm->h_name, gp)) {
 		add_aka (ak, hm->h_name);
 		break;
 	    }
-#ifdef DBMPWD
         if ((pw = getpwnam(gp)))
 	{
 		hmalloc(pw);
 		add_aka (ak, gp);
 	}
     }
-#endif /* DBMPWD */
 
     return 1;
 }
@@ -396,10 +387,7 @@ addmember (struct aka *ak, char *grp)
 	return 0;
     }
 
-#ifndef DBMPWD
-    if (homehead == NULL)
-#endif /* DBMPWD */
-	init_pw ();
+    init_pw ();
 
     for (hm = homehead; hm; hm = hm->h_next)
 	if (hm->h_gid == gid)
@@ -415,10 +403,8 @@ addall (struct aka *ak)
     int noshell = NoShell == NULL || *NoShell == 0;
     register struct home *hm;
 
-#ifndef DBMPWD
-    if (homehead == NULL)
-#endif /* DBMPWD */
-	init_pw ();
+    init_pw ();
+
     if (Everyone < 0)
 	Everyone = EVERYONE;
 
@@ -487,28 +473,24 @@ void
 init_pw (void)
 {
     register struct passwd  *pw;
-#ifdef DBMPWD
     static int init;
   
     if (!init)
     {
-          /* if the list has yet to be initialized */
-	    /* zap the list, and rebuild from scratch */
-	    homehead=NULL;
-	    hometail=NULL;
-	    init++;
-#endif /* DBMPWD */
+	/* if the list has yet to be initialized */
+	/* zap the list, and rebuild from scratch */
+	homehead=NULL;
+	hometail=NULL;
+	init++;
 
-    setpwent ();
+	setpwent ();
 
-    while ((pw = getpwent ()))
-	if (!hmalloc (pw))
-	    break;
+	while ((pw = getpwent ()))
+	    if (!hmalloc (pw))
+		break;
 
-    endpwent ();
-#ifdef DBMPWD
+	endpwent ();
     }
-#endif /* DBMPWD */
 }
 
 
@@ -561,22 +543,15 @@ struct home *
 seek_home (char *name)
 {
     register struct home *hp;
-#ifdef DBMPWD
     struct passwd *pw;
     char lname[32];
     unsigned char *c;
     char *c1;
-#else  /* DBMPWD */
-
-    if (homehead == NULL)
-	init_pw ();
-#endif /* DBMPWD */
 
     for (hp = homehead; hp; hp = hp->h_next)
 	if (!mh_strcasecmp (name, hp->h_name))
 	    return hp;
 
-#ifdef DBMPWD
     /*
      * The only place where there might be problems.
      * This assumes that ALL usernames are kept in lowercase.
@@ -590,7 +565,6 @@ seek_home (char *name)
     *c1 = '\0';
     if ((pw = getpwnam(lname)))
 	return(hmalloc(pw));
-#endif /* DBMPWD */
-	
+
     return NULL;
 }
