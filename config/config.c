@@ -9,10 +9,7 @@
 
 #include <h/mh.h>
 #include <stdio.h>
-
-#ifdef MHRC
-# include <pwd.h>
-#endif
+#include <pwd.h>
 
 #define nmhbindir(file) NMHBINDIR#file
 #define nmhetcdir(file) NMHETCDIR#file
@@ -35,21 +32,16 @@ etcpath (char *file)
 {
     static char epath[PATH_MAX];
     char *cp;
-#ifdef MHRC
     char *pp;
     struct passwd *pw;
-#endif
 
-#ifdef MHRC
     context_read();
-#endif
 
     switch (*file) {
 	case '/': 
 	    /* If already absolute pathname, return it */
 	    return file;
 
-#ifdef MHRC
 	case '~': 
 	    /* Expand ~username */
 	    if ((cp = strchr(pp = file + 1, '/')))
@@ -73,7 +65,6 @@ etcpath (char *file)
 	    if (access (epath, R_OK) != NOTOK)
 		return epath;	/* else fall */
 try_it:
-#endif /* MHRC */
 
 	default: 
 	    /* Check nmh Mail directory */

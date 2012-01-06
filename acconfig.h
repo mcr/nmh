@@ -26,11 +26,6 @@
 /* #define REALLYDUMB  1 */
 
 /*
- * If this is defined, nmh will recognize the ~ construct.
- */
-#define MHRC    1
-
-/*
  * Compile simple ftp client into mhn.  This will be used by mhn
  * for ftp access unless you have specified another access method
  * in your .mh_profile or mhn.defaults.  Use the "mhn-access-ftp"
