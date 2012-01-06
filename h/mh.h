@@ -261,6 +261,9 @@ extern char *msg_delim;		/*  .. */
 
 #define OUTPUTLINELEN	72	/* default line length for headers */
 
+#define LINK	"@"		/* Name of link to file to which you are */
+				/* replying. */
+
 /*
  * miscellaneous macros
  */

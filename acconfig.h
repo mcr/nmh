@@ -25,17 +25,5 @@
  */
 /* #define REALLYDUMB  1 */
 
-/*
- * Name of link to file to which you are replying.
- */
-#define LINK "@"
-
-/*
- * Define to 1 if your vi has ATT bug, such that it returns
- * non-zero exit codes on `pseudo-errors'.
- */
-#undef ATTVIBUG
-
-
 /***** END USER CONFIGURATION SECTION *****/
 @TOP@

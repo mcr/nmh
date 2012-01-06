@@ -726,13 +726,6 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 
 	default:
 	    if ((status = pidwait (pid, NOTOK))) {
-#ifdef ATTVIBUG
-		if ((cp = r1bindex (*ed, '/'))
-			&& strcmp (cp, "vi") == 0
-			&& (status & 0x00ff) == 0)
-		    status = 0;
-		else {
-#endif
 		if (((status & 0xff00) != 0xff00)
 		    && (!reedit || (status & 0x00ff))) {
 		    if (!use && (status & 0xff00) &&
@@ -744,9 +737,6 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 		}
 		status = -2;	/* maybe "reedit ? -2 : -1"? */
 		break;
-#ifdef ATTVIBUG
-		}
-#endif
 	    }
 
 	    reedit++;
