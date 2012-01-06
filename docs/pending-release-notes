@@ -8,3 +8,7 @@ Things to add to the release notes for the next full release:
 - Old code enabled by the UCI preprocessor definition has been
   garbage-collected.
 - LOCKDIR is now configurable via --enable-lockdir
+- All configuration options that were formerly only adjustable via editing
+  config.h have been removed.
+- Support for the built-in ftp client (used when dealing with external body
+  message parts in MIME messages) has been removed.

@@ -71,9 +71,6 @@ void content_error (char *, CT, char *, ...);
 /* mhcachesbr.c */
 int find_cache (CT, int, int *, char *, char *, int);
 
-/* ftpsbr.c */
-int ftp_get (char *, char *, char *, char *, char *, char *, int, int);
-
 /* mhfree.c */
 void free_content (CT);
 void free_ctinfo (CT);

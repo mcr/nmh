@@ -2485,10 +2485,8 @@ openFTP (CT ct, char **file)
     if ((ftp = context_find (nmhaccessftp)) && !*ftp)
 	ftp = NULL;
 
-#ifndef BUILTIN_FTP
     if (!ftp)
 	return NOTOK;
-#endif
 
     switch (openExternal (e->eb_parent, e->eb_content, ce, file, &fd)) {
 	case NOTOK:
@@ -2587,9 +2585,6 @@ openFTP (CT ct, char **file)
 	return NOTOK;
     }
 
-#ifdef BUILTIN_FTP
-    if (ftp)
-#endif
     {
 	int child_id, i, vecp;
 	char *vec[9];
@@ -2625,9 +2620,6 @@ openFTP (CT ct, char **file)
 
 	    default:
 		if (pidXwait (child_id, NULL)) {
-#ifdef BUILTIN_FTP
-losing_ftp:
-#endif
 		    username = password = NULL;
 		    ce->ce_unlink = 1;
 		    return NOTOK;
@@ -2635,14 +2627,6 @@ losing_ftp:
 		break;
 	}
     }
-#ifdef BUILTIN_FTP
-    else
-	if (ftp_get (e->eb_site, user, pass, e->eb_dir, e->eb_name,
-		     ce->ce_file,
-		     e->eb_mode && !mh_strcasecmp (e->eb_mode, "ascii"), 0)
-	        == NOTOK)
-	    goto losing_ftp;
-#endif
 
     if (cachefile[0]) {
 	if (caching)

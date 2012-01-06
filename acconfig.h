@@ -26,15 +26,6 @@
 /* #define REALLYDUMB  1 */
 
 /*
- * Compile simple ftp client into mhn.  This will be used by mhn
- * for ftp access unless you have specified another access method
- * in your .mh_profile or mhn.defaults.  Use the "mhn-access-ftp"
- * profile entry to override this.  Check mhn(1) man page for
- * details.
- */
-#define BUILTIN_FTP 1
-
-/*
  * If you enable POP support, this is the the port name that nmh will use.  Make
  * sure this is defined in your /etc/services file (or its NIS/NIS+ equivalent).
  * If you are using KPOP, you will need to change this to "kpop" unless you want
