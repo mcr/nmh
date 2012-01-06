@@ -90,13 +90,7 @@ need an ANSI C compiler such as gcc.
    Check the `mh-tailor' man page for a list of all the available options
    for this file ("masquerade" may be of particular interest).
 
-6) If you have enabled POP support, make sure that `pop3' (or more
-   precisely the value of the define POPSERVICE in config.h) is defined
-   in the /etc/services file (or its NIS/NIS+ equivalent) on the client
-   machine.  It should be something equivalent to "110/tcp".  This might
-   have already been done when the POP daemon was installed.
-
-7) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
+6) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
    This file contains the default profile entries for the nmh command
    `mhn' and is created by the script `mhn.defaults.sh'.  This script
    will search a generic path (essentially your $PATH) for programs to
@@ -117,7 +111,7 @@ need an ANSI C compiler such as gcc.
    "MH & xmh: Email for Users and Programmers", 3rd edition, by Jerry Peek,
    on the Internet at <http://www.ics.uci.edu/~mh/book/mh/confmhn.htm>.
 
-9) Add an optional global mh.profile, if desired.  This profile should be
+7) Add an optional global mh.profile, if desired.  This profile should be
    placed in the nmh `etc' directory with the name `mh.profile'.  This
    file will be used to construct the initial .mh_profile of a new nmh
    user, but will not be consulted after that.
@@ -197,9 +191,6 @@ Options for configure
      specified.
 
      See the mh-tailor(5) man page for full documentation of "masquerade:".
-
---enable-mhe    (DEFAULT)
-     Add support for the Emacs front-end `mhe'.
 
 --enable-pop
      Enable client-side support for pop.

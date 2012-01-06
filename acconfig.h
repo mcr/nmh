@@ -26,15 +26,6 @@
 /* #define REALLYDUMB  1 */
 
 /*
- * If you enable POP support, this is the the port name that nmh will use.  Make
- * sure this is defined in your /etc/services file (or its NIS/NIS+ equivalent).
- * If you are using KPOP, you will need to change this to "kpop" unless you want
- * to be able to use both POP3 _and_ Kerberized POP and plan to use inc and
- * msgchk's -kpop switch every time in the latter case.
- */
-#define POPSERVICE "pop3"
-
-/*
  * Define the default creation modes for folders and messages.
  */
 #define DEFAULT_FOLDER_MODE "700"
