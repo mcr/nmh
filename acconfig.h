@@ -26,12 +26,6 @@
 /* #define REALLYDUMB  1 */
 
 /*
- * Define the default creation modes for folders and messages.
- */
-#define DEFAULT_FOLDER_MODE "700"
-#define DEFAULT_MESSAGE_MODE "600"
-
-/*
  * Name of link to file to which you are replying.
  */
 #define LINK "@"

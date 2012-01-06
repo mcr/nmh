@@ -346,7 +346,7 @@ char *AliasFile = nmhetcdir (/MailAliases);
  * Folders (directories) are created with this protection (mode)
  */
 
-char *foldprot = DEFAULT_FOLDER_MODE;
+char *foldprot = "700";
 
 /*
  * Every NEW message will be created with this protection.  When a
@@ -354,5 +354,5 @@ char *foldprot = DEFAULT_FOLDER_MODE;
  * to messages coming in through inc.
  */
 
-char *msgprot = DEFAULT_MESSAGE_MODE;
+char *msgprot = "600";
 

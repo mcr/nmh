@@ -154,17 +154,17 @@ composition draft before it is sent.
 .RE
 .PP
 .BR Msg\-Protect :
-644
+600
 .RS 5
 An octal number which defines the permission bits for new message files.
 See
 .BR chmod (1)
 for an explanation of the octal number.
-(profile, default: 0644)
+(profile, default: 0600)
 .RE
 .PP
 .BR Folder\-Protect :
-750
+700
 .RS 5
 An octal number which defines the permission bits for new folder
 directories.  See
