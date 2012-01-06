@@ -26,13 +26,6 @@
 /* #define REALLYDUMB  1 */
 
 /*
- * If defined, slocal will use `mbox' format when saving to
- * your standard mail spool.  If not defined, it will use
- * mmdf format.
- */
-#define SLOCAL_MBOX  1
-
-/*
  * If this is defined, nmh will recognize the ~ construct.
  */
 #define MHRC    1

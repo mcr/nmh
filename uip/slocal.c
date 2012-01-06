@@ -439,11 +439,7 @@ localmail (int fd, char *mdlvr)
 	verbose_printf ("(delivering to standard mail spool)\n");
 
     /* last resort - deliver to standard mail spool */
-#ifdef SLOCAL_MBOX
     return usr_file (fd, mbox, MBOX_FORMAT);
-#else
-    return usr_file (fd, mbox, MMDF_FORMAT);
-#endif
 }
 
 
