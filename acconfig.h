@@ -26,20 +26,6 @@
 /* #define REALLYDUMB  1 */
 
 /*
- * Starting on January 1, 2000, some MUAs like ELM and Ultrix's DXmail started
- * generated bad dates ("00" or "100" for the year).  If this #define is active,
- * we use windowing to correct those dates to what we presume to be the intended
- * values.  About the only time this could get us into trouble would be if a MUA
- * was generating a year of "00" in 2001 or later, due to an unrelated bug.  In
- * this case we would "correct" the year to 2000, which could result in
- * inaccurate bug reports against the offending MUA.  A much more esoteric case
- * in which you might not want to #define this would be if you were OCR'ing in
- * old written correspondence and saving it in email format, and you had dates
- * of 1899 or earlier.
- */
-#define FIX_NON_Y2K_COMPLIANT_MUA_DATES 1
-
-/*
  * Directs inc/slocal to extract the envelope sender from "From "
  * line.  If inc/slocal is saving message to folder, then this
  * sender information is then used to create a Return-Path
