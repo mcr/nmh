@@ -7,3 +7,4 @@ Things to add to the release notes for the next full release:
   garbage collected.
 - Old code enabled by the UCI preprocessor definition has been
   garbage-collected.
+- LOCKDIR is now configurable via --enable-lockdir

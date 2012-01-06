@@ -387,12 +387,11 @@ specifies that
 a file should be created whose existence means \*(lqlocked\*(rq and
 whose non-existence means \*(lqunlocked\*(rq.  The name of this file is
 constructed by appending \*(lq.lock\*(rq to the name of the file being
-locked.  If
-.B LOCKDIR
-is not specified, lock files will be created
+locked.  If \*(lq--enable-lockdir=directory\*(rq
+is not specified at build time, lock files will be created
 in the directory where the file being locked resides.  Otherwise, lock
 files will be created in the directory specified by
-.BR LOCKDIR .
+\*(lq--enable-lockdir\*(rq.
 .PP
 Prior to installing
 .BR nmh ,

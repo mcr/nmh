@@ -12,15 +12,6 @@
  */
 
 /*
- * If you have defined DOT_LOCKING, then the default is to
- * place the lock files in the same directory as the file that
- * is to be locked.  Alternately, if you define LOCKDIR, you
- * can specify that all lock files go in a specific directory.
- * Don't define this unless you know you need it.
- */
-/* #define LOCKDIR "/usr/spool/locks" */
-
-/*
  * Define this if your passwords are stored in some type of
  * distributed name service, such as NIS, or NIS+.
  */
