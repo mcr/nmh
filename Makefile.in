@@ -10,6 +10,7 @@ SHELL = /bin/sh
 
 srcdir = @srcdir@
 abs_srcdir = @abs_srcdir@
+datarootdir = @datarootdir@
 VPATH  = @srcdir@
 
 # ========== USER CONFIGURATION SECTION ==========
