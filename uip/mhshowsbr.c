@@ -19,6 +19,7 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#include <sys/wait.h>
 
 extern int debugsw;
 

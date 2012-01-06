@@ -126,10 +126,11 @@ cpnumber(char **dest, int num, unsigned int wid, char fill, size_t n) {
 static void
 cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
     int remaining;     /* remaining output width available */
-    int c, ljust, w;
+    int c, ljust;
     int end;           /* number of input bytes remaining in str */
 #ifdef MULTIBYTE_SUPPORT
     int char_len;      /* bytes in current character */
+    int w;
     wchar_t wide_char;
 #endif
     char *sp;          /* current position in source string */

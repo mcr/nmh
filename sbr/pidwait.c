@@ -11,6 +11,7 @@
 #include <h/signals.h>
 #include <errno.h>
 #include <signal.h>
+#include <sys/wait.h>
 
 int
 pidwait (pid_t id, int sigsok)

@@ -54,7 +54,7 @@ short ospeed;
 char PC;
 # endif
 
-#endif notdef_lyndon_posix
+#endif /* notdef_lyndon_posix */
 
 static long speedcode;
 
