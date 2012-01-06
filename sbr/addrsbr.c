@@ -280,12 +280,10 @@ auxformat (struct mailname *mp, int extras)
 	else
 #endif /* DUMB */
 
-#ifndef	BANG
 	if (mp->m_type != UUCPHOST)
 	    snprintf (addr, sizeof(addr), mp->m_host ? "%s%s@%s" : "%s%s",
 		empty(mp->m_path), empty(mp->m_mbox), mp->m_host);
 	else
-#endif /* not BANG */
 	    snprintf (addr, sizeof(addr), "%s!%s", mp->m_host, mp->m_mbox);
 
     if (!extras)
@@ -354,11 +352,7 @@ adrsprintf (char *username, char *domain)
     if (domain == NULL)
 	domain = LocalName();
 
-#ifndef	BANG
     snprintf_return = snprintf (addr, sizeof(addr), "%s@%s", username, domain);
-#else /* BANG */
-    snprintf_return = snprintf (addr, sizeof(addr), "%s!%s", domain, username);
-#endif /* BANG */
 
     if (snprintf_return < 0 || snprintf_return >= sizeof(addr))
 	adios(NULL, "snprintf() error writing username (%d chars), domain (%d"
