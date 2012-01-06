@@ -125,10 +125,6 @@ int uprf (char *, char *);
 int vfgets (FILE *, char **);
 char *write_charset_8bit (void);
 
-#ifdef RPATHS
-int get_returnpath (char *, int, char *, int);
-#endif
-
 int mh_strcasecmp (const char *s1, const char *s2);
 int strncasecmp (const char *s1, const char *s2, size_t n);
 

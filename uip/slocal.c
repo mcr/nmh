@@ -1335,9 +1335,6 @@ you_lose:
 	if (first) {
 	    first = 0;
 	    if (!strncmp (buffer, "From ", i)) {
-#ifdef RPATHS
-		char *fp, *cp, *hp, *ep;
-#endif
 		/* get copy of envelope information ("From " line) */
 		envelope = getcpy (buffer);
 
@@ -1348,33 +1345,6 @@ you_lose:
 		    goto fputs_error;
 #endif
 
-#ifdef RPATHS
-		/*
-		 * Now create a "Return-Path:" line
-		 * from the "From " line.
-		 */
-		hp = cp = strchr(fp = envelope + i, ' ');
-		while ((hp = strchr(++hp, 'r')))
-		    if (uprf (hp, "remote from")) {
-			hp = strrchr(hp, ' ');
-			break;
-		    }
-		if (hp) {
-		    /* return path for UUCP style addressing */
-		    ep = strchr(++hp, '\n');
-		    snprintf (buffer, sizeof(buffer), "Return-Path: %.*s!%.*s\n",
-			(int)(ep - hp), hp, (int)(cp - fp), fp);
-		} else {
-		    /* return path for standard domain addressing */
-		    snprintf (buffer, sizeof(buffer), "Return-Path: %.*s\n",
-			(int)(cp - fp), fp);
-		}
-
-		/* Add Return-Path header to message */
-		fputs (buffer, ffp);
-		if (ferror (ffp))
-		    goto fputs_error;
-#endif
 		/* Put the delivery date in message */
 		fputs (ddate, ffp);
 		if (ferror (ffp))

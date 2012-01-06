@@ -87,11 +87,6 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
     char name[NAMESZ];
     static int rlwidth, slwidth;
 
-#ifdef RPATHS
-    char returnpath[BUFSIZ];
-    char deliverydate[BUFSIZ];
-#endif
-
     /* first-time only initialization */
     if (!scanl) {
 	if (width == 0) {
@@ -173,19 +168,6 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	}
 	if ((scnout = fopen (scnmsg, "w")) == NULL)
 	    adios (scnmsg, "unable to write");
-#ifdef RPATHS
-	/*
-	 * Add the Return-Path and Delivery-Date
-	 * header fields to message.
-	 */
-	if (get_returnpath (returnpath, sizeof(returnpath),
-		deliverydate, sizeof(deliverydate))) {
-	    FPUTS ("Return-Path: ");
-	    FPUTS (returnpath);
-	    FPUTS ("Delivery-Date: ");
-	    FPUTS (deliverydate);
-	}
-#endif /* RPATHS */
     }
 
     /* scan - main loop */

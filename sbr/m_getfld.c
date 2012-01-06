@@ -582,10 +582,6 @@ finish:
 }
 
 
-#ifdef RPATHS
-static char unixbuf[BUFSIZ] = "";
-#endif /* RPATHS */
-
 void
 m_unknown(FILE *iob)
 {
@@ -615,15 +611,8 @@ m_unknown(FILE *iob)
 	    && strncmp (text, "From ", 5) == 0) {
 	msg_style = MS_MBOX;
 	delimstr = "\nFrom ";
-#ifndef	RPATHS
 	while ((c = getc (iob)) != '\n' && c >= 0)
 	    ;
-#else /* RPATHS */
-	cp = unixbuf;
-	while ((c = getc (iob)) != '\n' && cp - unixbuf < BUFSIZ - 1)
-	    *cp++ = c;
-	*cp = 0;
-#endif /* RPATHS */
     } else {
 	/* not a Unix style maildrop */
 	fseek (iob, pos, SEEK_SET);
@@ -692,9 +681,6 @@ m_Eom (int c, FILE *iob)
     register long pos = 0L;
     register int i;
     char text[10];
-#ifdef RPATHS
-    register char *cp;
-#endif /* RPATHS */
 
     pos = ftell (iob);
     if ((i = fread (text, sizeof *text, edelimlen, iob)) != edelimlen
@@ -715,81 +701,13 @@ m_Eom (int c, FILE *iob)
     }
 
     if (msg_style == MS_MBOX) {
-#ifndef RPATHS
 	while ((c = getc (iob)) != '\n')
 	    if (c < 0)
 		break;
-#else /* RPATHS */
-	cp = unixbuf;
-	while ((c = getc (iob)) != '\n' && c >= 0 && cp - unixbuf < BUFSIZ - 1)
-	    *cp++ = c;
-	*cp = 0;
-#endif /* RPATHS */
     }
 
     return 1;
 }
-
-
-#ifdef RPATHS
-/*
- * Return the Return-Path and Delivery-Date
- * header information.
- *
- * Currently, I'm assuming that the "From " line
- * takes one of the following forms.
- *
- * From sender date remote from host   (for UUCP delivery)
- * From sender@host  date              (for sendmail delivery)
- */
-
-int
-get_returnpath (char *rp, int rplen, char *dd, int ddlen)
-{
-    char *ap, *bp, *cp, *dp;
-
-    ap = unixbuf;
-    if (!(bp = cp = strchr(ap, ' ')))
-	return 0;
-
-    /*
-     * Check for "remote from" in envelope to see
-     * if this message uses UUCP style addressing
-     */
-    while ((cp = strchr(++cp, 'r'))) {
-	if (strncmp (cp, "remote from", 11) == 0) {
-	    cp = strrchr (cp, ' ');
-	    break;
-	}
-    }
-
-    /*
-     * Get the Return-Path information from
-     * the "From " envelope.
-     */
-    if (cp) {
-	/* return path for UUCP style addressing */
-	dp = strchr (++cp, '\n');
-	snprintf (rp, rplen, "%.*s!%.*s\n", (int)(dp - cp), cp, (int)(bp - ap), ap);
-    } else {
-	/* return path for standard domain addressing */
-	snprintf (rp, rplen, "%.*s\n", (int)(bp - ap), ap);
-    }
-
-    /*
-     * advance over the spaces to get to
-     * delivery date on envelope
-     */
-    while (*bp == ' ')
-	bp++;
-
-    /* Now get delivery date from envelope */
-    snprintf (dd, ddlen, "%.*s\n", 24, bp);
-
-    unixbuf[0] = 0;
-    return 1;
-}
-#endif /* RPATHS */
 
 
 static unsigned char *

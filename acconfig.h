@@ -26,14 +26,6 @@
 /* #define REALLYDUMB  1 */
 
 /*
- * Directs inc/slocal to extract the envelope sender from "From "
- * line.  If inc/slocal is saving message to folder, then this
- * sender information is then used to create a Return-Path
- * header which is then added to the message.
- */
-#define RPATHS  1
-
-/*
  * If defined, slocal will use `mbox' format when saving to
  * your standard mail spool.  If not defined, it will use
  * mmdf format.
