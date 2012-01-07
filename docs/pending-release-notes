@@ -12,3 +12,5 @@ Things to add to the release notes for the next full release:
   config.h have been removed.
 - Support for the built-in ftp client (used when dealing with external body
   message parts in MIME messages) has been removed.
+- fileproc and mhlproc mh-profile entries will now be obeyed by
+  send, rcvdist, and whatnow.
