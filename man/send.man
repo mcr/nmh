@@ -116,7 +116,8 @@ includes the
 .I x-unix-mode
 attribute as noted above.  A value of
 .B 1
-suppresses both that and the \*(lqContent-Description\*(rq header, and
+suppresses that, puts the file name in the
+\*(lqContent-Description\*(rq header, and
 adds a \*(lqContent-Disposition\*(rq header.  A value of
 .B 2
 adds the file
@@ -139,10 +140,12 @@ Content-Description: ASCII text
 
 -attachformat 1:
 Content-Type: text/plain; name="VERSION"; charset="us-ascii"
+Content-Description: VERSION
 Content-Disposition: attachment; filename="VERSION"
 
 -attachformat 2:
 Content-Type: text/plain; name="VERSION"; charset="us-ascii"
+Content-Description: VERSION
 Content-Disposition: attachment; filename="VERSION"; modification-date="Mon, 19 Dec 2005 22:39:51 -0600"
 .fi
 .PP
