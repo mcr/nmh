@@ -168,6 +168,16 @@ main (int argc, char **argv)
     vec[vecp++] = "-library";
     vec[vecp++] = getcpy (m_maildir (""));
 
+    if ((cp = context_find ("fileproc"))) {
+      vec[vecp++] = "-fileproc";
+      vec[vecp++] = cp;
+    }
+
+    if ((cp = context_find ("mhlproc"))) {
+      vec[vecp++] = "-mhlproc";
+      vec[vecp++] = cp;
+    }
+
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {

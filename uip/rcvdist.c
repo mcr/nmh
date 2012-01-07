@@ -114,6 +114,10 @@ main (int argc, char **argv)
     vec[0] = r1bindex (postproc, '/');
     vec[vecp++] = "-dist";
     vec[vecp++] = drft;
+    if ((cp = context_find ("mhlproc"))) {
+      vec[vecp++] = "-mhlproc";
+      vec[vecp++] = cp;
+    }
     vec[vecp] = NULL;
 
     for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
