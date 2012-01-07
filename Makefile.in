@@ -111,6 +111,7 @@ superclean:  superclean-recursive  superclean-local
 
 mostlyclean-local:
 	rm -f *~
+	$(RM) -r autom4te.cache
 
 clean-local: mostlyclean-local
 
