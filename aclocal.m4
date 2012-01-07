@@ -56,11 +56,11 @@ dnl my autoconf skills -- feel free to put it in :-> -- PMM
 
 nmh_saved_libs="$LIBS"
 LIBS="$nmh_libs $5 $LIBS"
-AC_LINK_IFELSE(AC_LANG_PROGRAM([[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #define DB_DBM_HSEARCH 1
 #include <$1>
 ]],
-[[dbm_open("",0,0);]]),[nmh_ndbm_found=yes],[nmh_ndbm_found=no])
+[[dbm_open("",0,0);]])],[nmh_ndbm_found=yes],[nmh_ndbm_found=no])
 LIBS="$nmh_saved_libs"
 
 if test "$nmh_ndbm_found" = "yes"; then
