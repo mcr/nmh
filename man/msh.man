@@ -118,20 +118,7 @@ brief overview.  To terminate
 .BR msh ,
 type CTRL\-D, or use the
 .B quit
-command.  If
-.B msh
-is being invoked from
-.BR bbc ,
-then typing CTRL\-D will also tell
-.B bbc
-to exit as well, while
-using the
-.B quit
-command will return control to
-.BR bbc ,
-and
-.B bbc
-will continue examining the list of BBoards that it is scanning.
+command.
 .PP
 If the file is writable and has been modified, then using
 .B quit
@@ -153,64 +140,12 @@ for details about the
 .B $MH
 environment variable.
 .PP
-When invoked from
-.BR bbc ,
-two special features are enabled:
-First, the
-.B \-scan
-switch directs
-.B msh
-to do a
-.RB \*(lq scan
-.BR unseen \*(rq
-on start\-up if new items are present in the BBoard.  This feature is
-best used from
-.BR bbc ,
-which correctly sets the stage.  Second, the
-.B mark
-command in
-.B msh
-acts specially when you are reading a
-BBoard, since
-.B msh
-will consult the sequence \*(lqunseen\*(rq in
-determining what messages you have actually read.  When
-.B msh
-exits,
-it reports this information to
-.BR bbc .
-In addition, if you give the
-.B mark
-command with no arguments,
-.B msh
-will interpret it as
-.RB \*(lq mark
-.B \-sequence
-.B unseen
-.B \-delete
-.B \-nozero
-.BR all \*(rq
-Hence, to discard
-all of the messages in the current BBoard you're reading, just use the
-.B mark
-command with no arguments.
-.PP
-Normally, the
+The
 .B exit
 command is identical to the
 .B quit
 command in
 .BR msh .
-When run under
-.B bbc
-however,
-.B exit
-directs
-.B msh
-to mark all messages as seen and then
-.BR quit .
-For speedy type\-in, this command is often abbreviated as just
-.BR qe .
 .PP
 .B msh
 supports an output redirection facility.  Commands may be
@@ -265,7 +200,7 @@ are separated by whitespace (spaces and tabs).
 .fi
 
 .SH "SEE ALSO"
-bbc(1)
+packf(1)
 
 .SH DEFAULTS
 .nf

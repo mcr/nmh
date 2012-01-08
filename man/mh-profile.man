@@ -206,14 +206,6 @@ arguments to \*(lqWhat now?\*(rq, then \*(lqnexteditor\*(rq is used.
 (profile, no default)
 .RE
 .PP
-.BR bboards :
-system
-.RS 5
-Tells
-.B bbc
-which BBoards you are interested in.  (profile, default: system)
-.RE
-.PP
 .BR Folder\-Stack :
 .I folders
 .RS 5
