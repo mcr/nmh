@@ -18,7 +18,7 @@ CC       = @CC@
 CFLAGS   = @CFLAGS@
 DEFS     = @DEFS@
 CONFIGDEFS = -DNMHETCDIR='"$(etcdir)"' -DMAILSPOOL='"$(mailspool)"' -DSENDMAILPATH='"$(sendmailpath)"'
-INCLUDES = -I.. -I. -I$(top_srcdir) @CPPFLAGS@
+INCLUDES = -I. -I$(top_srcdir) @CPPFLAGS@
 
 LEX    = @LEX@
 AWK    = @AWK@

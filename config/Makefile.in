@@ -23,7 +23,7 @@ default_pager  = @pagerpath@
 CC         = @CC@
 CFLAGS     = @CFLAGS@
 DEFS       = @DEFS@
-INCLUDES   = -I.. -I$(top_srcdir) @CPPFLAGS@
+INCLUDES   = -I$(top_srcdir) @CPPFLAGS@
 CONFIGDEFS = -DNMHBINDIR='"$(bindir)"' -DNMHETCDIR='"$(etcdir)"' -DNMHLIBDIR='"$(libdir)"' \
              -DDEFAULT_EDITOR='"$(default_editor)"' -DDEFAULT_PAGER='"$(default_pager)"'
 

@@ -17,7 +17,7 @@ etcdir      = @sysconfdir@
 CC       = @CC@
 CFLAGS   = @CFLAGS@
 DEFS     = @DEFS@
-INCLUDES = -I../.. -I$(srcdir) -I$(top_srcdir) @CPPFLAGS@
+INCLUDES = -I$(srcdir) -I$(top_srcdir) @CPPFLAGS@
 LINT	= @LINT@
 LINTFLAGS = @LINTFLAGS@
 
