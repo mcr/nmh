@@ -271,7 +271,7 @@ do_cache:
 	    adios (NULL, "out of memory");
 	ctp = cts;
 
-	if ((ct = parse_mime (file)));
+	if ((ct = parse_mime (file)))
 	    *ctp++ = ct;
     } else {
 	/*
