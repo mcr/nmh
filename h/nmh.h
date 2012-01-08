@@ -62,8 +62,3 @@
 #endif
 
 #include <signal.h>
- 
-#define bcmp(b1,b2,length)      memcmp(b1, b2, length)
-#define bcopy(b1,b2,length)     memcpy (b2, b1, length)
-#define bcpy(b1,b2,length)      memcmp (b1, b2, length)
-#define bzero(b,length)         memset (b, 0, length)
