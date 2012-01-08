@@ -3,7 +3,9 @@
  * signals.h -- header file for nmh signal interface
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 /*
  * The type for a signal handler
