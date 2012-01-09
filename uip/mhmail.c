@@ -37,7 +37,7 @@ static char tmpfil[BUFSIZ];
 /*
  * static prototypes
  */
-static RETSIGTYPE intrser (int);
+static void intrser (int);
 
 
 int
@@ -197,7 +197,7 @@ main (int argc, char **argv)
 }
 
 
-static RETSIGTYPE
+static void
 intrser (int i)
 {
 #ifndef RELIABLE_SIGNALS

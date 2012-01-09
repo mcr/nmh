@@ -10,7 +10,7 @@
 /*
  * The type for a signal handler
  */
-typedef RETSIGTYPE (*SIGNAL_HANDLER)(int);
+typedef void (*SIGNAL_HANDLER)(int);
 
 /*
  * If not a POSIX machine, then we create our

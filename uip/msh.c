@@ -195,10 +195,10 @@ static int initaux_io (struct Cmd *);
 static void fin_io (struct Cmd *, int);
 static void finaux_io (struct Cmd *);
 static void m_init (void);
-static RETSIGTYPE intrser (int);
-static RETSIGTYPE pipeser (int);
-static RETSIGTYPE quitser (int);
-static RETSIGTYPE alrmser (int);
+static void intrser (int);
+static void pipeser (int);
+static void quitser (int);
+static void alrmser (int);
 static int pINI (void);
 static int pQRY (char *, int);
 static int pQRY1 (int);
@@ -1618,7 +1618,7 @@ seq_setcur (struct msgs *mp, int msgnum)
 
 
 
-static RETSIGTYPE
+static void
 intrser (int i)
 {
 #ifndef RELIABLE_SIGNALS
@@ -1635,7 +1635,7 @@ intrser (int i)
 }
 
 
-static RETSIGTYPE
+static void
 pipeser (int i)
 {
 #ifndef RELIABLE_SIGNALS
@@ -1654,7 +1654,7 @@ pipeser (int i)
 }
 
 
-static RETSIGTYPE
+static void
 quitser (int i)
 {
 #ifndef RELIABLE_SIGNALS
@@ -1671,7 +1671,7 @@ quitser (int i)
 }
 
 
-static RETSIGTYPE
+static void
 alrmser (int i)
 {
     longjmp (peerenv, DONE);

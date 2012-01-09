@@ -18,7 +18,7 @@ static jmp_buf sigenv;
 /*
  * static prototypes
  */
-static RETSIGTYPE intrser (int);
+static void intrser (int);
 
 
 char **
@@ -67,7 +67,7 @@ getans (char *prompt, struct swit *ansp)
 }
 
 
-static RETSIGTYPE
+static void
 intrser (int i)
 {
     /*

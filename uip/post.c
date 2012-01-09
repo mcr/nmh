@@ -1611,7 +1611,7 @@ do_text (char *file, int fd)
  * SIGNAL HANDLING
  */
 
-static RETSIGTYPE
+static void
 sigser (int i)
 {
 #ifndef RELIABLE_SIGNALS

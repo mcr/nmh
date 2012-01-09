@@ -75,7 +75,7 @@ static int show_multi_aux (CT, int, int, char *);
 static int show_message_rfc822 (CT, int, int);
 static int show_partial (CT, int, int);
 static int show_external (CT, int, int);
-static RETSIGTYPE intrser (int);
+static void intrser (int);
 
 
 /*
@@ -1081,7 +1081,7 @@ show_external (CT ct, int serial, int alternate)
 }
 
 
-static RETSIGTYPE
+static void
 intrser (int i)
 {
 #ifndef RELIABLE_SIGNALS

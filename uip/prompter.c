@@ -70,7 +70,7 @@ static jmp_buf sigenv;
 int getln (char *, int);
 static int chrcnv (char *);
 static void chrdsp (char *, char);
-static RETSIGTYPE intrser (int);
+static void intrser (int);
 
 
 int
@@ -393,7 +393,7 @@ getln (char *buffer, int n)
 }
 
 
-static RETSIGTYPE
+static void
 intrser (int i)
 {
 #ifndef	RELIABLE_SIGNALS

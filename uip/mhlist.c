@@ -108,7 +108,7 @@ void freects_done (int) NORETURN;
 /*
  * static prototypes
  */
-static RETSIGTYPE pipeser (int);
+static void pipeser (int);
 
 
 int
@@ -371,7 +371,7 @@ do_cache:
 }
 
 
-static RETSIGTYPE
+static void
 pipeser (int i)
 {
     if (i == SIGQUIT) {

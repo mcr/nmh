@@ -190,7 +190,7 @@ static int timely (char *, char *);
 static int usr_file (int, char *, int);
 static int usr_pipe (int, char *, char *, char **, int);
 static int usr_folder (int, char *);
-static RETSIGTYPE alrmser (int);
+static void alrmser (int);
 static void get_sender (char *, char **);
 static int copy_message (int, char *, int);
 static void verbose_printf (char *fmt, ...);
@@ -1211,7 +1211,7 @@ usr_pipe (int fd, char *cmd, char *pgm, char **vec, int suppress)
 }
 
 
-static RETSIGTYPE
+static void
 alrmser (int i)
 {
 #ifndef RELIABLE_SIGNALS

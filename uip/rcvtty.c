@@ -78,7 +78,7 @@ char *getusername(void);
 /*
  * static prototypes
  */
-static RETSIGTYPE alrmser (int);
+static void alrmser (int);
 static int message_fd (char **);
 static int header_fd (void);
 static void alert (char *, int);
@@ -204,7 +204,7 @@ main (int argc, char **argv)
 }
 
 
-static RETSIGTYPE
+static void
 alrmser (int i)
 {
 #ifndef RELIABLE_SIGNALS

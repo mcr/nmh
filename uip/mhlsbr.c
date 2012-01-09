@@ -271,9 +271,9 @@ static void putcomp (struct mcomp *, struct mcomp *, int);
 static char *oneline (char *, long);
 static void putstr (char *);
 static void putch (char);
-static RETSIGTYPE intrser (int);
-static RETSIGTYPE pipeser (int);
-static RETSIGTYPE quitser (int);
+static void intrser (int);
+static void pipeser (int);
+static void quitser (int);
 static void face_format (struct mcomp *);
 static int doface (struct mcomp *);
 static void mhladios (char *, char *, ...);
@@ -1444,7 +1444,7 @@ putch (char ch)
 }
 
 
-static RETSIGTYPE
+static void
 intrser (int i)
 {
 #ifndef RELIABLE_SIGNALS
@@ -1457,7 +1457,7 @@ intrser (int i)
 }
 
 
-static RETSIGTYPE
+static void
 pipeser (int i)
 {
 #ifndef RELIABLE_SIGNALS
@@ -1468,7 +1468,7 @@ pipeser (int i)
 }
 
 
-static RETSIGTYPE
+static void
 quitser (int i)
 {
 #ifndef RELIABLE_SIGNALS

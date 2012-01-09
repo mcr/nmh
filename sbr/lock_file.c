@@ -103,7 +103,7 @@ static int lkopen_dot (char *, int, mode_t);
 static void lockname (char *, struct lockinfo *, int);
 static void timerON (char *, int);
 static void timerOFF (int);
-static RETSIGTYPE alrmser (int);
+static void alrmser (int);
 
 #if !defined(HAVE_LIBLOCKFILE)
 static int lockit (struct lockinfo *);
@@ -585,7 +585,7 @@ timerOFF (int fd)
  * lockfiles, so another command doesn't remove them.
  */
 
-static RETSIGTYPE
+static void
 alrmser (int sig)
 {
     char *lockfile;

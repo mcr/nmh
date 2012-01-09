@@ -105,7 +105,7 @@ void freects_done (int) NORETURN;
  * static prototypes
  */
 static int write_content (CT *, char *);
-static RETSIGTYPE pipeser (int);
+static void pipeser (int);
 
 
 int
@@ -377,7 +377,7 @@ write_content (CT *cts, char *outfile)
 }
 
 
-static RETSIGTYPE
+static void
 pipeser (int i)
 {
     if (i == SIGQUIT) {
