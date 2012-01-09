@@ -75,7 +75,7 @@ INSTALL_DATA    = @INSTALL_DATA@
 # all files in this directory included in the distribution
 DIST = ChangeLog COPYRIGHT DATE INSTALL MACHINES README VERSION		\
 	ChangeLog install-sh mkinstalldirs Makefile.in aclocal.m4	\
-	acconfig.h config.h.in configure.in configure stamp-h.in	\
+	config.h.in configure.ac configure stamp-h.in	\
 	config.sub config.guess
 
 # subdirectories in distribution
@@ -145,7 +145,7 @@ Makefile: Makefile.in config.status
 config.status: configure VERSION
 	./config.status --recheck
 
-configure: configure.in aclocal.m4
+configure: configure.ac aclocal.m4
 	cd $(srcdir) && autoconf
 
 config.h: stamp-h
@@ -153,7 +153,7 @@ stamp-h: config.h.in config.status
 	./config.status config.h stamp
 
 config.h.in: stamp-h.in
-stamp-h.in: configure.in acconfig.h aclocal.m4
+stamp-h.in: configure.ac aclocal.m4
 	cd $(srcdir) && autoheader
 	date > $@
 

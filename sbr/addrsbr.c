@@ -17,6 +17,9 @@
    addresses.  The routines in sbr/addrsbr.c associate semantics with those
    addresses.  
 
+   The comments below are left in for historical purposes; DUMB and
+   REALLYDUMB are now the default in the code.
+
    If #ifdef DUMB is in effect, a full 822-style parser is called
    for syntax recongition.  This breaks each address into its components.
    Note however that no semantics are assumed about the parts or their
@@ -113,9 +116,6 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
 {
     char *pp;
     struct mailname *mp;
-#ifndef	DUMB
-    char *dp;
-#endif /* not DUMB */
 
     if (err[0]) {
 	if (eresult)
@@ -188,13 +188,11 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
 	else {
 	    mp->m_nohost = 1;
 	    mp->m_mbox = getcpy (mbox);
-#ifdef DUMB
 	    if (route == NULL && dftype == LOCALHOST) {
 		mp->m_host = NULL;
 		mp->m_type = dftype;
 	    }
 	    else
-#endif /* DUMB */
 	    {
 		mp->m_host = route ? NULL : getcpy (dfhost);
 		mp->m_type = route ? NETHOST : dftype;
@@ -206,27 +204,8 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
     if (wanthost == AD_NHST)
 	mp->m_type = !mh_strcasecmp (LocalName (), mp->m_host)
 	    ? LOCALHOST : NETHOST;
-#ifdef DUMB
     else
 	mp->m_type = mh_strcasecmp (LocalName(), mp->m_host) ?  NETHOST : LOCALHOST;
-#else /* not DUMB */
-    else
-	if (pp = OfficialName (mp->m_host)) {
-    got_real_host: ;
-	    free (mp->m_host);
-	    mp->m_host = getcpy (pp);
-	    mp->m_type = mh_strcasecmp (LocalName(), mp->m_host) ? NETHOST : LOCALHOST;
-	}
-	else {
-	    if (dp = strchr(mp->m_host, '.')) {
-		*dp = NULL;
-		if (pp = OfficialName (mp->m_host))
-		    goto got_real_host;
-		*dp = '.';
-	    }
-	    mp->m_type = BADHOST;
-	}
-#endif /* not DUMB */
 
 got_host: ;
     if (route)
@@ -274,11 +253,9 @@ auxformat (struct mailname *mp, int extras)
     static char addr[BUFSIZ];
     static char buffer[BUFSIZ];
 
-#ifdef DUMB
 	if (mp->m_nohost)
 	    strncpy (addr, mp->m_mbox ? mp->m_mbox : "", sizeof(addr));
 	else
-#endif /* DUMB */
 
 	if (mp->m_type != UUCPHOST)
 	    snprintf (addr, sizeof(addr), mp->m_host ? "%s%s@%s" : "%s%s",
@@ -345,9 +322,7 @@ adrsprintf (char *username, char *domain)
 	}
     }
 
-#ifdef REALLYDUMB
     return username;
-#endif
 
     if (domain == NULL)
 	domain = LocalName();
