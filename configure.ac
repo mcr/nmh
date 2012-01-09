@@ -767,59 +767,6 @@ SIGNAL_H=$nmh_cv_path_signal_h
 AC_SUBST(SIGNAL_H)dnl
 
 dnl ----------------
-dnl OS SPECIFIC DEFINES
-dnl ----------------
-AH_TEMPLATE(SYS5, [Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX, SCO5; only used in vmh.c which is not built.])
-AH_TEMPLATE(SVR4, [Defined for Solaris 2.x, Irix, OSF/1, HP-UX, AIX; only used in vmh.c which is not built.])
-AH_TEMPLATE(BSD44, [Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS, Mac OS X/Rhapsody; only used in vmh.c which is not built.])
-AH_TEMPLATE(BSD42, [Defined for SunOS 4, FreeBSD, NetBSD, OpenBSD, BSD/OS, Mac OS X/Rhapsody -- does PicoBSD have uname?])
-AH_TEMPLATE(SCO_5_STDIO, [Defined for SCO5.])
-
-case "$target_os" in
-
-  solaris2*)
-    AC_DEFINE(SYS5)
-    AC_DEFINE(SVR4)
-    ;;
-  irix*)
-    AC_DEFINE(SYS5)
-    AC_DEFINE(SVR4)
-    ;;
-  osf*)
-    AC_DEFINE(SYS5)
-    AC_DEFINE(SVR4)
-    ;;
-  aix*)
-    AC_DEFINE(SYS5)
-    AC_DEFINE(SVR4)
-    ;;
-  sunos4*)
-    AC_DEFINE(BSD42)
-    ;;
-  freebsd*)  
-    AC_DEFINE(BSD42)
-    AC_DEFINE(BSD44)
-    ;;
-  netbsd*)
-    AC_DEFINE(BSD42)
-    AC_DEFINE(BSD44)
-    ;;
-  openbsd*)
-    AC_DEFINE(BSD42)
-    AC_DEFINE(BSD44)
-    ;;
-  bsd/os*)
-    AC_DEFINE(BSD42)
-    AC_DEFINE(BSD44)
-    ;;
-  sco5*)
-    AC_DEFINE(SYS5)
-    AC_DEFINE(SCO_5_STDIO)
-    ;;
-esac
-
-
-dnl ----------------
 dnl OUTPUT MAKEFILES
 dnl ----------------
 AC_CONFIG_FILES(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \

@@ -312,11 +312,7 @@ find_cache_aux (int writing, char *directory, char *id,
     static int partno, pid;
     static time_t clock = 0;
 
-#ifdef BSD42
-    usemap = strchr (id, '/') ? 1 : 0;
-#else
     usemap = 1;
-#endif
 
     if (debugsw)
 	fprintf (stderr, "find_cache_aux %s usemap=%d\n", directory, usemap);

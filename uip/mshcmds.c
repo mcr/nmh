@@ -2406,19 +2406,7 @@ ask (int msgnum)
     fflush (stdout);
     buf[0] = 0;
 
-#ifndef	BSD42
     read (fileno (stdout), buf, sizeof buf);
-#else /* BSD42 */
-    switch (setjmp (sigenv)) {
-	case OK: 
-	    should_intr = 1;
-	    read (fileno (stdout), buf, sizeof buf);/* fall... */
-
-	default: 
-	    should_intr = 0;
-	    break;
-    }
-#endif /* BSD42 */
 
     if (strchr(buf, '\n') == NULL)
 	putchar ('\n');

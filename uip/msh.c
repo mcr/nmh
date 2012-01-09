@@ -150,11 +150,6 @@ int interrupted;		/* SIGINT detected  */
 int broken_pipe;		/* SIGPIPE detected */
 int told_to_quit;		/* SIGQUIT detected */
 
-#ifdef BSD42
-int should_intr;		/* signal handler should interrupt call */
-jmp_buf sigenv;			/* the environment pointer              */
-#endif
-
 /*
  * prototypes
  */
@@ -336,9 +331,6 @@ main (int argc, char **argv)
 	ioctl (pfd, FIOCLEX, NULL);
 #endif /* FIOCLEX */
 
-#ifdef BSD42
-    should_intr = 0;
-#endif	/* BSD42 */
     istat = SIGNAL2 (SIGINT, intrser);
     qstat = SIGNAL2 (SIGQUIT, quitser);
 
@@ -1054,11 +1046,9 @@ display_info (int scansw)
     if (sp == NULL) {
 	if ((sd = dup (fileno (stdout))) == NOTOK)
 	    padios ("standard output", "unable to dup");
-#ifndef BSD42			/* XXX */
 #ifdef FIOCLEX
 	ioctl (sd, FIOCLEX, NULL);
 #endif /* FIOCLEX */
-#endif /* not BSD42 */
 	if ((sp = fdopen (sd, "w")) == NULL)
 	    padios ("standard output", "unable to fdopen");
     }
@@ -1216,33 +1206,11 @@ getargs (char *prompt, struct swit *sw, struct Cmd *cmdp)
     told_to_quit = 0;
     for (;;) {
 	interrupted = 0;
-#ifdef BSD42
-	switch (setjmp (sigenv)) {
-	    case OK:
-		should_intr = 1;
-		break;
-
-	    default:
-		should_intr = 0;
-		if (interrupted && !told_to_quit) {
-		    putchar ('\n');
-		    continue;
-		}
-		if (ppid > 0)
-#ifdef SIGEMT
-		    kill (ppid, SIGEMT);
-#else
-		    kill (ppid, SIGTERM);
-#endif
-		return EOF;
-	}
-#endif /* BSD42 */
 	if (interactive) {
 	    printf ("%s", prompt);
 	    fflush (stdout);
 	}
 	for (cp = buffer; (i = getchar ()) != '\n';) {
-#ifndef BSD42
 	    if (interrupted && !told_to_quit) {
 		buffer[0] = '\0';
 		putchar ('\n');
@@ -1257,10 +1225,6 @@ getargs (char *prompt, struct swit *sw, struct Cmd *cmdp)
 #endif
 		return EOF;
 	    }
-#else /* BSD42 */
-	    if (i == EOF)
-		longjmp (sigenv, DONE);
-#endif /* BSD42 */
 	    if (cp < &buffer[sizeof buffer - 2])
 		*cp++ = i;
 	}
@@ -1288,9 +1252,6 @@ getargs (char *prompt, struct swit *sw, struct Cmd *cmdp)
 			cmdp->args[0]);
 		continue;
 	    default: 
-#ifdef BSD42
-		should_intr = 0;
-#endif /* BSD42 */
 		return i;
 	}
     }
@@ -1623,11 +1584,6 @@ intrser (int i)
 {
     discard (stdout);
     interrupted++;
-
-#ifdef BSD42
-    if (should_intr)
-	longjmp (sigenv, NOTOK);
-#endif
 }
 
 
@@ -1638,11 +1594,6 @@ pipeser (int i)
 	fprintf (stderr, "broken pipe\n");
     told_to_quit++;
     interrupted++;
-
-#ifdef BSD42
-    if (should_intr)
-	longjmp (sigenv, NOTOK);
-#endif
 }
 
 
@@ -1651,11 +1602,6 @@ quitser (int i)
 {
     told_to_quit++;
     interrupted++;
-
-#ifdef BSD42
-    if (should_intr)
-	longjmp (sigenv, NOTOK);
-#endif
 }
 
 

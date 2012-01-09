@@ -75,11 +75,6 @@ extern int interrupted;		/* SIGINT detected  */
 extern int broken_pipe;		/* SIGPIPE detected */
 extern int told_to_quit;	/* SIGQUIT detected */
 
-#ifdef BSD42
-extern int should_intr;		/* signal handler should interrupt call */
-extern jmp_buf sigenv;		/* the environment pointer */
-#endif
-
 /*
  * prototypes
  */

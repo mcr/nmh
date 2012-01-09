@@ -370,7 +370,6 @@ getuserinfo (void)
        field, like phone number.  Also, if mmailid masquerading is turned on due
        to "mmailid" appearing on the "masquerade:" line of mts.conf, stop if we
        hit a '<' (which should precede any ','s). */
-#ifndef BSD42
     if (mmailid_masquerading)
 	/* Stop at ',' or '<'. */
 	for (cp = fullname; *np != '\0' && *np != ',' && *np != '<';
@@ -385,46 +384,6 @@ getuserinfo (void)
 	for (cp = fullname; *np != '\0' && *np != ',';
 	     *cp++ = *np++)
 	    continue;
-#else /* BSD42 */
-    /* On BSD(-derived) systems, the system utilities that deal with the GECOS
-       field (finger, mail, sendmail, etc.) translate any '&' character in it to
-       the login name, with the first letter capitalized.  So, for instance,
-       fingering a user "bob" with the GECOS field "& Jones" would reveal him to
-       be "In real life: Bob Jones".  Surprisingly, though, the OS doesn't do
-       the translation for you, so we have to do it manually here. */
-    if (mmailid_masquerading)
-	/* Stop at ',' or '<'. */
-	for (cp = fullname;
-	     *np != '\0' && *np != ',' && *np != '<';) {
-	    if (*np == '&')	{	/* blech! */
-		strcpy (cp, pw->pw_name);
-		*cp = toupper(*cp);
-		while (*cp)
-		    cp++;
-		np++;
-	    } else {
-		*cp++ = *np++;
-	    }
-	}
-    else
-	/* Allow '<' as a legal character of the user's name.  This code is
-	   basically a duplicate of the code above the "else" -- we don't
-	   collapse it down to one copy and put the mmailid_masquerading check
-	   inside the loop with "(x ? y : z)" because that's inefficient and the
-	   value'll never change while it's in there. */
-	for (cp = fullname;
-	     *np != '\0' && *np != ',';) {
-	    if (*np == '&')	{	/* blech! */
-		strcpy (cp, pw->pw_name);
-		*cp = toupper(*cp);
-		while (*cp)
-		    cp++;
-		np++;
-	    } else {
-		*cp++ = *np++;
-	    }
-	}
-#endif /* BSD42 */
     *cp = '\0';
 
     if (mmailid_masquerading) {

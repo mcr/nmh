@@ -11,13 +11,6 @@
 
 #include <termios.h>
 
-#ifdef SCO_5_STDIO
-# define _ptr  __ptr
-# define _cnt  __cnt
-# define _base __base
-# define _filbuf(fp)  ((fp)->__cnt = 0, __filbuf(fp))
-#endif
-
 
 void
 discard (FILE *io)
