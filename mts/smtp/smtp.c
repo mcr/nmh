@@ -158,7 +158,7 @@ static int sm_werror (void);
 static int smhear (void);
 static int sm_rrecord (char *, int *);
 static int sm_rerror (int);
-static RETSIGTYPE alrmser (int);
+static void alrmser (int);
 static char *EHLOset (char *);
 static int sm_fwrite(char *, int);
 static int sm_fputs(char *);
@@ -446,7 +446,7 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 #ifdef CYRUS_SASL
     char *server_mechs;
 #endif /* CYRUS_SASL */
-    int i, result, vecp;
+    unsigned int i, result, vecp;
     int pdi[2], pdo[2];
     char *vec[15];
 
@@ -1663,7 +1663,7 @@ sm_rerror (int rc)
 }
 
 
-static RETSIGTYPE
+static void
 alrmser (int i)
 {
 #ifndef	RELIABLE_SIGNALS
