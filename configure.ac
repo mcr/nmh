@@ -1,5 +1,5 @@
 dnl
-dnl configure.in -- autoconf template for nmh
+dnl configure.ac -- autoconf template for nmh
 dnl
 
 dnl Move this up a bit
@@ -487,8 +487,7 @@ AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
 dnl ---------------
 dnl CHECK FUNCTIONS
 dnl ---------------
-AC_CHECK_FUNCS(writev lstat tzset getutent nl_langinfo sigaction sigprocmask \
-	       sigblock sigsetmask sighold sigrelse)
+AC_CHECK_FUNCS(writev lstat tzset getutent nl_langinfo)
 
 dnl Look for the initgroups() declaration.  On AIX 4.[13], Solaris 4.1.3, and
 dnl ULTRIX 4.2A the function is defined in libc but there's no declaration in
@@ -763,18 +762,6 @@ AC_TYPE_UID_T
 AC_TYPE_MODE_T
 AC_TYPE_SIZE_T
 
-dnl Check for sigset_t.  Currently I'm looking in
-dnl <sys/types.h> and <signal.h>.  Others might need
-dnl to be added.
-AC_CACHE_CHECK(for sigset_t, nmh_cv_type_sigset_t,
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
-#include <signal.h>]], [[sigset_t tempsigset;]])],
-nmh_cv_type_sigset_t=yes,nmh_cv_type_sigset_t=no)])
-if test $nmh_cv_type_sigset_t = no; then
-  AC_DEFINE(sigset_t, unsigned int,
-    [Define to `unsigned int' if <sys/types.h> or <signal.h> doesn't define.])
-fi
-
 dnl ----------------
 dnl CHECK STRUCTURES
 dnl ----------------
@@ -794,34 +781,6 @@ AC_CHECK_MEMBERS(struct tm.tm_gmtoff,,,
 AC_CHECK_MEMBERS(struct utmp.ut_type,,,[#include <utmp.h>])
 
 AC_STRUCT_DIRENT_D_TYPE
-
-dnl -------------
-dnl CHECK SIGNALS
-dnl -------------
-dnl What style of signal do you have (POSIX, BSD, or SYSV)?
-AH_TEMPLATE(RELIABLE_SIGNALS, [Define to 1 if you have reliable signals.])
-AC_MSG_CHECKING(what style of signals to use)
-if test $ac_cv_func_sigaction = yes -a $ac_cv_func_sigprocmask = yes; then
-  signals_style=POSIX_SIGNALS
-  AC_DEFINE(POSIX_SIGNALS, 1,
-    [Define to 1 if you use POSIX style signal handling.])
-  AC_DEFINE(RELIABLE_SIGNALS)
-elif test $ac_cv_func_sigblock = yes -a $ac_cv_func_sigsetmask = yes; then
-  signals_style=BSD_SIGNALS
-  AC_DEFINE(BSD_SIGNALS,1,
-    [Define to 1 if you use BSD style signal handling (and can block signals).])
-  AC_DEFINE(RELIABLE_SIGNALS)
-elif test $ac_cv_func_sighold = yes -a $ac_cv_func_sigrelse = yes; then
-  signals_style=SYSV_SIGNALS
-  AC_DEFINE(SYSV_SIGNALS,1,
-    [Define to 1 if you use SYSV style signal handling (and can block signals).])
-else
-  signals_style=NO_SIGNAL_BLOCKING
-  AC_DEFINE(NO_SIGNAL_BLOCKING,1,
-    [Define to 1 if you have no signal blocking at all (bummer).])
-fi
-
-AC_MSG_RESULT($signals_style)
 
 dnl Where is <signal.h> located?  Needed as input for signames.awk
 AC_CACHE_CHECK(where signal.h is located, nmh_cv_path_signal_h,

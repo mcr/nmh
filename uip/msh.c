@@ -1621,10 +1621,6 @@ seq_setcur (struct msgs *mp, int msgnum)
 static void
 intrser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (SIGINT, intrser);
-#endif
-
     discard (stdout);
     interrupted++;
 
@@ -1638,10 +1634,6 @@ intrser (int i)
 static void
 pipeser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (SIGPIPE, pipeser);
-#endif
-
     if (broken_pipe++ == 0)
 	fprintf (stderr, "broken pipe\n");
     told_to_quit++;
@@ -1657,10 +1649,6 @@ pipeser (int i)
 static void
 quitser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (SIGQUIT, quitser);
-#endif
-
     told_to_quit++;
     interrupted++;
 

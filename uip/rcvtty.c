@@ -207,10 +207,6 @@ main (int argc, char **argv)
 static void
 alrmser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (SIGALRM, alrmser);
-#endif
-
     longjmp (myctx, 1);
 }
 

@@ -1447,10 +1447,6 @@ putch (char ch)
 static void
 intrser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (SIGINT, intrser);
-#endif
-
     discard (stdout);
     putchar ('\n');
     longjmp (env, DONE);
@@ -1460,10 +1456,6 @@ intrser (int i)
 static void
 pipeser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (SIGPIPE, pipeser);
-#endif
-
     done (NOTOK);
 }
 
@@ -1471,10 +1463,6 @@ pipeser (int i)
 static void
 quitser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (SIGQUIT, quitser);
-#endif
-
     putchar ('\n');
     fflush (stdout);
     done (NOTOK);

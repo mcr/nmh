@@ -396,10 +396,6 @@ getln (char *buffer, int n)
 static void
 intrser (int i)
 {
-#ifndef	RELIABLE_SIGNALS
-    SIGNAL (SIGINT, intrser);
-#endif
-
     if (wtuser)
 	longjmp (sigenv, NOTOK);
     sigint++;

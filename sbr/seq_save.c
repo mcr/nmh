@@ -87,7 +87,7 @@ priv:
 		sigaddset(&set, SIGINT);
 		sigaddset(&set, SIGQUIT);
 		sigaddset(&set, SIGTERM);
-		SIGPROCMASK (SIG_BLOCK, &set, &oset);
+		sigprocmask (SIG_BLOCK, &set, &oset);
 	    }
 	    fprintf (fp, "%s: %s\n", mp->msgattrs[i], cp);
 	}
@@ -95,7 +95,7 @@ priv:
 
     if (fp) {
 	lkfclose (fp, seqfile);
-	SIGPROCMASK (SIG_SETMASK, &oset, &set);  /* reset signal mask */
+	sigprocmask (SIG_SETMASK, &oset, &set);  /* reset signal mask */
     } else {
 	/*
 	 * If folder is not readonly, and we didn't save any

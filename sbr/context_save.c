@@ -41,7 +41,7 @@ context_save (void)
     sigaddset (&set, SIGINT);
     sigaddset (&set, SIGQUIT);
     sigaddset (&set, SIGTERM);
-    SIGPROCMASK (SIG_BLOCK, &set, &oset);
+    sigprocmask (SIG_BLOCK, &set, &oset);
 
     if (!(out = lkfopen (ctxpath, "w")))
 	adios (ctxpath, "unable to write");
@@ -50,7 +50,7 @@ context_save (void)
 	    fprintf (out, "%s: %s\n", np->n_name, np->n_field);
     lkfclose (out, ctxpath);
 
-    SIGPROCMASK (SIG_SETMASK, &oset, &set); /* reset the signal mask */
+    sigprocmask (SIG_SETMASK, &oset, &set); /* reset the signal mask */
 
     if (action == 0)
 	_exit (0);		/* we are child, time to die */

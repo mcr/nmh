@@ -200,11 +200,6 @@ main (int argc, char **argv)
 static void
 intrser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    if (i)
-	SIGNAL (i, SIG_IGN);
-#endif
-
     unlink (tmpfil);
     done (i != 0 ? 1 : 0);
 }

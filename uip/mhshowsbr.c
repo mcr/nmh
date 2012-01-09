@@ -150,7 +150,7 @@ show_single_message (CT ct, char *form)
     sigaddset (&set, SIGINT);
     sigaddset (&set, SIGQUIT);
     sigaddset (&set, SIGTERM);
-    SIGPROCMASK (SIG_BLOCK, &set, &oset);
+    sigprocmask (SIG_BLOCK, &set, &oset);
 
     while (wait (&status) != NOTOK) {
 	pidcheck (status);
@@ -158,7 +158,7 @@ show_single_message (CT ct, char *form)
     }
 
     /* reset the signal mask */
-    SIGPROCMASK (SIG_SETMASK, &oset, &set);
+    sigprocmask (SIG_SETMASK, &oset, &set);
 
     xpid = 0;
     flush_errors ();
@@ -710,7 +710,7 @@ show_multi_internal (CT ct, int serial, int alternate)
 	sigaddset (&set, SIGINT);
 	sigaddset (&set, SIGQUIT);
 	sigaddset (&set, SIGTERM);
-	SIGPROCMASK (SIG_BLOCK, &set, &oset);
+	sigprocmask (SIG_BLOCK, &set, &oset);
     }
 
 /*
@@ -796,7 +796,7 @@ show_multi_internal (CT ct, int serial, int alternate)
 out:
     if (!nowserial) {
 	/* reset the signal mask */
-	SIGPROCMASK (SIG_SETMASK, &oset, &set);
+	sigprocmask (SIG_SETMASK, &oset, &set);
     }
 
     return result;
@@ -1084,10 +1084,6 @@ show_external (CT ct, int serial, int alternate)
 static void
 intrser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (SIGINT, intrser);
-#endif
-
     putchar ('\n');
     siglongjmp (intrenv, DONE);
 }

@@ -1214,10 +1214,6 @@ usr_pipe (int fd, char *cmd, char *pgm, char **vec, int suppress)
 static void
 alrmser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (SIGALRM, alrmser);
-#endif
-
     longjmp (myctx, DONE);
 }
 

@@ -977,14 +977,14 @@ anno (int fd, struct stat *st)
 	    sigaddset (&set, SIGINT);
 	    sigaddset (&set, SIGQUIT);
 	    sigaddset (&set, SIGTERM);
-	    SIGPROCMASK (SIG_BLOCK, &set, &oset);
+	    sigprocmask (SIG_BLOCK, &set, &oset);
 
 	    annoaux (fd);
 	    if (child_id == OK)
 		_exit (0);
 
 	    /* reset the signal mask */
-	    SIGPROCMASK (SIG_SETMASK, &oset, &set);
+	    sigprocmask (SIG_SETMASK, &oset, &set);
 
 	    chdir (cwd);
 	    break;

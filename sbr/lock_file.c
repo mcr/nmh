@@ -591,10 +591,6 @@ alrmser (int sig)
     char *lockfile;
     struct lock *lp;
 
-#ifndef	RELIABLE_SIGNALS
-    SIGNAL (SIGALRM, alrmser);
-#endif
-
     /* update the ctime of all the lock files */
     for (lp = l_top; lp; lp = lp->l_next) {
 	lockfile = lp->l_lock;

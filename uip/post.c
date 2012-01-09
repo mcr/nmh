@@ -1614,10 +1614,6 @@ do_text (char *file, int fd)
 static void
 sigser (int i)
 {
-#ifndef RELIABLE_SIGNALS
-    SIGNAL (i, SIG_IGN);
-#endif
-
     unlink (tmpfil);
     if (msgflags & MINV)
 	unlink (bccfil);

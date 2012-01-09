@@ -11,46 +11,19 @@
 #include <h/signals.h>
 
 
-int
-SIGPROCMASK (int how, const sigset_t *set, sigset_t *oset)
-{
-#ifdef POSIX_SIGNALS
-    return sigprocmask(how, set, oset);
-#else
-# ifdef BSD_SIGNALS
-    switch(how) {
-    case SIG_BLOCK:
-	*oset = sigblock(*set);
-	break;
-    case SIG_UNBLOCK:
-	sigfillset(*oset);
-	*oset = sigsetmask(*oset);
-	sigsetmask(*oset & ~(*set));
-	break;
-    case SIG_SETMASK:
-	*oset = sigsetmask(*set);
-	break;
-    default:
-	adios(NULL, "unknown flag in SIGPROCMASK");
-	break;
-    }
-    return 0;
-# endif
-#endif
-}
-
-
 /*
  * A version of the function `signal' that uses reliable
  * signals, if the machine supports them.  Also, (assuming
  * OS support), it restarts interrupted system calls for all
  * signals except SIGALRM.
+ *
+ * Since we are now assuming POSIX signal support everywhere, we always
+ * use reliable signals.
  */
 
 SIGNAL_HANDLER
 SIGNAL (int sig, SIGNAL_HANDLER func)
 {
-#ifdef POSIX_SIGNALS
     struct sigaction act, oact;
 
     act.sa_handler = func;
@@ -69,9 +42,6 @@ SIGNAL (int sig, SIGNAL_HANDLER func)
     if (sigaction(sig, &act, &oact) < 0)
 	return (SIG_ERR);
     return (oact.sa_handler);
-#else
-    return signal (sig, func);
-#endif
 }
 
 
@@ -84,7 +54,6 @@ SIGNAL (int sig, SIGNAL_HANDLER func)
 SIGNAL_HANDLER
 SIGNAL2 (int sig, SIGNAL_HANDLER func)
 {
-#ifdef POSIX_SIGNALS
     struct sigaction act, oact;
 
     if (sigaction(sig, NULL, &oact) < 0)
@@ -107,12 +76,5 @@ SIGNAL2 (int sig, SIGNAL_HANDLER func)
 	    return (SIG_ERR);
     }
     return (oact.sa_handler);
-#else
-    SIGNAL_HANDLER ofunc;
-
-    if ((ofunc = signal (sig, SIG_IGN)) != SIG_IGN)
-	signal (sig, func);
-    return ofunc;
-#endif
 }
 
