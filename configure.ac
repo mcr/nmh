@@ -462,7 +462,6 @@ esac
 AC_SUBST(OURDEFS)
 
 AC_HEADER_STDC
-AC_HEADER_TIME
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS(errno.h fcntl.h crypt.h termcap.h \
                  langinfo.h wchar.h wctype.h iconv.h netdb.h \
@@ -487,7 +486,7 @@ AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
 dnl ---------------
 dnl CHECK FUNCTIONS
 dnl ---------------
-AC_CHECK_FUNCS(writev lstat tzset getutent nl_langinfo)
+AC_CHECK_FUNCS(writev lstat getutent nl_langinfo)
 
 dnl Check for multibyte character set support
 if test "x$ac_cv_header_wchar_h" = "xyes" -a "x$ac_cv_header_wctype_h" = "xyes" \
@@ -744,18 +743,7 @@ dnl ----------------
 dnl CHECK STRUCTURES
 dnl ----------------
 
-AC_CHECK_MEMBERS(struct tm.tm_gmtoff,,,
-  [#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef TM_IN_SYS_TIME
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif])
-
+AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[#include <time.h>])
 AC_CHECK_MEMBERS(struct utmp.ut_type,,,[#include <utmp.h>])
 
 AC_STRUCT_DIRENT_D_TYPE

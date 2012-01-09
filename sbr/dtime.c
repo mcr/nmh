@@ -10,23 +10,9 @@
 #include <h/mh.h>   /* for snprintf() */
 #include <h/nmh.h>
 #include <h/tws.h>
+#include <time.h>
 
-#if !defined(HAVE_STRUCT_TM_TM_GMTOFF) && !defined(HAVE_TZSET)
-# include <sys/timeb.h>
-#endif
-
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-
-#if !defined(HAVE_STRUCT_TM_TM_GMTOFF) && defined(HAVE_TZSET)
+#if !defined(HAVE_STRUCT_TM_TM_GMTOFF)
 extern int daylight;
 extern long timezone;
 extern char *tzname[];
@@ -140,10 +126,6 @@ dlocaltime (time_t *clock)
     static struct tws tw;
     struct tm *tm;
 
-#if !defined(HAVE_STRUCT_TM_TM_GMTOFF) && !defined(HAVE_TZSET)
-    struct timeb tb;
-#endif
-
     if (!clock)
 	return NULL;
 
@@ -172,13 +154,8 @@ dlocaltime (time_t *clock)
     if (tm->tm_isdst)			/* if DST is in effect */
 	tw.tw_zone -= 60;		/* reset to normal offset */
 #else
-# ifdef HAVE_TZSET
     tzset();
     tw.tw_zone = -(timezone / 60);
-# else
-    ftime (&tb);
-    tw.tw_zone = -tb.timezone;
-# endif
 #endif
 
     tw.tw_flags &= ~TW_SDAY;
@@ -368,14 +345,8 @@ dtimezone (int offset, int flags)
     }
 
     if (!(flags & TW_ZONE) && mins == 0) {
-#if defined(HAVE_TZSET) && defined(HAVE_TZNAME)
 	tzset();
 	return ((flags & TW_DST) ? tzname[1] : tzname[0]);
-#else
-	for (z = zones; z->std; z++)
-	    if (z->shift == hours)
-		return (z->dst && (flags & TW_DST) ? z->dst : z->std);
-#endif
     }
 
 #ifdef ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
