@@ -489,28 +489,6 @@ dnl CHECK FUNCTIONS
 dnl ---------------
 AC_CHECK_FUNCS(writev lstat tzset getutent nl_langinfo)
 
-dnl Look for the initgroups() declaration.  On AIX 4.[13], Solaris 4.1.3, and
-dnl ULTRIX 4.2A the function is defined in libc but there's no declaration in
-dnl any system header.  
-dnl
-dnl On Solaris 2.[456], the declaration is in <grp.h>.  On HP-UX 9-11 and
-dnl (reportedly) FreeBSD 3.[23], it's in <unistd.h>.  Any other locations we
-dnl need to check?
-AH_TEMPLATE(INITGROUPS_HEADER, [Define to the header containing the declaration of `initgroups'.])
-AC_EGREP_HEADER(initgroups, grp.h, AC_DEFINE(INITGROUPS_HEADER, <grp.h>),
-                AC_EGREP_HEADER(initgroups, unistd.h, 
-                                AC_DEFINE(INITGROUPS_HEADER, <unistd.h>)))
-
-dnl On AIX 4.1, snprintf() is defined in libc.a but there's no prototype in
-dnl <stdio.h> or elsewhere.  Apparently it's not officially supported (though it
-dnl seems to work perfectly and IBM apparently uses it in internal code).
-dnl Anyhow, if we omit our own snprintf() and vsnprintf() prototypes when we
-dnl HAVE_SNPRINTF, we get a billion warnings at compile time.  Use the C
-dnl preprocessor to preprocess stdio.h and make sure that there's actually a 
-dnl prototype. 
-AC_EGREP_HEADER(snprintf, stdio.h, AC_DEFINE(HAVE_SNPRINTF_PROTOTYPE,1,
-  [Define to 1 if <stdio.h> has a prototype for snprintf().]))
-
 dnl Check for multibyte character set support
 if test "x$ac_cv_header_wchar_h" = "xyes" -a "x$ac_cv_header_wctype_h" = "xyes" \
     -a "x$ac_cv_func_wcwidth" = "xyes" -a "x$ac_cv_func_mbtowc" = "xyes"; then

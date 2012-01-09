@@ -34,16 +34,6 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 
-#ifdef INITGROUPS_HEADER
-#include INITGROUPS_HEADER
-#else
-/* On AIX 4.1, initgroups() is defined and even documented (giving the parameter
-   types as char* and int), but doesn't have a prototype in any of the system
-   header files.  AIX 4.3, SunOS 4.1.3, and ULTRIX 4.2A have the same
-   problem. */
-extern int  initgroups(char*, int);
-#endif
-
 /* This define is needed for Berkeley db v2 and above to
  * make the header file expose the 'historical' ndbm APIs.
  * We define it unconditionally because this is simple and
