@@ -1313,6 +1313,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 	    && altmsg) {
 	vec[vecp++] = "-dist";
 	distfile = getcpy (m_mktemp2(altmsg, invo_name, NULL, NULL));
+	unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK)
 	    adios (distfile, "unable to link %s to", altmsg);
     } else {

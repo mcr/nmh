@@ -426,6 +426,7 @@ go_to_it:
 	    && altmsg) {
 	vec[vecp++] = "-dist";
 	distfile = getcpy (m_mktemp2 (altmsg, invo_name, NULL, NULL));
+	unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK) {
 	    if (errno != EXDEV
 #ifdef EISREMOTE

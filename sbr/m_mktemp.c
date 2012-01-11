@@ -121,7 +121,7 @@ m_mktemp2 (
         /* No directory component */
         return m_mktemp(pfx_in, fd_ret, fp_ret);
     }
-    n = (int)(cp-dir_in-1); /* Length of dir component */
+    n = (int)(cp-dir_in); /* Length of dir component */
     snprintf(buffer, sizeof(buffer), "%.*s%s", n, dir_in, pfx_in);
     return m_mktemp(buffer, fd_ret, fp_ret);
 }
