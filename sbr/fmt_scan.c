@@ -22,8 +22,6 @@
 #  include <wchar.h>
 #endif
 
-#define	NFMTS MAXARGS
-
 extern char *formataddr ();	/* hook for custom address formatting */
 
 #ifdef LBL

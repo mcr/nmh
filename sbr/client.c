@@ -16,9 +16,6 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
-#define	TRUE         1
-#define	FALSE        0
-
 #define	MAXARGS   1000
 
 /*

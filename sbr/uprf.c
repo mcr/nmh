@@ -9,8 +9,10 @@
 
 #include <h/mh.h>
 
-#define TO_LOWER 040
-#define NO_MASK  000
+#ifndef LOCALE
+# define TO_LOWER 040
+# define NO_MASK  000
+#endif
 
 
 int

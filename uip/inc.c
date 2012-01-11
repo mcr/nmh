@@ -109,7 +109,9 @@ static struct swit switches[] = {
  * flags for the mail source
  */
 #define INC_FILE  0
-#define INC_POP   1
+#ifdef POP
+# define INC_POP   1
+#endif /* POP */
 
 static int inc_type;
 static struct Maildir_entry {
