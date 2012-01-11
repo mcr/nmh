@@ -53,46 +53,6 @@ struct zone {
     int shift;
 };
 
-static struct zone zones[] = {
-    { "GMT", "BST", 0 },
-    { "EST", "EDT", -5 },
-    { "CST", "CDT", -6 },
-    { "MST", "MDT", -7 },
-    { "PST", "PDT", -8 },
-#if 0
-/* RFC1123 specifies do not use military TZs */
-    { "A", NULL, -1 },
-    { "B", NULL, -2 },
-    { "C", NULL, -3 },
-    { "D", NULL, -4 },
-    { "E", NULL, -5 },
-    { "F", NULL, -6 },
-    { "G", NULL, -7 },
-    { "H", NULL, -8 },
-    { "I", NULL, -9 },
-    { "K", NULL, -10 },
-    { "L", NULL, -11 },
-    { "M", NULL, -12 },
-    { "N", NULL, 1 },
-#ifndef	HUJI
-    { "O", NULL, 2 },
-#else
-    { "JST", "JDT", 2 },
-#endif
-    { "P", NULL, 3 },
-    { "Q", NULL, 4 },
-    { "R", NULL, 5 },
-    { "S", NULL, 6 },
-    { "T", NULL, 7 },
-    { "U", NULL, 8 },
-    { "V", NULL, 9 },
-    { "W", NULL, 10 },
-    { "X", NULL, 11 },
-    { "Y", NULL, 12 },
-#endif
-    { NULL, NULL, 0 }
-};
-
 static int dmsize[] = {
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
@@ -333,7 +293,6 @@ char *
 dtimezone (int offset, int flags)
 {
     int hours, mins;
-    struct zone *z;
     static char buffer[10];
 
     if (offset < 0) {
