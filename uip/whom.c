@@ -112,6 +112,7 @@ main (int argc, char **argv)
 		case NOCHKSW: 
 		case SNOOPSW:
 		case SASLSW:
+		case TLSSW:
 		    vec[vecp++] = --cp;
 		    continue;
 
