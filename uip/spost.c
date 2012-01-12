@@ -27,53 +27,45 @@ struct swit switches[] = {
     { "filter filterfile", 0 },
 #define	NFILTSW              1
     { "nofilter", 0 },
-#define	FRMTSW               2
-    { "format", 0 },
-#define	NFRMTSW              3
-    { "noformat", 0 },
-#define	REMVSW               4
+#define	REMVSW               2
     { "remove", 0 },
-#define	NREMVSW              5
+#define	NREMVSW              3
     { "noremove", 0 },
-#define	VERBSW               6
+#define	VERBSW               4
     { "verbose", 0 },
-#define	NVERBSW              7
+#define	NVERBSW              5
     { "noverbose", 0 },
-#define	WATCSW               8
+#define	WATCSW               6
     { "watch", 0 },
-#define	NWATCSW              9
+#define	NWATCSW              7
     { "nowatch", 0 },
-#define BACKSW              10
+#define BACKSW               8
     { "backup", 0 },
-#define NBACKSW             11
+#define NBACKSW              9
     { "nobackup", 0 },
-#define ALIASW              12
+#define ALIASW              10
     { "alias aliasfile", 0 },
-#define NALIASW             13
+#define NALIASW             11
     { "noalias", 0 },
-#define WIDTHSW             14
+#define WIDTHSW             12
     { "width columns", 0 },
-#define VERSIONSW           15
+#define VERSIONSW           13
     { "version", 0 },
-#define	HELPSW              16
+#define	HELPSW              14
     { "help", 0 },
-#define	DEBUGSW             17
+#define	DEBUGSW             15
     { "debug", -5 },
-#define	DISTSW              18
+#define	DISTSW              16
     { "dist", -4 },		/* interface from dist */
-#define CHKSW               19
-    { "check", -5 },		/* interface from whom */
-#define NCHKSW              20
-    { "nocheck", -7 },		/* interface from whom */
-#define WHOMSW              21
+#define WHOMSW              17
     { "whom", -4 },		/* interface from whom */
-#define PUSHSW              22	/* fork to sendmail then exit */
+#define PUSHSW              18	/* fork to sendmail then exit */
     { "push", -4 },
-#define NPUSHSW             23	/* exec sendmail */
+#define NPUSHSW             19	/* exec sendmail */
     { "nopush", -6 },
-#define LIBSW               24
+#define LIBSW               20
     { "library directory", -7 },
-#define	ANNOSW              25
+#define	ANNOSW              21
     { "idanno number", -6 },
     { NULL, 0 }
 };
@@ -86,7 +78,7 @@ struct swit switches[] = {
 #define	HSUB	0x0004		/* Subject: header */
 #define	HTRY	0x0008		/* try to send to addrs on header */
 #define	HBCC	0x0010		/* don't output this header */
-#define	HMNG	0x0020		/* mung this header */
+/* #define	HMNG	0x0020	*/	/* munge this header */
 #define	HNGR	0x0040		/* no groups allowed in this header */
 #define	HFCC	0x0080		/* FCC: type header */
 #define	HNIL	0x0100		/* okay for this header not to have addrs */
