@@ -44,6 +44,8 @@
  * harmless.
  */
 #define DB_DBM_HSEARCH 1
+#ifdef DB_DBM_HSEARCH
+#endif /* Use DB_DBM_HSEARCH to prevent warning from gcc -Wunused-macros. */
 #ifdef NDBM_HEADER
 #include NDBM_HEADER
 #endif

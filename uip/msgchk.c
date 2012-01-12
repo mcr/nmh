@@ -65,6 +65,8 @@ static struct swit switches[] = {
 #define MAXVEC  51
 
 #define	NT_NONE	0x0
+#ifdef NT_NONE
+#endif /* Use NT_NONE to prevent warning from gcc -Wunused-macros. */
 #define	NT_MAIL	0x1
 #define	NT_NMAI	0x2
 #define	NT_ALL	(NT_MAIL | NT_NMAI)

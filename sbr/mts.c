@@ -20,9 +20,6 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-#define	NOTOK   (-1)
-#define	OK        0
-
 /*
  * static prototypes
  */
