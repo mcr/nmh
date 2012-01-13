@@ -5,6 +5,9 @@
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.
+ *
+ * This is the engine that processes the format instructions created by
+ * fmt_compile (found in fmt_compile.c).
  */
 
 #include <h/mh.h>

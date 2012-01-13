@@ -14,3 +14,4 @@ Things to add to the release notes for the next full release:
   message parts in MIME messages) has been removed.
 - fileproc and mhlproc mh-profile entries will now be obeyed by
   send, rcvdist, and whatnow.
+- New format instructions %(putlit) and %(concataddr) have been implemented.
