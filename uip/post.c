@@ -1608,6 +1608,8 @@ do_text (char *file, int fd)
 static void
 sigser (int i)
 {
+    NMH_UNUSED (i);
+
     unlink (tmpfil);
     if (msgflags & MINV)
 	unlink (bccfil);

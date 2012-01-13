@@ -167,6 +167,8 @@ lkclose (int fd, char *file)
     lockfile_remove(lkinfo.curlock);
 #endif /* HAVE_LIBLOCKFILE */
     timerOFF (fd);			/* turn off lock timer   */
+#else  /* DOT_LOCKING */
+    NMH_UNUSED (file);
 #endif /* DOT_LOCKING */
 
     return (close (fd));
@@ -258,6 +260,8 @@ lkfclose (FILE *fp, char *file)
     lockfile_remove(lkinfo.curlock);
 #endif /* HAVE_LIBLOCKFILE */
     timerOFF (fileno(fp));		/* turn off lock timer   */
+#else  /* DOT_LOCKING */
+    NMH_UNUSED (file);
 #endif /* DOT_LOCKING */
 
     return (fclose (fp));

@@ -1210,6 +1210,8 @@ usr_pipe (int fd, char *cmd, char *pgm, char **vec, int suppress)
 static void
 alrmser (int i)
 {
+    NMH_UNUSED (i);
+
     longjmp (myctx, DONE);
 }
 

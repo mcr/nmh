@@ -1051,6 +1051,9 @@ show_message_rfc822 (CT ct, int serial, int alternate)
 static int
 show_partial (CT ct, int serial, int alternate)
 {
+    NMH_UNUSED (serial);
+    NMH_UNUSED (alternate);
+
     content_error (NULL, ct,
 	"in order to display this message, you must reassemble it");
     return NOTOK;
@@ -1084,6 +1087,8 @@ show_external (CT ct, int serial, int alternate)
 static void
 intrser (int i)
 {
+    NMH_UNUSED (i);
+
     putchar ('\n');
     siglongjmp (intrenv, DONE);
 }
