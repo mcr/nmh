@@ -25,6 +25,7 @@ static char *badaddrs = NULL;
 static char *dfhost = NULL;
 
 static struct mailname mq = { NULL };
+static int nodupcheck = 0;		/* If set, no check for duplicates */
 
 /*
  * Buffer size for content part of header fields.
@@ -380,11 +381,37 @@ formataddr (char *orig, char *str)
 }
 
 
+/*
+ * fmt_scan will call this routine if the user includes the function
+ * "(concataddr {component})" in a format string.  This behaves exactly
+ * like formataddr, except that it does NOT suppress duplicate addresses
+ * between calls.
+ *
+ * As an implementation detail: I thought about splitting out formataddr()
+ * into the generic part and duplicate-suppressing part, but the call to
+ * insert() was buried deep within a couple of loops and I didn't see a
+ * way to do it easily.  So instead we simply set a special flag to stop
+ * the duplicate check and call formataddr().
+ */
+char *
+concataddr(char *orig, char *str)
+{
+    char *cp;
+
+    nodupcheck = 1;
+    cp = formataddr(orig, str);
+    nodupcheck = 0;
+    return cp;
+}
+
 static int
 insert (struct mailname *np)
 {
     char buffer[BUFSIZ];
     register struct mailname *mp;
+
+    if (nodupcheck)
+	return 1;
 
     if (np->m_mbox == NULL)
 	return 0;

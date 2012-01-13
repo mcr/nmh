@@ -23,6 +23,7 @@
 #endif
 
 extern char *formataddr ();	/* hook for custom address formatting */
+extern char *concataddr ();	/* address formatting but allowing duplicates */
 
 #ifdef LBL
 struct msgs *fmt_current_folder; /* current folder (set by main program) */
@@ -346,6 +347,11 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    break;
 	case FT_STRF:
 	    cptrimmed (&cp, str, fmt->f_width, fmt->f_fill, ep - cp);
+	    break;
+	case FT_STRLIT:
+	    sp = str;
+	    while ((c = *sp++) && cp < ep)
+		*cp++ = c;
 	    break;
 	case FT_STRFW:
 	    adios (NULL, "internal error (FT_STRFW)");
@@ -784,6 +790,11 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	case FT_FORMATADDR:
 	    /* hook for custom address list formatting (see replsbr.c) */
 	    str = formataddr (savestr, str);
+	    break;
+
+	case FT_CONCATADDR:
+	    /* The same as formataddr, but doesn't do duplicate suppression */
+	    str = concataddr (savestr, str);
 	    break;
 
 	case FT_PUTADDR:

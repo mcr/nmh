@@ -1,5 +1,5 @@
 .\"
-.\" THIS FILE HAS BEEN AUTOMATICALLY GENERATED.  DO NOT EDIT.
+.\" %nmhwarning%
 .\"
 .TH MH-FORMAT %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
@@ -288,9 +288,14 @@ putstrf	expr		print \fIstr\fR in a fixed width
 putnum	expr		print \fInum\fR
 putnumf	expr		print \fInum\fR in a fixed width
 .\" addtoseq literal    add msg to sequence (LBL option)
+putlit	expr		print \fIstr\fR without space compression
 nodate	string	integer	Argument not a date string (0 or 1)
 formataddr	expr		append \fIarg\fR to \fIstr\fR as a
 			(comma separated) address list
+concataddr	expr		append \fIarg\fR to \fIstr\fR as a
+			(comma separated) address list,
+			including duplicates,
+			see Special Handling
 putaddr	literal		print \fIstr\fR address list with
 			\fIarg\fR as optional label;
 			get line width from \fInum\fR
@@ -387,10 +392,24 @@ right-justification of the string within the field, with padding on
 the left up to the field width.
 The functions (\fIputnum\fR\^) and
 (\fIputstr\fR\^) are somewhat special: they print their result in the minimum number of characters
-required, and ignore any leading field width argument.
+required, and ignore any leading field width argument.  The (\fIputlit\fR\^)
+function outputs the exact contents of str register without any changes
+such as duplicate space removal or control character conversion.
 .PP
 The available output width is kept in an internal register; any output
 past this width will be truncated.
+.SS Special Handling
+A few functions have different behavior depending on what command they are
+being invoked from.
+.PP
+In
+.BR repl
+the (\fIformataddr\fR\^) function stores all email addresses encountered into
+an internal cache and will use this cache to suppress duplicate addresses.
+If you need to create an address list that includes previously-seen
+addresses you may use the (\fIconcataddr\fR\^) function, which is identical
+to (\fIformataddr\fR\^) in all other respects.  Note that (\fIconcataddr\fR\^)
+will NOT add addresses to the duplicate-suppression cache.
 .SS Examples
 With all this in mind,
 here's the default format string for
