@@ -207,6 +207,8 @@ main (int argc, char **argv)
 static void
 alrmser (int i)
 {
+    NMH_UNUSED (i);
+
     longjmp (myctx, 1);
 }
 

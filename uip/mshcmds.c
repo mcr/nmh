@@ -1086,6 +1086,8 @@ static char *hlpmsg[] = {
 void
 helpcmd (char **args)
 {
+    NMH_UNUSED (args);
+
     int i;
 
     for (i = 0; hlpmsg[i]; i++) {
@@ -2366,6 +2368,8 @@ show (int msgnum)
 static int
 eom_action (int c)
 {
+    NMH_UNUSED (c);
+
     return (ftell (mhlfp) >= Msgs[mhlnum].m_stop);
 }
 

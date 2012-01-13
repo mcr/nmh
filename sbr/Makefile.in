@@ -16,6 +16,7 @@ etcdir      = @sysconfdir@
 
 CC       = @CC@
 CFLAGS   = @CFLAGS@
+DISABLE_UNUSED_MACROS_WARNING = @DISABLE_UNUSED_MACROS_WARNING@
 DEFS     = @DEFS@
 CONFIGDEFS = -DNMHETCDIR='"$(etcdir)"' -DMAILSPOOL='"$(mailspool)"' -DSENDMAILPATH='"$(sendmailpath)"'
 INCLUDES = -I. -I$(top_srcdir) @CPPFLAGS@
@@ -39,7 +40,7 @@ COMPILE2 = $(CC) -c $(DEFS) $(CONFIGDEFS) $(INCLUDES) $(CFLAGS)
 
 
 .SUFFIXES:
-.SUFFIXES: .c .o
+.SUFFIXES: .c .o .lex
 
 .c.o:
 	$(COMPILE) $<
@@ -97,8 +98,9 @@ lint: sigmsg.h
 # some lexes will only accept '-n -t', not '-nt'.
 # Also, not all makes accept $< in non-pattern rules,
 # hence the explicit filenames here.
-dtimep.c: dtimep.lex
+dtimep.o: dtimep.lex
 	$(LEX) -n -t $(srcdir)/dtimep.lex > dtimep.c
+	$(COMPILE) $(DISABLE_UNUSED_MACROS_WARNING) dtimep.c
 
 client.o: client.c
 	$(COMPILE2) $(srcdir)/client.c

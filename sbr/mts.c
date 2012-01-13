@@ -141,6 +141,8 @@ static struct bind binds[] = {
 void
 mts_init (char *name)
 {
+    NMH_UNUSED (name);
+
     const char *cp;
     FILE *fp;
     static int inited = 0;

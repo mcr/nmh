@@ -218,6 +218,20 @@ fi
 
 AC_PROG_CC
 
+AC_CACHE_CHECK(whether preprocessor supports -Wunused-macros,
+  nmh_cv_has_unusedmacros,
+  [nmh_saved_cppflags="$CPPFLAGS"
+   CPPFLAGS="$CPPFLAGS -Wunused-macros -Wno-unused-macros"
+   AC_TRY_COMPILE([],[],nmh_cv_has_unusedmacros=yes,nmh_cv_has_unusedmacros=no)
+   CPPFLAGS="$nmh_saved_cppflags"])
+
+if test "$nmh_cv_has_unusedmacros" = 'yes'; then
+  test -z "$CPPLAGS"  &&  CPPFLAGS=-Wunused-macros \
+                      ||  CPPFLAGS="$CPPFLAGS -Wunused-macros"
+  DISABLE_UNUSED_MACROS_WARNING=-Wno-unused-macros
+fi
+AC_SUBST(DISABLE_UNUSED_MACROS_WARNING)dnl
+
 AC_CACHE_CHECK(whether compiler supports -Wno-pointer-sign, nmh_cv_has_noptrsign,
 [nmh_saved_cflags="$CFLAGS"
  CFLAGS="$CFLAGS -Wno-pointer-sign"
@@ -456,7 +470,8 @@ dnl before system header files.
 case "$target_os" in
   linux*)
     # Like DEFS, but doesn't get stomped on by configure when using config.h:
-    OURDEFS="$OURDEFS -D_GNU_SOURCE"
+    test -z "$OURDEFS"  &&  OURDEFS="-D_GNU_SOURCE"  \
+                        ||  OURDEFS="$OURDEFS -D_GNU_SOURCE"
     ;;
 esac
 AC_SUBST(OURDEFS)

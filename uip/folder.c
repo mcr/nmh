@@ -457,6 +457,8 @@ get_folder_info_body (char *fold, char *msg, boolean *crawl_children)
 static boolean
 get_folder_info_callback (char *fold, void *baton)
 {
+    NMH_UNUSED (baton);
+
     boolean crawl_children;
     get_folder_info_body (fold, NULL, &crawl_children);
     fflush (stdout);

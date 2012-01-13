@@ -1447,6 +1447,8 @@ putch (char ch)
 static void
 intrser (int i)
 {
+    NMH_UNUSED (i);
+
     discard (stdout);
     putchar ('\n');
     longjmp (env, DONE);
@@ -1456,6 +1458,8 @@ intrser (int i)
 static void
 pipeser (int i)
 {
+    NMH_UNUSED (i);
+
     done (NOTOK);
 }
 
@@ -1463,6 +1467,8 @@ pipeser (int i)
 static void
 quitser (int i)
 {
+    NMH_UNUSED (i);
+
     putchar ('\n');
     fflush (stdout);
     done (NOTOK);

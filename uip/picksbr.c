@@ -656,6 +656,8 @@ static int
 GREPaction (params)
 plist
 {
+    NMH_UNUSED (msgnum);
+
     int c, body, lf;
     long pos = start;
     register char *p1, *p2, *ebp, *cbp;
@@ -929,6 +931,8 @@ static int
 TWSaction (params)
 plist
 {
+    NMH_UNUSED (stop);
+
     int state;
     register char *bp;
     char buf[BUFSIZ], name[NAMESZ];

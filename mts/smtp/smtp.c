@@ -396,6 +396,8 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	    return RP_RPLY;
 	}
     }
+#else  /* TLS_SUPPORT */
+    NMH_UNUSED (tls);
 #endif /* TLS_SUPPORT */
 
 #ifdef CYRUS_SASL
@@ -1121,6 +1123,8 @@ static int
 sm_get_pass(sasl_conn_t *conn, void *context, int id,
 	    sasl_secret_t **psecret)
 {
+    NMH_UNUSED (conn);
+
     char **pw_context = (char **) context;
     char *pass = NULL;
     int len;
@@ -1666,6 +1670,8 @@ sm_rerror (int rc)
 static void
 alrmser (int i)
 {
+    NMH_UNUSED (i);
+
 #ifndef	RELIABLE_SIGNALS
     SIGNAL (SIGALRM, alrmser);
 #endif

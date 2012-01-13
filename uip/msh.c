@@ -805,6 +805,7 @@ m_gMsgs (int n)
 FILE *
 msh_ready (int msgnum, int full)
 {
+    NMH_UNUSED (full);
     register int msgp;
     int fd;
     char *cp;
@@ -1582,6 +1583,7 @@ seq_setcur (struct msgs *mp, int msgnum)
 static void
 intrser (int i)
 {
+    NMH_UNUSED (i);
     discard (stdout);
     interrupted++;
 }
@@ -1590,6 +1592,7 @@ intrser (int i)
 static void
 pipeser (int i)
 {
+    NMH_UNUSED (i);
     if (broken_pipe++ == 0)
 	fprintf (stderr, "broken pipe\n");
     told_to_quit++;
@@ -1600,6 +1603,7 @@ pipeser (int i)
 static void
 quitser (int i)
 {
+    NMH_UNUSED (i);
     told_to_quit++;
     interrupted++;
 }
@@ -1608,6 +1612,7 @@ quitser (int i)
 static void
 alrmser (int i)
 {
+    NMH_UNUSED (i);
     longjmp (peerenv, DONE);
 }
 
@@ -1672,6 +1677,7 @@ pINI (void)
 static int
 pQRY (char *str, int scansw)
 {
+    NMH_UNUSED (str);
     if (pQRY1 (scansw) == NOTOK || pQRY2 () == NOTOK)
 	return NOTOK;
 

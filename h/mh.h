@@ -32,8 +32,10 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
  */
 #if __GNUC__ > 2
 #define NORETURN __attribute__((__noreturn__))
+#define NMH_UNUSED(i) (void) i
 #else
 #define NORETURN
+#define NMH_UNUSED(i) i
 #endif
 
 /*

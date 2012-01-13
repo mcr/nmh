@@ -396,6 +396,8 @@ getln (char *buffer, int n)
 static void
 intrser (int i)
 {
+    NMH_UNUSED (i);
+
     if (wtuser)
 	longjmp (sigenv, NOTOK);
     sigint++;

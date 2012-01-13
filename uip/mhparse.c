@@ -1042,6 +1042,8 @@ invalid:
 static int
 InitGeneric (CT ct)
 {
+    NMH_UNUSED (ct);
+
     return OK;		/* not much to do here */
 }
 

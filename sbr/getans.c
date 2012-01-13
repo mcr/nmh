@@ -70,6 +70,8 @@ getans (char *prompt, struct swit *ansp)
 static void
 intrser (int i)
 {
+    NMH_UNUSED (i);
+
     /*
      * should this be siglongjmp?
      */
