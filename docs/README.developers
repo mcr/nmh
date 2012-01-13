@@ -16,7 +16,7 @@ autoconf files
 If you wish to change the `configure' script or its related files, you'll need
 to first install GNU m4, available from <ftp://ftp.gnu.org/pub/gnu/m4/> and then
 GNU autoconf (<ftp://ftp.gnu.org/pub/gnu/autoconf/>).  Nmh is currently using
-a minimum of autoconf 2.54.
+a minimum of autoconf 2.61.
 
 Most of the configure-related files are automatically generated.  The only files
 you should need to manually edit are acconfig.h and configure.in.  Don't, for
