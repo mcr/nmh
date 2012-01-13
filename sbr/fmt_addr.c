@@ -112,3 +112,8 @@ formataddr (char *orig, char *str)
     last_dst = dst;
     return (buf);
 }
+
+char *concataddr (char *orig, char *str)
+{
+    return formataddr(orig, str);
+}

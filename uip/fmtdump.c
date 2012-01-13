@@ -354,6 +354,7 @@ f_typestr(int t)
 	case FT_STRF: return("STRF");
 	case FT_STRFW: return("STRFW");
 	case FT_PUTADDR: return("PUTADDR");
+	case FT_STRLIT: return("STRLIT");
 	case FT_LS_COMP: return("LS_COMP");
 	case FT_LS_LIT: return("LS_LIT");
 	case FT_LS_GETENV: return("LS_GETENV");
@@ -408,6 +409,7 @@ f_typestr(int t)
 	case FT_PARSEDATE: return("PARSEDATE");
 	case FT_PARSEADDR: return("PARSEADDR");
 	case FT_FORMATADDR: return("FORMATADDR");
+	case FT_CONCATADDR: return("CONCATADDR");
 	case FT_MYMBOX: return("MYMBOX");
 #ifdef	FT_ADDTOSEQ
 	case FT_ADDTOSEQ: return("ADDTOSEQ");

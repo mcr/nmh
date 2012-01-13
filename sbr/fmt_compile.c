@@ -75,6 +75,7 @@ static struct ftable functable[] = {
      { "putnum",     TF_EXPR,	FT_NUM,		0,		0 },
      { "putnumf",    TF_EXPR,	FT_NUMF,	0,		0 },
      { "putaddr",    TF_STR,	FT_PUTADDR,	0,		0 },
+     { "putlit",     TF_STR,	FT_STRLIT,	0,		0 },
      { "void",       TF_NOP,	0,		0,		0 },
 
      { "comp",       TF_COMP,	FT_LS_COMP,	0,		TFL_PUTS },
@@ -139,6 +140,7 @@ static struct ftable functable[] = {
      { "ingrp",      TF_COMP,	FT_LV_INGRPF,	FT_PARSEADDR,	TFL_PUTN },
      { "nohost",     TF_COMP,	FT_LV_NOHOSTF,	FT_PARSEADDR,	TFL_PUTN },
      { "formataddr", TF_EXPR_SV,FT_FORMATADDR,	FT_FORMATADDR,	0 },
+     { "concataddr", TF_EXPR_SV,FT_CONCATADDR,	FT_FORMATADDR,	0 },
      { "friendly",   TF_COMP,	FT_LS_FRIENDLY,	FT_PARSEADDR,	TFL_PUTS },
 
      { "mymbox",     TF_COMP,	FT_LV_COMPFLAG,	FT_MYMBOX,	TFL_PUTN },
