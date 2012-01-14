@@ -19,7 +19,7 @@ GNU autoconf (<ftp://ftp.gnu.org/pub/gnu/autoconf/>).  Nmh is currently using
 a minimum of autoconf 2.61.
 
 Most of the configure-related files are automatically generated.  The only files
-you should need to manually edit are acconfig.h and configure.in.  Don't, for
+you should need to manually edit are configure.ac and aclocal.m4.  Don't, for
 instance, edit config.h.in.  Though it is an input file from the point of view
 of the users (and the configure script) it is an output file from the point of
 view of the developers (and the autoconf script).
