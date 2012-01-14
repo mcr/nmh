@@ -771,10 +771,11 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
  */
 
 static int
-sendaux (char **vec, int vecp, char *drft, struct stat *st)
+sendaux (char **vec, int vecp, char *volatile drft, struct stat *st)
 {
     pid_t child_id;
-    int i, status, fd, fd2;
+    int i, status;
+    volatile int fd, fd2;
     char backup[BUFSIZ], buf[BUFSIZ];
 
     fd = pushsw ? tmp_fd () : NOTOK;

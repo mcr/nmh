@@ -2472,7 +2472,8 @@ InitFTP (CT ct)
 static int
 openFTP (CT ct, char **file)
 {
-    int	cachetype, caching, fd;
+    int	cachetype, fd;
+    volatile int caching;
     int len, buflen;
     char *bp, *ftp, *user, *pass;
     char buffer[BUFSIZ], cachefile[BUFSIZ];

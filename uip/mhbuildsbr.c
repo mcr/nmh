@@ -988,7 +988,8 @@ compose_content (CT ct)
     default:
 	if (!ce->ce_file) {
 	    pid_t child_id;
-	    int i, xstdout, len, buflen;
+	    int i, len, buflen;
+	    volatile int xstdout;
 	    char *bp, **ap, *cp;
 	    char *vec[4], buffer[BUFSIZ];
 	    FILE *out;

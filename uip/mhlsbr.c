@@ -790,7 +790,7 @@ parse (void)
 
 
 static void
-process (char *folder, char *fname, int ofilen, int ofilec)
+process (char *folder, char *volatile fname, int ofilen, int ofilec)
 {
     char *cp = NULL;
     FILE *fp = NULL;

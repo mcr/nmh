@@ -811,7 +811,7 @@ copyf (char *ifile, char *ofile)
  */
 
 static int
-sendfile (char **arg, char *file, int pushsw)
+sendfile (char **arg, char *file, volatile int pushsw)
 {
     pid_t child_id;
     int i, vecp;

@@ -217,7 +217,8 @@ static int
 message_fd (char **vec)
 {
     pid_t child_id;
-    int bytes, fd, seconds;
+    int bytes, seconds;
+    volatile int fd;
     char tmpfil[BUFSIZ];
     struct stat st;
 
