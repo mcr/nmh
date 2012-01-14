@@ -24,7 +24,7 @@ if test -n "$LIBTOOL" ; then
   fi
 fi
 ] )
-  
+
 echo "configuring for AC_PACKAGE_NAME-AC_PACKAGE_VERSION"
 AC_SUBST(VERSION,AC_PACKAGE_VERSION)dnl
 
@@ -232,6 +232,12 @@ if test "$nmh_cv_has_unusedmacros" = 'yes'; then
 fi
 AC_SUBST(DISABLE_UNUSED_MACROS_WARNING)dnl
 
+AC_CACHE_CHECK(whether compiler supports -Wextra, nmh_cv_wextra,
+[nmh_saved_cflags="$CFLAGS"
+ CFLAGS="$CFLAGS -Wextra"
+ AC_TRY_COMPILE([],[],nmh_cv_wextra=' -Wextra',echo -n no)
+ CFLAGS="$nmh_saved_cflags"])
+
 AC_CACHE_CHECK(whether compiler supports -Wno-pointer-sign, nmh_cv_has_noptrsign,
 [nmh_saved_cflags="$CFLAGS"
  CFLAGS="$CFLAGS -Wno-pointer-sign"
@@ -242,13 +248,14 @@ dnl if the user hasn't specified CFLAGS, then
 dnl   if compiler is gcc, then
 dnl     use -O2 and some warning flags
 dnl   else use -O
-dnl We use -Wall; if the compiler supports it we also use -Wno-pointer-sign,
-dnl because gcc 4 now produces a lot of new warnings which are probably mostly
-dnl spurious and which in any case we don't want to deal with now.
+dnl We use -Wall and -Wextra if supported.  If the compiler supports it we
+dnl also use -Wno-pointer-sign, because gcc 4 now produces a lot of new
+dnl warnings which are probably mostly spurious and which in any case we
+dnl don't want to deal with now.
 if test "$nmh_cv_has_noptrsign" = "yes"; then
-        nmh_gcc_warnflags="-Wall -Wno-pointer-sign"
+        nmh_gcc_warnflags="-Wall$nmh_cv_wextra -Wno-pointer-sign"
 else
-        nmh_gcc_warnflags="-Wall"
+        nmh_gcc_warnflags="-Wall$nmh_cv_wextra"
 fi
 
 if test -n "$auto_cflags"; then
@@ -354,7 +361,7 @@ AC_PATH_PROG(lspath, ls, no, [$pathtmp])
 
 dnl See how we get ls to display the owner and the group
 if test "$lspath" != "no"; then
-  AC_CACHE_CHECK(how to get ls to show us the group ownership of a file, 
+  AC_CACHE_CHECK(how to get ls to show us the group ownership of a file,
 		 nmh_cv_ls_grpopt,
   [if test x"`$lspath -dl / | $AWK '{print $9}'`" = x"/"; then
     dnl There were 9 parameters, so unless this is a really bizarre, nonstandard
@@ -411,7 +418,7 @@ AC_SUBST(mailspool)dnl
 
 dnl See whether the mail spool directory is world-writable.
 if test "$lspath" != "no" -a "$cutpath" != "no"; then
-  AC_CACHE_CHECK(whether the mail spool is world-writable, 
+  AC_CACHE_CHECK(whether the mail spool is world-writable,
 		 nmh_cv_mailspool_world_writable,
   [if test "`$lspath -dlL $mailspool | $cutpath -c9`" = "-"; then
     nmh_cv_mailspool_world_writable=no
@@ -481,7 +488,7 @@ AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS(errno.h fcntl.h crypt.h termcap.h \
                  langinfo.h wchar.h wctype.h iconv.h netdb.h \
                  sys/param.h sys/time.h sys/stream.h)
- 
+
 dnl
 dnl Checks for _IO_write_ptr. A Linuxism used by nmh on linux. We
 dnl really use a whole set of them, but this check should be
@@ -489,7 +496,7 @@ dnl sufficient.
 dnl
 AC_CHECK_HEADER(libio.h, [
   AC_EGREP_HEADER(_IO_write_ptr, libio.h, [
-    AC_DEFINE(LINUX_STDIO,1,[Use the Linux _IO_*_ptr defines from <libio.h>.]) ]) ]) 
+    AC_DEFINE(LINUX_STDIO,1,[Use the Linux _IO_*_ptr defines from <libio.h>.]) ]) ])
 
 AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
   [Define to 1 if `struct winsize' requires <sys/ptem.h>.]),,
