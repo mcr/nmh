@@ -361,7 +361,7 @@ ismymbox (struct mailname *np)
     char buffer[BUFSIZ];
     struct mailname *mp;
     static char *am = NULL;
-    static struct mailname mq={NULL};
+    static struct mailname mq;
 
     /*
      * If this is the first call, initialize

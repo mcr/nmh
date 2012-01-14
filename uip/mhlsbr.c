@@ -134,11 +134,11 @@ static struct mcomp *fmthd = NULL;
 static struct mcomp *fmttl = NULL;
 
 static struct mcomp global = {
-    NULL, NULL, "", NULL, NULL, 0, -1, 80, -1, 40, BELL, 0
+    NULL, NULL, NULL, NULL, NULL, NULL, 0, -1, 80, -1, 40, BELL, NULL
 };
 
 static struct mcomp holder = {
-    NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NOCOMPONENT, 0
+    NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NOCOMPONENT, NULL
 };
 
 struct pair {

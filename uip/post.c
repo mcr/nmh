@@ -266,10 +266,10 @@ static char *fccfold[FCCS];	/* foldernames for FCC'ing       */
 
 static struct headers  *hdrtab;	/* table for the message we're doing */
 
-static struct mailname localaddrs={NULL};	/* local addrs     */
-static struct mailname netaddrs={NULL};		/* network addrs   */
-static struct mailname uuaddrs={NULL};		/* uucp addrs      */
-static struct mailname tmpaddrs={NULL};		/* temporary queue */
+static struct mailname localaddrs;		/* local addrs     */
+static struct mailname netaddrs;		/* network addrs   */
+static struct mailname uuaddrs;			/* uucp addrs      */
+static struct mailname tmpaddrs;		/* temporary queue */
 
 #ifdef SMTPMTS
 static int snoop      = 0;

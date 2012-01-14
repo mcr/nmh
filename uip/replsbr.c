@@ -24,7 +24,7 @@ static int dftype=0;
 static char *badaddrs = NULL;
 static char *dfhost = NULL;
 
-static struct mailname mq = { NULL };
+static struct mailname mq;
 static int nodupcheck = 0;		/* If set, no check for duplicates */
 
 /*
