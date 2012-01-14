@@ -70,7 +70,9 @@
 #define	SM_DOT	600	/* see above */
 #define	SM_QUIT	 30
 #define	SM_CLOS	 10
+#ifdef CYRUS_SASL
 #define	SM_AUTH  45
+#endif /* CYRUS_SASL */
 
 static int sm_addrs = 0;
 static int sm_alarmed = 0;
@@ -194,6 +196,10 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 {
 #ifdef CYRUS_SASL
     char *server_mechs;
+#else  /* CYRUS_SASL */
+    NMH_UNUSED (sasl);
+    NMH_UNUSED (saslmech);
+    NMH_UNUSED (user);
 #endif /* CYRUS_SASL */
     int result, sd1, sd2;
 
@@ -447,6 +453,11 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 {
 #ifdef CYRUS_SASL
     char *server_mechs;
+#else  /* CYRUS_SASL */
+    NMH_UNUSED (server);
+    NMH_UNUSED (sasl);
+    NMH_UNUSED (saslmech);
+    NMH_UNUSED (user);
 #endif /* CYRUS_SASL */
     unsigned int i, result, vecp;
     int pdi[2], pdo[2];
