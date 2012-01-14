@@ -33,11 +33,11 @@ need an ANSI C compiler such as gcc.
 
    ./configure [options]
 
-   This will check the configuration of your OS, and create the 
+   This will check the configuration of your OS, and create the
    include file config.h, as well as the various Makefiles.
 
-   The configure script accepts various options.  The options of 
-   most interest are listed in a section below.  To see the list 
+   The configure script accepts various options.  The options of
+   most interest are listed in a section below.  To see the list
    of all available options, you can run
 
    ./configure --help
@@ -68,8 +68,8 @@ need an ANSI C compiler such as gcc.
    injecting the message to a mail transfer agent (such as sendmail)
    on the local machine via SMTP.
 
-   If, instead, all your mail sending and receiving occurs on a 
-   remote POP/SMTP server, you will need to look at the values of the 
+   If, instead, all your mail sending and receiving occurs on a
+   remote POP/SMTP server, you will need to look at the values of the
    variables "localname", "pophost", and "servers":
 
     a) "localname" defines the hostname that nmh considers local.
@@ -125,12 +125,16 @@ the "configure" script does not know about, by either editing the user
 configuration section of the top level Makefile (after running configure)
 or giving "configure" initial values for these variables by setting them
 in the environment.  Using a Bourne-compatible shell (such as sh,ksh,zsh),
- 
+
 you can do that on the command line like this:
     CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
- 
+
 Or on systems that have the "env" program, you can do it like this:
     env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
+
+If you want to add to, not replace, compile flags, you can use
+OURDEFS with env or like this:
+    OURDEFS='-Wextra -Wno-sign-compare' ./configure
 
 ----------------------------------------
 Building nmh on additional architectures
@@ -140,7 +144,7 @@ This should restore the nmh source distribution back to its original
 state.  You can then configure nmh as above on other architectures in
 which you wish to build nmh.  Or alternatively, you can use a different
 build directory for each architecture.
- 
+
 ---------------------------------
 Using a different build directory
 ---------------------------------
@@ -151,7 +155,7 @@ architecture at the same time.  To do this, you must use a version of
 the directory where you want the object files and executables to go and
 run the "configure" script.  "configure" automatically checks for the
 source code in the directory that "configure" is in.  For example,
- 
+
     cd /usr/local/solaris/nmh
     /usr/local/src/nmh-1.0/configure
     make
@@ -179,7 +183,7 @@ Options for configure
 --enable-debug
      Enable debugging support.
 
---enable-masquerade[='draft_from mmailid username_extension']    
+--enable-masquerade[='draft_from mmailid username_extension']
      If this option is disabled, the mts.conf file will contain the
      line "masquerade: " (with no value), which may be manually edited
      later.  You may find it convenient to specify a value at
