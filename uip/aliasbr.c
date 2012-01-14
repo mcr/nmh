@@ -409,7 +409,7 @@ addall (struct aka *ak)
 	Everyone = EVERYONE;
 
     for (hm = homehead; hm; hm = hm->h_next)
-	if (hm->h_uid > Everyone
+        if ((int) hm->h_uid > Everyone
 		&& (noshell || strcmp (hm->h_shell, NoShell)))
 	    add_aka (ak, hm->h_name);
 
@@ -556,7 +556,9 @@ seek_home (char *name)
      * The only place where there might be problems.
      * This assumes that ALL usernames are kept in lowercase.
      */
-    for (c = name, c1 = lname; *c && (c1 - lname < sizeof(lname) - 1); c++, c1++) {
+    for (c = name, c1 = lname;
+         *c && (c1 - lname < (int) sizeof(lname) - 1);
+         c++, c1++) {
         if (isalpha(*c) && isupper(*c))
 	    *c1 = tolower (*c);
 	else

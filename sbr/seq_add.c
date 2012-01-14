@@ -25,7 +25,8 @@
 int
 seq_addsel (struct msgs *mp, char *cp, int public, int zero)
 {
-    int i, msgnum, new_seq = 1;
+    unsigned int i;
+    int msgnum, new_seq = 1;
 
     if (!seq_nameok (cp))
 	return 0;
@@ -117,7 +118,8 @@ seq_addsel (struct msgs *mp, char *cp, int public, int zero)
 int
 seq_addmsg (struct msgs *mp, char *cp, int msgnum, int public, int zero)
 {
-    int i, j, new_seq = 1;
+    unsigned int i;
+    int j, new_seq = 1;
 
     if (!seq_nameok (cp))
 	return 0;

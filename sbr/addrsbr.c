@@ -312,7 +312,7 @@ adrsprintf (char *username, char *domain)
 				       "%s%s", username, extension);
 	    
 	    if (snprintf_return < 0 ||
-		snprintf_return >= sizeof(username_with_extension))
+		snprintf_return >= (int) sizeof(username_with_extension))
 		adios(NULL, "snprintf() error writing username (%d chars) and"
 		      " $USERNAME_EXTENSION (%d chars) to array of BUFSIZ (%d)"
 		      " chars",
@@ -329,7 +329,7 @@ adrsprintf (char *username, char *domain)
 
     snprintf_return = snprintf (addr, sizeof(addr), "%s@%s", username, domain);
 
-    if (snprintf_return < 0 || snprintf_return >= sizeof(addr))
+    if (snprintf_return < 0 || snprintf_return >= (int) sizeof(addr))
 	adios(NULL, "snprintf() error writing username (%d chars), domain (%d"
 	      " chars), and 1 separator char to array of BUFSIZ (%d) chars",
 	      strlen(username), strlen(domain), BUFSIZ);

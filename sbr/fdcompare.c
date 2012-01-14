@@ -23,12 +23,12 @@ fdcompare (int fd1, int fd2)
 	    && n1 == n2) {
 	c1 = b1;
 	c2 = b2;
-	for (i = n1 < sizeof(b1) ? n1 : sizeof(b1); i--;)
+	for (i = n1 < (int) sizeof(b1) ? n1 : (int) sizeof(b1); i--;)
 	    if (*c1++ != *c2++) {
 		resp = 0;
 		goto leave;
 	    }
-	if (n1 < sizeof(b1))
+	if (n1 < (int) sizeof(b1))
 	    goto leave;
     }
     resp = 0;

@@ -500,8 +500,9 @@ mhl_draft (int out, char *digest, int volume, int issue,
 	     * handle about 995 messages (because vec is fixed size),
 	     * but that should be plenty.
 	     */
-	    for (msgnum = mp->lowsel; msgnum <= mp->hghsel && i < sizeof(vec) - 1;
-			msgnum++)
+	    for (msgnum = mp->lowsel;
+                 msgnum <= mp->hghsel && i < (int) sizeof(vec) - 1;
+                 msgnum++)
 		if (is_selected (mp, msgnum))
 		    vec[i++] = getcpy (m_name (msgnum));
 	    vec[i] = NULL;

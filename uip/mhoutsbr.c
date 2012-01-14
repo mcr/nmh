@@ -430,7 +430,7 @@ writeBase64 (CT ct, FILE *out)
 int
 writeBase64aux (FILE *in, FILE *out)
 {
-    int	cc, n;
+    unsigned int cc, n;
     char inbuf[3];
 
     n = BPERLIN;

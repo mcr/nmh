@@ -316,7 +316,7 @@ int
 fmt_compile(char *fstring, struct format **fmt)
 {
     register char *cp;
-    int i;
+    size_t i;
 
     if (format_string)
 	free (format_string);

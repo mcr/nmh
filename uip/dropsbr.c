@@ -140,13 +140,12 @@ mbx_chk_mbox (int fd)
 static int
 mbx_chk_mmdf (int fd)
 {
-    size_t count;
+    ssize_t count;
     char ldelim[BUFSIZ];
 
     count = strlen (mmdlm2);
 
-    /* casting -count to off_t, seem to break FreeBSD 2.2.6 */
-    if (lseek (fd, (long) (-count), SEEK_END) == (off_t) NOTOK)
+    if (lseek (fd, -count, SEEK_END) == (off_t) NOTOK)
 	return NOTOK;
     if (read (fd, ldelim, count) != count)
 	return NOTOK;
@@ -518,7 +517,8 @@ map_read (char *file, long pos, struct drop **drops, int noisy)
     memcpy((char *) dp, (char *) mp, sizeof(*dp));
 
     lseek (md, (off_t) sizeof(*mp), SEEK_SET);
-    if ((i = read (md, (char *) (dp + 1), msgp * sizeof(*dp))) < sizeof(*dp)) {
+    if ((i = read (md, (char *) (dp + 1), msgp * sizeof(*dp))) <
+        (int) sizeof(*dp)) {
 	i = 0;
 	free ((char *) dp);
     } else {
@@ -651,7 +651,7 @@ map_open (char *file, int md)
     mode_t mode;
     struct stat st;
 
-    mode = fstat (md, &st) != NOTOK ? (mode_t) (st.st_mode & 0777) : m_gmprot ();
+    mode = fstat (md, &st) != NOTOK ? (int) (st.st_mode & 0777) : m_gmprot ();
     return mbx_open (file, OTHER_FORMAT, st.st_uid, st.st_gid, mode);
 }
 
@@ -659,7 +659,7 @@ map_open (char *file, int md)
 int
 map_chk (char *file, int fd, struct drop *dp, long pos, int noisy)
 {
-    long count;
+    ssize_t count;
     struct drop d, tmpd;
     register struct drop *dl;
 
@@ -700,7 +700,7 @@ map_chk (char *file, int fd, struct drop *dp, long pos, int noisy)
     }
 
     dl = &d;
-    count = (long) strlen (mmdlm2);
+    count = strlen (mmdlm2);
     lseek (fd, (off_t) (dp->d_id * sizeof(*dp)), SEEK_SET);
     if (read (fd, (char *) dl, sizeof(*dl)) != sizeof(*dl)
 	    || (ntohl(dl->d_stop) != dp->d_stop

@@ -1126,7 +1126,8 @@ void
 markcmd (char **args)
 {
     int addsw = 0, deletesw = 0, debugsw = 0;
-    int listsw = 0, zerosw = 0, seqp = 0;
+    int listsw = 0, zerosw = 0;
+    size_t seqp = 0;
     int msgp = 0, msgnum;
     char *cp, buf[BUFSIZ];
     char *seqs[NUMATTRS + 1], *msgs[MAXARGS];
@@ -1635,7 +1636,8 @@ static struct swit pickswit[] = {
 void
 pickcmd (char **args)
 {
-    int zerosw = 1, msgp = 0, seqp = 0;
+    int zerosw = 1, msgp = 0;
+    size_t seqp = 0;
     int vecp = 0, hi, lo, msgnum;
     char *cp, buf[BUFSIZ], *msgs[MAXARGS];
     char *seqs[NUMATTRS], *vec[MAXARGS];

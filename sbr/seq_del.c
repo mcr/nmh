@@ -25,7 +25,8 @@
 int
 seq_delsel (struct msgs *mp, char *cp, int public, int zero)
 {
-    int i, msgnum, new_seq = 1;
+    unsigned int i;
+    int msgnum, new_seq = 1;
 
     if (!seq_nameok (cp))
 	return 0;

@@ -71,7 +71,8 @@ static void putzero_done (int) NORETURN;
 int
 main (int argc, char **argv)
 {
-    int publicsw = -1, zerosw = 1, seqp = 0, vecp = 0;
+    int publicsw = -1, zerosw = 1, vecp = 0;
+    size_t seqp = 0;
     int lo, hi, msgnum;
     char *maildir, *folder = NULL, buf[100];
     char *cp, **argp, **arguments;

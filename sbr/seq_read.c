@@ -158,7 +158,8 @@ seq_private (struct msgs *mp)
 static int
 seq_init (struct msgs *mp, char *name, char *field)
 {
-    int i, j, k, is_current;
+    unsigned int i;
+    int j, k, is_current;
     char *cp, **ap;
 
     /*

@@ -45,7 +45,7 @@ static struct smsg *smsgs;
 int nmsgs;
 
 char *subjsort = (char *) 0;    /* sort on subject if != 0 */
-unsigned long datelimit = 0;
+time_t datelimit = 0;
 int submajor = 0;		/* if true, sort on subject-major */
 int verbose;
 

@@ -44,7 +44,8 @@ int
 main (int argc, char **argv)
 {
     pid_t child_id;
-    int status, i, iscc = 0, nvec;
+    int status, iscc = 0, nvec;
+    size_t i;
     int queued = 0, resent = 0, somebody;
     char *cp, *tolist = NULL, *cclist = NULL, *subject = NULL;
     char *from = NULL, *body = NULL, **argp, **arguments;

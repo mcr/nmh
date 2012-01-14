@@ -49,8 +49,8 @@ int
 main (int argc, char **argv)
 {
     int addsw = 0, deletesw = 0, debugsw = 0;
-    int listsw = 0, publicsw = -1, zerosw = 0;
-    int seqp = 0, msgnum;
+    int listsw = 0, publicsw = -1, zerosw = 0, msgnum;
+    unsigned int seqp = 0;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
     char **argp, **arguments;
     char *seqs[NUMATTRS + 1];

@@ -53,7 +53,8 @@ main (int argc, char **argv)
 {
     int publicsw = -1, zerosw = 0;
     int create = 1, unseensw = 1;
-    int fd, msgnum, seqp = 0;
+    int fd, msgnum;
+    size_t seqp = 0;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
     char **argp, **arguments, *seqs[NUMATTRS+1];
     struct msgs *mp;

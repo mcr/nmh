@@ -263,10 +263,10 @@ m_conv (struct msgs *mp, char *str, int call)
 #ifdef LOCALE
     /* doesn't enforce lower case */
     for (bp = buf; (isalpha(*cp) || *cp == '.')
-		&& (bp - buf < sizeof(buf) - 1); )
+           && (bp - buf < (int) sizeof(buf) - 1); )
 #else
     for (bp = buf; ((*cp >= 'a' && *cp <= 'z') || *cp == '.')
-		&& (bp - buf < sizeof(buf) - 1); )
+           && (bp - buf < (int) sizeof(buf) - 1); )
 #endif /* LOCALE */
     {
 	*bp++ = *cp++;

@@ -183,7 +183,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
     int		length;		/* length of field name */
     int		n;		/* number of bytes written */
 
-    mode = fstat (fd, &st) != NOTOK ? (st.st_mode & 0777) : m_gmprot ();
+    mode = fstat (fd, &st) != NOTOK ? (int) (st.st_mode & 0777) : m_gmprot ();
 
     strncpy (tmpfil, m_mktemp2(file, "annotate", NULL, &tmp), sizeof(tmpfil));
     chmod (tmpfil, mode);

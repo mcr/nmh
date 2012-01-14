@@ -50,7 +50,8 @@ pidstatus (int status, FILE *fp, char *cp)
 	    if (cp)
 		fprintf (fp, "%s: ", cp);
 	    fprintf (fp, "signal %d", signum);
-	    if (signum >= 0 && signum < sizeof(sigmsg) && sigmsg[signum] != NULL)
+	    if (signum >= 0 && signum < (int) sizeof(sigmsg) &&
+                  sigmsg[signum] != NULL)
 		fprintf (fp, " (%s%s)\n", sigmsg[signum],
 			 WCOREDUMP(status) ? ", core dumped" : "");
 	    else

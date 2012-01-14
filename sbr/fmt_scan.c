@@ -508,13 +508,13 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 			    ljust++;
 		    }
 
-		    if (!ljust && i > 0 && strlen(str) > i)
+		    if (!ljust && i > 0 && (int) strlen(str) > i)
 			    str[i] = '\0';
 		    xp = str;
 		    xp += strlen(str) - 1;
 		    while (xp > str && isspace(*xp))
 			    *xp-- = '\0';
-		    if (ljust && i > 0 && strlen(str) > i)
+		    if (ljust && i > 0 && (int) strlen(str) > i)
 			str += strlen(str) - i;
 	    }
 	    break;

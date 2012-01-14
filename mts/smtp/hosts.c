@@ -43,7 +43,7 @@ OfficialName (char *name)
     char **r;
     struct host *h;
 
-    for (p = name, q = site; *p && (q - site < sizeof(site) - 1); p++, q++)
+    for (p = name, q = site; *p && (q - site < (int)sizeof(site) - 1); p++, q++)
 	*q = isupper (*p) ? tolower (*p) : *p;
     *q = '\0';
     q = site;

@@ -267,7 +267,8 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
     if ((in = fopen (msgnam = m_name (msgnum), "r")) == NULL)
 	adios (msgnam, "unable to read message");
 
-    mode = fstat (fileno(in), &st) != NOTOK ? (st.st_mode & 0777) : m_gmprot();
+    mode =
+      fstat (fileno(in), &st) != NOTOK ? (int) (st.st_mode & 0777) : m_gmprot();
     mp = *mpp;
 
     /*

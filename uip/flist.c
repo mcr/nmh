@@ -74,7 +74,7 @@ static struct Folder *orders = NULL;
 static int nOrders = 0;
 static int nOrdersAlloced = 0;
 static struct Folder *folders = NULL;
-static int nFolders = 0;
+static unsigned int nFolders = 0;
 static int nFoldersAlloced = 0;
 
 /* info on folders to search */
@@ -84,7 +84,7 @@ static int maxfolders;
 
 /* info on sequences to search for */
 static char *sequencesToDo[NUMATTRS];
-static int numsequences;
+static unsigned int numsequences;
 
 static int all        = FALSE;  /* scan all folders in top level?           */
 static int alphaOrder = FALSE;	/* want alphabetical order only             */
@@ -464,7 +464,8 @@ BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
 int
 AddFolder(char *name, int force)
 {
-    int i, msgnum, nonzero;
+    unsigned int i;
+    int msgnum, nonzero;
     int seqnum[NUMATTRS], nSeq[NUMATTRS];
     struct Folder *f;
     struct msgs *mp;
@@ -534,8 +535,8 @@ void
 PrintFolders(void)
 {
     char tmpname[BUFSIZ];
-    int i, j, len, has_private = 0;
-    int maxfolderlen = 0, maxseqlen = 0;
+    unsigned int i, j, len, has_private = 0;
+    unsigned int maxfolderlen = 0, maxseqlen = 0;
     int maxnum = 0, maxseq = 0;
 
     if (!Total) {

@@ -218,13 +218,13 @@ static int mhldebug = 0;
 static int ontty = NOTTY;
 
 static int row;
-static int column;
+static unsigned int column;
 
 static int lm;
 static int llim;
 static int ovoff;
 static int term;
-static int wid;
+static unsigned int wid;
 
 static char *ovtxt;
 
@@ -1275,9 +1275,9 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     if (cchdr) {
 	if (flag == TWOCOMP)
 	    count = (c1->c_cwidth >= 0) ? c1->c_cwidth
-			: strlen (c2->c_name) + 2;
+			: (int) strlen (c2->c_name) + 2;
 	else
-	    count = (c1->c_cwidth >= 0) ? c1->c_cwidth
+	    count = (c1->c_cwidth >= 0) ? (size_t) c1->c_cwidth
 			: strlen (c1->c_text ? c1->c_text : c1->c_name) + 2;
     }
     count += c1->c_offset;
