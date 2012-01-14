@@ -586,6 +586,8 @@ timerOFF (int fd)
 static void
 alrmser (int sig)
 {
+    NMH_UNUSED (sig);
+
     char *lockfile;
     struct lock *lp;
 
