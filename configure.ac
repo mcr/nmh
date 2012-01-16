@@ -485,7 +485,7 @@ AC_SUBST(OURDEFS)
 
 AC_HEADER_STDC
 AC_HEADER_TIOCGWINSZ
-AC_CHECK_HEADERS(errno.h fcntl.h crypt.h termcap.h \
+AC_CHECK_HEADERS(errno.h fcntl.h crypt.h ncurses/termcap.h termcap.h \
                  langinfo.h wchar.h wctype.h iconv.h netdb.h \
                  sys/param.h sys/time.h sys/stream.h)
 
