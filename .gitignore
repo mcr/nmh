@@ -81,4 +81,5 @@
 *.5
 *.8
 a.out.DSYM
+.DS_Store
 RPM/
