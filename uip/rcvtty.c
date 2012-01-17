@@ -22,17 +22,7 @@
 #include <signal.h>
 #include <fcntl.h>
 
-#include <utmp.h>
-
-#ifndef HAVE_GETUTENT
-# ifndef UTMP_FILE
-#  ifdef _PATH_UTMP
-#   define UTMP_FILE _PATH_UTMP
-#  else
-#   define UTMP_FILE "/etc/utmp"
-#  endif
-# endif
-#endif
+#include <utmpx.h>
 
 #define	SCANFMT	\
 "%2(hour{dtimenow}):%02(min{dtimenow}): %<(size)%5(size) %>%<{encrypted}E%>\
@@ -91,13 +81,7 @@ main (int argc, char **argv)
     int md, vecp = 0;
     char *cp, *user, buf[BUFSIZ], tty[BUFSIZ];
     char **argp, **arguments, *vec[MAXARGS];
-#ifdef HAVE_GETUTENT
-    struct utmp * utp;
-#else
-    struct utmp ut;
-    register FILE *uf;
-#endif
-
+    struct utmpx *utp;
 #ifdef LOCALE
     setlocale(LC_ALL, "");
 #endif
@@ -172,33 +156,16 @@ main (int argc, char **argv)
 
     user = getusername();
 
-#ifdef HAVE_GETUTENT
-    setutent();
-    while ((utp = getutent()) != NULL) {
-        if (
-#ifdef HAVE_STRUCT_UTMP_UT_TYPE
-	       utp->ut_type == USER_PROCESS 
-	       &&
-#endif
-               utp->ut_name[0] != 0
+    setutxent();
+    while ((utp = getutxent()) != NULL) {
+        if (utp->ut_type == USER_PROCESS && utp->ut_user[0] != 0
                && utp->ut_line[0] != 0
-               && strncmp (user, utp->ut_name, sizeof(utp->ut_name)) == 0) {
+               && strncmp (user, utp->ut_user, sizeof(utp->ut_user)) == 0) {
             strncpy (tty, utp->ut_line, sizeof(utp->ut_line));
 	    alert (tty, md);
         }
     }
-    endutent();
-#else
-    if ((uf = fopen (UTMP_FILE, "r")) == NULL)
-	exit (RCV_MBX);
-    while (fread ((char *) &ut, sizeof(ut), 1, uf) == 1)
-	if (ut.ut_name[0] != 0
-		&& strncmp (user, ut.ut_name, sizeof(ut.ut_name)) == 0) {
-	    strncpy (tty, ut.ut_line, sizeof(ut.ut_line));
-	    alert (tty, md);
-	}
-    fclose (uf);
-#endif
+    endutxent();
 
     exit (RCV_MOK);
     return 0;  /* dead code to satisfy the compiler */

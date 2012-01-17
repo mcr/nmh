@@ -51,17 +51,7 @@
 #include NDBM_HEADER
 #endif
 
-#include <utmp.h>
-
-#ifndef HAVE_GETUTENT
-# ifndef UTMP_FILE
-#  ifdef _PATH_UTMP
-#   define UTMP_FILE _PATH_UTMP
-#  else
-#   define UTMP_FILE "/etc/utmp"
-#  endif
-# endif
-#endif
+#include <utmpx.h>
 
 static struct swit switches[] = {
 #define	ADDRSW         0
@@ -937,62 +927,29 @@ lookup (struct pair *pairs, char *key)
  * logged in.
  */
 
-#ifdef HAVE_GETUTENT
 static int
 logged_in (void)
 {
-    struct utmp * utp;
+    struct utmpx *utp;
 
     if (utmped)
         return utmped;
 
-    setutent();
+    setutxent();
 
-    while ((utp = getutent()) != NULL) {
-        if (
-#ifdef HAVE_STRUCT_UTMP_UT_TYPE
-		utp->ut_type == USER_PROCESS
-                &&
-#endif
-		utp->ut_name[0] != 0
-                && strncmp (user, utp->ut_name, sizeof(utp->ut_name)) == 0) {
+    while ((utp = getutxent()) != NULL) {
+        if ( utp->ut_type == USER_PROCESS && utp->ut_user[0] != 0
+                && strncmp (user, utp->ut_user, sizeof(utp->ut_user)) == 0) {
             if (debug)
                 continue;
-            endutent();
+            endutxent();
             return (utmped = DONE);
         }
     }
 
-    endutent();
+    endutxent();
     return (utmped = NOTOK);
 }
-#else
-static int
-logged_in (void)
-{
-    struct utmp ut;
-    FILE *uf;
-
-    if (utmped)
-	return utmped;
-
-    if ((uf = fopen (UTMP_FILE, "r")) == NULL)
-	return NOTOK;
-
-    while (fread ((char *) &ut, sizeof(ut), 1, uf) == 1) {
-	if (ut.ut_name[0] != 0
-	    && strncmp (user, ut.ut_name, sizeof(ut.ut_name)) == 0) {
-	    if (debug)
-		continue;
-	    fclose (uf);
-	    return (utmped = DONE);
-	}
-    }
-
-    fclose (uf);
-    return (utmped = NOTOK);
-}
-#endif
 
 #define	check(t,a,b)		if (t < a || t > b) return -1
 #define	cmpar(h1,m1,h2,m2)	if (h1 < h2 || (h1 == h2 && m1 < m2)) return 0

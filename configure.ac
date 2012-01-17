@@ -510,7 +510,7 @@ AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
 dnl ---------------
 dnl CHECK FUNCTIONS
 dnl ---------------
-AC_CHECK_FUNCS(writev lstat getutent nl_langinfo)
+AC_CHECK_FUNCS(writev lstat nl_langinfo)
 
 dnl Check for multibyte character set support
 if test "x$ac_cv_header_wchar_h" = "xyes" -a "x$ac_cv_header_wctype_h" = "xyes" \
@@ -766,8 +766,6 @@ AC_TYPE_SIZE_T
 dnl ----------------
 dnl CHECK STRUCTURES
 dnl ----------------
-
-AC_CHECK_MEMBERS(struct utmp.ut_type,,,[#include <utmp.h>])
 
 AC_STRUCT_DIRENT_D_TYPE
 
