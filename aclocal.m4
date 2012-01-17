@@ -4,7 +4,7 @@
 # optional libraries for networking functions.
 #
 
-AC_DEFUN([AC_CHECK_NETLIBS],
+AC_DEFUN([NMH_CHECK_NETLIBS],
 [AC_SEARCH_LIBS([gethostbyname], [nsl], ,
 		[AC_MSG_ERROR([gethostbyname not found])])
  AC_SEARCH_LIBS([connect], [socket], , [AC_MSG_ERROR([connect not found])])

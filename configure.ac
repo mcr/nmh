@@ -526,7 +526,7 @@ dnl Check location of modf
 AC_CHECK_FUNC(modf, , AC_CHECK_LIB(m, modf))
 
 dnl Checks for network libraries (nsl, socket)
-AC_CHECK_NETLIBS
+NMH_CHECK_NETLIBS
 
 termcap_curses_order="termcap curses ncurses"
 for lib in $termcap_curses_order; do
