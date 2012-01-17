@@ -767,7 +767,6 @@ dnl ----------------
 dnl CHECK STRUCTURES
 dnl ----------------
 
-AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[#include <time.h>])
 AC_CHECK_MEMBERS(struct utmp.ut_type,,,[#include <utmp.h>])
 
 AC_STRUCT_DIRENT_D_TYPE
