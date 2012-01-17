@@ -218,6 +218,8 @@ fi
 
 AC_PROG_CC
 
+AC_SUBST(EXEEXT)dnl
+
 AC_CACHE_CHECK(whether preprocessor supports -Wunused-macros,
   nmh_cv_has_unusedmacros,
   [nmh_saved_cppflags="$CPPFLAGS"

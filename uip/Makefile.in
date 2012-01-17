@@ -13,6 +13,7 @@ exec_prefix = @exec_prefix@
 bindir      = @bindir@
 libdir      = @libdir@
 etcdir      = @sysconfdir@
+EXEEXT      = @EXEEXT@
 
 CC       = @CC@
 CFLAGS   = @CFLAGS@
@@ -246,7 +247,7 @@ install: install-cmds install-misc install-lcmds install-scmds
 install-cmds:
 	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(bindir)
 	for cmd in $(CMDS); do \
-	  $(INSTALL_PROGRAM) $$cmd $(DESTDIR)$(bindir)/$$cmd; \
+	  $(INSTALL_PROGRAM) $$cmd$(EXEEXT) $(DESTDIR)$(bindir)/$$cmd$(EXEEXT); \
 	done
 
 # install links
@@ -277,23 +278,23 @@ install-misc:
 # install commands with special installation needs (thus no $(SCMDS) use here)
 install-scmds:
 	if test x$(SETGID_MAIL) != x; then \
-	  $(INSTALL_PROGRAM) -g $(MAIL_SPOOL_GRP) -m 2755 inc $(DESTDIR)$(bindir)/$$cmd; \
+	  $(INSTALL_PROGRAM) -g $(MAIL_SPOOL_GRP) -m 2755 inc $(DESTDIR)$(bindir)/$$cmd$(EXEEXT); \
 	else \
-	  $(INSTALL_PROGRAM)                 inc $(DESTDIR)$(bindir)/$$cmd; \
+	  $(INSTALL_PROGRAM) inc $(DESTDIR)$(bindir)/$$cmd$(EXEEXT); \
 	fi
 
 uninstall:
 	for cmd in $(CMDS); do \
-	  rm -f $(DESTDIR)$(bindir)/$$cmd; \
+	  rm -f $(DESTDIR)$(bindir)/$$cmd$(EXEEXT); \
 	done
 	for lcmd in $(LCMDS); do \
-	  rm -f $(DESTDIR)$(bindir)/$$lcmd; \
+	  rm -f $(DESTDIR)$(bindir)/$$lcmd$(EXEEXT); \
 	done
 	for misc in $(MISC); do \
-	  rm -f $(DESTDIR)$(libdir)/$$misc; \
+	  rm -f $(DESTDIR)$(libdir)/$$misc$(EXEEXT); \
 	done
 	for cmd in $(SCMDS); do \
-	  rm -f $(DESTDIR)$(bindir)/$$cmd; \
+	  rm -f $(DESTDIR)$(bindir)/$$cmd$(EXEEXT); \
 	done
 
 # ========== DEPENDENCIES FOR CLEANUP ==========
