@@ -1587,7 +1587,7 @@ doface (struct mcomp *c1)
 	return NOTOK;
     }
 
-    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
 
     switch (child_id) {
@@ -1761,7 +1761,7 @@ m_popen (char *name)
     if (pipe (pd) == NOTOK)
 	adios ("pipe", "unable to");
 
-    switch (m_pid = m_vfork()) {
+    switch (m_pid = vfork()) {
 	case NOTOK: 
 	    adios ("fork", "unable to");
 

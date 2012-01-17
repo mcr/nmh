@@ -236,8 +236,8 @@ AC_SUBST(DISABLE_UNUSED_MACROS_WARNING)dnl
 
 AC_CACHE_CHECK(whether compiler supports -Wextra, nmh_cv_wextra,
 [nmh_saved_cflags="$CFLAGS"
- CFLAGS="$CFLAGS -Wextra"
- AC_TRY_COMPILE([],[],nmh_cv_wextra=' -Wextra',echo -n no)
+ CFLAGS="$CFLAGS -Wextra -Wno-clobbered"
+ AC_TRY_COMPILE([],[],nmh_cv_wextra=' -Wextra -Wno-clobbered',echo -n no)
  CFLAGS="$nmh_saved_cflags"])
 
 AC_CACHE_CHECK(whether compiler supports -Wno-pointer-sign, nmh_cv_has_noptrsign,

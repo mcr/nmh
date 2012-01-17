@@ -80,7 +80,6 @@ int m_putenv (char *, char *);
 char *m_mktemp(const char *, int *, FILE **);
 char *m_mktemp2(const char *, const char *, int *, FILE **);
 void m_unknown(FILE *);
-pid_t m_vfork ();
 int makedir (char *);
 char *nmh_getpass(const char *);
 char *norm_charmap(char *);

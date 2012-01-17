@@ -197,7 +197,7 @@ DisplayMsgHeader (CT ct, char *form)
 
     fflush (stdout);
 
-    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
 
     switch (child_id) {
@@ -564,7 +564,7 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 
     fflush (stdout);
 
-    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
     switch (child_id) {
 	case NOTOK:

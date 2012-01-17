@@ -428,7 +428,7 @@ main (int argc, char **argv)
 
     if (pushflg && !(watch || verbose)) {
 	/* fork to a child to run sendmail */
-	for (i=0; (pid = m_vfork()) == NOTOK && i < 5; i++)
+	for (i=0; (pid = vfork()) == NOTOK && i < 5; i++)
 	    sleep(5);
 	switch (pid) {
 	    case NOTOK:
@@ -764,7 +764,7 @@ make_bcc_file (void)
     else {
 	vec[0] = r1bindex (mhlproc, '/');
 
-	for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
+	for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	    sleep (5);
 	switch (child_id) {
 	    case NOTOK: 
@@ -825,7 +825,7 @@ fcc (char *file, char *folder)
 	printf ("%sFcc: %s\n", msgstate == resent ? "Resent-" : "", folder);
     fflush (stdout);
 
-    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
     switch (child_id) {
 	case NOTOK: 

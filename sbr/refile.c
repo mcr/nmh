@@ -34,7 +34,7 @@ refile (char **arg, char *file)
     context_save();	/* save the context file */
     fflush(stdout);
 
-    switch (pid = m_vfork()) {
+    switch (pid = vfork()) {
 	case -1: 
 	    advise ("fork", "unable to");
 	    return -1;

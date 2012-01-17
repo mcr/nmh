@@ -2604,7 +2604,7 @@ openFTP (CT ct, char **file)
 
 	fflush (stdout);
 
-	for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
+	for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	    sleep (5);
 	switch (child_id) {
 	    case NOTOK:
@@ -2746,7 +2746,7 @@ openMail (CT ct, char **file)
     vec[vecp++] = e->eb_body;
     vec[vecp] = NULL;
 
-    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
     switch (child_id) {
 	case NOTOK:

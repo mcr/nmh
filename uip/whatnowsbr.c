@@ -696,7 +696,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
     context_save ();	/* save the context file */
     fflush (stdout);
 
-    switch (pid = m_vfork()) {
+    switch (pid = vfork()) {
 	case NOTOK:
 	    advise ("fork", "unable to");
 	    status = NOTOK;
@@ -846,7 +846,7 @@ sendfile (char **arg, char *file, int pushsw)
     context_save ();	/* save the context file */
     fflush (stdout);
 
-    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
     switch (child_id) {
 	case NOTOK:
@@ -1349,7 +1349,7 @@ whomfile (char **arg, char *file)
     context_save ();	/* save the context file */
     fflush (stdout);
 
-    switch (pid = m_vfork()) {
+    switch (pid = vfork()) {
 	case NOTOK:
 	    advise ("fork", "unable to");
 	    return 1;

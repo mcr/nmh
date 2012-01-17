@@ -794,7 +794,7 @@ sendaux (char **vec, int vecp, char *drft, struct stat *st)
 	done (1);
     vec[vecp] = NULL;
 
-    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
 
     switch (child_id) {
