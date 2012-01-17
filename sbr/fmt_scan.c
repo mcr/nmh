@@ -155,7 +155,10 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
 		sp += char_len;
 #else
 	    end--;
-	    if (iscntrl(*sp) || isspace(*sp)) {
+            /* isnctrl(), etc., take an int argument.  Cygwin's ctype.h
+               intentionally warns if they are passed a char. */
+            int c = *sp;
+	    if (iscntrl(c) || isspace(c)) {
 		sp++;
 #endif
 		if (!prevCtrl) {
