@@ -6,7 +6,6 @@
 #if defined(SMTPMTS)
 # include <ctype.h>
 # include <errno.h>
-# include <setjmp.h>
 # include <stdio.h>
 # include <sys/types.h>
 # include <mts/smtp/smtp.h>

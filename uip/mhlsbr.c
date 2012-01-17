@@ -13,7 +13,7 @@
 #include <h/fmt_scan.h>
 #include <h/tws.h>
 #include <h/utils.h>
-#include <setjmp.h>
+#include <h/m_setjmp.h>
 #include <signal.h>
 
 /*
@@ -790,13 +790,13 @@ parse (void)
 
 
 static void
-process (char *folder, char *volatile fname, int ofilen, int ofilec)
+process (char *folder, char *fname, int ofilen, int ofilec)
 {
     char *cp = NULL;
     FILE *fp = NULL;
     struct mcomp *c1;
 
-    switch (setjmp (env)) {
+    switch (m_setjmp (env)) {
 	case OK: 
 	    if (fname) {
 		fp = mhl_action ? (*mhl_action) (fname) : fopen (fname, "r");
@@ -1587,7 +1587,7 @@ doface (struct mcomp *c1)
 	return NOTOK;
     }
 
-    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
 
     switch (child_id) {
@@ -1682,7 +1682,7 @@ mhlsbr (int argc, char **argv, FILE *(*action)())
     char *cp = NULL;
     struct mcomp *c1;
 
-    switch (setjmp (mhlenv)) {
+    switch (m_setjmp (mhlenv)) {
 	case OK: 
 	    cp = invo_name;
 	    sleepsw = 0;	/* XXX */
@@ -1761,7 +1761,7 @@ m_popen (char *name)
     if (pipe (pd) == NOTOK)
 	adios ("pipe", "unable to");
 
-    switch (m_pid = vfork ()) {
+    switch (m_pid = m_vfork()) {
 	case NOTOK: 
 	    adios ("fork", "unable to");
 

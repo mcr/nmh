@@ -15,7 +15,6 @@
 #include <h/tws.h>
 #include <h/mts.h>
 #include <errno.h>
-#include <setjmp.h>
 #include <signal.h>
 #include <h/msh.h>
 #include <h/picksbr.h>

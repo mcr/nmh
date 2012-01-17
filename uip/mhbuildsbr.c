@@ -988,8 +988,7 @@ compose_content (CT ct)
     default:
 	if (!ce->ce_file) {
 	    pid_t child_id;
-	    int i, len, buflen;
-	    volatile int xstdout;
+	    int i, xstdout, len, buflen;
 	    char *bp, **ap, *cp;
 	    char *vec[4], buffer[BUFSIZ];
 	    FILE *out;
@@ -1088,7 +1087,7 @@ raw:
 	    if ((out = fopen (ce->ce_file, "w")) == NULL)
 		adios (ce->ce_file, "unable to open for writing");
 
-	    for (i = 0; (child_id = vfork()) == NOTOK && i > 5; i++)
+	    for (i = 0; (child_id = m_vfork()) == NOTOK && i > 5; i++)
 		sleep (5);
 	    switch (child_id) {
 	    case NOTOK:

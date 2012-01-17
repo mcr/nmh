@@ -25,6 +25,7 @@
 #include <h/dropsbr.h>
 #include <h/rcvmail.h>
 #include <h/signals.h>
+#include <h/m_setjmp.h>
 #include <h/tws.h>
 #include <h/mts.h>
 #include <h/utils.h>
@@ -1165,7 +1166,7 @@ usr_pipe (int fd, char *cmd, char *pgm, char **vec, int suppress)
 
 	default: 
 	    /* parent process */
-	    if (!setjmp (myctx)) {
+	    if (! m_setjmp (myctx)) {
 		SIGNAL (SIGALRM, alrmser);
 		bytes = fstat (fd, &st) != -1 ? (int) st.st_size : 100;
 

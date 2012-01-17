@@ -12,7 +12,7 @@
 #include <h/signals.h>
 #include <errno.h>
 #include <signal.h>
-#include <setjmp.h>
+#include <h/m_setjmp.h>
 
 #include <termios.h>
 
@@ -353,7 +353,7 @@ getln (char *buffer, int n)
     cp = buffer;
     *cp = 0;
 
-    switch (setjmp (sigenv)) {
+    switch (m_setjmp (sigenv)) {
 	case OK: 
 	    wtuser = 1;
 	    break;

@@ -14,6 +14,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
+#include <h/m_setjmp.h>
 #include <h/rcvmail.h>
 #include <h/scansbr.h>
 #include <h/tws.h>
@@ -217,21 +218,20 @@ static int
 message_fd (char **vec)
 {
     pid_t child_id;
-    int bytes, seconds;
-    volatile int fd;
+    int bytes, fd, seconds;
     char tmpfil[BUFSIZ];
     struct stat st;
 
     fd = mkstemp (strncpy (tmpfil, "/tmp/rcvttyXXXXX", sizeof(tmpfil)));
     unlink (tmpfil);
 
-    if ((child_id = vfork()) == NOTOK) {
+    if ((child_id = m_vfork()) == NOTOK) {
 	/* fork error */
 	close (fd);
 	return header_fd ();
     } else if (child_id) {
 	/* parent process */
-	if (!setjmp (myctx)) {
+	if (!m_setjmp (myctx)) {
 	    SIGNAL (SIGALRM, alrmser);
 	    bytes = fstat(fileno (stdin), &st) != NOTOK ? (int) st.st_size : 100;
 
@@ -317,7 +317,7 @@ alert (char *tty, int md)
     if (stat (ttyspec, &st) == NOTOK || (st.st_mode & mask) == 0)
 	return;
 
-    if (!setjmp (myctx)) {
+    if (!m_setjmp (myctx)) {
 	SIGNAL (SIGALRM, alrmser);
 	alarm (2);
 	td = open (ttyspec, O_WRONLY);

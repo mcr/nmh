@@ -12,7 +12,7 @@
 #include <h/signals.h>
 #include <h/md5.h>
 #include <errno.h>
-#include <setjmp.h>
+#include <h/m_setjmp.h>
 #include <signal.h>
 #include <h/mts.h>
 #include <h/tws.h>
@@ -197,7 +197,7 @@ DisplayMsgHeader (CT ct, char *form)
 
     fflush (stdout);
 
-    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
 
     switch (child_id) {
@@ -541,7 +541,7 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	    SIGNAL_HANDLER istat;
 
 	    istat = SIGNAL (SIGINT, intrser);
-	    if ((intr = sigsetjmp (intrenv, 1)) == OK) {
+	    if ((intr = m_sigsetjmp (intrenv, 1)) == OK) {
 		fflush (stdout);
 		prompt[0] = 0;
 		read (fileno (stdout), prompt, sizeof(prompt));
@@ -564,7 +564,7 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 
     fflush (stdout);
 
-    for (i = 0; (child_id = vfork ()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
     switch (child_id) {
 	case NOTOK:

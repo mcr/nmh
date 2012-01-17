@@ -12,7 +12,6 @@
 #include <h/signals.h>
 #include <h/md5.h>
 #include <errno.h>
-#include <setjmp.h>
 #include <signal.h>
 #include <h/mts.h>
 #include <h/tws.h>
@@ -2472,8 +2471,7 @@ InitFTP (CT ct)
 static int
 openFTP (CT ct, char **file)
 {
-    int	cachetype, fd;
-    volatile int caching;
+    int	cachetype, caching, fd;
     int len, buflen;
     char *bp, *ftp, *user, *pass;
     char buffer[BUFSIZ], cachefile[BUFSIZ];
@@ -2606,7 +2604,7 @@ openFTP (CT ct, char **file)
 
 	fflush (stdout);
 
-	for (i = 0; (child_id = vfork ()) == NOTOK && i < 5; i++)
+	for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
 	    sleep (5);
 	switch (child_id) {
 	    case NOTOK:
@@ -2748,7 +2746,7 @@ openMail (CT ct, char **file)
     vec[vecp++] = e->eb_body;
     vec[vecp] = NULL;
 
-    for (i = 0; (child_id = vfork ()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
     switch (child_id) {
 	case NOTOK:

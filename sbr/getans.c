@@ -9,7 +9,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
-#include <setjmp.h>
+#include <h/m_setjmp.h>
 #include <signal.h>
 
 static char ansbuf[BUFSIZ];
@@ -28,7 +28,7 @@ getans (char *prompt, struct swit *ansp)
     SIGNAL_HANDLER istat = NULL;
     char *cp, **cpp;
 
-    if (!(setjmp (sigenv))) {
+    if (!(m_setjmp (sigenv))) {
 	istat = SIGNAL (SIGINT, intrser);
     } else {
 	SIGNAL (SIGINT, istat);

@@ -466,7 +466,7 @@ replfilter (FILE *in, FILE *out, char *filter)
     rewind (in);
     lseek (fileno(in), (off_t) 0, SEEK_SET);
 
-    switch (pid = vfork ()) {
+    switch (pid = m_vfork()) {
 	case NOTOK: 
 	    adios ("fork", "unable to");
 

@@ -12,7 +12,6 @@
 #include <h/signals.h>
 #include <h/md5.h>
 #include <errno.h>
-#include <setjmp.h>
 #include <signal.h>
 #include <h/mts.h>
 #include <h/tws.h>

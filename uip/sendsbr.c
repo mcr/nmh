@@ -9,7 +9,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
-#include <setjmp.h>
+#include <h/m_setjmp.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <h/mime.h>
@@ -110,7 +110,7 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, cha
     }
 
     done=armed_done;
-    switch (setjmp (env)) {
+    switch (m_setjmp (env)) {
     case OK: 
 	/*
 	 * If given -push and -unique (which is undocumented), then
@@ -771,11 +771,10 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
  */
 
 static int
-sendaux (char **vec, int vecp, char *volatile drft, struct stat *st)
+sendaux (char **vec, int vecp, char *drft, struct stat *st)
 {
     pid_t child_id;
-    int i, status;
-    volatile int fd, fd2;
+    int i, status, fd, fd2;
     char backup[BUFSIZ], buf[BUFSIZ];
 
     fd = pushsw ? tmp_fd () : NOTOK;
@@ -795,7 +794,7 @@ sendaux (char **vec, int vecp, char *volatile drft, struct stat *st)
 	done (1);
     vec[vecp] = NULL;
 
-    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
+    for (i = 0; (child_id = m_vfork()) == NOTOK && i < 5; i++)
 	sleep (5);
 
     switch (child_id) {

@@ -25,7 +25,7 @@
 #include <termios.h>
 
 #include <pwd.h>
-#include <setjmp.h>
+#include <h/m_setjmp.h>
 #include <signal.h>
 #include <h/msh.h>
 #include <h/vmhsbr.h>
@@ -1919,7 +1919,7 @@ pFIN (void)
 {
     int status;
 
-    switch (setjmp (peerenv)) {
+    switch (m_setjmp (peerenv)) {
 	case OK: 
 	    SIGNAL (SIGALRM, alrmser);
 	    alarm (ALARM);

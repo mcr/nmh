@@ -85,7 +85,7 @@ makedir (char *dir)
 	   nested directories like the above code can.
 
 	   -- Dan Harkless <dan-nmh@dilvish.speed.net> */
-	switch (pid = vfork()) {
+	switch (pid = m_vfork()) {
 	    case -1: 
 		advise ("fork", "unable to");
 		return 0;

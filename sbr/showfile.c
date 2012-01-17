@@ -28,7 +28,7 @@ showfile (char **arg, char *file)
     if (!strcmp (r1bindex (lproc, '/'), "mhl"))
 	lproc = mhlproc;
 
-    switch (pid = vfork()) {
+    switch (pid = m_vfork()) {
     case -1:
 	/* fork error */
 	advise ("fork", "unable to");
