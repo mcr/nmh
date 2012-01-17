@@ -76,6 +76,7 @@
 /uip/whatnow
 /uip/whom
 /nmh-*.tar.gz
+/aclocal.m4
 *.o
 *.1
 *.5

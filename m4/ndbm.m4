@@ -1,15 +1,3 @@
-
-#
-# Updated for more modern systems.  Check to see if we need to link against
-# optional libraries for networking functions.
-#
-
-AC_DEFUN([NMH_CHECK_NETLIBS],
-[AC_SEARCH_LIBS([gethostbyname], [nsl], ,
-		[AC_MSG_ERROR([gethostbyname not found])])
- AC_SEARCH_LIBS([connect], [socket], , [AC_MSG_ERROR([connect not found])])
-])dnl
-
 dnl --------------
 dnl CHECK FOR NDBM
 dnl --------------
@@ -41,7 +29,7 @@ dnl done AC_PROG_CC or something that implies it before
 dnl using this macro autoconf complains about a recursive
 dnl expansion.
 
-AC_DEFUN(NMH_CHECK_NDBM,
+AC_DEFUN([NMH_CHECK_NDBM],
 [
 if test "x$2" = "x"; then
   nmh_libs=

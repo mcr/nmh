@@ -15,7 +15,7 @@ dnl ---------------------
 dnl define a macro or two
 dnl ---------------------
 
-AC_DEFUN(NMH_PROG_GNU_LIBTOOL, [
+AC_DEFUN([NMH_PROG_GNU_LIBTOOL], [
 if test -n "$LIBTOOL" ; then
   tmptest=`$LIBTOOL --version 2>&1 | grep GNU`
   if test x"$tmptest" != x  ; then
