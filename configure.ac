@@ -3,27 +3,14 @@ dnl configure.ac -- autoconf template for nmh
 dnl
 
 dnl Move this up a bit
-AC_PREREQ(2.61)
+AC_PREREQ([2.61])
 
-AC_INIT(nmh, m4_normalize(m4_include([VERSION])))
-AC_CONFIG_SRCDIR(h/nmh.h)
-AC_CONFIG_HEADER(config.h)
+AC_INIT([nmh], m4_normalize(m4_include([VERSION])), [nmh-workers@nongnu.org])
+AC_CONFIG_SRCDIR([h/nmh.h])
+AC_CONFIG_HEADER([config.h])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
-AC_CANONICAL_TARGET
-
-dnl ---------------------
-dnl define a macro or two
-dnl ---------------------
-
-AC_DEFUN([NMH_PROG_GNU_LIBTOOL], [
-if test -n "$LIBTOOL" ; then
-  tmptest=`$LIBTOOL --version 2>&1 | grep GNU`
-  if test x"$tmptest" != x  ; then
-    GNU_LIBTOOL=1
-    AC_SUBST(GNU_LIBTOOL)dnl
-  fi
-fi
-] )
+AC_CANONICAL_HOST
 
 echo "configuring for AC_PACKAGE_NAME-AC_PACKAGE_VERSION"
 AC_SUBST(VERSION,AC_PACKAGE_VERSION)dnl
@@ -31,14 +18,14 @@ AC_SUBST(VERSION,AC_PACKAGE_VERSION)dnl
 dnl What date of nmh are we building?
 DATE=`cat ${srcdir}/DATE`
 echo "configuring for nmh dated $DATE"
-AC_SUBST(DATE)dnl
+AC_SUBST([DATE])dnl
 
 dnl --------------------------
 dnl CHECK COMMAND LINE OPTIONS
 dnl --------------------------
 
 dnl Do you want to debug nmh?
-AC_ARG_ENABLE(debug,
+AC_ARG_ENABLE([debug],
   AS_HELP_STRING([--enable-debug],[enable nmh code debugging]))
 dnl The old redundant --enable-nmh-debug is deprecated and undocumented.
 if test x"$enable_nmh_debug" = x"yes"; then
@@ -57,7 +44,7 @@ AC_ARG_ENABLE(masquerade,
 AC_SUBST(masquerade)dnl
 
 dnl Do you want client-side support for pop?
-AC_ARG_ENABLE(pop,
+AC_ARG_ENABLE([pop],
   AS_HELP_STRING([--enable-pop], [enable client-side support for plain POP3]))
 dnl The old redundant --enable-nmh-pop is deprecated and undocumented.
 if test x"$enable_nmh_pop" = x"yes"; then
@@ -77,10 +64,10 @@ AC_DEFINE(LOCALE)
 
 dnl Do you want client-side support for using SASL for authentication?
 dnl Note that this code will be enabled for both POP and SMTP
-AC_ARG_WITH(cyrus-sasl, AS_HELP_STRING([--with-cyrus-sasl],
+AC_ARG_WITH([cyrus-sasl], AS_HELP_STRING([--with-cyrus-sasl],
   [Enable SASL support via the Cyrus SASL library]))
 if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"; then
-  AC_DEFINE(CYRUS_SASL, 1,
+  AC_DEFINE([CYRUS_SASL], [1],
     [Define to use the Cyrus SASL library for authentication of POP and SMTP.])dnl
   if test x"$with_cyrus_sasl" != xyes; then
     AC_MSG_WARN([Arguments to --with-cyrus-sasl now ignored])
@@ -92,16 +79,16 @@ else
 fi
 
 dnl Do you want client-side support for encryption with TLS?
-AC_ARG_WITH(tls, AS_HELP_STRING([--with-tls], [Enable TLS support]))
+AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
 if test x"$with_tls" != x -a x"$with_tls" != x"no"; then
-  AC_DEFINE(TLS_SUPPORT, 1, [Support TLS for session encryption.])dnl
+  AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])dnl
   tls_support=yes
 else
   tls_support=no
 fi
 
 dnl What should be the default editor?
-AC_ARG_WITH(editor,
+AC_ARG_WITH([editor],
   AS_HELP_STRING([--with-editor=EDITOR],[specify the default editor]))
 
 if test -n "$with_editor"; then
@@ -116,20 +103,15 @@ if test x"$with_hash_backup" != x -a x"$with_hash_backup" != x"no"; then
 else
   backup_prefix=","
 fi
-AC_DEFINE_UNQUOTED(BACKUP_PREFIX, "$backup_prefix",
+AC_DEFINE_UNQUOTED([BACKUP_PREFIX], "$backup_prefix",
     [The prefix that is prepended to the name of message files when they are "removed" by rmm. This should typically be `,' or `#'.])dnl
 
 dnl After we know if we're including apop and kpop support, do pop stuff
 if test x"$enable_pop" = x"yes"; then
-  AC_DEFINE(POP, 1,
+  AC_DEFINE([POP], 1,
     [Define this to compile client-side support for pop into inc and msgchk.])dnl
-  POPLIB=popsbr.o
-  POPSED='/^%nmhbeginpop%/d;/^%nmhendpop%/d'
-else
-  POPSED='/^%nmhbeginpop%/,/^%nmhendpop%/d'
 fi
-AC_SUBST(POPLIB)dnl
-AC_SUBST(POPSED)dnl
+AM_CONDITIONAL([POP_SUPPORT], [test x"$enable_pop" = x"yes"])
 
 dnl What method of locking to use?
 AC_ARG_WITH(locking,
@@ -165,7 +147,7 @@ AC_ARG_ENABLE([lockdir], [
 ])
 
 dnl What method of posting should post use?
-AC_ARG_WITH(mts,
+AC_ARG_WITH([mts],
   AS_HELP_STRING([--with-mts=@<:@smtp|sendmail@:>@],
   [specify the default mail transport agent/service]))
 
@@ -176,14 +158,14 @@ elif test x"$with_mts" = x"sendmail"; then
 else
   MTS="smtp"
 fi
-AC_SUBST(MTS)dnl
+AC_SUBST([MTS])dnl
 
 dnl Both the smtp and sendmail mail transport services use the smtp code
-AC_DEFINE(SMTPMTS, 1,
+AC_DEFINE([SMTPMTS], [1],
   [Define if you want SMTP (simple mail transport protocol) support.])dnl
 
 dnl What should be the default pager?
-AC_ARG_WITH(pager,
+AC_ARG_WITH([pager],
   AS_HELP_STRING([--with-pager=PAGER],[specify the default pager]))
 
 if test -n "$with_pager"; then
@@ -199,12 +181,12 @@ if test -n "$with_smtpservers"; then
 else
   smtpservers="localhost"
 fi
-AC_SUBST(smtpservers)dnl
+AC_SUBST([smtpservers])dnl
 
 dnl ----------------------------------------------------
 dnl Default location is /usr/local/nmh/{bin,etc,lib,man}
 dnl ----------------------------------------------------
-AC_PREFIX_DEFAULT(/usr/local/nmh)
+AC_PREFIX_DEFAULT([/usr/local/nmh])
 
 dnl ------------------
 dnl CHECK THE COMPILER
@@ -217,11 +199,10 @@ if test x"$enable_debug" = x"yes"; then
 fi
 
 AC_PROG_CC
+AM_PROG_CC_C_O
 
-AC_SUBST(EXEEXT)dnl
-
-AC_CACHE_CHECK(whether preprocessor supports -Wunused-macros,
-  nmh_cv_has_unusedmacros,
+AC_CACHE_CHECK([whether preprocessor supports -Wunused-macros],
+  [nmh_cv_has_unusedmacros],
   [nmh_saved_cppflags="$CPPFLAGS"
    CPPFLAGS="$CPPFLAGS -Wunused-macros -Wno-unused-macros"
    AC_TRY_COMPILE([],[],nmh_cv_has_unusedmacros=yes,nmh_cv_has_unusedmacros=no)
@@ -234,13 +215,14 @@ if test "$nmh_cv_has_unusedmacros" = 'yes'; then
 fi
 AC_SUBST(DISABLE_UNUSED_MACROS_WARNING)dnl
 
-AC_CACHE_CHECK(whether compiler supports -Wextra, nmh_cv_wextra,
+AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_wextra],
 [nmh_saved_cflags="$CFLAGS"
  CFLAGS="$CFLAGS -Wextra -Wno-clobbered"
- AC_TRY_COMPILE([],[],nmh_cv_wextra=' -Wextra -Wno-clobbered',echo -n no)
+ AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
+   [nmh_cv_wextras=' -Wextra -Wno-clobbered'], [echo $ECHO_N "no$ECHO_C"])
  CFLAGS="$nmh_saved_cflags"])
 
-AC_CACHE_CHECK(whether compiler supports -Wno-pointer-sign, nmh_cv_has_noptrsign,
+AC_CACHE_CHECK([whether compiler supports -Wno-pointer-sign], [nmh_cv_has_noptrsign],
 [nmh_saved_cflags="$CFLAGS"
  CFLAGS="$CFLAGS -Wno-pointer-sign"
  AC_TRY_COMPILE([],[],nmh_cv_has_noptrsign=yes,nmh_cv_has_noptrsign=no)
@@ -295,6 +277,7 @@ AC_PROG_MAKE_SET	dnl Does make define $MAKE
 AC_PROG_INSTALL		dnl Check for BSD compatible `install'
 AC_PROG_RANLIB		dnl Check for `ranlib'
 AC_PROG_AWK             dnl Check for mawk,gawk,nawk, then awk
+AC_PROG_SED		dnl Check for Posix-compliant sed
 AC_PROG_LEX             dnl Check for lex/flex
 
 dnl Look for `cut'
@@ -318,53 +301,17 @@ else
     LINTFLAGS=""
   fi
 fi
-AC_SUBST(LINT)dnl
-AC_SUBST(LINTFLAGS)dnl
-
-dnl try to figure out which one we've got
-AC_CHECK_PROG(LIBTOOL, libtool, libtool, , [$pathtmp])
-NMH_PROG_GNU_LIBTOOL
-
-dnl Check for lorder and tsort commands
-AC_CHECK_PROG(LORDER, lorder, lorder, no)dnl
-AC_CHECK_PROG(TSORT, tsort, tsort, no)dnl
-
-dnl If either doesn't exist, replace them with echo and cat
-if test x$ac_cv_prog_LORDER != xlorder -o x$ac_cv_prog_TSORT != xtsort; then
-  LORDER=echo
-  TSORT=cat
-  AC_SUBST(LORDER)dnl
-  AC_SUBST(TSORT)dnl
-dnl Mac OS X has lorder, but sh is too broken for it to work
-dnl elif test -z "`lorder config/config.c 2>&1 | grep config/config.c`" ; then
-dnl   LORDER=echo
-dnl   TSORT=cat
-dnl   AC_SUBST(LORDER)dnl
-dnl   AC_SUBST(TSORT)dnl
-fi
-
-dnl Check whether tsort can deal with loops
-AC_CACHE_CHECK(whether tsort can deal with loops, nmh_cv_tsort_loop,
-  [if test -z "`echo a b b a | tsort 2>/dev/null | grep a`" ; then
-    nmh_cv_tsort_loop=no
-  else
-    nmh_cv_tsort_loop=yes
-  fi])
-if test x$nmh_cv_tsort_loop = xno ; then
-  LORDER=echo
-  TSORT=cat
-  AC_SUBST(LORDER)dnl
-  AC_SUBST(TSORT)dnl
-fi
+AC_SUBST([LINT])dnl
+AC_SUBST([LINTFLAGS])dnl
 
 dnl Look for `ls'
 pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
-AC_PATH_PROG(lspath, ls, no, [$pathtmp])
+AC_PATH_PROG([lspath], [ls], [no], [$pathtmp])
 
 dnl See how we get ls to display the owner and the group
 if test "$lspath" != "no"; then
-  AC_CACHE_CHECK(how to get ls to show us the group ownership of a file,
-		 nmh_cv_ls_grpopt,
+  AC_CACHE_CHECK([how to get ls to show us the group ownership of a file],
+		 [nmh_cv_ls_grpopt],
   [if test x"`$lspath -dl / | $AWK '{print $9}'`" = x"/"; then
     dnl There were 9 parameters, so unless this is a really bizarre, nonstandard
     dnl ls, it would seem -l gave us both the user and group.  On this type of
@@ -378,7 +325,7 @@ fi
 
 dnl Look for `more'
 pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
-AC_PATH_PROG(morepath, more, no, [$pathtmp])
+AC_PATH_PROG([morepath], [more], [no], [$pathtmp])
 
 dnl If pager is not specified yet,
 dnl then use `more' as the default.
@@ -389,18 +336,18 @@ AC_SUBST(pagerpath)dnl
 
 dnl Look for `sendmail'
 pathtmp=/usr/lib:/usr/sbin:/usr/etc:/usr/ucblib:/usr/bin:/bin
-AC_PATH_PROG(sendmailpath, sendmail, /usr/sbin/sendmail, [$pathtmp])
+AC_PATH_PROG([sendmailpath], [sendmail], [/usr/sbin/sendmail], [$pathtmp])
 
 dnl Look for `vi'
 pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
-AC_PATH_PROG(vipath, vi, /bin/vi, [$pathtmp])
+AC_PATH_PROG([vipath], [vi], [/bin/vi], [$pathtmp])
 
 dnl If editor is not specified yet,
 dnl then use `vi' as the default.
 if test -z "$editorpath"; then
   editorpath="$vipath"
 fi
-AC_SUBST(editorpath)dnl
+AC_SUBST([editorpath])dnl
 
 dnl ----------------------------------------------------------
 dnl FIND MAIL SPOOL AND SEE IF WE NEED TO MAKE inc SETGID MAIL
@@ -430,7 +377,7 @@ if test "$lspath" != "no" -a "$cutpath" != "no"; then
 fi
 
 dnl Also, check for liblockfile (as found on Debian systems)
-AC_CHECK_HEADER(lockfile.h, AC_CHECK_LIB(lockfile, lockfile_create) )
+AC_CHECK_HEADER([lockfile.h], AC_CHECK_LIB(lockfile, lockfile_create) )
 
 dnl and whether its companion program dotlockfile is setgid
 AC_PATH_PROG(dotlockfilepath, dotlockfile, no)
@@ -476,7 +423,7 @@ dnl because it must be set before any system header is included and there's no
 dnl portable way to make sure that files generated by lex include config.h
 dnl before system header files.
 
-case "$target_os" in
+case "$host_os" in
   linux*)
     # Like DEFS, but doesn't get stomped on by configure when using config.h:
     test -z "$OURDEFS"  &&  OURDEFS="-D_GNU_SOURCE"  \
@@ -532,7 +479,7 @@ termcap_curses_order="termcap curses ncurses"
 for lib in $termcap_curses_order; do
   AC_CHECK_LIB(${lib}, tgetent, [TERMLIB="-l$lib"; break])
 done
-AC_SUBST(TERMLIB)dnl
+AC_SUBST([TERMLIB])dnl
 
 dnl ---------------
 dnl CHECK FOR ICONV
@@ -547,7 +494,7 @@ if test "x$ac_cv_header_iconv_h" = "xyes"; then
       AC_CHECK_LIB(iconv, libiconv, ac_found_iconv=yes)
     fi
     if test "x$ac_found_iconv" != "xno"; then
-      LIBS="-liconv $LIBS"
+      ICONVLIB="-liconv"
     fi
   else
     dnl Handle case where there is a native iconv but iconv.h is from libiconv
@@ -557,8 +504,9 @@ if test "x$ac_cv_header_iconv_h" = "xyes"; then
   fi
 fi
 if test "x$ac_found_iconv" = xyes; then
-  AC_DEFINE(HAVE_ICONV, 1, [Define if you have the iconv() function.])
+  AC_DEFINE([HAVE_ICONV], [1], [Define if you have the iconv() function.])
 fi
+AC_SUBST([ICONVLIB])
 
 dnl Check if iconv uses const in prototype declaration
 if test "x$ac_found_iconv" = "xyes"; then
@@ -639,7 +587,7 @@ else
   else
     NDBM_LIBS=
   fi
-  AC_SUBST(NDBM_LIBS)
+  AC_SUBST([NDBM_LIBS])
 fi
 
 dnl ------------------
@@ -652,7 +600,7 @@ AC_ARG_WITH(rpmdir,
   AS_HELP_STRING([--with-rpmdir=RPMDIR], [RPM build directory @<:@RPM@:>@]))
   AS_IF([test x"$with_rpmdir" = x], [rpmdir='$(abs_srcdir)/RPM'; nmhrpm=./RPM],
           [rpmdir="$with_rpmdir"; eval "nmhrpm=${rpmdir}"])
-AC_SUBST(rpmdir)
+AC_SUBST([rpmdir])
 
 
 dnl --------------------
@@ -661,8 +609,9 @@ dnl --------------------
 
 AS_IF([test x"$sasl_support" = x"yes"],[
   AC_CHECK_HEADER([sasl/sasl.h], , [AC_MSG_ERROR([sasl.h not found])])
-  AC_CHECK_LIB([sasl2], [sasl_client_new], ,
-    [AC_MSG_ERROR([Cyrus SASL library not found])])])
+  AC_CHECK_LIB([sasl2], [sasl_client_new], [SASLLIB="-lsasl2"],
+    [AC_MSG_ERROR([Cyrus SASL library not found])])],[SASLLIB=""])
+AC_SUBST([SASLLIB])
 
 dnl -----------------
 dnl CHECK FOR OPENSSL
@@ -787,15 +736,6 @@ nmh_cv_path_signal_h=$SIGNAL_H
 SIGNAL_H=$nmh_cv_path_signal_h
 AC_SUBST(SIGNAL_H)dnl
 
-dnl ----------------
-dnl OUTPUT MAKEFILES
-dnl ----------------
-AC_CONFIG_FILES(Makefile config/Makefile h/Makefile sbr/Makefile uip/Makefile \
-                mts/Makefile mts/smtp/Makefile \
-	        etc/Makefile docs/Makefile man/Makefile)
-AC_CONFIG_COMMANDS([stamp],[test -z "$CONFIG_HEADERS" || echo > stamp-h])
-AC_OUTPUT
-
 dnl These odd looking assignments are done to expand out unexpanded
 dnl variables in bindir et al (for instance mandir is '${datarootdir}/man',
 dnl but expanding that gives '${prefix}/share/man', so we need to expand
@@ -811,20 +751,26 @@ eval "nmhrpm=${nmhrpm}";
 
 pop_kinds=no
 if test x"$enable_pop" = x"yes"; then
-  pop_kinds="yes ("
-
-  if test x"$enable_apop" = x"yes"; then
-    pop_kinds="${pop_kinds}APOP "
-  fi
-
-  pop_kinds="${pop_kinds}POP3)"
+  pop_kinds="yes (POP3)"
 fi
 
+dnl
+dnl Sigh, this is required because under the new world order autoconf has
+dnl nothing to create in a few of the build directories when doing an object
+dnl tree build.  So make sure we created certain directories if they don't
+dnl exist.
+dnl
+
+AC_CONFIG_COMMANDS([build-directories],
+[test -d etc || ${MKDIR_P} etc
+test -d man || ${MKDIR_P} man])
+
+AC_CONFIG_COMMANDS_POST([
 echo "
 nmh configuration
 -----------------
 nmh version                : AC_PACKAGE_VERSION
-target os                  : ${target}
+host os                    : ${host}
 compiler                   : ${CC}
 compiler flags             : ${CFLAGS}
 linker flags               : ${LDFLAGS}
@@ -845,4 +791,10 @@ email address masquerading : ${masquerade}
 pop is enabled             : ${pop_kinds}
 SASL support               : ${sasl_support}
 TLS support                : ${tls_support}"
-echo ""
+echo ""])
+
+dnl ---------------
+dnl OUTPUT MAKEFILE
+dnl ---------------
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

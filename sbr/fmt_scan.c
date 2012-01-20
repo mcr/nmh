@@ -33,7 +33,8 @@ struct msgs *fmt_current_folder; /* current folder (set by main program) */
 #endif
 
 extern int fmt_norm;		/* defined in sbr/fmt_def.c = AD_NAME */
-struct mailname fmt_mnull;
+struct mailname fmt_mnull = { NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0,
+			      NULL, NULL };
 
 /*
  * static prototypes

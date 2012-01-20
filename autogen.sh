@@ -5,6 +5,6 @@
 # building from a distributed tarball.
 
 set -e
-aclocal -I m4
-autoreconf
+# aclocal -I m4
+autoreconf -v -i
 date > stamp-h.in
