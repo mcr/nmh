@@ -10,7 +10,6 @@
 /Makefile.in
 /stamp-h1
 /config/version.c
-/config/libmhconfig.a
 /depcomp
 /docs/Makefile
 /etc/mhn.defaults

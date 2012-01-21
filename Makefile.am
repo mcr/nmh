@@ -14,7 +14,7 @@ ACLOCAL_AMFLAGS = -I m4
 ## LDADD is included in the program-specific LDADD since we want to add
 ## to this list of libraries, not replace it.
 ##
-LDADD = config/libmhconfig.a sbr/libmh.a
+LDADD = sbr/libmh.a
 
 ##
 ## These are used to create the default mhn.defaults config file
@@ -67,7 +67,7 @@ auxexec_PROGRAMS = uip/ap uip/conflict uip/dp uip/fmtdump uip/mhl uip/post \
 ## Internal libraries that we don't create as part of the build process
 ## but do not install
 ##
-noinst_LIBRARIES = config/libmhconfig.a sbr/libmh.a mts/libmts.a
+noinst_LIBRARIES = sbr/libmh.a mts/libmts.a
 
 ##
 ## These are all of our header files.  Right now we don't install any of
@@ -286,10 +286,10 @@ uip_mhl_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB)
 uip_mhtest_SOURCES = uip/mhtest.c uip/mhparse.c uip/mhcachesbr.c \
 		     uip/mhoutsbr.c uip/mhmisc.c uip/mhfree.c \
 		     uip/termsbr.c uip/md5.c
-uip_mhtest_LDFLAGS = $(LDADD) $(TERMLIB)
+uip_mhtest_LDADD = $(LDADD) $(TERMLIB)
 
 uip_post_SOURCES = uip/post.c uip/aliasbr.c
-uip_post_LDFLAGS = $(LDADD) mts/libmts.a $(SASLLIB)
+uip_post_LDADD = mts/libmts.a $(LDADD) $(SASLLIB)
 
 uip_rcvdist_SOURCES = uip/rcvdist.c uip/distsbr.c
 uip_rcvdist_LDADD = $(LDADD) $(ICONVLIB)
@@ -302,6 +302,7 @@ uip_rcvtty_SOURCES = uip/rcvtty.c uip/scansbr.c uip/termsbr.c
 uip_rcvtty_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB)
 
 uip_slocal_SOURCES = uip/slocal.c uip/aliasbr.c uip/dropsbr.c
+uip_slocal_LDADD = $(LDADD) $(NDBM_LIBS)
 
 uip_spost_SOURCES = uip/spost.c uip/aliasbr.c
 
@@ -321,7 +322,7 @@ etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 	rm -f $@
 	$(SED) -e 's,%mts%,$(MTS),' \
 	       -e 's,%mailspool%,$(mailspool),' \
-	       -e 's,%etcdir%,$(etcdir),' \
+	       -e 's,%etcdir%,$(sysconfdir),' \
 	       -e 's,%masquerade%,$(masquerade),' \
 	       -e 's,%smtpservers%,$(smtpservers),' \
 	       			< $(srcdir)/etc/mts.conf.in > $@
@@ -354,10 +355,12 @@ install-exec-hook:
 	ln $(DESTDIR)/$(bindir)/show$(EXEEXT) $(DESTDIR)/$(bindir)/prev$(EXEEXT)
 	ln $(DESTDIR)/$(bindir)/show$(EXEEXT) $(DESTDIR)/$(bindir)/next$(EXEEXT)
 
+install-data-hook:
+	ln $(DESTDIR)/$(man5dir)/mh-profile.5 $(DESTDIR)/$(man5dir)/mh_profile.5
 ##
 ## Make sure we remove those links at uninstall time
 ##
-uninstall-local:
+uninstall-hook:
 	rm -f $(DESTDIR)/$(bindir)/flists$(EXEEXT)
 	rm -f $(DESTDIR)/$(bindir)/folders$(EXEEXT)
 	rm -f $(DESTDIR)/$(bindir)/fnext$(EXEEXT)
@@ -365,11 +368,10 @@ uninstall-local:
 	rm -f $(DESTDIR)/$(bindir)/unseen$(EXEEXT)
 	rm -f $(DESTDIR)/$(bindir)/prev$(EXEEXT)
 	rm -f $(DESTDIR)/$(bindir)/next$(EXEEXT)
+	rm -f $(DESTDIR)/$(man5dir)/mh_profile.5
 
 ##
-## Our rules to build our internal libraries (libmh.a, libmhconfig.a, libmts.a)
-## No, I'm not quite sure why the first two aren't simply combined into one
-## library.  Maybe in the future.
+## Our rules to build our internal libraries (libmh.a, libmts.a)
 ##
 sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/brkstring.c \
 		      sbr/check_charset.c sbr/client.c sbr/closefds.c \
@@ -403,18 +405,16 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/brkstring.c \
 		      sbr/snprintb.c sbr/ssequal.c sbr/strcasecmp.c \
 		      sbr/strindex.c sbr/trimcpy.c sbr/uprf.c sbr/vfgets.c \
 		      sbr/fmt_def.c sbr/m_msgdef.c sbr/mf.c sbr/utils.c \
-		      sbr/m_mktemp.c
+		      sbr/m_mktemp.c config/config.c config/version.c
 
 sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
-		-DMAILSPOOL='"$(mailspool)"' -DSENDMAILPATH='"$(sendmailpath)"'
-
-mts_libmts_a_SOURCES = mts/smtp/hosts.c mts/smtp/smtp.c
-
-config_libmhconfig_a_SOURCES = config/config.c config/version.c
-config_libmhconfig_a_CPPFLAGS = -DNMHBINDIR='"$(bindir)"' \
-		-DNMHETCDIR='"$(sysconfdir)"' -DNMHLIBDIR='"$(libdir)"' \
+		-DMAILSPOOL='"$(mailspool)"' \
+		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
+		-DNMHLIBDIR='"$(libdir)"' \
 		-DDEFAULT_EDITOR='"$(default_editor)"' \
 		-DDEFAULT_PAGER='"$(default_pager)"'
+
+mts_libmts_a_SOURCES = mts/smtp/hosts.c mts/smtp/smtp.c
 
 ##
 ## Our rules for generating man pages (both the rule for man.sed and
@@ -432,7 +432,7 @@ man/man.sed: Makefile
 	echo 's,%nmhversion%,nmh-$(VERSION),g' >> $@
 	echo 's,%nmhdate%,$(DATE),g' >> $@
 	echo 's,%bindir%,$(bindir),g' >> $@
-	echo 's,%etcdir%,$(etcdir),g' >> $@
+	echo 's,%etcdir%,$(sysconfdir),g' >> $@
 	echo 's,%libdir%,$(libdir),g' >> $@
 	echo 's,%mandir%,$(mandir),g' >> $@
 	echo 's,%mailspool%,$(mailspool),g' >> $@
