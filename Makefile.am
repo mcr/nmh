@@ -340,20 +340,20 @@ etc/sendfiles: $(srcdir)/etc/sendfiles.in Makefile
 ## between different programs.
 ##
 install-exec-hook:
-	rm -f $(DESTDIR)/$(bindir)/flists$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/folders$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/fnext$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/fprev$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/unseen$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/prev$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/next$(EXEEXT)
-	ln $(DESTDIR)/$(bindir)/flist$(EXEEXT) $(DESTDIR)/$(bindir)/flists$(EXEEXT)
-	ln $(DESTDIR)/$(bindir)/folder$(EXEEXT) $(DESTDIR)/$(bindir)/folders$(EXEEXT)
-	ln $(DESTDIR)/$(bindir)/new$(EXEEXT) $(DESTDIR)/$(bindir)/fnext$(EXEEXT)
-	ln $(DESTDIR)/$(bindir)/new$(EXEEXT) $(DESTDIR)/$(bindir)/fprev$(EXEEXT)
-	ln $(DESTDIR)/$(bindir)/new$(EXEEXT) $(DESTDIR)/$(bindir)/unseen$(EXEEXT)
-	ln $(DESTDIR)/$(bindir)/show$(EXEEXT) $(DESTDIR)/$(bindir)/prev$(EXEEXT)
-	ln $(DESTDIR)/$(bindir)/show$(EXEEXT) $(DESTDIR)/$(bindir)/next$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/flists$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/folders$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/fnext$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/fprev$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/unseen$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/prev$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/next$(EXEEXT)
+	ln $(DESTDIR)$(bindir)/flist$(EXEEXT) $(DESTDIR)$(bindir)/flists$(EXEEXT)
+	ln $(DESTDIR)$(bindir)/folder$(EXEEXT) $(DESTDIR)$(bindir)/folders$(EXEEXT)
+	ln $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/fnext$(EXEEXT)
+	ln $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/fprev$(EXEEXT)
+	ln $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/unseen$(EXEEXT)
+	ln $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/prev$(EXEEXT)
+	ln $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/next$(EXEEXT)
 	if test x$(SETGID_MAIL) != x; then \
 		chgrp $(MAIL_SPOOL_GRP) $(DESTDIR)$(bindir)/inc$(EXEEXT); \
 		chmod 2755 $(DESTDIR)$(bindir)/inc$(EXEEXT); \
@@ -365,14 +365,14 @@ install-data-hook:
 ## Make sure we remove those links at uninstall time
 ##
 uninstall-hook:
-	rm -f $(DESTDIR)/$(bindir)/flists$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/folders$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/fnext$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/fprev$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/unseen$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/prev$(EXEEXT)
-	rm -f $(DESTDIR)/$(bindir)/next$(EXEEXT)
-	rm -f $(DESTDIR)/$(man5dir)/mh_profile.5
+	rm -f $(DESTDIR)$(bindir)/flists$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/folders$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/fnext$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/fprev$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/unseen$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/prev$(EXEEXT)
+	rm -f $(DESTDIR)$(bindir)/next$(EXEEXT)
+	rm -f $(DESTDIR)$(man5dir)/mh_profile.5
 
 ##
 ## Our rules to build our internal libraries (libmh.a, libmts.a)
