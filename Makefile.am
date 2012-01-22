@@ -315,7 +315,7 @@ uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/mhoutsbr.c uip/sendsbr.c \
 config/version.c: Makefile
 	sh $(srcdir)/config/version.sh $(VERSION) > $@
 
-sbr/sigmsg.h: Makefile $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H)
+sbr/sigmsg.h: $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H)
 	$(AWK) -f $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H) > $@
 
 etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
