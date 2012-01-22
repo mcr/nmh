@@ -64,7 +64,7 @@ auxexec_PROGRAMS = uip/ap uip/conflict uip/dp uip/fmtdump uip/mhl uip/post \
 		   uip/spost uip/viamail uip/mhtest
 
 ##
-## Internal libraries that we don't create as part of the build process
+## Internal libraries that we create as part of the build process
 ## but do not install
 ##
 noinst_LIBRARIES = sbr/libmh.a mts/libmts.a
@@ -354,6 +354,10 @@ install-exec-hook:
 	ln $(DESTDIR)/$(bindir)/new$(EXEEXT) $(DESTDIR)/$(bindir)/unseen$(EXEEXT)
 	ln $(DESTDIR)/$(bindir)/show$(EXEEXT) $(DESTDIR)/$(bindir)/prev$(EXEEXT)
 	ln $(DESTDIR)/$(bindir)/show$(EXEEXT) $(DESTDIR)/$(bindir)/next$(EXEEXT)
+	if test x$(SETGID_MAIL) != x; then \
+		chgrp $(MAIL_SPOOL_GRP) $(DESTDIR)$(bindir)/inc$(EXEEXT); \
+		chmod 2755 $(DESTDIR)$(bindir)/inc$(EXEEXT); \
+	fi
 
 install-data-hook:
 	ln $(DESTDIR)/$(man5dir)/mh-profile.5 $(DESTDIR)/$(man5dir)/mh_profile.5
