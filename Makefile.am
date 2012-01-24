@@ -37,6 +37,11 @@ CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf etc/sendfiles \
 	     etc/mhn.defaults man/man.sed $(man_MANS)
 
 ##
+## Stuff that should be cleaned via "make maintainer-clean"
+##
+MAINTAINERCLEANFILES = cscope.files cscope.out
+
+##
 ## Files that need to be built before everything else
 ##
 BUILT_SOURCES = sbr/sigmsg.h
@@ -486,3 +491,11 @@ rpm: $(DIST_ARCHIVES)
 	@rpmbuild --define '_topdir $(rpmdir)' \
 	  --define '_tmppath %{_topdir}/TMP' \
 	  -ba $(rpmdir)/SPECS/nmh.spec
+
+##
+## A target to build information needed by cscope
+##
+
+cscope:
+	echo "-I $(srcdir)/h -I $(srcdir)/sbr -I $(srcdir)/uip -I $(srcdir)/mts/smtp" > cscope.files
+	find $(srcdir) \( -name \*.c -o -name \*.l \) -print | grep -v dtimep.c >> cscope.files
