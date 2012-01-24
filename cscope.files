@@ -1,5 +1,7 @@
--I h -I sbr -I uip
+-I h -I sbr -I uip -I mts/smtp
 config/config.c
+mts/smtp/hosts.c
+mts/smtp/smtp.c
 sbr/addrsbr.c
 sbr/ambigsw.c
 sbr/atooi.c
