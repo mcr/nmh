@@ -39,28 +39,6 @@
 # define TXTSIZ BUFSIZ
 #endif
 
-#ifdef notdef_lyndon_posix
-
-/*
-	XXX No current termcap should need this.  If your compile barfs,
-	email details to lyndon@orthanc.ca.  This code will vanish soon ...
-*/
-/*
- * These variables are sometimes defined in,
- * and needed by the termcap library.
- */
-# ifdef HAVE_OSPEED
-#  ifdef MUST_DEFINE_OSPEED
-extern short ospeed;
-extern char PC;
-#  endif
-# else
-short ospeed;
-char PC;
-# endif
-
-#endif /* notdef_lyndon_posix */
-
 static long speedcode;
 
 static int initLI = 0;
@@ -117,8 +95,6 @@ read_termcap(void)
 
     cp = termcap;
     CL = tgetstr ("cl", &cp);
-    if ((bp = tgetstr ("pc", &cp)))
-	PC = *bp;
     if (tgetnum ("sg") <= 0) {
 	SE = tgetstr ("se", &cp);
 	SO = tgetstr ("so", &cp);
