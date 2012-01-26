@@ -57,7 +57,7 @@ static char termcap[TXTSIZ];
 static void
 read_termcap(void)
 {
-    char *bp, *cp;
+    char *cp;
     char *term;
 
 #ifndef TGETENT_ACCEPTS_NULL
