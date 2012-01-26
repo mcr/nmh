@@ -215,11 +215,10 @@ if test "$nmh_cv_has_unusedmacros" = 'yes'; then
 fi
 AC_SUBST(DISABLE_UNUSED_MACROS_WARNING)dnl
 
-AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_wextra],
+AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
  CFLAGS="$CFLAGS -Wextra -Wno-clobbered"
- AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
-   [nmh_cv_wextras=' -Wextra -Wno-clobbered'], [echo $ECHO_N "no$ECHO_C"])
+ AC_TRY_COMPILE([],[],nmh_cv_has_wextra=yes,nmh_cv_has_wextra=no)
  CFLAGS="$nmh_saved_cflags"])
 
 AC_CACHE_CHECK([whether compiler supports -Wno-pointer-sign], [nmh_cv_has_noptrsign],
@@ -237,9 +236,17 @@ dnl also use -Wno-pointer-sign, because gcc 4 now produces a lot of new
 dnl warnings which are probably mostly spurious and which in any case we
 dnl don't want to deal with now.
 if test "$nmh_cv_has_noptrsign" = "yes"; then
-        nmh_gcc_warnflags="-Wall$nmh_cv_wextra -Wno-pointer-sign"
+    if test "$nmh_cv_has_wextra" = "yes"; then
+        nmh_gcc_warnflags="-Wall -Wextra -Wno-clobbered -Wno-pointer-sign"
+    else
+        nmh_gcc_warnflags="-Wall -Wno-pointer-sign"
+    fi
 else
-        nmh_gcc_warnflags="-Wall$nmh_cv_wextra"
+    if test "$nmh_cv_has_wextra" = "yes"; then
+        nmh_gcc_warnflags="-Wall -Wextra -Wno-clobbered"
+    else
+        nmh_gcc_warnflags="-Wall"
+    fi
 fi
 
 if test -n "$auto_cflags"; then
