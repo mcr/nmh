@@ -31,8 +31,8 @@
 # nmh.spec used to build the Fedora 15 nmh rpm.
 
 Name:          nmh
-Version:       %(sed "s/-/_/g" $RPM_SOURCE_DIR/VERSION)
-%define        rawversion %(cat $RPM_SOURCE_DIR/VERSION)
+Version:       %(sed "s/-/_/g" VERSION)
+%define        rawversion %(cat VERSION)
 Release:       0%{?dist}
 Summary:       A capable mail handling system with a command line interface.
 Group:         Applications/Internet
@@ -62,7 +62,7 @@ interface for it--nmh only has a command line interface.
 if [ ! -f $RPM_SOURCE_DIR/%tarfile ]; then
   #### The tarfile wasn't already installed and we started with a
   #### workspace (using make rpm), so get it from there.
-  [ -f %srcdir/%tarfile ]  ||  (cd %srcdir  &&  make nmhdist)
+  [ -f %srcdir/%tarfile ]  ||  (cd %srcdir  &&  make dist)
   cp -p %srcdir/%tarfile $RPM_SOURCE_DIR/%tarfile
 fi
 [ -f $RPM_SOURCE_DIR/VERSION ]  ||  cp -p %srcdir/VERSION $RPM_SOURCE_DIR
@@ -80,7 +80,7 @@ else
   %endif
   %configure %configure_opts
 fi
-make all nmhdist
+make all dist
 
 
 %install

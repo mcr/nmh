@@ -486,7 +486,7 @@ endif
 ## Our RPM build target
 ##
 
-rpm: $(DIST_ARCHIVES)
+rpm: dist
 	@test -d $(rpmdir)/SOURCES || $(MKDIR_P) $(rpmdir)/SOURCES
 	@test -d $(rpmdir)/SPECS || $(MKDIR_P) $(rpmdir)/SPECS
 	@mv -f $(DIST_ARCHIVES) $(rpmdir)/SOURCES
