@@ -12,6 +12,10 @@
 #include <h/tws.h>
 #include <time.h>
 
+#if !defined(HAVE_STRUCT_TM_TM_GMTOFF)
+extern long timezone;
+#endif
+
 /*
  * The number of days in the year, accounting for leap years
  */
@@ -99,8 +103,14 @@ dlocaltime (time_t *clock)
     if (tm->tm_isdst)
 	tw.tw_flags |= TW_DST;
 
+#ifdef HAVE_STRUCT_TM_TM_GMTOFF
+    tw.tw_zone = tm->tm_gmtoff / 60;
+    if (tm->tm_isdst)			/* if DST is in effect */
+	tw.tw_zone -= 60;		/* reset to normal offset */
+#else
     tzset();
     tw.tw_zone = -(timezone / 60);
+#endif
 
     tw.tw_flags &= ~TW_SDAY;
     tw.tw_flags |= TW_SEXP;

@@ -716,6 +716,11 @@ dnl ----------------
 dnl CHECK STRUCTURES
 dnl ----------------
 
+dnl For platforms such as FreeBSD that have tm_gmtoff in struct tm.
+dnl (FreeBSD has a timezone() function but not a timezone global
+dnl variable that is visible).
+AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[#include <time.h>])
+
 AC_STRUCT_DIRENT_D_TYPE
 
 dnl Where is <signal.h> located?  Needed as input for signames.awk
