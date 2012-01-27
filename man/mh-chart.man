@@ -242,7 +242,6 @@ is equivalent to
 .RB [ \-truncate " | " \-notruncate ]
 .RB [ \-width
 .IR columns ]
-%nmhbeginpop%
 .RB [ \-host
 .IR hostname ]
 .RB [ \-user
@@ -254,7 +253,6 @@ is equivalent to
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-snoop ]
-%nmhendpop%
 .RB [ \-version ]
 .RB [ \-help ]
 
@@ -434,7 +432,6 @@ is equivalent to
 all/mail/nomail ]
 .RB [ \-nonotify
 all/mail/nomail ]
-%nmhbeginpop%
 .RB [ \-host
 .IR hostname ]
 .RB [ \-user
@@ -443,7 +440,6 @@ all/mail/nomail ]
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-snoop ]
-%nmhendpop%
 .RI [ users
 \&... ]
 .RB [ \-version ]

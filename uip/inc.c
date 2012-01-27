@@ -30,11 +30,8 @@
 #include <h/utils.h>
 #include <fcntl.h>
 
-#ifdef POP
-# include <h/dropsbr.h>
-# include <h/popsbr.h>
-#endif
-
+#include <h/dropsbr.h>
+#include <h/popsbr.h>
 #include <h/fmt_scan.h>
 #include <h/scansbr.h>
 #include <h/signals.h>
@@ -42,12 +39,6 @@
 #include <h/mts.h>
 #include <errno.h>
 #include <signal.h>
-
-#ifndef	POP
-# define POPminc(a) (a)
-#else
-# define POPminc(a)  0
-#endif
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)
@@ -71,15 +62,15 @@ static struct swit switches[] = {
 #define	FMTSW                      6
     { "format string", 5 },
 #define	HOSTSW                     7
-    { "host hostname", POPminc (-4) },
+    { "host hostname", 0 },
 #define	USERSW                     8
-    { "user username", POPminc (-4) },
+    { "user username", 0 },
 #define	PACKSW                     9
-    { "pack file", POPminc (-4) },
+    { "pack file", 0},
 #define	NPACKSW                   10
-    { "nopack", POPminc (-6) },
+    { "nopack", 0 },
 #define PORTSW			  11
-    { "port name/number", POPminc (-4) },
+    { "port name/number", 0 },
 #define	SILSW                     12
     { "silent", 0 },
 #define	NSILSW                    13
@@ -101,7 +92,7 @@ static struct swit switches[] = {
 #define SASLMECHSW                21
     { "saslmech", SASLminc(-8) },
 #define PROXYSW                   22
-    { "proxy command", POPminc(-5) },
+    { "proxy command", 0 },
     { NULL, 0 }
 };
 
@@ -109,9 +100,7 @@ static struct swit switches[] = {
  * flags for the mail source
  */
 #define INC_FILE  0
-#ifdef POP
-# define INC_POP   1
-#endif /* POP */
+#define INC_POP   1
 
 static int inc_type;
 static struct Maildir_entry {
@@ -121,7 +110,6 @@ static struct Maildir_entry {
 static int num_maildir_entries = 0;
 static int snoop = 0;
 
-#ifdef POP
 extern char response[];
 
 static int size;
@@ -129,7 +117,6 @@ static long pos;
 
 static int mbx_style = MMDF_FORMAT;
 static int pd = NOTOK;
-#endif /* POP */
 
 static long start;
 static long stop;
@@ -141,13 +128,9 @@ static FILE *pf = NULL;
  * privilege ops into macros.
  * *GROUPPRIVS() is related to handling the setgid MAIL property,
  * and only applies if MAILGROUP is defined.
- * *USERPRIVS() is related to handling the setuid root property,
- * and only applies if POP is defined [why does POP => setuid root?]
  * Basically, SAVEGROUPPRIVS() is called right at the top of main()
  * to initialise things, and then DROPGROUPPRIVS() and GETGROUPPRIVS()
- * do the obvious thing. TRYDROPGROUPPRIVS() has to be safe to call
- * before DROPUSERPRIVS() is called [this is needed because setgid()
- * sets both effective and real uids if euid is root.]
+ * do the obvious thing.
  *
  * There's probably a better implementation if we're allowed to use
  * BSD-style setreuid() rather than using POSIX saved-ids.
@@ -164,15 +147,7 @@ static FILE *pf = NULL;
  */
 #ifdef MAILGROUP
 static int return_gid;
-#ifndef POP
-/* easy case; we're not setuid root, so can drop group privs
- * immediately.
- */
 #define TRYDROPGROUPPRIVS() DROPGROUPPRIVS()
-#else /* POP ie we are setuid root */
-#define TRYDROPGROUPPRIVS() \
-if (geteuid() != 0) DROPGROUPPRIVS()
-#endif
 #define DROPGROUPPRIVS() setgid(getgid())
 #define GETGROUPPRIVS() setgid(return_gid)
 #define SAVEGROUPPRIVS() return_gid = getegid()
@@ -195,11 +170,9 @@ static FILE *in;
 char *map_name(char *);
 
 static void inc_done(int) NORETURN;
-#ifdef POP
 static int pop_action(char *);
 static int pop_pack(char *);
 static int map_count(void);
-#endif
 
 int
 maildir_srt(const void *va, const void *vb)
@@ -232,11 +205,9 @@ main (int argc, char **argv)
     char b[MAXPATHLEN + 1];
     char *maildir_copy = NULL;	/* copy of mail directory because the static gets overwritten */
 
-#ifdef POP
     int nmsgs, nbytes;
     char *pass = NULL;
     char *MAILHOST_env_variable;
-#endif
 
     done=inc_done;
 
@@ -258,7 +229,6 @@ main (int argc, char **argv)
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
-#ifdef POP
     /*
      * Scheme is:
      *        use MAILHOST environment variable if present,
@@ -277,7 +247,6 @@ main (int argc, char **argv)
 
     if ((cp = getenv ("MHPOPDEBUG")) && *cp)
 	snoop++;
-#endif /* POP */
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -379,18 +348,11 @@ main (int argc, char **argv)
 		continue;
 
 	    case PACKSW:
-#ifndef	POP
-		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
-#else /* POP */
 		if (!(packfile = *argp++) || *packfile == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
-#endif /* POP */
 		continue;
 	    case NPACKSW:
-#ifdef POP
 		packfile = NULL;
-#endif /* POP */
 		continue;
 
 	    case SNOOPSW:
@@ -424,10 +386,8 @@ main (int argc, char **argv)
     /* NOTE: above this point you should use TRYDROPGROUPPRIVS(),
      * not DROPGROUPPRIVS().
      */
-#ifdef POP
     if (host && !*host)
 	host = NULL;
-#endif /* POP */
 
     /* guarantee dropping group priveleges; we might not have done so earlier */
     DROPGROUPPRIVS();
@@ -437,14 +397,11 @@ main (int argc, char **argv)
      */
     if (from)
 	inc_type = INC_FILE;
-#ifdef POP
     else if (host)
 	inc_type = INC_POP;
-#endif
     else
 	inc_type = INC_FILE;
 
-#ifdef POP
     /*
      * Are we getting the mail from
      * a POP server?
@@ -473,7 +430,6 @@ main (int argc, char **argv)
 	    adios (NULL, "no mail to incorporate");
 	}
     }
-#endif /* POP */
 
     /*
      * We will get the mail from a file
@@ -548,11 +504,9 @@ main (int argc, char **argv)
 	newmail = cp;
     }
 
-#ifdef POP
     /* skip the folder setup */
     if ((inc_type == INC_POP) && packfile)
 	goto go_to_it;
-#endif /* POP */
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
@@ -580,9 +534,7 @@ main (int argc, char **argv)
     if (!(mp = folder_read (folder)))
 	adios (NULL, "unable to read folder %s", folder);
 
-#ifdef POP
 go_to_it:
-#endif /* POP */
 
     if (inc_type == INC_FILE && Maildir == NULL) {
 	if (access (newmail, W_OK) != NOTOK) {
@@ -619,15 +571,10 @@ go_to_it:
 	else if (i == NOTOK)
 	    chmod (audfile, m_gmprot ());
 
-#ifdef POP
 	fprintf (aud, from ? "<<inc>> %s -ms %s\n"
 		 : host ? "<<inc>> %s -host %s -user %s\n"
 		 : "<<inc>> %s\n",
 		 dtimenow (0), from ? from : host, user);
-#else /* POP */
-	fprintf (aud, from ? "<<inc>> %s  -ms %s\n" : "<<inc>> %s\n",
-		 dtimenow (0), from);
-#endif /* POP */
     }
 
     /* Get new format string */
@@ -638,7 +585,6 @@ go_to_it:
 	fflush (stdout);
     }
 
-#ifdef POP
     /*
      * Get the mail from a POP server
      */
@@ -767,7 +713,6 @@ go_to_it:
 	    pd = NOTOK;
 	}
     }
-#endif /* POP */
 
     /*
      * Get the mail from file (usually mail spool)
@@ -970,10 +915,8 @@ go_to_it:
     if (noisy)
 	fflush (stdout);
 
-#ifdef POP
     if ((inc_type == INC_POP) && packfile)
 	done (0);
-#endif /* POP */
 
     /*
      * truncate file we are incorporating from
@@ -1066,10 +1009,8 @@ cpymsg (FILE *in, FILE *out)
 static void
 inc_done (int status)
 {
-#ifdef POP
     if (packfile && pd != NOTOK)
 	mbx_close (packfile, pd);
-#endif /* POP */
     if (locked)
     {
         GETGROUPPRIVS();
@@ -1079,7 +1020,6 @@ inc_done (int status)
     exit (status);
 }
 
-#ifdef POP
 static int
 pop_action (char *s)
 {
@@ -1123,4 +1063,3 @@ map_count (void)
     close (md);
     return (d.d_id);
 }
-#endif /* POP */

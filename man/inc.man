@@ -23,7 +23,6 @@ inc \- incorporate new mail
 .RB [ \-truncate " | " \-notruncate ]
 .RB [ \-width
 .IR columns ]
-%nmhbeginpop%
 .RB [ \-host
 .IR hostname ]
 .RB [ \-user
@@ -37,7 +36,6 @@ inc \- incorporate new mail
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-snoop ]
-%nmhendpop%
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -180,7 +178,6 @@ switch directs
 to be quiet and not ask any questions at all.  This is useful for putting
 .B inc
 in the background and going on to other things.
-%nmhbeginpop%
 .PP
 .SS "Using POP"
 .B inc
@@ -286,7 +283,6 @@ Encrypted traffic is labelled with `(encrypted)' and `(decrypted)'
 when viewing the POP transaction with the
 .B \-snoop
 switch.
-%nmhendpop%
 
 .SH FILES
 .fc ^ ~
@@ -322,9 +318,7 @@ mhmail(1), scan(1), mh\-mail(5), post(8)
 .RB ` \-nosilent '
 .RB ` \-truncate "' if `" \-file " name' not given, `" \-notruncate "' otherwise"
 .RB ` \-width "' defaulted to the width of the terminal"
-%nmhbeginpop%
 .RB ` \-nopack '
-%nmhendpop%
 .fi
 
 .SH CONTEXT

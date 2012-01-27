@@ -43,14 +43,6 @@ AC_ARG_ENABLE(masquerade,
   fi], [masquerade="draft_from mmailid username_extension"])
 AC_SUBST(masquerade)dnl
 
-dnl Do you want client-side support for pop?
-AC_ARG_ENABLE([pop],
-  AS_HELP_STRING([--enable-pop], [enable client-side support for plain POP3]))
-dnl The old redundant --enable-nmh-pop is deprecated and undocumented.
-if test x"$enable_nmh_pop" = x"yes"; then
-  enable_pop=yes
-fi
-
 dnl Do you want to disable use of locale functions
 AH_TEMPLATE([LOCALE],
 [Undefine if you don't want locale features.  By default this is defined.])
@@ -105,13 +97,6 @@ else
 fi
 AC_DEFINE_UNQUOTED([BACKUP_PREFIX], "$backup_prefix",
     [The prefix that is prepended to the name of message files when they are "removed" by rmm. This should typically be `,' or `#'.])dnl
-
-dnl After we know if we're including apop and kpop support, do pop stuff
-if test x"$enable_pop" = x"yes"; then
-  AC_DEFINE([POP], 1,
-    [Define this to compile client-side support for pop into inc and msgchk.])dnl
-fi
-AM_CONDITIONAL([POP_SUPPORT], [test x"$enable_pop" = x"yes"])
 
 dnl What method of locking to use?
 AC_ARG_WITH(locking,
@@ -761,11 +746,6 @@ eval "nmhlib=${libdir}";         eval "nmhlib=${nmhlib}"
 eval "nmhman=${mandir}";         eval "nmhman=${nmhman}"
 eval "nmhrpm=${nmhrpm}";
 
-pop_kinds=no
-if test x"$enable_pop" = x"yes"; then
-  pop_kinds="yes (POP3)"
-fi
-
 dnl
 dnl Sigh, this is required because under the new world order autoconf has
 dnl nothing to create in a few of the build directories when doing an object
@@ -800,7 +780,6 @@ default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
 default pager              : ${pagerpath}
 email address masquerading : ${masquerade}
-pop is enabled             : ${pop_kinds}
 SASL support               : ${sasl_support}
 TLS support                : ${tls_support}"
 echo ""])

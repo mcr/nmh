@@ -188,10 +188,8 @@ uip_forw_SOURCES = uip/forw.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c
 uip_forw_LDADD = $(LDADD) $(ICONVLIB)
 
-uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/termsbr.c
-if POP_SUPPORT
-uip_inc_SOURCES += uip/popsbr.c
-endif
+uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/termsbr.c \
+		  uip/popsbr.c
 uip_inc_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(SASLLIB)
 
 uip_install_mh_SOURCES = uip/install-mh.c
@@ -229,10 +227,7 @@ uip_mhstore_SOURCES = uip/mhstore.c uip/mhparse.c uip/mhcachesbr.c \
 		      uip/mhmisc.c uip/mhfree.c uip/termsbr.c uip/md5.c
 uip_mhstore_LDADD = $(LDADD) $(TERMLIB)
 
-uip_msgchk_SOURCES = uip/msgchk.c
-if POP_SUPPORT
-uip_msgchk_SOURCES += uip/popsbr.c
-endif
+uip_msgchk_SOURCES = uip/msgchk.c uip/popsbr.c
 uip_msgchk_LDADD = $(LDADD) $(SASLLIB)
 
 uip_msh_SOURCES = uip/msh.c uip/mshcmds.c uip/vmhsbr.c uip/picksbr.c \
@@ -457,11 +452,6 @@ man/man.sed: Makefile
 	echo 's,%manext1%,$(manext1),g' >> $@
 	echo 's,%manext5%,$(manext5),g' >> $@
 	echo 's,%manext8%,$(manext8),g' >> $@
-if POP_SUPPORT
-	echo '/^%nmhbeginpop%/d;/^%nmhendpop%/d' >> $@
-else
-	echo '/^%nmhbeginpop%/,/^%nmhendpop%/d' >> $@
-endif
 	echo '/%components%/r $(top_srcdir)/etc/components' >> $@
 	echo ' s,%components%,,g' >> $@
 	echo '/%distcomps%/r $(top_srcdir)/etc/distcomps' >> $@

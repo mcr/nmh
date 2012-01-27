@@ -12,15 +12,7 @@
 #include <h/tws.h>
 #include <pwd.h>
 
-#ifdef POP
-# include <h/popsbr.h>
-#endif
-
-#ifndef	POP
-# define POPminc(a) (a)
-#else
-# define POPminc(a)  0
-#endif
+#include <h/popsbr.h>
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)
@@ -38,11 +30,11 @@ static struct swit switches[] = {
 #define	NNOTESW                  3
     { "nonotify type", 0 },
 #define	HOSTSW                   4
-    { "host hostname", POPminc (-4) },
+    { "host hostname", 0 },
 #define	USERSW                   5
-    { "user username", POPminc (-4) },
+    { "user username", 0 },
 #define PORTSW			 6
-    { "port name/number", POPminc(-4) },
+    { "port name/number", 0 },
 #define VERSIONSW                7
     { "version", 0 },
 #define	HELPSW                   8
@@ -54,7 +46,7 @@ static struct swit switches[] = {
 #define SASLMECHSW		11
     { "saslmech", SASLminc(-5) },
 #define PROXYSW 		12
-    { "proxy command", POPminc(-5) },
+    { "proxy command", 0 },
     { NULL, 0 }
 };
 
@@ -85,11 +77,8 @@ static struct swit switches[] = {
  */
 static int donote (char *, int);
 static int checkmail (char *, char *, int, int, int);
-
-#ifdef POP
 static int remotemail (char *, char *, char *, char *, int, int, int, int,
 		       char *);
-#endif
 
 
 int
@@ -122,10 +111,8 @@ main (int argc, char **argv)
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
-#ifdef POP
     if ((cp = getenv ("MHPOPDEBUG")) && *cp)
 	snoop++;
-#endif
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -207,7 +194,6 @@ main (int argc, char **argv)
 	    vec[vecp++] = cp;
     }
 
-#ifdef POP
     /*
      * If -host is not specified by user
      */
@@ -221,12 +207,10 @@ main (int argc, char **argv)
     }
     if (!host || !*host)
 	host = NULL;
-#endif /* POP */
 
     if (vecp != 0)
 	vec[vecp] = NULL;
 
-#ifdef POP
     if (host) {
 	if (vecp == 0) {
 	    status = remotemail (host, port, user, proxy, notifysw, 1,
@@ -237,7 +221,6 @@ main (int argc, char **argv)
 				      snoop, sasl, saslmech);
 	}
     } else {
-#endif /* POP */
 
     if (vecp == 0) {
 	char *home;
@@ -258,9 +241,7 @@ main (int argc, char **argv)
 		advise (NULL, "no such user as %s", vec[vecp]);
 	}
     }
-#ifdef POP
     }		/* host == NULL */
-#endif
 
     done (status);
     return 1;
@@ -351,7 +332,6 @@ checkmail (char *user, char *home, int datesw, int notifysw, int personal)
 }
 
 
-#ifdef POP
 extern char response[];
 
 static int
@@ -399,4 +379,3 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 
     return status;
 }
-#endif /* POP */

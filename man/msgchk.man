@@ -13,7 +13,6 @@ msgchk \- check for messages
 all/mail/nomail ]
 .RB [ \-nonotify
 all/mail/nomail ]
-%nmhbeginpop%
 .RB [ \-host
 .IR hostname ]
 .RB [ \-user
@@ -22,7 +21,6 @@ all/mail/nomail ]
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-snoop ]
-%nmhendpop%
 .RI [ users
 \&... ]
 .RB [ \-version ]
@@ -77,7 +75,6 @@ switch directs
 .B msgchk
 to print out the last date mail was read, if this can
 be determined.
-%nmhbeginpop%
  
 .SS "Using POP"
 .B msgchk
@@ -150,7 +147,6 @@ with `(encrypted)' and `(decrypted)' when viewing the POP transaction
 with the
 .B \-snoop
 switch.
-%nmhendpop%
 
 .SH FILES
 .fc ^ ~
