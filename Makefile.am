@@ -365,8 +365,8 @@ install-exec-hook:
 	fi
 
 install-data-hook:
-	rm -f $(DESTDIR)/$(man5dir)/mh_profile.5
-	ln $(DESTDIR)/$(man5dir)/mh-profile.5 $(DESTDIR)/$(man5dir)/mh_profile.5
+	rm -f $(DESTDIR)$(man5dir)/mh_profile.5
+	ln $(DESTDIR)$(man5dir)/mh-profile.5 $(DESTDIR)$(man5dir)/mh_profile.5
 ##
 ## Make sure we remove those links at uninstall time
 ##
