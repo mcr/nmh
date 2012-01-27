@@ -74,6 +74,7 @@
 /uip/viamail
 /uip/whatnow
 /uip/whom
+/uip/*.exe
 /nmh-*.tar.gz
 /aclocal.m4
 /ylwrap
