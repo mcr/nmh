@@ -11,6 +11,7 @@
 #include <h/signals.h>
 #include <h/m_setjmp.h>
 #include <signal.h>
+#include <errno.h>
 
 static char ansbuf[BUFSIZ];
 static sigjmp_buf sigenv;
@@ -32,7 +33,6 @@ getans (char *prompt, struct swit *ansp)
 	istat = SIGNAL (SIGINT, intrser);
     } else {
 	SIGNAL (SIGINT, istat);
-	printf("returning NULL\n");
 	return NULL;
     }
 
@@ -42,8 +42,34 @@ getans (char *prompt, struct swit *ansp)
 	cp = ansbuf;
 	while ((i = getchar ()) != '\n') {
 	    if (i == EOF) {
-	    	printf("Got EOF\n");
-		siglongjmp (sigenv, 1);
+	    	/*
+		 * If we get an EOF, return
+		 */
+		if (feof(stdin))
+		    siglongjmp (sigenv, 1);
+
+		/*
+		 * For errors, if we get an EINTR that means that we got
+		 * a signal and we should retry.  If we get another error,
+		 * then just return.
+		 */
+
+		else if (ferror(stdin)) {
+		    if (errno == EINTR) {
+		    	clearerr(stdin);
+			continue;
+		    }
+		    fprintf(stderr, "\nError %s during read\n",
+		    	    strerror(errno));
+		    siglongjmp (sigenv, 1);
+		} else {
+		    /*
+		     * Just for completeness's sake ...
+		     */
+
+		    fprintf(stderr, "\nUnknown problem in getchar()\n");
+		    siglongjmp (sigenv, 1);
+		}
 	    }
 	    if (cp < &ansbuf[sizeof ansbuf - 1])
 		*cp++ = i;
