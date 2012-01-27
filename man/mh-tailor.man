@@ -108,7 +108,7 @@ above).  If this option is set, but empty, no
 command will be given.
 .PP
 Although the
-/B HELO
+.B HELO
 command is required by RFC\-821, many SMTP servers
 do not require it.  Early versions of
 .I SendMail
