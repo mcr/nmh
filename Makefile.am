@@ -35,6 +35,8 @@ auxexecdir = @libdir@
 ##
 CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf etc/sendfiles \
 	     etc/mhn.defaults man/man.sed $(man_MANS)
+clean-local:
+	@rm -rf RPM
 
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
