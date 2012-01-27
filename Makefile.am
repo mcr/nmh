@@ -35,6 +35,8 @@ auxexecdir = @libdir@
 ##
 CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf etc/sendfiles \
 	     etc/mhn.defaults man/man.sed $(man_MANS)
+clean-local:
+	@rm -rf RPM
 
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
@@ -365,8 +367,8 @@ install-exec-hook:
 	fi
 
 install-data-hook:
-	rm -f $(DESTDIR)/$(man5dir)/mh_profile.5
-	ln $(DESTDIR)/$(man5dir)/mh-profile.5 $(DESTDIR)/$(man5dir)/mh_profile.5
+	rm -f $(DESTDIR)$(man5dir)/mh_profile.5
+	ln $(DESTDIR)$(man5dir)/mh-profile.5 $(DESTDIR)$(man5dir)/mh_profile.5
 ##
 ## Make sure we remove those links at uninstall time
 ##
@@ -486,7 +488,7 @@ endif
 ## Our RPM build target
 ##
 
-rpm: $(DIST_ARCHIVES)
+rpm: dist
 	@test -d $(rpmdir)/SOURCES || $(MKDIR_P) $(rpmdir)/SOURCES
 	@test -d $(rpmdir)/SPECS || $(MKDIR_P) $(rpmdir)/SPECS
 	@mv -f $(DIST_ARCHIVES) $(rpmdir)/SOURCES
