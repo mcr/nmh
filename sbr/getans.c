@@ -13,7 +13,7 @@
 #include <signal.h>
 
 static char ansbuf[BUFSIZ];
-static jmp_buf sigenv;
+static sigjmp_buf sigenv;
 
 /*
  * static prototypes
@@ -28,10 +28,11 @@ getans (char *prompt, struct swit *ansp)
     SIGNAL_HANDLER istat = NULL;
     char *cp, **cpp;
 
-    if (!(m_setjmp (sigenv))) {
+    if (!(sigsetjmp(sigenv, 1))) {
 	istat = SIGNAL (SIGINT, intrser);
     } else {
 	SIGNAL (SIGINT, istat);
+	printf("returning NULL\n");
 	return NULL;
     }
 
@@ -40,8 +41,10 @@ getans (char *prompt, struct swit *ansp)
 	fflush (stdout);
 	cp = ansbuf;
 	while ((i = getchar ()) != '\n') {
-	    if (i == EOF)
-		longjmp (sigenv, 1);
+	    if (i == EOF) {
+	    	printf("Got EOF\n");
+		siglongjmp (sigenv, 1);
+	    }
 	    if (cp < &ansbuf[sizeof ansbuf - 1])
 		*cp++ = i;
 	}
@@ -75,5 +78,5 @@ intrser (int i)
     /*
      * should this be siglongjmp?
      */
-    longjmp (sigenv, 1);
+    siglongjmp (sigenv, 1);
 }
