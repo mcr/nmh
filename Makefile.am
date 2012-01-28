@@ -36,12 +36,22 @@ auxexecdir = @libdir@
 CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf etc/sendfiles \
 	     etc/mhn.defaults man/man.sed $(man_MANS)
 clean-local:
-	@rm -rf RPM
+	@rm -rf RPM a.out.DSYM uip/a.out.DSYM
 
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
 ##
 MAINTAINERCLEANFILES = cscope.files cscope.out
+
+##
+## And our own superclean, to get everything left by maintainer-clean.
+##
+SUPERCLEANFILES = Makefile.in aclocal.m4 compile config.guess config.h.in \
+		  config.h.in~ config.sub configure depcomp install-sh missing \
+		  ylwrap nmh-*.tar.gz
+superclean: maintainer-clean
+	@rm -f $(SUPERCLEANFILES)
+.PHONY: superclean
 
 ##
 ## Files that need to be built before everything else
@@ -487,6 +497,7 @@ rpm: dist
 	@rpmbuild --define '_topdir $(rpmdir)' \
 	  --define '_tmppath %{_topdir}/TMP' \
 	  -ba $(rpmdir)/SPECS/nmh.spec
+.PHONY: rpm
 
 ##
 ## A target to build information needed by cscope
