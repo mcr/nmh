@@ -343,6 +343,8 @@ sasl_get_user(void *context, int id, const char **result, unsigned *len)
 static int
 sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
 {
+    NMH_UNUSED (conn);
+
     struct pass_context *p_context = (struct pass_context *) context;
     char *pass = NULL;
     int len;
@@ -893,7 +895,7 @@ static int
 sasl_fgetc(FILE *f)
 {
     static unsigned char *buffer = NULL, *ptr;
-    static int size = 0;
+    static unsigned int size = 0;
     static int cnt = 0;
     unsigned int retbufsize = 0;
     int cc, result;
