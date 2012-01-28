@@ -235,6 +235,8 @@ leftadjust	flag	strip off leading whitespace on each
 noleftadjust	flag	don't leftadjust
 compress	flag	change newlines in text to spaces
 nocompress	flag	don't compress
+wrap	flag	Wrap lines that exceed width (default)
+nowrap	flag	Do not perform line wrapping
 split	flag	don't combine multiple fields into
 		a single field
 nosplit	flag	combine multiple fields into

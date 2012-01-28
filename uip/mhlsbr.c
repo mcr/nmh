@@ -109,8 +109,9 @@ static struct swit mhlswitches[] = {
 #define	FACEDFLT    0x008000	/* default for face                  */
 #define	SPLIT       0x010000	/* split headers (don't concatenate) */
 #define	NONEWLINE   0x020000	/* don't write trailing newline      */
-#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017FACEFMT\020FACEDFLT\021SPLIT\022NONEWLINE"
-#define	GFLAGS	(NOCOMPONENT | UPPERCASE | CENTER | LEFTADJUST | COMPRESS | SPLIT)
+#define NOWRAP      0x040000	/* Don't wrap lines ever             */
+#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017FACEFMT\020FACEDFLT\021SPLIT\022NONEWLINE\023NOWRAP"
+#define	GFLAGS	(NOCOMPONENT | UPPERCASE | CENTER | LEFTADJUST | COMPRESS | SPLIT | NOWRAP)
 
 struct mcomp {
     char *c_name;		/* component name          */
@@ -192,6 +193,8 @@ static struct triple triples[] = {
     { "datefield",     DATEFMT,     ADDRFMT },
     { "newline",       0,           NONEWLINE },
     { "nonewline",     NONEWLINE,   0 },
+    { "wrap",          0,           NOWRAP },
+    { "nowrap",        NOWRAP,      0 },
     { NULL,            0,           0 }
 };
 
@@ -269,8 +272,8 @@ static struct mcomp *add_queue (struct mcomp **, struct mcomp **, char *, char *
 static void free_queue (struct mcomp **, struct mcomp **);
 static void putcomp (struct mcomp *, struct mcomp *, int);
 static char *oneline (char *, long);
-static void putstr (char *);
-static void putch (char);
+static void putstr (char *, long);
+static void putch (char, long);
 static void intrser (int);
 static void pipeser (int);
 static void quitser (int);
@@ -1199,8 +1202,8 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     onelp = NULL;
 
     if (c1->c_flags & CLEARTEXT) {
-	putstr (c1->c_text);
-	putstr ("\n");
+	putstr (c1->c_text, c1->c_flags);
+	putstr ("\n", c1->c_flags);
 	return;
     }
 
@@ -1233,9 +1236,9 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	    for (cp = (c1->c_text ? c1->c_text : c1->c_name); *cp; cp++)
 	        if (islower (*cp))
 		    *cp = toupper (*cp);
-	putstr (c1->c_text ? c1->c_text : c1->c_name);
+	putstr (c1->c_text ? c1->c_text : c1->c_name, c1->c_flags);
 	if (flag != BODYCOMP) {
-	    putstr (": ");
+	    putstr (": ", c1->c_flags);
 	    if (!(c1->c_flags & SPLIT))
 		c1->c_flags |= HDROUTPUT;
 
@@ -1243,7 +1246,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	if ((count = c1->c_cwidth -
 		strlen (c1->c_text ? c1->c_text : c1->c_name) - 2) > 0)
 	    while (count--)
-		putstr (" ");
+		putstr (" ", c1->c_flags);
 	}
 	else
 	    c1->c_flags |= HDROUTPUT;		/* for BODYCOMP */
@@ -1256,15 +1259,15 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	    for (cp = c2->c_name; *cp; cp++)
 	        if (islower (*cp))
 		    *cp = toupper (*cp);
-	putstr (c2->c_name);
-	putstr (": ");
+	putstr (c2->c_name, c1->c_flags);
+	putstr (": ", c1->c_flags);
 	if (!(c1->c_flags & SPLIT))
 	    c2->c_flags |= HDROUTPUT;
 
 	cchdr++;
 	if ((count = c1->c_cwidth - strlen (c2->c_name) - 2) > 0)
 	    while (count--)
-		putstr (" ");
+		putstr (" ", c1->c_flags);
     }
     if (c1->c_flags & UPPERCASE)
 	for (cp = c2->c_text; *cp; cp++)
@@ -1283,18 +1286,18 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     count += c1->c_offset;
 
     if ((cp = oneline (c2->c_text, c1->c_flags)))
-       putstr(cp);
+       putstr(cp, c1->c_flags);
     if (term == '\n')
-	putstr ("\n");
+	putstr ("\n", c1->c_flags);
     while ((cp = oneline (c2->c_text, c1->c_flags))) {
 	lm = count;
 	if (flag == BODYCOMP
 		&& !(c1->c_flags & NOCOMPONENT))
-	    putstr (c1->c_text ? c1->c_text : c1->c_name);
+	    putstr (c1->c_text ? c1->c_text : c1->c_name, c1->c_flags);
 	if (*cp)
-	    putstr (cp);
+	    putstr (cp, c1->c_flags);
 	if (term == '\n')
-	    putstr ("\n");
+	    putstr ("\n", c1->c_flags);
     }
     if (flag == BODYCOMP && term == '\n')
 	c1->c_flags &= ~HDROUTPUT;		/* Buffer ended on a newline */
@@ -1354,27 +1357,27 @@ oneline (char *stuff, long flags)
 
 
 static void
-putstr (char *string)
+putstr (char *string, long flags)
 {
     if (!column && lm > 0) {
 	while (lm > 0)
 	    if (lm >= 8) {
-		putch ('\t');
+		putch ('\t', flags);
 		lm -= 8;
 	    }
 	    else {
-		putch (' ');
+		putch (' ', flags);
 		lm--;
 	    }
     }
     lm = 0;
     while (*string)
-	putch (*string++);
+	putch (*string++, flags);
 }
 
 
 static void
-putch (char ch)
+putch (char ch, long flags)
 {
     char buf[BUFSIZ];
 
@@ -1431,12 +1434,12 @@ putch (char ch)
 	    break;
     }
 
-    if (column >= wid) {
-	putch ('\n');
+    if (column >= wid && (flags & NOWRAP) == 0) {
+	putch ('\n', flags);
 	if (ovoff > 0)
 	    lm = ovoff;
-	putstr (ovtxt ? ovtxt : "");
-	putch (ch);
+	putstr (ovtxt ? ovtxt : "", flags);
+	putch (ch, flags);
 	return;
     }
 
