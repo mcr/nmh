@@ -46,9 +46,9 @@ MAINTAINERCLEANFILES = cscope.files cscope.out
 ##
 ## And our own superclean, to get everything left by maintainer-clean.
 ##
-SUPERCLEANFILES = Makefile.in aclocal.m4 compile config.guess config.h.in \
-		  config.h.in~ config.sub configure depcomp install-sh missing \
-		  ylwrap nmh-*.tar.gz
+SUPERCLEANFILES = ChangeLog Makefile.in aclocal.m4 compile config.guess \
+		  config.h.in config.h.in~ config.sub configure depcomp \
+		  install-sh missing ylwrap nmh-*.tar.gz
 superclean: maintainer-clean
 	@rm -f $(SUPERCLEANFILES)
 .PHONY: superclean
@@ -483,6 +483,11 @@ man/man.sed: Makefile
 
 .man.$(manext8):
 	$(SED) -f man/man.sed $< > $@
+
+## Don't include commit hashes in ChangeLog.
+ChangeLog:
+	@git --no-pager log --abbrev-commit | \
+           egrep -v '^commit [0-9a-f]+$$' > $@
 
 ##
 ## Our RPM build target
