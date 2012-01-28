@@ -486,8 +486,12 @@ man/man.sed: Makefile
 
 ## Don't include commit hashes in ChangeLog.
 ChangeLog:
-	@git --no-pager log --abbrev-commit | \
-           egrep -v '^commit [0-9a-f]+$$' > $@
+	@[ -d .git ]  &&  git --no-pager log --abbrev-commit | \
+           egrep -v '^commit [0-9a-f]+$$' > $@  ||  true
+## Make ChangeLog phony so it will always get regenerated.  But don't
+## fail if we don't have a git repository in order to allow
+## regeneration of distribution archive or RPM.
+.PHONY: ChangeLog
 
 ##
 ## Our RPM build target
