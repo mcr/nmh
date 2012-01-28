@@ -1,29 +1,47 @@
-/autom4te.cache/
+# Not removed by any Makefile target:
+.DS_Store
+
+# Removed by superclean:
+/Makefile.in
+/aclocal.m4
 /compile
-/config.h
+/config.guess
 /config.h.in
 /config.h.in~
-/config.log
-/config.status
+/config.sub
 /configure
+/depcomp
+/install-sh
+/missing
+/ylwrap
+/nmh-*.tar.gz
+
+# Removed by maintainer-clean:
+/autom4te.cache/
+/sbr/dtimep.c
 /cscope.files
 /cscope.out
+
+# Removed by distclean:
+.deps/
+.dirstamp
 /Makefile
-/Makefile.in
+/config.h
+/config.log
+/config.status
 /stamp-h1
+
+# Removed by clean:
+/RPM/
+a.out.DSYM/
 /config/version.c
-/depcomp
-/docs/Makefile
 /etc/mhn.defaults
 /etc/mts.conf
 /etc/sendfiles
-/install-sh
+/man/*.[158]
 /man/man.sed
-/missing
 /mts/libmts.a
-/sbr/dtimep.c
-/sbr/libdtimep.a
-/sbr/libmh.a
+/sbr/*.a
 /sbr/sigmsg.h
 /uip/ali
 /uip/anno
@@ -75,15 +93,6 @@
 /uip/whatnow
 /uip/whom
 /uip/*.exe
-/nmh-*.tar.gz
-/aclocal.m4
-/ylwrap
+
+# Removed by mostlyclean:
 *.o
-*.1
-*.5
-*.8
-a.out.DSYM
-.DS_Store
-.deps
-.dirstamp
-RPM/
