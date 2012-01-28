@@ -10,11 +10,10 @@ distribution in a file named COPYRIGHT.
 Developers
 ----------
 Information of interest to nmh developers can be found in the
-README.developers file in the docs subdirectory of this distribution. 
+README.developers file in the docs subdirectory of this distribution.
 If you're hacking on the code, you should also definitely subscribe to
 the nmh-workers mailing list. To do so, please visit the nmh-workers
-info page at
-http://lists.nongnu.org/mailman/listinfo/nmh-workers
+info page at <http://lists.nongnu.org/mailman/listinfo/nmh-workers>.
 If you're interested in working on nmh, but aren't sure what to do, see
 the TODO file in the docs subdirectory. There's plenty of work there.
 
@@ -24,11 +23,10 @@ The files COMPLETION-BASH, COMPLETION-TCSH and COMPLETION-ZSH in the
 docs subdirectory give cookbook examples of how to use the enhanced
 features of these shells with nmh. There is also a section in Jerry
 Peek's book covering nmh/MH and working with the shell. The section is
-available online here: http://www.ics.uci.edu/~mh/book/mh/mhanthsh.htm
+available online at <http://oreilly.com/openbook/mh/mhanthsh.htm>.
 
 For More information
 --------------------
 There is more information, including a FAQ and a bit of historical
 information in the docs subdirectory. There are also links to further
-documentation on the nmh website located at http://nmh.nongnu.org/ .
-
+documentation on the nmh website located at <http://nmh.nongnu.org/>.
