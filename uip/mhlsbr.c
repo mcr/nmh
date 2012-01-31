@@ -1949,7 +1949,8 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp)
 
     holder.c_text = buf;
 
-    while ((cc = read(fdoutput[0], buf, bufsz)) > 0) {
+    while ((cc = read(fdoutput[0], buf, bufsz - 1)) > 0) {
+    	buf[cc] = '\0';
     	putcomp(c1, &holder, BODYCOMP);
     }
 
