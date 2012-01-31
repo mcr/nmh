@@ -315,6 +315,7 @@ extern char *draft;
 extern char *faceproc;
 extern char *fileproc;
 extern char *foldprot;
+extern char *formatproc;
 extern char *forwcomps;
 extern char *inbox;
 extern char *incproc;

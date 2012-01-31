@@ -15,6 +15,7 @@
 #include <h/utils.h>
 #include <h/m_setjmp.h>
 #include <signal.h>
+#include <errno.h>
 
 /*
  * MAJOR BUG:
@@ -110,7 +111,8 @@ static struct swit mhlswitches[] = {
 #define	SPLIT       0x010000	/* split headers (don't concatenate) */
 #define	NONEWLINE   0x020000	/* don't write trailing newline      */
 #define NOWRAP      0x040000	/* Don't wrap lines ever             */
-#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017FACEFMT\020FACEDFLT\021SPLIT\022NONEWLINE\023NOWRAP"
+#define FMTFILTER   0x080000	/* Filter through format filter      */
+#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017FACEFMT\020FACEDFLT\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER"
 #define	GFLAGS	(NOCOMPONENT | UPPERCASE | CENTER | LEFTADJUST | COMPRESS | SPLIT | NOWRAP)
 
 struct mcomp {
@@ -195,6 +197,8 @@ static struct triple triples[] = {
     { "nonewline",     NONEWLINE,   0 },
     { "wrap",          0,           NOWRAP },
     { "nowrap",        NOWRAP,      0 },
+    { "format",        FMTFILTER,   0 },
+    { "noformat",      0,           FMTFILTER },
     { NULL,            0,           0 }
 };
 
@@ -282,6 +286,7 @@ static int doface (struct mcomp *);
 static void mhladios (char *, char *, ...);
 static void mhldone (int);
 static void m_popen (char *);
+static void filterbody (struct mcomp *, char *, int, int, FILE *);
 
 int mhl (int, char **);
 int mhlsbr (int, char **, FILE *(*)());
@@ -957,15 +962,20 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			continue;
 		    }
 		    if (dobody && !mh_strcasecmp (c1->c_name, "body")) {
-			holder.c_text = mh_xmalloc (sizeof(buf));
-			strncpy (holder.c_text, buf, sizeof(buf));
-			while (state == BODY) {
-			    putcomp (c1, &holder, BODYCOMP);
-			    state = m_getfld (state, name, holder.c_text,
-					sizeof(buf), fp);
+		    	if (c1->c_flags & FMTFILTER && state == BODY &&
+							formatproc != NULL) {
+			    filterbody(c1, buf, sizeof(buf), state, fp);
+			} else {
+			    holder.c_text = mh_xmalloc (sizeof(buf));
+			    strncpy (holder.c_text, buf, sizeof(buf));
+			    while (state == BODY) {
+				putcomp (c1, &holder, BODYCOMP);
+				state = m_getfld (state, name, holder.c_text,
+					    sizeof(buf), fp);
+			    }
+			    free (holder.c_text);
+			    holder.c_text = NULL;
 			}
-			free (holder.c_text);
-			holder.c_text = NULL;
 			continue;
 		    }
 		    for (c2 = msghd; c2; c2 = c2->c_next)
@@ -1812,4 +1822,167 @@ m_pclose (void)
 
     pidwait (m_pid, OK);
     m_pid = NOTOK;
+}
+
+
+/*
+ * Filter the body of a message through a specified format program
+ */
+
+void
+filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp)
+{
+    struct mcomp holder;
+    char name[NAMESZ];
+    int fdinput[2], fdoutput[2], waitstat;
+    ssize_t cc;
+    pid_t writerpid, filterpid;
+
+    /*
+     * Create pipes so we can communicate with our filter process.
+     */
+
+    if (pipe(fdinput) < 0) {
+	adios(NULL, "Unable to create input pipe");
+    }
+
+    if (pipe(fdoutput) < 0) {
+    	adios(NULL, "Unable to create output pipe");
+    }
+
+    /*
+     * Here's what we're doing to do.
+     *
+     * - Fork ourselves and start writing data to the write side of the
+     *   input pipe (fdinput[1]).
+     *
+     * - Fork and exec our filter program.  We set the standard input of
+     *   our filter program to be the read side of our input pipe (fdinput[0]).
+     *   Standard output is set to the write side of our output pipe
+     *   (fdoutput[1]).
+     *
+     * - We read from the read side of the output pipe (fdoutput[0]).
+     *
+     * We're forking because that's the simplest way to prevent any deadlocks.
+     * (without doing something like switching to non-blocking I/O and using
+     * select or poll, and I'm not interested in doing that).
+     */
+
+    switch (writerpid = fork()) {
+    case 0:
+    	/*
+	 * Our child process - just write to the filter input (fdinput[1]).
+	 * Close all other descriptors that we don't need.
+	 */
+
+	close(fdinput[0]);
+	close(fdoutput[0]);
+	close(fdoutput[1]);
+
+	/*
+	 * Call m_getfld() until we're no longer in the BODY state
+	 */
+
+	while (state == BODY) {
+	    write(fdinput[1], buf, strlen(buf));
+	    state = m_getfld(state, name, buf, bufsz, fp);
+	}
+
+	/*
+	 * We should be done; time to exit.
+	 */
+
+	close(fdinput[1]);
+	exit(0);
+	break;
+    case -1:
+    	adios(NULL, "Unable to fork for filter writer process");
+	break;
+    }
+
+    /*
+     * Fork and exec() our filter program, after redirecting standard in
+     * and standard out appropriately.
+     */
+
+    switch (filterpid = fork()) {
+    case 0:
+    	if (dup2(fdinput[0], STDIN_FILENO) < 0) {
+	    adios("formatproc", "Unable to dup2() standard input");
+	}
+	if (dup2(fdoutput[1], STDOUT_FILENO) < 0) {
+	    adios("formatproc", "Unable to dup2() standard output");
+	}
+
+	/*
+	 * Close everything (especially the old input and output
+	 * descriptors, since they've been dup'd to stdin and stdout),
+	 * and exec the formatproc.
+	 */
+
+	close(fdinput[0]);
+	close(fdinput[1]);
+	close(fdoutput[0]);
+	close(fdoutput[1]);
+
+	execlp(formatproc, formatproc, (char *) NULL);
+
+	adios(formatproc, "Unable to execute filter");
+
+	break;
+
+    case -1:
+    	adios(NULL, "Unable to fork format program");
+    }
+
+    /*
+     * Close everything except our reader (fdoutput[0]);
+     */
+
+    close(fdinput[0]);
+    close(fdinput[1]);
+    close(fdoutput[1]);
+
+    /*
+     * As we read in this data, send it to putcomp
+     */
+
+    holder.c_text = buf;
+
+    while ((cc = read(fdoutput[0], buf, bufsz)) > 0) {
+    	putcomp(c1, &holder, BODYCOMP);
+    }
+
+    if (cc < 0) {
+    	adios(NULL, "reading from formatproc");
+    }
+
+    /*
+     * See if we got any errors along the way.  I'm a little leery of calling
+     * waitpid() without WNOHANG, but it seems to be the most correct solution.
+     */
+
+    if (waitpid(filterpid, &waitstat, 0) < 0) {
+    	if (errno != ECHILD) {
+	    adios("filterproc", "Unable to determine status");
+	}
+    } else {
+    	if (! (WIFEXITED(waitstat) && WEXITSTATUS(waitstat) == 0)) {
+	    pidstatus(waitstat, stderr, "filterproc");
+	}
+    }
+
+    if (waitpid(writerpid, &waitstat, 0) < 0) {
+    	if (errno != ECHILD) {
+	    adios("writer process", "Unable to determine status");
+	    done(1);
+	}
+    } else {
+    	if (! (WIFEXITED(waitstat) && WEXITSTATUS(waitstat) == 0)) {
+	    pidstatus(waitstat, stderr, "writer process");
+	    done(1);
+	}
+    }
+
+    close(fdoutput[0]);
 }

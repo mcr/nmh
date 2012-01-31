@@ -194,6 +194,13 @@ char *faceproc = NULL;
 
 char *fileproc = nmhbindir (/refile);
 
+/*
+ * This program is used to optionally format the bodies of messages by
+ * "mhl".
+ */
+
+char *formatproc = NULL;
+
 /* 
  * This program is called to incorporate messages into a folder.
  */

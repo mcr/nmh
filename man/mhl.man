@@ -250,6 +250,10 @@ decode	flag	decode text as RFC-2047 encoded
 		header field
 addrfield	flag	field contains addresses
 datefield	flag	field contains dates
+format	flag	Run component through formatproc filter
+		(body only)
+noformat	flag	Do not run component through
+		formatproc filter (default)
 .fi
 .RE
 .PP
@@ -315,7 +319,24 @@ can be given a default format string for
 either address or date fields (but not both).  To do this, on a global
 line specify: either the flag addrfield or datefield, along with the
 appropriate formatfield variable string.
-
+.PP
+The \*(lqformat\*(rq flag specifies that this component will be run through
+the filter program specified by the 
+.IR formatproc
+profile entry.  This filter program is expected to read data on standard
+input and output data on standard output.  Currently the \*(lqformat\*(rq
+flag is only supported for the \(*lqbody\*(rq component.  The component
+name will be prefixed to the output
+.IR after
+the filter has been run.  The expected use of this is to filter a message
+body to create more pleasing text to use in a reply message.
+A suggested filter to use for
+.BR repl(1)
+is as follows:
+.PP
+.RS 5
+body:component=">",overflowtext=">",overflowoffset=0,format,nowrap
+.RE
 .SH FILES
 .fc ^ ~
 .nf
@@ -331,6 +352,8 @@ appropriate formatfield variable string.
 .ta 2.4i
 .ta \w'ExtraBigProfileName  'u
 ^moreproc:~^Program to use as interactive front\-end
+^formatproc:~^Program to use as a filter for components that
+^^have the \*(lqformat\*(rq flag set.
 .fi
 
 .SH "SEE ALSO"

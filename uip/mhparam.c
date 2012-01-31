@@ -46,6 +46,7 @@ static struct proc procs [] = {
      { "faceproc",      &faceproc },
      { "fileproc",      &fileproc },
      { "foldprot",      &foldprot },
+     { "formatproc",	&formatproc },
      { "incproc",       &incproc },
      { "installproc",   &installproc  },
      { "lproc",         &lproc },

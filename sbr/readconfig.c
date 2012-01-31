@@ -22,6 +22,7 @@ static struct procstr procs[] = {
     { "buildmimeproc", &buildmimeproc },
     { "faceproc",      &faceproc },
     { "fileproc",      &fileproc },
+    { "formatproc",    &formatproc },
     { "incproc",       &incproc },
     { "installproc",   &installproc },
     { "lproc",         &lproc },
