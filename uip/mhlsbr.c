@@ -16,6 +16,8 @@
 #include <h/m_setjmp.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 
 /*
  * MAJOR BUG:
