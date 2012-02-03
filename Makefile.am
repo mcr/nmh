@@ -533,3 +533,4 @@ upload: dist
 	fi
 	@echo "Uploading to savannah"
 	scp -p $(DIST_ARCHIVES)* $(SAVANNAH_USERNAME)@savannah.gnu.org:/releases/nmh
+.PHONY: upload
