@@ -287,17 +287,20 @@ auxformat (struct mailname *mp, int extras)
 
 
 /*
- * address specific "sprintf"
+ * This used to be adrsprintf() (where it would format an address for you
+ * given a username and a domain).  But somewhere we got to the point where
+ * the only caller was post, and it only called it with both arguments NULL.
+ * So the function was renamed with a more sensible name.
  */
 
 char *
-adrsprintf (char *username, char *domain)
+getlocaladdr(void)
 {
     int          snprintf_return;
+    char	 *username, *domain;
     static char  addr[BUFSIZ];
 
-    if (username == NULL)
-	username = getusername();
+    username = getusername();
 
     if (username_extension_masquerading) {
 	/* mts.conf contains "masquerade:[...]username_extension[...]", so tack
@@ -324,8 +327,7 @@ adrsprintf (char *username, char *domain)
 
     return username;
 
-    if (domain == NULL)
-	domain = LocalName();
+    domain = LocalName();
 
     snprintf_return = snprintf (addr, sizeof(addr), "%s@%s", username, domain);
 

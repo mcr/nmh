@@ -17,3 +17,7 @@ Things to add to the release notes for the next full release:
 - New format instructions %(putlit) and %(concataddr) have been implemented.
 - The --enable-pop configure option has been removed; POP support is now
   compiled in always.
+- You can now filter the body of a message through a user-defined filter
+  program inside of repl (the idea is that it will be used by repl).
+  See mhl(1), specifically the "format" keyword and "formatproc" in
+  mh-profile(5).

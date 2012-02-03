@@ -868,7 +868,7 @@ start_headers (void)
     mygid = getgid ();
     time (&tclock);
 
-    strncpy (from, adrsprintf (NULL, NULL), sizeof(from));
+    strncpy (from, getlocaladdr(), sizeof(from));
     strncpy (myhost, LocalName (), sizeof(myhost));
 
     for (cp = myhost; *cp; cp++)
@@ -877,7 +877,7 @@ start_headers (void)
     if ((cp = getfullname ()) && *cp) {
 	strncpy (sigbuf, cp, sizeof(sigbuf));
 	snprintf (signature, sizeof(signature), "%s <%s>",
-		sigbuf, adrsprintf (NULL, NULL));
+		sigbuf, getlocaladdr());
 	if ((cp = getname (signature)) == NULL)
 	    adios (NULL, "getname () failed -- you lose extraordinarily big");
 	if ((mp = getm (cp, NULL, 0, AD_HOST, NULL)) == NULL)
@@ -886,7 +886,7 @@ start_headers (void)
 	while (getname (""))
 	    continue;
     } else {
-	strncpy (signature, adrsprintf (NULL, NULL), sizeof(signature));
+	strncpy (signature, getlocaladdr(), sizeof(signature));
     }
 }
 

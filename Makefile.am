@@ -173,11 +173,6 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 ## overrides that are used to select different library options from the
 ## default.
 ##
-## Note that a few programs link in extra files (specifically, popsbr.c)
-## if POP3 support is compiled in.  An Automake conditional is used for
-## this purpose.
-##
-
 uip_ali_SOURCES = uip/ali.c uip/aliasbr.c
 
 uip_anno_SOURCES = uip/anno.c uip/annosbr.c
@@ -515,3 +510,27 @@ rpm: dist
 cscope:
 	echo "-I $(srcdir)/h -I $(srcdir)/sbr -I $(srcdir)/uip -I $(srcdir)/mts/smtp" > cscope.files
 	find $(srcdir) \( -name \*.c -o -name \*.l \) -print | grep -v dtimep.c >> cscope.files
+
+##
+## Rules to upload the distribution to savannah
+##
+
+upload: dist
+	@if test -z "$(SAVANNAH_USERNAME)"; then \
+		echo "You need to set SAVANNAH_USERNAME to the your username on savannah.gnu.org." ;\
+		echo "You can set it either in your environment or on the make command line."; \
+		false; \
+	fi
+	@echo "Did you run 'make distcheck' already?"
+	@if test -z "$(SKIP_GPG_SIG)"; then \
+		echo "Creating GPG signature (set SKIP_GPG_SIG to bypass this step)"; \
+		gpg --output $(DIST_ARCHIVES).sig --detatch-sig $(DIST_ARCHIVES); \
+	fi
+	@echo "Setting permissions for savannah.gnu.org"
+	chmod 664 $(DIST_ARCHIVES)
+	if test -f $(DIST_ARCHIVES).sig; then \
+		chmod 664 $(DIST_ARCHIVES).sig; \
+	fi
+	@echo "Uploading to savannah"
+	scp -p $(DIST_ARCHIVES)* $(SAVANNAH_USERNAME)@savannah.gnu.org:/releases/nmh
+.PHONY: upload

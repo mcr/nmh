@@ -355,6 +355,16 @@ response to the
 directive at the \*(lqWhat now?\*(rq prompt.
 .RE
 .PP
+.BR formatproc :
+.RS 5
+Program called by
+.B mhl
+to filter a component when it is tagged with the \*(lqformat\*(rq variable
+in the mhl filter.  See 
+.BR mhl (5)
+for more information.
+.RE
+.PP
 .BR incproc :
 %bindir%/inc
 .RS 5
