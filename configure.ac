@@ -733,6 +733,19 @@ nmh_cv_path_signal_h=$SIGNAL_H
 SIGNAL_H=$nmh_cv_path_signal_h
 AC_SUBST(SIGNAL_H)dnl
 
+dnl
+dnl Sigh, this is required because under the new world order autoconf has
+dnl nothing to create in a few of the build directories when doing an object
+dnl tree build.  So make sure we created certain directories if they don't
+dnl exist.
+dnl
+
+AC_CONFIG_COMMANDS([build-directories],
+[test -d etc || ${MKDIR_P} etc
+test -d man || ${MKDIR_P} man])
+
+AC_CONFIG_COMMANDS_POST([
+
 dnl These odd looking assignments are done to expand out unexpanded
 dnl variables in bindir et al (for instance mandir is '${datarootdir}/man',
 dnl but expanding that gives '${prefix}/share/man', so we need to expand
@@ -746,18 +759,6 @@ eval "nmhlib=${libdir}";         eval "nmhlib=${nmhlib}"
 eval "nmhman=${mandir}";         eval "nmhman=${nmhman}"
 eval "nmhrpm=${nmhrpm}";
 
-dnl
-dnl Sigh, this is required because under the new world order autoconf has
-dnl nothing to create in a few of the build directories when doing an object
-dnl tree build.  So make sure we created certain directories if they don't
-dnl exist.
-dnl
-
-AC_CONFIG_COMMANDS([build-directories],
-[test -d etc || ${MKDIR_P} etc
-test -d man || ${MKDIR_P} man])
-
-AC_CONFIG_COMMANDS_POST([
 echo "
 nmh configuration
 -----------------
