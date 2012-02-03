@@ -23,7 +23,7 @@ The files COMPLETION-BASH, COMPLETION-TCSH and COMPLETION-ZSH in the
 docs subdirectory give cookbook examples of how to use the enhanced
 features of these shells with nmh. There is also a section in Jerry
 Peek's book covering nmh/MH and working with the shell. The section is
-available online at <http://oreilly.com/openbook/mh/mhanthsh.htm>.
+available online at <http://rand-mh.sourceforge.net/book/mh/mhanthsh.html>.
 
 For More information
 --------------------

@@ -109,7 +109,7 @@ need an ANSI C compiler such as gcc.
    to edit the `mhn.defaults' file manually.  The syntax of this file is
    described in the man page for `mhn', and in section 9.4 of the book
    "MH & xmh: Email for Users and Programmers", 3rd edition, by Jerry Peek,
-   on the Internet at <http://oreilly.com/openbook/mh/confmhn.htm>.
+   on the Internet at <http://rand-mh.sourceforge.net/book/mh/confmhn.html>.
 
 7) Add an optional global mh.profile, if desired.  This profile should be
    placed in the nmh `etc' directory with the name `mh.profile'.  This
