@@ -2554,7 +2554,8 @@ openFTP (CT ct, char **file)
 
     if (e->eb_flags) {
 	user = "anonymous";
-	snprintf (buffer, sizeof(buffer), "%s@%s", getusername (), LocalName ());
+	snprintf (buffer, sizeof(buffer), "%s@%s", getusername (),
+		  LocalName (1));
 	pass = buffer;
     } else {
 	ruserpass (e->eb_site, &username, &password);

@@ -185,7 +185,7 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     strncpy (tmpfil, tfile, sizeof(tmpfil));
 
     if (!strchr(mailsw, '@'))
-	mailsw = concat (mailsw, "@", LocalName (), NULL);
+	mailsw = concat (mailsw, "@", LocalName (0), NULL);
     fprintf (fp, "To: %s\n", mailsw);
 
     if (subjsw)
@@ -193,7 +193,7 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
 
     if (fromsw) {
 	if (!strchr(fromsw, '@'))
-	    fromsw = concat (fromsw, "@", LocalName (), NULL);
+	    fromsw = concat (fromsw, "@", LocalName (0), NULL);
 	fprintf (fp, "From: %s\n", fromsw);
     }
 

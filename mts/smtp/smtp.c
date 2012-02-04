@@ -216,7 +216,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	if (clientname) {
 	    client = clientname;
 	} else {
-	    client = LocalName();	/* no clientname -> LocalName */
+	    client = LocalName(1);	/* no clientname -> LocalName */
 	}
     }
 
@@ -475,7 +475,7 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 	if (clientname)
 	    client = clientname;
 	else
-	    client = LocalName();	/* no clientname -> LocalName */
+	    client = LocalName(1);	/* no clientname -> LocalName */
     }
 
     /*

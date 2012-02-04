@@ -669,7 +669,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 
     time (&clock);
     snprintf (msgid, sizeof(msgid), "<%d.%ld@%s>",
-		(int) getpid(), (long) clock, LocalName());
+		(int) getpid(), (long) clock, LocalName(1));
 
     fseek (in, start, SEEK_SET);
     for (partno = 1; partno <= nparts; partno++) {

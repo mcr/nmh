@@ -1096,7 +1096,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	    if ((c1->c_flags & FACEDFLT) && c2->c_face == NULL) {
 		char   *h, *o;
 		if ((h = mp->m_host) == NULL)
-		    h = LocalName ();
+		    h = LocalName (0);
 		if ((o = OfficialName (h)))
 		    h = o;
 		c2->c_face = concat ("address ", h, " ", mp->m_mbox,
@@ -1503,7 +1503,7 @@ face_format (struct mcomp *c1)
 	if ((mp = getm (cp, NULL, 0, AD_NAME, NULL))) {
 	    char *h, *o;
 	    if ((h = mp->m_host) == NULL)
-		h = LocalName ();
+		h = LocalName (0);
 	    if ((o = OfficialName (h)))
 		h = o;
 	    c1->c_face = concat ("address ", h, " ", mp->m_mbox, NULL);

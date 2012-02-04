@@ -145,7 +145,7 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
     }
 
     if (dfhost == NULL) {
-	dfhost = LocalName ();
+	dfhost = LocalName (0);
 	dftype = LOCALHOST;
     }
 
@@ -202,10 +202,10 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
     }
 
     if (wanthost == AD_NHST)
-	mp->m_type = !mh_strcasecmp (LocalName (), mp->m_host)
+	mp->m_type = !mh_strcasecmp (LocalName (0), mp->m_host)
 	    ? LOCALHOST : NETHOST;
     else
-	mp->m_type = mh_strcasecmp (LocalName(), mp->m_host) ?  NETHOST : LOCALHOST;
+	mp->m_type = mh_strcasecmp (LocalName(0), mp->m_host) ?  NETHOST : LOCALHOST;
 
 got_host: ;
     if (route)
@@ -327,7 +327,7 @@ getlocaladdr(void)
 
     return username;
 
-    domain = LocalName();
+    domain = LocalName(0);
 
     snprintf_return = snprintf (addr, sizeof(addr), "%s@%s", username, domain);
 
@@ -419,7 +419,7 @@ ismymbox (struct mailname *np)
     
     switch (np->m_type) {
 	case NETHOST:
-	    len = strlen (cp = LocalName ());
+	    len = strlen (cp = LocalName (0));
 	    if (!uprf (np->m_host, cp) || np->m_host[len] != '.')
 		break;
 	    goto local_test;

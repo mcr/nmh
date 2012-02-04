@@ -6,7 +6,7 @@
 /*
  * Local and UUCP Host Name
  */
-char *LocalName(void);
+char *LocalName(int);
 char *SystemName(void);
 
 /*

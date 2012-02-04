@@ -869,7 +869,7 @@ start_headers (void)
     time (&tclock);
 
     strncpy (from, getlocaladdr(), sizeof(from));
-    strncpy (myhost, LocalName (), sizeof(myhost));
+    strncpy (myhost, LocalName (0), sizeof(myhost));
 
     for (cp = myhost; *cp; cp++)
 	*cp = uptolow (*cp);
@@ -908,7 +908,7 @@ finish_headers (FILE *out)
 	    fprintf (out, "Date: %s\n", dtime (&tclock, 0));
 	    if (msgid)
 		fprintf (out, "Message-ID: <%d.%ld@%s>\n",
-			(int) getpid (), (long) tclock, LocalName ());
+			(int) getpid (), (long) tclock, LocalName (1));
 	    if (msgflags & MFRM) {
 		/* There was already a From: in the draft.  Don't add one. */
 		if (!draft_from_masquerading)
@@ -943,7 +943,7 @@ finish_headers (FILE *out)
 	    fprintf (out, "Resent-Date: %s\n", dtime (&tclock, 0));
 	    if (msgid)
 		fprintf (out, "Resent-Message-ID: <%d.%ld@%s>\n",
-			(int) getpid (), (long) tclock, LocalName ());
+			(int) getpid (), (long) tclock, LocalName (1));
 	    if (msgflags & MRFM) {
 		/* There was already a Resent-From: in draft.  Don't add one. */
 		if (!draft_from_masquerading)
@@ -1197,7 +1197,7 @@ make_bcc_file (int dashstuff)
     fprintf (out, "Date: %s\n", dtime (&tclock, 0));
     if (msgid)
 	fprintf (out, "Message-ID: <%d.%ld@%s>\n",
-		(int) getpid (), (long) tclock, LocalName ());
+		(int) getpid (), (long) tclock, LocalName (1));
     if (msgflags & MFRM) {
       /* There was already a From: in the draft.  Don't add one. */
       if (!draft_from_masquerading)

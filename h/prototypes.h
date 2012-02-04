@@ -133,7 +133,7 @@ int strncasecmp (const char *s1, const char *s2, size_t n);
  * some prototypes for address parsing system
  * (others are in addrsbr.h)
  */
-char *LocalName(void);
+char *LocalName(int);
 char *SystemName(void);
 char *OfficialName(char *);
 

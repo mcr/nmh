@@ -859,7 +859,7 @@ set_id (CT ct, int top)
     if (clock == 0) {
 	time (&clock);
 	snprintf (msgid, sizeof(msgid), "<%d.%ld.%%d@%s>\n",
-		(int) getpid(), (long) clock, LocalName());
+		(int) getpid(), (long) clock, LocalName(1));
 	partno = 0;
 	msgfmt = getcpy(msgid);
     }

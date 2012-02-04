@@ -48,8 +48,8 @@ OfficialName (char *name)
     *q = '\0';
     q = site;
 
-    if (!mh_strcasecmp (LocalName(), site))
-	return LocalName();
+    if (!mh_strcasecmp (LocalName(1), site))
+	return LocalName(1);
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_flags = AI_CANONNAME;

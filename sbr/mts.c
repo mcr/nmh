@@ -78,7 +78,7 @@ char *sendmail = SENDMAILPATH;
  * SMTP/POP stuff
  */
 char *clientname = NULL;
-char *servers    = "localhost \01localnet";
+char *servers    = "localhost";
 char *pophost    = "";
 
 /*
@@ -238,34 +238,45 @@ tailor_value (unsigned char *s)
 
 /*
  * Get the fully qualified name of the local host.
+ *
+ * If flag is 0, then use anything out of mts.conf (like localname).
+ * If flag is 1, then only use the "proper" local hostname.
  */
 
 char *
-LocalName (void)
+LocalName (int flag)
 {
-    static char buffer[BUFSIZ] = "";
+    static char buffer0[BUFSIZ] = "";
+    static char buffer1[BUFSIZ] = "";
+    static char *buffer[] = { buffer0, buffer1 };
+    char *buf;
     struct addrinfo hints, *res;
 
+    if (flag < 0 || flag > 1)
+    	return NULL;
+
+    buf = buffer[flag];
+
     /* check if we have cached the local name */
-    if (buffer[0])
-	return buffer;
+    if (buf[0])
+	return buf;
 
     mts_init ("mts");
 
     /* check if the mts.conf file specifies a "localname" */
-    if (*localname) {
-	strncpy (buffer, localname, sizeof(buffer));
+    if (*localname && flag == 0) {
+	strncpy (buf, localname, sizeof(buffer0));
     } else {
-	memset(buffer, 0, sizeof(buffer));
+	memset(buffer, 0, sizeof(buffer0));
 	/* first get our local name */
-	gethostname (buffer, sizeof(buffer) - 1);
+	gethostname (buf, sizeof(buffer0) - 1);
 	/* now fully qualify our name */
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_flags = AI_CANONNAME;
 	hints.ai_family = PF_UNSPEC;
-	if (getaddrinfo(buffer, NULL, &hints, &res) == 0) {
-	    strncpy(buffer, res->ai_canonname, sizeof(buffer) - 1);
+	if (getaddrinfo(buf, NULL, &hints, &res) == 0) {
+	    strncpy(buf, res->ai_canonname, sizeof(buffer0) - 1);
 	    freeaddrinfo(res);
 	}
     }
@@ -275,11 +286,11 @@ LocalName (void)
      * we append that now.  This should rarely be needed.
      */
     if (*localdomain) {
-	strcat (buffer, ".");
-	strcat (buffer, localdomain);
+	strcat (buf, ".");
+	strcat (buf, localdomain);
     }
 
-    return buffer;
+    return buf;
 }
 
 
