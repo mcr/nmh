@@ -267,7 +267,7 @@ LocalName (int flag)
     if (*localname && flag == 0) {
 	strncpy (buf, localname, sizeof(buffer0));
     } else {
-	memset(buffer, 0, sizeof(buffer0));
+	memset(buf, 0, sizeof(buffer0));
 	/* first get our local name */
 	gethostname (buf, sizeof(buffer0) - 1);
 	/* now fully qualify our name */
