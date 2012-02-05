@@ -2,6 +2,9 @@
 # Copyright 2003 "Wade Richards" <wade@wabyn.net>
 # Permission granted to redistribute under the BSD license
 
+[ "$BASH_COMPLETION" ]  ||  echo "ERROR: COMPLETION-BASH is not intended to be \
+sourced directly, but rather added to a bash-completion package installation."
+
 have show &&
 _nmh()
 {
