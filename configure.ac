@@ -472,6 +472,12 @@ for lib in $termcap_curses_order; do
   AC_CHECK_LIB(${lib}, tgetent, [TERMLIB="-l$lib"; break])
 done
 AC_SUBST([TERMLIB])dnl
+if test "x$TERMLIB" = "x"; then
+  echo 'Could not find tgetent in any library.  Is there a ncurses-devel '\
+'package that you can install?'
+  exit 1
+fi
+
 
 dnl ---------------
 dnl CHECK FOR ICONV
