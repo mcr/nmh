@@ -28,31 +28,25 @@ dnl Do you want to debug nmh?
 AC_ARG_ENABLE([debug],
   AS_HELP_STRING([--enable-debug],[enable nmh code debugging]))
 dnl The old redundant --enable-nmh-debug is deprecated and undocumented.
-if test x"$enable_nmh_debug" = x"yes"; then
-  enable_debug=yes
-fi
+AS_IF([test x"$enable_nmh_debug" = x"yes"], [enable_debug=yes])
 
 dnl Allow users to send email from addresses other than their default?
 AC_ARG_ENABLE(masquerade,
   AS_HELP_STRING([--enable-masquerade='draft_from mmailid username_extension'],
     [enable up to 3 types of address masquerading]),
-  [if test x"$enable_masquerade" = x"yes"; then
-    masquerade="draft_from mmailid username_extension"
-  else
-    masquerade="$enable_masquerade"
-  fi], [masquerade="draft_from mmailid username_extension"])
+  [AS_IF([test x"$enable_masquerade" = x"yes"],
+	 [masquerade="draft_from mmailid username_extension"],
+	 [masquerade="$enable_masquerade"])],
+  [masquerade="draft_from mmailid username_extension"])
 AC_SUBST(masquerade)dnl
 
 dnl Do you want to disable use of locale functions
 AH_TEMPLATE([LOCALE],
 [Undefine if you don't want locale features.  By default this is defined.])
 AC_ARG_ENABLE([locale],
-AC_HELP_STRING([--disable-locale], [turn off locale features]),
-[if test x$enableval = xyes; then
-  AC_DEFINE(LOCALE)
-fi],
-AC_DEFINE(LOCALE)
-)
+  [AC_HELP_STRING([--disable-locale], [turn off locale features])],
+  [AS_IF([test x$enableval = xyes], [AC_DEFINE(LOCALE)])],
+  [AC_DEFINE(LOCALE)])
 
 dnl Do you want client-side support for using SASL for authentication?
 dnl Note that this code will be enabled for both POP and SMTP
@@ -136,13 +130,9 @@ AC_ARG_WITH([mts],
   AS_HELP_STRING([--with-mts=@<:@smtp|sendmail@:>@],
   [specify the default mail transport agent/service]))
 
-if test x"$with_mts" = x"smtp"; then
-  MTS="smtp"
-elif test x"$with_mts" = x"sendmail"; then
-  MTS="sendmail"
-else
-  MTS="smtp"
-fi
+AS_IF([test x"$with_mts" = x"smtp"], [MTS="smtp"],
+      [test x"$with_mts" = x"sendmail"], [MTS="sendmail"],
+      [MTS="smtp"])
 AC_SUBST([MTS])dnl
 
 dnl Both the smtp and sendmail mail transport services use the smtp code
@@ -161,11 +151,8 @@ dnl What should be the default mail server(s)?
 AC_ARG_WITH(smtpservers,
   AS_HELP_STRING([--with-smtpservers='SMTPSERVER1@<:@ SMTPSERVER2...@:>@'],
   [specify the default SMTP server(s) @<:@localhost@:>@]))
-if test -n "$with_smtpservers"; then
-  smtpservers="$with_smtpservers"
-else
-  smtpservers="localhost"
-fi
+AS_IF([test -n "$with_smtpservers"], [smtpservers="$with_smtpservers"],
+      [smtpservers="localhost"])
 AC_SUBST([smtpservers])dnl
 
 dnl ----------------------------------------------------
@@ -214,7 +201,7 @@ AC_CACHE_CHECK([whether compiler supports -Wno-pointer-sign], [nmh_cv_has_noptrs
 
 dnl if the user hasn't specified CFLAGS, then
 dnl   if compiler is gcc, then
-dnl     use -O2 and some warning flags
+dnl    use -O2 and some warning flags
 dnl   else use -O
 dnl We use -Wall and -Wextra if supported.  If the compiler supports it we
 dnl also use -Wno-pointer-sign, because gcc 4 now produces a lot of new
@@ -462,7 +449,7 @@ dnl -------------------
 dnl CHECK FOR LIBRARIES
 dnl -------------------
 dnl Check location of modf
-AC_CHECK_FUNC(modf, , AC_CHECK_LIB(m, modf))
+AC_CHECK_FUNC([modf], , AC_CHECK_LIB([m], [modf]))
 
 dnl Checks for network libraries (nsl, socket)
 NMH_CHECK_NETLIBS
@@ -472,11 +459,9 @@ for lib in $termcap_curses_order; do
   AC_CHECK_LIB(${lib}, tgetent, [TERMLIB="-l$lib"; break])
 done
 AC_SUBST([TERMLIB])dnl
-if test "x$TERMLIB" = "x"; then
-  echo 'Could not find tgetent in any library.  Is there a ncurses-devel '\
-'package that you can install?'
-  exit 1
-fi
+AS_IF([test "x$TERMLIB" = "x"],
+      [AC_MSG_FAILURE([Could not find tgetent in any library.  Is there a curses
+or ncurses library or package that you can install?])])
 
 
 dnl ---------------
