@@ -95,7 +95,7 @@ client (char *args, char *service, char *response, int len_response, int debug)
 
 	    if (connect(sd, ai->ai_addr, ai->ai_addrlen) == 0) {
 		freeaddrinfo(res);
-		client_freelist(ap);
+		client_freelist(arguments);
 		return sd;
 	    }
 
@@ -109,7 +109,7 @@ client (char *args, char *service, char *response, int len_response, int debug)
     	freeaddrinfo(res);
     }
 
-    client_freelist(ap);
+    client_freelist(arguments);
     strncpy (response, "no servers available", len_response);
     return NOTOK;
 }
@@ -122,8 +122,7 @@ client (char *args, char *service, char *response, int len_response, int debug)
 static void
 client_freelist(char **list)
 {
-    while (*list++ != NULL)
-	free(*list);
+    free(*list);
 }
 
 
