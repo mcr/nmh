@@ -52,34 +52,25 @@ dnl Do you want client-side support for using SASL for authentication?
 dnl Note that this code will be enabled for both POP and SMTP
 AC_ARG_WITH([cyrus-sasl], AS_HELP_STRING([--with-cyrus-sasl],
   [Enable SASL support via the Cyrus SASL library]))
-if test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"; then
-  AC_DEFINE([CYRUS_SASL], [1],
-    [Define to use the Cyrus SASL library for authentication of POP and SMTP.])dnl
-  if test x"$with_cyrus_sasl" != xyes; then
-    AC_MSG_WARN([Arguments to --with-cyrus-sasl now ignored])
-    AC_MSG_WARN([Please pass the appropriate arguments to CPPFLAGS/LDFLAGS])
-  fi
-  sasl_support=yes
-else
-  sasl_support=no
-fi
+AS_IF([test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"],[
+      AC_DEFINE([CYRUS_SASL], [1],
+		[Define to use the Cyrus SASL library for authentication of POP and SMTP.])dnl
+      AS_IF([test x"$with_cyrus_sasl" != xyes],[
+	    AC_MSG_WARN([Arguments to --with-cyrus-sasl now ignored])
+	    AC_MSG_WARN([Please pass the appropriate arguments to CPPFLAGS/LDFLAGS])])
+      sasl_support=yes], [sasl_support=no])
 
 dnl Do you want client-side support for encryption with TLS?
 AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
-if test x"$with_tls" != x -a x"$with_tls" != x"no"; then
-  AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])dnl
-  tls_support=yes
-else
-  tls_support=no
-fi
+AS_IF([test x"$with_tls" != x -a x"$with_tls" != x"no"],[
+      AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])dnl
+      tls_support=yes],[tls_support=no])
 
 dnl What should be the default editor?
 AC_ARG_WITH([editor],
   AS_HELP_STRING([--with-editor=EDITOR],[specify the default editor]))
 
-if test -n "$with_editor"; then
-  editorpath="$with_editor"
-fi
+AS_IF([test -n "$with_editor"], [editorpath="$with_editor"])
 
 dnl Set the backup prefix
 AC_ARG_WITH([hash-backup],
@@ -323,9 +314,7 @@ AC_PATH_PROG([vipath], [vi], [/bin/vi], [$pathtmp])
 
 dnl If editor is not specified yet,
 dnl then use `vi' as the default.
-if test -z "$editorpath"; then
-  editorpath="$vipath"
-fi
+AS_IF([test -z "$editorpath"], [editorpath="$vipath"])
 AC_SUBST([editorpath])dnl
 
 dnl ----------------------------------------------------------
