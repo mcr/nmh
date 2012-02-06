@@ -136,67 +136,50 @@ getpass()    nmh_getpass()
 releasing nmh
 -------------
 
-To make a public release of nmh (we'll use version 1.0.4 and my mhost.com
+To make a public release of nmh (we'll use version 1.5 and my mhost.com
 account, danh, as examples here; the convention for release candidates
-is to use something like "1.0.4-RC1"):
+is to use something like "1.5-RC1"):
 
- 1. % echo 1.0.4 > VERSION
+ 1. % echo 1.5 > VERSION
     % date +"%e %B %Y" > DATE
     (DATE should contain something like "30 December 2000")
 
  2. % git commit VERSION DATE; git push
 
- 3. % git tag -a nmh-1_0_4 -m 'Releasing nmh-1_0_4.'
+ 3. % git tag -a 1.5 -m 'Releasing nmh-1.5.'
 
- 4. % make nmhdist
+    Note that the new convention for tagging is to simply tag with the
+    version number (tag formats in the past have varied).
 
- 5. Untar nmh-1.0.4.tar.gz and `diff -r' it vs. your workspace.  Make
-    sure no files got left out of the distribution that should be in
-    it (due to someone forgetting to update the DIST variables in the
-    Makefiles).
+ 4. % make distcheck
 
- 6. If you have root access on your machine, it's good at this point to do:
+    If you want to check the distribution build with some particular
+    configure options, set the DISTCHECK_CONFIGURE_FLAGS variable.
+    E.g.:
 
-    % chown -R 0:0 nmh-1.0.4
-    % tar cvf nmh-1.0.4.tar nmh-1.0.4
-    % gzip nmh-1.0.4.tar
+    % make distcheck DISTCHECK_CONFIGURE_FLAGS=--with-cyrus-sasl
 
-    If you leave the files in the archive as being owned by yourself, your UID
-    may coincide with one of a user on a machine where nmh is being installed,
-    making it possible for that user to Trojan the nmh code before the system
-    administrator finishes installing it.
-
- 7. Make sure your new tarball uncompresses and untars with no problem.  Make
-    sure you can configure, make, and install nmh from it.
-
- 8. If all is well and your tarball is final, go back to your workspace and do:
+ 5. If all is well and your tarball is final, go back to your workspace and do:
 
     % echo 1.0.4+dev > VERSION
 
- 9. % git commit VERSION; git push
+ 6. % git commit VERSION; git push
 
-10. If possible, make an MD5 hash and/or a PGP signature of nmh-1.0.4.tar.gz.
-    Assuming you have gpg set up, this should be:
-    % gpg --output nmh-1.0.4.tar.gz.sig --detach-sig nmh-1.0.4.tar.gz
+ 7. Upload the distribution file to savannah.  You can automate this process
+    by doing:
 
-    You can verify the signature with
-    % gpg --verify nmh-1.0.4.tar.gz.sig nmh-1.0.4.tar.gz
+    % make upload SAVANNAH_USERNAME=username
 
-11. Upload the files to savannah. First make sure they are mode 664 so
-    they will have the right permissions on the server end
-    (see https://savannah.gnu.org/maintenance/SharedDownloadArea)
-    % chmod 664 nmh-1.0.4.tar.gz*
+    This will automatically call gpg to sign the release.  You can bypass
+    this step by setting the SKIP_GPG_SIG variable.
 
-    Then scp them across:
-    % scp -p nmh-1.0.4.tar.gz* youruser@dl.sv.nongnu.org:/releases/nmh/
-
-12. Update the http://www.nongnu.org/nmh/ homepage. (It lives in the CVS
+ 8. Update the http://www.nongnu.org/nmh/ homepage. (It lives in the CVS
     'webpages repository'; see https://savannah.nongnu.org/cvs/?group=nmh)
 
-13. Add a news item to the savannah nmh page. You'll have to submit it first
+ 9. Add a news item to the savannah nmh page. You'll have to submit it first
     and then separately approve it (under News->Manage).
 
-14. Send the release announcement email to the following places:
+10. Send the release announcement email to the following places:
      nmh-workers@nongnu.org
      nmh-announce@nongnu.org
      exmh-users@redhat.com
