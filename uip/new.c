@@ -408,6 +408,8 @@ main(int argc, char **argv)
     char *unseen;
     struct node *folder;
 
+    sequences[0] = NULL;
+
 #ifdef LOCALE
     setlocale(LC_ALL, "");
 #endif
