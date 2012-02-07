@@ -127,7 +127,7 @@ and
 support a \&.forward file for directing incoming mail.
 You should include the line
 .PP
-.RS 5
+.ce
 \*(lq|\ %libdir%/slocal\ \-user\ username\*(rq
 .RE
 .PP
