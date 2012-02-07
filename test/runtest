@@ -1,28 +1,23 @@
 #!/bin/sh
 
-set -e
+status=1
 
-if [ ! -e test-temp-dir ]; then
-   echo "test-temp-dir not found: running setup-test"
-   ./setup-test
-fi
+[ $# -eq 1 ]  ||  echo "usage: $0 "'<testname>'
 
-export MH_TEST_DIR=`cat test-temp-dir`
+# Get full pathnames that we'll need.
+cd `dirname $0`
 
-if [ ! -e "$MH_TEST_DIR/bld/Makefile" ]; then
-   echo "temporary directory missing or broken: running setup-test"
-   ./setup-test
-   export MH_TEST_DIR=`cat test-temp-dir`
-fi
-
+export MH_TEST_DIR=`pwd`/testinstall
 export MH=$MH_TEST_DIR/Mail/.mh_profile
 export PATH=$MH_TEST_DIR/bin:$PATH
-
 export MH_TEST_COMMON=$PWD/common.sh
 
+[ -d $MH_TEST_DIR ] || ./setup-test
+
 # clean old test data
-rm -rf $MH_TEST_DIR/Mail
+trap "rm -rf $MH_TEST_DIR/Mail; exit \$status" 0
 # setup test data
+rm -rf $MH_TEST_DIR/Mail
 mkdir $MH_TEST_DIR/Mail
 echo "Path: $MH_TEST_DIR/Mail" > $MH
 folder -create +inbox > /dev/null
@@ -45,8 +40,9 @@ set +e
 return_value=$?
 set -e
 
-if [ $return_value -eq 0 ] ; then
+if [ $return_value -eq 0 ]; then
     echo Test $1 PASS
+    status=0
 elif [ $return_value -eq 120 ]; then
     # indicates test was skipped (eg needed program not found)
     # test itself should have printed a message about this,

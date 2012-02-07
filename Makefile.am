@@ -31,12 +31,27 @@ MHNSEARCHPROG = $(srcdir)/etc/mhn.find.sh
 auxexecdir = @libdir@
 
 ##
+## nmh _does_ have a test suite!
+##
+testdir = $(srcdir)/test
+## It might be nice to configure testinstall and testbuild
+## directories, but for now they're hard-coded here and in the test
+## scripts.
+## And it would be easier to clean up if tests were launched from a
+## tmp directory, and/or each test cleaned up after itself on
+## successful completion.
+MOSTLYCLEANFILES = test/testinstall/*.actual* test/testinstall/*.expected* \
+		   test/testinstall/*.replgroupcomps test/testinstall/*.draft \
+		   test/testinstall/,*.draft* \*
+
+##
 ## Stuff that should be cleaned via "make clean"
 ##
 CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf etc/sendfiles \
 	     etc/mhn.defaults man/man.sed $(man_MANS)
 clean-local:
 	@rm -rf RPM a.out.DSYM uip/a.out.DSYM
+	@$(testdir)/teardown-test
 
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
@@ -478,6 +493,11 @@ man/man.sed: Makefile
 
 .man.$(manext8):
 	$(SED) -f man/man.sed $< > $@
+
+test: all
+	@test -d $(testdir)/testinstall || $(testdir)/setup-test
+	@$(testdir)/runalltests
+.PHONY: test
 
 ## Don't include commit hashes in ChangeLog.
 ChangeLog:

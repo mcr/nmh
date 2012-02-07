@@ -1,4 +1,8 @@
 #!/bin/sh
 
-rm -rf `cat test-temp-dir`
-rm -f test-temp-dir
+# Get full pathnames that we'll need.
+testdir=`dirname $0`
+builddir=$testdir/testbuild
+testinstalldir=$testdir/testinstall
+
+rm -rf $builddir $testinstalldir

@@ -1,22 +1,46 @@
 #!/bin/sh
+#
+# Copy our sources and configuration, but change the installation
+# prefix so that we can test with a completely independent
+# installation.
 
-set -e
+# Get full pathnames that we'll need.  Assumes that this script is
+# located in the nmh test subdirectory.
+cd `dirname $0`
+testdir=`pwd`
+srcdir=`dirname $testdir`
+builddir=$testdir/testbuild
+installdir=$testdir/testinstall
 
-if TEMPDIR=`cat test-temp-dir 2> /dev/null` \
-   && [ -e $TEMPDIR/bld/Makefile ]; then
-    (cd $TEMPDIR/bld && make all install)
-    exit
+#### Set up builddir.
+[ -d $builddir ]  ||  mkdir -p $builddir
+cd $builddir
+
+#### Expedient way to copy the sources and configuration.
+if rsync -h >/dev/null 2>&1; then
+  rsync -a $srcdir/ --exclude .git --exclude test --exclude .deps \
+                    --exclude '*.gz' --exclude '*.*o' .
+else
+  (cd $srcdir && tar cf - \
+    `find . -name .git -prune -o -name test -prune -o -name .deps -prune -o \
+       \( ! -type d ! -name '*.gz' ! -name '*.*o' -print \)`) | \
+  tar xpf -
 fi
 
-TEMPDIR=`mktemp -d /tmp/nmh-test-XXXXXXXX`
-echo $TEMPDIR > test-temp-dir
+#### Set up new configuration.
+#### Put it in a file so we don't have to mess with shell quoting.  It
+#### would get tricky with configure options that can contain embedded
+#### spaces, such as --enable-masquerade and --with-smtpservers.
+reconfig=reconfig-for-test
+echo 'set '/bin/sh' './configure' \' > $reconfig
+#### Configure allows multiple --prefix but ignores all but the last.
+#### So add the one we want to use.  This is easier than trying to change
+#### an existing --prefix, esp. if it has quoted characters.
+echo $(./config.status --config) \'--prefix="$installdir"\' >> $reconfig
+echo 'exec "$@"' >> $reconfig
 
-cd ..
-if ! [ -e configure ]; then
-    ./autogen.sh
-fi
-srcdir=$PWD
-mkdir $TEMPDIR/bld
-cd $TEMPDIR/bld
-$srcdir/configure --prefix=$TEMPDIR --with-locking=fcntl --enable-debug
-make install
+echo configuring the test installation in "$installdir" . . .
+/bin/sh $reconfig > /dev/null
+
+echo building the test installation . . .
+make install > /dev/null

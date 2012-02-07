@@ -1,7 +1,17 @@
 #!/bin/sh
 
-# Note that we ignore *~ files as these are probably editor backups
-for i in `find tests -name 'test-*[!~]' -type f`;
+status=0
+
+# Get full pathnames that we'll need.
+cd `dirname $0`
+testdir=`pwd`
+
+test -d testinstall || ./setup-test
+
+# Note that we ignore *~ files as these are probably editor backups.
+for i in `find . -name 'test-*[!~]' -type f`
 do
-    ./runtest $i
+    $testdir/runtest $i || status=$?
 done
+
+exit $status
