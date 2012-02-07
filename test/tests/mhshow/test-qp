@@ -19,7 +19,7 @@ To: bar@example.edu
 Subject: test
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Date: Sun, 18 Dec 2005 00:52:39 +0100
+Date: Sun, 18 Dec 2005 00:52:39 +0000
 
 =3D
 =3d
@@ -38,7 +38,7 @@ EOF
 
 # check it
 cat > $expected <<EOF
-Date:    Sun, 18 Dec 2005 00:52:39 +0100
+Date:    Sun, 18 Dec 2005 00:52:39 GMT
 To:      bar@example.edu
 From:    foo@example.edu
 Subject: test
