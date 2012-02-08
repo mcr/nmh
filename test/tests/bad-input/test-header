@@ -21,7 +21,7 @@ actual=$MH_TEST_DIR/$$.actual
 msgfile=$(mhpath new)
 msgnum=$(basename $msgfile)
 cat > $msgfile <<EOF
-Date: Sun, 18 Dec 2005 00:52:39 +0000
+Date: Sun, 18 Dec 2005 00:52:39 +0100
 From: foo@example.edu
 To: bar@example.edu
 Subject: test
@@ -41,7 +41,7 @@ check
 cat > $expected <<EOF
 (Message inbox:11)
 
-Date:    Sun, 18 Dec 2005 00:52:39 GMT
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
 Subject: test
@@ -57,7 +57,7 @@ check
 
 # check mhshow
 cat > $expected <<EOF
-Date:    Sun, 18 Dec 2005 00:52:39 GMT
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
 Subject: test

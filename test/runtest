@@ -12,13 +12,6 @@ export MH=$MH_TEST_DIR/Mail/.mh_profile
 export PATH=$MH_TEST_DIR/bin:$PATH
 export MH_TEST_COMMON=$PWD/common.sh
 
-#### Some tests use mhshow to display headers.  It relies on mhl's
-#### default mhl.headers, which runs the date through the pretty
-#### function.  That displays the date with the user's current
-#### timezone.  All of the tests expect GMT, so fool them into using
-#### that.
-export TZ=GMT
-
 [ -d $MH_TEST_DIR ] || ./setup-test
 
 # clean old test data
