@@ -119,22 +119,34 @@ need an ANSI C compiler such as gcc.
 -----------------------------------------------
 Compiler options, or using a different compiler
 -----------------------------------------------
-By default, configure will use the "gcc" compiler if found.  You can use a
-different compiler, or add unusual options for compiling or linking that
-the "configure" script does not know about, by either editing the user
-configuration section of the top level Makefile (after running configure)
-or giving "configure" initial values for these variables by setting them
-in the environment.  Using a Bourne-compatible shell (such as sh,ksh,zsh),
 
-you can do that on the command line like this:
+By default, configure will use the "gcc" compiler if found.  You can
+use a different compiler, or add unusual options for compiling or
+linking that the "configure" script does not know about, by giving
+"configure" initial values for these in its environment.  Using a
+Bourne-compatible shell, such as sh, ksh, zsh, or bash, you can do
+that on the command line like this:
     CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
 
 Or on systems that have the "env" program, you can do it like this:
     env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
 
-If you want to add to, not replace, compile flags, you can use
-OURDEFS with env or like this:
+If you want to add to, not replace, compile flags, you can use OURDEFS
+with env or like this:
     OURDEFS='-Wextra -Wno-sign-compare' ./configure
+
+If you want to add to both compile and link flags at build time
+without putting them in the configuration, you can use an otherwise
+unused Makefile macro, like this:
+    make AM_CFLAGS=--coverage
+
+That does not include that setting in the configuration, so you will
+have to repeat it if you re-run "make".  One example would be if you
+build the test suite as a separate step:
+    make test AM_CFLAGS=--coverage
+
+Though note that the Makefile test target depends on the default
+target, so both be can built in one step with "make test".
 
 ----------------------------------------
 Building nmh on additional architectures
