@@ -27,7 +27,7 @@ EOF
 
 # check it
 cat > $expected <<EOF
-Date:    Tue, 05 Mar 2002 18:20:35 GMT
+Date:    Tue, 05 Mar 2002 18:20:35 +0000
 To:      bar@example.edu
 From:    foo@example.edu
 Subject: test

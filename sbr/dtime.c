@@ -280,7 +280,10 @@ dasctime (struct tws *tw, int flags)
 
 
 /*
- * Get the timezone for given offset
+ * Get the timezone for given offset.
+ * This used to return a three-letter abbreviation for some offset
+ * values.  But not many.  Until there's a good way to do that,
+ * return the string representation of the numeric offset.
  */
 
 char *
@@ -295,11 +298,6 @@ dtimezone (int offset, int flags)
     } else {
 	mins = offset % 60;
 	hours = offset / 60;
-    }
-
-    if (!(flags & TW_ZONE) && mins == 0) {
-	tzset();
-	return ((flags & TW_DST) ? tzname[1] : tzname[0]);
     }
 
 #ifdef ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
