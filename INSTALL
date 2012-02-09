@@ -12,11 +12,11 @@ You should check the MACHINES file to see if there are any specific
 build instructions for your operating system.  To build nmh, you will
 need an ANSI C compiler such as gcc.
 
-0) If you have obtained nmh by checking it out of CVS, you will
-   need to run the GNU autotools to regenerate some files.
-   (If your directory already contains a file 'config.h.in'
-   then this has already been done and you do not need to do it.)
-   You can regenerate the files by running the command
+0) If you have obtained nmh by checking it out of the git repository,
+   you will need to run the GNU autotools to regenerate some files.
+   (If your directory already contains a file 'config.h.in' then this
+   has already been done and you do not need to do it.)  You can
+   regenerate the files by running the command
 
    ./autogen.sh
 
@@ -34,7 +34,7 @@ need an ANSI C compiler such as gcc.
    ./configure [options]
 
    This will check the configuration of your OS, and create the
-   include file config.h, as well as the various Makefiles.
+   include file config.h, as well as the Makefile.
 
    The configure script accepts various options.  The options of
    most interest are listed in a section below.  To see the list
@@ -44,11 +44,20 @@ need an ANSI C compiler such as gcc.
 
 2) Look through the user configuration section at the beginning
    of the generated include file `config.h'. You may
-   want to customize some #defines for your environment.
+   want to customize some #defines for your environment, though
+   that is usually unnecessary.  Note the configure options below
+   control some of the #defines.
 
 3) make
 
-4) make install
+4) make test
+
+   This takes a bit of time (under 2 minutes on a modern machine) but
+   is highly recommended.  "make test" copies your configuration and
+   rebuilds nmh completely in a sandbox, so you can test without
+   disturbing an existing nmh installation or any of your nmh folders.
+
+5) make install
 
    Note that if you have [n]mh files in your install directories with
    the same names as the files being installed, the old ones will get
@@ -59,7 +68,7 @@ need an ANSI C compiler such as gcc.
    make is processing that directory to see if you need to merge
    changes from *.prev files into the new versions.
 
-5) Edit the file `mts.conf' (installed in the nmh `etc' directory)
+6) Edit the file `mts.conf' (installed in the nmh `etc' directory)
    and make any necessary changes for the mail transport interface
    you are using.
 
@@ -81,16 +90,19 @@ need an ANSI C compiler such as gcc.
        which `inc' and `msgchk' will always query for new mail.
 
     c) "servers" defines the server to which you send outgoing SMTP
-       traffic.
+       traffic.  See the discussion of the --with-smtpserver configure
+       option below.
 
    If you compile with POP support, but don't want to use it exclusively,
    you can use the `-host' and `-user' options to `inc' and `msgchk'
    rather than hardcoding pophost in `mts.conf'.
 
    Check the `mh-tailor' man page for a list of all the available options
-   for this file ("masquerade" may be of particular interest).
+   for this file ("masquerade" may be of particular interest, though its
+   default value allows the most flexibility.  See the discussion of the
+   --enable-masquerade configure option below).
 
-6) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
+7) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
    This file contains the default profile entries for the nmh command
    `mhn' and is created by the script `mhn.defaults.sh'.  This script
    will search a generic path (essentially your $PATH) for programs to
@@ -111,7 +123,7 @@ need an ANSI C compiler such as gcc.
    "MH & xmh: Email for Users and Programmers", 3rd edition, by Jerry Peek,
    on the Internet at <http://rand-mh.sourceforge.net/book/mh/confmhn.html>.
 
-7) Add an optional global mh.profile, if desired.  This profile should be
+8) Add an optional global mh.profile, if desired.  This profile should be
    placed in the nmh `etc' directory with the name `mh.profile'.  This
    file will be used to construct the initial .mh_profile of a new nmh
    user, but will not be consulted after that.
@@ -196,17 +208,17 @@ Options for configure
      Enable debugging support.
 
 --enable-masquerade[='draft_from mmailid username_extension']
+     By default, all three masquerade options are enabled.
+
      If this option is disabled, the mts.conf file will contain the
      line "masquerade: " (with no value), which may be manually edited
      later.  You may find it convenient to specify a value at
      configure-time, however, so that each time nmh is reinstalled,
-     the right value will be there.  By default, it is enabled.
-
-     The above usage shows the default, with all three masquerade
-     options being specified.  Any subset of the three may be
-     specified.
+     the right value will be there.
 
      See the mh-tailor(5) man page for full documentation of "masquerade:".
+
+     This option will likely be removed in a future version of nmh.
 
 --enable-pop
      Enable client-side support for pop.

@@ -6,11 +6,11 @@ nmh is known to compile on the following platforms (save the
 exceptions noted below), using an ANSI C compiler, such as gcc.
 
 AIX 4.1.5.0.01
-Cygwin, setup version 2.763
+Cygwin, setup version 2.763 (though it does not run correctly, see below)
 FreeBSD
 IRIX 6.5
-Linux 2.2, 2.3, 2.4 (glibc 2.1, glibc 2.2)
-Mac OS X Public Beta
+Linux 2.2 to current (glibc 2.1 to current)
+Mac OS X
 NetBSD 1.4.2
 OpenBSD
 Solaris 7 and 8 (sparc,x86)
@@ -44,6 +44,10 @@ Cygwin:
 
 Be sure to install Cygwin package libncurses-devel, in the Devel or
 Libs category.  And libncurses10 or later in the Lib category.
+
+Which nmh builds on Cygwin, not all of its programs operate.  If
+you're willing to help fix them, please contact the nmh maintainters
+at nmh-workers@nongnu.org.
 
 --------------------------------------
 HPUX:
@@ -101,4 +105,6 @@ it isn't ANSI C.  But nmh builds just fine with gcc. With
 --enable-debug you will see a lot of warnings.
 --------------------------------------
 
-
+--
+The nmh team
+nmh-workers@nongnu.org
