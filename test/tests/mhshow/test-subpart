@@ -1,0 +1,51 @@
+#!/bin/sh
+######################################################
+#
+# Test show of one part, fixed by
+# 31cba404636730df219dd009ca5893ccc56d46af
+#
+######################################################
+
+set -e
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+# Write message with a text/plain subpart.
+msgfile=$(mhpath new)
+msgnum=$(basename $msgfile)
+cat > $msgfile <<EOF
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="NextPart_001"
+Content-class: urn:content-classes:message
+Date: Thu, 19 May 2011 00:00:00 -0000
+From: sender@example.com
+To: recipient@example.com
+
+This is a multi-part message in MIME format.
+
+--NextPart_001
+Content-Type: multipart/related;
+    type="multipart/alternative";
+    boundary="NextPart_002"
+
+--NextPart_002
+Content-Type: text/plain;
+    charset="utf-8"
+
+This is the text/plain part.
+
+--NextPart_002--
+
+--NextPart_001--
+EOF
+
+# Write the expected output.
+cat > $expected <<EOF
+part 1.1   text/plain                  29
+This is the text/plain part.
+EOF
+
+# check it
+mhshow -part 1.1 -form mhl.null -nopause $msgnum > $actual 2>&1
+diff -u $expected $actual  &&  rm -f $expected $actual
