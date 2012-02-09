@@ -1,12 +1,13 @@
 #!/bin/sh
 
-status=0
-
 # Get full pathnames that we'll need.
 cd `dirname $0`
 testdir=`pwd`
 
-test -d testinstall || ./setup-test
+# Always run setup-test in case the code or configuration has changed.
+./setup-test
+
+status=0
 
 # Note that we ignore *~ files as these are probably editor backups.
 for i in `find . -name 'test-*[!~]' -type f`

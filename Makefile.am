@@ -500,7 +500,6 @@ man/man.sed: Makefile
 	$(SED) -f man/man.sed $< > $@
 
 test: all
-	@test -d $(testdir)/testinstall || $(testdir)/setup-test
 	@$(testdir)/runalltests
 .PHONY: test
 
