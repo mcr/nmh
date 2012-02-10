@@ -140,8 +140,9 @@ environment.  For example,
 
     ./configure CC=c89 CFLAGS=-O2 LIBS=-lposix
 
-If you want to add to, not replace, compile flags, you can use OURDEFS:
-   ./configure OURDEFS='-Wextra -Wno-sign-compare'
+If you wish to add options that are only used at compile time instead of
+link time, you can use the CPPFLAGS variable:
+   ./configure CPPFLAGS='-Wextra -Wno-sign-compare'
 
 If you want to add to both compile and link flags at build time
 without putting them in the configuration, you can use an otherwise
@@ -177,7 +178,7 @@ run the "configure" script.  "configure" automatically checks for the
 source code in the directory that "configure" is in.  For example,
 
     cd /usr/local/solaris/nmh
-    /usr/local/src/nmh-1.0/configure
+    /usr/local/src/nmh-1.5/configure
     make
 
 ---------------------

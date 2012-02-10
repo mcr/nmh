@@ -389,9 +389,8 @@ dnl before system header files.
 AS_CASE(["$host_os"],
 	[linux*],
 	[# Like DEFS, but doesn't get stomped on by configure when using config.h:
-    test -z "$OURDEFS"  &&  OURDEFS="-D_GNU_SOURCE"  \
-                        ||  OURDEFS="$OURDEFS -D_GNU_SOURCE"])
-AC_SUBST(OURDEFS)
+	  AS_IF([test -z "$CPPFLAGS"],[CPPFLAGS="-D_GNU_SOURCE"],
+                [CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"])])
 
 AC_HEADER_STDC
 AC_HEADER_TIOCGWINSZ
@@ -740,7 +739,7 @@ host os                    : ${host}
 compiler                   : ${CC}
 compiler flags             : ${CFLAGS}
 linker flags               : ${LDFLAGS}
-definitions                : ${OURDEFS}
+preprocessor flags         : ${CPPFLAGS}
 source code location       : ${srcdir}
 binary install path        : ${nmhbin}
 library install path       : ${nmhlib}

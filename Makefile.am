@@ -31,11 +31,6 @@ MHNSEARCHPROG = $(srcdir)/etc/mhn.find.sh
 auxexecdir = @libdir@
 
 ##
-## For backward compatibility, include OURDEFS in DEFS.  See INSTALL.
-##
-DEFS = @DEFS@ @OURDEFS@
-
-##
 ## nmh _does_ have a test suite!
 ##
 testdir = $(srcdir)/test
