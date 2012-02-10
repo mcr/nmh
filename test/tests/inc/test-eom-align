@@ -21,7 +21,7 @@ fi
 # intact. (Since we're dealing in exact byte alignment
 # minor corruptions such as line ending changes could
 # render the tests useless.)
-(cd "$THISDIR" && md5sum *.txt > "$MH_TEST_DIR/inctest.md5sums")
+(cd "$THISDIR" && output_md5 *.txt > "$MH_TEST_DIR/inctest.md5sums")
 diff -u "$THISDIR/md5sums" "$MH_TEST_DIR/inctest.md5sums"
 
 FILLER="$THISDIR/filler.txt"
@@ -115,9 +115,11 @@ do_one_test_B () {
 START=$(($STDIO_BUFSZ - 16))
 FINISH=$(($STDIO_BUFSZ + $HDRSZ + $FROMLINESZ + 32))
 echo "Testing inc of files with various alignments of eom marker with buffer size..."
-for sz in $(seq $START $FINISH); do
+i="$START"
+while test $i -le $FINISH; do
   progress_update $sz $START $FINISH
   do_one_test_A $sz
   do_one_test_B $sz
+  i=$(expr $i + 1)
 done
 progress_done

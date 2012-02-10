@@ -247,7 +247,17 @@ AC_PROG_LEX             dnl Check for lex/flex
 
 dnl Look for `cut'
 pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
-AC_PATH_PROG(cutpath, cut, no, [$pathtmp])
+AC_PATH_PROG([cutpath], [cut], [no], [$pathtmp])
+
+dnl
+dnl Check for MD5 program and formatting command
+dnl
+AC_CHECK_PROGS([MD5SUM], [md5sum md5], [missing])
+AS_CASE(["${MD5SUM}"],
+	[md5sum], [MD5FMT="cat"],
+	[md5], [[MD5FMT="${SED} -e 's/MD5 *(\(.*\)) *= \([0-9a-f]*\)/\2  \1/'"]],
+	[MD5FMT="missing"])
+AC_SUBST([MD5FMT])
 
 dnl ----------------------------------------------
 dnl check for lclint, and lint if it doesn't exist
@@ -760,5 +770,5 @@ TLS support                : ${tls_support}
 dnl ---------------
 dnl OUTPUT MAKEFILE
 dnl ---------------
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile test/common.sh])
 AC_OUTPUT

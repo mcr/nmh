@@ -22,7 +22,7 @@ mkdir $MH_TEST_DIR/Mail
 echo "Path: $MH_TEST_DIR/Mail" > $MH
 folder -create +inbox > /dev/null
 # create 10 basic messages
-for i in `seq 1 10`;
+for i in 1 2 3 4 5 6 7 8 9 10;
 do
     cat > $MH_TEST_DIR/Mail/inbox/$i <<EOF
 From: Test$i <test$i@example.com>
@@ -47,7 +47,7 @@ elif [ $return_value -eq 120 ]; then
     # indicates test was skipped (eg needed program not found)
     # test itself should have printed a message about this,
     # so print nothing here.
-    :
+    status=0
 else
     echo Test $1 FAIL
 fi

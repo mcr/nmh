@@ -30,6 +30,7 @@
 /config.h
 /config.log
 /config.status
+/test/common.sh
 /stamp-h1
 
 # Removed by clean:

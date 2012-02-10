@@ -10,7 +10,7 @@ require_prog valgrind
 
 TESTMBOX="$THISDIR/deb359167.mbox"
 
-if [ "$(md5sum "$TESTMBOX" | cut -d ' ' -f 1)" != "e6ac458b8cccba2b2fd866fb505aeb5e" ]; then 
+if [ "$(${MD5SUM} "$TESTMBOX" | cut -d ' ' -f 1)" != "e6ac458b8cccba2b2fd866fb505aeb5e" ]; then 
   echo "Test mailbox has been corrupted"
   exit 1
 fi

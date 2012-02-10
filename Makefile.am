@@ -40,9 +40,13 @@ testdir = $(srcdir)/test
 ## And it would be easier to clean up if tests were launched from a
 ## tmp directory, and/or each test cleaned up after itself on
 ## successful completion.
-MOSTLYCLEANFILES = test/testinstall/*.actual* test/testinstall/*.expected* \
-		   test/testinstall/*.replgroupcomps test/testinstall/*.draft \
-		   test/testinstall/,*.draft* \*
+##MOSTLYCLEANFILES = test/testinstall/*.actual* test/testinstall/*.expected* \
+##		   test/testinstall/*.replgroupcomps test/testinstall/*.draft \
+##		   test/testinstall/,*.draft*
+
+mostlyclean-local:
+	rm -rf test/testinstall
+	rm -rf test/testbuild
 
 ##
 ## Stuff that should be cleaned via "make clean"
@@ -180,7 +184,9 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     man/rcvpack.man man/rcvstore.man man/rcvtty.man man/refile.man \
 	     man/repl.man man/rmf.man man/rmm.man man/scan.man man/send.man \
 	     man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
-	     man/unseen.man man/whatnow.man man/whom.man
+	     man/unseen.man man/whatnow.man man/whom.man test/common.sh.in \
+	     test/README test/runalltests test/runtest test/setup-test \
+	     test/teardown-test test/tests
 
 ##
 ## These are all of the definitions for each of the programs listed above.

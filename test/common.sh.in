@@ -1,4 +1,10 @@
 # Common helper routines for test shell scripts -- intended to be sourced by them
+
+output_md5()
+{
+  @MD5SUM@ $* | @MD5FMT@
+}
+
 test_skip ()
 {
   WHY="$1"
