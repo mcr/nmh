@@ -167,7 +167,7 @@ AC_CACHE_CHECK([whether preprocessor supports -Wunused-macros],
    CPPFLAGS="$nmh_saved_cppflags"])
 
 if test "$nmh_cv_has_unusedmacros" = 'yes'; then
-  test -z "$CPPLAGS"  &&  CPPFLAGS=-Wunused-macros \
+  test -z "$CPPFLAGS"  &&  CPPFLAGS=-Wunused-macros \
                       ||  CPPFLAGS="$CPPFLAGS -Wunused-macros"
   DISABLE_UNUSED_MACROS_WARNING=-Wno-unused-macros
 fi
