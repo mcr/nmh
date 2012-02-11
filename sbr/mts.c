@@ -430,7 +430,7 @@ getuserinfo (void)
 static const char*
 get_mtsconf_pathname (void)
 {
-    const char *cp = getenv ( "MHMTSCONF ");
+    const char *cp = getenv ( "MHMTSCONF" );
     if (cp != NULL && *cp != '\0') {
         return cp;
     }
