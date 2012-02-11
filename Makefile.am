@@ -37,7 +37,7 @@ auxexecdir = @libdir@
 TESTS_ENVIRONMENT = MH_TEST_DIR=`pwd`/test/testdir \
 		    MH_TEST_COMMON=`pwd`/test/common.sh \
 		    MH_OBJ_DIR=`pwd` mandir=$(mandir) bindir=$(bindir) \
-		    sysconfdir=$(sysconfdir)
+		    sysconfdir=$(sysconfdir) auxexecdir=$(auxexecdir)
 ##
 ## Important note: the "cleanup" test should always be last
 ##

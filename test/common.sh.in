@@ -84,7 +84,7 @@ setup_test ()
   mkdir $MH_TEST_DIR/Mail || exit 1
   cat > $MH <<EOF || exit 1
 Path: ${MH_TEST_DIR}/Mail
-mhlproc: ${MH_OBJ_DIR}/uip/mhl
+mhlproc: ${MH_INST_DIR}${auxexecdir}/mhl
 EOF
 
   for f in MailAliases components digestcomps distcomps forwcomps mhl.body \
