@@ -533,11 +533,11 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	else
 	    list_switch (ct, -1, 1, 0, 0);
 
-	if (xpause && SOprintf ("Press <return> to show content..."))
-	    printf ("Press <return> to show content...");
-
-	if (xpause) {
+	if (xpause && isatty (fileno (stdout))) {
 	    int	intr;
+
+	    if (SOprintf ("Press <return> to show content..."))
+		printf ("Press <return> to show content...");
 	    SIGNAL_HANDLER istat;
 
 	    istat = SIGNAL (SIGINT, intrser);
