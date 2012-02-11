@@ -9,28 +9,26 @@ the result by one of:
   * for a test pass: exit with status 0
   * where a test has been skipped (perhaps because it depends on an
     external program which can't be found): print "Test $0 SKIP (reason)"
-    and exit with status 120
+    and exit with status 77
   * for a test fail: exit with some status other than 0 or 120
 
-The Suite is arranged as such:
+The Suite is a re-worked version of the original test suite; it now is
+designed to work with Automake.  To run these tests you can do "make check"
+via the top-level Makefile.  This is also done automatically via
+"make distcheck".
 
-setup-test
-    Create the unit test framework.  This will re-generate your configure
-    script and make files.
+If you wish to write a new test, here are the steps:
 
-teardown-test
-    Remove the temporary files created as part of the unit tests.
+- Make sure your test script sources common.sh (the location of this script
+  is in the MH_TEST_COMMON environment variable and calls the setup_test
+  shell function (the other scripts have examples of this).
 
-runtest
-    Run a single test.
+- Your path will be set up to find the locations of the test nmh binaries.
 
-runalltests
-    Run all tests in the suite
+- Add your script to the TESTS variable in the toplevel Makefile.am.
 
-tests
-    Directory containing the tests.  All files found in this and all
-    subsequent directories which have the name test-* will be treated as a
-    single test.
+- If you need additional files for your tests, be sure to add them to
+  the EXTRA_DIST variable in Makefile.am.  Note that you should insure
+  that you access these files relative to the ${srcdir} environment variable.
 
-Complex tests may be given their own directory as long as there is a file
-named 'test-*' in the directory which will launch the test.
+- Verify that the test works with both "make check" and "make distcheck".

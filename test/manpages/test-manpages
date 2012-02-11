@@ -6,11 +6,13 @@
 #
 ######################################################
 
-. $MH_TEST_COMMON
+. ${MH_TEST_COMMON}
+
+setup_test
 
 require_prog groff
 
-cd $MH_TEST_DIR/share/man
+cd ${MH_INST_DIR}${mandir} || exit 1
 
 # groff will still exit with status zero even if warnings
 # were emitted, so we have to jump through hoops to

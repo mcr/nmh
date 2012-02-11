@@ -1,10 +1,18 @@
 #!/bin/sh
 ######################################################
 #
-# Test that whatnow's "cd" copes with directory names
+# Test that whatnow's "ls" copes with directory names
 # which have spaces and quotes in them (see bug #23319)
 #
 ######################################################
+
+if [ -z "${MH_TEST_COMMON}" ]; then
+    echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
 
 set -e
 SPDIR="$MH_TEST_DIR/foo's bar"
@@ -12,7 +20,6 @@ rm -rf "$SPDIR"
 mkdir "$SPDIR"
 cd "$SPDIR"
 touch baz boz
-cd
 
 expectederr=$MH_TEST_DIR/$$.expectederr
 actualerr=$MH_TEST_DIR/$$.actualerr
@@ -20,15 +27,15 @@ expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
 cat > $expected <<EOF
-$SPDIR
+baz
+boz
 EOF
 
 cat > $expectederr <<EOF
 EOF
 
-# ||true to ignore whatnow's exit status
-# watch the quoting -- shell and printf and then the shell run inside whatnow
-printf "cd $MH_TEST_DIR/foo\\\\'s\\\\ bar\npwd\n" | whatnow -noedit -prompt '' 2> "$actualerr" > "$actual" || true
+# NB use of sort as the order of output of ls is not guaranteed
+echo 'ls' | whatnow -noedit -prompt '' 2> "$actualerr" | sort > "$actual"
 
-diff -u $expectederr $actualerr
+diff -u $expectederr $actualerr || exit 1
 diff -u $expected $actual

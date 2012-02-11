@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# This exists so "make check" will always clean up the "inst" directory
+# after a run, even if tests fail.  That way if you fix a problem and do
+# another "make check", you will get new binaries to test against.
+# 
+
+if [ -z "${MH_TEST_COMMON}" ]; then
+    echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
+
+rm -rf ${MH_INST_DIR}

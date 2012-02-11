@@ -33,20 +33,24 @@ auxexecdir = @libdir@
 ##
 ## nmh _does_ have a test suite!
 ##
-testdir = $(srcdir)/test
-## It might be nice to configure testinstall and testbuild
-## directories, but for now they're hard-coded here and in the test
-## scripts.
-## And it would be easier to clean up if tests were launched from a
-## tmp directory, and/or each test cleaned up after itself on
-## successful completion.
-##MOSTLYCLEANFILES = test/testinstall/*.actual* test/testinstall/*.expected* \
-##		   test/testinstall/*.replgroupcomps test/testinstall/*.draft \
-##		   test/testinstall/,*.draft*
 
-mostlyclean-local:
-	rm -rf test/testinstall
-	rm -rf test/testbuild
+TESTS_ENVIRONMENT = MH_TEST_DIR=`pwd`/test/testdir \
+		    MH_TEST_COMMON=`pwd`/test/common.sh \
+		    MH_OBJ_DIR=`pwd` mandir=$(mandir) bindir=$(bindir) \
+		    sysconfdir=$(sysconfdir)
+##
+## Important note: the "cleanup" test should always be last
+##
+TESTS = test/bad-input/test-header test/folder/test-create \
+	test/folder/test-total test/inc/test-deb359167 test/inc/test-eom-align \
+	test/manpages/test-manpages test/mhbuild/test-forw \
+	test/mhshow/test-cte-binary test/mhshow/test-qp \
+	test/mhshow/test-subpart test/new/test-basic test/pick/test-stderr \
+	test/repl/test-if-str test/scan/test-scan \
+	test/whatnow/test-attach-detach test/whatnow/test-cd \
+	test/whatnow/test-ls test/cleanup
+
+check_SCRIPTS = test/common.sh
 
 ##
 ## Stuff that should be cleaned via "make clean"
@@ -55,7 +59,7 @@ CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf etc/sendfiles \
 	     etc/mhn.defaults man/man.sed $(man_MANS)
 clean-local:
 	@rm -rf RPM a.out.DSYM uip/a.out.DSYM
-	@$(testdir)/teardown-test
+	@rm -rf test/testdir
 
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
@@ -184,9 +188,9 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     man/rcvpack.man man/rcvstore.man man/rcvtty.man man/refile.man \
 	     man/repl.man man/rmf.man man/rmm.man man/scan.man man/send.man \
 	     man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
-	     man/unseen.man man/whatnow.man man/whom.man test/common.sh.in \
-	     test/README test/runalltests test/runtest test/setup-test \
-	     test/teardown-test test/tests
+	     man/unseen.man man/whatnow.man man/whom.man test/README $(TESTS) \
+	     test/inc/deb359167.mbox test/inc/fromline.txt \
+	     test/inc/msgheader.txt test/inc/filler.txt test/inc/md5sums
 
 ##
 ## These are all of the definitions for each of the programs listed above.
@@ -499,10 +503,6 @@ man/man.sed: Makefile
 
 .man.$(manext8):
 	$(SED) -f man/man.sed $< > $@
-
-test: all
-	@$(testdir)/runalltests
-.PHONY: test
 
 ## Don't include commit hashes in ChangeLog.
 ChangeLog:

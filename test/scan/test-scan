@@ -5,6 +5,14 @@
 #
 ######################################################
 
+if [ -z "${MH_TEST_COMMON}" ]; then
+    echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
+
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
@@ -21,6 +29,6 @@ cat > $expected <<EOF
   10  09/29 Test10             Testing message 10<<This is message number 10 >>
 EOF
 
-scan -width 80 +inbox > $actual
+scan -width 80 +inbox > $actual || exit 1
 
 diff -u $expected $actual

@@ -1,4 +1,5 @@
 # Common helper routines for test shell scripts -- intended to be sourced by them
+# @configure_input@
 
 output_md5()
 {
@@ -9,7 +10,7 @@ test_skip ()
 {
   WHY="$1"
   echo "$Test $0 SKIP ($WHY)"
-  exit 120
+  exit 77
 }
 
 # portable implementation of 'which' utility
@@ -55,4 +56,62 @@ progress_update ()
 progress_done ()
 {
   printf "100%%\n"
+}
+
+setup_test ()
+{
+  export MH=${MH_TEST_DIR}/Mail/.mh_profile
+  export MH_INST_DIR=${MH_TEST_DIR}/inst
+  export MHMTSCONF=${MH_INST_DIR}${sysconfdir}/mts.conf
+  export PATH=${MH_INST_DIR}${bindir}:${PATH}
+
+  if [ -z "${srcdir}" ]; then
+    echo "srcdir not set; aborting"
+    exit 1
+  fi
+
+  #
+  # Only do this once
+  #
+
+  if [ ! -d ${MH_INST_DIR}${bindir} ]; then
+    (cd ${MH_OBJ_DIR} && make DESTDIR=${MH_INST_DIR} install) || exit 1
+  fi
+
+  # clean old test data
+  trap "rm -rf $MH_TEST_DIR/Mail; exit \$status" 0
+  # setup test data
+  mkdir $MH_TEST_DIR/Mail || exit 1
+  cat > $MH <<EOF || exit 1
+Path: ${MH_TEST_DIR}/Mail
+mhlproc: ${MH_OBJ_DIR}/uip/mhl
+EOF
+
+  for f in MailAliases components digestcomps distcomps forwcomps mhl.body \
+  	   mhl.digest mhl.format mhl.forward mhl.headers mhl.reply \
+	   rcvdistcomps replcomps replgroupcomps scan.MMDDYY \
+	   scan.YYYYMMDD scan.default scan.mailx scan.nomime scan.size \
+	   scan.time scan.timely scan.unseen
+  do
+    cp ${srcdir}/etc/${f} ${MH_TEST_DIR}/Mail || exit 1
+  done
+
+  for f in mhn.defaults mts.conf
+  do
+    cp ${MH_OBJ_DIR}/etc/${f} ${MH_TEST_DIR}/Mail || exit 1
+  done
+
+  folder -create +inbox > /dev/null
+  # create 10 basic messages
+  for i in 1 2 3 4 5 6 7 8 9 10;
+  do
+    cat > $MH_TEST_DIR/Mail/inbox/$i <<EOF || exit 1
+From: Test$i <test$i@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message $i
+
+This is message number $i
+EOF
+  done
 }

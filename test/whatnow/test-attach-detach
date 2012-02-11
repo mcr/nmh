@@ -6,6 +6,14 @@
 #
 ######################################################
 
+if [ -z "${MH_TEST_COMMON}" ]; then
+    echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
+
 set -e
 
 cd "$MH_TEST_DIR"
@@ -34,5 +42,5 @@ echo "detach baz\\'s\\ boz" | whatnow -attach foo -noedit -prompt '' 2>> $actual
 echo "alist" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
 set -e
 
-diff -u $expectederr $actualerr
+diff -u $expectederr $actualerr || exit 1
 diff -u $expected $actual

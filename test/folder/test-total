@@ -5,6 +5,14 @@
 #
 ######################################################
 
+if [ -z "${MH_TEST_COMMON}" ]; then
+    echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
+
 output=`folder -total +inbox`
 if test x"$output" != x'TOTAL = 10 messages in 1 folder.' ; then
     exit 1

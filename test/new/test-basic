@@ -1,5 +1,12 @@
 #!/bin/sh
 
+if [ -z "${MH_TEST_COMMON}" ]; then
+    echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
 # TODO: Move to a common file tests can source; need more framework...
 failed=0
 check() {

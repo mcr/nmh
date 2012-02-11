@@ -4,9 +4,11 @@
 
 set -e
 
-. $MH_TEST_COMMON
+. ${MH_TEST_COMMON}
 
-THISDIR="tests/inc"
+setup_test
+
+THISDIR="${srcdir}/test/inc"
 
 if [ ! -z "$VALGRIND_ME" ]; then
     require_prog valgrind

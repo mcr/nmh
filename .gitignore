@@ -45,8 +45,7 @@ a.out.DSYM/
 /mts/libmts.a
 /sbr/*.a
 /sbr/sigmsg.h
-/test/testbuild/
-/test/testinstall/
+/test/testdir
 /uip/ali
 /uip/anno
 /uip/ap

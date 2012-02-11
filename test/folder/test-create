@@ -5,6 +5,14 @@
 #
 ######################################################
 
+if [ -z "${MH_TEST_COMMON}" ]; then
+    echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
+
 folder -create +testfolder > /dev/null
 if [ ! -d "$MH_TEST_DIR/Mail/testfolder" ]; then
     exit 1

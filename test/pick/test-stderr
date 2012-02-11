@@ -5,6 +5,14 @@
 #
 ######################################################
 
+if [ -z "${MH_TEST_COMMON}" ]; then
+    echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
+
 expected_err=$MH_TEST_DIR/$$.expected_err
 expected_out=$MH_TEST_DIR/$$.expected_out
 actual_err=$MH_TEST_DIR/$$.actual_err
@@ -20,5 +28,5 @@ EOF
 cat /dev/null > $expected_out
 
 pick -a > $actual_out 2> $actual_err
-diff -u $expected_err $actual_err
-diff -u $expected_out $actual_out
+diff -u $expected_err $actual_err || exit 1
+diff -u $expected_out $actual_out || exit 1

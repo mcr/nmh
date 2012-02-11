@@ -5,6 +5,13 @@
 #
 ######################################################
 
+if [ -z "${MH_TEST_COMMON}" ]; then
+    echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
