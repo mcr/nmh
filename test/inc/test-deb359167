@@ -12,9 +12,16 @@ require_prog valgrind
 
 TESTMBOX="$THISDIR/deb359167.mbox"
 
-if [ "$(${MD5SUM} "$TESTMBOX" | cut -d ' ' -f 1)" != "e6ac458b8cccba2b2fd866fb505aeb5e" ]; then 
+if [ "$(output_md5 "$TESTMBOX" | cut -d ' ' -f 1)" != "e6ac458b8cccba2b2fd866fb505aeb5e" ]; then 
   echo "Test mailbox has been corrupted"
   exit 1
 fi
+
+#
+# valgrind refuses to run on a setuid/setgid program, so chmod inc so it
+# isn't (just in case)
+#
+
+chmod 755 ${MH_INST_DIR}${bindir}/inc
 
 valgrind --error-exitcode=1 --quiet inc -silent -file "$TESTMBOX"
