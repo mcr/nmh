@@ -409,6 +409,7 @@ main(int argc, char **argv)
     struct node *folder;
 
     sequences[0] = NULL;
+    sequences[1] = NULL;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -456,6 +457,7 @@ main(int argc, char **argv)
 	/* have a sequence argument */
 	if (!seq_in_list(cp, sequences)) {
 	    sequences[i++] = cp;
+	    sequences[i] = NULL;
 	}
     }
 
