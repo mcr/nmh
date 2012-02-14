@@ -119,9 +119,9 @@ FINISH=$(($STDIO_BUFSZ + $HDRSZ + $FROMLINESZ + 32))
 echo "Testing inc of files with various alignments of eom marker with buffer size..."
 i="$START"
 while test $i -le $FINISH; do
-  progress_update $sz $START $FINISH
-  do_one_test_A $sz
-  do_one_test_B $sz
+  progress_update $i $START $FINISH
+  do_one_test_A $i
+  do_one_test_B $i
   i=$(expr $i + 1)
 done
 progress_done
