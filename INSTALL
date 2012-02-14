@@ -50,12 +50,10 @@ need an ANSI C compiler such as gcc.
 
 3) make
 
-4) make test
+4) make check
 
-   This takes a bit of time (under 2 minutes on a modern machine) but
-   is highly recommended.  "make test" copies your configuration and
-   rebuilds nmh completely in a sandbox, so you can test without
-   disturbing an existing nmh installation or any of your nmh folders.
+   This takes a bit of time, around one minute on a modern machine,
+   but is highly recommended.
 
 5) make install
 
@@ -142,20 +140,14 @@ environment.  For example,
 
 If you wish to add options that are only used at compile time instead of
 link time, you can use the CPPFLAGS variable:
+
    ./configure CPPFLAGS='-Wextra -Wno-sign-compare'
 
 If you want to add to both compile and link flags at build time
-without putting them in the configuration, you can use an otherwise
-unused Makefile macro, like this:
+without putting them in the configuration, you can use the AM_CFLAGS
+Makefile macro:
+
     make AM_CFLAGS=--coverage
-
-That does not include that setting in the configuration, so you will
-have to repeat it if you re-run "make".  One example would be if you
-build the test suite as a separate step:
-    make test AM_CFLAGS=--coverage
-
-Note that the Makefile test target depends on the default target, so
-both be can built in one step with "make test".
 
 ----------------------------------------
 Building nmh on additional architectures

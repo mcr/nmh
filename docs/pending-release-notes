@@ -21,4 +21,4 @@ Things to add to the release notes for the next full release:
   program inside of repl (the idea is that it will be used by repl).
   See mhl(1), specifically the "format" keyword and "formatproc" in
   mh-profile(5).
-- The test suite has been integrated into the Makefile via "make test".
+- The test suite has been integrated into the Makefile via "make check".
