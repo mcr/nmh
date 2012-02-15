@@ -370,6 +370,9 @@ ismymbox (struct mailname *np)
      * list of alternate mailboxes.
      */
     if (am == NULL) {
+	mq.m_next = NULL;
+	mq.m_mbox = getusername ();
+
 	if ((am = context_find ("local-mailbox"))) {
 	    struct mailname *mptr;
 
@@ -378,20 +381,10 @@ ismymbox (struct mailname *np)
 		return 0;
 	    }
 
-	    if ((mptr = getm (cp, NULL, 0, AD_NAME, NULL)) == NULL) {
+	    if ((mq.m_next = getm (cp, NULL, 0, AD_NAME, NULL)) == NULL) {
 	    	admonish (NULL, "invalid entry in local-mailbox: %s", cp);
 		return 0;
 	    }
-
-	    /*
-	     * Yes, we're not freeing the whole entry, because all of those
-	     * elements contain allocated pointers that we need; maybe
-	     * later ...
-	     */
-
-	    mq = *mptr;
-
-	    free(mptr);
 
 	    /*
 	     * Sigh, it turns out that the address parser gets messed up
@@ -400,11 +393,7 @@ ismymbox (struct mailname *np)
 
 	    while ((cp = getname(am)) != NULL)
 	    	;
-	} else {
-	    mq.m_mbox = getusername ();
 	}
-
-	mq.m_next = NULL;
 
 	if ((am = context_find ("alternate-mailboxes")) == NULL)
 	    am = getusername();
