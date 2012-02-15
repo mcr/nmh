@@ -252,7 +252,9 @@ strlen		integer	length of \fIstr\fR
 width		integer	output buffer size in bytes
 charleft		integer	bytes left in output buffer
 timenow		integer	seconds since the UNIX epoch
-me		string	the user's mailbox
+me		string	the user's mailbox (username)
+myhost		string  the user's local hostname
+myname		string  the user's name
 eq	literal	boolean	\fInum\fR == \fIarg\fR
 ne	literal	boolean	\fInum\fR != \fIarg\fR
 gt	literal	boolean	\fInum\fR > \fIarg\fR
@@ -301,6 +303,19 @@ putaddr	literal		print \fIstr\fR address list with
 			get line width from \fInum\fR
 .fi
 .RE
+.PP
+The (\fIme\fR\^) function returns the username of the current user.  The
+(\fImyhost\fR\^) function returns the
+.B localname
+entry in
+.IR mts.conf ,
+or the local hostname if
+.B localname
+is not configured.  The (\fImyname\fR\^) function will return the value of
+the
+.B SIGNATURE
+environment variable if set, otherwise will return the passwd GECOS field for
+the current user.
 .PP
 The following functions require a date component as an argument:
 .PP

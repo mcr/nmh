@@ -44,6 +44,7 @@
 #include <h/tws.h>
 #include <h/fmt_scan.h>
 #include <h/fmt_compile.h>
+#include <h/mts.h>
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -75,6 +76,8 @@ extern struct mailname fmt_mnull;
 #define	TF_NOW     6  	    /* special - get current unix time    */
 #define	TF_EXPR_SV 7	    /* like expr but save current str reg */
 #define	TF_NOP     8	    /* like expr but no result            */
+#define TF_MYNAME  9        /* special - get current name of user */
+#define TF_MYHOST  10       /* special - get "local" hostname     */
 
 /* ftable->flags */
 /* NB that TFL_PUTS is also used to decide whether the test
@@ -153,6 +156,8 @@ static struct ftable functable[] = {
      { "dat",        TF_NUM,	FT_LV_DAT,	0,		TFL_PUTN },
      { "strlen",     TF_NONE,	FT_LV_STRLEN,	0,		TFL_PUTN },
      { "me",         TF_MYBOX,	FT_LS_LIT,	0,		TFL_PUTS },
+     { "myname",     TF_MYNAME,	FT_LS_LIT,	0,		TFL_PUTS },
+     { "myhost",     TF_MYHOST,	FT_LS_LIT,	0,		TFL_PUTS },
      { "plus",       TF_NUM,	FT_LV_PLUS_L,	0,		TFL_PUTN },
      { "minus",      TF_NUM,	FT_LV_MINUS_L,	0,		TFL_PUTN },
      { "divide",     TF_NUM,	FT_LV_DIVIDE_L,	0,		TFL_PUTN },
@@ -243,11 +248,6 @@ static char *format_string;
 static unsigned char *usr_fstring;	/* for CERROR */
 
 #define CERROR(str) compile_error (str, cp)
-
-/*
- * external prototypes
- */
-extern char *getusername(void);
 
 /*
  * static prototypes
@@ -591,6 +591,14 @@ do_func(char *sp)
 
     case TF_MYBOX:
 	LS(t->f_type, getusername());
+	break;
+
+    case TF_MYNAME:
+    	LS(t->f_type, getfullname());
+	break;
+
+    case TF_MYHOST:
+    	LS(t->f_type, LocalName(0));
 	break;
 
     case TF_NOW:
