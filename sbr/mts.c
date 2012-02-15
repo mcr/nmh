@@ -412,9 +412,12 @@ getuserinfo (void)
 	strncpy (username, pw->pw_name, sizeof(username));
 
     /* The $SIGNATURE environment variable overrides the GECOS field's idea of
-       your real name. */
+       your real name. If SIGNATURE isn't set, use the Signature profile
+       setting if it exists. */
     if ((cp = getenv ("SIGNATURE")) && *cp)
 	strncpy (fullname, cp, sizeof(fullname));
+    else if ((cp = context_find("Signature")))
+    	strncpy (fullname, cp, sizeof(fullname));
 
     if (strchr(fullname, '.')) {		/*  quote any .'s */
 	char tmp[BUFSIZ];
@@ -423,6 +426,8 @@ getuserinfo (void)
 	snprintf (tmp, sizeof(tmp), "\"%s\"", fullname);
 	strncpy (fullname, tmp, sizeof(fullname));
     }
+
+    fullname[sizeof(fullname) - 1] = '\0';
 
     return;
 }
