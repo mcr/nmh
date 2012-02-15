@@ -364,6 +364,7 @@ ismymbox (struct mailname *np)
     struct mailname *mp;
     static char *am = NULL;
     static struct mailname mq;
+    static int localmailbox = 0;
 
     /*
      * If this is the first call, initialize
@@ -374,7 +375,8 @@ ismymbox (struct mailname *np)
 	mq.m_mbox = getusername ();
 
 	if ((am = context_find ("local-mailbox"))) {
-	    struct mailname *mptr;
+
+	    localmailbox++;
 
 	    if ((cp = getname(am)) == NULL) {
 	        admonish (NULL, "Unable to find address in local-mailbox");
@@ -440,25 +442,30 @@ ismymbox (struct mailname *np)
     if (np == NULL) /* XXX */
 	return 0;
     
-    switch (np->m_type) {
-	case NETHOST:
-	    len = strlen (cp = LocalName (0));
-	    if (!uprf (np->m_host, cp) || np->m_host[len] != '.')
-		break;
-	    goto local_test;
+    /*
+     * Don't perform this "local" test if we have a Local-Mailbox set
+     */
 
-	case UUCPHOST:
-	    if (mh_strcasecmp (np->m_host, SystemName()))
-		break;		/* fall */
-	case LOCALHOST:
+    if (! localmailbox)
+	switch (np->m_type) {
+	    case NETHOST:
+		len = strlen (cp = LocalName (0));
+		if (!uprf (np->m_host, cp) || np->m_host[len] != '.')
+		    break;
+		goto local_test;
+
+	    case UUCPHOST:
+		if (mh_strcasecmp (np->m_host, SystemName()))
+		    break;		/* fall */
+	    case LOCALHOST:
 local_test: ;
-	    if (!mh_strcasecmp (np->m_mbox, mq.m_mbox))
-		return 1;
-	    break;
+		if (!mh_strcasecmp (np->m_mbox, mq.m_mbox))
+		    return 1;
+		break;
 
-	default:
-	    break;
-    }
+	    default:
+		break;
+	}
 
     /*
      * Now scan through list of alternate
@@ -467,8 +474,7 @@ local_test: ;
     for (mp = &mq; mp->m_next;) {
 	mp = mp->m_next;
 	if (!np->m_mbox)
-	    continue;
-	if ((len = strlen (cp = np->m_mbox))
+	    continue; if ((len = strlen (cp = np->m_mbox))
 		< (i = strlen (pp = mp->m_mbox)))
 	    continue;
 	switch (mp->m_type & W_MBOX) {
