@@ -370,8 +370,29 @@ ismymbox (struct mailname *np)
      * list of alternate mailboxes.
      */
     if (am == NULL) {
+	if ((am = context_find ("local-mailbox"))) {
+	    struct mailname *mptr;
+
+	    if ((mptr = getm (am, NULL, 0, AD_NAME, NULL)) == NULL) {
+	    	admonish (NULL, "invalid entry in local-mailbox: %s", am);
+		return 0;
+	    }
+
+	    /*
+	     * Yes, we're not freeing the whole entry, because all of those
+	     * elements contain allocated pointers that we need; maybe
+	     * later ...
+	     */
+
+	    mq = *mptr;
+
+	    free(mptr);
+	} else {
+	    mq.m_mbox = getusername ();
+	}
+
 	mq.m_next = NULL;
-	mq.m_mbox = getusername ();
+
 	if ((am = context_find ("alternate-mailboxes")) == NULL)
 	    am = getusername();
 	else {

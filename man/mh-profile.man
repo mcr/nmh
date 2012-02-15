@@ -215,6 +215,22 @@ command.
 (context, no default)
 .RE
 .PP
+.BR Local\-Mailbox :
+Your Username <user@some.host>
+.RS 5
+Tells the various MH tools what your local mailbox is.  If set, will be used
+by the default component files by tools like
+.B comp
+and
+.B repl
+to construct your default \*(lqFrom\*(rq header.  The text used here will
+be copied exactly to your From: header, so it should already be RFC-822
+compliant.  If this is set, the
+.B Signature
+profile entry is NOT used, so it should include a signature as well.  (profile,
+default: userid@local.hostname)
+.RE
+.PP
 .BR Alternate\-Mailboxes :
 mh@uci\-750a, bug-mh*
 .RS 5
