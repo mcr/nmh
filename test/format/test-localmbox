@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# Test that we can retrieve the local mailbox name from the profile via
+# component functions
+#
+
+if [ -z "${MH_TEST_COMMON}" ]; then
+	echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
+
+testname="Some User <some@domain.com>"
+
+echo "Local-Mailbox: ${testname}" >> ${MH}
+
+# We can use "ap" to get the output of format commands
+
+testoutput=$(${MH_LIB_DIR}/ap -format "%(profile Local-Mailbox)" ignore)
+
+if [ x"${testname}" != x"${testoutput}" ]; then
+	echo "Expected ${testname}, got ${testoutput}"
+	exit 1
+fi
+
+exit 0

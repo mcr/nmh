@@ -42,7 +42,10 @@ TESTS_ENVIRONMENT = MH_TEST_DIR=`pwd`/test/testdir \
 ## Important note: the "cleanup" test should always be last
 ##
 TESTS = test/bad-input/test-header test/folder/test-create \
-	test/folder/test-total test/inc/test-deb359167 test/inc/test-eom-align \
+	test/folder/test-total test/format/test-localmbox \
+	test/format/test-myname test/format/test-myhost \
+	test/format/test-mymbox \
+	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/manpages/test-manpages test/mhbuild/test-forw \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
 	test/mhshow/test-subpart test/new/test-basic test/pick/test-stderr \
@@ -51,6 +54,7 @@ TESTS = test/bad-input/test-header test/folder/test-create \
 	test/whatnow/test-ls test/cleanup
 
 check_SCRIPTS = test/common.sh
+check_PROGRAMS = test/getfullname
 
 ##
 ## Stuff that should be cleaned via "make clean"
@@ -340,6 +344,9 @@ uip_spost_SOURCES = uip/spost.c uip/aliasbr.c
 
 uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/mhoutsbr.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
+
+test_getfullname_SOURCES = test/getfullname.c
+test_getfullname_LDADD =
 
 ##
 ## Our rebuild rules for files that aren't built via the normal mechanisms

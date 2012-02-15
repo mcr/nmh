@@ -96,6 +96,7 @@ a.out.DSYM/
 /uip/whatnow
 /uip/whom
 /uip/*.exe
+/test/getfullname
 
 # Removed by mostlyclean:
 *.o

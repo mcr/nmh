@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# Test that the %(mymbox) function correctly determines whether or not
+# a particular email address is "mine" or not
+#
+
+if [ -z "${MH_TEST_COMMON}" ]; then
+	echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
+
+runtest()
+{
+	testoutput=$(${MH_LIB_DIR}/ap -format "%(mymbox{text})" "$1")
+
+	if [ -z "${testoutput}" ]; then
+		echo "Test program did not return anything for $3"
+		exit 1
+	fi
+
+	if [ "${testoutput}" -ne $2 ]; then
+		echo "Did not get expected output for $3"
+		exit 1
+	fi
+}
+
+user="$(id -un)"
+host="$(hostname)"
+
+runtest "${user}" 1 "Basic user test"
+runtest "${user}@${host}" 1 "Basic user@host test"
+runtest "nosuchuser@nosuchhost.blah" 0 "Basic non-matching test"
+
+myname="Random User <random@user.something.com>"
+
+echo "Local-Mailbox: ${myname}" >> ${MH}
+
+runtest "${myname}" 1 "Local-Mailbox test"
+runtest "${user}@${host}" 0 "Local-mailbox overriding user@host test"
+
+exit 0

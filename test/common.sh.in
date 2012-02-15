@@ -64,6 +64,7 @@ setup_test ()
   export MH_INST_DIR=${MH_TEST_DIR}/inst
   export MHMTSCONF=${MH_INST_DIR}${sysconfdir}/mts.conf
   export PATH=${MH_INST_DIR}${bindir}:${PATH}
+  export MH_LIB_DIR=${MH_INST_DIR}${auxexecdir}
 
   if [ -z "${srcdir}" ]; then
     echo "srcdir not set; aborting"
@@ -84,7 +85,7 @@ setup_test ()
   mkdir $MH_TEST_DIR/Mail || exit 1
   cat > $MH <<EOF || exit 1
 Path: ${MH_TEST_DIR}/Mail
-mhlproc: ${MH_INST_DIR}${auxexecdir}/mhl
+mhlproc: ${MH_LIB_DIR}/mhl
 EOF
 
   for f in MailAliases components digestcomps distcomps forwcomps mhl.body \

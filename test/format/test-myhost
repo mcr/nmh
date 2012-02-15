@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# Test that the %(myhost) function returns the local hostname and
+# the localname entry out of the mts configuration file.
+#
+
+if [ -z "${MH_TEST_COMMON}" ]; then
+	echo "MH_TEST_COMMON not set; try running via 'make check'"
+fi
+
+. ${MH_TEST_COMMON}
+
+setup_test
+
+runtest()
+{
+	testoutput=$(${MH_LIB_DIR}/ap -format "%(myhost)" ignore)
+
+	if [ x"$1" != x"${testoutput}" ]; then
+		echo "For $2, expected $1 but got ${testoutput}"
+		exit 1
+	fi
+}
+
+runtest "$(hostname)" "local hostname test"
+
+cp ${MHMTSCONF} ${MH_TEST_DIR}/Mail/mts.conf || exit 1
+export MHMTSCONF="${MH_TEST_DIR}/Mail/mts.conf"
+
+echo "localname: some.random.name" >> ${MHMTSCONF}
+
+runtest "some.random.name" "mts.conf localname test"
+
+exit 0
