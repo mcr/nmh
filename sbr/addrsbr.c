@@ -373,8 +373,13 @@ ismymbox (struct mailname *np)
 	if ((am = context_find ("local-mailbox"))) {
 	    struct mailname *mptr;
 
-	    if ((mptr = getm (am, NULL, 0, AD_NAME, NULL)) == NULL) {
-	    	admonish (NULL, "invalid entry in local-mailbox: %s", am);
+	    if ((cp = getname(am)) == NULL) {
+	        admonish (NULL, "Unable to find address in local-mailbox");
+		return 0;
+	    }
+
+	    if ((mptr = getm (cp, NULL, 0, AD_NAME, NULL)) == NULL) {
+	    	admonish (NULL, "invalid entry in local-mailbox: %s", cp);
 		return 0;
 	    }
 
@@ -387,6 +392,14 @@ ismymbox (struct mailname *np)
 	    mq = *mptr;
 
 	    free(mptr);
+
+	    /*
+	     * Sigh, it turns out that the address parser gets messed up
+	     * if you don't call getname() until it returns NULL.
+	     */
+
+	    while ((cp = getname(am)) != NULL)
+	    	;
 	} else {
 	    mq.m_mbox = getusername ();
 	}
