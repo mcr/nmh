@@ -22,3 +22,9 @@ Things to add to the release notes for the next full release:
   See mhl(1), specifically the "format" keyword and "formatproc" in
   mh-profile(5).
 - The test suite has been integrated into the Makefile via "make check".
+- The following environment variables are obsolete.  Support for them
+  will be removed from the next nmh release:
+    MHPOPDEBUG (use -snoop command line switch instead)
+    MM_NOASK (use -nolist and -nopause command line switches instead)
+    NOMHNPROC (use -nocheckmime command line switch instead)
+    FACEPROC (undocumented faceproc feature to be removed)
