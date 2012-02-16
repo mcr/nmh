@@ -306,7 +306,7 @@ the \*(lq>\*(rq character.
 You can also use an external format program to format the message body.
 The format program is specified by the
 .IR formatproc
-profile entry, and is enabled by the \*(lqformat\(*rq flag.  A message
+profile entry, and is enabled by the \*(lqformat\*(rq flag.  A message
 filter using an external format program would look like this:
 .PP
 .RS 5
