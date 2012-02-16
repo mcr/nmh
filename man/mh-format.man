@@ -73,7 +73,15 @@ All component escapes have a string value.  Normally, component values are
 compressed by converting any control characters (tab and newline included)
 to spaces, then eliding any leading or multiple spaces.  However, commands
 may give different interpretations to some component escapes; be sure
-to refer to each command's manual entry for complete details.
+to refer to each command's manual entry for complete details.  Some commands
+(such as
+.B ap
+and
+.BR mhl )
+use a special component
+.RI `%{ text }'
+to refer to the text being processed; see their respective man pages for
+details and examples.
 .PP
 A
 .I function
@@ -425,6 +433,80 @@ If you need to create an address list that includes previously-seen
 addresses you may use the (\fIconcataddr\fR\^) function, which is identical
 to (\fIformataddr\fR\^) in all other respects.  Note that (\fIconcataddr\fR\^)
 will NOT add addresses to the duplicate-suppression cache.
+.SS Other Hints and Tips
+Sometimes to format function writers it is confusing as to why output is
+duplicated.  The general rule to remember is simple: If a function or
+component escape is used where it starts with a %, then it will generate
+text in the output file.  Otherwise, it will not.
+.PP
+A good example is a simple attempt to generate a To: header based on
+the From: and Reply-To: headers:
+.PP
+.RS 5
+.nf
+%(formataddr %<{reply-to}%|%{from})%(putaddr To: )
+.fi
+.RE
+.PP
+Unfortuantely if the Reply-to: header is NOT present, the output line that is
+generated will be something like:
+.PP
+.RS 5
+.nf
+My From User <from@user.com>To: My From User <from@user.com>
+.fi
+.RE
+.PP
+What went wrong?  When performing the test for the
+.B if
+clause (%<), the component is not output because it is considered an
+argument to the
+.B if
+statement (hence the rule about the lack of % applies).  But the component
+escape in our
+.B else
+statement (everything after the `%|') is NOT an argument to anything; the
+syntax is that it is written with a %, and thus the value of that component
+is output.  This also has the side effect of setting the 
+.I str
+register, which is later picked up by the (\fIformataddr\fR\^) function
+and then output by (\fIputaddr\fR\^).  This format string has another bug
+as well; there should always be a valid width value in the
+.I num
+register when (\fIputaddr\fR\^) is called, otherwise bad formatting can take
+place.
+.PP
+The solution is to use the (\fIvoid\fR\^) function; this will prevent the
+function or component from outputting any text.  With this in place (and
+using (\fIwidth\fR\^) to set the
+.I num
+register for the width, a better implementation would look like:
+.PP
+.RS 3
+.nf
+%(formataddr %<{reply-to}%|%(void{from})%(void(width))%(putaddr To: )
+.fi
+.RE
+.PP
+It should be noted here that the side-effects of functions and component
+escapes still are in force: as a result each component
+test in the 
+.B if\-elseif\-else\-endif
+clause sets the
+.I str
+register.
+.PP
+As an additional note, the (\fIformataddr\fR\^) and (\fIconcataddr\fR\^)
+functions have some behavior when it comes to the
+.I str
+register.  The starting point of the register is saved and is used to
+build up entries in the address list.
+.PP
+You will find the
+.B ap
+and
+.B fmtdump
+utilities invaluable in debugging problems with format strings.
 .SS Examples
 With all this in mind,
 here's the default format string for
