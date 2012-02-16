@@ -822,6 +822,10 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	    sp = fmt->f_text;
 	    indent = strlen (sp);
 	    wid -= indent;
+	    if (wid <= 0) {
+	    	adios(NULL, "putaddr -- num register (%d) must be greater "
+			    "than label width (%d)", value, indent);
+	    }
 	    while( (c = *sp++) && cp < ep)
 		*cp++ = c;
 	    while (len > wid) {
