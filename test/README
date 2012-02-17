@@ -17,18 +17,27 @@ designed to work with Automake.  To run these tests you can do "make check"
 via the top-level Makefile.  This is also done automatically via
 "make distcheck".
 
-If you wish to write a new test, here are the steps:
+WARNING:  The test suite installs nmh and run the tests on that test
+installation.  If you run tests individually, they will not remove
+that test installation or check to see if it remains up to date with
+your nmh workspace.  You can run test/clean after a test to remove the
+test installation.  "make check" will do that, so it is best to use
+it.
 
-- Make sure your test script sources common.sh (the location of this script
-  is in the MH_TEST_COMMON environment variable and calls the setup_test
-  shell function (the other scripts have examples of this).
+If you wish to write a new test script, here are the steps:
+
+- Make sure your test script sources $MH_OBJ_DIR/test/common.sh and
+  calls the setup_test shell function (the other scripts have examples
+  of this).
 
 - Your path will be set up to find the locations of the test nmh binaries.
 
 - Add your script to the TESTS variable in the toplevel Makefile.am.
+  By convention, test script names start with "test-", though that
+  is not a requirement.
 
 - If you need additional files for your tests, be sure to add them to
   the EXTRA_DIST variable in Makefile.am.  Note that you should insure
-  that you access these files relative to the ${srcdir} environment variable.
+  that you access these files relative to the $MH_OBJ_DIR environment variable.
 
 - Verify that the test works with both "make check" and "make distcheck".

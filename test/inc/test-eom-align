@@ -4,11 +4,16 @@
 
 set -e
 
-. ${MH_TEST_COMMON}
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
 
 setup_test
 
-THISDIR="${srcdir}/test/inc"
+THISDIR="${MH_OBJ_DIR}/test/inc"
 
 if [ ! -z "$VALGRIND_ME" ]; then
     require_prog valgrind

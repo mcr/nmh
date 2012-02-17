@@ -34,10 +34,10 @@ auxexecdir = @libdir@
 ## nmh _does_ have a test suite!
 ##
 
-TESTS_ENVIRONMENT = MH_TEST_DIR=`pwd`/test/testdir \
-		    MH_TEST_COMMON=`pwd`/test/common.sh \
-		    MH_OBJ_DIR=`pwd` mandir=$(mandir) bindir=$(bindir) \
-		    sysconfdir=$(sysconfdir) auxexecdir=$(auxexecdir)
+TESTS_ENVIRONMENT = MH_OBJ_DIR=@abs_srcdir@ \
+		    MH_TEST_DIR=@abs_srcdir@/test/testdir \
+		    auxexecdir=$(auxexecdir) bindir=$(bindir) \
+		    mandir=$(mandir) sysconfdir=$(sysconfdir)
 ##
 ## Important note: the "cleanup" test should always be last
 ##

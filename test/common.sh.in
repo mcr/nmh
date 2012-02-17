@@ -1,6 +1,24 @@
 # Common helper routines for test shell scripts -- intended to be sourced by them
 # @configure_input@
 
+
+#### The following exported variables are set by "make check".  Ensure
+#### that they are set here so that individual tests can be run
+#### outside of make.  Requires that MH_OBJ_DIR be set on entry.
+test -z "$MH_TEST_DIR"  &&  MH_TEST_DIR="$MH_OBJ_DIR/test/testdir"
+test -z "$prefix"  &&  prefix=@prefix@
+test -z "$datarootdir"  &&  datarootdir=@datarootdir@
+test -z "$exec_prefix"  &&  exec_prefix=@exec_prefix@
+test -z "$auxexecdir"  &&  auxexecdir="@libdir@"
+test -z "$bindir"  &&  bindir="@bindir@"
+test -z "$mandir"  &&  mandir="@mandir@"
+test -z "$sysconfdir"  &&  sysconfdir="@sysconfdir@"
+export MH_TEST_DIR auxexecdir bindir mandir sysconfdir
+
+test -z "$MH_INST_DIR"  &&  MH_INST_DIR=${MH_TEST_DIR}/inst
+export MH_INST_DIR
+
+
 output_md5()
 {
   @MD5SUM@ $* | @MD5FMT@
@@ -61,20 +79,13 @@ progress_done ()
 setup_test ()
 {
   export MH=${MH_TEST_DIR}/Mail/.mh_profile
-  export MH_INST_DIR=${MH_TEST_DIR}/inst
   export MHMTSCONF=${MH_INST_DIR}${sysconfdir}/mts.conf
   export PATH=${MH_INST_DIR}${bindir}:${PATH}
   export MH_LIB_DIR=${MH_INST_DIR}${auxexecdir}
 
-  if [ -z "${srcdir}" ]; then
-    echo "srcdir not set; aborting"
-    exit 1
-  fi
-
   #
-  # Only do this once
+  # Only install once
   #
-
   if [ ! -d ${MH_INST_DIR}${bindir} ]; then
     (cd ${MH_OBJ_DIR} && make DESTDIR=${MH_INST_DIR} install) || exit 1
   fi
