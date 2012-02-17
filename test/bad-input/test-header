@@ -14,15 +14,6 @@ fi
 
 setup_test
 
-# TODO: Move to a common file tests can source; need more framework...
-failed=0
-check() {
-    diff -u $expected $actual
-    if [ $? -ne 0 ]; then
-        failed=$((failed + 1))
-    fi
-}
-
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
@@ -44,7 +35,7 @@ cat > $expected <<EOF
   11  12/18 foo@example.edu    test<<This is a multi-part message in MIME forma
 EOF
 scan $msgnum > $actual 2>&1
-check
+check $expected $actual
 
 # check show (mhl)
 cat > $expected <<EOF
@@ -62,7 +53,7 @@ This is a multi-part message in MIME format.
 I am a stupid spammer.
 EOF
 show $msgnum > $actual 2>&1
-check
+check $expected $actual
 
 # check mhshow
 cat > $expected <<EOF
@@ -79,6 +70,6 @@ This is a multi-part message in MIME format.
 I am a stupid spammer.
 EOF
 mhshow -nopause $msgnum > $actual 2>&1
-check
+check $expected $actual
 
 exit $failed

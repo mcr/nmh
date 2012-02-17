@@ -76,6 +76,14 @@ progress_done ()
   printf "100%%\n"
 }
 
+#### check() requires two arguments, each the name of a file to be
+#### diff'ed.
+#### If different, global variable "failed" is incremented.
+check() {
+    #### POSIX diff should support -c.
+    diff -c "$1" "$2"  ||  failed=`expr ${failed:-0} + 1`
+}
+
 setup_test ()
 {
   export MH=${MH_TEST_DIR}/Mail/.mh_profile

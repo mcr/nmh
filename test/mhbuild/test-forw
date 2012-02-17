@@ -14,15 +14,6 @@ fi
 
 setup_test
 
-# TODO: Move to a common file tests can source; need more framework...
-failed=0
-check() {
-    diff -u $expected $actual
-    if [ $? -ne 0 ]; then
-        failed=$((failed + 1))
-    fi
-}
-
 # Make a draft file forwarding two messages.
 mkdraft() {
     cat > $draft <<EOF
@@ -81,7 +72,7 @@ EOF
 mkdraft
 mhbuild $draft
 mungedraft
-check
+check $expected $actual
 
 # check mhbuild -rfc934
 cat > $expected <<EOF
@@ -118,6 +109,6 @@ EOF
 mkdraft
 mhbuild -rfc934 $draft
 mungedraft
-check
+check $expected $actual
 
 exit $failed
