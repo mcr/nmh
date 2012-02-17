@@ -1,3 +1,4 @@
+From: %(localmbox)
 To:
 cc:
 Fcc: +outbox

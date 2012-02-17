@@ -9,6 +9,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
+#include <h/fmt_scan.h>
 #include <fcntl.h>
 
 static struct swit switches[] = {
@@ -71,12 +72,14 @@ int
 main (int argc, char **argv)
 {
     int use = NOUSE, nedit = 0, nwhat = 0;
-    int i, in, isdf = 0, out;
+    int i, in, isdf = 0, out, dat[5], ncomps, format_len;
+    int outputlinelen = OUTPUTLINELEN;
     char *cp, *cwd, *maildir, *dfolder = NULL;
     char *ed = NULL, *file = NULL, *form = NULL;
     char *folder = NULL, *msg = NULL, buf[BUFSIZ];
     char drft[BUFSIZ], **argp, **arguments;
     struct msgs *mp = NULL;
+    struct format *fmt;
     struct stat st;
 
 #ifdef LOCALE
@@ -195,6 +198,8 @@ main (int argc, char **argv)
     if (form && (folder || msg))
 	    adios (NULL, "can't mix forms and folders/msgs");
 
+    cp = NULL;
+
     if (folder || msg) {
 	/*
 	 * Use a message as the "form" for the new message.
@@ -226,8 +231,17 @@ main (int argc, char **argv)
 
 	if ((in = open (form = getcpy (m_name (mp->lowsel)), O_RDONLY)) == NOTOK)
 	    adios (form, "unable to open message");
-    } else
-	in = open_form(&form, components);
+    } else {
+    	if (! form)
+	    form = components;
+
+        cp = new_fs(form, NULL, NULL);
+	format_len = strlen(cp);
+	ncomps = fmt_compile(cp, &fmt);
+	if (ncomps > 0) {
+	    adios(NULL, "format components not supported when using comp");
+	}
+    }
 
 try_it_again:
     strncpy (drft, m_draft (dfolder, file, use, &isdf), sizeof(drft));
@@ -284,8 +298,23 @@ try_it_again:
 
     if ((out = creat (drft, m_gmprot ())) == NOTOK)
 	adios (drft, "unable to create");
-    cpydata (in, out, form, drft);
-    close (in);
+    if (cp) {
+    	char *scanl;
+
+	i = format_len + 1024;
+	scanl = mh_xmalloc((size_t) i + 2);
+	dat[0] = 0;
+	dat[1] = 0;
+	dat[2] = 0;
+	dat[3] = outputlinelen;
+	dat[4] = 0;
+	fmt_scan(fmt, scanl, i, dat);
+	write(out, scanl, strlen(scanl));
+	free(scanl);
+    } else {
+	cpydata (in, out, form, drft);
+	close (in);
+    }
     close (out);
 
 edit_it:

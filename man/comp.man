@@ -96,6 +96,17 @@ The
 .I file
 switch says to use the named file as the message draft.
 .PP
+Forms that are selected via the
+.B \-form
+switch are processed via the mh template system; see 
+.BR mh\-format (5)
+for details.  Drafts constructed from another mssage or with the
+.B \-use
+or
+.B \-file
+switchs will NOT be processed with
+.BR mh\-format (5).
+.PP
 If the draft already exists,
 .B comp
 will ask you as to the disposition
