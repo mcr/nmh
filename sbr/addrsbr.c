@@ -10,6 +10,7 @@
 #include <h/mh.h>
 #include <h/addrsbr.h>
 #include <h/mf.h>
+#include <h/mts.h>
 
 /* High level parsing of addresses:
 
@@ -77,12 +78,6 @@ static char adr[BUFSIZ];
 
 
 extern boolean  username_extension_masquerading;  /* defined in mts.c */
-
-
-/*
- * external prototypes
- */
-char *getusername (void);
 
 
 char *
