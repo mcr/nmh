@@ -33,9 +33,8 @@ auxexecdir = @libdir@
 ##
 ## nmh _does_ have a test suite!
 ##
-
-TESTS_ENVIRONMENT = MH_OBJ_DIR=@abs_srcdir@ \
-		    MH_TEST_DIR=@abs_srcdir@/test/testdir \
+TESTS_ENVIRONMENT = MH_OBJ_DIR=@abs_builddir@ \
+		    MH_TEST_DIR=@abs_builddir@/test/testdir \
 		    auxexecdir=$(auxexecdir) bindir=$(bindir) \
 		    mandir=$(mandir) sysconfdir=$(sysconfdir)
 ##

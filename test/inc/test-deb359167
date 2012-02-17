@@ -11,10 +11,9 @@ fi
 
 setup_test
 
-THISDIR="${MH_OBJ_DIR}/test/inc"
-
 require_prog valgrind
 
+THISDIR="`dirname $0`"
 TESTMBOX="$THISDIR/deb359167.mbox"
 
 if [ "$(output_md5 "$TESTMBOX" | cut -d ' ' -f 1)" != "e6ac458b8cccba2b2fd866fb505aeb5e" ]; then 

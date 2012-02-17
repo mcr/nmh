@@ -13,7 +13,7 @@ fi
 
 setup_test
 
-THISDIR="${MH_OBJ_DIR}/test/inc"
+THISDIR="`dirname $0`"
 
 if [ ! -z "$VALGRIND_ME" ]; then
     require_prog valgrind
