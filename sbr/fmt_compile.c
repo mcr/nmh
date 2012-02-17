@@ -78,6 +78,7 @@ extern struct mailname fmt_mnull;
 #define	TF_NOP     8	    /* like expr but no result            */
 #define TF_MYNAME  9        /* special - get current name of user */
 #define TF_MYHOST  10       /* special - get "local" hostname     */
+#define TF_LMBOX   11       /* special - get full local mailbox   */
 
 /* ftable->flags */
 /* NB that TFL_PUTS is also used to decide whether the test
@@ -158,6 +159,7 @@ static struct ftable functable[] = {
      { "me",         TF_MYBOX,	FT_LS_LIT,	0,		TFL_PUTS },
      { "myname",     TF_MYNAME,	FT_LS_LIT,	0,		TFL_PUTS },
      { "myhost",     TF_MYHOST,	FT_LS_LIT,	0,		TFL_PUTS },
+     { "localmbox",  TF_LMBOX,	FT_LS_LIT,	0,		TFL_PUTS },
      { "plus",       TF_NUM,	FT_LV_PLUS_L,	0,		TFL_PUTN },
      { "minus",      TF_NUM,	FT_LV_MINUS_L,	0,		TFL_PUTN },
      { "divide",     TF_NUM,	FT_LV_DIVIDE_L,	0,		TFL_PUTN },
@@ -599,6 +601,10 @@ do_func(char *sp)
 
     case TF_MYHOST:
     	LS(t->f_type, LocalName(0));
+	break;
+
+    case TF_LMBOX:
+    	LS(t->f_type, getlocalmbox());
 	break;
 
     case TF_NOW:

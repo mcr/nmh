@@ -24,6 +24,7 @@ extern char *uucplfil;
 
 char *getusername(void);
 char *getfullname(void);
+char *getlocalmbox(void);
 
 /*
  * Separators

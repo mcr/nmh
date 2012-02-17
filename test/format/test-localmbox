@@ -19,7 +19,7 @@ echo "Local-Mailbox: ${testname}" >> ${MH}
 
 # We can use "ap" to get the output of format commands
 
-testoutput=$(${MH_LIB_DIR}/ap -format "%(profile Local-Mailbox)" ignore)
+testoutput=$(${MH_LIB_DIR}/ap -format "%(localmbox)" ignore)
 
 if [ x"${testname}" != x"${testoutput}" ]; then
 	echo "Expected ${testname}, got ${testoutput}"

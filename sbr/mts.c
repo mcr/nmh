@@ -54,9 +54,10 @@ char *uucplfil = "";
 char *mmdlm1 = "\001\001\001\001\n";
 char *mmdlm2 = "\001\001\001\001\n";
 
-/* Cache the username and fullname of the user */
+/* Cache the username, fullname, and mailbox of the user */
 static char username[BUFSIZ];
 static char fullname[BUFSIZ];
+static char localmbox[BUFSIZ];
 
 /* Variables for username masquerading: */
        boolean  draft_from_masquerading = FALSE;  /* also used from post.c */
@@ -352,6 +353,34 @@ getfullname (void)
 
 
 /*
+ * Get the full local mailbox name.  This is in the form:
+ *
+ * User Name <user@name.com>
+ */
+
+char *
+getlocalmbox (void)
+{
+    if (username[0] == '\0')
+    	getuserinfo();
+
+    if (localmbox[0] == '\0') {
+    	char *cp;
+
+    	if ((cp = context_find("Local-Mailbox")) != NULL) {
+	    strncpy(localmbox, cp, sizeof(localmbox));
+	} else {
+	    snprintf(localmbox, sizeof(localmbox), "%s <%s@%s>", fullname,
+		     username, LocalName(0));
+	}
+
+	localmbox[sizeof(localmbox) - 1] = '\0';
+    }
+
+    return localmbox;
+}
+
+/*
  * Find the user's username and full name, and cache them.
  * Also, handle "mmailid" username masquerading controlled from the GECOS field
  * of the passwd file. 
@@ -428,6 +457,8 @@ getuserinfo (void)
     }
 
     fullname[sizeof(fullname) - 1] = '\0';
+
+    localmbox[0] = '\0';
 
     return;
 }
