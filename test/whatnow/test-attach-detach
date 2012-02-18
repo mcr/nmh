@@ -6,6 +6,8 @@
 #
 ######################################################
 
+set -e
+
 if test -z "${MH_OBJ_DIR}"; then
     srcdir=`dirname "$0"`/../..
     MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
@@ -15,11 +17,10 @@ fi
 
 setup_test
 
-set -e
-
 cd "$MH_TEST_DIR"
-rm -f "baz's boz"
-touch "baz's boz"
+testname="baz's boz"
+testname_quoted="baz\'s\ boz"
+touch "$testname"
 # whatnow's attach stuff needs a draft to work on
 cp "$MH_TEST_DIR/Mail/inbox/1" "$MH_TEST_DIR/Mail/draft"
 
@@ -32,16 +33,22 @@ rm -f $expected $expectederr $actual $actualerr
 touch $expected $expectederr $actual $actualerr
 
 cat > $expected <<EOF
-baz's boz
+$testname
 EOF
 
 # whatnow's exit status is always 1 so that is not a failure
 set +e
-echo "attach baz\\'s\\ boz" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+echo "attach $testname_quoted" | \
+  whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
 echo "alist" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
-echo "detach baz\\'s\\ boz" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+echo "detach $testname_quoted" | \
+  whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
 echo "alist" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
 set -e
 
-diff -u $expectederr $actualerr || exit 1
-diff -u $expected $actual
+check "$expectederr" "$actualerr"
+check "$expected" "$actual"
+
+test ${failed:-0} -eq 0  &&  rm "$testname"
+
+exit $failed

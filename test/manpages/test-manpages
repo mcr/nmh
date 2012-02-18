@@ -35,4 +35,6 @@ for manpage in man?/*.?; do
   groff -Tutf8 -mandoc -wmac "$manpage" > /dev/null 2>>"$actual"
 done
 
-diff -u "$expected" "$actual"
+check "$expected" "$actual"
+
+exit $failed

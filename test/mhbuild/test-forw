@@ -32,9 +32,10 @@ mungedraft() {
     sed 's/\(Content-ID:\) <[^>][^>]*>/\1 <TESTID>/' $draft > $actual
 }
 
-draft=$MH_TEST_DIR/$$.draft
-expected=$MH_TEST_DIR/$$.expected
-actual=$MH_TEST_DIR/$$.actual
+draft="$MH_TEST_DIR/$$.draft"
+draftorig="$MH_TEST_DIR/,$$.draft.orig"
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
 
 # check mhbuild
 cat > $expected <<EOF
@@ -73,6 +74,7 @@ mkdraft
 mhbuild $draft
 mungedraft
 check $expected $actual
+test ${failed:-0} -eq 0  &&  rm "$draft" "$draftorig"
 
 # check mhbuild -rfc934
 cat > $expected <<EOF
@@ -110,5 +112,6 @@ mkdraft
 mhbuild -rfc934 $draft
 mungedraft
 check $expected $actual
+test ${failed:-0} -eq 0  &&  rm "$draft" "$draftorig"
 
 exit $failed

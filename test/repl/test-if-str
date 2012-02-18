@@ -42,4 +42,8 @@ EOF
 
 repl -editor true -format -form $form -group -nocc me -nowhatnowproc 1 || exit 1
 
-diff -u $expected $actual
+check "$expected" "$actual"
+
+test ${failed:-0} -eq 0  &&  rm "$form"
+
+exit $failed

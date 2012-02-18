@@ -69,4 +69,6 @@ just a newline
 = ^H (backspace) character, probably erased = in diff output
 EOF
 mhshow -nopause $msgnum > $actual 2>&1
-diff -u $expected $actual
+check "$expected" "$actual"
+
+exit $failed

@@ -29,7 +29,7 @@ fi
 # minor corruptions such as line ending changes could
 # render the tests useless.)
 (cd "$THISDIR" && output_md5 *.txt > "$MH_TEST_DIR/inctest.md5sums")
-diff -u "$THISDIR/md5sums" "$MH_TEST_DIR/inctest.md5sums"
+check "$THISDIR/md5sums" "$MH_TEST_DIR/inctest.md5sums" 'keep first'
 
 FILLER="$THISDIR/filler.txt"
 FROMLINE="$THISDIR/fromline.txt"
@@ -96,10 +96,12 @@ do_one_test_A () {
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the messages should be 11 and 12 in inbox
   # Now get the bodies back out.
-  sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/11" > "$MH_TEST_DIR/eom-align.inbox.body1"
-  sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/12" > "$MH_TEST_DIR/eom-align.inbox.body2"
-  diff -u "$MH_TEST_DIR/eom-align.mbox.body" "$MH_TEST_DIR/eom-align.inbox.body1"
-  diff -u "$FILLER" "$MH_TEST_DIR/eom-align.inbox.body2"
+  body1="$MH_TEST_DIR/eom-align.inbox.body1"
+  body2="$MH_TEST_DIR/eom-align.inbox.body2"
+  sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/11" > "$body1"
+  sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/12" > "$body2"
+  check "$MH_TEST_DIR/eom-align.mbox.body" "$body1" 'keep first'
+  check "$FILLER" "$body2" 'keep first'
   rmm 11 12
 }
 
@@ -110,11 +112,11 @@ do_one_test_B () {
   makembox_B "$MH_TEST_DIR/eom-align.mbox" $STDIO_BUFSZ
   $VALGRIND inc -silent -file "$MH_TEST_DIR/eom-align.mbox"
   # We know the message should be 11 in the inbox
-  sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/11" > "$MH_TEST_DIR/eom-align.inbox.body1"
-  diff -u "$MH_TEST_DIR/eom-align.mbox.body" "$MH_TEST_DIR/eom-align.inbox.body1"
+  body1="$MH_TEST_DIR/eom-align.inbox.body1"
+  sed -e '1,/^$/d' "$MH_TEST_DIR/Mail/inbox/11" > "$body1"
+  check "$MH_TEST_DIR/eom-align.mbox.body" "$body1" 'keep first'
   rmm 11
 }
-
 
 # Cover a decent range around the stdio buffer size to make sure we catch
 # any corner cases whether they relate to total message size equal to
@@ -130,3 +132,8 @@ while test $i -le $FINISH; do
   i=$(expr $i + 1)
 done
 progress_done
+
+test ${failed:-0} -eq 0  &&  \
+rm "$MH_TEST_DIR/eom-align.mbox" "$MH_TEST_DIR/eom-align.mbox.body"
+
+exit $failed

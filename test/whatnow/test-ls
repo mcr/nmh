@@ -6,6 +6,8 @@
 #
 ######################################################
 
+set -e
+
 if test -z "${MH_OBJ_DIR}"; then
     srcdir=`dirname "$0"`/../..
     MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
@@ -15,7 +17,6 @@ fi
 
 setup_test
 
-set -e
 SPDIR="$MH_TEST_DIR/foo's bar"
 rm -rf "$SPDIR"
 mkdir "$SPDIR"
@@ -38,5 +39,9 @@ EOF
 # NB use of sort as the order of output of ls is not guaranteed
 echo 'ls' | whatnow -noedit -prompt '' 2> "$actualerr" | sort > "$actual"
 
-diff -u $expectederr $actualerr || exit 1
-diff -u $expected $actual
+check "$expectederr" "$actualerr"
+check "$expected" "$actual"
+
+test ${failed:-0} -eq 0  &&  rm -r "$SPDIR"
+
+exit $failed

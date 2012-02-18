@@ -29,5 +29,5 @@ EOF
 cat /dev/null > $expected_out
 
 pick -a > $actual_out 2> $actual_err
-diff -u $expected_err $actual_err || exit 1
-diff -u $expected_out $actual_out || exit 1
+check "$expected_err" "$actual_err"
+check "$expected_out" "$actual_out"

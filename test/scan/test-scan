@@ -32,4 +32,6 @@ EOF
 
 scan -width 80 +inbox > $actual || exit 1
 
-diff -u $expected $actual
+check "$expected" "$actual"
+
+exit $failed

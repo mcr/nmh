@@ -57,4 +57,6 @@ EOF
 
 # check it
 mhshow -part 1.1 -form mhl.null -nopause $msgnum > $actual 2>&1
-diff -u $expected $actual  &&  rm -f $expected $actual
+check "$expected" "$actual"
+
+exit $failed
