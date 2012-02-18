@@ -50,12 +50,7 @@ need an ANSI C compiler such as gcc.
 
 3) make
 
-4) make check
-
-   This takes a bit of time, around one minute on a modern machine,
-   but is highly recommended.
-
-5) make install
+4) make install
 
    Note that if you have [n]mh files in your install directories with
    the same names as the files being installed, the old ones will get
@@ -66,7 +61,7 @@ need an ANSI C compiler such as gcc.
    make is processing that directory to see if you need to merge
    changes from *.prev files into the new versions.
 
-6) Edit the file `mts.conf' (installed in the nmh `etc' directory)
+5) Edit the file `mts.conf' (installed in the nmh `etc' directory)
    and make any necessary changes for the mail transport interface
    you are using.
 
@@ -100,7 +95,7 @@ need an ANSI C compiler such as gcc.
    default value allows the most flexibility.  See the discussion of the
    --enable-masquerade configure option below).
 
-7) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
+6) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
    This file contains the default profile entries for the nmh command
    `mhn' and is created by the script `mhn.defaults.sh'.  This script
    will search a generic path (essentially your $PATH) for programs to
@@ -120,6 +115,13 @@ need an ANSI C compiler such as gcc.
    described in the man page for `mhn', and in section 9.4 of the book
    "MH & xmh: Email for Users and Programmers", 3rd edition, by Jerry Peek,
    on the Internet at <http://rand-mh.sourceforge.net/book/mh/confmhn.html>.
+
+7) make check
+
+   This takes a bit of time, around one minute on a modern machine,
+   but is highly recommended.  If you're going to run it, it must be
+   run after installation.  If you want to run the nmh test suite
+   prior to installation, use "make distcheck".
 
 8) Add an optional global mh.profile, if desired.  This profile should be
    placed in the nmh `etc' directory with the name `mh.profile'.  This
