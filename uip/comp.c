@@ -72,7 +72,7 @@ int
 main (int argc, char **argv)
 {
     int use = NOUSE, nedit = 0, nwhat = 0;
-    int i, in, isdf = 0, out, dat[5], ncomps, format_len;
+    int i, in = NOTOK, isdf = 0, out, dat[5], ncomps, format_len;
     int outputlinelen = OUTPUTLINELEN;
     char *cp, *cwd, *maildir, *dfolder = NULL;
     char *ed = NULL, *file = NULL, *form = NULL;
