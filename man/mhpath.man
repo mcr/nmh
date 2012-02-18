@@ -48,9 +48,14 @@ message, if the folder contains messages.
 .IP 3) 4
 An empty folder is not in itself an error.
 .PP
-Message numbers greater than the highest existing message in a folder
-as part of a range designation are replaced with the next free message
-number.
+A message number less than that of the smallest existing message in a
+folder is treated as if the message already exists.  A message number
+greater than that of the highest existing message in a folder causes
+an \*(lqout of range\*(rq error message to be displayed.
+.PP
+As part of a range designation that contains messages that do exist,
+message numbers less than the smallest, or greater than the highest,
+existing message in a folder are ignored.
 .PP
 Examples: The current folder foo contains messages 3 5 6.
 Cur is 4.
@@ -66,7 +71,7 @@ Cur is 4.
 /r/phyl/Mail/foo/6
 
 % mhpath 2001
-/r/phyl/Mail/foo/7
+mhpath: message 2001 out of range 1-6
 
 % mhpath 1\-2001
 /r/phyl/Mail/foo/3
@@ -81,13 +86,13 @@ Cur is 4.
 /r/phyl/Mail/foo/7
 
 % mhpath last\-new
-bad message list \*(lqlast\-new\*(rq.
+mhpath: bad message list last\-new
 
 % mhpath cur
 /r/phyl/Mail/foo/4
 
 % mhpath 1\-2
-no messages in range \*(lq1\-2\*(rq.
+mhpath: no messages in range 1\-2
 
 % mhpath first:2
 /r/phyl/Mail/foo/3

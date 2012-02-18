@@ -46,11 +46,13 @@ TESTS = test/bad-input/test-header test/folder/test-create \
 	test/format/test-mymbox \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/manpages/test-manpages test/mhbuild/test-forw \
+	test/mhpath/test-mhpath \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
 	test/mhshow/test-subpart test/new/test-basic test/pick/test-stderr \
 	test/repl/test-if-str test/scan/test-scan \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
-	test/whatnow/test-ls test/cleanup
+	test/whatnow/test-ls \
+	test/cleanup ## The "cleanup" test should always be last.
 
 check_SCRIPTS = test/common.sh
 check_PROGRAMS = test/getfullname
