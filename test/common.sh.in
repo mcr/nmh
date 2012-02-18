@@ -93,18 +93,19 @@ check() {
     fi
 }
 
-#### check_string() requires two arguments, the first is a program and
-#### arguments, the second is its expected one-line output string.  If
-#### the actual output does not match that string, an error message is
-#### printed and global variable "failed" is incremented.
-check_string() {
+#### run_test() requires two arguments, the first is a program and
+#### arguments, the second is its expected one-line output string.
+#### If the actual output does not match that string:
+#### an error message is printed and global variable "failed" is incremented;
+#### if there is an optional third argument, it is used in the error message.
+run_test() {
   #### Invert exit status to prevent triggering immediate exit due to set -e.
-  ! actual_output=`$1 2>&1`
-  if test "$actual_output" != "$2"; then
-    echo "$0: \"$1\" should have produced:" 1>&2
-    echo "    $2" 1>&2
-    echo "but instead produced:" 1>&2
-    echo "    $actual_output" 1>&2
+  ! actual_output="`$1 2>&1`"
+  if test x"$actual_output" != x"$2"; then
+    echo "$0: ${3:-\"$1\"} expected:" 1>&2
+    echo "    '$2'" 1>&2
+    echo "but instead got:" 1>&2
+    echo "    '$actual_output'" 1>&2
     failed=`expr ${failed:-0} + 1`
   fi
 }

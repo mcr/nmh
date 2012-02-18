@@ -39,14 +39,14 @@ if ! mhpath -v | grep '^mhpath --' > /dev/null; then
 fi
 
 # check +
-check_string "mhpath +" "$MH_TEST_DIR/Mail"
+run_test "mhpath +" "$MH_TEST_DIR/Mail"
 
 # check with no options
 folder -fast +inbox > /dev/null
-check_string "mhpath" "$MH_TEST_DIR/Mail/inbox"
+run_test "mhpath" "$MH_TEST_DIR/Mail/inbox"
 
 # check +inbox
-check_string "mhpath +inbox" "$MH_TEST_DIR/Mail/inbox"
+run_test "mhpath +inbox" "$MH_TEST_DIR/Mail/inbox"
 
 # check all
 cat > $expected <<EOF
@@ -65,8 +65,8 @@ mhpath all > $actual 2>&1
 check $expected $actual
 
 # check message number greater than highest
-check_string "mhpath 11" "mhpath: message 11 out of range 1-10"
-check_string "mhpath 10 11" "mhpath: message 11 out of range 1-10"
+run_test "mhpath 11" "mhpath: message 11 out of range 1-10"
+run_test "mhpath 10 11" "mhpath: message 11 out of range 1-10"
 
 # check range with message number greater than highest
 cat > $expected <<EOF
@@ -85,7 +85,7 @@ mhpath 1-99999 > $actual 2>&1
 check $expected $actual
 
 # check new
-check_string "mhpath new" "$MH_TEST_DIR/Mail/inbox/11"
+run_test "mhpath new" "$MH_TEST_DIR/Mail/inbox/11"
 
 # check multiple msgs, including new
 cat > $expected <<EOF
@@ -97,27 +97,27 @@ mhpath first last new > $actual 2>&1
 check $expected $actual
 
 # check invalid message list using names
-check_string "mhpath last-new" "mhpath: bad message list last-new"
+run_test "mhpath last-new" "mhpath: bad message list last-new"
 
 # check cur
 folder +inbox 5 > /dev/null
-check_string "mhpath cur" "$MH_TEST_DIR/Mail/inbox/5"
+run_test "mhpath cur" "$MH_TEST_DIR/Mail/inbox/5"
 
 # check prev
-check_string "mhpath prev" "$MH_TEST_DIR/Mail/inbox/4"
+run_test "mhpath prev" "$MH_TEST_DIR/Mail/inbox/4"
 
 # check next
-check_string "mhpath next" "$MH_TEST_DIR/Mail/inbox/6"
+run_test "mhpath next" "$MH_TEST_DIR/Mail/inbox/6"
 
 # check invalid message list using numbers
 rmm 1-2
-check_string "mhpath 1-2" "mhpath: no messages in range 1-2"
+run_test "mhpath 1-2" "mhpath: no messages in range 1-2"
 
 # check ignoring of out-of-range message numbers in ranges
-check_string "mhpath 1-3" "$MH_TEST_DIR/Mail/inbox/3"
-check_string "mhpath first-3" "$MH_TEST_DIR/Mail/inbox/3"
-check_string "mhpath 10-11" "$MH_TEST_DIR/Mail/inbox/10"
-check_string "mhpath last-11" "$MH_TEST_DIR/Mail/inbox/10"
+run_test "mhpath 1-3" "$MH_TEST_DIR/Mail/inbox/3"
+run_test "mhpath first-3" "$MH_TEST_DIR/Mail/inbox/3"
+run_test "mhpath 10-11" "$MH_TEST_DIR/Mail/inbox/10"
+run_test "mhpath last-11" "$MH_TEST_DIR/Mail/inbox/10"
 
 # check reference to existing messages
 cat > $expected <<EOF
