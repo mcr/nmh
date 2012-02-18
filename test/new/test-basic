@@ -40,14 +40,14 @@ cat > $expected <<EOF
  total      0.
 EOF
 new aseq > $actual 2>&1
-check $expected $actual
+check $expected $actual 'keep first'
 new -folders $folders aseq > $actual 2>&1
 check $expected $actual
 
 # test fnext/fprev with no desired messages
 cat /dev/null > $expected
 fnext aseq > $actual 2>&1
-check $expected $actual
+check $expected $actual 'keep first'
 fprev aseq > $actual 2>&1
 check $expected $actual
 
@@ -88,7 +88,7 @@ inbox      3.* 1 3-4
  total      9.
 EOF
 new aseq bseq > $actual 2>&1
-check $expected $actual
+check $expected $actual 'keep first'
 
 # set aseq bseq as unseen
 echo 'Unseen-Sequence: aseq bseq' >> $MH

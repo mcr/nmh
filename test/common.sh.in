@@ -78,10 +78,35 @@ progress_done ()
 
 #### check() requires two arguments, each the name of a file to be
 #### diff'ed.
+#### If the same, the second file is removed.  And the first file is
+####   removed unless the optional third argument has a value of
+####   'keep first'.
 #### If different, global variable "failed" is incremented.
 check() {
     #### POSIX diff should support -c.
-    diff -c "$1" "$2"  ||  failed=`expr ${failed:-0} + 1`
+    if diff -c "$1" "$2"; then
+      test $# -lt 3 -o "$3" != 'keep first'  &&  rm -f "$1"
+      rm -f "$2"
+    else
+      echo "$0: test failed, outputs are in $1 and $2."
+      failed=`expr ${failed:-0} + 1`
+    fi
+}
+
+#### check_string() requires two arguments, the first is a program and
+#### arguments, the second is its expected one-line output string.  If
+#### the actual output does not match that string, an error message is
+#### printed and global variable "failed" is incremented.
+check_string() {
+  #### Invert exit status to prevent triggering immediate exit due to set -e.
+  ! actual_output=`$1 2>&1`
+  if test "$actual_output" != "$2"; then
+    echo "$0: \"$1\" should have produced:" 1>&2
+    echo "    $2" 1>&2
+    echo "but instead produced:" 1>&2
+    echo "    $actual_output" 1>&2
+    failed=`expr ${failed:-0} + 1`
+  fi
 }
 
 setup_test ()
