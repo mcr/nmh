@@ -13,7 +13,7 @@ setup_test
 
 require_prog valgrind
 
-THISDIR="`dirname $0`"
+THISDIR="$srcdir/test/inc"
 TESTMBOX="$THISDIR/deb359167.mbox"
 
 if [ "$(output_md5 "$TESTMBOX" | cut -d ' ' -f 1)" != "e6ac458b8cccba2b2fd866fb505aeb5e" ]; then 

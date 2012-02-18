@@ -38,6 +38,6 @@ If you wish to write a new test script, here are the steps:
 
 - If you need additional files for your tests, be sure to add them to
   the EXTRA_DIST variable in Makefile.am.  Note that you should insure
-  that you access these files relative to the $MH_OBJ_DIR environment variable.
+  that you access these files relative to the $srcdir environment variable.
 
 - Verify that the test works with both "make check" and "make distcheck".

@@ -13,7 +13,7 @@ fi
 
 setup_test
 
-THISDIR="`dirname $0`"
+THISDIR="$srcdir/test/inc"
 
 if [ ! -z "$VALGRIND_ME" ]; then
     require_prog valgrind
