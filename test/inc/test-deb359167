@@ -3,8 +3,8 @@
 set -e
 
 if test -z "${MH_OBJ_DIR}"; then
-    srcdir=`dirname $0`/../..
-    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
 fi
 
 . "$MH_OBJ_DIR/test/common.sh"
