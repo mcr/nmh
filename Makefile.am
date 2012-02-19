@@ -457,8 +457,8 @@ sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 		-DMAILSPOOL='"$(mailspool)"' \
 		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
 		-DNMHLIBDIR='"$(libdir)"' \
-		-DDEFAULT_EDITOR='"$(default_editor)"' \
-		-DDEFAULT_PAGER='"$(default_pager)"'
+		-DDEFAULT_EDITOR='"$(editorpath)"' \
+		-DDEFAULT_PAGER='"$(pagerpath)"'
 
 sbr_libdtimep_a_SOURCES = sbr/dtimep.l
 sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) $(DISABLE_UNUSED_MACROS_WARNING)
@@ -486,8 +486,8 @@ man/man.sed: Makefile
 	echo 's,%mandir%,$(mandir),g' >> $@
 	echo 's,%mailspool%,$(mailspool),g' >> $@
 	echo 's,%sendmailpath%,$(sendmailpath),g' >> $@
-	echo 's,%default_editor%,$(default_editor),g' >> $@
-	echo 's,%default_pager%,$(default_pager),g' >> $@
+	echo 's,%default_editor%,$(editorpath),g' >> $@
+	echo 's,%default_pager%,$(pagerpath),g' >> $@
 	echo 's,%manext1%,$(manext1),g' >> $@
 	echo 's,%manext5%,$(manext5),g' >> $@
 	echo 's,%manext8%,$(manext8),g' >> $@
