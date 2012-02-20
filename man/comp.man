@@ -23,6 +23,16 @@ comp \- compose a message
 .RB [ \-editor
 .IR editor ]
 .RB [ \-noedit ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-from
+.IR address ]
+.RB [ \-to
+.IR address ]
+.RB [ \-cc
+.IR address ]
+.RB [ \-fcc
+.IR +folder ]
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
@@ -37,11 +47,18 @@ the draft (unless
 .B \-noedit
 is given, in which case the initial edit is suppressed).
 .PP
-The default message form contains the following elements:
+The default message template \*(lqcomponents\*(rq will direct
+.B comp
+to construct the messgage draft as follows:
 .PP
 .RS 5
 .nf
-%components%
+From: {from switch} or <Local-Mailbox> or <username@hostname>
+To: {to switch} or blank
+cc: {cc switch} or blank
+Fcc: {fcc switch} or +outbox
+Subject:
+--------
 .fi
 .RE
 .PP
@@ -106,6 +123,43 @@ or
 .B \-file
 switchs will NOT be processed with
 .BR mh\-format (5).
+.PP
+In addition to the standard
+.BR mh\-format (5)
+escapes,
+.B comp
+the following
+.I component
+escapes are either new or have an alternate meaning:
+.PP
+.RS 5
+.nf
+.ta \w'Escape  'u +\w'Returns  'u
+.I Escape       Returns Description
+fcc	string	Any folders specified with `\-fcc\ folder'
+from	string	Any addresses specified with `\-from\ address'
+to	string	Any addresses specified with `\-to\ address'
+cc	string	Any addresses specified with `\-cc\ address'
+.fi
+.RE
+.PP
+By default the \*(lqTo:\*(rq and \*(lqcc:\*(rq fields are empty.  You may
+add addresses to these fields with the
+.B \-to
+.I address
+and
+.B \-cc
+.I address
+switches.  You may give these switches multiple times to add multiple
+addresses.
+.PP
+By default the \*(lqFrom:\*(rq field has either the value of the
+.B Local\-Mailbox
+profile entry or a system default email address.  This default can be
+overridden by using the
+.B \-from
+.I address
+switch.
 .PP
 If the draft already exists,
 .B comp

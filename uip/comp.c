@@ -39,6 +39,16 @@ static struct swit switches[] = {
     { "version", 0 },
 #define	HELPSW                12
     { "help", 0 },
+#define TOSW                  13
+    { "to address", 0 },
+#define CCSW                  14
+    { "cc address", 0 },
+#define FROMSW                15
+    { "from address", 0 },
+#define FCCSW                 16
+    { "fcc mailbox", 0 },
+#define WIDTHSW		      17
+    { "width colums", 0 },
     { NULL, 0 }
 };
 
@@ -67,6 +77,11 @@ static struct swit aqrul[] = {
     { NULL, 0 }
 };
 
+/*
+ * Add an item to a comma seperated list
+ */
+
+static char *addlist(char *, char *); 
 
 int
 main (int argc, char **argv)
@@ -77,6 +92,7 @@ main (int argc, char **argv)
     char *cp, *cwd, *maildir, *dfolder = NULL;
     char *ed = NULL, *file = NULL, *form = NULL;
     char *folder = NULL, *msg = NULL, buf[BUFSIZ];
+    char *to = NULL, *from = NULL, *cc = NULL, *fcc = NULL, *dp;
     char drft[BUFSIZ], **argp, **arguments;
     struct msgs *mp = NULL;
     struct format *fmt;
@@ -167,6 +183,42 @@ main (int argc, char **argv)
 		    dfolder = NULL;
 		    isdf = NOTOK;
 		    continue;
+
+		case TOSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    to = addlist(to, cp);
+		    continue;
+
+		case CCSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    cc = addlist(cc, cp);
+		    continue;
+
+		case FROMSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    from = addlist(from, cp);
+		    continue;
+
+		case FCCSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    dp = NULL;
+		    if (*cp == '@')
+			cp = dp = path(cp + 1, TSUBCWF);
+		    fcc = addlist(fcc, cp);
+		    if (dp)
+			free(dp);
+		    continue;
+
+		case WIDTHSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    if ((outputlinelen = atoi(cp)) < 10)
+			adios (NULL, "impossible width %d", outputlinelen);
+		    continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -232,14 +284,38 @@ main (int argc, char **argv)
 	if ((in = open (form = getcpy (m_name (mp->lowsel)), O_RDONLY)) == NOTOK)
 	    adios (form, "unable to open message");
     } else {
+	struct comp *cptr;
+
     	if (! form)
 	    form = components;
 
         cp = new_fs(form, NULL, NULL);
 	format_len = strlen(cp);
 	ncomps = fmt_compile(cp, &fmt);
-	if (ncomps > 0) {
-	    adios(NULL, "format components not supported when using comp");
+
+	/*
+	 * Set up any components that were fed to us on the command line
+	 */
+
+	if (from) {
+	    FINDCOMP(cptr, "from");
+	    if (cptr)
+	    	cptr->c_text = from;
+	}
+	if (to) {
+	    FINDCOMP(cptr, "to");
+	    if (cptr)
+	    	cptr->c_text = to;
+	}
+	if (cc) {
+	    FINDCOMP(cptr, "cc");
+	    if (cptr)
+	    	cptr->c_text = cc;
+	}
+	if (fcc) {
+	    FINDCOMP(cptr, "fcc");
+	    if (cptr)
+	    	cptr->c_text = fcc;
 	}
     }
 
@@ -325,4 +401,17 @@ edit_it:
     what_now (ed, nedit, use, drft, NULL, 0, NULLMP, NULL, 0, cwd);
     done (1);
     return 1;
+}
+
+/*
+ * Append an item to a comma separated list
+ */
+
+static char *
+addlist (char *list, char *item)
+{
+    if (list)
+    	list = add (", ", list);
+
+    return add (item, list);
 }

@@ -1,6 +1,6 @@
-From: %(localmbox)
-To:
-cc:
-Fcc: +outbox
+%<{from}%|%(void(localmbox))%>%(void(width))%(putaddr From: )
+%<{to}%(void(width))%(putaddr To: )%|To:%>
+%<{cc}%(void(width))%(putaddr cc: )%|cc:%>
+Fcc: %<{fcc}%(putstr)%|+outbox%>
 Subject:
 --------
