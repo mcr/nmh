@@ -261,9 +261,9 @@ width		integer	output buffer size in bytes
 charleft		integer	bytes left in output buffer
 timenow		integer	seconds since the UNIX epoch
 me		string	the user's mailbox (username)
-myhost		string  the user's local hostname
-myname		string  the user's name
-localmbox	string	the complete local mailbox
+myhost		string	the user's local hostname
+myname		string	the user's name
+localmbox		string	the complete local mailbox
 eq	literal	boolean	\fInum\fR == \fIarg\fR
 ne	literal	boolean	\fInum\fR != \fIarg\fR
 gt	literal	boolean	\fInum\fR > \fIarg\fR

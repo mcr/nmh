@@ -135,7 +135,7 @@ escapes are either new or have an alternate meaning:
 .RS 5
 .nf
 .ta \w'Escape  'u +\w'Returns  'u
-.I Escape       Returns Description
+.I Escape	Returns	Description
 fcc	string	Any folders specified with `\-fcc\ folder'
 from	string	Any addresses specified with `\-from\ address'
 to	string	Any addresses specified with `\-to\ address'
