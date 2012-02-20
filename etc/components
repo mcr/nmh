@@ -1,6 +1,25 @@
+%;
+%; Our default components file.  Used by `comp'
+%;
+%;
+%; This line creates our From: header based on the following ordering:
+%;
+%; - Use a -from switch if it exists ({from})
+%; - Use our local mailbox identity; first from the Local-Mailbox profile
+%;   entry, otherwise gets the information from the local system
+%;
 %<{from}%|%(void(localmbox))%>%(void(width))%(putaddr From: )
+%;
+%; Here we include an address list if one or more "-to" arguments were
+%; given, otherwise just output a blank header.  We do the same for the
+%; "cc" header as well.
+%;
 %<{to}%(void(width))%(putaddr To: )%|To:%>
 %<{cc}%(void(width))%(putaddr cc: )%|cc:%>
+%;
+%; Slight difference here: if we're not given "-fcc" on the command line,
+%; make the default mailbox +outbox
+%;
 Fcc: %<{fcc}%(putstr)%|+outbox%>
 Subject:
 --------

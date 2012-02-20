@@ -1,4 +1,9 @@
-%; $Header$
+%;
+%; replcomps - our default component file for "repl"
+%;
+%;
+%; First, output a "From" header.
+%(void(localmbox))%(void(width))%(putaddr From: )
 %;
 %; These next lines slurp in lots of addresses for To: and cc:.
 %; Use with repl -query or else you may get flooded with addresses!
