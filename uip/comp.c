@@ -49,6 +49,8 @@ static struct swit switches[] = {
     { "fcc mailbox", 0 },
 #define WIDTHSW		      17
     { "width colums", 0 },
+#define SUBJECTSW             18
+    { "subject text", 0 },
     { NULL, 0 }
 };
 
@@ -93,6 +95,7 @@ main (int argc, char **argv)
     char *ed = NULL, *file = NULL, *form = NULL;
     char *folder = NULL, *msg = NULL, buf[BUFSIZ];
     char *to = NULL, *from = NULL, *cc = NULL, *fcc = NULL, *dp;
+    char *subject = NULL;
     char drft[BUFSIZ], **argp, **arguments;
     struct msgs *mp = NULL;
     struct format *fmt;
@@ -219,6 +222,12 @@ main (int argc, char **argv)
 		    if ((outputlinelen = atoi(cp)) < 10)
 			adios (NULL, "impossible width %d", outputlinelen);
 		    continue;
+
+		case SUBJECTSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    subject = cp;
+		    continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -316,6 +325,11 @@ main (int argc, char **argv)
 	    FINDCOMP(cptr, "fcc");
 	    if (cptr)
 	    	cptr->c_text = fcc;
+	}
+	if (subject) {
+	    FINDCOMP(cptr, "subject");
+	    if (cptr)
+	    	cptr->c_text = subject;
 	}
     }
 

@@ -21,5 +21,5 @@
 %; make the default mailbox +outbox
 %;
 Fcc: %<{fcc}%(putstr)%|+outbox%>
-Subject:
+Subject:%<{subject} %(putstr)%>
 --------

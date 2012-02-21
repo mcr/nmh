@@ -33,6 +33,8 @@ comp \- compose a message
 .IR address ]
 .RB [ \-fcc
 .IR +folder ]
+.RB [ \-subject
+.IR text ]
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
@@ -57,7 +59,7 @@ From: {from switch} or <Local-Mailbox> or <username@hostname>
 To: {to switch} or blank
 cc: {cc switch} or blank
 Fcc: {fcc switch} or +outbox
-Subject:
+Subject: {subject switch} or blank
 --------
 .fi
 .RE
@@ -140,6 +142,7 @@ fcc	string	Any folders specified with `\-fcc\ folder'
 from	string	Any addresses specified with `\-from\ address'
 to	string	Any addresses specified with `\-to\ address'
 cc	string	Any addresses specified with `\-cc\ address'
+subject	string	Any text specified with `\-subject\ text'
 .fi
 .RE
 .PP
@@ -160,6 +163,10 @@ overridden by using the
 .B \-from
 .I address
 switch.
+.PP
+Any text you give to the
+.B \-subject
+switch will be placed in the \*(lqSubject:\*(rq field in the draft.
 .PP
 If the draft already exists,
 .B comp
