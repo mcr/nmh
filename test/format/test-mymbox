@@ -13,33 +13,24 @@ fi
 
 setup_test
 
-runtest()
-{
-	testoutput=$(${MH_LIB_DIR}/ap -format "%(mymbox{text})" "$1")
+user="`id -un`"
+host="`hostname`"
 
-	if [ -z "${testoutput}" ]; then
-		echo "Test program did not return anything for $3"
-		exit 1
-	fi
-
-	if [ "${testoutput}" -ne $2 ]; then
-		echo "Did not get expected output for $3"
-		exit 1
-	fi
-}
-
-user="$(id -un)"
-host="$(hostname)"
-
-runtest "${user}" 1 "Basic user test"
-runtest "${user}@${host}" 1 "Basic user@host test"
-runtest "nosuchuser@nosuchhost.blah" 0 "Basic non-matching test"
+run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) ${user}" \
+         1 "Basic user test"
+run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) ${user}@${host}" \
+         1 "Basic user@host test"
+run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) nosuchuser@nosuchhost.blah" \
+         0 "Basic non-matching test"
 
 myname="Random User <random@user.something.com>"
 
 echo "Local-Mailbox: ${myname}" >> ${MH}
 
-runtest "${myname}" 1 "Local-Mailbox test"
-runtest "${user}@${host}" 0 "Local-mailbox overriding user@host test"
+run_test "echo `${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \
+         1 "Local-Mailbox test"
 
-exit 0
+run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) ${user}@${host}" \
+         0 "Local-mailbox overriding user@host test"
+
+exit $failed

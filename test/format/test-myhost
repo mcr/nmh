@@ -13,23 +13,15 @@ fi
 
 setup_test
 
-runtest()
-{
-	testoutput=$(${MH_LIB_DIR}/ap -format "%(myhost)" ignore)
-
-	if [ x"$1" != x"${testoutput}" ]; then
-		echo "For $2, expected $1 but got ${testoutput}"
-		exit 1
-	fi
-}
-
-runtest "$(hostname)" "local hostname test"
+run_test "${MH_LIB_DIR}/ap -format %(myhost) ignore" "`hostname`" \
+         "local hostname test"
 
 cp ${MHMTSCONF} ${MH_TEST_DIR}/Mail/mts.conf || exit 1
 export MHMTSCONF="${MH_TEST_DIR}/Mail/mts.conf"
 
 echo "localname: some.random.name" >> ${MHMTSCONF}
 
-runtest "some.random.name" "mts.conf localname test"
+run_test "${MH_LIB_DIR}/ap -format %(myhost) ignore" "some.random.name" \
+         "mts.conf localname test"
 
-exit 0
+exit $failed
