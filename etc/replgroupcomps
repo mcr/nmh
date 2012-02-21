@@ -26,7 +26,7 @@
 %|\
 %(lit)%(formataddr %<{mail-reply-to}%?{reply-to}%?{from}%?{sender}%?{return-path}%>)\
 %<(nonnull)%(void(width))%(putaddr To: )\n%>\
-%(lit)%(formataddr{to})%(formataddr{cc})%(formataddr(me))\
+%(lit)%(formataddr{to})%(formataddr{cc})%(formataddr(localmbox))\
 %<(nonnull)%(void(width))%(putaddr cc: )\n%>%>\
 %;
 Fcc: %<{fcc}%{fcc}%|+outbox%>

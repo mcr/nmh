@@ -22,7 +22,7 @@
 %(formataddr{x-cc})\
 %(formataddr{resent-cc})\
 %(formataddr{prev-resent-cc})\
-%(formataddr(me))\
+%(formataddr(localmbox))\
 %(void(width))%(putaddr cc: )
 Fcc: %<{fcc}%{fcc}%|+outbox%>
 Subject: %<{subject}Re: %(void{subject})%(trim)%(putstr)%>
