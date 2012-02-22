@@ -19,6 +19,10 @@
 # If configure has previously been run successfully in the workspace,
 # it will not be invoked again, even if configure_opts is defined.
 #
+# Note that "make rpm" sets _sysconfdir.  If configuring to install
+# anyplace other than the default _sysconfdir, typically /etc, and
+# you're not using this through "make rpm", be sure to set _sysconfdir.
+#
 # With kernel (fcntl, flock, or lockf) locking, or with dot locking
 # and a lockdir that's writable by the user, bin/inc does not need to
 # be setgid.  This spec assumes that.  But if needed, add something
@@ -33,8 +37,8 @@
 Name:          nmh
 Version:       %(sed "s/-/_/g" VERSION)
 %define        rawversion %(cat VERSION)
-Release:       0%{?dist}
-Summary:       A capable mail handling system with a command line interface.
+Release:       1%{?dist}
+Summary:       A capable mail handling system with a command line interface
 Group:         Applications/Internet
 License:       BSD
 URL:           http://savannah.nongnu.org/projects/nmh
@@ -43,8 +47,7 @@ BuildRequires: gdbm-devel ncurses-devel
 Source0:       %tarfile
 Source1:       VERSION
 %define        srcdir %(pwd)
-# This should already be defined in /usr/lib/rpm/macros:
-# BuildRoot:     %{_buildrootdir}/%{name}-%{version}-%{release}.%{_arch}
+
 
 %description
 Nmh is an email system based on the MH email system and is intended to
@@ -84,11 +87,8 @@ make all dist
 
 
 %install
-rm -rf $RPM_BUILD_ROOT doc
+rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT SETGID_MAIL=
-#### Exclude docs from nmh_files because its files are added with the
-#### %doc directive in the %files section below.
-mv `find $RPM_BUILD_ROOT -type d -name doc` .
 
 gz_manpages='-e '
 
@@ -97,14 +97,16 @@ if find $RPM_BUILD_ROOT -name 'inc.1*' | \
   #### brp-compress will gzip the man pages, so account for that.
   gz_manpages='-e s#\(/man/man./.*\)#\1.gz#'
 fi
-find $RPM_BUILD_ROOT ! -type d -print | \
+
+#### etc is brought into files using %config{noreplace}
+find $RPM_BUILD_ROOT -name etc -prune -o ! -type d -print | \
   sed -e "s#^$RPM_BUILD_ROOT##" "$gz_manpages" > nmh_files
 
 
 %clean
-rm -rf $RPM_BUILD_ROOT doc $RPM_BUILD_DIR/%name-%rawversion
+rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/%buildsubdir
 
 
 %files -f nmh_files
 %defattr(-,root,root,-)
-%doc doc/*
+%config(noreplace) %_sysconfdir/

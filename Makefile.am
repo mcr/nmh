@@ -534,6 +534,7 @@ rpm: dist
 	@cp -p nmh.spec $(rpmdir)/SPECS
 	@rpmbuild --define '_topdir $(rpmdir)' \
 	  --define '_tmppath %{_topdir}/TMP' \
+	  --define "_sysconfdir $(DESTDIR)$(sysconfdir)" \
 	  -ba $(rpmdir)/SPECS/nmh.spec
 .PHONY: rpm
 
