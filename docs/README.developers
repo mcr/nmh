@@ -136,9 +136,9 @@ getpass()    nmh_getpass()
 releasing nmh
 -------------
 
-To make a public release of nmh (we'll use version 1.5 and my mhost.com
-account, danh, as examples here; the convention for release candidates
-is to use something like "1.5-RC1"):
+To make a public release of nmh (we'll use version 1.5 as the example
+here; the convention for release candidates is to use something like
+"1.5-RC1"):
 
  1. % echo 1.5 > VERSION
     % date +"%e %B %Y" > DATE
@@ -161,7 +161,7 @@ is to use something like "1.5-RC1"):
 
  5. If all is well and your tarball is final, go back to your workspace and do:
 
-    % echo 1.0.4+dev > VERSION
+    % echo 1.5+dev > VERSION
 
  6. % git commit VERSION; git push
 
