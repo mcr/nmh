@@ -13,6 +13,7 @@
 #    For example:
 #      $ rpm -i nmh-1.4-0.fc16.src.rpm
 #      $ rpmbuild --rmsource --rmspec \
+#          --define '_sysconfdir /usr/local/nmh/etc' \
 #          --define 'configure_opts --with-cyrus-sasl --with-locking=fcntl' \
 #          --bb ~/lib/rpmbuild/SPECS/nmh.spec
 #
@@ -109,4 +110,4 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/%buildsubdir
 
 %files -f nmh_files
 %defattr(-,root,root,-)
-%config(noreplace) %_sysconfdir/
+%config(noreplace) %_sysconfdir/*
