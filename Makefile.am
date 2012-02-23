@@ -50,6 +50,7 @@ TESTS = test/bad-input/test-header test/folder/test-create \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
 	test/mhshow/test-subpart test/new/test-basic test/pick/test-stderr \
 	test/repl/test-if-str test/scan/test-scan \
+	test/sequences/test-flist test/sequences/test-mark \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
 	test/whatnow/test-ls \
 	test/cleanup ## The "cleanup" test should always be last.

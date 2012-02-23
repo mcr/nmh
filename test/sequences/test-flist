@@ -1,0 +1,79 @@
+#!/bin/sh
+######################################################
+#
+# Test flist
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+run_test 'mark 1 3 5 7 9 +inbox -sequence odd' ''
+run_test 'mark -s odd -list' 'odd: 1 3 5 7 9'
+run_test 'mark +inbox -sequence unseen all' ''
+run_test 'mark +inbox -sequence unseen -list' 'unseen: 1-10'
+
+folder -create +other > /dev/null
+for i in 2 5 7 12; do
+  cp -p "$MH_TEST_DIR/Mail/inbox/1" "$MH_TEST_DIR/Mail/other/$i"
+done
+run_test 'mark +other -sequence unseen all' ''
+run_test 'mark +other -sequence unseen -list' 'unseen: 2 5 7 12'
+
+# Make sure that inbox is current folder.
+folder -f +inbox > /dev/null
+
+# Test flists.
+run_test 'flists -seq odd' 'inbox+ has 5 in sequence odd; out of 10
+other  has 0 in sequence odd; out of  4'
+
+run_test 'flists -seq unseen' \
+         'inbox+ has 10 in sequence unseen; out of 10
+other  has  4 in sequence unseen; out of  4'
+
+# Test flist on individual folders, starting with the current folder.
+run_test 'flist -sequence unseen' \
+         'inbox+ has 10 in sequence unseen; out of 10'
+run_test 'flist +other -sequence unseen' \
+         'other+ has 4 in sequence unseen; out of 4'
+
+# Test multiple folders and sequences.
+run_test 'flist +inbox +other -seq unseen -seq odd' \
+         'inbox  has 10 in sequence unseen; out of 10
+inbox  has  5 in sequence odd   ; out of 10
+other+ has  4 in sequence unseen; out of  4
+other+ has  0 in sequence odd   ; out of  4'
+
+# Test Flist-Order with -noalpha.
+echo 'Flist-Order: o* i*' >> $MH_TEST_DIR/Mail/.mh_profile
+run_test 'flists -seq unseen -seq odd -noalpha' \
+         'other+ has  4 in sequence unseen; out of  4
+other+ has  0 in sequence odd   ; out of  4
+inbox  has 10 in sequence unseen; out of 10
+inbox  has  5 in sequence odd   ; out of 10'
+
+# Test nonexistent folder.
+run_test 'flist +nonexistent -seq unseen' ''
+
+# Test nonexistent sequence.
+run_test 'flist +inbox -seq nonexistent' \
+         'inbox+ has 0 in sequence nonexistent; out of 10'
+
+# Test -fast.
+folder -f +inbox > /dev/null
+run_test 'flist -sequence unseen -fast' 'inbox'
+run_test 'flist +other -sequence unseen -fast' 'other'
+
+# Test -fast and -alpha.
+run_test 'flists -seq unseen -fast -alpha' 'inbox
+other'
+
+exit $failed
