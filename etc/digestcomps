@@ -3,7 +3,7 @@ To:	  %{digest} Distribution: dist-%{digest};
 Subject:  %{digest} Digest V%(cur) #%(msg)
 Reply-To: %{digest}
 --------
-%{digest} Digest	%(weekday{date}), %2(mday{date}) %(month{date}) %(year{date})
+%{digest} Digest	%(weekday{nmh-date}), %2(mday{nmh-date}) %(month{nmh-date}) %(year{nmh-date})
 		Volume %(cur) : Issue %(msg)
 
 Today's Topics:

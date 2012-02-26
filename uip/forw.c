@@ -9,7 +9,6 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
-#include <h/fmt_scan.h>
 #include <h/tws.h>
 #include <h/utils.h>
 
@@ -70,7 +69,18 @@ static struct swit switches[] = {
     { "file file", 4 },			/* interface from msh */
 #define	BILDSW                25
     { "build", 5 },			/* interface from mhe */
-
+#define FROMSW                26
+    { "from address", 0 },
+#define TOSW                  27
+    { "to address", 0 },
+#define CCSW                  28
+    { "cc address", 0 },
+#define SUBJECTSW             29
+    { "subject text", 0 },
+#define FCCSW                 30
+    { "fcc mailbox", 0 },
+#define WIDTHSW               31
+    { "width columns", 0 },
     { NULL, 0 }
 };
 
@@ -112,7 +122,6 @@ static struct msgs *mp = NULL;		/* used a lot */
 static void mhl_draft (int, char *, int, int, char *, char *, int);
 static void copy_draft (int, char *, char *, int, int, int);
 static void copy_mime_draft (int);
-static int build_form (char *, char *, int, int);
 
 
 int
@@ -122,9 +131,12 @@ main (int argc, char **argv)
     int issue = 0, volume = 0, dashstuff = 0;
     int nedit = 0, nwhat = 0, i, in;
     int out, isdf = 0, msgnum;
+    int outputlinelen = OUTPUTLINELEN;
+    int dat[5];
     char *cp, *cwd, *maildir, *dfolder = NULL;
     char *dmsg = NULL, *digest = NULL, *ed = NULL;
-    char *file = NULL, *filter = NULL, *folder = NULL;
+    char *file = NULL, *filter = NULL, *folder = NULL, *fwdmsg = NULL;
+    char *from = NULL, *to = NULL, *cc = NULL, *subject = NULL, *fcc = NULL;
     char *form = NULL, buf[BUFSIZ], value[10];
     char **argp, **arguments, *msgs[MAXARGS];
     struct stat st;
@@ -228,8 +240,9 @@ main (int argc, char **argv)
 		    continue;
 
 		case DGSTSW: 
-		    if (!(digest = *argp++) || *digest == '-')
+		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
+		    digest = getcpy(cp);
 		    mime = 0;
 		    continue;
 		case ISSUESW:
@@ -269,6 +282,39 @@ main (int argc, char **argv)
 		    continue;
 		case NBITSTUFFSW: 
 		    dashstuff = -1;	/* trinary logic */
+		    continue;
+
+		case FROMSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    from = addlist(from, cp);
+		    continue;
+		case TOSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    to = addlist(to, cp);
+		    continue;
+		case CCSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    cc = addlist(cc, cp);
+		    continue;
+		case FCCSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    fcc = addlist(fcc, cp);
+		    continue;
+		case SUBJECTSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    subject = getcpy(cp);
+		    continue;
+
+		case WIDTHSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    if ((outputlinelen = atoi(cp)) < 10)
+			adios (NULL, "impossible width %d", outputlinelen);
 		    continue;
 	    }
 	}
@@ -353,6 +399,20 @@ try_it_again:
 	    if (!m_convert (mp, msgs[msgnum]))
 		done (1);
 	seq_setprev (mp);	/* set the previous sequence */
+
+	/*
+	 * Find the first message in our set and use it as the input
+	 * for the component scanner
+	 */
+
+	for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)
+	    if (is_selected (mp, msgnum)) {
+	    	fwdmsg = strdup(m_name(msgnum));
+		break;
+	    }
+
+	if (! fwdmsg)
+	    adios (NULL, "Unable to find input message");
     }
 
     if (filter && access (filter, R_OK) == NOTOK)
@@ -376,9 +436,19 @@ try_it_again:
 	    volume = 1;
 	if (!form)
 	    form = digestcomps;
-	in = build_form (form, digest, volume, issue);
-    } else
-	in = open_form(&form, forwcomps);
+    } else {
+    	form = forwcomps;
+    }
+
+    dat[0] = issue;
+    dat[1] = volume;
+    dat[2] = 0;
+    dat[3] = outputlinelen;
+    dat[4] = 0;
+
+
+    in = build_form (form, digest, dat, from, to, cc, fcc, subject,
+    		     file ? file : fwdmsg);
 
     if ((out = creat (drft, m_gmprot ())) == NOTOK)
 	adios (drft, "unable to create");
@@ -625,56 +695,4 @@ copy_mime_draft (int out)
 	    write (out, buffer, strlen (buffer));
 	}
     write (out, "\n", 1);
-}
-
-
-static int
-build_form (char *form, char *digest, int volume, int issue)
-{
-    int	in;
-    int fmtsize;
-    register char *nfs;
-    char *line, tmpfil[BUFSIZ];
-    FILE *tmp;
-    register struct comp *cptr;
-    struct format *fmt;
-    int dat[5];
-    char *cp = NULL;
-
-    /* Get new format string */
-    nfs = new_fs (form, NULL, NULL);
-    fmtsize = strlen (nfs) + 256;
-
-    /* Compile format string */
-    fmt_compile (nfs, &fmt);
-
-    FINDCOMP (cptr, "digest");
-    if (cptr)
-	cptr->c_text = digest;
-    FINDCOMP (cptr, "date");
-    if (cptr)
-	cptr->c_text = getcpy(dtimenow (0));
-
-    dat[0] = issue;
-    dat[1] = volume;
-    dat[2] = 0;
-    dat[3] = fmtsize;
-    dat[4] = 0;
-
-    cp = m_mktemp2(NULL, invo_name, NULL, &tmp);
-    if (cp == NULL) adios("forw", "unable to create temporary file");
-    strncpy (tmpfil, cp, sizeof(tmpfil));
-    unlink (tmpfil);
-    if ((in = dup (fileno (tmp))) == NOTOK)
-	adios ("dup", "unable to");
-
-    line = mh_xmalloc ((unsigned) fmtsize);
-    fmt_scan (fmt, line, fmtsize, dat);
-    fputs (line, tmp);
-    free (line);
-    if (fclose (tmp))
-	adios (tmpfil, "error writing");
-
-    lseek (in, (off_t) 0, SEEK_SET);
-    return in;
 }

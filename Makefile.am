@@ -145,6 +145,9 @@ dist_sysconf_DATA = etc/MailAliases etc/components etc/digestcomps \
 ##
 sysconf_DATA = etc/mhn.defaults etc/mts.conf
 
+##
+## Documentation that gets installed in docdir
+##
 dist_doc_DATA = COPYRIGHT VERSION docs/COMPLETION-BASH docs/COMPLETION-TCSH \
 		docs/COMPLETION-ZSH docs/DIFFERENCES docs/FAQ \
 		docs/MAIL.FILTERING docs/MAILING-LISTS docs/README-ATTACHMENTS \
@@ -223,7 +226,7 @@ uip_flist_SOURCES = uip/flist.c
 uip_folder_SOURCES = uip/folder.c
 
 uip_forw_SOURCES = uip/forw.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
-		   uip/annosbr.c uip/distsbr.c
+		   uip/annosbr.c uip/distsbr.c uip/forwsbr.c
 uip_forw_LDADD = $(LDADD) $(ICONVLIB)
 
 uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/termsbr.c \
@@ -547,6 +550,7 @@ rpm: dist
 cscope:
 	echo "-I $(srcdir)/h -I $(srcdir)/sbr -I $(srcdir)/uip -I $(srcdir)/mts/smtp" > cscope.files
 	find $(srcdir) \( -name \*.c -o -name \*.l \) -print | grep -v dtimep.c >> cscope.files
+.PHONY: cscope
 
 ##
 ## Rules to upload the distribution to savannah

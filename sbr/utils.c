@@ -123,6 +123,19 @@ add (char *s2, char *s1)
 }
 
 /*
+ * addlist
+ *	Append an item to a comma separated list
+ */
+char *
+addlist (char *list, char *item)
+{
+    if (list)
+    	list = add (", ", list);
+
+    return add (item, list);
+}
+
+/*
  * folder_exists
  *      Check to see if a folder exists.
  */

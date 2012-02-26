@@ -1,5 +1,6 @@
-To:
-cc:
-Fcc: +outbox
-Subject:
+%<{nmh-from}%|%(void(localmbox))%>%(void(width))%(putaddr From: )
+%<{nmh-to}%(void(width))%(putaddr To: )%|To:%>
+%<{nmh-cc}%(void(width))%(putaddr cc: )%|cc:%>
+Fcc: %<{fcc}%(putstr)%|+outbox%>
+Subject:%<{nmh-subject} %(trim)%(putlit)%?{subject} %(trim)%(putlit) (fwd)%>
 --------

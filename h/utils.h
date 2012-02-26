@@ -7,6 +7,7 @@ void *mh_xmalloc(size_t);
 void *mh_xrealloc(void *, size_t);
 char *pwd(void);
 char *add(char *, char *);
+char *addlist(char *, char *);
 int folder_exists(char *);
 void create_folder(char *, int, void (*)(int));
 int num_digits(int);

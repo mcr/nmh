@@ -79,12 +79,6 @@ static struct swit aqrul[] = {
     { NULL, 0 }
 };
 
-/*
- * Add an item to a comma seperated list
- */
-
-static char *addlist(char *, char *); 
-
 int
 main (int argc, char **argv)
 {
@@ -415,17 +409,4 @@ edit_it:
     what_now (ed, nedit, use, drft, NULL, 0, NULLMP, NULL, 0, cwd);
     done (1);
     return 1;
-}
-
-/*
- * Append an item to a comma separated list
- */
-
-static char *
-addlist (char *list, char *item)
-{
-    if (list)
-    	list = add (", ", list);
-
-    return add (item, list);
 }
