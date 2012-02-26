@@ -479,41 +479,41 @@ manext8 = 8
 $(man_MANS): man/man.sed
 
 man/man.sed: Makefile
-	echo 's,%nmhwarning%,THIS FILE HAS BEEN AUTOMATICALLY GENERATED.  DO NOT EDIT.,g' > $@
-	echo 's,%nmhversion%,nmh-$(VERSION),g' >> $@
-	echo 's,%nmhdate%,$(DATE),g' >> $@
-	echo 's,%bindir%,$(bindir),g' >> $@
-	echo 's,%etcdir%,$(sysconfdir),g' >> $@
-	echo 's,%libdir%,$(libdir),g' >> $@
-	echo 's,%mandir%,$(mandir),g' >> $@
-	echo 's,%mailspool%,$(mailspool),g' >> $@
-	echo 's,%sendmailpath%,$(sendmailpath),g' >> $@
-	echo 's,%default_editor%,$(editorpath),g' >> $@
-	echo 's,%default_pager%,$(pagerpath),g' >> $@
-	echo 's,%manext1%,$(manext1),g' >> $@
-	echo 's,%manext5%,$(manext5),g' >> $@
-	echo 's,%manext8%,$(manext8),g' >> $@
-	echo '/%components%/r $(top_srcdir)/etc/components' >> $@
-	echo ' s,%components%,,g' >> $@
-	echo '/%distcomps%/r $(top_srcdir)/etc/distcomps' >> $@
-	echo ' s,%distcomps%,,g' >> $@
-	echo '/%forwcomps%/r $(top_srcdir)/etc/forwcomps' >> $@
-	echo ' s,%forwcomps%,,g' >> $@
-	echo '/%mhl_forward%/r $(top_srcdir)/etc/mhl.forward' >> $@
-	echo ' s,%mhl_forward%,,g' >> $@
-	echo '/%mhl_format%/r $(top_srcdir)/etc/mhl.format' >> $@
-	echo ' s,%mhl_format%,,g' >> $@
-	echo '/%mhl_reply%/r $(top_srcdir)/etc/mhl.reply' >> $@
-	echo ' s,%mhl_reply%,,g' >> $@
+	@echo 's,%nmhwarning%,THIS FILE HAS BEEN AUTOMATICALLY GENERATED.  DO NOT EDIT.,g' > $@
+	@echo 's,%nmhversion%,nmh-$(VERSION),g' >> $@
+	@echo 's,%nmhdate%,$(DATE),g' >> $@
+	@echo 's,%bindir%,$(bindir),g' >> $@
+	@echo 's,%etcdir%,$(sysconfdir),g' >> $@
+	@echo 's,%libdir%,$(libdir),g' >> $@
+	@echo 's,%mandir%,$(mandir),g' >> $@
+	@echo 's,%mailspool%,$(mailspool),g' >> $@
+	@echo 's,%sendmailpath%,$(sendmailpath),g' >> $@
+	@echo 's,%default_editor%,$(editorpath),g' >> $@
+	@echo 's,%default_pager%,$(pagerpath),g' >> $@
+	@echo 's,%manext1%,$(manext1),g' >> $@
+	@echo 's,%manext5%,$(manext5),g' >> $@
+	@echo 's,%manext8%,$(manext8),g' >> $@
+	@echo '/%components%/r $(top_srcdir)/etc/components' >> $@
+	@echo ' s,%components%,,g' >> $@
+	@echo '/%distcomps%/r $(top_srcdir)/etc/distcomps' >> $@
+	@echo ' s,%distcomps%,,g' >> $@
+	@echo '/%forwcomps%/r $(top_srcdir)/etc/forwcomps' >> $@
+	@echo ' s,%forwcomps%,,g' >> $@
+	@echo '/%mhl_forward%/r $(top_srcdir)/etc/mhl.forward' >> $@
+	@echo ' s,%mhl_forward%,,g' >> $@
+	@echo '/%mhl_format%/r $(top_srcdir)/etc/mhl.format' >> $@
+	@echo ' s,%mhl_format%,,g' >> $@
+	@echo '/%mhl_reply%/r $(top_srcdir)/etc/mhl.reply' >> $@
+	@echo ' s,%mhl_reply%,,g' >> $@
 
 .man.$(manext1):
-	$(SED) -f man/man.sed $< > $@
+	@$(SED) -f man/man.sed $< > $@
 
 .man.$(manext5):
-	$(SED) -f man/man.sed $< > $@
+	@$(SED) -f man/man.sed $< > $@
 
 .man.$(manext8):
-	$(SED) -f man/man.sed $< > $@
+	@$(SED) -f man/man.sed $< > $@
 
 ## Don't include commit hashes in ChangeLog.
 ChangeLog:
