@@ -14,7 +14,8 @@ Things to add to the release notes for the next full release:
   message parts in MIME messages) has been removed.
 - fileproc and mhlproc mh-profile entries will now be obeyed by
   send, rcvdist, and whatnow.
-- New format instructions %(putlit) and %(concataddr) have been implemented.
+- New mh-format(5) instructions have been implemented: %(putlit),
+  %(concataddr), %(myhost), %(myname)
 - The --enable-pop configure option has been removed; POP support is now
   compiled in always.
 - You can now filter the body of a message through a user-defined filter
@@ -28,3 +29,13 @@ Things to add to the release notes for the next full release:
     MM_NOASK (use -nolist and -nopause command line switches instead)
     NOMHNPROC (use -nocheckmime command line switch instead)
     FACEPROC (undocumented faceproc feature to be removed)
+- nmh's idea of the local mailbox is available via a new mh-profile(5)
+  escape, %(localmbox).  The local mailbox name is now configurable
+  via a new mh-profile(5) entry, Local-Mailbox.
+- comp, forw, and dist all support -from, -to, -cc, -fcc, and -subject
+  switches.  They also all process all component templates through
+  mh-format(5).
+- post(8) now requires a From: header in all drafts that it processes
+  for sending.  The default component templates have all been adjusted
+  to include appropriate From: headers based on either the -from switch
+  or the local mailbox.
