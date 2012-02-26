@@ -1,0 +1,45 @@
+As of the 1.5 release, nmh has made significant changes to the way most of
+the message composition utilites work, specifically with the way
+the components templates are handled.  If you use the default
+components templates that come with nmh then everything should work
+with only minor changes, but if you have custom component templates
+you should read this information carefully to understand how you
+might need to adapt your component templates.
+
+- "post" now requires a From: header in all drafts that it processes
+  for sending (a "Resent-From" header is accepted for use with "dist").
+
+- You should now use %(localmbox) instead of %(me) especially in replcomps
+  and replgroupcomps.
+
+- The nmh programs "comp", "forw", and "dist" now process all component
+  template files using the format routines in mh-format(5).  The default
+  templates are configured to place an appropriate From: header in them.
+  Any custom templates you use will either have to be adapter to add an
+  appropriate From: header or you will have to manually put one in
+  the draft.
+
+- "comp", "forw", and "dist" all have new switches "-from", "-to", "-cc",
+  "-fcc", and "-subject" that can be used to adjust the headers that
+  appear in the draft.  See the default component files and the program
+  man pages to see exactly how this works with mh-format.
+
+- The default From: header is constructed based on the Unix username and
+  the local hostname.  This can be overridden using the Local-Mailbox
+  profile entry.
+
+- A number of new format instructions are available:
+
+  %(myhost)	- The local hostname
+  %(myname)	- The local user's name (GECOS field)
+  %(localmbox)	- The local mailbox (either Local-Mailbox or user@host).
+		  This should now be used instead of %(me) in nearly all
+		  cases (%(me) only outputs the local Unix username).
+  %(putlit)	- Out the contents of the str register without space
+		  compression.
+  %(concataddr) - Construct an address list like %(formataddr), except that
+		  it will NOT perform duplicate supression (currently
+		  duplicate supression only happens inside of
+		  "repl").  One possible use of this function is to
+		  construct an address list and use %(match) to decide
+		  which "From:" address to use.

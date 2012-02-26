@@ -152,8 +152,9 @@ sysconf_DATA = etc/mhn.defaults etc/mts.conf
 dist_doc_DATA = COPYRIGHT VERSION docs/COMPLETION-BASH docs/COMPLETION-TCSH \
 		docs/COMPLETION-ZSH docs/DIFFERENCES docs/FAQ \
 		docs/MAIL.FILTERING docs/MAILING-LISTS docs/README-ATTACHMENTS \
-		docs/README-HOOKS docs/README.about docs/README.SASL \
-		docs/README.developers docs/README.manpages docs/TODO
+		docs/README-HOOKS docs/README-components docs/README.about \
+		docs/README.SASL docs/README.developers docs/README.manpages \
+		docs/TODO
 
 ##
 ## Our man pages
