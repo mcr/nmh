@@ -44,7 +44,7 @@ TESTS = test/bad-input/test-header test/comp/test-comp-format \
 	test/folder/test-create \
 	test/folder/test-total test/format/test-localmbox \
 	test/format/test-myname test/format/test-myhost \
-	test/format/test-mymbox \
+	test/format/test-mymbox test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/manpages/test-manpages test/mhbuild/test-forw \
 	test/mhpath/test-mhpath \

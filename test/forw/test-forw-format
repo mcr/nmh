@@ -1,0 +1,75 @@
+#!/bin/sh
+#
+# Tests to see if the -from, -to, -cc, -fcc, and -subject switches to
+# "forw" work correctly.
+#
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+#
+# Create a test template file (we create one here just in case the master
+# one changes)
+#
+
+form="${MH_TEST_DIR}/$$.forwcomps"
+cat > $form <<EOF
+%(void{nmh-from})%(void(width))%(putaddr From: )
+%(void{nmh-to})%(void(width))%(putaddr To: )
+%(void{nmh-cc})%(void(width))%(putaddr cc: )
+Fcc: %{fcc}
+Subject:%<{nmh-subject} %(trim)%(putlit)%?{subject} %(trim)%(putlit) (fwd)%>
+--------
+EOF
+
+expected="${MH_TEST_DIR}/$$.expected"
+actual="${MH_TEST_DIR}/Mail/draft"
+from="Mr Test User <test@user.com>"
+to1="User One <userone@test.com>"
+to2="User Two <usertwo@test.com>"
+cc1="CC User One <ccuserone@test.com>"
+cc2="CC User Two <ccusertwo@test.com>"
+cc3="CC User Three <ccuserthree@test.com>"
+cc4="CC User Four <ccuserfour@test.com>"
+fcc1="+nosuchmailbox"
+fcc2="+nosuchmailbox2"
+subject="Totally bogus subject"
+
+cat > "$expected" <<EOF
+From: ${from}
+To: ${to1}, ${to2}
+cc: ${cc1},
+    ${cc2},
+    ${cc3},
+    ${cc4}
+Fcc: ${fcc1}, ${fcc2}
+Subject: ${subject}
+--------
+
+------- Forwarded Message
+
+EOF
+
+cat `mhpath +inbox 1` >> "$expected"
+
+cat >> "$expected" <<EOF
+
+------- End of Forwarded Message
+
+EOF
+
+forw -editor true -form "${form}" -from "${from}" -to "${to1}" -to "${to2}" \
+    -cc "${cc1}" -cc "${cc2}" -cc "${cc3}" -cc "${cc4}" -fcc "${fcc1}" \
+    -fcc "${fcc2}" -subject "${subject}" -width 60 -nowhatnowproc 1 || exit 1
+
+check "${expected}" "${actual}"
+
+test "${failed:-0}" -eq 0 && rm "${form}"
+
+exit $failed
