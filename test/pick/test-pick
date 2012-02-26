@@ -1,0 +1,219 @@
+#!/bin/sh
+######################################################
+#
+# Test pick
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+# Add an 11th message.
+sed \
+  -e 's/10/11/g' \
+  -e 's/^To:\(.*\)/To:\1\nCc: <another@example.com>/' \
+  -e 's/^\(Date:.*\)2006\( 00:00:\)00/\12008\200\nDelivery-Date: \12009\241/' \
+  $MH_TEST_DIR/Mail/inbox/10 >$MH_TEST_DIR/Mail/inbox/11
+
+# Test message specification.
+run_test 'pick first last' '1
+11'
+
+# Test -and.
+run_test 'pick -subject message.3 -and -from Test3' '3'
+run_test 'pick -subject message.3 -and -from Test4' \
+         'pick: no messages match specification
+0'
+
+# Test -or.
+run_test 'pick -subject message.3 -or -from Test3' '3'
+run_test 'pick -subject message.3 -or -from Test4' '3
+4'
+
+# Test -not.
+run_test 'pick -not -subject message.8 last:5' '7
+9
+10
+11'
+
+# Test -lbrace, -rbrace.
+run_test 'pick -subject message.12 -and -subject message.3 -or -from Test4' '4'
+run_test 'pick -subject message.12 -and -lbrace -subject message.3 -rbrace' \
+         'pick: no messages match specification
+0'
+
+# -and takes precedence over -or.
+run_test 'pick -subject message.12 -or -subject message.3 -and -from Test3' '3'
+run_test 'pick -subject message.12 -or -subject message.3 -and -from Test4' \
+         'pick: no messages match specification
+0'
+
+# -not takes precedence over -and.
+run_test 'pick -not -subject message.12 -and -subject message.3' '3'
+run_test 'pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace' \
+         '1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11'
+
+# Test MHPDEBUG.
+MHPDEBUG=1 pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace \
+ >/dev/null 2>$actual
+cat >$expected <<EOF
+NOT
+| AND
+| | PATTERN(header) ^subject[ 	]*:.*NoMatch
+| | PATTERN(header) ^subject[ 	]*:.*message.3
+EOF
+check $expected $actual
+
+
+# Produce 0 if no messages match and standard output is not a tty.
+# Note that there is an error message on stderr, but it's redirected
+# to /dev/null here.
+echo `pick -subject message.3 -and -from Test4 >$actual 2>/dev/null` >/dev/null
+cat >$expected <<EOF
+0
+EOF
+check $expected $actual
+
+# Produce no standard output if no messages match and standard output
+# is a tty.  To test that, move stderr to stdout.
+echo `pick -subject message.3 -and -from Test4 >&2-` >$actual
+cat >$expected <<EOF
+
+EOF
+check $expected $actual
+
+# Also, check that the exit status is 1.
+set +e
+pick -subject message.3 -and -from Test4 2>/dev/null
+run_test "echo $?" '1'
+set -e
+
+# Test -cc.
+run_test 'pick -cc another' '11'
+
+# Test -date.
+run_test 'pick -date 29.Sep.2008' '11'
+
+# Test -from.
+run_test 'pick -from test7' '7'
+
+# Test -search.
+run_test 'pick -search This.is.message.number.[456]' '4
+5
+6'
+
+# Test -subject.
+run_test 'pick -subject message.2' '2'
+
+# Test -to.
+run_test 'pick -to some -nolist' '11 hits'
+run_test 'pick -to user@example.com -nolist' '11 hits'
+
+# Test -after.
+pick -after '28 Sep 2008' >$actual 2>&1
+cat >$expected <<EOF
+11
+EOF
+check $expected $actual
+# Invert exit status so execution doesn't terminate due to -e.
+! pick -after '29 Sep 2008' >$actual 2>/dev/null
+cat >$expected <<EOF
+0
+EOF
+check $expected $actual
+
+# Test -before.  While -after doesn't include the specified date, -before does.
+pick -before '29 Sep 2008' last:3 >$actual 2>&1
+cat >$expected <<EOF
+9
+10
+11
+EOF
+check $expected $actual
+pick -before '28 Sep 2008' last:3 >$actual 2>&1
+cat >$expected <<EOF
+9
+10
+EOF
+check $expected $actual
+# Invert exit status so execution doesn't terminate due to -e.
+! pick -before '28 Sep 2006' last:3 >$actual 2>/dev/null
+cat >$expected <<EOF
+0
+EOF
+check $expected $actual
+
+# Test -datefield.
+# Invert exit status so execution doesn't terminate due to -e.
+! pick -datefield date -after '29 Sep 2008 00:00:00' >$actual 2>/dev/null
+cat >$expected <<EOF
+0
+EOF
+check $expected $actual
+pick -datefield delivery-date -after '29 Sep 2008 00:00:00' >$actual 2>&1
+cat >$expected <<EOF
+11
+EOF
+check $expected $actual
+
+# Test sequence creation.
+run_test 'pick 2 4 6 8 10 -sequence even' '5 hits'
+run_test 'mark -s even -list' 'even: 2 4 6 8 10'
+
+# Test private sequence creation.
+# Set current message for following tests.
+folder +inbox 1 > /dev/null
+run_test 'pick -date 29.Sep.2008 -sequence privateseq -nopublic' '1 hit'
+run_test 'mark -list' 'cur: 1
+even: 2 4 6 8 10
+privateseq (private): 11'
+
+# Test add to private sequence.
+run_test 'pick first -sequence privateseq -nozero -nopublic' '1 hit'
+run_test 'mark -list' 'cur: 1
+even: 2 4 6 8 10
+privateseq (private): 1 11'
+
+# Test sequence creation, with -list.
+run_test 'pick 5 7 -sequence odd -list' '5
+7'
+run_test 'mark -s odd -list' 'odd: 5 7'
+
+# Test sequence creation, with default of -zero.
+run_test 'pick 1 3 -sequence odd' '2 hits'
+run_test 'mark -s odd -list' 'odd: 1 3'
+
+# Test sequence creation, with -nozero.
+run_test 'pick  5 7 9 -sequence odd -nozero' '3 hits'
+run_test 'mark -s odd -list' 'odd: 1 3 5 7 9'
+
+# Test sequence creation, with explicit folder, -public, and -zero.
+run_test 'pick +inbox 5 7 9 11 -public -sequence odd' '4 hits'
+run_test 'mark -s odd -list' 'odd: 5 7 9 11'
+
+# Test -nolist.
+run_test 'pick all -nolist' '11 hits'
+
+
+exit $failed

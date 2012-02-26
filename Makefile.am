@@ -49,7 +49,8 @@ TESTS = test/bad-input/test-header test/comp/test-comp-format \
 	test/manpages/test-manpages test/mhbuild/test-forw \
 	test/mhpath/test-mhpath \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
-	test/mhshow/test-subpart test/new/test-basic test/pick/test-stderr \
+	test/mhshow/test-subpart test/new/test-basic \
+	test/pick/test-pick test/pick/test-stderr \
 	test/repl/test-if-str test/scan/test-scan \
 	test/sequences/test-flist test/sequences/test-mark \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
