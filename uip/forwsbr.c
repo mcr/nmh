@@ -26,7 +26,8 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 	    char *cc, char *fcc, char *subject, char *inputfile)
 {
     int	in;
-    int i, fmtsize, ncomps, state, char_read = 0;
+    int fmtsize, state, char_read = 0;
+    unsigned i;
     register char *nfs;
     char *line, tmpfil[BUFSIZ], name[NAMESZ];
     FILE *tmp;
@@ -46,7 +47,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
     fmtsize = strlen (nfs) + 256;
 
     /* Compile format string */
-    ncomps = fmt_compile (nfs, &fmt);
+    (void) fmt_compile (nfs, &fmt);
 
     /*
      * Process our message and save all relevant components
