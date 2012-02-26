@@ -157,7 +157,6 @@ dist_doc_DATA = COPYRIGHT VERSION docs/COMPLETION-BASH docs/COMPLETION-TCSH \
 ##
 ## Our man pages
 ##
-
 man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/conflict.8 man/dist.1 man/dp.8 man/flist.1 man/flists.1 \
 	   man/fmtdump.8 man/fnext.1 man/folder.1 man/folders.1 \
@@ -178,7 +177,6 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 ## Files we need to include in the distribution which aren't found by
 ## Automake using the automatic rules
 ##
-
 EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     etc/mhn.defaults.sh $(MHNSEARCHPROG) nmh.spec DATE \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
@@ -474,7 +472,6 @@ mts_libmts_a_SOURCES = mts/smtp/hosts.c mts/smtp/smtp.c
 ## Our rules for generating man pages (both the rule for man.sed and
 ## the implicit rules for man page generation).
 ##
-
 manext1 = 1
 manext5 = 5
 manext8 = 8
@@ -530,7 +527,6 @@ ChangeLog:
 ##
 ## Our RPM build target
 ##
-
 rpm: dist
 	@test -d $(rpmdir)/SOURCES || $(MKDIR_P) $(rpmdir)/SOURCES
 	@test -d $(rpmdir)/SPECS || $(MKDIR_P) $(rpmdir)/SPECS
@@ -546,16 +542,36 @@ rpm: dist
 ##
 ## A target to build information needed by cscope
 ##
-
 cscope:
 	echo "-I $(srcdir)/h -I $(srcdir)/sbr -I $(srcdir)/uip -I $(srcdir)/mts/smtp" > cscope.files
 	find $(srcdir) \( -name \*.c -o -name \*.l \) -print | grep -v dtimep.c >> cscope.files
 .PHONY: cscope
 
+
+##
+## Use GNU gcov to find the coverage of the test suite.
+## gcov and gcov-clean are not integrated into the other automake
+## targets because gcov will be used so infrequently, if at all.
+##
+gcov:
+	@echo rebuilding with AM_CLFAGS=--coverage . . .
+	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null  &&  make check
+	@for i in `find . -name '*.gcda'`; do \
+	   gcov -o `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
+	 done
+	@for i in `find . -name '*.gcno'`; do \
+	   if ! test -f `echo $$i | sed 's%\.gcno%.gcda%'`; then \
+	     echo untested: $$i; \
+	   fi; \
+	 done
+gcov-clean:
+	@find . -name '*.gcno' -o -name '*.gcda' -o -name '*.gcov' | xargs rm
+.PHONY: gcov gcov-clean
+
+
 ##
 ## Rules to upload the distribution to savannah
 ##
-
 upload: dist
 	@if test -z "$(SAVANNAH_USERNAME)"; then \
 		echo "You need to set SAVANNAH_USERNAME to the your username on savannah.gnu.org." ;\
