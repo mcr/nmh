@@ -1,5 +1,5 @@
-From:	  %{digest}-Request
-To:	  %{digest} Distribution: dist-%{digest};
+%<{nmh-from}%(void(width))%(putaddr From:	   )%|From:	  %{digest}-Request%>
+%<{nmh-to}%(void(width))%(putaddr To:	   )%|To:	  %{digest} Distribution: dist-%{digest};%>
 Subject:  %{digest} Digest V%(cur) #%(msg)
 Reply-To: %{digest}
 --------
