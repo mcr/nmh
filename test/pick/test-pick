@@ -22,8 +22,10 @@ actual=$MH_TEST_DIR/$$.actual
 # Add an 11th message.
 sed \
   -e 's/10/11/g' \
-  -e 's/^To:\(.*\)/To:\1\nCc: <another@example.com>/' \
-  -e 's/^\(Date:.*\)2006\( 00:00:\)00/\12008\200\nDelivery-Date: \12009\241/' \
+  -e 's/^To:\(.*\)/To:\1\
+Cc: <another@example.com>/' \
+  -e 's/^\(Date:.*\)2006\( 00:00:\)00/\12008\200\
+Delivery-Date: \12009\241/' \
   $MH_TEST_DIR/Mail/inbox/10 >$MH_TEST_DIR/Mail/inbox/11
 
 # Test message specification.
@@ -131,34 +133,35 @@ run_test 'pick -to some -nolist' '11 hits'
 run_test 'pick -to user@example.com -nolist' '11 hits'
 
 # Test -after.
-pick -after '28 Sep 2008' >$actual 2>&1
+pick -after '28 Sep 2008 00:00:00' >$actual 2>&1
 cat >$expected <<EOF
 11
 EOF
+
 check $expected $actual
 # Invert exit status so execution doesn't terminate due to -e.
-! pick -after '29 Sep 2008' >$actual 2>/dev/null
+! pick -after '29 Sep 2008 00:00:00' >$actual 2>/dev/null
 cat >$expected <<EOF
 0
 EOF
 check $expected $actual
 
 # Test -before.  While -after doesn't include the specified date, -before does.
-pick -before '29 Sep 2008' last:3 >$actual 2>&1
+pick -before '29 Sep 2008 00:00:01' last:3 >$actual 2>&1
 cat >$expected <<EOF
 9
 10
 11
 EOF
 check $expected $actual
-pick -before '28 Sep 2008' last:3 >$actual 2>&1
+pick -before '28 Sep 2008 00:00:00:' last:3 >$actual 2>&1
 cat >$expected <<EOF
 9
 10
 EOF
 check $expected $actual
 # Invert exit status so execution doesn't terminate due to -e.
-! pick -before '28 Sep 2006' last:3 >$actual 2>/dev/null
+! pick -before '28 Sep 2006 00:00:00' last:3 >$actual 2>/dev/null
 cat >$expected <<EOF
 0
 EOF
