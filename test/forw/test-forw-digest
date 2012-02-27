@@ -24,27 +24,94 @@ cc4="CC User Four <ccuserfour@test.com>"
 fcc1="+nosuchmailbox"
 fcc2="+nosuchmailbox2"
 
+digestdate=$(date "+%A, %d %b %G")
+
 cat > "$expected" <<EOF
-From: ${from}
-To: ${to1}, ${to2}
-cc: ${cc1},
-    ${cc2},
-    ${cc3},
-    ${cc4}
+From:     ${from}
+To:       ${to1},
+          ${to2}
+cc:       ${cc1},
+          ${cc2},
+          ${cc3},
+          ${cc4}
 Fcc: ${fcc1}, ${fcc2}
-Subject: foo
+Subject:  digest-test Digest V2 #3
+Reply-To: digest-test
 --------
+digest-test Digest	$digestdate
+		Volume 2 : Issue 3
 
+Today's Topics:
 
+------------------------------------------------------------
+
+EOF
+
+i=1
+while [ "$i" -le 6 ]
+do
+    filename=$(mhpath +inbox $i)
+    cat $filename >> "$expected"
+    cat >> "$expected" <<EOF
+
+------------------------------
+
+EOF
+    i=$(expr $i + 1)
+done
+
+cat >> "$expected" <<EOF
+End of digest-test Digest [Volume 2 Issue 3]
+********************************************
 EOF
 
 forw -editor true -from "${from}" -to "${to1}" -to "${to2}" \
     -cc "${cc1}" -cc "${cc2}" -cc "${cc3}" -cc "${cc4}" -fcc "${fcc1}" \
-    -fcc "${fcc2}" -width 60 -nowhatnowproc 1 \
+    -fcc "${fcc2}" -width 60 -issue 3 -volume 2 -nowhatnowproc \
     -digest digest-test +inbox 1-6 || exit 1
 
 check "${expected}" "${actual}"
 
-test "${failed:-0}" -eq 0 && rm "${form}"
+#
+# Once more, but taking some of the defaults
+#
+
+cat > "$expected" <<EOF
+From:     ${from}
+To:       digest-test Distribution: dist-digest-test;
+Subject:  This is a test
+Reply-To: digest-test
+--------
+digest-test Digest	${digestdate}
+		Volume 2 : Issue 4
+
+Today's Topics:
+
+------------------------------------------------------------
+
+EOF
+
+i=7
+while [ "$i" -le 8 ]
+do
+    filename=$(mhpath +inbox $i)
+    cat $filename >> "$expected"
+    cat >> "$expected" <<EOF
+
+------------------------------
+
+EOF
+    i=$(expr $i + 1)
+done
+
+cat >> "$expected" <<EOF
+End of digest-test Digest [Volume 2 Issue 4]
+********************************************
+EOF
+
+forw -editor true -from "${from}" -nowhatnowproc -digest digest-test \
+    -subject "This is a test" +inbox 7-8 || exit 1
+
+check "${expected}" "${actual}"
 
 exit $failed
