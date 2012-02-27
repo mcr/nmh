@@ -430,10 +430,11 @@ try_it_again:
 		issue = 0;
 	    issue++;
 	}
-	if (volume == 0)
+	if (volume == 0) {
 	    snprintf (buf, sizeof(buf), VFORMAT, digest);
-	if ((cp = context_find (buf)) == NULL || (volume = atoi (cp)) <= 0)
-	    volume = 1;
+	    if ((cp = context_find (buf)) == NULL || (volume = atoi (cp)) <= 0)
+		volume = 1;
+	}
 	if (!form)
 	    form = digestcomps;
     } else {
