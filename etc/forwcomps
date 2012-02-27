@@ -1,6 +1,32 @@
+%;
+%; forwcomps - Our components file when we're using "forw"
+%;
+%; We want people to be able to use the components from forwarded
+%; messages in this file, so we have to cheat a bit.  We create a series
+%; of pseudo-components with a "nmh" prefix to represent arguments given
+%; on the command line.  We don't do this for %{fcc} since there's already
+%; precedence for this from "repl".
+%;
+%; If we're given multiple messages to forward, provide the components
+%; from the first one.  Can't really think of anything better to do there.
+%;
+%; Generate a "From:" header; if we don't give one, use %(localmbox)
+%;
 %<{nmh-from}%|%(void(localmbox))%>%(void(width))%(putaddr From: )
+%;
+%; Generate To: and cc: headers; if we're given ones, put something in there
+%; otherwise leave them blank.
+%;
 %<{nmh-to}%(void(width))%(putaddr To: )%|To:%>
 %<{nmh-cc}%(void(width))%(putaddr cc: )%|cc:%>
+%;
+%; If we're not given a -fcc switch, then default to +outbox
+%;
 Fcc: %<{fcc}%(putstr)%|+outbox%>
+%;
+%; If we're not given a -subject switch, then use the original message
+%; subject, but adding (fwd) on the end.  I got this idea from exmh, and
+%; I've always liked it.
+%;
 Subject:%<{nmh-subject} %(trim)%(putlit)%?{subject} %(trim)%(putlit) (fwd)%>
 --------

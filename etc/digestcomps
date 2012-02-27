@@ -1,6 +1,18 @@
-%<{nmh-from}%(void(width))%(putaddr From:	   )%|From:	  %{digest}-Request%>
-%<{nmh-to}%(void(width))%(putaddr To:	   )%|To:	  %{digest} Distribution: dist-%{digest};%>
-Subject:  %{digest} Digest V%(cur) #%(msg)
+%;
+%; digestcomps - the component template file used when doing "forw -digest"
+%;
+%; What happens here is the following:
+%;
+%; - Try to make reasonable defaults when using -digest
+%; - Allow users to override headers if they give them
+%;
+%; See forwcomps for more details on how this works
+%;
+%<{nmh-from}%(void(width))%(putaddr From:     )%|From:     %{digest}-Request%>
+%<{nmh-to}%(void(width))%(putaddr To:       )%|To:       %{digest} Distribution: dist-%{digest};%>
+%<{nmh-cc}%(void(width))%(putaddr cc:       )\n%>\
+%<{fcc}Fcc: %(putstr)\n%>\
+Subject:  %<{nmh-subject}%(putlit)%|%{digest} Digest V%(cur) #%(msg)%>
 Reply-To: %{digest}
 --------
 %{digest} Digest	%(weekday{nmh-date}), %2(mday{nmh-date}) %(month{nmh-date}) %(year{nmh-date})
