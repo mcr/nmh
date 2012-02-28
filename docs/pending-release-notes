@@ -39,3 +39,4 @@ Things to add to the release notes for the next full release:
   for sending.  The default component templates have all been adjusted
   to include appropriate From: headers based on either the -from switch
   or the local mailbox.
+- burst(1) now supports any valid message delimiter according to RFC 934.
