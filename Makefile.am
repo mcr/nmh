@@ -221,7 +221,8 @@ uip_comp_SOURCES = uip/comp.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 uip_comp_LDADD = $(LDADD) $(ICONVLIB)
 
 uip_dist_SOURCES = uip/dist.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
-		   uip/annosbr.c uip/distsbr.c
+		   uip/annosbr.c uip/distsbr.c uip/forwsbr.c
+uip_dist_LDADD = $(LDADD) $(ICONVLIB)
 
 uip_flist_SOURCES = uip/flist.c
 
@@ -497,12 +498,6 @@ man/man.sed: Makefile
 	@echo 's,%manext1%,$(manext1),g' >> $@
 	@echo 's,%manext5%,$(manext5),g' >> $@
 	@echo 's,%manext8%,$(manext8),g' >> $@
-	@echo '/%components%/r $(top_srcdir)/etc/components' >> $@
-	@echo ' s,%components%,,g' >> $@
-	@echo '/%distcomps%/r $(top_srcdir)/etc/distcomps' >> $@
-	@echo ' s,%distcomps%,,g' >> $@
-	@echo '/%forwcomps%/r $(top_srcdir)/etc/forwcomps' >> $@
-	@echo ' s,%forwcomps%,,g' >> $@
 	@echo '/%mhl_forward%/r $(top_srcdir)/etc/mhl.forward' >> $@
 	@echo ' s,%mhl_forward%,,g' >> $@
 	@echo '/%mhl_format%/r $(top_srcdir)/etc/mhl.format' >> $@

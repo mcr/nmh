@@ -22,6 +22,16 @@ dist \- redistribute a message to additional addresses
 .RB [ \-editor
 .IR editor ]
 .RB [ \-noedit ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-from
+.IR address ]
+.RB [ \-to
+.IR address ]
+.RB [ \-cc
+.IR address ]
+.RB [ \-fcc
+.IR +folder ]
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
@@ -40,7 +50,10 @@ The default message form contains the following elements:
 .PP
 .RS 5
 .nf
-%distcomps%
+Resent-From: {from switch} or <Local-Mailbox> or <username@hostname>
+Resent-To: {to switch} or blank
+Resent-cc: {cc switch} or blank
+Resent-fcc: {fcc switch} or blank
 .fi
 .RE
 .PP
@@ -51,7 +64,39 @@ will be used instead of this default form.  You may specify an alternate
 forms file with the switch
 .B \-form
 .IR formfile .
-The form used will be prepended to the message being resent.
+Forms are processed via the
+.B nmh
+template system; see
+.BR mh\-format (5)
+for details.  Components from the redistributed message are available
+as standard component escapes in the forms file.
+.PP
+In addition to the standard
+.BR mh\-format (5)
+escapes, the following
+.I component
+escapes are also supported:
+.PP
+.RS 5
+.nf
+.ta \w'Escape	'u +\w'Returns	'u
+.I Escape	Returns	Description
+fcc	string	Any folders specified with `\-fcc\ folder'
+nmh\-from	string	Addresses specified with `\-from\ address'
+nmh\-to	string	Addresses specified with `\-to\ address'
+nmh\-cc	string	Addresses specified with `\-cc\ address'
+.fi
+.RE
+.PP
+See the
+.BR forw (1)
+man page for descriptions of the
+.BR \-from ,
+.BR \-to ,
+.BR \-cc ,
+and
+.B \-fcc
+switches.
 .PP
 If the draft already exists,
 .B dist

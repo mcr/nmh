@@ -1,3 +1,16 @@
-Resent-To:
-Resent-cc:
-Resent-fcc:
+%;
+%; distcomps - Our components file for "dist"
+%;
+%; This is modeled after the components file for forw, so check that
+%; file for more explanation as to what is going on here.
+%;
+%; When using "dist" we have to use the special Resent- headers, since
+%; we're keeping the original headers of the message intact.
+%;
+%; All of the header components from the original message are available
+%; if you wish to use them.
+%;
+%<{nmh-from}%|%(void(localmbox))%>%(void(width))%(putaddr Resent-From: )
+%<{nmh-to}%(void(width))%(putaddr Resent-To: )%|Resent-To: %(msg) %{subject}%>
+%<{nmh-cc}%(void(width))%(putaddr Resent-cc: )%|Resent-cc:%>
+%<{nmh-fcc}%(void(width))%(putaddr Resent-fcc: )%|Resent-fcc:%>

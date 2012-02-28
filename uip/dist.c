@@ -42,6 +42,16 @@ static struct swit switches[] = {
     { "help", 0 },
 #define	FILESW	14
     { "file file", -4 },	/* interface from msh */
+#define FROMSW  15
+    { "from address", 0 },
+#define TOSW    16
+    { "to address", 0 },
+#define CCSW    17
+    { "cc address", 0 },
+#define FCCSW   18
+    { "fcc mailbox", 0 },
+#define WIDTHSW 19
+    { "width columns", 0 },
     { NULL, 0 }
 };
 
@@ -74,9 +84,12 @@ main (int argc, char **argv)
 {
     int anot = 0, inplace = 1, nedit = 0;
     int nwhat = 0, i, in, isdf = 0, out;
+    int outputlinelen = OUTPUTLINELEN;
+    int dat[5];
     char *cp, *cwd, *maildir, *msgnam, *dfolder = NULL;
     char *dmsg = NULL, *ed = NULL, *file = NULL, *folder = NULL;
     char *form = NULL, *msg = NULL, buf[BUFSIZ], drft[BUFSIZ];
+    char *from = NULL, *to = NULL, *cc = NULL, *fcc = NULL;
     char **argp, **arguments;
     struct msgs *mp = NULL;
     struct stat st;
@@ -172,6 +185,34 @@ main (int argc, char **argv)
 		    dfolder = NULL;
 		    isdf = NOTOK;
 		    continue;
+
+		case FROMSW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios (NULL, "missing argument to %s", argp[-2]);
+		    from = addlist(from, cp);
+		    continue;
+		case TOSW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios (NULL, "missing argument to %s", argp[-2]);
+		    to = addlist(to, cp);
+		    continue;
+		case CCSW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios (NULL, "missing argument to %s", argp[-2]);
+		    cc = addlist(cc, cp);
+		    continue;
+		case FCCSW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios (NULL, "missing argument to %s", argp[-2]);
+		    fcc = addlist(fcc, cp);
+		    continue;
+
+		case WIDTHSW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios (NULL, "missing argument to %s", argp[-2]);
+		    if ((outputlinelen = atoi(cp)) < 10)
+		    	adios (NULL, "impossible width %d", outputlinelen);
+		    continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -193,8 +234,6 @@ main (int argc, char **argv)
 	free (path ("./", TFOLDER));
     if (file && (msg || folder))
 	adios (NULL, "can't mix files and folders/msgs");
-
-    in = open_form(&form, distcomps);
 
 try_it_again:
     strncpy (drft, m_draft (dfolder, dmsg, NOUSE, &isdf), sizeof(drft));
@@ -226,12 +265,6 @@ try_it_again:
 	    }
 	}
     }
-    if ((out = creat (drft, m_gmprot ())) == NOTOK)
-	adios (drft, "unable to create");
-
-    cpydata (in, out, form, drft);
-    close (in);
-    close (out);
 
     if (file) {
 	/*
@@ -269,6 +302,25 @@ try_it_again:
     }
 
     msgnam = file ? file : getcpy (m_name (mp->lowsel));
+
+    dat[0] = mp->lowsel;
+    dat[1] = 0;
+    dat[2] = 0;
+    dat[3] = outputlinelen;
+    dat[4] = 0;
+
+    if (!form)
+    	form = distcomps;
+
+    in = build_form(form, NULL, dat, from, to, cc, fcc, NULL, msgnam);
+
+    if ((out = creat (drft, m_gmprot ())) == NOTOK)
+	adios (drft, "unable to create");
+
+    cpydata (in, out, form, drft);
+    close (in);
+    close (out);
+
     if ((in = open (msgnam, O_RDONLY)) == NOTOK)
 	adios (msgnam, "unable to open message");
 
