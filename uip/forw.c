@@ -441,7 +441,7 @@ try_it_again:
     	form = forwcomps;
     }
 
-    dat[0] = issue;
+    dat[0] = digest ? issue : msgnum;
     dat[1] = volume;
     dat[2] = 0;
     dat[3] = outputlinelen;
