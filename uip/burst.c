@@ -29,8 +29,6 @@ static struct swit switches[] = {
     { NULL, 0 }
 };
 
-static char delim3[] = "-------";
-
 struct smsg {
     long s_start;
     long s_stop;
@@ -43,6 +41,16 @@ static int find_delim (int, struct smsg *);
 static void burst (struct msgs **, int, struct smsg *, int, int, int, char *);
 static void cpybrst (FILE *, FILE *, char *, char *, int);
 
+/*
+ * A macro to check to see if we have reached a message delimiter
+ * (an encapsulation boundary, EB, in RFC 934 parlance).
+ *
+ * According to RFC 934, an EB is simply a line which starts with
+ * a "-" and is NOT followed by a space.  So even a single "-" on a line
+ * by itself would be an EB.
+ */
+
+#define CHECKDELIM(buffer) (buffer[0] == '-' && buffer[1] != ' ')
 
 int
 main (int argc, char **argv)
@@ -200,14 +208,12 @@ main (int argc, char **argv)
 static int
 find_delim (int msgnum, struct smsg *smsgs)
 {
-    int ld3, wasdlm, msgp;
+    int wasdlm, msgp;
     long pos;
     char c, *msgnam;
     int cc;
     char buffer[BUFSIZ];
     FILE *in;
-
-    ld3 = strlen (delim3);
 
     if ((in = fopen (msgnam = m_name (msgnum), "r")) == NULL)
 	adios (msgnam, "unable to read message");
@@ -221,7 +227,7 @@ find_delim (int msgnum, struct smsg *smsgs)
 	smsgs[msgp].s_start = pos;
 
 	for (c = 0; fgets (buffer, sizeof(buffer), in); c = buffer[0]) {
-	    if (strncmp (buffer, delim3, ld3) == 0
+	    if (CHECKDELIM(buffer)
 		    && (msgp == 1 || c == '\n')
 		    && ((cc = peekc (in)) == '\n' || cc == EOF))
 		break;
@@ -229,7 +235,7 @@ find_delim (int msgnum, struct smsg *smsgs)
 		pos += (long) strlen (buffer);
 	}
 
-	wasdlm = strncmp (buffer, delim3, ld3) == 0;
+	wasdlm = CHECKDELIM(buffer);
 	if (smsgs[msgp].s_start != pos)
 	    smsgs[msgp++].s_stop = (c == '\n' && wasdlm) ? pos - 1 : pos;
 	if (feof (in)) {
