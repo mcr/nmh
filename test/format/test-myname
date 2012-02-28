@@ -4,6 +4,8 @@
 # the Signature profile entry, and via SIGNATURE environment variable.
 #
 
+set -e
+
 if test -z "${MH_OBJ_DIR}"; then
     srcdir=`dirname "$0"`/../..
     MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
@@ -13,10 +15,11 @@ fi
 
 setup_test
 
-unset SIGNATURE 
+unset SIGNATURE
 
+fullname=`${MH_OBJ_DIR}/test/getfullname`
 run_test "${MH_LIB_DIR}/ap -format %(myname) ignore" \
-         "`${MH_OBJ_DIR}/test/getfullname`" "GECOS field test"
+         "$fullname" "GECOS field test"
 
 echo "Signature: Some Random Name 1" >> ${MH}
 
