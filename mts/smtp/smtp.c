@@ -200,6 +200,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     char *server_mechs;
 #else  /* CYRUS_SASL */
     NMH_UNUSED (sasl);
+    NMH_UNUSED (saslssf);
     NMH_UNUSED (saslmech);
     NMH_UNUSED (user);
 #endif /* CYRUS_SASL */
@@ -956,7 +957,8 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 
     memset(&secprops, 0, sizeof(secprops));
     secprops.maxbufsize = SASL_MAXRECVBUF;
-    secprops.max_ssf = tls_active ? 0 : (saslssf != -1 ? saslssf : UINT_MAX);
+    secprops.max_ssf =
+      tls_active ? 0 : (saslssf != -1 ? (unsigned int) saslssf : UINT_MAX);
 
     result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
 
