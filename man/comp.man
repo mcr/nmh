@@ -163,6 +163,10 @@ profile entry or a system default email address.  This default can be
 overridden by using the
 .B \-from
 .I address
+switch.  The default mailbox in the \*(lqFcc:\*(rq field is
+.IR \+outbox .
+This can be overridden by the
+.B \-fcc
 switch.
 .PP
 Any text you give to the

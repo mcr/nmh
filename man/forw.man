@@ -120,6 +120,32 @@ nmh\-subject	string	Any text specified with `\-subject\ text'
 .fi
 .RE
 .PP
+By default the \*(lqTo:\*(rq and \*(lqcc:\*(rq fields are empty.  You may
+add addresses to these fields with the
+.B \-to
+.I address
+and
+.B \-cc
+.I address
+switches.  You may give these switches multiple times to add multiple
+addresses.
+.PP
+By default the \*(lqFrom:\*(rq field has either the value of the
+.B Local\-Mailbox
+profile entry a system default email address.  This default can be overridden
+by using the
+.B \-from
+.I address
+switch.  The default mailbox in the \*(lqFcc:\*(rq field is
+.IR \+outbox .
+This can be overridden by the
+.B \-fcc
+switch.
+.PP
+Any text you give to the
+.B \-subject
+switch will be placed in the \*(lqSubject:\*(rq field in the draft.
+.PP
 If the draft already exists,
 .B forw
 will ask you as to the disposition
