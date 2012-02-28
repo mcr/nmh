@@ -124,7 +124,7 @@ value of
 \*(lqlocalname\*(rq in
 .IR mts.conf ,
 if set).  An example is \*(lqFrom: Dan Harkless
-<dan@machine.company.com>\*(rq.  There are four ways to override these values,
+<dan@machine.example.com>\*(rq.  There are four ways to override these values,
 however.  Note that they apply equally to \*(lqResent\-From:\*(rq lines in messages sent
 with
 .BR dist .
@@ -136,7 +136,7 @@ contains \*(lqmmailid\*(rq, this processing is activated.  If a user's GECOS
 field in the passwd file is of the form \*(lqFull Name <fakename>\*(rq then \*(lqfakename\*(rq
 will be used in place of the real username.  For instance, a GECOS field of \*(lqDan
 Harkless <Dan.Harkless>\*(rq would result in \*(lqFrom: Dan Harkless
-<Dan.Harkless@machine.company.com>\*(rq.  Naturally if you were doing something like
+<Dan.Harkless@machine.example.com>\*(rq.  Naturally if you were doing something like
 this you'd want to set up an MTA alias (e.g. in /etc/aliases) from, for
 instance, \*(lqDan.Harkless\*(rq to \*(lqdan\*(rq.
 .PP
@@ -156,7 +156,7 @@ environment variable will result in its value being appended the user's login
 name.  For instance, if I set
 .B $USERNAME_EXTENSION
 to \*(lq+www\*(rq, my \*(lqFrom:\*(rq
-line will contain \*(lqDan Harkless <dan+www@machine.company.com>\*(rq (or
+line will contain \*(lqDan Harkless <dan+www@machine.example.com>\*(rq (or
 \*(lqDan.Harkless+www\*(rq if I'm using mmailid masquerading as well).  Recent versions
 of
 .B sendmail

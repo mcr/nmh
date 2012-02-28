@@ -199,9 +199,9 @@ First [Middle] Last <First.Last>
 type of username masquerading.  If the user sets the
 .B $USERNAME_EXTENSION
 environment variable, its value will be appended to the actual login name.  For
-instance, if I am \*(lqdan@company.com\*(rq, and I set
+instance, if I am \*(lqdan@example.com\*(rq, and I set
 .B $USERNAME_EXTENSION
-to \*(lq\-www\*(rq, my mail will appear to come from \*(lqdan\-www@company.com\*(rq.  This is meant
+to \*(lq\-www\*(rq, my mail will appear to come from \*(lqdan\-www@example.com\*(rq.  This is meant
 to interact with qmail's \*(lquser\-extension\*(rq feature, where mail sent to
 .IR user \- string
 will be delivered to

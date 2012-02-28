@@ -464,7 +464,7 @@ generated will be something like:
 .PP
 .RS 5
 .nf
-My From User <from@user.com>To: My From User <from@user.com>
+My From User <from@example.com>To: My From User <from@example.com>
 .fi
 .RE
 .PP

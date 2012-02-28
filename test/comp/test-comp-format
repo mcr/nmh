@@ -30,20 +30,21 @@ EOF
 
 expected="${MH_TEST_DIR}/$$.expected"
 actual="${MH_TEST_DIR}/Mail/draft"
-from="Mr Test User <test@user.com>"
-to1="User One <userone@test.com>"
-to2="User Two <usertwo@test.com>"
-cc1="CC User One <ccuserone@test.com>"
-cc2="CC User Two <ccusertwo@test.com>"
-cc3="CC User Three <ccuserthree@test.com>"
-cc4="CC User Four <ccuserfour@test.com>"
+from="Mr Test User <test@example.com>"
+to1="User One <userone@example.com>"
+to2="User Two <usertwo@example.com>"
+cc1="CC User One <ccuserone@example.com>"
+cc2="CC User Two <ccusertwo@example.com>"
+cc3="CC User Three <ccuserthree@example.com>"
+cc4="CC User Four <ccuserfour@example.com>"
 fcc1="+nosuchmailbox"
 fcc2="+nosuchmailbox2"
 subject="Totally bogus subject"
 
 cat > $expected <<EOF
 From: ${from}
-To: ${to1}, ${to2}
+To: ${to1},
+    ${to2}
 cc: ${cc1},
     ${cc2},
     ${cc3},
