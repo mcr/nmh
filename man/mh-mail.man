@@ -44,7 +44,11 @@ the header and body may be separated by a line consisting of dashes:
 .PP
 .RS 5
 .nf
-%components%
+From: Local Mailbox <user@example.com>
+To:
+cc:
+Fcc: +outbox
+Subject:
 .fi
 .RE
 .PP
@@ -88,8 +92,10 @@ into the mail transport system.
 .PP
 .BR From :
 .RS 5
-Added by
-.BR post ,
+This header is filled in by default with the system's idea of the user's local
+mailbox.  This can be changed with the
+.B Local\-Mailbox
+profile entry.  It
 contains the address of the author or authors
 (may be more than one if a \*(lqSender:\*(rq field is present).  For a
 standard reply (using
@@ -97,6 +103,11 @@ standard reply (using
 the reply address is constructed by
 checking the following headers (in this order): \*(lqMail-Reply\-To:\*(rq,
 \*(lqReply\-To:\*(rq, \*(lqFrom:\*(rq, \*(lqSender:\*(rq.
+A
+.BR From :
+header MUST exist when the message is sent to
+.BR post,
+otherwise the message will be rejected.
 .RE
 .PP
 .BR Mail\-Reply\-To :
