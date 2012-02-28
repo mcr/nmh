@@ -97,18 +97,24 @@ cat >$expected <<EOF
 EOF
 check $expected $actual
 
-# Produce no standard output if no messages match and standard output
-# is a tty.  To test that, move stderr to stdout.
-echo `pick -subject message.3 -and -from Test4 >&2-` >$actual
-cat >$expected <<EOF
 
-EOF
-check $expected $actual
+set +e
+
+if test -w /dev/tty; then
+  # Produce no standard output if no messages match and standard
+  # output is a tty.  To test that, move stderr to stdout and
+  # write the output directly to the tty.  If there is output,
+  # it probably won't be captured, but pretend that it would be.
+  output=`pick -subject message.3 -and -from Test4 >&2- >/dev/tty`
+  run_test "echo $output" ''
+else
+  echo "$0: skip tty test because can't write to /dev/tty"
+fi
 
 # Also, check that the exit status is 1.
-set +e
-pick -subject message.3 -and -from Test4 2>/dev/null
+pick -subject message.3 -and -from Test4 >/dev/null 2>&1
 run_test "echo $?" '1'
+
 set -e
 
 # Test -cc.
@@ -137,8 +143,8 @@ pick -after '28 Sep 2008 00:00:00' >$actual 2>&1
 cat >$expected <<EOF
 11
 EOF
-
 check $expected $actual
+
 # Invert exit status so execution doesn't terminate due to -e.
 ! pick -after '29 Sep 2008 00:00:00' >$actual 2>/dev/null
 cat >$expected <<EOF
