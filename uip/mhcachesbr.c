@@ -41,13 +41,9 @@ char *cache_public;
 char *cache_private;
 
 
-/* mhparse.c (OR) mhbuildsbr.c */
-int pidcheck (int);
-
 /* mhmisc.c */
 int part_ok (CT, int);
 int type_ok (CT, int);
-int make_intermediates (char *);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
 

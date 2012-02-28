@@ -38,12 +38,6 @@ pid_t xpid = 0;
 static sigjmp_buf intrenv;
 
 
-/* termsbr.c */
-int SOprintf (char *, ...);
-
-/* mhparse.c */
-int pidcheck (int);
-
 /* mhmisc.c */
 int part_ok (CT, int);
 int type_ok (CT, int);

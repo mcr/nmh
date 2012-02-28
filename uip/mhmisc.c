@@ -34,8 +34,6 @@ static char *errs = NULL;
  */
 int part_ok (CT, int);
 int type_ok (CT, int);
-void set_endian (void);
-int make_intermediates (char *);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
 

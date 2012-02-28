@@ -19,9 +19,6 @@
  * it will call this routine directly without exec'ing it.
  */
 
-/* from whatnowsbr.c */
-int WhatNow (int, char **);
-
 
 int
 what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,

@@ -48,7 +48,6 @@ typedef int (*qsort_comp) (const void *, const void *);
 /* mhmisc.c */
 int part_ok (CT, int);
 int type_ok (CT, int);
-int make_intermediates (char *);
 void flush_errors (void);
 
 /* mhshowsbr.c */

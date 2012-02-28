@@ -33,13 +33,6 @@ static FILE *mhlfp;
 typedef int (*qsort_comp) (const void *, const void *);
 
 /*
- * prototypes
- */
-void clear_screen (void);   /* from termsbr.c */
-int SOprintf (char *, ...); /* from termsbr.c */
-int sc_width (void);        /* from termsbr.c */
-
-/*
  * static prototypes
  */
 static int burst (struct Msg *, int, int, int, int);
@@ -57,9 +50,6 @@ static char *sosmash (char *, char *);
 static int process (int, char *, int, char **);
 static void copy_message (int, FILE *);
 static void copy_digest (int, FILE *);
-
-/* from mhlsbr.c */
-int mhlsbr (int, char **, FILE *(*)());
 
 void
 forkcmd (char **args, char *pgm)

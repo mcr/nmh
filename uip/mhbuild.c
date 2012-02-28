@@ -103,9 +103,6 @@ int output_message_fp (CT, FILE *, char*);
 /* mhlistsbr.c */
 int list_all_messages (CT *, int, int, int, int);
 
-/* mhmisc.c */
-void set_endian (void);
-
 /* mhfree.c */
 void free_content (CT);
 

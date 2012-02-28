@@ -59,7 +59,6 @@ static char prefix[] = "----- =_aaaaaaaaaa";
 
 
 /* mhmisc.c */
-int make_intermediates (char *);
 void content_error (char *, CT, char *, ...);
 
 /* mhcachesbr.c */

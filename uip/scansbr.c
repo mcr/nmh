@@ -56,7 +56,6 @@ char *scanl = 0;			/* text of most recent scanline    */
 /*
  * prototypes
  */
-int sc_width (void);			/* from termsbr.c */
 static int mh_fputs(char *, FILE *);
 
 #ifdef MULTIBYTE_SUPPORT

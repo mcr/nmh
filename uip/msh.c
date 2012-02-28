@@ -153,8 +153,6 @@ int told_to_quit;		/* SIGQUIT detected */
 /*
  * prototypes
  */
-int SOprintf (char *, ...);  /* from termsbr.c */
-int sc_width (void);         /* from termsbr.c */
 void fsetup (char *);
 void setup (char *);
 FILE *msh_ready (int, int);

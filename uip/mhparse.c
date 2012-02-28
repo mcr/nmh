@@ -85,16 +85,12 @@ struct k2v SubApplication[] = {
 };
 
 
-/* ftpsbr.c */
-int ftp_get (char *, char *, char *, char *, char *, char *, int, int);
-
 /* mhcachesbr.c */
 int find_cache (CT, int, int *, char *, char *, int);
 
 /* mhmisc.c */
 int part_ok (CT, int);
 int type_ok (CT, int);
-int make_intermediates (char *);
 void content_error (char *, CT, char *, ...);
 
 /* mhfree.c */

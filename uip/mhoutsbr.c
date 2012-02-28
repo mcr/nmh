@@ -65,7 +65,6 @@ static char nib2b64[0x40+1] =
  */
 int output_message (CT, char *);
 int output_message_fp (CT, FILE *, char *);
-int writeBase64aux (FILE *, FILE *);
 
 /*
  * static prototypes

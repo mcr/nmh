@@ -93,7 +93,6 @@ int output_message (CT, char *);
 /* mhmisc.c */
 int part_ok (CT, int);
 int type_ok (CT, int);
-void set_endian (void);
 void flush_errors (void);
 
 /* mhfree.c */

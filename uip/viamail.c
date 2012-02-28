@@ -52,12 +52,6 @@ extern int verbsw;
 
 int ebcdicsw = 0;	/* hack for linking purposes */
 
-/* mhmisc.c */
-void set_endian (void);
-
-/* mhoutsbr.c */
-int writeBase64aux (FILE *, FILE *);
-
 /*
  * static prototypes
  */

@@ -290,16 +290,6 @@ static void mhldone (int);
 static void m_popen (char *);
 static void filterbody (struct mcomp *, char *, int, int, FILE *);
 
-int mhl (int, char **);
-int mhlsbr (int, char **, FILE *(*)());
-void m_pclose (void);
-
-void clear_screen (void);             /* from termsbr.c */
-int SOprintf (char *, ...);           /* from termsbr.c */
-int sc_width (void);                  /* from termsbr.c */
-int sc_length (void);                 /* from termsbr.c */
-int sc_hardcopy (void);               /* from termsbr.c */
-
 
 int
 mhl (int argc, char **argv)

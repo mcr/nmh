@@ -59,7 +59,7 @@ int gans (char *, struct swit *);
 char **getans (char *, struct swit *);
 int getanswer (char *);
 char **getarguments (char *, int, char **, int);
-char *get_charset();
+char *get_charset(void);
 char *getcpy (char *);
 char *getfolder(int);
 int lkclose(int, char*);
@@ -143,12 +143,23 @@ char *OfficialName(char *);
 int annotate (char *, char *, char *, int, int, int, int);
 void annolist(char *, char *, char *, int);
 void annopreserve(int);
+void clear_screen(void);
+void m_pclose(void);
+int make_intermediates(char *);
+int mhl(int, char **);
+int mhlsbr(int, char **, FILE *(*)(char *));
 int distout (char *, char *, char *);
 void replout (FILE *, char *, char *, struct msgs *, int,
 	int, char *, char *, char *);
+void set_endian(void);
+int sc_hardcopy(void);
+int sc_length(void);
+int sc_width(void);
 int build_form (char *, char *, int *, char *, char *, char *, char *,
 		char *, char *);
 int sendsbr (char **, int, char *, struct stat *, int, char *, int);
+int SOprintf (char *, ...);
 int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *);
-
+int WhatNow(int, char **);
+int writeBase64aux(FILE *, FILE *);

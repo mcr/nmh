@@ -42,11 +42,6 @@ static struct format *fmt;
 static int dat[5];
 
 /*
- * prototypes
- */
-int sc_width (void);  /* from termsbr.c */
-
-/*
  * static prototypes
  */
 static int process (char *, int, int);
