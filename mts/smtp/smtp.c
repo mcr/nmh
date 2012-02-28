@@ -147,9 +147,9 @@ char *EHLOkeys[MAXEHLO + 1];
  * static prototypes
  */
 static int smtp_init (char *, char *, char *, int, int, int, int, int, int,
-		      char *, char *, int);
+		      int, char *, char *, int);
 static int sendmail_init (char *, char *, int, int, int, int, int, int,
-                          char *, char *);
+                          int, char *, char *);
 
 static int rclient (char *, char *);
 static int sm_ierror (char *fmt, ...);
@@ -173,26 +173,28 @@ static int sm_fgets(char *, int, FILE *);
  * Function prototypes needed for SASL
  */
 
-static int sm_auth_sasl(char *, char *, char *);
+static int sm_auth_sasl(char *, int, char *, char *);
 #endif /* CYRUS_SASL */
 
 int
 sm_init (char *client, char *server, char *port, int watch, int verbose,
-         int debug, int onex, int queued, int sasl, char *saslmech,
-         char *user, int tls)
+         int debug, int onex, int queued, int sasl, int saslssf,
+	 char *saslmech, char *user, int tls)
 {
     if (sm_mts == MTS_SMTP)
 	return smtp_init (client, server, port, watch, verbose,
-			  debug, onex, queued, sasl, saslmech, user, tls);
+			  debug, onex, queued, sasl, saslssf, saslmech,
+			  user, tls);
     else
 	return sendmail_init (client, server, watch, verbose,
-                              debug, onex, queued, sasl, saslmech, user);
+                              debug, onex, queued, sasl, saslssf, saslmech,
+			      user);
 }
 
 static int
 smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	   int debug, int onex, int queued,
-           int sasl, char *saslmech, char *user, int tls)
+           int sasl, int saslssf, char *saslmech, char *user, int tls)
 {
 #ifdef CYRUS_SASL
     char *server_mechs;
@@ -427,7 +429,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 			     saslmech, server_mechs);
 	}
 
-	if (sm_auth_sasl(user, saslmech ? saslmech : server_mechs,
+	if (sm_auth_sasl(user, saslssf, saslmech ? saslmech : server_mechs,
 			 server) != RP_OK) {
 	    sm_end(NOTOK);
 	    return NOTOK;
@@ -449,13 +451,14 @@ send_options: ;
 int
 sendmail_init (char *client, char *server, int watch, int verbose,
                int debug, int onex, int queued,
-               int sasl, char *saslmech, char *user)
+               int sasl, int saslssf, char *saslmech, char *user)
 {
 #ifdef CYRUS_SASL
     char *server_mechs;
 #else  /* CYRUS_SASL */
     NMH_UNUSED (server);
     NMH_UNUSED (sasl);
+    NMH_UNUSED (saslssf);
     NMH_UNUSED (saslmech);
     NMH_UNUSED (user);
 #endif /* CYRUS_SASL */
@@ -603,7 +606,7 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 			     saslmech, server_mechs);
 	}
 
-	if (sm_auth_sasl(user, saslmech ? saslmech : server_mechs,
+	if (sm_auth_sasl(user, saslssf, saslmech ? saslmech : server_mechs,
 			 server) != RP_OK) {
 	    sm_end(NOTOK);
 	    return NOTOK;
@@ -875,7 +878,7 @@ sm_end (int type)
  * (optionally) negotiated a security layer.
  */
 static int
-sm_auth_sasl(char *user, char *mechlist, char *inhost)
+sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 {
     int result, status;
     unsigned int buflen, outlen;
@@ -953,7 +956,7 @@ sm_auth_sasl(char *user, char *mechlist, char *inhost)
 
     memset(&secprops, 0, sizeof(secprops));
     secprops.maxbufsize = SASL_MAXRECVBUF;
-    secprops.max_ssf = tls_active ? 0 : UINT_MAX;
+    secprops.max_ssf = tls_active ? 0 : (saslssf != -1 ? saslssf : UINT_MAX);
 
     result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
 

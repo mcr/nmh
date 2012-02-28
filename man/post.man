@@ -21,6 +21,9 @@ post \- deliver a message
 .RB [ \-width
 .IR columns ]
 .RB [ \-sasl ]
+.RB [ \-nosasl ]
+.RB [ \-saslmaxssf
+.IR ssf ]
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-user
@@ -195,7 +198,9 @@ If
 .B nmh
 has been compiled with SASL support, the
 .B \-sasl
-switch will enable
+and
+.B \-nosasl
+switches will enable and disable
 the use of SASL authentication with the SMTP MTA.  Depending on the
 SASL mechanism used, this may require an additional password prompt from the
 user (but the
@@ -214,7 +219,11 @@ will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(sasl-encrypted)' and `(sasl-decrypted)' when
 viewing the SMTP transaction with the
 .B \-snoop
-switch.
+switch.  The
+.B \-saslmaxssf
+switch can be used to select the maximum value of the Security Strength Factor.
+This is an integer value and the exact meaning of this value depends on the
+underlying SASL mechanism.  A value of 0 disables encryption.
 .PP
 If
 .B nmh

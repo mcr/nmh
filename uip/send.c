@@ -102,17 +102,21 @@ static struct swit switches[] = {
     { "snoop", 5 },
 #define SASLSW                37
     { "sasl", SASLminc(4) },
-#define SASLMECHSW            38
+#define NOSASLSW              38
+    { "nosasl", SASLminc(-6) },
+#define SASLMXSSFSW           39
+    { "saslmaxssf", SASLminc(-10) },
+#define SASLMECHSW            40
     { "saslmech mechanism", SASLminc(-5) },
-#define USERSW                39
+#define USERSW                41
     { "user username", SASLminc(-4) },
-#define ATTACHSW              40
+#define ATTACHSW              42
     { "attach", 6 },
-#define ATTACHFORMATSW        41
+#define ATTACHFORMATSW        43
     { "attachformat", 7 },
-#define PORTSW		      42
+#define PORTSW		      44
     { "port server-port-name/number" , 4 },
-#define TLSSW		      43
+#define TLSSW		      45
     { "tls", TLSminc(-3) },
     { NULL, 0 }
 };
@@ -278,6 +282,7 @@ main (int argc, char **argv)
 		case SOMLSW: 
 		case SNOOPSW: 
 		case SASLSW:
+		case NOSASLSW:
 		case TLSSW:
 		    vec[vecp++] = --cp;
 		    continue;
@@ -288,6 +293,7 @@ main (int argc, char **argv)
 		case CLIESW: 
 		case SERVSW: 
 		case SASLMECHSW:
+		case SASLMXSSFSW:
 		case USERSW:
 		case PORTSW:
 		    vec[vecp++] = --cp;

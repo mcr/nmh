@@ -1054,17 +1054,21 @@ static struct swit  sendswitches[] = {
     { "nodraftfolder", -3 },
 #define SASLSW           36
     { "sasl", SASLminc(-4) },
-#define SASLMECHSW       37
+#define NOSASLSW         37
+    { "nosasl", SASLminc(-6) },
+#define SASLMXSSFSW      38
+    { "saslmaxssf", SASLminc(-10) },
+#define SASLMECHSW       39
     { "saslmech", SASLminc(-5) },
-#define USERSW           38
+#define USERSW           40
     { "user", SASLminc(-4) },
-#define SNDATTACHSW       39
+#define SNDATTACHSW       41
     { "attach file", 6 },
-#define SNDATTACHFORMAT   40
+#define SNDATTACHFORMAT   42
     { "attachformat", 7 },
-#define PORTSW		  41
+#define PORTSW		  43
     { "port server-port-name/number", 4 },
-#define TLSSW		  42
+#define TLSSW		  44
     { "tls", TLSminc(-3) },
     { NULL, 0 }
 };
@@ -1227,6 +1231,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case SOMLSW:
 		case SNOOPSW:
 		case SASLSW:
+		case NOSASLSW:
 		case TLSSW:
 		    vec[vecp++] = --cp;
 		    continue;
@@ -1236,6 +1241,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case WIDTHSW:
 		case CLIESW:
 		case SERVSW:
+		case SASLMXSSFSW:
 		case SASLMECHSW:
 		case USERSW:
 		case PORTSW:

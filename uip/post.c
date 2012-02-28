@@ -131,17 +131,21 @@ static struct swit switches[] = {
     { "queued", -6 },
 #define SASLSW                   37
     { "sasl", SASLminc(-4) },
-#define SASLMECHSW               38
+#define NOSASLSW                 38
+    { "nosasl", SASLminc(-6) },
+#define SASLMXSSFSW              39
+    { "saslmaxssf", SASLminc(-10) },
+#define SASLMECHSW               40
     { "saslmech", SASLminc(-5) },
-#define USERSW                   39
+#define USERSW                   41
     { "user", SASLminc(-4) },
-#define PORTSW			 40
+#define PORTSW			 42
     { "port server port name/number", 4 },
-#define TLSSW			 41
+#define TLSSW			 43
     { "tls", TLSminc(-3) },
-#define FILEPROCSW		 42
+#define FILEPROCSW		 44
     { "fileproc", -4 },
-#define MHLPROCSW		 43
+#define MHLPROCSW		 45
     { "mhlproc", -3 },
     { NULL, 0 }
 };
@@ -239,6 +243,7 @@ static int checksw = 0;		/* whom -check                           */
 static int linepos=0;		/* putadr()'s position on the line       */
 static int nameoutput=0;	/* putadr() has output header name       */
 static int sasl=0;		/* Use SASL auth for SMTP                */
+static int saslssf=-1;		/* Our maximum SSF for SASL              */
 static char *saslmech=NULL;	/* Force use of particular SASL mech     */
 static char *user=NULL;		/* Authenticate as this user             */
 static char *port="smtp";	/* Name of server port for SMTP		 */
@@ -514,6 +519,16 @@ main (int argc, char **argv)
 		
 		case SASLSW:
 		    sasl++;
+		    continue;
+
+		case NOSASLSW:
+		    sasl = 0;
+		    continue;
+
+		case SASLMXSSFSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    saslssf = atoi(cp);
 		    continue;
 		
 		case SASLMECHSW:
@@ -1431,8 +1446,8 @@ post (char *file, int bccque, int talk)
     sigon ();
 
     if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch, verbose,
-				    snoop, onex, queued, sasl, saslmech,
-				    user, tls))
+				    snoop, onex, queued, sasl, saslssf,
+				    saslmech, user, tls))
 	    || rp_isbad (retval = sm_winit (smtpmode, from)))
 	die (NULL, "problem initializing server; %s", rp_string (retval));
 
@@ -1471,7 +1486,7 @@ verify_all_addresses (int talk)
     if (!whomsw || checksw)
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, 0, queued, sasl,
-					saslmech, user, tls))
+					saslssf, saslmech, user, tls))
 		|| rp_isbad (retval = sm_winit (smtpmode, from)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
