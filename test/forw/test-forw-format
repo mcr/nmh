@@ -62,7 +62,6 @@ cat `mhpath +inbox 1` >> "$expected"
 cat >> "$expected" <<EOF
 
 ------- End of Forwarded Message
-
 EOF
 
 forw -editor true -form "${form}" -from "${from}" -to "${to1}" -to "${to2}" \

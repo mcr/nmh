@@ -484,7 +484,7 @@ mhl (int argc, char **argv)
 	    printf ("%s", buf);
 	}
 	else
-	    printf ("\n------- End of Forwarded Message%s\n\n",
+	    printf ("\n------- End of Forwarded Message%s\n",
 		    vecp > 1 ? "s" : "");
     }
 

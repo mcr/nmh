@@ -659,7 +659,7 @@ copy_draft (int out, char *digest, char *file, int volume, int issue, int dashst
     if (digest) {
 	strncpy (buffer, delim4, sizeof(buffer));
     } else {
-	snprintf (buffer, sizeof(buffer), "\n------- End of Forwarded Message%s\n\n",
+	snprintf (buffer, sizeof(buffer), "\n------- End of Forwarded Message%s\n",
 		mp->numsel > 1 ? "s" : "");
     }
     write (out, buffer, strlen (buffer));
