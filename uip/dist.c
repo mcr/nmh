@@ -303,7 +303,7 @@ try_it_again:
 
     msgnam = file ? file : getcpy (m_name (mp->lowsel));
 
-    dat[0] = mp->lowsel;
+    dat[0] = mp ? mp->lowsel : 0;
     dat[1] = 0;
     dat[2] = 0;
     dat[3] = outputlinelen;
