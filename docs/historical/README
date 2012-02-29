@@ -11,6 +11,25 @@ were downloaded from ftp://munnari.oz.au/pub/mh/doc/
 designOfMH.pdf was downloaded from
 http://www.dtic.mil/cgi-bin/GetTRDoc?AD=ADA257836
 
+The sources for the papers in these directories:
+  bboards/
+  beginners/
+  changes/
+  doclib/
+  mh4/
+  mh4mm/
+  mh5/
+  mh6.5/
+  mh6/
+  multifarious/
+  mznet/
+  realwork/
+  trusted/
+  tutorial/
+were downloaded from
+http://stuff.mit.edu/afs/sipb/project/sipb-athena/src/mh/papers/
+
+
 The README below is retained in its original form for posterity.  All
 of the txt (.doc and .tty) files have been renamed to .txt.  All of
 the postscript (.ps) files have been converted to pdf using ps2pdf.
