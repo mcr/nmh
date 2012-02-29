@@ -1,0 +1,2904 @@
+
+
+
+
+
+
+
+
+                                            _d_i_s_c_a_r_d _t_h_i_s _p_a_g_e
+
+
+
+
+                                               The RAND _M_H
+                                             Message Handling
+                                                 System:
+                                          Administrator's Guide
+
+                                               UCI Version
+
+
+                                            November 30, 1993
+                                              6.8.3 #1[UCI]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                             _1. _I_N_T_R_O_D_U_C_T_I_O_N
+
+
+
+
+
+
+
+                 _S_c_o_p_e _o_f _t_h_i_s _d_o_c_u_m_e_n_t
+
+                      This is the Administrator's Guide to _M_H.  If you don't maintain  an
+                 _M_H  system,  don't read this; the information is entirely too technical.
+                 If you are a maintainer, then read this guide until you  understand  it,
+                 follow the advice it gives, and then forget about the guide.
+
+                      Before continuing, I'll point out two facts:
+
+
+
+                           _T_h_i_s _d_o_c_u_m_e_n_t _w_i_l_l _n_e_v_e_r _c_o_n_t_a_i_n _a_l_l _t_h_e _i_n_f_o_r_m_a_t_i_o_n
+                                         _y_o_u _n_e_e_d _t_o _m_a_i_n_t_a_i_n _M_H.
+
+                         _F_u_r_t_h_e_r_m_o_r_e, _t_h_i_s _d_o_c_u_m_e_n_t _w_i_l_l _n_e_v_e_r _c_o_n_t_a_i_n _e_v_e_r_y_t_h_i_n_g
+                                       _I _k_n_o_w _a_b_o_u_t _m_a_i_n_t_a_i_n_i_n_g _M_H.
+
+
+
+                 _M_H, and mailsystems in general, are more complex than most people  real-
+                 ize.   A  combination of experience, intuition, and tenacity is required
+                 to maintain _M_H properly.  This document can provide only guidelines  for
+                 bringing  up  an  _M_H  system  and maintaining it.  There is a sufficient
+                 amount of customization possible that not all events or problems can  be
+                 forseen.
+
+
+
+                 _S_u_m_m_a_r_y
+
+                      During _M_H generation, you specify several  configuration  constants
+                 to  the _m_h_c_o_n_f_i_g program.  These directives take into consideration such
+                 issues as hardware and operating system dependencies in the source code.
+                 They also factor out some major mailsystem administrative decisions that
+                 are likely to be made consistantly at sites with  more  than  one  host.
+                 The  manual  entry  _m_h-_g_e_n (8)  describes  all  the static configuration
+                 directives.
+
+                      However,  when  you  install  _M_H  you  may  wish   to   make   some
+                 site-specific  or  host-specific  changes  which aren't hardware or even
+                 software related.  Rather, they are  administrative  decisions.   That's
+                 what  this  guide is for: it describes all of the dynamically tailorable
+                 directives.
+
+
+
+
+
+
+
+
+
+
+
+
+                                                   -2-
+
+
+                      Usually,  after  installing   _M_H,   you'll   want   to   edit   the
+                 /usr/local/lib/mh/mtstailor  file.   This  file  fine-tunes  the  way _M_H
+                 interacts with the message transport  system  (MTS).   Section  2  talks
+                 about the MTS interface and MTS tailoring.
+
+                      After that, if you're running the UCI BBoards facility, or the  POP
+                 facility, you'll need to know how to maintain those systems.  Sections 3
+                 and 4 talk about these.
+
+                      If for some reason you're not running an MTS that can  handle  both
+                 Internet  and _U_U_C_P traffic, you should read-up on mail filtering in Sec-
+                 tion 5.  Although this is considered "old technology" now,  the  mechan-
+                 isms  described  in Section 5 were really quite useful when first intro-
+                 duced way back in 1981.
+
+                      Finally, you may want to know how to modify  the  _M_H  source  tree.
+                 Section 6 talks (a little bit) about that.
+
+                      The last two sections describe a few hidden features in _M_H, and the
+                 configuration options that were in effect when this guide was generated.
+
+                      After _M_H is installed, you should define the  address  "Bug-MH"  to
+                 map to either you or the _P_o_s_t_M_a_s_t_e_r at your site.
+
+                      In addition, if you want to tailor  the  behavior  of  _M_H  for  new
+                 users,  you  can  create and edit the file /usr/local/lib/mh/mh.profile.
+                 When the _i_n_s_t_a_l_l-_m_h program is run for a user, if this file  exists,  it
+                 will copy it into the user's .mh_profile file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                           _2. _T_H_E _M_T_S _I_N_T_E_R_F_A_C_E
+
+
+
+
+
+                      The    file    /usr/local/lib/mh/mtstailor    customizes    certain
+                 host-specific  parameters  of  _M_H related primarily to interactions with
+                 the  transport  system.   The  parameters  in  this  file  override  the
+                 compiled-in  defaults given during _M_H configuration.  Rather than recom-
+                 piling _M_H on each host to make minor customizations, it is easier simply
+                 to  modify  the  mtstailor file.  All hosts at a given site normally use
+                 the same mtstailor file, though this need not be the case.
+
+                      It is a good idea to run  the  _c_o_n_f_l_i_c_t (8)  program  each  morning
+                 under _c_r_o_n.  The following line usually suffices:
+
+                      00 05 * * * /usr/local/lib/mh/conflict -mail PostMaster
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                              -3-
+
+
+
+
+
+
+
+
+
+            MH-TAILOR(5)                      -4-                       MH-TAILOR(5)
+
+
+            _N_A_M_E
+                 mh-tailor, mtstailor - system customization for MH message handler
+
+
+            _S_Y_N_O_P_S_I_S
+                 /_u_s_r/_l_o_c_a_l/_l_i_b/_m_h/_m_t_s_t_a_i_l_o_r
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The file /usr/local/lib/mh/mtstailor defines run-time  options  for
+                 those  _M_H  programs  which interact (in some form) with the message
+                 transport system.  At present, these (user) programs are: _a_p,  _c_o_n_-
+                 _f_l_i_c_t, _i_n_c, _m_s_g_c_h_k, _m_s_h, _p_o_s_t, _r_c_v_d_i_s_t, and _r_c_v_p_a_c_k.
+
+                 Each option should be given on a  single  line.   Blank  lines  and
+                 lines  which  begin  with  `#'  are ignored.  The options available
+                 along with default values and a description of their  meanings  are
+                 listed below:
+
+                 localname:
+                      The host name _M_H considers local.  If not  set,  depending  on
+                      the  version  of UNIX you're running, _M_H will query the system
+                      for this value (e.g., <whoami.h>,  gethostname,  etc.).   This
+                      has  no  equivalent  in the _M_H configuration file.  POP client
+                      hosts should set this value to the name  of  the  POP  service
+                      host.
+
+                 localdomain:
+                      If this is set, a `.' followed by this string will be appended
+                      to  your  host name.  This might be useful for sites where the
+                      host name returned by the system (e.g.,  <whoami.h>,  gethost-
+                      name,  etc.),  is  not  a "fully qualified domain name" (i.e.,
+                      does not contain a `.').
+
+                 clientname:
+                      The host name _M_H will give in the SMTP HELO  (and  EHLO)  com-
+                      mand,  when posting mail.  If not set, no HELO command will be
+                      given.  Although the HELO command is required by RFC 821, many
+                      SMTP servers do not require it.
+
+                      Early versions of SendMail will fail if the host name given in
+                      the HELO command is the local host; later versions of SendMail
+                      will complain if you omit the HELO command.  If you run  Send-
+                      Mail,  find  out  what  your system expects and set this field
+                      accordingly.
+
+                 systemname:
+                      The name of the local host in the _U_U_C_P "domain".  If not  set,
+                      depending on the version of UNIX you're running, _M_H will query
+                      the system for this value.  This has no equivalent in  the  _M_H
+                      configuration file.
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            MH-TAILOR(5)                      -5-                       MH-TAILOR(5)
+
+
+                 mmdfldir: /usr/spool/mail
+                      The directory where maildrops are kept.  If this is empty, the
+                      user's  home  directory  is  used.   This overrides the "mail"
+                      field in the _M_H configuration file.
+
+                 mmdflfil:
+                      The name of the maildrop file in the directory where maildrops
+                      are  kept.   If  this is empty, the user's login name is used.
+                      This overrides the "mail" field in the _M_H configuration file.
+
+                 mmdelim1: \001\001\001\001\n
+                      The beginning-of-message delimiter for maildrops.
+
+                 mmdelim2: \001\001\001\001\n
+                      The end-of-message delimiter for maildrops.
+
+                 mmailid: 0
+                      If non-zero, then  support  for  MMailids  in  /etc/passwd  is
+                      enabled.   Basically,  the pw_gecos field in the password file
+                      is of the form
+
+                           My Full Name <mailid>
+
+                      The _M_H internal routines that deal with user  and  full  names
+                      will return "mailid" and "My Full Name" respectively.
+
+                 lockstyle: 0
+                      The locking discipline to perform.  A value of  "0"  means  to
+                      use  kernel-level  locking  if available.  (See below for more
+                      details.) On systems compiled  without  kernel-level  locking,
+                      standard  _B_e_l_l_M_a_i_l  locking  is used.  A value of "1" means to
+                      use _B_e_l_l_M_a_i_l locking always (the name of the lock is based  on
+                      the  file  name).   A  value  of "2" means to use _M_M_D_F locking
+                      always (the name of the lock is based on device/inode pairs).
+
+                 lockldir:
+                      The name of the directory for making locks.   If  your  system
+                      isn't configured to use kernel-level locking, then this direc-
+                      tory is used when creating locks.  If the value is empty, then
+                      the directory of the file to be locked is used.
+
+                 maildelivery: /usr/local/lib/mh/maildelivery
+                      The name of the system-wide default ._m_a_i_l_d_e_l_i_v_e_r_y  file.   See
+                      _m_h_o_o_k (1) for the details.
+
+                 everyone: 200
+                      The highest user-id which should NOT receive mail addressed to
+                      "everyone".
+
+                 noshell:
+                      If set, then each user-id greater than "everyone" that  has  a
+                      login  shell  equivalent to the given value (e.g., "/bin/csh")
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            MH-TAILOR(5)                      -6-                       MH-TAILOR(5)
+
+
+                      indicates that mail for "everyone" should not be sent to them.
+                      This is useful for handling admin, dummy, and guest logins.
+
+              _M_a_i_l _F_i_l_t_e_r_i_n_g
+
+                 These  options  are  only  available  if  you  compiled   _M_H   with
+                 "options MF".
+
+                 uucpchan: name of _U_U_C_P channel
+                      Usually "UUCP".  This has no equivalent in the  _M_H  configura-
+                      tion file.
+
+                 uucpldir: /usr/spool/mail
+                      The name of the directory where _U_U_C_P maildrops are kept.  This
+                      has no equivalent in the _M_H configuration file.
+
+                 uucplfil:
+                      The name of the maildrop file  in  the  directory  where  _U_U_C_P
+                      maildrops  are  kept.  If this is empty, the user's login name
+                      is used.  This has no equivalent in the _M_H configuration file.
+
+                 umincproc: /usr/local/lib/mh/uminc
+                      The path to the program that filters _U_U_C_P-style  maildrops  to
+                      _M_M_D_F-style maildrops.
+
+              _S_t_a_n_d-_A_l_o_n_e _D_e_l_i_v_e_r_y
+
+                 These options are only available if you compiled _M_H to  use  stand-
+                 alone delivery (i.e., "mts: mh").
+
+                 mailqdir: /usr/spool/netmail
+                      The directory where network mail is queued.
+
+                 tmailqdir: /usr/tmp
+                      The directory where network mail queue files are built.
+
+                 syscpy: 1
+                      If ON, unauthorized mail is copied to the overseer.
+
+                 overseer: root
+                      The user that receives reports of unauthorized mail.
+
+                 mailer: root
+                      The user acting for the mail system.
+
+                 fromtmp: /tmp/rml.f.XXXXXX
+                      The _m_k_t_e_m_p template for storing from lines.
+
+                 msgtmp: /tmp/rml.m.XXXXXX
+                      The _m_k_t_e_m_p template for storing the rest of the message.
+
+                 errtmp: /tmp/rml.e.XXXXXX
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            MH-TAILOR(5)                      -7-                       MH-TAILOR(5)
+
+
+                      The _m_k_t_e_m_p template for  storing  error  messages  from  other
+                      mailers.
+
+                 tmpmode: 0600
+                      The octal mode which temporary files are set to.
+
+                 okhosts: /usr/local/lib/mh/Rmail.OKHosts
+                      A file containing a list of hosts that can send ARPAnet mail.
+
+                 okdests: /usr/local/lib/mh/RMail.OKDests
+                      A file containing a list of  hosts  that  can  always  receive
+                      mail.
+
+              _T_h_e `/_s_m_t_p' _M_T_S _S_u_f_f_i_x
+
+                 These options are only  available  if  you  compiled  _M_H  with  the
+                 "/smtp" suffix to your "mts:" configuration.
+
+                 hostable: /usr/local/lib/mh/hosts
+                      The exceptions file for /etc/hosts used by _p_o_s_t to try to find
+                      official names.  The format of this file is quite simple:
+
+                           1. Comments are surrounded by sharp (`#') and newline.
+                           2. Words are surrounded by white space.
+                           3. The first word on the line is the official name  of  a
+                           host.
+                           4. All words following the official names are aliases for
+                           that host.
+
+                 servers: localhost \01localnet
+                      A lists of hosts and networks which to look for  SMTP  servers
+                      when posting local mail.  It turns out this is a major win for
+                      hosts which don't run an message transport system.  The  value
+                      of  "servers"  should  be one or more items.  Each item is the
+                      name of either a host or a net (in the  latter  case,  precede
+                      the  name  of  the  net by a \01).  This list is searched when
+                      looking for a smtp server to post mail.  If a host is present,
+                      the SMTP port on that host is tried.  If a net is present, the
+                      SMTP port on each host in that net is tried.  Note that if you
+                      are  running  with  the BIND code, then any networks specified
+                      are ignored (sorry, the interface went away under BIND).
+
+              _S_e_n_d_M_a_i_l
+
+                 This option is only available if you compiled _M_H to use _S_e_n_d_M_a_i_l as
+                 your delivery agent (i.e., "mts: sendmail").
+
+                 sendmail: /usr/lib/sendmail
+                      The pathname to the _s_e_n_d_m_a_i_l program.
+
+              _P_o_s_t _O_f_f_i_c_e _P_r_o_t_o_c_o_l
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            MH-TAILOR(5)                      -8-                       MH-TAILOR(5)
+
+
+                 This option is only available if you compiled _M_H with  POP  support
+                 enabled (i.e., "pop: on").
+
+                 pophost:
+                      The name of the default POP service host.  If this is not set,
+                      then _M_H looks in the standard maildrop areas for waiting mail,
+                      otherwise the named POP service host is consulted.
+
+              _B_B_o_a_r_d_s _D_e_l_i_v_e_r_y
+
+                 This  option  is  only  available   if   you   compiled   _M_H   with
+                 "bbdelivery: on".
+
+                 bbdomain:
+                      The local BBoards domain (a UCI hack).
+
+              _B_B_o_a_r_d_s & _T_h_e _P_O_P
+
+                 These  options  are  only  available  if  you  compiled   _M_H   with
+                 "bboards: pop" and "pop: on".
+
+                 popbbhost:
+                      The POP service host which also acts as a BBoard server.  This
+                      variable should be set on the POP BBoards client host.
+
+                 popbbuser:
+                      The guest account on the POP/BB service host.  This should  be
+                      a  different  login ID than either the POP user or the BBoards
+                      user.  (The user-id "ftp" is highly recommended.)  This  vari-
+                      able  should be set on both the POP BBoards client and service
+                      hosts.
+
+                 popbblist: /usr/local/lib/mh/hosts.popbb
+                      A file containing of lists of hosts that are  allowed  to  use
+                      the  POP  facility  to access BBoards using the guest account.
+                      If this file is not present, then  no  check  is  made.   This
+                      variable should be set on the POP BBoards service host.
+
+              _B_B_o_a_r_d_s & _T_h_e _N_N_T_P
+
+                 This  option  is  only  available   if   you   compiled   _M_H   with
+                 "bboards: nntp" and "pop: on".
+
+                 nntphost:
+                      The host which  provides  the  NNTP  service.   This  variable
+                      should be set on the NNTP BBoards client host.
+
+              _F_i_l_e _L_o_c_k_i_n_g
+
+                 A few words on locking: _M_H has a flexible locking system for making
+                 locks  on  files.   There are two mtstailor variables you should be
+                 aware of "lockstyle" and "lockldir".  The first controls the method
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            MH-TAILOR(5)                      -9-                       MH-TAILOR(5)
+
+
+                 of locking, the second says where lock files should be created.
+
+                 The "lockstyle" variable can take on three  values:  0,  1,  2.   A
+                 value  of 0 is useful on systems with kernel-level locking.  If you
+                 are on a BSD42 system, _M_H assumes you have the _f_l_o_c_k  system  call.
+                 On  other systems: define FLOCK if you want to use the _f_l_o_c_k system
+                 call; define LOCKF if you want to use the  _l_o_c_k_f  system  call;  or
+                 define  FCNTL  if you want to use the _f_c_n_t_l system call for kernel-
+                 level locking.  If you haven't configured _M_H  to  use  kernel-level
+                 locking,  a  locking  style  of 0 is considered the same as locking
+                 style 1.
+
+                 A value of 1 or 2 specifies that a file  should  be  created  whose
+                 existence  means "locked" and whose non-existence means "unlocked".
+                 A value of 1 says to construct the lockname by appending ".lock" to
+                 the  name of the file being locked.  A value of 2 says to construct
+                 the lockname by looking at the device and inode numbers of the file
+                 being  locked.   If  the "lockldir" variable is not specified, lock
+                 files will be created in the directory where the file being  locked
+                 resides.   Otherwise,  lock  files will be created in the directory
+                 specified by "lockldir".  Prior to installing _M_H,  you  should  see
+                 how locking is done at your site, and set the appropriate values.
+
+            _F_i_l_e_s
+                 /usr/local/lib/mh/mtstailor         tailor file
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 mh-gen(8), mh-mts(8)
+
+
+            _D_e_f_a_u_l_t_s
+                 As listed above
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            MH-MTS(8)                         -10-                         MH-MTS(8)
+
+
+            _N_A_M_E
+                 mh-mts - the MH interface to the message transport system
+
+            _S_Y_N_O_P_S_I_S
+                 SendMail
+
+                 Zmailer
+
+                 MMDF (any release)
+
+                 stand-alone
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 _M_H can use a wide range of message  transport  systems  to  deliver
+                 mail.   Although the _M_H administrator usually doesn't get to choose
+                 which MTS to use (since  it's  already  in  place),  this  document
+                 briefly describes the interfaces.
+
+                 When communicating with _S_e_n_d_M_a_i_l, _M_H always uses the SMTP  to  post
+                 mail.   Depending  on the _M_H configuration, _S_e_n_d_M_a_i_l may be invoked
+                 directly (via a _f_o_r_k and an _e_x_e_c), or _M_H may open a TCP/IP  connec-
+                 tion to the SMTP server on the localhost.
+
+                 When communicating with _z_m_a_i_l_e_r, the _S_e_n_d_M_a_i_l compatibility program
+                 is  required  to  be  installed  in /usr/lib.  _M_H communicates with
+                 _z_m_a_i_l_e_r  by  using  the  SMTP.   It  does  this  by  invoking   the
+                 /usr/lib/sendmail  compatibility  program  directly, with the `-bs'
+                 option.
+
+                 When communicating with _M_M_D_F, normally _M_H uses the  "mm_"  routines
+                 to  post  mail.   However,  depending  on  the _M_H configuration, _M_H
+                 instead may open a TCP/IP connection to  the  SMTP  server  on  the
+                 localhost.
+
+                 When using the stand-alone system (NOT  recommended),  _M_H  delivers
+                 local  mail  itself  and queues _U_U_C_P and network mail.  The network
+                 mail portion will probably have to be modified to reflect the local
+                 host's  tastes,  since there is no well-known practice in this area
+                 for all types of UNIX hosts.
+
+                 If you are running a UNIX system with TCP/IP networking, then it is
+                 felt  that  the best interface is achieved by using either _S_e_n_d_M_a_i_l
+                 or _M_M_D_F with the SMTP option.  This gives greater flexibility.   To
+                 enable this option you append the /smtp suffix to the mts option in
+                 the _M_H configuration.  This yields two primary  advantages:  First,
+                 you  don't  have to know where _s_u_b_m_i_t or _S_e_n_d_M_a_i_l live.  This means
+                 that _M_H binaries (e.g., _p_o_s_t ) don't have to have this  information
+                 hard-coded,  or can run different programs altogether; and, second,
+                 you can post mail with the server  on  different  systems,  so  you
+                 don't  need either _M_M_D_F or _S_e_n_d_M_a_i_l on your local host.  Big win in
+                 conserving cycles and disk space.  Since _M_H supports the notion  of
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            MH-MTS(8)                         -11-                         MH-MTS(8)
+
+
+                 a server search-list in this respect, this approach can be tolerant
+                 of faults.  Be sure to set "servers:" as described in  mh-tailor(8)
+                 if you use this option.
+
+                 There are four disadvantages to using the SMTP option: First,  only
+                 UNIX  systems  with TCP/IP are supported.  Second, you need to have
+                 an SMTP server running somewhere on any network your local host can
+                 reach.   Third, this bypasses any authentication mechanisms in _M_M_D_F
+                 or _S_e_n_d_M_a_i_l.  Fourth, the file  /etc/hosts  is  used  for  hostname
+                 lookups  (although  there  is  an  exception file).  In response to
+                 these disadvantages though: First, there's got to be an SMTP server
+                 somewhere around if you're in the Internet or have a local network.
+                 Since the server search-list  is  very  general,  a  wide-range  of
+                 options are possible.  Second, SMTP should be fixed to have authen-
+                 tication mechanisms in it, like POP.  Third, _M_H won't choke on mail
+                 to  hosts  whose  official  names  it can't verify, it'll just plug
+                 along (and besides if you enable the  BERK  or  DUMB  configuration
+                 options, _M_H ignores the hosts file altogether).
+
+            _F_i_l_e_s
+                 /usr/local/lib/mh/mtstailor         tailor file
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 _M_M_D_F-_I_I: _A _T_e_c_h_n_i_c_a_l _R_e_v_i_e_w, Proceedings, Usenix Summer '84 Confer-
+                 ence
+                 _S_E_N_D_M_A_I_L -- _A_n _I_n_t_e_r_n_e_t_w_o_r_k _M_a_i_l _R_o_u_t_e_r
+                 mh-tailor(8), post(8)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+            _B_u_g_s
+                 The /usr/local/lib/mh/mtstailor file ignores the information in the
+                 _M_M_D_F-_I_I tailoring file.  It should not.
+
+
+
+
+
+
+
+
+                 [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+
+
+
+                                                _3. _B_B_O_A_R_D_S
+
+
+
+
+
+                      The UCI BBoards facility has two aspects: message reading, and mes-
+                 sage  delivery.   The configuration directives applicable to BBoards are
+                 "bboards: on/off/pop/nntp" and "bbdelivery: on/off".
+
+
+                 _B_B_o_a_r_d _D_e_l_i_v_e_r_y
+
+                      If you enabled BBoards delivery ("bbdelivery:  on")  during  confi-
+                 guration,  then  the initial environment for bboards delivery was set-up
+                 during installation.  A BBoard called "system" is established, which  is
+                 the BBoard for general discussion.
+
+                      To add more BBoards,  become  the  "bboards"  user,  and  edit  the
+                 /usr/spool/bboards/BBoards  file.  The file support/bboards/Example is a
+                 copy of the /usr/spool/bboards/BBoards file that we use  at  UCI.   When
+                 you add a BBoard, you don't have to create the files associated with it,
+                 the BBoards delivery system will do that automatically.
+
+                      Private BBoards may be created.   To  add  the  fictitious  private
+                 BBoard  "hacks",  add  the appropriate entry to the BBoards file, create
+                 the empty file /usr/spool/bboards/hacks.mbox (or whatever),  change  the
+                 mode  of  this  file to 0640, and change the group of the file to be the
+                 groupid of the people that you want to be able to read it.  Also be sure
+                 to add the "bboards" user to this group (in /etc/group), so the archives
+                 can be owned correctly.
+
+                      By using the special INVIS  flag  for  a  BBoard,  special  purpose
+                 BBoards  may be set-up which are invisible to the _M_H user.  For example,
+                 if a site distributes a BBoard both locally to a number of machines  and
+                 to a number of distant machines.  It might be useful to have two distri-
+                 bution lists: one for all machines on the list, and the other for  local
+                 machines  only.  This is actually very simple to do.  For the main list,
+                 put the standard entry of information in the  /usr/spool/bboards/BBoards
+                 file, with the complete distribution list.  For the local machines list,
+                 and add a similar entry to the /usr/spool/bboards/BBoards file.  All the
+                 fields should be the same except three: the BBoard name should reflect a
+                 local designation (e.g., "l-hacks"), the distribution list  should  con-
+                 tain only machines at the local site, and the flags field should contain
+                 the INVIS flag.  Since the  two  entries  share  the  same  primary  and
+                 archive  files,  messages  sent  to either list are read by local users,
+                 while only thoses messages sent to the main list are read by all users.
+
+                      Two automatic facilities for dealing with BBoards exist:  automatic
+                 archiving and automatic aliasing.  The file support/bboards/crontab con-
+                 tains some entries that you should add to your /usr/lib/crontab file  to
+                 run  the  specified  programs at times that are convenient for you.  The
+
+                                                   -12-
+
+
+
+
+
+
+
+
+
+                                                   -13-
+
+
+                 bboards.daily file is run once a day and generates an alias file for _M_H.
+                 By  using  this  file,  users of _M_H can use, for example, "unix-wizards"
+                 instead of "unix-wizards@brl-vgr" when they want to send  a  message  to
+                 the  "unix-wizards"  discussion  group.   This is a major win, since you
+                 just have to know the name of the group,  not  the  address  where  it's
+                 located.
+
+                      The bboards.weekly file is run once a week and handles old messages
+                 (those  received  more than 12 days ago) in the BBoards area.  In short,
+                 those BBoards which are marked for automatic archiving will  have  their
+                 old  messages  placed  in  the /usr/spool/bboards/archive/ area, or have
+                 their old messages removed.  Not only does this make BBoards  faster  to
+                 read,  but it conveniently partitions the new messages from the old mes-
+                 sages so you can easily put the old messages on  tape  and  then  remove
+                 them.   It  turns out that this automatic archiving capability is also a
+                 major win.
+
+                      At UCI, our policy is to save archived messages on tape (every  two
+                 months  or so).  We use a program called _b_b_t_a_r to implement our particu-
+                 lar policy.  Since some BBoards are private (see  above),  we  save  the
+                 archives  on two tapes: one containing the world-readable archives (this
+                 tape is read-only accessible to all users by calling the operator),  and
+                 the  other  containing  the  non-world-readable  ones (this tape is kept
+                 locked-up somewhere).
+
+
+                 _B_B_o_a_r_d_s _w_i_t_h _t_h_e _P_O_P
+
+                      If you configured _M_H with "bboards: pop" and "pop: on", then the _M_H
+                 user is allowed to read BBoards on a server machine instead of the local
+                 host (thus saving disk space).  For completely transparent behavior, the
+                 administrator  may  set  certain  variables in the mtstailor file on the
+                 client host.  The variable "popbbhost" indicates the host where  BBoards
+                 are kept (it doesn't have to be the POP service host, but this host must
+                 run both a POP server and the BBoards system).  The variable "popbbuser"
+                 indicates  the  guest  account  on this host for BBoards.  This username
+                 should not be either the POP user or  the  BBoards  user.   Usually  the
+                 anonymous  FTP  user  (ftp)  is  the best choice.  Finally, the variable
+                 "popbblist" indicates the name of a file which contains a list of  hosts
+                 (one to a line, official host names only) which should be allowed to use
+                 the POP facility to access BBoards via the guest account.  (If the  file
+                 is not present, then no check is made.)
+
+                      The "popbbuser" variable should be set on both the client and  ser-
+                 vice host.  The "popbbhost" variable need be set only on the client host
+                 (the  value,  of  course,  is  the  name  of  the  service  host).   The
+                 "popbblist" variable need be set only on the service host.
+
+                      Finally, on the client host, if a POP service host  is  not  expli-
+                 citly given by the user (i.e., "popbbhost" is implicitly used), then _b_b_c
+                 will explicitly check the local host prior  to  contacting  the  service
+                 host.   This  allows  each  POP  client host to have a few local BBoards
+
+
+
+
+
+
+
+
+
+
+
+                                                   -14-
+
+
+                 (e.g., each host could have one called "system"), and then have the  POP
+                 service host used for all the rest (a site-wide BBoard might be known as
+                 "general").
+
+
+                 _B_B_o_a_r_d_s _w_i_t_h _t_h_e _N_N_T_P
+
+                      If you configured _M_H with "bboards: nntp" and "pop: on",  then  the
+                 _M_H  user  is  allowed to read the Network News on a server machine using
+                 the standard _b_b_c command.   For  completely  transparent  behavior,  the
+                 administrator  may  set the "nntphost" variable in the mtstailor file to
+                 indicate the host where the Network News is kept.  The "nntphost"  vari-
+                 able  should be set only on the client host Finally, on the client host,
+                 if an NNTP service host is not  explicitly  given  by  the  user  (i.e.,
+                 "nntphost" is implicitly used), then _b_b_c will explicitly check the local
+                 host prior to contacting the service host.  This allows each NNTP client
+                 host  to have a few local BBoards (e.g., each host could have one called
+                 "system"), and then have the NNTP service host used for to read the Net-
+                 work News.
+
+                      Reading  BBoards  via  the  POP  and  via  the  NNTP  are  mutually
+            exclusive.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            BBOARDS(5)                        -15-                        BBOARDS(5)
+
+
+            _N_A_M_E
+                 BBoards - BBoards database
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/spool/bboards/BBoards
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The BBoards database contains for each BBoard the following  infor-
+                 mation:
+
+                 _f_i_e_l_d               _v_a_l_u_e
+                 name                the name of the BBoard
+                 aliases             local aliases for the BBoard
+                                     (separated by commas)
+                 primary file        the .mbox file
+                 encrypted password  leadership password
+                 leaders             local list maintainers (separated by commas)
+                                     usernames from the _p_a_s_s_w_d (5) file,
+                                     or groupnames preceded by `=' from the
+                                     _g_r_o_u_p (5) file
+                 network address     the list address
+                 request address     the list maintainer's address
+                 relay               the host acting as relay for the local domain
+                 distribution sites  (separated by commas)
+                 flags               special flags (see <bboards.h>)
+
+                 This is an ASCII file.  Each field within each  BBoard's  entry  is
+                 separated from the next by a colon.  Each BBoard entry is separated
+                 from the next by a new-line.  If the password  field  is  null,  no
+                 password  is  demanded;  if  it contains a single asterisk, then no
+                 password is valid.
+
+                 This file resides in the home directory  of  the  login  "bboards".
+                 Because  of  the  encrypted passwords, it can and does have general
+                 read permission.
+
+            _F_i_l_e_s
+                 /usr/spool/bboards/BBoards          BBoards database
+
+
+            _S_e_e _A_l_s_o
+                 bbaka(8), bbexp(8), bboards (8), bbtar(8)
+
+
+            _B_u_g_s
+                 A binary indexed file format should be available for fast access.
+
+                 Appropriate precautions must be taken  to  lock  the  file  against
+                 changes  if  it is to be edited with a text editor.  A _v_i_b_b program
+                 is needed.
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            BBOARDS(5)                        -16-                        BBOARDS(5)
+
+
+            _N_A_M_E
+                 bbaka - generate an alias list for BBoards
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/spool/bboards/bbaka [system]
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The _b_b_a_k_a program reads the BBoards database and  produces  on  its
+                 standard output a file suitable for inclusion in either the _M_M_D_F-_I_I
+                 aliases file (if the argument `system' is given).  If the  argument
+                 is  not  given,  then  _b_b_a_k_a produces on its standard output a file
+                 suitable for becoming the /usr/local/lib/mh/BBoardsAliases file.
+
+            _F_i_l_e_s
+                 /usr/spool/bboards/BBoards          BBoards database
+                 /usr/local/lib/mh/BBoardsAliases    BBoards aliases file for _M_H
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 bboards(5)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            BBEXP(8)                          -17-                          BBEXP(8)
+
+
+            _N_A_M_E
+                 bbexp - expunge the BBoards area
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/spool/bboards/bbexp [-_f_i_r_s_t-_m_e_t_r_i_c] [-_s_e_c_o_n_d-_m_e_t_r_i_c]
+                      [bboards ...]
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The _b_b_e_x_p program reads the  BBoards  database  and  calls  _m_s_h  to
+                 archive the named BBoards (or all BBoards if none are specified).
+
+                 The first-metric (which defaults to 12) gives the age  in  days  of
+                 the  "BB-Posted:" field for messages which should be expunged.  The
+                 second-metric (which defaults to 20) gives the age in days  of  the
+                 "Date:"  field  for messages which should be expunged.  Any message
+                 which meets either metric  will  be  either  archived  or  removed,
+                 depending on what the _B_B_o_a_r_d_s (5) file says.
+
+            _F_i_l_e_s
+                 /usr/spool/bboards/BBoards          BBoards database
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 msh(1), bboards(5)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            BBOARDS(8)                        -18-                        BBOARDS(8)
+
+
+            _N_A_M_E
+                 bboards - BBoards channel/mailer
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/mmdf/chans/bboards fd1 fd2 [y]
+
+                 /usr/local/lib/mh/sbboards bboard ...
+
+                 /usr/local/lib/mh/sbboards file maildrop directory bboards.bboard
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 For _M_M_D_F, the BBoards channel delivers mail to the BBoards  system.
+                 For  _S_e_n_d_M_a_i_l and stand-alone _M_H, the SBBoards mailer performs this
+                 task.
+
+                 For each address given, these programs consult the _b_b_o_a_r_d_s (5) file
+                 to  ascertain  information  about  the BBoard named by the address.
+                 The programs then perform local delivery,  if  appropriate.   After
+                 that,  with the exception of _s_b_b_o_a_r_d_s running under stand-alone _M_H,
+                 the programs perform redistribution, if appropriate.
+
+                 For redistribution, the return address is set  to  be  the  request
+                 address at the local host, so bad addresses down the line return to
+                 the nearest point of  authority.   If  any  failures  occur  during
+                 redistribution,  a  mail  message  is  sent  to  the  local request
+                 address.
+
+            _F_i_l_e_s
+                 /usr/local/lib/mh/mtstailor         tailor file
+                 /usr/spool/bboards/BBoards          BBoards database
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 bboards(5), bbaka(8)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            BBTAR(8)                          -19-                          BBTAR(8)
+
+
+            _N_A_M_E
+                 bbtar - generate the names of archive files to be put to tape
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/spool/bboards/bbtar [private] [public]
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The _b_b_t_a_r program reads the BBoards database and  produces  on  its
+                 standard  output  the names of BBoards archives which should be put
+                 to tape, for direct use in a _t_a_r (1) command.
+
+                 If the argument `private' is given, only private BBoards  are  con-
+                 sidered.   If  the  argument `public' is given, only public BBoards
+                 are considered.  This lets  the  BBoards  administrator  write  two
+                 tapes,  one  for  general read-access (the public BBoards), and one
+                 for restricted access.  The default is all BBoards
+
+                 For example:
+
+                      cd archive              # change to the archive directory
+                      tar cv `bbtar private`  # save all private BBoard archives
+
+                 After the archives have  been  saved  to  tape,  they  are  usually
+                 removed.  The archives are then filled again, usually automatically
+                 by cron jobs which run _b_b_e_x_p (8).
+
+            _F_i_l_e_s
+                 /usr/spool/bboards/BBoards          BBoards database
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 bboards(5), bbexp(8)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+
+
+                 [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+
+
+
+                                                  _4. _P_O_P
+
+
+
+
+
+                      For POP (Post Office Protocol) client hosts, you need to  edit  the
+                 /usr/local/lib/mh/mtstailor  file to know about two hosts: the SMTP ser-
+                 vice host and the POP service  host.   Normally,  these  are  the  same.
+                 Change  the "localname" field of the mtstailor file of _M_H in the file to
+                 be the name of the POP service host.  This makes replies  to  mail  gen-
+                 erated  on  the POP client host possible, since _M_H will consider use the
+                 hostname of the POP service host as  the  local  hostname  for  outgoing
+                 mail.   Also  set  the value of "pophost" to this value.  This tells _i_n_c
+                 and _m_s_g_c_h_k to use POP instead of looking  for  mail  locally.   Finally,
+                 make  sure  the value of "servers" includes the name of the SMTP service
+                 host.  The recommended value for "servers" is:
+
+                      servers: SMTP-service-host localhost \01localnet
+
+                      If you want more information on the Post Office  Protocol  used  by
+                 _M_H,      consult      the      files     support/pop/rfc1081.txt     and
+                 support/pop/rfc1082.txt which describe the _M_H version of the POP: POP3.
+
+                      For POP service hosts, you need to run  a  daemon,  _p_o_p_d (8).   The
+                 daemon should start at multi-user boot time, so adding the lines:
+
+                      if [ -f /etc/popd ]; then
+                          /etc/popd & echo -n ' pop'                  >/dev/console
+                      fi
+
+                 to the /etc/rc.local file is sufficient.
+
+                      The port assigned to the POP3 protocol is  "110".   For  historical
+                 reasons,  many  sites are using port "109" which is the port assigned to
+                 the "POP" (version 1 and 2) protocol.  The configuration option "POPSER-
+                 VICE"  is  the  name of the port number that _M_H POP will try to use, and
+                 defaults to the name "pop".
+
+                      To generate _M_H to use newer assigned port number, in your _M_H config
+                 file, add:
+
+                      options POPSERVICE='"pop3"'
+
+                 And on both the POP client and service hosts, you  need  to  define  the
+                 port that the POP service uses.  Add the line:
+
+                      pop3            110/tcp
+
+                 to the /etc/services file (if it's not already there).
+
+
+
+                                                   -20-
+
+
+
+
+
+
+
+
+
+                                                   -21-
+
+
+                      There are two ways to administer POP: In "naive" mode, each user-id
+                 in  the  _p_a_s_s_w_d (5) file is considered a POP subscriber.  No changes are
+                 required for the mailsystem on the  POP  service  host.   However,  this
+                 method  requires  that each POP subscriber have an entry in the password
+                 file.  The POP server will fetch the user's mail from wherever maildrops
+                 are kept on the POP service host.  This means that if maildrops are kept
+                 in the user's home directory, then each POP subscriber must have a  home
+                 directory.
+
+                      In "smart" mode (enabled via "DPOP" being given as a  configuration
+                 option),  the  list  of  POP subscribers and the list of login users are
+                 completely separate name spaces.  A separate database (simple file simi-
+                 lar  to  the  _B_B_o_a_r_d_s (5) file) is used to record information about each
+                 POP subscriber.  Unfortunately, the local mailsystem must be changed  to
+                 reflect  this.   This  requires  two changes (both of which are simple):
+                 First, the aliasing  mechanism  is  augmented  so  that  POP  subscriber
+                 addresses are diverted to a special delivery mechanism.  _M_H comes with a
+                 program, _p_o_p_a_k_a (8), which generates the additional  information  to  be
+                 put  in the mailsystem's alias file.  Second, a special POP channel (for
+                 MMDF-II) or POP mailer (for SendMail) performs the actual delivery (_m_h._6
+                 supplies  both).   All  it really does is just place the mail in the POP
+                 spool area.
+
+                      These two different philosophies are not compatible on the same POP
+                 service  host:  one or the other, but not both may be run.  Clever mail-
+                 system people will note that the POP mechanism is really a special  case
+                 of the more general BBoards mechanism.
+
+                      In addition,  there  is  one  user-visible  difference,  which  the
+                 administrator  controls  the availability of.  The difference is whether
+                 the POP subscriber must supply a password to the POP server:  The  first
+                 method  uses  the  standard  ARPA  technique of sending a username and a
+                 password.  The appropriate programs (_i_n_c,  _m_s_g_c_h_k,  and  possibly  _b_b_c )
+                 will prompt the user for this information.
+
+                      The second method (which is enabled via "RPOP"  being  given  as  a
+                 configuration  option)  uses  the Berkeley UNIX reserved port method for
+                 authentication.  This requires that the two  or  three  mentioned  above
+                 programs  be  _s_e_t_u_i_d to root.  (There are no known holes in any of these
+                 programs.)
+
+                      To add a POP subscriber, for the first method, one  simply  follows
+                 the  usual procedures for adding a new user, which eventually results in
+                 adding a line to the _p_a_s_s_w_d (5) file; for the second  method,  one  must
+                 edit the POP database file (kept in the home directory of the POP user),
+                 and then run the _p_o_p_a_k_a program.  The output of this program  is  placed
+                 in the aliases file for the transport system (e.g., /usr/lib/aliases for
+                 SendMail).
+
+                      Authentication for POP subscribers differs  depending  on  the  two
+                 methods.   When  the user supplies a password for the POP session: under
+                 the first method, the contents of the  password  field  for  the  user's
+
+
+
+
+
+
+
+
+
+
+
+                                                   -22-
+
+
+                 entry  in the _p_a_s_s_w_d (5) is consulted; under the second method, the con-
+                 tents of the password field for the subscriber's entry  in  the  _p_o_p (5)
+                 file is consulted.  (To set this field, the _p_o_p_w_r_d (8) program is used.)
+
+                      If you are allowing  RPOP,  under  the  first  method,  the  user's
+                 ._r_h_o_s_t_s  file is consulted; under the second method, the contents of the
+                 network address field for the subscriber's entry in the _p_o_p (5) file  is
+                 consulted.
+
+                      In addition, a third authentication scheme is available.  When  the
+                 APOP configuration option is given, e.g.,
+
+                      options APOP='"/etc/pop.auth"'
+
+                 In this case, the server also allows a client to  supply  authentication
+                 credentials  to  provide for origin authentication and reply protection,
+                 but which do not involve sending a password in the clear over  the  net-
+                 work.  A POP authorization DB, having as its name the value of APOP con-
+                 figuration option, is used to keep track of this information.  This file
+                 is  created  and  manipulated  by the _p_o_p_a_u_t_h (8) program.  Because this
+                 file contains secret information, it must be  protected  mode  0600  and
+                 owned  by  the  super-user.  Hence, your first step after installing the
+                 software is to issue
+
+                      # popauth -init
+
+            which creates and initalizes the POP authorization DB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            POP(5)                            -23-                            POP(5)
+
+
+            _N_A_M_E
+                 POP - POP database of subscribers
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/spool/pop/POP
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The POP database has exactly the same  format  as  the  _B_B_o_a_r_d_s (5)
+                 database,  although  many  fields are unused.  Currently, only four
+                 fields are examined:
+
+                 _f_i_e_l_d               _v_a_l_u_e
+                 name                the POP subscriber
+                 primary file        the maildrop for the POP subscriber
+                                     (relative to the POP directory)
+                 encrypted password  the POP subscriber's password
+                 network address     the remote user allowed to RPOP
+
+                 This is an ASCII file.  Each field  within  each  POP  subscriber's
+                 entry  is  separated from the next by a colon.  Each POP subscriber
+                 is separated from the next by a new-line.  If the password field is
+                 null, then no password is valid.
+
+                 To add a new POP subscriber, edit the file adding a line such as
+
+                      mrose::mrose:::::::0
+
+                 Then, use _p_o_p_w_r_d to set the password for the  POP  subscriber.   If
+                 you wish to allow POP subscribers to access their maildrops without
+                 supplying a password (by using privileged ports), fill-in the  net-
+                 work address field, as in:
+
+                      mrose::mrose:::mrose@nrtc-isc::::0
+
+                 which permits "mrose@nrtc-isc" to access the maildrop for  the  POP
+                 subscriber "mrose".  Multiple network addresses may be specified by
+                 separating them with commas, as in:
+
+                      dave::dave:9X5/m4yWHvhCc::dave@romano.wisc.edu,dave@rsch.wisc.edu::::
+
+                 To  disable  a  POP subscriber from _r_e_c_e_i_v_i_n_g mail, set the primary
+                 file name to the empty string.  To prevent a  POP  subscriber  from
+                 _p_i_c_k_i_n_g-_u_p mail, set the encrypted password to "*" and set the net-
+                 work address to the empty string.
+
+                 This file resides in home directory of the login "pop".  Because of
+                 the  encrypted passwords, it can and does have general read permis-
+                 sion.
+
+            _F_i_l_e_s
+                 /usr/spool/pop/POP                  POP database
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            POP(5)                            -24-                            POP(5)
+
+
+            _S_e_e _A_l_s_o
+                 bboards(5), pop(8), popaka(8), popd(8), popwrd(8)
+
+
+            _B_u_g_s
+                 A binary indexed file format should be available for fast access.
+
+                 Appropriate precautions must be taken  to  lock  the  file  against
+                 changes  if it is to be edited with a text editor.  A _v_i_p_o_p program
+                 is needed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            POP(8)                            -25-                            POP(8)
+
+
+            _N_A_M_E
+                 pop - POP channel/mailer
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/mmdf/chans/pop fd1 fd2 [y]
+
+                 /usr/local/lib/mh/spop POP-subscriber ...
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 For _M_M_D_F-_I_I, the POP channel delivers mail to the  POP  spool  area
+                 for  later  retrieval  by  POP subscribers.  For _S_e_n_d_M_a_i_l, the SPOP
+                 mailer performs this task.
+
+                 For each address given, these programs consult the _p_o_p (5) file  to
+                 obtain  information  about the POP-subscriber named by the address.
+                 The programs then deliver the message to the  spool  area  for  the
+                 POP-subscriber.
+
+            _F_i_l_e_s
+                 /usr/local/lib/mh/mtstailor         tailor file
+                 /usr/spool/pop/POP                  POP database
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 bboards(5), bbaka(8)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            POPAKA(8)                         -26-                         POPAKA(8)
+
+
+            _N_A_M_E
+                 popaka - generate POP entries for SendMail or MMDF-II alias file
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/local/lib/mh/popaka
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The _p_o_p_a_k_a program reads the POP database and produces on its stan-
+                 dard  output  a  file  suitable  for  inclusion  in the SendMail or
+                 _M_M_D_F-_I_I aliases file.  The contents of this file  divert  mail  for
+                 POP subscribers to the POP channel.
+
+            _F_i_l_e_s
+                 /usr/spool/pop/POP                  POP database
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 pop(5)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            POPAUTH(8)                        -27-                        POPAUTH(8)
+
+
+            _N_A_M_E
+                 popauth - manipulate POP authorization DB
+
+            _S_Y_N_O_P_S_I_S
+                 popauth [-init] [-list] [-user name] [-help]
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The _p_o_p_a_u_t_h program allows a POP-subscriber to  change  the  secret
+                 value  used to generate their authentication credentials.  In addi-
+                 tion, the super-user or master POP user may  use  this  program  to
+                 either  initialize the database or to print public information from
+                 it.  _p_o_p_a_u_t_h is useful only when the APOP configuration  option  is
+                 defined.   (This  configuration  option defines the name of the POP
+                 authorization DB.)
+
+                 Under normal usage, _p_o_p_a_u_t_h prompts for a new secret, just like the
+                 _p_a_s_s_w_d  program.   It then updates the POP authorization DB accord-
+                 ingly.
+
+                 With the `-init' switch, the super-user  or  master  POP  user  can
+                 create a new (or zero the existing) POP authorization DB.
+
+                 With the `-list' switch, the super-user  or  master  POP  user  can
+                 print  out  public  information  about the named subscriber (or all
+                 subscribers).
+
+            _F_i_l_e_s
+                 /etc/pop.auth.*                     POP authorization DB
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 popd(8)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            POPD(8)                           -28-                           POPD(8)
+
+
+            _N_A_M_E
+                 popd - the POP server
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/etc/popd [-p portno] (under /etc/rc.local)
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The _p_o_p_d server implements the Post Office Protocol (version 3), as
+                 described in RFC1081 and RFC1082.  Basically, the server listens on
+                 the TCP port named "pop" for connections and enters  the  POP  upon
+                 establishing  a  connection.  The `-p' option overrides the default
+                 TCP port.  If the POP2 configuration option is  defined,  then  the
+                 server also implements version 2 of the protocol.  If the APOP con-
+                 figuration option is defined,  then  the  server  supports  a  non-
+                 standard  mechanism for identity-establishment in which authentica-
+                 tion credentials are used to provide for origin authentication  and
+                 reply  protection,  but  which do not involve sending a password in
+                 the clear over the network.  See _p_o_p_a_u_t_h(8) for more details.
+
+            _F_i_l_e_s
+                 /usr/spool/pop/POP                  POP database
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 _P_o_s_t _O_f_f_i_c_e _P_r_o_t_o_c_o_l - _v_e_r_s_i_o_n _3 (aka RFC-1081),
+                 _P_o_s_t _O_f_f_i_c_e  _P_r_o_t_o_c_o_l  -  _v_e_r_s_i_o_n  _3:  _E_x_t_e_n_d_e_d  _s_e_r_v_i_c_e  _o_f_f_e_r_i_n_g_s
+                 (RFC-1082),
+                 pop(5)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            POPD(8)                           -29-                           POPD(8)
+
+
+            _H_i_s_t_o_r_y
+                 For historical reasons, the _M_H POP defaults to using the port named
+                 "pop"  (109) instead of its newly assigned port named "pop3" (110).
+                 See the POPSERVICE configuration option for more details.
+
+                 Previous versions of the server (10/28/84) had the restriction that
+                 the  POP  client  may retrieve messages for login users only.  This
+                 restriction has been lifted, and  true  POB  support  is  available
+                 (sending  mail  to a mailbox on the POP service host which does not
+                 map to a user-id in the password file).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            POPWRD(8)                         -30-                         POPWRD(8)
+
+
+            _N_A_M_E
+                 popwrd - set password for a POP subscriber
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/local/lib/mh/popwrd POP-subscriber
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The _p_o_p_w_r_d program lets the super-user or the master POP user or  a
+                 "leader"  of a POP subscriber change the password field for the POP
+                 subscriber in the POP database.  This program is  very  similar  to
+                 the _p_a_s_s_w_d (1) program.
+
+                 Since only the super-user and the master POP user  may  change  any
+                 other  fields of the POP database (using an ordinary editor), it is
+                 possible for the system administrator to delegate responsibility to
+                 others to manage groups of POP subscribers.
+
+            _F_i_l_e_s
+                 /usr/spool/pop/POP                  POP database
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 pop(5)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+            _B_u_g_s
+                 Although _p_o_p_w_r_d does locking against other invocations  of  _p_o_p_w_r_d,
+                 editor  locking for the POP database in general is not implemented.
+                 A _v_i_p_o_p program is needed.
+
+
+
+
+
+
+
+
+
+
+
+                 [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+
+
+
+                                            _5. _M_A_I_L _F_I_L_T_E_R_I_N_G
+
+
+
+
+
+                      There was a time when users on a UNIX host might have had two mail-
+                 drops:  one  from  _M_M_D_F  and the other from _U_U_C_P.  This was really a bad
+                 problem since it prevented using a single user-interface on all of  your
+                 mail.  Furthermore, if you wanted to send a message to addresses on dif-
+                 ferent mailsystems, you couldn't send just one message.   To  solve  all
+                 these  problems, the notion of _m_a_i_l _f_i_l_t_e_r_i_n_g was developed that allowed
+                 sophisticated munging and relaying between the two pseudo-domains.
+
+                      _M_H will perform mail filtering, transparently, if given the MF con-
+                 figuration  option.   However,  with  the advent of _S_e_n_d_M_a_i_l and further
+                 maturation of _M_M_D_F, _M_H doesn't really need to  do  this  anymore,  since
+                 these message transport agents handle it.
+
+                      The mail-filtering stuff is too complicated.  It should be simpler,
+            but, protocol translation really _i_s difficult.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                              -31-
+
+
+
+
+
+
+
+
+
+            MF(1)                             -32-                             MF(1)
+
+
+            _N_A_M_E
+                 muinc, musift, uminc, umsift - mail filters
+
+            _S_Y_N_O_P_S_I_S
+                 /usr/local/lib/mh/muinc
+
+                 /usr/local/lib/mh/musift [files ...]
+
+                 /usr/local/lib/mh/uminc
+
+                 /usr/local/lib/mh/umsift [files ...]
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 The mail filters are a set of programs that filter  mail  from  one
+                 format  to another.  In particular, _U_U_C_P- and _M_M_D_F-style mail files
+                 are handled.
+
+                 _m_u_i_n_c filters mail from the user's _M_M_D_F maildrop  into  the  user's
+                 _U_U_C_P  maildrop;  similarly, _u_m_i_n_c filters mail from the user's _U_U_C_P
+                 maildrop into the user's _M_M_D_F maildrop.  These two programs respect
+                 each system's maildrop locking protocols.
+
+                 _m_u_s_i_f_t filters each file on the command line (or the standard input
+                 if  no  arguments are given), and places the result on the standard
+                 output in _U_U_C_P format.  The files (or standard input) are  expected
+                 to  be  in  _M_M_D_F format.  _u_m_s_i_f_t does the same thing filtering _U_U_C_P
+                 formatted files (or input), and places the _M_M_D_F formatted result on
+                 the  standard  output.  No locking protocols are used by these pro-
+                 grams.
+
+                 If the files aren't in the expected format, the mail  filters  will
+                 try to recover.  In really bad cases, you may lose big.
+
+            _F_i_l_e_s
+                 /usr/spool/mail/                    UUCP spool area for maildrops
+                 /usr/spool/mail/$USER               Location of standard maildrop
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 _P_r_o_p_o_s_e_d _S_t_a_n_d_a_r_d _f_o_r _M_e_s_s_a_g_e _H_e_a_d_e_r _M_u_n_g_i_n_g (aka RFC-886),
+                 inc(1)
+
+
+            _D_e_f_a_u_l_t_s
+
+
+            _C_o_n_t_e_x_t
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            MF(1)                             -33-                             MF(1)
+
+
+            _B_u_g_s
+                 Numerous; protocol translation is very difficult.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            RMAIL(8)                          -34-                          RMAIL(8)
+
+
+            _N_A_M_E
+                 rmail - UUCP interface to mail
+
+            _S_Y_N_O_P_S_I_S
+                 rmail address ...
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 _R_m_a_i_l is intended as a replacement for those systems without  _S_e_n_d_-
+                 _M_a_i_l  or  _M_M_D_F.   It  is  normally  invoked by _u_u_x on behalf of the
+                 remote _U_U_C_P site.  For each address, it decides where to  send  it:
+                 either locally, via another _U_U_C_P link, or via the Internet.
+
+                 _R_m_a_i_l implements a crude access control facility by consulting  the
+                 files  Rmail.OkHosts  and  Rmail.OkDests  in the /usr/local/lib/mh/
+                 directory.  Hosts listed in the former file can  send  messages  to
+                 anywhere  they please.  Hosts listed in the latter file can receive
+                 messages from anywhere.  Note that a host listed in the first  file
+                 is implicitly listed in the second file.
+
+            _F_i_l_e_s
+                 /usr/local/lib/mh/mtstailor         tailor file
+                 /usr/local/lib/mh/Rmail.OkHosts     list of privileged hosts
+                 /usr/local/lib/mh/Rmail.OkDests     list of privileged destinations
+
+
+            _P_r_o_f_i_l_e _C_o_m_p_o_n_e_n_t_s
+                 None
+
+
+            _S_e_e _A_l_s_o
+                 mf(1)
+
+
+            _D_e_f_a_u_l_t_s
+                 None
+
+
+            _C_o_n_t_e_x_t
+                 None
+
+
+
+
+
+
+
+
+
+
+
+
+
+                 [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+
+
+
+                                              _6. _M_H _H_A_C_K_I_N_G
+
+
+
+
+
+                      Finally, here's a little information on modifying the  _M_H  sources.
+                 A word of advice however:
+
+
+                                                  _D_O_N'_T
+
+
+
+                 If you really want new _M_H capabilities, write a  shell  script  instead.
+                 After all, that's what UNIX is all about, isn't it?
+
+                      Here's the organization of the _M_H source tree.
+
+                      conf/        configurator tree
+                      config/      compiled configuration constants
+                      dist/        distributor
+                      doc/         manual entries
+                      h/           include files
+                      miscellany/  various sundries
+                      mts/         MTS-specific areas
+                                   mh/        standalone delivery
+                                   mmdf/      MMDF-I, MMDF-II
+                                   sendmail/  SendMail, SMTP
+                      papers/      papers about _M_H
+                      sbr/         subroutines
+                      support/     support programs and files
+                                   bboards/   UCI BBoards facility
+                                   general/   templates
+                                   pop/       POP facility
+                      tma/         Trusted Mail Agent (not present in all distributions)
+                      uip/         programs
+                      zotnet/      MTS-independent areas
+                                   bboards/   UCI BBoards facility
+                                   mf/        Mail Filtering
+                                   mts/       MTS constants
+                                   tws/       date routines
+
+
+
+
+
+
+
+
+
+
+
+                                              -35-
+
+
+
+
+
+
+
+
+
+            MH-HACK(8)                        -36-                        MH-HACK(8)
+
+
+            _N_A_M_E
+                 mh-hack - how to hack MH
+
+            _S_Y_N_O_P_S_I_S
+                 big hack attack
+
+            _D_E_S_C_R_I_P_T_I_O_N
+
+                 This is a description of how one can modify the _M_H system.  The  _M_H
+                 distribution has a lot of complex inter-relations, so before you go
+                 modifying any code, you should read this  and  understand  what  is
+                 going on.
+
+                 ADDING A NEW PROGRAM
+                      Suppose you want to create a new _M_H command  called  "pickle".
+                      First, create and edit "pickle.c" in the uip/ directory.  Next
+                      edit conf/makefiles/uip to include "pickle".   This  file  has
+                      directions  at  the  end  of it which explain how it should be
+                      modified.  Next, update any documentation  (described  below).
+                      At  this  point  you  can  re-configure _M_H.  See _m_h-_g_e_n(_8) for
+                      instructions on how to do this (basically, you want  "mhconfig
+                      MH").
+
+                 ADDING A NEW SUBROUTINE
+                      Suppose you want to create a new _M_H routine  called  "pickle".
+                      First, create and edit "pickle.c" in the sbr/ directory.  Next
+                      edit conf/makefiles/sbr to include "pickle".   This  file  has
+                      directions  at  the  end  of it which explain how it should be
+                      modified.  You should modify  config/mh.h  to  define  "pickle
+                      ();".   Similarly,  sbr/llib-lsbr should be modified for _l_i_n_t.
+                      At this point you can re-configure _M_H.
+
+                 UPDATING DOCUMENTATION
+                      Edit whatever files you want in conf/doc/.  When documenting a
+                      new program, such as "pickle", you should create a manual page
+                      with the name "pickle.rf".  The file conf/doc/template  has  a
+                      manual page template that you can use.  If you are documenting
+                      a new program, then you should also update three other  files:
+                      The  file  conf/doc/mh.rf  should  be  modified to include the
+                      ".NA" section from "pickle.rf".  The file conf/doc/mh-chart.rf
+                      should   be   modified  to  include  the  ".SY"  section  from
+                      "pickle.rf".  Finally, the file conf/doc/MH.rf should be modi-
+                      fied  to  include a ".so pickle.me".  Naturally, none of these
+                      changes will be reflected in the configuration until you actu-
+                      ally run _m_h_c_o_n_f_i_g.
+
+            _F_i_l_e_s
+                 Too numerous to mention.  Honest.
+
+
+            _S_e_e _A_l_s_o
+                 mh-gen(8)
+
+            [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+            MH-HACK(8)                        -37-                        MH-HACK(8)
+
+
+            _B_u_g_s
+                 Hacking is an art, but most programmers are butchers, not artists.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                 [mh.6]                           MH.6.8                      UCI version
+
+
+
+
+
+
+
+
+
+
+
+
+                                            _7. _H_I_D_D_E_N _F_E_A_T_U_R_E_S
+
+
+
+
+
+                      The capabilities discussed here should not be used on a  production
+                 basis,  as they are either experimental, are useful for debugging _M_H, or
+                 are otherwise not recommended.
+
+
+
+                 _D_e_b_u_g _F_a_c_i_l_i_t_i_e_s
+
+                      The _m_a_r_k command has a `-debug' switch which essentially prints out
+                 all the internal _M_H data structures for the folder you're looking at.
+
+                      The _p_o_s_t command has a `-debug' switch which  does  everything  but
+                 actually  post  the  message  for you.  Instead of posting the draft, it
+                 sends it to the standard output.  Similarly, _s_e_n_d has a `-debug'  switch
+                 which gets passed to _p_o_s_t.
+
+                      Some _M_H commands look at envariables to determine debug-mode opera-
+                 tion of certain new facilities.  The current list of envariables is:
+
+                      MHFDEBUG     OVERHEAD facility
+                      MHLDEBUG     mhl
+                      MHPDEBUG     pick
+                      MHPOPDEBUG   POP transactions
+                      MHVDEBUG     window management transactions
+                      MHWDEBUG     alternate-mailboxes
+
+
+
+                 _F_o_r_w_a_r_d_i_n_g _M_a_i_l
+
+                      The _f_o_r_w and _m_h_l commands have  two  switches,  `-dashmunging'  and
+                 `-nodashmunging'  which enable or disable the prepending of `- ' in for-
+                 warded messages.  To use `-nodashmunging', you must use  an  _m_h_l  filter
+                 file.
+
+
+
+                 _S_e_n_d
+
+                      The _s_e_n_d command has two switches, `-unique' and `-nounique', which
+                 are  useful  to certain individuals who, for obscure reasons, do not use
+                 draft-folders.
+
+                      "Distribution Carbon Copy" addresses may be specified in  the  _D_c_c:
+                 header.  This header is removed before posting the message,and a copy of
+                 the message is distributed  to  each  listed  address.   This  could  be
+
+                                                   -38-
+
+
+
+
+
+
+
+
+
+                                                   -39-
+
+
+                 considered a form of Blind Carbon Copy which is best used for sending to
+                 an address which would never reply (such as an auto-archiver).
+
+
+
+                 _P_o_s_t_i_n_g _M_a_i_l
+
+                      If you're running a version of _M_H which talks directly to  an  _S_M_T_P
+                 server  (or  perhaps an advanced _M_M_D_F submit process), there are lots of
+                 interesting switches for your amusement which _s_e_n_d and _p_o_s_t understand:
+                      -mail         Use the _M_A_I_L command (default)
+                      -saml         Use the _S_A_M_L command
+                      -send         Use the _S_E_N_D command
+                      -soml         Use the _S_O_M_L command
+                      -snoop        Watch the _S_M_T_P transaction
+                      -client host  Claim to be "host" when posting mail
+                      -server host  Post mail with "host"
+
+                      The last switch is to be useful when _M_H resides on  small  worksta-
+                 tions  (or  PC:s) in a network--they can post their outgoing mail with a
+                 local relay, and reduce the load on the local  system.   On  POP  client
+                 hosts,  the  `-server host'  switch is defaulted appropriately using the
+                 SMTP search-list mechanism.  The _w_h_o_m command understands the last three
+                 switches.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                         _8. _C_O_N_F_I_G_U_R_A_T_I_O_N _O_P_T_I_O_N_S
+
+
+
+
+
+                      This manual was generated with the following configuration  options
+                 in effect:
+
+
+                 ________________________________________________________________________
+
+                             Generation Date             November 30, 1993
+                             Primary Directory           /usr/local/
+                             Secondary Directory         /usr/local/lib/mh/
+                             Maildrop Location           /usr/spool/mail/$USER
+                             Transport System            SendMail
+                 ________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                   -40-
+
+
+
+
+
+
+
+
+
+
+
+
+                                                 _C_O_N_T_E_N_T_S
+
+
+
+
+                 Section
+
+                    1.  INTRODUCTION ...............................................    1
+                      Scope of this document .......................................    1
+                      Summary ......................................................    1
+
+                    2.  THE MTS INTERFACE ..........................................    3
+                         MH-TAILOR .................................................    4
+                         MH-MTS ....................................................   10
+
+                    3.  BBOARDS ....................................................   12
+                      BBoard Delivery ..............................................   12
+                      BBoards with the POP .........................................   13
+                      BBoards with the NNTP ........................................   14
+                         BBOARDS ...................................................   15
+                         BBAKA .....................................................   16
+                         BBEXP .....................................................   17
+                         BBOARDS ...................................................   18
+                         BBTAR .....................................................   19
+
+                    4.  POP ........................................................   20
+                         POP .......................................................   23
+                         POP .......................................................   25
+                         POPAKA ....................................................   26
+                         POPAUTH ...................................................   27
+                         POPD ......................................................   28
+                         POPWRD ....................................................   30
+
+                    5.  MAIL FILTERING .............................................   31
+                         MF ........................................................   32
+                         RMAIL .....................................................   34
+
+                    6.  MH HACKING .................................................   35
+                         MH-HACK ...................................................   36
+
+                    7.  HIDDEN FEATURES ............................................   38
+                      Debug Facilities .............................................   38
+                      Forwarding Mail ..............................................   38
+                      Send .........................................................   38
+                      Posting Mail .................................................   39
+
+                    8.  CONFIGURATION OPTIONS ......................................   40
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                         THE RAND MH
+
+
+                                      MESSAGE HANDLING
+
+
+                                           SYSTEM:
+
+
+                                    ADMINISTRATOR'S GUIDE
+
+
+
+
+
+
+                                         UCI Version
+
+
+
+
+
+                                      Marshall T. Rose
+
+
+
+
+                                       _F_i_r_s_t _E_d_i_t_i_o_n:
+
+                                         _M_H _C_l_a_s_s_i_c
+
+                      (_N_o_t _t_o _b_e _c_o_n_f_u_s_e_d _w_i_t_h _a _w_e_l_l-_k_n_o_w_n _s_o_f_t _d_r_i_n_k)
+
+
+
+
+
+
+
+                                      November 30, 1993
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        6.8.3 #1[UCI]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
