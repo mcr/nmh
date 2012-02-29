@@ -11,6 +11,6 @@
 %; if you wish to use them.
 %;
 %<{nmh-from}%|%(void(localmbox))%>%(void(width))%(putaddr Resent-From: )
-%<{nmh-to}%(void(width))%(putaddr Resent-To: )%|Resent-To: %(msg) %{subject}%>
+%<{nmh-to}%(void(width))%(putaddr Resent-To: )%|Resent-To:%>
 %<{nmh-cc}%(void(width))%(putaddr Resent-cc: )%|Resent-cc:%>
 %<{nmh-fcc}%(void(width))%(putaddr Resent-fcc: )%|Resent-fcc:%>
