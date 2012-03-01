@@ -17,6 +17,7 @@ whom \- report to whom a message would go
 .RB [ \-draftmessage
 .IR msg ]
 .RB [ \-nodraftfolder ]
+.RB [ \-snoop ]
 .RI [ file ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -42,6 +43,12 @@ draft folder facility.  This is an advanced (and highly
 useful) feature.  Consult the
 .BR mh-draft (5)
 man page for more information.
+.PP
+The
+.B \-snoop
+switch can be used to view the SMTP transaction.  (Beware that the
+SMTP transaction may contain authentication information either in
+plaintext or easily decoded base64.)
 .PP
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
 additional alias files given by the
