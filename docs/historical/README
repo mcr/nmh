@@ -17,6 +17,9 @@ http://www.dtic.mil/cgi-bin/GetTRDoc?AD=ADA257836
 mh-6.8.5/ contains the entire MH 6.8.5, include source code and
 RCS files, and was downloaded from
 http://iweb.dl.sourceforge.net/project/rand-mh/MH/6.8.5/mh-6.8.5.tgz
+Some obviously unnecessary files were removed.  mh.rf and mh.me
+were renamed to mh-intro.rf and mh-intro.me, respectively, to avoid
+name clashes with other files on case-insensitive file systems.
 
 MH source code, versions 6.3 through 6.8.5, is archived under
 http://sourceforge.net/projects/rand-mh/files/
