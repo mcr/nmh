@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# Tests to see if bursting messages works correctly.
+#
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${MH_OBJ_DIR}/test/common.sh"
+
+setup_test
+
+#
+# Create a test message that we can burst
+#
+
+cat > "${MH_TEST_DIR}/Mail/inbox/11" <<EOF
+From: Test Burst Message <burst1@example.com>
+To: Test Recipient <recipient@example.com>
+Date: Friday, 29 Sep 2006 00:00:00
+Subject: Test digest
+
+------- Message one
+
+From: Mister Burster <burst2@example.com>
+To: Nobody 1 <nobody1@example.com>
+Date: Thursday, 28 Sep 2006 00:01:00
+Subject: Message one
+
+This is message one
+
+------- Message two
+
+From: Mister Burster <burst3@example.com>
+To: Nobody 2 <nobody2@example.com>
+Date: Thursday, 28 Sep 2006 00:02:00
+Subject: Message two
+
+This is message two
+For real.
+
+-------
+
+End of all messages
+EOF
+
+burst 11 || exit
+
+scan 11-last
+
+exit 0
