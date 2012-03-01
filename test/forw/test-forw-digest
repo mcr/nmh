@@ -24,7 +24,7 @@ cc4="CC User Four <ccuserfour@example.com>"
 fcc1="+nosuchmailbox"
 fcc2="+nosuchmailbox2"
 
-digestdate=$(date "+%A, %e %b %G")
+digestdate=$(date "+%A, %e %b %Y")
 
 cat > "$expected" <<EOF
 From:     ${from}
