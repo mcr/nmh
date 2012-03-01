@@ -24,7 +24,7 @@ cc4="CC User Four <ccuserfour@example.com>"
 fcc1="+nosuchmailbox"
 fcc2="+nosuchmailbox2"
 
-digestdate=$(date "+%A, %d %b %G")
+digestdate=$(date "+%A, %e %b %G")
 
 cat > "$expected" <<EOF
 From:     ${from}
@@ -71,6 +71,8 @@ forw -editor true -from "${from}" -to "${to1}" -to "${to2}" \
     -digest digest-test +inbox 1-6 || exit 1
 
 check "${expected}" "${actual}"
+
+rm -f "${actual}"
 
 #
 # Once more, but taking some of the defaults
