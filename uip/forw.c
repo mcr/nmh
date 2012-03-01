@@ -130,7 +130,7 @@ main (int argc, char **argv)
     int msgp = 0, anot = 0, inplace = 1, mime = 0;
     int issue = 0, volume = 0, dashstuff = 0;
     int nedit = 0, nwhat = 0, i, in;
-    int out, isdf = 0, msgnum;
+    int out, isdf = 0, msgnum = 0;
     int outputlinelen = OUTPUTLINELEN;
     int dat[5];
     char *cp, *cwd, *maildir, *dfolder = NULL;
