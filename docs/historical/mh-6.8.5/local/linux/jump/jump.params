@@ -1,6 +1,0 @@
-Name=/lib/libmh
-Text=0x63f00000
-Data=0x00000000
-Jump=0x00001000
-GOT=0x00001000
-Version=3.0

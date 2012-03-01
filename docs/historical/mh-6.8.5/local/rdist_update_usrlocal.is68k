@@ -1,6 +1,0 @@
-FILES = (ali anno bbc bbl burst comp dist folder folders forw inc mark mhmail
-	mhpath msgchk msh packf pick prompter refile repl rmf rmm scan send
-	show next prev sortm vmh whatnow whom)
-
-${FILES} -> (cip1 cip4)
-	install /usr/uci ;
