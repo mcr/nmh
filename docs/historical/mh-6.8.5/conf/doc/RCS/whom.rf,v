@@ -1,0 +1,186 @@
+head	1.7;
+access;
+symbols;
+locks; strict;
+
+
+1.7
+date	92.02.11.00.47.53;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.05.15.10.01;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.03.22.11.31.56;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.20.19.42.39;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.20.17.36.54;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.03.16.15.40.16;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.03.16.15.31.01;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@document Aliasfile may be more than one file
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: whom.rf,v 1.6 1990/04/05 15:10:01 sources Exp jromine $
+.SC WHOM 1
+.NA
+whom \- report to whom a message would go
+.SY
+whom
+\%[\-alias\ aliasfile]
+\%[\-check] \%[\-nocheck]
+\%[\-draft]
+\%[\-draftfolder\ +folder] \%[\-draftmessage\ msg] \%[\-nodraftfolder]
+\%[file]
+\%[\-help]
+.DE
+\fIWhom\fR is used to expand the headers of a message into a set of addresses
+and optionally verify that those addresses are deliverable at that time
+(if `\-check' is given).
+
+The `\-draftfolder\ +folder' and `\-draftmessage\ msg' switches invoke the
+\fIMH\fR draft folder facility.
+This is an advanced (and highly useful) feature.
+Consult the \fBAdvanced Features\fR section of the \fIMH\fR manual for more
+information.
+
+The files specified by the profile entry \*(lqAliasfile:\*(rq and any
+additional alias files given by the `\-alias aliasfile' switch will be read
+(more than one file, each  preceeded by `\-alias', can be named).
+See \fImh\-alias\fR\0(5) for more information.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's MH directory
+.Ps
+^Draft\-Folder:~^To find the default draft\-folder
+.Ps
+^Aliasfile:~^For a default alias file
+.Ps
+^postproc:~^Program to post the message
+.Sa
+mh\-alias(5), post(8)
+.De
+`file' defaults to <mh\-dir>/draft
+.Ds
+`\-nocheck'
+.Ds
+`\-alias @@(MHETCPATH)/MailAliases'
+.Co
+None
+.Bu
+With the `\-check' option, \fIwhom\fR makes no guarantees that the addresses
+listed as being ok are really deliverable, rather, an address being listed
+as ok means that at the time that \fIwhom\fR was run the address was
+thought to be deliverable by the transport service.  For local addresses, this
+is absolute; for network addresses, it means that the host is known; for uucp
+addresses, it (often) means that the \fIUUCP\fR network is available for use.
+.En
+@
+
+
+1.6
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+d25 1
+a25 1
+The file specified by the profile entry \*(lqAliasfile:\*(rq and any
+@
+
+
+1.5
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.4
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH WHOM 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.3
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH WHOM 1 [mh.6] MH
+@
+
+
+1.2
+log
+@document Aliasfile: profile entry
+@
+text
+@d2 2
+a3 2
+.SC WHOM 1
+.NA
+d5 1
+a5 1
+.SY
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d24 2
+a25 2
+By using the `\-alias\ aliasfile' switch, the user can direct \fIsend\fR
+to consult the named files for alias definitions
+d31 2
+d34 2
+@

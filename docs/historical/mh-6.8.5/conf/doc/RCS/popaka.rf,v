@@ -1,0 +1,118 @@
+head     1.5;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @@;
+
+
+1.5
+date     90.04.05.15.14.23;  author sources;  state Exp;
+branches ;
+next     1.4;
+
+1.4
+date     90.03.22.11.31.38;  author sources;  state Exp;
+branches ;
+next     1.3;
+
+1.3
+date     90.03.20.19.42.18;  author sources;  state Exp;
+branches ;
+next     1.2;
+
+1.2
+date     90.03.20.17.36.33;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.03.20.17.21.18;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.5
+log
+@add ID
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id:$
+.SC POPAKA 8
+.NA
+popaka \- generate POP entries for SendMail or MMDF\-II alias file
+.SY
+@@(MHETCPATH)/popaka
+.DE
+The \fIpopaka\fR program reads the POP database and produces
+on its standard output a file suitable for inclusion in the SendMail or
+\fIMMDF\-II\fR aliases
+file.
+The contents of this file divert mail for POP subscribers to the POP channel.
+.Fi
+^/usr/spool/pop/POP~^POP database
+.Pr
+None
+.Sa
+pop(5)
+.De
+None
+.Co
+None
+.En
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH POPAKA 8 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH POPAKA 8 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC POPAKA 8
+.NA
+d5 1
+a5 1
+.SY
+@

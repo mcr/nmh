@@ -1,0 +1,197 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	93.09.04.19.09.45;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.12.14.17.47.34;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.12.14.17.44.38;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@add clientname
+@
+text
+@/* mts.h - definitions for the mail system */
+/* @@(#)$Id: mts.h,v 1.3 1992/12/15 00:20:22 jromine Exp jromine $ */
+
+
+/* Local and UUCP Host Name */
+
+char   *LocalName (), *SystemName (), *UucpChan ();
+
+
+/* Mailboxes */
+
+extern char *mmdfldir,
+            *mmdflfil,
+            *uucpldir,
+            *uucplfil;
+
+#define	MAILDIR	(mmdfldir && *mmdfldir ? mmdfldir : getenv ("HOME"))
+#define	MAILFIL	(mmdflfil && *mmdflfil ? mmdflfil : getusr ())
+#define	UUCPDIR	(uucpldir && *uucpldir ? uucpldir : getenv ("HOME"))
+#define	UUCPFIL	(uucplfil && *uucplfil ? uucplfil : getusr ())
+
+char   *getusr (), *getfullname ();
+
+char   *getenv ();
+
+
+/* Separators */
+
+extern char *mmdlm1,
+            *mmdlm2;
+
+#define	isdlm1(s)	(strcmp (s, mmdlm1) == 0)
+#define	isdlm2(s)	(strcmp (s, mmdlm2) == 0)
+
+
+/* Filters */
+
+extern char *umincproc;
+
+
+/* Locking Directory */
+
+#define	LOK_UNIX	0
+#define	LOK_BELL	1
+#define	LOK_MMDF	2
+
+#ifndef	MMDFONLY
+extern int   lockstyle;
+#endif	/* MMDFONLY */
+extern char *lockldir;
+
+int	lkopen (), lkclose ();
+FILE   *lkfopen ();
+int	lkfclose ();
+
+/*  */
+
+/* MTS specific variables */
+
+#ifdef	MHMTS
+extern char *Mailqdir;
+extern char *TMailqdir;
+extern int Syscpy;
+extern char *Overseer;
+extern char *Mailer;
+extern char *Fromtmp;
+extern char *Msgtmp;
+extern char *Errtmp;
+extern int Tmpmode;
+extern char *Okhosts;
+extern char *Okdests;
+#endif	/* MHMTS */
+
+#ifdef	MMDFMTS
+#endif	/* MMDFMTS */
+
+#ifdef	SENDMTS
+extern char *hostable;
+extern char *sendmail;
+#endif	/* SENDMTS */
+
+
+/* SMTP/POP stuff */
+
+extern char *servers;
+extern char *pophost;
+extern char *clientname;
+
+
+/* BBoards-specific variables */
+
+extern char *bb_domain;
+
+
+/* POP BBoards-specific variables */
+
+#ifdef	BPOP
+extern char *popbbhost;
+extern char *popbbuser;
+extern char *popbblist;
+#endif	/* BPOP */
+
+
+/* MailDelivery */
+
+extern char *maildelivery;
+
+
+/* Aliasing Facility (doesn't belong here) */
+
+extern int Everyone;
+extern char *NoShell;
+@
+
+
+1.3
+log
+@endif sugar
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mts.h,v 1.2 1992/12/14 17:47:34 jromine Exp jromine $ */
+d87 1
+@
+
+
+1.2
+log
+@add id
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: pidwait.c,v 1.9 1992/12/14 17:10:58 jromine Exp $ */
+d49 1
+a49 1
+#endif	MMDFONLY
+d72 1
+a72 1
+#endif	MHMTS
+d75 1
+a75 1
+#endif	MMDFMTS
+d80 1
+a80 1
+#endif SENDMTS
+d100 1
+a100 1
+#endif	BPOP
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+@

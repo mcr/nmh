@@ -1,0 +1,118 @@
+head	1.6;
+access;
+symbols;
+locks; strict;
+
+
+1.6
+date	93.10.25.19.35.03;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.11.11.20.57.33;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.11.02.18.56.04;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.02.04.01.00.20;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.05.14.18.27;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.05.14.17.51;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@allow LWSP a couple of places
+@
+text
+@2,/^extern int yylineno;$/c\
+static int start_cond = 0;\
+#define BEGIN start_cond =
+/^struct yysvf \*yyestate;$/,/^extern struct yysvf yysvec/d
+/^# define YYNEWLINE /,/^[ 	]*int nstr;/d
+/^[ 	]*while((nstr = yylook()/,/^[ 	]*if(yywrap()) /d
+/^case -1:$/,/^} return(0); }/c\
+	default: return(0);\
+} }
+/^struct yysvf *yybgin = yysvec+1;$/d
+/^int yylineno /,$d
+/^# define YYTYPE short/c\
+# define YYTYPE int
+/^unsigned char yymatch\[\] = {/c\
+char yymatch[] = {
+/^unsigned char yyextra\[\] = {/c\
+char yyextra[] = {
+/^# define YYTYPE unsigned short/c\
+# define YYTYPE int
+/^if (__once_yylex) {$/,/if(yymbcurmax<=0) yymbcurmax=MB_CUR_MAX;$/d
+@
+
+
+1.5
+log
+@fixups for aix
+@
+text
+@d5 2
+a6 2
+/^# define YYNEWLINE /,/^int nstr;/d
+/^while((nstr = yylook()/,/^if(yywrap()) /d
+@
+
+
+1.4
+log
+@fix for _AIX
+@
+text
+@d18 2
+@
+
+
+1.3
+log
+@lex problem solved by Todd Kaehler <kaehler@@decvax.dec.com>
+@
+text
+@d18 1
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d12 6
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d7 3
+a9 2
+/^case -1:$/,/^fprintf(yyout,"bad switch yylook /c\
+	default: return(0);
+@

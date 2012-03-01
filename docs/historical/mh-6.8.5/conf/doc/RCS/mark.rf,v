@@ -1,0 +1,309 @@
+head	1.9;
+access;
+symbols;
+locks; strict;
+
+
+1.9
+date	93.08.20.00.04.30;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	93.08.19.21.21.01;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.02.12.00.23.13;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.12.26.17.03.28;	author mh;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.05.15.12.51;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.22.11.31.10;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.20.19.41.49;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.03.20.17.36.05;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.03.20.17.20.51;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@typo
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: mark.rf,v 1.8 1993/08/19 21:21:01 jromine Exp jromine $
+.SC MARK 1
+.NA
+mark \- mark messages
+.SY
+mark
+\%[+folder] \%[msgs]
+\%[\-sequence\ name\ ...]
+\%[\-add] \%[\-delete] \%[\-list] 
+\%[\-public] \%[\-nopublic]
+\%[\-zero] \%[\-nozero]
+\%[\-help]
+.DE
+The \fImark\fR command manipulates message sequences by adding or
+deleting message numbers from folder\-specific message sequences,
+or by listing those sequences and messages.
+A message sequence is a keyword, just like one of the
+\*(lqreserved\*(rq message names,
+such as \*(lqfirst\*(rq or \*(lqnext\*(rq.
+Unlike the \*(lqreserved\*(rq message names,
+which have a fixed semantics on a per\-folder basis,
+the semantics of a message sequence may be defined, modified, and
+removed by the user.
+Message sequences are folder\-specific, e.g.,
+the sequence name \*(lqseen\*(rq in the context of folder \*(lq+inbox\*(rq
+need not have any relation whatsoever to the sequence of the same name
+in a folder of a different name.
+
+Three action switches direct the operation of \fImark\fR.
+These switches are mutually exclusive:
+the last occurrence of any of them overrides any previous occurrence of the
+other two.
+
+The `\-add' switch tells \fImark\fR to add messages to sequences
+or to create a new sequence.
+For each sequence named via the `\-sequence\ name' argument
+(which must occur at least once)
+the messages named via `msgs'
+(which defaults to \*(lqcur\*(rq if no `msgs' are given),
+are added to the sequence.
+The messages to be added need not be absent from the sequence.
+If the `\-zero' switch is specified,
+the sequence will be emptied prior to adding the messages.
+Hence, `\-add\ \-zero' means that each sequence should be initialized
+to the indicated messages,
+while `\-add\ \-nozero' means that each sequence should be appended to
+by the indicated messages.
+
+The `\-delete' switch tells \fImark\fR to delete messages from
+sequences, and is the dual of `\-add'.
+For each of the named sequences,
+the named messages are removed from the sequence.
+These messages need not be already present in the sequence.
+If the `\-zero' switch is specified,
+then all messages in the folder are appended to the sequence prior to
+removing the messages.
+Hence, `\-delete\ \-zero' means that each sequence should contain all
+messages except those indicated,
+while `\-delete\ \-nozero' means that only the indicated messages
+should be removed from each sequence.
+As expected, the command `mark\0\-sequence\0seen\0\-delete\0all'
+deletes the sequence \*(lqseen\*(rq from the current folder.
+
+When creating (or modifying) a sequence,
+the `\-public' switch indicates that the sequence should be made readable
+for other \fIMH\fR users.
+In contrast, the `\-nopublic' switch indicates that the sequence should be
+private to the user's \fIMH\fR environment.
+
+The `\-list' switch tells \fImark\fR to list both the sequences defined
+for the folder and the messages associated with those sequences.
+\fIMark\fR will list the name of each sequence given by
+`\-sequence\ name' and the messages associated with that sequence.
+If `\-sequence' isn't used, all sequences will be listed,
+with private sequences being so indicated.
+The `\-zero' switch does not affect the operation of `\-list'.
+
+The current restrictions on sequences are:
+
+.in +.25i
+The name used to denote a message sequence must consist of
+an alphabetic character followed by zero or more
+alphanumeric characters, and cannot be one of the (reserved)
+message names \*(lqnew\*(rq, \*(lqfirst\*(rq,
+\*(lqlast\*(rq, \*(lqall\*(rq, \*(lqnext\*(rq, or \*(lqprev\*(rq.
+
+Only a certain number of sequences may be defined for a given folder.
+This number is usually limited to 26 (10 on small systems).
+
+Message ranges with user\-defined 
+sequence names are restricted to the form \*(lqname:n\*(rq or
+\*(lqname:-n\*(rq, and refer to the first or last `n' messages
+of the sequence `name', respectively.
+Constructs of the form \*(lqname1\-name2\*(rq are forbidden.
+.in -.25i
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's MH directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Sa
+pick (1), mh-sequence (5)
+.De
+`+folder' defaults to the current folder
+.Ds
+`\-add' if `\-sequence' is specified, `\-list' otherwise
+.Ds
+`msgs' defaults to cur (or all if `\-list' is specified)
+.Ds
+`\-nopublic' if the folder is read\-only, `\-public' otherwise
+.Ds
+`\-nozero'
+.Co
+If a folder is given, it will become the current folder.
+.Hh
+Use \*(lqpick sequence \-list\*(rq
+to enumerate the messages in a sequence (such as for use 
+by a shell script).
+.En
+@
+
+
+1.8
+log
+@list reserved message sequence names
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mark.rf,v 1.7 1992/02/12 00:23:13 jromine Exp jromine $
+d84 3
+a86 3
+alphanumeric characters, and cannot be one of the reserved
+message names (\*(lqnew\*(rq, \*(lqall\*(rq, \*(lqfirst\*(rq,
+\*(lqlast\*(rq, \*(lqnext\*(rq, and \*(lqprev\*(rq).
+@
+
+
+1.7
+log
+@add hints
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mark.rf,v 1.6 1990/12/26 17:03:28 mh Exp jromine $
+d84 3
+a86 3
+alphanumeric characters, and can not be one of the \*(lqreserved\*(rq
+message names
+(e.g., \*(lqfirst\*(rq, \*(lqcur\*(rq, and so forth).
+@
+
+
+1.6
+log
+@document user-defined sequence ranges
+jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mark.rf,v 1.5 90/04/05 15:12:51 sources Exp Locker: mh $
+d73 4
+a76 3
+\fIMark\fR will list each sequence named via `\-sequence\ name'
+(or all of them if `\-sequence' isn't used),
+and the messages associated with that sequence.
+d89 1
+a89 1
+This number is usually limited to 10.
+d104 1
+a104 1
+pick (1)
+d117 4
+@
+
+
+1.5
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+d81 3
+a83 2
+The name used to denote a message sequence must consist solely of
+alphabetic characters, and can not be one of the \*(lqreserved\*(rq
+d90 5
+a94 3
+The name used to denote a message sequence can not occur as part of a
+message range, e.g., constructs like \*(lqseen:20\*(rq or
+\*(lqseen\-10\*(rq are forbidden.
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH MARK 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH MARK 1 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC MARK 1
+.NA
+d5 1
+a5 1
+.SY
+@

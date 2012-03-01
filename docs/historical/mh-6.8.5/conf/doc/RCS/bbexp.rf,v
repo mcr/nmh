@@ -1,0 +1,124 @@
+head     1.5;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @@;
+
+
+1.5
+date     90.04.05.15.11.10;  author sources;  state Exp;
+branches ;
+next     1.4;
+
+1.4
+date     90.03.22.11.30.52;  author sources;  state Exp;
+branches ;
+next     1.3;
+
+1.3
+date     90.03.20.19.41.28;  author sources;  state Exp;
+branches ;
+next     1.2;
+
+1.2
+date     90.03.20.17.35.46;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.03.20.17.20.10;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.5
+log
+@add ID
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id:$
+.SC BBEXP 8
+.NA
+bbexp \- expunge the BBoards area
+.SY
+@@(BBHOME)/bbexp
+\%[\-\fIfirst\-metric\fR] \%[\-\fIsecond\-metric\fR]
+\%[bboards\ ...]
+.DE
+The \fIbbexp\fR program reads the BBoards database and calls \fImsh\fR to
+archive the named BBoards (or all BBoards if none are specified).
+
+The first\-metric (which defaults to 12) gives the age in days of the
+\*(lqBB\-Posted:\*(rq field for messages which should be expunged.
+The second\-metric (which defaults to 20) gives the age in days of the
+\*(lqDate:\*(rq field for messages which should be expunged.
+Any message which meets either metric will be either archived or removed,
+depending on what the \fIBBoards\fR\0(5) file says.
+.Fi
+^@@(BBHOME)/BBoards~^BBoards database
+.Pr
+None
+.Sa
+msh(1), bboards(5)
+.De
+None
+.Co
+None
+.En
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH BBEXP 8 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH BBEXP 8 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC BBEXP 8
+.NA
+d5 1
+a5 1
+.SY
+@

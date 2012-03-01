@@ -1,0 +1,22 @@
+bin	/usr/local
+bboards	on
+bbhome	/usr/bboards
+etc	/usr/local/lib/mh
+mail	/usr/spool/mail
+mandir	/usr/man
+manuals	local
+chown	/etc/chown
+editor	prompter
+remove	mv -f
+mf	off
+mts	mmdf2/smtp
+options	BSD42 BSD43 MHRC SUN40
+options	MHE WHATNOW NFS
+options UCI RPOP POP BIND
+pop	on
+popbboards on
+ldoptions -n -s
+ldoptlibs -ldbm -lresolv
+curses -lcurses -ltermcap
+ranlib  on
+sharedlib on

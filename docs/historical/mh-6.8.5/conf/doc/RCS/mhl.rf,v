@@ -1,0 +1,471 @@
+head	1.11;
+access;
+symbols;
+locks; strict;
+
+
+1.11
+date	92.12.04.18.59.22;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.11.18.00.45.57;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.11.18.00.27.02;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.10.26.17.05.53;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	90.04.05.15.10.28;	author sources;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.03.28.16.07.45;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.03.22.11.31.24;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.20.19.42.03;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.20.17.36.19;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.03.20.10.31.28;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.03.20.10.27.56;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.11
+log
+@typo
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: mhl.rf,v 1.10 1992/11/18 00:45:57 jromine Exp jromine $
+.SC MHL 1
+.NA
+mhl \- produce formatted listings of MH messages
+.SY
+@@(MHETCPATH)/mhl
+\%[\-bell] \%[\-nobell]
+\%[\-clear] \%[\-noclear]
+\%[\-folder\ +folder]
+\%[\-form\ formfile]
+\%[\-length\ lines] \%[\-width\ columns] 
+\%[\-moreproc\ program] \%[\-nomoreproc]
+\%[files\ ...]
+\%[\-help] 
+.DE
+\fIMhl\fR is a formatted message listing program.
+It can be used as a replacement for \fImore\fR\0(1)
+(the default \fIshowproc\fR\0).
+As with \fImore\fR,
+each of the messages specified as arguments (or the standard input) will be
+output.
+If more than one message file is specified,
+the user will be prompted prior to each one,
+and a <RETURN> or <EOT> will begin the output,
+with <RETURN> clearing the screen (if appropriate),
+and <EOT> (usually CTRL\-D) suppressing the screen clear.
+An <INTERRUPT> (usually CTRL\-C) will abort the current message output,
+prompting for the next message (if there is one),
+and a <QUIT> (usually CTRL-\\) will terminate the program (without core dump).
+
+The `\-bell' option tells \fImhl\fR to ring the terminal's bell at the end of each page,
+while the `\-clear' option tells \fImhl\fR to clear the scree at the end of
+each page (or output a formfeed after each message).
+Both of these switches (and their inverse counterparts)
+take effect only if the profile entry \fImoreproc\fR is defined but empty,
+and \fImhl\fR is outputting to a terminal.
+If the \fImoreproc\fR entry is defined and non-empty,
+and \fImhl\fR is outputting to a terminal,
+then \fImhl\fR will cause the \fImoreproc\fR to be placed between the
+terminal and \fImhl\fR and the switches are ignored.
+Furthermore,
+if the `\-clear' switch is used and \fImhl's\fR output is directed to a
+terminal,
+then \fImhl\fR will consult the \fB$TERM\fR and \fB$TERMCAP\fR
+envariables to determine the user's
+terminal type in order to find out how to clear the screen.
+If the `\-clear' switch is used and \fImhl's\fR output is not directed to
+a terminal (e.g., a pipe or a file),
+then \fImhl\fR will send a formfeed after each message.
+
+To override the default \fImoreproc\fR and the profile entry,
+use the `\-moreproc\ program' switch.
+Note that \fImhl\fR will never start a \fImoreproc\fR if invoked on a
+hardcopy terminal.
+
+The `\-length\ length' and `\-width\ width' switches set the screen length and
+width, respectively.
+These default to the values indicated by \fB$TERMCAP\fR,
+if appropriate,
+otherwise they default to 40 and 80, respectively.
+
+The default format file used by \fImhl\fR is called \fImhl.format\fR
+(which is first searched for in the user's \fIMH\fR directory,
+and then sought in the \fI@@(MHETCPATH)\fR directory),
+this can be changed by using the `\-form\ formatfile' switch.
+
+Finally,
+the `\-folder\ +folder' switch sets the \fIMH\fR folder name,
+which is used for the \*(lqmessagename:\*(rq field described below.
+The envariable \fB$mhfolder\fR is consulted for the default value,
+which \fIshow\fR, \fInext\fR, and \fIprev\fR initialize appropriately.
+
+\fIMhl\fR operates in two phases:
+1) read and parse the format file,
+and 2) process each message (file).
+During phase 1,
+an internal description of the format is produced as a structured list.
+In phase 2,
+this list is walked for each message,
+outputting message information under the format constraints from the format
+file.
+
+The \*(lqmhl.format\*(rq form file contains information controlling
+screen clearing, screen size, wrap\-around control, transparent text,
+component ordering, and component formatting.
+Also, a list of components to ignore may be specified,
+and a couple of \*(lqspecial\*(rq components are defined to provide added
+functionality.
+Message output will be in the order specified by the order in the format file.
+
+Each line of mhl.format has one of the formats:
+
+     ;comment
+     :cleartext
+     variable[,variable...]
+     component:[variable,...]
+
+A line beginning with a `;' is a comment, and is ignored.
+A line beginning with a `:' is clear text,
+and is output exactly as is.
+A line containing only a `:' produces a blank line in the output.
+A line beginning with \*(lqcomponent:\*(rq defines the format for the specified
+component,
+and finally, remaining lines define the global environment.
+
+For example, the line:
+
+.ti +.5i
+width=80,length=40,clearscreen,overflowtext="***",overflowoffset=5
+
+defines the screen size to be 80 columns by 40 rows,
+specifies that the screen should be cleared prior to each page,
+that the overflow indentation is 5,
+and that overflow text should be flagged with \*(lq***\*(rq.
+
+Following are all of the current variables and their arguments.
+If they follow a component,
+they apply only to that component,
+otherwise, their affect is global.
+Since the whole format is parsed before any output processing,
+the last global switch setting for a variable applies to the whole message
+if that variable is used in a global context
+(i.e., bell, clearscreen, width, length).
+
+.nf
+.in +.5i
+.ta \w'noclearscreen  'u +\w'integer/G  'u
+\fIvariable\fR	\fItype\fR	\fIsemantics\fR
+width	integer	screen width or component width
+length	integer	screen length or component length
+offset	integer	positions to indent \*(lqcomponent: \*(rq
+overflowtext	string	text to use at the beginning of an
+		overflow line
+overflowoffset	integer	positions to indent overflow lines
+compwidth	integer	positions to indent component text
+		after the first line is output
+uppercase	flag	output text of this component in all
+		upper case
+nouppercase	flag	don't uppercase
+clearscreen	flag/G	clear the screen prior to each page
+noclearscreen	flag/G	don't clearscreen
+bell	flag/G	ring the bell at the end of each page
+nobell	flag/G	don't bell
+component	string/L	name to use instead of \*(lqcomponent\*(rq for
+		this component
+nocomponent	flag	don't output \*(lqcomponent: \*(rq for this
+		component
+center	flag	center component on line (works for
+		one\-line components only)
+nocenter	flag	don't center
+leftadjust	flag	strip off leading whitespace on each
+		line of text
+noleftadjust	flag	don't leftadjust
+compress	flag	change newlines in text to spaces
+nocompress	flag	don't compress
+split	flag	don't combine multiple fields into a single field
+nosplit	flag	combine multiple fields into a single field
+newline	flag	print newline at end of components (default)
+nonewline	flag	don't print newline at end of components
+formatfield	string	format string for this component (see below)
+addrfield	flag	field contains addresses
+datefield	flag	field contains dates
+.re
+.in -.5i
+.fi
+
+To specify the value of integer\-valued and string\-valued variables,
+follow their name with an equals\-sign and the value.
+Integer\-valued variables are given decimal values,
+while string\-valued variables are given arbitrary text bracketed by
+double\-quotes.
+If a value is suffixed by \*(lq/G\*(rq or \*(lq/L\*(rq,
+then its value is useful in a global\-only or local\-only context
+(respectively).
+
+A line of the form:
+
+    ignores=component,...
+
+specifies a list of components which are never output.
+
+The component \*(lqMessageName\*(rq (case\-insensitive)
+will output the actual message name (file name) preceded by
+the folder name if one is specified or found in the environment.
+The format is identical to that produced by the `\-header' option to
+\fIshow\fR.
+
+The component \*(lqExtras\*(rq will output all of the components of the message
+which were not matched by explicit components,
+or included in the ignore list.
+If this component is not specified,
+an ignore list is not needed since all non\-specified components will be
+ignored.
+
+If \*(lqnocomponent\*(rq is NOT specified, then the component name will be
+output as it appears in the format file.
+
+The default format is:
+
+.nf
+.in +.5i
+.ne 15
+.eo
+.so @@(MHETCPATH)/mhl.format
+.ec
+.in -.5i
+.fi
+
+The variable \*(lqformatfield\*(rq specifies a format string
+(see \fImh\-format\fR\0(5)).
+The flag variables \*(lqaddrfield\*(rq and \*(lqdatefield\*(rq
+(which are mutually exclusive),
+tell \fImhl\fR to interpret the escapes in the format string
+as either addresses or dates, respectively.
+
+By default,
+\fImhl\fR does not apply any formatting string to fields containing address or
+dates (see \fImh\-mail\fR\0(5) for a list of these fields).
+Note that this results in faster operation
+since \fImhl\fR must parse both addresses and dates in order to apply a
+format string to them.
+If desired,
+\fImhl\fR can be given a default format string for either address or date
+fields (but not both).
+To do this,
+on a global line specify: either the flag addrfield or datefield,
+along with the apropriate formatfield variable string.
+.Fi
+^@@(MHETCPATH)/mhl.format~^The message template
+^or <mh\-dir>/mhl.format~^Rather than the standard template
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^moreproc:~^Program to use as interactive front\-end
+.Sa
+show(1), ap(8), dp(8)
+.De
+`\-bell'
+.Ds
+`\-noclear'
+.Ds
+`\-length 40'
+.Ds
+`\-width 80'
+.Co
+None
+.Bu
+There should be some way to pass `bell' and `clear' information to the 
+front\-end.
+
+On hosts where \fIMH\fR was configured with the BERK option,
+address parsing is not enabled.
+
+The \*(lqnonewline\*(rq option interacts badly 
+with \*(lqcompress\*(rq and \*(lqsplit\*(rq.
+.En
+@
+
+
+1.10
+log
+@restore indent
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhl.rf,v 1.9 1992/11/18 00:27:02 jromine Exp jromine $
+d254 1
+a254 1
+The \*(lqnonewline\(*rq option interacts badly 
+@
+
+
+1.9
+log
+@document "newline" and "nonewline"
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhl.rf,v 1.8 1992/10/26 17:05:53 jromine Exp jromine $
+d127 1
+a127 1
+.in +.25i
+@
+
+
+1.8
+log
+@typo fix from Jerry Peek
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhl.rf,v 1.7 1990/04/05 15:10:28 sources Exp jromine $
+d127 1
+a127 1
+.in +.5i
+d159 2
+d253 3
+@
+
+
+1.7
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+d169 1
+a169 1
+while string\-valued variables are given arbirtray text bracketed by
+@
+
+
+1.6
+log
+@use formatstrings on any field
+@
+text
+@d2 1
+@
+
+
+1.5
+log
+@put things back, do .NA stuff another way
+@
+text
+@d208 1
+a208 2
+(see \fImh\-format\fR\0(5)), which may be used only on
+address and date header components.
+d211 2
+a212 1
+control the interpretation of the escapes.
+@
+
+
+1.4
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH MHL 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.3
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH MHL 1 [mh.6] MH
+@
+
+
+1.2
+log
+@make formatfield interpretation clearer
+@
+text
+@d2 2
+a3 2
+.SC MHL 1
+.NA
+d5 1
+a5 1
+.SY
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d158 1
+a158 1
+formatfield	string	format string for this component
+d208 3
+a210 2
+(see \fImh\-format\fR(5)).
+The variables \*(lqaddrfield\*(rq and \*(lqdatefield\*(rq
+d224 2
+a225 3
+on a global line
+specify either the variable addrfield or the variable datefield,
+along with the variable formatfield.
+@

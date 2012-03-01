@@ -1,0 +1,26 @@
+head     2.0;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @@;
+
+
+2.0
+date     89.11.17.15.57.36;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@6
+@

@@ -1,0 +1,210 @@
+head	1.7;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	92.10.30.19.45.32;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	91.01.07.16.12.37;	author mh;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.05.15.40.17;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.22.11.31.58;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.22.11.22.32;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.03.20.14.29.10;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.03.20.13.15.41;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@add .re macro
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: tmac.h,v 1.6 1991/01/07 16:12:37 mh Exp jromine $
+.\"    Try to keep only one copy of the documentation around
+.\"    by re-defining macros and so forth.
+.\"
+.fc ^ ~
+.\"    I pity the fool who tampers with the next line...
+.ds ZZ -man
+.de SC					\" Title section
+.TH \\$1 \\$2 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+..
+.de NA					\" Name section
+.SH NAME
+..
+.de SY					\" Synopsis section
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+..
+.de DE					\" Description section
+.in -.5i
+.SH DESCRIPTION
+..
+.de Fi					\" Files section
+.SH FILES
+.nf
+.ta \w'@@(MHETCPATH)/ExtraBigFileName  'u
+..
+.de Pr					\" Profile section
+.SH "PROFILE\ COMPONENTS"
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
+..
+.de Ps					\" Profile next
+.br
+..
+.de Sa					\" See Also section
+.fi
+.SH "SEE\ ALSO"
+..
+.de De					\" Defaults section
+.SH "DEFAULTS"
+.nf
+..
+.de Ds					\" Defaults next
+.br
+..
+.de Co					\" Context section
+.fi
+.SH CONTEXT
+..
+.de Hh					\" Hints section
+.fi
+.SH "HELPFUL HINTS"
+..
+.de Hi					\" History section
+.fi
+.SH HISTORY
+..
+.de Bu					\" Bugs section
+.fi
+.SH BUGS
+..
+.de En
+..
+.de ip
+.IP "\\$1" \\$2
+..
+.de Uh
+.ne 4
+.SS "\\$1"
+..
+.\" a useful -me macro
+.de re
+.ta 0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i
+..
+@
+
+
+1.6
+log
+@add Uh macro for sub sections
+jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: tmac.h,v 1.5 90/04/05 15:40:17 sources Exp Locker: mh $
+d73 4
+@
+
+
+1.5
+log
+@Id
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+d69 4
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@put it back, and fix things another way
+@
+text
+@d9 1
+a9 1
+.TH \\$1 \\$2 MH [mh.6]
+@
+
+
+1.2
+log
+@fixed for backward compatibility with -man (for makewhatis & getNAME)
+@
+text
+@a7 4
+.rn SH Sh		\" rename SH to Sh
+.de SH
+\\$1
+..
+d12 1
+a12 1
+.Sh NAME
+d15 1
+a15 2
+.Sh SYNOPSIS
+.rn Sh SH		\" put SH back to normal
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d8 4
+d16 1
+a16 1
+.SH NAME
+d19 2
+a20 1
+.SH SYNOPSIS
+@

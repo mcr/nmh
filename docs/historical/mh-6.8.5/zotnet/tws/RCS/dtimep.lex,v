@@ -1,0 +1,1113 @@
+head	2.15;
+access;
+symbols;
+locks; strict;
+
+
+2.15
+date	93.02.26.22.07.40;	author jromine;	state Exp;
+branches;
+next	2.14;
+
+2.14
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	2.13;
+
+2.13
+date	92.05.19.21.26.05;	author jromine;	state Exp;
+branches;
+next	2.12;
+
+2.12
+date	92.05.19.21.25.17;	author jromine;	state Exp;
+branches;
+next	2.11;
+
+2.11
+date	92.02.10.20.32.29;	author jromine;	state Exp;
+branches;
+next	2.10;
+
+2.10
+date	92.02.09.22.41.24;	author jromine;	state Exp;
+branches;
+next	2.9;
+
+2.9
+date	92.02.07.01.04.07;	author jromine;	state Exp;
+branches;
+next	2.8;
+
+2.8
+date	92.02.07.00.46.23;	author jromine;	state Exp;
+branches;
+next	2.7;
+
+2.7
+date	92.02.07.00.45.31;	author jromine;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	92.02.07.00.25.45;	author jromine;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	92.02.07.00.10.21;	author jromine;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	92.02.07.00.07.37;	author jromine;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	92.02.07.00.03.39;	author jromine;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	92.02.07.00.02.09;	author jromine;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	92.02.06.23.56.12;	author jromine;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	92.02.06.23.36.10;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	90.04.05.15.55.07;	author sources;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	90.03.21.15.34.15;	author sources;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	90.02.23.13.42.22;	author sources;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	90.02.08.14.12.10;	author sources;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.02.06.16.31.28;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.02.06.16.29.08;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.02.06.15.57.59;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.06.13.42.29;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.01.14.43.27;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.01.14.41.24;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.15
+log
+@386BSD/BSD44
+@
+text
+@%e 2000
+%p 5000
+%n 1000
+%a 4000
+%START	Z
+sun	(sun(day)?)
+mon	(mon(day)?)
+tue	(tue(sday)?)
+wed	(wed(nesday)?)
+thu	(thu(rsday)?)
+fri	(fri(day)?)
+sat	(sat(urday)?)
+
+DAY	({sun}|{mon}|{tue}|{wed}|{thu}|{fri}|{sat})
+
+jan	(jan(uary)?)
+feb	(feb(ruary)?)
+mar	(mar(ch)?)
+apr	(apr(il)?)
+may	(may)
+jun	(jun(e)?)
+jul	(jul(y)?)
+aug	(aug(ust)?)
+sep	(sep(tember)?)
+oct	(oct(ober)?)
+nov	(nov(ember)?)
+dec	(dec(ember)?)
+
+MONTH	({jan}|{feb}|{mar}|{apr}|{may}|{jun}|{jul}|{aug}|{sep}|{oct}|{nov}|{dec})
+
+w	([ \t]*)
+W	([ \t]+)
+D	([0-9]?[0-9])
+d	[0-9]
+%{
+#ifndef	lint
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.14 1992/12/15 00:20:22 jromine Exp jromine $";
+#endif
+#include "tws.h"
+#include "../h/strings.h"
+#include <ctype.h>
+#include <sys/types.h>
+#if !defined(SYS5) && !defined(ZONEINFO)
+#include <sys/timeb.h>
+#endif /* !defined(SYS5) && !defined(ZONEINFO) */
+
+#ifdef SYS5
+extern int  daylight;
+extern long timezone;
+extern char *tzname[];
+#endif /* SYS5 */
+
+/*
+ * Patchable flag that says how to interpret NN/NN/NN dates. When
+ * true, we do it European style: DD/MM/YY. When false, we do it
+ * American style: MM/DD/YY.  Of course, these are all non-RFC822
+ * compliant.
+ */
+int europeandate = 0;
+
+/*
+ * Table to convert month names to numeric month.  We use the
+ * fact that the low order 5 bits of the sum of the 2nd & 3rd
+ * characters of the name is a hash with no collisions for the 12
+ * valid month names.  (The mask to 5 bits maps any combination of
+ * upper and lower case into the same hash value).
+ */
+static	int month_map[] = {
+	0,
+	6,	/* 1 - Jul */
+	3,	/* 2 - Apr */
+	5,	/* 3 - Jun */
+	0,
+	10,	/* 5 - Nov */
+	0,
+	1,	/* 7 - Feb */
+	11,	/* 8 - Dec */
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,	/*15 - Jan */
+	0,
+	0,
+	0,
+	2,	/*19 - Mar */
+	0,
+	8,	/*21 - Sep */
+	0,
+	9,	/*23 - Oct */
+	0,
+	0,
+	4,	/*26 - May */
+	0,
+	7	/*28 - Aug */
+};
+/*
+ * Same trick for day-of-week using the hash function
+ *  (c1 & 7) + (c2 & 4)
+ */
+static	int day_map[] = {
+	0,
+	0,
+	0,
+	6,	/* 3 - Sat */
+	4,	/* 4 - Thu */
+	0,
+	5,	/* 6 - Fri */
+	0,	/* 7 - Sun */
+	2,	/* 8 - Tue */
+	1	/* 9 - Mon */,
+	0,
+	3	/*11 - Wed */
+};
+#define SETDAY	{ tw.tw_wday= day_map[(cp[0] & 7) + (cp[1] & 4)];\
+		tw.tw_flags &= ~TW_SDAY; tw.tw_flags |= TW_SEXP;\
+		cp += 2; }
+#define SETMONTH { tw.tw_mon = month_map[(cp[0] + cp[1]) & 0x1f]; gotdate++;\
+		 cp += 2;\
+		 SKIPD;}
+#define	CVT1OR2	(i=(*cp++ - '0'), isdigit(*cp)? i*10 + (*cp++ - '0') : i)
+#define	CVT2	  ((cp[0] - '0')*10 + (cp[1] - '0'))
+#define	CVT4	((((cp[0] - '0')*10 + (cp[1] - '0'))*10 + \
+				      (cp[2] - '0'))*10 + (cp[3] - '0'))
+#define SKIPD	{ while ( !isdigit(*cp++) ) ;  --cp; }
+#define EXPZONE	{ tw.tw_flags &= ~TW_SZONE; tw.tw_flags |= TW_SZEXP; }
+#define ZONE(x)	{ tw.tw_zone=(x); EXPZONE; }
+#define ZONED(x) { ZONE(x); tw.tw_flags |= TW_DST; }
+#define	LC(c)	(isupper (c) ? tolower (c) : (c))
+
+#ifdef	DSTXXX
+#ifdef	_AIX
+#include <sys/time.h>
+#include <time.h>
+#else
+#ifndef	BSD42
+#include <time.h>
+#else	/* BSD42 */
+#include <sys/time.h>
+#endif	/* BSD42 */
+#endif
+
+static	zonehack (tw)
+register struct tws *tw;
+{
+    register struct tm *tm;
+
+    if (twclock (tw) == -1L)
+	return;
+
+    tm = localtime (&tw -> tw_clock);
+    if (tm -> tm_isdst) {
+	tw -> tw_flags |= TW_DST;
+	tw -> tw_zone -= 60;
+    }
+}
+#endif	/* DSTXXX */
+%}
+%%
+%{
+struct tws *dparsetime (str)
+	char *str;
+{
+	register int i;
+	static struct tws tw;
+	register char *cp;
+	register int gotdate = 0;
+#ifndef SYS5
+#ifdef ZONEINFO
+	struct tm      *tm;
+	time_t		clock;
+#else
+	struct timeb	tb;
+#endif	/* ZONEINFO */
+#endif	/* not SYS5 */
+	long tclock;
+
+	start_cond = 0;
+
+	/* Zero out the struct. */
+	bzero( (char *) &tw, sizeof tw);
+
+	/* Set default time zone. */
+#ifdef SYS5
+	tzset( );
+	tw.tw_zone = -(timezone / 60);
+#else
+#ifdef ZONEINFO
+	time (&clock);
+	tm = localtime(&clock);
+	tw.tw_zone = tm->tm_gmtoff / 60;
+	if (tm -> tm_isdst)			/* if DST is in effect */
+		tw.tw_zone -= 60;		/* reset to normal offset */
+#else
+	ftime( &tb );
+	tw.tw_zone = -tb.timezone;
+#endif	/* ZONEINFO */
+#endif	/* SYS5 */
+
+	while (isspace(*str))
+		str++;
+	while ( 1 )
+		switch (cp = str, *cp ? lex_string( &str, start_cond) : 0) {
+
+		case -1:
+			if (!gotdate || tw.tw_year == 0)
+				return (struct tws *)0;
+			/* fall through */
+		case 0:
+			if ( tw.tw_year == 0 ) {
+				/* Set default year. */
+				time (&tclock);
+				tw.tw_year = localtime(&tclock)->tm_year + 1900;
+			}
+			else if (tw.tw_year < 100) {
+				/* assume no 2-digit years > 1999 */
+				tw.tw_year += 1900;
+			}
+			return &tw;
+
+%}
+{DAY}","?{w}				SETDAY;
+"("{DAY}")"(","?)			{
+					cp++;
+					SETDAY;
+					}
+{D}(("-"{D}"-")|("/"{D}"/")){D}?{d}{d}{w}	{
+					if (europeandate) {
+						/* European: DD/MM/YY */
+						tw.tw_mday = CVT1OR2;
+						cp++;
+						tw.tw_mon  = CVT1OR2 - 1;
+					} else {
+						/* American: MM/DD/YY */
+						tw.tw_mon  = CVT1OR2 - 1;
+						cp++;
+						tw.tw_mday = CVT1OR2;
+					}
+					cp++;
+					for (i = 0; isdigit(*cp); )
+						i = i*10 + (*cp++ - '0');
+					tw.tw_year = i;
+					gotdate++;	/* XXX */
+					}
+{D}("/"|"-"){D}{w}			{
+					if (europeandate) {
+						tw.tw_mday = CVT1OR2; cp++;
+						tw.tw_mon  = CVT1OR2 - 1;
+					} else {
+						tw.tw_mon = CVT1OR2 - 1; cp++;
+						tw.tw_mday  = CVT1OR2;
+					}
+					gotdate++;
+					}
+{D}{w}(-)?{w}{MONTH}{w}(-)?{w}{D}?{d}{d}({W}at)?{w}	{
+					tw.tw_mday = CVT1OR2;
+					while ( !isalpha(*cp++) )
+						;
+					SETMONTH;
+					for (i = 0; isdigit(*cp); )
+						i = i*10 + (*cp++ - '0');
+					tw.tw_year = i;
+					}
+{D}"-"?{MONTH}({W}at)?{w}               {
+                                        tw.tw_mday = CVT1OR2;
+                                        while ( ! isalpha( *cp++ ) )
+                                                ;
+                                        SETMONTH;
+                                        }
+{MONTH}{W}{D}","{W}{D}?{d}{d}{w}	{
+					cp++;
+					SETMONTH;
+					tw.tw_mday = CVT1OR2;
+					SKIPD;
+					for (i = 0; isdigit(*cp); )
+						i = i*10 + (*cp++ - '0');
+					tw.tw_year = i;
+					}
+{MONTH}{W}{D}{w}			{
+					cp++;
+					SETMONTH;
+					tw.tw_mday = CVT1OR2;
+					}
+
+{D}:{D}:{D}{W}19[6-9]{d}		{	/* hack: ctime w/o TZ */
+					tw.tw_hour = CVT1OR2; cp++;
+					tw.tw_min  = CVT1OR2; cp++;
+					tw.tw_sec  = CVT1OR2;
+					SKIPD;
+					tw.tw_year = CVT4; cp+=4;
+					}
+{D}:{D}:{D}{w}				{
+					tw.tw_hour = CVT1OR2; cp++;
+					tw.tw_min  = CVT1OR2; cp++;
+					tw.tw_sec  = CVT1OR2;
+					BEGIN Z;
+					}
+{D}:{D}{w}				{
+					tw.tw_hour = CVT1OR2; cp++;
+					tw.tw_min = CVT1OR2;
+					BEGIN Z;
+					}
+{D}:{D}{w}am{w}				{
+					tw.tw_hour = CVT1OR2; cp++;
+					if (tw.tw_hour == 12)
+						tw.tw_hour = 0;
+					tw.tw_min  = CVT1OR2;
+					BEGIN Z;
+					}
+{D}:{D}:{D}{w}am{w}			{
+					tw.tw_hour = CVT1OR2; cp++;
+					if (tw.tw_hour == 12)
+						tw.tw_hour = 0;
+					tw.tw_min  = CVT1OR2; cp++;
+					tw.tw_sec  = CVT1OR2;
+					BEGIN Z;
+					}
+{D}:{D}{w}pm{w}				{
+					tw.tw_hour = CVT1OR2; cp++;
+					if (tw.tw_hour != 12)
+						tw.tw_hour += 12;
+					tw.tw_min  = CVT1OR2;
+					BEGIN Z;
+					}
+{D}:{D}:{D}{w}pm{w}			{
+					tw.tw_hour = CVT1OR2; cp++;
+					if (tw.tw_hour != 12)
+						tw.tw_hour += 12;
+					tw.tw_min  = CVT1OR2; cp++;
+					tw.tw_sec  = CVT1OR2;
+					BEGIN Z;
+					}
+[0-2]{d}{d}{d}{d}{d}{w}			{
+					tw.tw_hour = CVT2; cp+=2;
+					tw.tw_min  = CVT2; cp+=2;
+					tw.tw_sec  = CVT2; cp+=2;
+					BEGIN Z;
+					}
+19[6-9]{d}{w}				{
+					/*
+					 * Luckly, 4 digit times in the range
+					 * 1960-1999 aren't legal as hour
+					 * and minutes.
+					 */
+					tw.tw_year = CVT4; cp+=4;
+					}
+[0-2]{d}{d}{d}{w}			{
+					if (tw.tw_hour || tw.tw_min 
+							    || tw.tw_sec) {
+					    tw.tw_year = CVT4; cp+=4;
+					    tw.tw_zone = 0;
+					} else {
+					    tw.tw_hour = CVT2; cp+=2;
+					    tw.tw_min  = CVT2; cp+=2;
+					    BEGIN Z;
+					}
+					}
+<Z>"-"?ut				ZONE(0 * 60);
+<Z>"-"?gmt				ZONE(0 * 60);
+<Z>"-"?jst				ZONE(2 * 60);
+<Z>"-"?jdt				ZONED(2 * 60);
+<Z>"-"?est				ZONE(-5 * 60);
+<Z>"-"?edt				ZONED(-5 * 60);
+<Z>"-"?cst				ZONE(-6 * 60);
+<Z>"-"?cdt				ZONED(-6 * 60);
+<Z>"-"?mst				ZONE(-7 * 60);
+<Z>"-"?mdt				ZONED(-7 * 60);
+<Z>"-"?pst				ZONE(-8 * 60);
+<Z>"-"?pdt				ZONED(-8 * 60);
+<Z>"-"?nst				ZONE(-(3 * 60 + 30));
+<Z>"-"?ast				ZONE(-4 * 60);
+<Z>"-"?adt				ZONED(-4 * 60);
+<Z>"-"?yst				ZONE(-9 * 60);
+<Z>"-"?ydt				ZONED(-9 * 60);
+<Z>"-"?hst				ZONE(-10 * 60);
+<Z>"-"?hdt				ZONED(-10 * 60);
+<Z>"-"?bst				ZONED(-1 * 60);
+<Z>[a-i]				{
+					tw.tw_zone = 60 * (('a'-1) - LC(*cp));
+					EXPZONE; 
+					}
+<Z>[k-m]				{
+					tw.tw_zone = 60 * ('a' - LC(*cp));
+					EXPZONE; 
+					}
+<Z>[n-y]				{
+					tw.tw_zone = 60 * (LC(*cp) - 'm');
+					EXPZONE; 
+					}
+<Z>"+"[0-1]{d}{d}{d}			{
+					cp++;
+					tw.tw_zone = ((cp[0] * 10 + cp[1])
+						     -('0' * 10   + '0'))*60
+						    +((cp[2] * 10 + cp[3])
+						     -('0' * 10   + '0'));
+					EXPZONE;
+#ifdef	DSTXXX
+					zonehack (&tw);
+#endif	/* DSTXXX */
+					cp += 4;
+					}
+<Z>"-"[0-1]{d}{d}{d}			{
+					cp++;
+					tw.tw_zone = (('0' * 10   + '0')
+						     -(cp[0] * 10 + cp[1]))*60
+						    +(('0' * 10   + '0')
+						     -(cp[2] * 10 + cp[3]));
+					EXPZONE;
+#ifdef	DSTXXX
+					zonehack (&tw);
+#endif	/* DSTXXX */
+					cp += 4;
+					}
+<Z>{W}{d}{d}{d}{d}			{
+					SKIPD;
+					tw.tw_year = CVT4; cp+=4;
+					}
+\n	|
+{W}	;
+%%
+@
+
+
+2.14
+log
+@endif sugar
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.13 1992/05/19 21:26:05 jromine Exp jromine $";
+d43 1
+a43 1
+#ifndef SYS5
+d45 1
+a45 1
+#endif /* not SYS5 */
+d171 4
+d176 2
+a177 1
+#endif /* not SYS5 */
+d186 11
+a196 1
+#ifndef SYS5
+d199 2
+a200 4
+#else /* SYS5 */
+	tzset( );
+	tw.tw_zone = -(timezone / 60);
+#endif /* SYS5 */
+@
+
+
+2.13
+log
+@AIX
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.12 1992/05/19 21:25:17 jromine Exp jromine $";
+d45 1
+a45 1
+#endif not SYS5
+d51 1
+a51 1
+#endif SYS5
+d140 1
+a140 1
+#else	BSD42
+d142 1
+a142 1
+#endif	BSD42
+d159 1
+a159 1
+#endif	DSTXXX
+d172 1
+a172 1
+#endif not SYS5
+d184 1
+a184 1
+#else SYS5
+d187 1
+a187 1
+#endif SYS5
+d388 1
+a388 1
+#endif	DSTXXX
+d400 1
+a400 1
+#endif	DSTXXX
+@
+
+
+2.12
+log
+@4-year dates
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.11 1992/02/10 20:32:29 jromine Exp jromine $";
+d134 4
+d143 1
+@
+
+
+2.11
+log
+@clock -> tclock
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.10 1992/02/09 22:41:24 jromine Exp jromine $";
+d124 3
+a126 4
+#define	CVT2	((*cp++ - '0')*10 + (*cp++ - '0'))
+#define	CVT3	(((*cp++ - '0')*10 + (*cp++ - '0'))*10 + (*cp++ - '0'))
+#define	CVT4	((((*cp++ - '0')*10 + (*cp++ - '0'))*10 + \
+				(*cp++ - '0'))*10 + (*cp++ - '0'))
+d274 1
+a274 1
+					tw.tw_year = CVT4;
+d318 3
+a320 3
+					tw.tw_hour = CVT2;
+					tw.tw_min  = CVT2;
+					tw.tw_sec  = CVT2;
+d329 1
+a329 1
+					tw.tw_year = CVT4;
+d334 1
+a334 1
+					    tw.tw_year = CVT4;
+d337 2
+a338 2
+					    tw.tw_hour = CVT2;
+					    tw.tw_min  = CVT2;
+d400 1
+a400 1
+					tw.tw_year = CVT4;
+@
+
+
+2.10
+log
+@make all years 4-digit
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.9 1992/02/07 01:04:07 jromine Exp jromine $";
+d169 1
+a169 1
+	long clock;
+d197 2
+a198 2
+				time( &clock );
+				tw.tw_year = localtime(&clock)->tm_year + 1900;
+@
+
+
+2.9
+log
+@typo
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.8 1992/02/07 00:46:23 jromine Exp jromine $";
+d199 4
+@
+
+
+2.8
+log
+@fix
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.7 1992/02/07 00:45:31 jromine Exp jromine $";
+d236 1
+a236 1
+{D}{w}(-)?{w}{MONTH}{w}(-){w}{D}?{d}{d}({W}at)?{w}	{
+@
+
+
+2.7
+log
+@4 digit years
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.6 1992/02/07 00:25:45 jromine Exp $";
+d198 1
+a198 3
+				tw.tw_year = localtime( &clock ) -> tm_year;
+				if (tw.tw_year < 100)
+				    tw.tw_year += CENTURY;
+@
+
+
+2.6
+log
+@fixes
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 2.5 1992/02/07 00:10:21 jromine Exp jromine $";
+d199 2
+@
+
+
+2.5
+log
+@merge done
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id: dtimep.lex,v 1.10 1990/04/05 15:55:07 sources Exp $";
+d236 1
+a236 1
+{D}(("-"{MONTH}"-")|(" "{MONTH}" ")|({MONTH})){D}?{d}{d}({W}at)?{w}	{
+d271 1
+a271 1
+					tw.tw_year = CVT1OR2;
+@
+
+
+2.4
+log
+@more patches
+@
+text
+@d245 6
+@
+
+
+2.3
+log
+@more patches
+@
+text
+@a243 1
+					gotdate++;	/* XXX */
+a252 1
+					gotdate++;	/* XXX */
+a257 1
+					gotdate++;	/* XXX */
+d323 3
+a325 3
+					if (tw.tw_hour) {
+					    cp += 2;
+					    tw.tw_year = CVT2;
+@
+
+
+2.2
+log
+@more patches
+@
+text
+@d264 5
+a268 7
+					tw.tw_hour = CVT2; cp++;
+					tw.tw_min  = CVT2; cp++;
+					tw.tw_sec  = CVT2;
+					while( !isdigit(*cp++) )
+						;
+					cp++;
+					tw.tw_year = CVT2;
+@
+
+
+2.1
+log
+@more diffs
+@
+text
+@d236 1
+a236 1
+{D}{w}(-)?{w}{MONTH}{w}(-)?{w}(19)?{D}{w}(\,{w}|at{W})? {
+d243 2
+a244 1
+					tw.tw_year = i % 100;
+@
+
+
+2.0
+log
+@start merging changes from the Jef Poskanzer version
+@
+text
+@d123 5
+a127 1
+#define CVT2	(i=(*cp++ - '0'),isdigit(*cp)? i*10 + (*cp++ - '0') : i)
+d226 10
+d272 3
+a274 3
+					tw.tw_hour = CVT2; cp++;
+					tw.tw_min  = CVT2; cp++;
+					tw.tw_sec  = CVT2;
+d278 2
+a279 2
+					tw.tw_hour = CVT2; cp++;
+					tw.tw_min = CVT2;
+d283 1
+a283 1
+					tw.tw_hour = CVT2; cp++;
+d286 1
+a286 1
+					tw.tw_min  = CVT2;
+d289 8
+d298 1
+a298 1
+					tw.tw_hour = CVT2; cp++;
+d301 1
+a301 1
+					tw.tw_min  = CVT2;
+d304 8
+d324 1
+a324 2
+					cp += 2;
+					tw.tw_year = CVT2;
+@
+
+
+1.10
+log
+@Id
+@
+text
+@d37 1
+a37 1
+static char ident[] = "@@(#)$Id:$";
+d165 1
+d188 1
+a188 1
+				return 0;
+d191 5
+d204 1
+a204 1
+{D}"/"{D}"/"(19)?[0-9][0-9]{w}		{
+d207 1
+a207 1
+						tw.tw_mday = CVT2;
+d209 1
+a209 1
+						tw.tw_mon  = CVT2 - 1;
+d212 1
+a212 1
+						tw.tw_mon  = CVT2 - 1;
+d214 1
+a214 1
+						tw.tw_mday = CVT2;
+d219 2
+a220 1
+					tw.tw_year = i % 100;
+d223 1
+a223 1
+					tw.tw_mday = CVT2;
+d231 1
+a231 1
+{MONTH}{W}{D}","{W}(19)?{D}{w}		{
+d234 1
+a234 1
+					tw.tw_mday = CVT2;
+d238 2
+a239 1
+					tw.tw_year = i % 100;
+a240 1
+
+d244 2
+a245 1
+					tw.tw_mday = CVT2;
+d327 1
+a327 1
+<Z>"-"?bst				ZONED(0 * 60);
+d364 3
+a366 5
+<Z>{W}19[6-9]{d}			{
+					while( !isdigit(*cp++) )
+						;
+					cp++;
+					tw.tw_year = CVT2;
+a367 1
+
+@
+
+
+1.9
+log
+@fix for numeric tz parsing
+@
+text
+@d36 3
+@
+
+
+1.8
+log
+@many changes to make parsing more lax.
+@
+text
+@d290 1
+a290 1
+					    tw.tw_zone = ZONE(0 * 60);/* GMT */
+d335 1
+d347 1
+@
+
+
+1.7
+log
+@UCL fix
+@
+text
+@d51 8
+d114 4
+a117 4
+#define SETDAY	tw.tw_wday= day_map[(cp[0] & 7) + (cp[1] & 4)];\
+		tw.tw_flags |= TW_SEXP;\
+		cp += 2;
+#define SETMONTH tw.tw_mon = month_map[(cp[0] + cp[1]) & 0x1f]; gotdate++;\
+d119 1
+a119 1
+		 SKIPD;
+d121 4
+a124 3
+#define SKIPD	while ( !isdigit(*cp++) ) ;  --cp;
+#define ZONE(x)	tw.tw_zone=(x);
+#define ZONED(x)  tw.tw_zone=(x); tw.tw_flags |= TW_DST;
+d177 2
+d180 1
+a180 1
+		switch (cp = str, lex_string( &str, start_cond)) {
+d191 3
+a193 7
+"("{DAY}")"(","?)			cp++, SETDAY;
+
+{D}"/"{D}"/"19[0-9][0-9]{w}		{
+					tw.tw_mday = CVT2; cp++;
+					tw.tw_mon  = CVT2 - 1; cp += 3;
+					tw.tw_year = CVT2;
+					gotdate++;
+d195 11
+a205 5
+{D}"/"{D}"/"[0-9][0-9]{w}		{
+					tw.tw_mday = CVT2; cp++;
+					tw.tw_mon  = CVT2 - 1; cp++;
+					tw.tw_year = CVT2;
+					gotdate++;
+d207 6
+a212 1
+{D}("-"|{W})?{MONTH}("-"|{W})?(19)?{D}({W}at{W})?	{
+d277 9
+d317 12
+a328 3
+<Z>[a-i]				tw.tw_zone = 60 * (('a'-1) - LC (*cp));
+<Z>[k-m]				tw.tw_zone = 60 * ('a' - LC (*cp));
+<Z>[n-y]				tw.tw_zone = 60 * (LC (*cp) - 'm');
+@
+
+
+1.6
+log
+@allow lwsp between digits and month name
+@
+text
+@d289 1
+a289 1
+<Z>"-"?bst				ZONED(-1 * 60);
+@
+
+
+1.5
+log
+@move zonehack() routine to top
+@
+text
+@d194 1
+a194 1
+{D}[- ]?{MONTH}[- ]?(19)?{D}({W}at{W})?	{
+@
+
+
+1.4
+log
+@fix for dates with no timezone
+@
+text
+@a43 8
+#ifdef	DSTXXX
+#ifndef	BSD42
+#include <time.h>
+#else	BSD42
+#include <sys/time.h>
+#endif	BSD42
+#endif	DSTXXX
+
+d117 23
+a139 1
+static zonehack();
+d269 1
+a324 17
+#ifdef	DSTXXX
+
+static	zonehack (tw)
+register struct tws *tw;
+{
+    register struct tm *tm;
+
+    if (twclock (tw) == -1L)
+	return;
+
+    tm = localtime (&tw -> tw_clock);
+    if (tm -> tm_isdst) {
+	tw -> tw_flags |= TW_DST;
+	tw -> tw_zone -= 60;
+    }
+}
+#endif	DSTXXX
+@
+
+
+1.3
+log
+@ANSI Compilance
+@
+text
+@d246 8
+a253 3
+					tw.tw_hour = CVT2;
+					tw.tw_min  = CVT2;
+					BEGIN Z;
+@
+
+
+1.2
+log
+@move some #include up a bit
+@
+text
+@d125 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d44 8
+a304 5
+#ifndef	BSD42
+#include <time.h>
+#else	BSD42
+#include <sys/time.h>
+#endif	BSD42
+@

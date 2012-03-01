@@ -1,0 +1,417 @@
+head	1.7;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.05.19.20.59.48;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.02.08.05.39.47;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.02.08.00.09.16;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.02.05.17.56.15;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.02.04.21.48.55;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.02.04.21.48.15;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@from mrose for APOP
+@
+
+
+1.7
+log
+@endif sugar
+@
+text
+@/* popauth.c - manipulate POP authorization DB */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: popauth.c,v 1.6 1992/05/19 20:59:48 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include "popauth.h"
+#undef	DBM		/* used by mts.c and ndbm.h */
+#include <ndbm.h>
+#include <pwd.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/file.h>
+#ifdef	SYS5
+#include <fcntl.h>
+#endif
+#include "../zotnet/bboards.h"
+#include "../zotnet/mts.h"
+
+/*  */
+
+static struct swit switches[] = {
+#define	INITSW	0
+    "init", 0,
+#define	LISTSW	1
+    "list", 0,
+#define	USERSW	2
+    "user name", 0,
+
+#define	HELPSW	3
+    "help", 4,
+
+    NULL, 0
+};
+
+/*  */
+
+char   *getpass ();
+
+/*  */
+
+/* ARGSUSED */
+
+main (argc, argv)
+int	argc;
+char   *argv[];
+{
+    int	    flags,
+	    i,
+	    initsw = 0,
+	    insist,
+	    listsw = 0;
+    long    clock;
+    char   *bp,
+	   *cp,
+	   *usersw = NULL,
+	    buf[100],
+	  **ap,
+	  **argp,
+	   *arguments[MAXARGS];
+    datum   key,
+	    value;
+    DBM    *db;
+    struct authinfo auth;
+
+    invo_name = r1bindex (argv[0], '/');
+    m_foil (NULLCP);
+    if ((cp = m_find (invo_name)) != NULL) {
+	ap = brkstring (cp = getcpy (cp), " ", "\n");
+	ap = copyip (ap, arguments);
+    }
+    else
+	ap = arguments;
+    (void) copyip (argv + 1, ap);
+    argp = arguments;
+
+/*  */
+
+    while (cp = *argp++) {
+	if (*cp == '-')
+	    switch (smatch (++cp, switches)) {
+		case AMBIGSW: 
+		    ambigsw (cp, switches);
+		    done (1);
+		case UNKWNSW: 
+		    adios (NULLCP, "-%s unknown", cp);
+		case HELPSW: 
+		    (void) sprintf (buf, "%s [switches]", invo_name);
+		    help (buf, switches);
+		    done (1);
+
+		case INITSW:
+		    initsw = 1, listsw = 0;
+		    continue;
+		case LISTSW:
+		    listsw = 1, initsw = 0;
+		    continue;
+		case USERSW:
+		    if (!(usersw = *argp++) || *usersw == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+	    }
+	adios (NULLCP, "usage: %s [switches]", invo_name);
+    }
+
+/*  */
+
+#ifndef	APOP
+    adios (NULLCP, "not compiled with APOP option");
+#else
+    if (getuid ())
+	initsw = listsw = 0, usersw = NULL;
+
+    if (initsw) {
+	struct passwd *pw;
+	struct stat st;
+
+	if ((pw = getpwnam (POPUID)) == NULL)
+	    adios (NULLCP, "POP user-id unknown");
+
+	(void) sprintf (buf, "%s.dir", APOP);
+	if (stat (buf, &st) != NOTOK) {
+	    if (!getanswer ("Really initialize POP authorization DB? "))
+		done (1);
+	    (void) unlink (buf);
+	    (void) sprintf (buf, "%s.pag", APOP);	    
+	    (void) unlink (buf);
+	}
+	if ((db = dbm_open (APOP, O_RDWR | O_CREAT, 0600)) == NULL)
+	    adios (APOP, "unable to create POP authorization DB");
+	if (fchown (dbm_dirfno (db), pw -> pw_uid, pw -> pw_gid) == NOTOK
+	        || fchown (dbm_pagfno (db), pw -> pw_uid, pw -> pw_gid)
+	    		== NOTOK)
+	    advise (" ", "error setting ownership of POP authorization DB");
+
+	done (0);
+    }
+
+    if ((db = dbm_open (APOP, O_RDONLY, 0)) == NULL)
+	adios (APOP, "unable to open POP authorization DB");
+
+    if (flock (dbm_pagfno (db), LOCK_SH) == NOTOK)
+	adios (APOP, "unable to lock POP authorization DB");
+
+    if (listsw) {
+	if (usersw) {
+	    key.dsize = strlen (key.dptr = usersw) + 1;
+	    value = dbm_fetch (db, key);
+	    if (value.dptr == NULL)
+		adios (NULLCP, "no such entry in POP authorization DB");
+	    bcopy (value.dptr, (char *) &auth, sizeof auth);
+	    printf ("%s\n", key.dptr);
+	}
+	else
+	    for (key = dbm_firstkey (db); key.dptr; key = dbm_nextkey (db)) {
+		printf ("%s", key.dptr);
+		value = dbm_fetch (db, key);
+		if (value.dptr == NULL)
+		    printf (" - no information?!?\n");
+		else {
+		    bcopy (value.dptr, (char *) &auth, sizeof auth);
+		    printf ("\n");
+		}
+	    }
+
+	dbm_close (db);
+
+	done (0);
+    }
+
+    if (usersw == NULL)
+	usersw = getusr ();
+
+    fprintf (stderr, "Changing POP password for %s.\n", usersw);
+
+    key.dsize = strlen (key.dptr = usersw) + 1;
+    value = dbm_fetch (db, key);
+    if (value.dptr != NULL) {
+	bcopy (value.dptr, (char *) &auth, sizeof auth);
+	dbm_close (db);
+
+	if ((i = strlen (strcpy (buf, getpass ("Old password:")))) == 0
+	        || auth.auth_secretlen != i
+	    	|| bcmp (buf, auth.auth_secret, i))
+	    fprintf (stderr, "Sorry.\n"), exit (1);
+    }
+    else
+	dbm_close (db);
+
+#ifdef	lint
+    flags = 0;
+#endif	/* lint */
+    for (insist = 0; insist < 2; insist++) {
+	int	i;
+	char    c;
+
+	if (insist)
+	    printf ("Please use %s.\n",
+		    flags == 1 ? "at least one non-numeric character"
+		    : "a longer password");
+
+	if ((i = strlen (strcpy (buf, getpass ("New password:")))) == 0) {
+	    fprintf (stderr, "Password unchanged.\n");
+	    exit (1);
+	}
+
+	flags = 0;
+	for (cp = buf; c = *cp++;)
+	    if (c >= 'a' && c <= 'z')
+		flags |= 2;
+	    else
+		if (c >= 'A' && c <= 'Z')
+		    flags |= 4;
+		else
+		    if (c >= '0' && c <= '9')
+			flags |= 1;
+		    else
+			flags |= 8;
+
+	if ((flags >= 7 && i >= 4)
+		|| ((flags == 2 || flags == 4) && i >= 6)
+		|| ((flags == 3 || flags == 5 || flags == 6) && i >= 5))
+	    break;
+    }
+
+    if (strcmp (buf, getpass ("Retype new password:"))) {
+	fprintf (stderr, "Mismatch - password unchanged.\n");
+	exit (1);
+    }
+
+    if ((db = dbm_open (APOP, O_RDWR, 0)) == NULL)
+	adios (APOP, "unable to open POP authorization DB");
+
+    if (flock (dbm_pagfno (db), LOCK_EX) == NOTOK)
+	adios (APOP, "unable to lock POP authorization DB");
+
+    key.dsize = strlen (key.dptr = usersw) + 1;
+
+    buf[sizeof auth.auth_secret] = NULL;
+    bcopy (buf, auth.auth_secret, auth.auth_secretlen = strlen (buf));
+    value.dptr = (char *) &auth, value.dsize = sizeof auth;
+
+    if (dbm_store (db, key, value, DBM_REPLACE))
+	adios (NULLCP, "POP authorization DB may be corrupt?!?");
+    dbm_close (db);
+#endif
+
+    done (0);
+    /* NOTREACHED */
+}
+@
+
+
+1.6
+log
+@NULL->0
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: popauth.c,v 1.5 1992/02/08 05:39:47 jromine Exp jromine $";
+#endif	lint
+d193 1
+a193 1
+#endif	lint
+@
+
+
+1.5
+log
+@fix from mrose
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popauth.c,v 1.4 1992/02/08 00:09:16 jromine Exp jromine $";
+d34 1
+a34 1
+    NULL, NULL
+@
+
+
+1.4
+log
+@fix from mrose
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popauth.c,v 1.3 1992/02/05 17:56:15 jromine Exp jromine $";
+d109 3
+a111 1
+#ifdef	APOP
+@
+
+
+1.3
+log
+@undef DBM
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popauth.c,v 1.2 1992/02/04 21:48:55 jromine Exp jromine $";
+d50 1
+a112 4
+    if ((db = dbm_open (APOP, listsw ? O_RDONLY : O_RDWR, 0))
+	    == NULL)
+	adios (APOP, "unable to open POP authorization DB");
+
+d138 6
+d172 1
+d174 15
+d229 3
+@
+
+
+1.2
+log
+@contributed patch
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scan.c,v 1.11 1992/02/03 22:45:20 jromine Exp $";
+d8 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 3
+d7 1
+a37 7
+struct authinfo {
+    long    auth_clock;
+    char    auth_secret[16];
+    int	    auth_secretlen;
+};
+
+
+d132 4
+a135 2
+	(void) fchown (dbm_dirfno (db), pw -> pw_uid, pw -> pw_gid);
+	(void) fchown (dbm_pagfno (db), pw -> pw_uid, pw -> pw_gid);
+d147 1
+a147 1
+	    printf ("%s %ld\n", key.dptr, auth.auth_clock);
+d151 1
+a151 1
+		printf ("%s ", key.dptr);
+d154 1
+a154 1
+		    printf ("- no information?!?\n");
+d157 1
+a157 1
+		    printf ("%ld\n", auth.auth_clock);
+a214 1
+    (void) time (&auth.auth_clock);
+@

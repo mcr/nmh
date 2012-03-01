@@ -1,0 +1,747 @@
+head	1.16;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.16
+date	94.04.21.18.20.50;	author jromine;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	93.08.20.15.54.08;	author jromine;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	93.02.26.22.00.09;	author jromine;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	92.02.18.17.44.05;	author jromine;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	92.02.15.01.02.18;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.02.10.19.21.00;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.02.05.07.26.30;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.01.31.22.26.36;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.01.30.00.11.23;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.01.23.23.06.45;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.05.14.57.59;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.17.09.53.37;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.09.10.50.25;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.06.16.40.46;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.06.16.37.35;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.16
+log
+@update for scansbr.c -- overload {folder}.c_flags with hdrflg
+@
+text
+@/* scansbr.c - routines to help scan along... */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.15 1993/08/20 15:54:08 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include "../h/addrsbr.h"
+#include "../h/formatsbr.h"
+#include "../h/scansbr.h"
+#include "../zotnet/tws.h"
+#include <stdio.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#ifdef _FSTDIO
+#define       _ptr    _p              /* Gag */
+#define       _cnt    _w              /* Wretch */
+#endif
+
+#define MAXSCANL 256		/* longest possible scan line */
+#define SBUFSIZ 512		/* buffer size for content part of header
+				 * fields.  We want this to be large
+				 * enough so that we don't do a lot of
+				 * extra FLDPLUS calls on m_getfld but
+				 * small enough so that we don't snarf
+				 * the entire message body when we're
+				 * only going to display 30 characters
+				 * of it.
+				 */
+
+/*  */
+
+static struct format *fmt;
+#ifdef JLR
+static struct format *fmt_top;
+#endif /* JLR */
+
+static struct comp *datecomp;		/* pntr to "date" comp */
+static struct comp *bodycomp;		/* pntr to "body" pseudo-comp 
+					 * (if referenced) */
+static int	ncomps = 0;		/* # of interesting components */
+static char	**compbuffers = 0; 	/* buffers for component text */
+static struct comp **used_buf = 0;	/* stack for comp that use buffers */
+
+char    	*scanl = 0;		/* text of most recent scanline */
+
+static int  dat[5];			/* aux. data for format routine */
+
+#ifdef	RPATHS
+char   *unixline ();			/* info from UNIX From: line */
+#endif	/* RPATHS */
+
+#define FPUTS(buf) {\
+		if (mh_fputs(buf,scnout) == EOF)\
+		    adios (scnmsg, "write error on");\
+		}
+
+/*  */
+
+/* ARGSUSED */
+
+int     scan (inb, innum, outnum, nfs, width, curflg, unseen,
+					hdrflg, folder, size, noisy)
+char	*nfs,
+	*folder;
+int     innum,
+        outnum,
+	width,
+        curflg,
+	unseen,
+	hdrflg,
+	noisy;
+long	size;
+register FILE   *inb;
+{
+    int     compnum,
+	    encrypted,
+            state;
+    register int  i;
+    register char *cp;
+    register struct comp *cptr;
+    register char *tmpbuf;
+    register char **nxtbuf;
+    register struct comp **savecomp;
+    char    *scnmsg;
+    FILE    *scnout;
+    char    name[NAMESZ];
+    static  int rlwidth,
+	        slwidth;
+
+    /* first-time only initialization */
+    if (scanl == NULLCP) {
+	int	bigwid;
+
+	if (width == 0) {
+	    if ((width = sc_width ()) < WIDTH/2)
+		width = WIDTH/2;
+	    else if (width > MAXSCANL)
+		width = MAXSCANL;
+	}
+	dat[3] = slwidth = width;
+	if ((scanl = (char *)malloc( (unsigned) (slwidth + 2) )) == (char *)0)
+	    adios (NULLCP, "unable to malloc scan line (%d bytes)", slwidth+2);
+	if (outnum)
+	    (void) umask( ~ m_gmprot() );
+
+	ncomps = fmt_compile (nfs, &fmt) + 1;
+#ifdef JLR
+	fmt_top = fmt;
+#endif	/* JLR */
+	FINDCOMP(bodycomp, "body");
+	FINDCOMP(datecomp, "date");
+	FINDCOMP(cptr, "folder");
+	if (cptr && folder) {
+	    cptr->c_text = folder;
+	    cptr->c_flags = hdrflg;
+	}
+	FINDCOMP(cptr, "encrypted");
+	if (!cptr)
+	    if (cptr = (struct comp *) calloc (1, sizeof *cptr)) {
+		cptr -> c_name = "encrypted";
+		cptr -> c_next = wantcomp[i = CHASH (cptr -> c_name)];
+		wantcomp[i] = cptr;
+		ncomps++;
+	}
+	FINDCOMP (cptr, "dtimenow");
+	if (cptr)
+	    cptr->c_text = getcpy(dtimenow ());
+	nxtbuf = compbuffers = (char **)calloc((unsigned) ncomps,
+	    sizeof(char *));
+	if (nxtbuf == NULL)
+	    adios (NULLCP, "unable to allocate component buffers");
+	used_buf = (struct comp **)calloc((unsigned) (ncomps+1),
+	    sizeof(struct comp *));
+	if (used_buf == NULL)
+	    adios (NULLCP, "unable to allocate component buffer stack");
+	used_buf += ncomps+1; *--used_buf = 0;
+	rlwidth = bodycomp && (width > SBUFSIZ) ? width : SBUFSIZ;
+	for (i = ncomps; i--; )
+	    if ((*nxtbuf++ = malloc( rlwidth )) == NULL)
+		adios (NULLCP, "unable to allocate component buffer");
+    }
+    /* each-message initialization */
+    nxtbuf = compbuffers;
+    savecomp = used_buf;
+    tmpbuf = *nxtbuf++;
+    dat[0] = innum ? innum : outnum;
+    dat[1] = curflg;
+    dat[4] = unseen;
+
+    /*
+     * get the first field.  If the msg is non-empty and we're doing
+     * an "inc", open the output file.
+     */
+    if ((state = m_getfld (FLD, name, tmpbuf, rlwidth, inb)) == FILEEOF)
+	if (ferror(inb)) {
+	    advise("read", "unable to"); /* "read error" */
+	    return SCNFAT;
+	} else
+	    return SCNEOF;
+
+    if (outnum) {
+	if (outnum > 0) {	/* Fix from Van -- I'm not sure why... */
+	    scnmsg = m_name (outnum);
+	    if (*scnmsg == '?')	/* msg num out of range */
+		return SCNNUM;
+	}
+	else
+	    scnmsg = "/dev/null";
+	if ((scnout = fopen (scnmsg, "w")) == NULL)
+	    adios (scnmsg, "unable to write");
+#ifdef	RPATHS
+	if ((cp = unixline ()) && *cp != '\n') {
+	    FPUTS ("Return-Path: ");
+	    FPUTS (cp);
+	}
+#endif	/* RPATHS */
+    }
+
+    /* scan - main loop */
+    for (compnum = 1; ; state = m_getfld (state, name, tmpbuf, rlwidth, inb)) {
+	switch (state) {
+	    case FLD: 
+	    case FLDPLUS: 
+		compnum++;
+		if (outnum) {
+		    FPUTS (name);
+		    (void) putc (':', scnout);
+		    FPUTS (tmpbuf);
+		}
+		/*
+		 * if we're interested in this component, save a pointer
+		 * to the component text, then start using our next free
+		 * buffer as the component temp buffer (buffer switching
+		 * saves an extra copy of the component text).
+		 */
+		if (cptr = wantcomp[CHASH(name)])
+		    do {
+			if (uleq(name, cptr->c_name)) {
+			    if (! cptr->c_text) {
+				cptr->c_text = tmpbuf;
+				for (cp = tmpbuf + strlen (tmpbuf) - 1; 
+					cp >= tmpbuf; cp--)
+				    if (isspace (*cp))
+					*cp = 0;
+				    else
+					break;
+				*--savecomp = cptr;
+				tmpbuf = *nxtbuf++;
+			    }
+			    break;
+			}
+		    } while (cptr = cptr->c_next);
+
+		while (state == FLDPLUS) {
+		    state = m_getfld (state, name, tmpbuf, rlwidth, inb);
+		    if (outnum)
+			FPUTS (tmpbuf);
+		}
+		break;
+
+	    case BODY: 
+		compnum = -1;
+		if (! outnum) {
+		    state = FILEEOF; /* stop now if scan cmd */
+		    goto finished;
+		}
+		(void) putc ('\n', scnout);
+		FPUTS (tmpbuf);
+		/*
+		 * performance hack: some people like to run "inc" on
+		 * things like net.sources or large digests.  We do a
+		 * copy directly into the output buffer rather than
+		 * going through an intermediate buffer.
+		 *
+		 * We need the amount of data m_getfld found & don't
+		 * want to do a strlen on the long buffer so there's
+		 * a hack in m_getfld to save the amount of data it
+		 * returned in the global "msg_count".
+		 */
+	body: 	;
+		while (state == BODY) {
+		    if (scnout->_cnt <= 0) {
+			if (fflush(scnout) == EOF)
+			    adios (scnmsg, "write error on");
+		    }
+		    state = m_getfld( state, name, scnout->_ptr,
+				      -(scnout->_cnt), inb );
+		    scnout->_cnt -= msg_count;
+		    scnout->_ptr += msg_count;
+		}
+		goto finished;
+
+	    case LENERR: 
+	    case FMTERR: 
+		fprintf (stderr, 
+			innum ? "??Format error (message %d) in "
+			      : "??Format error in ",
+			outnum ? outnum : innum);
+		fprintf (stderr, "component %d\n", compnum);
+
+		if (outnum) {
+		    FPUTS ("\n\nBAD MSG:\n");
+		    FPUTS (name);
+		    (void) putc ('\n', scnout);
+		    state = BODY;
+		    goto body;
+		}
+		/* fall through */
+
+	    case FILEEOF:
+		goto finished;
+
+	    default: 
+		adios (NULLCP, "getfld() returned %d", state);
+	}
+    }
+    /*
+     * format and output the scan line.
+     */
+finished:
+    if (ferror(inb)) {
+	advise("read", "unable to"); /* "read error" */
+	return SCNFAT;
+    }
+    {
+	char *saved_c_text;
+
+	if (bodycomp) {
+	    /* Save and restore buffer so we don't trash our dynamic pool! */
+	    saved_c_text = bodycomp->c_text;
+	    bodycomp->c_text = tmpbuf;
+	}
+
+	if (size)
+	    dat[2] = size;
+	else if (outnum > 0)
+	    dat[2] = ftell(scnout);
+
+	if ( (datecomp && ! datecomp->c_text) || (!size && !outnum)) {
+	    struct stat st;
+	    (void) fstat (fileno(inb), &st);
+	    if (!size && !outnum)
+		dat[2] = st.st_size;
+	    if (datecomp) {
+		if (! datecomp->c_text) {
+		    if (datecomp->c_tws == NULL)
+			datecomp->c_tws = (struct tws *)
+			    calloc((unsigned) 1, sizeof(*datecomp->c_tws));
+		    if (datecomp->c_tws == NULL)
+			adios (NULLCP, "unable to allocate tws buffer");
+  		    *datecomp->c_tws = *dlocaltime ((long *) &st.st_mtime);
+		    datecomp->c_flags = -1;
+		} else {
+		    datecomp->c_flags = 0;
+		}
+	    }
+	}
+#ifndef JLR
+	(void) fmtscan (fmt, scanl, slwidth, dat);
+#else	/* JLR */
+	fmt = fmtscan (fmt, scanl, slwidth, dat);
+	if (!fmt)
+	    fmt = fmt_top;		/* reset for old format files */
+#endif	/* JLR */
+
+	if (bodycomp)
+	    bodycomp->c_text = saved_c_text;
+    }
+    if (noisy)
+	(void) fputs (scanl, stdout);
+
+    FINDCOMP (cptr, "encrypted");
+    encrypted = cptr && cptr -> c_text;
+    /* return dynamically allocated buffers to pool */
+    while ( cptr = *savecomp++ ) {
+	*--nxtbuf = cptr->c_text;
+	cptr->c_text = NULLCP;
+    }
+    *--nxtbuf = tmpbuf;
+
+    if (outnum && fclose (scnout) == EOF)
+	adios (scnmsg, "write error on");
+
+    return (state != FILEEOF ? SCNERR : encrypted ? SCNENC : SCNMSG);
+}
+
+/*  */
+
+/* Cheat:  we are loaded with adrparse, which wants a routine called
+   OfficialName().  We call adrparse:getm() with the correct arguments
+   to prevent OfficialName() from being called.  Hence, the following
+   is to keep the loader happy.
+ */
+
+char   *OfficialName (name)
+register char  *name;
+{
+    return name;
+}
+
+mh_fputs(s, stream)
+char *s;
+FILE *stream;
+{
+    char    c;
+    while(c = *s++) 
+	if(putc(c,stream) == EOF )
+	    return(EOF);
+    return(0);
+}
+@
+
+
+1.15
+log
+@allow BIG widths
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.14 1993/02/26 22:00:09 jromine Exp jromine $";
+d63 2
+a64 2
+int     scan (inb, innum, outnum, nfs, width, curflg,
+					unseen, folder, size, noisy)
+d72 1
+d115 1
+a115 1
+	if (cptr && folder)
+d117 2
+@
+
+
+1.14
+log
+@_FSTDIO
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.13 1992/12/15 00:20:22 jromine Exp jromine $";
+d88 2
+a89 1
+    static  int slwidth;
+d93 2
+d136 1
+d138 1
+a138 1
+	    if ((*nxtbuf++ = malloc( SBUFSIZ )) == NULL)
+d153 1
+a153 1
+    if ((state = m_getfld (FLD, name, tmpbuf, SBUFSIZ, inb)) == FILEEOF)
+d179 1
+a179 1
+    for (compnum = 1; ; state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb)) {
+d214 1
+a214 1
+		    state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
+@
+
+
+1.13
+log
+@endif sugar
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.12 1992/02/18 17:44:05 jromine Exp jromine $";
+d16 4
+@
+
+
+1.12
+log
+@test malloc return
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.11 1992/02/15 01:02:18 jromine Exp $";
+#endif	lint
+d48 1
+a48 1
+#endif	RPATHS
+d103 1
+a103 1
+#endif JLR
+d167 1
+a167 1
+#endif	RPATHS
+d311 1
+a311 1
+#else JLR
+d315 1
+a315 1
+#endif JLR
+@
+
+
+1.11
+log
+@remove extra $Header$
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.10 1992/02/10 19:21:00 jromine Exp jromine $";
+d95 2
+a96 1
+	scanl = (char *)malloc( (unsigned) (slwidth + 2) );
+@
+
+
+1.10
+log
+@report fatal errors
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.9 1992/02/05 07:26:30 jromine Exp jromine $";
+a4 1
+static char *RCSid = "$Header: /usr/rand/src/bin/mh/uip/RCS/scansbr.c,v 1.3 91/02/05 14:10:35 pearlman Exp $";
+@
+
+
+1.9
+log
+@put unseen sequence in mh-format
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.8 1992/01/31 22:26:36 jromine Exp jromine $";
+d5 1
+d146 5
+a150 1
+	return SCNEOF;
+d272 4
+@
+
+
+1.8
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.7 1992/01/30 00:11:23 jromine Exp jromine $";
+d44 1
+a44 1
+static int  dat[4];			/* aux. data for format routine */
+d59 2
+a60 1
+int     scan (inb, innum, outnum, nfs, width, curflg, folder, size, noisy)
+d67 1
+d136 1
+a136 1
+    dat[0] = innum? innum : outnum;
+d138 1
+@
+
+
+1.7
+log
+@increase SBUFSIZ - some X.400 headers are pretty big!
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.6 1992/01/23 23:06:45 jromine Exp jromine $";
+d187 1
+a187 1
+					*cp = NULL;
+@
+
+
+1.6
+log
+@new formatsbr changes under JLR
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scansbr.c,v 1.5 1990/04/05 14:57:59 sources Exp jromine $";
+d18 1
+a18 1
+#define SBUFSIZ 256		/* buffer size for content part of header
+@
+
+
+1.5
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d31 3
+d59 3
+a61 2
+int     scan (inb, innum, outnum, nfs, width, curflg, header, size, noisy)
+char	*nfs;
+a65 1
+        header,
+d98 3
+d103 3
+d297 1
+d299 5
+@
+
+
+1.4
+log
+@fixes from jeff honig
+add {dtimenow} to scansbr
+add a bunch of options to rcvtty
+@
+text
+@d2 3
+@
+
+
+1.3
+log
+@Fixes from Van Jacobson
+@
+text
+@d102 3
+@
+
+
+1.2
+log
+@build scan line even if not printing (for rcvtty, etc.)
+@
+text
+@d15 1
+a15 1
+#define SBUFSIZ 128		/* buffer size for content part of header
+d102 8
+a109 2
+	nxtbuf = compbuffers = (char **)calloc((unsigned) ncomps,sizeof(char *));
+	used_buf = (struct comp **)calloc((unsigned) (ncomps+1),sizeof(struct comp *));
+d112 2
+a113 1
+	    *nxtbuf++ = malloc( SBUFSIZ );
+d130 7
+a136 3
+	scnmsg = m_name (outnum);
+	if (*scnmsg == '?')	/* msg num out of range */
+	    return SCNNUM;
+d140 1
+a140 1
+	if ((cp = unixline ()) && *cp) {
+d250 5
+a254 1
+	if (bodycomp)
+d256 1
+d260 1
+a260 1
+	else if (outnum)
+d270 6
+a275 3
+		    struct tws dmt;
+		    dmt =  *dlocaltime ((long *) &st.st_mtime);
+		    *datecomp->c_tws = dmt;
+d285 1
+a285 1
+	    bodycomp->c_text = NULLCP;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d238 1
+a238 1
+    if (noisy) {
+a263 1
+	(void) fputs (scanl, stdout);
+d268 2
+@

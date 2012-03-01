@@ -1,0 +1,227 @@
+head	1.9;
+access;
+symbols;
+locks; strict;
+
+
+1.9
+date	92.02.04.21.13.28;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	90.04.09.20.22.49;	author sources;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	90.04.09.10.06.15;	author sources;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.09.09.56.01;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.05.15.10.37;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.22.11.31.39;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.20.19.42.20;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.03.20.17.36.34;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.03.20.13.10.22;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@contributed patch
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: popd.rf,v 1.8 1990/04/09 20:22:49 sources Exp jromine $
+.SC POPD 8
+.NA
+popd \- the POP server
+.SY
+/usr/etc/popd
+\%[\-p\ portno]
+(under /etc/rc.local)
+.DE
+The \fIpopd\fR server implements the Post Office Protocol (version 3),
+as described in RFC1081 and RFC1082.
+Basically, the server listens on the TCP port named \*(lqpop\*(rq
+for connections and enters the
+POP upon establishing a connection.
+The `\-p' option overrides the default TCP port.
+.PP
+If the POP2 configuration option is defined,
+then the server also implements version 2 of the protocol.
+.PP
+If the APOP configuration option is defined,
+then the server supports a non-standard mechanism for identity-establishment
+in which authentication credentials are used to provide for origin
+authentication and reply protection,
+but which do not involve sending a password in the clear over the network.
+See \fIpopauth\fR(8) for more details.
+.Fi
+^/usr/spool/pop/POP~^POP database
+.Pr
+None
+.Sa
+\fIPost Office Protocol - version 3\fR (aka RFC\-1081),
+.br
+\fIPost Office Protocol - version 3: Extended service offerings\fP
+(RFC\-1082),
+.br
+pop(5)
+.De
+None
+.Co
+None
+.Hi
+For historical reasons, the \fIMH\fP POP defaults to using
+the port named \*(lqpop\*(rq (109) instead of its newly assigned
+port named \*(lqpop3\*(rq (110).
+See the POPSERVICE configuration option for more details.
+.sp 
+Previous versions of the server (10/28/84) had the restriction that
+the POP client may retrieve messages for login users only.
+This restriction has been lifted,
+and true POB support is available
+(sending mail to a mailbox on the POP service host
+which does not map to a user\-id in the password file).
+.En
+@
+
+
+1.8
+log
+@fixup RFC references
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: popd.rf,v 1.7 90/04/09 10:06:15 sources Exp Locker: sources $
+d11 1
+a11 1
+The \fIpopd\fR server implements the Post Office protocol,
+d17 10
+@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: popd.rf,v 1.6 90/04/09 09:56:01 sources Exp Locker: sources $
+d12 1
+a12 1
+as described in RFC819 (revised, \fIMH\fR internal).
+d25 1
+a25 1
+(RFC\-1082).
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: popd.rf,v 1.5 90/04/05 15:10:37 sources Exp Locker: sources $
+d13 2
+a14 1
+Basically, the server listens on TCP port 109 for connections and enters the
+d33 5
+@
+
+
+1.5
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+d21 4
+a24 1
+\fIPost Office Protocol (revised)\fR (aka RFC\-819 with revisions),
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH POPD 8 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH POPD 8 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC POPD 8
+.NA
+d5 1
+a5 1
+.SY
+@

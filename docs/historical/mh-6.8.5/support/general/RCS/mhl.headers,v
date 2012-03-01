@@ -1,0 +1,35 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	92.10.20.22.48.43;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@overflowtext="***",overflowoffset=5
+leftadjust,compwidth=9
+ignores=msgid,message-id,received,content-type,content-transfer-encoding,content-ID
+Date:formatfield="%<(nodate{text})%{text}%|%(pretty{text})%>"
+To:
+cc:
+:
+From:
+Subject:
+:
+extras:nocomponent
+:
+@

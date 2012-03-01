@@ -1,0 +1,95 @@
+head	1.5;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.5
+date	92.10.26.16.44.42;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.02.11.05.11.14;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.02.09.22.12.28;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.01.31.16.37.47;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.01.31.16.37.44;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@remove %?{content-type} stuff (from MTR)
+@
+text
+@%<(cur)>%| %>\
+%<{status} %|N%>\
+%<{replied}R%?{encrypted}E%| %>\
+%4(msg)\
+ %<(mymbox{from})%<{to}To: %13(friendly{to})%>%>%<(zero)%17(friendly{from})%>\
+ %3(day{date}) %3(month{date}) %02(mday{date})\
+ %02(hour{date}):%02(min{date})\
+ %{subject}
+@
+
+
+1.4
+log
+@use if-then-elseif-else
+@
+text
+@d3 1
+a3 1
+%<{replied}R%?{encrypted}E%?{content-type}M%| %>\
+@
+
+
+1.3
+log
+@put in new from/to test
+@
+text
+@d3 1
+a3 1
+%<{replied}R%|%<{encrypted}E%|%<{content-type}M%| %>%>%>\
+@
+
+
+1.2
+log
+@Multimedia MH
+@
+text
+@d5 1
+a5 1
+ %<(mymbox{from})To: %13(friendly{to})%|%17(friendly{from})%>\
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 1
+a3 1
+%<{replied}R%|%<{encrypted}E%| %>%>\
+@

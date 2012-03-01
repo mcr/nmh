@@ -1,0 +1,1284 @@
+head	2.7;
+access;
+symbols;
+locks
+	shettich:2.7; strict;
+comment	@ * @;
+
+
+2.7
+date	94.04.19.20.12.14;	author jromine;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	93.08.26.18.25.52;	author jromine;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	93.08.25.17.26.40;	author jromine;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	92.11.24.18.32.32;	author jromine;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	92.11.02.22.53.37;	author jromine;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	92.10.26.16.48.22;	author jromine;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	92.10.20.22.43.35;	author jromine;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	92.10.20.15.56.14;	author jromine;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	92.03.03.17.09.57;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.02.11.17.40.13;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.02.04.22.21.02;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.02.04.21.45.44;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.02.04.21.33.20;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.01.31.22.04.36;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.09.09.45.16;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.05.15.35.04;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.04.05.14.54.46;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.06.13.12.55;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.06.13.12.32;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.7
+log
+@add MODE IDENTIFY auth command
+@
+text
+@/* popsbr.c - POP client subroutines */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: popsbr.c,v 2.6 1993/08/26 18:25:52 jromine Exp jromine $";
+#endif	lint
+
+#if defined(NNTP) && !defined(PSHSBR)
+#undef  NNTP
+#endif
+
+/* LINTLIBRARY */
+
+#include "../h/strings.h"
+#ifdef NNTP			/* building pshsbr.o from popsbr.c */
+#include "../h/nntp.h"
+#endif /* NNTP */
+#include <stdio.h>
+#include <signal.h>
+
+#ifndef	POPSERVICE
+#define	POPSERVICE	"pop"
+#endif
+
+#define	NOTOK	(-1)
+#define	OK	0
+#define	DONE	1
+
+#define	TRM	"."
+#define	TRMLEN	(sizeof TRM - 1)
+
+extern int  errno;
+#ifndef	BSD44
+extern int  sys_nerr;
+extern char *sys_errlist[];
+#endif
+
+static int  poprint = 0;
+static int  pophack = 0;
+
+char    response[BUFSIZ];
+
+static FILE *input;
+static FILE *output;
+
+#ifdef __STDC__
+static int  traverse (int (*)(), const char*, char *, char *, char *, char *);
+#define	targ_t	char *
+#else
+static int	traverse();
+#define	targ_t	int
+#endif
+
+#if !defined(NNTP) && defined(MPOP)
+#define	command	pop_command
+#define	multiline pop_multiline
+int	command(), multiline();
+#else
+static	int	command(), multiline();
+#endif
+
+static int	getline();
+static putline();
+
+#ifdef NNTP
+#ifdef	BPOP	/* stupid */
+static	int	xtnd_last = -1,
+		xtnd_first = 0;
+static char	xtnd_name[512];	/* INCREDIBLE HACK!! */
+#endif
+#endif /* NNTP */
+
+/*  */
+
+#ifndef	NNTP
+#ifdef	APOP
+#include "md5.c"
+
+static char *pop_auth (user, pass)
+char   *user,
+       *pass;
+{
+    register char *cp,
+		  *lp;
+    register unsigned char *dp;
+    unsigned char *ep,
+		   digest[16];
+    MD5_CTX mdContext;
+    static char buffer[BUFSIZ];
+
+    if ((cp = index (response, '<')) == NULL
+	    || (lp = index (cp, '>')) == NULL) {
+	(void) sprintf (buffer, "APOP not available: %s", response);
+	(void) strcpy (response, buffer);
+	return NULL;
+    }
+
+    *++lp = NULL;
+    (void) sprintf (buffer, "%s%s", cp, pass);
+
+    MD5Init (&mdContext);
+    MD5Update (&mdContext, (unsigned char *) buffer,
+	       (unsigned int) strlen (buffer));
+    MD5Final (digest, &mdContext);
+
+    (void) sprintf (cp = buffer, "%s ", user);
+    cp += strlen (cp);
+    for (ep = (dp = digest) + sizeof digest / sizeof digest[0];
+	     dp < ep;
+	     cp += 2)
+	(void) sprintf (cp, "%02x", *dp++ & 0xff);
+    *cp = NULL;
+
+    return buffer;
+}
+#endif	/* APOP */
+#endif	/* !NNTP */
+
+/*  */
+
+#if defined(RPOP) || defined(APOP)
+int     pop_init (host, user, pass, snoop, rpop)
+int     rpop;
+#else
+int     pop_init (host, user, pass, snoop)
+#endif
+char   *host,
+       *user,
+       *pass;
+int	snoop;
+{
+#ifdef	APOP
+    int     apop;
+#else
+#ifndef	RPOP	/* !APOP && !RPOP */
+    int	    rpop = 0;
+#endif
+#endif
+    int     fd1,
+            fd2;
+    char    buffer[BUFSIZ];
+
+#ifdef	APOP
+    if ((apop = rpop) < 0)
+	rpop = 0;
+#endif	/* APOP */
+
+#ifndef NNTP
+#ifndef	KPOP
+    if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response)) == NOTOK)
+#else	/* KPOP */
+    (void) sprintf (buffer, "%s/%s", POPSERVICE, "kpop");
+    if ((fd1 = client (host, "tcp", buffer, rpop, response)) == NOTOK)
+#endif
+#else	/* NNTP */
+    if ((fd1 = client (host, "tcp", "nntp", rpop, response)) == NOTOK)
+#endif
+	return NOTOK;
+
+    if ((fd2 = dup (fd1)) == NOTOK) {
+	(void) sprintf (response, "unable to dup connection descriptor: %s",
+		errno > 0 && errno < sys_nerr ? sys_errlist[errno]
+		: "unknown error");
+	(void) close (fd1);
+	return NOTOK;
+    }
+#ifndef NNTP
+    if (pop_set (fd1, fd2, snoop) == NOTOK)
+#else	/* NNTP */
+    if (pop_set (fd1, fd2, snoop, (char *)0) == NOTOK)
+#endif	/* NNTP */
+	return NOTOK;
+
+    (void) signal (SIGPIPE, SIG_IGN);
+
+    switch (getline (response, sizeof response, input)) {
+	case OK: 
+	    if (poprint)
+		fprintf (stderr, "<--- %s\n", response);
+#ifndef	NNTP
+	    if (*response == '+') {
+#ifndef	KPOP
+#ifdef	APOP
+		if (apop < 0) {
+		    char   *cp = pop_auth (user, pass);
+
+		    if (cp && command ("APOP %s", cp) != NOTOK)
+			return OK;
+		}
+		else
+#endif	/* apop */
+		if (command ("USER %s", user) != NOTOK
+		    && command ("%s %s", rpop ? "RPOP" : (pophack++, "PASS"),
+					pass) != NOTOK)
+		return OK;
+#else	/* KPOP */
+		if (command ("USER %s", user) != NOTOK
+		    && command ("PASS %s", pass) != NOTOK)
+		return OK;
+#endif
+	    }
+#else	/* NNTP */
+	    if (*response < CHAR_ERR) {
+		(void) command ("MODE READER");
+#ifdef	NEWSAUTH
+		if (getenv("NEWSAUTH"))	/* special for IDENT protocol */
+		    command("MODE IDENTIFY");
+#endif
+		return OK;
+	    }
+#endif	/* NNTP */
+	    (void) strcpy (buffer, response);
+	    (void) command ("QUIT");
+	    (void) strcpy (response, buffer);
+				/* and fall */
+
+	case NOTOK: 
+	case DONE: 
+	    if (poprint)	    
+		fprintf (stderr, "%s\n", response);
+	    (void) fclose (input);
+	    (void) fclose (output);
+	    return NOTOK;
+    }
+/* NOTREACHED */
+}
+/*  */
+
+#ifndef NNTP
+int	pop_set (in, out, snoop)
+#else	/* NNTP */
+int	pop_set (in, out, snoop, myname)
+char   *myname;
+#endif	/* NNTP */
+int	in,
+	out,
+	snoop;
+{
+#ifdef NNTP
+    if (myname && *myname)
+	strcpy (xtnd_name, myname);	/* interface from bbc to msh */
+
+#endif	/* NNTP */
+    if ((input = fdopen (in, "r")) == NULL
+	    || (output = fdopen (out, "w")) == NULL) {
+	(void) strcpy (response, "fdopen failed on connection descriptor");
+	if (input)
+	    (void) fclose (input);
+	else
+	    (void) close (in);
+	(void) close (out);
+	return NOTOK;
+    }
+
+    poprint = snoop;
+
+    return OK;
+}
+
+
+int	pop_fd (in, out)
+char   *in,
+       *out;
+{
+    (void) sprintf (in, "%d", fileno (input));
+    (void) sprintf (out, "%d", fileno (output));
+    return OK;
+}
+
+/*  */
+
+int     pop_stat (nmsgs, nbytes)
+int    *nmsgs,
+       *nbytes;
+{
+#ifdef NNTP
+    char **ap;
+    extern char **brkstring();
+#endif	/* NNTP */
+
+#ifndef	NNTP
+    if (command ("STAT") == NOTOK)
+	return NOTOK;
+
+    *nmsgs = *nbytes = 0;
+    (void) sscanf (response, "+OK %d %d", nmsgs, nbytes);
+
+#else	/* NNTP */
+    if (xtnd_last < 0) { 	/* in msh, xtnd_name is set from myname */
+	if (command("GROUP %s", xtnd_name) == NOTOK)
+	    return NOTOK;
+
+	ap = brkstring (response, " ", "\n"); /* "211 nart first last ggg" */
+	xtnd_first = atoi (ap[2]);
+	xtnd_last  = atoi (ap[3]);
+    }
+
+    /* nmsgs is not the real nart, but an incredible simuation */
+    if (xtnd_last > 0)
+	*nmsgs = xtnd_last - xtnd_first + 1;	/* because of holes... */
+    else
+	*nmsgs = 0;
+    *nbytes = xtnd_first;	/* for subtracting offset in msh() */
+#endif	/* NNTP */
+
+    return OK;
+}
+
+#ifdef NNTP
+int	pop_exists (action)
+int	(*action) ();
+{
+#ifdef	XMSGS		/* hacked into NNTP 1.5 */
+    if (traverse (action, "XMSGS %d-%d",
+	    (targ_t)xtnd_first, (targ_t)xtnd_last, 0, 0) == OK)
+	return OK;
+#endif
+    if (traverse (action, "LISTGROUP",	/* provided by INN 1.4 */
+	    0, 0, 0, 0) == OK)
+	return OK;
+    return traverse (action, "XHDR NONAME %d-%d",
+	    (targ_t)xtnd_first, (targ_t)xtnd_last, 0, 0);
+}
+#endif	/* NNTP */
+
+#ifndef	BPOP
+int     pop_list (msgno, nmsgs, msgs, bytes)
+#else	BPOP
+int     pop_list (msgno, nmsgs, msgs, bytes, ids)
+int    *ids;
+#endif	BPOP
+int     msgno,
+       *nmsgs,
+       *msgs,
+       *bytes;
+{
+    int     i;
+#ifndef	BPOP
+    int    *ids = NULL;
+#endif
+
+    if (msgno) {
+#ifndef NNTP
+	if (command ("LIST %d", msgno) == NOTOK)
+	    return NOTOK;
+	*msgs = *bytes = 0;
+	if (ids) {
+	    *ids = 0;
+	    (void) sscanf (response, "+OK %d %d %d", msgs, bytes, ids);
+	}
+	else
+	    (void) sscanf (response, "+OK %d %d", msgs, bytes);
+#else	/* NNTP */
+	*msgs = *bytes = 0;
+	if (command ("STAT %d", msgno) == NOTOK) 
+	    return NOTOK;
+	if (ids) {
+	    *ids = msgno;
+	}
+#endif	/* NNTP */
+	return OK;
+    }
+
+#ifndef NNTP
+    if (command ("LIST") == NOTOK)
+	return NOTOK;
+
+    for (i = 0; i < *nmsgs; i++)
+	switch (multiline ()) {
+	    case NOTOK: 
+		return NOTOK;
+	    case DONE: 
+		*nmsgs = ++i;
+		return OK;
+	    case OK: 
+		*msgs = *bytes = 0;
+		if (ids) {
+		    *ids = 0;
+		    (void) sscanf (response, "%d %d %d",
+			    msgs++, bytes++, ids++);
+		}
+		else
+		    (void) sscanf (response, "%d %d", msgs++, bytes++);
+		break;
+	}
+    for (;;)
+	switch (multiline ()) {
+	    case NOTOK: 
+		return NOTOK;
+	    case DONE: 
+		return OK;
+	    case OK: 
+		break;
+	}
+#else	/* NNTP */
+    return NOTOK;
+#endif	/* NNTP */
+}
+
+/*  */
+
+int     pop_retr (msgno, action)
+int     msgno,
+        (*action) ();
+{
+#ifndef NNTP
+    return traverse (action, "RETR %d", (targ_t)msgno, 0, 0, 0);
+#else	/* NNTP */
+    return traverse (action, "ARTICLE %d", (targ_t)msgno, 0, 0, 0);
+#endif	/* NNTP */
+}
+
+
+/* VARARGS2 */
+
+static int  traverse (action, fmt, a, b, c, d)
+int     (*action) ();
+#ifdef __STDC__
+const char   *fmt;
+#else
+char *fmt;
+#endif
+char   *a,
+       *b,
+       *c,
+       *d;
+{
+    char    buffer[sizeof response];
+
+    if (command (fmt, a, b, c, d) == NOTOK)
+	return NOTOK;
+    (void) strcpy (buffer, response);
+
+    for (;;)
+	switch (multiline ()) {
+	    case NOTOK: 
+		return NOTOK;
+
+	    case DONE: 
+		(void) strcpy (response, buffer);
+		return OK;
+
+	    case OK: 
+		(*action) (response);
+		break;
+	}
+}
+
+/*  */
+
+int     pop_dele (msgno)
+int     msgno;
+{
+    return command ("DELE %d", msgno);
+}
+
+
+int     pop_noop () {
+    return command ("NOOP");
+}
+
+
+#ifndef	NNTP
+#ifdef	MPOP
+int     pop_last () {
+    return command ("LAST");
+}
+#endif	/* MPOP */
+#endif	/* !NNTP */
+
+int     pop_rset () {
+    return command ("RSET");
+}
+
+/*  */
+
+int     pop_top (msgno, lines, action)
+int     msgno,
+	lines,
+        (*action) ();
+{
+#ifndef NNTP
+    return traverse (action, "TOP %d %d", (targ_t)msgno, (targ_t)lines, 0, 0);
+#else	/* NNTP */
+    return traverse (action, "HEAD %d", (targ_t)msgno, 0, 0, 0);
+#endif	/* NNTP */
+}
+
+
+#ifdef	BPOP
+int	pop_xtnd (action, fmt, a, b, c, d)
+int     (*action) ();
+char   *fmt,
+       *a,
+       *b,
+       *c,
+       *d;
+{
+    char buffer[BUFSIZ];
+#ifdef NNTP
+    extern char **brkstring();
+    char  **ap;
+#endif	/* NNTP */
+
+#ifndef NNTP
+    (void) sprintf (buffer, "XTND %s", fmt);
+    return traverse (action, buffer, a, b, c, d);
+#else	/* NNTP */
+    sprintf (buffer, fmt, a, b, c, d);
+    ap = brkstring (buffer, " ", "\n");	/* a hack, i know... */
+
+    if (uleq(ap[0], "x-bboards")) {	/* XTND "X-BBOARDS group */
+	/* most of these parameters are meaningless under NNTP. 
+	 * bbc.c was modified to set AKA and LEADERS as appropriate,
+	 * the rest are left blank.
+	 */
+	return OK;
+    }
+    if (uleq (ap[0], "archive") && ap[1]) {
+	sprintf (xtnd_name, "%s", ap[1]);		/* save the name */
+	xtnd_last = 0;
+	xtnd_first = 1;		/* setup to fail in pop_stat */
+	return OK;
+    }
+    if (uleq (ap[0], "bboards")) {
+
+	if (ap[1]) {			/* XTND "BBOARDS group" */
+	    sprintf (xtnd_name, "%s", ap[1]);		/* save the name */
+	    if (command("GROUP %s", xtnd_name) == NOTOK)
+		return NOTOK;
+
+	    strcpy (buffer, response);	/* action must ignore extra args */
+	    ap = brkstring (response, " ", "\n");/* "211 nart first last g" */
+	    xtnd_first = atoi (ap[2]);
+	    xtnd_last  = atoi (ap[3]);
+
+	    (*action) (buffer);		
+	    return OK;
+
+	} else {		/* XTND "BBOARDS" */
+	    return traverse (action, "LIST", a, b, c, d);
+	}
+    }
+    return NOTOK;	/* unknown XTND command */
+#endif	/* NNTP */
+}
+#endif	BPOP
+
+/*  */
+
+int     pop_quit () {
+    int     i;
+
+    i = command ("QUIT");
+    (void) pop_done ();
+
+    return i;
+}
+
+
+int     pop_done () {
+    (void) fclose (input);
+    (void) fclose (output);
+
+    return OK;
+}
+
+/*  */
+
+/* VARARGS1 */
+
+#if defined(MPOP) && !defined(NNTP)
+int	command (fmt, a, b, c, d)
+#else
+static int  command (fmt, a, b, c, d)
+#endif
+char   *fmt,
+       *a,
+       *b,
+       *c,
+       *d;
+{
+    char   *cp,
+	    buffer[BUFSIZ];
+
+    (void) sprintf (buffer, fmt, a, b, c, d);
+    if (poprint)
+	if (pophack) {
+	    if (cp = index (buffer, ' '))
+		*cp = 0;
+	    fprintf (stderr, "---> %s ********\n", buffer);
+	    if (cp)
+		*cp = ' ';
+	    pophack = 0;
+	}
+	else
+	    fprintf (stderr, "---> %s\n", buffer);
+
+    if (putline (buffer, output) == NOTOK)
+	return NOTOK;
+
+    switch (getline (response, sizeof response, input)) {
+	case OK: 
+	    if (poprint)
+		fprintf (stderr, "<--- %s\n", response);
+#ifndef NNTP
+	    return (*response == '+' ? OK : NOTOK);
+#else	/* NNTP */
+	    return (*response < CHAR_ERR ? OK : NOTOK);
+#endif	/* NNTP */
+
+	case NOTOK: 
+	case DONE: 
+	    if (poprint)	    
+		fprintf (stderr, "%s\n", response);
+	    return NOTOK;
+    }
+/* NOTREACHED */
+}
+
+#if	defined(MPOP) && !defined(NNTP)
+int  multiline () {
+#else
+static int  multiline () {
+#endif
+    char    buffer[BUFSIZ + TRMLEN];
+
+    if (getline (buffer, sizeof buffer, input) != OK)
+	return NOTOK;
+#ifdef	DEBUG
+    if (poprint)
+	fprintf (stderr, "<--- %s\n", response);
+#endif	DEBUG
+    if (strncmp (buffer, TRM, TRMLEN) == 0) {
+	if (buffer[TRMLEN] == 0)
+	    return DONE;
+	else
+	    (void) strcpy (response, buffer + TRMLEN);
+    }
+    else
+	(void) strcpy (response, buffer);
+
+    return OK;
+}
+
+/*  */
+
+static int  getline (s, n, iop)
+char   *s;
+int     n;
+FILE * iop;
+{
+    int     c;
+    char   *p;
+
+    p = s;
+    while (--n > 0 && (c = fgetc (iop)) != EOF)
+	if ((*p++ = c) == '\n')
+	    break;
+    if (ferror (iop) && c != EOF) {
+	(void) strcpy (response, "error on connection");
+	return NOTOK;
+    }
+    if (c == EOF && p == s) {
+	(void) strcpy (response, "connection closed by foreign host");
+	return DONE;
+    }
+    *p = 0;
+    if (*--p == '\n')
+	*p = 0;
+    if (*--p == '\r')
+	*p = 0;
+
+    return OK;
+}
+
+
+static  putline (s, iop)
+char   *s;
+FILE * iop;
+{
+    (void) fprintf (iop, "%s\r\n", s);
+    (void) fflush (iop);
+    if (ferror (iop)) {
+	(void) strcpy (response, "lost connection");
+	return NOTOK;
+    }
+
+    return OK;
+}
+@
+
+
+2.6
+log
+@update NNTP commands for INN.  Use "MODE READER" and "LISTGROUP".
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 2.5 1993/08/25 17:26:40 jromine Exp jromine $";
+d203 4
+d209 1
+a209 1
+#endif
+@
+
+
+2.5
+log
+@off_t fixes for BSD44
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 2.4 1992/11/24 18:32:32 jromine Exp jromine $";
+d201 2
+a202 1
+	    if (*response < CHAR_ERR)
+d204 1
+d307 1
+d310 4
+@
+
+
+2.4
+log
+@ansi sugar
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 2.3 1992/11/02 22:53:37 jromine Exp jromine $";
+d31 1
+d34 1
+@
+
+
+2.3
+log
+@fixup APOP/MPOP
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 2.2 1992/10/26 16:48:22 jromine Exp jromine $";
+d44 1
+d47 1
+d303 2
+a304 1
+    if (traverse (action, "XMSGS %d-%d", xtnd_first, xtnd_last) == OK)
+d306 2
+a307 1
+    return traverse (action, "XHDR NONAME %d-%d", xtnd_first, xtnd_last);
+d392 1
+a392 1
+    return traverse (action, "RETR %d", (char *)msgno, 0, 0, 0);
+d394 1
+a394 1
+    return traverse (action, "ARTICLE %d", (char *)msgno, 0, 0, 0);
+d468 1
+a468 1
+    return traverse (action, "TOP %d %d", (char *)msgno, (char *)lines, 0, 0);
+d470 1
+a470 1
+    return traverse (action, "HEAD %d", (char *)msgno, 0, 0, 0);
+@
+
+
+2.2
+log
+@MD5 API changes (from MTR)
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 2.1 1992/10/20 22:43:35 jromine Exp jromine $";
+d48 1
+a48 1
+#if !defined(NNTP) && defined(APOP)
+d445 1
+a445 1
+#ifdef	APOP
+d449 1
+a449 1
+#endif	/* APOP */
+d553 1
+a553 1
+#if defined(APOP) && !defined(NNTP)
+d602 1
+a602 1
+#if	defined(APOP) && !defined(NNTP)
+@
+
+
+2.1
+log
+@NNTP/APOP fixes
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 2.0 1992/10/20 15:56:14 jromine Exp jromine $";
+d80 2
+a81 1
+    unsigned char *ep;
+d98 1
+a98 1
+    MD5Final (&mdContext);
+d102 1
+a102 2
+    for (ep = (dp = mdContext.digest)
+			+ sizeof mdContext.digest / sizeof mdContext.digest[0];
+@
+
+
+2.0
+log
+@merge NNTP/APOP/KPOP changes
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: pshsbr.c,v 2.2 1990/04/05 14:56:13 sources Exp $";
+d69 1
+d111 1
+d127 1
+a127 1
+    int     apop,
+d444 1
+d450 1
+d553 3
+a555 1
+#ifndef	APOP
+d557 1
+a557 3
+#else	/* APOP */
+int	command (fmt, a, b, c, d)
+#endif	/* APOP */
+d602 3
+a604 1
+#ifndef	APOP
+d606 1
+a606 3
+#else	/* APOP */
+int  multiline () {
+#endif	/* APOP */
+@
+
+
+1.11
+log
+@fixes from mtr
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 1.10 1992/02/11 17:40:13 jromine Exp jromine $";
+d6 4
+d13 3
+a41 3
+#define	command	pop_command
+#define	multiline pop_multiline
+
+d48 8
+d59 8
+d109 1
+a109 1
+#endif
+d113 1
+d115 4
+d122 1
+a122 2
+int	snoop,
+	rpop;
+d124 1
+d126 6
+a131 1
+	    fd1,
+a132 3
+#ifdef	notdef	/* KPOP */
+    int	    kpop = 0;
+#endif
+d135 1
+a135 4
+#ifdef	notdef
+    if ((kpop = rpop) != 2)		/* 2 => KPOP */
+	rpop = 0;
+#endif
+d138 6
+a143 2
+#ifdef KPOP		/* contact a KERBEROS kpop server */
+    /* should test kpop flag */
+d146 4
+a150 4
+#else
+    if ((fd1 = client (host, "tcp", POPSERVICE, rpop, response)) == NOTOK)
+	return NOTOK;
+#endif
+d159 1
+d161 3
+d172 1
+d174 1
+d183 9
+d193 4
+a196 6
+		    if (command ("USER %s", user) != NOTOK
+#ifndef KPOP
+			    && command ("%s %s",
+				    rpop ? "RPOP" : (pophack++, "PASS"),
+#else
+			    && command ("PASS %s",
+a197 3
+					pass) != NOTOK)
+			return OK;
+	    }
+d201 1
+a201 1
+	    /* and fall */
+a212 1
+
+d215 1
+d217 4
+d225 5
+d262 6
+d273 19
+d295 9
+d322 1
+a324 1
+
+d332 8
+d343 1
+d374 3
+d385 1
+d387 3
+d442 1
+d446 1
+a447 1
+
+d459 1
+d461 3
+d477 4
+d482 1
+d485 38
+d549 3
+d553 1
+d583 1
+d585 3
+d598 3
+d602 1
+d607 4
+@
+
+
+1.10
+log
+@accomodate KPOP cleanup in client.c
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 1.9 1992/02/04 22:21:02 jromine Exp $";
+a102 3
+#ifndef	RPOP
+    int	    rpop = 0;
+#endif	RPOP
+@
+
+
+1.9
+log
+@fix decls
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 1.8 1992/02/04 21:45:44 jromine Exp jromine $";
+d106 3
+d111 4
+d117 4
+a120 2
+#ifdef KPOP
+    if ((fd1 = kclient (host, "tcp", POPSERVICE, rpop, response)) == NOTOK)
+@
+
+
+1.8
+log
+@contributed patch
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 1.7 1992/02/04 21:33:20 jromine Exp jromine $";
+d44 1
+a44 1
+static int	command(), multiline(), getline();
+@
+
+
+1.7
+log
+@contributed patch
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 1.6 1992/01/31 22:04:36 jromine Exp jromine $";
+d56 2
+a57 2
+    long    clock;
+    register char *cp;
+d63 6
+a68 4
+    (void) time (&clock);
+    (void) sprintf (cp = buffer, "%s %ld ", user, clock);
+    cp += strlen (cp);
+    (void) strcpy (cp, pass);
+d70 3
+d74 2
+a75 1
+    MD5Update (&mdContext, buffer, strlen (buffer));
+d78 2
+d137 3
+a139 1
+		    if (command ("APOP %s", pop_auth (user, pass)) != NOTOK)
+@
+
+
+1.6
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 1.5 90/04/09 09:45:16 sources Exp Locker: sources $";
+d35 3
+d43 1
+d46 1
+d49 36
+a84 3
+#ifndef	RPOP
+int     pop_init (host, user, pass, snoop)
+#else	RPOP
+a85 2
+int     rpop;
+#endif	RPOP
+d89 2
+a90 1
+int	snoop;
+d92 2
+a93 1
+    int     fd1,
+d100 2
+d126 9
+a134 2
+	    if (*response == '+'
+		&& command ("USER %s", user) != NOTOK
+d136 2
+a137 1
+		&& command ("%s %s", rpop ? "RPOP" : (pophack++, "PASS"),
+d139 1
+a139 1
+		&& command ("PASS %s",
+d142 6
+a147 6
+		return OK;
+	    if (*response != '+') {
+		(void) strcpy (buffer, response);
+		(void) command ("QUIT");
+		(void) strcpy (response, buffer);
+	    }			/* fall */
+d329 5
+d388 1
+a388 1
+static int  command (fmt, a, b, c, d)
+d429 1
+a429 1
+static int  multiline () {
+@
+
+
+1.5
+log
+@POPSERVICE define
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: popsbr.c,v 1.4 90/04/05 15:35:04 sources Exp Locker: sources $";
+d35 6
+a40 1
+static int	traverse(), command(), multiline(), getline();
+d62 4
+d68 1
+d87 6
+a92 2
+		    && command ("USER %s", user) != NOTOK
+		    && command ("%s %s", rpop ? "RPOP" : (pophack++, "PASS"),
+d174 1
+a174 1
+#endif	not BPOP
+d228 1
+a228 1
+    return traverse (action, "RETR %d", msgno);
+d236 6
+a241 2
+char   *fmt,
+       *a,
+d292 1
+a292 1
+    return traverse (action, "TOP %d %d", msgno, lines);
+d349 1
+a349 1
+		*cp = NULL;
+d382 1
+a382 1
+	if (buffer[TRMLEN] == NULL)
+d415 1
+a415 1
+    *p = NULL;
+d417 1
+a417 1
+	*p = NULL;
+d419 1
+a419 1
+	*p = NULL;
+@
+
+
+1.4
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d12 3
+d57 1
+a57 1
+    if ((fd1 = client (host, "tcp", "pop", rpop, response)) == NOTOK)
+@
+
+
+1.3
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:";
+@
+
+
+1.2
+log
+@ANSI Compilance
+@
+text
+@d2 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d29 2
+@

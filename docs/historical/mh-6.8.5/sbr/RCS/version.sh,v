@@ -1,0 +1,148 @@
+head	2.3;
+access;
+symbols;
+locks
+	jromine:2.3; strict;
+comment	@# @;
+
+
+2.3
+date	90.04.05.21.25.03;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.26.10.01.08;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.23.17.58.09;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.57.40;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@used for shared libraries.
+@
+
+
+2.3
+log
+@update to take argument
+@
+text
+@: run this script through /bin/sh
+: '@@(#)$Id:$'
+case $# in
+  0) set "6.6";;
+esac
+
+OFS="$IFS" IFS=:
+
+for A in rprompt hostname uname who
+do
+    for D in $PATH
+    do
+	if [ ! -f $D/$A ]; then
+	    continue
+	fi
+	case $A in
+	    rprompt)    LOCAL=`$A %h`
+			;;
+	    hostname)   LOCAL=`$A`
+			;;
+	    uname)	LOCAL=`$A -n`
+			;;
+	    who)	LOCAL=`$A am i | sed -e 's%^\(.*\)!.*$%\1%'`
+			;;
+	esac
+	break
+    done
+    if [ "x$LOCAL" != x ]; then
+	break
+    fi
+done
+
+IFS=
+
+: 'derivative of ../config/version.sh'
+if [ ! -r version ]; then echo "0" > version ; fi
+
+cat version ../config/version |\
+awk -F. '\
+BEGIN	{ split ("'"${1}"'", ver, ".");\
+	  major = ver[1]; minor = ver[2]; patch = ver[3]}\
+NR == 1 { compile = $(NF) }\
+NR == 2 { if (major != $1) {major = $1; minor = 0};\
+	  if (minor != $2) {minor = $2; compile = 0}}\
+END	 { compile++;\
+	   printf "version: libmh %d.%d.%d\n", major, minor, compile; \
+	   printf "%d.%d.%d\n", major, minor, compile > "_version";}'
+mv _version version
+@
+
+
+2.2
+log
+@*** empty log message ***
+@
+text
+@d2 4
+d36 1
+a36 1
+if [ ! -r version ]; then echo "6.6.0" > version ; fi
+d40 3
+a42 1
+NR == 1 { major = $1; minor = $2; compile = $3 + 1}\
+d44 3
+a46 2
+	  if (minor != $2) {minor = $2; compile = 1}}\
+END	 { printf "version: libmh %d.%d.%d\n", major, minor, compile; \
+@
+
+
+2.1
+log
+@*** empty log message ***
+@
+text
+@d34 1
+a34 2
+mv version _version
+cat _version ../config/version.major ../config/version.minor |\
+d36 3
+a38 3
+NR == 0 { major = $1; minor = $2; compile = $3 + 1}\
+NR == 1 { if (major != $1) {major = $1; minor = 0}}\
+NR == 2 { if (minor != $1) {minor = $1; compile = 1}}\
+d40 2
+a41 1
+	   printf "%d.%d.%d\n", major, minor, compile > "version";}'
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d31 2
+a32 5
+if [ ! -r version.major ]; then echo 6 > version.major; fi
+if [ ! -r version.minor ]; then echo 6 > version.minor; fi
+if [ ! -r version.local ]; then echo 0 > version.local; fi
+echo `cat version.major` `cat version.minor` `cat version.local` > version.tmp
+rm -f version.c version.local
+d34 8
+a41 4
+awk '	{ major = $1; minor = $2; local = $3 + 1}\
+END	{ printf "%d%d.%d\n", major, minor, local > "version"; \
+	  printf "%d\n", local > "version.local"; }' < version.tmp
+rm -f version.tmp
+@

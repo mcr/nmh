@@ -1,0 +1,496 @@
+head	2.16;
+access;
+symbols;
+locks; strict;
+
+
+2.16
+date	93.08.27.22.15.49;	author jromine;	state Exp;
+branches;
+next	2.15;
+
+2.15
+date	92.12.03.16.23.40;	author jromine;	state Exp;
+branches;
+next	2.14;
+
+2.14
+date	92.12.02.22.19.13;	author jromine;	state Exp;
+branches;
+next	2.13;
+
+2.13
+date	92.11.18.16.51.59;	author jromine;	state Exp;
+branches;
+next	2.12;
+
+2.12
+date	92.11.06.18.53.55;	author jromine;	state Exp;
+branches;
+next	2.11;
+
+2.11
+date	92.11.02.22.56.13;	author jromine;	state Exp;
+branches;
+next	2.10;
+
+2.10
+date	92.10.29.17.41.35;	author jromine;	state Exp;
+branches;
+next	2.9;
+
+2.9
+date	92.10.29.16.25.20;	author jromine;	state Exp;
+branches;
+next	2.8;
+
+2.8
+date	92.10.16.16.51.06;	author jromine;	state Exp;
+branches;
+next	2.7;
+
+2.7
+date	92.03.03.17.25.21;	author jromine;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	92.02.06.17.25.23;	author jromine;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	90.04.08.14.09.51;	author sources;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	90.04.05.15.39.13;	author sources;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.04.05.15.17.14;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.21.17.29.01;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.21.17.05.09;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.56.24;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.43.15;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.16
+log
+@make MANDIR
+@
+text
+@##############################################################################
+#	Instructions to Make, for compilation of MH modules
+#
+#	@@(MHWARNING)
+# @@(#)$Id: MH-Makefile,v 2.15 1992/12/03 16:23:40 jromine Exp jromine $
+##############################################################################
+
+MAKE	=	make DESTDIR=$(DESTDIR) $(MFLAGS) -k
+SHELL	=	/bin/sh
+
+# Targets to Make:
+#    
+#    all:	generate MH system, assumes configuration previously done
+#
+#    depend:	generate dependencies, for MH master maintainers only!
+#
+#    lint:	verify code, for MH master maintainers only!
+#
+#    compat-v7:	verify V7 restrictions, for MH master maintainers only!
+#
+#    install:	install system
+#
+#    inst-all:	install system
+#
+#    inst-lib:  install shared libraries
+#
+#    mkdirs:	make MH target directories
+#
+#    tar:	generate tar commands to move targets to other systems
+#		    e.g., make TFLAGS="cf mh.tar" tar
+#    
+#    uninstall:	undo installation
+#    
+#    distribution:
+#		revert source tree to MH distribution
+#    unconfig:
+#		removes configured files - for MH master maintainers only!
+#    
+#    checkout:	MH maintainers only!
+#
+#    clean:	remove all objects and targets plus clean up
+#    
+#    unclean:	remove scratch files and backups
+
+
+##############################################################################
+#	Generate MH system
+##############################################################################
+
+ALL	=	config sbr mts zotnet uip support doc
+
+all:;		for d in $(ALL); do (cd $$d; $(MAKE) all); done
+
+depend:;	for d in $(ALL); do (cd $$d; $(MAKE) depend); done
+
+lint:;		for d in $(ALL); do (cd $$d; $(MAKE) lint); done
+
+compat-v7:	all
+		miscellany/tools/7limit */x* */*/x*
+		miscellany/tools/8limit */*.o */*/*.o
+
+
+INSTALL	=	zotnet support uip doc
+BINDIR	=	$(DESTDIR)@@(MHBINPATH)
+ETCDIR	=	$(DESTDIR)@@(MHETCPATH)
+MANDIR	=	$(DESTDIR)@@(MHMANDIR)
+SLIB	=	sbr
+
+install:	inst-all
+
+inst-all:	mkdirs inst-lib
+		for d in $(INSTALL); do (cd $$d; $(MAKE) inst-all); done
+
+inst-lib:;	for d in $(SLIB); do (cd $$d; $(MAKE) inst-lib); done
+
+mkdirs:		$(BINDIR) $(ETCDIR) $(MANDIR)
+
+$(BINDIR) $(ETCDIR) $(MANDIR):
+		mkdir $@@ && chmod 0755 $@@
+
+tar:;		@@for d in $(INSTALL); \
+		    do (cd $$d; $(MAKE) TFLAGS="$(TFLAGS)" tar); done
+
+uninstall:;	for d in $(INSTALL); do (cd $$d; $(MAKE) uninstall); done
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+DISTRIBUTION=	dist conf config sbr mts zotnet support uip doc papers
+
+distribution:	READ-ME CHANGES
+		rm -f _* :*
+		@@if test -f tma/mh/files; \
+		 then \
+		    echo rm -f `cat tma/mh/files`; rm -f `cat tma/mh/files`; \
+		    echo rm -rf tma; rm -rf tma; \
+		 fi
+		-rm -f support/pop/mmdfII/pop/lock.c
+		-rm -f support/bboards/mmdfII/bboards/lock.c
+		-rm -f zotnet/tws/tws.h
+		-rm -f uip/pshsbr.c
+		cd support/pop/mmdfII/pop ; @@(LN) ../../../../zotnet/mts/lock.c .
+		cd support/bboards/mmdfII/bboards ; @@(LN) ../../../../zotnet/mts/lock.c .
+		cd zotnet/tws ; @@(LN) ../tws.h .
+		cd uip ; @@(LN) popsbr.c pshsbr.c
+		for d in $(DISTRIBUTION); \
+		    do (cd $$d; $(MAKE) distribution); done
+
+READ-ME:	conf/mh-gen.8
+		nroff -man conf/mh-gen.8 > read-me.tmp
+		mv read-me.tmp $@@
+
+CHANGES:	papers/changes/mh-changes.ms
+		nroff -ms papers/changes/mh-changes.ms > changes.tmp
+		mv changes.tmp $@@
+
+unconfig:;	rm -f _* :* core READ-ME
+		-rm -f support/pop/mmdfII/pop/lock.c
+		-rm -f support/bboards/mmdfII/bboards/lock.c
+		-rm -f zotnet/tws/tws.h
+		-rm -f uip/pshsbr.c
+		for d in $(DISTRIBUTION); do (cd $$d; $(MAKE) unconfig); done
+		cp conf/makefiles/MH-Unconfig tmp
+		mv tmp Makefile
+
+checkout:	unclean lint compat-v7
+		find . \( -name ":*" -o -name "_*" -o -name "#*" \) -a -print
+
+clean:;		rm -f _* :* core
+		for d in $(DISTRIBUTION); do (cd $$d; $(MAKE) clean); done
+
+unclean:;	rm -f _* :* core
+		for d in $(DISTRIBUTION); do (cd $$d; $(MAKE) unclean); done
+@
+
+
+2.15
+log
+@remove -Tcrt from nroff line
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.14 1992/12/02 22:19:13 jromine Exp jromine $
+d66 1
+d76 1
+a76 1
+mkdirs:		$(BINDIR) $(ETCDIR)
+d78 2
+a79 3
+$(BINDIR) $(ETCDIR):
+		mkdir $@@
+		chmod 0755 $@@
+@
+
+
+2.14
+log
+@add mh changes document
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.13 1992/11/18 16:51:59 jromine Exp jromine $
+d116 1
+a116 1
+		nroff -ms -Tcrt papers/changes/mh-changes.ms > changes.tmp
+@
+
+
+2.13
+log
+@fixup the way @@(LN) works
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.12 1992/11/06 18:53:55 jromine Exp jromine $
+d93 1
+a93 1
+distribution:	READ-ME
+d114 4
+@
+
+
+2.12
+log
+@use @@(LN)
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.11 1992/11/02 22:56:13 jromine Exp jromine $
+d104 4
+a107 4
+		@@(LN) zotnet/mts/lock.c support/pop/mmdfII/pop/lock.c
+		@@(LN) zotnet/mts/lock.c support/bboards/mmdfII/bboards/lock.c
+		@@(LN) zotnet/tws.h zotnet/tws/tws.h
+		@@(LN) uip/popsbr.c uip/pshsbr.c
+@
+
+
+2.11
+log
+@make pshsbr.c from popsbr.c
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.10 1992/10/29 17:41:35 jromine Exp jromine $
+d104 4
+a107 4
+		ln zotnet/mts/lock.c support/pop/mmdfII/pop/lock.c
+		ln zotnet/mts/lock.c support/bboards/mmdfII/bboards/lock.c
+		ln zotnet/tws.h zotnet/tws/tws.h
+		ln uip/popsbr.c uip/pshsbr.c
+@
+
+
+2.10
+log
+@fixup make unconfig
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.9 1992/10/29 16:25:20 jromine Exp jromine $
+d103 1
+d107 1
+d119 1
+@
+
+
+2.9
+log
+@fixup make distribution & tws.h
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.8 1992/10/16 16:51:06 jromine Exp jromine $
+d93 2
+a94 1
+distribution:;	rm -f _* :*
+d109 5
+a113 1
+unconfig:;	rm -f _* :* core
+d118 1
+a118 2
+		echo > tmp \
+    'all clean:; @@echo "You must configure MH first -- see READ-ME for details"'
+@
+
+
+2.8
+log
+@make install not force clean
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.7 1992/03/03 17:25:21 jromine Exp jromine $
+d101 1
+d104 1
+d109 3
+@
+
+
+2.7
+log
+@add 'clean' target to empty makefile
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.6 1992/02/06 17:25:23 jromine Exp jromine $
+d21 1
+a21 1
+#    install:	install system and clean up afterwards
+d68 1
+a68 1
+install:	inst-all clean
+@
+
+
+2.6
+log
+@fixes
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.5 1990/04/08 14:09:51 sources Exp jromine $
+d109 1
+a109 1
+	'all:; @@echo "You must configure MH first -- see READ-ME for details"'
+@
+
+
+2.5
+log
+@*** empty log message ***
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.4 90/04/05 15:39:13 sources Exp Locker: sources $
+d23 2
+d27 1
+a27 1
+#    inst-all:	install system
+d64 2
+d70 1
+a70 1
+inst-all:	inst-lib
+d75 6
+d99 4
+@
+
+
+2.4
+log
+@add warning
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: MH-Makefile,v 2.3 90/04/05 15:17:14 sources Exp Locker: sources $
+d81 1
+a81 1
+DISTRIBUTION=	conf config sbr mts zotnet support uip doc papers dist
+@
+
+
+2.3
+log
+@add ID
+@
+text
+@d3 3
+a6 1
+# @@(#)$Id:$
+@
+
+
+2.2
+log
+@make unconfig changes
+@
+text
+@d4 1
+@
+
+
+2.1
+log
+@checkpoint
+@
+text
+@d91 3
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d32 1
+a32 1
+#		does "make dist" -- removes all configured files
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d20 2
+d31 2
+d59 1
+d63 2
+a64 1
+inst-all:;	for d in $(INSTALL); do (cd $$d; $(MAKE) inst-all); done
+d66 2
+d88 3
+@

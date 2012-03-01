@@ -1,0 +1,798 @@
+for d in config sbr mts zotnet uip support doc; do (cd $d; make DESTDIR= -k -k all); done
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  config.c
+MH 6.8.4 #1[UCI]
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  version.c
++ mkdir shared 
+rm -f add.o shared/add.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic add.c
+mv add.o shared/add.o
+rm -f add.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c add.c
+ld -x -r add.o
+mv a.out add.o
+rm -f adios.o shared/adios.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic adios.c
+mv adios.o shared/adios.o
+rm -f adios.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c adios.c
+ld -x -r adios.o
+mv a.out adios.o
+rm -f admonish.o shared/admonish.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic admonish.c
+mv admonish.o shared/admonish.o
+rm -f admonish.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c admonish.c
+ld -x -r admonish.o
+mv a.out admonish.o
+rm -f addrsbr.o shared/addrsbr.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic addrsbr.c
+mv addrsbr.o shared/addrsbr.o
+rm -f addrsbr.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c addrsbr.c
+ld -x -r addrsbr.o
+mv a.out addrsbr.o
+rm -f advertise.o shared/advertise.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic advertise.c
+mv advertise.o shared/advertise.o
+rm -f advertise.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c advertise.c
+ld -x -r advertise.o
+mv a.out advertise.o
+rm -f advise.o shared/advise.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic advise.c
+mv advise.o shared/advise.o
+rm -f advise.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c advise.c
+ld -x -r advise.o
+mv a.out advise.o
+rm -f ambigsw.o shared/ambigsw.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic ambigsw.c
+mv ambigsw.o shared/ambigsw.o
+rm -f ambigsw.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c ambigsw.c
+ld -x -r ambigsw.o
+mv a.out ambigsw.o
+rm -f atooi.o shared/atooi.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic atooi.c
+mv atooi.o shared/atooi.o
+rm -f atooi.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c atooi.c
+ld -x -r atooi.o
+mv a.out atooi.o
+rm -f brkstring.o shared/brkstring.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic brkstring.c
+mv brkstring.o shared/brkstring.o
+rm -f brkstring.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c brkstring.c
+ld -x -r brkstring.o
+mv a.out brkstring.o
+rm -f closefds.o shared/closefds.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic closefds.c
+mv closefds.o shared/closefds.o
+rm -f closefds.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c closefds.c
+ld -x -r closefds.o
+mv a.out closefds.o
+rm -f concat.o shared/concat.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic concat.c
+mv concat.o shared/concat.o
+rm -f concat.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c concat.c
+ld -x -r concat.o
+mv a.out concat.o
+rm -f copy.o shared/copy.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic copy.c
+mv copy.o shared/copy.o
+rm -f copy.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c copy.c
+ld -x -r copy.o
+mv a.out copy.o
+rm -f copyip.o shared/copyip.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic copyip.c
+mv copyip.o shared/copyip.o
+rm -f copyip.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c copyip.c
+ld -x -r copyip.o
+mv a.out copyip.o
+rm -f cpydata.o shared/cpydata.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic cpydata.c
+mv cpydata.o shared/cpydata.o
+rm -f cpydata.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c cpydata.c
+ld -x -r cpydata.o
+mv a.out cpydata.o
+rm -f cpydgst.o shared/cpydgst.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic cpydgst.c
+mv cpydgst.o shared/cpydgst.o
+rm -f cpydgst.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c cpydgst.c
+ld -x -r cpydgst.o
+mv a.out cpydgst.o
+rm -f discard.o shared/discard.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic discard.c
+mv discard.o shared/discard.o
+rm -f discard.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c discard.c
+ld -x -r discard.o
+mv a.out discard.o
+rm -f done.o shared/done.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic done.c
+mv done.o shared/done.o
+rm -f done.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c done.c
+ld -x -r done.o
+mv a.out done.o
+rm -f fdcompare.o shared/fdcompare.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic fdcompare.c
+mv fdcompare.o shared/fdcompare.o
+rm -f fdcompare.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c fdcompare.c
+ld -x -r fdcompare.o
+mv a.out fdcompare.o
+rm -f gans.o shared/gans.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic gans.c
+mv gans.o shared/gans.o
+rm -f gans.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c gans.c
+ld -x -r gans.o
+mv a.out gans.o
+rm -f getans.o shared/getans.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic getans.c
+mv getans.o shared/getans.o
+rm -f getans.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c getans.c
+ld -x -r getans.o
+mv a.out getans.o
+rm -f getanswer.o shared/getanswer.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic getanswer.c
+mv getanswer.o shared/getanswer.o
+rm -f getanswer.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c getanswer.c
+ld -x -r getanswer.o
+mv a.out getanswer.o
+rm -f getcpy.o shared/getcpy.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic getcpy.c
+mv getcpy.o shared/getcpy.o
+rm -f getcpy.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c getcpy.c
+ld -x -r getcpy.o
+mv a.out getcpy.o
+rm -f help.o shared/help.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic help.c
+mv help.o shared/help.o
+rm -f help.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c help.c
+ld -x -r help.o
+mv a.out help.o
+rm -f fmtcompile.o shared/fmtcompile.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic fmtcompile.c
+mv fmtcompile.o shared/fmtcompile.o
+rm -f fmtcompile.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c fmtcompile.c
+ld -x -r fmtcompile.o
+mv a.out fmtcompile.o
+rm -f formataddr.o shared/formataddr.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic formataddr.c
+mv formataddr.o shared/formataddr.o
+rm -f formataddr.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c formataddr.c
+ld -x -r formataddr.o
+mv a.out formataddr.o
+rm -f formatsbr.o shared/formatsbr.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic formatsbr.c
+mv formatsbr.o shared/formatsbr.o
+rm -f formatsbr.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c formatsbr.c
+ld -x -r formatsbr.o
+mv a.out formatsbr.o
+rm -f m_atoi.o shared/m_atoi.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_atoi.c
+mv m_atoi.o shared/m_atoi.o
+rm -f m_atoi.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_atoi.c
+ld -x -r m_atoi.o
+mv a.out m_atoi.o
+rm -f m_backup.o shared/m_backup.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_backup.c
+mv m_backup.o shared/m_backup.o
+rm -f m_backup.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_backup.c
+ld -x -r m_backup.o
+mv a.out m_backup.o
+rm -f m_convert.o shared/m_convert.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_convert.c
+mv m_convert.o shared/m_convert.o
+rm -f m_convert.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_convert.c
+ld -x -r m_convert.o
+mv a.out m_convert.o
+rm -f m_delete.o shared/m_delete.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_delete.c
+mv m_delete.o shared/m_delete.o
+rm -f m_delete.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_delete.c
+ld -x -r m_delete.o
+mv a.out m_delete.o
+rm -f m_draft.o shared/m_draft.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_draft.c
+mv m_draft.o shared/m_draft.o
+rm -f m_draft.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_draft.c
+ld -x -r m_draft.o
+mv a.out m_draft.o
+rm -f m_find.o shared/m_find.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_find.c
+mv m_find.o shared/m_find.o
+rm -f m_find.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_find.c
+ld -x -r m_find.o
+mv a.out m_find.o
+rm -f m_fmsg.o shared/m_fmsg.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_fmsg.c
+mv m_fmsg.o shared/m_fmsg.o
+rm -f m_fmsg.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_fmsg.c
+ld -x -r m_fmsg.o
+mv a.out m_fmsg.o
+rm -f m_foil.o shared/m_foil.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_foil.c
+mv m_foil.o shared/m_foil.o
+rm -f m_foil.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_foil.c
+ld -x -r m_foil.o
+mv a.out m_foil.o
+rm -f m_getdefs.o shared/m_getdefs.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_getdefs.c
+mv m_getdefs.o shared/m_getdefs.o
+rm -f m_getdefs.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_getdefs.c
+ld -x -r m_getdefs.o
+mv a.out m_getdefs.o
+rm -f m_getfld.o shared/m_getfld.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_getfld.c
+mv m_getfld.o shared/m_getfld.o
+rm -f m_getfld.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_getfld.c
+ld -x -r m_getfld.o
+mv a.out m_getfld.o
+rm -f m_getfolder.o shared/m_getfolder.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_getfolder.c
+mv m_getfolder.o shared/m_getfolder.o
+rm -f m_getfolder.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_getfolder.c
+ld -x -r m_getfolder.o
+mv a.out m_getfolder.o
+rm -f m_gmprot.o shared/m_gmprot.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_gmprot.c
+mv m_gmprot.o shared/m_gmprot.o
+rm -f m_gmprot.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_gmprot.c
+ld -x -r m_gmprot.o
+mv a.out m_gmprot.o
+rm -f m_gmsg.o shared/m_gmsg.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_gmsg.c
+mv m_gmsg.o shared/m_gmsg.o
+rm -f m_gmsg.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_gmsg.c
+ld -x -r m_gmsg.o
+mv a.out m_gmsg.o
+rm -f m_maildir.o shared/m_maildir.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_maildir.c
+mv m_maildir.o shared/m_maildir.o
+rm -f m_maildir.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_maildir.c
+ld -x -r m_maildir.o
+mv a.out m_maildir.o
+rm -f m_name.o shared/m_name.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_name.c
+mv m_name.o shared/m_name.o
+rm -f m_name.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_name.c
+ld -x -r m_name.o
+mv a.out m_name.o
+rm -f m_readefs.o shared/m_readefs.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_readefs.c
+mv m_readefs.o shared/m_readefs.o
+rm -f m_readefs.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_readefs.c
+ld -x -r m_readefs.o
+mv a.out m_readefs.o
+rm -f m_remsg.o shared/m_remsg.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_remsg.c
+mv m_remsg.o shared/m_remsg.o
+rm -f m_remsg.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_remsg.c
+ld -x -r m_remsg.o
+mv a.out m_remsg.o
+rm -f m_replace.o shared/m_replace.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_replace.c
+mv m_replace.o shared/m_replace.o
+rm -f m_replace.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_replace.c
+ld -x -r m_replace.o
+mv a.out m_replace.o
+rm -f m_scratch.o shared/m_scratch.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_scratch.c
+mv m_scratch.o shared/m_scratch.o
+rm -f m_scratch.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_scratch.c
+ld -x -r m_scratch.o
+mv a.out m_scratch.o
+rm -f m_seq.o shared/m_seq.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_seq.c
+mv m_seq.o shared/m_seq.o
+rm -f m_seq.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_seq.c
+ld -x -r m_seq.o
+mv a.out m_seq.o
+rm -f m_seqbits.o shared/m_seqbits.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_seqbits.c
+mv m_seqbits.o shared/m_seqbits.o
+rm -f m_seqbits.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_seqbits.c
+ld -x -r m_seqbits.o
+mv a.out m_seqbits.o
+rm -f m_seqflag.o shared/m_seqflag.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_seqflag.c
+mv m_seqflag.o shared/m_seqflag.o
+rm -f m_seqflag.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_seqflag.c
+ld -x -r m_seqflag.o
+mv a.out m_seqflag.o
+rm -f m_seqnew.o shared/m_seqnew.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_seqnew.c
+mv m_seqnew.o shared/m_seqnew.o
+rm -f m_seqnew.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_seqnew.c
+ld -x -r m_seqnew.o
+mv a.out m_seqnew.o
+rm -f m_setcur.o shared/m_setcur.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_setcur.c
+mv m_setcur.o shared/m_setcur.o
+rm -f m_setcur.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_setcur.c
+ld -x -r m_setcur.o
+mv a.out m_setcur.o
+rm -f m_setseq.o shared/m_setseq.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_setseq.c
+mv m_setseq.o shared/m_setseq.o
+rm -f m_setseq.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_setseq.c
+ld -x -r m_setseq.o
+mv a.out m_setseq.o
+rm -f m_setvis.o shared/m_setvis.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_setvis.c
+mv m_setvis.o shared/m_setvis.o
+rm -f m_setvis.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_setvis.c
+ld -x -r m_setvis.o
+mv a.out m_setvis.o
+rm -f m_sync.o shared/m_sync.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_sync.c
+mv m_sync.o shared/m_sync.o
+rm -f m_sync.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_sync.c
+ld -x -r m_sync.o
+mv a.out m_sync.o
+rm -f m_tmpfil.o shared/m_tmpfil.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_tmpfil.c
+mv m_tmpfil.o shared/m_tmpfil.o
+rm -f m_tmpfil.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_tmpfil.c
+ld -x -r m_tmpfil.o
+mv a.out m_tmpfil.o
+rm -f m_update.o shared/m_update.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_update.c
+mv m_update.o shared/m_update.o
+rm -f m_update.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_update.c
+ld -x -r m_update.o
+mv a.out m_update.o
+rm -f makedir.o shared/makedir.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic makedir.c
+mv makedir.o shared/makedir.o
+rm -f makedir.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c makedir.c
+ld -x -r makedir.o
+mv a.out makedir.o
+rm -f path.o shared/path.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic path.c
+mv path.o shared/path.o
+rm -f path.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c path.c
+ld -x -r path.o
+mv a.out path.o
+rm -f peekc.o shared/peekc.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic peekc.c
+mv peekc.o shared/peekc.o
+rm -f peekc.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c peekc.c
+ld -x -r peekc.o
+mv a.out peekc.o
+rm -f pidwait.o shared/pidwait.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic pidwait.c
+mv pidwait.o shared/pidwait.o
+rm -f pidwait.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c pidwait.c
+ld -x -r pidwait.o
+mv a.out pidwait.o
+rm -f pidstatus.o shared/pidstatus.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic pidstatus.c
+mv pidstatus.o shared/pidstatus.o
+rm -f pidstatus.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c pidstatus.c
+ld -x -r pidstatus.o
+mv a.out pidstatus.o
+rm -f printsw.o shared/printsw.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic printsw.c
+mv printsw.o shared/printsw.o
+rm -f printsw.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c printsw.c
+ld -x -r printsw.o
+mv a.out printsw.o
+rm -f push.o shared/push.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic push.c
+mv push.o shared/push.o
+rm -f push.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c push.c
+ld -x -r push.o
+mv a.out push.o
+rm -f putenv.o shared/putenv.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic putenv.c
+mv putenv.o shared/putenv.o
+rm -f putenv.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c putenv.c
+ld -x -r putenv.o
+mv a.out putenv.o
+rm -f pwd.o shared/pwd.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic pwd.c
+mv pwd.o shared/pwd.o
+rm -f pwd.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c pwd.c
+ld -x -r pwd.o
+mv a.out pwd.o
+rm -f refile.o shared/refile.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic refile.c
+mv refile.o shared/refile.o
+rm -f refile.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c refile.c
+ld -x -r refile.o
+mv a.out refile.o
+rm -f remdir.o shared/remdir.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic remdir.c
+mv remdir.o shared/remdir.o
+rm -f remdir.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c remdir.c
+ld -x -r remdir.o
+mv a.out remdir.o
+rm -f r1bindex.o shared/r1bindex.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic r1bindex.c
+mv r1bindex.o shared/r1bindex.o
+rm -f r1bindex.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c r1bindex.c
+ld -x -r r1bindex.o
+mv a.out r1bindex.o
+rm -f showfile.o shared/showfile.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic showfile.c
+mv showfile.o shared/showfile.o
+rm -f showfile.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c showfile.c
+ld -x -r showfile.o
+mv a.out showfile.o
+rm -f smatch.o shared/smatch.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic smatch.c
+mv smatch.o shared/smatch.o
+rm -f smatch.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c smatch.c
+ld -x -r smatch.o
+mv a.out smatch.o
+rm -f sprintb.o shared/sprintb.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic sprintb.c
+mv sprintb.o shared/sprintb.o
+rm -f sprintb.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c sprintb.c
+ld -x -r sprintb.o
+mv a.out sprintb.o
+rm -f ssequal.o shared/ssequal.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic ssequal.c
+mv ssequal.o shared/ssequal.o
+rm -f ssequal.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c ssequal.c
+ld -x -r ssequal.o
+mv a.out ssequal.o
+rm -f strindex.o shared/strindex.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic strindex.c
+mv strindex.o shared/strindex.o
+rm -f strindex.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c strindex.c
+ld -x -r strindex.o
+mv a.out strindex.o
+rm -f trimcpy.o shared/trimcpy.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic trimcpy.c
+mv trimcpy.o shared/trimcpy.o
+rm -f trimcpy.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c trimcpy.c
+ld -x -r trimcpy.o
+mv a.out trimcpy.o
+rm -f uleq.o shared/uleq.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic uleq.c
+mv uleq.o shared/uleq.o
+rm -f uleq.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c uleq.c
+ld -x -r uleq.o
+mv a.out uleq.o
+rm -f uprf.o shared/uprf.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic uprf.c
+mv uprf.o shared/uprf.o
+rm -f uprf.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c uprf.c
+ld -x -r uprf.o
+mv a.out uprf.o
+rm -f vfgets.o shared/vfgets.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic vfgets.c
+mv vfgets.o shared/vfgets.o
+rm -f vfgets.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c vfgets.c
+ld -x -r vfgets.o
+mv a.out vfgets.o
+rm -f formatdef.o shared/formatdef.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic formatdef.c
+mv formatdef.o shared/formatdef.o
+rm -f formatdef.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c formatdef.c
+ld -x -r formatdef.o
+mv a.out formatdef.o
+rm -f m_msgdef.o shared/m_msgdef.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c -pic m_msgdef.c
+mv m_msgdef.o shared/m_msgdef.o
+rm -f m_msgdef.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -c m_msgdef.c
+ld -x -r m_msgdef.o
+mv a.out m_msgdef.o
+mv libmh.a zlibmh.a
+mv: libmh.a: Cannot access: No such file or directory
+*** Error code 1 (ignored)
+ar r libmh.a add.o adios.o admonish.o addrsbr.o advertise.o advise.o  ambigsw.o atooi.o brkstring.o closefds.o concat.o copy.o  copyip.o cpydata.o cpydgst.o discard.o done.o fdcompare.o  gans.o getans.o getanswer.o getcpy.o help.o fmtcompile.o  formataddr.o formatsbr.o m_atoi.o m_backup.o m_convert.o  m_delete.o m_draft.o m_find.o m_fmsg.o m_foil.o m_getdefs.o  m_getfld.o m_getfolder.o m_gmprot.o m_gmsg.o m_maildir.o  m_name.o m_readefs.o m_remsg.o m_replace.o m_scratch.o  m_seq.o m_seqbits.o m_seqflag.o m_seqnew.o m_setcur.o  m_setseq.o m_setvis.o m_sync.o m_tmpfil.o m_update.o  makedir.o path.o peekc.o pidwait.o pidstatus.o  printsw.o push.o putenv.o pwd.o refile.o remdir.o r1bindex.o  showfile.o smatch.o sprintb.o ssequal.o strindex.o trimcpy.o  uleq.o uprf.o vfgets.o formatdef.o m_msgdef.o; ranlib libmh.a
+ar: creating libmh.a
+-rw-rw-r--  1 mh         120560 Feb  9 15:25 libmh.a
+MH library built normally
+mv -f libmh.so zlibmh.so
+mv: libmh.so: Cannot access: No such file or directory
+*** Error code 1 (ignored)
+(cd shared; ld -o ../libmh.so -assert pure-text add.o adios.o admonish.o addrsbr.o advertise.o advise.o  ambigsw.o atooi.o brkstring.o closefds.o concat.o copy.o  copyip.o cpydata.o cpydgst.o discard.o done.o fdcompare.o  gans.o getans.o getanswer.o getcpy.o help.o fmtcompile.o  formataddr.o formatsbr.o m_atoi.o m_backup.o m_convert.o  m_delete.o m_draft.o m_find.o m_fmsg.o m_foil.o m_getdefs.o  m_getfld.o m_getfolder.o m_gmprot.o m_gmsg.o m_maildir.o  m_name.o m_readefs.o m_remsg.o m_replace.o m_scratch.o  m_seq.o m_seqbits.o m_seqflag.o m_seqnew.o m_setcur.o  m_setseq.o m_setvis.o m_sync.o m_tmpfil.o m_update.o  makedir.o path.o peekc.o pidwait.o pidstatus.o  printsw.o push.o putenv.o pwd.o refile.o remdir.o r1bindex.o  showfile.o smatch.o sprintb.o ssequal.o strindex.o trimcpy.o  uleq.o uprf.o vfgets.o formatdef.o m_msgdef.o)
+ln libmh.so libmh.so.3.2
+-rwxrwxr-x  2 mh          90112 Feb  9 15:25 libmh.so
+-rwxrwxr-x  2 mh          90112 Feb  9 15:25 libmh.so.3.2
+MH shared library built normally
+mv libmh.sa zlibmh.sa
+mv: libmh.sa: Cannot access: No such file or directory
+*** Error code 1 (ignored)
+ar r libmh.sa formatdef.o m_msgdef.o; ranlib libmh.sa
+ar: creating libmh.sa
+ln libmh.sa libmh.sa.3.2
+-rw-rw-r--  2 mh            600 Feb  9 15:25 libmh.sa
+-rw-rw-r--  2 mh            600 Feb  9 15:25 libmh.sa.3.2
+MH data interface description built normally
+for d in sendmail; do (cd $d; make DESTDIR= -k all); done
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I.. -c hosts.c
+ld -x -r hosts.o
+mv a.out hosts.o
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I.. -c smail.c
+ld -x -r smail.o
+mv a.out smail.o
+mv sendmts.a zsendmts.a
+mv: sendmts.a: Cannot access: No such file or directory
+*** Error code 1 (ignored)
+ar r sendmts.a hosts.o smail.o; ranlib sendmts.a
+ar: creating sendmts.a
+rm -f ../libmts.a
+cd ..; ln sendmail/sendmts.a libmts.a
+rm -f ../llib-lmts
+cd .. ; ln sendmail/llib-lsendmail llib-lmts
+-rw-rw-r--  2 mh          15192 Feb  9 15:25 sendmts.a
+SendMail/SMTP-MTS library built normally
+for d in mts bboards tws mf; do (cd $d; make DESTDIR= -k all); done
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I..  -target sun4 -c  mts.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I..  -target sun4 -c  lock.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I..  -target sun4 -c  client.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I..  -target sun4 -c  getbbent.c
+lex -nt dtimep.lex | sed -f lexedit.sed > dtimep.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I..  -target sun4 -c  dtimep.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I.. -c -DONECASE lexstring.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I..  -target sun4 -c  dtime.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I..  -target sun4 -c  date.c
+/bin/cc -s -L/opt/mh-6.8.4/lib -o date date.o dtime.o  -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -I..  -target sun4 -c  mf.c
+mv libzot.a zlibzot.a
+mv: libzot.a: Cannot access: No such file or directory
+*** Error code 1 (ignored)
+ar r libzot.a mts/mts.o mts/lock.o mts/client.o mf/mf.o  bboards/getbbent.o  tws/dtime.o tws/dtimep.o tws/lexstring.o; ranlib libzot.a
+ar: creating libzot.a
+-rw-rw-r--  1 mh          94030 Feb  9 15:25 libzot.a
+ZOTnet library built normally
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  ali.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  aliasbr.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xali ali.o aliasbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  anno.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  annosbr.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xanno anno.o annosbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  burst.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xburst burst.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  comp.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  whatnowproc.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  whatnowsbr.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  sendsbr.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  distsbr.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xcomp comp.o whatnowproc.o \
+		whatnowsbr.o sendsbr.o annosbr.o distsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm 
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  dist.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xdist dist.o whatnowproc.o \
+		whatnowsbr.o sendsbr.o annosbr.o distsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm 
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  folder.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xfolder folder.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm 
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  forw.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xforw forw.o whatnowproc.o \
+		whatnowsbr.o sendsbr.o annosbr.o distsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm 
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  inc.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  scansbr.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  dropsbr.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  trmsbr.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  popsbr.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xinc inc.o scansbr.o dropsbr.o \
+		trmsbr.o popsbr.o    \
+		../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  mark.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xmark mark.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm 
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  mhmail.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xmhmail mhmail.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  mhn.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  ftpsbr.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xmhn mhn.o ftpsbr.o trmsbr.o \
+			../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  mhpath.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xmhpath mhpath.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  msgchk.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xmsgchk msgchk.o popsbr.o \
+				  ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  msh.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  mshcmds.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  vmhsbr.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  picksbr.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  mhlsbr.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O -DPSHSBR -c pshsbr.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xmsh msh.o mshcmds.o vmhsbr.o \
+		picksbr.o scansbr.o dropsbr.o mhlsbr.o trmsbr.o \
+		pshsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  show.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xshow show.o \
+		mhlsbr.o trmsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  packf.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xpackf packf.o dropsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  pick.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xpick pick.o picksbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  prompter.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xprompter prompter.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  refile.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xrefile refile.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm 
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  repl.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  replsbr.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xrepl repl.o replsbr.o whatnowproc.o \
+		whatnowsbr.o sendsbr.o annosbr.o distsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  rmf.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xrmf rmf.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  rmm.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xrmm rmm.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  scan.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xscan scan.o \
+		scansbr.o trmsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  send.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xsend send.o \
+		sendsbr.o annosbr.o distsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  sortm.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xsortm sortm.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  vmh.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xvmh vmh.o vmhsbr.o -lcurses -ltermcap ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  whatnow.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xwhatnow whatnow.o \
+		whatnowsbr.o sendsbr.o annosbr.o distsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  whom.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xwhom whom.o distsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  bbc.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xbbc bbc.o pshsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  bbl.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xbbl bbl.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  ap.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xap ap.o trmsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  conflict.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xconflict conflict.o aliasbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  dp.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xdp dp.o trmsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  install-mh.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xinstall-mh install-mh.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm 
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  mhl.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xmhl mhl.o \
+		mhlsbr.o trmsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  post.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xpost post.o \
+		aliasbr.o   ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  rcvdist.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xrcvdist rcvdist.o distsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  rcvpack.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xrcvpack rcvpack.o dropsbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  rcvstore.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xrcvstore rcvstore.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  rcvtty.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xrcvtty rcvtty.o scansbr.o trmsbr.o \
+		../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  fmtdump.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xfmtdump fmtdump.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  mhparam.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xmhparam mhparam.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm -lcurses -ltermcap
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  sendmail.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xsendmail sendmail.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -target sun4 -c  spost.c
+LD_LIBRARY_PATH=../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xspost spost.o aliasbr.o ../config/config.o -Bdynamic  -lmh.3.2  ../mts/libmts.a  ../zotnet/libzot.a ../config/version.o -ldbm
+for d in bboards general pop; do (cd $d; make DESTDIR= -k all); done
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -I..  -target sun4 -c  popd.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -I..  -target sun4 -c  popser.c
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -I..  -target sun4 -c  syslog.c
+LD_LIBRARY_PATH=../../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xpopd popd.o popser.o syslog.o \
+		../../uip/dropsbr.o \
+		../../config/config.o ../../config/version.o  -Bdynamic  -lmh.3.2 ../../zotnet/libzot.a ../../mts/libmts.a -ldbm 
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -I..  -target sun4 -c  popaka.c
+LD_LIBRARY_PATH=../../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xpopaka popaka.o ../../zotnet/libzot.a ../../mts/libmts.a -ldbm
+/bin/cc -DBIND -DBSD42 -DBSD43 -DMHE -DMHRC -DRPATHS -DWHATNOW -DMIME -DUCI -DPOP2 -DRPOP -DNEWSAUTH -DDBMPWD -DNFS -DSUN40 -DATTVIBUG -DSENDMTS -DMMDFII -DSMTP -DPOP -DBPOP -DNNTP -DTYPESIG=void -O  -I..  -target sun4 -c  popwrd.c
+LD_LIBRARY_PATH=../../sbr /bin/cc -s -L/opt/mh-6.8.4/lib -o xpopwrd popwrd.o ../../zotnet/libzot.a ../../mts/libmts.a -ldbm
+cat tmac.me ali.me | sed -f me2man.sed  > ali.man
+cat tmac.me anno.me | sed -f me2man.sed  > anno.man
+cat tmac.me burst.me | sed -f me2man.sed  > burst.man
+cat tmac.me comp.me | sed -f me2man.sed  > comp.man
+cat tmac.me dist.me | sed -f me2man.sed  > dist.man
+cat tmac.me folder.me | sed -f me2man.sed  > folder.man
+cat tmac.me forw.me | sed -f me2man.sed  > forw.man
+cat tmac.me inc.me | sed -f me2man.sed  > inc.man
+cat tmac.me mark.me | sed -f me2man.sed  > mark.man
+cat tmac.me mh-chart.me | sed -f me2man.sed  > mh-chart.man
+cat tmac.me mh.me | sed -f me2man.sed  > mh.man
+cat tmac.me mhl.me | sed -f me2man.sed  > mhl.man
+cat tmac.me mhook.me | sed -f me2man.sed  > mhook.man
+cat tmac.me mhmail.me | sed -f me2man.sed  > mhmail.man
+cat tmac.me mhn.me | sed -f me2man.sed  > mhn.man
+cat tmac.me mhparam.me | sed -f me2man.sed  > mhparam.man
+cat tmac.me mhpath.me | sed -f me2man.sed  > mhpath.man
+cat tmac.me msgchk.me | sed -f me2man.sed  > msgchk.man
+cat tmac.me msh.me | sed -f me2man.sed  > msh.man
+cat tmac.me next.me | sed -f me2man.sed  > next.man
+cat tmac.me packf.me | sed -f me2man.sed  > packf.man
+cat tmac.me pick.me | sed -f me2man.sed  > pick.man
+cat tmac.me prev.me | sed -f me2man.sed  > prev.man
+cat tmac.me prompter.me | sed -f me2man.sed  > prompter.man
+cat tmac.me rcvstore.me | sed -f me2man.sed  > rcvstore.man
+cat tmac.me refile.me | sed -f me2man.sed  > refile.man
+cat tmac.me repl.me | sed -f me2man.sed  > repl.man
+cat tmac.me rmf.me | sed -f me2man.sed  > rmf.man
+cat tmac.me rmm.me | sed -f me2man.sed  > rmm.man
+cat tmac.me scan.me | sed -f me2man.sed  > scan.man
+cat tmac.me send.me | sed -f me2man.sed  > send.man
+cat tmac.me show.me | sed -f me2man.sed  > show.man
+cat tmac.me slocal.me | sed -f me2man.sed  > slocal.man
+cat tmac.me sortm.me | sed -f me2man.sed  > sortm.man
+cat tmac.me vmh.me | sed -f me2man.sed  > vmh.man
+cat tmac.me whatnow.me | sed -f me2man.sed  > whatnow.man
+cat tmac.me whom.me | sed -f me2man.sed  > whom.man
+cat tmac.me bbc.me | sed -f me2man.sed  > bbc.man
+cat tmac.me bbl.me | sed -f me2man.sed  > bbl.man
+cat tmac.me bbleader.me | sed -f me2man.sed  > bbleader.man
+cat tmac.me bboards.me | sed -f me2man.sed  > bboards.man
+cat tmac.me mh-alias.me | sed -f me2man.sed  > mh-alias.man
+cat tmac.me mh-format.me | sed -f me2man.sed  > mh-format.man
+cat tmac.me mh-mail.me | sed -f me2man.sed  > mh-mail.man
+cat tmac.me mh-profile.me | sed -f me2man.sed  > mh-profile.man
+cat tmac.me mh-sequence.me | sed -f me2man.sed  > mh-sequence.man
+cat tmac.me mh-tailor.me | sed -f me2man.sed  > mh-tailor.man
+cat tmac.me ap.me | sed -f me2man.sed  > ap.man
+cat tmac.me conflict.me | sed -f me2man.sed  > conflict.man
+cat tmac.me dp.me | sed -f me2man.sed  > dp.man
+cat tmac.me install-mh.me | sed -f me2man.sed  > install-mh.man
+cat tmac.me post.me | sed -f me2man.sed  > post.man
+cat tmac.me fmtdump.me | sed -f me2man.sed  > fmtdump.man

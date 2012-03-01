@@ -1,0 +1,1257 @@
+head	2.20;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+2.20
+date	94.03.23.23.35.23;	author jromine;	state Exp;
+branches;
+next	2.19;
+
+2.19
+date	93.09.01.20.55.38;	author jromine;	state Exp;
+branches;
+next	2.18;
+
+2.18
+date	93.08.19.23.36.12;	author jromine;	state Exp;
+branches;
+next	2.17;
+
+2.17
+date	93.08.19.23.08.05;	author jromine;	state Exp;
+branches;
+next	2.16;
+
+2.16
+date	92.11.24.18.40.34;	author jromine;	state Exp;
+branches;
+next	2.15;
+
+2.15
+date	92.11.02.18.58.12;	author jromine;	state Exp;
+branches;
+next	2.14;
+
+2.14
+date	92.05.19.20.51.57;	author jromine;	state Exp;
+branches;
+next	2.13;
+
+2.13
+date	92.05.12.21.46.45;	author jromine;	state Exp;
+branches;
+next	2.12;
+
+2.12
+date	92.02.10.18.12.35;	author jromine;	state Exp;
+branches;
+next	2.11;
+
+2.11
+date	92.02.05.17.08.16;	author jromine;	state Exp;
+branches;
+next	2.10;
+
+2.10
+date	92.02.03.17.49.13;	author jromine;	state Exp;
+branches;
+next	2.9;
+
+2.9
+date	92.02.03.16.34.00;	author jromine;	state Exp;
+branches;
+next	2.8;
+
+2.8
+date	92.01.31.21.37.07;	author jromine;	state Exp;
+branches;
+next	2.7;
+
+2.7
+date	91.02.14.15.17.56;	author mh;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	90.11.05.12.06.39;	author mh;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	90.04.05.15.29.04;	author sources;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	90.04.05.14.42.56;	author sources;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.04.02.14.27.00;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.07.13.00.42;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.05.14.46.23;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.56.27;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.44.15;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.20
+log
+@change "client" to "clientname"
+make default to use LocalName()
+@
+text
+@/* mts.c - definitions for the mail transport system */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: mts.c,v 2.19 1993/09/01 20:55:38 jromine Exp jromine $";
+#endif /* lint */
+
+/* LINTLIBRARY */
+
+#undef	NETWORK
+#if	defined(BSD41A) || defined(BSD42) || defined(SOCKETS)
+#define	NETWORK
+#endif
+
+#include "../h/strings.h"
+#include <ctype.h>
+#include <stdio.h>
+#include "mts.h"
+#ifdef	NETWORK
+#if	defined(BSD42) || defined(SOCKETS)
+#include <netdb.h>
+#endif
+#else	/* NETWORK */
+#ifndef SYS5
+#include <whoami.h>
+#else
+#include <sys/utsname.h>
+#endif /* SYS5 */
+#endif /* NETWORK */
+#include <pwd.h>
+
+
+#define	NOTOK	(-1)
+#define	OK	0
+
+#define	NULLCP	((char *) 0)
+
+extern int  errno;
+
+static char   *tailor_value ();
+
+
+#if defined(SYS5) && !defined(_AIX)
+#define	index	strchr
+#define	rindex	strrchr
+#endif /* SYS5 */
+
+#if !defined(__STDC__) && !defined(_AIX) && !defined(_POSIX_SOURCE)
+char   *index (), *malloc (), *mktemp (), *rindex (), *strcpy ();
+
+#ifdef	SYS5
+struct passwd  *getpwuid ();
+#endif
+#endif /* !__STDC__ */
+
+/*  */
+
+/*
+   *mmdfldir and *uucpldir are the maildrop directories.  If maildrops
+   are kept in the user's home directory, then these should be empty
+   strings.  In this case, the appropriate ...lfil array should contain
+   the name of the file in the user's home directory.  Usually, this is
+   something like ".mail".
+ */
+
+static char *mtstailor = "@@(MHETCPATH)/mtstailor";
+
+static char    *localname = "";
+static char    *localdomain = "";
+static char    *systemname = "";
+#ifdef	MF
+static char    *UUCPchan = "";
+#endif /* MF */
+char    *mmdfldir = "@@(MHDROPATH)";
+char    *mmdflfil = "@@(MHDROPFIL)";
+char    *uucpldir = "/usr/spool/mail";
+char    *uucplfil = "";
+
+
+char    *mmdlm1 = "\001\001\001\001\n";
+char    *mmdlm2 = "\001\001\001\001\n";
+
+
+static int  MMailids = 0;
+static char *mmailid = "0";
+
+
+#ifdef	MF
+char   *umincproc = "@@(MHETCPATH)/uminc";
+#else /* MF */
+char   *umincproc = NULL;
+#endif /* MF */
+
+
+int	lockstyle = LOK_UNIX;
+static char *lkstyle = "0";
+char   *lockldir = "";
+
+/*  */
+
+/* MTS specific variables */
+
+#ifdef	MHMTS
+char   *Mailqdir = "/usr/spool/netmail";
+char   *TMailqdir = "/usr/tmp";
+int     Syscpy = 1;
+static char *syscpy = "1";
+char   *Overseer = "root";
+char   *Mailer = "root";
+char   *Fromtmp = "/tmp/rml.f.XXXXXX";
+char   *Msgtmp = "/tmp/rml.m.XXXXXX";
+char   *Errtmp = "/tmp/rml.e.XXXXXX";
+int     Tmpmode = 0600;
+static char *tmpmode = "0600";
+char   *Okhosts = "@@(MHETCPATH)/Rmail.OkHosts";
+char   *Okdests = "@@(MHETCPATH)/Rmail.OkDests";
+#endif /* MHMTS */
+
+#ifdef	MMDFMTS
+#endif /* MMDFMTS */
+
+#ifdef	SENDMTS
+char   *hostable = "@@(MHETCPATH)/hosts";
+char   *sendmail = "/usr/lib/sendmail";
+#endif /* SENDMTS */
+
+
+/* SMTP/POP stuff */
+
+char   *clientname = (char *)0;
+char   *servers = "localhost \01localnet";
+char   *pophost = "";
+
+
+/* BBoards-specific variables */
+
+char   *bb_domain = "";
+
+
+/* POP BBoards-specific variables */
+
+#ifdef	BPOP
+char    *popbbhost = "";
+char    *popbbuser = "";
+char    *popbblist = "@@(MHETCPATH)/hosts.popbb";
+#endif /* BPOP */
+
+
+/* MailDelivery */
+
+char   *maildelivery = "@@(MHETCPATH)/maildelivery";
+
+
+/* Aliasing Facility (doesn't belong here) */
+
+int	Everyone = NOTOK;
+static char *everyone = "-1";
+char   *NoShell = "";
+
+/*  */
+
+/* customize the MTS settings for MH by reading @@(MHETCPATH)/mtstailor */
+
+static  struct bind {
+    char   *keyword;
+    char  **value;
+}       binds[] = {
+    "localname", &localname,
+    "localdomain", &localdomain,
+    "systemname", &systemname,
+#ifdef	MF
+    "uucpchan", &UUCPchan,
+#endif /* MF */
+    "mmdfldir", &mmdfldir,
+    "mmdflfil", &mmdflfil,
+    "uucpldir", &uucpldir,
+    "uucplfil", &uucplfil,
+    "mmdelim1", &mmdlm1,
+    "mmdelim2", &mmdlm2,
+    "mmailid", &mmailid,
+    "umincproc", &umincproc,
+    "lockstyle", &lkstyle,
+    "lockldir", &lockldir,
+
+#ifdef	MHMTS
+    "mailqdir", &Mailqdir,
+    "tmailqdir", &TMailqdir,
+    "syscpy", &syscpy,
+    "overseer", &Overseer,
+    "mailer", &Mailer,
+    "fromtmp", &Fromtmp,
+    "msgtmp", &Msgtmp,
+    "errtmp", &Errtmp,
+    "tmpmode", &tmpmode,
+    "okhosts", &Okhosts,
+    "okdests", &Okdests,
+#endif /* MHMTS */
+
+#ifdef	MMDFMTS
+#endif /* MMDFMTS */
+
+#ifdef	SENDMTS
+    "hostable", &hostable,
+    "sendmail", &sendmail,
+#endif /* SENDMTS */
+
+    "clientname",  &clientname,
+    "servers", &servers,
+    "pophost", &pophost,
+
+    "bbdomain", &bb_domain,
+
+#ifdef	BPOP
+    "popbbhost", &popbbhost,
+    "popbbuser", &popbbuser,
+    "popbblist", &popbblist,
+#endif /* BPOP */
+#ifdef	NNTP
+    "nntphost", &popbbhost,
+#endif /* NNTP */
+
+    "maildelivery", &maildelivery,
+
+    "everyone", &everyone,
+    "noshell", &NoShell,
+
+    NULL
+};
+
+/*  */
+
+/* I'd like to use m_getfld() here, but not all programs loading mts.o may be
+   MH-style programs... */
+
+/* ARGSUSED */
+
+mts_init (name)
+char    *name;
+{
+    register char  *bp,
+                   *cp;
+    char    buffer[BUFSIZ];
+    register struct bind   *b;
+    register    FILE *fp;
+    static int  inited = 0;
+
+    if (inited++ || (fp = fopen (mtstailor, "r")) == NULL)
+	return;
+
+    while (fgets (buffer, sizeof buffer, fp)) {
+	if ((cp = index (buffer, '\n')) == NULL)
+	    break;
+	*cp = 0;
+	if (*buffer == '#' || *buffer == '\0')
+	    continue;
+	if ((bp = index (buffer, ':')) == NULL)
+	    break;
+	*bp++ = 0;
+	while (isspace (*bp))
+	    *bp++ = 0;
+
+	for (b = binds; b -> keyword; b++)
+	    if (strcmp (buffer, b -> keyword) == 0)
+		break;
+	if (b -> keyword && (cp = tailor_value (bp)))
+	    *b -> value = cp;
+    }
+
+    (void) fclose (fp);
+
+    MMailids = atoi (mmailid);
+    if ((lockstyle = atoi (lkstyle)) < LOK_UNIX || lockstyle > LOK_MMDF)
+	lockstyle = LOK_UNIX;
+#ifdef	MHMTS
+    Syscpy = atoi (syscpy);
+    (void) sscanf (tmpmode, "0%o", &Tmpmode);
+#endif /* MHMTS */
+    Everyone = atoi (everyone);
+}
+
+/*  */
+
+#define	QUOTE	'\\'
+
+static char *tailor_value (s)
+register char   *s;
+{
+    register int    i,
+                    r;
+    register char  *bp;
+    char    buffer[BUFSIZ];
+
+    for (bp = buffer; *s; bp++, s++)
+	if (*s != QUOTE)
+	    *bp = *s;
+	else
+	    switch (*++s) {
+#define	grot(y,z) case y: *bp = z; break;
+		grot ('b', '\b');
+		grot ('f', '\f');
+		grot ('n', '\n');
+		grot ('t', '\t');
+#undef	grot
+
+		case 0: s--;
+		case QUOTE: 
+		    *bp = QUOTE;
+		    break;
+
+		default: 
+		    if (!isdigit (*s)) {
+			*bp++ = QUOTE;
+			*bp = *s;
+		    }
+		    r = *s != '0' ? 10 : 8;
+		    for (i = 0; isdigit (*s); s++)
+			i = i * r + *s - '0';
+		    s--;
+		    *bp = toascii (i);
+		    break;
+	    }
+    *bp = 0;
+
+    bp = malloc ((unsigned) (strlen (buffer) + 1));
+    if (bp != NULL)
+	(void) strcpy (bp, buffer);
+
+    return bp;
+}
+
+/*  */
+
+char   *LocalName () {
+#ifdef	BSD41A
+    char  *myname;
+#endif /* BSD41A */
+#if	defined(BSD42) || defined(SOCKETS)
+    register struct hostent *hp;
+#endif /* BSD42 or SOCKETS */
+#if	defined(SYS5) && !defined(NETWORK)
+    struct utsname name;
+#endif /* SYS5 and not NETWORK */
+    static char buffer[BUFSIZ] = "";
+
+    if (buffer[0])
+	return buffer;
+
+    mts_init ("mts");
+    if (*localname)
+	strcpy (buffer, localname);
+    else {
+
+#ifdef	locname
+    (void) strcpy (buffer, locname);
+#else /* not locname */
+#ifdef	NETWORK
+#ifdef	BSD41A
+    myname = "myname";
+    if (rhost (&myname) == -1)
+	(void) gethostname (buffer, sizeof buffer);
+    else {
+	(void) strcpy (buffer, myname);
+	free (myname);
+    }
+#endif /* BSD41A */
+#if	defined(BSD42) || defined(SOCKETS)
+    (void) gethostname (buffer, sizeof buffer);
+#ifndef	BIND
+    sethostent (1);
+#endif
+    if (hp = gethostbyname (buffer))
+	(void) strcpy (buffer, hp -> h_name);
+#endif /* BSD42 or SOCKETS */
+#else /* not NETWORK */
+#ifndef	SYS5
+    (void) strcpy (buffer, SystemName ());
+#else /* SYS5 */
+    (void) uname (&name);
+    (void) strcpy (buffer, name.nodename);
+#endif /* SYS5 */
+#endif /* not NETWORK */
+#endif /* not locname */
+    }
+    if (*localdomain) {
+	strcat (buffer, ".");
+	strcat (buffer, localdomain);
+    }
+    return buffer;
+}
+
+/*  */
+
+char *SystemName () {
+#if	defined(SYS5) && !defined(NETWORK)
+    struct utsname name;
+#endif /* SYS5 and not NETWORK */
+    static char buffer[BUFSIZ] = "";
+
+    if (buffer[0])
+	return buffer;
+
+    mts_init ("mts");
+    if (*systemname)
+	return strcpy (buffer, systemname);
+
+#ifdef	sysname
+    (void) strcpy (buffer, sysname);
+#else /* sysname */
+#if	!defined(SYS5) || defined(NETWORK)
+    (void) gethostname (buffer, sizeof buffer);
+#else /* SYS5 and not NETWORK */
+#ifdef	SYS5
+    (void) uname (&name);
+    (void) strcpy (buffer, name.nodename);
+#endif /* SYS5 */
+#endif /* SYS5 and not NETWORK */
+#endif /* sysname */
+
+    return buffer;
+}
+
+/*  */
+
+char   *UucpChan () {
+#ifdef	MF
+    static char buffer[BUFSIZ] = "";
+#endif /* MF */
+
+#ifndef	MF
+    return NULL;
+#else /* MF */
+    if (buffer[0])
+	return buffer;
+
+    mts_init ("mts");
+    if (*UUCPchan)
+	return strcpy (buffer, UUCPchan);
+
+#ifdef	uucpchan
+    (void) strcpy (buffer, uucpchan);
+#else /* uucpchan */
+    (void) strcpy (buffer, "uucp");
+#endif /* uucpchan */
+    return buffer;
+#endif /* MF */
+}
+
+/*  */
+
+#ifdef	ALTOS
+gethostname (name, len)
+register char   *name;
+register int     len;
+{
+    register char  *cp;
+    register FILE  *fp;
+
+    if (fp = fopen ("/etc/systemid", "r")) {
+	if (fgets (name, len, fp)) {
+	    if (cp = index (name, '\n'))
+		*cp = 0;
+	    (void) fclose (fp);
+	    return OK;
+	}
+	(void) fclose (fp);
+    }
+    (void) strncpy (name, "altos", len);
+
+    return OK;
+}
+#endif /* ALTOS */
+
+/*  */
+
+static char username[BUFSIZ];
+static char fullname[BUFSIZ];
+
+
+char   *getusr () {
+    register char  *cp,
+                   *np;
+#ifdef KPOP
+    int uid;
+#endif /* KPOP */
+    register struct passwd *pw;
+
+    if (username[0])
+	return username;
+
+#ifndef KPOP
+    if ((pw = getpwuid (getuid ())) == NULL
+	    || pw -> pw_name == NULL
+	    || *pw -> pw_name == NULL) {
+#else /* KPOP */
+    uid = getuid ();
+    if (uid == geteuid () && (cp = getenv ("USER")) != NULL
+	&& (pw = getpwnam (cp)) != NULL)
+      strcpy (username, cp);
+    else if ((pw = getpwuid (uid)) == NULL
+	     || pw -> pw_name == NULL
+	     || *pw -> pw_name == '\0') {
+#endif /* KPOP */
+	(void) strcpy (username, "unknown");
+	(void) sprintf (fullname, "The Unknown User-ID (%d)", getuid ());
+	return username;
+    }
+
+    np = pw -> pw_gecos;
+#ifndef	GCOS_HACK
+    for (cp = fullname; *np && *np != (MMailids ? '<' : ','); *cp++ = *np++)
+	continue;
+#else
+    for (cp = fullname; *np && *np != (MMailids ? '<' : ','); )
+	if (*np == '&')	{	/* blech! */
+	    (void) strcpy(cp, pw -> pw_name);
+	    *cp = toupper(*cp);
+	    while (*cp)
+		cp++;
+	    np++;
+	}
+	else
+	    *cp++ = *np++;
+#endif
+    *cp = '\0';
+    if (MMailids) {
+	if (*np)
+	    np++;
+	for (cp = username; *np && *np != '>'; *cp++ = *np++)
+	    continue;
+	*cp = '\0';
+    }
+    if (MMailids == 0 || *np == '\0')
+	(void) strcpy (username, pw -> pw_name);
+
+    if ((cp = getenv ("SIGNATURE")) && *cp)
+	(void) strcpy (fullname, cp);
+    if (index(fullname, '.')) {		/*  quote any .'s */
+	  char tmp[BUFSIZ];
+      sprintf (tmp, "\"%s\"", fullname);/* should quote "'s too */
+      strcpy (fullname, tmp);
+    }
+
+    return username;
+}
+
+
+char   *getfullname () {
+    if (username[0] == '\0')
+	(void) getusr ();
+
+    return fullname;
+}
+
+/*  */
+
+#ifdef	SYS5
+#ifndef	notdef			/* Supposedly this works, I prefer the
+				   recursive solution... */
+
+#include <fcntl.h>
+
+int     dup2 (d1, d2)
+register int    d1,
+                d2;
+{
+    int     d;
+
+    if (d1 == d2)
+	return OK;
+
+    (void) close (d2);
+    if ((d = fcntl (d1, F_DUPFD, d2)) == NOTOK)
+	return NOTOK;
+    if (d == d2)
+	return OK;
+
+    errno = 0;
+    return NOTOK;
+}
+
+#else /* notdef */
+int     dup2 (d1, d2)
+register int    d1,
+                d2;
+{
+    if (d1 == d2)
+	return OK;
+
+    (void) close (d2);
+    return dup2aux (d1, d2);
+}
+
+
+static int  dup2aux (d1, d2)
+register int    d1,
+                d2;
+{
+    int     d,
+            i,
+            eindex;
+
+    if ((d = dup (d1)) == NOTOK)
+	return NOTOK;
+    if (d == d2)
+	return OK;
+
+    i = dup2aux (d1, d2);
+    eindex = errno;
+    (void) close (d);
+    errno = eindex;
+    return i;
+}
+#endif /* notdef */
+#endif /* SYS5 */
+@
+
+
+2.19
+log
+@and "client" (clientname) tailor option
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.18 1993/08/19 23:36:12 jromine Exp jromine $";
+d128 1
+a128 1
+char   *clientname = "";
+d205 1
+a205 1
+    "client",  &clientname,
+@
+
+
+2.18
+log
+@use GCOS_HACK (instead of FINGER_HACK)
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.17 1993/08/19 23:08:05 jromine Exp jromine $";
+d128 1
+d205 1
+@
+
+
+2.17
+log
+@add FINGER_HACK
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.16 1992/11/24 18:40:34 jromine Exp jromine $";
+d505 1
+a505 1
+#ifndef	FINGER_HACK
+@
+
+
+2.16
+log
+@fix decl
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.15 1992/11/02 18:58:12 jromine Exp jromine $";
+d505 1
+d508 12
+@
+
+
+2.15
+log
+@_AIX
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.14 1992/05/19 20:51:57 jromine Exp jromine $";
+d38 1
+a38 1
+char   *tailor_value ();
+@
+
+
+2.14
+log
+@AIX
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.13 1992/05/12 21:46:45 jromine Exp jromine $";
+d41 1
+a41 1
+#ifdef	SYS5
+@
+
+
+2.13
+log
+@fix ifdefs
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.12 1992/02/10 18:12:35 jromine Exp jromine $";
+d46 1
+a46 1
+#ifndef __STDC__
+@
+
+
+2.12
+log
+@some SVR4 changes
+add "localdomain" tailor option
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: mts.c,v 2.11 1992/02/05 17:08:16 jromine Exp jromine $";
+#endif	lint
+d44 1
+a44 1
+#endif	SYS5
+d71 1
+a71 1
+#endif	MF
+d88 1
+a88 1
+#else	MF
+d90 1
+a90 1
+#endif	MF
+d115 1
+a115 1
+#endif	MHMTS
+d118 1
+a118 1
+#endif	MMDFMTS
+d123 1
+a123 1
+#endif	SENDMTS
+d143 1
+a143 1
+#endif	BPOP
+d170 1
+a170 1
+#endif	MF
+d194 1
+a194 1
+#endif	MHMTS
+d197 1
+a197 1
+#endif	MMDFMTS
+d202 1
+a202 1
+#endif	SENDMTS
+d213 1
+a213 1
+#endif	BPOP
+d216 1
+a216 1
+#endif	NNTP
+d273 1
+a273 1
+#endif	MHMTS
+d332 1
+a332 1
+#endif	BSD41A
+d335 1
+a335 1
+#endif	BSD42 or SOCKETS
+d338 1
+a338 1
+#endif	SYS5 and not NETWORK
+d351 1
+a351 1
+#else	not locname
+d361 1
+a361 1
+#endif	BSD41A
+d369 2
+a370 2
+#endif	BSD42 or SOCKETS
+#else	not NETWORK
+d373 1
+a373 1
+#else	SYS5
+d376 3
+a378 3
+#endif	SYS5
+#endif	not NETWORK
+#endif	not locname
+d392 1
+a392 1
+#endif	SYS5 and not NETWORK
+d404 1
+a404 1
+#else	sysname
+d407 1
+a407 1
+#else	SYS5 and not NETWORK
+d411 3
+a413 3
+#endif  SYS5
+#endif  SYS5 and not NETWORK
+#endif	sysname
+d423 1
+a423 1
+#endif	MF
+d427 1
+a427 1
+#else	MF
+d437 1
+a437 1
+#else	uucpchan
+d439 1
+a439 1
+#endif	uucpchan
+d441 1
+a441 1
+#endif	MF
+d467 1
+a467 1
+#endif	ALTOS
+d480 1
+a480 1
+#endif KPOP
+d490 1
+a490 1
+#else KPOP
+d498 1
+a498 1
+#endif KPOP
+d564 1
+a564 1
+#else	notdef
+d596 2
+a597 2
+#endif	notdef
+#endif	SYS5
+@
+
+
+2.11
+log
+@put getpwnam(USER) under #ifdef KPOP
+this is a major lose for shared accounts
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.10 1992/02/03 17:49:13 jromine Exp $";
+d67 1
+d166 1
+d346 2
+a347 1
+	return strcpy (buffer, localname);
+d379 5
+a383 1
+
+@
+
+
+2.10
+log
+@SYS5
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.9 1992/02/03 16:34:00 jromine Exp jromine $";
+d471 1
+d473 1
+d479 5
+d491 1
+@
+
+
+2.9
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.8 1992/01/31 21:37:07 jromine Exp jromine $";
+d49 1
+d51 1
+@
+
+
+2.8
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.7 1991/02/14 15:17:56 mh Exp jromine $";
+d46 1
+d50 1
+@
+
+
+2.7
+log
+@set signature from gecos field of passwd file.  $SIGNATURE
+will override this
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.6 90/11/05 12:06:39 mh Exp Locker: mh $";
+d11 1
+a11 1
+#endif	not (defined(BSD41A) || defined(BSD42) || defined(SOCKETS))
+d20 2
+a21 2
+#endif	BSD42 or SOCKETS
+#else	not NETWORK
+d24 1
+a24 1
+#else SYS5
+d26 2
+a27 2
+#endif SYS5
+#endif	not NETWORK
+d243 2
+a244 2
+	*cp = NULL;
+	if (*buffer == '#' || *buffer == NULL)
+d248 1
+a248 1
+	*bp++ = NULL;
+d250 1
+a250 1
+	    *bp++ = NULL;
+d295 1
+a295 1
+		case NULL: s--;
+d312 1
+a312 1
+    *bp = NULL;
+d446 1
+a446 1
+		*cp = NULL;
+d460 2
+a461 2
+static char username[BUFSIZ] = "";
+static char fullname[BUFSIZ] = "";
+d467 1
+d473 7
+a479 3
+    if ((pw = getpwuid (getuid ())) == NULL
+	    || pw -> pw_name == NULL
+	    || *pw -> pw_name == NULL) {
+d488 1
+a488 1
+    *cp = NULL;
+d494 1
+a494 1
+	*cp = NULL;
+d496 1
+a496 1
+    if (MMailids == 0 || *np == NULL)
+d512 1
+a512 1
+    if (username[0] == NULL)
+@
+
+
+2.6
+log
+@quote bad signatures with "..."
+JLR
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: mts.c,v 2.5 90/04/05 15:29:04 sources Exp Locker: mh $";
+d480 4
+a484 4
+	np = pw -> pw_gecos;
+	for (cp = fullname; *np && *np != '<'; *cp++ = *np++)
+	    continue;
+	*cp = NULL;
+d491 1
+a491 1
+    if (MMailids == 0 || *np == NULL) {
+d493 1
+a493 2
+	fullname[0] = NULL;
+    }
+d498 1
+a498 1
+      sprintf (tmp, "\"%s\"", fullname);
+@
+
+
+2.5
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+a490 8
+    /*
+     *  If the fullname contains any .'s, quote it
+     */
+    if (index(fullname, '.')) {
+	  char tmp[BUFSIZ];
+      sprintf (tmp, "\"%s\"", fullname);
+      strcpy (fullname, tmp);
+    }
+d497 5
+@
+
+
+2.4
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "$Id:";
+@
+
+
+2.3
+log
+@"intruder" -> "unknown"
+quote any full names with "."s
+@
+text
+@d2 3
+@
+
+
+2.2
+log
+@ANSI Compliance
+@
+text
+@d472 1
+a472 1
+	(void) strcpy (username, "intruder");
+d487 8
+@
+
+
+2.1
+log
+@new #define SOCKETS for non-bsd machines with socket(), et. al.
+@
+text
+@a270 1
+#define	grot(x)	case 'x': *bp = '\x'; break
+d285 6
+a290 4
+		grot (b);
+		grot (f);
+		grot (n);
+		grot (t);
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d6 1
+a6 1
+#if	defined(BSD41A) || defined(BSD42)
+d8 1
+a8 1
+#endif	not (defined(BSD41A) || defined(BSD42))
+d15 1
+a15 1
+#ifdef	BSD42
+d17 1
+a17 1
+#endif	BSD42
+d323 1
+a323 1
+#ifdef	BSD42
+d325 2
+a326 2
+#endif	BSD42
+#ifdef	SYS5
+d328 1
+a328 1
+#endif	SYS5
+d351 1
+a351 1
+#ifdef	BSD42
+d358 1
+a358 1
+#endif	BSD42
+d375 1
+a375 1
+#ifdef	SYS5
+d377 1
+a377 1
+#endif	SYS5
+d390 1
+a390 1
+#ifndef	SYS5
+d392 2
+a393 1
+#else   SYS5
+d397 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d205 3
+@

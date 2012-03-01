@@ -1,0 +1,686 @@
+head	1.11;
+access;
+symbols;
+locks; strict;
+
+
+1.11
+date	92.05.12.22.23.34;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.02.06.22.46.37;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	91.01.09.11.34.34;	author mh;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	91.01.07.16.45.12;	author mh;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	91.01.07.16.41.26;	author mh;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	91.01.07.16.34.25;	author mh;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	91.01.07.16.26.52;	author mh;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	91.01.07.16.14.39;	author mh;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.12.27.14.59.21;	author mh;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.12.27.14.55.16;	author mh;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.12.27.12.25.16;	author mh;	state Exp;
+branches;
+next	;
+
+
+desc
+@jlr
+@
+
+
+1.11
+log
+@fixup for nroff problems
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: mh-sequence.rf,v 1.10 1992/02/06 22:46:37 jromine Exp jromine $
+.SC MH-SEQUENCE 5
+.NA
+mh-sequence \- sequence specification for MH message system
+.SY
+most \fIMH\fR commands
+.DE
+Most \fIMH\fP commands accept a `msg' or `msgs' specification, where
+`msg' indicates one message and `msgs' indicates one or more
+messages.
+To designate a message, you may use either its number (e.g., 1, 10, 234)
+or one of these \*(lqreserved\*(rq message names: 
+.in +.5i
+.sp 1
+.nf
+.ta +\w'\fIName\fP      'u
+\fIName\fP	\fIDescription\fR
+first	the first message in the folder
+last	the last message in the folder
+cur	the most recently accessed message
+prev	the message numerically preceding \*(lqcur\*(rq
+next	the message numerically following \*(lqcur\*(rq
+.re
+.fi
+.in -.5i
+
+In commands that take a `msg' argument, the default is \*(lqcur\*(rq.
+As a shorthand, \*(lq\&.\*(rq is equivalent to \*(lqcur\*(rq.
+
+For example: In a folder containing five messages numbered 5, 10, 94,
+177 and 325, \*(lqfirst\*(rq is 5 and \*(lqlast\*(rq is 325.
+If \*(lqcur\*(rq is 94, then \*(lqprev\*(rq is 10 and \*(lqnext\*(rq
+is 177.
+
+The word `msgs' indicates that one or more messages may be specified.
+Such a specification consists of one message designation or of several message
+designations separated by spaces.
+A message designation consists either 
+of a message name as defined above, or a message range.
+
+A message range is specified as \*(lqname1\-name2\*(rq
+or \*(lqname:n\*(rq,
+where `name', `name1' and `name2' are message names, and `n' is an integer.
+
+The specification \*(lqname1\-name2\*(rq 
+designates all currently-existing messages from `name1' to `name2' inclusive.
+The message name \*(lqall\*(rq is a shorthand for the message
+range \*(lqfirst\-last\*(rq.
+
+The specification \*(lqname:n\*(rq designates up to `n' messages.
+These messages start with `name' if `name' is a message number
+or one of the reserved names \*(lqfirst\*(rq \*(lqcur\*(rq, or \*(lqnext\*(rq,
+The messages end with `name' if `name' is \*(lqprev\*(rq or \*(lqlast\*(rq.
+The interpretation of `n' may be overridden by preceding `n' with 
+a plus or minus sign; `+n' always means up to `n' messages starting
+with `name', and `\-n' always means up to `n' messages ending
+with `name'.
+
+In commands which accept a `msgs' argument, the default is either
+\*(lqcur\*(rq or \*(lqall\*(rq, depending on which makes more sense
+for each command (see the individual man pages for details).
+Repeated specifications of the same message have the same effect as
+a single specification of the message.
+
+.Uh "User\-Defined Message Sequences"
+In addition to the \*(lqreserved\*(rq (pre-defined) message names given above,
+\fIMH\fP supports user-defined sequence names.
+User-defined sequences allow the \fIMH\fR user a tremendous amount of power
+in dealing with groups of messages in the same folder
+by allowing the user to bind a group of messages to a meaningful symbolic
+name.
+
+The name used to denote a message sequence must consist of
+an alphabetic character followed by zero or more
+alphanumeric characters, and can not be one of the \*(lqreserved\*(rq
+message names above.
+After defining a sequence,
+it can be used wherever an \fIMH\fR command expects a `msg' or `msgs'
+argument.
+
+Some forms of message ranges are allowed with user-defined
+sequences.  The 
+specification \*(lqname:n\*(rq may be used, and it
+designates up to the first `n' messages (or last `n' messages for `\-n')
+which are elements of the user-defined sequence `name'.
+
+The specifications \*(lqname:next\*(rq and \*(lqname:prev\*(rq
+may also be used, and they designate the
+next or previous message (relative to the current message)
+which is an element of the user-defined sequence `name'.
+The specificaitions 
+\*(lqname:first\*(rq and \*(lqname:last\*(rq are equivalent
+to \*(lqname:1\*(rq and \*(lqname:\-1\*(rq, respectively.
+The specification \*(lqname:cur\*(rq is not allowed
+(use just \*(lqcur\*(rq instead).
+The syntax of these message range
+specifcations is subject to change
+in the future.
+
+User-defined sequence names 
+are specific to each folder.
+They are defined using the \fIpick\fP and \fImark\fP commands.
+
+.Uh "Public and Private User-Defined Sequences"
+There are two varieties of sequences: \fIpublic\fR sequences
+and \fIprivate\fR sequences.
+\fIPublic\fR sequences of a folder are accessible to any \fIMH\fR user that
+can read that folder and are kept in the \&.mh\(rusequences file in the folder.
+\fIPrivate\fR sequences are accessible only to the \fIMH\fR user that defined
+those sequences and are kept in the user's \fIMH\fR context file.
+By default,
+\fIpick\fR and \fImark\fR create \fIpublic\fR sequences
+if the folder for which the sequences are being defined is writable by the
+\fIMH\fR user.
+Otherwise, \fIprivate\fR sequences are created.
+This can be overridden with the `\-public' and `\-private' switches
+to \fImark\fP.
+
+.Uh "Sequence Negation"
+\fIMH\fP provides the ability to select all messages
+not elements of a user-defined sequence.  To do this,
+the user should define the entry
+\*(lqSequence\-Negation\*(rq in the \fIMH\fR profile file;
+its value may be any string.
+This string is then used to preface an existing user-defined
+sequence name.  This specification then refers to those messages
+not elements of the specified sequence name.
+For example, if the profile entry is:
+
+.ti +.5i
+Sequence\-Negation:\^ not
+
+then anytime an \fIMH\fR command is given \*(lqnotfoo\*(rq as a `msg' or
+`msgs' argument,
+it would substitute all messages that are not elements of the sequence
+\*(lqfoo\*(rq.
+
+Obviously,
+the user should beware of defining sequences with names that
+begin with the value of the
+\*(lqSequence\-Negation\*(rq profile entry.
+
+.Uh "The Previous Sequence"
+\fIMH\fR provides the ability
+to remember the `msgs' or
+`msg' argument last given to an \fIMH\fR command.
+The entry \*(lqPrevious\-Sequence\*(rq should be defined in the
+\fIMH\fR profile; its value should be a sequence name or multiple
+sequence names separated by spaces.
+If this entry is defined, when
+when an \fIMH\fP command finishes,
+it will define the sequence(s) named in the value of this entry to be
+those messages that were specified to the command.
+Hence, a profile entry of
+
+.ti +.5i
+Previous\-Sequence:\^ pseq
+
+directs any \fIMH\fR command that accepts a `msg' or `msgs' argument to
+define the sequence \*(lqpseq\*(rq as those messages when it finishes.
+
+\fBNote:\fP there can be a performance penalty in using the  
+\*(lqPrevious\-Sequence\*(rq facility.
+If it is used,
+\fBall\fP \fIMH\fR programs have to write the sequence information 
+to the \&.mh\(rusequences file for
+the folder each time they run.
+If the \*(lqPrevious\-Sequence\*(rq profile entry is not included,
+only \fIpick\fR and \fImark\fR will write to the \&.mh\(rusequences file.
+
+.Uh "The Unseen Sequence"
+Finally, some users like to indicate messages which have not been
+previously seen by them.
+Both \fIinc\fR and \fIshow\fR honor the profile entry
+\*(lqUnseen\-Sequence\*(rq to support this activity.
+This entry in the \&.mh\(ruprofile should be defined
+as one or more sequence names separated by spaces.
+If there is a value for \*(lqUnseen\-Sequence\*(rq in the profile,
+then whenever \fIinc\fR places new messages in a folder,
+the new messages will also be added to the sequence(s) named
+in the value of this entry.
+Hence, a profile entry of
+
+.ti +.5i
+Unseen\-Sequence:\^ unseen
+
+directs \fIinc\fR to add new messages to the sequence \*(lqunseen\*(rq.
+Unlike the behavior of the \*(lqPrevious\-Sequence\*(rq entry in the profile,
+however, the sequence(s) will \fBnot\fR be zeroed by \fIinc\fP.
+
+Similarly,
+whenever \fIshow\fR (or \fInext\fR or \fIprev\fR\^) displays a message,
+that message will be removed
+from any sequences named by the
+\*(lqUnseen\-Sequence\*(rq entry in the profile.
+
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+^<mh\-dir>/context~^The user context
+^<folder>/\&.mh\(rusequences~^Public sequences for <folder>
+.Pr
+^Sequence\-Negation:~^To designate messages not in a sequence
+.Ps
+^Previous\-Sequence:~^The last message specification given
+.Ps
+^Unseen\-Sequence:~^Those messages not yet seen by the user
+.Sa
+mh(1), mark(1), pick(1), mh-profile(5)
+.De
+None
+.Co
+All
+.Bu
+User-defined sequences are stored in the \&.mh\(rusequences file 
+as a series of message specifications separated by spaces.
+If a user-defined sequence contains too many individual
+message specifications,
+that line in the file may become too long for \fIMH\fP to handle.
+This will generate the error message \*(lq\&.mh\(rusequences is
+poorly formatted\*(rq.  You'll have to edit the file by hand to
+remove the offending line. 
+
+This can happen to users who define the \*(lqPrevious\-Sequence\*(rq entry in
+the \fIMH\fP profile
+and have a folder containing many messages with gaps in the numbering.
+A workaround for large folders is to minimize numbering gaps by using
+\*(lqfolder\ \-pack\*(rq often.
+.En
+@
+
+
+1.10
+log
+@minor note
+@
+text
+@d2 2
+a3 2
+.\" @@(#)$Id: mh-sequence.rf,v 1.9 1991/01/09 11:34:34 mh Exp jromine $
+.SC MH\-SEQUENCE 5
+d5 1
+a5 1
+mh\-sequence \- sequence specification for MH message system
+@
+
+
+1.9
+log
+@document name:{first,last,next,prev}
+jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mh-sequence.rf,v 1.8 91/01/07 16:45:12 mh Exp Locker: mh $
+d61 2
+a62 1
+\*(lqcur\*(rq or \*(lqall\*(rq, depending on which makes more sense.
+@
+
+
+1.8
+log
+@jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mh-sequence.rf,v 1.7 91/01/07 16:41:26 mh Exp Locker: mh $
+d81 2
+a82 2
+A restricted form of message ranges are allowed with user\-defined
+sequences.  Only the 
+d87 14
+a100 1
+These user-defined sequence names 
+@
+
+
+1.7
+log
+@fix
+jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mh-sequence.rf,v 1.6 91/01/07 16:34:25 mh Exp Locker: mh $
+d66 1
+a66 1
+In addition to the \(*lqreserved\(*rq (pre-defined) message names given above,
+@
+
+
+1.6
+log
+@fixup
+jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mh-sequence.rf,v 1.5 91/01/07 16:26:52 mh Exp Locker: mh $
+a183 15
+.Bu
+User-defined sequences are stored in the \&.mh\(rusequences file 
+as a series of message specifications separated by spaces.
+If a user-defined sequence contains too many individual
+message specifications,
+that line in the file may become too long for \fIMH\fP to handle.
+This will generate the error message \*(lq\&.mh\(rusequences is
+poorly formatted\*(rq.  You'll have to edit the file by hand to
+remove the offending line. 
+
+This can happen to users who define the \*(lqPrevious\-Sequence\*(rq entry in
+the \fIMH\fP profile
+and have a folder containing many messages with gaps in the numbering.
+A workaround for large folders is to minimize numbering gaps by using
+\*(lqfolder\ \-pack\*(rq often.
+d200 15
+@
+
+
+1.5
+log
+@change from Jerry Peek
+@
+text
+@d1 4
+a4 7
+.\"	This file is automatically generated.  Do not edit!
+.\" include the -mh macro file
+.so /usr/local/lib/mh/tmac.h
+.\"	This file is automatically generated.  Do not edit!
+.\" @@(#)$Id: mh-sequence.rf,v 1.3 90/12/27 14:59:21 mh Exp $
+.TH MH\-SEQUENCE 5 MH.6.7 [mh.6]
+.SH NAME
+d6 1
+a6 3
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+d8 1
+a8 2
+.in -.5i
+.SH DESCRIPTION
+@
+
+
+1.4
+log
+@use Uh macro
+@
+text
+@d1 7
+a7 4
+.\"	@@(MHWARNING)
+.\" @@(#)$Id: mh-sequence.rf,v 1.3 90/12/27 14:59:21 mh Exp Locker: mh $
+.SC MH\-SEQUENCE 5
+.NA
+d9 3
+a11 1
+.SY
+d13 2
+a14 1
+.DE
+d16 1
+a16 1
+`msg' indicates one message, and `msgs' indicates one or more
+d18 1
+a18 1
+To designate a message, you may use either its number (e.g., 1, 10, 234),
+d28 1
+a28 1
+prev 	the message numerically preceding \*(lqcur\*(rq
+d37 5
+d43 2
+a44 2
+Such a specification consists of several message designations separated
+by spaces.
+d49 2
+a50 2
+or \*(lqname1:n\*(rq,
+where `name1' and `name2' are message names, and `n' is an integer.
+d53 1
+a53 1
+designates all the messages from `name1' to `name2' inclusive.
+d57 2
+a58 2
+The specification \*(lqname1:n\*(rq designates up to `n' messages,
+starting with `name1' if `name1' is a message number
+d60 1
+a60 1
+and ending with `name1' if `name1' is \*(lqprev\*(rq, or \*(lqlast\*(rq.
+d63 2
+a64 2
+with `name1', and `\-n' always means up to `n' messages ending
+with `name1'.
+d72 2
+a73 2
+In addition to the pre-defined message names given above,
+\fIMH\fP supports user-defined sequences names.
+d94 2
+a95 2
+are specific to each folder, and are
+defined using the \fIpick\fP and \fImark\fP commands.
+d98 1
+a98 1
+There are two varieties of sequences: \fIpublic\fR sequences,
+d105 1
+a105 1
+\fIpick\fR (and \fImark\fR\^) create \fIpublic\fR sequences
+d116 1
+a116 1
+\*(lqSequence\-Negation\*(rq in the \&.mh\(ruprofile;
+d141 1
+a141 1
+\&.mh\(ruprofile; its value should be a sequence name, or multiple
+d155 1
+a155 1
+\fBNote:\fP there is a performance penalty in using the  
+d158 2
+a159 1
+\fBall\fP \fIMH\fR programs have to update the sequence information for
+d161 2
+a162 2
+Although most programs read this information,
+usually only \fIpick\fR and \fImark\fR have to write this information out.
+d190 15
+@
+
+
+1.3
+log
+@jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mh-sequence.rf,v 1.2 90/12/27 14:55:16 mh Exp Locker: mh $
+a8 3
+.de UH
+.SS "\\$1"
+..
+d60 1
+a60 1
+.UH "User\-Defined Message Sequences"
+d86 1
+a86 1
+.UH "Public and Private User-Defined Sequences"
+d101 1
+a101 1
+.UH "Sequence Negation"
+d125 1
+a125 1
+.UH "The Previous Sequence"
+d152 1
+a152 1
+.UH "The Unseen Sequence"
+@
+
+
+1.2
+log
+@jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mh-sequence.rf,v 1.1 90/12/27 12:25:16 mh Exp $
+d83 1
+a83 1
+which are part of the user-defined sequence `name'.
+d97 1
+a97 1
+\fIpick\fR (and \fImark\fR\|) create \fIpublic\fR sequences
+d116 1
+a116 1
+Sequence\-Negation:\| not
+d142 1
+a142 1
+Previous\-Sequence:\| pseq
+d169 1
+a169 1
+Unseen\-Sequence:\| unseen
+d176 1
+a176 1
+whenever \fIshow\fR (or \fInext\fR or \fIprev\fR\|) displays a message,
+d192 1
+a192 1
+mark(1), pick(1), mh-profile(5)
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mh-profile.rf,v 1.8 90/12/18 12:49:13 mh Exp $
+d7 1
+a7 1
+any \fIMH\fR commands
+d12 2
+a13 3
+Most \fIMH\fP commands accept a `msg' or `msgs' argument.
+The word
+`msg' refers to one message, and `msgs' refers to one or more
+d15 2
+a16 5
+This describes how messages are specified to \fIMH\fP commands.
+
+.ne 10
+A message name may be a number (e.g., 1, 10, 234) or one of
+the \*(lqreserved\*(rq message names: 
+d20 1
+a20 1
+.ta +\w'first   'u
+d25 1
+a25 1
+prev 	the message numerically preceeding \*(lqcur\*(rq
+a26 1
+\&.	a shorthand for \*(lqcur\*(rq
+d32 1
+d40 3
+a42 4
+A message range is specified as \*(lqname1\-name2\*(rq, where
+`name1' and `name2' are message names, or
+as \*(lqname1:n\*(rq, where `name1'
+is a message name and `n' is an integer.
+d44 2
+a45 2
+The specification \*(lqname1\-name2\*(rq desginates up to
+This designates all the messages from `name1' to `name2' inclusive.
+d49 1
+a49 1
+The specification \*(lqname1:n\*(rq desginates up to `n' messages,
+d53 1
+a53 1
+The interpretation of `n' may be overridden by preceeding `n' with 
+d60 2
+d97 1
+a97 1
+\fIpick\fR (and \fImark\fR\0) create \fIpublic\fR sequences
+d105 9
+a113 4
+The \fIMH\fP user may desire to specify all messages not
+present in a user-defined sequence.
+This capability is realized through the entry 
+\*(lqSequence\-Negation:\*(rq in the \&.mh\(ruprofile.
+a114 7
+The \*(lqSequence\-Negation:\*(rq profile entry may consist of
+any string.  If it is defined,
+it may be used to preface an existing user-defined
+sequence name.  This designation then refers to those messages
+not present in the specified sequence name.
+For example, if the entry is:
+
+d116 1
+a116 1
+Sequence\-Negation:\0not
+d124 1
+a124 1
+the user should beware of defining new sequences whose names
+d126 1
+a126 1
+\*(lqSequence\-Negation:\*(rq profile entry.
+d132 7
+a138 5
+If the entry \*(lqPrevious\-Sequence:\*(rq is defined in the
+\&.mh\(ruprofile,
+then when the command finishes,
+it will define the sequence(s) named in the value of this entry as being
+exactly those messages that were specified.
+d142 1
+a142 1
+Previous\-Sequence:\0pseq
+a145 2
+More than one sequence name may be placed in this entry,
+separated with spaces.
+d147 5
+a151 5
+There is a performance penalty in using the  
+\*(lqPrevious\-Sequence:\*(rq entry.
+It
+is that all \fIMH\fR progams have to update the sequence information for
+the folder each time they run
+d154 1
+d156 1
+a156 1
+Finally, some users like to distinguish between messages which have been
+d160 6
+a165 5
+Whenever \fIinc\fR places new messages in a folder,
+if the entry \*(lqUnseen\-Sequence:\*(rq is defined in the \&.mh\(ruprofile,
+then when the command finishes,
+\fIinc\fR will add the new messages to the sequence(s) named in the value of
+this entry.
+d169 1
+a169 1
+Unseen\-Sequence:\0 unseen
+d172 2
+a173 3
+Unlike the behavior of the \*(lqPrevious\-Sequence\*(rq entry in the profile
+however,
+the sequence(s) will \fBnot\fR be zero'd.
+d176 3
+a178 2
+whenever \fIshow\fR (or \fInext\fR or \fIprev\fR\0) displays a message,
+they remove those messages from any sequences named by the
+@

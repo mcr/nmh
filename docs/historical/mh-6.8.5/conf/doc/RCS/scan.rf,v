@@ -1,0 +1,457 @@
+head	1.14;
+access;
+symbols;
+locks; strict;
+
+
+1.14
+date	95.12.06.23.22.17;	author jromine;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	94.04.21.19.11.44;	author jromine;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	93.08.19.20.43.27;	author jromine;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	92.10.29.22.01.56;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.01.29.22.56.18;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	91.01.07.11.13.47;	author mh;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	90.04.05.15.10.08;	author sources;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	90.03.22.11.31.50;	author sources;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.03.20.19.42.32;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.03.20.17.36.47;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.20.10.24.48;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.18.20.48.49;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.03.16.15.51.59;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.03.16.15.47.47;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.14
+log
+@cleanup wording about "*" & missing Date: header
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: scan.rf,v 1.13 1994/04/21 19:11:44 jromine Exp jromine $
+.SC SCAN 1
+.NA
+scan \- produce a one line per message scan listing
+.SY
+scan
+\%[+folder] \%[msgs]
+\%[\-clear] \%[\-noclear]
+\%[\-form\ formatfile]
+\%[\-format\ string]
+\%[\-header] \%[\-noheader]
+\%[\-width\ columns]
+\%[\-reverse] \%[\-noreverse]
+\%[\-file filename]
+\%[\-help]
+.DE
+\fIScan\fR produces a one\-line\-per\-message listing of the specified
+messages.
+Each \fIscan\fR line contains the message number (name),
+the date, the \*(lqFrom:\*(rq field, the \*(lqSubject\*(rq field, and, if room
+allows, some of the body of the message.
+For example:
+
+.nf
+.in +.5i
+.ta \w'15+- 'u +\w'07/\|05x 'u +\w'Dcrocker  'u
+15+	07/\|05	Dcrocker	nned\0\0\*(<<Last week I asked some of
+16\0-	07/\|05	dcrocker	message id format\0\0\*(<<I recommend
+18	07/\|06	Obrien	Re: Exit status from mkdir
+19	07/\|07*	Obrien	\*(lqscan\*(rq listing format in MH
+.re
+.in -.5i
+.fi
+
+The `+' on message 15 indicates that it is the current message.
+The `\-' on message 16 indicates that it has been
+replied to, as indicated by a \*(lqReplied:\*(rq component (produced by
+the `\-annotate' switch to the \fIrepl\fR command).
+The `*' on message 19 indicates that there was no \*(lqDate:\*(rq
+header present (the last write date of the message is given instead).
+
+If there is sufficient room left on the \fIscan\fR line after the
+subject, the line will be filled with text from the body,
+preceded by <<, and terminated by >> if the body is sufficiently short.
+\fIScan\fR actually reads each of the specified
+messages and parses them to extract the desired fields.
+During parsing, appropriate error messages will be produced if
+there are format errors in any of the messages.
+
+The `\-header' switch produces a header line prior to the \fIscan\fR
+listing.
+Currently,
+the name of the folder and the current date and time are output
+(see the \fBHISTORY\fR section for more information).
+
+If the `\-clear' switch is used and \fIscan's\fR output is directed to a
+terminal,
+then \fIscan\fR will consult the \fB$TERM\fR and \fB$TERMCAP\fR
+envariables to determine your
+terminal type in order to find out how to clear the screen prior to exiting.
+If the `\-clear' switch is used and \fIscan's\fR output is not directed to
+a terminal (e.g., a pipe or a file),
+then \fIscan\fR will send a formfeed prior to exiting.
+
+For example, the command:
+
+.ti +.5i
+(scan \-clear \-header; show all \-show pr \-f) | lpr
+
+produces a scan listing of the current folder, followed by a formfeed,
+followed by a formatted listing of all messages in the folder, one per
+page.  Omitting `\-show\ pr\ \-f' will cause the messages to be concatenated,
+separated by a one\-line header and two blank lines.
+
+To override the output format used by \fIscan\fR,
+the `\-format\ string' or `\-form\ file' switches are used.
+This permits individual fields of the scan listing to be extracted with ease.
+The string is simply a format string and the file is simply a format file.
+See \fImh\-format\fR\0(5) for the details.
+
+In addition to the standard \fImh\-format\fR\0(5) escapes,
+\fIscan\fR also recognizes the following additional \fIcomponent\fR escapes:
+.sp 1
+.nf
+.ta \w'Dtimenow  'u +\w'Returns  'u
+\fIEscape\fR	\fIReturns\fR	\fIDescription\fR
+body	string	the (compressed) first part of the body
+dtimenow	date	the current date
+folder	string	the name of the current folder
+.re
+.fi
+
+.\" and the following \fIfunction\fP escape:
+.\" .sp 1
+.\" .nf
+.\" .ta \w'Dcompflagxfolderx  'u +\w'Returns  'u
+.\" \fIEscape\fR	\fIReturns\fR	\fIDescription\fR
+.\" compflag{folder}	integer	boolean state of `\-header'
+.\" .re
+.\" .fi
+.\" 
+If no date header is present in the message, the \fIfunction\fR
+escapes which operate on {\fIdate\fP\|} will return values for the 
+date of last modification of the message file itself.
+This is particularly handy for scanning a \fIdraft folder\fR,
+as message drafts usually aren't allowed to have dates in them.
+
+\fIscan\fR will update the \fIMH\fR context prior to starting the listing,
+so interrupting a long \fIscan\fR listing preserves the new context.
+\fIMH\fR purists hate this idea.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's MH directory
+.Ps
+^Alternate\-Mailboxes:~^To determine the user's mailboxes
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Sa
+inc(1), pick(1), show(1), mh\-format(5)
+.De
+`+folder' defaults to the folder current
+.Ds
+`msgs' defaults to all
+.Ds
+`\-format' defaulted as described above
+.Ds
+`\-noheader'
+.Ds
+`\-width' defaulted to the width of the terminal
+.Co
+If a folder is given, it will become the current folder.
+.Hi
+Prior to using the format string mechanism,
+`\-header' used to generate a heading saying what each column in the listing
+was.
+Format strings prevent this from happening.
+.Bu
+The argument to the `\-format' switch must be interpreted as a single token
+by the shell that invokes \fIscan\fR.
+Therefore,
+one must usually place the argument to this switch inside double\-quotes.
+.br
+The value of
+each \fIcomponent\fR escape is set by \fIscan\fR to the contents
+of the first message header \fIscan\fR encounters
+with the corresponding component name;
+any following headers with the same component name are ignored.
+.sp
+The switch `\-reverse', makes \fIscan\fR list the messages
+in reverse order; this should be considered a bug.
+.sp
+The `\-file filename' switch allows the user to obtain a \fIscan\fP
+listing of a maildrop file as produced by \fIpackf\fP.  This listing
+includes every message in the file.  The user should use \fImsh\fP
+for more selective processing of the file.  `\-reverse' is ignored
+with this option.
+.En
+@
+
+
+1.13
+log
+@consider documenting compflag{folder}
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: scan.rf,v 1.12 1993/08/19 20:43:27 jromine Exp jromine $
+d27 5
+a31 5
+.ta \w'15+- 'u +\w'7/\05  'u +\w'Dcrocker  'u
+15+	7/\05	Dcrocker	nned\0\0\*(<<Last week I asked some of
+16\0-	7/\05	dcrocker	message id format\0\0\*(<<I recommend
+18	7/\06	Obrien	Re: Exit status from mkdir
+19	7/\07	Obrien	\*(lqscan\*(rq listing format in MH
+d38 4
+a41 2
+replied to, as indicated by a \*(lqReplied:\*(rq component produced by
+an `\-annotate' switch to the \fIrepl\fR command.
+a75 7
+If \fIscan\fR encounters a message without a \*(lqDate:\*(rq field,
+rather than leaving that portion of the scan listing blank,
+the date is filled\-in with the last write date of the message,
+and post\-fixed with a `*'.
+This is particularly handy for scanning a \fIdraft folder\fR,
+as message drafts usually aren't allowed to have dates in them.
+
+d103 1
+a103 1
+Also, if no date header was present in the message, the \fIfunction\fR
+d106 2
+@
+
+
+1.12
+log
+@typo
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: scan.rf,v 1.11 1992/10/29 22:01:56 jromine Exp jromine $
+d99 9
+@
+
+
+1.11
+log
+@document dtimenow
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: scan.rf,v 1.10 1992/01/29 22:56:18 jromine Exp jromine $
+d82 1
+a82 1
+the `\-format\ string' or `\-format\ file' switches are used.
+@
+
+
+1.10
+log
+@document %{folder}
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: scan.rf,v 1.9 1991/01/07 11:13:47 mh Exp jromine $
+d91 1
+a91 1
+.ta \w'Escape  'u +\w'Returns  'u
+d94 1
+a101 1
+
+@
+
+
+1.9
+log
+@document scan -file filename
+jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: scan.rf,v 1.8 90/04/05 15:10:08 sources Exp Locker: mh $
+d88 1
+a88 1
+\fIscan\fR also recognizes the following additional \fIcomponent\fR escape:
+d94 1
+@
+
+
+1.8
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+d15 1
+d98 1
+a98 1
+escapes which operate on {\fIdate\|} will return values for the 
+d101 1
+d143 1
+a143 1
+.br
+d146 6
+@
+
+
+1.7
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.6
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH SCAN 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.5
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH SCAN 1 [mh.6] MH
+@
+
+
+1.4
+log
+@mention using st_mtime
+@
+text
+@d2 2
+a3 2
+.SC SCAN 1
+.NA
+d5 1
+a5 1
+.SY
+@
+
+
+1.3
+log
+@document component escape semantics
+@
+text
+@d95 4
+@
+
+
+1.2
+log
+@fixup
+@
+text
+@d85 1
+a85 1
+In addition to the standard escapes,
+a94 1
+In addition,
+d97 1
+a97 1
+\fIMH\fR purists hate both of these ideas.
+d130 6
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d13 1
+d86 2
+a87 1
+\fIscan\fR also recognizes the following additional escape:
+d89 3
+a91 3
+.ta \w'escape  'u
+\fIescape\fR	\fIsubstitution\fR
+body	the (compressed) first part of the body
+a94 3
+On hosts where \fIMH\fR was configured with the BERK option,
+\fIscan\fR has two other switches: `\-reverse', and `\-noreverse'.
+These make \fIscan\fR list the messages in reverse order.
+d131 3
+@

@@ -1,0 +1,127 @@
+head     1.5;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @@;
+
+
+1.5
+date     90.04.05.15.14.29;  author sources;  state Exp;
+branches ;
+next     1.4;
+
+1.4
+date     90.03.22.11.31.40;  author sources;  state Exp;
+branches ;
+next     1.3;
+
+1.3
+date     90.03.20.19.42.21;  author sources;  state Exp;
+branches ;
+next     1.2;
+
+1.2
+date     90.03.20.17.36.35;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.03.20.17.21.20;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.5
+log
+@add ID
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id:$
+.SC POPWRD 8
+.NA
+popwrd \- set password for a POP subscriber
+.SY
+@@(MHETCPATH)/popwrd
+POP\-subscriber
+.DE
+The \fIpopwrd\fR program lets the super\-user or the master POP user
+or a \*(lqleader\*(rq of a POP subscriber change the password field for the
+POP subscriber in the POP database.
+This program is very similar to the \fIpasswd\fR\0(1) program.
+
+Since only the super\-user and the master POP user may change any other
+fields of the POP database (using an ordinary editor),
+it is possible for the system administrator to delegate responsibility to
+others to manage groups of POP subscribers.
+.Fi
+^/usr/spool/pop/POP~^POP database
+.Pr
+None
+.Sa
+pop(5)
+.De
+None
+.Co
+None
+.Bu
+Although \fIpopwrd\fR does locking against other invocations of \fIpopwrd\fR,
+editor locking for the POP database in general is not implemented.
+A \fIvipop\fR program is needed.
+.En
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH POPWRD 8 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH POPWRD 8 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC POPWRD 8
+.NA
+d5 1
+a5 1
+.SY
+@

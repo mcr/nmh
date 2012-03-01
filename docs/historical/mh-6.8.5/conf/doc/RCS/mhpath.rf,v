@@ -1,0 +1,257 @@
+head	1.7;
+access;
+symbols;
+locks; strict;
+
+
+1.7
+date	92.02.11.22.40.23;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.05.15.08.26;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.03.22.11.31.28;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.20.19.42.07;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.20.17.36.23;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	89.11.17.16.25.35;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.16.23.44;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@minor re-format
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: mhpath.rf,v 1.6 1990/04/05 15:08:26 sources Exp jromine $
+.SC MHPATH 1
+.NA
+mhpath \- print full pathnames of MH messages and folders
+.SY
+mhpath
+\%[+folder] \%[msgs]
+\%[\-help]
+.DE
+\fIMhpath\fR expands and sorts the message list `msgs' and writes
+the full pathnames of the messages to the standard output
+separated by newlines.
+If no `msgs' are specified,
+\fImhpath\fR outputs the folder pathname instead.
+If the only argument is `+', your MH \fIPath\fR is output;
+this can be useful is shell scripts.
+
+Contrasted with other MH commands, a message argument to \fImhpath\fR
+may often be intended for \fIwriting\fR.
+Because of this:
+.sp
+1) the name \*(lqnew\*(rq has been added to \fImhpath\fR's list of
+reserved message names
+(the others are \*(lqfirst\*(rq, \*(lqlast\*(rq, \*(lqprev\*(rq,
+\*(lqnext\*(rq, \*(lqcur\*(rq, and \*(lqall\*(rq).
+The new message is equivalent to the message after the
+last message in a folder
+(and equivalent to 1 in a folder without messages).
+The \*(lqnew\*(rq message may not be used as part of a message range.
+.sp
+2) Within a message list,
+the following designations may refer to messages that do not exist:
+a single numeric message name,
+the single message name \*(lqcur\*(rq,
+and (obviously) the single message name \*(lqnew\*(rq.
+All other message designations must refer to at least one existing message.
+.sp
+3) An empty folder is not in itself an error.
+
+Message numbers greater than the highest existing message in a folder as
+part of a range designation are replaced with the next free message number.
+
+Examples: The current folder foo contains messages 3 5 6.
+Cur is 4.
+
+.nf
+.in +.5i
+% mhpath
+/r/phyl/Mail/foo
+
+% mhpath all
+/r/phyl/Mail/foo/3
+/r/phyl/Mail/foo/5
+/r/phyl/Mail/foo/6
+
+% mhpath 2001
+/r/phyl/Mail/foo/7
+
+% mhpath 1\-2001
+/r/phyl/Mail/foo/3
+/r/phyl/Mail/foo/5
+/r/phyl/Mail/foo/6
+
+% mhpath new
+/r/phyl/Mail/foo/7
+
+% mhpath last new
+/r/phyl/Mail/foo/6
+/r/phyl/Mail/foo/7
+
+% mhpath last\-new
+bad message list \*(lqlast\-new\*(rq.
+
+% mhpath cur
+/r/phyl/Mail/foo/4
+
+% mhpath 1\-2
+no messages in range \*(lq1\-2\*(rq.
+
+% mhpath first:2
+/r/phyl/Mail/foo/3
+/r/phyl/Mail/foo/5
+
+% mhpath 1 2
+/r/phyl/Mail/foo/1
+/r/phyl/Mail/foo/2
+.in -.5i
+.fi
+
+\fIMHpath\fR is also useful in back\-quoted operations:
+
+.nf
+.in +.5i
+% cd `mhpath +inbox`
+
+% echo `mhpath +`
+/r/phyl/Mail
+.in -.5i
+.fi
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's MH directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Sa
+folder(1)
+.De
+`+folder' defaults to the current folder
+.Ds
+`msgs' defaults to none
+.Co
+None
+.Bu
+Like all MH commands, \fImhpath\fR expands and sorts \%[msgs].
+So don't expect
+
+.ti +.5i
+mv `mhpath 501 500`
+
+to move 501 to 500.
+Quite the reverse.  But
+
+.ti +.5i
+mv `mhpath 501` `mhpath 500`
+
+will do the trick.
+
+Out of range message 0 is treated far more severely than large out of
+range message numbers.
+.En
+@
+
+
+1.6
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+d22 1
+d31 1
+d38 1
+@
+
+
+1.5
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.4
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH MHPATH 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.3
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH MHPATH 1 [mh.6] MH
+@
+
+
+1.2
+log
+@document 'mhpath +'
+@
+text
+@d2 2
+a3 2
+.SC MHPATH 1
+.NA
+d5 1
+a5 1
+.SY
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d15 2
+@

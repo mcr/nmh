@@ -1,0 +1,209 @@
+head	1.6;
+access;
+symbols;
+locks; strict;
+
+
+1.6
+date	92.12.02.21.38.37;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.11.11.17.33.50;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.02.12.20.06.28;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.02.03.16.43.08;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	91.01.25.15.47.30;	author mh;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	91.01.25.15.41.02;	author mh;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@fixup
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: fmtdump.rf,v 1.5 1992/11/11 17:33:50 jromine Exp jromine $
+.SC FMTDUMP 8
+.NA
+fmtdump \- decode MH format files
+.SY
+@@(MHETCPATH)/fmtdump
+\%[\-form\ formatfile]
+\%[\-format\ string]
+\%[\-help]
+.DE
+\fIFmtdump\fR is a program that parses an \fIMH\fP format file
+and produces a pseudo-language listing of the how \fIMH\fP
+interprets the file.
+
+The `\-format\ string' and `\-form\ formatfile' switches may be used
+to specify a format string or format file to read.
+The string is simply a format string and the file is simply a format file.
+See \fImh-format\fR\|(5) for the details.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+^@@(MHETCPATH)/scan.default~^The default format file
+.Pr
+^Path:~^To determine the user's MH directory
+.Sa
+mh-format(5), mh-sequences(8)
+.Co
+None
+.Bu
+The output may not be useful unless you are familiar
+with the internals of the mh-format subroutines.
+.En
+@
+
+
+1.5
+log
+@add -form/-format switches
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: fmtdump.rf,v 1.4 1992/02/12 20:06:28 jromine Exp jromine $
+d5 1
+a5 1
+fmtdump \- decode \fIMH\fP format files
+@
+
+
+1.4
+log
+@typo
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: fmtdump.rf,v 1.3 1992/02/03 16:43:08 jromine Exp jromine $
+d7 4
+a10 1
+@@(MHETCPATH)/fmtdump formatfile
+d15 5
+d21 4
+a24 1
+none
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: fmtdump.rf,v 1.2 1991/01/25 15:47:30 mh Exp jromine $
+d12 2
+@
+
+
+1.2
+log
+@jlr
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: fmtdump.rf,v 1.6 90/04/05 15:08:58 sources Exp $
+d13 1
+a13 1
+mh-format(8), mh-sequences(8)
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.\" @@(#)$Id: dp.rf,v 1.6 90/04/05 15:08:58 sources Exp $
+.SC DP 8
+d5 1
+a5 1
+dp \- parse dates 822\-style
+d7 1
+a7 6
+@@(MHETCPATH)/dp
+\%[\-form\ formatfile]
+\%[\-format\ string]
+\%[\-width\ columns]
+dates\ ...
+\%[\-help]
+d9 3
+a11 32
+\fIDp\fR is a program that parses dates according to the ARPA Internet
+standard.
+It also understands many non\-standard formats,
+such as those produced by TOPS\-20 sites and some UNIX sites using
+\fIctime\fR\0(3).
+It is useful for seeing how \fIMH\fR will interpret a date.
+
+The \fIdp\fR program treats each argument as a single date,
+and prints the date out in the official 822\-format.
+Hence, it is usually best to enclose each argument in double\-quotes for the
+shell.
+
+To override the output format used by \fIdp\fR,
+the `\-format\ string' or `\-format\ file' switches are used.
+This permits individual fields of the address to be extracted with ease.
+The string is simply a format stringand thefile is simply a format file.
+See \fImh\-format\fR\0(5) for the details.
+
+Here is the default format string used by \fIdp\fR:
+
+.nf
+.ti +.5i
+%<(nodate{text})error: %{text}%|%(putstr(pretty{text}))%>
+.fi
+
+which says that if an error was detected, print the error, a `:',
+and the date in error.
+Otherwise, output the 822\-proper format of the date.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+None
+d13 1
+a13 7
+ap(8)
+.br
+\fIStandard for the Format of ARPA Internet Text Messages\fR (aka RFC\-822)
+.De
+`\-format' default as described above
+.Ds
+`\-width' default to the width of the terminal
+d17 2
+a18 4
+The argument to the `\-format' switch must be interpreted as a single token
+by the shell that invokes \fIdp\fR.
+Therefore,
+one must usually place the argument to this switch inside double\-quotes.
+@

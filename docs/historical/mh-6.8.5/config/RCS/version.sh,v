@@ -1,0 +1,280 @@
+head	1.9;
+access;
+symbols;
+locks
+	jromine:1.9; strict;
+comment	@# @;
+
+
+1.9
+date	92.01.30.22.20.41;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.01.25.01.13.49;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.01.25.01.12.23;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.05.21.25.14;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.05.15.56.13;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.05.15.55.51;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.05.17.07.16;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.26.09.40.57;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.23.17.58.55;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@awk fixes
+@
+text
+@: run this script through /bin/sh
+: '@@(#)$Id: version.sh,v 1.8 1992/01/25 01:13:49 jromine Exp jromine $'
+case $# in
+  0) set "6.6";;
+esac
+
+OFS="$IFS" IFS=:
+
+for A in rprompt hostname uname who
+do
+    for D in $PATH
+    do
+	if [ ! -f $D/$A ]; then
+	    continue
+	fi
+	case $A in
+	    rprompt)    LOCAL=`$A %h`
+			;;
+	    hostname)   LOCAL=`$A`
+			;;
+	    uname)	LOCAL=`$A -n`
+			;;
+	    who)	LOCAL=`$A am i | sed -e 's%^\(.*\)!.*$%\1%'`
+			;;
+	esac
+	break
+    done
+    if [ "x$LOCAL" != x ]; then
+	break
+    fi
+done
+
+IFS=" "
+Patch="../Patchlevel"
+
+if [ ! -r version  ]; then echo "0" > version; fi
+if [ ! -r ${Patch} ]; then Patch="" ; fi
+
+rm -f version.c
+
+cat version ${Patch} |\
+awk -F. '
+BEGIN	{ split ("'"${1}"'", ver, ".");\
+	  major = ver[1]; minor = ver[2]; patch = ver[3]} \
+NR == 1 { local = $(NF) } ;\
+NR == 2 { patch = $(NF) } ;\
+END	{ local++;\
+	  if (patch > 0) {\
+	  printf "char *version = \"@@(#)MH %s.%s.%s #%d[UCI] ", \
+		major, minor, patch, local > "version.c"; \
+	  printf ".ds MH %s.%s.%s #%d[UCI]\n", \
+		major, minor, patch, local > "../doc/version.rf"; \
+	  printf "MH %s.%s.%s #%d[UCI]\n", major, minor, patch, local ;\
+	} else {\
+	  printf "char *version = \"@@(#)MH %s.%s #%d[UCI] ", \
+		major, minor, local > "version.c"; \
+	  printf ".ds MH %s.%s #%d[UCI]\n", \
+		major, minor, local > "../doc/version.rf"; \
+	  printf "MH %s.%s #%d[UCI]\n", major, minor, local ;\
+	}\
+	  printf "%s.%s.%s.%d\n", major, minor, patch, local > "_version";\
+}' && mv _version version
+echo '('$LOCAL') of '`date`'";' >> version.c
+@
+
+
+1.8
+log
+@typo
+@
+text
+@d2 1
+a2 1
+: '@@(#)$Id: version.sh,v 1.7 1992/01/25 01:12:23 jromine Exp jromine $'
+d44 3
+a46 3
+	  major = ver[1]; minor = ver[2]; patch = ver[3]}\
+NR == 1 { local = $(NF) }\
+NR == 2 { patch = $(NF) }\
+@
+
+
+1.7
+log
+@add @@(#) to version string
+@
+text
+@d2 1
+a2 1
+: '@@(#)$Id: version.sh,v 1.6 1990/04/05 21:25:14 sources Exp jromine $'
+d49 1
+a49 1
+	  printf "char *version = \"MH %s.%s.%s #%d[UCI] ", \
+@
+
+
+1.6
+log
+@update to take argument
+@
+text
+@d2 1
+a2 1
+: '@@(#)$Id: version.sh,v 1.5 90/04/05 15:56:13 sources Exp Locker: sources $'
+d55 1
+a55 1
+	  printf "char *version = \"MH %s.%s #%d[UCI] ", \
+@
+
+
+1.5
+log
+@Id
+@
+text
+@d2 4
+a5 1
+: '@@(#)$Id:$'
+d36 1
+a36 1
+if [ ! -r version  ]; then echo "6.6" > version; fi
+d43 3
+a45 1
+NR == 1 { major = $1; minor = $2; patch = $3; local = $4 + 1}\
+d47 2
+a48 1
+END	{ if (patch > 0) {\
+@
+
+
+1.4
+log
+@checkpoint
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@checkpoint
+@
+text
+@d40 1
+a40 1
+NR == 2 { n=split($0,a," "); patch = a[n] }\
+d42 1
+a42 1
+	  printf "char *version = \"MH %d.%d.%d #%d[UCI] ", \
+d44 1
+a44 1
+	  printf ".ds MH %d.%d.%d #%d[UCI]\n", \
+d46 1
+a46 1
+	  printf "MH %d.%d.%d #%d[UCI]\n", major, minor, patch, local ;\
+d48 1
+a48 1
+	  printf "char *version = \"MH %d.%d #%d[UCI] ", \
+d50 1
+a50 1
+	  printf ".ds MH %d.%d #%d[UCI]\n", \
+d52 1
+a52 1
+	  printf "MH %d.%d #%d[UCI]\n", major, minor, local ;\
+d54 1
+a54 1
+	  printf "%d.%d.%d.%d\n", major, minor, patch, local > "_version";\
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d30 1
+a30 1
+VERS="../Version"
+d32 2
+a33 1
+if [ ! -r ${VERS} ]; then echo "6.6" > ${VERS} ; fi
+d37 1
+a37 1
+cat ${VERS} |\
+d40 1
+a40 1
+NR == 2 { patch = $1 }\
+d55 1
+a55 1
+}' && mv _version ${VERS}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d29 2
+a30 1
+IFS=
+d32 2
+a33 4
+if [ ! -r version.major ]; then echo 6 > version.major; fi
+if [ ! -r version.minor ]; then echo 2 > version.minor; fi
+if [ ! -r version.patch ]; then echo 0 > version.patch; fi
+if [ ! -r version.local ]; then echo 0 > version.local; fi
+d36 4
+a39 3
+echo    `cat version.major` `cat version.minor` \
+	`cat version.patch` `cat version.local` | \
+awk '	{ major = $1; minor = $2; patch = $3; local = $4 + 1}\
+d53 2
+a54 1
+	  printf "%d\n", local > "version.local";}'
+@

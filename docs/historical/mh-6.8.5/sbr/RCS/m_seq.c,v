@@ -1,0 +1,250 @@
+head	1.8;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.8
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	91.02.14.14.44.38;	author mh;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.05.15.30.40;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.05.14.44.39;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.02.21.16.36.08;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.21.16.35.38;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.01.14.07.31;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.01.14.04.09;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@endif sugar
+@
+text
+@/* m_seq.c - print out a message sequence */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: m_seq.c,v 1.7 1991/02/14 14:44:38 mh Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include <stdio.h>
+
+/* new version from VJ 2/90 - faster? */
+
+char *
+m_seq(mp, cp)
+	struct msgs *mp;
+	char *cp;
+{
+	int mask;
+	register int i, j;
+	register char *bp;
+	static char buffer[BUFSIZ*2];	/* for big sequences */
+
+	if (strcmp (current, cp) == 0) {
+	    /* assume this is in sync with msgstats["cur"] */
+	    /* see m_seqadd() for details */
+	    if (mp->curmsg) {	
+		(void) sprintf(buffer, "%s", m_name(mp->curmsg));
+		return (buffer);
+	    } else
+		return (NULL);
+	}
+	for (i = 0; mp->msgattrs[i]; i++)
+		if (strcmp(mp->msgattrs[i], cp) == 0)
+			break;
+	
+	if (! mp->msgattrs[i])
+		return (NULL);
+
+	mask = EXISTS | (1 << (FFATTRSLOT + i));
+	bp = buffer;
+	for (i = mp->lowmsg; i <= mp->hghmsg; ++i) {
+		if ((mp->msgstats[i] & mask) != mask)
+			continue;
+
+		if (bp > buffer)
+			*bp++ = ' ';
+
+		(void) sprintf(bp, "%s", m_name(i));
+		bp += strlen(bp);
+		j = i;
+		for (++i; i <= mp->hghmsg && (mp->msgstats[i] & mask) == mask;
+		     ++i)
+			;
+		if (i - j > 1) {
+			(void) sprintf(bp, "-%s", m_name(i - 1));
+			bp += strlen(bp);
+		}
+	}
+	return (bp > buffer? buffer : NULL);
+}
+@
+
+
+1.7
+log
+@comment unclear code
+jlr
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: m_seq.c,v 1.6 90/04/05 15:30:40 sources Exp Locker: mh $";
+#endif	lint
+@
+
+
+1.6
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d21 8
+a28 6
+	if (strcmp(current, cp) == 0) {
+		if (mp->curmsg) {
+			(void) sprintf(buffer, "%s", m_name(mp->curmsg));
+			return (buffer);
+		} else
+			return (NULL);
+@
+
+
+1.5
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "$Id:";
+@
+
+
+1.4
+log
+@make buffer bigger
+@
+text
+@d2 3
+@
+
+
+1.3
+log
+@Fixes from Van Jacobson
+@
+text
+@d16 1
+a16 1
+	static char buffer[BUFSIZ];
+@
+
+
+1.2
+log
+@increase message sequence buffer size by factor of 2.  I hope this
+is worth it, since it'll make things bigger.
+@
+text
+@d6 1
+d8 4
+a11 3
+char   *m_seq (mp, cp)
+struct msgs *mp;
+char   *cp;
+d13 4
+a16 8
+    int     bits,
+            found,
+            hack;
+    register int    i,
+                    j,
+                    k;
+    register char  *bp;
+    static char buffer[BUFSIZ * 2];
+d18 18
+a35 15
+    bits = FFATTRSLOT;
+    hack = strcmp (current, cp) == 0;
+    for (i = 0; mp -> msgattrs[i]; i++)
+	if (strcmp (mp -> msgattrs[i], cp) == 0) {
+	    found = 0;
+	    bp = buffer;
+	    for (j = mp -> lowmsg; j <= mp -> hghmsg; j++)
+		if ((mp -> msgstats[j] & EXISTS)
+			&& (mp -> msgstats[j] & (1 << (bits + i)))) {
+		    (void) sprintf (bp, "%s%s", found ? " " : "", m_name (j));
+		    bp += strlen (bp);
+		    for (k = j + 1; k <= mp -> hghmsg
+			    && (mp -> msgstats[k] & EXISTS)
+			    && (mp -> msgstats[k] & (1 << (bits + i)));
+			    k++)
+d37 13
+a49 6
+		    if (--k > j) {
+			(void) sprintf (bp, "-%s", m_name (k));
+			bp += strlen (bp);
+		    }
+		    j = k + 1;
+		    found++;
+a50 5
+	    if (found == 0 && hack && mp -> curmsg) {
+		found++;
+		(void) sprintf (buffer, "%s", m_name (mp -> curmsg));
+	    }
+	    return (found > 0 ? buffer : NULL);
+d52 1
+a52 2
+
+    return NULL;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d18 1
+a18 1
+    static char buffer[BUFSIZ];
+@

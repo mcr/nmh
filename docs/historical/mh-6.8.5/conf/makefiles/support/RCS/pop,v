@@ -1,0 +1,1003 @@
+head	2.26;
+access;
+symbols;
+locks; strict;
+
+
+2.26
+date	92.11.25.04.18.59;	author jromine;	state Exp;
+branches;
+next	2.25;
+
+2.25
+date	92.11.05.00.00.18;	author jromine;	state Exp;
+branches;
+next	2.24;
+
+2.24
+date	92.11.04.21.17.44;	author jromine;	state Exp;
+branches;
+next	2.23;
+
+2.23
+date	92.11.04.03.30.31;	author jromine;	state Exp;
+branches;
+next	2.22;
+
+2.22
+date	92.10.31.05.25.36;	author jromine;	state Exp;
+branches;
+next	2.21;
+
+2.21
+date	92.10.28.18.51.37;	author jromine;	state Exp;
+branches;
+next	2.20;
+
+2.20
+date	92.10.20.23.48.34;	author jromine;	state Exp;
+branches;
+next	2.19;
+
+2.19
+date	92.10.20.22.52.03;	author jromine;	state Exp;
+branches;
+next	2.18;
+
+2.18
+date	92.10.20.17.12.49;	author jromine;	state Exp;
+branches;
+next	2.17;
+
+2.17
+date	92.05.20.22.36.18;	author jromine;	state Exp;
+branches;
+next	2.16;
+
+2.16
+date	92.05.20.22.35.04;	author jromine;	state Exp;
+branches;
+next	2.15;
+
+2.15
+date	92.05.20.22.15.43;	author jromine;	state Exp;
+branches;
+next	2.14;
+
+2.14
+date	92.02.11.05.14.33;	author jromine;	state Exp;
+branches;
+next	2.13;
+
+2.13
+date	92.02.05.17.37.55;	author jromine;	state Exp;
+branches;
+next	2.12;
+
+2.12
+date	92.02.04.21.42.12;	author jromine;	state Exp;
+branches;
+next	2.11;
+
+2.11
+date	92.01.31.22.48.43;	author jromine;	state Exp;
+branches;
+next	2.10;
+
+2.10
+date	92.01.31.21.24.25;	author jromine;	state Exp;
+branches;
+next	2.9;
+
+2.9
+date	90.12.18.13.34.33;	author mh;	state Exp;
+branches;
+next	2.8;
+
+2.8
+date	90.12.18.13.26.13;	author mh;	state Exp;
+branches;
+next	2.7;
+
+2.7
+date	90.11.05.16.06.03;	author mh;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	90.11.05.15.56.12;	author mh;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	90.04.05.15.16.16;	author sources;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	90.03.12.11.27.16;	author sources;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.02.23.17.37.13;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.21.16.56.16;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.06.12.54.44;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.56.44;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.44.22;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.26
+log
+@add default rule
+@
+text
+@##############################################################################
+#	Instructions to Make, for POP support processes
+#
+#	@@(MHWARNING)
+# @@(#)$Id: pop,v 2.25 1992/11/05 00:00:18 jromine Exp jromine $
+##############################################################################
+
+# The following entries were inserted during MH configuration
+BINDIR	=	$(DESTDIR)@@(MHBINPATH)
+ETCDIR	=	$(DESTDIR)@@(MHPOPDPATH)
+LIBDIR	=	$(DESTDIR)@@(MHETCPATH)
+OPTIONS	=	@@(MHOPTIONS) @@(POPUUMBOX) -I..
+LDOPTIONS=	@@(LDOPTIONS)
+LDOPTLIB=	@@(LDOPTLIB)
+@@BEGIN: MPOP
+LDCURSES=	@@(LDCURSES)
+@@END: MPOP
+PGMPROT	=	0711
+REMOVE	=	@@(MHREMOVE)
+CHOWN	=	@@(MHCHOWNPATH)
+POPUID	=	pop
+@@BEGIN: APOP
+Apop	=	popauth
+IApop	=	inst-popauth
+Lpop	=	l-popauth
+Tpop	=	xpopauth
+@@END: APOP
+@@BEGIN: POP
+ALL	=	popd popaka $(Apop) popwrd
+INST-ALL=	inst-popd inst-popaka $(IApop) inst-popwrd
+LALL	=	l-popd l-popaka $(Lpop) l-popwrd
+TALL	=	xpopd xpopaka $(Tpop) xpopwrd
+@@END: POP
+
+CP      =       @@(CP)
+CC      =	@@(MHCOMPILER)
+@@BEGIN: STDLIB
+LD	=	@@(MHCOMPILER)
+@@END: STDLIB
+@@BEGIN: SHAREDLIB
+LD	=	LD_LIBRARY_PATH=../../sbr @@(MHCOMPILER)
+@@END: SHAREDLIB
+@@BEGIN: OPTIM
+CFLAGS  =	$(OPTIONS)
+@@END: OPTIM
+@@BEGIN: DEBUG
+CFLAGS  =	      $(OPTIONS)
+@@END: DEBUG
+LDFLAGS	=	$(LDOPTIONS)
+LIBES1	=	../../zotnet/libzot.a ../../mts/libmts.a
+@@BEGIN: STDLIB
+LIBES2	=	../../config/config.o ../../sbr/libmh.a $(LIBES1)
+LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+LDLIBS2	=	$(LIBES2) ../../config/version.o $(LDOPTLIB)
+@@END: STDLIB
+@@BEGIN: SUN4SHLIB
+SLIBVER	=	.@@(SLIBVER)
+@@END: SUN4SHLIB
+@@BEGIN: SHAREDLIB
+LIBES2	=	../../config/config.o ../../sbr/libmh.so $(LIBES1)
+LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+LDLIBS2	=	../../config/config.o ../../config/version.o \
+		-Bdynamic @@(SLDFLAG) -lmh$(SLIBVER) $(LIBES1) $(LDOPTLIB)
+@@END: SHAREDLIB
+
+LINT	=	lint
+LFLAGS	=	-bhu $(OPTIONS)
+LLIBS1	=	../../zotnet/llib-lzotnet
+LLIBS2	=	../../sbr/llib-lmh $(LLIBS1)
+
+.c:;		echo $@@
+
+################################################################
+# Here it is...
+################################################################
+
+all:		$(ALL)
+
+lint:		$(LALL)
+
+install:	inst-all clean
+
+inst-all:	$(INST-ALL)
+
+tar:		$(ALL)
+@@BEGIN: POP
+		@@touch $(TALL)
+		@@make -n inst-all > MAKEPOP
+		@@chmod +x MAKEPOP
+		tar $(TFLAGS) MAKEPOP $(TALL)
+		@@rm -f MAKEPOP
+@@END: POP
+
+uninstall:;	-cd $(ETCDIR); rm -f popd
+		-cd $(LIBDIR); rm -f popaka popwrd
+		-cd $(BINDIR); rm -f popauth
+
+
+################################################################
+# popd
+################################################################
+
+inst-popd:	$(ETCDIR)/popd
+
+$(ETCDIR)/popd:	xpopd
+		-$(REMOVE) $@@ zpopd
+		-rm -f $@@
+		$(CP) xpopd $@@
+		-chmod 700 $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+popd:		xpopd
+
+xpopd:		popd.o popser.o syslog.o \
+			../../uip/dropsbr.o \
+@@BEGIN: MPOP
+			../../uip/scansbr.o \
+@@END: MPOP
+			$(LIBES2)
+		$(LD) $(LDFLAGS) -o $@@ popd.o popser.o syslog.o \
+			../../uip/dropsbr.o \
+@@BEGIN: MPOP
+			../../uip/scansbr.o \
+@@END: MPOP
+			$(LDLIBS2) $(LDCURSES)
+
+l-popd:;	$(LINT) $(LFLAGS) popd.c popser.c \
+			../../uip/dropsbr.c \
+@@BEGIN: MPOP
+			../../uip/scansbr.c \
+@@END: MPOP
+			$(LLIBS2)
+
+
+################################################################
+# popaka
+################################################################
+
+inst-popaka:	$(LIBDIR)/popaka
+
+$(LIBDIR)/popaka:	xpopaka
+		-$(REMOVE) $@@ zpopaka
+		$(CP) xpopaka $@@
+		-@@chmod $(PGMPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+popaka:		xpopaka
+
+xpopaka:	popaka.o $(LIBES1)
+		$(LD) $(LDFLAGS) -o $@@ popaka.o $(LDLIBS1)
+
+l-popaka:;	$(LINT) $(LFLAGS) popaka.c $(LLIBS1)
+
+
+################################################################
+# popauth
+################################################################
+
+inst-popauth:	$(BINDIR)/popauth
+
+$(BINDIR)/popauth:	xpopauth
+		-$(REMOVE) $@@ zpopauth
+		cp xpopauth $@@
+		-@@chmod $(PGMPROT) $@@
+		-$(CHOWN) $(POPUID) $@@
+		chmod u+s $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+popauth:	xpopauth
+
+xpopauth:	popauth.o $(LIBES1)
+		$(LD) $(LDFLAGS) -o $@@ popauth.o $(LDLIBS2)
+
+l-popauth:;	$(LINT) $(LFLAGS) popauth.c $(LLIBS2)
+
+
+################################################################
+# popwrd
+################################################################
+
+inst-popwrd:	$(LIBDIR)/popwrd
+
+$(LIBDIR)/popwrd:	xpopwrd
+		-$(REMOVE) $@@ zpopwrd
+		-chmod u-s zpopwrd
+		$(CP) xpopwrd $@@
+		-chmod $(PGMPROT) $@@
+		-$(CHOWN) $(POPUID) $@@
+		chmod u+s $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+popwrd:		xpopwrd
+
+xpopwrd:	popwrd.o $(LIBES1)
+		$(LD) $(LDFLAGS) -o $@@ popwrd.o $(LDLIBS1)
+
+l-popwrd:;	$(LINT) $(LFLAGS) popwrd.c $(LLIBS1)
+
+
+################################################################
+# smtpd
+################################################################
+
+inst-smtpd:	$(ETCDIR)/smtpd
+
+$(ETCDIR)/smtpd:	xsmtpd
+		-$(REMOVE) $@@ zsmtpd
+		$(CP) xsmtpd $@@
+		-chmod 700 $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+smtpd:		xsmtpd
+
+xsmtpd:		smtpd.o syslog.o
+		$(LD) $(LDFLAGS) -o $@@ smtpd.o syslog.o
+
+l-smtpd:;	$(LINT) $(LFLAGS) smtpd.c
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+unconfig:	distribution
+		-rm -f mmdfII/pop/lock.c
+		-rm -f Makefile
+
+distribution:   clean
+
+clean:		unclean
+		-rm -f x* *.o
+
+unclean:;	-rm -f z* _* :* core eddep makedep MAKEPOP
+
+
+##############################################################################
+#	Dependencies
+##############################################################################
+
+MODULES	=	popd popser popaka popauth popwrd
+
+depend:;	for m in $(MODULES); do ( \
+		    i=`basename $$m .c`; \
+		    echo $$i.o: $$i.c >> makedep; \
+		    grep '^#[ 	]*include' $$i.c | \
+			sed -e 's,[^"]*"/\([^"]*\)".*,'$$i'.o: /\1,' \
+			    -e 's,[^"]*"\([^"]*\)".*,'$$i'.o: \1,' \
+			    -e 's,[^<]*<\(.*\)>.*,#'$$i'.o: /usr/include/\1,' \
+			>> makedep \
+		); done
+		echo '/^# DO NOT DELETE THIS LINE/+2,$$d' > eddep
+		echo '$$r makedep' >> eddep
+		echo 'w' >> eddep
+		$(CP) Makefile _Makefile
+		ed - Makefile < eddep
+		rm eddep makedep
+		echo '# DEPENDENCIES MUST END AT END OF FILE' >> Makefile
+		echo '# IF YOU PUT STUFF HERE IT WILL GO AWAY' >> Makefile
+
+# DO NOT DELETE THIS LINE
+# DEPENDENCIES START HERE
+popd.o: popd.c
+#popd.o: /usr/include/errno.h
+#popd.o: /usr/include/signal.h
+#popd.o: /usr/include/stdio.h
+#popd.o: /usr/include/strings.h
+#popd.o: /usr/include/syslog.h
+#popd.o: /usr/include/sys/types.h
+#popd.o: /usr/include/sys/file.h
+#popd.o: /usr/include/sys/ioctl.h
+#popd.o: /usr/include/sys/socket.h
+#popd.o: /usr/include/sys/time.h
+#popd.o: /usr/include/sys/resource.h
+#popd.o: /usr/include/sys/wait.h
+#popd.o: /usr/include/netinet/in.h
+#popd.o: /usr/include/netdb.h
+#popd.o: /usr/include/arpa/inet.h
+popser.o: popser.c
+popser.o: ../../h/mh.h
+popser.o: ../../h/dropsbr.h
+popser.o: ../../zotnet/bboards.h
+#popser.o: /usr/include/stdio.h
+popser.o: ../../zotnet/mts.h
+#popser.o: /usr/include/ctype.h
+#popser.o: /usr/include/errno.h
+#popser.o: /usr/include/pwd.h
+#popser.o: /usr/include/signal.h
+#popser.o: /usr/include/syslog.h
+#popser.o: /usr/include/sys/types.h
+#popser.o: /usr/include/sys/stat.h
+popser.o: popauth.h
+popaka.o: popaka.c
+#popaka.o: /usr/include/stdio.h
+popaka.o: ../../zotnet/bboards.h
+popauth.o: popauth.c
+popauth.o: ../../h/mh.h
+popauth.o: popauth.h
+popauth.o: ../../zotnet/bboards.h
+popauth.o: ../../zotnet/mts.h
+popwrd.o: popwrd.c
+popwrd.o: ../../h/strings.h
+popwrd.o: ../../zotnet/bboards.h
+#popwrd.o: /usr/include/errno.h
+#popwrd.o: /usr/include/pwd.h
+#popwrd.o: /usr/include/signal.h
+#popwrd.o: /usr/include/stdio.h
+#popwrd.o: /usr/include/sys/types.h
+#popwrd.o: /usr/include/sys/file.h
+# DEPENDENCIES MUST END AT END OF FILE
+# IF YOU PUT STUFF HERE IT WILL GO AWAY
+@
+
+
+2.25
+log
+@add DESTDIR on MHPOPDPATH
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.24 1992/11/04 21:17:44 jromine Exp jromine $
+d71 1
+@
+
+
+2.24
+log
+@MPOP fixes from mtr - exclude trmsbr
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.23 1992/11/04 03:30:31 jromine Exp jromine $
+d10 1
+a10 1
+ETCDIR	=	@@(MHPOPDPATH)
+@
+
+
+2.23
+log
+@make sure sun4 shared libs load correct version of library.
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.22 1992/10/31 05:25:36 jromine Exp jromine $
+d117 1
+a117 1
+			../../uip/scansbr.o ../../uip/trmsbr.o \
+d123 1
+a123 1
+			../../uip/scansbr.o ../../uip/trmsbr.o \
+d128 1
+d130 1
+a130 1
+			../../uip/trmsbr.c ../../uip/scansbr.c \
+d132 1
+a132 1
+			../../uip/dropsbr.c $(LLIBS2)
+@
+
+
+2.22
+log
+@don't load popd with scansbr unless MPOP
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.21 1992/10/28 18:51:37 jromine Exp jromine $
+d56 3
+d63 1
+a63 1
+		-Bdynamic @@(SLDFLAG) -lmh $(LIBES1) $(LDOPTLIB)
+@
+
+
+2.21
+log
+@add trmsbr/curses if MPOP
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.20 1992/10/20 23:48:34 jromine Exp jromine $
+d112 1
+a112 1
+			../../uip/dropsbr.o ../../uip/scansbr.o \
+d114 1
+a114 1
+			../../uip/trmsbr.o \
+d118 1
+a118 1
+			../../uip/dropsbr.o ../../uip/scansbr.o \
+d120 1
+a120 1
+			../../uip/trmsbr.o \
+d126 1
+a126 1
+			../../uip/trmsbr.c \
+d128 1
+a128 1
+			../../uip/dropsbr.c ../../uip/scansbr.c $(LLIBS2)
+@
+
+
+2.20
+log
+@put popd in MHPOPDPATH
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.19 1992/10/20 22:52:03 jromine Exp jromine $
+d15 3
+d113 3
+d119 4
+a122 1
+			$(LDLIBS2)
+d125 3
+@
+
+
+2.19
+log
+@add libmts.a on LIBES1.  This seems to be needed to satisfy
+an unresolved "OfficialName" symbol when using shared libraries.
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.18 1992/10/20 17:12:49 jromine Exp jromine $
+d10 1
+a10 1
+ETCDIR	=	/usr/etc
+@
+
+
+2.18
+log
+@cleanup APOP
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.17 1992/05/20 22:36:18 jromine Exp jromine $
+d47 1
+a47 1
+LIBES1	=	../../zotnet/libzot.a
+@
+
+
+2.17
+log
+@move popsbr.c back into uip
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.16 1992/05/20 22:35:04 jromine Exp $
+d19 6
+d26 4
+a29 4
+ALL	=	popd popaka popauth popwrd
+INST-ALL=	inst-popd inst-popaka inst-popauth inst-popwrd
+LALL	=	l-popd l-popaka l-popauth l-popwrd
+TALL	=	xpopd xpopaka xpopauth xpopwrd
+d228 1
+a228 1
+MODULES	=	popd popser popaka popwrd
+@
+
+
+2.16
+log
+@move popi back into uip/
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.15 1992/05/20 22:15:43 jromine Exp jromine $
+d20 1
+a20 1
+ALL	=	popd popaka popauth popwrd popsbr
+d22 1
+a22 1
+LALL	=	l-popd l-popaka l-popauth l-popwrd l-popsbr
+d66 1
+a66 1
+lint:		$(LALL) $(KLINT)
+a181 9
+# popsbr
+################################################################
+
+popsbr:		popsbr.o
+
+l-popsbr:;	$(LINT) $(LFLAGS) popsbr.c $(LLIBS)
+
+
+################################################################
+d222 1
+a222 1
+MODULES	=	popd popser popaka popwrd popsbr $(KALL)
+a290 4
+popsbr.o: popsbr.c
+popsbr.o: ../../h/strings.h
+#popsbr.o: /usr/include/stdio.h
+#popsbr.o: /usr/include/signal.h
+@
+
+
+2.15
+log
+@move popi from uip/
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.14 1992/02/11 05:14:33 jromine Exp jromine $
+a18 6
+@@BEGIN: MPOP
+CMPOP	=	popi
+IMPOP	=	inst-popi
+LMPOP	=	l-popi
+TMPOP	=	xpopi
+@@END: MPOP
+d20 4
+a23 4
+ALL	=	popd popaka popauth popwrd popsbr $(CMPOP)
+INST-ALL=	inst-popd inst-popaka inst-popauth inst-popwrd $(IMPOP)
+LALL	=	l-popd l-popaka l-popauth l-popwrd l-popsbr $(LMPOP)
+TALL	=	xpopd xpopaka xpopauth xpopwrd $(TMPOP)
+d83 1
+a83 1
+		-cd $(BINDIR); rm -f popauth popi
+a178 24
+
+
+################################################################
+# popi
+################################################################
+
+inst-popi:	$(BINDIR)/popi
+
+$(BINDIR)/popi:	xpopi
+		-$(REMOVE) $@@ zpopi
+		cp xpopi $@@
+		-@@chmod $(PGMPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+popi:		xpopi
+
+xpopi:		popi.o ../../uip/trmsbr.o $(LIBES2)
+		$(CC) $(LDFLAGS) -o $@@ popi.o \
+			../../uip/trmsbr.o $(LDLIBS2) $(LDCURSES)
+
+l-popi:;	$(LINT) $(LFLAGS) popi.c 
+			../../uip/trmsbr.c $(LLIBS2)
+
+@
+
+
+2.14
+log
+@unconfig - remove lock.c
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.13 1992/02/05 17:37:55 jromine Exp jromine $
+d19 6
+d26 4
+a29 9
+@@BEGIN: KPOP
+KSBR    =       ../../uip/kclient.o
+KLINT   =       l-kclient
+KPOPLIBS=       -lkrb -ldes
+@@END: KPOP
+ALL	=	popd popaka popauth popwrd popsbr
+INST-ALL=	inst-popd inst-popaka inst-popauth inst-popwrd
+LALL	=	l-popd l-popaka l-popauth l-popwrd l-popsbr
+TALL	=	xpopd xpopaka xpopauth xpopwrd
+d89 1
+a89 1
+		-cd $(BINDIR); rm -f popauth
+d110 1
+a110 1
+			$(KSBR) $(LIBES2)
+d113 1
+a113 1
+			$(KSBR) $(LDLIBS2)
+d185 24
+@
+
+
+2.13
+log
+@MIME changes
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.12 1992/02/04 21:42:12 jromine Exp jromine $
+d25 4
+a28 4
+ALL	=	popd popaka popwrd popsbr
+INST-ALL=	inst-popd inst-popaka inst-popwrd
+LALL	=	l-popd l-popaka l-popwrd l-popsbr
+TALL	=	xpopd xpopaka xpopwrd
+d107 1
+a107 1
+xpopd:		popd.o popser.o syslog.o 
+d221 1
+@
+
+
+2.12
+log
+@contributed patch
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.11 1992/01/31 22:48:43 jromine Exp jromine $
+d88 1
+d107 3
+a109 2
+xpopd:		popd.o popser.o syslog.o \
+			../../uip/dropsbr.o $(KSBR) $(LIBES2)
+d111 2
+a112 1
+			../../uip/dropsbr.o $(KSBR) $(LDLIBS2)
+d115 1
+a115 1
+			../../uip/dropsbr.c $(LLIBS2)
+d137 23
+@
+
+
+2.11
+log
+@add CP
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.10 1992/01/31 21:24:25 jromine Exp jromine $
+d260 1
+d264 5
+@
+
+
+2.10
+log
+@kerberos
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.9 1990/12/18 13:34:33 mh Exp jromine $
+d31 1
+a31 1
+CP      =       cp -p
+@
+
+
+2.9
+log
+@SLDFLAG
+jlr
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.8 90/12/18 13:26:13 mh Exp Locker: mh $
+d20 5
+d31 1
+d71 1
+a71 1
+lint:		$(LALL)
+d99 1
+a99 1
+		cp xpopd $@@
+d107 1
+a107 1
+			../../uip/dropsbr.o $(LIBES2)
+d109 1
+a109 1
+			../../uip/dropsbr.o $(LDLIBS2)
+d123 1
+a123 1
+		cp xpopaka $@@
+d145 1
+a145 1
+		cp xpopwrd $@@
+d177 1
+a177 1
+		cp xsmtpd $@@
+d209 1
+a209 1
+MODULES	=	popd popser popaka popwrd popsbr
+d223 1
+a223 1
+		cp Makefile _Makefile
+@
+
+
+2.8
+log
+@fix LD_LIBRARY_PATH
+jlr
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.7 90/11/05 16:06:03 mh Exp Locker: mh $
+d50 1
+a50 1
+		-Bdynamic -lmh $(LIBES1) $(LDOPTLIB)
+@
+
+
+2.7
+log
+@typo
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.6 90/11/05 15:56:12 mh Exp Locker: mh $
+d27 6
+d50 1
+a50 1
+		-Bdynamic -L../../sbr -lmh $(LIBES1) $(LDOPTLIB)
+d102 1
+a102 1
+		$(CC) $(LDFLAGS) -o $@@ popd.o popser.o syslog.o \
+d125 1
+a125 1
+		$(CC) $(LDFLAGS) -o $@@ popaka.o $(LDLIBS1)
+d149 1
+a149 1
+		$(CC) $(LDFLAGS) -o $@@ popwrd.o $(LDLIBS1)
+d179 1
+a179 1
+		$(CC) $(LDFLAGS) -o $@@ smtpd.o syslog.o
+@
+
+
+2.6
+log
+@special hack to fix popser.c
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: pop,v 2.5 90/04/05 15:16:16 sources Exp Locker: mh $
+d12 1
+a12 1
+OPTIONS	=	@@(MHOPTIONS) @@(UUCPMBOX) -I..
+@
+
+
+2.5
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d12 1
+a12 1
+OPTIONS	=	@@(MHOPTIONS) -I..
+@
+
+
+2.4
+log
+@remove -O (put in mhconfig)
+@
+text
+@d5 1
+@
+
+
+2.3
+log
+@version.sh changes
+@
+text
+@d27 1
+a27 1
+CFLAGS  =	-O    $(OPTIONS)
+@
+
+
+2.2
+log
+@make unconfig changes
+@
+text
+@d37 1
+a37 1
+LDLIBS2	=	$(LIBES2) $(LDOPTLIB)
+d42 2
+a43 2
+LDLIBS2	=	../../config/config.o -Bdynamic -L../../sbr -lmh \
+		$(LIBES1) $(LDOPTLIB)
+@
+
+
+2.1
+log
+@ANSI Compilance
+@
+text
+@d181 3
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d25 1
+a25 1
+CC      =	cc
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d34 1
+d38 7
+@

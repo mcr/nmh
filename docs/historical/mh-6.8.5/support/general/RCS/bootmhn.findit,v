@@ -1,0 +1,68 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	92.11.02.21.58.59;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.10.26.16.40.51;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@use [ -f ...] instead of -x/-c since those options aren't present everywhere
+@
+text
+@: run this script through /bin/sh
+: '$Id: bootmhn.findit,v 1.1 1992/10/26 16:40:51 jromine Exp jromine $'
+
+if [ -z "$1" -o -z "$2" ]; then
+    echo "usage: bootmhn.findit program library" 1>&2
+    exit 1
+fi
+
+PGM= DIR= oIFS="$IFS" IFS=":"
+for A in $PATH $2 /usr/demo/SOUND; do
+    if [ "$A" = "." ]; then
+	continue
+    fi
+    if [ -f "$A/$1" ]; then
+	if [ "$A" = "/usr/local/bin" ]; then
+	    PGM="$1" DIR=""
+	else
+	    PGM="$A/$1" DIR="$A/"
+	fi
+
+	echo "$PGM"
+	exit 0
+    fi
+done
+IFS="$oIFS"
+
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+a2 1
+: '$Id$'
+d14 1
+a14 1
+    if [ -x "$A/$1" ]; then
+@

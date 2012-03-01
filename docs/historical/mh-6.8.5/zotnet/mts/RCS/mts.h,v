@@ -1,0 +1,176 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	93.09.01.20.55.05;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.05.12.21.47.34;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.02.10.17.57.36;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@add clientname tailor option
+@
+text
+@/* mts.h - definitions for the mail system */
+
+
+/* Local and UUCP Host Name */
+
+char   *LocalName (), *SystemName (), *UucpChan ();
+
+
+/* Mailboxes */
+
+extern char *mmdfldir,
+            *mmdflfil,
+            *uucpldir,
+            *uucplfil;
+
+#define	MAILDIR	(mmdfldir && *mmdfldir ? mmdfldir : getenv ("HOME"))
+#define	MAILFIL	(mmdflfil && *mmdflfil ? mmdflfil : getusr ())
+#define	UUCPDIR	(uucpldir && *uucpldir ? uucpldir : getenv ("HOME"))
+#define	UUCPFIL	(uucplfil && *uucplfil ? uucplfil : getusr ())
+
+char   *getusr (), *getfullname ();
+
+char   *getenv ();
+
+
+/* Separators */
+
+extern char *mmdlm1,
+            *mmdlm2;
+
+#define	isdlm1(s)	(strcmp (s, mmdlm1) == 0)
+#define	isdlm2(s)	(strcmp (s, mmdlm2) == 0)
+
+
+/* Filters */
+
+extern char *umincproc;
+
+
+/* Locking Directory */
+
+#define	LOK_UNIX	0
+#define	LOK_BELL	1
+#define	LOK_MMDF	2
+
+#ifndef	MMDFONLY
+extern int   lockstyle;
+#endif /* MMDFONLY */
+extern char *lockldir;
+
+int	lkopen (), lkclose ();
+FILE   *lkfopen ();
+int	lkfclose ();
+
+/*  */
+
+/* MTS specific variables */
+
+#ifdef	MHMTS
+extern char *Mailqdir;
+extern char *TMailqdir;
+extern int Syscpy;
+extern char *Overseer;
+extern char *Mailer;
+extern char *Fromtmp;
+extern char *Msgtmp;
+extern char *Errtmp;
+extern int Tmpmode;
+extern char *Okhosts;
+extern char *Okdests;
+#endif /* MHMTS */
+
+#ifdef	MMDFMTS
+#endif /* MMDFMTS */
+
+#ifdef	SENDMTS
+extern char *hostable;
+extern char *sendmail;
+#endif /* SENDMTS */
+
+
+/* SMTP/POP stuff */
+
+extern char *clientname;
+extern char *servers;
+extern char *pophost;
+
+
+/* BBoards-specific variables */
+
+extern char *bb_domain;
+
+
+/* POP BBoards-specific variables */
+
+#ifdef	BPOP
+extern char *popbbhost;
+extern char *popbbuser;
+extern char *popbblist;
+#endif /* BPOP */
+
+
+/* MailDelivery */
+
+extern char *maildelivery;
+
+
+/* Aliasing Facility (doesn't belong here) */
+
+extern int Everyone;
+extern char *NoShell;
+@
+
+
+1.2
+log
+@fix ifdefs
+@
+text
+@d84 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d48 1
+a48 1
+#endif	MMDFONLY
+d71 1
+a71 1
+#endif	MHMTS
+d74 1
+a74 1
+#endif	MMDFMTS
+d79 1
+a79 1
+#endif SENDMTS
+d99 1
+a99 1
+#endif	BPOP
+@

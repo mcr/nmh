@@ -1,0 +1,273 @@
+head	1.10;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.10
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.12.14.17.10.58;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.11.23.22.56.09;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.11.11.22.04.30;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.05.19.20.57.43;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.01.29.23.57.28;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.05.15.31.19;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.04.05.14.45.34;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.05.14.23.23;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.05.14.23.17;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@endif sugar
+@
+text
+@/* pidwait.c - wait for child to exit */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: pidwait.c,v 1.9 1992/12/14 17:10:58 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include <signal.h>
+#include <stdio.h>
+#if defined (BSD42) || defined (SVR4)
+#include <sys/wait.h>
+#endif
+
+
+int     pidwait (id, sigsok)
+register int     id,
+		 sigsok;
+{
+    register int    pid;
+    TYPESIG (*hstat) (), (*istat) (), (*qstat) (), (*tstat) ();
+#if	defined(BSD42) && !defined(WAITINT)
+    union wait status;
+#else
+    int     status;
+#endif
+
+    if (sigsok == NOTOK) {
+#ifdef	notdef		/* I don't see why to trap these... */
+	hstat = signal (SIGHUP, SIG_IGN);
+	tstat = signal (SIGTERM, SIG_IGN);
+#endif
+	istat = signal (SIGINT, SIG_IGN);
+	qstat = signal (SIGQUIT, SIG_IGN);
+    }
+
+#ifdef	SVR4
+    pid = waitpid (id, &status, WUNTRACED);
+#else
+    while ((pid = wait (&status)) != NOTOK && pid != id)
+	continue;
+#endif
+
+    if (sigsok == NOTOK) {
+#ifdef	notdef
+	(void) signal (SIGHUP, hstat);
+	(void) signal (SIGTERM, tstat);
+#endif
+	(void) signal (SIGINT, istat);
+	(void) signal (SIGQUIT, qstat);
+    }
+
+#if defined(BSD42) && !defined(WAITINT)
+    return (pid == NOTOK ? NOTOK : status.w_status);
+#else
+    return (pid == NOTOK ? NOTOK : status);
+#endif
+}
+@
+
+
+1.9
+log
+@WAITINT ifdef
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: pidwait.c,v 1.8 1992/11/23 22:56:09 jromine Exp jromine $";
+#endif	lint
+@
+
+
+1.8
+log
+@fix arg order in waitpid()
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: pidwait.c,v 1.7 1992/11/11 22:04:30 jromine Exp jromine $";
+d20 3
+a22 1
+#ifndef	BSD42
+a23 2
+#else
+    union wait status;
+d51 3
+a53 1
+#ifndef	BSD42
+a54 2
+#else
+    return (pid == NOTOK ? NOTOK : status.w_status);
+@
+
+
+1.7
+log
+@use union wait under BSD42 only
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: pidwait.c,v 1.6 1992/05/19 20:57:43 jromine Exp jromine $";
+d9 1
+a9 1
+#ifdef	BSD42
+d36 1
+a36 1
+    pid = waitpid (&status, id, 0);
+@
+
+
+1.6
+log
+@AIX
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: pidwait.c,v 1.5 1992/01/29 23:57:28 jromine Exp jromine $";
+d11 1
+a11 1
+#endif	BSD42
+a19 3
+#ifdef _AIX
+#undef BSD42
+#endif
+d35 1
+a35 1
+#ifdef _AIX
+@
+
+
+1.5
+log
+@don't ignore HUP or TERM
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: pidwait.c,v 1.4 1990/04/05 15:31:19 sources Exp jromine $";
+d20 3
+d25 1
+a25 1
+#else	BSD42
+d27 1
+a27 1
+#endif	BSD42
+d38 3
+d43 1
+d56 1
+a56 1
+#else	BSD42
+d58 1
+a58 1
+#endif	BSD42
+@
+
+
+1.4
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d27 1
+d29 2
+a32 1
+	tstat = signal (SIGTERM, SIG_IGN);
+d39 1
+d41 2
+a44 1
+	(void) signal (SIGTERM, tstat);
+@
+
+
+1.3
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "$Id:";
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d2 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d16 1
+a16 1
+    int     (*hstat) (), (*istat) (), (*qstat) (), (*tstat) ();
+@

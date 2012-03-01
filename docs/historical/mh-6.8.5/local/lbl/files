@@ -1,0 +1,13 @@
+./sbr/formatsbr.c
+./sbr/trmsbr.c
+./sbr/tags
+./sbr/t.c
+./sbr/m_gmsg.c
+./sbr/m_seq.c
+./uip/version.c
+./uip/m_getfld.c
+./zotnet/tws/dtimep.c
+./zotnet/tws/test.input
+./zotnet/tws/dtest
+./zotnet/tws/dtimep.lex
+./zotnet/tws.h

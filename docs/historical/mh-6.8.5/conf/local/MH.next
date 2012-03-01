@@ -1,0 +1,23 @@
+bin	/usr/local
+bboards	on
+bbhome	/usr/bboards
+etc	/usr/local/lib/mh
+mail	/usr/spool/mail
+mandir	/usr/man
+manuals	local
+chown	/etc/chown
+editor	prompter
+remove	mv -f
+mf	off
+mts	mmdf2/smtp
+options	BSD42 BSD43 MHRC
+options	MHE WHATNOW NFS
+options UCI RPOP POP BIND
+pop	on
+popbboards on
+ldoptions -s
+ldoptlibs -ldbm
+curses -lcurses -ltermcap
+ranlib  on
+sharedlib off
+ccoptions -I/usr/src/bs/mh-6.6.next/h

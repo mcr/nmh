@@ -1,0 +1,51 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	92.01.23.23.11.24;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	91.08.06.17.22.10;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@typo
+@
+text
+@/* copy.c - copy a string and return pointer to NULL terminator */
+
+
+char   *copy (from, to)
+register char  *from,
+               *to;
+{
+    while (*to++ = *from++)
+	continue;
+
+    return (to - 1);
+}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d12 1
+a12 1
+};
+@

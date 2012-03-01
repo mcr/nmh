@@ -1,0 +1,188 @@
+head	1.4;
+access;
+symbols;
+locks
+	shettich:1.4; strict;
+comment	@ * @;
+
+
+1.4
+date	93.08.25.17.18.31;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.12.14.17.47.34;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.12.14.17.44.38;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@off_t fixes for BSD44
+@
+text
+@/* advertise.c - the heart of adios */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: advertise.c,v 1.3 1992/12/15 00:20:22 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include <stdio.h>
+#ifdef	BSD42
+#include <sys/types.h>
+#include <sys/uio.h>
+#endif	/* BSD42 */
+
+/* For 4.2BSD systems, use writev() for slightly better performance.  Why?
+   Well, there are a couple of reasons.  Primarily, it gives a smoother
+   output...  More importantly though, it's a sexy syscall()...
+ */
+
+extern int  errno;
+#ifndef	BSD44	/* in <stdio.h> */
+extern int  sys_nerr;
+extern char *sys_errlist[];
+#endif
+
+/*  */
+
+/* VARARGS3 */
+
+void advertise (what, tail, fmt, a, b, c, d, e, f)
+char   *what,
+       *tail,
+       *fmt,
+       *a,
+       *b,
+       *c,
+       *d,
+       *e,
+       *f;
+{
+    int	    eindex = errno;
+#ifdef	BSD42
+    char    buffer[BUFSIZ],
+            err[BUFSIZ];
+    struct iovec    iob[20];
+    register struct iovec  *iov = iob;
+#endif	/* BSD42 */
+
+    (void) fflush (stdout);
+
+#ifndef	BSD42
+    if (invo_name && *invo_name)
+	fprintf (stderr, "%s: ", invo_name);
+    fprintf (stderr, fmt, a, b, c, d, e, f);
+    if (what) {
+	if (*what)
+	    fprintf (stderr, " %s: ", what);
+	if (eindex > 0 && eindex < sys_nerr)
+	    fprintf (stderr, "%s", sys_errlist[eindex]);
+	else
+	    fprintf (stderr, "Error %d", eindex);
+    }
+    if (tail)
+	fprintf (stderr, ", %s", tail);
+    (void) fputc ('\n', stderr);
+#else	/* BSD42 */
+    (void) fflush (stderr);
+
+    if (invo_name && *invo_name) {
+	iov -> iov_len = strlen (iov -> iov_base = invo_name);
+	iov++;
+	iov -> iov_len = strlen (iov -> iov_base = ": ");
+	iov++;
+    }
+    
+    (void) sprintf (buffer, fmt, a, b, c, d, e, f);
+    iov -> iov_len = strlen (iov -> iov_base = buffer);
+    iov++;
+    if (what) {
+	if (*what) {
+	    iov -> iov_len = strlen (iov -> iov_base = " ");
+	    iov++;
+	    iov -> iov_len = strlen (iov -> iov_base = what);
+	    iov++;
+	    iov -> iov_len = strlen (iov -> iov_base = ": ");
+	    iov++;
+	}
+	if (eindex > 0 && eindex < sys_nerr)
+	    iov -> iov_len = strlen (iov -> iov_base = sys_errlist[eindex]);
+	else {
+	    (void) sprintf (err, "Error %d", eindex);
+	    iov -> iov_len = strlen (iov -> iov_base = err);
+	}
+	iov++;
+    }
+    if (tail && *tail) {
+	iov -> iov_len = strlen (iov -> iov_base = ", ");
+	iov++;
+	iov -> iov_len = strlen (iov -> iov_base = tail);
+	iov++;
+    }
+    iov -> iov_len = strlen (iov -> iov_base = "\n");
+    iov++;
+    (void) writev (fileno (stderr), iob, iov - iob);
+#endif	/* BSD42 */
+}
+@
+
+
+1.3
+log
+@endif sugar
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: advertise.c,v 1.2 1992/12/14 17:47:34 jromine Exp jromine $";
+d19 1
+d22 1
+@
+
+
+1.2
+log
+@add id
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: pidwait.c,v 1.9 1992/12/14 17:10:58 jromine Exp $";
+d11 1
+a11 1
+#endif	BSD42
+d43 1
+a43 1
+#endif	BSD42
+d62 1
+a62 1
+#else	BSD42
+d101 1
+a101 1
+#endif	BSD42
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 3
+@

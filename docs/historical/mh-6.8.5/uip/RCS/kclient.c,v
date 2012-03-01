@@ -1,0 +1,445 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	92.01.31.22.37.24;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.01.31.22.37.02;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@/* kclient.c - connect to a server via knetd, kerberos authenticated */
+#ifndef lint
+static char ident[]= "$Id: kclient.c,v 1.1 1992/01/31 22:37:02 jromine Exp jromine $";
+#endif lint
+
+
+#include "../h/strings.h"
+#include <stdio.h>
+#ifdef KPOP
+#include "../zotnet/mts/mts.h"
+#else
+#include "mts.h"
+#endif
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#ifdef KPOP
+#include <krb.h>
+#include <ctype.h>
+
+static CREDENTIALS cred;
+static MSG_DAT msg_data;
+static KTEXT ticket = (KTEXT)NULL;
+static Key_schedule schedule;
+#endif
+
+#define	NOTOK	(-1)
+#define	OK	0
+#define	DONE	1
+
+#define	TRUE	1
+#define	FALSE	0
+
+#define	OOPS1	(-2)
+#define	OOPS2	(-3)
+
+#define	MAXARGS		1000
+#define	MAXNETS		5
+#define	MAXHOSTS	25
+
+/*  */
+
+extern int errno;
+extern int  sys_nerr;
+extern char *sys_errlist[];
+
+struct addrent {
+    int     a_addrtype;		/* assumes AF_INET for inet_netof () */
+
+    union {
+	int	un_net;
+	char    un_addr[14];
+    } un;
+#define	a_net	un.un_net
+#define	a_addr	un.un_addr
+};
+
+static struct addrent *ne, *nz;
+static struct addrent nets[MAXNETS];
+
+static struct addrent *he, *hz;
+static struct addrent hosts[MAXHOSTS];
+
+#ifdef KPOP
+
+char realservice[] = "kpop";
+
+char krb_realm[REALM_SZ];
+char *PrincipalHostname();
+
+/* redefine routine names for kerberos to make the loader happy */
+#define client kclient
+#define rcaux krcaux
+
+#ifdef __STDC__
+static int rcaux (struct servent *, struct hostent *, int, char *, char *);
+static int getport (int, int, char *);
+static int inet (struct hostent *, int);
+#else
+static int rcaux (), getport (), inet ();
+#endif /* STDC */
+static int brkany ();
+
+#endif /* KPOP */
+
+char *getcpy (), **brkstring (), **copyip ();
+
+/*  */
+
+int	client (args, protocol, service, rproto, response)
+char   *args,
+       *protocol,
+       *service,
+       *response;
+int	rproto;
+{
+    int     sd;
+    register char **ap;
+    char   *arguments[MAXARGS];
+    register struct hostent *hp;
+#ifndef	BIND
+    register struct netent *np;
+#endif
+    register struct servent *sp;
+#ifndef KPOP
+#define realservice service
+#endif
+
+    if ((sp = getservbyname (realservice, protocol)) == NULL) {
+	(void) sprintf (response, "%s/%s: unknown service", realservice, protocol);
+	return NOTOK;
+    }
+
+    ap = arguments;
+    if (args != NULL && *args != 0)
+	ap = copyip (brkstring (getcpy (args), " ", "\n"), ap);
+    else
+	if (servers != NULL && *servers != 0)
+	    ap = copyip (brkstring (getcpy (servers), " ", "\n"), ap);
+    if (ap == arguments) {
+	*ap++ = getcpy ("localhost");
+	*ap = NULL;
+    }
+
+    nz = (ne = nets) + sizeof nets / sizeof nets[0];
+    hz = (he = hosts) + sizeof hosts / sizeof hosts[0];
+
+    for (ap = arguments; *ap; ap++) {
+	if (**ap == '\01') {
+#ifndef	BIND
+	    if (np = getnetbyname (*ap + 1)) {
+		sethostent (1);
+		while (hp = gethostent ())
+		    if (np -> n_addrtype == hp -> h_addrtype
+			    && inet (hp, np -> n_net)) {
+			switch (sd = rcaux (sp, hp, rproto, response, service)) {
+			    case NOTOK: 
+				continue;
+			    case OOPS1: 
+				break;
+			    case OOPS2: 
+				return NOTOK;
+
+			    default: 
+				return sd;
+			}
+			break;
+		    }
+	    }
+#endif
+	    continue;
+	}
+
+	if (hp = gethostbyname (*ap)) {
+	    switch (sd = rcaux (sp, hp, rproto, response, service)) {
+		case NOTOK: 
+		case OOPS1: 
+		    break;
+		case OOPS2: 
+		    return NOTOK;
+
+		default: 
+		    return sd;
+	    }
+	    continue;
+	}
+    }
+
+    (void) strcpy (response, "no servers available");
+    return NOTOK;
+}
+
+/*  */
+
+static int  rcaux (sp, hp, rproto, response, service)
+register struct servent *sp;
+register struct hostent *hp;
+int	rproto;
+register char *response;
+char *service;				/* what they really want to talk to */
+{
+    int     sd;
+    struct in_addr  in;
+    register struct addrent *ap;
+    struct sockaddr_in  in_socket;
+    register struct sockaddr_in *isock = &in_socket;
+#ifdef KPOP
+    int rem;
+#endif
+
+    for (ap = nets; ap < ne; ap++)
+	if (ap -> a_addrtype == hp -> h_addrtype && inet (hp, ap -> a_net))
+	    return NOTOK;
+
+    for (ap = hosts; ap < he; ap++)
+	if (ap -> a_addrtype == hp -> h_addrtype
+		&& bcmp (ap -> a_addr, hp -> h_addr, hp -> h_length) == 0)
+	    return NOTOK;
+
+    if ((sd = getport (rproto, hp -> h_addrtype, response)) == NOTOK)
+	return OOPS2;
+
+    bzero ((char *) isock, sizeof *isock);
+    isock -> sin_family = hp -> h_addrtype;
+    isock -> sin_port = sp -> s_port;
+    bcopy (hp -> h_addr, (char *) &isock -> sin_addr, hp -> h_length);
+
+    if (connect (sd, (struct sockaddr *) isock, sizeof *isock) == NOTOK)
+	switch (errno) {
+	    case ENETDOWN: 
+	    case ENETUNREACH: 
+		(void) close (sd);
+		if (ne < nz) {
+		    ne -> a_addrtype = hp -> h_addrtype;
+		    bcopy (hp -> h_addr, (char *) &in, sizeof in);
+		    ne -> a_net = inet_netof (in);
+		    ne++;
+		}
+		return OOPS1;
+
+	    case ETIMEDOUT: 
+	    case ECONNREFUSED: 
+	    default: 
+		(void) close (sd);
+		if (he < hz) {
+		    he -> a_addrtype = hp -> h_addrtype;
+		    bcopy (hp -> h_addr, he -> a_addr, hp -> h_length);
+		    he++;
+		}
+		return NOTOK;
+	}
+
+#ifdef KPOP
+    ticket = (KTEXT)malloc( sizeof(KTEXT_ST) );
+    rem = krb_sendauth(0L, sd, ticket, service, hp->h_name,
+		       (char *) krb_realmofhost(hp->h_name),
+		       (unsigned long)0, &msg_data, &cred, schedule,
+		       (struct sockaddr_in *)NULL,
+		       (struct sockaddr_in *)NULL,
+		       "KPOPV0.1");
+    if (rem != KSUCCESS) {
+	close(sd);
+	(void) strcpy(response, "Post office refused connection: ");
+	(void) strcat(response, krb_err_txt[rem]);
+	return OOPS2;
+    }
+#endif
+
+    return sd;
+}
+
+/*  */
+
+static int getport (rproto, addrtype, response)
+int	rproto,
+	addrtype;
+register char *response;
+{
+    int     sd,
+            port;
+    struct sockaddr_in  in_socket,
+                       *isock = &in_socket;
+
+    if (rproto && addrtype != AF_INET) {
+	(void) sprintf (response, "reserved ports not supported for af=%d",
+		addrtype);
+	errno = ENOPROTOOPT;
+	return NOTOK;
+    }
+
+    if ((sd = socket (AF_INET, SOCK_STREAM, 0)) == NOTOK) {
+	(void) sprintf (response, "unable to create socket: %s",
+		errno > 0 && errno < sys_nerr ? sys_errlist[errno]
+		: "unknown error");
+	return NOTOK;
+    }
+#ifdef KPOP
+    return(sd);
+#else
+    if (!rproto)
+	return sd;
+
+    bzero ((char *) isock, sizeof *isock);
+    isock -> sin_family = addrtype;
+    for (port = IPPORT_RESERVED - 1;;) {
+	isock -> sin_port = htons ((u_short) port);
+	if (bind (sd, (struct sockaddr *) isock, sizeof *isock) != NOTOK)
+	    return sd;
+
+	switch (errno) {
+	    case EADDRINUSE: 
+	    case EADDRNOTAVAIL: 
+		if (--port <= IPPORT_RESERVED / 2) {
+		    (void) strcpy (response, "ports available");
+		    return NOTOK;
+		}
+		break;
+
+	    default: 
+		(void) sprintf (response, "unable to bind socket: %s",
+			errno > 0 && errno < sys_nerr ? sys_errlist[errno]
+			: "unknown error");
+		return NOTOK;
+	}
+    }
+#endif
+}
+
+/*  */
+
+static int  inet (hp, net)
+register struct hostent *hp;
+int	net;
+{
+    struct in_addr  in;
+
+    bcopy (hp -> h_addr, (char *) &in, sizeof in);
+    return (inet_netof (in) == net);
+}
+
+/*  */
+
+/* static copies of three MH subroutines... (sigh) */
+
+static char *broken[MAXARGS + 1];
+
+
+static char **brkstring (strg, brksep, brkterm)
+register char  *strg;
+register char  *brksep,
+               *brkterm;
+{
+    register int    bi;
+    register char   c,
+                   *sp;
+
+    sp = strg;
+
+    for (bi = 0; bi < MAXARGS; bi++) {
+	while (brkany (c = *sp, brksep))
+	    *sp++ = 0;
+	if (!c || brkany (c, brkterm)) {
+	    *sp = 0;
+	    broken[bi] = 0;
+	    return broken;
+	}
+
+	broken[bi] = sp;
+	while ((c = *++sp) && !brkany (c, brksep) && !brkany (c, brkterm))
+	    continue;
+    }
+    broken[MAXARGS] = 0;
+
+    return broken;
+}
+
+
+static  brkany (chr, strg)
+register char   chr,
+               *strg;
+{
+    register char  *sp;
+
+    if (strg)
+	for (sp = strg; *sp; sp++)
+	    if (chr == *sp)
+		return 1;
+    return 0;
+}
+
+
+static char **copyip (p, q)
+register char **p,
+              **q;
+{
+    while (*p)
+	*q++ = *p++;
+    *q = 0;
+
+    return q;
+}
+
+
+static char *getcpy (str)
+register char  *str;
+{
+    register char  *cp;
+
+    if ((cp = malloc ((unsigned) (strlen (str) + 1))) == NULL)
+	return NULL;
+
+    (void) strcpy (cp, str);
+    return cp;
+}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+a1 5
+/*
+ *	$Source: /paris/source/4.3/new/mh.6.6/support/pop/RCS/kclient.c,v $
+ *	$Header: /paris/source/4.3/new/mh.6.6/support/pop/RCS/kclient.c,v 1.2 89/11/11 03:35:14 probe Exp $
+ */
+
+d3 1
+a3 1
+static char ident[]= "$Id: /paris/source/4.3/new/mh.6.6/support/pop/RCS/kclient.c,v 1.2 89/11/11 03:35:14 probe Exp $";
+a5 1
+/* kclient.c - connect to a server via knetd, kerberos authenticated */
+@

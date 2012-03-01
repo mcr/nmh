@@ -1,0 +1,70 @@
+head     1.3;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @# @;
+
+
+1.3
+date     90.04.08.15.04.21;  author sources;  state Exp;
+branches ;
+next     1.2;
+
+1.2
+date     90.04.05.15.57.49;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.02.01.13.15.17;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.3
+log
+@add me2man.sed
+@
+text
+@: run this script through /bin/sh
+: '@@(#)$Id: mhdoc,v 1.2 90/04/05 15:57:49 sources Exp Locker: sources $'
+
+echo grinding...
+
+sed -f doc/config.sed < doc/tmac.h > ../doc/tmac.h
+sed -f doc/config.sed < doc/tmac.hdr > ../doc/tmac.me
+sed -f doc/config.sed < doc/me2man.sed > ../doc/me2man.sed
+
+for f in doc/*.rf
+do
+    sed -f doc/config.sed < $f > ../doc/`basename $f .rf`.me
+done
+
+exit 0
+@
+
+
+1.2
+log
+@Id
+@
+text
+@d2 1
+a2 1
+: '@@(#)$Id:$'
+d8 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+@

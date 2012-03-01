@@ -1,0 +1,146 @@
+head	2.4;
+access;
+symbols;
+locks; strict;
+
+
+2.4
+date	94.04.18.22.04.09;	author jromine;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	92.10.26.22.36.21;	author jromine;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.04.05.15.18.33;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.01.29.15.42.29;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.56.26;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.43.59;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.4
+log
+@add mhconfig to make clean
+@
+text
+@######################################################################
+#	Instructions to Make, for compilation of MH modules
+######################################################################
+# @@(#)$Id: Makefile,v 2.3 1992/10/26 22:36:21 jromine Exp jromine $
+
+SHELL	=	/bin/sh
+
+CC      =   	cc
+CFLAGS  =   	-O
+LFLAGS  =   	-bhu
+LDFLAGS =
+LIBES   =
+
+
+######################################################################
+#	Here it is...
+######################################################################
+
+all:		mhconfig
+lint:		l-mhconfig
+
+sys5:	;	exec make $(MFLAGS) CFLAGS="$(CFLAGS) -DSYS5" all
+
+
+######################################################################
+# mhconfig
+######################################################################
+
+mhconfig:	mhconfig.o
+		$(CC) $(LDFLAGS) -o $@@ mhconfig.o $(LIBES)
+
+
+l-mhconfig:;	lint $(LFLAGS) mhconfig.c $(LLIBS)
+
+
+######################################################################
+#	Miscellaneous tasks
+######################################################################
+
+unconfig distribution:	clean
+		rm -f mhconfig config.sed doc/config.sed
+
+clean:		unclean
+
+unclean:;	rm -f mhconfig *.o _* :* */_* */:* */*/_* */*/:*
+@
+
+
+2.3
+log
+@add SHELL
+@
+text
+@d4 1
+a4 1
+# @@(#)$Id: Makefile,v 2.2 1990/04/05 15:18:33 sources Exp jromine $
+d45 1
+a45 1
+unclean:;	rm -f *.o _* :* */_* */:* */*/_* */*/:*
+@
+
+
+2.2
+log
+@add ID
+@
+text
+@d4 3
+a6 1
+# @@(#)$Id:$
+@
+
+
+2.1
+log
+@defines for "make sys5"
+@
+text
+@d4 1
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d19 2
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d35 1
+a35 1
+distribution:	clean
+@

@@ -1,0 +1,2 @@
+/usr/etc/popd -> (icsf cip1 cip4)
+	install /usr/etc/popd ;

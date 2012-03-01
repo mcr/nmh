@@ -1,0 +1,232 @@
+head	1.8;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.8
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.02.11.21.32.04;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.02.03.16.35.19;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.01.31.21.55.24;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.05.15.32.29;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.04.05.14.50.04;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.03.20.15.58.30;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.03.20.15.58.13;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@endif sugar
+@
+text
+@/* m_remsg.c - realloc a msgs structure */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: m_remsg.c,v 1.7 1992/02/11 21:32:04 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include <stdio.h>
+
+
+struct msgs *m_remsg (mp, lo, hi)
+register struct msgs *mp;
+int	lo,
+	hi;
+{
+    int     msgnum;
+#ifdef	MTR
+    register int   *sp,
+		   *pp;
+#endif	/* MTR */
+
+    if (lo == 0 && (lo = mp -> lowmsg) == 0)
+	lo = 1;
+    if (hi < mp -> hghmsg)
+	hi = mp -> hghmsg + (MAXFOLDER - mp -> nummsg);
+    if (hi <= mp -> hghmsg)
+	hi = mp -> hghmsg + MAXFOLDER;
+    if (lo == mp -> lowmsg && hi == mp -> hghmsg)
+	return mp;
+
+#ifndef	MTR
+    mp = (struct msgs  *) realloc ((char *) mp, MHSIZE (mp, lo, hi));
+    if (mp == NULL)
+	adios (NULLCP, "unable to re-allocate folder storage");
+#else	/* MTR */
+    if ((sp = (int *) calloc ((unsigned) 1, MHSIZEX (mp, lo, hi))) == NULL)
+	adios (NULLCP, "unable to re-allocate messages storage");
+
+    pp = sp - lo;
+    if (pp < (int *)0)
+	adios (NULLCP, "m_remsg() botch -- you lose big[1]");
+    for (msgnum = mp -> lowmsg; msgnum <= mp -> hghmsg; msgnum++)
+	pp[msgnum] = mp -> msgstats[msgnum];
+    free ((char *) mp -> msgbase);
+    mp -> msgstats = sp;
+#endif	/* MTR */
+    mp -> lowoff = lo;
+    mp -> hghoff = hi;
+#ifdef	MTR
+    mp -> msgstats = (mp -> msgbase = mp -> msgstats) - mp -> lowoff;
+    if (mp -> msgstats < (int *)0)
+	adios (NULLCP, "m_remsg() botch -- you lose big[2]");
+#endif	/* MTR */
+    for (msgnum = mp -> lowmsg - 1; msgnum >= lo; msgnum--)
+	mp -> msgstats[msgnum] = 0;
+    for (msgnum = mp -> hghmsg + 1; msgnum <= hi; msgnum++)
+	mp -> msgstats[msgnum] = 0;
+
+    return mp;
+}
+@
+
+
+1.7
+log
+@put sequences in an "int"
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: m_remsg.c,v 1.6 1992/02/03 16:35:19 jromine Exp jromine $";
+#endif	lint
+d19 1
+a19 1
+#endif	MTR
+d34 1
+a34 1
+#else	MTR
+d45 1
+a45 1
+#endif	MTR
+d52 1
+a52 1
+#endif	MTR
+@
+
+
+1.6
+log
+@fix
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: m_remsg.c,v 1.5 1992/01/31 21:55:24 jromine Exp jromine $";
+d17 1
+a17 1
+    register short *sp,
+d35 1
+a35 1
+    if ((sp = (short *) calloc ((unsigned) 1, MHSIZEX (mp, lo, hi))) == NULL)
+d39 1
+a39 1
+    if (pp < (short *)0)
+d50 1
+a50 1
+    if (mp -> msgstats < (short *)0)
+@
+
+
+1.5
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: m_remsg.c,v 1.4 1990/04/05 15:32:29 sources Exp jromine $";
+d31 1
+a31 1
+    mp = (struct msgs  *) realloc ((char *) mp, MSIZE (mp, lo, hi));
+d35 1
+a35 1
+    if ((sp = (short *) calloc ((unsigned) 1, MSIZEX (mp, lo, hi))) == NULL)
+@
+
+
+1.4
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d54 1
+a54 1
+	mp -> msgstats[msgnum] = NULL;
+d56 1
+a56 1
+	mp -> msgstats[msgnum] = NULL;
+@
+
+
+1.3
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "$Id:";
+@
+
+
+1.2
+log
+@cast (short *)0
+@
+text
+@d2 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d36 1
+a36 1
+    if (pp < 0)
+d47 1
+a47 1
+    if (mp -> msgstats < 0)
+@

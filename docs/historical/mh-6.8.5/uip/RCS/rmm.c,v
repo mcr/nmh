@@ -1,0 +1,246 @@
+head	1.5;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.5
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.11.04.01.00.56;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.02.11.21.37.29;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.01.31.22.26.14;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.01.31.22.25.48;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@endif sugar
+@
+text
+@/* rmm.c - remove a message */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: rmm.c,v 1.4 1992/11/04 01:00:56 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include <stdio.h>
+#ifdef LOCALE
+#include	<locale.h>
+#endif
+
+/*  */
+
+static struct swit switches[] = {
+#define	HELPSW	0
+    "help", 4,
+
+    NULL, 0
+};
+
+/*  */
+
+/* ARGSUSED */
+
+main (argc, argv)
+int     argc;
+char  **argv;
+{
+    int     msgp = 0,
+            msgnum,
+            vecp;
+    char   *cp,
+           *dp,
+           *maildir,
+           *folder = NULL,
+            buf[100],
+          **ap,
+          **argp,
+          **vec,
+           *arguments[MAXARGS],
+           *msgs[MAXARGS];
+    struct msgs *mp;
+
+#ifdef LOCALE
+	setlocale(LC_ALL, "");
+#endif
+    invo_name = r1bindex (argv[0], '/');
+    if ((cp = m_find (invo_name)) != NULL) {
+	ap = brkstring (cp = getcpy (cp), " ", "\n");
+	ap = copyip (ap, arguments);
+    }
+    else
+	ap = arguments;
+    (void) copyip (argv + 1, ap);
+    argp = arguments;
+
+/*  */
+
+    while (cp = *argp++) {
+	if (*cp == '-')
+	    switch (smatch (++cp, switches)) {
+		case AMBIGSW: 
+		    ambigsw (cp, switches);
+		    done (1);
+		case UNKWNSW: 
+		    adios (NULLCP, "-%s unknown\n", cp);
+		case HELPSW: 
+		    (void) sprintf (buf, "%s [+folder] [msgs] [switches]",
+			    invo_name);
+		    help (buf, switches);
+		    done (1);
+	    }
+	if (*cp == '+' || *cp == '@@') {
+	    if (folder)
+		adios (NULLCP, "only one folder at a time!");
+	    else
+		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+	}
+	else
+	    msgs[msgp++] = cp;
+    }
+
+/*  */
+
+    if (!m_find ("path"))
+	free (path ("./", TFOLDER));
+    if (!msgp)
+	msgs[msgp++] = "cur";
+    if (!folder)
+	folder = m_getfolder ();
+    maildir = m_maildir (folder);
+
+    if (chdir (maildir) == NOTOK)
+	adios (maildir, "unable to change directory to");
+    if (!(mp = m_gmsg (folder)))
+	adios (NULLCP, "unable to read folder %s", folder);
+    if (mp -> hghmsg == 0)
+	adios (NULLCP, "no messages in %s", folder);
+
+    for (msgnum = 0; msgnum < msgp; msgnum++)
+	if (!m_convert (mp, msgs[msgnum]))
+	    done (1);
+    m_setseq (mp);
+
+    for (msgnum = mp -> lowsel; msgnum <= mp -> hghsel; msgnum++)
+	if (mp -> msgstats[msgnum] & SELECTED) {
+#ifdef	notdef
+	    mp -> msgstats[msgnum] |= DELETED;
+#endif	/* notdef */
+	    mp -> msgstats[msgnum] &= ~EXISTS;
+	}
+    mp -> msgflags |= SEQMOD;
+
+    m_replace (pfolder, folder);
+    m_sync (mp);
+    m_update ();
+
+    if (rmmproc) {
+	if (mp -> numsel > MAXARGS - 2)
+	    adios (NULLCP, "more than %d messages for %s exec", MAXARGS - 2,
+		    rmmproc);
+	vec = (char **) calloc ((unsigned) (mp -> numsel + 2), sizeof *vec);
+	if (vec == NULL)
+	    adios (NULLCP, "unable to allocate exec vector");
+	vecp = 1;
+	for (msgnum = mp -> lowsel; msgnum <= mp -> hghsel; msgnum++)
+	    if (mp -> msgstats[msgnum] & SELECTED)
+		vec[vecp++] = getcpy (m_name (msgnum));
+	vec[vecp] = NULL;
+
+	(void) fflush (stdout);
+	vec[0] = r1bindex (rmmproc, '/');
+	execvp (rmmproc, vec);
+	adios (rmmproc, "unable to exec");
+    }
+
+    for (msgnum = mp -> lowsel; msgnum <= mp -> hghsel; msgnum++)
+	if (mp -> msgstats[msgnum] & SELECTED) {
+	    (void) strcpy (buf, m_backup (dp = m_name (msgnum)));
+	    if (rename (dp, buf) == NOTOK)
+		admonish (buf, "unable to rename %s to", dp);
+	}
+
+    done (0);
+}
+@
+
+
+1.4
+log
+@LOCALE
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: rmm.c,v 1.3 1992/02/11 21:37:29 jromine Exp jromine $";
+#endif	lint
+d109 1
+a109 1
+#endif	notdef
+@
+
+
+1.3
+log
+@allow relative folders with "@@".  I hope there isn't a reason
+this wasn't already done.
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: rmm.c,v 1.2 1992/01/31 22:26:14 jromine Exp jromine $";
+d8 3
+d44 3
+@
+
+
+1.2
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scan.c,v 1.9 1992/01/23 23:06:45 jromine Exp $";
+d67 1
+a67 1
+	if (*cp == '+') {
+d71 1
+a71 1
+		folder = path (cp + 1, TFOLDER);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 3
+d15 1
+a15 1
+    NULL, NULL
+@

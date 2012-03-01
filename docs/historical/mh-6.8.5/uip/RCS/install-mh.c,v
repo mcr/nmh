@@ -1,0 +1,356 @@
+head	1.8;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.8
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.11.04.00.44.07;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.02.03.17.57.22;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.02.03.16.35.36;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.01.31.22.11.43;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.04.05.15.01.19;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.06.13.20.21;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.06.13.19.47;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@endif sugar
+@
+text
+@/* install-mh.c - initialize the MH environment */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: install-mh.c,v 1.7 1992/11/04 00:44:07 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include <pwd.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#ifdef LOCALE
+#include	<locale.h>
+#endif
+
+/*  */
+
+static char *message[] = {
+    "Prior to using MH, it is necessary to have a file in your login",
+    "directory (%s) named %s which contains information",
+    "to direct certain MH operations.  The only item which is required",
+    "is the path to use for all MH folder operations.  The suggested MH",
+    "path for you is %s/Mail...",
+    NULL
+};
+
+
+static char   *geta ();
+
+#ifndef __STDC__
+#ifdef	SYS5
+struct passwd  *getpwuid ();
+#endif
+#endif /* !__STDC__ */
+
+/*  */
+
+/* ARGSUSED */
+
+main (argc, argv)
+int     argc;
+char  **argv;
+{
+    int     autof,
+	    i;
+    char   *cp,
+           *path;
+    struct node *np;
+    struct passwd *pw;
+    struct stat st;
+    FILE   *in,
+	   *out;
+
+#ifdef LOCALE
+	setlocale(LC_ALL, "");
+#endif
+    invo_name = r1bindex (argv[0], '/');
+
+#ifdef	COMPAT
+    if (argc == 2 && strcmp (argv[1], "-compat") == 0) {
+	context = "/dev/null";	/* hack past m_getdefs() */
+	
+	m_getdefs ();
+	for (np = m_defs; np; np = np -> n_next)
+	    if (uleq (pfolder, np -> n_name)
+		    || ssequal ("atr-", np -> n_name)
+		    || ssequal ("cur-", np -> n_name))
+		np -> n_context = 1;
+
+	ctxpath = getcpy (m_maildir (context = "context"));
+	ctxflags |= CTXMOD;
+	m_update ();
+
+	if ((out = fopen (defpath, "w")) == NULL)
+	    adios (defpath, "unable to write");
+	for (np = m_defs; np; np = np -> n_next)
+	    if (!np -> n_context)
+		fprintf (out, "%s: %s\n", np -> n_name, np -> n_field);
+	(void) fclose (out);
+
+	done (0);
+    }
+#endif	/* COMPAT */
+
+    autof = (argc == 2 && strcmp (argv[1], "-auto") == 0);
+    if (mypath == NULL) {	/* straight from m_getdefs... */
+	if (mypath = getenv ("HOME"))
+	    mypath = getcpy (mypath);
+	else
+	    if ((pw = getpwuid (getuid ())) == NULL
+		    || pw -> pw_dir == NULL
+		    || *pw -> pw_dir == 0)
+		adios (NULLCP, "no HOME envariable");
+	    else
+		mypath = getcpy (pw -> pw_dir);
+	if ((cp = mypath + strlen (mypath) - 1) > mypath && *cp == '/')
+	    *cp = 0;
+    }
+    defpath = concat (mypath, "/", mh_profile, NULLCP);
+
+    if (stat (defpath, &st) != NOTOK)
+	if (autof)
+	    adios (NULLCP, "invocation error");
+	else
+	    adios (NULLCP,
+		    "You already have an MH profile, use an editor to modify it");
+
+    if (!autof && gans ("Do you want help? ", anoyes)) {
+	(void) putchar ('\n');
+	for (i = 0; message[i]; i++) {
+	    printf (message[i], mypath, mh_profile);
+	    (void) putchar ('\n');
+	}
+	(void) putchar ('\n');
+    }
+
+/*  */
+
+    cp = concat (mypath, "/", "Mail", NULLCP);
+    if (stat (cp, &st) != NOTOK) {
+	if ((st.st_mode & S_IFMT) == S_IFDIR) {
+	    cp = concat ("You already have the standard MH directory \"",
+		    cp, "\".\nDo you want to use it for MH? ", NULLCP);
+	    if (gans (cp, anoyes))
+		path = "Mail";
+	    else
+		goto query;
+	}
+	else
+	    goto query;
+    }
+    else {
+	if (autof)
+	    printf ("I'm going to create the standard MH path for you.\n");
+	else
+	    cp = concat ("Do you want the standard MH path \"",
+		    mypath, "/", "Mail\"? ", NULLCP);
+	if (autof || gans (cp, anoyes))
+	    path = "Mail";
+	else {
+    query:  ;
+	    if (gans ("Do you want a path below your login directory? ",
+			anoyes)) {
+		printf ("What is the path?  %s/", mypath);
+		path = geta ();
+	    }
+	    else {
+		printf ("What is the whole path?  /");
+		path = concat ("/", geta (), NULLCP);
+	    }
+	}
+    }
+
+    (void) chdir (mypath);
+    if (chdir (path) == NOTOK) {
+	cp = concat ("\"", path, "\" doesn't exist; Create it? ", NULLCP);
+	if (autof || gans (cp, anoyes))
+	    if (makedir (path) == 0)
+		adios (NULLCP, "unable to create %s", path);
+    }
+    else
+	printf ("[Using existing directory]\n");
+
+/*  */
+
+    np = m_defs = (struct node *) malloc (sizeof *np);
+    if (np == NULL)
+	adios (NULLCP, "unable to allocate profile storage");
+    np -> n_name = getcpy ("Path");
+    np -> n_field = getcpy (path);
+    np -> n_context = 0;
+    np -> n_next = NULL;
+
+    if (in = fopen (mh_defaults, "r")) {
+	m_readefs (&np -> n_next, in, mh_defaults, 0);
+	(void) fclose (in);
+    }
+
+    ctxpath = getcpy (m_maildir (context = "context"));
+    m_replace (pfolder, defalt);
+    m_update ();
+
+    if ((out = fopen (defpath, "w")) == NULL)
+	adios (defpath, "unable to write");
+    for (np = m_defs; np; np = np -> n_next)
+	if (!np -> n_context)
+	    fprintf (out, "%s: %s\n", np -> n_name, np -> n_field);
+    (void) fclose (out);
+
+    done (0);
+}
+
+/*  */
+
+static char *geta () {
+    register char  *cp;
+    static char line[BUFSIZ];
+
+    (void) fflush (stdout);
+    if (fgets (line, sizeof line, stdin) == NULL)
+	done (1);
+    if (cp = index (line, '\n'))
+	*cp = 0;
+    return line;
+}
+@
+
+
+1.7
+log
+@LOCALE
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: install-mh.c,v 1.6 1992/02/03 17:57:22 jromine Exp jromine $";
+#endif	lint
+d82 1
+a82 1
+#endif	COMPAT
+@
+
+
+1.6
+log
+@STDC/SYS5/getpw
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: install-mh.c,v 1.5 1992/02/03 16:35:36 jromine Exp jromine $";
+d11 3
+d53 3
+@
+
+
+1.5
+log
+@fix
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: install-mh.c,v 1.4 1992/01/31 22:11:43 jromine Exp jromine $";
+d27 1
+d29 1
+@
+
+
+1.4
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: install-mh.c,v 1.3 1990/04/05 15:01:19 sources Exp jromine $";
+d26 1
+d28 1
+@
+
+
+1.3
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d81 1
+a81 1
+		    || *pw -> pw_dir == NULL)
+d86 1
+a86 1
+	    *cp = NULL;
+d192 1
+a192 1
+	*cp = NULL;
+@
+
+
+1.2
+log
+@ANSI Compilance
+@
+text
+@d2 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d21 1
+a21 1
+char   *geta ();
+@

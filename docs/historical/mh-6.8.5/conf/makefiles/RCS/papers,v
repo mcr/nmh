@@ -1,0 +1,163 @@
+head	2.6;
+access;
+symbols;
+locks; strict;
+
+
+2.6
+date	92.12.02.21.57.34;	author jromine;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	90.04.05.15.18.04;	author sources;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	90.04.05.13.21.04;	author sources;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.03.15.11.40.13;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.23.22.06.15;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.21.16.59.41;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.56.40;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.44.19;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.6
+log
+@mh6.7 -> papers
+@
+text
+@##############################################################################
+#    Instructions to Make, for compilation of MH papers
+#
+#	@@(MHWARNING)
+# @@(#)$Id: papers,v 2.5 1990/04/05 15:18:04 sources Exp jromine $
+##############################################################################
+
+MAKE	=	make DESTDIR=$(DESTDIR) $(MFLAGS)
+SHELL	=	/bin/sh
+
+DIRS	=	bboards beginners changes mh4 mh4mm mh5 mh6.5 \
+		multifarious mznet realwork trusted tutorial
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+all:;		for d in $(DIRS); do (cd $$d; $(MAKE)); done
+
+unconfig:	distribution
+		-rm -f Makefile
+
+distribution:;	for d in $(DIRS); do \
+		(cd $$d; $(MAKE) distribution); done
+
+clean:;		for d in $(DIRS); do (cd $$d; $(MAKE) clean); done
+
+unclean:;	for d in $(DIRS); do (cd $$d; $(MAKE) clean); done
+@
+
+
+2.5
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d11 1
+a11 1
+DIRS	=	bboards beginners mh4 mh4mm mh5 mh6.5 mh6.7 \
+@
+
+
+2.4
+log
+@add mh6.7 paper
+@
+text
+@d5 1
+@
+
+
+2.3
+log
+@add "make all"
+@
+text
+@d10 2
+a11 2
+DIRS	=	bboards beginners mh4 mh4mm mh5 mh6.5 mh6 multifarious mznet \
+		realwork trusted tutorial
+@
+
+
+2.2
+log
+@add mh6/ directory
+@
+text
+@d18 1
+@
+
+
+2.1
+log
+@make unconfig changes
+@
+text
+@d10 1
+a10 1
+DIRS	=	bboards beginners mh4 mh4mm mh5 mh6.5 multifarious mznet \
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d19 4
+a22 1
+unconfig distribution:;	for d in $(DIRS); do \
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d19 2
+a20 1
+distribution:;	for d in $(DIRS); do (cd $$d; $(MAKE) distribution); done
+@

@@ -1,0 +1,180 @@
+head	1.7;
+access;
+symbols;
+locks
+	shettich:1.7; strict;
+comment	@# @;
+
+
+1.7
+date	90.04.06.09.44.31;	author sources;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.06.09.41.55;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.05.15.57.52;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.02.16.56.45;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.04.02.14.31.11;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.04.02.14.30.15;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.04.02.14.30.05;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@a plain default
+@
+text
+@# @@(#)$Id:$
+# a 4.2BSD VAX system running SendMail
+bin	/usr/local
+bboards	on
+etc	/usr/local/lib/mh
+mail	/usr/spool/mail
+manuals	local
+mts	sendmail
+options	BSD42
+@
+
+
+1.6
+log
+@try for a reasonable default
+@
+text
+@d1 5
+a5 8
+# @@(#)$Id: MH,v 1.5 90/04/05 15:57:52 sources Exp Locker: sources $
+#
+# For Sun OS 4.* with SendMail, running Yellow Pages, and /etc/named.
+# MH will post mail through an SMTP connection to the localhost's
+# SendMail daemon.  Be sure to set "servers" in your mtstailor file.
+#
+bin	/usr/new/mh
+etc	/usr/new/lib/mh
+d7 3
+a9 29
+manuals	new
+editor	prompter
+mts	sendmail/smtp
+options	BSD42 BSD43 SUN40 TYPESIG=void
+options	DBM
+options BIND
+curses	-lcurses -ltermcap
+ranlib	on
+ldoptions -s -O
+#
+# include "bbc" support to read NetNews via the NNTP.
+#
+bboards	nntp
+bbdelivery off
+pop	on
+#
+# These are optional: 
+#
+# DUMB	  restricts some address defaulting
+# RPATHS  don't throw away UNIX "From " lines
+# MHE	  for Emacs/MH interface
+# SBACKUP change to "#" instead of ","
+# MSGPROT default messages to 0600 protection mode
+#
+options	DUMB 
+options	RPATHS
+options	MHE 
+options	SBACKUP='"\\043"'
+options	MSGPROT='"0600"'
+@
+
+
+1.5
+log
+@Id
+@
+text
+@d1 6
+a6 1
+# @@(#)$Id:$
+a7 1
+bboards	off
+d11 1
+d13 23
+a35 2
+options	BSD42 BIND DBM
+options	DUMB RPATHS
+d38 1
+a38 2
+pop	off
+ldoptions -n -s -O
+@
+
+
+1.4
+log
+@fix
+@
+text
+@d1 1
+@
+
+
+1.3
+log
+@a fair default
+@
+text
+@d8 1
+a8 1
+options DUMB RPATHS
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d7 3
+a9 2
+options	BSD42 BERK TTYD DUMB
+options	MHE NETWORK BIND RPATHS
+a10 1
+#options      DBM
+d12 1
+a12 1
+ldoptions -ns -O
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 1
+@

@@ -1,0 +1,716 @@
+head	1.17;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.17
+date	94.04.21.18.20.50;	author jromine;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	92.11.04.01.01.43;	author jromine;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	92.02.09.07.13.34;	author jromine;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	92.02.05.22.50.17;	author jromine;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	92.02.05.07.26.30;	author jromine;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	92.02.03.22.45.20;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.01.31.22.26.24;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.01.23.23.06.45;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	90.04.05.14.59.58;	author sources;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	90.04.02.14.43.19;	author sources;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.03.12.11.07.47;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.02.21.15.36.00;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.02.09.10.34.35;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.09.10.17.36;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.01.14.28.48;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.01.14.19.44;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.17
+log
+@update for scansbr.c -- overload {folder}.c_flags with hdrflg
+@
+text
+@/* scan.c - display a one-line "scan" listing */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: scan.c,v 1.16 1992/12/15 00:20:22 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include "../h/formatsbr.h"
+#include "../h/scansbr.h"
+#include "../zotnet/tws.h"
+#include <errno.h>
+#include <stdio.h>
+#ifdef LOCALE
+#include	<locale.h>
+#endif
+
+/*  */
+
+static struct swit switches[] = {
+#define	CLRSW	0
+    "clear", 0,
+#define	NCLRSW	1
+    "noclear", 0,
+
+#define	FORMSW	2
+    "form formatfile", 0,
+#define	FMTSW	3
+    "format string", 5,
+
+#define	HEADSW	4
+    "header", 0,
+#define	NHEADSW	5
+    "noheader", 0,
+
+#define	WIDSW	6
+    "width columns", 0,
+
+#define	REVSW	7
+    "reverse", 0,
+#define	NREVSW	8
+    "noreverse", 0,
+
+#define	FILESW	9
+    "file file", 4,
+
+#define	HELPSW	10
+    "help", 4,
+
+    NULL, 0
+};
+
+/*  */
+
+extern int errno;
+#ifdef	LBL	/* global for sbr/formatsbr.c - yech! */
+extern struct msgs *fmt_current_folder;	
+#endif
+
+
+void	clear_screen ();
+
+/*  */
+
+/* ARGSUSED */
+
+main (argc, argv)
+int     argc;
+char   *argv[];
+{
+     int    clearflag = 0,
+	    hdrflag = 0,
+	    revflag = 0, 	/* used to be #ifdef BERK */
+	    width = 0,
+            msgp = 0,
+	    bits,		/* should match mp->msgstats[] type */
+	    ontty,
+	    state,
+            msgnum;
+    long    clock;
+    char   *cp,
+           *maildir,
+	   *file = NULL,
+           *folder = NULL,
+	   *form = NULL,
+	   *format = NULL,
+            buf[100],
+          **ap,
+          **argp,
+           *nfs,
+           *arguments[MAXARGS],
+           *msgs[MAXARGS];
+    struct msgs *mp;
+    FILE * in;
+
+#ifdef LOCALE
+	setlocale(LC_ALL, "");
+#endif
+    invo_name = r1bindex (argv[0], '/');
+    mts_init (invo_name);
+    if ((cp = m_find (invo_name)) != NULL) {
+	ap = brkstring (cp = getcpy (cp), " ", "\n");
+	ap = copyip (ap, arguments);
+    }
+    else
+	ap = arguments;
+    (void) copyip (argv + 1, ap);
+    argp = arguments;
+
+/*  */
+
+    while (cp = *argp++) {
+	if (*cp == '-')
+	    switch (smatch (++cp, switches)) {
+		case AMBIGSW: 
+		    ambigsw (cp, switches);
+		    done (1);
+		case UNKWNSW: 
+		    adios (NULLCP, "-%s unknown", cp);
+		case HELPSW: 
+		    (void) sprintf (buf, "%s [+folder] [msgs] [switches]",
+			    invo_name);
+		    help (buf, switches);
+		    done (1);
+
+		case CLRSW: 
+		    clearflag++;
+		    continue;
+		case NCLRSW: 
+		    clearflag = 0;
+		    continue;
+
+		case FORMSW: 
+		    if (!(form = *argp++) || *form == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    format = NULL;
+		    continue;
+		case FMTSW: 
+		    if (!(format = *argp++) || *format == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    form = NULL;
+		    continue;
+
+		case HEADSW: 
+		    hdrflag++;
+		    continue;
+		case NHEADSW: 
+		    hdrflag = 0;
+		    continue;
+
+		case WIDSW: 
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    width = atoi (cp);
+		    continue;
+		case REVSW:
+		    revflag++;
+		    continue;
+		case NREVSW:
+		    revflag = 0;
+		    continue;
+
+		case FILESW:
+		    if (!(cp = *argp++) || (cp[0] == '-' && cp[1]))
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    if (strcmp (file = cp, "-"))
+			file = path (cp, TFILE);
+		    continue;
+	    }
+	if (*cp == '+' || *cp == '@@') {
+	    if (folder)
+		adios (NULLCP, "only one folder at a time!");
+	    else
+		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+	}
+	else
+	    msgs[msgp++] = cp;
+    }
+
+
+    if (!m_find ("path"))
+	free (path ("./", TFOLDER));
+    nfs = new_fs (form, format, FORMAT);	/* must be before chdir() */
+
+    if (file) {
+	if (msgp)
+	    adios (NULLCP, "\"msgs\" not allowed with -file");
+	if (folder)
+	    adios (NULLCP, "\"+folder\" not allowed with -file");
+	/* we've been asked to scan a maildrop file */
+	if (strcmp (file, "-")) {
+	    in = fopen (file, "r");
+	    if (in == NULL)
+		adios (file, "unable to open");
+	}
+	else {
+	    in = stdin;
+	    file = "stdin";
+	}
+
+#ifndef	JLR
+	if (hdrflag) {
+	    (void) time (&clock);
+	    printf ("Folder %-32s%s\n\n", file,
+		    dasctime (dlocaltime (&clock), TW_NULL));
+	}
+#endif	/* JLR */
+	m_unknown (in);
+	for (msgnum = 1; ; ++msgnum) {
+	    state = scan (in, msgnum, -1, nfs, width, 0, 0,
+		    hdrflag, file, 0L, 1);
+	    if (state != SCNMSG && state != SCNENC)
+		break;
+	}
+	fclose (in);
+	done (0);
+    }
+
+    if (!msgp)
+	msgs[msgp++] = "all";
+    if (!folder)
+	folder = m_getfolder ();
+    maildir = m_maildir (folder);
+
+    if (chdir (maildir) == NOTOK)
+	adios (maildir, "unable to change directory to");
+    if (!(mp = m_gmsg (folder)))
+	adios (NULLCP, "unable to read folder %s", folder);
+    if (mp -> hghmsg == 0)
+	adios (NULLCP, "no messages in %s", folder);
+
+    for (msgnum = 0; msgnum < msgp; msgnum++)
+	if (!m_convert (mp, msgs[msgnum]))
+	    done(1);
+    m_setseq (mp);
+
+    m_replace (pfolder, folder);
+    m_sync (mp);
+    m_update ();
+
+    if (cp = m_find(usequence)) { /* set bits for each unseen sequence */
+	char *dp = NULL;
+
+	bits = 0;
+	for (ap = brkstring(dp = getcpy(cp), " ", "\n"); ap && *ap; ap++)
+	    bits |= m_seqflag(mp, *ap);
+
+	if (dp)
+	    free(dp);
+    }
+
+    ontty = isatty (fileno (stdout));
+
+#ifdef	LBL
+    else
+	fmt_current_folder = mp;
+#endif
+
+/*  */
+
+    for (msgnum = revflag ? mp -> hghsel : mp -> lowsel;
+	    (revflag ? msgnum >= mp -> lowsel : msgnum <= mp -> hghsel);
+	    msgnum += revflag ? (-1) : 1)
+	if (mp -> msgstats[msgnum] & SELECTED) {
+	    if ((in = fopen (cp = m_name (msgnum), "r")) == NULL) {
+#ifdef	notdef
+		if (errno != EACCES)
+#endif
+		    admonish (cp, "unable to open message");
+#ifdef	notdef
+		else
+		    printf ("%*d  unreadable\n", DMAXFOLDER, msgnum);
+#endif
+		continue;
+	    }
+
+#ifndef	JLR
+	    if (hdrflag) {
+		(void) time (&clock);
+		printf ("Folder %-32s%s\n\n", folder,
+			dasctime (dlocaltime (&clock), TW_NULL));
+	    }
+#endif	/* JLR */
+	    switch (state = scan (in, msgnum, 0, nfs, width,
+			msgnum == mp -> curmsg,
+			mp -> msgstats[msgnum] & bits,
+			hdrflag, folder, 0L, 1)) {
+		case SCNMSG: 
+		case SCNENC: 
+		case SCNERR: 
+		    break;
+
+		default: 
+		    adios (NULLCP, "scan() botch (%d)", state);
+
+		case SCNEOF: 
+#ifdef	notdef
+		    printf ("%*d  empty\n", DMAXFOLDER, msgnum);
+#else
+		    advise (NULLCP, "message %d: empty", msgnum);
+#endif
+		    break;
+	    }
+	    hdrflag = 0;
+	    (void) fclose (in);
+	    if (ontty)
+		(void) fflush (stdout);
+	}
+#ifdef	LBL
+    m_sync (mp);	/* because formatsbr might have made changes */
+#endif
+
+/*  */
+
+    if (clearflag)
+	clear_screen ();
+
+    done (0);
+}
+@
+
+
+1.16
+log
+@endif sugar
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scan.c,v 1.15 1992/11/04 01:01:43 jromine Exp jromine $";
+d209 1
+a209 1
+		    hdrflag ? file : (char *)0, 0L, 1);
+d285 1
+a285 1
+			hdrflag ? folder : (char *)0, 0L, 1)) {
+@
+
+
+1.15
+log
+@LOCALE
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: scan.c,v 1.14 1992/02/09 07:13:34 jromine Exp jromine $";
+#endif	lint
+@
+
+
+1.14
+log
+@allow headers with -file
+allow "-file -" to mean read stdin
+put V.Jacobson changes under "options LBL"
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scan.c,v 1.13 1992/02/05 22:50:17 jromine Exp jromine $";
+d12 3
+d94 3
+@
+
+
+1.13
+log
+@allow "-file -" for stdin
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scan.c,v 1.12 1992/02/05 07:26:30 jromine Exp jromine $";
+d51 1
+a51 1
+#ifdef	VAN	/* global for sbr/formatsbr.c - yech! */
+d156 1
+a156 1
+		    if (!(cp = *argp++) || *cp == '-')
+d158 2
+a159 1
+		    file = path (cp, TFILE);
+d193 7
+d246 1
+a246 1
+#ifdef	VAN
+d301 1
+a301 1
+#ifdef	VAN
+@
+
+
+1.12
+log
+@put unseen sequence in mh-format
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scan.c,v 1.11 1992/02/03 22:45:20 jromine Exp jromine $";
+d182 9
+a190 3
+	in = fopen (file, "r");
+	if (in == NULL)
+	    adios (file, "unable to open");
+@
+
+
+1.11
+log
+@move -file up so folder context doesn't happen
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scan.c,v 1.10 1992/01/31 22:26:24 jromine Exp jromine $";
+d71 1
+d188 1
+a188 1
+	    state = scan (in, msgnum, -1, nfs, width, 0,
+d219 11
+d264 1
+@
+
+
+1.10
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scan.c,v 1.9 1992/01/23 23:06:45 jromine Exp jromine $";
+d173 23
+a201 2
+    nfs = new_fs (form, format, FORMAT);	/* must be before chdir() */
+
+a219 16
+    if (file) {
+	/* we've been asked to scan a maildrop file */
+	in = fopen (file, "r");
+	if (in == NULL)
+		adios (NULLCP, "can't open %s (%d)", file, errno);
+
+	m_unknown (in);
+	for (msgnum = 1; ; ++msgnum) {
+		state = scan (in, msgnum, -1, nfs, width, 0,
+			hdrflag ? file : (char *)0, 0L, 1);
+		if (state != SCNMSG && state != SCNENC)
+			break;
+	}
+	fclose (in);
+	done (0);
+    }
+@
+
+
+1.9
+log
+@new formatsbr changes under JLR
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: scan.c,v 1.8 1990/04/05 14:59:58 sources Exp jromine $";
+d45 1
+a45 1
+    NULL, NULL
+@
+
+
+1.8
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d207 2
+a208 1
+		state = scan (in, msgnum, -1, nfs, width, 0, hdrflag, 0L, 1);
+d238 1
+d244 1
+d247 1
+a247 1
+			hdrflag, 0L, 1)) {
+@
+
+
+1.7
+log
+@RAND fixes
+@
+text
+@d2 3
+@
+
+
+1.6
+log
+@change "empty" and "unreadable" message to be error messages
+via advise().  I don't agree with this change -- eventually,
+formatsbr should have to deal with these errors.
+/JLR
+@
+text
+@d88 1
+@
+
+
+1.5
+log
+@add #ifdef VAN
+@
+text
+@d222 1
+d224 1
+d226 1
+d229 1
+d250 1
+d252 3
+d262 1
+d264 1
+@
+
+
+1.4
+log
+@Fixes from Van Jacobson
+@
+text
+@d48 3
+a50 1
+extern struct msgs *fmt_current_folder;	/* global for sbr/formatsbr.c - yech! */
+d210 1
+d213 1
+@
+
+
+1.3
+log
+@fixup -reverse
+@
+text
+@d36 4
+a39 1
+#define	HELPSW	9
+d48 1
+d72 1
+d147 6
+a163 1
+/*  */
+d193 18
+d250 1
+@
+
+
+1.2
+log
+@relent and add -[no]reverse
+@
+text
+@a184 12
+#ifdef	notdef
+    if (revflag) {
+	firstlim = mp -> hghsel;
+	lastlim = mp -> lowsel;
+	incr = -1;
+    }
+    else {
+	firstlim = mp -> lowsel;
+	lastlim = mp -> hghsel;
+	incr = 1;
+    }
+#endif	notdef
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a30 1
+#ifdef	BERK
+a36 3
+#else	not BERK
+#define	HELPSW	7
+#endif	not BERK
+d59 1
+a64 6
+#ifdef  BERK
+    register int    revflag = 0,
+		    firstlim,
+		    lastlim,
+		    incr;
+#endif  BERK
+a135 1
+#ifdef  BERK
+a141 1
+#endif  BERK
+d185 1
+a185 1
+#ifdef  BERK
+d196 4
+a199 7
+
+    for (msgnum = firstlim;
+	    (revflag ? msgnum >= lastlim : msgnum <= lastlim);
+	    msgnum += incr)
+#else	not BERK
+    for (msgnum = mp -> lowsel; msgnum <= mp -> hghsel; msgnum++)
+#endif  not BERK
+@

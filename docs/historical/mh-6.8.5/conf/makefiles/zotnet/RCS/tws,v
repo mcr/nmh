@@ -1,0 +1,462 @@
+head	1.16;
+access;
+symbols;
+locks
+	jromine:1.16; strict;
+comment	@# @;
+
+
+1.16
+date	93.02.26.21.50.51;	author jromine;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	92.11.18.16.54.16;	author jromine;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	92.11.12.23.23.50;	author jromine;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	92.11.11.20.29.22;	author jromine;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	92.11.02.23.45.21;	author jromine;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	92.02.03.16.39.08;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.01.30.00.31.18;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	90.04.05.15.16.39;	author sources;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	90.03.12.11.28.08;	author sources;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	90.02.23.10.32.19;	author sources;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.02.21.16.58.43;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.02.08.15.47.51;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.02.08.15.47.00;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.06.12.56.24;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.01.25.16.18.47;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.01.25.16.18.25;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.16
+log
+@use lexed version of dtimep.lex if lex fails
+@
+text
+@##############################################################################
+#    Instructions to Make, for compilation of ZOT UIP/utility processes
+#
+#	@@(MHWARNING)
+# @@(#)$Id: tws,v 1.15 1992/11/18 16:54:16 jromine Exp jromine $
+##############################################################################
+
+# The following entries were inserted during MH configuration
+BINDIR	=	$(DESTDIR)@@(MHBINPATH)
+ETCDIR	=	$(DESTDIR)@@(MHETCPATH)
+OPTIONS	=	@@(MHOPTIONS) -I..
+LDOPTIONS=	@@(LDOPTIONS)
+LDOPTLIB=	@@(LDOPTLIB)
+
+CC      =	@@(MHCOMPILER)
+LN	=	@@(LN)
+LEX	=	@@(LEX)
+@@BEGIN: OPTIM
+CFLAGS  =	$(OPTIONS)
+@@END: OPTIM
+@@BEGIN: DEBUG
+CFLAGS  =	      $(OPTIONS)
+@@END: DEBUG
+LINT	=	lint
+LFLAGS	=	-bhu $(OPTIONS)
+LLIBS	=
+LDFLAGS =	$(LDOPTIONS)
+LIBES   =
+LDLIBS	=	$(LIBES) $(LDOPTLIB)
+
+OFILES	=	dtimep.o lexstring.o dtime.o
+LFILES	= 	l-dtimep l-dtime l-date
+
+.c:;		echo $@@
+
+######################################################################
+#	Here it is...
+######################################################################
+
+all:		$(OFILES) date
+
+lint:		$(LFILES)
+
+install:	inst-all clean
+
+inst-all:;
+
+tar:;
+
+uninstall:;
+
+
+######################################################################
+# date
+######################################################################
+
+date:		date.o dtime.o $(LIBES)
+		$(CC) $(LDFLAGS) -o $@@ date.o dtime.o $(LDLIBS)
+
+l-date:;	$(LINT) $(LFLAGS) date.c dtime.c $(LLIBS)
+
+
+######################################################################
+# dtimep
+######################################################################
+
+
+dtimep:		dtimep.o lexstring.o
+
+dtimep.o:	dtimep.c
+
+dtimep.c:	dtimep.lex
+		$(LEX) dtimep.lex | sed -f lexedit.sed > dtimep.c
+		len=`wc -l dtimep.c | awk ' { print $$1 } '`; \
+		    if [ $$len -eq 1 ]; then cp dtimep.c-lexed dtimep.c; fi
+
+lexstring.o:	lexstring.c
+		$(CC) $(CFLAGS) -c -DONECASE lexstring.c
+
+l-dtimep:;	$(LINT) $(LFLAGS) dtimep.c -DONECASE lexstring.c $(LLIBS)
+
+
+######################################################################
+# dtime
+######################################################################
+
+dtime:		dtime.o
+
+l-dtime:;	$(LINT) $(LFLAGS) dtime.c $(LLIBS)
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+tws.h:		../tws.h
+		rm -f $@@
+		$(LN) ../tws.h $@@
+
+unconfig:	distribution
+		-rm -f Makefile
+
+distribution:   clean
+
+clean:		unclean
+		-rm -f dtimep.c *.o date
+
+unclean:;	-rm -f _* :* core eddep makedep
+
+
+##############################################################################
+#	Dependencies
+##############################################################################
+
+MODULES	=	date dtime dtimep
+
+depend:;	for m in $(MODULES); do ( \
+		    i=`basename $$m .c`; \
+		    echo $$i.o: $$i.c >> makedep; \
+		    grep '^#[ 	]*include' $$i.c | \
+			sed -e 's,[^"]*"/\([^"]*\)".*,'$$i'.o: /\1,' \
+			    -e 's,[^"]*"\([^"]*\)".*,'$$i'.o: \1,' \
+			    -e 's,[^<]*<\(.*\)>.*,#'$$i'.o: /usr/include/\1,' \
+			>> makedep \
+		); done
+		echo '/^# DO NOT DELETE THIS LINE/+2,$$d' > eddep
+		echo '$$r makedep' >> eddep
+		echo 'w' >> eddep
+		cp Makefile _Makefile
+		ed - Makefile < eddep
+		rm eddep makedep
+		echo '# DEPENDENCIES MUST END AT END OF FILE' >> Makefile
+		echo '# IF YOU PUT STUFF HERE IT WILL GO AWAY' >> Makefile
+
+# DO NOT DELETE THIS LINE
+# DEPENDENCIES START HERE
+date.o: date.c
+date.o: ../tws.h
+#date.o: /usr/include/stdio.h
+dtime.o: dtime.c
+dtime.o: ../tws.h
+dtime.o: ../../h/strings.h
+#dtime.o: /usr/include/stdio.h
+#dtime.o: /usr/include/sys/types.h
+#dtime.o: /usr/include/sys/sysmacros.h
+#dtime.o: /usr/include/sys/timeb.h
+#dtime.o: /usr/include/time.h
+dtimep.o: dtimep.c
+#dtimep.o: /usr/include/stdio.h
+dtimep.o: ../tws.h
+dtimep.o: ../../h/strings.h
+#dtimep.o: /usr/include/ctype.h
+#dtimep.o: /usr/include/sys/types.h
+#dtimep.o: /usr/include/sys/sysmacros.h
+#dtimep.o: /usr/include/sys/timeb.h
+#dtimep.o: /usr/include/time.h
+# DEPENDENCIES MUST END AT END OF FILE
+# IF YOU PUT STUFF HERE IT WILL GO AWAY
+@
+
+
+1.15
+log
+@fixup LN
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: tws,v 1.14 1992/11/12 23:23:50 jromine Exp jromine $
+d74 2
+@
+
+
+1.14
+log
+@link tws.h
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: tws,v 1.13 1992/11/11 20:29:22 jromine Exp jromine $
+d16 1
+@
+
+
+1.13
+log
+@fixup for some brain-damaged makes
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: tws,v 1.12 1992/11/02 23:45:21 jromine Exp jromine $
+d30 1
+a30 1
+OFILES	=	dtimep.o lexstring.o dtime.o  date
+d39 1
+a39 1
+all:		$(OFILES)
+d93 3
+@
+
+
+1.12
+log
+@make sure to remove dtimep.c -- it doesn't work as-is on all systems
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: tws,v 1.11 1992/02/03 16:39:08 jromine Exp jromine $
+d30 3
+d39 1
+a39 1
+all:		dtimep dtime date
+d41 1
+a41 1
+lint:		l-dtimep l-dtime l-date
+@
+
+
+1.11
+log
+@typo
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: tws,v 1.10 1992/01/30 00:31:18 jromine Exp jromine $
+a77 7
+
+lex:		zap-dtime dtimep.c
+
+zap-dtime:;	rm -f dtimep.c
+
+
+######################################################################
+d97 1
+a97 1
+		-rm -f *.o date
+@
+
+
+1.10
+log
+@don't delete lex'd flie
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: tws,v 1.9 1990/04/05 15:16:39 sources Exp jromine $
+d65 1
+a65 1
+ 
+@
+
+
+1.9
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d78 7
+d97 1
+d104 1
+a104 1
+		-rm -f dtimep.c *.o date
+@
+
+
+1.8
+log
+@remove -O (put in mhconfig)
+@
+text
+@d5 1
+@
+
+
+1.7
+log
+@make sure tws.h is in zotnet/ not zotnet/tws/
+@
+text
+@d17 1
+a17 1
+CFLAGS  =	-O    $(OPTIONS)
+@
+
+
+1.6
+log
+@make unconfig changes
+@
+text
+@d127 1
+a127 1
+date.o: tws.h
+d130 1
+a130 1
+dtime.o: tws.h
+d134 1
+a136 1
+#dtime.o: /usr/include/sys/time.h
+d139 1
+a139 1
+dtimep.o: tws.h
+d142 4
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d89 3
+@
+
+
+1.4
+log
+@LEX define
+@
+text
+@d68 1
+a68 1
+		$(LEX) -nt dtimep.lex | sed -f lexedit.sed > dtimep.c
+@
+
+
+1.3
+log
+@ANSI Compilance
+@
+text
+@d15 1
+d68 1
+a68 1
+		lex -nt dtimep.lex | sed -f lexedit.sed > dtimep.c
+@
+
+
+1.2
+log
+@add default rule for .c
+@
+text
+@d14 1
+a14 1
+CC      =	cc
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d28 1
+@

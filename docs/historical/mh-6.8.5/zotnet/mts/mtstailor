@@ -1,0 +1,4 @@
+mmdfldir:	/var/spool/mail
+mmdflfil:	
+hostable:	/opt/mh-6.8.5/lib/hosts
+servers:	localhost \01localnet

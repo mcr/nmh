@@ -1,0 +1,361 @@
+head	2.7;
+access;
+symbols;
+locks; strict;
+
+
+2.7
+date	92.12.02.22.21.43;	author jromine;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	90.04.08.20.01.28;	author sources;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	90.04.08.19.55.42;	author sources;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	90.04.08.14.04.31;	author sources;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.04.05.20.15.38;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.04.05.15.17.43;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.04.05.13.23.57;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.56.37;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.44.17;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.7
+log
+@rename mh-6.7 -> mh-changes
+@
+text
+@##############################################################################
+#    Instructions to Make, for generation of MH documentation sets
+#
+#	@@(MHWARNING)
+# @@(#)$Id: dist,v 2.6 1990/04/08 20:01:28 sources Exp jromine $
+##############################################################################
+
+MAKE	=	make DESTDIR=$(DESTDIR) $(MFLAGS) -k
+SHELL	=	/bin/sh
+
+
+##############################################################################
+#	Generation Rules
+##############################################################################
+
+.SUFFIXES:	.cat .dvi .imp
+
+.cat.imp:;	catimp -i $@@ $<
+
+.dvi.imp:;	dviimp -i $@@ $<
+
+
+######################################################################
+#	Here it is...
+######################################################################
+
+TARGETS	=	../READ-ME \
+		mh-gen.cat MH.cat ADMIN.cat mh-changes.cat \
+		bboards.dvi beginners.dvi mh4mm.dvi mh6.dvi multifarious.dvi \
+		mznet.dvi realwork.dvi trusted.dvi tutorial.dvi
+
+all:;		@@cd ../config; make version
+		@@for f in $(TARGETS); do $(MAKE) $$f; done
+
+
+doc:		MH.doc ADMIN.doc mh-changes.doc
+
+
+IMPRESS	=	mh-gen.imp MH.imp ADMIN.imp mh-changes.imp \
+		bboards.imp beginners.imp \
+		mh4mm.imp mh6.imp multifarious.imp mznet.imp realwork.imp \
+		trusted.imp tutorial.imp
+
+imp:;		@@for f in $(IMPRESS); do $(MAKE) $$f; done
+
+
+i-all:	all true
+	lpr -t -J MH-gen mh-gen.cat
+	lpr -t -J MH MH.cat
+	lpr -t -J ADMIN ADMIN.cat
+	lpr -t -J MH-CHANGES mh-changes.cat
+	lpr -d -J BBoards bboards.dvi
+	lpr -d -J Beginners beginners.dvi
+	lpr -d -J MH-4-MM mh4mm.dvi
+	lpr -d -J mh6.5 mh6.dvi
+	lpr -d -J Multifarious multifarious.dvi
+	lpr -d -J MZnet mznet.dvi
+	lpr -d -J Realwork realwork.dvi
+	lpr -d -J Trusted trusted.dvi
+	lpr -d -J Tutorial tutorial.dvi
+
+
+true:;
+
+
+#############################################################
+#	Documentation Set
+#############################################################
+
+ADMIN.cat MH.cat \
+ADMIN.doc MH.doc \
+ADMIN.imp MH.imp:	true
+		cd ../doc; make $@@
+		cp ../doc/$@@ $@@
+
+../READ-ME:	../conf/mh-gen.8
+		nroff -man ../conf/mh-gen.8 > read-me.tmp
+		mv read-me.tmp $@@
+
+mh-gen.cat:	../conf/mh-gen.8
+		itroff -t -man ../conf/mh-gen.8 > mh-gen.tmp
+		mv mh-gen.tmp $@@
+
+mh-changes.cat \
+mh-changes.doc \
+mh-changes.imp:	true
+		cd ../papers/changes; make $@@
+		cp ../papers/changes/$@@ $@@
+
+bboards.imp \
+bboards.dvi:	true
+		cd ../papers/bboards; make $@@
+		cp ../papers/bboards/$@@ $@@
+
+beginners.imp \
+beginners.dvi:	true
+		cd ../papers/beginners; make $@@
+		cp ../papers/beginners/$@@ $@@
+
+mh4mm.imp \
+mh4mm.dvi:	true
+		cd ../papers/mh4mm; make $@@
+		cp ../papers/mh4mm/$@@ $@@
+
+mh6.imp \
+mh6.dvi:	true
+		cd ../papers/mh6.5; make $@@
+		cp ../papers/mh6.5/$@@ $@@
+
+multifarious.imp \
+multifarious.dvi:	true
+		cd ../papers/multifarious; make $@@
+		cp ../papers/multifarious/$@@ $@@
+
+mznet.imp \
+mznet.dvi:	true
+		cd ../papers/mznet; make $@@
+		cp ../papers/mznet/$@@ $@@
+
+realwork.imp \
+realwork.dvi:	true
+		cd ../papers/realwork; make $@@
+		cp ../papers/realwork/$@@ $@@
+
+trusted.imp \
+trusted.dvi:	true
+		cd ../papers/trusted; make $@@
+		cp ../papers/trusted/$@@ $@@
+
+tutorial.imp \
+tutorial.dvi:	true
+		cd ../papers/tutorial; make $@@
+		cp ../papers/tutorial/$@@ $@@
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+distribution:   clean ../READ-ME
+
+unconfig clean:		unclean
+		rm -f *.cat *.dvi *.imp *.doc
+
+unclean:;	rm -f *.tmp _* :* core
+@
+
+
+2.6
+log
+@*** empty log message ***
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: dist,v 2.5 90/04/08 19:55:42 sources Exp Locker: sources $
+d28 1
+a28 1
+		mh-gen.cat MH.cat ADMIN.cat mh6.7.cat \
+d36 1
+a36 1
+doc:		MH.doc ADMIN.doc mh6.7.doc
+d39 1
+a39 1
+IMPRESS	=	mh-gen.imp MH.imp ADMIN.imp mh6.7.imp \
+d51 1
+a51 1
+	lpr -t -J MH.6.7 mh6.7.cat
+d84 5
+a88 5
+mh6.7.cat \
+mh6.7.doc \
+mh6.7.imp:	true
+		cd ../papers/mh6.7; make $@@
+		cp ../papers/mh6.7/$@@ $@@
+@
+
+
+2.5
+log
+@*** empty log message ***
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: dist,v 2.4 90/04/08 14:04:31 sources Exp Locker: sources $
+d36 1
+a36 1
+doc:		MH.doc ADMIN.doc
+d84 3
+a86 2
+mh6.7.imp \
+mh6.7.cat:	true
+@
+
+
+2.4
+log
+@*** empty log message ***
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: dist,v 2.3 90/04/05 20:15:38 sources Exp Locker: sources $
+a69 4
+../ADMIN.doc:	true
+		cd ../doc; make $@@
+		cp ../doc/$@@ $@@
+
+d139 1
+a139 1
+distribution:   clean ../READ-ME ../ADMIN.doc
+@
+
+
+2.3
+log
+@fix
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: dist,v 2.2 90/04/05 15:17:43 sources Exp Locker: sources $
+d32 2
+a33 1
+all:;		@@for f in $(TARGETS); do $(MAKE) $$f; done
+d70 4
+d143 1
+a143 1
+distribution:   clean ../READ-ME
+@
+
+
+2.2
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d29 1
+a29 1
+		bboards.dvi beginners.dvi mh4mm.dvi mh6.5.dvi multifarious.dvi \
+d40 1
+a40 1
+		mh4mm.imp mh6.5.imp multifarious.imp mznet.imp realwork.imp \
+d54 1
+a54 1
+	lpr -d -J mh6.5 mh6.5.dvi
+d103 2
+a104 2
+mh6.5.imp \
+mh6.5.dvi:	true
+@
+
+
+2.1
+log
+@add mh6.7 paper
+@
+text
+@d5 1
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d27 2
+a28 2
+		mh-gen.cat MH.cat ADMIN.cat \
+		bboards.dvi beginners.dvi mh4mm.dvi mh6.dvi multifarious.dvi \
+d37 3
+a39 2
+IMPRESS	=	mh-gen.imp MH.imp ADMIN.imp bboards.imp beginners.imp \
+		mh4mm.imp mh6.imp multifarious.imp mznet.imp realwork.imp \
+d49 1
+d53 1
+a53 1
+	lpr -d -J mh6 mh6.dvi
+d82 5
+d102 2
+a103 2
+mh6.imp \
+mh6.dvi:	true
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d132 1
+a132 1
+clean:		unclean
+@

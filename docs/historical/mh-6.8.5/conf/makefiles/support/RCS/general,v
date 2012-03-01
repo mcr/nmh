@@ -1,0 +1,804 @@
+head	1.20;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.20
+date	95.12.06.20.57.55;	author jromine;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	93.08.20.15.56.25;	author jromine;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	92.10.28.18.56.06;	author jromine;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	92.10.26.16.38.00;	author jromine;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	92.10.16.21.36.34;	author jromine;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	92.02.14.16.25.03;	author jromine;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	92.02.09.21.29.00;	author jromine;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	92.01.31.22.48.43;	author jromine;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	92.01.31.21.37.07;	author jromine;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	92.01.31.16.38.59;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	90.04.05.15.16.25;	author sources;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	90.03.28.11.17.40;	author sources;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	90.03.21.09.57.11;	author sources;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	90.03.20.20.33.18;	author sources;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.03.20.20.30.34;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.03.15.21.13.57;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.15.21.05.13;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.15.16.48.07;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.21.16.56.14;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.06.12.54.15;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.20
+log
+@pgp changes from mtr
+@
+text
+@##############################################################################
+#    Instructions to Make, for general support processes
+#
+#	@@(MHWARNING)
+# @@(#)$Id: general,v 1.19 1993/08/20 15:56:25 jromine Exp jromine $
+##############################################################################
+
+# The following entries were inserted during MH configuration
+BINDIR  =	$(DESTDIR)@@(MHBINPATH)
+ETCDIR	=	$(DESTDIR)@@(MHETCPATH)
+@@BEGIN: BBSERVER
+BBUID	=	bboards
+IOPTMISC=	inst-bboards
+UOPTMISC=	BBoardAliases
+TOPTMISC=	BBoardAliases
+@@END: BBSERVER
+@@BEGIN: MIME
+IOPTMIME=	inst-mhndefs inst-viamail inst-pgpmime
+UOPTMIME=	mhn_defaults viamail
+TOPTMIME=	mhn_defaults viamail
+@@END: MIME
+REMOVE	=	@@(MHREMOVE)
+FILPROT	=	0644
+PGMPROT	=	0755
+CP      =       @@(CP)
+
+TALL	=	MailAliases components digestcomps distcomps forwcomps \
+		rcvdistcomps replcomps mhl.digest mhl.format mhl.forward \
+		mhl.body mhl.headers scan.default scan.mailx scan.size \
+		scan.time scan.timely packmbox $(TOPTMISC) $(TOPTMIME)
+
+
+##############################################################################
+#	Generate miscellaneous stuff
+##############################################################################
+
+all:;
+
+depend:;
+
+lint:;
+
+install:	inst-all clean
+
+inst-all:	inst-aliases inst-components inst-digestcomps inst-distcomps \
+		inst-forwcomps inst-rcvdistcomps inst-replcomps inst-digest \
+		inst-format inst-forward inst-body inst-headers inst-mailx \
+		inst-default inst-size inst-time inst-timely \
+		inst-packmbox $(IOPTMISC) $(IOPTMIME)
+
+tar:;		@@touch $(TALL)
+		@@make -n inst-all > MAKEGEN
+		@@chmod +x MAKEGEN
+		tar $(TFLAGS) MAKEGEN $(TALL)
+		@@rm -f MAKEGEN
+
+
+uninstall:;	cd $(ETCDIR); \
+		rm -f MailAliases components digestcomps distcomps forwcomps \
+		    rcvdistcomps replcomps mhl.digest mhl.format mhl.forward \
+		    mhl.body mhl.headers scan.default scan.mailx scan.size \
+		    scan.time scan.timely viamail packmbox \
+		    $(UOPTMISC) $(UOPTMIME)
+
+
+##############################################################################
+#	Individual components
+##############################################################################
+
+inst-aliases:	$(ETCDIR)/MailAliases
+
+$(ETCDIR)/MailAliases:	MailAliases
+		-@@if [ ! -f $@@ ]; then \
+		    $(REMOVE) $@@ zMailAliases; \
+		    $(CP) MailAliases $@@; \
+		else \
+		    echo "Will not overwrite existing $@@"; \
+		fi
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-components:	$(ETCDIR)/components
+
+$(ETCDIR)/components:	components
+		-$(REMOVE) $@@ zcomponents
+		$(CP) components $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-digestcomps:	$(ETCDIR)/digestcomps
+
+$(ETCDIR)/digestcomps:	digestcomps
+		-$(REMOVE) $@@ zdigestcomps
+		$(CP) digestcomps $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-distcomps:	$(ETCDIR)/distcomps
+
+$(ETCDIR)/distcomps:	distcomps
+		-$(REMOVE) $@@ zdistcomps
+		$(CP) distcomps $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-forwcomps:	$(ETCDIR)/forwcomps
+
+$(ETCDIR)/forwcomps:	forwcomps
+		-$(REMOVE) $@@ zforwcomps
+		$(CP) forwcomps $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-rcvdistcomps:	$(ETCDIR)/rcvdistcomps
+
+$(ETCDIR)/rcvdistcomps:	rcvdistcomps
+		-$(REMOVE) $@@ zrcvdistcomps
+		$(CP) rcvdistcomps $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-replcomps:	$(ETCDIR)/replcomps
+
+$(ETCDIR)/replcomps:	replcomps
+		-$(REMOVE) $@@ zreplcomps
+		$(CP) replcomps $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-digest:	$(ETCDIR)/mhl.digest
+
+$(ETCDIR)/mhl.digest:	mhl.digest
+		-$(REMOVE) $@@ zmhl.digest
+		$(CP) mhl.digest $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-format:	$(ETCDIR)/mhl.format
+
+$(ETCDIR)/mhl.format:	mhl.format
+		-$(REMOVE) $@@ zmhl.format
+		$(CP) mhl.format $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-forward:	$(ETCDIR)/mhl.forward
+
+$(ETCDIR)/mhl.forward:	mhl.forward
+		-$(REMOVE) $@@ zmhl.forward
+		$(CP) mhl.forward $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-body:	$(ETCDIR)/mhl.body
+
+$(ETCDIR)/mhl.body:	mhl.body
+		-$(REMOVE) $@@ zmhl.body
+		$(CP) mhl.body $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-headers:	$(ETCDIR)/mhl.headers
+
+$(ETCDIR)/mhl.headers:	mhl.headers
+		-$(REMOVE) $@@ zmhl.headers
+		cp mhl.headers $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-default:	$(ETCDIR)/scan.default
+
+$(ETCDIR)/scan.default:	scan.default
+		-$(REMOVE) $@@ zscan.default
+		$(CP) scan.default $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+inst-mailx:	$(ETCDIR)/scan.mailx
+
+$(ETCDIR)/scan.mailx:	scan.mailx
+		-$(REMOVE) $@@ zscan.mailx
+		$(CP) scan.mailx $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-size:	$(ETCDIR)/scan.size
+
+$(ETCDIR)/scan.size:	scan.size
+		-$(REMOVE) $@@ zscan.size
+		$(CP) scan.size $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-time:	$(ETCDIR)/scan.time
+
+$(ETCDIR)/scan.time:	scan.time
+		-$(REMOVE) $@@ zscan.time
+		$(CP) scan.time $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-timely:	$(ETCDIR)/scan.timely
+
+$(ETCDIR)/scan.timely:	scan.timely
+		-$(REMOVE) $@@ zscan.timely
+		$(CP) scan.timely $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-packmbox:	$(ETCDIR)/packmbox
+
+$(ETCDIR)/packmbox:	packmbox.sh
+		-$(REMOVE) $@@ zpackmbox.sh
+		cp packmbox.sh $@@
+		-@@chmod $(PGMPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-bboards:	$(ETCDIR)/BBoardAliases
+
+$(ETCDIR)/BBoardAliases:	BBoardAliases
+		-@@if [ ! -f $@@ ]; then \
+		    $(REMOVE) $@@ zBBoardAliases; \
+		    $(CP) BBoardAliases $@@; \
+		else \
+		    echo "Will not overwrite existing $@@"; \
+		fi
+		-@@chmod $(FILPROT) $@@
+		-chown $(BBUID) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-viamail:	$(ETCDIR)/viamail
+
+$(ETCDIR)/viamail:	viamail.sh
+		-$(REMOVE) $@@ zviamail.sh
+		cp viamail.sh $@@
+		-@@chmod $(PGMPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-mhndefs:	$(ETCDIR)/mhn_defaults
+
+$(ETCDIR)/mhn_defaults:	true
+		-@@if [ ! -f $@@ ]; then \
+		    ./bootmhn.sh $(ETCDIR); \
+		else \
+		    echo "Will not overwrite existing $@@"; \
+		fi
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+inst-pgpmime:	$(ETCDIR)/pgped.tcl $(BINDIR)/pgped $(BINDIR)/pgpshow
+
+$(ETCDIR)/pgped.tcl:	pgped.tcl
+		-$(REMOVE) $@@ zpgped.tcl
+		cp pgped.tcl $@@
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+$(BINDIR)/pgped:	pgped.sh
+		-$(REMOVE) $@@ zpgped.sh
+		sed -e 's%@@LIB%$(ETCDIR)%' < pgped.sh > $@@
+		-@@chmod $(PGMPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+$(BINDIR)/pgpshow:	pgpshow.sh
+		-$(REMOVE) $@@ zpgpshow.sh
+		cp pgpshow.sh $@@
+		-@@chmod $(PGMPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+unconfig:	distribution
+		-rm -f Makefile
+
+distribution:	clean
+		-rm -f MailAliases
+
+clean:		unclean
+		-rm -f x*
+
+unclean:;	-rm -f z* _* :* core MAKEGEN
+
+true:;
+@
+
+
+1.19
+log
+@fixup from mtr
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: general,v 1.18 1992/10/28 18:56:06 jromine Exp jromine $
+d18 1
+a18 1
+IOPTMIME=	inst-mhndefs inst-viamail
+d287 24
+@
+
+
+1.18
+log
+@fix inst-viamail
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: general,v 1.17 1992/10/26 16:38:00 jromine Exp jromine $
+d281 1
+a281 1
+		-if [ ! -f $@@ ]; then \
+@
+
+
+1.17
+log
+@fixes for MIME install from MTR
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: general,v 1.16 1992/10/16 21:36:34 jromine Exp jromine $
+d18 1
+a18 1
+IOPTMIME=	inst-mhndefs viamail
+d48 1
+a48 1
+		inst-default inst-size inst-time inst-timely inst-viamail \
+@
+
+
+1.16
+log
+@include "true:" target
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: general,v 1.15 1992/02/14 16:25:03 jromine Exp jromine $
+d17 5
+d30 1
+a30 1
+		scan.time scan.timely viamail packmbox $(TOPTMISC)
+d49 1
+a49 1
+		inst-packmbox $(IOPTMISC)
+d63 1
+a63 1
+		    $(UOPTMISC)
+a242 10
+inst-viamail:	$(ETCDIR)/viamail
+
+$(ETCDIR)/viamail:	viamail.sh
+		-$(REMOVE) $@@ zviamail.sh
+		cp viamail.sh $@@
+		-@@chmod $(PGMPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+d264 23
+@
+
+
+1.15
+log
+@add packmbox
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: general,v 1.14 1992/02/09 21:29:00 jromine Exp jromine $
+d287 2
+@
+
+
+1.14
+log
+@add scan.default - duplicate of standard scan format string
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: general,v 1.13 1992/01/31 22:48:43 jromine Exp jromine $
+d25 1
+a25 1
+		scan.time scan.timely viamail $(TOPTMISC)
+d44 1
+a44 1
+		$(IOPTMISC)
+d57 1
+a57 1
+		    scan.time scan.timely viamail \
+d243 10
+@
+
+
+1.13
+log
+@add CP
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: general,v 1.12 1992/01/31 21:37:07 jromine Exp jromine $
+d24 2
+a25 2
+		mhl.body mhl.headers scan.mailx scan.size scan.time \
+		scan.timely viamail $(TOPTMISC)
+d43 2
+a44 1
+		inst-size inst-time inst-timely inst-viamail $(IOPTMISC)
+d56 2
+a57 2
+		    mhl.body mhl.headers scan.mailx scan.size scan.time \
+		    scan.timely viamail \
+d188 9
+@
+
+
+1.12
+log
+@kerberos
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: general,v 1.11 1992/01/31 16:38:59 jromine Exp jromine $
+d20 1
+a20 1
+CP      =       cp -p
+@
+
+
+1.11
+log
+@Multimedia MH
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: general,v 1.10 90/04/05 15:16:25 sources Exp $
+d20 1
+d69 1
+a69 1
+		    cp MailAliases $@@; \
+d82 1
+a82 1
+		cp components $@@
+d92 1
+a92 1
+		cp digestcomps $@@
+d102 1
+a102 1
+		cp distcomps $@@
+d112 1
+a112 1
+		cp forwcomps $@@
+d122 1
+a122 1
+		cp rcvdistcomps $@@
+d132 1
+a132 1
+		cp replcomps $@@
+d142 1
+a142 1
+		cp mhl.digest $@@
+d152 1
+a152 1
+		cp mhl.format $@@
+d162 1
+a162 1
+		cp mhl.forward $@@
+d172 1
+a172 1
+		cp mhl.body $@@
+d192 1
+a192 1
+		cp scan.mailx $@@
+d202 1
+a202 1
+		cp scan.size $@@
+d212 1
+a212 1
+		cp scan.time $@@
+d222 1
+a222 1
+		cp scan.timely $@@
+d243 1
+a243 1
+		    cp BBoardAliases $@@; \
+@
+
+
+1.10
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d19 1
+d23 2
+a24 1
+		mhl.body scan.mailx scan.size scan.time scan.timely $(TOPTMISC)
+d41 2
+a42 2
+		inst-format inst-forward inst-body inst-mailx inst-size \
+		inst-time inst-timely $(IOPTMISC)
+d54 2
+a55 1
+		    mhl.body scan.mailx scan.size scan.time scan.timely \
+d177 10
+d223 10
+@
+
+
+1.9
+log
+@silence some stuff
+@
+text
+@d5 1
+@
+
+
+1.8
+log
+@fix for "bbhome: none"
+@
+text
+@d62 1
+a62 1
+		-if [ ! -f $@@ ]; then \
+d216 1
+a216 1
+		-if [ ! -f $@@ ]; then \
+@
+
+
+1.7
+log
+@fixup
+@
+text
+@d10 1
+a10 1
+@@BEGIN: BBOARDS
+d15 1
+a15 1
+@@END: BBOARDS
+@
+
+
+1.6
+log
+@fixup
+@
+text
+@d62 6
+a67 2
+		-cp $@@ zMailAliases
+		test -f $@@ || cp MailAliases $@@
+@
+
+
+1.5
+log
+@fix
+@
+text
+@d212 6
+a217 2
+		-cp $@@ zBBoardAliases
+		test -f $@@ || cp BBoardAliases $@@
+@
+
+
+1.4
+log
+@don't overinstall alias files
+@
+text
+@d62 1
+a62 1
+		-$(REMOVE) $@@ zMailAliases
+d212 1
+a212 1
+		-$(REMOVE) $@@ zBBoardAliases
+@
+
+
+1.3
+log
+@add explicit chmod for installed files
+@
+text
+@d63 1
+a63 1
+		cp MailAliases $@@
+d213 1
+a213 1
+		cp BBoardAliases $@@
+@
+
+
+1.2
+log
+@make unconfig changes
+@
+text
+@d17 1
+d64 1
+d74 1
+d84 1
+d94 1
+d104 1
+d114 1
+d124 1
+d134 1
+d144 1
+d154 1
+d164 1
+d174 1
+d184 1
+d194 1
+d204 1
+d214 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d207 3
+@

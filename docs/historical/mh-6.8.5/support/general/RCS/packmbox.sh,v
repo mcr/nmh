@@ -1,0 +1,402 @@
+head	1.16;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.16
+date	92.02.14.17.05.31;	author jromine;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	92.02.13.19.07.01;	author jromine;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	92.02.13.18.58.56;	author jromine;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	92.02.13.18.57.46;	author jromine;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	92.02.13.18.39.27;	author jromine;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	92.02.13.00.01.44;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.02.12.23.48.40;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.02.12.23.38.59;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.02.12.23.34.06;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.02.12.23.33.13;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.02.12.23.11.58;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.02.12.22.40.02;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.02.12.22.23.40;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.02.12.22.16.40;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.02.12.22.16.01;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.02.12.22.14.05;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.16
+log
+@make format string backward compatible
+@
+text
+@#! /bin/sh
+# packmbox - pack an MH folder back into a UUCP-style mbox
+# @@(#)$Id: packmbox.sh,v 1.15 1992/02/13 19:07:01 jromine Exp $
+#
+# Defaults:
+#    `+folder'	defaults to current folder
+#    `msgs' 	defaults to all
+#
+# Context:
+#    Current-Folder
+#
+# for simplicity (and speed) we don't parse command-line args (much)
+case $#/$1 in
+   1/-h*) echo "syntax: packmbox [+folder] [msgs] [-help]" 1>&2; exit 0;;
+esac
+
+format="%(msg) From \
+%<{return-path}%(putstr)%|\
+%<(nonnull(mbox{from}))%(putstr)%|nobody%>@@\
+%<(nonnull(host{from}))%(putstr)%|nowhere%>%> \
+%(day{date}) %(month{date}) %2(mday{date}) \
+%02(hour{date}):%02(min{date}):%02(sec{date}) \
+%(void(year{date}))%<(gt 100)%4(putnum)%|19%02(putnum)%>"
+
+trap 'rm -f /tmp/packm$$; exit 1' 1 2 3 15
+
+scan -noclear -noheader -noreverse -width 256 \
+			-format "${format}" $* >/tmp/packm$$
+# tricky -- you must do this "cd" after scan has updated the context
+cd `mhpath`
+
+exec </tmp/packm$$
+rm -f /tmp/packm$$
+while read m f
+do
+    echo "$f"
+    sed -e '/^From /s/^/>/' < $m
+    echo ""
+done
+exit
+@
+
+
+1.15
+log
+@typo
+@
+text
+@d3 1
+a3 1
+# @@(#)$Id: packmbox.sh,v 1.14 1992/02/13 18:58:56 jromine Exp $
+d18 3
+a20 1
+%(putstr %<{return-path}%|%<{from}%(addr{from})%|nobody%>%>) \
+@
+
+
+1.14
+log
+@tricky comment
+@
+text
+@d3 1
+a3 1
+# @@(#)$Id: packmbox.sh,v 1.13 1992/02/13 18:57:46 jromine Exp jromine $
+d21 1
+a21 1
+%(void(year{date}))%<(gt 100)%4(putnum)%|19%2(putnum)%>"
+@
+
+
+1.13
+log
+@back out changes
+Fix 2-digit dates to be "19xx".
+@
+text
+@d3 1
+a3 1
+# @@(#)$Id: packmbox.sh,v 1.11 1992/02/13 00:01:44 jromine Exp $
+d27 1
+@
+
+
+1.12
+log
+@Fixes from Jerry Peek
+@
+text
+@d3 1
+a3 1
+# @@(#)$Id: packmbox.sh,v 1.11 1992/02/13 00:01:44 jromine Exp jromine $
+d20 2
+a21 1
+%02(hour{date}):%02(min{date}):%02(sec{date}) %4(year{date})"
+d23 4
+d29 2
+a30 1
+scan -noclear -noheader -noreverse -width 256 -format "${format}" $* |
+@
+
+
+1.11
+log
+@give help
+@
+text
+@d3 1
+a3 1
+# @@(#)$Id: packmbox.sh,v 1.10 1992/02/12 23:48:40 jromine Exp jromine $
+a21 4
+trap 'rm -f /tmp/packm$$; exit 1' 1 2 3 15
+
+scan -noclear -noheader -noreverse -width 256 \
+			-format "${format}" $* >/tmp/packm$$
+d24 1
+a24 2
+exec </tmp/packm$$
+rm -f /tmp/packm$$
+@
+
+
+1.10
+log
+@*** empty log message ***
+@
+text
+@d3 1
+a3 1
+# @@(#)$Id: packmbox,v 1.9 1992/02/12 23:38:59 jromine Exp jromine $
+a4 2
+# usage: packmbox [+folder] [msgs] > mbox
+#
+d12 4
+a15 1
+# for simplicity (and speed) we don't parse command-line args
+@
+
+
+1.9
+log
+@*** empty log message ***
+@
+text
+@d3 1
+a3 1
+# @@(#)$Id: packmbox,v 1.8 1992/02/12 23:34:06 jromine Exp jromine $
+d23 2
+a24 1
+scan -noclear -noheader -noheader -format "${format}" $* >/tmp/packm$$
+@
+
+
+1.8
+log
+@*** empty log message ***
+@
+text
+@d2 2
+a3 1
+# $Id: packmbox,v 1.7 1992/02/12 23:33:13 jromine Exp jromine $
+d5 1
+a5 1
+# Turn an MH folder back into a UUCP-style mbox
+d8 2
+a9 1
+#    Current-folder, `msgs' defaults to all
+d12 3
+a14 1
+#    Current-folder, and/or msg
+@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@d2 1
+a2 1
+# $Id: packmbox,v 1.6 1992/02/12 23:11:58 jromine Exp jromine $
+d23 1
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@d2 1
+a2 1
+# $Id: packmbox,v 1.5 1992/02/12 22:40:02 jromine Exp jromine $
+a10 4
+#
+# Sadly, this had to run "pick" in order to select the current
+# folder.  "scan" doesn't need an expanded list of the messages,
+# but we need to `cd' to the selected folder.
+d17 3
+a19 1
+msgs="`pick $* -list`"
+d22 1
+a22 1
+scan -noclear -noheader -noheader -format "${format}" ${msgs} | (
+a28 1
+)
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d2 1
+a2 1
+# $Id: MH2Mail,v 1.4 1992/02/12 22:23:40 jromine Exp jromine $
+d4 1
+a4 1
+# Turn an MH folder back into a UUCP-style mbox (yuk!)
+d6 9
+a14 2
+# Note, this tries to avoid bad defaults in your .mh_profile,
+# but may not be 100% successful.
+d16 2
+a17 3
+# set the format string
+format="\
+%(msg) From %(putstr %<{return-path}%?{from}%(addr{from})%|nobody%>) \
+d21 1
+a21 3
+MHCONTEXT=/dev/null; export MHCONTEXT
+# do the work
+scan -noclear -noheader -noheader -format "${format}" $* | (
+d23 2
+d28 1
+a28 1
+    cat $m
+d32 1
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d2 2
+a3 1
+# $Id$
+d8 2
+a9 1
+#
+d15 3
+a18 1
+scan -noclear -noheader -noheader -format "${format}" $* | (
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d2 6
+a7 1
+msgs="`pick $* -list`"
+d14 1
+a14 1
+scan -noheader -format "${format}" ${msgs} | (
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d9 2
+a10 1
+for i in ${msgs}
+d12 2
+a13 2
+    scan -noheader -format "${format}" $i
+    cat $i
+d16 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d9 1
+a9 2
+scan -noheader -format "${format}" ${msgs} | (
+while read m f
+d11 2
+a12 2
+    echo "$f"
+    cat $m
+a14 1
+)
+@

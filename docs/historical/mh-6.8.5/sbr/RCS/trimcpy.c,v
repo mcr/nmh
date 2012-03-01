@@ -1,0 +1,87 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.01.31.21.58.26;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.01.31.21.57.47;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@endif sugar
+@
+text
+@/* trimcpy.c - strip [lt]wsp and replace newlines with spaces */
+#ifndef       lint
+static char ident[] = "@@(#)$Id: trimcpy.c,v 1.2 1992/01/31 21:58:26 jromine Exp jromine $";
+#endif	/*        lint */
+
+
+#include "../h/mh.h"
+#include <ctype.h>
+#include <stdio.h>
+
+
+char *trimcpy (cp)
+register char *cp;
+{
+    register char  *sp;
+
+    while (isspace (*cp))
+	cp++;
+    for (sp = cp + strlen (cp) - 1; sp >= cp; sp--)
+	if (isspace (*sp))
+	    *sp = 0;
+	else
+	    break;
+    for (sp = cp; *sp; sp++)
+	if (isspace (*sp))
+	    *sp = ' ';
+
+    return getcpy (cp);
+}
+@
+
+
+1.2
+log
+@kerberos
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id$";
+#endif        lint
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 3
+d6 1
+d21 1
+a21 1
+	    *sp = NULL;
+@

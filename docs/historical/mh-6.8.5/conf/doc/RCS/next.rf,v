@@ -1,0 +1,161 @@
+head     1.6;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @@;
+
+
+1.6
+date     90.12.17.16.03.31;  author mh;  state Exp;
+branches ;
+next     1.5;
+
+1.5
+date     90.04.05.15.13.47;  author sources;  state Exp;
+branches ;
+next     1.4;
+
+1.4
+date     90.03.22.11.31.31;  author sources;  state Exp;
+branches ;
+next     1.3;
+
+1.3
+date     90.03.20.19.42.10;  author sources;  state Exp;
+branches ;
+next     1.2;
+
+1.2
+date     90.03.20.17.36.28;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.03.20.17.21.11;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.6
+log
+@delete "-format" default
+jlr
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: next.rf,v 1.5 90/04/05 15:13:47 sources Exp Locker: mh $
+.SC NEXT 1
+.NA
+next \- show the next message
+.SY
+next 
+\%[+folder] 
+\%[\-header] \%[\-noheader]
+\%[\-showproc\ program] \%[\-noshowproc]
+\%[switches\ for\ \fIshowproc\fR]
+\%[\-help]
+.DE
+\fINext\fR performs a \fIshow\fR on the next message in the specified
+(or current) folder.
+Like \fIshow\fR, it passes any switches on to the
+program \fIshowproc\fR, which is called to list the message.
+This command
+is almost exactly equivalent to \*(lqshow next\*(rq.
+Consult the manual entry for \fIshow\fR\0(1) for all the details.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's MH directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Ps
+^showproc:~^Program to show the message
+.Sa
+show(1), prev(1)
+.De
+`+folder' defaults to the current folder
+.Ds
+`\-header'
+.Co
+If a folder is specified, it will become the current folder.
+The message that is shown (i.e., the next message in sequence)
+will become the current message.
+.Bu
+\fInext\fR is really a link to the \fIshow\fR program.
+As a result,
+if you make a link to \fInext\fR and that link is not called \fInext\fR,
+your link will act like \fIshow\fR instead.
+To circumvent this,
+add a profile\-entry for the link to your \fIMH\fR profile and add the
+argument \fInext\fR to the entry.
+.En
+@
+
+
+1.5
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+a32 2
+.Ds
+`\-format'
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH NEXT 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH NEXT 1 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC NEXT 1
+.NA
+d5 1
+a5 1
+.SY
+@

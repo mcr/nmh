@@ -1,0 +1,1624 @@
+head     1.11;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @% @;
+
+
+1.11
+date     90.04.05.15.19.59;  author sources;  state Exp;
+branches ;
+next     1.10;
+
+1.10
+date     90.04.02.15.12.47;  author sources;  state Exp;
+branches ;
+next     1.9;
+
+1.9
+date     90.03.29.15.15.11;  author sources;  state Exp;
+branches ;
+next     1.8;
+
+1.8
+date     90.03.29.11.05.57;  author sources;  state Exp;
+branches ;
+next     1.7;
+
+1.7
+date     90.03.29.09.24.36;  author sources;  state Exp;
+branches ;
+next     1.6;
+
+1.6
+date     90.03.29.09.06.19;  author sources;  state Exp;
+branches ;
+next     1.5;
+
+1.5
+date     90.03.29.08.29.07;  author sources;  state Exp;
+branches ;
+next     1.4;
+
+1.4
+date     90.03.29.08.17.38;  author sources;  state Exp;
+branches ;
+next     1.3;
+
+1.3
+date     90.03.29.08.03.49;  author sources;  state Exp;
+branches ;
+next     1.2;
+
+1.2
+date     90.03.29.07.46.07;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.03.29.07.44.49;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.11
+log
+@add ID
+@
+text
+@% run this through LaTeX
+% @@(#)$Id:$
+
+\input lcustom
+
+\documentstyle[12pt,sfwmac]{article}
+
+\parindent 0pt
+\parskip 6pt plus 2pt	% for 12pt font
+%\raggedright
+
+\def\displaylabel#1{{\tt #1}\ \hfill}
+%\def\displaylabel#1{\pgm{#1}\ \hfill}
+\newenvironment{display}[1]{%
+\list{}{\let\makelabel\displaylabel%
+    \settowidth{\labelwidth}{\makelabel{#1}\ }%
+    \setlength{\leftmargin}{\labelwidth}\addtolength{\leftmargin}{\labelsep}%
+    \setlength{\itemindent}{0pt}}}{\endlist}
+
+\begin{document}
+
+\title{Changes to\\ The Rand MH Message Handling System:\\
+	UCI version MH.6.7}
+\author{John L.~Romine\\
+	Computing Suport Group\\
+	Department of Information and Computer Science\\
+	University of California, Irvine\\
+	Irvine, CA  92717}
+\date{\ifdraft \versiondate/\\ Version \versiontag/\else \today\fi}
+\maketitle
+\footnotetext[0]{\hskip -\parindent
+This document (version \versiontag/)
+was \LaTeX set \today\ with \fmtname\ v\fmtversion.}
+
+\begin{abstract}
+This document describes the user-visible and internal changes to the
+UCI version of the Rand \MH/ system from \MH/~\#6.5
+to \MH/.6.7.  The first part should be of interest to all users
+of \MH/, while the latter part is of interest only to \MH/
+Administrators.
+
+This document is meant to supplement,
+not supersede, the standard \MH/ User's manual\cite{MH.USR} and
+\MH/ Administrator's manual\cite{MH.ADM}.
+
+Comments concerning this documentation should be addressed to the Internet
+mailbox {\sf Bug-MH@@ICS.UCI.EDU}.
+\end{abstract}
+
+\newpage
+\section* {Acknowledgements}
+The \MH/ system described herein is based on the original Rand \MH/ system.
+It has been extensively developed (perhaps too much so) by Marshall T.~Rose
+and John L.~Romine at the University of California, Irvine.
+
+For this release, numerous \MH/-Workers sent in fixes and other
+changes.  Also, a number of sites served as beta-testers for
+the changes which were made.
+\section* {Disclaimer}
+The Regents of the University of California wish to make it known that:
+\begin{quote}
+Although each program has been tested by its contributor,
+no warranty, express or implied,
+is made by the contributor or the University of California,
+as to the accuracy and functioning of the program
+and related program material,
+nor shall the fact of distribution constitute any such warranty,
+and no responsibility is assumed by the contributor
+or the University of California in connection herewith.
+\end{quote}
+
+\section* {Conventions}
+In this document,
+certain \LaTeX -formatting conventions are adhered to:
+\begin{enumerate}
+\item The names of \unix/ commands, such as \pgm{comp},
+are presented in {\it text italics}.
+
+\item Arguments to programs, such as \arg"msgs",
+are presented in {\tt typewriter style} and delimited by single-quotes.
+
+\item \unix/ pathnames and envariables,
+such as $$\file{/usr/uci/}\hbox{\qquad and\qquad}\file{\$SIGNATURE},$$
+are presented in {\sl slanted roman}.
+
+\item Text presenting an example, such as
+\begin{verbatim}
+    comp -editor zz
+\end{verbatim}
+is presented in {\tt typewriter style}.
+\end{enumerate}
+
+\newpage
+\section* {General Changes}
+The author is pleased to announce that there are very few
+user-visible
+changes to \MH/.6.7 from the previous \MH/.6.6 distribution.
+The majority of development was in the form of bug fixes and 
+slight enhancements.
+In addition, this release is slightly faster than the
+previous release.
+With a few minor exceptions, 
+it is backward-compatible with the previous release.
+
+The changes were made mainly to generalize the source code to
+be compatible with a larger range of systems and compilers.
+There were many small changes to add declarations for ANSI C compliance.
+The System 5 support has been brought up to SYS5 R3, and there is
+support for Sun OS 4.0.
+
+\subsection*{Using Aliases}
+A new profile entry \arg"Aliasfile:" has been added.  The
+\pgm{ali}, \pgm{send}, and \pgm{whom} programs will look for
+this profile entry and treat it as they would an argument to
+\switch"alias".
+This should make it easier for novice \MH/ users to begin
+using aliases.
+
+\subsection*{BBoards \& News}
+In addition to reading local BBoards, 
+the UCI BBoards facility\cite{MH.BB}
+has been augmented to let it read the Network
+News using the NNTP\cite{NetworkNews}
+instead of reading remote BBoards with the 
+POP\cite{MH.POP}\cite{MH.XPOP}.
+This capability is enabled by compiling \MH/ with
+the \arg"bboards: nntp" option.
+Unfortunately, reading remote BBoards via the POP and the Network
+News via the NNTP may not both be enabled.
+
+To support the NNTP,
+a new module, \file{uip/pshsbr.c}, is compiled and loaded into
+\pgm{bbc} and \pgm{msh} instead of \file {uip/popsbr.c}.
+The default BBoard is changed from \arg"system" to \arg"general"
+for the NNTP.
+
+When reading BBoards,
+\pgm{bbc} will first look for local BBoards, and then contact the
+NNTP server to read the Network News.  The location of the
+NNTP server should be specified with the \arg"nntphost:"
+entry in the \file{mtstailor} file
+(see the \MH/ Administrator's Guide for details),
+or may be specified on
+the command line with the \switch"host" switch.
+
+\subsection*{Format Strings}
+The manual page documenting format strings \man{mh-format}(5) has
+been rewritten to better explain how to write format strings,
+and how they are interpreted by \MH/.
+A description of the \file{replcomps}
+default format is now included in that manual page.
+
+Some new format functions were added, and others were augmented:
+\begin{display}{date2local}
+\item [trim]
+	Strips leading and trailing spaces from \verb"str".
+\item [date2local]
+	Will coerce the date to the local timezone.
+\item [date2gmt]
+	Will coerce the date to GMT.
+\item [divide]
+	Divides \arg"num" by its argument.  This is useful for
+	building \pgm{scan} format strings which print large
+	message sizes in \verb"Kb" or \verb"Mb".
+\item [friendly]
+	Modified to just return the text of the address header,
+	if the address cannot be parsed.
+\item [szone]
+	A flag indicating whether the timezone was explict
+	in the date string.
+\end{display}
+%
+\section*{New Program Features}
+In addition to the general changes mentioned above,
+many programs have specific new features added,
+either by new switches or by expanded functionality.
+Each command's manual page gives complete information about 
+its new options.  Here is a short summary.
+\subsection*{User Interface Programs}
+\def\displaylabel#1{\pgm{#1}\ \hfill}
+\begin{display}{prompter}
+\item [anno]
+	Accepts a \switch"nodate" switch which inhibits the date annotation, 
+	leaving only the body annotation.
+\item [folder]
+	When invoked with the \switch"pack" switch
+	and the new \switch"verbose" switch, \pgm{folder} will
+	give information about the actions taken to renumber the folder.
+
+	On most systems, \pgm{folder} can now create any non-existing
+	parent folders of a new sub-folder.
+\item [forw]
+	When making digests, \pgm{forw}
+	will put the issue and volume numbers
+	in the digest trailer as well as the digest list name.
+\item [inc]
+	Detects NFS write failures, and will
+	not zero your maildrop in that event.
+\item [msh]
+	Supports a variant of the new \pgm{sortm}.
+\item [prompter]
+	Considers a period on a line by itself to signify end-of-file
+	when the \switch"doteof" switch is specified.
+\item [repl]
+	The \switch"[no]format" switches
+	have not been used since \mh5 and have been deleted.
+\item [scan]
+	With the \switch"file msgbox" switch, \pgm{scan}
+	can list a \pgm{packf}\/'d-format file directly 
+	(without using \pgm{msh}).
+
+	Lists messages in reverse order with the \switch"reverse" switch.
+	This should be considered a bug.
+\item [sortm]
+	Now has the options:
+	\switch"textfield field", \switch"notextfield",
+	\switch"limit days", and \switch"nolimit".
+
+	With these options, \pgm{sortm} can be instructed to sort a 
+	folder based on the contents of an arbitrary header such
+	as \arg"subject".
+
+	\pgm{sortm} minimizes renaming messages, and
+	will no longer arbitrarily pack folders; for this behavior,
+	use \verb"folder -pack".
+\item [whatnow]
+	Deletes the draft by renaming it with leading comma, instead
+	of unlinking it.
+\end{display}
+
+\subsection*{\MH/ Support Programs}
+The following support programs also have changes or enhancements:
+\begin{display}{rcvtty}
+\item [mhl]
+	Will now accept a format string on any component, not just
+	addresses and dates.
+\item [popd]
+	Will use {\it shadow} password files if compiled with the 
+	\verb"SHADOW" option.  It can now also 
+	read UUCP-style maildrops directly.
+\item [rcvtty]
+	If given no arguments, \pgm{rcvtty} will produce a \verb"scan"
+	listing as specified by a format string or file; a default
+	format string is used if one is not specified.
+
+	Before the listing is written to the users terminal, the 
+	terminal's bell is rung and a newline is output.
+	The \switch"nobell" and the \switch"nonewline" options
+	inhibit these functions.
+
+	On \verb"BSD43" systems, \pgm{rcvtty} will be installed
+	set-group-id to the \verb"tty" group, and will obey the
+	\pgm{mesg} permissions on your terminal.
+	Using the \switch"biff" switch will cause \pgm{rcvtty} to
+	also obey the \pgm{biff} permissions on your terminal.
+\item [slocal]
+	Understands UUCP-style \arg"From " lines and will write
+	output files using this format if appropriate.
+	Before invoking a delivery program, \pgm{slocal} will strip
+	such lines unless compiled with the \verb"RPATHS" option,
+	in which case it will will convert such lines into
+	\arg"Return-Path:" headers.
+
+	\pgm{slocal} has a new result code \arg"N", 
+	for use in \file{.maildelivery} files.
+	With this result code,
+	\pgm{slocal} will 
+	perform the action only if the message has not been delivered
+	and the previous action succeeded.  This allows for performing
+	an action only if multiple conditions are true.
+\end{display}
+
+\section*{Documentation}
+Several of the older \MH/ papers have been difficult to format
+because they depended on an older version of
+PhDTeX\cite{PhDTeX}\cite{AmSTeX} which was
+not supplied.  These papers have been updated, and some TeX
+library files are supplied in \file{papers/doclib/}, so that 
+these papers may be generated on any system with TeX.
+
+Many of the manual pages have been revised to include documentation
+of new command options, and some have been expanded to give more detail.
+All are now slightly reformatted at installation time
+to make them more compatible with programs like \pgm{makewhatis}.
+
+\section*{\MH/ Administration}
+This section describes changes in configuring, compiling and
+installing \MH/.6.7 and should not
+be of interest to casual \MH/ users.
+The \file{READ-ME} file has been revised to
+better document the configuration and compilation options which
+have been included in this release.  Some compilation options
+have been removed, and many new options have been added.
+
+All \MH/ \file{Makefile}\/s have been updated to work around some 
+incompatibilities introduced in newer versions of \pgm{make}.
+\MH/ programs will no longer be installed with the sticky-bit 
+turned on.
+
+Reading this section not a substitute for carefully
+reading the \file{READ-ME} file before attempting to compile \MH/.
+
+\subsection*{Bug Fixes}
+Some bugs were fixed which in general were not user-visible:
+\def\displaylabel#1{{\tt #1}\ \hfill}
+\begin{display}{dynamic memory}
+\item [address parser]
+	Fixed to allow use of the \arg"AT" domain, and some 
+	minor bugs were fixed pertaining to address groups.
+\item [date parser]
+	Improved to accept more forms of illegal dates.  Military
+	timezones were removed.
+\item [dynamic memory]
+	Many problems with the dynamic memory pool becoming corrupted
+	have been fixed.
+\item [locking]
+	Fixed to open files for write if necessary to enable locking.
+\item [nil pointers]
+	All reported nil pointer problems have been fixed.
+\item [replcomps]
+	The \arg"In-Reply-To:" header had quotes added 
+	around the date field to comply with RFC822\cite{RFC822}.
+\end{display}
+
+\subsection*{White Pages}
+If \MH/ is compiled with the \verb"WP" option,
+\pgm{send} recognizes an address between \arg"<<" and \arg">>" characters
+such as:
+\begin{verbatim}
+        To: << rose -org psi >>
+\end{verbatim}
+to be a name meaningful to a whitepages service.  In order to expand the
+name, \pgm{send} must be invoked interactively 
+(i.e., not from \pgm{push}).  For each
+name, \pgm{send} will invoke a command called \pgm{fred}
+in a special mode asking to expand the name.
+
+To get a copy of the white pages service, contact wpp-manager@@psi.com.
+\subsection*{Configuration Options}
+Some configuration options have been added or changed:
+%
+\begin{display}{mailgroup}
+\item [cc]
+	To specify an alternate C compiler.
+\item [ccoptions]
+	Defaults to \switch"O".
+\item [bboards]
+	May now be defined as \arg"on", \arg"off", \arg"pop", or \arg"nntp".
+\item [bbdelivery]
+	Determines whether the bboard delivery agent should be installed.
+\item [lex]
+	To specify an alternate version of \pgm{lex}.
+\item [mailgroup]
+	If defined, \pgm{inc} will be made set-group-id to this group.
+\item [sharedlib]
+	For \verb"SUN40" systems; if \arg"on", makes \file{libmh.a}
+	into a shared library.
+\item [slibdir]
+	The directory where the above shared library should be installed.
+\end{display}
+
+\subsection*{Compilation Options}
+For different configurations,
+several \arg"-D" options to \pgm{cc} have been added or changed:
+%
+\begin{display}{NOIOCTLH}
+\item [BSD43]
+	Will make \pgm{rcvtty} set-group-id to the group \verb"tty".
+\item [NETWORK]
+	This option has been deleted.  See \verb"SOCKETS".
+\item [NOIOCTLH]
+	Tells \MH/ not to include the file \file{sys/ioctl.h}.  Use this
+	if this file is not present on your system.
+\item [NTOHL]
+	On systems with TCP/IP networking,
+	\pgm{msh} will try to use the \verb"ntohl()" macro from the
+	file \file{netinet/in.h} to byte-swap the binary map files
+	it writes.
+\item [SENDMAILBUG]
+	Some versions of \SendMail/ return a {\tt 451} (failure) reply code 
+	when they don't mean to indicate failure.  This option considers
+	that code to be equivalent to {\tt 250} (OK).
+\item [SHADOW]
+	Causes \pgm{popd} to read the file \file{/etc/shadow} for
+	encrypted passwords instead of \file{/etc/passwd}.  Use this if you
+	are using a newer version of SYSTEM 5 with shadow password files.
+\item [SOCKETS]
+	Enable this if you are on a non-BSD system with a
+	socket interface for TCP/IP networking compatible with 4.2BSD UNIX.
+\item [SUN40]
+	Use on Suns running Sun OS 4.0 and later.
+\item [SUN41]
+	Use on Suns running Sun OS 4.1 and later.
+\item [SYS5]
+	This option has been updated to refer to SYS5 R3 and later systems.
+\item [SYS5DIR]
+	Use this if your system uses \verb"struct dirent" instead of
+	\verb"struct direct".  This should be true for systems based
+	on SYS5 R3 and later.
+\item [TYPESIG]
+	Defines the base type for the {\it signal} system call.  This
+	defaults to \verb"int", but should be defined as \verb"void"
+	if appropriate for your system.
+\item [WP]
+	Enables support for the White Pages service.
+\end{display}
+
+\subsection*{Installation}
+\MH/ will now
+explicitly set the protection mode on every file it installs.
+
+Previously any existing file \MH/ installed would be backed up into
+the source tree, and then overwritten.
+Now, a few system-dependent files will not be overwritten, and your
+changes will have to be merged in by hand. 
+See the \file{READ-ME} file for more details.
+
+\bibliography{bcustom,sfwdoc,mail,networking}
+\bibliographystyle{alpha}
+
+\showsummary
+
+\end{document}
+
+@
+
+
+1.10
+log
+@*** empty log message ***
+@
+text
+@d2 1
+@
+
+
+1.9
+log
+@*** empty log message ***
+@
+text
+@d9 1
+a9 1
+\raggedright
+d11 2
+a12 1
+\def\displaylabel#1{\pgm{#1}\hfill}
+a70 1
+\newpage
+a119 1
+If you compiled \MH/ with the \arg"bboards: nntp" option, 
+d125 2
+a126 1
+
+d153 1
+a153 1
+\begin{itemize}
+d170 1
+a170 1
+\end{itemize}
+d179 2
+a180 1
+\begin{description}
+d214 1
+a214 1
+	Now has the following new options:
+d228 1
+a228 1
+\end{description}
+d232 1
+a232 1
+\begin{description}
+d270 1
+a270 1
+\end{description}
+d287 3
+a289 1
+installing \MH/.6.7.  The \file{READ-ME} file has been revised to
+d294 6
+a299 1
+This section not a substitute for carefully
+d302 4
+a305 11
+\subsection*{Internal Changes}
+Some internal changes were made which in general are not
+user-visible:
+\begin{description}
+\item [m\_seq \& m\_getfld]
+	have minor speed improvements.
+\item [locking]
+	Fixed to also open files for write if necessary to enable locking.
+\item [replcomps]
+	Quotes were added around the date field of the \arg"In-Reply-To:"
+	header to comply with \cite{RFC822}.
+d307 2
+a308 2
+	Some bugs were fixed pertaining to address groups, and the
+	\arg"AT" domain.
+d312 11
+a322 1
+\end{description}
+d324 12
+a335 5
+%\item [uip/Makefile]
+%	doesn't use sticky bit
+%\item [whom]
+%	WP changes
+%
+d337 1
+d341 1
+a341 1
+\begin{description}
+d359 1
+a359 1
+\end{description}
+d365 1
+a365 1
+\begin{description}
+d403 3
+a405 1
+\end{description}
+@
+
+
+1.8
+log
+@*** empty log message ***
+@
+text
+@d5 1
+a5 1
+\documentstyle[sfwmac,res]{article}
+d8 2
+a9 2
+\parskip 10pt	% for 10pt font
+%\raggedright
+d11 7
+d34 5
+a38 8
+This document describes the user-visible change to the
+UCI version of the Rand \MH/ system that were made from \mh5 to \MH/ \#6.5.
+It is based on the \mh6 changes document,
+but has been updated to accurately reflect the \MH/ distributed with
+4.3\bsd/~\unix/.
+This document does not describe bug-fixes, per se,
+or internal changes,
+unless these activities resulted in a visible change for the \MH/ user.
+d41 2
+a42 1
+not supersede, the standard \MH/ User's manual\cite{MH.USR}.
+a52 6
+Einar A.~Stefferud, Jerry N.~Sweet,
+and Terry P.~Domae provided numerous suggestions
+to improve the UCI version of \MH/.
+Of course,
+a large number of people have helped \MH/ along.
+The list of ``\MH/~immortals'' is too long to list here.
+d54 3
+d94 9
+a102 2
+This document describes the changes to \MH/ from
+release \MH/.6.5 to the current release \MH/.6.7.
+d104 5
+a108 2
+All known bugs are fixed.  There were many small changes to add 
+declarations for ANSI C compliance.
+a109 3
+\section*{User Changes}
+Many improvements and new options have been added to \MH/ programs.
+
+d111 1
+a111 1
+A new profile entry \verb"Aliasfile:" has been added.  The
+a114 1
+
+d121 5
+a125 2
+the UCI BBoards facility has been augmented to let it read the Network
+News using the NNTP instead of reading remote BBoards with the POP.
+d140 3
+a142 1
+entry in the \file{mtstailor} file, or may be specified on
+d146 1
+a146 1
+The man page documenting format strings \man{mh-format}(5) has
+d148 3
+a150 2
+and how they are interpreted.  A description of the \file{replcomps}
+default format is included.
+d152 2
+a153 2
+Some new format functions were added, and others augmented:
+\begin{description}
+d157 1
+a157 1
+	Coerce the date to the local timezone.
+d159 1
+a159 1
+	Coerce the date to GMT.
+d161 2
+a162 2
+	Divides \verb"num" by its argument.  This is useful for
+	building \pgm{scan} format strings which output large
+d170 2
+a171 9
+\end{description}
+
+\subsection*{Documentation}
+man pages won't upset makewhatis
+
+The man pages have been updated and I'll be supplying
+some TeX stuff so that the MH papers can be generated on systems
+without UCI's version of AmSTeX.
+
+d176 3
+a178 1
+%
+d191 2
+a192 1
+	When making digests, will put the issue and volume numbers
+a196 2
+\item [mhl]
+	Accepts format strings on all components.
+a201 16
+\item [popd]
+	Will use {\it shadow} password files if compiled with the 
+	\verb"SHADOW" option.
+
+	Can read UUCP-style maildrops directly.
+\item [rcvtty]
+	Has lots of new enhancements:
+	\begin{enumerate}
+	\item 
+	Now uses an mh-format string to specify the output format.
+	-->needs separate man page.
+	\item -biff,
+	\item uses mh-format
+	\item -[no]bell
+	\item obeys 4.3 tty prots
+	\end{enumerate}
+d206 3
+a208 2
+	Can list a \pgm{packf}\/'d-format file directly 
+	(without using \pgm{msh}) with the \switch"file msgbox" switch.
+a211 12
+\item [slocal]
+	Understands UUCP-style \arg"From " lines and will write
+	output files using this format if appropriate.
+	Before invoking a delivery program, \pgm{slocal} will strip
+	such lines unless compiled with the \verb"RPATHS" option,
+	in which case it will will convert such lines into
+	\verb"Return-Path:" headers.
+
+	When using the new result code \arg"N" in your 
+	\file{.maildelivery} file, \pgm{slocal} will 
+	perform the action only if the message has not been delivered
+	and the previous action succeeded.
+d213 1
+a213 1
+	A major rewrite.  Now has the following new options:
+d229 2
+a230 4
+\subsection*{Other Internal Changes}
+Some other internal changes were made which in general are not
+user-visible.
+%
+d232 11
+a242 14
+\item [m\_seq \& m\_getfld]
+	have minor speed improvements.
+\item [locking]
+	Fixed to also open files for write if necessary to enable locking.
+\item [replcomps]
+	Quotes were added around the date field of the \verb"In-Reply-To:"
+	header to comply with RFC822.
+\item [address parser]
+	Some bugs were fixed pertaining to address groups, and the
+	\verb"AT" domain.
+\item [date parsing]
+	Was improved to accept more types of illegal dates.  Military
+	timezones were removed.
+\end{description}
+d244 4
+a247 3
+\begin{display}{uip/Makefile}
+\item [mts: sendmail]
+	SENDMAILBUG option
+d249 12
+a260 18
+\item [uip/Makefile]
+	doesn't use sticky bit
+	can install inc sgid-mailgroup
+	rcvtty sgid-tty
+\item [config]
+	bbserver
+\item [mtstailor]
+	nntphost
+\item [DOCS]
+\item [bbc]
+	-host host	if NNTP
+\item [config/install changes]
+	will not overwrite mtstailor, etc.
+	shared libraries
+	cc
+	lex
+	
+\end{display}
+d262 8
+a269 18
+\subsection*{Other bug fixes, etc.}
+\begin{description}
+\item [whom]
+	WP changes
+\item [spost]
+	uses sendmail: from mtstailor
+\item [send]
+	Aliasfile: profile entry
+\item [rcvdist]
+	malloc bug fixed
+\item [rcvstore]
+	bugs fixed - tmpfile always removed
+\item [post]
+	-fill-in file for WP changes
+	hidden Dcc: header
+\item [msh]
+	NNTP interface stuff
+	sortm changes
+d271 7
+a277 2
+\item [dropsbr]
+	SOCKETS/NTOHL changes
+d279 4
+a282 1
+\end{description}
+d284 1
+a284 1
+\section*{Confuration and Installation}
+d294 18
+a311 1
+makefiles deal with changed "make" semantics
+d313 6
+d332 1
+a332 1
+	You may now specify an alternate version of \pgm{lex}.
+d371 1
+a371 1
+	Use on Sun Microsystems systems running Sun OS 4.0 and later.
+d373 1
+a373 1
+	Use on Sun Microsystems systems running Sun OS 4.1 and later.
+d387 1
+a387 1
+For those sites with restrictive \verb"umask"s, \MH/ will now
+d390 5
+a394 4
+For sites who are already running \MH/, previously all
+files would be overwritten when installing \MH/.  Now a few files
+(documented in \file{READ-ME}) will not be overwritten, and your
+changes will have to be merged in by hand.
+d396 1
+a396 1
+\bibliography{bcustom,sfwdoc}
+@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@d5 1
+a5 1
+\documentstyle[11pt,sfwmac,res]{article}
+d8 2
+a9 2
+\parskip 11pt	% for 11pt font
+\raggedright
+d14 1
+a14 1
+ UCI version MH.6.7}
+d16 4
+a19 4
+ Computing Suport Group\\
+ Department of Information and Computer Science\\
+ University of California, Irvine\\
+ Irvine, CA  92717}
+d68 1
+d91 3
+d95 70
+d169 1
+a169 1
+
+d189 2
+d194 5
+d200 1
+a200 1
+	Has lot of new enhancements:
+d211 1
+a211 1
+	The \switch"format" and \switch"noformat" switches
+d214 1
+a214 1
+	Can list a \pgm{packf}'d-format file directly 
+d248 19
+a266 1
+Some other stuff
+a268 14
+\item [mh-format]
+	In addition to a much improved manual page, some new
+	functions were added:
+	\begin{enumerate}
+	\item put{num,str}f can do ljust
+	\item "trim"
+	\item "divide"
+	\item "zonef"	szone
+	\item "friendly" more friendly
+	\item "localdate" date2local
+	\item "gmtdate" date2gmt
+	\end{enumerate}
+\item [m\_seq]
+	speedup
+d271 1
+a271 19
+\item [addrsbr]
+	WP changes
+	discard newlines in addresses
+\item [m\_getfld]
+	slight speedup
+\item [lock]
+	always lock for write
+\item [replcomps]
+	fixed typo
+	added quotes around date in-reply-to
+\item [popd]
+	SHADOW passwd files
+	reads old UUCP mbox format
+\item [mf]
+	fixed some addr parsing bugs
+	"at" domain, dotted-addresses in groups
+\item [tws]
+	improved error-rejection
+	no mil-timezones
+a287 2
+	man pages won't upset makewhatis
+	makefiles deal with changed "make" semantics
+a288 19
+\item [config]
+	mailgroup
+	bboards: nntp/pop/on/off
+	bbdelivery: on/off
+	NOIOCTLH
+	NTOHL
+	SENDMAILBUG
+	SHADOW
+	SOCKETS
+	SUN40
+	SUN41
+	SYS5 changes for R3
+	SYS5DIR
+	TYPESIG
+	lex:
+	sharedlib: on/off
+	slibdir:
+\item [papers/]
+	updated to be formatable
+a298 2
+\item [pshsbr]
+	new module for NNTP
+a308 6
+\item [bbc]
+	can use NNTP instead of BB/POP
+	some UCL ifdefs for speedups?
+	signal type under TYPESIG
+	able to understand reseting bb-id? - needs testing
+	reads "general" instead of "system" if NNTP
+a313 2
+	
+\section* {General Changes}
+d315 6
+a320 2
+This document describes the changes to \MH/ from
+release \MH/.6.5 to the current release \MH/.6.7.
+d322 2
+a323 2
+Fixes for null pointers, and freeing incremented malloc'd pointers are
+plentiful.
+d325 1
+a325 2
+There were many small changes to add declarations for ANSI C
+compliance.
+d327 3
+a329 2
+\subsection*{Configuration}
+
+d331 10
+d342 6
+a347 11
+
+\item [bboards: nntp/pop/on/off]
+
+\item [bbdelivery: on/off]
+
+\item [lex:]
+
+\item [sharedlib: on/off]
+
+\item [slibdir:]
+
+d350 4
+a353 2
+\subsubsection*{Compiler Options}
+
+d355 4
+d360 2
+a361 2
+Tells \MH/ not to include the file \file"sys/ioctl.h".  Use this
+if this file is not present on your system.
+d363 4
+a366 1
+\pgm{msh} will 
+d368 3
+a370 1
+
+d372 3
+a374 1
+
+d376 2
+a377 1
+
+d379 1
+a379 1
+
+d381 3
+a383 3
+
+\item [SYS5 changes for R3]
+
+d385 3
+a387 1
+
+d389 3
+a391 1
+
+d394 3
+a396 3
+\#ifdefs for SYS5 (release 3) and hpux.  You can now define
+TYPESIG to be "void" to stop compiler warnings regarding signal types
+(automatically defined that way on SUN40).
+d398 4
+a401 2
+4. The bboard program "bbl" and associated man pages are installed if
+you enable "bboards", whether or not you enable "bbdelivery".
+a402 42
+
+For SYS5, you can set "mailgroup" in the MH config file to have inc be
+set-gid to that group.  You can also defined SOCKET for those non-BSD
+systems with sockets.
+
+NTOHL
+The bug is minor, msh can't read map files -- which would cause
+a performance penalty, as well as giving irritating diagnostic
+messages.  You can add "options NONTOHL" if you don't want the
+ntohl() macro to be used (for binary file transportability).
+
+\subsection*{New Features}
+
+7. whatnowsbr reads the "Aliasfile:" profile entry for its built-in send.
+
+5. In mh-format, %(friendly{addr}) will return the text of the header
+if it can't parse the addresses.
+
+6. Changes to uip/mshcmds.c to support a variant of the new sortm.
+
+---> need to add these to msh?
+Other minor things are "anno -[no]date", "scan -[no]reverse", "prompter
+-doteof" and "forw -[no]dashmunging".  These are either now visible or
+new options.  
+
+changes to rcvtty to work with biff,
+
+some major changes to sortm to make it sort by subject as well as date.  
+
+1. A new sortm, which has "-textfield field" and "-limit days".  This
+lets you sort by date first, then by an arbitrary text field (like
+subject).  It can also sort by text field first and date second.  It's
+kinda complicated; see "man sortm" for the details.
+
+\subsection*{Documentation}
+
+The man pages have been updated and I'll be supplying
+some TeX stuff so that the MH papers can be generated on systems
+without UCI's version of AmSTeX.
+
+mh-format man page improved
+
+d409 1
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@a53 4
+However, Van Jacobson deserves a special acknowledgement for his tireless
+work in improving the performance of \MH/.
+Some programs have been speeded-up by a factor of 10 or 20.
+All of users of \MH/, everywhere, owe a special thanks to Van.
+a67 1
+\newpage
+d91 1
+a91 1
+\subsection*{Program Changes}
+d96 1
+a96 1
+\begin{display}{prompter}
+d101 3
+a103 4
+	When invoked with the \switch"pack" switch, will
+	give information about
+	the actions taken to renumber the folder with the
+	\switch"verbose" switch.
+d105 1
+a105 1
+	On most systems, \pgm{folder} will create any non-existing
+d139 1
+a139 1
+	Understands UUCP-style \arg"From\ " lines and will write
+d141 4
+a144 3
+	It can also convert such lines into \verb"Return-Path:" headers
+	before invoking a delivery program if compiled with the
+	\verb"RPATHS" option.
+d152 3
+a154 4
+	\begin{enumerate}
+	\item	\switch"textfield field" and \switch"notextfield"
+	\item	\switch"limit days" and \switch"nolimit"
+	\end{enumerate}
+d159 3
+a161 2
+	Does not automatically pack folders; for this behavior,
+	use the \switch"pack" switch to \pgm{folder}.
+d163 7
+a169 1
+	Deletes the draft by renaming it with leading comma.
+a181 5
+\end{display}
+
+Some other stuff
+
+\begin{display}{uip/Makefile}
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d105 5
+d111 2
+a112 3
+\item [folder]
+	New switch \switch"verbose" which gives information about
+	the actions taken by \switch"pack" to renumber the folder.
+d114 1
+a114 1
+	When making digests, forw will put the issue and volume numbers
+d117 1
+a117 1
+	Should now be able to detect NFS write failures, and will
+d120 1
+a120 1
+	Will now accept format strings on all components.
+d122 2
+a123 2
+	Will consider a period on a line by itself to signify end-of-file
+	if the \switch"doteof" switch is specified.
+d139 5
+a143 6
+	The new \switch"file filename" is useful for getting a listing of
+	a \pgm{packf}-format file without using \pgm{msh}.\\
+	Has a \switch"reverse" switch to list messages in reverse
+	order.  This should be considered a bug.
+\item [send]
+	Aliasfile: profile entry
+d145 10
+a154 2
+	fix for RPATHS, can write mbox format on output
+	new "n" action
+d156 11
+a166 4
+	new version with -textfield, -limit, etc.
+	doesn't compress folders
+\item [spost]
+	uses sendmail: from mtstailor
+d168 1
+a168 5
+	deletes draft by renaming with leading comma
+	Aliasfile profile entry
+	WP changes
+\item [whom]
+	WP changes
+d170 16
+a185 10
+	some new functions
+	better documentation
+	put{num,str}f can do ljust
+	"trim"
+	"divide"
+	"zonef"	szone
+	"friendly" more friendly
+	"localdate" date2local
+	"gmtdate" date2gmt
+	fix for addr parser calls
+a187 2
+\item [makedir]
+	can do recursive mkdir's on most systems
+d251 6
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d97 3
+a99 2
+Many programs have new features added, either with new switches
+or by expanded functionality.
+d101 1
+a101 1
+\begin{display}{uip/Makefile}
+d126 4
+a129 4
+	\item
+	-biff, uses mh-format -[no]bell
+	\item
+	obeys 4.3 tty prots
+d135 4
+a138 3
+	The -reverse causes scan to 
+	-[no]reverse standard
+	-file for scanning msgbox files -- needs doc?
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d5 1
+a5 1
+\documentstyle[11pt,sfwmac]{article}
+d8 1
+a8 1
+\parskip 13pt	% for 11pt font
+d97 4
+a100 2
+\begin{description}
+\settowidth{\labelwidth}{{\bf folder\-pack   }}
+d102 2
+a103 2
+	Accepts a -nodate switch which inhibits the date annotation, 
+	leaving only the body annotation.  The default is -date.
+a104 10
+\item [bbc]
+	can use NNTP instead of BB/POP
+	some UCL ifdefs for speedups?
+	signal type under TYPESIG
+	able to understand reseting bb-id? - needs testing
+	reads "general" instead of "system" if NNTP
+
+\item [dropsbr]
+	SOCKETS/NTOHL changes
+
+d106 2
+a107 2
+	New switch -verbose which gives information about
+	the actions taken by -pack to renumber the folder.
+d109 2
+a110 3
+	When using -digest, forw will put the issue and volume numbers
+	in the digest trailer.
+
+a113 1
+
+d115 1
+a115 8
+	Will now accept format strings on all components.  Also,
+	some bugs with 'body:component=">"' have been fixed.
+\item [msh]
+	NNTP interface stuff
+	sortm changes
+\item [post]
+	-fill-in file for WP changes
+	hidden Dcc: header
+d118 1
+a118 7
+	if the -doteof switch is specified.  -nodoteof is the default.
+\item [pshsbr]
+	new module for NNTP
+\item [rcvdist]
+	malloc bug fixed
+\item [rcvstore]
+	bugs fixed - tmpfile always removed
+d120 3
+d125 1
+d127 1
+d129 1
+d131 2
+a132 2
+	The -[no]format switches have not been used since mh.5 and
+	have been deleted.
+d227 26
+@
+
+
+1.2
+log
+@checkpoint
+@
+text
+@d7 4
+d97 3
+a99 2
+\begin{itemize}
+\item anno\\
+d103 1
+a103 1
+\item bbc\\
+d110 1
+a110 1
+\item dropsbr\\
+d113 1
+a113 1
+\item folder\\
+d116 1
+a116 1
+\item forw\\
+d120 1
+a120 1
+\item inc\\
+d124 1
+a124 1
+\item mhl\\
+d127 1
+a127 1
+\item msh\\
+d130 1
+a130 1
+\item post\\
+d133 1
+a133 1
+\item prompter\\
+d136 1
+a136 1
+\item pshsbr\\
+d138 1
+a138 1
+\item rcvdist\\
+d140 1
+a140 1
+\item rcvstore\\
+d142 1
+a142 1
+\item rcvtty\\
+d147 1
+a147 1
+\item repl\\
+d150 1
+a150 1
+\item scan\\
+d154 1
+a154 1
+\item send\\
+d156 1
+a156 1
+\item slocal\\
+d159 1
+a159 1
+\item sortm\\
+d162 1
+a162 1
+\item spost\\
+d164 1
+a164 1
+\item whatnow\\
+d168 1
+a168 1
+\item whom\\
+d170 1
+a170 1
+\item mh-format\\
+d181 1
+a181 1
+\item m_seq\\
+d183 1
+a183 1
+\item makedir\\
+d185 1
+a185 1
+\item mts: sendmail\\
+d187 1
+a187 1
+\item addrsbr\\
+d190 1
+a190 1
+\item m_getfld\\
+d192 1
+a192 1
+\item lock\\
+d194 1
+a194 1
+\item replcomps\\
+d197 1
+a197 1
+\item popd\\
+d200 1
+a200 1
+\item mf\\
+d203 1
+a203 1
+\item tws\\
+d206 1
+a206 1
+\item uip/Makefile\\
+d210 1
+a210 1
+\item config\\
+d212 1
+a212 1
+\item mtstailor\\
+d214 2
+a215 2
+\item DOCS\\
+\item bbc\\
+d217 1
+a217 1
+\item config/install changes\\
+d225 1
+a225 1
+\item config\\
+d242 1
+a242 1
+\item papers/\\
+d244 1
+a244 1
+\end{itemize}
+d259 2
+a260 2
+\begin{itemize}
+\item mailgroup\\
+d262 1
+a262 1
+\item bboards: nntp/pop/on/off\\
+d264 1
+a264 1
+\item bbdelivery: on/off\\
+d266 1
+a266 1
+\item lex:\\
+d268 1
+a268 1
+\item sharedlib: on/off\\
+d270 1
+a270 1
+\item slibdir:\\
+d272 1
+a272 1
+\end{itemize}
+d276 2
+a277 2
+\begin{itemize}
+\item NOIOCTLH\\
+d280 1
+a280 1
+\item NTOHL\\
+d282 1
+a282 1
+\item SENDMAILBUG\\
+d284 1
+a284 1
+\item SHADOW\\
+d286 1
+a286 1
+\item SOCKETS\\
+d288 1
+a288 1
+\item SUN40\\
+d290 1
+a290 1
+\item SUN41\\
+d292 1
+a292 1
+\item SYS5 changes for R3\\
+d294 1
+a294 1
+\item SYS5DIR\\
+d296 1
+a296 1
+\item TYPESIG\\
+d298 1
+a298 1
+\end{itemize}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a90 12
+\begin{verbatim}
+--
+ali
+ accept Aliasfile profile entry
+anno
+ -[no]date
+bbc
+ can use NNTP instead of BB/POP
+ some UCL ifdefs for speedups?
+ signal type under TYPESIG
+ able to understand reseting bb-id? - needs testing
+ reads "general" instead of "system" if NNTP
+d92 5
+a96 2
+dropsbr
+ SOCKETS/NTOHL changes
+d98 6
+a103 113
+folder
+ -verbose used by -pack
+forw
+ will put issue/volume numbers in digest trailers
+inc
+ should be able to detect NFS write failures
+mhl
+ added -volume, -issue hidden switches interface from forw.
+ will allow format strings on all components
+ does BODYCOMP stuff right
+msh
+ NNTP interface stuff
+ sortm changes
+post
+ -fill-in file for WP changes
+ hidden Dcc: header
+prompter
+ -[no]doteof
+ minor fix for -nobody
+pshsbr
+ new module for NNTP
+rcvdist
+ malloc bug fixed
+rcvstore
+ bugs fixed - tmpfile always removed
+rcvtty
+ -biff, uses mh-format -[no]bell
+ obeys 4.3 tty prots
+repl
+ -[no]format went away
+ malloc bug fixed
+scan
+ -[no]reverse standard
+ -file for scanning msgbox files -- needs doc?
+send
+ Aliasfile: profile entry
+slocal
+ fix for RPATHS, can write mbox format on output
+ new "n" action
+sortm
+ new version with -textfield, -limit, etc.
+ doesn't compress folders
+spost
+ uses sendmail: from mtstailor
+whatnow
+ deletes draft by renaming with leading comma
+ Aliasfile profile entry
+ WP changes
+whom
+ WP changes
+mh-format
+ some new functions
+ better documentation
+ put{num,str}f can do ljust
+ "trim"
+ "divide"
+ "zonef" szone
+ "friendly" more friendly
+ "localdate" date2local
+ "gmtdate" date2gmt
+ fix for addr parser calls
+mseq
+ speedup
+makedir
+ can do recursive mkdir's on most systems
+mts: sendmail
+ SENDMAILBUG option
+addrsbr
+ WP changes
+ discard newlines in addresses
+mgetfld
+ slight speedup
+lock
+ always lock for write
+replcomps
+ fixed typo
+ added quotes around date in-reply-to
+popd
+ SHADOW passwd files
+ reads old UUCP mbox format
+mf
+ fixed some addr parsing bugs
+ "at" domain, dotted-addresses in groups
+tws
+ improved error-rejection
+ no mil-timezones
+uip/Makefile
+ doesn't use sticky bit
+ can install inc sgid-mailgroup
+ rcvtty sgid-tty
+config
+ bbserver
+mtstailor
+ nntphost
+DOCS
+bbc
+ -host host if NNTP
+config/install changes
+ will not overwrite mtstailor, etc.
+ shared libraries
+ cc
+ lex
+ man pages won't upset makewhatis
+ makefiles deal with changed "make" semantics
+ 
+papers/
+ updated to be formatable
+ 
+Let me see if I can hit the highlights in these changes.  There were
+the SUN40 changes to use shared libraries and the NNTP changes to bbc
+which you've already seen.  I have fixed up some problems with those
+patches.
+\end{verbatim}
+d105 136
+@

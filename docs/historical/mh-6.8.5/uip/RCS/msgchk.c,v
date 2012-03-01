@@ -1,0 +1,827 @@
+head	1.14;
+access;
+symbols;
+locks
+	shettich:1.14; strict;
+comment	@ * @;
+
+
+1.14
+date	95.12.06.23.51.28;	author jromine;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	93.09.01.21.44.19;	author jromine;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	93.08.20.15.52.41;	author jromine;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.11.04.00.49.17;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.10.16.16.51.48;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.02.04.21.58.40;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.02.04.21.54.20;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.02.03.16.35.46;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.01.31.22.49.20;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.01.31.22.16.47;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.04.05.15.01.32;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.06.13.21.51;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.06.13.21.36;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.14
+log
+@fix: null ptr
+@
+text
+@/* msgchk.c - check for mail */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.13 1993/09/01 21:44:19 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include <stdio.h>
+#include "../zotnet/mts.h"
+#include "../zotnet/tws.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <pwd.h>
+#ifdef LOCALE
+#include <locale.h>
+#endif
+#ifdef HESIOD
+#include <hesiod.h>
+#endif
+
+/*  */
+
+#ifndef	POP
+#define	POPminc(a)	(a)
+#else	/* POP */
+#define	POPminc(a)	0
+#endif	/* POP */
+
+#ifndef	RPOP
+#define	RPOPminc(a)	(a)
+#else	/* RPOP */
+#define	RPOPminc(a)	0
+#endif	/* RPOP */
+
+#ifndef	APOP
+#define	APOPminc(a)	(a)
+#else
+#define	APOPminc(a)	0
+#endif
+
+static struct swit  switches[] = {
+#define	DATESW	0
+    "date", 0,
+#define	NDATESW	1
+    "nodate", 0,
+
+#define	NOTESW	2
+    "notify type", 0,
+#define	NNOTESW	3
+    "nonotify type", 0,
+
+#define	HOSTSW	4
+    "host host", POPminc (-4),
+#define	USERSW	5
+    "user user", POPminc (-4),
+
+#define	APOPSW	6
+    "apop", APOPminc (-4),
+#define	NAPOPSW	7
+    "noapop", APOPminc (-6),
+
+#define	RPOPSW	8
+    "rpop", RPOPminc (-4),
+#define	NRPOPSW	9
+    "norpop", RPOPminc (-6),
+
+#define	HELPSW	10
+    "help", 4,
+
+    NULL, 0
+};
+
+/*  */
+
+#define	NT_NONE	0x0
+#define	NT_MAIL	0x1
+#define	NT_NMAI	0x2
+#define	NT_ALL	(NT_MAIL | NT_NMAI)
+
+
+#define	NONEOK	0x0
+#define	UUCPOLD	0x1
+#define	UUCPNEW	0x2
+#define	UUCPOK	(UUCPOLD | UUCPNEW)
+#define	MMDFOLD	0x4
+#define	MMDFNEW	0x8
+#define	MMDFOK	(MMDFOLD | MMDFNEW)
+
+
+#ifdef	SYS5
+#ifndef __STDC__
+struct passwd	*getpwuid(), *getpwnam();
+#endif /* !__STDC__ */
+#endif	/* SYS5 */
+
+static int	donote(), checkmail(), remotemail();
+/*  */
+
+/* ARGSUSED */
+
+main (argc, argv)
+int     argc;
+char   *argv[];
+{
+    int     datesw = 1,
+	    notifysw = NT_ALL,
+	    rpop = 1,
+	    status = 0,
+	    snoop = 0,
+	    vecp = 0;
+    int uid = getuid ();
+    char   *cp,
+           *host = NULL,
+            buf[80],
+	  **ap,
+          **argp,
+	   *arguments[MAXARGS],
+           *vec[50];
+    char *user = getusr ();
+    struct passwd  *pw;
+#ifdef HESIOD
+    struct hes_postoffice *po;
+    char *tmphost;
+#endif
+
+#ifdef LOCALE
+	setlocale(LC_ALL, "");
+#endif
+    invo_name = r1bindex (argv[0], '/');
+    mts_init (invo_name);
+#ifdef	POP
+    if ((cp = getenv ("MHPOPDEBUG")) && *cp)
+	snoop++;
+#endif
+
+    if ((cp = m_find (invo_name)) != NULL) {
+	ap = brkstring (cp = getcpy (cp), " ", "\n");
+	ap = copyip (ap, arguments);
+    }
+    else
+	ap = arguments;
+    (void) copyip (argv + 1, ap);
+    argp = arguments;
+
+/*  */
+
+    while (cp = *argp++) {
+	if (*cp == '-')
+	    switch (smatch (++cp, switches)) {
+		case AMBIGSW: 
+		    ambigsw (cp, switches);
+		    done (1);
+		case UNKWNSW: 
+		    adios (NULLCP, "-%s unknown", cp);
+		case HELPSW: 
+		    (void) sprintf (buf, "%s [switches] [users ...]",
+			    invo_name);
+		    help (buf, switches);
+		    done (1);
+
+		case DATESW:
+		    datesw++;
+		    continue;
+		case NDATESW:
+		    datesw = 0;
+		    continue;
+
+		case NOTESW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    notifysw |= donote (cp, 1);
+		    continue;
+		case NNOTESW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    notifysw &= ~donote (cp, 0);
+		    continue;
+
+		case HOSTSW: 
+		    if (!(host = *argp++) || *host == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+		case USERSW: 
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    vec[vecp++] = cp;
+		    continue;
+		case APOPSW: 
+		    rpop = -1;
+		    continue;
+		case RPOPSW: 
+		    rpop = 1;
+		    continue;
+		case NAPOPSW:
+		case NRPOPSW: 
+		    rpop = 0;
+		    continue;
+	    }
+	vec[vecp++] = cp;
+    }
+
+/*  */
+#ifdef	POP
+    if (!host || !*host) {	/* -host not specified by user */
+#ifdef HESIOD
+	/*
+	 * Scheme is:
+	 *        use MAILHOST environment variable if present,
+	 *  else try Hesiod.
+	 *  If that fails, use the default (if any)
+	 *  provided by mtstailor in mts_init()
+	 */
+	if ((tmphost = getenv("MAILHOST")) != NULL)
+	    pophost = tmphost;
+	else if ((po = hes_getmailhost(vecp ? vec[0] : user)) != NULL &&
+		strcmp(po->po_type, "POP") == 0)
+	    pophost = po->po_host;
+#endif /* HESIOD */
+	if (pophost && *pophost)
+	    host = pophost;
+    }
+    if (!host || !*host)
+	host = NULL;
+    if (!host || rpop <= 0)
+	(void) setuid (uid);
+#endif /* POP */
+    if (vecp == 0) {
+#ifdef	POP
+	if (host)
+	    status = remotemail (host, user, rpop, notifysw, 1, snoop);
+	else
+#endif
+	  {
+	    char *home = (uid = geteuid()) ? home = getenv ("HOME") : NULL;
+	    if (home == NULL)
+	      {
+		pw = getpwnam (user);
+		if (pw == NULL)
+		  adios (NULLCP, "unable to get information about user");
+		if (home == NULL)
+		  home = pw->pw_dir;
+	      }
+	    status = checkmail (user, home, datesw, notifysw, 1);
+	  }
+    }
+    else {
+	vec[vecp] = NULL;
+
+	for (vecp = 0; cp = vec[vecp]; vecp++)
+#ifdef	POP
+	    if (host)
+		status += remotemail (host, cp, rpop, notifysw, 0, snoop);
+	    else
+#endif
+		if (pw = getpwnam (cp))
+		    status += checkmail (pw->pw_name, pw->pw_dir, datesw, notifysw, 0);
+		else
+		    advise (NULLCP, "no such user as %s", cp);
+    }
+
+    done (status);
+}
+
+/*  */
+
+static struct swit ntswitches[] = {
+#define	NALLSW	0
+    "all", 0,
+#define	NMAISW	1
+    "mail", 0,
+#define	NNMAISW	2
+    "nomail", 0,
+
+    NULL, 0
+};
+
+
+static int donote (cp, ntflag)
+register char   *cp;
+int	ntflag;
+{
+    switch (smatch (cp, ntswitches)) {
+	case AMBIGSW: 
+	    ambigsw (cp, ntswitches);
+	    done (1);
+	case UNKWNSW: 
+	    adios (NULLCP, "-%snotify %s unknown", ntflag ? "" : "no", cp);
+
+	case NALLSW: 
+	    return NT_ALL;
+	case NMAISW: 
+	    return NT_MAIL;
+	case NNMAISW: 
+	    return NT_NMAI;
+    }
+}
+
+/*  */
+
+#ifdef	MF
+/* ARGSUSED */
+#endif	/* MF */
+
+static int  checkmail (user, home, datesw, notifysw, personal)
+register char *user, *home;
+int	datesw,
+	notifysw,
+	personal;
+{
+    int     mf,
+            status;
+    char    buffer[BUFSIZ];
+    struct stat st;
+
+    (void) sprintf (buffer, "%s/%s",
+	    mmdfldir[0] ? mmdfldir : home,
+	    mmdflfil[0] ? mmdflfil : user);
+#ifndef	MF
+    if (datesw) {
+	st.st_size = 0;
+	st.st_atime = st.st_mtime = 0;
+    }
+#endif	/* MF */
+    mf = (stat (buffer, &st) == NOTOK || st.st_size == 0) ? NONEOK
+	: st.st_atime <= st.st_mtime ? MMDFNEW : MMDFOLD;
+
+#ifdef	MF
+    if (umincproc != NULL && *umincproc != NULL) {
+	(void) sprintf (buffer, "%s/%s",
+		uucpldir[0] ? uucpldir : home,
+		uucplfil[0] ? uucplfil : user);
+	mf |= (stat (buffer, &st) == NOTOK || st.st_size == 0) ? NONEOK
+	    : st.st_atime <= st.st_mtime ? UUCPNEW : UUCPOLD;
+    }
+#endif	/* MF */
+
+    if ((mf & UUCPOK) || (mf & MMDFOK)) {
+	if (notifysw & NT_MAIL) {
+	    printf (personal ? "You have " : "%s has ", user);
+	    if (mf & UUCPOK)
+		printf ("%s old-style bell", mf & UUCPOLD ? "old" : "new");
+	    if ((mf & UUCPOK) && (mf & MMDFOK))
+		printf (" and ");
+	    if (mf & MMDFOK)
+		printf ("%s%s", mf & MMDFOLD ? "old" : "new",
+			mf & UUCPOK ? " Internet" : "");
+	    printf (" mail waiting");
+	}
+	else
+	    notifysw = 0;
+
+	status = 0;
+    }
+    else {
+	if (notifysw & NT_NMAI)
+	    printf (personal ? "You don't %s%s" : "%s doesn't %s",
+		    personal ? "" : user, "have any mail waiting");
+	else
+	    notifysw = 0;
+
+	status = 1;
+    }
+
+#ifndef	MF
+    if (notifysw)
+	if (datesw && st.st_atime)
+	    printf ("; last read on %s",
+		    dasctime (dlocaltime ((long *) & st.st_atime), TW_NULL));
+#endif	/* MF */
+    if (notifysw)
+	printf ("\n");
+
+    return status;
+}
+
+/*  */
+
+#ifdef	POP
+extern	char response[];
+
+
+static int  remotemail (host, user, rpop, notifysw, personal, snoop)
+register char   *host;
+char   *user;
+int	rpop,
+	notifysw,
+	personal,
+	snoop;
+{
+    int     nmsgs,
+            nbytes,
+            status;
+    char   *pass = NULL;
+
+    if (user == NULL)
+	user = getusr ();
+    if (rpop > 0)
+	pass = getusr ();
+    else
+	ruserpass (host, &user, &pass);
+
+    if (pop_init (host, user, pass, snoop, rpop) == NOTOK
+	    || pop_stat (&nmsgs, &nbytes) == NOTOK
+	    || pop_quit () == NOTOK) {
+	advise (NULLCP, "%s", response);
+	return 1;
+    }
+
+    if (nmsgs) {
+	if (notifysw & NT_MAIL) {
+	    printf (personal ? "You have " : "%s has ", user);
+	    printf ("%d message%s (%d bytes)",
+		    nmsgs, nmsgs != 1 ? "s" : "", nbytes);
+	}
+	else
+	    notifysw = 0;
+
+	status = 0;
+    }
+    else {
+	if (notifysw & NT_NMAI)
+	    printf (personal ? "You don't %s%s" : "%s doesn't %s",
+		    personal ? "" : user, "have any mail waiting");
+	else
+	    notifysw = 0;
+	status = 1;
+    }
+    if (notifysw)
+	printf (" on %s\n", host);
+
+    return status;
+}
+#endif	/* POP */
+@
+
+
+1.13
+log
+@don't override -host value with pophost
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.12 1993/08/20 15:52:41 jromine Exp jromine $";
+d392 1
+a392 1
+    char   *pass;
+@
+
+
+1.12
+log
+@better user defaulting on rpop/apop
+should check to make sure this works OK
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.11 1992/12/15 00:20:22 jromine Exp jromine $";
+d203 1
+d205 7
+a211 9
+    /*
+      * Scheme is:
+      *        use MAILHOST environment variable if present,
+      *  else try Hesiod.
+      *  If that fails, use the default (if any)
+      *  provided by mtstailor in mts_init()
+      */
+    if (pophost == NULL || pophost[0] == '\0')
+      {
+d213 1
+a213 1
+	  pophost = tmphost;
+d215 2
+a216 3
+		 strcmp(po->po_type, "POP") == 0)
+	  pophost = po->po_host;
+      }
+d218 3
+a220 2
+    if (pophost && *pophost)
+	host = pophost;
+@
+
+
+1.11
+log
+@endif sugar
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.10 1992/11/04 00:49:17 jromine Exp jromine $";
+d395 3
+a397 3
+    if (rpop) {
+	if (user == NULL)
+	    user = getusr ();
+a398 1
+    }
+@
+
+
+1.10
+log
+@LOCALE
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.9 1992/10/16 16:51:48 jromine Exp jromine $";
+#endif	lint
+d24 1
+a24 1
+#else	POP
+d26 1
+a26 1
+#endif	POP
+d30 1
+a30 1
+#else	RPOP
+d32 1
+a32 1
+#endif	RPOP
+d93 1
+a93 1
+#endif	SYS5
+d302 1
+a302 1
+#endif	MF
+d323 1
+a323 1
+#endif	MF
+d335 1
+a335 1
+#endif	MF
+d369 1
+a369 1
+#endif	MF
+d434 1
+a434 1
+#endif	POP
+@
+
+
+1.9
+log
+@security fix
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.8 1992/02/04 21:58:40 jromine Exp jromine $";
+d13 3
+d125 3
+@
+
+
+1.8
+log
+@don't call getusr() unless needed
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.7 1992/02/04 21:54:20 jromine Exp jromine $";
+d389 5
+a393 4
+    if (user == NULL)
+	user = getusr ();
+    if (rpop > 0)
+  	pass = user;
+@
+
+
+1.7
+log
+@contributed patch
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.6 1992/02/03 16:35:46 jromine Exp jromine $";
+d392 1
+a392 1
+  	pass = getusr ();
+@
+
+
+1.6
+log
+@fix
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.5 1992/01/31 22:49:20 jromine Exp jromine $";
+d31 6
+d53 6
+a58 1
+#define	RPOPSW	6
+d60 1
+a60 1
+#define	NRPOPSW	7
+d63 1
+a63 1
+#define	HELPSW	8
+d181 3
+d185 1
+a185 1
+		    rpop++;
+d187 1
+d218 1
+a218 1
+    if (!host || !rpop)
+d389 4
+a392 5
+    if (rpop) {
+	if (user == NULL)
+	    user = getusr ();
+	pass = user;
+    }
+@
+
+
+1.5
+log
+@kerberos fix
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.4 1992/01/31 22:16:47 jromine Exp jromine $";
+d76 1
+d78 1
+@
+
+
+1.4
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: msgchk.c,v 1.3 1990/04/05 15:01:32 sources Exp jromine $";
+d111 1
+d114 1
+@
+
+
+1.3
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d13 3
+d55 1
+a55 1
+    NULL, NULL
+d94 1
+d102 1
+d104 4
+a110 3
+#ifdef	POP
+    if (pophost && *pophost)
+	host = pophost;
+d113 1
+a113 1
+#endif	POP
+a176 1
+
+d178 19
+d200 2
+a201 2
+	(void) setuid (getuid ());
+#endif	POP
+d205 1
+a205 1
+	    status = remotemail (host, NULLCP, rpop, notifysw, 1, snoop);
+d207 13
+a219 5
+#endif	POP
+	    if ((pw = getpwuid (getuid ())) == NULL)
+		adios (NULLCP, "you lose");
+	    else
+		status = checkmail (pw, datesw, notifysw, 1);
+d229 1
+a229 1
+#endif	POP
+d231 1
+a231 1
+		    status += checkmail (pw, datesw, notifysw, 0);
+d249 1
+a249 1
+    NULL, NULL
+d279 2
+a280 2
+static int  checkmail (pw, datesw, notifysw, personal)
+register struct passwd  *pw;
+d291 2
+a292 2
+	    mmdfldir[0] ? mmdfldir : pw -> pw_dir,
+	    mmdflfil[0] ? mmdflfil : pw -> pw_name);
+d305 2
+a306 2
+		uucpldir[0] ? uucpldir : pw -> pw_dir,
+		uucplfil[0] ? uucplfil : pw -> pw_name);
+d314 1
+a314 1
+	    printf (personal ? "You have " : "%s has ", pw -> pw_name);
+d332 1
+a332 1
+		    personal ? "" : pw -> pw_name, "have any mail waiting");
+d373 1
+a373 1
+	pass = getusr ();
+@
+
+
+1.2
+log
+@ANSI Compilance
+@
+text
+@d2 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d73 1
+@

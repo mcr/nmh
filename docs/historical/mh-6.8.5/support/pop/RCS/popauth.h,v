@@ -1,0 +1,31 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	92.02.11.17.41.39;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/* popauth.h - POP authorization DB definitions */
+/* @@(#)$Id$ */
+
+
+struct authinfo {
+    char    auth_secret[16];
+    int	    auth_secretlen;
+};
+@

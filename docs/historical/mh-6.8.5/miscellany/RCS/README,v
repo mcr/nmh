@@ -1,0 +1,213 @@
+head	1.9;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.9
+date	95.12.11.18.09.27;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.11.20.17.05.30;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.11.06.03.44.09;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.10.21.02.03.57;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.10.21.02.03.11;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.05.12.22.13.16;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.04.06.11.24.12;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.04.06.10.27.17;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.04.06.10.26.59;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@update mh-e
+@
+text
+@$Id: README,v 1.8 1992/11/20 17:05:30 jromine Exp jromine $
+
+The "miscellany/" directory contains some useful things for MH
+users and installers.
+
+These three tools are probably out of date, but should be of help.
+
+compress-4.0	MH Patches are sent out compressed.
+less-177	"less is more" - a more/pg-like pager (ver. 177)
+patch-2.0.12u8	The famous patch program.  MH updates are sent as patches.
+
+Other interesting stuff:
+
+audit		A perl package to parse and process messages 
+convert		Utilities for converting to/from other mailbox formats.
+libndir		The new directory routines for sites that don't have them.
+mem		A reminder system using an appointment folder.
+mh-e		GNU Emacs interface to MH (Contributed by Stephen Gildea.
+		    Latest version available at ftp://ftp.x.org/misc/mh-e).
+mhe		Brian Reid's MHE system
+mtrenv		Some of Marshall T. Rose's MH environment
+multi-media	Multi-media mail as specified by RFC 1341 (MIME)
+netnews		Making netnews directories MH folders under 4BSD
+rcvtrip		A script mhook which will annoy all posters of
+		mailing lists the user might be on.
+scripts		Some useful scripts
+sendmail	A replacement local mailer which uses the MMDF
+		maildrop format
+sortf		Sort a folder by arbitrary fields (for MH6.6)
+tools		MH maintenance tools.
+@
+
+
+1.8
+log
+@get latest version of "patch"
+include "audit"
+@
+text
+@d1 1
+a1 1
+$Id: README,v 1.7 1992/11/06 03:44:09 jromine Exp jromine $
+d18 2
+a19 1
+mh-e		GNU Emacs interface to MH (probably not the newest version)
+@
+
+
+1.7
+log
+@note sendmail spooler.c
+@
+text
+@d1 1
+a1 1
+$Id: README,v 1.6 1992/10/21 02:03:57 jromine Exp $
+d9 2
+a10 2
+less-5.0	"less is more" - a more/pg-like pager (v5)
+patch-2.0.12	The famous patch program.  MH updates are sent as patches.
+d14 1
+d17 2
+a18 2
+mem		A reminder system.
+mh-e		GNU Emacs interface to MH
+d23 2
+a24 1
+rcvtrip		A script mhook.
+d26 2
+a27 1
+sendmail	A replacement local mailer which uses the ctrl/A maildrop format
+@
+
+
+1.6
+log
+@typo
+@
+text
+@d1 1
+a1 1
+$Id: README,v 1.5 1992/10/21 02:03:11 jromine Exp jromine $
+d24 1
+@
+
+
+1.5
+log
+@document MIME
+@
+text
+@d1 1
+a1 1
+$Id$
+d3 2
+a4 1
+This directory contains some useful things for MH users and installers.
+@
+
+
+1.4
+log
+@fix ifdefs
+@
+text
+@d1 1
+a1 1
+miscellany/README $Revision: 1.3 $ $Date: 1990/04/06 11:24:12 $
+d19 1
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d1 1
+a1 1
+miscellany/README $Revision: 1.2 $ $Date: 90/04/06 10:27:17 $
+d16 2
+a17 2
+mh-e		Brian Reid's MHE system
+mhe		GNU Emacs interface to MH
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d1 1
+a1 1
+miscellany/README $Revision: 1.1 $ $Date:$
+d7 2
+a8 2
+compress	Compress 4.0.  MH Patches are usually sent out compressed.
+less.5		"less is more" - a more/pg-like pager (v5)
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+a1 1
+miscellany/README $Revision:$
+@

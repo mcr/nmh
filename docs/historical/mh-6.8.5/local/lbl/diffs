@@ -1,0 +1,1190 @@
+diff -r -w lbl/sbr/formatsbr.c ./sbr/formatsbr.c
+1a2,4
+> #ifndef	lint
+> static char ident[] = "@(#)$Id: formatsbr.c,v 1.16 1992/02/09 07:11:55 jromine Exp $";
+> #endif	lint
+12a16,18
+> /*  */
+> 
+> 
+17a24
+> #ifdef	LBL
+18a26
+> #endif
+20c28,30
+< int fmt_norm = AD_NAME;
+---
+> static normalize();
+> 
+> extern int fmt_norm;		/* defined in sbr/formatdef.c = AD_NAME */
+24,28c34
+< static
+< normalize(cp)
+< 	register char *cp;
+< {
+< 	register char *dp;
+---
+> long	time ();
+30,34c36
+< 	for (dp = cp; *cp; cp++)
+< 		if (*cp != QUOTE)
+< 			*dp++ = *cp;
+< 		else
+< 			switch (*++cp) {
+---
+> /*  */
+36,50c38
+< 			case 'b':
+< 				*dp++ = '\b';
+< 				break;
+< 			case 'f':
+< 				*dp++ = '\f';
+< 				break;
+< 			case 'n':
+< 				*dp++ = '\n';
+< 				break;
+< 			case 'r':
+< 				*dp++ = '\r';
+< 				break;
+< 			case 't':
+< 				*dp++ = '\t';
+< 				break;
+---
+> /* MAJOR HACK:	See MHCHANGES for discussion */
+52,68c40,43
+< 			case '\n':
+< 				break;
+< 
+< 			case NULL:
+< 				cp--;
+< 				/* fall through */
+< 			default:
+< 				*dp++ = *cp;
+< 				break;
+< 			}
+< 
+< 	*dp = NULL;
+< }
+< 
+< char *
+< new_fs(form, format, def)
+< 	register char *form, *format, *def;
+---
+> char  *new_fs (form, format, def)
+> register char  *form,
+>                *format,
+>                *def;
+89a65
+> 
+91c67,68
+< 	} else {
+---
+>     }
+>     else {
+99a77,109
+> /*  */
+> 
+> static  normalize (cp)
+> register char  *cp;
+> {
+>     register char  *dp;
+> 
+>     for (dp = cp; *cp; cp++)
+> 	if (*cp != QUOTE)
+> 	    *dp++ = *cp;
+> 	else
+> 	    switch (*++cp) {
+> #define	grot(y,z) case y: *dp++ = z; break;
+> 		grot ('b', '\b');
+> 		grot ('f', '\f');
+> 		grot ('n', '\n');
+> 		grot ('r', '\r');
+> 		grot ('t', '\t');
+> 
+> 		case '\n':
+> 		    break;
+> 
+> 		case 0: 
+> 		    cp--;	/* fall */
+> 		default: 
+> 		    *dp++ = *cp;
+> 		    break;
+> 	    }
+> 
+>     *dp = 0;
+> }
+> 
+> /*  */
+104,106c114,117
+< static int
+< match(str, sub)
+< 	register char *str, *sub;
+---
+> 
+> static int match (str, sub)
+> register char  *str,
+>                *sub;
+118,119c129
+< 		s1 = sub + 1;
+< 		s2 = str;
+---
+> 	s1 = sub + 1; s2 = str;
+126a137
+> /*  */
+130,135c141,143
+< #define PUTDF(cp, num, wid, fill) {\
+< 		if (cp + wid < ep) {\
+< 			if ((i = (num)) < 0)\
+< 				i = -(num);\
+< 			if ((c = (wid)) < 0)\
+< 				c = -c;\
+---
+> #define PUTDF(cp, num, wid, fill) if (cp + wid < ep){\
+> 		if((i = (num))<0) i = -(num);\
+> 		if((c = (wid))<0) c = -c;\
+148,152c156,158
+< 		}}
+< #define PUTD(cp, num) {\
+< 		if (cp < ep) {\
+< 			if ((i = (num)) == 0)\
+< 				*cp++ = '0';\
+---
+> 		}
+> #define PUTD(cp, num) if (cp < ep){\
+> 		if((i = (num))==0) *cp++ = '0';\
+165c171
+< 		}}
+---
+> 		}
+167,168c173
+< 		char *cp2 = cp;\
+< 		rjust = 0;\
+---
+> 		ljust = 0;\
+171c176
+< 			rjust++;\
+---
+> 			ljust++;\
+174c179
+< 			if (rjust) {\
+---
+> 			if (ljust) {\
+190,193c195
+< 				else if (c == '\010') {\
+< 					if (cp > cp2)\
+< 						--cp;\
+< 				} else {\
+---
+> 			else {\
+199c201
+< 		if (!rjust)\
+---
+> 		if (!ljust)\
+203d204
+< 
+205d205
+< 		char *cp2 = cp;\
+212,215c212
+< 				else if (c == '\010') {\
+< 					if (cp > cp2)\
+< 						--cp;\
+< 				} else {\
+---
+> 			else {\
+220c217,218
+< 		}}
+---
+> 		}\
+> 		}
+222,225d219
+< static char *lmonth[] = {
+<     "January", "February", "March", "April", "May", "June",
+<     "July", "August", "September", "October", "November", "December"
+< };
+226a221,223
+> static char *lmonth[] = { "January",  "February","March",   "April",
+> 			  "May",      "June",    "July",    "August",
+> 			  "September","October", "November","December" };
+227a225,226
+> 
+> struct format *
+245,246c244
+< 	register int j;
+< 	int rjust;
+---
+>     int ljust;
+251c249
+< 	for (;;) {
+---
+>     while (cp < ep) {
+258,259c256
+< 			PUTSF(cp, fmt->f_comp->c_text, fmt->f_width,
+< 			    fmt->f_fill);
+---
+> 	    PUTSF (cp, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill);
+262,269d258
+< 		case FT_LIT_FORCE:
+< 			sp = fmt->f_text;
+< 			i = strlen(sp);
+< 			ep += i;	/* forced lits are `invisible' */
+< 
+< 			while (c = *sp++)
+< 				*cp++ = c;
+< 			break;
+277,280c266,268
+< 
+< 			/* By default we left justify */
+< 			rjust = 0;
+< 			if ((i = fmt->f_width) < 0) {
+---
+> 	    ljust = 0;
+> 	    i = fmt->f_width;
+> 	    if (i < 0) {
+282c270
+< 				rjust++;
+---
+> 		ljust++;		/* XXX should do something with this */
+284,294d271
+< 
+< 			if (rjust) {
+< 				j = strlen(sp);
+< 				if (j > i)
+< 					sp += j - i;
+< 				else while (j < i && cp < ep) {
+< 					*cp++ = fmt->f_fill;
+< 					++j;
+< 				}
+< 			}
+< 
+297d273
+< 
+320a297
+> 
+325c302
+< 			if (str == NULLCP || *str == NULL) {
+---
+> 	    if (!(value = (str && *str))) {
+332c309
+< 			if (str != NULLCP && *str != NULL) {
+---
+> 	    if (!(value = (str == NULLCP || *str == 0))) {
+360c337
+< 			if (!str || !match(str, fmt->f_text)) {
+---
+> 	    if (!(value = (str && match (str, fmt->f_text)))) {
+374c351
+< 			if (!str || !uprf(str, fmt->f_text)) {
+---
+> 	    if (!(value = (str && uprf (str, fmt->f_text)))) {
+381d357
+< 			if (str)
+383,384d358
+< 			else
+< 				value = 0;
+388c362
+< 			value = (str != NULLCP && *str != NULL);
+---
+> 	    value = (str != NULLCP && *str != 0);
+392c366
+< 			value = (str == NULLCP || *str == NULL);
+---
+> 	    value = (str == NULLCP || *str == 0);
+419a394,397
+> 	case FT_LS_GETENV:
+> 	    if (!(str = getenv (fmt->f_text)))
+> 		str = "";
+> 	    break;
+424,425c402
+< 				/* Be careful since str can point into buffer */
+< 				bcopy(str, buffer, strlen(str) + 1);
+---
+> 		    (void) strcpy(buffer, str);
+427,428d403
+< 
+< 				/* Eat leading whitespace */
+431,438c406
+< 
+< 				/* Trim trailing whitespace */
+< 				xp = str + strlen(str) - 1;
+< 				while (xp > str && isspace(*xp))
+< 					*xp-- = '\0';
+< 
+< 				/* By default we left justify */
+< 				rjust = 0;
+---
+> 		    ljust = 0;
+441c409
+< 					rjust++;
+---
+> 			    ljust++;
+444,446c412
+< 				/* If necessary, limit width and/or justify */
+< 				if (i > 0 && (j = strlen(str)) > i) {
+< 					if (!rjust)
+---
+> 		    if (!ljust && i > 0 && strlen(str) > i)
+448,449c414,419
+< 					else
+< 						str += j - i;
+---
+> 		    xp = str;
+> 		    xp += strlen(str) - 1;
+> 		    while (xp > str && isspace(*xp))
+> 			    *xp-- = '\0';
+> 		    if (ljust && i > 0 && strlen(str) > i)
+> 			str += strlen(str) - i;
+451d420
+< 			}
+458,459c427
+< 			value = (comp = fmt->f_comp)->c_text ?
+< 			    atoi(comp->c_text) : 0;
+---
+> 	    value = (comp = fmt->f_comp)->c_text ? atoi(comp->c_text) : 0;
+484a453,458
+> 	case FT_LV_MODULO_L:
+> 	    if (fmt->f_value)
+> 		value = value % fmt->f_value;
+> 	    else
+> 		value = 0;
+> 	    break;
+517,518c491
+< 			if (!(((tws = fmt->f_comp->c_tws)->tw_flags) &
+< 			    (TW_SEXP | TW_SIMP)))
+---
+> 	    if (!(((tws = fmt->f_comp->c_tws)->tw_flags) & (TW_SEXP|TW_SIMP)))
+523,524c496
+< 			if (!(((tws = fmt->f_comp->c_tws)->tw_flags) &
+< 			    (TW_SEXP | TW_SIMP)))
+---
+> 	    if (!(((tws = fmt->f_comp->c_tws)->tw_flags) & (TW_SEXP|TW_SIMP)))
+529,530c501
+< 			if (!(((tws = fmt->f_comp->c_tws)->tw_flags) &
+< 			    (TW_SEXP | TW_SIMP)))
+---
+> 	    if (!(((tws = fmt->f_comp->c_tws)->tw_flags) & (TW_SEXP|TW_SIMP)))
+550,551c521
+< 			if (!(((tws = fmt->f_comp->c_tws)->tw_flags) &
+< 			    (TW_SEXP | TW_SIMP)))
+---
+> 	    if (!(((tws = fmt->f_comp->c_tws)->tw_flags) & (TW_SEXP|TW_SIMP)))
+555,556c525
+< 				value = 1;
+< 				break;
+---
+> 		    value = 1; break;
+558,559c527
+< 				value = 0;
+< 				break;
+---
+> 		    value = 0; break;
+561,562c529
+< 				value = -1;
+< 				break;
+---
+> 		    value = -1; break;
+565,566c532
+< 			if ((fmt->f_comp->c_tws->tw_flags & TW_SZONE) ==
+< 			    TW_SZEXP)
+---
+> 	    if ((fmt->f_comp->c_tws->tw_flags & TW_SZONE) == TW_SZEXP)
+610a577
+> 	case FT_LS_ADDR:
+614,615c581,587
+< #else
+< 			mn = fmt->f_comp->c_mn;
+---
+> #else not BERK
+> 	    if ((mn = fmt -> f_comp -> c_mn) == &fmt_mnull) {
+> 		str = fmt -> f_comp -> c_text;
+> 		break;
+> 	    }
+> 	    if (fmt -> f_type == FT_LS_ADDR)
+> 		goto unfriendly;
+616a589,604
+> 	        if ((str = mn -> m_note)) {
+> 	            (void) strcpy (buffer, str);
+> 	            str = buffer;
+> 	            if (*str == '(')
+> 	            	str++;
+> 	            sp = str + strlen(str) - 1;
+> 	            if (*sp == ')') {
+> 	            	*sp-- = '\0';
+> 	        	while (sp >= str)
+> 	            	    if (*sp == ' ')
+> 	            		*sp-- = '\0';
+> 	            	    else
+> 	            		break;
+> 	            }
+> 	        } else {
+> 	unfriendly: ;
+618d605
+< 
+632c619,620
+< 					} else
+---
+> 			}
+> 			else
+635a624
+> 		}
+661,662c650
+< 				bzero((char *)comp->c_tws,
+< 				    sizeof(*comp->c_tws));
+---
+> 		bzero ((char *) comp -> c_tws, sizeof *comp -> c_tws);
+668c656
+< 			/* custom address list formatting hook */
+---
+> 	    /* hook for custom address list formatting (see replsbr.c) */
+673,678c661,665
+< 			/*
+< 			 * Output the str register as an address component,
+< 			 * splitting it into multiple lines if necessary.
+< 			 * The value reg. contains the max line length.  The
+< 			 * lit. field may contain a string to prepend to the
+< 			 * result (e.g., "To: ")
+---
+> 	    /* output the str register as an address component,
+> 	     * splitting it into multiple lines if necessary.  The
+> 	     * value reg. contains the max line length.  The lit.
+> 	     * field may contain a string to prepend to the result
+> 	     * (e.g., "To: ")
+693,696c680,681
+< 					/*
+< 					 * Try to break at a comma; failing
+< 					 * that, break at a space, failing
+< 					 * that, just split the line.
+---
+> 		/* try to break at a comma; failing that, break at a
+> 		 * space, failing that, just split the line.
+698,699c683
+< 					lastb = 0;
+< 					sp = lp + wid;
+---
+> 		lastb = 0; sp = lp + wid;
+729c713,715
+< 			} else
+---
+> 	    } else {
+> 		while (getname(""))		/* XXX */
+> 		    ;
+730a717
+> 	    }
+735,737c722,724
+< 			 * If there's no component, we say true.  Otherwise
+< 			 * we say "true" only if we can parse the address and
+< 			 * it matches one of our addresses.
+---
+> 	     * if there's no component, we say true.  Otherwise we
+> 	     * say "true" only if we can parse the address and it
+> 	     * matches one of our addresses.
+748,749c735
+< 					    (mn = getm(sp, NULLCP, 0,
+< 					    AD_NAME, NULLCP)))
+---
+> 			(mn = getm (sp, NULLCP, 0, AD_NAME, NULLCP)))
+751a738,739
+> 		while (getname(""))		/* XXX */
+> 		    ;
+758,762c746,749
+< 			/*
+< 			 * If we're working on a folder (as opposed to a
+< 			 * file), add the current msg to sequence given in
+< 			 * literal field.  Don't disturb string or value
+< 			 * registers.
+---
+> #ifdef	LBL
+> 	    /* If we're working on a folder (as opposed to a file), add the
+> 	     * current msg to sequence given in literal field.  Don't
+> 	     * disturb string or value registers.
+765,766c752,753
+< 				(void) m_seqadd(fmt_current_folder,
+< 				    fmt->f_text, dat[0], -1);
+---
+> 		    (void)m_seqadd(fmt_current_folder, fmt->f_text, dat[0], -1);
+> #endif
+771c758,759
+< finished:
+---
+> #ifndef JLR
+>     finished:;
+774,775c762,774
+< 	*cp = NULL;
+< 	return (value);
+---
+>     *cp   = 0;
+>     return ((struct format *)0);
+> #else	/* JLR */
+>     if (cp[-1] != '\n')
+> 	*cp++ = '\n';
+>     while (fmt->f_type != FT_DONE)
+> 	fmt++;
+> 
+>     finished:;    
+>     *cp = '\0';
+>     return (fmt -> f_value ? ++fmt : (struct format *)0);
+> 
+> #endif /* JLR */
+diff -r -w lbl/sbr/m_gmsg.c ./sbr/m_gmsg.c
+1a2,4
+> #ifndef	lint
+> static char ident[] = "@(#)$Id: m_gmsg.c,v 2.8 1992/02/11 21:32:04 jromine Exp $";
+> #endif	lint
+3a7
+> #include "../h/local.h"
+5,16d8
+< #include <sys/types.h>
+< #include <sys/stat.h>
+< #include <ctype.h>
+< #ifndef	BSD42
+< #ifndef SYS5
+< #include <ndir.h>
+< #else	SYS5
+< #include <dir.h>
+< #endif  SYS5
+< #else	BSD42
+< #include <sys/dir.h>
+< #endif	BSD42
+25,27c17
+< static int m_getatr(), m_setatr();
+< 
+< static int  len;
+---
+> static int  len=0;
+29a20,21
+> static		m_getatr();
+> static int	m_setatr();
+32,33c24
+< struct msgs *
+< m_gmsg(name)
+---
+> struct msgs *m_gmsg (name)
+48a40,43
+> #ifdef SYS5DIR
+>     register struct dirent *dp;
+> 		DIR * dd;
+> #else  SYS5DIR
+50a46
+> #endif SYS5DIR
+59c55
+<     mp = (struct msgs  *) malloc (MSIZE (mp, 0, 0));
+---
+>     mp = (struct msgs  *) malloc (MHSIZE (mp, 0, 0));
+183c179
+< 		realloc ((char *) mp, MSIZE (mp, mp->lowoff, mp->hghoff));
+---
+> 		realloc ((char *) mp, MHSIZE (mp, mp -> lowoff, mp -> hghoff));
+191c187
+< 		calloc ((unsigned) 1, MSIZEX (mp, mp->lowmsg, mp->hghmsg));
+---
+> 		calloc ((unsigned) 1, MHSIZEX (mp, mp -> lowmsg, mp -> hghmsg));
+195c191
+<     if (mp->msgstats < 0)
+---
+>     if (mp -> msgstats < (int *)0)	/* non portable */
+207,208c203
+< static int
+< m_getatr(mp)
+---
+> static m_getatr (mp)
+219c214
+<             field[BUFSIZ];
+---
+>             field[BUFSIZ * 2];
+225,226c220,221
+<     mp->msgattrs[0] = getcpy (current);
+<     mp->msgattrs[1] = NULL;
+---
+>     mp -> msgattrs[i = 0] = getcpy (current);
+>     mp -> msgattrs[++i] = NULL;
+237,248d231
+< 		case FLDPLUS: 
+< 			/*
+< 			 * sequence was too big for buffer: back up
+< 			 * to a word break.
+< 			 */
+< 			for (cp = &field[sizeof(field)-2]; !isspace(*cp); --cp)
+< 				;
+< 			if (i = cp - &field[sizeof(field)-2]) {
+< 				*cp = 0;
+< 				fseek(fp, i, 1);
+< 			}
+< 			/*FALL THROUGH*/
+250,252d232
+< 		    (void) m_setatr (mp, name, field);
+< 		    continue;
+< 
+254c234,235
+< 		    (void) m_setatr (mp, name, field);
+---
+> 		    (void) m_setatr (mp, getcpy (name), trimcpy (field));
+> 		    if (state == FLDEOF)
+255a237
+> 		    continue;
+286c268
+< 	    if ((i = m_setatr (mp, cp, np->n_field)) != NOTOK)
+---
+> 	    if ((i = m_setatr (mp, cp, getcpy (np -> n_field))) != NOTOK)
+288d269
+< 	    free(cp);
+294,295c275
+< static int
+< m_setatr(mp, name, field)
+---
+> static int  m_setatr (mp, name, field)
+297c277,278
+< 	register char *name, *field;
+---
+> register char   *name,
+> 		*field;
+299,300c280,286
+<     register int bits, slot, first, last;
+<     register char *cp;
+---
+>     int     bits,
+>             hack;
+>     register int    i,
+> 		    j,
+> 		    k;
+>     register char  *cp,
+>                   **ap;
+302,305c288,290
+<     if (strcmp (current, name) == 0) {
+< 	mp->curmsg = atoi(field);
+< 	return (0);
+<     }
+---
+>     bits = FFATTRSLOT;
+>     hack = strcmp (current, name) == 0;/* hack... */
+>     /* if we're going to use UNSEEN, it should be set here! */
+307,308c292,295
+<     for (slot = 0; mp->msgattrs[slot]; slot++)
+< 	if (strcmp(mp->msgattrs[slot], name) == 0)
+---
+>     for (i = 0; mp -> msgattrs[i]; i++)
+> 	if (strcmp (mp -> msgattrs[i], name) == 0) {
+> 	    for (j = mp -> lowmsg; j <= mp -> hghmsg; j++)
+> 		mp -> msgstats[j] &= ~(1 << (bits + i));
+310,311c297,300
+< 
+<     if (slot >= NATTRS)
+---
+> 	}
+>     if (i >= NATTRS) {
+> 	free (name);
+> 	free (field);
+312a302
+>     }
+314,316c304,306
+<     if (mp->msgattrs[slot] == NULL) {
+< 	mp->msgattrs[slot] = getcpy(name);
+< 	mp->msgattrs[slot + 1] = NULL;
+---
+>     if (mp -> msgattrs[i] == NULL) {
+> 	mp -> msgattrs[i] = name;
+> 	mp -> msgattrs[i + 1] = NULL;
+317a308,309
+>     else
+> 	free (name);
+319,338c311,328
+<     bits = 1 << (FFATTRSLOT + slot);
+< 
+<     for (cp = field; *cp; ) {
+< 	while (isspace(*cp))
+< 		++cp;
+< 	if (! isdigit(*cp))
+< 		return (NOTOK);
+< 	for (first = 0; isdigit(*cp); ++cp)
+< 		first = (first * 10) + (*cp - '0');
+< 	if (first == 0)
+< 		return (NOTOK);
+< 	if (*cp++ == '-') {
+< 		/* have a range of msgs */
+< 		for (last = 0; isdigit(*cp); ++cp)
+< 			last = (last * 10) + (*cp - '0');
+< 		if (last < first) {
+< 			advise(NULLCP,
+< 			       "seq %s msg range bad: first (%d) > last (%d)",
+< 			       name, first, last);
+< 			continue;
+---
+>     for (ap = brkstring (field, " ", "\n");
+> 	    *ap;
+> 	    ap++) {
+> 	if (cp = index (*ap, '-'))
+> 	    *cp++ = NULL;
+> 	if ((j = m_atoi (*ap)) > 0) {
+> #ifdef	notdef
+> 	    if (hack && j >= mp -> lowmsg && j <= mp -> hghmsg
+> 		    && (mp -> msgstats[j] & EXISTS))
+> 		mp -> curmsg = j;
+> #else	not notdef
+> 	    if (hack)
+> 		mp -> curmsg = j;
+> #endif	not notdef
+> 	    for (k = cp ? m_atoi (cp) : j; j <= k; j++)
+> 		if (j >= mp -> lowmsg && j <= mp -> hghmsg
+> 			&& (mp -> msgstats[j] & EXISTS))
+> 		    mp -> msgstats[j] |= 1 << (bits + i);
+340,349d329
+< 		if (last < mp->lowmsg)
+< 			continue;
+< 		if (last > mp->hghmsg)
+< 			last = mp->hghmsg;
+< 		if (first < mp->lowmsg)
+< 			first = mp->lowmsg;
+< 	} else {
+< 		if (first < mp->lowmsg)
+< 			continue;
+< 		last = first;
+351,355c331,333
+< 	for ( ; first <= last; ++first)
+< 		if (mp->msgstats[first] & EXISTS)
+< 			mp->msgstats[first] |= bits;
+<     }
+<     return slot;
+---
+>     free (field);
+> 
+>     return i;
+diff -r -w lbl/sbr/m_seq.c ./sbr/m_seq.c
+1a2,4
+> #ifndef	lint
+> static char ident[] = "@(#)$Id: m_seq.c,v 1.7 1991/02/14 14:44:38 mh Exp $";
+> #endif	lint
+6,7c9
+< static char *buffer;
+< static int bufsize = BUFSIZ;
+---
+> /* new version from VJ 2/90 - faster? */
+15,16c17,19
+< 	register int i, j, linlen;
+< 	register char *bp, *ep;
+---
+> 	register int i, j;
+> 	register char *bp;
+> 	static char buffer[BUFSIZ*2];	/* for big sequences */
+18,21d20
+< 	if (buffer == 0) {
+< 		if ((buffer = malloc(bufsize)) == NULL)
+< 			adios (NULLCP, "unable to allocate seq str storage");
+< 	}
+22a22,23
+> 	    /* assume this is in sync with msgstats["cur"] */
+> 	    /* see m_seqadd() for details */
+38,39d38
+< 	ep = bp + bufsize - 16;
+< 	linlen = strlen(cp) + 2;
+41,42d39
+< 		register char *oldbp;
+< 
+46,58c43
+< 		oldbp = bp;
+< 		if (bp > buffer) {
+< 			if (bp >= ep) {
+< 				int oldoff = bp - buffer;
+< 				bufsize <<= 1;
+< 				if ((buffer = realloc(buffer, bufsize)) == NULL)
+< 					adios (NULLCP, "unable to allocate seq str storage");
+< 				oldbp = bp = buffer + oldoff;
+< 				ep = bp + bufsize - 16;
+< 			}
+< 			if (linlen >= 72) {
+< 				linlen = 0;
+< 				*bp++ = '\n';
+---
+> 		if (bp > buffer)
+60,62c45
+< 			}
+< 			*bp++ = ' ';
+< 		}
+---
+> 
+73d55
+< 		linlen += bp - oldbp;
+diff -r -w lbl/zotnet/tws/dtimep.lex ./zotnet/tws/dtimep.lex
+1,11d0
+< %{
+< #ifndef lint
+< static char rcsid[] =
+< #ifdef FLEX_SCANNER
+<     "@(#) $Header: dtimep.lex,v 1.15 90/10/16 14:57:20 leres Exp $ (LBL) (flex generated scanner)";
+< #else
+<     "@(#) $Header: dtimep.lex,v 1.15 90/10/16 14:57:20 leres Exp $ (LBL) (lex generated scanner)";
+< #endif
+< #endif
+< %}
+< /*
+16,17d4
+<  */
+< 
+48a36,38
+> #ifndef	lint
+> static char ident[] = "@(#)$Id: dtimep.lex,v 2.11 1992/02/10 20:32:29 jromine Exp jromine $";
+> #endif
+49a40
+> #include "../h/strings.h"
+50a42,45
+> #include <sys/types.h>
+> #ifndef SYS5
+> #include <sys/timeb.h>
+> #endif not SYS5
+51a47,52
+> #ifdef SYS5
+> extern int  daylight;
+> extern long timezone;
+> extern char *tzname[];
+> #endif SYS5
+> 
+55c56,57
+<  * American style: MM/DD/YY.
+---
+>  * American style: MM/DD/YY.  Of course, these are all non-RFC822
+>  * compliant.
+121c123,126
+< #define CVT2	(i=(*cp++ - '0'),isdigit(*cp)? i*10 + (*cp++ - '0') : i)
+---
+> #define	CVT1OR2	(i=(*cp++ - '0'), isdigit(*cp)? i*10 + (*cp++ - '0') : i)
+> #define	CVT2	  ((cp[0] - '0')*10 + (cp[1] - '0'))
+> #define	CVT4	((((cp[0] - '0')*10 + (cp[1] - '0'))*10 + \
+> 				      (cp[2] - '0'))*10 + (cp[3] - '0'))
+128,131c133,138
+< #ifdef FLEX_SCANNER
+< /* We get passed a string and return a pointer to a static tws struct */
+< #undef YY_DECL
+< #define YY_DECL struct tws *dparsetime(str) char *str;
+---
+> #ifdef	DSTXXX
+> #ifndef	BSD42
+> #include <time.h>
+> #else	BSD42
+> #include <sys/time.h>
+> #endif	BSD42
+133,148c140,143
+< /* We assume that we're never passed more than max_size characters */
+< #undef YY_INPUT
+< #define YY_INPUT(buf,result,max_size) \
+< 	if (gstr) { \
+< 		register char *xp; \
+< 		xp = gstr; \
+< 		while (isspace(*xp)) \
+< 			xp++; \
+< 		gstr = xp; \
+< 		while (*xp != '\0') \
+< 			++xp; \
+< 		result = xp - gstr; \
+< 		bcopy(gstr, buf, result); \
+< 		gstr = 0; \
+< 	} else \
+< 		result = YY_NULL;
+---
+> static	zonehack (tw)
+> register struct tws *tw;
+> {
+>     register struct tm *tm;
+150,152c145,146
+< /* Date strings aren't usually very long */
+< #undef YY_READ_BUF_SIZE
+< #define YY_READ_BUF_SIZE 128
+---
+>     if (twclock (tw) == -1L)
+> 	return;
+154,156c148,168
+< /* Use mh error reporting routine */
+< #undef YY_FATAL_ERROR
+< #define YY_FATAL_ERROR(s) adios("dparsetime()", s);
+---
+>     tm = localtime (&tw -> tw_clock);
+>     if (tm -> tm_isdst) {
+> 	tw -> tw_flags |= TW_DST;
+> 	tw -> tw_zone -= 60;
+>     }
+> }
+> #endif	DSTXXX
+> %}
+> %%
+> %{
+> struct tws *dparsetime (str)
+> 	char *str;
+> {
+> 	register int i;
+> 	static struct tws tw;
+> 	register char *cp;
+> 	register int gotdate = 0;
+> #ifndef SYS5
+> 	struct timeb	tb;
+> #endif not SYS5
+> 	long tclock;
+158,160c170
+< /* We need a pointer to the matched text we can modify */
+< #undef YY_USER_ACTION
+< #define YY_USER_ACTION cp = yytext
+---
+> 	start_cond = 0;
+162,163c172,173
+< /* Used to initialize */
+< static struct tws ztw = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+---
+> 	/* Zero out the struct. */
+> 	bzero( (char *) &tw, sizeof tw);
+165,167c175,182
+< /* Global for use by YY_INPUT() macro */
+< static char *gstr;
+< #endif
+---
+> 	/* Set default time zone. */
+> #ifndef SYS5
+> 	ftime( &tb );
+> 	tw.tw_zone = -tb.timezone;
+> #else SYS5
+> 	tzset( );
+> 	tw.tw_zone = -(timezone / 60);
+> #endif SYS5
+169c184,187
+< %}
+---
+> 	while (isspace(*str))
+> 		str++;
+> 	while ( 1 )
+> 		switch (cp = str, *cp ? lex_string( &str, start_cond) : 0) {
+171,175c189,203
+< %%
+< 					register int i, gotdate;
+< 					register char *cp;
+< 					static struct tws tw;
+< 					static void zonehack();
+---
+> 		case -1:
+> 			if (!gotdate || tw.tw_year == 0)
+> 				return (struct tws *)0;
+> 			/* fall through */
+> 		case 0:
+> 			if ( tw.tw_year == 0 ) {
+> 				/* Set default year. */
+> 				time (&tclock);
+> 				tw.tw_year = localtime(&tclock)->tm_year + 1900;
+> 			}
+> 			else if (tw.tw_year < 100) {
+> 				/* assume no 2-digit years > 1999 */
+> 				tw.tw_year += 1900;
+> 			}
+> 			return &tw;
+177,182c205
+< 					BEGIN(INITIAL);
+< 					yy_init = 1;
+< 					tw = ztw;
+< 					gstr = str;
+< 					gotdate = 0;
+< 
+---
+> %}
+188,189c211
+< 
+< {D}"/"{D}"/"(19)?[0-9][0-9]{w}		{
+---
+> {D}(("-"{D}"-")|("/"{D}"/")){D}?{d}{d}{w}	{
+192c214
+< 						tw.tw_mday = CVT2;
+---
+> 						tw.tw_mday = CVT1OR2;
+194c216
+< 						tw.tw_mon  = CVT2 - 1;
+---
+> 						tw.tw_mon  = CVT1OR2 - 1;
+197c219
+< 						tw.tw_mon  = CVT2 - 1;
+---
+> 						tw.tw_mon  = CVT1OR2 - 1;
+199c221
+< 						tw.tw_mday = CVT2;
+---
+> 						tw.tw_mday = CVT1OR2;
+204c226,236
+< 					tw.tw_year = i % 100;
+---
+> 					tw.tw_year = i;
+> 					gotdate++;	/* XXX */
+> 					}
+> {D}("/"|"-"){D}{w}			{
+> 					if (europeandate) {
+> 						tw.tw_mday = CVT1OR2; cp++;
+> 						tw.tw_mon  = CVT1OR2 - 1;
+> 					} else {
+> 						tw.tw_mon = CVT1OR2 - 1; cp++;
+> 						tw.tw_mday  = CVT1OR2;
+> 					}
+207,208c239,240
+< {D}{w}(-)?{w}{MONTH}{w}(-)?{w}(19)?{D}{w}(\,{w}|at{W})? {
+< 					tw.tw_mday = CVT2;
+---
+> {D}{w}(-)?{w}{MONTH}{w}(-)?{w}{D}?{d}{d}({W}at)?{w}	{
+> 					tw.tw_mday = CVT1OR2;
+214c246
+< 					tw.tw_year = i % 100;
+---
+> 					tw.tw_year = i;
+216c248,254
+< {MONTH}{W}{D}","{W}(19)?{D}{w}		{
+---
+> {D}"-"?{MONTH}({W}at)?{w}               {
+>                                         tw.tw_mday = CVT1OR2;
+>                                         while ( ! isalpha( *cp++ ) )
+>                                                 ;
+>                                         SETMONTH;
+>                                         }
+> {MONTH}{W}{D}","{W}{D}?{d}{d}{w}	{
+219c257
+< 					tw.tw_mday = CVT2;
+---
+> 					tw.tw_mday = CVT1OR2;
+223c261
+< 					tw.tw_year = i % 100;
+---
+> 					tw.tw_year = i;
+225d262
+< 
+229c266
+< 					tw.tw_mday = CVT2;
+---
+> 					tw.tw_mday = CVT1OR2;
+231a269,275
+> {D}:{D}:{D}{W}19[6-9]{d}		{	/* hack: ctime w/o TZ */
+> 					tw.tw_hour = CVT1OR2; cp++;
+> 					tw.tw_min  = CVT1OR2; cp++;
+> 					tw.tw_sec  = CVT1OR2;
+> 					SKIPD;
+> 					tw.tw_year = CVT4; cp+=4;
+> 					}
+233,235c277,279
+< 					tw.tw_hour = CVT2; cp++;
+< 					tw.tw_min  = CVT2; cp++;
+< 					tw.tw_sec  = CVT2;
+---
+> 					tw.tw_hour = CVT1OR2; cp++;
+> 					tw.tw_min  = CVT1OR2; cp++;
+> 					tw.tw_sec  = CVT1OR2;
+239,240c283,284
+< 					tw.tw_hour = CVT2; cp++;
+< 					tw.tw_min  = CVT2;
+---
+> 					tw.tw_hour = CVT1OR2; cp++;
+> 					tw.tw_min = CVT1OR2;
+244c288
+< 					tw.tw_hour = CVT2; cp++;
+---
+> 					tw.tw_hour = CVT1OR2; cp++;
+247c291
+< 					tw.tw_min  = CVT2;
+---
+> 					tw.tw_min  = CVT1OR2;
+249a294,301
+> {D}:{D}:{D}{w}am{w}			{
+> 					tw.tw_hour = CVT1OR2; cp++;
+> 					if (tw.tw_hour == 12)
+> 						tw.tw_hour = 0;
+> 					tw.tw_min  = CVT1OR2; cp++;
+> 					tw.tw_sec  = CVT1OR2;
+> 					BEGIN Z;
+> 					}
+251c303
+< 					tw.tw_hour = CVT2; cp++;
+---
+> 					tw.tw_hour = CVT1OR2; cp++;
+254c306
+< 					tw.tw_min  = CVT2;
+---
+> 					tw.tw_min  = CVT1OR2;
+256a309,316
+> {D}:{D}:{D}{w}pm{w}			{
+> 					tw.tw_hour = CVT1OR2; cp++;
+> 					if (tw.tw_hour != 12)
+> 						tw.tw_hour += 12;
+> 					tw.tw_min  = CVT1OR2; cp++;
+> 					tw.tw_sec  = CVT1OR2;
+> 					BEGIN Z;
+> 					}
+258,260c318,320
+< 					tw.tw_hour = CVT2;
+< 					tw.tw_min  = CVT2;
+< 					tw.tw_sec  = CVT2;
+---
+> 					tw.tw_hour = CVT2; cp+=2;
+> 					tw.tw_min  = CVT2; cp+=2;
+> 					tw.tw_sec  = CVT2; cp+=2;
+267,268c327
+< 					 * and minutes. This rule must come
+< 					 * the 4 digit hour and minute rule.
+---
+> 					 * and minutes.
+270,271c329
+< 					cp += 2;
+< 					tw.tw_year = CVT2;
+---
+> 					tw.tw_year = CVT4; cp+=4;
+274,275c332,338
+< 					tw.tw_hour = CVT2;
+< 					tw.tw_min  = CVT2;
+---
+> 					if (tw.tw_hour || tw.tw_min 
+> 							    || tw.tw_sec) {
+> 					    tw.tw_year = CVT4; cp+=4;
+> 					    tw.tw_zone = 0;
+> 					} else {
+> 					    tw.tw_hour = CVT2; cp+=2;
+> 					    tw.tw_min  = CVT2; cp+=2;
+277a341
+> 					}
+315a380
+> 					EXPZONE;
+320d384
+< 					EXPZONE; 
+327a392
+> 					EXPZONE;
+332d396
+< 					EXPZONE; 
+334c398,401
+< 
+---
+> <Z>{W}{d}{d}{d}{d}			{
+> 					SKIPD;
+> 					tw.tw_year = CVT4; cp+=4;
+> 					}
+337,349d403
+< 
+< <INITIAL,Z><<EOF>>			return(&tw);
+< 
+< .					{
+< 					/*
+< 					 * We jammed; it's an error if we
+< 					 * didn't parse anything.
+< 					 */
+< 					if (!gotdate || tw.tw_year == 0)
+< 						return(0);
+< 					return(&tw);
+< 					}
+< 
+351,375d404
+< 
+< #ifdef	DSTXXX
+< #include <sys/types.h>
+< #ifndef	BSD42
+< #include <time.h>
+< #else	BSD42
+< #include <sys/time.h>
+< #endif	BSD42
+< 
+< static void
+< zonehack(tw)
+<     register struct tws *tw;
+< {
+<     register struct tm *tm;
+< 
+<     if (twclock (tw) == -1L)
+< 	return;
+< 
+<     tm = localtime (&tw -> tw_clock);
+<     if (tm -> tm_isdst) {
+< 	tw -> tw_flags |= TW_DST;
+< 	tw -> tw_zone -= 60;
+<     }
+< }
+< #endif	DSTXXX

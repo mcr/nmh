@@ -1,0 +1,339 @@
+head	1.9;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.9
+date	93.08.20.15.56.12;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.02.06.17.29.00;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.01.29.23.10.03;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.05.15.16.53;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.03.20.20.34.51;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.12.11.28.06;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.21.16.58.42;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.06.12.56.23;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.06.12.55.23;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@fixup from mtr.
+@
+text
+@##############################################################################
+#    Instructions to Make, for compilation of ZOT UIP/utility processes
+#
+#	@@(MHWARNING)
+# @@(#)$Id: mts,v 1.8 1992/02/06 17:29:00 jromine Exp jromine $
+##############################################################################
+
+# The following entries were inserted during MH configuration
+BINDIR	=	$(DESTDIR)@@(MHBINPATH)
+ETCDIR	=	$(DESTDIR)@@(MHETCPATH)
+OPTIONS	=	@@(MHOPTIONS) -I..
+LDOPTIONS=	@@(LDOPTIONS)
+LDOPTLIB=	@@(LDOPTLIB)
+CHOWN	=	@@(MHCHOWNPATH)
+REMOVE	=	@@(MHREMOVE)
+
+CC      =	@@(MHCOMPILER)
+@@BEGIN: OPTIM
+CFLAGS  =	$(OPTIONS)
+@@END: OPTIM
+@@BEGIN: DEBUG
+CFLAGS  =	      $(OPTIONS)
+@@END: DEBUG
+LINT	=	lint
+LFLAGS	=	-bhu $(OPTIONS)
+LDFLAGS	=	$(LDOPTIONS)
+LLIBS	=
+LIBES	=
+LDLIBS	=	$(LIBES) $(LDOPTLIB)
+FILPROT	=	0644
+PGMPROT	=	0755
+
+OFILES	=	mts.o lock.o client.o
+LFILES	=	l-mts l-lock l-client
+IFILES	=	inst-mtstailor
+
+.c:;            echo $@@
+
+######################################################################
+#	Here it is...
+######################################################################
+
+all:		$(OFILES)
+
+lint:		$(LFILES)
+
+install:	inst-all clean
+
+inst-all:	$(IFILES)
+
+tar:;		@@touch mtstailor
+		@@make -n inst-all > MAKEMTS
+		@@chmod +x MAKEMTS
+		tar $(TFLAGS) MAKEMTS mtstailor
+		@@rm -f MAKEMTS
+
+uninstall:;
+		-cd $(ETCDIR); rm -f mtstailor
+
+
+##############################################################################
+# mts
+##############################################################################
+
+mts:		mts.o 
+
+l-mts:;		$(LINT) $(LFLAGS) mts.c $(LLIBS)
+
+
+##############################################################################
+# lock
+##############################################################################
+
+lock:		lock.o 
+
+l-lock:;	$(LINT) $(LFLAGS) lock.c $(LLIBS)
+
+
+##############################################################################
+# client
+##############################################################################
+
+client:		client.o 
+
+l-client:;	$(LINT) $(LFLAGS) client.c $(LLIBS)
+
+
+##############################################################################
+# mtstailor
+##############################################################################
+
+inst-mtstailor:	$(ETCDIR)/mtstailor
+
+$(ETCDIR)/mtstailor:	mtstailor
+		-@@if [ ! -f $@@ ]; then \
+		    $(REMOVE) $@@ zmtstailor; \
+		    cp mtstailor $@@; \
+		else \
+		    echo "Will not overwrite existing $@@"; \
+		fi
+		-@@chmod $(FILPROT) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+unconfig:	distribution
+		-rm -f Makefile
+
+distribution:   clean
+		-rm -f mts.c mtstailor
+
+clean:		unclean
+		-rm -f x* *.o
+
+unclean:;	-rm -f z* _* :* core eddep makedep MAKEMTS
+
+
+##############################################################################
+#	Dependencies
+##############################################################################
+
+MODULES	=	mts lock client
+
+depend:;	for m in $(MODULES); do ( \
+		    i=`basename $$m .c`; \
+		    echo $$i.o: $$i.c >> makedep; \
+		    grep '^#[ 	]*include' $$i.c | \
+			sed -e 's,[^"]*"/\([^"]*\)".*,'$$i'.o: /\1,' \
+			    -e 's,[^"]*"\([^"]*\)".*,'$$i'.o: \1,' \
+			    -e 's,[^<]*<\(.*\)>.*,#'$$i'.o: /usr/include/\1,' \
+			>> makedep \
+		); done
+		echo '/^# DO NOT DELETE THIS LINE/+2,$$d' > eddep
+		echo '$$r makedep' >> eddep
+		echo 'w' >> eddep
+		cp Makefile _Makefile
+		ed - Makefile < eddep
+		rm eddep makedep
+		echo '# DEPENDENCIES MUST END AT END OF FILE' >> Makefile
+		echo '# IF YOU PUT STUFF HERE IT WILL GO AWAY' >> Makefile
+
+# DO NOT DELETE THIS LINE
+# DEPENDENCIES START HERE
+mts.o: mts.c
+mts.o: ../../h/strings.h
+#mts.o: /usr/include/ctype.h
+#mts.o: /usr/include/stdio.h
+mts.o: mts.h
+#mts.o: /usr/include/netdb.h
+#mts.o: /usr/include/whoami.h
+#mts.o: /usr/include/sys/utsname.h
+#mts.o: /usr/include/pwd.h
+#mts.o: /usr/include/fcntl.h
+lock.o: lock.c
+lock.o: ../../h/strings.h
+#lock.o: /usr/include/stdio.h
+lock.o: mts.h
+#lock.o: /usr/include/sys/types.h
+#lock.o: /usr/include/sys/stat.h
+#lock.o: /usr/include/sys/file.h
+#lock.o: /usr/include/signal.h
+client.o: client.c
+client.o: ../../h/strings.h
+#client.o: /usr/include/stdio.h
+client.o: mts.h
+#client.o: /usr/include/errno.h
+#client.o: /usr/include/sys/types.h
+#client.o: /usr/include/sys/socket.h
+#client.o: /usr/include/netinet/in.h
+#client.o: /usr/include/netdb.h
+#client.o: /usr/include/arpa/inet.h
+# DEPENDENCIES MUST END AT END OF FILE
+# IF YOU PUT STUFF HERE IT WILL GO AWAY
+@
+
+
+1.8
+log
+@move targets to OFILES IFILES LFILES
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: mts,v 1.7 1992/01/29 23:10:03 jromine Exp jromine $
+d95 1
+a95 1
+		-if [ ! -f $@@ ]; then \
+@
+
+
+1.7
+log
+@add .c: rule for brain-dead "make"
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: mts,v 1.6 1990/04/05 15:16:53 sources Exp jromine $
+d33 4
+d43 1
+a43 1
+all:		mts lock client
+d45 1
+a45 1
+lint:		l-mts l-lock l-client
+d49 1
+a49 1
+inst-all:	inst-mtstailor
+@
+
+
+1.6
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d33 1
+@
+
+
+1.5
+log
+@fixup test
+@
+text
+@d5 1
+@
+
+
+1.4
+log
+@remove -O (put in mhconfig)
+@
+text
+@d89 6
+a94 2
+		-$(REMOVE) $@@ zmtstailor
+		cp mtstailor $@@
+@
+
+
+1.3
+log
+@make unconfig changes
+@
+text
+@d18 1
+a18 1
+CFLAGS  =	-O    $(OPTIONS)
+@
+
+
+1.2
+log
+@ANSI Compilance
+@
+text
+@d100 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d16 1
+a16 1
+CC      =	cc
+@

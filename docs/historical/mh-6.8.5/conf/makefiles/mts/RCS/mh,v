@@ -1,0 +1,269 @@
+head	1.10;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.10
+date	92.11.20.17.14.07;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.11.18.16.51.59;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.11.05.19.13.39;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.02.04.17.42.12;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.05.15.15.55;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.03.12.11.26.29;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.12.10.27.04;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.21.16.54.09;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.06.12.53.30;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.06.12.53.05;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@try to use LN instead of hard link
+@
+text
+@##############################################################################
+#    Instructions to Make, for compilation of standalone-MTS library
+#
+#	@@(MHWARNING)
+# @@(#)$Id: mh,v 1.9 1992/11/18 16:51:59 jromine Exp jromine $
+##############################################################################
+
+# The following entries were inserted during MH configuration
+OPTIONS=	@@(MHOPTIONS) -I..
+
+CC	=	@@(MHCOMPILER)
+@@BEGIN: OPTIM
+CFLAGS	=	$(OPTIONS)
+@@END: OPTIM
+@@BEGIN: DEBUG
+CFLAGS	=	      $(OPTIONS)
+@@END: DEBUG
+LINT	=	lint
+LFLAGS	=	-bhu $(OPTIONS)
+LLIBS	=	
+CP	=	@@(CP)
+LN	=	@@(LN)
+
+LIB	=	mhmts.a
+
+CFILES	=	hosts.c netmail.c uucp.c
+OFILES	=	hosts.o netmail.o uucp.o
+
+
+@@BEGIN: OPTIM
+##############################################################################
+#	Generation Rules
+##############################################################################
+.c.o:;		$(CC) $(CFLAGS) -c $*.c
+@@BEGIN: NEWLOAD
+		-ld -x -r $@@
+		mv a.out $@@
+@@END: NEWLOAD
+@@BEGIN: OLDLOAD
+		${CC} -s -o $@@
+@@END: OLDLOAD
+
+
+@@END: OPTIM
+##############################################################################
+#	Here it is...
+##############################################################################
+
+all:		$(LIB)
+depend:;
+lint:		l-mhmts
+
+$(LIB):		$(OFILES)
+		-mv $@@ z$@@
+@@BEGIN: RANLIB
+		ar r $@@ $(OFILES); ranlib $@@
+@@END: RANLIB
+@@BEGIN: LORDER
+		ar r $@@ `lorder $(OFILES) | tsort`
+@@END: LORDER
+		-rm -f ../libmts.a
+		-cd ..; $(LN) mh/$@@ libmts.a
+		-rm -f ../llib-lmts
+		-cd .. ; $(LN) mh/llib-lmhmts llib-lmts
+		-@@ls -l $@@
+		-@@echo "standalone-MTS library built normally"
+
+l-mhmts:;	$(LINT) $(LFLAGS) $(CFILES) $(LLIBS)
+
+hosts.o:	Makefile
+netmail.o:	Makefile
+uucp.o:		Makefile
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+unconfig:	distribution
+		-rm -f Makefile
+
+distribution:   clean
+
+clean:		unclean
+		-rm -f *.o $(LIB) z$(LIB)
+
+unclean:;	-rm -f _* :* core
+@
+
+
+1.9
+log
+@fixup the way @@(LN) works
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: mh,v 1.8 1992/11/05 19:13:39 jromine Exp jromine $
+d62 1
+a62 1
+		ln $@@ ../libmts.a
+@
+
+
+1.8
+log
+@use LN for llib files
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: mh,v 1.7 1992/02/04 17:42:12 jromine Exp jromine $
+d64 1
+a64 1
+		-$(LN) llib-lmhmts ../llib-lmts
+@
+
+
+1.7
+log
+@use CP instead of ld for llib in case of cross-device link
+Stephen Gildea <gildea@@expo.lcs.mit.EDU>
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: mh,v 1.6 1990/04/05 15:15:55 sources Exp jromine $
+d22 1
+d64 1
+a64 1
+		-$(CP) llib-lmhmts ../llib-lmts
+@
+
+
+1.6
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d21 1
+d63 1
+a63 1
+		-ln llib-lmhmts ../llib-lmts
+@
+
+
+1.5
+log
+@remove -O (put in mhconfig)
+@
+text
+@d5 1
+@
+
+
+1.4
+log
+@llib ln command failure shouldn't abort make
+/.
+@
+text
+@d12 1
+a12 1
+CFLAGS	=	-O    $(OPTIONS)
+@
+
+
+1.3
+log
+@make unconfig changes
+@
+text
+@d61 1
+a61 1
+		ln llib-lmhmts ../llib-lmts
+@
+
+
+1.2
+log
+@ANSI Compilance
+@
+text
+@d76 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 1
+a10 1
+CC	=	cc
+d37 1
+a37 1
+		cc -s -o $@@
+@

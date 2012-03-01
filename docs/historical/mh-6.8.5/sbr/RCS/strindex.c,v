@@ -1,0 +1,104 @@
+head	2.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+2.3
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.04.05.15.30.30;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.04.05.14.44.25;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.57.26;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.44.28;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.3
+log
+@endif sugar
+@
+text
+@/* strindex.c - "unsigned" lexical index */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: strindex.c,v 2.2 1990/04/05 15:30:30 sources Exp jromine $";
+#endif	/* lint */
+
+
+int  stringdex (p1, p2)
+register char  *p1,
+               *p2;
+{
+    register char  *p;
+
+    if (p1 == 0 || p2 == 0) return(-1);		/* XXX */
+
+    for (p = p2; *p; p++)
+	if (uprf (p, p1))
+	    return (p - p2);
+
+    return (-1);
+}
+@
+
+
+2.2
+log
+@add ID
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id:$";
+#endif	lint
+@
+
+
+2.1
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "$Id:";
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d2 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 2
+@

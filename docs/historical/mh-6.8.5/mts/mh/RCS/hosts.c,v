@@ -1,0 +1,204 @@
+head	1.6;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.01.31.21.37.07;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.05.15.30.01;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.04.05.14.43.18;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.05.14.51.51;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.05.14.51.25;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@endif sugar
+@
+text
+@/* hosts.c - find out the official name of a host */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: hosts.c,v 1.5 1992/01/31 21:37:07 jromine Exp jromine $";
+#endif	/* lint */
+
+/* LINTLIBRARY */
+
+#undef	NETWORK
+#if	defined(BSD41A) || defined(BSD42) || defined(SOCKETS)
+#define	NETWORK
+#endif	/* not (defined(BSD41A) || defined(BSD42) || defined(SOCKETS)) */
+
+#include "../h/strings.h"
+#include <stdio.h>
+#include "../zotnet/mts.h"
+#include <ctype.h>
+#if	defined(BSD42) || defined(SOCKETS)
+#include <netdb.h>
+#endif	/* BSD42 or SOCKETS */
+
+
+#define	NOTOK	(-1)
+
+/*  */
+
+char   *OfficialName (name)
+char   *name;
+{
+    register char  *p;
+    char   *q,
+	    site[BUFSIZ];
+#ifdef	NETWORK
+    static char buffer[BUFSIZ];
+#if	defined(BSD42) || defined(SOCKETS)
+    register struct hostent *hp;
+#endif	/* BSD42 or SOCKETS */
+#endif	/* NETWORK */
+
+    for (p = name, q = site; *p; p++, q++)
+	*q = isupper (*p) ? tolower (*p) : *p;
+    *q = 0;
+    q = site;
+
+    if (uleq (LocalName (), site))
+	return LocalName ();
+
+#ifdef	BSD41A
+    if (rhost (&q) != NOTOK) {
+	(void) strcpy (buffer, q);
+	free (q);
+	return buffer;
+    }
+#endif	/* BSD41A */
+#if	defined(BSD42) || defined(SOCKETS)
+    if (hp = gethostbyname (q)) {
+	(void) strcpy (buffer, hp -> h_name);
+	return buffer;
+    }
+#endif	/* BSD42 or SOCKETS */
+
+    return NULL;
+}
+@
+
+
+1.5
+log
+@kerberos
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: hosts.c,v 1.4 1990/04/05 15:30:01 sources Exp jromine $";
+#endif	lint
+d11 1
+a11 1
+#endif	not (defined(BSD41A) || defined(BSD42) || defined(SOCKETS))
+d19 1
+a19 1
+#endif	BSD42 or SOCKETS
+d36 2
+a37 2
+#endif	BSD42 or SOCKETS
+#endif	NETWORK
+d53 1
+a53 1
+#endif	BSD41A
+d59 1
+a59 1
+#endif	BSD42 or SOCKETS
+@
+
+
+1.4
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d41 1
+a41 1
+    *q = NULL;
+@
+
+
+1.3
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "$Id:";
+@
+
+
+1.2
+log
+@SOCKETS
+@
+text
+@d2 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d6 1
+a6 1
+#if	defined(BSD41A) || defined(BSD42)
+d8 1
+a8 1
+#endif	not (defined(BSD41A) || defined(BSD42))
+d14 1
+a14 1
+#ifdef	BSD42
+d16 1
+a16 1
+#endif	BSD42
+d31 1
+a31 1
+#ifdef	BSD42
+d33 1
+a33 1
+#endif	BSD42
+d51 1
+a51 1
+#ifdef	BSD42
+d56 1
+a56 1
+#endif	BSD42
+@

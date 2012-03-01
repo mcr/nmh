@@ -1,0 +1,82 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	92.02.09.22.03.10;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.01.14.08.26;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.01.11.02.51;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.01.11.02.15;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@use if-then-elseif-else-endif construct
+@
+text
+@%(lit)%(formataddr %<{reply-to}%?{from}%?{sender}%?{return-path}%>)\
+%<(nonnull)%(void(width))%(putaddr To: )\n%>\
+%(lit)%(formataddr{to})%(formataddr{cc})%(formataddr(me))\
+%<(nonnull)%(void(width))%(putaddr cc: )\n%>\
+%<{fcc}Fcc: %{fcc}\n%>\
+%<{subject}Subject: Re: %{subject}\n%>\
+%<{date}In-reply-to: Your message of "\
+%<(nodate{date})%{date}%|%(pretty{date})%>."%<{message-id}
+             %{message-id}%>\n%>\
+--------
+@
+
+
+1.3
+log
+@quote date string to comply with RFC
+@
+text
+@d1 1
+a1 1
+%(lit)%(formataddr %<{reply-to}%|%<{from}%|%<{sender}%|%<{return-path}%>%>%>%>)\
+@
+
+
+1.2
+log
+@missing "%>"
+@
+text
+@d7 2
+a8 2
+%<{date}In-reply-to: Your message of \
+%<(nodate{date})%{date}%|%(tws{date})%>.%<{message-id}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+a1 1
+%(lit)%(formataddr %<{reply-to}%|%<{from}%|%<{sender}%|%{return-path}%>%>%>)\
+@

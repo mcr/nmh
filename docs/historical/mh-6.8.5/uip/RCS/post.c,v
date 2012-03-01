@@ -1,0 +1,4246 @@
+head	2.26;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+2.26
+date	96.02.10.00.22.14;	author jromine;	state Exp;
+branches;
+next	2.25;
+
+2.25
+date	95.12.06.19.20.22;	author jromine;	state Exp;
+branches;
+next	2.24;
+
+2.24
+date	94.04.21.19.23.38;	author jromine;	state Exp;
+branches;
+next	2.23;
+
+2.23
+date	93.08.25.17.26.51;	author jromine;	state Exp;
+branches;
+next	2.22;
+
+2.22
+date	93.08.20.15.53.20;	author jromine;	state Exp;
+branches;
+next	2.21;
+
+2.21
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	2.20;
+
+2.20
+date	92.11.24.19.02.24;	author jromine;	state Exp;
+branches;
+next	2.19;
+
+2.19
+date	92.11.19.23.24.00;	author jromine;	state Exp;
+branches;
+next	2.18;
+
+2.18
+date	92.11.04.02.58.40;	author jromine;	state Exp;
+branches;
+next	2.17;
+
+2.17
+date	92.11.04.00.55.52;	author jromine;	state Exp;
+branches;
+next	2.16;
+
+2.16
+date	92.10.16.23.55.56;	author jromine;	state Exp;
+branches;
+next	2.15;
+
+2.15
+date	92.10.16.21.37.31;	author jromine;	state Exp;
+branches;
+next	2.14;
+
+2.14
+date	92.03.02.17.06.14;	author jromine;	state Exp;
+branches;
+next	2.13;
+
+2.13
+date	92.01.31.22.23.44;	author jromine;	state Exp;
+branches;
+next	2.12;
+
+2.12
+date	92.01.31.16.34.06;	author jromine;	state Exp;
+branches;
+next	2.11;
+
+2.11
+date	92.01.30.22.39.58;	author jromine;	state Exp;
+branches;
+next	2.10;
+
+2.10
+date	92.01.29.23.54.10;	author jromine;	state Exp;
+branches;
+next	2.9;
+
+2.9
+date	92.01.24.00.05.24;	author jromine;	state Exp;
+branches;
+next	2.8;
+
+2.8
+date	90.04.05.15.35.20;	author sources;	state Exp;
+branches;
+next	2.7;
+
+2.7
+date	90.04.05.14.55.10;	author sources;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	90.03.20.16.21.26;	author sources;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	90.03.12.13.58.09;	author sources;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	90.02.23.14.18.43;	author sources;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.02.06.13.27.11;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.05.15.40.11;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.05.14.25.54;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.58.07;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	89.05.03.16.25.05;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.05.03.16.07.15;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.26
+log
+@allow "whom -c" to work (default -c to -check)
+@
+text
+@/* post.c - enter messages into the transport system */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: post.c,v 2.25 1995/12/06 19:20:22 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include "../h/addrsbr.h"
+#include "../h/aliasbr.h"
+#include "../h/dropsbr.h"
+#include "../zotnet/tws.h"
+#ifndef	MMDFMTS
+#include <ctype.h>
+#include <errno.h>
+#include <setjmp.h>
+#include <stdio.h>
+#include <sys/types.h>
+#else	/* MMDFMTS */
+#include "../mts/mmdf/util.h"
+#include "../mts/mmdf/mmdf.h"
+#endif	/* MMDFMTS */
+#include "../zotnet/mts.h"
+#ifdef	MHMTS
+#ifndef	V7
+#include <sys/ioctl.h>
+#endif	/* not V7 */
+#include <sys/stat.h>
+#endif	/* MHMTS */
+#ifdef	SENDMTS
+#include "../mts/sendmail/smail.h"
+#undef	MF
+#endif	/* SENDMTS */
+#include <signal.h>
+#ifdef	MIME
+#include "../h/mhn.h"
+#endif	/* MIME */
+#ifdef LOCALE
+#include <locale.h>
+#endif
+
+
+#ifndef	MMDFMTS
+#define	uptolow(c)	((isalpha(c) && isupper (c)) ? tolower (c) : (c))
+#endif	/* not MMDFMTS */
+
+#define FCCS		10	/* max number of fccs allowed */
+
+/*  */
+
+#ifndef	MIME
+#define	MIMEminc(a)	(a)
+#else
+#define	MIMEminc(a)	0
+#endif
+
+#ifndef	TMA
+#define	TMAminc(a)	(a)
+#else	/* TMA */
+#define	TMAminc(a)	0
+#endif	/* TMA */
+
+static struct swit switches[] = {
+#define	ALIASW	0
+    "alias aliasfile", 0,
+
+#define	CHKSW	1
+    "check", -1,		/* interface from whom */
+#define	NCHKSW	2
+    "nocheck", -3,		/* interface from whom */
+
+#define	DEBUGSW	3
+    "debug", -5,
+
+#define	DISTSW	4
+    "dist", -4,			/* interface from dist */
+
+#define	ENCRSW	5
+    "encrypt", TMAminc (-7),
+#define	NENCRSW	6
+    "noencrypt", TMAminc (-9),
+
+#define	FILTSW	7
+    "filter filterfile", 0,
+#define	NFILTSW	8
+    "nofilter", 0,
+
+#define	FRMTSW	9
+    "format", 0,
+#define	NFRMTSW	10
+    "noformat", 0,
+
+#define	LIBSW	11		/* interface from send, whom */
+    "library directory", -7,
+
+#define	MIMESW	12
+    "mime", MIMEminc(-4),
+#define	NMIMESW	13
+    "nomime", MIMEminc(-6),
+
+#define	MSGDSW	14
+    "msgid", 0,
+#define	NMSGDSW	15
+    "nomsgid", 0,
+
+#define	VERBSW	16
+    "verbose", 0,
+#define	NVERBSW	17
+    "noverbose", 0,
+
+#define	WATCSW	18
+    "watch", 0,
+#define	NWATCSW	19
+    "nowatch", 0,
+
+#define	WHOMSW	20	/* interface from whom */
+    "whom", -4,		
+
+#define	WIDTHSW	21
+    "width columns", 0,
+
+#define	HELPSW	22
+    "help", 4,
+
+#define	MAILSW	23
+    "mail", -4,
+#define	SAMLSW	24
+    "saml", -4,
+#define	SENDSW	25
+    "send", -4,
+#define	SOMLSW	26
+    "soml", -4,
+
+#define	ANNOSW	27		/* interface from send */
+    "idanno number", -6,
+
+#define	DLVRSW	28
+    "deliver address-list", -7,
+
+#define	CLIESW	29
+    "client host", -6,
+#define	SERVSW	30
+    "server host", -6,
+#define	SNOOPSW	31
+    "snoop", -5,
+
+#define	FILLSW	32
+    "fill-in file", -7,
+#define	FILLUSW	33
+    "fill-up", -7,
+#define	PARTSW	34
+    "partno", -6,
+
+#define	QUEUESW 35
+    "queued", -6,
+
+#define	RECORSW 36
+    "record program", -6,
+#define	NRECOSW 37
+    "norecord", -8,
+
+    NULL, 0
+};
+
+/*  */
+
+struct headers {
+    char   *value;
+
+    unsigned int    flags;
+#define	HNOP	0x0000		/* just used to keep .set around */
+#define	HBAD	0x0001		/* bad header - don't let it through */
+#define	HADR	0x0002		/* header has an address field */
+#define	HSUB	0x0004		/* Subject: header */
+#define	HTRY	0x0008		/* try to send to addrs on header */
+#define	HBCC	0x0010		/* don't output this header */
+#define	HMNG	0x0020		/* munge this header */
+#define	HNGR	0x0040		/* no groups allowed in this header */
+#define	HFCC	0x0080		/* FCC: type header */
+#define	HNIL	0x0100		/* okay for this header not to have addrs */
+#define	HIGN	0x0200		/* ignore this header */
+#define	HDCC	0x0400		/* another undocumented feature */
+
+    unsigned int    set;
+#define	MFRM	0x0001		/* we've seen a From: */
+#define	MDAT	0x0002		/* we've seen a Date: */
+#define	MRFM	0x0004		/* we've seen a Resent-From: */
+#define	MVIS	0x0008		/* we've seen sighted addrs */
+#define	MINV	0x0010		/* we've seen blind addrs */
+#define	MRPY	0x0020		/* we've seen a Reply-to: */
+};
+
+/*  */
+
+static struct headers  NHeaders[] = {
+    "Return-Path", HBAD, 0,
+    "Received", HBAD, 0,
+    "Reply-To", HADR | HNGR, MRPY,
+    "From", HADR | HNGR, MFRM,
+    "Sender", HADR | HBAD, 0,
+    "Date", HBAD, 0,
+    "Subject", HSUB, 0,
+    "To", HADR | HTRY, MVIS,
+    "cc", HADR | HTRY, MVIS,
+    "Bcc", HADR | HTRY | HBCC | HNIL, MINV,
+    "Dcc", HADR | HTRY | HDCC | HNIL, MVIS,	/* sorta cc & bcc combined */
+    "Message-ID", HBAD, 0,
+    "Fcc", HFCC, 0,
+
+    NULL
+};
+
+static struct headers  RHeaders[] = {
+    "Resent-Reply-To", HADR | HNGR, MRPY,
+    "Resent-From", HADR | HNGR, MRFM,
+    "Resent-Sender", HADR | HBAD, 0,
+    "Resent-Date", HBAD, 0,
+    "Resent-Subject", HSUB, 0,
+    "Resent-To", HADR | HTRY, MVIS,
+    "Resent-cc", HADR | HTRY, MVIS,
+    "Resent-Bcc", HADR | HTRY | HBCC, MINV,
+    "Resent-Message-ID", HBAD, 0,
+    "Resent-Fcc", HFCC, 0,
+    "Reply-To", HADR, MRPY,
+    "From", HADR | HNGR, MFRM,
+#ifdef	MMDFI
+    "Sender", HADR | HMNG | HNGR, 0,
+#else	/* not MMFDI */
+    "Sender", HADR | HNGR, 0,
+#endif	/* not MMDFI */
+    "Date", HNOP, MDAT,
+    "To", HADR | HNIL, 0,
+    "cc", HADR | HNIL, 0,
+    "Bcc", HADR | HTRY | HBCC | HNIL, 0,
+    "Fcc", HIGN, 0,
+
+    NULL
+};
+
+/*  */
+
+
+static short    fccind = 0;	/* index into fccfold[] */
+static short    outputlinelen = OUTPUTLINELEN;
+
+static int  pfd = NOTOK;	/* fd to write annotation list to */
+static int  myuid= -1;		/* my user id */
+static int  mygid= -1;		/* my group id */
+static int  recipients = 0;	/* how many people will get a copy */
+static int  unkadr = 0;		/* how many of those were unknown */
+static int  badadr = 0;		/* number of bad addrs */
+static int  badmsg = 0;		/* message has bad semantics */
+static int  verbose = 0;	/* spell it out */
+static int  format = 1;		/* format addresses */
+static int  mime = 0;		/* use MIME-style encapsulations */
+static int  msgid = 0;		/* add msgid */
+static int  debug = 0;		/* debugging post */
+static int  watch = 0;		/* watch the delivery process */
+static int  whomsw = 0;		/* we are whom not post */
+static int  checksw = 0;	/* whom -check */
+static int  linepos=0;		/* putadr()'s position on the line */
+static int  nameoutput=0;	/* putadr() has output header name */
+
+static unsigned msgflags = 0;	/* what we've seen */
+
+#define	NORMAL 0
+#define	RESENT 1
+static int msgstate = NORMAL;
+
+static long tclock = 0L;		/* the time we started (more or less) */
+
+static TYPESIG  (*hstat) (), (*istat) (), (*qstat) (), (*tstat) ();
+
+static char tmpfil[BUFSIZ];
+static char bccfil[BUFSIZ];
+
+static char from[BUFSIZ];	/* my network address */
+static char signature[BUFSIZ];	/* my signature */
+static char *filter = NULL;	/* the filter for BCC'ing */
+static char *msgfrom = NULL;	/* the From: field for Bcc'ing */
+static char *subject = NULL;	/* the subject field for BCC'ing */
+static char *fccfold[FCCS];	/* foldernames for FCC'ing */
+
+static struct headers  *hdrtab;	/* table for the message we're doing */
+
+static struct mailname localaddrs={NULL};	/* local addrs */
+static struct mailname netaddrs={NULL};		/* network addrs */
+static struct mailname uuaddrs={NULL};		/* uucp addrs */
+static struct mailname tmpaddrs={NULL};		/* temporary queue */
+
+/*  */
+
+#ifdef	MMDFMTS
+static char *submitmode = "m";	/* deliver to mailbox only */
+static char submitopts[6] = "vl";/* initial options for submit */
+#endif	/* MMDFMTS */
+
+#ifdef	MHMTS
+static char *deliver = NULL;
+
+extern char **environ;
+
+TYPESIG	sigser ();
+#endif	/* MHMTS */
+
+#ifdef	SENDMTS
+static int smtpmode = S_MAIL;
+static int snoop = 0;
+static char *clientsw = NULL;
+static char *serversw = NULL;
+
+extern struct smtp  sm_reply;
+#endif	/* SENDMTS */
+
+#ifdef	TMA
+#define	post(a,b,c) \
+    if (encryptsw) postcipher ((a), (b), (c)); else postplain ((a), (b), (c))
+
+#ifndef	SENDMTS
+#define	tmasnoop	0
+#else	/* SENDMTS */
+#define	tmasnoop	snoop
+#endif	/* SENDMTS */
+#endif	/* TMA */
+
+static int  encryptsw = 0;	/* encrypt it */
+
+
+#ifdef	BERK
+#undef	WP
+#endif
+
+#ifdef MIME
+static char	prefix[] = "----- =_aaaaaaaaaa";
+static int      find_prefix();
+#endif /* MIME */
+
+static int	fill_up = 0;
+static char    *fill_in = NULLCP;
+static char    *partno = NULLCP;
+
+static	int	queued = 0;
+
+static	char   *record = NULLCP;
+
+off_t	lseek ();
+long	time ();
+
+static	putfmt(), start_headers(), finish_headers(), putgrp(), pl();
+static	anno(), make_bcc_file(), verify_all_addresses();
+static	chkadr(), do_addresses(), do_text(), do_an_address(), sigon();
+static 	sigoff(), p_refile(), fcc(), die(), insert_fcc(), p_record ();
+static int	get_header(), putadr(), insert(), annoaux();
+#ifdef TMA
+static	postplain();
+#else
+static	post();
+#endif	/* !TMA */
+/*    MAIN */
+
+/* ARGSUSED */
+
+main (argc, argv)
+int     argc;
+char   *argv[];
+{
+    int     state,
+            compnum;
+    char   *cp,
+           *msg = NULL,
+          **argp = argv + 1,
+            buf[BUFSIZ],
+            name[NAMESZ];
+    FILE   *in,
+	   *out;
+
+#ifdef LOCALE
+	setlocale(LC_ALL, "");
+#endif
+    invo_name = r1bindex (argv[0], '/');
+    m_foil (NULLCP);
+    mts_init (invo_name);
+#ifdef	MMDFMTS
+#ifdef	MMDFII
+    mmdf_init (invo_name);
+#endif	/* MMDFII */
+#endif	/* MMDFMTS */
+
+/*  */
+
+    while (cp = *argp++) {
+	if (*cp == '-')
+	    switch (smatch (++cp, switches)) {
+		case AMBIGSW: 
+		    ambigsw (cp, switches);
+		    done (1);
+		case UNKWNSW: 
+		    adios (NULLCP, "-%s unknown", cp);
+		case HELPSW: 
+		    (void) sprintf (buf, "%s [switches] file", invo_name);
+		    help (buf, switches);
+		    done (1);
+
+		case LIBSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    m_foil (cp);
+		    continue;
+
+		case ALIASW: 
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+#ifdef	MHMTS
+		    if (access (libpath (cp), 04) == NOTOK)
+			adios (cp, "unable to read");
+#endif	/* MHMTS */
+		    if ((state = alias (cp)) != AK_OK)
+			adios (NULLCP, "aliasing error in %s - %s",
+				cp, akerror (state));
+		    continue;
+
+		case CHKSW: 
+		    checksw++;
+		    continue;
+		case NCHKSW: 
+		    checksw = 0;
+		    continue;
+
+		case DEBUGSW: 
+		    debug++;
+		    continue;
+
+		case DISTSW:
+		    msgstate = RESENT;
+		    continue;
+
+		case FILTSW:
+		    if (!(filter = *argp++) || *filter == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    mime = 0;
+		    continue;
+		case NFILTSW:
+		    filter = NULL;
+		    continue;
+		
+		case FRMTSW: 
+		    format++;
+		    continue;
+		case NFRMTSW: 
+		    format = 0;
+		    continue;
+
+		case MIMESW:
+#ifdef	MIME
+		    mime++;
+		    filter = 0;
+#endif
+		    continue;
+		case NMIMESW: 
+		    mime = 0;
+		    continue;
+
+		case MSGDSW: 
+		    msgid++;
+		    continue;
+		case NMSGDSW: 
+		    msgid = 0;
+		    continue;
+
+		case VERBSW: 
+		    verbose++;
+		    continue;
+		case NVERBSW: 
+		    verbose = 0;
+		    continue;
+
+		case WATCSW: 
+		    watch++;
+		    continue;
+		case NWATCSW: 
+		    watch = 0;
+		    continue;
+
+		case WHOMSW: 
+		    whomsw++;
+		    continue;
+
+		case WIDTHSW: 
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    if ((outputlinelen = atoi (cp)) < 10)
+			adios (NULLCP, "impossible width %d", outputlinelen);
+		    continue;
+
+		case ENCRSW:
+		    encryptsw++;
+		    continue;
+		case NENCRSW:
+		    encryptsw = 0;
+		    continue;
+
+		case ANNOSW: 
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    if ((pfd = atoi (cp)) <= 2)
+			adios (NULLCP, "bad argument %s %s", argp[-2], cp);
+		    continue;
+
+#ifdef	MMDFMTS
+		case MAILSW:
+		    submitmode = "m";
+		    continue;
+		case SOMLSW:	/* for right now, sigh... */
+		case SAMLSW:
+		    submitmode = "b";
+		    continue;
+		case SENDSW:
+		    submitmode = "y";
+		    continue;
+#endif	/* MMDFMTS */
+
+#ifndef	MHMTS
+		case DLVRSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+#else	/* MHMTS */
+		case MAILSW:
+		case SAMLSW:
+		case SOMLSW:
+		case SENDSW:
+		    continue;
+		case DLVRSW: 
+		    if (!(deliver = *argp++) || *deliver == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+#endif	/* MHMTS */
+
+#ifndef	SENDMTS
+		case CLIESW:
+		case SERVSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+
+		case SNOOPSW:
+		    continue;
+#else	/* SENDMTS */
+		case MAILSW:
+		    smtpmode = S_MAIL;
+		    continue;
+		case SAMLSW:
+		    smtpmode = S_SAML;
+		    continue;
+		case SOMLSW:
+		    smtpmode = S_SOML;
+		    continue;
+		case SENDSW:
+		    smtpmode = S_SEND;
+		    continue;
+		case CLIESW:
+		    if (!(clientsw = *argp++) || *clientsw == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+		case SERVSW:
+		    if (!(serversw = *argp++) || *serversw == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+		case SNOOPSW:
+		    snoop++;
+		    continue;
+#endif	/* SENDMTS */
+
+		case FILLSW:
+		    if (!(fill_in = *argp++) || *fill_in == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+		case FILLUSW:
+		    fill_up++;
+		    continue;
+		case PARTSW:
+		    if (!(partno = *argp++) || *partno == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+
+		case QUEUESW:
+		    queued++;
+		    continue;
+
+		case RECORSW:
+		    if (!(record = *argp++) || *record == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+		    continue;
+		case NRECOSW:
+		    record = NULLCP;
+		    continue;
+	    }
+	if (msg)
+	    adios (NULLCP, "only one message at a time!");
+	else
+	    msg = cp;
+    }
+
+    (void) alias (AliasFile);
+
+/*  */
+
+    if (!msg)
+	adios (NULLCP, "usage: %s [switches] file", invo_name);
+
+    if (outputlinelen < 10)
+	adios (NULLCP, "impossible width %d", outputlinelen);
+
+#ifdef	MHMTS
+    if (access (msg, 04) == NOTOK)
+	adios (msg, "unable to read");
+#endif	/* MHMTS */
+    if ((in = fopen (msg, "r")) == NULL)
+	adios (msg, "unable to open");
+
+    start_headers ();
+    if (debug) {
+	verbose++;
+	discard (out = stdout);	/* XXX: reference discard() to help loader */
+#ifdef	MHMTS
+	if (deliver) {
+	    (void) strcpy (tmpfil, msg);
+	    putfmt ("To", deliver, out);
+	    goto daemon;
+	}
+#endif	/* MHMTS */
+    }
+    else
+#ifdef	MHMTS
+    if (deliver) {
+	if ((out = fopen ("/dev/null", "r")) == NULL)
+	    adios ("/dev/null", "unable to write");
+	(void) strcpy (tmpfil, msg);
+	putfmt ("To", deliver, out);
+	goto daemon;
+    }
+    else
+#endif	/* MHMTS */
+	if (whomsw) {
+	    if ((out = fopen (fill_in ? fill_in : "/dev/null", "w")) == NULL)
+		adios ("/dev/null", "unable to open");
+	}
+	else {
+	    (void) strcpy (tmpfil, m_scratch ("", m_maildir (invo_name)));
+	    if ((out = fopen (tmpfil, "w")) == NULL) {
+		(void) strcpy (tmpfil, m_tmpfil (invo_name));
+		if ((out = fopen (tmpfil, "w")) == NULL)
+		    adios (tmpfil, "unable to create");
+	    }
+#ifdef	MHMTS
+	    (void) chown (tmpfil, myuid, mygid);
+#endif	/* MHMTS */
+	    (void) chmod (tmpfil, 0600);
+	}
+
+/*  */
+
+    hdrtab = msgstate == NORMAL ? NHeaders : RHeaders;
+
+    for (compnum = 1, state = FLD;;) {
+	switch (state = m_getfld (state, name, buf, sizeof buf, in)) {
+	    case FLD: 
+	    case FLDEOF: 
+	    case FLDPLUS: 
+		compnum++;
+		cp = add (buf, NULLCP);
+		while (state == FLDPLUS) {
+		    state = m_getfld (state, name, buf, sizeof buf, in);
+		    cp = add (buf, cp);
+		}
+		putfmt (name, cp, out);
+		free (cp);
+		if (state != FLDEOF)
+		    continue;
+		finish_headers (out);
+		break;
+
+	    case BODY: 
+	    case BODYEOF: 
+		finish_headers (out);
+		if (whomsw && !fill_in)
+		    break;
+		fprintf (out, "\n%s", buf);
+		while (state == BODY) {
+		    state = m_getfld (state, name, buf, sizeof buf, in);
+		    fputs (buf, out);
+		}
+		break;
+
+	    case FILEEOF: 
+		finish_headers (out);
+		break;
+
+	    case LENERR: 
+	    case FMTERR: 
+		adios (NULLCP, "message format error in component #%d",
+			compnum);
+
+	    default: 
+		adios (NULLCP, "getfld() returned %d", state);
+	}
+	break;
+    }
+
+/*  */
+
+#ifdef	MHMTS
+daemon: ;
+#endif	/* MHMTS */
+    if (pfd != NOTOK)
+	anno ();
+    (void) fclose (in);
+    if (debug) {
+	pl ();
+	done (0);
+    }
+    else
+	(void) fclose (out);
+
+#ifdef	TMA
+    if (encryptsw)
+	tmastart (tmasnoop);
+#endif	/* TMA */
+    if (whomsw) {
+	if (!fill_up)
+	    verify_all_addresses (1);
+	done (0);
+    }
+
+#ifdef	MMDFMTS
+    (void) strcat (submitopts, submitmode);
+    if (watch)
+	(void) strcat (submitopts, "nw");
+#endif	/* MMDFMTS */
+#ifdef	MHMTS
+    verify_all_addresses (0);
+#endif	/* MHMTS */
+    if (encryptsw)
+	verify_all_addresses (verbose);
+    if (msgflags & MINV) {
+	make_bcc_file ();
+	if (msgflags & MVIS) {
+#ifndef	MHMTS
+	    if (!encryptsw)
+		verify_all_addresses (verbose);
+#endif	/* not MHMTS */
+	    post (tmpfil, 0, verbose);
+	}
+	post (bccfil, 1, verbose);
+	(void) unlink (bccfil);
+    }
+    else
+	post (tmpfil, 0, isatty (1));
+#ifdef	TMA
+    if (encryptsw)
+	tmastop ();
+#endif	/* TMA */
+
+    p_refile (tmpfil);
+
+    p_record ();
+
+#ifdef	MHMTS
+    if (!deliver)
+#endif	/* MHMTS */
+	(void) unlink (tmpfil);
+
+    if (verbose)
+	printf (partno ? "Partial Message #%s Processed\n" : "Message Processed\n",
+		partno);
+
+    done (0);
+}
+
+/*    DRAFT GENERATION */
+
+static putfmt (name, str, out)
+register char   *name,
+		*str;
+register FILE *out;
+{
+    int     count,
+            grp,
+            i,
+            keep;
+    register char  *cp,
+                   *pp,
+                   *qp;
+    char    namep[BUFSIZ];
+    register struct mailname   *mp,
+                               *np;
+    register struct headers *hdr;
+
+    while (*str == ' ' || *str == '\t')
+	str++;
+
+    if (msgstate == NORMAL && uprf (name, "resent")) {
+	advise (NULLCP, "illegal header line -- %s:", name);
+	badmsg++;
+	return;
+    }
+
+    if ((i = get_header (name, hdrtab)) == NOTOK) {
+	fprintf (out, "%s: %s", name, str);
+	return;
+    }
+
+    hdr = &hdrtab[i];
+    if (hdr -> flags & HIGN) {
+	if (fill_in)
+	    fprintf (out, "%s: %s", name, str);
+	return;
+    }
+    if (hdr -> flags & HBAD) {
+	if (fill_in)
+	    fprintf (out, "%s: %s", name, str);
+	else {
+	    advise (NULLCP, "illegal header line -- %s:", name);
+	    badmsg++;
+	}
+	return;
+    }
+    msgflags |= (hdr -> set & ~(MVIS | MINV));
+
+    if (hdr -> set & MFRM)
+	msgfrom = msgfrom ? add (str, add (",", msgfrom)) : getcpy (str);
+    if (hdr -> flags & HSUB)
+	subject = subject ? add (str, add ("\t", subject)) : getcpy (str);
+    if (hdr -> flags & HFCC) {
+	if (fill_in) {
+	    fprintf (out, "%s: %s", name, str);
+	    return;
+	}
+
+	if (cp = rindex (str, '\n'))
+	    *cp = 0;
+	for (cp = pp = str; cp = index (pp, ','); pp = cp) {
+	    *cp++ = 0;
+	    insert_fcc (hdr, pp);
+	}
+	insert_fcc (hdr, pp);
+	return;
+    }
+
+/*  */
+
+    if (!(hdr -> flags & HADR)) {
+	fprintf (out, "%s: %s", name, str);
+	return;
+    }
+
+    tmpaddrs.m_next = NULL;
+    for (count = 0; cp = getname (str); count++)
+	if (mp = getm (cp, NULLCP, 0, AD_HOST, NULLCP)) {
+	    if (tmpaddrs.m_next)
+		np -> m_next = mp;
+	    else
+		tmpaddrs.m_next = mp;
+	    np = mp;
+	}
+	else
+	    if (hdr -> flags & HTRY)
+		badadr++;
+	    else
+		badmsg++;
+
+    if (count < 1) {
+	if (hdr -> flags & HNIL) {
+	    if (!(hdr -> flags & HBCC))
+		fprintf (out, "%s: %s", name, str);
+	}
+	else {
+#ifdef	notdef
+	    advise (NULLCP, "%s: field requires at least one address", name);
+	    badmsg++;
+#endif	/* notdef */
+	}
+	return;
+    }
+
+/*  */
+
+    nameoutput = linepos = 0;
+    (void) sprintf (namep, "%s%s",
+		    !fill_in && (hdr -> flags & HMNG) ? "Original-" : "",
+		    name);
+
+    for (grp = 0, mp = tmpaddrs.m_next; mp; mp = np)
+	if (mp -> m_nohost) {	/* also used to test (hdr -> flags & HTRY) */
+	    pp = akvalue (mp -> m_mbox);
+	    qp = akvisible () ? mp -> m_mbox : "";
+	    np = mp;
+	    if (np -> m_gname)
+		putgrp (namep, np -> m_gname, out, hdr -> flags);
+	    while (cp = getname (pp)) {
+		if (!(mp = getm (cp, NULLCP, 0, AD_HOST, NULLCP))) {
+		    badadr++;
+		    continue;
+		}
+		if (hdr -> flags & HBCC)
+		    mp -> m_bcc++;
+		if (np -> m_ingrp)
+		    mp -> m_ingrp = np -> m_ingrp;
+		else
+		    if (mp -> m_gname)
+			putgrp (namep, mp -> m_gname, out, hdr -> flags);
+		if (mp -> m_ingrp)
+		    grp++;
+#ifdef	MHMTS
+		mp -> m_aka = getcpy (np -> m_mbox);
+#endif	/* MHMTS */
+		if (putadr (namep, qp, mp, out, hdr -> flags))
+		    msgflags |= (hdr -> set & (MVIS | MINV));
+		else
+		    mnfree (mp);
+	    }
+	    mp = np;
+	    np = np -> m_next;
+	    mnfree (mp);
+	}
+	else {
+	    if (hdr -> flags & HBCC)
+		mp -> m_bcc++;
+	    if (mp -> m_gname)
+		putgrp (namep, mp -> m_gname, out, hdr -> flags);
+	    if (mp -> m_ingrp)
+		grp++;
+	    keep = putadr (namep, "", mp, out, hdr -> flags);
+	    np = mp -> m_next;
+	    if (keep) {
+		mp -> m_next = NULL;
+		msgflags |= (hdr -> set & (MVIS | MINV));
+	    }
+	    else
+		mnfree (mp);
+	}
+
+    if (grp > 0 && (hdr -> flags & HNGR)) {
+	advise (NULLCP, "%s: field does not allow groups", name);
+	badmsg++;
+    }
+    if (linepos) {
+	if (fill_in && grp > 0)
+	    (void) putc (';', out);
+	(void) putc ('\n', out);
+    }
+}
+
+/*  */
+
+static  start_headers () {
+    register char  *cp;
+    char    myhost[BUFSIZ],
+            sigbuf[BUFSIZ];
+    register struct mailname   *mp;
+
+    myuid = getuid ();
+    mygid = getgid ();
+    (void) time (&tclock);
+
+    (void) strcpy (from, adrsprintf (NULLCP, NULLCP));
+
+    (void) strcpy (myhost, LocalName ());
+    for (cp = myhost; *cp; cp++)
+	*cp = uptolow (*cp);
+
+#ifdef	MHMTS
+    if (deliver) {
+	if (geteuid () == 0 && myuid != 0 && myuid != 1 && mygid != 1)
+	    adios (NULLCP, "-deliver unknown");
+	(void) strcpy (signature, from);
+    }
+#endif	/* MHMTS */
+
+    if ((cp = getfullname ()) && *cp) {
+	(void) strcpy (sigbuf, cp);
+	(void) sprintf (signature, "%s <%s>", sigbuf, adrsprintf (NULLCP, NULLCP));
+	if ((cp = getname (signature)) == NULL)
+	    adios (NULLCP, "getname () failed -- you lose extraordinarily big");
+	if ((mp = getm (cp, NULLCP, 0, AD_HOST, NULLCP)) == NULL)
+	    adios (NULLCP, "bad signature '%s'", sigbuf);
+	mnfree (mp);
+	while (getname (""))
+	    continue;
+    }
+    else
+	(void) strcpy (signature, adrsprintf (NULLCP, NULLCP));
+}
+
+/*  */
+
+static finish_headers (out)
+register FILE *out;
+{
+    switch (msgstate) {
+	case NORMAL: 
+	    if (whomsw && !fill_up)
+		break;
+
+	    fprintf (out, "Date: %s\n", dtime (&tclock));
+	    if (msgid)
+		fprintf (out, "Message-ID: <%d.%ld@@%s>\n",
+			getpid (), tclock, LocalName ());
+	    if (msgflags & MFRM)
+		fprintf (out, "Sender: %s\n", from);
+	    else
+		fprintf (out, "From: %s\n", signature);
+	    if (whomsw)
+		break;
+
+	    if (!(msgflags & MVIS))
+		fprintf (out, "Bcc: Blind Distribution List: ;\n");
+	    break;
+
+	case RESENT: 
+	    if (!(msgflags & MDAT)) {
+		advise (NULLCP, "message has no Date: header");
+		badmsg++;
+	    }
+	    if (!(msgflags & MFRM)) {
+		advise (NULLCP, "message has no From: header");
+		badmsg++;
+	    }
+	    if (whomsw && !fill_up)
+		break;
+
+#ifdef	MMDFI			/* sigh */
+	    fprintf (out, "Sender: %s\n", from);
+#endif	/* MMDFI */
+
+	    fprintf (out, "Resent-Date: %s\n", dtime (&tclock));
+	    if (msgid)
+		fprintf (out, "Resent-Message-ID: <%d.%ld@@%s>\n",
+			getpid (), tclock, LocalName ());
+	    if (msgflags & MRFM)
+		fprintf (out, "Resent-Sender: %s\n", from);
+	    else
+		fprintf (out, "Resent-From: %s\n", signature);
+	    if (whomsw)
+		break;
+	    if (!(msgflags & MVIS))
+		fprintf (out, "Resent-Bcc: Blind Re-Distribution List: ;\n");
+	    break;
+    }
+
+    if (badmsg)
+	adios (NULLCP, "re-format message and try again");
+    if (!recipients)
+	adios (NULLCP, "no addressees");
+}
+
+/*  */
+
+static int     get_header (header, table)
+register char   *header;
+register struct headers *table;
+{
+    register struct headers *h;
+
+    for (h = table; h -> value; h++)
+	if (uleq (header, h -> value))
+	    return (h - table);
+
+    return NOTOK;
+}
+
+/*  */
+
+static int     putadr (name, aka, mp, out, flags)
+register char   *name,
+		*aka;
+register struct mailname *mp;
+register FILE *out;
+unsigned int    flags;
+{
+    int     len;
+    register char   *cp;
+    char    buffer[BUFSIZ];
+
+    if (mp -> m_mbox == NULL || ((flags & HTRY) && !insert (mp)))
+	return 0;
+    if (!fill_in && (flags & (HBCC | HDCC)) || mp -> m_ingrp)
+	return 1;
+
+    if (!nameoutput) {
+	fprintf (out, "%s: ", name);
+	linepos += (nameoutput = strlen (name) + 2);
+    }
+
+    if (*aka && mp -> m_type != UUCPHOST && !mp -> m_pers)
+	mp -> m_pers = getcpy (aka);
+    if (format) {
+	if (mp -> m_gname && !fill_in)
+	    (void) sprintf (cp = buffer, "%s;", mp -> m_gname);
+	else
+	    cp = adrformat (mp);
+    }
+    else
+	cp = mp -> m_text;
+    len = strlen (cp);
+
+    if (linepos != nameoutput)
+	if (len + linepos + 2 > outputlinelen)
+	    fprintf (out, ",\n%*s", linepos = nameoutput, "");
+	else {
+	    fputs (", ", out);
+	    linepos += 2;
+	}
+
+    fputs (cp, out);
+    linepos += len;
+
+    return (flags & HTRY);
+}
+
+/*  */
+
+static putgrp (name, group, out, flags)
+register char   *name,
+		*group;
+register FILE *out;
+unsigned int    flags;
+{
+    int     len;
+    char   *cp;
+
+    if (!fill_in && (flags & HBCC))
+	return;
+
+    if (!nameoutput) {
+	fprintf (out, "%s: ", name);
+	linepos += (nameoutput = strlen (name) + 2);
+	if (fill_in)
+	    linepos -= strlen (group);
+    }
+
+    cp = fill_in ? group : concat (group, ";", NULLCP);
+    len = strlen (cp);
+
+    if (linepos > nameoutput)
+	if (len + linepos + 2 > outputlinelen) {
+	    fprintf (out, ",\n%*s", nameoutput, "");
+	    linepos = nameoutput;
+	}
+	else {
+	    fputs (", ", out);
+	    linepos += 2;
+	}
+
+    fputs (cp, out);
+    linepos += len;
+}
+
+/*  */
+
+static int     insert (np)
+register struct mailname   *np;
+{
+    register struct mailname   *mp;
+
+    if (np -> m_mbox == NULL)
+	return 0;
+
+    for (mp = np -> m_type == LOCALHOST ? &localaddrs
+	    : np -> m_type == UUCPHOST ? &uuaddrs
+	    : &netaddrs;
+	    mp -> m_next;
+	    mp = mp -> m_next)
+	if (uleq (np -> m_host, mp -> m_next -> m_host)
+		&& uleq (np -> m_mbox, mp -> m_next -> m_mbox)
+		&& np -> m_bcc == mp -> m_next -> m_bcc)
+	    return 0;
+
+    mp -> m_next = np;
+    recipients++;
+    return 1;
+}
+
+
+static  pl () {
+    register int     i;
+    register struct mailname *mp;
+
+    printf ("-------\n\t-- Addresses --\nlocal:\t");
+    for (mp = localaddrs.m_next; mp; mp = mp -> m_next)
+	printf ("%s%s%s", mp -> m_mbox,
+		mp -> m_bcc ? "[BCC]" : "",
+		mp -> m_next ? ",\n\t" : "");
+
+    printf ("\nnet:\t");
+    for (mp = netaddrs.m_next; mp; mp = mp -> m_next)
+	printf ("%s%s@@%s%s%s", mp -> m_path ? mp -> m_path : "",
+		mp -> m_mbox, mp -> m_host,
+		mp -> m_bcc ? "[BCC]" : "",
+		mp -> m_next ? ",\n\t" : "");
+
+    printf ("\nuucp:\t");
+    for (mp = uuaddrs.m_next; mp; mp = mp -> m_next)
+	printf ("%s!%s%s", mp -> m_host, mp -> m_mbox,
+		mp -> m_bcc ? "[BCC]" : "",
+		mp -> m_next ? ",\n\t" : "");
+
+    printf ("\n\t-- Folder Copies --\nfcc:\t");
+    for (i = 0; i < fccind; i++)
+	printf ("%s%s", fccfold[i], i + 1 < fccind ? ",\n\t" : "");
+    printf ("\n");
+}
+
+/*  */
+
+static  anno () {
+    register struct mailname *mp;
+
+    for (mp = localaddrs.m_next; mp; mp = mp -> m_next)
+	if (annoaux (mp) == NOTOK)
+	    goto oops;
+
+    for (mp = netaddrs.m_next; mp; mp = mp -> m_next)
+	if (annoaux (mp) == NOTOK)
+	    goto oops;
+
+    for (mp = uuaddrs.m_next; mp; mp = mp -> m_next)
+	if (annoaux (mp) == NOTOK)
+	    break;
+
+oops: ;
+    (void) close (pfd);
+    pfd = NOTOK;
+}
+
+
+static int  annoaux (mp)
+register struct mailname *mp;
+{
+    int     i;
+    char    buffer[BUFSIZ];
+
+    (void) sprintf (buffer, "%s\n", adrformat (mp));
+    i = strlen (buffer);
+
+    return (write (pfd, buffer, i) == i ? OK : NOTOK);
+}
+
+/*  */
+
+static  insert_fcc (hdr, pp)
+register struct	headers *hdr;
+register char   *pp;
+{
+    register char   *cp;
+
+    for (cp = pp; isspace (*cp); cp++)
+	continue;
+    for (pp += strlen (pp) - 1; pp > cp && isspace (*pp); pp--)
+	continue;
+    if (pp >= cp)
+	*++pp = 0;
+    if (*cp == 0)
+	return;
+
+    if (fccind >= FCCS)
+	adios (NULLCP, "too many %ss", hdr -> value);
+    fccfold[fccind++] = getcpy (cp);
+}
+
+/*    BCC GENERATION */
+
+static  make_bcc_file () {
+    int     fd,
+	    i,
+            child_id;
+    char   *vec[6];
+    register FILE   *out;
+
+    (void) strcpy (bccfil, m_tmpfil ("bccs"));
+    if ((out = fopen (bccfil, "w")) == NULL)
+	adios (bccfil, "unable to create");
+    (void) chmod (bccfil, 0600);
+
+    fprintf (out, "Date: %s\n", dtime (&tclock));
+    if (msgid)
+	fprintf (out, "Message-ID: <%d.%ld.1@@%s>\n",
+		getpid (), tclock, LocalName ());
+    if (msgflags & MFRM) {
+	fprintf (out, "From: %s", msgfrom);
+	fprintf (out, "Sender: %s\n", from);
+    }
+    else
+	fprintf (out, "From: %s\n", signature);
+    if (subject)
+	fprintf (out, "Subject: %s", subject);
+    fprintf (out, "BCC:\n");
+#ifdef MIME
+    if (mime) {
+	char   *cp;
+
+	if ((cp = index (prefix, 'a')) == NULL)
+	    adios (NULLCP, "lost prefix start");
+	while (find_prefix () == NOTOK)
+	    if (*cp < 'z')
+		(*cp)++;
+	    else
+		if (*++cp == 0)
+		    adios (NULLCP,
+			   "giving up trying to find a unique delimiter string");
+		else
+		    (*cp)++;
+
+	fprintf (out, "%s: %s\n%s: multipart/digest; boundary=\"",
+		 VRSN_FIELD, VRSN_VALUE, TYPE_FIELD);
+	fprintf (out, "%s\"\n%s: %s\n\n--%s\n%s: %s\n%s: %s\n\n", prefix,
+		 DESCR_FIELD, "Blind Carbon Copy", prefix,
+		 TYPE_FIELD, "message/rfc822",
+		 DESCR_FIELD, "Original Message");
+    }
+    else
+#endif /* MIME */
+	fprintf (out, "\n------- Blind-Carbon-Copy\n\n");
+    (void) fflush (out);
+
+    if (filter == NULL) {
+	if ((fd = open (tmpfil, 0)) == NOTOK)
+	    adios (tmpfil, "unable to re-open");
+#ifdef MIME
+	if (mime)
+	    cpydata (fd, fileno (out), tmpfil, bccfil);
+	else
+#endif /* MIME */
+	    cpydgst (fd, fileno (out), tmpfil, bccfil);
+	(void) close (fd);
+    }
+    else {
+	vec[0] = r1bindex (mhlproc, '/');
+
+	for (i = 0; (child_id = fork ()) == NOTOK && i < 5; i++)
+	    sleep (5);
+	switch (child_id) {
+	    case NOTOK: 
+		adios ("fork", "unable to");
+
+	    case OK: 
+		(void) dup2 (fileno (out), 1);
+
+		i = 1;
+		vec[i++] = "-forward";
+		vec[i++] = "-form";
+		vec[i++] = filter;
+		vec[i++] = tmpfil;
+		vec[i] = NULL;
+
+		execvp (mhlproc, vec);
+		fprintf (stderr, "unable to exec ");
+		perror (mhlproc);
+		_exit (-1);
+
+	    default: 
+		(void) pidXwait (child_id, mhlproc);
+		break;
+	}
+    }
+
+    (void) fseek (out, 0L, 2);
+#ifdef	MIME
+    if (mime)
+	fprintf (out, "\n--%s--\n", prefix);
+    else
+#endif /* MIME */
+	fprintf (out, "\n------- End of Blind-Carbon-Copy\n");
+    (void) fclose (out);
+}
+
+/*  */
+
+#ifdef MIME
+static int  find_prefix ()
+{
+    int	    len,
+	    result;
+    char    buffer[BUFSIZ];
+    FILE   *in;
+
+    if ((in = fopen (tmpfil, "r")) == NULL)
+	adios (tmpfil, "unable to re-open");
+
+    len = strlen (prefix);
+
+    result = OK;
+    while (fgets (buffer, sizeof buffer - 1, in))
+	if (buffer[0] == '-' && buffer[1] == '-') {
+	    register char *cp;
+
+	    for (cp = buffer + strlen (buffer) - 1; cp >= buffer; cp--)
+		if (!isspace (*cp))
+		    break;
+	    *++cp = NULL;
+	    if (strcmp (buffer + 2, prefix) == 0) {
+		result = NOTOK;
+		break;
+	    }
+	}
+
+    (void) fclose (in);
+	
+    return result;
+}
+#endif /* MIME */
+
+/*    ADDRESS VERIFICATION */
+
+static  verify_all_addresses (talk)
+int     talk;
+{
+#ifndef	MHMTS
+    int     retval;
+#endif	/* not MHMTS */
+#ifdef	MMDFMTS
+#ifdef	RP_NS
+    int	    len;
+    struct rp_bufstruct reply;
+#endif	/* RP_NS */
+#endif	/* MMDFMTS */
+    register struct mailname *lp;
+
+#ifndef	MHMTS
+    sigon ();
+#endif	/* not MHMTS */
+
+#ifdef	MMDFMTS
+    if (!whomsw || checksw) {
+	if (rp_isbad (retval = mm_init ())
+		|| rp_isbad (retval = mm_sbinit ())
+		|| rp_isbad (retval = mm_winit (NULLCP, submitopts, from)))
+	    die (NULLCP, "problem initializing MMDF system [%s]",
+		    rp_valstr (retval));
+#ifdef	RP_NS
+	if (rp_isbad (retval = mm_rrply (&reply, &len)))
+	    die (NULLCP, "problem with sender address [%s]",
+		    rp_valstr (retval));
+#endif	/* RP_NS */
+    }
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    if (!whomsw || checksw)
+	if (rp_isbad (retval = sm_init (clientsw, serversw, 0, 0, snoop, 0, 0))
+		|| rp_isbad (retval = sm_winit (smtpmode, from)))
+	    die (NULLCP, "problem initializing server; %s",
+		    rp_string (retval));
+#endif	/* SENDMTS */
+
+    if (talk && !whomsw)
+	printf (" -- Address Verification --\n");
+#ifndef	BERK
+    if (talk && localaddrs.m_next)
+	printf ("  -- Local Recipients --\n");
+#endif	/* BERK */
+    for (lp = localaddrs.m_next; lp; lp = lp -> m_next)
+	do_an_address (lp, talk, encryptsw);
+
+#ifndef	BERK
+    if (talk && uuaddrs.m_next)
+	printf ("  -- UUCP Recipients --\n");
+#endif	/* BERK */
+    for (lp = uuaddrs.m_next; lp; lp = lp -> m_next)
+	do_an_address (lp, talk, encryptsw);
+
+#ifndef	BERK
+    if (talk && netaddrs.m_next)
+	printf ("  -- Network Recipients --\n");
+#endif	/* BERK */
+    for (lp = netaddrs.m_next; lp; lp = lp -> m_next)
+	do_an_address (lp, talk, encryptsw);
+
+    chkadr ();
+    if (talk && !whomsw)
+	printf (" -- Address Verification Successful --\n");
+
+#ifdef	MMDFMTS
+    if (!whomsw || checksw)
+	(void) mm_end (NOTOK);
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    if (!whomsw || checksw)
+	(void) sm_end (DONE);
+#endif	/* SENDMTS */
+    (void) fflush (stdout);
+
+#ifndef	MHMTS
+    sigoff ();
+#endif	/* not MHMTS */
+}
+
+/*  */
+
+static  chkadr () {
+#define	plural(x) (x == 1 ? "" : "s")
+
+    if (badadr && unkadr)
+	die (NULLCP, "%d address%s unparsable, %d addressee%s undeliverable",
+		badadr, plural (badadr), unkadr, plural (badadr));
+    if (badadr)
+	die (NULLCP, "%d address%s unparsable", badadr, plural (badadr));
+    if (unkadr)
+	die (NULLCP, "%d addressee%s undeliverable", unkadr, plural (unkadr));
+}
+
+/*    MTS INTERACTION */
+
+#ifdef	TMA
+static postplain (file, bccque, talk)
+#else	/* TMA */
+static post (file, bccque, talk)
+#endif	/* TMA */
+register char   *file;
+int     bccque,
+        talk;
+{
+    int     fd,
+    	    onex = !(msgflags & MINV) || bccque;
+#ifndef	MHMTS
+    int	    retval;
+#ifdef	MMDFMTS
+#ifdef	RP_NS
+    int	    len;
+    struct rp_bufstruct reply;
+#endif	/* RP_NS */
+#endif	/* MMDFMTS */
+#else	/* MHMTS */
+    int	    ud;
+#endif	/* MHMTS */
+
+    if (verbose)
+	if (msgflags & MINV)
+	    printf (" -- Posting for %s Recipients --\n",
+		    bccque ? "Blind" : "Sighted");
+	else
+	    printf (" -- Posting for All Recipients --\n");
+
+    sigon ();
+
+#ifdef	MMDFMTS
+    if (rp_isbad (retval = mm_init ())
+	    || rp_isbad (retval = mm_sbinit ())
+	    || rp_isbad (retval = mm_winit (NULLCP, submitopts, from)))
+	die (NULLCP, "problem initializing MMDF system [%s]",
+		rp_valstr (retval));
+#ifdef	RP_NS
+	if (rp_isbad (retval = mm_rrply (&reply, &len)))
+	    die (NULLCP, "problem with sender address [%s]",
+		    rp_valstr (retval));
+#endif	/* RP_NS */
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    if (rp_isbad (retval = sm_init (clientsw, serversw, watch, verbose, snoop,
+				    onex, queued))
+	    || rp_isbad (retval = sm_winit (smtpmode, from)))
+	die (NULLCP, "problem initializing server; %s", rp_string (retval));
+#endif	/* SENDMTS */
+
+#ifndef	MHMTS
+    do_addresses (bccque, talk && verbose);
+    if ((fd = open (file, 0)) == NOTOK)
+	die (file, "unable to re-open");
+    do_text (file, fd);
+#else	/* MHMTS */
+    if ((fd = open (file, 0)) == NULL)
+	adios (file, "unable to re-open");
+#ifdef	MF
+    ud = UucpChan () && uuaddrs.m_next ? make_uucp_file (fd) : NOTOK;
+#else	/* not MF */
+    ud = NOTOK;
+#endif	/* not MF */
+    do_addresses (file, fd, ud, bccque, talk && verbose);
+    if (ud != NOTOK)
+	(void) close (ud);
+#endif	/* MHMTS */
+    (void) close (fd);
+    (void) fflush (stdout);
+
+#ifdef	MMDFMTS
+    (void) mm_sbend ();
+    (void) mm_end (OK);
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    (void) sm_end (onex ? OK : DONE);
+#endif	/* SENDMTS */
+
+    sigoff ();
+
+    if (verbose)
+	if (msgflags & MINV)
+	    printf (" -- %s Recipient Copies Posted --\n",
+		    bccque ? "Blind" : "Sighted");
+	else
+	    printf (" -- Recipient Copies Posted --\n");
+    (void) fflush (stdout);
+}
+
+/*  */
+
+#ifdef	TMA
+static postcipher (file, bccque, talk)
+register char   *file;
+int     bccque,
+        talk;
+{
+    int     fdP,
+            state;
+    char    reason[BUFSIZ];
+    struct mailname *lp;
+
+    if (verbose)
+	if (msgflags & MINV)
+	    printf (" -- Posting for %s Recipients --\n",
+		    bccque ? "Blind" : "Sighted");
+	else
+	    printf (" -- Posting for All Recipients --\n");
+
+    if ((fdP = open (file, 0)) == NOTOK)
+	adios (file, "unable to re-open");
+    if (ciphinit (fdP, reason) == NOTOK)
+	adios (NULLCP, "%s", reason);
+    (void) close (fdP);
+
+    for (state = 0, lp = localaddrs.m_next; lp; lp = lp -> m_next)
+	if (lp -> m_bcc ? bccque : !bccque) {
+#ifndef	BERK
+	    if (talk && !state)
+		printf ("  -- Local Recipients --\n");
+#endif	/* BERK */
+	    do_a_cipher (lp, talk);
+#ifndef	BERK
+	    state++;
+#endif	/* BERK */
+	}
+
+    for (state = 0, lp = uuaddrs.m_next; lp; lp = lp -> m_next)
+	if (lp -> m_bcc ? bccque : !bccque) {
+#ifndef	BERK
+	    if (talk && !state)
+		printf ("  -- UUCP Recipients --\n");
+#endif	/* BERK */
+	    do_a_cipher (lp, talk);
+#ifndef	BERK
+	    state++;
+#endif	/* BERK */
+	}
+
+    for (state = 0, lp = netaddrs.m_next; lp; lp = lp -> m_next)
+	if (lp -> m_bcc ? bccque : !bccque) {
+#ifndef	BERK
+	    if (talk && !state)
+		printf ("  -- Network Recipients --\n");
+#endif	/* BERK */
+	    do_a_cipher (lp, talk);
+#ifndef	BERK
+	    state++;
+#endif	/* BERK */
+	}
+
+    if (ciphdone (reason) == NOTOK)
+	admonish (NULLCP, "%s", reason);
+#ifdef	SENDMTS
+    if (!(msgflags & MINV) || bccque)
+	(void) sm_end (OK);
+#endif	/* SENDMTS */
+
+    if (verbose)
+	if (msgflags & MINV)
+	    printf (" -- %s Recipient Copies Posted --\n",
+		    bccque ? "Blind" : "Sighted");
+	else
+	    printf (" -- Recipient Copies Posted --\n");
+    (void) fflush (stdout);
+}
+
+/*  */
+
+static do_a_cipher (lp, talk)
+register struct mailname *lp;
+int	talk;
+{
+    int     fd,
+            retval;
+    register char  *mbox,
+                   *host;
+    char    addr[BUFSIZ],
+            reason[BUFSIZ];
+#ifdef	MMDFMTS
+#ifdef	RP_NS
+    int	    len;
+    struct rp_bufstruct reply;
+#endif	/* RP_NS */
+#endif	/* MMDFMTS */
+
+    sigon ();
+
+#ifdef	MMDFMTS
+    if (rp_isbad (retval = mm_init ())
+	    || rp_isbad (retval = mm_sbinit ())
+	    || rp_isbad (retval = mm_winit (NULL, submitopts, from)))
+	die (NULLCP, "problem initializing MMDF system [%s]",
+		rp_valstr (retval));
+#ifdef	RP_NS
+	if (rp_isbad (retval = mm_rrply (&reply, &len)))
+	    die (NULLCP, "problem with sender address [%s]",
+		    rp_valstr (retval));
+#endif	/* RP_NS */
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    if (rp_isbad (retval = sm_init (clientsw, serversw, watch, verbose, snoop,
+				    0, 0))
+	    || rp_isbad (retval = sm_winit (smtpmode, from)))
+	die (NULLCP, "problem initializing server; %s", rp_string (retval));
+#endif	/* SENDMTS */
+
+    do_an_address (lp, talk, 0);
+
+    switch (lp -> m_type) {
+	case LOCALHOST: 
+	    mbox = lp -> m_mbox;
+	    host = LocalName ();
+	    (void) strcpy (addr, mbox);
+	    break;
+
+	case UUCPHOST: 
+#ifdef	MMDFMTS
+	    mbox = concat (lp -> m_host, "!", lp -> m_mbox, NULLCP);
+	    host = UucpChan ();
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+	    mbox = auxformat (lp, 0);
+	    host = NULL;
+#endif	/* SENDMTS */
+	    (void) sprintf (addr, "%s!%s", lp -> m_host, lp -> m_mbox);
+	    break;
+
+	default: 
+	    mbox = lp -> m_mbox;
+	    host = lp -> m_host;
+	    (void) sprintf (addr, "%s at %s", lp -> m_mbox, lp -> m_host);
+	    break;
+    }
+    chkadr ();			/* XXX */
+
+#ifdef	MMDFMTS
+    if (rp_isbad (retval = mm_waend ()))
+	die (NULLCP, "problem ending addresses [%s]\n",
+		rp_valstr (retval));
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    if (rp_isbad (retval = sm_waend ()))
+	die (NULLCP, "problem ending addresses; %s", rp_string (retval));
+#endif	/* SENDMTS */
+
+    if ((fd = encipher (mbox, host, reason)) == NOTOK)
+	die (NULLCP, "%s: %s", addr, reason);
+    do_text ("temporary file", fd);
+    (void) close (fd);
+    (void) fflush (stdout);
+
+#ifdef	MMDFMTS
+    (void) mm_sbend ();
+    (void) mm_end (OK);
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    (void) sm_end (DONE);
+#endif	/* SENDMTS */
+
+    sigoff ();
+}
+#endif	/* TMA */
+
+/*  */
+
+#ifndef	MHMTS
+static do_addresses (bccque, talk)
+#else	/* MHMTS */
+static do_addresses (file, fd, ud, bccque, talk)
+register char   *file;
+int	fd,
+	ud;
+#endif	/* MHMTS */
+int	bccque,
+	talk;
+{
+    int     retval;
+#ifndef	BERK
+    int	    state;
+#endif	/* not BERK */
+    register struct mailname *lp;
+
+#ifndef	BERK
+    state = 0;
+#endif	/* not BERK */
+    for (lp = localaddrs.m_next; lp; lp = lp -> m_next)
+	if (lp -> m_bcc ? bccque : !bccque) {
+#ifndef	BERK
+	    if (talk && !state)
+		printf ("  -- Local Recipients --\n");
+#endif	/* not BERK */
+#ifndef	MHMTS
+	    do_an_address (lp, talk, 0);
+#else	/* MHMTS */
+	    localmail (lp, talk, fd);
+#endif	/* MHMTS */
+#ifndef	BERK
+	    state++;
+#endif	/* not BERK */
+	}
+
+#ifndef	BERK
+    state = 0;
+#endif	/* not BERK */
+    for (lp = uuaddrs.m_next; lp; lp = lp -> m_next)
+	if (lp -> m_bcc ? bccque : !bccque) {
+#ifndef	BERK
+	    if (talk && !state)
+		printf ("  -- UUCP Recipients --\n");
+#endif	/* not BERK */
+#ifndef	MHMTS
+	    do_an_address (lp, talk, 0);
+#else	/* MHMTS */
+	    uucpmail (lp, talk, ud != NOTOK ? ud : fd, ud == NOTOK);
+#endif	/* MHMTS */
+#ifndef	BERK
+	    state++;
+#endif	/* not BERK */
+	}
+
+#ifndef	BERK
+    state = 0;
+#endif	/* not BERK */
+    for (lp = netaddrs.m_next; lp; lp = lp -> m_next)
+	if (lp -> m_bcc ? bccque : !bccque) {
+#ifndef	BERK
+	    if (talk && !state)
+		printf ("  -- Network Recipients --\n");
+#endif	/* not BERK */
+#ifndef	MHMTS
+	    do_an_address (lp, talk, 0);
+#else	/* MHMTS */
+	    netmail (talk, fd, bccque);
+#endif	/* MHMTS */
+#ifndef	BERK
+	    state++;
+#endif	/* not BERK */
+	}
+
+/*  */
+
+    chkadr ();
+
+#ifdef	MMDFMTS
+    if (rp_isbad (retval = mm_waend ()))
+	die (NULLCP, "problem ending addresses [%s]\n",
+		rp_valstr (retval));
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    if (rp_isbad (retval = sm_waend ()))
+	die (NULLCP, "problem ending addresses; %s", rp_string (retval));
+#endif	/* SENDMTS */
+}
+
+/*  */
+
+#ifndef	MHMTS
+static  do_text (file, fd)
+register char   *file;
+int     fd;
+{
+    int     retval,
+            state;
+    char    buf[BUFSIZ];
+#ifdef	MMDFMTS
+    struct rp_bufstruct reply;
+#endif	/* MMDFMTS */
+
+    (void) lseek (fd, (off_t)0, 0);
+    while ((state = read (fd, buf, sizeof buf)) > 0)
+#ifdef	MMDFMTS
+	if (rp_isbad (mm_wtxt (buf, state)))
+	    die (NULLCP, "problem writing text [%s]\n", rp_valstr (retval));
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+	if (rp_isbad (retval = sm_wtxt (buf, state)))
+	    die (NULLCP, "problem writing text; %s\n", rp_string (retval));
+#endif	/* SENDMTS */
+
+    if (state == NOTOK)
+	die (file, "problem reading from");
+
+#ifdef	MMDFMTS
+    if (rp_isbad (retval = mm_wtend ()))
+	die (NULLCP, "problem ending text [%s]\n", rp_valstr (retval));
+
+    if (rp_isbad (retval = mm_rrply (&reply, &state)))
+	die (NULLCP, "problem getting submission status [%s]\n",
+		rp_valstr (retval));
+
+    switch (rp_gval (reply.rp_val)) {
+	case RP_OK: 
+	case RP_MOK: 
+	    break;
+
+	case RP_NO: 
+	    die (NULLCP, "you lose; %s", reply.rp_line);
+
+	case RP_NDEL: 
+	    die (NULLCP, "no delivery occurred; %s", reply.rp_line);
+
+	case RP_AGN: 
+	    die (NULLCP, "try again later; %s", reply.rp_line);
+
+	case RP_NOOP: 
+	    die (NULLCP, "nothing done; %s", reply.rp_line);
+
+	default: 
+	    die (NULLCP, "unexpected response;\n\t[%s] -- %s",
+		    rp_valstr (reply.rp_val), reply.rp_line);
+    }
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    switch (retval = sm_wtend ()) {
+	case RP_OK: 
+	    break;
+
+	case RP_NO: 
+	case RP_NDEL: 
+	    die (NULLCP, "posting failed; %s", rp_string (retval));
+
+	default: 
+	    die (NULLCP, "unexpected response; %s", rp_string (retval));
+    }
+#endif	/* SENDMTS */
+}
+#endif	/* not MHMTS */
+
+/*    MTS-SPECIFIC INTERACTION */
+
+#ifdef	MMDFMTS
+
+#ifndef	TMA
+/* ARGSUSED */
+#endif	/* TMA */
+
+static do_an_address (lp, talk, tma)
+register struct mailname *lp;
+int     talk,
+	tma;
+{
+    int     len,
+            retval;
+    register char  *mbox,
+                   *host,
+                   *text,
+                   *path;
+    char    addr[BUFSIZ];
+#ifdef	TMA
+    char    reason[BUFSIZ];
+#endif	/* TMA */
+    struct rp_bufstruct reply;
+
+    switch (lp -> m_type) {
+	case LOCALHOST: 
+	    mbox = lp -> m_mbox;
+	    host = LocalName ();
+	    (void) strcpy (addr, mbox);
+	    break;
+
+	case UUCPHOST: 
+#ifdef	MF
+	    mbox = concat (lp -> m_host, "!", lp -> m_mbox, NULLCP);
+	    host = UucpChan ();
+	    (void) strcpy (addr, mbox);
+	    break;
+#else	/* MF */
+	    fprintf (talk ? stdout : stderr, "  %s!%s: %s\n",
+		lp -> m_host, lp -> m_mbox, "not supported; UUCP address");
+	    unkadr++;
+	    (void) fflush (stdout);
+	    return;
+#endif	/* MF */
+
+	default: 		/* let MMDF decide if the host is bad */
+	    mbox = lp -> m_mbox;
+	    host = lp -> m_host;
+	    (void) sprintf (addr, "%s at %s", mbox, host);
+	    break;
+    }
+#ifdef	TMA
+    if ((!whomsw || checksw)
+	    && tma
+	    && seekaddr (mbox, host, reason) == NOTOK) {
+	fprintf (talk ? stdout : stderr, "  %s%s: %s\n",
+		addr, "[TMA]", reason);
+	unkadr++;
+    }
+#endif	/* TMA */
+
+    if (talk)
+	printf ("  %s%s", addr, whomsw && lp -> m_bcc ? "[BCC]" : "");
+
+    if (whomsw && !checksw) {
+	(void) putchar ('\n');
+	return;
+    }
+    if (talk)
+	printf (": ");
+    (void) fflush (stdout);
+
+/*  */
+
+#ifdef	MMDFII
+    if (lp -> m_path)
+	path = concat (lp -> m_path, mbox, "@@", host, NULLCP);
+    else
+#endif	/* MMDFII */
+	path = NULLCP;
+    if (rp_isbad (retval = mm_wadr (path ? NULLCP : host, path ? path : mbox))
+	    || rp_isbad (retval = mm_rrply (&reply, &len)))
+	die (NULLCP, "problem submitting address [%s]", rp_valstr (retval));
+
+    switch (rp_gval (reply.rp_val)) {
+	case RP_AOK: 
+	    if (talk)
+		printf ("address ok\n");
+	    (void) fflush (stdout);
+	    return;
+
+#ifdef	RP_DOK
+	case RP_DOK: 
+	    if (talk)
+		printf ("nameserver timeout - queued for checking\n");
+	    (void) fflush (stdout);
+	    return;
+#endif	/* RP_DOK */
+
+	case RP_NO: 
+	    text = "you lose";
+	    break;
+
+#ifdef	RP_NS
+	case RP_NS: 
+	    text = "temporary nameserver failure";
+	    break;
+
+#endif	/* RP_NS */
+
+	case RP_USER: 
+	case RP_NDEL: 
+	    text = "not deliverable";
+	    break;
+
+	case RP_AGN: 
+	    text = "try again later";
+	    break;
+
+	case RP_NOOP: 
+	    text = "nothing done";
+	    break;
+
+	default: 
+	    if (!talk)
+		fprintf (stderr, "  %s: ", addr);
+	    text = "unexpected response";
+	    die (NULLCP, "%s;\n    [%s] -- %s", text,
+		    rp_valstr (reply.rp_val), reply.rp_line);
+    }
+
+    if (!talk)
+	fprintf (stderr, "  %s: ", addr);
+    fprintf (talk ? stdout : stderr, "%s;\n    %s\n", text, reply.rp_line);
+    unkadr++;
+
+    (void) fflush (stdout);
+}
+#endif	/* MMDFMTS */
+
+/*  */
+
+#ifdef	MHMTS
+/* ARGSUSED */
+
+static do_an_address (lp, talk, tma)
+register struct mailname *lp;
+int     talk,
+	tma;
+{
+    register char  *mbox;
+    char    addr[BUFSIZ];
+
+    switch (lp -> m_type) {
+	case LOCALHOST: 
+	    (void) strcpy (addr, lp -> m_mbox);
+	    break;
+
+	case UUCPHOST: 
+	    (void) sprintf (addr, "%s!%s", lp -> m_host, lp -> m_mbox);
+	    break;
+
+	default: 
+	    (void) sprintf (addr, "%s at %s", lp -> m_mbox, lp -> m_host);
+	    break;
+    }
+    if (talk)
+	printf ("  %s%s", addr, whomsw && lp -> m_bcc ? "[BCC]" : "");
+
+    if (whomsw && !checksw) {
+	(void) putchar ('\n');
+	return;
+    }
+    if (talk)
+	printf (": ");
+    (void) fflush (stdout);
+
+/*  */
+
+    switch (lp -> m_type) {
+	case LOCALHOST: 
+	    mbox = lp -> m_mbox;
+	    if (*mbox == '~')
+		mbox++;
+	    if (seek_home (mbox)) {
+		lp -> m_mbox = mbox;
+		if (talk)
+		    printf ("address ok\n");
+	    }
+	    else {
+		if (!talk)
+		    fprintf (stderr, "  %s: ", addr);
+		fprintf (talk ? stdout : stderr,
+			"not deliverable; unknown user\n");
+		unkadr++;
+	    }
+	    break;
+
+	case UUCPHOST: 
+	    if (uucpsite (lp -> m_host) == OK) {
+		if (talk)
+		    printf ("address ok\n");
+	    }
+	    else {
+		if (!talk)
+		    fprintf (stderr, "  %s: ", addr);
+		fprintf (talk ? stdout : stderr,
+			"not deliverable; unknown system\n");
+		unkadr++;
+	    }
+	    break;
+
+	case NETHOST: 
+	    if (talk)
+		printf ("address ok\n");
+	    break;
+
+	default: 
+	    if (!talk)
+		fprintf (stderr, "  %s: ", addr);
+	    fprintf (talk ? stdout : stderr,
+		    "not deliverable; unknown host\n");
+	    unkadr++;
+	    break;
+    }
+
+    (void) fflush (stdout);
+}
+#endif	/* MHMTS */
+
+/*  */
+
+#ifdef	SENDMTS
+
+#ifndef	TMA
+/* ARGSUSED */
+#endif	/* TMA */
+
+static do_an_address (lp, talk, tma)
+register struct mailname *lp;
+int     talk,
+	tma;
+{
+    int     retval;
+    register char  *mbox,
+                   *host;
+    char    addr[BUFSIZ];
+#ifdef	TMA
+    char    reason[BUFSIZ];
+#endif	/* TMA */
+
+    switch (lp -> m_type) {
+	case LOCALHOST: 
+	    mbox = lp -> m_mbox;
+	    host = lp -> m_host;
+	    (void) strcpy (addr, mbox);
+	    break;
+
+	case UUCPHOST: 
+	    mbox = auxformat (lp, 0);
+	    host = NULL;
+	    (void) sprintf (addr, "%s!%s", lp -> m_host, lp -> m_mbox);
+	    break;
+
+	default: 		/* let SendMail decide if the host is bad  */
+	    mbox = lp -> m_mbox;
+	    host = lp -> m_host;
+	    (void) sprintf (addr, "%s at %s", mbox, host);
+	    break;
+    }
+
+#ifdef	TMA
+    if ((!whomsw || checksw)
+	    && tma
+	    && seekaddr (mbox, host, reason) == NOTOK) {
+	fprintf (talk ? stdout : stderr, "  %s%s: %s\n",
+		addr, "[TMA]", reason);
+	unkadr++;
+    }
+#endif	/* TMA */
+
+    if (talk)
+	printf ("  %s%s", addr, whomsw && lp -> m_bcc ? "[BCC]" : "");
+
+    if (whomsw && !checksw) {
+	(void) putchar ('\n');
+	return;
+    }
+    if (talk)
+	printf (": ");
+    (void) fflush (stdout);
+
+/*  */
+
+    switch (retval = sm_wadr (mbox, host,
+			 lp -> m_type != UUCPHOST ? lp -> m_path : NULLCP)) {
+	case RP_OK: 
+	    if (talk)
+		printf ("address ok\n");
+	    break;
+
+	case RP_NO: 
+	case RP_USER: 
+	    if (!talk)
+		fprintf (stderr, "  %s: ", addr);
+	    fprintf (talk ? stdout : stderr, "loses; %s\n",
+			rp_string (retval));
+	    unkadr++;
+	    break;
+
+	default: 
+	    if (!talk)
+		fprintf (stderr, "  %s: ", addr);
+	    die (NULLCP, "unexpected response; %s", rp_string (retval));
+    }
+
+    (void) fflush (stdout);
+}
+#endif	/* SENDMTS */
+
+/*    SIGNAL HANDLING */
+
+#ifndef	MHMTS
+
+/* ARGSUSED */
+
+static	TYPESIG sigser (i)
+int     i;
+{
+#ifndef	BSD42
+    (void) signal (i, SIG_IGN);
+#endif	/* not BSD42 */
+    (void) unlink (tmpfil);
+    if (msgflags & MINV)
+	(void) unlink (bccfil);
+#ifdef	MMDFMTS
+    if (!whomsw || checksw)
+	(void) mm_end (NOTOK);
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    if (!whomsw || checksw)
+	(void) sm_end (NOTOK);
+#endif	/* SENDMTS */
+    done (1);
+}
+#endif	/* not MHMTS */
+
+
+static  sigon () {
+    if (debug)
+	return;
+
+#ifndef	MHMTS
+    setsigx (hstat, SIGHUP, sigser);
+    setsigx (istat, SIGINT, sigser);
+    setsigx (qstat, SIGQUIT, sigser);
+    setsigx (tstat, SIGTERM, sigser);
+#else	/* MHMTS */
+    setsigx (hstat, SIGHUP, SIG_IGN);
+    setsigx (istat, SIGINT, SIG_IGN);
+    setsigx (qstat, SIGQUIT, SIG_IGN);
+    setsigx (tstat, SIGTERM, SIG_IGN);
+#endif	/* MHMTS */
+}
+
+
+static sigoff () {
+    if (debug)
+	return;
+
+    (void) signal (SIGHUP, hstat);
+    (void) signal (SIGINT, istat);
+    (void) signal (SIGQUIT, qstat);
+    (void) signal (SIGTERM, tstat);
+}
+
+/*    FCC INTERACTION */
+
+static  p_refile (file)
+register char   *file;
+{
+    register int     i;
+
+    if (fccind == 0)
+	return;
+
+#ifdef	MHMTS
+    (void) setuid (myuid);
+#endif	/* MHMTS */
+    if (verbose)
+	printf (" -- Filing Folder Copies --\n");
+    for (i = 0; i < fccind; i++)
+	fcc (file, fccfold[i]);
+    if (verbose)
+	printf (" -- Folder Copies Filed --\n");
+}
+
+
+static fcc (file, folder)
+register char   *file,
+		*folder;
+{
+    int     i,
+            child_id,
+	    status;
+    char    fold[BUFSIZ];
+
+    if (verbose)
+	printf ("  %sFcc %s: ", msgstate == RESENT ? "Resent-" : "", folder);
+    (void) fflush (stdout);
+
+    for (i = 0; (child_id = fork ()) == NOTOK && i < 5; i++)
+	sleep (5);
+    switch (child_id) {
+	case NOTOK: 
+	    if (!verbose)
+		fprintf (stderr, "  %sFcc %s: ",
+			msgstate == RESENT ? "Resent-" : "", folder);
+	    fprintf (verbose ? stdout : stderr, "no forks, so not ok\n");
+	    break;
+
+	case OK: 
+	    (void) sprintf (fold, "%s%s",
+		    *folder == '+' || *folder == '@@' ? "" : "+", folder);
+	    execlp (fileproc, r1bindex (fileproc, '/'),
+		    "-link", "-file", file, fold, NULLCP);
+	    _exit (-1);
+
+	default: 
+	    if (status = pidwait (child_id, OK)) {
+		if (!verbose)
+		    fprintf (stderr, "  %sFcc %s: ",
+			    msgstate == RESENT ? "Resent-" : "", folder);
+		(void) pidstatus (status, verbose ? stdout : stderr, NULLCP);
+	    }
+	    else
+		if (verbose)
+		    printf ("folder ok\n");
+    }
+
+    (void) fflush (stdout);
+}
+
+/*    RECORD RECIPIENTS */
+
+static	p_record ()
+{
+    int	    i,
+	    child_id,
+	    status;
+    char    recfile[BUFSIZ];
+    register struct mailname  *ap,
+			     **app;
+    struct mailname *addrs[3];
+    register FILE   *out;
+
+    if (!record || (msgflags & (MFRM | MRFM | MRPY)))
+	return;
+
+    addrs[0] = &localaddrs;
+    addrs[1] = &netaddrs;
+    addrs[2] = NULL;
+    if (verbose) {
+	printf ("recording recipients... ");
+	fflush (stdout);
+    }
+
+    (void) strcpy (recfile, m_tmpfil ("record"));
+    if ((out = fopen (recfile, "w")) == NULL) {
+	fprintf (verbose ? stdout : stderr, "unable to create temporary file");
+	if (!verbose)
+	    fprintf (stderr, ", so can't record recipients");
+	fprintf (verbose ? stdout : stderr, "\n");
+	return;
+    }
+    (void) chmod (recfile, 0600);
+
+    for (app = addrs; ap = *app; app++) {
+	register struct mailname *mp;
+
+	for (mp = ap -> m_next; mp; mp = mp -> m_next)
+	    fprintf (out, "%s\n", adrformat (mp));
+    }
+
+    (void) fclose (out);
+
+    for (i = 0; (child_id = fork ()) == NOTOK && i < 5; i++)
+	sleep (5);
+    switch (child_id) {
+	case NOTOK:
+	    fprintf (verbose ? stdout : stderr, "unable to fork");
+	    if (!verbose)
+		fprintf (stderr, ", so can't record recipients");
+	    fprintf (verbose ? stdout : stderr, "\n");
+	    break;
+
+	case OK:
+	    execlp (record, r1bindex (record, '/'), recfile, NULLCP);
+	    _exit (-1);
+
+	default:
+	    if (status = pidwait (child_id, OK)) {
+		if (!verbose)
+		    fprintf (stderr, "problem with %s: ", recfile);
+		(void) pidstatus (status, verbose ? stdout : stderr, NULLCP);
+	    }
+	    else
+		if (verbose)
+		    printf ("done\n");
+    }
+
+    (void) unlink (recfile);
+}
+
+/*    TERMINATION */
+
+/* VARARGS2 */
+
+static die (what, fmt, a, b, c, d)
+char   *what,
+       *fmt,
+       *a,
+       *b,
+       *c,
+       *d;
+{
+#ifndef	MHMTS
+    (void) unlink (tmpfil);
+    if (msgflags & MINV)
+	(void) unlink (bccfil);
+#endif	/* MHMTS */
+#ifdef	MMDFMTS
+    if (!whomsw || checksw)
+	(void) mm_end (NOTOK);
+#endif	/* MMDFMTS */
+#ifdef	SENDMTS
+    if (!whomsw || checksw)
+	(void) sm_end (NOTOK);
+#endif	/* SENDMTS */
+
+    adios (what, fmt, a, b, c, d);
+}
+
+
+#ifdef	MMDFMTS
+/* 
+ *    err_abrt() is used by the mm_ routines
+ *    		 do not, under *ANY* circumstances, remove it from post,
+ *		 or you will lose *BIG*
+ */
+
+err_abrt (code, fmt, a, b, c)
+int     code;
+char   *fmt,
+       *a,
+       *b,
+       *c;
+{
+    char    buffer[BUFSIZ];
+
+    (void) sprintf (buffer, "[%s]", rp_valstr (code));
+
+    adios (buffer, fmt, a, b, c);
+}
+#endif	/* MMDFMTS */
+
+/*    STAND-ALONE DELIVERY */
+
+#ifdef	MHMTS
+
+/* BUG: MHMTS ignores 822-style route addresses... */
+
+static  localmail (lp, talk, fd)
+register struct mailname *lp;
+int     talk,
+        fd;
+{
+    int     md;
+    char    mailbox[BUFSIZ],
+	    ddate[BUFSIZ];
+    register struct home *hp;
+
+    if (talk)
+	printf ("  %s: ", lp -> m_mbox);
+    (void) fflush (stdout);
+
+    if ((hp = seek_home (lp -> m_mbox)) == NULL) {
+	if (!talk)
+	    fprintf (stderr, "  %s: ", lp -> m_mbox);
+	fprintf (talk ? stdout : stderr,
+		"not deliverable; unknown address\n");
+	unkadr++;
+	return;
+    }
+
+    (void) sprintf (mailbox, "%s/%s",
+	    mmdfldir[0] ? mmdfldir : hp -> h_home,
+	    mmdflfil[0] ? mmdflfil : hp -> h_name);
+
+/*  */
+
+    switch (access (slocalproc, 01)) {
+	default: 
+	    if (talk)
+		printf ("(invoking hook)\n\t");
+	    (void) fflush (stdout);
+
+	    if (usr_hook (lp, talk, fd, hp, mailbox) != NOTOK)
+		return;
+	    if (talk)
+		printf ("  %s: ", lp -> m_mbox);
+	    (void) fflush (stdout);
+
+	case NOTOK: 
+	    (void) lseek (fd, (off_t)0, 0);
+	    if ((md = mbx_open (mailbox, hp -> h_uid, hp -> h_gid, m_gmprot ()))
+		    == NOTOK) {
+		if (!talk)
+		    fprintf (stderr, "  %s: ", lp -> m_mbox);
+		fprintf (talk ? stdout : stderr,
+			"error in transmission; unable to open maildrop\n");
+		unkadr++;
+		return;
+	    }
+	    (void) sprintf (ddate, "Delivery-Date: %s\n", dtimenow ());
+	    if (mbx_copy (mailbox, md, fd, 0, ddate, 0) == NOTOK) {
+		if (!talk)
+		    fprintf (stderr, "  %s: ", lp -> m_mbox);
+		fprintf (talk ? stdout : stderr,
+			"error in transmission; write to maildrop failed\n");
+		unkadr++;
+		(void) close (md);
+		return;
+	    }
+	    mbx_close (mailbox, md);
+
+	    if (talk)
+		printf ("sent\n");
+	    break;
+    }
+
+    (void) fflush (stdout);
+}
+
+/*  */
+
+static int  usr_hook (lp, talk, fd, hp, mailbox)
+register struct mailname *lp;
+int     talk,
+        fd;
+register struct home *hp;
+register char   *mailbox;
+{
+    int     i,
+            child_id,
+            status;
+    char    tmpfil[BUFSIZ];
+
+    if ((fd = copyfile (fd, tmpfil)) == NOTOK) {
+	if (!talk)
+	    fprintf (stderr, "  %s: ", lp -> m_mbox);
+	fprintf (talk ? stdout : stderr,
+		"unable to copy message; skipping hook\n");
+	return NOTOK;
+    }
+    (void) chown (tmpfil, hp -> h_uid, hp -> h_gid);
+
+    (void) fflush (stdout);
+
+    for (i = 0; (child_id = fork ()) == NOTOK && i < 5; i++)
+	sleep (5);
+    switch (child_id) {
+	case NOTOK: 
+	    if (!talk)
+		fprintf (stderr, "  %s: ", lp -> m_mbox);
+	    fprintf (talk ? stdout : stderr,
+		    "unable to invoke hook; fork() failed\n");
+	    return NOTOK;
+
+	case OK: 
+	    if (fd != 0)
+		(void) dup2 (fd, 0);
+	    (void) freopen ("/dev/null", "w", stdout);
+	    (void) freopen ("/dev/null", "w", stderr);
+	    if (fd != 3)	/* backwards compatible... */
+		(void) dup2 (fd, 3);
+	    closefds (4);
+#ifdef	TIOCNOTTY
+	    if ((fd = open ("/dev/tty", 2)) != NOTOK) {
+		(void) ioctl (fd, TIOCNOTTY, NULLCP);
+		(void) close (fd);
+	    }
+#endif	/* TIOCNOTTY */
+#ifdef	BSD42
+	    (void) setpgrp (0, getpid ());
+#endif	/* BSD42 */
+
+	    *environ = NULL;
+	    (void) m_putenv ("USER", hp -> h_name);
+	    (void) m_putenv ("HOME", hp -> h_home);
+	    (void) m_putenv ("SHELL", hp -> h_shell);
+	    if (chdir (hp -> h_home) == NOTOK)
+		(void) chdir ("/");
+	    (void) umask (0077);
+#ifdef	BSD41A
+	    (void) inigrp (hp -> h_name, hp -> h_gid);
+#endif	/* BSD41A */
+	    (void) setgid (hp -> h_gid);
+#ifdef	BSD42
+	    (void) initgroups (hp -> h_name, hp -> h_gid);
+#endif	/* BSD42 */
+	    (void) setuid (hp -> h_uid);
+
+	    execlp (slocalproc, r1bindex (slocalproc, '/'),
+		    "-file", tmpfil, "-mailbox", mailbox,
+		    "-home", hp -> h_home, "-addr", lp -> m_aka,
+		    "-user", hp -> h_name, "-sender", from,
+		    talk ? "-verbose" : NULLCP, NULLCP);
+	    _exit (-1);
+
+/*  */
+
+	default: 
+	    (void) close (fd);
+
+	    status = pidwait (child_id, OK);
+
+	    (void) unlink (tmpfil);
+	    if (status == 0) {
+		if (talk)
+		    printf ("accepted\n");
+		return OK;
+	    }
+	    if (!talk)
+		fprintf (stderr, "  %s: ", lp -> m_mbox);
+	    fprintf (talk ? stdout : stderr,
+		    "%s error on hook; status=0%o\n",
+		    status & 0x00ff ? "system" : "user",
+		    status & 0x00ff ? status & 0xff
+		    : (status & 0xff00) >> 8);
+	    return NOTOK;
+    }
+}
+
+/*  */
+
+static int  copyfile (qd, tmpfil)
+int     qd;
+register char   *tmpfil;
+{
+    int     i,
+            fd;
+    char    buffer[BUFSIZ];
+
+    (void) strcpy (tmpfil, m_tmpfil ("hook"));
+    if ((fd = creat (tmpfil, 0600)) == NOTOK)
+	return NOTOK;
+    (void) close (fd);
+    if ((fd = open (tmpfil, 2)) == NOTOK)
+	return NOTOK;
+
+    (void) lseek (qd, (off_t)0, 0);
+    while ((i = read (qd, buffer, sizeof buffer)) > 0)
+	if (write (fd, buffer, i) != i) {
+	    (void) close (fd);
+	    return NOTOK;
+	}
+    if (i == NOTOK) {
+	(void) close (fd);
+	return NOTOK;
+    }
+
+    (void) lseek (fd, (off_t)0, 0);
+
+    return fd;
+}
+
+/*  */
+
+static  uucpmail (lp, talk, fd, from)
+register struct mailname *lp;
+int     talk,
+        fd,
+	from;
+{
+    int     i;
+    TYPESIG     (*pstat) ();
+    char    addr[BUFSIZ],
+            buffer[BUFSIZ];
+    register FILE *fp;
+
+    (void) sprintf (addr, "%s!%s", lp -> m_host, lp -> m_mbox);
+    if (talk)
+	printf ("  %s: ", addr);
+    (void) fflush (stdout);
+
+#ifndef	UCI
+    (void) sprintf (buffer, "uux -r -p %s!rmail \\(%s\\)",
+		lp -> m_host, lp -> m_mbox);
+#else	/* UCI */
+    (void) sprintf (buffer, "uux -p %s!rmail \\(%s\\)", lp -> m_host,
+	    lp -> m_mbox);
+#endif	/* UCI */
+    if ((fp = popen (buffer, "w")) == NULL) {
+	if (!talk)
+	    fprintf (stderr, "  %s: ", addr);
+	fprintf (talk ? stdout : stderr,
+		"unable to start uux; popen() failed\n");
+	unkadr++;
+	return;
+    }
+
+    pstat = signal (SIGPIPE, SIG_IGN);
+    if (from) {			/* no mail filtering, so... */
+	(void) sprintf (buffer, "From %s %.24s remote from %s\n",
+		getusr (), ctime (&tclock), SystemName ());
+	i = strlen (buffer);
+	if (fwrite (buffer, sizeof *buffer, i, fp) != i)
+	    goto oops;
+    }
+
+    (void) lseek (fd, (off_t)0, 0);
+    while ((i = read (fd, buffer, sizeof buffer)) > 0)
+	if (fwrite (buffer, sizeof *buffer, i, fp) != i) {
+    oops:   ;
+	    if (!talk)
+		fprintf (stderr, "  %s: ", addr);
+	    fprintf (talk ? stdout : stderr,
+		    "error in transmission; write to uux failed\n");
+	    unkadr++;
+	    (void) pclose (fp);
+	    return;
+	}
+    if (pclose (fp))
+	goto oops;
+    (void) signal (SIGPIPE, pstat);
+
+    if (i < 0) {
+	if (!talk)
+	    fprintf (stderr, "  %s: ", addr);
+	fprintf (talk ? stdout : stderr,
+		"error in transmission; read failed\n");
+	unkadr++;
+	return;
+    }
+
+    if (talk)
+	printf ("queued (via uux)\n");
+    (void) fflush (stdout);
+}
+
+/*  */
+
+#ifdef	MF
+static int  make_uucp_file (td)
+int     td;
+{
+    int     i,
+            qd,
+            fd;
+    char    tmpfil[BUFSIZ];
+
+    (void) lseek (td, (off_t)0, 0);
+    if ((qd = dup (td)) == NOTOK)
+	adios ("fd", "unable to dup");
+
+    (void) strcpy (tmpfil, m_tmpfil ("uumf"));
+    if ((fd = creat (tmpfil, 0600)) == NOTOK)
+	adios (tmpfil, "unable to create");
+    (void) close (fd);
+    if ((fd = open (tmpfil, 2)) == NOTOK)
+	adios (tmpfil, "unable to re-open");
+
+    switch (i = mmdf2uucp (qd, fd, 1)) {
+	case OK: 
+	    if (!debug)
+		(void) unlink (tmpfil);
+	    break;
+
+	default: 
+	    adios (NULLCP, "unable to filter mail(%d), examine %s", i, tmpfil);
+    }
+    (void) close (qd);
+
+    return fd;
+}
+#endif	/* MF */
+
+/*  */
+
+static  netmail (talk, fd, bccque)
+int     talk,
+        fd,
+        bccque;
+{
+    int     i,
+            naddrs;
+    char    buffer[BUFSIZ];
+    register struct mailname *lp;
+
+    naddrs = 0;
+    if (nm_init (getusr (), &tclock) == NOTOK) {
+	for (lp = netaddrs.m_next; lp; lp = lp -> m_next)
+	    if (lp -> m_bcc ? bccque : !bccque)
+		fprintf (stderr, "  %s at %s: unable to get queue file\n",
+			lp -> m_mbox, lp -> m_host);
+	return;
+    }
+
+    for (lp = netaddrs.m_next; lp; lp = lp -> m_next)
+	if (lp -> m_bcc ? bccque : !bccque) {
+	    (void) nm_wadr (lp -> m_mbox, lp -> m_host);
+	    naddrs++;
+	    if (talk)
+		printf ("  %s at %s: queued\n", lp -> m_mbox, lp -> m_host);
+	    (void) fflush (stdout);
+	}
+    nm_waend ();
+
+    (void) lseek (fd, (off_t)0, 0);
+    while ((i = read (fd, buffer, sizeof buffer)) > 0)
+	if (nm_wtxt (buffer, i) == NOTOK) {
+	    fprintf (stderr,
+		    "error in transmission; write to temporary failed");
+	    unkadr += naddrs;
+	    return;
+	}
+
+    if (i < 0) {
+	fprintf (stderr, "error in transmission; read failed\n");
+	unkadr += naddrs;
+	return;
+    }
+
+    if (nm_wtend () == NOTOK) {
+	fprintf (stderr, "error in transmission; unable to queue message\n");
+	unkadr += naddrs;
+	return;
+    }
+}
+#endif	/* MHMTS */
+@
+
+
+2.25
+log
+@fixes from mtr
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.24 1994/04/21 19:23:38 jromine Exp jromine $";
+d66 1
+a66 1
+    "check", -5,		/* interface from whom */
+d68 1
+a68 1
+    "nocheck", -7,		/* interface from whom */
+@
+
+
+2.24
+log
+@mhn fixes from MTR
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.23 1993/08/25 17:26:51 jromine Exp jromine $";
+d155 5
+d188 1
+d196 1
+a196 1
+    "Reply-To", HADR | HNGR, 0,
+d212 1
+a212 1
+    "Resent-Reply-To", HADR | HNGR, 0,
+d222 1
+a222 1
+    "Reply-To", HADR, 0,
+d278 1
+d342 2
+d350 1
+a350 1
+static 	sigoff(), p_refile(), fcc(), die(), insert_fcc();
+d587 8
+d764 2
+d828 2
+d871 4
+a874 2
+	if (hdr -> flags & HNIL)
+	    fprintf (out, "%s: %s", name, str);
+d1287 6
+a1292 1
+    fprintf (out, "From: %s\n", signature);
+d1314 4
+a1317 2
+	fprintf (out, "%s\"\n%s: %s\n\n--%s\n%s: %s\n\n", prefix, DESCR_FIELD,
+		 "Blind Carbon Copy", prefix, DESCR_FIELD, "Original Message");
+d2383 71
+@
+
+
+2.23
+log
+@off_t fixes for BSD44
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.22 1993/08/20 15:53:20 jromine Exp jromine $";
+d1262 1
+a1262 1
+	fprintf (out, "Message-ID: <%d.%ld@@%s>\n",
+d1286 2
+a1287 1
+	fprintf (out, "%s\"\n\n--%s\n\n", prefix, prefix);
+@
+
+
+2.22
+log
+@add -queued switch
+make use of ONEX SMTP command
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.21 1992/12/15 00:20:22 jromine Exp jromine $";
+d335 2
+a336 1
+long	lseek (), time ();
+d1850 1
+a1850 1
+    (void) lseek (fd, 0L, 0);
+d2454 1
+a2454 1
+	    (void) lseek (fd, 0L, 0);
+d2601 1
+a2601 1
+    (void) lseek (qd, 0L, 0);
+d2612 1
+a2612 1
+    (void) lseek (fd, 0L, 0);
+d2661 1
+a2661 1
+    (void) lseek (fd, 0L, 0);
+d2702 1
+a2702 1
+    (void) lseek (td, 0L, 0);
+d2759 1
+a2759 1
+    (void) lseek (fd, 0L, 0);
+@
+
+
+2.21
+log
+@endif sugar
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.20 1992/11/24 19:02:24 jromine Exp jromine $";
+d152 3
+d333 2
+d573 4
+d1415 1
+a1415 1
+	if (rp_isbad (retval = sm_init (clientsw, serversw, 0, 0, snoop))
+d1488 2
+a1489 1
+    int     fd;
+d1524 2
+a1525 1
+    if (rp_isbad (retval = sm_init (clientsw, serversw, watch, verbose, snoop))
+d1555 1
+a1555 1
+    (void) sm_end (!(msgflags & MINV) || bccque ? OK : DONE);
+d1681 2
+a1682 1
+    if (rp_isbad (retval = sm_init (clientsw, serversw, watch, verbose, snoop))
+@
+
+
+2.20
+log
+@add decl
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: post.c,v 2.19 1992/11/19 23:24:00 jromine Exp jromine $";
+#endif	lint
+d17 1
+a17 1
+#else	MMDFMTS
+d20 1
+a20 1
+#endif	MMDFMTS
+d25 1
+a25 1
+#endif	not V7
+d27 1
+a27 1
+#endif	MHMTS
+d31 1
+a31 1
+#endif	SENDMTS
+d43 1
+a43 1
+#endif	not MMDFMTS
+d57 1
+a57 1
+#else	TMA
+d59 1
+a59 1
+#endif	TMA
+d217 1
+a217 1
+#else	not MMFDI
+d219 1
+a219 1
+#endif	not MMDFI
+d284 1
+a284 1
+#endif	MMDFMTS
+d292 1
+a292 1
+#endif	MHMTS
+d301 1
+a301 1
+#endif	SENDMTS
+d309 1
+a309 1
+#else	SENDMTS
+d311 2
+a312 2
+#endif	SENDMTS
+#endif	TMA
+d341 1
+a341 1
+#endif !TMA
+d369 2
+a370 2
+#endif	MMDFII
+#endif	MMDFMTS
+d399 1
+a399 1
+#endif	MHMTS
+d503 1
+a503 1
+#endif	MMDFMTS
+d510 1
+a510 1
+#else	MHMTS
+d520 1
+a520 1
+#endif	MHMTS
+d531 1
+a531 1
+#else	SENDMTS
+d555 1
+a555 1
+#endif	SENDMTS
+d588 1
+a588 1
+#endif	MHMTS
+d602 1
+a602 1
+#endif	MHMTS
+d614 1
+a614 1
+#endif	MHMTS
+d628 1
+a628 1
+#endif	MHMTS
+d685 1
+a685 1
+#endif	MHMTS
+d699 1
+a699 1
+#endif	TMA
+d710 1
+a710 1
+#endif	MMDFMTS
+d713 1
+a713 1
+#endif	MHMTS
+d722 1
+a722 1
+#endif	not MHMTS
+d733 1
+a733 1
+#endif	TMA
+d739 1
+a739 1
+#endif	MHMTS
+d846 1
+a846 1
+#endif	notdef
+d881 1
+a881 1
+#endif	MHMTS
+d943 1
+a943 1
+#endif	MHMTS
+d999 1
+a999 1
+#endif	MMDFI
+d1377 1
+a1377 1
+#endif	not MHMTS
+d1382 2
+a1383 2
+#endif	RP_NS
+#endif	MMDFMTS
+d1388 1
+a1388 1
+#endif	not MHMTS
+d1401 1
+a1401 1
+#endif	RP_NS
+d1403 1
+a1403 1
+#endif	MMDFMTS
+d1410 1
+a1410 1
+#endif	SENDMTS
+d1417 1
+a1417 1
+#endif	BERK
+d1424 1
+a1424 1
+#endif	BERK
+d1431 1
+a1431 1
+#endif	BERK
+d1442 1
+a1442 1
+#endif	MMDFMTS
+d1446 1
+a1446 1
+#endif	SENDMTS
+d1451 1
+a1451 1
+#endif	not MHMTS
+d1472 1
+a1472 1
+#else	TMA
+d1474 1
+a1474 1
+#endif	TMA
+d1486 3
+a1488 3
+#endif	RP_NS
+#endif	MMDFMTS
+#else	MHMTS
+d1490 1
+a1490 1
+#endif	MHMTS
+d1511 2
+a1512 2
+#endif	RP_NS
+#endif	MMDFMTS
+d1517 1
+a1517 1
+#endif	SENDMTS
+d1524 1
+a1524 1
+#else	MHMTS
+d1529 1
+a1529 1
+#else	not MF
+d1531 1
+a1531 1
+#endif	not MF
+d1535 1
+a1535 1
+#endif	MHMTS
+d1542 1
+a1542 1
+#endif	MMDFMTS
+d1545 1
+a1545 1
+#endif	SENDMTS
+d1589 1
+a1589 1
+#endif	BERK
+d1593 1
+a1593 1
+#endif	BERK
+d1601 1
+a1601 1
+#endif	BERK
+d1605 1
+a1605 1
+#endif	BERK
+d1613 1
+a1613 1
+#endif	BERK
+d1617 1
+a1617 1
+#endif	BERK
+d1625 1
+a1625 1
+#endif	SENDMTS
+d1652 2
+a1653 2
+#endif	RP_NS
+#endif	MMDFMTS
+d1667 2
+a1668 2
+#endif	RP_NS
+#endif	MMDFMTS
+d1673 1
+a1673 1
+#endif	SENDMTS
+d1688 1
+a1688 1
+#endif	MMDFMTS
+d1692 1
+a1692 1
+#endif	SENDMTS
+d1708 1
+a1708 1
+#endif	MMDFMTS
+d1712 1
+a1712 1
+#endif	SENDMTS
+d1723 1
+a1723 1
+#endif	MMDFMTS
+d1726 1
+a1726 1
+#endif	SENDMTS
+d1730 1
+a1730 1
+#endif	TMA
+d1736 1
+a1736 1
+#else	MHMTS
+d1741 1
+a1741 1
+#endif	MHMTS
+d1748 1
+a1748 1
+#endif	not BERK
+d1753 1
+a1753 1
+#endif	not BERK
+d1759 1
+a1759 1
+#endif	not BERK
+d1762 1
+a1762 1
+#else	MHMTS
+d1764 1
+a1764 1
+#endif	MHMTS
+d1767 1
+a1767 1
+#endif	not BERK
+d1772 1
+a1772 1
+#endif	not BERK
+d1778 1
+a1778 1
+#endif	not BERK
+d1781 1
+a1781 1
+#else	MHMTS
+d1783 1
+a1783 1
+#endif	MHMTS
+d1786 1
+a1786 1
+#endif	not BERK
+d1791 1
+a1791 1
+#endif	not BERK
+d1797 1
+a1797 1
+#endif	not BERK
+d1800 1
+a1800 1
+#else	MHMTS
+d1802 1
+a1802 1
+#endif	MHMTS
+d1805 1
+a1805 1
+#endif	not BERK
+d1816 1
+a1816 1
+#endif	MMDFMTS
+d1820 1
+a1820 1
+#endif	SENDMTS
+d1835 1
+a1835 1
+#endif	MMDFMTS
+d1842 1
+a1842 1
+#endif	MMDFMTS
+d1846 1
+a1846 1
+#endif	SENDMTS
+d1880 1
+a1880 1
+#endif	MMDFMTS
+d1893 1
+a1893 1
+#endif	SENDMTS
+d1895 1
+a1895 1
+#endif	not MHMTS
+d1903 1
+a1903 1
+#endif	TMA
+d1919 1
+a1919 1
+#endif	TMA
+d1935 1
+a1935 1
+#else	MF
+d1941 1
+a1941 1
+#endif	MF
+d1957 1
+a1957 1
+#endif	TMA
+d1976 1
+a1976 1
+#endif	MMDFII
+d1995 1
+a1995 1
+#endif	RP_DOK
+d2006 1
+a2006 1
+#endif	RP_NS
+d2036 1
+a2036 1
+#endif	MMDFMTS
+d2126 1
+a2126 1
+#endif	MHMTS
+d2134 1
+a2134 1
+#endif	TMA
+d2147 1
+a2147 1
+#endif	TMA
+d2177 1
+a2177 1
+#endif	TMA
+d2216 1
+a2216 1
+#endif	SENDMTS
+d2229 1
+a2229 1
+#endif	not BSD42
+d2236 1
+a2236 1
+#endif	MMDFMTS
+d2240 1
+a2240 1
+#endif	SENDMTS
+d2243 1
+a2243 1
+#endif	not MHMTS
+d2255 1
+a2255 1
+#else	MHMTS
+d2260 1
+a2260 1
+#endif	MHMTS
+d2286 1
+a2286 1
+#endif	MHMTS
+d2357 1
+a2357 1
+#endif	MHMTS
+d2361 1
+a2361 1
+#endif	MMDFMTS
+d2365 1
+a2365 1
+#endif	SENDMTS
+d2391 1
+a2391 1
+#endif	MMDFMTS
+d2519 1
+a2519 1
+#endif	TIOCNOTTY
+d2522 1
+a2522 1
+#endif	BSD42
+d2533 1
+a2533 1
+#endif	BSD41A
+d2537 1
+a2537 1
+#endif	BSD42
+d2626 1
+a2626 1
+#else	UCI
+d2629 1
+a2629 1
+#endif	UCI
+d2713 1
+a2713 1
+#endif	MF
+d2767 1
+a2767 1
+#endif	MHMTS
+@
+
+
+2.19
+log
+@fix bug in blind list handling
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.18 1992/11/04 02:58:40 jromine Exp $";
+d323 1
+@
+
+
+2.18
+log
+@m_putenv
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.17 1992/11/04 00:55:52 jromine Exp jromine $";
+d871 5
+a875 3
+#ifndef afix
+		if (mp -> m_ingrp = np -> m_ingrp)
+#else afix
+a876 1
+#endif afix
+a880 4
+#ifdef afix
+		if (mp -> m_gname)
+		    putgrp (namep, mp -> m_gname, out, hdr -> flags);
+#endif afix
+@
+
+
+2.17
+log
+@LOCALE
+TYPESIG
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.16 1992/10/16 23:55:56 jromine Exp jromine $";
+d2527 3
+a2529 3
+	    (void) putenv ("USER", hp -> h_name);
+	    (void) putenv ("HOME", hp -> h_home);
+	    (void) putenv ("SHELL", hp -> h_shell);
+@
+
+
+2.16
+log
+@typo
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.15 1992/10/16 21:37:31 jromine Exp jromine $";
+d36 3
+d42 1
+a42 1
+#define	uptolow(c)	(isupper (c) ? tolower (c) : (c))
+d291 1
+a291 1
+int	sigser ();
+d359 3
+d2226 1
+a2226 1
+static	int sigser (i)
+@
+
+
+2.15
+log
+@MIME changes
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.14 1992/03/02 17:06:14 jromine Exp jromine $";
+d35 1
+a35 1
+#endidf	/* MIME */
+@
+
+
+2.14
+log
+@back off alias fix
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.13 1992/01/31 22:23:44 jromine Exp jromine $";
+d33 3
+d46 6
+d91 6
+a96 1
+#define	MSGDSW	12
+d98 1
+a98 1
+#define	NMSGDSW	13
+d101 1
+a101 1
+#define	VERBSW	14
+d103 1
+a103 1
+#define	NVERBSW	15
+d106 1
+a106 1
+#define	WATCSW	16
+d108 1
+a108 1
+#define	NWATCSW	17
+d111 1
+a111 1
+#define	WHOMSW	18	/* interface from whom */
+d114 1
+a114 1
+#define	WIDTHSW	19
+d117 1
+a117 1
+#define	HELPSW	20
+d120 1
+a120 1
+#define	MAILSW	21
+d122 1
+a122 1
+#define	SAMLSW	22
+d124 1
+a124 1
+#define	SENDSW	23
+d126 1
+a126 1
+#define	SOMLSW	24
+d129 1
+a129 1
+#define	ANNOSW	25		/* interface from send */
+d132 1
+a132 1
+#define	DLVRSW	26
+d135 1
+a135 1
+#define	CLIESW	27
+d137 1
+a137 1
+#define	SERVSW	28
+d139 1
+a139 1
+#define	SNOOPSW	29
+d142 1
+a142 1
+#define	FILLSW	30
+d144 1
+a144 1
+#define	FILLUSW	31
+d146 1
+a146 1
+#define	PARTSW	32
+d241 1
+d318 4
+d416 1
+d429 10
+d1253 24
+a1276 1
+    fprintf (out, "BCC:\n\n------- Blind-Carbon-Copy\n\n");
+d1281 7
+a1287 2
+	    adios (NULLCP, "unable to re-open");
+	cpydgst (fd, fileno (out), tmpfil, bccfil);
+d1321 6
+a1326 1
+    fprintf (out, "\n------- End of Blind-Carbon-Copy\n");
+d1329 36
+@
+
+
+2.13
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.12 1992/01/31 16:34:06 jromine Exp jromine $";
+d835 3
+d839 1
+d844 1
+d847 1
+@
+
+
+2.12
+log
+@Multimedia MH
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.11 1992/01/30 22:39:58 jromine Exp $";
+d135 1
+a135 1
+    NULL, NULL
+d168 3
+a170 3
+    "Return-Path", HBAD, NULL,
+    "Received", HBAD, NULL,
+    "Reply-To", HADR | HNGR, NULL,
+d172 3
+a174 3
+    "Sender", HADR | HBAD, NULL,
+    "Date", HBAD, NULL,
+    "Subject", HSUB, NULL,
+d179 2
+a180 2
+    "Message-ID", HBAD, NULL,
+    "Fcc", HFCC, NULL,
+d186 1
+a186 1
+    "Resent-Reply-To", HADR | HNGR, NULL,
+d188 3
+a190 3
+    "Resent-Sender", HADR | HBAD, NULL,
+    "Resent-Date", HBAD, NULL,
+    "Resent-Subject", HSUB, NULL,
+d194 3
+a196 3
+    "Resent-Message-ID", HBAD, NULL,
+    "Resent-Fcc", HFCC, NULL,
+    "Reply-To", HADR, NULL,
+d199 1
+a199 1
+    "Sender", HADR | HMNG | HNGR, NULL,
+d201 1
+a201 1
+    "Sender", HADR | HNGR, NULL,
+d204 4
+a207 4
+    "To", HADR | HNIL, NULL,
+    "cc", HADR | HNIL, NULL,
+    "Bcc", HADR | HTRY | HBCC | HNIL, NULL,
+    "Fcc", HIGN, NULL,
+d310 1
+a310 1
+static	anno(), insert_foc(), make_bcc_file(), verify_all_addresses();
+d771 1
+a771 1
+	    *cp = NULL;
+d773 1
+a773 1
+	    *cp++ = NULL;
+d1187 2
+a1188 2
+	*++pp = NULL;
+    if (*cp == NULL)
+@
+
+
+2.11
+log
+@remove WP
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.10 1992/01/29 23:54:10 jromine Exp jromine $";
+d128 7
+d299 8
+d519 12
+d579 1
+a579 1
+	    if ((out = fopen ("/dev/null", "w")) == NULL)
+d620 1
+a620 1
+		if (whomsw)
+d664 2
+a665 1
+	verify_all_addresses (1);
+d706 2
+a707 1
+	printf ("Message Processed\n");
+d746 3
+a748 1
+    if (hdr -> flags & HIGN)
+d750 1
+d752 6
+a757 2
+	advise (NULLCP, "illegal header line -- %s:", name);
+	badmsg++;
+d765 5
+d818 2
+a819 1
+		    (hdr -> flags & HMNG) ? "Original-" : "", name);
+d872 3
+a874 1
+    if (linepos)
+d876 1
+d927 1
+a927 1
+	    if (whomsw)
+d938 3
+d954 1
+a954 1
+	    if (whomsw)
+d969 2
+d1012 1
+a1012 1
+    if ((flags & (HBCC|HDCC)) || mp -> m_ingrp)
+d1023 1
+a1023 1
+	if (mp -> m_gname)
+d1057 1
+a1057 1
+    if (flags & HBCC)
+d1063 2
+d1067 1
+a1067 1
+    cp = concat (group, ";", NULLCP);
+@
+
+
+2.10
+log
+@bug fix for groups in alias files (yea!)
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.9 1992/01/24 00:05:24 jromine Exp jromine $";
+a127 3
+#define	FILLSW	30
+    "fill-in file", -7,
+
+a291 6
+#ifdef	WP
+extern int	do_wp;		/* fill-in white pages queries */
+#endif
+static char    *fill_in = NULLCP;
+
+
+a503 7
+
+		case FILLSW:
+#ifdef	WP
+		    if (!(fill_in = *argp++) || *fill_in == '-')
+			adios (NULLCP, "missing argument to %s", argp[-2]);
+#endif
+		    continue;
+a511 3
+#ifdef	WP
+    do_wp++;
+#endif
+d552 1
+a552 1
+	    if ((out = fopen (fill_in ? fill_in : "/dev/null", "w")) == NULL)
+d593 1
+a593 1
+		if (whomsw && !fill_in)
+d717 1
+a717 3
+    if (hdr -> flags & HIGN) {
+	if (fill_in)
+	    fprintf (out, "%s: %s", name, str);
+a718 1
+    }
+d720 2
+a721 6
+	if (fill_in)
+	    fprintf (out, "%s: %s", name, str);
+	else {
+	    advise (NULLCP, "illegal header line -- %s:", name);
+	    badmsg++;
+	}
+a728 5
+	if (fill_in) {
+	    fprintf (out, "%s: %s", name, str);
+	    return;
+	}
+
+d777 1
+a777 2
+		    !fill_in && (hdr -> flags & HMNG) ? "Original-" : "",
+		    name);
+d830 1
+a830 3
+    if (linepos) {
+	if (fill_in && grp > 0)
+	    (void) putc (';', out);
+a831 1
+    }
+d962 1
+a962 1
+    if (!fill_in && ((flags & (HBCC|HDCC)) || mp -> m_ingrp))
+d973 1
+a973 1
+	if (mp -> m_gname && !fill_in)
+d1007 1
+a1007 1
+    if (!fill_in && (flags & HBCC))
+a1012 2
+	if (fill_in)
+	    linepos -= strlen (group);
+d1015 1
+a1015 1
+    cp = fill_in ? group : concat (group, ";", NULLCP);
+@
+
+
+2.9
+log
+@"clock" -> "tclock" (reserved word on ncr)
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: post.c,v 2.8 1990/04/05 15:35:20 sources Exp jromine $";
+d825 1
+a825 1
+		if (mp -> m_ingrp = np -> m_ingrp)
+d830 2
+@
+
+
+2.8
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d237 1
+a237 1
+static long clock = 0L;		/* the time we started (more or less) */
+d877 1
+a877 1
+    (void) time (&clock);
+d918 1
+a918 1
+	    fprintf (out, "Date: %s\n", dtime (&clock));
+d921 1
+a921 1
+			getpid (), clock, LocalName ());
+d946 1
+a946 1
+	    fprintf (out, "Resent-Date: %s\n", dtime (&clock));
+d949 1
+a949 1
+			getpid (), clock, LocalName ());
+d1193 1
+a1193 1
+    fprintf (out, "Date: %s\n", dtime (&clock));
+d1196 1
+a1196 1
+		getpid (), clock, LocalName ());
+d2516 1
+a2516 1
+		getusr (), ctime (&clock), SystemName ());
+d2602 1
+a2602 1
+    if (nm_init (getusr (), &clock) == NOTOK) {
+@
+
+
+2.7
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:";
+@
+
+
+2.6
+log
+@ansi fixup
+@
+text
+@d2 3
+@
+
+
+2.5
+log
+@TYPESIG fix
+@
+text
+@d303 1
+a303 1
+static 	sigoff(), p_refile(), fcc(), die();
+@
+
+
+2.4
+log
+@"refile" -> "p_refile()"
+@
+text
+@d2484 1
+a2484 1
+    int     (*pstat) ();
+@
+
+
+2.3
+log
+@ANSI Compilance
+@
+text
+@d303 1
+a303 1
+static 	sigoff(), refile(), fcc(), die();
+d686 1
+a686 1
+    refile (tmpfil);
+d2147 1
+a2147 1
+static  refile (file)
+@
+
+
+2.2
+log
+@WP Changes
+@
+text
+@d300 10
+@
+
+
+2.1
+log
+@TYPESIG
+@
+text
+@d125 3
+d292 6
+d500 7
+d515 3
+d558 1
+a558 1
+	    if ((out = fopen ("/dev/null", "w")) == NULL)
+d599 1
+a599 1
+		if (whomsw)
+d723 3
+a725 1
+    if (hdr -> flags & HIGN)
+d727 1
+d729 6
+a734 2
+	advise (NULLCP, "illegal header line -- %s:", name);
+	badmsg++;
+d742 5
+d795 2
+a796 1
+	    (hdr -> flags & HMNG) ? "Original-" : "", name);
+d847 3
+a849 1
+    if (linepos)
+d851 1
+d982 1
+a982 1
+    if ((flags & (HBCC|HDCC)) || mp -> m_ingrp)
+d993 1
+a993 1
+	if (mp -> m_gname)
+d1027 1
+a1027 1
+    if (flags & (HBCC|HDCC))
+d1033 2
+d1037 1
+a1037 1
+    cp = concat (group, ";", NULLCP);
+d1040 1
+a1040 1
+    if (linepos != nameoutput)
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d233 1
+a233 1
+static int  (*hstat) (), (*istat) (), (*qstat) (), (*tstat) ();
+@
+
+
+1.2
+log
+@add "Dcc:" header line.  This is basically a blind distribution copy.
+addresses listed on Dcc: lines are put in the envelope only!
+I don't intend to document this since Bcc: is the socially appropriate
+header to use for such copies.
+/JLR
+@
+text
+@d145 1
+a145 1
+#define	HDCC	0x0400		/* oh joy, another undocumented feature */
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d145 1
+d168 1
+d947 1
+a947 1
+    if ((flags & HBCC) || mp -> m_ingrp)
+d992 1
+a992 1
+    if (flags & HBCC)
+@

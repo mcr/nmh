@@ -1,0 +1,678 @@
+head	1.10;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.10
+date	93.06.12.06.46.16;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.02.09.07.12.48;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.01.23.23.16.05;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	91.11.28.00.05.59;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	91.11.28.00.04.48;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.12.27.17.04.12;	author mh;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.05.15.06.42;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.21.15.40.53;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.21.15.39.50;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.21.15.38.18;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@add %(profile xxx) to return m_find(xxx)
+@
+text
+@/* @@(#)$Id: fmtcompile.h,v 1.9 1992/02/09 07:12:48 jromine Exp jromine $ */
+
+/* Format Types */
+/* -------------*/
+
+/* types that output text */
+#define FT_COMP		1	/* the text of a component */
+#define FT_COMPF	2	/* comp text, filled */
+#define FT_LIT		3	/* literal text */
+#define FT_LITF		4	/* literal text, filled */
+#define FT_CHAR		5	/* a single ascii character */
+#define FT_NUM		6	/* "value" as decimal number */
+#define FT_NUMF		7	/* "value" as filled dec number */
+#define FT_STR		8	/* "str" as text */
+#define FT_STRF		9	/* "str" as text, filled */
+#define FT_STRFW	10	/* "str" as text, filled, width in "value" */
+#define FT_PUTADDR	11	/* split and print address line */
+
+/* types that modify the "str" or "value" registers */
+#define FT_LS_COMP	12	/* set "str" to component text */
+#define FT_LS_LIT	13	/* set "str" to literal text */
+#define FT_LS_GETENV	14	/* set "str" to getenv(text) */
+#define FT_LS_MFIND	15	/* set "str" to m_find(text) */
+#define FT_LS_TRIM	16	/* trim trailing white space from "str" */
+#define FT_LV_COMP	17	/* set "value" to comp (as dec. num) */
+#define FT_LV_COMPFLAG	18	/* set "value" to comp flag word */
+#define FT_LV_LIT	19	/* set "value" to literal num */
+#define FT_LV_DAT	20	/* set "value" to dat[n] */
+#define FT_LV_STRLEN	21	/* set "value" to length of "str" */
+#define FT_LV_PLUS_L	22	/* set "value" += literal */
+#define FT_LV_MINUS_L	23	/* set "value" -= literal */
+#define FT_LV_DIVIDE_L	24	/* set "value" to value / literal */
+#define FT_LV_MODULO_L	25	/* set "value" to value % literal */
+#define FT_LV_CHAR_LEFT 26	/* set "value" to char left in output */
+
+#define FT_LS_MONTH	27	/* set "str" to tws month */
+#define FT_LS_LMONTH	28	/* set "str" to long tws month */
+#define FT_LS_ZONE	29	/* set "str" to tws timezone */
+#define FT_LS_DAY	30	/* set "str" to tws weekday */
+#define FT_LS_WEEKDAY	31	/* set "str" to long tws weekday */
+#define FT_LS_822DATE	32	/* set "str" to 822 date str */
+#define FT_LS_PRETTY	33	/* set "str" to pretty (?) date str */
+#define FT_LV_SEC	34	/* set "value" to tws second */
+#define FT_LV_MIN	35	/* set "value" to tws minute */
+#define FT_LV_HOUR	36	/* set "value" to tws hour */
+#define FT_LV_MDAY	37	/* set "value" to tws day of month */
+#define FT_LV_MON	38	/* set "value" to tws month */
+#define FT_LV_YEAR	39	/* set "value" to tws year */
+#define FT_LV_YDAY	40	/* set "value" to tws day of year */
+#define FT_LV_WDAY	41	/* set "value" to tws weekday */
+#define FT_LV_ZONE	42	/* set "value" to tws timezone */
+#define FT_LV_CLOCK	43	/* set "value" to tws clock */
+#define FT_LV_RCLOCK	44	/* set "value" to now - tws clock */
+#define FT_LV_DAYF	45	/* set "value" to tws day flag */
+#define FT_LV_DST	46	/* set "value" to tws daylight savings flag */
+#define FT_LV_ZONEF	47	/* set "value" to tws timezone flag */
+
+#define FT_LS_PERS	48	/* set "str" to person part of addr */
+#define FT_LS_MBOX	49	/* set "str" to mbox part of addr */
+#define FT_LS_HOST	50	/* set "str" to host part of addr */
+#define FT_LS_PATH	51	/* set "str" to route part of addr */
+#define FT_LS_GNAME	52	/* set "str" to group part of addr */
+#define FT_LS_NOTE	53	/* set "str" to comment part of addr */
+#define FT_LS_ADDR	54	/* set "str" to mbox@@host */
+#define FT_LS_822ADDR	55	/* set "str" to 822 format addr */
+#define FT_LS_FRIENDLY	56	/* set "str" to "friendly" format addr */
+#define FT_LV_HOSTTYPE	57	/* set "value" to addr host type */
+#define FT_LV_INGRPF	58	/* set "value" to addr in-group flag */
+#define FT_LV_NOHOSTF	59	/* set "value" to addr no-host flag */
+
+/* Date Coercion */
+#define FT_LOCALDATE	60	/* Coerce date to local timezone */
+#define FT_GMTDATE	61	/* Coerce date to gmt */
+
+/* pre-format processing */
+#define FT_PARSEDATE	62	/* parse comp into a date (tws) struct */
+#define FT_PARSEADDR	63	/* parse comp into a mailaddr struct */
+#define FT_FORMATADDR	64	/* let external routine format addr */
+#define FT_MYMBOX	65	/* do "mymbox" test on comp */
+
+/* misc. */		/* ADDTOSEQ only works if you include "options LBL" */
+#define FT_ADDTOSEQ	66	/* add current msg to a sequence */
+
+/* conditionals & control flow (must be last) */
+#define FT_SAVESTR	67	/* save current str reg */
+#define FT_DONE		68	/* stop formatting */
+#define FT_PAUSE	69	/* pause */
+#define FT_NOP		70	/* nop */
+#define FT_GOTO		71	/* (relative) goto */
+#define FT_IF_S_NULL	72	/* test if "str" null */
+#define FT_IF_S		73	/* test if "str" non-null */
+#define FT_IF_V_EQ	74	/* test if "value" = literal */
+#define FT_IF_V_NE	75	/* test if "value" != literal */
+#define FT_IF_V_GT	76	/* test if "value" > literal */
+#define FT_IF_MATCH	77	/* test if "str" contains literal */
+#define FT_IF_AMATCH	78	/* test if "str" starts with literal */
+#define FT_S_NULL	79	/* V = 1 if "str" null */
+#define FT_S_NONNULL	80	/* V = 1 if "str" non-null */
+#define FT_V_EQ		81	/* V = 1 if "value" = literal */
+#define FT_V_NE		82	/* V = 1 if "value" != literal */
+#define FT_V_GT		83	/* V = 1 if "value" > literal */
+#define FT_V_MATCH	84	/* V = 1 if "str" contains literal */
+#define FT_V_AMATCH	85	/* V = 1 if "str" starts with literal */
+
+#define IF_FUNCS FT_S_NULL	/* start of "if" functions */
+@
+
+
+1.9
+log
+@add modulo function
+put Van Jacobson changes under "options LBL"
+@
+text
+@d1 1
+a1 1
+/* @@(#)$Id: fmtcompile.h,v 1.8 1992/01/23 23:16:05 jromine Exp $ */
+d23 12
+a34 11
+#define FT_LS_TRIM	15	/* trim trailing white space from "str" */
+#define FT_LV_COMP	16	/* set "value" to comp (as dec. num) */
+#define FT_LV_COMPFLAG	17	/* set "value" to comp flag word */
+#define FT_LV_LIT	18	/* set "value" to literal num */
+#define FT_LV_DAT	19	/* set "value" to dat[n] */
+#define FT_LV_STRLEN	20	/* set "value" to length of "str" */
+#define FT_LV_PLUS_L	21	/* set "value" += literal */
+#define FT_LV_MINUS_L	22	/* set "value" -= literal */
+#define FT_LV_DIVIDE_L	23	/* set "value" to value / literal */
+#define	FT_LV_MODULO_L	24	/* set "value" to value % literal */
+#define FT_LV_CHAR_LEFT 25      /* set "value" to char left in output */
+d36 21
+a56 21
+#define FT_LS_MONTH     26      /* set "str" to tws month */
+#define FT_LS_LMONTH    27      /* set "str" to long tws month */
+#define FT_LS_ZONE      28      /* set "str" to tws timezone */
+#define FT_LS_DAY       29      /* set "str" to tws weekday */
+#define FT_LS_WEEKDAY   30      /* set "str" to long tws weekday */
+#define FT_LS_822DATE   31      /* set "str" to 822 date str */
+#define FT_LS_PRETTY    32      /* set "str" to pretty (?) date str */
+#define FT_LV_SEC       33      /* set "value" to tws second */
+#define FT_LV_MIN       34      /* set "value" to tws minute */
+#define FT_LV_HOUR      35      /* set "value" to tws hour */
+#define FT_LV_MDAY      36      /* set "value" to tws day of month */
+#define FT_LV_MON       37      /* set "value" to tws month */
+#define FT_LV_YEAR      38      /* set "value" to tws year */
+#define FT_LV_YDAY      39      /* set "value" to tws day of year */
+#define FT_LV_WDAY      40      /* set "value" to tws weekday */
+#define FT_LV_ZONE      41      /* set "value" to tws timezone */
+#define FT_LV_CLOCK     42      /* set "value" to tws clock */
+#define FT_LV_RCLOCK    43      /* set "value" to now - tws clock */
+#define FT_LV_DAYF      44      /* set "value" to tws day flag */
+#define FT_LV_DST       45      /* set "value" to tws daylight savings flag */
+#define FT_LV_ZONEF     46      /* set "value" to tws timezone flag */
+d58 12
+a69 12
+#define FT_LS_PERS      47      /* set "str" to person part of addr */
+#define FT_LS_MBOX      48      /* set "str" to mbox part of addr */
+#define FT_LS_HOST      49      /* set "str" to host part of addr */
+#define FT_LS_PATH      50      /* set "str" to route part of addr */
+#define FT_LS_GNAME     51      /* set "str" to group part of addr */
+#define FT_LS_NOTE      52      /* set "str" to comment part of addr */
+#define FT_LS_ADDR      53      /* set "str" to mbox@@host */
+#define FT_LS_822ADDR   54      /* set "str" to 822 format addr */
+#define FT_LS_FRIENDLY  55      /* set "str" to "friendly" format addr */
+#define FT_LV_HOSTTYPE  56      /* set "value" to addr host type */
+#define FT_LV_INGRPF    57      /* set "value" to addr in-group flag */
+#define FT_LV_NOHOSTF   58      /* set "value" to addr no-host flag */
+d72 2
+a73 2
+#define FT_LOCALDATE    59      /* Coerce date to local timezone */
+#define FT_GMTDATE      60      /* Coerce date to gmt */
+d76 4
+a79 4
+#define FT_PARSEDATE    61      /* parse comp into a date (tws) struct */
+#define FT_PARSEADDR    62      /* parse comp into a mailaddr struct */
+#define FT_FORMATADDR   63      /* let external routine format addr */
+#define FT_MYMBOX       64      /* do "mymbox" test on comp */
+d82 1
+a82 1
+#define FT_ADDTOSEQ     65      /* add current msg to a sequence */
+d85 19
+a103 19
+#define FT_SAVESTR      66      /* save current str reg */
+#define FT_DONE         67      /* stop formatting */
+#define FT_PAUSE        68      /* pause */
+#define FT_NOP          69      /* nop */
+#define FT_GOTO         70      /* (relative) goto */
+#define FT_IF_S_NULL    71      /* test if "str" null */
+#define FT_IF_S         72      /* test if "str" non-null */
+#define FT_IF_V_EQ      73      /* test if "value" = literal */
+#define FT_IF_V_NE      74      /* test if "value" != literal */
+#define FT_IF_V_GT      75      /* test if "value" > literal */
+#define FT_IF_MATCH     76      /* test if "str" contains literal */
+#define FT_IF_AMATCH    77      /* test if "str" starts with literal */
+#define FT_S_NULL       78      /* V = 1 if "str" null */
+#define FT_S_NONNULL    79      /* V = 1 if "str" non-null */
+#define FT_V_EQ         80      /* V = 1 if "value" = literal */
+#define FT_V_NE         81      /* V = 1 if "value" != literal */
+#define FT_V_GT         82      /* V = 1 if "value" > literal */
+#define FT_V_MATCH      83      /* V = 1 if "str" contains literal */
+#define FT_V_AMATCH     84      /* V = 1 if "str" starts with literal */
+d105 1
+a105 1
+#define IF_FUNCS FT_S_NULL      /* start of "if" functions */
+@
+
+
+1.8
+log
+@add getenv
+@
+text
+@d1 1
+a1 1
+/* @@(#)$Id: fmtcompile.h,v 1.7 1991/11/28 00:05:59 jromine Exp jromine $ */
+d32 2
+a33 1
+#define FT_LV_CHAR_LEFT 24	/* set "value" to char left in output */
+d35 21
+a55 21
+#define FT_LS_MONTH	25	/* set "str" to tws month */
+#define FT_LS_LMONTH	26	/* set "str" to long tws month */
+#define FT_LS_ZONE	27	/* set "str" to tws timezone */
+#define FT_LS_DAY	28	/* set "str" to tws weekday */
+#define FT_LS_WEEKDAY	29	/* set "str" to long tws weekday */
+#define FT_LS_822DATE	30	/* set "str" to 822 date str */
+#define FT_LS_PRETTY	31	/* set "str" to pretty (?) date str */
+#define FT_LV_SEC	32	/* set "value" to tws second */
+#define FT_LV_MIN	33	/* set "value" to tws minute */
+#define FT_LV_HOUR	34	/* set "value" to tws hour */
+#define FT_LV_MDAY	35	/* set "value" to tws day of month */
+#define FT_LV_MON	36	/* set "value" to tws month */
+#define FT_LV_YEAR	37	/* set "value" to tws year */
+#define FT_LV_YDAY	38	/* set "value" to tws day of year */
+#define FT_LV_WDAY	39	/* set "value" to tws weekday */
+#define FT_LV_ZONE	40	/* set "value" to tws timezone */
+#define FT_LV_CLOCK	41	/* set "value" to tws clock */
+#define FT_LV_RCLOCK	42	/* set "value" to now - tws clock */
+#define FT_LV_DAYF	43	/* set "value" to tws day flag */
+#define FT_LV_DST	44	/* set "value" to tws daylight savings flag */
+#define FT_LV_ZONEF	45	/* set "value" to tws timezone flag */
+d57 12
+a68 12
+#define FT_LS_PERS	46	/* set "str" to person part of addr */
+#define FT_LS_MBOX	47	/* set "str" to mbox part of addr */
+#define FT_LS_HOST	48	/* set "str" to host part of addr */
+#define FT_LS_PATH	49	/* set "str" to route part of addr */
+#define FT_LS_GNAME	50	/* set "str" to group part of addr */
+#define FT_LS_NOTE	51	/* set "str" to comment part of addr */
+#define FT_LS_ADDR	52	/* set "str" to mbox@@host */
+#define FT_LS_822ADDR	53	/* set "str" to 822 format addr */
+#define FT_LS_FRIENDLY	54	/* set "str" to "friendly" format addr */
+#define FT_LV_HOSTTYPE	55	/* set "value" to addr host type */
+#define FT_LV_INGRPF	56	/* set "value" to addr in-group flag */
+#define FT_LV_NOHOSTF	57	/* set "value" to addr no-host flag */
+d71 2
+a72 2
+#define FT_LOCALDATE	58	/* Coerce date to local timezone */
+#define FT_GMTDATE	59	/* Coerce date to gmt */
+d75 4
+a78 4
+#define FT_PARSEDATE	60	/* parse comp into a date (tws) struct */
+#define FT_PARSEADDR	61	/* parse comp into a mailaddr struct */
+#define FT_FORMATADDR	62	/* let external routine format addr */
+#define FT_MYMBOX	63	/* do "mymbox" test on comp */
+d80 2
+a81 4
+/* misc. */
+#ifdef	VAN
+#define FT_ADDTOSEQ	64	/* add current msg to a sequence */
+#endif
+d84 19
+a102 19
+#define FT_SAVESTR	65	/* save current str reg */
+#define FT_DONE		66	/* stop formatting */
+#define FT_PAUSE	67	/* pause */
+#define FT_NOP		68	/* nop */
+#define FT_GOTO		69	/* (relative) goto */
+#define FT_IF_S_NULL	70	/* test if "str" null */
+#define FT_IF_S		71	/* test if "str" non-null */
+#define FT_IF_V_EQ	72	/* test if "value" = literal */
+#define FT_IF_V_NE	73	/* test if "value" != literal */
+#define FT_IF_V_GT	74	/* test if "value" > literal */
+#define FT_IF_MATCH	75	/* test if "str" contains literal */
+#define FT_IF_AMATCH	76	/* test if "str" starts with literal */
+#define FT_S_NULL	77	/* V = 1 if "str" null */
+#define FT_S_NONNULL	78	/* V = 1 if "str" non-null */
+#define FT_V_EQ		79	/* V = 1 if "value" = literal */
+#define FT_V_NE		80	/* V = 1 if "value" != literal */
+#define FT_V_GT		81	/* V = 1 if "value" > literal */
+#define FT_V_MATCH	82	/* V = 1 if "str" contains literal */
+#define FT_V_AMATCH	83	/* V = 1 if "str" starts with literal */
+d104 1
+a104 1
+#define IF_FUNCS FT_S_NULL	/* start of "if" functions */
+@
+
+
+1.7
+log
+@FT_PAUSE
+@
+text
+@d1 1
+a1 1
+/* @@(#)$Id: fmtcompile.h,v 1.6 1991/11/28 00:04:48 jromine Exp jromine $ */
+d22 11
+a32 10
+#define FT_LS_TRIM	14	/* trim trailing white space from "str" */
+#define FT_LV_COMP	15	/* set "value" to comp (as dec. num) */
+#define FT_LV_COMPFLAG	16	/* set "value" to comp flag word */
+#define FT_LV_LIT	17	/* set "value" to literal num */
+#define FT_LV_DAT	18	/* set "value" to dat[n] */
+#define FT_LV_STRLEN	19	/* set "value" to length of "str" */
+#define FT_LV_PLUS_L	20	/* set "value" += literal */
+#define FT_LV_MINUS_L	21	/* set "value" -= literal */
+#define FT_LV_DIVIDE_L	22	/* set "value" to value / literal */
+#define FT_LV_CHAR_LEFT	23	/* set "value" to char left in output */
+d34 21
+a54 21
+#define FT_LS_MONTH	24	/* set "str" to tws month */
+#define FT_LS_LMONTH	25	/* set "str" to long tws month */
+#define FT_LS_ZONE	26	/* set "str" to tws timezone */
+#define FT_LS_DAY	27	/* set "str" to tws weekday */
+#define FT_LS_WEEKDAY	28	/* set "str" to long tws weekday */
+#define FT_LS_822DATE	29	/* set "str" to 822 date str */
+#define FT_LS_PRETTY	30	/* set "str" to pretty (?) date str */
+#define FT_LV_SEC	31	/* set "value" to tws second */
+#define FT_LV_MIN	32	/* set "value" to tws minute */
+#define FT_LV_HOUR	33	/* set "value" to tws hour */
+#define FT_LV_MDAY	34	/* set "value" to tws day of month */
+#define FT_LV_MON	35	/* set "value" to tws month */
+#define FT_LV_YEAR	36	/* set "value" to tws year */
+#define FT_LV_YDAY	37	/* set "value" to tws day of year */
+#define FT_LV_WDAY	38	/* set "value" to tws weekday */
+#define FT_LV_ZONE	39	/* set "value" to tws timezone */
+#define FT_LV_CLOCK	40	/* set "value" to tws clock */
+#define FT_LV_RCLOCK	41	/* set "value" to now - tws clock */
+#define FT_LV_DAYF	42	/* set "value" to tws day flag */
+#define FT_LV_DST	43	/* set "value" to tws daylight savings flag */
+#define FT_LV_ZONEF	44	/* set "value" to tws timezone flag */
+d56 12
+a67 12
+#define FT_LS_PERS	45	/* set "str" to person part of addr */
+#define FT_LS_MBOX	46	/* set "str" to mbox part of addr */
+#define FT_LS_HOST	47	/* set "str" to host part of addr */
+#define FT_LS_PATH	48	/* set "str" to route part of addr */
+#define FT_LS_GNAME	49	/* set "str" to group part of addr */
+#define FT_LS_NOTE	50	/* set "str" to comment part of addr */
+#define	FT_LS_ADDR	51	/* set "str" to mbox@@host */
+#define FT_LS_822ADDR	52	/* set "str" to 822 format addr */
+#define FT_LS_FRIENDLY	53	/* set "str" to "friendly" format addr */
+#define FT_LV_HOSTTYPE	54	/* set "value" to addr host type */
+#define FT_LV_INGRPF	55	/* set "value" to addr in-group flag */
+#define FT_LV_NOHOSTF	56	/* set "value" to addr no-host flag */
+d70 2
+a71 2
+#define FT_LOCALDATE	57	/* Coerce date to local timezone */
+#define FT_GMTDATE	58	/* Coerce date to gmt */
+d74 4
+a77 4
+#define FT_PARSEDATE	59	/* parse comp into a date (tws) struct */
+#define FT_PARSEADDR	60	/* parse comp into a mailaddr struct */
+#define FT_FORMATADDR	61	/* let external routine format addr */
+#define FT_MYMBOX	62	/* do "mymbox" test on comp */
+d81 1
+a81 1
+#define FT_ADDTOSEQ	63	/* add current msg to a sequence */
+d85 19
+a103 19
+#define FT_SAVESTR	64	/* save current str reg */
+#define FT_DONE		65	/* stop formatting */
+#define FT_PAUSE	66	/* pause */
+#define FT_NOP		67	/* nop */
+#define FT_GOTO		68	/* (relative) goto */
+#define FT_IF_S_NULL	69	/* test if "str" null */
+#define FT_IF_S		70	/* test if "str" non-null */
+#define FT_IF_V_EQ	71	/* test if "value" = literal */
+#define FT_IF_V_NE	72	/* test if "value" != literal */
+#define FT_IF_V_GT	73	/* test if "value" > literal */
+#define FT_IF_MATCH	74	/* test if "str" contains literal */
+#define FT_IF_AMATCH	75	/* test if "str" starts with literal */
+#define FT_S_NULL	76	/* V = 1 if "str" null */
+#define FT_S_NONNULL	77	/* V = 1 if "str" non-null */
+#define FT_V_EQ		78	/* V = 1 if "value" = literal */
+#define FT_V_NE		79	/* V = 1 if "value" != literal */
+#define FT_V_GT		80	/* V = 1 if "value" > literal */
+#define FT_V_MATCH	81	/* V = 1 if "str" contains literal */
+#define FT_V_AMATCH	82	/* V = 1 if "str" starts with literal */
+@
+
+
+1.6
+log
+@add FT_RETURN
+@
+text
+@d1 1
+a1 1
+/* @@(#)$Id: fmtcompile.h,v 1.5 1990/12/27 17:04:12 mh Exp jromine $ */
+d84 19
+a102 19
+#define FT_SAVESTR      64      /* save current str reg */
+#define FT_DONE         65      /* stop formatting */
+#define FT_RETURN       66      /* suspend, and return current position */
+#define FT_NOP          67      /* nop */
+#define FT_GOTO         68      /* (relative) goto */
+#define FT_IF_S_NULL    69      /* test if "str" null */
+#define FT_IF_S         70      /* test if "str" non-null */
+#define FT_IF_V_EQ      71      /* test if "value" = literal */
+#define FT_IF_V_NE      72      /* test if "value" != literal */
+#define FT_IF_V_GT      73      /* test if "value" > literal */
+#define FT_IF_MATCH     74      /* test if "str" contains literal */
+#define FT_IF_AMATCH    75      /* test if "str" starts with literal */
+#define FT_S_NULL       76      /* V = 1 if "str" null */
+#define FT_S_NONNULL    77      /* V = 1 if "str" non-null */
+#define FT_V_EQ         78      /* V = 1 if "value" = literal */
+#define FT_V_NE         79      /* V = 1 if "value" != literal */
+#define FT_V_GT         80      /* V = 1 if "value" > literal */
+#define FT_V_MATCH      81      /* V = 1 if "str" contains literal */
+#define FT_V_AMATCH     82      /* V = 1 if "str" starts with literal */
+d104 1
+a104 1
+#define IF_FUNCS FT_S_NULL      /* start of "if" functions */
+@
+
+
+1.5
+log
+@add FT_LS_ADDR
+jlr
+@
+text
+@d1 1
+a1 1
+/* @@(#)$Id: fmtcompile.h,v 1.4 90/04/05 15:06:42 sources Exp Locker: mh $ */
+d84 19
+a102 18
+#define FT_SAVESTR	64	/* save current str reg */
+#define FT_DONE		65	/* stop formatting */
+#define FT_NOP		66	/* nop */
+#define FT_GOTO		67	/* (relative) goto */
+#define FT_IF_S_NULL	68	/* test if "str" null */
+#define FT_IF_S		69	/* test if "str" non-null */
+#define FT_IF_V_EQ	70	/* test if "value" = literal */
+#define FT_IF_V_NE	71	/* test if "value" != literal */
+#define FT_IF_V_GT	72	/* test if "value" > literal */
+#define FT_IF_MATCH	73	/* test if "str" contains literal */
+#define FT_IF_AMATCH	74	/* test if "str" starts with literal */
+#define FT_S_NULL	75	/* V = 1 if "str" null */
+#define FT_S_NONNULL	76	/* V = 1 if "str" non-null */
+#define FT_V_EQ		77	/* V = 1 if "value" = literal */
+#define FT_V_NE		78	/* V = 1 if "value" != literal */
+#define FT_V_GT		79	/* V = 1 if "value" > literal */
+#define FT_V_MATCH	80	/* V = 1 if "str" contains literal */
+#define FT_V_AMATCH	81	/* V = 1 if "str" starts with literal */
+d104 1
+a104 1
+#define IF_FUNCS FT_S_NULL	/* start of "if" functions */
+@
+
+
+1.4
+log
+@add ID
+@
+text
+@d1 1
+a1 1
+/* @@(#)$Id:$ */
+d61 6
+a66 5
+#define FT_LS_822ADDR	51	/* set "str" to 822 format addr */
+#define FT_LS_FRIENDLY	52	/* set "str" to "friendly" format addr */
+#define FT_LV_HOSTTYPE	53	/* set "value" to addr host type */
+#define FT_LV_INGRPF	54	/* set "value" to addr in-group flag */
+#define FT_LV_NOHOSTF	55	/* set "value" to addr no-host flag */
+d69 2
+a70 2
+#define FT_LOCALDATE	56	/* Coerce date to local timezone */
+#define FT_GMTDATE	57	/* Coerce date to gmt */
+d73 4
+a76 4
+#define FT_PARSEDATE	58	/* parse comp into a date (tws) struct */
+#define FT_PARSEADDR	59	/* parse comp into a mailaddr struct */
+#define FT_FORMATADDR	60	/* let external routine format addr */
+#define FT_MYMBOX	61	/* do "mymbox" test on comp */
+d80 1
+a80 1
+#define FT_ADDTOSEQ	62	/* add current msg to a sequence */
+d84 18
+a101 18
+#define FT_SAVESTR	63	/* save current str reg */
+#define FT_DONE		64	/* stop formatting */
+#define FT_NOP		65	/* nop */
+#define FT_GOTO		66	/* (relative) goto */
+#define FT_IF_S_NULL	67	/* test if "str" null */
+#define FT_IF_S		68	/* test if "str" non-null */
+#define FT_IF_V_EQ	69	/* test if "value" = literal */
+#define FT_IF_V_NE	70	/* test if "value" != literal */
+#define FT_IF_V_GT	71	/* test if "value" > literal */
+#define FT_IF_MATCH	72	/* test if "str" contains literal */
+#define FT_IF_AMATCH	73	/* test if "str" starts with literal */
+#define FT_S_NULL	74	/* V = 1 if "str" null */
+#define FT_S_NONNULL	75	/* V = 1 if "str" non-null */
+#define FT_V_EQ		76	/* V = 1 if "value" = literal */
+#define FT_V_NE		77	/* V = 1 if "value" != literal */
+#define FT_V_GT		78	/* V = 1 if "value" > literal */
+#define FT_V_MATCH	79	/* V = 1 if "str" contains literal */
+#define FT_V_AMATCH	80	/* V = 1 if "str" starts with literal */
+@
+
+
+1.3
+log
+@#ifdef VAN
+@
+text
+@d1 1
+@
+
+
+1.2
+log
+@Fixes from Van Jacobson
+@
+text
+@d77 1
+d79 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d21 10
+a30 8
+#define FT_LV_COMP	14	/* set "value" to comp (as dec. num) */
+#define FT_LV_COMPFLAG	15	/* set "value" to comp flag word */
+#define FT_LV_LIT	16	/* set "value" to literal num */
+#define FT_LV_DAT	17	/* set "value" to dat[n] */
+#define FT_LV_STRLEN	18	/* set "value" to length of "str" */
+#define FT_LV_PLUS_L	19	/* set "value" += literal */
+#define FT_LV_MINUS_L	20	/* set "value" -= literal */
+#define FT_LV_CHAR_LEFT	21	/* set "value" to char left in output */
+d32 21
+a52 20
+#define FT_LS_MONTH	22	/* set "str" to tws month */
+#define FT_LS_LMONTH	23	/* set "str" to long tws month */
+#define FT_LS_ZONE	24	/* set "str" to tws timezone */
+#define FT_LS_DAY	25	/* set "str" to tws weekday */
+#define FT_LS_WEEKDAY	26	/* set "str" to long tws weekday */
+#define FT_LS_822DATE	27	/* set "str" to 822 date str */
+#define FT_LS_PRETTY	28	/* set "str" to pretty (?) date str */
+#define FT_LV_SEC	29	/* set "value" to tws second */
+#define FT_LV_MIN	30	/* set "value" to tws minute */
+#define FT_LV_HOUR	31	/* set "value" to tws hour */
+#define FT_LV_MDAY	32	/* set "value" to tws day of month */
+#define FT_LV_MON	33	/* set "value" to tws month */
+#define FT_LV_YEAR	34	/* set "value" to tws year */
+#define FT_LV_YDAY	35	/* set "value" to tws day of year */
+#define FT_LV_WDAY	36	/* set "value" to tws weekday */
+#define FT_LV_ZONE	37	/* set "value" to tws timezone */
+#define FT_LV_CLOCK	38	/* set "value" to tws clock */
+#define FT_LV_RCLOCK	39	/* set "value" to now - tws clock */
+#define FT_LV_DAYF	40	/* set "value" to tws day flag */
+#define FT_LV_TZONEF	41	/* set "value" to tws timezone flag */
+d54 11
+a64 11
+#define FT_LS_PERS	42	/* set "str" to person part of addr */
+#define FT_LS_MBOX	43	/* set "str" to mbox part of addr */
+#define FT_LS_HOST	44	/* set "str" to host part of addr */
+#define FT_LS_PATH	45	/* set "str" to route part of addr */
+#define FT_LS_GNAME	46	/* set "str" to group part of addr */
+#define FT_LS_NOTE	47	/* set "str" to comment part of addr */
+#define FT_LS_822ADDR	48	/* set "str" to 822 format addr */
+#define FT_LS_FRIENDLY	49	/* set "str" to "friendly" format addr */
+#define FT_LV_HOSTTYPE	50	/* set "value" to addr host type */
+#define FT_LV_INGRPF	51	/* set "value" to addr in-group flag */
+#define FT_LV_NOHOSTF	52	/* set "value" to addr no-host flag */
+d66 4
+d71 4
+a74 4
+#define FT_PARSEDATE	53	/* parse comp into a date (tws) struct */
+#define FT_PARSEADDR	54	/* parse comp into a mailaddr struct */
+#define FT_FORMATADDR	55	/* let external routine format addr */
+#define FT_MYMBOX	56	/* do "mymbox" test on comp */
+d76 3
+d80 18
+a97 18
+#define FT_SAVESTR	57	/* save current str reg */
+#define FT_DONE		58	/* stop formatting */
+#define FT_NOP		59	/* nop */
+#define FT_GOTO		60	/* (relative) goto */
+#define FT_IF_S_NULL	61	/* test if "str" null */
+#define FT_IF_S		62	/* test if "str" non-null */
+#define FT_IF_V_EQ	63	/* test if "value" = literal */
+#define FT_IF_V_NE	64	/* test if "value" != literal */
+#define FT_IF_V_GT	65	/* test if "value" > literal */
+#define FT_IF_MATCH	66	/* test if "str" contains literal */
+#define FT_IF_AMATCH	67	/* test if "str" starts with literal */
+#define FT_S_NULL	68	/* V = 1 if "str" null */
+#define FT_S_NONNULL	69	/* V = 1 if "str" non-null */
+#define FT_V_EQ		70	/* V = 1 if "value" = literal */
+#define FT_V_NE		71	/* V = 1 if "value" != literal */
+#define FT_V_GT		72	/* V = 1 if "value" > literal */
+#define FT_V_MATCH	73	/* V = 1 if "str" contains literal */
+#define FT_V_AMATCH	74	/* V = 1 if "str" starts with literal */
+@

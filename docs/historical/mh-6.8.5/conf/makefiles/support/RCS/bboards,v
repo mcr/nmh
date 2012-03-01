@@ -1,0 +1,602 @@
+head	2.12;
+access;
+symbols;
+locks; strict;
+
+
+2.12
+date	92.11.04.03.30.31;	author jromine;	state Exp;
+branches;
+next	2.11;
+
+2.11
+date	92.10.31.05.34.54;	author jromine;	state Exp;
+branches;
+next	2.10;
+
+2.10
+date	92.02.11.05.14.33;	author jromine;	state Exp;
+branches;
+next	2.9;
+
+2.9
+date	90.12.18.13.34.38;	author mh;	state Exp;
+branches;
+next	2.8;
+
+2.8
+date	90.12.18.13.26.21;	author mh;	state Exp;
+branches;
+next	2.7;
+
+2.7
+date	90.04.05.15.16.08;	author sources;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	90.03.28.11.17.33;	author sources;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	90.03.21.10.01.44;	author sources;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	90.03.20.20.50.11;	author sources;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.03.12.11.27.05;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.21.16.56.09;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.06.12.54.41;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.56.42;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.48.03;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.12
+log
+@make sure sun4 shared libs load correct version of library.
+@
+text
+@##############################################################################
+#    Instructions to Make, for BBoards support processes
+#
+#	@@(MHWARNING)
+# @@(#)$Id: bboards,v 2.11 1992/10/31 05:34:54 jromine Exp jromine $
+##############################################################################
+
+# The following entries were inserted during MH configuration
+BINDIR	=	$(DESTDIR)@@(MHBINPATH)
+ETCDIR	=	$(DESTDIR)@@(MHETCPATH)
+OPTIONS	=	@@(MHOPTIONS) -I..
+LDOPTIONS=	@@(LDOPTIONS)
+LDOPTLIB=	@@(LDOPTLIB)
+BBDIR	=	@@(BBHOME)
+BBETC	=	$(BBDIR)/etc
+CHOWN	=	@@(MHCHOWNPATH)
+REMOVE	=	@@(MHREMOVE)
+BBUID	=	bboards
+@@BEGIN: BBSERVER
+ALL	=	bbaka bbexp bbtar
+INST-ALL=	inst-bboards inst-bbaka inst-bbexp inst-bbtar \
+		inst-daily inst-weekly inst-cshell inst-profile \
+		inst-makebboards
+TALL	=	BBoards xbbaka xbbexp xbbtar bboards.daily bboards.weekly \
+		MakeBBoards cshrc mh_profile
+@@END: BBSERVER
+
+CC      =	@@(MHCOMPILER)
+@@BEGIN: STDLIB
+LD	=	@@(MHCOMPILER)
+@@END: STDLIB
+@@BEGIN: SHAREDLIB
+LD	=	LD_LIBRARY_PATH=../../sbr @@(MHCOMPILER)
+@@END: SHAREDLIB
+@@BEGIN: OPTIM
+CFLAGS  =	$(OPTIONS)
+@@END: OPTIM
+@@BEGIN: DEBUG
+CFLAGS  =	    $(OPTIONS)
+@@END: DEBUG
+LDFLAGS	=	$(LDOPTIONS)
+LIBES1	=	../../zotnet/libzot.a ../../mts/libmts.a
+@@BEGIN: STDLIB
+LIBES2	=	../../config/config.o ../../config/version.o \
+		../../sbr/libmh.a $(LIBES1)
+LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+LDLIBS2	=	$(LIBES2) $(LDOPTLIB)
+@@END: STDLIB
+@@BEGIN: SUN4SHLIB
+SLIBVER	=	.@@(SLIBVER)
+@@END: SUN4SHLIB
+@@BEGIN: SHAREDLIB
+LIBES2	=	../../config/config.o ../../config/version.o \
+		../../sbr/libmh.so $(LIBES1)
+LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+LDLIBS2	=	$(LIBES2) $(LDOPTLIB)
+LDLIBS2	=	../../config/config.o ../../config/version.o \
+		-Bdynamic @@(SLDFLAG) -lmh$(SLIBVER) $(LIBES1) $(LDOPTLIB)
+@@END: SHAREDLIB
+
+LINT	=	lint
+LFLAGS	=	-bhu $(OPTIONS)
+LLIBS1	=	../../zotnet/llib-lzotnet
+LLIBS2	=	../../sbr/llib-lmh $(LLIBS1)
+
+
+######################################################################
+#	Here it is...
+######################################################################
+
+all:		$(ALL)
+
+lint:		l-bbaka l-bbexp l-bbtar
+
+install:	inst-all clean
+
+inst-all:	$(INST-ALL)
+
+tar:		$(ALL)
+@@BEGIN: BBSERVER
+		@@touch $(TALL)
+		@@make -n inst-all > MAKEBB
+		@@chmod +x MAKEBB
+		tar $(TFLAGS) MAKEBB $(TALL)
+		@@rm -f MAKEBB
+@@END: BBSERVER
+
+uninstall:;
+@@BEGIN: BBSERVER
+		-cd (BBDIR); \
+		    rm -f BBoards .cshrc .mh_profile
+		-cd (ETCDIR); \
+		    rm -f bbaka bbexp bbtar bboards.daily \
+			  bboards.weekly Makefile context
+@@END: BBSERVER
+
+
+######################################################################
+#	Generate BBoards Support files and processes
+######################################################################
+
+inst-bboards:	$(BBDIR)/BBoards
+
+$(BBDIR)/BBoards: BBoards
+		-@@if [ ! -f $@@ ]; then \
+		    $(REMOVE) $@@ zBBoards; \
+		    cp BBoards $@@; \
+		else \
+		    echo "Will not overwrite existing $@@"; \
+		fi
+		-$(CHOWN) $(BBUID) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+######################################################################
+# bbaka
+######################################################################
+
+inst-bbaka:	$(BBETC)/bbaka
+
+$(BBETC)/bbaka: xbbaka
+		-$(REMOVE) $@@ zbbaka
+		cp xbbaka $@@
+		-$(CHOWN) $(BBUID) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+bbaka:		xbbaka
+
+xbbaka:		bbaka.o $(LIBES1)
+		$(LD) $(LDFLAGS) -o $@@ bbaka.o $(LDLIBS1)
+
+l-bbaka:;	$(LINT) $(LFLAGS) bbaka.c $(LLIBS1)
+
+
+######################################################################
+# bbexp
+######################################################################
+
+inst-bbexp:	$(BBETC)/bbexp
+
+$(BBETC)/bbexp: xbbexp
+		-$(REMOVE) $@@ zbbexp
+		cp xbbexp $@@
+		-$(CHOWN) $(BBUID) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+bbexp:		xbbexp
+
+xbbexp:		bbexp.o ../../uip/dropsbr.o $(LIBES2)
+		$(LD) $(LDFLAGS) -o $@@ bbexp.o ../../uip/dropsbr.o $(LDLIBS2)
+
+l-bbexp:;	$(LINT) $(LFLAGS) bbexp.c ../../uip/dropsbr.c $(LLIBS2)
+
+
+######################################################################
+# bbtar
+######################################################################
+
+inst-bbtar:	$(BBETC)/bbtar
+
+$(BBETC)/bbtar: xbbtar
+		-$(REMOVE) $@@ zbbtar
+		cp xbbtar $@@
+		-$(CHOWN) $(BBUID) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+bbtar:		xbbtar
+
+xbbtar:		bbtar.o $(LIBES1)
+		$(LD) $(LDFLAGS) -o $@@ bbtar.o $(LDLIBS1)
+
+l-bbtar:;	$(LINT) $(LFLAGS) bbtar.c $(LLIBS1)
+
+
+######################################################################
+# bboards.daily
+######################################################################
+
+inst-daily:	$(BBETC)/bboards.daily
+
+$(BBETC)/bboards.daily: bboards.daily
+		-$(REMOVE) $@@ zbboards.daily
+		cp bboards.daily $@@
+		-$(CHOWN) $(BBUID) $@@
+		-@@chmod +x $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+######################################################################
+# bboards.weekly
+######################################################################
+
+inst-weekly:	$(BBETC)/bboards.weekly
+
+$(BBETC)/bboards.weekly: bboards.weekly
+		-$(REMOVE) $@@ zbboards.weekly
+		cp bboards.weekly $@@
+		-$(CHOWN) $(BBUID) $@@
+		-@@chmod +x $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+######################################################################
+# MakeBBoards
+######################################################################
+
+inst-makebboards:	$(BBETC)/Makefile
+
+$(BBETC)/Makefile: MakeBBoards
+		-$(REMOVE) $@@ zMakeBBoards
+		cp MakeBBoards $@@
+		-$(CHOWN) $(BBUID) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+######################################################################
+# .cshrc
+######################################################################
+
+inst-cshell:	$(BBDIR)/.cshrc
+
+$(BBDIR)/.cshrc: cshrc
+		-$(REMOVE) $@@ z.cshrc
+		cp cshrc $@@
+		-$(CHOWN) $(BBUID) $@@
+		-@@ls -l $@@
+		-@@echo ""
+
+
+######################################################################
+# .mh_profile
+######################################################################
+
+inst-profile:	$(BBDIR)/.mh_profile
+
+$(BBDIR)/.mh_profile: mh_profile
+		-$(REMOVE) $@@ z.mh_profile
+		cp mh_profile $@@
+		-$(CHOWN) $(BBUID) $@@
+		-@@ls -l $@@
+		-@@touch $(BBETC)/context
+		-$(CHOWN) $(BBUID) $(BBETC)/context
+		-@@echo ""
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+unconfig:	distribution
+		-rm -f mmdfII/bboards/lock.c
+		-rm -f Makefile
+
+distribution:	clean
+		-rm -f bboards.daily bboards.weekly crontab MakeBBoards
+
+clean:		unclean
+		-rm -f x* *.o
+
+unclean:;	-rm -f z* _* :* core eddep makedep MAKEBB
+
+
+##############################################################################
+#	Dependencies
+##############################################################################
+
+MODULES	=	bbaka bbexp bbtar
+
+depend:;	for m in $(MODULES); do ( \
+		    i=`basename $$m .c`; \
+		    echo $$i.o: $$i.c >> makedep; \
+		    grep '^#[ 	]*include' $$i.c | \
+			sed -e 's,[^"]*"/\([^"]*\)".*,'$$i'.o: /\1,' \
+			    -e 's,[^"]*"\([^"]*\)".*,'$$i'.o: \1,' \
+			    -e 's,[^<]*<\(.*\)>.*,#'$$i'.o: /usr/include/\1,' \
+			>> makedep \
+		); done
+		echo '/^# DO NOT DELETE THIS LINE/+2,$$d' > eddep
+		echo '$$r makedep' >> eddep
+		echo 'w' >> eddep
+		cp Makefile _Makefile
+		ed - Makefile < eddep
+		rm eddep makedep
+		echo '# DEPENDENCIES MUST END AT END OF FILE' >> Makefile
+		echo '# IF YOU PUT STUFF HERE IT WILL GO AWAY' >> Makefile
+
+# DO NOT DELETE THIS LINE
+# DEPENDENCIES START HERE
+bbaka.o: bbaka.c
+bbaka.o: ../../h/strings.h
+bbaka.o: ../../zotnet/bboards.h
+#bbaka.o: /usr/include/stdio.h
+bbaka.o: ../../zotnet/mts.h
+bbexp.o: bbexp.c
+bbexp.o: ../../h/mh.h
+bbexp.o: ../../h/dropsbr.h
+bbexp.o: ../../zotnet/bboards.h
+#bbexp.o: /usr/include/pwd.h
+#bbexp.o: /usr/include/signal.h
+#bbexp.o: /usr/include/stdio.h
+#bbexp.o: /usr/include/sys/types.h
+#bbexp.o: /usr/include/sys/stat.h
+#bbexp.o: /usr/include/stdio.h
+bbexp.o: ../../zotnet/bboards.h
+bbtar.o: bbtar.c
+#bbtar.o: /usr/include/pwd.h
+#bbtar.o: /usr/include/stdio.h
+#bbtar.o: /usr/include/sys/types.h
+#bbtar.o: /usr/include/sys/stat.h
+bbtar.o: ../../zotnet/bboards.h
+# DEPENDENCIES MUST END AT END OF FILE
+# IF YOU PUT STUFF HERE IT WILL GO AWAY
+@
+
+
+2.11
+log
+@need to load with version.o & libmts.a for _version & _OfficialName
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: bboards,v 2.10 1992/02/11 05:14:33 jromine Exp jromine $
+d49 3
+d58 1
+a58 1
+		-Bdynamic @@(SLDFLAG) -lmh $(LIBES1) $(LDOPTLIB)
+@
+
+
+2.10
+log
+@unconfig - remove lock.c
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: bboards,v 2.9 1990/12/18 13:34:38 mh Exp jromine $
+d42 1
+a42 1
+LIBES1	=	../../zotnet/libzot.a
+d44 2
+a45 1
+LIBES2	=	../../config/config.o ../../sbr/libmh.a $(LIBES1)
+d50 2
+a51 1
+LIBES2	=	../../config/config.o ../../sbr/libmh.so $(LIBES1)
+d54 2
+a55 2
+LDLIBS2	=	../../config/config.o -Bdynamic @@(SLDFLAG) -lmh \
+		$(LIBES1) $(LDOPTLIB)
+@
+
+
+2.9
+log
+@SLDFLAG
+jlr
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: bboards,v 2.8 90/12/18 13:26:21 mh Exp Locker: mh $
+d253 1
+@
+
+
+2.8
+log
+@fix LD_LIBRARY_PATH
+jlr
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: bboards,v 2.7 90/04/05 15:16:08 sources Exp Locker: mh $
+d52 1
+a52 1
+LDLIBS2	=	../../config/config.o -Bdynamic -lmh \
+@
+
+
+2.7
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d29 6
+d52 1
+a52 1
+LDLIBS2	=	../../config/config.o -Bdynamic -L../../sbr -lmh \
+d127 1
+a127 1
+		$(CC) $(LDFLAGS) -o $@@ bbaka.o $(LDLIBS1)
+d148 1
+a148 1
+		$(CC) $(LDFLAGS) -o $@@ bbexp.o ../../uip/dropsbr.o $(LDLIBS2)
+d169 1
+a169 1
+		$(CC) $(LDFLAGS) -o $@@ bbtar.o $(LDLIBS1)
+@
+
+
+2.6
+log
+@silence some stuff
+@
+text
+@d5 1
+@
+
+
+2.5
+log
+@fix for "bbhome: none"
+@
+text
+@d93 1
+a93 1
+		-if [ ! -f $@@ ]; then \
+@
+
+
+2.4
+log
+@install "BBoards", but don't overwrite
+@
+text
+@d18 1
+a18 1
+@@BEGIN: BBOARDS
+d25 1
+a25 1
+@@END: BBOARDS
+d68 1
+a68 1
+@@BEGIN: BBOARDS
+d74 1
+a74 1
+@@END: BBOARDS
+d77 1
+a77 1
+@@BEGIN: BBOARDS
+d83 1
+a83 1
+@@END: BBOARDS
+@
+
+
+2.3
+log
+@remove -O (put in mhconfig)
+@
+text
+@d20 1
+a20 1
+INST-ALL=	inst-bbaka inst-bbexp inst-bbtar \
+d93 6
+a98 2
+		-$(REMOVE) $@@ zBBoards
+		cp BBoards $@@
+@
+
+
+2.2
+log
+@make unconfig changes
+@
+text
+@d29 1
+a29 1
+CFLAGS  =	-O  $(OPTIONS)
+@
+
+
+2.1
+log
+@ANSI Compilance
+@
+text
+@d241 3
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d27 1
+a27 1
+CC      =	cc
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d20 1
+a20 1
+INST-ALL=	inst-bboards inst-bbaka inst-bbexp inst-bbtar \
+d36 1
+d40 8
+@

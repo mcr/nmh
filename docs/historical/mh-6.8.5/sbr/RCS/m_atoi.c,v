@@ -1,0 +1,71 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	92.10.26.22.52.05;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.10.26.22.51.37;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@LOCALE
+@
+text
+@/* m_atoi.c - parse a string representation of a message number */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: gans.c,v 1.2 1992/10/26 22:50:52 jromine Exp $";
+#endif /* lint */
+
+#include "../h/mh.h"
+
+
+m_atoi (str)
+register char *str;
+{
+    register int    i;
+    register char  *cp;
+
+    i = 0;
+    cp = str;
+#ifdef LOCALE
+    while (isdigit(*cp)) {
+	i *= 10;
+	i += *cp++ - '0';
+    }
+#else
+    while (*cp) {
+	if (*cp < '0' || *cp > '9')
+	    return 0;
+	i *= 10;
+	i += *cp++ - '0';
+    }
+#endif
+
+    return i;
+}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 3
+d17 6
+d29 1
+@

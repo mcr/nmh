@@ -1,0 +1,16 @@
+FILES	=	( /usr/local/nbbc /usr/local/nmsh /usr/local/lib/mh/mtstailor )
+
+SUN4	=	( blanche.ics.uci.edu  crimee.ics.uci.edu  siam.ics.uci.edu  
+		zola.ics.uci.edu  paris.ics.uci.edu  glacier.ics.uci.edu  )
+
+SUN3_40	=	( elysees.ics.uci.edu  beaver.ics.uci.edu  cad.ics.uci.edu  
+		wagram.ics.uci.edu  london.ics.uci.edu  beanie.ics.uci.edu  
+		cecil.ics.uci.edu  harlie.ics.uci.edu  commerce.ics.uci.edu  
+		madeleine.ics.uci.edu  cadet.ics.uci.edu  pompe.ics.uci.edu  
+		europe.ics.uci.edu  rome.ics.uci.edu  )
+
+sun4: ${FILES} -> ( ${SUN4} )
+	install ;
+
+sun3-40: ${FILES} -> ( ${SUN3_40} )
+	install ;

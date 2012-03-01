@@ -1,0 +1,222 @@
+head	1.7;
+access;
+symbols;
+locks; strict;
+
+
+1.7
+date	92.02.04.21.41.41;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.09.20.22.46;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.05.15.13.33;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.22.11.31.29;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.20.19.42.08;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.03.20.17.36.24;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.03.20.17.21.08;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@contributed patch
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: msgchk.rf,v 1.6 1990/04/09 20:22:46 sources Exp jromine $
+.SC MSGCHK 1
+.NA
+msgchk \- check for messages
+.SY
+msgchk
+\%[\-date] \%[\-nodate]
+\%[\-notify\ all/mail/nomail] \%[\-nonotify\ all/mail/nomail]
+@@BEGIN: POP
+\%[\-host\ host] \%[\-user\ user]
+\%[\-apop] \%[\-noapop]
+\%[\-rpop] \%[\-norpop]
+@@END: POP
+\%[users\ ...]
+\%[\-help]
+.DE
+The \fImsgchk\fR program checks all known mail drops for mail waiting
+for you.
+For those drops which have mail for you,
+\fImsgchk\fR will indicate if it believes that you have seen the mail
+in question before.
+
+The `\-notify\ type' switch indicates under what circumstances \fImsgchk\fR
+should produce a message.
+The default is `\-notify\ all' which says that \fImsgchk\fR should always
+report the status of the users maildrop.
+Other values for `type' include `mail' which says that \fImsgchk\fR should
+report the status of waiting mail;
+and, `nomail' which says that \fImsgchk\fR should report the status of empty
+maildrops.
+The `\-nonotify\ type' switch has the inverted sense,
+so `\-nonotify\ all' directs \fImsgchk\fR to never report the status of
+maildrops.
+This is useful if the user wishes to check \fImsgchk\fR's exit status.
+A non\-zero exit status indicates that mail was \fBnot\fR waiting for at
+least one of the indicated users.
+
+If \fImsgchk\fR produces output,
+then the `\-date' switch directs \fImsgchk\fR to print out the last date mail
+was read,
+if this can be determined.
+@@BEGIN: POP
+
+If the local host is configured as a POP client,
+or if the `\-host\ host' switch is given,
+\fImsgchk\fR will query the POP service host as to the status of mail waiting.
+If the `\-user\ user' switch is not given,
+then the current username is used.
+Normally,
+\fImsgchk\fR will prompt for a password to use.
+However,
+if the `\-apop' switch is given,
+\fImsgchk\fR will generate authentication credentials to provide
+for origin authentication and replay protection,
+but which do not involve sending a password in the clear over the network.
+Otherwise,
+if the `\-rpop' switch is given,
+then \fImsgchk\fR will try to use a \*(lqtrusted\*(rq connection
+(ala the BSD r-commands).
+@@END: POP
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+^@@(MHETCPATH)/mtstailor~^tailor file
+^@@(MHDROPLOC)~^Location of mail drop
+.Pr
+None
+.Sa
+@@BEGIN: POP
+\fIPost Office Protocol - version 3\fR (aka RFC\-1081),
+.br
+@@END: POP
+inc(1)
+.De
+`user' defaults to the current user
+.Ds
+`\-date'
+.Ds
+`\-notify\ all'
+@@BEGIN: POP
+.Ds
+`\-rpop'
+@@END: POP
+.Co
+None
+.En
+@
+
+
+1.6
+log
+@fixup RFC references
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: msgchk.rf,v 1.5 90/04/05 15:13:33 sources Exp Locker: sources $
+d12 1
+d48 13
+a60 6
+The `\-user\ user' switch may be given to specify the name of the POP
+subscriber you wish to check mail for on the POP service host.
+The `\-rpop' switch uses the UNIX \fIrPOP\fR
+(authentication done via trusted connections).
+In contrast, the `\-norpop' switch uses the ARPA \fIPOP\fR
+(in which case \fImsgchk\fR will prompt for a password).
+@
+
+
+1.5
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+d62 1
+a62 1
+\fIPost Office Protocol (revised)\fR (aka RFC\-819 with revisions),
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH MSGCHK 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH MSGCHK 1 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC MSGCHK 1
+.NA
+d5 1
+a5 1
+.SY
+@

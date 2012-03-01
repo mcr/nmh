@@ -1,0 +1,462 @@
+diff --recursive --minimal --context=2 --unidirectional-new-file ../mh-6.8.3-dist/Makefile ./Makefile
+*** ../mh-6.8.3-dist/Makefile	Sat Dec 25 14:19:03 1993
+--- ./Makefile	Sat Dec 25 14:19:19 1993
+***************
+*** 48,52 ****
+  ##############################################################################
+  
+! ALL	=	config sbr mts zotnet uip support doc
+  
+  all:;		for d in $(ALL); do (cd $$d; $(MAKE) all); done
+--- 48,52 ----
+  ##############################################################################
+  
+! ALL	=	config sbr mts zotnet jump uip support doc
+  
+  all:;		for d in $(ALL); do (cd $$d; $(MAKE) all); done
+***************
+*** 61,65 ****
+  
+  
+! INSTALL	=	zotnet support uip doc
+  BINDIR	=	$(DESTDIR)/usr/bin/mh
+  ETCDIR	=	$(DESTDIR)/usr/lib/mh
+--- 61,65 ----
+  
+  
+! INSTALL	=	zotnet support jump uip doc
+  BINDIR	=	$(DESTDIR)/usr/bin/mh
+  ETCDIR	=	$(DESTDIR)/usr/lib/mh
+diff --recursive --minimal --context=2 --unidirectional-new-file ../mh-6.8.3-dist/config/Makefile ./config/Makefile
+*** ../mh-6.8.3-dist/config/Makefile	Sat Dec 25 12:21:17 1993
+--- ./config/Makefile	Sat Dec 25 12:43:50 1993
+***************
+*** 9,12 ****
+--- 9,17 ----
+  LDOPTIONS=	
+  
++ # Linux shared libraries
++ JUMP_DIR=../jump/
++ JUMP_LIB=libconfig
++ export JUMP_DIR JUMP_LIB
++ 
+  CC	=	cc
+  CFLAGS	=	$(OPTIONS)
+***************
+*** 17,20 ****
+--- 22,29 ----
+  LLIBS	=
+  
++ # Linux: create $*.j from $*.c, contains DLL version
++ .c.o:;		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
++ 		mv $*.o $*.j
++ 		$(CC) $(CFLAGS) -c $*.c
+  
+  ##############################################################################
+***************
+*** 45,49 ****
+  
+  clean:		unclean
+! 		-rm -f *.o
+  
+  unclean:;	-rm -f _* :* core eddep makedep
+--- 54,58 ----
+  
+  clean:		unclean
+! 		-rm -f *.o *.j
+  
+  unclean:;	-rm -f _* :* core eddep makedep
+diff --recursive --minimal --context=2 --unidirectional-new-file ../mh-6.8.3-dist/mts/mh/Makefile ./mts/mh/Makefile
+*** ../mh-6.8.3-dist/mts/mh/Makefile	Sat Dec 25 12:21:26 1993
+--- ./mts/mh/Makefile	Sat Dec 25 12:43:18 1993
+***************
+*** 9,12 ****
+--- 9,17 ----
+  OPTIONS=	-DSYS5 -DSHADOW -DMORE='"/usr/bin/more"' -DRENAME -DSYS5DIR -DUNISTD -DSVR4 -DMIME -DVSPRINTF -DMHE -DOVERHEAD -DRPATHS -DDUMB -DATHENA -DBIND -DSOCKETS -DNTOHLSWAP -DDPOP -DPOP2 -DRPOP -DMPOP -DAPOP='"/etc/pop.auth"' -DMAILGROUP -DSENDMTS -DSMTP -DPOP -DBPOP -DSPRINTFTYPE=int -DTYPESIG=void -traditional -D_NFILE='getdtablesize()' -DSIGEMT=SIGUSR1 -O2 -I..
+  
++ # Linux shared library
++ JUMP_DIR=../../jump/
++ JUMP_LIB=libmts
++ export JUMP_DIR JUMP_LIB
++ 
+  CC	=	cc
+  CFLAGS	=	$(OPTIONS)
+***************
+*** 26,30 ****
+  #	Generation Rules
+  ##############################################################################
+! .c.o:;		$(CC) $(CFLAGS) -c $*.c
+  		-ld -x -r $@
+  		mv a.out $@
+--- 31,40 ----
+  #	Generation Rules
+  ##############################################################################
+! 
+! # Linux: create $*.j from $*.c, contains DLL version
+! .c.o:;		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
+! 		-ld -x -r $@
+! 		mv a.out $*.j
+! 		$(CC) $(CFLAGS) -c $*.c
+  		-ld -x -r $@
+  		mv a.out $@
+diff --recursive --minimal --context=2 --unidirectional-new-file ../mh-6.8.3-dist/mts/mmdf/Makefile ./mts/mmdf/Makefile
+*** ../mh-6.8.3-dist/mts/mmdf/Makefile	Sat Dec 25 12:21:28 1993
+--- ./mts/mmdf/Makefile	Sat Dec 25 12:42:57 1993
+***************
+*** 9,12 ****
+--- 9,17 ----
+  OPTIONS	=	-DSYS5 -DSHADOW -DMORE='"/usr/bin/more"' -DRENAME -DSYS5DIR -DUNISTD -DSVR4 -DMIME -DVSPRINTF -DMHE -DOVERHEAD -DRPATHS -DDUMB -DATHENA -DBIND -DSOCKETS -DNTOHLSWAP -DDPOP -DPOP2 -DRPOP -DMPOP -DAPOP='"/etc/pop.auth"' -DMAILGROUP -DSENDMTS -DSMTP -DPOP -DBPOP -DSPRINTFTYPE=int -DTYPESIG=void -traditional -D_NFILE='getdtablesize()' -DSIGEMT=SIGUSR1 -O2 -I..
+  
++ # Linux shared library
++ JUMP_DIR=../../jump/
++ JUMP_LIB=libmts
++ export JUMP_DIR JUMP_LIB
++ 
+  CC	=	(MHCOMPILER)
+  CFLAGS	=	$(OPTIONS)
+***************
+*** 27,31 ****
+  ##############################################################################
+  
+! .c.o:;		$(CC) $(CFLAGS) -c $*.c
+  		-ld -x -r $@
+  		mv a.out $@
+--- 32,40 ----
+  ##############################################################################
+  
+! # Linux: create $*.j from $*.c, contains DLL version
+! .c.o:;		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
+! 		-ld -x -r $@
+! 		mv a.out $*.j
+! 		$(CC) $(CFLAGS) -c $*.c
+  		-ld -x -r $@
+  		mv a.out $@
+diff --recursive --minimal --context=1 --unidirectional-new-file ../mh-6.8.3-dist/mts/sendmail/Makefile ./mts/sendmail/Makefile
+*** ../mh-6.8.3-dist/mts/sendmail/Makefile	Sat Dec 25 12:21:29 1993
+--- ./mts/sendmail/Makefile	Sat Dec 25 12:42:35 1993
+***************
+*** 10,11 ****
+--- 10,16 ----
+  
++ # Linux shared library
++ JUMP_DIR=../../jump/
++ JUMP_LIB=libmts
++ export JUMP_DIR JUMP_LIB
++ 
+  CC	=	cc
+***************
+*** 26,28 ****
+  
+! .c.o:;		$(CC) $(CFLAGS) -c $*.c
+  		-ld -x -r $@
+--- 31,37 ----
+  
+! # Linux: create $*.j from $*.c, contains DLL version
+! .c.o:;		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
+! 		-ld -x -r $@
+! 		mv a.out $*.j
+! 		$(CC) $(CFLAGS) -c $*.c
+  		-ld -x -r $@
+***************
+*** 66,68 ****
+  clean:		unclean
+! 		-rm -f *.o $(LIB) z$(LIB)
+  
+--- 75,77 ----
+  clean:		unclean
+! 		-rm -f *.o *.j $(LIB) z$(LIB)
+  
+diff --recursive --minimal --context=1 --unidirectional-new-file ../mh-6.8.3-dist/sbr/Makefile ./sbr/Makefile
+*** ../mh-6.8.3-dist/sbr/Makefile	Sat Dec 25 12:21:33 1993
+--- ./sbr/Makefile	Sat Dec 25 12:41:42 1993
+***************
+*** 9,10 ****
+--- 9,15 ----
+  
++ # Linux shared library
++ JUMP_DIR=../jump/
++ JUMP_LIB=libmh
++ export JUMP_DIR JUMP_LIB
++ 
+  CC	=	cc
+***************
+*** 56,58 ****
+--- 61,67 ----
+  
++ # Linux: create $*.j from $*.c, contains DLL version
+  .c.o:
++ 		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
++ 		-ld -x -r $@
++ 		mv a.out $*.j
+  		$(CC) $(CFLAGS) -c $*.c
+***************
+*** 90,92 ****
+  clean:		unclean
+! 		-rm -f *.o libmh.*
+  
+--- 99,101 ----
+  clean:		unclean
+! 		-rm -f *.o *.j libmh.*
+  
+diff --recursive --minimal --context=2 --unidirectional-new-file ../mh-6.8.3-dist/support/bboards/Makefile ./support/bboards/Makefile
+*** ../mh-6.8.3-dist/support/bboards/Makefile	Sat Dec 25 12:21:35 1993
+--- ./support/bboards/Makefile	Sat Dec 25 13:55:52 1993
+***************
+*** 22,28 ****
+  CFLAGS  =	$(OPTIONS)
+  LDFLAGS	=	$(LDOPTIONS)
+! LIBES1	=	../../zotnet/libzot.a ../../mts/libmts.a
+! LIBES2	=	../../config/config.o ../../config/version.o \
+! 		../../sbr/libmh.a $(LIBES1)
+  LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+  LDLIBS2	=	$(LIBES2) $(LDOPTLIB)
+--- 22,33 ----
+  CFLAGS  =	$(OPTIONS)
+  LDFLAGS	=	$(LDOPTIONS)
+! #LIBES1	=	../../zotnet/libzot.a ../../mts/libmts.a
+! #LIBES2	=	../../config/config.o ../../config/version.o \
+! #		../../sbr/libmh.a $(LIBES1)
+! #LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+! #LDLIBS2	=	$(LIBES2) $(LDOPTLIB)
+! # Linux shared libraries
+! LIBES1	=	../../jump/libzot.sa ../../jump/libmts.sa
+! LIBES2	=	../../jump/libconfig.sa ../../jump/libmh.sa $(LIBES1)
+  LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+  LDLIBS2	=	$(LIBES2) $(LDOPTLIB)
+diff --recursive --minimal --context=2 --unidirectional-new-file ../mh-6.8.3-dist/support/pop/Makefile ./support/pop/Makefile
+*** ../mh-6.8.3-dist/support/pop/Makefile	Sat Dec 25 14:46:20 1993
+--- ./support/pop/Makefile	Sat Dec 25 13:56:48 1993
+***************
+*** 32,39 ****
+  CFLAGS  =	$(OPTIONS)
+  LDFLAGS	=	$(LDOPTIONS)
+! LIBES1	=	../../zotnet/libzot.a ../../mts/libmts.a
+! LIBES2	=	../../config/config.o ../../sbr/libmh.a $(LIBES1)
+  LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+! LDLIBS2	=	$(LIBES2) ../../config/version.o $(LDOPTLIB)
+  
+  LINT	=	lint
+--- 32,44 ----
+  CFLAGS  =	$(OPTIONS)
+  LDFLAGS	=	$(LDOPTIONS)
+! #LIBES1	=	../../zotnet/libzot.a ../../mts/libmts.a
+! #LIBES2	=	../../config/config.o ../../sbr/libmh.a $(LIBES1)
+! #LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+! #LDLIBS2	=	$(LIBES2) ../../config/version.o $(LDOPTLIB)
+! # Linux shared libraries
+! LIBES1	=	../../jump/libzot.sa ../../jump/libmts.sa
+! LIBES2	=	../../jump/libconfig.sa ../../jump/libmh.sa $(LIBES1)
+  LDLIBS1	=	$(LIBES1) $(LDOPTLIB)
+! LDLIBS2	=	$(LIBES2) $(LDOPTLIB)
+  
+  LINT	=	lint
+diff --recursive --minimal --context=2 --unidirectional-new-file ../mh-6.8.3-dist/uip/Makefile ./uip/Makefile
+*** ../mh-6.8.3-dist/uip/Makefile	Sat Dec 25 14:40:03 1993
+--- ./uip/Makefile	Sat Dec 25 13:57:46 1993
+***************
+*** 56,62 ****
+  CFLAGS	=	$(OPTIONS)
+  LDFLAGS	=	$(LDOPTIONS)
+! LIBES	=	../config/config.o ../sbr/libmh.a ../mts/libmts.a \
+! 		../zotnet/libzot.a
+! LDLIBS	=	$(LIBES) ../config/version.o $(LDOPTLIB)
+  LINT	=	lint
+  LFLAGS	=	-bhu $(OPTIONS) $(TMAOPTS)
+--- 56,66 ----
+  CFLAGS	=	$(OPTIONS)
+  LDFLAGS	=	$(LDOPTIONS)
+! #LIBES	=	../config/config.o ../sbr/libmh.a ../mts/libmts.a \
+! #		../zotnet/libzot.a
+! #LDLIBS	=	$(LIBES) ../config/version.o $(LDOPTLIB)
+! # Linux shared libraries
+! LIBES	=	../jump/libconfig.sa ../jump/libmh.sa ../jump/libmts.sa \
+! 		../jump/libzot.sa
+! LDLIBS	=	$(LIBES) $(LDOPTLIB)
+  LINT	=	lint
+  LFLAGS	=	-bhu $(OPTIONS) $(TMAOPTS)
+diff --recursive --minimal --context=1 --unidirectional-new-file ../mh-6.8.3-dist/zotnet/Makefile ./zotnet/Makefile
+*** ../mh-6.8.3-dist/zotnet/Makefile	Sat Dec 25 12:21:46 1993
+--- ./zotnet/Makefile	Sat Dec 25 14:02:53 1993
+***************
+*** 10,11 ****
+--- 10,16 ----
+  
++ # Linux shared library
++ JUMP_DIR=../jump/
++ JUMP_LIB=libzot
++ export JUMP_DIR JUMP_LIB
++ 
+  CC	=	cc
+***************
+*** 31,33 ****
+  
+! .c.o:;		$(CC) $(CFLAGS) -c $*.c
+  		-ld -x -r $@
+--- 36,42 ----
+  
+! # Linux: create $*.j from $*.c, contains DLL version
+! .c.o:;		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
+! 		-ld -x -r $@
+! 		mv a.out $*.j
+! 		$(CC) $(CFLAGS) -c $*.c
+  		-ld -x -r $@
+***************
+*** 83,85 ****
+  
+! clean:;		-rm -f $(LIB) z$(LIB) _* :* *.o core
+  		for d in $(DIRS); do (cd $$d; $(MAKE) clean); done
+--- 92,94 ----
+  
+! clean:;		-rm -f $(LIB) z$(LIB) _* :* *.o *.j core
+  		for d in $(DIRS); do (cd $$d; $(MAKE) clean); done
+diff --recursive --minimal --context=1 --unidirectional-new-file ../mh-6.8.3-dist/zotnet/bboards/Makefile ./zotnet/bboards/Makefile
+*** ../mh-6.8.3-dist/zotnet/bboards/Makefile	Sat Dec 25 12:21:47 1993
+--- ./zotnet/bboards/Makefile	Sat Dec 25 12:40:58 1993
+***************
+*** 10,11 ****
+--- 10,16 ----
+  
++ # Linux shared library
++ JUMP_DIR=../../jump/
++ JUMP_LIB=libzot
++ export JUMP_DIR JUMP_LIB
++ 
+  CC      =	cc
+***************
+*** 18,19 ****
+--- 23,29 ----
+  
++ # Linux: create $*.j from $*.c, contains DLL version
++ .c.o:;		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
++ 		mv $*.o $*.j
++ 		$(CC) $(CFLAGS) -c $*.c
++ 
+  ######################################################################
+***************
+*** 54,56 ****
+  clean:		unclean
+! 		-rm -f *.o
+  
+--- 64,66 ----
+  clean:		unclean
+! 		-rm -f *.o *.j
+  
+diff --recursive --minimal --context=2 --unidirectional-new-file ../mh-6.8.3-dist/zotnet/mf/Makefile ./zotnet/mf/Makefile
+*** ../mh-6.8.3-dist/zotnet/mf/Makefile	Sat Dec 25 12:21:49 1993
+--- ./zotnet/mf/Makefile	Sat Dec 25 14:03:33 1993
+***************
+*** 13,16 ****
+--- 13,21 ----
+  REMOVE	=	mv -f
+  
++ # Linux shared library
++ JUMP_DIR=../../jump/
++ JUMP_LIB=libzot
++ export JUMP_DIR JUMP_LIB
++ 
+  CC      =	cc
+  CFLAGS  =	$(OPTIONS)
+***************
+*** 24,27 ****
+--- 29,37 ----
+  .c:;            echo $@
+  
++ # Linux: create $*.j from $*.c, contains DLL version
++ .c.o:;		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
++ 		mv $*.o $*.j
++ 		$(CC) $(CFLAGS) -c $*.c
++ 
+  ######################################################################
+  #	Here it is...
+***************
+*** 146,150 ****
+  
+  clean:		unclean
+! 		-rm -f x* *.o
+  
+  unclean:;	-rm -f z* _* :* core eddep makedep MAKEMF
+--- 156,160 ----
+  
+  clean:		unclean
+! 		-rm -f x* *.o *.j
+  
+  unclean:;	-rm -f z* _* :* core eddep makedep MAKEMF
+diff --recursive --minimal --context=2 --unidirectional-new-file ../mh-6.8.3-dist/zotnet/mts/Makefile ./zotnet/mts/Makefile
+*** ../mh-6.8.3-dist/zotnet/mts/Makefile	Sat Dec 25 12:21:50 1993
+--- ./zotnet/mts/Makefile	Sat Dec 25 14:03:47 1993
+***************
+*** 15,18 ****
+--- 15,23 ----
+  REMOVE	=	mv -f
+  
++ # Linux shared library
++ JUMP_DIR=../../jump/
++ JUMP_LIB=libzot
++ export JUMP_DIR JUMP_LIB
++ 
+  CC      =	cc
+  CFLAGS  =	$(OPTIONS)
+***************
+*** 32,35 ****
+--- 37,45 ----
+  .c:;            echo $@
+  
++ # Linux: create $*.j from $*.c, contains DLL version
++ .c.o:;		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
++ 		mv $*.o $*.j
++ 		$(CC) $(CFLAGS) -c $*.c
++ 
+  ######################################################################
+  #	Here it is...
+***************
+*** 110,114 ****
+  
+  clean:		unclean
+! 		-rm -f x* *.o
+  
+  unclean:;	-rm -f z* _* :* core eddep makedep MAKEMTS
+--- 120,124 ----
+  
+  clean:		unclean
+! 		-rm -f x* *.o *.j
+  
+  unclean:;	-rm -f z* _* :* core eddep makedep MAKEMTS
+diff --recursive --minimal --context=1 --unidirectional-new-file ../mh-6.8.3-dist/zotnet/tws/Makefile ./zotnet/tws/Makefile
+*** ../mh-6.8.3-dist/zotnet/tws/Makefile	Sat Dec 25 12:21:52 1993
+--- ./zotnet/tws/Makefile	Sat Dec 25 14:12:29 1993
+***************
+*** 14,15 ****
+--- 14,20 ----
+  
++ # Linux shared library
++ JUMP_DIR=../../jump/
++ JUMP_LIB=libzot
++ export JUMP_DIR JUMP_LIB
++ 
+  CC      =	cc
+***************
+*** 30,31 ****
+--- 35,41 ----
+  
++ # Linux: create $*.j from $*.c, contains DLL version
++ .c.o:;		$(CC) -B/usr/dll/jump/ $(CFLAGS) -c $*.c
++ 		mv $*.o $*.j
++ 		$(CC) $(CFLAGS) -c $*.c
++ 
+  ######################################################################
+***************
+*** 76,77 ****
+--- 86,89 ----
+  lexstring.o:	lexstring.c
++ 		$(CC) -B/usr/dll/jump/ $(patsubst -O2,,$(CFLAGS)) -c -DONECASE lexstring.c
++ 		mv $*.o $*.j
+  		$(CC) $(CFLAGS) -c -DONECASE lexstring.c
+***************
+*** 104,106 ****
+  clean:		unclean
+! 		-rm -f dtimep.c *.o date
+  
+--- 116,118 ----
+  clean:		unclean
+! 		-rm -f dtimep.c *.o *.j date
+  

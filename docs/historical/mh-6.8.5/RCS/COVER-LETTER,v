@@ -1,0 +1,164 @@
+head     1.4;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @# @;
+
+
+1.4
+date     90.04.05.16.01.10;  author sources;  state Exp;
+branches ;
+next     1.3;
+
+1.3
+date     90.04.05.16.00.29;  author sources;  state Exp;
+branches ;
+next     1.2;
+
+1.2
+date     90.03.15.15.26.06;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.03.15.15.17.58;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.4
+log
+@Id
+@
+text
+@    A new release of the UCI version of the Rand Message Handling (MH)
+    system is available for distribution.  This release of MH is called 
+
+				  MH 6.6
+
+    There are a lot of changes between MH.6 and MH 6.6; a lot of
+    performance enhancements were made, there's also a lot of support
+    for distributed mail (personal mail and bulletin bboards).
+
+    Here are the details:  
+
+	- MH is in the public-domain
+	- MH runs on a number of versions of UNIX (4.[123]BSD, V7, SYS5, and
+	  related variants, e.g., HPUX) [sorry, no support for SYS3.]
+	- MH runs on top of a number of mail transport systems
+	  (MMDF-{I,II}, SendMail, stand-alone (with UUCP support))
+
+    Although MH is not "supported" per se, it does have a bug-reporting
+    address, Bug-MH@@ICS.UCI.EDU (ucbvax!ucivax!bug-mh).  Bug reports
+    (and fixes) are welcome, by the way.  There are also two Internet
+    discussion groups:  MH-Users@@ICS.UCI.EDU and MH-Workers@@ICS.UCI.EDU.
+    MH-Users is bi-directionally gatewayed to USENET as comp.mail.mh.
+
+    There are two ways to get a distribution:
+
+    1.  If you can FTP to the ARPA Internet, use anonymous FTP to
+    ics.uci.edu [128.195.1.1] and retrieve the file pub/mh-6.6.tar.Z.
+    This is a tar image after being run through the compress program
+    (approx 1.5MB).  This file is also available on louie.udel.edu 
+    [128.175.1.3] in portal/mh-6.tar.Z.  You may also find MH.6.6 on
+    various other hosts; to make sure you get the latest version and
+    don't waste your time re-fixing bugs, it's best to get it from
+    either ics.uci.edu or louie.udel.edu.
+
+    2.  You can send $75 US to the address below.  This covers the cost
+    of a magtape, handling, and shipping.  In addition, you'll get a
+    laser-printed hard-copy of the entire MH documentation set.  Be
+    sure to include your USPS address with your check.  Checks should
+    be made payable to
+
+		Regents of the University of California
+
+    and must be drawn on U.S.  funds.  The distribution address is:  
+
+	Computing Support Group 
+	Attn: MH distribution
+	Department of Information and Computer Science
+	University of California, Irvine
+	Irvine, CA  92717
+
+	714/856-7554
+
+    Sadly, if you just want the hard-copies of the documentation, you
+    still have to pay the $75.00.  The tar image has the documentation
+    source (the manual is in roff format, but the rest are in TeX
+    format).  I'm working on getting Postscript versions of the documents.
+
+/JLR ($Id:$)
+@
+
+
+1.3
+log
+@Id
+@
+text
+@d58 1
+a58 1
+/JLR ($Revision:$)
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d58 1
+a58 1
+/mtr
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a5 1
+    (This is a maintenance release of MH 6.5.)
+d19 4
+a22 4
+    address, Bug-MH@@ICS.UCI.EDU.  Bug reports (and fixes) are welcome, by
+    the way.  There are also two ARPA Internet discussion groups:
+    MH-Users@@ICS.UCI.EDU and MH-Workers@@ICS.UCI.EDU (somewhat analogous in
+    charter to Info-UNIX and UNIX-Wizards).  
+d27 7
+a33 5
+    louie.udel.edu [10.0.0.96] and retrieve the file portal/mh-6.tar.
+    This is a tar image (approx 4MB).  The file portal/mh-6.tar.C is
+    the tar image after being run through the compact program (approx
+    2.3MB).  The file portal/mh-6.tar.Z is the tar image after being run
+    through the compress program (approx 1.5MB).
+d35 5
+a39 5
+    2.  You can send $75 to the address below.  This covers the cost of
+    a magtape, handling, and shipping.  In addition, you'll get a
+    laser-printed hard-copy of the entire MH documentation set.  Be sure
+    to include your USPS address with your check.  Checks should be made
+    payable to 
+d43 1
+a43 4
+    and must be drawn on U.S.  funds.  It's also a good idea (though not
+    mandatory) to send a computer mail message to "Bug-MH@@ICS.UCI.EDU" when
+    you send your check via USPS to ensure minimal turn-around time.
+    The distribution address is:  
+d45 1
+a45 1
+	Support Group 
+d51 1
+a51 1
+	714/856-7553
+d56 1
+a56 1
+    format).  
+@

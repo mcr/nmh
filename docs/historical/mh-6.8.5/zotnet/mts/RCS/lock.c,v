@@ -1,0 +1,1109 @@
+head	2.19;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+2.19
+date	93.08.25.17.33.09;	author jromine;	state Exp;
+branches;
+next	2.18;
+
+2.18
+date	92.11.12.23.26.49;	author jromine;	state Exp;
+branches;
+next	2.17;
+
+2.17
+date	92.11.12.19.32.01;	author jromine;	state Exp;
+branches;
+next	2.16;
+
+2.16
+date	92.11.12.19.29.42;	author jromine;	state Exp;
+branches;
+next	2.15;
+
+2.15
+date	92.11.12.01.04.29;	author jromine;	state Exp;
+branches;
+next	2.14;
+
+2.14
+date	92.11.11.20.55.04;	author jromine;	state Exp;
+branches;
+next	2.13;
+
+2.13
+date	92.11.06.03.23.24;	author jromine;	state Exp;
+branches;
+next	2.12;
+
+2.12
+date	92.11.02.18.58.35;	author jromine;	state Exp;
+branches;
+next	2.11;
+
+2.11
+date	92.10.27.16.42.22;	author jromine;	state Exp;
+branches;
+next	2.10;
+
+2.10
+date	92.10.16.16.52.18;	author jromine;	state Exp;
+branches;
+next	2.9;
+
+2.9
+date	92.02.07.19.25.18;	author jromine;	state Exp;
+branches;
+next	2.8;
+
+2.8
+date	92.02.07.17.47.51;	author jromine;	state Exp;
+branches;
+next	2.7;
+
+2.7
+date	92.02.07.17.25.22;	author jromine;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	92.02.05.19.10.05;	author jromine;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	92.01.31.22.35.13;	author jromine;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	91.01.18.08.43.29;	author mh;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.04.05.15.04.28;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.06.13.41.44;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.01.14.36.01;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.58.35;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.44.58;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.19
+log
+@off_t fixes for BSD44
+@
+text
+@/* lock.c - universal locking routines */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: lock.c,v 2.18 1992/11/12 23:26:49 jromine Exp jromine $";
+#endif
+/* compile-time priority:
+ *	LOCKF	use if defined
+ *	FCNTL	use if SYS5  defined and LOCKF not defined
+ *	FLOCK	use if BSD42 defined and LOCKF and SYS5 not defined
+ */
+
+#ifdef	MMDFONLY
+#define	LOCKONLY
+#endif
+
+#include "../h/mh.h"
+#include <stdio.h>
+#ifndef	LOCKONLY
+#include "../h/strings.h"
+#include "mts.h"
+#else	/* LOCKONLY */
+#include "strings.h"
+#ifdef	MMDFONLY
+#include "mmdfonly.h"
+#include "mts.h"
+#else	/* not MMDFONLY */
+#include "lockonly.h"
+#endif	/* not MMDFONLY */
+#endif	/* LOCKONLY */
+#include <sys/types.h>
+#include <sys/stat.h>
+#ifdef SVR4
+#define LOCKF
+#include <unistd.h>
+#endif
+#ifdef	LOCKF
+#include <sys/errno.h>
+#include <sys/file.h>
+#ifndef	F_ULOCK
+#ifdef	UNISTD
+#include <unistd.h>
+#else	/* UNISTD */
+#include <sys/fcntl.h>
+#endif	/* UNISTD */
+#endif
+#endif	/* LOCKF */
+#if defined(_AIX) || defined(AUX)
+#include <sys/file.h>
+#endif
+
+#ifdef	SYS5
+#define	u_short	ushort
+#define u_long  ulong
+#endif
+
+
+#if defined(SYS5) && !defined(_AIX)
+#define	index	strchr
+#define	rindex	strrchr
+#endif
+#ifdef	BSD42
+#define	FLOCK		/* LOCKF will override this, if defined */
+#endif
+
+extern int  errno;
+
+#ifdef	LOCKONLY
+#ifndef	MMDFONLY
+char   *lockldir = "/usr/spool/locks";
+#endif	/* not MMDFONLY */
+#endif	/* LOCKONLY */
+
+static int	b_lkopen(), lockit(), f_lkopen();
+static		lockname(), timerON(), timerOFF();
+
+long	time ();
+
+/*  */
+
+int	lkopen (file, access)
+register char   *file;
+register int     access;
+{
+    mts_init ("mts");
+    switch (lockstyle) {
+	case LOK_UNIX:
+#if	defined (FLOCK) || defined(LOCKF) || defined(FCNTL)
+	    return f_lkopen (file, access);
+#endif
+
+	default:
+	    return b_lkopen (file, access);
+	}
+}
+
+/*  */
+
+static int  b_lkopen (file, access)
+register char   *file;
+register int     access;
+{
+    register int    i,
+                    j;
+    long    curtime;
+    char    curlock[BUFSIZ],
+            tmplock[BUFSIZ];
+    struct stat st;
+
+    if (stat (file, &st) == NOTOK)
+	return NOTOK;
+    lockname (curlock, tmplock, file, (int) st.st_dev, (int) st.st_ino);
+
+    for (i = 0;;)
+	switch (lockit (tmplock, curlock)) {
+	    case OK: 
+		if ((i = open (file, access)) == NOTOK) {
+		    j = errno;
+		    (void) unlink (curlock);
+		    errno = j;
+		}
+		timerON (curlock, i);
+		return i;
+
+	    case NOTOK: 
+		if (stat (curlock, &st) == NOTOK) {
+		    if (i++ > 5)
+			return NOTOK;
+		    sleep (5);
+		    break;
+		}
+
+		i = 0;
+		(void) time (&curtime);
+		if (curtime < st.st_ctime + 60L)
+		    sleep (5);
+		else
+		    (void) unlink (curlock);
+		break;
+	}
+}
+
+
+static int  lockit (tmp, file)
+register char   *tmp,
+	        *file;
+{
+    register int    fd;
+
+    if ((fd = creat (tmp, 0400)) == NOTOK)
+	return NOTOK;
+#if defined(hpux) || defined(ncr)
+    write(fd, "MH lock\n",8);
+#endif /* hpux */
+    (void) close (fd);
+
+    fd = link (tmp, file);
+    (void) unlink (tmp);
+
+    return (fd != NOTOK ? OK : NOTOK);
+}
+
+/*  */
+
+static  lockname (curlock, tmplock, file, dev, ino)
+register char   *curlock,
+	        *tmplock,
+	        *file;
+register int     dev,
+		 ino;
+{
+    register char  *bp,
+                   *cp;
+
+    bp = curlock;
+    if ((cp = rindex (file, '/')) == NULL || *++cp == 0)
+	cp = file;
+    if (lockldir == NULL || *lockldir == 0) {
+	if (cp != file) {
+	    (void) sprintf (bp, "%.*s", cp - file, file);
+	    bp += strlen (bp);
+	}
+    }
+    else {
+	(void) sprintf (bp, "%s/", lockldir);
+	bp += strlen (bp);
+    }
+
+    switch (lockstyle) {
+	case LOK_BELL: 
+	default: 
+	    (void) sprintf (bp, "%s.lock", cp);
+	    break;
+
+	case LOK_MMDF: 
+	    (void) sprintf (bp, "LCK%05d.%05d", dev, ino);
+	    break;
+    }
+
+    if (tmplock) {
+	if ((cp = rindex (curlock, '/')) == NULL || *++cp == 0)
+	    (void) strcpy (tmplock, ",LCK.XXXXXX");
+	else
+	    (void) sprintf (tmplock, "%.*s,LCK.XXXXXX",
+		cp - curlock, curlock);
+	(void) unlink (mktemp (tmplock));
+    }
+}
+
+/*  */
+
+#if	defined(FLOCK) || defined(LOCKF) || defined(FCNTL)
+
+#if	defined(BSD42) || defined(SVR4)
+#include <sys/file.h>
+#if	defined(SUN40) || defined(SVR4)
+#include <sys/fcntl.h>
+#endif
+#else 
+#ifdef	FCNTL
+#include <fcntl.h>
+#endif
+#endif
+
+static int  f_lkopen (file, access)
+register char   *file;
+register int     access;
+{
+    register int    fd,
+                    i,
+		    j;
+#ifdef FCNTL
+    struct flock    buf;
+#endif /* FCNTL */
+
+    for (i = 0; i < 5; i++) {
+#if defined(LOCKF) || defined(FCNTL)
+	j = access;
+	access &= ~O_APPEND;	/* make sure we open at the beginning */
+	if ((access & 03) == O_RDONLY) {
+	/* We MUST have write permission or lockf/fcntl() won't work */
+	/* (Stupid eh?) */
+	    access &= ~O_RDONLY;
+	    access |= O_RDWR;
+	}
+#endif	/* LOCKF || FCNTL */
+	if ((fd = open (file, access | O_NDELAY)) == NOTOK)
+	    return NOTOK;
+#ifndef	LOCKF
+#ifndef	FLOCK
+#ifndef	FCNTL
+	/* should be an error? */
+#else /* FCNTL */
+	buf.l_type = F_WRLCK;
+	buf.l_whence = 0;
+	buf.l_start = 0;
+	buf.l_len = 0;
+	if (fcntl (fd, F_SETLK, &buf) != NOTOK)
+	    return fd;
+#endif
+#else /* FLOCK */
+	if (flock (fd, LOCK_EX | LOCK_NB) != NOTOK)
+	    return fd;
+#endif
+#else /* LOCKF */
+	if (lockf (fd, F_TLOCK, 0L) != NOTOK) {
+	    /* see if we should be at the end */
+	    if (j & O_APPEND)
+#ifdef SVR4
+		lseek (fd, (off_t)0, SEEK_END);
+#else
+		lseek (fd, (off_t)0, L_XTND);
+#endif
+	    return fd;
+	}
+	/* Fix errno - lockf screws it */
+	if (errno == EACCES)
+	    errno = EWOULDBLOCK;
+#endif
+	j = errno;
+	(void) close (fd);
+
+	sleep (5);
+    }
+
+    (void) close (fd);
+    errno = j;
+    return NOTOK;
+}
+#endif	/* FLOCK || LOCKF || FCNTL */
+
+/*  */
+
+/* ARGSUSED */
+
+int     lkclose (fd, file)
+register int     fd;
+register char   *file;
+{
+    char    curlock[BUFSIZ];
+    struct stat st;
+#ifdef FCNTL
+    struct flock buf;
+#endif
+
+    if (fd == NOTOK)
+	return OK;
+    switch (lockstyle) {
+	case LOK_UNIX: 
+#ifndef	LOCKF
+#ifndef	FLOCK
+#ifndef	FCNTL
+	/* should be an error? */
+#else	/* FCNTL */
+	    buf.l_type = F_UNLCK;
+	    buf.l_whence = 0;
+	    buf.l_start = 0;
+	    buf.l_len = 0;
+	    fcntl(fd, F_SETLK, &buf);
+	    break;
+#endif
+#else	/* FLOCK */
+	    flock (fd, LOCK_UN);
+	    break;
+#endif
+#else	/* LOCKF */
+	    lseek (fd, (off_t)0, L_SET); /* make sure we unlock the whole thing */
+	    lockf (fd, F_ULOCK, 0L);
+	    break;
+#endif	
+
+	default: 
+	    if (fstat (fd, &st) != NOTOK) {
+		lockname (curlock, NULLCP, file, (int) st.st_dev, (int) st.st_ino);
+		(void) unlink (curlock);
+		timerOFF (fd);
+	    }
+    }
+
+    return (close (fd));
+}
+
+
+/*  */
+
+FILE	*lkfopen (file, mode)
+register char   *file,
+ 	        *mode;
+{
+    register int    fd;
+    register FILE  *fp;
+
+    if ((fd = lkopen (file, strcmp (mode, "r") ? 2 : 0)) == NOTOK)
+	return NULL;
+
+    if ((fp = fdopen (fd, mode)) == NULL) {
+	(void) close (fd);
+	return NULL;
+    }
+
+    return fp;
+}
+
+
+/* ARGSUSED */
+
+int	lkfclose (fp, file)
+register FILE	*fp;
+register char	*file;
+{
+    char    curlock[BUFSIZ];
+    struct stat st;
+#ifdef FCNTL
+    struct flock buf;
+#endif
+
+    if (fp == NULL)
+	return OK;
+
+    switch (lockstyle) {
+	case LOK_UNIX: 
+#ifndef	LOCKF
+#ifndef	FLOCK
+#ifndef	FCNTL
+	/* should be an error? */
+#else	/* FCNTL */
+	    buf.l_type = F_UNLCK;
+	    buf.l_whence = 0;
+	    buf.l_start = 0;
+	    buf.l_len = 0;
+	    fcntl(fileno(fp), F_SETLK, &buf);
+	    break;
+#endif
+#else /* FLOCK */
+	    flock (fileno(fp), LOCK_UN);
+	    break;
+#endif
+#else	/* LOCKF */
+	    fseek (fp, 0L, 0); /* make sure we unlock the whole thing */
+	    lockf (fileno(fp), F_ULOCK, 0L);
+	    break;
+#endif
+
+	default: 
+	    if (fstat (fileno (fp), &st) != NOTOK) {
+		lockname (curlock, NULLCP, file, (int) st.st_dev, (int) st.st_ino);
+		(void) unlink (curlock);
+	    }
+    }
+
+    return (fclose (fp));
+}
+
+/*  */
+
+#include <signal.h>
+
+#define	NSECS	((unsigned) 20)
+
+
+struct lock {
+    int		 l_fd;
+    char	*l_lock;
+    struct lock *l_next;
+};
+#define	NULLP	((struct lock *) 0)
+
+static struct lock *l_top = NULLP;
+
+
+/* ARGSUSED */
+
+static TYPESIG alrmser (sig)
+int	sig;
+{
+    register int    j;
+    register char  *cp;
+    register struct lock   *lp;
+
+#ifndef	BSD42
+    (void) signal (SIGALRM, alrmser);
+#endif	/* BSD42 */
+
+    for (lp = l_top; lp; lp = lp -> l_next)
+	if (*(cp = lp -> l_lock) && (j = creat (cp, 0400)) != NOTOK)
+	    (void) close (j);
+
+    (void) alarm (NSECS);
+}
+
+/*  */
+
+static timerON (lock, fd)
+char   *lock;
+int	fd;
+{
+    register struct lock   *lp;
+
+    if ((lp = (struct lock *) malloc ((unsigned) (sizeof *lp))) == NULLP)
+	return;			/* XXX */
+
+    lp -> l_fd = fd;
+    if ((lp -> l_lock = malloc ((unsigned) (strlen (lock) + 1))) == NULLCP) {
+	free ((char *) lp);
+	return;			/* XXX */
+    }
+    (void) strcpy (lp -> l_lock, lock);
+    lp -> l_next = NULLP;
+
+    if (l_top)
+	lp -> l_next = l_top -> l_next;
+    else {
+	(void) signal (SIGALRM, alrmser);/* perhaps SIGT{STP,TIN,TOU} */
+	(void) alarm (NSECS);
+    }
+    l_top = lp;
+}
+
+
+static timerOFF (fd)
+int	fd;
+{
+    register struct lock   *pp,
+                           *lp;
+
+    (void) alarm (0);
+
+    if (l_top) {
+	for (pp = lp = l_top; lp; pp = lp, lp = lp -> l_next)
+	    if (lp -> l_fd == fd)
+		break;
+	if (lp) {
+	    if (lp == l_top)
+		l_top = lp -> l_next;
+	    else
+		pp -> l_next = lp -> l_next;
+
+	    free (lp -> l_lock);
+	    free ((char *) lp);
+	}
+    }
+
+    if (l_top)
+	(void) alarm (NSECS);
+}
+@
+
+
+2.18
+log
+@write to lock file on NCR
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.17 1992/11/12 19:32:01 jromine Exp jromine $";
+d268 1
+a268 1
+		lseek (fd, 0L, SEEK_END);
+d270 1
+a270 1
+		lseek (fd, 0L, L_XTND);
+d325 1
+a325 1
+	    lseek (fd, 0L, L_SET); /* make sure we unlock the whole thing */
+@
+
+
+2.17
+log
+@try to fixup u_short without U_SHORT option
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.16 1992/11/12 19:29:42 jromine Exp jromine $";
+d150 1
+a150 1
+#ifdef hpux
+@
+
+
+2.16
+log
+@add U_SHORT
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.15 1992/11/12 01:04:29 jromine Exp jromine $";
+a14 5
+#if	defined(SYS5) && !defined(U_SHORT)
+#define	u_short	ushort
+#define u_long  ulong
+#endif
+
+d49 6
+@
+
+
+2.15
+log
+@SVR4 (u_short)
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.14 1992/11/11 20:55:04 jromine Exp jromine $";
+d15 1
+a15 1
+#if	defined(SYS5) && !defined(_AIX) && !defined(SVR4)
+@
+
+
+2.14
+log
+@don't define u_short under aix
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.13 1992/11/06 03:23:24 jromine Exp jromine $";
+d15 1
+a15 1
+#if	defined(SYS5) && !defined(_AIX)
+@
+
+
+2.13
+log
+@fixup u_short define for AUX
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.12 1992/11/02 18:58:35 jromine Exp jromine $";
+d15 1
+a15 1
+#ifdef	SYS5
+@
+
+
+2.12
+log
+@_AIX
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.11 1992/10/27 16:42:22 jromine Exp jromine $";
+d15 5
+d51 1
+a51 1
+#ifdef _AIX
+@
+
+
+2.11
+log
+@UNISTD
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.10 1992/10/16 16:52:18 jromine Exp jromine $";
+d50 1
+a50 1
+#ifdef	SYS5
+@
+
+
+2.10
+log
+@TYPESIG missing on alrmser
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.9 1992/02/07 19:25:18 jromine Exp jromine $";
+d15 1
+d39 1
+d41 3
+a48 5
+
+#define	NOTOK	(-1)
+#define	OK	0
+
+#define	NULLCP	((char *) 0)
+@
+
+
+2.9
+log
+@SVR4
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.8 1992/02/07 17:47:51 jromine Exp jromine $";
+d425 1
+a425 1
+static alrmser (sig)
+@
+
+
+2.8
+log
+@changes for SYS5 merged.
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.7 1992/02/07 17:25:22 jromine Exp jromine $";
+d30 4
+d53 1
+a53 2
+#define	FCNTL		/* assume all SYS5's have fcntl() locking */
+#else
+a56 1
+#endif
+a57 1
+
+d206 1
+a206 1
+#ifdef	BSD42
+d208 1
+a208 1
+#ifdef	SUN40
+d260 6
+a265 1
+	    if (j & O_APPEND) lseek (fd, 0L, L_XTND);
+@
+
+
+2.7
+log
+@checkpoint
+@
+text
+@d3 7
+a9 2
+static char ident[] = "@@(#)$Id: lock.c,v 2.6 1992/02/05 19:10:05 jromine Exp jromine $";
+#endif	/* lint */
+d13 1
+a13 1
+#endif	/* MMDFONLY */
+d35 1
+a35 1
+#endif/*  */
+d39 1
+a39 1
+#endif/*  */
+d49 6
+a54 2
+#define	FCNTL
+#endif	/* SYS5 */
+d79 1
+a79 1
+#if defined(BSD42) || defined(FCNTL)
+d81 1
+a81 1
+#endif	/* BSD42 || FCNTL */
+d203 1
+a203 1
+#if defined(BSD42) || defined(FCNTL)
+d205 1
+a205 1
+#ifdef BSD42
+d209 3
+a211 2
+#endif	/* SUN40 */
+#else /* FCNTL */
+d214 1
+d237 1
+a237 1
+#endif	/* LOCKF */
+d241 4
+a244 1
+#ifdef FCNTL
+d250 3
+a252 1
+#else /* BSD42 */
+a253 1
+#endif /* BSD42 */
+d255 2
+a256 1
+#else	/* LOCKF */
+d263 3
+a265 2
+	if (errno == EACCES) errno = EWOULDBLOCK;
+#endif	/* LOCKF */
+d276 1
+a276 1
+#endif	/* BSD42 || FCNTL */
+a295 1
+#if defined(BSD42) || defined(FCNTL)
+d297 4
+a300 1
+#ifdef FCNTL
+d306 3
+a308 1
+#else /* BSD42 */
+d310 2
+a311 1
+#endif /* BSD42 */
+a314 1
+#endif	/* LOCKF */
+d316 1
+a316 1
+#endif	/* BSD42 */
+a367 1
+#if defined(BSD42) || defined(FCNTL)
+d369 4
+a372 1
+#ifdef FCNTL
+d378 3
+a380 1
+#else /* BSD42 */
+d382 2
+a383 1
+#endif /* BSD42 */
+a386 1
+#endif	/* LOCKF */
+d388 1
+a388 1
+#endif	/* BSD42 */
+@
+
+
+2.6
+log
+@fix LOCKF typo
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: lock.c,v 2.5 1992/01/31 22:35:13 jromine Exp jromine $";
+#endif	lint
+d8 1
+a8 1
+#endif	MMDFONLY
+d14 1
+a14 1
+#else	LOCKONLY
+d19 1
+a19 1
+#else	not MMDFONLY
+d21 2
+a22 2
+#endif	not MMDFONLY
+#endif	LOCKONLY
+d30 2
+a31 2
+#endif
+#endif	LOCKF
+d34 1
+a34 1
+#endif
+d44 2
+a45 1
+#endif	SYS5
+d53 2
+a54 2
+#endif	not MMDFONLY
+#endif	LOCKONLY
+d70 1
+a70 1
+#ifdef	BSD42
+d72 1
+a72 1
+#endif	BSD42
+d136 1
+a136 1
+#endif hpux
+d194 1
+a194 1
+#ifdef	BSD42
+d196 1
+d200 4
+a203 1
+#endif	SUN40
+d212 3
+d217 1
+a217 1
+#ifdef	LOCKF
+d221 1
+a221 1
+	/* We MUST have write permission of lockf won't work */
+d226 1
+a226 1
+#endif	LOCKF
+d230 7
+d238 1
+d240 1
+a240 1
+#else	LOCKF
+d248 1
+a248 1
+#endif	LOCKF
+d259 1
+a259 1
+#endif	BSD42
+d271 3
+d279 1
+a279 1
+#ifdef	BSD42
+d281 7
+d289 2
+a290 1
+#else	LOCKF
+d293 1
+a293 1
+#endif	LOCKF
+d295 1
+a295 1
+#endif	BSD42
+d338 3
+d347 1
+a347 1
+#ifdef	BSD42
+d349 7
+d357 2
+a358 1
+#else	LOCKF
+d361 1
+a361 1
+#endif	LOCKF
+d363 1
+a363 1
+#endif	BSD42
+d403 1
+a403 1
+#endif	BSD42
+@
+
+
+2.5
+log
+@kerberos
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.4 91/01/18 08:43:29 mh Exp Locker: mh $";
+d211 1
+a211 1
+	access &= ! O_APPEND;	/* make sure we open at the beginning */
+d215 1
+a215 1
+	    access &= ! O_RDONLY;
+@
+
+
+2.4
+log
+@add sys/file.h under LOCKF
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: lock.c,v 2.3 90/04/05 15:04:28 sources Exp Locker: mh $";
+d28 3
+d32 3
+a35 1
+
+d157 1
+a157 1
+    if ((cp = rindex (file, '/')) == NULL || *++cp == NULL)
+d159 1
+a159 1
+    if (lockldir == NULL || *lockldir == NULL) {
+d182 1
+a182 1
+	if ((cp = rindex (curlock, '/')) == NULL || *++cp == NULL)
+@
+
+
+2.3
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d27 1
+@
+
+
+2.2
+log
+@ANSI Compilance
+@
+text
+@d2 3
+@
+
+
+2.1
+log
+@fix for hpux
+@
+text
+@d46 2
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d122 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d22 3
+d182 3
+d195 10
+d207 1
+d210 9
+d247 6
+d304 6
+@

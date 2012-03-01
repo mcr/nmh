@@ -1,0 +1,286 @@
+head	2.5;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+2.5
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	92.01.31.21.56.45;	author jromine;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.04.05.15.30.25;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.04.05.14.44.11;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.05.14.38.27;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.57.25;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.06.26.14.31.50;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.5
+log
+@endif sugar
+@
+text
+@/* pwd.c - return the current working directory */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: pwd.c,v 2.4 1992/01/31 21:56:45 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#if	!defined (BSD42) && !defined (SYS5DIR)
+#include "../h/local.h"
+#endif	/* not BSD42 and not SYS5DIR */
+#include <stdio.h>
+
+#define	MAXPATHLEN	1024
+
+static char curwd[MAXPATHLEN];
+
+
+
+char   *pwd () {
+    register char  *cp;
+
+#ifndef	BSD42
+#ifndef	SYS5DIR
+    if (getwd (curwd) == NOTOK) {
+	admonish (NULL, "unable to determine working directory");
+#else	/* SYS5DIR */
+    if (getcwd (curwd, MAXPATHLEN) == NULL) {
+	admonish (NULL, "unable to determine working directory");
+#endif	/* SYS5DIR */
+#else	/* BSD42 */
+    if (getwd (curwd) == 0) {
+	admonish (NULLCP, "unable to determine working directory: %s", curwd);
+#endif	/* BSD42 */
+	if (mypath == NULL
+		|| *mypath == 0
+		|| ((void) strcpy (curwd, mypath), chdir (curwd)) == NOTOK) {
+	    (void) strcpy (curwd, "/");
+	    (void) chdir (curwd);
+	}
+	return curwd;
+    }
+
+    if ((cp = curwd + strlen (curwd) - 1) > curwd && *cp == '/')
+	*cp = 0;
+
+    return curwd;
+}
+
+/*  */
+
+#if	!defined (BSD42) && !defined (SYS5DIR)
+/* getwd() - get the current working directory */
+
+/* Algorithm from several sources, -ljobs, pwd.c, etc., etc. */
+
+getwd (cwd)
+register char   *cwd;
+{
+    int     found;
+    char    tmp1[BUFSIZ],
+            tmp2[BUFSIZ];
+    struct stat st1,
+                st2,
+                root;
+    register struct direct *dp;
+    register    DIR * dd;
+
+    (void) strcpy (cwd, "/");
+    (void) stat ("/", &root);
+
+    for (;;) {
+	if ((dd = opendir ("..")) == NULL)
+	    return NOTOK;
+	if (stat (".", &st2) == NOTOK || stat ("..", &st1) == NOTOK)
+	    goto out;
+	if (st2.st_ino == root.st_ino && st2.st_dev == root.st_dev) {
+	    closedir (dd);
+	    return chdir (cwd);
+	}
+
+	if (st2.st_ino == st1.st_ino && st2.st_dev == st1.st_dev) {
+	    closedir (dd);
+	    (void) chdir ("/");
+	    if ((dd = opendir (".")) == NULL)
+		return NOTOK;
+	    if (stat (".", &st1) < 0)
+		goto out;
+	    if (st2.st_dev != st1.st_dev)
+		while (dp = readdir (dd)) {
+		    if (stat (dp -> d_name, &st1) == NOTOK)
+			goto out;
+		    if (st2.st_dev == st1.st_dev) {
+			(void) sprintf (tmp1, "%s%s", dp -> d_name, cwd);
+			(void) strcpy (cwd + 1, tmp1);
+			closedir (dd);
+			return (chdir (cwd));
+		    }
+		}
+	    else {
+		closedir (dd);
+		return (chdir (cwd));
+	    }
+	}
+
+	found = 0;
+	while (dp = readdir (dd)) {
+	    (void) sprintf (tmp2, "../%s", dp -> d_name);
+	    if (stat (tmp2, &st1) != NOTOK
+		    && st1.st_ino == st2.st_ino
+		    && st1.st_dev == st2.st_dev) {
+		closedir (dd);
+		found++;
+		(void) chdir ("..");
+		(void) sprintf (tmp1, "%s%s", dp -> d_name, cwd);
+		(void) strcpy (cwd + 1, tmp1);
+		break;
+	    }
+	}
+	if (!found)
+	    goto out;
+    }
+
+out: ;
+    closedir (dd);
+    return NOTOK;
+}
+#endif	/* not BSD42 and not SYS5DIR */
+@
+
+
+2.4
+log
+@kerberos
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: pwd.c,v 2.3 1990/04/05 15:30:25 sources Exp jromine $";
+#endif	lint
+d9 1
+a9 1
+#endif	not BSD42 and not SYS5DIR
+d25 1
+a25 1
+#else	SYS5DIR
+d28 2
+a29 2
+#endif	SYS5DIR
+#else	BSD42
+d32 1
+a32 1
+#endif	BSD42
+d126 1
+a126 1
+#endif	not BSD42 and not SYS5DIR
+@
+
+
+2.3
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d30 1
+a30 1
+    if (getwd (curwd) == NULL) {
+d34 1
+a34 1
+		|| *mypath == NULL
+d43 1
+a43 1
+	*cp = NULL;
+@
+
+
+2.2
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "$Id:";
+@
+
+
+2.1
+log
+@new SYS5DIR routine
+@
+text
+@d2 3
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d4 1
+a4 1
+#ifndef	BSD42
+d6 1
+a6 1
+#endif	not BSD42
+d19 1
+d22 4
+d47 1
+a47 1
+#ifndef	BSD42
+a60 4
+#ifdef SYS5DIR
+    register struct dirent *dp;
+		DIR * dd;
+#else  SYS5DIR
+a62 1
+#endif SYS5DIR
+d123 1
+a123 1
+#endif	not BSD42
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d56 4
+d62 1
+@

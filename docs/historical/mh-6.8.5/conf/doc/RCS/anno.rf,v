@@ -1,0 +1,168 @@
+head     2.4;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @@;
+
+
+2.4
+date     90.04.05.15.08.00;  author sources;  state Exp;
+branches ;
+next     2.3;
+
+2.3
+date     90.03.22.11.30.48;  author sources;  state Exp;
+branches ;
+next     2.2;
+
+2.2
+date     90.03.20.19.41.24;  author sources;  state Exp;
+branches ;
+next     2.1;
+
+2.1
+date     90.03.20.17.35.42;  author sources;  state Exp;
+branches ;
+next     2.0;
+
+2.0
+date     89.11.17.15.56.31;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     89.11.17.15.44.16;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+2.4
+log
+@add ID
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id:$
+.SC ANNO 1
+.NA
+anno \- annotate messages
+.SY
+anno
+\%[+folder] \%[msgs]
+\%[\-component\ field]
+\%[\-inplace] \%[\-noinplace]
+\%[\-date] \%[\-nodate]
+\%[\-text\ body]
+\%[\-help]
+.DE
+\fIAnno\fR annotates the specified messages in the named folder using
+the field and body.
+Annotation is optionally performed by \fIdist\fR, \fIforw\fR, and
+\fIrepl\fR,
+to keep track of your distribution of, forwarding of, and replies to a
+message.
+By using \fIanno\fR,
+you can perform arbitrary annotations of your own.
+Each message selected will be annotated with the lines
+
+    field:\ date
+    field:\ body
+
+The `\-nodate' switch inhibits the date annotation,
+leaving only the body annotation.
+The `\-inplace' switch causes annotation to be done in place in order
+to preserve links to the annotated message.
+
+The field specified should be a valid 822-style message field name,
+which means that it should consist of alphanumerics (or dashes) only.
+The body specified is arbitrary text.
+
+If a `\-component\ field' is not specified when \fIanno\fR is invoked,
+\fIanno\fR will prompt the user for the name of field for the annotation.
+.Fi
+^$HOME/\&.mh\(ruprofile~^The user profile
+.Pr
+^Path:~^To determine the user's MH directory
+.Ps
+^Current\-Folder:~^To find the default current folder
+.Sa
+dist (1), forw (1), repl (1)
+.De
+`+folder' defaults to the current folder
+.Ds
+`msgs' defaults to cur
+.Ds
+`\-noinplace'
+.Ds
+`\-date'
+.Co
+If a folder is given, it will become the current folder.
+The first message annotated will become the current message.
+.En
+@
+
+
+2.3
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+2.2
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH ANNO 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+2.1
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH ANNO 1 [mh.6] MH
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d2 2
+a3 2
+.SC ANNO 1
+.NA
+d5 1
+a5 1
+.SY
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 1
+d27 2
+d52 2
+@

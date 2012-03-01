@@ -1,0 +1,72 @@
+head     2.1;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @@;
+
+
+2.1
+date     90.04.06.09.51.39;  author sources;  state Exp;
+branches ;
+next     2.0;
+
+2.0
+date     89.11.17.15.56.53;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     89.11.17.15.44.23;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+2.1
+log
+@*** empty log message ***
+@
+text
+@mmdfldir:	@@(MHDROPATH)
+mmdflfil:	@@(MHDROPFIL)
+uucpldir:	/usr/spool/mail
+uucplfil:	
+mmdelim1:	\001\001\001\001\n
+mmdelim2:	\001\001\001\001\n
+mmailid:	0
+umincproc:
+lockldir:
+
+hostable:	@@(MHETCPATH)/hosts
+
+bbdomain:	UCI
+systemname:	paris.ics.uci.edu
+
+nntphost:	paris.ics.uci.edu
+
+servers:	paris.ics.uci.edu ics.uci.edu \01localnet
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d16 1
+a16 1
+nntpbbhost:	paris.ics.uci.edu
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d14 5
+@

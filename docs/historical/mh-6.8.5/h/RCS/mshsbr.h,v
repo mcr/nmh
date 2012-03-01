@@ -1,0 +1,232 @@
+head	1.8;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.8
+date	95.12.07.21.34.13;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	95.12.07.18.50.19;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	93.08.25.17.16.28;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.05.12.22.04.01;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.01.31.16.38.28;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.04.05.15.06.34;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.05.14.20.30;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.05.14.20.10;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@32bit ansi fix
+@
+text
+@/* mshsbr.h - definitions for msh */
+/* @@(#)$Id: mshsbr.h,v 1.7 1995/12/07 18:50:19 jromine Exp jromine $ */
+
+struct Cmd {
+    char    line[BUFSIZ];
+    char   *args[MAXARGS];
+
+    char   *redirect;
+
+    int     direction;
+#define	STDIO	0		/* regular stdoutput */
+#define	CRTIO	1		/* create  re-direct */
+#define	APPIO	2		/* append  re-direct */
+#define	PIPIO	3		/* pipe    re-direct */
+
+    FILE   *stream;
+};
+#define	NULLCMD	((struct Cmd *) 0)
+
+
+struct Msg {
+    struct drop m_drop;
+#define	m_bboard_id	m_drop.d_id
+#define	m_top		m_drop.d_size
+#define	m_start		m_drop.d_start
+#define	m_stop		m_drop.d_stop
+
+    char   *m_scanl;
+    
+    struct tws  m_tb;
+
+    short   m_flags;
+#define	MHNCHK	0x0001	/* did nontext check */
+#define	MHNYES	0x0002	/*   .. and known to be non-text */
+
+    int     m_stats;	/* ought to be unsigned (also in mh.h) */
+#define CUR ((unsigned)1 << (FFATTRSLOT + NATTRS))
+#ifdef	BPOP
+#define	VIRTUAL	SELECT_EMPTY
+#endif /* BPOP */
+};
+
+/*  */
+
+				/* FOLDER */
+extern char  *fmsh;		/* folder instead of file */
+extern int    modified;		/* command modified folder */
+extern struct msgs *mp;		/* used a lot */
+extern struct Msg  *Msgs;	/* Msgs[0] not used */
+
+FILE  *msh_ready ();
+
+
+				/* COMMAND */
+extern int  interactive;	/* running from a /dev/tty */
+extern int  redirected;		/* re-directing output */
+extern  FILE  *sp;		/* original stdout */
+
+extern char *cmd_name;		/* command being run */
+
+extern char myfilter[];		/* path to mhl.forward */
+
+
+
+extern char *BBoard_ID;		/* BBoard-ID constant */
+
+
+				/* SIGNALS */
+extern TYPESIG  (*istat) ();	/* original SIGINT */
+extern TYPESIG  (*qstat) ();	/* original SIGQUIT */
+extern int  interrupted;	/* SIGINT detected */
+extern int  broken_pipe;	/* SIGPIPE detected */
+extern int  told_to_quit;	/* SIGQUIT detected */
+
+#ifdef	BSD42
+extern int  should_intr;	/* signal handler should interrupt call */
+extern jmp_buf sigenv;		/* the environment pointer */
+#endif /* BSD42 */
+
+
+off_t    lseek ();
+@
+
+
+1.7
+log
+@increase m_stats to int (to agree with mh.h)
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mshsbr.h,v 1.6 1993/08/25 17:16:28 jromine Exp jromine $ */
+d36 2
+a37 2
+    int     m_stats;
+#define CUR (1 << (FFATTRSLOT + NATTRS))
+@
+
+
+1.6
+log
+@off_t fixes for BSD44
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mshsbr.h,v 1.5 1992/05/12 22:04:01 jromine Exp jromine $ */
+d36 1
+a36 1
+    short   m_stats;
+@
+
+
+1.5
+log
+@fix ifdefs
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mshsbr.h,v 1.4 1992/01/31 16:38:28 jromine Exp jromine $ */
+d81 1
+a81 1
+long    lseek ();
+@
+
+
+1.4
+log
+@Multimedia MH
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mshsbr.h,v 1.3 90/04/05 15:06:34 sources Exp $ */
+d40 1
+a40 1
+#endif	BPOP
+d78 1
+a78 1
+#endif	BSD42
+@
+
+
+1.3
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id:$ */
+d31 4
+@
+
+
+1.2
+log
+@TYPESIG
+@
+text
+@d2 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d64 2
+a65 2
+extern int  (*istat) ();	/* original SIGINT */
+extern int  (*qstat) ();	/* original SIGQUIT */
+@

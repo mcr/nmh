@@ -1,0 +1,614 @@
+head	1.5;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.5
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.05.15.05.05;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.23.11.14.31;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.01.14.45.29;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.01.14.45.07;	author sources;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	90.02.23.10.43.44;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@endif sugar
+@
+text
+@#include <stdio.h>
+#include <ctype.h>
+#ifndef	lint
+static char ident[] = "@@(#)$Id: lexstring.c,v 1.4 1990/04/05 15:05:05 sources Exp jromine $";
+#endif	/* lint */
+
+#define YYLERR yysvec
+#define YYTYPE int
+#define YYLMAX 256
+
+struct yysvf { 
+#ifndef hpux
+	struct yywork *yystoff;
+#else	/* hpux */
+	int yystoff;
+#endif	/* hpux */
+	struct yysvf *yyother;
+	int *yystops;
+};
+
+struct yywork { 
+	YYTYPE	verify;
+	YYTYPE	advance; 
+}; 
+
+extern int yyvstop[];
+extern struct yywork yycrank[];
+extern struct yysvf yysvec[];
+extern char yymatch[];
+extern char yyextra[];
+
+#ifdef LEXDEBUG
+static int debug = 0;
+#endif	/* LEXDEBUG */
+
+#ifdef ONECASE
+static char case_map[] = {
+     0,   1,   2,   3,   4,   5,   6,   7,   8,   9,
+    10,  11,  12,  13,  14,  15,  16,  17,  18,  19,
+    20,  21,  22,  23,  24,  25,  26,  27,  28,  29,
+    30,  31,  32,  33,  34,  35,  36,  37,  38,  39,
+    40,  41,  42,  43,  44,  45,  46,  47,  48,  49,
+    50,  51,  52,  53,  54,  55,  56,  57,  58,  59,
+    60,  61,  62,  63,  64,  97,  98,  99, 100, 101,
+   102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+   112, 113, 114, 115, 116, 117, 118, 119, 120, 121,
+   122,  91,  92,  93,  94,  95,  96,  97,  98,  99,
+   100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+   110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
+   120, 121, 122, 123, 124, 125, 126, 127,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0
+};
+#endif	/* ONECASE */
+
+lex_string( strptr, start_cond)
+	char	**strptr;
+	int	start_cond;
+{
+	register struct yysvf *state, **lsp;
+	register struct yywork *tran;
+	register int statenum;
+	register int ch;
+	register char	*cp = *strptr;
+	register int	*found;
+	struct	yysvf *yylstate[YYLMAX];
+
+	/* start off machines */
+	lsp = yylstate;
+	statenum = 1 + start_cond;
+	state = yysvec + statenum;
+	for (;;){
+# ifdef LEXDEBUG
+		if (debug) {
+			fprintf(stderr,"%d ",statenum - 1);
+		}
+# endif
+#ifndef hpux
+		tran = state->yystoff;
+#else	/* hpux */
+		tran = &yycrank[state->yystoff];
+#endif	/* hpux */
+		if(tran == yycrank)
+			/* may not be any transitions */
+			if (state->yyother == 0 ||
+#ifndef hpux
+			    state->yyother->yystoff == yycrank)
+#else	/* hpux */
+			    state->yyother->yystoff == 0)
+#endif	/* hpux */
+				break;
+
+#ifdef ONECASE
+		ch = case_map[*cp++];
+#else	/*  not ONECASE */
+		ch = *cp++;
+#endif	/* ONECASE */
+# ifdef LEXDEBUG
+		if (debug) {
+			fprintf(stderr,"(");
+			allprint(ch);
+			fprintf(stderr, ")");
+		}
+# endif
+tryagain:
+#ifndef hpux
+		if ( tran > yycrank){
+#else	/* hpux */
+		if ( (int)tran > (int)yycrank){
+#endif	/* hpux */
+			tran += ch;
+			if (tran->verify == statenum){
+				if ((statenum = tran->advance) == 0){
+					/* error transitions */
+					--cp;
+					break;
+				}
+				state = statenum + yysvec;
+				*lsp++ = state;
+				goto contin;
+			}
+
+#ifndef hpux
+		} else if(tran < yycrank) {
+#else	/* hpux */
+		} else if( (int)tran < (int)yycrank) {
+#endif	/* hpux */
+			tran = yycrank+(yycrank-tran) + ch;
+# ifdef LEXDEBUG
+			if (debug) {
+				fprintf(stderr," compressed");
+			}
+# endif
+			if (tran->verify == statenum){
+				if ((statenum = tran->advance) == 0)
+					/* error transitions */
+					break;
+
+				state = statenum + yysvec;
+				*lsp++ = state;
+				goto contin;
+			}
+			tran += (yymatch[ch] - ch);
+# ifdef LEXDEBUG
+			if (debug) {
+				fprintf(stderr,"(fb ");
+				allprint(yymatch[ch]);
+				fprintf(stderr,")");
+			}
+# endif
+			if (tran->verify == statenum){
+				if((statenum = tran->advance) == 0)
+					/* error transition */
+					break;
+
+				state = statenum + yysvec;
+				*lsp++ = state;
+				goto contin;
+			}
+		}
+		if ((state = state->yyother) &&
+#ifndef hpux
+		    (tran = state->yystoff) != yycrank){
+#else	/* hpux */
+		    (tran = &yycrank[state->yystoff]) != yycrank){
+#endif	/* hpux */
+			statenum = state - yysvec;
+# ifdef LEXDEBUG
+			if (debug) {
+				fprintf(stderr,"fb %d", statenum - 1);
+			}
+# endif
+			goto tryagain;
+		} else
+			break;
+
+contin:
+# ifdef LEXDEBUG
+		if (debug) {
+			fprintf(stderr,">");
+		}
+# endif
+		;
+	}
+# ifdef LEXDEBUG
+	if (debug) {
+		fprintf(stderr,"\nStopped in state %d (",*(lsp-1)-yysvec-1);
+		allprint(ch);
+		fprintf(stderr, ") ");
+	}
+# endif
+	while (lsp-- > yylstate){
+		if (*lsp != 0 && (found= (*lsp)->yystops) && *found > 0){
+			if(yyextra[*found]){
+				/* must backup */
+				ch = -*found;
+				do {
+					while (*found && *found++ != ch)
+						;
+				 } while (lsp > yylstate &&
+					  (found = (*--lsp)->yystops));
+			}
+# ifdef LEXDEBUG
+			if (debug) {
+				fprintf(stderr," Match \"");
+				for ( cp = *strptr;
+				      cp <= ((*strptr)+(lsp-yylstate));
+				      cp++)
+					allprint( *cp );
+				fprintf(stderr,"\" action %d\n",*found);
+			}
+# endif
+			*strptr += (lsp - yylstate + 1);
+			return(*found);
+		}
+	}
+	/* the string didn't match anything - if we're looking at
+	 * eos, just return 0.  Otherwise, bump the string pointer
+	 * and return -1.
+	 */
+# ifdef LEXDEBUG
+	if (debug) {
+		fprintf(stderr," No match\n");
+	}
+#endif	/* LEXDEBUG */
+	if ( **strptr ) {
+		(*strptr)++;
+		return (-1);
+	}
+	return (0);
+}
+
+#ifdef LEXDEBUG
+allprint(c)
+	char c;
+{
+	if ( c < 32 ) {
+	    putc( '^', stderr );
+	    c += 32;
+	} else if ( c == 127 ) {
+	    putc( '^', stderr );
+	    c = '?';
+	}
+	putc( c, stderr );
+}
+#endif	/* LEXDEBUG */
+@
+
+
+1.4
+log
+@add ID
+@
+text
+@d4 2
+a5 2
+static char ident[] = "@@(#)$Id:$";
+#endif	lint
+d14 1
+a14 1
+#else hpux
+d16 1
+a16 1
+#endif hpux
+d34 1
+a34 1
+#endif LEXDEBUG
+d59 1
+a59 1
+#endif ONECASE
+d85 1
+a85 1
+#else hpux
+d87 1
+a87 1
+#endif hpux
+d93 1
+a93 1
+#else hpux
+d95 1
+a95 1
+#endif hpux
+d100 1
+a100 1
+#else  not ONECASE
+d102 1
+a102 1
+#endif ONECASE
+d113 1
+a113 1
+#else hpux
+d115 1
+a115 1
+#endif hpux
+d130 1
+a130 1
+#else hpux
+d132 1
+a132 1
+#endif hpux
+d169 1
+a169 1
+#else hpux
+d171 1
+a171 1
+#endif hpux
+d230 1
+a230 1
+#endif LEXDEBUG
+d251 1
+a251 1
+#endif LEXDEBUG
+@
+
+
+1.3
+log
+@merged VJ and HPUX changes
+@
+text
+@d3 3
+@
+
+
+1.2
+log
+@hpux patches
+@
+text
+@a25 1
+extern struct yywork *yytop;
+d33 25
+d64 1
+d72 2
+a73 1
+	state = yysvec+1+start_cond;
+d76 3
+a78 2
+		if(debug)
+			fprintf(stderr,"state %d\n",state-yysvec-1);
+d95 3
+a98 3
+#ifdef ONECASE
+		if (isupper(ch) )
+			ch = tolower(ch);
+a99 1
+tryagain:
+d101 2
+a102 2
+		if(debug){
+			fprintf(stderr,"char ");
+d104 1
+a104 1
+			putchar('\n');
+d107 1
+d114 2
+a115 2
+			if (tran <= yytop && tran->verify+yysvec == state){
+				if ((state = tran->advance+yysvec) == YYLERR){
+d120 1
+a129 1
+			/* r < yycrank */
+d132 3
+a134 2
+			if (debug)
+				fprintf(stderr,"compressed state\n");
+d136 2
+a137 2
+			if(tran <= yytop && tran->verify+yysvec == state){
+				if ((state = tran->advance+yysvec) == YYLERR)
+d141 1
+d147 2
+a148 2
+			if(debug){
+				fprintf(stderr,"try fall back character ");
+d150 1
+a150 1
+				putchar('\n');
+d153 2
+a154 2
+			if(tran <= yytop && tran->verify+yysvec == state){
+				if(tran->advance+yysvec == YYLERR)
+d158 2
+a159 1
+				*lsp++ = state = tran->advance+yysvec;
+d169 1
+d171 3
+a173 3
+			if(debug)
+				fprintf(stderr,"fall back to state %d\n",
+					state-yysvec-1);
+d181 2
+a182 4
+		if(debug){
+			fprintf(stderr,"state %d char ",state-yysvec-1);
+			allprint(ch);
+			putchar('\n');
+d188 2
+a189 2
+	if(debug){
+		fprintf(stderr,"stopped at %d with ",*(lsp-1)-yysvec-1);
+d191 1
+a191 1
+		putchar('\n');
+d206 2
+a207 2
+			if(debug){
+				fprintf(stderr,"\nmatch ");
+d212 1
+a212 1
+				fprintf(stderr," action %d\n",*found);
+d224 3
+a226 2
+	if(debug)
+		fprintf(stderr,"\nno match\n");
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d9 1
+d11 3
+d53 1
+d55 3
+d61 1
+d63 3
+d81 1
+d83 3
+d97 1
+d99 3
+d134 1
+d136 3
+@
+
+
+1.1.1.1
+log
+@Fixes from Van Jacobson
+@
+text
+@d22 1
+a29 25
+#ifdef ONECASE
+static char case_map[] = {
+     0,   1,   2,   3,   4,   5,   6,   7,   8,   9,
+    10,  11,  12,  13,  14,  15,  16,  17,  18,  19,
+    20,  21,  22,  23,  24,  25,  26,  27,  28,  29,
+    30,  31,  32,  33,  34,  35,  36,  37,  38,  39,
+    40,  41,  42,  43,  44,  45,  46,  47,  48,  49,
+    50,  51,  52,  53,  54,  55,  56,  57,  58,  59,
+    60,  61,  62,  63,  64,  97,  98,  99, 100, 101,
+   102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+   112, 113, 114, 115, 116, 117, 118, 119, 120, 121,
+   122,  91,  92,  93,  94,  95,  96,  97,  98,  99,
+   100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+   110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
+   120, 121, 122, 123, 124, 125, 126, 127,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0
+};
+#endif ONECASE
+
+a35 1
+	register int statenum;
+d43 1
+a43 2
+	statenum = 1 + start_cond;
+	state = yysvec + statenum;
+d46 2
+a47 3
+		if (debug) {
+			fprintf(stderr,"%d ",statenum - 1);
+		}
+d56 1
+d58 2
+a59 3
+		ch = case_map[*cp++];
+#else  not ONECASE
+		ch = *cp++;
+d61 1
+d63 2
+a64 2
+		if (debug) {
+			fprintf(stderr,"(");
+d66 1
+a66 1
+			fprintf(stderr, ")");
+a68 1
+tryagain:
+d71 2
+a72 2
+			if (tran->verify == statenum){
+				if ((statenum = tran->advance) == 0){
+a76 1
+				state = statenum + yysvec;
+d82 1
+d85 2
+a86 3
+			if (debug) {
+				fprintf(stderr," compressed");
+			}
+d88 2
+a89 2
+			if (tran->verify == statenum){
+				if ((statenum = tran->advance) == 0)
+a92 1
+				state = statenum + yysvec;
+d98 2
+a99 2
+			if (debug) {
+				fprintf(stderr,"(fb ");
+d101 1
+a101 1
+				fprintf(stderr,")");
+d104 2
+a105 2
+			if (tran->verify == statenum){
+				if((statenum = tran->advance) == 0)
+d109 1
+a109 2
+				state = statenum + yysvec;
+				*lsp++ = state;
+a114 1
+			statenum = state - yysvec;
+d116 3
+a118 3
+			if (debug) {
+				fprintf(stderr,"fb %d", statenum - 1);
+			}
+d126 4
+a129 2
+		if (debug) {
+			fprintf(stderr,">");
+d135 2
+a136 2
+	if (debug) {
+		fprintf(stderr,"\nStopped in state %d (",*(lsp-1)-yysvec-1);
+d138 1
+a138 1
+		fprintf(stderr, ") ");
+d153 2
+a154 2
+			if (debug) {
+				fprintf(stderr," Match \"");
+d159 1
+a159 1
+				fprintf(stderr,"\" action %d\n",*found);
+d171 2
+a172 3
+	if (debug) {
+		fprintf(stderr," No match\n");
+	}
+@

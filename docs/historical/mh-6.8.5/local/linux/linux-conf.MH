@@ -1,0 +1,30 @@
+# @(#)$Id: MH,v 1.7 90/04/06 09:44:31 sources Exp $
+# Linux i386
+bin	/usr/bin/mh
+bboards	off
+etc	/usr/lib/mh
+mail	/usr/spool/mail
+mandir	/usr/man
+manuals	standard
+chown	/bin/chown
+cc	cc
+ccoptions	-traditional -D_NFILE='getdtablesize()' -DSIGEMT=SIGUSR1 -O2
+ldoptions	
+ldoptlibs	-ldbm
+lex	flex
+ranlib	on
+mts	sendmail/smtp
+bbdelivery	off
+bbhome	/usr/spool/bboards
+pop	on
+popdir	/usr/sbin
+signal	void
+sprintf	int
+mailgroup	mail
+# MH has never worked properly with terminfo, to my knowledge.  It looks
+# like vmh still tries to play the internals game, which is bound to fail.
+curses	-lcurses -ltermcap
+# This is POSIX.  Building Linux software for BSD is almost always a mistake.
+options	SYS5 MORE='"/usr/bin/more"' RENAME SYS5DIR UNISTD SVR4 MIME
+options	VSPRINTF MHE OVERHEAD RPATHS DUMB ATHENA BIND SOCKETS NTOHLSWAP
+options DPOP POP2 RPOP MHRC

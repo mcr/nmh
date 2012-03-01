@@ -1,0 +1,68 @@
+MH 6.8.3 for Linux
+==================
+
+This distribution consists of two packages:  mh-6.8.3-bin.tar.gz contains
+shared binaries, and mh-6.8.3-patch.tar.gz contains patches to the UCI MH
+6.8.3 distribution.  The patches will allow the building of shared or static
+binaries, although the implementation is still a bit of a hack.  You may
+download either or both packages, depending on whether you want sources,
+binaries, or both.
+
+You will need to add a user for POP, and another for BBoards.  I used:
+
+pop:x:13:13:POP administrator:/usr/lib/mh:/bin/sh
+bboards:x:14:14:BBoards administrator:/usr/spool/bboards:/bin/sh
+
+Do this before unpacking the binary distribution to avoid problems with buggy
+versions of GNU tar, or before installing binaries built from the source
+patch distribution.  (Note that the BBoards spool area is not included in the
+binary distribution.)
+
+mh-6.8.3-bin.tar.gz should be unpacked from the root directory.  It places
+files in /usr/bin/mh, /usr/lib/mh, and /usr/sbin (popd), installs manpages in
+/usr.man/man?/*.?mh, and installs the MH shared library libmh.so.2.0 in /lib.
+(WARNING!!!  The internals of MH have changed; you can not use the older
+shared library with the new binaries, or vice versa.)  Add /usr/bin/mh to your
+PATH and you're set.  (Ed. note:  I don't want to hear about the choice of
+directories.  Complain to the FSSTND folks if you don't like it, or grab the
+source package and recompile it with different paths.)
+
+mh-6.8.3-patch.tar.gz can be unpacked anywhere, although it's convenient to
+unpack it into the top directory of the UCI MH distribution.  After unpacking,
+issue the commands:
+
+patch -p0 -N < DIFFS-pre
+cp -f MH conf/MH
+(cd conf/mh; make; mhconfig MH)
+make clean
+
+(If you want to change the configuration, edit conf/MH after the cp -f.)
+
+If you want to build shared binaries, you must issue the command:
+
+patch -p0 -N < DIFFS-post
+
+after the "make clean" step.  Depending on what changes you may have made to
+conf/MH, you may see several failures; you will need to patch those files
+manually.  Eventually, I will get this into the distribution makefiles and the
+post-patch won't be necessary.
+
+!!! If you do not patch the binaries, you may want to edit doc/Makefile and
+!!! change the definitions of MAN1EXT, MAN5EXT, and MAN8EXT to add the "mh"
+!!! suffix to the manpages when they are installed.  This can not easily be
+!!! done automatically; fixing it will require some changes to mhconfig.
+
+Everything is now ready:  "make" will build the distribution.  (You will see
+various warnings because NULL is defined as "(void *) 0" instead of simply
+"0", and for shared binaries the DLL tools will complain about relative
+JUMP_DIR settings.  The alternative having been to hardcode the full pathname,
+forcing everyone to unpack MH in /varopt, I chose to accept the warnings.)
+
+"make install" will place the binaries and configuration files in the
+appropriate locations, and will install libmh.so.2.0 in /lib and run ldconfig.
+
+If you need help building MH beyond this, I suggest reading the file READ-ME
+in the top level of the UCI MH distribution.
+
+Brandon S. Allbery
+bsa@kf8nh.wariat.org

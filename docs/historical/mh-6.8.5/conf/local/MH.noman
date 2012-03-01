@@ -1,0 +1,24 @@
+bin	/usr/local
+bboards	on
+bbhome	/usr/bboards
+etc	/usr/local/lib/mh
+mail	/usr/spool/mail
+mandir	/usr/man
+manuals	none
+chown	/etc/chown
+editor	prompter
+remove	mv -f
+mf	off
+mts	mmdf2/smtp
+options	BSD42 BSD43 MHRC SUN40
+options	MHE WHATNOW NFS
+options UCI BIND
+pop	on
+options	RPOP
+nntpbboards on
+popbboards off
+ldoptions -s
+ldoptlibs -ldbm
+curses -lcurses -ltermcap
+ranlib  on
+sharedlib off

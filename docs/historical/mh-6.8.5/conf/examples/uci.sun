@@ -1,0 +1,52 @@
+# uci.sun	- MH 6.8 - Sun3 or Sun4 running Sun OS 4
+#
+bin	/opt/mh-6.8.4/bin
+etc	/opt/mh-6.8.4/lib
+popdir	/opt/mh-6.8.4/lib
+mandir	/opt/mh-6.8.4/man
+slibdir	/opt/mh-6.8.4/lib
+bbhome	/usr/bboards
+mail	/usr/spool/mail
+mailgroup	off
+manuals		standard
+chown	/etc/chown
+editor	prompter
+remove	rm -f
+mts	mmdf2/smtp
+bboards	nntp
+bbdelivery off
+mf	off
+pop	on
+options	BIND
+options	BSD42 
+options	BSD43 
+#options	LOCKF
+options	MHE
+options	MHRC 
+options	RPATHS
+options	WHATNOW
+options	MIME
+options UCI
+options	POP2
+options	RPOP
+options	NEWSAUTH
+#options	APOP
+#options	JLR
+curses -lcurses -ltermcap
+ranlib  on
+# Sun specifics
+#options	TYPESIG=void
+signal	void
+options	DBMPWD
+options	NFS
+options	SUN40
+options	ATTVIBUG
+#options	MPOP
+#options	ZONEINFO
+#
+#cc	/usr/bs/sunc/cc
+#cc	/usr/gnu/bin/gcc
+#cc      /opt/SUNWspro/3.0.1/bin/acc
+ldoptions -s -L/opt/mh-6.8.4/lib
+ldoptlibs -ldbm
+sharedlib sun4

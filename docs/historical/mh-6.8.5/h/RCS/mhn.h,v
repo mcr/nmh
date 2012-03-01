@@ -1,0 +1,132 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	93.08.20.15.43.43;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.10.16.17.13.19;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.01.31.16.27.00;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@multimedia MH
+@
+
+
+1.3
+log
+@fixes from mtr
+@
+text
+@/* mhn.h - definitions for mhn & friends */
+/* @@(#)$Id: mhn.h,v 1.2 1992/10/16 17:13:19 jromine Exp jromine $ */
+
+#define	VRSN_FIELD	"MIME-Version"
+#define	VRSN_VALUE	"1.0"
+
+#define	XXX_FIELD_PRF	"Content-"
+
+#define	TYPE_FIELD	"Content-Type"
+
+#define	ENCODING_FIELD	"Content-Transfer-Encoding"
+
+#define	ID_FIELD	"Content-ID"
+
+#define	DESCR_FIELD	"Content-Description"
+
+#define	MD5_FIELD	"Content-MD5"
+
+
+#define	isatom(c) \
+    	(!isspace (c) \
+	    && !iscntrl (c) \
+	    && (c) != '(' \
+	    && (c) != ')' \
+	    && (c) != '<' \
+	    && (c) != '>' \
+	    && (c) != '@@' \
+	    && (c) != ',' \
+	    && (c) != ';' \
+	    && (c) != ':' \
+	    && (c) != '\\' \
+	    && (c) != '"' \
+	    && (c) != '.' \
+	    && (c) != '[' \
+	    && (c) != ']')
+
+#define	istoken(c) \
+    	(!isspace (c) \
+	    && !iscntrl (c) \
+	    && (c) != '(' \
+	    && (c) != ')' \
+	    && (c) != '<' \
+	    && (c) != '>' \
+	    && (c) != '@@' \
+	    && (c) != ',' \
+	    && (c) != ';' \
+	    && (c) != ':' \
+	    && (c) != '\\' \
+	    && (c) != '"' \
+	    && (c) != '/' \
+	    && (c) != '[' \
+	    && (c) != ']' \
+	    && (c) != '?' \
+	    && (c) != '=')
+
+/* MTR: removed now, since likely to go away in the future
+	    && (c) != '.' \
+ */
+
+/*  */
+
+#define	CPERLIN	76
+#define	BPERLIN	(CPERLIN / 4)
+#define	LPERMSG	632
+#define	CPERMSG	(LPERMSG * CPERLIN)
+
+/*  */
+
+#if	defined(BSD42) || defined(SOCKETS)
+#define	FTP
+#endif
+@
+
+
+1.2
+log
+@fixes from mtr -- mime/update9
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mhn.h,v 1.1 1992/01/31 16:27:00 jromine Exp $ */
+d16 2
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id$ */
+d52 3
+d56 1
+a56 1
+	    && (c) != '=')
+@

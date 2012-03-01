@@ -1,0 +1,834 @@
+head	2.19;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+2.19
+date	93.02.26.21.53.29;	author jromine;	state Exp;
+branches;
+next	2.18;
+
+2.18
+date	92.12.14.17.10.43;	author jromine;	state Exp;
+branches;
+next	2.17;
+
+2.17
+date	92.11.24.20.24.06;	author jromine;	state Exp;
+branches;
+next	2.16;
+
+2.16
+date	92.11.17.20.42.05;	author jromine;	state Exp;
+branches;
+next	2.15;
+
+2.15
+date	92.11.04.00.32.42;	author jromine;	state Exp;
+branches;
+next	2.14;
+
+2.14
+date	92.11.02.18.52.04;	author jromine;	state Exp;
+branches;
+next	2.13;
+
+2.13
+date	92.10.27.16.57.25;	author jromine;	state Exp;
+branches;
+next	2.12;
+
+2.12
+date	92.05.12.21.47.13;	author jromine;	state Exp;
+branches;
+next	2.11;
+
+2.11
+date	92.02.11.00.38.12;	author jromine;	state Exp;
+branches;
+next	2.10;
+
+2.10
+date	92.02.04.00.00.59;	author jromine;	state Exp;
+branches;
+next	2.9;
+
+2.9
+date	92.02.03.16.34.21;	author jromine;	state Exp;
+branches;
+next	2.8;
+
+2.8
+date	92.01.31.21.37.07;	author jromine;	state Exp;
+branches;
+next	2.7;
+
+2.7
+date	92.01.24.00.03.50;	author jromine;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	90.04.05.15.06.09;	author sources;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	90.03.27.19.14.05;	author sources;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	90.02.23.14.28.50;	author sources;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.02.23.14.27.01;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.05.14.19.54;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.01.13.20.04;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.56.55;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.06.26.15.41.03;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.19
+log
+@386BSD/BSD44
+@
+text
+@/* mh.h - main header file for all of MH */
+/* @@(#)$Id: mh.h,v 2.18 1992/12/14 17:10:43 jromine Exp jromine $ */
+
+
+/* Well-used constants */
+
+#define	NOTOK		(-1)	/* syscall()s return this on error */
+#define	OK		0	/*  ditto on success */
+#define	DONE		1	/* trinary logic */
+#define ALL		""
+#define NULLCP		((char *) 0)
+#define NULLVP		((char **) 0)
+#define	Nbby		8	/* number of bits/byte */
+
+#define MAXARGS		1000	/* max arguments to exec */
+
+#define NFOLDERS	 300	/* max folder arguments on command line */
+
+#ifndef	UCI
+#define	MAXFOLDER	1000	/* message increment */
+#else
+#define	MAXFOLDER	1500	/* message increment */
+#endif
+#define DMAXFOLDER	   4	/* typical number of digits */
+
+#if (!defined(BSD42) && !defined(BSD41A) && !defined(VMUNIX) && !defined(hpux)) || defined(_AIX)
+#define	vfork		fork
+#endif	/* not BSD */		/* how sad... */
+
+/*  */
+
+/* profile structure */
+
+struct node {
+    char   *n_name;		/* key */
+    char   *n_field;		/* value */
+
+    char    n_context;		/* context, not profile */
+
+    struct node *n_next;	/* next entry */
+};
+
+
+/* switches structure */
+
+#define	AMBIGSW		(-2)	/* from smatch() on ambiguous switch */
+#define	UNKWNSW		(-1)	/*  ditto on unknown switch */
+
+struct swit {
+    char   *sw;
+    int     minchars;
+};
+
+extern struct swit  anoyes[];	/* standard yes/no switches */
+
+
+/* messages structure */
+
+struct msgs {
+    int     hghmsg;		/* Highest msg in directory     */
+    int     nummsg;		/* Actual Number of msgs        */
+    int     lowmsg;		/* Lowest msg number            */
+    int     curmsg;		/* Number of current msg if any */
+
+    int     lowsel;		/* Lowest selected msg number   */
+    int     hghsel;		/* Highest selected msg number  */
+    int     numsel;		/* Number of msgs selected      */
+
+    char   *foldpath;		/* Pathname of folder           */
+
+    int     msgflags;		/* Folder status bits           */
+#ifndef	MTR
+    char    pad1[sizeof (int) - sizeof (char)];
+#endif /* not MTR */
+#define READONLY  0x01		/*     No write access to folder */
+#define	SEQMOD	  0x02		/*     folder's sequences modifed */
+#define	MHPATH	  0x04		/*     mhpath-style folder handling */
+#define	OTHERS	  0x08		/*     folder has other files	*/
+#define	MODIFIED  0x10		/*     msh in-core folder modified */
+#define	FBITS	"\020\01READONLY\02SEQMOD\03MHPATH\04OTHERS\05MODIFIED"
+
+/* Note well: msgstats[] is a int, so we have 16 or 32 bits to work
+	with.  The first 5 are for standard MH message flags,
+	this leaves us 11 (or 27) for user-defined attributes.  Of
+	these, 1 is reserved for future internal use, so this leaves
+	users 10 (or 26).					*/
+#define	NATTRS	((sizeof(int)*Nbby)-6) 		/*  see above	*/
+    char   *msgattrs[NATTRS + 1];/* folder attributes		*/
+    int     attrstats;		/* public=0/private=1		*/
+
+    int	    lowoff;		/* low element in msgstats[] */
+    int	    hghoff;		/* hgh element in msgstats[] */
+
+#ifndef	MTR
+    int     msgstats[1];	/* msg status			*/
+#else /* MTR */
+    int    *msgbase;		/* msg base			*/
+    int    *msgstats;		/* msg status			*/
+#endif /* MTR */
+#define EXISTS		0x0001	/*     exists			*/
+#define DELETED		0x0002	/*     deleted			*/
+#define SELECTED	0x0004	/*     selected for use		*/
+#define SELECT_EMPTY	0x0008	/*     mhpath "new"		*/
+#define	UNSEEN		0x0010	/*     inc/show "unseen"	*/
+#define	FFATTRSLOT	5	/*     user-defined attributes	*/
+				/*	first free slot is	*/
+				/*	(1 << 5) or 0x20	*/
+#define	MBITS	"\020\01EXISTS\02DELETED\03SELECTED\04NEW\05UNSEEN"
+
+#ifndef	MTR
+#define	MHSIZE(mp,lo,hi)	\
+		((unsigned) (sizeof *mp + ((hi) + 2) * sizeof *mp -> msgstats))
+#else /* MTR */
+#define	MHSIZE(mp,lo,hi)	((unsigned) sizeof *mp)
+#define	MHSIZEX(mp,lo,hi)	\
+		((unsigned) (((hi) - (lo) + 1) * sizeof *mp -> msgstats))
+#endif /* MTR */
+};
+
+#define	NULLMP	((struct msgs *) 0)
+
+/*  */
+
+/* m_getfld() message parsing */
+
+#define NAMESZ  128		/* Limit on component name size         */
+
+#define LENERR  (-2)		/* Name too long error from getfld      */
+#define FMTERR  (-3)		/* Message Format error                 */
+#define FLD      0		/* Field returned                       */
+#define FLDPLUS  1		/* Field " with more to come            */
+#define FLDEOF   2		/* Field " ending at eom                */
+#define BODY     3		/* Body  " with more to come            */
+#define BODYEOF  4		/* Body  " ending at eom                */
+#define FILEEOF  5		/* Reached end of input file            */
+
+
+/* Maildrop styles */
+
+#define	MS_DEFAULT	0	/* default (one msg per file) */
+#define	MS_UNKNOWN	1	/* type not known yet */
+#define	MS_UUCP		2	/* Unix-style "from" lines */
+#define	MS_MMDF		3	/* string mmdlm2 */
+#define	MS_MSH		4	/* whacko msh */
+
+extern int msg_count;		/* m_getfld() indicators */
+extern int msg_style;		/*  .. */
+extern char *msg_delim;		/*  .. */
+
+
+#define	NOUSE	0		/* draft being re-used */
+
+#define TFOLDER 0		/* path() given a +folder */
+#define TFILE   1		/* path() given a file */
+#define	TSUBCWF	2		/* path() given a @@folder */
+
+#ifndef	LINK
+#define	LINK	"@@"
+#endif /* not LINK */
+
+#ifndef	SBACKUP
+#define	SBACKUP	","
+#endif /* not SBACKUP */
+
+
+#define OUTPUTLINELEN	72	/* default line length for headers */
+
+/*  */
+
+/*
+ * These standard strings are defined in config.c.  They are the
+ * only system-dependent parameters in MH, and thus by redefining
+ * their values and reloading the various modules, MH will run
+ * on any system.
+ */
+
+extern char *components;
+extern char *context;
+extern char *current;
+extern char *defalt;
+extern char *digestcomps;
+extern char *distcomps;
+extern char *draft;
+extern char *faceproc;
+extern char *fileproc;
+extern char *foldprot;
+extern char *forwcomps;
+extern char *inbox;
+extern char *incproc;
+extern char *installproc;
+extern char *lproc;
+extern char *mailproc;
+extern char *mh_defaults;
+extern char *mh_profile;
+extern char *mh_seq;
+extern char *mhlformat;
+extern char *mhlforward;
+extern char *mhlproc;
+extern char *moreproc;
+extern char *msgprot;
+extern char *mshproc;
+extern char *nsequence;
+extern char *packproc;
+extern char *postproc;
+extern char *pfolder;
+extern char *psequence;
+extern char *rcvdistcomps;
+extern char *replcomps;
+extern char *rmfproc;
+extern char *rmmproc;
+extern char *sendproc;
+extern char *showproc;
+extern char *slocalproc;
+extern char *sysed;
+extern char *usequence;
+extern char *version;
+extern char *vmhproc;
+extern char *whatnowproc;
+extern char *whomproc;
+
+/*  */
+
+/* global variables -sigh- */
+
+extern char ctxflags;
+#define CTXMOD	0x01		/* context information modified */
+#define	DBITS	"\020\01CTXMOD"
+
+#ifdef	OVERHEAD
+extern int  fd_def;
+extern int  fd_ctx;
+#endif /* OVERHEAD */
+
+extern char *invo_name;		/* pgm invocation name */
+extern char *mypath;		/* user's $HOME */
+extern char *defpath;		/* pathname of user's profile */
+extern char *ctxpath;		/* pathname of user's context */
+
+extern struct node *m_defs;
+
+/*  */
+
+/* from the MH subroutine library */
+
+char   *add ();
+void	adios ();
+void	admonish ();
+void	advise ();
+void	advertise ();
+void	ambigsw ();
+int     atooi ();
+char  **brkstring ();
+void	closefds ();
+char   *concat ();
+char   *copy ();
+char  **copyip ();
+void	cpydata ();
+void	cpydgst ();
+void	discard ();
+void	done ();
+int     fdcompare ();
+int     gans ();
+char  **getans ();
+int	getanswer ();
+char   *getcpy ();
+void	help ();
+char   *libpath ();
+int     m_atoi ();
+char   *m_backup ();
+int     m_convert ();
+int     m_delete ();
+char   *m_draft ();
+void	m_eomsbr ();
+int     m_file ();
+char   *m_find ();
+void	m_fmsg ();
+void    m_foil ();
+void	m_getdefs ();
+int     m_getfld ();
+char   *m_getfolder ();
+int     m_gmprot ();
+struct msgs *m_gmsg ();
+char   *m_maildir ();
+char   *m_mailpath ();
+char   *m_name ();
+int	m_putenv ();
+void	m_readefs ();
+struct msgs *m_remsg ();
+void	m_replace ();
+char   *m_scratch ();
+char   *m_seq ();
+int	m_seqadd ();
+char   *m_seqbits ();
+int	m_seqdel ();
+int	m_seqflag ();
+int	m_seqnew ();
+void	m_setcur ();
+void	m_setseq ();
+void	m_setvis ();
+void    m_sync ();
+char   *m_tmpfil ();
+void	m_unknown ();
+void	m_update ();
+int	m_whatnow ();
+int     makedir ();
+char   *path ();
+int     peekc ();
+int     pidwait ();
+#define	pidXwait(id,cp)	pidstatus (pidwait (id, NOTOK), stdout, cp)
+int     pidstatus ();
+void	printsw ();
+void    push ();
+char   *pwd ();
+char   *r1bindex ();
+int	refile ();
+int	remdir ();
+int     showfile ();
+int     smatch ();
+char   *sprintb();
+int	ssequal ();
+int	stringdex ();
+char   *trimcpy ();
+int     type ();
+int     uleq ();
+int	unputenv ();
+int     uprf ();
+int	vfgets ();
+
+/*  */
+
+#include "../h/strings.h"
+
+/* should be in <stdio.h> */
+
+#if	!defined(SYS5) && !defined(ncr) && !defined(_AIX) && !defined(OSF1) && !defined(__convex__) && !defined(__386BSD__) && !defined(BSD44)
+typedef struct _iobuf  *FP;
+FP   popen ();
+#else /* SYS5 */
+#define	FP	FILE*
+#endif /* SYS5 */
+
+
+/* miscellaneous */
+
+#if !defined(BSD42) && !defined(hpux) && !defined(ncr) && !defined(_AIX) && !defined(RENAME)
+#define	rename(f1,f2)	(link (f1, f2) != NOTOK ? unlink (f1) : NOTOK)
+#endif	/* not BSD42 */
+
+#define	setsig(s,f)	if (signal (s, SIG_IGN) != SIG_IGN) \
+			    (void) signal (s, f)
+#define	setsigx(i,s,f)	if ((i = signal (s, SIG_IGN)) != SIG_IGN) \
+			    (void) signal (s, f)
+
+#if	defined(sun) && !defined(NFS)
+#define	NFS
+#endif
+
+#ifdef	NFS
+#define	ruserpass	_ruserpass
+#endif
+
+#if (defined(BSD44) || defined(SUN40) || defined(hpux) \
+	|| defined(_AIX) || defined (sgi)) && !defined(UNISTD)
+#define       UNISTD
+#endif
+@
+
+
+2.18
+log
+@convex
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.17 1992/11/24 20:24:06 jromine Exp jromine $ */
+d335 1
+a335 1
+#if	!defined(SYS5) && !defined(ncr) && !defined(_AIX) && !defined(OSF1) && !defined(__convex__)
+@
+
+
+2.17
+log
+@add OSF1 define
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.16 1992/11/17 20:42:05 jromine Exp jromine $ */
+d335 1
+a335 1
+#if	!defined(SYS5) && !defined(ncr) && !defined(_AIX) && !defined(OSF1)
+@
+
+
+2.16
+log
+@drop TYPESIG
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.15 1992/11/04 00:32:42 jromine Exp jromine $ */
+d335 1
+a335 1
+#if	!defined(SYS5) && !defined(ncr) && !defined(_AIX)
+@
+
+
+2.15
+log
+@putenv -> m_putenv
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.14 1992/11/02 18:52:04 jromine Exp jromine $ */
+a352 8
+
+#ifndef	TYPESIG
+#ifdef	SUN40
+#define	TYPESIG	void
+#else	/* use old V7 default */
+#define	TYPESIG	int
+#endif
+#endif /* not TYPESIG */
+@
+
+
+2.14
+log
+@rename NBBY
+use _AIX instead of AIX
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.13 1992/10/27 16:57:25 jromine Exp jromine $ */
+d286 1
+a312 1
+int	putenv ();
+@
+
+
+2.13
+log
+@UNISTD, RENAME
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.12 1992/05/12 21:47:13 jromine Exp jromine $ */
+d13 1
+a13 1
+#define	NBBY		8	/* number of bits/byte */
+d87 1
+a87 1
+#define	NATTRS	((sizeof(int)*NBBY)-6) 		/*  see above	*/
+d371 1
+a371 1
+	|| defined(AIX) || defined (sgi)) && !defined(UNISTD)
+@
+
+
+2.12
+log
+@fix ifdefs
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.11 1992/02/11 00:38:12 jromine Exp jromine $ */
+a332 1
+
+d345 1
+a345 1
+#if !defined(BSD42) && !defined(hpux) && !defined(ncr) && !defined(_AIX)
+d368 5
+@
+
+
+2.11
+log
+@allow 32-bit for user-defined sequences
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.10 1992/02/04 00:00:59 jromine Exp $ */
+d74 1
+a74 1
+#endif	not MTR
+d96 1
+a96 1
+#else	MTR
+d99 1
+a99 1
+#endif	MTR
+d113 1
+a113 1
+#else	MTR
+d117 1
+a117 1
+#endif	MTR
+d159 1
+a159 1
+#endif	not LINK
+d163 1
+a163 1
+#endif	not SBACKUP
+d232 1
+a232 1
+#endif	OVERHEAD
+d339 1
+a339 1
+#else	SYS5
+d341 1
+a341 1
+#endif	SYS5
+d361 1
+a361 1
+#endif	not TYPESIG
+@
+
+
+2.10
+log
+@contributed patch
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.9 1992/02/03 16:34:21 jromine Exp jromine $ */
+d13 1
+d71 1
+a71 1
+    char    msgflags;		/* Folder status bits           */
+d82 1
+a82 1
+/* Note well: msgstats[] is a short, so we have 16 bits to work
+d84 4
+a87 4
+	this leaves us 11 for user-defined attributes.  Of these,
+	1 is reserved for future internal use, so this leaves
+	users 10.						*/
+#define	NATTRS	10		/* could be 11, see above	*/
+d89 1
+a89 4
+    short   attrstats;		/* public=0/private=1		*/
+#ifndef	MTR
+    char    pad2[sizeof (int) - sizeof (short)];
+#endif	not MTR
+d95 1
+a95 1
+    short   msgstats[1];	/* msg status			*/
+d97 2
+a98 2
+    short  *msgbase;		/* msg base			*/
+    short  *msgstats;		/* msg status			*/
+@
+
+
+2.9
+log
+@kerberos
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.8 1992/01/31 21:37:07 jromine Exp jromine $ */
+d190 1
+@
+
+
+2.8
+log
+@kerberos
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.7 1992/01/24 00:03:50 jromine Exp jromine $ */
+d113 1
+a113 1
+#define	MSIZE(mp,lo,hi)	\
+d116 2
+a117 2
+#define	MSIZE(mp,lo,hi)	((unsigned) sizeof *mp)
+#define	MSIZEX(mp,lo,hi)	\
+@
+
+
+2.7
+log
+@ncr changes
+MAXFOLDER = 1500 at UCI
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id: mh.h,v 2.6 1990/04/05 15:06:09 sources Exp jromine $ */
+d25 1
+a25 1
+#if !defined(BSD42) && !defined(BSD41A) && !defined(VMUNIX) && !defined(hpux)
+d27 1
+a27 1
+#endif	not BSD			/* how sad... */
+d337 1
+a337 1
+#if	!defined(SYS5) && !defined(ncr)
+d347 1
+a347 1
+#if !defined(BSD42) && !defined(hpux) && !defined(ncr)
+d349 1
+a349 1
+#endif	not BSD42
+@
+
+
+2.6
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+/* @@(#)$Id:$ */
+d18 1
+d20 3
+d337 1
+a337 1
+#ifndef	SYS5
+d347 1
+a347 1
+#if !defined(BSD42) && !defined(hpux)
+@
+
+
+2.5
+log
+@some hpux fixes
+@
+text
+@d2 1
+@
+
+
+2.4
+log
+@TYPESIG
+@
+text
+@d342 1
+a342 1
+#ifndef	BSD42
+d344 1
+a344 1
+#endif	BSD42
+@
+
+
+2.3
+log
+@TYPESIG defaulting on SYS5/SUN40 systems
+@
+text
+@d352 1
+a352 1
+#if	defined (SYS5) || defined (SUN40)
+@
+
+
+2.2
+log
+@TYPESIG
+@
+text
+@d352 3
+d356 1
+@
+
+
+2.1
+log
+@up NFOLDERS to 300
+@
+text
+@d351 4
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d15 1
+a15 1
+#define NFOLDERS	 100	/* max folder arguments on command line */
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d20 1
+a20 1
+#ifndef	BSD42 || BSD41A || VMUNIX || hpux
+@

@@ -1,0 +1,140 @@
+head     1.5;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @@;
+
+
+1.5
+date     90.04.05.15.12.03;  author sources;  state Exp;
+branches ;
+next     1.4;
+
+1.4
+date     90.03.22.11.30.59;  author sources;  state Exp;
+branches ;
+next     1.3;
+
+1.3
+date     90.03.20.19.41.35;  author sources;  state Exp;
+branches ;
+next     1.2;
+
+1.2
+date     90.03.20.17.35.52;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.03.20.17.20.42;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.5
+log
+@add ID
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id:$
+.SC BBTAR 8
+.NA
+bbtar \- generate the names of archive files to be put to tape
+.SY
+@@(BBHOME)/bbtar
+\%[private] \%[public]
+.DE
+The \fIbbtar\fR program reads the BBoards database and produces on its
+standard output the names of BBoards archives which should be put to tape,
+for direct use in a \fItar\fR\0(1) command.
+
+If the argument `private' is given,
+only private BBoards are considered.
+If the argument `public' is given,
+only public BBoards are considered.
+This lets the BBoards administrator write two tapes,
+one for general read\-access (the public BBoards),
+and one for restricted access.
+The default is all BBoards
+
+For example:
+
+.nf
+.in +.5i
+cd archive		# change to the archive directory
+tar cv `bbtar private` 	# save all private BBoard archives
+.in -.5i
+.fi
+
+After the archives have been saved to tape,
+they are usually removed.
+The archives are then filled again,
+usually automatically by cron jobs which run \fIbbexp\fR\0(8).
+.Fi
+^@@(BBHOME)/BBoards~^BBoards database
+.Pr
+None
+.Sa
+bboards(5), bbexp(8)
+.De
+None
+.Co
+None
+.En
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH BBTAR 8 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH BBTAR 8 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC BBTAR 8
+.NA
+d5 1
+a5 1
+.SY
+@

@@ -1,0 +1,753 @@
+head	1.16;
+access;
+symbols;
+locks; strict;
+
+
+1.16
+date	95.12.06.23.31.56;	author jromine;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	92.10.29.22.03.44;	author jromine;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	92.10.28.16.53.03;	author jromine;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	92.05.12.22.23.34;	author jromine;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	92.02.15.00.10.42;	author jromine;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	92.02.12.19.08.15;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.02.10.20.00.15;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.02.03.18.11.52;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	90.04.05.22.18.43;	author sources;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	90.04.05.22.12.11;	author sources;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.05.15.13.25;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.03.22.11.31.26;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.21.16.28.55;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.03.20.19.42.05;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.03.20.17.36.21;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.03.20.17.21.04;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.16
+log
+@document %{addresses} for rcvdist
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id: mhook.rf,v 1.15 1992/10/29 22:03:44 jromine Exp jromine $
+.SC MHOOK 1
+.NA
+mhook, rcvdist, rcvpack, rcvtty  \- MH receive-mail hooks
+.SY
+.na
+.ti .5i
+@@(MHETCPATH)/rcvdist
+\%[\-form\ formfile]
+\%[switches\ for\ \fIpostproc\fR]
+address\ ...
+\%[\-help]
+
+.ti .5i
+@@(MHETCPATH)/rcvpack
+file
+\%[\-help]
+
+.ti .5i
+@@(MHETCPATH)/rcvtty
+\%[command]
+\%[\-form\ formatfile]
+\%[\-format\ string]
+\%[\-bell] \%[\-nobell]
+\%[\-newline] \%[\-nonewline]
+\%[\-biff]
+\%[\-help]
+.ad
+.DE
+A receive\-mail hook is a program that is run whenever you receive a
+mail message.
+You do \fBNOT\fR invoke the hook yourself,
+rather the hook is invoked on your behalf by your
+system's Message Transport Agent.  See \fIslocal\fP\0(1)
+for details on how to activate receive\-mail hooks on your system.
+
+Four programs are currently available as part of \fIMH\fP,
+\fIrcvdist\fR (redistribute incoming messages to additional recipients),
+\fIrcvpack\fR (save incoming messages in a \fIpackf\fR'd file),
+and \fIrcvtty\fR (notify user of incoming messages).
+The fourth program,
+\fIrcvstore\fR\0(1) is described separately.
+They all reside in the \fI@@(MHETCPATH)/\fR directory.
+
+The \fIrcvdist\fR program will resend a copy of the message to all of the
+addresses listed on its command line.
+It uses the format string facility described in \fImh\-format\fR\0(5).
+In addition, \fIrcvdist\fP
+also recognizes the following additional \fIcomponent\fR escape:
+.sp 1
+.ne 5
+.nf
+.ta \w'Dtimenow  'u +\w'Returns  'u
+\fIEscape\fR	\fIReturns\fR	\fIDescription\fR
+addresses	string	the addresses to distribute to
+.re
+.fi
+
+The \fIrcvpack\fR program will append a copy of the message to the file listed
+on its command line.
+Its use is obsoleted by the \*(lqfile\*(rq action of \fIslocal\fR.
+
+The \fIrcvtty\fR program executes the named file with the message as its
+standard input,
+and writes the resulting output 
+on your terminal.
+
+If no file is specified, or is bogus, etc.,
+then \fIrcvtty\fR will instead write a one\-line scan listing.
+Either the `\-form\ formatfile' or `\-format\ string' option may be used 
+to override the default output format (see \fImh\-format\fP\0(5)).
+A newline is output before the 
+message output, and the terminal bell is rung
+after the output.  The `\-nonewline' and `\-nobell' options
+will inhibit these functions.
+
+In addition to the standard \fImh\-format\fR\0(5) escapes,
+\fIrcvtty\fR also recognizes the following additional \fIcomponent\fR escapes:
+.sp 1
+.ne 5
+.nf
+.ta \w'Dtimenow  'u +\w'Returns  'u
+\fIEscape\fR	\fIReturns\fR	\fIDescription\fR
+body	string	the (compressed) first part of the body
+dtimenow	date	the current date
+folder	string	the name of the current folder
+.re
+.fi
+
+Normally, \fIrcvtty\fP obeys
+write permission as granted by \fImesg\fP\0(1).
+With the `\-biff' option, \fIrcvtty\fP will obey the notification
+status set by \fIbiff\fP\0(1) instead.
+If the terminal access daemon (TTYD) is available on your system,
+then \fIrcvtty\fR will give its output to the daemon for output
+instead of writing on the user's terminal.
+.Fi
+^@@(MHETCPATH)/mtstailor~^tailor file
+^$HOME/\&.maildelivery~^The file controlling local delivery
+^@@(MHETCPATH)/maildelivery~^Rather than the standard file
+.Sa
+rcvstore (1), mh\-format(5), slocal(1)
+.Bu
+Only two return codes are meaningful, others should be.
+.En
+@
+
+
+1.15
+log
+@document additional rcvtty escapes
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhook.rf,v 1.14 1992/10/28 16:53:03 jromine Exp jromine $
+d49 10
+@
+
+
+1.14
+log
+@move slocal to (1)
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhook.rf,v 1.13 1992/05/12 22:23:34 jromine Exp jromine $
+d67 13
+@
+
+
+1.13
+log
+@fixup for nroff problems
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhook.rf,v 1.12 1992/02/15 00:10:42 jromine Exp jromine $
+d35 1
+a35 1
+system's Message Transport Agent.  See \fIslocal\fP\0(8)
+d80 1
+a80 1
+rcvstore (1), mh\-format(5), slocal (8)
+@
+
+
+1.12
+log
+@fix
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhook.rf,v 1.11 1992/02/12 19:08:15 jromine Exp jromine $
+d5 1
+a5 1
+mhook, rcvdist, rcvpack, rcvtty  \- MH receive\-mail hooks
+@
+
+
+1.11
+log
+@major revision
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhook.rf,v 1.10 1992/02/10 20:00:15 jromine Exp jromine $
+d71 1
+a71 1
+status set by \fIbiff\fP\0(1).
+@
+
+
+1.10
+log
+@replace $USER with "username"
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhook.rf,v 1.9 1992/02/03 18:11:52 jromine Exp jromine $
+d5 1
+a5 1
+mhook \- MH receive\-mail hooks
+d7 1
+a7 18
+$HOME/\&.maildelivery
+@@BEGIN: MHMTS
+.ds SL \fIpost\fR
+.ds ZS slocal
+@@END: MHMTS
+@@BEGIN: MMDFIMTS
+.ds SL \fIslocal\fR
+.ds ZS slocal
+@@END: MMDFIMTS
+@@BEGIN: MMDFIIMTS
+.ds SL the local channel
+.ds ZS mmdfII
+@@END: MMDFIIMTS
+@@BEGIN: SENDMTS
+.ds SL \fIslocal\fR
+.ds ZS slocal
+@@END: SENDMTS
+
+d29 1
+d34 3
+a36 21
+@@BEGIN: MHMTS
+rather the hook is invoked on your behalf by \fIMH\fR.
+@@END: MHMTS
+@@BEGIN: MMDFIMTS
+rather the hook is invoked on your behalf by \fIMMDF\fR
+when you (symbolically) link @@(MHETCPATH)/slocal to the file
+bin/rcvmail in your home directory.
+@@END: MMDFIMTS
+@@BEGIN: MMDFIIMTS
+rather the hook is invoked on your behalf by \fIMMDF\fR.
+@@END: MMDFIIMTS
+@@BEGIN: SENDMTS
+rather the hook is invoked on your behalf by \fISendMail\fR,
+when you include the line
+.nf
+.in +.5i
+    \*(lq| @@(MHETCPATH)/slocal -user username\*(rq
+.in -.5i
+.fi
+in your \&.forward file in your home directory.
+@@END: SENDMTS
+d38 1
+a38 223
+The \fI\&.maildelivery\fR file,
+which is an ordinary ASCII file,
+controls how local delivery is performed.
+This file is read by \*(SL.
+.if '\*(ZS'slocal' \{\
+
+The format of each line in the \fI\&.maildelivery\fR file is
+
+.ti +.5i
+\fBfield pattern action result string\fR
+
+where
+
+.in +.5i
+.ti -.25i
+\fBfield\fR:
+.br
+The name of a field that is to be searched for a pattern.
+This is any field in the headers of the message that might be present.
+In addition, the following special fields are also defined:
+.in +.25i
+\fIsource\fR: the out\-of\-band sender information
+.br
+\fIaddr\fR: the address that was used to cause delivery to the recipient
+.br
+\fIdefault\fR: this matches \fIonly\fR if the message hasn't been delivered yet
+.br
+\fI*\fR: this always matches
+.in -.25i
+
+.ti -.25i
+\fBpattern\fR:
+.br
+The sequence of characters to match in the specified field.
+Matching is case\-insensitive but not RE\-based.
+
+.ti -.25i
+\fBaction\fR:
+.br
+The action to take to deliver the message.
+This is one of
+
+.in +.5i
+.ti -.5i
+\fIfile\fR or \fI>\fR:
+.br
+Append the message to the file named by \fBstring\fR.
+The message is appended to the file in the maildrop 
+format which is used by your message transport system.
+If the message can be appended to the file,
+then this action succeeds.
+
+When writing to the file,
+a new field is added:
+
+.ti +.5i
+Delivery\-Date:\ date
+
+which indicates the date and time that message was appended to the file.
+
+.ti -.5i
+\fImbox\fR:
+.br
+Identical to \fIfile\fR,
+but always appends the message using the format used by \fIpackf\fR
+(the MMDF mailbox format).
+
+.ti -.5i
+\fIpipe\fR or \fI|\fR:
+.br
+Pipe the message as the standard input to the command named by \fBstring\fR,
+using the Bourne shell \fIsh\fR\0(1) to interpret the string.
+Prior to giving the string to the shell,
+it is expanded with the following built\-in variables:
+.in +.25i
+$(sender): the return address for the message
+.br
+$(address): the address that was used to cause delivery to the recipient
+.br
+$(size): the size of the message in bytes
+.br
+$(reply\-to): either the \*(lqReply\-To:\*(rq or \*(lqFrom:\*(rq field
+of the message
+.br
+$(info): miscellaneous out\-of\-band information
+.in -.25i
+
+When a process is invoked, its environment is:
+the user/group id:s are set to recipient's id:s;
+the working directory is the recipient's directory;
+the umask is 0077;
+the process has no /dev/tty;
+the standard input is set to the message;
+the standard output and diagnostic output are set to /dev/null;
+all other file\-descriptors are closed;
+the envariables \fB$USER\fR, \fB$HOME\fR, \fB$SHELL\fR are set
+appropriately,
+and no other envariables exist.
+
+The process is given a certain amount of time to execute.
+If the process does not exit within this limit,
+the process will be terminated with extreme prejudice.
+The amount of time is calculated as ((size x 60) + 300) seconds,
+where size is the number of bytes in the message.
+
+The exit status of the process is consulted in determining the success of the
+action.
+An exit status of zero means that the action succeeded.
+Any other exit status (or abnormal termination) means that the action failed.
+
+In order to avoid any time limitations,
+you might implement a process that began by \fIforking\fR.
+The parent would return the appropriate value immediately,
+and the child could continue on,
+doing whatever it wanted for as long as it wanted.
+This approach is somewhat risky if the parent is going to return an
+exit status of zero.
+If the parent is going to return a non\-zero exit status,
+then this approach can lead to quicker delivery into your maildrop.
+
+.ti -.5i
+\fIqpipe\fR or \fI<caret>\fR:
+.br
+Similar to \fIpipe\fR,
+but executes the command directly,
+after built\-in variable expansion,
+without assistance from the shell.
+
+.ti -.5i
+\fIdestroy\fR:
+.br
+This action always succeeds.
+.in -.5i
+
+.ti -.25i
+\fBresult\fR:
+.br
+Indicates how the action should be performed:
+
+.in +.5i
+.ti -.5i
+\fIA\fR:
+.br
+Perform the action.
+If the action succeeds, then the message is considered delivered.
+
+.ti -.5i
+\fIR\fR:
+.br
+Perform the action.
+Regardless of the outcome of the action,
+the message is not considered delivered.
+
+.ti -.5i
+\fI?\fR:
+.br
+Perform the action only if the message has not been delivered.
+If the action succeeds, then the message is considered delivered.
+
+.ti -.5i
+\fIN\fR:
+.br
+Perform the action only if the message has not been delivered
+and the previous action succeeded.
+If this action succeeds, then the message is considered delivered.
+.in -.5i
+.in -.5i
+
+The file is always read completely,
+so that several matches can be made and several actions can be taken.
+The \fI\&.maildelivery\fR file must be owned either by the user or by root,
+and must be writable only by the owner.
+If the \fI\&.maildelivery\fR file can not be found,
+or does not perform an action which delivers the message,
+then the file @@(MHETCPATH)/maildelivery is read according to the same rules.
+This file must be owned by the root and must be writable only by the root.
+If this file can not be found
+or does not perform an action which delivers the message,
+then standard delivery to the user's maildrop, @@(MHDROPLOC), is performed.
+
+Arguments in the \fI\&.maildelivery\fR file are separated by white\-space or
+comma.
+Since double\-quotes are honored,
+these characters may be included in a single argument by enclosing the
+entire argument in double\-quotes.
+A double\-quote can be included by preceeding it with a backslash.
+
+To summarize, here's an example:
+
+.nf
+.in +.5i
+.ta \w'default  'u +\w'uk-mmdf-workers  'u +\w'action  'u +\w'result  'u
+#\fIfield\fR	\fIpattern\fR	\fIaction\fR	\fIresult\fR	\fIstring\fR
+# lines starting with a '#' are ignored, as are blank lines
+#
+# file mail with mmdf2 in the \*(lqTo:\*(rq line into file mmdf2.log
+To	mmdf2	file	A	mmdf2.log
+# Messages from mmdf pipe to the program err-message-archive
+From	mmdf	pipe	A	err-message-archive
+# Anything with the \*(lqSender:\*(rq address \*(lquk-mmdf-workers\*(rq
+# file in mmdf2.log if not filed already
+Sender	uk-mmdf-workers	file	?	mmdf2.log
+# \*(lqTo:\*(rq unix \- put in file unix-news
+To	Unix	>	A	unix-news
+# if the address is jpo=mmdf \- pipe into mmdf-redist
+addr	jpo=mmdf	|	A	mmdf-redist
+# if the address is jpo=ack \- send an acknowledgement copy back
+addr	jpo=ack	|	R	\*(lqresend\0\-r\0$(reply-to)\*(rq
+# anything from steve \- destroy!
+From	steve	destroy	A	\-
+# anything not matched yet \- put into mailbox
+default	\-	>	?	mailbox
+# always run rcvalert
+*	\-	|	R	rcvalert
+.re
+.in -.5i
+.fi
+.\}
+.if '\*(ZS'mmdfII' \{\
+See \fImaildelivery\fR\0(5) for the details.
+.\}
+
+Four programs are currently standardly available,
+d52 1
+a52 1
+Its use is obsoleted by the \fI\&.maildelivery\fR.
+d80 1
+a80 43
+.if '\*(ZS'slocal' \{\
+rcvstore (1), mh\-format(5)
+.\}
+.if '\*(ZS'mmdfII' \{\
+rcvstore (1), maildelivery(5), mh\-format(5)
+.\}
+.Co
+None
+.if '\*(ZS'slocal' \{\
+.Hi
+For compatibility with older versions of \fIMH\fR,
+if \fIslocal\fR can't find the user's \fI\&.maildelivery\fR file,
+it will attempt to execute an old\-style rcvmail hook in the user's $HOME
+directory.
+In particular,
+it will first attempt to execute
+
+.ti +.5i
+\&.mh\(rureceive file maildrop directory user
+
+failing that it will attempt to execute
+
+.ti +.5i
+$HOME/bin/rcvmail user file sender
+
+before giving up and writing to the user's maildrop.
+
+In addition,
+whenever a hook or process is invoked,
+file\-descriptor three (3) is set to the message in addition to the standard
+input.
+
+@@BEGIN: MMDFIMTS
+In addition to an exit status of zero,
+the \fIMMDF\fR values \fIRP_MOK\fR (32) and \fIRP_OK\fR (9)
+mean that the message has been fully delivered.
+All other non\-zero exit status,
+including abnormal termination,
+is interpreted as the \fIMMDF\fR value \fIRP_MECH\fR (200),
+which means \*(lquse an alternate route\*(rq
+(deliver the message to the maildrop).
+@@END: MMDFIMTS
+.\}
+a82 10
+
+.if '\*(ZS'mmdfII' \{\
+Versions of \fIMMDF\fR with the \fImaildelivery\fR mechanism aren't
+entirely backwards\-compatible with earlier versions.
+If you have an old\-style hook, the best you can do is to have a one\-line
+\fI\&.maildelivery\fR file:
+
+.ti +.15i
+default \- pipe A \*(lqbin/rcvmail $(address) $(info) $(sender)\*(rq
+.\}
+@
+
+
+1.9
+log
+@add "mbox" option
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhook.rf,v 1.8 1990/04/05 22:18:43 sources Exp jromine $
+d66 1
+a66 1
+    \*(lq| @@(MHETCPATH)/slocal -user $USER\*(rq
+@
+
+
+1.8
+log
+@rcvtty fixes
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhook.rf,v 1.7 90/04/05 22:12:11 sources Exp Locker: sources $
+d119 2
+a120 1
+The standard maildrop delivery process is used.
+d131 7
+@
+
+
+1.7
+log
+@rcvtty docs
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id: mhook.rf,v 1.6 90/04/05 15:13:25 sources Exp Locker: sources $
+d39 6
+a44 1
+\%[command\ ...]
+d310 1
+a310 1
+to override the default scan listing output format.
+@
+
+
+1.6
+log
+@add ID
+@
+text
+@d2 1
+a2 1
+.\" @@(#)$Id:$
+d299 1
+a299 1
+and gives the resulting output to the terminal access daemon for display
+d301 1
+a301 3
+If the terminal access daemon is unavailable on your system,
+then \fIrcvtty\fR will write the output to your terminal
+if, and only if, your terminal has \*(lqworld\-writable\*(rq permission.
+d303 15
+a317 2
+then the \fIrcvtty\fR program will give a one\-line scan listing
+to the terminal access daemon.
+d324 1
+a324 1
+rcvstore (1)
+d327 1
+a327 1
+rcvstore (1), maildelivery(5)
+@
+
+
+1.5
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.4
+log
+@docunemt "N" flag
+@
+text
+@d2 2
+a3 2
+.TH MHOOK 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d202 1
+a202 1
+If the action succeeded, then the message is considered delivered.
+d215 8
+a222 1
+If the action succeeded, then the message is considered delivered.
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH MHOOK 1 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC MHOOK 1
+.NA
+d5 1
+a5 1
+.SY
+@

@@ -1,0 +1,154 @@
+head     1.5;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @@;
+
+
+1.5
+date     90.04.05.15.12.57;  author sources;  state Exp;
+branches ;
+next     1.4;
+
+1.4
+date     90.03.22.11.31.12;  author sources;  state Exp;
+branches ;
+next     1.3;
+
+1.3
+date     90.03.20.19.41.50;  author sources;  state Exp;
+branches ;
+next     1.2;
+
+1.2
+date     90.03.20.17.36.06;  author sources;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.03.20.17.20.53;  author sources;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.5
+log
+@add ID
+@
+text
+@.\"	@@(MHWARNING)
+.\" @@(#)$Id:$
+.SC MF 1
+.NA
+muinc, musift, uminc, umsift \- mail filters
+.SY
+@@(MHETCPATH)/muinc
+
+.ti .5i
+@@(MHETCPATH)/musift
+\%[files\ ...]
+
+.ti .5i
+@@(MHETCPATH)/uminc
+
+.ti .5i
+@@(MHETCPATH)/umsift
+\%[files\ ...]
+.DE
+The mail filters
+are a set of programs that filter mail from one format to another.
+In particular, \fIUUCP\fR\- and \fIMMDF\fR\-style mail files are handled.
+
+\fImuinc\fR
+filters mail from the user's \fIMMDF\fR maildrop into the user's \fIUUCP\fR
+maildrop;
+similarly,
+\fIuminc\fR
+filters mail from the user's \fIUUCP\fR maildrop into the user's \fIMMDF\fR
+maildrop.
+These two programs respect each system's maildrop locking protocols.
+
+\fImusift\fR
+filters each file on the command line
+(or the standard input if no arguments are given),
+and places the result on the standard output in \fIUUCP\fR format.
+The files (or standard input) are expected to be in \fIMMDF\fR format.
+\fIumsift\fR
+does the same thing filtering \fIUUCP\fR formatted files (or input),
+and places the \fIMMDF\fR formatted result on the standard output.
+No locking protocols are used by these programs.
+
+If the files aren't in the expected format,
+the mail filters will try to recover.
+In really bad cases,
+you may lose big.
+.Fi
+^/usr/spool/mail/~^UUCP spool area for maildrops
+^@@(MHDROPLOC)~^Location of standard maildrop
+.Pr
+None
+.Sa
+\fIProposed Standard for Message Header Munging\fR (aka RFC\-886),
+.br
+inc(1)
+.De
+.Co
+.Bu
+Numerous; protocol translation is very difficult.
+.En
+@
+
+
+1.4
+log
+@put things back, do .NA stuff another way
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@typo
+@
+text
+@d2 2
+a3 2
+.TH MF 1 @@(MHCENTERFOOT) @@(MHLEFTFOOT)
+.SH .NA
+d5 1
+a5 1
+.SH .SY
+@
+
+
+1.2
+log
+@fixup for makewhatis
+@
+text
+@d2 1
+a2 1
+.TH MF 1 [mh.6] MH
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+.SC MF 1
+.NA
+d5 1
+a5 1
+.SY
+@

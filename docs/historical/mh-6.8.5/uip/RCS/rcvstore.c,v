@@ -1,0 +1,414 @@
+head	1.9;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.9
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.11.04.00.57.54;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.10.27.00.12.13;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	92.02.04.00.03.16;	author jromine;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	92.01.31.22.25.00;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.05.14.58.56;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.06.17.05.37;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	89.11.17.16.12.46;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.16.10.29;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@endif sugar
+@
+text
+@/* rcvstore.c - incorporate new mail asynchronously
+		originally from Julian Onions */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: rcvstore.c,v 1.8 1992/11/04 00:57:54 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include <errno.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#ifdef LOCALE
+#include	<locale.h>
+#endif
+
+/*  */
+
+static struct swit switches[] = {
+#define CRETSW	0
+    "create",	0,
+#define NCRETSW	1
+    "nocreate", 0,
+
+#define PUBSW	2
+    "public",	0,
+#define NPUBSW	3
+    "nopublic",  0,
+
+#define SEQSW	4
+    "sequence name", 0,
+
+#define ZEROSW  5
+    "zero",	0,
+#define NZEROSW 6
+    "nozero",	0,
+
+#define HELPSW  7
+    "help", 4,
+
+    NULL, 0
+};
+
+/*  */
+
+extern int  errno;
+
+static char *tmpfilenam = NULLCP;
+/*  */
+
+/* ARGSUSED */
+
+main (argc, argv)
+int	argc;
+char   *argv[];
+{
+    int     publicsw = -1,
+            zerosw = 0,
+            msgnum,
+            create = 1,
+            fd,
+            seqp = 0;
+    char   *cp,
+           *maildir,
+           *folder = NULL,
+            buf[100],
+          **ap,
+          **argp,
+           *arguments[MAXARGS],
+           *seqs[NATTRS+1];
+    struct msgs *mp;
+    struct stat st;
+
+#ifdef LOCALE
+	setlocale(LC_ALL, "");
+#endif
+    invo_name = r1bindex (argv[0], '/');
+    mts_init (invo_name);
+    if ((cp = m_find (invo_name)) != NULL) {
+	ap = brkstring (cp = getcpy (cp), " ", "\n");
+	ap = copyip (ap, arguments);
+    }
+    else
+	ap = arguments;
+    (void) copyip (argv + 1, ap);
+    argp = arguments;
+
+/*  */
+
+    while (cp = *argp++) {
+	if (*cp == '-')
+	    switch (smatch (++cp, switches)) {
+		case AMBIGSW: 
+		    ambigsw (cp, switches);
+		    done (1);
+		case UNKWNSW: 
+		    adios (NULLCP, "-%s unknown", cp);
+		case HELPSW: 
+		    (void) sprintf (buf, "%s [+folder] [switches]", invo_name);
+		    help (buf, switches);
+		    done (1);
+
+		case SEQSW: 
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULLCP, "missing argument name to %s",
+				argp[-2]);
+		    if (seqp < NATTRS)
+			seqs[seqp++] = cp;
+		    else
+			adios (NULLCP, "only %d sequences allowed!", NATTRS);
+		    continue;
+		case PUBSW: 
+		    publicsw = 1;
+		    continue;
+		case NPUBSW: 
+		    publicsw = 0;
+		    continue;
+		case ZEROSW: 
+		    zerosw++;
+		    continue;
+		case NZEROSW: 
+		    zerosw = 0;
+		    continue;
+
+		case CRETSW: 
+		    create++;
+		    continue;
+		case NCRETSW: 
+		    create = 0;
+		    continue;
+	    }
+	if (*cp == '+' || *cp == '@@') {
+	    if (folder)
+		adios (NULLCP, "only one folder at a time!");
+	    else
+		folder = path (cp + 1, *cp == '+' ? TFOLDER : TSUBCWF);
+	}
+	else
+	    adios (NULLCP, "usage: %s [+folder] [switches]", invo_name);
+    }
+
+/*  */
+
+    if (!m_find ("path"))
+	free (path ("./", TFOLDER));
+    if (!folder && !(folder = m_find (inbox)))
+	folder = defalt;
+    maildir = m_maildir (folder);
+
+    if (stat (maildir, &st) == NOTOK) {
+	if (errno != ENOENT)
+	    adios (maildir, "error on folder");
+	if (!create)
+	    adios (NULLCP, "folder %s doesn't exist", maildir);
+	if (!makedir (maildir))
+	    adios (NULLCP, "unable to create folder %s", maildir);
+    }
+
+    if (chdir (maildir) == NOTOK)
+	adios (maildir, "unable to change directory to");
+    if (!(mp = m_gmsg (folder)))
+	adios (NULLCP, "unable to read folder %s", folder);
+
+    (void) signal (SIGHUP, SIG_IGN);
+    (void) signal (SIGINT, SIG_IGN);
+    (void) signal (SIGQUIT, SIG_IGN);
+    (void) signal (SIGTERM, SIG_IGN);
+
+/*  */
+
+    if ((fd = creat (tmpfilenam = m_scratch ("", invo_name), m_gmprot ()))
+	    == NOTOK)
+	adios (tmpfilenam, "unable to create");
+    (void) chmod (tmpfilenam, m_gmprot ());
+
+    cpydata (fileno (stdin), fd, "standard input", tmpfilenam);
+
+    if (fstat (fd, &st) == NOTOK) {
+	(void) unlink (tmpfilenam);
+	adios (tmpfilenam, "unable to fstat");
+    }
+    if (close (fd) == NOTOK)
+	adios (tmpfilenam, "error closing");
+    if (st.st_size == 0) {
+	(void) unlink (tmpfilenam);
+	advise (NULLCP, "empty file");
+	done (0);
+    }
+
+    msgnum = mp -> hghmsg;
+    do {
+	msgnum++, mp -> hghmsg++;
+	if (msgnum > mp -> hghoff)
+	    if ((mp = m_remsg (mp, 0, mp -> hghoff + MAXFOLDER)) == NULL)
+		adios (NULLCP, "unable to allocate folder storage");
+
+	mp -> msgstats[msgnum] |= EXISTS | UNSEEN;
+	errno = 0;
+    } while (link (tmpfilenam, m_name (msgnum)) == NOTOK && errno == EEXIST);
+
+    (void) unlink (tmpfilenam);
+    tmpfilenam = NULLCP;
+    if (errno != 0)
+	adios (NULLCP, "can't file message %d", msgnum);
+
+    if (mp -> lowmsg == 0)
+	mp -> lowmsg = msgnum;
+    mp -> msgflags |= SEQMOD;
+
+    seqs[seqp] = NULL;
+    for (seqp = 0; seqs[seqp]; seqp++) {
+	if (zerosw && !m_seqnew (mp, seqs[seqp], publicsw))
+	    done (1);
+	if (!m_seqadd (mp, seqs[seqp], msgnum, publicsw))
+	    done (1);
+    }
+
+    m_setvis (mp, 0);
+    m_sync (mp);
+    m_update ();
+
+    done (0);
+}
+
+void done (status)
+register int     status;
+{
+    if (tmpfilenam && *tmpfilenam)
+	(void) unlink (tmpfilenam);
+    exit (status);
+}
+@
+
+
+1.8
+log
+@LOCALE
+TYPESIG
+@
+text
+@d4 2
+a5 2
+static char ident[] = "@@(#)$Id: rcvstore.c,v 1.7 1992/10/27 00:12:13 jromine Exp jromine $";
+#endif	lint
+@
+
+
+1.7
+log
+@NATTRS->NATTRS+1
+@
+text
+@d4 1
+a4 1
+static char ident[] = "@@(#)$Id: rcvstore.c,v 1.6 1992/02/04 00:03:16 jromine Exp jromine $";
+d13 3
+d74 3
+@
+
+
+1.6
+log
+@contributed patch
+@
+text
+@d4 1
+a4 1
+static char ident[] = "@@(#)$Id: rcvstore.c,v 1.5 1992/01/31 22:25:00 jromine Exp jromine $";
+d67 1
+a67 1
+           *seqs[NATTRS];
+@
+
+
+1.5
+log
+@kerberos
+@
+text
+@d4 1
+a4 1
+static char ident[] = "@@(#)$Id: rcvstore.c,v 1.4 1990/04/05 14:58:56 sources Exp jromine $";
+d140 1
+a140 1
+    if (!folder)
+@
+
+
+1.4
+log
+@add ID
+@
+text
+@d4 1
+a4 1
+static char ident[] = "@@(#)$Id:$";
+d38 1
+a38 1
+    NULL, NULL
+@
+
+
+1.3
+log
+@some fixes from J. Onions for bad close() return
+@
+text
+@d3 3
+@
+
+
+1.2
+log
+@add explicit chmod to override umask
+@
+text
+@d42 1
+d162 4
+a165 3
+    if ((fd = creat (cp = m_scratch ("", invo_name), m_gmprot ())) == NOTOK)
+	adios (cp, "unable to create");
+    (void) chmod (cp, m_gmprot ()); /* creat ANDs with umask, do it right */
+d167 1
+a167 1
+    cpydata (fileno (stdin), fd, "standard input", cp);
+d170 2
+a171 2
+	(void) unlink (cp);
+	adios (cp, "unable to fstat");
+d173 2
+a174 1
+    (void) close (fd);
+d176 1
+a176 1
+	(void) unlink (cp);
+d190 1
+a190 1
+    } while (link (cp, m_name (msgnum)) == NOTOK && errno == EEXIST);
+d192 2
+a193 1
+    (void) unlink (cp);
+d214 8
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d163 1
+@

@@ -1,0 +1,333 @@
+head	1.11;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.11
+date	93.12.06.18.11.49;	author jromine;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	92.11.20.17.14.07;	author jromine;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	92.11.18.16.51.59;	author jromine;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	92.11.05.19.13.39;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.02.04.17.42.12;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.04.05.15.16.01;	author sources;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.03.12.11.26.36;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.03.12.10.27.22;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.21.16.54.14;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.06.12.53.44;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.06.12.53.07;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.11
+log
+@typo in CC=
+@
+text
+@##############################################################################
+#    Instructions to Make, for compilation of MMDF-MTS library 
+#
+#	@@(MHWARNING)
+# @@(#)$Id: mmdf,v 1.10 1992/11/20 17:14:07 jromine Exp jromine $
+##############################################################################
+
+# The following entries were inserted during MH configuration
+OPTIONS	=	@@(MHOPTIONS) -I..
+
+CC	=	@@(MHCOMPILER)
+@@BEGIN: OPTIM
+CFLAGS	=	$(OPTIONS)
+@@END: OPTIM
+@@BEGIN: DEBUG
+CFLAGS	=	      $(OPTIONS)
+@@END: DEBUG
+LINT	=	lint
+LFLAGS	=	-bhu $(OPTIONS)
+LLIBS	=
+CP	=	@@(CP)
+LN	=	@@(LN)
+
+LIB	=	mmdfmts.a
+
+CFILES	=	hosts.c
+OFILES	=	hosts.o
+
+
+@@BEGIN: OPTIM
+##############################################################################
+#	Generation Rules
+##############################################################################
+
+.c.o:;		$(CC) $(CFLAGS) -c $*.c
+@@BEGIN: NEWLOAD
+		-ld -x -r $@@
+		mv a.out $@@
+@@END: NEWLOAD
+@@BEGIN: OLDLOAD
+		${CC} -s -o $@@
+@@END: OLDLOAD
+
+
+@@END: OPTIM
+##############################################################################
+#	Here it is...
+##############################################################################
+
+all:		$(LIB)
+depend:;
+lint:		l-mmdf
+
+@@BEGIN: MMDFIMTS
+$(LIB):		$(OFILES) mmdf_lib.a util_lib.a
+		-mv $(LIB) z$(LIB)
+		-rm -fr tmp
+		mkdir tmp mmdf util
+		ln hosts.o mmdf_lib.a util_lib.a tmp
+		cd mmdf; ar x ../mmdf_lib.a; ln *.o ../tmp
+		cd util; ar x ../util_lib.a; ln *.o ../tmp
+		-@@rm -f tmp/signal.o #dont want 4.1 signal package
+@@BEGIN: RANLIB
+		cd tmp; ar r ../$@@ *.o; ranlib $@@
+@@END: RANLIB
+@@BEGIN: LORDER
+		cd tmp; ar r ../$@@ `lorder *.o | tsort`
+@@END: LORDER
+		rm -fr tmp mmdf util
+		-rm -f ../libmts.a
+		-cd ..; $(LN) mmdf/$@@ libmts.a
+		-rm -f ../llib-lmts
+		-cd .. ; $(LN) mmdf/llib-lmmdf llib-lmts
+		-@@ls -l $@@
+		-@@echo "MMDFI-MTS library built normally"
+@@END: MMDFIMTS
+
+@@BEGIN: MMDFIIMTS
+$(LIB):		$(OFILES) libmmdf.a
+		-mv $(LIB) z$(LIB)
+@@BEGIN: RANLIB
+		cp libmmdf.a $@@
+		ar r $@@ hosts.o; ranlib $@@
+@@END: RANLIB
+@@BEGIN: LORDER
+		mkdir tmp
+		cd tmp; ar x ../libmmdf.a
+		ln hosts.o tmp
+		cd tmp; ar r ../$@@ `lorder *.o | tsort`
+		rm -fr tmp
+@@END: LORDER
+		-rm -f ../libmts.a
+		-cd ..; $(LN) mmdf/$@@ libmts.a
+		-rm -f ../llib-lmts
+		-cd ..; $(LN) mmdf/llib-lmmdf llib-lmts
+		-@@ls -l $@@
+		-@@echo "MMDFII-MTS library built normally"
+@@END: MMDFIIMTS
+
+l-mmdf:;	$(LINT) $(LFLAGS) $(CFILES) $(LLIBS)
+
+hosts.o:	Makefile
+
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+unconfig:	distribution
+		-rm -f Makefile
+
+distribution:   clean
+
+clean:		unclean
+		-rm -f *.o $(LIB) z$(LIB)
+
+unclean:;	-rm -f _* :* core
+@
+
+
+1.10
+log
+@try to use LN instead of hard link
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: mmdf,v 1.9 1992/11/18 16:51:59 jromine Exp jromine $
+d11 1
+a11 1
+CC	=	(MHCOMPILER)
+@
+
+
+1.9
+log
+@fixup the way @@(LN) works
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: mmdf,v 1.8 1992/11/05 19:13:39 jromine Exp jromine $
+d71 1
+a71 1
+		ln $@@ ../libmts.a
+d93 1
+a93 1
+		ln $@@ ../libmts.a
+d95 1
+a95 1
+		-$(LN) llib-lmmdf ../llib-lmts
+@
+
+
+1.8
+log
+@use LN for llib files
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: mmdf,v 1.7 1992/02/04 17:42:12 jromine Exp jromine $
+d73 1
+a73 1
+		-$(LN) llib-lmmdf ../llib-lmts
+@
+
+
+1.7
+log
+@use CP instead of ld for llib in case of cross-device link
+Stephen Gildea <gildea@@expo.lcs.mit.EDU>
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: mmdf,v 1.6 1990/04/05 15:16:01 sources Exp jromine $
+d22 1
+d73 1
+a73 1
+		-$(CP) llib-lmmdf ../llib-lmts
+d95 1
+a95 1
+		-$(CP) llib-lmmdf ../llib-lmts
+@
+
+
+1.6
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d21 1
+d72 1
+a72 1
+		-ln llib-lmmdf ../llib-lmts
+d94 1
+a94 1
+		-ln llib-lmmdf ../llib-lmts
+@
+
+
+1.5
+log
+@remove -O (put in mhconfig)
+@
+text
+@d5 1
+@
+
+
+1.4
+log
+@llib ln command failure shouldn't abort make
+/.
+@
+text
+@d12 1
+a12 1
+CFLAGS	=	-O    $(OPTIONS)
+@
+
+
+1.3
+log
+@make unconfig changes
+@
+text
+@d70 1
+a70 1
+		ln llib-lmmdf ../llib-lmts
+d92 1
+a92 1
+		ln llib-lmmdf ../llib-lmts
+@
+
+
+1.2
+log
+@ANSI Compilance
+@
+text
+@d106 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 1
+a10 1
+CC	=	cc
+d38 1
+a38 1
+		cc -s -o $@@
+@

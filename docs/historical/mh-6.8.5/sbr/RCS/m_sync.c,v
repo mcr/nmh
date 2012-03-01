@@ -1,0 +1,266 @@
+head	1.8;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.8
+date	92.12.15.00.20.22;	author jromine;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	92.01.31.21.56.12;	author jromine;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	90.11.05.11.46.34;	author mh;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	90.04.05.15.31.00;	author sources;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	90.04.05.14.45.03;	author sources;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	90.02.05.14.22.42;	author sources;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	90.02.01.14.06.58;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	90.02.01.14.04.25;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@endif sugar
+@
+text
+@/* m_sync.c - synchronize message sequences */
+#ifndef	lint
+static char ident[] = "@@(#)$Id: m_sync.c,v 1.7 1992/01/31 21:56:12 jromine Exp jromine $";
+#endif	/* lint */
+
+#include "../h/mh.h"
+#include <stdio.h>
+#include <signal.h>
+#ifndef	sigmask
+#define	sigmask(s)	(1 << ((s) - 1))
+#endif	/* not sigmask */
+
+
+/* decision logic
+    1.  public and folder readonly: make it private
+    2a. public: add it to the sequences file
+    2b. private: add it to the profile
+ */
+
+
+void m_sync (mp)
+register struct msgs *mp;
+{
+    int     bits;
+    register int    i;
+    register char  *cp;
+    char    flags,
+	    attr[BUFSIZ],
+	    seq[BUFSIZ * 2];
+    register FILE  *fp;
+#ifndef	BSD42
+    TYPESIG (*hstat) (), (*istat) (), (*qstat) (), (*tstat) ();
+#else	/* BSD42 */
+    int	    smask;
+#endif	/* BSD42 */
+
+    if (!(mp -> msgflags & SEQMOD))
+	return;
+    mp -> msgflags &= ~SEQMOD;
+
+    m_getdefs ();
+    (void) sprintf (seq, "%s/%s", mp -> foldpath, mh_seq);
+    bits = FFATTRSLOT;
+    fp = NULL;
+
+    flags = mp -> msgflags;
+    if (mh_seq == NULL || *mh_seq == 0)
+	mp -> msgflags |= READONLY;
+
+    for (i = 0; mp -> msgattrs[i]; i++) {
+	(void) sprintf (attr, "atr-%s-%s", mp -> msgattrs[i], mp -> foldpath);
+	if (mp -> msgflags & READONLY
+		|| mp -> attrstats & (1 << (bits + i))) {
+    priv: ;
+	    if (cp = m_seq (mp, mp -> msgattrs[i]))
+		m_replace (attr, cp);
+	    else
+		(void) m_delete (attr);
+	}
+	else {
+	    (void) m_delete (attr);
+	    if ((cp = m_seq (mp, mp -> msgattrs[i])) == NULL)
+		continue;
+	    if (fp == NULL) {
+		if ((fp = fopen (seq, "w")) == NULL
+			&& (unlink (seq) == NOTOK ||
+			    (fp = fopen (seq, "w")) == NULL)) {
+		    admonish (attr, "unable to write");
+		    goto priv;
+		}
+#ifndef	BSD42
+		hstat = signal (SIGHUP, SIG_IGN);
+		istat = signal (SIGINT, SIG_IGN);
+		qstat = signal (SIGQUIT, SIG_IGN);
+		tstat = signal (SIGTERM, SIG_IGN);
+#else	/* BSD42 */
+		smask = sigblock (sigmask (SIGHUP) | sigmask (SIGINT)
+				    | sigmask (SIGQUIT) | sigmask (SIGTERM));
+#endif	/* BSD42 */
+	    }
+	    fprintf (fp, "%s: %s\n", mp -> msgattrs[i], cp);
+	}
+    }
+
+    if (fp) {
+	(void) fclose (fp);
+#ifndef	BSD42
+	(void) signal (SIGHUP, hstat);
+	(void) signal (SIGINT, istat);
+	(void) signal (SIGQUIT, qstat);
+	(void) signal (SIGTERM, tstat);
+#else	/* BSD42 */
+	(void) sigsetmask (smask);
+#endif	/* BSD42 */
+    }
+    else
+	if (!(mp -> msgflags & READONLY))
+	    (void) unlink (seq);
+
+    mp -> msgflags = flags;
+}
+@
+
+
+1.7
+log
+@kerberos
+@
+text
+@d3 2
+a4 2
+static char ident[] = "@@(#)$Id: m_sync.c,v 1.6 1990/11/05 11:46:34 mh Exp jromine $";
+#endif	lint
+d11 1
+a11 1
+#endif	not sigmask
+d33 1
+a33 1
+#else	BSD42
+d35 1
+a35 1
+#endif	BSD42
+d76 1
+a76 1
+#else	BSD42
+d79 1
+a79 1
+#endif	BSD42
+d92 1
+a92 1
+#else	BSD42
+d94 1
+a94 1
+#endif	BSD42
+@
+
+
+1.6
+log
+@correctly detect inability to alter the public sequence
+file.  the original test only worked if the unlink succeeded.
+JLR
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id: m_sync.c,v 1.5 90/04/05 15:31:00 sources Exp Locker: mh $";
+d47 1
+a47 1
+    if (mh_seq == NULL || *mh_seq == NULL)
+@
+
+
+1.5
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "@@(#)$Id:$";
+d66 2
+a67 2
+			&& unlink (seq) != NOTOK 
+			&& (fp = fopen (seq, "w")) == NULL) {
+@
+
+
+1.4
+log
+@add ID
+@
+text
+@d3 1
+a3 1
+static char ident[] = "$Id:";
+@
+
+
+1.3
+log
+@TYPESIG
+@
+text
+@d2 3
+@
+
+
+1.2
+log
+@increase message sequence buffer size by factor of 2.  I hope this
+is worth it, since it'll make things bigger.
+@
+text
+@d29 1
+a29 1
+    int     (*hstat) (), (*istat) (), (*qstat) (), (*tstat) ();
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d26 1
+a26 1
+	    seq[BUFSIZ];
+@

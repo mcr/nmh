@@ -1,0 +1,108 @@
+head	1.5;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.5
+date	92.12.03.16.23.40;	author jromine;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	92.12.02.22.19.33;	author jromine;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	92.11.02.22.56.13;	author jromine;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	92.10.29.17.41.35;	author jromine;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	92.10.29.17.41.11;	author jromine;	state Exp;
+branches;
+next	;
+
+
+desc
+@new Unconfig make file for MH top level
+@
+
+
+1.5
+log
+@remove -Tcrt from nroff line
+@
+text
+@all clean:;	@@echo "You must configure MH first -- see READ-ME for details"
+
+distribution unconfig:	links READ-ME CHANGES
+
+READ-ME:	conf/mh-gen.8
+		nroff -man conf/mh-gen.8 > read-me.tmp
+		mv read-me.tmp $@@
+
+CHANGES:	papers/changes/mh-changes.ms
+		nroff -ms papers/changes/mh-changes.ms > changes.tmp
+		mv changes.tmp $@@
+
+links:;		-rm -f support/pop/mmdfII/pop/lock.c
+		-rm -f support/bboards/mmdfII/bboards/lock.c
+		-rm -f zotnet/tws/tws.h
+		-rm -f uip/pshsbr.c
+		ln zotnet/mts/lock.c support/pop/mmdfII/pop/lock.c
+		ln zotnet/mts/lock.c support/bboards/mmdfII/bboards/lock.c
+		ln zotnet/tws.h zotnet/tws/tws.h
+		ln uip/popsbr.c uip/pshsbr.c
+@
+
+
+1.4
+log
+@add mh changes
+@
+text
+@d10 1
+a10 1
+		nroff -ms -Tcrt papers/changes/mh-changes.ms > changes.tmp
+@
+
+
+1.3
+log
+@make pshsbr.c from popsbr.c
+@
+text
+@d3 1
+a3 1
+distribution unconfig:	links READ-ME
+d8 4
+@
+
+
+1.2
+log
+@fixup make unconfig
+@
+text
+@d12 1
+d16 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 1
+a3 1
+distribution:	links READ-ME
+@

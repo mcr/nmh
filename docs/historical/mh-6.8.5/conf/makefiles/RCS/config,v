@@ -1,0 +1,269 @@
+head	2.8;
+access;
+symbols;
+locks; strict;
+
+
+2.8
+date	92.02.05.21.52.46;	author jromine;	state Exp;
+branches;
+next	2.7;
+
+2.7
+date	90.04.08.22.00.29;	author sources;	state Exp;
+branches;
+next	2.6;
+
+2.6
+date	90.04.08.20.23.04;	author sources;	state Exp;
+branches;
+next	2.5;
+
+2.5
+date	90.04.05.15.17.20;	author sources;	state Exp;
+branches;
+next	2.4;
+
+2.4
+date	90.03.12.11.29.13;	author sources;	state Exp;
+branches;
+next	2.3;
+
+2.3
+date	90.02.23.17.34.23;	author sources;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	90.02.21.16.59.28;	author sources;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	90.02.06.12.51.03;	author sources;	state Exp;
+branches;
+next	2.0;
+
+2.0
+date	89.11.17.15.56.36;	author sources;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	89.11.17.15.44.16;	author sources;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+2.8
+log
+@add "regtest: on/off" to not include hostname and date
+in version.c
+@
+text
+@##############################################################################
+#    Instructions to Make, for compilation of MH modules
+#
+#	@@(MHWARNING)
+# @@(#)$Id: config,v 2.7 1990/04/08 22:00:29 sources Exp jromine $
+##############################################################################
+
+OPTIONS	=	@@(MHOPTIONS)
+LDOPTIONS=	@@(LDOPTIONS)
+
+CC	=	@@(MHCOMPILER)
+@@BEGIN: OPTIM
+CFLAGS	=	$(OPTIONS)
+@@END: OPTIM
+@@BEGIN: DEBUG
+CFLAGS	=	     $(OPTIONS)
+@@END: DEBUG
+LDFLAGS	=	$(LDOPTIONS)
+LIBES	=
+LINT	=	lint
+LFLAGS	=	-bhu $(OPTIONS)
+LLIBS	=
+
+
+##############################################################################
+#	Generate object file for MH configuration
+##############################################################################
+
+CFILES	=	config.c version.c
+OFILES	=	config.o version.o
+
+all:		$(OFILES)
+
+lint:;		$(LINT) $(LFLAGS) $(CFILES) $(LLIBS)
+
+version version.c:	true
+		@@/bin/sh version.sh @@(MHHOSTVER) @@(MHRELEASE)
+
+true:;
+
+##############################################################################
+#	Miscellaneous tasks
+##############################################################################
+
+unconfig:	distribution
+		-rm -f Makefile
+
+distribution:   clean
+		-rm -f config.c version.c version
+
+clean:		unclean
+		-rm -f *.o
+
+unclean:;	-rm -f _* :* core eddep makedep
+
+
+##############################################################################
+#	Dependencies
+##############################################################################
+
+MODULES	=	$(CFILES)
+
+depend:;	for m in $(MODULES); do ( \
+		    i=`basename $$m .c`; \
+		    echo $$i.o: $$i.c >> makedep; \
+		    grep '^#[ 	]*include' $$i.c | \
+			sed -e 's,[^"]*"/\([^"]*\)".*,'$$i'.o: /\1,' \
+			    -e 's,[^"]*"\([^"]*\)".*,'$$i'.o: \1,' \
+			    -e 's,[^<]*<\(.*\)>.*,#'$$i'.o: /usr/include/\1,' \
+			>> makedep \
+		); done
+		echo '/^# DO NOT DELETE THIS LINE/+2,$$d' > eddep
+		echo '$$r makedep' >> eddep
+		echo 'w' >> eddep
+		cp Makefile _Makefile
+		ed - Makefile < eddep
+		rm eddep makedep
+		echo '# DEPENDENCIES MUST END AT END OF FILE' >> Makefile
+		echo '# IF YOU PUT STUFF HERE IT WILL GO AWAY' >> Makefile
+
+# DO NOT DELETE THIS LINE
+# DEPENDENCIES START HERE
+config.o: config.c
+config.o: ../h/mh.h
+#config.o: /usr/include/pwd.h
+#config.o: /usr/include/stdio.h
+# DEPENDENCIES MUST END AT END OF FILE
+# IF YOU PUT STUFF HERE IT WILL GO AWAY
+@
+
+
+2.7
+log
+@remove version for "make distribution"
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: config,v 2.6 90/04/08 20:23:04 sources Exp Locker: sources $
+d37 1
+a37 1
+		@@/bin/sh version.sh @@(MHRELEASE)
+@
+
+
+2.6
+log
+@run version.sh with release
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id: config,v 2.5 90/04/05 15:17:20 sources Exp Locker: sources $
+d49 1
+a49 1
+		-rm -f config.c version.c
+@
+
+
+2.5
+log
+@add ID
+@
+text
+@d5 1
+a5 1
+# @@(#)$Id:$
+d36 2
+a37 2
+version.c:	true
+		@@/bin/sh version.sh
+@
+
+
+2.4
+log
+@remove -O (put in mhconfig)
+@
+text
+@d5 1
+@
+
+
+2.3
+log
+@version.sh changes
+@
+text
+@d12 1
+a12 1
+CFLAGS	=	-O   $(OPTIONS)
+@
+
+
+2.2
+log
+@make unconfig changes
+@
+text
+@d28 2
+a29 2
+CFILES	=	config.c
+OFILES	=	config.o
+d35 2
+d38 2
+d48 1
+a48 1
+		-rm -f config.c
+@
+
+
+2.1
+log
+@ANSI Compilance
+@
+text
+@d40 4
+a43 1
+unconfig distribution:   clean
+@
+
+
+2.0
+log
+@changes for SUN40 shared libraries and NNTP under bbc
+@
+text
+@d10 1
+a10 1
+CC	=	cc
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d40 1
+a40 1
+distribution:   clean
+@
