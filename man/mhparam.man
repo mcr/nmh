@@ -5,6 +5,7 @@
 .SH NAME
 mhparam \- print nmh profile and context components
 .SH SYNOPSIS
+.HP 5
 .na
 .B mhparam
 .RI [ components ]

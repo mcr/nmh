@@ -25,6 +25,13 @@ mh-chart \- Chart of nmh Commands
 .IR field ]
 .RB [ \-inplace " | " \-noinplace ]
 .RB [ \-date " | " \-nodate ]
+.RB [ \-draft ]
+.RB [ \-append ]
+.RB [ \-list ]
+.RB [ \-delete ]
+.RB [ \-number
+.IR [ num|all ]]
+.RB [ \-preserve " | " \-nopreserve ]
 .RB [ \-version ]
 .RB [ \-help ]
 .RB [ \-text
@@ -71,6 +78,18 @@ mh-chart \- Chart of nmh Commands
 .RB [ \-editor
 .IR editor ]
 .RB [ \-noedit ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-from
+.IR address ]
+.RB [ \-to
+.IR address ]
+.RB [ \-cc
+.IR address ]
+.RB [ \-fcc
+.IR +folder ]
+.RB [ \-subject
+.IR text ]
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
@@ -104,6 +123,16 @@ mh-chart \- Chart of nmh Commands
 .RB [ \-editor
 .IR editor ]
 .RB [ \-noedit ]
+.RB [ \-width
+.IR columns ]
+.RB [ \-from
+.IR address ]
+.RB [ \-to
+.IR address ]
+.RB [ \-cc
+.IR address ]
+.RB [ \-fcc
+.IR +folder ]
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
@@ -159,7 +188,7 @@ is equivalent to
 .HP 5
 .B folder
 .RI [ +folder ]
-.RI [ msgs ]
+.RI [ msg ]
 .RB [ \-all " | " \-noall ]
 .RB [ \-create " | " \-nocreate ]
 .RB [ \-fast " | " \-nofast ]
@@ -200,6 +229,18 @@ is equivalent to
 .RB [ \-editor
 .IR editor ]
 .RB [ \-noedit ]
+.RB [ \-width
+.IR colums ]
+.RB [ \-from
+.IR address ]
+.RB [ \-to
+.IR address ]
+.RB [ \-cc
+.IR address ]
+.RB [ \-fcc
+.IR +folder ]
+.RB [ \-subject
+.IR text ]
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
@@ -249,6 +290,8 @@ is equivalent to
 .RB [ \-pack
 .IR file ]
 .RB [ \-nopack ]
+.RB [ \-proxy
+.IR command ]
 .RB [ \-sasl ]
 .RB [ \-saslmech
 .IR mechanism ]
@@ -259,6 +302,7 @@ is equivalent to
 .HP 5
 .B %libdir%/install\-mh
 .RB [ \-auto ]
+.RB [ \-check ]
 .RB [ \-version ]
 .RB [ \-help ]
 
@@ -371,6 +415,14 @@ is equivalent to
 .I file
 .RB [ \-ebcdicsafe " | " \-noebcdicsafe ]
 .RB [ \-rfc934mode " | " \-norfc934mode ]
+
+.HP 5
+.B mhparam
+.RI [ components ]
+.RB [ \-all ]
+.RB [ \-component " | " \-nocomponent ]
+.RB [ \-version ]
+.RB [ \-help ]
 
 .HP 5
 .B mhpath
@@ -539,12 +591,15 @@ or
 .RB [ \-width
 .IR columns ]
 .RB [ \-sasl ]
+.RB [ \-nosasl ]
+.RB [ \-saslmaxssf
+.IR ssf ]
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-user
 .IR username ]
-.I file
 .RB [ \-tls ]
+.I file
 .RB [ \-version ]
 .RB [ \-help ]
 
@@ -680,7 +735,7 @@ all/to/cc/me]
 .B rmm
 .RI [ +folder ]
 .RI [ msgs ]
-.RB [ \-link " | " \-nolink ]
+.RB [ \-unlink " | " \-nounlink ]
 .RB [ \-version ]
 .RB [ \-help ]
 
@@ -724,9 +779,17 @@ all/to/cc/me]
 .IR seconds ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-watch " | " \-nowatch ]
+.RB [ \-server
+.IR servername ]
+.RB [ \-port
+.IR port-name/number ]
 .RB [ \-sasl ]
+.RB [ \-nosasl ]
+.RB [ \-saslmaxssf
+.IR ssf ]
 .RB [ \-saslmech
 .IR mechanism ]
+.RB [ \-snoop ]
 .RB [ \-user
 .IR username ]
 .RB [ \-tls ]
@@ -736,6 +799,10 @@ all/to/cc/me]
 \&...] 
 .RB [ \-version ]
 .RB [ \-help ]
+.RB [ \-attach
+.IR header-field-name ]
+.RB [ \-attachformat
+.IR 0 " | " 1 " | " 2 ]
 
 .HP 5
 .B show
@@ -810,6 +877,8 @@ or
 .RI [ file ]
 .RB [ \-version ]
 .RB [ \-help ]
+.RB [ \-attach
+.IR header-field-name ]
 
 .HP 5
 .B whom
@@ -822,6 +891,7 @@ or
 .RB [ \-draftmessage
 .IR msg ]
 .RB [ \-nodraftfolder ]
+.RB [ \-snoop ]
 .RI [ file ]
 .RB [ \-version ]
 .RB [ \-help ]
