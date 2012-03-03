@@ -1602,13 +1602,14 @@ calculate_digest (CT ct, int asciiP)
     unsigned char *dp;
     unsigned char digest[16];
     unsigned char outbuf[25];
-    FILE *in;
     MD5_CTX mdContext;
     CE ce = ct->c_cefile;
+    char *infilename = ce->ce_file ? ce->ce_file : ct->c_file;
+    FILE *in;
 
     /* open content */
-    if ((in = fopen (ce->ce_file, "r")) == NULL)
-	adios (ce->ce_file, "unable to open for reading");
+    if ((in = fopen (infilename, "r")) == NULL)
+	adios (infilename, "unable to open for reading");
 
     /* Initialize md5 context */
     MD5Init (&mdContext);
