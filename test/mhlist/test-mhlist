@@ -1,0 +1,175 @@
+#!/bin/sh
+######################################################
+#
+# Test mhlist
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+
+# check with no options and no current message
+run_test 'mhlist' 'mhlist: no cur message'
+
+# check with no options and current message
+folder +inbox 5 > /dev/null
+cat > $expected <<EOF
+ msg part  type/subtype              size description                         
+   5       text/plain                  25
+EOF
+mhlist > $actual 2>&1
+check $expected $actual 'keep first'
+
+# check -noheaders
+run_test 'mhlist 5 -noheaders' '   5       text/plain                  25'
+
+# check -headers
+mhlist -noheaders -headers > $actual 2>&1
+check $expected $actual 'keep first'
+
+# check with folder and current message
+mhlist +inbox > $actual 2>&1
+check $expected $actual 'keep first'
+
+# check with specified message
+mhlist 5 > $actual 2>&1
+check $expected $actual 'keep first'
+
+# check -file
+mhlist -file "$MH_TEST_DIR/Mail/inbox/5" > $actual 2>&1
+check $expected $actual
+
+# check -file -
+cat > $expected <<EOF
+ msg part  type/subtype              size description                         
+   0       text/plain                  25
+EOF
+mhlist -file - < "$MH_TEST_DIR/Mail/inbox/5" > $actual 2>&1
+check $expected $actual
+
+# check message number greater than highest
+run_test 'mhlist 11' "mhlist: message 11 doesn't exist"
+
+# check multiple messages
+cat > $expected <<EOF
+ msg part  type/subtype              size description                         
+   2       text/plain                  25
+   8       text/plain                  25
+EOF
+mhlist 2 8 > $actual 2>&1
+check $expected $actual
+
+# Write message with a text/plain subpart.
+msgfile=$(mhpath new)
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist test
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: multipart/related;
+    type="multipart/alternative";
+    boundary="subpart__1.1"
+
+--subpart__1.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="test1"
+
+This is the first text/plain part.
+
+--subpart__1.1--
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="test2"
+Content-MD5: kq+Hnc2SD/eKwAnkFBDuEA==
+Content-Transfer-Encoding: quoted-printable
+
+This is the second text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="test3"
+
+This is the third text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="test4"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyB0aGUgZm91cnRoIHRleHQvcGxhaW4gcGFydC4K
+
+------- =_aaaaaaaaaa0--
+EOF
+
+# check -part
+run_test 'mhlist last -part 3 -noheader' \
+'  11       multipart/mixed            900
+     1     multipart/related          164
+     3     text/plain                  35'
+
+# check -part of a subpart
+run_test 'mhlist last -part 1.1 -noheader' \
+'  11       multipart/mixed            900
+     1     multipart/related          164
+     1.1   text/plain                  35'
+
+# check -type
+run_test 'mhlist last -type text/plain -noheader' \
+'  11       multipart/mixed            900
+     1     multipart/related          164
+     1.1   text/plain                  35
+     2     text/plain                  36
+     3     text/plain                  35
+     4     text/plain                  36'
+
+# check -norealsize
+run_test 'mhlist last -part 4 -noheader -norealsize' \
+'  11       multipart/mixed            900
+     1     multipart/related          164
+     4     text/plain                  49'
+
+# check -realsize, the default
+run_test 'mhlist last -part 4 -noheader -norealsize -realsize' \
+'  11       multipart/mixed            900
+     1     multipart/related          164
+     4     text/plain                  36'
+
+# check -check
+run_test 'mhlist last -part 2 -noheader -check' \
+'  11       multipart/mixed            900
+     1     multipart/related          164
+     2     text/plain                  36'
+
+# check -check with bad MD5 checksum
+sed 's/\(Content-MD5: \)kq+Hnc/\1BADBAD/' $msgfile > $MH_TEST_DIR/$$.tmp
+mv -f $MH_TEST_DIR/$$.tmp $msgfile
+run_test 'mhlist last -part 2 -noheader -check' \
+'  11       multipart/mixed            900
+     1     multipart/related          164
+     2     text/plain                  36
+mhlist: content integrity suspect (digest mismatch) -- continuing
+        (content text/plain in message 11, part 2)'
+
+# check -nocheck, the default
+run_test 'mhlist last -part 2 -noheader -check -nocheck' \
+'  11       multipart/mixed            900
+     1     multipart/related          164
+     2     text/plain                  36'
+
+exit $failed
