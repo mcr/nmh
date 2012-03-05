@@ -30,8 +30,8 @@ static struct swit switches[] = {
 };
 
 struct smsg {
-    long s_start;
-    long s_stop;
+    off_t s_start;
+    off_t s_stop;
 };
 
 /*
@@ -209,9 +209,8 @@ static int
 find_delim (int msgnum, struct smsg *smsgs)
 {
     int wasdlm, msgp;
-    long pos;
+    off_t pos;
     char c, *msgnam;
-    int cc;
     char buffer[BUFSIZ];
     FILE *in;
 
@@ -219,25 +218,46 @@ find_delim (int msgnum, struct smsg *smsgs)
 	adios (msgnam, "unable to read message");
 
     for (msgp = 0, pos = 0L; msgp <= MAXFOLDER;) {
+    	/*
+	 * We're either at the beginning of the whole message, or
+	 * we're just past the delimiter of the last message.
+	 * Swallow lines until we get to something that's not a newline
+	 */
 	while (fgets (buffer, sizeof(buffer), in) && buffer[0] == '\n')
 	    pos += (long) strlen (buffer);
 	if (feof (in))
 	    break;
-	fseek (in, pos, SEEK_SET);
+
+	/*
+	 * Reset to the beginning of the last non-blank line, and save our
+	 * starting position.  This is where the encapsulated message
+	 * starts.
+	 */
+	fseeko (in, pos, SEEK_SET);
 	smsgs[msgp].s_start = pos;
 
+	/*
+	 * Read in lines until we get to a message delimiter.
+	 *
+	 * Previously we checked to make sure the preceeding line and
+	 * next line was a newline.  That actually does not comply with
+	 * RFC 934, so make sure we break on a message delimiter even
+	 * if the previous character was NOT a newline.
+	 */
 	for (c = 0; fgets (buffer, sizeof(buffer), in); c = buffer[0]) {
-	    if (CHECKDELIM(buffer)
-		    && (msgp == 1 || c == '\n')
-		    && ((cc = peekc (in)) == '\n' || cc == EOF))
+	    if ((wasdlm = CHECKDELIM(buffer)))
 		break;
 	    else
 		pos += (long) strlen (buffer);
 	}
 
-	wasdlm = CHECKDELIM(buffer);
-	if (smsgs[msgp].s_start != pos)
+	/*
+	 * Only count as a new message if we got the message delimiter.
+	 * Swallow a blank line if it was right before the message delimiter.
+	 */
+	if (smsgs[msgp].s_start != pos && wasdlm)
 	    smsgs[msgp++].s_stop = (c == '\n' && wasdlm) ? pos - 1 : pos;
+
 	if (feof (in)) {
 #if 0
 	    if (wasdlm) {
@@ -251,7 +271,7 @@ find_delim (int msgnum, struct smsg *smsgs)
     }
 
     fclose (in);
-    return (msgp - 1);		/* toss "End of XXX Digest" */
+    return (msgp - 1);		/* return the number of messages burst */
 }
 
 
@@ -358,7 +378,7 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
 	    printf ("message %d of digest %d becomes message %d\n", j, msgnum, i);
 
 	chmod (f2, mode);
-	fseek (in, smsgs[j].s_start, SEEK_SET);
+	fseeko (in, smsgs[j].s_start, SEEK_SET);
 	cpybrst (in, out, msgnam, f2,
 		(int) (smsgs[j].s_stop - smsgs[j].s_start));
 	fclose (out);
