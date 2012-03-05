@@ -40,3 +40,4 @@ Things to add to the release notes for the next full release:
   to include appropriate From: headers based on either the -from switch
   or the local mailbox.
 - burst(1) now supports any valid message delimiter according to RFC 934.
+- A problem with the MD5 digest calculator on 64-bit systems has been fixed.
