@@ -48,6 +48,100 @@ EOF
 
 burst 11 || exit
 
-scan 11-last
+run_test 'scan -width 80 11-last' \
+"  11  09/29 Test Burst Messag  Test digest<<------- Message one From: Mister Bu
+  12+ 09/28 Mister Burster     Message one<<This is message one >>
+  13  09/28 Mister Burster     Message two<<This is message two For real. >>"
 
-exit 0
+#
+# Create another test message that stresses the boundary checker a bit
+#
+
+cat > "${MH_TEST_DIR}/Mail/inbox/14" <<EOF
+From: Test Burst Message <burst1@example.com>
+To: Test Recipient <recipient@example.com>
+Date: Friday, 29 Sep 2006 00:00:00
+Subject: Test digest
+
+This is a preamble
+------- Message one
+
+From: Mister Burster <burst2@example.com>
+To: Nobody 1 <nobody1@example.com>
+Date: Thursday, 28 Sep 2006 00:01:00
+Subject: Message one
+
+- -This is message one
+
+------- Message two
+From: Mister Burster <burst3@example.com>
+To: Nobody 2 <nobody2@example.com>
+Date: Thursday, 28 Sep 2006 00:02:00
+Subject: Message two
+
+This is message two
+- For real.
+------- Message three
+
+
+
+From: Mister Burster <burst4@example.com>
+To: Nobody 3 <nobody3@example.com>
+Date: Thursday, 28 Sep 2006 00:03:00
+Subject: Message three
+
+Will this one work?
+
+
+------ Message three
+End of all messages
+EOF
+
+burst 14 || exit
+
+run_test 'scan -width 80 14-last' \
+"  14  09/29 Test Burst Messag  Test digest<<This is a preamble ------- Message 
+  15+ 09/28 Mister Burster     Message one<<-This is message one >>
+  16  09/28 Mister Burster     Message two<<This is message two For real. >>
+  17  09/28 Mister Burster     Message three<<Will this one work? >>"
+
+#
+# Check to see if each message is what we expect
+#
+
+run_test 'show -noheader -noshow 15' \
+"From: Mister Burster <burst2@example.com>
+To: Nobody 1 <nobody1@example.com>
+Date: Thursday, 28 Sep 2006 00:01:00
+Subject: Message one
+
+-This is message one"
+
+run_test 'show -noheader -noshow 16' \
+"From: Mister Burster <burst3@example.com>
+To: Nobody 2 <nobody2@example.com>
+Date: Thursday, 28 Sep 2006 00:02:00
+Subject: Message two
+
+This is message two
+For real."
+
+#
+# Backticks used by run_test can consume blank lines at the end of the
+# command output, so use check for this one.
+#
+
+expected="${MH_TEST_DIR}/$$.expected"
+cat > "${expected}" <<EOF
+From: Mister Burster <burst4@example.com>
+To: Nobody 3 <nobody3@example.com>
+Date: Thursday, 28 Sep 2006 00:03:00
+Subject: Message three
+
+Will this one work?
+
+EOF
+
+check "${expected}" `mhpath 17`
+
+exit $failed
