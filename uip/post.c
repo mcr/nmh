@@ -27,9 +27,7 @@
 #endif
 #include <time.h>
 
-#ifdef SMTPMTS
-# include <mts/smtp/smtp.h>
-#endif
+#include <mts/smtp/smtp.h>
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)
@@ -275,14 +273,12 @@ static struct mailname netaddrs;		/* network addrs   */
 static struct mailname uuaddrs;			/* uucp addrs      */
 static struct mailname tmpaddrs;		/* temporary queue */
 
-#ifdef SMTPMTS
 static int snoop      = 0;
 static int smtpmode   = S_MAIL;
 static char *clientsw = NULL;
 static char *serversw = NULL;
 
 extern struct smtp sm_reply;
-#endif /* SMTPMTS */
 
 static char prefix[] = "----- =_aaaaaaaaaa";
 
@@ -466,16 +462,6 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 
-#ifndef	SMTPMTS
-		case CLIESW:
-		case SERVSW:
-		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
-		    continue;
-
-		case SNOOPSW:
-		    continue;
-#else /* SMTPMTS */
 		case MAILSW:
 		    smtpmode = S_MAIL;
 		    continue;
@@ -499,7 +485,6 @@ main (int argc, char **argv)
 		case SNOOPSW:
 		    snoop++;
 		    continue;
-#endif /* SMTPMTS */
 
 		case FILLSW:
 		    if (!(fill_in = *argp++) || *fill_in == '-')
@@ -1410,10 +1395,8 @@ do_addresses (int bccque, int talk)
 
     chkadr ();
 
-#ifdef SMTPMTS
     if (rp_isbad (retval = sm_waend ()))
 	die (NULL, "problem ending addresses; %s", rp_string (retval));
-#endif /* SMTPMTS */
 }
 
 
@@ -1425,8 +1408,6 @@ do_addresses (int bccque, int talk)
 /*
  * SENDMAIL/SMTP routines
  */
-
-#ifdef SMTPMTS
 
 static void
 post (char *file, int bccque, int talk)
@@ -1612,8 +1593,6 @@ do_text (char *file, int fd)
     }
 }
 
-#endif /* SMTPMTS */
-
 
 /*
  * SIGNAL HANDLING
@@ -1628,10 +1607,8 @@ sigser (int i)
     if (msgflags & MINV)
 	unlink (bccfil);
 
-#ifdef SMTPMTS
     if (!whomsw || checksw)
 	sm_end (NOTOK);
-#endif /* SMTPMTS */
 
     done (1);
 }
@@ -1747,10 +1724,8 @@ die (char *what, char *fmt, ...)
     if (msgflags & MINV)
 	unlink (bccfil);
 
-#ifdef SMTPMTS
     if (!whomsw || checksw)
 	sm_end (NOTOK);
-#endif /* SMTPMTS */
 
     va_start(ap, fmt);
     advertise (what, NULL, fmt, ap);

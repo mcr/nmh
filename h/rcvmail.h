@@ -3,19 +3,15 @@
  * rcvmail.h -- rcvmail hook definitions
  */
 
-#if defined(SMTPMTS)
-# include <ctype.h>
-# include <errno.h>
-# include <stdio.h>
-# include <sys/types.h>
-# include <mts/smtp/smtp.h>
-#endif /* SMTPMTS */
+#include <ctype.h>
+#include <errno.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <mts/smtp/smtp.h>
 
 
-#if defined(SMTPMTS)
-# define RCV_MOK	0
-# define RCV_MBX	1
-#endif /* SMTPMTS */
+#define RCV_MOK	0
+#define RCV_MBX	1
 
 
 #ifdef NRTC			/* sigh */

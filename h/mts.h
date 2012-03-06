@@ -43,7 +43,6 @@ void mts_init (char *);
 /*
  * MTS specific variables
  */
-#if defined (SMTPMTS)
 
 /* whether to speak SMTP to localhost:25 or to /usr/sbin/sendmail */
 #define MTS_SMTP     0
@@ -52,7 +51,6 @@ extern int sm_mts;
 
 extern char *hostable;
 extern char *sendmail;
-#endif
 
 /*
  * SMTP/POP stuff
