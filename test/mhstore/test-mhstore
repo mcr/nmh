@@ -1,0 +1,243 @@
+#!/bin/sh
+######################################################
+#
+# Test mhstore
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+cd $MH_TEST_DIR
+
+# check with no options and no current message
+run_test 'mhstore' 'mhstore: no cur message'
+
+# check with no options and current message
+folder +inbox 5 > /dev/null
+cat > $expected <<EOF
+This is message number 5
+EOF
+run_test 'mhstore' 'storing message 5 as file 5.txt'
+check $expected 5.txt 'keep first'
+
+# check with folder and current message
+run_test 'mhstore +inbox' 'storing message 5 as file 5.txt'
+check $expected 5.txt 'keep first'
+
+# check with specified message
+run_test 'mhstore 5' 'storing message 5 as file 5.txt'
+check $expected 5.txt 'keep first'
+
+# check -file
+run_test "mhstore -file $MH_TEST_DIR/Mail/inbox/5" \
+  "storing message $MH_TEST_DIR/Mail/inbox/5 as file 5.txt"
+check $expected 5.txt 'keep first'
+
+# check -file -
+stored_contents=`mhstore -file - < $MH_TEST_DIR/Mail/inbox/5 2>&1 | \
+  sed 's/.*as file //'`
+check $expected $stored_contents
+
+# check message number greater than highest
+run_test 'mhstore 11' "mhstore: message 11 doesn't exist"
+
+# check multiple messages
+run_test 'mhstore 4 6' 'storing message 4 as file 4.txt
+storing message 6 as file 6.txt'
+cat > $expected <<EOF
+This is message number 4
+EOF
+check $expected 4.txt
+cat > $expected <<EOF
+This is message number 6
+EOF
+check $expected 6.txt
+
+# Write message with a text/plain subpart.
+msgfile=$(mhpath new)
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist test
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: multipart/related;
+    type="multipart/alternative";
+    boundary="subpart__1.1"
+
+--subpart__1.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="test1.txt"
+
+This is the first text/plain part, in a subpart.
+
+--subpart__1.1--
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="test2.txt"
+Content-MD5: kq+Hnc2SD/eKwAnkFBDuEA==
+Content-Transfer-Encoding: quoted-printable
+
+This is the second text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="test3.txt"
+
+This is the third text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"; name="test4.txt"
+Content-Disposition: attachment; filename="test4.txt"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyB0aGUgZm91cnRoIHRleHQvcGxhaW4gcGFydC4K
+
+------- =_aaaaaaaaaa0--
+EOF
+
+# check -part
+cat > $expected <<EOF
+This is the third text/plain part.
+EOF
+run_test 'mhstore last -part 3' 'storing message 11 part 3 as file 11.3.txt'
+check $expected 11.3.txt
+
+# check -part of a subpart
+cat > $expected <<EOF
+This is the first text/plain part, in a subpart.
+EOF
+run_test 'mhstore last -part 1.1' \
+         'storing message 11 part 1.1 as file 11.1.1.txt'
+check $expected 11.1.1.txt 'keep first'
+
+# check -type
+run_test 'mhstore last -type text/plain' \
+  'storing message 11 part 1.1 as file 11.1.1.txt
+storing message 11 part 2 as file 11.2.txt
+storing message 11 part 3 as file 11.3.txt
+storing message 11 part 4 as file 11.4.txt'
+check $expected 11.1.1.txt
+cat > $expected <<EOF
+This is the second text/plain part.
+EOF
+check $expected 11.2.txt
+cat > $expected <<EOF
+This is the third text/plain part.
+EOF
+check $expected 11.3.txt
+cat > $expected <<EOF
+This is the fourth text/plain part.
+EOF
+check $expected 11.4.txt
+
+# check -auto
+cat > $expected <<EOF
+This is the fourth text/plain part.
+EOF
+run_test 'mhstore last -part 4 -auto' \
+  'storing message 11 part 4 as file test4.txt'
+check $expected test4.txt 'keep first'
+
+# check -noauto, the default
+run_test 'mhstore last -part 4 -auto -noauto' \
+  'storing message 11 part 4 as file 11.4.txt'
+check $expected 11.4.txt 'keep first'
+
+# check -verbose, which doesn't do anything
+run_test 'mhstore last -part 4 -verbose' \
+  'storing message 11 part 4 as file 11.4.txt'
+check $expected 11.4.txt 'keep first'
+
+# check -noverbose, the default
+run_test 'mhstore last -part 4 -verbose -noverbose' \
+  'storing message 11 part 4 as file 11.4.txt'
+check $expected 11.4.txt
+
+# check -check
+cat > $expected <<EOF
+This is the second text/plain part.
+EOF
+run_test 'mhstore last -part 2 -check' \
+         'storing message 11 part 2 as file 11.2.txt'
+check $expected 11.2.txt 'keep first'
+
+# check -check with bad MD5 checksum
+sed 's/\(Content-MD5: \)kq+Hnc/\1BADBAD/' $msgfile > $MH_TEST_DIR/$$.tmp
+mv -f $MH_TEST_DIR/$$.tmp $msgfile
+run_test 'mhstore last -part 2 -check' \
+'storing message 11 part 2 as file 11.2.txt
+mhstore: content integrity suspect (digest mismatch) -- continuing
+         (content text/plain in message 11, part 2)'
+check $expected 11.2.txt 'keep first'
+
+# check -nocheck, the default
+run_test 'mhstore last -part 2 -check -nocheck' \
+         'storing message 11 part 2 as file 11.2.txt'
+check $expected 11.2.txt
+
+# check reassembly of message/partial messages (RFC 1521, 7.3.2)
+msgfile=$(mhpath new)
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist test
+MIME-Version: 1.0
+Content-Type: message/partial; id="test-mhstore message/partial test"; number=1
+
+Content-Type: text/plain; charset="us-ascii"
+
+This is part one of three.
+EOF
+
+msgfile=$(mhpath new)
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist test
+MIME-Version: 1.0
+Content-Type: message/partial; id="test-mhstore message/partial test"; number=2
+
+This is part two of three.
+EOF
+
+msgfile=$(mhpath new)
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist test
+MIME-Version: 1.0
+Content-Type: message/partial; id="test-mhstore message/partial test"; number=3;
+  total=3
+
+This is part three of three.
+EOF
+
+run_test 'mhstore last:3' \
+         'reassembling partials 12,13,14 to folder inbox as message 15'
+
+cat > $expected <<EOF
+This is part one of three.
+This is part two of three.
+This is part three of three.
+EOF
+run_test 'mhstore last' 'storing message 15 as file 15.txt'
+check $expected 15.txt
+
+
+exit $failed

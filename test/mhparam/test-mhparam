@@ -1,0 +1,101 @@
+#!/bin/sh
+######################################################
+#
+# Test mhparam
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+expected_err=$MH_TEST_DIR/$$.expected_err
+actual=$MH_TEST_DIR/$$.actual
+actual_err=$MH_TEST_DIR/$$.actual_err
+
+
+# check -help
+cat >$expected <<EOF
+Usage: mhparam [profile-components] [switches]
+  switches are:
+  -[no]components
+  -all
+  -version
+  -help
+EOF
+# The exit status is 1 with -help, so invert it to prevent
+# triggering immediate exit due to set -e.
+! mhparam -help >$actual 2>&1
+check $expected $actual
+
+# check -version
+if ! mhparam -v | grep '^mhparam --' >/dev/null; then
+  echo "$0: mhparam -v generated unexpected output" 1>&2
+  failed=`expr ${failed:-0} + 1`
+fi
+
+# check unknown option
+run_test 'mhparam -nonexistent' 'mhparam: -nonexistent unknown'
+
+# check -all
+cp $MH_TEST_DIR/Mail/.mh_profile $expected
+# -all adds current folder
+echo 'Current-Folder: '`folder -f` >>$expected
+mhparam -all >$actual
+check $expected $actual 'keep first'
+
+# check -all with a component
+echo 'mhparam: profile-components ignored with -all' >$expected_err
+mhparam -all path >$actual 2>$actual_err
+check $expected $actual 'keep first'
+check $expected_err $actual_err
+
+# check -all with -components
+echo 'mhparam: -components ignored with -all' >$expected_err
+mhparam -all -components >$actual 2>$actual_err
+check $expected $actual
+check $expected_err $actual_err
+
+# check one component
+run_test 'mhparam path' "$MH_TEST_DIR/Mail"
+
+# check more than one component, which enables -component
+echo 'AliasFile: aliases' >>"$MH_TEST_DIR/Mail/.mh_profile"
+run_test 'mhparam path AliasFile' "path: $MH_TEST_DIR/Mail
+AliasFile: aliases"
+
+# check -component
+run_test 'mhparam -component Path' "Path: $MH_TEST_DIR/Mail"
+
+# check -component, note that component name of argument is echoed exactly
+run_test 'mhparam -component path' "path: $MH_TEST_DIR/Mail"
+run_test 'mhparam -component PATH' "PATH: $MH_TEST_DIR/Mail"
+
+# check -nocomponent
+run_test 'mhparam -component -nocomponent path' "$MH_TEST_DIR/Mail"
+run_test 'mhparam -nocomponent path AliasFile' "$MH_TEST_DIR/Mail
+aliases"
+
+# check nonexistent component
+run_test 'mhparam nonexistent' ''
+
+# check that return status counts nonexistent components
+set +e
+mhparam path context nonexistent1 nonexistent2 nonexistent3 >/dev/null
+run_test "echo $?" 3
+set -e
+
+# mhparam -debug (undocumented)
+# Some of its output depends on configure options, so don't bother to
+# check for correctness here.
+mhparam -debug >/dev/null
+
+exit $failed

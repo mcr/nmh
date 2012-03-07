@@ -51,9 +51,11 @@ TESTS = test/bad-input/test-header \
 	test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/manpages/test-manpages test/mhbuild/test-forw \
-	test/mhlist/test-mhlist test/mhpath/test-mhpath \
+	test/mhlist/test-mhlist test/mhparam/test-mhparam \
+	test/mhpath/test-mhpath \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
-	test/mhshow/test-subpart test/new/test-basic \
+	test/mhshow/test-subpart test/mhstore/test-mhstore \
+	test/new/test-basic \
 	test/pick/test-pick test/pick/test-stderr \
 	test/repl/test-if-str test/scan/test-scan \
 	test/sequences/test-flist test/sequences/test-mark \
