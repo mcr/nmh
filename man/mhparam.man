@@ -53,7 +53,7 @@ Mail
 % mhparam mhlproc
 %libdir%/mhl
 
-% mhparam \-component path
+% mhparam \-component Path
 Path: Mail
 
 % mhparam AliasFile rmmproc
