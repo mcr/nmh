@@ -468,7 +468,6 @@ is equivalent to
 .IR content ]
 \&...
 .RB [ \-auto " | " \-noauto ]
-.RB [ \-verbose " | " \-noverbose ]
 .RB [ \-rcache
 .IR policy ]
 .RB [ \-wcache

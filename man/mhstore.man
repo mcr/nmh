@@ -19,7 +19,6 @@ mhstore \- store contents of MIME messages into files
 .IR content ]
 \&...
 .RB [ \-auto " | " \-noauto ]
-.RB [ \-verbose " | " \-noverbose ]
 .RB [ \-rcache
 .IR policy ]
 .RB [ \-wcache
@@ -469,7 +468,6 @@ mhbuild(1), mhlist(1), mhshow(1), sendfiles(1)
 .RB ` \-nocheck '
 .RB ` \-rcache ask '
 .RB ` \-wcache ask '
-.RB ` \-noverbose '
 
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
