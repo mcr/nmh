@@ -208,7 +208,7 @@ main (int argc, char **argv)
 static int
 find_delim (int msgnum, struct smsg *smsgs)
 {
-    int wasdlm, msgp;
+    int wasdlm = 0, msgp;
     off_t pos;
     char c, *msgnam;
     char buffer[BUFSIZ];
