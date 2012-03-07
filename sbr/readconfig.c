@@ -32,7 +32,6 @@ static struct procstr procs[] = {
     { "mshproc",       &mshproc },
     { "packproc",      &packproc },
     { "postproc",      &postproc },
-    { "rmfproc",       &rmfproc },
     { "rmmproc",       &rmmproc },
     { "sendproc",      &sendproc },
     { "showmimeproc",  &showmimeproc },

@@ -345,7 +345,6 @@ extern char *rcvdistcomps;
 extern char *rcvstoreproc;
 extern char *replcomps;
 extern char *replgroupcomps;
-extern char *rmfproc;
 extern char *rmmproc;
 extern char *sendproc;
 extern char *showmimeproc;

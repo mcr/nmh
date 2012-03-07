@@ -516,12 +516,6 @@ and
 to delete a message from a folder.
 .RE
 .PP
-.BR rmfproc :
-%bindir%/rmf
-.RS 5
-Currently not used.
-.RE
-.PP
 .BR sendproc :
 %bindir%/send
 .RS 5

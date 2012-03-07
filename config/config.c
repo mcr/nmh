@@ -276,12 +276,6 @@ char *postproc = nmhlibdir (/post);
 char *rcvstoreproc = nmhlibdir (/rcvstore);
 
 /* 
- * This program is called to remove a folder.  
- */
-
-char *rmfproc = nmhbindir (/rmf);
-
-/* 
  * This program is called to remove a message by rmm or refile -nolink.
  * It's usually empty, which means to rename the file to a backup name.
  */
