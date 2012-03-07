@@ -242,7 +242,7 @@ switch must be interpreted as a single
 token by the shell that invokes
 .BR whatnow .
 Therefore, one must
-usually place the argument to this switch inside double\-quotes.
+usually place the argument to this switch inside quotes.
 .PP
 If the initial edit fails,
 .B whatnow

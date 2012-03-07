@@ -33,7 +33,7 @@ The
 .B dp
 program treats each argument as a single date,
 and prints the date out in the official 822\-format.
-Hence, it is usually best to enclose each argument in double\-quotes for the
+Hence, it is usually best to enclose each argument in quotes for the
 shell.
 .PP
 To override the output format used by
@@ -91,4 +91,4 @@ The argument to the
 .B \-format
 switch must be interpreted as a single token by the shell that invokes
 .BR dp .
-Therefore, one must usually place the argument to this switch inside double\-quotes.
+Therefore, one must usually place the argument to this switch inside quotes.

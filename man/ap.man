@@ -32,7 +32,7 @@ The
 .B ap
 program treats each argument as one or more addresses, and
 prints those addresses out in the official 822\-format.  Hence, it is
-usually best to enclose each argument in double\-quotes for the shell.
+usually best to enclose each argument in quotes for the shell.
 .PP
 To override the output format used by
 .BR ap ,
@@ -111,4 +111,4 @@ switch must be interpreted as a single token
 by the shell that invokes
 .BR ap .
 Therefore,
-one must usually place the argument to this switch inside double\-quotes.
+one must usually place the argument to this switch inside quotes.

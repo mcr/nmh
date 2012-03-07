@@ -373,7 +373,7 @@ switches must be interpreted
 as a single token by the shell that invokes
 .BR pick .
 Therefore, one
-must usually place the argument to this switch inside double\-quotes.
+must usually place the argument to this switch inside quotes.
 Furthermore, any occurrence of
 .B \-datefield
 must occur prior to the

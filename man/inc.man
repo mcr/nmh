@@ -337,4 +337,4 @@ switch must be interpreted as a single
 token by the shell that invokes
 .BR inc .
 Therefore, one must usually place the argument to this switch inside
-double\-quotes.
+quotes.
