@@ -466,8 +466,8 @@ mhbuild(1), mhlist(1), mhshow(1), sendfiles(1)
 .RB ` msgs "' defaults to cur"
 .RB ` \-noauto '
 .RB ` \-nocheck '
-.RB ` \-rcache ask '
-.RB ` \-wcache ask '
+.RB ` \-rcache\ ask '
+.RB ` \-wcache\ ask '
 
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last

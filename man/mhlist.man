@@ -179,8 +179,8 @@ mhbuild(1), mhshow(1), mhstore(1), sendfiles(1)
 .RB ` \-nocheck '
 .RB ` \-headers '
 .RB ` \-realsize '
-.RB ` \-rcache ask '
-.RB ` \-wcache ask '
+.RB ` \-rcache\ ask '
+.RB ` \-wcache\ ask '
 .RB ` \-noverbose '
 .fi
 

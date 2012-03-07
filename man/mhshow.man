@@ -591,13 +591,13 @@ mhbuild(1), mhl(1), mhlist(1), mhstore(1), sendfiles(1)
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
 .RB ` \-nocheck '
-.RB ` \-form mhl.headers '
+.RB ` \-form\ mhl.headers '
 .RB ` \-pause '
-.RB ` \-rcache ask '
+.RB ` \-rcache\ ask '
 .RB ` \-realsize '
 .RB ` \-noserialonly '
 .RB ` \-noverbose '
-.RB ` \-wcache ask '
+.RB ` \-wcache\ ask '
 .fi
 
 .SH CONTEXT

@@ -363,8 +363,8 @@ show(1), ap(8), dp(8)
 .nf
 .RB ` \-bell '
 .RB ` \-noclear '
-.RB ` \-length 40 '
-.RB ` \-width 80 '
+.RB ` \-length\ 40 '
+.RB ` \-width\ 80 '
 .fi
 
 .SH CONTEXT
