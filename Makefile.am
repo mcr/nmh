@@ -57,6 +57,7 @@ TESTS = test/bad-input/test-header \
 	test/mhshow/test-subpart test/mhstore/test-mhstore \
 	test/new/test-basic \
 	test/pick/test-pick test/pick/test-stderr \
+	test/refile/test-refile \
 	test/repl/test-if-str test/scan/test-scan \
 	test/sequences/test-flist test/sequences/test-mark \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
@@ -553,23 +554,25 @@ cscope:
 
 ##
 ## Use GNU gcov to find the coverage of the test suite.
-## gcov and gcov-clean are not integrated into the other automake
-## targets because gcov will be used so infrequently, if at all.
+## These targets are not integrated into the other automake
+## targets because they will be used so infrequently, if at all.
 ##
 gcov:
 	@echo rebuilding with AM_CLFAGS=--coverage . . .
 	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null  &&  make check
 	@for i in `find . -name '*.gcda'`; do \
-	   gcov -o `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
+	   gcov -p -o `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
 	 done
 	@for i in `find . -name '*.gcno'`; do \
 	   if ! test -f `echo $$i | sed 's%\.gcno%.gcda%'`; then \
 	     echo untested: $$i; \
 	   fi; \
 	 done
-gcov-clean:
-	@find . -name '*.gcno' -o -name '*.gcda' -o -name '*.gcov' | xargs rm
-.PHONY: gcov gcov-clean
+gcov-mostlyclean:
+	@find . -name '*.gcno' -o -name '*.gcda' | xargs rm
+gcov-clean: gcov-mostlyclean
+	@find . -name '*.gcov' | xargs rm
+.PHONY: gcov gcov-mostlyclean gcov-clean
 
 
 ##

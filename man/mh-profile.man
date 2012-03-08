@@ -276,6 +276,7 @@ Indicates a default draft folder for
 .BR comp ,
 .BR dist ,
 .BR forw ,
+.BR refile ,
 and
 .BR repl .
 Read the

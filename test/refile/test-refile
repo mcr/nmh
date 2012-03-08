@@ -1,0 +1,212 @@
+#!/bin/sh
+######################################################
+#
+# Test refile
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+cd $MH_TEST_DIR
+
+folder -create +other -fast >/dev/null
+folder -create +another -fast >/dev/null
+
+# check with no options and no current message
+run_test 'refile' 'refile: no folder specified'
+
+# check with current message
+folder +inbox 4 >/dev/null
+run_test 'refile +other' ''
+run_test 'folders -noheader' \
+'another  has no messages.
+inbox+   has  9 messages  (1-10); cur=4.
+other    has  1 message   (1- 1).
+
+TOTAL = 10 messages in 3 folders.'
+
+# check with specified message
+folder +inbox 5 >/dev/null
+run_test 'refile 5 +other' ''
+run_test 'folders -noheader' \
+'another  has no messages.
+inbox+   has  8 messages  (1-10); cur=5.
+other    has  2 messages  (1- 2).
+
+TOTAL = 10 messages in 3 folders.'
+
+# check multiple messages
+run_test 'refile 6 7 +other' ''
+run_test 'folders -noheader' \
+'another  has no messages.
+inbox+   has  6 messages  (1-10); cur=7.
+other    has  4 messages  (1- 4).
+
+TOTAL = 10 messages in 3 folders.'
+
+# check multiple folders
+run_test 'refile 8 +other +another' ''
+run_test 'folders -noheader' \
+'another  has 1 message   (1- 1).
+inbox+   has 5 messages  (1-10); cur=8.
+other    has 5 messages  (1- 5).
+
+TOTAL = 11 messages in 3 folders.'
+
+# check message number greater than highest
+run_test 'refile 11 +other' "refile: message 11 doesn't exist"
+folder -f +another >/dev/null
+
+# check -src
+run_test 'refile 9 -src +inbox +other' ''
+run_test 'folders -noheader' \
+'another  has 1 message   (1- 1).
+inbox+   has 4 messages  (1-10); cur=9.
+other    has 6 messages  (1- 6).
+
+TOTAL = 11 messages in 3 folders.'
+
+# check -file
+run_test "refile -file $MH_TEST_DIR/Mail/inbox/10 +other" ''
+run_test 'folders -noheader' \
+'another  has 1 message   (1-1).
+inbox+   has 3 messages  (1-3).
+other    has 7 messages  (1-7).
+
+TOTAL = 11 messages in 3 folders.'
+
+# check -file -, which isn't supported
+run_test "refile -file - +other <$MH_TEST_DIR/Mail/inbox/9" \
+         'refile: missing argument to -file'
+run_test 'folders -noheader' \
+'another  has 1 message   (1-1).
+inbox+   has 3 messages  (1-3).
+other    has 7 messages  (1-7).
+
+TOTAL = 11 messages in 3 folders.'
+
+run_test "refile -src +other all +inbox"
+run_test 'folders -noheader' \
+'another  has  1 message   (1- 1).
+inbox    has 10 messages  (1-10); cur=9.
+other+   has no messages.
+
+TOTAL = 11 messages in 3 folders.'
+
+# check -draft
+mv $MH_TEST_DIR/Mail/another/1 $MH_TEST_DIR/Mail/draft
+rmdir $MH_TEST_DIR/Mail/another
+run_test 'refile -draft +other' ''
+run_test 'folders -noheader' \
+'inbox  has 10 messages  (1-10); cur=9.
+other+ has  1 message   (1- 1).
+
+TOTAL = 11 messages in 2 folders.'
+
+# check -link
+run_test 'refile 7 -src +inbox +other -link' ''
+run_test 'folders -noheader' \
+'inbox+ has 10 messages  (1-10); cur=7.
+other  has  2 messages  (1- 2).
+
+TOTAL = 12 messages in 2 folders.'
+# inbox/7 and other/2 are linked.  Modify one and verify
+# that the other changes as well.
+echo '' >>$MH_TEST_DIR/Mail/other/2
+run_test "cmp $MH_TEST_DIR/Mail/inbox/7 $MH_TEST_DIR/Mail/other/2" ''
+
+# check -nolink
+run_test 'refile 7 +other -link -nolink' ''
+run_test 'folders -noheader' \
+'inbox+ has 9 messages  (1-10); cur=7.
+other  has 3 messages  (1- 3).
+
+TOTAL = 12 messages in 2 folders.'
+# inbox/7 should no longer exist because it was moved, not linked.
+run_test 'scan +inbox 7' "scan: message 7 doesn't exist"
+
+# check -preserve
+run_test 'refile 10 +other -preserve' ''
+run_test 'folders -noheader' \
+'inbox+ has 8 messages  (1- 9).
+other  has 4 messages  (1-10).
+
+TOTAL = 12 messages in 2 folders.'
+run_test 'scan +other last -format %(msg):%(decode{subject})' \
+         '10:Testing message 10'
+
+# check -nopreserve
+run_test 'refile 9 -src +inbox +other -preserve -nopreserve' ''
+run_test 'folders -noheader' \
+'inbox+ has 7 messages  (1- 8).
+other  has 5 messages  (1-11).
+
+TOTAL = 12 messages in 2 folders.'
+run_test 'scan +other last -format %(msg):%(decode{subject})' \
+         '11:Testing message 9'
+
+# check -unlink
+run_test 'refile 3 -src +inbox +other -unlink' ''
+run_test 'folders -noheader' \
+'inbox+ has 6 messages  (1- 8); cur=3.
+other  has 6 messages  (1-12).
+
+TOTAL = 12 messages in 2 folders.'
+if test -f $MH_TEST_DIR/Mail/inbox/,3; then
+  echo "$0: refile -unlink failed" 1>&2
+  failed=`expr ${failed:-0} + 1`
+fi
+
+# check -nounlink
+run_test 'refile 2 +other -unlink -nounlink' ''
+run_test 'folders -noheader' \
+'inbox+ has 5 messages  (1- 8); cur=2.
+other  has 7 messages  (1-13).
+
+TOTAL = 12 messages in 2 folders.'
+if ! test -f $MH_TEST_DIR/Mail/inbox/,2; then
+  echo "$0: refile -nounlink failed" 1>&2
+  failed=`expr ${failed:-0} + 1`
+fi
+
+# test folder creation when stdin is not a tty
+refile first +newfolder </dev/null
+run_test 'folders -noheader' \
+'inbox+     has 4 messages  (4- 8).
+newfolder  has 1 message   (1- 1).
+other      has 7 messages  (1-13).
+
+TOTAL = 12 messages in 3 folders.'
+
+# test -rmmproc
+run_test 'refile first +other -rmmproc echo' '4'
+run_test 'folders -noheader' \
+'inbox+     has 4 messages  (4- 8); cur=4.
+newfolder  has 1 message   (1- 1).
+other      has 8 messages  (1-14).
+
+TOTAL = 13 messages in 3 folders.'
+
+# test -normmproc
+run_test 'refile first +other -rmmproc echo -normmproc' ''
+run_test 'folders -noheader' \
+'inbox+     has 3 messages  (5- 8).
+newfolder  has 1 message   (1- 1).
+other      has 9 messages  (1-15).
+
+TOTAL = 13 messages in 3 folders.'
+
+
+exit $failed
