@@ -80,7 +80,7 @@ Content-Type: multipart/related;
     boundary="subpart__1.1"
 
 --subpart__1.1
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: attachment; filename="test1.txt"
 
 This is the first text/plain part, in a subpart.
@@ -88,7 +88,7 @@ This is the first text/plain part, in a subpart.
 --subpart__1.1--
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: attachment; filename="test2.txt"
 Content-MD5: kq+Hnc2SD/eKwAnkFBDuEA==
 Content-Transfer-Encoding: quoted-printable
@@ -96,13 +96,13 @@ Content-Transfer-Encoding: quoted-printable
 This is the second text/plain part.
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: attachment; filename="test3.txt"
 
 This is the third text/plain part.
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; charset="us-ascii"; name="test4.txt"
+Content-Type: text/plain; charset="iso-8859-1"; name="test4.txt"
 Content-Disposition: attachment; filename="test4.txt"
 Content-Transfer-Encoding: base64
 
@@ -200,7 +200,7 @@ Subject: mhlist test
 MIME-Version: 1.0
 Content-Type: message/partial; id="test-mhstore message/partial test"; number=1
 
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 
 This is part one of three.
 EOF
