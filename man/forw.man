@@ -111,7 +111,7 @@ escapes are also supported:
 .RS 5
 .nf
 .ta \w'nmh\-subject	'u +\w'Returns	'u
-.I Escape	Returns	Description
+.I "Escape	Returns	Description"
 fcc	string	Any folders specified with `\-fcc\ folder'
 nmh\-from	string	Addresses specified with `\-from\ address'
 nmh\-to	string	Addresses specified with `\-to\ address'
@@ -137,7 +137,7 @@ by using the
 .B \-from
 .I address
 switch.  The default mailbox in the \*(lqFcc:\*(rq field is
-.IR \+outbox .
+.IR +outbox .
 This can be overridden by the
 .B \-fcc
 switch.
@@ -382,7 +382,7 @@ Specifying these switches enables and/or overloads the following escapes:
 .RS 5
 .nf
 .ta \w'Component  'u +\w'Escape  'u +\w'Returns  'u
-.I Type	Escape	Returns	Description
+.I "Type	Escape	Returns	Description"
 component	digest	string	Argument to `\-digest'
 function	cur	integer	Argument to `\-volume'
 function	msg	integer	Argument to `\-issue'

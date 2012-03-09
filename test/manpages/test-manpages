@@ -32,7 +32,7 @@ rm -f "$expected" "$actual"
 touch "$expected" "$actual"
 
 for manpage in man?/*.?; do
-  groff -Tutf8 -mandoc -wmac "$manpage" > /dev/null 2>>"$actual"
+  groff -Tutf8 -mandoc -ww "$manpage" > /dev/null 2>>"$actual"
 done
 
 check "$expected" "$actual"

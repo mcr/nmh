@@ -27,7 +27,7 @@ or one of these \*(lqreserved\*(rq message names:
 .RS 5
 .nf
 .ta +\w'\fIName\fP      'u
-.I Name	Description
+.I "Name	Description"
 first	the first message in the folder
 last	the last message in the folder
 cur	the most recently accessed message

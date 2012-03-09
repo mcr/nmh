@@ -55,7 +55,7 @@ also recognizes the following additional escape:
 .RS 5
 .nf
 .ta \w'Escape  'u +\w'Returns  'u
-.I Escape	Returns	Description
+.I "Escape	Returns	Description"
 error	string	A diagnostic if the parse failed
 .RE
 .fi

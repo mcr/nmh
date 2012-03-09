@@ -207,7 +207,7 @@ bell, clearscreen, width, length).
 .RS 5
 .nf
 .ta \w'noclearscreen  'u +\w'integer/G  'u
-.I variable	type	semantics
+.I "variable	type	semantics"
 width	integer	screen width or component width
 length	integer	screen length or component length
 offset	integer	positions to indent \*(lqcomponent: \*(rq

@@ -37,7 +37,7 @@ and, if room allows, some of the body of the message.  For example:
 .nf
 .ta \w'15+- 'u +\w'07/\|05x 'u +\w'Dcrocker  'u
 15+	10/\|05 crocker	nned\0\0<<Last week I asked some of
-16\-	10/\|05 crocker	message id format\0\0\<<I recommend
+16\-	10/\|05 crocker	message id format\0\0<<I recommend
 18	10/\|06 brien	Re: Exit status from mkdir
 19	10/\|07*brien	\*(lqscan\*(rq listing format in nmh
 .fi
@@ -172,7 +172,7 @@ escapes:
 .RS 5
 .nf
 .ta \w'Dtimenow  'u +\w'Returns  'u
-.I Escape	Returns	Description
+.I "Escape	Returns	Description"
 body	string	the (compressed) first part of the body
 dtimenow	date	the current date
 folder	string	the name of the current folder

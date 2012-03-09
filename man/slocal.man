@@ -129,7 +129,6 @@ You should include the line
 .PP
 .ce
 \*(lq|\ %libdir%/slocal\ \-user\ username\*(rq
-.RE
 .PP
 in your \&.forward file in your home directory.  This will cause
 your MTA to invoke
@@ -153,7 +152,7 @@ The format of each line in the
 file is:
 .PP
 .RS 5
-.B header	pattern	action	result	string
+.B "header	pattern	action	result	string"
 .RE
 .PP
 .BR header :

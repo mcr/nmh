@@ -50,7 +50,7 @@ escape:
 .RS 5
 .nf
 .ta \w'Dtimenow  'u +\w'Returns  'u
-.I Escape	Returns	Description
+.I "Escape	Returns	Description"
 addresses	string	the addresses to distribute to
 .fi
 .RE

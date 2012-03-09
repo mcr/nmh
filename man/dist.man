@@ -80,7 +80,7 @@ escapes are also supported:
 .RS 5
 .nf
 .ta \w'Escape	'u +\w'Returns	'u
-.I Escape	Returns	Description
+.I "Escape	Returns	Description"
 fcc	string	Any folders specified with `\-fcc\ folder'
 nmh\-from	string	Addresses specified with `\-from\ address'
 nmh\-to	string	Addresses specified with `\-to\ address'

@@ -153,7 +153,7 @@ these include:
 .RS 5
 .nf
 .ta +\w'Argument 'u +\w'An optional component, 'u
-.I Argument	Description	Example Syntax
+.I "Argument	Description	Example Syntax"
 literal	A literal number	%(\fIfunc\fR 1234)
 	or string		%(\fIfunc\fR text string)
 comp	Any component		%(\fIfunc\fR\^{\fIin-reply-to\fR\^})
@@ -251,7 +251,7 @@ The function escapes may be roughly grouped into a few categories.
 .RS 5
 .nf
 .ta \w'Fformataddr 'u +\w'Aboolean 'u +\w'Rboolean 'u
-.I Function	Argument   Result	Description
+.I "Function	Argument   Result	Description"
 msg		integer	message number
 cur		integer	message is current (0 or 1)
 unseen		integer	message is unseen (0 or 1)
@@ -341,7 +341,7 @@ The following functions require a date component as an argument:
 .RS 5
 .nf
 .ta \w'Fformataddr 'u +\w'Aboolean 'u +\w'Rboolean 'u
-.I Function	Argument	Return	Description
+.I "Function	Argument	Return	Description"
 sec	date	integer	seconds of the minute
 min	date	integer	minutes of the hour
 hour	date	integer	hours of the day (0-23)
@@ -377,7 +377,7 @@ the first address present in the header component.
 .RS 5
 .nf
 .ta \w'Fformataddr 'u +\w'Aboolean 'u +\w'Rboolean 'u
-.I Function	Argument	Return	Description
+.I "Function	Argument	Return	Description"
 proper	addr	string	official 822 rendering
 friendly	addr	string	user-friendly rendering
 addr	addr	string	mbox@host or host!mbox rendering*
