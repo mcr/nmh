@@ -41,3 +41,5 @@ Things to add to the release notes for the next full release:
   or the local mailbox.
 - burst(1) now supports any valid message delimiter according to RFC 934.
 - A problem with the MD5 digest calculator on 64-bit systems has been fixed.
+- Fixed mhbuild -check to properly insert Content-MD5 header.
+- Fixed mhlist -verbose to work with all content types [Bug #35219].

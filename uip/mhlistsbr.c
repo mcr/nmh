@@ -206,18 +206,26 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
 
     printf ("\n");
 
-    /*
-     * If verbose, print any RFC-822 comments in the
-     * Content-Type line.
-     */
-    if (verbose && ci->ci_comment) {
-	char *dp;
+    if (verbose) {
+	char **ap, **ep;
+	CI ci = &ct->c_ctinfo;
 
-	dp = trimcpy (cp = add (ci->ci_comment, NULL));
-	free (cp);
-	snprintf (buffer, sizeof(buffer), "(%s)", dp);
-	free (dp);
-	printf (LSTFMT2d2, buffer);
+	for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
+	    printf ("\t     %s=\"%s\"\n", *ap, *ep);
+
+	/*
+	 * If verbose, print any RFC-822 comments in the
+	 * Content-Type line.
+	 */
+	if (ci->ci_comment) {
+	    char *dp;
+
+	    dp = trimcpy (cp = add (ci->ci_comment, NULL));
+	    free (cp);
+	    snprintf (buffer, sizeof(buffer), "(%s)", dp);
+	    free (dp);
+	    printf (LSTFMT2d2, buffer);
+	}
     }
 
     if (debug)
@@ -394,19 +402,15 @@ list_external (CT ct, int toplevel, int realsize, int verbose, int debug)
 
 /*
  * list content information for type "application"
+ * This no longer needs to be a separate function.  It used to
+ * produce some output with verbose enabled, but that has been
+ * moved to list_content ().
  */
 
 static int
 list_application (CT ct, int toplevel, int realsize, int verbose, int debug)
 {
     list_content (ct, toplevel, realsize, verbose, debug);
-    if (verbose) {
-	char **ap, **ep;
-	CI ci = &ct->c_ctinfo;
-
-	for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-	    printf ("\t     %s=\"%s\"\n", *ap, *ep);
-    }
 
     return OK;
 }
