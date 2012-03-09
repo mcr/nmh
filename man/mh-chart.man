@@ -339,6 +339,7 @@ is equivalent to
 .RB [ \-wcache
 .IR policy ]
 .RB [ \-check " | " \-nocheck ]
+.RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
 .RB [ \-help ]
 

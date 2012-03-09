@@ -25,6 +25,7 @@ mhlist \- list information about MIME messages
 .RB [ \-wcache
 .IR policy ]
 .RB [ \-check " | " \-nocheck ]
+.RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
