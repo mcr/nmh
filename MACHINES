@@ -94,7 +94,7 @@ match. There isn't another safe and portable way to do this at the
 moment. An explicit cast would get rid of the warnings, but I think
 it's better to leave it complaining for now until we come up with
 a better solution. The whole thing is probablly going to be chucked
-with UTC-8 support anyway.
+with UTF-8 support anyway.
 
 Other than the warnings, it builds ok.
 --------------------------------------
