@@ -102,11 +102,10 @@ set +e
 
 if test -w /dev/tty; then
   # Produce no standard output if no messages match and standard
-  # output is a tty.  To test that, move stderr to stdout and
-  # write the output directly to the tty.  If there is output,
-  # it probably won't be captured, but pretend that it would be.
-  output=`pick -subject message.3 -and -from Test4 >&2- >/dev/tty`
-  run_test "echo $output" ''
+  # output is a tty.  To test that even when run with stdout
+  # detached, write directly to /dev/tty.  Can't capture the
+  # output so hopefully the user will notice it.
+  pick -subject message.3 -and -from Test4 >/dev/tty 2>/dev/null
 else
   echo "$0: skip tty test because can't write to /dev/tty"
 fi
