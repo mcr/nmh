@@ -20,6 +20,10 @@ post \- deliver a message
 .RB [ \-watch " | " \-nowatch ]
 .RB [ \-width
 .IR columns ]
+.RB [ \-server
+.IR servername ]
+.RB [ \-port
+.IR portname/number ]
 .RB [ \-sasl ]
 .RB [ \-nosasl ]
 .RB [ \-saslmaxssf

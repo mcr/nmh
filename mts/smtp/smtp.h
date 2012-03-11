@@ -3,12 +3,6 @@
  * smtp.h -- definitions for the nmh SMTP Interface
  */
 
-/* various modes for SMTP */
-#define	S_MAIL	0
-#define	S_SEND	1
-#define	S_SOML	2
-#define	S_SAML	3
-
 /* length is the length of the string in text[], which is also NUL
  * terminated, so s.text[s.length] should always be 0.
  */
@@ -23,7 +17,7 @@ struct smtp {
  */
 /* int client (); */
 int sm_init (char *, char *, char *, int, int, int, int, int, int, int, char *, char *, int);
-int sm_winit (int, char *);
+int sm_winit (char *);
 int sm_wadr (char *, char *, char *);
 int sm_waend (void);
 int sm_wtxt (char *, int);

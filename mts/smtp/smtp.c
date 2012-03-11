@@ -639,33 +639,9 @@ rclient (char *server, char *service)
 }
 
 int
-sm_winit (int mode, char *from)
+sm_winit (char *from)
 {
-    char *smtpcom = NULL;
-
-    switch (mode) {
-	case S_MAIL:
-	    smtpcom = "MAIL";
-	    break;
-
-	case S_SEND:
-	    smtpcom = "SEND";
-	    break;
-
-	case S_SOML:
-	    smtpcom = "SOML";
-	    break;
-
-	case S_SAML:
-	    smtpcom = "SAML";
-	    break;
-
-        default:
-            /* Hopefully, we do not get here. */
-            break;
-    }
-
-    switch (smtalk (SM_MAIL, "%s FROM:<%s>", smtpcom, from)) {
+    switch (smtalk (SM_MAIL, "MAIL FROM:<%s>", from)) {
 	case 250: 
 	    sm_addrs = 0;
 	    return RP_OK;

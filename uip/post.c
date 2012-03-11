@@ -101,49 +101,35 @@ static struct swit switches[] = {
     { "dashstuffing", -12 },		/* should we dashstuff BCC messages? */
 #define NBITSTUFFSW              23
     { "nodashstuffing", -14 },
-#define	MAILSW                   24
-    { "mail", -4 },			/* specify MAIL smtp mode */
-#define	SAMLSW                   25
-    { "saml", -4 },			/* specify SAML smtp mode */
-#define	SENDSW                   26
-    { "send", -4 },			/* specify SEND smtp mode */
-#define	SOMLSW                   27
-    { "soml", -4 },			/* specify SOML smtp mode */
-#define	ANNOSW                   28
+#define	ANNOSW                   24
     { "idanno number", -6 },		/* interface from send    */
-#define	DLVRSW                   29
-    { "deliver address-list", -7 },
-#define	CLIESW                   30
+#define	CLIESW                   25
     { "client host", -6 },
-#define	SERVSW                   31
-    { "server host", -6 },		/* specify alternate SMTP server */
-#define	SNOOPSW                  32
+#define	SERVSW                   26
+    { "server host", 6 },		/* specify alternate SMTP server */
+#define	SNOOPSW                  27
     { "snoop", -5 },			/* snoop the SMTP transaction */
-#define	FILLSW                   33
-    { "fill-in file", -7 },
-#define	FILLUSW                  34
-    { "fill-up", -7 },
-#define	PARTSW                   35
+#define	PARTSW                   28
     { "partno", -6 },
-#define	QUEUESW                  36
+#define	QUEUESW                  29
     { "queued", -6 },
-#define SASLSW                   37
+#define SASLSW                   30
     { "sasl", SASLminc(-4) },
-#define NOSASLSW                 38
+#define NOSASLSW                 31
     { "nosasl", SASLminc(-6) },
-#define SASLMXSSFSW              39
+#define SASLMXSSFSW              32
     { "saslmaxssf", SASLminc(-10) },
-#define SASLMECHSW               40
+#define SASLMECHSW               33
     { "saslmech", SASLminc(-5) },
-#define USERSW                   41
+#define USERSW                   34
     { "user", SASLminc(-4) },
-#define PORTSW			 42
+#define PORTSW			 35
     { "port server port name/number", 4 },
-#define TLSSW			 43
+#define TLSSW			 36
     { "tls", TLSminc(-3) },
-#define FILEPROCSW		 44
+#define FILEPROCSW		 37
     { "fileproc", -4 },
-#define MHLPROCSW		 45
+#define MHLPROCSW		 38
     { "mhlproc", -3 },
     { NULL, 0 }
 };
@@ -274,7 +260,6 @@ static struct mailname uuaddrs;			/* uucp addrs      */
 static struct mailname tmpaddrs;		/* temporary queue */
 
 static int snoop      = 0;
-static int smtpmode   = S_MAIL;
 static char *clientsw = NULL;
 static char *serversw = NULL;
 
@@ -282,8 +267,6 @@ extern struct smtp sm_reply;
 
 static char prefix[] = "----- =_aaaaaaaaaa";
 
-static int fill_up = 0;
-static char *fill_in = NULL;
 static char *partno = NULL;
 static int queued = 0;
 
@@ -457,23 +440,6 @@ main (int argc, char **argv)
 			adios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 
-		case DLVRSW:
-		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
-		    continue;
-
-		case MAILSW:
-		    smtpmode = S_MAIL;
-		    continue;
-		case SAMLSW:
-		    smtpmode = S_SAML;
-		    continue;
-		case SOMLSW:
-		    smtpmode = S_SOML;
-		    continue;
-		case SENDSW:
-		    smtpmode = S_SEND;
-		    continue;
 		case CLIESW:
 		    if (!(clientsw = *argp++) || *clientsw == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -486,13 +452,6 @@ main (int argc, char **argv)
 		    snoop++;
 		    continue;
 
-		case FILLSW:
-		    if (!(fill_in = *argp++) || *fill_in == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
-		    continue;
-		case FILLUSW:
-		    fill_up++;
-		    continue;
 		case PARTSW:
 		    if (!(partno = *argp++) || *partno == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -571,7 +530,7 @@ main (int argc, char **argv)
 	discard (out = stdout);	/* XXX: reference discard() to help loader */
     } else {
 	if (whomsw) {
-	    if ((out = fopen (fill_in ? fill_in : "/dev/null", "w")) == NULL)
+	    if ((out = fopen ("/dev/null", "w")) == NULL)
 		adios ("/dev/null", "unable to open");
 	} else {
             char *cp = m_mktemp(m_maildir(invo_name), NULL, &out);
@@ -609,7 +568,7 @@ main (int argc, char **argv)
 	    case BODY: 
 	    case BODYEOF: 
 		finish_headers (out);
-		if (whomsw && !fill_in)
+		if (whomsw)
 		    break;
 		fprintf (out, "\n%s", buf);
 		while (state == BODY) {
@@ -645,8 +604,7 @@ main (int argc, char **argv)
 
     /* If we are doing a "whom" check */
     if (whomsw) {
-	if (!fill_up)
-	    verify_all_addresses (1);
+	verify_all_addresses (1);
 	done (0);
     }
 
@@ -702,17 +660,11 @@ putfmt (char *name, char *str, FILE *out)
 
     hdr = &hdrtab[i];
     if (hdr->flags & HIGN) {
-	if (fill_in)
-	    fprintf (out, "%s: %s", name, str);
 	return;
     }
     if (hdr->flags & HBAD) {
-	if (fill_in)
-	    fprintf (out, "%s: %s", name, str);
-	else {
-	    advise (NULL, "illegal header line -- %s:", name);
-	    badmsg++;
-	}
+	advise (NULL, "illegal header line -- %s:", name);
+	badmsg++;
 	return;
     }
     msgflags |= (hdr->set & ~(MVIS | MINV));
@@ -720,11 +672,6 @@ putfmt (char *name, char *str, FILE *out)
     if (hdr->flags & HSUB)
 	subject = subject ? add (str, add ("\t", subject)) : getcpy (str);
     if (hdr->flags & HFCC) {
-	if (fill_in) {
-	    fprintf (out, "%s: %s", name, str);
-	    return;
-	}
-
 	if ((cp = strrchr(str, '\n')))
 	    *cp = 0;
 	for (cp = pp = str; (cp = strchr(pp, ',')); pp = cp) {
@@ -769,7 +716,7 @@ putfmt (char *name, char *str, FILE *out)
 
     nameoutput = linepos = 0;
     snprintf (namep, sizeof(namep), "%s%s",
-		!fill_in && (hdr->flags & HMNG) ? "Original-" : "", name);
+		(hdr->flags & HMNG) ? "Original-" : "", name);
 
     for (grp = 0, mp = tmpaddrs.m_next; mp; mp = np)
 	if (mp->m_nohost) {	/* also used to test (hdr->flags & HTRY) */
@@ -850,8 +797,6 @@ putfmt (char *name, char *str, FILE *out)
 	badmsg++;
     }
     if (linepos) {
-	if (fill_in && grp > 0)
-	    putc (';', out);
 	putc ('\n', out);
     }
 }
@@ -902,7 +847,7 @@ finish_headers (FILE *out)
 {
     switch (msgstate) {
 	case NORMAL: 
-	    if (whomsw && !fill_up)
+	    if (whomsw)
 		break;
 
 	    fprintf (out, "Date: %s\n", dtime (&tclock, 0));
@@ -937,7 +882,7 @@ finish_headers (FILE *out)
 		advise (NULL, "message has no From: header");
 		badmsg++;
 	    }
-	    if (whomsw && !fill_up)
+	    if (whomsw)
 		break;
 
 	    fprintf (out, "Resent-Date: %s\n", dtime (&tclock, 0));
@@ -992,7 +937,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flag
 
     if (mp->m_mbox == NULL || ((flags & HTRY) && !insert (mp)))
 	return 0;
-    if ((!fill_in && (flags & (HBCC | HDCC))) || mp->m_ingrp)
+    if ((flags & (HBCC | HDCC)) || mp->m_ingrp)
 	return 1;
 
     if (!nameoutput) {
@@ -1003,7 +948,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flag
     if (*aka && mp->m_type != UUCPHOST && !mp->m_pers)
 	mp->m_pers = getcpy (aka);
     if (format) {
-	if (mp->m_gname && !fill_in) {
+	if (mp->m_gname) {
 	    snprintf (buffer, sizeof(buffer), "%s;", mp->m_gname);
 	    cp = buffer;
 	} else {
@@ -1036,17 +981,15 @@ putgrp (char *name, char *group, FILE *out, unsigned int flags)
     int len;
     char *cp;
 
-    if (!fill_in && (flags & HBCC))
+    if (flags & HBCC)
 	return;
 
     if (!nameoutput) {
 	fprintf (out, "%s: ", name);
 	linepos += (nameoutput = strlen (name) + 2);
-	if (fill_in)
-	    linepos -= strlen (group);
     }
 
-    cp = fill_in ? group : concat (group, ";", NULL);
+    cp = concat (group, ";", NULL);
     len = strlen (cp);
 
     if (linepos > nameoutput) {
@@ -1429,7 +1372,7 @@ post (char *file, int bccque, int talk)
     if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch, verbose,
 				    snoop, onex, queued, sasl, saslssf,
 				    saslmech, user, tls))
-	    || rp_isbad (retval = sm_winit (smtpmode, from)))
+	    || rp_isbad (retval = sm_winit (from)))
 	die (NULL, "problem initializing server; %s", rp_string (retval));
 
     do_addresses (bccque, talk && verbose);
@@ -1468,7 +1411,7 @@ verify_all_addresses (int talk)
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, 0, queued, sasl,
 					saslssf, saslmech, user, tls))
-		|| rp_isbad (retval = sm_winit (smtpmode, from)))
+		|| rp_isbad (retval = sm_winit (from)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
     if (talk && !whomsw)
