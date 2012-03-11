@@ -58,6 +58,8 @@ static struct swit switches[] = {
     { "port server port name/number", 4 },
 #define TLSSW		   16
     { "tls", TLSminc(-3) },
+#define NTLSSW             17
+    { "notls", TLSminc(-5) },
     { NULL, 0 }
 };
 
@@ -113,6 +115,7 @@ main (int argc, char **argv)
 		case SNOOPSW:
 		case SASLSW:
 		case TLSSW:
+		case NTLSSW:
 		    vec[vecp++] = --cp;
 		    continue;
 

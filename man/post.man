@@ -33,6 +33,7 @@ post \- deliver a message
 .RB [ \-user
 .IR username ]
 .RB [ \-tls ]
+.RB [ \-notls ]
 .I file
 .RB [ \-version ]
 .RB [ \-help ]
@@ -233,7 +234,10 @@ If
 .B nmh
 has been compiled with TLS support, the
 .B \-tls
-switch will require the negotiation of TLS support when connecting to the
+and
+.B \-notls
+switches will require and disable the negotiation of TLS support when
+connecting to the
 SMTP MTA.  Encrypted data is labelled with `(tls-encrypted)' and
 `(tls-decrypted)' when viewing the SMTP transction with the
 .B \-snoop

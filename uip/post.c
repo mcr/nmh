@@ -127,9 +127,11 @@ static struct swit switches[] = {
     { "port server port name/number", 4 },
 #define TLSSW			 36
     { "tls", TLSminc(-3) },
-#define FILEPROCSW		 37
+#define NTLSSW                   37
+    { "notls", TLSminc(-5) },
+#define FILEPROCSW		 38
     { "fileproc", -4 },
-#define MHLPROCSW		 38
+#define MHLPROCSW		 39
     { "mhlproc", -3 },
     { NULL, 0 }
 };
@@ -492,6 +494,10 @@ main (int argc, char **argv)
 
 		case TLSSW:
 		    tls++;
+		    continue;
+
+		case NTLSSW:
+		    tls = 0;
 		    continue;
 
 		case FILEPROCSW:

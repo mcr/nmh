@@ -1070,6 +1070,8 @@ static struct swit  sendswitches[] = {
     { "port server-port-name/number", 4 },
 #define TLSSW		  44
     { "tls", TLSminc(-3) },
+#define NTLSSW            45
+    { "notls", TLSminc(-5) },
     { NULL, 0 }
 };
 
@@ -1233,6 +1235,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case SASLSW:
 		case NOSASLSW:
 		case TLSSW:
+		case NTLSSW:
 		    vec[vecp++] = --cp;
 		    continue;
 
