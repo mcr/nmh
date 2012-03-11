@@ -1727,7 +1727,7 @@ static int
 openBase64 (CT ct, char **file)
 {
     int	bitno, cc, digested;
-    int fd, len, skip;
+    int fd, len, skip, own_ct_fp = 0;
     unsigned long bits;
     unsigned char value, *b, *b1, *b2, *b3;
     unsigned char *cp, *ep;
@@ -1798,9 +1798,12 @@ openBase64 (CT ct, char **file)
     if ((len = ct->c_end - ct->c_begin) < 0)
 	adios (NULL, "internal error(1)");
 
-    if (!ct->c_fp && (ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
-	content_error (ct->c_file, ct, "unable to open for reading");
-	return NOTOK;
+    if (! ct->c_fp) {
+	if ((ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
+	    content_error (ct->c_file, ct, "unable to open for reading");
+	    return NOTOK;
+	}
+	own_ct_fp = 1;
     }
     
     if ((digested = ct->c_digested))
@@ -1912,9 +1915,17 @@ self_delimiting:
 
 ready_to_go:
     *file = ce->ce_file;
+    if (own_ct_fp) {
+      fclose (ct->c_fp);
+      ct->c_fp = NULL;
+    }
     return fileno (ce->ce_fp);
 
 clean_up:
+    if (own_ct_fp) {
+      fclose (ct->c_fp);
+      ct->c_fp = NULL;
+    }
     free_encoding (ct, 0);
     return NOTOK;
 }
@@ -1954,7 +1965,7 @@ InitQuoted (CT ct)
 static int
 openQuoted (CT ct, char **file)
 {
-    int	cc, digested, len, quoted;
+    int	cc, digested, len, quoted, own_ct_fp = 0;
     unsigned char *cp, *ep;
     char buffer[BUFSIZ];
     unsigned char mask;
@@ -2016,17 +2027,15 @@ openQuoted (CT ct, char **file)
 	return NOTOK;
     }
 
-    if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
-	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");
-	return NOTOK;
-    }
-
     if ((len = ct->c_end - ct->c_begin) < 0)
 	adios (NULL, "internal error(2)");
 
-    if (!ct->c_fp && (ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
-	content_error (ct->c_file, ct, "unable to open for reading");
-	return NOTOK;
+    if (! ct->c_fp) {
+	if ((ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
+	    content_error (ct->c_file, ct, "unable to open for reading");
+	    return NOTOK;
+	}
+	own_ct_fp = 1;
     }
 
     if ((digested = ct->c_digested))
@@ -2148,10 +2157,18 @@ openQuoted (CT ct, char **file)
 
 ready_to_go:
     *file = ce->ce_file;
+    if (own_ct_fp) {
+      fclose (ct->c_fp);
+      ct->c_fp = NULL;
+    }
     return fileno (ce->ce_fp);
 
 clean_up:
     free_encoding (ct, 0);
+    if (own_ct_fp) {
+      fclose (ct->c_fp);
+      ct->c_fp = NULL;
+    }
     return NOTOK;
 }
 
@@ -2174,7 +2191,7 @@ Init7Bit (CT ct)
 int
 open7Bit (CT ct, char **file)
 {
-    int	cc, fd, len;
+    int	cc, fd, len, own_ct_fp = 0;
     char buffer[BUFSIZ];
     /* sbeck -- handle suffixes */
     char *cp;
@@ -2284,9 +2301,12 @@ open7Bit (CT ct, char **file)
     if ((len = ct->c_end - ct->c_begin) < 0)
 	adios (NULL, "internal error(3)");
 
-    if (!ct->c_fp && (ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
-	content_error (ct->c_file, ct, "unable to open for reading");
-	return NOTOK;
+    if (! ct->c_fp) {
+	if ((ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
+	    content_error (ct->c_file, ct, "unable to open for reading");
+	    return NOTOK;
+	}
+	own_ct_fp = 1;
     }
 
     lseek (fd = fileno (ct->c_fp), (off_t) ct->c_begin, SEEK_SET);
@@ -2323,10 +2343,18 @@ open7Bit (CT ct, char **file)
 
 ready_to_go:
     *file = ce->ce_file;
+    if (own_ct_fp) {
+      fclose (ct->c_fp);
+      ct->c_fp = NULL;
+    }
     return fileno (ce->ce_fp);
 
 clean_up:
     free_encoding (ct, 0);
+    if (own_ct_fp) {
+      fclose (ct->c_fp);
+      ct->c_fp = NULL;
+    }
     return NOTOK;
 }
 
