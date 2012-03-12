@@ -239,5 +239,37 @@ EOF
 run_test 'mhstore last' 'storing message 15 as file 15.txt'
 check $expected 15.txt
 
+# check with relative nmh-storage profile component
+storagedir=storagedir
+dir="$MH_TEST_DIR/Mail/inbox/$storagedir"
+mkdir "$dir"
+echo "nmh-storage: $storagedir" >> $MH
+cat > $expected <<EOF
+This is the fourth text/plain part.
+EOF
+run_test 'mhstore 11 -part 4' \
+"storing message 11 part 4 as file $storagedir/11.4.txt"
+check $expected "$dir/11.4.txt" 'keep first'
+
+# check with relative nmh-storage profile component and -auto
+run_test 'mhstore 11 -part 4 -auto' \
+"storing message 11 part 4 as file $storagedir/test4.txt"
+check $expected "$dir/test4.txt" 'keep first'
+
+# check with absolute nmh-storage profile component
+absstoragedir="$MH_TEST_DIR/$storagedir"
+mkdir "$absstoragedir"
+sed "s%\(nmh-storage: \)storagedir%\1$absstoragedir%" $MH > $MH.new
+mv -f $MH.new $MH
+run_test 'mhstore 11 -part 4' \
+"storing message 11 part 4 as file $storagedir/11.4.txt"
+check $expected "$absstoragedir/11.4.txt" 'keep first'
+
+# check with absolute nmh-storage profile component and -auto
+run_test 'mhstore 11 -part 4 -auto' \
+"storing message 11 part 4 as file $storagedir/test4.txt"
+check $expected "$absstoragedir/test4.txt"
+rmdir "$absstoragedir"
+
 
 exit $failed

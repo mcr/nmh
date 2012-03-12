@@ -92,9 +92,7 @@ store_all_messages (CT *cts)
      * Check for the directory in which to
      * store any contents.
      */
-    if (autosw)
-	dir = getcpy (cwd);
-    else if ((cp = context_find (nmhstorage)) && *cp)
+    if ((cp = context_find (nmhstorage)) && *cp)
 	dir = getcpy (cp);
     else
 	dir = getcpy (cwd);

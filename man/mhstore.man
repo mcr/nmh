@@ -218,7 +218,9 @@ to store the content.  If the formatting string starts with a '/',
 then the content will be stored in the full path given, else the
 file name will be relative to the value of \*(lqnmh-storage\*(rq or
 the current working directory.  Any escapes (given below) will be
-expanded, except for the a-escape.
+expanded, except for the a-escape.  Note that if \*(lqnmh-storage\*(rq
+is not an absolute path, it will be relative to the folder that
+contains the message(s).
 .PP
 A command or pathname formatting string may contain the following
 escapes.  If the content isn't part of a multipart (of any subtype

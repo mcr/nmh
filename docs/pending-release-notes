@@ -43,3 +43,6 @@ Things to add to the release notes for the next full release:
 - A problem with the MD5 digest calculator on 64-bit systems has been fixed.
 - Fixed mhbuild -check to properly insert Content-MD5 header.
 - Fixed mhlist -verbose to work with all content types [Bug #35219].
+- Fixed file descriptor leaks in mhparse [Bug #24004: (debbug 344182)].
+- Fixed mhstore to honor nmh-storage profile entry even with -auto
+  [Bug #35303].
