@@ -158,6 +158,8 @@ struct headers {
 #define	HNIL  0x0100		/* okay for this header not to have addrs */
 #define	HIGN  0x0200		/* ignore this header                     */
 #define	HDCC  0x0400		/* another undocumented feature           */
+#define HONE  0x0800		/* Only one address allowed		  */
+#define HEFM  0x1000		/* Envelope-From: header		  */
 
 /*
  * flags for headers->set
@@ -167,29 +169,33 @@ struct headers {
 #define	MRFM  0x0004		/* we've seen a Resent-From: */
 #define	MVIS  0x0008		/* we've seen sighted addrs  */
 #define	MINV  0x0010		/* we've seen blind addrs    */
+#define MSND  0x0020		/* we've seen a Sender:      */
+#define MRSN  0x0040		/* We've seen a Resent-Sendr:*/
+#define MEFM  0x0080		/* We've seen Envelope-From: */
 
 
 static struct headers NHeaders[] = {
-    { "Return-Path", HBAD,                0 },
-    { "Received",    HBAD,                0 },
-    { "Reply-To",    HADR|HNGR,           0 },
-    { "From",        HADR|HNGR,           MFRM },
-    { "Sender",      HADR|HBAD,           0 },
-    { "Date",        HBAD,                0 },
-    { "Subject",     HSUB,                0 },
-    { "To",          HADR|HTRY,           MVIS },
-    { "cc",          HADR|HTRY,           MVIS },
-    { "Bcc",         HADR|HTRY|HBCC|HNIL, MINV },
-    { "Dcc",         HADR|HTRY|HDCC|HNIL, MVIS },	/* sorta cc & bcc combined */
-    { "Message-ID",  HBAD,                0 },
-    { "Fcc",         HFCC,                0 },
-    { NULL,          0,                   0 }
+    { "Return-Path",   HBAD,                0 },
+    { "Received",      HBAD,                0 },
+    { "Reply-To",      HADR|HNGR,           0 },
+    { "From",          HADR|HNGR,           MFRM },
+    { "Sender",        HADR|HNGR|HONE,      MSND },
+    { "Date",          HBAD,                0 },
+    { "Subject",       HSUB,                0 },
+    { "To",            HADR|HTRY,           MVIS },
+    { "cc",            HADR|HTRY,           MVIS },
+    { "Bcc",           HADR|HTRY|HBCC|HNIL, MINV },
+    { "Dcc",           HADR|HTRY|HDCC|HNIL, MVIS },	/* sorta cc & bcc combined */
+    { "Message-ID",    HBAD,                0 },
+    { "Fcc",           HFCC,                0 },
+    { "Envelope-From", HADR|HONE|HEFM,      MEFM },
+    { NULL,            0,                   0 }
 };
 
 static struct headers RHeaders[] = {
     { "Resent-Reply-To",   HADR|HNGR,           0 },
     { "Resent-From",       HADR|HNGR,           MRFM },
-    { "Resent-Sender",     HADR|HBAD,           0 },
+    { "Resent-Sender",     HADR|HNGR,           MRSN },
     { "Resent-Date",       HBAD,                0 },
     { "Resent-Subject",    HSUB,                0 },
     { "Resent-To",         HADR|HTRY,           MVIS },
@@ -199,12 +205,13 @@ static struct headers RHeaders[] = {
     { "Resent-Fcc",        HFCC,                0 },
     { "Reply-To",          HADR,                0 },
     { "From",              HADR|HNGR,           MFRM },
-    { "Sender",            HADR|HNGR,           0 },
+    { "Sender",            HADR|HNGR,           MSND },
     { "Date",              HNOP,                MDAT },
     { "To",                HADR|HNIL,           0 },
     { "cc",                HADR|HNIL,           0 },
     { "Bcc",               HADR|HTRY|HBCC|HNIL, 0 },
     { "Fcc",               HIGN,                0 },
+    { "Envelope-From",     HADR|HONE|HEFM,      MEFM },
     { NULL,                0,                   0 }
 };
 
@@ -234,6 +241,8 @@ static char *saslmech=NULL;	/* Force use of particular SASL mech     */
 static char *user=NULL;		/* Authenticate as this user             */
 static char *port="smtp";	/* Name of server port for SMTP		 */
 static int tls=0;		/* Use TLS for encryption		 */
+static int fromcount=0;		/* Count of addresses on From: header	 */
+static int seensender=0;	/* Have we seen a Sender: header?	 */
 
 static unsigned msgflags = 0;	/* what we've seen */
 
@@ -249,6 +258,8 @@ static char tmpfil[BUFSIZ];
 static char bccfil[BUFSIZ];
 
 static char from[BUFSIZ];	/* my network address            */
+static char sender[BUFSIZ];	/* my Sender: header		 */
+static char efrom[BUFSIZ];	/* my Envelope-From: header	 */
 static char signature[BUFSIZ];	/* my signature                  */
 static char *filter = NULL;	/* the filter for BCC'ing        */
 static char *subject = NULL;	/* the subject field for BCC'ing */
@@ -272,8 +283,6 @@ static char prefix[] = "----- =_aaaaaaaaaa";
 static char *partno = NULL;
 static int queued = 0;
 
-extern boolean  draft_from_masquerading;  /* defined in mts.c */
-
 /*
  * static prototypes
  */
@@ -289,14 +298,14 @@ static void anno (void);
 static int annoaux (struct mailname *);
 static void insert_fcc (struct headers *, unsigned char *);
 static void make_bcc_file (int);
-static void verify_all_addresses (int);
+static void verify_all_addresses (int, char *);
 static void chkadr (void);
 static void sigon (void);
 static void sigoff (void);
 static void p_refile (char *);
 static void fcc (char *, char *);
 static void die (char *, char *, ...);
-static void post (char *, int, int);
+static void post (char *, int, int, char *);
 static void do_text (char *file, int fd);
 static void do_an_address (struct mailname *, int);
 static void do_addresses (int, int);
@@ -307,7 +316,7 @@ int
 main (int argc, char **argv)
 {
     int state, compnum, dashstuff = 0;
-    char *cp, *msg = NULL, **argp, **arguments;
+    char *cp, *msg = NULL, **argp, **arguments, *envelope;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *in, *out;
 
@@ -608,22 +617,40 @@ main (int argc, char **argv)
 	fclose (out);
     }
 
+    /*
+     * Here's how we decide which address to use as the envelope-from
+     * address for SMTP.
+     *
+     * - If we were given an Envelope-From header, use that.
+     * - If we were given multiple addresses in the From: header, use
+     *   the Sender: address
+     * - Otherwise, use the address on the From: line
+     */
+
+    if (msgflags & MEFM) {
+    	envelope = efrom;
+    } else if (fromcount > 1) {
+    	envelope = sender;
+    } else {
+    	envelope = from;
+    }
+
     /* If we are doing a "whom" check */
     if (whomsw) {
-	verify_all_addresses (1);
+	verify_all_addresses (1, envelope);
 	done (0);
     }
 
     if (msgflags & MINV) {
 	make_bcc_file (dashstuff);
 	if (msgflags & MVIS) {
-	    verify_all_addresses (verbose);
-	    post (tmpfil, 0, verbose);
+	    verify_all_addresses (verbose, envelope);
+	    post (tmpfil, 0, verbose, envelope);
 	}
-	post (bccfil, 1, verbose);
+	post (bccfil, 1, verbose, envelope);
 	unlink (bccfil);
     } else {
-	post (tmpfil, 0, isatty (1));
+	post (tmpfil, 0, isatty (1), envelope);
     }
 
     p_refile (tmpfil);
@@ -720,6 +747,12 @@ putfmt (char *name, char *str, FILE *out)
 	return;
     }
 
+    if (count > 1 && (hdr->flags & HONE)) {
+	advise (NULL, "%s: field only permits one address", name);
+	badmsg++;
+	return;
+    }
+
     nameoutput = linepos = 0;
     snprintf (namep, sizeof(namep), "%s%s",
 		(hdr->flags & HMNG) ? "Original-" : "", name);
@@ -738,17 +771,37 @@ putfmt (char *name, char *str, FILE *out)
 		    continue;
 		}
 
-		if (draft_from_masquerading && ((msgstate == RESENT)
-						? (hdr->set & MRFM)
-						: (hdr->set & MFRM)))
-		    /* The user manually specified a [Resent-]From: address in
-		       their draft and the "masquerade:" line in mts.conf
-		       doesn't contain "draft_from", so we'll set things up to
-		       use the actual email address embedded in the draft
-		       [Resent-]From: (after alias substitution, and without the
-		       GECOS full name or angle brackets) as the envelope
-		       From:. */
+		/*
+		 * If it's a From: or Resent-From: header, save the address
+		 * for later possible use (as the envelope address for SMTP)
+		 */
+
+		if ((msgstate == RESENT) ? (hdr->set & MRFM)
+						: (hdr->set & MFRM)) {
 		    strncpy(from, auxformat(mp, 0), sizeof(from) - 1);
+		    from[sizeof(from) - 1] = '\0';
+		    fromcount = count;
+		}
+
+		/*
+		 * Also save the Sender: or Resent-Sender: header as well
+		 */
+
+		if ((msgstate == RESENT) ? (hdr->set & MRSN)
+						: (hdr->set & MSND)) {
+		    strncpy(sender, auxformat(mp, 0), sizeof(sender) - 1);
+		    sender[sizeof(sender) - 1] = '\0';
+		    seensender++;
+		}
+
+		/*
+		 * ALSO ... save Envelope-From
+		 */
+
+		if (hdr->set & MEFM) {
+		    strncpy(efrom, auxformat(mp, 0), sizeof(efrom) - 1);
+		    efrom[sizeof(efrom) - 1] = '\0';
+		}
 
 		if (hdr->flags & HBCC)
 		    mp->m_bcc++;
@@ -770,17 +823,37 @@ putfmt (char *name, char *str, FILE *out)
 	}
 	else {
 	    /* Address includes a host, so no alias substitution is needed. */
-	    if (draft_from_masquerading && ((msgstate == RESENT)
-					    ? (hdr->set & MRFM)
-					    : (hdr->set & MFRM)))
-		/* The user manually specified a [Resent-]From: address in
-		   their draft and the "masquerade:" line in mts.conf
-		   doesn't contain "draft_from", so we'll set things up to
-		   use the actual email address embedded in the draft
-		   [Resent-]From: (after alias substitution, and without the
-		   GECOS full name or angle brackets) as the envelope
-		   From:. */
+
+	    /*
+	     * If it's a From: or Resent-From header, save the address
+	     * for later possible use (as the envelope address for SMTP)
+	     */
+
+	    if ((msgstate == RESENT) ? (hdr->set & MRFM)
+					    : (hdr->set & MFRM)) {
 		strncpy(from, auxformat(mp, 0), sizeof(from) - 1);
+		fromcount = count;
+	    }
+
+	    /*
+	     * Also save the Sender: header as well
+	     */
+
+	    if ((msgstate == RESENT) ? (hdr->set & MRSN)
+					    : (hdr->set & MSND)) {
+	        strncpy(sender, auxformat(mp, 0), sizeof(sender) - 1);
+		sender[sizeof(sender) - 1] = '\0';
+		seensender++;
+	    }
+
+	    /*
+	     * ALSO ... save Envelope-From
+	     */
+
+	    if (hdr->set & MEFM) {
+		strncpy(efrom, auxformat(mp, 0), sizeof(efrom) - 1);
+		efrom[sizeof(efrom) - 1] = '\0';
+	    }
 
 	    if (hdr->flags & HBCC)
 		mp->m_bcc++;
@@ -853,6 +926,21 @@ finish_headers (FILE *out)
 {
     switch (msgstate) {
 	case NORMAL: 
+	    if (!(msgflags & MFRM)) {
+		/*
+		 * A From: header is now required in the draft.
+		 */
+		advise (NULL, "message has no From: header");
+		advise (NULL, "See default components files for examples");
+		badmsg++;
+	    }
+
+	    if (fromcount > 1 && seensender == 0) {
+		advise (NULL, "A Sender: header is required with multiple "
+			"From: addresses");
+		badmsg++;
+	    }
+
 	    if (whomsw)
 		break;
 
@@ -860,21 +948,6 @@ finish_headers (FILE *out)
 	    if (msgid)
 		fprintf (out, "Message-ID: <%d.%ld@%s>\n",
 			(int) getpid (), (long) tclock, LocalName (1));
-	    if (msgflags & MFRM) {
-		/* There was already a From: in the draft.  Don't add one. */
-		if (!draft_from_masquerading)
-		    /* mts.conf didn't contain "masquerade:[...]draft_from[...]"
-		       so we'll reveal the user's actual account@thismachine
-		       address in a Sender: header (and use it as the envelope
-		       From: later). */
-		    fprintf (out, "Sender: %s\n", from);
-	    }
-	    else
-		/* Construct a From: header. */
-		fprintf (out, "From: %s\n", signature);
-	    if (whomsw)
-		break;
-
 	    if (!(msgflags & MVIS))
 		fprintf (out, "Bcc: Blind Distribution List: ;\n");
 	    break;
@@ -888,6 +961,17 @@ finish_headers (FILE *out)
 		advise (NULL, "message has no From: header");
 		badmsg++;
 	    }
+	    if (!(msgflags & MRFM)) {
+		advise (NULL, "message has no Resent-From: header");
+		advise (NULL, "See default components files for examples");
+		badmsg++;
+	    }
+	    if (fromcount > 1 && seensender == 0) {
+		advise (NULL, "A Resent-Sender: header is required with "
+			"multiple Resent-From: addresses");
+		badmsg++;
+	    }
+
 	    if (whomsw)
 		break;
 
@@ -895,20 +979,6 @@ finish_headers (FILE *out)
 	    if (msgid)
 		fprintf (out, "Resent-Message-ID: <%d.%ld@%s>\n",
 			(int) getpid (), (long) tclock, LocalName (1));
-	    if (msgflags & MRFM) {
-		/* There was already a Resent-From: in draft.  Don't add one. */
-		if (!draft_from_masquerading)
-		    /* mts.conf didn't contain "masquerade:[...]draft_from[...]"
-		       so we'll reveal the user's actual account@thismachine
-		       address in a Sender: header (and use it as the envelope
-		       From: later). */
-		    fprintf (out, "Resent-Sender: %s\n", from);
-	    }
-	    else
-		/* Construct a Resent-From: header. */
-		fprintf (out, "Resent-From: %s\n", signature);
-	    if (whomsw)
-		break;
 	    if (!(msgflags & MVIS))
 		fprintf (out, "Resent-Bcc: Blind Re-Distribution List: ;\n");
 	    break;
@@ -943,7 +1013,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flag
 
     if (mp->m_mbox == NULL || ((flags & HTRY) && !insert (mp)))
 	return 0;
-    if ((flags & (HBCC | HDCC)) || mp->m_ingrp)
+    if ((flags & (HBCC | HDCC | HEFM)) || mp->m_ingrp)
 	return 1;
 
     if (!nameoutput) {
@@ -1147,18 +1217,6 @@ make_bcc_file (int dashstuff)
     if (msgid)
 	fprintf (out, "Message-ID: <%d.%ld@%s>\n",
 		(int) getpid (), (long) tclock, LocalName (1));
-    if (msgflags & MFRM) {
-      /* There was already a From: in the draft.  Don't add one. */
-      if (!draft_from_masquerading)
-        /* mts.conf didn't contain "masquerade:[...]draft_from[...]"
-           so we'll reveal the user's actual account@thismachine
-           address in a Sender: header (and use it as the envelope
-           From: later). */
-        fprintf (out, "Sender: %s\n", from);
-    }
-    else
-      /* Construct a From: header. */
-      fprintf (out, "From: %s\n", signature);
     if (subject)
 	fprintf (out, "Subject: %s", subject);
     fprintf (out, "BCC:\n");
@@ -1359,7 +1417,7 @@ do_addresses (int bccque, int talk)
  */
 
 static void
-post (char *file, int bccque, int talk)
+post (char *file, int bccque, int talk, char *envelope)
 {
     int fd, onex;
     int	retval;
@@ -1378,7 +1436,7 @@ post (char *file, int bccque, int talk)
     if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch, verbose,
 				    snoop, onex, queued, sasl, saslssf,
 				    saslmech, user, tls))
-	    || rp_isbad (retval = sm_winit (from)))
+	    || rp_isbad (retval = sm_winit (envelope)))
 	die (NULL, "problem initializing server; %s", rp_string (retval));
 
     do_addresses (bccque, talk && verbose);
@@ -1406,7 +1464,7 @@ post (char *file, int bccque, int talk)
 /* Address Verification */
 
 static void
-verify_all_addresses (int talk)
+verify_all_addresses (int talk, char *envelope)
 {
     int retval;
     struct mailname *lp;
@@ -1417,7 +1475,7 @@ verify_all_addresses (int talk)
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, 0, queued, sasl,
 					saslssf, saslmech, user, tls))
-		|| rp_isbad (retval = sm_winit (from)))
+		|| rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
     if (talk && !whomsw)

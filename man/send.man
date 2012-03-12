@@ -278,16 +278,7 @@ switch, then
 will
 use the MIME rules for encapsulation.
 .PP
-Prior to sending the message, the fields \*(lqFrom:\ user@local\*(rq,
-and \*(lqDate:\ now\*(rq will be appended to the headers in the message.
-If the environment variable
-.B $SIGNATURE
-is set, then its value
-is used as your personal name when constructing the \*(lqFrom:\*(rq
-line of the message.  If this environment variable is not set, then
-.B send
-will consult the profile entry \*(lqSignature\*(rq for
-this information.
+Prior to sending the message, the \*(lqDate:\ now\*(rq field will be appended to the headers in the message.
 If
 .B \-msgid
 is specified, then a \*(lqMessage\-ID:\*(rq field will also
@@ -299,9 +290,19 @@ is re\-distributing a message (when invoked by
 .BR dist ),
 then \*(lqResent\-\*(rq will be prepended to each of these
 fields: \*(lqFrom:\*(rq, \*(lqDate:\*(rq, and \*(lqMessage\-ID:\*(rq.
-If the message already contains a \*(lqFrom:\*(rq field, then a
-\*(lqSender: user@local\*(rq field will be added as well.  (An already
-existing \*(lqSender:\*(rq field is an error!)
+.PP
+A \*(lqFrom:\*(rq field is required for all outgoing messages.  Multiple
+addresses are permitted in the \*(lqFrom:\*(rq field, but a \*(lqSender:\*(rq
+field is required in this case.  Otherwise a \*(lqSender:\*(rq field
+is optional.
+.PP
+When using SMTP for mail submission, the envelope\-from used for SMTP
+transaction is derived from the \*(lqFrom:\*(rq field.  If multiple
+addresses are in the \*(lqFrom:\*(rq field, the address in the
+\*(lqSender\*(rq field is used instead.  This behavior can be overridden
+by using the \*(lqEnvelope\-From:\*(rq field.  When \*(lqEnvelope\-From\*(rq
+appears in the message, its address will be used as the SMTP envelope\-from
+address and the field will be removed from the message.
 .PP
 By using the
 .B \-format

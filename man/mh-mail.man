@@ -99,12 +99,11 @@ profile entry.  It
 contains the address of the author or authors
 (may be more than one if a \*(lqSender:\*(rq field is present).  For a
 standard reply (using
-.BR repl ,
+.BR repl ),
 the reply address is constructed by
 checking the following headers (in this order): \*(lqMail-Reply\-To:\*(rq,
 \*(lqReply\-To:\*(rq, \*(lqFrom:\*(rq, \*(lqSender:\*(rq.
-A
-.BR From :
+A \*(lqFrom:\*(rq
 header MUST exist when the message is sent to
 .BR post,
 otherwise the message will be rejected.
@@ -145,10 +144,11 @@ constructed by checking the following headers (in this order):
 .PP
 .BR Sender :
 .RS 5
-Added by
+Required by
 .B post
-in the event that the message already has a
-\*(lqFrom:\*(rq line.  This line contains the address of the actual
+in the event that the message has multiple addresses on the
+\*(lqFrom:\*(rq line.  It is otherwise optional.  This line should
+contain the address of the actual
 sender.
 .RE
 .PP
@@ -162,14 +162,24 @@ Contains addresses of primary recipients.
 Contains addresses of secondary recipients.
 .RE
 .PP
-Bcc:
+.BR Bcc :
 .RS 5
 Still more recipients.  However, the \*(lqBcc:\*(rq line is not
 copied onto the message as delivered, so these recipients are not
 listed.
 .B nmh
 uses an encapsulation method for blind copies, see
-.BR send .
+.BR send (1).
+.RE
+.PP
+.BR Dcc :
+.RS 5
+Still more recipients.  However, the \*(lqDcc:\*(rq line is not
+copied onto the messages as delivered.  Recipients on the \*(lqDcc:\*(rq
+line receive the same messsage as recipients on the \*(lqTo:\*(rq and
+\*(lqcc:\*(rq lines.  See
+.BR send (1)
+for more details.
 .RE
 .PP
 .BR Fcc :
