@@ -91,3 +91,5 @@ struct format {
 struct format *fmt_scan (struct format *, char *, int, int *);
 char *new_fs (char *, char *, char *);
 int fmt_compile (char *, struct format **);
+char *formataddr(char *, char *);
+char *concataddr(char *, char *);

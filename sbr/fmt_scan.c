@@ -25,9 +25,6 @@
 #  include <wchar.h>
 #endif
 
-extern char *formataddr ();	/* hook for custom address formatting */
-extern char *concataddr ();	/* address formatting but allowing duplicates */
-
 #ifdef LBL
 struct msgs *fmt_current_folder; /* current folder (set by main program) */
 #endif
