@@ -43,8 +43,6 @@
 
 #define FCCS		10	/* max number of fccs allowed */
 
-#define	uptolow(c)	((isalpha(c) && isupper (c)) ? tolower (c) : c)
-
 /* In the following array of structures, the numeric second field of the
    structures (minchars) is apparently used like this:
 
@@ -158,7 +156,7 @@ struct headers {
 #define	HNIL  0x0100		/* okay for this header not to have addrs */
 #define	HIGN  0x0200		/* ignore this header                     */
 #define	HDCC  0x0400		/* another undocumented feature           */
-#define HONE  0x0800		/* Only one address allowed		  */
+#define HONE  0x0800		/* Only (zero or) one address allowed	  */
 #define HEFM  0x1000		/* Envelope-From: header		  */
 
 /*
@@ -622,14 +620,13 @@ main (int argc, char **argv)
      * address for SMTP.
      *
      * - If we were given an Envelope-From header, use that.
-     * - If we were given multiple addresses in the From: header, use
-     *   the Sender: address
+     * - If we were given a Sender: address, use that.
      * - Otherwise, use the address on the From: line
      */
 
     if (msgflags & MEFM) {
     	envelope = efrom;
-    } else if (fromcount > 1) {
+    } else if (seensender) {
     	envelope = sender;
     } else {
     	envelope = from;
@@ -739,6 +736,14 @@ putfmt (char *name, char *str, FILE *out)
 	if (hdr->flags & HNIL)
 	    fprintf (out, "%s: %s", name, str);
 	else {
+	    /*
+	     * Sender (or Resent-Sender) can have only one address
+	     */
+	    if ((msgstate == RESENT) ? (hdr->set & MRSN)
+					: (hdr->set & MSND)) {
+		advise (NULL, "%s: field requires one address", name);
+		badmsg++;
+	    }
 #ifdef notdef
 	    advise (NULL, "%s: field requires at least one address", name);
 	    badmsg++;
@@ -885,18 +890,20 @@ static void
 start_headers (void)
 {
     unsigned char  *cp;
-    char myhost[BUFSIZ], sigbuf[BUFSIZ];
+    char sigbuf[BUFSIZ];
     struct mailname *mp;
 
     myuid = getuid ();
     mygid = getgid ();
     time (&tclock);
 
-    strncpy (from, getlocaladdr(), sizeof(from));
-    strncpy (myhost, LocalName (0), sizeof(myhost));
+    /*
+     * Probably not necessary, but just in case ...
+     */
 
-    for (cp = myhost; *cp; cp++)
-	*cp = uptolow (*cp);
+    from[0] = '\0';
+    efrom[0] = '\0';
+    sender[0] = '\0';
 
     if ((cp = getfullname ()) && *cp) {
 	strncpy (sigbuf, cp, sizeof(sigbuf));
@@ -933,12 +940,14 @@ finish_headers (FILE *out)
 		advise (NULL, "message has no From: header");
 		advise (NULL, "See default components files for examples");
 		badmsg++;
+		break;
 	    }
 
-	    if (fromcount > 1 && seensender == 0) {
-		advise (NULL, "A Sender: header is required with multiple "
-			"From: addresses");
+	    if (fromcount > 1 && (seensender == 0 && !(msgflags & MEFM))) {
+		advise (NULL, "A Sender: or Envelope-From: header is required "
+			"with multiple\nFrom: addresses");
 		badmsg++;
+		break;
 	    }
 
 	    if (whomsw)
@@ -948,6 +957,23 @@ finish_headers (FILE *out)
 	    if (msgid)
 		fprintf (out, "Message-ID: <%d.%ld@%s>\n",
 			(int) getpid (), (long) tclock, LocalName (1));
+	    /*
+	     * If we have multiple From: addresses, make sure we have an
+	     * Sender: header.  If we don't have one, then generate one
+	     * from Envelope-From: (which in this case, cannot be blank)
+	     */
+
+	    if (fromcount > 1 && seensender == 0) {
+	    	if (efrom[0] == '\0') {
+		    advise (NULL, "Envelope-From cannot be blank when there "
+		    	    "is multiple From: addresses\nand no Sender: "
+			    "header");
+		    badmsg++;
+		} else {
+		    fprintf (out, "Sender: %s\n", efrom);
+		}
+	    }
+
 	    if (!(msgflags & MVIS))
 		fprintf (out, "Bcc: Blind Distribution List: ;\n");
 	    break;
@@ -965,11 +991,13 @@ finish_headers (FILE *out)
 		advise (NULL, "message has no Resent-From: header");
 		advise (NULL, "See default components files for examples");
 		badmsg++;
+		break;
 	    }
-	    if (fromcount > 1 && seensender == 0) {
-		advise (NULL, "A Resent-Sender: header is required with "
-			"multiple Resent-From: addresses");
+	    if (fromcount > 1 && (seensender == 0 && !(msgflags & MEFM))) {
+		advise (NULL, "A Resent-Sender: or Envelope-From: header is "
+			"required with multiple\nResent-From: addresses");
 		badmsg++;
+		break;
 	    }
 
 	    if (whomsw)
@@ -979,6 +1007,23 @@ finish_headers (FILE *out)
 	    if (msgid)
 		fprintf (out, "Resent-Message-ID: <%d.%ld@%s>\n",
 			(int) getpid (), (long) tclock, LocalName (1));
+	    /*
+	     * If we have multiple Resent-From: addresses, make sure we have an
+	     * Resent-Sender: header.  If we don't have one, then generate one
+	     * from Envelope-From (which in this case, cannot be blank)
+	     */
+
+	    if (fromcount > 1 && seensender == 0) {
+	    	if (efrom[0] == '\0') {
+		    advise (NULL, "Envelope-From cannot be blank when there "
+		    	    "is multiple Resent-From: addresses and no "
+			    "Resent-Sender: header");
+		    badmsg++;
+		} else {
+		    fprintf (out, "Resent-Sender: %s\n", efrom);
+		}
+	    }
+
 	    if (!(msgflags & MVIS))
 		fprintf (out, "Resent-Bcc: Blind Re-Distribution List: ;\n");
 	    break;

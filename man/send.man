@@ -296,13 +296,20 @@ addresses are permitted in the \*(lqFrom:\*(rq field, but a \*(lqSender:\*(rq
 field is required in this case.  Otherwise a \*(lqSender:\*(rq field
 is optional.
 .PP
-When using SMTP for mail submission, the envelope\-from used for SMTP
-transaction is derived from the \*(lqFrom:\*(rq field.  If multiple
-addresses are in the \*(lqFrom:\*(rq field, the address in the
-\*(lqSender\*(rq field is used instead.  This behavior can be overridden
-by using the \*(lqEnvelope\-From:\*(rq field.  When \*(lqEnvelope\-From\*(rq
-appears in the message, its address will be used as the SMTP envelope\-from
-address and the field will be removed from the message.
+If a message with multiple \*(lqFrom:\*(rq
+addresses does
+.B NOT
+include a \*(lqSender:\*(rq field but does include an \*(lqEnvelope\-From:\*(rq
+field, the \*(lqEnvelope\-From:\*(rq field will be used to construct
+a \*(lqSender:\*(rq field.
+.PP
+When using SMTP for mail submission, the envelope\-from used for the SMTP
+transaction is derived from the \*(lqEnvelope\-From:\*(rq field.
+If no \*(lqEnvelope\-From:\*(rq field is present, the \*(lqSender:\*(rq
+field is used.  If neither the \*(lqEnvelope\-From:\*(rq nor the
+\*(lqSender:\*(rq field is present, the \*(lqFrom:\*(rq field is used.
+When \*(lqEnvelope\-From:\*(rq appears in a message
+it will be removed from the final outgoing message.
 .PP
 By using the
 .B \-format
