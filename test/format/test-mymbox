@@ -14,7 +14,7 @@ fi
 setup_test
 
 user="`id -un`"
-host="`hostname`"
+host=`${MH_OBJ_DIR}/test/getfqdn`
 
 run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) ${user}" \
          1 "Basic user test"

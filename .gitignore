@@ -45,7 +45,7 @@ a.out.DSYM/
 /mts/libmts.a
 /sbr/*.a
 /sbr/sigmsg.h
-/test/testdir
+/test/testdir/
 /uip/ali
 /uip/anno
 /uip/ap
@@ -97,6 +97,7 @@ a.out.DSYM/
 /uip/whom
 /uip/*.exe
 /test/getfullname
+/test/getfqdn
 
 # Removed by mostlyclean:
 *.o
