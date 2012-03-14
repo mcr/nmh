@@ -28,7 +28,10 @@ fi
 # intact. (Since we're dealing in exact byte alignment
 # minor corruptions such as line ending changes could
 # render the tests useless.)
-(cd "$THISDIR" && output_md5 *.txt > "$MH_TEST_DIR/inctest.md5sums")
+(cd "$THISDIR"  && \
+ for i in *.txt; do
+   echo `output_md5 $i`'  '"$i" >> "$MH_TEST_DIR/inctest.md5sums"
+ done)
 check "$THISDIR/md5sums" "$MH_TEST_DIR/inctest.md5sums" 'keep first'
 
 FILLER="$THISDIR/filler.txt"
