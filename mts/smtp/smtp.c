@@ -1496,7 +1496,7 @@ sm_rrecord (char *buffer, int *len)
     buffer[*len = 0] = 0;
 
     if ((retval = sm_fgets (buffer, BUFSIZ, sm_rfp)) != RP_OK)
-	return retval;
+	return sm_rerror (retval);
     *len = strlen (buffer);
     /* *len should be >0 except on EOF, but check for safety's sake */
     if (*len == 0)
