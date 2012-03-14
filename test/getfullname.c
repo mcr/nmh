@@ -28,7 +28,7 @@ main(int argc, char *argv[])
 
 	if (! pwd) {
 		fprintf(stderr, "Unable to retrieve user info for "
-			"userid %d\n", getuid());
+			"userid %ld\n", (long) getuid());
 		exit(1);
 	}
 
