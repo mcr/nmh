@@ -42,6 +42,8 @@ echo 'ls' | whatnow -noedit -prompt '' 2> "$actualerr" | sort > "$actual"
 check "$expectederr" "$actualerr"
 check "$expected" "$actual"
 
+# On some platforms, need to be out of $SPDIR in order to remove it.
+cd "$MH_TEST_DIR"
 test ${failed:-0} -eq 0  &&  rm -r "$SPDIR"
 
 exit $failed
