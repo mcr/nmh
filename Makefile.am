@@ -65,7 +65,7 @@ TESTS = test/bad-input/test-header \
 	test/cleanup ## The "cleanup" test should always be last.
 
 check_SCRIPTS = test/common.sh
-check_PROGRAMS = test/getfullname test/getfqdn
+check_PROGRAMS = test/getfullname test/getfqdn test/fakesmtp
 
 ##
 ## Stuff that should be cleaned via "make clean"
@@ -365,6 +365,9 @@ test_getfullname_LDADD =
 
 test_getfqdn_SOURCES = test/getfqdn.c
 test_getfqdn_LDADD =
+
+test_fakesmtp_SOURCES = test/fakesmtp.c
+test_fakesmtp_LDADD =
 
 ##
 ## Our rebuild rules for files that aren't built via the normal mechanisms
