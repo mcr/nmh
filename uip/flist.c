@@ -413,6 +413,12 @@ BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
      * stat them.  But that shouldn't generally be a problem.
      */
     nlinks = s->st_nlink;
+    if (nlinks == 1) {
+      /* Disable the optimization under conditions where st_nlink
+         is set to 1.  That happens on Cygwin, for example:
+         http://cygwin.com/ml/cygwin-apps/2008-08/msg00264.html */
+      nlinks = INT_MAX;
+    }
 
     if (!(dir = opendir(dirName)))
 	adios(dirName, "can't open directory");
