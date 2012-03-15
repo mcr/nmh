@@ -387,7 +387,6 @@ etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 	$(SED) -e 's,%mts%,$(MTS),' \
 	       -e 's,%mailspool%,$(mailspool),' \
 	       -e 's,%etcdir%,$(sysconfdir),' \
-	       -e 's,%masquerade%,$(masquerade),' \
 	       -e 's,%smtpservers%,$(smtpservers),' \
 	       			< $(srcdir)/etc/mts.conf.in > $@
 

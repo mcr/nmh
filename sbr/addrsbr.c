@@ -77,9 +77,6 @@ static char err[BUFSIZ];
 static char adr[BUFSIZ];
 
 
-extern boolean  username_extension_masquerading;  /* defined in mts.c */
-
-
 char *
 getname (char *addrs)
 {
@@ -291,47 +288,11 @@ auxformat (struct mailname *mp, int extras)
 char *
 getlocaladdr(void)
 {
-    int          snprintf_return;
-    char	 *username, *domain;
-    static char  addr[BUFSIZ];
+    char	 *username;
 
     username = getusername();
 
-    if (username_extension_masquerading) {
-	/* mts.conf contains "masquerade:[...]username_extension[...]", so tack
-	   on the value of the $USERNAME_EXTENSION environment variable, if set,
-	   to username. */
-	char*        extension = getenv("USERNAME_EXTENSION");
-	static char  username_with_extension[BUFSIZ];
-
-	if (extension != NULL && *extension != '\0') {
-	    snprintf_return = snprintf(username_with_extension,
-				       sizeof(username_with_extension),
-				       "%s%s", username, extension);
-	    
-	    if (snprintf_return < 0 ||
-		snprintf_return >= (int) sizeof(username_with_extension))
-		adios(NULL, "snprintf() error writing username (%d chars) and"
-		      " $USERNAME_EXTENSION (%d chars) to array of BUFSIZ (%d)"
-		      " chars",
-		      strlen(username), strlen(extension), BUFSIZ);
-	    
-	    username = username_with_extension;
-	}
-    }
-
     return username;
-
-    domain = LocalName(0);
-
-    snprintf_return = snprintf (addr, sizeof(addr), "%s@%s", username, domain);
-
-    if (snprintf_return < 0 || snprintf_return >= (int) sizeof(addr))
-	adios(NULL, "snprintf() error writing username (%d chars), domain (%d"
-	      " chars), and 1 separator char to array of BUFSIZ (%d) chars",
-	      strlen(username), strlen(domain), BUFSIZ);
-    
-    return addr;
 }
 
 

@@ -19,10 +19,6 @@ hostable: %etcdir%/hosts
 # query the system for this value (gethostname, etc...).
 #localname: foo.bar.com
 
-# The following directive allows email address masquerading.  The string
-# "draft_from mmailid username_extension" will allow all three types.
-masquerade: %masquerade%
-
 # Default location of mail drops.  If this option is
 # set, but empty, the user's home directory is used.
 mmdfldir: %mailspool%

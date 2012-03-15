@@ -96,9 +96,7 @@ need an ANSI C compiler such as gcc.
    rather than hardcoding pophost in `mts.conf'.
 
    Check the `mh-tailor' man page for a list of all the available options
-   for this file ("masquerade" may be of particular interest, though its
-   default value allows the most flexibility.  See the discussion of the
-   --enable-masquerade configure option below).
+   for this file.
 
 7) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
    This file contains the default profile entries for the nmh command
@@ -195,19 +193,6 @@ Options for configure
 
 --enable-debug
      Enable debugging support.
-
---enable-masquerade[='draft_from mmailid username_extension']
-     By default, all three masquerade options are enabled.
-
-     If this option is disabled, the mts.conf file will contain the
-     line "masquerade: " (with no value), which may be manually edited
-     later.  You may find it convenient to specify a value at
-     configure-time, however, so that each time nmh is reinstalled,
-     the right value will be there.
-
-     See the mh-tailor(5) man page for full documentation of "masquerade:".
-
-     This option will likely be removed in a future version of nmh.
 
 --enable-pop
      Enable client-side support for pop.

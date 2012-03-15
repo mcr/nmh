@@ -30,16 +30,6 @@ AC_ARG_ENABLE([debug],
 dnl The old redundant --enable-nmh-debug is deprecated and undocumented.
 AS_IF([test x"$enable_nmh_debug" = x"yes"], [enable_debug=yes])
 
-dnl Allow users to send email from addresses other than their default?
-AC_ARG_ENABLE(masquerade,
-  AS_HELP_STRING([--enable-masquerade='draft_from mmailid username_extension'],
-    [enable up to 3 types of address masquerading]),
-  [AS_IF([test x"$enable_masquerade" = x"yes"],
-	 [masquerade="draft_from mmailid username_extension"],
-	 [masquerade="$enable_masquerade"])],
-  [masquerade="draft_from mmailid username_extension"])
-AC_SUBST(masquerade)dnl
-
 dnl Do you want to disable use of locale functions
 AH_TEMPLATE([LOCALE],
 [Undefine if you don't want locale features.  By default this is defined.])
@@ -758,7 +748,6 @@ file locking type          : ${LOCKTYPE}
 default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
 default pager              : ${pagerpath}
-email address masquerading : ${masquerade}
 SASL support               : ${sasl_support}
 TLS support                : ${tls_support}
 ])])dnl
