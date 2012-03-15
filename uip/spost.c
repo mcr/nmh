@@ -112,6 +112,7 @@ static struct headers NHeaders[] = {
     { "Bcc",         HADR|HTRY|HBCC|HNIL, MINV },
     { "Message-Id",  HBAD,                0 },
     { "Fcc",         HFCC,                0 },
+    { "Envelope-From",HIGN,               0 },
     { NULL,          0,                   0 }
 };
 
@@ -128,6 +129,7 @@ static struct headers RHeaders[] = {
     { "Resent-Fcc",        HFCC,           0 },
     { "Reply-To",          HADR,           0 },
     { "Fcc",               HIGN,           0 },
+    { "Envelope-From",     HIGN,           0 },
     { NULL,                0,              0 }
 };
 
