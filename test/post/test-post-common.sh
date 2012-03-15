@@ -37,7 +37,9 @@ test_post ()
     # compare it against our "correct" output.
     #
 
-    sed -i "" -e 's/^Date:.*/Date:/' "$1"
+    sed -i.bak -e 's/^Date:.*/Date:/' "$1"
+
+    rm -f "${1}.bak"
 
     check "$1" "$2"
 }

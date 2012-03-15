@@ -54,8 +54,10 @@ EOF
 
 msgname=$(mhpath +inbox 11)
 
-sed -i "" -e 's/^Date:.*/Date:/' ${msgname}
+sed -i.bak -e 's/^Date:.*/Date:/' "${msgname}"
 
-check "${testname}.msg.expected" ${msgname}
+rm -f "${msgname}.bak"
+
+check "${testname}.msg.expected" "${msgname}"
 
 exit ${failed:-0}
