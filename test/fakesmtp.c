@@ -240,7 +240,7 @@ static int
 getsmtp(int socket, char *data)
 {
 	int cc;
-	static int bytesinbuf = 0;
+	static unsigned int bytesinbuf = 0;
 	static char buffer[LINESIZE * 2], *p;
 
 	for (;;) {
@@ -294,6 +294,8 @@ getsmtp(int socket, char *data)
 static void
 handleterm(int signal)
 {
+	(void) signal;
+
 	killpidfile();
 	fflush(NULL);
 	_exit(1);
