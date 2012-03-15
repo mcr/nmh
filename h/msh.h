@@ -53,7 +53,7 @@ extern int modified;		/* command modified folder */
 extern struct msgs *mp;		/* used a lot              */
 extern struct Msg *Msgs;	/* Msgs[0] not used        */
 
-FILE *msh_ready ();
+FILE *msh_ready (int, int);
 
 /*
  * COMMAND

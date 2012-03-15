@@ -155,7 +155,6 @@ int told_to_quit;		/* SIGQUIT detected */
  */
 void fsetup (char *);
 void setup (char *);
-FILE *msh_ready (int, int);
 void readids (int);
 int readid (int);
 void display_info (int);
@@ -174,7 +173,6 @@ static int read_map (char *, long);
 static int read_file (long, int);
 
 static void m_gMsgs (int);
-FILE *msh_ready (int, int);
 static int check_folder (int);
 static void scanrange (int, int);
 static void scanstring (char *);

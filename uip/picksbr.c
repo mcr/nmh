@@ -175,23 +175,23 @@ static struct nexus *head;
 /*
  * prototypes for date routines
  */
-static struct tws *tws_parse();
-static struct tws *tws_special();
+static struct tws *tws_parse(char *, int);
+static struct tws *tws_special(char *);
 
 /*
  * static prototypes
  */
-static void PRaction();
-static int gcompile();
-static int advance();
-static int cclass();
-static int tcompile();
+static void PRaction(struct nexus *, int);
+static int gcompile(struct nexus *, char *);
+static int advance(char *, char *);
+static int cclass(unsigned char *, int, int);
+static int tcompile(char *, struct tws *, int);
 
-static struct nexus *parse();
-static struct nexus *nexp1();
-static struct nexus *nexp2();
-static struct nexus *nexp3();
-static struct nexus *newnexus();
+static struct nexus *parse(void);
+static struct nexus *nexp1(void);
+static struct nexus *nexp2(void);
+static struct nexus *nexp3(void);
+static struct nexus *newnexus(int (*)());
 
 static int ORaction();
 static int ANDaction();
