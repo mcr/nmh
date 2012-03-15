@@ -57,6 +57,9 @@ TESTS = test/bad-input/test-header \
 	test/mhshow/test-subpart test/mhstore/test-mhstore \
 	test/new/test-basic \
 	test/pick/test-pick test/pick/test-stderr \
+	test/post/test-post-basic test/post/test-post-multiple \
+	test/post/test-post-dcc test/post/test-post-fcc \
+	test/post/test-post-multifrom test/post/test-post-envelope \
 	test/refile/test-refile \
 	test/repl/test-if-str test/scan/test-scan \
 	test/sequences/test-flist test/sequences/test-mark \
@@ -207,7 +210,8 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
 	     man/unseen.man man/whatnow.man man/whom.man test/README $(TESTS) \
 	     test/inc/deb359167.mbox test/inc/fromline.txt \
-	     test/inc/msgheader.txt test/inc/filler.txt test/inc/md5sums
+	     test/inc/msgheader.txt test/inc/filler.txt test/inc/md5sums \
+	     test/post/test-post-common.sh
 
 ##
 ## These are all of the definitions for each of the programs listed above.

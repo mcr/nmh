@@ -137,6 +137,7 @@ Path: ${MH_TEST_DIR}/Mail
 mhlproc: ${MH_LIB_DIR}/mhl
 showproc: ${MH_LIB_DIR}/mhl
 postproc: ${MH_LIB_DIR}/post
+fileproc: ${MH_INST_DIR}${bindir}/refile
 EOF
 
   for f in MailAliases components digestcomps distcomps forwcomps mhl.body \

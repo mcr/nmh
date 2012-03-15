@@ -1,0 +1,61 @@
+#!/bin/sh
+#
+# Test the Fcc: feature of post
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+#
+# Basic test - Simple message, single user, single recipient.  Note that
+# we test dot-stuffing here as well.
+#
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Fcc test
+Fcc: +inbox
+
+This is a fcc test
+EOF
+
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Fcc test
+Date:
+
+This is a fcc test
+.
+QUIT
+EOF
+
+test_post "${testname}.actual" "${testname}.expected"
+
+cat > "${testname}.msg.expected" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Fcc test
+Date:
+
+This is a fcc test
+EOF
+
+msgname=$(mhpath +inbox 11)
+
+sed -i "" -e 's/^Date:.*/Date:/' ${msgname}
+
+check "${testname}.msg.expected" ${msgname}
+
+exit ${failed:-0}

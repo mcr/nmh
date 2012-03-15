@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Test the behavior of post with multiple recipients (& dcc)
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+#
+# Dcc test
+#
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody One <somebody1@example.com>,
+    Somebody Two <somebody2@example.com>
+Subject: Test Dcc
+Dcc: Somebody Three <somebody3@example.com>
+
+This is test of Dcc recipients.
+EOF
+
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody@example.com>
+RCPT TO:<somebody1@example.com>
+RCPT TO:<somebody2@example.com>
+RCPT TO:<somebody3@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+To: Somebody One <somebody1@example.com>,
+    Somebody Two <somebody2@example.com>
+Subject: Test Dcc
+Date:
+
+This is test of Dcc recipients.
+.
+QUIT
+EOF
+
+test_post "${testname}.actual" "${testname}.expected"
+
+exit ${failed:-0}

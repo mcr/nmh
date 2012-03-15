@@ -1,0 +1,179 @@
+#!/bin/sh
+#
+# Test the setting of the envelope-from address for SMTP
+#
+# Note here we use multiple From: addresses for some tests so we pick up
+# some cases skipped in other tests.
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+#
+# Sender
+#
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody One <nobody1@example.com>,
+      Mr Nobody Two <nobody2@example.com>
+Sender: Mr Nobody Three <nobody3@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Sender test
+
+This is a test of the Sender header.
+EOF
+
+cat > "${testname}.0.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody3@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody One <nobody1@example.com>,
+      Mr Nobody Two <nobody2@example.com>
+Sender: Mr Nobody Three <nobody3@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Sender test
+Date:
+
+This is a test of the Sender header.
+.
+QUIT
+EOF
+
+test_post "${testname}.0.actual" "${testname}.0.expected"
+
+#
+# Check to see if Envelope-From overrides Sender
+#
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody One <nobody1@example.com>,
+      Mr Nobody Two <nobody2@example.com>
+Sender: Mr Nobody Three <nobody3@example.com>
+Envelope-From: Mr Nobody Four <nobody4@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Envelope-From test
+
+This is a test of the Envelope-From header.
+EOF
+
+cat > "${testname}.1.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody4@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody One <nobody1@example.com>,
+      Mr Nobody Two <nobody2@example.com>
+Sender: Mr Nobody Three <nobody3@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Envelope-From test
+Date:
+
+This is a test of the Envelope-From header.
+.
+QUIT
+EOF
+
+test_post "${testname}.1.actual" "${testname}.1.expected"
+
+#
+# See if Envelope-From will generate a Sender: header with multiple From:
+# addresses
+#
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody One <nobody1@example.com>,
+      Mr Nobody Two <nobody2@example.com>
+Envelope-From: Mr Nobody Four <nobody4@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Envelope-From and Sender test
+
+This is a test of the Envelope-From and Sender headers.
+EOF
+
+cat > "${testname}.2.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody4@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody One <nobody1@example.com>,
+      Mr Nobody Two <nobody2@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Envelope-From and Sender test
+Date:
+Sender: nobody4@example.com
+
+This is a test of the Envelope-From and Sender headers.
+.
+QUIT
+EOF
+
+test_post "${testname}.2.actual" "${testname}.2.expected"
+
+#
+# And make sure we do NOT get a Sender with only one From:
+#
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody One <nobody1@example.com>
+Envelope-From: Mr Nobody Five <nobody5@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Solo Envelope-From test
+
+This is a solo test of the Envelope-From header.
+EOF
+
+cat > "${testname}.3.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody5@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody One <nobody1@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Solo Envelope-From test
+Date:
+
+This is a solo test of the Envelope-From header.
+.
+QUIT
+EOF
+
+test_post "${testname}.3.actual" "${testname}.3.expected"
+
+#
+# Make sure blank Envelope-From does what we expect it to
+#
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody One <nobody1@example.com>
+Envelope-From:
+To: Somebody Else <somebody@example.com>
+Subject: Blank Envelope-From test
+
+This is a blank test of the Envelope-From header.
+EOF
+
+cat > "${testname}.4.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody One <nobody1@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Blank Envelope-From test
+Date:
+
+This is a blank test of the Envelope-From header.
+.
+QUIT
+EOF
+
+test_post "${testname}.4.actual" "${testname}.4.expected"
+
+exit ${failed:-0}

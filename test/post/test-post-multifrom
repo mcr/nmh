@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+# Test the behavior of post with multiple from addresses
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+#
+# This SHOULD error
+#
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody One <nobody1@example.com>, Mr Nobody Two <nobody2@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test multi-from
+
+This is a test of multi-from.
+EOF
+
+#
+# Since this should fail, don't run fakesmtp
+#
+
+run_test "send -draft -server 127.0.0.1 -port $localport" \
+	"post: A Sender: or Envelope-From: header is required with multiple
+From: addresses
+post: re-format message and try again
+send: message not delivered to anyone"
+
+#
+# This should also error
+#
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody One <nobody1@example.com>, Mr Nobody Two <nobody2@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test multi-from
+Envelope-From:
+
+This is a test of multi-from with blank Envelope-From.
+EOF
+
+run_test "send -draft -server 127.0.0.1 -port $localport" \
+	"post: Envelope-From cannot be blank when there is multiple From: addresses
+and no Sender: header
+post: re-format message and try again
+send: message not delivered to anyone"
+
+exit ${failed:-0}
