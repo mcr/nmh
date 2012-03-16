@@ -124,7 +124,40 @@ if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-application/x-ivs: %p$PGM -o '%F'" >> $TMP
 fi
 
-echo "mhshow-suffix-text/html: .html" >> $TMP
+cat <<EOF >> ${TMP}
+mhshow-suffix-text/html: .html
+mhshow-suffix-text/xml: .xml
+mhshow-suffix-application/pdf: .pdf
+mhshow-suffix-application/postscript: .ps
+mhshow-suffix-application/msword: .doc
+mhshow-suffix-application/msword: .docx
+mhshow-suffix-application/vnd.ms-excel: xls
+mhshow-suffix-application/vnd.ms-excel: xlc
+mhshow-suffix-application/vnd.ms-excel: xll
+mhshow-suffix-application/vnd.ms-excel: xlm
+mhshow-suffix-application/vnd.ms-excel: xlw
+mhshow-suffix-application/vnd.ms-excel: xla
+mhshow-suffix-application/vnd.ms-excel: xlt
+mhshow-suffix-application/vnd.ms-excel: xld
+mhshow-suffix-application/vnd.ms-powerpoint: ppz
+mhshow-suffix-application/vnd.ms-powerpoint: ppt
+mhshow-suffix-application/vnd.ms-powerpoint: pps
+mhshow-suffix-application/vnd.ms-powerpoint: pot
+mhshow-suffix-audio/mpeg: .mp3
+mhshow-suffix-image/gif: .gif
+mhshow-suffix-image/jpeg: .jpeg
+mhshow-suffix-image/jpeg: .jpg
+mhshow-suffix-image/png: .png
+mhshow-suffix-image/tiff: .tif
+mhshow-suffix-image/tiff: .tiff
+mhshow-suffix-video/mpeg: .mpeg
+mhshow-suffix-video/mpeg: .mpg
+mhshow-suffix-video/mpeg: .mpg
+mhshow-suffix-video/quicktime: .qt
+mhshow-suffix-video/quicktime: .mov
+mhshow-suffix-video/quicktime: .moov
+mhshow-suffix-video/quicktime: .qtvr
+EOF
 
 # I'd like to check if netscape is available and use it preferentially to lynx,
 # but only once I've added a new %-escape that makes more permanent temp files,
