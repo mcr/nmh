@@ -39,6 +39,8 @@ all/to/cc/me]
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
+.RB [ \-atfile ]
+.RB [ \-noatfile ]
 .RB [ \-build ]
 .RB [ \-file
 .IR msgfile ]
@@ -220,6 +222,12 @@ stored in the environment variable
 and the pathname of
 the folder containing the message is stored in the environment variable
 .BR $mhfolder .
+The creation of the \*(lq@\*(rq file and associated environment variables
+can be controlled via the
+.B \-atfile
+and
+.B \-noatfile
+options.
 .PP
 Although
 .B repl
@@ -510,6 +518,7 @@ mhbuild(1), comp(1), forw(1), send(1), whatnow(1), mh\-format(5)
 .RB ` \-inplace '
 .RB ` \-nomime '
 .RB ` \-noquery '
+.RB ` \-atfile '
 .RB ` "\-width\ 72" '
 .fi
 

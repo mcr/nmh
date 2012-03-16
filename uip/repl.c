@@ -70,6 +70,10 @@ static struct swit switches[] = {
     { "file file", 4 },			/* interface from msh */
 #define	BILDSW                28
     { "build", 5 },			/* interface from mhe */
+#define ATFILESW              29
+    { "atfile", 0 },
+#define NOATFILESW            30
+    { "noatfile", 0 },
 
     { NULL, 0 }
 };
@@ -134,6 +138,7 @@ main (int argc, char **argv)
     int	i, isdf = 0;
     int anot = 0, inplace = 1;
     int nedit = 0, nwhat = 0;
+    int atfile = 1;
     char *cp, *cwd, *dp, *maildir, *file = NULL;
     char *folder = NULL, *msg = NULL, *dfolder = NULL;
     char *dmsg = NULL, *ed = NULL, drft[BUFSIZ], buf[BUFSIZ];
@@ -304,6 +309,13 @@ main (int argc, char **argv)
 		    dfolder = NULL;
 		    isdf = NOTOK;
 		    continue;
+
+		case ATFILESW:
+		    atfile++;
+		    continue;
+		case NOATFILESW:
+		    atfile = 0;
+		    continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -424,7 +436,7 @@ try_it_again:
 
     if (nwhat)
 	done (0);
-    what_now (ed, nedit, NOUSE, drft, msg, 0, mp,
+    what_now (ed, nedit, NOUSE, drft, atfile ? msg : NULL, 0, mp,
 	    anot ? "Replied" : NULL, inplace, cwd);
     done (1);
     return 1;

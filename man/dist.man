@@ -35,6 +35,8 @@ dist \- redistribute a message to additional addresses
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
+.RB [ \-atfile ]
+.RB [ \-noatfile ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -164,6 +166,12 @@ stored in the environment variable
 and the pathname of
 the folder containing the message is stored in the environment variable
 .BR $mhfolder .
+The creation of the \*(lq@\*(rq file and associated environment variables
+can be controlled via the
+.B \-atfile
+and
+.B \-noatfile
+options.
 .PP
 The
 .B \-draftfolder
@@ -226,6 +234,7 @@ comp(1), forw(1), repl(1), send(1), whatnow(1)
 .RB ` \-noannotate '
 .RB ` \-nodraftfolder '
 .RB ` \-inplace '
+.RB ` \-atfile '
 .fi
 
 .SH CONTEXT

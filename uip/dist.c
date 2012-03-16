@@ -52,6 +52,10 @@ static struct swit switches[] = {
     { "fcc mailbox", 0 },
 #define WIDTHSW 19
     { "width columns", 0 },
+#define ATFILESW 20
+    { "atfile", 0 },
+#define NOATFILESW 21
+    { "noatfile", 0 },
     { NULL, 0 }
 };
 
@@ -85,7 +89,7 @@ main (int argc, char **argv)
     int anot = 0, inplace = 1, nedit = 0;
     int nwhat = 0, i, in, isdf = 0, out;
     int outputlinelen = OUTPUTLINELEN;
-    int dat[5];
+    int dat[5], atfile = 1;
     char *cp, *cwd, *maildir, *msgnam, *dfolder = NULL;
     char *dmsg = NULL, *ed = NULL, *file = NULL, *folder = NULL;
     char *form = NULL, *msg = NULL, buf[BUFSIZ], drft[BUFSIZ];
@@ -213,6 +217,13 @@ main (int argc, char **argv)
 		    if ((outputlinelen = atoi(cp)) < 10)
 		    	adios (NULL, "impossible width %d", outputlinelen);
 		    continue;
+
+		case ATFILESW:
+		    atfile++;
+		    continue;
+		case NOATFILESW:
+		    atfile = 0;
+		    continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -333,7 +344,7 @@ try_it_again:
 
     if (nwhat)
 	done (0);
-    what_now (ed, nedit, NOUSE, drft, msgnam, 1, mp,
+    what_now (ed, nedit, NOUSE, drft, atfile ? msgnam : NULL, 1, mp,
 	anot ? "Resent" : NULL, inplace, cwd);
     done (1);
     return 1;
