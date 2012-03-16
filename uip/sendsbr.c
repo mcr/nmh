@@ -192,6 +192,7 @@ attach(char *attachment_header_field_name, char *draft_file_name,
     int			has_body;		/* draft has a message body */
     int			length;			/* length of attachment header field name */
     char		*p;			/* miscellaneous string pointer */
+    FILE		*fp;			/* pointer for mhn.defaults */
 
     /*
      *	Open up the draft file.
@@ -300,6 +301,11 @@ attach(char *attachment_header_field_name, char *draft_file_name,
      *	Now, go back to the beginning of the draft file and look for header fields
      *	that specify attachments.  Add a mhbuild MIME composition file for each.
      */
+
+    if ((fp = fopen (p = etcpath ("mhn.defaults"), "r"))) {
+    	readconfig ((struct node **) NULL, fp, p, 0);
+	fclose(fp);
+    }
 
     rewind(draft_file);
 
