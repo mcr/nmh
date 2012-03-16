@@ -55,8 +55,8 @@ with
 acting as a relatively simple preprocessor.
 Thus, it is
 .B post
-which parses the various header fields, appends
-\*(lqFrom:\*(rq and \*(lqDate:\*(rq lines, and interacts with the mail transport system.
+which parses the various header fields, appends a
+\*(lqDate:\*(rq line, and interacts with the mail transport system.
 .B Post
 will not normally be called directly by the user.
 .PP
@@ -122,72 +122,38 @@ delivery).
 .PP
 Under normal circumstances,
 .B post
-constructs the \*(lqFrom:\*(rq line of the
-message from the user's login name, the full name from the GECOS field of the
-passwd file, and the fully\-qualified name of the local machine (or the
-value of
-\*(lqlocalname\*(rq in
-.IR mts.conf ,
-if set).  An example is \*(lqFrom: Dan Harkless
-<dan@machine.example.com>\*(rq.  There are four ways to override these values,
-however.  Note that they apply equally to \*(lqResent\-From:\*(rq lines in messages sent
+uses the \*(lqFrom:\*(rq line in the message draft as the identity of
+the the originating mailbox.  A \*(lqFrom:\*(rq line is required in
+all message draft.  By default the message composition utilities such
+as
+.B comp
+and
+.B repl
+will automatically place a \*(lqFrom:\*(rq line in the message draft.
+There are two ways to override this behavior, however.
+Note that they apply equally to \*(lqResent\-From:\*(rq lines in messages sent
 with
 .BR dist .
 .PP
-The first way is GECOS\-based username masquerading.  If the \*(lqmasquerade:\*(rq line
-in
-.I mts.conf
-contains \*(lqmmailid\*(rq, this processing is activated.  If a user's GECOS
-field in the passwd file is of the form \*(lqFull Name <fakename>\*(rq then \*(lqfakename\*(rq
-will be used in place of the real username.  For instance, a GECOS field of \*(lqDan
-Harkless <Dan.Harkless>\*(rq would result in \*(lqFrom: Dan Harkless
-<Dan.Harkless@machine.example.com>\*(rq.  Naturally if you were doing something like
-this you'd want to set up an MTA alias (e.g. in /etc/aliases) from, for
-instance, \*(lqDan.Harkless\*(rq to \*(lqdan\*(rq.
+The first way is to supply a \*(lqSender:\*(rq line.  The value of this
+field will be used as the originating mailbox identity when submitting the
+message to the mail transport system.  If multiple addresses are
+given in the \*(lqFrom:\*(rq line, a \*(lqSender:\*(rq line is
+.BR required .
+If an \*(lqEnvelope-From:\*(rq line is supplied when multiple addresses
+are given in the \*(lqFrom:\*(rq line, a \*(lqSender:\*(rq header will
+be generated using the value of the \*(lqEnvelope-From:\*(rq line,
+.B if
+the \*(lqEnvelope-From:\*(rq line is not blank.
 .PP
-The second way to override default construction of \*(lqFrom:\*(rq is to set the
-.B $SIGNATURE
-environment variable.  This variable overrides the full name
-from the GECOS field, even if GECOS\-based masquerading is being done.  This
-processing is always active, and does not need to be enabled from
-.IR mts.conf .
-.PP
-The third way is controlled by the \*(lquser_extension\*(rq value of \*(lqmasquerade:\*(rq line
-of
-.IR mts.conf .
-When that's turned on, setting the
-.B $USERNAME_EXTENSION
-environment variable will result in its value being appended the user's login
-name.  For instance, if I set
-.B $USERNAME_EXTENSION
-to \*(lq+www\*(rq, my \*(lqFrom:\*(rq
-line will contain \*(lqDan Harkless <dan+www@machine.example.com>\*(rq (or
-\*(lqDan.Harkless+www\*(rq if I'm using mmailid masquerading as well).  Recent versions
-of
-.B sendmail
-automatically deliver all mail sent to
-.IR user + string
-to
-.IR user .
-.B qmail
-has a similar feature which uses '\-' as the delimiter by
-default, but can use other characters as well.
-.PP
-The fourth method of address masquerading is to specify a \*(lqFrom:\*(rq line manually
-in the message draft.  It will be used as provided (after alias substitution),
-but normally, to discourage email forgery, the user's
-.B real
-address will be
-used in the SMTP envelope \*(lqFrom:\*(rq and in a \*(lqSender:\*(rq header.  However, if the
-\*(lqmasquerade:\*(rq line of
-.I mts.conf
-contains \*(lqdraft_from\*(rq, the SMTP envelope \*(lqFrom:\*(rq
-will use the address given in the draft \*(lqFrom:\*(rq, and there will be no \*(lqSender:\*(rq
-header.  This is useful in pretending to send mail \*(lqdirectly\*(rq from a remote POP3
-account, or when remote email robots give improper precedence to the envelope
-\*(lqFrom:\*(rq.  Note that your MTA may still reveal your real identity (e.g.
-.BR sendmail 's
-\*(lqX\-Authentication\-Warning:\*(rq header). 
+The second way is to supply a \*(lqEnvelope-From:\*(rq line.  The value
+of this field will be used as the originating mailbox identity when
+submitting the message to the mail transport system.  This will override
+both the value of the \*(lqFrom:\*(rq line and a \*(lqSender:\*(rq line
+(if one is supplied).  The \*(lqEnvelope-From:\*(rq line is allowed to
+have a blank value; if the value is blank, then the mail transport system
+will be instructed to not send any bounces in response to the message.
+Not all mail transport systems support this feature.
 .PP
 If nmh is using the SMTP MTA, the
 .B \-server
