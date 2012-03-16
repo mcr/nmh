@@ -46,3 +46,5 @@ Things to add to the release notes for the next full release:
 - Fixed file descriptor leaks in mhparse [Bug #24004: (debbug 344182)].
 - Fixed mhstore to honor nmh-storage profile entry even with -auto
   [Bug #35303].
+- post(8) can now explicitly control the SMTP envelope address either via
+  the Sender: header or the new Envelope-From: header.
