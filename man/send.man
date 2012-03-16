@@ -96,14 +96,17 @@ The body of each header field whose name matches the
 is interpreted as a file name, and each file named is included as a separate
 part in the MIME message.
 .PP
-For file names with dot suffixes, the context is scanned for a
+For file names with dot suffixes, the profile is scanned for a
 .I mhshow-suffix-
 entry for that suffix.
-The content-type for the part is taken from that context entry if a match is
-found.
+The content-type for the part is taken from that profile entry if a match is
+found.  If a match is not found in the user profile, the mhn.defaults
+profile is scanned next.
 If no match is found or the file does not have a dot suffix, the content-type
 is text/plain if the file contains only ASCII characters or application/octet-stream
-if it contains characters outside of the ASCII range.
+if it contains characters outside of the ASCII range.  See
+.BR mhshow (1)
+for more details and example syntax.
 .PP
 Each part contains a name attribute that is the last component of the path name.
 A
