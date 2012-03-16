@@ -48,3 +48,5 @@ Things to add to the release notes for the next full release:
   [Bug #35303].
 - post(8) can now explicitly control the SMTP envelope address either via
   the Sender: header or the new Envelope-From: header.
+- The -attach option is now the default (using Nmh-Attachment) and
+  -attachformat 1 is now the default.

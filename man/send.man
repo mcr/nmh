@@ -51,6 +51,7 @@ send \- send a message
 .RB [ \-help ]
 .RB [ \-attach
 .IR header-field-name ]
+.RB [ \-noattach ]
 .RB [ \-attachformat
 .IR 0 " | " 1 " | " 2 ]
 .ad
@@ -78,15 +79,15 @@ are actually performed by
 .BR post .
 
 .PP
-If a
-.I header-field-name
-is supplied using the
-.B -attach
-option, the draft is scanned for a header whose field name matches the
-supplied
-.IR header-field-name .
+By default the draft is scanned for a header named
+.IR Nmh-Attachment .
 The draft is converted to a MIME message if one or more matches are found.
-This conversion occurs before all other processing.
+This conversion occurs before all other processing.  The header name
+can be changed with the
+.B \-attach
+option.  This behavior can be disabled completely with the
+.B \-noattach
+option.
 .PP
 The first part of the MIME message is the draft body if that body contains
 any non-blank characters.
@@ -115,12 +116,12 @@ command on the file.
 The
 .B -attachformat
 option specifies the MIME header field formats:  a value of
-.B 0,
-the default,
+.B 0
 includes the
 .I x-unix-mode
 attribute as noted above.  A value of
-.B 1
+.BR 1 ,
+the default,
 suppresses that, puts the file name in the
 \*(lqContent-Description\*(rq header, and
 adds a \*(lqContent-Disposition\*(rq header.  A value of
@@ -440,7 +441,8 @@ comp(1), dist(1), forw(1), repl(1), mh\-alias(5), post(8)
 .RB ` \-noverbose '
 .RB ` \-nowatch '
 .RB ` "\-width\ 72" '
-.RB ` "\-attachformat\ 0" '
+.RB ` "\-attach\ Nmh-Attachment" '
+.RB ` "\-attachformat\ 1" '
 .fi
 
 .SH CONTEXT

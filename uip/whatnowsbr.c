@@ -63,6 +63,8 @@ static struct swit whatnowswitches[] = {
     { "help", 0 },
 #define	ATTACHSW                8
     { "attach header-field-name", 0 },
+#define NOATTACHSW              9
+    { "noattach", 0 },
     { NULL, 0 }
 };
 
@@ -138,7 +140,7 @@ WhatNow (int argc, char **argv)
     char buf[BUFSIZ], prompt[BUFSIZ];
     char **argp, **arguments;
     struct stat st;
-    char	*attach = (char *)0;	/* attachment header field name */
+    char	*attach = NMH_ATTACH_HEADER;/* attachment header field name */
     char	cwd[MAXPATHLEN + 1];	/* current working directory */
     char	file[MAXPATHLEN + 1];	/* file name buffer */
     char	shell[MAXPATHLEN + 1];	/* shell response buffer */
@@ -213,10 +215,12 @@ WhatNow (int argc, char **argv)
 		continue;
 
 	    case ATTACHSW:
-		if (attach != (char *)0)
-		    adios(NULL, "only one attachment header field name at a time!");
 		if (!(attach = *argp++) || *attach == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
+
+	    case NOATTACHSW:
+	    	attach = NULL;
 		continue;
 	    }
 	}
@@ -1064,13 +1068,15 @@ static struct swit  sendswitches[] = {
     { "user", SASLminc(-4) },
 #define SNDATTACHSW       41
     { "attach file", 6 },
-#define SNDATTACHFORMAT   42
+#define SNDNOATTACHSW     42
+    { "noattach", 0 },
+#define SNDATTACHFORMAT   43
     { "attachformat", 7 },
-#define PORTSW		  43
+#define PORTSW		  44
     { "port server-port-name/number", 4 },
-#define TLSSW		  44
+#define TLSSW		  45
     { "tls", TLSminc(-3) },
-#define NTLSSW            45
+#define NTLSSW            46
     { "notls", TLSminc(-5) },
     { NULL, 0 }
 };
@@ -1096,8 +1102,8 @@ sendit (char *sp, char **arg, char *file, int pushed)
     char *cp, buf[BUFSIZ], **argp;
     char **arguments, *vec[MAXARGS];
     struct stat st;
-    char	*attach = (char *)0;	/* attachment header field name */
-    int		attachformat = 0;	/* mhbuild format specifier for
+    char	*attach = NMH_ATTACH_HEADER;/* attachment header field name */
+    int		attachformat = 1;	/* mhbuild format specifier for
 					   attachments */
 
 #ifndef	lint
@@ -1270,6 +1276,9 @@ sendit (char *sp, char **arg, char *file, int pushed)
 			advise (NULL, "missing argument to %s", argp[-2]);
 			return;
 		    }
+		    continue;
+		case SNDNOATTACHSW:
+		    attach = NULL;
 		    continue;
 
 		case SNDATTACHFORMAT:

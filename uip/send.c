@@ -112,13 +112,15 @@ static struct swit switches[] = {
     { "user username", SASLminc(-4) },
 #define ATTACHSW              42
     { "attach", 6 },
-#define ATTACHFORMATSW        43
+#define NOATTACHSW            43
+    { "noattach", 0 },
+#define ATTACHFORMATSW        44
     { "attachformat", 7 },
-#define PORTSW		      44
+#define PORTSW		      45
     { "port server-port-name/number" , 4 },
-#define TLSSW		      45
+#define TLSSW		      46
     { "tls", TLSminc(-3) },
-#define NTLSSW                46
+#define NTLSSW                47
     { "notls", TLSminc(-5) },
     { NULL, 0 }
 };
@@ -157,8 +159,8 @@ main (int argc, char **argv)
     char *msgs[MAXARGS], *vec[MAXARGS];
     struct msgs *mp;
     struct stat st;
-    char	*attach = (char *)0;	/* header field name for attachments */
-    int attachformat = 0; /* mhbuild format specifier for attachments */
+    char *attach = NMH_ATTACH_HEADER;	/* header field name for attachments */
+    int attachformat = 1; /* mhbuild format specifier for attachments */
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -308,6 +310,9 @@ main (int argc, char **argv)
 		case ATTACHSW:
 		    if (!(attach = *argp++) || *attach == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
+		    continue;
+		case NOATTACHSW:
+		    attach = NULL;
 		    continue;
 
 		case ATTACHFORMATSW:

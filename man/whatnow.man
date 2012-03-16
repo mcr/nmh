@@ -23,6 +23,7 @@ whatnow \- prompting front-end for sending messages
 .RB [ \-help ]
 .RB [ \-attach
 .IR header-field-name ]
+.RB [ \-noattach ]
 .ad
 .SH DESCRIPTION
 .B Whatnow
@@ -230,6 +231,7 @@ send(1), whom(1)
 .SH DEFAULTS
 .nf
 .RB ` \-prompt "' defaults to \*(lqWhat\ Now?\ \*(rq"
+.RB ` \-attach "' defaults to \*(lqNmh-Attachment\*(rq"
 .fi
 
 .SH CONTEXT

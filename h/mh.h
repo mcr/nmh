@@ -266,6 +266,8 @@ extern char *msg_delim;		/*  .. */
 #define LINK	"@"		/* Name of link to file to which you are */
 				/* replying. */
 
+#define NMH_ATTACH_HEADER "Nmh-Attachment"  /* Default header for -attach */
+
 /*
  * miscellaneous macros
  */
