@@ -16,7 +16,6 @@ extern char *mhlibdir;
 extern char *mhetcdir;
 
 char *sbackup = BACKUP_PREFIX;
-char *slink = LINK;
 
 static struct swit switches[] = {
 #define	COMPSW	  0
@@ -68,7 +67,6 @@ static struct proc procs [] = {
      { "etcdir",        &mhetcdir },
      { "libdir",        &mhlibdir },
      { "sbackup",       &sbackup },
-     { "link",          &slink },
      { NULL,            NULL },
 };
 

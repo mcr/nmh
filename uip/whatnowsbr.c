@@ -642,9 +642,6 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 
 #ifdef HAVE_LSTAT
     int	slinked = 0;
-#if 0
-    int oumask;	/* PJS: for setting permissions on symlinks. */
-#endif
 #endif /* HAVE_LSTAT */
 
     /* Was there a previous edit session? */
@@ -674,20 +671,11 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    strncpy (linkpath, LINK, sizeof(linkpath));
 	else
 	    snprintf (linkpath, sizeof(linkpath), "%s/%s", cwd, LINK);
-    }
 
-    if (altmsg) {
 	unlink (linkpath);
 #ifdef HAVE_LSTAT
 	if (link (altpath, linkpath) == NOTOK) {
-#if 0
-	    /* I don't think permission on symlinks matters /JLR */
-	    oumask = umask(0044);	/* PJS: else symlinks are world 'r' */
-#endif
 	    symlink (altpath, linkpath);
-#if 0
-	    umask(oumask);		/* PJS: else symlinks are world 'r' */
-#endif
 	    slinked = 1;
 	} else {
 	    slinked = 0;
