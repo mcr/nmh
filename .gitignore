@@ -42,6 +42,7 @@ a.out.DSYM/
 /etc/sendfiles
 /man/*.[158]
 /man/man.sed
+/man/mh-chart.man
 /mts/libmts.a
 /sbr/*.a
 /sbr/sigmsg.h

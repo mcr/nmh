@@ -75,7 +75,7 @@ check_PROGRAMS = test/getfullname test/getfqdn test/fakesmtp
 ## Stuff that should be cleaned via "make clean"
 ##
 CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf etc/sendfiles \
-	     etc/mhn.defaults man/man.sed $(man_MANS)
+	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS)
 clean-local:
 	@rm -rf RPM a.out.DSYM uip/a.out.DSYM
 	@rm -rf test/testdir
@@ -198,21 +198,22 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     man/conflict.man man/dist.man man/dp.man man/flist.man \
 	     man/flists.man man/fmtdump.man man/fnext.man man/folder.man \
 	     man/folders.man man/forw.man man/fprev.man man/inc.man \
-	     man/install-mh.man man/mark.man man/mh-alias.man man/mh-chart.man \
-	     man/mh-draft.man man/mh-format.man man/mh-mail.man \
-	     man/mh-profile.man man/mh-sequence.man man/mh-tailor.man \
-	     man/mhbuild.man man/mhl.man man/mhlist.man man/mhmail.man \
-	     man/mhn.man man/mhparam.man man/mhpath.man man/mhshow.man \
-	     man/mhstore.man man/msgchk.man man/msh.man man/mts.conf.man \
-	     man/new.man man/next.man man/nmh.man man/packf.man man/pick.man \
-	     man/post.man man/prev.man man/prompter.man man/rcvdist.man \
-	     man/rcvpack.man man/rcvstore.man man/rcvtty.man man/refile.man \
-	     man/repl.man man/rmf.man man/rmm.man man/scan.man man/send.man \
+	     man/install-mh.man man/mark.man man/mh-alias.man \
+	     man/mh-chart-gen.sh man/mh-draft.man man/mh-format.man \
+	     man/mh-mail.man man/mh-profile.man man/mh-sequence.man \
+	     man/mh-tailor.man man/mhbuild.man man/mhl.man man/mhlist.man \
+	     man/mhmail.man man/mhn.man man/mhparam.man man/mhpath.man \
+	     man/mhshow.man man/mhstore.man man/msgchk.man man/msh.man \
+	     man/mts.conf.man man/new.man man/next.man man/nmh.man \
+	     man/packf.man man/pick.man man/post.man man/prev.man \
+	     man/prompter.man man/rcvdist.man man/rcvpack.man \
+	     man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
+	     man/rmf.man man/rmm.man man/scan.man man/send.man \
 	     man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
-	     man/unseen.man man/whatnow.man man/whom.man test/README $(TESTS) \
-	     test/inc/deb359167.mbox test/inc/fromline.txt \
-	     test/inc/msgheader.txt test/inc/filler.txt test/inc/md5sums \
-	     test/post/test-post-common.sh
+	     man/unseen.man man/whatnow.man man/whom.man \
+	     test/README $(TESTS) test/inc/deb359167.mbox \
+	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
+	     test/inc/md5sums test/post/test-post-common.sh
 
 ##
 ## These are all of the definitions for each of the programs listed above.
@@ -519,6 +520,9 @@ man/man.sed: Makefile
 	@echo ' s,%mhl_format%,,g' >> $@
 	@echo '/%mhl_reply%/r $(top_srcdir)/etc/mhl.reply' >> $@
 	@echo ' s,%mhl_reply%,,g' >> $@
+
+man/mh-chart.man:
+	@$(srcdir)/man/mh-chart-gen.sh > $@
 
 .man.$(manext1):
 	@$(SED) -f man/man.sed $< > $@

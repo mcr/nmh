@@ -18,7 +18,7 @@ prompter \- prompting editor front-end for nmh
 .I file
 .RB [ \-version ]
 .RB [ \-help ]
-.fi
+.ad
 .SH DESCRIPTION
 .B Prompter
 is an editor front\-end for
