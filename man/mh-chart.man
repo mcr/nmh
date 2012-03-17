@@ -136,6 +136,8 @@ mh-chart \- Chart of nmh Commands
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
+.RB [ \-atfile ]
+.RB [ \-noatfile ]
 .RB [ \-version ]
 .RB [ \-help ]
 
@@ -317,6 +319,20 @@ is equivalent to
 .RB [ \-list ] 
 .RB [ \-public " | " \-nopublic ]
 .RB [ \-zero " | " \-nozero ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B mhbuild
+.I file
+.RB [ \-list " | " \-nolist ]
+.RB [ \-realsize " | " \-norealsize ]
+.RB [ \-headers " | " \-noheaders ]
+.RB [ \-ebcdicsafe " | " \-noebcdicsafe ]
+.RB [ \-rfc934mode " | " \-norfc934mode ]
+.RB [ \-contentid " | " \-nocontentid ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-check " | " \-nocheck ]
 .RB [ \-version ]
 .RB [ \-help ]
 
@@ -508,6 +524,31 @@ all/mail/nomail ]
 .RB [ \-help ]
 
 .HP 5
+.B new
+.RI [ sequences ]
+.RB [ \-mode
+.IR mode ]
+.RB [ \-folders
+.IR foldersfile ]
+.RB [ \-version ]
+.RB [ \-help ]
+.PP
+.HP 5
+.B fnext
+is equivalent to
+.B new \-mode fnext
+.PP
+.HP 5
+.B fprev
+is equivalent to
+.B new \-mode fprev
+.PP
+.HP 5
+.B unseen
+is equivalent to
+.B new \-mode unseen
+
+.HP 5
 .B next 
 .RI [ +folder ]
 .RB [\-showproc
@@ -575,6 +616,7 @@ or
 .RB [ \-list " | " \-nolist ] 
 .RB [ \-version ]
 .RB [ \-help ]
+.PP
 
 .HP 5
 .B %libdir%/post 
@@ -590,6 +632,10 @@ or
 .RB [ \-watch " | " \-nowatch ]
 .RB [ \-width
 .IR columns ]
+.RB [ \-server
+.IR servername ]
+.RB [ \-port
+.IR portname/number ]
 .RB [ \-sasl ]
 .RB [ \-nosasl ]
 .RB [ \-saslmaxssf
@@ -599,6 +645,7 @@ or
 .RB [ \-user
 .IR username ]
 .RB [ \-tls ]
+.RB [ \-notls ]
 .I file
 .RB [ \-version ]
 .RB [ \-help ]
@@ -616,6 +663,19 @@ or
 .I showproc
 or
 .IR showmimeproc ]
+.RB [ \-version ]
+.RB [ \-help ]
+
+.HP 5
+.B prompter
+.RB [ \-erase
+.IR chr ]
+.RB [ \-kill
+.IR chr ]
+.RB [ \-prepend " | " \-noprepend ]
+.RB [ \-rapid " | " \-norapid ]
+.RB [ \-doteof " | " \-nodoteof ]
+.I file
 .RB [ \-version ]
 .RB [ \-help ]
 
@@ -718,6 +778,8 @@ all/to/cc/me]
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
+.RB [ \-atfile ]
+.RB [ \-noatfile ]
 .RB [ \-build ]
 .RB [ \-file
 .IR msgfile ]
@@ -758,6 +820,15 @@ all/to/cc/me]
 .RB [ \-help ]
 
 .HP 5
+.B sendfiles
+.RB [ delay ]
+.I mailpath
+.I subject
+.I file1
+.RI [ file2
+\&...]
+
+.HP 5
 .B send
 .RB [ \-alias
 .IR aliasfile ]
@@ -793,6 +864,7 @@ all/to/cc/me]
 .RB [ \-user
 .IR username ]
 .RB [ \-tls ]
+.RB [ \-notls ]
 .RB [ \-width
 .IR columns ]
 .RB [ file
@@ -801,6 +873,7 @@ all/to/cc/me]
 .RB [ \-help ]
 .RB [ \-attach
 .IR header-field-name ]
+.RB [ \-noattach ]
 .RB [ \-attachformat
 .IR 0 " | " 1 " | " 2 ]
 
@@ -879,6 +952,7 @@ or
 .RB [ \-help ]
 .RB [ \-attach
 .IR header-field-name ]
+.RB [ \-noattach ]
 
 .HP 5
 .B whom
