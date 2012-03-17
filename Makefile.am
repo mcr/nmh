@@ -198,7 +198,7 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     man/conflict.man man/dist.man man/dp.man man/flist.man \
 	     man/flists.man man/fmtdump.man man/fnext.man man/folder.man \
 	     man/folders.man man/forw.man man/fprev.man man/inc.man \
-	     man/install-mh.man man/mark.man man/mh-alias.man man/mh-chart.man \
+	     man/install-mh.man man/mark.man man/mh-alias.man man/mh-chart.sh \
 	     man/mh-draft.man man/mh-format.man man/mh-mail.man \
 	     man/mh-profile.man man/mh-sequence.man man/mh-tailor.man \
 	     man/mhbuild.man man/mhl.man man/mhlist.man man/mhmail.man \
@@ -519,6 +519,9 @@ man/man.sed: Makefile
 	@echo ' s,%mhl_format%,,g' >> $@
 	@echo '/%mhl_reply%/r $(top_srcdir)/etc/mhl.reply' >> $@
 	@echo ' s,%mhl_reply%,,g' >> $@
+
+man/mh-chart.man:
+	@man/mh-chart-gen.sh > $@
 
 .man.$(manext1):
 	@$(SED) -f man/man.sed $< > $@

@@ -5,7 +5,7 @@
 .SH NAME
 sendfiles \- send multiple files via a MIME message
 .SH SYNOPSIS
-.HP
+.HP 5
 .na
 .B sendfiles
 .RB [ delay ]
