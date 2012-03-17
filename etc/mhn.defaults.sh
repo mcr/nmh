@@ -125,6 +125,7 @@ if [ ! -z "$PGM" ]; then
 fi
 
 cat <<EOF >> ${TMP}
+mhshow-suffix-text/calendar: .ics
 mhshow-suffix-text/html: .html
 mhshow-suffix-text/xml: .xml
 mhshow-suffix-application/pdf: .pdf
