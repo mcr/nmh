@@ -17,8 +17,9 @@ The
 .BR comp ,
 .BR dist ,
 .BR forw ,
+.BR repl ,
 and
-.B repl
+.B whom
 commands have two additional switches,
 .B \-draftfolder
 .I +folder
@@ -38,8 +39,9 @@ profile entry may be used to declare a default draft folder for use with
 .BR comp ,
 .BR dist ,
 .BR forw ,
+.BR repl ,
 and
-.BR repl ).
+.B whom ).
 .PP
 If the swith
 .B \-draftmessage
