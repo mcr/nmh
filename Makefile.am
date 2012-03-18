@@ -65,7 +65,7 @@ TESTS = test/bad-input/test-header \
 	test/repl/test-if-str test/scan/test-scan \
 	test/sequences/test-flist test/sequences/test-mark \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
-	test/whatnow/test-ls \
+	test/whatnow/test-ls test/whom/test-whom \
 	test/cleanup ## The "cleanup" test should always be last.
 
 check_SCRIPTS = test/common.sh

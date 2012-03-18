@@ -1,0 +1,97 @@
+#!/bin/sh
+######################################################
+#
+# Test whom
+#
+######################################################
+
+# Not tested:
+# -check, -client, -server, -port, -user, -sasl, -saslmech, -snoop, -tls, -notls
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+cd $MH_TEST_DIR
+
+cat >$MH_TEST_DIR/Mail/draft <<'EOF'
+From: Test1 <test1@example.com>
+To: Some User <user@example.com>
+Subject: Testing message 1
+--------
+This is a draft message.
+EOF
+
+# check with no options
+run_test 'whom' '  -- Network Recipients --
+  user at example.com'
+
+# check -nocheck
+run_test 'whom -check -nocheck' '  -- Network Recipients --
+  user at example.com'
+
+# check with file specified
+run_test "whom $MH_TEST_DIR/Mail/draft" '  -- Network Recipients --
+  user at example.com'
+
+# check -draftmessage
+run_test "whom -draftm draft" '  -- Network Recipients --
+  user at example.com'
+
+# check -draftfolder with -draftmessage
+folder +drafts -create >/dev/null
+folder +inbox -fast >/dev/null
+cp $MH_TEST_DIR/Mail/draft $MH_TEST_DIR/Mail/drafts/1
+run_test "whom -draftfolder +drafts -draftm 1" \
+'  -- Network Recipients --
+  user at example.com'
+
+# check -draftfolder with current draftmessage
+folder +drafts 1 >/dev/null
+run_test "whom -draftfolder +drafts" \
+'  -- Network Recipients --
+  user at example.com'
+
+# check -nodraftfolder
+run_test 'whom -draftfolder +nonexistent -nodraftfolder' \
+'  -- Network Recipients --
+  user at example.com'
+
+# check -draft, though I'm not sure that it's useful.  Note that it
+# must appear after the file argument when run standalone.
+run_test "whom $MH_TEST_DIR/Mail/drafts/1 -draft" \
+'  -- Network Recipients --
+  user at example.com'
+
+# check -alias
+rm -f $MH_TEST_DIR/Mail/draft
+cat >$MH_TEST_DIR/Mail/draft <<'EOF'
+From: Test1 <test1@example.com>
+To: u
+Subject: Testing message 1
+--------
+This is a draft message.
+EOF
+
+cat >$MH_TEST_DIR/Mail/nmhaliases <<'EOF'
+u: user1@example.com
+EOF
+run_test 'whom -alias nmhaliases' '  -- Network Recipients --
+  user1 at example.com'
+
+# check -alias with nonexistent aliasfile
+run_test 'whom -alias nonexistent' \
+"whom: aliasing error in nonexistent - unable to read 'nonexistent'"
+
+
+exit $failed
