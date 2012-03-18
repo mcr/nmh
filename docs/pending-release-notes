@@ -23,8 +23,8 @@ Things to add to the release notes for the next full release:
   See mhl(1), specifically the "format" keyword and "formatproc" in
   mh-profile(5).
 - The test suite has been integrated into the Makefile via "make check".
-- The following environment variables are obsolete.  Support for them
-  will be removed from the next nmh release:
+- The following environment variables are obsolete/deprecated.  Support for
+  them will be removed from the next nmh release:
     MHPOPDEBUG (use -snoop command line switch instead)
     MM_NOASK (use -nolist and -nopause command line switches instead)
     NOMHNPROC (use -nocheckmime command line switch instead)
@@ -50,3 +50,10 @@ Things to add to the release notes for the next full release:
   the Sender: header or the new Envelope-From: header.
 - The -attach option is now the default (using Nmh-Attachment) and
   -attachformat 1 is now the default.
+- repl and dist currently create a link to the message being replied
+  or redistributed named ./@.  A switch, -noatfile, has been added to
+  disable creation of this link.  The current default behavior can
+  also be specified with -atfile.  The current default behavior is
+  obsolete/deprecated:  -noatfile will become the default in the next
+  nmh release.  If there are no requests to maintain -atfile, it will
+  be removed in the future.

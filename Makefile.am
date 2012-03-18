@@ -573,9 +573,9 @@ cscope:
 ##
 gcov:
 	@if ./config.status --config | grep -e --enable-debug >/dev/null; then \
-	   echo For best results with gcov, should configure \
-           without --enable-debug; fi
-	@echo rebuilding with AM_CLFAGS=--coverage . . .
+	   echo For best results with gcov, configure without --enable-debug; \
+	 fi
+	@echo rebuilding with AM_CFLAGS=--coverage . . .
 	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null  &&  make check
 	@for i in `find . -name '*.gcda'`; do \
 	   gcov -p -o `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
