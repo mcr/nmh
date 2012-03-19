@@ -207,6 +207,15 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 
 	    case BODY: 
 		compnum = -1;
+		/*
+		 * A slight hack ... if we have less than rlwidth characters
+		 * in the buffer, call m_getfld again.
+		 */
+
+		if ((i = strlen(tmpbuf)) < rlwidth) {
+		    state = m_getfld (state, name, tmpbuf + i,
+		    		      rlwidth - i, inb);
+		}
 		if (! outnum) {
 		    state = FILEEOF; /* stop now if scan cmd */
 		    goto finished;

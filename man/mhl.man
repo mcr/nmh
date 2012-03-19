@@ -325,7 +325,7 @@ the filter program specified by the
 .IR formatproc
 profile entry.  This filter program is expected to read data on standard
 input and output data on standard output.  Currently the \*(lqformat\*(rq
-flag is only supported for the \(*lqbody\*(rq component.  The component
+flag is only supported for the \*(lqbody\*(rq component.  The component
 name will be prefixed to the output
 .IR after
 the filter has been run.  The expected use of this is to filter a message

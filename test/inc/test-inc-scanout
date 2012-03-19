@@ -1,0 +1,195 @@
+#!/bin/sh
+#
+# Check to see if the scan output is correct if we have a message
+# right on the stdio buffer boundary
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+cat > "${MH_TEST_DIR}/test.mbox" <<EOF
+From nobody@nowhereville Jan 1 1970
+Received: I am the very model of a modern Major-General,
+Received: I've information vegetable, animal, and mineral,
+Received: I know the kings of England, and I quote the fights historical
+Received: From Marathon to Waterloo, in order categorical;
+Received: I'm very well acquainted, too, with matters mathematical,
+Received: I understand equations, both the simple and quadratical,
+Received: About binomial theorem I'm teeming with a lot o' news,
+Received: With many cheerful facts about the square of the hypotenuse.
+Received: I'm very good at integral and differential calculus;
+Received: I know the scientific names of beings animalculous:
+Received: In short, in matters vegetable, animal, and mineral,
+Received: I am the very model of a modern Major-General.
+Received: I know our mythic history, King Arthur's and Sir Caradoc's;
+Received: I answer hard acrostics, I've a pretty taste for paradox,
+Received: I quote in elegiacs all the crimes of Heliogabalus,
+Received: In conics I can floor peculiarities parabolous;
+Received: I can tell undoubted Raphaels from Gerard Dows and Zoffanies,
+Received: I know the croaking chorus from The Frogs of Aristophanes!
+Received: Then I can hum a fugue of which I've heard the music's din afore,c
+Received: And whistle all the airs from that infernal nonsense Pinafore.
+Received: Then I can write a washing bill in Babylonic cuneiform,
+Received: And tell you ev'ry detail of Caractacus's uniform:d
+Received: In short, in matters vegetable, animal, and mineral,
+Received: I am the very model of a modern Major-General.
+Received: In fact, when I know what is meant by "mamelon" and "ravelin",
+Received: When I can tell at sight a Mauser rifle from a Javelin,
+Received: When such affairs as sorties and surprises I'm more wary at,
+Received: And when I know precisely what is meant by "commissariat",
+Received: When I have learnt what progress has been made in modern gunnery,
+Received: When I know more of tactics than a novice in a nunnery—
+Received: In short, when I've a smattering of elemental strategy—
+Received: You'll say a better Major-General has never sat a gee.
+Received: For my military knowledge, though I'm plucky and adventury,
+Received: Has only been brought down to the beginning of the century;
+Received: But still, in matters vegetable, animal, and mineral,
+Received: I am the very model of a modern Major-General. 
+Received: For the Angel of Death spread his wings on the blast,
+Received: And breathed in the face of the foe as he passed:
+Received: the eyes of the sleepers waxed deadly and chill,
+Received: And their hearts but once heaved, and for ever grew still!
+Received: Abbott: Strange as it may seem, they give ball players nowadays very peculiar names.
+Received: Costello: Funny names?
+Received: Abbott: Nicknames, nicknames. Now, on the St. Louis team we have Who's on first, What's on second, I Don't Know is on third--
+Received: Costello: That's what I want to find out. I want you to tell me the names of the fellows on the St. Louis team.
+Received: Abbott: I'm telling you. Who's on first, What's on second, I Don't Know is on third--
+Received: Costello: You know the fellows' names?
+Received: Abbott: Yes.
+Received: Costello: Well, then who's playing first?
+Received: Abbott: Yes.
+Received: Costello: I mean the fellow's name on first base.
+Received: Abbott: Who.
+Received: Costello: The fellow playin' first base.
+Received: Abbott: Who.
+Received: Costello: The guy on first base.
+Received: Abbott: Who is on first.
+Received: Costello: Well, what are you askin' me for?
+Received: Abbott: I'm not asking you--I'm telling you. Who is on first.
+Received: Costello: I'm asking you--who's on first?
+Received: Abbott: That's the man's name.
+Received: Costello: That's who's name?
+Received: Abbott: Yes.
+Received: Costello: When you pay off the first baseman every month, who gets the money?
+X-Spam-Source: Definitely spam!  Seriously!
+From: Mr Nobody <nobody1@example.com>
+To: Another Nobody <nobody2@example.com>
+Date: Thu, 1 Mar 2012 01:02:03 -0500
+Subject: Who is on first?
+
+Abbott: Every dollar of it. And why not, the man's entitled to it.
+Costello: Who is?
+Abbott: Yes.
+Costello: So who gets it?
+Abbott: Why shouldn't he? Sometimes his wife comes down and collects it.
+Costello: Who's wife?
+Abbott: Yes. After all, the man earns it.
+Costello: Who does?
+Abbott: Absolutely.
+Costello: Well, all I'm trying to find out is what's the guy's name on first base?
+Abbott: Oh, no, no. What is on second base.
+Costello: I'm not asking you who's on second.
+Abbott: Who's on first!
+EOF
+
+cat > "${MH_TEST_DIR}/test.mbox.2" <<EOF
+Received: I am the very model of a modern Major-General,
+Received: I've information vegetable, animal, and mineral,
+Received: I know the kings of England, and I quote the fights historical
+Received: From Marathon to Waterloo, in order categorical;
+Received: I'm very well acquainted, too, with matters mathematical,
+Received: I understand equations, both the simple and quadratical,
+Received: About binomial theorem I'm teeming with a lot o' news,
+Received: With many cheerful facts about the square of the hypotenuse.
+Received: I'm very good at integral and differential calculus;
+Received: I know the scientific names of beings animalculous:
+Received: In short, in matters vegetable, animal, and mineral,
+Received: I am the very model of a modern Major-General.
+Received: I know our mythic history, King Arthur's and Sir Caradoc's;
+Received: I answer hard acrostics, I've a pretty taste for paradox,
+Received: I quote in elegiacs all the crimes of Heliogabalus,
+Received: In conics I can floor peculiarities parabolous;
+Received: I can tell undoubted Raphaels from Gerard Dows and Zoffanies,
+Received: I know the croaking chorus from The Frogs of Aristophanes!
+Received: Then I can hum a fugue of which I've heard the music's din afore,c
+Received: And whistle all the airs from that infernal nonsense Pinafore.
+Received: Then I can write a washing bill in Babylonic cuneiform,
+Received: And tell you ev'ry detail of Caractacus's uniform:d
+Received: In short, in matters vegetable, animal, and mineral,
+Received: I am the very model of a modern Major-General.
+Received: In fact, when I know what is meant by "mamelon" and "ravelin",
+Received: When I can tell at sight a Mauser rifle from a Javelin,
+Received: When such affairs as sorties and surprises I'm more wary at,
+Received: And when I know precisely what is meant by "commissariat",
+Received: When I have learnt what progress has been made in modern gunnery,
+Received: When I know more of tactics than a novice in a nunnery—
+Received: In short, when I've a smattering of elemental strategy—
+Received: You'll say a better Major-General has never sat a gee.
+Received: For my military knowledge, though I'm plucky and adventury,
+Received: Has only been brought down to the beginning of the century;
+Received: But still, in matters vegetable, animal, and mineral,
+Received: I am the very model of a modern Major-General. 
+Received: For the Angel of Death spread his wings on the blast,
+Received: And breathed in the face of the foe as he passed:
+Received: the eyes of the sleepers waxed deadly and chill,
+Received: And their hearts but once heaved, and for ever grew still!
+Received: Abbott: Strange as it may seem, they give ball players nowadays very peculiar names.
+Received: Costello: Funny names?
+Received: Abbott: Nicknames, nicknames. Now, on the St. Louis team we have Who's on first, What's on second, I Don't Know is on third--
+Received: Costello: That's what I want to find out. I want you to tell me the names of the fellows on the St. Louis team.
+Received: Abbott: I'm telling you. Who's on first, What's on second, I Don't Know is on third--
+Received: Costello: You know the fellows' names?
+Received: Abbott: Yes.
+Received: Costello: Well, then who's playing first?
+Received: Abbott: Yes.
+Received: Costello: I mean the fellow's name on first base.
+Received: Abbott: Who.
+Received: Costello: The fellow playin' first base.
+Received: Abbott: Who.
+Received: Costello: The guy on first base.
+Received: Abbott: Who is on first.
+Received: Costello: Well, what are you askin' me for?
+Received: Abbott: I'm not asking you--I'm telling you. Who is on first.
+Received: Costello: I'm asking you--who's on first?
+Received: Abbott: That's the man's name.
+Received: Costello: That's who's name?
+Received: Abbott: Yes.
+Received: Costello: When you pay off the first baseman every month, who gets the money?
+X-Spam-Source: Definitely spam!  Seriously!
+From: Mr Nobody <nobody1@example.com>
+To: Another Nobody <nobody2@example.com>
+Date: Thu, 1 Mar 2012 01:02:03 -0500
+Subject: Who is on first?
+
+Abbott: Every dollar of it. And why not, the man's entitled to it.
+Costello: Who is?
+Abbott: Yes.
+Costello: So who gets it?
+Abbott: Why shouldn't he? Sometimes his wife comes down and collects it.
+Costello: Who's wife?
+Abbott: Yes. After all, the man earns it.
+Costello: Who does?
+Abbott: Absolutely.
+Costello: Well, all I'm trying to find out is what's the guy's name on first base?
+Abbott: Oh, no, no. What is on second base.
+Costello: I'm not asking you who's on second.
+Abbott: Who's on first!
+EOF
+
+run_test "inc -file ${MH_TEST_DIR}/test.mbox -width 120 -truncate" \
+	"Incorporating new mail into inbox...
+
+  11+ 03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And why not, the man's entitled to it. Cos"
+
+check "${MH_TEST_DIR}/test.mbox.2" "$(mhpath +inbox 11)"
+rm -f "${MH_TEST_DIR}/test.mbox" "${MH_TEST_DIR}/test.mbox.2"
+
+exit ${failed:-0}
