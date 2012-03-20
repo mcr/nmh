@@ -91,6 +91,10 @@ static struct swit mhlswitches[] = {
     { "issue number", -5 },
 #define NBODYSW       22
     { "nobody", -6 },
+#define FMTPROCSW     23
+    { "fmtproc program", 0 },
+#define NFMTPROCSW    24
+    { "nofmtproc", 0 },
     { NULL, 0 }
 };
 
@@ -117,6 +121,16 @@ static struct swit mhlswitches[] = {
 #define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017FACEFMT\020FACEDFLT\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER"
 #define	GFLAGS	(NOCOMPONENT | UPPERCASE | CENTER | LEFTADJUST | COMPRESS | SPLIT | NOWRAP)
 
+/*
+ * A list of format arguments
+ */
+
+struct arglist {
+    struct format *a_fmt;
+    char *a_nfs;
+    struct arglist *a_next;
+};
+
 struct mcomp {
     char *c_name;		/* component name          */
     char *c_text;		/* component text          */
@@ -130,6 +144,9 @@ struct mcomp {
     int c_cwidth;		/* width of component      */
     int c_length;		/* length in lines         */
     long c_flags;
+    struct arglist *c_f_args;	/* Argument list for filter*/
+    struct arglist *c_f_tail;	/* Pointer to tail of list */
+    int c_nargs;		/* Number of arguments     */
     struct mcomp *c_next;
 };
 
@@ -253,6 +270,7 @@ static char delim4[] = "\n------------------------------\n\n";
 
 static FILE *(*mhl_action) () = (FILE *(*) ()) 0;
 
+static struct comp *mhlcomp[128];
 
 /*
  * Redefine a couple of functions.
@@ -289,6 +307,11 @@ static void mhladios (char *, char *, ...);
 static void mhldone (int);
 static void m_popen (char *);
 static void filterbody (struct mcomp *, char *, int, int, FILE *);
+static int compileargs (struct mcomp *, char *);
+static int checkcomp (char *, char *);
+static void addcomp (int, char *, char *);
+static void freecomps (void);
+static void freecomptext (void);
 
 
 int
@@ -375,6 +398,14 @@ mhl (int argc, char **argv)
 		    nomore++;
 		    continue;
 
+		case FMTPROCSW:
+		    if (!(formatproc = *argp++) || *formatproc == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    continue;
+		case NFMTPROCSW:
+		    formatproc = NULL;
+		    continue;
+
 		case LENSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -448,6 +479,9 @@ mhl (int argc, char **argv)
 	ontty = NOTTY;
     }
 
+    for (i = 0; i < sizeof(mhlcomp)/sizeof(mhlcomp[0]); i++)
+    	mhlcomp[i] = NULL;
+
     mhl_format (form ? form : mhlformat, length, width);
 
     if (vecp == 0) {
@@ -456,6 +490,8 @@ mhl (int argc, char **argv)
 	for (i = 0; i < vecp; i++)
 	    process (folder, files[i], i + 1, vecp);
     }
+
+    freecomps();
 
     if (forwall) {
 	if (digest) {
@@ -715,6 +751,20 @@ evalvar (struct mcomp *c1)
 	    return 0;
 	}
 
+   if (!mh_strcasecmp (name, "formatarg")) {
+	char *nfs;
+	int rc;
+
+	if (ptos (name, &cp))
+	    return 1;
+	nfs = new_fs (NULL, NULL, cp);
+
+	rc = compileargs(c1, nfs);
+
+	return rc;
+    }
+
+
     return 1;
 }
 
@@ -829,13 +879,15 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 		c1->c_flags &= ~HDROUTPUT;
 	    break;
     }
+
+    freecomptext();
 }
 
 
 static void
 mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 {
-    int state;
+    int state, bucket;
     struct mcomp *c1, *c2, *c3;
     char **ip, name[NAMESZ], buf[BUFSIZ];
 
@@ -901,10 +953,13 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 	switch (state = m_getfld (state, name, buf, sizeof(buf), fp)) {
 	    case FLD: 
 	    case FLDPLUS: 
+	        bucket = checkcomp(name, buf);
 		for (ip = ignores; *ip; ip++)
 		    if (!mh_strcasecmp (name, *ip)) {
-			while (state == FLDPLUS)
+			while (state == FLDPLUS) {
 			    state = m_getfld (state, name, buf, sizeof(buf), fp);
+			    addcomp(bucket, name, buf);
+			}
 			break;
 		    }
 		if (*ip)
@@ -926,6 +981,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		while (state == FLDPLUS) {
 		    state = m_getfld (state, name, buf, sizeof(buf), fp);
 		    c1->c_text = add (buf, c1->c_text);
+		    addcomp(bucket, name, buf);
 		}
 		if (c2 == NULL)
 		    c1->c_flags |= EXTRA;
@@ -1177,6 +1233,17 @@ free_queue (struct mcomp **head, struct mcomp **tail)
 	    free ((char *) c1->c_fmt);
 	if (c1->c_face)
 	    free (c1->c_face);
+	if (c1->c_f_args) {
+	    struct arglist *a1, *a2;
+	    for (a1 = c1->c_f_args; a1; a1 = a2) {
+	    	a2 = a1->a_next;
+		if (a1->a_fmt)
+		    free(a1->a_fmt);
+		if (a1->a_nfs)
+		    free(a1->a_nfs);
+	    }
+	    free(a1);
+	}
 	free ((char *) c1);
     }
 
@@ -1818,10 +1885,177 @@ m_pclose (void)
 
 
 /*
+ * Compile a format string and add it to the list of arguments used by
+ * the formatproc.
+ *
+ * This deserves some explanation.  Here's the deal:
+ *
+ * We want to keep track of components used as arguments by formatproc,
+ * but the hash table is reset every time fmt_compile is called.  So we
+ * iterate through the function list looking for things that use components
+ * and save the name.  And because we might get the same components used
+ * by different arguments we need to keep track to every reference of
+ * every component so we can add them when the message is processed.  So
+ * we compile the argument string now (to get the components we use) and
+ * save them for later.
+ */
+
+static int
+compileargs (struct mcomp *c1, char *nfs)
+{
+    struct format *fmt;
+    struct arglist *args;
+    int i;
+
+    i = fmt_compile(nfs, &fmt);
+
+    args = (struct arglist *) mh_xmalloc(sizeof(struct arglist));
+
+    if (! args)
+    	adios (NULL, "Unable to allocate formatproc args storage");
+
+    args->a_fmt = fmt;
+    args->a_nfs = format_string;
+    args->a_next = NULL;
+    c1->c_nargs++;
+    format_string = NULL;
+
+    if (c1->c_f_tail)
+    	c1->c_f_tail->a_next = args;
+
+    c1->c_f_tail = args;
+
+    if (! c1->c_f_args)
+    	c1->c_f_args = args;
+
+    if (i == 0)
+    	return 0;
+
+    /*
+     * If wantcomp ever changes size, we need to change the size
+     * of mhlcomp as well
+     */
+
+    for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++) {
+    	if (wantcomp[i]) {
+	    if (mhlcomp[i]) {
+	    	struct comp *c;
+	    	for (c = mhlcomp[i]; c->c_next != NULL; c = c->c_next)
+		    ;
+		c->c_next = wantcomp[i];
+	    } else
+	    	mhlcomp[i] = wantcomp[i];
+	}
+    }
+
+    return 0;
+}
+
+/*
+ * Check to see if we are interested in a component.  If we are, save
+ * the text.
+ */
+
+static int
+checkcomp(char *name, char *buf)
+{
+    int found = 0, i;
+    struct comp *c;
+    int bucket = CHASH(name);
+    char *cp;
+ 
+    if ((c = mhlcomp[bucket])) {
+    	do {
+	    if (mh_strcasecmp(name, c->c_name) == 0) {
+	    	found++;
+		if (! c->c_text) {
+		    i = strlen(c->c_text = strdup(buf)) - 1;
+		    if (c->c_text[i] == '\n')
+			c->c_text[i] = '\0';
+		} else {
+		    i = strlen(cp = c->c_text) - 1;
+		    if (cp[i] == '\n') {
+		    	if (c->c_type & CT_ADDR) {
+			    cp[i] = '\0';
+			    cp = add (",\n\t", cp);
+			} else {
+			    cp = add ("\t", cp);
+			}
+		    }
+		    c->c_text = add (buf, cp);
+		}
+	    }
+	} while ((c = c->c_next));
+    }
+
+    return found ? bucket : -1;
+}
+
+/*
+ * Add text to an existing component
+ */
+
+static void
+addcomp(int bucket, char *name, char *buf)
+{
+    struct comp *c;
+
+    if (bucket != -1) {
+    	c = mhlcomp[bucket];
+	do {
+	    if (mh_strcasecmp(name, c->c_name) == 0)
+	    	c->c_text = add (buf, c->c_text);
+	} while ((c = c->c_next));
+    }
+}
+
+/*
+ * Free up saved component structures
+ */
+
+static void
+freecomps(void)
+{
+    struct comp *c1, *c2;
+    int i;
+
+    for (i = 0; i < sizeof(mhlcomp)/sizeof(mhlcomp[0]); i++) {
+    	if ((c1 = mhlcomp[i]))
+	    for (; c1; c1 = c2) {
+	    	c2 = c1->c_next;
+		if (c1->c_text)
+		    free(c1->c_text);
+		free(c1);
+	    }
+    }
+}
+
+/*
+ * Just free up the component text.
+ */
+
+static void
+freecomptext(void)
+{
+    struct comp *c1;
+    int i;
+
+    for (i = 0; i < sizeof(mhlcomp)/sizeof(mhlcomp[0]); i++) {
+    	if ((c1 = mhlcomp[i]))
+	    for (; c1; c1 = c1->c_next) {
+		if (c1->c_text) {
+		    free(c1->c_text);
+		    c1->c_text = NULL;
+		}
+	    }
+    }
+}
+
+/*
  * Filter the body of a message through a specified format program
  */
 
-void
+static void
 filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp)
 {
     struct mcomp holder;
@@ -1898,7 +2132,40 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp)
      */
 
     switch (filterpid = fork()) {
+        char **args;
+	struct arglist *a;
+	int i, dat[5], s;
+
     case 0:
+    	/*
+	 * Allocate an argument array for us
+	 */
+
+	args = (char **) mh_xmalloc((c1->c_nargs + 2) * sizeof(char *));
+	args[0] = formatproc;
+	args[c1->c_nargs + 1] = NULL;
+	dat[0] = 0;
+	dat[1] = 0;
+	dat[2] = 0;
+	dat[3] = BUFSIZ;
+	dat[4] = 0;
+
+	/*
+	 * Pull out each argument and scan them.
+	 */
+
+	for (a = c1->c_f_args, i = 1; a != NULL; a = a->a_next, i++) {
+	    args[i] = mh_xmalloc(BUFSIZ);
+	    fmt_scan(a->a_fmt, args[i], BUFSIZ, dat);
+	    /*
+	     * fmt_scan likes to put a trailing newline at the end of the
+	     * format string.  If we have one, get rid of it.
+	     */
+	    s = strlen(args[i]);
+	    if (args[i][s - 1] == '\n')
+	    	args[i][s - 1] = '\0';
+	}
+
     	if (dup2(fdinput[0], STDIN_FILENO) < 0) {
 	    adios("formatproc", "Unable to dup2() standard input");
 	}
@@ -1917,7 +2184,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp)
 	close(fdoutput[0]);
 	close(fdoutput[1]);
 
-	execlp(formatproc, formatproc, (char *) NULL);
+	execvp(formatproc, args);
 
 	adios(formatproc, "Unable to execute filter");
 

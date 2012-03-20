@@ -93,3 +93,4 @@ char *new_fs (char *, char *, char *);
 int fmt_compile (char *, struct format **);
 char *formataddr(char *, char *);
 char *concataddr(char *, char *);
+extern char *format_string;

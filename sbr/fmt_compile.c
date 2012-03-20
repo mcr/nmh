@@ -246,7 +246,7 @@ static struct ftable functable[] = {
 #define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = (str); } while (0)
 #define PUTC(c)			do { NEW(FT_CHAR,0,0); fp->f_char = (c); } while (0)
 
-static char *format_string;
+char *format_string;
 static unsigned char *usr_fstring;	/* for CERROR */
 
 #define CERROR(str) compile_error (str, cp)
