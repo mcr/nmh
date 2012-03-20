@@ -189,7 +189,10 @@ run_test "inc -file ${MH_TEST_DIR}/test.mbox -width 120 -truncate" \
 
   11+ 03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And why not, the man's entitled to it. Cos"
 
-check "${MH_TEST_DIR}/test.mbox.2" "$(mhpath +inbox 11)"
+check "$(mhpath +inbox 11)" "${MH_TEST_DIR}/test.mbox.2" "keep first"
 rm -f "${MH_TEST_DIR}/test.mbox" "${MH_TEST_DIR}/test.mbox.2"
+
+run_test "scan -width 120 +inbox 11" \
+	"  11+ 03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And why not, the man's entitled to it. Cos"
 
 exit ${failed:-0}
