@@ -58,7 +58,11 @@ char *scanl = 0;			/* text of most recent scanline    */
  */
 static int mh_fputs(char *, FILE *);
 
+#ifdef MULTIBYTE_SUPPORT
 #define SCAN_CHARWIDTH MB_CUR_MAX
+#else
+#define SCAN_CHARWIDTH 1
+#endif
 
 int
 scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,

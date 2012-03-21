@@ -413,7 +413,14 @@ AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
 dnl ---------------
 dnl CHECK FUNCTIONS
 dnl ---------------
-AC_CHECK_FUNCS([writev lstat nl_langinfo])
+AC_CHECK_FUNCS([wcwidth mbtowc writev lstat nl_langinfo])
+
+dnl Check for multibyte character set support
+if test "x$ac_cv_header_wchar_h" = "xyes" -a "x$ac_cv_header_wctype_h" = "xyes" \
+    -a "x$ac_cv_func_wcwidth" = "xyes" -a "x$ac_cv_func_mbtowc" = "xyes"; then
+  AC_DEFINE(MULTIBYTE_SUPPORT, 1,
+    [Define to enable support for multibyte character sets.])
+fi
 
 dnl -------------------
 dnl CHECK FOR LIBRARIES
