@@ -21,6 +21,9 @@ mhl \- produce formatted listings of nmh messages
 .RB [ \-moreproc
 .IR program ]
 .RB [ \-nomoreproc ]
+.RB [ \-fmtproc
+.IR program ]
+.RB [ \-nofmtproc ]
 .RI [ files
 .IR \&... ]
 .RB [ \-version ]
@@ -254,6 +257,7 @@ format	flag	Run component through formatproc filter
 		(body only)
 noformat	flag	Do not run component through
 		formatproc filter (default)
+formatarg	string	Argument to format filter
 .fi
 .RE
 .PP
@@ -337,6 +341,23 @@ is as follows:
 .RS 5
 body:component=">",overflowtext=">",overflowoffset=0,format,nowrap
 .RE
+.PP
+The
+.B \-fmtproc
+and
+.B \-nofmtproc
+switches can be used to override the
+.I formatproc
+profile entry.
+.PP
+The
+.I formatarg
+option specifies a string that is used as an argument to the format filter.
+This string is processed by 
+.BR mh\-format (5)
+and all of the message components are available for use.  Multiple
+.I formatarg
+options can be used to build up multiple arguments to the format filter.
 .SH FILES
 .fc ^ ~
 .nf
@@ -376,3 +397,6 @@ front\-end.
 .PP
 The \*(lqnonewline\*(rq option interacts badly with \*(lqcompress\*(rq
 and \*(lqsplit\*(rq.
+.PP
+The \*(lqformat\*(rq option really should work on something other than the body
+component.
