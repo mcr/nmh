@@ -156,11 +156,13 @@ static struct mcomp *fmthd = NULL;
 static struct mcomp *fmttl = NULL;
 
 static struct mcomp global = {
-    NULL, NULL, NULL, NULL, NULL, NULL, 0, -1, 80, -1, 40, BELL, NULL
+    NULL, NULL, NULL, NULL, NULL, NULL, 0, -1, 80, -1, 40, BELL, NULL, NULL,
+    0, NULL
 };
 
 static struct mcomp holder = {
-    NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NOCOMPONENT, NULL
+    NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NOCOMPONENT, NULL, NULL,
+    0, NULL
 };
 
 struct pair {
@@ -318,7 +320,8 @@ int
 mhl (int argc, char **argv)
 {
     int length = 0, nomore = 0;
-    int i, width = 0, vecp = 0;
+    unsigned int i, vecp = 0;;
+    int width = 0;
     char *cp, *folder = NULL, *form = NULL;
     char buf[BUFSIZ], *files[MAXARGS];
     char **argp, **arguments;
@@ -1905,7 +1908,7 @@ compileargs (struct mcomp *c1, char *nfs)
 {
     struct format *fmt;
     struct arglist *args;
-    int i;
+    unsigned int i;
 
     i = fmt_compile(nfs, &fmt);
 
@@ -2017,7 +2020,7 @@ static void
 freecomps(void)
 {
     struct comp *c1, *c2;
-    int i;
+    unsigned int i;
 
     for (i = 0; i < sizeof(mhlcomp)/sizeof(mhlcomp[0]); i++) {
     	if ((c1 = mhlcomp[i]))
@@ -2038,7 +2041,7 @@ static void
 freecomptext(void)
 {
     struct comp *c1;
-    int i;
+    unsigned int i;
 
     for (i = 0; i < sizeof(mhlcomp)/sizeof(mhlcomp[0]); i++) {
     	if ((c1 = mhlcomp[i]))

@@ -50,8 +50,8 @@ Things to add to the release notes for the next full release:
   the Sender: header or the new Envelope-From: header.
 - The -attach option is now the default (using Nmh-Attachment) and
   -attachformat 1 is now the default.
-- repl and dist currently create a link to the message being replied
-  or redistributed named ./@.  A switch, -noatfile, has been added to
+- repl and dist currently create a link named ./@ to the message being
+  replied or redistributed.  A switch, -noatfile, has been added to
   disable creation of this link.  The current default behavior can
   also be specified with -atfile.  The current default behavior is
   obsolete/deprecated:  -noatfile will become the default in the next
