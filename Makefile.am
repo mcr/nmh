@@ -230,11 +230,11 @@ uip_burst_SOURCES = uip/burst.c
 
 uip_comp_SOURCES = uip/comp.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c
-uip_comp_LDADD = $(LDADD) $(ICONVLIB)
+uip_comp_LDADD = $(LDADD) $(ICONVLIB) $(READLINELIB)
 
 uip_dist_SOURCES = uip/dist.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c uip/forwsbr.c
-uip_dist_LDADD = $(LDADD) $(ICONVLIB)
+uip_dist_LDADD = $(LDADD) $(ICONVLIB) $(READLINELIB)
 
 uip_flist_SOURCES = uip/flist.c
 
@@ -242,7 +242,7 @@ uip_folder_SOURCES = uip/folder.c
 
 uip_forw_SOURCES = uip/forw.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c uip/forwsbr.c
-uip_forw_LDADD = $(LDADD) $(ICONVLIB)
+uip_forw_LDADD = $(LDADD) $(ICONVLIB) $(READLINELIB)
 
 uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/termsbr.c \
 		  uip/popsbr.c
@@ -302,7 +302,7 @@ uip_refile_SOURCES = uip/refile.c
 
 uip_repl_SOURCES = uip/repl.c uip/replsbr.c uip/whatnowproc.c \
 		   uip/whatnowsbr.c uip/sendsbr.c uip/annosbr.c uip/distsbr.c
-uip_repl_LDADD = $(LDADD) $(ICONVLIB)
+uip_repl_LDADD = $(LDADD) $(ICONVLIB) $(READLINELIB)
 
 uip_rmf_SOURCES = uip/rmf.c
 
@@ -320,6 +320,7 @@ uip_sortm_SOURCES = uip/sortm.c
 
 uip_whatnow_SOURCES = uip/whatnow.c uip/whatnowsbr.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
+uip_whatnow_LDADD = $(LDADD) $(READLINELIB)
 
 uip_whom_SOURCES = uip/whom.c uip/distsbr.c
 
@@ -476,7 +477,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/brkstring.c \
 		      sbr/snprintb.c sbr/ssequal.c sbr/strcasecmp.c \
 		      sbr/strindex.c sbr/trimcpy.c sbr/uprf.c sbr/vfgets.c \
 		      sbr/fmt_def.c sbr/m_msgdef.c sbr/mf.c sbr/utils.c \
-		      sbr/m_mktemp.c config/config.c config/version.c
+		      sbr/m_mktemp.c sbr/getansreadline.c config/config.c \
+		      config/version.c
 
 sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 		-DMAILSPOOL='"$(mailspool)"' \

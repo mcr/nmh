@@ -113,6 +113,8 @@ AS_IF([test x"$with_mts" = x"smtp"], [MTS="smtp"],
       [MTS="smtp"])
 AC_SUBST([MTS])dnl
 
+NMH_READLINE
+
 dnl What should be the default pager?
 AC_ARG_WITH([pager],
   AS_HELP_STRING([--with-pager=PAGER],[specify the default pager]))

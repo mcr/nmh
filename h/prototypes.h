@@ -57,6 +57,9 @@ struct msgs *folder_read (char *);
 struct msgs *folder_realloc (struct msgs *, int, int);
 int gans (char *, struct swit *);
 char **getans (char *, struct swit *);
+#ifdef READLINE_SUPPORT
+char **getans_via_readline (char *, struct swit *);
+#endif /* READLINE_SUPPORT */
 int getanswer (char *);
 char **getarguments (char *, int, char **, int);
 char *get_charset(void);

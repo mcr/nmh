@@ -57,3 +57,5 @@ Things to add to the release notes for the next full release:
   obsolete/deprecated:  -noatfile will become the default in the next
   nmh release.  If there are no requests to maintain -atfile, it will
   be removed in the future.
+- Added support for readline editing and command/filename completion at
+  the WhatNow? prompt

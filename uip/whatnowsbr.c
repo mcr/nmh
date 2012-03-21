@@ -249,7 +249,11 @@ WhatNow (int argc, char **argv)
 
     snprintf (prompt, sizeof(prompt), myprompt, invo_name);
     for (;;) {
+#ifdef READLINE_SUPPORT
+	if (!(argp = getans_via_readline (prompt, aleqs))) {
+#else /* ! READLINE_SUPPORT */
 	if (!(argp = getans (prompt, aleqs))) {
+#endif /* READLINE_SUPPORT */
 	    unlink (LINK);
 	    done (1);
 	}
