@@ -6,7 +6,7 @@ nmh is known to compile on the following platforms (save the
 exceptions noted below), using an ANSI C compiler, such as gcc.
 
 AIX 4.1.5.0.01
-Cygwin, setup version 2.763 (though it does not run correctly, see below)
+Cygwin (setup version 2.763, other versions may be fine)
 FreeBSD
 IRIX 6.5
 Linux 2.2 to current (glibc 2.1 to current)
@@ -45,9 +45,13 @@ Cygwin:
 Be sure to install Cygwin package libncurses-devel, in the Devel or
 Libs category.  And libncurses10 or later in the Lib category.
 
-Which nmh builds on Cygwin, not all of its programs operate.  If
-you're willing to help fix them, please contact the nmh maintainters
-at nmh-workers@nongnu.org.
+You may notice a few (three) compile warnings:  they can be ignored.
+
+If send, post, and whom fail, the cause might be a \ in your username.
+To avoid this, either add a Signature profile entry (see the
+mh-profile(5) man page) or set/export your SIGNATURE environment
+variable.  The value can be just the short form of your username, such
+as that displayed by "id -nu".
 
 --------------------------------------
 HPUX:

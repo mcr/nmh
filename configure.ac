@@ -121,6 +121,15 @@ AC_ARG_WITH([pager],
 
 AS_IF([test -n "$with_pager"], [pagerpath="$with_pager"])
 
+dnl If a pager is not explicitly specified, then look for one.
+dnl Fall back to `cat', to avoid catastrophic failure of
+dnl `mhshow', et al., if pagerpath is set to `no'.
+if test -z "$pagerpath"; then
+  pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
+  AC_PATH_PROGS([pagerpath], [more less most cat], [no], [$pathtmp])
+fi
+AC_SUBST(pagerpath)dnl
+
 dnl What should be the default mail server(s)?
 AC_ARG_WITH(smtpservers,
   AS_HELP_STRING([--with-smtpservers='SMTPSERVER1@<:@ SMTPSERVER2...@:>@'],
@@ -285,17 +294,6 @@ if test "$lspath" != "no"; then
     nmh_cv_ls_grpopt="-lg"
   fi])
 fi
-
-dnl Look for `more'
-pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
-AC_PATH_PROG([morepath], [more], [no], [$pathtmp])
-
-dnl If pager is not specified yet,
-dnl then use `more' as the default.
-if test -z "$pagerpath"; then
-  pagerpath="$morepath"
-fi
-AC_SUBST(pagerpath)dnl
 
 dnl Look for `sendmail'
 pathtmp=/usr/lib:/usr/sbin:/usr/etc:/usr/ucblib:/usr/bin:/bin
