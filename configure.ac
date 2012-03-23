@@ -113,8 +113,6 @@ AS_IF([test x"$with_mts" = x"smtp"], [MTS="smtp"],
       [MTS="smtp"])
 AC_SUBST([MTS])dnl
 
-NMH_READLINE
-
 dnl What should be the default pager?
 AC_ARG_WITH([pager],
   AS_HELP_STRING([--with-pager=PAGER],[specify the default pager]))
@@ -430,6 +428,8 @@ AC_CHECK_FUNC([modf], , AC_CHECK_LIB([m], [modf]))
 
 dnl Checks for network libraries (nsl, socket)
 NMH_CHECK_NETLIBS
+
+NMH_READLINE
 
 termcap_curses_order="termcap curses ncurses"
 for lib in $termcap_curses_order; do
