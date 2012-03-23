@@ -67,7 +67,7 @@ seq_addsel (struct msgs *mp, char *cp, int public, int zero)
      * If sequence is new, or zero flag is set, then first
      * clear the bit for this sequence from all messages.
      */
-    if (new_seq || zero) {
+    if ((new_seq || zero) && mp->nummsg > 0) {
 	for (msgnum = mp->lowmsg; msgnum <= mp->hghmsg; msgnum++)
 	    clear_sequence (mp, i, msgnum);
     }
@@ -159,7 +159,7 @@ seq_addmsg (struct msgs *mp, char *cp, int msgnum, int public, int zero)
      * If sequence is new, or zero flag is set, then first
      * clear the bit for this sequence from all messages.
      */
-    if (new_seq || zero) {
+    if ((new_seq || zero) && mp->nummsg > 0) {
 	for (j = mp->lowmsg; j <= mp->hghmsg; j++)
 	    clear_sequence (mp, i, j);
     }
