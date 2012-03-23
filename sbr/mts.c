@@ -395,15 +395,9 @@ getuserinfo (void)
     else if ((cp = context_find("Signature")))
     	strncpy (fullname, cp, sizeof(fullname));
 
-    if (strchr(fullname, '.')) {		/*  quote any .'s */
-	char tmp[BUFSIZ];
-
-	/* should quote "'s too */
-	snprintf (tmp, sizeof(tmp), "\"%s\"", fullname);
-	strncpy (fullname, tmp, sizeof(fullname));
-    }
-
     fullname[sizeof(fullname) - 1] = '\0';
+
+    escape_display_name(fullname);
 
     localmbox[0] = '\0';
 

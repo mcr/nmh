@@ -369,7 +369,7 @@ uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/mhoutsbr.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
 
 test_getfullname_SOURCES = test/getfullname.c
-test_getfullname_LDADD =
+test_getfullname_LDADD = sbr/libmh.a
 
 test_getfqdn_SOURCES = test/getfqdn.c
 test_getfqdn_LDADD =
@@ -452,7 +452,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/brkstring.c \
 		      sbr/context_replace.c sbr/context_save.c \
 		      sbr/copy.c sbr/copyip.c sbr/cpydata.c \
 		      sbr/cpydgst.c sbr/crawl_folders.c sbr/discard.c \
-		      sbr/done.c sbr/dtime.c \
+		      sbr/done.c sbr/dtime.c sbr/escape_display_name.c \
 		      sbr/error.c  sbr/ext_hook.c sbr/fdcompare.c \
 		      sbr/folder_addmsg.c sbr/folder_delmsgs.c \
 		      sbr/folder_free.c sbr/folder_pack.c \

@@ -47,6 +47,7 @@ void cpydgst (int, int, char *, char *);
 int decode_rfc2047 (char *, char *, size_t);
 void discard (FILE *);
 int default_done (int);
+void escape_display_name (char *);
 int ext_hook(char *, char *, char *);
 int fdcompare (int, int);
 int folder_addmsg (struct msgs **, char *, int, int, int, int, char *);

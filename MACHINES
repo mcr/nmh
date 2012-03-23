@@ -47,12 +47,6 @@ Libs category.  And libncurses10 or later in the Lib category.
 
 You may notice a few (three) compile warnings:  they can be ignored.
 
-If send, post, and whom fail, the cause might be a \ in your username.
-To avoid this, either add a Signature profile entry (see the
-mh-profile(5) man page) or set/export your SIGNATURE environment
-variable.  The value can be just the short form of your username, such
-as that displayed by "id -nu".
-
 --------------------------------------
 HPUX:
 
