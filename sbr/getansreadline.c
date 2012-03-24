@@ -24,9 +24,9 @@ static char **nmh_completion(const char *, int, int);
 static void initialize_readline(void);
 
 static char ansbuf[BUFSIZ];
+#if 0
 static sigjmp_buf sigenv;
 
-#if 0
 /*
  * static prototypes
  */
@@ -175,6 +175,8 @@ initialize_readline(void)
 static char **
 nmh_completion(const char *text, int start, int end)
 {
+    NMH_UNUSED (end);
+
     char **matches;
 
     matches = (char **) NULL;
@@ -197,7 +199,7 @@ nmh_command_generator(const char *text, int state)
 	len = strlen(text);
     }
 
-    while (name = rl_cmds[list_index].sw) {
+    while ((name = rl_cmds[list_index].sw)) {
     	list_index++;
 	strncpy(buf, name, sizeof(buf));
 	buf[sizeof(buf) - 1] = '\0';
