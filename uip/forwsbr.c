@@ -21,6 +21,26 @@
 static char msgbuf[256];
 #define COMPFREE(c) if (c->c_text) free(c->c_text)
 
+/*
+ * A list of components we treat as addresses
+ */
+
+static char *addrcomps[] = {
+    "from",
+    "sender",
+    "reply-to",
+    "to",
+    "cc",
+    "bcc",
+    "resent-from",
+    "resent-sender",
+    "resent-reply-to",
+    "resent-to",
+    "resent-cc",
+    "resent-bcc",
+    NULL
+};
+
 int
 build_form (char *form, char *digest, int *dat, char *from, char *to,
 	    char *cc, char *fcc, char *subject, char *inputfile)
@@ -29,7 +49,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
     int fmtsize, state, char_read = 0;
     unsigned i;
     register char *nfs;
-    char *line, tmpfil[BUFSIZ], name[NAMESZ];
+    char *line, tmpfil[BUFSIZ], name[NAMESZ], **ap;
     FILE *tmp;
     register struct comp *cptr;
     struct format *fmt;
@@ -48,6 +68,16 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 
     /* Compile format string */
     (void) fmt_compile (nfs, &fmt);
+
+    /*
+     * Mark any components tagged as address components
+     */
+
+    for (ap = addrcomps; *ap; ap++) {
+	FINDCOMP (cptr, *ap);
+	if (cptr)
+	    cptr->c_type |= CT_ADDR;
+    }
 
     /*
      * Process our message and save all relevant components
@@ -71,9 +101,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 		    	if (mh_strcasecmp(name, cptr->c_name) == 0) {
 			    char_read += msg_count;
 			    if (! cptr->c_text) {
-				i = strlen(cptr->c_text = strdup(msgbuf)) - 1;
-				if (cptr->c_text[i] == '\n')
-				    cptr->c_text[i] = '\0';
+				cptr->c_text = strdup(msgbuf);
 			    } else {
 				i = strlen(cptr->c_text) - 1;
 				if (cptr->c_text[i] == '\n') {
