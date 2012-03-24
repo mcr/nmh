@@ -14,14 +14,13 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-extern void escape_display_name (char *);
+extern void escape_display_name (char *, size_t);
 
 int
 main(int argc, char *argv[])
 {
 	struct passwd *pwd;
 	char buf[BUFSIZ], *p;
-	char *name = buf;
 
 	if (argc < 2) {
 		pwd = getpwuid(getuid());
@@ -35,7 +34,7 @@ main(int argc, char *argv[])
 		strncpy(buf, pwd->pw_gecos, sizeof(buf));
 		buf[sizeof(buf) - 1] = '\0';
 	} else if (argc == 2) {
-		name = argv[1];
+		strncpy(buf, argv[1], sizeof(buf));
 	} else if (argc > 2) {
 		fprintf (stderr, "usage: %s [name]\n", argv[0]);
 		return 1;
@@ -48,15 +47,15 @@ main(int argc, char *argv[])
 	/*
 	 * Stop at the first comma.
 	 */
-	if ((p = strchr(name, ',')))
+	if ((p = strchr(buf, ',')))
 		*p = '\0';
 
 	/*
 	 * Quote the entire string if it has a special character in it.
 	 */
-	escape_display_name (name);
+	escape_display_name (buf, sizeof(buf));
 
-	printf("%s\n", name);
+	printf("%s\n", buf);
 
 	exit(0);
 }

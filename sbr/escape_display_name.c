@@ -1,62 +1,67 @@
+/*
+ * escape_display_name.c -- Escape a display name, hopefully per RFC 5322.
+ *
+ * This code is Copyright (c) 2012, by the authors of nmh.  See the
+ * COPYRIGHT file in the root directory of the nmh distribution for
+ * complete copyright information.
+ */
+
 #include <sys/types.h>
 #include <h/utils.h>
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 
-/* Escape a display name, hopefully per RFC 5322.
-   The argument is assumed to be a pointer to a character array of
-   one-byte characters with enough space to handle the additional
-   characters. */
+/* Escape a display name, hopefully per RFC 5322.  Assumes one-byte
+   characters.  The char array pointed to by the name argument is
+   modified in place.  Its size is specified by the namesize
+   argument. */
 void
-escape_display_name (char *name) {
+escape_display_name (char *name, size_t namesize) {
     /* Quote and escape name that contains any specials, as necessary. */
     if (strpbrk("\"(),.:;<>@[\\]", name)) {
-        size_t len = strlen(name);
         char *destp, *srcp;
-        size_t destpos, srcpos;
-        /* E.g., 2 characters, "", would require 7, "\"\""\0. */
-	char *tmp = malloc (2*len+3);
+        /* Maximum space requirement would be if each character had
+           to be escaped, plus enclosing double quotes, plus null termintor.
+           E.g., 2 characters, "", would require 7, "\"\""0, where that 0
+           is '\0'. */
+        char *tmp = mh_xmalloc (2*strlen(name) + 3);
 
-        for (destp = tmp, srcp = name, destpos = 0, srcpos = 0;
-             *srcp;
-             ++destp, ++srcp, ++destpos, ++srcpos) {
-            if (srcpos == 0) {
+        for (destp = tmp, srcp = name; *srcp; ++srcp) {
+            if (srcp == name) {
                 /* Insert initial double quote, if needed. */
                 if (*srcp != '"') {
                     *destp++ = '"';
-                    ++destpos;
                 }
             } else {
-                /* Escape embedded, unescaped ". */
-                if (*srcp == '"'  &&  srcpos < len - 1  &&  *(srcp-1) != '\\') {
+                /* Escape embedded, unescaped double quote. */
+                if (*srcp == '"' && *(srcp+1) != '\0' && *(srcp-1) != '\\') {
                     *destp++ = '\\';
-                    ++destpos;
                 }
             }
 
-            *destp = *srcp;
+            *destp++ = *srcp;
 
             /* End of name. */
-            if (srcpos == len - 1) {
+            if (*(srcp+1) == '\0') {
                 /* Insert final double quote, if needed. */
                 if (*srcp != '"') {
-                    *++destp = '"';
-                    ++destpos;
+                    *destp++ = '"';
                 }
 
-                *++destp = '\0';
-                ++destpos;
+                *destp++ = '\0';
             }
         }
 
         if (strcmp (tmp, "\"")) {
-            /* assert (strlen(tmp) + 1 == destpos); */
-            strncpy (name, tmp, destpos);
+            /* assert (strlen(tmp) + 1 == destp - tmp); */
+            size_t len = destp - tmp;
+            strncpy (name, tmp, len <= namesize  ?  len  :  namesize);
         } else {
             /* Handle just " as special case here instead of above. */
-            strcpy (name, "\"\\\"\"");
+            strncpy (name, "\"\\\"\"", namesize);
         }
+
+        name[namesize - 1] = '\0';
 
         free (tmp);
     }

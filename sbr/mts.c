@@ -397,7 +397,7 @@ getuserinfo (void)
 
     fullname[sizeof(fullname) - 1] = '\0';
 
-    escape_display_name(fullname);
+    escape_display_name(fullname, sizeof(fullname));
 
     localmbox[0] = '\0';
 
