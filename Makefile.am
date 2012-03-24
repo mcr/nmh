@@ -63,7 +63,9 @@ TESTS = test/bad-input/test-header \
 	test/post/test-post-multifrom test/post/test-post-envelope \
 	test/post/test-post-group \
 	test/refile/test-refile \
-	test/repl/test-if-str test/scan/test-scan \
+	test/repl/test-if-str test/repl/test-trailing-newline \
+	test/repl/test-multicomp \
+	test/scan/test-scan \
 	test/sequences/test-flist test/sequences/test-mark \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
 	test/whatnow/test-ls test/whom/test-whom \

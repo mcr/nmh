@@ -318,14 +318,20 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	case FT_LS_COMP:
 	case FT_LS_DECODECOMP:
 	    /*
-	     * Trim these components of any newlines
+	     * Trim these components of any newlines.
+	     *
+	     * But don't trim the "body" and "text" components.
 	     */
-	    if (! (fmt->f_comp->c_flags & CF_TRIMMED) &&
-	    	 			fmt->f_comp->c_text) {
-	    	int i = strlen(fmt->f_comp->c_text);
-		if (fmt->f_comp->c_text[i - 1] == '\n')
-		    fmt->f_comp->c_text[i - 1] = '\0';
-		fmt->f_comp->c_flags |= CF_TRIMMED;
+
+	    comp = fmt->f_comp;
+
+	    if (! (comp->c_flags & CF_TRIMMED) && comp->c_text) {
+	    	i = strlen(comp->c_text);
+		if (comp->c_text[i - 1] == '\n' &&
+			strcmp(comp->c_name, "body") != 0 &&
+			strcmp(comp->c_name, "text") != 0)
+		    comp->c_text[i - 1] = '\0';
+		comp->c_flags |= CF_TRIMMED;
 	    }
 	    break;
 	}

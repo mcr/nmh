@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# Test to make sure repl doesn't put trailing spaces at the end of components
+# (like subject)
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+# create test replcomps
+form="$MH_TEST_DIR/$$.replcomps"
+cat > "$form" <<EOF
+From: Nowhere User <nowhere@example.com>
+%(lit)%(formataddr %<{reply-to}%?{from}%>)\
+%<(nonnull)%(void(width))%(putaddr To: )\n%>\
+%<{subject}Subject: Re: %{subject}\n%>\
+--------
+EOF
+
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/Mail/draft"
+
+cat > "$expected" <<EOF
+From: Nowhere User <nowhere@example.com>
+To: Test1 <test1@example.com>
+Subject: Re: Testing message 1
+--------
+Test1 writes:
+> This is message number 1
+EOF
+
+repl -editor true -format -form $form -nowhatnowproc 1 || exit 1
+
+check "$expected" "$actual"
+
+test ${failed:-0} -eq 0  &&  rm "$form"
+
+exit $failed

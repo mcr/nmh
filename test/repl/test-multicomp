@@ -1,0 +1,62 @@
+#!/bin/sh
+#
+# See if we handle multiple components of the same name correctly.
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+# create test replcomps
+form="$MH_TEST_DIR/$$.replcomps"
+cat > "$form" <<EOF
+From: Nowhere User <nowhere@example.com>
+%(lit)%(formataddr %<{reply-to}%?{from}%>)\
+%<(nonnull)%(void(width))%(putaddr To: )\n%>\
+%(lit)%(formataddr{cc})\
+%<(nonnull)%(void(width))%(putaddr cc: )\n%>\
+%<{subject}Subject: Re: %{subject}\n%>\
+--------
+EOF
+
+cat > "${MH_TEST_DIR}/Mail/inbox/11" <<EOF
+From: Test1 <test1@example.com>
+To: Nowhere User <nowhere@example.com>
+cc: Mister User One <mruserone@example.com>
+Subject: This is a subject
+cc: Mister User Two <mrusertwo@example.com>
+Subject: that got continued on another line
+Date: 28 Sep 2006 03:04:05 -0400
+
+This is a new test message
+EOF
+
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/Mail/draft"
+
+cat > "$expected" <<EOF
+From: Nowhere User <nowhere@example.com>
+To: Test1 <test1@example.com>
+cc: Mister User One <mruserone@example.com>,
+    Mister User Two <mrusertwo@example.com>
+Subject: Re: This is a subject that got continued on another line
+--------
+Test1 writes:
+> This is a new test message
+EOF
+
+repl -editor true -cc cc -format -form $form -width 72 -nowhatnowproc 11 \
+						|| exit 1
+
+check "$expected" "$actual"
+
+test ${failed:-0} -eq 0  &&  rm "$form"
+
+exit $failed
