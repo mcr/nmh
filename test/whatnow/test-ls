@@ -28,16 +28,38 @@ actualerr=$MH_TEST_DIR/$$.actualerr
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
-cat > $expected <<EOF
+#
+# Handle different output depending on readline version
+#
+
+set +e
+whatnowtest="$(echo cd | TERM=dumb whatnow -prompt '')"
+set -e
+
+case "${whatnowtest}" in
+    cd) cat > "$expected" <<EOF
+baz
+boz
+ls
+EOF
+    break;;
+    "") cat > "$expected" <<EOF
 baz
 boz
 EOF
+    break;;
+    *) echo "Unknown response to whatnow readline test"
+    echo "Response is: ${whatnowtest}"
+    exit 1
+    break;;
+esac
 
 cat > $expectederr <<EOF
 EOF
 
 # NB use of sort as the order of output of ls is not guaranteed
-echo 'ls' | whatnow -noedit -prompt '' 2> "$actualerr" | sort > "$actual"
+echo 'ls' | TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" | \
+	sort > "$actual"
 
 check "$expectederr" "$actualerr"
 check "$expected" "$actual"

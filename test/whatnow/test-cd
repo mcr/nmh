@@ -27,9 +27,30 @@ actualerr=$MH_TEST_DIR/$$.actualerr
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
-cat > $expected <<EOF
+#
+# Handle different output depending on readline version
+#
+
+set +e
+whatnowtest="$(echo cd | TERM=dumb whatnow -prompt '')"
+set -e
+
+case "${whatnowtest}" in
+    cd) cat > "$expected" <<EOF
+cd ${MH_TEST_DIR}/foo\'s\ bar
+pwd
 $SPDIR
 EOF
+    break;;
+    "") cat > "$expected" <<EOF
+$SPDIR
+EOF
+    break;;
+    *) echo "Unknown response to whatnow readline test"
+    echo "Response is: ${whatnowtest}"
+    exit 1
+    break;;
+esac
 
 cat > $expectederr <<EOF
 EOF
@@ -37,7 +58,7 @@ EOF
 # ||true to ignore whatnow's exit status
 # watch the quoting -- shell and printf and then the shell run inside whatnow
 printf "cd $MH_TEST_DIR/foo\\\\'s\\\\ bar\npwd\n" | \
-  whatnow -noedit -prompt '' 2> "$actualerr" > "$actual" || true
+  TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" > "$actual" || true
 
 check "$expectederr" "$actualerr"
 check "$expected" "$actual"

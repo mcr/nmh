@@ -32,18 +32,44 @@ actual=$MH_TEST_DIR/$$.actual
 rm -f $expected $expectederr $actual $actualerr
 touch $expected $expectederr $actual $actualerr
 
-cat > $expected <<EOF
+#
+# Sigh.  Different readline versions change echoing behavior, so we need
+# to deal.
+#
+
+set +e
+whatnowtest="$(echo cd | TERM=dumb whatnow -prompt '')"
+set -e
+
+case "${whatnowtest}" in
+    cd) cat > "$expected" <<EOF
+attach $testname_quoted
+alist
+$testname
+detach $testname_quoted
+alist
+EOF
+    break;;
+    "") cat > "$expected" <<EOF
 $testname
 EOF
+    break;;
+    *) echo "Unknown response to whatnow readline test"
+    echo "Response is: ${whatnowtest}"
+    exit 1
+    break;;
+esac
 
 # whatnow's exit status is always 1 so that is not a failure
 set +e
 echo "attach $testname_quoted" | \
-  whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
-echo "alist" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+  TERM=dumb whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+echo "alist" | TERM=dumb whatnow -attach foo -noedit -prompt '' \
+				2>> $actualerr >> $actual
 echo "detach $testname_quoted" | \
-  whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
-echo "alist" | whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+  TERM=dumb whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+echo "alist" | TERM=dumb whatnow -attach foo -noedit -prompt '' \
+				2>> $actualerr >> $actual
 set -e
 
 check "$expectederr" "$actualerr"
