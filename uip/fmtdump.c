@@ -470,13 +470,14 @@ c_flagsstr(int t)
 	static char buf[64];
 
 	buf[0] = '\0';
-	if (t & ~(CF_TRUE|CF_PARSED|CF_DATEFAB))
+	if (t & ~(CF_TRUE|CF_PARSED|CF_DATEFAB|CF_TRIMMED))
 		printf(buf, "0x%x ", t);
 	strcat(buf, "<");
 	i = 0;
 	FNORD(CF_TRUE, "TRUE");
 	FNORD(CF_PARSED, "PARSED");
 	FNORD(CF_DATEFAB, "DATEFAB");
+	FNORD(CF_TRIMMED, "TRIMMED");
 	strcat(buf, ">");
 	return(buf);
 }

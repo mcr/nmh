@@ -164,9 +164,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 			if (!mh_strcasecmp(name, cptr->c_name)) {
 			    char_read += msg_count;
 			    if (! cptr->c_text) {
-				i = strlen(cptr->c_text = tmpbuf) - 1;
-				if (tmpbuf[i] == '\n')
-				    tmpbuf[i] = '\0';
+				cptr->c_text = tmpbuf;
 				*--savecomp = cptr;
 				tmpbuf = *nxtbuf++;
 			    } else {

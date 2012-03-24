@@ -39,6 +39,7 @@ struct comp {
 #define	CF_TRUE       (1<<0)	/* usually means component is present */
 #define	CF_PARSED     (1<<1)	/* address/date has been parsed */
 #define	CF_DATEFAB    (1<<2)	/* datefield fabricated */
+#define CF_TRIMMED    (1<<3)	/* Component has been trimmed */
 
 extern int fmt_norm;
 

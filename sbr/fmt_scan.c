@@ -313,6 +313,21 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
 	case FT_PARSEDATE:
 	    fmt->f_comp->c_flags &= ~CF_PARSED;
 	    break;
+	case FT_COMP:
+	case FT_COMPF:
+	case FT_LS_COMP:
+	case FT_LS_DECODECOMP:
+	    /*
+	     * Trim these components of any newlines
+	     */
+	    if (! (fmt->f_comp->c_flags & CF_TRIMMED) &&
+	    	 			fmt->f_comp->c_text) {
+	    	int i = strlen(fmt->f_comp->c_text);
+		if (fmt->f_comp->c_text[i - 1] == '\n')
+		    fmt->f_comp->c_text[i - 1] = '\0';
+		fmt->f_comp->c_flags |= CF_TRIMMED;
+	    }
+	    break;
 	}
 
     fmt = format;
