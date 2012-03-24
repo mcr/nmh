@@ -42,8 +42,8 @@ is disabled. With debugging enabled, it compiles and runs happily.
 --------------------------------------
 Cygwin:
 
-Be sure to install Cygwin package libncurses-devel, in the Devel or
-Libs category.  And libncurses10 or later in the Lib category.
+Be sure to install Cygwin packages libncurses-devel and libncurses10,
+in the Libs category.
 
 You may notice a few (three) compile warnings:  they can be ignored.
 
