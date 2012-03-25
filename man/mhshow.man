@@ -594,7 +594,6 @@ mhbuild(1), mhl(1), mhlist(1), mhstore(1), sendfiles(1)
 .RB ` \-form\ mhl.headers '
 .RB ` \-pause '
 .RB ` \-rcache\ ask '
-.RB ` \-realsize '
 .RB ` \-noserialonly '
 .RB ` \-wcache\ ask '
 .fi
