@@ -240,6 +240,8 @@ static int issue = 0;
 static int exitstat = 0;
 static int mhldebug = 0;
 
+static int filesize = 0;
+
 #define	PITTY	(-1)
 #define	NOTTY	0
 #define	ISTTY	1
@@ -848,6 +850,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
     char *cp = NULL;
     FILE *fp = NULL;
     struct mcomp *c1;
+    struct stat st;
 
     switch (m_setjmp (env)) {
 	case OK: 
@@ -861,6 +864,11 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 	    } else {
 		fname = "(stdin)";
 		fp = stdin;
+	    }
+	    if (fstat(fileno(fp), &st) == 0) {
+	    	filesize = st.st_size;
+	    } else {
+	    	filesize = 0;
 	    }
 	    cp = folder ? concat (folder, ":", fname, NULL) : getcpy (fname);
 	    if (ontty != PITTY)
@@ -1112,7 +1120,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
     c2->c_text = NULL;
     dat[0] = 0;
     dat[1] = 0;
-    dat[2] = 0;
+    dat[2] = filesize;
     dat[3] = sizeof(buffer) - 1;
     dat[4] = 0;
     fmt_compile (c1->c_nfs, &c1->c_fmt);
