@@ -323,7 +323,8 @@ or the local hostname if
 is not configured.  The (\fImyname\fR\^) function will return the value of
 the
 .B SIGNATURE
-environment variable if set, otherwise will return the passwd GECOS field for
+environment variable if set, otherwise will return the passwd GECOS field
+(truncated at the first comma if it contains one) for
 the current user.  The (\fIlocalmbox\fR\^) function will return the complete
 form of the local mailbox, suitable for use in a \*(lqFrom\*(rq header.
 It will return the
