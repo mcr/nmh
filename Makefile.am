@@ -50,7 +50,7 @@ TESTS = test/bad-input/test-header \
 	test/forw/test-forw-digest \
 	test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
-	test/inc/test-inc-scanout \
+	test/inc/test-inc-scanout test/install-mh/test-install-mh \
 	test/manpages/test-manpages test/mhbuild/test-forw \
 	test/mhlist/test-mhlist test/mhparam/test-mhparam \
 	test/mhpath/test-mhpath \
@@ -581,7 +581,8 @@ gcov:
 	   echo For best results with gcov, configure without --enable-debug; \
 	 fi
 	@echo rebuilding with AM_CFLAGS=--coverage . . .
-	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null  &&  make check
+	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null  && \
+          make check AM_CFLAGS=--coverage
 	@for i in `find . -name '*.gcda'`; do \
 	   gcov -p -o `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
 	 done
