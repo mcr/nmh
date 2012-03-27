@@ -190,28 +190,10 @@ indicates that mail for \*(lqeveryone\*(rq should not be sent to them.
 This is useful for handling admin, dummy, and guest logins.
 .RE
 .SS "SMTP support"
-These options are only available if you set
+This option is only available if you set
 .B mts
 to
 .BR smtp .
-.PP
-.BR hostable :
-%etcdir%/hosts
-.RS 5
-The exceptions file for /etc/hosts used by
-.B post
-to try to find
-official names.  The format of this file is quite simple:
-.PP
-.IP 1. 4
-Comments are surrounded by sharp (`#') and newline.
-.IP 2. 4
-Words are surrounded by white space.
-.IP 3. 4
-The first word on the line is the official name of a host.
-.IP 4. 4
-All words following the official names are aliases for that host.
-.RE
 .PP
 .BR servers :
 localhost

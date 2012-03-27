@@ -392,9 +392,8 @@ etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 	rm -f $@
 	$(SED) -e 's,%mts%,$(MTS),' \
 	       -e 's,%mailspool%,$(mailspool),' \
-	       -e 's,%etcdir%,$(sysconfdir),' \
 	       -e 's,%smtpservers%,$(smtpservers),' \
-	       			< $(srcdir)/etc/mts.conf.in > $@
+				< $(srcdir)/etc/mts.conf.in > $@
 
 etc/mhn.defaults: $(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPROG)
 	rm -f $@
@@ -492,7 +491,7 @@ sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 sbr_libdtimep_a_SOURCES = sbr/dtimep.l
 sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) $(DISABLE_UNUSED_MACROS_WARNING)
 
-mts_libmts_a_SOURCES = mts/smtp/hosts.c mts/smtp/smtp.c
+mts_libmts_a_SOURCES = mts/smtp/smtp.c
 
 ##
 ## Our rules for generating man pages (both the rule for man.sed and
@@ -582,7 +581,7 @@ gcov:
 	 fi
 	@echo rebuilding with AM_CFLAGS=--coverage . . .
 	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null  && \
-          make check AM_CFLAGS=--coverage
+	  make check AM_CFLAGS=--coverage
 	@for i in `find . -name '*.gcda'`; do \
 	   gcov -p -o `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
 	 done

@@ -139,7 +139,6 @@ int strncasecmp (const char *s1, const char *s2, size_t n);
  */
 char *LocalName(int);
 char *SystemName(void);
-char *OfficialName(char *);
 
 /*
  * prototypes for some routines in uip

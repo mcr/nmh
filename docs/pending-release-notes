@@ -59,3 +59,4 @@ Things to add to the release notes for the next full release:
   be removed in the future.
 - Added support for readline editing and command/filename completion at
   the WhatNow? prompt
+- The hostable option of mts.conf is no longer needed and has been removed.

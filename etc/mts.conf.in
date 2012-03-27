@@ -1,8 +1,7 @@
 #
 # nmh mail transport interface customization file.
-# 
-# Check the mh-tailor(5) man page for a list of
-# all the available options for this file.
+#
+# Check the mh-tailor(5) man page for descriptions of available options.
 #
 
 # The delivery method to use.  Supported values are `smtp' and `sendmail'.
@@ -10,10 +9,6 @@
 # machine specified below, and speak SMTP directly.
 # When `sendmail', nmh will pipe messages directly to the sendmail program.
 mts: %mts%
-
-# The exceptions file for /etc/hosts used by
-# `post' to try to find official names.
-hostable: %etcdir%/hosts
 
 # Name that nmh considers `local'.  If not set, nmh will
 # query the system for this value (gethostname, etc...).

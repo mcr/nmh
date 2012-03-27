@@ -1151,13 +1151,8 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	    p->pq_error = getcpy (error);
 	} else {
 	    if ((c1->c_flags & FACEDFLT) && c2->c_face == NULL) {
-		char   *h, *o;
-		if ((h = mp->m_host) == NULL)
-		    h = LocalName (0);
-		if ((o = OfficialName (h)))
-		    h = o;
-		c2->c_face = concat ("address ", h, " ", mp->m_mbox,
-				    NULL);
+		char *h = mp->m_host  ?  mp->m_host  :  LocalName (0);
+		c2->c_face = concat ("address ", h, " ", mp->m_mbox, NULL);
 	    }
 	    p->pq_text = getcpy (mp->m_text);
 	    mnfree (mp);
@@ -1569,11 +1564,7 @@ face_format (struct mcomp *c1)
 
     if ((cp = getname (cp))) {
 	if ((mp = getm (cp, NULL, 0, AD_NAME, NULL))) {
-	    char *h, *o;
-	    if ((h = mp->m_host) == NULL)
-		h = LocalName (0);
-	    if ((o = OfficialName (h)))
-		h = o;
+	    char *h = mp->m_host  ?  mp->m_host	 :  LocalName (0);
 	    c1->c_face = concat ("address ", h, " ", mp->m_mbox, NULL);
 	}
 
