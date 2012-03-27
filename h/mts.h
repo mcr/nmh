@@ -49,7 +49,6 @@ void mts_init (char *);
 #define MTS_SENDMAIL 1
 extern int sm_mts;
 
-extern char *hostable;
 extern char *sendmail;
 
 /*

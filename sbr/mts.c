@@ -64,7 +64,6 @@ static char localmbox[BUFSIZ];
  */
 static char *sm_method = "smtp";
 int  sm_mts    = MTS_SMTP;
-char *hostable = nmhetcdir(/hosts);
 char *sendmail = SENDMAILPATH;
 
 /*
@@ -108,7 +107,6 @@ static struct bind binds[] = {
     { "mmdelim1", &mmdlm1 },
     { "mmdelim2", &mmdlm2 },
     { "mts",      &sm_method },
-    { "hostable", &hostable  },
     { "sendmail", &sendmail  },
     { "clientname",  &clientname },
     { "servers", &servers },
