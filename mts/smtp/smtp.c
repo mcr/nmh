@@ -316,7 +316,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	 */
 
 	if (! sslctx) {
-	    SSL_METHOD *method;
+	    const SSL_METHOD *method;
 
 	    SSL_library_init();
 	    SSL_load_error_strings();
@@ -386,7 +386,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	}
 
 	if (sm_debug) {
-	    SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
+	    const SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
 	    printf("SSL negotiation successful: %s(%d) %s\n",
 		   SSL_CIPHER_get_name(cipher),
 		   SSL_CIPHER_get_bits(cipher, NULL),

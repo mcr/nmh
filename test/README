@@ -17,7 +17,7 @@ designed to work with Automake.  To run these tests you can do "make check"
 via the top-level Makefile.  This is also done automatically via
 "make distcheck".
 
-WARNING:  The test suite installs nmh and run the tests on that test
+WARNING:  The test suite installs nmh and runs the tests on that test
 installation.  If you run tests individually, they will not remove
 that test installation or check to see if it remains up to date with
 your nmh workspace.  You can run test/clean after a test to remove the
