@@ -1923,7 +1923,7 @@ compileargs (struct mcomp *c1, char *nfs)
 {
     struct format *fmt;
     struct arglist *args;
-    char *ap;
+    char **ap;
     struct comp *cptr;
     unsigned int i;
 
