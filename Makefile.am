@@ -168,7 +168,7 @@ dist_doc_DATA = COPYRIGHT VERSION docs/COMPLETION-BASH docs/COMPLETION-TCSH \
 		docs/MAIL.FILTERING docs/MAILING-LISTS docs/README-ATTACHMENTS \
 		docs/README-HOOKS docs/README-components docs/README.about \
 		docs/README.SASL docs/README.developers docs/README.manpages \
-		docs/TODO
+		docs/TODO docs/replyfilter
 
 ##
 ## Our man pages

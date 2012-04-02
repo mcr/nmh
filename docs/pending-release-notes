@@ -60,3 +60,5 @@ Things to add to the release notes for the next full release:
 - Added support for readline editing and command/filename completion at
   the WhatNow? prompt
 - The hostable option of mts.conf is no longer needed and has been removed.
+- A sample mhl filter for handling MIME content inside of mhl has been
+  placed in the doc directory as "replyfilter".

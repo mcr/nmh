@@ -1,0 +1,637 @@
+#!/usr/bin/perl
+#
+# replyfilter - A reply filter for nmh
+#
+# The idea behind this program is that it will act as a format filter
+# for nmh.  It will try to extract out all text/plain parts and format
+# them if necessary using a filter program.
+#
+# To use this program, configure nmh in the following way (nmh 1.5 or later):
+#
+# - Put the path to this program in your .mh_profile under formatproc:
+# 
+#   formatproc: replyfilter
+#
+# - Create a mhl reply filter that consists of the following line:
+#
+#   body:nocomponent,format,nowrap,formatarg="%(trim{content-type})%(putstr)",formatarg="%(trim{content-transfer-encoding})%(putstr)",formatarg=">"
+#
+#   To decode this a bit:
+#
+#   body	- Output the "body" component
+#   nocomponent - Don't output a component prefix (normally here we use a
+#		  component prefix of ">" as a quote character, but we're
+#		  going to have replyfilter do that).
+#   nowrap	- Don't wrap lines if they exceed the column width
+#   formatarg   - Arguments to fmtproc.  The first argument is the value of
+#		  the Content-type header; the second is the value of the
+#		  Content-Transfer-Encoding header.  The last "formatarg"
+#		  is used as your quoting prefix.  Replace it with whatever
+#		  you want.
+#
+
+use Mail::Field;
+use MIME::Head;
+use MIME::QuotedPrint;
+use MIME::Base64;
+use Encode;
+
+#
+# The program we use to format "long" text
+#
+
+$filterprogram = 'par';
+
+#
+# Our output character set.  This script assumes a UTF-8 locale, but if you
+# want to run under a different locale the change it here.
+#
+
+$outcharset = 'utf-8';
+
+#
+# Maximum column width (used by the HTML converter and to decide if we need
+# to invoke the filter program
+#
+
+$maxcolwidth = 78;
+
+#
+# Out HTML converter program & arguments
+#
+
+@htmlconv = ('w3m', '-dump', '-cols', $maxcolwidth - 2, '-T', 'text/html',
+	     '-O', $outcharset);
+
+
+die "Usage: $0 Content-type content-transfer-encoding quote-prefix\n"
+				if $#ARGV != 2;
+
+if ($ARGV[0] ne "") {
+	$content_type = Mail::Field->new('Content-Type', $ARGV[0]);
+}
+
+$encoding = $ARGV[1] eq "" ? '7bit' : lc($ARGV[1]);
+$quoteprefix = $ARGV[2];
+
+#
+# Set up our output to be in our character set
+#
+
+binmode(STDOUT, ":encoding($outcharset)");
+
+#
+# The simplest case: if we have a single type of text/plain, send it
+# to our format subroutine.
+#
+
+if ($ARGV[0] eq "" || $content_type->type eq 'text/plain') {
+	process_text(\*STDIN, $encoding, $content_type->charset);
+	exit 0;
+}
+
+#
+# Alright, here's what we need to do.
+#
+# Find any text/plain parts and decode them.  Decode them via base64 or
+# quoted-printable, and feed them to our formatting filter when appropriate.
+# Put markers in the output for other content types.
+#
+
+($type) = (split('/', $content_type->type));
+
+if ($type eq 'multipart') {
+
+	#
+	# For multipart messages we have to do a little extra.
+	# Eat the MIME prologue (everything up until the first boundary)
+	#
+
+	$boundary = $content_type->boundary;
+
+	if ($boundary eq '') {
+		print "No boundary in Content-Type header!\n";
+		eat_part(\*STDIN);
+		exit 1;
+	}
+
+	while (<STDIN>) {
+		last if match_boundary($_, $boundary);
+	}
+
+	if (eof(STDIN)) {
+		print "Unable to find boundary in message\n";
+		exit 1;
+	}
+} else {
+	undef $boundary;
+}
+
+process_part(\*STDIN, $content_type->type, $encoding, $content_type->charset,
+	     $boundary);
+
+if ($boundary) {
+	#
+	# Eat the MIME eplilog
+	#
+	eat_part(\*STDIN);
+}
+
+exit 0;
+
+#
+# Handled encoded text.  I think we can assume if the encoding is q-p
+# or base64 to feed it into a formatting filter.
+#
+
+sub process_text (*$$;$)
+{
+	my ($input, $encoding, $charset, $boundary) = @_;
+	my $text, $filterpid, $prefixpid, $finread, $finwrite;
+	my $foutread, $foutwrite, $decoder, $ret, $filterflag;
+	my @text = ( '' ), $maxline = 0;
+
+	#
+	# In the simple case, just spit out the text prefixed by the
+	# quote character
+	#
+
+	if ($encoding eq '7bit' || $encoding ne '8bit') {
+		while (<$input>) {
+			$ret = match_boundary($_, $boundary);
+			if (defined $ret) {
+				return $ret;
+			}
+			print $quoteprefix, $_;
+		}
+		return 'EOF';
+	} else {
+		$decoder = find_decoder($encoding);
+		if (! defined $decoder) {
+			return 'EOF';
+		}
+	}
+
+	#
+	# Okay, assume that the encoding will make it so that we MIGHT need
+	# to filter it.  Read it in; if it's too long, filter it.
+	#
+
+	while (<$input>) {
+		my $line, $len;
+
+		last if ($ret = match_boundary($_, $boundary));
+
+		$line = decode($charset, &$decoder($_));
+
+		if (substr($text[$#text], -1, 1) eq "\n") {
+			push @text, $line;
+		} else {
+			$text[$#text] .= $line;
+		}
+		if (($len = length($text[$#text])) > $maxline) {
+			$maxline = $len;
+		}
+	}
+
+	if (! defined $ret) {
+		$ret = 'EOF';
+	}
+
+	if ($maxline <= $maxcolwidth) {
+		#
+		# These are short enough; just output it now as-is
+		#
+		print STDOUT @text;
+		return $ret;
+	}
+
+	#
+	# We fork a copy of ourselves to read the output from the filter
+	# program and prefix the quote character.
+	#
+
+	pipe($finread, $finwrite) || die "pipe() failed: $!\n";
+	pipe($foutread, $foutwrite) || die "pipe() (second) failed: $!\n";
+
+	binmode($finread, ":encoding($outcharset)");
+	binmode($finread, ":encoding($outcharset)");
+	binmode($foutread, ":encoding($outcharset)");
+	binmode($foutwrite, ":encoding($outcharset)");
+
+	if ($filterpid = fork) {
+		#
+		# Close the pipes in the parent that we're not using
+		#
+
+		close($finread);
+		close($foutwrite);
+	} elsif (defined $filterpid) {
+		#
+		# Close our ununsed filehandles
+		#
+
+		close($finwrite);
+		close($foutread);
+
+		#
+		# Dup() down the filehandles to standard input and output
+		#
+
+		open(STDIN, "<&", $finread) ||
+					die "dup(filterin) failed: $!\n";
+		open(STDOUT, ">&", $foutwrite) ||
+					die "dup(filterout) failed: $!\n";
+
+		#
+		# Close our copies.
+		#
+
+		close($finread);
+		close($foutwrite);
+
+		#
+		# Exec our filter
+		#
+
+		exec $filterprogram ||
+				die "Unable to exec $filterprogram: $!\n";
+	} else {
+		die "Fork for $filterprogram failed: $!\n";
+	}
+
+	#
+	# Fork our output handler.
+	#
+
+	if ($prefixpid = fork) {
+		#
+		# We don't need these anymore
+		#
+		close($foutread);
+
+	} elsif (defined $prefixpid) {
+		#
+		# Read from foutwrite, and output (with prefix) to stdout
+		#
+
+		close($finwrite);
+
+		while (<$foutread>) {
+			print STDOUT $quoteprefix, $_;
+		}
+
+		exit 0;
+	}
+
+	#
+	# Send our input to the filter program
+	#
+
+	print $finwrite @text;
+
+	close($finwrite);
+	waitpid $filterpid, 0;
+	warn "Filter process exited with ", ($? >> 8), "\n" if $?;
+	waitpid $prefixpid, 0;
+	warn "Pipe reader process exited with ", ($? >> 8), "\n" if $?;
+
+	return $ret;
+}
+
+#
+# Filter HTML through a converter program
+#
+
+sub process_html (*$$;$)
+{
+	my ($input, $encoding, $charset, $boundary) = @_;
+	my $filterpid, $prefixpid, $finread, $finwrite;
+	my $foutread, $foutwrite, $decoder, $ret;
+
+	if (! defined($decoder = find_decoder($encoding))) {
+		return 'EOF';
+	}
+
+	#
+	# We fork a copy of ourselves to read the output from the filter
+	# program and prefix the quote character.
+	#
+
+	pipe($finread, $finwrite) || die "pipe() failed: $!\n";
+	pipe($foutread, $foutwrite) || die "pipe() (second) failed: $!\n";
+
+	binmode($finread, ":encoding($outcharset)");
+	binmode($finread, ":encoding($outcharset)");
+	binmode($foutread, ":encoding($outcharset)");
+	binmode($foutwrite, ":encoding($outcharset)");
+
+	if ($filterpid = fork) {
+		#
+		# Close the pipes in the parent that we're not using
+		#
+
+		close($finread);
+		close($foutwrite);
+	} elsif (defined $filterpid) {
+		#
+		# Close our ununsed filehandles
+		#
+
+		close($finwrite);
+		close($foutread);
+
+		#
+		# Dup() down the filehandles to standard input and output
+		#
+
+		open(STDIN, "<&", $finread) ||
+					die "dup(filterin) failed: $!\n";
+		open(STDOUT, ">&", $foutwrite) ||
+					die "dup(filterout) failed: $!\n";
+
+		#
+		# Close our copies.
+		#
+
+		close($finread);
+		close($foutwrite);
+
+		#
+		# Exec our converter
+		#
+
+		exec (@htmlconv) ||
+				die "Unable to exec $filterprogram: $!\n";
+	} else {
+		die "Fork for $htmlconv[0] failed: $!\n";
+	}
+
+	#
+	# Fork our output handler.
+	#
+
+	if ($prefixpid = fork) {
+		#
+		# We don't need these anymore
+		#
+		close($foutread);
+
+	} elsif (defined $prefixpid) {
+		#
+		# Read from foutwrite, and output (with prefix) to stdout
+		#
+
+		close($finwrite);
+
+		while (<$foutread>) {
+			print STDOUT $quoteprefix, $_;
+		}
+
+		exit 0;
+	}
+
+	#
+	# Send our input to the filter program
+	#
+
+	while (<$input>) {
+		last if ($ret = match_boundary($_, $boundary));
+		print $finwrite (&$decoder($_));
+	}
+
+	if (! defined $ret) {
+		$ret = 'EOF';
+	}
+
+	close($finwrite);
+	waitpid $filterpid, 0;
+	warn "HTML converter process exited with ", scalar($? >> 8), "\n" if $?;
+	waitpid $prefixpid, 0;
+	warn "Pipe reader process exited with ", $? >> 8, "\n" if $?;
+
+	return $ret;
+}
+
+#
+# Decide what to do, based on what kind of content it is.
+#
+
+sub process_part (*$$$$;$)
+{
+	my ($input, $content_type, $encoding, $charset, $boundary, $name) = @_;
+	my ($type, $subtype) = (split('/', $content_type, -1), '');
+
+	if ($type eq 'text') {
+		#
+		# If this is a text part, right now we only deal with
+		# plain and HTML parts.
+		#
+		if ($subtype eq 'plain') {
+			return process_text($input, $encoding, $charset,
+					    $boundary);
+		} elsif ($subtype eq 'html') {
+			return process_html($input, $encoding, $charset,
+					    $boundary);
+		} else {
+			print ">>> $content_type content\n";
+			return eat_part($input, $boundary);
+		}
+	} elsif ($type eq 'multipart') {
+		return process_multipart($input, $subtype, $boundary);
+	} else {
+		#
+		# Other types we're not sure what to do with right now
+		# Just put a marker in there
+		#
+
+		print ">>> $content_type attachment";
+		if (defined $name) {
+			print ", name=$name";
+		}
+		print "\n";
+
+		return eat_part($input, $boundary);
+	}
+}
+
+#
+# Process a multipart message.
+#
+# When called, we should be right after the beginning of the first
+# boundary marker.  So we should be pointed at header lines which describe
+# the content of this part
+#
+
+sub process_multipart ($$$)
+{
+	my ($input, $subtype, $boundary) = @_;
+	my $altout;
+
+	while (1) {
+		my $encoding, $type, $end, $name, $charset;
+
+		#
+		# Use the Mail::Header package to read in any headers
+		# corresponding to this part
+		#
+
+		my $head = Mail::Header->new($input, (MailFrom => 'IGNORE'));
+
+		#
+		# Extract out any Content-Type, Content-Transfer-Encoding, and
+		# Content-Disposition headers
+		#
+
+		my $ctype = Mail::Field->extract('Content-Type', $head);
+		my $cte = Mail::Field->extract('Content-Transfer-Encoding',
+					       $head);
+		my $cdispo = Mail::Field->extract('Content-Disposition', $head);
+
+		if (defined $ctype) {
+			$type = $ctype->type;
+			$charset = $ctype->charset;
+		} else {
+			$type = 'text/plain';
+			$charset = 'us-ascii';
+		}
+
+		$encoding = defined $cte ? $cte->param('_') : '7bit';
+		$name = defined $cdispo ? $cdispo->param('filename') : undef;
+
+                #
+                # Special handling for multipart/alternative; pick
+                # the "first" one we can handle (which is usually
+                # text/plain) and silently eat the rest, but output a
+                # warning if we can't handle anything.
+                #
+
+		if ($altout) {
+			$end = eat_part($input, $boundary);
+		} else {
+			my $subboundary = $boundary;
+			my $maintype = (split('/', $type))[0];
+
+			if ($maintype eq 'multipart') {
+				$subboundary = $ctype->boundary;
+				#
+				# Go until we find our beginning of this
+				# part
+				#
+				my $subend = eat_part($input, $subboundary);
+
+				if ($subend ne 'EOP') {
+					print ">>> WARNING: malformed ",
+						"nested multipart\n";
+					return $subend;
+				}
+			}
+
+			$end = process_part($input, $type, $encoding,
+					    $charset, $subboundary, $name);
+
+			if ($subtype eq 'alternative' && ! defined $altout &&
+			    $type eq 'text/plain') {
+			    	$altout = 1;
+			}
+
+                        #
+                        # Since we changed the semantics of $boundary
+                        # above for nested multiparts, if we are
+                        # handling a nested multipart then find the end
+                        # of our current part
+                        #
+
+			if ($maintype eq 'multipart') {
+				$end = eat_part($input, $boundary);
+			}
+
+		}
+
+		if ($end eq 'EOM' || $end eq 'EOF') {
+			if ($subtype eq 'alternative' && !defined $altout) {
+				print ">>>multipart/alternative: no suitable ",
+					"parts\n";
+			}
+			return $end;
+		}
+	}
+}
+
+#
+# "Eat" a MIME part; consume content until we hit the boundary or EOF
+#
+
+sub eat_part ($$)
+{
+	my ($input, $boundary) = @_;
+	my $ret;
+
+	#
+	# If we weren't given a boundary just eat input until EOF
+	#
+
+	if (! defined $boundary) {
+		while (<$input>) { }
+		return 'EOF';
+	}
+
+	#
+	# Otherwise, consume data until we hit our boundary
+	#
+
+	while (<$input>) {
+		if ($ret = match_boundary($_, $boundary)) {
+			return $ret;
+		}
+	}
+
+	return 'EOF';
+}
+
+#
+# Return the decoder subroutine to use
+#
+
+sub find_decoder ($)
+{
+	my ($encoding) = @_;
+
+	if ($encoding eq '7bit' || $encoding eq '8bit') {
+		return \&null_decoder;
+	} elsif ($encoding eq 'base64') {
+		return \&decode_base64;
+	} elsif ($encoding eq 'quoted-printable') {
+		return \&decode_qp;
+	} else {
+		warn "Unknown encoding: $encoding\n";
+		return undef;
+	}
+}
+
+sub null_decoder ($)
+{
+	my ($input) = @_;
+
+	return $input;
+}
+
+#
+# Match a line against the boundary string
+#
+
+sub match_boundary($$)
+{
+	my ($_, $boundary) = @_;
+
+	if (substr($_, 0, 2) eq '--') {
+		s/[ \t\r\n]+\Z//;
+		if ($_ eq "--$boundary") {
+			return 'EOP';
+		} elsif ($_ eq "--$boundary--") {
+			return 'EOM';
+		}
+	}
+
+	return undef;
+}
