@@ -223,6 +223,22 @@ static struct triple triples[] = {
     { NULL,            0,           0 }
 };
 
+static char *addrcomps[] = {
+    "from",
+    "sender",
+    "reply-to",
+    "to",
+    "cc",
+    "bcc",
+    "resent-from",
+    "resent-sender",
+    "resent-reply-to",
+    "resent-to",
+    "resent-cc",
+    "resent-bcc",
+    NULL
+};
+
 
 static int bellflg   = 0;
 static int clearflg  = 0;
@@ -1907,9 +1923,21 @@ compileargs (struct mcomp *c1, char *nfs)
 {
     struct format *fmt;
     struct arglist *args;
+    char *ap;
+    struct comp *cptr;
     unsigned int i;
 
     i = fmt_compile(nfs, &fmt);
+
+    /*
+     * Search through and mark any components that are address components
+     */
+
+    for (ap = addrcomps; *ap; ap++) {
+	FINDCOMP (cptr, *ap);
+	if (cptr)
+	    cptr->c_type |= CT_ADDR;
+    }
 
     args = (struct arglist *) mh_xmalloc(sizeof(struct arglist));
 
@@ -1971,9 +1999,7 @@ checkcomp(char *name, char *buf)
 	    if (mh_strcasecmp(name, c->c_name) == 0) {
 	    	found++;
 		if (! c->c_text) {
-		    i = strlen(c->c_text = strdup(buf)) - 1;
-		    if (c->c_text[i] == '\n')
-			c->c_text[i] = '\0';
+		    c->c_text = strdup(buf);
 		} else {
 		    i = strlen(cp = c->c_text) - 1;
 		    if (cp[i] == '\n') {
