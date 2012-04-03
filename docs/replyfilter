@@ -68,7 +68,13 @@ die "Usage: $0 Content-type content-transfer-encoding quote-prefix\n"
 				if $#ARGV != 2;
 
 if ($ARGV[0] ne "") {
-	$content_type = Mail::Field->new('Content-Type', $ARGV[0]);
+	my $ctype = Mail::Field->new('Content-Type', $ARGV[0]);
+	$content_type =  $ctype->type;
+	$charset = $ctype->charset;
+	$boundary = $ctype->boundary;
+} else {
+	$content_type = 'text/plain';
+	$charset = 'us-ascii';
 }
 
 $encoding = $ARGV[1] eq "" ? '7bit' : lc($ARGV[1]);
@@ -85,8 +91,8 @@ binmode(STDOUT, ":encoding($outcharset)");
 # to our format subroutine.
 #
 
-if ($ARGV[0] eq "" || $content_type->type eq 'text/plain') {
-	process_text(\*STDIN, $encoding, $content_type->charset);
+if ($content_type eq 'text/plain') {
+	process_text(\*STDIN, $encoding, $charset);
 	exit 0;
 }
 
@@ -98,7 +104,7 @@ if ($ARGV[0] eq "" || $content_type->type eq 'text/plain') {
 # Put markers in the output for other content types.
 #
 
-($type) = (split('/', $content_type->type));
+($type) = (split('/', $content_type));
 
 if ($type eq 'multipart') {
 
@@ -107,9 +113,7 @@ if ($type eq 'multipart') {
 	# Eat the MIME prologue (everything up until the first boundary)
 	#
 
-	$boundary = $content_type->boundary;
-
-	if ($boundary eq '') {
+	if (! defined $boundary || $boundary eq '') {
 		print "No boundary in Content-Type header!\n";
 		eat_part(\*STDIN);
 		exit 1;
@@ -127,8 +131,7 @@ if ($type eq 'multipart') {
 	undef $boundary;
 }
 
-process_part(\*STDIN, $content_type->type, $encoding, $content_type->charset,
-	     $boundary);
+process_part(\*STDIN, $content_type, $encoding, $charset, $boundary);
 
 if ($boundary) {
 	#
