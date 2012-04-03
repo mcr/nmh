@@ -135,7 +135,7 @@ process_part(\*STDIN, $content_type, $encoding, $charset, $boundary);
 
 if ($boundary) {
 	#
-	# Eat the MIME eplilog
+	# Eat the MIME epilog
 	#
 	eat_part(\*STDIN);
 }
@@ -159,7 +159,7 @@ sub process_text (*$$;$)
 	# quote character
 	#
 
-	if ($encoding eq '7bit' || $encoding ne '8bit') {
+	if ($encoding eq '7bit' || $encoding eq '8bit') {
 		while (<$input>) {
 			$ret = match_boundary($_, $boundary);
 			if (defined $ret) {
@@ -218,7 +218,7 @@ sub process_text (*$$;$)
 	pipe($foutread, $foutwrite) || die "pipe() (second) failed: $!\n";
 
 	binmode($finread, ":encoding($outcharset)");
-	binmode($finread, ":encoding($outcharset)");
+	binmode($finwrite, ":encoding($outcharset)");
 	binmode($foutread, ":encoding($outcharset)");
 	binmode($foutwrite, ":encoding($outcharset)");
 
