@@ -168,7 +168,13 @@ dist_doc_DATA = COPYRIGHT VERSION docs/COMPLETION-BASH docs/COMPLETION-TCSH \
 		docs/MAIL.FILTERING docs/MAILING-LISTS docs/README-ATTACHMENTS \
 		docs/README-HOOKS docs/README-components docs/README.about \
 		docs/README.SASL docs/README.developers docs/README.manpages \
-		docs/TODO docs/replyfilter
+		docs/TODO
+
+##
+## Contribs that get installed in docdir/contrib/
+##
+contribdir = $(docdir)/contrib
+dist_contrib_DATA = docs/contrib/nmh.spec docs/contrib/replyfilter
 
 ##
 ## Our man pages
@@ -194,7 +200,7 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 ## Automake using the automatic rules
 ##
 EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
-	     etc/mhn.defaults.sh $(MHNSEARCHPROG) nmh.spec DATE \
+	     etc/mhn.defaults.sh $(MHNSEARCHPROG) DATE \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
 	     man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
@@ -554,7 +560,7 @@ rpm: dist
 	@test -d $(rpmdir)/SPECS || $(MKDIR_P) $(rpmdir)/SPECS
 	@mv -f $(DIST_ARCHIVES) $(rpmdir)/SOURCES
 	@cp -p VERSION $(rpmdir)/SOURCES
-	@cp -p nmh.spec $(rpmdir)/SPECS
+	@cp -p docs/contrib/nmh.spec $(rpmdir)/SPECS
 	@rpmbuild --define '_topdir $(rpmdir)' \
 	  --define '_tmppath %{_topdir}/TMP' \
 	  --define "_sysconfdir $(DESTDIR)$(sysconfdir)" \
