@@ -160,6 +160,11 @@ sub process_text (*$$;$)
 	#
 
 	if ($encoding eq '7bit' || $encoding eq '8bit') {
+		#
+		# Switch the character set to whatever is specified by
+		# the MIME message
+		#
+		binmode($input, ":encoding($charset)");
 		while (<$input>) {
 			$ret = match_boundary($_, $boundary);
 			if (defined $ret) {
@@ -169,6 +174,13 @@ sub process_text (*$$;$)
 		}
 		return 'EOF';
 	} else {
+		#
+		# If we've got some other encoding, the input text is almost
+		# certainly US-ASCII
+		#
+
+		binmode($input, ":encoding(us-ascii)");
+
 		$decoder = find_decoder($encoding);
 		if (! defined $decoder) {
 			return 'EOF';
@@ -180,12 +192,14 @@ sub process_text (*$$;$)
 	# to filter it.  Read it in; if it's too long, filter it.
 	#
 
+	my $chardecode = find_encoding($charset);
+
 	while (<$input>) {
 		my $line, $len;
 
 		last if ($ret = match_boundary($_, $boundary));
 
-		$line = decode($charset, &$decoder($_));
+		$line = $chardecode->decode(&$decoder($_));
 
 		if (substr($text[$#text], -1, 1) eq "\n") {
 			push @text, $line;
