@@ -18,7 +18,8 @@ rmm \- remove messages
 By default,
 .B rmm
 will remove the specified messages by renaming
-the message files with preceding commas.  Such files will then need to
+each of the message files with a site-dependent prefix (usually a
+comma).  Such files will then need to
 be removed in some manner after a certain amount of time.  Many sites
 arrange for
 .B cron

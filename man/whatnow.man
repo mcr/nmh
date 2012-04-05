@@ -249,7 +249,8 @@ usually place the argument to this switch inside quotes.
 If the initial edit fails,
 .B whatnow
 deletes your draft (by renaming
-it with a leading comma); failure of a later edit preserves the draft.
+it with a site-dependent prefix (usually a comma);
+failure of a later edit preserves the draft.
 .PP
 If the
 .I buildmimeproc

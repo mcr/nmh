@@ -240,7 +240,8 @@ is the intended file, whereas
 .B \-draft
 will suppress this question.
 Once the transport system has successfully accepted custody of the
-message, the file will be renamed with a leading comma, which allows
+message, the file will be renamed with a site-dependent prefix
+(usually a comma), which allows
 it to be retrieved until the next draft message is sent.  If there are
 errors in the formatting of the message,
 .B send
