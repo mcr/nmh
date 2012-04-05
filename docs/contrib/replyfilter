@@ -168,6 +168,7 @@ sub process_text (*$$;$)
 		while (<$input>) {
 			$ret = match_boundary($_, $boundary);
 			if (defined $ret) {
+				binmode($input, ':encoding(us-ascii)');
 				return $ret;
 			}
 			print $quoteprefix, $_;
@@ -179,7 +180,7 @@ sub process_text (*$$;$)
 		# certainly US-ASCII
 		#
 
-		binmode($input, ":encoding(us-ascii)");
+		binmode($input, ':encoding(us-ascii)');
 
 		$decoder = find_decoder($encoding);
 		if (! defined $decoder) {
@@ -195,21 +196,27 @@ sub process_text (*$$;$)
 	my $chardecode = find_encoding($charset);
 
 	while (<$input>) {
-		my $line, $len;
+		my @lines, $len;
 
 		last if ($ret = match_boundary($_, $boundary));
 
-		$line = $chardecode->decode(&$decoder($_));
+		@lines = split(/^/, $chardecode->decode(&$decoder($_)));
 
 		if (substr($text[$#text], -1, 1) eq "\n") {
-			push @text, $line;
+			push @text, shift @lines;
 		} else {
-			$text[$#text] .= $line;
+			$text[$#text] .= shift @lines;
 		}
 		if (($len = length($text[$#text])) > $maxline) {
 			$maxline = $len;
 		}
+
+		if ($#lines > -1) {
+			push @text, @lines;
+		}
 	}
+
+	binmode($input, ':encoding(us-ascii)');
 
 	if (! defined $ret) {
 		$ret = 'EOF';
@@ -219,7 +226,9 @@ sub process_text (*$$;$)
 		#
 		# These are short enough; just output it now as-is
 		#
-		print STDOUT @text;
+		foreach my $line (@text) {
+			print STDOUT $quoteprefix, $line;
+		}
 		return $ret;
 	}
 
@@ -640,6 +649,8 @@ sub null_decoder ($)
 sub match_boundary($$)
 {
 	my ($_, $boundary) = @_;
+
+	return if ! defined $boundary;
 
 	if (substr($_, 0, 2) eq '--') {
 		s/[ \t\r\n]+\Z//;
