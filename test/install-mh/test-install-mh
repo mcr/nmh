@@ -56,10 +56,10 @@ else
 fi
 
 # Remove the nmh installation so that install-mh -auto can install.
+# And set HOME to that it installs in the test directory:
+# install-mh -auto does a chdir($HOME).
 rm -rf $MH_TEST_DIR/Mail
-echo "n
-n
-$installpath" | install-mh -auto >/dev/null
+HOME=$MH_TEST_DIR install-mh -auto >/dev/null
 
 if [ -f $MH_TEST_DIR/Mail/context  -a  -f $MH_TEST_DIR/Mail/.mh_profile ]; then
   install-mh -check
