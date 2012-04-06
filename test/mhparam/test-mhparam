@@ -72,6 +72,36 @@ echo 'AliasFile: aliases' >>"$MH_TEST_DIR/Mail/.mh_profile"
 run_test 'mhparam path AliasFile' "path: $MH_TEST_DIR/Mail
 AliasFile: aliases"
 
+# check each component in procs array in uip/mhparam.c
+run_test 'mhparam -nocomponent context' 'context'
+run_test 'mhparam -nocomponent mh-sequences' '.mh_sequences'
+run_test 'mhparam -nocomponent buildmimeproc' "$prefix/bin/mhbuild"
+run_test 'mhparam -nocomponent faceproc' ''
+run_test 'mhparam -nocomponent fileproc' "$MH_INST_DIR$prefix/bin/refile"
+run_test 'mhparam -nocomponent foldprot' '700'
+run_test 'mhparam -nocomponent formatproc' ''
+run_test 'mhparam -nocomponent incproc' "$prefix/bin/inc"
+run_test 'mhparam -nocomponent installproc' "$prefix/lib/install-mh"
+run_test 'mhparam -nocomponent lproc' 'less'
+run_test 'mhparam -nocomponent mailproc' "$prefix/bin/mhmail"
+run_test 'mhparam -nocomponent mhlproc' "$MH_INST_DIR$prefix/lib/mhl"
+run_test 'mhparam -nocomponent moreproc' 'less'
+run_test 'mhparam -nocomponent msgprot' '600'
+run_test 'mhparam -nocomponent mshproc' "$prefix/bin/msh"
+run_test 'mhparam -nocomponent packproc' "$prefix/bin/packf"
+run_test 'mhparam -nocomponent postproc' "$MH_INST_DIR$prefix/lib/post"
+run_test 'mhparam -nocomponent rmmproc' ''
+run_test 'mhparam -nocomponent sendproc' "$prefix/bin/send"
+run_test 'mhparam -nocomponent showmimeproc' "$prefix/bin/mhshow"
+run_test 'mhparam -nocomponent showproc' "$MH_INST_DIR$prefix/lib/mhl"
+run_test 'mhparam -nocomponent version' 'nmh-'`cat $MH_OBJ_DIR/VERSION`
+run_test 'mhparam -nocomponent vmhproc' "$prefix/bin/msh"
+run_test 'mhparam -nocomponent whatnowproc' "$prefix/bin/whatnow"
+run_test 'mhparam -nocomponent whomproc' "$prefix/bin/whom"
+run_test 'mhparam -nocomponent etcdir' "$prefix/etc"
+run_test 'mhparam -nocomponent libdir' "$prefix/lib"
+run_test 'mhparam -nocomponent sbackup' ','
+
 # check -component
 run_test 'mhparam -component Path' "Path: $MH_TEST_DIR/Mail"
 

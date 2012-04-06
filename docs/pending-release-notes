@@ -61,4 +61,5 @@ Things to add to the release notes for the next full release:
   the WhatNow? prompt
 - The hostable option of mts.conf is no longer needed and has been removed.
 - A sample mhl filter for handling MIME content inside of mhl has been
-  placed in the doc directory as "replyfilter".
+  placed as "replyfilter" in the doc contrib directory, which is typically
+  installed as <prefix>/share/doc/nmh/contrib/.
