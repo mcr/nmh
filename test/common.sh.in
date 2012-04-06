@@ -13,7 +13,8 @@ test -z "$auxexecdir"  &&  auxexecdir="@libdir@"
 test -z "$bindir"  &&  bindir="@bindir@"
 test -z "$mandir"  &&  mandir="@mandir@"
 test -z "$sysconfdir"  &&  sysconfdir="@sysconfdir@"
-export MH_TEST_DIR auxexecdir bindir mandir sysconfdir
+test -z "$pagerpath"  &&  pagerpath="@pagerpath@"
+export MH_TEST_DIR auxexecdir bindir mandir sysconfdir pagerpath
 
 test -z "$MH_INST_DIR"  &&  MH_INST_DIR=${MH_TEST_DIR}/inst
 export MH_INST_DIR
