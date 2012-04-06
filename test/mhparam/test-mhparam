@@ -93,7 +93,7 @@ $MH_INST_DIR$auxexecdir/post
 $bindir/send
 $bindir/mhshow
 $MH_INST_DIR$auxexecdir/mhl
-nmh-`cat $MH_OBJ_DIR/VERSION`
+nmh-`cat ${srcdir}/VERSION`
 $bindir/msh
 $bindir/whatnow
 $bindir/whom
