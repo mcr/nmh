@@ -438,7 +438,8 @@ try_it_again:
 	if (!form)
 	    form = digestcomps;
     } else {
-    	form = forwcomps;
+    	if (!form)
+    	    form = forwcomps;
     }
 
     dat[0] = digest ? issue : msgnum;
