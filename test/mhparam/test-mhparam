@@ -99,7 +99,6 @@ $bindir/whatnow
 $bindir/whom
 $sysconfdir
 $auxexecdir
-,
 EOF
 
 mhparam -nocomponent \
@@ -126,15 +125,19 @@ vmhproc \
 whatnowproc \
 whomproc \
 etcdir \
-libdir \
-sbackup >$actual 2>&1
+libdir >$actual 2>&1
 
 check $expected $actual
 
-#### These return status of 1, so let run_test squash that:
-run_test 'mhparam -nocomponent faceproc' ''
-run_test 'mhparam -nocomponent formatproc' ''
-run_test 'mhparam -nocomponent rmmproc' ''
+#### This exits with non-zero status, so let run_test squash that:
+run_test 'mhparam faceproc formatproc rmmproc' ''
+
+#### test sbackup separately because it's only passed as a -D compile option
+if ! mhparam sbackup | grep -F ',
+#' >/dev/null; then
+  echo mhparam sbackup failed
+  failed=`expr ${failed:-0} + 1`
+fi
 
 # check -component
 run_test 'mhparam -component Path' "Path: $MH_TEST_DIR/Mail"
