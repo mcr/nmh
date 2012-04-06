@@ -64,12 +64,12 @@ static char *addrcomps[] = {
  * static prototypes
  */
 static int insert (struct mailname *);
-static void replfilter (FILE *, FILE *, char *);
+static void replfilter (FILE *, FILE *, char *, int);
 
 
 void
 replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
-	int mime, char *form, char *filter, char *fcc)
+	int mime, char *form, char *filter, char *fcc, int fmtproc)
 {
     NMH_UNUSED (msg);
 
@@ -254,7 +254,7 @@ finished:
 	if (ferror (out))
 	    adios (drft, "error writing");
 	
-	replfilter (inb, out, filter);
+	replfilter (inb, out, filter, fmtproc);
     } else if (mime && mp) {
 	    fprintf (out, "#forw [original message] +%s %s\n",
 		     mp->foldpath, m_name (mp->lowsel));
@@ -447,11 +447,12 @@ insert (struct mailname *np)
  */
 
 static void
-replfilter (FILE *in, FILE *out, char *filter)
+replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 {
     int	pid;
     char *mhl;
     char *errstr;
+    char *arglist[7];
 
     if (filter == NULL)
 	return;
@@ -473,7 +474,26 @@ replfilter (FILE *in, FILE *out, char *filter)
 	    dup2 (fileno (out), fileno (stdout));
 	    closefds (3);
 
-	    execlp (mhlproc, mhl, "-form", filter, "-noclear", NULL);
+	    arglist[0] = mhl;
+	    arglist[1] = "-form";
+	    arglist[2] = filter;
+	    arglist[3] = "-noclear";
+
+	    switch (fmtproc) {
+	    case 1:
+		arglist[4] = "-fmtproc";
+		arglist[5] = formatproc;
+		arglist[6] = NULL;
+		break;
+	    case 0:
+	    	arglist[4] = "-nofmtproc";
+		arglist[5] = NULL;
+		break;
+	    default:
+	    	arglist[4] = NULL;
+	    }
+
+	    execvp (mhlproc, arglist);
 	    errstr = strerror(errno);
 	    write(2, "unable to exec ", 15);
 	    write(2, mhlproc, strlen(mhlproc));

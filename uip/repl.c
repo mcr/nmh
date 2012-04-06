@@ -74,6 +74,10 @@ static struct swit switches[] = {
     { "atfile", 0 },
 #define NOATFILESW            30
     { "noatfile", 0 },
+#define FMTPROCSW             31
+    { "fmtproc program", 0 },
+#define NFMTPROCSW            32
+    { "nofmtproc", 0 },
 
     { NULL, 0 }
 };
@@ -139,6 +143,7 @@ main (int argc, char **argv)
     int anot = 0, inplace = 1;
     int nedit = 0, nwhat = 0;
     int atfile = 1;
+    int fmtproc = -1;
     char *cp, *cwd, *dp, *maildir, *file = NULL;
     char *folder = NULL, *msg = NULL, *dfolder = NULL;
     char *dmsg = NULL, *ed = NULL, drft[BUFSIZ], buf[BUFSIZ];
@@ -316,6 +321,15 @@ main (int argc, char **argv)
 		case NOATFILESW:
 		    atfile = 0;
 		    continue;
+
+		case FMTPROCSW:
+		    if (!(formatproc = *argp++) || *formatproc == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    fmtproc = 1;
+		    continue;
+		case NFMTPROCSW:
+		    fmtproc = 0;
+		    continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -431,7 +445,8 @@ try_it_again:
 	    form = etcpath (replcomps);
     }
 
-    replout (in, msg, drft, mp, outputlinelen, mime, form, filter, fcc);
+    replout (in, msg, drft, mp, outputlinelen, mime, form, filter,
+    	     fcc, fmtproc);
     fclose (in);
 
     if (nwhat)

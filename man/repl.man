@@ -41,6 +41,9 @@ all/to/cc/me]
 .RB [ \-nowhatnowproc ]
 .RB [ \-atfile ]
 .RB [ \-noatfile ]
+.RB [ \-fmtproc
+.IR program ]
+.RB [ \-nofmtproc ]
 .RB [ \-build ]
 .RB [ \-file
 .IR msgfile ]
@@ -325,7 +328,13 @@ body:component=\*(lq>\*(rq,\|nowrap,\|format
 .PP
 See the
 .BR mhl(1)
-documentation for more information.
+documentation for more information.  The format program can be changed by
+the
+.B \-fmtproc
+.I program
+and
+.B \-nofmtproc
+switches.
 .PP
 To use the MIME rules for encapsulation, specify the
 .B \-mime
