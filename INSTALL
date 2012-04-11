@@ -2,9 +2,18 @@
 # INSTALL -- installation instructions
 #
 
---------------
-Installing nmh
---------------
+--------------------------------
+Installing nmh, guided by script
+--------------------------------
+For routine installation on popular platforms, the shell script in
+docs/contrib/build_nmh can be used to guide you through configuration.
+It will then build and optionally (with -i) install in the configured
+location.
+
+
+------------------------
+Installing nmh, manually
+------------------------
 Please read all of the following instructions before you begin
 building nmh.
 
@@ -91,9 +100,8 @@ need an ANSI C compiler such as gcc.
        traffic.  See the discussion of the --with-smtpserver configure
        option below.
 
-   If you compile with POP support, but don't want to use it exclusively,
-   you can use the `-host' and `-user' options to `inc' and `msgchk'
-   rather than hardcoding pophost in `mts.conf'.
+   If you don't want to hardcode pophost in `mts.conf', you can use
+   the `-host' and `-user' options to `inc' and `msgchk'.
 
    Check the `mh-tailor' man page for a list of all the available options
    for this file.
@@ -194,12 +202,6 @@ Options for configure
 --enable-debug
      Enable debugging support.
 
---enable-pop
-     Enable client-side support for pop.
-
---enable-apop
-     Enable client-side support for apop (Authenticated POP).
-
 --with-editor=EDITOR  (DEFAULT is vi)
      specify the full path of the default editor to use.  If this
      option is not given, then the configuration process will search
@@ -207,16 +209,6 @@ Options for configure
      specify an interface which is compatible with MH, then use the
      nmh command `prompter'.  If you specify `prompter', then you don't
      need to give the full pathname.
-
---with-hesiod=PREFIX
-     Specify the location of Hesiod.
-
---with-krb4=PREFIX
-     Specify the location of Kerberos V4 for KPOP support. After
-     running configure, you will need to change the POPSERVICE #define in
-     config.h if you want to use KPOP exclusively (rather than being able
-     to switch between KPOP and normal POP3).  See the comments inside
-     config.h for details.
 
 --with-locking=LOCKTYPE    (DEFAULT is dot)
      Specify the locking mechanism when attempting to "inc" or

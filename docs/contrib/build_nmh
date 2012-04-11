@@ -1,0 +1,326 @@
+#! /bin/sh
+#
+# Configures and builds nmh.
+# * This script must be invoked from an nmh source directory.
+# * This script retrieves configuration from the first existing nmh
+#   installation on your $PATH, if any, as well as any $EDITOR/$VISUAL
+#   and $PAGER environment variable settings.
+# * Unless the -y option is provided, this script then interactively
+#   walks you through confirmation of common configuration settings.
+#
+# Typical usage:
+# The first time you invoke this script, use the -i option to install
+# nmh in the specified location.  The script will walk you through the
+# common nmh configuration settings.  The -v option will cause display
+# of brief progress indicators.  Be sure to add the bin directory of
+# the install location to your $PATH, if not already there.
+# Subsequently, invoke this script with the -y option, to use the
+# relevant configuration settings from the installed nmh without
+# confirmation.
+#
+# Option summary:
+#   First time use:
+#     -i to install nmh
+#     -v to display progress
+#   Subsequent uses, assuming installed nmh bin directory is on $PATH:
+#     -y to accept all configuration options without confirmation
+#   Output control:
+#     -l <logfile name>, default 'build_nmh.log'
+#   Advanced/developer use:
+#     -c to run 'make distcheck' instead of 'make check'
+#     -d to build nmh with debug enabled
+#     -s to use 'make superclean': requires recent autoconf and automake,
+#        see docs/README.developers
+#     -r to build rpm
+#
+# On Fedora, at least these rpms must be installed:
+#   gdbm-devel
+#   ncurses-devel
+#   cyrus-sasl-devel, if using sasl
+#   openssl-devel, if using TLS
+#   autoconf and automake, with -s (see docs/README.developers for versions)
+#   rpm-build, with -r
+
+
+####
+#### OS-specific setup.
+####
+which=which
+ldd=ldd
+locking=
+
+os=${OSTYPE:-`uname -s`}
+#### It'd be nice to have configure decide what locking style to use.
+#### In the meantime, select it manually.  To determine what style
+#### locking your system uses by default, try something like this,
+#### assuming that strace is installed:
+####   $ echo test | strace -o /tmp/mail.strace mail -s test $LOGNAME
+#### Then look in /tmp/mail.strace for fcntl, flock, and lockf system
+#### calls and opens of dot files in the mail spool.
+#### These might help but are old:
+####   https://bugzilla.mozilla.org/show_bug.cgi?id=239013#c9
+####   http://www.jwz.org/doc/movemail.html
+case "$os" in
+  aix) locking=fcntl ;;
+  freebsd*) locking=flock ;;
+  linux* ) locking=fcntl ;;
+esac
+
+
+####
+#### Interpret command arguments.
+####
+check=check
+debug=0
+install=0
+logfile=build_nmh.log
+build_rpm=0
+superclean=0
+verbose=0
+yes=0
+usage="usage: $0
+  [-c to run 'make distcheck' instead of 'make check']
+  [-d to build nmh with debug enabled]
+  [-i to install nmh]
+  [-l <logfile name>, default '$logfile']
+  [-r to build rpm]
+  [-s to use 'make superclean': requires recent autoconf and automake]
+  [-v to display progress]
+  [-y to accept all configuration options without confirmation]"
+
+while getopts 'cdil:rsvy?' arg; do
+  case $arg in
+    c  ) check=distcheck ;;
+    d  ) debug=1 ;;
+    i  ) install=1 ;;
+    l  ) logfile=$OPTARG ;;
+    r  ) build_rpm=1 ;;
+    s  ) superclean=1 ;;
+    v  ) verbose=1 ;;
+    y  ) yes=1 ;;
+    '?') echo "$usage"; exit 0 ;;
+  esac
+done
+shift `expr $OPTIND - 1`
+
+#### No command line arguments are supported.
+if [ $# -gt 0 ]; then
+  echo "usage: $0"
+  exit 1
+fi
+
+#### Check to see that we're in a nmh source directory.
+if ! grep 'the authors of nmh' COPYRIGHT >/dev/null; then
+  echo "$0: not in nmh source directory"
+  exit 1
+fi
+
+####
+#### Set up configure options.  Handle options that can have embedded
+#### spaces (currently just smtpservers) specially.
+####
+
+#### dotlocking, the usual default, requires chgrp and chmod of inc.
+installpriv=
+if [ $install -ge 1  -a  `id -u` -ne 0 ]; then
+  if [ "x$locking" = x  -o  "$locking" = dot ]; then
+    echo "$0: "'install requires chgrp and chmod 2755'
+    echo 'so will sudo to install.  Terminate with Ctrl-C if unacceptable.'
+    installpriv=sudo
+  fi
+fi
+
+
+#### Here are the config options that we will try to detect, then
+#### confirm, and finally set.
+config_prefix=/usr/local/nmh
+config_locking="$locking"
+config_mts=smtp
+config_smtpservers=localhost
+config_sasl=n
+config_tls=n
+config_editor=vi
+config_pager=more
+config_debug=n
+
+if mhparam >/dev/null 2>&1; then
+  # Determine config options from installed nmh.
+  mhparam=`which mhparam`
+  mhbin=`dirname "$mhparam"`
+
+  config_prefix=`cd $mhbin/.. && pwd`
+
+  mtsconf=`dirname "$mhbin"`/etc/mts.conf
+  if [ -f "$mtsconf" ]; then
+    mts_entry=`grep '^mts:' $mtsconf`
+    if [ "mts_entry" ]; then
+      mts=`echo $mts_entry | sed -e 's/^mts: *//'`
+      if [ "$mts"  -a  "$mts" != smtp ]; then
+        config_mts="$mts"
+      fi
+    fi
+
+    mtsconfservers=`grep '^servers:' $mtsconf`
+    if [ "$mtsconfservers" ]; then
+      servers=`echo $mtsconfservers | sed -e 's/^servers: *//' -e 's/ /\\\ /g'`
+      [ "$servers" ]  &&  config_smtpservers="$servers"
+    fi
+  fi
+
+  if $ldd $mhbin/inc | grep sasl >/dev/null; then
+    config_sasl=y
+  fi
+
+  if $ldd $mhbin/inc | grep ssl >/dev/null; then
+    config_tls=y
+  fi
+fi
+
+if [ "$EDITOR" ]; then
+  config_editor="$EDITOR"
+elif [ "$VISUAL" ]; then
+  config_editor="$VISUAL"
+fi
+
+[ "$PAGER" ]  &&  config_pager="$PAGER"
+
+[ $debug -ge 1 ]  &&  config_debug=y
+
+if [ $yes -eq 0 ]; then
+  #### Confirm each config setting with user.
+  printf 'Install prefix [%s]: ' $config_prefix
+  read prefix
+  [ "$prefix" ]  &&  config_prefix="$prefix"
+
+  printf 'Locking type (dot|fcntl|flock|lockf) [%s]: ' $config_locking
+  read locking
+  [ "$locking" ]  &&  config_locking="$locking"
+
+  printf 'MTS (smtp|sendmail) [%s]: ' $config_mts
+  read mts
+  [ "$mts" ]  &&  config_mts="$mts"
+
+  if [ ! "$mts"  -o  "$mts" = smtp ]; then
+    printf 'SMTP server(s), space separated [%s]: ' $config_smtpservers
+    read response
+    servers=`echo $response | sed -e 's/ /\\\ /g'`
+    [ "$servers" ]  &&  config_smtpservers="$servers"
+  fi
+
+  printf 'Cyrus SASL support [%s]: ' $config_sasl
+  read response
+  if [ "$response" = y  -o  "$response" = Y ]; then
+    config_sasl=y
+  elif [ "$response" = n  -o  "$response" = N ]; then
+    config_sasl=n
+  fi
+
+  printf 'TLS support [%s]: ' $config_tls
+  read response
+  if [ "$response" = y  -o  "$response" = Y ]; then
+    config_tls=y
+  elif [ "$response" = n  -o  "$response" = N ]; then
+    config_tls=n
+  fi
+
+  printf 'Default editor [%s]: ' $config_editor
+  read editor
+  [ "$editor" ]  &&  config_editor=$editor
+
+  printf 'Pager [%s]: ' $config_pager
+  read pager
+  [ "$pager" ]  &&  config_pager=$pager
+
+  #### Don't confirm debug here:  obey the -d option to this script.
+fi
+
+smtpservers=
+config_opts="--prefix=$config_prefix"
+
+[ "$config_locking" ]  &&  \
+  config_opts="$config_opts --with-locking=$config_locking"
+[ "$config_mts"  -a  "$config_mts" != smtp ]  &&  \
+  config_opts="$config_opts --with-mts=$config_mts"
+[ "$config_smtpservers"  -a  "$config_smtpservers" != localhost ]  &&  \
+  smtpservers="--with-smtpservers=$config_smtpservers"
+[ "$config_sasl" = y ]  &&  \
+  config_opts="$config_opts --with-cyrus-sasl"
+[ "$config_tls" = y ]  &&  \
+  config_opts="$config_opts --with-tls"
+[ "$config_editor" ]  &&  \
+  config_opts="$config_opts --with-editor=$config_editor"
+[ "$config_pager" ]  &&  \
+  config_opts="$config_opts --with-pager=$config_pager"
+[ $config_debug = y ]  &&  \
+  config_opts="$config_opts --enable-debug"
+
+
+####
+#### Clean up, and set up with autoconfig if necessary.
+####
+if [ -f Makefile ]; then
+  [ $verbose -ge 1 ]  &&  echo cleaning . . .
+  if [ $superclean -ge 1 ]; then
+    make superclean >/dev/null
+  else
+    make distclean >/dev/null
+  fi
+fi
+
+/bin/rm -f $logfile
+if [ -f configure  -a  -f Makefile.in ]; then
+  :
+else
+  [ $verbose -ge 1 ]  &&  echo autoconfiguring . . .
+  ./autogen.sh >>$logfile 2>&1
+fi
+
+
+####
+#### Build.
+####
+[ $verbose -ge 1 ]  &&  echo configuring . . .
+echo ./configure $config_opts ${smtpservers:+"$smtpservers"} >>$logfile 2>&1
+./configure $config_opts ${smtpservers:+"$smtpservers"} >>$logfile 2>&1
+status=$?
+
+if [ $status -eq 0 ]; then
+  [ $verbose -ge 1 ]  &&  echo building . . .
+  make >>$logfile 2>&1
+  status=$?
+
+  if [ $status -eq 0 ]; then
+    [ $verbose -ge 1 ]  &&  echo testing . . .
+    checkoutput=`make $check SETGID_MAIL= 2>>$logfile`
+    status=$?
+
+    tests_summary=`echo "$checkoutput" | grep tests`
+    if [ "$tests_summary" ]; then
+      echo '===================' >>$logfile
+      echo $tests_summary >>$logfile
+      echo '===================' >>$logfile
+      [ "$check" = distcheck ]  &&  \
+        echo "$checkoutput" | tail -n 4 >>$logfile
+    fi
+
+    if [ $status -eq 0 ]; then
+      if [ $install -ge 1 ]; then
+        [ $verbose -ge 1 ]  &&  echo installing . . .
+        ($installpriv make install) >/dev/null 2>>$logfile
+        status=$?
+      fi
+
+      if [ $status -eq 0  -a  $build_rpm -ge 1 ]; then
+        [ $verbose -ge 1 ]  &&  echo building rpm . . .
+        make rpm >/dev/null 2>>$logfile
+        status=$?
+      fi
+    fi
+  fi
+fi
+
+grep -E 'Error|warn' $logfile
+[ $status -ne 0 ]  &&  echo build failed!
+[ $status -eq 0  -a  $verbose -ge 1 ]  &&  echo build completed successfully
+
+exit $status
