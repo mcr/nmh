@@ -92,11 +92,6 @@ main (int argc, char **argv)
     char **argp, **arguments, *vec[MAXVEC];
     struct passwd *pw;
 
-#ifdef HESIOD
-    struct hes_postoffice *po;
-    char *tmphost;
-#endif
-
 #ifdef LOCALE
     setlocale(LC_ALL, "");
 #endif
