@@ -29,7 +29,7 @@ test_post ()
 
     send -draft -server 127.0.0.1 -port $localport || exit 1
 
-    wait $!
+    wait ${pid}
 
     #
     # It's hard to calculate the exact Date: header post is going to

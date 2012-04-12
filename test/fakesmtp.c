@@ -49,6 +49,33 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
+	/*
+	 * If there is a pid file already around, kill the previously running
+	 * fakesmtp process.  Hopefully this will reduce the race conditions
+	 * that crop up when running the test suite.
+	 */
+
+	if (stat(PIDFILE, &st) == 0) {
+		long oldpid;
+
+		if (!(pid = fopen(PIDFILE, "r"))) {
+			fprintf(stderr, "Cannot open " PIDFILE
+				" (%s), continuing ...\n", strerror(errno));
+		} else {
+			rc = fscanf(pid, "%ld", &oldpid);
+			fclose(pid);
+
+			if (rc != 1) {
+				fprintf(stderr, "Unable to parse pid in "
+					PIDFILE ", continuing ...\n");
+			} else {
+				kill((pid_t) oldpid, SIGTERM);
+			}
+		}
+
+		unlink(PIDFILE);
+	}
+
 	memset(&hints, 0, sizeof(hints));
 
 	hints.ai_family = PF_INET;
@@ -92,33 +119,9 @@ main(int argc, char *argv[])
 	}
 
 	/*
-	 * Now that our socket & files are set up, do the following things:
-	 *
-	 * - Check for a PID file.  If there is one, kill the old version.
-	 * - Wait 30 seconds for a connection.  If there isn't one, then
-	 *   exit.
+	 * Now that our socket & files are set up, wait 30 seconds for
+	 * a connection.  If there isn't one, then exit.
 	 */
-
-	if (stat(PIDFILE, &st) == 0) {
-		long oldpid;
-
-		if (!(pid = fopen(PIDFILE, "r"))) {
-			fprintf(stderr, "Cannot open " PIDFILE
-				" (%s), continuing ...\n", strerror(errno));
-		} else {
-			rc = fscanf(pid, "%ld", &oldpid);
-			fclose(pid);
-
-			if (rc != 1) {
-				fprintf(stderr, "Unable to parse pid in "
-					PIDFILE ", continuing ...\n");
-			} else {
-				kill((pid_t) oldpid, SIGTERM);
-			}
-		}
-
-		unlink(PIDFILE);
-	}
 
 	if (!(pid = fopen(PIDFILE, "w"))) {
 		fprintf(stderr, "Cannot open " PIDFILE ": %s\n",
