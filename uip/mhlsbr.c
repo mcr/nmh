@@ -13,7 +13,7 @@
 #include <h/fmt_scan.h>
 #include <h/tws.h>
 #include <h/utils.h>
-#include <h/m_setjmp.h>
+#include <setjmp.h>
 #include <signal.h>
 #include <errno.h>
 #include <sys/wait.h>
@@ -868,7 +868,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
     struct mcomp *c1;
     struct stat st;
 
-    switch (m_setjmp (env)) {
+    switch (setjmp (env)) {
 	case OK: 
 	    if (fname) {
 		fp = mhl_action ? (*mhl_action) (fname) : fopen (fname, "r");
@@ -1772,7 +1772,7 @@ mhlsbr (int argc, char **argv, FILE *(*action)())
     char *cp = NULL;
     struct mcomp *c1;
 
-    switch (m_setjmp (mhlenv)) {
+    switch (setjmp (mhlenv)) {
 	case OK: 
 	    cp = invo_name;
 	    sleepsw = 0;	/* XXX */

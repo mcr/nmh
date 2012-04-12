@@ -136,7 +136,7 @@ noinst_LIBRARIES = sbr/libmh.a sbr/libdtimep.a mts/libmts.a
 ## them, but that might change in the future.
 ##
 noinst_HEADERS = h/addrsbr.h h/aliasbr.h h/crawl_folders.h h/dropsbr.h \
-		 h/fmt_compile.h h/fmt_scan.h h/m_setjmp.h h/md5.h h/mf.h \
+		 h/fmt_compile.h h/fmt_scan.h h/md5.h h/mf.h \
 		 h/mh.h h/mhcachesbr.h h/mhparse.h h/mime.h h/msh.h \
 		 h/mts.h h/nmh.h h/picksbr.h h/popsbr.h h/prototypes.h \
 		 h/rcvmail.h h/scansbr.h h/signals.h h/tws.h h/utils.h \
@@ -470,7 +470,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/brkstring.c \
 		      sbr/fmt_rfc2047.c sbr/fmt_scan.c sbr/lock_file.c \
 		      sbr/m_atoi.c sbr/m_backup.c sbr/m_convert.c \
 		      sbr/m_draft.c sbr/m_getfld.c sbr/m_gmprot.c \
-		      sbr/m_maildir.c sbr/m_name.c sbr/m_setjmp.c \
+		      sbr/m_maildir.c sbr/m_name.c \
 		      sbr/makedir.c sbr/mts.c sbr/norm_charmap.c sbr/path.c \
 		      sbr/peekc.c sbr/pidwait.c sbr/pidstatus.c \
 		      sbr/print_help.c sbr/print_sw.c sbr/print_version.c \

@@ -14,7 +14,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
-#include <h/m_setjmp.h>
+#include <setjmp.h>
 #include <h/rcvmail.h>
 #include <h/scansbr.h>
 #include <h/tws.h>
@@ -198,7 +198,7 @@ message_fd (char **vec)
 	return header_fd ();
     } else if (child_id) {
 	/* parent process */
-	if (!m_setjmp (myctx)) {
+	if (!setjmp (myctx)) {
 	    SIGNAL (SIGALRM, alrmser);
 	    bytes = fstat(fileno (stdin), &st) != NOTOK ? (int) st.st_size : 100;
 
@@ -284,7 +284,7 @@ alert (char *tty, int md)
     if (stat (ttyspec, &st) == NOTOK || (st.st_mode & mask) == 0)
 	return;
 
-    if (!m_setjmp (myctx)) {
+    if (!setjmp (myctx)) {
 	SIGNAL (SIGALRM, alrmser);
 	alarm (2);
 	td = open (ttyspec, O_WRONLY);

@@ -9,7 +9,7 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
-#include <h/m_setjmp.h>
+#include <setjmp.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <h/mime.h>
@@ -110,7 +110,7 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, cha
     }
 
     done=armed_done;
-    switch (m_setjmp (env)) {
+    switch (setjmp (env)) {
     case OK: 
 	/*
 	 * If given -push and -unique (which is undocumented), then

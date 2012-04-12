@@ -12,7 +12,7 @@
 #include <h/signals.h>
 #include <h/md5.h>
 #include <errno.h>
-#include <h/m_setjmp.h>
+#include <setjmp.h>
 #include <signal.h>
 #include <h/mts.h>
 #include <h/tws.h>
@@ -535,7 +535,7 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	    SIGNAL_HANDLER istat;
 
 	    istat = SIGNAL (SIGINT, intrser);
-	    if ((intr = m_sigsetjmp (intrenv, 1)) == OK) {
+	    if ((intr = sigsetjmp (intrenv, 1)) == OK) {
 		fflush (stdout);
 		prompt[0] = 0;
 		read (fileno (stdout), prompt, sizeof(prompt));

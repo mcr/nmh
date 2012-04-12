@@ -45,7 +45,7 @@ Cygwin:
 Be sure to install Cygwin packages libncurses-devel and libncurses10,
 in the Libs category.
 
-You may notice a few (three) compile warnings:  they can be ignored.
+The few minor compile warnings can be ignored.
 
 --------------------------------------
 HPUX:
