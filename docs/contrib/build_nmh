@@ -47,7 +47,7 @@
 ####
 which=which
 ldd=ldd
-locking=
+locking=dot
 
 os=${OSTYPE:-`uname -s`}
 #### It'd be nice to have configure decide what locking style to use.
@@ -122,7 +122,7 @@ fi
 
 #### dotlocking, the usual default, requires chgrp and chmod of inc.
 installpriv=
-if [ $install -ge 1  -a  `id -u` -ne 0 ]; then
+if [ $install -ge 1  -a  `id -u` -ne 0  -a  "$OSTYPE" != cygwin ]; then
   if [ "x$locking" = x  -o  "$locking" = dot ]; then
     echo "$0: "'install requires chgrp and chmod 2755'
     echo 'so will sudo to install.  Terminate with Ctrl-C if unacceptable.'
@@ -140,10 +140,15 @@ config_smtpservers=localhost
 config_sasl=n
 config_tls=n
 config_editor=vi
-config_pager=more
+for i in more less most cat; do
+  if which $i >/dev/null 2>&1; then
+    config_pager=$i
+    break
+  fi
+done
 config_debug=n
 
-if mhparam >/dev/null 2>&1; then
+if install-mh -check >/dev/null 2>&1; then
   # Determine config options from installed nmh.
   mhparam=`which mhparam`
   mhbin=`dirname "$mhparam"`
