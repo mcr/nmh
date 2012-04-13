@@ -321,7 +321,7 @@ sub process_text (*$$;$)
 	# Send our input to the filter program
 	#
 
-	if (defined %filterreplace) {
+	if (%filterreplace) {
 		foreach my $match (keys %filterreplace) {
 			 $text =~ s/$match/$filterreplace{$match}/g;
 		}
