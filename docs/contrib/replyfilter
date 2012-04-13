@@ -37,10 +37,21 @@ use MIME::Base64;
 use Encode;
 
 #
-# The program we use to format "long" text
+# The program we use to format "long" text.  Should be capable of reading
+# from standard input and sending the formatted text to standard output.
 #
 
 $filterprogram = 'par';
+
+#
+# If the above filter program has problems with some input, use the following
+# regular expression to remove any problematic input.  In this example we
+# filter out the UTF-8 non-breaking space (U+00A0) because that makes par
+# mangle the output.  Uncomment this if this ends up being a problem for
+# you, or feel free to add others.
+#
+
+#%filterreplace = ( "\N{U+a0}" => " " );
 
 #
 # Our output character set.  This script assumes a UTF-8 locale, but if you
@@ -152,7 +163,7 @@ sub process_text (*$$;$)
 	my ($input, $encoding, $charset, $boundary) = @_;
 	my $text, $filterpid, $prefixpid, $finread, $finwrite;
 	my $foutread, $foutwrite, $decoder, $ret, $filterflag;
-	my @text = ( '' ), $maxline = 0;
+	my $text, $maxline = 0;
 
 	#
 	# In the simple case, just spit out the text prefixed by the
@@ -190,7 +201,7 @@ sub process_text (*$$;$)
 
 	#
 	# Okay, assume that the encoding will make it so that we MIGHT need
-	# to filter it.  Read it in; if it's too long, filter it.
+	# to filter it.  Read it in; if the lines are too long, filter it
 	#
 
 	my $chardecode = find_encoding($charset);
@@ -200,23 +211,19 @@ sub process_text (*$$;$)
 
 		last if ($ret = match_boundary($_, $boundary));
 
-		@lines = split(/^/, $chardecode->decode(&$decoder($_)));
+		$text .= $_;
 
-		if (substr($text[$#text], -1, 1) eq "\n") {
-			push @text, shift @lines;
-		} else {
-			$text[$#text] .= shift @lines;
-		}
-		if (($len = length($text[$#text])) > $maxline) {
-			$maxline = $len;
-		}
-
-		if ($#lines > -1) {
-			push @text, @lines;
-		}
 	}
 
 	binmode($input, ':encoding(us-ascii)');
+
+	$text = $chardecode->decode(&$decoder($text));
+
+	grep {
+		my $len;
+		if (($len = length) > $maxline) {
+			$maxline = $len;
+		}} split(/^/, $text);
 
 	if (! defined $ret) {
 		$ret = 'EOF';
@@ -226,7 +233,7 @@ sub process_text (*$$;$)
 		#
 		# These are short enough; just output it now as-is
 		#
-		foreach my $line (@text) {
+		foreach my $line (split(/^/, $text)) {
 			print STDOUT $quoteprefix, $line;
 		}
 		return $ret;
@@ -314,7 +321,13 @@ sub process_text (*$$;$)
 	# Send our input to the filter program
 	#
 
-	print $finwrite @text;
+	if (defined %filterreplace) {
+		foreach my $match (keys %filterreplace) {
+			 $text =~ s/$match/$filterreplace{$match}/g;
+		}
+	}
+
+	print $finwrite $text;
 
 	close($finwrite);
 	waitpid $filterpid, 0;
