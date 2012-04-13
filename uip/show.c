@@ -40,9 +40,13 @@ static struct swit switches[] = {
     { "draft", 0 },
 #define	FILESW              13
     { "file file", -4 },		/* interface from showfile */
-#define VERSIONSW           14
+#define FMTPROCSW           14
+    { "fmtproc program", 0 },
+#define NFMTPROCSW          15
+    { "nofmtproc", 0 },
+#define VERSIONSW           16
     { "version", 0 },
-#define	HELPSW              15
+#define	HELPSW              17
     { "help", 0 },
     { NULL, 0 }
 };
@@ -92,6 +96,7 @@ main (int argc, char **argv)
 		    done (1);
 		case UNKWNSW: 
 		case NPROGSW:
+		case NFMTPROCSW:
 		    vec[vecp++] = --cp;
 		    continue;
 
@@ -142,6 +147,7 @@ usage:
 		case PROGSW:
 		case LENSW:
 		case WIDTHSW:
+		case FMTPROCSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
