@@ -495,7 +495,9 @@ sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 		-DDEFAULT_PAGER='"$(pagerpath)"'
 
 sbr_libdtimep_a_SOURCES = sbr/dtimep.l
-sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) $(DISABLE_UNUSED_MACROS_WARNING)
+sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) \
+			 $(DISABLE_UNUSED_MACROS_WARNING) \
+			 $(DISABLE_SIGN_COMPARE_WARNING)
 
 mts_libmts_a_SOURCES = mts/smtp/smtp.c
 

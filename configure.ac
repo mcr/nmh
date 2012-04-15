@@ -168,6 +168,19 @@ if test "$nmh_cv_has_unusedmacros" = 'yes'; then
 fi
 AC_SUBST(DISABLE_UNUSED_MACROS_WARNING)dnl
 
+AC_CACHE_CHECK([whether compiler supports -Wno-sign-compare],
+  [nmh_cv_has_nosigncompare],
+  [nmh_saved_cppflags="$CPPFLAGS"
+   CPPFLAGS="$CPPFLAGS -Wno-sign-compare"
+   AC_TRY_COMPILE([],[],nmh_cv_has_nosigncompare=yes,
+                  nmh_cv_has_nosigncompare=no)
+   CPPFLAGS="$nmh_saved_cppflags"])
+
+if test "$nmh_cv_has_nosigncompare" = 'yes'; then
+  DISABLE_SIGN_COMPARE_WARNING=-Wno-sign-compare
+fi
+AC_SUBST(DISABLE_SIGN_COMPARE_WARNING)dnl
+
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
  CFLAGS="$CFLAGS -Wextra -Wno-clobbered"
