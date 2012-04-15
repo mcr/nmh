@@ -188,6 +188,11 @@ static int (*eom_action)(int) = NULL;
 # define _cnt    _r		/* Retch */
 # define _filbuf __srget	/* Puke  */
 # define DEFINED__FILBUF_TO_SOMETHING_SPECIFIC
+
+# if defined __CYGWIN__
+  /* Cygwin's stdio.h does not declare __srget(). */
+  int __srget(FILE *);
+# endif /* __CYGWIN__ */
 #endif
 
 #ifndef DEFINED__FILBUF_TO_SOMETHING_SPECIFIC
