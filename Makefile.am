@@ -574,7 +574,7 @@ rpm: dist
 ##
 cscope:
 	echo "-I $(srcdir)/h -I $(srcdir)/sbr -I $(srcdir)/uip -I $(srcdir)/mts/smtp" > cscope.files
-	find $(srcdir) \( -name \*.c -o -name \*.l \) -print | grep -v dtimep.c >> cscope.files
+	find $(srcdir) \( -name docs -prune \) -o \( -name \*.c -o -name \*.l \) -print | grep -v dtimep.c >> cscope.files
 .PHONY: cscope
 
 
