@@ -163,6 +163,6 @@ int build_form (char *, char *, int *, char *, char *, char *, char *,
 int sendsbr (char **, int, char *, struct stat *, int, char *, int);
 int SOprintf (char *, ...);
 int what_now (char *, int, int, char *, char *,
-	int, struct msgs *, char *, int, char *);
+	int, struct msgs *, char *, int, char *, int);
 int WhatNow(int, char **);
 int writeBase64aux(FILE *, FILE *);

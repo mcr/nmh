@@ -22,7 +22,7 @@
 
 int
 what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
-          struct msgs *mp, char *text, int inplace, char *cwd)
+          struct msgs *mp, char *text, int inplace, char *cwd, int atfile)
 {
     int found, k, msgnum, vecp;
     int len, buflen;
@@ -60,6 +60,8 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
     }
     snprintf (buffer, sizeof(buffer), "%d", use);
     m_putenv ("mhuse", buffer);
+    snprintf (buffer, sizeof(buffer), "%d", atfile);
+    m_putenv ("mhatfile", buffer);
 
     unputenv ("mhmessages");
     unputenv ("mhannotate");

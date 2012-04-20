@@ -451,8 +451,8 @@ try_it_again:
 
     if (nwhat)
 	done (0);
-    what_now (ed, nedit, NOUSE, drft, atfile ? msg : NULL, 0, mp,
-	    anot ? "Replied" : NULL, inplace, cwd);
+    what_now (ed, nedit, NOUSE, drft, msg, 0, mp, anot ? "Replied" : NULL,
+	    inplace, cwd, atfile);
     done (1);
     return 1;
 }

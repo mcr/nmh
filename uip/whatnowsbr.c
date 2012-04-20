@@ -113,7 +113,7 @@ static char *myprompt = "\nWhat now? ";
  * static prototypes
  */
 static int editfile (char **, char **, char *, int, struct msgs *,
-	char *, char *, int);
+	char *, char *, int, int);
 static int sendfile (char **, char *, int);
 static void sendit (char *, char **, char *, int);
 static int buildfile (char **, char *);
@@ -134,7 +134,7 @@ static int copyf (char *, char *);
 int
 WhatNow (int argc, char **argv)
 {
-    int isdf = 0, nedit = 0, use = 0;
+    int isdf = 0, nedit = 0, use = 0, atfile = 1;
     char *cp, *dfolder = NULL, *dmsg = NULL;
     char *ed = NULL, *drft = NULL, *msgnam = NULL;
     char buf[BUFSIZ], prompt[BUFSIZ];
@@ -235,6 +235,9 @@ WhatNow (int argc, char **argv)
 
     msgnam = (cp = getenv ("mhaltmsg")) && *cp ? getcpy (cp) : NULL;
 
+    if ((cp = getenv ("mhatfile")) && *cp)
+    	atfile = atoi(cp);
+
     if ((cp = getenv ("mhuse")) && *cp)
 	use = atoi (cp);
 
@@ -244,7 +247,8 @@ WhatNow (int argc, char **argv)
     }
 
     /* start editing the draft, unless -noedit was given */
-    if (!nedit && editfile (&ed, NULL, drft, use, NULL, msgnam, NULL, 1) < 0)
+    if (!nedit && editfile (&ed, NULL, drft, use, NULL, msgnam,
+    			    NULL, 1, atfile) < 0)
 	done (1);
 
     snprintf (prompt, sizeof(prompt), myprompt, invo_name);
@@ -275,7 +279,8 @@ WhatNow (int argc, char **argv)
 	    /* Call an editor on the draft file */
 	    if (*++argp)
 		ed = *argp++;
-	    if (editfile (&ed, argp, drft, NOUSE, NULL, msgnam, NULL, 1) == NOTOK)
+	    if (editfile (&ed, argp, drft, NOUSE, NULL, msgnam,
+	    		  NULL, 1, atfile) == NOTOK)
 		done (1);
 	    break;
 
@@ -637,7 +642,7 @@ static char *edsave = NULL;	/* the editor we used previously */
 
 static int
 editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
-	  char *altmsg, char *cwd, int save_editor)
+	  char *altmsg, char *cwd, int save_editor, int atfile)
 {
     int pid, status, vecp;
     char altpath[BUFSIZ], linkpath[BUFSIZ];
@@ -666,7 +671,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    *ed = defaulteditor;
     }
 
-    if (altmsg) {
+    if (altmsg && atfile) {
 	if (mp == NULL || *altmsg == '/' || cwd == NULL)
 	    strncpy (altpath, altmsg, sizeof(altpath));
 	else
@@ -766,7 +771,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	edsave = getcpy (*ed);
 
     *ed = NULL;
-    if (altmsg)
+    if (altmsg && atfile)
 	unlink (linkpath);
 
     return status;
@@ -825,7 +830,7 @@ sendfile (char **arg, char *file, int pushsw)
     if ((cp = context_find ("automhnproc"))
 	    && !getenv ("NOMHNPROC")
 	    && check_draft (file)
-	    && (i = editfile (&cp, NULL, file, NOUSE, NULL, NULL, NULL, 0)))
+	    && (i = editfile (&cp, NULL, file, NOUSE, NULL, NULL, NULL, 0, 0)))
 	return 0;
 
     /*
@@ -904,7 +909,7 @@ buildfile (char **argp, char *file)
 	args[i++] = *argp++;
     args[i] = NULL;
 
-    i = editfile (&ed, args, file, NOUSE, NULL, NULL, NULL, 0);
+    i = editfile (&ed, args, file, NOUSE, NULL, NULL, NULL, 0, 0);
     free (args);
 
     return (i ? NOTOK : OK);

@@ -344,8 +344,8 @@ try_it_again:
 
     if (nwhat)
 	done (0);
-    what_now (ed, nedit, NOUSE, drft, atfile ? msgnam : NULL, 1, mp,
-	anot ? "Resent" : NULL, inplace, cwd);
+    what_now (ed, nedit, NOUSE, drft, msgnam, 1, mp, anot ? "Resent" : NULL,
+	    inplace, cwd, atfile);
     done (1);
     return 1;
 }
