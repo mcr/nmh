@@ -51,20 +51,14 @@ need an ANSI C compiler such as gcc.
 
    ./configure --help
 
-2) Look through the user configuration section at the beginning
-   of the generated include file `config.h'. You may
-   want to customize some #defines for your environment, though
-   that is usually unnecessary.  Note the configure options below
-   control some of the #defines.
+2) make
 
-3) make
-
-4) make check
+3) (Optional) make check
 
    This takes a bit of time, around one minute on a modern machine,
    but is highly recommended.
 
-5) make install
+4) make install
 
    Note that if you have [n]mh files in your install directories with
    the same names as the files being installed, the old ones will get
@@ -75,7 +69,7 @@ need an ANSI C compiler such as gcc.
    make is processing that directory to see if you need to merge
    changes from *.prev files into the new versions.
 
-6) Edit the file `mts.conf' (installed in the nmh `etc' directory)
+5) Edit the file `mts.conf' (installed in the nmh `etc' directory)
    and make any necessary changes for the mail transport interface
    you are using.
 
@@ -106,7 +100,7 @@ need an ANSI C compiler such as gcc.
    Check the `mh-tailor' man page for a list of all the available options
    for this file.
 
-7) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
+6) Edit the file `mhn.defaults' (installed in the nmh `etc' directory).
    This file contains the default profile entries for the nmh command
    `mhn' and is created by the script `mhn.defaults.sh'.  This script
    will search a generic path (essentially your $PATH) for programs to
@@ -127,7 +121,7 @@ need an ANSI C compiler such as gcc.
    "MH & xmh: Email for Users and Programmers", 3rd edition, by Jerry Peek,
    on the Internet at <http://rand-mh.sourceforge.net/book/mh/confmhn.html>.
 
-8) Add an optional global mh.profile, if desired.  This profile should be
+7) Add an optional global mh.profile, if desired.  This profile should be
    placed in the nmh `etc' directory with the name `mh.profile'.  This
    file will be used to construct the initial .mh_profile of a new nmh
    user, but will not be consulted after that.
@@ -225,6 +219,11 @@ Options for configure
      is not world- or user-writeable, and thus a lock file cannot
      be created.
 
+--enable-lockdir=DIR	(DEFAULT is disabled)
+     If dot locking is being used, store all dot-lock files in "DIR".
+     The default is to store them in the directory of the file being
+     locked.
+
 --with-mts=MTS   (DEFAULT is smtp)
      Specify the default mail transport system you want to use.  The two
      acceptable options are "smtp" (which is the default), and
@@ -271,6 +270,20 @@ Options for configure
      there.
 
      See the mh-tailor(5) man page for full documentation of "servers:".
+
+--with-cyrus-sasl	(DEFAULT is without)
+     Enable SASL support for SMTP and POP via the Cyrus SASL library.
+     This is used for the POP AUTH and SMTP AUTH protocols.  This supports
+     a wide variety of security mechanisms, including Kerberos/GSSAPI.
+     Session encryption via SASL is supported for both POP and SMTP
+     (depending on server-side support and the security mechanism in use).
+
+--with-tls		(DEFAULT is without)
+     Enable TLS session encryption support for SMTP via the STARTTLS command.
+
+--with-readline		(DEFAULT is to autodetect)
+     Enable support for readline functionality (command history/editing) at
+     the WhatNow? prompt.
 
 --
 The nmh team
