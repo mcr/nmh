@@ -1,0 +1,140 @@
+#
+# NEWS - Release notes for nmh 1.5
+#
+
+Welcome to nmh, the new version of the classic MH mail handling
+system.  Long-time MH and nmh users should read carefully the NOTABLE
+CHANGES section, as there are some subtle but significant changes
+to the way nmh now behaves.  Otherwise, please see the README and INSTALL
+files for help on getting started with nmh.
+
+------------
+NEW FEATURES
+------------
+
+The following are new features for the 1.5 release of nmh.
+
+- Improved performance for TLS encryption of the SMTP protocol.
+- MH-E and POP support are now always compiled in.
+- The selection of a locking directory for dot-locking files is now
+  controllable via configure.
+- fileproc and mhlproc mh-profile are now obeyed by send, rcvdist,
+  and whatnow.
+- New mh-format instructions have been implemented: %(putlit),
+  %(concataddr), %(myhost), %(myname), %(localmbox).  See mh-format(5)
+  for more details.
+- Nmh's idea of the local mailbox is now configurable via a new profile
+  entry, Local-Mailbox.  See mh-profile(5) for more details.
+- comp, forw, and dist now process all component templates through
+  mh-format(5), and now all support new command line arguments -from,
+  -to, -cc, -fcc, and -subject.
+- burst(1) now supports any valid message delimiter according to RFC 934.
+- post(8) now requires a From: header in all drafts that it processes;
+  see NOTABLE CHANGES below for more details.
+- post(8) can now explicitly control the SMTP envelope address either via
+  the Sender: header or the new Envelope-From: header.
+- The -attach option is now the default for send (using the header
+  Nmh-Attachment) and -attachformat 1 is the default attachment type.
+- repl and dist now support new switches -atfile and -noatfile to control
+  the creation of the ./@ link to the message being replied or
+  redistributed.  The current default is -atfile.
+- Support (if available) for readline editing and filename completion at
+  the WhatNow? prompt.
+- Support for using an external command to filter the body of a message
+  through in mhl.  See mhl(1) for more details, specifically, the
+  "format" keyword, the "formatproc" entry in mh-profile(5), and the
+  -fmtproc switch for mhl and repl.
+- Preliminary support for improved MIME handling when replying to messages!
+  Yes, a long requested feature has a solution.  A perl script
+  called replyfilter is available; it is designed to act as a mhl
+  external filter to process MIME messages in a more logical way.
+  It is available in $(srcdir)/docs/contrib/replyfilter or is
+  typically installed as $(prefix)/share/doc/nmh/contrib/replyfilter.
+  See the comments at the top of replyfilter for usage information;
+  it will likely require some adjustment for your site.  replyfilter
+  requires the MIME-Tools and MailTools perl modules.
+
+----------------------------
+OBSOLETE/DEPRECATED FEATURES
+----------------------------
+
+The following features have either been removed completely or marked
+as officially deprecated for removal in a future release of nmh.
+
+- The creation of the ./@ link to the message being replied or
+  redistributed is deprecated; -noatfile will be the default in the
+  next release.  If there are no requests to maintain -atfile it
+  will be removed in a future release.
+- Old code enabled by the UCI preprocessor definition has been removed.
+- All configuration options that were formerly only adjustable by editing
+  config.h have either been moved into configure or removed completely.
+- Support for the built-in ftp client (used when dealing with external-body
+  message parts in MIME messages) has been removed.
+- The following environment variables are marked as obsolete/deprecated.
+  Support for them will be removed from the next nmh release:
+    MHPOPDEBUG (use -snoop command line switch instead)
+    MM_NOASK (use -nolist and -nopause command line switches instead)
+    NOMHNPROC (use -nocheckmime command line switch instead)
+    FACEPROC (undocumented faceproc feature to be removed)
+- The hostable option of mts.conf is no longer needed and has been removed.
+
+---------------
+NOTABLE CHANGES
+---------------
+
+The largest change is that post(8) now requires a From: header in all drafts
+that it processes.
+
+The impetus for this change has been the evolution of email and client
+systems.  When MH was first developed the norm was to have tightly managed
+clients that were part of the same domain as a user's email address.  This
+is no longer a valid assumption, and the algorithm used by nmh to determine
+the user's local mailbox is no longer a reasonable default.
+
+Unfortunately, the way that nmh uses the user's local mailbox used to happen
+very late in the message process; it was handled by post during message
+submission.  If no From: header exists in the current draft post would
+insert one based on it's idea of the local mailbox, which was frequently
+wrong.
+
+After a long discussion within the nmh development community, it was
+decided that the only reasonable way forward was to move the local mailbox
+handling up a level and place it under more direct control of the end
+user.  post(8) no longer will try to determine the local mailbox name;
+it will take that information from the draft message.  Thus a From: header
+is now required in all drafts.
+
+As part of these changes, all message composition utilities now process
+their component files using mh-format.  All of the default component
+files have been modified to include a From: header in them; this will
+give the user a chance to see nmh's idea of the local mailbox and modify
+it if desired.  The new mh-profile(5) entry Local-Mailbox can be used
+to adjust the local mailbox name if the system default is not appropriate.
+
+So how should end-users adapt to these changes?  Here are some suggestions:
+
+1) If you use the default component files, everything should basically work
+   the same for you.  You should see a From: header in the drafts of your
+   messages.  If the address you see in the From: header is incorrect
+   you can change it via the Local-Mailbox profile entry.  You can also
+   use the -from switch to change it on a per-command basis.
+
+2) If you have custom component files that include a From: header or
+   you perform custom processing on drafts that end up placing a From:
+   header in the draft message, everything should work as before.
+
+3) If you have custom component files that do NOT include a From: header
+   then you will have to adapt then to include a From: header.  You
+   can either simply hard-code the correct From: header or use the
+   default component files as a guide (see mh-format(5) for more
+   details, specifically the %(localmbox) function).
+
+The other significant change is the support for filters in mhl.  Included
+in the distribution is replyfilter, a filter designed for sane processing
+of MIME messages during replies.  Since this isn't as integrated into
+nmh as we would prefer, it's included in the contrib directory as an
+optional component.  Please try it out and give us feedback.
+
+--
+The nmh team
+nmh-workers@nongnu.org
