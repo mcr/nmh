@@ -34,7 +34,7 @@ dnl Do you want to disable use of locale functions
 AH_TEMPLATE([LOCALE],
 [Undefine if you don't want locale features.  By default this is defined.])
 AC_ARG_ENABLE([locale],
-  [AC_HELP_STRING([--disable-locale], [turn off locale features])],
+  [AS_HELP_STRING([--disable-locale], [turn off locale features])],
   [AS_IF([test x$enableval = xyes], [AC_DEFINE(LOCALE)])],
   [AC_DEFINE(LOCALE)])
 
@@ -93,8 +93,8 @@ else
 fi
 
 dnl Should we use a locking directory?
-AC_ARG_ENABLE([lockdir], [
-  AS_HELP_STRING([--enable-lockdir=dir], [Store dot-lock files in "dir"])], [
+AC_ARG_ENABLE([lockdir],
+  [AS_HELP_STRING([--enable-lockdir=dir], [Store dot-lock files in "dir"])], [
   AS_IF([test "x$enableval" = xyes],[
     AC_MSG_ERROR([--enable-lockdir requires an argument])])
   AS_IF([test "x$LOCKTYPE" != xdot],[
