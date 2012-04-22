@@ -625,5 +625,5 @@ upload: dist
 		chmod 664 $(DIST_ARCHIVES).sig; \
 	fi
 	@echo "Uploading to savannah"
-	scp -p $(DIST_ARCHIVES)* $(SAVANNAH_USERNAME)@savannah.gnu.org:/releases/nmh
+	scp -p $(DIST_ARCHIVES)* $(SAVANNAH_USERNAME)@dl.sv.nongnu.org:/releases/nmh
 .PHONY: upload
