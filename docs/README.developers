@@ -185,7 +185,6 @@ here; the convention for release candidates is to use something like
      exmh-users@redhat.com
      exmh-workers@redhat.com
      mh-e-users@lists.sourceforge.net
-     mh-users@ics.uci.edu *or* comp.mail.mh (there is a bidirectional gateway)
 
     If the release fixes significant security holes, also send an announcement
     to bugtraq@securityfocus.com.  The exmh lists require you to be subscribed
