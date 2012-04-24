@@ -110,7 +110,9 @@ if [ $# -gt 0 ]; then
 fi
 
 #### Check to see that we're in a nmh source directory.
-if ! grep 'the authors of nmh' COPYRIGHT >/dev/null; then
+if grep 'the authors of nmh' COPYRIGHT >/dev/null; then
+  :
+else
   echo "$0: not in nmh source directory"
   exit 1
 fi
@@ -205,7 +207,9 @@ if [ $yes -eq 0 ]; then
   read mts
   [ "$mts" ]  &&  config_mts="$mts"
 
-  if [ ! "$mts"  -o  "$mts" = smtp ]; then
+  if [ "$mts"  -o  "$mts" = smtp ]; then
+    :
+  else
     printf 'SMTP server(s), space separated [%s]: ' $config_smtpservers
     read response
     servers=`echo $response | sed -e 's/ /\\\ /g'`
@@ -324,7 +328,8 @@ if [ $status -eq 0 ]; then
   fi
 fi
 
-grep -E 'Error|warn' $logfile
+grep 'Error' $logfile
+grep 'warn' $logfile
 [ $status -ne 0 ]  &&  echo build failed!
 [ $status -eq 0  -a  $verbose -ge 1 ]  &&  echo build completed successfully
 

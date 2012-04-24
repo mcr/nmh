@@ -1,7 +1,7 @@
 #! /bin/sh
 #
-# Generates mh-chart.man from other .man files that have a
-# SYNOPSIS section.
+# Generates mh-chart.man from other .man files that have a SYNOPSIS
+# section.
 
 nmhmandir=`dirname $0`
 
@@ -17,15 +17,17 @@ mh-chart \- Chart of nmh Commands
 EOF
 
 for i in $nmhmandir/*.man; do
-  if ! echo $i | grep 'mh-chart.man' >/dev/null; then
-    if grep '^\.ad' "$i" >/dev/null; then
-      #### Extract lines from just after .SH SYNOPSIS to just before .ad.
-      #### Filter out the "typical usage:" section in pick.man.
-      awk '/.SH SYNOPSIS/,/^(\.ad|typical usage:)/' "$i" | \
-        grep -Ev '^(\.SH SYNOPSIS|\.na|\.ad|typical usage:)'
-      echo
-    fi
-  fi
+  case $i in
+    */mh-chart.man) ;;
+    *) if grep '^\.ad' "$i" >/dev/null; then
+         #### Extract lines from just after .SH SYNOPSIS to just before .ad.
+         #### Filter out the "typical usage:" section in pick.man.
+         awk '/.SH SYNOPSIS/,/^(\.ad|typical usage:)/ {
+                if ($0 !~ /^(\.SH SYNOPSIS|\.na|\.ad|typical usage:)/) print
+              }' "$i"
+         echo
+       fi ;;
+  esac
 done
 
 cat <<'EOF'
