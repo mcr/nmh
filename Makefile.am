@@ -174,7 +174,8 @@ dist_doc_DATA = COPYRIGHT VERSION docs/COMPLETION-BASH docs/COMPLETION-TCSH \
 ## Contribs that get installed in docdir/contrib/
 ##
 contribdir = $(docdir)/contrib
-dist_contrib_DATA = docs/contrib/nmh.spec docs/contrib/replyfilter
+dist_contrib_DATA = docs/contrib/nmh.spec docs/contrib/replyfilter \
+                    docs/contrib/build_nmh
 
 ##
 ## Our man pages
