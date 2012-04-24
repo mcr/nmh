@@ -22,6 +22,15 @@ family of programs.  Each entry in the file is of the format
 .PP
 If the text of profile entry is long, you may extend it across several
 real lines by indenting the continuation lines with leading spaces or tabs.
+Comments may be introduced by a line starting with `#:':
+.PP
+.RS 5
+.IR # ": "
+This is a comment.
+.RE
+.PP
+Blank lines are not permitted in
+.IR \&.mh\(ruprofile.
 
 .SS "Standard Profile Entries"
 The possible profile components are exemplified below.  The only mandatory
