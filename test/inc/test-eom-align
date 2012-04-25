@@ -38,7 +38,7 @@ FILLER="$THISDIR/filler.txt"
 FROMLINE="$THISDIR/fromline.txt"
 HDR="$THISDIR/msgheader.txt"
 
-if grep -q From "$FILLER"; then
+if grep From "$FILLER" >/dev/null; then
    echo "Somebody's messed with $FILLER -- it must not contain"
    echo "anything that might look like a message delimiter!"
    exit 1
@@ -51,8 +51,8 @@ fi
 # bigger as well.
 STDIO_BUFSZ=16384
 
-FROMLINESZ=`wc -c "$FROMLINE" | cut -d ' ' -f 1`
-HDRSZ=`wc -c "$HDR" | cut -d ' ' -f 1`
+FROMLINESZ=`wc -c < "$FROMLINE"`
+HDRSZ=`wc -c < "$HDR"`
 
 # makembox_A mboxname sz
 # Assemble a mailbox into file mboxname, with two messages, such

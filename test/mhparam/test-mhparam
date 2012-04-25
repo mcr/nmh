@@ -136,8 +136,7 @@ check $expected $actual
 run_test 'mhparam faceproc formatproc rmmproc' ''
 
 #### test sbackup separately because it's only passed as a -D compile option
-if mhparam sbackup | grep -F ',
-#' >/dev/null; then
+if mhparam sbackup | grep ',' >/dev/null; then
   :
 else
   echo mhparam sbackup failed

@@ -16,7 +16,7 @@ require_prog valgrind
 THISDIR="$srcdir/test/inc"
 TESTMBOX="$THISDIR/deb359167.mbox"
 
-if [ `output_md5 "$TESTMBOX"` != "e6ac458b8cccba2b2fd866fb505aeb5e" ]; then
+if [ "`output_md5 "$TESTMBOX"`" != "e6ac458b8cccba2b2fd866fb505aeb5e" ]; then
     echo "Test mailbox has been corrupted"
     exit 1
 fi

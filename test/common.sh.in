@@ -19,6 +19,7 @@ export MH_TEST_DIR auxexecdir bindir mandir sysconfdir pagerpath
 test -z "$MH_INST_DIR"  &&  MH_INST_DIR=${MH_TEST_DIR}/inst
 export MH_INST_DIR
 
+unset MHCONTEXT
 
 output_md5()
 {
@@ -68,7 +69,7 @@ findprog()
 
 require_prog ()
 {
-  if [ -z `findprog $1` ]; then
+  if [ -z "`findprog $1`" ]; then
     test_skip "missing $1"
   fi
 }
@@ -133,7 +134,7 @@ setup_test ()
   MHMTSCONF=${MH_INST_DIR}${sysconfdir}/mts.conf
   PATH=${MH_INST_DIR}${bindir}:${PATH}
   MH_LIB_DIR=${MH_INST_DIR}${auxexecdir}
-  export MH MHMTSCONF MH_LIB_DIR
+  export MH MHMTSCONF MH_LIB_DIR PATH
 
   #
   # Only install once
@@ -145,7 +146,7 @@ setup_test ()
   fi
 
   # clean old test data
-  trap "rm -rf $MH_TEST_DIR/Mail; exit \$status" 0
+  trap "rm -rf $MH_TEST_DIR/Mail" 0
   # setup test data
   mkdir $MH_TEST_DIR/Mail || exit 1
   cat > $MH <<EOF || exit 1
