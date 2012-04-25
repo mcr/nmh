@@ -424,7 +424,7 @@ AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
 dnl ---------------
 dnl CHECK FUNCTIONS
 dnl ---------------
-AC_CHECK_FUNCS([wcwidth mbtowc writev lstat nl_langinfo])
+AC_CHECK_FUNCS([wcwidth mbtowc writev lstat nl_langinfo getutxent])
 
 dnl Check for multibyte character set support
 if test "x$ac_cv_header_wchar_h" = "xyes" -a "x$ac_cv_header_wctype_h" = "xyes" \

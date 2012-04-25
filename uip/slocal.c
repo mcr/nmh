@@ -51,7 +51,9 @@
 #include NDBM_HEADER
 #endif
 
+#ifdef HAVE_GETUTXENT
 #include <utmpx.h>
+#endif /* HAVE_GETUTXENT */
 
 static struct swit switches[] = {
 #define	ADDRSW         0
@@ -930,6 +932,7 @@ lookup (struct pair *pairs, char *key)
 static int
 logged_in (void)
 {
+#if HAVE_GETUTXENT
     struct utmpx *utp;
 
     if (utmped)
@@ -948,6 +951,7 @@ logged_in (void)
     }
 
     endutxent();
+#endif /* HAVE_GETUTXENT */
     return (utmped = NOTOK);
 }
 

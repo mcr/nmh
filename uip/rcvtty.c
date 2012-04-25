@@ -22,7 +22,9 @@
 #include <signal.h>
 #include <fcntl.h>
 
+#ifdef HAVE_GETUTXENT
 #include <utmpx.h>
+#endif /* HAVE_GETUTXENT */
 
 #define	SCANFMT	\
 "%2(hour{dtimenow}):%02(min{dtimenow}): %<(size)%5(size) %>%<{encrypted}E%>\
@@ -156,6 +158,7 @@ main (int argc, char **argv)
 
     user = getusername();
 
+#if HAVE_GETUTXENT
     setutxent();
     while ((utp = getutxent()) != NULL) {
         if (utp->ut_type == USER_PROCESS && utp->ut_user[0] != 0
@@ -166,6 +169,7 @@ main (int argc, char **argv)
         }
     }
     endutxent();
+#endif /* HAVE_GETUTXENT */
 
     exit (RCV_MOK);
     return 0;  /* dead code to satisfy the compiler */
