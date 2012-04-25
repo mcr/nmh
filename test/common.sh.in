@@ -142,7 +142,8 @@ setup_test ()
   if [ -d ${MH_INST_DIR}${bindir} ]; then
     :
   else
-    (cd ${MH_OBJ_DIR} && make DESTDIR=${MH_INST_DIR} install) || exit 1
+    (cd ${MH_OBJ_DIR} && make DESTDIR=${MH_INST_DIR} SETGID_MAIL= install) ||
+      exit 1
   fi
 
   # clean old test data

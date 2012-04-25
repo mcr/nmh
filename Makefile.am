@@ -430,7 +430,7 @@ install-exec-hook:
 	ln $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/prev$(EXEEXT)
 	ln $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/next$(EXEEXT)
 	if test x$(SETGID_MAIL) != x; then \
-		chgrp $(MAIL_SPOOL_GRP) $(DESTDIR)$(bindir)/inc$(EXEEXT); \
+		chgrp $(MAIL_SPOOL_GRP) $(DESTDIR)$(bindir)/inc$(EXEEXT) && \
 		chmod 2755 $(DESTDIR)$(bindir)/inc$(EXEEXT); \
 	fi
 

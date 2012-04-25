@@ -300,7 +300,7 @@ if [ $status -eq 0 ]; then
 
   if [ $status -eq 0 ]; then
     [ $verbose -ge 1 ]  &&  echo testing . . .
-    checkoutput=`make $check SETGID_MAIL= 2>>$logfile`
+    checkoutput=`make $check 2>>$logfile`
     status=$?
 
     tests_summary=`echo "$checkoutput" | grep tests`
