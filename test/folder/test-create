@@ -15,7 +15,9 @@ fi
 setup_test
 
 folder -create +testfolder > /dev/null
-if [ ! -d "$MH_TEST_DIR/Mail/testfolder" ]; then
+if [ -d "$MH_TEST_DIR/Mail/testfolder" ]; then
+    :
+else
     exit 1
 fi
 

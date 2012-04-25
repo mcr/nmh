@@ -72,7 +72,7 @@ mhlist 2 8 > $actual 2>&1
 check $expected $actual
 
 # Write message with a text/plain subpart.
-msgfile=$(mhpath new)
+msgfile=`mhpath new`
 cat > $msgfile <<EOF
 To: recipient@example.com
 From: sender@example.com

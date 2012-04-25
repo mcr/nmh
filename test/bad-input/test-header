@@ -18,8 +18,8 @@ expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
 # Write message with bogus header field (missing blank line, really).
-msgfile=$(mhpath new)
-msgnum=$(basename $msgfile)
+msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat > $msgfile <<EOF
 Date: Sun, 18 Dec 2005 00:52:39 +0100
 From: foo@example.edu

@@ -33,7 +33,7 @@ actual=$MH_TEST_DIR/$$.actual
 #
 
 set +e
-whatnowtest="$(echo cd | TERM=dumb whatnow -prompt '')"
+whatnowtest=`echo cd | TERM=dumb whatnow -prompt ''`
 set -e
 
 case "${whatnowtest}" in
@@ -42,16 +42,16 @@ baz
 boz
 ls
 EOF
-    break;;
+    ;;
     "") cat > "$expected" <<EOF
 baz
 boz
 EOF
-    break;;
+    ;;
     *) echo "Unknown response to whatnow readline test"
     echo "Response is: ${whatnowtest}"
     exit 1
-    break;;
+    ;;
 esac
 
 cat > $expectederr <<EOF

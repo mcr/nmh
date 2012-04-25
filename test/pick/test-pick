@@ -145,7 +145,9 @@ EOF
 check $expected $actual
 
 # Invert exit status so execution doesn't terminate due to -e.
-! pick -after '29 Sep 2008 00:00:00' >$actual 2>/dev/null
+set +e
+pick -after '29 Sep 2008 00:00:00' >$actual 2>/dev/null
+set -e
 cat >$expected <<EOF
 0
 EOF
@@ -165,16 +167,18 @@ cat >$expected <<EOF
 10
 EOF
 check $expected $actual
-# Invert exit status so execution doesn't terminate due to -e.
-! pick -before '28 Sep 2006 00:00:00' last:3 >$actual 2>/dev/null
+set +e
+pick -before '28 Sep 2006 00:00:00' last:3 >$actual 2>/dev/null
+set -e
 cat >$expected <<EOF
 0
 EOF
 check $expected $actual
 
 # Test -datefield.
-# Invert exit status so execution doesn't terminate due to -e.
-! pick -datefield date -after '29 Sep 2008 00:00:00' >$actual 2>/dev/null
+set +e
+pick -datefield date -after '29 Sep 2008 00:00:00' >$actual 2>/dev/null
+set -e
 cat >$expected <<EOF
 0
 EOF

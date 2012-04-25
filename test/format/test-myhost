@@ -18,7 +18,7 @@ run_test "${MH_LIB_DIR}/ap -format %(myhost) ignore" "$host" \
          "local hostname test"
 
 cp ${MHMTSCONF} ${MH_TEST_DIR}/Mail/mts.conf || exit 1
-export MHMTSCONF="${MH_TEST_DIR}/Mail/mts.conf"
+MHMTSCONF="${MH_TEST_DIR}/Mail/mts.conf"
 
 echo "localname: some.random.name" >> ${MHMTSCONF}
 

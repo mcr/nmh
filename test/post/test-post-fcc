@@ -52,7 +52,7 @@ Date:
 This is a fcc test
 EOF
 
-msgname=$(mhpath +inbox 11)
+msgname=`mhpath +inbox 11`
 
 sed -i.bak -e 's/^Date:.*/Date:/' "${msgname}"
 

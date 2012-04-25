@@ -27,13 +27,16 @@ Usage: mhpath [+folder] [msgs] [switches]
   -version
   -help
 EOF
-# The exit status is 1 with -help, so invert it to prevent
-# triggering immediate exit due to set -e.
-! mhpath -help > $actual 2>&1
+# The exit status is 1 with -help, so temporarily disable -e.
+set +e
+mhpath -help > $actual 2>&1
+set -e
 check $expected $actual
 
 # check -version
-if ! mhpath -v | grep '^mhpath --' > /dev/null; then
+if mhpath -v | grep '^mhpath --' > /dev/null; then
+  :
+else
   echo "$0: mhpath -v generated unexpected output" 1>&2
   failed=`expr ${failed:-0} + 1`
 fi

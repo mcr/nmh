@@ -20,8 +20,8 @@ expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
 # Write message with bogus quoted-printable data.
-msgfile=$(mhpath new)
-msgnum=$(basename $msgfile)
+msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat > $msgfile <<EOF
 From: foo@example.edu
 To: bar@example.edu

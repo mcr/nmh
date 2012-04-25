@@ -24,7 +24,7 @@ cc4="CC User Four <ccuserfour@example.com>"
 fcc1="+nosuchmailbox"
 fcc2="+nosuchmailbox2"
 
-digestdate=$(date "+%A, %e %b %Y")
+digestdate=`date "+%A, %e %b %Y"`
 
 cat > "$expected" <<EOF
 From:     ${from}
@@ -50,14 +50,14 @@ EOF
 i=1
 while [ "$i" -le 6 ]
 do
-    filename=$(mhpath +inbox $i)
+    filename=`mhpath +inbox $i`
     cat $filename >> "$expected"
     cat >> "$expected" <<EOF
 
 ------------------------------
 
 EOF
-    i=$(expr $i + 1)
+    i=`expr $i + 1`
 done
 
 cat >> "$expected" <<EOF
@@ -96,14 +96,14 @@ EOF
 i=7
 while [ "$i" -le 8 ]
 do
-    filename=$(mhpath +inbox $i)
+    filename=`mhpath +inbox $i`
     cat $filename >> "$expected"
     cat >> "$expected" <<EOF
 
 ------------------------------
 
 EOF
-    i=$(expr $i + 1)
+    i=`expr $i + 1`
 done
 
 cat >> "$expected" <<EOF

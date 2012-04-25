@@ -66,7 +66,7 @@ EOF
 check $expected 6.txt
 
 # Write message with a text/plain subpart.
-msgfile=$(mhpath new)
+msgfile=`mhpath new`
 cat > $msgfile <<EOF
 To: recipient@example.com
 From: sender@example.com
@@ -192,7 +192,7 @@ run_test 'mhstore last -part 2 -check -nocheck' \
 check $expected 11.2.txt
 
 # check reassembly of message/partial messages (RFC 1521, 7.3.2)
-msgfile=$(mhpath new)
+msgfile=`mhpath new`
 cat > $msgfile <<EOF
 To: recipient@example.com
 From: sender@example.com
@@ -205,7 +205,7 @@ Content-Type: text/plain; charset="iso-8859-1"
 This is part one of three.
 EOF
 
-msgfile=$(mhpath new)
+msgfile=`mhpath new`
 cat > $msgfile <<EOF
 To: recipient@example.com
 From: sender@example.com
@@ -216,7 +216,7 @@ Content-Type: message/partial; id="test-mhstore message/partial test"; number=2
 This is part two of three.
 EOF
 
-msgfile=$(mhpath new)
+msgfile=`mhpath new`
 cat > $msgfile <<EOF
 To: recipient@example.com
 From: sender@example.com

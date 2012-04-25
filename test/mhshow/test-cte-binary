@@ -17,8 +17,8 @@ expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
 # Write message with Content-Transfer-Encoding: binary text.
-msgfile=$(mhpath new)
-msgnum=$(basename $msgfile)
+msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat > $msgfile <<EOF
 Content-Transfer-Encoding: binary
 To: bar@example.edu

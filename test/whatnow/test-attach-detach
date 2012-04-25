@@ -38,7 +38,7 @@ touch $expected $expectederr $actual $actualerr
 #
 
 set +e
-whatnowtest="$(echo cd | TERM=dumb whatnow -prompt '')"
+whatnowtest=`echo cd | TERM=dumb whatnow -prompt ''`
 set -e
 
 case "${whatnowtest}" in
@@ -49,15 +49,15 @@ $testname
 detach $testname_quoted
 alist
 EOF
-    break;;
+    ;;
     "") cat > "$expected" <<EOF
 $testname
 EOF
-    break;;
+    ;;
     *) echo "Unknown response to whatnow readline test"
     echo "Response is: ${whatnowtest}"
     exit 1
-    break;;
+    ;;
 esac
 
 # whatnow's exit status is always 1 so that is not a failure

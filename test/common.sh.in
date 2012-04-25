@@ -29,6 +29,17 @@ output_md5()
   @MD5SUM@ $* | @MD5FMT@ | cut -d ' ' -f 1
 }
 
+#### Use built-in $((...)) in test suite if shell supports it.
+#### Borrowed from configure's as_fn_arith.  The result is placed
+#### in global arith_val.
+#### Detected at run-time instead of by configure to allow testing
+#### with different shells.
+if (eval "test \$(( 1 + 1 )) = 2" 2>/dev/null); then
+  eval 'arith_eval () { arith_val=$(( $* )); }'
+else
+  arith_eval () { arith_val=`expr "$@" || test $? -eq 1`; }
+fi
+
 test_skip ()
 {
   WHY="$1"
@@ -57,7 +68,7 @@ findprog()
 
 require_prog ()
 {
-  if [ -z "$(findprog $1)" ]; then
+  if [ -z `findprog $1` ]; then
     test_skip "missing $1"
   fi
 }
@@ -68,10 +79,10 @@ progress_update ()
   THIS="$1"
   FIRST="$2"
   LAST="$3"
-  RANGE="$(($LAST - $FIRST))"
-  PROG="$(($THIS - $FIRST))"
+  arith_eval $LAST - $FIRST; RANGE=$arith_val
+  arith_eval $THIS - $FIRST; PROG=$arith_val
   # this automatically rounds to nearest integer
-  PERC="$(((100 * $PROG) / $RANGE))"
+  arith_eval 100 \* $PROG / $RANGE; PERC=$arith_val
   # note \r so next update will overwrite
   printf "%3d%%\r" $PERC
 }
@@ -104,8 +115,9 @@ check() {
 #### an error message is printed and global variable "failed" is incremented;
 #### if there is an optional third argument, it is used in the error message.
 run_test() {
-  #### Invert exit status to prevent triggering immediate exit due to set -e.
-  ! actual_output="`$1 2>&1`"
+  set +e
+  actual_output=`$1 2>&1`
+  set -e
   if test x"$actual_output" != x"$2"; then
     echo "$0: ${3:-\"$1\"} expected:" 1>&2
     echo "    '$2'" 1>&2
@@ -117,15 +129,18 @@ run_test() {
 
 setup_test ()
 {
-  export MH=${MH_TEST_DIR}/Mail/.mh_profile
-  export MHMTSCONF=${MH_INST_DIR}${sysconfdir}/mts.conf
-  export PATH=${MH_INST_DIR}${bindir}:${PATH}
-  export MH_LIB_DIR=${MH_INST_DIR}${auxexecdir}
+  MH=${MH_TEST_DIR}/Mail/.mh_profile
+  MHMTSCONF=${MH_INST_DIR}${sysconfdir}/mts.conf
+  PATH=${MH_INST_DIR}${bindir}:${PATH}
+  MH_LIB_DIR=${MH_INST_DIR}${auxexecdir}
+  export MH MHMTSCONF MH_LIB_DIR
 
   #
   # Only install once
   #
-  if [ ! -d ${MH_INST_DIR}${bindir} ]; then
+  if [ -d ${MH_INST_DIR}${bindir} ]; then
+    :
+  else
     (cd ${MH_OBJ_DIR} && make DESTDIR=${MH_INST_DIR} install) || exit 1
   fi
 

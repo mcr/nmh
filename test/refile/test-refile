@@ -176,7 +176,9 @@ run_test 'folders -noheader' \
 other  has 7 messages  (1-13).
 
 TOTAL = 12 messages in 2 folders.'
-if ! test -f $MH_TEST_DIR/Mail/inbox/,2; then
+if test -f $MH_TEST_DIR/Mail/inbox/,2; then
+  :
+else
   echo "$0: refile -nounlink failed" 1>&2
   failed=`expr ${failed:-0} + 1`
 fi
