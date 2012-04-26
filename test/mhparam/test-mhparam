@@ -37,13 +37,14 @@ mhparam -help >$actual 2>&1
 set -e
 check $expected $actual
 
-# check -version
-if mhparam -v | grep '^mhparam --' >/dev/null; then
-  :
-else
-  echo "$0: mhparam -v generated unexpected output" 1>&2
-  failed=`expr ${failed:-0} + 1`
-fi
+# check -version, which returns non-zero exit status
+set +e
+case `mhparam -v` in
+  mhparam\ --*) ;;
+  *           ) echo "$0: mhparam -v generated unexpected output" 1>&2
+                failed=`expr ${failed:-0} + 1`;;
+esac
+set -e
 
 # check unknown option
 run_test 'mhparam -nonexistent' 'mhparam: -nonexistent unknown'
@@ -135,13 +136,12 @@ check $expected $actual
 #### This exits with non-zero status, so let run_test squash that:
 run_test 'mhparam faceproc formatproc rmmproc' ''
 
-#### test sbackup separately because it's only passed as a -D compile option
-if mhparam sbackup | grep ',' >/dev/null; then
-  :
-else
-  echo mhparam sbackup failed
-  failed=`expr ${failed:-0} + 1`
-fi
+#### Test sbackup separately because it's only passed as a -D compile option.
+case `mhparam sbackup` in
+  ,|\#) ;;
+  *   ) echo mhparam sbackup failed
+        failed=`expr ${failed:-0} + 1` ;;
+esac
 
 # check -component
 run_test 'mhparam -component Path' "Path: $MH_TEST_DIR/Mail"

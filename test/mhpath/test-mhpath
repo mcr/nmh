@@ -33,13 +33,14 @@ mhpath -help > $actual 2>&1
 set -e
 check $expected $actual
 
-# check -version
-if mhpath -v | grep '^mhpath --' > /dev/null; then
-  :
-else
-  echo "$0: mhpath -v generated unexpected output" 1>&2
-  failed=`expr ${failed:-0} + 1`
-fi
+# check -version, which returns non-zero exit status
+set +e
+case `mhpath -v` in
+  mhpath\ --*) ;;
+  *          ) echo "$0: mhpath -v generated unexpected output" 1>&2
+               failed=`expr ${failed:-0} + 1`;;
+esac
+set -e
 
 # check +
 run_test "mhpath +" "$MH_TEST_DIR/Mail"
