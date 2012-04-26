@@ -55,8 +55,7 @@ EOF
 msgname=`mhpath +inbox 11`
 
 sed -e 's/^Date:.*/Date:/' "${msgname}" > "${msgname}".nodate
-mv "${msgname}".nodate "${msgname}"
 
-check "${testname}.msg.expected" "${msgname}"
+check "${testname}.msg.expected" "${msgname}".nodate
 
 exit ${failed:-0}

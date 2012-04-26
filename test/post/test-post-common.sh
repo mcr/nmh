@@ -38,7 +38,7 @@ test_post ()
     #
 
     sed -e 's/^Date:.*/Date:/' "$1" > "$1".nodate
-    mv "$1".nodate "$1"
+    rm -f "$1"
 
-    check "$1" "$2"
+    check "$1".nodate "$2"
 }
