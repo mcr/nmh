@@ -87,6 +87,7 @@ NOT
 EOF
 check $expected $actual
 
+set +e
 
 # Produce 0 if no messages match and standard output is not a tty.
 # Note that there is an error message on stderr, but it's redirected
@@ -96,9 +97,6 @@ cat >$expected <<EOF
 0
 EOF
 check $expected $actual
-
-
-set +e
 
 if test -w /dev/tty; then
   # Produce no standard output if no messages match and standard
