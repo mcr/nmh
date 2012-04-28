@@ -18,7 +18,6 @@ SunOS 4.1
 
 Known Compilation problems:
 --------------------------------------
---------------------------------------
 Cygwin:
 
 Be sure to install Cygwin packages libncurses-devel and libncurses10,
