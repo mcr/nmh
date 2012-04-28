@@ -362,6 +362,12 @@ if test "$ac_cv_lib_lockfile_lockfile_create" != "no" ; then
   fi
 fi
 
+dnl Provide a way for distcheck to disable setgid_mail via
+dnl DISTCHECK_CONFIGURE_FLAGS.
+if test x"$DISABLE_SETGID_MAIL" != x; then
+  nmh_cv_dotlockfile_setgid=yes
+fi
+
 dnl If mailspool is not world-writable and dotlockfile is not setgid,
 dnl we need to #define MAILGROUP to 1 and make inc setgid.
 if test x"$LOCKTYPE" = x"dot" -a x"$nmh_cv_mailspool_world_writable" = x"no" -a x"$nmh_cv_dotlockfile_setgid" != x"yes" ; then

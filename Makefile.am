@@ -73,6 +73,7 @@ TESTS = test/bad-input/test-header \
 
 check_SCRIPTS = test/common.sh
 check_PROGRAMS = test/getfullname test/getfqdn test/fakesmtp
+DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 
 ##
 ## Stuff that should be cleaned via "make clean"
