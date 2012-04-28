@@ -364,7 +364,7 @@ fi
 
 dnl Provide a way for distcheck to disable setgid_mail via
 dnl DISTCHECK_CONFIGURE_FLAGS.
-if test x"$DISABLE_SETGID_MAIL" != x; then
+if test x"$DISABLE_SETGID_MAIL" != x -a x"$DISABLE_SETGID_MAIL" != x0; then
   nmh_cv_dotlockfile_setgid=yes
 fi
 
