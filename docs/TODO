@@ -2,7 +2,6 @@
 
 * fix msh/mmdf problems.
 * Add IPv6 support.
-* Check/fix compilation on 64-bit systems.
 * Write different function to read configuration files, instead
   of using m_getfld.c
 * convert calls from sprintf/vsprintf to snprintf/vsnprintf
@@ -28,7 +27,6 @@
   find what a particular option does is a pain in the nads.
 * Add some way to configure whether you prefer to see text/plain or text/html
   parts of multipart/alternative messages.
-* Flag bogus/misspelled mts.conf "masquerade:" / --enable-masquerade options.
 * Allow multiple simultaneous differing contexts, probably each tied to a parent
   (terminal) process.
 
@@ -37,7 +35,6 @@
 MAN PAGES
 ---------
 * Update mh-tailor man page.
-* generate mh-chart man page from other man pages
 * update default mode in man pages with sed
 
 SEQUENCES
@@ -51,13 +48,6 @@ ENVIRONMENT/PROFILE
 -------------------
 * Maybe add profile entry "Pager" to change the default pager?
 * Should nmh check for EDITOR or PAGER environment variable?
-
-POP
----
-* Clean up uip/spop.c (I dont' think it's needed any longer).
-* Need to decide if want to support APOP, RPOP, MPOP.  APOP
-  and RPOP still work, but need autoconf support added.  Does
-  anyone still use this stuff?
 
 OPTIONS
 -------
@@ -171,7 +161,6 @@ REPL
 
 SEND/SENDSBR
 ------------
-* Maybe add `-server' and `-client' to documentation.
 * Add ability for returned messages from "send -push" to be
   in MIME format (this is actually a change in mhmail).
 * make -msgid the default.
@@ -191,11 +180,6 @@ SLOCAL
 * Add -logfile (or -audit) to specify where to record info about successful
   deliveries.
 
-VMH
----
-* Fix vmh (or remove it).  vmh seems to be using internal
-  knowledge of curses.
-
 MTA INTERFACE
 -------------
 * Fix locking code.  Add lockfile command.
@@ -209,7 +193,6 @@ GENERAL
 -------
 * see if the various versions of copyfile and copyf can be
   merged.
-* change time functions to use POSIX functions by default.
 * Add MH-6.8.4 features into nmh (mostly done).
 * Maybe should move etcpath to sbr and add to libmh.
 * collect winsize, struct termio, etc... together into a ttyinfo
@@ -218,5 +201,4 @@ GENERAL
 * use wait3 if not waitpid (maybe)
 * some of the calls to setjmp/longjmp should be replaced with
   sigsetjmp/siglongjmp.
-* When do we need to add -lresolv for SunOS 4.1.x?
 * replace use of ftell with fgetpos.

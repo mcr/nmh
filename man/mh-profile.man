@@ -595,24 +595,6 @@ variables whose names are all upper-case are user-settable; those
 whose names are lower-case only are used internally by nmh and should
 not generally be set by the user.
 .PP
-If the
-.B WHATNOW
-option was set during
-.B nmh
-configuration, and
-if this environment variable is set, then if the commands
-.BR refile\ ,
-.BR send ,
-.BR show ,
-or
-.B whom
-are not given any `msgs'
-arguments, then they will default to using the file indicated by
-.BR mh\-draft (5).
-This is useful for getting the default behavior
-supplied by the default
-.IR whatnowproc .
-.PP
 .B $MH
 .RS 5
 With this environment variable, you can specify a profile

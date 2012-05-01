@@ -354,11 +354,6 @@ local filename
 .PP
 The program should terminate with an exit status of zero if the
 retrieval is successful, and a non-zero exit status otherwise.
-.PP
-If this entry is not provided, then
-.B mhstore
-will use a simple
-built-in FTP client to perform the retrieval.
 .SS "The Content Cache"
 When
 .B mhstore
