@@ -175,8 +175,7 @@ dist_doc_DATA = COPYRIGHT VERSION docs/COMPLETION-BASH docs/COMPLETION-TCSH \
 ## Contribs that get installed in docdir/contrib/
 ##
 contribdir = $(docdir)/contrib
-dist_contrib_DATA = docs/contrib/nmh.spec docs/contrib/replyfilter \
-                    docs/contrib/build_nmh
+dist_contrib_DATA = docs/contrib/replyfilter docs/contrib/build_nmh
 
 ##
 ## Our man pages
@@ -224,7 +223,8 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     man/unseen.man man/whatnow.man man/whom.man \
 	     test/README $(TESTS) test/inc/deb359167.mbox \
 	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
-	     test/inc/md5sums test/post/test-post-common.sh
+	     test/inc/md5sums test/post/test-post-common.sh \
+	     SPECS/nmh.spec
 
 ##
 ## These are all of the definitions for each of the programs listed above.
@@ -561,14 +561,12 @@ ChangeLog:
 ##
 rpm: dist
 	@test -d $(rpmdir)/SOURCES || $(MKDIR_P) $(rpmdir)/SOURCES
-	@test -d $(rpmdir)/SPECS || $(MKDIR_P) $(rpmdir)/SPECS
 	@mv -f $(DIST_ARCHIVES) $(rpmdir)/SOURCES
 	@cp -p VERSION $(rpmdir)/SOURCES
-	@cp -p docs/contrib/nmh.spec $(rpmdir)/SPECS
 	@rpmbuild --define '_topdir $(rpmdir)' \
 	  --define '_tmppath %{_topdir}/TMP' \
 	  --define "_sysconfdir $(DESTDIR)$(sysconfdir)" \
-	  -ba $(rpmdir)/SPECS/nmh.spec
+	  -ba SPECS/nmh.spec
 .PHONY: rpm
 
 ##
@@ -596,7 +594,7 @@ gcov:
 	   gcov -p -o `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
 	 done
 	@for i in `find . -name '*.gcno'`; do \
-	   if ! test -f `echo $$i | sed 's%\.gcno%.gcda%'`; then \
+	   if test -f `echo $$i | sed 's%\.gcno%.gcda%'`; then :; else \
 	     echo untested: $$i; \
 	   fi; \
 	 done
