@@ -1,5 +1,13 @@
 #!/bin/bash
 #
+# ==========================================================================
+# Based on Cygwin generic package build script, customized for nmh.
+# Relies on nmh VERSION file.
+#
+# This script is incompatible with directory names that contain spaces, etc.
+# To fix that, a whole bunch of shell variables need to be wrapped with "".
+# ==========================================================================
+#
 # Generic package build script
 #
 # $Id: generic-build-script,v 1.47 2006/02/01 14:01:14 igor Exp $
@@ -30,18 +38,37 @@ else
   fi
 fi
 
-tscriptname=`basename $0 .sh`
-export PKG=`echo $tscriptname | sed -e 's/\-[^\-]*\-[^\-]*$//'`
-export VER=`echo $tscriptname | sed -e "s/${PKG}\-//" -e 's/\-[^\-]*$//'`
-export REL=`echo $tscriptname | sed -e "s/${PKG}\-${VER}\-//"`
+# Change from generic-build-script:  save pwd for later use.
+pwd=`pwd`
+
+# Change from generic-build-script:  base version on contents of
+# VERSION instead of script name.  Looks first for VERSION in
+# current directory, then in $topdir.
+test -e VERSION  &&  version=VERSION  ||  version="${topdir}/VERSION"
+if ! test -e "${version}"; then
+  echo "$0: need VERSION file"
+  exit 1
+fi
+
+tscriptname=nmh-`cat "${version}"`
+# Change from generic-build-script: allow + in addition to - between
+# VER and REL, e.g., 1.5+dev.
+export PKG=`echo $tscriptname | sed -e 's/\-[^\-]*[+-][^+-]*$//'`
+export VER=`echo $tscriptname | sed -e "s/${PKG}\-//" -e 's/[+-][^+-]*$//'`
+export REL=`echo $tscriptname | sed -e "s/${PKG}\-${VER}\([+-]\)/\1/"`
 # BASEPKG refers to the upstream base package
 # SHORTPKG refers to the Cygwin package
 # Normally, these are identical, but if the Cygwin package name is different
 # from the upstream package name, you will want to redefine BASEPKG.
 # Example: For Apache 2, BASEPKG=httpd-2.x.xx but SHORTPKG=apache2-2.x.xx
-export BASEPKG=${PKG}-${VER}
+#
+# Change from generic-build-script: added DISABLE_SETGID_MAIL=1 so that
+# install will not try to chgrp/chmod bin/inc.
+export DISABLE_SETGID_MAIL=1
+# Change from generic-build-script: added -${REL} to BASEPKG.
+export BASEPKG=${PKG}-${VER}${REL}
 export SHORTPKG=${PKG}-${VER}
-export FULLPKG=${SHORTPKG}-${REL}
+export FULLPKG=${SHORTPKG}${REL}
 
 # determine correct decompression option and tarball filename
 export src_orig_pkg_name=
@@ -60,9 +87,16 @@ elif [ -e ${BASEPKG}.tar ] ; then
   export opt_decomp=
   export src_orig_pkg_name=${BASEPKG}.tar
 else
-  echo "Cannot find PKG:${PKG} VER:${VER} REL:${REL}.  Rename $0 to"
-  echo "something more appropriate, and try again."
-  exit 1
+  # Change from generic-build-script:  build the tarball if it doesn't exist.
+  (cd "${topdir}" && make dist)
+  if [ -e "${topdir}/${BASEPKG}.tar.gz" ] ; then
+    export opt_decomp=z
+    export src_orig_pkg_name=${BASEPKG}.tar.gz
+  else
+    echo "Cannot find PKG:${PKG} VER:${VER} REL:${REL}.  Rename $0 to"
+    echo "something more appropriate, and try again."
+    exit 1
+  fi
 fi
 
 export src_orig_pkg=${topdir}/${src_orig_pkg_name}
@@ -78,10 +112,12 @@ export makelogname=${FULLPKG}-MAKE.LOG
 export checklogname=${FULLPKG}-CHECK.LOG
 export installlogname=${FULLPKG}-INSTALL.LOG
 
-export src_pkg=${topdir}/${src_pkg_name}
-export src_patch=${topdir}/${src_patch_name}
-export bin_pkg=${topdir}/${bin_pkg_name}
-export srcdir=${topdir}/${BASEPKG}
+# Change from generic-build-script: put src_pkg and bin_pkg in current
+# directory.
+export src_pkg=${pwd}/${src_pkg_name}
+export src_patch="${topdir}"/${src_patch_name}
+export bin_pkg=${pwd}/${bin_pkg_name}
+export srcdir="${topdir}"/${BASEPKG}
 export objdir=${srcdir}/.build
 export instdir=${srcdir}/.inst
 export srcinstdir=${srcdir}/.sinst
@@ -101,6 +137,8 @@ if [ -z "$MY_LDFLAGS" ]; then
   MY_LDFLAGS=
 fi
 
+# Change from generic-build-script: removed ChangeLog because the nmh
+# Makefile installs it.
 export install_docs="\
 	ABOUT-NLS \
 	ANNOUNCE \
@@ -112,7 +150,6 @@ export install_docs="\
 	COPYRIGHT \
 	CREDITS \
 	CHANGELOG \
-	ChangeLog* \
 	FAQ \
 	HOW-TO-CONTRIBUTE \
 	INSTALL \
@@ -213,8 +250,10 @@ prep_log() {
   prep "$@" && \
   mkdirs_log && \
   if [ -f ${topdir}/${log_pkg_name} ] ; then \
-    cd ${buildlogdir} && \
-    tar xvjf ${topdir}/${log_pkg_name}
+    # Change from generic-build-script:  do the following in subshell
+    # so that cd isn't permanent.
+    (cd ${buildlogdir} && \
+    tar xvjf "${topdir}"/${log_pkg_name})
   fi
 }
 
@@ -274,6 +313,8 @@ clean() {
 }
 
 # Install the package, with DESTDIR set to '.inst'.
+# Change from generic-build-script:  added ":;" after "find ... | gzip"
+# because it returns non-zero status.
 install() {
   (cd ${objdir} && \
   rm -fr ${instdir}/* && \
@@ -294,7 +335,7 @@ install() {
   if [ -d ${instdir}${prefix}/share/man ] ; then \
     find ${instdir}${prefix}/share/man -name "*.1" -o -name "*.3" -o \
       -name "*.3x" -o -name "*.3pm" -o -name "*.5" -o -name "*.6" -o \
-      -name "*.7" -o -name "*.8" | xargs -r gzip -q ; \
+      -name "*.7" -o -name "*.8" | xargs -r gzip -q ; :; \
   fi && \
   templist="" && \
   for fp in ${install_docs} ; do \
@@ -401,6 +442,7 @@ acceptpatch() {
 }
 
 # Build the source tarball.
+# Change from generic-build-script:  added VERSION file.
 spkg() {
   (mkpatch && \
   if [ "${SIG}" -eq 1 ] ; then \
@@ -415,6 +457,7 @@ spkg() {
   if [ "${SIG}" -eq 1 ] ; then \
     cp $0.sig ${srcinstdir}/ ; \
   fi && \
+  cp "${version}" "${srcinstdir}" && \
   cd ${srcinstdir} && \
   tar cvjf ${src_pkg} * )
 }
