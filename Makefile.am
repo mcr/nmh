@@ -224,7 +224,7 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     test/README $(TESTS) test/inc/deb359167.mbox \
 	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
 	     test/inc/md5sums test/post/test-post-common.sh \
-	     SPECS/nmh.spec
+	     SPECS/nmh.spec SPECS/build-nmh-cygwin
 
 ##
 ## These are all of the definitions for each of the programs listed above.
@@ -414,6 +414,10 @@ etc/sendfiles: $(srcdir)/etc/sendfiles.in Makefile
 ##
 ## This rule gets called at "make install" time; we use it to create links
 ## between different programs.
+## On Cygwin, the choice of ln or ln -s must be made at install time,
+## not configure time, because some filesystems (NTFS) support hard
+## links but others (FAT32) don't.  The fallback to cp -p might not be
+## needed, but it's here just in case.
 ##
 install-exec-hook:
 	rm -f $(DESTDIR)$(bindir)/flists$(EXEEXT)
@@ -423,13 +427,29 @@ install-exec-hook:
 	rm -f $(DESTDIR)$(bindir)/unseen$(EXEEXT)
 	rm -f $(DESTDIR)$(bindir)/prev$(EXEEXT)
 	rm -f $(DESTDIR)$(bindir)/next$(EXEEXT)
-	ln $(DESTDIR)$(bindir)/flist$(EXEEXT) $(DESTDIR)$(bindir)/flists$(EXEEXT)
-	ln $(DESTDIR)$(bindir)/folder$(EXEEXT) $(DESTDIR)$(bindir)/folders$(EXEEXT)
-	ln $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/fnext$(EXEEXT)
-	ln $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/fprev$(EXEEXT)
-	ln $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/unseen$(EXEEXT)
-	ln $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/prev$(EXEEXT)
-	ln $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/next$(EXEEXT)
+	cd $(DESTDIR)$(bindir) && \
+	  if ln flist$(EXEEXT) flists$(EXEEXT) 2>/dev/null && \
+	    ln folder$(EXEEXT) folders$(EXEEXT) && \
+	    ln new$(EXEEXT) fnext$(EXEEXT) && \
+	    ln new$(EXEEXT) fprev$(EXEEXT) && \
+	    ln new$(EXEEXT) unseen$(EXEEXT) && \
+	    ln show$(EXEEXT) prev$(EXEEXT) && \
+	    ln show$(EXEEXT) next$(EXEEXT); then :; \
+	  elif ln -s flist$(EXEEXT) flists$(EXEEXT) 2>/dev/null && \
+	    ln -s folder$(EXEEXT) folders$(EXEEXT) && \
+	    ln -s new$(EXEEXT) fnext$(EXEEXT) && \
+	    ln -s new$(EXEEXT) fprev$(EXEEXT) && \
+	    ln -s new$(EXEEXT) unseen$(EXEEXT) && \
+	    ln -s show$(EXEEXT) prev$(EXEEXT) && \
+	    ln -s show$(EXEEXT) next$(EXEEXT); then :; \
+	  else cp -p flist$(EXEEXT) flists$(EXEEXT) && \
+	    cp -p folder$(EXEEXT) folders$(EXEEXT) && \
+	    cp -p new$(EXEEXT) fnext$(EXEEXT) && \
+	    cp -p new$(EXEEXT) fprev$(EXEEXT) && \
+	    cp -p new$(EXEEXT) unseen$(EXEEXT) && \
+	    cp -p show$(EXEEXT) prev$(EXEEXT) && \
+	    cp -p show$(EXEEXT) next$(EXEEXT); \
+	  fi
 	if test x$(SETGID_MAIL) != x; then \
 		chgrp $(MAIL_SPOOL_GRP) $(DESTDIR)$(bindir)/inc$(EXEEXT) && \
 		chmod 2755 $(DESTDIR)$(bindir)/inc$(EXEEXT); \

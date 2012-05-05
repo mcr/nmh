@@ -20,8 +20,12 @@ Known Compilation problems:
 --------------------------------------
 Cygwin:
 
-Be sure to install Cygwin packages libncurses-devel and libncurses10,
-in the Libs category.
+Be sure to install these Cygwin packages:
+  gdbm
+  libgdbm4
+  libgdbm-devel
+  libncurses10
+  libncurses-devel
 
 --------------------------------------
 HPUX:
@@ -71,12 +75,14 @@ a better solution. The whole thing is probablly going to be chucked
 with UTF-8 support anyway.
 
 Other than the warnings, it builds ok.
+
 --------------------------------------
 SunOS 4.1.1/4.1.3/4.1.4:
 
 You can't use the C compiler that comes with SunOS 4 since
 it isn't ANSI C.  But nmh builds just fine with gcc. With
 --enable-debug you will see a lot of warnings.
+
 --------------------------------------
 
 --
