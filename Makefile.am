@@ -81,7 +81,7 @@ DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf etc/sendfiles \
 	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS)
 clean-local:
-	@rm -rf RPM a.out.DSYM uip/a.out.DSYM
+	@rm -rf RPM a.out.dSYM uip/a.out.dSYM
 	@rm -rf test/testdir
 
 ##

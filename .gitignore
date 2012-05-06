@@ -35,7 +35,7 @@
 
 # Removed by clean:
 /RPM/
-a.out.DSYM/
+a.out.dSYM/
 /config/version.c
 /etc/mhn.defaults
 /etc/mts.conf
