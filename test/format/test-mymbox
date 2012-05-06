@@ -25,6 +25,10 @@ run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) nosuchuser@nosuchhost.blah" \
 
 myname="Random User <random@user.something.com>"
 
+#### Remove existing Local-Mailbox: profile component, if any.  Then
+#### add one.
+grep -v 'Local-Mailbox: ' ${MH} > ${MH}.new
+mv -f ${MH}.new ${MH}
 echo "Local-Mailbox: ${myname}" >> ${MH}
 
 run_test "echo `${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \

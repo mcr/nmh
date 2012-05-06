@@ -15,6 +15,10 @@ setup_test
 
 testname="Some User <some@domain.com>"
 
+#### Remove existing Local-Mailbox: profile component, if any.  Then
+#### add one.
+grep -v 'Local-Mailbox: ' ${MH} > ${MH}.new
+mv -f ${MH}.new ${MH}
 echo "Local-Mailbox: ${testname}" >> ${MH}
 
 # We can use "ap" to get the output of format commands
