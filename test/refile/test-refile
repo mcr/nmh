@@ -115,17 +115,29 @@ other+ has  1 message   (1- 1).
 
 TOTAL = 11 messages in 2 folders.'
 
-# check -link
-run_test 'refile 7 -src +inbox +other -link' ''
-run_test 'folders -noheader' \
-'inbox+ has 10 messages  (1-10); cur=7.
+printf '' > $$.txt
+set +e
+if link $$.txt $$-2.txt 2>/dev/null; then
+  # Hard links are supported.
+  # check -link
+  run_test 'refile 7 -src +inbox +other -link' ''
+  run_test 'folders -noheader' \
+  'inbox+ has 10 messages  (1-10); cur=7.
 other  has  2 messages  (1- 2).
 
 TOTAL = 12 messages in 2 folders.'
-# inbox/7 and other/2 are linked.  Modify one and verify
-# that the other changes as well.
-echo '' >>$MH_TEST_DIR/Mail/other/2
-run_test "cmp $MH_TEST_DIR/Mail/inbox/7 $MH_TEST_DIR/Mail/other/2" ''
+  # inbox/7 and other/2 are linked.  Modify one and verify
+  # that the other changes as well.
+  echo '' >>$MH_TEST_DIR/Mail/other/2
+  run_test "cmp $MH_TEST_DIR/Mail/inbox/7 $MH_TEST_DIR/Mail/other/2" ''
+else
+  # Hard links are not supported.  Skip the -link test but emulate
+  # what it would have done using a copy instead of a link.
+  cp -p Mail/inbox/7 Mail/other/2
+  folder -f +inbox 7 >/dev/null
+fi
+set -e
+rm -f $$.txt $$-2.txt
 
 # check -nolink
 run_test 'refile 7 +other -link -nolink' ''

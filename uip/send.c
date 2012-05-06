@@ -442,7 +442,8 @@ go_to_it:
 	distfile = getcpy (m_mktemp2 (altmsg, invo_name, NULL, NULL));
 	unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK) {
-	    if (errno != EXDEV
+	    /* Cygwin with FAT32 filesystem produces EPERM. */
+	    if (errno != EXDEV  &&  errno != EPERM
 #ifdef EISREMOTE
 		    && errno != EISREMOTE
 #endif /* EISREMOTE */

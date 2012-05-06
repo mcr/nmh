@@ -166,8 +166,9 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 	     * across devices, then check if there is a message
 	     * already in the desired location.  If so, then return
 	     * error, else just copy the message.
+	     * Cygwin with FAT32 filesystem produces EPERM.
 	     */
-	    if (linkerr == EXDEV) {
+	    if (linkerr == EXDEV  ||  linkerr == EPERM) {
 		if (stat (newmsg, &st1) == 0) {
 		    advise (NULL, "message %s:%s already exists", mp->foldpath, newmsg);
 		    return -1;
