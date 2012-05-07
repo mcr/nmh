@@ -34,7 +34,7 @@ EOF
 cat > $expected <<EOF
   11  12/18 foo@example.edu    test<<This is a multi-part message in MIME forma
 EOF
-scan $msgnum > $actual 2>&1
+scan -width 80 $msgnum > $actual 2>&1
 check $expected $actual
 
 # check show (mhl)
