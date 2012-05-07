@@ -36,7 +36,8 @@ auxexecdir = @libdir@
 TESTS_ENVIRONMENT = MH_OBJ_DIR=@abs_builddir@ \
 		    MH_TEST_DIR=@abs_builddir@/test/testdir \
 		    auxexecdir=$(auxexecdir) bindir=$(bindir) \
-		    mandir=$(mandir) sysconfdir=$(sysconfdir)
+		    mandir=$(mandir) sysconfdir=$(sysconfdir) \
+		    $(TESTS_SHELL) ## Keep at end of TESTS_ENVIRONMENT.
 ##
 ## Important note: the "cleanup" test should always be last
 ##
