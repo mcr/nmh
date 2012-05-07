@@ -208,16 +208,18 @@ dnl also use -Wno-pointer-sign, because gcc 4 now produces a lot of new
 dnl warnings which are probably mostly spurious and which in any case we
 dnl don't want to deal with now.
 if test "$nmh_cv_has_noptrsign" = "yes"; then
+    nmh_gcc_common_flags="-ansi -pedantic -Wall"
     if test "$nmh_cv_has_wextra" = "yes"; then
-        nmh_gcc_warnflags="-Wall -Wextra -Wno-clobbered -Wno-pointer-sign"
+        nmh_gcc_warnflags="${nmh_gcc_common_flags} -Wextra -Wno-clobbered "\
+"-Wno-pointer-sign"
     else
-        nmh_gcc_warnflags="-Wall -Wno-pointer-sign"
+        nmh_gcc_warnflags="${nmh_gcc_common_flags} -Wno-pointer-sign"
     fi
 else
     if test "$nmh_cv_has_wextra" = "yes"; then
-        nmh_gcc_warnflags="-Wall -Wextra -Wno-clobbered"
+        nmh_gcc_warnflags="${nmh_gcc_common_flags} -Wextra -Wno-clobbered"
     else
-        nmh_gcc_warnflags="-Wall"
+        nmh_gcc_warnflags="${nmh_gcc_common_flags}"
     fi
 fi
 
