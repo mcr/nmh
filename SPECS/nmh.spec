@@ -80,7 +80,7 @@ if [ -f %srcdir/config.status ]; then
   ./config.status
 else
   %if %{undefined configure_opts}
-    %define configure_opts --enable-pop --with-cyrus-sasl --with-locking=fcntl
+    %define configure_opts --with-cyrus-sasl --with-locking=fcntl
   %endif
   %configure %configure_opts
 fi
@@ -89,7 +89,7 @@ make all dist
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT SETGID_MAIL=
+make install DESTDIR=$RPM_BUILD_ROOT
 
 gz_manpages='-e '
 
