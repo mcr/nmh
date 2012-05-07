@@ -27,6 +27,9 @@ Be sure to install these Cygwin packages:
   libncurses10
   libncurses-devel
 
+Note that the -link switch to refile cannot be used on FAT32 and
+similar filesystems.
+
 --------------------------------------
 HPUX:
 

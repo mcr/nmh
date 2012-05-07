@@ -71,6 +71,12 @@ AC_DEFINE_UNQUOTED([BACKUP_PREFIX], "$backup_prefix",
     [The prefix that is prepended to the name of message files when they are "removed" by rmm. This should typically be `,' or `#'.])dnl
 
 dnl What method of locking to use?
+AS_CASE(["$host_os"],
+  [aix*|cygwin*|linux*],
+    [default_locktype="fcntl"; default_locking=FCNTL_LOCKING],
+  [freebsd*], [default_locktype="flock"; default_locking=FLOCK_LOCKING],
+  [default_locktype="dot"; default_locking=DOT_LOCKING])
+
 AC_ARG_WITH(locking,
   AS_HELP_STRING([--with-locking=@<:@dot|fcntl|flock|lockf@:>@],
   [specify the file locking method]))
@@ -88,8 +94,8 @@ elif test x"$with_locking" = x"fcntl"; then
   LOCKTYPE="fcntl"
   AC_DEFINE(FCNTL_LOCKING, 1, [Define to use fnctl() based locking.])dnl
 else
-  LOCKTYPE="dot"
-  AC_DEFINE(DOT_LOCKING)dnl
+  LOCKTYPE="$default_locktype"
+  AC_DEFINE_UNQUOTED($default_locking, 1)dnl
 fi
 
 dnl Should we use a locking directory?
