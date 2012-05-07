@@ -1776,8 +1776,8 @@ openBase64 (CT ct, char **file)
     }
     if (cp != NULL && *cp != '\0') {
         if (ce->ce_unlink) {
-            // Temporary file already exists, so we rename to
-            // version with extension.
+            /* Temporary file already exists, so we rename to
+               version with extension. */
             char *file_org = strdup(ce->ce_file);
             ce->ce_file = add (cp, ce->ce_file);
             if (rename(file_org, ce->ce_file)) {
@@ -2008,8 +2008,8 @@ openQuoted (CT ct, char **file)
     }
     if (cp != NULL && *cp != '\0') {
         if (ce->ce_unlink) {
-            // Temporary file already exists, so we rename to
-            // version with extension.
+            /* Temporary file already exists, so we rename to
+               version with extension. */
             char *file_org = strdup(ce->ce_file);
             ce->ce_file = add (cp, ce->ce_file);
             if (rename(file_org, ce->ce_file)) {
@@ -2232,8 +2232,8 @@ open7Bit (CT ct, char **file)
     }
     if (cp != NULL && *cp != '\0') {
         if (ce->ce_unlink) {
-            // Temporary file already exists, so we rename to
-            // version with extension.
+            /* Temporary file already exists, so we rename to
+               version with extension. */
             char *file_org = strdup(ce->ce_file);
             ce->ce_file = add (cp, ce->ce_file);
             if (rename(file_org, ce->ce_file)) {

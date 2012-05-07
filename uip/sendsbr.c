@@ -502,10 +502,12 @@ make_mime_composition_file_entry(char *file_name, int attachformat)
         } else {
             /* Suppress Content-Id, insert simple Content-Disposition
                and Content-Description with filename. */
+            p = strrchr(file_name, '/');
             (void) fprintf (composition_file,
-                            "#%1$s; name=\"%2$s\" <> [%2$s]{attachment}",
+                            "#%s; name=\"%s\" <> [%s]{attachment}",
                             content_type,
-                            ((p = strrchr(file_name, '/')) == (char *)0) ? file_name : p + 1);
+                            (p == (char *)0) ? file_name : p + 1,
+                            (p == (char *)0) ? file_name : p + 1);
         }
 
         break;
@@ -519,10 +521,12 @@ make_mime_composition_file_entry(char *file_name, int attachformat)
         } else {
             /* Suppress Content-Id, insert Content-Disposition with
                modification date and Content-Description wtih filename. */
+            p = strrchr(file_name, '/');
             (void) fprintf (composition_file,
-                            "#%1$s; name=\"%2$s\" <>[%2$s]{attachment; modification-date=\"%3$s\"}",
+                            "#%s; name=\"%s\" <>[%s]{attachment; modification-date=\"%s\"}",
                             content_type,
-                            ((p = strrchr(file_name, '/')) == (char *)0) ? file_name : p + 1,
+                            (p == (char *)0) ? file_name : p + 1,
+                            (p == (char *)0) ? file_name : p + 1,
                             dtime (&st.st_mtime, 0));
         }
 

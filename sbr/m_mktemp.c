@@ -130,7 +130,7 @@ m_mktemp2 (
 static char *
 get_temp_dir()
 {
-    // Ignore envvars if we are setuid
+    /* Ignore envvars if we are setuid */
     if ((getuid()==geteuid()) && (getgid()==getegid())) {
         char *tmpdir = NULL;
         tmpdir = getenv("MHTMPDIR");

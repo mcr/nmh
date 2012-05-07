@@ -80,7 +80,7 @@ static struct swit parswit[] = {
 static char linebuf[LBSIZE + 1];
 
 /* the magic array for case-independence */
-static char cc[] = {
+static unsigned char cc[] = {
 	0000,0001,0002,0003,0004,0005,0006,0007,
 	0010,0011,0012,0013,0014,0015,0016,0017,
 	0020,0021,0022,0023,0024,0025,0026,0027,

@@ -1115,11 +1115,11 @@ static int
 sm_get_pass(sasl_conn_t *conn, void *context, int id,
 	    sasl_secret_t **psecret)
 {
-    NMH_UNUSED (conn);
-
     char **pw_context = (char **) context;
     char *pass = NULL;
     int len;
+
+    NMH_UNUSED (conn);
 
     if (! psecret || id != SASL_CB_PASS)
 	return SASL_BADPARAM;

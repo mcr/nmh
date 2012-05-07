@@ -175,9 +175,9 @@ initialize_readline(void)
 static char **
 nmh_completion(const char *text, int start, int end)
 {
-    NMH_UNUSED (end);
-
     char **matches;
+
+    NMH_UNUSED (end);
 
     matches = (char **) NULL;
 

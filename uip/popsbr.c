@@ -343,11 +343,11 @@ sasl_get_user(void *context, int id, const char **result, unsigned *len)
 static int
 sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
 {
-    NMH_UNUSED (conn);
-
     struct pass_context *p_context = (struct pass_context *) context;
     char *pass = NULL;
     int len;
+
+    NMH_UNUSED (conn);
 
     if (! psecret || id != SASL_CB_PASS)
 	return SASL_BADPARAM;
