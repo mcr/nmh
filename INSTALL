@@ -58,6 +58,11 @@ need an ANSI C compiler such as gcc.
    This takes a bit of time, around one minute on a modern machine,
    but is highly recommended.
 
+   test/inc/test-deb359167 uses valgrind, which detects use of an
+   uninitialized variable on older Linux distributions such as
+   Mandriva 2007.0 and CentOS 5.4.  That particular failure is
+   beyond the scope of nmh and can be ignored.
+
 4) make install
 
    Note that if you have [n]mh files in your install directories with
