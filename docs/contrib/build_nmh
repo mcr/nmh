@@ -47,25 +47,6 @@
 ####
 which=which
 ldd=ldd
-locking=dot
-
-os=${OSTYPE:-`uname -s`}
-#### It'd be nice to have configure decide what locking style to use.
-#### In the meantime, select it manually.  To determine what style
-#### locking your system uses by default, try something like this,
-#### assuming that strace is installed:
-####   $ echo test | strace -o /tmp/mail.strace mail -s test $LOGNAME
-#### Then look in /tmp/mail.strace for fcntl, flock, and lockf system
-#### calls and opens of dot files in the mail spool.
-#### These might help but are old:
-####   https://bugzilla.mozilla.org/show_bug.cgi?id=239013#c9
-####   http://www.jwz.org/doc/movemail.html
-case "$os" in
-  aix) locking=fcntl ;;
-  freebsd*) locking=flock ;;
-  linux* ) locking=fcntl ;;
-esac
-
 
 ####
 #### Interpret command arguments.
@@ -122,21 +103,9 @@ fi
 #### spaces (currently just smtpservers) specially.
 ####
 
-#### dotlocking, the usual default, requires chgrp and chmod of inc.
-installpriv=
-if [ $install -ge 1  -a  `id -u` -ne 0  -a  "$OSTYPE" != cygwin ]; then
-  if [ "x$locking" = x  -o  "$locking" = dot ]; then
-    echo "$0: "'install requires chgrp and chmod 2755'
-    echo 'so will sudo to install.  Terminate with Ctrl-C if unacceptable.'
-    installpriv=sudo
-  fi
-fi
-
-
 #### Here are the config options that we will try to detect, then
 #### confirm, and finally set.
 config_prefix=/usr/local/nmh
-config_locking="$locking"
 config_mts=smtp
 config_smtpservers=localhost
 config_sasl=n
@@ -199,10 +168,6 @@ if [ $yes -eq 0 ]; then
   read prefix
   [ "$prefix" ]  &&  config_prefix="$prefix"
 
-  printf 'Locking type (dot|fcntl|flock|lockf) [%s]: ' $config_locking
-  read locking
-  [ "$locking" ]  &&  config_locking="$locking"
-
   printf 'MTS (smtp|sendmail) [%s]: ' $config_mts
   read mts
   [ "$mts" ]  &&  config_mts="$mts"
@@ -246,8 +211,6 @@ fi
 smtpservers=
 config_opts="--prefix=$config_prefix"
 
-[ "$config_locking" ]  &&  \
-  config_opts="$config_opts --with-locking=$config_locking"
 [ "$config_mts"  -a  "$config_mts" != smtp ]  &&  \
   config_opts="$config_opts --with-mts=$config_mts"
 [ "$config_smtpservers"  -a  "$config_smtpservers" != localhost ]  &&  \
@@ -315,7 +278,7 @@ if [ $status -eq 0 ]; then
     if [ $status -eq 0 ]; then
       if [ $install -ge 1 ]; then
         [ $verbose -ge 1 ]  &&  echo installing . . .
-        ($installpriv make install) >/dev/null 2>>$logfile
+        (make install) >/dev/null 2>>$logfile
         status=$?
       fi
 
