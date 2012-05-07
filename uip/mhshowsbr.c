@@ -529,10 +529,10 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 
 	if (xpause && isatty (fileno (stdout))) {
 	    int	intr;
+	    SIGNAL_HANDLER istat;
 
 	    if (SOprintf ("Press <return> to show content..."))
 		printf ("Press <return> to show content...");
-	    SIGNAL_HANDLER istat;
 
 	    istat = SIGNAL (SIGINT, intrser);
 	    if ((intr = sigsetjmp (intrenv, 1)) == OK) {

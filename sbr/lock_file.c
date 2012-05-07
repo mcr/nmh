@@ -586,10 +586,9 @@ timerOFF (int fd)
 static void
 alrmser (int sig)
 {
-    NMH_UNUSED (sig);
-
     char *lockfile;
     struct lock *lp;
+    NMH_UNUSED (sig);
 
     /* update the ctime of all the lock files */
     for (lp = l_top; lp; lp = lp->l_next) {

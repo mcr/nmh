@@ -127,11 +127,10 @@ static struct bind binds[] = {
 void
 mts_init (char *name)
 {
-    NMH_UNUSED (name);
-
     const char *cp;
     FILE *fp;
     static int inited = 0;
+    NMH_UNUSED (name);
 
     if (inited++ || (fp = fopen (get_mtsconf_pathname(), "r")) == NULL)
 	return;

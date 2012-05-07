@@ -801,10 +801,10 @@ m_gMsgs (int n)
 FILE *
 msh_ready (int msgnum, int full)
 {
-    NMH_UNUSED (full);
     register int msgp;
     int fd;
     char *cp;
+    NMH_UNUSED (full);
 
     if (yp) {
 	fclose (yp);

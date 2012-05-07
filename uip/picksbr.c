@@ -656,12 +656,11 @@ static int
 GREPaction (params)
 plist
 {
-    NMH_UNUSED (msgnum);
-
     int c, body, lf;
     long pos = start;
     register char *p1, *p2, *ebp, *cbp;
     char ibuf[BUFSIZ];
+    NMH_UNUSED (msgnum);
 
     fseek (fp, start, SEEK_SET);
     body = 0;
@@ -931,12 +930,11 @@ static int
 TWSaction (params)
 plist
 {
-    NMH_UNUSED (stop);
-
     int state;
     register char *bp;
     char buf[BUFSIZ], name[NAMESZ];
     register struct tws *tw;
+    NMH_UNUSED (stop);
 
     fseek (fp, start, SEEK_SET);
     for (state = FLD, bp = NULL;;) {

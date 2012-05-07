@@ -196,6 +196,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	   int debug, int onex, int queued,
            int sasl, int saslssf, char *saslmech, char *user, int tls)
 {
+    int result, sd1, sd2;
 #ifdef CYRUS_SASL
     char *server_mechs;
 #else  /* CYRUS_SASL */
@@ -204,7 +205,6 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     NMH_UNUSED (saslmech);
     NMH_UNUSED (user);
 #endif /* CYRUS_SASL */
-    int result, sd1, sd2;
 
     if (watch)
 	verbose = TRUE;
@@ -454,6 +454,9 @@ sendmail_init (char *client, char *server, int watch, int verbose,
                int debug, int onex, int queued,
                int sasl, int saslssf, char *saslmech, char *user)
 {
+    unsigned int i, result, vecp;
+    int pdi[2], pdo[2];
+    char *vec[15];
 #ifdef CYRUS_SASL
     char *server_mechs;
 #else  /* CYRUS_SASL */
@@ -463,9 +466,6 @@ sendmail_init (char *client, char *server, int watch, int verbose,
     NMH_UNUSED (saslmech);
     NMH_UNUSED (user);
 #endif /* CYRUS_SASL */
-    unsigned int i, result, vecp;
-    int pdi[2], pdo[2];
-    char *vec[15];
 
     if (watch)
 	verbose = TRUE;

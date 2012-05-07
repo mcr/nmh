@@ -71,8 +71,6 @@ void
 replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 	int mime, char *form, char *filter, char *fcc, int fmtproc)
 {
-    NMH_UNUSED (msg);
-
     register int state, i;
     register struct comp *cptr;
     register char *tmpbuf;
@@ -83,6 +81,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     char name[NAMESZ], *scanl;
     unsigned char *cp;
     FILE *out;
+    NMH_UNUSED (msg);
 
     mask = umask(~m_gmprot());
     if ((out = fopen (drft, "w")) == NULL)

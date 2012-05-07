@@ -418,13 +418,12 @@ int
 pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	  int snoop, int sasl, char *mech)
 {
+    int fd1, fd2;
+    char buffer[BUFSIZ];
 #ifndef CYRUS_SASL
     NMH_UNUSED (sasl);
     NMH_UNUSED (mech);
 #endif /* ! CYRUS_SASL */
-
-    int fd1, fd2;
-    char buffer[BUFSIZ];
 
     if (proxy && *proxy) {
        int pid;

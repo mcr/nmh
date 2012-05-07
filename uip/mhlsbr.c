@@ -338,7 +338,7 @@ int
 mhl (int argc, char **argv)
 {
     int length = 0, nomore = 0;
-    unsigned int i, vecp = 0;;
+    unsigned int i, vecp = 0;
     int width = 0;
     char *cp, *folder = NULL, *form = NULL;
     char buf[BUFSIZ], *files[MAXARGS];

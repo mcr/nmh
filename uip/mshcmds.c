@@ -1075,9 +1075,8 @@ static char *hlpmsg[] = {
 void
 helpcmd (char **args)
 {
-    NMH_UNUSED (args);
-
     int i;
+    NMH_UNUSED (args);
 
     for (i = 0; hlpmsg[i]; i++) {
 	printf (hlpmsg[i], invo_name);
