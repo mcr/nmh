@@ -62,9 +62,6 @@ export REL=`echo $tscriptname | sed -e "s/${PKG}\-${VER}\([+-]\)/\1/"`
 # from the upstream package name, you will want to redefine BASEPKG.
 # Example: For Apache 2, BASEPKG=httpd-2.x.xx but SHORTPKG=apache2-2.x.xx
 #
-# Change from generic-build-script: added DISABLE_SETGID_MAIL=1 so that
-# install will not try to chgrp/chmod bin/inc.
-export DISABLE_SETGID_MAIL=1
 # Change from generic-build-script: added -${REL} to BASEPKG.
 export BASEPKG=${PKG}-${VER}${REL}
 export SHORTPKG=${PKG}-${VER}
