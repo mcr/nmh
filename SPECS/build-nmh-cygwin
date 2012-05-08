@@ -234,12 +234,14 @@ mkdirs_log() {
 }
 
 # Unpack the original tarball, and get everything set up for this script.
+# Change from generic-build-script:  cd to ${srcdir} instead of ${topdir}.
+# Change from generic-build-script:  use -p1 instead of -p0 patch option.
 prep() {
   (cd ${topdir} && \
   unpack ${src_orig_pkg} && \
-  cd ${topdir} && \
+  cd ${srcdir} && \
   if [ -f ${src_patch} ] ; then \
-    patch -Z -p0 < ${src_patch} ;\
+    patch -Z -p1 < ${src_patch} ;\
   fi && \
   mkdirs )
 }
