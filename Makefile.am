@@ -202,7 +202,7 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 ## Automake using the automatic rules
 ##
 EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
-	     etc/mhn.defaults.sh $(MHNSEARCHPROG) DATE \
+	     etc/mhn.defaults.sh $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
 	     man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
