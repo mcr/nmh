@@ -71,9 +71,11 @@ export FULLPKG=${SHORTPKG}${REL}
 export src_orig_pkg_name=
 if [ -e "${src_orig_pkg_name}" ] ; then
   export opt_decomp=? # Make sure tar punts if unpack() is not redefined
-elif [ -e ${BASEPKG}.tar.bz2 ] ; then
-  export opt_decomp=j
-  export src_orig_pkg_name=${BASEPKG}.tar.bz2
+# Change from generic-build-script: ${BASEPKG}.tar.bz2 is an output of
+#  this script, so don't trip over it on a rerun.
+# elif [ -e ${BASEPKG}.tar.bz2 ] ; then
+#   export opt_decomp=j
+#   export src_orig_pkg_name=${BASEPKG}.tar.bz2
 elif [ -e ${BASEPKG}.tar.gz ] ; then
   export opt_decomp=z
   export src_orig_pkg_name=${BASEPKG}.tar.gz
