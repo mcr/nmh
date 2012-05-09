@@ -41,3 +41,32 @@ If you wish to write a new test script, here are the steps:
   that you access these files relative to the $srcdir environment variable.
 
 - Verify that the test works with both "make check" and "make distcheck".
+
+Please use only Bourne shell and bare-bones POSIX program constructs
+in the test scripts.  In particular:
+
+- Use `` instead of $().
+
+- Wrap shell variables with "" if they could possibly contain
+  whitespace or special characters that would affect syntax.
+
+- Use the arith_eval() function in common.sh instead of $(()) or expr.
+  It detects at run time if $(()) is available.
+
+- Use grep >/dev/null instead of grep -q.
+
+- Don't use egrep, grep -E, fgrep, grep -F, or other non-portable grep
+  functionality.  The built-in case statement supports alternation (|).
+
+- Don't use ! to negate conditions.  Instead, use something like:
+    <condition> || <statement>
+  or
+    if <condition>; then :; else <statements> fi
+
+- Separate variable assignment from export (don't assign in export
+  statements).
+
+- Use sed >tmpfile and mv instead of sed -i.
+
+- Avoid depending on the exact format of output from system (non-nmh)
+  programs.
