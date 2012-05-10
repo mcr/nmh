@@ -13,13 +13,17 @@ fi
 
 setup_test
 
-user=${LOGNAME:-`id -un`}
+#### Use ap to get the username.  That will either be what's in the
+#### Local-Mailbox profile component, which we don't use in the test
+#### suite, or the user's login name.  ap will escape (quote) it if
+#### needed.
+user=`${MH_LIB_DIR}/ap -format '%(me)' 0`
 host=`${MH_OBJ_DIR}/test/getfqdn`
 
-run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) ${user}" \
-         1 "Basic user test"
-run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) ${user}@${host}" \
-         1 "Basic user@host test"
+output=`${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${user}"`
+run_test "echo $output" 1 "Basic user test"
+output=`${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${user}@${host}"`
+run_test "echo $output" 1 "Basic user@host test"
 run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) nosuchuser@nosuchhost.blah" \
          0 "Basic non-matching test"
 
@@ -34,7 +38,7 @@ echo "Local-Mailbox: ${myname}" >> ${MH}
 run_test "echo `${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \
          1 "Local-Mailbox test"
 
-run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) ${user}@${host}" \
-         0 "Local-mailbox overriding user@host test"
+output=`${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${user}@${host}"`
+run_test "echo $output" 0 "Local-mailbox overriding user@host test"
 
 exit $failed

@@ -337,19 +337,6 @@ getlocalmbox (void)
     if (username[0] == '\0')
     	getuserinfo();
 
-    if (localmbox[0] == '\0') {
-    	char *cp;
-
-    	if ((cp = context_find("Local-Mailbox")) != NULL) {
-	    strncpy(localmbox, cp, sizeof(localmbox));
-	} else {
-	    snprintf(localmbox, sizeof(localmbox), "%s <%s@%s>", fullname,
-		     username, LocalName(0));
-	}
-
-	localmbox[sizeof(localmbox) - 1] = '\0';
-    }
-
     return localmbox;
 }
 
@@ -373,6 +360,39 @@ getuserinfo (void)
 	return;
     }
 
+
+    /* username */
+    /* If there's a Local-Mailbox profile component, try to extract
+       the username from it.  But don't try very hard, this assumes
+       the very simple User Name <user@name.com> form.
+       Note that post(8) and whom(1) use context_foil (), so they
+       won't see the profile component. */
+    if ((np = context_find("Local-Mailbox")) != NULL) {
+	char *left_angle_bracket = strchr (np, '<');
+	char *at_sign = strchr (np, '@');
+	char *right_angle_bracket = strchr (np, '>');
+
+	strncpy(localmbox, np, sizeof(localmbox));
+
+	if (left_angle_bracket	&&  at_sign  &&	 right_angle_bracket) {
+	    if (at_sign > left_angle_bracket  &&
+		at_sign - left_angle_bracket < BUFSIZ) {
+		strncpy(username, left_angle_bracket + 1,
+			at_sign - left_angle_bracket - 1);
+	    }
+	}
+    }
+
+    if (username[0] == '\0') {
+	strncpy (username, pw->pw_name, sizeof(username));
+    }
+
+    username[sizeof(username) - 1] = '\0';
+
+    escape_local_part(username, sizeof(username));
+
+
+    /* fullname */
     np = pw->pw_gecos;
 
     /* Get the user's real name from the GECOS field.  Stop once we hit a ',',
@@ -381,8 +401,6 @@ getuserinfo (void)
     for (cp = fullname; *np != '\0' && *np != ','; *cp++ = *np++)
 	continue;
     *cp = '\0';
-
-    strncpy (username, pw->pw_name, sizeof(username));
 
     /* The $SIGNATURE environment variable overrides the GECOS field's idea of
        your real name. If SIGNATURE isn't set, use the Signature profile
@@ -396,9 +414,14 @@ getuserinfo (void)
 
     escape_display_name(fullname, sizeof(fullname));
 
-    localmbox[0] = '\0';
 
-    return;
+    /* localmbox, if not using Local-Mailbox */
+    if (localmbox[0] == '\0') {
+	snprintf(localmbox, sizeof(localmbox), "%s <%s@%s>", fullname,
+		 username, LocalName(0));
+    }
+
+    localmbox[sizeof(localmbox) - 1] = '\0';
 }
 
 static const char*

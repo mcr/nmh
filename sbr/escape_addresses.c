@@ -1,5 +1,5 @@
 /*
- * escape_display_name.c -- Escape a display name, hopefully per RFC 5322.
+ * escape_addresses.c -- Escape address components, hopefully per RFC 5322.
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
@@ -11,14 +11,38 @@
 #include <string.h>
 #include <stdlib.h>
 
-/* Escape a display name, hopefully per RFC 5322.  Assumes one-byte
-   characters.  The char array pointed to by the name argument is
-   modified in place.  Its size is specified by the namesize
-   argument. */
+static void
+escape_component (char *name, size_t namesize, char *chars);
+
+
 void
 escape_display_name (char *name, size_t namesize) {
-    /* Quote and escape name that contains any specials, as necessary. */
-    if (strpbrk("\"(),.:;<>@[\\]", name)) {
+  char *specials = "\"(),.:;<>@[\\]";
+  escape_component (name, namesize, specials);
+}
+
+
+void
+escape_local_part (char *name, size_t namesize) {
+  /* wsp (whitespace) is horizontal tab or space, according to
+     RFC 5234. */
+  char *specials_less_dot_plus_wsp = "	 \"(),:;<>@[\\]";
+  escape_component (name, namesize, specials_less_dot_plus_wsp);
+}
+
+
+/* Escape an address component, hopefully per RFC 5322.  Assumes
+   one-byte characters.  The char array pointed to by the name
+   argument is modified in place.  Its size is specified by the
+   namesize argument.  The need_escape argument is a string of
+   characters that require that name be escaped. */
+void
+escape_component (char *name, size_t namesize, char *chars_to_escape) {
+    /* If name contains any chars_to_escape:
+       1) enclose it in ""
+       2) escape any embedded "
+     */
+    if (strpbrk(name, chars_to_escape)) {
         char *destp, *srcp;
         /* Maximum space requirement would be if each character had
            to be escaped, plus enclosing double quotes, plus null termintor.
