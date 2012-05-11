@@ -145,6 +145,12 @@ setup_test ()
   else
     (cd ${MH_OBJ_DIR} && make DESTDIR=${MH_INST_DIR} SETGID_MAIL= install) ||
       exit 1
+
+    #### Don't test with sendmail because it would really send the
+    #### mail.  If configured to use sendmail, change to smtp instead
+    #### so that we use fakesmtp.
+    sed -e 's/mts: *sendmail/mts: smtp/' ${MHMTSCONF} >${MHMTSCONF}.new
+    mv -f ${MHMTSCONF}.new ${MHMTSCONF}
   fi
 
   # clean old test data
