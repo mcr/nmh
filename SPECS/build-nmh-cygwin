@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 # ==========================================================================
+# Change from generic-build-script:  added this comment block.
 # Based on Cygwin generic package build script, customized for nmh.
-# Relies on nmh VERSION file.
 #
 # This script is incompatible with directory names that contain spaces, etc.
 # To fix that, a whole bunch of shell variables need to be wrapped with "".
@@ -38,44 +38,32 @@ else
   fi
 fi
 
-# Change from generic-build-script:  save pwd for later use.
-pwd=`pwd`
-
-# Change from generic-build-script:  base version on contents of
-# VERSION instead of script name.  Looks first for VERSION in
-# current directory, then in $topdir.
-test -e VERSION  &&  version=VERSION  ||  version="${topdir}/VERSION"
-if ! test -e "${version}"; then
-  echo "$0: need VERSION file"
-  exit 1
-fi
-
-tscriptname=nmh-`cat "${version}"`
-# Change from generic-build-script: allow + in addition to - between
-# VER and REL, e.g., 1.5+dev.
-export PKG=`echo $tscriptname | sed -e 's/\-[^\-]*[+-][^+-]*$//'`
-export VER=`echo $tscriptname | sed -e "s/${PKG}\-//" -e 's/[+-][^+-]*$//'`
-export REL=`echo $tscriptname | sed -e "s/${PKG}\-${VER}\([+-]\)/\1/"`
+tscriptname=`basename $0 .sh`
+export PKG=`echo $tscriptname | sed -e 's/\-[^\-]*\-[^\-]*$//'`
+export VER=`echo $tscriptname | sed -e "s/${PKG}\-//" -e 's/\-[^\-]*$//'`
+export REL=`echo $tscriptname | sed -e "s/${PKG}\-${VER}\-//"`
 # BASEPKG refers to the upstream base package
 # SHORTPKG refers to the Cygwin package
 # Normally, these are identical, but if the Cygwin package name is different
 # from the upstream package name, you will want to redefine BASEPKG.
 # Example: For Apache 2, BASEPKG=httpd-2.x.xx but SHORTPKG=apache2-2.x.xx
-#
-# Change from generic-build-script: added -${REL} to BASEPKG.
-export BASEPKG=${PKG}-${VER}${REL}
+export BASEPKG=${PKG}-${VER}
+# Change from generic-build-script:  redefined BASEPKG.
+export BASEPKG=${PKG}-${VER}-RC2
 export SHORTPKG=${PKG}-${VER}
-export FULLPKG=${SHORTPKG}${REL}
+export FULLPKG=${SHORTPKG}-${REL}
 
 # determine correct decompression option and tarball filename
-export src_orig_pkg_name=
+# Change from generic-build-script:  set scr_orig_pkg_name here.
+export src_orig_pkg_name=nmh-1.5-RC2.tar.gz
 if [ -e "${src_orig_pkg_name}" ] ; then
-  export opt_decomp=? # Make sure tar punts if unpack() is not redefined
-# Change from generic-build-script: ${BASEPKG}.tar.bz2 is an output of
-#  this script, so don't trip over it on a rerun.
-# elif [ -e ${BASEPKG}.tar.bz2 ] ; then
-#   export opt_decomp=j
-#   export src_orig_pkg_name=${BASEPKG}.tar.bz2
+  # Change from generic-build-script:  don't need the following line, use
+  # opt_decomp of z.
+  # export opt_decomp=? # Make sure tar punts if unpack() is not redefined
+  export opt_decomp=z
+elif [ -e ${BASEPKG}.tar.bz2 ] ; then
+  export opt_decomp=j
+  export src_orig_pkg_name=${BASEPKG}.tar.bz2
 elif [ -e ${BASEPKG}.tar.gz ] ; then
   export opt_decomp=z
   export src_orig_pkg_name=${BASEPKG}.tar.gz
@@ -86,16 +74,9 @@ elif [ -e ${BASEPKG}.tar ] ; then
   export opt_decomp=
   export src_orig_pkg_name=${BASEPKG}.tar
 else
-  # Change from generic-build-script:  build the tarball if it doesn't exist.
-  (cd "${topdir}" && make dist)
-  if [ -e "${topdir}/${BASEPKG}.tar.gz" ] ; then
-    export opt_decomp=z
-    export src_orig_pkg_name=${BASEPKG}.tar.gz
-  else
-    echo "Cannot find PKG:${PKG} VER:${VER} REL:${REL}.  Rename $0 to"
-    echo "something more appropriate, and try again."
-    exit 1
-  fi
+  echo "Cannot find PKG:${PKG} VER:${VER} REL:${REL}.  Rename $0 to"
+  echo "something more appropriate, and try again."
+  exit 1
 fi
 
 export src_orig_pkg=${topdir}/${src_orig_pkg_name}
@@ -111,12 +92,10 @@ export makelogname=${FULLPKG}-MAKE.LOG
 export checklogname=${FULLPKG}-CHECK.LOG
 export installlogname=${FULLPKG}-INSTALL.LOG
 
-# Change from generic-build-script: put src_pkg and bin_pkg in current
-# directory.
-export src_pkg=${pwd}/${src_pkg_name}
-export src_patch="${topdir}"/${src_patch_name}
-export bin_pkg=${pwd}/${bin_pkg_name}
-export srcdir="${topdir}"/${BASEPKG}
+export src_pkg=${topdir}/${src_pkg_name}
+export src_patch=${topdir}/${src_patch_name}
+export bin_pkg=${topdir}/${bin_pkg_name}
+export srcdir=${topdir}/${BASEPKG}
 export objdir=${srcdir}/.build
 export instdir=${srcdir}/.inst
 export srcinstdir=${srcdir}/.sinst
@@ -236,14 +215,12 @@ mkdirs_log() {
 }
 
 # Unpack the original tarball, and get everything set up for this script.
-# Change from generic-build-script:  cd to ${srcdir} instead of ${topdir}.
-# Change from generic-build-script:  use -p1 instead of -p0 patch option.
 prep() {
   (cd ${topdir} && \
   unpack ${src_orig_pkg} && \
-  cd ${srcdir} && \
+  cd ${topdir} && \
   if [ -f ${src_patch} ] ; then \
-    patch -Z -p1 < ${src_patch} ;\
+    patch -Z -p0 < ${src_patch} ;\
   fi && \
   mkdirs )
 }
@@ -443,7 +420,6 @@ acceptpatch() {
 }
 
 # Build the source tarball.
-# Change from generic-build-script:  added VERSION file.
 spkg() {
   (mkpatch && \
   if [ "${SIG}" -eq 1 ] ; then \
@@ -458,7 +434,6 @@ spkg() {
   if [ "${SIG}" -eq 1 ] ; then \
     cp $0.sig ${srcinstdir}/ ; \
   fi && \
-  cp "${version}" "${srcinstdir}" && \
   cd ${srcinstdir} && \
   tar cvjf ${src_pkg} * )
 }
