@@ -404,7 +404,9 @@ getuserinfo (void)
 
     /* The $SIGNATURE environment variable overrides the GECOS field's idea of
        your real name. If SIGNATURE isn't set, use the Signature profile
-       setting if it exists. */
+       setting if it exists.
+       Note that post(8) and whom(1) use context_foil (), so they
+       won't see the profile component. */
     if ((cp = getenv ("SIGNATURE")) && *cp)
 	strncpy (fullname, cp, sizeof(fullname));
     else if ((cp = context_find("Signature")))

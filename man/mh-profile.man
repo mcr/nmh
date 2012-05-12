@@ -327,8 +327,11 @@ superseded by the environment variable
 .BR Signature :
 RAND MH System (agent: Marshall Rose)
 .RS 5
-Tells
-.B send
+Tells front-end programs such as
+.BR comp,
+.BR forw,
+and
+.B repl
 your mail signature.  This is superseded by the
 environment variable
 .BR $SIGNATURE .
@@ -339,7 +342,8 @@ the \fI/etc/passwd\fP file will be used.
 Your signature will be added to the address
 .B send
 puts in the \*(lqFrom:\*(rq header; do not include an address in the
-signature text.  (profile, no default)
+signature text.  The \*(lqLocal\-Mailbox\*(rq profile component
+supersedes all of this.  (profile, no default)
 .RE
 
 .SS "Process Profile Entries"
@@ -743,7 +747,8 @@ This variable tells
 .B send
 and
 .B post
-your mail signature. This supersedes the \*(lqSignature\*(rq profile entry.
+your mail signature. This supersedes the \*(lqSignature\*(rq profile entry,
+and is not used when the \*(lqLocal\-Mailbox\*(rq profile component is set.
 .RE
 .PP
 .B $USER
