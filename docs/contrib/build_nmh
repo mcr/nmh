@@ -106,6 +106,7 @@ fi
 #### Here are the config options that we will try to detect, then
 #### confirm, and finally set.
 config_prefix=/usr/local/nmh
+config_locking=
 config_mts=smtp
 config_smtpservers=localhost
 config_sasl=n
@@ -129,7 +130,7 @@ if install-mh -check >/dev/null 2>&1; then
   mtsconf=`dirname "$mhbin"`/etc/mts.conf
   if [ -f "$mtsconf" ]; then
     mts_entry=`grep '^mts:' $mtsconf`
-    if [ "mts_entry" ]; then
+    if [ "$mts_entry" ]; then
       mts=`echo $mts_entry | sed -e 's/^mts: *//'`
       if [ "$mts"  -a  "$mts" != smtp ]; then
         config_mts="$mts"
@@ -168,13 +169,15 @@ if [ $yes -eq 0 ]; then
   read prefix
   [ "$prefix" ]  &&  config_prefix="$prefix"
 
+  printf 'Locking type (dot|fcntl|flock|lockf) [determined by configure]: '
+  read locking
+  [ "$locking" ]  &&  config_locking="$locking"
+
   printf 'MTS (smtp|sendmail) [%s]: ' $config_mts
   read mts
   [ "$mts" ]  &&  config_mts="$mts"
 
-  if [ "$mts"  -o  "$mts" = smtp ]; then
-    :
-  else
+  if [ "$config_mts" = smtp ]; then
     printf 'SMTP server(s), space separated [%s]: ' $config_smtpservers
     read response
     servers=`echo $response | sed -e 's/ /\\\ /g'`
@@ -211,6 +214,8 @@ fi
 smtpservers=
 config_opts="--prefix=$config_prefix"
 
+[ "$config_locking" ]  &&  \
+  config_opts="$config_opts --with-locking=$config_locking"
 [ "$config_mts"  -a  "$config_mts" != smtp ]  &&  \
   config_opts="$config_opts --with-mts=$config_mts"
 [ "$config_smtpservers"  -a  "$config_smtpservers" != localhost ]  &&  \
@@ -225,6 +230,17 @@ config_opts="--prefix=$config_prefix"
   config_opts="$config_opts --with-pager=$config_pager"
 [ $config_debug = y ]  &&  \
   config_opts="$config_opts --enable-debug"
+
+
+#### dotlocking, the usual default, requires chgrp and chmod of inc.
+installpriv=
+if [ $install -ge 1  -a  `id -u` -ne 0 ]; then
+  if [ "$config_locking" = dot ]; then
+    echo "$0: "'install requires chgrp and chmod 2755'
+    echo 'so will sudo to install.  Terminate with Ctrl-C if unacceptable.'
+    installpriv=sudo
+  fi
+fi
 
 
 ####
@@ -278,7 +294,7 @@ if [ $status -eq 0 ]; then
     if [ $status -eq 0 ]; then
       if [ $install -ge 1 ]; then
         [ $verbose -ge 1 ]  &&  echo installing . . .
-        (make install) >/dev/null 2>>$logfile
+        ($installpriv make install) >/dev/null 2>>$logfile
         status=$?
       fi
 
@@ -293,7 +309,10 @@ fi
 
 grep 'Error' $logfile
 grep 'warn' $logfile
-[ $status -ne 0 ]  &&  echo build failed!
+if [ $status -ne 0 ]; then
+  echo build failed!
+  echo build log is in $logfile
+fi
 [ $status -eq 0  -a  $verbose -ge 1 ]  &&  echo build completed successfully
 
 exit $status
