@@ -661,15 +661,15 @@ sub null_decoder ($)
 
 sub match_boundary($$)
 {
-	my ($_, $boundary) = @_;
+	my ($line, $boundary) = @_;
 
 	return if ! defined $boundary;
 
-	if (substr($_, 0, 2) eq '--') {
-		s/[ \t\r\n]+\Z//;
-		if ($_ eq "--$boundary") {
+	if (substr($line, 0, 2) eq '--') {
+		$line =~ s/[ \t\r\n]+\Z//;
+		if ($line eq "--$boundary") {
 			return 'EOP';
-		} elsif ($_ eq "--$boundary--") {
+		} elsif ($line eq "--$boundary--") {
 			return 'EOM';
 		}
 	}
