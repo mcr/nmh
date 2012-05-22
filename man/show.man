@@ -203,7 +203,7 @@ mhl(1), mhshow(1), more(1), next(1), prev(1), scan(1)
 
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
-message shown will become the current message.
+message selected will become the current message.
 
 .SH BUGS
 The
