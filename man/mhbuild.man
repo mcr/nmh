@@ -682,7 +682,3 @@ mhlist(1), mhshow(1), mhstore(1),
 .RB ` \-noebcdicsafe '
 .RB ` \-noverbose '
 .fi
-
-.SH CONTEXT
-If a folder is given, it will become the current folder.  The last
-message selected will become the current message.

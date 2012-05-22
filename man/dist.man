@@ -9,7 +9,7 @@ dist \- redistribute a message to additional addresses
 .na
 .B dist
 .RI [ +folder ]
-.RI [ msgs ]
+.RI [ msg ]
 .RB [ \-form
 .IR formfile ]
 .RB [ \-annotate " | " \-noannotate ] 

@@ -9,7 +9,7 @@ comp \- compose a message
 .na
 .B comp 
 .RI [ +folder ]
-.RI [ msgs ]
+.RI [ msg ]
 .RB [ \-form
 .IR formfile ]
 .RB [ \-use " | " \-nouse ]
