@@ -425,6 +425,14 @@ do_cache:
 	}
     }
 
+    /* If reading from a folder, do some updating */
+    if (mp) {
+	context_replace (pfolder, folder);/* update current folder  */
+	seq_setcur (mp, mp->hghsel);	  /* update current message */
+	seq_save (mp);			  /* synchronize sequences  */
+	context_save ();		  /* save the context file  */
+    }
+
     /*
      * Show the message content
      */
@@ -436,14 +444,6 @@ do_cache:
 
     free ((char *) cts);
     cts = NULL;
-
-    /* If reading from a folder, do some updating */
-    if (mp) {
-	context_replace (pfolder, folder);/* update current folder  */
-	seq_setcur (mp, mp->hghsel);	  /* update current message */
-	seq_save (mp);			  /* synchronize sequences  */
-	context_save ();		  /* save the context file  */
-    }
 
     done (0);
     return 1;
