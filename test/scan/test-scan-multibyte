@@ -1,0 +1,55 @@
+#!/bin/sh
+############################################################
+#
+# Test scan to see if multibyte support (UTF-8 locale) works
+#
+# Other tests will get the normal ASCII case, so all we care
+# about here is UTF-8 encoded headers (RFC 2047).
+#
+# Note that this file should be edited via a UTF-8 aware
+# editor, since UTF-8 characters are in it.
+#
+############################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+if test "${MULTIBYTE_ENABLED}" -ne 1; then
+    test_skip "configure did not detect multibyte support"
+fi
+
+export LC_ALL=en_US.UTF-8
+
+#
+# Create a test message with RFC 2047 headers we can scan
+#
+
+cat > "${MH_TEST_DIR}/Mail/inbox/11" <<EOF
+From: David =?utf-8?q?=EF=AC=86?= Hubbins <hubbins@example.com>
+To: Sir Denis =?utf-8?q?Eton=E2=80=93Hogg? <sirdenis@example.com>
+Date: Friday, 2 Mar 1984 00:00:00
+Subject: =?utf-8?q?Spin=CC=88al_Tap_=E2=86=92_Tap_into_America!?=
+
+Things are looking great!
+EOF
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+cat > $expected <<EOF
+  11  03/02 David ﬆ Hubbins    Spin̈al Tap → Tap into America!<<Things are
+EOF
+
+scan -width 80 +inbox 11 > $actual || exit 1
+
+check "$expected" "$actual"
+
+exit $failed

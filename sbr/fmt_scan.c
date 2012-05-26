@@ -208,37 +208,64 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
 }
 
 static void
-cpstripped (char **start, char *end, char *str)
+cpstripped (char **dest, char *end, char *str)
 {
-    int c;
-    char *s = str;
+    int prevCtrl = 1;	/* This is 1 so we strip out leading spaces */
+    int len;
+#ifdef MULTIBYTE_SUPPORT
+    int char_len;
+    wchar_t wide_char;
+#endif /* MULTIBYTE_SUPPORT */
 
-    if (!s)
+    if (!str)
 	return;
 
-    /* skip any initial control characters or spaces */
-    while ((c = (unsigned char) *s) &&
-#ifdef LOCALE
-	    (iscntrl(c) || isspace(c)))
-#else
-	    (c <= 32))
-#endif
-	s++;
+    len = strlen(str);
 
-    /* compact repeated control characters and spaces into a single space */
-    while((c = (unsigned char) *s++) && *start < end)
-	if (!iscntrl(c) && !isspace(c))
-	    *(*start)++ = c;
-	else {
-	    while ((c = (unsigned char) *s) &&
-#ifdef LOCALE
-		    (iscntrl(c) || isspace(c)))
-#else
-		    (c <= 32))
-#endif
-		s++;
-	    *(*start)++ = ' ';
+#ifdef MULTIBYTE_SUPPORT
+    mbtowc(NULL, NULL, 0);  /* Reset shift state */
+#endif /* MULTIBYTE_SUPPORT */
+
+    /*
+     * Process each character at a time; if we have multibyte support
+     * then deal with that here.
+     */
+
+    while (*str != '\0' && len > 0 && *dest < end) {
+#ifdef MULTIBYTE_SUPPORT
+    	char_len = mbtowc(&wide_char, str, len);
+
+	if (char_len <= 0 || *dest + char_len > end)
+	    break;
+
+	len -= char_len;
+
+	if (iswcntrl(wide_char) || iswspace(wide_char)) {
+	    str += char_len;
+#else /* MULTIBYTE_SUPPORT */
+	int c = *str;
+	len--;
+	if (iscntrl(c) || isspace(c)) {
+	    str++;
+#endif /* MULTIBYTE_SUPPORT */
+	    if (! prevCtrl) {
+	    	*(*dest)++ = ' ';
+	    }
+
+	    prevCtrl = 1;
+	    continue;
 	}
+
+	prevCtrl = 0;
+
+#ifdef MULTIBYTE_SUPPORT
+	memcpy(*dest, str, char_len);
+	str += char_len;
+	*dest += char_len;
+#else /* MULTIBYE_SUPPORT */
+	*(*dest)++ = *str++
+#endif /* MULTIBYTE_SUPPORT */
+    }
 }
 
 static char *lmonth[] = { "January",  "February","March",   "April",

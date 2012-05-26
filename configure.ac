@@ -441,11 +441,15 @@ dnl ---------------
 AC_CHECK_FUNCS([wcwidth mbtowc writev lstat nl_langinfo getutxent])
 
 dnl Check for multibyte character set support
-if test "x$ac_cv_header_wchar_h" = "xyes" -a "x$ac_cv_header_wctype_h" = "xyes" \
-    -a "x$ac_cv_func_wcwidth" = "xyes" -a "x$ac_cv_func_mbtowc" = "xyes"; then
-  AC_DEFINE(MULTIBYTE_SUPPORT, 1,
-    [Define to enable support for multibyte character sets.])
-fi
+AS_IF([test "x$ac_cv_header_wchar_h" = "xyes" -a \
+	    "x$ac_cv_header_wctype_h" = "xyes" -a \
+	    "x$ac_cv_func_wcwidth" = "xyes" -a \
+	    "x$ac_cv_func_mbtowc" = "xyes"],
+      [AC_DEFINE([MULTIBYTE_SUPPORT], [1],
+		 [Define to enable support for multibyte character sets.])
+       MULTIBYTE_ENABLED=1],
+      [MULTIBYTE_ENABLED=0])
+AC_SUBST([MULTIBYTE_ENABLED])
 
 dnl -------------------
 dnl CHECK FOR LIBRARIES

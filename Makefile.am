@@ -37,6 +37,7 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR=@abs_builddir@ \
 		    MH_TEST_DIR=@abs_builddir@/test/testdir \
 		    auxexecdir=$(auxexecdir) bindir=$(bindir) \
 		    mandir=$(mandir) sysconfdir=$(sysconfdir) \
+		    MULTIBYTE_ENABLED=$(MULTIBYTE_ENABLED) \
 		    $(TESTS_SHELL) ## Keep at end of TESTS_ENVIRONMENT.
 ##
 ## Important note: the "cleanup" test should always be last
@@ -66,7 +67,7 @@ TESTS = test/bad-input/test-header \
 	test/refile/test-refile \
 	test/repl/test-if-str test/repl/test-trailing-newline \
 	test/repl/test-multicomp \
-	test/scan/test-scan \
+	test/scan/test-scan test/scan/test-scan-multibyte \
 	test/sequences/test-flist test/sequences/test-mark \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
 	test/whatnow/test-ls test/whom/test-whom \
