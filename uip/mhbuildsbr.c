@@ -72,7 +72,7 @@ void free_encoding (CT, int);
 /*
  * prototypes
  */
-CT build_mime (char *);
+CT build_mime (char *, int);
 
 /*
  * static prototypes
@@ -87,6 +87,37 @@ static int build_headers (CT);
 static char *calculate_digest (CT, int);
 
 
+static unsigned char directives_stack[32];
+static unsigned int directives_index;
+
+static int do_direct(void)
+{
+    return directives_stack[directives_index];
+}
+
+static void directive_onoff(int onoff)
+{
+    if (directives_index >= sizeof(directives_stack)) {
+	fprintf(stderr, "mhbuild: #on/off overflow, continuing\n");
+	return;
+    }
+    directives_stack[++directives_index] = onoff;
+}
+
+static void directive_init(int onoff)
+{
+    directives_index = 0;
+    directives_stack[0] = onoff;
+}
+
+static void directive_pop(void)
+{
+    if (directives_index > 0)
+	directives_index--;
+    else
+	fprintf(stderr, "mhbuild: #pop underflow, continuing\n");
+}
+
 /*
  * Main routine for translating composition file
  * into valid MIME message.  It translates the draft
@@ -97,7 +128,7 @@ static char *calculate_digest (CT, int);
  */
 
 CT
-build_mime (char *infile)
+build_mime (char *infile, int directives)
 {
     int	compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -106,6 +137,8 @@ build_mime (char *infile)
     struct part **pp;
     CT ct;
     FILE *in;
+
+    directive_init(directives);
 
     umask (~m_gmprot ());
 
@@ -327,20 +360,34 @@ static char *
 fgetstr (char *s, int n, FILE *stream)
 {
     char *cp, *ep;
+    int o_n = n;
 
-    for (ep = (cp = s) + n; cp < ep; ) {
-	int i;
+    while(1) {
+	for (ep = (cp = s) + o_n; cp < ep; ) {
+	    int i;
 
-	if (!fgets (cp, n, stream))
-	    return (cp != s ? s : NULL);
-	if (cp == s && *cp != '#')
-	    return s;
+	    if (!fgets (cp, n, stream))
+		return (cp != s ? s : NULL);
 
-	cp += (i = strlen (cp)) - 1;
-	if (i <= 1 || *cp-- != '\n' || *cp != '\\')
+	    if (cp == s && *cp != '#')
+		return s;
+
+	    cp += (i = strlen (cp)) - 1;
+	    if (i <= 1 || *cp-- != '\n' || *cp != '\\')
+		break;
+	    *cp = '\0';
+	    n -= (i - 2);
+	}
+
+	if (strcmp(s, "#on\n") == 0) {
+	    directive_onoff(1);
+	} else if (strcmp(s, "#off\n") == 0) {
+	    directive_onoff(0);
+	} else if (strcmp(s, "#pop\n") == 0) {
+	    directive_pop();
+	} else {
 	    break;
-	*cp = '\0';
-	n -= (i - 2);
+	}
     }
 
     return s;
@@ -367,7 +414,7 @@ user_content (FILE *in, char *file, char *buf, CT *ctp)
     CT ct;
     CE ce;
 
-    if (buf[0] == '\n' || strcmp (buf, "#\n") == 0) {
+    if (buf[0] == '\n' || (do_direct() && strcmp (buf, "#\n") == 0)) {
 	*ctp = NULL;
 	return OK;
     }
@@ -392,7 +439,7 @@ user_content (FILE *in, char *file, char *buf, CT *ctp)
      * 2) begins with "##"		(implicit directive)
      * 3) begins with "#<"
      */
-    if (buf[0] != '#' || buf[1] == '#' || buf[1] == '<') {
+    if (!do_direct() || buf[0] != '#' || buf[1] == '#' || buf[1] == '<') {
 	int headers;
 	int inlineD;
 	long pos;
@@ -407,7 +454,7 @@ user_content (FILE *in, char *file, char *buf, CT *ctp)
 	ce->ce_file = add (cp, NULL);
 	ce->ce_unlink = 1;
 
-	if (buf[0] == '#' && buf[1] == '<') {
+	if (do_direct() && (buf[0] == '#' && buf[1] == '<')) {
 	    strncpy (content, buf + 2, sizeof(content));
 	    inlineD = 1;
 	    goto rock_and_roll;
@@ -418,11 +465,11 @@ user_content (FILE *in, char *file, char *buf, CT *ctp)
 	/* the directive is implicit */
 	strncpy (content, "text/plain", sizeof(content));
 	headers = 0;
-	strncpy (buffer, buf[0] != '#' ? buf : buf + 1, sizeof(buffer));
+	strncpy (buffer, (!do_direct() || buf[0] != '#') ? buf : buf + 1, sizeof(buffer));
 	for (;;) {
 	    int	i;
 
-	    if (headers >= 0 && uprf (buffer, DESCR_FIELD)
+	    if (headers >= 0 && do_direct() && uprf (buffer, DESCR_FIELD)
 		&& buffer[i = strlen (DESCR_FIELD)] == ':') {
 		headers = 1;
 
@@ -445,7 +492,7 @@ again_descr:
 		}
 	    }
 
-	    if (headers >= 0 && uprf (buffer, DISPO_FIELD)
+	    if (headers >= 0 && do_direct() && uprf (buffer, DISPO_FIELD)
 		&& buffer[i = strlen (DISPO_FIELD)] == ':') {
 		headers = 1;
 
@@ -476,7 +523,7 @@ rock_and_roll:
 	    pos = ftell (in);
 	    if ((cp = fgetstr (buffer, sizeof(buffer) - 1, in)) == NULL)
 		break;
-	    if (buffer[0] == '#') {
+	    if (do_direct() && buffer[0] == '#') {
 		char *bp;
 
 		if (buffer[1] != '#')

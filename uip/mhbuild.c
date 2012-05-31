@@ -25,43 +25,47 @@ static struct swit switches[] = {
     { "check", 0 },
 #define	NCHECKSW                1
     { "nocheck", 0 },
-#define	EBCDICSW                2
+#define	DIRECTIVES              2
+    { "directives", 0 },
+#define	NDIRECTIVES             3
+    { "nodirectives", 0 },
+#define	EBCDICSW                4
     { "ebcdicsafe", 0 },
-#define	NEBCDICSW               3
+#define	NEBCDICSW               5
     { "noebcdicsafe", 0 },
-#define	HEADSW                  4
+#define	HEADSW                  6
     { "headers", 0 },
-#define	NHEADSW                 5
+#define	NHEADSW                 7
     { "noheaders", 0 },
-#define	LISTSW                  6
+#define	LISTSW                  8
     { "list", 0 },
-#define	NLISTSW                 7
+#define	NLISTSW                 9
     { "nolist", 0 },
-#define	SIZESW                  8
+#define	SIZESW                 10
     { "realsize", 0 },
-#define	NSIZESW                 9
+#define	NSIZESW                11
     { "norealsize", 0 },
-#define	RFC934SW               10
+#define	RFC934SW               12
     { "rfc934mode", 0 },
-#define	NRFC934SW              11
+#define	NRFC934SW              13
     { "norfc934mode", 0 },
-#define	VERBSW                 12
+#define	VERBSW                 14
     { "verbose", 0 },
-#define	NVERBSW                13
+#define	NVERBSW                15
     { "noverbose", 0 },
-#define	RCACHESW               14
+#define	RCACHESW               16
     { "rcache policy", 0 },
-#define	WCACHESW               15
+#define	WCACHESW               17
     { "wcache policy", 0 },
-#define	CONTENTIDSW            16
+#define	CONTENTIDSW            18
     { "contentid", 0 },
-#define	NCONTENTIDSW           17
+#define	NCONTENTIDSW           19
     { "nocontentid", 0 },
-#define VERSIONSW              18
+#define VERSIONSW              20
     { "version", 0 },
-#define	HELPSW                 19
+#define	HELPSW                 21
     { "help", 0 },
-#define	DEBUGSW                20
+#define	DEBUGSW                22
     { "debug", -5 },
     { NULL, 0 }
 };
@@ -96,7 +100,7 @@ static int unlink_outfile = 0;
 static void unlink_done (int) NORETURN;
 
 /* mhbuildsbr.c */
-CT build_mime (char *);
+CT build_mime (char *, int);
 int output_message (CT, char *);
 int output_message_fp (CT, FILE *, char*);
 
@@ -110,7 +114,7 @@ void free_content (CT);
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1;
+    int sizesw = 1, headsw = 1, directives = 1;
     int *icachesw;
     char *cp, buf[BUFSIZ];
     char buffer[BUFSIZ], *compfile = NULL;
@@ -196,6 +200,13 @@ main (int argc, char **argv)
 		continue;
 	    case NHEADSW:
 		headsw = 0;
+		continue;
+
+	    case DIRECTIVES:
+		directives = 1;
+		continue;
+	    case NDIRECTIVES:
+		directives = 0;
 		continue;
 
 	    case LISTSW:
@@ -306,7 +317,7 @@ main (int argc, char **argv)
 	unlink_infile = 1;
 
 	/* build the content structures for MIME message */
-	ct = build_mime (infile);
+	ct = build_mime (infile, directives);
 	cts[0] = ct;
 	cts[1] = NULL;
 
@@ -340,7 +351,7 @@ main (int argc, char **argv)
      */
 
     /* build the content structures for MIME message */
-    ct = build_mime (compfile);
+    ct = build_mime (compfile, directives);
     cts[0] = ct;
     cts[1] = NULL;
 

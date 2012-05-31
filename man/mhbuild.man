@@ -12,6 +12,7 @@ mhbuild \- translate MIME composition draft
 .RB [ \-list " | " \-nolist ]
 .RB [ \-realsize " | " \-norealsize ]
 .RB [ \-headers " | " \-noheaders ]
+.RB [ \-directives " | " \-nodirectives ]
 .RB [ \-ebcdicsafe " | " \-noebcdicsafe ]
 .RB [ \-rfc934mode " | " \-norfc934mode ]
 .RB [ \-contentid " | " \-nocontentid ]
@@ -115,12 +116,36 @@ than one line, e.g.,
 .fi
 .RE
 .PP
-There are four kinds of directives: \*(lqtype\*(rq directives, which
+There are five kinds of directives: \*(lqtype\*(rq directives, which
 name the type and subtype of the content; \*(lqexternal-type\*(rq
 directives, which also name the type and subtype of the content; the
 \*(lqmessage\*(rq directive (#forw), which is used to forward one or
-more messages; and, the \*(lqbegin\*(rq directive (#begin), which is
-used to create a multipart content.
+more messages; the \*(lqbegin\*(rq directive (#begin), which is
+used to create a multipart content; and the \*(lqon/off/pop\*(rq
+directives (#on, #off, #pop) which control whether any other
+directives are honored at all.
+.PP
+The
+.B \-directives
+switch allows control over whether mhbuild will honor any of the
+\*(lq#\*(rq-directives.  This can also be affected with the #on or
+#off directives, and #pop, which restores the state of processing to
+that preceding the most recent #on or #off.  (The #on, #off, and #pop
+directives are always honored, of course.) This allows inclusion of
+plain text which looks like mhbuild directives, without causing
+errors:
+.PP
+.RS 5
+.nf
+#off
+#include <stdio.h>
+
+printf("Hello, World!);
+#pop
+.fi
+.RE
+.PP
+Currently the stack depth for the #on/off/pop directives is 32.
 .PP
 The \*(lqtype\*(rq directive is used to directly specify the type and
 subtype of a content.  You may only specify discrete types in this manner
