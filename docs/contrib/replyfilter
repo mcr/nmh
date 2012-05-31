@@ -193,7 +193,7 @@ sub process_text (*$$;$)
 
 		binmode($input, ':encoding(us-ascii)');
 
-		$decoder = find_decoder($encoding);
+		$decoder = find_decoder(lc($encoding));
 		if (! defined $decoder) {
 			return 'EOF';
 		}
@@ -348,7 +348,7 @@ sub process_html (*$$;$)
 	my $filterpid, $prefixpid, $finread, $finwrite;
 	my $foutread, $foutwrite, $decoder, $ret;
 
-	if (! defined($decoder = find_decoder($encoding))) {
+	if (! defined($decoder = find_decoder(lc($encoding)))) {
 		return 'EOF';
 	}
 
