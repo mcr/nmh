@@ -97,7 +97,7 @@ static int do_direct(void)
 
 static void directive_onoff(int onoff)
 {
-    if (directives_index >= sizeof(directives_stack)) {
+    if (directives_index >= sizeof(directives_stack) - 1) {
 	fprintf(stderr, "mhbuild: #on/off overflow, continuing\n");
 	return;
     }
