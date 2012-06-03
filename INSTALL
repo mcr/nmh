@@ -67,12 +67,7 @@ need an ANSI C compiler such as gcc.
 
    Note that if you have [n]mh files in your install directories with
    the same names as the files being installed, the old ones will get
-   overwritten without any warning.  The only directory that isn't
-   true for is the `etc' directory -- in that directory, the previous
-   copy of each <file> will be backed up as <file>.prev if it differs
-   from the newly-installed copy.  Watch for any diff output while
-   make is processing that directory to see if you need to merge
-   changes from *.prev files into the new versions.
+   overwritten without any warning.
 
 5) Edit the file `mts.conf' (installed in the nmh `etc' directory)
    and make any necessary changes for the mail transport interface
