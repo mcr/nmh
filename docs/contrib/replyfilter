@@ -535,7 +535,7 @@ sub process_multipart ($$$)
 			$charset = 'us-ascii';
 		}
 
-		$encoding = defined $cte ? $cte->param('_') : '7bit';
+		$encoding = defined $cte ? lc($cte->param('_')) : '7bit';
 		$name = defined $cdispo ? $cdispo->param('filename') : undef;
 
                 #
