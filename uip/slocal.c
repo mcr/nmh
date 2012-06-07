@@ -225,10 +225,10 @@ main (int argc, char **argv)
 		    snprintf (buf, sizeof(buf),
 			"%s [switches] [address info sender]", invo_name);
 		    print_help (buf, switches, 0);
-		    done (1);
+		    done (0);
 		case VERSIONSW:
 		    print_version(invo_name);
-		    done (1);
+		    done (0);
 
 		case ADDRSW: 
 		    if (!(addr = *argp++))/* allow -xyz arguments */

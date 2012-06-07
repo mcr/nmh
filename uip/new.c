@@ -438,10 +438,10 @@ main(int argc, char **argv)
 		snprintf (help, sizeof(help), "%s [switches] [sequences]",
 			  invo_name);
 		print_help (help, switches, 1);
-		done (1);
+		done (0);
 	    case VERSIONSW:
 		print_version(invo_name);
-		done (1);
+		done (0);
 
 	    case FOLDERSSW:
 		if (!(folders = *argp++) || *folders == '-')

@@ -122,10 +122,10 @@ main (int argc, char **argv)
 		    snprintf (buf, sizeof(buf), "%s [switches] [users ...]",
 			invo_name);
 		    print_help (buf, switches, 1);
-		    done (1);
+		    done (0);
 		case VERSIONSW:
 		    print_version(invo_name);
-		    done (1);
+		    done (0);
 
 		case DATESW:
 		    datesw++;

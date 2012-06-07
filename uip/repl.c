@@ -181,7 +181,7 @@ main (int argc, char **argv)
 		    done (0);
 		case VERSIONSW:
 		    print_version(invo_name);
-		    done (1);
+		    done (0);
 
 		case GROUPSW:
 		    groupreply++;

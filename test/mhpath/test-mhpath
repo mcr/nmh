@@ -27,20 +27,17 @@ Usage: mhpath [+folder] [msgs] [switches]
   -version
   -help
 EOF
-# The exit status is 1 with -help, so temporarily disable -e.
-set +e
+
+# check -help
 mhpath -help > $actual 2>&1
-set -e
 check $expected $actual
 
-# check -version, which returns non-zero exit status
-set +e
+# check -version
 case `mhpath -v` in
   mhpath\ --*) ;;
   *          ) echo "$0: mhpath -v generated unexpected output" 1>&2
                failed=`expr ${failed:-0} + 1`;;
 esac
-set -e
 
 # check +
 run_test "mhpath +" "$MH_TEST_DIR/Mail"

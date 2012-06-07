@@ -109,10 +109,10 @@ main (int argc, char **argv)
 		    snprintf (buffer, sizeof(buffer), "%s [switches] file",
 			invo_name);
 		    print_help (buffer, switches, 1);
-		    done (1);
+		    done (0);
 		case VERSIONSW:
 		    print_version(invo_name);
-		    done (1);
+		    done (0);
 
 		case ERASESW: 
 		    if (!(erasep = *argp++) || *erasep == '-')

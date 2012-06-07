@@ -165,10 +165,10 @@ main(int argc, char **argv)
 		snprintf(buf, sizeof(buf), "%s [+folder1 [+folder2 ...]][switches]",
 			invo_name);
 		print_help(buf, switches, 1);
-		done(1);
+		done(0);
 	    case VERSIONSW:
 		print_version(invo_name);
-		done (1);
+		done (0);
 
 	    case SEQSW:
 		if (!(cp = *argp++) || *cp == '-')

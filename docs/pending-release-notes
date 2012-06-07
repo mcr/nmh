@@ -1,2 +1,6 @@
 Things to add to the release notes for the next full release:
 
+Backward incompatibilities:
+-- Changed exit status of each nmh command's -version and -help
+   switches from 1 to 0.
+

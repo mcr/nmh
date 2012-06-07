@@ -113,11 +113,11 @@ main (int argc, char **argv)
 			  invo_name);
 		print_help (buf, switches, 1);
 		listsw = 0;	/* HACK */
-		done (1);
+		done (0);
 	    case VERSIONSW:
 		print_version(invo_name);
 		listsw = 0;	/* HACK */
-		done (1);
+		done (0);
 
 	    case CCSW: 
 	    case DATESW: 

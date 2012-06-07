@@ -105,10 +105,10 @@ main (int argc, char **argv)
 			"%s [+folder] %s[switches] [switches for showproc]",
 			invo_name, mode == SHOW ? "[msgs] ": "");
 		    print_help (buf, switches, 1);
-		    done (1);
+		    done (0);
 		case VERSIONSW:
 		    print_version(invo_name);
-		    done (1);
+		    done (0);
 
 		case DRFTSW: 
 		    if (file)

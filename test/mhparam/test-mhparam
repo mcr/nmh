@@ -31,20 +31,17 @@ Usage: mhparam [profile-components] [switches]
   -version
   -help
 EOF
-# The exit status is 1 with -help, so temporarily disable -e.
-set +e
+
+# check -help
 mhparam -help >$actual 2>&1
-set -e
 check $expected $actual
 
-# check -version, which returns non-zero exit status
-set +e
+# check -version
 case `mhparam -v` in
   mhparam\ --*) ;;
   *           ) echo "$0: mhparam -v generated unexpected output" 1>&2
                 failed=`expr ${failed:-0} + 1`;;
 esac
-set -e
 
 # check unknown option
 run_test 'mhparam -nonexistent' 'mhparam: -nonexistent unknown'
