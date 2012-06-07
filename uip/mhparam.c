@@ -42,7 +42,6 @@ static struct proc procs [] = {
      { "context",       &context },
      { "mh-sequences",  &mh_seq },
      { "buildmimeproc", &buildmimeproc },
-     { "faceproc",      &faceproc },
      { "fileproc",      &fileproc },
      { "foldprot",      &foldprot },
      { "formatproc",	&formatproc },

@@ -314,7 +314,6 @@ extern char *defaultfolder;
 extern char *digestcomps;
 extern char *distcomps;
 extern char *draft;
-extern char *faceproc;
 extern char *fileproc;
 extern char *foldprot;
 extern char *formatproc;

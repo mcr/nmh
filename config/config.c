@@ -181,12 +181,6 @@ char *buildmimeproc = nmhbindir (/mhbuild);
 char *catproc = "/bin/cat";
 
 /*
- * mhl runs this program as a visual-end.
- */
-
-char *faceproc = NULL;
-
-/*
  * This program is usually called directly by users, but it is
  * also invoked by the post program to process an "Fcc", or by
  * comp/repl/forw/dist to refile a draft message.

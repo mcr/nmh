@@ -9,3 +9,4 @@ Backward incompatibilities:
     MHPOPDEBUG (use -snoop command line switch instead)
     MM_NOASK (use -nolist and -nopause command line switches instead)
     NOMHNPROC (use -nocheckmime command line switch instead)
+    FACEPROC (undocumented faceproc feature removed)

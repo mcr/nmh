@@ -53,47 +53,43 @@ static struct swit mhlswitches[] = {
     { "clear", 0 },
 #define	NCLRSW         3
     { "noclear", 0 },
-#define	FACESW         4
-    { "faceproc program", 0 },
-#define	NFACESW        5
-    { "nofaceproc", 0 },
-#define	FOLDSW         6
+#define	FOLDSW         4
     { "folder +folder", 0 },
-#define	FORMSW         7
+#define	FORMSW         5
     { "form formfile", 0 },
-#define	PROGSW         8
+#define	PROGSW         6
     { "moreproc program", 0 },
-#define	NPROGSW        9
+#define	NPROGSW        7
     { "nomoreproc", 0 },
-#define	LENSW         10
+#define	LENSW          8
     { "length lines", 0 },
-#define	WIDTHSW       11
+#define	WIDTHSW        9
     { "width columns", 0 },
-#define	SLEEPSW       12
+#define	SLEEPSW       10
     { "sleep seconds",  0 },
-#define	BITSTUFFSW    13
+#define	BITSTUFFSW    11
     { "dashstuffing", -12 },	/* interface from forw */
-#define	NBITSTUFFSW   14
+#define	NBITSTUFFSW   12
     { "nodashstuffing", -14 },	/* interface from forw */
-#define VERSIONSW     15
+#define VERSIONSW     13
     { "version", 0 },
-#define	HELPSW        16
+#define	HELPSW        14
     { "help", 0 },
-#define	FORW1SW       17
+#define	FORW1SW       15
     { "forward", -7 },		/* interface from forw */
-#define	FORW2SW       18
+#define	FORW2SW       16
     { "forwall", -7 },		/* interface from forw */
-#define	DGSTSW        19
+#define	DGSTSW        17
     { "digest list", -6 },
-#define VOLUMSW       20
+#define VOLUMSW       18
     { "volume number", -6 },
-#define ISSUESW       21
+#define ISSUESW       19
     { "issue number", -5 },
-#define NBODYSW       22
+#define NBODYSW       20
     { "nobody", -6 },
-#define FMTPROCSW     23
+#define FMTPROCSW     21
     { "fmtproc program", 0 },
-#define NFMTPROCSW    24
+#define NFMTPROCSW    22
     { "nofmtproc", 0 },
     { NULL, 0 }
 };
@@ -112,13 +108,11 @@ static struct swit mhlswitches[] = {
 #define	DATEFMT     0x000800	/* contains dates                    */
 #define	FORMAT      0x001000	/* parse address/date/RFC-2047 field */
 #define	INIT        0x002000	/* initialize component              */
-#define	FACEFMT     0x004000	/* contains face                     */
-#define	FACEDFLT    0x008000	/* default for face                  */
 #define	SPLIT       0x010000	/* split headers (don't concatenate) */
 #define	NONEWLINE   0x020000	/* don't write trailing newline      */
 #define NOWRAP      0x040000	/* Don't wrap lines ever             */
 #define FMTFILTER   0x080000	/* Filter through format filter      */
-#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017FACEFMT\020FACEDFLT\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER"
+#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER"
 #define	GFLAGS	(NOCOMPONENT | UPPERCASE | CENTER | LEFTADJUST | COMPRESS | SPLIT | NOWRAP)
 
 /*
@@ -137,7 +131,6 @@ struct mcomp {
     char *c_ovtxt;		/* text overflow indicator */
     char *c_nfs;		/* iff FORMAT              */
     struct format *c_fmt;	/*   ..                    */
-    char *c_face;		/* face designator         */
     int c_offset;		/* left margin indentation */
     int c_ovoff;		/* overflow indentation    */
     int c_width;		/* width of field          */
@@ -156,13 +149,13 @@ static struct mcomp *fmthd = NULL;
 static struct mcomp *fmttl = NULL;
 
 static struct mcomp global = {
-    NULL, NULL, NULL, NULL, NULL, NULL, 0, -1, 80, -1, 40, BELL, NULL, NULL,
-    0, NULL
+    NULL, NULL, NULL, NULL, NULL, 0, -1, 80, -1, 40, BELL, NULL, NULL, 0,
+    NULL
 };
 
 static struct mcomp holder = {
-    NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NOCOMPONENT, NULL, NULL,
-    0, NULL
+    NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NOCOMPONENT, NULL, NULL, 0,
+    NULL
 };
 
 struct pair {
@@ -172,7 +165,7 @@ struct pair {
 
 static struct pair pairs[] = {
     { "Date",            DATEFMT },
-    { "From",            ADDRFMT|FACEDFLT },
+    { "From",            ADDRFMT },
     { "Sender",          ADDRFMT },
     { "Reply-To",        ADDRFMT },
     { "To",              ADDRFMT },
@@ -185,7 +178,6 @@ static struct pair pairs[] = {
     { "Resent-To",       ADDRFMT },
     { "Resent-cc",       ADDRFMT },
     { "Resent-Bcc",      ADDRFMT },
-    { "Face",            FACEFMT },
     { NULL,              0 }
 };
 
@@ -321,8 +313,6 @@ static void putch (char, long);
 static void intrser (int);
 static void pipeser (int);
 static void quitser (int);
-static void face_format (struct mcomp *);
-static int doface (struct mcomp *);
 static void mhladios (char *, char *, ...);
 static void mhldone (int);
 static void m_popen (char *);
@@ -354,9 +344,6 @@ mhl (int argc, char **argv)
 
     if ((cp = getenv ("MHLDEBUG")) && *cp)
 	mhldebug++;
-
-    if ((cp = getenv ("FACEPROC")))
-	faceproc = cp;
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
@@ -398,13 +385,6 @@ mhl (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 
-		case FACESW:
-		    if (!(faceproc = *argp++) || *faceproc == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
-		    continue;
-		case NFACESW:
-		    faceproc = NULL;
-		    continue;
 		case SLEEPSW:
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -1059,17 +1039,6 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			    if (!(c1->c_flags & SPLIT))
 				break;
 			}
-		    if (faceproc && c2 == NULL && (c1->c_flags & FACEFMT))
-			for (c2 = msghd; c2; c2 = c2->c_next)
-			    if (c2->c_flags & FACEDFLT) {
-				if (c2->c_face == NULL)
-				    face_format (c2);
-				if ((holder.c_text = c2->c_face)) {
-				    putcomp (c1, &holder, ONECOMP);
-				    holder.c_text = NULL;
-				}
-				break;
-			    }
 		}
 		return;
 
@@ -1166,10 +1135,6 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	    p->pq_text = getcpy (cp);
 	    p->pq_error = getcpy (error);
 	} else {
-	    if ((c1->c_flags & FACEDFLT) && c2->c_face == NULL) {
-		char *h = mp->m_host  ?  mp->m_host  :  LocalName (0);
-		c2->c_face = concat ("address ", h, " ", mp->m_mbox, NULL);
-	    }
 	    p->pq_text = getcpy (mp->m_text);
 	    mnfree (mp);
 	}
@@ -1253,8 +1218,6 @@ free_queue (struct mcomp **head, struct mcomp **tail)
 	    free (c1->c_nfs);
 	if (c1->c_fmt)
 	    free ((char *) c1->c_fmt);
-	if (c1->c_face)
-	    free (c1->c_face);
 	if (c1->c_f_args) {
 	    struct arglist *a1, *a2;
 	    for (a1 = c1->c_f_args; a1; a1 = a2) {
@@ -1297,16 +1260,6 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	putstr ("\n", c1->c_flags);
 	return;
     }
-
-    if (c1->c_flags & FACEFMT)
-	switch (doface (c2)) {
-	    case NOTOK:		/* error */
-	    case OK:		/* async faceproc */
-		return;
-
-	    default:		/* sync faceproc */
-		break;
-	}
 
     if (c1->c_nfs && (c1->c_flags & (ADDRFMT | DATEFMT | FORMAT)))
 	mcomp_format (c1, c2);
@@ -1567,202 +1520,6 @@ quitser (int i)
     fflush (stdout);
     done (NOTOK);
 }
-
-
-static void
-face_format (struct mcomp *c1)
-{
-    char *cp;
-    struct mailname *mp;
-
-    if ((cp = c1->c_text) == NULL)
-	return;
-
-    if ((cp = getname (cp))) {
-	if ((mp = getm (cp, NULL, 0, AD_NAME, NULL))) {
-	    char *h = mp->m_host  ?  mp->m_host	 :  LocalName (0);
-	    c1->c_face = concat ("address ", h, " ", mp->m_mbox, NULL);
-	}
-
-	while ((cp = getname (cp)))
-	    continue;
-    }
-}
-
-
-/*
- * faceproc is two elements defining the image agent's location:
- *     Internet host
- *     UDP port
- */
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-
-static int
-doface (struct mcomp *c1)
-{
-    int	result, sd;
-    static int inited = OK;
-    static struct sockaddr_storage ss;
-    static socklen_t socklen;
-    static int socktype;
-    static int protocol;
-
-    if (inited == OK) {
-	char *cp;
-	char **ap = brkstring (cp = getcpy (faceproc), " ", "\n");
-	struct addrinfo hints, *res;
-
-	if (ap[0] == NULL || ap[1] == NULL) {
-bad_faceproc: ;
-	    free (cp);
-	    return (inited = NOTOK);
-	}
-
-	memset(&hints, 0, sizeof(hints));
-#ifdef AI_ADDRCONFIG
-	hints.ai_flags = AI_ADDRCONFIG;
-#endif
-	hints.ai_family = PF_UNSPEC;
-	hints.ai_socktype = SOCK_DGRAM;
-
-	if (getaddrinfo(ap[0], ap[1], &hints, &res) != 0)
-	    goto bad_faceproc;
-
-	memcpy(&ss, res->ai_addr, res->ai_addrlen);
-	socklen = res->ai_addrlen;
-	socktype = res->ai_socktype;
-	protocol = res->ai_protocol;
-	freeaddrinfo(res);
-
-	inited = DONE;
-    }
-    if (inited == NOTOK)
-	return NOTOK;
-
-    if ((sd = socket (ss.ss_family, socktype, protocol)) == NOTOK)
-	return NOTOK;
-
-    result = sendto (sd, c1->c_text, strlen (c1->c_text), 0,
-		(struct sockaddr *) &ss, socklen);
-
-    close (sd);
-
-    return (result != NOTOK ? OK : NOTOK);
-}
-
-/*
- * COMMENTED OUT
- * This version doesn't use sockets
- */
-#if 0
-
-static int
-doface (struct mcomp *c1)
-{
-    int i, len, vecp;
-    pid_t child_id;
-    int result, pdi[2], pdo[2];
-    char *bp, *cp;
-    char buffer[BUFSIZ], *vec[10];
-
-    if (pipe (pdi) == NOTOK)
-	return NOTOK;
-    if (pipe (pdo) == NOTOK) {
-	close (pdi[0]);
-	close (pdi[1]);
-	return NOTOK;
-    }
-
-    for (i = 0; (child_id = vfork()) == NOTOK && i < 5; i++)
-	sleep (5);
-
-    switch (child_id) {
-	case NOTOK: 
-	    /* oops... fork error */
-	    return NOTOK;
-
-	case OK: 
-	    /* child process */
-	    SIGNAL (SIGINT, SIG_IGN);
-	    SIGNAL (SIGQUIT, SIG_IGN);
-	    if (pdi[0] != fileno (stdin)) {
-		dup2 (pdi[0], fileno (stdin));
-		close (pdi[0]);
-	    }
-	    close (pdi[1]);
-	    close (pdo[0]);
-	    if (pdo[1] != fileno (stdout)) {
-		dup2 (pdo[1], fileno (stdout));
-		close (pdo[1]);
-	    }
-	    vecp = 0;
-	    vec[vecp++] = r1bindex (faceproc, '/');
-	    vec[vecp++] = "-e";
-	    if (sleepsw != NOTOK) {
-		vec[vecp++] = "-s";
-		snprintf (buffer, sizeof(buffer), "%d", sleepsw);
-		vec[vecp++] = buffer;
-	    }
-	    vec[vecp] = NULL;
-	    execvp (faceproc, vec);
-	    fprintf (stderr, "unable to exec ");
-	    perror (faceproc);
-	    _exit (-1);		/* NOTREACHED */
-
-	default: 
-	    /* parent process */
-	    close (pdi[0]);
-	    i = strlen (c1->c_text);
-	    if (write (pdi[1], c1->c_text, i) != i)
-		adios ("pipe", "error writing to");
-	    free (c1->c_text), c1->c_text = NULL;
-	    close (pdi[1]);
-
-	    close (pdo[1]);
-	    cp = NULL, len = 0;
-	    result = DONE;
-	    while ((i = read (pdo[0], buffer, strlen (buffer))) > 0) {
-		if (cp) {
-		    int j;
-		    char *dp;
-		    dp = mh_xrealloc (cp, (unsigned) (j = len + i));
-		    memcpy(dp + len, buffer, i);
-		    cp = dp, len = j;
-		}
-		else {
-		    cp = mh_xmalloc ((unsigned) i);
-		    memcpy(cp, buffer, i);
-		    len = i;
-		}
-		if (result == DONE)
-		    for (bp = buffer + i - 1; bp >= buffer; bp--)
-			if (!isascii (*bp) || iscntrl (*bp)) {
-			    result = OK;
-			    break;
-			}
-	    }
-	    close (pdo[0]);
-
-/* no waiting for child... */
-
-	    if (result == OK) {	/* binary */
-		if (write (1, cp, len) != len)
-		    adios ("writing", "error");
-		free (cp);
-	    }
-	    else		/* empty */
-		if ((c1->c_text = cp) == NULL)
-		    result = OK;
-	    break;
-    }
-
-    return result;
-}
-#endif /* COMMENTED OUT */
 
 
 int

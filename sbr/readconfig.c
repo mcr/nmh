@@ -20,7 +20,6 @@ static struct procstr procs[] = {
     { "context",       &context },
     { "mh-sequences",  &mh_seq },
     { "buildmimeproc", &buildmimeproc },
-    { "faceproc",      &faceproc },
     { "fileproc",      &fileproc },
     { "formatproc",    &formatproc },
     { "incproc",       &incproc },
