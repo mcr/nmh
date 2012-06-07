@@ -708,18 +708,6 @@ the environment variable
 to iso_8859_1).
 .RE
 .PP
-.B $NOMHNPROC
-.RS 5
-If this variable is set,
-.B show
-will next test for MIME messages.  This mechanism is obsolete;
-use the
-.B \-nocheckmime
-switch to
-.B show
-instead.
-.RE
-.PP
 .B $MAILDROP
 .RS 5
 This variable tells
@@ -812,21 +800,6 @@ These variables are searched, in order, for the directory in which to
 create some temporary files.
 .RE
 .PP
-.B $MM_NOASK
-.RS 5
-Setting this variable is set to 1 has the same effect as specifying
-the
-.B \-nolist
-and
-.B \-nopause
-switches to
-.BR mhbuild ,
-.BR mhn ,
-and
-.BR mhshow .
-OBSOLETE:  will be removed in a future version of nmh.
-.RE
-.PP
 .B $MHLDEBUG
 .RS 5
 If this variable is set to a non-null value,
@@ -839,18 +812,6 @@ will emit debugging information.
 If this variable is set to a non-null value,
 .B pick
 will emit a representation of the search pattern.
-.RE
-.PP
-.B $MHPOPDEBUG
-.RS 5
-If this variable is set to a non-null value,
-.B msgchck
-and
-.B inc
-will display their interaction with the POP server.
-This mechanism is obsolete; use the
-.B \-snoop
-switch instead.
 .RE
 .PP
 .B $MHWDEBUG

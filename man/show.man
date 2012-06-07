@@ -129,14 +129,6 @@ messages.  It is equivalent to
 .IR cat .
 It is still accepted, but should be considered (somewhat) obsolete.
 .PP
-If the environment variable
-.B $NOMHNPROC
-is set, the test for
-non-text (MIME) messages will be disabled.  This method is obsolete.
-Use the
-.B \-nocheckmime
-switch instead.
-.PP
 The
 .B \-header
 switch tells

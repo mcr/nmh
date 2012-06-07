@@ -287,11 +287,6 @@ do_cache:
 
     set_endian ();
 
-    if ((cp = getenv ("MM_NOASK")) && !strcmp (cp, "1")) {
-	nolist  = 1;
-	pausesw = 0;
-    }
-
     /*
      * Check if we've specified an additional profile
      */

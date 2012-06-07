@@ -256,9 +256,6 @@ main (int argc, char **argv)
 
     set_endian ();
 
-    if ((cp = getenv ("MM_NOASK")) && !strcmp (cp, "1"))
-	listsw  = 0;
-
     /*
      * Check if we've specified an additional profile
      */

@@ -284,7 +284,7 @@ go_to_it: ;
 	proc = catproc;
     } else {
 	/* check if any messages are non-text MIME messages */
-	if (checkmime && !getenv ("NOMHNPROC")) {
+	if (checkmime) {
 	    if (!draftsw && !file) {
 		/* loop through selected messages and check for MIME */
 		for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)

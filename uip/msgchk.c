@@ -106,9 +106,6 @@ main (int argc, char **argv)
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
-    if ((cp = getenv ("MHPOPDEBUG")) && *cp)
-	snoop++;
-
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {

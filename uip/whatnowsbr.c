@@ -821,14 +821,12 @@ sendfile (char **arg, char *file, int pushsw)
     /* Translate MIME composition file, if necessary */
     if ((cp = context_find ("automimeproc"))
 	    && (!strcmp (cp, "1"))
-	    && !getenv ("NOMHNPROC")
 	    && check_draft (file)
 	    && (buildfile (NULL, file) == NOTOK))
 	return 0;
 
     /* For backwards compatibility */
     if ((cp = context_find ("automhnproc"))
-	    && !getenv ("NOMHNPROC")
 	    && check_draft (file)
 	    && (i = editfile (&cp, NULL, file, NOUSE, NULL, NULL, NULL, 0, 0)))
 	return 0;
