@@ -3,10 +3,12 @@ Things to add to the release notes for the next full release:
 Backward incompatibilities:
 - Changed exit status of each nmh command's -version and -help
   switches from 1 to 0.
-
 - The following environment variables were deprecated in nmh 1.5
   and are removed from this release:
     MHPOPDEBUG (use -snoop command line switch instead)
     MM_NOASK (use -nolist and -nopause command line switches instead)
     NOMHNPROC (use -nocheckmime command line switch instead)
     FACEPROC (undocumented faceproc feature removed)
+- Changed repl and dist default to -noatfile.  The default of -atfile
+  was deprecated in nmh 1.5.  If there are no requests to maintain
+  -atfile, it will be removed in the future.

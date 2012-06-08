@@ -234,7 +234,7 @@ comp(1), forw(1), repl(1), send(1), whatnow(1)
 .RB ` \-noannotate '
 .RB ` \-nodraftfolder '
 .RB ` \-inplace '
-.RB ` \-atfile '
+.RB ` \-noatfile '
 .fi
 
 .SH CONTEXT

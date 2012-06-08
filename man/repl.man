@@ -527,7 +527,7 @@ mhbuild(1), comp(1), forw(1), send(1), whatnow(1), mh\-format(5)
 .RB ` \-inplace '
 .RB ` \-nomime '
 .RB ` \-noquery '
-.RB ` \-atfile '
+.RB ` \-noatfile '
 .RB ` "\-width\ 72" '
 .fi
 

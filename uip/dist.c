@@ -89,7 +89,7 @@ main (int argc, char **argv)
     int anot = 0, inplace = 1, nedit = 0;
     int nwhat = 0, i, in, isdf = 0, out;
     int outputlinelen = OUTPUTLINELEN;
-    int dat[5], atfile = 1;
+    int dat[5], atfile = 0;
     char *cp, *cwd, *maildir, *msgnam, *dfolder = NULL;
     char *dmsg = NULL, *ed = NULL, *file = NULL, *folder = NULL;
     char *form = NULL, *msg = NULL, buf[BUFSIZ], drft[BUFSIZ];

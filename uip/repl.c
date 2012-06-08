@@ -142,7 +142,7 @@ main (int argc, char **argv)
     int	i, isdf = 0;
     int anot = 0, inplace = 1;
     int nedit = 0, nwhat = 0;
-    int atfile = 1;
+    int atfile = 0;
     int fmtproc = -1;
     char *cp, *cwd, *dp, *maildir, *file = NULL;
     char *folder = NULL, *msg = NULL, *dfolder = NULL;
