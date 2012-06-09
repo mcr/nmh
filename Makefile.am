@@ -166,7 +166,8 @@ sysconf_DATA = etc/mhn.defaults etc/mts.conf
 ##
 ## Documentation that gets installed in docdir
 ##
-dist_doc_DATA = COPYRIGHT VERSION docs/COMPLETION-BASH docs/COMPLETION-TCSH \
+dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
+		docs/COMPLETION-BASH docs/COMPLETION-TCSH \
 		docs/COMPLETION-ZSH docs/DIFFERENCES docs/FAQ \
 		docs/MAIL.FILTERING docs/MAILING-LISTS docs/README-ATTACHMENTS \
 		docs/README-HOOKS docs/README-components docs/README.about \
