@@ -1,6 +1,17 @@
 Things to add to the release notes for the next full release:
 
-Backward incompatibilities:
+------------
+NEW FEATURES
+------------
+
+- All nmh programs will now warn about multiple profile entries for the
+  same component.  In previous versions, all but the first were
+  silently ignored.
+
+----------------------------
+OBSOLETE/DEPRECATED FEATURES
+----------------------------
+
 - Changed exit status of each nmh command's -version and -help
   switches from 1 to 0.
 - The following environment variables were deprecated in nmh 1.5

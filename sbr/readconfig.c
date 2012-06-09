@@ -106,5 +106,23 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 	break;
     }
 
+    if (opp == NULL) {
+	/* Check for duplicated profile entries.  But only on this
+	   very first call from context_read(), when opp is NULL. */
+
+	for (np = m_defs; np; np = np->n_next) {
+	    /* Yes, this is O(N^2).  The profile should be small enough so
+	       that's not a performance problem. */
+	    struct node *np2;
+	    for (np2 = np->n_next; np2; np2 = np2->n_next) {
+		if (!mh_strcasecmp (np->n_name, np2->n_name)) {
+		    admonish (NULL, "multiple \"%s\" profile components "
+				"in %s, ignoring \"%s\"",
+			      np->n_name, defpath, np2->n_field);
+		}
+	    }
+	}
+    }
+
     opp = npp;
 }

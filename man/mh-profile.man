@@ -40,7 +40,9 @@ indicates whether the information is kept in the user's
 .B nmh
 profile or
 .B nmh
-context, and indicates what the default value is.
+context, and indicates what the default value is.  Note that a profile
+component can only appear once.  Multiple appearances with trigger a
+warning that all appearances after the first are ignored.
 .PP
 .BR Path :
 Mail
