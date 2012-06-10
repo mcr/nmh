@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH NMH %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH NMH %manext7% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 nmh \- new MH message system
 .SH SYNOPSIS
@@ -295,4 +295,4 @@ program was loaded.
 Send bug reports and suggestions to
 .IR nmh-workers@nongnu.org .
 .SH "SEE ALSO"
-mh-chart(1)
+mh-chart(7)

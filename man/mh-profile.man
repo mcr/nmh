@@ -964,7 +964,7 @@ if annotations are to occur.
 .fi
 
 .SH "SEE ALSO"
-nmh(1), environ(5), mh-sequence(5)
+nmh(7), environ(5), mh-sequence(5)
 
 .SH HISTORY
 The

@@ -187,12 +187,12 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/conflict.8 man/dist.1 man/dp.8 man/flist.1 man/flists.1 \
 	   man/fmtdump.8 man/fnext.1 man/folder.1 man/folders.1 \
 	   man/forw.1 man/fprev.1 man/inc.1 man/install-mh.1 man/mark.1 \
-	   man/mh-alias.5 man/mh-chart.1 man/mh-draft.5 man/mh-format.5 \
+	   man/mh-alias.5 man/mh-chart.7 man/mh-draft.5 man/mh-format.5 \
 	   man/mh-mail.5 man/mh-profile.5 man/mh_profile.5 man/mh-sequence.5 \
 	   man/mh-tailor.5 man/mhbuild.1 man/mhl.1 man/mhlist.1 \
 	   man/mhmail.1 man/mhn.1 man/mhparam.1 man/mhpath.1 \
 	   man/mhshow.1 man/mhstore.1 man/msgchk.1 man/msh.1 \
-	   man/mts.conf.5 man/new.1 man/next.1 man/nmh.1 man/packf.1 \
+	   man/mts.conf.5 man/new.1 man/next.1 man/nmh.7 man/packf.1 \
 	   man/pick.1 man/post.8 man/prev.1 man/prompter.1 man/rcvdist.1 \
 	   man/rcvpack.1 man/rcvstore.1 man/rcvtty.1 man/refile.1 \
 	   man/repl.1 man/rmf.1 man/rmm.1 man/scan.1 man/send.1 \
@@ -528,6 +528,7 @@ mts_libmts_a_SOURCES = mts/smtp/smtp.c
 ##
 manext1 = 1
 manext5 = 5
+manext7 = 7
 manext8 = 8
 
 $(man_MANS): man/man.sed
@@ -546,6 +547,7 @@ man/man.sed: Makefile
 	@echo 's,%default_pager%,$(pagerpath),g' >> $@
 	@echo 's,%manext1%,$(manext1),g' >> $@
 	@echo 's,%manext5%,$(manext5),g' >> $@
+	@echo 's,%manext7%,$(manext7),g' >> $@
 	@echo 's,%manext8%,$(manext8),g' >> $@
 	@echo '/%mhl_forward%/r $(top_srcdir)/etc/mhl.forward' >> $@
 	@echo ' s,%mhl_forward%,,g' >> $@
@@ -561,6 +563,9 @@ man/mh-chart.man:
 	@$(SED) -f man/man.sed $< > $@
 
 .man.$(manext5):
+	@$(SED) -f man/man.sed $< > $@
+
+.man.$(manext7):
 	@$(SED) -f man/man.sed $< > $@
 
 .man.$(manext8):

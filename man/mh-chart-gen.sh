@@ -9,7 +9,7 @@ cat <<'EOF'
 .\"
 .\" %nmhwarning%
 .\"
-.TH MH-CHART %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH MH-CHART %manext7% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-chart \- Chart of nmh Commands
 .SH SYNOPSIS
@@ -34,5 +34,5 @@ cat <<'EOF'
 .ad
 
 .SH "SEE ALSO"
-nmh(1)
+nmh(7)
 EOF
