@@ -75,6 +75,7 @@ AliasFile: aliases"
 
 # check each component in procs array in uip/mhparam.c
 # The tests don't override these, so they're default or configured values.
+# Note that cat is hardcoded here because the testsuite uses it for moreproc.
 cat >$expected <<EOF
 context
 .mh_sequences
@@ -86,7 +87,7 @@ $auxexecdir/install-mh
 $pagerpath
 $bindir/mhmail
 $MH_INST_DIR$auxexecdir/mhl
-$pagerpath
+cat
 600
 $bindir/msh
 $bindir/packf

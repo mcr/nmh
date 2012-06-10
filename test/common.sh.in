@@ -162,6 +162,7 @@ setup_test ()
   cat > $MH <<EOF || exit 1
 Path: ${MH_TEST_DIR}/Mail
 mhlproc: ${MH_LIB_DIR}/mhl
+moreproc: cat
 showproc: ${MH_LIB_DIR}/mhl
 postproc: ${MH_LIB_DIR}/post
 fileproc: ${MH_INST_DIR}${bindir}/refile
