@@ -1,5 +1,5 @@
 #
-# MACHINE -- operating system specific information
+# MACHINES -- operating system specific information
 #
 
 nmh is known to compile on the following platforms (save the
@@ -26,6 +26,14 @@ Be sure to install these Cygwin packages:
   libgdbm-devel
   libncurses10
   libncurses-devel
+
+If configuring with --with-cyrus-sasl, install these Cygwin packages:
+  libsasl2
+  libsas2-devel
+
+If configuring with --with-tls, install these Cygwin packages:
+  gnutls-devel
+  libgnutls26
 
 Note that the -link switch to refile cannot be used on FAT32 and
 similar filesystems.

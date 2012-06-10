@@ -49,13 +49,13 @@ export REL=`echo $tscriptname | sed -e "s/${PKG}\-${VER}\-//"`
 # Example: For Apache 2, BASEPKG=httpd-2.x.xx but SHORTPKG=apache2-2.x.xx
 export BASEPKG=${PKG}-${VER}
 # Change from generic-build-script:  redefined BASEPKG.
-export BASEPKG=${PKG}-${VER}-RC2
+export BASEPKG=${PKG}-${VER}-dev
 export SHORTPKG=${PKG}-${VER}
 export FULLPKG=${SHORTPKG}-${REL}
 
 # determine correct decompression option and tarball filename
 # Change from generic-build-script:  set scr_orig_pkg_name here.
-export src_orig_pkg_name=nmh-1.5-RC2.tar.gz
+export src_orig_pkg_name=nmh-1.5-dev.tar.gz
 if [ -e "${src_orig_pkg_name}" ] ; then
   # Change from generic-build-script:  don't need the following line, use
   # opt_decomp of z.
@@ -106,7 +106,8 @@ export checklogfile=${srcinstdir}/${checklogname}
 export installlogfile=${srcinstdir}/${installlogname}
 
 prefix=/usr
-sysconfdir=/etc
+# Change from generic-build-script:  use /etc/nmh instead of /etc.
+sysconfdir=/etc/nmh
 localstatedir=/var
 if [ -z "$MY_CFLAGS" ]; then
   MY_CFLAGS="-O2"
@@ -115,35 +116,12 @@ if [ -z "$MY_LDFLAGS" ]; then
   MY_LDFLAGS=
 fi
 
-# Change from generic-build-script: removed ChangeLog because the nmh
-# Makefile installs it.
-export install_docs="\
-	ABOUT-NLS \
-	ANNOUNCE \
-	AUTHORS \
-	BUG-REPORTS \
-	CHANGES \
-	CONTRIBUTORS \
-	COPYING \
-	COPYRIGHT \
-	CREDITS \
-	CHANGELOG \
-	FAQ \
-	HOW-TO-CONTRIBUTE \
-	INSTALL \
-	KNOWNBUG \
-	LEGAL \
-	LICENSE \
-	NEWS \
-	NOTES \
-	PROGLIST \
-	README \
-	RELEASE_NOTES \
-	THANKS \
-	TODO \
-	USAGE \
-"
-export install_docs="`for i in ${install_docs}; do echo $i; done | sort -u`"
+# Change from generic-build-script:  disabled install_docs because
+# nmh's make install takes care of it.  Though it installs in
+# /usr/share/doc/nmh/ instead of /usr/share/doc/nmh-<version>/,
+# that seems to be more common on Cygwin than using the -<version>.
+export install_docs=
+#export install_docs="`for i in ${install_docs}; do echo $i; done | sort -u`"
 export test_rule=check
 if [ -z "$SIG" ]; then
   export SIG=0	# set to 1 to turn on signing by default
@@ -236,6 +214,12 @@ prep_log() {
 }
 
 # Configure the package.
+# Change from generic-build-script:  added following notes:
+# Could add --with-cyrus-sasl if libsasl2 and libsas2-devel
+#   packages are installed.
+# Could add --with-tls if libgnutls26 and gnutls-devel
+#   packages are installed.
+#
 conf() {
   (cd ${objdir} && \
   CFLAGS="${MY_CFLAGS}" LDFLAGS="${MY_LDFLAGS}" \
