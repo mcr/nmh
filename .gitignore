@@ -16,6 +16,7 @@
 /missing
 /ylwrap
 /nmh-*.tar.gz
+/nmh-*.tar.gz.sig
 
 # Removed by maintainer-clean:
 /autom4te.cache/

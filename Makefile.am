@@ -96,7 +96,7 @@ MAINTAINERCLEANFILES = cscope.files cscope.out
 ##
 SUPERCLEANFILES = ChangeLog Makefile.in aclocal.m4 compile config.guess \
 		  config.h.in config.h.in~ config.sub configure depcomp \
-		  install-sh missing ylwrap nmh-*.tar.gz
+		  install-sh missing ylwrap nmh-*.tar.gz nmh-*.tar.gz.sig
 superclean: maintainer-clean
 	@rm -f $(SUPERCLEANFILES)
 .PHONY: superclean
@@ -621,7 +621,7 @@ upload: dist
 	@echo "Did you run 'make distcheck' already?"
 	@if test -z "$(SKIP_GPG_SIG)"; then \
 		echo "Creating GPG signature (set SKIP_GPG_SIG to bypass this step)"; \
-		gpg --output $(DIST_ARCHIVES).sig --detatch-sig $(DIST_ARCHIVES); \
+		gpg --output $(DIST_ARCHIVES).sig --detach-sig $(DIST_ARCHIVES); \
 	fi
 	@echo "Setting permissions for savannah.gnu.org"
 	chmod 664 $(DIST_ARCHIVES)
