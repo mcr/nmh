@@ -327,6 +327,13 @@ dnl then use `vi' as the default.
 AS_IF([test -z "$editorpath"], [editorpath="$vipath"])
 AC_SUBST([editorpath])dnl
 
+dnl Cygwin FAT filesystems do not support hard links.  So use cp instead,
+dnl even if running on an NTFS or other filesystem.
+AS_CASE(["$host_os"],
+  [cygwin*],[LINK_FILE=cp],
+  [LINK_FILE=ln])
+AC_SUBST([LINK_FILE])
+
 dnl ----------------------------------------------------------
 dnl FIND MAIL SPOOL AND SEE IF WE NEED TO MAKE inc SETGID MAIL
 dnl ----------------------------------------------------------
