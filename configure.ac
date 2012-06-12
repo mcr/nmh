@@ -199,6 +199,25 @@ AC_CACHE_CHECK([whether compiler supports -Wno-pointer-sign], [nmh_cv_has_noptrs
  AC_TRY_COMPILE([],[],nmh_cv_has_noptrsign=yes,nmh_cv_has_noptrsign=no)
  CFLAGS="$nmh_saved_cflags"])
 
+dnl Can't use -ansi with gcc 4.5.3 on Cygwin, at least through setup
+dnl setup version 2.763, because it disables some features in the
+dnl system system header files and warns about them with -Wall.  Try
+dnl to test for that generally, though still with gcc.
+if test "$GCC" = yes; then
+  AC_CACHE_CHECK([whether we can use -ansi with gcc], [nmh_cv_has_dash_ansi],
+    [nmh_saved_cppflags="$CPPFLAGS"
+     nmh_saved_cflags="$CFLAGS"
+     CPPFLAGS="-D_GNU_SOURCE"
+     CFLAGS="-ansi -Wall -Werror"
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <time.h>],[tzset();])],
+       [nmh_cv_has_dash_ansi=yes],
+       [nmh_cv_has_dash_ansi=no])
+     CPPFLAGS="$nmh_saved_cppflags"
+     CFLAGS="$nmh_saved_cflags"])
+else
+  nmh_cv_has_dash_ansi=no
+fi
+
 dnl if the user hasn't specified CFLAGS, then
 dnl   if compiler is gcc, then
 dnl    use -O2 and some warning flags
@@ -208,7 +227,11 @@ dnl also use -Wno-pointer-sign, because gcc 4 now produces a lot of new
 dnl warnings which are probably mostly spurious and which in any case we
 dnl don't want to deal with now.
 if test "$nmh_cv_has_noptrsign" = "yes"; then
-    nmh_gcc_common_flags="-ansi -pedantic -Wall"
+    if test "$nmh_cv_has_dash_ansi" = "yes"; then
+        nmh_gcc_common_flags="-ansi -pedantic -Wall"
+    else
+        nmh_gcc_common_flags="-Wall"
+    fi
     if test "$nmh_cv_has_wextra" = "yes"; then
         nmh_gcc_warnflags="${nmh_gcc_common_flags} -Wextra -Wno-clobbered "\
 "-Wno-pointer-sign"
