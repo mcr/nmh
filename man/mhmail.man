@@ -88,7 +88,12 @@ By using
 .B \-from
 .IR addr ,
 you can specify the \*(lqFrom:\*(rq header of
-the draft.  Naturally,
+the draft.  If no
+.B \-from
+switch is used when sending,
+.B mhmail
+will supply a \*(lqFrom:\*(rq header field using the sender's local mailbox.
+Naturally,
 .B post
 will fill\-in the \*(lqSender:\*(rq
 header correctly.

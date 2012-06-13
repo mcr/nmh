@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/mts.h>
 #include <h/signals.h>
 #include <h/utils.h>
 #include <signal.h>
@@ -140,6 +141,8 @@ main (int argc, char **argv)
 	fprintf (out, "%sSubject: %s\n", resent ? "Resent-" : "", subject);
     if (from)
 	fprintf (out, "%sFrom: %s\n", resent ? "Resent-" : "", from);
+    else
+	fprintf (out, "From: %s\n", getlocalmbox ());
     if (!resent)
 	fputs ("\n", out);
 
