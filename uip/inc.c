@@ -202,7 +202,7 @@ main (int argc, char **argv)
     struct msgs *mp = NULL;
     struct stat st, s1;
     FILE *aud = NULL;
-    char b[MAXPATHLEN + 1];
+    char b[PATH_MAX + 1];
     char *maildir_copy = NULL;	/* copy of mail directory because the static gets overwritten */
 
     int nmsgs, nbytes;

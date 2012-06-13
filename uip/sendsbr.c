@@ -35,8 +35,8 @@ char *distfile = NULL;
 
 static jmp_buf env;
 
-static	char	body_file_name[MAXPATHLEN + 1];		/* name of temporary file for body content */
-static	char	composition_file_name[MAXPATHLEN + 1];	/* name of mhbuild composition temporary file */
+static	char	body_file_name[PATH_MAX + 1];		/* name of temporary file for body content */
+static	char	composition_file_name[PATH_MAX + 1];	/* name of mhbuild composition temporary file */
 static	int	field_size;				/* size of header field buffer */
 static	char	*field;					/* header field buffer */
 static	FILE	*draft_file;				/* draft file pointer */
@@ -186,7 +186,7 @@ static	int
 attach(char *attachment_header_field_name, char *draft_file_name,
        int attachformat)
 {
-    char		buf[MAXPATHLEN + 6];	/* miscellaneous buffer */
+    char		buf[PATH_MAX + 6];	/* miscellaneous buffer */
     int			c;			/* current character for body copy */
     int			has_attachment;		/* draft has at least one attachment */
     int			has_body;		/* draft has a message body */
@@ -386,7 +386,7 @@ make_mime_composition_file_entry(char *file_name, int attachformat)
 {
     int			binary;			/* binary character found flag */
     int			c;			/* current character */
-    char		cmd[MAXPATHLEN + 6];	/* file command buffer */
+    char		cmd[PATH_MAX + 6];	/* file command buffer */
     char		*content_type;		/* mime content type */
     FILE		*fp;			/* content and pipe file pointer */
     struct	node	*np;			/* context scan node pointer */
@@ -456,7 +456,7 @@ make_mime_composition_file_entry(char *file_name, int attachformat)
         (void)fprintf(composition_file, "#%s; name=\"%s\"; x-unix-mode=0%.3ho",
             content_type, ((p = strrchr(file_name, '/')) == (char *)0) ? file_name : p + 1, (unsigned short)(st.st_mode & 0777));
 
-        if (strlen(file_name) > MAXPATHLEN) {
+        if (strlen(file_name) > PATH_MAX) {
             clean_up_temporary_files();
             adios((char *)0, "attachment file name `%s' too long.", file_name);
         }

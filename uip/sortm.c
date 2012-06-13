@@ -492,7 +492,7 @@ rename_chain (struct msgs *mp, struct smsg **mlist, int msg, int endmsg)
 {
     int nxt, old, new;
     char *newname, oldname[BUFSIZ];
-    char newbuf[MAXPATHLEN + 1];
+    char newbuf[PATH_MAX + 1];
 
     for (;;) {
 	nxt = mlist[msg] - smsgs;	/* mlist[msg] is a ptr into smsgs */
@@ -530,7 +530,7 @@ rename_msgs (struct msgs *mp, struct smsg **mlist)
     int i, j, old, new;
     seqset_t tmpset;
     char f1[BUFSIZ], tmpfil[BUFSIZ];
-    char newbuf[MAXPATHLEN + 1];
+    char newbuf[PATH_MAX + 1];
     struct smsg *sp;
 
     strncpy (tmpfil, m_name (mp->hghmsg + 1), sizeof(tmpfil));

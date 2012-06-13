@@ -141,9 +141,9 @@ WhatNow (int argc, char **argv)
     char **argp, **arguments;
     struct stat st;
     char	*attach = NMH_ATTACH_HEADER;/* attachment header field name */
-    char	cwd[MAXPATHLEN + 1];	/* current working directory */
-    char	file[MAXPATHLEN + 1];	/* file name buffer */
-    char	shell[MAXPATHLEN + 1];	/* shell response buffer */
+    char	cwd[PATH_MAX + 1];	/* current working directory */
+    char	file[PATH_MAX + 1];	/* file name buffer */
+    char	shell[PATH_MAX + 1];	/* shell response buffer */
     FILE	*f;			/* read pointer for bgnd proc */
     char	*l;			/* set on -l to alist  command */
     int		n;			/* set on -n to alist command */
