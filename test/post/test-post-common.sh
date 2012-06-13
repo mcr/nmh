@@ -27,7 +27,17 @@ test_post ()
 { "${MH_OBJ_DIR}/test/fakesmtp" "$1" $localport &
     pid="$!"
 
-    send -draft -server 127.0.0.1 -port $localport || exit 1
+    # The server doesn't always come up fast enough, so sleep and
+    # retry a few times if it fails...
+    status=1
+    for i in 0 1 2 3 4 5 6 7 8 9; do
+        if send -draft -server 127.0.0.1 -port $localport >/dev/null 2>&1; then
+            status=0
+            break
+        fi
+        sleep 1
+    done
+    [ $status -eq 0 ] || exit 1
 
     wait ${pid}
 
