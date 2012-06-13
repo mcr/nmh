@@ -242,7 +242,7 @@ commands:
 ^mh\-mail(5)~^\- message format for nmh message system
 ^mh\-profile(5)~^\- user customization for nmh message system
 ^mh\-sequence(5)~^\- sequence specification for nmh message system
-^mh\-tailor(5)~^\- mail transport customization for nmh message system
+^mh\-tailor(5)~^\- mail transport configuration for nmh message system
 .sp
 ^ap(8)~^\- parse addresses 822\-style
 ^conflict(8)~^\- search for alias/password conflicts

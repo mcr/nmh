@@ -3,7 +3,7 @@
 .\"
 .TH MH-TAILOR %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
-mh-tailor, mts.conf \- mail transport customization for nmh message handler
+mh-tailor, mts.conf \- mail transport configuration for nmh message handler
 .SH SYNOPSIS
 .I %etcdir%/mts.conf
 .SH DESCRIPTION
@@ -321,4 +321,19 @@ None
 mh\-mts(8), post(8)
 
 .SH DEFAULTS
-As listed above
+As listed above.  The path of the mail transport configuration
+file can be changed with the
+.B MHMTSCONF
+environment variable and augmented with the
+.B MHMTSUSERCONF
+environment variable, see mh\-profile(5).
+
+.SH BUGS
+Failure to open any mail transport configuration file is silently
+ignored.  Therefore, it's best to avoid dynamic creation of such
+a file with the intent of use via the
+.B MHMTSCONF
+or
+.B MHMTSUSERCONF
+environment variables.  If such use is necessary, the ability
+to successfully open the file should first be verified.
