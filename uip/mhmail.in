@@ -84,6 +84,9 @@ else
            cclist="${cclist:+${cclist}, }${arg}"; ccarg=0
          elif [ ${bodyarg} -eq 1 ]; then
            body=${arg}; bodyarg=0
+           #### Allow -body "" by using just a newline for the body.
+           [ "${body}"x = x ]  &&  body="
+"
          elif [ ${otherarg} -eq 1 ]; then
            #### Always end ${header} with a newline.
            header="${header:+${header} }${arg}
@@ -109,9 +112,9 @@ else
   fi
 
   #### If no -body, read message from stdin the easy way.
-  if [ "${body}"x = x ]; then
-    body=`cat`
-  fi
+  [ "${body}"x = x ]  &&  body=`cat`
+  #### Don't allow an empty body (from stdin).
+  [ "${body}"x = x ]  &&  exit 1
 
   #### Set up a tmpfil and trap to remove it.  send moves the file to a backup.
   tmpdir=${MHTMPDIR:-${TMPDIR:-${TMP:-`${nmhbindir}/mhpath +`}}}
