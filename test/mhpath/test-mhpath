@@ -28,7 +28,6 @@ Usage: mhpath [+folder] [msgs] [switches]
   -help
 EOF
 
-# check -help
 mhpath -help > $actual 2>&1
 check $expected $actual
 
