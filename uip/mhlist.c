@@ -244,8 +244,6 @@ do_cache:
     parts[npart] = NULL;
     types[ntype] = NULL;
 
-    set_endian ();
-
     /* Check for public cache location */
     if ((cache_public = context_find (nmhcache)) && *cache_public != '/')
 	cache_public = NULL;

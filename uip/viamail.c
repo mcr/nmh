@@ -146,8 +146,6 @@ main (int argc, char **argv)
 	}
     }
 
-    set_endian ();
-
     if (!f1)
 	adios (NULL, "missing -viamail \"mailpath\" switch");
 

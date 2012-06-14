@@ -22,8 +22,6 @@
 
 extern int debugsw;
 
-extern int endian;	/* mhmisc.c     */
-
 extern pid_t xpid;	/* mhshowsbr.c  */
 
 /* cache policies */
@@ -1728,24 +1726,14 @@ openBase64 (CT ct, char **file)
 {
     int	bitno, cc, digested;
     int fd, len, skip, own_ct_fp = 0;
-    unsigned long bits;
-    unsigned char value, *b, *b1, *b2, *b3;
+    uint32_t bits;
+    unsigned char value, b;
     unsigned char *cp, *ep;
     char buffer[BUFSIZ];
     /* sbeck -- handle suffixes */
     CI ci;
     CE ce;
     MD5_CTX mdContext;
-
-    /* the decoder works on the least-significant three bytes of the bits integer,
-       but their position in memory depend on both endian-ness and size of 
-       long int... for little-endian architectures the size is irrelevant, for
-       big-endian archs it's crucial... ideally we'd adopt posix and use a64l instead
-       of this mess. */
-    b  = (unsigned char *) &bits;
-    b1 = &b[endian > 0 ? sizeof(bits)==8?5:1 : 2];
-    b2 = &b[endian > 0 ? sizeof(bits)==8?6:2 : 1];
-    b3 = &b[endian > 0 ? sizeof(bits)==8?7:3 : 0];
 
     ce = ct->c_cefile;
     if (ce->ce_fp) {
@@ -1855,17 +1843,20 @@ openBase64 (CT ct, char **file)
 		    bits |= value << bitno;
 test_end:
 		    if ((bitno -= 6) < 0) {
-			putc ((char) *b1, ce->ce_fp);
+		    	b = (bits >> 16) & 0xff;
+			putc ((char) b, ce->ce_fp);
 			if (digested)
-			    MD5Update (&mdContext, b1, 1);
+			    MD5Update (&mdContext, &b, 1);
 			if (skip < 2) {
-			    putc ((char) *b2, ce->ce_fp);
+			    b = (bits >> 8) & 0xff;
+			    putc ((char) b, ce->ce_fp);
 			    if (digested)
-				MD5Update (&mdContext, b2, 1);
+				MD5Update (&mdContext, &b, 1);
 			    if (skip < 1) {
-				putc ((char) *b3, ce->ce_fp);
+			    	b = bits & 0xff;
+				putc ((char) b, ce->ce_fp);
 				if (digested)
-				    MD5Update (&mdContext, b3, 1);
+				    MD5Update (&mdContext, &b, 1);
 			    }
 			}
 
@@ -2825,20 +2816,9 @@ static int
 readDigest (CT ct, char *cp)
 {
     int	bitno, skip;
-    unsigned long bits;
+    uint32_t bits;
     char *bp = cp;
     unsigned char *dp, value, *ep;
-    unsigned char *b, *b1, *b2, *b3;
-
-    /* the decoder works on the least-significant three bytes of the bits integer,
-       but their position in memory depend on both endian-ness and size of 
-       long int... for little-endian architectures the size is irrelevant, for
-       big-endian archs it's crucial... ideally we'd adopt posix and use a64l instead
-       of this mess. */
-    b  = (unsigned char *) &bits;
-    b1 = &b[endian > 0 ? sizeof(bits)==8?5:1 : 2];
-    b2 = &b[endian > 0 ? sizeof(bits)==8?6:2 : 1];
-    b3 = &b[endian > 0 ? sizeof(bits)==8?7:3 : 0];
 
     bitno = 18;
     bits = 0L;
@@ -2861,11 +2841,11 @@ test_end:
 		if ((bitno -= 6) < 0) {
 		    if (dp + (3 - skip) > ep)
 			goto invalid_digest;
-		    *dp++ = *b1;
+		    *dp++ = (bits >> 16) & 0xff;
 		    if (skip < 2) {
-			*dp++ = *b2;
+			*dp++ = (bits >> 8) & 0xff;
 			if (skip < 1)
-			    *dp++ = *b3;
+			    *dp++ = bits & 0xff;
 		    }
 		    bitno = 18;
 		    bits = 0L;

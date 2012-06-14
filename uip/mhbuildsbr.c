@@ -41,8 +41,6 @@ extern int listsw;
 extern int rfc934sw;
 extern int contentidsw;
 
-extern int endian;	/* mhmisc.c */
-
 /* cache policies */
 extern int rcachesw;	/* mhcachesbr.c */
 extern int wcachesw;	/* mhcachesbr.c */

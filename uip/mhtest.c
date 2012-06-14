@@ -232,8 +232,6 @@ do_cache:
     parts[npart] = NULL;
     types[ntype] = NULL;
 
-    set_endian ();
-
     if (outfile == NULL)
 	adios (NULL, "must specify output file");
 

@@ -285,8 +285,6 @@ do_cache:
     parts[npart] = NULL;
     types[ntype] = NULL;
 
-    set_endian ();
-
     /*
      * Check if we've specified an additional profile
      */

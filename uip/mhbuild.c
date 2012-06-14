@@ -254,8 +254,6 @@ main (int argc, char **argv)
 	    compfile = cp;
     }
 
-    set_endian ();
-
     /*
      * Check if we've specified an additional profile
      */

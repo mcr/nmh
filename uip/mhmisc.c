@@ -23,7 +23,6 @@ int ntype = 0;
 char *parts[NPARTS + 1];
 char *types[NTYPES + 1];
 
-int endian = 0;		/* little or big endian */
 int userrs = 0;
 
 static char *errs = NULL;
@@ -74,22 +73,6 @@ type_ok (CT ct, int sP)
 	    return 1;
 
     return 0;
-}
-
-
-void
-set_endian (void)
-{
-    union {
-	long l;
-	char c[sizeof(long)];
-    } un;
-
-    un.l = 1;
-    endian = un.c[0] ? -1 : 1;
-    if (debugsw)
-	fprintf (stderr, "%s endian architecture\n",
-		endian > 0 ? "big" : "little");
 }
 
 
