@@ -1,0 +1,137 @@
+#! /bin/sh
+#
+# mhmail.c -- simple mail program
+#
+# This code is Copyright (c) 2012, by the authors of nmh.  See the
+# COPYRIGHT file in the root directory of the nmh distribution for
+# complete copyright information.
+#
+# Emulation of compiled mhmail(1) using nmh send(1) or post(8).
+# Differences from compiled mhmail:
+# * Supports all send(1) (with -profile) or post(8) (without -profile) options.
+# * Optionally (with -profile) obeys the users profile, including
+#   AliasFile and send entries.
+# * Adds -debug option for debugging (sending, not incorporating new mail).
+#
+# To do:
+# * update mhmail man page
+# * add mhmail test
+# * integrate into autoconf
+# * support undocumented mhmail options?
+
+usage='Usage: mhmail [addrs ... [switches]]
+  switches are:
+  -b(ody) text
+  -c(c) addrs ...
+  -f(rom) addr
+  -s(ubject) text
+  -pr(ofile)
+  -v(ersion)
+  -h(elp)
+  -d(ebug)
+  and all send(1)/post(8) switches'
+
+#### Use autoconf to fill in bindir.
+nmhbindir=@bindir@
+
+#### Or if configure hasn't been run yet, figure out nmhbindir at runtime.
+case ${nmhbindir} in
+  @*@) nmhbindir=`dirname $0` ;;
+esac
+
+if [ $# -eq 0 ]; then
+  #### Emulate mhmail for reading mail.
+  exec ${nmhbindir}/inc
+else
+  #### Go through all the switches so we can build the draft.
+  tolist=
+  body=
+  bodyarg=0
+  cclist=
+  ccarg=0
+  havefrom=0
+  header=
+  otherarg=0
+  sendpostargs=
+  switcharg=0
+  use_send=0
+  debug=
+  for arg in "$@"; do
+    case ${arg} in
+      -*) switcharg=0
+    esac
+
+    case ${arg} in
+      #### Send and post wouldn't accept -f -or -s because they'd be
+      #### ambiguous, so no conflicts with them.  And they don't have
+      #### -b or -c.  For the new switches that compiled mhmail didn't
+      #### have:  let -p indicate mhmail -profile, not send -port, and
+      #### let -d indicate mhmail -debug, not send -draft.
+      -b|-bo|-bod|-body) bodyarg=1 ;;
+      -c|-cc) ccarg=1 ;;
+      -d|-de|-deb|-debu|-debug) debug=echo ;;
+      -f|-fr|-fro|-from) header="${header}From:"; otherarg=1; havefrom=1 ;;
+      -h|-he|-hel|-help) printf "%s\n" "${usage}"; exit ;;
+      -p|-pr|-pro|-prof|-profi|-profil|-profile) use_send=1 ;;
+      -s|-su|-sub|-subj|-subje|-subjec|-subject)
+          header="${header}Subject:"; otherarg=1 ;;
+      -v|-ve|-ver|-vers|-versi|-versio|-version)
+          #### Cheat instead of using autoconf and make to fill in the version.
+          ${nmhbindir}/mhpath -v | sed 's/mhpath/mhmail/'; exit ;;
+      -*) sendpostargs="${sendpostargs:+${sendpostargs} }${arg}"; switcharg=1 ;;
+      *) if [ ${ccarg} -eq 1 ]; then
+           cclist="${cclist:+${cclist}, }${arg}"; ccarg=0
+         elif [ ${bodyarg} -eq 1 ]; then
+           body=${arg}; bodyarg=0
+         elif [ ${otherarg} -eq 1 ]; then
+           #### Always end ${header} with a newline.
+           header="${header:+${header} }${arg}
+"; otherarg=0
+         elif [ ${switcharg} -eq 1 ]; then
+           sendpostargs="${sendpostargs:+${sendpostargs} }${arg}"
+         else
+           #### An address.
+           tolist="${tolist:+${tolist}, }${arg}"
+         fi
+    esac
+  done
+
+  #### Check for at least one address and -from.
+  if [ "${tolist}"x = x ]; then
+    printf "mhmail: usage: mhmail addrs ... [switches]\n"; exit 1
+  fi
+  if [ "${havefrom}" = 0 ]; then
+    nmhlibdir=`${nmhbindir}/mhparam libdir`
+    header="${header:+${header}
+}From: "`${nmhlibdir}/ap -format '%(localmbox)' 0`"
+"
+  fi
+
+  #### Set up a tmpfil and trap to remove it.  send moves the file to a backup.
+  tmpdir=${MHTMPDIR:-${TMPDIR:-${TMP:-`${nmhbindir}/mhpath +`}}}
+  tmpfil=${tmpdir}/mhmail$$
+  tmpfilbackup=${tmpdir}/[,#]mhmail$$
+  trap "rm -f ${tmpfil} ${tmpfilbackup}" EXIT
+
+  #### Put message header and body in file to supply as draft to
+  #### send/post.  ${header} always ends with a newline, so this adds
+  #### the blank that separates the body.
+  umask 077
+  printf "%s\n" "To: ${tolist}
+Cc: ${cclist}
+${header}
+${body}" > ${tmpfil} || exit 1
+
+  if [ "${debug}" ]; then
+    printf "%s:\n" `ls -1 ${tmpfil}`
+    cat ${tmpfil}
+  fi
+
+  if [ "$use_send" -eq 1 ]; then
+    send_or_post="${nmhbindir}/send"
+  else
+    send_or_post="${nmhlibdir:=`${nmhbindir}/mhparam libdir`}/post"
+  fi
+
+  $debug ${send_or_post} ${tmpfil} ${sendpostargs}
+fi
