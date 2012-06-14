@@ -1737,10 +1737,15 @@ openBase64 (CT ct, char **file)
     CE ce;
     MD5_CTX mdContext;
 
+    /* the decoder works on the least-significant three bytes of the bits integer,
+       but their position in memory depend on both endian-ness and size of 
+       long int... for little-endian architectures the size is irrelevant, for
+       big-endian archs it's crucial... ideally we'd adopt posix and use a64l instead
+       of this mess. */
     b  = (unsigned char *) &bits;
-    b1 = &b[endian > 0 ? 1 : 2];
-    b2 = &b[endian > 0 ? 2 : 1];
-    b3 = &b[endian > 0 ? 3 : 0];
+    b1 = &b[endian > 0 ? sizeof(bits)==8?5:1 : 2];
+    b2 = &b[endian > 0 ? sizeof(bits)==8?6:2 : 1];
+    b3 = &b[endian > 0 ? sizeof(bits)==8?7:3 : 0];
 
     ce = ct->c_cefile;
     if (ce->ce_fp) {
@@ -2825,10 +2830,16 @@ readDigest (CT ct, char *cp)
     unsigned char *dp, value, *ep;
     unsigned char *b, *b1, *b2, *b3;
 
-    b  = (unsigned char *) &bits,
-    b1 = &b[endian > 0 ? 1 : 2],
-    b2 = &b[endian > 0 ? 2 : 1],
-    b3 = &b[endian > 0 ? 3 : 0];
+    /* the decoder works on the least-significant three bytes of the bits integer,
+       but their position in memory depend on both endian-ness and size of 
+       long int... for little-endian architectures the size is irrelevant, for
+       big-endian archs it's crucial... ideally we'd adopt posix and use a64l instead
+       of this mess. */
+    b  = (unsigned char *) &bits;
+    b1 = &b[endian > 0 ? sizeof(bits)==8?5:1 : 2];
+    b2 = &b[endian > 0 ? sizeof(bits)==8?6:2 : 1];
+    b3 = &b[endian > 0 ? sizeof(bits)==8?7:3 : 0];
+
     bitno = 18;
     bits = 0L;
     skip = 0;
