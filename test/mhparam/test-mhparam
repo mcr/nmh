@@ -30,6 +30,7 @@ Usage: mhparam [profile-components] [switches]
   -all
   -version
   -help
+  -(debug)
 EOF
 
 mhparam -help >$actual 2>&1
