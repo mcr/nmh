@@ -6,7 +6,7 @@
 # COPYRIGHT file in the root directory of the nmh distribution for
 # complete copyright information.
 #
-# Emulation of compiled mhmail(1) using nmh send(1) or post(8).
+# Emulation of compiled mhmail(1) using nmh post(8) or send(1).
 # Differences from compiled mhmail:
 # * Supports all post(8) (by default, without -profile) or send(1)
 #   (with -profile) options.
@@ -30,7 +30,7 @@ usage='Usage: mhmail [addrs ... [switches]]
   -v(ersion)
   -h(elp)
   -d(ebug)
-  and all send(1)/post(8) switches'
+  and all post(8)/send(1) switches'
 
 #### Use autoconf to fill in bindir.
 nmhbindir=@bindir@
@@ -53,7 +53,7 @@ else
   havefrom=0
   header=
   otherarg=0
-  sendpostargs=
+  postsendargs=
   switcharg=0
   use_send=0
   debug=
@@ -63,7 +63,7 @@ else
     esac
 
     case ${arg} in
-      #### Send and post wouldn't accept -f -or -s because they'd be
+      #### Post and send won't accept -f -or -s because they'd be
       #### ambiguous, so no conflicts with them.  And they don't have
       #### -b or -c.  For the new switches that compiled mhmail didn't
       #### have:  let -p indicate mhmail -profile, not send -port, and
@@ -79,7 +79,7 @@ else
       -v|-ve|-ver|-vers|-versi|-versio|-version)
           #### Cheat instead of using autoconf and make to fill in the version.
           ${nmhbindir}/mhpath -v | sed 's/mhpath/mhmail/'; exit ;;
-      -*) sendpostargs="${sendpostargs:+${sendpostargs} }${arg}"; switcharg=1 ;;
+      -*) postsendargs="${postsendargs:+${postsendargs} }${arg}"; switcharg=1 ;;
       *) if [ ${ccarg} -eq 1 ]; then
            cclist="${cclist:+${cclist}, }${arg}"; ccarg=0
          elif [ ${bodyarg} -eq 1 ]; then
@@ -92,7 +92,7 @@ else
            header="${header:+${header} }${arg}
 "; otherarg=0
          elif [ ${switcharg} -eq 1 ]; then
-           sendpostargs="${sendpostargs:+${sendpostargs} }${arg}"
+           postsendargs="${postsendargs:+${postsendargs} }${arg}"
          else
            #### An address.
            tolist="${tolist:+${tolist}, }${arg}"
@@ -126,21 +126,27 @@ else
   #### send/post.  ${header} always ends with a newline, so this adds
   #### the blank that separates the body.
   umask 077
-  printf "%s\n" "To: ${tolist}
+  printf "%s" "To: ${tolist}
 Cc: ${cclist}
 ${header}
 ${body}" > ${tmpfil} || exit 1
 
   if [ "${debug}" ]; then
     printf "%s:\n" `ls -1 ${tmpfil}`
-    cat ${tmpfil}
+    cat "${tmpfil}"
   fi
 
-  if [ "$use_send" -eq 1 ]; then
-    send_or_post="${nmhbindir}/send"
+  if [ "$use_send" -eq 0 ]; then
+    post_or_send="${nmhlibdir:=`${nmhbindir}/mhparam libdir`}/post"
   else
-    send_or_post="${nmhlibdir:=`${nmhbindir}/mhparam libdir`}/post"
+    post_or_send="${nmhbindir}/send"
   fi
 
-  $debug ${send_or_post} ${tmpfil} ${sendpostargs}
+  if $debug ${post_or_send} ${tmpfil} ${postsendargs}; then
+    :
+  else
+    #### exec disables the trap set above.
+    printf "Letter saved in dead.letter\n"
+    exec mv ${tmpfil} dead.letter
+  fi
 fi
