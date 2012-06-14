@@ -102,8 +102,8 @@ else
   fi
   if [ "${havefrom}" = 0 ]; then
     nmhlibdir=`${nmhbindir}/mhparam libdir`
-    header="${header:+${header}
-}From: "`${nmhlibdir}/ap -format '%(localmbox)' 0`"
+    header="${header:+${header}}From: "\
+`${nmhlibdir}/ap -format '%(localmbox)' 0`"
 "
   fi
 
