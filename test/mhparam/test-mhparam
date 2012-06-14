@@ -32,7 +32,6 @@ Usage: mhparam [profile-components] [switches]
   -help
 EOF
 
-# check -help
 mhparam -help >$actual 2>&1
 check $expected $actual
 
@@ -132,7 +131,7 @@ libdir >$actual 2>&1
 check $expected $actual
 
 #### This exits with non-zero status, so let run_test squash that:
-run_test 'mhparam faceproc formatproc rmmproc' ''
+run_test 'mhparam formatproc rmmproc' ''
 
 #### Test sbackup separately because it's only passed as a -D compile option.
 case `mhparam sbackup` in
