@@ -278,6 +278,15 @@ if [ $status -eq 0 ]; then
   status=$?
 
   if [ $status -eq 0 ]; then
+    if [ "${TESTS_SHELL}"x = x ]; then
+      #### Bonus:  use heirloom shell to test, if available, and if
+      #### TESTS_SHELL hadn't already been set.
+      heirloom_shell=/usr/lib/heirloom/5bin/sh
+      if [ -x "${heirloom_shell}" ]; then
+        TESTS_SHELL="${heirloom_shell}"; export TESTS_SHELL
+      fi
+   fi
+
     [ $verbose -ge 1 ]  &&  echo testing . . .
     checkoutput=`make $check 2>>$logfile`
     status=$?
