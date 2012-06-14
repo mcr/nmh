@@ -161,7 +161,7 @@ mhparam path context nonexistent1 nonexistent2 nonexistent3 >/dev/null
 run_test "echo $?" 3
 set -e
 
-# mhparam -debug (undocumented)
+# mhparam -debug
 # Some of its output depends on configure options, so don't bother to
 # check for correctness here.
 mhparam -debug >/dev/null

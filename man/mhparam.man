@@ -13,6 +13,7 @@ mhparam \- print nmh profile and context components
 .RB [ \-component " | " \-nocomponent ]
 .RB [ \-version ]
 .RB [ \-help ]
+.RB [ \-debug ]
 .ad
 .SH DESCRIPTION
 .B mhparam
@@ -43,12 +44,18 @@ If
 is specified, then all components in the nmh profile are
 displayed and other arguments are ignored.
 .PP
-The locations of two nmh install directories are also available
-through
-.BR mhparam :
+.BR mhparam
+can provide other information, such as
+the locations of the nmh
 .I etcdir
 and
-.IR libdir .
+.I libdir
+install directories and all
+.I proc
+settings.  The
+.B \-debug
+switch displays all such other information available from
+.BR mhparam .
 .PP
 Examples:
 .PP

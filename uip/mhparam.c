@@ -29,7 +29,7 @@ static struct swit switches[] = {
 #define	HELPSW	  4
     { "help", 0 },
 #define DEBUGSW   5
-    { "debug", -5 },
+    { "debug", 5 },
     { NULL, 0 }
 };
 
