@@ -8,7 +8,8 @@
 #
 # Emulation of compiled mhmail(1) using nmh send(1) or post(8).
 # Differences from compiled mhmail:
-# * Supports all send(1) (with -profile) or post(8) (without -profile) options.
+# * Supports all post(8) (by default, without -profile) or send(1)
+#   (with -profile) options.
 # * Optionally (with -profile) obeys the users profile, including
 #   AliasFile and send entries.
 # * Adds -debug option for debugging (sending, not incorporating new mail).
@@ -105,6 +106,11 @@ else
     header="${header:+${header}}From: "\
 `${nmhlibdir}/ap -format '%(localmbox)' 0`"
 "
+  fi
+
+  #### If no -body, read message from stdin the easy way.
+  if [ "${body}"x = x ]; then
+    body=`cat`
   fi
 
   #### Set up a tmpfil and trap to remove it.  send moves the file to a backup.
