@@ -16,9 +16,10 @@ mhparam \- print nmh profile and context components
 .ad
 .SH DESCRIPTION
 .B mhparam
-writes the value of the specified profile component to the
-standard output separated by newlines.  If the profile component is not
-present, the default value (or nothing if there is no default) is printed.
+writes the value of the specified profile component to the standard
+output separated by newlines.  Component name matching is
+case-insensitive.  If the profile component is not present, the
+default value (or nothing if there is no default) is printed.
 .PP
 If the switch
 .B \-component
@@ -41,6 +42,13 @@ If
 .B \-all
 is specified, then all components in the nmh profile are
 displayed and other arguments are ignored.
+.PP
+The locations of two nmh install directories are also available
+through
+.BR mhparam :
+.I etcdir
+and
+.IR libdir .
 .PP
 Examples:
 .PP
@@ -67,6 +75,12 @@ rmmproc
 % mhparam path nonexistent context
 Path: Mail
 context: context
+
+% mhparam etcdir
+%etcdir%
+
+% mhparam libdir
+%libdir%
 .fi
 .RE
 .PP
