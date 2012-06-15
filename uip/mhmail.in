@@ -15,9 +15,7 @@
 # * Adds -debug option for debugging (sending, not incorporating new mail).
 #
 # To do:
-# * update mhmail man page
-# * add mhmail test
-# * integrate into autoconf
+# * set prefix properly so that it supports distcheck
 # * support undocumented mhmail options?
 
 usage='Usage: mhmail [addrs ... [switches]]
@@ -33,9 +31,12 @@ usage='Usage: mhmail [addrs ... [switches]]
   and all post(8)/send(1) switches'
 
 #### Use autoconf to fill in bindir.
-nmhbindir=@bindir@
+# This doesn't work with distcheck.
+# prefix=@prefix@
+# exec_prefix=@exec_prefix@
+# nmhbindir=@bindir@
 
-#### Or if configure hasn't been run yet, figure out nmhbindir at runtime.
+#### Or if configure/make haven't been run yet, figure out nmhbindir at runtime.
 case ${nmhbindir} in
   @*@) nmhbindir=`dirname $0` ;;
 esac
@@ -83,10 +84,11 @@ else
       *) if [ ${ccarg} -eq 1 ]; then
            cclist="${cclist:+${cclist}, }${arg}"; ccarg=0
          elif [ ${bodyarg} -eq 1 ]; then
-           body=${arg}; bodyarg=0
+           body="${arg}
+"; bodyarg=0
            #### Allow -body "" by using just a newline for the body.
-           [ "${body}"x = x ]  &&  body="
-"
+           [ "${body}"x = x ]  &&  body='
+'
          elif [ ${otherarg} -eq 1 ]; then
            #### Always end ${header} with a newline.
            header="${header:+${header} }${arg}
@@ -107,19 +109,31 @@ else
   if [ "${havefrom}" = 0 ]; then
     nmhlibdir=`${nmhbindir}/mhparam libdir`
     header="${header:+${header}}From: "\
-`${nmhlibdir}/ap -format '%(localmbox)' 0`"
-"
+`${nmhlibdir}/ap -format '%(localmbox)' 0`'
+'
   fi
 
   #### If no -body, read message from stdin the easy way.
-  [ "${body}"x = x ]  &&  body=`cat`
-  #### Don't allow an empty body (from stdin).
-  [ "${body}"x = x ]  &&  exit 1
+  if [ "${body}"x = x ]; then
+    #### This will lose any trailing newline(s), so we can't
+    #### send the message when stdin contains only newlines.
+    body=`cat`
+
+    #### Don't allow an empty body (from stdin).
+    if [ "${body}"x = x ]; then
+      printf "empty body, message not sent\n"
+      exit 1
+    fi
+
+    #### Add trailing newline to body if it doesn't have one.
+    [ `printf "${body}" | tail -n 1 | wc -l` -ne 1 ]  &&  body="${body}
+"
+  fi
 
   #### Set up a tmpfil and trap to remove it.  send moves the file to a backup.
-  tmpdir=${MHTMPDIR:-${TMPDIR:-${TMP:-`${nmhbindir}/mhpath +`}}}
-  tmpfil=${tmpdir}/mhmail$$
-  tmpfilbackup=${tmpdir}/[,#]mhmail$$
+  tmpdir="${MHTMPDIR:-${TMPDIR:-${TMP:-`${nmhbindir}/mhpath +`}}}"
+  tmpfil="${tmpdir}/mhmail$$"
+  tmpfilbackup="${tmpdir}/[,#]mhmail$$"
   trap "rm -f ${tmpfil} ${tmpfilbackup}" EXIT
 
   #### Put message header and body in file to supply as draft to
@@ -145,8 +159,8 @@ ${body}" > ${tmpfil} || exit 1
   if $debug ${post_or_send} ${tmpfil} ${postsendargs}; then
     :
   else
-    #### exec disables the trap set above.
     printf "Letter saved in dead.letter\n"
+    #### exec skips the trap set above.
     exec mv ${tmpfil} dead.letter
   fi
 fi
