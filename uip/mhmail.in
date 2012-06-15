@@ -35,6 +35,7 @@ usage='Usage: mhmail [addrs ... [switches]]
 # prefix=@prefix@
 # exec_prefix=@exec_prefix@
 # nmhbindir=@bindir@
+nmhbindir=`dirname $0`
 
 #### Or if configure/make haven't been run yet, figure out nmhbindir at runtime.
 case ${nmhbindir} in
