@@ -135,7 +135,7 @@ setup_test ()
 {
   MH=${MH_TEST_DIR}/Mail/.mh_profile
   MHMTSCONF=${MH_INST_DIR}${sysconfdir}/mts.conf
-  PATH=${MH_INST_DIR}${bindir}:${PATH}
+  PATH=${MH_INST_DIR}${bindir}:${MH_INST_DIR}${auxexecdir}:${PATH}
   MH_LIB_DIR=${MH_INST_DIR}${auxexecdir}
   export MH MHMTSCONF MH_LIB_DIR PATH
 
