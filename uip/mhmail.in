@@ -1,22 +1,25 @@
 #! /bin/sh
 #
-# mhmail.c -- simple mail program
+# mhmail -- simple mail program
 #
 # This code is Copyright (c) 2012, by the authors of nmh.  See the
 # COPYRIGHT file in the root directory of the nmh distribution for
 # complete copyright information.
 #
-# Emulation of compiled mhmail(1) using nmh post(8) or send(1).
-# Differences from compiled mhmail:
+# Emulation of compiled mhmail(1), with these differences:
+# * Instead of silently not sending an empty message, notifies user
+#   "mhmail: empty message not sent, use -body '' to force."
+# * The compiled mhmail dropped a trailing newline from the -body argument.
 # * Supports all post(8) (by default, without -profile) or send(1)
 #   (with -profile) options.
 # * Optionally (with -profile) obeys the users profile, including
 #   AliasFile and send entries.
 # * Adds -debug option for debugging (sending, not incorporating new mail).
+# * Drops support for undocumented -queue option.
 #
 # To do:
-# * set prefix properly so that it supports distcheck
-# * support undocumented mhmail options?
+# * add support for undocumented -resent compiled mhmail switch
+# * add -attach file ... switch
 
 usage='Usage: mhmail [addrs ... [switches]]
   switches are:
@@ -30,21 +33,12 @@ usage='Usage: mhmail [addrs ... [switches]]
   -d(ebug)
   and all post(8)/send(1) switches'
 
-#### Use autoconf to fill in bindir.
-# This doesn't work with distcheck.
-# prefix=@prefix@
-# exec_prefix=@exec_prefix@
-# nmhbindir=@bindir@
-nmhbindir=`dirname $0`
-
-#### Or if configure/make haven't been run yet, figure out nmhbindir at runtime.
-case ${nmhbindir} in
-  @*@) nmhbindir=`dirname $0` ;;
-esac
+bindir=`dirname $0`
+nmhbindir=`cd "${bindir}" && pwd`
 
 if [ $# -eq 0 ]; then
   #### Emulate mhmail for reading mail.
-  exec ${nmhbindir}/inc
+  exec "${nmhbindir}"/inc
 else
   #### Go through all the switches so we can build the draft.
   tolist=
@@ -52,19 +46,20 @@ else
   bodyarg=0
   cclist=
   ccarg=0
-  havefrom=0
-  header=
-  otherarg=0
+  from=
+  fromarg=0
+  subject=
+  subjectarg=0
   postsendargs=
   switcharg=0
   use_send=0
   debug=
   for arg in "$@"; do
-    case ${arg} in
+    case "${arg}" in
       -*) switcharg=0
     esac
 
-    case ${arg} in
+    case "${arg}" in
       #### Post and send won't accept -f -or -s because they'd be
       #### ambiguous, so no conflicts with them.  And they don't have
       #### -b or -c.  For the new switches that compiled mhmail didn't
@@ -73,29 +68,29 @@ else
       -b|-bo|-bod|-body) bodyarg=1 ;;
       -c|-cc) ccarg=1 ;;
       -d|-de|-deb|-debu|-debug) debug=echo ;;
-      -f|-fr|-fro|-from) header="${header}From:"; otherarg=1; havefrom=1 ;;
+      -f|-fr|-fro|-from) fromarg=1 ;;
       -h|-he|-hel|-help) printf "%s\n" "${usage}"; exit ;;
       -p|-pr|-pro|-prof|-profi|-profil|-profile) use_send=1 ;;
-      -s|-su|-sub|-subj|-subje|-subjec|-subject)
-          header="${header}Subject:"; otherarg=1 ;;
+      -s|-su|-sub|-subj|-subje|-subjec|-subject) subjectarg=1 ;;
       -v|-ve|-ver|-vers|-versi|-versio|-version)
-          #### Cheat instead of using autoconf and make to fill in the version.
-          ${nmhbindir}/mhpath -v | sed 's/mhpath/mhmail/'; exit ;;
+         #### Cheat instead of using autoconf and make to fill in the version.
+         "${nmhbindir}"/mhpath -v | sed 's/mhpath/mhmail/'; exit ;;
       -*) postsendargs="${postsendargs:+${postsendargs} }${arg}"; switcharg=1 ;;
-      *) if [ ${ccarg} -eq 1 ]; then
-           cclist="${cclist:+${cclist}, }${arg}"; ccarg=0
-         elif [ ${bodyarg} -eq 1 ]; then
+      *) if [ ${bodyarg} -eq 1 ]; then
            body="${arg}
 "; bodyarg=0
            #### Allow -body "" by using just a newline for the body.
            [ "${body}"x = x ]  &&  body='
 '
-         elif [ ${otherarg} -eq 1 ]; then
-           #### Always end ${header} with a newline.
-           header="${header:+${header} }${arg}
-"; otherarg=0
+         elif [ ${fromarg} -eq 1 ]; then
+           from="${arg}"; fromarg=0
+         elif [ ${subjectarg} -eq 1 ]; then
+           subject="${arg}"; subjectarg=0
          elif [ ${switcharg} -eq 1 ]; then
            postsendargs="${postsendargs:+${postsendargs} }${arg}"
+         elif [ ${ccarg} -eq 1 ]; then
+           #### Never reset ccarg to 0, for compatibilty with compiled mhmail.
+           cclist="${cclist:+${cclist}, }${arg}"
          else
            #### An address.
            tolist="${tolist:+${tolist}, }${arg}"
@@ -105,63 +100,78 @@ else
 
   #### Check for at least one address and -from.
   if [ "${tolist}"x = x ]; then
-    printf "mhmail: usage: mhmail addrs ... [switches]\n"; exit 1
+    printf "mhmail: usage: mhmail addrs ... [switches]\n"
+    exit 1
   fi
-  if [ "${havefrom}" = 0 ]; then
-    nmhlibdir=`${nmhbindir}/mhparam libdir`
-    header="${header:+${header}}From: "\
-`${nmhlibdir}/ap -format '%(localmbox)' 0`'
-'
+  if [ "${from}"x = x ]; then
+    nmhlibdir=`${nmhbindir}/mhparam libdir`/
+    #### If nmhlibdir isn't right, assume that the nmh lib dir is on the PATH.
+    [ -x "${nmhlibdir}ap" ]  ||  nmhlibdir=
+    from=`${nmhlibdir}ap -format '%(localmbox)' 0`
   fi
 
-  #### If no -body, read message from stdin the easy way.
+  #### Build header.
+  header="To: ${tolist}
+"
+  [ "${cclist}"x = x ]  ||  header="${header}Cc: ${cclist}
+"
+  [ "${subject}"x = x ]  ||  header="${header}Subject: ${subject}
+";
+  [ "${from}"x = x ]  ||  header="${header}From: ${from}
+";
+  header="${header}
+"
+
+  #### Set up a file to supply as a draft to send/post.  And set a
+  #### trap to remove it.  send moves the file to a backup, so it will
+  #### remove that, too.
+  umask 077
+  tmpdir="${MHTMPDIR:-${TMPDIR:-${TMP:-`${nmhbindir}/mhpath +`}}}"
+  tmpfil="${tmpdir}/mhmail$$"
+  tmpfilbackup="${tmpdir}/[,#]mhmail$$"
+  trap 'rm -f '"${tmpfil}"' '"${tmpfilbackup}" EXIT
+
   if [ "${body}"x = x ]; then
-    #### This will lose any trailing newline(s), so we can't
-    #### send the message when stdin contains only newlines.
-    body=`cat`
+    #### First put message header in the file.  cat >> handles blank
+    #### lines better than body=`cat`.
+    printf "%s" "${header}" > "${tmpfil}" || exit 1
 
-    #### Don't allow an empty body (from stdin).
-    if [ "${body}"x = x ]; then
-      printf "empty body, message not sent\n"
+    tmpfile_size_before=`wc -c "${tmpfil}"`
+    #### Now grab the body from stdin.
+    cat >>"${tmpfil}"
+    tmpfile_size_after=`wc -c "${tmpfil}"`
+
+    #### Don't allow an empty body (from stdin).  Use string
+    #### comparison so we don't have to strip the filename, etc.
+    if [ "${tmpfile_size_before}" = "${tmpfile_size_after}" ]; then
+      printf "mhmail: empty message not sent, use -body '' to force.\n" 1>&2
       exit 1
     fi
 
     #### Add trailing newline to body if it doesn't have one.
     [ `printf "${body}" | tail -n 1 | wc -l` -ne 1 ]  &&  body="${body}
 "
+  else
+    #### Put message header and body in the file.
+    printf "%s" "${header}${body}" > "${tmpfil}" || exit 1
   fi
 
-  #### Set up a tmpfil and trap to remove it.  send moves the file to a backup.
-  tmpdir="${MHTMPDIR:-${TMPDIR:-${TMP:-`${nmhbindir}/mhpath +`}}}"
-  tmpfil="${tmpdir}/mhmail$$"
-  tmpfilbackup="${tmpdir}/[,#]mhmail$$"
-  trap "rm -f ${tmpfil} ${tmpfilbackup}" EXIT
-
-  #### Put message header and body in file to supply as draft to
-  #### send/post.  ${header} always ends with a newline, so this adds
-  #### the blank that separates the body.
-  umask 077
-  printf "%s" "To: ${tolist}
-Cc: ${cclist}
-${header}
-${body}" > ${tmpfil} || exit 1
-
   if [ "${debug}" ]; then
-    printf "%s:\n" `ls -1 ${tmpfil}`
+    printf "%s:\n" `ls -1 "${tmpfil}"`
     cat "${tmpfil}"
   fi
 
   if [ "$use_send" -eq 0 ]; then
-    post_or_send="${nmhlibdir:=`${nmhbindir}/mhparam libdir`}/post"
+    post_or_send=`${nmhbindir}/mhparam postproc`
   else
     post_or_send="${nmhbindir}/send"
   fi
 
-  if $debug ${post_or_send} ${tmpfil} ${postsendargs}; then
+  if $debug "${post_or_send}" "${tmpfil}" ${postsendargs}; then
     :
   else
     printf "Letter saved in dead.letter\n"
     #### exec skips the trap set above.
-    exec mv ${tmpfil} dead.letter
+    exec mv "${tmpfil}" dead.letter
   fi
 fi
