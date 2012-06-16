@@ -63,7 +63,7 @@ TESTS = test/bad-input/test-header \
 	test/post/test-post-basic test/post/test-post-multiple \
 	test/post/test-post-dcc test/post/test-post-fcc \
 	test/post/test-post-multifrom test/post/test-post-envelope \
-	test/post/test-post-group \
+	test/post/test-post-group test/post/test-mhmail \
 	test/refile/test-refile \
 	test/repl/test-if-str test/repl/test-trailing-newline \
 	test/repl/test-multicomp \
@@ -113,13 +113,13 @@ BUILT_SOURCES = sbr/sigmsg.h
 ##
 bin_PROGRAMS = uip/ali uip/anno uip/burst uip/comp uip/dist uip/flist \
 	       uip/folder uip/forw uip/inc uip/install-mh uip/mark \
-	       uip/mhbuild uip/mhlist uip/mhmail uip/mhn uip/mhparam \
+	       uip/mhbuild uip/mhlist uip/mhn uip/mhparam \
 	       uip/mhpath uip/mhshow uip/mhstore uip/msgchk uip/msh uip/new \
 	       uip/packf uip/pick uip/prompter uip/refile uip/repl uip/rmf \
 	       uip/rmm uip/scan uip/send uip/show uip/sortm uip/whatnow \
 	       uip/whom
 
-bin_SCRIPTS = etc/sendfiles
+bin_SCRIPTS = uip/mhmail etc/sendfiles
 
 ##
 ## This is all programs that get installed in the "lib" directory
@@ -226,7 +226,7 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     man/unseen.man man/whatnow.man man/whom.man \
 	     test/README $(TESTS) test/inc/deb359167.mbox \
 	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
-	     test/inc/md5sums test/post/test-post-common.sh \
+	     test/inc/md5sums test/post/test-post-common.sh uip/mhmail \
 	     SPECS/nmh.spec SPECS/build-nmh-cygwin
 
 ##
@@ -274,8 +274,6 @@ uip_mhlist_SOURCES = uip/mhlist.c uip/mhparse.c uip/mhcachesbr.c \
 		     uip/mhlistsbr.c uip/mhmisc.c uip/mhfree.c uip/termsbr.c \
 		     uip/md5.c
 uip_mhlist_LDADD = $(LDADD) $(TERMLIB)
-
-uip_mhmail_SOURCES = uip/mhmail.c
 
 uip_mhn_SOURCES = uip/mhn.c uip/mhparse.c uip/mhcachesbr.c uip/mhshowsbr.c \
 		  uip/mhlistsbr.c uip/mhstoresbr.c uip/mhmisc.c uip/mhfree.c \
