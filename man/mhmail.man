@@ -22,7 +22,7 @@ mhmail \- send or read mail
 [switches\ for
 .I post
 \&... |
-.RB [ \-profile
+.R \-profile
 [switches\ for
 .I send
 \&...]]
