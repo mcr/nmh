@@ -126,9 +126,10 @@ uses the \*(lqFrom:\*(rq line in the message draft as the identity of
 the the originating mailbox.  A \*(lqFrom:\*(rq line is required in
 all message draft.  By default the message composition utilities such
 as
-.B comp
-and
+.BR comp ,
 .B repl
+and
+.B mhmail
 will automatically place a \*(lqFrom:\*(rq line in the message draft.
 There are two ways to override this behavior, however.
 Note that they apply equally to \*(lqResent\-From:\*(rq lines in messages sent
