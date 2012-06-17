@@ -27,9 +27,9 @@ mhmail \- send or read mail
 [switches\ for
 .I send
 \&...]]
+.RB [ \-send " | " \-nosend ]
 .RB [ \-version ]
 .RB [ \-help ]
-.RB [ \-debug ]
 .ad
 .SH DESCRIPTION
 .B mhmail
@@ -127,10 +127,14 @@ instead of
 to send the message.  This allows use of the user's context and aliases.
 .PP
 The
-.B \-debug
-option shows the draft file that would be posted/sent and the command
-that would be used to post/send the draft, but does not post or send
-it.
+.B \-nosend
+option shows the draft file that would be posted/sent on the command's
+standard output but does not post or send it.
+.B \-send
+provides the default behavior of posting or sending the message.  It
+can be used to disable
+.BR \-nosend ,
+for example, when using a shell alias.
 .PP
 All other switches are passed on to
 .B post
@@ -155,7 +159,7 @@ is used.
 dist(1), inc(1), post(8), send(1)
 
 .SH DEFAULTS
-None
+.RB ` \-send '
 
 .SH CONTEXT
 If
@@ -167,3 +171,8 @@ context changes occur.  With the
 switch, the context of
 .B send
 is used.
+
+.SH BUGS
+.B \-resent
+cannot be used with
+.BR \-profile .

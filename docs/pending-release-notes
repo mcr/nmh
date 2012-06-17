@@ -8,7 +8,8 @@ NEW FEATURES
   same component.  In previous versions, all but the first were
   silently ignored.
 - mhmail now supports all post(8) options, and optionally can use
-  send(1) with all of its options.
+  send(1) with all of its options.  Its formerly undocumented -resent
+  switch has been documented.  And it has new -send/-nosend switches.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

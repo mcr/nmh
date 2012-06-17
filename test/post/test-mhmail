@@ -77,12 +77,13 @@ Usage: mhmail [addrs ... [switches]]
   -b(ody) text
   -c(c) addrs ...
   -f(rom) addr
-  -s(ubject) text
+  -su(bject) text
   -r(esent)
   -pr(ofile)
+  -se(nd)
+  -nose(nd)
   -v(ersion)
   -h(elp)
-  -d(ebug)
   and all post(8)/send(1) switches
 EOF
 
@@ -111,20 +112,18 @@ case `mhmail` in
 esac
 
 
-# check -debug
+# check -nosend
 # Not supported by compiled mhmail.
-mhmail -debug recipient@example.com -from sender@localhost \
+mhmail -nosend recipient@example.com -from sender@localhost \
   -server 127.0.0.1 -port $localport -body '' >"$actual" 2>"$actual_err"
 
 tmpfil=`head -1 $actual | sed -e 's/://'`
 
 cat > "$expected" <<EOF
-${tmpfil}:
 To: recipient@example.com
 From: sender@localhost
 
 
-$MH_INST_DIR$auxexecdir/post ${tmpfil} -server 127.0.0.1 -port $localport
 EOF
 
 cat > "$expected_err" <<EOF
@@ -132,6 +131,26 @@ EOF
 
 check "$expected" "$actual"
 check "$expected_err" "$actual_err"
+[ ${failed:-0} -eq 0 ] || exit ${failed:-0}
+
+
+# check -send
+# Not supported by compiled mhmail.
+cat > "$expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<sender@localhost>
+RCPT TO:<recipient@example.com>
+DATA
+To: recipient@example.com
+From: sender@localhost
+Date:
+
+message
+.
+QUIT
+EOF
+
+test_mhmail "$expected" "-from sender@localhost -nosend -send" '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 

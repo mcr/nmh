@@ -14,12 +14,12 @@
 #   (with -profile) options.
 # * Optionally (with -profile) obeys the users profile, including
 #   AliasFile and send entries.
-# * Adds -debug option for debugging (sending, not incorporating new mail).
+# * Adds -nosend option, which displays the draft but does not send it.
 # * Drops support for undocumented -queue option.
 #
 # To do:
 # * fix -resent with -profile
-# * rename -debug to -nosend and add -send (and note in doc that last one takes)
+# * add -header-field name:body switch
 # * add -attach file ... switch
 
 usage='Usage: mhmail [addrs ... [switches]]
@@ -27,12 +27,13 @@ usage='Usage: mhmail [addrs ... [switches]]
   -b(ody) text
   -c(c) addrs ...
   -f(rom) addr
-  -s(ubject) text
+  -su(bject) text
   -r(esent)
   -pr(ofile)
+  -se(nd)
+  -nose(nd)
   -v(ersion)
   -h(elp)
-  -d(ebug)
   and all post(8)/send(1) switches'
 
 bindir=`dirname $0`
@@ -56,7 +57,7 @@ else
   postsendargs=
   switcharg=0
   use_send=0
-  debug=
+  sendsw=1
   for arg in "$@"; do
     case "${arg}" in
       -*) switcharg=0
@@ -67,17 +68,18 @@ else
       #### ambiguous, so no conflicts with them.  And they don't have
       #### -b, -c, or -r.  For the new switches that compiled mhmail
       #### didn't have:  let -p indicate mhmail -profile, not send
-      #### -port, and let -d indicate mhmail -debug, not send -draft.
+      #### -port.  -send masks the send(1) -send switch.
       -b|-bo|-bod|-body) bodyarg=1 ;;
       -c|-cc) ccarg=1 ;;
-      -d|-de|-deb|-debu|-debug) debug=echo ;;
       -f|-fr|-fro|-from) fromarg=1 ;;
       -h|-he|-hel|-help) printf "%s\n" "${usage}"; exit ;;
+      -nose|-nosen|-nosend) sendsw=0 ;;
       -p|-pr|-pro|-prof|-profi|-profil|-profile) use_send=1 ;;
       -resend) printf "mhmail: did you mean -resent instead of -resend?\n" 1>&2
          exit 1 ;;
       -r|-re|-res|-rese|-resen|-resent) resent=1 ;;
-      -s|-su|-sub|-subj|-subje|-subjec|-subject) subjectarg=1 ;;
+      -se|-sen|-send) sendsw=1 ;;
+      -su|-sub|-subj|-subje|-subjec|-subject) subjectarg=1 ;;
       -v|-ve|-ver|-vers|-versi|-versio|-version)
          #### Cheat instead of using autoconf and make to fill in the version.
          "${nmhbindir}"/mhpath -v | sed 's/mhpath/mhmail/'; exit ;;
@@ -141,7 +143,7 @@ else
     header="${header}
 "
   else
-    if [ "$use_send" -eq 0 ]; then
+    if [ ${use_send} -eq 0 ]; then
       postsendargs="${postsendargs:+${postsendargs} }-dist"
     else
       mhdist=1; export mhdist
@@ -177,24 +179,21 @@ else
     printf "%s" "${header}${body}" > "${tmpfil}" || exit 1
   fi
 
-  if [ "${debug}" ]; then
-    printf "%s:\n" `ls -1 "${tmpfil}"`
+  if [ ${sendsw} -eq 0 ]; then
     cat "${tmpfil}"
-  fi
-
-  if [ "$use_send" -eq 0 ]; then
-    post_or_send=`${nmhbindir}/mhparam postproc`
   else
-    post_or_send="${nmhbindir}/send"
-  fi
+    if [ ${use_send} -eq 0 ]; then
+      post_or_send=`${nmhbindir}/mhparam postproc`
+    else
+      post_or_send="${nmhbindir}/send"
+    fi
 
-  status=$?
-
-  if $debug "${post_or_send}" "${tmpfil}" ${postsendargs}; then
-    exit ${status}
-  else
-    printf "Letter saved in dead.letter\n"
-    #### exec skips the trap set above.
-    exec mv "${tmpfil}" dead.letter
+    if "${post_or_send}" "${tmpfil}" ${postsendargs}; then
+      exit
+    else
+      printf "Letter saved in dead.letter\n"
+      #### exec skips the trap set above.
+      exec mv "${tmpfil}" dead.letter
+    fi
   fi
 fi
