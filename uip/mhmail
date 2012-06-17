@@ -18,7 +18,8 @@
 # * Drops support for undocumented -queue option.
 #
 # To do:
-# * add support for undocumented -resent compiled mhmail switch
+# * fix -resent with -profile
+# * rename -debug to -nosend and add -send (and note in doc that last one takes)
 # * add -attach file ... switch
 
 usage='Usage: mhmail [addrs ... [switches]]
@@ -27,6 +28,7 @@ usage='Usage: mhmail [addrs ... [switches]]
   -c(c) addrs ...
   -f(rom) addr
   -s(ubject) text
+  -r(esent)
   -pr(ofile)
   -v(ersion)
   -h(elp)
@@ -50,6 +52,7 @@ else
   fromarg=0
   subject=
   subjectarg=0
+  resent=0
   postsendargs=
   switcharg=0
   use_send=0
@@ -62,15 +65,18 @@ else
     case "${arg}" in
       #### Post and send won't accept -f -or -s because they'd be
       #### ambiguous, so no conflicts with them.  And they don't have
-      #### -b or -c.  For the new switches that compiled mhmail didn't
-      #### have:  let -p indicate mhmail -profile, not send -port, and
-      #### let -d indicate mhmail -debug, not send -draft.
+      #### -b, -c, or -r.  For the new switches that compiled mhmail
+      #### didn't have:  let -p indicate mhmail -profile, not send
+      #### -port, and let -d indicate mhmail -debug, not send -draft.
       -b|-bo|-bod|-body) bodyarg=1 ;;
       -c|-cc) ccarg=1 ;;
       -d|-de|-deb|-debu|-debug) debug=echo ;;
       -f|-fr|-fro|-from) fromarg=1 ;;
       -h|-he|-hel|-help) printf "%s\n" "${usage}"; exit ;;
       -p|-pr|-pro|-prof|-profi|-profil|-profile) use_send=1 ;;
+      -resend) printf "mhmail: did you mean -resent instead of -resend?\n" 1>&2
+         exit 1 ;;
+      -r|-re|-res|-rese|-resen|-resent) resent=1 ;;
       -s|-su|-sub|-subj|-subje|-subjec|-subject) subjectarg=1 ;;
       -v|-ve|-ver|-vers|-versi|-versio|-version)
          #### Cheat instead of using autoconf and make to fill in the version.
@@ -111,16 +117,15 @@ else
   fi
 
   #### Build header.
-  header="To: ${tolist}
+  [ ${resent} -eq 0 ]  &&  prefix=  ||  prefix='Resent-'
+  header="${prefix}To: ${tolist}
 "
-  [ "${cclist}"x = x ]  ||  header="${header}Cc: ${cclist}
+  [ "${cclist}"x = x ]  ||  header="${header}${prefix}Cc: ${cclist}
 "
-  [ "${subject}"x = x ]  ||  header="${header}Subject: ${subject}
+  [ "${subject}"x = x ]  ||  header="${header}${prefix}Subject: ${subject}
 ";
-  [ "${from}"x = x ]  ||  header="${header}From: ${from}
+  [ "${from}"x = x ]  ||  header="${header}${prefix}From: ${from}
 ";
-  header="${header}
-"
 
   #### Set up a file to supply as a draft to send/post.  And set a
   #### trap to remove it.  send moves the file to a backup, so it will
@@ -130,6 +135,22 @@ else
   tmpfil="${tmpdir}/mhmail$$"
   tmpfilbackup="${tmpdir}/[,#]mhmail$$"
   trap 'rm -f '"${tmpfil}"' '"${tmpfilbackup}" EXIT
+
+  if [ ${resent} -eq 0 ]; then
+    #### Add blank line after header if not resending.
+    header="${header}
+"
+  else
+    if [ "$use_send" -eq 0 ]; then
+      postsendargs="${postsendargs:+${postsendargs} }-dist"
+    else
+      mhdist=1; export mhdist
+      mhaltmsg=${tmpfil}; export mhaltmsg
+      #### This doesn't work, I'm not sure about mhaltmsg.
+      printf "mhmail: -resent not currently supported with -profile\n"
+      exit 1
+    fi
+  fi
 
   if [ "${body}"x = x ]; then
     #### First put message header in the file.  cat >> handles blank
@@ -167,8 +188,10 @@ else
     post_or_send="${nmhbindir}/send"
   fi
 
+  status=$?
+
   if $debug "${post_or_send}" "${tmpfil}" ${postsendargs}; then
-    :
+    exit ${status}
   else
     printf "Letter saved in dead.letter\n"
     #### exec skips the trap set above.

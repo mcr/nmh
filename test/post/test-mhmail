@@ -56,6 +56,7 @@ test_mhmail ()
     #
 
     sed -e 's/^Date:.*/Date:/' \
+        -e 's/^Resent-Date:.*/Resent-Date:/' \
         -e 's/^Message-ID:.*/Message-ID:/' "$actual" > "$actual".nodate
     rm -f "$actual"
 
@@ -77,6 +78,7 @@ Usage: mhmail [addrs ... [switches]]
   -c(c) addrs ...
   -f(rom) addr
   -s(ubject) text
+  -r(esent)
   -pr(ofile)
   -v(ersion)
   -h(elp)
@@ -575,6 +577,37 @@ EOF
 test_mhmail "$expected" "-from sender@localhost" -b "here's some text
 
 "
+[ ${failed:-0} -eq 0 ] || exit ${failed:-0}
+
+
+# check -resent
+# Verified same behavior as compiled mhmail.
+cat > "$expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<recipient@example.com>
+RCPT TO:<recipient@example.com>
+DATA
+Resent-To: recipient@example.com
+Resent-From: recipient@example.com
+To: recipient@example.com
+From: sender@localhost
+Date:
+Resent-Date:
+
+please resend this message
+
+.
+QUIT
+EOF
+
+test_mhmail "$expected" "-from recipient@example.com -resent" \
+  -b "To: recipient@example.com
+From: sender@localhost
+Date: Sat Jun 16 18:35:15 -0500
+
+please resend this message
+"
+
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 

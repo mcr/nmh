@@ -19,6 +19,7 @@ mhmail \- send or read mail
 .IR addr ]
 .RB [ \-subject
 .IR subject ]
+.RB [ \-resent ]
 [switches\ for
 .I post
 \&... |
@@ -67,20 +68,19 @@ name of the temporary file as its argument to deliver the message to
 the specified user.
 .PP
 The
-.B \-profile
-switch instructs
-.B mhmail
-to use
-.B send
-instead of
-.B post
-to send the message.  This allows use of the user's context and aliases.
-.PP
-The
 .B \-subject
 .I subject
 switch can be used to specify the
 \*(lqSubject:\*(rq field of the message.
+.PP
+The
+.B \-resent
+switch indicates that the message body is a fully formed message that
+will be resent, as
+.B dist
+would do.  For example:
+.PP
+    mhmail u2@example.com -resent < `mhpath cur`
 .PP
 By default,
 .B mhmail
@@ -117,6 +117,16 @@ will fill\-in the \*(lqSender:\*(rq
 header correctly.
 .PP
 The
+.B \-profile
+switch instructs
+.B mhmail
+to use
+.B send
+instead of
+.B post
+to send the message.  This allows use of the user's context and aliases.
+.PP
+The
 .B \-debug
 option shows the draft file that would be posted/sent and the command
 that would be used to post/send the draft, but does not post or send
@@ -142,7 +152,7 @@ is used.
 .fi
 
 .SH "SEE ALSO"
-inc(1), post(8), send(1)
+dist(1), inc(1), post(8), send(1)
 
 .SH DEFAULTS
 None
