@@ -239,7 +239,8 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-    "-from sender@localhost -cc recipient2@example.com recipient3@example.com recipient4@example.com" '|' message
+    '-from sender@localhost -cc recipient2@example.com recipient3@example.com '\
+'recipient4@example.com' '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -260,8 +261,7 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" \
-  "-from sender@localhost -subject Test" '|' message
+test_mhmail "$expected" '-from sender@localhost -subject Test' '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -287,8 +287,7 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" \
-  "-from sender@localhost -profile" '|' message
+test_mhmail "$expected" '-from sender@localhost -profile' '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -309,8 +308,8 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost -from sender2@localhost \
--subject Subject1 -subject Subject2" -b message
+test_mhmail "$expected" '-from sender@localhost -from sender2@localhost '\
+'-subject Subject1 -subject Subject2' -b message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 # check repeated -body arguments
@@ -352,8 +351,8 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost \
--cc cc1@example.com -cc cc2@example.com" -b message
+test_mhmail "$expected" \
+  '-from sender@localhost -cc cc1@example.com -cc cc2@example.com' -b message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -377,8 +376,9 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost \
--cc cc1@example.com -subject Test cc2@example.com" -b message
+test_mhmail "$expected" \
+  '-from sender@localhost -cc cc1@example.com -subject Test cc2@example.com' \
+  -b message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -417,7 +417,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" '|' '\n'
+test_mhmail "$expected" '-from sender@localhost' '|' '\n'
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -439,7 +439,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" '|' '\n\n\n'
+test_mhmail "$expected" '-from sender@localhost' '|' '\n\n\n'
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -459,7 +459,7 @@ no newline in input
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" '|' 'no newline in input'
+test_mhmail "$expected" '-from sender@localhost' '|' 'no newline in input'
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -481,7 +481,7 @@ here's some text
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" '|' "here's some text\n\n\n"
+test_mhmail "$expected" '-from sender@localhost' '|' "here's some text\n\n\n"
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -501,7 +501,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" -b ''
+test_mhmail "$expected" '-from sender@localhost' -b ''
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -522,7 +522,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" -b '
+test_mhmail "$expected" '-from sender@localhost' -b '
 '
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
@@ -547,7 +547,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" -b '
+test_mhmail "$expected" '-from sender@localhost' -b '
 
 
 '
@@ -570,7 +570,7 @@ no newline in input
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" -b 'no newline in input'
+test_mhmail "$expected" '-from sender@localhost' -b 'no newline in input'
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -593,7 +593,7 @@ here's some text
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" -b "here's some text
+test_mhmail "$expected" '-from sender@localhost' -b "here's some text
 
 "
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
@@ -613,19 +613,76 @@ From: sender@localhost
 Date:
 Resent-Date:
 
-please resend this message
-
+please resend this message, #1
 .
 QUIT
 EOF
 
-test_mhmail "$expected" "-from recipient@example.com -resent" \
-  -b "To: recipient@example.com
+test_mhmail "$expected" '-from recipient@example.com -resent' \
+  -b 'To: recipient@example.com
 From: sender@localhost
 Date: Sat Jun 16 18:35:15 -0500
 
-please resend this message
-"
+please resend this message, #1'
+
+[ ${failed:-0} -eq 0 ] || exit ${failed:-0}
+
+# check -resent -profile, using stdin
+# Not supported by compiled mhmail.
+cat > "$expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<recipient@example.com>
+RCPT TO:<recipient@example.com>
+DATA
+To: recipient@example.com
+From: sender@localhost
+Date:
+Resent-To: recipient@example.com
+Resent-From: recipient@example.com
+Resent-Date:
+
+please resend this message, #2
+.
+QUIT
+EOF
+
+test_mhmail "$expected" \
+  '-from recipient@example.com -resent -profile -nomsgid' \
+  '|' 'To: recipient@example.com
+From: sender@localhost
+Date: Sat Jun 16 18:35:15 -0500
+
+please resend this message, #2'
+
+[ ${failed:-0} -eq 0 ] || exit ${failed:-0}
+
+
+# check -resent -profile, using -b
+# Not supported by compiled mhmail.
+cat > "$expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<recipient@example.com>
+RCPT TO:<recipient@example.com>
+DATA
+To: recipient@example.com
+From: sender@localhost
+Date:
+Resent-To: recipient@example.com
+Resent-From: recipient@example.com
+Resent-Date:
+
+please resend this message, #3
+.
+QUIT
+EOF
+
+test_mhmail "$expected" \
+  '-from recipient@example.com -resent -profile -nomsgid' \
+  -b 'To: recipient@example.com
+From: sender@localhost
+Date: Sat Jun 16 18:35:15 -0500
+
+please resend this message, #3'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 

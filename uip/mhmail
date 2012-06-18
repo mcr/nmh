@@ -18,7 +18,6 @@
 # * Drops support for undocumented -queue option.
 #
 # To do:
-# * fix -resent with -profile
 # * add -header-field name:body switch
 # * add -attach file ... switch
 
@@ -132,35 +131,43 @@ else
   #### remove that, too.
   umask 077
   tmpdir="${MHTMPDIR:-${TMPDIR:-${TMP:-`${nmhbindir}/mhpath +`}}}"
-  tmpfil="${tmpdir}/mhmail$$"
-  tmpfilbackup="${tmpdir}/[,#]mhmail$$"
-  trap 'rm -f '"${tmpfil}"' '"${tmpfilbackup}" EXIT
+  tmpfile="${tmpdir}/mhmail$$"
+  tmpfilebackup="${tmpdir}/[,#]mhmail$$"
+  tmpfileresent=
 
+  message_file=
   if [ ${resent} -eq 0 ]; then
     #### Add blank line after header if not resending.
     header="${header}
 "
+    message_file="${tmpfile}"
   else
     if [ ${use_send} -eq 0 ]; then
       postsendargs="${postsendargs:+${postsendargs} }-dist"
+      message_file="${tmpfile}"
     else
+      #### When resending with send, tmpfile will just contain the
+      #### Resent- header fields.  "${tmpfileresent}" will contain
+      #### the message that is being resent.
+      tmpfileresent="${tmpdir}/mhmail-resent$$"
       mhdist=1; export mhdist
-      mhaltmsg=${tmpfil}; export mhaltmsg
-      #### This doesn't work, I'm not sure about mhaltmsg.
-      printf "mhmail: -resent not currently supported with -profile\n"
-      exit 1
+      mhaltmsg=${tmpfileresent}; export mhaltmsg
+      message_file="${tmpfileresent}"
+      printf "" >"${message_file}"  || exit 2
     fi
   fi
 
-  if [ "${body}"x = x ]; then
-    #### First put message header in the file.  cat >> handles blank
-    #### lines better than body=`cat`.
-    printf "%s" "${header}" > "${tmpfil}" || exit 1
+  trap 'rm -f '"${tmpfile}"' '"${tmpfilebackup}"' '"${tmpfileresent}" EXIT
 
-    tmpfile_size_before=`wc -c "${tmpfil}"`
-    #### Now grab the body from stdin.
-    cat >>"${tmpfil}"
-    tmpfile_size_after=`wc -c "${tmpfil}"`
+  if [ "${body}"x = x ]; then
+    #### First put message header in the file.
+    printf "%s" "${header}" >"${tmpfile}" || exit 2
+
+    tmpfile_size_before=`wc -c "${message_file}"`
+    #### Now grab the body from stdin.  cat >> handles blank lines
+    #### better than body=`cat`.
+    cat >>"${message_file}" || exit 2
+    tmpfile_size_after=`wc -c "${message_file}"`
 
     #### Don't allow an empty body (from stdin).  Use string
     #### comparison so we don't have to strip the filename, etc.
@@ -170,15 +177,27 @@ else
     fi
 
     #### Add trailing newline to body if it doesn't have one.
+    if [ `tail -n 1 "${message_file}" | wc -l` -ne 1 ]; then
+      printf "\n" >>"${message_file}" || exit 2
+    fi
+  else
+    #### Add trailing newline to body if it doesn't have one.
     [ `printf "${body}" | tail -n 1 | wc -l` -ne 1 ]  &&  body="${body}
 "
-  else
-    #### Put message header and body in the file.
-    printf "%s" "${header}${body}" > "${tmpfil}" || exit 1
+
+    if [ "${tmpfileresent}" ]; then
+      #### Put just the new message header in the file.
+      printf "%s" "${header}" >"${tmpfile}" || exit 2
+      #### and the body in the file to resend.
+      printf "${body}" >"${tmpfileresent}" || exit 2
+    else
+      #### Put message header and body in the file.
+      printf "%s" "${header}${body}" >"${tmpfile}" || exit 2
+    fi
   fi
 
   if [ ${sendsw} -eq 0 ]; then
-    cat "${tmpfil}"
+    cat "${tmpfile}"
   else
     if [ ${use_send} -eq 0 ]; then
       post_or_send=`${nmhbindir}/mhparam postproc`
@@ -186,12 +205,12 @@ else
       post_or_send="${nmhbindir}/send"
     fi
 
-    if "${post_or_send}" "${tmpfil}" ${postsendargs}; then
+    if "${post_or_send}" "${tmpfile}" ${postsendargs}; then
       exit
     else
       printf "Letter saved in dead.letter\n"
       #### exec skips the trap set above.
-      exec mv "${tmpfil}" dead.letter
+      exec mv "${tmpfile}" dead.letter
     fi
   fi
 fi

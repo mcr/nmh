@@ -171,8 +171,3 @@ context changes occur.  With the
 switch, the context of
 .B send
 is used.
-
-.SH BUGS
-.B \-resent
-cannot be used with
-.BR \-profile .
