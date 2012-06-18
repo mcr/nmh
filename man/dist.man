@@ -12,8 +12,8 @@ dist \- redistribute a message to additional addresses
 .RI [ msg ]
 .RB [ \-form
 .IR formfile ]
-.RB [ \-annotate " | " \-noannotate ] 
-.RB [ \-inplace " | " \-noinplace ] 
+.RB [ \-annotate " | " \-noannotate ]
+.RB [ \-inplace " | " \-noinplace ]
 .RB [ \-draftfolder
 .IR +folder ]
 .RB [ \-draftmessage
@@ -129,6 +129,11 @@ fields and no body.  The headers and the body of
 the original message are copied to the draft when the message is sent.
 Use care in constructing the headers for the redistribution.
 .PP
+Because the draft is minimal, the
+.BR prompter (1)
+editor is quite useful with
+.BR dist .
+.PP
 If the
 .B \-annotate
 switch is given, the  message being distributed will
@@ -225,7 +230,7 @@ will prevent any edit from occurring.)
 .fi
 
 .SH "SEE ALSO"
-comp(1), forw(1), repl(1), send(1), whatnow(1)
+comp(1), forw(1), prompter(1), repl(1), send(1), whatnow(1)
 
 .SH DEFAULTS
 .nf
