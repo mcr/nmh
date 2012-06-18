@@ -210,6 +210,7 @@ else
     else
       printf "Letter saved in dead.letter\n"
       #### exec skips the trap set above.
+      [ "${tmpfileresent}" ]  &&  rm -f "${tmpfileresent}"
       exec mv "${tmpfile}" dead.letter
     fi
   fi
