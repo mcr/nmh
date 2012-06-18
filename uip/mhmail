@@ -113,8 +113,6 @@ else
   fi
   if [ "${from}"x = x ]; then
     nmhlibdir=`${nmhbindir}/mhparam libdir`/
-    #### If nmhlibdir isn't right, assume that the nmh lib dir is on the PATH.
-    [ -x "${nmhlibdir}ap" ]  ||  nmhlibdir=
     from=`${nmhlibdir}ap -format '%(localmbox)' 0`
   fi
 

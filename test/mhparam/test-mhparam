@@ -100,7 +100,7 @@ $bindir/msh
 $bindir/whatnow
 $bindir/whom
 $sysconfdir
-$auxexecdir
+${MH_LIB_DIR}
 EOF
 
 mhparam -nocomponent \

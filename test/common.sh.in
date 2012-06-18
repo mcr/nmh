@@ -135,7 +135,7 @@ setup_test ()
 {
   MH=${MH_TEST_DIR}/Mail/.mh_profile
   MHMTSCONF=${MH_INST_DIR}${sysconfdir}/mts.conf
-  PATH=${MH_INST_DIR}${bindir}:${MH_INST_DIR}${auxexecdir}:${PATH}
+  PATH=${MH_INST_DIR}${bindir}:${PATH}
   MH_LIB_DIR=${MH_INST_DIR}${auxexecdir}
   export MH MHMTSCONF MH_LIB_DIR PATH
 
@@ -161,6 +161,7 @@ setup_test ()
   mkdir $MH_TEST_DIR/Mail || exit 1
   cat > $MH <<EOF || exit 1
 Path: ${MH_TEST_DIR}/Mail
+libdir: ${MH_LIB_DIR}
 mhlproc: ${MH_LIB_DIR}/mhl
 moreproc: cat
 showproc: ${MH_LIB_DIR}/mhl
