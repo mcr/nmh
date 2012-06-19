@@ -10,6 +10,8 @@ mhmail \- send or read mail
 .B mhmail
 .RI [ addrs
 \&...]
+.RB [ \-attach
+.IR file ]
 .RB [ \-body
 .IR text ]
 .RB [ \-cc
@@ -143,6 +145,14 @@ recipient@example.com
 .fi
 .RE
 .PP
+Note about this example:  the
+.B \-attach
+switch causes
+.I MIME-Version
+and
+.I Content-Type
+headers to be added to the message.
+.PP
 The
 .B \-profile
 switch instructs
@@ -152,6 +162,22 @@ to use
 instead of
 .B post
 to send the message.  This allows use of the user's context and aliases.
+.PP
+The
+.B \-attach
+.I file
+switch attaches the specified file to the message.  Use of
+.B \-attach
+enables
+.B \-profile
+because
+.B mhmail
+uses
+.B send
+to handle the attachment.  It is usually best to enclose the argument
+in quotes to protect it from the shell.  The
+.B \-attach
+switch may be given multiple times to add multiple attachments.
 .PP
 The
 .B \-nosend
@@ -186,7 +212,12 @@ is used.
 dist(1), inc(1), post(8), send(1)
 
 .SH DEFAULTS
+.nf
 .RB ` \-send '
+.fi
+.RB ` \-profile' ,
+enabled by default only with
+.B \-attach
 
 .SH CONTEXT
 If

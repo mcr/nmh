@@ -57,7 +57,8 @@ test_mhmail ()
 
     sed -e 's/^Date:.*/Date:/' \
         -e 's/^Resent-Date:.*/Resent-Date:/' \
-        -e 's/^Message-ID:.*/Message-ID:/' "$actual" > "$actual".nodate
+        -e 's/^Message-ID:.*/Message-ID:/' \
+        -e 's/^Content-ID:.*/Content-ID:/' "$actual" > "$actual".nodate
     rm -f "$actual"
 
     check "$actual".nodate "$1"
@@ -74,6 +75,7 @@ actual_err=$MH_TEST_DIR/test-mhmail$$.actual_err
 cat >$expected <<EOF
 Usage: mhmail [addrs ... [switches]]
   switches are:
+  -at(tach) file [-at(tach) file] ...
   -b(ody) text
   -c(c) addrs ...
   -f(rom) addr
@@ -736,6 +738,47 @@ test_mhmail "$expected" \
 -header-field Content-Type:text/plain;charset=utf-8 \
 -header-field Content-Transfer-Encoding:8bit" \
   -b 'with added header fields'
+
+[ ${failed:-0} -eq 0 ] || exit ${failed:-0}
+
+
+# check -attach
+# Not supported by compiled mhmail.
+cat > "$expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<sender@example.com>
+RCPT TO:<recipient@example.com>
+DATA
+To: recipient@example.com
+From: sender@example.com
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-ID:
+Date:
+Message-ID:
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+See how easy it is to add an attachment!
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; name="attachment.txt"; charset="us-ascii"
+Content-Description: attachment.txt
+Content-Disposition: attachment; filename="attachment.txt"
+
+The future disappears into memory, With only a moment between,
+Forever dwells in that moment, hope is what remains to be seen
+Forever dwells in that moment, hope is what remains to be seen.
+
+------- =_aaaaaaaaaa0--
+.
+QUIT
+EOF
+
+test_mhmail "$expected" \
+  "-from sender@example.com -attach ${srcdir}/test/mhmail/attachment.txt" \
+  -b 'See how easy it is to add an attachment!'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 

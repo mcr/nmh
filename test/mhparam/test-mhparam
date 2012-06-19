@@ -79,7 +79,7 @@ AliasFile: aliases"
 cat >$expected <<EOF
 context
 .mh_sequences
-$bindir/mhbuild
+$MH_INST_DIR$bindir/mhbuild
 $MH_INST_DIR$bindir/refile
 700
 $bindir/inc

@@ -7,21 +7,19 @@
 # complete copyright information.
 #
 # Emulation of compiled mhmail(1), with these differences:
-# * Instead of silently not sending an empty message, notifies user
-#   "mhmail: empty message not sent, use -body '' to force."
-# * The compiled mhmail dropped a trailing newline from the -body argument.
+# * Adds -send/-nosend, -header-field, and -attach options.
 # * Supports all post(8) (by default, without -profile) or send(1)
 #   (with -profile) options.
 # * Optionally (with -profile) obeys the users profile, including
 #   AliasFile and send entries.
-# * Adds -send/-nosend and -header-field options.
+# * Instead of silently not sending an empty message, notifies user
+#   "mhmail: empty message not sent, use -body '' to force."
+# * The compiled mhmail dropped a trailing newline from the -body argument.
 # * Drops support for undocumented -queue option.
-#
-# To do:
-# * add -attach file ... switch
 
 usage='Usage: mhmail [addrs ... [switches]]
   switches are:
+  -at(tach) file [-at(tach) file] ...
   -b(ody) text
   -c(c) addrs ...
   -f(rom) addr
@@ -44,6 +42,8 @@ if [ $# -eq 0 ]; then
 else
   #### Go through all the switches so we can build the draft.
   tolist=
+  attacharg=0
+  attach_send_switch_added=0
   body=
   bodyarg=0
   cclist=
@@ -69,7 +69,18 @@ else
       #### ambiguous, so no conflicts with them.  And they don't have
       #### -b, -c, or -r.  For the new switches that compiled mhmail
       #### didn't have:  let -p indicate mhmail -profile, not send
-      #### -port.  -send masks the send(1) -send switch.
+      #### -port.  -send masks the send(1) -send switch.  -attach
+      #### masks the send(1) -attach switch.
+      -at|-att|-atta|-attac|-attach)
+         attacharg=1;
+         use_send=1
+         if [ ${attach_send_switch_added} -eq 0 ]; then
+           #### Override any send -attach switch in user's profile.
+           postsendargs=\
+"${postsendargs:+${postsendargs} }-attach Nmh-Attachment"
+           attach_send_switch_added=1
+         fi
+         ;;
       -b|-bo|-bod|-body) bodyarg=1 ;;
       -c|-cc) ccarg=1 ;;
       -f|-fr|-fro|-from) fromarg=1 ;;
@@ -99,6 +110,11 @@ else
          elif [ ${subjectarg} -eq 1 ]; then
            subject="${arg}"
            subjectarg=0
+         elif [ ${attacharg} -eq 1 ]; then
+           headerfieldlist="${headerfieldlist:+${headerfieldlist}}\
+Nmh-Attachment: ${arg}
+"
+           attacharg=0
          elif [ ${headerfieldarg} -eq 1 ]; then
            #### It's not strictly necessary to have one space after
            #### the : that separates the header field name from the

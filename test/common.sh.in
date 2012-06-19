@@ -161,6 +161,7 @@ setup_test ()
   mkdir $MH_TEST_DIR/Mail || exit 1
   cat > $MH <<EOF || exit 1
 Path: ${MH_TEST_DIR}/Mail
+buildmimeproc: ${MH_INST_DIR}${bindir}/mhbuild
 libdir: ${MH_LIB_DIR}
 mhlproc: ${MH_LIB_DIR}/mhl
 moreproc: cat
