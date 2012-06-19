@@ -614,7 +614,7 @@ From: sender@localhost
 Date:
 Resent-Date:
 
-please resend this message, #1
+please resend this message, 1
 .
 QUIT
 EOF
@@ -624,7 +624,7 @@ test_mhmail "$expected" '-from orig_recipient@example.com -resent' \
 From: sender@localhost
 Date: Sat Jun 16 18:35:15 -0500
 
-please resend this message, #1'
+please resend this message, 1'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
@@ -642,7 +642,7 @@ Resent-To: recipient@example.com
 Resent-From: orig_recipient@example.com
 Resent-Date:
 
-please resend this message, #2
+please resend this message, 2
 .
 QUIT
 EOF
@@ -653,7 +653,7 @@ test_mhmail "$expected" \
 From: sender@localhost
 Date: Sat Jun 16 18:35:15 -0500
 
-please resend this message, #2'
+please resend this message, 2'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
@@ -672,7 +672,7 @@ Resent-To: recipient@example.com
 Resent-From: orig_recipient@example.com
 Resent-Date:
 
-please resend this message, #3
+please resend this message, 3
 .
 QUIT
 EOF
@@ -683,7 +683,7 @@ test_mhmail "$expected" \
 From: sender@localhost
 Date: Sat Jun 16 18:35:15 -0500
 
-please resend this message, #3'
+please resend this message, 3'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 

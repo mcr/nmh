@@ -70,3 +70,7 @@ in the test scripts.  In particular:
 
 - Avoid depending on the exact format of output from system (non-nmh)
   programs.
+
+checkbashisms, available at http://sourceforge.net/projects/checkbaskisms/,
+might help some catch problems.  Though it misses all of the troublesome
+constructs, except for assignment in an export statement, listed above.
