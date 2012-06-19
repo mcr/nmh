@@ -17,6 +17,8 @@ mhmail \- send or read mail
 \&...]
 .RB [ \-from
 .IR addr ]
+.RB [ \-header\-field
+.IR name:body ]
 .RB [ \-subject
 .IR subject ]
 .RB [ \-resent ]
@@ -80,7 +82,11 @@ will be resent, as
 .B dist
 would do.  For example:
 .PP
-    mhmail u2@example.com -resent < `mhpath cur`
+.RS 5
+.nf
+mhmail u2@example.com -resent < `mhpath cur`
+.fi
+.RE
 .PP
 By default,
 .B mhmail
@@ -115,6 +121,27 @@ Naturally,
 .B post
 will fill\-in the \*(lqSender:\*(rq
 header correctly.
+.PP
+The
+.B \-header\-field
+.I name:body
+switch adds a header field with the specified name and body to the
+message.  There need not be a space after the colon that separates the
+name and body in the argument to this switch.  It is usually best to
+enclose the argument in quotes to protect it from the shell.  The
+.B \-header\-field
+switch may be given multiple times to add multiple header fields,
+for example,
+.PP
+.RS 5
+.nf
+mhmail -from sender@example.com \\
+-header\-field 'MIME-Version:1.0' \\
+-header\-field 'Content-Type:text/plain; charset=utf-8' \\
+-header\-field 'Content-Transfer-Encoding:8bit' \\
+recipient@example.com
+.fi
+.RE
 .PP
 The
 .B \-profile

@@ -77,13 +77,14 @@ Usage: mhmail [addrs ... [switches]]
   -b(ody) text
   -c(c) addrs ...
   -f(rom) addr
+  -hea(der-field) name:field [-hea(der-field) name:field] ...
   -su(bject) text
   -r(esent)
   -pr(ofile)
   -se(nd)
   -nose(nd)
   -v(ersion)
-  -h(elp)
+  -hel(p)
   and all post(8)/send(1) switches
 EOF
 
@@ -603,11 +604,11 @@ test_mhmail "$expected" '-from sender@localhost' -b "here's some text
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<recipient@example.com>
+MAIL FROM:<orig_recipient@example.com>
 RCPT TO:<recipient@example.com>
 DATA
 Resent-To: recipient@example.com
-Resent-From: recipient@example.com
+Resent-From: orig_recipient@example.com
 To: recipient@example.com
 From: sender@localhost
 Date:
@@ -618,7 +619,7 @@ please resend this message, #1
 QUIT
 EOF
 
-test_mhmail "$expected" '-from recipient@example.com -resent' \
+test_mhmail "$expected" '-from orig_recipient@example.com -resent' \
   -b 'To: recipient@example.com
 From: sender@localhost
 Date: Sat Jun 16 18:35:15 -0500
@@ -631,14 +632,14 @@ please resend this message, #1'
 # Not supported by compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<recipient@example.com>
+MAIL FROM:<orig_recipient@example.com>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
 From: sender@localhost
 Date:
 Resent-To: recipient@example.com
-Resent-From: recipient@example.com
+Resent-From: orig_recipient@example.com
 Resent-Date:
 
 please resend this message, #2
@@ -647,7 +648,7 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  '-from recipient@example.com -resent -profile -nomsgid' \
+  '-from orig_recipient@example.com -resent -profile -nomsgid' \
   '|' 'To: recipient@example.com
 From: sender@localhost
 Date: Sat Jun 16 18:35:15 -0500
@@ -661,14 +662,14 @@ please resend this message, #2'
 # Not supported by compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<recipient@example.com>
+MAIL FROM:<orig_recipient@example.com>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
 From: sender@localhost
 Date:
 Resent-To: recipient@example.com
-Resent-From: recipient@example.com
+Resent-From: orig_recipient@example.com
 Resent-Date:
 
 please resend this message, #3
@@ -677,12 +678,64 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  '-from recipient@example.com -resent -profile -nomsgid' \
+  '-from orig_recipient@example.com -resent -profile -nomsgid' \
   -b 'To: recipient@example.com
 From: sender@localhost
 Date: Sat Jun 16 18:35:15 -0500
 
 please resend this message, #3'
+
+[ ${failed:-0} -eq 0 ] || exit ${failed:-0}
+
+
+# check -header-field.
+# Not supported by compiled mhmail.
+cat > "$expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<sender@example.com>
+RCPT TO:<recipient@example.com>
+DATA
+To: recipient@example.com
+From: sender@example.com
+User-Agent: nmh
+Date:
+
+with added header field
+.
+QUIT
+EOF
+
+test_mhmail "$expected" \
+  '-from sender@example.com -header-field User-Agent:nmh' \
+  -b 'with added header field'
+
+[ ${failed:-0} -eq 0 ] || exit ${failed:-0}
+
+
+# check multiple -header-fields.
+# Not supported by compiled mhmail.
+cat > "$expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<sender@example.com>
+RCPT TO:<recipient@example.com>
+DATA
+To: recipient@example.com
+From: sender@example.com
+MIME-Version: 1.0
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: 8bit
+Date:
+
+with added header fields
+.
+QUIT
+EOF
+
+test_mhmail "$expected" \
+  "-from sender@example.com -header-field MIME-Version:1.0 \
+-header-field Content-Type:text/plain;charset=utf-8 \
+-header-field Content-Transfer-Encoding:8bit" \
+  -b 'with added header fields'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 

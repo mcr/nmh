@@ -14,11 +14,10 @@
 #   (with -profile) options.
 # * Optionally (with -profile) obeys the users profile, including
 #   AliasFile and send entries.
-# * Adds -nosend option, which displays the draft but does not send it.
+# * Adds -send/-nosend and -header-field options.
 # * Drops support for undocumented -queue option.
 #
 # To do:
-# * add -header-field name:body switch
 # * add -attach file ... switch
 
 usage='Usage: mhmail [addrs ... [switches]]
@@ -26,13 +25,14 @@ usage='Usage: mhmail [addrs ... [switches]]
   -b(ody) text
   -c(c) addrs ...
   -f(rom) addr
+  -hea(der-field) name:field [-hea(der-field) name:field] ...
   -su(bject) text
   -r(esent)
   -pr(ofile)
   -se(nd)
   -nose(nd)
   -v(ersion)
-  -h(elp)
+  -hel(p)
   and all post(8)/send(1) switches'
 
 bindir=`dirname $0`
@@ -50,6 +50,8 @@ else
   ccarg=0
   from=
   fromarg=0
+  headerfieldlist=
+  headerfieldarg=0
   subject=
   subjectarg=0
   resent=0
@@ -59,7 +61,7 @@ else
   sendsw=1
   for arg in "$@"; do
     case "${arg}" in
-      -*) switcharg=0
+      -*) switcharg=0; headerfieldarg=0 ;;
     esac
 
     case "${arg}" in
@@ -71,7 +73,8 @@ else
       -b|-bo|-bod|-body) bodyarg=1 ;;
       -c|-cc) ccarg=1 ;;
       -f|-fr|-fro|-from) fromarg=1 ;;
-      -h|-he|-hel|-help) printf "%s\n" "${usage}"; exit ;;
+      -hea|-head|-heade|-header|-header-|-header-f|-header-fi|-header-fie|-header-fiel|-header-field) headerfieldarg=1 ;;
+      -hel|-help) printf "%s\n" "${usage}"; exit ;;
       -nose|-nosen|-nosend) sendsw=0 ;;
       -p|-pr|-pro|-prof|-profi|-profil|-profile) use_send=1 ;;
       -resend) printf "mhmail: did you mean -resent instead of -resend?\n" 1>&2
@@ -85,14 +88,25 @@ else
       -*) postsendargs="${postsendargs:+${postsendargs} }${arg}"; switcharg=1 ;;
       *) if [ ${bodyarg} -eq 1 ]; then
            body="${arg}
-"; bodyarg=0
+"
+           bodyarg=0
            #### Allow -body "" by using just a newline for the body.
            [ "${body}"x = x ]  &&  body='
 '
          elif [ ${fromarg} -eq 1 ]; then
-           from="${arg}"; fromarg=0
+           from="${arg}"
+           fromarg=0
          elif [ ${subjectarg} -eq 1 ]; then
-           subject="${arg}"; subjectarg=0
+           subject="${arg}"
+           subjectarg=0
+         elif [ ${headerfieldarg} -eq 1 ]; then
+           #### It's not strictly necessary to have one space after
+           #### the : that separates the header field name from the
+           #### body, but do it to avoid surprising someone.
+           add=`printf "${arg}" | sed -e 's/:/: /' -e 's/:  /: /'`
+           headerfieldlist="${headerfieldlist:+${headerfieldlist}}${add}
+"
+           headerfieldarg=0
          elif [ ${switcharg} -eq 1 ]; then
            postsendargs="${postsendargs:+${postsendargs} }${arg}"
          elif [ ${ccarg} -eq 1 ]; then
@@ -101,7 +115,7 @@ else
          else
            #### An address.
            tolist="${tolist:+${tolist}, }${arg}"
-         fi
+         fi ;;
     esac
   done
 
@@ -125,6 +139,10 @@ else
 ";
   [ "${from}"x = x ]  ||  header="${header}${prefix}From: ${from}
 ";
+
+  if [ "${headerfieldlist}" ]; then
+    header="${header}${headerfieldlist}";
+  fi
 
   #### Set up a file to supply as a draft to send/post.  And set a
   #### trap to remove it.  send moves the file to a backup, so it will
