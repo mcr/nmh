@@ -54,8 +54,8 @@ TESTS = test/bad-input/test-header \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/inc/test-inc-scanout test/install-mh/test-install-mh \
 	test/manpages/test-manpages test/mhbuild/test-forw \
-	test/mhlist/test-mhlist test/mhparam/test-mhparam \
-	test/mhpath/test-mhpath \
+	test/mhlist/test-mhlist test/mhmail/test-mhmail \
+	test/mhparam/test-mhparam test/mhpath/test-mhpath \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
 	test/mhshow/test-subpart test/mhstore/test-mhstore \
 	test/new/test-basic \
@@ -63,7 +63,7 @@ TESTS = test/bad-input/test-header \
 	test/post/test-post-basic test/post/test-post-multiple \
 	test/post/test-post-dcc test/post/test-post-fcc \
 	test/post/test-post-multifrom test/post/test-post-envelope \
-	test/post/test-post-group test/post/test-mhmail \
+	test/post/test-post-group \
 	test/refile/test-refile \
 	test/repl/test-if-str test/repl/test-trailing-newline \
 	test/repl/test-multicomp \
