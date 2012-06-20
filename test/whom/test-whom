@@ -32,6 +32,34 @@ Subject: Testing message 1
 This is a draft message.
 EOF
 
+# check -help
+cat >$expected <<EOF
+Usage: whom [switches] [file]
+  switches are:
+  -alias aliasfile
+  -[no]check
+  -draft
+  -(draftf)older +folder
+  -(draftm)essage msg
+  -nodraftfolder
+  -version
+  -help
+  -sasl
+  -saslmech mechanism
+  -user username
+  -(port) server port name/number
+EOF
+
+whom -help >$actual 2>&1
+check $expected $actual
+
+# check -version
+case `whom -v` in
+  whom\ --*) ;;
+  *       ) echo "$0: whom -v generated unexpected output" 1>&2
+            failed=`expr ${failed:-0} + 1`;;
+esac
+
 # check with no options
 run_test 'whom' '  -- Network Recipients --
   user at example.com'
