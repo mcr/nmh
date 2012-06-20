@@ -1,0 +1,100 @@
+#!/bin/sh
+######################################################
+#
+# Test ali
+#
+######################################################
+
+# Not tested:
+# -normalize, -nonormalize
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+expected_err=$MH_TEST_DIR/$$.expected_err
+actual=$MH_TEST_DIR/$$.actual
+actual_err=$MH_TEST_DIR/$$.actual_err
+
+
+# check -help
+cat >$expected <<EOF
+Usage: ali [switches] aliases ...
+  switches are:
+  -alias aliasfile
+  -[no]list
+  -[no]normalize
+  -[no]user
+  -version
+  -help
+EOF
+
+ali -help >$actual 2>&1
+check $expected $actual
+
+# check -version
+case `ali -v` in
+  ali\ --*) ;;
+  *       ) echo "$0: ali -v generated unexpected output" 1>&2
+            failed=`expr ${failed:-0} + 1`;;
+esac
+
+# check unknown option
+run_test 'ali -nonexistent' 'ali: -nonexistent unknown'
+
+# check with no arguments and no AliasFile profile component
+run_test 'ali' ''
+
+# check with nonexistent alias file
+run_test 'ali -alias aliases' \
+         "ali: aliasing error in aliases - unable to read 'aliases'"
+
+cat >${MH_TEST_DIR}/Mail/aliases <<EOF
+me: me@example.com
+rush: geddy@example.com, alex@example.com, neil@example.com
+EOF
+
+# check -alias
+run_test "ali -alias ${MH_TEST_DIR}/Mail/aliases" \
+         'me: me@example.com
+rush: geddy@example.com, alex@example.com, neil@example.com'
+
+# check for a specific alias
+run_test "ali -alias ${MH_TEST_DIR}/Mail/aliases rush" \
+         'geddy@example.com, alex@example.com, neil@example.com'
+
+# check for a specific alias that doesn't exist
+run_test "ali -alias ${MH_TEST_DIR}/Mail/aliases nonexistent" \
+         'nonexistent'
+
+# check -list
+run_test "ali -alias ${MH_TEST_DIR}/Mail/aliases -list" \
+         'me: me@example.com
+rush: geddy@example.com
+      alex@example.com
+      neil@example.com'
+
+# check -nolist, which is the default
+run_test "ali -alias ${MH_TEST_DIR}/Mail/aliases -list -nolist" \
+         'me: me@example.com
+rush: geddy@example.com, alex@example.com, neil@example.com'
+
+# check -user
+run_test "ali -alias ${MH_TEST_DIR}/Mail/aliases -user geddy@example.com" \
+         'rush'
+
+# check -nouser
+run_test \
+  "ali -alias ${MH_TEST_DIR}/Mail/aliases -user -nouser geddy@example.com" \
+  'geddy@example.com'
+
+
+exit $failed

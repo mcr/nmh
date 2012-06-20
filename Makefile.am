@@ -42,7 +42,8 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR=@abs_builddir@ \
 ##
 ## Important note: the "cleanup" test should always be last
 ##
-TESTS = test/bad-input/test-header \
+TESTS = test/ali/test-ali \
+	test/bad-input/test-header \
 	test/burst/test-burst \
 	test/comp/test-comp-format \
 	test/folder/test-create \
