@@ -129,26 +129,27 @@ if install-mh -check >/dev/null 2>&1; then
 
   mtsconf=`dirname "$mhbin"`/etc/mts.conf
   if [ -f "$mtsconf" ]; then
-    mts_entry=`grep '^mts:' $mtsconf`
+    mts_entry=`grep '^mts:' "$mtsconf"`
     if [ "$mts_entry" ]; then
-      mts=`echo $mts_entry | sed -e 's/^mts: *//'`
+      mts=`echo "$mts_entry" | sed -e 's/^mts: *//'`
       if [ "$mts"  -a  "$mts" != smtp ]; then
         config_mts="$mts"
       fi
     fi
 
-    mtsconfservers=`grep '^servers:' $mtsconf`
+    mtsconfservers=`grep '^servers:' "$mtsconf"`
     if [ "$mtsconfservers" ]; then
-      servers=`echo $mtsconfservers | sed -e 's/^servers: *//' -e 's/ /\\\ /g'`
+      servers=`echo "$mtsconfservers" | \
+               sed -e 's/^servers: *//' -e 's/ /\\\ /g'`
       [ "$servers" ]  &&  config_smtpservers="$servers"
     fi
   fi
 
-  if $ldd $mhbin/inc | grep sasl >/dev/null; then
+  if $ldd "$mhbin/inc" | grep sasl >/dev/null; then
     config_sasl=y
   fi
 
-  if $ldd $mhbin/inc | grep ssl >/dev/null; then
+  if $ldd "$mhbin/inc" | grep ssl >/dev/null; then
     config_tls=y
   fi
 fi
@@ -202,11 +203,11 @@ if [ $yes -eq 0 ]; then
 
   printf 'Default editor [%s]: ' $config_editor
   read editor
-  [ "$editor" ]  &&  config_editor=$editor
+  [ "$editor" ]  &&  config_editor="$editor"
 
   printf 'Pager [%s]: ' $config_pager
   read pager
-  [ "$pager" ]  &&  config_pager=$pager
+  [ "$pager" ]  &&  config_pager="$pager"
 
   #### Don't confirm debug here:  obey the -d option to this script.
 fi
@@ -255,12 +256,12 @@ if [ -f Makefile ]; then
   fi
 fi
 
-/bin/rm -f $logfile
+/bin/rm -f "$logfile"
 if [ -f configure  -a  -f Makefile.in ]; then
   :
 else
   [ $verbose -ge 1 ]  &&  echo autoconfiguring . . .
-  ./autogen.sh >>$logfile 2>&1
+  ./autogen.sh >>"$logfile" 2>&1
 fi
 
 
@@ -268,13 +269,13 @@ fi
 #### Build.
 ####
 [ $verbose -ge 1 ]  &&  echo configuring . . .
-echo ./configure $config_opts ${smtpservers:+"$smtpservers"} >>$logfile 2>&1
-./configure $config_opts ${smtpservers:+"$smtpservers"} >>$logfile 2>&1
+echo ./configure $config_opts ${smtpservers:+"$smtpservers"} >>"$logfile" 2>&1
+./configure $config_opts ${smtpservers:+"$smtpservers"} >>"$logfile" 2>&1
 status=$?
 
 if [ $status -eq 0 ]; then
   [ $verbose -ge 1 ]  &&  echo building . . .
-  make >>$logfile 2>&1
+  make >>"$logfile" 2>&1
   status=$?
 
   if [ $status -eq 0 ]; then
@@ -288,7 +289,7 @@ if [ $status -eq 0 ]; then
    fi
 
     [ $verbose -ge 1 ]  &&  echo testing . . .
-    checkoutput=`make $check 2>>$logfile`
+    checkoutput=`make $check 2>>"$logfile"`
     status=$?
 
     tests_summary=`echo "$checkoutput" | grep tests`
@@ -296,35 +297,35 @@ if [ $status -eq 0 ]; then
     #### "grep tests" above.
     test_not_run=`echo "$checkoutput" | grep 'test was not run'`
     if [ "$tests_summary" ]; then
-      echo '===================' >>$logfile
-      echo $tests_summary >>$logfile
-      [ "$test_not_run" ]  &&  echo "$test_not_run" >>$logfile
-      echo '===================' >>$logfile
+      echo '===================' >>"$logfile"
+      echo "$tests_summary" >>"$logfile"
+      [ "$test_not_run" ]  &&  echo "$test_not_run" >>"$logfile"
+      echo '===================' >>"$logfile"
       [ "$check" = distcheck ]  &&  \
-        echo "$checkoutput" | tail -n 4 >>$logfile
+        echo "$checkoutput" | tail -n 4 >>"$logfile"
     fi
 
     if [ $status -eq 0 ]; then
       if [ $install -ge 1 ]; then
         [ $verbose -ge 1 ]  &&  echo installing . . .
-        ($installpriv make install) >/dev/null 2>>$logfile
+        ($installpriv make install) >/dev/null 2>>"$logfile"
         status=$?
       fi
 
       if [ $status -eq 0  -a  $build_rpm -ge 1 ]; then
         [ $verbose -ge 1 ]  &&  echo building rpm . . .
-        make rpm >/dev/null 2>>$logfile
+        make rpm >/dev/null 2>>"$logfile"
         status=$?
       fi
     fi
   fi
 fi
 
-grep 'Error' $logfile
-grep 'warn' $logfile
+grep 'Error' "$logfile"
+grep 'warn' "$logfile"
 if [ $status -ne 0 ]; then
   echo build failed!
-  echo build log is in $logfile
+  echo build log is in "$logfile"
 fi
 [ $status -eq 0  -a  $verbose -ge 1 ]  &&  echo build completed successfully
 
