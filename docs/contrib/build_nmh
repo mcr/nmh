@@ -292,9 +292,13 @@ if [ $status -eq 0 ]; then
     status=$?
 
     tests_summary=`echo "$checkoutput" | grep tests`
+    #### If multiple tests not run, that line will be caught by the
+    #### "grep tests" above.
+    test_not_run=`echo "$checkoutput" | grep 'test was not run'`
     if [ "$tests_summary" ]; then
       echo '===================' >>$logfile
       echo $tests_summary >>$logfile
+      [ "$test_not_run" ]  &&  echo "$test_not_run" >>$logfile
       echo '===================' >>$logfile
       [ "$check" = distcheck ]  &&  \
         echo "$checkoutput" | tail -n 4 >>$logfile
