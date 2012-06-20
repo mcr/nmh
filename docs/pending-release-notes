@@ -4,12 +4,13 @@ Things to add to the release notes for the next full release:
 NEW FEATURES
 ------------
 
-- All nmh programs will now warn about multiple profile entries for the
-  same component.  In previous versions, all but the first were
-  silently ignored.
+- All nmh programs will now warn about multiple profile entries for
+  the same non-null, non-comment component.  In previous versions, all
+  but the first were silently ignored.
 - mhmail now supports all post(8) options, and optionally can use
   send(1) with all of its options.  Its formerly undocumented -resent
-  switch has been documented.  And it has new -send/-nosend switches.
+  switch has been documented.  And it has new -attach, -header-field,
+  and -send/-nosend switches.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES
