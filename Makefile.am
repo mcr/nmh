@@ -415,6 +415,12 @@ etc/sendfiles: $(srcdir)/etc/sendfiles.in Makefile
 	$(SED) -e 's,%libdir%,$(libdir),' < $(srcdir)/etc/sendfiles.in > $@
 
 ##
+## Use configure to set up default LN, but through a make variable so
+## that it can be overridden at install time.
+##
+LN = @LN@
+
+##
 ## This rule gets called at "make install" time; we use it to create links
 ## between different programs.
 ##
@@ -426,13 +432,13 @@ install-exec-hook:
 	rm -f $(DESTDIR)$(bindir)/unseen$(EXEEXT)
 	rm -f $(DESTDIR)$(bindir)/prev$(EXEEXT)
 	rm -f $(DESTDIR)$(bindir)/next$(EXEEXT)
-	@LINK_FILE@ $(DESTDIR)$(bindir)/flist$(EXEEXT) $(DESTDIR)$(bindir)/flists$(EXEEXT)
-	@LINK_FILE@ $(DESTDIR)$(bindir)/folder$(EXEEXT) $(DESTDIR)$(bindir)/folders$(EXEEXT)
-	@LINK_FILE@ $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/fnext$(EXEEXT)
-	@LINK_FILE@ $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/fprev$(EXEEXT)
-	@LINK_FILE@ $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/unseen$(EXEEXT)
-	@LINK_FILE@ $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/prev$(EXEEXT)
-	@LINK_FILE@ $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/next$(EXEEXT)
+	$(LN) $(DESTDIR)$(bindir)/flist$(EXEEXT) $(DESTDIR)$(bindir)/flists$(EXEEXT)
+	$(LN) $(DESTDIR)$(bindir)/folder$(EXEEXT) $(DESTDIR)$(bindir)/folders$(EXEEXT)
+	$(LN) $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/fnext$(EXEEXT)
+	$(LN) $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/fprev$(EXEEXT)
+	$(LN) $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/unseen$(EXEEXT)
+	$(LN) $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/prev$(EXEEXT)
+	$(LN) $(DESTDIR)$(bindir)/show$(EXEEXT) $(DESTDIR)$(bindir)/next$(EXEEXT)
 	if test x$(SETGID_MAIL) != x; then \
 		chgrp $(MAIL_SPOOL_GRP) $(DESTDIR)$(bindir)/inc$(EXEEXT) && \
 		chmod 2755 $(DESTDIR)$(bindir)/inc$(EXEEXT); \
