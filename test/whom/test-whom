@@ -33,6 +33,8 @@ This is a draft message.
 EOF
 
 # check -help
+# Only look at first 10 lines because the rest depend on
+# whether sasl support was configured in.
 cat >$expected <<EOF
 Usage: whom [switches] [file]
   switches are:
@@ -44,13 +46,9 @@ Usage: whom [switches] [file]
   -nodraftfolder
   -version
   -help
-  -sasl
-  -saslmech mechanism
-  -user username
-  -(port) server port name/number
 EOF
 
-whom -help >$actual 2>&1
+whom -help | head -10 >$actual 2>&1
 check $expected $actual
 
 # check -version
