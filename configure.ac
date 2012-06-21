@@ -74,7 +74,7 @@ dnl What method of locking to use?
 AS_CASE(["$host_os"],
   [aix*|cygwin*|linux*],
     [default_locktype="fcntl"; default_locking=FCNTL_LOCKING],
-  [freebsd*], [default_locktype="flock"; default_locking=FLOCK_LOCKING],
+  [freebsd*|openbsd*|darwin*], [default_locktype="flock"; default_locking=FLOCK_LOCKING],
   [default_locktype="dot"; default_locking=DOT_LOCKING])
 
 AC_ARG_WITH(locking,
