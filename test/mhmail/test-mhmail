@@ -79,7 +79,7 @@ Usage: mhmail [addrs ... [switches]]
   -b(ody) text
   -c(c) addrs ...
   -f(rom) addr
-  -hea(der-field) name:field [-hea(der-field) name:field] ...
+  -hea(derfield) name:value [-hea(derfield) name:value] ...
   -su(bject) text
   -r(esent)
   -pr(ofile)
@@ -690,7 +690,7 @@ please resend this message, 3'
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
-# check -header-field.
+# check -headerfield.
 # Not supported by compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
@@ -708,13 +708,13 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  '-from sender@example.com -header-field User-Agent:nmh' \
+  '-from sender@example.com -headerfield User-Agent:nmh' \
   -b 'with added header field'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
-# check multiple -header-fields.
+# check multiple -headerfields.
 # Not supported by compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
@@ -734,9 +734,9 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  "-from sender@example.com -header-field MIME-Version:1.0 \
--header-field Content-Type:text/plain;charset=utf-8 \
--header-field Content-Transfer-Encoding:8bit" \
+  "-from sender@example.com -headerfield MIME-Version:1.0 \
+-headerfield Content-Type:text/plain;charset=utf-8 \
+-headerfield Content-Transfer-Encoding:8bit" \
   -b 'with added header fields'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}

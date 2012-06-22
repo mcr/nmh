@@ -7,7 +7,7 @@
 # complete copyright information.
 #
 # Emulation of compiled mhmail(1), with these differences:
-# * Adds -send/-nosend, -header-field, and -attach options.
+# * Adds -send/-nosend, -headerfield, and -attach options.
 # * Supports all post(8) (by default, without -profile) or send(1)
 #   (with -profile) options.
 # * Optionally (with -profile) obeys the users profile, including
@@ -23,7 +23,7 @@ usage='Usage: mhmail [addrs ... [switches]]
   -b(ody) text
   -c(c) addrs ...
   -f(rom) addr
-  -hea(der-field) name:field [-hea(der-field) name:field] ...
+  -hea(derfield) name:value [-hea(derfield) name:value] ...
   -su(bject) text
   -r(esent)
   -pr(ofile)
@@ -84,7 +84,7 @@ else
       -b|-bo|-bod|-body) bodyarg=1 ;;
       -c|-cc) ccarg=1 ;;
       -f|-fr|-fro|-from) fromarg=1 ;;
-      -hea|-head|-heade|-header|-header-|-header-f|-header-fi|-header-fie|-header-fiel|-header-field) headerfieldarg=1 ;;
+      -hea|-head|-heade|-header|-headerf|-headerfi|-headerfie|-headerfiel|-headerfield) headerfieldarg=1 ;;
       -hel|-help) printf "%s\n" "${usage}"; exit ;;
       -nose|-nosen|-nosend) sendsw=0 ;;
       -p|-pr|-pro|-prof|-profi|-profil|-profile) use_send=1 ;;

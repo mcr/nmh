@@ -19,8 +19,8 @@ mhmail \- send or read mail
 \&...]
 .RB [ \-from
 .IR addr ]
-.RB [ \-header\-field
-.IR name:body ]
+.RB [ \-headerfield
+.IR name:value ]
 .RB [ \-subject
 .IR subject ]
 .RB [ \-resent ]
@@ -130,22 +130,27 @@ will fill\-in the \*(lqSender:\*(rq
 header correctly.
 .PP
 The
-.B \-header\-field
-.I name:body
-switch adds a header field with the specified name and body to the
-message.  There need not be a space after the colon that separates the
-name and body in the argument to this switch.  It is usually best to
+.B \-headerfield
+.I name:value
+switch adds a header field with the specified name and value to the
+message.  (The
+.I value
+is called the
+.I field body
+in RFC 2822, but that's too easily confused with the message body.)
+There need not be a space after the colon that separates the
+name and value in the argument to this switch.  It is usually best to
 enclose the argument in quotes to protect it from the shell.  The
-.B \-header\-field
+.B \-headerfield
 switch may be given multiple times to add multiple header fields,
 for example,
 .PP
 .RS 5
 .nf
 mhmail -from sender@example.com \\
--header\-field 'MIME-Version:1.0' \\
--header\-field 'Content-Type:text/plain; charset=utf-8' \\
--header\-field 'Content-Transfer-Encoding:8bit' \\
+-headerfield 'MIME-Version:1.0' \\
+-headerfield 'Content-Type:text/plain; charset=utf-8' \\
+-headerfield 'Content-Transfer-Encoding:8bit' \\
 recipient@example.com
 .fi
 .RE
