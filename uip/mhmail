@@ -8,6 +8,7 @@
 #
 # Emulation of compiled mhmail(1), with these differences:
 # * Adds -send/-nosend, -headerfield, and -attach options.
+# * Adds optional -to switch for recipient addresses.
 # * Supports all post(8) (by default, without -profile) or send(1)
 #   (with -profile) options.
 # * Optionally (with -profile) obeys the users profile, including
@@ -17,7 +18,7 @@
 # * The compiled mhmail dropped a trailing newline from the -body argument.
 # * Drops support for undocumented -queue option.
 
-usage='Usage: mhmail [addrs ... [switches]]
+usage='Usage: mhmail [-t(o)] addrs ... [switches]
   switches are:
   -at(tach) file [-at(tach) file] ...
   -b(ody) text
@@ -31,7 +32,8 @@ usage='Usage: mhmail [addrs ... [switches]]
   -nose(nd)
   -v(ersion)
   -hel(p)
-  and all post(8)/send(1) switches'
+  and all post(8)/send(1) switches
+  mhmail with no arguments is equivalent to inc'
 
 bindir=`dirname $0`
 nmhbindir=`cd "${bindir}" && pwd`
@@ -50,6 +52,8 @@ checkforargs() {
     printf "mhmail: missing argument to -headerfield\n"; exit 1
   elif [ ${subjectarg} -eq 1 ]; then
     printf "mhmail: missing argument to -subject\n"; exit 1
+  elif [ ${toarg} -eq 1 ]; then
+    printf "mhmail: missing argument to -to\n"; exit 1
   fi
 }
 
@@ -59,6 +63,7 @@ if [ $# -eq 0 ]; then
 else
   #### Go through all the switches so we can build the draft.
   tolist=                     ## To: addresses
+  toarg=0                     ## whether currently handling -to
   attacharg=0                 ## whether currently handling -attach
   attach_send_switch_added=0  ## whether added "-attach Nmh-Attachment" switch
   body=                       ## contents of the message body
@@ -108,6 +113,7 @@ else
       -r|-re|-res|-rese|-resen|-resent) mhmailswitch=1; resent=1 ;;
       -se|-sen|-send) mhmailswitch=1; sendsw=1 ;;
       -su|-sub|-subj|-subje|-subjec|-subject) mhmailswitch=1; subjectarg=1 ;;
+      -t|-to) toarg=1; ccarg=0 ;;
       -v|-ve|-ver|-vers|-versi|-versio|-version)
          #### Cheat instead of using autoconf and make to fill in the version.
          "${nmhbindir}"/mhpath -v | sed 's/mhpath/mhmail/'; exit ;;
@@ -147,11 +153,12 @@ Nmh-Attachment: ${arg}
          elif [ ${post_send_switch_arg} -eq 1 ]; then
            postsendargs="${postsendargs:+${postsendargs} }${arg}"
          elif [ ${ccarg} -eq 1 ]; then
-           #### Never reset ccarg to 0, for compatibilty with compiled mhmail.
+           #### ccarg can only be reset to 0 by -to.
            cclist="${cclist:+${cclist}, }${arg}"
          else
            #### An address.
            tolist="${tolist:+${tolist}, }${arg}"
+           toarg=0
          fi ;;
     esac
   done

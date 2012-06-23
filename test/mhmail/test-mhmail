@@ -73,7 +73,7 @@ actual_err=$MH_TEST_DIR/test-mhmail$$.actual_err
 # check -help
 # Verified behavior consistent with compiled sendmail.
 cat >$expected <<EOF
-Usage: mhmail [addrs ... [switches]]
+Usage: mhmail [-t(o)] addrs ... [switches]
   switches are:
   -at(tach) file [-at(tach) file] ...
   -b(ody) text
@@ -88,6 +88,7 @@ Usage: mhmail [addrs ... [switches]]
   -v(ersion)
   -hel(p)
   and all post(8)/send(1) switches
+  mhmail with no arguments is equivalent to inc
 EOF
 
 mhmail -help >$actual 2>&1
@@ -103,21 +104,21 @@ case `mhmail -v` in
 esac
 
 # check for missing argument to switches that require them
-for switch in attach body cc from headerfield subject; do
+for switch in attach body cc from headerfield subject to; do
   run_test "mhmail recipient -$switch" \
            "mhmail: missing argument to -$switch"
 done
-for switch in attach body cc from headerfield subject; do
+for switch in attach body cc from headerfield subject to; do
   run_test "mhmail recipient -$switch -nosend" \
            "mhmail: missing argument to -$switch"
 done
-for switch in attach body cc from headerfield subject; do
+for switch in attach body cc from headerfield subject to; do
   run_test "mhmail recipient -$switch -server 127.0.0.1" \
            "mhmail: missing argument to -$switch"
 done
 
 
-# check with no arguments
+# check with no switches
 # That will just run inc, which we don't want to do anything,
 # so tell inc to just display its version.
 # Verified same behavior as compiled mhmail.
@@ -308,7 +309,7 @@ test_mhmail "$expected" '-from sender@localhost -profile' '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
-# check repeated -from and -subject arguments
+# check repeated -from and -subject switches
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
@@ -329,7 +330,7 @@ test_mhmail "$expected" '-from sender@localhost -from sender2@localhost '\
 '-subject Subject1 -subject Subject2' -b message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
-# check repeated -body arguments
+# check repeated -body switches
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
@@ -349,7 +350,7 @@ test_mhmail "$expected" "-from sender@localhost -body body1" -b body2
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
-# check multiple -cc arguments
+# check multiple -cc switches
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
@@ -395,6 +396,33 @@ EOF
 
 test_mhmail "$expected" \
   '-from sender@localhost -cc cc1@example.com -subject Test cc2@example.com' \
+  -b message
+[ ${failed:-0} -eq 0 ] || exit ${failed:-0}
+
+
+# check -cc switch followed by -to switch
+# Verified same behavior as compiled mhmail.
+cat > "$expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<sender@localhost>
+RCPT TO:<recipient@example.com>
+RCPT TO:<recipient2@example.com>
+RCPT TO:<cc1@example.com>
+DATA
+To: recipient@example.com, recipient2@example.com
+Cc: cc1@example.com
+Subject: Test
+From: sender@localhost
+Date:
+
+message
+.
+QUIT
+EOF
+
+test_mhmail "$expected" \
+  "-from sender@localhost -cc cc1@example.com -subject Test \
+   -to recipient2@example.com" \
   -b message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 

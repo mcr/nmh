@@ -8,8 +8,9 @@ mhmail \- send or read mail
 .HP 5
 .na
 .B mhmail
-.RI [ addrs
-\&...]
+.RB [ \-to ]
+.RI addrs
+\&...
 .RB [ \-attach
 .IR file ]
 .RB [ \-body
@@ -34,6 +35,11 @@ mhmail \- send or read mail
 .RB [ \-send " | " \-nosend ]
 .RB [ \-version ]
 .RB [ \-help ]
+.PP
+.HP 5
+.B mhmail
+with no arguments is equivalent to
+.B inc
 .ad
 .SH DESCRIPTION
 .B mhmail
@@ -46,8 +52,8 @@ which is compatible with
 .BR nmh .
 This program is intended for the use of programs such as
 .BR cron ,
-which expect to send mail automatically to various
-users.  It is also used by various
+which expect to send mail automatically to various addresses.  It is
+also used by various
 .B nmh
 commands to mail various
 error notifications.  Although
@@ -61,15 +67,15 @@ be used instead to send messages.
 .PP
 When invoked without arguments, it simply invokes
 .B inc
-to incorporate new messages from the user's maildrop.  When one or more users
-is specified, a message is read from the standard input and spooled to
-a temporary file.
+to incorporate new messages from the user's maildrop.
+.PP
+When one or more addresses are specified, a message is read from the
+standard input and spooled to a temporary file.
 .B mhmail
 then invokes
-.B post
-with the
-name of the temporary file as its argument to deliver the message to
-the specified user.
+.BR post ,
+by default, with the name of the temporary file as its argument to
+deliver the message to the specified address.
 .PP
 The
 .B \-subject
@@ -109,7 +115,16 @@ field.  At least one such address is required when sending a message,
 i.e., if any other switches are supplied. If the
 .B \-cc
 switch is used, all addresses following it, even if there are
-intervening switches, are placed in the \*(lqcc:\*(rq field.
+intervening switches other than
+.BR \-to ,
+are placed in the \*(lqcc:\*(rq field.  The optional
+.B \-to
+switch can appear in front of any addresses to signify their placement
+in the \*(lqTo:\*(rq field.  The
+.B \-to
+and
+.B \-cc
+switches may be given multiple times.
 .PP
 By using
 .B \-from
