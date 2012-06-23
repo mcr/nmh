@@ -36,68 +36,89 @@ usage='Usage: mhmail [addrs ... [switches]]
 bindir=`dirname $0`
 nmhbindir=`cd "${bindir}" && pwd`
 
+#### Checks for missing mandatory arguments.
+checkforargs() {
+  if [ ${attacharg} -eq 1 ]; then
+    printf "mhmail: missing argument to -attach\n"; exit 1
+  elif [ ${bodyarg} -eq 1 ]; then
+    printf "mhmail: missing argument to -body\n"; exit 1
+  elif [ ${ccarg} -eq 1  -a  "${cclist}"x = x ]; then
+    printf "mhmail: missing argument to -cc\n"; exit 1
+  elif [ ${fromarg} -eq 1 ]; then
+    printf "mhmail: missing argument to -from\n"; exit 1
+  elif [ ${headerfieldarg} -eq 1 ]; then
+    printf "mhmail: missing argument to -headerfield\n"; exit 1
+  elif [ ${subjectarg} -eq 1 ]; then
+    printf "mhmail: missing argument to -subject\n"; exit 1
+  fi
+}
+
 if [ $# -eq 0 ]; then
   #### Emulate mhmail for reading mail.
   exec "${nmhbindir}"/inc
 else
   #### Go through all the switches so we can build the draft.
-  tolist=
-  attacharg=0
-  attach_send_switch_added=0
-  body=
-  bodyarg=0
-  cclist=
-  ccarg=0
-  from=
-  fromarg=0
-  headerfieldlist=
-  headerfieldarg=0
-  subject=
-  subjectarg=0
-  resent=0
-  postsendargs=
-  switcharg=0
-  use_send=0
-  sendsw=1
+  tolist=                     ## To: addresses
+  attacharg=0                 ## whether currently handling -attach
+  attach_send_switch_added=0  ## whether added "-attach Nmh-Attachment" switch
+  body=                       ## contents of the message body
+  bodyarg=0                   ## whether currently handling -body
+  cclist=                     ## Cc: addresses
+  ccarg=0                     ## whether currently handling -cc
+  from=                       ## From: contents
+  fromarg=0                   ## whether currently handling -from
+  headerfieldlist=            ## header fields to be added to draft
+  headerfieldarg=0            ## whether currently handling -headerfield
+  mhmailswitch=0              ## whether currently handling any mhmail switch
+  subject=                    ## Subject: contents
+  subjectarg=0                ## whether currently handling -subject
+  resent=0                    ## whether resending
+  postsendargs=               ## switches to pass on to post or send
+  post_send_switch_arg=0      ## whether currently handling a post/send switch
+  use_send=0                  ## use post (default) or send (-profile)
+  sendsw=1                    ## to send (default) or not to send
   for arg in "$@"; do
-    case "${arg}" in
-      -*) switcharg=0; headerfieldarg=0 ;;
-    esac
-
     case "${arg}" in
       #### Post and send won't accept -f -or -s because they'd be
       #### ambiguous, so no conflicts with them.  And they don't have
-      #### -b, -c, or -r.  For the new switches that compiled mhmail
+      #### -b, -c, -r, -t.  For the new switches that compiled mhmail
       #### didn't have:  let -p indicate mhmail -profile, not send
       #### -port.  -send masks the send(1) -send switch.  -attach
       #### masks the send(1) -attach switch.
       -at|-att|-atta|-attac|-attach)
-         attacharg=1;
+         mhmailswitch=1
+         attacharg=1
          use_send=1
          if [ ${attach_send_switch_added} -eq 0 ]; then
            #### Override any send -attach switch in user's profile.
            postsendargs=\
 "${postsendargs:+${postsendargs} }-attach Nmh-Attachment"
            attach_send_switch_added=1
-         fi
-         ;;
-      -b|-bo|-bod|-body) bodyarg=1 ;;
-      -c|-cc) ccarg=1 ;;
-      -f|-fr|-fro|-from) fromarg=1 ;;
-      -hea|-head|-heade|-header|-headerf|-headerfi|-headerfie|-headerfiel|-headerfield) headerfieldarg=1 ;;
+         fi ;;
+      -b|-bo|-bod|-body) mhmailswitch=1; bodyarg=1 ;;
+      -c|-cc) mhmailswitch=1; ccarg=1 ;;
+      -f|-fr|-fro|-from) mhmailswitch=1; fromarg=1 ;;
+      -hea|-head|-heade|-header|-headerf|-headerfi|-headerfie|-headerfiel|\
+-headerfield) mhmailswitch=1; headerfieldarg=1 ;;
       -hel|-help) printf "%s\n" "${usage}"; exit ;;
-      -nose|-nosen|-nosend) sendsw=0 ;;
-      -p|-pr|-pro|-prof|-profi|-profil|-profile) use_send=1 ;;
+      -nose|-nosen|-nosend) mhmailswitch=1; sendsw=0 ;;
+      -p|-pr|-pro|-prof|-profi|-profil|-profile) mhmailswitch=1; use_send=1 ;;
       -resend) printf "mhmail: did you mean -resent instead of -resend?\n" 1>&2
          exit 1 ;;
-      -r|-re|-res|-rese|-resen|-resent) resent=1 ;;
-      -se|-sen|-send) sendsw=1 ;;
-      -su|-sub|-subj|-subje|-subjec|-subject) subjectarg=1 ;;
+      -r|-re|-res|-rese|-resen|-resent) mhmailswitch=1; resent=1 ;;
+      -se|-sen|-send) mhmailswitch=1; sendsw=1 ;;
+      -su|-sub|-subj|-subje|-subjec|-subject) mhmailswitch=1; subjectarg=1 ;;
       -v|-ve|-ver|-vers|-versi|-versio|-version)
          #### Cheat instead of using autoconf and make to fill in the version.
          "${nmhbindir}"/mhpath -v | sed 's/mhpath/mhmail/'; exit ;;
-      -*) postsendargs="${postsendargs:+${postsendargs} }${arg}"; switcharg=1 ;;
-      *) if [ ${bodyarg} -eq 1 ]; then
+      -*) if [ ${mhmailswitch} -eq 1 ]; then
+            checkforargs
+            mhmailswitch=0
+          fi
+          post_send_switch_arg=1
+          postsendargs="${postsendargs:+${postsendargs} }${arg}" ;;
+      *) mhmailswitch=0
+         if [ ${bodyarg} -eq 1 ]; then
            body="${arg}
 "
            bodyarg=0
@@ -123,7 +144,7 @@ Nmh-Attachment: ${arg}
            headerfieldlist="${headerfieldlist:+${headerfieldlist}}${add}
 "
            headerfieldarg=0
-         elif [ ${switcharg} -eq 1 ]; then
+         elif [ ${post_send_switch_arg} -eq 1 ]; then
            postsendargs="${postsendargs:+${postsendargs} }${arg}"
          elif [ ${ccarg} -eq 1 ]; then
            #### Never reset ccarg to 0, for compatibilty with compiled mhmail.
@@ -137,13 +158,15 @@ Nmh-Attachment: ${arg}
 
   #### Check for at least one address and -from.
   if [ "${tolist}"x = x ]; then
-    printf "mhmail: usage: mhmail addrs ... [switches]\n"
-    exit 1
+    printf "mhmail: usage: mhmail addrs ... [switches]\n"; exit 1
   fi
   if [ "${from}"x = x ]; then
     nmhlibdir=`${nmhbindir}/mhparam libdir`/
     from=`${nmhlibdir}ap -format '%(localmbox)' 0`
   fi
+
+  #### Check for missing mandatory arguments.
+  checkforargs
 
   #### Build header.
   [ ${resent} -eq 0 ]  &&  prefix=  ||  prefix='Resent-'
@@ -152,15 +175,15 @@ Nmh-Attachment: ${arg}
   [ "${cclist}"x = x ]  ||  header="${header}${prefix}Cc: ${cclist}
 "
   [ "${subject}"x = x ]  ||  header="${header}${prefix}Subject: ${subject}
-";
+"
   [ "${from}"x = x ]  ||  header="${header}${prefix}From: ${from}
-";
+"
 
   if [ "${headerfieldlist}" ]; then
-    header="${header}${headerfieldlist}";
+    header="${header}${headerfieldlist}"
   fi
 
-  #### Set up a file to supply as a draft to send/post.  And set a
+  #### Set up a file to supply as a draft to post/send.  And set a
   #### trap to remove it.  send moves the file to a backup, so it will
   #### remove that, too.
   umask 077

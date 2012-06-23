@@ -102,6 +102,20 @@ case `mhmail -v` in
                 failed=`expr ${failed:-0} + 1`;;
 esac
 
+# check for missing argument to switches that require them
+for switch in attach body cc from headerfield subject; do
+  run_test "mhmail recipient -$switch" \
+           "mhmail: missing argument to -$switch"
+done
+for switch in attach body cc from headerfield subject; do
+  run_test "mhmail recipient -$switch -nosend" \
+           "mhmail: missing argument to -$switch"
+done
+for switch in attach body cc from headerfield subject; do
+  run_test "mhmail recipient -$switch -server 127.0.0.1" \
+           "mhmail: missing argument to -$switch"
+done
+
 
 # check with no arguments
 # That will just run inc, which we don't want to do anything,
