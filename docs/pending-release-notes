@@ -9,7 +9,7 @@ NEW FEATURES
   but the first were silently ignored.
 - mhmail now supports all post(8) options, and optionally can use
   send(1) with all of its options.  Its formerly undocumented -resent
-  switch has been documented.  And it has new -attach, -header-field,
+  switch has been documented.  And it has new -attach, -headerfield,
   and -send/-nosend switches.
 
 ----------------------------
@@ -19,7 +19,7 @@ OBSOLETE/DEPRECATED FEATURES
 - Changed exit status of each nmh command's -version and -help
   switches from 1 to 0.
 - The following environment variables were deprecated in nmh 1.5
-  and are removed from this release:
+  and removed from this release:
     MHPOPDEBUG (use -snoop command line switch instead)
     MM_NOASK (use -nolist and -nopause command line switches instead)
     NOMHNPROC (use -nocheckmime command line switch instead)
@@ -33,3 +33,4 @@ OBSOLETE/DEPRECATED FEATURES
   SMTP XQUE verb, which is obsolete according to
   http://smtpfilter.sourceforge.net/esmtp.html
 - conflict(8) is deprecated and will be removed from the next release.
+- mhtest(8) is deprecated and will be removed from the next release.
