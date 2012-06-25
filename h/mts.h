@@ -19,8 +19,6 @@ extern char *uucplfil;
 
 #define	MAILDIR	(mmdfldir && *mmdfldir ? mmdfldir : getenv ("HOME"))
 #define	MAILFIL	(mmdflfil && *mmdflfil ? mmdflfil : getusername ())
-#define	UUCPDIR	(uucpldir && *uucpldir ? uucpldir : getenv ("HOME"))
-#define	UUCPFIL	(uucplfil && *uucplfil ? uucplfil : getusername ())
 
 char *getusername(void);
 char *getfullname(void);
