@@ -32,3 +32,4 @@ OBSOLETE/DEPRECATED FEATURES
   and will be removed in the next release.  It supports the
   SMTP XQUE verb, which is obsolete according to
   http://smtpfilter.sourceforge.net/esmtp.html
+- conflict(8) is deprecated and will be removed from the next release.
