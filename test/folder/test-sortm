@@ -1,0 +1,366 @@
+#!/bin/sh
+######################################################
+#
+# Test sortm
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+cd $MH_TEST_DIR
+
+# check -help
+cat >$expected <<EOF
+Usage: sortm [+folder] [msgs] [switches]
+  switches are:
+  -datefield field
+  -textfield field
+  -notextfield
+  -limit days
+  -nolimit
+  -[no]verbose
+  -version
+  -help
+EOF
+
+sortm -help >$actual 2>&1
+check $expected $actual
+
+# check -version
+case `sortm -version` in
+  sortm\ --*) ;;
+  *       ) echo "$0: sortm -v generated unexpected output" 1>&2
+            failed=`expr ${failed:-0} + 1`;;
+esac
+
+cat > $MH_TEST_DIR/Mail/inbox/11 <<EOF || exit 1
+From: Test11 <test11@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:01
+Alt-Date: Thu,  1 Sep 2005 00:00:00
+Subject: Re: common subject
+
+This is message number 11
+EOF
+
+cat > $MH_TEST_DIR/Mail/inbox/12 <<EOF || exit 1
+From: Test12 <test12@example.com>
+To: Some User <user@example.com>
+Date: Thu, 28 Sep 2006 23:59:59
+Alt-Date: Sat, 30 Sep 2006 00:00:00
+Subject: common subject
+
+This is message number 12
+EOF
+
+# check with no options
+cat >$expected <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2  09/29 Test1              Testing message 1<<This is message number 1 >>
+   3  09/29 Test2              Testing message 2<<This is message number 2 >>
+   4  09/29 Test3              Testing message 3<<This is message number 3 >>
+   5  09/29 Test4              Testing message 4<<This is message number 4 >>
+   6  09/29 Test5              Testing message 5<<This is message number 5 >>
+   7  09/29 Test6              Testing message 6<<This is message number 6 >>
+   8  09/29 Test7              Testing message 7<<This is message number 7 >>
+   9  09/29 Test8              Testing message 8<<This is message number 8 >>
+  10  09/29 Test9              Testing message 9<<This is message number 9 >>
+  11  09/29 Test10             Testing message 10<<This is message number 10 >>
+  12  09/29 Test11             Re: common subject<<This is message number 11 >>
+EOF
+
+sortm
+scan > $actual
+check $expected $actual
+
+# check +folder
+cat >$expected <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2+ 09/29 Test1              Testing message 1<<This is message number 1 >>
+   3  09/29 Test2              Testing message 2<<This is message number 2 >>
+   4  09/29 Test3              Testing message 3<<This is message number 3 >>
+   5  09/29 Test4              Testing message 4<<This is message number 4 >>
+   6  09/29 Test5              Testing message 5<<This is message number 5 >>
+   7  09/29 Test6              Testing message 6<<This is message number 6 >>
+   8  09/29 Test7              Testing message 7<<This is message number 7 >>
+   9  09/29 Test8              Testing message 8<<This is message number 8 >>
+  10  09/29 Test9              Testing message 9<<This is message number 9 >>
+  11  09/29 Test10             Testing message 10<<This is message number 10 >>
+  12  09/29 Test11             Re: common subject<<This is message number 11 >>
+EOF
+
+refile first +inbox
+folder -pack > /dev/null
+sortm +inbox
+scan > $actual
+check $expected $actual
+
+# check -verbose
+cat >$expected <<EOF
+sorting by datefield date
+renaming message chain from 12 to 1
+message 11 becomes message 12
+message 10 becomes message 11
+message 9 becomes message 10
+message 8 becomes message 9
+message 7 becomes message 8
+message 6 becomes message 7
+message 5 becomes message 6
+message 4 becomes message 5
+message 3 becomes message 4
+message 2 becomes message 3
+message 1 becomes message 2
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2+ 09/29 Test1              Testing message 1<<This is message number 1 >>
+   3  09/29 Test2              Testing message 2<<This is message number 2 >>
+   4  09/29 Test3              Testing message 3<<This is message number 3 >>
+   5  09/29 Test4              Testing message 4<<This is message number 4 >>
+   6  09/29 Test5              Testing message 5<<This is message number 5 >>
+   7  09/29 Test6              Testing message 6<<This is message number 6 >>
+   8  09/29 Test7              Testing message 7<<This is message number 7 >>
+   9  09/29 Test8              Testing message 8<<This is message number 8 >>
+  10  09/29 Test9              Testing message 9<<This is message number 9 >>
+  11  09/29 Test10             Testing message 10<<This is message number 10 >>
+  12  09/29 Test11             Re: common subject<<This is message number 11 >>
+EOF
+
+refile first +inbox
+folder -pack > /dev/null
+sortm -verbose >$actual
+scan >> $actual
+check $expected $actual
+
+# check -noverbose
+cat >$expected <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2+ 09/29 Test1              Testing message 1<<This is message number 1 >>
+   3  09/29 Test2              Testing message 2<<This is message number 2 >>
+   4  09/29 Test3              Testing message 3<<This is message number 3 >>
+   5  09/29 Test4              Testing message 4<<This is message number 4 >>
+   6  09/29 Test5              Testing message 5<<This is message number 5 >>
+   7  09/29 Test6              Testing message 6<<This is message number 6 >>
+   8  09/29 Test7              Testing message 7<<This is message number 7 >>
+   9  09/29 Test8              Testing message 8<<This is message number 8 >>
+  10  09/29 Test9              Testing message 9<<This is message number 9 >>
+  11  09/29 Test10             Testing message 10<<This is message number 10 >>
+  12  09/29 Test11             Re: common subject<<This is message number 11 >>
+EOF
+
+refile first +inbox
+folder -pack > /dev/null
+sortm -verbose -noverbose >$actual
+scan >> $actual
+check $expected $actual
+
+# check msgs
+cat >$expected <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2  09/29 Test2              Testing message 2<<This is message number 2 >>
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>
+   5  09/29 Test5              Testing message 5<<This is message number 5 >>
+   6  09/29 Test6              Testing message 6<<This is message number 6 >>
+   7  09/29 Test7              Testing message 7<<This is message number 7 >>
+   8  09/29 Test8              Testing message 8<<This is message number 8 >>
+   9  09/29 Test9              Testing message 9<<This is message number 9 >>
+  10  09/29 Test10             Testing message 10<<This is message number 10 >>
+  11  09/29 Test11             Re: common subject<<This is message number 11 >>
+  12+ 09/29 Test1              Testing message 1<<This is message number 1 >>
+EOF
+
+refile first +inbox
+folder -pack > /dev/null
+sortm first last
+scan > $actual
+check $expected $actual
+
+# check -datefield
+cat >$expected <<EOF
+   1  09/29 Test11             Re: common subject<<This is message number 11 >>
+   2  09/29 Test2              Testing message 2<<This is message number 2 >>
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>
+   5  09/29 Test5              Testing message 5<<This is message number 5 >>
+   6  09/29 Test6              Testing message 6<<This is message number 6 >>
+   7  09/29 Test7              Testing message 7<<This is message number 7 >>
+   8  09/29 Test8              Testing message 8<<This is message number 8 >>
+   9  09/29 Test9              Testing message 9<<This is message number 9 >>
+  10  09/29 Test10             Testing message 10<<This is message number 10 >>
+  11  09/28 Test12             common subject<<This is message number 12 >>
+  12+ 09/29 Test1              Testing message 1<<This is message number 1 >>
+EOF
+
+sortm -datefield Alt-Date 1 11
+scan > $actual
+check $expected $actual
+
+# check -textfield subject (datefield major, subjects grouped)
+cat >$expected <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2  09/29 Test11             Re: common subject<<This is message number 11 >>
+   3  09/29 Test2              Testing message 2<<This is message number 2 >>
+   4  09/29 Test3              Testing message 3<<This is message number 3 >>
+   5  09/29 Test4              Testing message 4<<This is message number 4 >>
+   6  09/29 Test5              Testing message 5<<This is message number 5 >>
+   7  09/29 Test6              Testing message 6<<This is message number 6 >>
+   8  09/29 Test7              Testing message 7<<This is message number 7 >>
+   9  09/29 Test8              Testing message 8<<This is message number 8 >>
+  10  09/29 Test9              Testing message 9<<This is message number 9 >>
+  11  09/29 Test10             Testing message 10<<This is message number 10 >>
+  12+ 09/29 Test1              Testing message 1<<This is message number 1 >>
+EOF
+
+sortm -textfield subject
+scan > $actual
+check $expected $actual
+
+# check -nolimit
+cat >$expected <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2  09/29 Test11             Re: common subject<<This is message number 11 >>
+   3  09/29 Test2              Testing message 2<<This is message number 2 >>
+   4  09/29 Test3              Testing message 3<<This is message number 3 >>
+   5  09/29 Test4              Testing message 4<<This is message number 4 >>
+   6  09/29 Test5              Testing message 5<<This is message number 5 >>
+   7  09/29 Test6              Testing message 6<<This is message number 6 >>
+   8  09/29 Test7              Testing message 7<<This is message number 7 >>
+   9  09/29 Test8              Testing message 8<<This is message number 8 >>
+  10  09/29 Test9              Testing message 9<<This is message number 9 >>
+  11  09/29 Test10             Testing message 10<<This is message number 10 >>
+  12+ 09/29 Test1              Testing message 1<<This is message number 1 >>
+EOF
+
+sortm -textfield subject -limit 0 -nolimit
+scan > $actual
+check $expected $actual
+
+# check -textfield subject -limit 0 (subject sort)
+cat >$expected <<EOF
+   1  09/29 Test11             Re: common subject<<This is message number 11 >>
+   2  09/28 Test12             common subject<<This is message number 12 >>
+   3  09/29 Test1              Testing message 1<<This is message number 1 >>
+   4  09/29 Test10             Testing message 10<<This is message number 10 >>
+   5  09/29 Test2              Testing message 2<<This is message number 2 >>
+   6  09/29 Test3              Testing message 3<<This is message number 3 >>
+   7  09/29 Test4              Testing message 4<<This is message number 4 >>
+   8  09/29 Test5              Testing message 5<<This is message number 5 >>
+   9  09/29 Test6              Testing message 6<<This is message number 6 >>
+  10  09/29 Test7              Testing message 7<<This is message number 7 >>
+  11  09/29 Test8              Testing message 8<<This is message number 8 >>
+  12+ 09/29 Test9              Testing message 9<<This is message number 9 >>
+EOF
+
+refile 2-7 +inbox; refile 1 +inbox; folder -pa last >/dev/null
+sortm -textfield subject -limit 0
+scan > $actual
+check $expected $actual
+
+# check -textfield -limit 0 (text sort)
+cat >$expected <<EOF
+   1  09/29 Test10             Testing message 10<<This is message number 10 >>
+   2  09/29 Test11             Re: common subject<<This is message number 11 >>
+   3  09/28 Test12             common subject<<This is message number 12 >>
+   4  09/29 Test1              Testing message 1<<This is message number 1 >>
+   5  09/29 Test2              Testing message 2<<This is message number 2 >>
+   6  09/29 Test3              Testing message 3<<This is message number 3 >>
+   7  09/29 Test4              Testing message 4<<This is message number 4 >>
+   8  09/29 Test5              Testing message 5<<This is message number 5 >>
+   9  09/29 Test6              Testing message 6<<This is message number 6 >>
+  10  09/29 Test7              Testing message 7<<This is message number 7 >>
+  11  09/29 Test8              Testing message 8<<This is message number 8 >>
+  12+ 09/29 Test9              Testing message 9<<This is message number 9 >>
+EOF
+
+refile 2-7 +inbox; refile 1 +inbox; folder -pa last >/dev/null
+sortm -textfield from -limit 0
+scan > $actual
+check $expected $actual
+
+# check -textfield with finite -limit that doesn't cover message 13
+cat > $MH_TEST_DIR/Mail/inbox/13 <<EOF || exit 1
+From: Test13 <test13@example.com>
+To: Some User <user@example.com>
+Date: Tue, 31 Oct 2006 23:59:59
+Subject: Re: common subject
+
+This is message number 13
+EOF
+
+cat >$expected <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2  09/29 Test11             Re: common subject<<This is message number 11 >>
+   3  09/29 Test5              Testing message 5<<This is message number 5 >>
+   4  09/29 Test6              Testing message 6<<This is message number 6 >>
+   5  09/29 Test7              Testing message 7<<This is message number 7 >>
+   6  09/29 Test8              Testing message 8<<This is message number 8 >>
+   7  09/29 Test9              Testing message 9<<This is message number 9 >>
+   8  09/29 Test1              Testing message 1<<This is message number 1 >>
+   9  09/29 Test2              Testing message 2<<This is message number 2 >>
+  10  09/29 Test3              Testing message 3<<This is message number 3 >>
+  11  09/29 Test4              Testing message 4<<This is message number 4 >>
+  12+ 09/29 Test10             Testing message 10<<This is message number 10 >>
+  13  10/31 Test13             Re: common subject<<This is message number 13 >>
+EOF
+
+refile 2-7 +inbox; refile 1 +inbox; folder -pa last >/dev/null
+sortm -textfield subject -limit 10
+scan > $actual
+check $expected $actual
+
+# check -textfield with finite -limit that does cover message 13
+cat >$expected <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2  09/29 Test11             Re: common subject<<This is message number 11 >>
+   3  10/31 Test13             Re: common subject<<This is message number 13 >>
+   4  09/29 Test1              Testing message 1<<This is message number 1 >>
+   5  09/29 Test2              Testing message 2<<This is message number 2 >>
+   6  09/29 Test3              Testing message 3<<This is message number 3 >>
+   7  09/29 Test4              Testing message 4<<This is message number 4 >>
+   8  09/29 Test10             Testing message 10<<This is message number 10 >>
+   9  09/29 Test5              Testing message 5<<This is message number 5 >>
+  10  09/29 Test6              Testing message 6<<This is message number 6 >>
+  11  09/29 Test7              Testing message 7<<This is message number 7 >>
+  12  09/29 Test8              Testing message 8<<This is message number 8 >>
+  13+ 09/29 Test9              Testing message 9<<This is message number 9 >>
+EOF
+
+refile 2-7 +inbox; refile 1 +inbox; folder -pa last >/dev/null
+sortm -textfield subject -limit 60
+scan > $actual
+check $expected $actual
+
+# check -notextfield
+cat >$expected <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2  09/29 Test10             Testing message 10<<This is message number 10 >>
+   3  09/29 Test5              Testing message 5<<This is message number 5 >>
+   4  09/29 Test6              Testing message 6<<This is message number 6 >>
+   5  09/29 Test7              Testing message 7<<This is message number 7 >>
+   6  09/29 Test8              Testing message 8<<This is message number 8 >>
+   7  09/29 Test9              Testing message 9<<This is message number 9 >>
+   8  09/29 Test1              Testing message 1<<This is message number 1 >>
+   9  09/29 Test2              Testing message 2<<This is message number 2 >>
+  10  09/29 Test3              Testing message 3<<This is message number 3 >>
+  11  09/29 Test4              Testing message 4<<This is message number 4 >>
+  12  09/29 Test11             Re: common subject<<This is message number 11 >>
+  13+ 10/31 Test13             Re: common subject<<This is message number 13 >>
+EOF
+
+refile 2-7 +inbox; refile 1 +inbox; folder -pa last >/dev/null
+sortm -textfield subject -limit 60 -notextfield
+scan > $actual
+check $expected $actual
+
+exit $failed

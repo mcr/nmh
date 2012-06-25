@@ -46,7 +46,7 @@ TESTS = test/ali/test-ali \
 	test/bad-input/test-header \
 	test/burst/test-burst \
 	test/comp/test-comp-format \
-	test/folder/test-create \
+	test/folder/test-create test/folder/test-sortm \
 	test/folder/test-total test/format/test-localmbox \
 	test/format/test-myname test/format/test-myhost \
 	test/format/test-mymbox \

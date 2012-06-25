@@ -53,11 +53,11 @@ The
 .I field
 switch causes
 .B sortm
-to sort messages
-by the specified text field.  If this field is \*(lqsubject\*(rq, any
-leading "re:" is stripped off.  In any case, all characters except
+to sort messages by the specified text field.  All characters except
 letters and numbers are stripped and the resulting strings are sorted
-datefield\-major, textfield\-minor, using a case insensitive comparison.
+datefield\-major, textfield\-minor, using a case insensitive
+comparison.  If this field is \*(lqsubject\*(rq, any leading "re:" is
+stripped off.
 .PP
 With
 .B \-textfield
@@ -66,7 +66,7 @@ if
 .B \-limit
 .I days
 is specified, messages
-with similar textfields that are dated within `days' of each other
+with the same textfields that are dated within `days' of each other
 appear together.  Specifying
 .B \-nolimit
 makes the limit infinity.
@@ -75,7 +75,8 @@ With
 .IR 0 ,
 the sort is instead made textfield\-major, date\-minor.
 .PP
-For example, to order a folder by date-major, subject-minor, use:
+For example, to order a folder by date-major, grouping messages with
+the same subject on the same date together, use:
 .PP
 .RS 5
 sortm -textfield subject +folder
@@ -114,7 +115,7 @@ folder(1)
 If a folder is given, it will become the current folder.  If the current
 message is moved,
 .B sortm
- will preserve its status as current.
+will preserve its status as current.
 
 .SH HISTORY
 Timezones used to be ignored when comparing dates: they aren't any more.
