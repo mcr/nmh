@@ -1,0 +1,143 @@
+#!/bin/sh
+######################################################
+#
+# Test repl
+#
+######################################################
+
+# This is not a comprehensive test of repl, but some day it will be :-)
+# Please add to it.
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/Mail/draft
+
+
+# check -help
+cat >$expected <<EOF
+Usage: repl: [+folder] [msg] [switches]
+  switches are:
+  -[no]group
+  -[no]annotate
+  -cc all|to|cc|me
+  -nocc type
+  -draftfolder +folder
+  -draftmessage msg
+  -nodraftfolder
+  -editor editor
+  -noedit
+  -fcc folder
+  -filter filterfile
+  -form formfile
+  -([no]forma)t
+  -[no]inplace
+  -[no]mime
+  -[no]query
+  -whatnowproc program
+  -nowhatnowproc
+  -width columns
+  -version
+  -help
+  -(file) file
+  -(build)
+  -[no]atfile
+  -fmtproc program
+  -nofmtproc
+EOF
+
+repl -help >$actual 2>&1
+check $expected $actual
+
+# check -version
+case `repl -v` in
+  repl\ --*) ;;
+  *           ) printf "$0: repl -v generated unexpected output\n" >&2
+                failed=`expr ${failed:-0} + 1`;;
+esac
+
+# check unknown switch
+run_test "repl -nonexistent" 'repl: -nonexistent unknown'
+
+# check with no switches
+run_test "repl" 'repl: no cur message'
+
+
+printf "Local-Mailbox: mymailbox@localhost%s\n" >> $MH
+
+# check -cc me
+cat >$expected <<EOF
+From: mymailbox@localhost
+To: Test1 <test1@example.com>
+cc: mymailbox@localhost
+Fcc: +outbox
+Subject: Re: Testing message 1
+Comments: In-reply-to Test1 <test1@example.com>
+   message dated "Fri, 29 Sep 2006 00:00:00."
+--------
+EOF
+
+repl -cc me -editor true -nowhatnowproc 1
+check $expected $actual
+
+# check -nocc me
+cat >$expected <<EOF
+From: mymailbox@localhost
+To: Test1 <test1@example.com>
+cc: 
+Fcc: +outbox
+Subject: Re: Testing message 1
+Comments: In-reply-to Test1 <test1@example.com>
+   message dated "Fri, 29 Sep 2006 00:00:00."
+--------
+EOF
+
+repl -cc me -nocc me -editor true -nowhatnowproc 1
+check $expected $actual
+
+# check -cc me with Local- and Alternate-Mailbox addtions, Bug #36635:
+# -nocc me doesn't account for Alternate-Mailboxes.
+printf "Alternate-Mailboxes: user@example.com\n" >> $MH
+
+cat >$expected <<EOF
+From: mymailbox@localhost
+To: Test1 <test1@example.com>
+cc: mymailbox@localhost
+Fcc: +outbox
+Subject: Re: Testing message 1
+Comments: In-reply-to Test1 <test1@example.com>
+   message dated "Fri, 29 Sep 2006 00:00:00."
+--------
+EOF
+
+repl -cc me -editor true -nowhatnowproc 1
+check $expected $actual
+
+
+# check -nocc me with Local- and Alternate-Mailbox addtions, Bug #36635:
+# -nocc me doesn't account for Alternate-Mailboxes.
+cat >$expected <<EOF
+From: mymailbox@localhost
+To: Test1 <test1@example.com>
+cc: 
+Fcc: +outbox
+Subject: Re: Testing message 1
+Comments: In-reply-to Test1 <test1@example.com>
+   message dated "Fri, 29 Sep 2006 00:00:00."
+--------
+EOF
+
+repl -cc me -nocc me -editor true -nowhatnowproc 1
+check $expected $actual
+
+
+exit ${failed:-0}

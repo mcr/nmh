@@ -67,7 +67,7 @@ TESTS = test/ali/test-ali \
 	test/post/test-post-group \
 	test/refile/test-refile \
 	test/repl/test-if-str test/repl/test-trailing-newline \
-	test/repl/test-multicomp \
+	test/repl/test-multicomp test/repl/test-repl \
 	test/scan/test-scan test/scan/test-scan-multibyte \
 	test/sequences/test-flist test/sequences/test-mark \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \

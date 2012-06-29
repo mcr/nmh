@@ -193,6 +193,8 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
 	goto got_host;
     }
 
+    /* For alternate mailboxes, m_type gets overwritten in ismymbox ()
+       to support wild-card matching. */
     if (wanthost == AD_NHST)
 	mp->m_type = !mh_strcasecmp (LocalName (0), mp->m_host)
 	    ? LOCALHOST : NETHOST;
@@ -356,7 +358,7 @@ ismymbox (struct mailname *np)
 	if ((am = context_find ("alternate-mailboxes")) == NULL)
 	    am = getusername();
 	else {
-	    mp = &mq;
+	    mp = mq.m_next ? mq.m_next : &mq;
 	    oops = 0;
 	    while ((cp = getname (am))) {
 		if ((mp->m_next = getm (cp, NULL, 0, AD_NAME, NULL)) == NULL) {
@@ -383,15 +385,22 @@ ismymbox (struct mailname *np)
 			    *cp = '\0';
 			}
 		    }
-		    if ((cp = getenv ("MHWDEBUG")) && *cp)
-			fprintf (stderr, "mbox=\"%s\" host=\"%s\" %s\n",
-			    mp->m_mbox, mp->m_host,
-			    snprintb (buffer, sizeof(buffer), (unsigned) mp->m_type, WBITS));
 		}
 	    }
 	    if (oops)
 		advise (NULL, "please fix the %s: entry in your %s file",
 			"alternate-mailboxes", mh_profile);
+	}
+
+	if ((cp = getenv ("MHWDEBUG")) && *cp) {
+	    for (mp = &mq; mp; mp = mp->m_next) {
+	      fprintf (stderr, "Local- or Alternate-Mailbox: text=\"%s\" "
+		       "mbox=\"%s\" host=\"%s\" %s\n",
+		       mp->m_text ? mp->m_text : "", mp->m_mbox,
+		       mp->m_host ? mp->m_host : "",
+		       snprintb (buffer, sizeof(buffer), (unsigned) mp->m_type,
+				 WBITS));
+	    }
 	}
     }
 
