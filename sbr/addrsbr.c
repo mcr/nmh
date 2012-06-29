@@ -169,39 +169,30 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
     if (host) {
 	mp->m_mbox = getcpy (mbox);
 	mp->m_host = getcpy (host);
-    }
-    else {
+	mp->m_type =
+	    mh_strcasecmp (LocalName(0), mp->m_host) ? NETHOST : LOCALHOST;
+    } else {
 	if ((pp = strchr(mbox, '!'))) {
 	    *pp++ = '\0';
 	    mp->m_mbox = getcpy (pp);
 	    mp->m_host = getcpy (mbox);
 	    mp->m_type = UUCPHOST;
-	}
-	else {
+	} else {
 	    mp->m_nohost = 1;
 	    mp->m_mbox = getcpy (mbox);
 	    if (route == NULL && dftype == LOCALHOST) {
 		mp->m_host = NULL;
 		mp->m_type = dftype;
-	    }
-	    else
-	    {
+	    } else {
 		mp->m_host = route ? NULL : getcpy (dfhost);
 		mp->m_type = route ? NETHOST : dftype;
 	    }
 	}
-	goto got_host;
     }
 
     /* For alternate mailboxes, m_type gets overwritten in ismymbox ()
        to support wild-card matching. */
-    if (wanthost == AD_NHST)
-	mp->m_type = !mh_strcasecmp (LocalName (0), mp->m_host)
-	    ? LOCALHOST : NETHOST;
-    else
-	mp->m_type = mh_strcasecmp (LocalName(0), mp->m_host) ?  NETHOST : LOCALHOST;
 
-got_host: ;
     if (route)
 	mp->m_path = getcpy (route);
     mp->m_ingrp = ingrp;
