@@ -37,26 +37,26 @@ else
     XWUD= X11DIR=
 fi
 
-PGM="`$SEARCHPROG $SEARCHPATH pbmtoxwd`"
+PGM="`$SEARCHPROG $SEARCHPATH pnmtoxwd`"
 if [ ! -z "$PGM" ]; then
-    PBM="$PGM" PBMDIR="`echo $PGM | awk -F/ '{ for(i=2;i<NF;i++)printf "/%s", $i;}'`"/
+    NETPBM="$PGM" NETPBMDIR="`echo $PGM | awk -F/ '{ for(i=2;i<NF;i++)printf "/%s", $i;}'`"/
 else
-    PBM= PBMDIR=
+    NETPBM= NETPBMDIR=
 fi
 
 PGM="`$SEARCHPROG $SEARCHPATH xv`"
 if [ ! -z "$PGM" ]; then
     echo "mhshow-show-image: %p$PGM -geometry =-0+0 '%f'" >> $TMP
-elif [ ! -z $"PBM" -a ! -z "$XWUD" ]; then
-    echo "mhshow-show-image/gif: %p${PBMDIR}giftoppm | ${PBMDIR}ppmtopgm | ${PBMDIR}pgmtopbm | ${PBMDIR}pbmtoxwd | $XWUD -geometry =-0+0" >> $TMP
-    echo "mhshow-show-image/x-pbm: %p${PBMDIR}pbmtoxwd | $XWUD -geometry =-0+0" >> $TMP
-    echo "mhshow-show-image/x-pgm: %p${PBMDIR}pgmtopbm | ${PBMDIR}pbmtoxwd | $XWUD -geometry =-0+0" >> $TMP
-    echo "mhshow-show-image/x-ppm: %p${PBMDIR}ppmtopgm | ${PBMDIR}pgmtopbm | ${PBMDIR}pbmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+elif [ ! -z $"NETPBM" -a ! -z "$XWUD" ]; then
+    echo "mhshow-show-image/gif: %p${NETPBMDIR}giftopnm | ${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+    echo "mhshow-show-image/x-pnm: %p${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+    echo "mhshow-show-image/x-pgm: %p${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+    echo "mhshow-show-image/x-ppm: %p${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
     echo "mhshow-show-image/x-xwd: %p$XWUD -geometry =-0+0" >> $TMP
 
     PGM="`$SEARCHPROG $SEARCHPATH djpeg`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-image/jpeg: %p$PGM -Pg | ${PBMDIR}ppmtopgm | ${PBMDIR}pgmtopbm | ${PBMDIR}pbmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+	echo "mhshow-show-image/jpeg: %p$PGM -Pg | ${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
     fi
 fi
 
@@ -114,7 +114,7 @@ if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-application/PostScript: %plpr -Pps" >> $TMP
 else
     PGM="`$SEARCHPROG $SEARCHPATH lp`"
-    if [ ! -z "$PGM" ]; then    
+    if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-application/PostScript: %plp -dps" >> $TMP
     fi
 fi
