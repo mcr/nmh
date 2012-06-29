@@ -430,11 +430,6 @@ insert (struct mailname *np)
     }
     mp->m_next = np;
 
-#ifdef ISI
-    if (ismymbox (np))
-	ccme = 0;
-#endif
-
     return 1;
 }
 
