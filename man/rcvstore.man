@@ -130,15 +130,3 @@ rcvdist(1), rcvpack(1), rcvtty(1), mh\-sequence(5)
 .SH CONTEXT
 No context changes will be attempted, with the exception of
 sequence manipulation.
-
-.SH BUGS
-If you use the \*(lqUnseen\-Sequence\*(rq profile entry,
-.B rcvstore
-could try to update the context while another
-.B nmh
-process
-is also trying to do so.  This can cause the context to become
-corrupted.  To avoid this, do not use
-.B rcvstore
-if you use the
-\*(lqUnseen\-Sequence\*(rq profile entry.
