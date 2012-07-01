@@ -253,3 +253,6 @@ context changes occur.  With the
 switch, the context of
 .B send
 is used.
+.B mhmail
+does not read the context file itself, so an entry for it will be
+ignored.
