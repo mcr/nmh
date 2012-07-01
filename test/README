@@ -71,6 +71,10 @@ in the test scripts.  In particular:
 - Avoid depending on the exact format of output from system (non-nmh)
   programs.
 
+The Heirloom Bourne Shell, http://heirloom.sourceforge.net/sh.html,
+catches many non-portable shell constructs, such as $(), $(()), !, and
+assignment in export statements.
+
 checkbashisms, available at http://sourceforge.net/projects/checkbaskisms/,
 might help some catch problems.  Though it misses all of the troublesome
 constructs, except for assignment in an export statement, listed above.

@@ -7,10 +7,15 @@ NEW FEATURES
 - All nmh programs will now warn about multiple profile entries for
   the same non-null, non-comment component.  In previous versions, all
   but the first were silently ignored.
-- mhmail now supports all post(8) options, and optionally can use
+- mhmail now supports all post(8) options, or optionally can use
   send(1) with all of its options.  Its formerly undocumented -resent
   switch has been documented.  And it has new -attach, -headerfield,
   and -send/-nosend switches.
+- Default to flock() locking on OpenBSD and Darwin.
+- Added -directives support to mhbuild(1) to control whether or not
+  mhbuild will honor MIME directives by default.  And added support
+  for special #on/#off/#pop directives to control the MIME directive
+  processing state.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES
@@ -34,3 +39,12 @@ OBSOLETE/DEPRECATED FEATURES
   http://smtpfilter.sourceforge.net/esmtp.html
 - conflict(8) is deprecated and will be removed from the next release.
 - mhtest(8) is deprecated and will be removed from the next release.
+
+---------
+BUG FIXES
+---------
+
+- Replaced utilities that operate on pbm files with those that operate
+  on pnm files in etc/mhn.defaults [Bug #15152].
+- Removed obsolete BUGS section at end of rcvstore(1) man page [Bug #4361].
+- Fixed -nocc me doesn't account for Alternate-Mailboxes [Bug #36635].

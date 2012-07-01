@@ -18,7 +18,7 @@ test -z "$MULTIBYTE_ENABLED"  &&  MULTIBYTE_ENABLED="@MULTIBYTE_ENABLED@"
 export MH_TEST_DIR auxexecdir bindir mandir sysconfdir pagerpath
 export MULTIBYTE_ENABLED
 
-test -z "$MH_INST_DIR"  &&  MH_INST_DIR=${MH_TEST_DIR}/inst
+test -z "$MH_INST_DIR"  &&  MH_INST_DIR="${MH_TEST_DIR}/inst"
 export MH_INST_DIR
 
 unset MHBUILD MHCONTEXT MHMTSUSERCONF MHN MHSHOW MHSTORE MHTMPDIR
@@ -133,33 +133,34 @@ run_test() {
 
 setup_test ()
 {
-  MH=${MH_TEST_DIR}/Mail/.mh_profile
-  MHMTSCONF=${MH_INST_DIR}${sysconfdir}/mts.conf
-  PATH=${MH_INST_DIR}${bindir}:${PATH}
-  MH_LIB_DIR=${MH_INST_DIR}${auxexecdir}
+  MH="${MH_TEST_DIR}/Mail/.mh_profile"
+  MHMTSCONF="${MH_INST_DIR}${sysconfdir}/mts.conf"
+  PATH="${MH_INST_DIR}${bindir}:${PATH}"
+  MH_LIB_DIR="${MH_INST_DIR}${auxexecdir}"
   export MH MHMTSCONF MH_LIB_DIR PATH
 
   #
   # Only install once
   #
-  if [ -d ${MH_INST_DIR}${bindir} ]; then
+  if [ -d "${MH_INST_DIR}${bindir}" ]; then
     :
   else
-    (cd ${MH_OBJ_DIR} && make DESTDIR=${MH_INST_DIR} SETGID_MAIL= install) ||
+    (cd "${MH_OBJ_DIR}" &&
+      make DESTDIR="${MH_INST_DIR}" SETGID_MAIL= install) ||
       exit 1
 
     #### Don't test with sendmail because it would really send the
     #### mail.  If configured to use sendmail, change to smtp instead
     #### so that we use fakesmtp.
-    sed -e 's/mts: *sendmail/mts: smtp/' ${MHMTSCONF} >${MHMTSCONF}.new
-    mv -f ${MHMTSCONF}.new ${MHMTSCONF}
+    sed -e 's/mts: *sendmail/mts: smtp/' "${MHMTSCONF}" >"${MHMTSCONF}.new"
+    mv -f "${MHMTSCONF}.new" "${MHMTSCONF}"
   fi
 
   # clean old test data
-  trap "rm -rf $MH_TEST_DIR/Mail" 0
+  trap "rm -rf '$MH_TEST_DIR/Mail'" 0
   # setup test data
-  mkdir $MH_TEST_DIR/Mail || exit 1
-  cat > $MH <<EOF || exit 1
+  mkdir "$MH_TEST_DIR/Mail" || exit 1
+  cat > "$MH" <<EOF || exit 1
 Path: ${MH_TEST_DIR}/Mail
 buildmimeproc: ${MH_INST_DIR}${bindir}/mhbuild
 libdir: ${MH_LIB_DIR}
@@ -176,7 +177,7 @@ EOF
            scan.YYYYMMDD scan.default scan.mailx scan.nomime scan.size \
            scan.time scan.timely scan.unseen
   do
-    cp ${MH_INST_DIR}${sysconfdir}/${f} ${MH_TEST_DIR}/Mail || exit 1
+    cp "${MH_INST_DIR}${sysconfdir}/${f}" "${MH_TEST_DIR}/Mail" || exit 1
   done
 
   folder -create +inbox > /dev/null
