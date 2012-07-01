@@ -23,6 +23,7 @@
 %(void(localmbox))%(void(width))%(putaddr From: )
 %(lit)%(formataddr{mail-followup-to})\
 %<(nonnull)%(void(width))%(putaddr To: )\n\
+%(putaddr Mail-Followup-To: )\n\
 %|\
 %(lit)%(formataddr %<{mail-reply-to}%?{reply-to}%?{from}%?{sender}%?{return-path}%>)\
 %<(nonnull)%(void(width))%(putaddr To: )\n%>\

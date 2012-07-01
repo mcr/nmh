@@ -123,7 +123,8 @@ will use the the
 standard forms file \*(lqreplgroupcomps\*(rq.  This will construct a
 draft message that is intended as a group or followup reply.  If a file
 named \*(lqreplgroupcomps\*(rq exists in the user's nmh directory, it
-will be used instead of this default forms file.
+will be used instead of this default forms file, unless you specify
+another forms file on the command line or in your profile.
 .PP
 The default group reply template \*(lqreplgroupcomps\*(rq will direct
 .B repl
