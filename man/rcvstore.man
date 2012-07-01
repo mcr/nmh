@@ -58,12 +58,14 @@ into the user's
 folder.  It will not change the message in any
 way.
 .PP
-If the user's profile contains a \*(lqMsg\-Protect: nnn\*(rq entry, it
-will be used as the protection on the newly created message, otherwise
-the
+If the user's profile contains a
+.RI \*(lq "Msg\-Protect: nnn" \*(rq
+entry, it will be used as the protection on the newly created
+message, otherwise the
 .B nmh
-default of 0644 will be used.  For all subsequent operations
-on this message, this initially assigned protection will be preserved.
+default of 0600 will be used (on filesystems that support it).  For
+all subsequent operations on this message, this initially assigned
+protection will be preserved.
 .PP
 If the switch
 .B \-unseen

@@ -73,12 +73,12 @@ listing of the new mail is produced.
 .PP
 If the user's profile contains a
 .RI \*(lq "Msg\-Protect: nnn" \*(rq
-entry, it
-will be used as the protection on the newly created messages, otherwise
-the
+entry, it will be used as the protection on the newly created
+messages, otherwise the
 .B nmh
-default of 0644 will be used.  For all subsequent operations
-on these messages, this initially assigned protection will be preserved.
+default of 0600 will be used (on filesystems that support it).  For
+all subsequent operations on these messages, this initially assigned
+protection will be preserved.
 .PP
 If the switch
 .B \-audit
