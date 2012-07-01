@@ -77,6 +77,3 @@ profile component.
 
 .SH "SEE ALSO"
 rcvpack(1), rcvstore(1), rcvtty(1), mh\-format(5), slocal(1)
-
-.SH BUGS
-Only two return codes are meaningful, others should be.
