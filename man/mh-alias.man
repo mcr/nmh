@@ -44,6 +44,10 @@ or
 or
 .RS 5
 .B ;
+|
+.B :
+|
+.B #
 .I comment
 .RE
 .PP
@@ -63,7 +67,9 @@ where:
 .RE
 .PP
 Continuation lines in alias files end with `\\' followed by the newline
-character.
+character.  This applies to comment lines.  Thus, a line following a
+comment line that ends with a `\\' will be treated as a continuation of
+the comment.
 .PP
 .RI \*(lq  Alias\-file \*(rq
 and

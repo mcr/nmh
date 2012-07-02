@@ -10,7 +10,7 @@
 
 ; everyone: *
 
-; Blank lines and lines beginning with a ; are ignored.
+; Blank lines and lines beginning with a ;, :, or # are ignored.
 ; < file	-> read more aliases from "file"
 ; foo: fum      -> simple replacement
 ; foo: fum, fie -> list replacement
@@ -25,3 +25,7 @@
 ; using a ';' instead of a ':' indicates that the alias should be displayed
 ; along with the addresses used (normally, the addresses replace the alias
 ; completely)
+;
+; A backslash at the end of a line escapes the following newline, even
+; in comment lines.  Thus, comments endinf with a \ will be continued even
+# without a leading ;, :, or # on the followling line.
