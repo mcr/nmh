@@ -48,3 +48,4 @@ BUG FIXES
   on pnm files in etc/mhn.defaults [Bug #15152].
 - Removed obsolete BUGS section at end of rcvstore(1) man page [Bug #4361].
 - Fixed -nocc me doesn't account for Alternate-Mailboxes [Bug #36635].
+- Propagate Mail-Followup-To [Bug #5571].
