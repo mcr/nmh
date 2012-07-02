@@ -1,0 +1,129 @@
+#!/bin/sh
+######################################################
+#
+# Test fmtdump
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+# Use proper program, likely not the first one on PATH.
+fmtdump="${MH_LIB_DIR}/fmtdump"
+
+expected=$MH_TEST_DIR/$$.expected
+expected_err=$MH_TEST_DIR/$$.expected_err
+actual=$MH_TEST_DIR/$$.actual
+actual_err=$MH_TEST_DIR/$$.actual_err
+
+
+# check -help
+cat >$expected <<EOF
+Usage: fmtdump [switches]
+  switches are:
+  -form formatfile
+  -(forma)t string
+  -version
+  -help
+EOF
+
+$fmtdump -help >$actual 2>&1
+check $expected $actual
+
+# check -version
+case `$fmtdump -v` in
+  fmtdump\ --*) ;;
+  *           ) printf "$0: fmtdump -v generated unexpected output\n" >&2
+                failed=`expr ${failed:-0} + 1`;;
+esac
+
+# check unknown switch
+run_test "$fmtdump -nonexistent" 'fmtdump: -nonexistent unknown'
+
+# check with no switches
+cat >$expected <<EOF
+	LV_DAT, value dat[0]
+	NUMF, width 4, fill ' '
+	LV_DAT, value dat[1]
+	IF_V_NE 0 continue else goto L0
+	CHAR '+'
+	GOTO L1
+L0:	CHAR ' '
+L1:	LS_COMP, comp "replied"
+	IF_S continue else goto L2
+	CHAR '-'
+	GOTO L3
+L2:	LS_COMP, comp "encrypted"
+	IF_S continue else goto L4
+	CHAR 'E'
+L3:	GOTO L5
+L4:	CHAR ' '
+L5:	PARSEDATE, c_name "date", c_type <DATE>
+	LV_MON, c_name "date", c_type <DATE>
+	NUMF, width 2, fill '0'
+	CHAR '/'
+	PARSEDATE, c_name "date", c_type <DATE>
+	LV_MDAY, c_name "date", c_type <DATE>
+	NUMF, width 2, fill '0'
+	LS_COMP, comp "date", c_type <DATE>
+	IF_S continue else goto L6
+	CHAR ' '
+	GOTO L7
+L6:	CHAR '*'
+L7:	MYMBOX, c_name "from", c_type <ADDR>
+	LV_COMPFLAG, comp "from", c_type <ADDR>
+	IF_V_NE 0 continue else goto L8
+	LS_COMP, comp "to", c_type <ADDR>
+	IF_S continue else goto L8
+	LIT "To:"
+	PARSEADDR, c_name "to", c_type <ADDR>
+	LS_FRIENDLY, c_name "to", c_type <ADDR>
+	FT_LS_DECODE
+	STRF, width 14, fill ' '
+L8:	IF_V_EQ 0 continue else goto L9
+	PARSEADDR, c_name "from", c_type <ADDR>
+	LS_FRIENDLY, c_name "from", c_type <ADDR>
+	FT_LS_DECODE
+	STRF, width 17, fill ' '
+L9:	LIT "  "
+	LS_COMP, comp "subject"
+	FT_LS_DECODE
+	STR
+	LS_COMP, comp "body"
+	IF_S continue else goto L10
+	LIT "<<"
+	COMP, comp "body"
+	LIT ">>"
+L10:	CHAR '\n'
+	DONE
+EOF
+
+$fmtdump >$actual 2>&1
+check $expected $actual 'keep first'
+
+# check -form
+$fmtdump -form "$MH_TEST_DIR/Mail/scan.default" >$actual 2>&1
+check $expected $actual
+
+# check -format
+cat >$expected <<EOF
+	LS_LIT str "1234567890"
+	IF_S continue else goto L0
+	LV_STRLEN
+	NUM
+L0:	DONE
+EOF
+
+$fmtdump -format '%<(lit 1234567890)%(strlen)%>' >$actual 2>&1
+check $expected $actual
+
+
+exit ${failed:-0}

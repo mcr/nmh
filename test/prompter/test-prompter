@@ -1,0 +1,235 @@
+#!/bin/sh
+######################################################
+#
+# Test prompter
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+expected_err=$MH_TEST_DIR/$$.expected_err
+actual=$MH_TEST_DIR/$$.actual
+actual_err=$MH_TEST_DIR/$$.actual_err
+
+
+# check -help
+cat >$expected <<EOF
+Usage: prompter [switches] file
+  switches are:
+  -erase chr
+  -kill chr
+  -[no]prepend
+  -[no]rapid
+  -[no]doteof
+  -version
+  -help
+EOF
+
+prompter -help >$actual 2>&1
+check $expected $actual
+
+# check -version
+case `prompter -v` in
+  prompter\ --*) ;;
+  *           ) printf "$0: prompter -v generated unexpected output\n" >&2
+                failed=`expr ${failed:-0} + 1`;;
+esac
+
+# check unknown switch
+run_test 'prompter -nonexistent' 'prompter: -nonexistent unknown'
+
+
+# check with no switches
+run_test 'prompter' 'prompter: usage: prompter [switches] file'
+
+# check with file
+cat >$expected <<EOF
+Resent-From: sender@example.com
+Resent-To: recipient@example.com
+Resent-cc: cc@example.com
+Resent-fcc: +outbox
+--------
+message body
+EOF
+
+cat >$MH_TEST_DIR/prompter-file <<EOF
+Resent-From: sender@example.com
+Resent-To:
+Resent-cc:
+Resent-fcc:
+EOF
+
+printf "recipient@example.com\ncc@example.com\n+outbox\nmessage body\n" | \
+  prompter $MH_TEST_DIR/prompter-file > /dev/null
+
+check "$expected" "$MH_TEST_DIR/prompter-file" 'keep first'
+
+# check -doteof
+cat >$MH_TEST_DIR/prompter-file <<EOF
+Resent-From: sender@example.com
+Resent-To:
+Resent-cc:
+Resent-fcc:
+EOF
+
+printf "recipient@example.com\ncc@example.com\n+outbox\nmessage body\n.\n" | \
+  prompter -doteof $MH_TEST_DIR/prompter-file > /dev/null
+
+check "$expected" "$MH_TEST_DIR/prompter-file" 'keep first'
+
+# check -nodoteof
+cat >$MH_TEST_DIR/prompter-file <<EOF
+Resent-From: sender@example.com
+Resent-To:
+Resent-cc:
+Resent-fcc:
+EOF
+
+printf "recipient@example.com\ncc@example.com\n+outbox\nmessage body\n" | \
+  prompter -doteof -nodoteof $MH_TEST_DIR/prompter-file > /dev/null
+
+check "$expected" "$MH_TEST_DIR/prompter-file" 'keep first'
+
+# check -noprepend
+cat >$MH_TEST_DIR/prompter-file <<EOF
+Resent-From: sender@example.com
+Resent-To:
+Resent-cc:
+Resent-fcc:
+--------
+message body
+EOF
+
+printf "appendage\n" >> "$expected"
+
+printf "recipient@example.com\ncc@example.com\n+outbox\nappendage\n" | \
+  prompter -noprepend $MH_TEST_DIR/prompter-file > /dev/null
+
+check "$expected" "$MH_TEST_DIR/prompter-file"
+
+# check -prepend
+cat >$MH_TEST_DIR/prompter-file <<EOF
+Resent-From: sender@example.com
+Resent-To:
+Resent-cc:
+Resent-fcc:
+--------
+message body
+EOF
+
+cat >$expected <<EOF
+Resent-From: sender@example.com
+Resent-To: recipient@example.com
+Resent-cc: cc@example.com
+Resent-fcc: +outbox
+--------
+prependage
+message body
+EOF
+
+printf "recipient@example.com\ncc@example.com\n+outbox\nprependage\n" | \
+  prompter -noprepend -prepend $MH_TEST_DIR/prompter-file > /dev/null
+
+check "$MH_TEST_DIR/prompter-file" "$expected" 'keep first'
+
+# check -rapid
+cat >$expected <<EOF
+Resent-From: sender@example.com
+Resent-To: recipient@example.com
+Resent-cc: cc@example.com
+Resent-fcc: +outbox
+
+--------Enter initial text
+
+--------
+EOF
+
+prompter -rapid $MH_TEST_DIR/prompter-file > "$actual" < /dev/null
+
+check "$expected" "$actual"
+
+# check -norapid
+cat >$expected <<EOF
+Resent-From: sender@example.com
+Resent-To: recipient@example.com
+Resent-cc: cc@example.com
+Resent-fcc: +outbox
+
+--------Enter initial text
+
+prependage
+message body
+--------
+EOF
+
+prompter -rapid -norapid $MH_TEST_DIR/prompter-file > "$actual" < /dev/null
+
+check "$expected" "$actual"
+
+# check -erase and -kill.  We can't test their effects because they
+# only affect the terminal and this test execution might not be
+# connected to one.  So we can just check that the respective options
+# were set.
+cat >$expected <<EOF
+erase ^U, kill ^?, intr ^@
+Resent-From: sender@example.com
+Resent-To: recipient@example.com
+Resent-cc: cc@example.com
+Resent-fcc: +outbox
+
+--------Enter initial text
+
+prependage
+message body
+--------
+EOF
+
+printf "woot woot\n" | \
+  prompter -erase '' -kill '' $MH_TEST_DIR/prompter-file > "$actual"
+
+check "$expected" "$actual"
+
+# check -body.  It's undocumented but the default, so make sure that
+# it reverses the effect of -nobody.
+cat >$expected <<EOF
+Resent-From: sender@example.com
+Resent-To: recipient@example.com
+Resent-cc: cc@example.com
+Resent-fcc: +outbox
+
+--------Enter initial text
+
+woot woot
+prependage
+message body
+--------
+EOF
+
+prompter -nobody -body $MH_TEST_DIR/prompter-file > "$actual" < /dev/null
+
+check "$expected" "$actual"
+
+# check -nobody.  It's undocumented but looks like it removes the body.
+cat >$expected <<EOF
+Resent-From: sender@example.com
+Resent-To: recipient@example.com
+Resent-cc: cc@example.com
+Resent-fcc: +outbox
+EOF
+
+printf "woot woot\n" | prompter -nobody $MH_TEST_DIR/prompter-file > /dev/null
+
+check "$expected" "$MH_TEST_DIR/prompter-file"
+
+
+exit ${failed:-0}

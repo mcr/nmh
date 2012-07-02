@@ -1,0 +1,79 @@
+#!/bin/sh
+######################################################
+#
+# Test rcvpack
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+# Use proper program, likely not the first one on PATH.
+rcvpack="${MH_LIB_DIR}/rcvpack"
+
+expected=$MH_TEST_DIR/$$.expected
+expected_err=$MH_TEST_DIR/$$.expected_err
+actual=$MH_TEST_DIR/$$.actual
+actual_err=$MH_TEST_DIR/$$.actual_err
+
+
+# check -help
+cat >$expected <<EOF
+Usage: rcvpack [switches] file
+  switches are:
+  -mbox
+  -mmdf
+  -version
+  -help
+EOF
+
+$rcvpack -help >$actual 2>&1
+check $expected $actual
+
+# check -version
+case `$rcvpack -v` in
+  rcvpack\ --*) ;;
+  *           ) printf "$0: rcvpack -v generated unexpected output\n" >&2
+                failed=`expr ${failed:-0} + 1`;;
+esac
+
+# check unknown switch
+run_test "$rcvpack -nonexistent" 'rcvpack: -nonexistent unknown'
+
+# check with no switches
+run_test "$rcvpack" 'rcvpack: rcvpack [switches] file'
+
+# check mbox creation
+$rcvpack <${MH_TEST_DIR}/Mail/inbox/1 ${MH_TEST_DIR}/Mail/mbox
+inc -file ${MH_TEST_DIR}/Mail/mbox -silent
+check "${MH_TEST_DIR}/Mail/inbox/1" "${MH_TEST_DIR}/Mail/inbox/11" 'keep first'
+
+# check -mbox
+$rcvpack -mmdf -mbox <${MH_TEST_DIR}/Mail/inbox/1 ${MH_TEST_DIR}/Mail/mbox2
+check "${MH_TEST_DIR}/Mail/mbox" "${MH_TEST_DIR}/Mail/mbox2" 'keep first'
+
+# check append to existing mbox file
+$rcvpack <${MH_TEST_DIR}/Mail/inbox/2 ${MH_TEST_DIR}/Mail/mbox
+inc -file ${MH_TEST_DIR}/Mail/mbox -silent
+check "${MH_TEST_DIR}/Mail/inbox/2" "${MH_TEST_DIR}/Mail/inbox/12" 'keep first'
+
+# check -mmdf
+$rcvpack -mmdf <${MH_TEST_DIR}/Mail/inbox/3 ${MH_TEST_DIR}/Mail/mmdf
+inc -file ${MH_TEST_DIR}/Mail/mmdf -silent
+check "${MH_TEST_DIR}/Mail/inbox/3" "${MH_TEST_DIR}/Mail/inbox/12" 'keep first'
+
+# check append to existing mmdf file
+$rcvpack -mmdf <${MH_TEST_DIR}/Mail/inbox/4 ${MH_TEST_DIR}/Mail/mmdf
+inc -file ${MH_TEST_DIR}/Mail/mmdf -silent
+check "${MH_TEST_DIR}/Mail/inbox/4" "${MH_TEST_DIR}/Mail/inbox/13" 'keep first'
+
+
+exit ${failed:-0}

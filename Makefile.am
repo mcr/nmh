@@ -47,9 +47,9 @@ TESTS = test/ali/test-ali \
 	test/burst/test-burst \
 	test/comp/test-comp-format \
 	test/folder/test-create test/folder/test-sortm \
-	test/folder/test-total test/format/test-localmbox \
-	test/format/test-myname test/format/test-myhost \
-	test/format/test-mymbox \
+	test/folder/test-total test/format/test-dp test/format/test-fmtdump \
+	test/format/test-localmbox test/format/test-myname \
+	test/format/test-myhost test/format/test-mymbox \
 	test/forw/test-forw-digest \
 	test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
@@ -65,6 +65,8 @@ TESTS = test/ali/test-ali \
 	test/post/test-post-dcc test/post/test-post-fcc \
 	test/post/test-post-multifrom test/post/test-post-envelope \
 	test/post/test-post-group \
+	test/prompter/test-prompter \
+	test/rcv/test-rcvdist test/rcv/test-rcvpack test/rcv/test-rcvstore \
 	test/refile/test-refile \
 	test/repl/test-if-str test/repl/test-trailing-newline \
 	test/repl/test-multicomp test/repl/test-repl \

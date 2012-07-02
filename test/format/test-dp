@@ -1,0 +1,115 @@
+#!/bin/sh
+######################################################
+#
+# Test dp
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+# Use proper program, likely not the first one on PATH.
+dp="${MH_LIB_DIR}/dp"
+
+expected="$MH_TEST_DIR/$$.expected"
+expected_err="$MH_TEST_DIR/$$.expected_err"
+actual="$MH_TEST_DIR/$$.actual"
+actual_err="$MH_TEST_DIR/$$.actual_err"
+
+
+# check -help
+cat >"$expected" <<EOF
+Usage: dp [switches] dates ...
+  switches are:
+  -form formatfile
+  -(forma)t string
+  -width columns
+  -version
+  -help
+EOF
+
+$dp -help >"$actual" 2>&1
+check "$expected" "$actual"
+
+# check -version
+case `$dp -v` in
+  dp\ --*) ;;
+  *           ) printf "$0: dp -v generated unexpected output\n" >&2
+                failed=`expr ${failed:-0} + 1`;;
+esac
+
+# check unknown switch
+run_test "$dp -nonexistent" 'dp: -nonexistent unknown'
+
+# check with no switches
+run_test "$dp" 'dp: usage: dp [switches] dates ...'
+
+# check with one valid date
+cat >"$expected" <<EOF
+Sun, 01 Jul 2012 00:00:00
+EOF
+
+$dp 'Sun Jul  1 2012' > "$actual" 2>&1
+check "$expected" "$actual"
+
+# check with two valid dates
+cat >"$expected" <<EOF
+Sun, 01 Jul 2012 00:00:00
+Mon, 02 Jul 2012 00:00:00
+EOF
+
+$dp 'Sun Jul  1 2012' 'Mon Jul  2 2012' > "$actual" 2>&1
+check "$expected" "$actual"
+
+# check with invalid date
+cat >"$expected" <<EOF
+error: not a date
+EOF
+
+cat >"$expected_err" <<EOF
+EOF
+
+$dp 'not a date' > "$actual" 2> "$actual_err"
+check "$expected" "$actual"
+check "$expected_err" "$actual_err"
+
+# check -form
+form="${MH_TEST_DIR}/Mail/dp-form"
+cat >"$form" <<'EOF'
+%(day{text})
+EOF
+
+cat >"$expected" <<EOF
+Sun
+EOF
+
+$dp -form "$form" 'Jul 1 2012' >$actual 2>&1
+check $expected $actual
+rm -f "$form"
+
+# check -format
+cat >"$expected" <<EOF
+Sun
+EOF
+
+$dp -format '%(day{text})' 'Jul 1 2012' >$actual 2>&1
+check $expected $actual
+
+# check -width
+cat >"$expected" <<EOF
+Sun, 01 Jul 2012
+EOF
+
+$dp -width 17 'Sun Jul  1 2012' > "$actual" 2>&1
+check "$expected" "$actual"
+
+
+exit ${failed:-0}
