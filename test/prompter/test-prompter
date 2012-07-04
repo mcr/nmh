@@ -69,7 +69,7 @@ Resent-cc:
 Resent-fcc:
 EOF
 
-printf "recipient@example.com\ncc@example.com\n+outbox\nmessage body\n" | \
+printf 'recipient@example.com\ncc@example.com\n+outbox\nmessage body\n' | \
   prompter $MH_TEST_DIR/prompter-file > /dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file" 'keep first'
@@ -82,7 +82,7 @@ Resent-cc:
 Resent-fcc:
 EOF
 
-printf "recipient@example.com\ncc@example.com\n+outbox\nmessage body\n.\n" | \
+printf 'recipient@example.com\ncc@example.com\n+outbox\nmessage body\n.\n' | \
   prompter -doteof $MH_TEST_DIR/prompter-file > /dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file" 'keep first'
@@ -95,7 +95,7 @@ Resent-cc:
 Resent-fcc:
 EOF
 
-printf "recipient@example.com\ncc@example.com\n+outbox\nmessage body\n" | \
+printf 'recipient@example.com\ncc@example.com\n+outbox\nmessage body\n' | \
   prompter -doteof -nodoteof $MH_TEST_DIR/prompter-file > /dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file" 'keep first'
@@ -110,9 +110,9 @@ Resent-fcc:
 message body
 EOF
 
-printf "appendage\n" >> "$expected"
+printf 'appendage\n' >> "$expected"
 
-printf "recipient@example.com\ncc@example.com\n+outbox\nappendage\n" | \
+printf 'recipient@example.com\ncc@example.com\n+outbox\nappendage\n' | \
   prompter -noprepend $MH_TEST_DIR/prompter-file > /dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file"
@@ -137,7 +137,7 @@ prependage
 message body
 EOF
 
-printf "recipient@example.com\ncc@example.com\n+outbox\nprependage\n" | \
+printf 'recipient@example.com\ncc@example.com\n+outbox\nprependage\n' | \
   prompter -noprepend -prepend $MH_TEST_DIR/prompter-file > /dev/null
 
 check "$MH_TEST_DIR/prompter-file" "$expected" 'keep first'
@@ -194,7 +194,7 @@ message body
 --------
 EOF
 
-printf "woot woot\n" | \
+printf 'woot woot\n' | \
   prompter -erase '' -kill '' $MH_TEST_DIR/prompter-file > "$actual"
 
 check "$expected" "$actual"
@@ -227,7 +227,7 @@ Resent-cc: cc@example.com
 Resent-fcc: +outbox
 EOF
 
-printf "woot woot\n" | prompter -nobody $MH_TEST_DIR/prompter-file > /dev/null
+prompter -nobody $MH_TEST_DIR/prompter-file > /dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file"
 
