@@ -1,0 +1,140 @@
+#!/bin/sh
+######################################################
+#
+# Test packf
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
+
+
+# check -help
+cat >"$expected" <<EOF
+Usage: packf [+folder] [msgs] [switches]
+  switches are:
+  -file name
+  -mbox
+  -mmdf
+  -version
+  -help
+EOF
+
+packf -help >"$actual" 2>&1
+check "$expected" "$actual"
+
+# check -version
+case `packf -v` in
+  packf\ --*) ;;
+  *           ) printf "$0: packf -v generated unexpected output\n" >&2
+                failed=`expr ${failed:-0} + 1`;;
+esac
+
+# check unknown switch
+run_test "packf -nonexistent" 'packf: -nonexistent unknown'
+
+cd "${MH_TEST_DIR}"  ||  exit 1
+printf 'y\n' >Mail/yes
+
+# check with no switches
+packf <Mail/yes
+inc +inbox2 -file msgbox <Mail/yes >/dev/null
+rm -f msgbox .msgbox.map
+for i in `pick +inbox`; do
+  diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
+done
+run_test "printf $i" '10'
+rmm +inbox2 -unlink `pick +inbox2`
+
+# check +folder
+packf +inbox <Mail/yes
+inc +inbox2 -file msgbox >/dev/null
+rm -f msgbox .msgbox.map
+for i in `pick +inbox`; do
+  diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
+done
+run_test "printf $i" '10'
+rmm +inbox2 -unlink `pick +inbox2`
+
+# check msgs
+packf +inbox 1 2 3 <Mail/yes
+inc +inbox2 -file msgbox >/dev/null
+rm -f msgbox .msgbox.map
+for i in `pick +inbox2`; do
+  diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
+done
+run_test "printf $i" '3'
+rmm +inbox2 -unlink `pick +inbox2`
+
+# check -file
+packf +inbox -file msgbox2 <Mail/yes
+inc +inbox2 -file msgbox2 >/dev/null
+for i in `pick +inbox2`; do
+  diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
+done
+run_test "printf $i" '10'
+rmm +inbox2 -unlink `pick +inbox2`
+
+# check append to existing mbox file
+packf +inbox -file msgbox2 <Mail/yes
+inc +inbox2 -file msgbox2 >/dev/null
+rm -f msgbox2 .msgbox2.map
+for i in `pick +inbox2`; do
+  if [ $i -le 10 ]; then
+    diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
+  else
+    arith_eval $i - 10
+    diff "`mhpath +inbox $arith_val`" "`mhpath +inbox2 $i`"
+  fi
+done
+run_test "printf $i" '20'
+rmm +inbox2 -unlink `pick +inbox2`
+
+# check -mbox
+packf +inbox -mbox <Mail/yes
+inc +inbox2 -file msgbox >/dev/null
+rm -f msgbox .msgbox.map
+for i in `pick +inbox2`; do
+  diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
+done
+run_test "printf $i" '10'
+rmm +inbox2 -unlink `pick +inbox2`
+
+# check -mmdf
+packf +inbox -mmdf <Mail/yes
+inc +inbox2 -file msgbox >/dev/null
+rm -f msgbox .msgbox.map
+for i in `pick +inbox2`; do
+  diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
+done
+run_test "printf $i" '10'
+rmm +inbox2 -unlink `pick +inbox2`
+
+# check append to existing mmdf file
+packf +inbox -mmdf <Mail/yes
+inc +inbox2 -file msgbox >/dev/null
+rm -f msgbox .msgbox.map
+for i in `pick +inbox2`; do
+  if [ $i -le 10 ]; then
+    diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
+  else
+    arith_eval $i - 10
+    diff "`mhpath +inbox $arith_val`" "`mhpath +inbox2 $i`"
+  fi
+done
+run_test "printf $i" '10'
+rmm +inbox2 -unlink `pick +inbox2`
+
+
+exit ${failed:-0}
