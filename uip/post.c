@@ -144,20 +144,20 @@ struct headers {
 /*
  * flags for headers->flags
  */
-#define	HNOP  0x0000		/* just used to keep .set around          */
-#define	HBAD  0x0001		/* bad header - don't let it through      */
-#define	HADR  0x0002		/* header has an address field            */
-#define	HSUB  0x0004		/* Subject: header                        */
-#define	HTRY  0x0008		/* try to send to addrs on header         */
-#define	HBCC  0x0010		/* don't output this header               */
-#define	HMNG  0x0020		/* munge this header                      */
-#define	HNGR  0x0040		/* no groups allowed in this header       */
-#define	HFCC  0x0080		/* FCC: type header                       */
-#define	HNIL  0x0100		/* okay for this header not to have addrs */
-#define	HIGN  0x0200		/* ignore this header                     */
-#define	HDCC  0x0400		/* another undocumented feature           */
-#define HONE  0x0800		/* Only (zero or) one address allowed	  */
-#define HEFM  0x1000		/* Envelope-From: header		  */
+#define	HNOP  0x0000	    /* just used to keep .set around		 */
+#define	HBAD  0x0001	    /* bad header - don't let it through	 */
+#define	HADR  0x0002	    /* header has an address field		 */
+#define	HSUB  0x0004	    /* Subject: header				 */
+#define	HTRY  0x0008	    /* try to send to addrs on header		 */
+#define	HBCC  0x0010	    /* don't output this header, unless MTS_PIPE */
+#define	HMNG  0x0020	    /* munge this header			 */
+#define	HNGR  0x0040	    /* no groups allowed in this header		 */
+#define	HFCC  0x0080	    /* FCC: type header				 */
+#define	HNIL  0x0100	    /* okay for this header not to have addrs	 */
+#define	HIGN  0x0200	    /* ignore this header			 */
+#define	HDCC  0x0400	    /* another undocumented feature		 */
+#define HONE  0x0800	    /* Only (zero or) one address allowed	 */
+#define HEFM  0x1000	    /* Envelope-From: header			 */
 
 /*
  * flags for headers->set
@@ -634,6 +634,7 @@ main (int argc, char **argv)
 
     /* If we are doing a "whom" check */
     if (whomsw) {
+	/* This won't work with MTS_PIPE. */
 	verify_all_addresses (1, envelope);
 	done (0);
     }
@@ -641,7 +642,13 @@ main (int argc, char **argv)
     if (msgflags & MINV) {
 	make_bcc_file (dashstuff);
 	if (msgflags & MVIS) {
-	    verify_all_addresses (verbose, envelope);
+	    if (sm_mts != MTS_PIPE) {
+		/* It would be nice to have support to call
+		   verify_all_addresses with MTS_PIPE, but that might
+		   require running sendmail as root.  Note that spost
+		   didn't verify addresses. */
+		verify_all_addresses (verbose, envelope);
+	    }
 	    post (tmpfil, 0, verbose, envelope);
 	}
 	post (bccfil, 1, verbose, envelope);
@@ -1058,7 +1065,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flag
 
     if (mp->m_mbox == NULL || ((flags & HTRY) && !insert (mp)))
 	return 0;
-    if ((flags & (HBCC | HDCC | HEFM)) || mp->m_ingrp)
+    if (sm_mts != MTS_PIPE && ((flags & (HBCC | HDCC | HEFM)) || mp->m_ingrp))
 	return 1;
 
     if (!nameoutput) {
@@ -1102,7 +1109,7 @@ putgrp (char *name, char *group, FILE *out, unsigned int flags)
     int len;
     char *cp;
 
-    if (flags & HBCC)
+    if (sm_mts != MTS_PIPE && (flags & HBCC))
 	return;
 
     if (!nameoutput) {
@@ -1465,7 +1472,8 @@ static void
 post (char *file, int bccque, int talk, char *envelope)
 {
     int fd, onex;
-    int	retval;
+    int	retval, i;
+    pid_t child_id;
 
     onex = !(msgflags & MINV) || bccque;
     if (verbose) {
@@ -1478,31 +1486,65 @@ post (char *file, int bccque, int talk, char *envelope)
 
     sigon ();
 
-    if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch, verbose,
-				    snoop, onex, queued, sasl, saslssf,
-				    saslmech, user, tls))
-	    || rp_isbad (retval = sm_winit (envelope)))
-	die (NULL, "problem initializing server; %s", rp_string (retval));
+    if (sm_mts == MTS_PIPE) {
+	char *sargv[16], **argp;
 
-    do_addresses (bccque, talk && verbose);
-    if ((fd = open (file, O_RDONLY)) == NOTOK)
-	die (file, "unable to re-open");
-    do_text (file, fd);
-    close (fd);
-    fflush (stdout);
+	for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
+	    sleep (5);
+	switch (child_id) {
+	    case NOTOK: 
+		adios ("fork", "unable to");
 
-    sm_end (onex ? OK : DONE);
-    sigoff ();
+	    case OK:
+		if (freopen( file, "r", stdin) == NULL) {
+		    adios (file, "can't reopen for sendmail");
+		}
 
-    if (verbose) {
-	if (msgflags & MINV)
-	    printf (" -- %s Recipient Copies Posted --\n",
-		    bccque ? "Blind" : "Sighted");
-	else
-	    printf (" -- Recipient Copies Posted --\n");
+		argp = sargv;
+		*argp++ = "sendmail";
+		*argp++ = "-m"; /* send to me too */
+		*argp++ = "-t"; /* read msg for recipients */
+		*argp++ = "-i"; /* don't stop on "." */
+		if (whomsw)
+		    *argp++ = "-bv";
+		if (snoop)
+		    *argp++ = "-v";
+		*argp = NULL;
+
+		execv (sendmail, sargv);
+		adios (sendmail, "can't exec");
+
+	    default: 
+		pidXwait (child_id, NULL);
+		break;
+	}
+    } else {
+        if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
+                                        verbose, snoop, onex, queued, sasl,
+                                        saslssf, saslmech, user, tls))  ||
+            rp_isbad (retval = sm_winit (envelope)))
+	    die (NULL, "problem initializing server; %s", rp_string (retval));
+
+        do_addresses (bccque, talk && verbose);
+        if ((fd = open (file, O_RDONLY)) == NOTOK)
+          die (file, "unable to re-open");
+        do_text (file, fd);
+        close (fd);
+        fflush (stdout);
+
+        sm_end (onex ? OK : DONE);
+        sigoff ();
+
+        if (verbose) {
+            if (msgflags & MINV)
+	        printf (" -- %s Recipient Copies Posted --\n",
+		        bccque ? "Blind" : "Sighted");
+            else
+	        printf (" -- Recipient Copies Posted --\n");
+        }
+
+        fflush (stdout);
     }
-
-    fflush (stdout);
 }
 
 

@@ -180,6 +180,10 @@ line receive the same messsage as recipients on the \*(lqTo:\*(rq and
 \*(lqcc:\*(rq lines.  See
 .BR send (1)
 for more details.
+.B Dcc
+is not supported with the
+.B pipe
+mail transport method.
 .RE
 .PP
 .BR Fcc :

@@ -111,8 +111,7 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
            profile entries that are just "#", because that's what the
            mh-profile man page suggests using for comments.  Only do
            this check on the very first call from context_read(), when
-           opp is
-	   NULL. */
+           opp is NULL. */
 
 	for (np = m_defs; np; np = np->n_next) {
 	    /* Yes, this is O(N^2).  The profile should be small enough so

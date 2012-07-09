@@ -4,10 +4,15 @@
 # Check the mh-tailor(5) man page for descriptions of available options.
 #
 
-# The delivery method to use.  Supported values are `smtp' and `sendmail'.
-# When `smtp', nmh will open a socket connection to the mail port on the
-# machine specified below, and speak SMTP directly.
-# When `sendmail', nmh will pipe messages directly to the sendmail program.
+# The delivery method to use, which must be one of the following:
+# smtp:     nmh opens a socket connection to the appropriate port
+#           on the servers listed below and speaks SMTP to the
+#           first one that responds.  This is the default.
+# sendmail: nmh pipes messages directly to the sendmail program,
+#           speaking SMTP.
+# pipe:     nmh pipes messages directly to the sendmail program,
+#           using the -t option so that addresses are retrieved
+#           from the message.
 mts: %mts%
 
 # Name that nmh considers `local'.  If not set, nmh will

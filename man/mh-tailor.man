@@ -29,10 +29,12 @@ default values and a description of their meanings are listed below:
 .PP
 .BR mts :
 .RS 5
-The mail transport method to use.  The two acceptable options are
+The mail transport method to use.  The three acceptable options are
 .B smtp
-(which is the default), and
-.BR sendmail .
+(which is the default),
+.BR sendmail ,
+and
+.BR pipe .
 .PP
 If you use
 .BR smtp ,
@@ -54,9 +56,23 @@ then
 will send messages by forking a
 local copy of
 .BR sendmail .
-Currently it will still speak SMTP with this local
-copy of
+It will still speak SMTP with this local copy of
 .BR sendmail .
+.PP
+The third alternative,
+.BR pipe ,
+also forks a local copy of
+.B sendmail
+but feeds the message directly to it, using
+.B sendmail
+.BR -t .
+This replaces the old, undocumented
+.B spost
+mechanism and retains some of its limitations, such as lack of
+support for the
+.B \-whom
+switch and
+\*(lqDcc:\*(rq header field.
 .RE
 .PP
 .BR localname :
@@ -199,8 +215,8 @@ to
 localhost
 .RS 5
 A lists of hosts and networks which to look for SMTP servers when
-posting local mail.  It turns out this is a major win for hosts which
-don't run an message transport system.  The value of
+posting non\-local mail.  It turns out this is a major win for hosts
+which don't run an message transport system.  The value of
 .B servers
 should be one or more items.  Each item is the name of a host which
 is (hopefully) running a SMTP server.

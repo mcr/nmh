@@ -39,6 +39,13 @@ OBSOLETE/DEPRECATED FEATURES
   http://smtpfilter.sourceforge.net/esmtp.html
 - conflict(8) is deprecated and will be removed from the next release.
 - mhtest(8) is deprecated and will be removed from the next release.
+- spost(8) has been merged into post(8).  Its functionality is enabled
+  by selecting the pipe mail transport method in etc/mts.conf, which
+  in turn can be configured using --with-mts=pipe.  The spost
+  -noalias, -backup/-nobackup, -push/-nopush, and -remove/-noremove
+  switches are not supported by post.  Note that spost did not support
+  -whom or Dcc, and neither does post when using mts: pipe.  spost is
+  deprecated and will be removed from the next release.
 
 ---------
 BUG FIXES

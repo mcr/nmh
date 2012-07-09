@@ -65,7 +65,7 @@ TESTS = test/ali/test-ali \
 	test/post/test-post-basic test/post/test-post-multiple \
 	test/post/test-post-dcc test/post/test-post-fcc \
 	test/post/test-post-multifrom test/post/test-post-envelope \
-	test/post/test-post-group \
+	test/post/test-post-group test/post/test-pipe \
 	test/prompter/test-prompter \
 	test/rcv/test-rcvdist test/rcv/test-rcvpack test/rcv/test-rcvstore \
 	test/refile/test-refile \
@@ -228,7 +228,7 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
 	     man/rmf.man man/rmm.man man/scan.man man/send.man \
 	     man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
 	     man/unseen.man man/whatnow.man man/whom.man \
-	     test/README $(TESTS) test/inc/deb359167.mbox \
+	     test/README test/fakesendmail $(TESTS) test/inc/deb359167.mbox \
 	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
 	     test/inc/md5sums test/mhmail/attachment.txt \
 	     test/post/test-post-common.sh uip/mhmail \

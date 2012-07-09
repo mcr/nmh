@@ -111,11 +111,12 @@ AC_ARG_ENABLE([lockdir],
 
 dnl What method of posting should post use?
 AC_ARG_WITH([mts],
-  AS_HELP_STRING([--with-mts=@<:@smtp|sendmail@:>@],
+  AS_HELP_STRING([--with-mts=@<:@smtp|sendmail|pipe@:>@],
   [specify the default mail transport agent/service]))
 
 AS_IF([test x"$with_mts" = x"smtp"], [MTS="smtp"],
       [test x"$with_mts" = x"sendmail"], [MTS="sendmail"],
+      [test x"$with_mts" = x"pipe"], [MTS="pipe"],
       [MTS="smtp"])
 AC_SUBST([MTS])dnl
 

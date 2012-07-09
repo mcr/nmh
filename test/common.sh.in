@@ -152,7 +152,7 @@ setup_test ()
     #### Don't test with sendmail because it would really send the
     #### mail.  If configured to use sendmail, change to smtp instead
     #### so that we use fakesmtp.
-    sed -e 's/mts: *sendmail/mts: smtp/' "${MHMTSCONF}" >"${MHMTSCONF}.new"
+    sed -e 's/mts: *.*/mts: smtp/' "${MHMTSCONF}" >"${MHMTSCONF}.new"
     mv -f "${MHMTSCONF}.new" "${MHMTSCONF}"
   fi
 

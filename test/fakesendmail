@@ -1,0 +1,30 @@
+#! /bin/sh
+##
+# fakesendmail - A fake sendmail program used by the nmh test suite
+#                to test the pipe mts.
+#
+# This code is Copyright (c) 2012, by the authors of nmh.  See the
+# COPYRIGHT file in the root directory of the nmh distribution for
+# complete copyright information.
+##
+
+if [ "$MH_TEST_DIR"x = x ]; then
+  printf "$0 is intended for use only by the nmh test suite\n"
+  exit 1
+fi
+
+found_dasht=0
+for arg in "$@"; do
+  [ "$arg" = -t ]  &&  found_dasht=1
+done
+
+if [ $found_dasht -eq 0 ]; then
+  printf "$0 is intended to fake \"sendmail -t\" only, but no -t provided\n"
+  exit 1
+fi
+
+#### Put the message (on stdin) in a drop that the test knows about.
+#### This will delete any lines in the message body that start with Bcc:,
+#### so avoid those.
+sed -e '/^[Bb][Cc][Cc]:/d' | \
+"${MH_LIB_DIR}"/rcvpack "${MH_TEST_DIR}"/Mail/fakesendmail.mbox

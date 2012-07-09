@@ -254,7 +254,9 @@ sent to sighted recipients.  The blind recipients will receive an entirely
 new message with a minimal set of headers.  Included in the body of the
 message will be a copy of the message sent to the sighted recipients.
 .PP
-If a \*(lqDcc:\*(rq field is encountered, its addresses will be used for
+If a \*(lqDcc:\*(rq field is encountered and the
+.B pipe
+mail transport method is not in use, its addresses will be used for
 delivery, and the \*(lqDcc:\*(rq field will be removed from the message.  The
 blind recipients will receive the same message sent to the sighted
 recipients. *WARNING* Recipients listed in the \*(lqDcc:\*(rq field receive no
@@ -429,7 +431,7 @@ for more information.
 .fi
 
 .SH "SEE ALSO"
-comp(1), dist(1), forw(1), repl(1), mh\-alias(5), post(8)
+comp(1), dist(1), forw(1), repl(1), mh\-alias(5), mh\-tailor(5), post(8)
 
 .SH DEFAULTS
 .nf

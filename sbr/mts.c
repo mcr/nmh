@@ -150,6 +150,8 @@ mts_init (char *name)
         sm_mts = MTS_SMTP;
     else if (strcmp(sm_method, "sendmail") == 0)
         sm_mts = MTS_SENDMAIL;
+    else if (strcmp(sm_method, "pipe") == 0)
+        sm_mts = MTS_PIPE;
     else {
         advise(NULL, "unsupported \"mts\" value in mts.conf: %s", sm_method);
         sm_mts = MTS_SMTP;
