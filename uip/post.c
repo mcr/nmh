@@ -1532,7 +1532,7 @@ post (char *file, int bccque, int talk, char *envelope)
         close (fd);
         fflush (stdout);
 
-        sm_end (OK);
+        sm_end (!(msgflags & MINV) || bccque ? OK : DONE);
         sigoff ();
 
         if (verbose) {
