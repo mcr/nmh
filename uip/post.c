@@ -1472,11 +1472,10 @@ do_addresses (int bccque, int talk)
 static void
 post (char *file, int bccque, int talk, char *envelope)
 {
-    int fd, onex;
+    int fd;
     int	retval, i;
     pid_t child_id;
 
-    onex = !(msgflags & MINV) || bccque;
     if (verbose) {
 	if (msgflags & MINV)
 	    printf (" -- Posting for %s Recipients --\n",
@@ -1521,7 +1520,7 @@ post (char *file, int bccque, int talk, char *envelope)
 	}
     } else {
         if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
-                                        verbose, snoop, onex, queued, sasl,
+                                        verbose, snoop, queued, sasl,
                                         saslssf, saslmech, user, tls))  ||
             rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
@@ -1533,7 +1532,7 @@ post (char *file, int bccque, int talk, char *envelope)
         close (fd);
         fflush (stdout);
 
-        sm_end (onex ? OK : DONE);
+        sm_end (OK);
         sigoff ();
 
         if (verbose) {
@@ -1561,7 +1560,7 @@ verify_all_addresses (int talk, char *envelope)
 
     if (!whomsw || checksw)
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
-					verbose, snoop, 0, queued, sasl,
+					verbose, snoop, queued, sasl,
 					saslssf, saslmech, user, tls))
 		|| rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));

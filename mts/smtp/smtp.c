@@ -147,9 +147,9 @@ char *EHLOkeys[MAXEHLO + 1];
  * static prototypes
  */
 static int smtp_init (char *, char *, char *, int, int, int, int, int, int,
-		      int, char *, char *, int);
+		      char *, char *, int);
 static int sendmail_init (char *, char *, int, int, int, int, int, int,
-                          int, char *, char *);
+                          char *, char *);
 
 static int rclient (char *, char *);
 static int sm_ierror (char *fmt, ...);
@@ -178,22 +178,22 @@ static int sm_auth_sasl(char *, int, char *, char *);
 
 int
 sm_init (char *client, char *server, char *port, int watch, int verbose,
-         int debug, int onex, int queued, int sasl, int saslssf,
+         int debug, int queued, int sasl, int saslssf,
 	 char *saslmech, char *user, int tls)
 {
     if (sm_mts == MTS_SMTP)
 	return smtp_init (client, server, port, watch, verbose,
-			  debug, onex, queued, sasl, saslssf, saslmech,
+			  debug, queued, sasl, saslssf, saslmech,
 			  user, tls);
     else
 	return sendmail_init (client, server, watch, verbose,
-                              debug, onex, queued, sasl, saslssf, saslmech,
+                              debug, queued, sasl, saslssf, saslmech,
 			      user);
 }
 
 static int
 smtp_init (char *client, char *server, char *port, int watch, int verbose,
-	   int debug, int onex, int queued,
+	   int debug, int queued,
            int sasl, int saslssf, char *saslmech, char *user, int tls)
 {
     int result, sd1, sd2;
@@ -441,8 +441,6 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 send_options: ;
     if (watch && EHLOset ("XVRB"))
 	smtalk (SM_HELO, "VERB on");
-    if (onex && EHLOset ("XONE"))
-	smtalk (SM_HELO, "ONEX");
     if (queued && EHLOset ("XQUE"))
 	smtalk (SM_HELO, "QUED");
 
@@ -451,7 +449,7 @@ send_options: ;
 
 int
 sendmail_init (char *client, char *server, int watch, int verbose,
-               int debug, int onex, int queued,
+               int debug, int queued,
                int sasl, int saslssf, char *saslmech, char *user)
 {
     unsigned int i, result, vecp;
@@ -615,8 +613,6 @@ sendmail_init (char *client, char *server, int watch, int verbose,
     }
 #endif /* CYRUS_SASL */
 
-	    if (onex)
-		smtalk (SM_HELO, "ONEX");
 	    if (watch)
 		smtalk (SM_HELO, "VERB on");
 
