@@ -1502,7 +1502,6 @@ post (char *file, int bccque, int talk, char *envelope)
 
 		argp = sargv;
 		*argp++ = "sendmail";
-		*argp++ = "-m"; /* send to me too */
 		*argp++ = "-t"; /* read msg for recipients */
 		*argp++ = "-i"; /* don't stop on "." */
 		if (whomsw)
