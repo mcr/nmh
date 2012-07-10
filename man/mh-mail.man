@@ -182,7 +182,7 @@ line receive the same messsage as recipients on the \*(lqTo:\*(rq and
 for more details.
 .B Dcc
 is not supported with the
-.B pipe
+.B sendmail/pipe
 mail transport method.
 .RE
 .PP

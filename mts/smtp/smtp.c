@@ -768,7 +768,7 @@ sm_end (int type)
     int status;
     struct smtp sm_note;
 
-    if (sm_mts == MTS_SENDMAIL) {
+    if (sm_mts == MTS_SENDMAIL_SMTP) {
 	switch (sm_child) {
 	    case NOTOK: 
 	    case OK: 

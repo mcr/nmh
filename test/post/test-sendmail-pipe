@@ -1,6 +1,7 @@
 #!/bin/sh
 #
-# Test the basic behavior of post when configured with pipe delivery method.
+# Test the basic behavior of post when configured with sendmail/pipe
+# delivery method.
 #
 
 set -e
@@ -15,13 +16,13 @@ fi
 setup_test
 testname="${MH_TEST_DIR}/$$"
 
-#### Force test of pipe regardless of configuration.
+#### Force test of sendmail/pipe regardless of configuration.
 mts_pipe="${MHMTSCONF}-pipe"
-sed -e 's/mts: *.*/mts: pipe/' "${MHMTSCONF}" >"$mts_pipe"
+sed -e 's/mts: *.*/mts: sendmail\/pipe/' "${MHMTSCONF}" >"$mts_pipe"
 printf "%s\n" "sendmail: ${srcdir}/test/fakesendmail" >>"$mts_pipe"
 MHMTSCONF="$mts_pipe"
 
-test_pipe ()
+test_sendmail_pipe ()
 {
   send -draft
 
@@ -49,8 +50,9 @@ test_pipe ()
 }
 
 #
-# Basic test - Simple message, single user, single recipient.
-# Dots are not stuffed because pipe invokes sendmail with -i.
+# Basic test - Simple message, single user, single recipient.  Dots
+# are not stuffed because sendmail/pipe causes sendmail to be invoked
+# with -i.
 #
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
@@ -71,7 +73,7 @@ This is a test
 .
 EOF
 
-test_pipe "${testname}.expected"
+test_sendmail_pipe "${testname}.expected"
 
 
 # check Bcc
@@ -112,7 +114,7 @@ This is a test
 ------- End of Blind-Carbon-Copy
 EOF
 
-test_pipe "${testname}.expected1" "${testname}.expected2"
+test_sendmail_pipe "${testname}.expected1" "${testname}.expected2"
 
 
 rm -f ${MHMTSCONF}

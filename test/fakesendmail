@@ -1,7 +1,7 @@
 #! /bin/sh
 ##
 # fakesendmail - A fake sendmail program used by the nmh test suite
-#                to test the pipe mts.
+#                to test the sendmail/pipe mts.
 #
 # This code is Copyright (c) 2012, by the authors of nmh.  See the
 # COPYRIGHT file in the root directory of the nmh distribution for

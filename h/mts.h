@@ -42,10 +42,10 @@ void mts_init (char *);
  * MTS specific variables
  */
 
-/* whether to speak SMTP to localhost:25 or to /usr/sbin/sendmail */
-#define MTS_SMTP     0
-#define MTS_SENDMAIL 1
-#define MTS_PIPE     2
+/* whether to speak SMTP, and over the network or directly to sendmail */
+#define MTS_SMTP          0
+#define MTS_SENDMAIL_SMTP 1
+#define MTS_SENDMAIL_PIPE 2
 extern int sm_mts;
 
 extern char *sendmail;

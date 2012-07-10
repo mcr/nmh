@@ -5,14 +5,14 @@
 #
 
 # The delivery method to use, which must be one of the following:
-# smtp:     nmh opens a socket connection to the appropriate port
-#           on the servers listed below and speaks SMTP to the
-#           first one that responds.  This is the default.
-# sendmail: nmh pipes messages directly to the sendmail program,
-#           speaking SMTP.
-# pipe:     nmh pipes messages directly to the sendmail program,
-#           using the -t option so that addresses are retrieved
-#           from the message.
+# smtp:          nmh opens a socket connection to the appropriate port
+#                on the servers listed below and speaks SMTP to the
+#                first one that responds.  This is the default.
+# sendmail/smtp: nmh pipes messages directly to the sendmail program,
+#                speaking SMTP.  Can be abbreviated to "sendmail".
+# sendmail/pipe: nmh pipes messages directly to the sendmail program,
+#                using the -t option so that addresses are retrieved
+#                from the message.
 mts: %mts%
 
 # Name that nmh considers `local'.  If not set, nmh will

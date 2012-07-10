@@ -255,7 +255,7 @@ new message with a minimal set of headers.  Included in the body of the
 message will be a copy of the message sent to the sighted recipients.
 .PP
 If a \*(lqDcc:\*(rq field is encountered and the
-.B pipe
+.B sendmail/pipe
 mail transport method is not in use, its addresses will be used for
 delivery, and the \*(lqDcc:\*(rq field will be removed from the message.  The
 blind recipients will receive the same message sent to the sighted

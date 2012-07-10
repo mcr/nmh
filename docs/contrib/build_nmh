@@ -174,7 +174,7 @@ if [ $yes -eq 0 ]; then
   read locking
   [ "$locking" ]  &&  config_locking="$locking"
 
-  printf 'MTS (smtp|sendmail|pipe) [%s]: ' $config_mts
+  printf 'MTS (smtp|sendmail/smtp|sendmail/pipe) [%s]: ' $config_mts
   read mts
   [ "$mts" ]  &&  config_mts="$mts"
 

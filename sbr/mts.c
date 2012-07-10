@@ -63,7 +63,7 @@ static char localmbox[BUFSIZ];
  * MTS specific variables
  */
 static char *sm_method = "smtp";
-int  sm_mts    = MTS_SMTP;
+int  sm_mts    = MTS_SENDMAIL_SMTP;
 char *sendmail = SENDMAILPATH;
 
 /*
@@ -148,13 +148,13 @@ mts_init (char *name)
 
     if (strcmp(sm_method, "smtp") == 0)
         sm_mts = MTS_SMTP;
-    else if (strcmp(sm_method, "sendmail") == 0)
-        sm_mts = MTS_SENDMAIL;
-    else if (strcmp(sm_method, "pipe") == 0)
-        sm_mts = MTS_PIPE;
+    else if (strcmp(sm_method, "sendmail/smtp") == 0)
+        sm_mts = MTS_SENDMAIL_SMTP;
+    else if (strcmp(sm_method, "sendmail/pipe") == 0)
+        sm_mts = MTS_SENDMAIL_PIPE;
     else {
         advise(NULL, "unsupported \"mts\" value in mts.conf: %s", sm_method);
-        sm_mts = MTS_SMTP;
+        sm_mts = MTS_SENDMAIL_SMTP;
     }
 }
 

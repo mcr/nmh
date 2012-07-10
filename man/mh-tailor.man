@@ -32,9 +32,9 @@ default values and a description of their meanings are listed below:
 The mail transport method to use.  The three acceptable options are
 .B smtp
 (which is the default),
-.BR sendmail ,
+.BR sendmail/smtp ,
 and
-.BR pipe .
+.BR sendmail/pipe .
 .PP
 If you use
 .BR smtp ,
@@ -50,7 +50,7 @@ to the mail port on the machine specified in the
 entry.
 .PP
 If you use
-.BR sendmail ,
+.BR sendmail/smtp ,
 then
 .B post
 will send messages by forking a
@@ -60,7 +60,7 @@ It will still speak SMTP with this local copy of
 .BR sendmail .
 .PP
 The third alternative,
-.BR pipe ,
+.BR sendmail/pipe ,
 also forks a local copy of
 .B sendmail
 but feeds the message directly to it, using
