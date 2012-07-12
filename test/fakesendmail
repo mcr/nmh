@@ -1,11 +1,12 @@
 #! /bin/sh
 ##
 # fakesendmail - A fake sendmail program used by the nmh test suite
-#                to test the sendmail/pipe mts.
+#                to test the sendmail/smtp and sendmail/pipe mts
+#                methods.
 #
 # This code is Copyright (c) 2012, by the authors of nmh.  See the
-# COPYRIGHT file in the root directory of the nmh distribution for
-# complete copyright information.
+# COPYRIGHT file in the root or documentation directory of the nmh
+# distribution for complete copyright information.
 ##
 
 if [ "$MH_TEST_DIR"x = x ]; then
@@ -13,18 +14,35 @@ if [ "$MH_TEST_DIR"x = x ]; then
   exit 1
 fi
 
+#### Puts message on stdin in a drop that the test knows about.
+deliver="${MH_LIB_DIR}/rcvpack ${MH_TEST_DIR}/Mail/fakesendmail.mbox"
+
 found_dasht=0
 for arg in "$@"; do
   [ "$arg" = -t ]  &&  found_dasht=1
 done
 
 if [ $found_dasht -eq 0 ]; then
-  printf "$0 is intended to fake \"sendmail -t\" only, but no -t provided\n"
-  exit 1
-fi
+  # sendmail/smtp
+  msg=
+  datamode=0
 
-#### Put the message (on stdin) in a drop that the test knows about.
-#### This will delete any lines in the message body that start with Bcc:,
-#### so avoid those.
-sed -e '/^[Bb][Cc][Cc]:/d' | \
-"${MH_LIB_DIR}"/rcvpack "${MH_TEST_DIR}"/Mail/fakesendmail.mbox
+  printf "220 If it can't be done in Bourne shell it's not worth doing\n"
+  while read line; do
+    #### Strip off carriage returns, they confuse the pattern matching.
+    line=`printf "$line" | tr -d '\r'`
+
+    case "$line" in
+      DATA) printf "354 do tell\n"; datamode=1 ;;
+         .) printf "250 done\n"; datamode=0; printf "$msg" | $deliver; msg= ;;
+      QUIT) printf "221 byenow\n"; break ;;
+         *) [ $datamode -eq 1 ]  &&  msg="${msg}${line}
+"  ||  printf "250 OK\n"
+    esac
+  done
+else
+  # sendmail/pipe
+
+  #### This will delete any lines in the message body that start with Bcc:!
+  sed -e '/^[Bb][Cc][Cc]:/d' | $deliver
+fi

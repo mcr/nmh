@@ -1073,6 +1073,8 @@ static struct swit  sendswitches[] = {
     { "tls", TLSminc(-3) },
 #define NTLSSW            46
     { "notls", TLSminc(-5) },
+#define MTSSW		  47
+    { "mts smtp|sendmail/smtp|sendmail/pipe", 2 },
     { NULL, 0 }
 };
 
@@ -1249,6 +1251,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case SASLMECHSW:
 		case USERSW:
 		case PORTSW:
+		case MTSSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-') {
 			advise (NULL, "missing argument to %s", argp[-2]);

@@ -16,6 +16,8 @@ whom \- report to whom a message would go
 .RB [ \-draftmessage
 .IR msg ]
 .RB [ \-nodraftfolder ]
+.RB [ \-mts
+.IR smtp " | " sendmail/smtp " | " sendmail/pipe ]
 .RB [ \-server
 .IR servername ]
 .RB [ \-port
@@ -54,6 +56,12 @@ draft folder facility.  This is an advanced (and highly
 useful) feature.  Consult the
 .BR mh-draft (5)
 man page for more information.
+.PP
+The mail transport system default is provided in
+.I %etcdir%/mts.conf
+but can be overriiden here with the
+.B \-mts
+switch.
 .PP
 If nmh is using the SMTP MTA, the
 .B \-server

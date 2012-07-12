@@ -65,7 +65,7 @@ TESTS = test/ali/test-ali \
 	test/post/test-post-basic test/post/test-post-multiple \
 	test/post/test-post-dcc test/post/test-post-fcc \
 	test/post/test-post-multifrom test/post/test-post-envelope \
-	test/post/test-post-group test/post/test-sendmail-pipe \
+	test/post/test-post-group test/post/test-mts \
 	test/prompter/test-prompter \
 	test/rcv/test-rcvdist test/rcv/test-rcvpack test/rcv/test-rcvstore \
 	test/refile/test-refile \

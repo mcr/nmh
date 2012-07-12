@@ -62,7 +62,7 @@ static char localmbox[BUFSIZ];
 /*
  * MTS specific variables
  */
-static char *sm_method = "smtp";
+static char *mts_method = "smtp";
 int  sm_mts    = MTS_SENDMAIL_SMTP;
 char *sendmail = SENDMAILPATH;
 
@@ -106,7 +106,7 @@ static struct bind binds[] = {
     { "uucplfil", &uucplfil },
     { "mmdelim1", &mmdlm1 },
     { "mmdelim2", &mmdlm2 },
-    { "mts",      &sm_method },
+    { "mts",      &mts_method },
     { "sendmail", &sendmail  },
     { "clientname",  &clientname },
     { "servers", &servers },
@@ -117,6 +117,25 @@ static struct bind binds[] = {
     { "noshell", &NoShell },
     { NULL, NULL }
 };
+
+
+/* Convert name of mts method to integer value and store it. */
+void
+save_mts_method (const char *value) {
+    if (! mh_strcasecmp (value, "smtp")) {
+        mts_method = "smtp";
+        sm_mts = MTS_SMTP;
+    } else if (! mh_strcasecmp (value, "sendmail/smtp")  ||
+               ! mh_strcasecmp (value, "sendmail")) {
+        mts_method = "sendmail/smtp";
+        sm_mts = MTS_SENDMAIL_SMTP;
+    } else if (! mh_strcasecmp (value, "sendmail/pipe")) {
+        mts_method = "sendmail/pipe";
+        sm_mts = MTS_SENDMAIL_PIPE;
+    } else {
+        adios (NULL, "unsupported mts selection \"%s\"", value);
+    }
+}
 
 
 /*
@@ -146,16 +165,7 @@ mts_init (char *name)
 
     Everyone = atoi (everyone);
 
-    if (strcmp(sm_method, "smtp") == 0)
-        sm_mts = MTS_SMTP;
-    else if (strcmp(sm_method, "sendmail/smtp") == 0)
-        sm_mts = MTS_SENDMAIL_SMTP;
-    else if (strcmp(sm_method, "sendmail/pipe") == 0)
-        sm_mts = MTS_SENDMAIL_PIPE;
-    else {
-        advise(NULL, "unsupported \"mts\" value in mts.conf: %s", sm_method);
-        sm_mts = MTS_SENDMAIL_SMTP;
-    }
+    save_mts_method (mts_method);
 }
 
 

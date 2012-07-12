@@ -21,7 +21,9 @@ echo "clientname: nosuchhost.example.com" >> ${MHMTSCONF}
 #
 # One "post" test run.  Ok, yeah, we're using "send", but that's just
 # because it's easier.
-#
+# $1: output filename for fakesmtp, i.e., the sent message
+# $2: expected output
+# $3: optional switches for send
 
 test_post ()
 { "${MH_OBJ_DIR}/test/fakesmtp" "$1" $localport &
@@ -31,7 +33,8 @@ test_post ()
     # retry a few times if it fails...
     status=1
     for i in 0 1 2 3 4 5 6 7 8 9; do
-        if send -draft -server 127.0.0.1 -port $localport >/dev/null 2>&1; then
+        if send -draft -server 127.0.0.1 -port $localport $3 >/dev/null 2>&1
+        then
             status=0
             break
         fi

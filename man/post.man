@@ -20,6 +20,8 @@ post \- deliver a message
 .RB [ \-watch " | " \-nowatch ]
 .RB [ \-width
 .IR columns ]
+.RB [ \-mts
+.IR smtp " | " sendmail/smtp " | " sendmail/pipe ]
 .RB [ \-server
 .IR servername ]
 .RB [ \-port
@@ -155,6 +157,12 @@ both the value of the \*(lqFrom:\*(rq line and a \*(lqSender:\*(rq line
 have a blank value; if the value is blank, then the mail transport system
 will be instructed to not send any bounces in response to the message.
 Not all mail transport systems support this feature.
+.PP
+The mail transport system default is provided in
+.I %etcdir%/mts.conf
+but can be overriiden here with the
+.B \-mts
+switch.
 .PP
 If nmh is using the SMTP MTA, the
 .B \-server

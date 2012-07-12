@@ -28,6 +28,8 @@ send \- send a message
 .IR seconds ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-watch " | " \-nowatch ]
+.RB [ \-mts
+.IR smtp " | " sendmail/smtp " | " sendmail/pipe ]
 .RB [ \-server
 .IR servername ]
 .RB [ \-port
@@ -341,6 +343,12 @@ By using the
 switch, the user can direct
 .B send
 as to how long it should make header lines containing addresses.
+.PP
+The mail transport system default is provided in
+.I %etcdir%/mts.conf
+but can be overriiden here with the
+.B \-mts
+switch.
 .PP
 If nmh is using the SMTP MTA, the
 .B \-server

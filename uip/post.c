@@ -131,6 +131,8 @@ static struct swit switches[] = {
     { "fileproc", -4 },
 #define MHLPROCSW		 39
     { "mhlproc", -3 },
+#define MTSSW			 40
+    { "mts smtp|sendmail/smtp|sendmail/pipe", 2 },
     { NULL, 0 }
 };
 
@@ -517,6 +519,12 @@ main (int argc, char **argv)
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    mhlproc = cp;
+		    continue;
+
+		case MTSSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+                    save_mts_method (cp);
 		    continue;
 	    }
 	}

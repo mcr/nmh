@@ -1,0 +1,172 @@
+#!/bin/sh
+#
+# Test the sendmail/smtp and sendmail/pipe transport methods
+# via the -mts option.
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+
+This is a test
+EOF
+
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+Date:
+
+This is a test
+.
+QUIT
+EOF
+
+# check invalid -mts selection
+run_test "send -draft -mts invalid" \
+"post: unsupported mts selection \"invalid\"
+send: message not delivered to anyone"
+
+test_post "${testname}.actual" "${testname}.expected" "-mts smtp"
+
+#### Rely on sendmail/smtp or sendmail/pipe below to override default mts.
+mts_fakesendmail="${MHMTSCONF}-fakesendmail"
+cp "${MHMTSCONF}" "$mts_fakesendmail"
+printf "%s\n" "sendmail: ${srcdir}/test/fakesendmail" >>"$mts_fakesendmail"
+MHMTSCONF="$mts_fakesendmail"
+
+# $1: option switches for send
+# remaining arguments: expected output(s)
+test_sendmail ()
+{
+  send -draft -mts "$1"
+  shift
+
+  # fakesendmail drops the message and any cc's into this mbox.
+  mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox
+  inc -silent -file "$mbox"
+  rm -f "$mbox" "$mbox.map"
+
+  n=1
+  for expected in "$@"; do
+    #
+    # It's hard to calculate the exact Date: header post is going to
+    # use, so we'll just use sed to remove the actual date so we can easily
+    # compare it against our "correct" output.
+    #
+    sed -e 's/^Date:.*/Date:/' "`mhpath cur`" > "${testname}.actual$n"
+
+    check "${testname}.actual$n" "$expected"
+
+    if [ "`mhpath cur`" != "`mhpath last`" ]; then
+      folder next >/dev/null
+      arith_eval $n + 1; n=$arith_val
+    fi
+  done
+}
+
+# check -mts sendmail/smtp
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+
+This is a test
+.
+EOF
+
+cat > "${testname}.expected" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+Date:
+
+This is a test
+..
+EOF
+
+test_sendmail sendmail/smtp "${testname}.expected"
+
+# check -mts sendmail/pipe
+# Dots are not stuffed because sendmail/pipe causes sendmail to be
+# invoked with -i.
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+
+This is a test
+.
+EOF
+
+cat > "${testname}.expected" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+Date:
+
+This is a test
+.
+EOF
+
+test_sendmail sendmail/pipe "${testname}.expected"
+
+# check Bcc
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Bcc: Silent Partner <bcc@example.com>
+Subject: Test
+
+This is a test
+.
+EOF
+
+cat > "${testname}.expected1" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+Date:
+
+This is a test
+.
+EOF
+
+cat > "${testname}.expected2" <<EOF
+Date:
+Subject: Test
+
+------- Blind-Carbon-Copy
+
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+Date:
+
+This is a test
+.
+
+------- End of Blind-Carbon-Copy
+EOF
+
+test_sendmail sendmail/pipe "${testname}.expected1" "${testname}.expected2"
+
+
+rm -f ${MHMTSCONF}
+
+exit ${failed:-0}

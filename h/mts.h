@@ -47,6 +47,7 @@ void mts_init (char *);
 #define MTS_SENDMAIL_SMTP 1
 #define MTS_SENDMAIL_PIPE 2
 extern int sm_mts;
+void save_mts_method (const char *);
 
 extern char *sendmail;
 

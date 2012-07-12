@@ -122,6 +122,8 @@ static struct swit switches[] = {
     { "tls", TLSminc(-3) },
 #define NTLSSW                47
     { "notls", TLSminc(-5) },
+#define MTSSW		      48
+    { "mts smtp|sendmail/smtp|sendmail/pipe", 2 },
     { NULL, 0 }
 };
 
@@ -301,6 +303,7 @@ main (int argc, char **argv)
 		case SASLMXSSFSW:
 		case USERSW:
 		case PORTSW:
+		case MTSSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);

@@ -58,6 +58,10 @@ local copy of
 .BR sendmail .
 It will still speak SMTP with this local copy of
 .BR sendmail .
+For backward compatibility,
+.B sendmail/smtp
+can be abbreviated to
+.BR sendmail .
 .PP
 The third alternative,
 .BR sendmail/pipe ,
