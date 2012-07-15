@@ -107,12 +107,20 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
     }
 
     if (opp == NULL) {
-	/* Check for duplicated non-null profile entries.  Also ignore
-           profile entries that are just "#", because that's what the
-           mh-profile man page suggests using for comments.  Only do
-           this check on the very first call from context_read(), when
-           opp is NULL. */
+	/* Check for duplicated non-null profile entries.  Except
+	   allow multiple profile entries named "#", because that's
+	   what the mh-profile man page suggests using for comments.
 
+	   Only do this check on the very first call from
+	   context_read(), when opp is NULL.  That way, entries in
+	   mhn.defaults can be overridden without triggering
+	   warnings.
+
+	   Note that that mhn.defaults, $MHN, $MHBUILD, $MHSHOW, and
+	   $MHSTORE all put their entries into just one list, m_defs,
+	   the same list that the profile uses. */
+
+	struct node *np;
 	for (np = m_defs; np; np = np->n_next) {
 	    /* Yes, this is O(N^2).  The profile should be small enough so
 	       that's not a performance problem. */
@@ -120,7 +128,6 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 		struct node *np2;
 		for (np2 = np->n_next; np2; np2 = np2->n_next) {
 		    if (! mh_strcasecmp (np->n_name, np2->n_name)) {
-			printf ("%d\n", strlen (np->n_name));
 			admonish (NULL, "multiple \"%s\" profile components "
 					"in %s, ignoring \"%s\"",
 				  np->n_name, defpath, np2->n_field);
