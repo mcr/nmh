@@ -53,7 +53,14 @@ run_test "$rcvdist" \
 # check with address
 # Replace post:
 cat >"$MH_TEST_DIR/Mail/notpost" <<EOF
-cp "\$2" "$actual"
+if grep '^Resent-From: ' "\$2" >/dev/null; then
+  sed 's/^Resent-From:.*/Resent-From:/' "\$2" >"$actual"
+else
+  printf 'post: message has no Resent-From: header\n'
+  printf 'post: See default components files for examples\n'
+  printf 'post: re-format message and try again\n'
+  exit 1
+fi
 EOF
 chmod u+x "$MH_TEST_DIR/Mail/notpost"
 sed 's/postproc:.*/#:/' "$MH" > "${MH}-new"
@@ -67,6 +74,7 @@ From:  Test1 <test1@example.com>
 To:  Some User <user@example.com>
 Date:  Fri, 29 Sep 2006 00:00:00
 Subject:  Testing message 1
+Resent-From:
 Resent-To:  recipient@example.com
 
 This is message number 1
@@ -82,7 +90,7 @@ To:  Some User <user@example.com>
 Date:  Fri, 29 Sep 2006 00:00:00
 Subject:  Testing message 1
 Resent-To: recipient@example.com
-Resent-From: Some User <user@example.com>
+Resent-From:
 
 This is message number 1
 EOF
