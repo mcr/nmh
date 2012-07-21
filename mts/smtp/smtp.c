@@ -529,10 +529,8 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 	    vec[vecp++] = watch ? "-odi" : queued ? "-odq" : "-odb";
 	    vec[vecp++] = "-oem";
 	    vec[vecp++] = "-om";
-# ifndef RAND
 	    if (verbose)
 		vec[vecp++] = "-ov";
-# endif /* not RAND */
 	    vec[vecp++] = NULL;
 
 	    setgid (getegid ());
