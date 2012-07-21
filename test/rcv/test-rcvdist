@@ -54,7 +54,7 @@ run_test "$rcvdist" \
 # Replace post:
 cat >"$MH_TEST_DIR/Mail/notpost" <<EOF
 if grep '^Resent-From: ' "\$2" >/dev/null; then
-  sed 's/^Resent-From:.*/Resent-From:/' "\$2" >"$actual"
+  cp "\$2" "$actual"
 else
   printf 'post: message has no Resent-From: header\n'
   printf 'post: See default components files for examples\n'
@@ -74,7 +74,7 @@ From:  Test1 <test1@example.com>
 To:  Some User <user@example.com>
 Date:  Fri, 29 Sep 2006 00:00:00
 Subject:  Testing message 1
-Resent-From:
+Resent-From:  `${MH_LIB_DIR}/ap -format '%(localmbox)' 0`
 Resent-To:  recipient@example.com
 
 This is message number 1
@@ -90,7 +90,7 @@ To:  Some User <user@example.com>
 Date:  Fri, 29 Sep 2006 00:00:00
 Subject:  Testing message 1
 Resent-To: recipient@example.com
-Resent-From:
+Resent-From: Some User <user@example.com>
 
 This is message number 1
 EOF
