@@ -272,10 +272,10 @@ Nmh-Attachment: ${arg}
     if "${post_or_send}" "${tmpfile}" ${postsendargs}; then
       exit
     else
+      status=$?
+      mv -f "${tmpfile}" dead.letter
       printf "Letter saved in dead.letter\n"
-      #### exec skips the trap set above.
-      [ "${tmpfileresent}" ]  &&  rm -f "${tmpfileresent}"
-      exec mv "${tmpfile}" dead.letter
+      exit $status
     fi
   fi
 fi
