@@ -1,7 +1,6 @@
 #!/bin/sh
 #
-# Test the sendmail/smtp and sendmail/pipe transport methods
-# via the -mts option.
+# Test post -messageid
 #
 
 set -e
@@ -11,7 +10,10 @@ if test -z "${MH_OBJ_DIR}"; then
     MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
 fi
 
-. "${srcdir}/test/post/test-post-common.sh"
+. "${MH_OBJ_DIR}/test/common.sh"
+
+setup_test
+testname="${MH_TEST_DIR}/$$"
 
 
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
@@ -37,24 +39,23 @@ This is a test
 QUIT
 EOF
 
-# check invalid -mts selection
-run_test "send -draft -mts invalid" \
-"post: unsupported mts selection \"invalid\"
+# check invalid -messageid selection
+run_test "send -draft -messageid invalid" \
+"post: unsupported messageid \"invalid\"
 send: message not delivered to anyone"
 
-test_post "${testname}.actual" "${testname}.expected" "-mts smtp"
-
-#### Rely on sendmail/smtp or sendmail/pipe below to override default mts.
+#### Rely on sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
 cp "${MHMTSCONF}" "$mts_fakesendmail"
 printf "%s\n" "sendmail: ${srcdir}/test/fakesendmail" >>"$mts_fakesendmail"
 MHMTSCONF="$mts_fakesendmail"
 
-# $1: -mts switch selection
-# remaining arguments: expected output(s)
-test_sendmail ()
+# $1: -messageid switch selection
+# arguments: expected output(s)
+test_messageid ()
 {
-  send -draft -mts "$1"
+  msgid_style="$1"
+  send -draft -mts sendmail/pipe -msgid -messageid "$msgid_style"
   shift
 
   # fakesendmail drops the message and any cc's into this mbox.
@@ -64,23 +65,51 @@ test_sendmail ()
 
   n=1
   for expected in "$@"; do
+    cur=`mhpath cur`
+    # Verify that Message-ID is of the right form.  We'll see how
+    # portable these grep regular expressions are.
+    case "$msgid_style" in
+      localname)
+        # e.g., Message-ID: <5348.1342884222@localhost.localdomain>
+        id='^Message-ID: <[0-9]\{1,\}\.[0-9]\{1,\}@'
+        ;;
+      random)
+        # e.g., Message-ID: <5364-1342884222.165897@ldYMFXwUbBqKcZwg>
+        id=\
+'^Message-ID: <[0-9]\{1,\}-[0-9]\{1,\}\.[0-9]\{6,6\}@[+/0-9A-Za-z]\{16,16\}'
+        ;;
+      *)         printf "$0: unexpected messageid: $msgid_style"; exit 1;;
+    esac
+
+    if grep "$id" "$cur" >/dev/null; then
+      :
+    else
+      mv "$cur" "${testname}.actual"
+      printf "$0: unexpected "$msgid_style" Message-ID format, \
+see ${testname}.actual\n"
+      exit 1
+    fi
+
     #
     # It's hard to calculate the exact Date: header post is going to
     # use, so we'll just use sed to remove the actual date so we can easily
-    # compare it against our "correct" output.
+    # compare it against our "correct" output.  And same for
+    # Message-ID.
     #
-    sed -e 's/^Date:.*/Date:/' "`mhpath cur`" > "${testname}.actual$n"
+    sed -e 's/^Date:.*/Date:/' \
+        -e 's/^Message-ID:.*/Message-ID:/' \
+        "$cur" > "${testname}.actual$n"
 
     check "${testname}.actual$n" "$expected"
 
-    if [ "`mhpath cur`" != "`mhpath last`" ]; then
+    if [ "$cur" != "`mhpath last`" ]; then
       folder next >/dev/null
       arith_eval $n + 1; n=$arith_val
     fi
   done
 }
 
-# check -mts sendmail/smtp
+# check -messageid localname (the default)
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
@@ -95,16 +124,15 @@ From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Test
 Date:
+Message-ID:
 
 This is a test
-..
+.
 EOF
 
-test_sendmail sendmail/smtp "${testname}.expected"
+test_messageid localname "${testname}.expected"
 
-# check -mts sendmail/pipe
-# Dots are not stuffed because sendmail/pipe causes sendmail to be
-# invoked with -i.
+# check -messageid random
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
@@ -119,52 +147,13 @@ From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Test
 Date:
+Message-ID:
 
 This is a test
 .
 EOF
 
-test_sendmail sendmail/pipe "${testname}.expected"
-
-# check Bcc
-cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
-From: Mr Nobody <nobody@example.com>
-To: Somebody Else <somebody@example.com>
-Bcc: Silent Partner <bcc@example.com>
-Subject: Test
-
-This is a test
-.
-EOF
-
-cat > "${testname}.expected1" <<EOF
-From: Mr Nobody <nobody@example.com>
-To: Somebody Else <somebody@example.com>
-Subject: Test
-Date:
-
-This is a test
-.
-EOF
-
-cat > "${testname}.expected2" <<EOF
-Date:
-Subject: Test
-
-------- Blind-Carbon-Copy
-
-From: Mr Nobody <nobody@example.com>
-To: Somebody Else <somebody@example.com>
-Subject: Test
-Date:
-
-This is a test
-.
-
-------- End of Blind-Carbon-Copy
-EOF
-
-test_sendmail sendmail/pipe "${testname}.expected1" "${testname}.expected2"
+test_messageid random "${testname}.expected"
 
 
 rm -f ${MHMTSCONF}

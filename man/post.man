@@ -16,6 +16,8 @@ post \- deliver a message
 .RB [ \-format " | " \-noformat ]
 .RB [ \-mime " | " \-nomime ]
 .RB [ \-msgid " | " \-nomsgid ]
+.RB [ \-messageid
+.IR localname " | " random ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-watch " | " \-nowatch ]
 .RB [ \-width
@@ -110,6 +112,23 @@ The
 .B \-msgid
 switch indicates that a \*(lqMessage\-ID:\*(rq or
 \*(lqResent\-Message\-ID:\*(rq field should be added to the header.
+.PP
+The
+.B \-messageid
+switch selects the style used for the part appearing after the @
+in \*(lqMessage\-ID:\*(rq, \*(lqResent\-Message\-ID:\*(rq, and
+\*(lqContent\-ID:\*(rq header fields.  The two acceptable options are
+.B localname
+(which is the default),
+and
+.BR random .
+With
+.BR localname ,
+the local hostname is used.  With
+.BR random ,
+a random sequence of characters is used instead.  Note that the
+.B \-msgid
+switch must be enabled for this switch to have any effect.
 .PP
 The
 .B \-verbose
@@ -246,6 +265,7 @@ mhmail(1), send(1), mh\-mail(5), mh\-alias(5), mh\-tailor(5),
 .RB ` \-format '
 .RB ` \-nomime '
 .RB ` \-nomsgid '
+.RB ` "\-messageid\ localname" '
 .RB ` \-noverbose '
 .RB ` \-nowatch '
 .RB ` "\-width\ 72" '

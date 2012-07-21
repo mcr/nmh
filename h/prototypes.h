@@ -82,10 +82,12 @@ char *m_maildir (char *);
 char *m_mailpath (char *);
 char *m_name (int);
 int m_putenv (char *, char *);
+int m_rand (unsigned char *, size_t);
 char *m_mktemp(const char *, int *, FILE **);
 char *m_mktemp2(const char *, const char *, int *, FILE **);
 void m_unknown(FILE *);
 int makedir (char *);
+char *message_id (time_t, int);
 char *nmh_getpass(const char *);
 char *norm_charmap(char *);
 char *new_fs (char *, char *, char *);
@@ -166,3 +168,4 @@ int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);
 int WhatNow(int, char **);
 int writeBase64aux(FILE *, FILE *);
+int writeBase64 (unsigned char *, size_t, unsigned char *);

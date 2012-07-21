@@ -16,6 +16,12 @@ NEW FEATURES
   mhbuild will honor MIME directives by default.  And added support
   for special #on/#off/#pop directives to control the MIME directive
   processing state.
+- Added -messageid switch to send(1) and post(8).  This allows
+  selection of the style to use for generated Message-ID and
+  Content-ID header fields.  The default localname style is
+  pid.time@localname, where time is in seconds, and matches previous
+  behavior.  The random style replaces the localname with some
+  (pseudo)random bytes and uses microsecond-resolution time.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

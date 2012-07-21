@@ -678,8 +678,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 	vec[vecp++] = "-queued";
 
     time (&clock);
-    snprintf (msgid, sizeof(msgid), "<%d.%ld@%s>",
-		(int) getpid(), (long) clock, LocalName(1));
+    snprintf (msgid, sizeof(msgid), "%s", message_id (clock, 0));
 
     fseek (in, start, SEEK_SET);
     for (partno = 1; partno <= nparts; partno++) {

@@ -133,6 +133,8 @@ static struct swit switches[] = {
     { "mhlproc", -3 },
 #define MTSSW			 40
     { "mts smtp|sendmail/smtp|sendmail/pipe", 2 },
+#define MESSAGEIDSW		 41
+    { "messageid localname|random", 2 },
     { NULL, 0 }
 };
 
@@ -525,6 +527,13 @@ main (int argc, char **argv)
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
                     save_mts_method (cp);
+		    continue;
+
+		case MESSAGEIDSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+                    if (save_message_id_style (cp) != 0)
+			adios (NULL, "unsupported messageid \"%s\"", cp);
 		    continue;
 	    }
 	}
@@ -970,8 +979,7 @@ finish_headers (FILE *out)
 
 	    fprintf (out, "Date: %s\n", dtime (&tclock, 0));
 	    if (msgid)
-		fprintf (out, "Message-ID: <%d.%ld@%s>\n",
-			(int) getpid (), (long) tclock, LocalName (1));
+		fprintf (out, "Message-ID: %s\n", message_id (tclock, 0));
 	    /*
 	     * If we have multiple From: addresses, make sure we have an
 	     * Sender: header.  If we don't have one, then generate one
@@ -1020,8 +1028,8 @@ finish_headers (FILE *out)
 
 	    fprintf (out, "Resent-Date: %s\n", dtime (&tclock, 0));
 	    if (msgid)
-		fprintf (out, "Resent-Message-ID: <%d.%ld@%s>\n",
-			(int) getpid (), (long) tclock, LocalName (1));
+		fprintf (out, "Resent-Message-ID: %s\n",
+			 message_id (tclock, 0));
 	    /*
 	     * If we have multiple Resent-From: addresses, make sure we have an
 	     * Resent-Sender: header.  If we don't have one, then generate one
@@ -1276,8 +1284,7 @@ make_bcc_file (int dashstuff)
 
     fprintf (out, "Date: %s\n", dtime (&tclock, 0));
     if (msgid)
-	fprintf (out, "Message-ID: <%d.%ld@%s>\n",
-		(int) getpid (), (long) tclock, LocalName (1));
+	fprintf (out, "Message-ID: %s\n", message_id (tclock, 0));
     if (subject)
 	fprintf (out, "Subject: %s", subject);
     fprintf (out, "BCC:\n");

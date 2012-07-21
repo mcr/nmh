@@ -65,7 +65,7 @@ TESTS = test/ali/test-ali \
 	test/post/test-post-basic test/post/test-post-multiple \
 	test/post/test-post-dcc test/post/test-post-fcc \
 	test/post/test-post-multifrom test/post/test-post-envelope \
-	test/post/test-post-group test/post/test-mts \
+	test/post/test-post-group test/post/test-mts test/post/test-messageid \
 	test/prompter/test-prompter \
 	test/rcv/test-rcvdist test/rcv/test-rcvpack test/rcv/test-rcvstore \
 	test/refile/test-refile \
@@ -462,15 +462,15 @@ uninstall-hook:
 ##
 ## Our rules to build our internal libraries (libmh.a, libmts.a)
 ##
-sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/brkstring.c \
-		      sbr/check_charset.c sbr/client.c sbr/closefds.c \
-		      sbr/concat.c sbr/context_del.c sbr/context_find.c \
-		      sbr/context_foil.c sbr/context_read.c \
+sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/base64.c \
+		      sbr/brkstring.c sbr/check_charset.c sbr/client.c \
+		      sbr/closefds.c sbr/concat.c sbr/context_del.c \
+		      sbr/context_find.c sbr/context_foil.c sbr/context_read.c \
 		      sbr/context_replace.c sbr/context_save.c \
 		      sbr/copy.c sbr/copyip.c sbr/cpydata.c \
 		      sbr/cpydgst.c sbr/crawl_folders.c sbr/discard.c \
 		      sbr/done.c sbr/dtime.c sbr/escape_addresses.c \
-		      sbr/error.c  sbr/ext_hook.c sbr/fdcompare.c \
+		      sbr/error.c sbr/ext_hook.c sbr/fdcompare.c \
 		      sbr/folder_addmsg.c sbr/folder_delmsgs.c \
 		      sbr/folder_free.c sbr/folder_pack.c \
 		      sbr/folder_read.c sbr/folder_realloc.c sbr/gans.c \
@@ -480,8 +480,9 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/brkstring.c \
 		      sbr/fmt_rfc2047.c sbr/fmt_scan.c sbr/lock_file.c \
 		      sbr/m_atoi.c sbr/m_backup.c sbr/m_convert.c \
 		      sbr/m_draft.c sbr/m_getfld.c sbr/m_gmprot.c \
-		      sbr/m_maildir.c sbr/m_name.c \
-		      sbr/makedir.c sbr/mts.c sbr/norm_charmap.c sbr/path.c \
+		      sbr/m_maildir.c sbr/m_name.c sbr/m_rand.c \
+		      sbr/makedir.c sbr/message_id.c sbr/mts.c \
+		      sbr/norm_charmap.c sbr/path.c \
 		      sbr/peekc.c sbr/pidwait.c sbr/pidstatus.c \
 		      sbr/print_help.c sbr/print_sw.c sbr/print_version.c \
 		      sbr/push.c sbr/putenv.c sbr/refile.c sbr/remdir.c \

@@ -1075,6 +1075,8 @@ static struct swit  sendswitches[] = {
     { "notls", TLSminc(-5) },
 #define MTSSW		  47
     { "mts smtp|sendmail/smtp|sendmail/pipe", 2 },
+#define MESSAGEIDSW	  48
+    { "messageid localname|random", 2 },
     { NULL, 0 }
 };
 
@@ -1252,6 +1254,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case USERSW:
 		case PORTSW:
 		case MTSSW:
+		case MESSAGEIDSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-') {
 			advise (NULL, "missing argument to %s", argp[-2]);

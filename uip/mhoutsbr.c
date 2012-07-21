@@ -57,9 +57,6 @@ static char ebcdicsafe[0x100] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-static char nib2b64[0x40+1] =
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
 /*
  * prototypes
  */
@@ -74,7 +71,7 @@ static void output_headers (CT, FILE *);
 static int writeExternalBody (CT, FILE *);
 static int write8Bit (CT, FILE *);
 static int writeQuoted (CT, FILE *);
-static int writeBase64 (CT, FILE *);
+static int writeBase64ct (CT, FILE *);
 
 
 /*
@@ -198,7 +195,7 @@ output_content (CT ct, FILE *out)
 
 	case CE_BASE64:
 	    putc ('\n', out);
-	    result = writeBase64 (ct, out);
+	    result = writeBase64ct (ct, out);
 	    break;
 
 	case CE_BINARY:
@@ -410,7 +407,7 @@ three_print:
  */
 
 static int
-writeBase64 (CT ct, FILE *out)
+writeBase64ct (CT ct, FILE *out)
 {
     int	fd, result;
     char *file;
@@ -423,52 +420,4 @@ writeBase64 (CT ct, FILE *out)
     result = writeBase64aux (ce->ce_fp, out);
     (*ct->c_ceclosefnx) (ct);
     return result;
-}
-
-
-int
-writeBase64aux (FILE *in, FILE *out)
-{
-    unsigned int cc, n;
-    char inbuf[3];
-
-    n = BPERLIN;
-    while ((cc = fread (inbuf, sizeof(*inbuf), sizeof(inbuf), in)) > 0) {
-	unsigned long bits;
-	char *bp;
-	char outbuf[4];
-
-	if (cc < sizeof(inbuf)) {
-	    inbuf[2] = 0;
-	    if (cc < sizeof(inbuf) - 1)
-		inbuf[1] = 0;
-	}
-	bits = (inbuf[0] & 0xff) << 16;
-	bits |= (inbuf[1] & 0xff) << 8;
-	bits |= inbuf[2] & 0xff;
-
-	for (bp = outbuf + sizeof(outbuf); bp > outbuf; bits >>= 6)
-	    *--bp = nib2b64[bits & 0x3f];
-	if (cc < sizeof(inbuf)) {
-	    outbuf[3] = '=';
-	    if (cc < sizeof inbuf - 1)
-		outbuf[2] = '=';
-	}
-
-	fwrite (outbuf, sizeof(*outbuf), sizeof(outbuf), out);
-
-	if (cc < sizeof(inbuf)) {
-	    putc ('\n', out);
-	    return OK;
-	}
-
-	if (--n <= 0) {
-	    n = BPERLIN;
-	    putc ('\n', out);
-	}
-    }
-    if (n != BPERLIN)
-	putc ('\n', out);
-
-    return OK;
 }

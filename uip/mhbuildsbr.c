@@ -895,20 +895,19 @@ use_forw:
 static void
 set_id (CT ct, int top)
 {
-    char msgid[BUFSIZ];
+    char contentid[BUFSIZ];
     static int partno;
     static time_t clock = 0;
     static char *msgfmt;
 
     if (clock == 0) {
 	time (&clock);
-	snprintf (msgid, sizeof(msgid), "<%d.%ld.%%d@%s>\n",
-		(int) getpid(), (long) clock, LocalName(1));
+	snprintf (contentid, sizeof(contentid), "%s\n", message_id (clock, 1));
 	partno = 0;
-	msgfmt = getcpy(msgid);
+	msgfmt = getcpy(contentid);
     }
-    snprintf (msgid, sizeof(msgid), msgfmt, top ? 0 : ++partno);
-    ct->c_id = getcpy (msgid);
+    snprintf (contentid, sizeof(contentid), msgfmt, top ? 0 : ++partno);
+    ct->c_id = getcpy (contentid);
 }
 
 
