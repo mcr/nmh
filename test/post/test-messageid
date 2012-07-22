@@ -74,9 +74,8 @@ test_messageid ()
         id='^Message-ID: <[0-9]\{1,\}\.[0-9]\{1,\}@'
         ;;
       random)
-        # e.g., Message-ID: <5364-1342884222.165897@ldYMFXwUbBqKcZwg>
-        id=\
-'^Message-ID: <[0-9]\{1,\}-[0-9]\{1,\}\.[0-9]\{6,6\}@[+/0-9A-Za-z]\{16,16\}'
+        # e.g., Message-ID: <5364-1342884222.165897@ldYM.FXwU.bBqK>
+        id='^Message-ID: <[0-9]\{1,\}-[0-9]\{1,\}\.[0-9]\{6,6\}@[-_0-9A-Za-z]\{4,4\}\.[-_0-9A-Za-z]\{4,4\}\.[-_0-9A-Za-z]\{4,4\}'
         ;;
       *)         printf "$0: unexpected messageid: $msgid_style"; exit 1;;
     esac

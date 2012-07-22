@@ -8,8 +8,8 @@
  */
 
 #include <h/mh.h>
-#include <unistd.h>   /* for getpid() */
-#include <sys/time.h> /* for gettimeofday() */
+#include <unistd.h>    /* for getpid() */
+#include <sys/time.h>  /* for gettimeofday() */
 #include <stdio.h>
 
 
@@ -43,14 +43,18 @@ message_id (time_t tclock, int content_id) {
     snprintf (message_id_, sizeof message_id_, format,
               (int) getpid (), (long) tclock, LocalName (1));
   } else if  (message_id_style == NMH_MESSAGE_ID_RANDOM) {
-    char *format = content_id ? "<%d-%ld.%06ld%%d@%s>" : "<%d-%ld.%06ld@%s>";
+    char *format = content_id
+      ?  "<%d-%ld.%06ld%%d@%.*s.%.*s.%.*s>"
+      :  "<%d-%ld.%06ld@%.*s.%.*s.%.*s>";
     /* Use a sequence of digits divisible by 3 because that will
        expand to base64 without any waste.  Must be shorter than 58,
        see below. */
-    unsigned char rnd[12];
+    unsigned char rnd[9];
+    /* The part after the '@' is divided into thirds.  The base64
+       encoded string will be 4/3 the size of rnd. */
+    size_t one_third = sizeof rnd * 4/3/3;
 
     if (m_rand (rnd, sizeof rnd) == 0) {
-      pid_t pid;
       struct timeval now;
       /* All we really need is 4 * [sizeof rnd/3] + 2, as long as the
          base64 encoding stays shorter than 76 bytes so embedded
@@ -70,12 +74,29 @@ message_id (time_t tclock, int content_id) {
         rnd_base64[i] = '\0';
       }
 
-      /* Neither of these can fail according to the POSIX spec. */
-      pid = getpid ();
+      {
+        char *cp = (char *) rnd_base64;
+        /* Try to make the base64 string look a little more like a
+           hostname by replacing + with - and / with _.  Also, the
+           format string inserts a couple of dots. */
+        for ( ; *cp; ++cp) {
+          char *plus, *slash;
+          if ((plus = strchr (cp, '+'))) {
+            *plus = '-';
+          } else if ((slash = strchr (cp, '/'))) {
+            *slash = '_';
+          }
+        }
+      }
+
+      /* gettimeofday() and getpid() shouldn't fail on POSIX platforms. */
       gettimeofday (&now, 0);
 
       snprintf (message_id_, sizeof message_id_, format,
-                pid, (long) now.tv_sec, (long) now.tv_usec, rnd_base64);
+                getpid (), (long) now.tv_sec, (long) now.tv_usec,
+                one_third, rnd_base64,
+                one_third, &rnd_base64[one_third],
+                one_third, &rnd_base64[2*one_third]);
     }
   } else {
     /* Should never get here. */
