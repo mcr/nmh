@@ -605,6 +605,11 @@ system_in_dir(const char *dir, const char *cmd)
 {
     char olddir[BUFSIZ];
     int r;
+
+    /* ensure that $SHELL exists, as the cmd was written relying on
+       a non-blank $SHELL... */
+    setenv("SHELL","/bin/sh",0); /* don't overwrite */
+
     if (getcwd(olddir, sizeof(olddir)) == 0)
 	adios("getcwd", "could not get working directory");
     if (chdir(dir) != 0)
@@ -621,6 +626,11 @@ popen_in_dir(const char *dir, const char *cmd, const char *type)
 {
     char olddir[BUFSIZ];
     FILE *f;
+
+    /* ensure that $SHELL exists, as the cmd was written relying on
+       a non-blank $SHELL... */
+    setenv("SHELL","/bin/sh",0); /* don't overwrite */
+    
     if (getcwd(olddir, sizeof(olddir)) == 0)
 	adios("getcwd", "could not get working directory");
     if (chdir(dir) != 0)
