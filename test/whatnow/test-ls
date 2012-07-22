@@ -61,6 +61,16 @@ EOF
 echo 'ls' | TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" | \
 	sort > "$actual"
 
+check "$expectederr" "$actualerr" 'keep first'
+check "$expected" "$actual" 'keep first'
+
+# Check with SHELL unset.  system () on Linux (glibc) seems to
+# always use /bin/sh, so this test won't reveal anything with it.
+unset SHELL
+
+echo 'ls' | TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" | \
+	sort > "$actual"
+
 check "$expectederr" "$actualerr"
 check "$expected" "$actual"
 
