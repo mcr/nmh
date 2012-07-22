@@ -50,49 +50,57 @@ run_test "$rcvdist -nonexistent" \
 run_test "$rcvdist" \
   'rcvdist: usage: rcvdist [switches] [switches for postproc] address ...'
 
-# check with address
-# Replace post:
-cat >"$MH_TEST_DIR/Mail/notpost" <<EOF
-if grep '^Resent-From: ' "\$2" >/dev/null; then
-  cp "\$2" "$actual"
-else
-  printf 'post: message has no Resent-From: header\n'
-  printf 'post: See default components files for examples\n'
-  printf 'post: re-format message and try again\n'
-  exit 1
-fi
-EOF
-chmod u+x "$MH_TEST_DIR/Mail/notpost"
-sed 's/postproc:.*/#:/' "$MH" > "${MH}-new"
-printf "postproc: $MH_TEST_DIR/Mail/notpost\n" >>"${MH}-new"
-mv -f "${MH}-new" "$MH"
+#### Use sendmail/pipe below to override default mts.
+mts_fakesendmail="${MHMTSCONF}-fakesendmail"
+sed -e 's/^mts:.*/mts: sendmail\/pipe/' "${MHMTSCONF}" > "$mts_fakesendmail"
+printf "%s\n" "sendmail: ${srcdir}/test/fakesendmail" >>"$mts_fakesendmail"
+MHMTSCONF="$mts_fakesendmail"
 
-#### An extra space gets inserted between each header field name
-#### and body.  That probably should be fixed.
+# arguments: rcvdist switches
+test_rcvdist ()
+{
+  $rcvdist "$@"
+
+  # fakesendmail drops the message and any cc's into this mbox.
+  mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox
+  inc -silent -file "$mbox"
+  rm -f "$mbox" "$mbox.map"
+
+  # It's hard to calculate the exact Date: header post is going to
+  # use, so we'll just use sed to remove the actual date so we can
+  # easily compare it against our "correct" output.
+  sed -e 's/^Resent-Date:.*/Resent-Date:/' `mhpath last` > "$actual"
+
+  check "$expected" "$actual"
+}
+
+# check with address
+
 cat > "$expected" <<EOF
-From:  Test1 <test1@example.com>
-To:  Some User <user@example.com>
-Date:  Fri, 29 Sep 2006 00:00:00
-Subject:  Testing message 1
-Resent-From:  `${MH_LIB_DIR}/ap -format '%(localmbox)' 0`
-Resent-To:  recipient@example.com
+From: Test1 <test1@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message 1
+Resent-From: `${MH_LIB_DIR}/ap -format '%(localmbox)' 0`
+Resent-To: recipient@example.com
+Resent-Date:
 
 This is message number 1
 EOF
 
-$rcvdist recipient@example.com < "$MH_TEST_DIR/Mail/inbox/1"
-check "$expected" "$actual"
+test_rcvdist recipient@example.com < "$MH_TEST_DIR/Mail/inbox/1"
 
 # check -form
 cat > "$expected" <<EOF
-From:  Test1 <test1@example.com>
-To:  Some User <user@example.com>
-Date:  Fri, 29 Sep 2006 00:00:00
-Subject:  Testing message 1
+From: Test2 <test2@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Subject: Testing message 2
 Resent-To: recipient@example.com
 Resent-From: Some User <user@example.com>
+Resent-Date:
 
-This is message number 1
+This is message number 2
 EOF
 
 cat > "$MH_TEST_DIR/Mail/rcvdistcomps" <<'EOF'
@@ -102,8 +110,8 @@ cat > "$MH_TEST_DIR/Mail/rcvdistcomps" <<'EOF'
 %<(nonnull)%(void(width))%(putaddr Resent-From:)\n%>
 EOF
 
-$rcvdist -form "$MH_TEST_DIR/Mail/rcvdistcomps" recipient@example.com < \
-  "$MH_TEST_DIR/Mail/inbox/1"
-check "$expected" "$actual"
+test_rcvdist -form "$MH_TEST_DIR/Mail/rcvdistcomps" recipient@example.com \
+  < "$MH_TEST_DIR/Mail/inbox/2"
+
 
 exit ${failed:-0}
