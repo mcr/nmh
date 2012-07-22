@@ -75,16 +75,18 @@ message_id (time_t tclock, int content_id) {
       }
 
       {
-        char *cp = (char *) rnd_base64;
+        char *cp;
         /* Try to make the base64 string look a little more like a
            hostname by replacing + with - and / with _.  Also, the
            format string inserts a couple of dots. */
-        for ( ; *cp; ++cp) {
+        for (cp = (char *) rnd_base64; *cp; ++cp) {
           char *plus, *slash;
           if ((plus = strchr (cp, '+'))) {
             *plus = '-';
           } else if ((slash = strchr (cp, '/'))) {
             *slash = '_';
+          } else {
+            break;
           }
         }
       }
