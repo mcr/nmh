@@ -64,8 +64,8 @@ echo 'ls' | TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" | \
 check "$expectederr" "$actualerr" 'keep first'
 check "$expected" "$actual" 'keep first'
 
-# Check with SHELL unset.  system () on Linux (glibc) seems to
-# always use /bin/sh, so this test won't reveal anything with it.
+# Check with SHELL unset.  This won't reveal any problems if
+# /bin/sh sets SHELL, which bash does.
 unset SHELL
 
 echo 'ls' | TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" | \
