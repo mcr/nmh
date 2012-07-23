@@ -1,4 +1,4 @@
-%<{nmh-from}%|%(void(localmbox))%>%(void(width))%(putaddr Resent-From: )
+%(void(localmbox))%(void(width))%(putaddr Resent-From: )
 %(lit)%(formataddr{addresses})\
 %<(nonnull)%(void(width))%(putaddr Resent-To: )\n%>\
 Resent-Fcc: outbox
