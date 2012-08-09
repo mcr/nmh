@@ -51,11 +51,11 @@ TESTS = test/ali/test-ali \
 	test/format/test-dp test/format/test-fmtdump \
 	test/format/test-localmbox test/format/test-myname \
 	test/format/test-myhost test/format/test-mymbox \
-	test/forw/test-forw-digest \
-	test/forw/test-forw-format \
+	test/forw/test-forw-digest test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/inc/test-inc-scanout test/install-mh/test-install-mh \
-	test/manpages/test-manpages test/mhbuild/test-forw \
+	test/manpages/test-manpages \
+	test/mhbuild/test-forw test/mhbuild/test-utf8-body \
 	test/mhlist/test-mhlist test/mhmail/test-mhmail \
 	test/mhparam/test-mhparam test/mhpath/test-mhpath \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \

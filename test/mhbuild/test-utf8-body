@@ -1,0 +1,134 @@
+#!/bin/sh
+######################################################
+#
+# Test UTF-8 body along with an attachment
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${MH_OBJ_DIR}/test/common.sh"
+
+setup_test
+testname="${MH_TEST_DIR}/$$"
+
+
+#### Rely on sendmail/pipe below to override default mts.
+mts_fakesendmail="${MHMTSCONF}-fakesendmail"
+cp "${MHMTSCONF}" "$mts_fakesendmail"
+printf "%s\n" "sendmail: ${srcdir}/test/fakesendmail" >>"$mts_fakesendmail"
+MHMTSCONF="$mts_fakesendmail"
+
+# argument: expected output
+test_attachment ()
+{
+  send -draft -mts sendmail/pipe
+
+  # fakesendmail drops the message and any cc's into this mbox.
+  mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox
+  inc -silent -file "$mbox"
+  rm -f "$mbox" "$mbox.map"
+
+  cur=`mhpath cur`
+
+  #
+  # It's hard to calculate the exact Date: header post is going to
+  # use, so we'll just use sed to remove the actual date so we can easily
+  # compare it against our "correct" output.  And same for
+  # Content-ID and charset.
+  #
+  sed -e 's/^Date:.*/Date:/' \
+      -e 's/^Content-ID:.*/Content-ID:/' \
+      -e 's/; charset=".*//' \
+      "$cur" > "${testname}.actual"
+
+  check "${testname}.actual" "$1"
+}
+
+# check that 7-bit body isn't encoded
+cat > "${MH_TEST_DIR}/attachment.txt" <<EOF
+this is an attachment
+EOF
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+Nmh-Attachment: $MH_TEST_DIR/attachment.txt
+
+This is a test.
+EOF
+
+cat > "${testname}.expected" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-ID:
+Date:
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain
+
+This is a test.
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; name="attachment.txt"
+Content-Description: attachment.txt
+Content-Disposition: attachment; filename="attachment.txt"
+
+this is an attachment
+
+------- =_aaaaaaaaaa0--
+EOF
+
+test_attachment "${testname}.expected"
+
+# check that 8-bit body is still encoded as quoted-printable
+# text/plain, even with an attachment
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+Nmh-Attachment: $MH_TEST_DIR/attachment.txt
+
+¡Ay, caramba!
+EOF
+
+cat > "${testname}.expected" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-ID:
+Date:
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+
+=A1Ay, caramba!
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; name="attachment.txt"
+Content-Description: attachment.txt
+Content-Disposition: attachment; filename="attachment.txt"
+
+this is an attachment
+
+------- =_aaaaaaaaaa0--
+EOF
+
+test_attachment "${testname}.expected"
+
+rm -f ${MHMTSCONF} "${MH_TEST_DIR}/attachment.txt"
+
+exit ${failed:-0}

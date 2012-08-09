@@ -63,7 +63,7 @@ static int sendaux (char **, int, char *, struct stat *);
 static	int	attach(char *, char *, int);
 static	void	clean_up_temporary_files(void);
 static	int	get_line(void);
-static	void	make_mime_composition_file_entry(char *, int);
+static	void	make_mime_composition_file_entry(char *, int, char *);
 
 
 /*
@@ -292,10 +292,13 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     /*
      *	Add a mhbuild MIME composition file line for the body if there was one.
+     *  Set the default content type to text/plain so that mhbuild takes care
+     *  of any necessary encoding.
      */
 
     if (has_body)
-	make_mime_composition_file_entry(body_file_name, attachformat);
+	make_mime_composition_file_entry(body_file_name, attachformat,
+					 "text/plain");
 
     /*
      *	Now, go back to the beginning of the draft file and look for header fields
@@ -314,7 +317,10 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 	    for (p = field + length + 1; *p == ' ' || *p == '\t'; p++)
 		;
 
-	    make_mime_composition_file_entry(p, attachformat);
+	    /* Don't set the default content type so take
+	       make_mime_composition_file_entry() will try to infer it
+	       from the file type. */
+	    make_mime_composition_file_entry(p, attachformat, 0);
 	}
     }
 
@@ -382,7 +388,8 @@ get_line(void)
 }
 
 static	void
-make_mime_composition_file_entry(char *file_name, int attachformat)
+make_mime_composition_file_entry(char *file_name, int attachformat,
+                                 char *default_content_type)
 {
     int			binary;			/* binary character found flag */
     int			c;			/* current character */
@@ -393,7 +400,7 @@ make_mime_composition_file_entry(char *file_name, int attachformat)
     char		*p;			/* miscellaneous string pointer */
     struct	stat	st;			/* file status buffer */
 
-    content_type = (char *)0;
+    content_type = default_content_type;
 
     /*
      *	Check the file name for a suffix.  Scan the context for that suffix on a
