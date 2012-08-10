@@ -26,12 +26,6 @@ Subject:
 EOF
 }
 
-# Munge the Content-Id from the draft after mhbuild, so we have a reliable
-# value to check.
-mungedraft() {
-    sed 's/\(Content-ID:\) <[^>][^>]*>/\1 <TESTID>/' $draft > $actual
-}
-
 draft="$MH_TEST_DIR/$$.draft"
 draftorig="$MH_TEST_DIR/,$$.draft.orig"
 expected="$MH_TEST_DIR/$$.expected"
@@ -45,7 +39,6 @@ Fcc: +outbox
 Subject:
 MIME-Version: 1.0
 Content-Type: multipart/digest; boundary="----- =_aaaaaaaaaa0"
-Content-ID: <TESTID>
 Content-Description: forwarded messages
 
 ------- =_aaaaaaaaaa0
@@ -72,9 +65,8 @@ This is message number 2
 EOF
 mkdraft
 mhbuild $draft
-mungedraft
-check $expected $actual
-test ${failed:-0} -eq 0  &&  rm "$draft" "$draftorig"
+check $expected $draft
+test ${failed:-0} -eq 0  &&  rm "$draftorig"
 
 # check mhbuild -rfc934
 cat > $expected <<EOF
@@ -84,7 +76,6 @@ Fcc: +outbox
 Subject:
 MIME-Version: 1.0
 Content-Type: multipart/digest; boundary="----- =_aaaaaaaaaa0"
-Content-ID: <TESTID>
 Content-Description: forwarded messages
 
 
@@ -110,8 +101,7 @@ This is message number 2
 EOF
 mkdraft
 mhbuild -rfc934 $draft
-mungedraft
-check $expected $actual
-test ${failed:-0} -eq 0  &&  rm "$draft" "$draftorig"
+check $expected $draft
+test ${failed:-0} -eq 0  &&  rm "$draftorig"
 
 exit $failed

@@ -163,12 +163,13 @@ setup_test ()
   cat > "$MH" <<EOF || exit 1
 Path: ${MH_TEST_DIR}/Mail
 buildmimeproc: ${MH_INST_DIR}${bindir}/mhbuild
+fileproc: ${MH_INST_DIR}${bindir}/refile
 libdir: ${MH_LIB_DIR}
+mhbuild: -nocontentid
 mhlproc: ${MH_LIB_DIR}/mhl
 moreproc: cat
-showproc: ${MH_LIB_DIR}/mhl
 postproc: ${MH_LIB_DIR}/post
-fileproc: ${MH_INST_DIR}${bindir}/refile
+showproc: ${MH_LIB_DIR}/mhl
 EOF
 
   for f in MailAliases components digestcomps distcomps forwcomps mhl.body \

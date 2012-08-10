@@ -39,11 +39,9 @@ test_attachment ()
   #
   # It's hard to calculate the exact Date: header post is going to
   # use, so we'll just use sed to remove the actual date so we can easily
-  # compare it against our "correct" output.  And same for
-  # Content-ID and charset.
+  # compare it against our "correct" output.  And same for charset.
   #
   sed -e 's/^Date:.*/Date:/' \
-      -e 's/^Content-ID:.*/Content-ID:/' \
       -e 's/; charset=".*//' \
       "$cur" > "${testname}.actual"
 
@@ -70,7 +68,6 @@ To: Somebody Else <somebody@example.com>
 Subject: Test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
-Content-ID:
 Date:
 
 ------- =_aaaaaaaaaa0
@@ -108,7 +105,6 @@ To: Somebody Else <somebody@example.com>
 Subject: Test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
-Content-ID:
 Date:
 
 ------- =_aaaaaaaaaa0

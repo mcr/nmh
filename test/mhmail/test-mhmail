@@ -57,8 +57,7 @@ test_mhmail ()
 
     sed -e 's/^Date:.*/Date:/' \
         -e 's/^Resent-Date:.*/Resent-Date:/' \
-        -e 's/^Message-ID:.*/Message-ID:/' \
-        -e 's/^Content-ID:.*/Content-ID:/' "$actual" > "$actual".nodate
+        -e 's/^Message-ID:.*/Message-ID:/' "$actual" > "$actual".nodate
     rm -f "$actual"
 
     check "$actual".nodate "$1"
@@ -795,7 +794,6 @@ To: recipient@example.com
 From: sender@example.com
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
-Content-ID:
 Date:
 Message-ID:
 
