@@ -34,16 +34,13 @@ test_attachment ()
   inc -silent -file "$mbox"
   rm -f "$mbox" "$mbox.map"
 
-  cur=`mhpath cur`
-
   #
   # It's hard to calculate the exact Date: header post is going to
   # use, so we'll just use sed to remove the actual date so we can easily
   # compare it against our "correct" output.  And same for charset.
   #
-  sed -e 's/^Date:.*/Date:/' \
-      -e 's/; charset=".*//' \
-      "$cur" > "${testname}.actual"
+  sed -e 's/^Date:.*/Date:/' -e 's/; charset=".*//' \
+      "`mhpath cur`" > "${testname}.actual"
 
   check "${testname}.actual" "$1"
 }
@@ -55,7 +52,7 @@ EOF
 
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
-To: Somebody Else <somebody@example.com>
+To: Somebody <somebody@example.com>
 Subject: Test
 Nmh-Attachment: $MH_TEST_DIR/attachment.txt
 
@@ -64,7 +61,7 @@ EOF
 
 cat > "${testname}.expected" <<EOF
 From: Mr Nobody <nobody@example.com>
-To: Somebody Else <somebody@example.com>
+To: Somebody <somebody@example.com>
 Subject: Test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
@@ -87,12 +84,12 @@ EOF
 
 test_attachment "${testname}.expected"
 
-# check that 8-bit body is still encoded as quoted-printable
-# text/plain, even with an attachment
+# check that 8-bit body is encoded as quoted-printable text/plain,
+# even with an attachment
 
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
-To: Somebody Else <somebody@example.com>
+To: Somebody <somebody@example.com>
 Subject: Test
 Nmh-Attachment: $MH_TEST_DIR/attachment.txt
 
@@ -101,7 +98,7 @@ EOF
 
 cat > "${testname}.expected" <<EOF
 From: Mr Nobody <nobody@example.com>
-To: Somebody Else <somebody@example.com>
+To: Somebody <somebody@example.com>
 Subject: Test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
