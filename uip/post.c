@@ -1279,7 +1279,6 @@ make_bcc_file (int dashstuff)
 
     tfile = m_mktemp2(NULL, "bccs", NULL, &out);
     if (tfile == NULL) adios("bcc", "unable to create temporary file");
-    chmod (bccfil, 0600);
     strncpy (bccfil, tfile, sizeof(bccfil));
 
     fprintf (out, "Date: %s\n", dtime (&tclock, 0));
