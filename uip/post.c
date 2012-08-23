@@ -262,6 +262,7 @@ static char bccfil[BUFSIZ];
 static char from[BUFSIZ];	/* my network address            */
 static char sender[BUFSIZ];	/* my Sender: header		 */
 static char efrom[BUFSIZ];	/* my Envelope-From: header	 */
+static char fullfrom[BUFSIZ];	/* full contents of From header  */
 static char signature[BUFSIZ];	/* my signature                  */
 static char *filter = NULL;	/* the filter for BCC'ing        */
 static char *subject = NULL;	/* the subject field for BCC'ing */
@@ -900,6 +901,23 @@ putfmt (char *name, char *str, FILE *out)
 		mnfree (mp);
 	}
 
+    /*
+     * If this is a From:/Resent-From: header, save the full thing for
+     * later in case we need it for use when constructing a Bcc draft message
+     */
+
+    if ((msgstate == RESENT) ? (hdr->set & MRFM) : (hdr->set & MFRM)) {
+    	strncpy(fullfrom, str, sizeof(fullfrom));
+	fullfrom[sizeof(fullfrom) - 1] = 0;
+	/*
+	 * Strip off any trailing newlines
+	 */
+
+	while (strlen(fullfrom) > 0 && fullfrom[strlen(fullfrom) - 1] == '\n') {
+	    fullfrom[strlen(fullfrom) - 1] = '\0';
+	}
+    }
+
     if (grp > 0 && (hdr->flags & HNGR)) {
 	advise (NULL, "%s: field does not allow groups", name);
 	badmsg++;
@@ -928,6 +946,7 @@ start_headers (void)
     from[0] = '\0';
     efrom[0] = '\0';
     sender[0] = '\0';
+    fullfrom[0] = '\0';
 
     if ((cp = getfullname ()) && *cp) {
 	strncpy (sigbuf, cp, sizeof(sigbuf));
@@ -1281,6 +1300,7 @@ make_bcc_file (int dashstuff)
     if (tfile == NULL) adios("bcc", "unable to create temporary file");
     strncpy (bccfil, tfile, sizeof(bccfil));
 
+    fprintf (out, "From: %s\n", fullfrom);
     fprintf (out, "Date: %s\n", dtime (&tclock, 0));
     if (msgid)
 	fprintf (out, "Message-ID: %s\n", message_id (tclock, 0));

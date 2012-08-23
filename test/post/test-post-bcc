@@ -1,0 +1,85 @@
+#!/bin/sh
+#
+# Test the behavior of post with multiple recipients and the use of Bcc:
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+#
+# Bcc test.
+#
+# It's worth pointing out here what's going on the SMTP protocol.
+#
+# If there are both sighted and unsighted addresses in the address list,
+# post calls verify_all_addresses() which results in ALL recipient
+# addresses being attempted, then the SMTP connection is reset, then
+# both the sighted and unsigned messages are sent (in different SMTP
+# transactions).  Apparantly post has always done it this way.
+#
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody One <somebody1@example.com>,
+    Somebody Two <somebody2@example.com>
+Subject: Test Bcc
+Bcc: Somebody Three <somebody3@example.com>,
+     Somebody Four <somebody4@example.com>
+
+This is test of Bcc recipients.
+EOF
+
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody@example.com>
+RCPT TO:<somebody1@example.com>
+RCPT TO:<somebody2@example.com>
+RCPT TO:<somebody3@example.com>
+RCPT TO:<somebody4@example.com>
+RSET
+MAIL FROM:<nobody@example.com>
+RCPT TO:<somebody1@example.com>
+RCPT TO:<somebody2@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+To: Somebody One <somebody1@example.com>,
+    Somebody Two <somebody2@example.com>
+Subject: Test Bcc
+Date:
+
+This is test of Bcc recipients.
+.
+RSET
+MAIL FROM:<nobody@example.com>
+RCPT TO:<somebody3@example.com>
+RCPT TO:<somebody4@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+Date:
+Subject: Test Bcc
+BCC:
+
+------- Blind-Carbon-Copy
+
+From: Mr Nobody <nobody@example.com>
+To: Somebody One <somebody1@example.com>,
+    Somebody Two <somebody2@example.com>
+Subject: Test Bcc
+Date:
+
+This is test of Bcc recipients.
+
+------- End of Blind-Carbon-Copy
+.
+QUIT
+EOF
+
+test_post "${testname}.actual" "${testname}.expected"
+
+exit ${failed:-0}

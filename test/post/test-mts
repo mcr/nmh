@@ -148,6 +148,7 @@ This is a test
 EOF
 
 cat > "${testname}.expected2" <<EOF
+From: Mr Nobody <nobody@example.com>
 Date:
 Subject: Test
 
