@@ -1,0 +1,25 @@
+#!/bin/sh
+######################################################
+#
+# Test of the -recuse option
+#
+######################################################
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+folder -create +testfolder > /dev/null
+folder -create +testfolder/folder1 > /dev/null
+folder -create +testfolder/folder2 > /dev/null
+
+run_test 'folder -recurse +testfolder' 'testfolder+         has no messages       ;        (others).
+testfolder/folder1  has no messages.
+testfolder/folder2  has no messages.'
+
+exit $failed
