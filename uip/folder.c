@@ -341,13 +341,13 @@ main (int argc, char **argv)
     /*
      * Scan the folders
      */
+    /* change directory to base of nmh directory for crawl_folders */
+    if (chdir (nmhdir) == NOTOK)
+	adios (nmhdir, "unable to change directory to");
     if (all || ftotal > 0) {
 	/*
 	 * If no folder is given, do them all
 	 */
-	/* change directory to base of nmh directory for crawl_folders */
-	if (chdir (nmhdir) == NOTOK)
-	    adios (nmhdir, "unable to change directory to");
 	if (!argfolder) {
 	    if (msg)
 		admonish (NULL, "no folder given for message %s", msg);
