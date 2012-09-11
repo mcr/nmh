@@ -2,7 +2,11 @@ Jon Steinhart's (jon@fourwinds.com) Attachment Handling Mods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A bunch of changes have been made to improve the nmh user interface for
-handling MIME attachments.
+handling MIME attachments.  This document provides the background and
+implementation details of this so-called attach feature.
+
+The user documentation for the attach feature is in the nmh send(1)
+and whatnow(1) man pages.  
 
 Why Did I Do This?
 ~~~~~~~~~~~~~~~~~~
@@ -21,23 +25,31 @@ automatically created when drafts with attachments are sent.
 The Simple Setup
 ~~~~~~~~~~~~~~~~
 
-The gory details are all given below.  Here's how to set things up simply.  This
-only works if you're using the "standard" interface, i.e., whatnow.  Life is more
-complicated if you run mh-e.
+Starting with nmh version 1.5, no setup is necessary.
+
+======================================================================
+Through nmh 1.4, and optionally with nmh 1.5 and beyond, here's how to
+set things up.
+
+This only works if you're using the "standard" interface, i.e.,
+whatnow.  Life is more complicated if you run mh-e.
 
 Add the following to your .mh_profile:
 
-	send: -attach X-MH-Attachment
-	whatnow: -attach X-MH-Attachment
+	send: -attach Nmh-Attachment
+	whatnow: -attach Nmh-Attachment
 
-You may already have send and whatnow lines in your .mh_profile; if you do, just add
-the new stuff to the end of the line.  For example, mine looks like:
+You may already have send and whatnow lines in your .mh_profile; if
+you do, just add the new stuff to the end of the line.  For example,
+mine looks like:
 
-	send: -alias aliases -attach X-MH-Attachment
-	whatnow: -attach X-MH-Attachment
+	send: -alias aliases -attach Nmh-Attachment
+	whatnow: -attach Nmh-Attachment
 
-That's it.  Next time you want to send an attachment, say "attach filename" at the
-whatnow prompt and you're done.  You can check your attachments by saying "alist".
+That's it.  Next time you want to send an attachment, say "attach
+filename" at the whatnow prompt and you're done.  You can check your
+attachments by saying "alist".
+======================================================================
 
 Did I Do This Correctly?
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,7 +62,8 @@ I am aware of two deviations from what I saw in the nmh code.
  1.  I commented my changes.
 
  2.  It's been years since I've used a VT-100, so I don't try to make code
-     fit into 80 columns anymore.  Seems silly to me.
+     fit into 80 columns anymore.  Seems silly to me.  (Some of us might
+     disagree. :-)
 
 What Did I Do?
 ~~~~~~~~~~~~~~
@@ -77,15 +90,18 @@ draft that looks like this
 
 	To: jon
 	Subject: test of attachments
-	X-MH-Attachment: /export/home/jon/foo
-	X-MH-Attachment: /export/home/jon/bar
-	X-MH-Attachment: /export/home/jon/test/foo
+	Nmh-Attachment: /export/home/jon/foo
+	Nmh-Attachment: /export/home/jon/bar
+	Nmh-Attachment: /export/home/jon/test/foo
 	--------
 
 has the files "foo", "bar", and foo as attachments.
 
-Although I use the header field name "X-MH-Attachment" to indicate
+Although I use the header field name "Nmh-Attachment" to indicate
 attachments, the implementation allows any header field name.
+(Originally, Jon used X-MH-Attachment.  We have globally changed that
+to Nmh-Attachment to prevent contributing to the X- header field
+namespace.)
 
 The advantage of using header fields is that the list of attachments
 travels with the draft so it remains valid across editing sessions.
@@ -113,34 +129,35 @@ generalize anno:
 Using the modified anno, the example above could be created (assuming that the
 draft exists) by
 
-	prompt% anno -draft -comp X-MH-Attachment -text /export/home/jon/foo -nodate -append
-	prompt% anno -draft -comp X-MH-Attachment -text /export/home/jon/bar -nodate -append
-	prompt% anno -draft -comp X-MH-Attachment -text /export/home/jon/test/foo -nodate -append
+	prompt% anno -draft -comp Nmh-Attachment -text /export/home/jon/foo -nodate -append
+	prompt% anno -draft -comp Nmh-Attachment -text /export/home/jon/bar -nodate -append
+	prompt% anno -draft -comp Nmh-Attachment -text /export/home/jon/test/foo -nodate -append
 
-One can quite easily make an "attach" command using shell scripts, aliases or functions.
-For example, here's a bash function that does the job:
+One can quite easily make an "attach" command using shell scripts,
+aliases or functions.  For example, here's a bash function that does
+the job:
 
-	function attach() { for i in $*; do anno -append -nodate -draft -comp X-MH-Attachment -text "$i"; done; }
+	function attach() { for i in $*; do anno -append -nodate -draft -comp Nmh-Attachment -text "$i"; done; }
 
 The following examples show the different ways in which attachments can be
 listed.
 
-	prompt% anno -list -draft -comp X-MH-Attachment
+	prompt% anno -list -draft -comp Nmh-Attachment
 	foo
 	bar
 	foo
 
-	prompt% anno -list -draft -comp X-MH-Attachment -text /
+	prompt% anno -list -draft -comp Nmh-Attachment -text /
 	/export/home/jon/foo
-	/export/home/jon/bar
+v	/export/home/jon/bar
 	/export/home/jon/test/foo
 
-	prompt% anno -list -draft -comp X-MH-Attachment -number
+	prompt% anno -list -draft -comp Nmh-Attachment -number
 	1	foo
 	2	bar
 	3	foo
 
-	prompt% anno -list -draft -comp X-MH-Attachment -text / -number
+	prompt% anno -list -draft -comp Nmh-Attachment -text / -number
 	1	/export/home/jon/foo
 	2	/export/home/jon/bar
 	3	/export/home/jon/test/foo
@@ -162,16 +179,16 @@ the same file name in different directories, as in the above example.
 
 Attachments are deleted using the -delete option.
 
-	prompt% anno -delete -draft -comp X-MH-Attachment -text foo
+	prompt% anno -delete -draft -comp Nmh-Attachment -text foo
 
-deletes the first attachment since the foo matches the basename of the attachment
-name.
+deletes the first attachment since the foo matches the basename of the
+attachment name.
 
-	prompt% anno -delete -draft -comp X-MH-Attachment -text /export/home/jon/test/foo
+	prompt% anno -delete -draft -comp Nmh-Attachment -text /export/home/jon/test/foo
 
 deletes the third attachment since the text is a full path name and matches.
 
-	prompt% anno -delete -draft -comp X-MH-Attachment -number 2
+	prompt% anno -delete -draft -comp Nmh-Attachment -number 2
 
 deletes the second attachment.
 
@@ -235,35 +252,38 @@ follows:
     running the file command on the attachment file.  The filename is the
     field body from the attachment header field.
 
-I added an -attach option to whatnow that specifies the header field name for
-attachments.
+I added an -attach option to whatnow that specifies the header field
+name for attachments.
 
-I added to the commands available at the whatnow prompt to provide an interface
-to the attachment mechanism.
+I added to the commands available at the whatnow prompt to provide an
+interface to the attachment mechanism.
 
-I'm not completely happy with some of these additions because they duplicate
-shell functionality.  I'm not sure that there's a good way around it other than
-to not use whatnow.
+I'm not completely happy with some of these additions because they
+duplicate shell functionality.  I'm not sure that there's a good way
+around it other than to not use whatnow.
 
-The first three additions (the ones I'm not happy with) are cd, ls, and pwd.
-These do the same thing as their system counterparts.  As a matter of fact,
-these are implemented by running the commands in a subshell.  I did this because
-I wanted proper interpretation of shell-specific things like ~ and wildcard
-expansion.
+The first three additions (the ones I'm not happy with) are cd, ls,
+and pwd.  These do the same thing as their system counterparts.  As a
+matter of fact, these are implemented by running the commands in a
+subshell.  I did this because I wanted proper interpretation of
+shell-specific things like ~ and wildcard expansion.
 
-The next command is attach.  This takes a list of files and adds them to the draft
-as attachments using the same code as the modified anno.  The list of files is
-run through ls using the user's shell, so wildcard expansion and all that works.
+The next command is attach.  This takes a list of files and adds them
+to the draft as attachments using the same code as the modified anno.
+The list of files is run through ls using the user's shell, so
+wildcard expansion and all that works.
 
-The alist command lists the attachments on the current draft using listing function
-that I added to anno.  It takes two optional options, -l for a long listing meaning
-full path names, and -n for a numbered listing.
+The alist command lists the attachments on the current draft using
+listing function that I added to anno.  It takes two optional options,
+-l for a long listing meaning full path names, and -n for a numbered
+listing.
 
-The detach command removes attachments from the current draft, again using the
-modified anno.  The arguments are interpreted as numbers if the -n option is used,
-otherwise they're interpreted as file names.  File names are shoveled through ls
-using the user's shell in the directory containing the file for wildcard expansion
-and such.  File names are matched against the last pathname component unless they
+The detach command removes attachments from the current draft, again
+using the modified anno.  The arguments are interpreted as numbers if
+the -n option is used, otherwise they're interpreted as file names.
+File names are shoveled through ls using the user's shell in the
+directory containing the file for wildcard expansion and such.  File
+names are matched against the last pathname component unless they
 begin with a / in which case they're matched against the entire name.
 
 What's Left To Do?
