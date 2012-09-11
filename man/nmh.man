@@ -121,7 +121,14 @@ it.
 .PP
 .B comp
 allows you to compose a message by putting you in the editor
-on a prototype message form, and then lets you send it.
+on a prototype message form, and then lets you send it via the
+.B whatnow
+command.
+.B whatnow
+also supports easy\-to\-use management of MIME attachments via
+its
+.B attach
+and related responses, as described in its man page.
 .PP
 All the
 .B nmh
@@ -194,7 +201,7 @@ commands:
 ^ali(1)~^\- list mail aliases
 ^anno(1)~^\- annotate messages
 ^burst(1)~^\- explode digests into messages
-^comp(1)~^\- compose a message 
+^comp(1)~^\- compose a message
 ^dist(1)~^\- redistribute a message to additional addresses
 ^flist(1)~^\- list folders with messages in given sequence(s)
 ^flists(1)~^\- list all folders with messages in given sequence(s)

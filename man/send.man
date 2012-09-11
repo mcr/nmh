@@ -50,7 +50,7 @@ send \- send a message
 .RB [ \-width
 .IR columns ]
 .RB [ file
-\&...] 
+\&...]
 .RB [ \-version ]
 .RB [ \-help ]
 .RB [ \-attach
@@ -91,7 +91,10 @@ can be changed with the
 .B \-attach
 option.  This behavior can be disabled completely with the
 .B \-noattach
-option.
+option.  The
+.B whatnow
+man page describes the user interface for managing MIME attachments via
+this mechanism.
 .PP
 The first part of the MIME message is the draft body if that body contains
 any non-blank characters.
@@ -149,7 +152,7 @@ values:
 -attachformat 0:
 Content-Type: text/plain; name="VERSION"; x-unix-mode="0644";
 	charset="us-ascii"
-Content-Description: ASCII text 
+Content-Description: ASCII text
 
 -attachformat 1:
 Content-Type: text/plain; name="VERSION"; charset="us-ascii"
@@ -401,7 +404,7 @@ and the the
 switch can be used to select a authorization userid
 to provide to SASL other than the default.
 .PP
-If SASL authentication is successful, 
+If SASL authentication is successful,
 .BR nmh
 will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(encrypted)' and `(decrypted)' when
@@ -458,7 +461,8 @@ for more information.
 .fi
 
 .SH "SEE ALSO"
-comp(1), dist(1), forw(1), repl(1), mh\-alias(5), mh\-tailor(5), post(8)
+comp(1), dist(1), forw(1), repl(1), mh\-alias(5), mh\-tailor(5), post(8),
+whatnow(1)
 
 .SH DEFAULTS
 .nf
