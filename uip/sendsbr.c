@@ -209,19 +209,27 @@ attach(char *attachment_header_field_name, char *draft_file_name,
     field = (char *)mh_xmalloc(field_size = 256);
 
     /*
-     *	Scan the draft file for a header field name that matches the -attach
-     *	argument.  The existence of one indicates that the draft has attachments.
-     *	Bail out if there are no attachments because we're done.  Read to the
-     *	end of the headers even if we have no attachments.
+     *	Scan the draft file for a header field name, with a non-empty
+     *	body, that matches the -attach argument.  The existence of one
+     *	indicates that the draft has attachments.  Bail out if there
+     *	are no attachments because we're done.  Read to the end of the
+     *	headers even if we have no attachments.
      */
 
     length = strlen(attachment_header_field_name);
 
     has_attachment = 0;
 
-    while (get_line() != EOF && *field != '\0' && *field != '-')
-	if (strncasecmp(field, attachment_header_field_name, length) == 0 && field[length] == ':')
-	    has_attachment = 1;
+    while (get_line() != EOF && *field != '\0' && *field != '-') {
+	if (strncasecmp(field, attachment_header_field_name, length) == 0 &&
+	    field[length] == ':') {
+	    for (p = field + length + 1; *p == ' ' || *p == '\t'; p++)
+		;
+	    if (strlen (p) > 0) {
+		has_attachment = 1;
+	    }
+	}
+    }
 
     if (has_attachment == 0)
 	return (DONE);
@@ -267,14 +275,16 @@ attach(char *attachment_header_field_name, char *draft_file_name,
     }
 
     /*
-     *	Start at the beginning of the draft file.  Copy all non-attachment header fields
-     *	to the temporary composition file.  Then add the dashed line separator.
+     *	Start at the beginning of the draft file.  Copy all
+     *	non-attachment header fields to the temporary composition
+     *	file.  Then add the dashed line separator.
      */
 
     rewind(draft_file);
 
     while (get_line() != EOF && *field != '\0' && *field != '-')
-	if (strncasecmp(field, attachment_header_field_name, length) != 0 || field[length] != ':')
+	if (strncasecmp(field, attachment_header_field_name, length) != 0 ||
+            field[length] != ':')
 	    (void)fprintf(composition_file, "%s\n", field);
 
     (void)fputs("--------\n", composition_file);
@@ -301,8 +311,9 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 					 "text/plain");
 
     /*
-     *	Now, go back to the beginning of the draft file and look for header fields
-     *	that specify attachments.  Add a mhbuild MIME composition file for each.
+     *	Now, go back to the beginning of the draft file and look for
+     *	header fields that specify attachments.  Add a mhbuild MIME
+     *	composition file for each.
      */
 
     if ((fp = fopen (p = etcpath ("mhn.defaults"), "r"))) {
@@ -313,22 +324,36 @@ attach(char *attachment_header_field_name, char *draft_file_name,
     rewind(draft_file);
 
     while (get_line() != EOF && *field != '\0' && *field != '-') {
-	if (strncasecmp(field, attachment_header_field_name, length) == 0 && field[length] == ':') {
+	if (strncasecmp(field, attachment_header_field_name, length) == 0 &&
+            field[length] == ':') {
 	    for (p = field + length + 1; *p == ' ' || *p == '\t'; p++)
 		;
 
-	    /* Don't set the default content type so take
-	       make_mime_composition_file_entry() will try to infer it
-	       from the file type. */
-	    make_mime_composition_file_entry(p, attachformat, 0);
+	    /* Skip empty attachment_header_field_name lines. */
+	    if (strlen (p) > 0) {
+		struct stat st;
+		if (stat (p, &st) == OK) {
+		    if (S_ISREG (st.st_mode)) {
+		      /* Don't set the default content type so take
+			 make_mime_composition_file_entry() will try
+			 to infer it from the file type. */
+			make_mime_composition_file_entry(p, attachformat, 0);
+		    } else {
+			adios (NULL, "unable to attach %s, not a plain file",
+			       p);
+		    }
+		} else {
+		  adios (NULL, "unable to access file \"%s\"", p);
+		}
+	    }
 	}
     }
 
     (void)fclose(composition_file);
 
     /*
-     *	We're ready to roll!  Run mhbuild on the composition file.  Note that mhbuild
-     *	is in the context as buildmimeproc.
+     *	We're ready to roll!  Run mhbuild on the composition file.
+     *	Note that mhbuild is in the context as buildmimeproc.
      */
 
     (void)sprintf(buf, "%s %s", buildmimeproc, composition_file_name);
