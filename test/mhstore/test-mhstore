@@ -239,6 +239,45 @@ EOF
 run_test 'mhstore last' 'storing message 15 as file 15.txt'
 check $expected 15.txt
 
+# check -clobber always
+folder +inbox 7 > /dev/null
+touch 7.txt
+cat > $expected <<EOF
+This is message number 7
+EOF
+run_test 'mhstore' 'storing message 7 as file 7.txt'
+check $expected 7.txt 'keep first'
+run_test 'mhstore -clobber always' 'storing message 7 as file 7.txt'
+check $expected 7.txt 'keep first'
+
+# check -clobber auto
+touch 7.txt
+run_test 'mhstore -clobber auto' 'storing message 7 as file 7-1.txt'
+check $expected 7-1.txt 'keep first'
+touch 7-1.txt
+run_test 'mhstore -clobber auto' 'storing message 7 as file 7-2.txt'
+check $expected 7-2.txt 'keep first'
+
+# check -clobber suffix
+run_test 'mhstore -clobber suffix' 'storing message 7 as file 7.txt.1'
+check $expected 7.txt.1 'keep first'
+touch 7.txt.1
+run_test 'mhstore -clobber suffix' 'storing message 7 as file 7.txt.2'
+check $expected 7.txt.2 'keep first'
+
+# Don't check -clobber ask because it requires connection to a
+# terminal, and this test won't always be run with one.
+
+# check -clobber never.  Its exit status is the number of files not overwritten.
+run_test 'mhstore -clobber never' \
+         "mhstore: will not overwrite `pwd`/7.txt with -clobber never"
+set +e
+mhstore -clobber never >/dev/null 2>&1
+run_test "echo $?" 1
+set -e
+
+/bin/rm -f 7.txt 7-1.txt 7.txt.1
+
 # check with relative nmh-storage profile component
 storagedir=storagedir
 dir="$MH_TEST_DIR/Mail/inbox/$storagedir"

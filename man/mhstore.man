@@ -19,6 +19,8 @@ mhstore \- store contents of MIME messages into files
 .IR content ]
 \&...
 .RB [ \-auto " | " \-noauto ]
+.RB [ \-clobber
+.IR always " | " auto " | " suffix " | " ask " | " never ]
 .RB [ \-rcache
 .IR policy ]
 .RB [ \-wcache
@@ -268,6 +270,73 @@ mhstore-store-application/PostScript: %m%P.ps
 .fi
 .RE
 .PP
+.SS "Overwriting Existing Files"
+The
+.B \-clobber
+switch controls whether
+.B mhstore
+should overwrite existing files.  The allowed values for this switch
+and corresponding behavior when
+.B mhstore
+encounters an existing file are:
+.PP
+.RS 5
+.nf
+.ta \w'suffix  'u
+always    Overwrite existing file (default)
+auto      Create new file of form name-n.extension
+suffix    Create new file of form name.extension.n
+ask       Prompt the user to specify whether or not to overwrite
+          the existing file
+never     Do not overwrite existing file
+.fi
+.RE
+.PP
+With
+.I auto
+and
+.IR suffix ,
+.I n
+is one beyond the existing file with the highest number in the same
+form.
+If a filename does not have an extension (following a '.'), then
+.I auto
+and
+.I suffix
+create a new file of the form
+.I name-n
+and
+.IR name.n ,
+respectively.  With
+.I never
+and
+.IR ask ,
+the exit status of
+.B mhstore
+will be the number of files that were requested but not stored.
+.PP
+With
+.IR ask ,
+if standard input is connected to a terminal,
+the user is prompted to respond
+.IR yes ,
+.IR no ,
+or
+.I rename
+to whether the file should be overwritten.  The responses
+can be abbreviated.  If the user responds with
+.IR rename ,
+then
+.B mhstore
+prompts the user for the name of the new file to be created.  If it is
+a relative path name (does not begin with '/'), then it is relative to
+the current directory.  If it is an absolute or relative path to a
+directory that does not exist, the user will be prompted whether to
+create the directory.  If standard input is not connected to a
+terminal,
+.I ask
+behaves the same as
+.IR always .
 .SS "Reassembling Messages of Type message/partial"
 .B mhstore
 is also able to reassemble messages that have been
@@ -462,6 +531,7 @@ mhbuild(1), mhlist(1), mhshow(1), sendfiles(1)
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
 .RB ` \-noauto '
+.RB ` \-clobber\ always '
 .RB ` \-nocheck '
 .RB ` \-rcache\ ask '
 .RB ` \-wcache\ ask '

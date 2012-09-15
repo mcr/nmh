@@ -22,6 +22,8 @@ NEW FEATURES
   pid.time@localname, where time is in seconds, and matches previous
   behavior.  The random style replaces the localname with some
   (pseudo)random bytes and uses microsecond-resolution time.
+- Added -clobber switch to mhstore(1) to control overwriting of
+  existing files.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES
