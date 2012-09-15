@@ -336,7 +336,7 @@ WhatNow (int argc, char **argv)
 	     */
 
 	    if (*(argp+1) == (char *)0) {
-		(void)sprintf(buf, "$SHELL -c \"cd;pwd\"");
+		(void)sprintf(buf, "$SHELL -c \"cd&&pwd\"");
 	    }
 	    else {
 		writesomecmd(buf, BUFSIZ, "cd", "pwd", argp);
@@ -561,9 +561,9 @@ writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
      * new C99 mandated 'number of chars that would have been written'
      */
     /* length checks here and inside the loop allow for the
-     * trailing ';', trailcmd, '"' and NUL
+     * trailing "&&", trailcmd, '"' and NUL
      */
-    int trailln = strlen(trailcmd) + 3;
+    int trailln = strlen(trailcmd) + 4;
     if (ln < 0 || ln + trailln > bufsz)
 	adios((char *)0, "arguments too long");
     
@@ -579,9 +579,9 @@ writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
 	cp += ln;
     }
     if (*trailcmd) {
-	*cp++ = ';';
+	*cp++ = '&'; *cp++ = '&';
 	strcpy(cp, trailcmd);
-	cp += trailln - 3;
+	cp += trailln - 4;
     }
     *cp++ = '"';
     *cp = 0;
