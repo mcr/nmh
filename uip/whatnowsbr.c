@@ -97,7 +97,7 @@ static struct swit aleqs[] = {
 #define	PWDCMDSW		      11
     { "pwd", 0 },
 #define	LSCMDSW			      12
-    { "ls", 0 },
+    { "ls", 2 },
 #define	ATTACHCMDSW		      13
     { "attach", 0 },
 #define	DETACHCMDSW		      14
