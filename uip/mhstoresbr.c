@@ -1129,7 +1129,7 @@ next_version (char *file, enum clobber_policy_t clobber_policy) {
   }
 
   for (version = 1; version < max_versions; ++version) {
-    struct stat st;
+    int fd;
 
     switch (clobber_policy) {
       case NMH_CLOBBER_AUTO: {
@@ -1151,7 +1151,15 @@ next_version (char *file, enum clobber_policy_t clobber_policy) {
         return NULL;
     }
 
-    if (stat (buffer, &st) == NOTOK) {
+    /* Actually (try to) create the file here to avoid a race
+       condition on file naming + creation.  This won't solve the
+       problem with old NFS that doesn't support O_EXCL, though.
+       Let the umask strip off permissions from 0666 as desired.
+       That's what fopen () would do if it was creating the file. */
+    if ((fd = open (buffer, O_CREAT | O_EXCL,
+                    S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |
+                    S_IROTH | S_IWOTH)) >= 0) {
+      close (fd);
       break;
     }
   }
