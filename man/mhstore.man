@@ -297,9 +297,8 @@ With
 and
 .IR suffix ,
 .I n
-is one beyond the existing file with the highest unused number,
-starting from one, in the same form.  If a filename does not have an
-extension (following a '.'), then
+is the lowest unused number, starting from one, in the same form.  If
+a filename does not have an extension (following a '.'), then
 .I auto
 and
 .I suffix
