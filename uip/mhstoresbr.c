@@ -177,7 +177,7 @@ store_switch (CT ct)
 
 /*
  * Generic routine to store a MIME content.
- * (audio, video, image, text, message/rfc922)
+ * (audio, video, image, text, message/rfc822)
  */
 
 static int
