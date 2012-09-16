@@ -33,7 +33,7 @@ test_post ()
     # retry a few times if it fails...
     status=1
     for i in 0 1 2 3 4 5 6 7 8 9; do
-        if send -draft -server 127.0.0.1 -port $localport $3 >/dev/null 2>&1
+        if send -draft -server 127.0.0.1 -port $localport $3
         then
             status=0
             break

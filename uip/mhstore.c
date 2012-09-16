@@ -47,15 +47,20 @@ static struct swit switches[] = {
     { "version", 0 },
 #define	HELPSW                 12
     { "help", 0 },
+#define	CLOBBERSW              13
+    { "clobber always|auto|suffix|ask|never", 0 },
 
 /*
  * switches for debugging
  */
-#define	DEBUGSW                13
+#define	DEBUGSW                14
     { "debug", -5 },
     { NULL, 0 }
 };
 
+
+int save_clobber_policy (const char *);
+extern int files_not_clobbered;
 
 /* mhparse.c */
 extern char *tmp;	/* directory to place temp files */
@@ -212,6 +217,14 @@ do_cache:
 		continue;
 	    case NVERBSW: 
 		verbosw = 0;
+		continue;
+            case CLOBBERSW:
+		if (!(cp = *argp++) || *cp == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+                if (save_clobber_policy (cp)) {
+                  adios (NULL, "invalid argument, %s, to %s", argp[-1],
+                         argp[-2]);
+                }
 		continue;
 	    case DEBUGSW:
 		debugsw = 1;
@@ -375,7 +388,7 @@ do_cache:
 	context_save ();		  /* save the context file  */
     }
 
-    done (0);
+    done (files_not_clobbered);
     return 1;
 }
 

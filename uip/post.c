@@ -709,7 +709,21 @@ putfmt (char *name, char *str, FILE *out)
     }
 
     if ((i = get_header (name, hdrtab)) == NOTOK) {
-	fprintf (out, "%s: %s", name, str);
+	if (strncasecmp (name, "nmh-", 4)) {
+	    fprintf (out, "%s: %s", name, str);
+	} else {
+	    /* Filter out all Nmh-* headers, because Norm asked.  They
+	       should never have reached this point.  Warn about any
+	       that are non-empty. */
+	    if (strcmp (str, "\n")) {
+		char *newline = strchr (str, '\n');
+		if (newline) *newline = '\0';
+		if (! whomsw) {
+		    advise (NULL, "ignoring header line -- %s: %s", name, str);
+		}
+	    }
+	}
+
 	return;
     }
 

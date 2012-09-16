@@ -6,7 +6,19 @@ This file is intended to provide a few tips for anyone doing development on nmh.
 Developers who learn things "the hard way" about the nmh codebase (as opposed to
 local info best encoded in a comment) are encouraged to share their wisdom here.
 
-The topics are organized alphabetically.
+Following a commit checklist, the topics are organized alphabetically.
+
+----------------
+commit checklist
+----------------
+
+1. code updated?
+2. test added?
+3. man page and other documentation updated?
+4. docs/pending-release-notes updated?
+5. should commit message reference bug report?
+6. update/close bug report (with commit id)?
+7. notify nmh-users?
 
 
 -------------------------

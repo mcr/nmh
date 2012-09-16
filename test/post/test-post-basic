@@ -56,9 +56,50 @@ This is a blank test
 EOF
 
 run_test "send -draft -server 127.0.0.1 -port $localport" \
-	"post: message has no From: header
+         "post: message has no From: header
 post: See default components files for examples
 post: re-format message and try again
 send: message not delivered to anyone"
+
+#
+# Make sure that empty Nmh-* header lines are ignored, and that post
+# warns about non-empty ones.
+#
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Nmh-Attachment:
+Nmh-Unused: suppress this line
+Subject: Test
+
+This is a test
+.
+EOF
+
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+Date:
+
+This is a test
+..
+.
+QUIT
+EOF
+
+cat > "${testname}.expected_send_output" <<EOF
+post: ignoring header line -- Nmh-Unused: suppress this line
+EOF
+
+test_post "${testname}.actual" "${testname}.expected" \
+          >${testname}.send_output 2>&1
+
+check "${testname}.send_output" "${testname}.expected_send_output"
+
 
 exit ${failed:-0}

@@ -75,7 +75,7 @@ static int output_content_folder (char *, char *);
 static int parse_format_string (CT, char *, char *, int, char *);
 static void get_storeproc (CT);
 static int copy_some_headers (FILE *, CT);
-
+static char *clobber_check (char *);
 
 /*
  * Main entry point to store content
@@ -589,7 +589,9 @@ store_content (CT ct, CT p)
 	return show_content_aux (ct, 1, 0, buffer + 1, dir);
 
     /* record the filename */
-    ct->c_storage = add (buffer, NULL);
+    if ((ct->c_storage = clobber_check (add (buffer, NULL))) == NULL) {
+      return NOTOK;
+    }
 
 got_filename:
     /* flush the output stream */
@@ -1076,3 +1078,230 @@ copy_some_headers (FILE *out, CT ct)
 
     return OK;
 }
+
+/******************************************************************************/
+/* -clobber support */
+
+enum clobber_policy_t {
+  NMH_CLOBBER_ALWAYS,
+  NMH_CLOBBER_AUTO,
+  NMH_CLOBBER_SUFFIX,
+  NMH_CLOBBER_ASK,
+  NMH_CLOBBER_NEVER
+};
+
+static enum clobber_policy_t clobber_policy = NMH_CLOBBER_ALWAYS;
+
+int files_not_clobbered = 0;
+
+int
+save_clobber_policy (const char *value) {
+  if (! mh_strcasecmp (value, "always")) {
+    clobber_policy = NMH_CLOBBER_ALWAYS;
+  } else if (! mh_strcasecmp (value, "auto")) {
+    clobber_policy = NMH_CLOBBER_AUTO;
+  } else if (! mh_strcasecmp (value, "suffix")) {
+    clobber_policy = NMH_CLOBBER_SUFFIX;
+  } else if (! mh_strcasecmp (value, "ask")) {
+    clobber_policy = NMH_CLOBBER_ASK;
+  } else if (! mh_strcasecmp (value, "never")) {
+    clobber_policy = NMH_CLOBBER_NEVER;
+  } else {
+    return 1;
+  }
+
+  return 0;
+}
+
+
+static char *
+next_version (char *file, enum clobber_policy_t clobber_policy) {
+  const size_t max_versions = 1000000;
+  /* 8 = log max_versions  +  one for - or .  +  one for null terminator */
+  const size_t buflen = strlen (file) + 8;
+  char *buffer = mh_xmalloc (buflen);
+  size_t version;
+
+  char *extension = NULL;
+  if (clobber_policy == NMH_CLOBBER_AUTO  &&
+      ((extension = strrchr (file, '.')) != NULL)) {
+    *extension++ = '\0';
+  }
+
+  for (version = 1; version < max_versions; ++version) {
+    int fd;
+
+    switch (clobber_policy) {
+      case NMH_CLOBBER_AUTO: {
+        snprintf (buffer, buflen, "%s-%ld%s%s", file, (long) version,
+                  extension == NULL  ?  ""  :  ".",
+                  extension == NULL  ?  ""  :  extension);
+        break;
+      }
+
+      case NMH_CLOBBER_SUFFIX:
+        snprintf (buffer, buflen, "%s.%ld", file, (long) version);
+        break;
+
+      default:
+        /* Should never get here. */
+        advise (NULL, "will not overwrite %s, invalid clobber policy", buffer);
+        free (buffer);
+        ++files_not_clobbered;
+        return NULL;
+    }
+
+    /* Actually (try to) create the file here to avoid a race
+       condition on file naming + creation.  This won't solve the
+       problem with old NFS that doesn't support O_EXCL, though.
+       Let the umask strip off permissions from 0666 as desired.
+       That's what fopen () would do if it was creating the file. */
+    if ((fd = open (buffer, O_CREAT | O_EXCL,
+                    S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |
+                    S_IROTH | S_IWOTH)) >= 0) {
+      close (fd);
+      break;
+    }
+  }
+
+  free (file);
+
+  if (version >= max_versions) {
+    advise (NULL, "will not overwrite %s, too many versions", buffer);
+    free (buffer);
+    buffer = NULL;
+    ++files_not_clobbered;
+  }
+
+  return buffer;
+}
+
+
+static char *
+clobber_check (char *original_file) {
+  /* clobber policy        return value
+   * --------------        ------------
+   *   -always                 file
+   *   -auto           file-<digits>.extension
+   *   -suffix             file.<digits>
+   *   -ask          file, 0, or another filename/path
+   *   -never                   0
+   */
+
+  char *file;
+  char *cwd = NULL;
+  int check_again;
+
+  if (clobber_policy == NMH_CLOBBER_ASK) {
+    /* Save cwd for possible use in loop below. */
+    char *slash;
+
+    cwd = add (original_file, NULL);
+    slash = strrchr (cwd, '/');
+
+    if (slash) {
+      *slash = '\0';
+    } else {
+      /* original_file wasn't a full path, which shouldn't happen. */
+      cwd = NULL;
+    }
+  }
+
+  do {
+    struct stat st;
+
+    file = original_file;
+    check_again = 0;
+
+    switch (clobber_policy) {
+      case NMH_CLOBBER_ALWAYS:
+        break;
+
+      case NMH_CLOBBER_SUFFIX:
+      case NMH_CLOBBER_AUTO:
+        if (stat (file, &st) == OK) {
+          file = next_version (original_file, clobber_policy);
+        }
+        break;
+
+      case NMH_CLOBBER_ASK:
+        if (stat (file, &st) == OK) {
+          enum answers { NMH_YES, NMH_NO, NMH_RENAME };
+          static struct swit answer[4] = {
+            { "yes", 0 }, { "no", 0 }, { "rename", 0 }, { NULL, 0 } };
+          char **ans;
+
+          if (isatty (fileno (stdin))) {
+            char *prompt =
+              concat ("Overwrite \"", file, "\" [y/n/rename]? ", NULL);
+            ans = getans (prompt, answer);
+            free (prompt);
+          } else {
+            /* Overwrite, that's what nmh used to do.  And warn. */
+            advise (NULL, "-clobber ask but no tty, so overwrite %s", file);
+            break;
+          }
+
+          switch ((enum answers) smatch (*ans, answer)) {
+            case NMH_YES:
+              break;
+            case NMH_NO:
+              free (file);
+              file = NULL;
+              ++files_not_clobbered;
+              break;
+            case NMH_RENAME: {
+              char buf[PATH_MAX];
+              printf ("Enter filename or full path of the new file: ");
+              if (fgets (buf, sizeof buf, stdin) == NULL  ||
+                  buf[0] == '\0') {
+                file = NULL;
+                ++files_not_clobbered;
+              } else {
+                char *newline = strchr (buf, '\n');
+                if (newline) {
+                  *newline = '\0';
+                }
+              }
+
+              free (file);
+
+              if (buf[0] == '/') {
+                /* Full path, use it. */
+                file = add (buf, NULL);
+              } else {
+                /* Relative path. */
+                file = cwd  ?  concat (cwd, "/", buf, NULL)  :  add (buf, NULL);
+              }
+
+              check_again = 1;
+              break;
+            }
+          }
+        }
+        break;
+
+      case NMH_CLOBBER_NEVER:
+        if (stat (file, &st) == OK) {
+          /* Keep count of files that would have been clobbered,
+             and return that as process exit status. */
+          advise (NULL, "will not overwrite %s with -clobber never", file);
+          free (file);
+          file = NULL;
+          ++files_not_clobbered;
+        }
+        break;
+    }
+
+    original_file = file;
+  } while (check_again);
+
+  if (cwd) {
+    free (cwd);
+  }
+
+  return file;
+}
+
+/* -clobber support */
+/******************************************************************************/
