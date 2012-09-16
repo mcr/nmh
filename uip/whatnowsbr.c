@@ -120,7 +120,7 @@ static int buildfile (char **, char *);
 static int check_draft (char *);
 static int whomfile (char **, char *);
 static int removefile (char *);
-static void writelscmd(char *, int, char **);
+static void writelscmd(char *, int, char *, char **);
 static void writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp);
 static FILE* popen_in_dir(const char *dir, const char *cmd, const char *type);
 static int system_in_dir(const char *dir, const char *cmd);
@@ -366,7 +366,7 @@ WhatNow (int argc, char **argv)
 	     *	Use the user's shell so that we can take advantage of any
 	     *	syntax that the user is accustomed to.
 	     */
-	    writelscmd(buf, sizeof(buf), argp);
+	    writelscmd(buf, sizeof(buf), "", argp);
 	    (void)system_in_dir(cwd, buf);
 	    break;
 
@@ -431,7 +431,7 @@ WhatNow (int argc, char **argv)
 	     *	Build a command line that causes the user's shell to list the file name
 	     *	arguments.  This handles and wildcard expansion, tilde expansion, etc.
 	     */
-	    writelscmd(buf, sizeof(buf), argp);
+	    writelscmd(buf, sizeof(buf), "-d", argp);
 
 	    /*
 	     *	Read back the response from the shell, which contains a number of lines
@@ -520,7 +520,7 @@ WhatNow (int argc, char **argv)
 	     * We feed all the file names to the shell at once, otherwise you can't
 	     * provide a file name with a space in it.
 	     */
-	    writelscmd(buf, sizeof(buf), argp);
+	    writelscmd(buf, sizeof(buf), "-d", argp);
 	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
 		while (fgets(shell, sizeof (shell), f) != (char *)0) {
 		    *(strchr(shell, '\n')) = '\0';
@@ -592,9 +592,11 @@ writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
  * arguments.  This handles and wildcard expansion, tilde expansion, etc.
  */
 static void
-writelscmd(char *buf, int bufsz, char **argp)
+writelscmd(char *buf, int bufsz, char *lsoptions, char **argp)
 {
-    writesomecmd(buf, bufsz, "ls", "", argp);
+  char *lscmd = concat ("ls ", lsoptions, " --", NULL);
+  writesomecmd(buf, bufsz, lscmd, "", argp);
+  free (lscmd);
 }
 
 /* Like system(), but run the command in directory dir.
