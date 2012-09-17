@@ -239,6 +239,9 @@ EOF
 run_test 'mhstore last' 'storing message 15 as file 15.txt'
 check $expected 15.txt
 
+# cd into Mail directory because it gets cleaned up by the exit trap.
+cd Mail
+
 # check -clobber always
 folder +inbox 7 > /dev/null
 touch 7.txt
@@ -247,7 +250,8 @@ This is message number 7
 EOF
 run_test 'mhstore' 'storing message 7 as file 7.txt'
 check $expected 7.txt 'keep first'
-run_test 'mhstore -clobber always' 'storing message 7 as file 7.txt'
+run_test 'mhstore -clobber ask -clobber always' \
+         'storing message 7 as file 7.txt'
 check $expected 7.txt 'keep first'
 
 # check -clobber auto
@@ -276,7 +280,7 @@ mhstore -clobber never >/dev/null 2>&1
 run_test "echo $?" 1
 set -e
 
-/bin/rm -f 7.txt 7-1.txt 7.txt.1
+cd ..
 
 # check with relative nmh-storage profile component
 storagedir=storagedir
