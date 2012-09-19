@@ -1,0 +1,13 @@
+#! /bin/sh
+#
+# spost -- delivers a message to local sendmail using its -t option
+#
+# This code is Copyright (c) 2012, by the authors of nmh.  See the
+# COPYRIGHT file in the root directory of the nmh distribution for
+# complete copyright information.
+#
+# Emulates old spost(8) using post(8).
+
+prefix='@prefix@'
+exec_prefix="@exec_prefix@"
+exec "@libdir@/post" -mts sendmail/pipe "$@"

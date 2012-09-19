@@ -132,7 +132,9 @@ bin_SCRIPTS = uip/mhmail etc/sendfiles
 ##
 auxexec_PROGRAMS = uip/ap uip/conflict uip/dp uip/fmtdump uip/mhl uip/post \
 		   uip/rcvdist uip/rcvpack uip/rcvstore uip/rcvtty uip/slocal \
-		   uip/spost uip/viamail uip/mhtest
+		   uip/viamail uip/mhtest
+
+auxexec_SCRIPTS = uip/spost
 
 ##
 ## Internal libraries that we create as part of the build process
@@ -380,8 +382,6 @@ uip_rcvtty_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB)
 
 uip_slocal_SOURCES = uip/slocal.c uip/aliasbr.c uip/dropsbr.c
 uip_slocal_LDADD = $(LDADD) $(NDBM_LIBS)
-
-uip_spost_SOURCES = uip/spost.c uip/aliasbr.c
 
 uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/mhoutsbr.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c

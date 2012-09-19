@@ -818,5 +818,5 @@ TLS support                : ${tls_support}
 dnl ---------------
 dnl OUTPUT MAKEFILE
 dnl ---------------
-AC_CONFIG_FILES([Makefile test/common.sh])
+AC_CONFIG_FILES([Makefile uip/spost test/common.sh])
 AC_OUTPUT
