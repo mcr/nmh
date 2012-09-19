@@ -405,18 +405,18 @@ sbr/sigmsg.h: $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H)
 	$(AWK) -f $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H) > $@
 
 etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
-	rm -f $@
+	@rm -f $@
 	$(SED) -e 's,%mts%,$(MTS),' \
 	       -e 's,%mailspool%,$(mailspool),' \
 	       -e 's,%smtpservers%,$(smtpservers),' \
 				< $(srcdir)/etc/mts.conf.in > $@
 
 etc/mhn.defaults: $(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPROG)
-	rm -f $@
+	@rm -f $@
 	$(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPATH) $(MHNSEARCHPROG) > $@
 
 etc/sendfiles: $(srcdir)/etc/sendfiles.in Makefile
-	rm -f $@
+	@rm -f $@
 	$(SED) -e 's,%libdir%,$(libdir),' < $(srcdir)/etc/sendfiles.in > $@
 
 ##
@@ -430,13 +430,13 @@ LN = @LN@
 ## between different programs.
 ##
 install-exec-hook:
-	rm -f $(DESTDIR)$(bindir)/flists$(EXEEXT)
-	rm -f $(DESTDIR)$(bindir)/folders$(EXEEXT)
-	rm -f $(DESTDIR)$(bindir)/fnext$(EXEEXT)
-	rm -f $(DESTDIR)$(bindir)/fprev$(EXEEXT)
-	rm -f $(DESTDIR)$(bindir)/unseen$(EXEEXT)
-	rm -f $(DESTDIR)$(bindir)/prev$(EXEEXT)
-	rm -f $(DESTDIR)$(bindir)/next$(EXEEXT)
+	@rm -f $(DESTDIR)$(bindir)/flists$(EXEEXT)
+	@rm -f $(DESTDIR)$(bindir)/folders$(EXEEXT)
+	@rm -f $(DESTDIR)$(bindir)/fnext$(EXEEXT)
+	@rm -f $(DESTDIR)$(bindir)/fprev$(EXEEXT)
+	@rm -f $(DESTDIR)$(bindir)/unseen$(EXEEXT)
+	@rm -f $(DESTDIR)$(bindir)/prev$(EXEEXT)
+	@rm -f $(DESTDIR)$(bindir)/next$(EXEEXT)
 	$(LN) $(DESTDIR)$(bindir)/flist$(EXEEXT) $(DESTDIR)$(bindir)/flists$(EXEEXT)
 	$(LN) $(DESTDIR)$(bindir)/folder$(EXEEXT) $(DESTDIR)$(bindir)/folders$(EXEEXT)
 	$(LN) $(DESTDIR)$(bindir)/new$(EXEEXT) $(DESTDIR)$(bindir)/fnext$(EXEEXT)
