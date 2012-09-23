@@ -35,8 +35,22 @@ usage='Usage: mhmail [-t(o)] addrs ... [switches]
   and all post(8)/send(1) switches
   mhmail with no arguments is equivalent to inc'
 
-bindir=`dirname $0`
+
+#### Find directory of this script.  Bourne shell just puts the program
+#### name in $0 if it's found from the PATH, so search that if necessary.
+finddir() {
+  case $0 in
+    */*) dirname $1 ;;
+    *  ) IFS=:
+         for d in $PATH; do
+           [ -f "${d:=.}/$1"  -a  -x "$d/$1" ]  &&  printf "$d"  &&  break
+         done ;;
+  esac
+}
+
+bindir=`finddir $0`
 nmhbindir=`cd "${bindir}" && pwd`
+
 
 #### Checks for missing mandatory arguments.
 checkforargs() {
@@ -83,7 +97,7 @@ else
   use_send=0                  ## use post (default) or send (-profile)
   sendsw=1                    ## to send (default) or not to send
   for arg in "$@"; do
-    case "${arg}" in
+    case ${arg} in
       #### Post and send won't accept -f -or -s because they'd be
       #### ambiguous, so no conflicts with them.  And they don't have
       #### -b, -c, -r, -t.  For the new switches that compiled mhmail
