@@ -68,7 +68,7 @@ test_messageid ()
     cur=`mhpath cur`
     # Verify that Message-ID is of the right form.  We'll see how
     # portable these grep regular expressions are.
-    case "$msgid_style" in
+    case $msgid_style in
       localname)
         # e.g., Message-ID: <5348.1342884222@localhost.localdomain>
         id='^Message-ID: <[0-9]\{1,\}\.[0-9]\{1,\}@'

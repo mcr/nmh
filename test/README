@@ -78,3 +78,7 @@ assignment in export statements.
 checkbashisms, available at http://sourceforge.net/projects/checkbaskisms/,
 might help some catch problems.  Though it misses all of the troublesome
 constructs, except for assignment in an export statement, listed above.
+
+The "Portable Shell" section of the Autoconf info manual has a wealth
+of tips for avoiding portability problems in shell scripts.  It might
+be available by entering:  info autoconf portable.
