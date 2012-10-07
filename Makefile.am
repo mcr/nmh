@@ -42,10 +42,10 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
 ##
 ## Important note: the "cleanup" test should always be last
 ##
-TESTS = test/ali/test-ali \
+TESTS = test/ali/test-ali test/anno/test-anno \
 	test/bad-input/test-header \
 	test/burst/test-burst \
-	test/comp/test-comp-format \
+	test/comp/test-comp-format test/dist/test-dist \
 	test/folder/test-create test/folder/test-packf \
 	test/folder/test-recurse test/folder/test-sortm \
 	test/folder/test-total \
@@ -54,8 +54,8 @@ TESTS = test/ali/test-ali \
 	test/format/test-myhost test/format/test-mymbox \
 	test/forw/test-forw-digest test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
-	test/inc/test-inc-scanout test/install-mh/test-install-mh \
-	test/manpages/test-manpages \
+	test/inc/test-inc-scanout test/inc/test-msgchk \
+	test/install-mh/test-install-mh test/manpages/test-manpages \
 	test/mhbuild/test-forw test/mhbuild/test-utf8-body \
 	test/mhlist/test-mhlist test/mhmail/test-mhmail \
 	test/mhparam/test-mhparam test/mhpath/test-mhpath \
@@ -70,7 +70,7 @@ TESTS = test/ali/test-ali \
 	test/post/test-post-group test/post/test-mts test/post/test-messageid \
 	test/prompter/test-prompter \
 	test/rcv/test-rcvdist test/rcv/test-rcvpack test/rcv/test-rcvstore \
-	test/refile/test-refile \
+	test/rcv/test-rcvtty test/refile/test-refile \
 	test/repl/test-if-str test/repl/test-trailing-newline \
 	test/repl/test-multicomp test/repl/test-repl \
 	test/scan/test-scan test/scan/test-scan-multibyte \
