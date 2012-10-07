@@ -47,7 +47,7 @@ test_post "${testname}.actual" "${testname}.expected" "-mts smtp"
 #### Rely on sendmail/smtp or sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
 cp "${MHMTSCONF}" "$mts_fakesendmail"
-printf "%s\n" "sendmail: ${srcdir}/test/fakesendmail" >>"$mts_fakesendmail"
+printf "sendmail: ${srcdir}/test/fakesendmail\n" >>"$mts_fakesendmail"
 MHMTSCONF="$mts_fakesendmail"
 
 # $1: -mts switch selection

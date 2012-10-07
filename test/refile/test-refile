@@ -115,10 +115,8 @@ other+ has  1 message   (1- 1).
 
 TOTAL = 11 messages in 2 folders.'
 
-printf '' > $$.txt
-set +e
-if link $$.txt $$-2.txt 2>/dev/null; then
-  # Hard links are supported.
+check_for_hard_links
+if [ $hard_links_supported -eq 1 ]; then
   # check -link
   run_test 'refile 7 -src +inbox +other -link' ''
   run_test 'folders -noheader' \
@@ -136,8 +134,6 @@ else
   cp -p Mail/inbox/7 Mail/other/2
   folder -f +inbox 7 >/dev/null
 fi
-set -e
-rm -f $$.txt $$-2.txt
 
 # check -nolink
 run_test 'refile 7 +other -link -nolink' ''

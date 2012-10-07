@@ -54,20 +54,19 @@ test_skip ()
 # portable implementation of 'which' utility
 findprog()
 {
-  FOUND=
   PROG="$1"
-  IFS_SAVE="$IFS"
+  #### Don't need to save current IFS because this function is run in
+  #### a subshell.
   IFS=:
   for D in $PATH; do
     if [ -z "$D" ]; then
       D=.
     fi
-    if [ -f "$D/$PROG" ] && [ -x "$D/$PROG" ]; then
-      printf '%s\n' "$D/$PROG"
+    if [ -f "$D/$PROG"  -a  -x "$D/$PROG" ]; then
+      printf "$D/$PROG"
       break
     fi
   done
-  IFS="$IFS_SAVE"
 }
 
 require_prog ()
@@ -94,6 +93,20 @@ progress_update ()
 progress_done ()
 {
   printf "100%%\n"
+}
+
+check_for_hard_links () {
+  set +e
+
+  printf '' > "${MH_TEST_DIR}/$$-1"
+  if link "${MH_TEST_DIR}/$$-1" "${MH_TEST_DIR}/$$-2" 2>/dev/null; then
+    hard_links_supported=1
+  else
+    hard_links_supported=0
+  fi
+  rm -f "${MH_TEST_DIR}/$$-1" "${MH_TEST_DIR}/$$-2"
+
+  set -e
 }
 
 #### check() requires two arguments, each the name of a file to be
@@ -152,7 +165,12 @@ setup_test ()
     #### Don't test with sendmail because it would really send the
     #### mail.  If configured to use sendmail, change to smtp instead
     #### so that we use fakesmtp.
-    sed -e 's/mts: *.*/mts: smtp/' "${MHMTSCONF}" >"${MHMTSCONF}.new"
+    #### And set up the maildrop in the test directory so tests don't
+    #### use the user's real maildrop.
+    sed -e 's/mts: *.*/mts: smtp/' \
+        -e "s%mmdfldir: *.*%mmdfldir: ${MH_TEST_DIR}/Mail%" \
+        -e 's%mmdflfil: *.*%mmdflfil: maildrop%' \
+        "${MHMTSCONF}" >"${MHMTSCONF}.new"
     mv -f "${MHMTSCONF}.new" "${MHMTSCONF}"
   fi
 

@@ -85,7 +85,7 @@ is invoked,
 will prompt the user for the name of field for the annotation.
 .PP
 The field specified must be a valid 2822-style message field name,
-which means that it may only consist of alphanumerics and dashes,
+which means that it may only consist of alphanumerics and dashes.
 The body specified is arbitrary text.
 .PP
 Normally
