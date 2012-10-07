@@ -31,7 +31,7 @@ MHMTSCONF="$mts_fakesendmail"
 # arguments: dist switches
 test_dist ()
 {
-  printf "send" | dist "$@" >/dev/null
+  printf "send\n" | dist "$@" >/dev/null
 
   # fakesendmail drops the message and any cc's into this mbox.
   mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox
