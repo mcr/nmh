@@ -180,7 +180,7 @@ is defined as an alias for the three names \*(lqfrated@UCI\*(rq,
 \*(rqfear\*(rq, and \*(rqfreida\*(rq.
 .PP
 The alias \*(lqb-people\*(rq is a blind list which includes the addresses
-\*(lqbill\*(rq and \*(lqbetty\*(rq; the message will be delieved to those
+\*(lqbill\*(rq and \*(lqbetty\*(rq; the message will be delivered to those
 addresses, but the message header will  show only \*(lqBlind List: ;\*(rq
 (not the addresses).
 .PP
