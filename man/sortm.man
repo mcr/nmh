@@ -89,7 +89,7 @@ makes the limit infinity.
 With
 .B \-limit
 .IR 0 ,
-the sort is instead made textfield\-major, date\-minor.
+the sort is instead simply textfield\-major.
 .PP
 For example, to order a folder by date-major, grouping messages with
 the same subject on the same date together, use:

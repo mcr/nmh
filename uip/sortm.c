@@ -221,9 +221,10 @@ main (int argc, char **argv)
 
     if (verbose) {	/* announce what we're doing */
 	if (subjsort)
-	    printf ("sorting by %s-major %s-minor\n",
-		submajor ? subjsort : datesw,
-		submajor ? datesw : subjsort);
+	    if (submajor)
+		printf ("sorting by %s\n", subjsort);
+	    else
+		printf ("sorting by %s-major %s-minor\n", subjsort, datesw);
 	else
 	    printf ("sorting by datefield %s\n", datesw);
     }
