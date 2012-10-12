@@ -10,6 +10,7 @@ sortm \- sort messages
 .B sortm
 .RI [ +folder ]
 .RI [ msgs ]
+.RB [ \-all | \-noall ]
 .RB [ \-datefield
 .IR field ]
 .RB [ \-textfield
@@ -26,6 +27,21 @@ sortm \- sort messages
 .B Sortm
 sorts the specified messages in the named folder according
 to the chronological order of the \*(lqDate:\*(rq field of each message.
+.PP
+If no messages are specified, the default is all messages in the folder.
+However, if no messages are specified and the
+.B \-noall
+switch is enabled, then
+.B sortm
+reports that as an error and exits with non-zero status.
+.B \-noall
+is most useful in the user's profile, to avoid inadvertant sorting of
+an entire folder.  The
+.B \-all
+switch can then be used on the command line to disable it.  Of course,
+a message specification of
+.I all
+can be used in any case.
 .PP
 The
 .B \-verbose
@@ -104,7 +120,8 @@ folder(1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
-.RB ` msgs"' defaults to all"
+.RB ` msgs"' defaults to all without -noall, no default with -noall"
+.RB ` \-all '
 .RB ` \-datefield "' defaults to date"
 .RB ` \-notextfield '
 .RB ` \-noverbose '

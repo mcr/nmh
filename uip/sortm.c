@@ -28,9 +28,13 @@ static struct swit switches[] = {
      { "verbose", 0 },
 #define NVERBSW                7
      { "noverbose", 0 },
-#define VERSIONSW              8
+#define ALLMSGS                8
+     { "all", 0 },
+#define NALLMSGS               9
+     { "noall", 0 },
+#define VERSIONSW             10
      { "version", 0 },
-#define HELPSW                 9
+#define HELPSW                11
      { "help", 0 },
      { NULL, 0 }
 };
@@ -48,6 +52,7 @@ char *subjsort = (char *) 0;    /* sort on subject if != 0 */
 time_t datelimit = 0;
 int submajor = 0;		/* if true, sort on subject-major */
 int verbose;
+int allmsgs = 1;
 
 /* This keeps compiler happy on calls to qsort */
 typedef int (*qsort_comp) (const void *, const void *);
@@ -153,6 +158,13 @@ main (int argc, char **argv)
 	    case NVERBSW:
 		verbose = 0;
 		continue;
+
+	    case ALLMSGS:
+		allmsgs = 1;
+		continue;
+	    case NALLMSGS:
+		allmsgs = 0;
+		continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -166,8 +178,13 @@ main (int argc, char **argv)
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
-    if (!msgs.size)
-	app_msgarg(&msgs, "all");
+    if (!msgs.size) {
+	if (allmsgs) {
+	    app_msgarg(&msgs, "all");
+        } else {
+	    adios (NULL, "must specify messages to sort with -noall");
+        }
+    }
     if (!datesw)
 	datesw = "date";
     if (!folder)
