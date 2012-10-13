@@ -55,9 +55,11 @@ OBSOLETE/DEPRECATED FEATURES
   the mh-tailor(5) man page.  The spost -noalias, -backup/-nobackup,
   -push/-nopush, and -remove/-noremove switches are not supported by
   post.  Note that spost did not support -whom or Dcc, and neither
-  does post when using sendmail/pipe.  For backward compatibility,
-  spost has been replaced by a simple shell script that exec's
-  post -mts sendmail/pipe.
+  does post when using sendmail/pipe.  And spost would expand blind
+  aliases and send them in the message; post with sendmail/pipe
+  refuses to do that.  For backward compatibility, spost has been
+  replaced by a simple shell script that exec's post -mts
+  sendmail/pipe.
 
 ---------
 BUG FIXES
