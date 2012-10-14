@@ -70,3 +70,5 @@ BUG FIXES
 - Removed obsolete BUGS section at end of rcvstore(1) man page [Bug #4361].
 - Fixed -nocc me doesn't account for Alternate-Mailboxes [Bug #36635].
 - Propagate Mail-Followup-To [Bug #5571].
+- "mark -sequence cur -delete all" now works for cur as well as any
+  other sequence, to allow clearing of the current message indication.

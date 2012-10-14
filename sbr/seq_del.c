@@ -83,6 +83,12 @@ seq_delsel (struct msgs *mp, char *cp, int public, int zero)
 	if (is_selected (mp, msgnum))
 	    clear_sequence (mp, i, msgnum);
 
+    if (! strcmp (cp, current)  &&
+        mp->lowsel <= mp->curmsg  &&  mp->curmsg <= mp->hghsel) {
+        /* Removed current message indication, so reset curmsg. */
+        mp->curmsg = 0;
+    }
+
     /*
      * Set the public/private bit for this sequence.
      */
