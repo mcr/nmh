@@ -864,7 +864,7 @@ putfmt (char *name, char *str, FILE *out)
 			   they'd have the Blind-Carbon-Copy
 			   indication. */
 			adios (NULL,
-			       "blind aliases not compatible with"
+			       "blind lists not compatible with"
 			       " sendmail/pipe");
 		    }
 
