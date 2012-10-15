@@ -35,8 +35,6 @@ struct home {
     struct home *h_next;	/* next home in list                     */
 };
 
-struct home *seek_home (char *);
-
 /*
  * prototypes
  */

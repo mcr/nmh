@@ -46,7 +46,6 @@ static char *getalias (char *);
 static void add_aka (struct aka *, char *);
 static struct aka *akalloc (char *);
 static struct home *hmalloc (struct passwd *);
-struct home *seek_home (char *);
 
 
 /* Do mh alias substitution on 's' and return the results. */
@@ -576,37 +575,4 @@ hmalloc (struct passwd *pw)
     hometail = p;
 
     return p;
-}
-
-
-struct home *
-seek_home (char *name)
-{
-    register struct home *hp;
-    struct passwd *pw;
-    char lname[32];
-    unsigned char *c;
-    char *c1;
-
-    for (hp = homehead; hp; hp = hp->h_next)
-	if (!mh_strcasecmp (name, hp->h_name))
-	    return hp;
-
-    /*
-     * The only place where there might be problems.
-     * This assumes that ALL usernames are kept in lowercase.
-     */
-    for (c = name, c1 = lname;
-         *c && (c1 - lname < (int) sizeof(lname) - 1);
-         c++, c1++) {
-        if (isalpha(*c) && isupper(*c))
-	    *c1 = tolower (*c);
-	else
-	    *c1 = *c;
-    }
-    *c1 = '\0';
-    if ((pw = getpwnam(lname)))
-	return(hmalloc(pw));
-
-    return NULL;
 }
