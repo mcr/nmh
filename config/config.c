@@ -215,7 +215,7 @@ char *installproc = nmhlibdir (/install-mh);
  * draft message.
  */
 
-char *lproc = DEFAULT_PAGER;
+char *lproc = NULL;
 
 /*
  * This is the path for the Bell equivalent mail program.
@@ -229,7 +229,7 @@ char *mailproc = nmhbindir (/mhmail);
  * or message parts of type text/plain.
  */
 
-char *moreproc = DEFAULT_PAGER;
+char *moreproc = NULL;
 
 /* 
  * This is the program (mhl) used to filter messages.  It is

@@ -106,6 +106,23 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 	break;
     }
 
+    /*
+     * Special handling for the pager processes: lproc and moreproc.
+     *
+     * If they are not set by the profile, use the callers $PAGER if
+     * available, otherwise set them to DEFAULT_PAGER.
+     */
+    if (lproc == NULL) {
+        lproc = getenv("PAGER");
+	if (lproc == NULL || lproc[0] == '\0')
+	    lproc = DEFAULT_PAGER;
+    }
+    if (moreproc == NULL) {
+        moreproc = getenv("PAGER");
+	if (moreproc == NULL || moreproc[0] == '\0')
+	    moreproc = DEFAULT_PAGER;
+    }
+
     if (opp == NULL) {
 	/* Check for duplicated non-null profile entries.  Except
 	   allow multiple profile entries named "#", because that's

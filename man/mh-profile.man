@@ -429,6 +429,9 @@ also used by the draft folder facility in
 and
 .B repl
 to display the draft message.
+(Note that
+.B $PAGER
+supersedes the default built-in pager command.)
 .RE
 .PP
 .BR mailproc :
@@ -488,6 +491,9 @@ formatted message when displaying to a terminal.  It is also the default
 program used by
 .B mhshow
 to display message bodies (or message parts) of type text/plain.
+(Note that
+.B $PAGER
+supersedes the default built-in pager command.)
 .RE
 .PP
 .BR mshproc :
@@ -825,6 +831,12 @@ commands that use the
 .BR Alternate\-Mailboxes
 profile entry will display debugging information
 about the values in that entry.
+.RE
+.PP
+.B $PAGER
+.RS 5
+If set to a non-null value, this supersedes the value of
+the default built-in pager command.
 .RE
 .PP
 .B $editalt
