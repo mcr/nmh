@@ -72,3 +72,6 @@ BUG FIXES
 - Propagate Mail-Followup-To [Bug #5571].
 - "mark -sequence cur -delete all" now works for cur as well as any
   other sequence, to allow clearing of the current message indication.
+- The first alias contained in a blind list is now expanded.  The
+  mh-alias(5) man page was updated to show that blind lists must not
+  be terminated with, or contain, a trailing semicolon [Bug #15604].

@@ -1,0 +1,156 @@
+#!/bin/sh
+######################################################
+#
+# Test aliases all the way through post
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+# Note that the last address in the blind list does not end with a
+# semicolon.
+cat >"${MH_TEST_DIR}/Mail/aliases" <<EOF
+blind_list: Blind List: one, two, three
+named.list; one@example.com, two@example.com
+one: one@example.com
+two: two@example.com
+three: three@example.com
+EOF
+
+#### Rely on sendmail/smtp or sendmail/pipe below to override default mts.
+mts_fakesendmail="${MHMTSCONF}-fakesendmail"
+cp "${MHMTSCONF}" "$mts_fakesendmail"
+printf "sendmail: ${srcdir}/test/fakesendmail\n" >>"$mts_fakesendmail"
+MHMTSCONF="$mts_fakesendmail"
+
+# $1: -mts switch selection
+# $2: expected output
+test_alias ()
+{
+  if [ "$1" = 'sendmail/smtp' ]; then
+    send -draft -alias "${MH_TEST_DIR}/Mail/aliases" -mts sendmail/smtp
+
+    # fakesendmail drops the message and any cc's into this mbox.
+    mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox
+    inc -silent -file "$mbox"
+    rm -f "$mbox" "$mbox.map"
+
+    # It's hard to calculate the exact Date: header post is going to
+    # use, so we'll just use sed to remove the actual date so we can easily
+    # compare it against our "correct" output.
+    sed -e 's/^Date:.*/Date:/' "`mhpath cur`" >"${testname}.actual"
+
+    check "${testname}.actual" "$2"
+
+    if [ "`mhpath cur`" != "`mhpath last`" ]; then
+      folder next >/dev/null
+      arith_eval $n + 1; n=$arith_val
+    fi
+
+  elif [ "$1" = 'sendmail/pipe' ]; then
+    set +e
+    send -draft -alias "${MH_TEST_DIR}/Mail/aliases" -mts sendmail/pipe \
+      >"${testname}.actual" 2>&1
+    if [ $? -eq 0 ]; then
+      printf "$0: sendmail/pipe should have failed but didn't\n"
+    else
+      set -e
+      check "${testname}.actual" "$2"
+    fi
+
+  else
+    printf "$0: invalid -mts switch selection\n"
+    exit 1
+  fi
+}
+
+
+# check blind list
+cat >"${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: blind_list
+Subject: blind list test
+
+This is test of a blind list.
+EOF
+cp -p "${MH_TEST_DIR}/Mail/draft" "${MH_TEST_DIR}/Mail/draft2"
+
+cat >"${testname}.expected" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Blind List: ;
+Subject: blind list test
+Date:
+
+This is test of a blind list.
+EOF
+
+test_alias sendmail/smtp "${testname}.expected"
+
+# Make sure the addresses were expanded correctly.
+mv "${MH_TEST_DIR}/Mail/draft2" "${MH_TEST_DIR}/Mail/draft"
+
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody@example.com>
+RCPT TO:<one@example.com>
+RCPT TO:<two@example.com>
+RCPT TO:<three@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+To: Blind List: ;
+Subject: blind list test
+Date:
+
+This is test of a blind list.
+.
+QUIT
+EOF
+
+test_post "${testname}.actual" "${testname}.expected" \
+  "-alias ${MH_TEST_DIR}/Mail/aliases"
+
+# check named list (alias followed by ;)
+cat >"${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: named.list
+Subject: named list test
+
+This is test of a named list.
+EOF
+
+cat >"${testname}.expected" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: "named.list" <one@example.com>, "named.list" <two@example.com>
+Subject: named list test
+Date:
+
+This is test of a named list.
+EOF
+
+test_alias sendmail/smtp "${testname}.expected"
+
+# check blind list with -mts sendmail/pipe, which should fail
+cat >"${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: blind_list
+Subject: blind list test
+
+This is test of a blind list.
+EOF
+
+cat >"${testname}.expected" <<EOF
+post: blind lists not compatible with sendmail/pipe
+send: message not delivered to anyone
+EOF
+
+test_alias sendmail/pipe "${testname}.expected"
+
+
+exit ${failed:-0}

@@ -63,8 +63,8 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/mhshow/test-subpart test/mhstore/test-mhstore \
 	test/new/test-basic \
 	test/pick/test-pick test/pick/test-stderr \
-	test/post/test-post-basic test/post/test-post-multiple \
-	test/post/test-post-bcc \
+	test/post/test-post-aliases test/post/test-post-basic \
+	test/post/test-post-multiple test/post/test-post-bcc \
 	test/post/test-post-dcc test/post/test-post-fcc \
 	test/post/test-post-multifrom test/post/test-post-envelope \
 	test/post/test-post-group test/post/test-mts test/post/test-messageid \
