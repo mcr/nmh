@@ -13,11 +13,6 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
-/*
- * maximum number of names
- */
-#define	NVEC 50
-
 static struct swit switches[] = {
 #define	ALIASW                0
     { "alias aliasfile", 0 },
@@ -59,7 +54,9 @@ main (int argc, char **argv)
     int i, vecp = 0, inverted = 0, list = 0;
     int noalias = 0, normalize = AD_NHST;
     char *cp, **ap, **argp, buf[BUFSIZ];
-    char *vec[NVEC], **arguments;
+    /* Really only need to allocate for argc-1, but must allocate at least 1,
+       so go ahead and allocate for argc char pointers. */
+    char **vec = mh_xmalloc (argc * sizeof (char *)), **arguments;
     struct aka *ak;
 
 #ifdef LOCALE
@@ -124,7 +121,14 @@ main (int argc, char **argv)
 		    continue;
 	    }
 	}
-	vec[vecp++] = cp;
+
+	if (vecp < argc) {
+	    vec[vecp++] = cp;
+	} else {
+	    /* Should never happen, but try to protect against code changes
+	       that could allow it. */
+	    adios (NULL, "too many arguments");
+	}
     }
 
     if (!noalias) {
@@ -151,23 +155,22 @@ main (int argc, char **argv)
 
 	for (i = 0; i < vecp; i++)
 	    print_usr (vec[i], list, normalize);
-
-	done (0);
-    }
-
-    if (vecp) {
-	/* print specified aliases */
-	for (i = 0; i < vecp; i++)
-	    print_aka (akvalue (vec[i]), list, 0);
     } else {
-	/* print them all */
-	for (ak = akahead; ak; ak = ak->ak_next) {
-	    printf ("%s: ", ak->ak_name);
-	    pos += strlen (ak->ak_name) + 1;
-	    print_aka (akresult (ak), list, pos);
+	if (vecp) {
+	    /* print specified aliases */
+	    for (i = 0; i < vecp; i++)
+		print_aka (akvalue (vec[i]), list, 0);
+	} else {
+	    /* print them all */
+	    for (ak = akahead; ak; ak = ak->ak_next) {
+		printf ("%s: ", ak->ak_name);
+		pos += strlen (ak->ak_name) + 1;
+		print_aka (akresult (ak), list, pos);
+	    }
 	}
     }
 
+    free (vec);
     done (0);
     return 1;
 }

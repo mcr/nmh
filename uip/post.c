@@ -854,8 +854,22 @@ putfmt (char *name, char *str, FILE *out)
 		else
 		    if (mp->m_gname)
 			putgrp (namep, mp->m_gname, out, hdr->flags);
-		if (mp->m_ingrp)
+		if (mp->m_ingrp) {
+		    if (sm_mts == MTS_SENDMAIL_PIPE) {
+			/* Catch this before sendmail chokes with:
+			   "553 List:; syntax illegal for recipient
+			    addresses".
+			   If we wanted to, we could expand out blind
+			   aliases and put them in Bcc:, but then
+			   they'd have the Blind-Carbon-Copy
+			   indication. */
+			adios (NULL,
+			       "blind lists not compatible with"
+			       " sendmail/pipe");
+		    }
+
 		    grp++;
+		}
 		if (putadr (namep, qp, mp, out, hdr->flags))
 		    msgflags |= (hdr->set & (MVIS | MINV));
 		else

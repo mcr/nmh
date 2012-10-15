@@ -146,10 +146,13 @@ the address list if it is not already on the list.  The alias itself is
 not usually output, rather the address\-group that the alias maps to is
 output instead.  If \*(lqalias\*(rq is terminated with a `;' instead of
 a `:', then both the \*(lqalias\*(rq and the address are output in the
-correct format.  (This makes replies possible since
+correct format (with the alias quoted if necessary and the address
+wrapped in <>).
+
+This makes replies possible since
 .B nmh
 aliases
-and personal aliases are unknown to the mail transport system.)
+and personal aliases are unknown to the mail transport system.
 .RE
 .PP
 Since the alias file is read line by line, forward references work, but
@@ -161,7 +164,7 @@ Example Alias File:
 .nf
 <%etcdir%/BBoardAliases
 sgroup: fred, fear, freida
-b-people: Blind List: bill, betty;
+b-people: Blind List: bill, betty
 fred: frated@UCI
 UNIX\-committee: <unix.aliases
 staff: =staff
@@ -179,10 +182,16 @@ is defined as an alias for \*(lqfrated@UCI\*(rq, and \*(lqsgroup\*(rq
 is defined as an alias for the three names \*(lqfrated@UCI\*(rq,
 \*(rqfear\*(rq, and \*(rqfreida\*(rq.
 .PP
+
 The alias \*(lqb-people\*(rq is a blind list which includes the addresses
 \*(lqbill\*(rq and \*(lqbetty\*(rq; the message will be delivered to those
-addresses, but the message header will  show only \*(lqBlind List: ;\*(rq
-(not the addresses).
+addresses, but the message header will show only \*(lqBlind List: ;\*(rq
+(not the addresses).  The alias must not be terminated with, or contain,
+a semicolon; see
+.B Helpful Hints
+below.  Note that blind lists are not supported with the
+.B sendmail/pipe
+mail transport method.
 .PP
 Next, the definition of \*(lqUNIX\-committee\*(rq is given by
 reading the file
@@ -251,6 +260,13 @@ Start adding aliases to your
 .RI \*(lq aliases \*(rq
 file as appropriate.
 .RE
+.PP
+Earlier versions of this man page showed a semicolon at the end of the
+blind list example.  That caused the preceeding alias to not be
+expanded.  There must not be a semicolon at the end of, or within, the
+address group of a blind list.
+.B post
+will append the semicolon to the blind list name.
 
 .SH FILES
 .fc ^ ~
@@ -282,5 +298,3 @@ command may defeat this.
 Since the number of file descriptors is finite (and very limited), such
 infinite recursion will terminate with a meaningless diagnostic when
 all the fds are used up.
-.PP
-Forward references do not work correctly inside blind lists.

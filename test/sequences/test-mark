@@ -80,4 +80,8 @@ run_test 'mark -sequence privateseq -list -public' 'privateseq (private): 1-2'
 folder -create +other > /dev/null
 run_test 'mark +other -sequence unseen all' 'mark: no messages in other'
 
+# Test removal of indication of cur message.
+mark +inbox -sequence cur -delete all
+run_test 'pick -nolist cur' 'pick: no cur message'
+
 exit $failed

@@ -9,6 +9,7 @@
 
 #include <h/mh.h>
 #include <h/aliasbr.h>
+#include <h/addrsbr.h>
 #include <h/utils.h>
 #include <grp.h>
 #include <pwd.h>
@@ -25,7 +26,7 @@ struct home *hometail = NULL;
 /*
  * prototypes
  */
-int alias (char *); 
+int alias (char *);
 int akvisible (void);
 void init_pw (void);
 char *akresult (struct aka *);
@@ -45,7 +46,6 @@ static char *getalias (char *);
 static void add_aka (struct aka *, char *);
 static struct aka *akalloc (char *);
 static struct home *hmalloc (struct passwd *);
-struct home *seek_home (char *);
 
 
 /* Do mh alias substitution on 's' and return the results. */
@@ -104,9 +104,45 @@ akval (struct aka *ak, char *s)
     if (!s)
 	return s;			/* XXX */
 
-    for (; ak; ak = ak->ak_next)
-	if (aleq (s, ak->ak_name))
+    for (; ak; ak = ak->ak_next) {
+	if (aleq (s, ak->ak_name)) {
 	    return akresult (ak);
+	} else if (strchr (s, ':')) {
+	    /* The first address in a blind list will contain the
+	       alias name, so try to match, but just with just the
+	       address (not including the list name).  If there's a
+	       match, then replace the alias part with its
+	       expansion. */
+
+	    char *name = getname (s);
+	    char *cp = NULL;
+
+	    if (name) {
+		/* s is of the form "Blind list: address".  If address
+		   is an alias, expand it. */
+		struct mailname *mp = getm (name, NULL, 0, AD_NAME, NULL);
+
+		if (mp	&&  mp->m_ingrp) {
+		    char *gname = add (mp->m_gname, NULL);
+
+		    if (gname  &&  aleq (name, ak->ak_name)) {
+			/* Will leak cp. */
+			cp = concat (gname, akresult (ak), NULL);
+			free (gname);
+		    }
+		}
+
+		mnfree (mp);
+	    }
+
+	    /* Need to flush getname after use. */
+	    while (getname ("")) continue;
+
+	    if (cp) {
+		return cp;
+	    }
+	}
+    }
 
     return getcpy (s);
 }
@@ -429,12 +465,15 @@ getalias (char *addrs)
 	if (*cp == 0)
 	    return (cp = NULL);
 
+    /* Remove leading any space from the address. */
     for (pp = cp; isspace (*pp); pp++)
 	continue;
     if (*pp == 0)
 	return (cp = NULL);
+    /* Find the end of the address. */
     for (qp = pp; *qp != 0 && *qp != ','; qp++)
 	continue;
+    /* Set cp to point to the remainder of the addresses. */
     if (*qp == ',')
 	*qp++ = 0;
     for (cp = qp, qp--; qp > pp; qp--)
@@ -536,37 +575,4 @@ hmalloc (struct passwd *pw)
     hometail = p;
 
     return p;
-}
-
-
-struct home *
-seek_home (char *name)
-{
-    register struct home *hp;
-    struct passwd *pw;
-    char lname[32];
-    unsigned char *c;
-    char *c1;
-
-    for (hp = homehead; hp; hp = hp->h_next)
-	if (!mh_strcasecmp (name, hp->h_name))
-	    return hp;
-
-    /*
-     * The only place where there might be problems.
-     * This assumes that ALL usernames are kept in lowercase.
-     */
-    for (c = name, c1 = lname;
-         *c && (c1 - lname < (int) sizeof(lname) - 1);
-         c++, c1++) {
-        if (isalpha(*c) && isupper(*c))
-	    *c1 = tolower (*c);
-	else
-	    *c1 = *c;
-    }
-    *c1 = '\0';
-    if ((pw = getpwnam(lname)))
-	return(hmalloc(pw));
-
-    return NULL;
 }
