@@ -8,11 +8,18 @@ sendfiles \- send multiple files via a MIME message
 .HP 5
 .na
 .B sendfiles
-.RB [ delay ]
-.I mailpath
+.RB [ \-bzip2 " | " \-compress " | " \-gzip " | " \-lzma " | " \-none " | " -zip ]
+.br
+.RB [ \-from
+.IR sender ]
+.RI [ \-delay ]
+.RB [ \-version ]
+.RB [ \-help ]
+.br
+.I recipient
 .I subject
-.I file1
-.RI [ file2
+.I file/directory1
+.RI [ file/directory2
 \&...]
 .ad
 .SH DESCRIPTION
@@ -22,7 +29,7 @@ is used to send a collection
 of files and directories via electronic mail.
 .PP
 .RS 5
-sendfiles mailpath \*(lqsubject\*(rq files\0...
+sendfiles recipient \*(lqsubject\*(rq files\0...
 .RE
 .PP
 .B sendfiles
@@ -30,10 +37,29 @@ will archive the files and directories you name
 with the
 .B tar
 command, and then mail the compressed
-archive to the \*(lqmailpath\*(rq with the given \*(lqsubject\*(rq.
+archive to the \*(lqrecipient\*(rq with the given \*(lqsubject\*(rq.
 The archive
 will be automatically split up into as many messages as necessary
 in order to get past most mailers.
+.PP
+The
+.B \-from
+switch can, and should, be used to specify the sender's mailbox (name
+and email address).  Alternatively, the
+.B PERSON
+environment variable can be used for the same purpose.
+If neither is used,
+.B sendfiles
+will supply a \*(lqFrom:\*(rq header field using the sender's local
+mailbox, see
+.I localmbox
+in
+.BR mh-format (5).
+.PP
+The remaining command line switches select the compression program.
+One of these can be used to override the run-time determination of
+the compression program by
+.BR sendfiles .
 .PP
 Sometimes you want
 .B sendfiles
@@ -48,7 +74,7 @@ interpreted as the number of seconds to pause in between postings,
 e.g.,
 .PP
 .RS 5
-sendfiles -30 mailpath \*(lqsubject\*(rq files\0...
+sendfiles -30 recipient \*(lqsubject\*(rq files\0...
 .RE
 .PP
 will pause 30 seconds in between each posting.
@@ -149,13 +175,14 @@ to perform the extraction.
 .fi
 
 .SH "SEE ALSO"
-mhbuild(1), mhlist(1), mhshow(1), mhstore(1). 
+mhbuild(1), mh-format(5), mhlist(1), mhshow(1), mhstore(1)
 .I "Proposed Standard for Message Encapsulation"
 (RFC\-934)
 
 .SH DEFAULTS
 .nf
-.RB ` \-noverbose '
+.RB ` "\-delay\ 0" '
+.RB ` "\-from localmbox" '
 .fi
 
 .SH CONTEXT

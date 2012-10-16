@@ -238,7 +238,7 @@ dist(1), inc(1), mh-format(5), post(8), send(1)
 
 .SH DEFAULTS
 .nf
-.RB ` \-from "' defaults to sender's local mailbox (localmbox)"
+.RB ` "\-from localmbox" '
 .RB ` \-profile "' is enabled by default only with " \-attach
 .RB ` \-send '
 .fi
