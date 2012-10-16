@@ -119,7 +119,7 @@ else
       -f|-fr|-fro|-from) mhmailswitch=1; fromarg=1 ;;
       -hea|-head|-heade|-header|-headerf|-headerfi|-headerfie|-headerfiel|\
 -headerfield) mhmailswitch=1; headerfieldarg=1 ;;
-      -hel|-help) printf "%s\n" "${usage}"; exit ;;
+      -hel|-help) printf "${usage}\n"; exit ;;
       -nose|-nosen|-nosend) mhmailswitch=1; sendsw=0 ;;
       -p|-pr|-pro|-prof|-profi|-profil|-profile) mhmailswitch=1; use_send=1 ;;
       -resend) printf "mhmail: did you mean -resent instead of -resend?\n" 1>&2
@@ -239,7 +239,7 @@ Nmh-Attachment: ${arg}
 
   if [ "${body}"x = x ]; then
     #### First put message header in the file.
-    printf "%s" "${header}" >"${tmpfile}" || exit 2
+    printf "${header}" >"${tmpfile}" || exit 2
 
     tmpfile_size_before=`wc -c "${message_file}"`
     #### Now grab the body from stdin.  cat >> handles blank lines
@@ -265,12 +265,12 @@ Nmh-Attachment: ${arg}
 
     if [ "${tmpfileresent}" ]; then
       #### Put just the new message header in the file.
-      printf "%s" "${header}" >"${tmpfile}" || exit 2
+      printf "${header}" >"${tmpfile}" || exit 2
       #### and the body in the file to resend.
       printf "${body}" >"${tmpfileresent}" || exit 2
     else
       #### Put message header and body in the file.
-      printf "%s" "${header}${body}" >"${tmpfile}" || exit 2
+      printf "${header}${body}" >"${tmpfile}" || exit 2
     fi
   fi
 
