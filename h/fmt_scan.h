@@ -62,7 +62,8 @@ extern struct comp *wantcomp[128];
 #define FINDCOMP(comp,name) \
 		for (comp = wantcomp[CHASH(name)]; \
 		     comp && strcmp(comp->c_name,name); \
-		     comp = comp->c_next) ;
+		     comp = comp->c_next) \
+		;
 
 /*
  * This structure defines one formatting instruction.
