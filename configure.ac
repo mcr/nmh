@@ -8,7 +8,7 @@ AC_PREREQ([2.61])
 AC_INIT([nmh], m4_normalize(m4_include([VERSION])), [nmh-workers@nongnu.org])
 AC_CONFIG_SRCDIR([h/nmh.h])
 AC_CONFIG_HEADER([config.h])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
+AM_INIT_AUTOMAKE([-Wall foreign subdir-objects])
 
 AC_CANONICAL_HOST
 
