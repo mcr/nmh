@@ -1,7 +1,10 @@
+.TH NMH %manext7% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH NMH %manext7% "%nmhdate%" MH.6.8 [%nmhversion%]
+.\" Register 'tt' contains the indent for .TP in the COMMANDS section:
+.nr tt \w'\fImh-sequence\fR(5)\0\0'u
+.\"
 .SH NAME
 nmh \- new MH message system
 .SH SYNOPSIS
@@ -37,17 +40,11 @@ individual programs for complete documentation.
 To get started using
 .BR nmh ,
 put the directory
-.I %bindir%
-on your
+\*(lq%bindir%\*(rq
+in your
 .BR $PATH .
-This is best done in one of the files:
-.IR \&.profile ,
-.IR \&.login ,
-.IR \&.bashrc ,
-or
-.I \&.cshrc
-in your home directory.  (Check the
-manual entry for the shell you use, in case you don't know how to
+(Check the
+manual entry for the shell you use if you don't know how to
 do this.)  Run the
 .B install-mh
 command.  If you've never used
@@ -58,7 +55,8 @@ asking you if you wish it to do so.
 .B inc
 moves mail from your system maildrop into your
 .B nmh
-`+inbox' folder, breaking it up into separate files and converting it
+\*(lq+inbox\*(rq
+folder, breaking it up into separate files and converting it
 to
 .B nmh
 format as it goes.  It prints one line for each message it
@@ -72,9 +70,9 @@ time you wish to incorporate new mail into your
 file.
 .PP
 .B scan
-.B prints a list of the messages in your current folder.
+prints a list of the messages in your current folder.
 .PP
-The commands:
+The commands
 .BR show ,
 .BR next ,
 and
@@ -108,13 +106,13 @@ is used to respond to the current message (by default).
 It places you in the editor with a prototype response form.  While you're
 in the editor, you may peruse the item you're responding to by reading
 the file
-.IR @ .
+.BR @ .
 After completing your response, type
-.B l
+\*(lql\*(rq
 to
 .B list
 (review) it, or
-.B s
+\*(lqs\*(rq
 to
 .B send
 it.
@@ -132,152 +130,362 @@ and related responses, as described in its man page.
 .PP
 All the
 .B nmh
-commands may be run with the single argument:
+commands may be run with the single argument
 .BR \-help ,
 which causes them to print a list of the arguments they may be invoked
 with and then exit.
 .PP
 All the
 .B nmh
-commands may be run with the single argument:
+commands may be run with the single argument
 .BR \-version ,
-which cause them to print the version number of the
+which causes them to print the version number of the
 .B nmh
 distribution, and then exit.
 .PP
-Commands which take a message number as an argument (
-.BR scan ,
+Commands which take a message number as an argument
+.RB ( scan ,
 .BR show ,
 .BR repl ,
-\&...)  also take one of the words: \*(lqfirst\*(rq,
+\&...)  also take one of the words \*(lqfirst\*(rq,
 \*(lqprev\*(rq, \*(lqcur\*(rq, \*(lqnext\*(rq, or \*(lqlast\*(rq to indicate
 (respectively) the first, previous, current, next, or last message in
 the current folder (assuming they are defined).
-
-Commands which take a range of message numbers (
-.BR rmm ,
+.PP
+Commands which take a range of message numbers
+.RB ( rmm ,
 .BR scan ,
 .BR show ,
 \&...)  also take any of the abbreviations:
-.PP
-.RS 5
-.IP \fI<num1>\fR\-\fI<num2>\fR 15
-Indicates all messages in the range <num1> to <num2>, inclusive. The range must be nonempty.
-.IP \fI<num>\fR:+\fIN\fR 15
-.IP \fI<num>\fR:\-\fIN\fR 15
+.TP \n(ttu
+.IR <num1> - <num2>
+Indicates all messages in the range <num1> to <num2>, inclusive.
+The range must be nonempty.
+.TP
+.IR <num> :+ N
+.PD 0
+.TP
+.IR <num> :\-N
 Up to
 .I N
 messages beginning with (or ending with) message
 .IR num .
 .I Num
-may be any of the pre-defined symbols:
-.IR first ,
-.IR prev ,
-.IR cur ,
-.I next
+may be any of the pre-defined symbols
+.BR first ,
+.BR prev ,
+.BR cur ,
+.B next
 or
-.IR last .
-.IP first:\fIN\fR 15
-.IP prev:\fIN\fR 15
-.IP next:\fIN\fR 15
-.IP last:\fIN\fR 15
+.BR last .
+.PD
+.TP
+.RI first: N
+.PD 0
+.TP
+.RI prev: N
+.TP
+.RI next: N
+.TP
+.RI last: N
 The first, previous, next or last
 messages, if they exist.
-.RE
+.PD
 .PP
 There are many other possibilities such as creating multiple folders
 for different topics, and automatically refiling messages according to
 subject, source, destination, or content.  These are beyond the scope
 of this manual entry.
+.ne 4
+.SH COMMANDS
 .PP
 Following is a list of all the
 .B nmh
-commands:
+commands, grouped loosely according to their role.
+.ne 4
+.SS
+Sending
+.TP \n(ttu
+.PD 0
+.IR comp (1)
+compose a message
+.TP
+.IR forw (1)
+forward messages
+.TP
+.IR repl (1)
+reply to a message
+.TP
+.IR whatnow (1)
+prompting front-end for send
+.PD
 .PP
-.RS 5
-.fc ^ ~
-.nf
-.ta 1.5i
-^ali(1)~^\- list mail aliases
-^anno(1)~^\- annotate messages
-^burst(1)~^\- explode digests into messages
-^comp(1)~^\- compose a message
-^dist(1)~^\- redistribute a message to additional addresses
-^flist(1)~^\- list folders with messages in given sequence(s)
-^flists(1)~^\- list all folders with messages in given sequence(s)
-^folder(1)~^\- set/list current folder/message
-^folders(1)~^\- list all folders
-^forw(1)~^\- forward messages
-^inc(1)~^\- incorporate new mail
-^mark(1)~^\- mark messages
-^mhbuild(1)~^\- translate MIME composition draft
-^mhl(1)~^\- produce formatted listings of nmh messages
-^mhlist(1)~^\- list information about content of MIME messages
-^mhmail(1)~^\- send or read mail
-^mhn(1)~^\- display/list/store/cache MIME messages
-^mhparam(1)~^\- print nmh profile components
-^mhpath(1)~^\- print full pathnames of nmh messages and folders
-^mhshow(1)~^\- display MIME messages
-^mhstore(1)~^\- store contents of MIME messages into files
-^msgchk(1)~^\- check for messages
-^msh(1)~^\- nmh shell(and BBoard reader)
-^next(1)~^\- show the next message
-^packf(1)~^\- compress a folder into a single file
-^pick(1)~^\- select messages by content
-^prev(1)~^\- show the previous message
-^prompter(1)~^\- prompting editor front end
-^rcvdist(1)~^\- asynchronously redistribute new mail
-^rcvpack(1)~^\- append message to file
-^rcvstore(1)~^\- asynchronously incorporate new mail
-^rcvtty(1)~^\- report new mail
-^refile(1)~^\- file messages in other folders
-^repl(1)~^\- reply to a message
-^rmf(1)~^\- remove folder
-^rmm(1)~^\- remove messages
-^scan(1)~^\- produce a one line per message scan listing
-^send(1)~^\- send a message
-^sendfiles(1)~^\- send multiple files and directories in MIME message
-^show(1)~^\- show(display) messages
-^slocal(1)~^\- asynchronously filter and deliver new mail
-^sortm(1)~^\- sort messages
-^whatnow(1)~^\- prompting front\-end for send
-^whom(1)~^\- report to whom a message would go
-.sp
-^mh\-alias(5)~^\- alias file for nmh message system
-^mh\-draft(5)~^\- draft folder facility
-^mh\-format(5)~^\- format file for nmh message system
-^mh\-mail(5)~^\- message format for nmh message system
-^mh\-profile(5)~^\- user customization for nmh message system
-^mh\-sequence(5)~^\- sequence specification for nmh message system
-^mh\-tailor(5)~^\- mail transport configuration for nmh message system
-.sp
-^ap(8)~^\- parse addresses 822\-style
-^conflict(8)~^\- search for alias/password conflicts
-^dp(8)~^\- parse dates 822\-style
-^fmtdump(8)~^\- decode \fInmh\fP format files
-^install\-mh(8)~^\- initialize the nmh environment
-^post(8)~^\- deliver a message
-.fi
-.RE
-
+Note that although
+.B whatnow
+provides much of the primary
+.B nmh
+user interface for sending mail, it is almost never invoked manually,
+but rather is invoked indirectly by one of the above commands, after
+you've composed a message in your editor, and before you've decided to
+send it.  Here you can add attachments, check the recipient
+list, decide to quit and send it later, etc.
+.PP
+Related utilities:
+.TP \n(ttu
+.PD 0
+.IR ali (1)
+list mail aliases
+.TP
+.IR anno (1)
+annotate messages
+.TP
+.IR whom (1)
+report to whom a message would go
+.TP
+.IR dist (1)
+redistribute a message to additional addresses
+.PD
+.PP
+Advanced commands, only sometimes invoked directly:
+.TP \n(ttu
+.PD 0
+.IR mhbuild (1)
+translate MIME composition draft
+.TP
+.IR send (1)
+send a message
+.TP
+.IR sendfiles (1)
+send multiple files in a MIME message
+.PD
+.ne 4
+.SS
+Incorporating
+.TP \n(ttu
+.IR inc (1)
+incorporate new mail
+.PP
+Related utilities:
+.TP \n(ttu
+.PD 0
+.IR burst (1)
+explode digests into messages
+.TP
+.IR msgchk (1)
+check for messages
+.TP
+.IR rcvdist (1)
+asynchronously redistribute new mail
+.TP
+.IR rcvpack (1)
+append message to file
+.TP
+.IR rcvstore (1)
+asynchronously incorporate new mail
+.TP
+.IR slocal (1)
+asynchronously filter and deliver new mail
+.PD
+.ne 4
+.SS
+Viewing
+.TP \n(ttu
+.PD 0
+.IR next (1)
+show the next message
+.TP
+.IR prev (1)
+show the previous message
+.TP
+.IR show (1)
+show(display) messages
+.TP
+.IR scan (1)
+produce a one line per message scan listing
+.TP
+.IR fnext (1)
+select the next folder with new messages
+.TP
+.IR fprev (1)
+select the previous folder with new messages
+.PD
+.PP
+Related utilities, only sometimes invoked directly:
+.TP \n(ttu
+.PD 0
+.IR mhl (1)
+produce formatted listings of nmh messages
+.TP
+.IR mhlist (1)
+list information about content of MIME messages
+.TP
+.IR mhn (1)
+display/list/store/cache MIME messages
+.TP
+.IR mhshow (1)
+display MIME messages
+.TP
+.IR mhstore (1)
+store contents of MIME messages into files
+.PD
+.ne 4
+.SS
+Searching
+.PP
+Within a folder:
+.TP \n(ttu
+.IR pick (1)
+select messages by content
+.PP
+Across folders:
+.TP \n(ttu
+.PD 0
+.IR new (1)
+list folders with new messages
+.TP
+.IR unseen (1)
+list new messages in a give set of folders
+.TP
+.IR flist (1)
+list folders with messages in given sequence(s)
+.TP
+.IR flists (1)
+list all folders with messages in given sequence(s)
+.TP
+.IR folder (1)
+set/list current folder/message
+.TP
+.IR folders (1)
+list all folders
+.PD
+.ne 4
+.SS
+Organizing
+.TP \n(ttu
+.PD 0
+.IR mark (1)
+mark messages
+.TP
+.IR refile (1)
+file messages in other folders
+.TP
+.IR rmf (1)
+remove folder
+.TP
+.IR rmm (1)
+remove messages
+.TP
+.IR sortm (1)
+sort messages
+.PD
+.ne 4
+.SS
+Convenience Wrappers
+.TP \n(ttu
+.PD 0
+.IR mhmail (1)
+send or read mail
+.TP
+.IR msh (1)
+nmh shell
+.PD
+.ne 4
+.SS
+Utilities
+.TP \n(ttu
+.PD 0
+.IR mhparam (1)
+print nmh profile components
+.TP
+.IR mhpath (1)
+print full pathnames of nmh messages and folders
+.TP
+.IR packf (1)
+compress a folder into a single file
+.TP
+.IR prompter (1)
+prompting editor front end
+.TP
+.IR rcvtty (1)
+report new mail
+.PD
+.ne 4
+.SS
+Indirectly Invoked Commands
+.TP \n(ttu
+.PD 0
+.IR ap (8)
+parse addresses 822\-style
+.TP
+.IR conflict (8)
+search for alias/password conflicts
+.TP
+.IR dp (8)
+parse dates 822\-style
+.TP
+.IR fmtdump (8)
+decode
+.IR mh-format (5)
+files
+.TP
+.IR install\-mh (8)
+initialize the nmh environment
+.TP
+.IR post (8)
+deliver a message
+.PD
+.ne 4
+.SS
+Files Used by nmh Commands
+.TP \n(ttu
+.PD 0
+.IR mh\-alias (5)
+alias file for nmh message system
+.TP
+.IR mh\-draft (5)
+draft folder facility
+.TP
+.IR mh\-format (5)
+format file for nmh message system
+.TP
+.IR mh\-mail (5)
+message format for nmh message system
+.TP
+.IR mh\-profile (5)
+user customization for nmh message system
+.TP
+.IR mh\-sequence (5)
+sequence specification for nmh message system
+.TP
+.IR mh\-tailor (5)
+mail transport customization for nmh message system
+.PD
+.ne 4
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%bindir%~^contains \fInmh\fR commands
-^%etcdir%~^contains \fInmh\fR format files
-^%libdir%~^contains \fInmh\fR library commands
-^$HOME/\&.mh\(ruprofile~^The user profile
-.fi
-
-.SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-.fi
-
+.TP
+%bindir%
+contains
+.B nmh
+commands
+.TP
+%etcdir%
+contains
+.B nmh
+format files
+.TP
+%libdir%
+contains
+.B nmh
+library commands
+.TP
+$HOME/\&.mh\-profile
+The user's nmh profile
+.ne 4
+.SH "SEE ALSO"
+.IR install-mh (1),
+.IR mh-profile (5),
+.IR mh-chart (7)
+.ne 4
 .SH BUGS
 If problems are encountered with an
 .B nmh
@@ -287,19 +495,17 @@ be reported to the local maintainers of
 When doing this, the
 name of the program should be reported, along with the version information
 for the program.
-.br
+.PP
 To find out what version of an
 .B nmh
 program is being run, invoke
 the program with the
 .B \-version
-switch.  This information includes
+switch.  This prints
 the version of
 .BR nmh ,
-the host it was generated on, and the date the
-program was loaded.
+the host it was compiled on, and the date the
+program was linked.
 .PP
 Send bug reports and suggestions to
 .IR nmh-workers@nongnu.org .
-.SH "SEE ALSO"
-mh-chart(7)
