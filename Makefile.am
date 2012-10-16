@@ -549,19 +549,26 @@ man/man.sed: Makefile
 	@echo ' s,%mhl_reply%,,g' >> $@
 
 man/mh-chart.man:
-	@$(srcdir)/man/mh-chart-gen.sh > $@
+	$(srcdir)/man/mh-chart-gen.sh > $@
 
 .man.$(manext1):
-	@$(SED) -f man/man.sed $< > $@
+	$(SED) -f man/man.sed $< > $@
 
 .man.$(manext5):
-	@$(SED) -f man/man.sed $< > $@
+	$(SED) -f man/man.sed $< > $@
 
 .man.$(manext7):
-	@$(SED) -f man/man.sed $< > $@
+	$(SED) -f man/man.sed $< > $@
 
 .man.$(manext8):
-	@$(SED) -f man/man.sed $< > $@
+	$(SED) -f man/man.sed $< > $@
+
+man: $(man_MANS)
+
+cleanman:
+	rm -f $(man_MANS)
+
+.PHONY: man cleanman
 
 ## Don't include commit hashes in ChangeLog.
 ChangeLog:
