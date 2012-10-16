@@ -6,10 +6,10 @@
 nmhmandir=`dirname $0`
 
 cat <<'EOF'
+.TH MH-CHART %manext7% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH MH-CHART %manext7% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-chart \- Chart of nmh Commands
 .SH SYNOPSIS
