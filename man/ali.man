@@ -1,7 +1,7 @@
+.TH ALI %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH ALI %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 ali \- list mail aliases
 .SH SYNOPSIS

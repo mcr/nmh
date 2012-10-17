@@ -1,7 +1,7 @@
+.TH MHPARAM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH MHPARAM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mhparam \- print nmh profile and context components
 .SH SYNOPSIS

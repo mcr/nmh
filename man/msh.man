@@ -1,7 +1,7 @@
+.TH MSH %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH MSH %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 msh \- nmh shell (and BBoard reader)
 .SH SYNOPSIS

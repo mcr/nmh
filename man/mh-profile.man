@@ -1,7 +1,7 @@
+.TH MH-PROFILE %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH MH-PROFILE %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-profile \- user profile customization for nmh message handler
 .SH SYNOPSIS

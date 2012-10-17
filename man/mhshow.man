@@ -1,7 +1,7 @@
+.TH MHSHOW %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH MHSHOW %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mhshow \- display MIME messages
 .SH SYNOPSIS

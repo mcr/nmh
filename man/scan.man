@@ -1,7 +1,7 @@
+.TH SCAN %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH SCAN %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 scan \- produce a one line per message scan listing
 .SH SYNOPSIS

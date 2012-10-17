@@ -1,7 +1,7 @@
+.TH RCVDIST %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH RCVDIST %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 rcvdist \- asynchronously redistribute new mail
 .SH SYNOPSIS

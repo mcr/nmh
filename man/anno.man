@@ -1,7 +1,7 @@
+.TH ANNO %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH ANNO %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 anno \- annotate messages
 .SH SYNOPSIS

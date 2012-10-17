@@ -1,7 +1,7 @@
+.TH INC %manext1% "%nmhdate%" MH.6.8 [%nmhversion%] XXX
 .\"
 .\" %nmhwarning%
 .\"
-.TH INC %manext1% "%nmhdate%" MH.6.8 [%nmhversion%] XXX
 .SH NAME
 inc \- incorporate new mail
 .SH SYNOPSIS

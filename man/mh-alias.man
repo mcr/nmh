@@ -1,7 +1,7 @@
+.TH MH-ALIAS %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH MH-ALIAS %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-alias \- alias file for nmh message system
 .SH SYNOPSIS

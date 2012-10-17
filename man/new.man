@@ -1,8 +1,7 @@
+.TH NEW %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH NEW %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
-
 .SH NAME
 new \- report on folders with new messages
 .PP

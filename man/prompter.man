@@ -1,7 +1,7 @@
+.TH PROMPTER %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH PROMPTER %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 prompter \- prompting editor front-end for nmh
 .SH SYNOPSIS

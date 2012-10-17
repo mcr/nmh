@@ -1,7 +1,7 @@
+.TH REFILE %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH REFILE %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 refile \- file message in other folders
 .SH SYNOPSIS

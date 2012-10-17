@@ -1,7 +1,7 @@
+.TH MHBUILD %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH MHBUILD %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mhbuild \- translate MIME composition draft
 .SH SYNOPSIS

@@ -1,7 +1,7 @@
+.TH WHOM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH WHOM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 whom \- report to whom a message would go
 .SH SYNOPSIS

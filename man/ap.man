@@ -1,7 +1,7 @@
+.TH AP %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH AP %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 ap \- parse addresses 822-style
 .SH SYNOPSIS

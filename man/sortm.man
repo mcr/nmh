@@ -1,7 +1,7 @@
+.TH SORTM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH SORTM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 sortm \- sort messages
 .SH SYNOPSIS

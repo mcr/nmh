@@ -1,7 +1,7 @@
+.TH POST %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH POST %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 post \- deliver a message
 .SH SYNOPSIS

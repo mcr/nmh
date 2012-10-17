@@ -1,7 +1,7 @@
+.TH MH-TAILOR %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH MH-TAILOR %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 mh-tailor, mts.conf \- mail transport configuration for nmh message handler
 .SH SYNOPSIS

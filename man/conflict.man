@@ -1,7 +1,7 @@
+.TH CONFLICT %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH CONFLICT %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 conflict \- search for alias/password conflicts
 .SH SYNOPSIS

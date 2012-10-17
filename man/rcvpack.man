@@ -1,7 +1,7 @@
+.TH RCVPACK %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH RCVPACK %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 rcvpack \- append message to file
 .SH SYNOPSIS
