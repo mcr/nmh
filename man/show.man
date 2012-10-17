@@ -162,14 +162,12 @@ non\-empty, then
 .B show
 will remove each of the messages shown
 from each sequence named by the profile entry.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -181,10 +179,8 @@ from each sequence named by the profile entry.
 ^showproc:~^Program to show text (non-MIME) messages
 ^showmimeproc:~^Program to show non-text (MIME) messages
 .fi
-
 .SH "SEE ALSO"
 mhl(1), mhshow(1), more(1), next(1), prev(1), scan(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -192,11 +188,9 @@ mhl(1), mhshow(1), more(1), next(1), prev(1), scan(1)
 .RB ` \-checkmime '
 .RB ` \-header '
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
 message selected will become the current message.
-
 .SH BUGS
 The
 .B \-header

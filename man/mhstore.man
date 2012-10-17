@@ -498,7 +498,6 @@ user profile, e.g.,
 which is created automatically during
 .B nmh
 installation.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -507,7 +506,6 @@ installation.
 ^$MHSTORE~^Additional profile entries
 ^%etcdir%/mhn.defaults~^System default MIME profile entries
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -521,10 +519,8 @@ installation.
 ^nmh-storage~^Directory to store contents
 ^mhstore-store-<type>*~^Template for storing contents
 .fi
-
 .SH "SEE ALSO"
 mhbuild(1), mhlist(1), mhshow(1), sendfiles(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -534,10 +530,8 @@ mhbuild(1), mhlist(1), mhshow(1), sendfiles(1)
 .RB ` \-nocheck '
 .RB ` \-rcache\ ask '
 .RB ` \-wcache\ ask '
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
 message selected will become the current message.
-
 .SH BUGS
 Partial messages contained within a multipart content are not reassembled.

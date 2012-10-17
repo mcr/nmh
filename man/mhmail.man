@@ -223,7 +223,6 @@ is not used, or
 if
 .B \-profile
 is used.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -232,17 +231,14 @@ is used.
 ^%libdir%/post~^Program to deliver a message
 ^/tmp/mhmail*~^Temporary copy of message
 .fi
-
 .SH "SEE ALSO"
 dist(1), inc(1), mh-format(5), post(8), send(1)
-
 .SH DEFAULTS
 .nf
 .RB ` "\-from localmbox" '
 .RB ` \-profile "' is enabled by default only with " \-attach
 .RB ` \-send '
 .fi
-
 .SH CONTEXT
 If
 .B inc

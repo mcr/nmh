@@ -230,7 +230,6 @@ the
 program which starts the initial edit.  Hence,
 .B \-nowhatnowproc
 will prevent any edit from occurring.)
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -240,7 +239,6 @@ will prevent any edit from occurring.)
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -253,10 +251,8 @@ will prevent any edit from occurring.)
 ^fileproc:~^Program to refile the message
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
 .fi
-
 .SH "SEE ALSO"
 dist(1), forw(1), repl(1), send(1), whatnow(1), mh-profile(5)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -264,10 +260,8 @@ dist(1), forw(1), repl(1), send(1), whatnow(1), mh-profile(5)
 .RB ` \-nodraftfolder '
 .RB ` \-nouse '
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 If
 .I whatnowproc

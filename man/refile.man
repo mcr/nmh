@@ -166,14 +166,12 @@ The
 switch tells
 .B refile
 to file the <mh\-dir>/draft.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -184,10 +182,8 @@ to file the <mh\-dir>/draft.
 ^Folder\-Protect:~^To set mode when creating a new folder
 ^rmmproc:~^Program to delete the message
 .fi
-
 .SH "SEE ALSO"
 folder(1), rmf(1), rmm(1)
-
 .SH DEFAULTS
 .nf
 .RB ` "\-src\ +folder" "' defaults to the current folder"
@@ -196,7 +192,6 @@ folder(1), rmf(1), rmm(1)
 .RB ` \-nounlink '
 .RB ` \-nopreserve '
 .fi
-
 .SH CONTEXT
 If
 .B \-src
@@ -215,7 +210,6 @@ will also define
 those sequences for the destination folders.  See
 .B mh\-sequence (5)
 for information concerning the previous sequence.
-
 .SH BUGS
 Since
 .B refile

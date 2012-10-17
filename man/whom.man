@@ -127,14 +127,12 @@ read (more than one file, each preceded by
 can be named). See
 .BR mh\-alias (5)
 for more information.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -145,20 +143,16 @@ for more information.
 ^Aliasfile:~^For a default alias file
 ^postproc:~^Program to post the message
 .fi
-
 .SH "SEE ALSO"
 mh\-alias(5), post(8)
-
 .SH DEFAULTS
 .nf
 .RB ` file "' defaults to <mh\-dir>/draft"
 .RB ` \-nocheck '
 .RB ` \-alias "' defaults to  %etcdir%/MailAliases"
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 With the
 .B \-check

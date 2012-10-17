@@ -46,7 +46,6 @@ escape sequences which begin with `%'.  When specifying a format
 string, the usual C backslash characters are honored: `\\b', `\\f',
 `\\n', `\\r', and `\\t'.  Continuation lines in format files end with
 `\\' followed by the newline character.
-
 .\" TALK ABOUT SYNTAX FIRST, THEN SEMANTICS
 .SS SYNTAX
 Format strings are built around
@@ -100,7 +99,6 @@ or a control escape.  When the argument is a function or a
 component, they are listed without a leading `%'.  When control escapes
 are used as function arguments, they written as normally, with
 a leading `%';
-
 .SS "Control escapes"
 .PP
 A
@@ -137,13 +135,11 @@ if the function return or component value is non-zero, and false if zero.
 For string valued functions or components, the condition is true
 if the function return or component value is 
 a non-empty string, and false for an empty string.
-
 .PP
 The `%?' control escape is optional, and may there may be more
 than one `%?' control escape in a conditional block.
 The `%|' control escape
 is also optional, but may be included at most once.
-
 .SS "Function escapes"
 Functions expecting an argument generally
 require an argument of a particular type.
@@ -747,6 +743,5 @@ If so, it is printed at full width: otherwise
 at 4 digits.
 .SH "SEE ALSO"
 scan(1), repl(1), ap(8), dp(8)
-
 .SH CONTEXT
 None

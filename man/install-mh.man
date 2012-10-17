@@ -66,7 +66,6 @@ The \fB\-check\fP option can be used to check whether or not nmh has
 been installed.
 This can be used by other programs to determine whether or not nmh has
 been installed without their having to know the internals of nmh.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -74,7 +73,6 @@ been installed without their having to know the internals of nmh.
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mh.profile~^Used to initialize user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -82,7 +80,6 @@ been installed without their having to know the internals of nmh.
 .ta \w'ExtraBigProfileName  'u
 ^Path:~^To set the user's nmh directory
 .fi
-
 .SH CONTEXT
 With
 .BR \-auto ,

@@ -281,14 +281,12 @@ in the
 same way
 .B mark
 uses them.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -297,10 +295,8 @@ uses them.
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 .fi
-
 .SH "SEE ALSO"
 mark(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -309,10 +305,8 @@ mark(1)
 .RB ` \-zero '
 .RB ` \-list "' is the default if no `\-sequence', `\-nolist' otherwise"
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.
-
 .SH HISTORY
 In previous versions of
 .BR MH ,
@@ -357,13 +351,11 @@ show\0fear
 .PP
 Finally, timezones used to be ignored when comparing dates: they aren't
 any more.
-
 .SH "HELPFUL HINTS"
 Use
 .RB \*(lq "pick sequence \-list" \*(rq
 to enumerate the messages in a sequence
 (such as for use by a shell script).
-
 .SH BUGS
 The argument to the
 .B \-after

@@ -148,7 +148,7 @@ output instead.  If \*(lqalias\*(rq is terminated with a `;' instead of
 a `:', then both the \*(lqalias\*(rq and the address are output in the
 correct format (with the alias quoted if necessary and the address
 wrapped in <>).
-
+.PP
 This makes replies possible since
 .B nmh
 aliases
@@ -182,7 +182,6 @@ is defined as an alias for \*(lqfrated@UCI\*(rq, and \*(lqsgroup\*(rq
 is defined as an alias for the three names \*(lqfrated@UCI\*(rq,
 \*(rqfear\*(rq, and \*(rqfreida\*(rq.
 .PP
-
 The alias \*(lqb-people\*(rq is a blind list which includes the addresses
 \*(lqbill\*(rq and \*(lqbetty\*(rq; the message will be delivered to those
 addresses, but the message header will show only \*(lqBlind List: ;\*(rq
@@ -225,7 +224,6 @@ that appears to be local, a system\-wide alias file is consulted.  These
 aliases are
 .B NOT
 expanded into the headers of messages delivered.
-
 .SH "HELPFUL HINTS"
 To use aliasing in
 .B nmh
@@ -267,14 +265,12 @@ expanded.  There must not be a semicolon at the end of, or within, the
 address group of a blind list.
 .B post
 will append the semicolon to the blind list name.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^%etcdir%/MailAliases~^global nmh alias file
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -282,13 +278,10 @@ will append the semicolon to the blind list name.
 .ta \w'ExtraBigProfileName  'u
 ^Aliasfile:~^For a default alias file
 .fi
-
 .SH "SEE ALSO"
 ali(1), send(1), whom(1), group(5), passwd(5), conflict(8), post(8)
-
 .SH CONTEXT
 None
-
 .SH BUGS
 Although the forward-referencing semantics of
 .B mh\-alias

@@ -236,7 +236,6 @@ SMTP MTA.  Encrypted data is labelled with `(tls-encrypted)' and
 `(tls-decrypted)' when viewing the SMTP transction with the
 .B \-snoop
 switch.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -246,19 +245,16 @@ switch.
 ^%bindir%/refile~^Program to process Fcc:s
 ^%libdir%/mhl~^Program to process Bcc:s
 .fi
-
 .SH "PROFILE COMPONENTS"
 .B post
 does
 .B NOT
 consult the user's
 .I \&.mh\(ruprofile
-
 .SH "SEE ALSO"
 mhmail(1), send(1), mh\-mail(5), mh\-alias(5), mh\-tailor(5),
 .I "Standard for the Format of ARPA Internet Text Messages"
 (RFC\-822)
-
 .SH DEFAULTS
 .nf
 .RB ` \-alias "' defaults to %etcdir%/MailAliases"
@@ -271,10 +267,8 @@ mhmail(1), send(1), mh\-mail(5), mh\-alias(5), mh\-tailor(5),
 .RB ` "\-width\ 72" '
 .RB ` \-nofilter '
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 \*(lqReply\-To:\*(rq fields are allowed to have groups in them according
 to the 822 specification, but

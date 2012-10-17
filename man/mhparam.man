@@ -98,11 +98,9 @@ is also useful in back\-quoted operations:
 .nf
 % fgrep cornell.edu `mhpath +`/`mhparam aliasfile`
 .fi
-
 .SH "EXIT STATUS"
 .B mhparam
 returns the number of components that were not found.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -112,7 +110,6 @@ returns the number of components that were not found.
 ^<mh-dir>/context~^The user context
 ^or $MHCONTEXT~^Rather than the standard context
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -120,16 +117,13 @@ returns the number of components that were not found.
 .ta \w'ExtraBigProfileName  'u
 ^context:~^To determine the context file
 .fi
-
 .SH "SEE ALSO"
 mh-profile(5)
-
 .SH DEFAULTS
 .nf
 .RB ` \-nocomponent "' if only one component is specified"
 .RB ` \-component "' if more than one component is specified"
 .RB ` components "' defaults to none"
 .fi
-
 .SH CONTEXT
 None

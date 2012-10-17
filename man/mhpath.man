@@ -115,15 +115,12 @@ is also useful in back\-quoted operations:
 /r/phyl/Mail
 .fi
 .RE
-.PP
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -132,19 +129,15 @@ is also useful in back\-quoted operations:
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 .fi
-
 .SH "SEE ALSO"
 folder(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to none"
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 Like all
 .B nmh

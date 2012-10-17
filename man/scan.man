@@ -198,14 +198,12 @@ so interrupting a long
 listing preserves the new context.
 .B nmh
 purists hate this idea.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -215,10 +213,8 @@ purists hate this idea.
 ^Alternate\-Mailboxes:~^To determine the user's mailboxes
 ^Current\-Folder:~^To find the default current folder
 .fi
-
 .SH "SEE ALSO"
 inc(1), pick(1), show(1), mh\-format(5)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -227,17 +223,14 @@ inc(1), pick(1), show(1), mh\-format(5)
 .RB ` \-noheader '
 .RB ` \-width "' defaulted to the width of the terminal"
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.
-
 .SH HISTORY
 Prior to using the format string mechanism,
 .B \-header
 used to generate
 a heading saying what each column in the listing was.  Format strings
 prevent this from happening.
-
 .SH BUGS
 The argument to the
 .B \-format

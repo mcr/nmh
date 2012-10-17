@@ -35,7 +35,6 @@ is simply a format string and the file is simply a format file.
 See
 .BR mh-format (5)
 for the details.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -43,7 +42,6 @@ for the details.
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/scan.default~^The default format file
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -51,13 +49,10 @@ for the details.
 .ta \w'ExtraBigProfileName  'u
 ^Path:~^To determine the user's nmh directory
 .fi
-
 .SH "SEE ALSO"
 mh-format(5), mh-sequences(8)
-
 .SH CONTEXT
 None
-
 .SH BUGS
 The output may not be useful unless you are familiar
 with the internals of the mh-format subroutines.

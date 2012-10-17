@@ -163,14 +163,12 @@ form \*(lqname:n\*(rq, \*(lqname:+n\*(rq, or \*(lqname:-n\*(rq, and refer
 to the first or last `n' messages of the sequence `name', respectively.
 Constructs of the form \*(lqname1\-name2\*(rq are forbidden for user
 defined sequences.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -179,20 +177,16 @@ defined sequences.
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 .fi
-
 .SH "SEE ALSO"
 flist(1), pick(1), mh-sequence(5)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
 .RB ` \-add "' if " \-sequence " is specified, " \-list " otherwise"
 .RB ` msgs "' defaults to cur (or all if " \-list " is specified)"
 .RB ` \-nozero '
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.
-
 .SH "HELPFUL HINTS"
 Use
 .B flist

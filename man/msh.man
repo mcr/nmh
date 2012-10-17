@@ -179,7 +179,6 @@ When parsing commands to the left of any redirection symbol,
 will honor `\\' (back\-slash) as the quote next\-character symbol, and
 `\*(lq' (double\-quote) as quote\-word delimiters.  All other input tokens
 are separated by whitespace (spaces and tabs).
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -187,7 +186,6 @@ are separated by whitespace (spaces and tabs).
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mts.conf~^nmh mts configuration file
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -198,10 +196,8 @@ are separated by whitespace (spaces and tabs).
 ^fileproc:~^Program to file messages
 ^showproc:~^Program to show messages
 .fi
-
 .SH "SEE ALSO"
 packf(1)
-
 .SH DEFAULTS
 .nf
 .RB ` file "' defaults to \*(lq./msgbox\*(rq"
@@ -209,10 +205,8 @@ packf(1)
 .RB ` \-noscan '
 .RB ` \-notopcur '
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 The argument to the
 .B \-prompt

@@ -15,7 +15,6 @@ message or collection of messages.
 has several internally
 defined sequences, as well as allowing users to define their own
 sequences.
-
 .SS "Message Specification and Pre\-Defined Message Sequences"
 Most
 .B nmh
@@ -75,7 +74,6 @@ There is also a special \*(lqreserved\*(rq message name \*(lqnew\*(rq
 which is used by the
 .B mhpath
 command.
-
 .SS "User\-Defined Message Sequences"
 In addition to the \*(lqreserved\*(rq (pre-defined) message names given
 above,
@@ -147,7 +145,6 @@ and
 But if the folder is read\-only, or if
 the \*(lqmh\-sequences\*(rq profile entry is defined but empty, then
 \fIprivate\fR sequences will be created instead.
-
 .SS "Sequence Negation"
 .B Nmh
 provides the ability to select all messages not elements of a
@@ -172,7 +169,6 @@ of the sequence \*(lqfoo\*(rq.
 .PP
 Obviously, the user should beware of defining sequences with names that
 begin with the value of the \*(lqSequence\-Negation\*(rq profile entry.
-
 .SS "The Previous Sequence"
 .B Nmh
 provides the ability to remember the `msgs' or `msg' argument
@@ -213,7 +209,6 @@ and
 will write to the
 .B \&.mh\(rusequences
 file.
-
 .SS "The Unseen Sequence"
 Finally, many users like to indicate which messages have not been
 previously seen by them.  The commands
@@ -259,7 +254,6 @@ or
 displays a message, that message will be removed from
 any sequences named by the \*(lqUnseen\-Sequence\*(rq entry in the
 profile.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -268,7 +262,6 @@ profile.
 ^<mh\-dir>/context~^The user context
 ^<folder>/\&.mh\(rusequences~^File for public sequences
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -279,9 +272,7 @@ profile.
 ^Previous\-Sequence:~^The last message specification given
 ^Unseen\-Sequence:~^Those messages not yet seen by the user
 .fi
-
 .SH "SEE ALSO"
 flist(1), mark(1), pick(1), mh-profile(5)
-
 .SH DEFAULTS
 None

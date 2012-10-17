@@ -81,7 +81,6 @@ profile component.  Most of the features attributed to
 .B send
 are actually performed by
 .BR post .
-
 .PP
 By default the draft is scanned for a header named
 .IR Nmh-Attachment .
@@ -439,14 +438,12 @@ can be named).
 See
 .BR mh\-alias (5)
 for more information.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -459,11 +456,9 @@ for more information.
 ^mailproc:~^Program to post failure notices
 ^postproc:~^Program to post the message
 .fi
-
 .SH "SEE ALSO"
 comp(1), dist(1), forw(1), repl(1), mh\-alias(5), mh\-tailor(5), post(8),
 whatnow(1)
-
 .SH DEFAULTS
 .nf
 .RB ` file "' defaults to <mh\-dir>/draft"
@@ -482,10 +477,8 @@ whatnow(1)
 .RB ` "\-attach\ Nmh-Attachment" '
 .RB ` "\-attachformat\ 1" '
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 Under some configurations, it is not possible to monitor the mail delivery
 transaction;

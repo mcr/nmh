@@ -75,7 +75,6 @@ switch directs
 .B msgchk
 to print out the last date mail was read, if this can
 be determined.
- 
 .SS "Using POP"
 .B msgchk
 will normally check all the local mail drops, but if
@@ -147,7 +146,6 @@ with `(encrypted)' and `(decrypted)' when viewing the POP transaction
 with the
 .B \-snoop
 switch.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -156,7 +154,6 @@ switch.
 ^%etcdir%/mts.conf~^nmh mts configuration file
 ^%mailspool%/$USER~^Location of mail drop
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -164,16 +161,13 @@ switch.
 .ta \w'ExtraBigProfileName  'u
 None
 .fi
-
 .SH "SEE ALSO"
 inc(1)
-
 .SH DEFAULTS
 .nf
 .RB ` user "' defaults to the current user"
 .RB ` \-date '
 .RB ` "\-notify\ all" '
 .fi
-
 .SH CONTEXT
 None

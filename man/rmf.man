@@ -54,14 +54,12 @@ from your context without affecting the folder itself.
 .B Rmf
 irreversibly deletes messages that don't have other links, so
 use it with caution.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -71,23 +69,19 @@ use it with caution.
 ^Current\-Folder:~^To find the default current folder
 ^Inbox:~^To find the default inbox
 .fi
-
 .SH "SEE ALSO"
 rmm(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder, usually with confirmation"
 .RB ` \-interactive "' if +folder' not given, `\-nointeractive' otherwise"
 .fi
-
 .SH CONTEXT
 .B Rmf
 will set the current folder to the parent folder if a
 subfolder is removed; or if the current folder is removed, it will make
 \*(lqinbox\*(rq current.  Otherwise, it doesn't change the current folder
 or message.
-
 .SH BUGS
 Although intuitively one would suspect that
 .B rmf

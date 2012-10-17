@@ -138,10 +138,11 @@ If the
 .B \-annotate
 switch is given, the  message being distributed will
 be annotated with the lines:
-
-     Resent:\ date
-     Resent:\ addrs
-
+.RS
+Resent:\ date
+.br
+Resent:\ addrs
+.RE
 where each address list contains as many lines as required.  This
 annotation will be done only if the message is sent directly from
 .BR dist .
@@ -205,7 +206,6 @@ switch.  (In truth of fact, it is the
 program which starts the initial edit.  Hence,
 .B \-nowhatnowproc
 will prevent any edit from occurring.)
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -215,7 +215,6 @@ will prevent any edit from occurring.)
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -228,10 +227,8 @@ will prevent any edit from occurring.)
 ^fileproc:~^Program to refile the message
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
 .fi
-
 .SH "SEE ALSO"
 comp(1), forw(1), prompter(1), repl(1), send(1), whatnow(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -241,11 +238,9 @@ comp(1), forw(1), prompter(1), repl(1), send(1), whatnow(1)
 .RB ` \-inplace '
 .RB ` \-noatfile '
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The message
 distributed will become the current message.
-
 .SH HISTORY
 .B Dist
 originally used headers of the form
@@ -260,7 +255,6 @@ will recognize
 .RI \*(lq Distribute\-xxx: \*(rq
 type headers and automatically convert them to
 .RI \*(lq Resent\-xxx: \*(rq.
-
 .SH BUGS
 .B Dist
 does not rigorously check the message being distributed

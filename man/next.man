@@ -42,14 +42,12 @@ Consult the manual entry for
 .BR show (1)
 for all the
 details.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -60,21 +58,17 @@ details.
 ^showproc:~^Program to show non-MIME messages
 ^showmimeproc:~^Program to show MIME messages
 .fi
-
 .SH "SEE ALSO"
 show(1), prev(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
 .RB ` \-checkmime '
 .RB ` \-header '
-
 .SH CONTEXT
 If a folder is specified, it will become the current folder.  The message
 that is shown (i.e., the next message in sequence) will become the
 current message.
-
 .SH BUGS
 .B next
 is really a link to the

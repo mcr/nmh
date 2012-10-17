@@ -97,14 +97,12 @@ the same subject on the same date together, use:
 .RS 5
 sortm -textfield subject +folder
 .RE
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -113,10 +111,8 @@ sortm -textfield subject +folder
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 .fi
-
 .SH "SEE ALSO"
 folder(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -127,13 +123,11 @@ folder(1)
 .RB ` \-noverbose '
 .RB ` \-nolimit '
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.  If the current
 message is moved,
 .B sortm
 will preserve its status as current.
-
 .SH HISTORY
 Timezones used to be ignored when comparing dates: they aren't any more.
 .PP
@@ -147,7 +141,6 @@ sorting).  This was a bug, and has been fixed.  To compress the message
 numbering in a folder, use
 .RB \*(lq "folder\ \-pack" \*(rq
 as always.
-
 .SH BUGS
 If
 .B sortm

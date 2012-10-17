@@ -117,7 +117,6 @@ allow you to see the decisions and actions that
 is taking, as well as check for syntax errors in your
 .RI \*(lq \&.maildelivery \*(rq
 file.
-
 .SS "Message Transfer Agents"
 Most modern MTAs including
 .BR sendmail ,
@@ -134,7 +133,6 @@ in your \&.forward file in your home directory.  This will cause
 your MTA to invoke
 .B slocal
 on your behalf when a message arrives.
-
 .SS "The Maildelivery File"
 The
 .RI \*(lq \&.maildelivery \*(rq
@@ -276,7 +274,6 @@ message is considered delivered.
 The delivery file is always read completely, so that several matches
 can be made and several actions can be taken.
 .RE
-
 .SS "Security of Delivery Files"
 In order to prevent security problems, the
 .RI \*(lq \&.maildelivery \*(rq
@@ -297,7 +294,6 @@ owned by the root and must be writable only by the root.
 If a global delivery file cannot be found or does not perform an
 action which delivers the message, then standard delivery to the
 user's maildrop is performed.
-
 .SS "Example Delivery File"
 To summarize, here's an example delivery file:
 .PP
@@ -334,7 +330,6 @@ default   \-        file    ?       mailbox
 # always run rcvtty
 *         \-        pipe    R       %libdir%/rcvtty
 .fi
-
 .SS "Sub-process environment"
 When a process is invoked, its environment is: the user/group-ids are
 set to recipient's ids; the working directory is the recipient's home
@@ -367,7 +362,6 @@ wanted for as long as it wanted.  This approach is somewhat risky if
 the parent is going to return an exit status of zero.  If the parent is
 going to return a non-zero exit status, then this approach can lead to
 quicker delivery into your maildrop.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -377,10 +371,8 @@ quicker delivery into your maildrop.
 ^%etcdir%/maildelivery~^Rather than the standard file
 ^%mailspool%/$USER~^The default maildrop
 .fi
-
 .SH "SEE ALSO"
 rcvdist(1), rcvpack(1), rcvstore(1), rcvtty(1), mh\-format(5)
-
 .SH DEFAULTS
 .nf
 .RB ` \-noverbose '
@@ -390,10 +382,8 @@ rcvdist(1), rcvpack(1), rcvstore(1), rcvtty(1), mh\-format(5)
 .RB ` \-file "' defaults to stdin"
 .RB ` \-user "' defaults to the current user"
 .fi
-
 .SH CONTEXT
 None
-
 .SH HISTORY
 .B Slocal
 was originally designed to be backward-compatible with
@@ -422,7 +412,6 @@ value
 .B RP_MECH
 (200), which means
 \*(lquse an alternate route\*(rq (deliver the message to the maildrop).
-
 .SH BUGS
 Only two return codes are meaningful, others should be.
 .PP

@@ -43,16 +43,13 @@ action of
 .BR slocal ,
 although it might still have occasional uses in various
 shell scripts.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^%etcdir%/mts.conf~^nmh mts configuration file
 .fi
-
 .SH "SEE ALSO"
 rcvdist(1), rcvstore(1), rcvtty(1), slocal(1)
-
 .SH BUGS
 Only two return codes are meaningful, others should be.

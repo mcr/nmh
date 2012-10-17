@@ -286,17 +286,14 @@ under the
 .B \-annotate
 option.
 .RE
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^%mailspool%/$USER~^Location of mail drop
 .fi
-
 .SH "SEE ALSO"
 .I "Standard for the Format of ARPA Internet Text Messages
 (RFC\-822)
-
 .SH CONTEXT
 None

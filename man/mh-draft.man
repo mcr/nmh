@@ -266,7 +266,6 @@ Second, although conceptually
 deletes the `msgs' named in the draft folder, it does not call
 .I delete\-prog
 to perform the deletion.
-
 .SS "What Happens if the Draft Exists"
 When the
 .BR comp ,
@@ -331,6 +330,5 @@ command will accept one more response:
 just as if
 .B \-use
 had been given.
-
 .SH CONTEXT
 None

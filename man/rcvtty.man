@@ -98,7 +98,6 @@ will obey the notification status
 set by the command
 .BR biff (1)
 instead.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -107,19 +106,15 @@ instead.
 ^$HOME/\&.maildelivery~^The file controlling local delivery
 ^%etcdir%/maildelivery~^Rather than the standard file
 .fi
-
 .SH CONTEXT
 None
-
 .SH DEFAULTS
 .nf
 .RB ` \-width "' defaults to the width of the terminal"
 .RB ` \-newline '
 .RB ` \-bell '
 .fi
-
 .SH "SEE ALSO"
 rcvdist(1), rcvpack(1), rcvstore(1), mh\-format(5), slocal(1)
-
 .SH BUGS
 Only two return codes are meaningful, others should be.

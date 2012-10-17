@@ -10,7 +10,6 @@ fnext \- set current folder to next folder with new messages
 fprev \- set current folder to previous folder with new messages
 .PP
 unseen \- scan new messages in all folders with new messages
-
 .SH SYNOPSIS
 .HP 5
 .na
@@ -38,7 +37,6 @@ is equivalent to
 is equivalent to
 .B new \-mode unseen
 .ad
-
 .SH DESCRIPTION
 .B New
 in its default mode produces a one\-line\-per\-folder listing of all
@@ -83,14 +81,12 @@ mode,
 executes
 .B scan sequences
 for each matching folder.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -100,9 +96,7 @@ for each matching folder.
 ^Current\-Folder:~^To find the default current folder
 ^Unseen-Sequence:~^The name of the unseen message sequence
 .fi
-
 .SH "SEE ALSO"
 scan(1), mh\-format(5)
-
 .SH HISTORY
 Based on Luke Mewburn's new (http://www.mewburn.net/luke/src/new).

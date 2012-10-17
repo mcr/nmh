@@ -77,7 +77,6 @@ Here is the default format string used by
 which says that if an error was detected, print the error, a `:', and
 the address in error.  Otherwise, output the 822\-proper format of
 the address.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -85,25 +84,20 @@ the address.
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^%etcdir%/mts.conf~^nmh mts configuration file
 .fi
-
 .SH "PROFILE COMPONENTS"
 None
-
 .SH "SEE ALSO"
 dp(8),
 .I "Standard for the Format of ARPA Internet Text Messages"
 (RFC\-822)
-
 .SH DEFAULTS
 .nf
 .RB ` \-format "' defaults as described above"
 .RB ` \-normalize '
 .RB ` \-width "' defaults to the width of the terminal"
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 The argument to the
 .B \-format

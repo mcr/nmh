@@ -87,9 +87,7 @@ without creating a non-existant folder.
 .\" If `\-noprint' is specified, 
 .\" a `+folder' and/or `msg' may still be specified
 .\" to set the current folder and/or message,
-.\" but the folder summary will not be printed.
-
-.SS "Multiple Folders"
+.\" but the folder summary will not be printed..SS "Multiple Folders"
 Specifying
 .B \-all
 will produce a summary line for each top-level folder
@@ -122,7 +120,6 @@ mh	has \076 messages	(15\-\076);	cur=70.
 notes	has \0\02 messages	(\01\-\0\02);	cur=\01.
 ucom	has 124 messages	(\01\-124);	cur=\06; (others).
 .ta \w'/rnd/phyl/Mail/EP has 'u
-
 TOTAL = 339 messages in 7 folders
 .fi
 .RE
@@ -263,14 +260,12 @@ and
 .B \-list
 switches turn off
 .BR \-print .
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -282,7 +277,6 @@ switches turn off
 ^Folder\-Stack:~^To determine the folder stack
 .\" ^lsproc:~^Program to list the contents of a folder
 .fi
-
 .SH "SEE ALSO"
 refile(1), mhpath(1)
 
@@ -299,14 +293,12 @@ refile(1), mhpath(1)
 .RB ` \-print "' is the default if no " \-list ", " \-push ", or " \-pop " is specified"
 .RB ` \-list "' is the default if " \-push ", or " \-pop " is specified"
 .fi
-
 .SH CONTEXT
 If
 .I +folder
 and/or
 .I msg
 are given, they will become the current folder and/or message.
-
 .SH BUGS
 There is no way to restore the default behavior 
 (to ask the user whether to create a non-existant folder)

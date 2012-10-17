@@ -283,7 +283,6 @@ Encrypted traffic is labelled with `(encrypted)' and `(decrypted)'
 when viewing the POP transaction with the
 .B \-snoop
 switch.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -292,7 +291,6 @@ switch.
 ^%etcdir%/mts.conf~^nmh mts configuration file
 ^%mailspool%/$USER~^Location of mail drop
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -305,10 +303,8 @@ switch.
 ^Msg\-Protect:~^To set mode when creating a new message and audit\-file
 ^Unseen\-Sequence:~^To name sequences denoting unseen messages
 .fi
-
 .SH "SEE ALSO"
 mhmail(1), scan(1), mh\-mail(5), post(8)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaulted by \*(lqInbox\*(rq above"
@@ -320,7 +316,6 @@ mhmail(1), scan(1), mh\-mail(5), post(8)
 .RB ` \-width "' defaulted to the width of the terminal"
 .RB ` \-nopack '
 .fi
-
 .SH CONTEXT
 The folder into which messages are being incorporated will become the
 current folder.  The first message incorporated will become the current
@@ -329,7 +324,6 @@ message, unless the
 option is specified.  This leaves the context ready for a
 .B show
 of the first new message.
-
 .SH BUGS
 The argument to the
 .B \-format

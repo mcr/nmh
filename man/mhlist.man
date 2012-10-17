@@ -153,14 +153,12 @@ Content-MD5 header field), then
 .B mhlist
 will attempt to verify the
 integrity of the content.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -169,10 +167,8 @@ integrity of the content.
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 .fi
-
 .SH "SEE ALSO"
 mhbuild(1), mhshow(1), mhstore(1), sendfiles(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -184,7 +180,6 @@ mhbuild(1), mhshow(1), mhstore(1), sendfiles(1)
 .RB ` \-wcache\ ask '
 .RB ` \-noverbose '
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
 message selected will become the current message.

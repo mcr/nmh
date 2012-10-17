@@ -394,7 +394,6 @@ Consult the
 section of the
 .B nmh
 User's Manual for more information on making digests.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -408,7 +407,6 @@ User's Manual for more information on making digests.
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -423,12 +421,10 @@ User's Manual for more information on making digests.
 ^mhlproc:~^Program to filter messages being forwarded
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
 .fi
-
 .SH "SEE ALSO"
 mhbuild(1), comp(1), repl(1), send(1), whatnow(1), mh\-format(5),
 .I "Proposed Standard for Message Encapsulation"
 (RFC\-934)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -440,11 +436,9 @@ mhbuild(1), comp(1), repl(1), send(1), whatnow(1), mh\-format(5),
 .RB ` \-dashstuffing '
 .RB ` \-nomime '
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.
 The first message forwarded will become the current message.
-
 .SH BUGS
 If
 .I whatnowproc

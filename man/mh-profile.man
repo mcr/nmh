@@ -31,7 +31,6 @@ This is a comment.
 .PP
 Blank lines are not permitted in
 .IR \&.mh\(ruprofile.
-
 .SS "Standard Profile Entries"
 The possible profile components are exemplified below.  The only mandatory
 entry is `Path:'.  The others are optional; some have default values if
@@ -348,7 +347,6 @@ puts in the \*(lqFrom:\*(rq header; do not include an address in the
 signature text.  The \*(lqLocal\-Mailbox\*(rq profile component
 supersedes all of this.  (profile, no default)
 .RE
-
 .SS "Process Profile Entries"
 The following profile elements are used whenever an
 .B nmh
@@ -582,7 +580,6 @@ This is the program used by
 .B whatnow
 to determine to whom a message would be sent.
 .RE
-
 .SS "Environment Variables"
 The operation of
 .B nmh
@@ -964,7 +961,6 @@ and
 .B repl
 if annotations are to occur.
 .RE
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -975,10 +971,8 @@ if annotations are to occur.
 ^or $MHCONTEXT~^Rather than the standard context
 ^<folder>/\&.mh\(rusequences~^Public sequences for <folder>
 .fi
-
 .SH "SEE ALSO"
 nmh(7), environ(5), mh-sequence(5)
-
 .SH HISTORY
 The
 .I \&.mh\(ruprofile
@@ -1007,7 +1001,6 @@ lower-case).  If the entry is not absolute (does not start with a
 .B nmh
 directory.  As a result, you can actually have more than one set of
 private sequences by using different context files.
-
 .SH BUGS
 The shell quoting conventions are not available in the
 .IR \&.mh\(ruprofile .

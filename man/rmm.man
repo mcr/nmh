@@ -72,14 +72,12 @@ so a
 .B next
  will
 advance to the next message in the folder as expected.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -89,20 +87,16 @@ advance to the next message in the folder as expected.
 ^Current\-Folder:~^To find the default current folder
 ^rmmproc:~^Program to delete the message
 .fi
-
 .SH "SEE ALSO"
 refile(1), rmf(1)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
 .RB ` -nounlink '
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.
-
 .SH BUGS
 Since
 .B refile

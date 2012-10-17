@@ -98,14 +98,12 @@ and
 .B \-nopublic
 switches may be used
 to force these sequences to be public or private sequences.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -117,10 +115,8 @@ to force these sequences to be public or private sequences.
 ^Msg\-Protect:~^To set mode when creating a new message
 ^Unseen\-Sequence:~^To name sequences denoting unseen messages
 .fi
-
 .SH "SEE ALSO"
 rcvdist(1), rcvpack(1), rcvtty(1), mh\-sequence(5)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to \*(lqInbox\*(rq profile entry"
@@ -128,7 +124,6 @@ rcvdist(1), rcvpack(1), rcvtty(1), mh\-sequence(5)
 .RB ` \-unseen '
 .RB ` \-nozero '
 .fi
-
 .SH CONTEXT
 No context changes will be attempted, with the exception of
 sequence manipulation.

@@ -482,7 +482,6 @@ interface to
 The same caveats apply to this option as to the
 .B \-build
 switch.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -496,7 +495,6 @@ switch.
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -512,10 +510,8 @@ switch.
 ^mhlproc:~^Program to filter message being replied\-to
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
 .fi
-
 .SH "SEE ALSO"
 mhbuild(1), comp(1), forw(1), send(1), whatnow(1), mh\-format(5)
-
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
@@ -531,11 +527,9 @@ mhbuild(1), comp(1), forw(1), send(1), whatnow(1), mh\-format(5)
 .RB ` \-noatfile '
 .RB ` "\-width\ 72" '
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The message
 replied\-to will become the current message.
-
 .SH BUGS
 If any addresses occur in the reply template, addresses in the template
 that do not contain hosts are defaulted incorrectly.  Instead of using

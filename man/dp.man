@@ -61,31 +61,25 @@ Here is the default format string used by
 which says that if an error was detected, print the error, a `:',
 and the date in error.
 Otherwise, output the 822\-proper format of the date.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 None
-
 .SH "SEE ALSO"
 ap(8),
 .I "Standard for the Format of ARPA Internet Text Messages"
 (RFC\-822)
-
 .SH DEFAULTS
 .nf
 .RB ` \-format "' default as described above"
 .RB ` \-width "' default to the width of the terminal"
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 The argument to the
 .B \-format

@@ -139,7 +139,6 @@ errors:
 .nf
 #off
 #include <stdio.h>
-
 printf("Hello, World!);
 #pop
 .fi
@@ -473,7 +472,6 @@ an integrity check with each \*(lqleaf\*(rq content.  This will add a
 Content-MD5 header field to the content, along with the md5 sum of the
 unencoded contents.  This may be used by the receiver of the message to
 verify that the contents of the message were not changed in transport.
-
 .SS "Transfer Encodings"
 After
 .B mhbuild
@@ -503,7 +501,6 @@ encoding.  Along with encoding 8\-bit characters, it will now also encode
 certain common punctuation characters as well.  This slightly reduces the
 readability of the message, but allows the message to pass more reliably
 through mail gateways which involve the EBCDIC character encoding.
-
 .SS "Invoking mhbuild"
 Typically,
 .B mhbuild
@@ -563,7 +560,6 @@ What now? list
 .RE
 .PP
 will work as you expect.
-
 .SS "User Environment"
 Because the environment in which
 .B mhbuild
@@ -588,7 +584,6 @@ user profile, e.g.,
 .RE
 .PP
 if it exists.
-
 .SS "Syntax of Composition Files"
 The following is the formal syntax of a
 .B mhbuild
@@ -655,8 +650,6 @@ line         ::=     "##" text EOL
                    | text EOL
 .fi
 .RE
-.PP
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -665,7 +658,6 @@ line         ::=     "##" text EOL
 ^$MHBUILD~^Additional profile entries
 ^%etcdir%/mhn.defaults~^System default MIME profile entries
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -675,7 +667,6 @@ line         ::=     "##" text EOL
 ^Current\-Folder:~^To find the default current folder
 ^mhbuild-compose-<type>*~^Template for composing contents
 .fi
-
 .SH "SEE ALSO"
 mhlist(1), mhshow(1), mhstore(1),
 .br
@@ -696,7 +687,6 @@ mhlist(1), mhshow(1), mhstore(1),
 .br
 .I "Multipurpose Internet Mail Extensions (MIME) Part Five: Conformance Criteria and Examples"
 (RFC\-2049)
-
 .SH DEFAULTS
 .nf
 .RB ` \-headers '

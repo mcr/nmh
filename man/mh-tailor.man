@@ -257,11 +257,9 @@ the named POP service host is consulted.
 \"  .RS 5
 \"  The local BBoards domain (a UCI hack).
 \"  .RE
-
 \"  .SS "BBoards & The POP"
 \"  These options are only available if you compiled \fInmh\fP with
 \"  \*(lqbboards:\ pop\*(rq and \*(lqpop:\ on\*(rq.
-
 \"  .PP
 \"  .BR popbbhost :
 \"  .RS 5
@@ -285,7 +283,6 @@ the named POP service host is consulted.
 \"  present, then no check is made.  This variable should be set on the POP
 \"  BBoards service host.
 \"  .RE
-
 .SS "File Locking"
 A few words on locking:
 .B nmh
@@ -326,20 +323,16 @@ Prior to installing
 .BR nmh ,
 you should see how locking is done at
 your site, and set the appropriate values.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^%etcdir%/mts.conf~^nmh mts configuration file
 .fi
-
 .SH "PROFILE COMPONENTS"
 None
-
 .SH "SEE ALSO"
 mh\-mts(8), post(8)
-
 .SH DEFAULTS
 As listed above.  The path of the mail transport configuration
 file can be changed with the
@@ -347,7 +340,6 @@ file can be changed with the
 environment variable and augmented with the
 .B MHMTSUSERCONF
 environment variable, see mh\-profile(5).
-
 .SH BUGS
 Failure to open any mail transport configuration file is silently
 ignored.  Therefore, it's best to avoid dynamic creation of such

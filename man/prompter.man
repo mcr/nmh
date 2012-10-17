@@ -137,7 +137,6 @@ The first non\-flag argument to
 the draft file, and subsequent non\-flag arguments are ignored.
 .\" (\fIRepl\fR invokes editors with two file arguments:
 .\" the draft file name and the replied\-to message file name.)
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -145,7 +144,6 @@ the draft file, and subsequent non\-flag arguments are ignored.
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^/tmp/prompter*~^Temporary copy of message
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -154,20 +152,16 @@ the draft file, and subsequent non\-flag arguments are ignored.
 prompter\-next:	To name the editor to be used on exit from .B prompter
 ^Msg\-Protect:~^To set mode when creating a new draft
 .fi
-
 .SH "SEE ALSO"
 comp(1), dist(1), forw(1), repl(1), whatnow(1)
-
 .SH DEFAULTS
 .nf
 .RB ` \-prepend '
 .RB ` \-norapid '
 .RB ` \-nodoteof '
 .fi
-
 .SH CONTEXT
 None
-
 .SH "HELPFUL HINTS"
 The
 .B \-rapid
@@ -187,7 +181,6 @@ invoking prompter differently for different
 .B nmh
 commands (e.g.,
 \*(lqforw: -editor rapid\*(rq).
-
 .SH BUGS
 .B Prompter
 uses

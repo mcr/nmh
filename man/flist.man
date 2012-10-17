@@ -94,9 +94,7 @@ will suppress all other output.  If this option is used in conjunction with
 then
 .B flist
 will only print the names of those folders searched that contain messages in
-in at least one of the specified sequences.
-
-.SS "Multiple Folders"
+in at least one of the specified sequences..SS "Multiple Folders"
 If the option
 .B \-all
 is given (and no folders are specified with
@@ -175,14 +173,12 @@ This order puts a few interesting folders first, such as those with mail
 addressed to you personally, those about a pet project, and those about
 mh-related things.  It places uninteresting folders at the end, and it
 puts everything else in the middle in alphabetical order.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -193,10 +189,8 @@ puts everything else in the middle in alphabetical order.
 ^Unseen-Sequence:~^The name of the unseen message sequence
 ^Flist-Order:~^To sort folders by priority
 .fi
-
 .SH "SEE ALSO"
 folder(1), rcvstore(1), slocal(1), mh\-sequence(5)
-
 .SH DEFAULTS
 .nf
 .RB ` -sequence "' defaults to Unseen-Sequence profile entry"
@@ -206,7 +200,6 @@ folder(1), rcvstore(1), slocal(1), mh\-sequence(5)
 .RB ` \-noalpha '
 .RB ` \-nofast '
 .fi
-
 .SH CONTEXT
 If
 .I +folder

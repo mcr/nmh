@@ -157,14 +157,12 @@ to find out what will be extracted.  Then
 can be invoked with
 .B \-auto
 to perform the extraction.
-
 .SH FILES
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -173,17 +171,14 @@ to perform the extraction.
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 .fi
-
 .SH "SEE ALSO"
 mhbuild(1), mh-format(5), mhlist(1), mhshow(1), mhstore(1)
 .I "Proposed Standard for Message Encapsulation"
 (RFC\-934)
-
 .SH DEFAULTS
 .nf
 .RB ` "\-delay\ 0" '
 .RB ` "\-from localmbox" '
 .fi
-
 .SH CONTEXT
 None

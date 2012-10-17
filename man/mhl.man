@@ -366,7 +366,6 @@ options can be used to build up multiple arguments to the format filter.
 ^or <mh\-dir>/mhl.format~^Rather than the standard template
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -376,10 +375,8 @@ options can be used to build up multiple arguments to the format filter.
 ^formatproc:~^Program to use as a filter for components that
 ^^have the \*(lqformat\*(rq flag set.
 .fi
-
 .SH "SEE ALSO"
 show(1), ap(8), dp(8)
-
 .SH DEFAULTS
 .nf
 .RB ` \-bell '
@@ -387,10 +384,8 @@ show(1), ap(8), dp(8)
 .RB ` \-length\ 40 '
 .RB ` \-width\ 80 '
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 There should be some way to pass `bell' and `clear' information to the 
 front\-end.

@@ -58,7 +58,6 @@ switch will be read.  Each
 .I alias
 is processed as described in
 .BR mh\-alias (5).
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -67,7 +66,6 @@ is processed as described in
 ^/etc/passwd~^List of users
 ^/etc/group~^List of groups
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -76,10 +74,8 @@ is processed as described in
 ^Path:~^To determine the user's nmh directory
 ^Aliasfile:~^For a default alias file
 .fi
-
 .SH "SEE ALSO"
 mh\-alias(5)
-
 .SH DEFAULTS
 .nf
 .RB ` aliasfiles "' defaults to %etcdir%/MailAliases"
@@ -87,10 +83,8 @@ mh\-alias(5)
 .RB ` \-nonormalize '
 .RB ` \-nouser '
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 The
 .B \-user

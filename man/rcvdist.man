@@ -63,7 +63,6 @@ to do the actual
 delivery of the message, although this can be changed by defining the
 .I postproc
 profile component.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -74,6 +73,5 @@ profile component.
 ^$HOME/\&.maildelivery~^The file controlling local delivery
 ^%etcdir%/maildelivery~^Rather than the standard file
 .fi
-
 .SH "SEE ALSO"
 rcvpack(1), rcvstore(1), rcvtty(1), mh\-format(5), slocal(1)

@@ -196,7 +196,6 @@ useful) feature.  Consult the
 .BR mh-draft (5)
 man page for more
 information.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -204,7 +203,6 @@ information.
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/draft~^The draft file
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -224,19 +222,15 @@ information.
 ^sendproc:~^Program to use to send the message
 ^whomproc:~^Program to determine who a message would go to
 .fi
-
 .SH "SEE ALSO"
 send(1), whom(1)
-
 .SH DEFAULTS
 .nf
 .RB ` \-prompt "' defaults to \*(lqWhat\ Now?\ \*(rq"
 .RB ` \-attach "' defaults to \*(lqNmh-Attachment\*(rq"
 .fi
-
 .SH CONTEXT
 None
-
 .SH BUGS
 The argument to the
 .B \-prompt

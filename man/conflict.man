@@ -59,7 +59,6 @@ invocation to
 should be run under
 .BR cron (8),
 or whenever system accounting takes place.
-
 .SH FILES
 .fc ^ ~
 .nf
@@ -70,17 +69,13 @@ or whenever system accounting takes place.
 ^%bindir%/mhmail~^Program to send mail
 ^%mailspool%/~^Directory of mail drop
 .fi
-
 .SH "PROFILE COMPONENTS"
 None
-
 .SH "SEE ALSO"
 mh\-alias(5)
-
 .SH "DEFAULTS"
 .nf
 .RB ` aliasfiles "' defaults to %etcdir%/MailAliases"
 .fi
-
 .SH CONTEXT
 None

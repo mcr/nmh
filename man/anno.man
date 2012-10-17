@@ -156,7 +156,6 @@ in the profile.
 .ta \w'%etcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
-
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
@@ -165,10 +164,8 @@ in the profile.
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 .fi
-
 .SH "SEE ALSO"
 dist(1), forw(1), repl(1)
-
 .SH DEFAULTS
 .nf
 .RI ` +folder "' defaults to the current folder"
@@ -176,7 +173,6 @@ dist(1), forw(1), repl(1)
 .RB ` \-inplace '
 .RB ` \-date '
 .fi
-
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The first
 message annotated will become the current message.
