@@ -45,9 +45,18 @@ mhn \- display/list/store/cache MIME messages
 .RB [ \-rfc934mode " | " \-norfc934mode ]
 .ad
 .SH DESCRIPTION
-.B MHN SHOULD BE CONSIDERED DEPRECATED.  IT IS RETAINED FOR THE PURPOSE
-.B OF BACKWARD COMPATIBILITY, BUT EVERYONE SHOULD MIGRATE TO USING THE
-.B COMMANDS MHSHOW, MHSTORE, AND MHLIST.  CHECK THE INDIVIDUAL MAN PAGES
-.B FOR DETAILS.
+.B
+Mhn
+is deprecated. It is retained only
+for backwards compatibility.
+.PP
+You should migrate to using the
+commands
+.BR mhlist .
+.BR mhshow ,
+and
+.BR mhstore .
 .SH "SEE ALSO"
-mhbuild(1), mhl(1), sendfiles(1)
+.IR mhlist (1),
+.IR mhshow (1),
+.IR mhstore (1)

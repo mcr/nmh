@@ -457,8 +457,14 @@ for more information.
 ^postproc:~^Program to post the message
 .fi
 .SH "SEE ALSO"
-comp(1), dist(1), forw(1), repl(1), mh\-alias(5), mh\-tailor(5), post(8),
-whatnow(1)
+.IR comp (1),
+.IR dist (1),
+.IR forw (1),
+.IR repl (1),
+.IR whatnow (1),
+.IR mh\-alias (5),
+.IR mh\-tailor (5),
+.IR post (8)
 .SH DEFAULTS
 .nf
 .RB ` file "' defaults to <mh\-dir>/draft"

@@ -278,8 +278,8 @@ switches turn off
 .\" ^lsproc:~^Program to list the contents of a folder
 .fi
 .SH "SEE ALSO"
-refile(1), mhpath(1)
-
+.IR mhpath (1),
+.IR refile (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

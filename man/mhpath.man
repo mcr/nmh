@@ -130,7 +130,7 @@ is also useful in back\-quoted operations:
 ^Current\-Folder:~^To find the default current folder
 .fi
 .SH "SEE ALSO"
-folder(1)
+.IR folder (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

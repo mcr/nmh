@@ -972,7 +972,9 @@ if annotations are to occur.
 ^<folder>/\&.mh\(rusequences~^Public sequences for <folder>
 .fi
 .SH "SEE ALSO"
-nmh(7), environ(5), mh-sequence(5)
+.IR environ (5),
+.IR mh-sequence (5),
+.IR nmh (7)
 .SH HISTORY
 The
 .I \&.mh\(ruprofile

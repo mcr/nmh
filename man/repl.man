@@ -511,7 +511,12 @@ switch.
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
 .fi
 .SH "SEE ALSO"
-mhbuild(1), comp(1), forw(1), send(1), whatnow(1), mh\-format(5)
+.IR comp (1),
+.IR forw (1),
+.IR mhbuild (1),
+.IR send (1),
+.IR whatnow (1),
+.IR mh\-format (5)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

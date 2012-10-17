@@ -168,7 +168,10 @@ integrity of the content.
 ^Current\-Folder:~^To find the default current folder
 .fi
 .SH "SEE ALSO"
-mhbuild(1), mhshow(1), mhstore(1), sendfiles(1)
+,IR mhbuild (1),
+.IR mhshow (1),
+.IR mhstore (1),
+.IR sendfiles (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

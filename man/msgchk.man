@@ -162,7 +162,7 @@ switch.
 None
 .fi
 .SH "SEE ALSO"
-inc(1)
+.IR inc (1)
 .SH DEFAULTS
 .nf
 .RB ` user "' defaults to the current user"

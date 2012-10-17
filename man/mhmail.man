@@ -232,7 +232,11 @@ is used.
 ^/tmp/mhmail*~^Temporary copy of message
 .fi
 .SH "SEE ALSO"
-dist(1), inc(1), mh-format(5), post(8), send(1)
+.IR dist (1),
+.IR inc (1),
+.IR send(1),
+.IR mh-format (5),
+.IR post (8)
 .SH DEFAULTS
 .nf
 .RB ` "\-from localmbox" '

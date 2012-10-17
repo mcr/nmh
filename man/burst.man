@@ -74,8 +74,12 @@ or
 ^Msg\-Protect:~^To set mode when creating a new message
 .fi
 .SH "SEE ALSO"
-inc(1), msh(1), pack(1),
-.I "Proposed Standard for Message Encapsulation"
+.IR inc (1),
+.IR msh (1),
+.IR pack (1)
+.PP
+.I
+Proposed Standard for Message Encapsulation
 (RFC\-934)
 .SH DEFAULTS
 .nf

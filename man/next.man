@@ -59,7 +59,8 @@ details.
 ^showmimeproc:~^Program to show MIME messages
 .fi
 .SH "SEE ALSO"
-show(1), prev(1)
+.IR prev (1),
+.IR show (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

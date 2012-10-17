@@ -197,7 +197,7 @@ are separated by whitespace (spaces and tabs).
 ^showproc:~^Program to show messages
 .fi
 .SH "SEE ALSO"
-packf(1)
+.IR packf (1)
 .SH DEFAULTS
 .nf
 .RB ` file "' defaults to \*(lq./msgbox\*(rq"

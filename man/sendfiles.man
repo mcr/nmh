@@ -172,7 +172,12 @@ to perform the extraction.
 ^Current\-Folder:~^To find the default current folder
 .fi
 .SH "SEE ALSO"
-mhbuild(1), mh-format(5), mhlist(1), mhshow(1), mhstore(1)
+.IR mhbuild (1),
+.IR mhlist (1),
+.IR mhshow (1),
+.IR mhstore (1),
+.IR mh-format (5)
+.PP
 .I "Proposed Standard for Message Encapsulation"
 (RFC\-934)
 .SH DEFAULTS

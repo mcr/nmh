@@ -304,7 +304,10 @@ switch.
 ^Unseen\-Sequence:~^To name sequences denoting unseen messages
 .fi
 .SH "SEE ALSO"
-mhmail(1), scan(1), mh\-mail(5), post(8)
+.IR mhmail (1),
+.IR scan (1),
+.IR mh\-mail (5),
+.IR post (8)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaulted by \*(lqInbox\*(rq above"

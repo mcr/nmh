@@ -296,7 +296,7 @@ uses them.
 ^Current\-Folder:~^To find the default current folder
 .fi
 .SH "SEE ALSO"
-mark(1)
+.IR mark (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

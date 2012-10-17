@@ -118,7 +118,7 @@ returns the number of components that were not found.
 ^context:~^To determine the context file
 .fi
 .SH "SEE ALSO"
-mh-profile(5)
+.IR mh-profile (5)
 .SH DEFAULTS
 .nf
 .RB ` \-nocomponent "' if only one component is specified"

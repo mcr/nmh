@@ -180,7 +180,11 @@ from each sequence named by the profile entry.
 ^showmimeproc:~^Program to show non-text (MIME) messages
 .fi
 .SH "SEE ALSO"
-mhl(1), mhshow(1), more(1), next(1), prev(1), scan(1)
+.IR mhl (1),
+.IR mhshow (1),
+.IR next (1),
+.IR prev (1),
+.IR scan (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

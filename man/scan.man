@@ -214,7 +214,9 @@ purists hate this idea.
 ^Current\-Folder:~^To find the default current folder
 .fi
 .SH "SEE ALSO"
-inc(1), pick(1), show(1), mh\-format(5)
+.IR pick (1),
+.IR show (1),
+.IR mh\-format(5)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

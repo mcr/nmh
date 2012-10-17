@@ -190,7 +190,10 @@ puts everything else in the middle in alphabetical order.
 ^Flist-Order:~^To sort folders by priority
 .fi
 .SH "SEE ALSO"
-folder(1), rcvstore(1), slocal(1), mh\-sequence(5)
+.IR folder (1),
+.IR rcvstore (1),
+.IR slocal (1),
+.IR mh\-sequence (5)
 .SH DEFAULTS
 .nf
 .RB ` -sequence "' defaults to Unseen-Sequence profile entry"

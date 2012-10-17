@@ -116,7 +116,10 @@ to force these sequences to be public or private sequences.
 ^Unseen\-Sequence:~^To name sequences denoting unseen messages
 .fi
 .SH "SEE ALSO"
-rcvdist(1), rcvpack(1), rcvtty(1), mh\-sequence(5)
+.IR rcvdist (1),
+.IR rcvpack (1),
+.IR rcvtty (1),
+.IR mh\-sequence (5)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to \*(lqInbox\*(rq profile entry"

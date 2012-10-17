@@ -376,7 +376,9 @@ options can be used to build up multiple arguments to the format filter.
 ^^have the \*(lqformat\*(rq flag set.
 .fi
 .SH "SEE ALSO"
-show(1), ap(8), dp(8)
+.IR show (1),
+.IR ap (8),
+.IR dp (8)
 .SH DEFAULTS
 .nf
 .RB ` \-bell '

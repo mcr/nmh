@@ -88,7 +88,7 @@ advance to the next message in the folder as expected.
 ^rmmproc:~^Program to delete the message
 .fi
 .SH "SEE ALSO"
-refile(1), rmf(1)
+.IR rmf (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

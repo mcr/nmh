@@ -144,7 +144,8 @@ for more information.
 ^postproc:~^Program to post the message
 .fi
 .SH "SEE ALSO"
-mh\-alias(5), post(8)
+.IR mh\-alias (5),
+.IR post (8)
 .SH DEFAULTS
 .nf
 .RB ` file "' defaults to <mh\-dir>/draft"

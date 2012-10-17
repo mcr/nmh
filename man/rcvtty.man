@@ -115,6 +115,10 @@ None
 .RB ` \-bell '
 .fi
 .SH "SEE ALSO"
-rcvdist(1), rcvpack(1), rcvstore(1), mh\-format(5), slocal(1)
+.IR rcvdist (1),
+.IR rcvpack (1),
+.IR rcvstore (1),
+.IR mh\-format (5),
+.IR  slocal (1)
 .SH BUGS
 Only two return codes are meaningful, others should be.

@@ -75,7 +75,7 @@ is processed as described in
 ^Aliasfile:~^For a default alias file
 .fi
 .SH "SEE ALSO"
-mh\-alias(5)
+.IR mh\-alias (5)
 .SH DEFAULTS
 .nf
 .RB ` aliasfiles "' defaults to %etcdir%/MailAliases"

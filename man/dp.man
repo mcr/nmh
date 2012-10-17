@@ -70,7 +70,8 @@ Otherwise, output the 822\-proper format of the date.
 .SH "PROFILE COMPONENTS"
 None
 .SH "SEE ALSO"
-ap(8),
+.IR ap (8),
+.PP
 .I "Standard for the Format of ARPA Internet Text Messages"
 (RFC\-822)
 .SH DEFAULTS

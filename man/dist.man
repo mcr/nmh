@@ -228,7 +228,12 @@ will prevent any edit from occurring.)
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
 .fi
 .SH "SEE ALSO"
-comp(1), forw(1), prompter(1), repl(1), send(1), whatnow(1)
+.IR comp (1),
+.IR forw (1),
+.IR prompter (1),
+.IR repl (1),
+.IR send (1),
+.IR whatnow (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

@@ -183,7 +183,9 @@ to file the <mh\-dir>/draft.
 ^rmmproc:~^Program to delete the message
 .fi
 .SH "SEE ALSO"
-folder(1), rmf(1), rmm(1)
+.IR folder (1),
+.IR rmf (1),
+.IR rmm (1)
 .SH DEFAULTS
 .nf
 .RB ` "\-src\ +folder" "' defaults to the current folder"

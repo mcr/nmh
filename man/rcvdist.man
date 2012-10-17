@@ -74,4 +74,8 @@ profile component.
 ^%etcdir%/maildelivery~^Rather than the standard file
 .fi
 .SH "SEE ALSO"
-rcvpack(1), rcvstore(1), rcvtty(1), mh\-format(5), slocal(1)
+.IR rcvpack (1),
+.IR rcvstore (1),
+.IR rcvtty (1), 
+.IR slocal (1),
+.IR mh\-format (5)

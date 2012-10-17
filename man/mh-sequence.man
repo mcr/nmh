@@ -273,6 +273,9 @@ profile.
 ^Unseen\-Sequence:~^Those messages not yet seen by the user
 .fi
 .SH "SEE ALSO"
-flist(1), mark(1), pick(1), mh-profile(5)
+.IR flist (1),
+.IR mark (1),
+.IR pick (1),
+.IR mh-profile (5)
 .SH DEFAULTS
 None

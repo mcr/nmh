@@ -252,7 +252,12 @@ does
 consult the user's
 .I \&.mh\(ruprofile
 .SH "SEE ALSO"
-mhmail(1), send(1), mh\-mail(5), mh\-alias(5), mh\-tailor(5),
+.IR mhmail (1),
+.IR send (1),
+.IR mh\-mail (5),
+.IR mh\-alias (5),
+.IR mh\-tailor (5)
+.PP
 .I "Standard for the Format of ARPA Internet Text Messages"
 (RFC\-822)
 .SH DEFAULTS

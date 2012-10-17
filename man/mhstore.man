@@ -520,7 +520,10 @@ installation.
 ^mhstore-store-<type>*~^Template for storing contents
 .fi
 .SH "SEE ALSO"
-mhbuild(1), mhlist(1), mhshow(1), sendfiles(1)
+.IR mhbuild (1),
+.IR mhlist (1),
+.IR mhshow (1),
+.IR sendfiles (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

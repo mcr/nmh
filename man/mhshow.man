@@ -576,7 +576,11 @@ installation.
 ^moreproc:~^Default program to display text/plain content
 .fi
 .SH "SEE ALSO"
-mhbuild(1), mhl(1), mhlist(1), mhstore(1), sendfiles(1)
+.IR mhbuild (1),
+.IR mhl (1),
+.IR mhlist (1),
+.IR mhstore (1),
+.IR sendfiles (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

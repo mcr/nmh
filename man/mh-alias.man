@@ -222,7 +222,7 @@ message transport system.  In contrast, once the message transport system
 is given a message to deliver to a list of addresses, for each address
 that appears to be local, a system\-wide alias file is consulted.  These
 aliases are
-.B NOT
+.B not
 expanded into the headers of messages delivered.
 .SH "HELPFUL HINTS"
 To use aliasing in
@@ -279,7 +279,13 @@ will append the semicolon to the blind list name.
 ^Aliasfile:~^For a default alias file
 .fi
 .SH "SEE ALSO"
-ali(1), send(1), whom(1), group(5), passwd(5), conflict(8), post(8)
+.IR ali (1),
+.IR send (1),
+.IR whom (1),
+.IR group (5),
+.IR passwd (5),
+.IR conflict(8),
+.IR post (8)
 .SH CONTEXT
 None
 .SH BUGS

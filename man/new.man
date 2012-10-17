@@ -97,6 +97,5 @@ for each matching folder.
 ^Unseen-Sequence:~^The name of the unseen message sequence
 .fi
 .SH "SEE ALSO"
-scan(1), mh\-format(5)
-.SH HISTORY
-Based on Luke Mewburn's new (http://www.mewburn.net/luke/src/new).
+.IR scan (1),
+.IR mh\-format (5)

@@ -50,9 +50,7 @@ for the details.
 ^Path:~^To determine the user's nmh directory
 .fi
 .SH "SEE ALSO"
-mh-format(5), mh-sequences(8)
+.IR mh-format (5),
+.IR mh-sequences (8)
 .SH CONTEXT
 None
-.SH BUGS
-The output may not be useful unless you are familiar
-with the internals of the mh-format subroutines.

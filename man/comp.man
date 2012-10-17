@@ -207,7 +207,7 @@ switches invoke the
 .B nmh
 draft folder facility.  This is an advanced (and highly
 useful) feature.  Consult the
-.BR mh-draft (5)
+.IR mh-draft (5)
 man page for more information.
 .PP
 The
@@ -252,7 +252,12 @@ will prevent any edit from occurring.)
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
 .fi
 .SH "SEE ALSO"
-dist(1), forw(1), repl(1), send(1), whatnow(1), mh-profile(5)
+.IR dist (1),
+.IR forw (1),
+.IR repl (1),
+.IR send(1),
+.IR whatnow (1),
+.IR mh-profile (5)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

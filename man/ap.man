@@ -87,8 +87,10 @@ the address.
 .SH "PROFILE COMPONENTS"
 None
 .SH "SEE ALSO"
-dp(8),
-.I "Standard for the Format of ARPA Internet Text Messages"
+.IR dp (8)
+.PP
+.I
+Standard for the Format of ARPA Internet Text Messages
 (RFC\-822)
 .SH DEFAULTS
 .nf

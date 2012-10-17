@@ -153,7 +153,11 @@ prompter\-next:	To name the editor to be used on exit from .B prompter
 ^Msg\-Protect:~^To set mode when creating a new draft
 .fi
 .SH "SEE ALSO"
-comp(1), dist(1), forw(1), repl(1), whatnow(1)
+.IR comp (1),
+.IR dist (1),
+.IR forw (1),
+.IR repl(1),
+.IR whatnow (1)
 .SH DEFAULTS
 .nf
 .RB ` \-prepend '

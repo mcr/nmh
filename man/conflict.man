@@ -57,7 +57,7 @@ invocation to
 .PP
 .B Conflict
 should be run under
-.BR cron (8),
+.IR cron (8),
 or whenever system accounting takes place.
 .SH FILES
 .fc ^ ~
@@ -72,7 +72,7 @@ or whenever system accounting takes place.
 .SH "PROFILE COMPONENTS"
 None
 .SH "SEE ALSO"
-mh\-alias(5)
+.IR mh\-alias (5)
 .SH "DEFAULTS"
 .nf
 .RB ` aliasfiles "' defaults to %etcdir%/MailAliases"

@@ -422,8 +422,15 @@ User's Manual for more information on making digests.
 ^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
 .fi
 .SH "SEE ALSO"
-mhbuild(1), comp(1), repl(1), send(1), whatnow(1), mh\-format(5),
-.I "Proposed Standard for Message Encapsulation"
+.IR comp (1),
+.IR mhbuild (1),
+.IR repl (1),
+.IR send (1),
+.IR whatnow (1),
+.IR mh\-format (5)
+.PP
+.I
+Proposed Standard for Message Encapsulation
 (RFC\-934)
 .SH DEFAULTS
 .nf

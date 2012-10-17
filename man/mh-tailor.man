@@ -332,7 +332,8 @@ your site, and set the appropriate values.
 .SH "PROFILE COMPONENTS"
 None
 .SH "SEE ALSO"
-mh\-mts(8), post(8)
+.IR mh\-mts (8),
+.IR post (8)
 .SH DEFAULTS
 As listed above.  The path of the mail transport configuration
 file can be changed with the

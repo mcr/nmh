@@ -50,6 +50,9 @@ shell scripts.
 ^%etcdir%/mts.conf~^nmh mts configuration file
 .fi
 .SH "SEE ALSO"
-rcvdist(1), rcvstore(1), rcvtty(1), slocal(1)
+.IR rcvdist (1),
+.IR rcvstore (1),
+.IR rcvtty (1),
+.IR slocal (1)
 .SH BUGS
 Only two return codes are meaningful, others should be.

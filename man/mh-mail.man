@@ -293,7 +293,8 @@ option.
 ^%mailspool%/$USER~^Location of mail drop
 .fi
 .SH "SEE ALSO"
-.I "Standard for the Format of ARPA Internet Text Messages
+.I
+Standard for the Format of ARPA Internet Text Messages
 (RFC\-822)
 .SH CONTEXT
 None

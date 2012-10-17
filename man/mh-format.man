@@ -739,9 +739,12 @@ conditional
 is used to test whether the message number
 has 5
 or more digits.
-If so, it is printed at full width: otherwise
+If so, it is printed at full width, otherwise
 at 4 digits.
 .SH "SEE ALSO"
-scan(1), repl(1), ap(8), dp(8)
+.IR scan (1),
+.IR repl (1),
+.IR ap (8),
+.IR dp (8)
 .SH CONTEXT
 None
