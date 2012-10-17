@@ -234,7 +234,7 @@ is used.
 .SH "SEE ALSO"
 .IR dist (1),
 .IR inc (1),
-.IR send(1),
+.IR send (1),
 .IR mh-format (5),
 .IR post (8)
 .SH DEFAULTS

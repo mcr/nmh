@@ -156,7 +156,7 @@ prompter\-next:	To name the editor to be used on exit from .B prompter
 .IR comp (1),
 .IR dist (1),
 .IR forw (1),
-.IR repl(1),
+.IR repl (1),
 .IR whatnow (1)
 .SH DEFAULTS
 .nf

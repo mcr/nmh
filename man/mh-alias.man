@@ -284,7 +284,7 @@ will append the semicolon to the blind list name.
 .IR whom (1),
 .IR group (5),
 .IR passwd (5),
-.IR conflict(8),
+.IR conflict (8),
 .IR post (8)
 .SH CONTEXT
 None

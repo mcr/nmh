@@ -255,7 +255,7 @@ will prevent any edit from occurring.)
 .IR dist (1),
 .IR forw (1),
 .IR repl (1),
-.IR send(1),
+.IR send (1),
 .IR whatnow (1),
 .IR mh-profile (5)
 .SH DEFAULTS
