@@ -2,14 +2,13 @@ NMH MANPAGE STYLE GUIDE
 
 nmh manpages should be in this general form:
 
+.TH COMP %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .\"
 .\" %nmhwarning%
 .\"
-.TH COMP %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
 .SH NAME
 comp \- compose a message
 .SH SYNOPSIS
-.HP 5
 .B comp 
 .RI [ +folder ]
 .RI [ msgs ]
@@ -21,36 +20,42 @@ comp \- compose a message
 .SH DESCRIPTION
 .B Comp
 is used to create a new message to be mailed.  It copies something.
-
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'/usr/local/nmh/etc/ExtraBigFileName  'u
-^%etcdir%/components~^The standard message skeleton
-
+.TP
+filename1
+description of filename1
+.TP
+filename2
+description of filename2
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-
+.TP
+Path
+Location of the user's MH folder directory
+.TP
+moreproc
+The pager command name
 .SH "SEE ALSO"
-dist(1), forw(1), repl(1), send(1), whatnow(1), mh-profile(5)
-
+.IR dist (1),
+.IR forw (1),
+.IR repl (1),
+.IR send (1),
+.IR whatnow (1),
+.IR mh-profile (5)
 .SH DEFAULTS
-.nf
-.RB ` +folder "' defaults to the current folder"
-
+.TP
+.RI + folder
+defaults to the current folder
+.\"
 .SH CONTEXT
 None
-
+.\" Leave out the BUGS section if there are none worth describing.
 .SH BUGS
 None
 
 ---------------------------------------
-In the FILES section, use a spacer of "/usr/local/nmh/etc" for now,
-we'll parametrize that into %etcdir% later.
+In the FILES section, prefer the default .TP indent. The pathnames are
+variable and long, so any indentation value that works for you won't
+work for someone else.
 
 
 Source files
@@ -94,7 +99,7 @@ Program names
 	If this is a manpage reference (outside of the SEE ALSO
 	section, which just uses regular text), use:
 
-		.BR mh-draft (5)
+		.IR mh-draft (5)
 
 SYNPOSIS section
 
