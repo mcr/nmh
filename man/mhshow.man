@@ -76,7 +76,7 @@ be in mail drop format (to convert a file in
 mail drop format to a folder of
 .B nmh
 messages, see
-.BR inc (1)).
+.IR inc (1)).
 .PP
 A part specification consists of a series of numbers separated by dots.
 For example, in a multipart content containing three parts, these
@@ -409,7 +409,7 @@ profile entry to
 and it will get
 called automatically.  (To handle other single-octet character sets,
 look at the
-.BR less (1)
+.IR less (1)
 manual entry for information about the
 .B $LESSCHARDEF
 environment variable.)
@@ -419,7 +419,7 @@ cannot directly display messages of type partial.
 You must reassemble them first into a normal message using
 .BR mhstore .
 Check the man page for
-.BR mhstore (1)
+.IR mhstore (1)
 for details.
 .SS "External Access"
 For contents of type message/external-body,

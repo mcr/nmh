@@ -91,7 +91,7 @@ argument.  The line of
 dashes or a blank line must be left between the header and the body of
 the message for the message to be identified properly when it is sent
 (see
-.BR send (1)).
+.IR send (1)).
 .PP
 The switch
 .B \-use
@@ -120,16 +120,16 @@ Forms that are selected via the
 switch are processed via the
 .B nmh
 template system; see 
-.BR mh\-format (5)
+.IR mh\-format (5)
 for details.  Drafts constructed from another message or with the
 .B \-use
 or
 .B \-file
 switchs will NOT be processed with
-.BR mh\-format (5).
+.IR mh\-format (5).
 .PP
 In addition to the standard
-.BR mh\-format (5)
+.IR mh\-format (5)
 escapes,
 the following
 .I component
@@ -219,7 +219,7 @@ initial edit.  Upon exiting from the editor,
 will invoke the
 .B whatnow
 program.  See
-.BR whatnow (1)
+.IR whatnow (1)
 for a discussion of
 available options.  The invocation of this program can be inhibited
 by using the

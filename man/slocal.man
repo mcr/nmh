@@ -355,7 +355,7 @@ failed.
 .PP
 In order to avoid any time limitations, you might implement a process
 that began by
-.BR fork ()-ing.
+.IR fork ()-ing.
 The parent would return the appropriate
 value immediately, and the child could continue on, doing whatever it
 wanted for as long as it wanted.  This approach is somewhat risky if

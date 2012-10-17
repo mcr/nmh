@@ -39,7 +39,7 @@ MIME (multi-media) messages.
 .B mhlist
 manipulates MIME (multi-media messages) as specified
 in RFC\-2045 thru RFC\-2049 (See
-.BR mhbuild (1)).
+.IR mhbuild (1)).
 .PP
 The
 .B \-headers
@@ -80,7 +80,7 @@ be in mail drop format (to convert a file in mail drop format to
 a folder of
 .B nmh
 messages, see
-.BR inc (1)).
+.IR inc (1)).
 .PP
 By default,
 .B mhlist

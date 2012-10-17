@@ -38,7 +38,7 @@ which is called
 to list the message.  This command is almost exactly equivalent to
 .RB \*(lq "show prev" \*(rq.
 Consult the manual entry for
-.BR show (1)
+.IR show (1)
 for all the details.
 .SH FILES
 .fc ^ ~

@@ -111,7 +111,7 @@ profile is scanned next.
 If no match is found or the file does not have a dot suffix, the content-type
 is text/plain if the file contains only ASCII characters or application/octet-stream
 if it contains characters outside of the ASCII range.  See
-.BR mhshow (1)
+.IR mhshow (1)
 for more details and example syntax.
 .PP
 Each part contains a name attribute that is the last component of the path name.
@@ -209,7 +209,7 @@ the
 .B nmh
 draft folder facility.  This is an advanced (and highly
 useful) feature.  Consult the
-.BR mh-draft (5)
+.IR mh-draft (5)
 man page for more
 information.
 .PP
@@ -436,7 +436,7 @@ read (more than one file, each preceded by
 .BR \-alias ,
 can be named).
 See
-.BR mh\-alias (5)
+.IR mh\-alias (5)
 for more information.
 .SH FILES
 .fc ^ ~

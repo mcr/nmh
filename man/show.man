@@ -38,7 +38,7 @@ This command will display text
 messages in a nice, uniform format.  It also allows you to configure
 the format of the displayed messages and which headers fields are
 shown.  See the
-.BR mhl (1)
+.IR mhl (1)
 manual page for the details about this
 command.  This default can be changed by defining the
 .I showproc
@@ -68,7 +68,7 @@ contents) are processed and displayed by the
 command
 .BR mhshow .
 See the
-.BR mhshow (1)
+.IR mhshow (1)
 manual page for details
 about this command.  This default can changed by defining the
 .I showmimeproc
@@ -98,7 +98,7 @@ should be set to the terminal's native character set to avoid
 gratuitous invocations of the
 .IR showmimeproc .
 See the
-.BR mh-profile (5)
+.IR mh-profile (5)
 man page for details about this environment variable.
 .PP
 The option

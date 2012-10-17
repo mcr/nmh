@@ -138,7 +138,7 @@ will supply a \*(lqFrom:\*(rq header field using the sender's local mailbox,
 see
 .I localmbox
 in
-.BR mh-format (5).
+.IR mh-format (5).
 Naturally,
 .B post
 will fill\-in the \*(lqSender:\*(rq

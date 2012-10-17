@@ -40,7 +40,7 @@ an alternate forms file with the switch
 The
 .RI \*(lq rcvdistcomps \*(rq
 file uses the format string facility described in
-.BR mh\-format (5).
+.IR mh\-format (5).
 In addition to the standard format escapes,
 .B rcvdist
 also recognizes the following additional

@@ -66,10 +66,10 @@ primitives are available: pattern matching and date constraint
 operations.
 .PP
 A modified
-.BR grep (1)
+.IR grep (1)
 is used to perform the matching, so the
 full regular expression (see
-.BR ed (1))
+.IR ed (1))
 facility is available
 within
 .IR pattern .

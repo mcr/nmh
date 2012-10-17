@@ -652,7 +652,7 @@ If a
 switch was given to
 .B repl
 (see
-.BR repl (1)
+.IR repl (1)
 for more details about %{\fIfcc\fR\^}),
 an \*(lqFcc:\*(rq header is output.
 .PP

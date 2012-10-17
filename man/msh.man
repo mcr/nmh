@@ -43,7 +43,7 @@ can be used on
 other files, such as message archives which have been
 .BR pack ed
 (see
-.BR packf (1)).
+.IR packf (1)).
 Finally,
 .B msh
 is an excellent
@@ -135,7 +135,7 @@ You may wish to use an alternate
 profile for the commands that
 .B msh
 executes; see
-.BR mh-profile (5)
+.IR mh-profile (5)
 for details about the
 .B $MH
 environment variable.

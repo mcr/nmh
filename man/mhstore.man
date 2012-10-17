@@ -73,7 +73,7 @@ be in mail drop format (to convert a file in mail drop format to
 a folder of
 .B nmh
 messages, see
-.BR inc (1)).
+.IR inc (1)).
 .PP
 A part specification consists of a series of numbers separated by
 dots.  For example, in a multipart content containing three parts,

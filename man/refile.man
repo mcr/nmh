@@ -28,9 +28,9 @@ refile \- file message in other folders
 .SH DESCRIPTION
 .B Refile
 moves (see
-.BR mv (1))
+.IR mv (1))
 or links (see
-.BR ln (1))
+.IR ln (1))
 messages
 from a source folder into one or more destination folders.
 .PP
@@ -74,7 +74,7 @@ be in mail drop format
 .B nmh
 messages,
 see
-.BR inc (1)).
+.IR inc (1)).
 .PP
 If a destination folder doesn't exist,
 .B refile
@@ -93,9 +93,9 @@ The option
 .B \-link
 preserves the source folder copy of the message (i.e.,
 it does a
-.BR ln (1)
+.IR ln (1)
 rather than a
-.BR mv (1)),
+.IR mv (1)),
 whereas,
 .B \-nolink
 (the default) deletes the filed messages from the source folder.

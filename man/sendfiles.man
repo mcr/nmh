@@ -54,7 +54,7 @@ will supply a \*(lqFrom:\*(rq header field using the sender's local
 mailbox, see
 .I localmbox
 in
-.BR mh-format (5).
+.IR mh-format (5).
 .PP
 The remaining command line switches select the compression program.
 One of these can be used to override the run-time determination of

@@ -45,7 +45,7 @@ or
 switches are used.  This permits individual fields of
 the address to be extracted with ease.  The string is simply a format
 string, and the file is simply a format file.  See
-.BR mh\-format (5)
+.IR mh\-format (5)
 for the details.
 .PP
 In addition to the standard escapes,

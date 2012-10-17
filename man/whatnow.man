@@ -130,7 +130,7 @@ For the
 and
 .B push
 responses, any valid switch to
-.BR send (1)
+.IR send (1)
 is valid (as
 .B push
 merely invokes
@@ -142,7 +142,7 @@ option).
 For the
 .B whom
 response, any valid switch to
-.BR whom (1)
+.IR whom (1)
 is valid.
 .PP
 For the
@@ -167,7 +167,7 @@ to the
 message).
 .PP
 See
-.BR mh\-profile (5)
+.IR mh\-profile (5)
 for further information about how editors
 are used by
 .BR nmh .
@@ -193,7 +193,7 @@ the
 .B nmh
 draft folder facility.  This is an advanced (and highly
 useful) feature.  Consult the
-.BR mh-draft (5)
+.IR mh-draft (5)
 man page for more
 information.
 .SH FILES

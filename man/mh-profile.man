@@ -89,7 +89,7 @@ command.  If not present or empty,
 no such sequences are defined.  Otherwise, for each name given, the
 sequence is first zero'd and then each message is added to the sequence.
 Read the
-.BR mh\-sequence (5)
+.IR mh\-sequence (5)
 man page for the details about this sequence. (profile, no default)
 .RE
 .PP
@@ -99,7 +99,7 @@ not
 Defines the string which, when prefixed to a sequence name, negates
 that sequence.  Hence, \*(lqnotseen\*(rq means all those messages that
 are not a member of the sequence \*(lqseen\*(rq.  Read the
-.BR mh\-sequence (5)
+.IR mh\-sequence (5)
 man page for the details.  (profile, no default)
 .RE
 .PP
@@ -117,7 +117,7 @@ will add or remove messages from these
 sequences when they are incorporated or read.  If not present or
 empty, no such sequences are defined.  Otherwise, each message is
 added to, or removed from, each sequence name given.  Read the
-.BR mh\-sequence (5)
+.IR mh\-sequence (5)
 man page for the details about this sequence.
 (profile, no default)
 .RE
@@ -136,7 +136,7 @@ entry blank.  (profile, default: \&.mh\(rusequences)
 Keeps track of the private sequence called \*(lqseq\*(rq in the specified
 folder.  Private sequences are generally used for read\-only folders.
 See the
-.BR mh\-sequence (5)
+.IR mh\-sequence (5)
 man page for details about private sequences.
 (context, no default)
 .RE
@@ -168,7 +168,7 @@ composition draft before it is sent.
 .RS 5
 An octal number which defines the permission bits for new message files.
 See
-.BR chmod (1)
+.IR chmod (1)
 for an explanation of the octal number.  Note that some filesystems,
 such as FAT32, do not support removal of read file permissions.
 (profile, default: 0600)
@@ -179,7 +179,7 @@ such as FAT32, do not support removal of read file permissions.
 .RS 5
 An octal number which defines the permission bits for new folder
 directories.  See
-.BR chmod (1)
+.IR chmod (1)
 for an explanation of the octal number.
 (profile, default: 700)
 .RE
@@ -291,7 +291,7 @@ Indicates a default draft folder for
 and
 .BR repl .
 Read the
-.BR mh\-draft (5)
+.IR mh\-draft (5)
 man page for details. (profile, no default)
 .RE
 .PP
@@ -392,7 +392,7 @@ Program called by
 .B mhl
 to filter a component when it is tagged with the \*(lqformat\*(rq variable
 in the mhl filter.  See
-.BR mhl (5)
+.IR mhl (5)
 for more information.
 .RE
 .PP

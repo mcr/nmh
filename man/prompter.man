@@ -188,5 +188,5 @@ commands (e.g.,
 .SH BUGS
 .B Prompter
 uses
-.BR stdio (3),
+.IR stdio (3),
 so it will lose if you edit files with nulls in them.

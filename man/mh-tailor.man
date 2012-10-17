@@ -191,7 +191,7 @@ The name of the system-wide default
 .I maildelivery
 file.
 See
-.BR slocal (1)
+.IR slocal (1)
 for the details.
 .RE
 .PP

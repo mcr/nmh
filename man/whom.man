@@ -54,7 +54,7 @@ the
 .B nmh
 draft folder facility.  This is an advanced (and highly
 useful) feature.  Consult the
-.BR mh-draft (5)
+.IR mh-draft (5)
 man page for more information.
 .PP
 The mail transport system default is provided in
@@ -125,7 +125,7 @@ switch will be
 read (more than one file, each preceded by
 .BR \-alias ,
 can be named). See
-.BR mh\-alias (5)
+.IR mh\-alias (5)
 for more information.
 .SH FILES
 .fc ^ ~

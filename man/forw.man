@@ -98,12 +98,12 @@ alternate forms file with the switch
 Forms are processed via the
 .B nmh
 template system; see
-.BR mh\-format (5)
+.IR mh\-format (5)
 for details.  Components from the first forwarded message are available
 as standard component escapes in the forms file.
 .PP
 In addition to the standard
-.BR mh\-format (5)
+.IR mh\-format (5)
 escapes, the following
 .I component
 escapes are also supported:
@@ -186,7 +186,7 @@ change this by using the
 switch.
 .PP
 See
-.BR comp (1)
+.IR comp (1)
 for a description of the
 .B \-editor
 and
@@ -306,7 +306,7 @@ switches invoke the
 .B nmh
 draft folder facility.  This is an advanced (and highly
 useful) feature.  Consult the
-.BR mh-draft (5)
+.IR mh-draft (5)
 man page for more information.
 .PP
 The
@@ -318,7 +318,7 @@ initial edit.  Upon exiting from the editor,
 will invoke the
 .B whatnow
 program.  See
-.BR whatnow (1)
+.IR whatnow (1)
 for a discussion of
 available options.  The invocation of this program can be inhibited
 by using the

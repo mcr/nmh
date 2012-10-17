@@ -301,7 +301,7 @@ The default format file is:
 .RE
 .PP
 The variable \*(lqformatfield\*(rq specifies a format string (see
-.BR mh\-format (5)).
+.IR mh\-format (5)).
 The flag variables \*(lqaddrfield\*(rq and
 \*(lqdatefield\*(rq (which are mutually exclusive), tell
 .B mhl
@@ -312,7 +312,7 @@ By default,
 .B mhl
 does not apply any formatting string to fields
 containing address or dates (see
-.BR mh\-mail (5)
+.IR mh\-mail (5)
 for a list of these
 fields).  Note that this results in faster operation since
 .B mhl
@@ -335,7 +335,7 @@ name will be prefixed to the output
 the filter has been run.  The expected use of this is to filter a message
 body to create more pleasing text to use in a reply message.
 A suggested filter to use for
-.BR repl(1)
+.IR repl(1)
 is as follows:
 .PP
 .RS 5
@@ -354,7 +354,7 @@ The
 .I formatarg
 option specifies a string that is used as an argument to the format filter.
 This string is processed by 
-.BR mh\-format (5)
+.IR mh\-format (5)
 and all of the message components are available for use.  Multiple
 .I formatarg
 options can be used to build up multiple arguments to the format filter.

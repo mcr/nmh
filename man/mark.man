@@ -119,7 +119,7 @@ you.  If neither of these switches is specified, then existing sequences
 will maintain their current status, and new sequences will default to
 \*(lqpublic\*(rq if you have write permission for the relevant folder.
 Check the
-.BR mh\-sequence (5)
+.IR mh\-sequence (5)
 man page for more details about the difference
 between \*(lqpublic\*(rq and \*(lqprivate\*(rq sequences.
 .PP

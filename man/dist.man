@@ -69,12 +69,12 @@ forms file with the switch
 Forms are processed via the
 .B nmh
 template system; see
-.BR mh\-format (5)
+.IR mh\-format (5)
 for details.  Components from the redistributed message are available
 as standard component escapes in the forms file.
 .PP
 In addition to the standard
-.BR mh\-format (5)
+.IR mh\-format (5)
 escapes, the following
 .I component
 escapes are also supported:
@@ -91,7 +91,7 @@ nmh\-cc	string	Addresses specified with `\-cc\ address'
 .RE
 .PP
 See the
-.BR forw (1)
+.IR forw (1)
 man page for descriptions of the
 .BR \-from ,
 .BR \-to ,
@@ -120,7 +120,7 @@ and
 will be sent.  Also, a
 .RI \*(lq "Resent\-Fcc: folder" \*(rq
 will be honored (see
-.BR send (1)).
+.IR send (1)).
 Note that with
 .BR dist ,
 the draft should contain only
@@ -130,7 +130,7 @@ the original message are copied to the draft when the message is sent.
 Use care in constructing the headers for the redistribution.
 .PP
 Because the draft is minimal, the
-.BR prompter (1)
+.IR prompter (1)
 editor is quite useful with
 .BR dist .
 .PP
@@ -158,7 +158,7 @@ the
 switch to change this.
 .PP
 See
-.BR comp (1)
+.IR comp (1)
 for a description of the
 .B \-editor
 and
@@ -189,7 +189,7 @@ switches invoke the
 .B nmh
 draft folder facility.  This is an advanced (and highly
 useful) feature.  Consult the
-.BR mh-draft (5)
+.IR mh-draft (5)
 man page for more information.
 .PP
 Upon exiting from the editor,
@@ -197,7 +197,7 @@ Upon exiting from the editor,
 will invoke the
 .B whatnow
 program.  See
-.BR whatnow (1)
+.IR whatnow (1)
 for a discussion of available options.  The invocation of this
 program can be inhibited by using the
 .B \-nowhatnowproc

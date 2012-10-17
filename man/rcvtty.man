@@ -50,7 +50,7 @@ equivalent options for
 and
 .BR inc .
 See
-.BR mh\-format (5)
+.IR mh\-format (5)
 for details.
 .PP
 A newline is output before the message output, and the terminal bell is
@@ -68,7 +68,7 @@ may be given to specify the width of
 the scan line.  The default is to use the width of the terminal.
 .PP
 In addition to the standard format escapes described in
-.BR mh\-format (5),
+.IR mh\-format (5),
 .B rcvtty
 also recognizes the following additional
 .I component
@@ -89,14 +89,14 @@ By default,
 will send its output to every terminal on the
 local machine that is owned by current user, and that has given write
 permission as granted by the command
-.BR mesg (1).
+.IR mesg (1).
 If the option
 .B \-biff
 is given, then
 .B rcvtty
 will obey the notification status
 set by the command
-.BR biff (1)
+.IR biff (1)
 instead.
 .SH FILES
 .fc ^ ~

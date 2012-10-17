@@ -169,7 +169,7 @@ copied onto the message as delivered, so these recipients are not
 listed.
 .B nmh
 uses an encapsulation method for blind copies, see
-.BR send (1).
+.IR send (1).
 .RE
 .PP
 .BR Dcc :
@@ -178,7 +178,7 @@ Still more recipients.  However, the \*(lqDcc:\*(rq line is not
 copied onto the messages as delivered.  Recipients on the \*(lqDcc:\*(rq
 line receive the same messsage as recipients on the \*(lqTo:\*(rq and
 \*(lqcc:\*(rq lines.  See
-.BR send (1)
+.IR send (1)
 for more details.
 .B Dcc
 is not supported with the

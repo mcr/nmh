@@ -24,7 +24,7 @@ dp \- parse dates 822-style
 is a program that parses dates according to the ARPA Internet standard.
 It also understands many non\-standard formats,
 such as those produced by TOPS\-20 sites and some UNIX sites using
-.BR ctime (3).
+.IR ctime (3).
 It is useful for seeing how
 .B nmh
 will interpret a date.
@@ -48,7 +48,7 @@ switches are used.
 This permits individual fields of the address to be extracted with ease.
 The string is simply a format string and the file is simply a format file.
 See
-.BR mh\-format (5)
+.IR mh\-format (5)
 for the details.
 .PP
 Here is the default format string used by

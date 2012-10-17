@@ -30,7 +30,7 @@ also checks for maildrops in %mailspool% which do not
 belong to a valid user.  It assumes that no user name will start with
 `.', and thus ignores files in %mailspool% which begin with `.'.  It also
 checks for entries in the
-.BR group (5)
+.IR group (5)
 file which do not belong
 to a valid user, and for users who do not have a valid group number.
 In addition duplicate users and groups are noted.
