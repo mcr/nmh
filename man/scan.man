@@ -216,7 +216,7 @@ purists hate this idea.
 .SH "SEE ALSO"
 .IR pick (1),
 .IR show (1),
-.IR mh\-format(5)
+.IR mh\-format (5)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
