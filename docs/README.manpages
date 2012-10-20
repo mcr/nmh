@@ -52,11 +52,10 @@ None
 .SH BUGS
 None
 
----------------------------------------------------------------------
-
+---------------------------------------
 The DATE in the .TH macro should reflect the most recent non-trivial
 update to the content of the manpage; formatting changes don't count.
-Spell out the date in English prose:  Month Day, Year
+Spell out the date (no abbreviations or shortcuts):
 
   January 2, 1904
 
@@ -64,17 +63,12 @@ not the unparseable
 
   01/02/04
 
-
-Don't include a CONTEXT section if contexts don't directly apply to what the
-manpage describes.
+Don't abbreviate the month.
 
 
 In the FILES section, prefer the default .TP indent. The pathnames are
 variable and long, so any indentation value that works for you won't
 work for someone else.
-
-
-The BUGS section goes last.
 
 
 Source files
@@ -203,3 +197,17 @@ Pointer manpages
 		.so man1/folder.1
 
 	Also, add this manpage to the appropriate section in Makefile.in
+	
+
+CONTEXT
+    Don't include a CONTEXT section when contexts are out of context.
+
+
+AUTHOR and HISTORY sections
+
+    These have no place in a manpage.  If you want everlasting glory,
+    try the release notes.
+
+BUGS
+
+    The BUGS section goes last.
