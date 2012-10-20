@@ -63,7 +63,7 @@ findprog()
       D=.
     fi
     if [ -f "$D/$PROG"  -a  -x "$D/$PROG" ]; then
-      printf "$D/$PROG"
+      printf '%s\n' "$D/$PROG"
       break
     fi
   done
@@ -87,12 +87,12 @@ progress_update ()
   # this automatically rounds to nearest integer
   arith_eval 100 \* $PROG / $RANGE; PERC=$arith_val
   # note \r so next update will overwrite
-  printf "%3d%%\r" $PERC
+  printf '%3d%%\r' $PERC
 }
 
 progress_done ()
 {
-  printf "100%%\n"
+  printf '100%%\n'
 }
 
 check_for_hard_links () {

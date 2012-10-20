@@ -21,7 +21,7 @@ testname="${MH_TEST_DIR}/$$"
 #### Rely on sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
 cp "${MHMTSCONF}" "$mts_fakesendmail"
-printf "sendmail: ${srcdir}/test/fakesendmail\n" >>"$mts_fakesendmail"
+printf 'sendmail: %s/test/fakesendmail\n' "$srcdir" >>"$mts_fakesendmail"
 MHMTSCONF="$mts_fakesendmail"
 
 # argument: expected output

@@ -38,7 +38,7 @@ check "$expected" "$actual"
 # check -version
 case `$rcvdist -v` in
   rcvdist\ --*) ;;
-  *           ) printf "$0: rcvdist -v generated unexpected output\n" >&2
+  *           ) printf '%s: rcvdist -v generated unexpected output\n' "$0" >&2
                 failed=`expr ${failed:-0} + 1`;;
 esac
 
@@ -53,7 +53,7 @@ run_test "$rcvdist" \
 #### Use sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
 sed -e 's/^mts:.*/mts: sendmail\/pipe/' "${MHMTSCONF}" > "$mts_fakesendmail"
-printf "sendmail: ${srcdir}/test/fakesendmail\n" >>"$mts_fakesendmail"
+printf 'sendmail: %s/test/fakesendmail\n' "$srcdir" >>"$mts_fakesendmail"
 MHMTSCONF="$mts_fakesendmail"
 
 # arguments: rcvdist switches

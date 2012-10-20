@@ -44,8 +44,8 @@ check $expected $actual
 # check -version
 case `$rcvstore -v` in
   rcvstore\ --*) ;;
-  *           ) printf "$0: rcvstore -v generated unexpected output\n" >&2
-                failed=`expr ${failed:-0} + 1`;;
+  *            ) printf '%s: rcvstore -v generated unexpected output\n' "$0" >&2
+                 failed=`expr ${failed:-0} + 1`;;
 esac
 
 # check unknown switch
@@ -194,7 +194,7 @@ check "${MH_TEST_DIR}/Mail/inbox/1" "${MH_TEST_DIR}/Mail/inbox/11" 'keep first'
 
 # check Msg-Protect profile entry
 msgprot=640
-printf "Msg-Protect: $msgprot\n" >>$MH
+printf 'Msg-Protect: %s\n' "$msgprot" >>$MH
 $rcvstore <${MH_TEST_DIR}/Mail/inbox/1 >$actual 2>&1
 check $expected $actual
 run_test "find ${MH_TEST_DIR}/Mail/inbox/11 -perm $msgprot" \

@@ -44,7 +44,7 @@ run_test "echo $output" 0 "Local-mailbox overriding user@host test"
 # Add an Alternate-Mailbox.  This caused ismymbox() to lose the
 # Local-Mailbox, Bug #36635: -nocc me doesn't account for
 # Alternate-Mailboxes.
-printf "Alternate-Mailboxes: user@example.com\n" >> $MH
+printf 'Alternate-Mailboxes: user@example.com\n' >> $MH
 run_test "echo `${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \
          1 "Local-Mailbox with Alternate-Mailbox test"
 

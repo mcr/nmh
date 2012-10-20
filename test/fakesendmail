@@ -10,12 +10,12 @@
 ##
 
 if [ "$MH_TEST_DIR"x = x ]; then
-  printf "$0 is intended for use only by the nmh test suite\n"
+  printf '%s is intended for use only by the nmh test suite\n' "$0"
   exit 1
 fi
 
 #### Puts message on stdin in a drop that the test knows about.
-deliver="${MH_LIB_DIR}/rcvpack ${MH_TEST_DIR}/Mail/fakesendmail.mbox"
+deliver="$MH_LIB_DIR/rcvpack $MH_TEST_DIR/Mail/fakesendmail.mbox"
 
 found_dasht=0
 for arg in "$@"; do
@@ -27,17 +27,18 @@ if [ $found_dasht -eq 0 ]; then
   msg=
   datamode=0
 
-  printf "220 If it can't be done in Bourne shell it's not worth doing\n"
+  printf '%s\n' "220 If it can't be done in Bourne shell it's not worth doing"
   while read line; do
     #### Strip off carriage returns, they confuse the pattern matching.
-    line=`printf "$line" | tr -d '\r'`
+    line=`printf %s "$line" | tr -d '\r'`
 
     case "$line" in
-      DATA) printf "354 do tell\n"; datamode=1 ;;
-         .) printf "250 done\n"; datamode=0; printf "$msg" | $deliver; msg= ;;
-      QUIT) printf "221 byenow\n"; break ;;
+      DATA) printf '354 do tell\n'; datamode=1 ;;
+         .) printf '250 done\n'; datamode=0;
+            printf %s "$msg" | $deliver; msg= ;;
+      QUIT) printf '221 byenow\n'; break ;;
          *) [ $datamode -eq 1 ]  &&  msg="${msg}${line}
-"  ||  printf "250 OK\n"
+"  ||  printf '250 OK\n'
     esac
   done
 else

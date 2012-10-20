@@ -42,8 +42,8 @@ check "$expected" "$actual"
 # check -version
 case `$dp -v` in
   dp\ --*) ;;
-  *           ) printf "$0: dp -v generated unexpected output\n" >&2
-                failed=`expr ${failed:-0} + 1`;;
+  *      ) printf '%s: dp -v generated unexpected output\n' "$0" >&2
+           failed=`expr ${failed:-0} + 1`;;
 esac
 
 # check unknown switch

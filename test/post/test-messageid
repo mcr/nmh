@@ -47,7 +47,7 @@ send: message not delivered to anyone"
 #### Rely on sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
 cp "${MHMTSCONF}" "$mts_fakesendmail"
-printf "%s\n" "sendmail: ${srcdir}/test/fakesendmail" >>"$mts_fakesendmail"
+printf 'sendmail: %s/test/fakesendmail\n' "$srcdir" >>"$mts_fakesendmail"
 MHMTSCONF="$mts_fakesendmail"
 
 # $1: -messageid switch selection
@@ -77,15 +77,15 @@ test_messageid ()
         # e.g., Message-ID: <5364-1342884222.165897@ldYM.FXwU.bBqK>
         id='^Message-ID: <[0-9]\{1,\}-[0-9]\{1,\}\.[0-9]\{6,6\}@[-_0-9A-Za-z]\{4,4\}\.[-_0-9A-Za-z]\{4,4\}\.[-_0-9A-Za-z]\{4,4\}'
         ;;
-      *)         printf "$0: unexpected messageid: $msgid_style"; exit 1;;
+      *) printf '%s: unexpected messageid: %s\n' "$0" "$msgid_style"; exit 1 ;;
     esac
 
     if grep "$id" "$cur" >/dev/null; then
       :
     else
       mv "$cur" "${testname}.actual"
-      printf "$0: unexpected "$msgid_style" Message-ID format, \
-see ${testname}.actual\n"
+      printf '%s: unexpected %s Message-ID format, see %s\n' "$0" \
+             "$msgid_style" "${testname}.actual"
       exit 1
     fi
 

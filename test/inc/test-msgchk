@@ -45,7 +45,7 @@ check "$expected" "$actual"
 # check -version
 case `msgchk -v` in
   msgchk\ --*) ;;
-  *          ) printf "$0: msgchk -v generated unexpected output\n" >&2
+  *          ) printf '%s: msgchk -v generated unexpected output\n' "$0" >&2
                failed=`expr ${failed:-0} + 1`;;
 esac
 

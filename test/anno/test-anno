@@ -45,7 +45,7 @@ check "$expected" "$actual"
 # check -version
 case `anno -v` in
   anno\ --*) ;;
-  *        ) printf "$0: anno -v generated unexpected output\n" >&2
+  *        ) printf '%s: anno -v generated unexpected output\n' "$0" >&2
              failed=`expr ${failed:-0} + 1`;;
 esac
 

@@ -61,8 +61,8 @@ check $expected $actual
 # check -version
 case `repl -v` in
   repl\ --*) ;;
-  *           ) printf "$0: repl -v generated unexpected output\n" >&2
-                failed=`expr ${failed:-0} + 1`;;
+  *        ) printf '%s: repl -v generated unexpected output\n' "$0" >&2
+             failed=`expr ${failed:-0} + 1`;;
 esac
 
 # check unknown switch
@@ -72,7 +72,7 @@ run_test "repl -nonexistent" 'repl: -nonexistent unknown'
 run_test "repl" 'repl: no cur message'
 
 
-printf "Local-Mailbox: mymailbox@localhost%s\n" >> $MH
+printf 'Local-Mailbox: mymailbox@localhost\n' >> $MH
 
 # check -cc me
 cat >$expected <<EOF
@@ -106,7 +106,7 @@ check $expected $actual
 
 # check -cc me with Local- and Alternate-Mailbox addtions, Bug #36635:
 # -nocc me doesn't account for Alternate-Mailboxes.
-printf "Alternate-Mailboxes: user@example.com\n" >> $MH
+printf 'Alternate-Mailboxes: user@example.com\n' >> $MH
 
 cat >$expected <<EOF
 From: mymailbox@localhost

@@ -27,7 +27,7 @@ EOF
 #### Rely on sendmail/smtp or sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
 cp "${MHMTSCONF}" "$mts_fakesendmail"
-printf "sendmail: ${srcdir}/test/fakesendmail\n" >>"$mts_fakesendmail"
+printf 'sendmail: %s/test/fakesendmail\n' "$srcdir" >>"$mts_fakesendmail"
 MHMTSCONF="$mts_fakesendmail"
 
 # $1: -mts switch selection
@@ -59,14 +59,14 @@ test_alias ()
     send -draft -alias "${MH_TEST_DIR}/Mail/aliases" -mts sendmail/pipe \
       >"${testname}.actual" 2>&1
     if [ $? -eq 0 ]; then
-      printf "$0: sendmail/pipe should have failed but didn't\n"
+      printf '%s: sendmail/pipe should have failed but didn'"'"'t\n' "$0"
     else
       set -e
       check "${testname}.actual" "$2"
     fi
 
   else
-    printf "$0: invalid -mts switch selection\n"
+    printf '%s: invalid -mts switch selection\n' "$0"
     exit 1
   fi
 }

@@ -18,8 +18,7 @@ fi
 # $1 is expected output file, provided by caller
 # $2 is mhmail switches, except for -body
 # $3 of -b signifies use -body switch, | signifies provide body on stdin
-# $4 contains message body.  When using stdin, can contain printf(1) format
-#    specifiers.
+# $4 contains the message body.
 test_mhmail ()
 {
     "${MH_OBJ_DIR}/test/fakesmtp" "$actual" $localport &
@@ -30,7 +29,7 @@ test_mhmail ()
     status=1
     for i in 0 1 2 3 4 5 6 7 8 9; do
         if [ $3 = '|' ]; then
-          if printf "$4" | mhmail recipient@example.com $2 \
+          if printf '%s' "$4" | mhmail recipient@example.com $2 \
              -server 127.0.0.1 -port $localport; then
               status=0
               break
@@ -98,8 +97,8 @@ check $expected $actual
 # Verified same behavior as compiled mhmail.
 case `mhmail -v` in
   mhmail\ --*) ;;
-  *           ) echo "$0: mhmail -v generated unexpected output" 1>&2
-                failed=`expr ${failed:-0} + 1`;;
+  *          ) printf '%s: mhmail -v generated unexpected output\n' "$0" >&2
+               failed=`expr ${failed:-0} + 1`;;
 esac
 
 # check for missing argument to switches that require them
@@ -121,7 +120,7 @@ done
 # That will just run inc, which we don't want to do anything,
 # so tell inc to just display its version.
 # Verified same behavior as compiled mhmail.
-printf "inc: -version\n" >> $MH
+printf 'inc: -version\n' >> $MH
 case `mhmail` in
   inc\ --*) ;;
   *           ) echo "$0: mhmail generated unexpected output" 1>&2
@@ -287,7 +286,7 @@ test_mhmail "$expected" '-from sender@localhost -subject Test' '|' message
 # 2) use send(1) by added a send switch to the profile and
 # verifying that it gets used.
 # Not supported by compiled mhmail.
-printf "send: -msgid\n" >> $MH
+printf 'send: -msgid\n' >> $MH
 
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
@@ -461,7 +460,8 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' '|' '\n'
+test_mhmail "$expected" '-from sender@localhost' '|' '
+'
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -483,7 +483,10 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' '|' '\n\n\n'
+test_mhmail "$expected" '-from sender@localhost' '|' '
+
+
+'
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -525,7 +528,10 @@ here's some text
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' '|' "here's some text\n\n\n"
+test_mhmail "$expected" '-from sender@localhost' '|' "here's some text
+
+
+"
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 

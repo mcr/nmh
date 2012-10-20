@@ -25,13 +25,13 @@ localmbox=`${MH_LIB_DIR}/ap -format "%(localmbox)" 0`
 #### Use sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
 sed -e 's/^mts:.*/mts: sendmail\/pipe/' "${MHMTSCONF}" > "$mts_fakesendmail"
-printf "sendmail: ${srcdir}/test/fakesendmail\n" >>"$mts_fakesendmail"
+printf 'sendmail: %s/test/fakesendmail\n' "$srcdir" >>"$mts_fakesendmail"
 MHMTSCONF="$mts_fakesendmail"
 
 # arguments: dist switches
 test_dist ()
 {
-  printf "send\n" | dist "$@" >/dev/null
+  printf 'send\n' | dist "$@" >/dev/null
 
   # fakesendmail drops the message and any cc's into this mbox.
   mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox
@@ -77,7 +77,7 @@ check "$expected" "$actual"
 # check -version
 case `dist -v` in
   dist\ --*) ;;
-  *        ) printf "$0: dist -v generated unexpected output\n" >&2
+  *        ) printf '%s: dist -v generated unexpected output\n' "$0" >&2
              failed=`expr ${failed:-0} + 1`;;
 esac
 
@@ -178,7 +178,7 @@ until grep '^Resent:' "${MH_TEST_DIR}"/Mail/inbox/2 >/dev/null; do
   arith_eval $i + 1
   i=$arith_val
   if [ $i -gt 60 ]; then
-    printf "$0: -annotate failed, will not wait any longer\n"
+    printf '%s: -annotate failed, will not wait any longer\n' "$0"
     break
   fi
 done

@@ -41,7 +41,7 @@ check $expected $actual
 # check -version
 case `$fmtdump -v` in
   fmtdump\ --*) ;;
-  *           ) printf "$0: fmtdump -v generated unexpected output\n" >&2
+  *           ) printf '%s: fmtdump -v generated unexpected output\n' "$0" >&2
                 failed=`expr ${failed:-0} + 1`;;
 esac
 

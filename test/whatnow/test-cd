@@ -57,7 +57,7 @@ EOF
 
 # ||true to ignore whatnow's exit status
 # watch the quoting -- shell and printf and then the shell run inside whatnow
-printf "cd $MH_TEST_DIR/foo\\\\'s\\\\ bar\npwd\n" | \
+printf 'cd %s/foo\\'"'"'s\\ bar\npwd\n' "$MH_TEST_DIR" | \
   TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" > "$actual" || true
 
 check "$expectederr" "$actualerr"

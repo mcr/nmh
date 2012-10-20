@@ -43,7 +43,7 @@ check "$expected" "$actual"
 # check -version
 case `$rcvtty -v` in
   rcvtty\ --*) ;;
-  *          ) printf "$0: rcvtty -v generated unexpected output\n" >&2
+  *          ) printf '%s: rcvtty -v generated unexpected output\n' "$0" >&2
                failed=`expr ${failed:-0} + 1`;;
 esac
 

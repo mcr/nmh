@@ -39,7 +39,7 @@ check "$expected" "$actual"
 # check -version
 case `$rcvpack -v` in
   rcvpack\ --*) ;;
-  *           ) printf "$0: rcvpack -v generated unexpected output\n" >&2
+  *           ) printf '%s: rcvpack -v generated unexpected output\n' "$0" >&2
                 failed=`expr ${failed:-0} + 1`;;
 esac
 
