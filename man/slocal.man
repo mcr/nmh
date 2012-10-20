@@ -1,4 +1,4 @@
-.TH SLOCAL %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH SLOCAL %manext1% "January 16, 2006" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

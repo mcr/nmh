@@ -1,4 +1,4 @@
-.TH MHBUILD %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH MHBUILD %manext1% "May 31, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

@@ -1,4 +1,4 @@
-.TH WHATNOW %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH WHATNOW %manext1% "%nmhdate%" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

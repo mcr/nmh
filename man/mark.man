@@ -1,4 +1,4 @@
-.TH MARK %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH MARK %manext1% "February 11, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

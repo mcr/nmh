@@ -1,4 +1,4 @@
-.TH FMTDUMP %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH FMTDUMP %manext8% "January 1, 2001" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

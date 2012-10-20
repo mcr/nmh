@@ -1,12 +1,18 @@
-#! /bin/sh
+#!/bin/sh
 #
 # Generates mh-chart.man from other .man files that have a SYNOPSIS
 # section.
 
 nmhmandir=`dirname $0`
 
-cat <<'EOF'
-.TH MH-CHART %manext7% "%nmhdate%" MH.6.8 [%nmhversion%]
+# The following ensures the generated date field in the manpage is divorced
+# from the local build environment when building distribution packages.
+export LC_TIME=C
+unset LANG
+datestamp=`date '+%B %d, %Y'`
+
+cat <<__HOOPY_FROOD
+.TH MH-CHART %manext7% "${datestamp}" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -14,7 +20,7 @@ cat <<'EOF'
 mh-chart \- Chart of nmh Commands
 .SH SYNOPSIS
 .na
-EOF
+__HOOPY_FROOD
 
 for i in $nmhmandir/*.man; do
   case $i in

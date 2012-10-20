@@ -1,4 +1,4 @@
-.TH MHPARAM %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH MHPARAM %manext1% "June 14, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

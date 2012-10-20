@@ -1,4 +1,4 @@
-.TH MH-SEQUENCE %manext5% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH MH-SEQUENCE %manext5% "January 9, 2001" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

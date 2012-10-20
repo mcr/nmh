@@ -1,4 +1,4 @@
-.TH INC %manext1% "%nmhdate%" MH.6.8 [%nmhversion%] XXX
+.TH INC %manext1% "July 1, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

@@ -2,7 +2,7 @@ NMH MANPAGE STYLE GUIDE
 
 nmh manpages should be in this general form:
 
-.TH COMP %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH COMP %manext1% "DATE" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -52,10 +52,29 @@ None
 .SH BUGS
 None
 
----------------------------------------
+---------------------------------------------------------------------
+
+The DATE in the .TH macro should reflect the most recent non-trivial
+update to the content of the manpage; formatting changes don't count.
+Spell out the date in English prose:  Month Day, Year
+
+  January 2, 1904
+
+not the unparseable
+
+  01/02/04
+
+
+Don't include a CONTEXT section if contexts don't directly apply to what the
+manpage describes.
+
+
 In the FILES section, prefer the default .TP indent. The pathnames are
 variable and long, so any indentation value that works for you won't
 work for someone else.
+
+
+The BUGS section goes last.
 
 
 Source files

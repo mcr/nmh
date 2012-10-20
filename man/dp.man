@@ -1,4 +1,4 @@
-.TH DP %manext8% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH DP %manext8% "March 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

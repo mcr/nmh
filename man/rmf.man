@@ -1,4 +1,4 @@
-.TH RMF %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH RMF %manext1% "January 18, 2001" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

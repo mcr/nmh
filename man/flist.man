@@ -1,4 +1,4 @@
-.TH FLIST %manext1% "%nmhdate%" MH.6.8 [%nmhversion%]
+.TH FLIST %manext1% "January 1, 2001" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
