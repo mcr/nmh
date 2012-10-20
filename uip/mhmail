@@ -210,7 +210,7 @@ fi
 umask 077
 tmpdir="${MHTMPDIR:-${TMPDIR:-${TMP:-`$nmhbindir/mhpath +`}}}"
 tmpfile="$tmpdir/mhmail$$"
-tmpfilebackup="$tmpdir/[,#]mhmail$$"
+tmpfilebackup="\"$tmpdir\"/[,#]mhmail$$"
 tmpfileresent=
 
 message_file=
@@ -235,7 +235,7 @@ else
   fi
 fi
 
-trap 'rm -f '"$tmpfile"' '"$tmpfilebackup"' '"$tmpfileresent" EXIT
+trap "rm -f '$tmpfile' $tmpfilebackup ${tmpfileresent:+'$tmpfileresent'}" 0
 
 if [ "$body"x = x ]; then
   #### First put message header in the file.
