@@ -1,0 +1,178 @@
+#!/bin/sh
+#
+# Sends multiple files and/or directories in a MIME message.
+# Requires tar and any specified compression program.
+#
+# This code is Copyright (c) 2012, by the authors of nmh.  See the
+# COPYRIGHT file in the root directory of the nmh distribution for
+# complete copyright information.
+
+usage='Usage: sendfiles [switches] -to recipient -subject subject '"\
+"'file1 [file2 ...]
+  or
+       sendfiles [switches] recipient subject file1 [file2 ...]
+  switches are:
+  -compress [bzip2 | compress | gzip | lzma | none | zip]
+  -from <sender>
+  -[delay] <delay> (expressed in seconds)
+  -version
+  -help
+  Can use PERSON environment variable instead of -from switch.'
+
+
+#### Find location of a program.  Bourne shell just puts the name in
+#### $0 if it's found from the PATH, so search that if necessary.
+finddir() {
+  case $1 in
+    */*) dirname "$1" ;;
+    *  ) IFS=:
+         for d in $PATH; do
+           [ -f "${d:=.}/$1"  -a  -x "$d/$1" ]  &&  printf %s "$d"  &&  break
+         done ;;
+  esac
+}
+
+die() {
+  printf '%s\n' "$usage"; exit ${1:-1}
+}
+
+bindir=`finddir $0`
+nmhbindir=`cd "$bindir" && pwd`
+nmhlibdir=`$nmhbindir/mhparam libdir`
+
+
+#### Process switches.
+compress=                   ## compress method
+compressarg=0               ## whether currently handling -compress
+delay=                      ## delay value
+delayarg=0                  ## whether currently handling -delay
+from=                       ## From: contents
+fromarg=0                   ## whether currently handling -from
+subject=                    ## Subject: contents
+subjectarg=0                ## whether currently handling -subject
+to=                         ## To: address
+toarg=0                     ## whether currently handling -to
+for arg in "$@"; do
+  case $arg in
+    -c|-co|-com|-comp|-compr|-compre|-compres|-compress) compressarg=1 ;;
+    -d|-de|-del|-dela|-delay) delayarg=1 ;;
+    -[0-9]|-[0-9][0-9]|-[0-9][0-9][0-9]|-[0-9][0-9][0-9][0-9])
+      delay=`printf '%s\n' "$arg" | sed -e 's%-%%'` ;;
+    -f|-fr|-fro|-from) fromarg=1 ;;
+    #### Support -gzip for backward compatibility.
+    -gzip) compress=gzip ;;
+    -h|-he|-hel|-help) die 0 ;;
+    #### Support -none for backward compatibility.
+    -none) compress=none ;;
+    -s|-su|-sub|-subj|-subje|-subjec|-subject) subjectarg=1 ;;
+    -t|-to) toarg=1 ;;
+    -v|-ve|-ver|-vers|-versi|-versio|-version)
+       "$nmhlibdir/viamail" -version | sed 's/viamail/sendfiles/'; exit ;;
+    -*) die ;;
+    *) if [ $compressarg -eq 1 ]; then
+         compress="$arg"
+         compressarg=0
+       elif [ $delayarg -eq 1 ]; then
+         delay="$arg"
+         delayarg=0
+       elif [ $fromarg -eq 1 ]; then
+         from="$arg"
+         fromarg=0
+       elif [ $subjectarg -eq 1 ]; then
+         subject="$arg"
+         subjectarg=0
+       elif [ $toarg -eq 1 ]; then
+         to="$arg"
+         toarg=0
+       else
+         #### Argument doesn't apply to a switch, so we're done with switches.
+         break
+       fi ;;
+  esac
+  shift
+done
+
+#### Check for switch after non-switch argument.
+for arg in "$@"; do
+  case $arg in
+    -*) die ;;
+  esac
+done
+
+#### Check for required arguments (to, subject, file(s)).
+if [ x"$to" = x ]; then
+  if [ x"$subject" = x ]; then
+    if [ $# -ge 3 ]; then
+      to="$1"; shift
+      subject="$1"; shift
+    else
+      die
+    fi
+  else
+    die
+  fi
+else
+  [ x"$subject" = x  -o  $# -lt 1 ]  &&  die
+fi
+
+#### Check for missing mandatory arguments.
+checkforargs() {
+  if [ $compressarg -eq 1 ]; then
+    printf 'sendfiles: missing argument to -compress\n' >&2; exit 1
+  elif [ $delayarg -eq 1 ]; then
+    printf 'sendfiles: missing argument to -delay\n' >&2; exit 1
+  elif [ $fromarg -eq 1 ]; then
+    printf 'sendfiles: missing argument to -from\n' >&2; exit 1
+  elif [ $subjectarg -eq 1 ]; then
+    printf 'sendfiles: missing argument to -subject\n' >&2; exit 1
+  elif [ $toarg -eq 1 ]; then
+    printf 'sendfiles: missing argument to -to\n' >&2; exit 1
+  fi
+}
+
+checkforargs
+[ $# -eq 0 ]  &&  die
+
+
+if [ x"$from" = x ]; then
+  if [ x"$PERSON" = x ]; then
+    from=`"$nmhlibdir/ap" -format '%(localmbox)' 0`
+  else
+    from="$PERSON"
+  fi
+fi
+
+
+#### Determine compression method and descriptive info.
+if [ x"$compress" = x ]; then
+  for compressor in gzip bzip2 lzma zip compress none; do
+    if [ x"`finddir $compressor`" = x ]; then :; else
+      compress="$compressor"
+      break
+    fi
+  done
+fi
+
+case $compress in
+  bzip2)    uncompress=bzcat; conversion='; x-conversions=bzip2' ;;
+  compress) compress='compress -c'; uncompress='uncompress -c';
+            conversion='; x-conversions=compress' ;;
+  gzip)     compress='gzip -c'; uncompress='gzip -cd'
+            conversion='; x-conversions=gzip' ;;
+  lzma)     compress='lzma -c'; uncompress='lzma -cd'
+            conversion='; x-conversions=lzma' ;;
+  zip)      compress='zip -q'; uncompress='unzip -p'
+            conversion='; x-conversions=zip' ;;
+  none)     compress=cat uncompress=cat; conversion= ;;
+  *)        printf 'sendfiles: unknown compression method "%s"\n' \
+                   "$compress" >&2
+            die ;;
+esac
+
+
+#### Send using viamail.
+tar cvf - "$@" | $compress | \
+    "$nmhlibdir/viamail" -to "$to" -subject "$subject" \
+        -from "$from" -parameters "type=tar$conversion" \
+        -comment "extract with $uncompress | tar xvpf -" \
+        -delay "$delay" -verbose

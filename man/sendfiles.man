@@ -8,16 +8,22 @@ sendfiles \- send multiple files via a MIME message
 .HP 5
 .na
 .B sendfiles
-.RB [ \-bzip2 " | " \-compress " | " \-gzip " | " \-lzma " | " \-none " | " -zip ]
+.RB [ -compress
+.IR bzip2 " | " compress " | " gzip " | " lzma " | " none " | " zip ]
 .br
 .RB [ \-from
 .IR sender ]
-.RI [ \-delay ]
+.RI [ "\-delay n" " | " \-n ]
 .RB [ \-version ]
 .RB [ \-help ]
 .br
+.B \-to
+.I recipient
+.B \-subject
+.IR subject " | "
 .I recipient
 .I subject
+.br
 .I file/directory1
 .RI [ file/directory2
 \&...]
@@ -29,7 +35,7 @@ is used to send a collection
 of files and directories via electronic mail.
 .PP
 .RS 5
-sendfiles recipient \*(lqsubject\*(rq files\0...
+sendfiles -to recipient -subject \*(lqsubject\*(rq files\0...
 .RE
 .PP
 .B sendfiles
@@ -41,6 +47,13 @@ archive to the \*(lqrecipient\*(rq with the given \*(lqsubject\*(rq.
 The archive
 will be automatically split up into as many messages as necessary
 in order to get past most mailers.
+.PP
+The
+.B \-to
+switch specifies the recipient.  The
+.B \-subject
+switch specifies the subject.  Alternatively, these two required values
+can be provided without their corresponding switch names.
 .PP
 The
 .B \-from
@@ -56,28 +69,35 @@ mailbox, see
 in
 .IR mh-format (5).
 .PP
-The remaining command line switches select the compression program.
-One of these can be used to override the run-time determination of
-the compression program by
+The
+.B \-compress
+command line switch can be used to override the run-time determination
+of the compression program by
 .BR sendfiles .
+.B \-compress
+.I none
+(alternatively,
+.BR \-none )
+disables compression.
 .PP
 Sometimes you want
 .B sendfiles
 to pause after posting a partial
 message.  This is usually the case when you are running
 .B sendmail
-and expect to generate a lot of partial messages.  If the first
-argument given to
-.B sendfiles
-starts with a dash, then it is
-interpreted as the number of seconds to pause in between postings,
+and expect to generate a lot of partial messages.  The
+.B \-delay
+switch specifies the number of seconds to pause in between postings,
 e.g.,
 .PP
 .RS 5
-sendfiles -30 recipient \*(lqsubject\*(rq files\0...
+sendfiles -delay 30 -to recipient -subject \*(lqsubject\*(rq files\0...
 .RE
 .PP
-will pause 30 seconds in between each posting.
+will pause 30 seconds in between each posting.  An alternate form of
+the switch with just the delay time,
+.BR \-30 ,
+for example, is also supported.
 .PP
 .SS "Extracting the Received Files"
 When these messages are received, invoke

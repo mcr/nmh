@@ -40,7 +40,6 @@ a.out.dSYM/
 /config/version.c
 /etc/mhn.defaults
 /etc/mts.conf
-/etc/sendfiles
 /man/*.[1578]
 /man/man.sed
 /man/mh-chart.man

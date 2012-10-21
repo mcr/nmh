@@ -1,0 +1,222 @@
+#!/bin/sh
+######################################################
+#
+# Test sendfiles
+#
+######################################################
+
+set -e
+
+if test -z "$MH_OBJ_DIR"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+expected_err=$MH_TEST_DIR/$$.expected_err
+actual=$MH_TEST_DIR/$$.actual
+actual_err=$MH_TEST_DIR/$$.actual_err
+localmbox=`$MH_LIB_DIR/ap -format "%(localmbox)" 0`
+#### Use this script itself for the test file.
+testfiledir="$srcdir/test/post"
+testfile=`basename $0`
+
+(cd "$MH_TEST_DIR"  &&
+mkdir -p tmp  &&
+cat >"$expected_err" <<EOF
+$testfile
+EOF
+)
+#### Copy fakesendmail and the testfile because we cd to the
+#### test directory, because tar doesn't like absolute paths.
+cp "$srcdir/test/fakesendmail" "$testfiledir/$testfile" "$MH_TEST_DIR"
+
+#### Use sendmail/pipe below to override default mts.
+mts_fakesendmail="$MHMTSCONF-fakesendmail"
+sed -e 's/^mts:.*/mts: sendmail\/pipe/' "$MHMTSCONF" > "$mts_fakesendmail"
+printf 'sendmail: %s/fakesendmail\n' "$MH_TEST_DIR" >>"$mts_fakesendmail"
+MHMTSCONF="$mts_fakesendmail"
+
+# $1: uncompress command
+# $2: argument style:
+#   new: -to recipient -subject subject
+#   old: recipient subject
+# remaining arguments: sendfiles switches
+test_sendfiles ()
+{
+  uncompress="$1"; shift
+  argstyle="$1"; shift
+
+  if [ "$argstyle" = 'new' ]; then
+    (cd "$MH_TEST_DIR"  &&
+     sendfiles "$@" -to recipient@example.com -subject "sendfiles test" \
+       "$testfile" >/dev/null 2>"$actual_err")
+  elif [ "$argstyle" = 'old' ]; then
+    (cd "$MH_TEST_DIR"  &&
+     sendfiles "$@" recipient@example.com "sendfiles test" \
+       "$testfile" >/dev/null 2>"$actual_err")
+  fi
+
+  check "$expected_err" "$actual_err" 'keep first'
+
+  # fakesendmail drops the message and any cc's into this mbox.
+  mbox="$MH_TEST_DIR"/Mail/fakesendmail.mbox
+  inc -silent -file "$mbox"
+  rm -f "$mbox" "$mbox.map"
+
+  mhlist -verbose last | sed -e 's/ *$//' >"$actual"
+  (cd $MH_TEST_DIR/tmp  &&
+   contents=`mhstore -noauto last 2>&1 | \
+             sed -e 's/storing message.*as file //'`  &&
+   $uncompress "$contents" | tar xpf -  &&  rm -f "$contents")
+
+  rmm last
+  check "$testfiledir/$testfile" "$MH_TEST_DIR/tmp/$testfile" \
+        'keep first'
+
+  [ -f "$expected" ]  &&  check "$expected" "$actual"  ||  rm -f "$actual"
+}
+
+
+# check -help
+cat >"$expected" <<EOF
+Usage: sendfiles [switches] -to recipient -subject subject file1 [file2 ...]
+  or
+       sendfiles [switches] recipient subject file1 [file2 ...]
+  switches are:
+  -compress [bzip2 | compress | gzip | lzma | none | zip]
+  -from <sender>
+  -[delay] <delay> (expressed in seconds)
+  -version
+  -help
+  Can use PERSON environment variable instead of -from switch.
+EOF
+
+sendfiles -help >"$actual" 2>&1
+check "$expected" "$actual"
+
+# check -version
+case `sendfiles -v` in
+  sendfiles\ --*) ;;
+  *           ) printf '%s: sendfiles -v generated unexpected output\n' "$0" >&2
+                failed=`expr ${failed:-0} + 1`;;
+esac
+
+# check unknown switch
+run_test 'sendfiles -nonexistent' "Usage: sendfiles [switches] -to recipient \
+-subject subject file1 [file2 ...]
+  or
+       sendfiles [switches] recipient subject file1 [file2 ...]
+  switches are:
+  -compress [bzip2 | compress | gzip | lzma | none | zip]
+  -from <sender>
+  -[delay] <delay> (expressed in seconds)
+  -version
+  -help
+  Can use PERSON environment variable instead of -from switch."
+
+# check unknown compression method
+run_test 'sendfiles -compress unknown to subject file' \
+'sendfiles: unknown compression method "unknown"'"
+Usage: sendfiles [switches] -to recipient \
+-subject subject file1 [file2 ...]
+  or
+       sendfiles [switches] recipient subject file1 [file2 ...]
+  switches are:
+  -compress [bzip2 | compress | gzip | lzma | none | zip]
+  -from <sender>
+  -[delay] <delay> (expressed in seconds)
+  -version
+  -help
+  Can use PERSON environment variable instead of -from switch."
+
+# Check basic operation, using specified compression method.
+# Don't check the mhlist output, by not creating an $expected file,
+# because it will vary with compression method and compressed file
+# size.
+[ "`findprog bzip2`" ]     &&  test_sendfiles 'bzip2 -cd' new -compress bzip2
+[ "`findprog compress`" ]  &&  test_sendfiles uncompress new -compress compress
+[ "`findprog gzip`" ]      &&  test_sendfiles 'gzip -cd' new -compress gzip
+[ "`findprog gzip`" ]      &&  test_sendfiles 'gzip -cd' new -gzip
+[ "`findprog lzma`" ]      &&  test_sendfiles 'lzma -cd' new -compress lzma
+[ "`findprog zip`" ]       &&  test_sendfiles 'unzip -p' new -compress zip
+
+# check with no compression
+cat >"$expected" <<EOF
+ msg part  type/subtype              size description
+  11       application/octet-stream   10K
+	     type="tar"
+	     (extract with cat | tar xvpf -)
+EOF
+
+test_sendfiles cat new -compress none
+
+# check with no compression, -none
+cat >"$expected" <<EOF
+ msg part  type/subtype              size description
+  11       application/octet-stream   10K
+	     type="tar"
+	     (extract with cat | tar xvpf -)
+EOF
+
+test_sendfiles cat new -none
+
+# check old argument style (without -to and -subject)
+cat >"$expected" <<EOF
+ msg part  type/subtype              size description
+  11       application/octet-stream   10K
+	     type="tar"
+	     (extract with cat | tar xvpf -)
+EOF
+
+test_sendfiles cat old -compress none
+
+# check -from
+cat >"$expected" <<EOF
+ msg part  type/subtype              size description
+  11       application/octet-stream   10K
+	     type="tar"
+	     (extract with cat | tar xvpf -)
+EOF
+
+test_sendfiles cat new -compress none -from 'Sender <sender@example.com>'
+
+# check PERSON environment variable
+cat >"$expected" <<EOF
+ msg part  type/subtype              size description
+  11       application/octet-stream   10K
+	     type="tar"
+	     (extract with cat | tar xvpf -)
+EOF
+
+PERSON='Sender <sender@example.com>' test_sendfiles cat new -compress none
+
+# check -delay, though for a small file it doesn't do anything
+cat >"$expected" <<EOF
+ msg part  type/subtype              size description
+  11       application/octet-stream   10K
+	     type="tar"
+	     (extract with cat | tar xvpf -)
+EOF
+
+test_sendfiles cat new -compress none -delay 5
+
+# check old style -delay, though for a small file it doesn't do anything
+cat >"$expected" <<EOF
+ msg part  type/subtype              size description
+  11       application/octet-stream   10K
+	     type="tar"
+	     (extract with cat | tar xvpf -)
+EOF
+
+test_sendfiles cat new -compress none -5
+
+rm -fr "$MH_TEST_DIR/fakesendmail" "$MH_TEST_DIR/$testfile" \
+       "$expected_err" "$MH_TEST_DIR/tmp"
+
+
+exit ${failed:-0}
