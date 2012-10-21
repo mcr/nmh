@@ -1,4 +1,4 @@
-.TH WHATNOW %manext1% "%nmhdate%" "%nmhversion%"
+.TH WHATNOW %manext1% "April 4, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -230,8 +230,6 @@ information.
 .RB ` \-prompt "' defaults to \*(lqWhat\ Now?\ \*(rq"
 .RB ` \-attach "' defaults to \*(lqNmh-Attachment\*(rq"
 .fi
-.SH CONTEXT
-None
 .SH BUGS
 The argument to the
 .B \-prompt
