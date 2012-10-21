@@ -524,7 +524,6 @@ $(man_MANS): man/man.sed
 man/man.sed: Makefile
 	@echo 's,%nmhwarning%,THIS FILE HAS BEEN AUTOMATICALLY GENERATED.  DO NOT EDIT.,g' > $@
 	@echo 's,%nmhversion%,nmh-$(VERSION),g' >> $@
-	@echo 's,%nmhdate%,$(DATE),g' >> $@
 	@echo 's,%bindir%,$(bindir),g' >> $@
 	@echo 's,%etcdir%,$(sysconfdir),g' >> $@
 	@echo 's,%libdir%,$(libdir),g' >> $@
