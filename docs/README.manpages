@@ -109,8 +109,7 @@ Program names
 		.B comp
 		.BR comp ,
 
-	If this is a manpage reference (outside of the SEE ALSO
-	section, which just uses regular text), use:
+	If this is a manpage reference, use:
 
 		.IR mh-draft (5)
 
