@@ -68,7 +68,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/post/test-post-dcc test/post/test-post-fcc \
 	test/post/test-post-multifrom test/post/test-post-envelope \
 	test/post/test-post-group test/post/test-mts test/post/test-messageid \
-	test/prompter/test-prompter \
+	test/post/test-sendfiles test/prompter/test-prompter \
 	test/rcv/test-rcvdist test/rcv/test-rcvpack test/rcv/test-rcvstore \
 	test/rcv/test-rcvtty test/refile/test-refile \
 	test/repl/test-if-str test/repl/test-trailing-newline \
@@ -86,7 +86,7 @@ DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 ##
 ## Stuff that should be cleaned via "make clean"
 ##
-CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf etc/sendfiles \
+CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf \
 	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS)
 clean-local:
 	@rm -rf RPM a.out.dSYM uip/a.out.dSYM
@@ -211,8 +211,8 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 ## Files we need to include in the distribution which aren't found by
 ## Automake using the automatic rules
 ##
-EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in etc/sendfiles.in \
-	     etc/mhn.defaults.sh $(MHNSEARCHPROG) DATE MACHINES \
+EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
+	     etc/mhn.defaults.sh etc/sendfiles $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
 	     man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
@@ -414,10 +414,6 @@ etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 etc/mhn.defaults: $(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPROG)
 	@rm -f $@
 	$(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPATH) $(MHNSEARCHPROG) > $@
-
-etc/sendfiles: $(srcdir)/etc/sendfiles.in Makefile
-	@rm -f $@
-	$(SED) -e 's,%libdir%,$(libdir),' < $(srcdir)/etc/sendfiles.in > $@
 
 ##
 ## Use configure to set up default LN, but through a make variable so

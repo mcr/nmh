@@ -76,3 +76,5 @@ BUG FIXES
 - The first alias contained in a blind list is now expanded.  The
   mh-alias(5) man page was updated to show that blind lists must not
   be terminated with, or contain, a trailing semicolon [Bug #15604].
+- Fixed sendfiles(1) to always provide a From: address.  Also, updated
+  its switches.
