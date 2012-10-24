@@ -29,7 +29,7 @@ Be sure to install these Cygwin packages:
 
 If configuring with --with-cyrus-sasl, install these Cygwin packages:
   libsasl2
-  libsas2-devel
+  libsasl2-devel
 
 If configuring with --with-tls, install these Cygwin packages:
   gnutls-devel
