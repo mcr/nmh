@@ -15,6 +15,13 @@
 #ifdef CYRUS_SASL
 #include <sasl/sasl.h>
 #include <sasl/saslutil.h>
+# if SASL_VERSION_FULL < 0x020125
+    /* Cyrus SASL 2.1.25 introduced the sasl_callback_ft prototype,
+       which has an explicit void parameter list, according to best
+       practice.  So we need to cast to avoid compile warnings.
+       Provide this prototype for earlier versions. */
+    typedef int (*sasl_callback_ft)();
+# endif /* SASL_VERSION_FULL < 0x020125 */
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -100,11 +107,11 @@ static int sm_get_user(void *, int, const char **, unsigned *);
 static int sm_get_pass(sasl_conn_t *, void *, int, sasl_secret_t **);
 
 static sasl_callback_t callbacks[] = {
-    { SASL_CB_USER, sm_get_user, NULL },
+    { SASL_CB_USER, (sasl_callback_ft) sm_get_user, NULL },
 #define SM_SASL_N_CB_USER 0
-    { SASL_CB_PASS, sm_get_pass, NULL },
+    { SASL_CB_PASS, (sasl_callback_ft) sm_get_pass, NULL },
 #define SM_SASL_N_CB_PASS 1
-    { SASL_CB_AUTHNAME, sm_get_user, NULL },
+    { SASL_CB_AUTHNAME, (sasl_callback_ft) sm_get_user, NULL },
 #define SM_SASL_N_CB_AUTHNAME 2
     { SASL_CB_LIST_END, NULL, NULL },
 };

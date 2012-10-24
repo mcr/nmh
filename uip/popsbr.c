@@ -12,6 +12,13 @@
 #ifdef CYRUS_SASL
 # include <sasl/sasl.h>
 # include <sasl/saslutil.h>
+# if SASL_VERSION_FULL < 0x020125
+    /* Cyrus SASL 2.1.25 introduced the sasl_callback_ft prototype,
+       which has an explicit void parameter list, according to best
+       practice.  So we need to cast to avoid compile warnings.
+       Provide this prototype for earlier versions. */
+    typedef int (*sasl_callback_ft)();
+# endif /* SASL_VERSION_FULL < 0x020125 */
 #endif /* CYRUS_SASL */
 
 #include <h/popsbr.h>
@@ -43,9 +50,9 @@ struct pass_context {
 };
 
 static sasl_callback_t callbacks[] = {
-    { SASL_CB_USER, sasl_get_user, NULL },
+    { SASL_CB_USER, (sasl_callback_ft) sasl_get_user, NULL },
 #define POP_SASL_CB_N_USER 0
-    { SASL_CB_PASS, sasl_get_pass, NULL },
+    { SASL_CB_PASS, (sasl_callback_ft) sasl_get_pass, NULL },
 #define POP_SASL_CB_N_PASS 1
     { SASL_CB_LOG, NULL, NULL },
     { SASL_CB_LIST_END, NULL, NULL },
