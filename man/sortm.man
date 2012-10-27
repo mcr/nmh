@@ -106,8 +106,8 @@ parsed, or has a format error in any header field.  With the
 .B \-check
 switch,
 .B sortm
-inhibits all modifications to the folder if there any such messages,
-and exits with non-zero status.  With the default of
+inhibits all modifications to the folder if there are any such
+messages, and exits with non-zero status.  With the default of
 .BR \-nocheck ,
 .B sortm
 sorts messages with a missing or invalid
