@@ -32,15 +32,19 @@ test_post ()
     # The server doesn't always come up fast enough, so sleep and
     # retry a few times if it fails...
     status=1
-    for i in 0 1 2 3 4 5 6 7 8 9; do
+    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
         if send -draft -server 127.0.0.1 -port $localport $3
         then
             status=0
             break
         fi
-        sleep 1
+        sleep 2
     done
-    [ $status -eq 0 ] || exit 1
+    if [ $status -ne 0 ]; then
+      printf '%s: send failed, was fakesmtp given enough time to start?\n' \
+             "$0" >&2
+      exit 1
+    fi
 
     wait ${pid}
 

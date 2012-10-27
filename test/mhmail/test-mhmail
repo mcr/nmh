@@ -27,7 +27,7 @@ test_mhmail ()
     # The server doesn't always come up fast enough, so sleep and
     # retry a few times if it fails...
     status=1
-    for i in 0 1 2 3 4 5 6 7 8 9; do
+    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
         if [ $3 = '|' ]; then
           if printf '%s' "$4" | mhmail recipient@example.com $2 \
              -server 127.0.0.1 -port $localport; then
@@ -41,9 +41,13 @@ test_mhmail ()
               break
           fi
         fi
-        sleep 1
+        sleep 2
     done
-    [ $status -eq 0 ] || exit 1
+    if [ $status -ne 0 ]; then
+      printf '%s: mhmail failed, was fakesmtp given enough time to start?\n' \
+             "$0" >&2
+      exit 1
+    fi
 
     wait ${pid}
 
@@ -123,7 +127,7 @@ done
 printf 'inc: -version\n' >> $MH
 case `mhmail` in
   inc\ --*) ;;
-  *           ) echo "$0: mhmail generated unexpected output" 1>&2
+  *           ) echo "$0: mhmail generated unexpected output" >&2
                 failed=`expr ${failed:-0} + 1`;;
 esac
 
