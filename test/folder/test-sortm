@@ -7,7 +7,7 @@
 
 set -e
 
-if test -z "${MH_OBJ_DIR}"; then
+if test -z "$MH_OBJ_DIR"; then
     srcdir=`dirname $0`/../..
     MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
 fi
@@ -32,6 +32,7 @@ Usage: sortm [+folder] [msgs] [switches]
   -nolimit
   -[no]verbose
   -[no]all
+  -[no]check
   -version
   -help
 EOF
@@ -382,6 +383,61 @@ EOF
 
 refile first +inbox; folder -pack >/dev/null
 sortm -noall -all
+scan >"$actual"
+check "$expected" "$actual"
+
+# check -check
+cat >"$expected" <<EOF
+sortm: can't parse date field in message 14, continuing...
+sortm: errors found, no messages sorted
+EOF
+
+sed -e 's/Sep//' $MH_TEST_DIR/Mail/inbox/7 > $MH_TEST_DIR/Mail/inbox/14
+set +e
+sortm -check >"$actual" 2>&1
+set -e
+check "$expected" "$actual"
+
+cat >"$expected" <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2+ 09/29 Test10             Testing message 10<<This is message number 10 >>
+   3  09/29 Test5              Testing message 5<<This is message number 5 >>
+   4  09/29 Test6              Testing message 6<<This is message number 6 >>
+   5  09/29 Test7              Testing message 7<<This is message number 7 >>
+   6  09/29 Test8              Testing message 8<<This is message number 8 >>
+   7  09/29 Test9              Testing message 9<<This is message number 9 >>
+   8  09/29 Test1              Testing message 1<<This is message number 1 >>
+   9  09/29 Test2              Testing message 2<<This is message number 2 >>
+  10  09/29 Test3              Testing message 3<<This is message number 3 >>
+  11  09/29 Test4              Testing message 4<<This is message number 4 >>
+  12  09/29 Test11             Re: common subject<<This is message number 11 >>
+  13  10/31 Test13             Re: common subject<<This is message number 13 >>
+  14  01/00 Test9              Testing message 9<<This is message number 9 >>
+EOF
+scan >"$actual"
+check "$expected" "$actual"
+
+# check -nocheck
+cat >"$expected" <<EOF
+   1  09/28 Test12             common subject<<This is message number 12 >>
+   2+ 09/29 Test10             Testing message 10<<This is message number 10 >>
+   3  09/29 Test5              Testing message 5<<This is message number 5 >>
+   4  09/29 Test6              Testing message 6<<This is message number 6 >>
+   5  09/29 Test7              Testing message 7<<This is message number 7 >>
+   6  09/29 Test8              Testing message 8<<This is message number 8 >>
+   7  09/29 Test9              Testing message 9<<This is message number 9 >>
+   8  09/29 Test1              Testing message 1<<This is message number 1 >>
+   9  09/29 Test2              Testing message 2<<This is message number 2 >>
+  10  09/29 Test3              Testing message 3<<This is message number 3 >>
+  11  09/29 Test4              Testing message 4<<This is message number 4 >>
+  12  09/29 Test11             Re: common subject<<This is message number 11 >>
+  13  10/31 Test13             Re: common subject<<This is message number 13 >>
+  14  01/00 Test9              Testing message 9<<This is message number 9 >>
+EOF
+
+sed -e 's/Sep//' $MH_TEST_DIR/Mail/inbox/7 > $MH_TEST_DIR/Mail/inbox/14
+run_test 'sortm -check -nocheck' \
+         "sortm: can't parse date field in message 14, continuing..."
 scan >"$actual"
 check "$expected" "$actual"
 

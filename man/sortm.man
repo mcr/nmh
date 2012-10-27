@@ -10,7 +10,7 @@ sortm \- sort messages
 .B sortm
 .RI [ +folder ]
 .RI [ msgs ]
-.RB [ \-all | \-noall ]
+.RB [ \-all " | " \-noall ]
 .RB [ \-datefield
 .IR field ]
 .RB [ \-textfield
@@ -19,6 +19,7 @@ sortm \- sort messages
 .RB [ \-limit
 .IR days ]
 .RB [ \-nolimit ]
+.RB [ \-check " | " \-nocheck ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -97,6 +98,20 @@ the same subject on the same date together, use:
 .RS 5
 sortm -textfield subject +folder
 .RE
+.PP
+.B sortm
+always issues a warning for each message that is missing a
+\*(lqDate:\*(rq field, has a \*(lqDate:\*(rq field that cannot be
+parsed, or has a format error in any header field.  With the
+.B \-check
+switch,
+.B sortm
+inhibits all modifications to the folder if there any such messages,
+and exits with non-zero status.  With the default of
+.BR \-nocheck ,
+.B sortm
+sorts messages with a missing or invalid
+\*(lqDate:\*(rq field using their file modification times.
 .SH FILES
 .fc ^ ~
 .nf
@@ -122,6 +137,7 @@ sortm -textfield subject +folder
 .RB ` \-notextfield '
 .RB ` \-noverbose '
 .RB ` \-nolimit '
+.RB ` \-nocheck '
 .fi
 .SH CONTEXT
 If a folder is given, it will become the current folder.  If the current
@@ -142,18 +158,6 @@ numbering in a folder, use
 .RB \*(lq "folder\ \-pack" \*(rq
 as always.
 .SH BUGS
-If
-.B sortm
-encounters a message without a date\-field, or if the
-message has a date\-field that
-.B sortm
-cannot parse, then
-.B sortm
-attempts to keep the message in the same relative position.  This does
-not always work.  For instance, if the first message encountered lacks
-a date which can be parsed, then it will usually be placed at the end
-of the messages being sorted.
-.PP
 When
 .B sortm
 complains about a message which it can't temporally

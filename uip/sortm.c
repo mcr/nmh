@@ -32,9 +32,13 @@ static struct swit switches[] = {
      { "all", 0 },
 #define NALLMSGS               9
      { "noall", 0 },
-#define VERSIONSW             10
+#define CHECKSW               10
+     { "check", 0 },
+#define NCHECKSW              11
+     { "nocheck", 0 },
+#define VERSIONSW             12
      { "version", 0 },
-#define HELPSW                11
+#define HELPSW                13
      { "help", 0 },
      { NULL, 0 }
 };
@@ -53,6 +57,7 @@ time_t datelimit = 0;
 int submajor = 0;		/* if true, sort on subject-major */
 int verbose;
 int allmsgs = 1;
+int check_failed = 0;
 
 /* This keeps compiler happy on calls to qsort */
 typedef int (*qsort_comp) (const void *, const void *);
@@ -80,6 +85,7 @@ main (int argc, char **argv)
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
     struct smsg **dlist;
+    int checksw = 0;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -165,6 +171,13 @@ main (int argc, char **argv)
 	    case NALLMSGS:
 		allmsgs = 0;
 		continue;
+
+	    case CHECKSW:
+		checksw = 1;
+		continue;
+	    case NCHECKSW:
+		checksw = 0;
+		continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -210,6 +223,10 @@ main (int argc, char **argv)
 
     if ((nmsgs = read_hdrs (mp, datesw)) <= 0)
 	adios (NULL, "no messages to sort");
+
+    if (checksw  &&  check_failed) {
+	adios (NULL, "errors found, no messages sorted");
+    }
 
     /*
      * sort a list of pointers to our "messages to be sorted".
@@ -389,9 +406,11 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 
 	case LENERR:
 	case FMTERR:
-	    if (state == LENERR || state == FMTERR)
+	    if (state == LENERR || state == FMTERR) {
 		admonish (NULL, "format error in message %d (header #%d)",
 		      msg, compnum);
+		check_failed = 1;
+	    }
 	    if (datecomp)
 		free (datecomp);
 	    if (subjcomp)
@@ -415,6 +434,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	admonish (NULL, "can't parse %s field in message %d", datesw, msg);
 	fstat (fileno (in), &st);
 	smsg->s_clock = st.st_mtime;
+	check_failed = 1;
     } else {
 	smsg->s_clock = dmktime (tw);
     }
