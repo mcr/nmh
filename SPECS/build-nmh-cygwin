@@ -47,15 +47,13 @@ export REL=`echo $tscriptname | sed -e "s/${PKG}\-${VER}\-//"`
 # Normally, these are identical, but if the Cygwin package name is different
 # from the upstream package name, you will want to redefine BASEPKG.
 # Example: For Apache 2, BASEPKG=httpd-2.x.xx but SHORTPKG=apache2-2.x.xx
-export BASEPKG=${PKG}-${VER}
-# Change from generic-build-script:  redefined BASEPKG.
-export BASEPKG=${PKG}-${VER}-dev
+export BASEPKG=${PKG}-${VER}-${REL}
 export SHORTPKG=${PKG}-${VER}
 export FULLPKG=${SHORTPKG}-${REL}
 
 # determine correct decompression option and tarball filename
 # Change from generic-build-script:  set scr_orig_pkg_name here.
-export src_orig_pkg_name=nmh-1.5-dev.tar.gz
+export src_orig_pkg_name=nmh-1.5-2.tar.gz
 if [ -e "${src_orig_pkg_name}" ] ; then
   # Change from generic-build-script:  don't need the following line, use
   # opt_decomp of z.
