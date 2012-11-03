@@ -980,7 +980,7 @@ raw:
     }
 
     if (buflen <= 0 ||
-        (ct->c_termproc && (size_t) buflen <= strlen(ct->c_termproc))) {
+        (ct->c_termproc && buflen <= (ssize_t) strlen(ct->c_termproc))) {
 	/* content_error would provide a more useful error message
 	 * here, except that if we got overrun, it probably would
 	 * too.
