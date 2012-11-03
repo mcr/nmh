@@ -1,4 +1,4 @@
-.TH NMH %manext7% "September 11, 2012" "%nmhversion%"
+.TH NMH %manext7% "November 3, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -161,6 +161,10 @@ Commands which take a range of message numbers
 .IR <num1> - <num2>
 Indicates all messages in the range <num1> to <num2>, inclusive.
 The range must be nonempty.
+.TP
+.RI all
+Indicates all messages, i.e.,
+.IR first - last .
 .TP
 .IR <num> :+ N
 .PD 0
