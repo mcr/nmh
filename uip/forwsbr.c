@@ -191,7 +191,7 @@ finished:
 	adios ("dup", "unable to");
 
     line = mh_xmalloc ((unsigned) fmtsize);
-    fmt_scan (fmt, line, fmtsize, dat);
+    fmt_scan (fmt, line, fmtsize - 1, fmtsize, dat);
     fputs (line, tmp);
     free (line);
     if (fclose (tmp))

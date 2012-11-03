@@ -317,7 +317,7 @@ get_x400_comp (char *mbox, char *key, char *buffer, int buffer_len)
 }
 
 struct format *
-fmt_scan (struct format *format, char *scanl, int width, int *dat)
+fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 {
     char *cp, *ep;
     unsigned char *sp;
@@ -332,8 +332,11 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
     struct tws *tws;
     struct mailname *mn;
 
+    /* ep keeps track of displayed characters.  They're limited by width.
+       The total number of characters, cp - scanl + 1 (for trailing NULL),
+       includes invisible control characters and is limited by max. */
     cp = scanl;
-    ep = scanl + width - 1;
+    ep = scanl + (width <= (int) max ? width : (int) max) - 1;
 
     for (fmt = format; fmt->f_type != FT_DONE; fmt++)
 	switch (fmt->f_type) {
@@ -974,9 +977,14 @@ fmt_scan (struct format *format, char *scanl, int width, int *dat)
     }
 #ifndef JLR
     finished:;
-    if (cp[-1] != '\n')
-	*cp++ = '\n';
-    *cp   = 0;
+    if (cp > scanl  &&  cp[-1] != '\n') {
+	if (cp - scanl < (int) max - 1) {
+	    *cp++ = '\n';
+	} else {
+	    cp[-1] = '\n';
+	}
+    }
+    *cp = '\0';
     return ((struct format *)0);
 #else /* JLR */
     if (cp[-1] != '\n')

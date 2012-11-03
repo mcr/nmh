@@ -144,7 +144,7 @@ process (char *date, int length)
     FINDCOMP (cptr, "text");
     if (cptr)
 	cptr->c_text = date;
-    fmt_scan (fmt, buffer, length, dat);
+    fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat);
     fputs (buffer, stdout);
 
     return status;

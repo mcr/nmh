@@ -1118,7 +1118,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	    if (!cp[1])
 		*cp = 0;
 
-	fmt_scan (c1->c_fmt, buffer, sizeof(buffer) - 1, dat);
+	fmt_scan (c1->c_fmt, buffer, sizeof buffer - 1, sizeof buffer - 1, dat);
 	/* Don't need to append a newline, dctime() already did */
 	c2->c_text = getcpy (buffer);
 
@@ -1149,7 +1149,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	if (cptr)
 	    cptr->c_text = p->pq_error;
 
-	fmt_scan (c1->c_fmt, buffer, sizeof(buffer) - 1, dat);
+	fmt_scan (c1->c_fmt, buffer, sizeof buffer - 1, sizeof buffer - 1, dat);
 	if (*buffer) {
 	    if (c2->c_text)
 		c2->c_text = add (",\n", c2->c_text);
@@ -1945,7 +1945,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp)
 
 	for (a = c1->c_f_args, i = 1; a != NULL; a = a->a_next, i++) {
 	    args[i] = mh_xmalloc(BUFSIZ);
-	    fmt_scan(a->a_fmt, args[i], BUFSIZ, dat);
+	    fmt_scan(a->a_fmt, args[i], BUFSIZ - 1, BUFSIZ, dat);
 	    /*
 	     * fmt_scan likes to put a trailing newline at the end of the
 	     * format string.  If we have one, get rid of it.

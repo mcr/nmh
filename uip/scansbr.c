@@ -31,10 +31,6 @@
 #define SBUFSIZ 512
 
 static struct format *fmt;
-#ifdef JLR
-static struct format *fmt_top;
-#endif /* JLR */
-
 static struct comp *datecomp;		/* pntr to "date" comp             */
 static struct comp *bodycomp;		/* pntr to "body" pseudo-comp      *
 					 * (if referenced)                 */
@@ -78,6 +74,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
     FILE *scnout = NULL;
     char name[NAMESZ];
     static int rlwidth, slwidth;
+    static size_t scanl_size;
 
     /* first-time only initialization */
     if (!scanl) {
@@ -88,16 +85,16 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		width = MAXSCANL;
 	}
 	dat[3] = slwidth = width;
-	scanl = (char *) mh_xmalloc((size_t) SCAN_CHARWIDTH * (slwidth + 2) );
+	/* Arbitrarily allocate 20 * slwidth to provide room for lots
+	   of escape sequences. */
+	scanl_size = SCAN_CHARWIDTH * (20 * slwidth + 2);
+	scanl = (char *) mh_xmalloc (scanl_size);
 	if (outnum)
 	    umask(~m_gmprot());
 
 	/* Compile format string */
 	ncomps = fmt_compile (nfs, &fmt) + 1;
 
-#ifdef JLR
-	fmt_top = fmt;
-#endif	/* JLR */
 	FINDCOMP(bodycomp, "body");
 	FINDCOMP(datecomp, "date");
 	FINDCOMP(cptr, "folder");
@@ -330,13 +327,7 @@ finished:
 	}
     }
 
-    fmt_scan (fmt, scanl, slwidth, dat);
-
-#if 0
-    fmt = fmt_scan (fmt, scanl, slwidth, dat);
-    if (!fmt)
-	fmt = fmt_top;		/* reset for old format files */
-#endif
+    fmt_scan (fmt, scanl, scanl_size, slwidth, dat);
 
     if (bodycomp)
 	bodycomp->c_text = saved_c_text;

@@ -190,7 +190,7 @@ process (char *arg, int length, int norm)
 	if (cptr)
 	    cptr->c_text = p->pq_error;
 
-	fmt_scan (fmt, buffer, length, dat);
+	fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat);
 	fputs (buffer, stdout);
 
 	free (p->pq_text);
