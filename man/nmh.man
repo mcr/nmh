@@ -43,9 +43,7 @@ put the directory
 \*(lq%bindir%\*(rq
 in your
 .BR $PATH .
-(Check the
-manual entry for the shell you use if you don't know how to
-do this.)  Run the
+Run the
 .B install-mh
 command.  If you've never used
 .B nmh
