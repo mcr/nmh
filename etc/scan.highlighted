@@ -1,0 +1,40 @@
+%; scan.highlighted
+%;
+%; This file shows how to use ANSI escape sequences to highlight a
+%; current message in yellow and any unseen messages in cyan.  It
+%; differs from the default scan format in the two additional lines at
+%; the beginning and the literal sequence at the end.
+%;
+%; To enable use of this format, add "-form scan.highlighted" to your
+%; scan invocation or to your profile (~/.mh_profile), e.g.:
+%;     scan: -form scan.highlighted
+%;
+%; You can optionally copy this file to your MH Path and modify as
+%; desired.
+%;
+%; The mh-sequence(5) man page describes the unseen sequence.
+%;
+%; A more readable approach would add escape sequences to your profile, e.g.:
+%;     normal: [m
+%;     bright-black: [1;30m
+%;     red: [31m
+%;     green: [32m
+%;     yellow: [33m
+%;     blue: [34m
+%;     magenta: [35m
+%;     cyan: [36m
+%;     bright-white: [1;37m
+%;     underlined-white: [4;37m
+%; To use them in the format, e.g., at the beginning:
+%;     %<(cur)%(void(profile yellow))%(zputlit)%>\
+%;     %<(unseen)%(void(profile cyan))%(zputlit)%>\
+%; and at the end:
+%;     %(void(profile normal))%(zputlit)
+%;
+%<(cur)%(void(lit [33m))%(zputlit)%>\
+%<(unseen)%(void(lit [36m))%(zputlit)%>\
+%4(msg)%<(cur)+%| %>%<{replied}-%?{encrypted}E%| %>\
+%02(mon{date})/%02(mday{date})%<{date} %|*%>\
+%<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>\
+%<(zero)%17(decode(friendly{from}))%>  \
+%(decode{subject})%<{body}<<%{body}>>%>%(void(lit [m))%(zputlit)

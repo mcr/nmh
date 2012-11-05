@@ -27,6 +27,8 @@ NEW FEATURES
 - Added -noall/-all switches to sortm(1).  sortm -noall requires
   a messages argument.
 - $PAGER overrides the compiled-in default pager command.
+- Added etc/scan.highlighted format file, as an example of how to
+  highlight/colorize the output of scan(1).
 
 
 ----------------------------

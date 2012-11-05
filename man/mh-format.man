@@ -1,4 +1,4 @@
-.TH MH-FORMAT %manext5% "March 24, 2012" "%nmhversion%"
+.TH MH-FORMAT %manext5% "November 4, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -296,7 +296,8 @@ putnum	expr		print \fInum\fR
 putnumf	expr		print \fInum\fR in a fixed width
 .\" addtoseq literal    add msg to sequence (LBL option)
 putlit	expr		print \fIstr\fR without space compression
-nodate	string	integer	Argument not a date string (0 or 1)
+zputlit	expr		print \fIstr\fR without space compression;
+			\fIstr\fR must occupy no width on display
 formataddr	expr		append \fIarg\fR to \fIstr\fR as a
 			(comma separated) address list
 concataddr	expr		append \fIarg\fR to \fIstr\fR as a
@@ -424,8 +425,11 @@ the left up to the field width.
 The functions (\fIputnum\fR\^) and
 (\fIputstr\fR\^) are somewhat special: they print their result in the minimum number of characters
 required, and ignore any leading field width argument.  The (\fIputlit\fR\^)
-function outputs the exact contents of str register without any changes
+function outputs the exact contents of the str register without any changes
 such as duplicate space removal or control character conversion.
+The (\fIzputlit\fR\^) similarly outputs the exact contents of the str
+register, but requires that those contents not occupy any output width.
+It can therefore be used for outputting terminal escape sequences.
 .PP
 The available output width is kept in an internal register; any output
 past this width will be truncated.

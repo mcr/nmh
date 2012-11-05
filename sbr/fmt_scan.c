@@ -409,6 +409,25 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	    while ((c = *sp++) && cp < ep)
 		*cp++ = c;
 	    break;
+	case FT_STRLITZ: {
+	    size_t len = strlen (str);
+
+	    /* Don't want to emit part of an escape sequence.  So if
+	       there isn't enough room in the buffer for the entire
+	       string, skip it completely. */
+	    if (cp - scanl + len + 1 < max) {
+		for (sp = str; *sp; *cp++ = *sp++) continue;
+
+		/* This string doesn't count against the width.	 So
+		   increase ep the same amount as cp, only if the
+		   scan buffer will always be large enough. */
+		if (ep - scanl + len + 1 < max) {
+		    ep += len;
+		}
+	    }
+
+	    break;
+	}
 	case FT_STRFW:
 	    adios (NULL, "internal error (FT_STRFW)");
 
@@ -976,6 +995,22 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	fmt++;
     }
 #ifndef JLR
+    /* Emit any trailing sequences of zero display length. */
+    while (fmt->f_type != FT_DONE) {
+	if (fmt->f_type == FT_LS_LIT) {
+	    str = fmt->f_text;
+	} else if (fmt->f_type == FT_STRLITZ) {
+	    /* Don't want to emit part of an escape sequence.  So if
+	       there isn't enough room in the buffer for the entire
+	       string, skip it completely.  Need room for null
+	       terminator, and maybe trailing newline (added below). */
+	    if (cp - scanl + strlen (str) + 1 < max) {
+		for (sp = str; *sp; *cp++ = *sp++) continue;
+	    }
+	}
+	fmt++;
+    }
+
     finished:;
     if (cp > scanl  &&  cp[-1] != '\n') {
 	if (cp - scanl < (int) max - 1) {

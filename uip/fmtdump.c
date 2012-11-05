@@ -355,6 +355,7 @@ f_typestr(int t)
 	case FT_STRFW: return("STRFW");
 	case FT_PUTADDR: return("PUTADDR");
 	case FT_STRLIT: return("STRLIT");
+	case FT_STRLITZ: return("STRLITZ");
 	case FT_LS_COMP: return("LS_COMP");
 	case FT_LS_LIT: return("LS_LIT");
 	case FT_LS_GETENV: return("LS_GETENV");

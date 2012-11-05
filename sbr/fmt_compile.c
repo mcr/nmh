@@ -35,6 +35,8 @@
  *
  * - Add the code in fmt_scan.c to handle your new function.
  *
+ * - Add code to fmtdump.c to display your new function.
+ *
  * - Document the new function in the mh-format(5) man page.
  *
  */
@@ -137,6 +139,7 @@ static struct ftable functable[] = {
      { "putnumf",    TF_EXPR,	FT_NUMF,	0,		0 },
      { "putaddr",    TF_STR,	FT_PUTADDR,	0,		0 },
      { "putlit",     TF_STR,	FT_STRLIT,	0,		0 },
+     { "zputlit",    TF_STR,	FT_STRLITZ,	0,		0 },
      { "void",       TF_NOP,	0,		0,		0 },
 
      { "comp",       TF_COMP,	FT_LS_COMP,	0,		TFL_PUTS },

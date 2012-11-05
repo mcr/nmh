@@ -1,4 +1,4 @@
-.TH SCAN %manext1% "March 6, 2012" "%nmhversion%"
+.TH SCAN %manext1% "November 4, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -188,6 +188,12 @@ will return values for the date of last
 modification of the message file itself.  This feature is handy for
 scanning a draft folder, as message drafts usually aren't allowed
 to have dates in them.
+.PP
+The
+.B %etcdir%
+directory contains several format files as examples of customized
+.B scan
+output.
 .PP
 .B scan
 will update the
