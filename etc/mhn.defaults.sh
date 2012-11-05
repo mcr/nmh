@@ -137,6 +137,7 @@ mhshow-suffix-application/vnd.ms-excel: .xld
 mhshow-suffix-application/vnd.ms-excel: .xll
 mhshow-suffix-application/vnd.ms-excel: .xlm
 mhshow-suffix-application/vnd.ms-excel: .xls
+mhshow-suffix-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: .xlsx
 mhshow-suffix-application/vnd.ms-excel: .xlt
 mhshow-suffix-application/vnd.ms-excel: .xlw
 mhshow-suffix-application/vnd.ms-powerpoint: .pot
