@@ -1,4 +1,4 @@
-.TH INC %manext1% "July 1, 2012" "%nmhversion%"
+.TH INC %manext1% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -327,11 +327,3 @@ message, unless the
 option is specified.  This leaves the context ready for a
 .B show
 of the first new message.
-.SH BUGS
-The argument to the
-.B \-format
-switch must be interpreted as a single
-token by the shell that invokes
-.BR inc .
-Therefore, one must usually place the argument to this switch inside
-quotes.

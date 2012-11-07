@@ -1,4 +1,4 @@
-.TH AP %manext8% "March 6, 2012" "%nmhversion%"
+.TH AP %manext8% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -100,11 +100,3 @@ Standard for the Format of ARPA Internet Text Messages
 .fi
 .SH CONTEXT
 None
-.SH BUGS
-The argument to the
-.B \-format
-switch must be interpreted as a single token
-by the shell that invokes
-.BR ap .
-Therefore,
-one must usually place the argument to this switch inside quotes.

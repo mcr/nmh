@@ -1,4 +1,4 @@
-.TH WHATNOW %manext1% "April 4, 2012" "%nmhversion%"
+.TH WHATNOW %manext1% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -231,14 +231,6 @@ information.
 .RB ` \-attach "' defaults to \*(lqNmh-Attachment\*(rq"
 .fi
 .SH BUGS
-The argument to the
-.B \-prompt
-switch must be interpreted as a single
-token by the shell that invokes
-.BR whatnow .
-Therefore, one must
-usually place the argument to this switch inside quotes.
-.PP
 If the initial edit fails,
 .B whatnow
 deletes your draft (by renaming

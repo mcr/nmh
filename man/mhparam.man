@@ -1,4 +1,4 @@
-.TH MHPARAM %manext1% "June 14, 2012" "%nmhversion%"
+.TH MHPARAM %manext1% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -92,7 +92,7 @@ context: context
 .RE
 .PP
 .B mhparam
-is also useful in back\-quoted operations:
+is also useful in backquoted operations:
 .PP
 .RS 5
 .nf

@@ -1,4 +1,4 @@
-.TH MSH %manext1% "January 8, 2012" "%nmhversion%"
+.TH MSH %manext1% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -176,7 +176,7 @@ substitutions, or alias substitutions.
 .PP
 When parsing commands to the left of any redirection symbol,
 .B msh
-will honor `\\' (back\-slash) as the quote next\-character symbol, and
+will honor `\\' (backslash) as the quote next\-character symbol, and
 `\*(lq' (double\-quote) as quote\-word delimiters.  All other input tokens
 are separated by whitespace (spaces and tabs).
 .SH FILES
@@ -208,13 +208,6 @@ are separated by whitespace (spaces and tabs).
 .SH CONTEXT
 None
 .SH BUGS
-The argument to the
-.B \-prompt
-switch must be interpreted as a single
-token by the shell that invokes
-.BR msh .
-Therefore, one must usually
-place the argument to this switch inside double\-quotes.
 .PP
 There is a strict limit of messages per file in
 .BR packf 'd
@@ -229,7 +222,7 @@ the nice facilities provided by the latter are not present in the former.
 .PP
 In particular,
 .B msh
-does not understand back\-quoting, so the only
+does not understand backquoting, so the only
 effective way to use
 .B pick
 inside

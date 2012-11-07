@@ -1,4 +1,4 @@
-.TH MH-PROFILE %manext5% "October 15, 2012" "%nmhversion%"
+.TH MH-PROFILE %manext5% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -31,6 +31,9 @@ This is a comment.
 .PP
 Blank lines are not permitted in
 .IR \&.mh\(ruprofile.
+The shell quoting conventions are not available in the
+.IR \&.mh\(ruprofile ;
+each token is separated by whitespace.
 .SS "Standard Profile Entries"
 The possible profile components are exemplified below.  The only mandatory
 entry is `Path:'.  The others are optional; some have default values if
@@ -1004,10 +1007,6 @@ lower-case).  If the entry is not absolute (does not start with a
 directory.  As a result, you can actually have more than one set of
 private sequences by using different context files.
 .SH BUGS
-The shell quoting conventions are not available in the
-.IR \&.mh\(ruprofile .
-Each token is separated by whitespace.
-.PP
 There is some question as to what kind of arguments should be placed
 in the profile as options.  In order to provide a clear answer, recall
 command line semantics of all

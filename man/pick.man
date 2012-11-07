@@ -1,4 +1,4 @@
-.TH PICK %manext1% "March 6, 2012" "%nmhversion%"
+.TH PICK %manext1% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -357,16 +357,7 @@ Use
 to enumerate the messages in a sequence
 (such as for use by a shell script).
 .SH BUGS
-The argument to the
-.B \-after
-and
-.B \-before
-switches must be interpreted
-as a single token by the shell that invokes
-.BR pick .
-Therefore, one
-must usually place the argument to this switch inside quotes.
-Furthermore, any occurrence of
+Any occurrence of
 .B \-datefield
 must occur prior to the
 .B \-after
@@ -376,7 +367,7 @@ switch it applies to.
 .PP
 If
 .B pick
-is used in a back\-quoted operation, such as
+is used in a backquoted operation, such as
 .PP
 .RS 5
 scan\0`pick\0\-from\0jones`

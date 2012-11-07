@@ -1,4 +1,4 @@
-.TH SCAN %manext1% "November 4, 2012" "%nmhversion%"
+.TH SCAN %manext1% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -240,14 +240,6 @@ used to generate
 a heading saying what each column in the listing was.  Format strings
 prevent this from happening.
 .SH BUGS
-The argument to the
-.B \-format
-switch must be interpreted as a single
-token by the shell that invokes
-.BR scan .
-Therefore, one must usually
-place the argument to this switch inside quotes.
-.PP
 The value of each
 .I component
 escape is set by

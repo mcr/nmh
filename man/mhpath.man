@@ -1,4 +1,4 @@
-.TH MHPATH %manext1% "February 18, 2012" "%nmhversion%"
+.TH MHPATH %manext1% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -105,7 +105,7 @@ mhpath: no messages in range 1\-2
 .RE
 .PP
 .B mhpath
-is also useful in back\-quoted operations:
+is also useful in backquoted operations:
 .PP
 .RS 5
 .nf
@@ -115,6 +115,31 @@ is also useful in back\-quoted operations:
 /r/phyl/Mail
 .fi
 .RE
+Because
+.B mhpath
+expands and sorts
+.RI [ msgs ].
+the command
+.PP
+.RS 5
+.nf
+mv `mhpath 501 500`
+.fi
+.RE
+.PP
+to will not move 501 to 500.
+Quite the reverse.  But
+.PP
+.RS 5
+.nf
+mv `mhpath 501` `mhpath 500`
+.fi
+.RE
+.PP
+will do the trick.
+.PP
+Out of range message 0 is treated far more severely than large out of
+range message numbers.
 .SH FILES
 .fc ^ ~
 .nf
@@ -138,32 +163,3 @@ is also useful in back\-quoted operations:
 .fi
 .SH CONTEXT
 None
-.SH BUGS
-Like all
-.B nmh
-commands,
-.B mhpath
-expands and sorts
-.RI [ msgs ].
-So don't
-expect
-.PP
-.RS 5
-.nf
-mv `mhpath 501 500`
-.fi
-.RE
-.PP
-to move 501 to 500.
-Quite the reverse.  But
-.PP
-.RS 5
-.nf
-mv `mhpath 501` `mhpath 500`
-.fi
-.RE
-.PP
-will do the trick.
-.PP
-Out of range message 0 is treated far more severely than large out of
-range message numbers.

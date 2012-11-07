@@ -1,4 +1,4 @@
-.TH MH-DRAFT %manext5% "January 2, 2001" "%nmhversion%"
+.TH MH-DRAFT %manext5% "November 6, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -183,7 +183,7 @@ the user could
 .B scan
 the folder to see which message draft in the
 folder should be used for editing or sending.  Clever users could even
-employ a back-quoted
+employ a backquoted
 .B pick
 to do the work:
 .PP
