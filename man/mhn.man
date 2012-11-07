@@ -52,7 +52,7 @@ for backwards compatibility.
 .PP
 You should migrate to using the
 commands
-.BR mhlist .
+.BR mhlist ,
 .BR mhshow ,
 and
 .BR mhstore .
