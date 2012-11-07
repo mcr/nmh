@@ -1,9 +1,10 @@
 %; scan.highlighted
 %;
 %; This file shows how to use ANSI escape sequences to highlight a
-%; current message in yellow and any unseen messages in cyan.  It
-%; differs from the default scan format in the two additional lines at
-%; the beginning and the literal sequence at the end.
+%; current message in yellow and any unseen messages in cyan (both on
+%; black background).  It differs from the default scan format in the
+%; two additional lines at the beginning and the literal sequence at
+%; the end.
 %;
 %; To enable use of this format, add "-form scan.highlighted" to your
 %; scan invocation or to your profile (~/.mh_profile), e.g.:
@@ -31,8 +32,8 @@
 %; and at the end:
 %;     %(void(profile normal))%(zputlit)
 %;
-%<(cur)%(void(lit [33m))%(zputlit)%>\
-%<(unseen)%(void(lit [36m))%(zputlit)%>\
+%<(cur)%(void(lit [33;40m))%(zputlit)%>\
+%<(unseen)%(void(lit [36;40m))%(zputlit)%>\
 %4(msg)%<(cur)+%| %>%<{replied}-%?{encrypted}E%| %>\
 %02(mon{date})/%02(mday{date})%<{date} %|*%>\
 %<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>\
