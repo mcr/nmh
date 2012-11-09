@@ -186,7 +186,8 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 ## Contribs that get installed in docdir/contrib/
 ##
 contribdir = $(docdir)/contrib
-dist_contrib_DATA = docs/contrib/replyfilter docs/contrib/build_nmh
+dist_contrib_DATA = docs/contrib/replyfilter docs/contrib/build_nmh \
+		    docs/contrib/ml
 
 ##
 ## Our man pages
