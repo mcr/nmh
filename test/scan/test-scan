@@ -40,12 +40,12 @@ cat > $expected <<EOF
    2  09/29 Test2              Testing message 2<<This is message number 2 >>[m
    3  09/29 Test3              Testing message 3<<This is message number 3 >>[m
    4  09/29 Test4              Testing message 4<<This is message number 4 >>[m
-[33m   5+ 09/29 Test5              Testing message 5<<This is message number 5 >>[m
+[33;40m   5+ 09/29 Test5              Testing message 5<<This is message number 5 >>[m
    6  09/29 Test6              Testing message 6<<This is message number 6 >>[m
    7  09/29 Test7              Testing message 7<<This is message number 7 >>[m
    8  09/29 Test8              Testing message 8<<This is message number 8 >>[m
    9  09/29 Test9              Testing message 9<<This is message number 9 >>[m
-[36m  10  09/29 Test10             Testing message 10<<This is message number 10 >>[m
+[36;40m  10  09/29 Test10             Testing message 10<<This is message number 10 >>[m
 EOF
 
 printf 'Unseen-Sequence: unseen\n' >> $MH
