@@ -1,4 +1,4 @@
-.TH SLOCAL %manext1% "January 16, 2006" "%nmhversion%"
+.TH SLOCAL %manext1% "November 9, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -289,7 +289,7 @@ perform an action which delivers the message, then
 will check for a global delivery file at
 .IR %etcdir%/maildelivery .
 This file is read according to the same rules.  This file must be
-owned by the root and must be writable only by the root.
+owned by root and must be writable only by root.
 .PP
 If a global delivery file cannot be found or does not perform an
 action which delivers the message, then standard delivery to the
