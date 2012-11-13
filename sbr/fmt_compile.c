@@ -138,8 +138,8 @@ static struct ftable functable[] = {
      { "putnum",     TF_EXPR,	FT_NUM,		0,		0 },
      { "putnumf",    TF_EXPR,	FT_NUMF,	0,		0 },
      { "putaddr",    TF_STR,	FT_PUTADDR,	0,		0 },
-     { "putlit",     TF_STR,	FT_STRLIT,	0,		0 },
-     { "zputlit",    TF_STR,	FT_STRLITZ,	0,		0 },
+     { "putlit",     TF_EXPR,	FT_STRLIT,	0,		0 },
+     { "zputlit",    TF_EXPR,	FT_STRLITZ,	0,		0 },
      { "void",       TF_NOP,	0,		0,		0 },
 
      { "comp",       TF_COMP,	FT_LS_COMP,	0,		TFL_PUTS },
