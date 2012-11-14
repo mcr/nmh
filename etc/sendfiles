@@ -12,7 +12,7 @@ usage='Usage: sendfiles [switches] -to recipient -subject subject '"\
   or
        sendfiles [switches] recipient subject file1 [file2 ...]
   switches are:
-  -compress [bzip2 | compress | gzip | lzma | none | zip]
+  -compress [bzip2 | compress | gzip | lzma | none]
   -from <sender>
   -[delay] <delay> (expressed in seconds)
   -version
@@ -145,7 +145,7 @@ fi
 
 #### Determine compression method and descriptive info.
 if [ x"$compress" = x ]; then
-  for compressor in gzip bzip2 lzma zip compress none; do
+  for compressor in gzip bzip2 lzma compress none; do
     if [ x"`finddir $compressor`" = x ]; then :; else
       compress="$compressor"
       break
@@ -161,8 +161,6 @@ case $compress in
             conversion='; x-conversions=gzip' ;;
   lzma)     compress='lzma -c'; uncompress='lzma -cd'
             conversion='; x-conversions=lzma' ;;
-  zip)      compress='zip -q'; uncompress='unzip -p'
-            conversion='; x-conversions=zip' ;;
   none)     compress=cat uncompress=cat; conversion= ;;
   *)        printf 'sendfiles: unknown compression method "%s"\n' \
                    "$compress" >&2

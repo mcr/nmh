@@ -9,7 +9,7 @@ sendfiles \- send multiple files via a MIME message
 .na
 .B sendfiles
 .RB [ -compress
-.IR bzip2 " | " compress " | " gzip " | " lzma " | " none " | " zip ]
+.IR bzip2 " | " compress " | " gzip " | " lzma " | " none ]
 .br
 .RB [ \-from
 .IR sender ]
