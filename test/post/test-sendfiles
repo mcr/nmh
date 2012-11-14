@@ -17,20 +17,14 @@ fi
 setup_test
 
 expected=$MH_TEST_DIR/$$.expected
-expected_err=$MH_TEST_DIR/$$.expected_err
 actual=$MH_TEST_DIR/$$.actual
-actual_err=$MH_TEST_DIR/$$.actual_err
 localmbox=`$MH_LIB_DIR/ap -format "%(localmbox)" 0`
 #### Use this script itself for the test file.
 testfiledir="$srcdir/test/post"
 testfile=`basename $0`
 
-(cd "$MH_TEST_DIR"  &&
-mkdir -p tmp  &&
-cat >"$expected_err" <<EOF
-$testfile
-EOF
-)
+(cd "$MH_TEST_DIR"  &&  mkdir -p tmp)
+
 #### Copy fakesendmail and the testfile because we cd to the
 #### test directory, because tar doesn't like absolute paths.
 cp "$srcdir/test/fakesendmail" "$testfiledir/$testfile" "$MH_TEST_DIR"
@@ -54,14 +48,12 @@ test_sendfiles ()
   if [ "$argstyle" = 'new' ]; then
     (cd "$MH_TEST_DIR"  &&
      sendfiles "$@" -to recipient@example.com -subject "sendfiles test" \
-       "$testfile" >/dev/null 2>"$actual_err")
+       "$testfile" >/dev/null 2>&1)
   elif [ "$argstyle" = 'old' ]; then
     (cd "$MH_TEST_DIR"  &&
      sendfiles "$@" recipient@example.com "sendfiles test" \
-       "$testfile" >/dev/null 2>"$actual_err")
+       "$testfile" >/dev/null 2>&1)
   fi
-
-  check "$expected_err" "$actual_err" 'keep first'
 
   # fakesendmail drops the message and any cc's into this mbox.
   mbox="$MH_TEST_DIR"/Mail/fakesendmail.mbox
@@ -139,7 +131,8 @@ Usage: sendfiles [switches] -to recipient \
 # because it will vary with compression method and compressed file
 # size.
 [ "`findprog bzip2`" ]     &&  test_sendfiles 'bzip2 -cd' new -compress bzip2
-[ "`findprog compress`" ]  &&  test_sendfiles uncompress new -compress compress
+[ "`findprog compress`" ]  &&  test_sendfiles 'uncompress -c' new \
+                                              -compress compress
 [ "`findprog gzip`" ]      &&  test_sendfiles 'gzip -cd' new -compress gzip
 [ "`findprog gzip`" ]      &&  test_sendfiles 'gzip -cd' new -gzip
 [ "`findprog lzma`" ]      &&  test_sendfiles 'lzma -cd' new -compress lzma
@@ -215,8 +208,7 @@ EOF
 
 test_sendfiles cat new -compress none -5
 
-rm -fr "$MH_TEST_DIR/fakesendmail" "$MH_TEST_DIR/$testfile" \
-       "$expected_err" "$MH_TEST_DIR/tmp"
+rm -fr "$MH_TEST_DIR/fakesendmail" "$MH_TEST_DIR/$testfile" "$MH_TEST_DIR/tmp"
 
 
 exit ${failed:-0}
