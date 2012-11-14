@@ -27,15 +27,15 @@
 %;     bright-white: [1;37m
 %;     underlined-white: [4;37m
 %; To use them in the format, e.g., at the beginning:
-%;     %<(cur)%(void(profile yellow))%(zputlit)%>\
-%;     %<(unseen)%(void(profile cyan))%(zputlit)%>\
+%;     %<(cur)%(zputlit(profile yellow))%>\
+%;     %<(unseen)%(zputlit(profile cyan))%>\
 %; and at the end:
 %;     %(void(profile normal))%(zputlit)
 %;
-%<(cur)%(void(lit [33;40m))%(zputlit)%>\
-%<(unseen)%(void(lit [36;40m))%(zputlit)%>\
+%<(cur)%(zputlit(lit [33;40m))%>\
+%<(unseen)%(zputlit(lit [36;40m))%>\
 %4(msg)%<(cur)+%| %>%<{replied}-%?{encrypted}E%| %>\
 %02(mon{date})/%02(mday{date})%<{date} %|*%>\
 %<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>\
 %<(zero)%17(decode(friendly{from}))%>  \
-%(decode{subject})%<{body}<<%{body}>>%>%(void(lit [m))%(zputlit)
+%(decode{subject})%<{body}<<%{body}>>%>%(zputlit(lit [m))
