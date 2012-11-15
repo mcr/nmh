@@ -133,7 +133,7 @@ main (int argc, char **argv)
     if (width > WBUFSIZ)
 	width = WBUFSIZ;
     fmt_norm = normalize;
-    fmt_compile (nfs, &fmt);
+    fmt_compile (nfs, &fmt, 1);
 
     dat[0] = 0;
     dat[1] = 0;
@@ -144,6 +144,7 @@ main (int argc, char **argv)
     for (addrp = 0; addrs[addrp]; addrp++)
 	status += process (addrs[addrp], width, normalize);
 
+    fmt_free (fmt, 1);
     done (status);
     return 1;
 }
@@ -183,17 +184,26 @@ process (char *arg, int length, int norm)
     }
 
     for (p = pq.pq_next; p; p = q) {
-	FINDCOMP (cptr, "text");
-	if (cptr)
+	cptr = fmt_findcomp ("text");
+	if (cptr) {
+	    if (cptr->c_text)
+	    	free(cptr->c_text);
 	    cptr->c_text = p->pq_text;
-	FINDCOMP (cptr, "error");
-	if (cptr)
+	    p->pq_text = NULL;
+	}
+	cptr = fmt_findcomp ("error");
+	if (cptr) {
+	    if (cptr->c_text)
+	    	free(cptr->c_text);
 	    cptr->c_text = p->pq_error;
+	    p->pq_error = NULL;
+	}
 
 	fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat);
 	fputs (buffer, stdout);
 
-	free (p->pq_text);
+	if (p->pq_text)
+	    free (p->pq_text);
 	if (p->pq_error)
 	    free (p->pq_error);
 	q = p->pq_next;
