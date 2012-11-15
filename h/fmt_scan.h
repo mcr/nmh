@@ -111,7 +111,8 @@ char *new_fs (char *form, char *format, char *default_fs);
  *		  strings that you want to compile and operate on the
  *		  same message, this should be set to false.
  *
- * Returns the number of components referenced by the format instructions.
+ * Returns the total number of components referenced by all format instructions
+ * since the last reset of the hash table.
  */
 
 int fmt_compile (char *fstring, struct format **fmt, int reset);
