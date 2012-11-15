@@ -47,23 +47,6 @@ struct comp {
 
 extern int fmt_norm;
 
-/* 
- * Hash function for component name.  The function should be
- * case independent and probably shouldn't involve a routine
- * call.  This function is pretty good but will not work on
- * single character component names.  
- */
-#define	CHASH(nm) (((((nm)[0]) - ((nm)[1])) & 0x1f) + (((nm)[2]) & 0x5f))
-
-/*
- * Find a component in the hash table.
- */
-#define FINDCOMP(comp,name) \
-		for (comp = wantcomp[CHASH(name)]; \
-		     comp && strcmp(comp->c_name,name); \
-		     comp = comp->c_next) \
-		;
-
 /*
  * This structure defines one formatting instruction.
  */
@@ -77,6 +60,7 @@ struct format {
 	char         f_u_char;	/* literal character    */
 	int          f_u_value;	/* literal value        */
     } f_un;
+    short         f_flags;	/* misc. flags          */
 };
 
 #define f_skip f_width		/* instr to skip (false "if") */
@@ -85,6 +69,13 @@ struct format {
 #define f_text  f_un.f_u_text
 #define f_char  f_un.f_u_char
 #define f_value f_un.f_u_value
+
+/*
+ * f_flags bits
+ */
+
+#define FF_STRALLOC	(1<<0)	/* String has been allocated */
+#define FF_COMPREF	(1<<1)	/* Component reference */
 
 /*
  * prototypes used by the format engine

@@ -218,10 +218,27 @@ static struct ftable functable[] = {
      { NULL,         0,		0,		0,		0 }
 };
 
+/* 
+ * Hash function for component name.  The function should be
+ * case independent and probably shouldn't involve a routine
+ * call.  This function is pretty good but will not work on
+ * single character component names.  
+ */
+#define	CHASH(nm) (((((nm)[0]) - ((nm)[1])) & 0x1f) + (((nm)[2]) & 0x5f))
+
+/*
+ * Find a component in the hash table.
+ */
+#define FINDCOMP(comp,name) \
+		for (comp = wantcomp[CHASH(name)]; \
+		     comp && strcmp(comp->c_name,name); \
+		     comp = comp->c_next) \
+		;
+
 /* Add new component to the hash table */
 #define NEWCOMP(cm,name) do { \
 	cm = ((struct comp *) calloc(1, sizeof (struct comp)));\
-	cm->c_name = name;\
+	cm->c_name = getcpy(name);\
 	ncomp++;\
 	i = CHASH(name);\
 	cm->c_next = wantcomp[i];\
@@ -240,10 +257,12 @@ static struct ftable functable[] = {
 	    NEWCOMP(cm,name);\
 	}\
 	fp->f_comp = cm; \
+	fp->f_flags |= FF_COMPREF; \
+	cm->c_refcount++; \
 	} while (0)
 
 #define LV(type, value)		do { NEW(type,0,0); fp->f_value = (value); } while (0)
-#define LS(type, str)		do { NEW(type,0,0); fp->f_text = (str); } while (0)
+#define LS(type, str)		do { NEW(type,0,0); fp->f_text = (str); fp->f_flags |= FF_STRALLOC; } while (0)
 
 #define PUTCOMP(comp)		do { NEW(FT_COMP,0,0); ADDC(comp); } while (0)
 #define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = getcpy(str); } while (0)
@@ -324,12 +343,15 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
 {
     register char *cp;
     size_t i;
+    static int comptable_initialized = 0;
 
     format_string = getcpy (fstring);
     usr_fstring = fstring;
 
-    if (reset_comptable)
+    if (reset_comptable || !comptable_initialized) {
     	free_comptable();
+	comptable_initialized = 1;
+    }
 
     /* init the component hash table. */
     for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++)
@@ -775,6 +797,53 @@ do_if(char *sp)
 }
 
 /*
+ * Free a set of format instructions.
+ *
+ * What we do here is:
+ *
+ * - Iterate through the list of format instructions, freeing any references
+ *   to allocated memory in each instruction.
+ * - Free component references.
+ * - If requested, reset the component hash table; that will also free any
+ *   references to components stored there.
+ *
+ */
+
+void
+fmt_free(struct format *fmt, int reset_comptable)
+{
+    struct format *fp = fmt;
+
+    if (fp) {
+    	while (! (fp->f_type == FT_DONE && fp->f_value == 0)) {
+	    if (fp->f_flags & FF_STRALLOC)
+	    	free(fp->f_text);
+	    if (fp->f_flags & FF_COMPREF)
+	    	free_component(fp->f_comp);
+	}
+	free(fmt);
+    }
+
+    if (reset_comptable)
+    	free_comptable();
+}
+
+/*
+ * Find a component in our hash table.  This is just a public interface to
+ * the FINDCOMP macro, so we don't have to expose our hash table.
+ */
+
+struct comp *
+fmt_findcomp(char *component)
+{
+    struct comp *cm;
+
+    FINDCOMP(cm, component);
+
+    return cm;
+}
+
+/*
  * Free and reset our component hash table
  */
 
@@ -804,6 +873,15 @@ static void
 free_component(struct comp *cm)
 {
     if (--cm->c_refcount <= 0) {
+    	/* Shouldn't ever be NULL, but just in case ... */
+    	if (cm->c_name)
+	    free(cm->c_name);
+	if (cm->c_text)
+	    free(cm->c_text);
+	if (cm->c_type & CT_DATE)
+	    free(cm->c_tws);
+	if (cm->c_type & CT_ADDR && cm->c_mn && cm->c_mn != &fmt_mnull)
+	    mnfree(cm->c_mn);
     	free(cm);
     }
 }
