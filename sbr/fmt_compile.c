@@ -56,7 +56,7 @@
 /*
  * hash table for deciding if a component is "interesting"
  */
-struct comp *wantcomp[128];
+static struct comp *wantcomp[128];
 
 static struct format *formatvec;	/* array to hold formats */
 static struct format *next_fp;		/* next free format slot */
@@ -246,10 +246,10 @@ static struct ftable functable[] = {
 #define LS(type, str)		do { NEW(type,0,0); fp->f_text = (str); } while (0)
 
 #define PUTCOMP(comp)		do { NEW(FT_COMP,0,0); ADDC(comp); } while (0)
-#define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = (str); } while (0)
+#define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = getcpy(str); } while (0)
 #define PUTC(c)			do { NEW(FT_CHAR,0,0); fp->f_char = (c); } while (0)
 
-char *format_string;
+static char *format_string;
 static unsigned char *usr_fstring;	/* for CERROR */
 
 #define CERROR(str) compile_error (str, cp)
@@ -266,6 +266,8 @@ static char *do_func(char *);
 static char *do_expr (char *, int);
 static char *do_loop(char *);
 static char *do_if(char *);
+static void free_component(struct comp *);
+static void free_comptable(void);
 
 
 /*
@@ -318,15 +320,16 @@ compile_error(char *str, char *cp)
  */
 
 int
-fmt_compile(char *fstring, struct format **fmt)
+fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
 {
     register char *cp;
     size_t i;
 
-    if (format_string)
-	free (format_string);
     format_string = getcpy (fstring);
     usr_fstring = fstring;
+
+    if (reset_comptable)
+    	free_comptable();
 
     /* init the component hash table. */
     for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++)
@@ -357,6 +360,7 @@ fmt_compile(char *fstring, struct format **fmt)
     LV(FT_DONE, 0);		/* really done */
     *fmt = formatvec;
 
+    free(format_string);
     return (ncomp);
 }
 
@@ -768,4 +772,38 @@ do_if(char *sp)
 	fexpr->f_skip = next_fp - fexpr;
 
     return (cp);
+}
+
+/*
+ * Free and reset our component hash table
+ */
+
+static void
+free_comptable(void)
+{
+    int i;
+    struct comp *cm, *cm2;
+
+    for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++) {
+    	cm = wantcomp[i];
+	while (cm != NULL) {
+	    cm2 = cm->c_next;
+	    free_component(cm);
+	    cm = cm2;
+	}
+	wantcomp[i] = 0;
+    }
+}
+
+/*
+ * Decrement the reference count of a component structure.  If it reaches
+ * zero, free it
+ */
+
+static void
+free_component(struct comp *cm)
+{
+    if (--cm->c_refcount <= 0) {
+    	free(cm);
+    }
 }
