@@ -239,6 +239,7 @@ static struct ftable functable[] = {
 #define NEWCOMP(cm,name) do { \
 	cm = ((struct comp *) calloc(1, sizeof (struct comp)));\
 	cm->c_name = getcpy(name);\
+	cm->c_refcount++;\
 	ncomp++;\
 	i = CHASH(name);\
 	cm->c_next = wantcomp[i];\
@@ -265,7 +266,7 @@ static struct ftable functable[] = {
 #define LS(type, str)		do { NEW(type,0,0); fp->f_text = (str); fp->f_flags |= FF_STRALLOC; } while (0)
 
 #define PUTCOMP(comp)		do { NEW(FT_COMP,0,0); ADDC(comp); } while (0)
-#define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = getcpy(str); } while (0)
+#define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = getcpy(str); fp->f_flags |= FF_STRALLOC; } while (0)
 #define PUTC(c)			do { NEW(FT_CHAR,0,0); fp->f_char = (c); } while (0)
 
 static char *format_string;
@@ -372,7 +373,6 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
     if (next_fp == NULL)
 	adios (NULL, "unable to allocate format storage");
 
-    ncomp = 0;
     infunction = 0;
 
     cp = compile(format_string);
@@ -851,6 +851,7 @@ fmt_free(struct format *fmt, int reset_comptable)
 	    	free(fp->f_text);
 	    if (fp->f_flags & FF_COMPREF)
 	    	free_component(fp->f_comp);
+	    fp++;
 	}
 	free(fmt);
     }
@@ -893,6 +894,8 @@ free_comptable(void)
 	}
 	wantcomp[i] = 0;
     }
+
+    ncomp = 0;
 }
 
 /*
