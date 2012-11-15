@@ -698,6 +698,37 @@ do_expr (char *sp, int preprocess)
  * There is no support for this in the format engine, so right now if
  * you try using it you will reach the FT_DONE and simply stop.  I'm leaving
  * this here in case someone wants to continue the work.
+ *
+ * Okay, got some more information on this from John L. Romine!  From an
+ * email he sent to the nmh-workers mailing list on December 2, 2010, he
+ * explains it thusly:
+ *
+ *    In this case (scan, formatsbr) it has to do with an extension to
+ *    the mh-format syntax to allow for looping.
+ *
+ *    The scan format is processed once for each message.  Those #ifdef
+ *    JLR changes allowed for the top part of the format file to be
+ *    processed once, then a second, looping part to be processed
+ *    once per message.  As I recall, there were new mh-format escape
+ *    sequences to delimit the loop.  This would have allowed for things
+ *    like per-format column headings in the scan output.
+ *
+ *    Since existing format files didn't include the scan listing
+ *    header (it was hard-coded in scan.c) it would not have been
+ *    backward-compatible.  All existing format files (including any
+ *    local ones) would have needed to be changed to include the format
+ *    codes for a header.  The practice at the time was not to introduce
+ *    incompatible changes in a minor release, and I never managed to
+ *    put out a newer major release.
+ *
+ * I can see how this would work, and I suspect part of the motivation was
+ * because the format compiler routines (at the time) couldn't really be
+ * called multiple times on the same message because the memory management
+ * was so lousy.  That's been reworked and things are now a lot cleaner,
+ * so I suspect if we're going to allow a format string to be used for the
+ * scan header it might be simpler to have a separate format string just
+ * for the header.  But I'll leave this code in for now just in case we
+ * decide that we want some kind of looping support.
  */
 static char *
 do_loop(char *sp)
