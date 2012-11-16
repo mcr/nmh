@@ -1108,12 +1108,12 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
     dat[2] = filesize;
     dat[3] = sizeof(buffer) - 1;
     dat[4] = 0;
-    fmt_compile (c1->c_nfs, &c1->c_fmt);
+    fmt_compile (c1->c_nfs, &c1->c_fmt, 1);
 
     if (!(c1->c_flags & ADDRFMT)) {
-	FINDCOMP (cptr, "text");
+	cptr = fmt_findcomp ("text");
 	if (cptr)
-	    cptr->c_text = ap;
+	    cptr->c_text = getcpy (ap);
 	if ((cp = strrchr(ap, '\n')))	/* drop ending newline */
 	    if (!cp[1])
 		*cp = 0;
@@ -1142,12 +1142,16 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
     }
 
     for (p = pq.pq_next; p; p = q) {
-	FINDCOMP (cptr, "text");
-	if (cptr)
+	cptr = fmt_findcomp ("text");
+	if (cptr) {
 	    cptr->c_text = p->pq_text;
-	FINDCOMP (cptr, "error");
-	if (cptr)
+	    p->pq_text = NULL;
+	}
+	cptr = fmt_findcomp ("error");
+	if (cptr) {
 	    cptr->c_text = p->pq_error;
+	    p->pq_error = NULL;
+	}
 
 	fmt_scan (c1->c_fmt, buffer, sizeof buffer - 1, sizeof buffer - 1, dat);
 	if (*buffer) {
@@ -1158,7 +1162,8 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	    c2->c_text = add (buffer, c2->c_text);
 	}
 
-	free (p->pq_text);
+	if (p->pq_text)
+	    free (p->pq_text);
 	if (p->pq_error)
 	    free (p->pq_error);
 	q = p->pq_next;
@@ -1217,7 +1222,7 @@ free_queue (struct mcomp **head, struct mcomp **tail)
 	if (c1->c_nfs)
 	    free (c1->c_nfs);
 	if (c1->c_fmt)
-	    free ((char *) c1->c_fmt);
+	    fmt_free (c1->c_fmt, 1);
 	if (c1->c_f_args) {
 	    struct arglist *a1, *a2;
 	    for (a1 = c1->c_f_args; a1; a1 = a2) {
@@ -1684,7 +1689,7 @@ compileargs (struct mcomp *c1, char *nfs)
     struct comp *cptr;
     unsigned int i;
 
-    i = fmt_compile(nfs, &fmt);
+    i = fmt_compile(nfs, &fmt, );
 
     /*
      * Search through and mark any components that are address components
