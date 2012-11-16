@@ -104,7 +104,7 @@ main (int argc, char **argv)
 
     fmt_dump(fmt);
 
-    fmt_free(fmt);
+    fmt_free(fmt, 1);
 
     done(0);
     return 1;
