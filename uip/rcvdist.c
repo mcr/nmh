@@ -146,10 +146,6 @@ static int outputlinelen = OUTPUTLINELEN;
 
 static struct format *fmt;
 
-static int ncomps = 0;
-static char **compbuffers = 0;
-static struct comp **used_buf = 0;
-
 static int dat[5];
 
 static char *addrcomps[] = {
@@ -173,8 +169,8 @@ static void
 rcvdistout (FILE *inb, char *form, char *addrs)
 {
     register int char_read = 0, format_len, i, state;
-    register char *tmpbuf, **nxtbuf, **ap;
-    char *cp, *scanl, name[NAMESZ];
+    register char **ap;
+    char *cp, *scanl, name[NAMESZ], tmpbuf[SBUFSIZ];
     register struct comp *cptr, **savecomp;
     FILE *out;
 
@@ -184,26 +180,15 @@ rcvdistout (FILE *inb, char *form, char *addrs)
     /* get new format string */
     cp = new_fs (form ? form : rcvdistcomps, NULL, NULL);
     format_len = strlen (cp);
-    ncomps = fmt_compile (cp, &fmt) + 1;
-    if (!(nxtbuf = compbuffers = (char **) calloc ((size_t) ncomps, sizeof(char *))))
-	adios (NULL, "unable to allocate component buffers");
-    if (!(savecomp = used_buf = (struct comp **) calloc ((size_t) (ncomps + 1), sizeof(struct comp *))))
-	adios (NULL, "unable to allocate component buffer stack");
-    savecomp += ncomps + 1;
-    *--savecomp = 0;
-
-    for (i = ncomps; i--;)
-	*nxtbuf++ = mh_xmalloc (SBUFSIZ);
-    nxtbuf = compbuffers;
-    tmpbuf = *nxtbuf++;
+    fmt_compile (cp, &fmt, 1);
 
     for (ap = addrcomps; *ap; ap++) {
-	FINDCOMP (cptr, *ap);
+	cptr = fmt_findcomp (*ap);
 	if (cptr)
 	    cptr->c_type |= CT_ADDR;
     }
 
-    FINDCOMP (cptr, "addresses");
+    cptr = fmt_findcomp ("addresses");
     if (cptr)
 	cptr->c_text = addrs;
 
@@ -211,36 +196,15 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 	switch (state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb)) {
 	    case FLD: 
 	    case FLDPLUS: 
-		if ((cptr = wantcomp[CHASH (name)]))
-		    do {
-			if (!mh_strcasecmp (name, cptr->c_name)) {
-			    char_read += msg_count;
-			    if (!cptr->c_text) {
-				cptr->c_text = tmpbuf;
-				*--savecomp = cptr;
-				tmpbuf = *nxtbuf++;
-			    }
-			    else {
-				i = strlen (cp = cptr->c_text) - 1;
-				if (cp[i] == '\n') {
-				    if (cptr->c_type & CT_ADDR) {
-					cp[i] = 0;
-					cp = add (",\n\t", cp);
-				    }
-				    else
-					cp = add ("\t", cp);
-				}
-				cptr->c_text = add (tmpbuf, cp);
-			    }
-			    while (state == FLDPLUS) {
-				state = m_getfld (state, name, tmpbuf,
-						  SBUFSIZ, inb);
-				cptr->c_text = add (tmpbuf, cptr->c_text);
-				char_read += msg_count;
-			    }
-			    break;
-			}
-		    } while ((cptr = cptr->c_next));
+	    	i = fmt_addcomp(name, tmpbuf);
+		if (i != -1) {
+		    char_read += msg_count;
+		    while (state == FLDPLUS) {
+			state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
+			fmt_appendcomp(i, name, tmpbuf);
+			char_read += msg_count;
+		    }
+		}
 
 		while (state == FLDPLUS)
 		    state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
@@ -270,12 +234,7 @@ finished: ;
     fclose (out);
 
     free (scanl);
-    for (nxtbuf = compbuffers, i = ncomps; (cptr = *savecomp++); nxtbuf++, i--)
-	free (cptr->c_text);
-    while (i-- > 0)
-        free (*nxtbuf++);
-    free ((char *) compbuffers);
-    free ((char *) used_buf);
+    fmt_free(fmt, 1);
 }
 
 
