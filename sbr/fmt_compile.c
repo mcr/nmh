@@ -47,6 +47,7 @@
 #include <h/fmt_scan.h>
 #include <h/fmt_compile.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -353,10 +354,6 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
     	free_comptable();
 	comptable_initialized = 1;
     }
-
-    /* init the component hash table. */
-    for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++)
-	wantcomp[i] = 0;
 
     memset((char *) &fmt_mnull, 0, sizeof(fmt_mnull));
 
@@ -873,6 +870,61 @@ fmt_findcomp(char *component)
     FINDCOMP(cm, component);
 
     return cm;
+}
+
+/*
+ * Add a string to a component hash table entry.
+ *
+ * Note the special handling for components marked with CT_ADDR.  The comments
+ * in fmt_scan.h explain this in more detail.
+ */
+
+int
+fmt_addcomp(char *component, char *text)
+{
+    int i, found = 0, bucket = CHASH(component);
+    struct comp *cptr = wantcomp[bucket];
+    char *cp;
+
+    while (cptr) {
+    	if (mh_strcasecmp(component, cptr->c_name) == 0) {
+	    found++;
+	    if (! cptr->c_text) {
+	    	cptr->c_text = getcpy(text);
+	    } else {
+	    	i = strlen(cp = cptr->c_text) - 1;
+		if (cp[i] == '\n') {
+		    if (cptr->c_type & CT_ADDR) {
+		    	cp[i] = '\0';
+			cp = add(",\n\t", cp);
+		    } else {
+		    	cp = add("\t", cp);
+		    }
+		}
+		cptr->c_text = add(text, cp);
+	    }
+	}
+	cptr = cptr->c_next;
+    }
+
+    return found ? bucket : -1;
+}
+
+/*
+ * Append text to a component we've already found.  See notes in fmt_scan.h
+ * for more information.
+ */
+
+void
+fmt_appendcomp(int bucket, char *component, char *text)
+{
+    struct comp *cptr;
+
+    if (bucket != -1) {
+    	for (cptr = wantcomp[bucket]; cptr; cptr = cptr->c_next)
+	    if (mh_strcasecmp(component, cptr->c_name) == 0)
+	    	cptr->c_text = add(text, cptr->c_text);
+    }
 }
 
 /*
