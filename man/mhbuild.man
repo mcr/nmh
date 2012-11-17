@@ -504,7 +504,7 @@ through mail gateways which involve the EBCDIC character encoding.
 .SS "Invoking mhbuild"
 Typically,
 .B mhbuild
- is invoked by the
+is invoked by the
 .B whatnow
 program.  This
 command will expect the body of the draft to be formatted as an
