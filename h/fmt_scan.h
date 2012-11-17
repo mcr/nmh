@@ -194,7 +194,8 @@ struct comp *fmt_findcomp(char *component);
  *
  * This function is designed to be called when you start processing a new
  * component.  The function returns the integer value of the hash table
- * bucket corresponding to this component.
+ * bucket corresponding to this component.  If there was no entry found
+ * in the component hash table, this function will return -1.
  */
 
 int fmt_addcomp(char *component, char *text);
@@ -203,7 +204,8 @@ int fmt_addcomp(char *component, char *text);
  * Append to an existing component.  Arguments are:
  *
  * bucket	- The hash table bucket corresponding to this component,
- *		  as returned by fmt_addcomp().
+ *		  as returned by fmt_addcomp().  If -1, this function will
+ *		  return with no actions performed.
  * component	- The component to append text to.  Like fmt_addcomp, the
  *		  component is searched case-INSENSITIVELY.
  * text		- The text to append to the component.  No special processing
