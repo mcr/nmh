@@ -895,6 +895,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
     FILE *fp = NULL;
     struct mcomp *c1;
     struct stat st;
+    struct arglist *ap;
 
     switch (setjmp (env)) {
 	case OK: 
@@ -918,6 +919,14 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 	    if (ontty != PITTY)
 		SIGNAL (SIGINT, intrser);
 	    mhlfile (fp, cp, ofilen, ofilec);  /* FALL THROUGH! */
+
+	    for (ap = arglist_head; ap; ap = ap->a_next) {
+	    	fmt_free(ap->a_fmt, 0);
+		ap->a_fmt = NULL;
+	    }
+
+	    if (arglist_head)
+	    	fmt_free(NULL, 1);
 
 	default: 
 	    if (ontty != PITTY)
@@ -1566,6 +1575,7 @@ mhlsbr (int argc, char **argv, FILE *(*action)())
     SIGNAL_HANDLER istat = NULL, pstat = NULL, qstat = NULL;
     char *cp = NULL;
     struct mcomp *c1;
+    struct arglist *a, *a2;
 
     switch (setjmp (mhlenv)) {
 	case OK: 
@@ -1602,6 +1612,15 @@ mhlsbr (int argc, char **argv, FILE *(*action)())
 	    free_queue (&msghd, &msgtl);
 	    for (c1 = fmthd; c1; c1 = c1->c_next)
 		c1->c_flags &= ~HDROUTPUT;
+
+	    a = arglist_head;
+	    while (a) {
+	    	if (a->a_nfs)
+		    free(a->a_nfs);
+		a2 = a->a_next;
+		free(a);
+		a = a2;
+	    }
 	    return exitstat;
     }
 }
