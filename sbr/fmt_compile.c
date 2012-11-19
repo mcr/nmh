@@ -264,7 +264,7 @@ static struct ftable functable[] = {
 	} while (0)
 
 #define LV(type, value)		do { NEW(type,0,0); fp->f_value = (value); } while (0)
-#define LS(type, str)		do { NEW(type,0,0); fp->f_text = (str); fp->f_flags |= FF_STRALLOC; } while (0)
+#define LS(type, str)		do { NEW(type,0,0); fp->f_text = getcpy(str); fp->f_flags |= FF_STRALLOC; } while (0)
 
 #define PUTCOMP(comp)		do { NEW(FT_COMP,0,0); ADDC(comp); } while (0)
 #define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = getcpy(str); fp->f_flags |= FF_STRALLOC; } while (0)
