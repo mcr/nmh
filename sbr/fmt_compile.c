@@ -877,7 +877,7 @@ fmt_findcomp(char *component)
  */
 
 struct comp *
-fmt_findcasecmp(char *component)
+fmt_findcasecomp(char *component)
 {
     struct comp *cm;
 

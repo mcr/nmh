@@ -178,7 +178,7 @@ struct comp *fmt_findcomp(char *component);
  * Identical to fmd_findcomp(), but is case-INSENSITIVE.
  */
 
-struct comp *fmt_findcasecmp(char *component);
+struct comp *fmt_findcasecomp(char *component);
 
 /*
  * Add a component entry to the component hash table
