@@ -873,6 +873,53 @@ fmt_findcomp(char *component)
 }
 
 /*
+ * Like fmt_findcomp, but case-insensitive.
+ */
+
+struct comp *
+fmt_findcasecmp(char *component)
+{
+    struct comp *cm;
+
+    for (cm = wantcomp[CHASH(component)]; cm; cm = cm->c_next)
+    	if (mh_strcasecmp(component, cm->c_name) == 0)
+	    break;
+
+    return cm;
+}
+
+/*
+ * Add an entry to the component hash table
+ *
+ * Returns true if the component was added, 0 if it already existed.
+ *
+ */
+
+int
+fmt_addcompentry(char *component)
+{
+    struct comp *cm;
+    int i;
+
+    FINDCOMP(cm, component);
+
+    if (cm)
+    	return 0;
+
+    NEWCOMP(cm, component);
+
+    /*
+     * ncomp is really meant for fmt_compile() and this function is
+     * meant to be used outside of it.  So decrement it just to be safe
+     * (internal callers should be using NEWCOMP()).
+     */
+
+    ncomp--;
+
+    return 1;
+}
+
+/*
  * Add a string to a component hash table entry.
  *
  * Note the special handling for components marked with CT_ADDR.  The comments
@@ -880,7 +927,7 @@ fmt_findcomp(char *component)
  */
 
 int
-fmt_addcomp(char *component, char *text)
+fmt_addcomptext(char *component, char *text)
 {
     int i, found = 0, bucket = CHASH(component);
     struct comp *cptr = wantcomp[bucket];

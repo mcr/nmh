@@ -1018,7 +1018,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 	switch (state = m_getfld (state, name, buf, sizeof(buf), fp)) {
 	    case FLD: 
 	    case FLDPLUS: 
-	        bucket = fmt_addcomp(name, buf);
+	        bucket = fmt_addcomptext(name, buf);
 		for (ip = ignores; *ip; ip++)
 		    if (!mh_strcasecmp (name, *ip)) {
 			while (state == FLDPLUS) {

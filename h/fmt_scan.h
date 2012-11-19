@@ -173,6 +173,25 @@ void fmt_free (struct format *fmt, int reset);
 struct comp *fmt_findcomp(char *component);
 
 /*
+ * Search for a component structure in the component hash table.
+ *
+ * Identical to fmd_findcomp(), but is case-INSENSITIVE.
+ */
+
+struct comp *fmt_findcasecmp(char *component);
+
+/*
+ * Add a component entry to the component hash table
+ *
+ * component	- The name of the component to add to the hash table.
+ *
+ * If the component is already in the hash table, this function will do
+ * nothing.  Returns 1 if a component was added, 0 if it already existed.
+ */
+
+int fmt_addcompentry(char *component);
+
+/*
  * Add a string to a component hash table entry.  Arguments are:
  *
  * component	- The name of the component to add text to.  The component
@@ -198,7 +217,7 @@ struct comp *fmt_findcomp(char *component);
  * in the component hash table, this function will return -1.
  */
 
-int fmt_addcomp(char *component, char *text);
+int fmt_addcomptext(char *component, char *text);
 
 /*
  * Append to an existing component.  Arguments are:

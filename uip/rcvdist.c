@@ -196,7 +196,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 	switch (state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb)) {
 	    case FLD: 
 	    case FLDPLUS: 
-	    	i = fmt_addcomp(name, tmpbuf);
+	    	i = fmt_addcomptext(name, tmpbuf);
 		if (i != -1) {
 		    char_read += msg_count;
 		    while (state == FLDPLUS) {
