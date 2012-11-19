@@ -1168,7 +1168,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 
     if (!(c1->c_flags & ADDRFMT)) {
 	if (c1->c_c_text)
-	    c1->c_c_text->c_text = getcpy (ap);
+	    c1->c_c_text->c_text = ap;
 	if ((cp = strrchr(ap, '\n')))	/* drop ending newline */
 	    if (!cp[1])
 		*cp = 0;
@@ -1177,7 +1177,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	/* Don't need to append a newline, dctime() already did */
 	c2->c_text = getcpy (buffer);
 
-	free (ap);
+	/* ap is now owned by the component struct, so do NOT free it here */
 	return;
     }
 
