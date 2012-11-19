@@ -93,24 +93,52 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	    umask(~m_gmprot());
 
 	/* Compile format string */
-	ncomps = fmt_compile (nfs, &fmt) + 1;
+	ncomps = fmt_compile (nfs, &fmt, 1) + 1;
 
-	FINDCOMP(bodycomp, "body");
-	FINDCOMP(datecomp, "date");
-	FINDCOMP(cptr, "folder");
+	bodycomp = fmt_findcomp("body");
+	datecomp = fmt_findcomp("date");
+	cptr = fmt_findcomp("folder");
 	if (cptr && folder)
-	    cptr->c_text = folder;
-	FINDCOMP(cptr, "encrypted");
-	if (!cptr)
-	    if ((cptr = (struct comp *) calloc (1, sizeof(*cptr)))) {
-		cptr->c_name = "encrypted";
-		cptr->c_next = wantcomp[i = CHASH (cptr->c_name)];
-		wantcomp[i] = cptr;
+	    cptr->c_text = getcpy(folder);
+	if (fmt_addcompentry("encrypted")) {
 		ncomps++;
 	}
-	FINDCOMP (cptr, "dtimenow");
+	cptr =  fmt_findcomp("dtimenow");
 	if (cptr)
 	    cptr->c_text = getcpy(dtimenow (0));
+
+	/*
+	 * In other programs I got rid of this complicated buffer switching,
+	 * but since scan reads lots of messages at once and this complicated
+	 * memory management, I decided to keep it; otherwise there was
+	 * the potential for a lot of malloc() and free()s, and I could
+	 * see the malloc() pool really getting fragmented.  Maybe it
+	 * wouldn't be an issue in practice; perhaps this will get
+	 * revisited someday.
+	 *
+	 * So, some notes for what's going on:
+	 *
+	 * nxtbuf is an array of pointers that contains malloc()'d buffers
+	 * to hold our component text.  used_buf is an array of struct comp
+	 * pointers that holds pointers to component structures we found while
+	 * processing a message.
+	 *
+	 * We read in the message with m_getfld(), using "tmpbuf" as our
+	 * input buffer.  tmpbuf is set at the start of message processing
+	 * to the first buffer in our buffer pool (nxtbuf).
+	 *
+	 * Every time we find a component we care about, we set that component's
+	 * text buffer to the current value of tmpbuf, and then switch tmpbuf
+	 * to the next buffer in our pool.  We also add that component to
+	 * our used_buf pool.
+	 *
+	 * When we're done, we go back and zero out all of the component
+	 * text buffer pointers that we saved in used_buf.
+	 *
+	 * Note that this means c_text memory is NOT owned by the fmt_module
+	 * and it's our responsibility to free it.
+	 */
+
 	nxtbuf = compbuffers = (char **) calloc((size_t) ncomps, sizeof(char *));
 	if (nxtbuf == NULL)
 	    adios (NULL, "unable to allocate component buffers");
@@ -176,23 +204,18 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		 * buffer as the component temp buffer (buffer switching
 		 * saves an extra copy of the component text).
 		 */
-		if ((cptr = wantcomp[CHASH(name)])) {
-		    do {
-			if (!mh_strcasecmp(name, cptr->c_name)) {
-			    if (! cptr->c_text) {
-				cptr->c_text = tmpbuf;
-				for (cp = tmpbuf + strlen (tmpbuf) - 1; 
+		if ((cptr = fmt_findcasecomp(name))) {
+		    if (! cptr->c_text) {
+			cptr->c_text = tmpbuf;
+			for (cp = tmpbuf + strlen (tmpbuf) - 1; 
 					cp >= tmpbuf; cp--)
-				    if (isspace (*cp))
-					*cp = 0;
-				    else
-					break;
-				*--savecomp = cptr;
-				tmpbuf = *nxtbuf++;
-			    }
-			    break;
-			}
-		    } while ((cptr = cptr->c_next));
+			    if (isspace (*cp))
+				*cp = 0;
+			    else
+				break;
+			*--savecomp = cptr;
+			tmpbuf = *nxtbuf++;
+		    }
 		}
 
 		while (state == FLDPLUS) {
@@ -335,7 +358,7 @@ finished:
     if (noisy)
 	fputs (scanl, stdout);
 
-    FINDCOMP (cptr, "encrypted");
+    cptr = fmt_findcomp ("encrypted");
     encrypted = cptr && cptr->c_text;
 
     /* return dynamically allocated buffers to pool */
