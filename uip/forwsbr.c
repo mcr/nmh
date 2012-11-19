@@ -67,14 +67,14 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
     fmtsize = strlen (nfs) + 256;
 
     /* Compile format string */
-    (void) fmt_compile (nfs, &fmt);
+    (void) fmt_compile (nfs, &fmt, 1);
 
     /*
      * Mark any components tagged as address components
      */
 
     for (ap = addrcomps; *ap; ap++) {
-	FINDCOMP (cptr, *ap);
+	cptr = fmt_findcomp (*ap);
 	if (cptr)
 	    cptr->c_type |= CT_ADDR;
     }
@@ -96,35 +96,17 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 		 * a copy.  We don't do all of that weird buffer switching
 		 * that replout does.
 		 */
-		if ((cptr = wantcomp[CHASH(name)]))
-		    do {
-		    	if (mh_strcasecmp(name, cptr->c_name) == 0) {
-			    char_read += msg_count;
-			    if (! cptr->c_text) {
-				cptr->c_text = strdup(msgbuf);
-			    } else {
-				i = strlen(cptr->c_text) - 1;
-				if (cptr->c_text[i] == '\n') {
-				    if (cptr->c_type & CT_ADDR) {
-					cptr->c_text[i] = '\0';
-					cptr->c_text = add(",\n\t",
-					    		       cptr->c_text);
-				    } else {
-					cptr->c_text = add ("\t", cptr->c_text);
-				    }
-				}
-				cptr->c_text = add(msgbuf, cptr->c_text);
-			    }
-			    while (state == FLDPLUS) {
-				state = m_getfld(state, name, msgbuf,
-						 sizeof(msgbuf), tmp);
-				cptr->c_text = add(msgbuf, cptr->c_text);
-				char_read += msg_count;
-			    }
-			    break;
-			}
-		    } while ((cptr = cptr->c_next));
 
+		i = fmt_addcomptext(name, msgbuf);
+		if (i != -1) {
+		    char_read += msg_count;
+		    while (state == FLDPLUS) {
+			state = m_getfld(state, name, msgbuf,
+					 sizeof(msgbuf), tmp);
+			fmt_appendcomp(i, name, msgbuf);
+			char_read += msg_count;
+		    }
+		}
 		while (state == FLDPLUS)
 		    state = m_getfld(state, name, msgbuf, sizeof(msgbuf), tmp);
 		break;
@@ -143,44 +125,49 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
     /*
      * Override any components just in case they were included in the
      * input message.  Also include command-line components given here
+     *
+     * With the memory rework I've changed things so we always get copies
+     * of these strings; I don't like the idea that the caller of this
+     * function has to know to pass in already-allocated memory (and that
+     * it will be free()'d by us).
      */
 
 finished:
 
-    FINDCOMP (cptr, "digest");
+    cptr = fmt_findcomp ("digest");
     if (cptr) {
     	COMPFREE(cptr);
-	cptr->c_text = digest;
+	cptr->c_text = getcpy(digest);
     }
-    FINDCOMP (cptr, "nmh-date");
+    cptr = fmt_findcomp ("nmh-date");
     if (cptr) {
     	COMPFREE(cptr);
 	cptr->c_text = getcpy(dtimenow (0));
     }
-    FINDCOMP (cptr, "nmh-from");
+    cptr = fmt_findcomp ("nmh-from");
     if (cptr) {
     	COMPFREE(cptr);
-	cptr->c_text = from;
+	cptr->c_text = getcpy(from);
     }
-    FINDCOMP (cptr, "nmh-to");
+    cptr = fmt_findcomp ("nmh-to");
     if (cptr) {
     	COMPFREE(cptr);
-	cptr->c_text = to;
+	cptr->c_text = getcpy(to);
     }
-    FINDCOMP (cptr, "nmh-cc");
+    cptr = fmt_findcomp ("nmh-cc");
     if (cptr) {
     	COMPFREE(cptr);
-	cptr->c_text = cc;
+	cptr->c_text = getcpy(cc);
     }
-    FINDCOMP (cptr, "nmh-subject");
+    cptr = fmt_findcomp ("nmh-subject");
     if (cptr) {
     	COMPFREE(cptr);
-	cptr->c_text = subject;
+	cptr->c_text = getcpy(subject);
     }
-    FINDCOMP (cptr, "fcc");
+    cptr = fmt_findcomp ("fcc");
     if (cptr) {
     	COMPFREE(cptr);
-	cptr->c_text = fcc;
+	cptr->c_text = getcpy(fcc);
     }
 
     cp = m_mktemp2(NULL, invo_name, NULL, &tmp);
@@ -203,9 +190,7 @@ finished:
      * Free any component buffers that we allocated
      */
 
-    for (i = 0; i < (sizeof(wantcomp) / sizeof(struct comp)); i++)
-    	for (cptr = wantcomp[i]; cptr != NULL; cptr = cptr->c_next)
-	    COMPFREE(cptr);
+    fmt_free(fmt, 1);
 
     return in;
 }

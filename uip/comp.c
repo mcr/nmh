@@ -294,34 +294,34 @@ main (int argc, char **argv)
 
         cp = new_fs(form, NULL, NULL);
 	format_len = strlen(cp);
-	fmt_compile(cp, &fmt);
+	fmt_compile(cp, &fmt, 1);
 
 	/*
 	 * Set up any components that were fed to us on the command line
 	 */
 
 	if (from) {
-	    FINDCOMP(cptr, "from");
+	    cptr = fmt_findcomp("from");
 	    if (cptr)
 	    	cptr->c_text = from;
 	}
 	if (to) {
-	    FINDCOMP(cptr, "to");
+	    cptr = fmt_findcomp("to");
 	    if (cptr)
 	    	cptr->c_text = to;
 	}
 	if (cc) {
-	    FINDCOMP(cptr, "cc");
+	    cptr = fmt_findcomp("cc");
 	    if (cptr)
 	    	cptr->c_text = cc;
 	}
 	if (fcc) {
-	    FINDCOMP(cptr, "fcc");
+	    cptr = fmt_findcomp("fcc");
 	    if (cptr)
 	    	cptr->c_text = fcc;
 	}
 	if (subject) {
-	    FINDCOMP(cptr, "subject");
+	    cptr = fmt_findcomp("subject");
 	    if (cptr)
 	    	cptr->c_text = subject;
 	}
