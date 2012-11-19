@@ -46,11 +46,7 @@ struct k2v SubText[] = {
     { NULL,       TEXT_UNKNOWN }    /* this one must be last! */
 };
 
-struct k2v Charset[] = {
-    { "us-ascii",   CHARSET_USASCII },
-    { "iso-8859-1", CHARSET_LATIN },
-    { NULL,         CHARSET_UNKNOWN }  /* this one must be last! */
-};
+/* Charset[] removed -- yozo.  Mon Oct  8 01:03:41 JST 2012 */
 
 /*
  * Structures for MULTIPART messages
@@ -1077,14 +1073,8 @@ InitText (CT ct)
 
     /* check if content specified a character set */
     if (*ap) {
-	/* match character set or set to CHARSET_UNKNOWN */
-	for (kv = Charset; kv->kv_key; kv++) {
-	    if (!mh_strcasecmp (*ep, kv->kv_key)) {
-		chset = *ep;
-		break;
-	    }
-	}
-	t->tx_charset = kv->kv_value;
+	chset = *ep;
+	t->tx_charset = CHARSET_SPECIFIED;
     } else {
 	t->tx_charset = CHARSET_UNSPECIFIED;
     }

@@ -162,10 +162,8 @@ struct Content {
 #define TEXT_ENRICHED	0x03
 
 /* Flags for character sets */
-#define	CHARSET_UNKNOWN	    0x00
+#define	CHARSET_SPECIFIED    0x00
 #define CHARSET_UNSPECIFIED 0x01  /* only needed when building drafts */
-#define	CHARSET_USASCII	    0x01
-#define	CHARSET_LATIN	    0x02
 
 /* Structure for text content */
 struct text {

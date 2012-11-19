@@ -1358,12 +1358,11 @@ scan_content (CT ct)
 		continue;
 
 	    if (contains8bit) {
-		t->tx_charset = CHARSET_UNKNOWN;
 		*ap = concat ("charset=", write_charset_8bit(), NULL);
 	    } else {
-		t->tx_charset = CHARSET_USASCII;
 		*ap = add ("charset=us-ascii", NULL);
 	    }
+	    t->tx_charset = CHARSET_SPECIFIED;
 
 	    cp = strchr(*ap++, '=');
 	    *ap = NULL;
