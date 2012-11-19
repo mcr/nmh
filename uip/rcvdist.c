@@ -171,7 +171,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
     register int char_read = 0, format_len, i, state;
     register char **ap;
     char *cp, *scanl, name[NAMESZ], tmpbuf[SBUFSIZ];
-    register struct comp *cptr, **savecomp;
+    register struct comp *cptr;
     FILE *out;
 
     if (!(out = fopen (drft, "w")))
