@@ -100,9 +100,12 @@ main (int argc, char **argv)
      * Get new format string.  Must be before chdir().
      */
     nfs = new_fs (form, format, FORMAT);
-    (void) fmt_compile(nfs, &fmt);
+    (void) fmt_compile(nfs, &fmt, 1);
 
     fmt_dump(fmt);
+
+    fmt_free(fmt, 1);
+
     done(0);
     return 1;
 }

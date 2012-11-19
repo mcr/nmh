@@ -117,7 +117,7 @@ main (int argc, char **argv)
     }
     if (width > WBUFSIZ)
 	width = WBUFSIZ;
-    fmt_compile (nfs, &fmt);
+    fmt_compile (nfs, &fmt, 1);
 
     dat[0] = 0;
     dat[1] = 0;
@@ -129,6 +129,7 @@ main (int argc, char **argv)
 	status += process (dates[datep], width);
 
     context_save ();	/* save the context file */
+    fmt_free (fmt, 1);
     done (status);
     return 1;
 }
@@ -141,9 +142,12 @@ process (char *date, int length)
     char buffer[WBUFSIZ + 1];
     register struct comp *cptr;
 
-    FINDCOMP (cptr, "text");
-    if (cptr)
-	cptr->c_text = date;
+    cptr = fmt_findcomp ("text");
+    if (cptr) {
+    	if (cptr->c_text)
+	    free(cptr->c_text);
+	cptr->c_text = getcpy(date);
+    }
     fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat);
     fputs (buffer, stdout);
 

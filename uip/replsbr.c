@@ -36,14 +36,6 @@ static int nodupcheck = 0;		/* If set, no check for duplicates */
  */
 #define SBUFSIZ 256		
 
-static struct format *fmt;
-
-static int ncomps = 0;			/* # of interesting components */
-static char **compbuffers = NULL; 	/* buffers for component text */
-static struct comp **used_buf = NULL;	/* stack for comp that use buffers */
-
-static int dat[5];			/* aux. data for format routine */
-
 static char *addrcomps[] = {
     "from",
     "sender",
@@ -73,13 +65,14 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 {
     register int state, i;
     register struct comp *cptr;
-    register char *tmpbuf;
-    register char **nxtbuf;
+    char tmpbuf[SBUFSIZ];
+    struct format *fmt;
     register char **ap;
-    register struct comp **savecomp;
     int	char_read = 0, format_len, mask;
     char name[NAMESZ], *scanl;
     unsigned char *cp;
+    static int dat[5];			/* aux. data for format routine */
+
     FILE *out;
     NMH_UNUSED (msg);
 
@@ -94,50 +87,41 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     format_len = strlen (cp);
 
     /* compile format string */
-    ncomps = fmt_compile (cp, &fmt) + 1;
-
-    if (!(nxtbuf = compbuffers = (char **)
-	    calloc((size_t) ncomps, sizeof(char *))))
-	adios (NULL, "unable to allocate component buffers");
-    if (!(savecomp = used_buf = (struct comp **)
-	    calloc((size_t) (ncomps+1), sizeof(struct comp *))))
-	adios (NULL, "unable to allocate component buffer stack");
-    savecomp += ncomps + 1;
-    *--savecomp = NULL;		/* point at zero'd end minus 1 */
-
-    for (i = ncomps; i--; )
-	*nxtbuf++ = mh_xmalloc(SBUFSIZ);
-
-    nxtbuf = compbuffers;		/* point at start */
-    tmpbuf = *nxtbuf++;
+    fmt_compile (cp, &fmt, 1);
 
     for (ap = addrcomps; *ap; ap++) {
-	FINDCOMP (cptr, *ap);
+	cptr = fmt_findcomp (*ap);
 	if (cptr)
 	    cptr->c_type |= CT_ADDR;
     }
 
     /*
      * ignore any components killed by command line switches
+     *
+     * This prevents the component from being found via fmt_findcomp(),
+     * which makes sure no text gets added to it when the message is processed.
+     *
+     * getcpy(NULL) returns a malloc'd zero-length string, so it can safely
+     * be free()'d later.
      */
     if (!ccto) {
-	FINDCOMP (cptr, "to");
+	cptr = fmt_findcomp ("to");
 	if (cptr)
-	    cptr->c_name = "";
+	    cptr->c_name = getcpy(NULL);
     }
     if (!cccc) {
-	FINDCOMP (cptr, "cc");
+	 cptr = fmt_findcomp("cc");
 	if (cptr)
-	    cptr->c_name = "";
+	    cptr->c_name = getcpy(NULL);
     }
     /* set up the "fcc" pseudo-component */
     if (fcc) {
-	FINDCOMP (cptr, "fcc");
+	cptr = fmt_findcomp ("fcc");
 	if (cptr)
 	    cptr->c_text = getcpy (fcc);
     }
     if ((cp = getenv("USER"))) {
-	FINDCOMP (cptr, "user");
+	cptr = fmt_findcomp ("user");
 	if (cptr)
 	    cptr->c_text = getcpy(cp);
     }
@@ -148,7 +132,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
      * pick any interesting stuff out of msg "inb"
      */
     for (state = FLD;;) {
-	state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
+	state = m_getfld (state, name, tmpbuf, sizeof(tmpbuf), inb);
 	switch (state) {
 	    case FLD: 
 	    case FLDPLUS: 
@@ -158,35 +142,17 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 		 * buffer as the component temp buffer (buffer switching
 		 * saves an extra copy of the component text).
 		 */
-		if ((cptr = wantcomp[CHASH(name)]))
-		    do {
-			if (!mh_strcasecmp(name, cptr->c_name)) {
-			    char_read += msg_count;
-			    if (! cptr->c_text) {
-				cptr->c_text = tmpbuf;
-				*--savecomp = cptr;
-				tmpbuf = *nxtbuf++;
-			    } else {
-				i = strlen (cp = cptr->c_text) - 1;
-				if (cp[i] == '\n') {
-				    if (cptr->c_type & CT_ADDR) {
-					cp[i] = '\0';
-					cp = add (",\n\t", cp);
-				    } else {
-					cp = add ("\t", cp);
-				    }
-				}
-				cptr->c_text = add (tmpbuf, cp);
-			    }
-			    while (state == FLDPLUS) {
-				state = m_getfld (state, name, tmpbuf,
-						  SBUFSIZ, inb);
-				cptr->c_text = add (tmpbuf, cptr->c_text);
-				char_read += msg_count;
-			    }
-			    break;
-			}
-		    } while ((cptr = cptr->c_next));
+
+		i = fmt_addcomptext(name, tmpbuf);
+		if (i != -1) {
+		    char_read += msg_count;
+		    while (state == FLDPLUS) {
+		    	state = m_getfld(state, name, tmpbuf,
+					 sizeof(tmpbuf), inb);
+			fmt_appendcomp(i, name, tmpbuf);
+			char_read += msg_count;
+		    }
+		}
 
 		while (state == FLDPLUS)
 		    state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
@@ -211,7 +177,7 @@ finished:
     /*
      * if there's a "Subject" component, strip any "Re:"s off it
      */
-    FINDCOMP (cptr, "subject")
+    cptr = fmt_findcomp ("subject");
     if (cptr && (cp = cptr->c_text)) {
 	register char *sp = cp;
 
@@ -266,12 +232,7 @@ finished:
 
     /* return dynamically allocated buffers */
     free (scanl);
-    for (nxtbuf = compbuffers, i = ncomps; (cptr = *savecomp++); nxtbuf++, i--)
-	free (cptr->c_text);	/* if not nxtbuf, nxtbuf already freed */
-    while ( i-- > 0)
-        free (*nxtbuf++);	/* free unused nxtbufs */
-    free ((char *) compbuffers);
-    free ((char *) used_buf);
+    fmt_free(fmt, 1);
 }
 
 static char *buf;		/* our current working buffer */

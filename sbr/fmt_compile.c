@@ -47,6 +47,7 @@
 #include <h/fmt_scan.h>
 #include <h/fmt_compile.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -56,7 +57,7 @@
 /*
  * hash table for deciding if a component is "interesting"
  */
-struct comp *wantcomp[128];
+static struct comp *wantcomp[128];
 
 static struct format *formatvec;	/* array to hold formats */
 static struct format *next_fp;		/* next free format slot */
@@ -218,10 +219,28 @@ static struct ftable functable[] = {
      { NULL,         0,		0,		0,		0 }
 };
 
+/* 
+ * Hash function for component name.  The function should be
+ * case independent and probably shouldn't involve a routine
+ * call.  This function is pretty good but will not work on
+ * single character component names.  
+ */
+#define	CHASH(nm) (((((nm)[0]) - ((nm)[1])) & 0x1f) + (((nm)[2]) & 0x5f))
+
+/*
+ * Find a component in the hash table.
+ */
+#define FINDCOMP(comp,name) \
+		for (comp = wantcomp[CHASH(name)]; \
+		     comp && strcmp(comp->c_name,name); \
+		     comp = comp->c_next) \
+		;
+
 /* Add new component to the hash table */
 #define NEWCOMP(cm,name) do { \
 	cm = ((struct comp *) calloc(1, sizeof (struct comp)));\
-	cm->c_name = name;\
+	cm->c_name = getcpy(name);\
+	cm->c_refcount++;\
 	ncomp++;\
 	i = CHASH(name);\
 	cm->c_next = wantcomp[i];\
@@ -240,16 +259,18 @@ static struct ftable functable[] = {
 	    NEWCOMP(cm,name);\
 	}\
 	fp->f_comp = cm; \
+	fp->f_flags |= FF_COMPREF; \
+	cm->c_refcount++; \
 	} while (0)
 
 #define LV(type, value)		do { NEW(type,0,0); fp->f_value = (value); } while (0)
-#define LS(type, str)		do { NEW(type,0,0); fp->f_text = (str); } while (0)
+#define LS(type, str)		do { NEW(type,0,0); fp->f_text = getcpy(str); fp->f_flags |= FF_STRALLOC; } while (0)
 
 #define PUTCOMP(comp)		do { NEW(FT_COMP,0,0); ADDC(comp); } while (0)
-#define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = (str); } while (0)
+#define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = getcpy(str); fp->f_flags |= FF_STRALLOC; } while (0)
 #define PUTC(c)			do { NEW(FT_CHAR,0,0); fp->f_char = (c); } while (0)
 
-char *format_string;
+static char *format_string;
 static unsigned char *usr_fstring;	/* for CERROR */
 
 #define CERROR(str) compile_error (str, cp)
@@ -266,6 +287,8 @@ static char *do_func(char *);
 static char *do_expr (char *, int);
 static char *do_loop(char *);
 static char *do_if(char *);
+static void free_component(struct comp *);
+static void free_comptable(void);
 
 
 /*
@@ -318,19 +341,19 @@ compile_error(char *str, char *cp)
  */
 
 int
-fmt_compile(char *fstring, struct format **fmt)
+fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
 {
     register char *cp;
     size_t i;
+    static int comptable_initialized = 0;
 
-    if (format_string)
-	free (format_string);
     format_string = getcpy (fstring);
     usr_fstring = fstring;
 
-    /* init the component hash table. */
-    for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++)
-	wantcomp[i] = 0;
+    if (reset_comptable || !comptable_initialized) {
+    	free_comptable();
+	comptable_initialized = 1;
+    }
 
     memset((char *) &fmt_mnull, 0, sizeof(fmt_mnull));
 
@@ -347,7 +370,6 @@ fmt_compile(char *fstring, struct format **fmt)
     if (next_fp == NULL)
 	adios (NULL, "unable to allocate format storage");
 
-    ncomp = 0;
     infunction = 0;
 
     cp = compile(format_string);
@@ -357,6 +379,7 @@ fmt_compile(char *fstring, struct format **fmt)
     LV(FT_DONE, 0);		/* really done */
     *fmt = formatvec;
 
+    free(format_string);
     return (ncomp);
 }
 
@@ -672,6 +695,37 @@ do_expr (char *sp, int preprocess)
  * There is no support for this in the format engine, so right now if
  * you try using it you will reach the FT_DONE and simply stop.  I'm leaving
  * this here in case someone wants to continue the work.
+ *
+ * Okay, got some more information on this from John L. Romine!  From an
+ * email he sent to the nmh-workers mailing list on December 2, 2010, he
+ * explains it thusly:
+ *
+ *    In this case (scan, formatsbr) it has to do with an extension to
+ *    the mh-format syntax to allow for looping.
+ *
+ *    The scan format is processed once for each message.  Those #ifdef
+ *    JLR changes allowed for the top part of the format file to be
+ *    processed once, then a second, looping part to be processed
+ *    once per message.  As I recall, there were new mh-format escape
+ *    sequences to delimit the loop.  This would have allowed for things
+ *    like per-format column headings in the scan output.
+ *
+ *    Since existing format files didn't include the scan listing
+ *    header (it was hard-coded in scan.c) it would not have been
+ *    backward-compatible.  All existing format files (including any
+ *    local ones) would have needed to be changed to include the format
+ *    codes for a header.  The practice at the time was not to introduce
+ *    incompatible changes in a minor release, and I never managed to
+ *    put out a newer major release.
+ *
+ * I can see how this would work, and I suspect part of the motivation was
+ * because the format compiler routines (at the time) couldn't really be
+ * called multiple times on the same message because the memory management
+ * was so lousy.  That's been reworked and things are now a lot cleaner,
+ * so I suspect if we're going to allow a format string to be used for the
+ * scan header it might be simpler to have a separate format string just
+ * for the header.  But I'll leave this code in for now just in case we
+ * decide that we want some kind of looping support.
  */
 static char *
 do_loop(char *sp)
@@ -768,4 +822,199 @@ do_if(char *sp)
 	fexpr->f_skip = next_fp - fexpr;
 
     return (cp);
+}
+
+/*
+ * Free a set of format instructions.
+ *
+ * What we do here is:
+ *
+ * - Iterate through the list of format instructions, freeing any references
+ *   to allocated memory in each instruction.
+ * - Free component references.
+ * - If requested, reset the component hash table; that will also free any
+ *   references to components stored there.
+ *
+ */
+
+void
+fmt_free(struct format *fmt, int reset_comptable)
+{
+    struct format *fp = fmt;
+
+    if (fp) {
+    	while (! (fp->f_type == FT_DONE && fp->f_value == 0)) {
+	    if (fp->f_flags & FF_STRALLOC)
+	    	free(fp->f_text);
+	    if (fp->f_flags & FF_COMPREF)
+	    	free_component(fp->f_comp);
+	    fp++;
+	}
+	free(fmt);
+    }
+
+    if (reset_comptable)
+    	free_comptable();
+}
+
+/*
+ * Find a component in our hash table.  This is just a public interface to
+ * the FINDCOMP macro, so we don't have to expose our hash table.
+ */
+
+struct comp *
+fmt_findcomp(char *component)
+{
+    struct comp *cm;
+
+    FINDCOMP(cm, component);
+
+    return cm;
+}
+
+/*
+ * Like fmt_findcomp, but case-insensitive.
+ */
+
+struct comp *
+fmt_findcasecomp(char *component)
+{
+    struct comp *cm;
+
+    for (cm = wantcomp[CHASH(component)]; cm; cm = cm->c_next)
+    	if (mh_strcasecmp(component, cm->c_name) == 0)
+	    break;
+
+    return cm;
+}
+
+/*
+ * Add an entry to the component hash table
+ *
+ * Returns true if the component was added, 0 if it already existed.
+ *
+ */
+
+int
+fmt_addcompentry(char *component)
+{
+    struct comp *cm;
+    int i;
+
+    FINDCOMP(cm, component);
+
+    if (cm)
+    	return 0;
+
+    NEWCOMP(cm, component);
+
+    /*
+     * ncomp is really meant for fmt_compile() and this function is
+     * meant to be used outside of it.  So decrement it just to be safe
+     * (internal callers should be using NEWCOMP()).
+     */
+
+    ncomp--;
+
+    return 1;
+}
+
+/*
+ * Add a string to a component hash table entry.
+ *
+ * Note the special handling for components marked with CT_ADDR.  The comments
+ * in fmt_scan.h explain this in more detail.
+ */
+
+int
+fmt_addcomptext(char *component, char *text)
+{
+    int i, found = 0, bucket = CHASH(component);
+    struct comp *cptr = wantcomp[bucket];
+    char *cp;
+
+    while (cptr) {
+    	if (mh_strcasecmp(component, cptr->c_name) == 0) {
+	    found++;
+	    if (! cptr->c_text) {
+	    	cptr->c_text = getcpy(text);
+	    } else {
+	    	i = strlen(cp = cptr->c_text) - 1;
+		if (cp[i] == '\n') {
+		    if (cptr->c_type & CT_ADDR) {
+		    	cp[i] = '\0';
+			cp = add(",\n\t", cp);
+		    } else {
+		    	cp = add("\t", cp);
+		    }
+		}
+		cptr->c_text = add(text, cp);
+	    }
+	}
+	cptr = cptr->c_next;
+    }
+
+    return found ? bucket : -1;
+}
+
+/*
+ * Append text to a component we've already found.  See notes in fmt_scan.h
+ * for more information.
+ */
+
+void
+fmt_appendcomp(int bucket, char *component, char *text)
+{
+    struct comp *cptr;
+
+    if (bucket != -1) {
+    	for (cptr = wantcomp[bucket]; cptr; cptr = cptr->c_next)
+	    if (mh_strcasecmp(component, cptr->c_name) == 0)
+	    	cptr->c_text = add(text, cptr->c_text);
+    }
+}
+
+/*
+ * Free and reset our component hash table
+ */
+
+static void
+free_comptable(void)
+{
+    int i;
+    struct comp *cm, *cm2;
+
+    for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++) {
+    	cm = wantcomp[i];
+	while (cm != NULL) {
+	    cm2 = cm->c_next;
+	    free_component(cm);
+	    cm = cm2;
+	}
+	wantcomp[i] = 0;
+    }
+
+    ncomp = 0;
+}
+
+/*
+ * Decrement the reference count of a component structure.  If it reaches
+ * zero, free it
+ */
+
+static void
+free_component(struct comp *cm)
+{
+    if (--cm->c_refcount <= 0) {
+    	/* Shouldn't ever be NULL, but just in case ... */
+    	if (cm->c_name)
+	    free(cm->c_name);
+	if (cm->c_text)
+	    free(cm->c_text);
+	if (cm->c_type & CT_DATE)
+	    free(cm->c_tws);
+	if (cm->c_type & CT_ADDR && cm->c_mn && cm->c_mn != &fmt_mnull)
+	    mnfree(cm->c_mn);
+    	free(cm);
+    }
 }
