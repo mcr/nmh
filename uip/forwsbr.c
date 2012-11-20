@@ -47,7 +47,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 {
     int	in;
     int fmtsize, state, char_read = 0;
-    unsigned i;
+    int i;
     register char *nfs;
     char *line, tmpfil[BUFSIZ], name[NAMESZ], **ap;
     FILE *tmp;

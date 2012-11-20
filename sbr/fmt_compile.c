@@ -981,7 +981,7 @@ fmt_appendcomp(int bucket, char *component, char *text)
 static void
 free_comptable(void)
 {
-    int i;
+    unsigned int i;
     struct comp *cm, *cm2;
 
     for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++) {
