@@ -1,4 +1,4 @@
-.TH SLOCAL %manext1% "November 9, 2012" "%nmhversion%"
+.TH SLOCAL %manext1% "November 23, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -8,7 +8,6 @@ slocal \- asynchronously filter and deliver new mail
 .HP 5
 .na
 .B %libdir%/slocal
-[address\ info\ sender]
 .RB [ \-addr
 .IR address ]
 .RB [ \-info
@@ -59,7 +58,7 @@ Under
 .BR sendmail ,
 the sender will obtained from the UUCP
 \*(lqFrom:\*(rq line, if present.  The user may override these
-values with command line arguments, or arguments to the
+values with the
 .B \-addr
 and
 .B \-sender

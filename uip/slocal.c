@@ -222,8 +222,7 @@ main (int argc, char **argv)
 		    adios (NULL, "-%s unknown", cp);
 
 		case HELPSW: 
-		    snprintf (buf, sizeof(buf),
-			"%s [switches] [address info sender]", invo_name);
+		    snprintf (buf, sizeof(buf), "%s [switches]", invo_name);
 		    print_help (buf, switches, 0);
 		    done (0);
 		case VERSIONSW:
@@ -284,20 +283,8 @@ main (int argc, char **argv)
 		    debug++;
 		    continue;
 	    }
-	}
-
-	switch (argp - (argv + 1)) {
-	    case 1: 
-		addr = cp;
-		break;
-
-	    case 2: 
-		info = cp;
-		break;
-
-	    case 3: 
-		sender = cp;
-		break;
+	} else {
+		adios (NULL, "only switch arguments are supported");
 	}
     }
 
