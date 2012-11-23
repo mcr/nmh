@@ -80,6 +80,7 @@ cat > "$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 Resent-From: `${MH_LIB_DIR}/ap -format '%(localmbox)' 0`
 Resent-To: recipient@example.com
@@ -95,6 +96,7 @@ cat > "$expected" <<EOF
 From: Test2 <test2@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 2@test.nmh
 Subject: Testing message 2
 Resent-To: recipient@example.com
 Resent-From: Some User <user@example.com>

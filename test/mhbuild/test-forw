@@ -47,6 +47,7 @@ Content-Type: message/rfc822
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 
 This is message number 1
@@ -57,6 +58,7 @@ Content-Type: message/rfc822
 From: Test2 <test2@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 2@test.nmh
 Subject: Testing message 2
 
 This is message number 2
@@ -84,6 +86,7 @@ Content-Description: forwarded messages
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 
 This is message number 1
@@ -93,6 +96,7 @@ This is message number 1
 From: Test2 <test2@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 2@test.nmh
 Subject: Testing message 2
 
 This is message number 2

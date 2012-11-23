@@ -81,6 +81,8 @@ To: Test1 <test1@example.com>
 cc: mymailbox@localhost
 Fcc: +outbox
 Subject: Re: Testing message 1
+In-reply-to: 1@test.nmh
+References: 1@test.nmh
 Comments: In-reply-to Test1 <test1@example.com>
    message dated "Fri, 29 Sep 2006 00:00:00."
 --------
@@ -96,6 +98,8 @@ To: Test1 <test1@example.com>
 cc: 
 Fcc: +outbox
 Subject: Re: Testing message 1
+In-reply-to: 1@test.nmh
+References: 1@test.nmh
 Comments: In-reply-to Test1 <test1@example.com>
    message dated "Fri, 29 Sep 2006 00:00:00."
 --------
@@ -114,6 +118,8 @@ To: Test1 <test1@example.com>
 cc: mymailbox@localhost
 Fcc: +outbox
 Subject: Re: Testing message 1
+In-reply-to: 1@test.nmh
+References: 1@test.nmh
 Comments: In-reply-to Test1 <test1@example.com>
    message dated "Fri, 29 Sep 2006 00:00:00."
 --------
@@ -131,6 +137,8 @@ To: Test1 <test1@example.com>
 cc: 
 Fcc: +outbox
 Subject: Re: Testing message 1
+In-reply-to: 1@test.nmh
+References: 1@test.nmh
 Comments: In-reply-to Test1 <test1@example.com>
    message dated "Fri, 29 Sep 2006 00:00:00."
 --------

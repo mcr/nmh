@@ -95,6 +95,7 @@ cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -112,6 +113,7 @@ cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -132,6 +134,7 @@ cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 Resent-From: me@example.com
 Resent-To: you@example.com
@@ -149,6 +152,7 @@ cat >"$expected" <<EOF
 From: Test2 <test2@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 2@test.nmh
 Subject: Testing message 2
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -165,6 +169,7 @@ Resent: somebody@example.com
 From: Test2 <test2@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 2@test.nmh
 Subject: Testing message 2
 
 This is message number 2
@@ -194,6 +199,7 @@ cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -208,6 +214,7 @@ cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 
 This is message number 1
@@ -225,6 +232,7 @@ if [ $hard_links_supported -eq 1 ]; then
 From: Test8 <test8@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 8@test.nmh
 Subject: Testing message 8
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -244,6 +252,7 @@ EOF
 From: Test8 <test8@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 8@test.nmh
 Subject: Testing message 8
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -260,6 +269,7 @@ cat >"$expected" <<EOF
 From: Test3 <test3@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 3@test.nmh
 Subject: Testing message 3
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -275,6 +285,7 @@ cat >"$expected" <<EOF
 From: Test3 <test3@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 3@test.nmh
 Subject: Testing message 3
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -291,6 +302,7 @@ cat >"$expected" <<EOF
 From: Test3 <test3@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 3@test.nmh
 Subject: Testing message 3
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -311,6 +323,7 @@ cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 Resent-From: me@example.com
 Resent-To: somebody@example.com
@@ -326,6 +339,7 @@ cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -342,6 +356,7 @@ cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
@@ -357,6 +372,7 @@ cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
 Subject: Testing message 1
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com

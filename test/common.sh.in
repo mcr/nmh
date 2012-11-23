@@ -207,6 +207,7 @@ EOF
 From: Test$i <test$i@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: $i@test.nmh
 Subject: Testing message $i
 
 This is message number $i
