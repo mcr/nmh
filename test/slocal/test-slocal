@@ -1,0 +1,195 @@
+#!/bin/sh
+######################################################
+#
+# Test slocal
+#
+######################################################
+
+set -e
+
+if test -z "$MH_OBJ_DIR"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+# Use proper program, maybe not the first one on PATH.
+slocal="$MH_LIB_DIR"/slocal
+
+expected="$MH_TEST_DIR"/$$.expected
+actual="$MH_TEST_DIR"/$$.actual
+actual2="$MH_TEST_DIR"/$$.actual2
+md="$MH_TEST_DIR"/Mail/maildelivery
+
+# check -help
+cat >"$expected" <<EOF
+Usage: slocal [switches]
+  switches are:
+  -addr address
+  -user name
+  -file file
+  -sender address
+  -mailbox file
+  -info data
+  -maildelivery file
+  -[no]verbose
+  -[no]suppressdup
+  -debug
+  -version
+  -help
+EOF
+
+$slocal -help >"$actual" 2>&1
+check "$expected" "$actual"
+
+# check -version
+case `$slocal -vers` in
+  slocal\ --*) ;;
+  *          ) printf '%s: slocal -vers generated unexpected output\n' "$0" >&2
+               failed=`expr ${failed:-0} + 1`;;
+esac
+
+# check unknown switch
+run_test "$slocal -nonexistent" 'slocal: -nonexistent unknown'
+
+# check non-switch argument
+run_test "$slocal nonexistent" 'slocal: only switch arguments are supported'
+
+# check basic operation
+# Can't use rcvstore because slocal wipes out the environment.
+# So, it would put the message in the user's inbox, not the
+# test inbox.  slocal also freopens stdout and stderr to
+# /dev/null, so we can't view them to verify simulated delivery.
+cat >$md  <<EOF
+* 1 qpipe A "tee $actual"
+EOF
+
+$slocal -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/1
+check "$MH_TEST_DIR/Mail/inbox/1" "$actual" 'keep first'
+
+# check -debug
+$slocal -debug -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/1 >"$actual2" 2>&1
+run_test "grep ^retrieving $actual2" 'retrieving message from stdin'
+
+# check -verbose
+$slocal -verbose -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/1 >"$actual2" 2>&1
+run_test "grep ^delivering $actual2" 'delivering to pipe "tee", success.'
+
+# check -noverbose
+$slocal -verbose -noverbose -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/1 \
+  >"$actual2" 2>&1
+run_test "grep ^delivering $actual2" ''
+rm -f "$actual2"
+
+# check match of From
+cat >$md  <<EOF
+From test2@example.com qpipe A "tee $actual"
+EOF
+
+$slocal -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/2
+check "$MH_TEST_DIR/Mail/inbox/2" "$actual" 'keep first'
+
+# check R and ?
+cat >$md  <<EOF
+From test3@example.com qpipe R "tee $actual"
+From test3@example.com qpipe ? "tee $actual2"
+EOF
+
+$slocal -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/3
+check "$MH_TEST_DIR/Mail/inbox/3" "$actual" 'keep first'
+check "$MH_TEST_DIR/Mail/inbox/3" "$actual2" 'keep first'
+
+# check R and N
+cat >$md  <<EOF
+From test4@example.com qpipe R "tee $actual"
+From test4@example.com qpipe N "tee $actual2"
+EOF
+
+$slocal -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/4
+check "$MH_TEST_DIR/Mail/inbox/4" "$actual" 'keep first'
+check "$MH_TEST_DIR/Mail/inbox/4" "$actual2" 'keep first'
+
+# check default
+cat >$md  <<EOF
+From test5@example.com qpipe R "tee $actual"
+default 1 qpipe A "tee $actual2"
+EOF
+
+$slocal -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/5
+check "$MH_TEST_DIR/Mail/inbox/5" "$actual" 'keep first'
+check "$MH_TEST_DIR/Mail/inbox/5" "$actual2" 'keep first'
+
+# Use current login for address, user, etc., because it must be an
+# existing user on the host.
+me=`"$MH_LIB_DIR"/ap -format '%(me)' 0`
+
+# check -addr
+cat >$md  <<EOF
+addr "$me" qpipe A "tee $actual"
+EOF
+
+$slocal -addr "$me" -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/6
+check "$MH_TEST_DIR/Mail/inbox/6" "$actual" 'keep first'
+
+# check -info
+cat >$md  <<EOF
+* 1 qpipe A "\$(info) $actual"
+EOF
+
+$slocal -info tee -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/7
+check "$MH_TEST_DIR/Mail/inbox/7" "$actual" 'keep first'
+
+# check -sender, which is compared with "source"
+cat >$md  <<EOF
+source "$me" qpipe A "tee $actual"
+EOF
+
+$slocal -sender "$me" -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/8
+check "$MH_TEST_DIR/Mail/inbox/8" "$actual" 'keep first'
+
+# check -user
+cat >$md  <<EOF
+* 1 qpipe A "tee $actual"
+EOF
+
+$slocal -user "$me" -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/9
+check "$MH_TEST_DIR/Mail/inbox/9" "$actual" 'keep first'
+
+# check -mailbox
+cat >$md  <<EOF
+EOF
+
+$slocal -mailbox "$actual" -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/10
+inc -file "$actual" -silent -truncate
+rm -f "$actual"
+check "$MH_TEST_DIR/Mail/inbox/10" "$MH_TEST_DIR/Mail/inbox/11" 'keep first'
+
+# check -file
+$slocal -mailbox "$actual" -maildelivery $md -file "$MH_TEST_DIR"/Mail/inbox/1
+inc -file "$actual" -silent -truncate
+rm -f "$actual"
+check "$MH_TEST_DIR/Mail/inbox/1" "$MH_TEST_DIR/Mail/inbox/11" 'keep first'
+
+# check -suppressdup
+cat >$md  <<EOF
+* 1 qpipe A "tee $actual"
+EOF
+
+$slocal -suppressdup -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/2
+check "$MH_TEST_DIR/Mail/inbox/2" "$actual" 'keep first'
+
+$slocal -suppressdup -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/2
+if [ -f "$actual" ]; then
+  echo $0: check -suppressdup failed
+  failed=`expr ${failed:-0} + 1`
+fi
+
+# check -nosuppressdup
+$slocal -suppress -nosuppressdup -maildelivery $md <"$MH_TEST_DIR"/Mail/inbox/2
+check "$MH_TEST_DIR/Mail/inbox/2" "$actual" 'keep first'
+
+
+exit ${failed:-0}
