@@ -29,6 +29,8 @@ NEW FEATURES
 - $PAGER overrides the compiled-in default pager command.
 - Added etc/scan.highlighted format file, as an example of how to
   highlight/colorize the output of scan(1).
+- inc(1) now supports a -port switch to specify the port used by the
+  POP server.
 
 
 ----------------------------
