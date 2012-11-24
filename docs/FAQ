@@ -13,8 +13,8 @@ From: Bill Wohler <wohler@newt.com>
 Organization: Newt Software, Menlo Park, California, USA
 
 Archive-name: mail/mh-faq/part1
-Last-modified: $Date$
-Version: $Revision$
+Last-modified: $Date: 2012-11-23 21:47:03 -0800 (Fri, 23 Nov 2012) $
+Version: $Revision: 11334 $
 Posting-Frequency: monthly
 
   This is a living list of frequently asked questions on the mailer
@@ -35,8 +35,7 @@ Posting-Frequency: monthly
   This list depends on your comments, additions and fixes: please send
   them to Bill Wohler <wohler at newt.com>.
 
-  Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-            2001, 2004, 2005, 2006, 2007 Bill Wohler
+  Copyright 1991-1999, 2001, 2004-2007, 2012 Bill Wohler
 
   Permission to use, copy, distribute, and translate this document for
   any non-commercial purpose is hereby granted, provided that this
@@ -61,9 +60,9 @@ __________________
  01.01 Why should I use MH?
 !01.02 What is the current version/status of MH?
 !01.03 Where can I get MH?
-!01.04 What references exist for MH?
+ 01.04 What references exist for MH?
  01.05 What other MH software is available?
-!01.06 How can I print a MH manual?
+ 01.06 How can I print a MH manual?
  01.07 How should I report bugs?
  01.08 How can I convert from my mailer to MH?
  01.09 What is the copyright status of nmh?
@@ -86,7 +85,7 @@ _________________
  02.13 Is there a patch to fix this or that?
  02.14 How can I build MH on OS/2?
  02.15 Do any POP/IMAP servers handle MH format?
- 02.16 How can I build MH on Windows?
+!02.16 How can I build MH on Windows?
 !02.17 How can I build MH on a Mac?
 ________________________
 
@@ -123,7 +122,7 @@ ____________
  04.02 Can I append MH messages to a GNU Emacs rmail BABYL-format file?
  04.03 Why do I get ".../.mh_sequences is poorly formatted?"
  04.04 How can you save News articles into an MH folder?
-!04.05 Are there any good tools to archive MH messages?
+ 04.05 Are there any good tools to archive MH messages?
  04.06 How can I remove duplicate messages?
  04.07 How can I remove holes in numbering?
 __________________________
@@ -163,14 +162,14 @@ _____________
  06.01 What to do with "Problems with edit - draft removed".
  06.02 Can I run my message through a program (e.g., ispell) before sending?
  06.03 What to do with "bad address 'xxx' - no at-sign after local-part".
- 06.04 Fixing "post: problem initializing server; [BHST] no servers available"
+!06.04 Fixing "post: problem initializing server; [BHST] no servers available"
  06.05 Fixing "post: problem initializing server; [RPLY] 503 Sender
        already specified"
  06.06 Fixing "post: unexpected response; [BHST] no socket opened"
  06.07 How do I fix the "X-Authentication-Warning" header?
  06.08 Fixing "post: unexpected response; [RPLY] 503 Need MAIL
        before RCPT"
- 06.09 Fixing "post: problem initializing server; [BHST] premature
+!06.09 Fixing "post: problem initializing server; [BHST] premature
        end-of-file on socket"
  06.10 Fixing "Sender didn't use the HELO protocol"
  06.11 Fixing "post: problem initializing server; [RPLY] 553 Local
@@ -338,11 +337,11 @@ Date: Sun, 23 Sep 2007 23:51:52 -0700
   repository for a long time. Ken Hornstein <kenh at pobox.com> picked
   up the torch in 2002 and moved development to Savannah where Jon
   Steinhart <nmh at fourwinds.com> joined him as a project maintainer.
-  See http://www.nongnu.org/nmh/. The stable version of nmh is 1.2.
-  The file DIFFERENCES in the nmh distribution contains an
-  ever-growing list of differences between nmh and MH.
+  See http://www.nongnu.org/nmh/. The stable version of nmh is 1.5.
+  The file docs/DIFFERENCES in the nmh distribution contains a list of
+  differences between nmh and MH.
 
-  GNU mailutils (version 1.2) is a collection of mail-related
+  GNU mailutils (version 2.99.97) is a collection of mail-related
   utilities. At the core of mailutils is libmailbox, a library which
   provides access to various forms of mailbox files (including remote
   mailboxes via popular protocols and MH). See
@@ -352,38 +351,30 @@ Date: Sun, 23 Sep 2007 23:51:52 -0700
   
 Subject: !01.03 Where can I get MH?
 From: Bill Wohler <wohler at newt.com>
-Date: Sun, 23 Sep 2007 23:51:46 -0700
+Date: Fri, 23 Nov 2012 12:19:17 -0800
 
-  MH comes standard with:
-  
-	Berkeley Software Design BSD/386  . . . . MH 6.8.3
-	Control Data Corp. CDC4680-MP . . . . . . EMH 1.4.2 (modified MH)
-	Debian GNU/Linux 4.0  . . . . . . . . . . nmh 1.1-RC4
-	Debian GNU/Linux 4.0  . . . . . . . . . . mailutils 1.1
-	DEC Ultrix 3.1  . . . . . . . . . . . . . MH 6.5
-	DEC Ultrix 4.2A.4 . . . . . . . . . . . . MH 6.7.1
-	DEC OSF/1 . . . . . . . . . . . . . . . . MH 6.7
-	Evans and Sutherland ES/OS 2.3  . . . . . MH 6.6
-	FreeBSD . . . . . . . . . . . . . . . . . MH 6.8.4
-	IBM PS/2 AIX 1.3  . . . . . . . . . . . . MH 6.4
-	IBM RISC System/6000 AIX 3.x and 4.x  . . MH 6.6
-	MIPS RISC/OS 4.52 . . . . . . . . . . . . MH 6.6
-	Red Hat Linux (3.0.3, 4.0 and 4.1)  . . . MH 6.8.3
-	SGI Irix 6.2 Freeware 2.0 CDROM . . . . . MH 6.8.3
-	Sony NEWS-OS 4.3  . . . . . . . . . . . . MH 6.7.2
-	Tektronix UTek  . . . . . . . . . . . . . MH (Version Unknown)
+  MH comes standard with many systems.
 
-  Download MH:
+  nmh (or mailutils) can be installed on Debian-based systems with:
 
-    http://download.savannah.nongnu.org/releases/nmh/nmh-1.2.tar.gz	831kB
+    aptitude install nmh
 
-  Download GNU mailutils:
-  
-    http://ftp.gnu.org/gnu/mailutils/mailutils-1.2.tar.gz		3.4MB
+  On Red Hat-based systems, use:
+
+    yum install nmh
+
+  nmh source code releases are available at:
+
+    http://download.savannah.nongnu.org/releases/nmh/
+ 
+  GNU mailutils source code releases are available at:
+
+    http://ftp.gnu.org/gnu/mailutils/mailutils-latest.tar.gz
+    (or .bz2 or .lzma or .xz)
 
 ------------------------------
   
-Subject: !01.04 What references exist for MH?
+Subject: 01.04 What references exist for MH?
 From: Bill Wohler <wohler at newt.com>
 Date: Sun, 23 Sep 2007 23:51:41 -0700
 
@@ -801,7 +792,7 @@ Date: Sun, 11 Mar 2001 00:23:21 -0800
 
 ------------------------------
   
-Subject: !01.06 How can I print a MH manual?
+Subject: 01.06 How can I print a MH manual?
 From: Bill Wohler <wohler at newt.com>, Jos Vos <jos at bull.nl>
 Date: Sun, 23 Sep 2007 23:51:33 -0700
 
@@ -1526,7 +1517,14 @@ Date: 11 Feb 2003 04:23:38 -0800
 
 ------------------------------
   
-Subject: 02.16 How can I build MH on Windows?
+Subject: !02.16 How can I build MH on Windows?
+From: David Levine <levinedl@acm.org>
+Date: Sun Sep 30 22:45:08 CDT 2012
+
+  nmh is now available as a Cygwin package. Select it using Cygwin
+  setup. Or, download and build from source. Hacks are no longer
+  needed.
+
 From: Satyaki Das <satyaki at theforce.stanford.edu>
 Date: Wed, 19 Jun 2002 20:57:19 -0700
 
@@ -1585,7 +1583,12 @@ Date: 24 May 99 17:20:27 GMT
 
 ------------------------------
   
-Subject: !02.17 How can I build MH on a Mac?
+Subject: 02.17 How can I build MH on a Mac?
+From: David Levine <levinedl@acm.org>
+Date: Sun Sep 30 22:47:12 CDT 2012
+
+  nmh 1.3 and later build on Mac OS X out of the box.
+
 From: Dr Eberhard W Lisse <el at lisse.na>
 Date: Sun, 05 Jun 2005 13:43:19 +0100
 
@@ -2331,7 +2334,7 @@ Date: Mon, 1 May 1995 00:00:00 -0800
 
 ------------------------------
   
-Subject: !04.05 Are there any good tools to archive MH messages?
+Subject: 04.05 Are there any good tools to archive MH messages?
 From: Bill Wohler <wohler at newt.com>
 Date: Sun, 23 Sep 2007 18:35:53 -0700
 
@@ -2988,7 +2991,7 @@ Date: Thu, 9 Mar 2006 19:27:14 -0800
   start with the first four lines--the latter group of lines are much
   easier to understand.
 
-    %; $Header$
+    %; $Header: /cvsroot/nmh/nmh/etc/replcomps,v 1.3.2.1 2003/10/24 20:14:46 kenh Exp $
     %;
     %; These next lines slurp in lots of addresses for To: and cc:.
     %; Use with repl -query or else you may get flooded with addresses!
@@ -3358,7 +3361,7 @@ Date: Fri, 1 Jan 1993 00:00:00 -0800
 
 ------------------------------
   
-Subject: 06.04 Fixing "post: problem initializing server; [BHST] no servers available"
+Subject: !06.04 Fixing "post: problem initializing server; [BHST] no servers available"
 From: Peter Marvit <marvit at hplabs.hpl.hp.com>,
 	Eric Bracken <bracken at bacon.performance.com>
 Date: Tue, 1 Nov 1994 00:00:00 -0800
@@ -3390,40 +3393,27 @@ Date: Sun, 1 May 1994 00:00:00 -0800
 
        servers: 127.0.0.1 \01localnet
 
+From: David Levine <levinedl@acm.org>
+Date: Sun Sep 30 22:47:12 CDT 2012
 From: Larry Daffner <ldaffner at convex.com>
 Date: 3 Mar 1996 14:39:54 -0600
 
   5. Your load average is so high that sendmail is refusing
      connections.
 
-     Solution: Change your configuration from "mta: sendmail/smtp" to
-     "mta: sendmail" so that a sendmail processes is spawned to
+     Solution: Change your configuration from "mts: smtp" to "mts:
+     sendmail" (after nmh 1.5, "mts: sendmail/smtp" or "mts:
+     sendmail/pipe") so that a sendmail processes is spawned to
      deliver the message. This is a double-edged sword since the extra
      process only makes the load worse.
-
-From: Corbin Covault <cec8 at po.cwru.edu>
-Date: Sun, 02 Sep 2001 02:13:42 -0400
-
-  6. Sendmail may not be located on the path that MH expects.
-
-     Solution: Try specifying the path explicitly by adding a line to
-     mts.conf thus:
-  
-       sendmail: /usr/sbin/sendmail
-  
-     or wherever your sendmail daemon executable lives.
 
 From: Neil W Rickert <rickert+nn at cs.niu.edu>
 Date: 13 Apr 2001 18:47:43 -0500
 
-  7. You don't want to use an available server.
+  8. You don't want to use an available server.
 
-     Solution: Try
-
-       postproc: /usr/local/lib/mh/spost
-
-     in your MH profile (but check the path first). That should use
-     command line sendmail.
+  See David Levine's answer in Fixing "post: problem initializing
+  server; [BHST] premature end-of-file on socket."
 
 ------------------------------
   
@@ -3526,21 +3516,52 @@ Date: Mon, 1 May 1995 00:00:00 -0800
 
 ------------------------------
   
-Subject: 06.09 Fixing "post: problem initializing server; [BHST] premature end-of-file on socket"
+Subject: !06.09 Fixing "post: problem initializing server; [BHST] premature end-of-file on socket"
+From: David Levine <levinedl@acm.org>
+Date: Sun Sep 30 22:52:46 CDT 2012
+
+  To use a different SMTP server temporarily (after nmh 1.5):
+
+    What now? send -server smtp.example.com
+
+  Use the name or address of your SMTP server, of course.
+  Alternatively, if you can use your local sendmail program, then
+  enable that by one of these methods:
+
+  1. Change the mts setting in your mts.conf to:
+
+       mts: sendmail/pipe
+
+  2. Add the mts setting to a send entry in your profile. For example,
+
+       send: -mts sendmail/pipe
+
+  3. Override the mts setting temporarily:
+
+       What now? send -mts sendmail/pipe
+
+  4. Add the following to your profile:
+
+       postproc: $MHLIB/spost
+
+     This is the only available solution if you are running a version
+     of MH other than nmh 1.5 and higher. However, the use of spost is
+     discouraged because:
+
+     a) It requires the local sendmail to be configured for delivery
+     to all possible addresses. This may not be as common as it used
+     to be, as it is limited by many ISPs.
+
+     b) spost and blind MH aliases turn out to be a potentially
+     dangerous combination: spost expands them as if they weren't
+     blind, so all recipients see them.
+
 From: Ginko <gianluca at noroboter.rotoni.com>
 Date: Thu, 8 Mar 2001 09:18:14 +0000 (UTC)
 
   I have sendmail under control of tcpwrapper started by inetd and
   didn't want to take it away, the very simple fix to this problem was
   to allow the localhost on /etc/hosts.allow on the sendmail entry.
-
-From: Stefan Huebner <sh at muc.de>
-Date: Wed, 11 Sep 1996 20:06:49 +0200
-
-  Use spost instead of post.  To do this:
-
-    % mv post post.orig
-    % ln -s spost post
 
 From: Chuck Mattern <cmattern at mindspring.com>
 Date: Mon, 1 May 1995 00:00:00 -0800
@@ -4432,7 +4453,7 @@ options VSPRINTF
 From: David Paschich <dpassage at bigbook.com>
 Date: 23 Apr 96 21:27:12 GMT
 
-# @(#)$Id$
+# @(#)$Id: mh.faq 11334 2012-11-24 05:47:03Z wohler $
 # a 4.2BSD VAX system running SendMail
 bin	/usr/local/bin/mh
 bboards	off
