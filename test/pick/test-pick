@@ -78,25 +78,26 @@ run_test 'pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace' \
 
 # Test MHPDEBUG.
 MHPDEBUG=1 pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace \
- >/dev/null 2>$actual
-cat >$expected <<EOF
+ >/dev/null 2>"$actual"
+cat >"$expected" <<EOF
 NOT
 | AND
 | | PATTERN(header) ^subject[ 	]*:.*NoMatch
 | | PATTERN(header) ^subject[ 	]*:.*message.3
 EOF
-check $expected $actual
+check "$expected" "$actual"
 
 set +e
 
 # Produce 0 if no messages match and standard output is not a tty.
 # Note that there is an error message on stderr, but it's redirected
 # to /dev/null here.
-echo `pick -subject message.3 -and -from Test4 >$actual 2>/dev/null` >/dev/null
-cat >$expected <<EOF
+echo `pick -subject message.3 -and -from Test4 >"$actual" 2>/dev/null` \
+  >/dev/null
+cat >"$expected" <<EOF
 0
 EOF
-check $expected $actual
+check "$expected" "$actual"
 
 if test -w /dev/tty && printf '' >/dev/tty; then
   # Produce no standard output if no messages match and standard
@@ -136,56 +137,56 @@ run_test 'pick -to some -nolist' '11 hits'
 run_test 'pick -to user@example.com -nolist' '11 hits'
 
 # Test -after.
-pick -after '28 Sep 2008 00:00:00' >$actual 2>&1
-cat >$expected <<EOF
+pick -after '28 Sep 2008 00:00:00' >"$actual" 2>&1
+cat >"$expected" <<EOF
 11
 EOF
-check $expected $actual
+check "$expected" "$actual"
 
 # Invert exit status so execution doesn't terminate due to -e.
 set +e
-pick -after '29 Sep 2008 00:00:00' >$actual 2>/dev/null
+pick -after '29 Sep 2008 00:00:00' >"$actual" 2>/dev/null
 set -e
-cat >$expected <<EOF
+cat >"$expected" <<EOF
 0
 EOF
-check $expected $actual
+check "$expected" "$actual"
 
 # Test -before.  While -after doesn't include the specified date, -before does.
-pick -before '29 Sep 2008 00:00:01' last:3 >$actual 2>&1
-cat >$expected <<EOF
+pick -before '29 Sep 2008 00:00:01' last:3 >"$actual" 2>&1
+cat >"$expected" <<EOF
 9
 10
 11
 EOF
-check $expected $actual
-pick -before '28 Sep 2008 00:00:00:' last:3 >$actual 2>&1
-cat >$expected <<EOF
+check "$expected" "$actual"
+pick -before '28 Sep 2008 00:00:00:' last:3 >"$actual" 2>&1
+cat >"$expected" <<EOF
 9
 10
 EOF
-check $expected $actual
+check "$expected" "$actual"
 set +e
-pick -before '28 Sep 2006 00:00:00' last:3 >$actual 2>/dev/null
+pick -before '28 Sep 2006 00:00:00' last:3 >"$actual" 2>/dev/null
 set -e
-cat >$expected <<EOF
+cat >"$expected" <<EOF
 0
 EOF
-check $expected $actual
+check "$expected" "$actual"
 
 # Test -datefield.
 set +e
-pick -datefield date -after '29 Sep 2008 00:00:00' >$actual 2>/dev/null
+pick -datefield date -after '29 Sep 2008 00:00:00' >"$actual" 2>/dev/null
 set -e
-cat >$expected <<EOF
+cat >"$expected" <<EOF
 0
 EOF
-check $expected $actual
-pick -datefield delivery-date -after '29 Sep 2008 00:00:00' >$actual 2>&1
-cat >$expected <<EOF
+check "$expected" "$actual"
+pick -datefield delivery-date -after '29 Sep 2008 00:00:00' >"$actual" 2>&1
+cat >"$expected" <<EOF
 11
 EOF
-check $expected $actual
+check "$expected" "$actual"
 
 # Test sequence creation.
 run_test 'pick 2 4 6 8 10 -sequence even' '5 hits'
@@ -224,6 +225,24 @@ run_test 'mark -s odd -list' 'odd: 5 7 9 11'
 
 # Test -nolist.
 run_test 'pick all -nolist' '11 hits'
+
+# Test unfolding of multi-line header fields: it should only
+# remove embedded newlines.
+cat >"$MH_TEST_DIR/Mail/inbox/12" <<EOF
+From: Test12 <test12@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 12@test.nmh
+Subject: multi-line
+ header field
+
+This is message number 12
+EOF
+
+echo 12 >"$expected"
+
+pick -subject 'multi-line header field' 12 >"$actual" 2>&1
+check "$expected" "$actual"
 
 
 exit $failed

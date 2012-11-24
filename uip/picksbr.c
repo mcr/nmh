@@ -701,7 +701,8 @@ plist
 			break;
 		    }
 		    lf++;
-		    c = ' ';
+		    /* Unfold by skipping the newline. */
+		    c = 0;
 		}
 	    }
 	    if (c && p1 < &linebuf[LBSIZE - 1])

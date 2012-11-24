@@ -82,3 +82,5 @@ BUG FIXES
   be terminated with, or contain, a trailing semicolon [Bug #15604].
 - Fixed sendfiles(1) to always provide a From: address.  Also, updated
   its switches.
+- Fixed pick(1) to properly unfold multiple-line header fields by
+  removing newlines instead of replacing them with spaces [Bug #15215].
