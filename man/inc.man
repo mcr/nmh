@@ -25,6 +25,8 @@ inc \- incorporate new mail
 .IR columns ]
 .RB [ \-host
 .IR hostname ]
+.RB [ \-port
+.IR portname/number ]
 .RB [ \-user
 .IR username ]
 .RB [ \-pack
@@ -198,7 +200,10 @@ will query this POP service host for mail to incorporate.  If
 is set and
 .B \-host
 is specified as well, the commandline switch will override
-the environment variable.
+the environment variable.  The
+.B \-port
+switch specifies the port name or number used to connect to the POP
+server.  If unspecified the default is \*(lqpop3\*(rq.
 .PP
 The default is for
 .B inc

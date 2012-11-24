@@ -335,7 +335,7 @@ main (int argc, char **argv)
 		continue;
 
 	    case PORTSW:
-		if (!(host = *argp++) || *port == '-')
+		if (!(port = *argp++) || *port == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
 
