@@ -34,6 +34,7 @@ main(int argc, char *argv[])
 	struct addrinfo hints, *res;
 	int rc, l, conn, on, datamode;
 	FILE *f, *pid;
+	pid_t child;
 	fd_set readfd;
 	struct stat st;
 	struct timeval tv;
@@ -116,6 +117,32 @@ main(int argc, char *argv[])
 		fprintf(stderr, "Unable to listen on socket: %s\n",
 			strerror(errno));
 		exit(1);
+	}
+
+	/*
+	 * Now we fork() and print out the process ID of our child
+	 * for scripts to use.  Once we do that, then exit.
+	 */
+
+	child = fork();
+
+	switch (child) {
+	case -1:
+		fprintf(stderr, "Unable to fork child: %s\n", strerror(errno));
+		exit(1);
+		break;
+	case 0:
+		/*
+		 * Close stdin & stdout, otherwise people can
+		 * think we're still doing stuff.  For now leave stderr
+		 * open.
+		 */
+		fclose(stdin);
+		fclose(stdout);
+		break;
+	default:
+		printf("%ld\n", (long) child);
+		exit(0);
 	}
 
 	/*
@@ -202,6 +229,8 @@ main(int argc, char *argv[])
 		 */
 
 		if (strcmp(line, "QUIT") == 0) {
+			fclose(f);
+			f = NULL;
 			putsmtp(conn, "221 Later alligator!");
 			close(conn);
 			break;
@@ -213,7 +242,8 @@ main(int argc, char *argv[])
 		}
 	}
 
-	fclose(f);
+	if (f)
+		fclose(f);
 
 	exit(0);
 }

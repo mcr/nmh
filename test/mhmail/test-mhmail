@@ -21,35 +21,15 @@ fi
 # $4 contains the message body.
 test_mhmail ()
 {
-    "${MH_OBJ_DIR}/test/fakesmtp" "$actual" $localport &
-    pid="$!"
+    pid=`"${MH_OBJ_DIR}/test/fakesmtp" "$actual" $localport`
 
-    # The server doesn't always come up fast enough, so sleep and
-    # retry a few times if it fails...
-    status=1
-    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
-        if [ $3 = '|' ]; then
-          if printf '%s' "$4" | mhmail recipient@example.com $2 \
-             -server 127.0.0.1 -port $localport; then
-              status=0
-              break
-          fi
-        else
-          if mhmail recipient@example.com $2 -body "$4" \
-             -server 127.0.0.1 -port $localport; then
-              status=0
-              break
-          fi
-        fi
-        sleep 2
-    done
-    if [ $status -ne 0 ]; then
-      printf '%s: mhmail failed, was fakesmtp given enough time to start?\n' \
-             "$0" >&2
-      exit 1
+    if [ $3 = '|' ]; then
+	printf '%s' "$4" | mhmail recipient@example.com $2 \
+			-server 127.0.0.1 -port $localport
+    else
+	mhmail recipient@example.com $2 -body "$4" \
+             -server 127.0.0.1 -port $localport
     fi
-
-    wait ${pid}
 
     #
     # It's hard to calculate the exact Date: header post is going to
