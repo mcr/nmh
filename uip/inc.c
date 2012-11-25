@@ -89,9 +89,11 @@ static struct swit switches[] = {
     { "snoop", -5 },
 #define SASLSW                    20
     { "sasl", SASLminc(-4) },
-#define SASLMECHSW                21
+#define NOSASLSW                  21
+    { "nosasl", SASLminc(-6) },
+#define SASLMECHSW                22
     { "saslmech", SASLminc(-8) },
-#define PROXYSW                   22
+#define PROXYSW                   23
     { "proxy command", 0 },
     { NULL, 0 }
 };
@@ -358,6 +360,9 @@ main (int argc, char **argv)
 	
 	    case SASLSW:
 		sasl++;
+		continue;
+	    case NOSASLSW:
+	    	sasl = 0;
 		continue;
 	
 	    case SASLMECHSW:

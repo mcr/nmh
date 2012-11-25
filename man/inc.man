@@ -34,7 +34,7 @@ inc \- incorporate new mail
 .RB [ \-nopack ]
 .RB [ \-proxy
 .IR command ]
-.RB [ \-sasl ]
+.RB [ \-sasl " | " \-nosasl ]
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-snoop ]
@@ -320,6 +320,7 @@ switch.
 .RB ` \-changecur '
 .RB ` \-format "' defaulted as described above"
 .RB ` \-nosilent '
+.RB ` \-nosasl '
 .RB ` \-truncate "' if `" \-file " name' not given, `" \-notruncate "' otherwise"
 .RB ` \-width "' defaulted to the width of the terminal"
 .RB ` \-nopack '
