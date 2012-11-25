@@ -244,5 +244,22 @@ echo 12 >"$expected"
 pick -subject 'multi-line header field' 12 >"$actual" 2>&1
 check "$expected" "$actual"
 
+# Test MIME-encoded header.
+cat >"$MH_TEST_DIR/Mail/inbox/13" <<EOF
+From: Test13 <test13@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 13@test.nmh
+Subject: =?us-ascii?q?=66=6f=6f?=
+ =?utf-8?q?=62=61=72?=
+
+This is message number 13, with MIME-encoded Subject "foobar".
+EOF
+
+echo 13 >"$expected"
+
+pick -subject foobar 13 >"$actual" 2>&1
+check "$expected" "$actual"
+
 
 exit $failed

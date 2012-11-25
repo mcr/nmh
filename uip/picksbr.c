@@ -78,6 +78,7 @@ static struct swit parswit[] = {
 
 
 static char linebuf[LBSIZE + 1];
+static char decoded_linebuf[LBSIZE + 1];
 
 /* the magic array for case-independence */
 static unsigned char cc[] = {
@@ -713,6 +714,13 @@ plist
 	cbp = p2;
 	p1 = linebuf;
 	p2 = n->n_expbuf;
+
+	/* Attempt to decode as a MIME header.	If it's the last header,
+	   body will be 1 and lf will be at least 1. */
+	if ((body == 0 || lf > 0)  &&
+	    decode_rfc2047 (linebuf, decoded_linebuf, sizeof decoded_linebuf)) {
+	    p1 = decoded_linebuf;
+	}
 
 	if (n->n_circf) {
 	    if (advance (p1, p2))
