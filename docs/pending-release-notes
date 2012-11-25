@@ -31,6 +31,7 @@ NEW FEATURES
   highlight/colorize the output of scan(1).
 - inc(1) now supports a -port switch to specify the port used by the
   POP server.
+- pick(1) now decodes MIME-encoded header fields before searching.
 
 
 ----------------------------
