@@ -97,6 +97,7 @@ a.out.dSYM/
 /uip/whom
 /uip/*.exe
 /test/fakesmtp
+/test/fakepop
 /test/getfullname
 /test/getfqdn
 

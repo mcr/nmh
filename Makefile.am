@@ -55,6 +55,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/forw/test-forw-digest test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/inc/test-inc-scanout test/inc/test-msgchk \
+	test/inc/test-pop \
 	test/install-mh/test-install-mh test/manpages/test-manpages \
 	test/mhbuild/test-forw test/mhbuild/test-utf8-body \
 	test/mhlist/test-mhlist test/mhmail/test-mhmail \
@@ -81,7 +82,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/cleanup ## The "cleanup" test should always be last.
 
 check_SCRIPTS = test/common.sh
-check_PROGRAMS = test/getfullname test/getfqdn test/fakesmtp
+check_PROGRAMS = test/getfullname test/getfqdn test/fakepop test/fakesmtp
 DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 
 ##
@@ -393,6 +394,9 @@ test_getfullname_LDADD = sbr/libmh.a
 
 test_getfqdn_SOURCES = test/getfqdn.c
 test_getfqdn_LDADD =
+
+test_fakepop_SOURCES = test/fakepop.c
+test_fakepop_LDADD =
 
 test_fakesmtp_SOURCES = test/fakesmtp.c
 test_fakesmtp_LDADD =

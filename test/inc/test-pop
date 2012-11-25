@@ -1,0 +1,62 @@
+#!/bin/sh
+######################################################
+#
+# Test POP support in inc
+# Only tests checking of local maildrop, does not
+# test checking of POP server.
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+#
+# Some extra stuff we need for POP support
+#
+
+TESTUSER=testuser
+TESTPASS=testuserpass
+testport=65413
+
+HOME="${MH_TEST_DIR}"; export HOME
+echo "default login ${TESTUSER} password ${TESTPASS}" > ${HOME}/.netrc
+chmod 600 ${HOME}/.netrc
+
+expected=$MH_TEST_DIR/$$.expected
+expected_err=$MH_TEST_DIR/$$.expected_err
+actual=$MH_TEST_DIR/$$.actual
+actual_err=$MH_TEST_DIR/$$.actual_err
+testmessage=$MH_TEST_DIR/testmessage
+
+cat > $testmessage <<EOM
+Received: From somewhere
+From: No Such User <nosuch@example.com>
+To: Some Other User <someother@example.com>
+Subject: Hello
+Date: Sun, 17 Dec 2006 12:13:14 -0500
+
+Hey man, how's it going?
+.
+Hope you're doing better.
+EOM
+
+pid=`"${MH_OBJ_DIR}/test/fakepop" "$testmessage" "$testport" \
+			"$TESTUSER" "$TESTPASS"`
+
+run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 80" \
+	"Incorporating new mail into inbox...
+
+  11+ 12/17 No Such User       Hello<<Hey man, how's it going? . Hope you're do"
+
+check `mhpath +inbox 11` $testmessage
+rm -f $testmessage
+
+exit ${failed:-0}
