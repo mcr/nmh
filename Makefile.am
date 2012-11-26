@@ -318,6 +318,7 @@ uip_new_SOURCES = uip/new.c
 uip_packf_SOURCES = uip/packf.c uip/dropsbr.c
 
 uip_pick_SOURCES = uip/pick.c uip/picksbr.c
+uip_pick_LDADD = $(LDADD) $(ICONVLIB)
 
 uip_prompter_SOURCES = uip/prompter.c
 
