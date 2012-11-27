@@ -127,7 +127,7 @@ static void copy_mime_draft (int);
 int
 main (int argc, char **argv)
 {
-    int msgp = 0, anot = 0, inplace = 1, mime = 0;
+    int anot = 0, inplace = 1, mime = 0;
     int issue = 0, volume = 0, dashstuff = 0;
     int nedit = 0, nwhat = 0, i, in;
     int out, isdf = 0, msgnum = 0;
@@ -138,8 +138,9 @@ main (int argc, char **argv)
     char *file = NULL, *filter = NULL, *folder = NULL, *fwdmsg = NULL;
     char *from = NULL, *to = NULL, *cc = NULL, *subject = NULL, *fcc = NULL;
     char *form = NULL, buf[BUFSIZ], value[10];
-    char **argp, **arguments, *msgs[MAXARGS];
+    char **argp, **arguments;
     struct stat st;
+    struct msgs_array msgs = { 0, 0, NULL };
 
     int buildsw = 0;
 
@@ -324,7 +325,7 @@ main (int argc, char **argv)
 	    else
 		folder = pluspath (cp);
 	} else {
-	    msgs[msgp++] = cp;
+	    app_msgarg(&msgs, cp);
 	}
     }
 
@@ -332,7 +333,7 @@ main (int argc, char **argv)
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
-    if (file && (msgp || folder))
+    if (file && (msgs.size || folder))
 	adios (NULL, "can't mix files and folders/msgs");
 
 try_it_again:
@@ -377,8 +378,8 @@ try_it_again:
 	/*
 	 * Forwarding a message.
 	 */
-	if (!msgp)
-	    msgs[msgp++] = "cur";
+	if (!msgs.size)
+	    app_msgarg(&msgs, "cur");
 	if (!folder)
 	    folder = getfolder (1);
 	maildir = m_maildir (folder);
@@ -395,9 +396,10 @@ try_it_again:
 	    adios (NULL, "no messages in %s", folder);
 
 	/* parse all the message ranges/sequences and set SELECTED */
-	for (msgnum = 0; msgnum < msgp; msgnum++)
-	    if (!m_convert (mp, msgs[msgnum]))
+	for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	    if (!m_convert (mp, msgs.msgs[msgnum]))
 		done (1);
+
 	seq_setprev (mp);	/* set the previous sequence */
 
 	/*
@@ -517,17 +519,18 @@ mhl_draft (int out, char *digest, int volume, int issue,
 {
     pid_t child_id;
     int i, msgnum, pd[2];
-    char *vec[MAXARGS];
     char buf1[BUFSIZ];
     char buf2[BUFSIZ];
-    
+    struct msgs_array vec = { 0, 0, NULL };
+
     if (pipe (pd) == NOTOK)
 	adios ("pipe", "unable to create");
 
-    vec[0] = r1bindex (mhlproc, '/');
+    app_msgarg(&vec, r1bindex (mhlproc, '/'));
 
     for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
 	sleep (5);
+
     switch (child_id) {
 	case NOTOK: 
 	    adios ("fork", "unable to");
@@ -538,19 +541,19 @@ mhl_draft (int out, char *digest, int volume, int issue,
 	    close (pd[1]);
 
 	    i = 1;
-	    vec[i++] = "-forwall";
-	    vec[i++] = "-form";
-	    vec[i++] = filter;
+	    app_msgarg(&vec, "-forwall");
+	    app_msgarg(&vec, "-form");
+	    app_msgarg(&vec, filter);
 
 	    if (digest) {
-		vec[i++] = "-digest";
-		vec[i++] = digest;
-		vec[i++] = "-issue";
+		app_msgarg(&vec, "-digest");
+		app_msgarg(&vec, digest);
+		app_msgarg(&vec, "-issue");
 		snprintf (buf1, sizeof(buf1), "%d", issue);
-		vec[i++] = buf1;
-		vec[i++] = "-volume";
+		app_msgarg(&vec, buf1);
+		app_msgarg(&vec, "-volume");
 		snprintf (buf2, sizeof(buf2), "%d", volume);
-		vec[i++] = buf2;
+		app_msgarg(&vec, buf2);
 	    }
 
 	    /*
@@ -559,34 +562,25 @@ mhl_draft (int out, char *digest, int volume, int issue,
 	     * unless the user has specified a specific flag.
 	     */
 	    if (dashstuff > 0)
-		vec[i++] = "-dashstuffing";
+		app_msgarg(&vec, "-dashstuffing");
 	    else if (dashstuff < 0)
-		vec[i++] = "-nodashstuffing";
+		app_msgarg(&vec, "-nodashstuffing");
 
-	    if (mp->numsel >= MAXARGS - i)
-		adios (NULL, "more than %d messages for %s exec",
-			MAXARGS - i, vec[0]);
-
-	    /*
-	     * Now add the message names to filter.  We can only
-	     * handle about 995 messages (because vec is fixed size),
-	     * but that should be plenty.
-	     */
-	    for (msgnum = mp->lowsel;
-                 msgnum <= mp->hghsel && i < (int) sizeof(vec) - 1;
-                 msgnum++)
+	    for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 		if (is_selected (mp, msgnum))
-		    vec[i++] = getcpy (m_name (msgnum));
-	    vec[i] = NULL;
+		    app_msgarg(&vec, getcpy (m_name (msgnum)));
+	    }
 
-	    execvp (mhlproc, vec);
+	    app_msgarg(&vec, NULL);
+
+	    execvp (mhlproc, vec.msgs);
 	    fprintf (stderr, "unable to exec ");
 	    perror (mhlproc);
 	    _exit (-1);
 
 	default: 
 	    close (pd[1]);
-	    cpydata (pd[0], out, vec[0], file);
+	    cpydata (pd[0], out, vec.msgs[0], file);
 	    close (pd[0]);
 	    pidXwait(child_id, mhlproc);
 	    break;
