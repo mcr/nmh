@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 static struct swit switches[] = {
 #define	INPLSW	0
@@ -56,9 +57,10 @@ int
 main (int argc, char **argv)
 {
     int inplace = 0, quietsw = 0, verbosw = 0;
-    int msgp = 0, hi, msgnum, numburst;
+    int hi, msgnum, numburst;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
-    char **argp, **arguments, *msgs[MAXARGS];
+    char **argp, **arguments;
+    struct msgs_array msgs = { 0, 0, NULL };
     struct smsg *smsgs;
     struct msgs *mp;
 
@@ -119,14 +121,14 @@ main (int argc, char **argv)
 	    else
 		folder = pluspath (cp);
 	} else {
-	    msgs[msgp++] = cp;
+	    app_msgarg(&msgs, cp);
 	}
     }
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
-    if (!msgp)
-	msgs[msgp++] = "cur";
+    if (!msgs.size)
+	app_msgarg(&msgs, "cur");
     if (!folder)
 	folder = getfolder (1);
     maildir = m_maildir (folder);
@@ -143,8 +145,8 @@ main (int argc, char **argv)
 	adios (NULL, "no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
-    for (msgnum = 0; msgnum < msgp; msgnum++)
-	if (!m_convert (mp, msgs[msgnum]))
+    for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	if (!m_convert (mp, msgs.msgs[msgnum]))
 	    done (1);
     seq_setprev (mp);	/* set the previous-sequence */
 
