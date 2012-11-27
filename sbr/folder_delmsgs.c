@@ -40,9 +40,6 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 	/* Mark that the sequence information has changed */
 	mp->msgflags |= SEQMOD;
 
-	if (mp->numsel > MAXARGS - 2)
-	    adios (NULL, "more than %d messages for %s exec", MAXARGS - 2,
-		   rmmproc);
 	vec = (char **) calloc ((size_t) (mp->numsel + 2), sizeof(*vec));
 	if (vec == NULL)
 	    adios (NULL, "unable to allocate exec vector");
