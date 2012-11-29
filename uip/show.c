@@ -330,23 +330,6 @@ go_to_it: ;
 	done (0);
     }
 
-    /*
-     * If you are not using a nmh command as your "proc", then
-     * add the path to the message names.  Currently, we are just
-     * checking for mhn here, since we've already taken care of mhl.
-     */
-    if (!strcmp (r1bindex (proc, '/'), "mhl")
-	    && !draftsw
-	    && !file
-	    && chdir (maildir = concat (m_maildir (""), "/", NULL)) != NOTOK) {
-	mp->foldpath = concat (mp->foldpath, "/", NULL);
-	cp = ssequal (maildir, mp->foldpath)
-	    ? mp->foldpath + strlen (maildir)
-	    : mp->foldpath;
-	for (msgnum = procp; msgnum < vec.size; msgnum++)
-	    vec.msgs[msgnum] = concat (cp, vec.msgs[msgnum], NULL);
-    }
-
     vec.msgs[0] = r1bindex (proc, '/');
     app_msgarg(&vec, NULL);
     execvp (proc, vec.msgs);
