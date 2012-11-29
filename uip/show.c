@@ -66,7 +66,7 @@ main (int argc, char **argv)
 {
     int draftsw = 0, headersw = 1;
     int nshow = 0, checkmime = 1, mime;
-    int procp = 1, isdf = 0, mode = SHOW, msgnum;
+    int isdf = 0, mode = SHOW, msgnum;
     char *cp, *maildir, *file = NULL, *folder = NULL, *proc;
     char buf[BUFSIZ], **argp, **arguments;
     struct msgs *mp = NULL;
@@ -191,7 +191,6 @@ usage:
 		app_msgarg(&msgs, cp);
 	}
     }
-    procp = vec.size;
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
