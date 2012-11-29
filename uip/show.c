@@ -64,18 +64,21 @@ static int is_nontext(char *);
 int
 main (int argc, char **argv)
 {
-    int draftsw = 0, headersw = 1, msgp = 0;
+    int draftsw = 0, headersw = 1;
     int nshow = 0, checkmime = 1, mime;
-    int vecp = 1, procp = 1, isdf = 0, mode = SHOW, msgnum;
+    int isdf = 0, mode = SHOW, msgnum;
     char *cp, *maildir, *file = NULL, *folder = NULL, *proc;
     char buf[BUFSIZ], **argp, **arguments;
-    char *msgs[MAXARGS], *vec[MAXARGS];
     struct msgs *mp = NULL;
+    struct msgs_array msgs = { 0, 0, NULL };
+    struct msgs_array vec = { 0, 0, NULL };
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
 #endif
     invo_name = r1bindex (argv[0], '/');
+
+    app_msgarg(&vec, NULL);  /* placeholder, filled later with proc name */
 
     /* read user profile/context */
     context_read();
@@ -97,7 +100,7 @@ main (int argc, char **argv)
 		case UNKWNSW: 
 		case NPROGSW:
 		case NFMTPROCSW:
-		    vec[vecp++] = --cp;
+		    app_msgarg(&vec, --cp);
 		    continue;
 
 		case HELPSW: 
@@ -138,20 +141,20 @@ usage:
 		    continue;
 
 		case FORMSW:
-		    vec[vecp++] = --cp;
+		    app_msgarg(&vec, --cp);
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    vec[vecp++] = getcpy (etcpath(cp));
+		    app_msgarg(&vec, getcpy (etcpath(cp)));
 		    continue;
 
 		case PROGSW:
 		case LENSW:
 		case WIDTHSW:
 		case FMTPROCSW:
-		    vec[vecp++] = --cp;
+		    app_msgarg(&vec, --cp);
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    vec[vecp++] = cp;
+		    app_msgarg(&vec, cp);
 		    continue;
 
 		case SHOWSW: 
@@ -185,41 +188,41 @@ usage:
 	    if (mode != SHOW)
 		goto usage;
 	    else
-		msgs[msgp++] = cp;
+		app_msgarg(&msgs, cp);
 	}
     }
-    procp = vecp;
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
 
     if (draftsw || file) {
-	if (msgp)
+	if (msgs.size)
 	    adios (NULL, "only one file at a time!");
-	vec[vecp++] = draftsw
-	    ? getcpy (m_draft (folder, msgp ? msgs[0] : NULL, 1, &isdf))
-	    : file;
+	if (draftsw)
+	    app_msgarg(&vec, getcpy (m_draft (folder, NULL, 1, &isdf)));
+	else
+	    app_msgarg(&vec, file);
 	goto go_to_it;
     }
 
 #ifdef WHATNOW
-    if (!msgp && !folder && mode == SHOW && (cp = getenv ("mhdraft")) && *cp) {
+    if (!msgs.size && !folder && mode == SHOW && (cp = getenv ("mhdraft")) && *cp) {
 	draftsw++;
-	vec[vecp++] = cp;
+	app_msgarg(&vec, cp);
 	goto go_to_it;
     }
 #endif /* WHATNOW */
 
-    if (!msgp) {
+    if (!msgs.size) {
 	switch (mode) {
 	    case NEXT:
-		msgs[msgp++] = "next";
+		app_msgarg(&msgs, "next");
 		break;
 	    case PREV:
-		msgs[msgp++] = "prev";
+		app_msgarg(&msgs, "prev");
 		break;
 	    default:
-		msgs[msgp++] = "cur";
+		app_msgarg(&msgs, "cur");
 		break;
 	}
     }
@@ -240,8 +243,8 @@ usage:
 	adios (NULL, "no messages in %s", folder);
 
     /* parse all the message ranges/sequences and set SELECTED */
-    for (msgnum = 0; msgnum < msgp; msgnum++)
-	if (!m_convert (mp, msgs[msgnum]))
+    for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	if (!m_convert (mp, msgs.msgs[msgnum]))
 	    done (1);
 
     /*
@@ -256,25 +259,20 @@ usage:
     seq_setprev (mp);		/* set the Previous-Sequence */
     seq_setunseen (mp, 1);	/* unset the Unseen-Sequence */
 
-    if (mp->numsel > MAXARGS - 2)
-	adios (NULL, "more than %d messages for show exec", MAXARGS - 2);
-
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)
 	if (is_selected(mp, msgnum))
-	    vec[vecp++] = getcpy (m_name (msgnum));
+	    app_msgarg(&vec, getcpy (m_name (msgnum)));
 
     seq_setcur (mp, mp->hghsel);	/* update current message  */
     seq_save (mp);			/* synchronize sequences   */
     context_replace (pfolder, folder);	/* update current folder   */
     context_save ();			/* save the context file   */
 
-    if (headersw && vecp == 2)
-	printf ("(Message %s:%s)\n", folder, vec[1]);
+    if (headersw && vec.size == 2)
+	printf ("(Message %s:%s)\n", folder, vec.msgs[1]);
 
 go_to_it: ;
     fflush (stdout);
-
-    vec[vecp] = NULL;
 
     /*
      * Decide which "proc" to use
@@ -294,7 +292,7 @@ go_to_it: ;
 		    }
 	    } else {
 		/* check the file or draft for MIME */
-		if (is_nontext (vec[vecp - 1]))
+		if (is_nontext (vec.msgs[vec.size - 1]))
 		    mime = 1;
 	    }
 	}
@@ -309,58 +307,31 @@ go_to_it: ;
     if (folder && !draftsw && !file)
 	m_putenv ("mhfolder", folder);
 
-    /*
-     * For backward compatibility, if the "proc" is mhn,
-     * then add "-show" option.  Add "-file" if showing
-     * file or draft.
-     */
     if (strcmp (r1bindex (proc, '/'), "mhn") == 0) {
+	/* Add "-file" if showing file or draft, */
 	if (draftsw || file) {
-	    vec[vecp] = vec[vecp - 1];
-	    vec[vecp - 1] = "-file";
-	    vecp++;
+	    app_msgarg(&vec, vec.msgs[vec.size - 1]);
+	    vec.msgs[vec.size - 2] = "-file";
 	}
-	vec[vecp++] = "-show";
-	vec[vecp] = NULL;
-    }
-
-    /* If the "proc" is "mhshow", add "-file" if showing file or draft.
-     */
-    if (strcmp (r1bindex (proc, '/'), "mhshow") == 0 && (draftsw || file) ) {
-       vec[vecp] = vec[vecp - 1];
-       vec[vecp - 1] = "-file";
-       vec[++vecp] = NULL;
-    }
-
-    /*
-     * If "proc" is mhl, then run it internally
-     * rather than exec'ing it.
-     */
-    if (strcmp (r1bindex (proc, '/'), "mhl") == 0) {
-	vec[0] = "mhl";
-	mhl (vecp, vec);
+	/* and add -show for backward compatibility */
+	app_msgarg(&vec, "-show");
+    } else if (strcmp (r1bindex (proc, '/'), "mhshow") == 0) {
+	/* If "mhshow", add "-file" if showing file or draft. */
+	if (draftsw || file) {
+	    app_msgarg(&vec, vec.msgs[vec.size - 1]);
+	    vec.msgs[vec.size - 2] = "-file";
+	}
+    } else if (strcmp (r1bindex (proc, '/'), "mhl") == 0) {
+	/* If "mhl", then run it internally */
+	vec.msgs[0] = "mhl";
+	app_msgarg(&vec, NULL);
+	mhl (vec.size, vec.msgs);
 	done (0);
     }
 
-    /*
-     * If you are not using a nmh command as your "proc", then
-     * add the path to the message names.  Currently, we are just
-     * checking for mhn here, since we've already taken care of mhl.
-     */
-    if (!strcmp (r1bindex (proc, '/'), "mhl")
-	    && !draftsw
-	    && !file
-	    && chdir (maildir = concat (m_maildir (""), "/", NULL)) != NOTOK) {
-	mp->foldpath = concat (mp->foldpath, "/", NULL);
-	cp = ssequal (maildir, mp->foldpath)
-	    ? mp->foldpath + strlen (maildir)
-	    : mp->foldpath;
-	for (msgnum = procp; msgnum < vecp; msgnum++)
-	    vec[msgnum] = concat (cp, vec[msgnum], NULL);
-    }
-
-    vec[0] = r1bindex (proc, '/');
-    execvp (proc, vec);
+    vec.msgs[0] = r1bindex (proc, '/');
+    app_msgarg(&vec, NULL);
+    execvp (proc, vec.msgs);
     adios (proc, "unable to exec");
     return 0;  /* dead code to satisfy the compiler */
 }
