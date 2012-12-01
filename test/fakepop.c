@@ -36,6 +36,8 @@
 				continue; \
 			}
 
+static void killpidfile(void);
+static void handleterm(int);
 static void putpop(int, char *);
 static void putpopbulk(int, char *);
 static int getpop(int, char *, ssize_t);
@@ -182,6 +184,9 @@ main(int argc, char *argv[])
 
 	fprintf(pid, "%ld\n", (long) getpid());
 	fclose(pid);
+
+	signal(SIGTERM, handleterm);
+	atexit(killpidfile);
 
 	FD_ZERO(&readfd);
 	FD_SET(l, &readfd);
@@ -411,4 +416,28 @@ readmessage(FILE *file)
 	strcat(buffer, ".\r\n");
 
 	return buffer;
+}
+
+/*
+ * Handle a SIGTERM
+ */
+
+static void
+handleterm(int signal)
+{
+	(void) signal;
+
+	killpidfile();
+	fflush(NULL);
+	_exit(1);
+}
+
+/*
+ * Get rid of our pid file
+ */
+
+static void
+killpidfile(void)
+{
+	unlink(PIDFILE);
 }
