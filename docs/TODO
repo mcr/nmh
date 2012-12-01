@@ -46,8 +46,7 @@ SEQUENCES
 
 ENVIRONMENT/PROFILE
 -------------------
-* Maybe add profile entry "Pager" to change the default pager?
-* Should nmh check for EDITOR or PAGER environment variable?
+* Should nmh check for EDITOR environment variable?
 
 OPTIONS
 -------
@@ -105,11 +104,6 @@ MHL
   an external filtering program.
 * fix internal pager for mhl?
 
-MHMAIL
-------
-* add -attach option (send could use this).  This should
-  be done by hooking in mhbuildsbr.c
-
 MHN/MHSHOW/MHLIST/MHSTORE
 -------------------------
 * add way so user can tell mhn to use internal method for
@@ -125,7 +119,6 @@ MHN/MHSHOW/MHLIST/MHSTORE
 
 MSH
 ---
-* change conditional includes in msh.c to use termios.h
 * Add -version to mshcmd.c for each command.
 * Change msh to use mbox style files, instead of mmdf.  Add options -mbox,
   -mmdf to choose.
