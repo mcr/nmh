@@ -1,4 +1,4 @@
-.TH NMH %manext7% "November 3, 2012" "%nmhversion%"
+.TH NMH %manext7% "November 30, 2012" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -149,6 +149,7 @@ Commands which take a message number as an argument
 \*(lqprev\*(rq, \*(lqcur\*(rq, \*(lqnext\*(rq, or \*(lqlast\*(rq to indicate
 (respectively) the first, previous, current, next, or last message in
 the current folder (assuming they are defined).
+As a shorthand, \*(lq\&.\*(rq is equivalent to \*(lqcur\*(rq.
 .PP
 Commands which take a range of message numbers
 .RB ( rmm ,
@@ -192,6 +193,38 @@ or
 .RI last: N
 The first, previous, next or last
 messages, if they exist.
+.PD
+.PP
+Commands which take a folder name
+.RB ( inc ,
+.BR refile ,
+.BR scan ,
+.BR sortm ,
+\&...) accept the folder name in two formats: \*(lq+folder\*(rq or
+\*(lq@folder\*(rq.  \*(lq+folder\*(rq specifies a folder underneath
+the Path defined in your profile; e.g., with the usual
+.RI \*(lq "Path: Mail" \*(rq,
+\*(lq+folder\*(rq tells nmh to use
+\*(lqMail/folder\*(rq.  \*(lq@folder\*(rq specifies a path
+relative to the current folder specified in your \*(lqcontext\*(rq
+file; e.g., with
+.RI \*(lq "Current-Folder: inbox" \*(rq,
+and the same profile, \*(lq@folder\*(rq tells nmh to use
+\*(lqMail/inbox/folder\*(rq.  If folder begins with \*(lq.\*(rq or
+\*(lq/\*(rq when using \*(lq+folder\*(rq, the folder is interpreted as
+a specific path to a directory on the filesystem rather than a
+relative folder location.
+For example,
+.TP \n(ttu
+.PD 0
+.BI "scan +" .
+scans the current directory
+.TP
+.BI "scan +" ../<dir>
+scans the named sibling directory
+.TP
+.BI "refile +" /tmp
+refiles into the /tmp directory
 .PD
 .PP
 There are many other possibilities such as creating multiple folders
