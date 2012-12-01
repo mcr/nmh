@@ -21,7 +21,8 @@ msh \- nmh shell (and BBoard reader)
 is an interactive program that implements a subset of the normal
 .B nmh
 commands operating on a single file in
-.BR packf 'd format.
+.BR packf 'd
+format.
 That is,
 .B msh
 is used to read a file that contains a number
