@@ -195,36 +195,50 @@ The first, previous, next or last
 messages, if they exist.
 .PD
 .PP
-Commands which take a folder name
+Commands that take a folder name
 .RB ( inc ,
 .BR refile ,
-.BR scan ,
-.BR sortm ,
-\&...) accept the folder name in two formats: \*(lq+folder\*(rq or
-\*(lq@folder\*(rq.  \*(lq+folder\*(rq specifies a folder underneath
-the Path defined in your profile; e.g., with the usual
-.RI \*(lq "Path: Mail" \*(rq,
-\*(lq+folder\*(rq tells nmh to use
-\*(lqMail/folder\*(rq.  \*(lq@folder\*(rq specifies a path
-relative to the current folder specified in your \*(lqcontext\*(rq
-file; e.g., with
-.RI \*(lq "Current-Folder: inbox" \*(rq,
-and the same profile, \*(lq@folder\*(rq tells nmh to use
-\*(lqMail/inbox/folder\*(rq.  If folder begins with \*(lq.\*(rq or
-\*(lq/\*(rq when using \*(lq+folder\*(rq, the folder is interpreted as
-a specific path to a directory on the filesystem rather than a
-relative folder location.
-For example,
+.BR scan, 
+\&...) accept the folder name in two formats:  \*(lq+folder\*(rq or
+\*(lq@folder\*(rq.  In both cases, \*(lqfolder\*(rq can be a
+\*(lq/\*(rq-separated path, e.g. \*(lqfoo/bar\*(rq.  \*(lq+folder\*(rq
+specifies a directory path to a folder.  If \*(lqfolder\*(rq starts
+with \*(lq/\*(rq then it's an absolute path from the root directory.
+If it is \*(lq.\*(rq or \*(lq..\*(rq, or starts with \*(lq./\*(rq or
+\*(lq../\*(rq, then it's relative to the current working directory.
+Otherwise it's relative to mh-profile(5)'s
+.RI \*(lq Path \*(rq,
+i.e. as given by
+.RB ` "mhpath +" `.
+\*(lq@folder\*(rq is a shorthand for \*(lq+curfolder/folder\*(rq; it's
+a relative path from the current folder.  \*(lqcurfolder\*(rq is given
+by
+.RB ` mhpath `.
+For example, assuming a
+.B Path
+profile component of Mail,
 .TP \n(ttu
 .PD 0
-.BI "scan +" .
+.BI "scan " +inbox
+scans $HOME/Mail/inbox
+.TP
+.BI "scan " +work/todo
+scans $HOME/Mail/work/todo
+.TP
+.BI "scan " @todo
+scans $HOME/Mail/work/todo, if current folder is +work
+.TP
+.BI "refile " @../done
+refiles to $HOME/Mail/work/done, if the current folder is +work/todo
+.TP
+.BI "scan " +/tmp
+scans /tmp
+.TP
+.BI "scan " +.
 scans the current directory
 .TP
-.BI "scan +" ../<dir>
-scans the named sibling directory
-.TP
-.BI "refile +" /tmp
-refiles into the /tmp directory
+.BI "refile " @.
+refiles current message to end of current folder.
 .PD
 .PP
 There are many other possibilities such as creating multiple folders
