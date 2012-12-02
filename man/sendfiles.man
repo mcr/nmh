@@ -30,13 +30,9 @@ sendfiles \- send multiple files via a MIME message
 .ad
 .SH DESCRIPTION
 The shell script
-.BR sendfiles ,
+.BR sendfiles
 is used to send a collection
 of files and directories via electronic mail.
-.PP
-.RS 5
-sendfiles -to recipient -subject \*(lqsubject\*(rq files\0...
-.RE
 .PP
 .B sendfiles
 will archive the files and directories you name
