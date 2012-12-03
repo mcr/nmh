@@ -1,0 +1,563 @@
+#!/usr/bin/perl -w
+use strict;
+use vars qw($cui $list $win $VERSION);
+
+#5.12 introduced a warning about prototypes that afflicts old Curses::UI
+#BEGIN{ if( $^V lt v5.12.0 ){eval "use Curses::UI"}else{ eval "no warnings 'illegalproto'; use Curses::UI" }  }
+
+use Curses::UI 0.9608;
+use Getopt::Long;
+
+$VERSION = 0.14;
+my %opts = configure();
+my $exit = sprintf("marked sequence %s in +%s\n",
+   ($opts{newsequence}||$opts{sequence}), $opts{'+'});
+$SIG{CONT} = sub{ $cui->leave_curses(); $cui->reset_curses() };
+
+$cui = new Curses::UI;
+$cui->add('status', 'Window', -y=>-1, -height=>1)->
+#, -htmltext=>1
+      add('explain', 'Label', -reverse=>1, -bold=>1, -text=>
+	  '    H)elp  I)nvert  V)iew  Q)uit  S)ave  '. #  </reverse>
+	  "+$opts{'+'} -seq $opts{sequence}".
+	  ($opts{cull}?' -cull':'').($opts{zero}?' -zero':'').
+	  ($opts{newsequence}?" -new $opts{newsequence}":''));
+
+$cui->set_binding(\&help, 'h');
+$cui->set_binding($SIG{CONT}, "\cL");
+$cui->set_binding(\&setSequence, 's');
+$cui->set_binding(sub{ kill "STOP", $$}, "\cZ");
+#XXX clear on sleep?
+
+my(@values, %labels, %indices);
+scan(\@values, \%labels, \%indices);
+
+$win = $cui->add('window', 'Window', -padbottom=>1);
+$list = $win->
+  add('mylistbox', 'Listbox', -multi=>1, -values=>\@values, -labels=>\%labels, -htmltext=>0);
+
+#XXX use -bindings and -routines as in Widget to clean up code?
+$list->set_binding(sub{ $exit=''; exit }, "\cC", 'q');
+$list->set_binding(\&invert=>'i');
+$list->set_binding(\&view, 'v', 'm');
+$list->set_binding(\&pgdn, "\cV", ' ' );
+$list->set_binding(\&pgup, "\eV", 'b');
+$list->set_selection(@indices{getSequence()}) unless $opts{zero};
+$list->focus();
+$cui->mainloop;
+
+
+##Heavy Lifting
+END{
+  $cui->leave_curses();
+  print "\n", $exit;
+  exit;
+}
+
+sub configure{
+  my %args = (_MBMHR=>(eval "use Mail::Box::MH::Resource 0.06", !$@),
+	      _NR   =>(eval "use Number::Range", !$@) );
+
+  {#Get default values
+    local $_;
+    my $nom = $0;
+    $nom =~ s%^.+/%%;
+    $_ = $args{_MBMHR} ? Mail::Box::MH::Resource->new()->get($nom) :
+	  `mhparam $nom`;
+    unshift(@ARGV, split) if defined;
+  }
+
+  Getopt::Long::Configure qw(auto_abbrev pass_through);
+  GetOptions (\%args, 'sequence=s', 'newsequence:s',
+	      'cull!', 'reverse!', 'zero!');
+  $args{'+'} = (grep {/^\+/} @ARGV)[0] || '';
+  $args{'+'} =~ s/^\+//;
+  unless( $args{sequence} ){
+    $args{sequence}='vpick';
+    $args{zero} = 1;
+  }
+
+  $args{newsequence} ||= 'vpick' if defined $args{newsequence};
+
+  if( $args{_MBMHR} ){
+    my $MHR = Mail::Box::MH::Resource->new();
+    $args{_Path} = $MHR->get('Path');
+    $args{_Path} = File::Spec->file_name_is_absolute($args{_Path}) ?
+                                                     $args{_Path} :
+		     File::Spec->catfile($ENV{HOME}, $args{_Path});
+    $MHR = Mail::Box::MH::Resource->new(File::Spec->catfile($args{_Path},
+							  'context'));
+    $args{'+'} ||= $MHR->get('Current-Folder');
+  }
+  else{
+    $args{zero} = 1; }
+  return %args;
+}
+
+sub help{
+  $cui->dialog(
+	       -title   =>'Navigation',
+	       -message =><<MESSAGE
+                        vpick v$VERSION
+
+  ^A <Home>             Top of list
+   b <PgUp>             Page up
+   k <Up>               Scroll up
+
+   l <Right> <Enter>    Mark message
+              y      1  Mark   & advance
+              n      0  Unmark & advance
+
+   j <Down>             Scroll down
+  ^V <PgDn>  <Space>    Page down
+  ^E <End>              Bottom of list
+
+   /                    Search forward
+   ?                    Search backward  
+\0
+MESSAGE
+	      );
+}
+
+sub invert{
+  my %count;
+  my @F = getSequence();
+  foreach($list->get(), @values){ $count{$_}++ }
+  foreach(keys %count){ delete($count{$_}) if $count{$_} > 1 }
+  $list->clear_selection();
+  $list->set_selection(@indices{%count});
+  $list->draw();
+}
+
+sub pgdn{
+  my $this = shift;
+  if ($this->{-ypos} >= $this->{-max_selected}) { 
+    $this->dobeep;
+    return $this;
+  }
+  {
+    use integer;
+    $this->{-ypos} = $this->canvasheight *
+      ( 2 + $this->{-ypos}/$this->canvasheight );
+  }
+  $this->run_event('-onselchange');
+  
+  #This is critical for to end up at the top of the screen,
+  #and why jumped two pages
+  $this->draw();
+  $this->{-ypos} -= $this->canvasheight;
+  
+  $this->run_event('-onselchange');
+  $this->schedule_draw(1);
+  return $this;
+}
+
+sub pgup{
+  my $this = shift;
+  if ($this->{-ypos} <= 0) {
+    $this->dobeep;
+    return $this;
+  }
+  $this->{-ypos} -= $this->canvasheight
+    +$this->{-ypos}%$this->canvasheight;
+  $this->run_event('-onselchange');
+  $this->schedule_draw(1);
+  return $this;
+}
+
+sub scan{
+  #Add back space for wide msg number, less the space used by the checkbox
+  #XXX #my $width = q'-width '. (qx'scan -format "%(width)" -noheader last'+6);
+  my $width = q'-width '. ($ENV{COLS} + 6);  
+  my $format= q`-format '%9(msg) %02(mon{date})/%02(mday{date})/%(void(year{date}))%02(modulo 100)%<{date}%> %<(mymbox{from})%<{to}To:%21(addr{to})%>%>%<(zero)%24(addr{from})%> %{subject}%<{body}<<%{body}>>%>'`;
+  my $args = "+$opts{'+'} " if $opts{_MBMHR};
+     $args.= $opts{reverse} ? '-reverse' : '-noreverse';
+
+     $args.= " $opts{sequence}" if $opts{cull};
+
+  my $i=0;
+  foreach( split/\n/, qx/scan -noheader $width $format $args/ ){
+    my (undef, $value, $label) = split(/\s+/, $_, 3);
+    push @{$_[0]}, $value;
+    $_[1]->{$value} = $label;
+    $_[2]->{$value} = $i++;
+  }
+
+}
+
+sub view{
+  my $view;
+  if( $view = $win->getobj('view') ){
+    $view->focus();
+  }
+  else{
+    $view = $win->add('view', 'TextViewer', -vscrollbar=>1, -wrapping=>1);
+    $view->set_binding(sub{ $list->focus(); $win->delete('view') },
+		       "\cC", 'q', 'v', 'm');
+#    $view->set_binding(sub{ $list->focus() }, "\cC", 'q', 'v', 'm');
+    $view->set_binding('cursor-pagedown'=>"\cV");
+    $view->set_binding('cursor-pageup'  =>"\eV", 'b');
+  }
+
+  my $path;
+  my $msg = $list->get_active_value();
+  if( $opts{_MBMHR} ){
+    $path = File::Spec->catfile($opts{_Path},$opts{'+'},$msg); }
+  else{
+    $path = qx(mhpath $msg); }
+  $view->text("Message: $msg\n". do{ local $/=undef; open(MSG, $path); <MSG>});
+  #XXX || Error
+  $view->focus();
+}
+
+sub getSequence{
+  my $MHR = Mail::Box::MH::Resource->new(
+              File::Spec->catfile($opts{_Path}, $opts{'+'}, '.mh_sequences') );
+  local $_ = $MHR->get($opts{sequence});
+  s/(?=\s)/,/g; s/-/\.\./g;
+  eval;
+}
+
+sub setSequence{
+  if( $opts{_NR} && $opts{_MBMHR} ){
+    my $seq = scalar Number::Range->new($list->get())->range();
+    $seq =~ s/\.\./-/g;
+    $seq =~ y/,/ /;
+    my $MHR = Mail::Box::MH::Resource->new(
+                File::Spec->catfile($opts{_Path},$opts{'+'},'.mh_sequences'));
+    $MHR->set($opts{newsequence}||$opts{sequence}=>$seq);
+    exit $MHR->close(); }
+  else{
+    exit system('mark', '-zero', '-seq', $opts{sequence}, $list->get())>>8;}
+}
+
+__END__
+=pod
+
+=head1 NAME
+
+vpick - visual pick, mark a message sequence by eye
+
+=head1 SYNOPSIS
+
+vpick [+folder] [B<-sequence> name] [B<-newsequence> [name]] [B<-cull>] [B<-zero>] [B<-reverse>] [B<sequence>]
+
+=begin html
+
+=head1 SCREENSHOT
+
+<img src="vpick.png" height=464 width=992>
+
+=head1 DOWNLOAD
+
+=over
+
+=item The script source.
+
+<a href="vpick">vpick</a>
+
+=item A binary for i686 Linux (Perl 5.8.0) for testing the software without ins\
+talling the L<dependencies|/REQUIREMENTS>.
+
+<a href="ftp://pthbb.org/pub/MH/vpick.gz">vpick.gz</a>
+
+=back
+
+=end html
+
+=head1 DESCRIPTION
+
+A nifty little tool for those dyed-in-the-wool MH users whom occasionally envy
+those pine/elm/mutt users. For those times when you'll know what you want when
+you see it and mark just won't cut it. vpick allows you to check boxes for
+individual messages to save them in a sequence.
+
+If you're lucky and your local curses library has mouse support you might even
+be the envy of your friends.
+
+=head2 INTERFACE
+
+=over
+
+=item * C<h>
+
+Online navigation help.
+
+=item * C<i>
+
+Invert the current message selections.
+
+=item * C<m>, C<v>
+
+Toggle a display of the highlighted message.
+
+=item * C<s>
+
+Save the sequence and exit.
+
+=item * C<q>
+
+Exit without saving changes to the sequence.
+
+=back
+
+=head3 Navigation
+
+=over
+
+=item * C<Right>, C<l>, C<Enter>
+
+Add the current message to the sequence.
+
+=item * C<1>, C<y>
+
+Add the current message to the sequence and advance to the next message.
+
+=item * C<0>, C<n>
+
+Remove the current message from the sequence and advance to the next message.
+
+=item * C<Down>, C<j>
+
+Advance to the next message.
+
+=item * C<Up>, C<k>
+
+Select previous message.
+
+=item * C<PageUp>, C<b>, C<M-v>
+
+Scroll up a page.
+
+=item * C<PageDown>, C<C-v>
+
+Scroll down a page.
+
+=item * C<Home>, C<C-a>
+
+Select the first message in the folder.
+
+=item * C<End>, C<C-e>
+
+Select the last message in the folder.
+
+=item * C</>
+
+Search message entries with a 'less'-like search system.
+A searchstring is entered and selection advances to the first match.
+After that the C<n> will search for the next occurance,
+and C<N> the previous.
+
+=item * C<?>
+
+The same as C</>, only it will search in the opposite direction.
+
+=back 
+
+=head1 OPTIONS
+
+Like MH commands, vpick options can be abbreviated to a shortest unique string,
+and any option that does not take an argument can be prefixed by I<no> to
+override earlier options.
+
+=over
+
+=item B<+folder>
+
+The name of the folder to edit a sequence for. Defaults to the current folder.
+
+=item B<-sequence> name
+
+The name of the sequence to edit. Defaults to I<vpick>.
+
+=item B<sequence>
+
+Only display the messages in the specified sequence.
+You probably want B<-cull> instead.
+
+=back
+
+=over
+
+=item B<-cull>, B<-nocull>
+
+Only display the messages currently in B<-sequence>. Shorthand for:
+
+ -seq foo foo
+
+=item B<-reverse>, B<-noreverse>
+
+View the folder in reverse order.
+
+=item B<-newsequence> name
+
+Save the altered message sequence as this new name, rather than clobber the
+existing sequence. The sequence name is otpional, and defaults to I<vpick>.
+
+This is useful for catching up on a backlog of unread messages like so:
+
+  -seq unseen -new -cull
+
+This preserves your I<unseen> sequence, so that when you C<rmm> the chaff
+in I<vpick>, I<unseen> contains only wheat.
+
+=item B<-zero>, B<-nozero>
+
+Zeroing loads an empty sequence, B<-nozero> flags existing messages from
+the sequence. Default is B<-nozero> unless B<-sequence> defaults to I<vpick>.
+See L</REQUIREMENTS>.
+
+=back
+
+=head1 REQUIREMENTS
+
+=over
+
+=item C<Curses::UI>
+
+To provide the nifty visual interface.
+
+=item C<scan>
+
+Required to summarize folder contents. But then you use MH, you knew that.
+
+=item C<mark> OR C<Mail::Box::MH::Resource> + C<Number::Range>
+
+Required to preserve sequences.
+The latter is preferred, without it some functionality will be disabled i.e;
+vpick will be forced to run as if -zero were given.
+
+Strictly speaking, you can also use vpick with MBMHR and not Number::Range.
+
+=back
+
+=head1 CAVEATS
+
+If using C<mark> instead of MBMHR and Number::Range with large sequences
+you may loose; blame the shell.
+
+You should not do anything to alter message ordering/numbering while vpick
+is running e.g; L<sortm(1)>, L<folder(1)> -pack Other operations are fine.
+
+=head1 RESTRICTIONS
+
+The scan format is embedded in the program, it doesn't seem worthwhile to
+abstract it to a user configurable setting.
+
+=head1 SEE ALSO
+
+L<mark(1)>, L<pick(1)>, L<scan(1)>
+
+=head1 AUTHOR
+
+Jerrad Pierce <jpierce@cpan.org>.
+
+=head1 LICENSE
+
+=over
+
+=item * Thou shalt not claim ownership of unmodified materials.
+
+=item * Thou shalt not claim whole ownership of modified materials.
+
+=item * Thou shalt grant the indemnity of the provider of materials.
+
+=item * Thou shalt use and dispense freely without other restrictions.
+
+=back
+
+=head1 CHANGES
+
+0.14
+
+=over
+
+=item Removed warning under modern perls
+
+5.12 introduced a warning about prototypes that Curses::UI has not yet fixed
+
+=back
+
+0.13
+
+=over
+
+=item Fix inclusion of year in scan format.
+
+=item Documentation clean-up.
+
+=item Check profile for default switches, using the name we're invoked as.
+
+=item Added display of B<-cull> and B<-newsequence> to the status line
+
+=item Fixed exit status message, which didn't account for B<-newsequence>.
+
+=item Removed closing reverse tag from status
+
+      Curses::UI implies support for that feature but it doesn't offer it yet :-/
+
+=back
+
+0.12
+
+=over
+
+=item Added -cull & -newsquence options
+
+=back
+
+0.11
+
+=over
+
+=item Fixed status bar, it always showed -zero
+
+=back
+
+0.10
+
+=over
+
+=item Fixed paging behavior, it only DWIMd if you were on the first item of a page.
+
+=back
+
+0.09
+
+=over
+
+=item Changed paging behavior to more closely Do What I Mean
+
+=back
+
+0.08
+
+=over
+
+=item Added support for ^Z
+
+=back
+
+0.07
+
+=over
+
+=item Added message viewing
+
+=back
+
+=head1 TODO
+
+=over
+
+=item shift for self or root to kill use vars
+
+=item switch scan from qx to pipe read to minimize delay?
+
+=item M-< / M-> for end/begin?
+
+=item Add back </reverse> to status once Curses::UI better supports htmltext
+
+=back
+
+=cut
