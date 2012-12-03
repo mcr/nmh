@@ -683,7 +683,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    *ed = defaulteditor;
     }
 
-    if (altmsg && atfile) {
+    if (altmsg) {
 	if (mp == NULL || *altmsg == '/' || cwd == NULL)
 	    strncpy (altpath, altmsg, sizeof(altpath));
 	else
@@ -693,17 +693,19 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	else
 	    snprintf (linkpath, sizeof(linkpath), "%s/%s", cwd, LINK);
 
-	unlink (linkpath);
+	if (atfile) {
+	    unlink (linkpath);
 #ifdef HAVE_LSTAT
-	if (link (altpath, linkpath) == NOTOK) {
-	    symlink (altpath, linkpath);
-	    slinked = 1;
-	} else {
-	    slinked = 0;
-	}
+	    if (link (altpath, linkpath) == NOTOK) {
+		symlink (altpath, linkpath);
+		slinked = 1;
+	    } else {
+		slinked = 0;
+	    }
 #else /* not HAVE_LSTAT */
-	link (altpath, linkpath);
+	    link (altpath, linkpath);
 #endif /* not HAVE_LSTAT */
+	}
     }
 
     context_save ();	/* save the context file */
