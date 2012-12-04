@@ -849,9 +849,13 @@ and
 .B repl
 during edit sessions so you can
 peruse the message being distributed or replied to.  The message is also
-available through a link called \*(lq@\*(rq in the current directory if
+available, when the
+.B \-atfile
+switch is used,
+through a link called \*(lq@\*(rq in the current directory if
 your current working directory and the folder the message lives in are
-on the same UNIX filesystem.
+on the same UNIX filesystem, and if your current working directory is
+writable.
 .RE
 .PP
 .B $mhdraft

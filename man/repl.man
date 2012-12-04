@@ -217,7 +217,9 @@ for a description of the
 .B \-editor
 and
 .B \-noedit
-switches.  Note that while in the editor, the message being replied
+switches.  Note that while in the editor, with
+.B \-atfile
+and if the current directory is writable, the message being replied
 to is available through a link named \*(lq@\*(rq (assuming the default
 .IR whatnowproc ).
 In addition, the actual pathname of the message is
@@ -226,8 +228,7 @@ stored in the environment variable
 and the pathname of
 the folder containing the message is stored in the environment variable
 .BR $mhfolder .
-The creation of the \*(lq@\*(rq file and associated environment variables
-can be controlled via the
+The creation of the \*(lq@\*(rq file is controlled via the
 .B \-atfile
 and
 .B \-noatfile
@@ -568,6 +569,3 @@ don't call it
 since
 .B repl
 won't run it.
-.PP
-If your current working directory is not writable, the link named
-\*(lq@\*(rq is not available.
