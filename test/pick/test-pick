@@ -261,5 +261,12 @@ echo 13 >"$expected"
 pick -subject foobar 13 >"$actual" 2>&1
 check "$expected" "$actual"
 
+# Test -nosequence.
+run_test 'pick +inbox 5 7 9 11 -sequence test -nosequence' '5
+7
+9
+11'
+run_test 'mark -list -sequence test' 'test: '
+
 
 exit $failed
