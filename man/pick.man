@@ -42,6 +42,7 @@ pick \- search for messages by content
 .RB [ \-sequence
 .I name
 \&...]
+.RB [ \-nosequence ]
 .RB [ \-public " | " \-nopublic ]
 .RB [ \-zero " | " \-nozero ]
 .RB [ \-list " | " \-nolist ] 
@@ -259,9 +260,14 @@ pick\0\-from\0frated\0\-seq\0fred
 defines a new message sequence for the current folder called
 \*(lqfred\*(rq which contains exactly those messages that were selected.
 .PP
+The
+.B \-nosequence
+switch will disable all previously named sequences, allowing
+those established by a profile component to be overridden.
+.PP
 By default,
 .B pick
-will zero the sequence before adding it.  This
+will zero a sequence before adding it.  This
 action can be disabled with the
 .B \-nozero
 switch, which means that the

@@ -45,21 +45,23 @@ static struct swit switches[] = {
     { "datefield field", 5 },
 #define	SEQSW                  15
     { "sequence name", 0 },
-#define	PUBLSW                 16
+#define	NSEQSW                 16
+    { "nosequence", 0 },
+#define	PUBLSW                 17
     { "public", 0 },
-#define	NPUBLSW                17
+#define	NPUBLSW                18
     { "nopublic", 0 },
-#define	ZEROSW                 18
+#define	ZEROSW                 19
     { "zero", 0 },
-#define	NZEROSW                19
+#define	NZEROSW                20
     { "nozero", 0 },
-#define	LISTSW                 20
+#define	LISTSW                 21
     { "list", 0 },
-#define	NLISTSW                21
+#define	NLISTSW                22
     { "nolist", 0 },
-#define VERSIONSW              22
+#define VERSIONSW              23
     { "version", 0 },
-#define	HELPSW                 23
+#define	HELPSW                 24
     { "help", 0 },
     { NULL, 0 }
 };
@@ -157,6 +159,9 @@ main (int argc, char **argv)
                   done (1);
 
 		seqs[seqp++] = cp;
+		continue;
+	    case NSEQSW:
+		seqp = 0;
 		continue;
 	    case PUBLSW: 
 		publicsw = 1;
