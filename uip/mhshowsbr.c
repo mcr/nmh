@@ -655,14 +655,11 @@ show_multi (CT ct, int serial, int alternate)
 	return show_multi_aux (ct, serial, alternate, cp);
 
     /*
-     * Use default method to display this multipart content
-     * if it is not a (nested) part of a multipart/alternative,
-     * or if it is one of the known subtypes of multipart.
+     * Use default method to display this multipart content.  Even
+     * unknown types are displayable, since they're treated as mixed
+     * per RFC 2046.
      */
-    if (!alternate || ct->c_subtype != MULTI_UNKNOWN)
-	return show_multi_internal (ct, serial, alternate);
-
-    return NOTOK;
+    return show_multi_internal (ct, serial, alternate);
 }
 
 
