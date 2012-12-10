@@ -120,8 +120,8 @@ BUILT_SOURCES = sbr/sigmsg.h
 ## the latter do not have $(EXEEXT) added on the end.
 ##
 bin_PROGRAMS = uip/ali uip/anno uip/burst uip/comp uip/dist uip/flist \
-	       uip/folder uip/forw uip/inc uip/install-mh uip/mark \
-	       uip/mhbuild uip/mhlist uip/mhn uip/mhparam \
+	       uip/fmttest uip/folder uip/forw uip/inc uip/install-mh \
+	       uip/mark uip/mhbuild uip/mhlist uip/mhn uip/mhparam \
 	       uip/mhpath uip/mhshow uip/mhstore uip/msgchk uip/msh uip/new \
 	       uip/packf uip/pick uip/prompter uip/refile uip/repl uip/rmf \
 	       uip/rmm uip/scan uip/send uip/show uip/sortm uip/whatnow \
@@ -362,6 +362,9 @@ uip_dp_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB)
 
 uip_fmtdump_SOURCES = uip/fmtdump.c
 uip_fmtdump_LDADD = $(LDADD) $(ICONVLIB)
+
+uip_fmttest_SOURCES = uip/fmttest.c uip/termsbr.c
+uip_fmttest_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB)
 
 uip_mhl_SOURCES = uip/mhl.c uip/mhlsbr.c uip/termsbr.c
 uip_mhl_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB)
