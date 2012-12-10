@@ -138,3 +138,49 @@ optional component.  Please try it out and give us feedback.
 --
 The nmh team
 nmh-workers@nongnu.org
+
+----------------------------------------------------------------------------
+
+#
+# NEWS - Release notes for nmh 1.4
+#
+
+This releases contains numerous bugfixes and a number of new features.
+The new features include:
+
+- SASL security layers (encryption) are now supported for the SMTP MTA.
+- TLS is now supported for the SMTP MTA.
+- inc can now incorporate mail from Maildir drops.
+- You can now select the SMTP server and port from either "send" or a
+  user's mh_profile (you could always select the server; that option is
+  now documented).  These are available via the -server and -port
+  switches.
+- All networking code has been modified to use the new networking APIs
+  (getaddrinfo and friends).  All networking code (with the exception of
+  the built-in ftp client) now supports IPv6.
+- New commands 'new', 'fnext', 'fprev', and 'unseen' for showing folders
+  with unseen mail (or mail in any specified sequence), changing to next
+  such folder, changing to previous such folder, and scanning all such
+  folders, respectively.  This is based on Luke Mewburn's 'new':
+  http://www.mewburn.net/luke/src/new
+- nmh will no longer attempt to install a mhn.defaults file that causes
+  mhshow to open its own xterms.
+
+A large chunk of old code has been garbage collected.  Specifically,
+support for APOP, RPOP, NNTP (including bboards) and MPOP is now gone.
+Also gone is support for prefixing a \01 in the "servers" entry in
+mts.conf to iterate over all servers on a named network.
+
+----------------------------------------------------------------------------
+
+#
+# NEWS - Release notes for nmh 1.3
+#
+
+It's been over two years since the 1.2 release; but the changes here are
+mostly minor; largely bugfixes.
+
+You should note that we have changed the default configuration to allow
+all supported forms of address masquerading. For more details please see
+the --enable-masquerade option to configure, and the mh-tailor and post
+man pages.
