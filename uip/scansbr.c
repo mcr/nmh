@@ -14,11 +14,6 @@
 #include <h/tws.h>
 #include <h/utils.h>
 
-#ifdef _FSTDIO
-# define _ptr _p                /* Gag    */
-# define _cnt _w                /* Wretch */
-#endif
-
 #define MAXSCANL 256		/* longest possible scan line */
 
 /*
@@ -65,7 +60,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
       int unseen, char *folder, long size, int noisy)
 {
     int i, compnum, encrypted, state;
-    unsigned char *cp, *tmpbuf;
+    unsigned char *cp, *tmpbuf, *startbody;
     char **nxtbuf;
     char *saved_c_text = NULL;
     struct comp *cptr;
@@ -93,7 +88,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	    umask(~m_gmprot());
 
 	/* Compile format string */
-	ncomps = fmt_compile (nfs, &fmt, 1) + 1;
+	ncomps = fmt_compile (nfs, &fmt, 1) + 2;
 
 	bodycomp = fmt_findcomp("body");
 	datecomp = fmt_findcomp("date");
@@ -158,6 +153,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
     nxtbuf = compbuffers;
     savecomp = used_buf;
     tmpbuf = *nxtbuf++;
+    startbody = NULL;
     dat[0] = innum ? innum : outnum;
     dat[1] = curflg;
     dat[4] = unseen;
@@ -236,48 +232,40 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		    state = m_getfld (state, name, tmpbuf + i,
 		    		      rlwidth - i, inb);
 		}
+
 		if (! outnum) {
 		    state = FILEEOF; /* stop now if scan cmd */
+		    if (bodycomp && startbody == NULL)
+		    	startbody = tmpbuf;
 		    goto finished;
 		}
 		if (putc ('\n', scnout) == EOF) DIEWRERR();
 		FPUTS (tmpbuf);
 		/*
-		 * performance hack: some people like to run "inc" on
-		 * things like net.sources or large digests.  We do a
-		 * copy directly into the output buffer rather than
-		 * going through an intermediate buffer.
+                 * The previous code here used to call m_getfld() using
+                 * pointers to the underlying output stdio buffers to
+                 * avoid the extra copy.  Tests by Markus Schnalke show
+                 * no noticable performance loss on larger mailboxes
+                 * if we incur an extra copy, and messing around with
+                 * internal stdio buffers is becoming more and more
+                 * unportable as times go on.  So from now on just deal
+                 * with the overhead of an extra copy.
 		 *
-		 * We need the amount of data m_getfld found & don't
-		 * want to do a strlen on the long buffer so there's
-		 * a hack in m_getfld to save the amount of data it
-		 * returned in the global "msg_count".
+		 * Subtle change - with the previous code tmpbuf wasn't
+		 * used, so we could reuse it for the {body} component.
+		 * Now since we're using tmpbuf as our read buffer we
+		 * need to save the beginning of the body for later.
+		 * See the above (and below) use of startbody.
 		 */
 body:;
+		if (bodycomp && startbody == NULL) {
+		    startbody = tmpbuf;
+		    tmpbuf = *nxtbuf++;
+		}
+
 		while (state == BODY) {
-#ifdef LINUX_STDIO
-		    if (scnout->_IO_write_ptr == scnout->_IO_write_end) {
-#elif defined(__DragonFly__)
-		    if (((struct __FILE_public *)scnout)->_w <= 0) {
-#else
-		    if (scnout->_cnt <= 0) {
-#endif
-			if (fflush(scnout) == EOF)
-			    DIEWRERR ();
-		    }
-#ifdef LINUX_STDIO
-		    state = m_getfld(state, name, scnout->_IO_write_ptr,
-			(long)scnout->_IO_write_ptr-(long)scnout->_IO_write_end , inb);
-		    scnout->_IO_write_ptr += msg_count;
-#elif defined(__DragonFly__)
-		    state = m_getfld( state, name, ((struct __FILE_public *)scnout)->_p, -(((struct __FILE_public *)scnout)->_w), inb );
-		    ((struct __FILE_public *)scnout)->_w -= msg_count;
-		    ((struct __FILE_public *)scnout)->_p += msg_count;
-#else
-		    state = m_getfld( state, name, scnout->_ptr, -(scnout->_cnt), inb );
-		    scnout->_cnt -= msg_count;
-		    scnout->_ptr += msg_count;
-#endif
+		    state = m_getfld(state, name, tmpbuf, rlwidth, inb);
+		    FPUTS(tmpbuf);
 		}
 		goto finished;
 
@@ -318,7 +306,7 @@ finished:
     /* Save and restore buffer so we don't trash our dynamic pool! */
     if (bodycomp) {
 	saved_c_text = bodycomp->c_text;
-	bodycomp->c_text = tmpbuf;
+	bodycomp->c_text = startbody;
     }
 
     if (size)
