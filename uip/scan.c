@@ -184,11 +184,9 @@ main (int argc, char **argv)
 		adios (file, "unable to open");
 	}
 
-#ifndef	JLR
 	if (hdrflag) {
 	    printf ("FOLDER %s\t%s\n", file, dtimenow (1));
 	}
-#endif /* JLR */
 
 	m_unknown (in);
 	for (msgnum = 1; ; ++msgnum) {
@@ -265,11 +263,9 @@ main (int argc, char **argv)
 		continue;
 	    }
 
-#ifndef JLR
 	    if (hdrflag) {
 		printf ("FOLDER %s\t%s\n", folder, dtimenow(1));
 	    }
-#endif /* JLR */
 
 	    /*
 	     * Check if message is in any sequence given

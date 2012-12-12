@@ -994,7 +994,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	}
 	fmt++;
     }
-#ifndef JLR
+
     /* Emit any trailing sequences of zero display length. */
     while (fmt->f_type != FT_DONE) {
 	if (fmt->f_type == FT_LS_LIT) {
@@ -1021,15 +1021,4 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
     }
     *cp = '\0';
     return ((struct format *)0);
-#else /* JLR */
-    if (cp[-1] != '\n')
-	*cp++ = '\n';
-    while (fmt->f_type != FT_DONE)
-	fmt++;
-
-    finished:;
-    *cp = '\0';
-    return (fmt->f_value ? ++fmt : (struct format *) 0);
-
-#endif /* JLR */
 }
