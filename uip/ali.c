@@ -249,12 +249,7 @@ print_usr (char *s, int list, int norm)
     }
     mnfree (mp);
 
-#if 0
-    printf ("%s: ", s);
-    print_aka (vp ? vp : s, list, pos += strlen (s) + 1);
-#else
     print_aka (vp ? vp : s, list, 0);
-#endif
 
     if (vp)
 	free (vp);

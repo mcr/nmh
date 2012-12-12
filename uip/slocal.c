@@ -1044,18 +1044,6 @@ usr_folder (int fd, char *string)
     /* use rcvstore to put message in folder */
     status = usr_pipe (fd, "rcvstore", rcvstoreproc, vec, 1);
 
-#if 0
-    /*
-     * Currently, verbose status messages are handled by usr_pipe().
-     */
-    if (verbose) {
-	if (status == 0)
-	    verbose_printf (", success.\n");
-	else
-	    verbose_printf (", failed.\n");
-    }
-#endif
-
     return status;
 }
 
@@ -1276,13 +1264,6 @@ you_lose:
 	    if (!strncmp (buffer, "From ", i)) {
 		/* get copy of envelope information ("From " line) */
 		envelope = getcpy (buffer);
-
-#if 0
-		/* First go ahead and put "From " line in message */
-		fputs (buffer, ffp);
-		if (ferror (ffp))
-		    goto fputs_error;
-#endif
 
 		/* Put the delivery date in message */
 		fputs (ddate, ffp);

@@ -1069,11 +1069,6 @@ show_external (CT ct, int serial, int alternate)
 	return OK;
 
     return show_switch (p, serial, alternate);
-
-#if 0
-    content_error (NULL, p, "don't know how to display content");
-    return NOTOK;
-#endif
 }
 
 

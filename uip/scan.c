@@ -261,14 +261,7 @@ main (int argc, char **argv)
 	 msgnum += (revflag ? -1 : 1)) {
 	if (is_selected(mp, msgnum)) {
 	    if ((in = fopen (cp = m_name (msgnum), "r")) == NULL) {
-#if 0
-		if (errno != EACCES)
-#endif
 		    admonish (cp, "unable to open message");
-#if 0
-		else
-		    printf ("%*d  unreadable\n", DMAXFOLDER, msgnum);
-#endif
 		continue;
 	    }
 
@@ -302,11 +295,7 @@ main (int argc, char **argv)
 		    adios (NULL, "scan() botch (%d)", state);
 
 		case SCNEOF: 
-#if 0
-		    printf ("%*d  empty\n", DMAXFOLDER, msgnum);
-#else
 		    advise (NULL, "message %d: empty", msgnum);
-#endif
 		    break;
 	    }
 	    hdrflag = 0;

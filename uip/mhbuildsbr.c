@@ -1549,11 +1549,6 @@ skip_headers:
     switch (ct->c_encoding) {
     case CE_7BIT:
 	/* Nothing to output */
-#if 0
-	np = add (ENCODING_FIELD, NULL);
-	vp = concat (" ", "7bit", "\n", NULL);
-	add_header (ct, np, vp);
-#endif
 	break;
 
     case CE_8BIT:

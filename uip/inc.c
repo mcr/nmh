@@ -734,19 +734,6 @@ go_to_it:
 		break;
 	    }
 
-#if 0
-	    /* copy file from spool to tmp file */
-	    tmpfilenam = m_scratch ("", invo_name);
-	    if ((fd = creat (tmpfilenam, m_gmprot ())) == NOTOK)
-		adios (tmpfilenam, "unable to create");
-	    chmod (tmpfilenam, m_gmprot ());
-	    if (!(in2 = fdopen (fd, "r+")))
-		adios (tmpfilenam, "unable to access");
-	    cpymsg (in, in2);
-
-	    /* link message into folder */
-	    newmsg = folder_addmsg(mp, tmpfilenam);
-#endif
 	    /* create scanline for new message */
 	    switch (incerr = scan (in, msgnum + 1, msgnum + 1, nfs, width,
 			      msgnum == hghnum && chgflag, 1, NULL, 0L, noisy)) {
@@ -973,39 +960,6 @@ go_to_it:
     done (0);
     return 1;
 }
-
-
-#if 0
-
-/*
- * Copy message message from spool into
- * temporary file.  Massage the "From " line
- * while copying.
- */
-
-cpymsg (FILE *in, FILE *out)
-{
-    int state;
-    char *tmpbuf, name[NAMESZ];
-
-    for (;;) {
-	state = m_getfld (state, name, tmpbuf, rlwidth, in);
-	switch (state) {
-	case FLD:
-	case FLDPLUS:
-	    break;
-	case BODY:
-	    break;
-	case LENERR:
-	case FMTERR:
-	    break;
-	case FILEEOF:
-	    break;
-	default:
-	}
-    }
-}
-#endif /* if 0 */
 
 
 static void
