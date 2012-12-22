@@ -212,26 +212,21 @@ Subsequent calls provide the state returned by the previous call.
 Along the way, I thought of these possible interface changes that we
 might want to consider before rototilling the internals:
 
-1) To improve interface documentation:
-   Change type of name argument from unsigned char * to unsigned char[NAMESZ].
-   This would also be a step toward allowing the compiler to check for array
-   size consistency.
-
-2) To remove globals that don't need to be:
+1) To remove globals that don't need to be:
    Change msg_style and msg_delim to be file static.
 
-3) To remove a global:
+2) To remove a global:
    Change bufsz to be in-out instead of in, and therefore int * instead of
    int, and use that instead of global msg_count.  There are only 3 call
    sites that use msg_count so it wouldn't take much effort to remove use of
    it.  Of course, all call sites would have to change to provide an int *
    instead of an int.  Some now pass constants.
 
-4) To remove the state argument from the signature:
+3) To remove the state argument from the signature:
    Given the Current usage and Restriction above, the state variable could
    be removed from the signature and just retained internally.
 
-5) To remove the Restriction above:
+4) To remove the Restriction above:
    One approach would be for m_getfld() to retain multiple copies of that
    state, one per iob that it sees.  Another approach would be for the
    caller to store it in an opaque struct, the address of which is passed
@@ -304,7 +299,7 @@ extern int  _filbuf(FILE*);
 
 
 int
-m_getfld (int state, unsigned char *name, unsigned char *buf,
+m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
           int bufsz, FILE *iob)
 {
     register unsigned char  *bp, *cp, *ep, *sp;
