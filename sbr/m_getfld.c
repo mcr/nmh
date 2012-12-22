@@ -134,6 +134,109 @@
    there is data in "name" or "buf").
   */
 
+/*
+Purpose
+=======
+Reads an Internet message (RFC 5322), or one or more messages stored in a
+maildrop in mbox (RFC 4155) or MMDF format, from a file stream.  Each call
+to m_getfld() reads one header field, or a portion of the body, in sequence.
+
+Inputs
+======
+state:  message parse state
+bufsz:  maximum number of characters to load into buf
+iob:  input file stream
+
+Outputs
+=======
+name:  header field name (array of size NAMESZ=999)
+buf:  either a header field body or message body
+(return value):  message parse state on return from function
+(global) int msg_count:  number of characters loaded into buf
+
+Functions (part of Inputs, really)
+=========
+void m_unknown(FILE *iob):  Determines the message delimiter string for the
+  maildrop.  Called by inc, scan, and msh when reading from a maildrop file.
+
+void m_eomsbr (int (*action)(int)):  Sets the hook to check for end of
+  message in a maildrop.  Called only by msh.
+
+Those functions save state in the State variables listed below.
+
+Definitions
+===========
+state is one of:
+  FLD      // Field returned
+  FLDPLUS  // Field returned with more to come
+  FLDEOF   // Field returned ending at eom
+  BODY     // Body  returned with more to come
+  BODYEOF  // Body  returned ending at eom
+  FILEEOF  // Reached end of input file
+  FMTERR   // Message Format error
+  LENERR   // Name too long error from getfld
+
+msg_style is maildrop style, one of:
+  MS_UNKNOWN // type not known yet
+  MS_DEFAULT // default (one msg per file)
+  MS_MBOX    // Unix-style "from" lines
+  MS_MMDF    // string mmdlm2
+  MS_MSH     // whacko msh
+
+State variables (part of Outputs)
+===============
+m_getfld() retains state internally between calls in some state variables.
+
+These two variables are global, but only used internally by m_getfld.c:
+int msg_style
+char *msg_delim
+
+These are used for the end-of-message matcher when reading maildrops:
+static unsigned char **pat_map
+static unsigned char *fdelim
+static unsigned char *delimend
+static int fdelimlen
+static unsigned char *edelim
+static int edelimlen
+
+Restriction
+===========
+m_getfld() is restricted to operate on one file stream at a time because of
+the retained state (see "State variables" above).
+
+Current usage
+=============
+The first call to m_getfld() on a file stream is with a state of FLD.
+Subsequent calls provide the state returned by the previous call.
+
+Along the way, I thought of these possible interface changes that we
+might want to consider before rototilling the internals:
+
+1) To improve interface documentation:
+   Change type of name argument from unsigned char * to unsigned char[NAMESZ].
+   This would also be a step toward allowing the compiler to check for array
+   size consistency.
+
+2) To remove globals that don't need to be:
+   Change msg_style and msg_delim to be file static.
+
+3) To remove a global:
+   Change bufsz to be in-out instead of in, and therefore int * instead of
+   int, and use that instead of global msg_count.  There are only 3 call
+   sites that use msg_count so it wouldn't take much effort to remove use of
+   it.  Of course, all call sites would have to change to provide an int *
+   instead of an int.  Some now pass constants.
+
+4) To remove the state argument from the signature:
+   Given the Current usage and Restriction above, the state variable could
+   be removed from the signature and just retained internally.
+
+5) To remove the Restriction above:
+   One approach would be for m_getfld() to retain multiple copies of that
+   state, one per iob that it sees.  Another approach would be for the
+   caller to store it in an opaque struct, the address of which is passed
+   through the interface.
+*/
 
 /*
  * static prototypes
