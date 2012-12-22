@@ -1015,14 +1015,16 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
     }
 
     for (state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), fp)) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
 	    case FLD: 
 	    case FLDPLUS: 
 	        bucket = fmt_addcomptext(name, buf);
 		for (ip = ignores; *ip; ip++)
 		    if (!mh_strcasecmp (name, *ip)) {
 			while (state == FLDPLUS) {
-			    state = m_getfld (state, name, buf, sizeof(buf), fp);
+			    bufsz = sizeof buf;
+			    state = m_getfld (state, name, buf, &bufsz, fp);
 			    fmt_appendcomp(bucket, name, buf);
 			}
 			break;
@@ -1044,7 +1046,8 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		if (c1 == NULL)
 		    c1 = add_queue (&msghd, &msgtl, name, buf, 0);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof(buf), fp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, name, buf, &bufsz, fp);
 		    c1->c_text = add (buf, c1->c_text);
 		    fmt_appendcomp(bucket, name, buf);
 		}
@@ -1083,8 +1086,9 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			    strncpy (holder.c_text, buf, sizeof(buf));
 			    while (state == BODY) {
 				putcomp (c1, &holder, BODYCOMP);
+				bufsz = sizeof buf;
 				state = m_getfld (state, name, holder.c_text,
-					    sizeof(buf), fp);
+					    &bufsz, fp);
 			    }
 			    free (holder.c_text);
 			    holder.c_text = NULL;
@@ -1838,8 +1842,9 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp)
 	 */
 
 	while (state == BODY) {
+	    int bufsz2 = bufsz;
 	    write(fdinput[1], buf, strlen(buf));
-	    state = m_getfld(state, name, buf, bufsz, fp);
+	    state = m_getfld(state, name, buf, &bufsz2, fp);
 	}
 
 	/*

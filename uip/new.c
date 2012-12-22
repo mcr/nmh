@@ -105,15 +105,16 @@ get_msgnums(char *folder, char *sequences[])
 
     /* copied from seq_read.c:seq_public */
     for (state = FLD;;) {
-        switch (state = m_getfld (state, name, field, sizeof(field), fp)) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (state, name, field, &fieldsz, fp)) {
             case FLD:
             case FLDPLUS:
             case FLDEOF:
                 if (state == FLDPLUS) {
                     cp = getcpy (field);
                     while (state == FLDPLUS) {
-                        state = m_getfld (state, name, field,
-                                          sizeof(field), fp);
+			fieldsz = sizeof field;
+			state = m_getfld (state, name, field, &fieldsz, fp);
                         cp = add (field, cp);
                     }
 

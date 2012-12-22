@@ -151,8 +151,8 @@ Outputs
 =======
 name:  header field name (array of size NAMESZ=999)
 buf:  either a header field body or message body
+bufsz:  number of characters loaded into buf
 (return value):  message parse state on return from function
-(global) int msg_count:  number of characters loaded into buf
 
 Functions (part of Inputs, really)
 =========
@@ -212,18 +212,11 @@ Subsequent calls provide the state returned by the previous call.
 Along the way, I thought of these possible interface changes that we
 might want to consider before rototilling the internals:
 
-1) To remove a global:
-   Change bufsz to be in-out instead of in, and therefore int * instead of
-   int, and use that instead of global msg_count.  There are only 3 call
-   sites that use msg_count so it wouldn't take much effort to remove use of
-   it.  Of course, all call sites would have to change to provide an int *
-   instead of an int.  Some now pass constants.
-
-2) To remove the state argument from the signature:
+1) To remove the state argument from the signature:
    Given the Current usage and Restriction above, the state variable could
    be removed from the signature and just retained internally.
 
-3) To remove the Restriction above:
+2) To remove the Restriction above:
    One approach would be for m_getfld() to retain multiple copies of that
    state, one per iob that it sees.  Another approach would be for the
    caller to store it in an opaque struct, the address of which is passed
@@ -243,14 +236,6 @@ static unsigned char *locc(int, unsigned char *, unsigned char);
 			  (eom_action && (*eom_action)(c))))
 
 static unsigned char **pat_map;
-
-/*
- * defined in sbr/m_msgdef.c = 0
- * This is a disgusting hack for "inc" so it can know how many
- * characters were stuffed in the buffer on the last call
- * (see comments in uip/scansbr.c).
- */
-extern int msg_count;
 
 static int msg_style = MS_DEFAULT;
 
@@ -294,13 +279,13 @@ extern int  _filbuf(FILE*);
 
 int
 m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
-          int bufsz, FILE *iob)
+          int *bufsz, FILE *iob)
 {
     register unsigned char  *bp, *cp, *ep, *sp;
     register int cnt, c, i, j;
 
     if ((c = Getc(iob)) < 0) {
-	msg_count = 0;
+	*bufsz = 0;
 	*buf = 0;
 	return FILEEOF;
     }
@@ -312,7 +297,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    if (c >= 0)
 		ungetc(c, iob);
 	}
-	msg_count = 0;
+	*bufsz = 0;
 	*buf = 0;
 	return FILEEOF;
     }
@@ -334,7 +319,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 			if (c >= 0)
 			    ungetc(c, iob);
 		    }
-		    msg_count = 0;
+		    *bufsz = 0;
 		    *buf = 0;
 		    return FILEEOF;
 		}
@@ -411,7 +396,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    /* See if buf can hold this line, since we were assuming
 		     * we had a buffer of NAMESZ, not bufsz. */
 		    /* + 1 for the newline */
-		    if (bufsz < j + 1) {
+		    if (*bufsz < j + 1) {
 			/* No, it can't.  Oh well, guess we'll blow up. */
 			*cp = *buf = 0;
 			advise (NULL, "eol encountered in field \"%s\"", name);
@@ -450,7 +435,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	     * characters up to the end of this field (newline
 	     * followed by non-blank) or bufsz-1 characters.
 	     */
-	    cp = buf; i = bufsz-1;
+	    cp = buf; i = *bufsz-1;
 	    for (;;) {
 #ifdef LINUX_STDIO
 		cnt = (long) iob->_IO_read_end - (long) iob->_IO_read_ptr;
@@ -565,7 +550,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	     * we assume that we were called to copy directly into
 	     * the output buffer and we don't add an eos.
 	     */
-	    i = (bufsz < 0) ? -bufsz : bufsz-1;
+	    i = (*bufsz < 0) ? -*bufsz : *bufsz-1;
 #ifdef LINUX_STDIO
 	    bp = (unsigned char *) --iob->_IO_read_ptr;
 	    cnt = (long) iob->_IO_read_end - (long) iob->_IO_read_ptr;
@@ -654,8 +639,8 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    iob->_cnt -= c;
 	    iob->_ptr += c;
 #endif
-	    if (bufsz < 0) {
-		msg_count = c;
+	    if (*bufsz < 0) {
+		*bufsz = c;
 		return (state);
 	    }
 	    cp = buf + c;
@@ -666,7 +651,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
     }
 finish:
     *cp = 0;
-    msg_count = cp - buf;
+    *bufsz = cp - buf;
     return (state);
 }
 

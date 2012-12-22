@@ -1005,15 +1005,17 @@ readid (int msgnum)
 	return Msgs[msgnum].m_bboard_id;
 
     zp = msh_ready (msgnum, 0);
-    for (state = FLD;;)
-	switch (state = m_getfld (state, name, buf, sizeof(buf), zp)) {
+    for (state = FLD;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (state, name, buf, &bufsz, zp)) {
 	    case FLD: 
 	    case FLDEOF: 
 	    case FLDPLUS: 
 		if (!mh_strcasecmp (name, BBoard_ID)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buf, sizeof(buf), zp);
+			bufsz = sizeof buf;
+			state = m_getfld (state, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    i = atoi (bp);
@@ -1024,13 +1026,15 @@ readid (int msgnum)
 			continue;
 		}
 		while (state == FLDPLUS)
-		    state = m_getfld (state, name, buf, sizeof(buf), zp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, name, buf, &bufsz, zp);
 		if (state != FLDEOF)
 		    continue;
 
 	    default: 
 		return 0;
 	}
+    }
 }
 
 

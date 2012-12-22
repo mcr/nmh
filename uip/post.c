@@ -579,14 +579,16 @@ main (int argc, char **argv)
     hdrtab = msgstate == NORMAL ? NHeaders : RHeaders;
 
     for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), in)) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (state, name, buf, &bufsz, in)) {
 	    case FLD: 
 	    case FLDEOF: 
 	    case FLDPLUS: 
 		compnum++;
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, name, buf, &bufsz, in);
 		    cp = add (buf, cp);
 		}
 		putfmt (name, cp, out);
@@ -603,7 +605,8 @@ main (int argc, char **argv)
 		    break;
 		fprintf (out, "\n%s", buf);
 		while (state == BODY) {
-		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, name, buf, &bufsz, in);
 		    fputs (buf, out);
 		}
 		break;

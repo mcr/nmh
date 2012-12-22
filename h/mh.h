@@ -251,8 +251,6 @@ struct msgs {
 #define	MS_MMDF		3	/* string mmdlm2              */
 #define	MS_MSH		4	/* whacko msh                 */
 
-extern int msg_count;		/* m_getfld() indicators */
-
 #define	NOUSE	0		/* draft being re-used */
 
 #define TFOLDER 0		/* path() given a +folder */

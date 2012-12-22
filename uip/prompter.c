@@ -209,7 +209,8 @@ main (int argc, char **argv)
      * Loop through the lines of the draft skeleton.
      */
     for (state = FLD;;) {
-	switch (state = m_getfld (state, name, field, sizeof(field), in)) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (state, name, field, &fieldsz, in)) {
 	    case FLD: 
 	    case FLDEOF: 
 	    case FLDPLUS: 
@@ -226,8 +227,8 @@ main (int argc, char **argv)
 		    printf ("%s:%s", name, field);
 		    fprintf (out, "%s:%s", name, field);
 		    while (state == FLDPLUS) {
-			state =
-			    m_getfld (state, name, field, sizeof(field), in);
+			fieldsz = sizeof field;
+			state = m_getfld (state, name, field, &fieldsz, in);
 			printf ("%s", field);
 			fprintf (out, "%s", field);
 		    }
@@ -293,7 +294,8 @@ abort:
 			if (!rapid && !sigint)
 			    printf ("%s", field);
 		    } while (state == BODY &&
-			    (state = m_getfld (state, name, field, sizeof(field), in)));
+			    (fieldsz = sizeof field,
+			     state = m_getfld (state, name, field, &fieldsz, in)));
 		    if (prepend || !body)
 			break;
 		    else

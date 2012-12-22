@@ -371,7 +371,8 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	return (0);
     }
     for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, nam, buf, sizeof(buf), in)) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (state, nam, buf, &bufsz, in)) {
 	case FLD:
 	case FLDEOF:
 	case FLDPLUS:
@@ -379,7 +380,8 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	    if (!mh_strcasecmp (nam, datesw)) {
 		datecomp = add (buf, datecomp);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, nam, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, nam, buf, &bufsz, in);
 		    datecomp = add (buf, datecomp);
 		}
 		if (!subjsort || subjcomp)
@@ -387,15 +389,18 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	    } else if (subjsort && !mh_strcasecmp (nam, subjsort)) {
 		subjcomp = add (buf, subjcomp);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, nam, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, nam, buf, &bufsz, in);
 		    subjcomp = add (buf, subjcomp);
 		}
 		if (datecomp)
 		    break;
 	    } else {
 		/* just flush this guy */
-		while (state == FLDPLUS)
-		    state = m_getfld (state, nam, buf, sizeof(buf), in);
+		while (state == FLDPLUS) {
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, nam, buf, &bufsz, in);
+		}
 	    }
 	    continue;
 

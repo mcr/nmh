@@ -740,13 +740,15 @@ parse (int fd)
      * a lookup table.
      */
     for (i = 0, state = FLD;;) {
-	switch (state = m_getfld (state, name, field, sizeof(field), in)) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (state, name, field, &fieldsz, in)) {
 	    case FLD: 
 	    case FLDEOF: 
 	    case FLDPLUS: 
 		lp = add (field, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, field, sizeof(field), in);
+		    fieldsz = sizeof field;
+		    state = m_getfld (state, name, field, &fieldsz, in);
 		    lp = add (field, lp);
 		}
 		for (p = hdrs; p->p_name; p++) {
@@ -1424,21 +1426,25 @@ suppress_duplicates (int fd, char *file)
     rewind (in);
 
     for (state = FLD;;) {
-	state = m_getfld (state, name, buf, sizeof(buf), in);
+	int bufsz = sizeof buf;
+	state = m_getfld (state, name, buf, &bufsz, in);
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
 	    case FLDEOF:
 		/* Search for the message ID */
 		if (mh_strcasecmp (name, "Message-ID")) {
-		    while (state == FLDPLUS)
-			state = m_getfld (state, name, buf, sizeof(buf), in);
+		    while (state == FLDPLUS) {
+			bufsz = sizeof buf;
+			state = m_getfld (state, name, buf, &bufsz, in);
+		    }
 		    continue;
 		}
 
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, name, buf, &bufsz, in);
 		    cp = add (buf, cp);
 		}
 		key.dptr = trimcpy (cp);

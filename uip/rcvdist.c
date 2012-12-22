@@ -193,21 +193,25 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 	cptr->c_text = addrs;
 
     for (state = FLD;;) {
-	switch (state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb)) {
+	int msg_count = SBUFSIZ;
+	switch (state = m_getfld (state, name, tmpbuf, &msg_count, inb)) {
 	    case FLD: 
 	    case FLDPLUS: 
 	    	i = fmt_addcomptext(name, tmpbuf);
 		if (i != -1) {
 		    char_read += msg_count;
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
+			msg_count = SBUFSIZ;
+			state = m_getfld (state, name, tmpbuf, &msg_count, inb);
 			fmt_appendcomp(i, name, tmpbuf);
 			char_read += msg_count;
 		    }
 		}
 
-		while (state == FLDPLUS)
-		    state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
+		while (state == FLDPLUS) {
+		    msg_count = SBUFSIZ;
+		    state = m_getfld (state, name, tmpbuf, &msg_count, inb);
+		}
 		break;
 
 	    case LENERR: 

@@ -77,14 +77,16 @@ seq_public (struct msgs *mp)
 
     /* Use m_getfld to scan sequence file */
     for (state = FLD;;) {
-	switch (state = m_getfld (state, name, field, sizeof(field), fp)) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (state, name, field, &fieldsz, fp)) {
 	    case FLD: 
 	    case FLDPLUS:
 	    case FLDEOF: 
 		if (state == FLDPLUS) {
 		    cp = getcpy (field);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, field, sizeof(field), fp);
+			fieldsz = sizeof field;
+			state = m_getfld (state, name, field, &fieldsz, fp);
 			cp = add (field, cp);
 		    }
 		    seq_init (mp, getcpy (name), trimcpy (cp));

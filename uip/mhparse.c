@@ -276,7 +276,8 @@ get_content (FILE *in, char *file, int toplevel)
      * content into a linked list.
      */
     for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), in)) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (state, name, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
 	case FLDEOF:
@@ -288,7 +289,8 @@ get_content (FILE *in, char *file, int toplevel)
 
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
-		state = m_getfld (state, name, buf, sizeof(buf), in);
+		bufsz = sizeof buf;
+		state = m_getfld (state, name, buf, &bufsz, in);
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 

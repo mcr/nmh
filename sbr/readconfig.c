@@ -59,7 +59,8 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
     }
 
     for (state = FLD;;) {
-	switch (state = m_getfld (state, name, field, sizeof(field), ib)) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (state, name, field, &fieldsz, ib)) {
 	    case FLD:
 	    case FLDPLUS:
 	    case FLDEOF:
@@ -70,7 +71,8 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 		if (state == FLDPLUS) {
 		    cp = getcpy (field);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, field, sizeof(field), ib);
+			fieldsz = sizeof field;
+			state = m_getfld (state, name, field, &fieldsz, ib);
 			cp = add (field, cp);
 		    }
 		    np->n_field = trimcpy (cp);

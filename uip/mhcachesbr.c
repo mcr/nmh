@@ -383,8 +383,9 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
     for (state = FLD;;) {
 	int result;
 	char *cp, *dp;
+	int bufsz = sizeof buf;
 
-	switch (state = m_getfld (state, name, buf, sizeof(buf), fp)) {
+	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
 	    case FLD:
 	    case FLDPLUS:
 	    case FLDEOF:
@@ -394,7 +395,8 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
 		else {
 		    cp = add (buf, NULL);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buf, sizeof(buf), fp);
+			bufsz = sizeof buf;
+			state = m_getfld (state, name, buf, &bufsz, fp);
 			cp = add (buf, cp);
 		    }
 		}

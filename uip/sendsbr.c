@@ -603,7 +603,8 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
      * as well as locate the beginning of the message body.
      */
     for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, name, buffer, sizeof(buffer), in)) {
+	int bufsz = sizeof buffer;
+	switch (state = m_getfld (state, name, buffer, &bufsz, in)) {
 	    case FLD:
 	    case FLDPLUS:
 	    case FLDEOF:
@@ -613,8 +614,10 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 		 * This header field is discarded.
 		 */
 		if (!mh_strcasecmp (name, "Message-ID")) {
-		    while (state == FLDPLUS)
-			state = m_getfld (state, name, buffer, sizeof(buffer), in);
+		    while (state == FLDPLUS) {
+			bufsz = sizeof buffer;
+			state = m_getfld (state, name, buffer, &bufsz, in);
+		    }
 		} else if (uprf (name, XXX_FIELD_PRF)
 			|| !mh_strcasecmp (name, VRSN_FIELD)
 			|| !mh_strcasecmp (name, "Subject")
@@ -638,7 +641,8 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 
 		    dp = add (concat (name, ":", buffer, NULL), dp);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buffer, sizeof(buffer), in);
+			bufsz = sizeof buffer;
+			state = m_getfld (state, name, buffer, &bufsz, in);
 			dp = add (buffer, dp);
 		    }
 		} else {
@@ -648,7 +652,8 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 		     */
 		    cp = add (concat (name, ":", buffer, NULL), cp);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buffer, sizeof(buffer), in);
+			bufsz = sizeof buffer;
+			state = m_getfld (state, name, buffer, &bufsz, in);
 			cp = add (buffer, cp);
 		    }
 		}

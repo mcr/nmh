@@ -2435,8 +2435,9 @@ is_nontext (int msgnum)
 
     fp = msh_ready (msgnum, 1);
 
-    for (state = FLD;;)
-	switch (state = m_getfld (state, name, buf, sizeof buf, fp)) {
+    for (state = FLD;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
 	case FLD:
 	case FLDPLUS:
 	case FLDEOF:
@@ -2449,7 +2450,8 @@ is_nontext (int msgnum)
 
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof buf, fp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		bp = cp;
@@ -2552,7 +2554,8 @@ out:
 	    if (!mh_strcasecmp (name, ENCODING_FIELD)) {
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof buf, fp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		for (bp = cp; isspace (*bp); bp++)
@@ -2576,8 +2579,10 @@ out:
 	     * Just skip the rest of this header
 	     * field and go to next one.
 	     */
-	    while (state == FLDPLUS)
-		state = m_getfld (state, name, buf, sizeof(buf), fp);
+	    while (state == FLDPLUS) {
+		bufsz = sizeof buf;
+		state = m_getfld (state, name, buf, &bufsz, fp);
+	    }
 	    break;
 
 	    /*
@@ -2587,6 +2592,7 @@ out:
 	default:
 	    return 0;
 	}
+    }
 }
 
 
@@ -2742,14 +2748,16 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 
     zp = msh_ready (msgnum, 0);
     for (state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof buf, zp)) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (state, name, buf, &bufsz, zp)) {
 	    case FLD: 
 	    case FLDEOF: 
 	    case FLDPLUS: 
 		if (!mh_strcasecmp (name, datesw)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buf, sizeof buf, zp);
+			bufsz = sizeof buf;
+			state = m_getfld (state, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    if ((tw = dparsetime (bp)) == NULL)
@@ -2766,7 +2774,8 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 		else if (subjsw && !mh_strcasecmp(name, subjsw)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buf, sizeof buf, zp);
+			bufsz = sizeof buf;
+			state = m_getfld (state, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    msgp->m_scanl = sosmash(subjsw, bp);
@@ -2775,8 +2784,10 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 		    else
 			subjsw = (char *)0;/* subject done, need date */
 		} else {
-		    while (state == FLDPLUS)	/* flush this one */
-			state = m_getfld (state, name, buf, sizeof buf, zp);
+		    while (state == FLDPLUS) {	/* flush this one */
+			bufsz = sizeof buf;
+			state = m_getfld (state, name, buf, &bufsz, zp);
+		    }
 		}
 		continue;
 

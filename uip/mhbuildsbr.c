@@ -163,7 +163,8 @@ build_mime (char *infile, int directives)
      * the new MIME message.
      */
     for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), in)) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (state, name, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
 	case FLDEOF:
@@ -179,8 +180,10 @@ build_mime (char *infile, int directives)
 
 	    /* ignore any Content-Type fields in the header */
 	    if (!mh_strcasecmp (name, TYPE_FIELD)) {
-		while (state == FLDPLUS)
-		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		while (state == FLDPLUS) {
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, name, buf, &bufsz, in);
+		}
 		goto finish_field;
 	    }
 
@@ -190,7 +193,8 @@ build_mime (char *infile, int directives)
 
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
-		state = m_getfld (state, name, buf, sizeof(buf), in);
+		bufsz = sizeof buf;
+		state = m_getfld (state, name, buf, &bufsz, in);
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 

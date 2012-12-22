@@ -87,7 +87,8 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
      */
 
     for (state = FLD;;) {
-    	state = m_getfld(state, name, msgbuf, sizeof(msgbuf), tmp);
+	int msg_count = sizeof msgbuf;
+	state = m_getfld(state, name, msgbuf, &msg_count, tmp);
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
@@ -101,14 +102,15 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 		if (i != -1) {
 		    char_read += msg_count;
 		    while (state == FLDPLUS) {
-			state = m_getfld(state, name, msgbuf,
-					 sizeof(msgbuf), tmp);
+			msg_count = sizeof msgbuf;
+			state = m_getfld(state, name, msgbuf, &msg_count, tmp);
 			fmt_appendcomp(i, name, msgbuf);
 			char_read += msg_count;
 		    }
 		}
 		while (state == FLDPLUS)
-		    state = m_getfld(state, name, msgbuf, sizeof(msgbuf), tmp);
+		    msg_count = sizeof msgbuf;
+		    state = m_getfld(state, name, msgbuf, &msg_count, tmp);
 		break;
 
 	    case LENERR:

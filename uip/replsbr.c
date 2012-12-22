@@ -132,7 +132,8 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
      * pick any interesting stuff out of msg "inb"
      */
     for (state = FLD;;) {
-	state = m_getfld (state, name, tmpbuf, sizeof(tmpbuf), inb);
+	int msg_count = sizeof tmpbuf;
+	state = m_getfld (state, name, tmpbuf, &msg_count, inb);
 	switch (state) {
 	    case FLD: 
 	    case FLDPLUS: 
@@ -147,15 +148,17 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 		if (i != -1) {
 		    char_read += msg_count;
 		    while (state == FLDPLUS) {
-		    	state = m_getfld(state, name, tmpbuf,
-					 sizeof(tmpbuf), inb);
+			msg_count= sizeof tmpbuf;
+			state = m_getfld(state, name, tmpbuf, &msg_count, inb);
 			fmt_appendcomp(i, name, tmpbuf);
 			char_read += msg_count;
 		    }
 		}
 
-		while (state == FLDPLUS)
-		    state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
+		while (state == FLDPLUS) {
+		    msg_count= sizeof tmpbuf;
+		    state = m_getfld (state, name, tmpbuf, &msg_count, inb);
+		}
 		break;
 
 	    case LENERR: 

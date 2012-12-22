@@ -947,7 +947,8 @@ plist
 
     fseek (fp, start, SEEK_SET);
     for (state = FLD, bp = NULL;;) {
-	switch (state = m_getfld (state, name, buf, sizeof buf, fp)) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
 	    case FLD: 
 	    case FLDEOF: 
 	    case FLDPLUS: 
@@ -955,7 +956,8 @@ plist
 		    free (bp), bp = NULL;
 		bp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof buf, fp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (state, name, buf, &bufsz, fp);
 		    bp = add (buf, bp);
 		}
 		if (!mh_strcasecmp (name, n->n_datef))

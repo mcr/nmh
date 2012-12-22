@@ -46,9 +46,9 @@ distout (char *drft, char *msgnam, char *backup)
     lseek (hdrfd, (off_t) 0, SEEK_SET); /* msgnam not accurate */
     cpydata (hdrfd, fileno (ofp), msgnam, drft);
 
-    for (state = FLD, resent = NULL;;)
-	switch (state =
-		m_getfld (state, name, buffer, sizeof buffer, ifp)) {
+    for (state = FLD, resent = NULL;;) {
+	int buffersz = sizeof buffer;
+	switch (state = m_getfld (state, name, buffer, &buffersz, ifp)) {
 	    case FLD: 
 	    case FLDPLUS: 
 	    case FLDEOF: 
@@ -65,8 +65,8 @@ distout (char *drft, char *msgnam, char *backup)
 		resent = add (buffer, resent);
 		fprintf (ofp, "%s: %s", name, buffer);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name,
-			    buffer, sizeof buffer, ifp);
+		    buffersz = sizeof buffer;
+		    state = m_getfld (state, name, buffer, &buffersz, ifp);
 		    resent = add (buffer, resent);
 		    fputs (buffer, ofp);
 		}
@@ -99,6 +99,7 @@ distout (char *drft, char *msgnam, char *backup)
 	    default: 
 		adios (NULL, "getfld() returned %d", state);
 	}
+    }
 process: ;
     fclose (ifp);
     fflush (ofp);
@@ -151,9 +152,9 @@ ready_msg (char *msgnam)
 	adios (NULL, "no file descriptors -- you lose big");
     unlink (tmpfil);
 
-    for (state = FLD;;)
-	switch (state =
-		m_getfld (state, name, buffer, sizeof buffer, ifp)) {
+    for (state = FLD;;) {
+	int buffersz = sizeof buffer;
+	switch (state = m_getfld (state, name, buffer, &buffersz, ifp)) {
 	    case FLD: 
 	    case FLDPLUS: 
 	    case FLDEOF: 
@@ -161,8 +162,8 @@ ready_msg (char *msgnam)
 		    fprintf (ofp, "Prev-");
 		fprintf (ofp, "%s: %s", name, buffer);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name,
-			    buffer, sizeof buffer, ifp);
+		    buffersz = sizeof buffer;
+		    state = m_getfld (state, name, buffer, &buffersz, ifp);
 		    fputs (buffer, ofp);
 		}
 		if (state == FLDEOF)
@@ -185,8 +186,8 @@ ready_msg (char *msgnam)
 		unlink (tmpfil);
 		fprintf (ofp, "\n%s", buffer);
 		while (state == BODY) {
-		    state = m_getfld (state, name,
-			    buffer, sizeof buffer, ifp);
+		    buffersz = sizeof buffer;
+		    state = m_getfld (state, name, buffer, &buffersz, ifp);
 		    fputs (buffer, ofp);
 		}
 	    case FILEEOF: 
@@ -199,6 +200,7 @@ ready_msg (char *msgnam)
 	    default: 
 		adios (NULL, "getfld() returned %d", state);
 	}
+    }
 process: ;
     fclose (ifp);
     fclose (ofp);
