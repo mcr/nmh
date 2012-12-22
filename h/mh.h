@@ -252,8 +252,6 @@ struct msgs {
 #define	MS_MSH		4	/* whacko msh                 */
 
 extern int msg_count;		/* m_getfld() indicators */
-extern int msg_style;		/*  .. */
-extern char *msg_delim;		/*  .. */
 
 #define	NOUSE	0		/* draft being re-used */
 

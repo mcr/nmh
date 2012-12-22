@@ -212,21 +212,18 @@ Subsequent calls provide the state returned by the previous call.
 Along the way, I thought of these possible interface changes that we
 might want to consider before rototilling the internals:
 
-1) To remove globals that don't need to be:
-   Change msg_style and msg_delim to be file static.
-
-2) To remove a global:
+1) To remove a global:
    Change bufsz to be in-out instead of in, and therefore int * instead of
    int, and use that instead of global msg_count.  There are only 3 call
    sites that use msg_count so it wouldn't take much effort to remove use of
    it.  Of course, all call sites would have to change to provide an int *
    instead of an int.  Some now pass constants.
 
-3) To remove the state argument from the signature:
+2) To remove the state argument from the signature:
    Given the Current usage and Restriction above, the state variable could
    be removed from the signature and just retained internally.
 
-4) To remove the Restriction above:
+3) To remove the Restriction above:
    One approach would be for m_getfld() to retain multiple copies of that
    state, one per iob that it sees.  Another approach would be for the
    caller to store it in an opaque struct, the address of which is passed
@@ -255,10 +252,7 @@ static unsigned char **pat_map;
  */
 extern int msg_count;
 
-/*
- * defined in sbr/m_msgdef.c = MS_DEFAULT
- */
-extern int msg_style;
+static int msg_style = MS_DEFAULT;
 
 /*
  * The "full" delimiter string for a packed maildrop consists
@@ -272,7 +266,7 @@ extern int msg_style;
  * is used in m_Eom because the first character of the string
  * has been read and matched before m_Eom is called.
  */
-extern char *msg_delim;         /* defined in sbr/m_msgdef.c = "" */
+static char *msg_delim = "";
 static unsigned char *fdelim;
 static unsigned char *delimend;
 static int fdelimlen;
