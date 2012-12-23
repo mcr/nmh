@@ -154,7 +154,7 @@ buf:  either a header field body or message body
 bufsz:  number of characters loaded into buf
 (return value):  message parse state on return from function
 
-Functions (part of Inputs, really)
+Functions
 =========
 void m_unknown(FILE *iob):  Determines the message delimiter string for the
   maildrop.  Called by inc, scan, and msh when reading from a maildrop file.
@@ -164,40 +164,19 @@ void m_eomsbr (int (*action)(int)):  Sets the hook to check for end of
 
 Those functions save state in the State variables listed below.
 
-Definitions
-===========
-state is one of:
-  FLD      // Field returned
-  FLDPLUS  // Field returned with more to come
-  FLDEOF   // Field returned ending at eom
-  BODY     // Body  returned with more to come
-  BODYEOF  // Body  returned ending at eom
-  FILEEOF  // Reached end of input file
-  FMTERR   // Message Format error
-  LENERR   // Name too long error from getfld
-
-msg_style is maildrop style, one of:
-  MS_UNKNOWN // type not known yet
-  MS_DEFAULT // default (one msg per file)
-  MS_MBOX    // Unix-style "from" lines
-  MS_MMDF    // string mmdlm2
-  MS_MSH     // whacko msh
-
-State variables (part of Outputs)
+State variables
 ===============
 m_getfld() retains state internally between calls in some state variables.
-
-These two variables are global, but only used internally by m_getfld.c:
-int msg_style
-char *msg_delim
-
-These are used for the end-of-message matcher when reading maildrops:
+These are used for detecting the end of each message when reading maildrops:
 static unsigned char **pat_map
 static unsigned char *fdelim
 static unsigned char *delimend
 static int fdelimlen
 static unsigned char *edelim
 static int edelimlen
+char * msg_delim
+int msg_style
+int (*eom_action)(int)
 
 Restriction
 ===========
@@ -208,19 +187,8 @@ Current usage
 =============
 The first call to m_getfld() on a file stream is with a state of FLD.
 Subsequent calls provide the state returned by the previous call.
-
-Along the way, I thought of these possible interface changes that we
-might want to consider before rototilling the internals:
-
-1) To remove the state argument from the signature:
-   Given the Current usage and Restriction above, the state variable could
-   be removed from the signature and just retained internally.
-
-2) To remove the Restriction above:
-   One approach would be for m_getfld() to retain multiple copies of that
-   state, one per iob that it sees.  Another approach would be for the
-   caller to store it in an opaque struct, the address of which is passed
-   through the interface.
+(Therefore, given the Restriction above, the state variable could be
+removed from the signature and just retained internally.)
 */
 
 /*
