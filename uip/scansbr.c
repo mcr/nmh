@@ -187,7 +187,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 
     /* scan - main loop */
     for (compnum = 1; ;
-	 bufsz = rlwidth, state = m_getfld (state, name, tmpbuf, &bufsz, inb)) {
+	bufsz = rlwidth, state = m_getfld (state, name, tmpbuf, &bufsz, inb)) {
 	switch (state) {
 	    case FLD: 
 	    case FLDPLUS: 
