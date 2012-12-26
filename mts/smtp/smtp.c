@@ -799,8 +799,6 @@ sm_end (int type)
 		smtalk (SM_QUIT, "QUIT");
 	    else {
 		kill (sm_child, SIGKILL);
-		discard (sm_rfp);
-		discard (sm_wfp);
 	    }
 	    if (type == NOTOK) {
 		sm_reply.code = sm_note.code;
