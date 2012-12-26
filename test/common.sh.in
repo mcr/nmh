@@ -171,6 +171,8 @@ setup_test ()
         -e "s%mmdfldir: *.*%mmdfldir: ${MH_TEST_DIR}/Mail%" \
         -e 's%mmdflfil: *.*%mmdflfil: maildrop%' \
         "${MHMTSCONF}" >"${MHMTSCONF}.new"
+    #### test-slocal needs to look at the original mts.conf, so save it.
+    mv -f "${MHMTSCONF}" "${MHMTSCONF}.old"
     mv -f "${MHMTSCONF}.new" "${MHMTSCONF}"
   fi
 
