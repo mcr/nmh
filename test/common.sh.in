@@ -167,13 +167,12 @@ setup_test ()
     #### so that we use fakesmtp.
     #### And set up the maildrop in the test directory so tests don't
     #### use the user's real maildrop.
+    #### test-slocal needs to look at the original mts.conf, so save it.
+    mv -f "${MHMTSCONF}" "${MHMTSCONF}.old"
     sed -e 's/mts: *.*/mts: smtp/' \
         -e "s%mmdfldir: *.*%mmdfldir: ${MH_TEST_DIR}/Mail%" \
         -e 's%mmdflfil: *.*%mmdflfil: maildrop%' \
-        "${MHMTSCONF}" >"${MHMTSCONF}.new"
-    #### test-slocal needs to look at the original mts.conf, so save it.
-    mv -f "${MHMTSCONF}" "${MHMTSCONF}.old"
-    mv -f "${MHMTSCONF}.new" "${MHMTSCONF}"
+        "${MHMTSCONF}.old" >"${MHMTSCONF}"
   fi
 
   # clean old test data
