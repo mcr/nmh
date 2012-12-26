@@ -359,8 +359,8 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 
 		j = bp - sp;
 		if ((cnt -= j) <= 0) {
-		    /* Used to explicitly force refill of the buffer
-		       here, but Getc() will do that if necessary. */
+		    /* Next to force refill of the buffer here. */
+		    m.readpos = m.end;
 		    if (Getc (iob) == EOF) {
 			*cp = *buf = 0;
 			advise (NULL, "eof encountered in field \"%s\"", name);
