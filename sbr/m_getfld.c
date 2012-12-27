@@ -297,12 +297,12 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 {
     register unsigned char  *bp, *cp, *ep, *sp;
     register int cnt, c, i, j, k;
+    long bytes_read = 0;
 
     setup_buffer (iob, &m);
 
     if ((c = Getc(iob)) < 0) {
-	*bufsz = 0;
-	*buf = 0;
+	*bufsz = *buf = 0;
 	return FILEEOF;
     }
     if (eom (c, iob)) {
@@ -314,8 +314,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    if (c >= 0)
 		Ungetc(c, iob);
 	}
-	*bufsz = 0;
-	*buf = 0;
+	*bufsz = *buf = 0;
 	return FILEEOF;
     }
 
@@ -325,8 +324,9 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	case FLD:
 	    if (c == '\n' || c == '-') {
 		/* we hit the header/body separator */
-		while (c != '\n' && (c = Getc(iob)) >= 0)
-		    ;
+		while (c != '\n' && (c = Getc(iob)) >= 0) {
+		    ++bytes_read;
+		}
 
 		if (c < 0 || (c = Getc(iob)) < 0 || eom (c, iob)) {
 		    if (! eom_action) {
@@ -336,8 +336,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 			if (c >= 0)
 			    Ungetc(c, iob);
 		    }
-		    *bufsz = 0;
-		    *buf = 0;
+		    *bufsz = *buf = 0;
 		    return FILEEOF;
 		}
 		state = BODY;
@@ -354,15 +353,17 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		/* Store current position, ungetting the last character. */
 		bp = sp = (unsigned char *) m.readpos - 1;
 		j = (cnt = m.end - m.readpos + 1) < i ? cnt : i;
-		while (--j >= 0 && (c = *bp++) != ':' && c != '\n')
+		while (--j >= 0 && (c = *bp++) != ':' && c != '\n') {
 		    *cp++ = c;
+		    ++bytes_read;
+		}
 
 		j = bp - sp;
 		if ((cnt -= j) <= 0) {
 		    /* Next to force refill of the buffer here. */
 		    m.readpos = m.end;
 		    if (Getc (iob) == EOF) {
-			*cp = *buf = 0;
+			*bufsz = *cp = *buf = 0;
 			advise (NULL, "eof encountered in field \"%s\"", name);
 			return FMTERR;
 		    }
@@ -392,7 +393,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    /* + 1 for the newline */
 		    if (*bufsz < j + 1) {
 			/* No, it can't.  Oh well, guess we'll blow up. */
-			*cp = *buf = 0;
+			*bufsz = *cp = *buf = 0;
 			advise (NULL, "eol encountered in field \"%s\"", name);
 			state = FMTERR;
 			goto finish;
@@ -407,24 +408,22 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		     * blank line in this case.  Simpler parsers (e.g. mhl)
 		     * get extra newlines, but that should be harmless enough,
 		     * right?  This is a corrupt message anyway. */
-		    /* emulates:  fseek (iob, ftell (iob) -(-2 + cnt + 1),
-					 SEEK_SET) */
+		    /* emulates:  fseek (iob, ftell (iob) -2), SEEK_SET) */
 		    m.readpos += cnt - 1;
-		    /* Reset file stream position so caller, e.g.,
-		       get_content, can use ftell(), etc. */
-		    fseek (iob, -cnt - 1, SEEK_CUR);
+		    *bufsz = bytes_read;
 		    return BODY;
 		}
 		if ((i -= j) <= 0) {
-		    *cp = *buf = 0;
+		    *bufsz = *cp = *buf = 0;
 		    advise (NULL, "field name \"%s\" exceeds %d bytes", name, NAMESZ - 2);
 		    state = LENERR;
 		    goto finish;
 		}
 	    }
 
-	    while (isspace (*--cp) && cp >= name)
-		;
+	    while (isspace (*--cp) && cp >= name) {
+		--bytes_read;
+	    }
 	    *++cp = 0;
 	    /* fall through */
 
@@ -574,7 +573,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    /* Advance the current position to reflect the copy out. */
 	    m.readpos += c;
 	    if (*bufsz < 0) {
-		*bufsz = c;
+		*bufsz = c + bytes_read + 1;
 		return (state);
 	    }
 	    cp = buf + c;
@@ -585,7 +584,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
     }
 finish:
     *cp = 0;
-    *bufsz = cp - buf;
+    *bufsz = cp - buf + bytes_read + 1;
     return (state);
 }
 
