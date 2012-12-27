@@ -409,7 +409,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		     * get extra newlines, but that should be harmless enough,
 		     * right?  This is a corrupt message anyway. */
 		    /* emulates:  fseek (iob, ftell (iob) -2), SEEK_SET) */
-		    m.readpos += cnt - 1;
+		    m.readpos -= 2;
 		    *bufsz = bytes_read;
 		    return BODY;
 		}
