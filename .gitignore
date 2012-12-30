@@ -5,6 +5,7 @@
 /ChangeLog
 /Makefile.in
 /aclocal.m4
+/ar-lib
 /compile
 /config.guess
 /config.h.in
