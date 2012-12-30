@@ -31,7 +31,7 @@ or other related files, you'll need to first install GNU m4, available
 from <ftp://ftp.gnu.org/pub/gnu/m4/>, then GNU autoconf
 (<ftp://ftp.gnu.org/pub/gnu/autoconf/>) and GNU automake
 (<ftp://ftp.gnu.org/pub/gnu/automake/>).  Nmh is currently using a
-minimum of autoconf 2.61 and automake 1.10.
+minimum of autoconf 2.61 and automake 1.12.
 
 Most of the configure-related files are automatically generated.
 The only files you should need to manually edit are configure.ac
