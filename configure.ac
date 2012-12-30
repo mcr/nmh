@@ -286,6 +286,8 @@ AC_PROG_AWK             dnl Check for mawk,gawk,nawk, then awk
 AC_PROG_SED		dnl Check for Posix-compliant sed
 AC_PROG_LEX             dnl Check for lex/flex
 
+AM_PROG_AR
+
 dnl Look for `cut'
 pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
 AC_PATH_PROG([cutpath], [cut], [no], [$pathtmp])
