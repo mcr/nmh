@@ -75,26 +75,24 @@ AS_CASE(["$host_os"],
   [freebsd*|openbsd*|darwin*], [default_locktype="flock"; default_locking=FLOCK_LOCKING],
   [default_locktype="dot"; default_locking=DOT_LOCKING])
 
-AC_ARG_WITH(locking,
+AC_ARG_WITH([locking],
   AS_HELP_STRING([--with-locking=@<:@dot|fcntl|flock|lockf@:>@],
   [specify the file locking method]))
 
-if test x"$with_locking" = x"dot"; then
-  LOCKTYPE="dot"
-  AC_DEFINE(DOT_LOCKING, 1, [Define to use dot based file locking.])dnl
-elif test x"$with_locking" = x"flock"; then
-  LOCKTYPE="flock"
-  AC_DEFINE(FLOCK_LOCKING, 1, [Define to use flock() based locking.])dnl
-elif test x"$with_locking" = x"lockf"; then
-  LOCKTYPE="lockf"
-  AC_DEFINE(LOCKF_LOCKING, 1, [Define to use lockf() based locking.])dnl
-elif test x"$with_locking" = x"fcntl"; then
-  LOCKTYPE="fcntl"
-  AC_DEFINE(FCNTL_LOCKING, 1, [Define to use fnctl() based locking.])dnl
-else
-  LOCKTYPE="$default_locktype"
-  AC_DEFINE_UNQUOTED($default_locking, 1)dnl
-fi
+AS_IF([test x"$with_locking" = x"dot"],
+    [LOCKTYPE="dot"
+    AC_DEFINE([DOT_LOCKING], [1], [Define to use dot based file locking.])],
+  [test x"$with_locking" = x"flock"],
+    [LOCKTYPE="flock"
+    AC_DEFINE([FLOCK_LOCKING], [1], [Define to use flock() based locking.])],
+  [test x"$with_locking" = x"lockf"],
+    [LOCKTYPE="lockf"
+    AC_DEFINE([LOCKF_LOCKING], [1], [Define to use lockf() based locking.])],
+  [test x"$with_locking" = x"fcntl"],
+    [LOCKTYPE="fcntl"
+    AC_DEFINE([FCNTL_LOCKING], [1], [Define to use fnctl() based locking.])],
+  [LOCKTYPE="$default_locktype"
+  AC_DEFINE_UNQUOTED([$default_locking], [1])])
 
 dnl Should we use a locking directory?
 AC_ARG_ENABLE([lockdir],
@@ -128,16 +126,15 @@ AS_IF([test -n "$with_pager"], [pagerpath="$with_pager"])
 dnl If a pager is not explicitly specified, then look for one.
 dnl Fall back to `cat', to avoid catastrophic failure of
 dnl `mhshow', et al., if pagerpath is set to `no'.
-if test -z "$pagerpath"; then
-  pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
-  AC_PATH_PROGS([pagerpath], [more less most cat], [no], [$pathtmp])
-fi
-AC_SUBST(pagerpath)dnl
+AS_IF([test -z "$pagerpath"],
+  [pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
+  AC_PATH_PROGS([pagerpath], [more less most cat], [no], [$pathtmp])])
+AC_SUBST([pagerpath])dnl
 
 dnl What should be the default mail server(s)?
-AC_ARG_WITH(smtpservers,
-  AS_HELP_STRING([--with-smtpservers='SMTPSERVER1@<:@ SMTPSERVER2...@:>@'],
-  [specify the default SMTP server(s) @<:@localhost@:>@]))
+AC_ARG_WITH([smtpservers],
+  [AS_HELP_STRING([--with-smtpservers='SMTPSERVER1@<:@ SMTPSERVER2...@:>@'],
+  [specify the default SMTP server(s) @<:@localhost@:>@])])
 AS_IF([test -n "$with_smtpservers"], [smtpservers="$with_smtpservers"],
       [smtpservers="localhost"])
 AC_SUBST([smtpservers])dnl
@@ -282,7 +279,7 @@ AC_PROG_INSTALL		dnl Check for BSD compatible `install'
 AC_PROG_RANLIB		dnl Check for `ranlib'
 AC_PROG_AWK             dnl Check for mawk,gawk,nawk, then awk
 AC_PROG_SED		dnl Check for Posix-compliant sed
-AC_PROG_LEX             dnl Check for lex/flex
+AM_PROG_LEX             dnl Check for lex/flex
 
 AM_PROG_AR
 
