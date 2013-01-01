@@ -27,8 +27,6 @@ dnl --------------------------
 dnl Do you want to debug nmh?
 AC_ARG_ENABLE([debug],
   AS_HELP_STRING([--enable-debug],[enable nmh code debugging]))
-dnl The old redundant --enable-nmh-debug is deprecated and undocumented.
-AS_IF([test x"$enable_nmh_debug" = x"yes"], [enable_debug=yes])
 
 dnl Do you want to disable use of locale functions
 AH_TEMPLATE([LOCALE],
