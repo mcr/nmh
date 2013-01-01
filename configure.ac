@@ -437,7 +437,7 @@ AS_CASE(["$host_os"],
 AC_HEADER_STDC
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([errno.h fcntl.h crypt.h ncurses/termcap.h termcap.h \
-                  langinfo.h wchar.h wctype.h iconv.h netdb.h \
+                  langinfo.h wchar.h wctype.h netdb.h \
                   sys/param.h sys/time.h sys/stream.h])
 
 dnl
@@ -481,7 +481,11 @@ AC_CHECK_FUNC([modf], , AC_CHECK_LIB([m], [modf]))
 dnl Checks for network libraries (nsl, socket)
 NMH_CHECK_NETLIBS
 
+dnl Check for readline support
 NMH_READLINE
+
+dnl Check for iconv
+NMH_CHECK_ICONV
 
 termcap_curses_order="termcap curses ncurses"
 for lib in $termcap_curses_order; do
@@ -491,53 +495,6 @@ AC_SUBST([TERMLIB])dnl
 AS_IF([test "x$TERMLIB" = "x"],
       [AC_MSG_FAILURE([Could not find tgetent in any library.  Is there a curses
 or ncurses library or package that you can install?])])
-
-
-dnl ---------------
-dnl CHECK FOR ICONV
-dnl ---------------
-
-dnl Find iconv. It may be in libiconv and may be iconv() or libiconv()
-if test "x$ac_cv_header_iconv_h" = "xyes"; then
-  AC_CHECK_FUNC(iconv, ac_found_iconv=yes, ac_found_iconv=no)
-  if test "x$ac_found_iconv" = "xno"; then
-    AC_CHECK_LIB(iconv, iconv, ac_found_iconv=yes)
-    if test "x$ac_found_iconv" = "xno"; then
-      AC_CHECK_LIB(iconv, libiconv, ac_found_iconv=yes)
-    fi
-    if test "x$ac_found_iconv" != "xno"; then
-      ICONVLIB="-liconv"
-    fi
-  else
-    dnl Handle case where there is a native iconv but iconv.h is from libiconv
-    AC_CHECK_DECL(_libiconv_version,
-      [ AC_CHECK_LIB(iconv, libiconv, LIBS="-liconv $LIBS") ],,
-      [ #include <iconv.h> ])
-  fi
-fi
-if test "x$ac_found_iconv" = xyes; then
-  AC_DEFINE([HAVE_ICONV], [1], [Define if you have the iconv() function.])
-fi
-AC_SUBST([ICONVLIB])
-
-dnl Check if iconv uses const in prototype declaration
-if test "x$ac_found_iconv" = "xyes"; then
-  AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
-    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-        #include <iconv.h>]],
-        [[#ifdef __cplusplus
-          "C"
-          #endif
-          #if defined(__STDC__) || defined(__cplusplus)
-          size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
-          #else
-          size_t iconv();
-          #endif]])],
-      [ac_cv_iconv_const=],
-      [ac_cv_iconv_const=const])])
-  AC_DEFINE_UNQUOTED([ICONV_CONST], $ac_cv_iconv_const,
-    [Define as const if the declaration of iconv() needs const.])
-fi
 
 dnl --------------
 dnl CHECK FOR NDBM
