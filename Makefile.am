@@ -372,7 +372,7 @@ uip_mhtest_SOURCES = uip/mhtest.c uip/mhparse.c uip/mhcachesbr.c \
 uip_mhtest_LDADD = $(LDADD) $(TERMLIB)
 
 uip_post_SOURCES = uip/post.c uip/aliasbr.c
-uip_post_LDADD = mts/libmts.a $(LDADD) $(SASLLIB)
+uip_post_LDADD = mts/libmts.a $(LDADD) $(SASLLIB) $(TLSLIB)
 
 uip_rcvdist_SOURCES = uip/rcvdist.c uip/distsbr.c
 uip_rcvdist_LDADD = $(LDADD) $(ICONVLIB)

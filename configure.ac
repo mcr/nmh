@@ -588,10 +588,12 @@ dnl -----------------
 
 AS_IF([test x"$tls_support" = x"yes"],[
   AC_CHECK_HEADER([openssl/ssl.h], , [AC_MSG_ERROR([openssl/ssl.h not found])])
-  AC_CHECK_LIB([crypto], [BIO_write], ,
+  AC_CHECK_LIB([crypto], [BIO_write], [TLSLIB="-lcrypto"],
     [AC_MSG_ERROR([OpenSSL crypto library not found])])
-  AC_CHECK_LIB([ssl], [SSL_library_init], ,
-    [AC_MSG_ERROR([OpenSSL library not found])])])
+  AC_CHECK_LIB([ssl], [SSL_library_init], [TLSLIB="-lssl $TLSLIB"],
+    [AC_MSG_ERROR([OpenSSL library not found])])],
+  [TLSLIB=])
+AC_SUBST([TLSLIB])
 
 dnl ---------------------
 dnl CHECK TERMCAP LIBRARY
