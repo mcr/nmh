@@ -97,7 +97,7 @@ clean-local:
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
 ##
-MAINTAINERCLEANFILES = cscope.files cscope.out
+MAINTAINERCLEANFILES = cscope.files cscope.out cscope.in.out cscope.po.out
 
 ##
 ## And our own superclean, to get everything left by maintainer-clean.
@@ -593,14 +593,6 @@ rpm: dist
 	  --define "_sysconfdir $(DESTDIR)$(sysconfdir)" \
 	  -ba SPECS/nmh.spec
 .PHONY: rpm
-
-##
-## A target to build information needed by cscope
-##
-cscope:
-	echo "-I $(srcdir)/h -I $(srcdir)/sbr -I $(srcdir)/uip -I $(srcdir)/mts/smtp" > cscope.files
-	find $(srcdir) \( -name docs -prune \) -o \( -name \*.c -o -name \*.l \) -print | grep -v dtimep.c >> cscope.files
-.PHONY: cscope
 
 
 ##
