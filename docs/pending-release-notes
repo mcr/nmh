@@ -88,3 +88,5 @@ BUG FIXES
 - Fixed pick(1) to properly unfold multiple-line header fields by
   removing newlines instead of replacing them with spaces [Bug #15215].
 - Removed the artificial limit of 1000 messages at a time for rmmproc.
+- Fixed decoding of header fields when they contain a character that
+  can't be converted.
