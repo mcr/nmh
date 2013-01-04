@@ -558,7 +558,7 @@ main (int argc, char **argv)
     start_headers ();
     if (debug) {
 	verbose++;
-	discard (out = stdout);	/* XXX: reference discard() to help loader */
+	out = stdout;
     } else {
 	if (whomsw) {
 	    if ((out = fopen ("/dev/null", "w")) == NULL)
