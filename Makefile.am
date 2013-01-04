@@ -211,6 +211,27 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/whatnow.1 man/whom.1
 
 ##
+## Sources for our man pages
+##
+man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
+	   man/conflict.man man/dist.man man/dp.man man/flist.man \
+	   man/flists.man man/fmtdump.man man/fnext.man man/folder.man \
+	   man/folders.man man/forw.man man/fprev.man man/inc.man \
+	   man/install-mh.man man/mark.man man/mh-alias.man \
+	   man/mh-chart-gen.sh man/mh-draft.man man/mh-format.man \
+	   man/mh-mail.man man/mh-profile.man man/mh_profile.man \
+	   man/mh-sequence.man man/mh-tailor.man man/mhbuild.man man/mhl.man \
+	   man/mhlist.man man/mhmail.man man/mhn.man man/mhparam.man \
+	   man/mhpath.man man/mhshow.man man/mhstore.man man/msgchk.man \
+	   man/msh.man man/mts.conf.man man/new.man man/next.man man/nmh.man \
+	   man/packf.man man/pick.man man/post.man man/prev.man \
+	   man/prompter.man man/rcvdist.man man/rcvpack.man \
+	   man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
+	   man/rmf.man man/rmm.man man/scan.man man/send.man \
+	   man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
+	   man/unseen.man man/whatnow.man man/whom.man
+
+##
 ## Files we need to include in the distribution which aren't found by
 ## Automake using the automatic rules
 ##
@@ -218,28 +239,11 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
 	     etc/mhn.defaults.sh etc/sendfiles $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
-	     man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
-	     man/conflict.man man/dist.man man/dp.man man/flist.man \
-	     man/flists.man man/fmtdump.man man/fnext.man man/folder.man \
-	     man/folders.man man/forw.man man/fprev.man man/inc.man \
-	     man/install-mh.man man/mark.man man/mh-alias.man \
-	     man/mh-chart-gen.sh man/mh-draft.man man/mh-format.man \
-	     man/mh-mail.man man/mh-profile.man man/mh_profile.man \
-	     man/mh-sequence.man man/mh-tailor.man man/mhbuild.man man/mhl.man \
-	     man/mhlist.man man/mhmail.man man/mhn.man man/mhparam.man \
-	     man/mhpath.man man/mhshow.man man/mhstore.man man/msgchk.man \
-	     man/msh.man man/mts.conf.man man/new.man man/next.man man/nmh.man \
-	     man/packf.man man/pick.man man/post.man man/prev.man \
-	     man/prompter.man man/rcvdist.man man/rcvpack.man \
-	     man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
-	     man/rmf.man man/rmm.man man/scan.man man/send.man \
-	     man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
-	     man/unseen.man man/whatnow.man man/whom.man \
 	     test/README test/fakesendmail $(TESTS) test/inc/deb359167.mbox \
 	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
 	     test/inc/md5sums test/mhmail/attachment.txt \
 	     test/post/test-post-common.sh uip/mhmail \
-	     SPECS/nmh.spec SPECS/build-nmh-cygwin
+	     SPECS/nmh.spec SPECS/build-nmh-cygwin $(man_SRCS)
 
 ##
 ## These are all of the definitions for each of the programs listed above.
@@ -550,7 +554,7 @@ man/man.sed: Makefile
 	@echo '/%mhl_reply%/r $(top_srcdir)/etc/mhl.reply' >> $@
 	@echo ' s,%mhl_reply%,,g' >> $@
 
-man/mh-chart.man:
+man/mh-chart.man: $(man_SRCS)
 	$(srcdir)/man/mh-chart-gen.sh > $@
 
 .man.$(manext1):
