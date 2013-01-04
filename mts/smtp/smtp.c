@@ -798,7 +798,19 @@ sm_end (int type)
 	    if (sm_mts == MTS_SMTP)
 		smtalk (SM_QUIT, "QUIT");
 	    else {
+		/* The SIGPIPE block replaces old calls to discard ().
+		   We're not sure what the discard () calls were for,
+		   maybe to prevent deadlock on old systems.  In any
+		   case, blocking SIGPIPE should be harmless.
+		   Because the file handles are closed below, leave it
+		   blocked. */
+		sigset_t set, oset;
+		sigemptyset (&set);
+		sigaddset (&set, SIGPIPE);
+		sigprocmask (SIG_BLOCK, &set, &oset);
+
 		kill (sm_child, SIGKILL);
+		sm_child = NOTOK;
 	    }
 	    if (type == NOTOK) {
 		sm_reply.code = sm_note.code;
@@ -838,9 +850,11 @@ sm_end (int type)
 	if (sasl_inbuffer)
 	    free(sasl_inbuffer);
 #endif /* CYRUS_SASL */
-    } else {
+    } else if (sm_child != NOTOK) {
 	status = pidwait (sm_child, OK);
 	sm_child = NOTOK;
+    } else {
+	status = OK;
     }
 
     sm_rfp = sm_wfp = NULL;
