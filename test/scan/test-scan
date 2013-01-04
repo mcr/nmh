@@ -53,24 +53,5 @@ mark -sequence unseen 10
 scan -form scan.highlighted -width 80 >"$actual" || exit 1
 check "$expected" "$actual"
 
-# check decoding with an invalid multibyte sequence.
-cat >"$expected" <<EOF
-  11  12/31 Test11             2013 New Year?s Deals! Start the year right
-EOF
-
-cat >`mhpath new` <<EOF
-From: Test11 <test11@example.com>
-To: Some User <user@example.com>
-Date: Mon, 31 Dec 2012 00:00:00
-Message-Id: 11@test.nmh
-Subject: =?UTF-8?B?MjAxMyBOZXcgWWVhcuKAmXMgRGVhbHMhIFN0YXJ0IHRoZSB5ZWFy?=
-	=?UTF-8?B?IHJpZ2h0IHdpdGggYmlnIHNhdmluZ3M=?=
-
-This message has an encoded Subject with an invalid character for the
-ISO-8859-1 character set.
-EOF
-LC_CTYPE=ISO-8859-1 MM_CHARSET=ISO-8859-1 scan -width 75 last >"$actual"
-check "$expected" "$actual"
-
 
 exit $failed

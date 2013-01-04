@@ -41,15 +41,43 @@ Subject: =?utf-8?q?Spin=CC=88al_Tap_=E2=86=92_Tap_into_America!?=
 Things are looking great!
 EOF
 
-expected=$MH_TEST_DIR/$$.expected
-actual=$MH_TEST_DIR/$$.actual
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
 
-cat > $expected <<EOF
+cat > "$expected" <<EOF
   11  03/02 David ﬆ Hubbins    Spin̈al Tap → Tap into America!<<Things are
 EOF
 
 scan -width 80 +inbox 11 > $actual || exit 1
-
 check "$expected" "$actual"
+
+# check decoding with an invalid multibyte sequence
+cat >`mhpath new` <<EOF
+From: Test12 <test12@example.com>
+To: Some User <user@example.com>
+Date: Mon, 31 Dec 2012 00:00:00
+Message-Id: 12@test.nmh
+Subject: =?UTF-8?B?MjAxMyBOZXcgWWVhcuKAmXMgRGVhbHMhIFN0YXJ0IHRoZSB5ZWFy?=
+	=?UTF-8?B?IHJpZ2h0IHdpdGggYmlnIHNhdmluZ3M=?=
+
+This message has an encoded Subject with an invalid character for the
+ISO-8859-1 character set, but it (U+2019) is valid UTF-8.
+EOF
+
+cat >"$expected" <<EOF
+  12  12/31 Test12             2013 New Year?s Deals! Start the year right
+EOF
+
+LC_CTYPE=ISO-8859-1 MM_CHARSET=ISO-8859-1 scan -width 75 last >"$actual"
+check "$expected" "$actual"
+
+# check scan width with a valid multibyte sequence
+cat >"$expected" <<EOF
+  12  12/31 Test12             2013 New Year’s Deals! Start the year right
+EOF
+
+LC_CTYPE=en_US.UTF-8 MM_CHARSET=UTF-8 scan -width 75 last >"$actual"
+check "$expected" "$actual"
+
 
 exit $failed
