@@ -68,6 +68,9 @@ OBSOLETE/DEPRECATED FEATURES
   sendmail/pipe.
 - Support for the undocumented and deprecated --enable-nmh-debug configure
   flag has been removed.
+- Support for encoding some characters designated as EBCDIC-unsafe
+  via the -ebcdicsafe and -noebcdicsafe switches to mhbuild has
+  been removed.
 
 ---------
 BUG FIXES

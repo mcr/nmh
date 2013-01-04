@@ -29,43 +29,39 @@ static struct swit switches[] = {
     { "directives", 0 },
 #define	NDIRECTIVES             3
     { "nodirectives", 0 },
-#define	EBCDICSW                4
-    { "ebcdicsafe", 0 },
-#define	NEBCDICSW               5
-    { "noebcdicsafe", 0 },
-#define	HEADSW                  6
+#define	HEADSW                  4
     { "headers", 0 },
-#define	NHEADSW                 7
+#define	NHEADSW                 5
     { "noheaders", 0 },
-#define	LISTSW                  8
+#define	LISTSW                  6
     { "list", 0 },
-#define	NLISTSW                 9
+#define	NLISTSW                 7
     { "nolist", 0 },
-#define	SIZESW                 10
+#define	SIZESW                  8
     { "realsize", 0 },
-#define	NSIZESW                11
+#define	NSIZESW                 9
     { "norealsize", 0 },
-#define	RFC934SW               12
+#define	RFC934SW               10
     { "rfc934mode", 0 },
-#define	NRFC934SW              13
+#define	NRFC934SW              11
     { "norfc934mode", 0 },
-#define	VERBSW                 14
+#define	VERBSW                 12
     { "verbose", 0 },
-#define	NVERBSW                15
+#define	NVERBSW                13
     { "noverbose", 0 },
-#define	RCACHESW               16
+#define	RCACHESW               14
     { "rcache policy", 0 },
-#define	WCACHESW               17
+#define	WCACHESW               15
     { "wcache policy", 0 },
-#define	CONTENTIDSW            18
+#define	CONTENTIDSW            16
     { "contentid", 0 },
-#define	NCONTENTIDSW           19
+#define	NCONTENTIDSW           17
     { "nocontentid", 0 },
-#define VERSIONSW              20
+#define VERSIONSW              18
     { "version", 0 },
-#define	HELPSW                 21
+#define	HELPSW                 19
     { "help", 0 },
-#define	DEBUGSW                22
+#define	DEBUGSW                20
     { "debug", -5 },
     { NULL, 0 }
 };
@@ -83,7 +79,6 @@ extern char *cache_private;
 int debugsw = 0;
 int verbosw = 0;
 
-int ebcdicsw = 0;
 int listsw   = 0;
 int rfc934sw = 0;
 int contentidsw = 1;
@@ -186,13 +181,6 @@ main (int argc, char **argv)
 		continue;
 	    case NCHECKSW:
 		checksw = 0;
-		continue;
-
-	    case EBCDICSW:
-		ebcdicsw++;
-		continue;
-	    case NEBCDICSW:
-		ebcdicsw = 0;
 		continue;
 
 	    case HEADSW:

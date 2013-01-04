@@ -179,7 +179,7 @@ compctl -K mhfseq -x 's[+][@]' -K mhcomp -S / -q - 's[-]' \
 compctl -K mhfseq -x 's[+][@]' -K mhcomp -S / -q - 's[-]' \
   -k "(file part type list headers noheaders realsize norealsize nolist \
   show serialonly noserialonly form pause nopause noshow store auto noauto \
-  nostore cache nocache rcache wcache check nocheck ebcdicsafe noebcdicsafe \
+  nostore cache nocache rcache wcache check nocheck \
   rfc934mode norfc934mode verbose noverbose help)" - \
   'c[-1,-file]' -f - 'c[-1,-form]' -K mhfile - \
   'C[-1,-[rw]cache]' -k '(public private never ask)' -- mhn

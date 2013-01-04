@@ -13,7 +13,6 @@ mhbuild \- translate MIME composition draft
 .RB [ \-realsize " | " \-norealsize ]
 .RB [ \-headers " | " \-noheaders ]
 .RB [ \-directives " | " \-nodirectives ]
-.RB [ \-ebcdicsafe " | " \-noebcdicsafe ]
 .RB [ \-rfc934mode " | " \-norfc934mode ]
 .RB [ \-contentid " | " \-nocontentid ]
 .RB [ \-verbose " | " \-noverbose ]
@@ -490,17 +489,6 @@ will encode each content with
 a transfer encoding, even it the content contains only 7\-bit data.  This
 is to increase the likelihood that the content is not changed while in
 transport.
-.PP
-The switch
-.B \-ebcdicsafe
-will cause
-.B mhbuild
-to slightly change
-the way in which it performs the \*(lqquoted-printable\*(rq transfer
-encoding.  Along with encoding 8\-bit characters, it will now also encode
-certain common punctuation characters as well.  This slightly reduces the
-readability of the message, but allows the message to pass more reliably
-through mail gateways which involve the EBCDIC character encoding.
 .SS "Invoking mhbuild"
 Typically,
 .B mhbuild
@@ -696,6 +684,5 @@ line         ::=     "##" text EOL
 .RB ` \-norfc934mode '
 .RB ` \-contentid '
 .RB ` \-nocheck '
-.RB ` \-noebcdicsafe '
 .RB ` \-noverbose '
 .fi

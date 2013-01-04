@@ -50,8 +50,6 @@ extern int debugsw;
 extern int splitsw;
 extern int verbsw;
 
-int ebcdicsw = 0;	/* hack for linking purposes */
-
 /*
  * static prototypes
  */

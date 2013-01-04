@@ -1280,57 +1280,53 @@ static struct swit mhnswit[] = {
     { "noauto", 0 },
 #define	MHNDEBUGSW	    2
     { "debug", -5 },
-#define	MHNEBCDICSW 	    3
-    { "ebcdicsafe", 0 },
-#define	MHNNEBCDICSW	    4
-    { "noebcdicsafe", 0 },
-#define	MHNFORMSW	    5
+#define	MHNFORMSW	    3
     { "form formfile", 4 },
-#define	MHNHEADSW	    6
+#define	MHNHEADSW	    4
     { "headers", 0 },
-#define	MHNNHEADSW	    7
+#define	MHNNHEADSW	    5
     { "noheaders", 0 },
-#define	MHNLISTSW	    8
+#define	MHNLISTSW	    6
     { "list", 0 },
-#define	MHNNLISTSW	    9
+#define	MHNNLISTSW	    7
     { "nolist", 0 },
-#define	MHNPARTSW	   10
+#define	MHNPARTSW	    8
     { "part number", 0 },
-#define	MHNSIZESW	   11
+#define	MHNSIZESW	    9
     { "realsize", 0 },
-#define	MHNNSIZESW	   12
+#define	MHNNSIZESW	   10
     { "norealsize", 0 },
-#define	MHNRFC934SW	   13
+#define	MHNRFC934SW	   11
     { "rfc934mode", 0 },
-#define	MHNNRFC934SW	   14
+#define	MHNNRFC934SW	   12
     { "norfc934mode", 0 },
-#define	MHNSERIALSW	   15
+#define	MHNSERIALSW	   13
     { "serialonly", 0 },
-#define	MHNNSERIALSW	   16
+#define	MHNNSERIALSW	   14
     { "noserialonly", 0 },
-#define	MHNSHOWSW	   17
+#define	MHNSHOWSW	   15
     { "show", 0 },
-#define	MHNNSHOWSW	   18
+#define	MHNNSHOWSW	   16
     { "noshow", 0 },
-#define	MHNSTORESW	   19
+#define	MHNSTORESW	   17
     { "store", 0 },
-#define	MHNNSTORESW	   20
+#define	MHNNSTORESW	   18
     { "nostore", 0 },
-#define	MHNTYPESW	   21
+#define	MHNTYPESW	   19
     { "type content", 0 },
-#define	MHNVERBSW	   22
+#define	MHNVERBSW	   20
     { "verbose", 0 },
-#define	MHNNVERBSW	   23
+#define	MHNNVERBSW	   21
     { "noverbose", 0 },
-#define	MHNHELPSW	   24
+#define	MHNHELPSW	   22
     { "help", 0 },
-#define	MHNPROGSW	   25
+#define	MHNPROGSW	   23
     { "moreproc program", -4 },
-#define	MHNNPROGSW	   26
+#define	MHNNPROGSW	   24
     { "nomoreproc", -3 },
-#define	MHNLENSW	   27
+#define	MHNLENSW	   25
     { "length lines", -4 },
-#define	MHNWIDSW	   28
+#define	MHNWIDSW	   26
     { "width columns", -4 },
     { NULL, 0 }
 };
@@ -1365,8 +1361,6 @@ mhncmd (char **args)
 		case MHNAUTOSW:
 		case MHNNAUTOSW:
 		case MHNDEBUGSW:
-		case MHNEBCDICSW:
-		case MHNNEBCDICSW:
 		case MHNHEADSW:
 		case MHNNHEADSW:
 		case MHNLISTSW:

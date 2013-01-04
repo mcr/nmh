@@ -107,13 +107,9 @@ static struct swit switches[] = {
     { "build", -5 },
 #define NBUILDSW               36
     { "nobuild", -7 },
-#define	EBCDICSW               37
-    { "ebcdicsafe", -10 },
-#define	NEBCDICSW              38
-    { "noebcdicsafe", -12 },
-#define	RFC934SW               39
+#define	RFC934SW               37
     { "rfc934mode", -10 },
-#define	NRFC934SW              40
+#define	NRFC934SW              38
     { "norfc934mode", -12 },
     { NULL, 0 }
 };
@@ -154,7 +150,6 @@ int verbosw = 0;
  * variables for mhbuild (mhn -build)
  */
 static int buildsw  = 0;
-static int ebcdicsw = 0;
 static int rfc934sw = 0;
 
 /*
@@ -398,12 +393,6 @@ do_cache:
 	    case NRFC934SW:
 		rfc934sw = -1;
 		continue;
-	    case EBCDICSW:
-		ebcdicsw = 1;
-		continue;
-	    case NEBCDICSW:
-		ebcdicsw = -1;
-		continue;
 
 	    case VERBSW: 
 		verbosw = 1;
@@ -493,11 +482,6 @@ do_cache:
 	vecp = 0;
 	vec[vecp++] = "mhbuild";
 
-	if (ebcdicsw == 1)
-	    vec[vecp++] = "-ebcdicsafe";
-	else if (ebcdicsw == -1)
-	    vec[vecp++] = "-noebcdicsafe";
-
 	if (rfc934sw == 1)
 	    vec[vecp++] = "-rfc934mode";
 	else if (rfc934sw == -1)
@@ -524,11 +508,6 @@ do_cache:
 
 	vecp = 0;
 	vec[vecp++] = "mhbuild";
-
-	if (ebcdicsw == 1)
-	    vec[vecp++] = "-ebcdicsafe";
-	else if (ebcdicsw == -1)
-	    vec[vecp++] = "-noebcdicsafe";
 
 	if (rfc934sw == 1)
 	    vec[vecp++] = "-rfc934mode";
