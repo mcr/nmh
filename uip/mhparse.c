@@ -1121,9 +1121,22 @@ InitMultiPart (CT ct)
      */
     if (ct->c_encoding != CE_7BIT && ct->c_encoding != CE_8BIT
 	&& ct->c_encoding != CE_BINARY) {
+	/* Copy the Content-Transfer-Encoding header field body so we can
+	   remove any trailing whitespace and leading blanks from it. */
+	char *cte = add (ct->c_celine ? ct->c_celine : "(null)", NULL);
+
+	bp = cte + strlen (cte) - 1;
+	while (bp >= cte && isspace (*bp)) *bp-- = '\0';
+	for (bp = cte; *bp && isblank (*bp); ++bp) continue;
+
 	admonish (NULL,
-		  "\"%s/%s\" type in message %s must be encoded in 7bit, 8bit, or binary",
-		  ci->ci_type, ci->ci_subtype, ct->c_file);
+		  "\"%s/%s\" type in message %s must be encoded in\n"
+		  "7bit, 8bit, or binary, per RFC 2045 (6.4).  One workaround "
+		  "is to\nmanually edit the file and change the \"%s\"\n"
+		  "Content-Transfer-Encoding to one of those.  For now",
+		  ci->ci_type, ci->ci_subtype, ct->c_file, bp);
+	free (cte);
+
 	return NOTOK;
     }
 
