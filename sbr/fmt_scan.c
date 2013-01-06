@@ -25,10 +25,6 @@
 #  include <wchar.h>
 #endif
 
-#ifdef LBL
-struct msgs *fmt_current_folder; /* current folder (set by main program) */
-#endif
-
 extern int fmt_norm;		/* defined in sbr/fmt_def.c = AD_NAME */
 struct mailname fmt_mnull = { NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0,
 			      NULL, NULL };
@@ -996,17 +992,6 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 		    comp->c_flags &= ~CF_TRUE;
 		comp->c_mn = &fmt_mnull;
 	    }
-	    break;
-
-	case FT_ADDTOSEQ:
-#ifdef LBL
-	    /* If we're working on a folder (as opposed to a file), add the
-	     * current msg to sequence given in literal field.  Don't
-	     * disturb string or value registers.
-	     */
-	    if (fmt_current_folder)
-		    seq_addmsg(fmt_current_folder, fmt->f_text, dat[0], -1);
-#endif
 	    break;
 	}
 	fmt++;

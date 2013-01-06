@@ -45,13 +45,6 @@ static struct swit switches[] = {
 
 
 /*
- * global for sbr/formatsbr.c - yech!
- */
-#ifdef LBL
-extern struct msgs *fmt_current_folder;	
-#endif
-
-/*
  * prototypes
  */
 void clear_screen(void);  /* from termsbr.c */
@@ -249,11 +242,6 @@ main (int argc, char **argv)
 
     ontty = isatty (fileno (stdout));
 
-#ifdef LBL
-    else
-	fmt_current_folder = mp;
-#endif
-
     for (msgnum = revflag ? mp->hghsel : mp->lowsel;
 	 (revflag ? msgnum >= mp->lowsel : msgnum <= mp->hghsel);
 	 msgnum += (revflag ? -1 : 1)) {
@@ -300,10 +288,6 @@ main (int argc, char **argv)
 		fflush (stdout);
 	}
     }
-
-#ifdef LBL
-    seq_save (mp);	/* because formatsbr might have made changes */
-#endif
 
     folder_free (mp);	/* free folder/message structure */
     if (clearflag)

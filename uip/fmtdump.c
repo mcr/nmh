@@ -415,9 +415,6 @@ f_typestr(int t)
 	case FT_FORMATADDR: return("FORMATADDR");
 	case FT_CONCATADDR: return("CONCATADDR");
 	case FT_MYMBOX: return("MYMBOX");
-#ifdef	FT_ADDTOSEQ
-	case FT_ADDTOSEQ: return("ADDTOSEQ");
-#endif
 	case FT_SAVESTR: return("SAVESTR");
 #ifdef	FT_PAUSE
 	case FT_PAUSE: return ("PAUSE");
