@@ -76,6 +76,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/repl/test-multicomp test/repl/test-repl \
 	test/scan/test-scan test/scan/test-scan-multibyte \
 	test/sequences/test-flist test/sequences/test-mark \
+	test/sequences/test-out-of-range \
 	test/slocal/test-slocal \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
 	test/whatnow/test-ls test/whom/test-whom \

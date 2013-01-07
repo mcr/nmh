@@ -1,0 +1,37 @@
+#!/bin/sh
+############################################################
+#
+# Test to see if a out-of-range sequence is handled properly
+#
+############################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+cat > $MH_TEST_DIR/Mail/inbox/.mh_sequences <<EOS
+cur: 120
+test: 121
+EOS
+
+run_test 'mhpath +inbox test' 'mhpath: sequence test empty'
+
+cat > $MH_TEST_DIR/Mail/inbox/.mh_sequences <<EOS
+cur: 120
+test: 121
+EOS
+
+#
+# Yes, this is right.  "cur" is special in that it can refer to messages
+# that don't exist.
+#
+run_test 'mhpath +inbox cur' "$MH_TEST_DIR/Mail/inbox/120"
+
+exit $failed
