@@ -6,14 +6,17 @@
 /*
  * various cache policies
  */
-static struct swit caches[] = {
-#define CACHE_NEVER    0
-    { "never", 0, 0 },
-#define CACHE_PRIVATE  1
-    { "private", 0, 0 },
-#define CACHE_PUBLIC   2
-    { "public", 0, 0 },
-#define CACHE_ASK      3
-    { "ask", 0, 0 },
-    { NULL, 0, 0 }
-};
+
+#define CACHE_SWITCHES \
+    X("never", 0, CACHE_NEVER) \
+    X("private", 0, CACHE_PRIVATE) \
+    X("public", 0, CACHE_PUBLIC) \
+    X("ask", 0, CACHE_ASK) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(CACHE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(CACHE, caches);
+#undef X
