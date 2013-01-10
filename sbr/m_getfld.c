@@ -231,10 +231,14 @@ static int (*eom_action)(int) = NULL;
 
 /* This replaces the old approach, which included direct access to
    stdio internals.  It uses one fread() to load a buffer that we
-   manage. */
+   manage.
+   MSG_INPUT_SIZE is the size of the buffer.
+   MAX_DELIMITER_SIZE is the maximum size of the delimiter used to
+   separate messages in a maildrop, such as mbox "\nFrom ". */
 #define MSG_INPUT_SIZE 8192
+#define MAX_DELIMITER_SIZE 32
 static struct m_getfld_buffer {
-    unsigned char msg_buf[2 * MSG_INPUT_SIZE];
+    unsigned char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
     unsigned char *readpos;
     unsigned char *end;  /* One past, like C++, the last character read in. */
 } m;
@@ -255,14 +259,25 @@ setup_buffer (FILE *iob, struct m_getfld_buffer *m) {
 
 static size_t
 read_more (struct m_getfld_buffer *m, FILE *iob) {
+    /* Retain at least edelimlen characters that have already been
+       read so that we can back up to them in m_Eom(). */
+    ssize_t retain = edelimlen;
     size_t num_read;
 
-    /* Move any leftover at the end of buf to the beginning. */
     if (m->end > m->readpos) {
-	memmove (m->msg_buf, m->readpos, m->end - m->readpos);
+	if (retain < m->end - m->readpos) retain = m->end - m->readpos;
+    }
+    if (retain > m->readpos - m->msg_buf) {
+	/* Should not happen:  there have been fewer characters read
+	   than are remaining in the buffer. */
+	retain = m->readpos - m->msg_buf;
     }
 
-    m->readpos = m->msg_buf + (m->end - m->readpos);
+    /* Move any leftover at the end of buf to the beginning. */
+    memmove (m->msg_buf, m->readpos - retain, retain);
+
+    m->readpos = m->msg_buf + retain;
+
     num_read = fread (m->readpos, 1, MSG_INPUT_SIZE, iob);
 
     m->end = m->readpos + num_read;
@@ -593,10 +608,10 @@ void
 m_unknown(FILE *iob)
 {
     register int c;
-    unsigned char *pos;
     char text[10];
     register char *cp;
     register char *delimstr;
+    size_t bytes_read = 0;
 
     setup_buffer (iob, &m);
 
@@ -615,8 +630,8 @@ m_unknown(FILE *iob)
 
     msg_style = MS_UNKNOWN;
 
-    pos = m.readpos; /* ftell */
     for (c = 0, cp = text; c < 5; ++c, ++cp) {
+	++bytes_read;
 	if ((*cp = Getc (iob)) == EOF) {
 	    break;
 	}
@@ -625,11 +640,11 @@ m_unknown(FILE *iob)
     if (c == 5  &&  strncmp (text, "From ", 5) == 0) {
 	msg_style = MS_MBOX;
 	delimstr = "\nFrom ";
-	while ((c = Getc (iob)) != '\n' && c >= 0)
+	while (++bytes_read, (c = Getc (iob)) != '\n' && c >= 0)
 	    ;
     } else {
 	/* not a Unix style maildrop */
-	m.readpos = pos; /* fseek (iob, pos, SEEK_SET) */
+	m.readpos -= bytes_read; /* fseek (iob, pos, SEEK_SET), but relative. */
 	if (mmdlm2 == NULL || *mmdlm2 == 0)
 	    mmdlm2 = "\001\001\001\001\n";
 	delimstr = mmdlm2;
@@ -692,13 +707,13 @@ m_eomsbr (int (*action)(int))
 static int
 m_Eom (int c, FILE *iob)
 {
-    unsigned char *pos;
     register int i;
-    char text[10];
+    size_t bytes_read = 0;
+    char text[MAX_DELIMITER_SIZE];
     char *cp;
 
-    pos = m.readpos; /* ftell */
     for (i = 0, cp = text; i < edelimlen; ++i, ++cp) {
+	++bytes_read;
 	if ((*cp = Getc (iob)) == EOF) {
 	    break;
 	}
@@ -710,8 +725,11 @@ m_Eom (int c, FILE *iob)
 	     * maildrop is part of the delimitter - delete it.
 	     */
 	    return 1;
-	m.readpos = pos - 1;	/* fseek (iob, pos - 1, SEEK_SET) */
-	Getc (iob);		/* should be OK */
+
+	/* Did not find delimiter, so restore the read position.
+	   Note that on input, a character had already been read
+	   with Getc().  It will be unget by m_getfld () on return. */
+	m.readpos -= bytes_read;
 	return 0;
     }
 
