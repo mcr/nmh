@@ -250,7 +250,7 @@ setup_buffer (FILE *iob, struct m_getfld_buffer *m) {
        methods are used.  And, the first call to m_getfld (), etc., on
        a stream always reads at least 1 byte.
        I don't think it's necessary to use ftello() because we just
-       need to determine whether the current offset is 0 or not.  */
+       need to determine whether the current offset is 0 or not. */
     if (ftell (iob) == 0) {
 	/* A new file stream, so reset the buffer state. */
 	m->readpos = m->end = m->msg_buf;
@@ -384,6 +384,9 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    }
 		} else {
 		    /* Restore the current offset. */
+		    /* j was set to be less than or equal to the number of
+		       bytes available, so we can't overrun the end of the
+		       message buffer. */
 		    m.readpos = bp + 1;
 		}
 		if (c == ':')
@@ -462,6 +465,8 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 			/* Save the text and update the current position. */
 			j = ep - m.readpos;
 			memcpy (cp, m.readpos, j);
+			/* c is less than or equal to the number of bytes
+			   remaining in the read buffer, so will not overrun. */
 			m.readpos = ep;
 			cp += j;
 			state = FLD;
@@ -585,7 +590,9 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		}
 	    }
 	    memcpy( buf, bp, c );
-	    /* Advance the current position to reflect the copy out. */
+	    /* Advance the current position to reflect the copy out.
+	       c is less than or equal to the number of bytes remaining
+	       in the read buffer, so will not overrun it. */
 	    m.readpos += c;
 	    if (*bufsz < 0) {
 		*bufsz = c + bytes_read + 1;
@@ -608,7 +615,7 @@ void
 m_unknown(FILE *iob)
 {
     register int c;
-    char text[10];
+    char text[MAX_DELIMITER_SIZE];
     register char *cp;
     register char *delimstr;
     size_t bytes_read = 0;
@@ -642,6 +649,11 @@ m_unknown(FILE *iob)
 	delimstr = "\nFrom ";
 	while (++bytes_read, (c = Getc (iob)) != '\n' && c >= 0)
 	    ;
+	/* m_unknown is only called on maildrop files, and they are only
+	   read using m_getfld ().  The caller musn't try to read from
+	   the stream directly because the file position indicator was
+	   not advanced based on bytes_read, but instead on whatever
+	   was read into the message buffer. */
     } else {
 	/* not a Unix style maildrop */
 	m.readpos -= bytes_read; /* fseek (iob, pos, SEEK_SET), but relative. */
@@ -657,7 +669,7 @@ m_unknown(FILE *iob)
     msg_delim = (char *)fdelim+1;
     edelim = (unsigned char *)msg_delim+1;
     fdelimlen = c + 1;
-    edelimlen = c - 1;
+    edelimlen = c - 1; /* == strlen (delimstr) */
     strcpy (msg_delim, delimstr);
     delimend = (unsigned char *)msg_delim + edelimlen;
     if (edelimlen <= 1)
