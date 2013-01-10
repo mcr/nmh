@@ -64,7 +64,7 @@ static struct swit aqrl[] = {
     { "replace", 0, YESW },
     { "list", 0, LISTDSW },
     { "refile +folder", 0, REFILSW },
-    { NULL, 0 }
+    { NULL, 0, 0 }
 };
 
 
