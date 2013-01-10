@@ -17,39 +17,30 @@
 #endif
 #include <time.h>
 
-static struct swit parswit[] = {
-#define	PRAND                   0
-    { "and", 0 },
-#define	PROR                    1
-    { "or", 0 },
-#define	PRNOT                   2
-    { "not", 0 },
-#define	PRLBR                   3
-    { "lbrace", 0 },
-#define	PRRBR                   4
-    { "rbrace", 0 },
-#define	PRCC                    5
-    { "cc  pattern", 0 },
-#define	PRDATE                  6
-    { "date  pattern", 0 },
-#define	PRFROM                  7
-    { "from  pattern", 0 },
-#define	PRSRCH                  8
-    { "search  pattern", 0 },
-#define	PRSUBJ                  9
-    { "subject  pattern", 0 },
-#define	PRTO                   10
-    { "to  pattern", 0 },
-#define	PROTHR                 11
-    { "-othercomponent  pattern", 15 },
-#define	PRAFTR                 12
-    { "after date", 0 },
-#define	PRBEFR                 13
-    { "before date", 0 },
-#define	PRDATF                 14
-    { "datefield field", 5 },
-    { NULL, 0 }
-};
+#define PARSE_SWITCHES \
+    X("and", 0, PRAND) \
+    X("or", 0, PROR) \
+    X("not", 0, PRNOT) \
+    X("lbrace", 0, PRLBR) \
+    X("rbrace", 0, PRRBR) \
+    X("cc  pattern", 0, PRCC) \
+    X("date  pattern", 0, PRDATE) \
+    X("from  pattern", 0, PRFROM) \
+    X("search  pattern", 0, PRSRCH) \
+    X("subject  pattern", 0, PRSUBJ) \
+    X("to  pattern", 0, PRTO) \
+    X("-othercomponent  pattern", 15, PROTHR) \
+    X("after date", 0, PRAFTR) \
+    X("before date", 0, PRBEFR) \
+    X("datefield field", 5, PRDATF) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(PARSE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(PARSE, parswit);
+#undef X
 
 /* DEFINITIONS FOR PATTERN MATCHING */
 

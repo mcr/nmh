@@ -18,33 +18,27 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 
-static struct swit switches[] = {
-#define	TOSW                    0
-    { "to mailpath", 0 },
-#define	FROMSW                  1
-    { "from mailpath", 0 },
-#define	SUBJECTSW               2
-    { "subject subject", 0 },
-#define	PARAMSW                 3
-    { "parameters arguments", 0 },
-#define	DESCRIPTSW              4
-    { "description text", 0 },
-#define	COMMENTSW               5
-    { "comment text", 0 },
-#define	DELAYSW                 6
-    { "delay seconds", 0 },
-#define	VERBSW                  7
-    { "verbose", 0 },
-#define	NVERBSW                 8
-    { "noverbose", 0 },
-#define VERSIONSW               9
-    { "version", 0 },
-#define	HELPSW                 10
-    { "help", 0 },
-#define DEBUGSW                11
-    { "debug", -5 },
-    { NULL, 0 }
-};
+#define VIAMAIL_SWITCHES \
+    X("to mailpath", 0, TOSW) \
+    X("from mailpath", 0, FROMSW) \
+    X("subject subject", 0, SUBJECTSW) \
+    X("parameters arguments", 0, PARAMSW) \
+    X("description text", 0, DESCRIPTSW) \
+    X("comment text", 0, COMMENTSW) \
+    X("delay seconds", 0, DELAYSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("debug", -5, DEBUGSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(VIAMAIL);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(VIAMAIL, switches);
+#undef X
 
 extern int debugsw;
 extern int splitsw;

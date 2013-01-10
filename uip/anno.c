@@ -46,39 +46,30 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	COMPSW	0
-    { "component field", 0 },
-#define	INPLSW	1
-    { "inplace", 0 },
-#define	NINPLSW	2
-    { "noinplace", 0 },
-#define	DATESW	3
-    { "date", 0 },
-#define	NDATESW	4
-    { "nodate", 0 },
-#define	TEXTSW	5
-    { "text body", 0 },
-#define VERSIONSW 6
-    { "version", 0 },
-#define	HELPSW	7
-    { "help", 0 },
-#define	DRFTSW			 8
-    { "draft", 2 },
-#define	LISTSW			 9
-    { "list", 1 },
-#define	DELETESW		10
-    { "delete", 2 },
-#define	NUMBERSW		11
-    { "number", 2 },
-#define	APPENDSW		12
-    { "append", 1 },
-#define	PRESERVESW		13
-    { "preserve", 1 },
-#define	NOPRESERVESW		14
-    { "nopreserve", 3 },
-    { NULL, 0 }
-};
+#define ANNO_SWITCHES \
+    X("component field", 0, COMPSW) \
+    X("inplace", 0, INPLSW) \
+    X("noinplace", 0, NINPLSW) \
+    X("date", 0, DATESW) \
+    X("nodate", 0, NDATESW) \
+    X("text body", 0, TEXTSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("draft", 2, DRFTSW) \
+    X("list", 1, LISTSW) \
+    X("delete", 2, DELETESW) \
+    X("number", 2, NUMBERSW) \
+    X("append", 1, APPENDSW) \
+    X("preserve", 1, PRESERVESW) \
+    X("nopreserve", 3, NOPRESERVESW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(ANNO);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(ANNO, switches);
+#undef X
 
 /*
  * static prototypes

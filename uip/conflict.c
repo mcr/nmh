@@ -26,17 +26,19 @@
  */
 #define	NGRPS	100
 
-static struct swit switches[] = {
-#define	MAILSW         0
-    { "mail name", 0 },
-#define	SERCHSW        1
-    { "search directory", 0 },
-#define VERSIONSW      2
-    { "version", 0 },
-#define	HELPSW         3
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define CONFLICT_SWITCHES \
+    X("mail name", 0, MAILSW) \
+    X("search directory", 0, SERCHSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(CONFLICT);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(CONFLICT, switches);
+#undef X
 
 static char *mail = NULL;
 static char *dirs[NDIRS];

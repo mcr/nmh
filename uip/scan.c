@@ -15,33 +15,27 @@
 #include <h/utils.h>
 #include <errno.h>
 
-static struct swit switches[] = {
-#define	CLRSW	0
-    { "clear", 0 },
-#define	NCLRSW	1
-    { "noclear", 0 },
-#define	FORMSW	2
-    { "form formatfile", 0 },
-#define	FMTSW	3
-    { "format string", 5 },
-#define	HEADSW	4
-    { "header", 0 },
-#define	NHEADSW	5
-    { "noheader", 0 },
-#define	WIDTHSW	6
-    { "width columns", 0 },
-#define	REVSW	7
-    { "reverse", 0 },
-#define	NREVSW	8
-    { "noreverse", 0 },
-#define	FILESW	9
-    { "file file", 4 },
-#define VERSIONSW 10
-    { "version", 0 },
-#define	HELPSW	11
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define SCAN_SWITCHES \
+    X("clear", 0, CLRSW) \
+    X("noclear", 0, NCLRSW) \
+    X("form formatfile", 0, FORMSW) \
+    X("format string", 5, FMTSW) \
+    X("header", 0, HEADSW) \
+    X("noheader", 0, NHEADSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("reverse", 0, REVSW) \
+    X("noreverse", 0, NREVSW) \
+    X("file file", 4, FILESW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SCAN);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SCAN, switches);
+#undef X
 
 
 /*

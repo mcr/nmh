@@ -12,17 +12,19 @@
 #include <h/fmt_compile.h>
 #include <h/scansbr.h>
 
-static struct swit switches[] = {
-#define	FORMSW              0
-    { "form formatfile", 0 },
-#define	FMTSW               1
-    { "format string", 5 },
-#define VERSIONSW           2
-    { "version", 0 },
-#define	HELPSW              3
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define FMTDUMP_SWITCHES \
+    X("form formatfile", 0, FORMSW) \
+    X("format string", 5, FMTSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(FMTDUMP);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(FMTDUMP, switches);
+#undef X
 
 /* for assignlabel */
 static struct format *lvec[128];

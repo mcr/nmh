@@ -44,55 +44,38 @@
 
 #define	QUOTE	'\\'
 
-static struct swit mhlswitches[] = {
-#define	BELLSW         0
-    { "bell", 0 },
-#define	NBELLSW        1
-    { "nobell", 0 },
-#define	CLRSW          2
-    { "clear", 0 },
-#define	NCLRSW         3
-    { "noclear", 0 },
-#define	FOLDSW         4
-    { "folder +folder", 0 },
-#define	FORMSW         5
-    { "form formfile", 0 },
-#define	PROGSW         6
-    { "moreproc program", 0 },
-#define	NPROGSW        7
-    { "nomoreproc", 0 },
-#define	LENSW          8
-    { "length lines", 0 },
-#define	WIDTHSW        9
-    { "width columns", 0 },
-#define	SLEEPSW       10
-    { "sleep seconds",  0 },
-#define	BITSTUFFSW    11
-    { "dashstuffing", -12 },	/* interface from forw */
-#define	NBITSTUFFSW   12
-    { "nodashstuffing", -14 },	/* interface from forw */
-#define VERSIONSW     13
-    { "version", 0 },
-#define	HELPSW        14
-    { "help", 0 },
-#define	FORW1SW       15
-    { "forward", -7 },		/* interface from forw */
-#define	FORW2SW       16
-    { "forwall", -7 },		/* interface from forw */
-#define	DGSTSW        17
-    { "digest list", -6 },
-#define VOLUMSW       18
-    { "volume number", -6 },
-#define ISSUESW       19
-    { "issue number", -5 },
-#define NBODYSW       20
-    { "nobody", -6 },
-#define FMTPROCSW     21
-    { "fmtproc program", 0 },
-#define NFMTPROCSW    22
-    { "nofmtproc", 0 },
-    { NULL, 0 }
-};
+#define MHL_SWITCHES \
+    X("bell", 0, BELLSW) \
+    X("nobell", 0, NBELLSW) \
+    X("clear", 0, CLRSW) \
+    X("noclear", 0, NCLRSW) \
+    X("folder +folder", 0, FOLDSW) \
+    X("form formfile", 0, FORMSW) \
+    X("moreproc program", 0, PROGSW) \
+    X("nomoreproc", 0, NPROGSW) \
+    X("length lines", 0, LENSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("sleep seconds", 0, SLEEPSW) \
+    X("dashstuffing", -12, BITSTUFFSW)    /* interface from forw */ \
+    X("nodashstuffing", -14, NBITSTUFFSW) /* interface from forw */ \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("forward", -7, FORW1SW)             /* interface from forw */ \
+    X("forwall", -7, FORW2SW)             /* interface from forw */ \
+    X("digest list", -6, DGSTSW) \
+    X("volume number", -6, VOLUMSW) \
+    X("issue number", -5, ISSUESW) \
+    X("nobody", -6, NBODYSW) \
+    X("fmtproc program", 0, FMTPROCSW) \
+    X("nofmtproc", 0, NFMTPROCSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHL);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHL, mhlswitches);
+#undef X
 
 #define NOCOMPONENT 0x000001	/* don't show component name         */
 #define UPPERCASE   0x000002	/* display in all upper case         */

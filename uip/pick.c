@@ -12,59 +12,40 @@
 #include <h/picksbr.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	ANDSW                   0
-    { "and", 0 },
-#define	ORSW                    1
-    { "or", 0 },
-#define	NOTSW                   2
-    { "not", 0 },
-#define	LBRSW                   3
-    { "lbrace", 0 },
-#define	RBRSW                   4
-    { "rbrace", 0 },
-#define	CCSW                    5
-    { "cc  pattern", 0 },
-#define	DATESW                  6
-    { "date  pattern", 0 },
-#define	FROMSW                  7
-    { "from  pattern", 0 },
-#define	SRCHSW                  8
-    { "search  pattern", 0 },
-#define	SUBJSW                  9
-    { "subject  pattern", 0 },
-#define	TOSW                   10
-    { "to  pattern", 0 },
-#define	OTHRSW                 11
-    { "-othercomponent  pattern", 0 },
-#define	AFTRSW                 12
-    { "after date", 0 },
-#define	BEFRSW                 13
-    { "before date", 0 },
-#define	DATFDSW                14
-    { "datefield field", 5 },
-#define	SEQSW                  15
-    { "sequence name", 0 },
-#define	NSEQSW                 16
-    { "nosequence", 0 },
-#define	PUBLSW                 17
-    { "public", 0 },
-#define	NPUBLSW                18
-    { "nopublic", 0 },
-#define	ZEROSW                 19
-    { "zero", 0 },
-#define	NZEROSW                20
-    { "nozero", 0 },
-#define	LISTSW                 21
-    { "list", 0 },
-#define	NLISTSW                22
-    { "nolist", 0 },
-#define VERSIONSW              23
-    { "version", 0 },
-#define	HELPSW                 24
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define PICK_SWITCHES \
+    X("and", 0, ANDSW) \
+    X("or", 0, ORSW) \
+    X("not", 0, NOTSW) \
+    X("lbrace", 0, LBRSW) \
+    X("rbrace", 0, RBRSW) \
+    X("cc  pattern", 0, CCSW) \
+    X("date  pattern", 0, DATESW) \
+    X("from  pattern", 0, FROMSW) \
+    X("search  pattern", 0, SRCHSW) \
+    X("subject  pattern", 0, SUBJSW) \
+    X("to  pattern", 0, TOSW) \
+    X("-othercomponent  pattern", 0, OTHRSW) \
+    X("after date", 0, AFTRSW) \
+    X("before date", 0, BEFRSW) \
+    X("datefield field", 5, DATFDSW) \
+    X("sequence name", 0, SEQSW) \
+    X("nosequence", 0, NSEQSW) \
+    X("public", 0, PUBLSW) \
+    X("nopublic", 0, NPUBLSW) \
+    X("zero", 0, ZEROSW) \
+    X("nozero", 0, NZEROSW) \
+    X("list", 0, LISTSW) \
+    X("nolist", 0, NLISTSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(PICK);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(PICK, switches);
+#undef X
 
 static int listsw = -1;
 

@@ -14,15 +14,18 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	FORMSW       0
-    { "form formfile",  4 },
-#define VERSIONSW    1
-    { "version", 0 },
-#define	HELPSW       2
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define RCVDIST_SWITCHES \
+    X("form formfile", 4, FORMSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(RCVDIST);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(RCVDIST, switches);
+#undef X
 
 static char backup[BUFSIZ] = "";
 static char drft[BUFSIZ] = "";

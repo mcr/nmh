@@ -29,16 +29,16 @@ smatch(char *string, struct swit *swp)
 	    continue;			/* no match */
 	for (sp = string; *sp == *tcp++;) {
 	    if (*sp++ == '\0')
-		return (tp - swp);	/* exact match */
+		return tp->swret;	/* exact match */
 	}
 	if (*sp) {
 	    if (*sp != ' ')
 		continue;		/* no match */
 	    if (*--tcp == '\0')
-		return (tp - swp);	/* exact match */
+		return tp->swret;	/* exact match */
 	}
 	if (firstone == UNKWNSW)
-	    firstone = tp - swp;
+	    firstone = tp->swret;
 	else
 	    firstone = AMBIGSW;
     }

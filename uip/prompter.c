@@ -26,33 +26,27 @@
 # define CERASE '#'
 #endif
 
-static struct swit switches[] = {
-#define	ERASESW	0
-    { "erase chr", 0 },
-#define	KILLSW	1
-    { "kill chr", 0 },
-#define	PREPSW	2
-    { "prepend", 0 },
-#define	NPREPSW	3
-    { "noprepend", 0 },	
-#define	RAPDSW	4
-    { "rapid", 0 },
-#define	NRAPDSW	5
-    { "norapid", 0 },
-#define	BODYSW	6
-    { "body", -4 },
-#define	NBODYSW	7
-    { "nobody", -6 },
-#define	DOTSW	8
-    { "doteof", 0 },
-#define	NDOTSW	9
-    { "nodoteof", 0 },
-#define VERSIONSW 10
-    { "version", 0 },
-#define	HELPSW	11
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define PROMPTER_SWITCHES \
+    X("erase chr", 0, ERASESW) \
+    X("kill chr", 0, KILLSW) \
+    X("prepend", 0, PREPSW) \
+    X("noprepend", 0, NPREPSW) \
+    X("rapid", 0, RAPDSW) \
+    X("norapid", 0, NRAPDSW) \
+    X("body", -4, BODYSW) \
+    X("nobody", -6, NBODYSW) \
+    X("doteof", 0, DOTSW) \
+    X("nodoteof", 0, NDOTSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(PROMPTER);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(PROMPTER, switches);
+#undef X
 
 
 static struct termios tio;

@@ -9,17 +9,19 @@
 
 #include <h/mh.h>
 
-static struct swit switches[] = {
-#define	INTRSW            0
-    { "interactive", 0 },
-#define	NINTRSW           1
-    { "nointeractive", 0 },
-#define VERSIONSW         2
-    { "version", 0 },
-#define	HELPSW            3
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define RMF_SWITCHES \
+    X("interactive", 0, INTRSW) \
+    X("nointeractive", 0, NINTRSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(RMF);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(RMF, switches);
+#undef X
 
 /*
  * static prototypes

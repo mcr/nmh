@@ -11,45 +11,33 @@
 #include <h/mime.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define CHECKMIMESW          0
-    { "checkmime", 0 },
-#define NOCHECKMIMESW        1
-    { "nocheckmime", 0 },
-#define	HEADSW               2
-    { "header", 0 },
-#define	NHEADSW              3
-    { "noheader", 0 },
-#define	FORMSW               4
-    { "form formfile", 0 },
-#define	PROGSW               5
-    { "moreproc program", 0 },
-#define	NPROGSW              6
-    { "nomoreproc", 0 },
-#define	LENSW                7
-    { "length lines", 0 },
-#define	WIDTHSW              8
-    { "width columns", 0 },
-#define	SHOWSW               9
-    { "showproc program", 0 },
-#define SHOWMIMESW          10
-    { "showmimeproc program", 0 },
-#define	NSHOWSW             11
-    { "noshowproc", 0 },
-#define	DRFTSW              12
-    { "draft", 0 },
-#define	FILESW              13
-    { "file file", -4 },		/* interface from showfile */
-#define FMTPROCSW           14
-    { "fmtproc program", 0 },
-#define NFMTPROCSW          15
-    { "nofmtproc", 0 },
-#define VERSIONSW           16
-    { "version", 0 },
-#define	HELPSW              17
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define SHOW_SWITCHES \
+    X("checkmime", 0, CHECKMIMESW) \
+    X("nocheckmime", 0, NOCHECKMIMESW) \
+    X("header", 0, HEADSW) \
+    X("noheader", 0, NHEADSW) \
+    X("form formfile", 0, FORMSW) \
+    X("moreproc program", 0, PROGSW) \
+    X("nomoreproc", 0, NPROGSW) \
+    X("length lines", 0, LENSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("showproc program", 0, SHOWSW) \
+    X("showmimeproc program", 0, SHOWMIMESW) \
+    X("noshowproc", 0, NSHOWSW) \
+    X("draft", 0, DRFTSW) \
+    X("file file", -4, FILESW) /* interface from showfile */ \
+    X("fmtproc program", 0, FMTPROCSW) \
+    X("nofmtproc", 0, NFMTPROCSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SHOW);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SHOW, switches);
+#undef X
 
 /*
  * static prototypes

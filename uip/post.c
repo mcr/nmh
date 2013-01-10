@@ -50,93 +50,57 @@
    0  : Switch can't be abbreviated;               switch shown in -help.
    #  : Switch can be abbreviated to # characters; switch shown in -help. */
 
-static struct swit switches[] = {
-#define	ALIASW                    0
-    { "alias aliasfile", 0 },
-#define	CHKSW                     1
-    { "check", -5 },			/* interface from whom */
-#define	NCHKSW                    2
-    { "nocheck", -7 },			/* interface from whom */
-#define	DEBUGSW                   3
-    { "debug", -5 },
-#define	DISTSW                    4
-    { "dist", -4 },			/* interface from dist */
-#define	FILTSW                    5
-    { "filter filterfile", 0 },
-#define	NFILTSW                   6
-    { "nofilter", 0 },
-#define	FRMTSW                    7
-    { "format", 0 },
-#define	NFRMTSW                   8
-    { "noformat", 0 },
-#define	LIBSW                     9
-    { "library directory", -7 },	/* interface from send, whom */
-#define	MIMESW                   10
-    { "mime", 0 },
-#define	NMIMESW                  11
-    { "nomime", 0 },
-#define	MSGDSW                   12
-    { "msgid", 0 },
-#define	NMSGDSW                  13
-    { "nomsgid", 0 },
-#define	VERBSW                   14
-    { "verbose", 0 },
-#define	NVERBSW                  15
-    { "noverbose", 0 },
-#define	WATCSW                   16
-    { "watch", 0 },
-#define	NWATCSW                  17
-    { "nowatch", 0 },
-#define	WHOMSW                   18
-    { "whom", -4 },			/* interface from whom */
-#define	WIDTHSW                  19
-    { "width columns", 0 },
-#define VERSIONSW                20
-    { "version", 0 },
-#define	HELPSW                   21
-    { "help", 0 },
-#define BITSTUFFSW               22
-    { "dashstuffing", -12 },		/* should we dashstuff BCC messages? */
-#define NBITSTUFFSW              23
-    { "nodashstuffing", -14 },
-#define	ANNOSW                   24
-    { "idanno number", -6 },		/* interface from send    */
-#define	CLIESW                   25
-    { "client host", -6 },
-#define	SERVSW                   26
-    { "server host", 6 },		/* specify alternate SMTP server */
-#define	SNOOPSW                  27
-    { "snoop", -5 },			/* snoop the SMTP transaction */
-#define	PARTSW                   28
-    { "partno", -6 },
-#define	QUEUESW                  29
-    { "queued", -6 },
-#define SASLSW                   30
-    { "sasl", SASLminc(-4) },
-#define NOSASLSW                 31
-    { "nosasl", SASLminc(-6) },
-#define SASLMXSSFSW              32
-    { "saslmaxssf", SASLminc(-10) },
-#define SASLMECHSW               33
-    { "saslmech", SASLminc(-5) },
-#define USERSW                   34
-    { "user", SASLminc(-4) },
-#define PORTSW			 35
-    { "port server port name/number", 4 },
-#define TLSSW			 36
-    { "tls", TLSminc(-3) },
-#define NTLSSW                   37
-    { "notls", TLSminc(-5) },
-#define FILEPROCSW		 38
-    { "fileproc", -4 },
-#define MHLPROCSW		 39
-    { "mhlproc", -3 },
-#define MTSSW			 40
-    { "mts smtp|sendmail/smtp|sendmail/pipe", 2 },
-#define MESSAGEIDSW		 41
-    { "messageid localname|random", 2 },
-    { NULL, 0 }
-};
+#define POST_SWITCHES \
+    X("alias aliasfile", 0, ALIASW) \
+    X("check", -5, CHKSW) /* interface from whom */ \
+    X("nocheck", -7, NCHKSW) /* interface from whom */ \
+    X("debug", -5, DEBUGSW) \
+    X("dist", -4, DISTSW) /* interface from dist */ \
+    X("filter filterfile", 0, FILTSW) \
+    X("nofilter", 0, NFILTSW) \
+    X("format", 0, FRMTSW) \
+    X("noformat", 0, NFRMTSW) \
+    X("library directory", -7, LIBSW) /* interface from send, whom */ \
+    X("mime", 0, MIMESW) \
+    X("nomime", 0, NMIMESW) \
+    X("msgid", 0, MSGDSW) \
+    X("nomsgid", 0, NMSGDSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("watch", 0, WATCSW) \
+    X("nowatch", 0, NWATCSW) \
+    X("whom", -4, WHOMSW) /* interface from whom */ \
+    X("width columns", 0, WIDTHSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("dashstuffing", -12, BITSTUFFSW) /* should we dashstuff BCC messages? */ \
+    X("nodashstuffing", -14, NBITSTUFFSW) \
+    X("idanno number", -6, ANNOSW) /* interface from send    */ \
+    X("client host", -6, CLIESW) \
+    X("server host", 6, SERVSW) /* specify alternate SMTP server */ \
+    X("snoop", -5, SNOOPSW) /* snoop the SMTP transaction */ \
+    X("partno", -6, PARTSW) \
+    X("queued", -6, QUEUESW) \
+    X("sasl", SASLminc(-4), SASLSW) \
+    X("nosasl", SASLminc(-6), NOSASLSW) \
+    X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
+    X("saslmech", SASLminc(-5), SASLMECHSW) \
+    X("user", SASLminc(-4), USERSW) \
+    X("port server port name/number", 4, PORTSW) \
+    X("tls", TLSminc(-3), TLSSW) \
+    X("notls", TLSminc(-5), NTLSSW) \
+    X("fileproc", -4, FILEPROCSW) \
+    X("mhlproc", -3, MHLPROCSW) \
+    X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
+    X("messageid localname|random", 2, MESSAGEIDSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(POST);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(POST, switches);
+#undef X
 
 
 struct headers {

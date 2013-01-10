@@ -21,17 +21,19 @@
 #include <h/crawl_folders.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define MODESW 0
-    { "mode", 1 },
-#define FOLDERSSW 1
-    { "folders", 1 },
-#define VERSIONSW 2
-    { "version", 1 },
-#define HELPSW 3
-    { "help", 1 },
-    { NULL, 0 }
-};
+#define NEW_SWITCHES \
+    X("mode", 1, MODESW) \
+    X("folders", 1, FOLDERSSW) \
+    X("version", 1, VERSIONSW) \
+    X("help", 1, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(NEW);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(NEW, switches);
+#undef X
 
 static enum { NEW, FNEXT, FPREV, UNSEEN } run_mode = NEW;
 

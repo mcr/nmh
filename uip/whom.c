@@ -23,47 +23,34 @@
 # define TLSminc(a)   0
 #endif /* TLS_SUPPORT */
 
-static struct swit switches[] = {
-#define	ALIASW              0
-    { "alias aliasfile", 0 },
-#define	CHKSW               1
-    { "check", 0 },
-#define	NOCHKSW             2
-    { "nocheck", 0 },
-#define	DRAFTSW             3
-    { "draft", 0 },
-#define	DFOLDSW             4
-    { "draftfolder +folder", 6 },
-#define	DMSGSW              5
-    { "draftmessage msg", 6 },
-#define	NDFLDSW             6
-    { "nodraftfolder", 0 },
-#define VERSIONSW           7
-    { "version", 0 },
-#define	HELPSW              8
-    { "help", 0 },
-#define	CLIESW              9
-    { "client host", -6 },
-#define	SERVSW             10
-    { "server host", -6 },
-#define	SNOOPSW            11
-    { "snoop", -5 },
-#define SASLSW             12
-    { "sasl", SASLminc(4) },
-#define SASLMECHSW         13
-    { "saslmech mechanism", SASLminc(-5) },
-#define USERSW             14
-    { "user username", SASLminc(-4) },
-#define PORTSW		   15
-    { "port server port name/number", 4 },
-#define TLSSW		   16
-    { "tls", TLSminc(-3) },
-#define NTLSSW             17
-    { "notls", TLSminc(-5) },
-#define MTSSW		   18
-    { "mts smtp|sendmail/smtp|sendmail/pipe", 0 },
-    { NULL, 0 }
-};
+#define WHOM_SWITCHES \
+    X("alias aliasfile", 0, ALIASW) \
+    X("check", 0, CHKSW) \
+    X("nocheck", 0, NOCHKSW) \
+    X("draft", 0, DRAFTSW) \
+    X("draftfolder +folder", 6, DFOLDSW) \
+    X("draftmessage msg", 6, DMSGSW) \
+    X("nodraftfolder", 0, NDFLDSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("client host", -6, CLIESW) \
+    X("server host", -6, SERVSW) \
+    X("snoop", -5, SNOOPSW) \
+    X("sasl", SASLminc(4), SASLSW) \
+    X("saslmech mechanism", SASLminc(-5), SASLMECHSW) \
+    X("user username", SASLminc(-4), USERSW) \
+    X("port server port name/number", 4, PORTSW) \
+    X("tls", TLSminc(-3), TLSSW) \
+    X("notls", TLSminc(-5), NTLSSW) \
+    X("mts smtp|sendmail/smtp|sendmail/pipe", 0, MTSSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(WHOM);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(WHOM, switches);
+#undef X
 
 
 int

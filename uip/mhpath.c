@@ -10,13 +10,17 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define VERSIONSW 0
-    { "version", 0 },
-#define	HELPSW	1
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define MHPATH_SWITCHES \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHPATH);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHPATH, switches);
+#undef X
 
 int
 main(int argc, char **argv)

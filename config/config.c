@@ -83,9 +83,9 @@ try_it:
  */
 
 struct swit anoyes[] = {
-    { "no", 0 },
-    { "yes", 0 },
-    { NULL, 0 }
+    { "no", 0, 0 },
+    { "yes", 0, 1 },
+    { NULL, 0, 0 }
 };
 
 /* 

@@ -25,119 +25,78 @@
 # define TLSminc(a)   0
 #endif /* TLS_SUPPORT */
 
-static struct swit switches[] = {
-#define	ALIASW                 0
-    { "alias aliasfile", 0 },
-#define	DEBUGSW                1
-    { "debug", -5 },
-#define	DRAFTSW                2
-    { "draft", 0 },
-#define	DFOLDSW                3
-    { "draftfolder +folder", 6 },
-#define	DMSGSW                 4
-    { "draftmessage msg", 6 },
-#define	NDFLDSW                5
-    { "nodraftfolder", 0 },
-#define	FILTSW                 6
-    { "filter filterfile", 0 },
-#define	NFILTSW                7
-    { "nofilter", 0 },
-#define	FRMTSW                 8
-    { "format", 0 },
-#define	NFRMTSW                9
-    { "noformat", 0 },
-#define	FORWSW                10
-    { "forward", 0 },
-#define	NFORWSW               11
-    { "noforward", 0 },
-#define MIMESW                12
-    { "mime", 0 },
-#define NMIMESW               13
-    { "nomime", 0 },
-#define	MSGDSW                14
-    { "msgid", 0 },
-#define	NMSGDSW               15
-    { "nomsgid", 0 },
-#define	PUSHSW                16
-    { "push", 0 },
-#define	NPUSHSW               17
-    { "nopush", 0 },
-#define	SPLITSW               18
-    { "split seconds", 0 },
-#define	UNIQSW                19
-    { "unique", -6 },
-#define	NUNIQSW               20
-    { "nounique", -8 },
-#define	VERBSW                21
-    { "verbose", 0 },
-#define	NVERBSW               22
-    { "noverbose", 0 },
-#define	WATCSW                23
-    { "watch", 0 },
-#define	NWATCSW               24
-    { "nowatch", 0 },
-#define	WIDTHSW               25
-    { "width columns", 0 },
-#define VERSIONSW             26
-    { "version", 0 },
-#define	HELPSW                27
-    { "help", 0 },
-#define BITSTUFFSW            28
-    { "dashstuffing", -12 },
-#define NBITSTUFFSW           29
-    { "nodashstuffing", -14 },
-#define	MAILSW                30
-    { "mail", -4 },
-#define	SAMLSW                31
-    { "saml", -4 },
-#define	SENDSW                32
-    { "send", -4 },
-#define	SOMLSW                33
-    { "soml", -4 },
-#define	CLIESW                34
-    { "client host", -6 },
-#define	SERVSW                35
-    { "server host", 6 },
-#define	SNOOPSW               36
-    { "snoop", 5 },
-#define SASLSW                37
-    { "sasl", SASLminc(4) },
-#define NOSASLSW              38
-    { "nosasl", SASLminc(-6) },
-#define SASLMXSSFSW           39
-    { "saslmaxssf", SASLminc(-10) },
-#define SASLMECHSW            40
-    { "saslmech mechanism", SASLminc(-5) },
-#define USERSW                41
-    { "user username", SASLminc(-4) },
-#define ATTACHSW              42
-    { "attach", 6 },
-#define NOATTACHSW            43
-    { "noattach", 0 },
-#define ATTACHFORMATSW        44
-    { "attachformat", 7 },
-#define PORTSW		      45
-    { "port server-port-name/number" , 4 },
-#define TLSSW		      46
-    { "tls", TLSminc(-3) },
-#define NTLSSW                47
-    { "notls", TLSminc(-5) },
-#define MTSSW		      48
-    { "mts smtp|sendmail/smtp|sendmail/pipe", 2 },
-#define MESSAGEIDSW	      49
-    { "messageid localname|random", 2 },
-    { NULL, 0 }
-};
+#define SEND_SWITCHES \
+    X("alias aliasfile", 0, ALIASW) \
+    X("debug", -5, DEBUGSW) \
+    X("draft", 0, DRAFTSW) \
+    X("draftfolder +folder", 6, DFOLDSW) \
+    X("draftmessage msg", 6, DMSGSW) \
+    X("nodraftfolder", 0, NDFLDSW) \
+    X("filter filterfile", 0, FILTSW) \
+    X("nofilter", 0, NFILTSW) \
+    X("format", 0, FRMTSW) \
+    X("noformat", 0, NFRMTSW) \
+    X("forward", 0, FORWSW) \
+    X("noforward", 0, NFORWSW) \
+    X("mime", 0, MIMESW) \
+    X("nomime", 0, NMIMESW) \
+    X("msgid", 0, MSGDSW) \
+    X("nomsgid", 0, NMSGDSW) \
+    X("push", 0, PUSHSW) \
+    X("nopush", 0, NPUSHSW) \
+    X("split seconds", 0, SPLITSW) \
+    X("unique", -6, UNIQSW) \
+    X("nounique", -8, NUNIQSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("watch", 0, WATCSW) \
+    X("nowatch", 0, NWATCSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("dashstuffing", -12, BITSTUFFSW) \
+    X("nodashstuffing", -14, NBITSTUFFSW) \
+    X("mail", -4, MAILSW) \
+    X("saml", -4, SAMLSW) \
+    X("send", -4, SENDSW) \
+    X("soml", -4, SOMLSW) \
+    X("client host", -6, CLIESW) \
+    X("server host", 6, SERVSW) \
+    X("snoop", 5, SNOOPSW) \
+    X("sasl", SASLminc(4), SASLSW) \
+    X("nosasl", SASLminc(-6), NOSASLSW) \
+    X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
+    X("saslmech mechanism", SASLminc(-5), SASLMECHSW) \
+    X("user username", SASLminc(-4), USERSW) \
+    X("attach", 6, ATTACHSW) \
+    X("noattach", 0, NOATTACHSW) \
+    X("attachformat", 7, ATTACHFORMATSW) \
+    X("port server-port-name/number", 4, PORTSW) \
+    X("tls", TLSminc(-3), TLSSW) \
+    X("notls", TLSminc(-5), NTLSSW) \
+    X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
+    X("messageid localname|random", 2, MESSAGEIDSW) \
 
-static struct swit anyl[] = {
-#define	NOSW     0
-    { "no", 0 },
-#define	YESW     1
-    { "yes", 0 },
-#define	LISTDSW  2
-    { "list", 0 },
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SEND);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SEND, switches);
+#undef X
+
+#define USE_SWITCHES \
+    X("no", 0, NOSW) \
+    X("yes", 0, YESW) \
+    X("list", 0, LISTDSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(USE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(USE, anyl);
+#undef X
 
 extern int debugsw;		/* from sendsbr.c */
 extern int forwsw;

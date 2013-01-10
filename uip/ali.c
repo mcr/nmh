@@ -13,29 +13,25 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	ALIASW                0
-    { "alias aliasfile", 0 },
-#define	NALIASW               1
-    { "noalias", -7 },
-#define	LISTSW                2
-    { "list", 0 },
-#define	NLISTSW               3
-    { "nolist", 0 },
-#define	NORMSW                4
-    { "normalize", 0 },
-#define	NNORMSW               5
-    { "nonormalize", 0 },
-#define	USERSW                6
-    { "user", 0 },
-#define	NUSERSW               7
-    { "nouser", 0 },
-#define VERSIONSW             8
-    { "version", 0 },
-#define	HELPSW                9
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define ALI_SWITCHES \
+    X("alias aliasfile", 0, ALIASW) \
+    X("noalias", -7, NALIASW) \
+    X("list", 0, LISTSW) \
+    X("nolist", 0, NLISTSW) \
+    X("normalize", 0, NORMSW) \
+    X("nonormalize", 0, NNORMSW) \
+    X("user", 0, USERSW) \
+    X("nouser", 0, NUSERSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(ALI);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(ALI, switches);
+#undef X
 
 static int pos = 1;
 

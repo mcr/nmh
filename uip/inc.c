@@ -46,57 +46,39 @@
 # define SASLminc(a)  0
 #endif
 
-static struct swit switches[] = {
-#define	AUDSW                      0
-    { "audit audit-file", 0 },
-#define	NAUDSW                     1
-    { "noaudit", 0 },
-#define	CHGSW                      2
-    { "changecur", 0 },
-#define	NCHGSW                     3
-    { "nochangecur", 0 },
-#define	FILESW                     4
-    { "file name", 0 },
-#define	FORMSW                     5
-    { "form formatfile", 0 },
-#define	FMTSW                      6
-    { "format string", 5 },
-#define	HOSTSW                     7
-    { "host hostname", 0 },
-#define	USERSW                     8
-    { "user username", 0 },
-#define	PACKSW                     9
-    { "pack file", 0},
-#define	NPACKSW                   10
-    { "nopack", 0 },
-#define PORTSW			  11
-    { "port name/number", 0 },
-#define	SILSW                     12
-    { "silent", 0 },
-#define	NSILSW                    13
-    { "nosilent", 0 },
-#define	TRNCSW                    14
-    { "truncate", 0 },
-#define	NTRNCSW                   15
-    { "notruncate", 0 },
-#define	WIDTHSW                   16
-    { "width columns", 0 },
-#define VERSIONSW                 17
-    { "version", 0 },
-#define	HELPSW                    18
-    { "help", 0 },
-#define SNOOPSW                   19
-    { "snoop", -5 },
-#define SASLSW                    20
-    { "sasl", SASLminc(-4) },
-#define NOSASLSW                  21
-    { "nosasl", SASLminc(-6) },
-#define SASLMECHSW                22
-    { "saslmech", SASLminc(-8) },
-#define PROXYSW                   23
-    { "proxy command", 0 },
-    { NULL, 0 }
-};
+#define INC_SWITCHES \
+    X("audit audit-file", 0, AUDSW) \
+    X("noaudit", 0, NAUDSW) \
+    X("changecur", 0, CHGSW) \
+    X("nochangecur", 0, NCHGSW) \
+    X("file name", 0, FILESW) \
+    X("form formatfile", 0, FORMSW) \
+    X("format string", 5, FMTSW) \
+    X("host hostname", 0, HOSTSW) \
+    X("user username", 0, USERSW) \
+    X("pack file", 0, PACKSW) \
+    X("nopack", 0, NPACKSW) \
+    X("port name/number", 0, PORTSW) \
+    X("silent", 0, SILSW) \
+    X("nosilent", 0, NSILSW) \
+    X("truncate", 0, TRNCSW) \
+    X("notruncate", 0, NTRNCSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("snoop", -5, SNOOPSW) \
+    X("sasl", SASLminc(-4), SASLSW) \
+    X("nosasl", SASLminc(-6), NOSASLSW) \
+    X("saslmech", SASLminc(-8), SASLMECHSW) \
+    X("proxy command", 0, PROXYSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(INC);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(INC, switches);
+#undef X
 
 /*
  * flags for the mail source
