@@ -365,29 +365,21 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    cp = name;
 	    i = NAMESZ - 1;
 	    for (;;) {
-		/* Store current position, ungetting the last character. */
-		bp = sp = (unsigned char *) m.readpos - 1;
-		j = (cnt = m.end - m.readpos + 1) < i ? cnt : i;
-		while (--j >= 0 && (c = *bp++) != ':' && c != '\n') {
+		/* Get the field name.  The first time through the
+		   loop, this copies out the first character, which
+		   was loaded into c prior to loop entry.*/
+		for (j = 0;
+		     c != ':'  &&  c != '\n'  &&  j < i;
+		     ++j, ++bytes_read, c = Getc (iob)) {
 		    *cp++ = c;
-		    ++bytes_read;
 		}
+		++j;
 
-		j = bp - sp;
-		if ((cnt -= j) <= 0) {
-		    /* Next to force refill of the buffer here. */
-		    m.readpos = m.end;
-		    if (Getc (iob) == EOF) {
-			*bufsz = *cp = *buf = 0;
-			advise (NULL, "eof encountered in field \"%s\"", name);
-			return FMTERR;
-		    }
-		} else {
-		    /* Restore the current offset. */
-		    /* j was set to be less than or equal to the number of
-		       bytes available, so we can't overrun the end of the
-		       message buffer. */
-		    m.readpos = bp + 1;
+		/* Advance to character after ':' or '\n'. */
+		if (Getc (iob) == EOF) {
+		    *bufsz = *cp = *buf = 0;
+		    advise (NULL, "eof encountered in field \"%s\"", name);
+		    return FMTERR;
 		}
 		if (c == ':')
 		    break;
@@ -409,6 +401,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    /* See if buf can hold this line, since we were assuming
 		     * we had a buffer of NAMESZ, not bufsz. */
 		    /* + 1 for the newline */
+
 		    if (*bufsz < j + 1) {
 			/* No, it can't.  Oh well, guess we'll blow up. */
 			*bufsz = *cp = *buf = 0;
