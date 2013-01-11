@@ -269,8 +269,6 @@ if test -n "$auto_cflags"; then
   fi
 fi
 
-AC_C_CONST              dnl Does compiler support `const'.
-
 dnl ------------------
 dnl CHECK FOR PROGRAMS
 dnl ------------------
@@ -434,7 +432,6 @@ AS_CASE(["$host_os"],
 	  AS_IF([test -z "$CPPFLAGS"],[CPPFLAGS="-D_GNU_SOURCE"],
                 [CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"])])
 
-AC_HEADER_STDC
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([errno.h fcntl.h crypt.h ncurses/termcap.h termcap.h \
                   langinfo.h wchar.h wctype.h netdb.h \
