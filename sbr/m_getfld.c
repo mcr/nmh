@@ -367,13 +367,13 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    for (;;) {
 		/* Get the field name.  The first time through the
 		   loop, this copies out the first character, which
-		   was loaded into c prior to loop entry.*/
-		for (j = 0;
-		     c != ':'  &&  c != '\n'  &&  j < i;
+		   was loaded into c prior to loop entry.  Initialize
+		   j to 1 to account for that. */
+		for (j = 1;
+		     c != ':'  &&  c != '\n'  &&  j <= i;
 		     ++j, ++bytes_read, c = Getc (iob)) {
 		    *cp++ = c;
 		}
-		++j;
 
 		/* Advance to character after ':' or '\n'. */
 		if (Getc (iob) == EOF) {
@@ -432,9 +432,8 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		}
 	    }
 
-	    while (isspace (*--cp) && cp >= name) {
-		--bytes_read;
-	    }
+	    /* Trim any trailing spaces from the end of name. */
+	    while (isspace (*--cp) && cp >= name) continue;
 	    *++cp = 0;
 	    /* fall through */
 
@@ -444,7 +443,8 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	     * characters up to the end of this field (newline
 	     * followed by non-blank) or bufsz-1 characters.
 	     */
-	    cp = buf; i = *bufsz-1;
+	    cp = buf;
+	    i = *bufsz-1;
 	    for (;;) {
 		/* Set, and save, the current position, and update cnt. */
 		cnt = m.end - m.readpos;
@@ -490,7 +490,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		--i;
 		*cp++ = j = Getc (iob);
 		c = Getc (iob);
-                if (c == EOF ||
+		if (c == EOF ||
 		  ((j == '\0' || j == '\n') && c != ' ' && c != '\t')) {
 		    if (c != EOF) {
 			/* Put the character back for the next call. */
