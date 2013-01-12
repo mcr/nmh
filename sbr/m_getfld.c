@@ -198,7 +198,6 @@ removed from the signature and just retained internally.)
  */
 static int m_Eom (int, FILE *);
 static unsigned char *matchc(int, char *, int, char *);
-static unsigned char *locc(int, unsigned char *, unsigned char);
 
 #define eom(c,iob)	(msg_style != MS_DEFAULT && \
 			 (((c) == *msg_delim && m_Eom(c,iob)) ||\
@@ -299,6 +298,14 @@ Getc (FILE *iob) {
 }
 
 static int
+Peek (FILE *iob) {
+    int next_char = Getc (iob);
+    --m.readpos;
+
+    return next_char;
+}
+
+static int
 Ungetc (int c, FILE *iob) {
     NMH_UNUSED (iob);
 
@@ -311,7 +318,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
           int *bufsz, FILE *iob)
 {
     register unsigned char  *bp, *cp, *ep, *sp;
-    register int cnt, c, i, j, k;
+    register int cnt, c, i, j;
     long bytes_read = 0;
 
     setup_buffer (iob, &m);
@@ -370,16 +377,20 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		   was loaded into c prior to loop entry.  Initialize
 		   j to 1 to account for that. */
 		for (j = 1;
-		     c != ':'  &&  c != '\n'  &&  j <= i;
+		     c != ':'  &&  c != '\n'  &&  c != EOF  &&  j <= i;
 		     ++j, ++bytes_read, c = Getc (iob)) {
 		    *cp++ = c;
 		}
 
-		/* Advance to character after ':' or '\n'. */
-		if (Getc (iob) == EOF) {
-		    *bufsz = *cp = *buf = 0;
-		    advise (NULL, "eof encountered in field \"%s\"", name);
-		    return FMTERR;
+		/* Skip next character, which is either the space
+		   after the ':' or the first folded whitespace. */
+		{
+		    int next_char;
+		    if (c == EOF  ||  (next_char = Peek (iob)) == EOF) {
+		        *bufsz = *cp = *buf = 0;
+		        advise (NULL, "eof encountered in field \"%s\"", name);
+		        return FMTERR;
+		    }
 		}
 		if (c == ':')
 		    break;
@@ -412,15 +423,6 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    memcpy (buf, name, j - 1);
 		    buf[j - 1] = '\n';
 		    buf[j] = '\0';
-		    /* mhparse.c:get_content wants to find the position of the
-		     * body start, but it thinks there's a blank line between
-		     * the header and the body (naturally!), so seek back so
-		     * that things line up even though we don't have that
-		     * blank line in this case.  Simpler parsers (e.g. mhl)
-		     * get extra newlines, but that should be harmless enough,
-		     * right?  This is a corrupt message anyway. */
-		    /* emulates:  fseek (iob, ftell (iob) -2), SEEK_SET) */
-		    m.readpos -= 2;
 		    *bufsz = bytes_read;
 		    return BODY;
 		}
@@ -435,69 +437,38 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    /* Trim any trailing spaces from the end of name. */
 	    while (isspace (*--cp) && cp >= name) continue;
 	    *++cp = 0;
+	    /* c is ':' here.  And readpos points to the first
+	       character of the field body. */
 	    /* fall through */
 
 	case FLDPLUS:
 	    /*
-	     * get (more of) the text of a field.  take
+	     * get (more of) the text of a field.  Take
 	     * characters up to the end of this field (newline
 	     * followed by non-blank) or bufsz-1 characters.
 	     */
 	    cp = buf;
 	    i = *bufsz-1;
 	    for (;;) {
-		/* Set, and save, the current position, and update cnt. */
-		cnt = m.end - m.readpos;
-		bp = --m.readpos;
-		c = cnt < i ? cnt : i;
-		while ((ep = locc( c, bp, '\n' ))) {
-		    /*
-		     * if we hit the end of this field, return.
-		     */
-		    if ((j = *++ep) != ' ' && j != '\t') {
-			/* Save the text and update the current position. */
-			j = ep - m.readpos;
-			memcpy (cp, m.readpos, j);
-			/* c is less than or equal to the number of bytes
-			   remaining in the read buffer, so will not overrun. */
-			m.readpos = ep;
-			cp += j;
-			state = FLD;
-			goto finish;
-		    }
-		    c -= ep - bp;
-		    bp = ep;
+		for (j = 0; c != '\n'  &&  c != EOF  &&  j++ <= i; ) {
+		    *cp++ = c = Getc (iob);
 		}
-		/*
-		 * end of input or dest buffer - copy what we've found.
-		 */
-		c += bp - m.readpos;
-		for (k = 0; k < c; ++k, --i) {
-		    *cp++ = Getc (iob);
-		}
-		if (i <= 0) {
+
+		if (c != EOF) c = Peek (iob);
+		if (i < j) {
 		    /* the dest buffer is full */
 		    state = FLDPLUS;
-		    break;
-		}
-		/*
-		 * There's one character left in the input buffer.
-		 * Copy it & fill the buffer (that fill used to be
-		 * explicit, but now Getc() does it).  If the last char
-		 * was a newline and the next char is not whitespace,
-		 * this is the end of the field.  Otherwise loop.
-		 */
-		--i;
-		*cp++ = j = Getc (iob);
-		c = Getc (iob);
-		if (c == EOF ||
-		  ((j == '\0' || j == '\n') && c != ' ' && c != '\t')) {
-		    if (c != EOF) {
-			/* Put the character back for the next call. */
-			--m.readpos;
-		    }
+		    goto finish;
+		} else if (c != ' '  &&  c != '\t') {
+		    /* The next character is not folded whitespace, so
+		       prepare to move on to the next field.  It's OK
+		       if c is EOF, it will be handled on the next
+		       call to m_getfld (). */
 		    state = FLD;
-		    break;
+		    goto finish;
+		} else {
+		    /* Folded header field, continues on the next line. */
+		    continue;
 		}
 	    }
 	    break;
@@ -769,18 +740,4 @@ matchc(int patln, char *pat, int strln, char *str)
 		if (pp >= ep)
 			return ((unsigned char *)--str);
 	}
-}
-
-
-/*
- * Locate character "term" in the next "cnt" characters of "src".
- * If found, return its address, otherwise return 0.
- */
-
-static unsigned char *
-locc(int cnt, unsigned char *src, unsigned char term)
-{
-    while (*src++ != term && --cnt > 0);
-
-    return (cnt > 0 ? --src : (unsigned char *)0);
 }

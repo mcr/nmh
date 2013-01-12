@@ -49,7 +49,6 @@ Subject: test
 
 This is a multi-part message in MIME format.
 
-
 I am a stupid spammer.
 EOF
 show $msgnum > $actual 2>&1
