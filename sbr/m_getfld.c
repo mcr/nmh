@@ -477,11 +477,9 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	body:
 	    /*
 	     * get the message body up to bufsz characters or the
-	     * end of the message.  Sleazy hack: if bufsz is negative
-	     * we assume that we were called to copy directly into
-	     * the output buffer and we don't add an eos.
+	     * end of the message.
 	     */
-	    i = (*bufsz < 0) ? -*bufsz : *bufsz-1;
+	    i = *bufsz-1;
 	    /* Back up and store the current position and update cnt. */
 	    bp = --m.readpos;
 	    cnt = m.end - m.readpos;
@@ -558,10 +556,6 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	       c is less than or equal to the number of bytes remaining
 	       in the read buffer, so will not overrun it. */
 	    m.readpos += c;
-	    if (*bufsz < 0) {
-		*bufsz = c + bytes_read + 1;
-		return (state);
-	    }
 	    cp = buf + c;
 	    break;
 
