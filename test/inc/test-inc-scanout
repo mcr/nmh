@@ -213,6 +213,18 @@ scan: eof encountered in field "Received"
 ??Format error (message -1) in component 2
 EOF
 
+# check m_getfld() handling of fields with trailing whitespace
+# Even though header field names aren't supposed to have spaces (RFC
+# 28220, m_getfld () trims trailing whitespace from them.
+cat >`mhpath new` <<EOF
+Date : Sun, 18 Dec 2005 00:52:39 +0100
+From	: foo@example.edu
+To: bar@example.edu
+Subject: test
+EOF
+run_test 'scan last' '  12  12/18 foo@example.edu    test'
+
+
 # check m_getfld() handling of empty header field
 scan -width 13 -file "$thisdir"/malformed_message.txt >"$actual" 2>"$actual_err"
 
