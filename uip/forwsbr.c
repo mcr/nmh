@@ -46,7 +46,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 	    char *cc, char *fcc, char *subject, char *inputfile)
 {
     int	in;
-    int fmtsize, state, char_read = 0;
+    int fmtsize, state;
     int i;
     register char *nfs;
     char *line, tmpfil[BUFSIZ], name[NAMESZ], **ap;
@@ -100,12 +100,10 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 
 		i = fmt_addcomptext(name, msgbuf);
 		if (i != -1) {
-		    char_read += msg_count;
 		    while (state == FLDPLUS) {
 			msg_count = sizeof msgbuf;
 			state = m_getfld(state, name, msgbuf, &msg_count, tmp);
 			fmt_appendcomp(i, name, msgbuf);
-			char_read += msg_count;
 		    }
 		}
 		while (state == FLDPLUS)
