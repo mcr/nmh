@@ -240,6 +240,7 @@ static struct m_getfld_buffer {
     unsigned char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
     unsigned char *readpos;
     unsigned char *end;  /* One past, like C++, the last character read in. */
+    size_t bytes_read; /* To support old msg_count. */
 } m;
 
 static void
@@ -254,6 +255,8 @@ setup_buffer (FILE *iob, struct m_getfld_buffer *m) {
 	/* A new file stream, so reset the buffer state. */
 	m->readpos = m->end = m->msg_buf;
     }
+
+    m->bytes_read = 0;
 }
 
 static size_t
@@ -276,9 +279,7 @@ read_more (struct m_getfld_buffer *m, FILE *iob) {
     memmove (m->msg_buf, m->readpos - retain, retain);
 
     m->readpos = m->msg_buf + retain;
-
     num_read = fread (m->readpos, 1, MSG_INPUT_SIZE, iob);
-
     m->end = m->readpos + num_read;
 
     return num_read;
@@ -290,10 +291,14 @@ Getc (FILE *iob) {
 	if (read_more (&m, iob) == 0) {
 	    /* Pretend that we read a character.  That's what stdio does. */
 	    ++m.readpos;
+	    /* Don't seem to need the following but maybe because no
+	       caller of m_getfld () looks at it. */
+	    ++m.bytes_read;
 	    return EOF;
 	}
     }
 
+    ++m.bytes_read;
     return m.readpos < m.end  ?  *m.readpos++  :  EOF;
 }
 
@@ -301,6 +306,7 @@ static int
 Peek (FILE *iob) {
     int next_char = Getc (iob);
     --m.readpos;
+    --m.bytes_read;
 
     return next_char;
 }
@@ -309,7 +315,12 @@ static int
 Ungetc (int c, FILE *iob) {
     NMH_UNUSED (iob);
 
-    return m.readpos == m.msg_buf  ?  EOF  :  (*--m.readpos = c);
+    if (m.readpos == m.msg_buf) {
+	return EOF;
+    } else {
+	--m.bytes_read;
+	return *--m.readpos = c;
+    }
 }
 
 
@@ -319,7 +330,6 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 {
     register unsigned char  *bp, *cp, *ep, *sp;
     register int cnt, c, i, j;
-    long bytes_read = 0;
 
     setup_buffer (iob, &m);
 
@@ -346,9 +356,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	case FLD:
 	    if (c == '\n' || c == '-') {
 		/* we hit the header/body separator */
-		while (c != '\n' && (c = Getc(iob)) >= 0) {
-		    ++bytes_read;
-		}
+		while (c != '\n' && (c = Getc(iob)) >= 0) continue;
 
 		if (c < 0 || (c = Getc(iob)) < 0 || eom (c, iob)) {
 		    if (! eom_action) {
@@ -378,7 +386,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		   j to 1 to account for that. */
 		for (j = 1;
 		     c != ':'  &&  c != '\n'  &&  c != EOF  &&  j <= i;
-		     ++j, ++bytes_read, c = Getc (iob)) {
+		     ++j, c = Getc (iob)) {
 		    *cp++ = c;
 		}
 
@@ -423,7 +431,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    memcpy (buf, name, j - 1);
 		    buf[j - 1] = '\n';
 		    buf[j] = '\0';
-		    *bufsz = bytes_read;
+		    *bufsz = m.bytes_read - 1;
 		    return BODY;
 		}
 		if ((i -= j) <= 0) {
@@ -564,7 +572,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
     }
 finish:
     *cp = 0;
-    *bufsz = cp - buf + bytes_read + 1;
+    *bufsz = m.bytes_read  +  (state == BODY ? cp - buf - 1 : 0);
     return (state);
 }
 
@@ -576,7 +584,6 @@ m_unknown(FILE *iob)
     char text[MAX_DELIMITER_SIZE];
     register char *cp;
     register char *delimstr;
-    size_t bytes_read = 0;
 
     setup_buffer (iob, &m);
 
@@ -596,7 +603,6 @@ m_unknown(FILE *iob)
     msg_style = MS_UNKNOWN;
 
     for (c = 0, cp = text; c < 5; ++c, ++cp) {
-	++bytes_read;
 	if ((*cp = Getc (iob)) == EOF) {
 	    break;
 	}
@@ -605,8 +611,7 @@ m_unknown(FILE *iob)
     if (c == 5  &&  strncmp (text, "From ", 5) == 0) {
 	msg_style = MS_MBOX;
 	delimstr = "\nFrom ";
-	while (++bytes_read, (c = Getc (iob)) != '\n' && c >= 0)
-	    ;
+	while ((c = Getc (iob)) != '\n' && c >= 0) continue;
 	/* m_unknown is only called on maildrop files, and they are only
 	   read using m_getfld ().  The caller musn't try to read from
 	   the stream directly because the file position indicator was
@@ -614,7 +619,7 @@ m_unknown(FILE *iob)
 	   was read into the message buffer. */
     } else {
 	/* not a Unix style maildrop */
-	m.readpos -= bytes_read; /* fseek (iob, pos, SEEK_SET), but relative. */
+	m.readpos -= m.bytes_read;
 	if (mmdlm2 == NULL || *mmdlm2 == 0)
 	    mmdlm2 = "\001\001\001\001\n";
 	delimstr = mmdlm2;
@@ -678,12 +683,10 @@ static int
 m_Eom (int c, FILE *iob)
 {
     register int i;
-    size_t bytes_read = 0;
     char text[MAX_DELIMITER_SIZE];
     char *cp;
 
     for (i = 0, cp = text; i < edelimlen; ++i, ++cp) {
-	++bytes_read;
 	if ((*cp = Getc (iob)) == EOF) {
 	    break;
 	}
@@ -699,7 +702,7 @@ m_Eom (int c, FILE *iob)
 	/* Did not find delimiter, so restore the read position.
 	   Note that on input, a character had already been read
 	   with Getc().  It will be unget by m_getfld () on return. */
-	m.readpos -= bytes_read;
+	m.readpos -= m.bytes_read - 1;
 	return 0;
     }
 
