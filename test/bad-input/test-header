@@ -1,7 +1,7 @@
 #!/bin/sh
 ######################################################
 #
-# Test bogus headers (no blank line before body).
+# Test bogus headers (no blank line before body, etc.)
 #
 ######################################################
 
@@ -14,13 +14,16 @@ fi
 
 setup_test
 
-expected=$MH_TEST_DIR/$$.expected
-actual=$MH_TEST_DIR/$$.actual
+thisdir="$srcdir/test/bad-input"
+expected="$MH_TEST_DIR/$$.expected"
+expected_err="$MH_TEST_DIR/$$.expected_err"
+actual="$MH_TEST_DIR/$$.actual"
+actual_err="$MH_TEST_DIR/$$.actual_err"
 
 # Write message with bogus header field (missing blank line, really).
 msgfile=`mhpath new`
 msgnum=`basename $msgfile`
-cat > $msgfile <<EOF
+cat > "$msgfile" <<EOF
 Date: Sun, 18 Dec 2005 00:52:39 +0100
 From: foo@example.edu
 To: bar@example.edu
@@ -31,14 +34,14 @@ I am a stupid spammer.
 EOF
 
 # check scan
-cat > $expected <<EOF
+cat > "$expected" <<EOF
   11  12/18 foo@example.edu    test<<This is a multi-part message in MIME forma
 EOF
-scan -width 80 $msgnum > $actual 2>&1
-check $expected $actual
+scan -width 80 $msgnum > "$actual" 2>&1
+check "$expected" "$actual"
 
 # check show (mhl)
-cat > $expected <<EOF
+cat > "$expected" <<EOF
 (Message inbox:11)
 
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
@@ -51,11 +54,11 @@ This is a multi-part message in MIME format.
 
 I am a stupid spammer.
 EOF
-show $msgnum > $actual 2>&1
-check $expected $actual
+show $msgnum > "$actual" 2>&1
+check "$expected" "$actual"
 
 # check mhshow
-cat > $expected <<EOF
+cat > "$expected" <<EOF
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -68,7 +71,22 @@ This is a multi-part message in MIME format.
 
 I am a stupid spammer.
 EOF
-mhshow -nopause $msgnum > $actual 2>&1
-check $expected $actual
+mhshow -nopause $msgnum > "$actual" 2>&1
+check "$expected" "$actual"
+
+# check m_getfld() handling of empty header field
+cat >"$expected" <<EOF
+   1  01/12 
+EOF
+cat >"$expected_err" <<EOF
+scan: eof encountered in field "Received"
+??Format error (message -1) in component 2
+EOF
+
+scan -width 13 -file "$thisdir"/malformed_message.txt >"$actual" 2>"$actual_err"
+
+check "$expected" "$actual"
+check "$expected_err" "$actual_err"
+
 
 exit $failed

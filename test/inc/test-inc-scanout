@@ -17,9 +17,7 @@ setup_test
 
 thisdir="$srcdir/test/inc"
 expected="$MH_TEST_DIR/$$.expected"
-expected_err="$MH_TEST_DIR/$$.expected_err"
 actual="$MH_TEST_DIR/$$.actual"
-actual_err="$MH_TEST_DIR/$$.actual_err"
 
 cat > "${MH_TEST_DIR}/test.mbox" <<EOF
 From nobody@nowhereville Jan 1 1970
@@ -205,14 +203,6 @@ run_test "scan -width 120 +inbox 11" \
 run_test "scan -width 60 -file $thisdir/lots_of_headers.txt" \
          '   1  01/10 No Such User       all that and nothing to say?'
 
-cat >"$expected" <<EOF
-   1  01/12 
-EOF
-cat >"$expected_err" <<EOF
-scan: eof encountered in field "Received"
-??Format error (message -1) in component 2
-EOF
-
 # check m_getfld() handling of fields with trailing whitespace
 # Even though header field names aren't supposed to have spaces (RFC
 # 28220, m_getfld () trims trailing whitespace from them.
@@ -223,13 +213,6 @@ To: bar@example.edu
 Subject: test
 EOF
 run_test 'scan last' '  12  12/18 foo@example.edu    test'
-
-
-# check m_getfld() handling of empty header field
-scan -width 13 -file "$thisdir"/malformed_message.txt >"$actual" 2>"$actual_err"
-
-check "$expected" "$actual"
-check "$expected_err" "$actual_err"
 
 
 exit ${failed:-0}
