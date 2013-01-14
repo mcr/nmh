@@ -180,17 +180,17 @@ int (*eom_action)(int)
 
 Restrictions
 ============
-m_getfld() is restricted to operate on one file stream at a time because of
-the retained state (see "State variables" above).  Also, if m_getfld() is
-used to read a file stream, then only m_getfld() should be used to read that
-file stream.
+m_getfld() is restricted to operate on one file stream at a time
+because of the retained state (see "State variables" above).  And the
+first call to m_getfld() on that file stream requires that the read
+pointer be at the beginning of the file (ftell() of 0).
 
 Current usage
 =============
 The first call to m_getfld() on a file stream is with a state of FLD.
 Subsequent calls provide the state returned by the previous call.
-(Therefore, given the Restrictions above, the state variable could be
-removed from the signature and just retained internally.)
+Therefore, given the Restrictions above, the state variable could be
+removed from the signature and just retained internally.
 */
 
 /*
@@ -239,24 +239,56 @@ static int (*eom_action)(int) = NULL;
 static struct m_getfld_buffer {
     unsigned char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
     unsigned char *readpos;
-    unsigned char *end;  /* One past, like C++, the last character read in. */
-    size_t bytes_read; /* To support old msg_count. */
+    unsigned char *end;  /* One past the last character read in. */
+    /* The following support tracking of the read position in the
+       input file so that callers can interleave m_getfld() calls with
+       ftell() and fseek().  bytes_read replaces the old m_getfld()
+       msg_count global. */
+    off_t bytes_read;
+    off_t last_file_position;
 } m;
 
 static void
 setup_buffer (FILE *iob, struct m_getfld_buffer *m) {
-    /* Rely on Restrictions that m_getfld() calls on different file
-       streams are not interleaved, and no other file stream read
-       methods are used.  And, the first call to m_getfld (), etc., on
-       a stream always reads at least 1 byte.
-       I don't think it's necessary to use ftello() because we just
-       need to determine whether the current offset is 0 or not. */
-    if (ftell (iob) == 0) {
+    /* Rely on Restriction that the first call to m_getfld (), etc.,
+       is with the read position for the file stream set to 0. */
+    if (ftello (iob) == 0) {
 	/* A new file stream, so reset the buffer state. */
 	m->readpos = m->end = m->msg_buf;
+	m->last_file_position = ftello (iob);
+    } else {
+	off_t position = ftello (iob);
+
+	/* Compare current file position with last file position.  If
+	   different, then caller must have called ftell(), so adjust
+	   by the same amounmt. */
+	if (position - m->last_file_position != 0) {
+	    size_t num_read;
+
+	    /* Opportunity for optimization here:  don't reread if the
+	       new position had already been read into the buffer,
+	       just move m->readpos to it. */
+	    fseeko (iob, 0, SEEK_SET);
+	    do {
+		num_read = fread (m->msg_buf, 1, MSG_INPUT_SIZE, iob);
+		position -= num_read;
+	    } while (position > 0);
+	    m->readpos = m->msg_buf + position + num_read;
+	    m->end = m->msg_buf + num_read;
+
+	    m->last_file_position = position;
+	}
+
+	fseeko (iob, position, SEEK_SET);
     }
 
     m->bytes_read = 0;
+}
+
+static void
+update_input_filepos (struct m_getfld_buffer *m, FILE *iob) {
+    /* Need to fseek so that callers can use ftell (). */
+    m->last_file_position = ftello (iob);
 }
 
 static size_t
@@ -335,6 +367,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 
     if ((c = Getc(iob)) < 0) {
 	*bufsz = *buf = 0;
+	update_input_filepos (&m, iob);
 	return FILEEOF;
     }
     if (eom (c, iob)) {
@@ -347,6 +380,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		Ungetc(c, iob);
 	}
 	*bufsz = *buf = 0;
+	update_input_filepos (&m, iob);
 	return FILEEOF;
     }
 
@@ -367,6 +401,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 			    Ungetc(c, iob);
 		    }
 		    *bufsz = *buf = 0;
+		    update_input_filepos (&m, iob);
 		    return FILEEOF;
 		}
 		state = BODY;
@@ -397,6 +432,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    if (c == EOF  ||  (next_char = Peek (iob)) == EOF) {
 		        *bufsz = *cp = *buf = 0;
 		        advise (NULL, "eof encountered in field \"%s\"", name);
+			update_input_filepos (&m, iob);
 		        return FMTERR;
 		    }
 		}
@@ -432,6 +468,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    buf[j - 1] = '\n';
 		    buf[j] = '\0';
 		    *bufsz = m.bytes_read - 1;
+		    update_input_filepos (&m, iob);
 		    return BODY;
 		}
 		if ((i -= j) <= 0) {
@@ -465,6 +502,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		if (c != EOF) c = Peek (iob);
 		if (i < j) {
 		    /* the dest buffer is full */
+		    *bufsz = m.bytes_read;
 		    state = FLDPLUS;
 		    goto finish;
 		} else if (c != ' '  &&  c != '\t') {
@@ -472,6 +510,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		       prepare to move on to the next field.  It's OK
 		       if c is EOF, it will be handled on the next
 		       call to m_getfld (). */
+		    *bufsz = m.bytes_read;
 		    state = FLD;
 		    goto finish;
 		} else {
@@ -479,6 +518,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    continue;
 		}
 	    }
+	    *bufsz = m.bytes_read;
 	    break;
 
 	case BODY:
@@ -565,6 +605,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	       in the read buffer, so will not overrun it. */
 	    m.readpos += c;
 	    cp = buf + c;
+	    *bufsz = m.bytes_read  +  cp - buf - 1;
 	    break;
 
 	default:
@@ -572,7 +613,8 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
     }
 finish:
     *cp = 0;
-    *bufsz = m.bytes_read  +  (state == BODY ? cp - buf - 1 : 0);
+
+    update_input_filepos (&m, iob);
     return (state);
 }
 
@@ -655,6 +697,8 @@ m_unknown(FILE *iob)
 	if (c >= 0)
 	    Ungetc(c, iob);
     }
+
+    update_input_filepos (&m, iob);
 }
 
 
