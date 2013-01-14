@@ -228,12 +228,15 @@ static int edelimlen;
 
 static int (*eom_action)(int) = NULL;
 
-/* This replaces the old approach, which included direct access to
-   stdio internals.  It uses one fread() to load a buffer that we
-   manage.
-   MSG_INPUT_SIZE is the size of the buffer.
-   MAX_DELIMITER_SIZE is the maximum size of the delimiter used to
-   separate messages in a maildrop, such as mbox "\nFrom ". */
+/* This replaces the old approach, with its direct access to stdio
+ * internals.  It uses one fread() to load a buffer that we manage.
+ *
+ * MSG_INPUT_SIZE is the size of the buffer.
+ * MAX_DELIMITER_SIZE is the maximum size of the delimiter used to
+ * separate messages in a maildrop, such as mbox "\nFrom ".
+ *
+ * test/inc/lots_of_headers.txt depends on the particular value of
+ * MSG_INPUT_SIZE. */
 #define MSG_INPUT_SIZE 8192
 #define MAX_DELIMITER_SIZE 32
 static struct m_getfld_buffer {
@@ -467,7 +470,10 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    memcpy (buf, name, j - 1);
 		    buf[j - 1] = '\n';
 		    buf[j] = '\0';
-		    *bufsz = m.bytes_read - 1;
+		    /* The last character read was '\n'.  m.bytes_read (and j)
+		       include that, but it was not put into the name array
+		       in the for loop above.  So subtract 1. */
+		    *bufsz = m.bytes_read - 1;  /* == j - 1 */
 		    update_input_filepos (&m, iob);
 		    return BODY;
 		}
@@ -605,7 +611,10 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	       in the read buffer, so will not overrun it. */
 	    m.readpos += c;
 	    cp = buf + c;
-	    *bufsz = m.bytes_read  +  cp - buf - 1;
+	    /* Less 1 from c because the first character was read by Getc(),
+	       and therefore already accounted for in m.bytes_read. */
+	    m.bytes_read += c - 1;
+	    *bufsz = m.bytes_read;
 	    break;
 
 	default:
