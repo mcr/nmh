@@ -316,16 +316,10 @@ read_more (struct m_getfld_buffer *m, FILE *iob) {
     ssize_t retain = edelimlen;
     size_t num_read;
 
-    if (m->end > m->readpos) {
-	if (retain < m->end - m->readpos) retain = m->end - m->readpos;
-    }
-    if (retain > m->readpos - m->msg_buf) {
-	/* Should not happen:  there have been fewer characters read
-	   than are remaining in the buffer. */
-	retain = m->readpos - m->msg_buf;
-    }
+    if (retain < m->end - m->readpos) retain = m->end - m->readpos;
+    /* assert (retain <= m->readpos - m->msg_buf <= sizeof msg_buf); */
 
-    /* Move any leftover at the end of buf to the beginning. */
+    /* Move what we want to retain at end of the buffer to the beginning. */
     memmove (m->msg_buf, m->readpos - retain, retain);
 
     m->readpos = m->msg_buf + retain;
