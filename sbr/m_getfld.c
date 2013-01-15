@@ -341,9 +341,6 @@ Getc (FILE *iob) {
 	if (read_more (&m, iob) == 0) {
 	    /* Pretend that we read a character.  That's what stdio does. */
 	    ++m.readpos;
-	    /* Don't seem to need the following but maybe because no
-	       caller of m_getfld () looks at it. */
-	    ++m.bytes_read;
 	    return EOF;
 	}
     }
@@ -515,8 +512,9 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	     */
 	    cp = buf;
 	    i = *bufsz-1;
+	    j = 0;
 	    for (;;) {
-		for (j = 0; c != '\n'  &&  c != EOF  &&  j++ <= i; ) {
+		while (c != '\n'  &&  c != EOF  &&  j++ < i) {
 		    *cp++ = c = Getc (iob);
 		}
 
