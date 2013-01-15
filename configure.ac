@@ -117,20 +117,6 @@ AS_IF([test x"$with_mts" = x"smtp"], [MTS="smtp"],
       [MTS="smtp"])
 AC_SUBST([MTS])dnl
 
-dnl What should be the default pager?
-AC_ARG_WITH([pager],
-  AS_HELP_STRING([--with-pager=PAGER],[specify the default pager]))
-
-AS_IF([test -n "$with_pager"], [pagerpath="$with_pager"])
-
-dnl If a pager is not explicitly specified, then look for one.
-dnl Fall back to `cat', to avoid catastrophic failure of
-dnl `mhshow', et al., if pagerpath is set to `no'.
-AS_IF([test -z "$pagerpath"],
-  [pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
-  AC_PATH_PROGS([pagerpath], [more less most cat], [no], [$pathtmp])])
-AC_SUBST([pagerpath])dnl
-
 dnl What should be the default mail server(s)?
 AC_ARG_WITH([smtpservers],
   [AS_HELP_STRING([--with-smtpservers='SMTPSERVER1@<:@ SMTPSERVER2...@:>@'],
@@ -754,7 +740,6 @@ transport system           : ${MTS}
 file locking type          : ${LOCKTYPE}
 default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
-default pager              : ${pagerpath}
 SASL support               : ${sasl_support}
 TLS support                : ${tls_support}
 ])])dnl

@@ -84,7 +84,7 @@ $MH_INST_DIR$bindir/refile
 700
 $bindir/inc
 $auxexecdir/install-mh
-$pagerpath
+more
 $bindir/mhmail
 $MH_INST_DIR$auxexecdir/mhl
 cat

@@ -71,6 +71,9 @@ OBSOLETE/DEPRECATED FEATURES
 - Support for encoding some characters designated as EBCDIC-unsafe
   via the -ebcdicsafe and -noebcdicsafe switches to mhbuild has
   been removed.
+- The configure flag --with-pager has been removed; the default pager
+  is now hardcoded as "more".  Users are still free to override the
+  default using the PAGER environment variable or entries in .mh_profile.
 
 ---------
 BUG FIXES

@@ -512,8 +512,7 @@ sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 		-DMAILSPOOL='"$(mailspool)"' \
 		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
 		-DNMHLIBDIR='"$(libdir)"' \
-		-DDEFAULT_EDITOR='"$(editorpath)"' \
-		-DDEFAULT_PAGER='"$(pagerpath)"'
+		-DDEFAULT_EDITOR='"$(editorpath)"'
 
 sbr_libdtimep_a_SOURCES = sbr/dtimep.l
 sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) \
@@ -543,7 +542,6 @@ man/man.sed: Makefile
 	@echo 's,%mailspool%,$(mailspool),g' >> $@
 	@echo 's,%sendmailpath%,$(sendmailpath),g' >> $@
 	@echo 's,%default_editor%,$(editorpath),g' >> $@
-	@echo 's,%default_pager%,$(pagerpath),g' >> $@
 	@echo 's,%manext1%,$(manext1),g' >> $@
 	@echo 's,%manext5%,$(manext5),g' >> $@
 	@echo 's,%manext7%,$(manext7),g' >> $@
