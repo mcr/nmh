@@ -665,8 +665,8 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	}
     } else {
 	/* set initial editor */
-	if (*ed == NULL && (*ed = context_find ("editor")) == NULL)
-	    *ed = defaulteditor;
+	if (*ed == NULL)
+	    *ed = get_default_editor();
     }
 
     if (altmsg) {

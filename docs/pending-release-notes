@@ -32,6 +32,8 @@ NEW FEATURES
 - inc(1) now supports a -port switch to specify the port used by the
   POP server.
 - pick(1) now decodes MIME-encoded header fields before searching.
+- The VISUAL and EDITOR environment variables are now supported as fallbacks
+  if the user does not configure an editor entry in their profile.
 
 
 ----------------------------
@@ -74,6 +76,8 @@ OBSOLETE/DEPRECATED FEATURES
 - The configure flag --with-pager has been removed; the default pager
   is now hardcoded as "more".  Users are still free to override the
   default using the PAGER environment variable or entries in .mh_profile.
+- The configure flag --with-editor has been removed; the fallback editor
+  if none is configured is "vi".
 
 ---------
 BUG FIXES

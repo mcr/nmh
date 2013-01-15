@@ -367,7 +367,6 @@ extern char *catproc;
 extern char *components;
 extern char *context;
 extern char *current;
-extern char *defaulteditor;
 extern char *defaultfolder;
 extern char *digestcomps;
 extern char *distcomps;

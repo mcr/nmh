@@ -54,12 +54,6 @@ AS_IF([test x"$with_tls" != x -a x"$with_tls" != x"no"],[
       AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])dnl
       tls_support=yes],[tls_support=no])
 
-dnl What should be the default editor?
-AC_ARG_WITH([editor],
-  AS_HELP_STRING([--with-editor=EDITOR],[specify the default editor]))
-
-AS_IF([test -n "$with_editor"], [editorpath="$with_editor"])
-
 dnl Set the backup prefix
 AC_ARG_WITH([hash-backup],
   AS_HELP_STRING([--with-hash-backup],[use # as the backup prefix (default: ,)]))
@@ -316,15 +310,6 @@ AS_IF([test "$lspath" != "no"],
 dnl Look for `sendmail'
 pathtmp=/usr/lib:/usr/sbin:/usr/etc:/usr/ucblib:/usr/bin:/bin
 AC_PATH_PROG([sendmailpath], [sendmail], [/usr/sbin/sendmail], [$pathtmp])
-
-dnl Look for `vi'
-pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
-AC_PATH_PROG([vipath], [vi], [/bin/vi], [$pathtmp])
-
-dnl If editor is not specified yet,
-dnl then use `vi' as the default.
-AS_IF([test -z "$editorpath"], [editorpath="$vipath"])
-AC_SUBST([editorpath])dnl
 
 dnl Cygwin FAT filesystems do not support hard links.  So default to
 dnl cp instead, even if running on an NTFS or other filesystem.

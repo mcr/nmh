@@ -66,6 +66,7 @@ int getanswer (char *);
 char **getarguments (char *, int, char **, int);
 char *get_charset(void);
 char *getcpy (char *);
+char *get_default_editor(void);
 char *getfolder(int);
 int lkclose(int, char*);
 int lkfclose(FILE *, char *);

@@ -485,7 +485,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/base64.c \
 		      sbr/folder_free.c sbr/folder_pack.c \
 		      sbr/folder_read.c sbr/folder_realloc.c sbr/gans.c \
 		      sbr/getans.c sbr/getanswer.c sbr/getarguments.c \
-		      sbr/getcpy.c sbr/getfolder.c sbr/getpass.c \
+		      sbr/getcpy.c sbr/geteditor.c sbr/getfolder.c \
+		      sbr/getpass.c \
 		      sbr/fmt_addr.c sbr/fmt_compile.c sbr/fmt_new.c \
 		      sbr/fmt_rfc2047.c sbr/fmt_scan.c sbr/lock_file.c \
 		      sbr/m_atoi.c sbr/m_backup.c sbr/m_convert.c \
@@ -511,8 +512,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/base64.c \
 sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 		-DMAILSPOOL='"$(mailspool)"' \
 		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
-		-DNMHLIBDIR='"$(libdir)"' \
-		-DDEFAULT_EDITOR='"$(editorpath)"'
+		-DNMHLIBDIR='"$(libdir)"'
 
 sbr_libdtimep_a_SOURCES = sbr/dtimep.l
 sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) \
@@ -541,7 +541,6 @@ man/man.sed: Makefile
 	@echo 's,%mandir%,$(mandir),g' >> $@
 	@echo 's,%mailspool%,$(mailspool),g' >> $@
 	@echo 's,%sendmailpath%,$(sendmailpath),g' >> $@
-	@echo 's,%default_editor%,$(editorpath),g' >> $@
 	@echo 's,%manext1%,$(manext1),g' >> $@
 	@echo 's,%manext5%,$(manext5),g' >> $@
 	@echo 's,%manext7%,$(manext7),g' >> $@

@@ -318,14 +318,6 @@ char *whatnowproc = nmhbindir (/whatnow);
 
 char *whomproc = nmhbindir (/whom);
 
-/*
- * This is the editor invoked by the various message
- * composition programs.  It SHOULD be a full screen
- * editor, such as vi or emacs, but any editor will work.
- */
-
-char *defaulteditor = DEFAULT_EDITOR;
-
 /* 
  * This is the global nmh alias file.  It is somewhat obsolete, since
  * global aliases should be handled by the Mail Transport Agent (MTA).
