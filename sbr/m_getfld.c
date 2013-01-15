@@ -244,28 +244,33 @@ static struct m_getfld_buffer {
     unsigned char *readpos;
     unsigned char *end;  /* One past the last character read in. */
     /* The following support tracking of the read position in the
-       input file so that callers can interleave m_getfld() calls with
-       ftell() and fseek().  bytes_read replaces the old m_getfld()
-       msg_count global. */
+       input file stream so that callers can interleave m_getfld()
+       calls with ftell() and fseek().  ytes_read replaces the old
+       m_getfld() msg_count global.  last_file_pos is stored when
+       leaving m_getfld()/m_unkown(), then checked on the next entry.
+       last_internal_pos is used to remember the position used
+       internally by m_getfld() (read_more(), actually). */
     off_t bytes_read;
-    off_t last_file_position;
+    off_t total_bytes_read;
+    off_t last_file_pos;
+    off_t last_internal_pos;
 } m;
 
 static void
 setup_buffer (FILE *iob, struct m_getfld_buffer *m) {
+    off_t pos = ftello (iob);
+
     /* Rely on Restriction that the first call to m_getfld (), etc.,
        is with the read position for the file stream set to 0. */
-    if (ftello (iob) == 0) {
+    if (pos == 0) {
 	/* A new file stream, so reset the buffer state. */
 	m->readpos = m->end = m->msg_buf;
-	m->last_file_position = ftello (iob);
+	m->total_bytes_read = 0;
+	m->last_file_pos = m->last_internal_pos = ftello (iob);
     } else {
-	off_t position = ftello (iob);
-
-	/* Compare current file position with last file position.  If
-	   different, then caller must have called ftell(), so adjust
-	   by the same amounmt. */
-	if (position - m->last_file_position != 0) {
+	/* If the current file stream position differs from the last one,
+	   then caller must have called ftell(), so adjust. */
+	if (pos != m->last_file_pos) {
 	    size_t num_read;
 
 	    /* Opportunity for optimization here:  don't reread if the
@@ -274,15 +279,20 @@ setup_buffer (FILE *iob, struct m_getfld_buffer *m) {
 	    fseeko (iob, 0, SEEK_SET);
 	    do {
 		num_read = fread (m->msg_buf, 1, MSG_INPUT_SIZE, iob);
-		position -= num_read;
-	    } while (position > 0);
-	    m->readpos = m->msg_buf + position + num_read;
+		pos -= num_read;
+	    } while (pos > 0);
+	    pos += num_read;
+	    /* assert (ftello (iob) == pos); */
+	    m->readpos = m->msg_buf + pos;
 	    m->end = m->msg_buf + num_read;
-
-	    m->last_file_position = position;
+	    m->last_internal_pos = m->last_file_pos = pos;
+	    m->total_bytes_read = pos;
+	} else {
+	    /* Restore the file position that we use for the input buffer. */
+	    pos = m->last_internal_pos;
 	}
 
-	fseeko (iob, position, SEEK_SET);
+	fseeko (iob, pos, SEEK_SET);
     }
 
     m->bytes_read = 0;
@@ -290,8 +300,13 @@ setup_buffer (FILE *iob, struct m_getfld_buffer *m) {
 
 static void
 update_input_filepos (struct m_getfld_buffer *m, FILE *iob) {
-    /* Need to fseek so that callers can use ftell (). */
-    m->last_file_position = ftello (iob);
+    /* Save the internal file position that we use for the input buffer. */
+    m->last_internal_pos = ftello (iob);
+
+    /* Set file stream position so that callers can use ftell (). */
+    m->total_bytes_read += m->bytes_read;
+    fseeko (iob, m->total_bytes_read, SEEK_SET);
+    m->last_file_pos = ftello (iob);
 }
 
 static size_t
@@ -473,7 +488,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    /* The last character read was '\n'.  m.bytes_read (and j)
 		       include that, but it was not put into the name array
 		       in the for loop above.  So subtract 1. */
-		    *bufsz = m.bytes_read - 1;  /* == j - 1 */
+		    *bufsz = --m.bytes_read;  /* == j - 1 */
 		    update_input_filepos (&m, iob);
 		    return BODY;
 		}

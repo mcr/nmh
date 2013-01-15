@@ -262,7 +262,6 @@ get_content (FILE *in, char *file, int toplevel)
     char *np, *vp;
     CT ct;
     HF hp;
-    long filepos;
 
     /* allocate the content structure */
     if (!(ct = (CT) calloc (1, sizeof(*ct))))
@@ -270,7 +269,7 @@ get_content (FILE *in, char *file, int toplevel)
 
     ct->c_fp = in;
     ct->c_file = add (file, NULL);
-    ct->c_begin = (filepos = ftell (ct->c_fp)) + 1;
+    ct->c_begin = ftell (ct->c_fp) + 1;
 
     /*
      * Parse the header fields for this
@@ -283,7 +282,6 @@ get_content (FILE *in, char *file, int toplevel)
 	case FLDPLUS:
 	case FLDEOF:
 	    compnum++;
-	    filepos += bufsz;
 
 	    /* get copies of the buffers */
 	    np = add (name, NULL);
@@ -301,20 +299,18 @@ get_content (FILE *in, char *file, int toplevel)
 
 	    /* continue, if this isn't the last header field */
 	    if (state != FLDEOF) {
-		ct->c_begin = filepos + 1;
+		ct->c_begin = ftell (in) + 1;
 		continue;
 	    }
 	    /* else fall... */
 
 	case BODY:
 	case BODYEOF:
-	    filepos += bufsz;
-	    ct->c_begin = filepos - strlen (buf);
+	    ct->c_begin = ftell (in) - strlen (buf);
 	    break;
 
 	case FILEEOF:
-	    filepos += bufsz;
-	    ct->c_begin = filepos;
+	    ct->c_begin = ftell (in);
 	    break;
 
 	case LENERR:
