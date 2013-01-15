@@ -257,7 +257,7 @@ static struct m_getfld_buffer {
 } m;
 
 static void
-setup_buffer (FILE *iob, struct m_getfld_buffer *m) {
+enter_getfld (FILE *iob, struct m_getfld_buffer *m) {
     off_t pos = ftello (iob);
 
     /* Rely on Restriction that the first call to m_getfld (), etc.,
@@ -299,7 +299,7 @@ setup_buffer (FILE *iob, struct m_getfld_buffer *m) {
 }
 
 static void
-update_input_filepos (struct m_getfld_buffer *m, FILE *iob) {
+leave_getfld (struct m_getfld_buffer *m, FILE *iob) {
     /* Save the internal file position that we use for the input buffer. */
     m->last_internal_pos = ftello (iob);
 
@@ -372,11 +372,11 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
     register unsigned char  *bp, *cp, *ep, *sp;
     register int cnt, c, i, j;
 
-    setup_buffer (iob, &m);
+    enter_getfld (iob, &m);
 
     if ((c = Getc(iob)) < 0) {
 	*bufsz = *buf = 0;
-	update_input_filepos (&m, iob);
+	leave_getfld (&m, iob);
 	return FILEEOF;
     }
     if (eom (c, iob)) {
@@ -389,7 +389,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		Ungetc(c, iob);
 	}
 	*bufsz = *buf = 0;
-	update_input_filepos (&m, iob);
+	leave_getfld (&m, iob);
 	return FILEEOF;
     }
 
@@ -410,7 +410,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 			    Ungetc(c, iob);
 		    }
 		    *bufsz = *buf = 0;
-		    update_input_filepos (&m, iob);
+		    leave_getfld (&m, iob);
 		    return FILEEOF;
 		}
 		state = BODY;
@@ -441,7 +441,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    if (c == EOF  ||  (next_char = Peek (iob)) == EOF) {
 		        *bufsz = *cp = *buf = 0;
 		        advise (NULL, "eof encountered in field \"%s\"", name);
-			update_input_filepos (&m, iob);
+			leave_getfld (&m, iob);
 		        return FMTERR;
 		    }
 		}
@@ -480,7 +480,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		       include that, but it was not put into the name array
 		       in the for loop above.  So subtract 1. */
 		    *bufsz = --m.bytes_read;  /* == j - 1 */
-		    update_input_filepos (&m, iob);
+		    leave_getfld (&m, iob);
 		    return BODY;
 		}
 		if ((i -= j) <= 0) {
@@ -630,7 +630,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 finish:
     *cp = 0;
 
-    update_input_filepos (&m, iob);
+    leave_getfld (&m, iob);
     return (state);
 }
 
@@ -643,7 +643,7 @@ m_unknown(FILE *iob)
     register char *cp;
     register char *delimstr;
 
-    setup_buffer (iob, &m);
+    enter_getfld (iob, &m);
 
 /*
  * Figure out what the message delimitter string is for this
@@ -714,7 +714,7 @@ m_unknown(FILE *iob)
 	    Ungetc(c, iob);
     }
 
-    update_input_filepos (&m, iob);
+    leave_getfld (&m, iob);
 }
 
 
