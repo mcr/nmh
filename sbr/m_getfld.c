@@ -423,79 +423,72 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	     */
 	    cp = name;
 	    i = NAMESZ - 1;
-	    for (;;) {
-		/* Get the field name.  The first time through the
-		   loop, this copies out the first character, which
-		   was loaded into c prior to loop entry.  Initialize
-		   j to 1 to account for that. */
-		for (j = 1;
-		     c != ':'  &&  c != '\n'  &&  c != EOF  &&  j <= i;
-		     ++j, c = Getc (iob)) {
-		    *cp++ = c;
-		}
+	    /* Get the field name.  The first time through the loop,
+	       this copies out the first character, which was loaded
+	       into c prior to loop entry.  Initialize j to 1 to
+	       account for that. */
+	    for (j = 1;
+		 c != ':'  &&  c != '\n'  &&  c != EOF  &&  j <= i;
+		 ++j, c = Getc (iob)) {
+		*cp++ = c;
+	    }
 
-		/* Skip next character, which is either the space
-		   after the ':' or the first folded whitespace. */
-		{
-		    int next_char;
-		    if (c == EOF  ||  (next_char = Peek (iob)) == EOF) {
-		        *bufsz = *cp = *buf = 0;
-		        advise (NULL, "eof encountered in field \"%s\"", name);
-			leave_getfld (&m, iob);
-		        return FMTERR;
-		    }
-		}
-		if (c == ':')
-		    break;
-
-		/*
-		 * something went wrong.  possibilities are:
-		 *  . hit a newline (error)
-		 *  . got more than namesz chars. (error)
-		 *  . hit the end of the buffer. (loop)
-		 */
-		if (c == '\n') {
-		    /* We hit the end of the line without seeing ':' to
-		     * terminate the field name.  This is usually (always?)
-		     * spam.  But, blowing up is lame, especially when
-		     * scan(1)ing a folder with such messages.  Pretend such
-		     * lines are the first of the body (at least mutt also
-		     * handles it this way). */
-
-		    /* See if buf can hold this line, since we were assuming
-		     * we had a buffer of NAMESZ, not bufsz. */
-		    /* + 1 for the newline */
-
-		    if (*bufsz < j + 1) {
-			/* No, it can't.  Oh well, guess we'll blow up. */
-			*bufsz = *cp = *buf = 0;
-			advise (NULL, "eol encountered in field \"%s\"", name);
-			state = FMTERR;
-			goto finish;
-		    }
-		    memcpy (buf, name, j - 1);
-		    buf[j - 1] = '\n';
-		    buf[j] = '\0';
-		    /* The last character read was '\n'.  m.bytes_read (and j)
-		       include that, but it was not put into the name array
-		       in the for loop above.  So subtract 1. */
-		    *bufsz = --m.bytes_read;  /* == j - 1 */
-		    leave_getfld (&m, iob);
-		    return BODY;
-		}
-		if ((i -= j) <= 0) {
+	    /* Skip next character, which is either the space after
+	       the ':' or the first folded whitespace. */
+	    {
+		int next_char;
+		if (c == EOF  ||  (next_char = Peek (iob)) == EOF) {
 		    *bufsz = *cp = *buf = 0;
-		    advise (NULL, "field name \"%s\" exceeds %d bytes", name, NAMESZ - 2);
-		    state = LENERR;
-		    goto finish;
+		    advise (NULL, "eof encountered in field \"%s\"", name);
+		    leave_getfld (&m, iob);
+		    return FMTERR;
 		}
+	    }
+
+	    /* If c isn't ':' here, something went wrong.  Possibilities are:
+	     *  . hit a newline (error)
+	     *  . got more than namesz chars. (error)
+	     */
+	    if (c == ':') {
+		/* Finished header name, fall through to FLDPLUS below. */
+	    } else if (c == '\n') {
+		/* We hit the end of the line without seeing ':' to
+		 * terminate the field name.  This is usually (always?)
+		 * spam.  But, blowing up is lame, especially when
+		 * scan(1)ing a folder with such messages.  Pretend such
+		 * lines are the first of the body (at least mutt also
+		 * handles it this way). */
+
+		/* See if buf can hold this line, since we were assuming
+		 * we had a buffer of NAMESZ, not bufsz. */
+		/* + 1 for the newline */
+		if (*bufsz < j + 1) {
+		    /* No, it can't.  Oh well, guess we'll blow up. */
+		    *bufsz = *cp = *buf = 0;
+		    advise (NULL, "eol encountered in field \"%s\"", name);
+		    state = FMTERR;
+		    break; /* to finish */
+		}
+		memcpy (buf, name, j - 1);
+		buf[j - 1] = '\n';
+		buf[j] = '\0';
+		/* The last character read was '\n'.  m.bytes_read
+		   (and j) include that, but it was not put into the
+		   name array in the for loop above.  So subtract 1. */
+		*bufsz = --m.bytes_read;  /* == j - 1 */
+		leave_getfld (&m, iob);
+		return BODY;
+	    } else if ((i -= j) <= 0) {
+		*bufsz = *cp = *buf = 0;
+		advise (NULL, "field name \"%s\" exceeds %d bytes", name, NAMESZ - 2);
+		state = LENERR;
+		break; /* to finish */
 	    }
 
 	    /* Trim any trailing spaces from the end of name. */
 	    while (isspace (*--cp) && cp >= name) continue;
 	    *++cp = 0;
-	    /* c is ':' here.  And readpos points to the first
-	       character of the field body. */
+	    /* readpos points to the first character of the field body. */
 	    /* fall through */
 
 	case FLDPLUS:
@@ -618,8 +611,8 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	       in the read buffer, so will not overrun it. */
 	    m.readpos += c;
 	    cp = buf + c;
-	    /* Less 1 from c because the first character was read by Getc(),
-	       and therefore already accounted for in m.bytes_read. */
+	    /* Subtract 1 from c because the first character was read by
+	       Getc(), and therefore already accounted for in m.bytes_read. */
 	    m.bytes_read += c - 1;
 	    *bufsz = m.bytes_read;
 	    break;
