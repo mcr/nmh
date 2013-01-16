@@ -428,7 +428,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	       into c prior to loop entry.  Initialize j to 1 to
 	       account for that. */
 	    for (j = 1;
-		 c != ':'  &&  c != '\n'  &&  c != EOF  &&  j <= i;
+		 c != ':'  &&  c != '\n'  &&  c != EOF  &&  j < i;
 		 ++j, c = Getc (iob)) {
 		*cp++ = c;
 	    }
@@ -478,9 +478,13 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		*bufsz = --m.bytes_read;  /* == j - 1 */
 		leave_getfld (&m, iob);
 		return BODY;
-	    } else if ((i -= j) <= 0) {
+	    } else if (i <= j) {
+		/* By design, the loop above discards the last character
+                   it had read.  It's in c, use it. */
+		*cp++ = c;
 		*bufsz = *cp = *buf = 0;
-		advise (NULL, "field name \"%s\" exceeds %d bytes", name, NAMESZ - 2);
+		advise (NULL, "field name \"%s\" exceeds %d bytes", name,
+			NAMESZ - 2);
 		state = LENERR;
 		break; /* to finish */
 	    }

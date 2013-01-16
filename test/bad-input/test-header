@@ -75,6 +75,7 @@ mhshow -nopause $msgnum > "$actual" 2>&1
 check "$expected" "$actual"
 
 # check m_getfld() handling of empty header field
+printf 'Date: Sat, 12 Jan 2013 09:07:01 -0600\nReceived:' >"$MH_TEST_DIR/mess"
 cat >"$expected" <<EOF
    1  01/12 
 EOF
@@ -83,8 +84,21 @@ scan: eof encountered in field "Received"
 ??Format error (message -1) in component 2
 EOF
 
-scan -width 13 -file "$thisdir"/malformed_message.txt >"$actual" 2>"$actual_err"
+scan -width 13 -file "$MH_TEST_DIR/mess" >"$actual" 2>"$actual_err"
+check "$expected" "$actual"
+check "$expected_err" "$actual_err"
+rm -f "$MH_TEST_DIR/mess"
 
+# check m_getfld() handling of excessively long header field name
+cat >"$expected" <<EOF
+   1  01/15 
+EOF
+cat >"$expected_err" <<EOF
+scan: field name "ThisHeaderFieldNameIsWaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaayTooLong" exceeds 997 bytes
+??Format error (message -1) in component 2
+EOF
+
+scan -width 13 -file "$thisdir"/malformed_message.txt >"$actual" 2>"$actual_err"
 check "$expected" "$actual"
 check "$expected_err" "$actual_err"
 
