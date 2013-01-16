@@ -367,11 +367,11 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 
 	    comp = fmt->f_comp;
 
-	    if (! (comp->c_flags & CF_TRIMMED) && comp->c_text) {
-	    	i = strlen(comp->c_text);
+	    if (! (comp->c_flags & CF_TRIMMED) && comp->c_text &&
+		(i = strlen(comp->c_text)) > 0) {
 		if (comp->c_text[i - 1] == '\n' &&
-			strcmp(comp->c_name, "body") != 0 &&
-			strcmp(comp->c_name, "text") != 0)
+		    strcmp(comp->c_name, "body") != 0 &&
+		    strcmp(comp->c_name, "text") != 0)
 		    comp->c_text[i - 1] = '\0';
 		comp->c_flags |= CF_TRIMMED;
 	    }
