@@ -370,7 +370,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
           int *bufsz, FILE *iob)
 {
     register unsigned char *cp;
-    register int cnt, c, i, j;
+    register int max, n, c;
 
     enter_getfld (iob, &m);
 
@@ -422,14 +422,14 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	     * comes first.
 	     */
 	    cp = name;
-	    i = NAMESZ - 1;
+	    max = NAMESZ - 1;
 	    /* Get the field name.  The first time through the loop,
 	       this copies out the first character, which was loaded
-	       into c prior to loop entry.  Initialize j to 1 to
+	       into c prior to loop entry.  Initialize n to 1 to
 	       account for that. */
-	    for (j = 1;
-		 c != ':'  &&  c != '\n'  &&  c != EOF  &&  j < i;
-		 ++j, c = Getc (iob)) {
+	    for (n = 1;
+		 c != ':'  &&  c != '\n'  &&  c != EOF  &&  n < max;
+		 ++n, c = Getc (iob)) {
 		*cp++ = c;
 	    }
 
@@ -462,23 +462,23 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		/* See if buf can hold this line, since we were assuming
 		 * we had a buffer of NAMESZ, not bufsz. */
 		/* + 1 for the newline */
-		if (*bufsz < j + 1) {
+		if (*bufsz < n + 1) {
 		    /* No, it can't.  Oh well, guess we'll blow up. */
 		    *bufsz = *cp = *buf = 0;
 		    advise (NULL, "eol encountered in field \"%s\"", name);
 		    state = FMTERR;
 		    break;
 		}
-		memcpy (buf, name, j - 1);
-		buf[j - 1] = '\n';
-		buf[j] = '\0';
+		memcpy (buf, name, n - 1);
+		buf[n - 1] = '\n';
+		buf[n] = '\0';
 		/* The last character read was '\n'.  m.bytes_read
-		   (and j) include that, but it was not put into the
+		   (and n) include that, but it was not put into the
 		   name array in the for loop above.  So subtract 1. */
-		*bufsz = --m.bytes_read;  /* == j - 1 */
+		*bufsz = --m.bytes_read;  /* == n - 1 */
 		leave_getfld (&m, iob);
 		return BODY;
-	    } else if (i <= j) {
+	    } else if (max <= n) {
 		/* By design, the loop above discards the last character
                    it had read.  It's in c, use it. */
 		*cp++ = c;
@@ -504,15 +504,15 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    int finished;
 
 	    cp = buf;
-	    i = *bufsz-1;
-	    j = 0;
+	    max = *bufsz-1;
+	    n = 0;
 	    for (finished = 0; ! finished; ) {
-		while (c != '\n'  &&  c != EOF  &&  j++ < i) {
+		while (c != '\n'  &&  c != EOF  &&  n++ < max) {
 		    *cp++ = c = Getc (iob);
 		}
 
 		if (c != EOF) c = Peek (iob);
-		if (i < j) {
+		if (max < n) {
 		    /* the dest buffer is full */
 		    state = FLDPLUS;
 		    finished = 1;
@@ -538,12 +538,13 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	     * end of the message.
 	     */
 	    unsigned char *bp;
+	    register int cnt;
 
-	    i = *bufsz-1;
+	    max = *bufsz-1;
 	    /* Back up and store the current position and update cnt. */
 	    bp = --m.readpos;
 	    cnt = m.end - m.readpos;
-	    c = cnt < i ? cnt : i;
+	    c = cnt < max ? cnt : max;
 	    if (msg_style != MS_DEFAULT && c > 1) {
 		/*
 		 * packed maildrop - only take up to the (possible)
