@@ -237,9 +237,7 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
 	     man/unseen.man man/whatnow.man man/whom.man \
 	     test/README test/fakesendmail $(TESTS) test/inc/deb359167.mbox \
 	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
-	     test/inc/lots_of_headers.txt test/inc/md5sums \
-	     test/bad-input/malformed_message.txt \
-	     test/mhmail/attachment.txt \
+	     test/inc/md5sums test/mhmail/attachment.txt \
 	     test/post/test-post-common.sh uip/mhmail \
 	     SPECS/nmh.spec SPECS/build-nmh-cygwin
 
