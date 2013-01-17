@@ -369,7 +369,7 @@ int
 m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
           int *bufsz, FILE *iob)
 {
-    register unsigned char  *bp, *cp, *ep, *sp;
+    register unsigned char *cp;
     register int cnt, c, i, j;
 
     enter_getfld (iob, &m);
@@ -467,7 +467,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    *bufsz = *cp = *buf = 0;
 		    advise (NULL, "eol encountered in field \"%s\"", name);
 		    state = FMTERR;
-		    break; /* to finish */
+		    break;
 		}
 		memcpy (buf, name, j - 1);
 		buf[j - 1] = '\n';
@@ -486,7 +486,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		advise (NULL, "field name \"%s\" exceeds %d bytes", name,
 			NAMESZ - 2);
 		state = LENERR;
-		break; /* to finish */
+		break;
 	    }
 
 	    /* Trim any trailing spaces from the end of name. */
@@ -495,16 +495,18 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    /* readpos points to the first character of the field body. */
 	    /* fall through */
 
-	case FLDPLUS:
+	case FLDPLUS: {
 	    /*
 	     * get (more of) the text of a field.  Take
 	     * characters up to the end of this field (newline
 	     * followed by non-blank) or bufsz-1 characters.
 	     */
+	    int finished;
+
 	    cp = buf;
 	    i = *bufsz-1;
 	    j = 0;
-	    for (;;) {
+	    for (finished = 0; ! finished; ) {
 		while (c != '\n'  &&  c != EOF  &&  j++ < i) {
 		    *cp++ = c = Getc (iob);
 		}
@@ -512,31 +514,31 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		if (c != EOF) c = Peek (iob);
 		if (i < j) {
 		    /* the dest buffer is full */
-		    *bufsz = m.bytes_read;
 		    state = FLDPLUS;
-		    goto finish;
+		    finished = 1;
 		} else if (c != ' '  &&  c != '\t') {
 		    /* The next character is not folded whitespace, so
 		       prepare to move on to the next field.  It's OK
 		       if c is EOF, it will be handled on the next
 		       call to m_getfld (). */
-		    *bufsz = m.bytes_read;
 		    state = FLD;
-		    goto finish;
+		    finished = 1;
 		} else {
 		    /* Folded header field, continues on the next line. */
-		    continue;
 		}
 	    }
 	    *bufsz = m.bytes_read;
 	    break;
+        }
 
-	case BODY:
 	body:
+	case BODY: {
 	    /*
 	     * get the message body up to bufsz characters or the
 	     * end of the message.
 	     */
+	    unsigned char *bp;
+
 	    i = *bufsz-1;
 	    /* Back up and store the current position and update cnt. */
 	    bp = --m.readpos;
@@ -555,6 +557,8 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		 * algorithms vs. brute force.)  Since I (currently)
 		 * run MH on a vax, we use the matchc instruction. --vj
 		 */
+		unsigned char *ep;
+
 		if ((ep = matchc( fdelimlen, fdelim, c, bp )))
 		    c = ep - bp + 1;
 		else {
@@ -571,6 +575,8 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		     * ends with one of the characters in the pattern
 		     * (excluding the first and last), we do only one test.
 		     */
+		    unsigned char *sp;
+
 		    ep = bp + c - 1;
 		    if ((sp = pat_map[*ep])) {
 			do {
@@ -620,15 +626,16 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    m.bytes_read += c - 1;
 	    *bufsz = m.bytes_read;
 	    break;
+        }
 
 	default:
 	    adios (NULL, "m_getfld() called with bogus state of %d", state);
     }
-finish:
-    *cp = 0;
 
+    *cp = 0;
     leave_getfld (&m, iob);
-    return (state);
+
+    return state;
 }
 
 
@@ -675,8 +682,6 @@ m_unknown(FILE *iob)
     } else {
 	/* not a Unix style maildrop */
 	m.readpos -= m.bytes_read;
-	if (mmdlm2 == NULL || *mmdlm2 == 0)
-	    mmdlm2 = "\001\001\001\001\n";
 	delimstr = mmdlm2;
 	msg_style = MS_MMDF;
     }
