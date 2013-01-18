@@ -582,7 +582,6 @@ main (int argc, char **argv)
 	int bufsz = sizeof buf;
 	switch (state = m_getfld (state, name, buf, &bufsz, in)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		compnum++;
 		cp = add (buf, NULL);
@@ -593,13 +592,9 @@ main (int argc, char **argv)
 		}
 		putfmt (name, cp, out);
 		free (cp);
-		if (state != FLDEOF)
-		    continue;
-		finish_headers (out);
-		break;
+		continue;
 
 	    case BODY: 
-	    case BODYEOF: 
 		finish_headers (out);
 		if (whomsw)
 		    break;

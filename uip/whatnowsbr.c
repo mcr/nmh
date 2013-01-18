@@ -946,7 +946,6 @@ check_draft (char *msgnam)
 	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 		/*
 		 * If draft already contains any of the
 		 * Content-XXX fields, then assume it already

@@ -237,9 +237,7 @@ struct msgs {
 #define FMTERR  (-3)		/* Message Format error             */
 #define FLD      0		/* Field returned                   */
 #define FLDPLUS  1		/* Field returned with more to come */
-#define FLDEOF   2		/* Field returned ending at eom     */
 #define BODY     3		/* Body  returned with more to come */
-#define BODYEOF  4		/* Body  returned ending at eom     */
 #define FILEEOF  5		/* Reached end of input file        */
 
 /*

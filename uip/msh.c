@@ -1009,7 +1009,6 @@ readid (int msgnum)
 	int bufsz = sizeof buf;
 	switch (state = m_getfld (state, name, buf, &bufsz, zp)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		if (!mh_strcasecmp (name, BBoard_ID)) {
 		    bp = getcpy (buf);
@@ -1028,8 +1027,7 @@ readid (int msgnum)
 		while (state == FLDPLUS)
 		    bufsz = sizeof buf;
 		    state = m_getfld (state, name, buf, &bufsz, zp);
-		if (state != FLDEOF)
-		    continue;
+		continue;
 
 	    default: 
 		return 0;

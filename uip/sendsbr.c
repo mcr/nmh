@@ -607,7 +607,6 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 	switch (state = m_getfld (state, name, buffer, &bufsz, in)) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 	        compnum++;
 
 		/*
@@ -658,14 +657,10 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 		    }
 		}
 
-		if (state != FLDEOF) {
-		    start = ftell (in) + 1;
-		    continue;
-		}
-		/* else fall... */
+		start = ftell (in) + 1;
+		continue;
 
 	   case BODY:
-	   case BODYEOF:
 	   case FILEEOF:
 		break;
 

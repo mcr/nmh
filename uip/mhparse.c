@@ -280,7 +280,6 @@ get_content (FILE *in, char *file, int toplevel)
 	switch (state = m_getfld (state, name, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
-	case FLDEOF:
 	    compnum++;
 
 	    /* get copies of the buffers */
@@ -297,15 +296,11 @@ get_content (FILE *in, char *file, int toplevel)
 	    /* Now add the header data to the list */
 	    add_header (ct, np, vp);
 
-	    /* continue, if this isn't the last header field */
-	    if (state != FLDEOF) {
-		ct->c_begin = ftell (in) + 1;
-		continue;
-	    }
-	    /* else fall... */
+	    /* continue, to see if this isn't the last header field */
+	    ct->c_begin = ftell (in) + 1;
+	    continue;
 
 	case BODY:
-	case BODYEOF:
 	    ct->c_begin = ftell (in) - strlen (buf);
 	    break;
 

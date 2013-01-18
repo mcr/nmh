@@ -357,7 +357,6 @@ is_nontext (char *msgnam)
 	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
 	case FLD:
 	case FLDPLUS:
-	case FLDEOF:
 	    /*
 	     * Check Content-Type field
 	     */

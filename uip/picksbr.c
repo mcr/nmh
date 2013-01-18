@@ -950,7 +950,6 @@ plist
 	int bufsz = sizeof buf;
 	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		if (bp != NULL)
 		    free (bp), bp = NULL;
@@ -962,11 +961,9 @@ plist
 		}
 		if (!mh_strcasecmp (name, n->n_datef))
 		    break;
-		if (state != FLDEOF)
-		    continue;
+		continue;
 
 	    case BODY: 
-	    case BODYEOF: 
 	    case FILEEOF: 
 	    case LENERR: 
 	    case FMTERR: 

@@ -81,7 +81,6 @@ seq_public (struct msgs *mp)
 	switch (state = m_getfld (state, name, field, &fieldsz, fp)) {
 	    case FLD: 
 	    case FLDPLUS:
-	    case FLDEOF: 
 		if (state == FLDPLUS) {
 		    cp = getcpy (field);
 		    while (state == FLDPLUS) {
@@ -94,12 +93,9 @@ seq_public (struct msgs *mp)
 		} else {
 		    seq_init (mp, getcpy (name), trimcpy (field));
 		}
-		if (state == FLDEOF)
-		    break;
 		continue;
 
 	    case BODY: 
-	    case BODYEOF: 
 		adios (NULL, "no blank lines are permitted in %s", seqfile);
 		/* fall */
 

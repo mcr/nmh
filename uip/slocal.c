@@ -743,7 +743,6 @@ parse (int fd)
 	int fieldsz = sizeof field;
 	switch (state = m_getfld (state, name, field, &fieldsz, in)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		lp = add (field, NULL);
 		while (state == FLDPLUS) {
@@ -777,12 +776,9 @@ parse (int fd)
 		    p++, i++;
 		    p->p_name = NULL;
 		}
-		if (state != FLDEOF)
-		    continue;
-		break;
+		continue;
 
 	    case BODY: 
-	    case BODYEOF: 
 	    case FILEEOF: 
 		break;
 
@@ -1431,7 +1427,6 @@ suppress_duplicates (int fd, char *file)
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 		/* Search for the message ID */
 		if (mh_strcasecmp (name, "Message-ID")) {
 		    while (state == FLDPLUS) {
@@ -1492,7 +1487,6 @@ suppress_duplicates (int fd, char *file)
 		break;
 
 	   case BODY:
-	   case BODYEOF:
 	   case FILEEOF:
 		break;
 

@@ -388,7 +388,6 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
 	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 	        strncpy (mapname, name, namelen);
 		if (state != FLDPLUS)
 		    cp = buf;
@@ -412,12 +411,9 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
 		    lkfclose (fp, mapfile);
 		    return OK;
 		}
-		if (state != FLDEOF)
-		    continue;
-		/* else fall... */
+		continue;
 
 	    case BODY:
-	    case BODYEOF:
 	    case FILEEOF:
 	    default:
 		break;

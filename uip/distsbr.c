@@ -51,7 +51,6 @@ distout (char *drft, char *msgnam, char *backup)
 	switch (state = m_getfld (state, name, buffer, &buffersz, ifp)) {
 	    case FLD: 
 	    case FLDPLUS: 
-	    case FLDEOF: 
 		if (uprf (name, "distribute-"))
 		    snprintf (name, sizeof(name), "%s%s", "Resent", &name[10]);
 		if (uprf (name, "distribution-"))
@@ -70,12 +69,9 @@ distout (char *drft, char *msgnam, char *backup)
 		    resent = add (buffer, resent);
 		    fputs (buffer, ofp);
 		}
-		if (state == FLDEOF)
-		    goto process;
 		break;
 
 	    case BODY: 
-	    case BODYEOF: 
 		for (dp = buffer; *dp; dp++)
 		    if (!isspace (*dp)) {
 			advise (NULL, BADTXT, "draft");
@@ -157,7 +153,6 @@ ready_msg (char *msgnam)
 	switch (state = m_getfld (state, name, buffer, &buffersz, ifp)) {
 	    case FLD: 
 	    case FLDPLUS: 
-	    case FLDEOF: 
 		if (uprf (name, "resent"))
 		    fprintf (ofp, "Prev-");
 		fprintf (ofp, "%s: %s", name, buffer);
@@ -166,12 +161,9 @@ ready_msg (char *msgnam)
 		    state = m_getfld (state, name, buffer, &buffersz, ifp);
 		    fputs (buffer, ofp);
 		}
-		if (state == FLDEOF)
-		    goto process;
 		break;
 
 	    case BODY: 
-	    case BODYEOF: 
 		fclose (ofp);
 
                 cp = m_mktemp2(NULL, "dist", &txtfd, NULL);

@@ -63,7 +63,6 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 	switch (state = m_getfld (state, name, field, &fieldsz, ib)) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 		np = (struct node *) mh_xmalloc (sizeof(*np));
 		*npp = np;
 		*(npp = &np->n_next) = NULL;
@@ -91,12 +90,9 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 			*ps->procnaddr = np->n_field;
 			break;
 		    }
-		if (state == FLDEOF)
-		    break;
 		continue;
 
 	    case BODY:
-	    case BODYEOF:
 		adios (NULL, "no blank lines are permitted in %s", file);
 
 	    case FILEEOF:

@@ -212,7 +212,6 @@ main (int argc, char **argv)
 	int fieldsz = sizeof field;
 	switch (state = m_getfld (state, name, field, &fieldsz, in)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		/*
 		 * Check if the value of field contains anything
@@ -258,17 +257,9 @@ abort:
 		    }
 		}
 
-		if (state == FLDEOF) {	/* moby hack */
-		    fprintf (out, "--------\n");
-		    printf ("--------\n");
-		    if (!body)
-			break;
-		    goto no_body;
-		}
 		continue;
 
 	    case BODY: 
-	    case BODYEOF:
 	    case FILEEOF: 
 	        if (!body)
 	            break;
@@ -301,7 +292,7 @@ abort:
 		    else
 			printf ("\n--------Enter additional text\n\n");
 		}
-no_body:
+
 		fflush (stdout);
 		for (;;) {
 		    getln (field, sizeof(field));

@@ -109,7 +109,6 @@ get_msgnums(char *folder, char *sequences[])
 	switch (state = m_getfld (state, name, field, &fieldsz, fp)) {
             case FLD:
             case FLDPLUS:
-            case FLDEOF:
                 if (state == FLDPLUS) {
                     cp = getcpy (field);
                     while (state == FLDPLUS) {
@@ -149,12 +148,9 @@ get_msgnums(char *folder, char *sequences[])
                     }
                 }
 
-                if (state == FLDEOF)
-                    break;
                 continue;
 
             case BODY:
-            case BODYEOF:
                 adios (NULL, "no blank lines are permitted in %s", seqfile);
                 /* fall */
 

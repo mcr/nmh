@@ -374,7 +374,6 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	int bufsz = sizeof buf;
 	switch (state = m_getfld (state, nam, buf, &bufsz, in)) {
 	case FLD:
-	case FLDEOF:
 	case FLDPLUS:
 	    compnum++;
 	    if (!mh_strcasecmp (nam, datesw)) {
@@ -405,7 +404,6 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	    continue;
 
 	case BODY:
-	case BODYEOF:
 	case FILEEOF:
 	    break;
 

@@ -426,8 +426,6 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
     }
 
     switch (state) {
-	case FLDEOF:
-	case BODYEOF:
 	case FLD:
 	    if (c == '\n' || c == '-') {
 		/* we hit the header/body separator */

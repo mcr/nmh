@@ -167,7 +167,6 @@ build_mime (char *infile, int directives)
 	switch (state = m_getfld (state, name, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
-	case FLDEOF:
 	    compnum++;
 
 	    /* abort if draft has Mime-Version header field */
@@ -203,16 +202,13 @@ build_mime (char *infile, int directives)
 
 finish_field:
 	    /* if this wasn't the last header field, then continue */
-	    if (state != FLDEOF)
-		continue;
-	    /* else fall... */
+	    continue;
 
 	case FILEEOF:
 	    adios (NULL, "draft has empty body -- no directives!");
 	    /* NOTREACHED */
 
 	case BODY:
-	case BODYEOF:
 	    fseek (in, (long) (-strlen (buf)), SEEK_CUR);
 	    break;
 

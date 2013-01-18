@@ -2440,7 +2440,6 @@ is_nontext (int msgnum)
 	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
 	case FLD:
 	case FLDPLUS:
-	case FLDEOF:
 	    /*
 	     * Check Content-Type field
 	     */
@@ -2751,7 +2750,6 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 	int bufsz = sizeof buf;
 	switch (state = m_getfld (state, name, buf, &bufsz, zp)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		if (!mh_strcasecmp (name, datesw)) {
 		    bp = getcpy (buf);
@@ -2792,7 +2790,6 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 		continue;
 
 	    case BODY: 
-	    case BODYEOF: 
 	    case FILEEOF: 
 		break;
 
