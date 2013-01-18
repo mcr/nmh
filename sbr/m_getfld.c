@@ -246,15 +246,44 @@ static struct m_getfld_buffer {
     /* The following support tracking of the read position in the
        input file stream so that callers can interleave m_getfld()
        calls with ftell() and fseek().  ytes_read replaces the old
-       m_getfld() msg_count global.  last_file_pos is stored when
+       m_getfld() msg_count global.  last_caller_pos is stored when
        leaving m_getfld()/m_unkown(), then checked on the next entry.
        last_internal_pos is used to remember the position used
        internally by m_getfld() (read_more(), actually). */
     off_t bytes_read;
-    off_t total_bytes_read;
-    off_t last_file_pos;
+    off_t total_bytes_read; /* by caller, not necessarily from input file */
+    off_t last_caller_pos;
     off_t last_internal_pos;
 } m;
+
+/*
+  Summary of file and message input buffer positions:
+
+  input file      -------------------------------------------EOF
+                                 |              |
+                          last_caller_pos  last_internal_pos
+
+
+  msg_buf                   --------------------EOF
+                            |         |         |
+                         msg_buf   readpos     end
+
+                            |<>|=retained characters, difference
+                                 between last_internal_pos and
+                                 first readpos value after reading
+                                 in new chunk in read_more()
+
+  When returning from m_getfld()/m_unknown():
+  1) Save the internal file position in last_internal_pos.  That's the
+     m_getfld() position reference in the input file.
+  2) Set file stream position so that callers can use ftell().
+
+  When entering m_getfld()/m_unknown():
+  Check to see if the call had changed the file position.  If so,
+  adjust the internal position reference accordingly.  If not, restore
+  the internal file position from last_internal_pos.
+*/
+
 
 static void
 enter_getfld (FILE *iob, struct m_getfld_buffer *m) {
@@ -266,30 +295,33 @@ enter_getfld (FILE *iob, struct m_getfld_buffer *m) {
 	/* A new file stream, so reset the buffer state. */
 	m->readpos = m->end = m->msg_buf;
 	m->total_bytes_read = 0;
-	m->last_file_pos = m->last_internal_pos = ftello (iob);
+	m->last_caller_pos = m->last_internal_pos = ftello (iob);
     } else {
-	/* If the current file stream position differs from the last one,
-	   then caller must have called ftell(), so adjust. */
-	if (pos != m->last_file_pos) {
-	    size_t num_read;
+	off_t pos_movement = pos - m->last_caller_pos; /* Can be < 0. */
 
-	    /* Opportunity for optimization here:  don't reread if the
-	       new position had already been read into the buffer,
-	       just move m->readpos to it. */
-	    fseeko (iob, 0, SEEK_SET);
-	    do {
-		num_read = fread (m->msg_buf, 1, MSG_INPUT_SIZE, iob);
-		pos -= num_read;
-	    } while (pos > 0);
-	    pos += num_read;
-	    /* assert (ftello (iob) == pos); */
-	    m->readpos = m->msg_buf + pos;
-	    m->end = m->msg_buf + num_read;
-	    m->last_internal_pos = m->last_file_pos = pos;
-	    m->total_bytes_read = pos;
-	} else {
-	    /* Restore the file position that we use for the input buffer. */
+	if (pos_movement == 0) {
 	    pos = m->last_internal_pos;
+	} else {
+	    /* The current file stream position differs from the last one, so
+	       caller must have called ftell/o().  Adjust accordingly. */
+	    if (m->readpos + pos_movement >= m->msg_buf  &&
+		m->readpos + pos_movement < m->end) {
+		/* We can shift readpos and remain within the bounds of
+		   msg_buf. */
+		m->readpos += pos_movement;
+		m->total_bytes_read += pos_movement;
+		pos = m->last_internal_pos;
+	    } else {
+		size_t num_read;
+
+		/* This seek skips past an integral number of chunks of
+		   size MSG_INPUT_SIZE. */
+		fseeko (iob, pos / MSG_INPUT_SIZE * MSG_INPUT_SIZE, SEEK_SET);
+		num_read = fread (m->msg_buf, 1, MSG_INPUT_SIZE, iob);
+		m->readpos = m->msg_buf  +  pos % MSG_INPUT_SIZE;
+		m->end = m->msg_buf + num_read;
+		m->total_bytes_read = pos;
+	    }
 	}
 
 	fseeko (iob, pos, SEEK_SET);
@@ -303,10 +335,10 @@ leave_getfld (struct m_getfld_buffer *m, FILE *iob) {
     /* Save the internal file position that we use for the input buffer. */
     m->last_internal_pos = ftello (iob);
 
-    /* Set file stream position so that callers can use ftell (). */
+    /* Set file stream position so that callers can use ftell(). */
     m->total_bytes_read += m->bytes_read;
     fseeko (iob, m->total_bytes_read, SEEK_SET);
-    m->last_file_pos = ftello (iob);
+    m->last_caller_pos = ftello (iob);
 }
 
 static size_t
@@ -433,7 +465,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		*cp++ = c;
 	    }
 
-	    /* Skip next character, which is either the space after
+	    /* Check for next character, which is either the space after
 	       the ':' or the first folded whitespace. */
 	    {
 		int next_char;
@@ -538,13 +570,11 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	     * end of the message.
 	     */
 	    unsigned char *bp;
-	    register int cnt;
 
 	    max = *bufsz-1;
 	    /* Back up and store the current position and update cnt. */
 	    bp = --m.readpos;
-	    cnt = m.end - m.readpos;
-	    c = cnt < max ? cnt : max;
+	    c = m.end - m.readpos < max  ?  m.end - m.readpos  :  max;
 	    if (msg_style != MS_DEFAULT && c > 1) {
 		/*
 		 * packed maildrop - only take up to the (possible)
