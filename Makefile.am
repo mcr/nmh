@@ -472,7 +472,8 @@ uninstall-hook:
 ##
 ## Our rules to build our internal libraries (libmh.a, libmts.a)
 ##
-sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/base64.c \
+sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
+		      sbr/base64.c \
 		      sbr/brkstring.c sbr/check_charset.c sbr/client.c \
 		      sbr/closefds.c sbr/concat.c sbr/context_del.c \
 		      sbr/context_find.c sbr/context_foil.c sbr/context_read.c \
