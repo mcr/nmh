@@ -55,8 +55,24 @@ run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 80" \
 	"Incorporating new mail into inbox...
 
   11+ 12/17 No Such User       Hello<<Hey man, how's it going? . Hope you're do"
+check $testmessage `mhpath +inbox 11` 'keep first'
 
-check `mhpath +inbox 11` $testmessage
-rm -f $testmessage
+# check -pack
+pid=`"${MH_OBJ_DIR}/test/fakepop" "$testmessage" "$testport" \
+			"$TESTUSER" "$TESTPASS"`
+
+touch "$MH_TEST_DIR/inc.mbox"
+run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 80 \
+          -pack $MH_TEST_DIR/inc.mbox" \
+	"Incorporating new mail into (null)...
+
+   1  12/17 No Such User       Hello<<Hey man, how's it going? . Hope you're do"
+run_test "inc -file $MH_TEST_DIR/inc.mbox -truncate" \
+	"Incorporating new mail into inbox...
+
+  11+ 12/17 No Such User       Hello<<Hey man, how's it going? . Hope you're do"
+
+check $testmessage `mhpath +inbox 11`
+rm -f "$MH_TEST_DIR/inc.mbox" "$MH_TEST_DIR/.inc.map"
 
 exit ${failed:-0}
