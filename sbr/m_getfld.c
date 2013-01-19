@@ -196,11 +196,12 @@ removed from the signature and just retained internally.
 /*
  * static prototypes
  */
-static int m_Eom (int, FILE *);
+struct m_getfld_state;
+static int m_Eom (int, struct m_getfld_state *);
 static unsigned char *matchc(int, char *, int, char *);
 
-#define eom(c,iob)	(s->msg_style != MS_DEFAULT && \
-			 (((c) == *s->msg_delim && m_Eom(c,iob)) ||\
+#define eom(c,s)	(s->msg_style != MS_DEFAULT && \
+			 (((c) == *s->msg_delim && m_Eom(c,s)) || \
 			  (s->eom_action && (*s->eom_action)(c))))
 
 /* This replaces the old approach, with its direct access to stdio
@@ -212,7 +213,7 @@ static unsigned char *matchc(int, char *, int, char *);
  *
  * Some of the tests in the test suite assume a MSG_INPUT_SIZE
  * of 8192. */
-#define MSG_INPUT_SIZE BUFSIZ
+#define MSG_INPUT_SIZE (BUFSIZ >= 1024 ? BUFSIZ : 1024)
 #define MAX_DELIMITER_SIZE 32
 
 static struct m_getfld_state {
@@ -230,6 +231,7 @@ static struct m_getfld_state {
     off_t total_bytes_read; /* by caller, not necessarily from input file */
     off_t last_caller_pos;
     off_t last_internal_pos;
+    FILE *iob;
 
     unsigned char **pat_map;
     int msg_style;
@@ -284,13 +286,19 @@ static struct m_getfld_state {
 
 
 static void
-enter_getfld (FILE *iob, struct m_getfld_state *m) {
-    off_t pos = ftello (iob);
+enter_getfld (struct m_getfld_state *m, FILE *iob) {
+    off_t pos;
+
+    /* Ugly.  The parser opens the input file mutliple times, so we
+       have to always use the FILE * that's passed to m_getfld(). */
+    m->iob = iob;
+    pos = ftello (iob);
 
     /* Rely on Restriction that the first call to m_getfld (), etc.,
        is with the read position for the file stream set to 0. */
     if (pos == 0) {
 	/* A new file stream, so reset the buffer state. */
+        m->iob = iob;
 	m->readpos = m->end = m->msg_buf;
 	m->total_bytes_read = 0;
 	m->last_caller_pos = m->last_internal_pos = ftello (iob);
@@ -335,18 +343,18 @@ enter_getfld (FILE *iob, struct m_getfld_state *m) {
 }
 
 static void
-leave_getfld (struct m_getfld_state *m, FILE *iob) {
+leave_getfld (struct m_getfld_state *s) {
     /* Save the internal file position that we use for the input buffer. */
-    m->last_internal_pos = ftello (iob);
+    s->last_internal_pos = ftello (s->iob);
 
     /* Set file stream position so that callers can use ftell(). */
-    m->total_bytes_read += m->bytes_read;
-    fseeko (iob, m->total_bytes_read, SEEK_SET);
-    m->last_caller_pos = ftello (iob);
+    s->total_bytes_read += s->bytes_read;
+    fseeko (s->iob, s->total_bytes_read, SEEK_SET);
+    s->last_caller_pos = ftello (s->iob);
 }
 
 static size_t
-read_more (struct m_getfld_state *s, FILE *iob) {
+read_more (struct m_getfld_state *s) {
     /* Retain at least edelimlen characters that have already been
        read so that we can back up to them in m_Eom(). */
     ssize_t retain = s->edelimlen;
@@ -359,18 +367,16 @@ read_more (struct m_getfld_state *s, FILE *iob) {
     memmove (s->msg_buf, s->readpos - retain, retain);
 
     s->readpos = s->msg_buf + retain;
-    num_read = fread (s->readpos, 1, MSG_INPUT_SIZE, iob);
+    num_read = fread (s->readpos, 1, MSG_INPUT_SIZE, s->iob);
     s->end = s->readpos + num_read;
 
     return num_read;
 }
 
 static int
-Getc (FILE *iob) {
-    struct m_getfld_state *s = &m;
-
+Getc (struct m_getfld_state *s) {
     if (s->end - s->readpos < 1) {
-	if (read_more (&m, iob) == 0) {
+	if (read_more (s) == 0) {
 	    /* Pretend that we read a character.  That's what stdio does. */
 	    ++s->readpos;
 	    return EOF;
@@ -382,10 +388,8 @@ Getc (FILE *iob) {
 }
 
 static int
-Peek (FILE *iob) {
-    struct m_getfld_state *s = &m;
-
-    int next_char = Getc (iob);
+Peek (struct m_getfld_state *s) {
+    int next_char = Getc (s);
     --s->readpos;
     --s->bytes_read;
 
@@ -393,10 +397,7 @@ Peek (FILE *iob) {
 }
 
 static int
-Ungetc (int c, FILE *iob) {
-    struct m_getfld_state *s = &m;
-    NMH_UNUSED (iob);
-
+Ungetc (int c, struct m_getfld_state *s) {
     if (s->readpos == s->msg_buf) {
 	return EOF;
     } else {
@@ -414,24 +415,24 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
     register unsigned char *cp;
     register int max, n, c;
 
-    enter_getfld (iob, &m);
+    enter_getfld (s, iob);
 
-    if ((c = Getc(iob)) < 0) {
+    if ((c = Getc(s)) < 0) {
 	*bufsz = *buf = 0;
-	leave_getfld (&m, iob);
+	leave_getfld (s);
 	return FILEEOF;
     }
-    if (eom (c, iob)) {
+    if (eom (c, s)) {
 	if (! s->eom_action) {
 	    /* flush null messages */
-	    while ((c = Getc(iob)) >= 0 && eom (c, iob))
+	    while ((c = Getc(s)) >= 0 && eom (c, s))
 		;
 
 	    if (c >= 0)
-		Ungetc(c, iob);
+		Ungetc(c, s);
 	}
 	*bufsz = *buf = 0;
-	leave_getfld (&m, iob);
+	leave_getfld (s);
 	return FILEEOF;
     }
 
@@ -439,18 +440,18 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	case FLD:
 	    if (c == '\n' || c == '-') {
 		/* we hit the header/body separator */
-		while (c != '\n' && (c = Getc(iob)) >= 0) continue;
+		while (c != '\n' && (c = Getc(s)) >= 0) continue;
 
-		if (c < 0 || (c = Getc(iob)) < 0 || eom (c, iob)) {
+		if (c < 0 || (c = Getc(s)) < 0 || eom (c, s)) {
 		    if (! s->eom_action) {
 			/* flush null messages */
-			while ((c = Getc(iob)) >= 0 && eom (c, iob))
+			while ((c = Getc(s)) >= 0 && eom (c, s))
 			    ;
 			if (c >= 0)
-			    Ungetc(c, iob);
+			    Ungetc(c, s);
 		    }
 		    *bufsz = *buf = 0;
-		    leave_getfld (&m, iob);
+		    leave_getfld (s);
 		    return FILEEOF;
 		}
 		state = BODY;
@@ -469,7 +470,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	       account for that. */
 	    for (n = 1;
 		 c != ':'  &&  c != '\n'  &&  c != EOF  &&  n < max;
-		 ++n, c = Getc (iob)) {
+		 ++n, c = Getc (s)) {
 		*cp++ = c;
 	    }
 
@@ -477,10 +478,10 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	       the ':' or the first folded whitespace. */
 	    {
 		int next_char;
-		if (c == EOF  ||  (next_char = Peek (iob)) == EOF) {
+		if (c == EOF  ||  (next_char = Peek (s)) == EOF) {
 		    *bufsz = *cp = *buf = 0;
 		    advise (NULL, "eof encountered in field \"%s\"", name);
-		    leave_getfld (&m, iob);
+		    leave_getfld (s);
 		    return FMTERR;
 		}
 	    }
@@ -516,7 +517,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		   (and n) include that, but it was not put into the
 		   name array in the for loop above.  So subtract 1. */
 		*bufsz = --s->bytes_read;  /* == n - 1 */
-		leave_getfld (&m, iob);
+		leave_getfld (s);
 		return BODY;
 	    } else if (max <= n) {
 		/* By design, the loop above discards the last character
@@ -548,10 +549,10 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	    n = 0;
 	    for (finished = 0; ! finished; ) {
 		while (c != '\n'  &&  c != EOF  &&  n++ < max) {
-		    *cp++ = c = Getc (iob);
+		    *cp++ = c = Getc (s);
 		}
 
-		if (c != EOF) c = Peek (iob);
+		if (c != EOF) c = Peek (s);
 		if (max < n) {
 		    /* the dest buffer is full */
 		    state = FLDPLUS;
@@ -672,7 +673,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
     }
 
     *cp = 0;
-    leave_getfld (&m, iob);
+    leave_getfld (s);
 
     return state;
 }
@@ -687,7 +688,7 @@ m_unknown(FILE *iob)
     register char *cp;
     register char *delimstr;
 
-    enter_getfld (iob, &m);
+    enter_getfld (s, iob);
 
 /*
  * Figure out what the message delimitter string is for this
@@ -705,7 +706,7 @@ m_unknown(FILE *iob)
     s->msg_style = MS_UNKNOWN;
 
     for (c = 0, cp = text; c < 5; ++c, ++cp) {
-	if ((*cp = Getc (iob)) == EOF) {
+	if ((*cp = Getc (s)) == EOF) {
 	    break;
 	}
     }
@@ -713,7 +714,7 @@ m_unknown(FILE *iob)
     if (c == 5  &&  strncmp (text, "From ", 5) == 0) {
 	s->msg_style = MS_MBOX;
 	delimstr = "\nFrom ";
-	while ((c = Getc (iob)) != '\n' && c >= 0) continue;
+	while ((c = Getc (s)) != '\n' && c >= 0) continue;
 	/* m_unknown is only called on maildrop files, and they are only
 	   read using m_getfld ().  The caller musn't try to read from
 	   the stream directly because the file position indicator was
@@ -750,13 +751,13 @@ m_unknown(FILE *iob)
 
     if (s->msg_style == MS_MMDF) {
 	/* flush extra msg hdrs */
-	while ((c = Getc(iob)) >= 0 && eom (c, iob))
+	while ((c = Getc(s)) >= 0 && eom (c, s))
 	    ;
 	if (c >= 0)
-	    Ungetc(c, iob);
+	    Ungetc(c, s);
     }
 
-    leave_getfld (&m, iob);
+    leave_getfld (s);
 }
 
 
@@ -784,15 +785,14 @@ m_eomsbr (int (*action)(int))
  */
 
 static int
-m_Eom (int c, FILE *iob)
+m_Eom (int c, struct m_getfld_state *s)
 {
-    struct m_getfld_state *s = &m;
     register int i;
     char text[MAX_DELIMITER_SIZE];
     char *cp;
 
     for (i = 0, cp = text; i < s->edelimlen; ++i, ++cp) {
-	if ((*cp = Getc (iob)) == EOF) {
+	if ((*cp = Getc (s)) == EOF) {
 	    break;
 	}
     }
@@ -813,7 +813,7 @@ m_Eom (int c, FILE *iob)
     }
 
     if (s->msg_style == MS_MBOX) {
-	while ((c = Getc (iob)) != '\n')
+	while ((c = Getc (s)) != '\n')
 	    if (c < 0)
 		break;
     }
