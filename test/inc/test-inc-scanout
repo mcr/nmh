@@ -349,5 +349,37 @@ run_test 'scan -width 80 -file '"$MH_TEST_DIR"'/mess' \
          '   1  01/16 No Such User       FLDPLUS test'
 rm -f "$MH_TEST_DIR/mess"
 
+# check scan and inc of mbox with multiple messages
+echo y | packf -file "$MH_TEST_DIR/msgbox"
+run_test "scan -width 80 -file $MH_TEST_DIR/msgbox" \
+'   1  09/29 Test1              Testing message 1<<This is message number 1 >>
+   2  09/29 Test2              Testing message 2<<This is message number 2 >>
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>
+   5  09/29 Test5              Testing message 5<<This is message number 5 >>
+   6  09/29 Test6              Testing message 6<<This is message number 6 >>
+   7  09/29 Test7              Testing message 7<<This is message number 7 >>
+   8  09/29 Test8              Testing message 8<<This is message number 8 >>
+   9  09/29 Test9              Testing message 9<<This is message number 9 >>
+  10  09/29 Test10             Testing message 10<<This is message number 10 >>
+  11  03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. An
+  12  12/18 foo@example.edu    test'
+run_test "inc -width 80 -file $MH_TEST_DIR/msgbox -truncate" \
+'Incorporating new mail into inbox...
+
+  13+ 09/29 Test1              Testing message 1<<This is message number 1 >>
+  14  09/29 Test2              Testing message 2<<This is message number 2 >>
+  15  09/29 Test3              Testing message 3<<This is message number 3 >>
+  16  09/29 Test4              Testing message 4<<This is message number 4 >>
+  17  09/29 Test5              Testing message 5<<This is message number 5 >>
+  18  09/29 Test6              Testing message 6<<This is message number 6 >>
+  19  09/29 Test7              Testing message 7<<This is message number 7 >>
+  20  09/29 Test8              Testing message 8<<This is message number 8 >>
+  21  09/29 Test9              Testing message 9<<This is message number 9 >>
+  22  09/29 Test10             Testing message 10<<This is message number 10 >>
+  23  03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. An
+  24  12/18 foo@example.edu    test'
+rm -f  "$MH_TEST_DIR/msgbox"
+
 
 exit ${failed:-0}
