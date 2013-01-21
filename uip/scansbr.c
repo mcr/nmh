@@ -351,10 +351,8 @@ finished:
 
     /* return dynamically allocated buffers to pool */
     while ((cptr = *savecomp++)) {
-	*--nxtbuf = cptr->c_text;
 	cptr->c_text = NULL;
     }
-    *--nxtbuf = tmpbuf;
 
     if (outnum && (ferror(scnout) || fclose (scnout) == EOF))
 	DIEWRERR();
