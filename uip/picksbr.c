@@ -943,12 +943,14 @@ plist
     register char *bp;
     char buf[BUFSIZ], name[NAMESZ];
     register struct tws *tw;
+    m_getfld_state_t gstate;
     NMH_UNUSED (stop);
 
     fseek (fp, start, SEEK_SET);
-    for (state = FLD, bp = NULL;;) {
+    m_getfld_state_init (&gstate);
+    for (bp = NULL;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld (gstate, name, buf, &bufsz, fp)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		if (bp != NULL)
@@ -956,7 +958,7 @@ plist
 		bp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (state, name, buf, &bufsz, fp);
+		    state = m_getfld (gstate, name, buf, &bufsz, fp);
 		    bp = add (buf, bp);
 		}
 		if (!mh_strcasecmp (name, n->n_datef))
@@ -978,6 +980,7 @@ plist
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     if ((tw = dparsetime (bp)) == NULL)
 	advise (NULL, "unable to parse %s field in message %d, matching...",

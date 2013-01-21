@@ -135,6 +135,7 @@ build_mime (char *infile, int directives)
     struct part **pp;
     CT ct;
     FILE *in;
+    m_getfld_state_t gstate;
 
     directive_init(directives);
 
@@ -162,9 +163,10 @@ build_mime (char *infile, int directives)
      * draft into the linked list of header fields for
      * the new MIME message.
      */
-    for (compnum = 1, state = FLD;;) {
+    m_getfld_state_init (&gstate);
+    for (compnum = 1;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (state, name, buf, &bufsz, in)) {
+	switch (state = m_getfld (gstate, name, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
 	    compnum++;
@@ -181,7 +183,7 @@ build_mime (char *infile, int directives)
 	    if (!mh_strcasecmp (name, TYPE_FIELD)) {
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (state, name, buf, &bufsz, in);
+		    state = m_getfld (gstate, name, buf, &bufsz, in);
 		}
 		goto finish_field;
 	    }
@@ -193,7 +195,7 @@ build_mime (char *infile, int directives)
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
 		bufsz = sizeof buf;
-		state = m_getfld (state, name, buf, &bufsz, in);
+		state = m_getfld (gstate, name, buf, &bufsz, in);
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 
@@ -221,6 +223,7 @@ finish_field:
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * Now add the MIME-Version header field

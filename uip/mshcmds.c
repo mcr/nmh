@@ -51,6 +51,8 @@ static int process (int, char *, int, char **);
 static void copy_message (int, FILE *);
 static void copy_digest (int, FILE *);
 
+extern m_getfld_state_t gstate;
+
 void
 forkcmd (char **args, char *pgm)
 {
@@ -984,7 +986,7 @@ forw (char *proc, char *filter, int vecp, char **vec)
 			args[i++] = getcpy (m_name (msgnum));
 		args[i] = NULL;
 		mhlsbr (i, args, mhl_action);
-		m_eomsbr ((int (*) ()) 0);
+		m_eomsbr (gstate, (int (*) ()) 0);
 		fclose (stdout);
 		_exit (0);
 
@@ -2305,7 +2307,7 @@ finish: ;
 	if (mp->numsel == 1 && headersw)
 	    show (mp->lowsel);
 	mhlsbr (vecp, vec, mhl_action);
-	m_eomsbr ((int (*)()) 0);
+	m_eomsbr (gstate, (int (*)()) 0);
 	while (msgp < vecp)
 	    free (vec[msgp++]);
     } else {
@@ -2377,7 +2379,7 @@ mhl_action (char *name)
 
     mhlfp = msh_ready (msgnum, 1);
     if (!fmsh)
-	m_eomsbr (eom_action);
+	m_eomsbr (gstate, eom_action);
 
     return mhlfp;
 }
@@ -2435,9 +2437,9 @@ is_nontext (int msgnum)
 
     fp = msh_ready (msgnum, 1);
 
-    for (state = FLD;;) {
+    for (;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld (gstate, name, buf, &bufsz, fp)) {
 	case FLD:
 	case FLDPLUS:
 	    /*
@@ -2450,7 +2452,7 @@ is_nontext (int msgnum)
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (state, name, buf, &bufsz, fp);
+		    state = m_getfld (gstate, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		bp = cp;
@@ -2554,7 +2556,7 @@ out:
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (state, name, buf, &bufsz, fp);
+		    state = m_getfld (gstate, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		for (bp = cp; isspace (*bp); bp++)
@@ -2580,7 +2582,7 @@ out:
 	     */
 	    while (state == FLDPLUS) {
 		bufsz = sizeof buf;
-		state = m_getfld (state, name, buf, &bufsz, fp);
+		state = m_getfld (gstate, name, buf, &bufsz, fp);
 	    }
 	    break;
 
@@ -2746,16 +2748,17 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
     register FILE *zp;
 
     zp = msh_ready (msgnum, 0);
-    for (state = FLD;;) {
+
+    for (;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (state, name, buf, &bufsz, zp)) {
+	switch (state = m_getfld (gstate, name, buf, &bufsz, zp)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		if (!mh_strcasecmp (name, datesw)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;
-			state = m_getfld (state, name, buf, &bufsz, zp);
+			state = m_getfld (gstate, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    if ((tw = dparsetime (bp)) == NULL)
@@ -2773,7 +2776,7 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;
-			state = m_getfld (state, name, buf, &bufsz, zp);
+			state = m_getfld (gstate, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    msgp->m_scanl = sosmash(subjsw, bp);
@@ -2784,7 +2787,7 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 		} else {
 		    while (state == FLDPLUS) {	/* flush this one */
 			bufsz = sizeof buf;
-			state = m_getfld (state, name, buf, &bufsz, zp);
+			state = m_getfld (gstate, name, buf, &bufsz, zp);
 		    }
 		}
 		continue;

@@ -51,6 +51,8 @@ static struct swit switches[] = {
 extern struct msgs *fmt_current_folder;	
 #endif
 
+extern m_getfld_state_t gstate;
+
 /*
  * prototypes
  */
@@ -188,13 +190,15 @@ main (int argc, char **argv)
 	    printf ("FOLDER %s\t%s\n", file, dtimenow (1));
 	}
 
-	m_unknown (in);
+	m_getfld_state_init (&gstate);
+	m_unknown (gstate, in);
 	for (msgnum = 1; ; ++msgnum) {
 	    state = scan (in, msgnum, -1, nfs, width, 0, 0,
 		    hdrflag ? file : NULL, 0L, 1);
 	    if (state != SCNMSG && state != SCNENC)
 		break;
 	}
+	m_getfld_state_destroy (&gstate);
 	fclose (in);
 	done (0);
     }
@@ -279,6 +283,7 @@ main (int argc, char **argv)
 		}
 	    }
 
+	    m_getfld_state_init (&gstate);
 	    switch (state = scan (in, msgnum, 0, nfs, width,
 			msgnum == mp->curmsg, unseen,
 			folder, 0L, 1)) {
@@ -294,12 +299,14 @@ main (int argc, char **argv)
 		    advise (NULL, "message %d: empty", msgnum);
 		    break;
 	    }
+	    m_getfld_state_destroy (&gstate);
 	    hdrflag = 0;
 	    fclose (in);
 	    if (ontty)
 		fflush (stdout);
 	}
     }
+    m_getfld_state_destroy (&gstate);
 
 #ifdef LBL
     seq_save (mp);	/* because formatsbr might have made changes */

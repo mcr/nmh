@@ -240,6 +240,9 @@ struct msgs {
 #define BODY     3		/* Body  returned with more to come */
 #define FILEEOF  5		/* Reached end of input file        */
 
+struct m_getfld_state;
+typedef struct m_getfld_state *m_getfld_state_t;
+
 /*
  * Maildrop styles
  */

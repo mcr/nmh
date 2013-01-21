@@ -150,6 +150,8 @@ int interrupted;		/* SIGINT detected  */
 int broken_pipe;		/* SIGPIPE detected */
 int told_to_quit;		/* SIGQUIT detected */
 
+extern m_getfld_state_t gstate;
+
 /*
  * prototypes
  */
@@ -342,6 +344,7 @@ main (int argc, char **argv)
 #endif /* SIGTSTP */
     }
 
+    m_getfld_state_init (&gstate);
     if (folder)
 	fsetup (folder);
     else
@@ -350,6 +353,7 @@ main (int argc, char **argv)
     display_info (id > 0 ? scansw : 0);
 
     msh (id > 0 ? scansw : 0);
+    m_getfld_state_destroy (&gstate);
 
     m_reset ();
     
@@ -713,7 +717,7 @@ setup (char *file)
     mp->msgattrs[0] = getcpy ("unseen");
     mp->msgattrs[1] = NULL;
 
-    m_unknown (fp);		/* the MAGIC invocation */    
+    m_unknown (gstate, fp);		/* the MAGIC invocation */
     if (fmsh) {
 	free (fmsh);
 	fmsh = NULL;
@@ -836,7 +840,7 @@ msh_ready (int msgnum, int full)
 	return yp;
     }
 
-    m_eomsbr ((int (*)()) 0);	/* XXX */
+    m_eomsbr (gstate, (int (*)()) 0);	/* XXX */
     fseek (fp, Msgs[msgnum].m_start, SEEK_SET);
     return fp;
 }
@@ -1005,16 +1009,16 @@ readid (int msgnum)
 	return Msgs[msgnum].m_bboard_id;
 
     zp = msh_ready (msgnum, 0);
-    for (state = FLD;;) {
+    for (;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (state, name, buf, &bufsz, zp)) {
+	switch (state = m_getfld (gstate, name, buf, &bufsz, zp)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		if (!mh_strcasecmp (name, BBoard_ID)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;
-			state = m_getfld (state, name, buf, &bufsz, zp);
+			state = m_getfld (gstate, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    i = atoi (bp);
@@ -1026,7 +1030,7 @@ readid (int msgnum)
 		}
 		while (state == FLDPLUS)
 		    bufsz = sizeof buf;
-		    state = m_getfld (state, name, buf, &bufsz, zp);
+		    state = m_getfld (gstate, name, buf, &bufsz, zp);
 		continue;
 
 	    default: 

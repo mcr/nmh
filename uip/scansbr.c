@@ -14,6 +14,8 @@
 #include <h/tws.h>
 #include <h/utils.h>
 
+m_getfld_state_t gstate;
+
 #define MAXSCANL 256		/* longest possible scan line */
 
 /*
@@ -164,7 +166,8 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
      * and we're doing an "inc", open the output file.
      */
     bufsz = rlwidth;
-    if ((state = m_getfld (FLD, name, tmpbuf, &bufsz, inb)) == FILEEOF) {
+    m_getfld_state_reset (&gstate);
+    if ((state = m_getfld (gstate, name, tmpbuf, &bufsz, inb)) == FILEEOF) {
 	if (ferror(inb)) {
 	    advise("read", "unable to"); /* "read error" */
 	    return SCNFAT;
@@ -187,7 +190,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 
     /* scan - main loop */
     for (compnum = 1; ;
-	bufsz = rlwidth, state = m_getfld (state, name, tmpbuf, &bufsz, inb)) {
+	bufsz = rlwidth, state = m_getfld (gstate, name, tmpbuf, &bufsz, inb)) {
 	switch (state) {
 	    case FLD: 
 	    case FLDPLUS: 
@@ -219,7 +222,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 
 		while (state == FLDPLUS) {
 		    bufsz = rlwidth;
-		    state = m_getfld (state, name, tmpbuf, &bufsz, inb);
+		    state = m_getfld (gstate, name, tmpbuf, &bufsz, inb);
 		    if (outnum)
 			FPUTS (tmpbuf);
 		}
@@ -234,7 +237,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 
 		if ((i = strlen(tmpbuf)) < rlwidth) {
 		    bufsz = rlwidth - i;
-		    state = m_getfld (state, name, tmpbuf + i, &bufsz, inb);
+		    state = m_getfld (gstate, name, tmpbuf + i, &bufsz, inb);
 		}
 
 		if (! outnum) {
@@ -269,7 +272,7 @@ body:;
 
 		while (state == BODY) {
 		    bufsz = rlwidth;
-		    state = m_getfld(state, name, tmpbuf, &bufsz, inb);
+		    state = m_getfld (gstate, name, tmpbuf, &bufsz, inb);
 		    FPUTS(tmpbuf);
 		}
 		goto finished;

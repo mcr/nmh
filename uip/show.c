@@ -348,13 +348,15 @@ is_nontext (char *msgnam)
     char *cp;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
+    m_getfld_state_t gstate;
 
     if ((fp = fopen (msgnam, "r")) == NULL)
 	return 0;
 
-    for (state = FLD;;) {
+    m_getfld_state_init (&gstate);
+    for (;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (state, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld (gstate, name, buf, &bufsz, fp)) {
 	case FLD:
 	case FLDPLUS:
 	    /*
@@ -367,7 +369,7 @@ is_nontext (char *msgnam)
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (state, name, buf, &bufsz, fp);
+		    state = m_getfld (gstate, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		bp = cp;
@@ -471,7 +473,7 @@ out:
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (state, name, buf, &bufsz, fp);
+		    state = m_getfld (gstate, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		for (bp = cp; isspace (*bp); bp++)
@@ -497,7 +499,7 @@ out:
 	     */
 	    while (state == FLDPLUS) {
 		bufsz = sizeof buf;
-		state = m_getfld (state, name, buf, &bufsz, fp);
+		state = m_getfld (gstate, name, buf, &bufsz, fp);
 	    }
 	    break;
 
@@ -510,4 +512,5 @@ out:
 	    return 0;
 	}
     }
+    m_getfld_state_destroy (&gstate);
 }

@@ -52,15 +52,17 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
     char name[NAMESZ], field[BUFSIZ];
     register struct node *np;
     register struct procstr *ps;
+    m_getfld_state_t gstate;
 
     if (npp == NULL && (npp = opp) == NULL) {
 	admonish (NULL, "bug: readconfig called but pump not primed");
 	return;
     }
 
-    for (state = FLD;;) {
+    m_getfld_state_init (&gstate);
+    for (;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (state, name, field, &fieldsz, ib)) {
+	switch (state = m_getfld (gstate, name, field, &fieldsz, ib)) {
 	    case FLD:
 	    case FLDPLUS:
 		np = (struct node *) mh_xmalloc (sizeof(*np));
@@ -71,7 +73,7 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 		    cp = getcpy (field);
 		    while (state == FLDPLUS) {
 			fieldsz = sizeof field;
-			state = m_getfld (state, name, field, &fieldsz, ib);
+			state = m_getfld (gstate, name, field, &fieldsz, ib);
 			cp = add (field, cp);
 		    }
 		    np->n_field = trimcpy (cp);
@@ -103,6 +105,7 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * Special handling for the pager processes: lproc and moreproc.

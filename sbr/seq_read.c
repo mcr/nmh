@@ -59,6 +59,7 @@ seq_public (struct msgs *mp)
     char *cp, seqfile[PATH_MAX];
     char name[NAMESZ], field[BUFSIZ];
     FILE *fp;
+    m_getfld_state_t gstate;
 
     /*
      * If mh_seq == NULL (such as if nmh been compiled with
@@ -76,16 +77,17 @@ seq_public (struct msgs *mp)
 	return;
 
     /* Use m_getfld to scan sequence file */
-    for (state = FLD;;) {
+    m_getfld_state_init (&gstate);
+    for (;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (state, name, field, &fieldsz, fp)) {
+	switch (state = m_getfld (gstate, name, field, &fieldsz, fp)) {
 	    case FLD: 
 	    case FLDPLUS:
 		if (state == FLDPLUS) {
 		    cp = getcpy (field);
 		    while (state == FLDPLUS) {
 			fieldsz = sizeof field;
-			state = m_getfld (state, name, field, &fieldsz, fp);
+			state = m_getfld (gstate, name, field, &fieldsz, fp);
 			cp = add (field, cp);
 		    }
 		    seq_init (mp, getcpy (name), trimcpy (cp));
@@ -107,6 +109,7 @@ seq_public (struct msgs *mp)
 	}
 	break;	/* break from for loop */
     }
+    m_getfld_state_destroy (&gstate);
 
     lkfclose (fp, seqfile);
 }

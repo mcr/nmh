@@ -54,6 +54,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
     register struct comp *cptr;
     struct format *fmt;
     char *cp = NULL;
+    m_getfld_state_t gstate;
 
     /*
      * Open the message we'll be scanning for components
@@ -86,9 +87,10 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
      * these routines?
      */
 
-    for (state = FLD;;) {
+    m_getfld_state_init (&gstate);
+    for (;;) {
 	int msg_count = sizeof msgbuf;
-	state = m_getfld(state, name, msgbuf, &msg_count, tmp);
+	state = m_getfld (gstate, name, msgbuf, &msg_count, tmp);
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
@@ -102,13 +104,13 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 		if (i != -1) {
 		    while (state == FLDPLUS) {
 			msg_count = sizeof msgbuf;
-			state = m_getfld(state, name, msgbuf, &msg_count, tmp);
+			state = m_getfld (gstate, name, msgbuf, &msg_count, tmp);
 			fmt_appendcomp(i, name, msgbuf);
 		    }
 		}
 		while (state == FLDPLUS)
 		    msg_count = sizeof msgbuf;
-		    state = m_getfld(state, name, msgbuf, &msg_count, tmp);
+		    state = m_getfld (gstate, name, msgbuf, &msg_count, tmp);
 		break;
 
 	    case LENERR:
@@ -121,6 +123,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 	    	adios(NULL, "m_getfld() returned %d", state);
 	}
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * Override any components just in case they were included in the

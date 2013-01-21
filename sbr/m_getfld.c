@@ -143,7 +143,7 @@ to m_getfld() reads one header field, or a portion of the body, in sequence.
 
 Inputs
 ======
-state:  message parse state
+gstate:  opaque parse state
 bufsz:  maximum number of characters to load into buf
 iob:  input file stream
 
@@ -162,12 +162,12 @@ void m_unknown(FILE *iob):  Determines the message delimiter string for the
 void m_eomsbr (int (*action)(int)):  Sets the hook to check for end of
   message in a maildrop.  Called only by msh.
 
-Those functions save state in the State variables listed below.
-
 State variables
 ===============
-m_getfld() retains state internally between calls in some state variables.
-These are used for detecting the end of each message when reading maildrops:
+m_getfld() retains state internally between calls in the m_getfld_state_t
+variable.  These are used for detecting the end of each message when reading
+maildrops:
+
   unsigned char **pat_map
   unsigned char *fdelim
   unsigned char *delimend
@@ -178,30 +178,28 @@ These are used for detecting the end of each message when reading maildrops:
   int msg_style
   int (*eom_action)(int)
 
-Restrictions
-============
-m_getfld() is restricted to operate on one file stream at a time
-because of the retained state (see "State variables" above).  And the
-first call to m_getfld() on that file stream requires that the read
-pointer be at the beginning of the file (ftell() of 0).
+Usage
+=====
+    m_getfld_state_t gstate;
+    m_getfld_state_init (&gstate);
+    int state = m_getfld (gstate, ...);
+       ...
+    m_getfld_state_destroy (&gstate);
 
-Current usage
-=============
-The first call to m_getfld() on a file stream is with a state of FLD.
-Subsequent calls provide the state returned by the previous call.
-Therefore, given the Restrictions above, the state variable could be
-removed from the signature and just retained internally.
+The state is retained internally by gstate.  To reset its state to FLD:
+
+    m_getfld_state_reset (&gstate);
 */
 
 /*
  * static prototypes
  */
 struct m_getfld_state;
-static int m_Eom (int, struct m_getfld_state *);
+static int m_Eom (m_getfld_state_t, int);
 static unsigned char *matchc(int, char *, int, char *);
 
 #define eom(c,s)	(s->msg_style != MS_DEFAULT && \
-			 (((c) == *s->msg_delim && m_Eom(c,s)) || \
+			 (((c) == *s->msg_delim && m_Eom(s,c)) || \
 			  (s->eom_action && (*s->eom_action)(c))))
 
 /* This replaces the old approach, with its direct access to stdio
@@ -216,7 +214,7 @@ static unsigned char *matchc(int, char *, int, char *);
 #define MSG_INPUT_SIZE (BUFSIZ >= 1024 ? BUFSIZ : 1024)
 #define MAX_DELIMITER_SIZE 32
 
-static struct m_getfld_state {
+struct m_getfld_state {
     unsigned char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
     unsigned char *readpos;
     unsigned char *end;  /* One past the last character read in. */
@@ -224,7 +222,7 @@ static struct m_getfld_state {
        input file stream so that callers can interleave m_getfld()
        calls with ftell() and fseek().  ytes_read replaces the old
        m_getfld() msg_count global.  last_caller_pos is stored when
-       leaving m_getfld()/m_unkown(), then checked on the next entry.
+       leaving m_getfld()/m_unknown(), then checked on the next entry.
        last_internal_pos is used to remember the position used
        internally by m_getfld() (read_more(), actually). */
     off_t bytes_read;
@@ -254,7 +252,37 @@ static struct m_getfld_state {
     unsigned char *edelim;
     int edelimlen;
     int (*eom_action)(int);
-} m;
+    int state;
+};
+
+void
+m_getfld_state_init (m_getfld_state_t *s) {
+    *s = (m_getfld_state_t) mh_xmalloc(sizeof (struct m_getfld_state));
+    (*s)->readpos = (*s)->end = (*s)->msg_buf;
+    (*s)->bytes_read = (*s)->total_bytes_read = 0;
+    (*s)->last_caller_pos = (*s)->last_internal_pos = 0;
+    /* (*s)->iob gets loaded on every call to m_getfld()/m_unknown(). */
+    (*s)->pat_map = NULL;
+    (*s)->msg_style = MS_DEFAULT;
+    (*s)->msg_delim = "";
+    (*s)->fdelim = (*s)->delimend = (*s)->edelim = NULL;
+    (*s)->fdelimlen = (*s)->edelimlen = 0;
+    (*s)->eom_action = NULL;
+    (*s)->state = FLD;
+}
+
+/* scan() needs to force a state an initial state of FLD for each message. */
+void
+m_getfld_state_reset (m_getfld_state_t *s) {
+    (*s)->state = FLD;
+}
+
+void m_getfld_state_destroy (m_getfld_state_t *s) {
+    if (*s) {
+	free (*s);
+	*s = 0;
+    }
+}
 
 /*
   Summary of file and message input buffer positions:
@@ -286,64 +314,53 @@ static struct m_getfld_state {
 
 
 static void
-enter_getfld (struct m_getfld_state *m, FILE *iob) {
+enter_getfld (m_getfld_state_t s, FILE *iob) {
     off_t pos;
 
-    /* Ugly.  The parser opens the input file mutliple times, so we
+    /* Ugly.  The parser opens the input file multiple times, so we
        have to always use the FILE * that's passed to m_getfld(). */
-    m->iob = iob;
+    s->iob = iob;
+
     pos = ftello (iob);
 
-    /* Rely on Restriction that the first call to m_getfld (), etc.,
-       is with the read position for the file stream set to 0. */
-    if (pos == 0) {
-	/* A new file stream, so reset the buffer state. */
-        m->iob = iob;
-	m->readpos = m->end = m->msg_buf;
-	m->total_bytes_read = 0;
-	m->last_caller_pos = m->last_internal_pos = ftello (iob);
-	m->pat_map = NULL;
-	m->fdelim = m->delimend = m->edelim = NULL;
-	m->msg_style = MS_DEFAULT;
-	m->msg_delim = "";
-	m->fdelimlen = m->edelimlen = 0;
-	m->eom_action = NULL;
-    } else {
-	off_t pos_movement = pos - m->last_caller_pos; /* Can be < 0. */
+    if (pos != 0) {
+	off_t pos_movement = pos - s->last_caller_pos; /* Can be < 0. */
 
 	if (pos_movement == 0) {
-	    pos = m->last_internal_pos;
+	    pos = s->last_internal_pos;
 	} else {
-	    /* The current file stream position differs from the last one, so
-	       caller must have called ftell/o().  Adjust accordingly. */
-	    if (m->readpos + pos_movement >= m->msg_buf  &&
-		m->readpos + pos_movement < m->end) {
+	    /* The current file stream position differs from the last
+	       one, so caller must have called ftell/o().  Or, this is
+	       the first call and the file position was not at 0. */
+
+	    if (s->readpos + pos_movement >= s->msg_buf  &&
+		s->readpos + pos_movement < s->end) {
 		/* We can shift readpos and remain within the bounds of
 		   msg_buf. */
-		m->readpos += pos_movement;
-		m->total_bytes_read += pos_movement;
-		pos = m->last_internal_pos;
+		s->readpos += pos_movement;
+		s->total_bytes_read += pos_movement;
+		pos = s->last_internal_pos;
 	    } else {
 		size_t num_read;
 
 		/* This seek skips past an integral number of chunks of
 		   size MSG_INPUT_SIZE. */
 		fseeko (iob, pos / MSG_INPUT_SIZE * MSG_INPUT_SIZE, SEEK_SET);
-		num_read = fread (m->msg_buf, 1, MSG_INPUT_SIZE, iob);
-		m->readpos = m->msg_buf  +  pos % MSG_INPUT_SIZE;
-		m->end = m->msg_buf + num_read;
-		m->total_bytes_read = pos;
+		num_read = fread (s->msg_buf, 1, MSG_INPUT_SIZE, iob);
+		s->readpos = s->msg_buf  +  pos % MSG_INPUT_SIZE;
+		s->end = s->msg_buf + num_read;
+		s->total_bytes_read = pos;
 	    }
 	}
 
-	fseeko (iob, pos, SEEK_SET);
+	if (s->last_internal_pos != 0) fseeko (iob, pos, SEEK_SET);
     }
 
-    m->bytes_read = 0;
+    s->bytes_read = 0;
 }
 
 static void
-leave_getfld (struct m_getfld_state *s) {
+leave_getfld (m_getfld_state_t s) {
     /* Save the internal file position that we use for the input buffer. */
     s->last_internal_pos = ftello (s->iob);
 
@@ -354,7 +371,7 @@ leave_getfld (struct m_getfld_state *s) {
 }
 
 static size_t
-read_more (struct m_getfld_state *s) {
+read_more (m_getfld_state_t s) {
     /* Retain at least edelimlen characters that have already been
        read so that we can back up to them in m_Eom(). */
     ssize_t retain = s->edelimlen;
@@ -374,7 +391,7 @@ read_more (struct m_getfld_state *s) {
 }
 
 static int
-Getc (struct m_getfld_state *s) {
+Getc (m_getfld_state_t s) {
     if (s->end - s->readpos < 1) {
 	if (read_more (s) == 0) {
 	    /* Pretend that we read a character.  That's what stdio does. */
@@ -388,7 +405,7 @@ Getc (struct m_getfld_state *s) {
 }
 
 static int
-Peek (struct m_getfld_state *s) {
+Peek (m_getfld_state_t s) {
     int next_char = Getc (s);
     --s->readpos;
     --s->bytes_read;
@@ -397,7 +414,7 @@ Peek (struct m_getfld_state *s) {
 }
 
 static int
-Ungetc (int c, struct m_getfld_state *s) {
+Ungetc (int c, m_getfld_state_t s) {
     if (s->readpos == s->msg_buf) {
 	return EOF;
     } else {
@@ -408,10 +425,9 @@ Ungetc (int c, struct m_getfld_state *s) {
 
 
 int
-m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
+m_getfld (m_getfld_state_t s, unsigned char name[NAMESZ], unsigned char *buf,
           int *bufsz, FILE *iob)
 {
-    struct m_getfld_state *s = &m;
     register unsigned char *cp;
     register int max, n, c;
 
@@ -420,7 +436,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
     if ((c = Getc(s)) < 0) {
 	*bufsz = *buf = 0;
 	leave_getfld (s);
-	return FILEEOF;
+	return s->state = FILEEOF;
     }
     if (eom (c, s)) {
 	if (! s->eom_action) {
@@ -433,10 +449,10 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 	}
 	*bufsz = *buf = 0;
 	leave_getfld (s);
-	return FILEEOF;
+	return s->state = FILEEOF;
     }
 
-    switch (state) {
+    switch (s->state) {
 	case FLD:
 	    if (c == '\n' || c == '-') {
 		/* we hit the header/body separator */
@@ -452,9 +468,9 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    }
 		    *bufsz = *buf = 0;
 		    leave_getfld (s);
-		    return FILEEOF;
+		    return s->state = FILEEOF;
 		}
-		state = BODY;
+		s->state = BODY;
 		goto body;
 	    }
 	    /*
@@ -482,7 +498,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    *bufsz = *cp = *buf = 0;
 		    advise (NULL, "eof encountered in field \"%s\"", name);
 		    leave_getfld (s);
-		    return FMTERR;
+		    return s->state = FMTERR;
 		}
 	    }
 
@@ -507,7 +523,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		    /* No, it can't.  Oh well, guess we'll blow up. */
 		    *bufsz = *cp = *buf = 0;
 		    advise (NULL, "eol encountered in field \"%s\"", name);
-		    state = FMTERR;
+		    s->state = FMTERR;
 		    break;
 		}
 		memcpy (buf, name, n - 1);
@@ -518,7 +534,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		   name array in the for loop above.  So subtract 1. */
 		*bufsz = --s->bytes_read;  /* == n - 1 */
 		leave_getfld (s);
-		return BODY;
+		return s->state = BODY;
 	    } else if (max <= n) {
 		/* By design, the loop above discards the last character
                    it had read.  It's in c, use it. */
@@ -526,7 +542,7 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		*bufsz = *cp = *buf = 0;
 		advise (NULL, "field name \"%s\" exceeds %d bytes", name,
 			NAMESZ - 2);
-		state = LENERR;
+		s->state = LENERR;
 		break;
 	    }
 
@@ -555,14 +571,14 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
 		if (c != EOF) c = Peek (s);
 		if (max < n) {
 		    /* the dest buffer is full */
-		    state = FLDPLUS;
+		    s->state = FLDPLUS;
 		    finished = 1;
 		} else if (c != ' '  &&  c != '\t') {
 		    /* The next character is not folded whitespace, so
 		       prepare to move on to the next field.  It's OK
 		       if c is EOF, it will be handled on the next
 		       call to m_getfld (). */
-		    state = FLD;
+		    s->state = FLD;
 		    finished = 1;
 		} else {
 		    /* Folded header field, continues on the next line. */
@@ -669,20 +685,19 @@ m_getfld (int state, unsigned char name[NAMESZ], unsigned char *buf,
         }
 
 	default:
-	    adios (NULL, "m_getfld() called with bogus state of %d", state);
+	    adios (NULL, "m_getfld() called with bogus state of %d", s->state);
     }
 
     *cp = 0;
     leave_getfld (s);
 
-    return state;
+    return s->state;
 }
 
 
 void
-m_unknown(FILE *iob)
+m_unknown(m_getfld_state_t s, FILE *iob)
 {
-    struct m_getfld_state *s = &m;
     register int c;
     char text[MAX_DELIMITER_SIZE];
     register char *cp;
@@ -762,10 +777,8 @@ m_unknown(FILE *iob)
 
 
 void
-m_eomsbr (int (*action)(int))
+m_eomsbr (m_getfld_state_t s, int (*action)(int))
 {
-    struct m_getfld_state *s = &m;
-
     if ((s->eom_action = action)) {
 	s->msg_style = MS_MSH;
 	*s->msg_delim = 0;
@@ -785,7 +798,7 @@ m_eomsbr (int (*action)(int))
  */
 
 static int
-m_Eom (int c, struct m_getfld_state *s)
+m_Eom (m_getfld_state_t s, int c)
 {
     register int i;
     char text[MAX_DELIMITER_SIZE];

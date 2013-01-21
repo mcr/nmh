@@ -262,6 +262,7 @@ get_content (FILE *in, char *file, int toplevel)
     char *np, *vp;
     CT ct;
     HF hp;
+    m_getfld_state_t gstate;
 
     /* allocate the content structure */
     if (!(ct = (CT) calloc (1, sizeof(*ct))))
@@ -275,9 +276,10 @@ get_content (FILE *in, char *file, int toplevel)
      * Parse the header fields for this
      * content into a linked list.
      */
-    for (compnum = 1, state = FLD;;) {
+    m_getfld_state_init (&gstate);
+    for (compnum = 1;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (state, name, buf, &bufsz, in)) {
+	switch (state = m_getfld (gstate, name, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
 	    compnum++;
@@ -289,7 +291,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
 		bufsz = sizeof buf;
-		state = m_getfld (state, name, buf, &bufsz, in);
+		state = m_getfld (gstate, name, buf, &bufsz, in);
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 
@@ -319,6 +321,7 @@ get_content (FILE *in, char *file, int toplevel)
 	/* break out of the loop */
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * Read the content headers.  We will parse the
