@@ -35,6 +35,9 @@ If configuring with --with-tls, install these Cygwin packages:
   gnutls-devel
   libgnutls26
 
+When running the nmh test suite ("make check"), it helps to have
+/usr/bin/ ahead of any Windows directories on your PATH.
+
 Note that the -link switch to refile cannot be used on FAT32 and
 similar filesystems.
 

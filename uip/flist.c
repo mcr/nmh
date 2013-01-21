@@ -27,39 +27,30 @@
 #define MAXFOLDERS  100
 
 
-static struct swit switches[] = {
-#define SEQSW           0
-    { "sequence name", 0 },
-#define ALLSW           1
-    { "all", 0 },
-#define NOALLSW         2
-    { "noall", 0 },
-#define RECURSE         3
-    { "recurse", 0 },
-#define NORECURSE       4
-    { "norecurse", 0 },
-#define SHOWZERO        5
-    { "showzero", 0 },
-#define NOSHOWZERO      6
-    { "noshowzero", 0 },
-#define ALPHASW         7
-    { "alpha", 0 },
-#define NOALPHASW       8
-    { "noalpha", 0 },
-#define FASTSW          9
-    { "fast", 0 },
-#define NOFASTSW        10
-    { "nofast", 0 },
-#define TOTALSW         11
-    { "total", -5 },
-#define NOTOTALSW       12
-    { "nototal", -7 },
-#define VERSIONSW	13
-    { "version", 0 },
-#define HELPSW          14
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define FLIST_SWITCHES \
+    X("sequence name", 0, SEQSW) \
+    X("all", 0, ALLSW) \
+    X("noall", 0, NOALLSW) \
+    X("recurse", 0, RECURSE) \
+    X("norecurse", 0, NORECURSE) \
+    X("showzero", 0, SHOWZERO) \
+    X("noshowzero", 0, NOSHOWZERO) \
+    X("alpha", 0, ALPHASW) \
+    X("noalpha", 0, NOALPHASW) \
+    X("fast", 0, FASTSW) \
+    X("nofast", 0, NOFASTSW) \
+    X("total", -5, TOTALSW) \
+    X("nototal", -7, NOTOTALSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(FLIST);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(FLIST, switches);
+#undef X
 
 struct Folder {
     char *name;			/* name of folder */

@@ -93,35 +93,28 @@ forkcmd (char **args, char *pgm)
 }
 
 
-static struct swit distswit[] = {
-#define	DIANSW                    0
-    { "annotate", 0 },
-#define	DINANSW                   1
-    { "noannotate", 0 },
-#define	DIDFSW                    2
-    { "draftfolder +folder", 0 },
-#define	DIDMSW                    3
-    { "draftmessage msg", 0 },
-#define	DINDFSW                   4
-    { "nodraftfolder", 0 },
-#define	DIEDTSW                   5
-    { "editor editor", 0 },
-#define	DINEDSW                   6
-    { "noedit", 0 },
-#define	DIFRMSW                   7
-    { "form formfile", 0 },
-#define	DIINSW                    8
-    { "inplace", 0 },
-#define	DININSW                   9
-    { "noinplace", 0 },
-#define	DIWHTSW                  10
-    { "whatnowproc program", 0 },
-#define	DINWTSW                  11
-    { "nowhatnowproc", 0 },
-#define	DIHELP                   12
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define DIST_SWITCHES \
+    X("annotate", 0, DIANSW) \
+    X("noannotate", 0, DINANSW) \
+    X("draftfolder +folder", 0, DIDFSW) \
+    X("draftmessage msg", 0, DIDMSW) \
+    X("nodraftfolder", 0, DINDFSW) \
+    X("editor editor", 0, DIEDTSW) \
+    X("noedit", 0, DINEDSW) \
+    X("form formfile", 0, DIFRMSW) \
+    X("inplace", 0, DIINSW) \
+    X("noinplace", 0, DININSW) \
+    X("whatnowproc program", 0, DIWHTSW) \
+    X("nowhatnowproc", 0, DINWTSW) \
+    X("help", 0, DIHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(DIST);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(DIST, distswit);
+#undef X
 
 
 void
@@ -206,23 +199,22 @@ distcmd (char **args)
 }
 
 
-static struct swit explswit[] = {
-#define	EXINSW         0
-    { "inplace", 0 },
-#define	EXNINSW        1
-    { "noinplace", 0 },
-#define	EXQISW         2
-    { "quiet", 0 },
-#define	EXNQISW        3
-    { "noquiet", 0 },
-#define	EXVBSW         4
-    { "verbose", 0 },
-#define	EXNVBSW        5
-    { "noverbose", 0 },
-#define	EXHELP	       6
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define EXPLODE_SWITCHES \
+    X("inplace", 0, EXINSW) \
+    X("noinplace", 0, EXNINSW) \
+    X("quiet", 0, EXQISW) \
+    X("noquiet", 0, EXNQISW) \
+    X("verbose", 0, EXVBSW) \
+    X("noverbose", 0, EXNVBSW) \
+    X("help", 0, EXHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(EXPLODE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(EXPLODE, explswit);
+#undef X
 
 
 void
@@ -429,29 +421,25 @@ burst (struct Msg *smsgs, int msgnum, int inplace, int quietsw, int verbosw)
 }
 
 
-static struct swit fileswit[] = {
-#define	FIDRFT               0
-    { "draft", 0 },
-#define	FILINK               1
-    { "link", 0 },
-#define	FINLINK              2
-    { "nolink", 0 },
-#define	FIPRES               3
-    { "preserve", 0 },
-#define FINPRES              4
-    { "nopreserve", 0 },
-#define	FISRC                5
-    { "src +folder", 0 },
-#define	FIFILE               6
-    { "file file", 0 },
-#define	FIPROC               7
-    { "rmmproc program", 0 },
-#define	FINPRC               8
-    { "normmproc", 0 },
-#define	FIHELP               9
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define FILE_SWITCHES \
+    X("draft", 0, FIDRFT) \
+    X("link", 0, FILINK) \
+    X("nolink", 0, FINLINK) \
+    X("preserve", 0, FIPRES) \
+    X("nopreserve", 0, FINPRES) \
+    X("src +folder", 0, FISRC) \
+    X("file file", 0, FIFILE) \
+    X("rmmproc program", 0, FIPROC) \
+    X("normmproc", 0, FINPRC) \
+    X("help", 0, FIHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(FILE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(FILE, fileswit);
+#undef X
 
 
 void
@@ -581,41 +569,31 @@ filehak (char **args)
 }
 
 
-static struct swit foldswit[] = {
-#define	FLALSW         0
-    { "all", 0 },
-#define	FLFASW         1
-    { "fast", 0 },
-#define	FLNFASW        2
-    { "nofast", 0 },
-#define	FLHDSW         3
-    { "header", 0 },
-#define	FLNHDSW        4
-    { "noheader", 0 },
-#define	FLPKSW         5
-    { "pack", 0 },
-#define	FLNPKSW        6
-    { "nopack", 0 },
-#define	FLRCSW         7
-    { "recurse", 0 },
-#define	FLNRCSW        8
-    { "norecurse", 0 },
-#define	FLTLSW         9
-    { "total", 0 },
-#define	FLNTLSW       10
-    { "nototal", 0 },
-#define	FLPRSW        11
-    { "print", 0 },
-#define	FLPUSW        12
-    { "push", 0 },
-#define	FLPOSW        13
-    { "pop", 0 },
-#define	FLLISW        14
-    { "list", 0 },
-#define	FLHELP        15
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define FOLDER_SWITCHES \
+    X("all", 0, FLALSW) \
+    X("fast", 0, FLFASW) \
+    X("nofast", 0, FLNFASW) \
+    X("header", 0, FLHDSW) \
+    X("noheader", 0, FLNHDSW) \
+    X("pack", 0, FLPKSW) \
+    X("nopack", 0, FLNPKSW) \
+    X("recurse", 0, FLRCSW) \
+    X("norecurse", 0, FLNRCSW) \
+    X("total", 0, FLTLSW) \
+    X("nototal", 0, FLNTLSW) \
+    X("print", 0, FLPRSW) \
+    X("push", 0, FLPUSW) \
+    X("pop", 0, FLPOSW) \
+    X("list", 0, FLLISW) \
+    X("help", 0, FLHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(FOLDER);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(FOLDER, foldswit);
+#undef X
 
 
 void
@@ -796,45 +774,33 @@ fast: ;
 }
 
 
-static struct swit forwswit[] = {
-#define	FOANSW                   0
-    { "annotate", 0 },
-#define	FONANSW                  1
-    { "noannotate", 0 },
-#define	FODFSW                   2
-    { "draftfolder +folder", 0 },
-#define	FODMSW                   3
-    { "draftmessage msg", 0 },
-#define	FONDFSW                  4
-    { "nodraftfolder", 0 },
-#define	FOEDTSW                  5
-    { "editor editor", 0 },
-#define	FONEDSW                  6
-    { "noedit", 0 },
-#define	FOFTRSW                  7
-    { "filter filterfile", 0 },
-#define	FOFRMSW                  8
-    { "form formfile", 0 },
-#define	FOFTSW                   9
-    { "format", 5 },
-#define	FONFTSW                 10
-    { "noformat", 7 },
-#define	FOINSW                  11
-    { "inplace", 0 },
-#define	FONINSW                 12
-    { "noinplace", 0 },
-#define	FOMISW                  13
-    { "mime", 0 },
-#define	FONMISW                 14
-    { "nomime", 0 },
-#define	FOWHTSW                 15
-    { "whatnowproc program", 0 },
-#define	FONWTSW                 16
-    { "nowhatnow", 0 },
-#define	FOHELP                  17
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define FORW_SWITCHES \
+    X("annotate", 0, FOANSW) \
+    X("noannotate", 0, FONANSW) \
+    X("draftfolder +folder", 0, FODFSW) \
+    X("draftmessage msg", 0, FODMSW) \
+    X("nodraftfolder", 0, FONDFSW) \
+    X("editor editor", 0, FOEDTSW) \
+    X("noedit", 0, FONEDSW) \
+    X("filter filterfile", 0, FOFTRSW) \
+    X("form formfile", 0, FOFRMSW) \
+    X("format", 5, FOFTSW) \
+    X("noformat", 7, FONFTSW) \
+    X("inplace", 0, FOINSW) \
+    X("noinplace", 0, FONINSW) \
+    X("mime", 0, FOMISW) \
+    X("nomime", 0, FONMISW) \
+    X("whatnowproc program", 0, FOWHTSW) \
+    X("nowhatnow", 0, FONWTSW) \
+    X("help", 0, FOHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(FORW);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(FORW, forwswit);
+#undef X
 
 
 void
@@ -1085,29 +1051,25 @@ helpcmd (char **args)
 }
 
 
-static struct swit markswit[] = {
-#define	MADDSW             0
-    { "add", 0 },
-#define	MDELSW             1
-    { "delete", 0 },
-#define	MLSTSW             2
-    { "list", 0 },
-#define	MSEQSW             3
-    { "sequence name", 0 },
-#define	MPUBSW             4
-    { "public", 0 },
-#define	MNPUBSW            5
-    { "nopublic", 0 },
-#define	MZERSW             6
-    { "zero", 0 },
-#define	MNZERSW            7
-    { "nozero", 0 },
-#define	MHELP              8
-    { "help", 0 },
-#define	MDBUGSW            9
-    { "debug", -5 },
-    { NULL, 0 }
-};
+#define MARK_SWITCHES \
+    X("add", 0, MADDSW) \
+    X("delete", 0, MDELSW) \
+    X("list", 0, MLSTSW) \
+    X("sequence name", 0, MSEQSW) \
+    X("public", 0, MPUBSW) \
+    X("nopublic", 0, MNPUBSW) \
+    X("zero", 0, MZERSW) \
+    X("nozero", 0, MNZERSW) \
+    X("help", 0, MHELP) \
+    X("debug", -5, MDBUGSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MARK);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MARK, markswit);
+#undef X
 
 
 void
@@ -1273,67 +1235,42 @@ markcmd (char **args)
 }
 
 
-static struct swit mhnswit[] = {
-#define	MHNAUTOSW	    0
-    { "auto", 0 },
-#define	MHNNAUTOSW	    1
-    { "noauto", 0 },
-#define	MHNDEBUGSW	    2
-    { "debug", -5 },
-#define	MHNEBCDICSW 	    3
-    { "ebcdicsafe", 0 },
-#define	MHNNEBCDICSW	    4
-    { "noebcdicsafe", 0 },
-#define	MHNFORMSW	    5
-    { "form formfile", 4 },
-#define	MHNHEADSW	    6
-    { "headers", 0 },
-#define	MHNNHEADSW	    7
-    { "noheaders", 0 },
-#define	MHNLISTSW	    8
-    { "list", 0 },
-#define	MHNNLISTSW	    9
-    { "nolist", 0 },
-#define	MHNPARTSW	   10
-    { "part number", 0 },
-#define	MHNSIZESW	   11
-    { "realsize", 0 },
-#define	MHNNSIZESW	   12
-    { "norealsize", 0 },
-#define	MHNRFC934SW	   13
-    { "rfc934mode", 0 },
-#define	MHNNRFC934SW	   14
-    { "norfc934mode", 0 },
-#define	MHNSERIALSW	   15
-    { "serialonly", 0 },
-#define	MHNNSERIALSW	   16
-    { "noserialonly", 0 },
-#define	MHNSHOWSW	   17
-    { "show", 0 },
-#define	MHNNSHOWSW	   18
-    { "noshow", 0 },
-#define	MHNSTORESW	   19
-    { "store", 0 },
-#define	MHNNSTORESW	   20
-    { "nostore", 0 },
-#define	MHNTYPESW	   21
-    { "type content", 0 },
-#define	MHNVERBSW	   22
-    { "verbose", 0 },
-#define	MHNNVERBSW	   23
-    { "noverbose", 0 },
-#define	MHNHELPSW	   24
-    { "help", 0 },
-#define	MHNPROGSW	   25
-    { "moreproc program", -4 },
-#define	MHNNPROGSW	   26
-    { "nomoreproc", -3 },
-#define	MHNLENSW	   27
-    { "length lines", -4 },
-#define	MHNWIDSW	   28
-    { "width columns", -4 },
-    { NULL, 0 }
-};
+#define MHN_SWITCHES \
+    X("auto", 0, MHNAUTOSW) \
+    X("noauto", 0, MHNNAUTOSW) \
+    X("debug", -5, MHNDEBUGSW) \
+    X("form formfile", 4, MHNFORMSW) \
+    X("headers", 0, MHNHEADSW) \
+    X("noheaders", 0, MHNNHEADSW) \
+    X("list", 0, MHNLISTSW) \
+    X("nolist", 0, MHNNLISTSW) \
+    X("part number", 0, MHNPARTSW) \
+    X("realsize", 0, MHNSIZESW) \
+    X("norealsize", 0, MHNNSIZESW) \
+    X("rfc934mode", 0, MHNRFC934SW) \
+    X("norfc934mode", 0, MHNNRFC934SW) \
+    X("serialonly", 0, MHNSERIALSW) \
+    X("noserialonly", 0, MHNNSERIALSW) \
+    X("show", 0, MHNSHOWSW) \
+    X("noshow", 0, MHNNSHOWSW) \
+    X("store", 0, MHNSTORESW) \
+    X("nostore", 0, MHNNSTORESW) \
+    X("type content", 0, MHNTYPESW) \
+    X("verbose", 0, MHNVERBSW) \
+    X("noverbose", 0, MHNNVERBSW) \
+    X("help", 0, MHNHELPSW) \
+    X("moreproc program", -4, MHNPROGSW) \
+    X("nomoreproc", -3, MHNNPROGSW) \
+    X("length lines", -4, MHNLENSW) \
+    X("width columns", -4, MHNWIDSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHN);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHN, mhnswit);
+#undef X
 
 
 void
@@ -1365,8 +1302,6 @@ mhncmd (char **args)
 		case MHNAUTOSW:
 		case MHNNAUTOSW:
 		case MHNDEBUGSW:
-		case MHNEBCDICSW:
-		case MHNNEBCDICSW:
 		case MHNHEADSW:
 		case MHNNHEADSW:
 		case MHNLISTSW:
@@ -1434,13 +1369,17 @@ mhncmd (char **args)
 }
 
 
-static struct swit packswit[] = {
-#define	PAFISW         0
-    { "file name", 0 },
-#define	PAHELP         1
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define PACK_SWITCHES \
+    X("file name", 0, PAFISW) \
+    X("help", 0, PAHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(PACK);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(PACK, packswit);
+#undef X
 
 static int mbx_style = MMDF_FORMAT;
 
@@ -1570,55 +1509,38 @@ packhak (char **args)
 }
 
 
-static struct swit pickswit[] = {
-#define	PIANSW                0
-    { "and", 0 },
-#define	PIORSW                1
-    { "or", 0 },
-#define	PINTSW                2
-    { "not", 0 },
-#define	PILBSW                3
-    { "lbrace", 0 },
-#define	PIRBSW                4
-    { "rbrace", 0 },
-#define	PICCSW                5
-    { "cc  pattern", 0 },
-#define	PIDASW                6
-    { "date  pattern", 0 },
-#define	PIFRSW                7
-    { "from  pattern", 0 },
-#define	PISESW                8
-    { "search  pattern", 0 },
-#define	PISUSW                9
-    { "subject  pattern", 0 },
-#define	PITOSW               10
-    { "to  pattern", 0 },
-#define	PIOTSW               11
-    { "-othercomponent  pattern", 15 },
-#define	PIAFSW               12
-    { "after date", 0 },
-#define	PIBFSW               13
-    { "before date", 0 },
-#define	PIDFSW               14
-    { "datefield field", 5 },
-#define	PISQSW               15
-    { "sequence name", 0 },
-#define	PIPUSW               16
-    { "public", 0 },
-#define	PINPUSW              17
-    { "nopublic", 0 },
-#define	PIZRSW               18
-    { "zero", 0 },
-#define	PINZRSW              19
-    { "nozero", 0 },
-#define	PILISW               20
-    { "list", 0 },
-#define	PINLISW              21
-    { "nolist", 0 },
-#define	PIHELP               22
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define PICK_SWITCHES \
+    X("and", 0, PIANSW) \
+    X("or", 0, PIORSW) \
+    X("not", 0, PINTSW) \
+    X("lbrace", 0, PILBSW) \
+    X("rbrace", 0, PIRBSW) \
+    X("cc  pattern", 0, PICCSW) \
+    X("date  pattern", 0, PIDASW) \
+    X("from  pattern", 0, PIFRSW) \
+    X("search  pattern", 0, PISESW) \
+    X("subject  pattern", 0, PISUSW) \
+    X("to  pattern", 0, PITOSW) \
+    X("-othercomponent  pattern", 15, PIOTSW) \
+    X("after date", 0, PIAFSW) \
+    X("before date", 0, PIBFSW) \
+    X("datefield field", 5, PIDFSW) \
+    X("sequence name", 0, PISQSW) \
+    X("public", 0, PIPUSW) \
+    X("nopublic", 0, PINPUSW) \
+    X("zero", 0, PIZRSW) \
+    X("nozero", 0, PINZRSW) \
+    X("list", 0, PILISW) \
+    X("nolist", 0, PINLISW) \
+    X("help", 0, PIHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(PICK);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(PICK, pickswit);
+#undef X
 
 
 void
@@ -1764,49 +1686,35 @@ pattern: ;
 }
 
 
-static struct swit replswit[] = {
-#define	REANSW                  0
-    { "annotate", 0 },
-#define	RENANSW                 1
-    { "noannotate", 0 },
-#define	RECCSW                  2
-    { "cc type", 0 },
-#define	RENCCSW                 3
-    { "nocc type", 0 },
-#define	REDFSW                  4
-    { "draftfolder +folder", 0 },
-#define	REDMSW                  5
-    { "draftmessage msg", 0 },
-#define	RENDFSW                 6
-    { "nodraftfolder", 0 },
-#define	REEDTSW                 7
-    { "editor editor", 0 },
-#define	RENEDSW                 8
-    { "noedit", 0 },
-#define	REFCCSW                 9
-    { "fcc +folder", 0 },
-#define	REFLTSW                10
-    { "filter filterfile", 0 },
-#define	REFRMSW                11
-    { "form formfile", 0 },
-#define	REINSW                 12
-    { "inplace", 0 },
-#define	RENINSW                13
-    { "noinplace", 0 },
-#define	REQUSW                 14
-    { "query", 0 },
-#define	RENQUSW                15
-    { "noquery", 0 },
-#define	REWHTSW                16
-    { "whatnowproc program", 0 },
-#define	RENWTSW                17
-    { "nowhatnow", 0 },
-#define	REWIDSW                19
-    { "width columns", 0 },
-#define	REHELP                 20
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define REPL_SWITCHES \
+    X("annotate", 0, REANSW) \
+    X("noannotate", 0, RENANSW) \
+    X("cc type", 0, RECCSW) \
+    X("nocc type", 0, RENCCSW) \
+    X("draftfolder +folder", 0, REDFSW) \
+    X("draftmessage msg", 0, REDMSW) \
+    X("nodraftfolder", 0, RENDFSW) \
+    X("editor editor", 0, REEDTSW) \
+    X("noedit", 0, RENEDSW) \
+    X("fcc +folder", 0, REFCCSW) \
+    X("filter filterfile", 0, REFLTSW) \
+    X("form formfile", 0, REFRMSW) \
+    X("inplace", 0, REINSW) \
+    X("noinplace", 0, RENINSW) \
+    X("query", 0, REQUSW) \
+    X("noquery", 0, RENQUSW) \
+    X("whatnowproc program", 0, REWHTSW) \
+    X("nowhatnow", 0, RENWTSW) \
+    X("width columns", 0, REWIDSW) \
+    X("help", 0, REHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(REPL);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(REPL, replswit);
+#undef X
 
 
 void
@@ -1898,11 +1806,16 @@ replcmd (char **args)
 }
 
 
-static struct swit rmmswit[] = {
-#define	RMHELP    0
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define RMM_SWITCHES \
+    X("help", 0, RMHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(RMM);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(RMM, rmmswit);
+#undef X
 
 
 void
@@ -2007,25 +1920,23 @@ rmm (void)
 }
 
 
-static struct swit scanswit[] = {
-#define	SCCLR              0
-    { "clear", 0 },
-#define	SCNCLR             1
-    { "noclear", 0 },
-#define	SCFORM             2
-    { "form formatfile", 0 },
-#define	SCFMT              3
-    { "format string", 5 },
-#define	SCHEAD             4
-    { "header", 0 },
-#define SCNHEAD            5
-    { "noheader", 0 },
-#define	SCWID              6
-    { "width columns", 0 },
-#define	SCHELP             7
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define SCAN_SWITCHES \
+    X("clear", 0, SCCLR) \
+    X("noclear", 0, SCNCLR) \
+    X("form formatfile", 0, SCFORM) \
+    X("format string", 5, SCFMT) \
+    X("header", 0, SCHEAD) \
+    X("noheader", 0, SCNHEAD) \
+    X("width columns", 0, SCWID) \
+    X("help", 0, SCHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SCAN);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SCAN, scanswit);
+#undef X
 
 
 void
@@ -2162,31 +2073,26 @@ scancmd (char **args)
 }
 
 
-static struct swit showswit[] = {
-#define	SHDRAFT               0
-    { "draft", 5 },
-#define	SHFORM                1
-    { "form formfile", 4 },
-#define	SHPROG                2
-    { "moreproc program", 4 },
-#define	SHNPROG               3
-    { "nomoreproc", 3 },
-#define	SHLEN                 4
-    { "length lines", 4 },
-#define	SHWID                 5
-    { "width columns", 4 },
-#define	SHSHOW                6
-    { "showproc program", 4 },
-#define	SHNSHOW               7
-    { "noshowproc", 3 },
-#define	SHHEAD                8
-    { "header", 4 },
-#define SHNHEAD               9
-    { "noheader", 3 },
-#define	SHHELP               10
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define SHOW_SWITCHES \
+    X("draft", 5, SHDRAFT) \
+    X("form formfile", 4, SHFORM) \
+    X("moreproc program", 4, SHPROG) \
+    X("nomoreproc", 3, SHNPROG) \
+    X("length lines", 4, SHLEN) \
+    X("width columns", 4, SHWID) \
+    X("showproc program", 4, SHSHOW) \
+    X("noshowproc", 3, SHNSHOW) \
+    X("header", 4, SHHEAD) \
+    X("noheader", 3, SHNHEAD) \
+    X("help", 0, SHHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SHOW);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SHOW, showswit);
+#undef X
 
 
 void
@@ -2590,25 +2496,23 @@ out:
 }
 
 
-static struct swit sortswit[] = {
-#define	SODATE               0
-    { "datefield field", 0 },
-#define	SOSUBJ               1
-    { "textfield field", 0 },
-#define	SONSUBJ              2
-    { "notextfield", 0 },
-#define	SOLIMT               3
-    { "limit days", 0 },
-#define	SONLIMT              4
-    { "nolimit", 0 },
-#define	SOVERB               5
-    { "verbose", 0 },
-#define	SONVERB              6
-    { "noverbose", 0 },
-#define	SOHELP               7
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define SORT_SWITCHES \
+    X("datefield field", 0, SODATE) \
+    X("textfield field", 0, SOSUBJ) \
+    X("notextfield", 0, SONSUBJ) \
+    X("limit days", 0, SOLIMT) \
+    X("nolimit", 0, SONLIMT) \
+    X("verbose", 0, SOVERB) \
+    X("noverbose", 0, SONVERB) \
+    X("help", 0, SOHELP) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SORT);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SORT, sortswit);
+#undef X
 
 
 void

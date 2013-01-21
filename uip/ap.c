@@ -19,23 +19,22 @@
 
 #define	FORMAT	"%<{error}%{error}: %{text}%|%(putstr(proper{text}))%>"
 
-static struct swit switches[] = {
-#define	FORMSW	0
-    { "form formatfile", 0 },
-#define	FMTSW	1
-    { "format string", 5 },
-#define	NORMSW	2
-    { "normalize", 0 },
-#define	NNORMSW	3
-    { "nonormalize", 0 },
-#define	WIDTHSW	4
-    { "width columns", 0 },
-#define VERSIONSW 5
-    { "version", 0 },
-#define	HELPSW	6
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define AP_SWITCHES \
+    X("form formatfile", 0, FORMSW) \
+    X("format string", 5, FMTSW) \
+    X("normalize", 0, NORMSW) \
+    X("nonormalize", 0, NNORMSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(AP);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(AP, switches);
+#undef X
 
 static struct format *fmt;
 

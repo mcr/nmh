@@ -13,35 +13,28 @@
 #include <fcntl.h>
 #include <errno.h>
 
-static struct swit switches[] = {
-#define	DRAFTSW          0
-    { "draft", 0 },
-#define	LINKSW           1
-    { "link", 0 },
-#define	NLINKSW          2
-    { "nolink", 0 },
-#define	PRESSW           3
-    { "preserve", 0 },
-#define	NPRESSW          4
-    { "nopreserve", 0 },
-#define UNLINKSW         5
-    { "unlink", 0 },
-#define NUNLINKSW        6
-    { "nounlink", 0 },
-#define	SRCSW            7
-    { "src +folder", 0 },
-#define	FILESW           8
-    { "file file", 0 },
-#define	RPROCSW          9
-    { "rmmproc program", 0 },
-#define	NRPRCSW         10
-    { "normmproc", 0 },
-#define VERSIONSW       11
-    { "version", 0 },
-#define	HELPSW          12
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define REFILE_SWITCHES \
+    X("draft", 0, DRAFTSW) \
+    X("link", 0, LINKSW) \
+    X("nolink", 0, NLINKSW) \
+    X("preserve", 0, PRESSW) \
+    X("nopreserve", 0, NPRESSW) \
+    X("unlink", 0, UNLINKSW) \
+    X("nounlink", 0, NUNLINKSW) \
+    X("src +folder", 0, SRCSW) \
+    X("file file", 0, FILESW) \
+    X("rmmproc program", 0, RPROCSW) \
+    X("normmproc", 0, NRPRCSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(REFILE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(REFILE, switches);
+#undef X
 
 static char maildir[BUFSIZ];
 

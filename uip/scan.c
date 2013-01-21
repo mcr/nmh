@@ -15,41 +15,28 @@
 #include <h/utils.h>
 #include <errno.h>
 
-static struct swit switches[] = {
-#define	CLRSW	0
-    { "clear", 0 },
-#define	NCLRSW	1
-    { "noclear", 0 },
-#define	FORMSW	2
-    { "form formatfile", 0 },
-#define	FMTSW	3
-    { "format string", 5 },
-#define	HEADSW	4
-    { "header", 0 },
-#define	NHEADSW	5
-    { "noheader", 0 },
-#define	WIDTHSW	6
-    { "width columns", 0 },
-#define	REVSW	7
-    { "reverse", 0 },
-#define	NREVSW	8
-    { "noreverse", 0 },
-#define	FILESW	9
-    { "file file", 4 },
-#define VERSIONSW 10
-    { "version", 0 },
-#define	HELPSW	11
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define SCAN_SWITCHES \
+    X("clear", 0, CLRSW) \
+    X("noclear", 0, NCLRSW) \
+    X("form formatfile", 0, FORMSW) \
+    X("format string", 5, FMTSW) \
+    X("header", 0, HEADSW) \
+    X("noheader", 0, NHEADSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("reverse", 0, REVSW) \
+    X("noreverse", 0, NREVSW) \
+    X("file file", 4, FILESW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
 
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SCAN);
+#undef X
 
-/*
- * global for sbr/formatsbr.c - yech!
- */
-#ifdef LBL
-extern struct msgs *fmt_current_folder;	
-#endif
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SCAN, switches);
+#undef X
+
 
 /*
  * prototypes
@@ -184,11 +171,9 @@ main (int argc, char **argv)
 		adios (file, "unable to open");
 	}
 
-#ifndef	JLR
 	if (hdrflag) {
 	    printf ("FOLDER %s\t%s\n", file, dtimenow (1));
 	}
-#endif /* JLR */
 
 	m_unknown (in);
 	for (msgnum = 1; ; ++msgnum) {
@@ -251,32 +236,18 @@ main (int argc, char **argv)
 
     ontty = isatty (fileno (stdout));
 
-#ifdef LBL
-    else
-	fmt_current_folder = mp;
-#endif
-
     for (msgnum = revflag ? mp->hghsel : mp->lowsel;
 	 (revflag ? msgnum >= mp->lowsel : msgnum <= mp->hghsel);
 	 msgnum += (revflag ? -1 : 1)) {
 	if (is_selected(mp, msgnum)) {
 	    if ((in = fopen (cp = m_name (msgnum), "r")) == NULL) {
-#if 0
-		if (errno != EACCES)
-#endif
 		    admonish (cp, "unable to open message");
-#if 0
-		else
-		    printf ("%*d  unreadable\n", DMAXFOLDER, msgnum);
-#endif
 		continue;
 	    }
 
-#ifndef JLR
 	    if (hdrflag) {
 		printf ("FOLDER %s\t%s\n", folder, dtimenow(1));
 	    }
-#endif /* JLR */
 
 	    /*
 	     * Check if message is in any sequence given
@@ -302,11 +273,7 @@ main (int argc, char **argv)
 		    adios (NULL, "scan() botch (%d)", state);
 
 		case SCNEOF: 
-#if 0
-		    printf ("%*d  empty\n", DMAXFOLDER, msgnum);
-#else
 		    advise (NULL, "message %d: empty", msgnum);
-#endif
 		    break;
 	    }
 	    hdrflag = 0;
@@ -315,10 +282,6 @@ main (int argc, char **argv)
 		fflush (stdout);
 	}
     }
-
-#ifdef LBL
-    seq_save (mp);	/* because formatsbr might have made changes */
-#endif
 
     folder_free (mp);	/* free folder/message structure */
     if (clearflag)

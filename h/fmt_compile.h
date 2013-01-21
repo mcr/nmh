@@ -84,28 +84,25 @@
 #define FT_CONCATADDR	70	/* formataddr w/out duplicate removal  */
 #define FT_MYMBOX	71	/* do "mymbox" test on comp            */
 
-/* misc. */		/* ADDTOSEQ only works if you include "options LBL" */
-#define FT_ADDTOSEQ	72	/* add current msg to a sequence       */
-
 /* conditionals & control flow (must be last) */
-#define FT_SAVESTR	73	/* save current str reg               */
-#define FT_DONE		74	/* stop formatting                    */
-#define FT_PAUSE	75	/* pause                              */
-#define FT_NOP		76	/* nop                                */
-#define FT_GOTO		77	/* (relative) goto                    */
-#define FT_IF_S_NULL	78	/* test if "str" null                 */
-#define FT_IF_S		79	/* test if "str" non-null             */
-#define FT_IF_V_EQ	80	/* test if "value" = literal          */
-#define FT_IF_V_NE	81	/* test if "value" != literal         */
-#define FT_IF_V_GT	82	/* test if "value" > literal          */
-#define FT_IF_MATCH	83	/* test if "str" contains literal     */
-#define FT_IF_AMATCH	84	/* test if "str" starts with literal  */
-#define FT_S_NULL	85	/* V = 1 if "str" null                */
-#define FT_S_NONNULL	86	/* V = 1 if "str" non-null            */
-#define FT_V_EQ		87	/* V = 1 if "value" = literal         */
-#define FT_V_NE		88	/* V = 1 if "value" != literal        */
-#define FT_V_GT		89	/* V = 1 if "value" > literal         */
-#define FT_V_MATCH	90	/* V = 1 if "str" contains literal    */
-#define FT_V_AMATCH	91	/* V = 1 if "str" starts with literal */
+#define FT_SAVESTR	72	/* save current str reg               */
+#define FT_DONE		73	/* stop formatting                    */
+#define FT_PAUSE	74	/* pause                              */
+#define FT_NOP		75	/* nop                                */
+#define FT_GOTO		76	/* (relative) goto                    */
+#define FT_IF_S_NULL	77	/* test if "str" null                 */
+#define FT_IF_S		78	/* test if "str" non-null             */
+#define FT_IF_V_EQ	79	/* test if "value" = literal          */
+#define FT_IF_V_NE	80	/* test if "value" != literal         */
+#define FT_IF_V_GT	81	/* test if "value" > literal          */
+#define FT_IF_MATCH	82	/* test if "str" contains literal     */
+#define FT_IF_AMATCH	83	/* test if "str" starts with literal  */
+#define FT_S_NULL	84	/* V = 1 if "str" null                */
+#define FT_S_NONNULL	85	/* V = 1 if "str" non-null            */
+#define FT_V_EQ		86	/* V = 1 if "value" = literal         */
+#define FT_V_NE		87	/* V = 1 if "value" != literal        */
+#define FT_V_GT		88	/* V = 1 if "value" > literal         */
+#define FT_V_MATCH	89	/* V = 1 if "str" contains literal    */
+#define FT_V_AMATCH	90	/* V = 1 if "str" starts with literal */
 
 #define IF_FUNCS FT_S_NULL	/* start of "if" functions */

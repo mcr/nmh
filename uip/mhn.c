@@ -20,103 +20,63 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	AUTOSW                  0
-    { "auto", 0 },
-#define	NAUTOSW                 1
-    { "noauto", 0 },
-#define	CACHESW                 2
-    { "cache", 0 },
-#define	NCACHESW                3
-    { "nocache", 0 },
-#define	CHECKSW                 4
-    { "check", 0 },
-#define	NCHECKSW                5
-    { "nocheck", 0 },
-#define	HEADSW                  6
-    { "headers", 0 },
-#define	NHEADSW                 7
-    { "noheaders", 0 },
-#define	LISTSW                  8
-    { "list", 0 },
-#define	NLISTSW                 9
-    { "nolist", 0 },
-#define	PAUSESW                10
-    { "pause", 0 },
-#define	NPAUSESW               11
-    { "nopause", 0 },
-#define	SIZESW                 12
-    { "realsize", 0 },
-#define	NSIZESW                13
-    { "norealsize", 0 },
-#define	SERIALSW               14
-    { "serialonly", 0 },
-#define	NSERIALSW              15
-    { "noserialonly", 0 },
-#define	SHOWSW                 16
-    { "show", 0 },
-#define	NSHOWSW                17
-    { "noshow", 0 },
-#define	STORESW                18
-    { "store", 0 },
-#define	NSTORESW               19
-    { "nostore", 0 },
-#define	VERBSW                 20
-    { "verbose", 0 },
-#define	NVERBSW                21
-    { "noverbose", 0 },
-#define	FILESW                 22	/* interface from show */
-    { "file file", 0 },
-#define	FORMSW                 23
-    { "form formfile", 0 },
-#define	PARTSW                 24
-    { "part number", 0 },
-#define	TYPESW                 25
-    { "type content", 0 },
-#define	RCACHESW               26
-    { "rcache policy", 0 },
-#define	WCACHESW               27
-    { "wcache policy", 0 },
-#define VERSIONSW              28
-    { "version", 0 },
-#define	HELPSW                 29
-    { "help", 0 },
+#define MHN_SWITCHES \
+    X("auto", 0, AUTOSW) \
+    X("noauto", 0, NAUTOSW) \
+    X("cache", 0, CACHESW) \
+    X("nocache", 0, NCACHESW) \
+    X("check", 0, CHECKSW) \
+    X("nocheck", 0, NCHECKSW) \
+    X("headers", 0, HEADSW) \
+    X("noheaders", 0, NHEADSW) \
+    X("list", 0, LISTSW) \
+    X("nolist", 0, NLISTSW) \
+    X("pause", 0, PAUSESW) \
+    X("nopause", 0, NPAUSESW) \
+    X("realsize", 0, SIZESW) \
+    X("norealsize", 0, NSIZESW) \
+    X("serialonly", 0, SERIALSW) \
+    X("noserialonly", 0, NSERIALSW) \
+    X("show", 0, SHOWSW) \
+    X("noshow", 0, NSHOWSW) \
+    X("store", 0, STORESW) \
+    X("nostore", 0, NSTORESW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("file file", 0, FILESW) \
+    X("form formfile", 0, FORMSW) \
+    X("part number", 0, PARTSW) \
+    X("type content", 0, TYPESW) \
+    X("rcache policy", 0, RCACHESW) \
+    X("wcache policy", 0, WCACHESW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    /*					\
+     * for debugging			\
+     */					\
+    X("debug", -5, DEBUGSW) \
+    /*					\
+     * switches for moreproc/mhlproc	\
+     */					\
+    X("moreproc program", -4, PROGSW) \
+    X("nomoreproc", -3, NPROGSW) \
+    X("length lines", -4, LENSW) \
+    X("width columns", -4, WIDTHSW) \
+    /*					\
+     * switches for mhbuild		\
+     */					\
+    X("build", -5, BUILDSW) \
+    X("nobuild", -7, NBUILDSW) \
+    X("rfc934mode", -10, RFC934SW) \
+    X("norfc934mode", -12, NRFC934SW) \
 
-/*
- * switches for debugging
- */
-#define	DEBUGSW                30
-    { "debug", -5 },
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHN);
+#undef X
 
-/*
- * switches for moreproc/mhlproc
- */
-#define	PROGSW                 31
-    { "moreproc program", -4 },
-#define	NPROGSW                32
-    { "nomoreproc", -3 },
-#define	LENSW                  33
-    { "length lines", -4 },
-#define	WIDTHSW                34
-    { "width columns", -4 },
-
-/*
- * switches for mhbuild
- */
-#define BUILDSW                35
-    { "build", -5 },
-#define NBUILDSW               36
-    { "nobuild", -7 },
-#define	EBCDICSW               37
-    { "ebcdicsafe", -10 },
-#define	NEBCDICSW              38
-    { "noebcdicsafe", -12 },
-#define	RFC934SW               39
-    { "rfc934mode", -10 },
-#define	NRFC934SW              40
-    { "norfc934mode", -12 },
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHN, switches);
+#undef X
 
 
 /* mhparse.c */
@@ -154,7 +114,6 @@ int verbosw = 0;
  * variables for mhbuild (mhn -build)
  */
 static int buildsw  = 0;
-static int ebcdicsw = 0;
 static int rfc934sw = 0;
 
 /*
@@ -398,12 +357,6 @@ do_cache:
 	    case NRFC934SW:
 		rfc934sw = -1;
 		continue;
-	    case EBCDICSW:
-		ebcdicsw = 1;
-		continue;
-	    case NEBCDICSW:
-		ebcdicsw = -1;
-		continue;
 
 	    case VERBSW: 
 		verbosw = 1;
@@ -493,11 +446,6 @@ do_cache:
 	vecp = 0;
 	vec[vecp++] = "mhbuild";
 
-	if (ebcdicsw == 1)
-	    vec[vecp++] = "-ebcdicsafe";
-	else if (ebcdicsw == -1)
-	    vec[vecp++] = "-noebcdicsafe";
-
 	if (rfc934sw == 1)
 	    vec[vecp++] = "-rfc934mode";
 	else if (rfc934sw == -1)
@@ -524,11 +472,6 @@ do_cache:
 
 	vecp = 0;
 	vec[vecp++] = "mhbuild";
-
-	if (ebcdicsw == 1)
-	    vec[vecp++] = "-ebcdicsafe";
-	else if (ebcdicsw == -1)
-	    vec[vecp++] = "-noebcdicsafe";
 
 	if (rfc934sw == 1)
 	    vec[vecp++] = "-rfc934mode";

@@ -15,6 +15,10 @@ fi
 
 setup_test
 
+thisdir="$srcdir/test/inc"
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
+
 cat > "${MH_TEST_DIR}/test.mbox" <<EOF
 From nobody@nowhereville Jan 1 1970
 Received: I am the very model of a modern Major-General,
@@ -194,5 +198,188 @@ rm -f "${MH_TEST_DIR}/test.mbox" "${MH_TEST_DIR}/test.mbox.2"
 
 run_test "scan -width 120 +inbox 11" \
 	"  11+ 03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And why not, the man's entitled to it. Cos"
+
+# check header field name with ':' character than lands on m_getfld() buffer
+cat >"$MH_TEST_DIR/mess" <<EOF
+Comments: The important characteristic of this message is that the 8193'd
+Comments: byte is the ':' at the end of header field name.  That tests some
+Comments: logic in m_getfld (), assuming its MSG_INPUT_SIZE is 8192.
+Comments: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Comments: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+Comments: CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+Comments: DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+Comments: EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+Comments: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+Comments: GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+Comments: HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+Comments: IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+Comments: JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ
+Comments: KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+Comments: LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+Comments: MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+Comments: NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
+Comments: OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+Comments: PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+Comments: QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+Comments: RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+Comments: SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+Comments: TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+Comments: UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
+Comments: VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+Comments: WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+Comments: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Comments: YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+Comments: ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+Comments: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Comments: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+Comments: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+Comments: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Comments: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+Comments: ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+Comments: gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+Comments: hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+Comments: iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+Comments: jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+Comments: kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+Comments: llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+Comments: mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+Comments: nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+Comments: oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+Comments: pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
+Comments: qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+Comments: rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
+Comments: ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+Comments: tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
+Comments: uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
+Comments: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+Comments: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+Comments: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Comments: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+Comments: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+Comments: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Comments: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+Comments: CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+Comments: DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+Comments: EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+Comments: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+Comments: GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+Comments: HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+Comments: IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+Comments: JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ
+Comments: KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+Comments: LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+Comments: MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+Comments: NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
+Comments: OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+Comments: PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+Comments: QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+Comments: RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+Comments: SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+Comments: TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+Comments: UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
+Comments: VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+Comments: WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+Comments: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Comments: YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+Comments: ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+Comments: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Comments: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+Comments: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+Comments: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Comments: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+Comments: ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+Comments: gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+Comments: hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+Comments: iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+Comments: jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+Comments: kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+Comments: llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+Comments: mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+Comments: nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+Comments: oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+Comments: pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
+Comments: qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+Comments: rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
+Comments: ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+Comments: tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
+Comments: uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
+Comments: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+Comments: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+Comments: This is it, the line with the 8193'd character of ':'.
+Comments: From somewhere
+From: No Such User <nosuch@example.com>
+To: Some Other User <someother@example.com>
+Subject: all that and nothing to say?
+Date: Thu, 10 Jan 2013 19:54:01 -0500
+
+EOF
+
+run_test 'scan -width 60 -file '"$MH_TEST_DIR/mess" \
+         '   1  01/10 No Such User       all that and nothing to say?'
+rm -f "$MH_TEST_DIR/mess"
+
+# check m_getfld() handling of fields with trailing whitespace
+# Even though header field names aren't supposed to have spaces (RFC
+# 28220, m_getfld () trims trailing whitespace from them.
+cat >`mhpath new` <<EOF
+Date : Sun, 18 Dec 2005 00:52:39 +0100
+From	: foo@example.edu
+To: bar@example.edu
+Subject: test
+EOF
+run_test 'scan last' '  12  12/18 foo@example.edu    test'
+
+# check header field body with more than 511 characters
+cat >"$MH_TEST_DIR/mess" <<EOF
+Comments: The important characteristic of this message is that this header
+          field body is more than 511 bytes long.  That tests the logic in
+          m_getfld () for transitioning to the FLDPLUS state.  This is the
+          only use for the FLDPLUS state, handling header field bodies that
+          are longer than the buffer used to retrieve them.  The trailing
+          newline after the last character is the 512th character.  The 511th
+          character, counting all spaces, even the leading one, is*
+From: No Such User <nosuch@example.com>
+To: Some Other User <someother@example.com>
+Subject: FLDPLUS test
+Date: Wed, 16 Jan 2013 20:33:58 -0600
+
+EOF
+
+run_test 'scan -width 80 -file '"$MH_TEST_DIR"'/mess' \
+         '   1  01/16 No Such User       FLDPLUS test'
+rm -f "$MH_TEST_DIR/mess"
+
+# check scan and inc of mbox with multiple messages
+echo y | packf -file "$MH_TEST_DIR/msgbox"
+run_test "scan -width 80 -file $MH_TEST_DIR/msgbox" \
+'   1  09/29 Test1              Testing message 1<<This is message number 1 >>
+   2  09/29 Test2              Testing message 2<<This is message number 2 >>
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>
+   5  09/29 Test5              Testing message 5<<This is message number 5 >>
+   6  09/29 Test6              Testing message 6<<This is message number 6 >>
+   7  09/29 Test7              Testing message 7<<This is message number 7 >>
+   8  09/29 Test8              Testing message 8<<This is message number 8 >>
+   9  09/29 Test9              Testing message 9<<This is message number 9 >>
+  10  09/29 Test10             Testing message 10<<This is message number 10 >>
+  11  03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. An
+  12  12/18 foo@example.edu    test'
+run_test "inc -width 80 -file $MH_TEST_DIR/msgbox -truncate" \
+'Incorporating new mail into inbox...
+
+  13+ 09/29 Test1              Testing message 1<<This is message number 1 >>
+  14  09/29 Test2              Testing message 2<<This is message number 2 >>
+  15  09/29 Test3              Testing message 3<<This is message number 3 >>
+  16  09/29 Test4              Testing message 4<<This is message number 4 >>
+  17  09/29 Test5              Testing message 5<<This is message number 5 >>
+  18  09/29 Test6              Testing message 6<<This is message number 6 >>
+  19  09/29 Test7              Testing message 7<<This is message number 7 >>
+  20  09/29 Test8              Testing message 8<<This is message number 8 >>
+  21  09/29 Test9              Testing message 9<<This is message number 9 >>
+  22  09/29 Test10             Testing message 10<<This is message number 10 >>
+  23  03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. An
+  24  12/18 foo@example.edu    test'
+rm -f  "$MH_TEST_DIR/msgbox"
+
 
 exit ${failed:-0}

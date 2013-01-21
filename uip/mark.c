@@ -12,31 +12,26 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	ADDSW               0
-    { "add", 0 },
-#define	DELSW               1
-    { "delete", 0 },
-#define	LSTSW               2
-    { "list", 0 },
-#define	SEQSW               3
-    { "sequence name", 0 },
-#define	PUBLSW              4
-    { "public", 0 },
-#define	NPUBLSW             5
-    { "nopublic", 0 },
-#define	ZEROSW              6
-    { "zero", 0 },
-#define	NZEROSW             7
-    { "nozero", 0 },
-#define VERSIONSW           8
-    { "version", 0 },
-#define	HELPSW              9
-    { "help", 0 },
-#define	DEBUGSW            10
-    { "debug", -5 },
-    { NULL, 0 }
-};
+#define MARK_SWITCHES \
+    X("add", 0, ADDSW) \
+    X("delete", 0, DELSW) \
+    X("list", 0, LSTSW) \
+    X("sequence name", 0, SEQSW) \
+    X("public", 0, PUBLSW) \
+    X("nopublic", 0, NPUBLSW) \
+    X("zero", 0, ZEROSW) \
+    X("nozero", 0, NZEROSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("debug", -5, DEBUGSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MARK);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MARK, switches);
+#undef X
 
 /*
  * static prototypes

@@ -55,6 +55,11 @@ struct node {
 #define	UNKWNSW	 (-1)	/* from smatch() on unknown switch   */
 
 struct swit {
+
+    /*
+     * Switch name
+     */
+
     char *sw;
 
     /* The minchars field is apparently used like this:
@@ -63,7 +68,53 @@ struct swit {
        0  : Switch can't be abbreviated;               switch shown in -help.
        #  : Switch can be abbreviated to # characters; switch shown in -help. */
     int minchars;
+
+    /*
+     * If we pick this switch, return this value from smatch
+     */
+
+    int swret;
 };
+
+/*
+ * Macros to use when declaring struct swit arrays.
+ *
+ * These macros are what known as X-Macros.  In your source code you
+ * use them like this:
+ *
+ * #define FOO_SWITCHES \
+ *    X("switch1", 0, SWITCHSW) \
+ *    X("switch2", 0, SWITCH2SW) \
+ *    X("thirdswitch", 2, SWITCH3SW) \
+ *
+ * The argument to each entry in FOO_SWITCHES are the switch name (sw),
+ * the minchars field (see above) and the return value for this switch.
+ *
+ * After you define FOO_SWITCHES, you instantiate it as follows:
+ *
+ * #define X(sw, minchars, id) id,
+ * DEFINE_SWITCH_ENUM(FOO);
+ * #undef X
+ *
+ * #define X(sw, minchars, id) { sw, minchars, id },
+ * DEFINE_SWITCH_ARRAY(FOO);
+ * #undef X
+ *
+ * DEFINE_SWITCH_ENUM defines an extra enum at the end of the list called
+ * LEN_FOO.
+ */
+
+#define DEFINE_SWITCH_ENUM(name) \
+    enum { \
+    	name ## _SWITCHES \
+	LEN_ ## name \
+    }
+
+#define DEFINE_SWITCH_ARRAY(name, array) \
+    static struct swit array[] = { \
+    	name ## _SWITCHES \
+	{ NULL, 0, 0 } \
+    }
 
 extern struct swit anoyes[];	/* standard yes/no switches */
 
@@ -316,7 +367,6 @@ extern char *catproc;
 extern char *components;
 extern char *context;
 extern char *current;
-extern char *defaulteditor;
 extern char *defaultfolder;
 extern char *digestcomps;
 extern char *distcomps;

@@ -18,19 +18,20 @@
 
 #define	FORMAT "%<(nodate{text})error: %{text}%|%(putstr(pretty{text}))%>"
 
-static struct swit switches[] = {
-#define	FORMSW                0
-    { "form formatfile", 0 },
-#define	FMTSW                 1
-    { "format string", 5 },
-#define	WIDTHSW               2
-    { "width columns", 0 },
-#define VERSIONSW             3
-    { "version", 0 },
-#define	HELPSW                4
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define DP_SWITCHES \
+    X("form formatfile", 0, FORMSW) \
+    X("format string", 5, FMTSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(DP);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(DP, switches);
+#undef X
 
 static struct format *fmt;
 

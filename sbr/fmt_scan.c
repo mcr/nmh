@@ -25,10 +25,6 @@
 #  include <wchar.h>
 #endif
 
-#ifdef LBL
-struct msgs *fmt_current_folder; /* current folder (set by main program) */
-#endif
-
 extern int fmt_norm;		/* defined in sbr/fmt_def.c = AD_NAME */
 struct mailname fmt_mnull = { NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0,
 			      NULL, NULL };
@@ -118,7 +114,8 @@ cpnumber(char **dest, int num, unsigned int wid, char fill, size_t n) {
  * no more than n bytes are copied
  */
 static void
-cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
+cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n,
+	  size_t max) {
     int remaining;     /* remaining output width available */
     int c, ljust;
     int end;           /* number of input bytes remaining in str */
@@ -129,7 +126,8 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
 #endif
     char *sp;          /* current position in source string */
     char *cp = *dest;  /* current position in destination string */
-    char *ep = cp + n; /* end of destination buffer */
+    char *ep = cp + n; /* end of destination buffer based on desired width */
+    char *epmax = cp + max; /* true end of destination buffer */
     int prevCtrl = 1;
 
     /* get alignment */
@@ -144,6 +142,13 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
 	while (*sp && remaining > 0 && end > 0) {
 #ifdef MULTIBYTE_SUPPORT
 	    char_len = mbtowc(&wide_char, sp, end);
+
+	    /* Account for multibyte characters taking only one character's
+	       width of output. */
+	    if (char_len > 1  &&  epmax - ep >= char_len - 1) {
+		ep += char_len - 1;
+	    }
+
 	    if (char_len <= 0 || (cp + char_len > ep))
 		break;
 
@@ -208,7 +213,7 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n) {
 }
 
 static void
-cpstripped (char **dest, char *end, char *str)
+cpstripped (char **dest, char *end, char *max, char *str)
 {
     int prevCtrl = 1;	/* This is 1 so we strip out leading spaces */
     int len;
@@ -234,6 +239,12 @@ cpstripped (char **dest, char *end, char *str)
     while (*str != '\0' && len > 0 && *dest < end) {
 #ifdef MULTIBYTE_SUPPORT
     	char_len = mbtowc(&wide_char, str, len);
+
+	/* Account for multibyte characters taking only one character's
+	   width of output. */
+	if (char_len > 1  &&  max - end >= char_len - 1) {
+	    end += char_len - 1;
+	}
 
 	if (char_len <= 0 || *dest + char_len > end)
 	    break;
@@ -356,11 +367,11 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 
 	    comp = fmt->f_comp;
 
-	    if (! (comp->c_flags & CF_TRIMMED) && comp->c_text) {
-	    	i = strlen(comp->c_text);
+	    if (! (comp->c_flags & CF_TRIMMED) && comp->c_text &&
+		(i = strlen(comp->c_text)) > 0) {
 		if (comp->c_text[i - 1] == '\n' &&
-			strcmp(comp->c_name, "body") != 0 &&
-			strcmp(comp->c_name, "text") != 0)
+		    strcmp(comp->c_name, "body") != 0 &&
+		    strcmp(comp->c_name, "text") != 0)
 		    comp->c_text[i - 1] = '\0';
 		comp->c_flags |= CF_TRIMMED;
 	    }
@@ -373,10 +384,11 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	switch (fmt->f_type) {
 
 	case FT_COMP:
-	    cpstripped (&cp, ep, fmt->f_comp->c_text);
+	    cpstripped (&cp, ep, scanl + max - 1, fmt->f_comp->c_text);
 	    break;
 	case FT_COMPF:
-	    cptrimmed (&cp, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill, ep - cp);
+	    cptrimmed (&cp, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill,
+		       ep - cp, scanl - cp + max - 1);
 	    break;
 
 	case FT_LIT:
@@ -399,10 +411,11 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	    break;
 
 	case FT_STR:
-	    cpstripped (&cp, ep, str);
+	    cpstripped (&cp, ep, scanl + max - 1, str);
 	    break;
 	case FT_STRF:
-	    cptrimmed (&cp, str, fmt->f_width, fmt->f_fill, ep - cp);
+	    cptrimmed (&cp, str, fmt->f_width, fmt->f_fill, ep - cp,
+		       scanl - cp + max - 1);
 	    break;
 	case FT_STRLIT:
 	    sp = str;
@@ -926,7 +939,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 			*cp++ = ' ';
 		}
 	    }
-	    cpstripped (&cp, ep, lp);
+	    cpstripped (&cp, ep, scanl + max - 1, lp);
 	    }
 	    break;
 
@@ -980,21 +993,10 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 		comp->c_mn = &fmt_mnull;
 	    }
 	    break;
-
-	case FT_ADDTOSEQ:
-#ifdef LBL
-	    /* If we're working on a folder (as opposed to a file), add the
-	     * current msg to sequence given in literal field.  Don't
-	     * disturb string or value registers.
-	     */
-	    if (fmt_current_folder)
-		    seq_addmsg(fmt_current_folder, fmt->f_text, dat[0], -1);
-#endif
-	    break;
 	}
 	fmt++;
     }
-#ifndef JLR
+
     /* Emit any trailing sequences of zero display length. */
     while (fmt->f_type != FT_DONE) {
 	if (fmt->f_type == FT_LS_LIT) {
@@ -1021,15 +1023,4 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
     }
     *cp = '\0';
     return ((struct format *)0);
-#else /* JLR */
-    if (cp[-1] != '\n')
-	*cp++ = '\n';
-    while (fmt->f_type != FT_DONE)
-	fmt++;
-
-    finished:;
-    *cp = '\0';
-    return (fmt->f_value ? ++fmt : (struct format *) 0);
-
-#endif /* JLR */
 }

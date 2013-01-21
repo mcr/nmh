@@ -20,35 +20,28 @@
 # define SASLminc(a)  0
 #endif
 
-static struct swit switches[] = {
-#define	DATESW                   0
-    { "date", 0 },
-#define	NDATESW                  1
-    { "nodate", 0 },
-#define	NOTESW                   2
-    { "notify type", 0 },
-#define	NNOTESW                  3
-    { "nonotify type", 0 },
-#define	HOSTSW                   4
-    { "host hostname", 0 },
-#define	USERSW                   5
-    { "user username", 0 },
-#define PORTSW			 6
-    { "port name/number", 0 },
-#define VERSIONSW                7
-    { "version", 0 },
-#define	HELPSW                   8
-    { "help", 0 },
-#define SNOOPSW                  9
-    { "snoop", -5 },
-#define SASLSW                  10
-    { "sasl", SASLminc(-4) },
-#define SASLMECHSW		11
-    { "saslmech", SASLminc(-5) },
-#define PROXYSW 		12
-    { "proxy command", 0 },
-    { NULL, 0 }
-};
+#define MSGCHK_SWITCHES \
+    X("date", 0, DATESW) \
+    X("nodate", 0, NDATESW) \
+    X("notify type", 0, NOTESW) \
+    X("nonotify type", 0, NNOTESW) \
+    X("host hostname", 0, HOSTSW) \
+    X("user username", 0, USERSW) \
+    X("port name/number", 0, PORTSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("snoop", -5, SNOOPSW) \
+    X("sasl", SASLminc(-4), SASLSW) \
+    X("saslmech", SASLminc(-5), SASLMECHSW) \
+    X("proxy command", 0, PROXYSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MSGCHK);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MSGCHK, switches);
+#undef X
 
 /*
  * Maximum numbers of users we can check (plus
@@ -240,15 +233,18 @@ main (int argc, char **argv)
 }
 
 
-static struct swit ntswitches[] = {
-#define	NALLSW     0
-    { "all", 0 },
-#define	NMAISW     1
-    { "mail", 0 },
-#define	NNMAISW	   2
-    { "nomail", 0 },
-    { NULL, 0 }
-};
+#define NOTE_SWITCHES \
+    X("all", 0, NALLSW) \
+    X("mail", 0, NMAISW) \
+    X("nomail", 0, NNMAISW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(NOTE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(NOTE, ntswitches);
+#undef X
 
 
 static int

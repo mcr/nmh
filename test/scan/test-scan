@@ -14,10 +14,10 @@ fi
 
 setup_test
 
-expected=$MH_TEST_DIR/$$.expected
-actual=$MH_TEST_DIR/$$.actual
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
 
-cat > $expected <<EOF
+cat >"$expected" <<EOF
    1  09/29 Test1              Testing message 1<<This is message number 1 >>
    2  09/29 Test2              Testing message 2<<This is message number 2 >>
    3  09/29 Test3              Testing message 3<<This is message number 3 >>
@@ -30,12 +30,11 @@ cat > $expected <<EOF
   10  09/29 Test10             Testing message 10<<This is message number 10 >>
 EOF
 
-scan +inbox -width 80 > $actual || exit 1
-
+scan +inbox -width 80 >"$actual" || exit 1
 check "$expected" "$actual"
 
 # check highlighting
-cat > $expected <<EOF
+cat >"$expected" <<EOF
    1  09/29 Test1              Testing message 1<<This is message number 1 >>[m
    2  09/29 Test2              Testing message 2<<This is message number 2 >>[m
    3  09/29 Test3              Testing message 3<<This is message number 3 >>[m
@@ -51,8 +50,7 @@ EOF
 printf 'Unseen-Sequence: unseen\n' >> $MH
 mark -sequence cur 5
 mark -sequence unseen 10
-scan -form scan.highlighted -width 80 > $actual || exit 1
-
+scan -form scan.highlighted -width 80 >"$actual" || exit 1
 check "$expected" "$actual"
 
 

@@ -1,4 +1,4 @@
-.TH MHBUILD %manext1% "May 31, 2012" "%nmhversion%"
+.TH MHBUILD %manext1% "January 4, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -13,7 +13,6 @@ mhbuild \- translate MIME composition draft
 .RB [ \-realsize " | " \-norealsize ]
 .RB [ \-headers " | " \-noheaders ]
 .RB [ \-directives " | " \-nodirectives ]
-.RB [ \-ebcdicsafe " | " \-noebcdicsafe ]
 .RB [ \-rfc934mode " | " \-norfc934mode ]
 .RB [ \-contentid " | " \-nocontentid ]
 .RB [ \-verbose " | " \-noverbose ]
@@ -467,11 +466,11 @@ If
 .B mhbuild
 is given the
 .B \-check
-switch, then it will also associate
-an integrity check with each \*(lqleaf\*(rq content.  This will add a
-Content-MD5 header field to the content, along with the md5 sum of the
-unencoded contents.  This may be used by the receiver of the message to
-verify that the contents of the message were not changed in transport.
+switch, then it will also associate an integrity check with each
+\*(lqleaf\*(rq content.  This will add a Content-MD5 header field to
+the content, along with the md5 sum of the unencoded contents, per RFC
+1864.  This may be used by the receiver of the message to verify that
+the contents of the message were not changed in transport.
 .SS "Transfer Encodings"
 After
 .B mhbuild
@@ -490,17 +489,6 @@ will encode each content with
 a transfer encoding, even it the content contains only 7\-bit data.  This
 is to increase the likelihood that the content is not changed while in
 transport.
-.PP
-The switch
-.B \-ebcdicsafe
-will cause
-.B mhbuild
-to slightly change
-the way in which it performs the \*(lqquoted-printable\*(rq transfer
-encoding.  Along with encoding 8\-bit characters, it will now also encode
-certain common punctuation characters as well.  This slightly reduces the
-readability of the message, but allows the message to pass more reliably
-through mail gateways which involve the EBCDIC character encoding.
 .SS "Invoking mhbuild"
 Typically,
 .B mhbuild
@@ -675,6 +663,9 @@ line         ::=     "##" text EOL
 .I "Proposed Standard for Message Encapsulation"
 (RFC\-934),
 .PP
+.I "The Content-MD5 Header Field"
+(RFC\-1864),
+.PP
 .I "Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies"
 (RFC\-2045),
 .PP
@@ -696,6 +687,5 @@ line         ::=     "##" text EOL
 .RB ` \-norfc934mode '
 .RB ` \-contentid '
 .RB ` \-nocheck '
-.RB ` \-noebcdicsafe '
 .RB ` \-noverbose '
 .fi

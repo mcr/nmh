@@ -145,7 +145,7 @@ man page for details about private sequences.
 .RE
 .PP
 .BR Editor :
-/usr/bin/vi
+vi
 .RS 5
 Defines the editor to be used by the commands
 .BR comp ,
@@ -153,7 +153,9 @@ Defines the editor to be used by the commands
 .BR forw ,
 and
 .BR repl .
-(profile, default: %default_editor%)
+If not set in profile the value will be taken from the VISUAL and
+EDITOR environment variables.
+(profile, default: vi)
 .RE
 .PP
 .BR automimeproc :
@@ -417,7 +419,7 @@ new users of
 .RE
 .PP
 .BR lproc :
-%default_pager%
+more
 .RS 5
 This program is used to list the contents of a message in response
 to the
@@ -482,7 +484,7 @@ that is sent to \*(lqBcc:\*(rq recipients.
 .RE
 .PP
 .BR moreproc :
-%default_pager%
+more
 .RS 5
 This is the program used by
 .B mhl

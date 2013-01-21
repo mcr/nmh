@@ -31,29 +31,25 @@
 %<(mymbox{from})%<{to}To:%14(friendly{to})%>%>%<(zero)%17(friendly{from})%>  \
 %{subject}%<{body}<<%{body}>>%>"
 
-static struct swit switches[] = {
-#define	BIFFSW	0
-    { "biff", 0 },
-#define	FORMSW	1
-    { "form formatfile", 0 },
-#define	FMTSW	2
-    { "format string", 5 },
-#define WIDTHSW 3
-    { "width columns", 0 },
-#define NLSW    4
-    { "newline", 0 },
-#define NNLSW   5
-    { "nonewline", 0 },
-#define BELSW	6
-    { "bell", 0 },
-#define	NBELSW	7
-    { "nobell", 0 },
-#define VERSIONSW 8
-    { "version", 0 },
-#define	HELPSW	9
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define RCVTTY_SWITCHES \
+    X("biff", 0, BIFFSW) \
+    X("form formatfile", 0, FORMSW) \
+    X("format string", 5, FMTSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("newline", 0, NLSW) \
+    X("nonewline", 0, NNLSW) \
+    X("bell", 0, BELSW) \
+    X("nobell", 0, NBELSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(RCVTTY);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(RCVTTY, switches);
+#undef X
 
 static jmp_buf myctx;
 static int bell = 1;

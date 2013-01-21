@@ -402,20 +402,6 @@ void
 twscopy (struct tws *tb, struct tws *tw)
 {
     *tb = *tw;  /* struct copy */
-
-#if 0
-    tb->tw_sec   = tw->tw_sec;
-    tb->tw_min   = tw->tw_min;
-    tb->tw_hour  = tw->tw_hour;
-    tb->tw_mday  = tw->tw_mday;
-    tb->tw_mon   = tw->tw_mon;
-    tb->tw_year  = tw->tw_year;
-    tb->tw_wday  = tw->tw_wday;
-    tb->tw_yday  = tw->tw_yday;
-    tb->tw_zone  = tw->tw_zone;
-    tb->tw_clock = tw->tw_clock;
-    tb->tw_flags = tw->tw_flags;
-#endif
 }
 
 

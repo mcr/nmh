@@ -14,31 +14,26 @@
 #include <signal.h>
 #include <h/mts.h>
 
-static struct swit switches[] = {
-#define CRETSW         0
-    { "create",	0 },
-#define NCRETSW        1
-    { "nocreate", 0 },
-#define UNSEENSW       2
-    { "unseen", 0 },
-#define NUNSEENSW      3
-    { "nounseen", 0 },
-#define PUBSW          4
-    { "public",	0 },
-#define NPUBSW         5
-    { "nopublic",  0 },
-#define ZEROSW         6
-    { "zero",	0 },
-#define NZEROSW        7
-    { "nozero",	0 },
-#define SEQSW          8
-    { "sequence name", 0 },
-#define VERSIONSW      9
-    { "version", 0 },
-#define HELPSW        10
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define RCVSTORE_SWITCHES \
+    X("create", 0, CRETSW) \
+    X("nocreate", 0, NCRETSW) \
+    X("unseen", 0, UNSEENSW) \
+    X("nounseen", 0, NUNSEENSW) \
+    X("public", 0, PUBSW) \
+    X("nopublic", 0, NPUBSW) \
+    X("zero", 0, ZEROSW) \
+    X("nozero", 0, NZEROSW) \
+    X("sequence name", 0, SEQSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(RCVSTORE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(RCVSTORE, switches);
+#undef X
 
 
 /*

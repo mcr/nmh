@@ -13,17 +13,19 @@
 #include <h/tws.h>
 #include <h/mts.h>
 
-static struct swit switches[] = {
-#define MBOXSW       0
-    { "mbox", 0 },
-#define MMDFSW       1
-    { "mmdf", 0 },
-#define VERSIONSW    2
-    { "version", 0 },
-#define	HELPSW       3
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define RCVPACK_SWITCHES \
+    X("mbox", 0, MBOXSW) \
+    X("mmdf", 0, MMDFSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(RCVPACK);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(RCVPACK, switches);
+#undef X
 
 /*
  * default format in which to save messages

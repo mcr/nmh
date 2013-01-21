@@ -55,39 +55,30 @@
 #include <utmpx.h>
 #endif /* HAVE_GETUTXENT */
 
-static struct swit switches[] = {
-#define	ADDRSW         0
-    { "addr address", 0 },
-#define	USERSW         1
-    { "user name", 0 },
-#define	FILESW         2
-    { "file file", 0 },
-#define	SENDERSW       3
-    { "sender address", 0 },
-#define	MAILBOXSW      4
-    { "mailbox file", 0 },
-#define	HOMESW         5
-    { "home directory", -4 },
-#define	INFOSW         6
-    { "info data", 0 },
-#define	MAILSW         7
-    { "maildelivery file", 0 },
-#define	VERBSW         8
-    { "verbose", 0 },
-#define	NVERBSW        9
-    { "noverbose", 0 },
-#define SUPPRESSDUP   10
-    { "suppressdup", 0 },
-#define NSUPPRESSDUP 11
-    { "nosuppressdup", 0 },
-#define	DEBUGSW       12
-    { "debug", 0 },
-#define VERSIONSW     13
-    { "version", 0 },
-#define	HELPSW        14
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define SLOCAL_SWITCHES \
+    X("addr address", 0, ADDRSW) \
+    X("user name", 0, USERSW) \
+    X("file file", 0, FILESW) \
+    X("sender address", 0, SENDERSW) \
+    X("mailbox file", 0, MAILBOXSW) \
+    X("home directory", -4, HOMESW) \
+    X("info data", 0, INFOSW) \
+    X("maildelivery file", 0, MAILSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("suppressdup", 0, SUPPRESSDUP) \
+    X("nosuppressdup", 0, NSUPPRESSDUP) \
+    X("debug", 0, DEBUGSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SLOCAL);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SLOCAL, switches);
+#undef X
 
 static int globbed = 0;		/* have we built "vars" table yet?        */
 static int parsed = 0;		/* have we built header field table yet   */
@@ -1044,18 +1035,6 @@ usr_folder (int fd, char *string)
     /* use rcvstore to put message in folder */
     status = usr_pipe (fd, "rcvstore", rcvstoreproc, vec, 1);
 
-#if 0
-    /*
-     * Currently, verbose status messages are handled by usr_pipe().
-     */
-    if (verbose) {
-	if (status == 0)
-	    verbose_printf (", success.\n");
-	else
-	    verbose_printf (", failed.\n");
-    }
-#endif
-
     return status;
 }
 
@@ -1276,13 +1255,6 @@ you_lose:
 	    if (!strncmp (buffer, "From ", i)) {
 		/* get copy of envelope information ("From " line) */
 		envelope = getcpy (buffer);
-
-#if 0
-		/* First go ahead and put "From " line in message */
-		fputs (buffer, ffp);
-		if (ferror (ffp))
-		    goto fputs_error;
-#endif
 
 		/* Put the delivery date in message */
 		fputs (ddate, ffp);

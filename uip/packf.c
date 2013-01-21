@@ -13,19 +13,20 @@
 #include <h/utils.h>
 #include <errno.h>
 
-static struct swit switches[] = {
-#define FILESW         0
-    { "file name", 0 },
-#define MBOXSW         1
-    { "mbox", 0 },
-#define MMDFSW         2
-    { "mmdf", 0 },
-#define VERSIONSW      3
-    { "version", 0 },
-#define	HELPSW         4
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define PACKF_SWITCHES \
+    X("file name", 0, FILESW) \
+    X("mbox", 0, MBOXSW) \
+    X("mmdf", 0, MMDFSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(PACKF);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(PACKF, switches);
+#undef X
 
 static int md = NOTOK;
 static int mbx_style = MBOX_FORMAT;

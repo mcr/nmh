@@ -108,14 +108,6 @@ cache_content (CT ct)
 	return;
     }
 
-/* THIS NEEDS TO BE FIXED */
-#if 0
-    if (ct->c_ceopenfnx == openMail) {
-	advise (NULL, "a radish may no know Greek, but I do...");
-	return;
-    }
-#endif
-
     if (find_cache (NULL, wcachesw != CACHE_NEVER ? wcachesw : CACHE_ASK,
 		    &cachetype, ct->c_id, cachefile, sizeof(cachefile))
 	    == NOTOK) {
