@@ -207,12 +207,12 @@ static unsigned char *matchc(int, char *, int, char *);
  *
  * MSG_INPUT_SIZE is the size of the buffer.
  * MAX_DELIMITER_SIZE is the maximum size of the delimiter used to
- * separate messages in a maildrop, such as mbox "\nFrom ".
+ * separate messages in a maildrop, such as mbox "From ".
  *
  * Some of the tests in the test suite assume a MSG_INPUT_SIZE
  * of 8192. */
 #define MSG_INPUT_SIZE (BUFSIZ >= 1024 ? BUFSIZ : 1024)
-#define MAX_DELIMITER_SIZE 32
+#define MAX_DELIMITER_SIZE 5
 
 struct m_getfld_state {
     unsigned char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
@@ -702,6 +702,7 @@ m_unknown(m_getfld_state_t s, FILE *iob)
     char text[MAX_DELIMITER_SIZE];
     register char *cp;
     register char *delimstr;
+    unsigned int i;
 
     enter_getfld (s, iob);
 
@@ -720,13 +721,13 @@ m_unknown(m_getfld_state_t s, FILE *iob)
 
     s->msg_style = MS_UNKNOWN;
 
-    for (c = 0, cp = text; c < 5; ++c, ++cp) {
+    for (i = 0, cp = text; i < sizeof text; ++i, ++cp) {
 	if ((*cp = Getc (s)) == EOF) {
 	    break;
 	}
     }
 
-    if (c == 5  &&  strncmp (text, "From ", 5) == 0) {
+    if (i == sizeof text  &&  strncmp (text, "From ", sizeof text) == 0) {
 	s->msg_style = MS_MBOX;
 	delimstr = "\nFrom ";
 	while ((c = Getc (s)) != '\n' && c >= 0) continue;
