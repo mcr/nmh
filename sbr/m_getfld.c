@@ -279,6 +279,7 @@ m_getfld_state_reset (m_getfld_state_t *s) {
 
 void m_getfld_state_destroy (m_getfld_state_t *s) {
     if (*s) {
+	if ((*s)->fdelim) free ((*s)->fdelim-1);
 	free (*s);
 	*s = 0;
     }
@@ -700,6 +701,7 @@ m_unknown(m_getfld_state_t s, FILE *iob)
 {
     register int c;
     char text[MAX_DELIMITER_SIZE];
+    char from[] = "From ";
     register char *cp;
     register char *delimstr;
     unsigned int i;
@@ -727,15 +729,10 @@ m_unknown(m_getfld_state_t s, FILE *iob)
 	}
     }
 
-    if (i == sizeof text  &&  strncmp (text, "From ", sizeof text) == 0) {
+    if (i == sizeof from-1  &&  strncmp (text, "From ", sizeof from-1) == 0) {
 	s->msg_style = MS_MBOX;
 	delimstr = "\nFrom ";
 	while ((c = Getc (s)) != '\n' && c >= 0) continue;
-	/* m_unknown is only called on maildrop files, and they are only
-	   read using m_getfld ().  The caller musn't try to read from
-	   the stream directly because the file position indicator was
-	   not advanced based on bytes_read, but instead on whatever
-	   was read into the message buffer. */
     } else {
 	/* not a Unix style maildrop */
 	s->readpos -= s->bytes_read;
