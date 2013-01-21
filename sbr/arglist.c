@@ -90,6 +90,7 @@ argsplit(char *command, char **file, int *argp)
 	*file = getcpy(split[0]);
 	if (argp)
 	    *argp = i;
+	free(p);
 	return argvarray;
     }
 
