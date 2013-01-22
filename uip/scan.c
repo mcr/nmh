@@ -306,7 +306,6 @@ main (int argc, char **argv)
 		fflush (stdout);
 	}
     }
-    m_getfld_state_destroy (&gstate);
 
 #ifdef LBL
     seq_save (mp);	/* because formatsbr might have made changes */
