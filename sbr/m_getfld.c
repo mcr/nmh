@@ -316,45 +316,54 @@ void m_getfld_state_destroy (m_getfld_state_t *s) {
 
 static void
 enter_getfld (m_getfld_state_t s, FILE *iob) {
-    off_t pos;
+    off_t pos = ftello (iob);
 
     /* Ugly.  The parser opens the input file multiple times, so we
-       have to always use the FILE * that's passed to m_getfld(). */
+       have to always use the FILE * that's passed to m_getfld().
+       Though this might not be necessary any more, as long as the
+       parser inits a new m_getfld_state for each file.  See comment
+       below about the readpos shift code being currently unused. */
     s->iob = iob;
 
-    pos = ftello (iob);
-
-    if (pos != 0) {
-	off_t pos_movement = pos - s->last_caller_pos; /* Can be < 0. */
-
-	if (pos_movement == 0) {
-	    pos = s->last_internal_pos;
+    if (pos != 0  ||  s->last_internal_pos != 0) {
+	if (s->last_internal_pos == 0) {
+	    s->total_bytes_read = pos;
 	} else {
-	    /* The current file stream position differs from the last
-	       one, so caller must have called ftell/o().  Or, this is
-	       the first call and the file position was not at 0. */
+	    off_t pos_movement = pos - s->last_caller_pos; /* Can be < 0. */
 
-	    if (s->readpos + pos_movement >= s->msg_buf  &&
-		s->readpos + pos_movement < s->end) {
-		/* We can shift readpos and remain within the bounds of
-		   msg_buf. */
-		s->readpos += pos_movement;
-		s->total_bytes_read += pos_movement;
+	    if (pos_movement == 0) {
 		pos = s->last_internal_pos;
 	    } else {
-		size_t num_read;
+		/* The current file stream position differs from the
+		   last one, so caller must have called ftell/o().
+		   Or, this is the first call and the file position
+		   was not at 0. */
 
-		/* This seek skips past an integral number of chunks of
-		   size MSG_INPUT_SIZE. */
-		fseeko (iob, pos / MSG_INPUT_SIZE * MSG_INPUT_SIZE, SEEK_SET);
-		num_read = fread (s->msg_buf, 1, MSG_INPUT_SIZE, iob);
-		s->readpos = s->msg_buf  +  pos % MSG_INPUT_SIZE;
-		s->end = s->msg_buf + num_read;
-		s->total_bytes_read = pos;
+		if (s->readpos + pos_movement >= s->msg_buf  &&
+		    s->readpos + pos_movement < s->end) {
+		    /* This is currently unused.  It could be used by
+		       parse_mime() if it was changed to use a global
+		       m_getfld_state. */
+		    /* We can shift readpos and remain within the
+		       bounds of msg_buf. */
+		    s->readpos += pos_movement;
+		    s->total_bytes_read += pos_movement;
+		    pos = s->last_internal_pos;
+		} else {
+		    size_t num_read;
+
+		    /* This seek skips past an integral number of
+		       chunks of size MSG_INPUT_SIZE. */
+		    fseeko (iob, pos/MSG_INPUT_SIZE * MSG_INPUT_SIZE, SEEK_SET);
+		    num_read = fread (s->msg_buf, 1, MSG_INPUT_SIZE, iob);
+		    s->readpos = s->msg_buf  +  pos % MSG_INPUT_SIZE;
+		    s->end = s->msg_buf + num_read;
+		    s->total_bytes_read = pos;
+		}
 	    }
-	}
 
-	if (s->last_internal_pos != 0) fseeko (iob, pos, SEEK_SET);
+	    fseeko (iob, pos, SEEK_SET);
+	}
     }
 
     s->bytes_read = 0;
@@ -407,11 +416,15 @@ Getc (m_getfld_state_t s) {
 
 static int
 Peek (m_getfld_state_t s) {
-    int next_char = Getc (s);
-    --s->readpos;
-    --s->bytes_read;
+    if (s->end - s->readpos < 1) {
+	if (read_more (s) == 0) {
+	    /* Pretend that we read a character.  That's what stdio does. */
+	    ++s->readpos;
+	    return EOF;
+	}
+    }
 
-    return next_char;
+    return s->readpos < s->end  ?  *s->readpos  :  EOF;
 }
 
 static int
@@ -598,7 +611,7 @@ m_getfld (m_getfld_state_t s, unsigned char name[NAMESZ], unsigned char *buf,
 	    unsigned char *bp;
 
 	    max = *bufsz-1;
-	    /* Back up and store the current position and update cnt. */
+	    /* Back up and store the current position. */
 	    bp = --s->readpos;
 	    c = s->end - s->readpos < max  ?  s->end - s->readpos  :  max;
 	    if (s->msg_style != MS_DEFAULT && c > 1) {
