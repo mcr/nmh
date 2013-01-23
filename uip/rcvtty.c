@@ -31,8 +31,6 @@
 %<(mymbox{from})%<{to}To:%14(friendly{to})%>%>%<(zero)%17(friendly{from})%>  \
 %{subject}%<{body}<<%{body}>>%>"
 
-extern m_getfld_state_t gstate;
-
 static struct swit switches[] = {
 #define	BIFFSW	0
     { "biff", 0 },
@@ -69,6 +67,8 @@ static char *format = NULL;
  * external prototypes
  */
 char *getusername(void);
+
+extern m_getfld_state_t gstate;
 
 /*
  * static prototypes
@@ -262,7 +262,6 @@ header_fd (void)
 
     /* get new format string */
     nfs = new_fs (form, format, SCANFMT);
-    m_getfld_state_init (&gstate);
     scan (stdin, 0, 0, nfs, width, 0, 0, NULL, 0L, 0);
     m_getfld_state_destroy (&gstate);
     if (newline)

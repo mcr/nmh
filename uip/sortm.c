@@ -365,16 +365,15 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
     register struct tws *tw;
     register char *datecomp = NULL, *subjcomp = NULL;
     register FILE *in;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
     if ((in = fopen (msgnam = m_name (msg), "r")) == NULL) {
 	admonish (msgnam, "unable to read message");
 	return (0);
     }
-    m_getfld_state_init (&gstate);
     for (compnum = 1;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (gstate, nam, buf, &bufsz, in)) {
+	switch (state = m_getfld (&gstate, nam, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
 	    compnum++;
@@ -382,7 +381,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 		datecomp = add (buf, datecomp);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, nam, buf, &bufsz, in);
+		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
 		    datecomp = add (buf, datecomp);
 		}
 		if (!subjsort || subjcomp)
@@ -391,7 +390,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 		subjcomp = add (buf, subjcomp);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, nam, buf, &bufsz, in);
+		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
 		    subjcomp = add (buf, subjcomp);
 		}
 		if (datecomp)
@@ -400,7 +399,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 		/* just flush this guy */
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, nam, buf, &bufsz, in);
+		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
 		}
 	    }
 	    continue;

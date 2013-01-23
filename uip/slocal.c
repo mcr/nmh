@@ -716,7 +716,7 @@ parse (int fd)
     char name[NAMESZ], field[BUFSIZ];
     struct pair *p, *q;
     FILE  *in;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
     if (parsed++)
 	return 0;
@@ -740,16 +740,15 @@ parse (int fd)
      * Scan the headers of the message and build
      * a lookup table.
      */
-    m_getfld_state_init (&gstate);
     for (i = 0;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (gstate, name, field, &fieldsz, in)) {
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, in)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		lp = add (field, NULL);
 		while (state == FLDPLUS) {
 		    fieldsz = sizeof field;
-		    state = m_getfld (gstate, name, field, &fieldsz, in);
+		    state = m_getfld (&gstate, name, field, &fieldsz, in);
 		    lp = add (field, lp);
 		}
 		for (p = hdrs; p->p_name; p++) {
@@ -1415,7 +1414,7 @@ suppress_duplicates (int fd, char *file)
     datum key, value;
     DBM *db;
     FILE *in;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
     if ((fd1 = dup (fd)) == -1)
 	return -1;
@@ -1425,10 +1424,9 @@ suppress_duplicates (int fd, char *file)
     }
     rewind (in);
 
-    m_getfld_state_init (&gstate);
     for (;;) {
 	int bufsz = sizeof buf;
-	state = m_getfld (gstate, name, buf, &bufsz, in);
+	state = m_getfld (&gstate, name, buf, &bufsz, in);
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
@@ -1436,7 +1434,7 @@ suppress_duplicates (int fd, char *file)
 		if (mh_strcasecmp (name, "Message-ID")) {
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;
-			state = m_getfld (gstate, name, buf, &bufsz, in);
+			state = m_getfld (&gstate, name, buf, &bufsz, in);
 		    }
 		    continue;
 		}
@@ -1444,7 +1442,7 @@ suppress_duplicates (int fd, char *file)
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, name, buf, &bufsz, in);
+		    state = m_getfld (&gstate, name, buf, &bufsz, in);
 		    cp = add (buf, cp);
 		}
 		key.dptr = trimcpy (cp);

@@ -46,8 +46,6 @@
 # define SASLminc(a)  0
 #endif
 
-extern m_getfld_state_t gstate;
-
 static struct swit switches[] = {
 #define	AUDSW                      0
     { "audit audit-file", 0 },
@@ -172,6 +170,8 @@ static FILE *in;
  * prototypes
  */
 char *map_name(char *);
+
+extern m_getfld_state_t gstate;
 
 static void inc_done(int) NORETURN;
 static int pop_action(char *);
@@ -589,7 +589,6 @@ go_to_it:
 	fflush (stdout);
     }
 
-    m_getfld_state_init (&gstate);
 
     /*
      * Get the mail from a POP server
@@ -724,7 +723,7 @@ go_to_it:
      * Get the mail from file (usually mail spool)
      */
     if (inc_type == INC_FILE && Maildir == NULL) {
-	m_unknown (gstate, in);		/* the MAGIC invocation... */
+	m_unknown (&gstate, in);		/* the MAGIC invocation... */
 	hghnum = msgnum = mp->hghmsg;
 	for (;;) {
 	    /*

@@ -938,14 +938,13 @@ check_draft (char *msgnam)
     int	state;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
     if ((fp = fopen (msgnam, "r")) == NULL)
 	return 0;
-    m_getfld_state_init (&gstate);
     for (;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (gstate, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	    case FLD:
 	    case FLDPLUS:
 		/*
@@ -959,7 +958,7 @@ check_draft (char *msgnam)
 		}
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, name, buf, &bufsz, fp);
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		}
 		break;
 
@@ -974,7 +973,7 @@ check_draft (char *msgnam)
 			}
 
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, name, buf, &bufsz, fp);
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		} while (state == BODY);
 		/* and fall... */
 

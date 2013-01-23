@@ -180,9 +180,9 @@ maildrops:
 
 Usage
 =====
-    m_getfld_state_t gstate;
-    m_getfld_state_init (&gstate);
-    int state = m_getfld (gstate, ...);
+    m_getfld_state_t gstate = 0;
+       ...
+    int state = m_getfld (&gstate, ...);
        ...
     m_getfld_state_destroy (&gstate);
 
@@ -255,33 +255,42 @@ struct m_getfld_state {
     int state;
 };
 
+static
 void
-m_getfld_state_init (m_getfld_state_t *s) {
-    *s = (m_getfld_state_t) mh_xmalloc(sizeof (struct m_getfld_state));
-    (*s)->readpos = (*s)->end = (*s)->msg_buf;
-    (*s)->bytes_read = (*s)->total_bytes_read = 0;
-    (*s)->last_caller_pos = (*s)->last_internal_pos = 0;
-    /* (*s)->iob gets loaded on every call to m_getfld()/m_unknown(). */
-    (*s)->pat_map = NULL;
-    (*s)->msg_style = MS_DEFAULT;
-    (*s)->msg_delim = "";
-    (*s)->fdelim = (*s)->delimend = (*s)->edelim = NULL;
-    (*s)->fdelimlen = (*s)->edelimlen = 0;
-    (*s)->eom_action = NULL;
-    (*s)->state = FLD;
+m_getfld_state_init (m_getfld_state_t *gstate) {
+    m_getfld_state_t s;
+
+    s = *gstate = (m_getfld_state_t) mh_xmalloc(sizeof (struct m_getfld_state));
+    s->readpos = s->end = s->msg_buf;
+    s->bytes_read = s->total_bytes_read = 0;
+    s->last_caller_pos = s->last_internal_pos = 0;
+    /* s->iob gets loaded on every call to m_getfld()/m_unknown(). */
+    s->pat_map = NULL;
+    s->msg_style = MS_DEFAULT;
+    s->msg_delim = "";
+    s->fdelim = s->delimend = s->edelim = NULL;
+    s->fdelimlen = s->edelimlen = 0;
+    s->eom_action = NULL;
+    s->state = FLD;
 }
 
 /* scan() needs to force a state an initial state of FLD for each message. */
 void
-m_getfld_state_reset (m_getfld_state_t *s) {
-    (*s)->state = FLD;
+m_getfld_state_reset (m_getfld_state_t *gstate) {
+    if (! *gstate) {
+	m_getfld_state_init (gstate);
+    }
+
+    (*gstate)->state = FLD;
 }
 
-void m_getfld_state_destroy (m_getfld_state_t *s) {
-    if (*s) {
-	if ((*s)->fdelim) free ((*s)->fdelim-1);
-	free (*s);
-	*s = 0;
+void m_getfld_state_destroy (m_getfld_state_t *gstate) {
+    m_getfld_state_t s = *gstate;
+
+    if (s) {
+	if (s->fdelim) free (s->fdelim-1);
+	free (s);
+	*gstate = 0;
     }
 }
 
@@ -315,14 +324,22 @@ void m_getfld_state_destroy (m_getfld_state_t *s) {
 
 
 static void
-enter_getfld (m_getfld_state_t s, FILE *iob) {
+enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
+    m_getfld_state_t s;
     off_t pos = ftello (iob);
 
-    /* Ugly.  The parser opens the input file multiple times, so we
-       have to always use the FILE * that's passed to m_getfld().
-       Though this might not be necessary any more, as long as the
-       parser inits a new m_getfld_state for each file.  See comment
-       below about the readpos shift code being currently unused. */
+    if (! *gstate) {
+	m_getfld_state_init (gstate);
+    }
+    s = *gstate;
+    s->bytes_read = 0;
+
+    /* Ugly.  The parser (used to) open the input file multiple times,
+       so we have to always use the FILE * that's passed to
+       m_getfld().  Though this might not be necessary any more, as
+       long as the parser inits a new m_getfld_state for each file.
+       See comment below about the readpos shift code being currently
+       unused. */
     s->iob = iob;
 
     if (pos != 0  ||  s->last_internal_pos != 0) {
@@ -365,8 +382,6 @@ enter_getfld (m_getfld_state_t s, FILE *iob) {
 	    fseeko (iob, pos, SEEK_SET);
 	}
     }
-
-    s->bytes_read = 0;
 }
 
 static void
@@ -439,13 +454,15 @@ Ungetc (int c, m_getfld_state_t s) {
 
 
 int
-m_getfld (m_getfld_state_t s, unsigned char name[NAMESZ], unsigned char *buf,
-          int *bufsz, FILE *iob)
+m_getfld (m_getfld_state_t *gstate, unsigned char name[NAMESZ],
+          unsigned char *buf, int *bufsz, FILE *iob)
 {
+    m_getfld_state_t s;
     register unsigned char *cp;
     register int max, n, c;
 
-    enter_getfld (s, iob);
+    enter_getfld (gstate, iob);
+    s = *gstate;
 
     if ((c = Getc(s)) < 0) {
 	*bufsz = *buf = 0;
@@ -710,8 +727,9 @@ m_getfld (m_getfld_state_t s, unsigned char name[NAMESZ], unsigned char *buf,
 
 
 void
-m_unknown(m_getfld_state_t s, FILE *iob)
+m_unknown(m_getfld_state_t *gstate, FILE *iob)
 {
+    m_getfld_state_t s;
     register int c;
     char text[MAX_DELIMITER_SIZE];
     char from[] = "From ";
@@ -719,7 +737,8 @@ m_unknown(m_getfld_state_t s, FILE *iob)
     register char *delimstr;
     unsigned int i;
 
-    enter_getfld (s, iob);
+    enter_getfld (gstate, iob);
+    s = *gstate;
 
 /*
  * Figure out what the message delimitter string is for this

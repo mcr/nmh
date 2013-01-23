@@ -52,17 +52,16 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
     char name[NAMESZ], field[BUFSIZ];
     register struct node *np;
     register struct procstr *ps;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
     if (npp == NULL && (npp = opp) == NULL) {
 	admonish (NULL, "bug: readconfig called but pump not primed");
 	return;
     }
 
-    m_getfld_state_init (&gstate);
     for (;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (gstate, name, field, &fieldsz, ib)) {
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, ib)) {
 	    case FLD:
 	    case FLDPLUS:
 		np = (struct node *) mh_xmalloc (sizeof(*np));
@@ -73,7 +72,7 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 		    cp = getcpy (field);
 		    while (state == FLDPLUS) {
 			fieldsz = sizeof field;
-			state = m_getfld (gstate, name, field, &fieldsz, ib);
+			state = m_getfld (&gstate, name, field, &fieldsz, ib);
 			cp = add (field, cp);
 		    }
 		    np->n_field = trimcpy (cp);

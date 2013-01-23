@@ -322,7 +322,7 @@ main (int argc, char **argv)
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *in, *out;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -579,17 +579,16 @@ main (int argc, char **argv)
 
     hdrtab = msgstate == NORMAL ? NHeaders : RHeaders;
 
-    m_getfld_state_init (&gstate);
     for (compnum = 1;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (gstate, name, buf, &bufsz, in)) {
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		compnum++;
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, name, buf, &bufsz, in);
+		    state = m_getfld (&gstate, name, buf, &bufsz, in);
 		    cp = add (buf, cp);
 		}
 		putfmt (name, cp, out);
@@ -603,7 +602,7 @@ main (int argc, char **argv)
 		fprintf (out, "\n%s", buf);
 		while (state == BODY) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, name, buf, &bufsz, in);
+		    state = m_getfld (&gstate, name, buf, &bufsz, in);
 		    fputs (buf, out);
 		}
 		break;

@@ -943,14 +943,13 @@ plist
     register char *bp;
     char buf[BUFSIZ], name[NAMESZ];
     register struct tws *tw;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
     NMH_UNUSED (stop);
 
     fseek (fp, start, SEEK_SET);
-    m_getfld_state_init (&gstate);
     for (bp = NULL;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (gstate, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		if (bp != NULL)
@@ -958,7 +957,7 @@ plist
 		bp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, name, buf, &bufsz, fp);
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		    bp = add (buf, bp);
 		}
 		if (!mh_strcasecmp (name, n->n_datef))

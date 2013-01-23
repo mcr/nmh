@@ -173,7 +173,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
     char *cp, *scanl, name[NAMESZ], tmpbuf[SBUFSIZ];
     register struct comp *cptr;
     FILE *out;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
     if (!(out = fopen (drft, "w")))
 	adios (drft, "unable to create");
@@ -193,10 +193,9 @@ rcvdistout (FILE *inb, char *form, char *addrs)
     if (cptr)
 	cptr->c_text = addrs;
 
-    m_getfld_state_init (&gstate);
     for (;;) {
 	int msg_count = SBUFSIZ;
-	switch (state = m_getfld (gstate, name, tmpbuf, &msg_count, inb)) {
+	switch (state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb)) {
 	    case FLD: 
 	    case FLDPLUS: 
 	    	i = fmt_addcomptext(name, tmpbuf);
@@ -204,7 +203,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 		    char_read += msg_count;
 		    while (state == FLDPLUS) {
 			msg_count = SBUFSIZ;
-			state = m_getfld (gstate, name, tmpbuf, &msg_count, inb);
+			state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
 			fmt_appendcomp(i, name, tmpbuf);
 			char_read += msg_count;
 		    }
@@ -212,7 +211,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 
 		while (state == FLDPLUS) {
 		    msg_count = SBUFSIZ;
-		    state = m_getfld (gstate, name, tmpbuf, &msg_count, inb);
+		    state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
 		}
 		break;
 

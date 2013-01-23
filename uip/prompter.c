@@ -84,7 +84,7 @@ main (int argc, char **argv)
     char **arguments, **argp;
     FILE *in, *out;
     char *tfile = NULL;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -209,10 +209,9 @@ main (int argc, char **argv)
     /*
      * Loop through the lines of the draft skeleton.
      */
-    m_getfld_state_init (&gstate);
     for (;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (gstate, name, field, &fieldsz, in)) {
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, in)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		/*
@@ -229,7 +228,7 @@ main (int argc, char **argv)
 		    fprintf (out, "%s:%s", name, field);
 		    while (state == FLDPLUS) {
 			fieldsz = sizeof field;
-			state = m_getfld (gstate, name, field, &fieldsz, in);
+			state = m_getfld (&gstate, name, field, &fieldsz, in);
 			printf ("%s", field);
 			fprintf (out, "%s", field);
 		    }
@@ -288,7 +287,7 @@ abort:
 			    printf ("%s", field);
 		    } while (state == BODY &&
 			    (fieldsz = sizeof field,
-			     state = m_getfld (gstate, name, field, &fieldsz, in)));
+			     state = m_getfld (&gstate, name, field, &fieldsz, in)));
 		    if (prepend || !body)
 			break;
 		    else

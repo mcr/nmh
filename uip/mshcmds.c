@@ -2439,7 +2439,7 @@ is_nontext (int msgnum)
 
     for (;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (gstate, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	case FLD:
 	case FLDPLUS:
 	    /*
@@ -2452,7 +2452,7 @@ is_nontext (int msgnum)
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, name, buf, &bufsz, fp);
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		bp = cp;
@@ -2556,7 +2556,7 @@ out:
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (gstate, name, buf, &bufsz, fp);
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		for (bp = cp; isspace (*bp); bp++)
@@ -2582,7 +2582,7 @@ out:
 	     */
 	    while (state == FLDPLUS) {
 		bufsz = sizeof buf;
-		state = m_getfld (gstate, name, buf, &bufsz, fp);
+		state = m_getfld (&gstate, name, buf, &bufsz, fp);
 	    }
 	    break;
 
@@ -2751,14 +2751,14 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 
     for (;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (gstate, name, buf, &bufsz, zp)) {
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, zp)) {
 	    case FLD: 
 	    case FLDPLUS: 
 		if (!mh_strcasecmp (name, datesw)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;
-			state = m_getfld (gstate, name, buf, &bufsz, zp);
+			state = m_getfld (&gstate, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    if ((tw = dparsetime (bp)) == NULL)
@@ -2776,7 +2776,7 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;
-			state = m_getfld (gstate, name, buf, &bufsz, zp);
+			state = m_getfld (&gstate, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    msgp->m_scanl = sosmash(subjsw, bp);
@@ -2787,7 +2787,7 @@ get_fields (char *datesw, char *subjsw, int msgnum, struct Msg *msgp)
 		} else {
 		    while (state == FLDPLUS) {	/* flush this one */
 			bufsz = sizeof buf;
-			state = m_getfld (gstate, name, buf, &bufsz, zp);
+			state = m_getfld (&gstate, name, buf, &bufsz, zp);
 		    }
 		}
 		continue;

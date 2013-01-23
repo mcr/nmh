@@ -591,7 +591,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
     char subject[BUFSIZ];
     char name[NAMESZ], partnum[BUFSIZ];
     FILE *in;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
     if ((in = fopen (drft, "r")) == NULL)
 	adios (drft, "unable to open for reading");
@@ -603,10 +603,9 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
      * Scan through the message and examine the various header fields,
      * as well as locate the beginning of the message body.
      */
-    m_getfld_state_init (&gstate);
     for (compnum = 1;;) {
 	int bufsz = sizeof buffer;
-	switch (state = m_getfld (gstate, name, buffer, &bufsz, in)) {
+	switch (state = m_getfld (&gstate, name, buffer, &bufsz, in)) {
 	    case FLD:
 	    case FLDPLUS:
 	        compnum++;
@@ -617,7 +616,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 		if (!mh_strcasecmp (name, "Message-ID")) {
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buffer;
-			state = m_getfld (gstate, name, buffer, &bufsz, in);
+			state = m_getfld (&gstate, name, buffer, &bufsz, in);
 		    }
 		} else if (uprf (name, XXX_FIELD_PRF)
 			|| !mh_strcasecmp (name, VRSN_FIELD)
@@ -643,7 +642,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 		    dp = add (concat (name, ":", buffer, NULL), dp);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buffer;
-			state = m_getfld (gstate, name, buffer, &bufsz, in);
+			state = m_getfld (&gstate, name, buffer, &bufsz, in);
 			dp = add (buffer, dp);
 		    }
 		} else {
@@ -654,7 +653,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 		    cp = add (concat (name, ":", buffer, NULL), cp);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buffer;
-			state = m_getfld (gstate, name, buffer, &bufsz, in);
+			state = m_getfld (&gstate, name, buffer, &bufsz, in);
 			cp = add (buffer, cp);
 		    }
 		}

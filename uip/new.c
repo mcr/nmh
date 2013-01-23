@@ -97,7 +97,7 @@ get_msgnums(char *folder, char *sequences[])
     char name[NAMESZ], field[BUFSIZ];
     char *cp;
     char *msgnums = NULL, *this_msgnums, *old_msgnums;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
     /* no sequences file -> no messages */
     if (fp == NULL) {
@@ -105,17 +105,16 @@ get_msgnums(char *folder, char *sequences[])
     }
 
     /* copied from seq_read.c:seq_public */
-    m_getfld_state_init (&gstate);
     for (;;) {
 	int fieldsz = sizeof field;
-	switch (state = m_getfld (gstate, name, field, &fieldsz, fp)) {
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, fp)) {
             case FLD:
             case FLDPLUS:
                 if (state == FLDPLUS) {
                     cp = getcpy (field);
                     while (state == FLDPLUS) {
 			fieldsz = sizeof field;
-			state = m_getfld (gstate, name, field, &fieldsz, fp);
+			state = m_getfld (&gstate, name, field, &fieldsz, fp);
                         cp = add (field, cp);
                     }
 

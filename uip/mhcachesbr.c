@@ -376,18 +376,17 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
     int	state;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
-    m_getfld_state_t gstate;
+    m_getfld_state_t gstate = 0;
 
     if (!(fp = lkfopen (mapfile, "r")))
 	return NOTOK;
 
-    m_getfld_state_init (&gstate);
     for (;;) {
 	int result;
 	char *cp, *dp;
 	int bufsz = sizeof buf;
 
-	switch (state = m_getfld (gstate, name, buf, &bufsz, fp)) {
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	    case FLD:
 	    case FLDPLUS:
 	        strncpy (mapname, name, namelen);
@@ -397,7 +396,7 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
 		    cp = add (buf, NULL);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;
-			state = m_getfld (gstate, name, buf, &bufsz, fp);
+			state = m_getfld (&gstate, name, buf, &bufsz, fp);
 			cp = add (buf, cp);
 		    }
 		}

@@ -51,12 +51,12 @@ static struct swit switches[] = {
 extern struct msgs *fmt_current_folder;	
 #endif
 
-extern m_getfld_state_t gstate;
-
 /*
  * prototypes
  */
 void clear_screen(void);  /* from termsbr.c */
+
+extern m_getfld_state_t gstate;
 
 
 int
@@ -190,8 +190,7 @@ main (int argc, char **argv)
 	    printf ("FOLDER %s\t%s\n", file, dtimenow (1));
 	}
 
-	m_getfld_state_init (&gstate);
-	m_unknown (gstate, in);
+	m_unknown (&gstate, in);
 	for (msgnum = 1; ; ++msgnum) {
 	    state = scan (in, msgnum, -1, nfs, width, 0, 0,
 		    hdrflag ? file : NULL, 0L, 1);
@@ -283,7 +282,6 @@ main (int argc, char **argv)
 		}
 	    }
 
-	    m_getfld_state_init (&gstate);
 	    switch (state = scan (in, msgnum, 0, nfs, width,
 			msgnum == mp->curmsg, unseen,
 			folder, 0L, 1)) {
