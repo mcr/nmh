@@ -45,7 +45,7 @@ expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 
 cat > "$expected" <<EOF
-  11  03/02 David ﬆ Hubbins    Spin̈al Tap → Tap into America!<<Things are
+  11  03/02 David ﬆ Hubbins    Spin̈al Tap → Tap into America!<<Things are look
 EOF
 
 scan -width 80 +inbox 11 > $actual || exit 1

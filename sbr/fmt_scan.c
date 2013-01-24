@@ -114,8 +114,8 @@ cpnumber(char **dest, int num, unsigned int wid, char fill, size_t n) {
  * no more than n bytes are copied
  */
 static void
-cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n,
-	  size_t max) {
+cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
+	  char *epmax) {
     int remaining;     /* remaining output width available */
     int c, ljust;
     int end;           /* number of input bytes remaining in str */
@@ -126,8 +126,6 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n,
 #endif
     char *sp;          /* current position in source string */
     char *cp = *dest;  /* current position in destination string */
-    char *ep = cp + n; /* end of destination buffer based on desired width */
-    char *epmax = cp + max; /* true end of destination buffer */
     int prevCtrl = 1;
 
     /* get alignment */
@@ -137,19 +135,29 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n,
 	ljust++;
     }
     if ((sp = (str))) {
+#ifdef MULTIBYTE_SUPPORT
 	mbtowc(NULL, NULL, 0); /* reset shift state */
+#endif
 	end = strlen(str);
 	while (*sp && remaining > 0 && end > 0) {
 #ifdef MULTIBYTE_SUPPORT
 	    char_len = mbtowc(&wide_char, sp, end);
 
-	    /* Account for multibyte characters taking only one character's
-	       width of output. */
-	    if (char_len > 1  &&  epmax - ep >= char_len - 1) {
-		ep += char_len - 1;
+	    if (char_len <= 0)
+	    	break;
+
+	    w = wcwidth(wide_char);
+
+	    /*
+	     * Multibyte characters can have a variable number of column
+	     * widths, so use the column width to bump the end pointer when
+	     * appropriate.
+	     */
+	    if (char_len > 1 && epmax - *ep >= char_len - w) {
+		*ep += char_len - w;
 	    }
 
-	    if (char_len <= 0 || (cp + char_len > ep))
+	    if (cp + w > *ep)
 		break;
 
 	    end -= char_len;
@@ -176,7 +184,6 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n,
 	    prevCtrl = 0;
 
 #ifdef MULTIBYTE_SUPPORT
-	    w = wcwidth(wide_char);
 	    if (w >= 0 && remaining >= w) {
 		strncpy(cp, sp, char_len);
 		cp += char_len;
@@ -191,9 +198,10 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n,
     }
 
     if (ljust) {
-	if (cp + remaining > ep)
-	    remaining = ep - cp;
-	ep = cp + remaining;
+        char *endfield;
+	if (cp + remaining > *ep)
+	    remaining = *ep - cp;
+	endfield = cp + remaining;
 	if (remaining > 0) {
 	    /* copy string to the right */
 	    while (--cp >= *dest)
@@ -203,22 +211,22 @@ cptrimmed(char **dest, char *str, unsigned int wid, char fill, size_t n,
 	    for (c=remaining; c>0; c--)
 		*cp-- = fill;
 	}
-	*dest = ep;
+	*dest = endfield;
     } else {
 	/* pad remaining space */
-	while (remaining-- > 0 && cp < ep)
+	while (remaining-- > 0 && cp < *ep)
 		*cp++ = fill;
 	*dest = cp;
     }
 }
 
 static void
-cpstripped (char **dest, char *end, char *max, char *str)
+cpstripped (char **dest, char **end, char *max, char *str)
 {
     int prevCtrl = 1;	/* This is 1 so we strip out leading spaces */
     int len;
 #ifdef MULTIBYTE_SUPPORT
-    int char_len;
+    int char_len, w;
     wchar_t wide_char;
 #endif /* MULTIBYTE_SUPPORT */
 
@@ -236,17 +244,21 @@ cpstripped (char **dest, char *end, char *max, char *str)
      * then deal with that here.
      */
 
-    while (*str != '\0' && len > 0 && *dest < end) {
+    while (*str != '\0' && len > 0 && *dest < *end) {
 #ifdef MULTIBYTE_SUPPORT
     	char_len = mbtowc(&wide_char, str, len);
+	w = wcwidth(wide_char);
 
-	/* Account for multibyte characters taking only one character's
-	   width of output. */
-	if (char_len > 1  &&  max - end >= char_len - 1) {
-	    end += char_len - 1;
+	/*
+	 * Account for multibyte characters, and increment the end pointer
+	 * by the number of "extra" bytes in this character.  That's the
+	 * character length (char_len) minus the column width (w).
+	 */
+	if (char_len > 1  &&  max - *end >= char_len - w) {
+	    *end += char_len - w;
 	}
 
-	if (char_len <= 0 || *dest + char_len > end)
+	if (char_len <= 0 || *dest + char_len > *end)
 	    break;
 
 	len -= char_len;
@@ -384,11 +396,11 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	switch (fmt->f_type) {
 
 	case FT_COMP:
-	    cpstripped (&cp, ep, scanl + max - 1, fmt->f_comp->c_text);
+	    cpstripped (&cp, &ep, scanl + max - 1, fmt->f_comp->c_text);
 	    break;
 	case FT_COMPF:
-	    cptrimmed (&cp, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill,
-		       ep - cp, scanl - cp + max - 1);
+	    cptrimmed (&cp, &ep, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill,
+		       scanl + max - 1);
 	    break;
 
 	case FT_LIT:
@@ -411,11 +423,11 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	    break;
 
 	case FT_STR:
-	    cpstripped (&cp, ep, scanl + max - 1, str);
+	    cpstripped (&cp, &ep, scanl + max - 1, str);
 	    break;
 	case FT_STRF:
-	    cptrimmed (&cp, str, fmt->f_width, fmt->f_fill, ep - cp,
-		       scanl - cp + max - 1);
+	    cptrimmed (&cp, &ep, str, fmt->f_width, fmt->f_fill, 
+		       scanl + max - 1);
 	    break;
 	case FT_STRLIT:
 	    sp = str;
@@ -939,7 +951,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 			*cp++ = ' ';
 		}
 	    }
-	    cpstripped (&cp, ep, scanl + max - 1, lp);
+	    cpstripped (&cp, &ep, scanl + max - 1, lp);
 	    }
 	    break;
 

@@ -34,6 +34,8 @@ NEW FEATURES
 - pick(1) now decodes MIME-encoded header fields before searching.
 - The VISUAL and EDITOR environment variables are now supported as fallbacks
   if the user does not configure an editor entry in their profile.
+- The format engine (mh_format(5)) now properly accounts for multibyte
+  characters when accounting for column widths.
 
 
 ----------------------------
