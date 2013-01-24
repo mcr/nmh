@@ -27,8 +27,9 @@ TESTPASS=testuserpass
 testport=65413
 
 HOME="${MH_TEST_DIR}"; export HOME
-echo "default login ${TESTUSER} password ${TESTPASS}" > ${HOME}/.netrc
-chmod 600 ${HOME}/.netrc
+netrc="${HOME}/.netrc"
+echo "default login ${TESTUSER} password ${TESTPASS}" > "$netrc"
+chmod 600 "$netrc"
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err
@@ -73,6 +74,6 @@ run_test "inc -file $MH_TEST_DIR/inc.mbox -truncate" \
   11+ 12/17 No Such User       Hello<<Hey man, how's it going? . Hope you're do"
 
 check $testmessage `mhpath +inbox 11`
-rm -f "$MH_TEST_DIR/inc.mbox" "$MH_TEST_DIR/.inc.map"
+rm -f "$MH_TEST_DIR/inc.mbox" "$MH_TEST_DIR/.inc.map" "$netrc"
 
 exit ${failed:-0}
