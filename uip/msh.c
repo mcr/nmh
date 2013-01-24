@@ -164,7 +164,7 @@ void seq_setcur (struct msgs *, int);
 void padios (char *, char *, ...);
 void padvise (char *, char *, ...);
 
-extern m_getfld_state_t gstate;
+extern m_getfld_state_t gstate;	/* use the gstate in scansbr.c */
 
 
 /*
@@ -352,7 +352,7 @@ main (int argc, char **argv)
     display_info (id > 0 ? scansw : 0);
 
     msh (id > 0 ? scansw : 0);
-    m_getfld_state_destroy (&gstate);
+    scan_finished ();
 
     m_reset ();
     
@@ -716,7 +716,7 @@ setup (char *file)
     mp->msgattrs[0] = getcpy ("unseen");
     mp->msgattrs[1] = NULL;
 
-    m_unknown (&gstate, fp);		/* the MAGIC invocation */
+    scan_detect_mbox_style (fp);		/* the MAGIC invocation */
     if (fmsh) {
 	free (fmsh);
 	fmsh = NULL;
@@ -839,7 +839,7 @@ msh_ready (int msgnum, int full)
 	return yp;
     }
 
-    m_eomsbr (gstate, (int (*)()) 0);	/* XXX */
+    scan_eom_action ((int (*)()) 0);	/* XXX */
     fseek (fp, Msgs[msgnum].m_start, SEEK_SET);
     return fp;
 }

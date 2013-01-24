@@ -14,8 +14,6 @@
 #include <h/tws.h>
 #include <h/utils.h>
 
-m_getfld_state_t gstate;
-
 #define MAXSCANL 256		/* longest possible scan line */
 
 /*
@@ -38,6 +36,7 @@ static struct comp **used_buf = 0;	/* stack for comp that use buffers */
 static int dat[5];			/* aux. data for format routine    */
 
 char *scanl = 0;			/* text of most recent scanline    */
+m_getfld_state_t gstate;		/* for access by msh */
 
 #define DIEWRERR() adios (scnmsg, "write error on")
 
@@ -380,3 +379,18 @@ mh_fputs(char *s, FILE *stream)
     return (0);
 }
 
+/* The following three functions allow access to the global gstate above. */
+void
+scan_finished () {
+    m_getfld_state_destroy (&gstate);
+}
+
+void
+scan_detect_mbox_style (FILE *f) {
+    m_unknown (&gstate, f);
+}
+
+void
+scan_eom_action (int (*action)()) {
+    m_eomsbr (gstate, action);
+}

@@ -51,7 +51,7 @@ static int process (int, char *, int, char **);
 static void copy_message (int, FILE *);
 static void copy_digest (int, FILE *);
 
-extern m_getfld_state_t gstate;
+extern m_getfld_state_t gstate;	/* use the gstate in scansbr.c */
 
 void
 forkcmd (char **args, char *pgm)
@@ -986,7 +986,7 @@ forw (char *proc, char *filter, int vecp, char **vec)
 			args[i++] = getcpy (m_name (msgnum));
 		args[i] = NULL;
 		mhlsbr (i, args, mhl_action);
-		m_eomsbr (gstate, (int (*) ()) 0);
+		scan_eom_action ((int (*) ()) 0);
 		fclose (stdout);
 		_exit (0);
 
@@ -2307,7 +2307,7 @@ finish: ;
 	if (mp->numsel == 1 && headersw)
 	    show (mp->lowsel);
 	mhlsbr (vecp, vec, mhl_action);
-	m_eomsbr (gstate, (int (*)()) 0);
+	scan_eom_action ((int (*)()) 0);
 	while (msgp < vecp)
 	    free (vec[msgp++]);
     } else {
@@ -2379,7 +2379,7 @@ mhl_action (char *name)
 
     mhlfp = msh_ready (msgnum, 1);
     if (!fmsh)
-	m_eomsbr (gstate, eom_action);
+	scan_eom_action (eom_action);
 
     return mhlfp;
 }

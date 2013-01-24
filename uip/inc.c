@@ -171,8 +171,6 @@ static FILE *in;
  */
 char *map_name(char *);
 
-extern m_getfld_state_t gstate;
-
 static void inc_done(int) NORETURN;
 static int pop_action(char *);
 static int pop_pack(char *);
@@ -723,7 +721,7 @@ go_to_it:
      * Get the mail from file (usually mail spool)
      */
     if (inc_type == INC_FILE && Maildir == NULL) {
-	m_unknown (&gstate, in);		/* the MAGIC invocation... */
+	scan_detect_mbox_style (in);		/* the MAGIC invocation... */
 	hghnum = msgnum = mp->hghmsg;
 	for (;;) {
 	    /*
@@ -890,7 +888,7 @@ go_to_it:
 	free (Maildir); /* From now on Maildir is just a flag - don't dref! */
     }
 
-    m_getfld_state_destroy (&gstate);
+    scan_finished ();
 
     if (incerr < 0) {		/* error */
 	if (locked) {

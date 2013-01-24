@@ -257,14 +257,14 @@ struct m_getfld_state {
 
 static
 void
-m_getfld_state_init (m_getfld_state_t *gstate) {
+m_getfld_state_init (m_getfld_state_t *gstate, FILE *iob) {
     m_getfld_state_t s;
 
     s = *gstate = (m_getfld_state_t) mh_xmalloc(sizeof (struct m_getfld_state));
     s->readpos = s->end = s->msg_buf;
     s->bytes_read = s->total_bytes_read = 0;
     s->last_caller_pos = s->last_internal_pos = 0;
-    /* s->iob gets loaded on every call to m_getfld()/m_unknown(). */
+    s->iob = iob;
     s->pat_map = NULL;
     s->msg_style = MS_DEFAULT;
     s->msg_delim = "";
@@ -277,11 +277,9 @@ m_getfld_state_init (m_getfld_state_t *gstate) {
 /* scan() needs to force a state an initial state of FLD for each message. */
 void
 m_getfld_state_reset (m_getfld_state_t *gstate) {
-    if (! *gstate) {
-	m_getfld_state_init (gstate);
+    if (*gstate) {
+	(*gstate)->state = FLD;
     }
-
-    (*gstate)->state = FLD;
 }
 
 void m_getfld_state_destroy (m_getfld_state_t *gstate) {
@@ -329,17 +327,17 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
     off_t pos = ftello (iob);
 
     if (! *gstate) {
-	m_getfld_state_init (gstate);
+	m_getfld_state_init (gstate, iob);
     }
     s = *gstate;
     s->bytes_read = 0;
 
-    /* Ugly.  The parser (used to) open the input file multiple times,
-       so we have to always use the FILE * that's passed to
-       m_getfld().  Though this might not be necessary any more, as
-       long as the parser inits a new m_getfld_state for each file.
-       See comment below about the readpos shift code being currently
-       unused. */
+    /* This is ugly and no longer necessary, but is retained just in
+       case it's needed again.  The parser used to open the input file
+       multiple times, so we had to always use the FILE * that's
+       passed to m_getfld().  Now the parser inits a new
+       m_getfld_state for each file.  See comment below about the
+       readpos shift code being currently unused. */
     s->iob = iob;
 
     if (pos != 0  ||  s->last_internal_pos != 0) {

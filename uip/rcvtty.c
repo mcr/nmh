@@ -68,8 +68,6 @@ static char *format = NULL;
  */
 char *getusername(void);
 
-extern m_getfld_state_t gstate;
-
 /*
  * static prototypes
  */
@@ -263,7 +261,7 @@ header_fd (void)
     /* get new format string */
     nfs = new_fs (form, format, SCANFMT);
     scan (stdin, 0, 0, nfs, width, 0, 0, NULL, 0L, 0);
-    m_getfld_state_destroy (&gstate);
+    scan_finished ();
     if (newline)
         write (fd, "\n\r", 2);
     write (fd, scanl, strlen (scanl));
