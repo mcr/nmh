@@ -103,6 +103,7 @@ a.out.dSYM/
 /test/fakepop
 /test/getfullname
 /test/getfqdn
+/test/getcwidth
 
 # Removed by mostlyclean:
 *.o

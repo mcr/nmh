@@ -84,7 +84,8 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/cleanup ## The "cleanup" test should always be last.
 
 check_SCRIPTS = test/common.sh
-check_PROGRAMS = test/getfullname test/getfqdn test/fakepop test/fakesmtp
+check_PROGRAMS = test/getfullname test/getfqdn test/fakepop test/fakesmtp \
+		 test/getcwidth
 DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 
 ##
