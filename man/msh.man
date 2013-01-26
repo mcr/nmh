@@ -1,4 +1,4 @@
-.TH MSH %manext1% "November 6, 2012" "%nmhversion%"
+.TH MSH %manext1% "January 26, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -16,12 +16,14 @@ msh \- nmh shell (and BBoard reader)
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
+.SH STATUS
+.B msh is deprecated and will be removed from the next nmh release.
 .SH DESCRIPTION
 .B msh
 is an interactive program that implements a subset of the normal
 .B nmh
 commands operating on a single file in
-.BR packf 'd
+.BR mmdf
 format.
 That is,
 .B msh

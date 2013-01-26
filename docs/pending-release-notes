@@ -60,6 +60,7 @@ OBSOLETE/DEPRECATED FEATURES
   http://smtpfilter.sourceforge.net/esmtp.html
 - conflict(8) is deprecated and will be removed from the next release.
 - mhtest(8) is deprecated and will be removed from the next release.
+- msh(1) is deprecated and will be removed from the next release.
 - spost(8) has been merged into post(8).  Its functionality is enabled
   by selecting the sendmail/pipe mail transport method, described in
   the mh-tailor(5) man page.  The spost -noalias, -backup/-nobackup,
