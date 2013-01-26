@@ -11,6 +11,75 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
+/*
+   Purpose
+   =======
+   Reads an Internet message (RFC 5322), or one or more messages
+   stored in a maildrop in mbox (RFC 4155) or MMDF format, from a file
+   stream.  Each call to m_getfld() reads one header field, or a
+   portion of the body, in sequence.
+
+   Inputs
+   ======
+   gstate:  opaque parse state
+   bufsz:  maximum number of characters to load into buf
+   iob:  input file stream
+
+   Outputs
+   =======
+   name:  header field name (array of size NAMESZ=999)
+   buf:  either a header field body or message body
+   bufsz:  number of characters loaded into buf
+   (return value):  message parse state on return from function
+
+   Functions
+   =========
+   void m_getfld_state_destroy (m_getfld_state_t *gstate): destroys
+   the parse state pointed to by the gstate argument.
+
+   m_getfld_state_reset (m_getfld_state_t *gstate): resets the parse
+   state to FLD.
+
+   void m_unknown(FILE *iob):  Determines the message delimiter string
+   for the maildrop.  Called by inc, scan, and msh when reading from a
+   maildrop file.
+
+   void m_eomsbr (int (*action)(int)):  Sets the hook to check for end
+   of message in a maildrop.  Called only by msh.
+
+   State variables
+   ===============
+   m_getfld() retains state internally between calls in the
+   m_getfld_state_t variable.  These are used for detecting the end of
+   each message when reading maildrops:
+
+     unsigned char **pat_map
+     unsigned char *fdelim
+     unsigned char *delimend
+     int fdelimlen
+     unsigned char *edelim
+     int edelimlen
+     char *msg_delim
+     int msg_style
+     int (*eom_action)(int)
+
+   Usage
+   =====
+   m_getfld_state_t gstate = 0;
+      ...
+   int state = m_getfld (&gstate, ...);
+      ...
+   m_getfld_state_destroy (&gstate);
+
+   The state is retained internally by gstate.  To reset its state to FLD:
+   m_getfld_state_reset (&gstate);
+*/
+
+/* The following described the old implementation.  The high-level
+   structure hasn't changed, but some of the details have.  I'm
+   leaving this as-is, though, for posterity.
+ */
+
 /* This module has a long and checkered history.  First, it didn't burst
    maildrops correctly because it considered two CTRL-A:s in a row to be
    an inter-message delimiter.  It really is four CTRL-A:s followed by a
@@ -135,63 +204,6 @@
   */
 
 /*
-Purpose
-=======
-Reads an Internet message (RFC 5322), or one or more messages stored in a
-maildrop in mbox (RFC 4155) or MMDF format, from a file stream.  Each call
-to m_getfld() reads one header field, or a portion of the body, in sequence.
-
-Inputs
-======
-gstate:  opaque parse state
-bufsz:  maximum number of characters to load into buf
-iob:  input file stream
-
-Outputs
-=======
-name:  header field name (array of size NAMESZ=999)
-buf:  either a header field body or message body
-bufsz:  number of characters loaded into buf
-(return value):  message parse state on return from function
-
-Functions
-=========
-void m_unknown(FILE *iob):  Determines the message delimiter string for the
-  maildrop.  Called by inc, scan, and msh when reading from a maildrop file.
-
-void m_eomsbr (int (*action)(int)):  Sets the hook to check for end of
-  message in a maildrop.  Called only by msh.
-
-State variables
-===============
-m_getfld() retains state internally between calls in the m_getfld_state_t
-variable.  These are used for detecting the end of each message when reading
-maildrops:
-
-  unsigned char **pat_map
-  unsigned char *fdelim
-  unsigned char *delimend
-  int fdelimlen
-  unsigned char *edelim
-  int edelimlen
-  char *msg_delim
-  int msg_style
-  int (*eom_action)(int)
-
-Usage
-=====
-    m_getfld_state_t gstate = 0;
-       ...
-    int state = m_getfld (&gstate, ...);
-       ...
-    m_getfld_state_destroy (&gstate);
-
-The state is retained internally by gstate.  To reset its state to FLD:
-
-    m_getfld_state_reset (&gstate);
-*/
-
-/*
  * static prototypes
  */
 struct m_getfld_state;
@@ -210,7 +222,8 @@ static unsigned char *matchc(int, char *, int, char *);
  * separate messages in a maildrop, such as mbox "From ".
  *
  * Some of the tests in the test suite assume a MSG_INPUT_SIZE
- * of 8192. */
+ * of 8192.
+ */
 #define MSG_INPUT_SIZE (BUFSIZ >= 1024 ? BUFSIZ : 1024)
 #define MAX_DELIMITER_SIZE 5
 
