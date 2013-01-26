@@ -273,17 +273,19 @@ if [ $status -eq 0 ]; then
    fi
 
     [ $verbose -ge 1 ]  &&  echo testing . . .
-    checkoutput=`make $check 2>>"$logfile"`
+    checkoutput=`make $check AM_COLOR_TESTS=always 2>>"$logfile"`
     status=$?
 
     tests_summary=`echo "$checkoutput" | grep tests`
     #### If multiple tests not run, that line will be caught by the
     #### "grep tests" above.
     test_not_run=`echo "$checkoutput" | grep 'test was not run'`
+    fails=`echo "$checkoutput" | grep FAIL`
     if [ "$tests_summary" ]; then
       echo '===================' >>"$logfile"
-      echo "$tests_summary" >>"$logfile"
       [ "$test_not_run" ]  &&  echo "$test_not_run" >>"$logfile"
+      [ "$fails" ]  &&  echo "$fails" >>"$logfile"
+      echo "$tests_summary" >>"$logfile"
       echo '===================' >>"$logfile"
       [ "$check" = distcheck ]  &&  \
         echo "$checkoutput" | tail -n 4 >>"$logfile"
