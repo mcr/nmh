@@ -388,7 +388,7 @@ check "$expected" "$actual"
 
 # check -check
 cat >"$expected" <<EOF
-sortm: can't parse date field in message 14, will use file mtime
+sortm: can't parse date field in message 14, will use file modification time
 sortm: errors found, no messages sorted
 EOF
 
@@ -437,7 +437,8 @@ EOF
 
 sed -e 's/Sep//' $MH_TEST_DIR/Mail/inbox/7 > $MH_TEST_DIR/Mail/inbox/14
 run_test 'sortm -check -nocheck' \
-         "sortm: can't parse date field in message 14, will use file mtime"
+         "sortm: can't parse date field in message 14, will use file \
+modification time"
 scan >"$actual"
 check "$expected" "$actual"
 
