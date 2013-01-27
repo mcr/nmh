@@ -20,15 +20,7 @@ discard (FILE *io)
 
     tcflush (fileno(io), TCOFLUSH);
 
-#if defined(_FSTDIO) || defined(__DragonFly__)
-    fpurge (io);
-#else
-# ifdef LINUX_STDIO
-    io->_IO_write_ptr = io->_IO_write_base;
-# else
-    if ((io->_ptr = io->_base))
-	io->_cnt = 0;
-# endif
-#endif
+    /* There used to be an fpurge() here on some platforms, stdio
+       hackery on others.  But it didn't seem necessary. */
 }
 

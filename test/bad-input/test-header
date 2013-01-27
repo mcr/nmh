@@ -1,9 +1,11 @@
 #!/bin/sh
 ######################################################
 #
-# Test bogus headers (no blank line before body).
+# Test bogus headers (no blank line before body, etc.)
 #
 ######################################################
+
+set -e
 
 if test -z "${MH_OBJ_DIR}"; then
     srcdir=`dirname "$0"`/../..
@@ -14,13 +16,14 @@ fi
 
 setup_test
 
-expected=$MH_TEST_DIR/$$.expected
-actual=$MH_TEST_DIR/$$.actual
+expected="$MH_TEST_DIR/$$.expected"
+expected_err="$MH_TEST_DIR/$$.expected_err"
+actual="$MH_TEST_DIR/$$.actual"
+actual_err="$MH_TEST_DIR/$$.actual_err"
 
 # Write message with bogus header field (missing blank line, really).
-msgfile=`mhpath new`
-msgnum=`basename $msgfile`
-cat > $msgfile <<EOF
+msgfile="$MH_TEST_DIR/Mail/inbox/11"
+cat >"$msgfile" <<EOF
 Date: Sun, 18 Dec 2005 00:52:39 +0100
 From: foo@example.edu
 To: bar@example.edu
@@ -31,14 +34,14 @@ I am a stupid spammer.
 EOF
 
 # check scan
-cat > $expected <<EOF
+cat >"$expected" <<EOF
   11  12/18 foo@example.edu    test<<This is a multi-part message in MIME forma
 EOF
-scan -width 80 $msgnum > $actual 2>&1
-check $expected $actual
+scan -width 80 last > "$actual" 2>&1
+check "$expected" "$actual"
 
 # check show (mhl)
-cat > $expected <<EOF
+cat >"$expected" <<EOF
 (Message inbox:11)
 
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
@@ -49,14 +52,13 @@ Subject: test
 
 This is a multi-part message in MIME format.
 
-
 I am a stupid spammer.
 EOF
-show $msgnum > $actual 2>&1
-check $expected $actual
+show last > "$actual" 2>&1
+check "$expected" "$actual"
 
 # check mhshow
-cat > $expected <<EOF
+cat >"$expected" <<EOF
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -69,7 +71,72 @@ This is a multi-part message in MIME format.
 
 I am a stupid spammer.
 EOF
-mhshow -nopause $msgnum > $actual 2>&1
-check $expected $actual
+mhshow -nopause last > "$actual" 2>&1
+check "$expected" "$actual"
+
+# check m_getfld() handling of empty header field
+msgfile="$MH_TEST_DIR/Mail/inbox/12"
+printf 'Date: Sat, 12 Jan 2013 09:07:01 -0600\nReceived:' >"$msgfile"
+cat >"$expected" <<EOF
+  12  01/12 
+EOF
+cat >"$expected_err" <<EOF
+scan: eof encountered in field "Received"
+??Format error (message 12) in component 2
+EOF
+
+scan -width 13 last >"$actual" 2>"$actual_err"
+check "$expected" "$actual"
+check "$expected_err" "$actual_err"
+
+# check m_getfld() handling of excessively long header field name
+msgfile="$MH_TEST_DIR/Mail/inbox/13"
+cat >"$msgfile" <<EOF
+Date: Tue, 15 Jan 2013 21:13:12 -0600
+ThisHeaderFieldNameIsWaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaayTooLong: OK
+EOF
+cat >"$expected" <<EOF
+  13  01/15 
+EOF
+
+scan -width 13 last >"$actual" 2>"$actual_err"
+check "$expected" "$actual"
+# Cygwin has a BUFSIZ of 1024 so the error message gets truncated.
+# Deal with that by grepping to verify that scan showed the proper error.
+verify_string_in_file() {
+  if grep "$1" "$2" >/dev/null; then
+    :
+  else
+    echo "$0: did not receive expected error message \"$1\""
+    failed=`expr ${failed:-0} + 1`
+  fi
+}
+verify_string_in_file 'scan: field name "ThisHeaderFieldNameIsWa' "$actual_err"
+verify_string_in_file 'exceeds 997' "$actual_err"
+verify_string_in_file '??Format error (message 13) in component 2' "$actual_err"
+rm -f "$actual_err"
+
+# check m_getfld() handling of long header field name without a colon
+msgfile="$MH_TEST_DIR/Mail/inbox/14"
+cat >"$msgfile" <<EOF
+Date: Thu, 17 Jan 2013 19:33:46 -0600
+If a header field name has at least 512 characters without a newline or colon, it will raise a format error in m_getfld().  Here is a test of that.  01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
+
+Test
+
+
+EOF
+cat >"$expected" <<EOF
+  14  01/17 
+EOF
+cat >"$expected_err" <<EOF
+scan: eol encountered in field "If a header field name has at least 512 characters without a newline or colon, it will raise a format error in m_getfld().  Here is a test of that.  01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+??Format error (message 14) in component 2
+EOF
+
+scan -width 13 last >"$actual" 2>"$actual_err"
+check "$expected" "$actual"
+check "$expected_err" "$actual_err"
+
 
 exit $failed

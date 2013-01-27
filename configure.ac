@@ -407,15 +407,6 @@ AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([fcntl.h ncurses/termcap.h termcap.h langinfo.h \
                   wchar.h wctype.h sys/param.h sys/time.h sys/stream.h])
 
-dnl
-dnl Checks for _IO_write_ptr. A Linuxism used by nmh on linux. We
-dnl really use a whole set of them, but this check should be
-dnl sufficient.
-dnl
-AC_CHECK_HEADER(libio.h, [
-  AC_EGREP_HEADER(_IO_write_ptr, libio.h, [
-    AC_DEFINE(LINUX_STDIO,1,[Use the Linux _IO_*_ptr defines from <libio.h>.]) ]) ])
-
 AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
   [Define to 1 if `struct winsize' requires <sys/ptem.h>.]),,
 [[#if HAVE_SYS_STREAM_H

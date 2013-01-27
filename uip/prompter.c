@@ -78,6 +78,7 @@ main (int argc, char **argv)
     char **arguments, **argp;
     FILE *in, *out;
     char *tfile = NULL;
+    m_getfld_state_t gstate = 0;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -202,10 +203,10 @@ main (int argc, char **argv)
     /*
      * Loop through the lines of the draft skeleton.
      */
-    for (state = FLD;;) {
-	switch (state = m_getfld (state, name, field, sizeof(field), in)) {
+    for (;;) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, in)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		/*
 		 * Check if the value of field contains anything
@@ -220,8 +221,8 @@ main (int argc, char **argv)
 		    printf ("%s:%s", name, field);
 		    fprintf (out, "%s:%s", name, field);
 		    while (state == FLDPLUS) {
-			state =
-			    m_getfld (state, name, field, sizeof(field), in);
+			fieldsz = sizeof field;
+			state = m_getfld (&gstate, name, field, &fieldsz, in);
 			printf ("%s", field);
 			fprintf (out, "%s", field);
 		    }
@@ -251,17 +252,9 @@ abort:
 		    }
 		}
 
-		if (state == FLDEOF) {	/* moby hack */
-		    fprintf (out, "--------\n");
-		    printf ("--------\n");
-		    if (!body)
-			break;
-		    goto no_body;
-		}
 		continue;
 
 	    case BODY: 
-	    case BODYEOF:
 	    case FILEEOF: 
 	        if (!body)
 	            break;
@@ -287,13 +280,14 @@ abort:
 			if (!rapid && !sigint)
 			    printf ("%s", field);
 		    } while (state == BODY &&
-			    (state = m_getfld (state, name, field, sizeof(field), in)));
+			    (fieldsz = sizeof field,
+			     state = m_getfld (&gstate, name, field, &fieldsz, in)));
 		    if (prepend || !body)
 			break;
 		    else
 			printf ("\n--------Enter additional text\n\n");
 		}
-no_body:
+
 		fflush (stdout);
 		for (;;) {
 		    getln (field, sizeof(field));
@@ -310,6 +304,7 @@ no_body:
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     if (body)
 	printf ("--------\n");

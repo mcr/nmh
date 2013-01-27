@@ -262,6 +262,7 @@ get_content (FILE *in, char *file, int toplevel)
     char *np, *vp;
     CT ct;
     HF hp;
+    m_getfld_state_t gstate = 0;
 
     /* allocate the content structure */
     if (!(ct = (CT) calloc (1, sizeof(*ct))))
@@ -275,11 +276,11 @@ get_content (FILE *in, char *file, int toplevel)
      * Parse the header fields for this
      * content into a linked list.
      */
-    for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), in)) {
+    for (compnum = 1;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
-	case FLDEOF:
 	    compnum++;
 
 	    /* get copies of the buffers */
@@ -288,22 +289,19 @@ get_content (FILE *in, char *file, int toplevel)
 
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
-		state = m_getfld (state, name, buf, sizeof(buf), in);
+		bufsz = sizeof buf;
+		state = m_getfld (&gstate, name, buf, &bufsz, in);
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 
 	    /* Now add the header data to the list */
 	    add_header (ct, np, vp);
 
-	    /* continue, if this isn't the last header field */
-	    if (state != FLDEOF) {
-		ct->c_begin = ftell (in) + 1;
-		continue;
-	    }
-	    /* else fall... */
+	    /* continue, to see if this isn't the last header field */
+	    ct->c_begin = ftell (in) + 1;
+	    continue;
 
 	case BODY:
-	case BODYEOF:
 	    ct->c_begin = ftell (in) - strlen (buf);
 	    break;
 
@@ -322,6 +320,7 @@ get_content (FILE *in, char *file, int toplevel)
 	/* break out of the loop */
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * Read the content headers.  We will parse the

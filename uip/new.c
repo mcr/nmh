@@ -99,6 +99,7 @@ get_msgnums(char *folder, char *sequences[])
     char name[NAMESZ], field[BUFSIZ];
     char *cp;
     char *msgnums = NULL, *this_msgnums, *old_msgnums;
+    m_getfld_state_t gstate = 0;
 
     /* no sequences file -> no messages */
     if (fp == NULL) {
@@ -106,16 +107,16 @@ get_msgnums(char *folder, char *sequences[])
     }
 
     /* copied from seq_read.c:seq_public */
-    for (state = FLD;;) {
-        switch (state = m_getfld (state, name, field, sizeof(field), fp)) {
+    for (;;) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, fp)) {
             case FLD:
             case FLDPLUS:
-            case FLDEOF:
                 if (state == FLDPLUS) {
                     cp = getcpy (field);
                     while (state == FLDPLUS) {
-                        state = m_getfld (state, name, field,
-                                          sizeof(field), fp);
+			fieldsz = sizeof field;
+			state = m_getfld (&gstate, name, field, &fieldsz, fp);
                         cp = add (field, cp);
                     }
 
@@ -150,12 +151,9 @@ get_msgnums(char *folder, char *sequences[])
                     }
                 }
 
-                if (state == FLDEOF)
-                    break;
                 continue;
 
             case BODY:
-            case BODYEOF:
                 adios (NULL, "no blank lines are permitted in %s", seqfile);
                 /* fall */
 
@@ -167,6 +165,7 @@ get_msgnums(char *folder, char *sequences[])
         }
         break;  /* break from for loop */
     }
+    m_getfld_state_destroy (&gstate);
 
     fclose(fp);
 

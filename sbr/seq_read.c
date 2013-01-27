@@ -59,6 +59,7 @@ seq_public (struct msgs *mp)
     char *cp, seqfile[PATH_MAX];
     char name[NAMESZ], field[BUFSIZ];
     FILE *fp;
+    m_getfld_state_t gstate = 0;
 
     /*
      * If mh_seq == NULL (such as if nmh been compiled with
@@ -76,15 +77,16 @@ seq_public (struct msgs *mp)
 	return;
 
     /* Use m_getfld to scan sequence file */
-    for (state = FLD;;) {
-	switch (state = m_getfld (state, name, field, sizeof(field), fp)) {
+    for (;;) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, fp)) {
 	    case FLD: 
 	    case FLDPLUS:
-	    case FLDEOF: 
 		if (state == FLDPLUS) {
 		    cp = getcpy (field);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, field, sizeof(field), fp);
+			fieldsz = sizeof field;
+			state = m_getfld (&gstate, name, field, &fieldsz, fp);
 			cp = add (field, cp);
 		    }
 		    seq_init (mp, getcpy (name), trimcpy (cp));
@@ -92,12 +94,9 @@ seq_public (struct msgs *mp)
 		} else {
 		    seq_init (mp, getcpy (name), trimcpy (field));
 		}
-		if (state == FLDEOF)
-		    break;
 		continue;
 
 	    case BODY: 
-	    case BODYEOF: 
 		adios (NULL, "no blank lines are permitted in %s", seqfile);
 		/* fall */
 
@@ -109,6 +108,7 @@ seq_public (struct msgs *mp)
 	}
 	break;	/* break from for loop */
     }
+    m_getfld_state_destroy (&gstate);
 
     lkfclose (fp, seqfile);
 }

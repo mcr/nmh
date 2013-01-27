@@ -286,6 +286,7 @@ main (int argc, char **argv)
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *in, *out;
+    m_getfld_state_t gstate = 0;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -522,7 +523,7 @@ main (int argc, char **argv)
     start_headers ();
     if (debug) {
 	verbose++;
-	discard (out = stdout);	/* XXX: reference discard() to help loader */
+	out = stdout;
     } else {
 	if (whomsw) {
 	    if ((out = fopen ("/dev/null", "w")) == NULL)
@@ -542,32 +543,30 @@ main (int argc, char **argv)
 
     hdrtab = msgstate == NORMAL ? NHeaders : RHeaders;
 
-    for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), in)) {
+    for (compnum = 1;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		compnum++;
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, in);
 		    cp = add (buf, cp);
 		}
 		putfmt (name, cp, out);
 		free (cp);
-		if (state != FLDEOF)
-		    continue;
-		finish_headers (out);
-		break;
+		continue;
 
 	    case BODY: 
-	    case BODYEOF: 
 		finish_headers (out);
 		if (whomsw)
 		    break;
 		fprintf (out, "\n%s", buf);
 		while (state == BODY) {
-		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, in);
 		    fputs (buf, out);
 		}
 		break;
@@ -585,6 +584,7 @@ main (int argc, char **argv)
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     if (pfd != NOTOK)
 	anno ();

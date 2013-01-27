@@ -924,14 +924,15 @@ check_draft (char *msgnam)
     int	state;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
+    m_getfld_state_t gstate = 0;
 
     if ((fp = fopen (msgnam, "r")) == NULL)
 	return 0;
-    for (state = FLD;;)
-	switch (state = m_getfld (state, name, buf, sizeof(buf), fp)) {
+    for (;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 		/*
 		 * If draft already contains any of the
 		 * Content-XXX fields, then assume it already
@@ -941,8 +942,10 @@ check_draft (char *msgnam)
 		    fclose (fp);
 		    return 0;
 		}
-		while (state == FLDPLUS)
-		    state = m_getfld (state, name, buf, sizeof(buf), fp);
+		while (state == FLDPLUS) {
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
+		}
 		break;
 
 	    case BODY:
@@ -955,7 +958,8 @@ check_draft (char *msgnam)
 			    return 1;
 			}
 
-		    state = m_getfld (state, name, buf, sizeof(buf), fp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		} while (state == BODY);
 		/* and fall... */
 
@@ -963,6 +967,8 @@ check_draft (char *msgnam)
 		fclose (fp);
 		return 0;
 	}
+    }
+    m_getfld_state_destroy (&gstate);
 }
 
 

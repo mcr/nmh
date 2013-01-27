@@ -357,21 +357,23 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
     register struct tws *tw;
     register char *datecomp = NULL, *subjcomp = NULL;
     register FILE *in;
+    m_getfld_state_t gstate = 0;
 
     if ((in = fopen (msgnam = m_name (msg), "r")) == NULL) {
 	admonish (msgnam, "unable to read message");
 	return (0);
     }
-    for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, nam, buf, sizeof(buf), in)) {
+    for (compnum = 1;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, nam, buf, &bufsz, in)) {
 	case FLD:
-	case FLDEOF:
 	case FLDPLUS:
 	    compnum++;
 	    if (!mh_strcasecmp (nam, datesw)) {
 		datecomp = add (buf, datecomp);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, nam, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
 		    datecomp = add (buf, datecomp);
 		}
 		if (!subjsort || subjcomp)
@@ -379,20 +381,22 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	    } else if (subjsort && !mh_strcasecmp (nam, subjsort)) {
 		subjcomp = add (buf, subjcomp);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, nam, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
 		    subjcomp = add (buf, subjcomp);
 		}
 		if (datecomp)
 		    break;
 	    } else {
 		/* just flush this guy */
-		while (state == FLDPLUS)
-		    state = m_getfld (state, nam, buf, sizeof(buf), in);
+		while (state == FLDPLUS) {
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
+		}
 	    }
 	    continue;
 
 	case BODY:
-	case BODYEOF:
 	case FILEEOF:
 	    break;
 
@@ -415,6 +419,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * If no date component, then use the modification

@@ -336,15 +336,16 @@ is_nontext (char *msgnam)
     char *cp;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
+    m_getfld_state_t gstate = 0;
 
     if ((fp = fopen (msgnam, "r")) == NULL)
 	return 0;
 
-    for (state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), fp)) {
+    for (;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	case FLD:
 	case FLDPLUS:
-	case FLDEOF:
 	    /*
 	     * Check Content-Type field
 	     */
@@ -354,7 +355,8 @@ is_nontext (char *msgnam)
 
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof(buf), fp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		bp = cp;
@@ -457,7 +459,8 @@ out:
 	    if (!mh_strcasecmp (name, ENCODING_FIELD)) {
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof(buf), fp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
 		for (bp = cp; isspace (*bp); bp++)
@@ -481,8 +484,10 @@ out:
 	     * Just skip the rest of this header
 	     * field and go to next one.
 	     */
-	    while (state == FLDPLUS)
-		state = m_getfld (state, name, buf, sizeof(buf), fp);
+	    while (state == FLDPLUS) {
+		bufsz = sizeof buf;
+		state = m_getfld (&gstate, name, buf, &bufsz, fp);
+	    }
 	    break;
 
 	    /*
@@ -494,4 +499,5 @@ out:
 	    return 0;
 	}
     }
+    m_getfld_state_destroy (&gstate);
 }

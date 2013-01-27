@@ -155,6 +155,8 @@ void seq_setcur (struct msgs *, int);
 void padios (char *, char *, ...);
 void padvise (char *, char *, ...);
 
+extern m_getfld_state_t gstate;	/* use the gstate in scansbr.c */
+
 
 /*
  * static prototypes
@@ -341,6 +343,7 @@ main (int argc, char **argv)
     display_info (id > 0 ? scansw : 0);
 
     msh (id > 0 ? scansw : 0);
+    scan_finished ();
 
     m_reset ();
     
@@ -682,7 +685,7 @@ setup (char *file)
     mp->msgattrs[0] = getcpy ("unseen");
     mp->msgattrs[1] = NULL;
 
-    m_unknown (fp);		/* the MAGIC invocation */    
+    scan_detect_mbox_style (fp);		/* the MAGIC invocation */
     if (fmsh) {
 	free (fmsh);
 	fmsh = NULL;
@@ -805,7 +808,7 @@ msh_ready (int msgnum, int full)
 	return yp;
     }
 
-    m_eomsbr ((int (*)()) 0);	/* XXX */
+    scan_eom_action ((int (*)()) 0);	/* XXX */
     fseek (fp, Msgs[msgnum].m_start, SEEK_SET);
     return fp;
 }
@@ -974,15 +977,16 @@ readid (int msgnum)
 	return Msgs[msgnum].m_bboard_id;
 
     zp = msh_ready (msgnum, 0);
-    for (state = FLD;;)
-	switch (state = m_getfld (state, name, buf, sizeof(buf), zp)) {
+    for (;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, zp)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		if (!mh_strcasecmp (name, BBoard_ID)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buf, sizeof(buf), zp);
+			bufsz = sizeof buf;
+			state = m_getfld (&gstate, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    i = atoi (bp);
@@ -992,14 +996,16 @@ readid (int msgnum)
 		    else
 			continue;
 		}
-		while (state == FLDPLUS)
-		    state = m_getfld (state, name, buf, sizeof(buf), zp);
-		if (state != FLDEOF)
-		    continue;
+		while (state == FLDPLUS) {
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, zp);
+		}
+		continue;
 
 	    default: 
 		return 0;
 	}
+    }
 }
 
 

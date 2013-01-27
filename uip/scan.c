@@ -175,13 +175,14 @@ main (int argc, char **argv)
 	    printf ("FOLDER %s\t%s\n", file, dtimenow (1));
 	}
 
-	m_unknown (in);
+	scan_detect_mbox_style (in);
 	for (msgnum = 1; ; ++msgnum) {
 	    state = scan (in, msgnum, -1, nfs, width, 0, 0,
 		    hdrflag ? file : NULL, 0L, 1);
 	    if (state != SCNMSG && state != SCNENC)
 		break;
 	}
+	scan_finished ();
 	fclose (in);
 	done (0);
     }
@@ -276,6 +277,7 @@ main (int argc, char **argv)
 		    advise (NULL, "message %d: empty", msgnum);
 		    break;
 	    }
+	    scan_finished ();
 	    hdrflag = 0;
 	    fclose (in);
 	    if (ontty)

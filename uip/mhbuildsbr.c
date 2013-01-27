@@ -134,6 +134,7 @@ build_mime (char *infile, int directives)
     struct part **pp;
     CT ct;
     FILE *in;
+    m_getfld_state_t gstate = 0;
 
     directive_init(directives);
 
@@ -161,11 +162,11 @@ build_mime (char *infile, int directives)
      * draft into the linked list of header fields for
      * the new MIME message.
      */
-    for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), in)) {
+    for (compnum = 1;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
-	case FLDEOF:
 	    compnum++;
 
 	    /* abort if draft has Mime-Version header field */
@@ -178,8 +179,10 @@ build_mime (char *infile, int directives)
 
 	    /* ignore any Content-Type fields in the header */
 	    if (!mh_strcasecmp (name, TYPE_FIELD)) {
-		while (state == FLDPLUS)
-		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		while (state == FLDPLUS) {
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, in);
+		}
 		goto finish_field;
 	    }
 
@@ -189,7 +192,8 @@ build_mime (char *infile, int directives)
 
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
-		state = m_getfld (state, name, buf, sizeof(buf), in);
+		bufsz = sizeof buf;
+		state = m_getfld (&gstate, name, buf, &bufsz, in);
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 
@@ -198,16 +202,13 @@ build_mime (char *infile, int directives)
 
 finish_field:
 	    /* if this wasn't the last header field, then continue */
-	    if (state != FLDEOF)
-		continue;
-	    /* else fall... */
+	    continue;
 
 	case FILEEOF:
 	    adios (NULL, "draft has empty body -- no directives!");
 	    /* NOTREACHED */
 
 	case BODY:
-	case BODYEOF:
 	    fseek (in, (long) (-strlen (buf)), SEEK_CUR);
 	    break;
 
@@ -220,6 +221,7 @@ finish_field:
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * Now add the MIME-Version header field

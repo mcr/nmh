@@ -569,6 +569,7 @@ go_to_it:
 	fflush (stdout);
     }
 
+
     /*
      * Get the mail from a POP server
      */
@@ -702,7 +703,7 @@ go_to_it:
      * Get the mail from file (usually mail spool)
      */
     if (inc_type == INC_FILE && Maildir == NULL) {
-	m_unknown (in);		/* the MAGIC invocation... */
+	scan_detect_mbox_style (in);		/* the MAGIC invocation... */
 	hghnum = msgnum = mp->hghmsg;
 	for (;;) {
 	    /*
@@ -868,6 +869,8 @@ go_to_it:
 	}
 	free (Maildir); /* From now on Maildir is just a flag - don't dref! */
     }
+
+    scan_finished ();
 
     if (incerr < 0) {		/* error */
 	if (locked) {

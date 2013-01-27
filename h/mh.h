@@ -288,10 +288,11 @@ struct msgs {
 #define FMTERR  (-3)		/* Message Format error             */
 #define FLD      0		/* Field returned                   */
 #define FLDPLUS  1		/* Field returned with more to come */
-#define FLDEOF   2		/* Field returned ending at eom     */
 #define BODY     3		/* Body  returned with more to come */
-#define BODYEOF  4		/* Body  returned ending at eom     */
 #define FILEEOF  5		/* Reached end of input file        */
+
+struct m_getfld_state;
+typedef struct m_getfld_state *m_getfld_state_t;
 
 /*
  * Maildrop styles
@@ -301,10 +302,6 @@ struct msgs {
 #define	MS_MBOX		2	/* Unix-style "from" lines    */
 #define	MS_MMDF		3	/* string mmdlm2              */
 #define	MS_MSH		4	/* whacko msh                 */
-
-extern int msg_count;		/* m_getfld() indicators */
-extern int msg_style;		/*  .. */
-extern char *msg_delim;		/*  .. */
 
 #define	NOUSE	0		/* draft being re-used */
 

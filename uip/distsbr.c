@@ -32,6 +32,7 @@ distout (char *drft, char *msgnam, char *backup)
     register char *resent;
     char name[NAMESZ], buffer[BUFSIZ];
     register FILE *ifp, *ofp;
+    m_getfld_state_t gstate = 0;
 
     if (rename (drft, strcpy (backup, m_backup (drft))) == NOTOK)
 	adios (backup, "unable to rename %s to",drft);
@@ -46,12 +47,11 @@ distout (char *drft, char *msgnam, char *backup)
     lseek (hdrfd, (off_t) 0, SEEK_SET); /* msgnam not accurate */
     cpydata (hdrfd, fileno (ofp), msgnam, drft);
 
-    for (state = FLD, resent = NULL;;)
-	switch (state =
-		m_getfld (state, name, buffer, sizeof buffer, ifp)) {
+    for (resent = NULL;;) {
+	int buffersz = sizeof buffer;
+	switch (state = m_getfld (&gstate, name, buffer, &buffersz, ifp)) {
 	    case FLD: 
 	    case FLDPLUS: 
-	    case FLDEOF: 
 		if (uprf (name, "distribute-"))
 		    snprintf (name, sizeof(name), "%s%s", "Resent", &name[10]);
 		if (uprf (name, "distribution-"))
@@ -65,17 +65,14 @@ distout (char *drft, char *msgnam, char *backup)
 		resent = add (buffer, resent);
 		fprintf (ofp, "%s: %s", name, buffer);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name,
-			    buffer, sizeof buffer, ifp);
+		    buffersz = sizeof buffer;
+		    state = m_getfld (&gstate, name, buffer, &buffersz, ifp);
 		    resent = add (buffer, resent);
 		    fputs (buffer, ofp);
 		}
-		if (state == FLDEOF)
-		    goto process;
 		break;
 
 	    case BODY: 
-	    case BODYEOF: 
 		for (dp = buffer; *dp; dp++)
 		    if (!isspace (*dp)) {
 			advise (NULL, BADTXT, "draft");
@@ -99,7 +96,9 @@ distout (char *drft, char *msgnam, char *backup)
 	    default: 
 		adios (NULL, "getfld() returned %d", state);
 	}
+    }
 process: ;
+    m_getfld_state_destroy (&gstate);
     fclose (ifp);
     fflush (ofp);
 
@@ -131,6 +130,7 @@ ready_msg (char *msgnam)
     char name[NAMESZ], buffer[BUFSIZ], tmpfil[BUFSIZ];
     register FILE *ifp, *ofp;
     char *cp = NULL;
+    m_getfld_state_t gstate = 0;
 
     if (hdrfd != NOTOK)
 	close (hdrfd), hdrfd = NOTOK;
@@ -151,26 +151,22 @@ ready_msg (char *msgnam)
 	adios (NULL, "no file descriptors -- you lose big");
     unlink (tmpfil);
 
-    for (state = FLD;;)
-	switch (state =
-		m_getfld (state, name, buffer, sizeof buffer, ifp)) {
+    for (;;) {
+	int buffersz = sizeof buffer;
+	switch (state = m_getfld (&gstate, name, buffer, &buffersz, ifp)) {
 	    case FLD: 
 	    case FLDPLUS: 
-	    case FLDEOF: 
 		if (uprf (name, "resent"))
 		    fprintf (ofp, "Prev-");
 		fprintf (ofp, "%s: %s", name, buffer);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name,
-			    buffer, sizeof buffer, ifp);
+		    buffersz = sizeof buffer;
+		    state = m_getfld (&gstate, name, buffer, &buffersz, ifp);
 		    fputs (buffer, ofp);
 		}
-		if (state == FLDEOF)
-		    goto process;
 		break;
 
 	    case BODY: 
-	    case BODYEOF: 
 		fclose (ofp);
 
                 cp = m_mktemp2(NULL, "dist", &txtfd, NULL);
@@ -185,8 +181,8 @@ ready_msg (char *msgnam)
 		unlink (tmpfil);
 		fprintf (ofp, "\n%s", buffer);
 		while (state == BODY) {
-		    state = m_getfld (state, name,
-			    buffer, sizeof buffer, ifp);
+		    buffersz = sizeof buffer;
+		    state = m_getfld (&gstate, name, buffer, &buffersz, ifp);
 		    fputs (buffer, ofp);
 		}
 	    case FILEEOF: 
@@ -199,7 +195,9 @@ ready_msg (char *msgnam)
 	    default: 
 		adios (NULL, "getfld() returned %d", state);
 	}
+    }
 process: ;
+    m_getfld_state_destroy (&gstate);
     fclose (ifp);
     fclose (ofp);
 }

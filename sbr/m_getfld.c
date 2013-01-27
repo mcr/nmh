@@ -11,6 +11,75 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
+/*
+   Purpose
+   =======
+   Reads an Internet message (RFC 5322), or one or more messages
+   stored in a maildrop in mbox (RFC 4155) or MMDF format, from a file
+   stream.  Each call to m_getfld() reads one header field, or a
+   portion of the body, in sequence.
+
+   Inputs
+   ======
+   gstate:  opaque parse state
+   bufsz:  maximum number of characters to load into buf
+   iob:  input file stream
+
+   Outputs
+   =======
+   name:  header field name (array of size NAMESZ=999)
+   buf:  either a header field body or message body
+   bufsz:  number of characters loaded into buf
+   (return value):  message parse state on return from function
+
+   Functions
+   =========
+   void m_getfld_state_destroy (m_getfld_state_t *gstate): destroys
+   the parse state pointed to by the gstate argument.
+
+   m_getfld_state_reset (m_getfld_state_t *gstate): resets the parse
+   state to FLD.
+
+   void m_unknown(FILE *iob):  Determines the message delimiter string
+   for the maildrop.  Called by inc, scan, and msh when reading from a
+   maildrop file.
+
+   void m_eomsbr (int (*action)(int)):  Sets the hook to check for end
+   of message in a maildrop.  Called only by msh.
+
+   State variables
+   ===============
+   m_getfld() retains state internally between calls in the
+   m_getfld_state_t variable.  These are used for detecting the end of
+   each message when reading maildrops:
+
+     unsigned char **pat_map
+     unsigned char *fdelim
+     unsigned char *delimend
+     int fdelimlen
+     unsigned char *edelim
+     int edelimlen
+     char *msg_delim
+     int msg_style
+     int (*eom_action)(int)
+
+   Usage
+   =====
+   m_getfld_state_t gstate = 0;
+      ...
+   int state = m_getfld (&gstate, ...);
+      ...
+   m_getfld_state_destroy (&gstate);
+
+   The state is retained internally by gstate.  To reset its state to FLD:
+   m_getfld_state_reset (&gstate);
+*/
+
+/* The following described the old implementation.  The high-level
+   structure hasn't changed, but some of the details have.  I'm
+   leaving this as-is, though, for posterity.
+ */
+
 /* This module has a long and checkered history.  First, it didn't burst
    maildrops correctly because it considered two CTRL-A:s in a row to be
    an inter-message delimiter.  It really is four CTRL-A:s followed by a
@@ -125,7 +194,7 @@
    it knows that _filbuf ignores the _ptr & _cnt and simply fills
    the buffer.  If stdio on your system doesn't work this way, you
    may have to make small changes in this routine.
-   
+
    This routine also "knows" that an EOF indication on a stream is
    "sticky" (i.e., you will keep getting EOF until you reposition the
    stream).  If your system doesn't work this way it is broken and you
@@ -134,358 +203,446 @@
    there is data in "name" or "buf").
   */
 
-
 /*
  * static prototypes
  */
-static int m_Eom (int, FILE *);
+struct m_getfld_state;
+static int m_Eom (m_getfld_state_t, int);
 static unsigned char *matchc(int, char *, int, char *);
-static unsigned char *locc(int, unsigned char *, unsigned char);
 
-#define Getc(iob)	getc(iob)
-#define eom(c,iob)	(msg_style != MS_DEFAULT && \
-			 (((c) == *msg_delim && m_Eom(c,iob)) ||\
-			  (eom_action && (*eom_action)(c))))
+#define eom(c,s)	(s->msg_style != MS_DEFAULT && \
+			 (((c) == *s->msg_delim && m_Eom(s,c)) || \
+			  (s->eom_action && (*s->eom_action)(c))))
 
-static unsigned char **pat_map;
+/* This replaces the old approach, with its direct access to stdio
+ * internals.  It uses one fread() to load a buffer that we manage.
+ *
+ * MSG_INPUT_SIZE is the size of the buffer.
+ * MAX_DELIMITER_SIZE is the maximum size of the delimiter used to
+ * separate messages in a maildrop, such as mbox "From ".
+ *
+ * Some of the tests in the test suite assume a MSG_INPUT_SIZE
+ * of 8192.
+ */
+#define MSG_INPUT_SIZE (BUFSIZ >= 1024 ? BUFSIZ : 1024)
+#define MAX_DELIMITER_SIZE 5
+
+struct m_getfld_state {
+    unsigned char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
+    unsigned char *readpos;
+    unsigned char *end;  /* One past the last character read in. */
+    /* The following support tracking of the read position in the
+       input file stream so that callers can interleave m_getfld()
+       calls with ftell() and fseek().  ytes_read replaces the old
+       m_getfld() msg_count global.  last_caller_pos is stored when
+       leaving m_getfld()/m_unknown(), then checked on the next entry.
+       last_internal_pos is used to remember the position used
+       internally by m_getfld() (read_more(), actually). */
+    off_t bytes_read;
+    off_t total_bytes_read; /* by caller, not necessarily from input file */
+    off_t last_caller_pos;
+    off_t last_internal_pos;
+    FILE *iob;
+
+    unsigned char **pat_map;
+    int msg_style;
+    /*
+     * The "full" delimiter string for a packed maildrop consists
+     * of a newline followed by the actual delimiter.  E.g., the
+     * full string for a Unix maildrop would be: "\n\nFrom ".
+     * "Fdelim" points to the start of the full string and is used
+     * in the BODY case of the main routine to search the buffer for
+     * a possible eom.  Msg_delim points to the first character of
+     * the actual delim. string (i.e., fdelim+1).  Edelim
+     * points to the 2nd character of actual delimiter string.  It
+     * is used in m_Eom because the first character of the string
+     * has been read and matched before m_Eom is called.
+     */
+    char *msg_delim;
+    unsigned char *fdelim;
+    unsigned char *delimend;
+    int fdelimlen;
+    unsigned char *edelim;
+    int edelimlen;
+    int (*eom_action)(int);
+    int state;
+};
+
+static
+void
+m_getfld_state_init (m_getfld_state_t *gstate, FILE *iob) {
+    m_getfld_state_t s;
+
+    s = *gstate = (m_getfld_state_t) mh_xmalloc(sizeof (struct m_getfld_state));
+    s->readpos = s->end = s->msg_buf;
+    s->bytes_read = s->total_bytes_read = 0;
+    s->last_caller_pos = s->last_internal_pos = 0;
+    s->iob = iob;
+    s->pat_map = NULL;
+    s->msg_style = MS_DEFAULT;
+    s->msg_delim = "";
+    s->fdelim = s->delimend = s->edelim = NULL;
+    s->fdelimlen = s->edelimlen = 0;
+    s->eom_action = NULL;
+    s->state = FLD;
+}
+
+/* scan() needs to force a state an initial state of FLD for each message. */
+void
+m_getfld_state_reset (m_getfld_state_t *gstate) {
+    if (*gstate) {
+	(*gstate)->state = FLD;
+    }
+}
+
+void m_getfld_state_destroy (m_getfld_state_t *gstate) {
+    m_getfld_state_t s = *gstate;
+
+    if (s) {
+	if (s->fdelim) free (s->fdelim-1);
+	free (s);
+	*gstate = 0;
+    }
+}
 
 /*
- * defined in sbr/m_msgdef.c = 0
- * This is a disgusting hack for "inc" so it can know how many
- * characters were stuffed in the buffer on the last call
- * (see comments in uip/scansbr.c).
- */
-extern int msg_count;
+  Summary of file and message input buffer positions:
 
-/*
- * defined in sbr/m_msgdef.c = MS_DEFAULT
- */
-extern int msg_style;
+  input file      -------------------------------------------EOF
+                                 |              |
+                          last_caller_pos  last_internal_pos
 
-/*
- * The "full" delimiter string for a packed maildrop consists
- * of a newline followed by the actual delimiter.  E.g., the
- * full string for a Unix maildrop would be: "\n\nFrom ".
- * "Fdelim" points to the start of the full string and is used
- * in the BODY case of the main routine to search the buffer for
- * a possible eom.  Msg_delim points to the first character of
- * the actual delim. string (i.e., fdelim+1).  Edelim
- * points to the 2nd character of actual delimiter string.  It
- * is used in m_Eom because the first character of the string
- * has been read and matched before m_Eom is called.
- */
-extern char *msg_delim;         /* defined in sbr/m_msgdef.c = "" */
-static unsigned char *fdelim;
-static unsigned char *delimend;
-static int fdelimlen;
-static unsigned char *edelim;
-static int edelimlen;
 
-static int (*eom_action)(int) = NULL;
+  msg_buf                   --------------------EOF
+                            |         |         |
+                         msg_buf   readpos     end
 
-#ifdef _FSTDIO
-# define _ptr    _p		/* Gag   */
-# define _cnt    _r		/* Retch */
-# define _filbuf __srget	/* Puke  */
-# define DEFINED__FILBUF_TO_SOMETHING_SPECIFIC
+                            |<>|=retained characters, difference
+                                 between last_internal_pos and
+                                 first readpos value after reading
+                                 in new chunk in read_more()
 
-# if defined __CYGWIN__
-  /* Cygwin's stdio.h does not declare __srget(). */
-  int __srget(FILE *);
-# endif /* __CYGWIN__ */
-#endif
+  When returning from m_getfld()/m_unknown():
+  1) Save the internal file position in last_internal_pos.  That's the
+     m_getfld() position reference in the input file.
+  2) Set file stream position so that callers can use ftell().
 
-#ifndef DEFINED__FILBUF_TO_SOMETHING_SPECIFIC
-extern int  _filbuf(FILE*);
-#endif
+  When entering m_getfld()/m_unknown():
+  Check to see if the call had changed the file position.  If so,
+  adjust the internal position reference accordingly.  If not, restore
+  the internal file position from last_internal_pos.
+*/
+
+
+static void
+enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
+    m_getfld_state_t s;
+    off_t pos = ftello (iob);
+
+    if (! *gstate) {
+	m_getfld_state_init (gstate, iob);
+    }
+    s = *gstate;
+    s->bytes_read = 0;
+
+    /* This is ugly and no longer necessary, but is retained just in
+       case it's needed again.  The parser used to open the input file
+       multiple times, so we had to always use the FILE * that's
+       passed to m_getfld().  Now the parser inits a new
+       m_getfld_state for each file.  See comment below about the
+       readpos shift code being currently unused. */
+    s->iob = iob;
+
+    if (pos != 0  ||  s->last_internal_pos != 0) {
+	if (s->last_internal_pos == 0) {
+	    s->total_bytes_read = pos;
+	} else {
+	    off_t pos_movement = pos - s->last_caller_pos; /* Can be < 0. */
+
+	    if (pos_movement == 0) {
+		pos = s->last_internal_pos;
+	    } else {
+		/* The current file stream position differs from the
+		   last one, so caller must have called ftell/o().
+		   Or, this is the first call and the file position
+		   was not at 0. */
+
+		if (s->readpos + pos_movement >= s->msg_buf  &&
+		    s->readpos + pos_movement < s->end) {
+		    /* This is currently unused.  It could be used by
+		       parse_mime() if it was changed to use a global
+		       m_getfld_state. */
+		    /* We can shift readpos and remain within the
+		       bounds of msg_buf. */
+		    s->readpos += pos_movement;
+		    s->total_bytes_read += pos_movement;
+		    pos = s->last_internal_pos;
+		} else {
+		    size_t num_read;
+
+		    /* This seek skips past an integral number of
+		       chunks of size MSG_INPUT_SIZE. */
+		    fseeko (iob, pos/MSG_INPUT_SIZE * MSG_INPUT_SIZE, SEEK_SET);
+		    num_read = fread (s->msg_buf, 1, MSG_INPUT_SIZE, iob);
+		    s->readpos = s->msg_buf  +  pos % MSG_INPUT_SIZE;
+		    s->end = s->msg_buf + num_read;
+		    s->total_bytes_read = pos;
+		}
+	    }
+
+	    fseeko (iob, pos, SEEK_SET);
+	}
+    }
+}
+
+static void
+leave_getfld (m_getfld_state_t s) {
+    /* Save the internal file position that we use for the input buffer. */
+    s->last_internal_pos = ftello (s->iob);
+
+    /* Set file stream position so that callers can use ftell(). */
+    s->total_bytes_read += s->bytes_read;
+    fseeko (s->iob, s->total_bytes_read, SEEK_SET);
+    s->last_caller_pos = ftello (s->iob);
+}
+
+static size_t
+read_more (m_getfld_state_t s) {
+    /* Retain at least edelimlen characters that have already been
+       read so that we can back up to them in m_Eom(). */
+    ssize_t retain = s->edelimlen;
+    size_t num_read;
+
+    if (retain < s->end - s->readpos) retain = s->end - s->readpos;
+    /* assert (retain <= s->readpos - s->msg_buf <= sizeof msg_buf); */
+
+    /* Move what we want to retain at end of the buffer to the beginning. */
+    memmove (s->msg_buf, s->readpos - retain, retain);
+
+    s->readpos = s->msg_buf + retain;
+    num_read = fread (s->readpos, 1, MSG_INPUT_SIZE, s->iob);
+    s->end = s->readpos + num_read;
+
+    return num_read;
+}
+
+static int
+Getc (m_getfld_state_t s) {
+    if (s->end - s->readpos < 1) {
+	if (read_more (s) == 0) {
+	    /* Pretend that we read a character.  That's what stdio does. */
+	    ++s->readpos;
+	    return EOF;
+	}
+    }
+
+    ++s->bytes_read;
+    return s->readpos < s->end  ?  *s->readpos++  :  EOF;
+}
+
+static int
+Peek (m_getfld_state_t s) {
+    if (s->end - s->readpos < 1) {
+	if (read_more (s) == 0) {
+	    /* Pretend that we read a character.  That's what stdio does. */
+	    ++s->readpos;
+	    return EOF;
+	}
+    }
+
+    return s->readpos < s->end  ?  *s->readpos  :  EOF;
+}
+
+static int
+Ungetc (int c, m_getfld_state_t s) {
+    if (s->readpos == s->msg_buf) {
+	return EOF;
+    } else {
+	--s->bytes_read;
+	return *--s->readpos = c;
+    }
+}
 
 
 int
-m_getfld (int state, unsigned char *name, unsigned char *buf,
-          int bufsz, FILE *iob)
+m_getfld (m_getfld_state_t *gstate, unsigned char name[NAMESZ],
+          unsigned char *buf, int *bufsz, FILE *iob)
 {
-    register unsigned char  *bp, *cp, *ep, *sp;
-    register int cnt, c, i, j;
+    m_getfld_state_t s;
+    register unsigned char *cp;
+    register int max, n, c;
 
-    if ((c = Getc(iob)) < 0) {
-	msg_count = 0;
-	*buf = 0;
-	return FILEEOF;
+    enter_getfld (gstate, iob);
+    s = *gstate;
+
+    if ((c = Getc(s)) < 0) {
+	*bufsz = *buf = 0;
+	leave_getfld (s);
+	return s->state = FILEEOF;
     }
-    if (eom (c, iob)) {
-	if (! eom_action) {
+    if (eom (c, s)) {
+	if (! s->eom_action) {
 	    /* flush null messages */
-	    while ((c = Getc(iob)) >= 0 && eom (c, iob))
+	    while ((c = Getc(s)) >= 0 && eom (c, s))
 		;
+
 	    if (c >= 0)
-		ungetc(c, iob);
+		Ungetc(c, s);
 	}
-	msg_count = 0;
-	*buf = 0;
-	return FILEEOF;
+	*bufsz = *buf = 0;
+	leave_getfld (s);
+	return s->state = FILEEOF;
     }
 
-    switch (state) {
-	case FLDEOF: 
-	case BODYEOF: 
-	case FLD: 
+    switch (s->state) {
+	case FLD:
 	    if (c == '\n' || c == '-') {
 		/* we hit the header/body separator */
-		while (c != '\n' && (c = Getc(iob)) >= 0)
-		    ;
+		while (c != '\n' && (c = Getc(s)) >= 0) continue;
 
-		if (c < 0 || (c = Getc(iob)) < 0 || eom (c, iob)) {
-		    if (! eom_action) {
+		if (c < 0 || (c = Getc(s)) < 0 || eom (c, s)) {
+		    if (! s->eom_action) {
 			/* flush null messages */
-			while ((c = Getc(iob)) >= 0 && eom (c, iob))
+			while ((c = Getc(s)) >= 0 && eom (c, s))
 			    ;
 			if (c >= 0)
-			    ungetc(c, iob);
+			    Ungetc(c, s);
 		    }
-		    msg_count = 0;
-		    *buf = 0;
-		    return FILEEOF;
+		    *bufsz = *buf = 0;
+		    leave_getfld (s);
+		    return s->state = FILEEOF;
 		}
-		state = BODY;
+		s->state = BODY;
 		goto body;
 	    }
 	    /*
 	     * get the name of this component.  take characters up
 	     * to a ':', a newline or NAMESZ-1 characters, whichever
-	     * comes first.  
+	     * comes first.
 	     */
 	    cp = name;
-	    i = NAMESZ - 1;
-	    for (;;) {
-#ifdef LINUX_STDIO
-		bp = sp = (unsigned char *) iob->_IO_read_ptr - 1;
-		j = (cnt = ((long) iob->_IO_read_end -
-			(long) iob->_IO_read_ptr)  + 1) < i ? cnt : i;
-#elif defined(__DragonFly__)
-		bp = sp = (unsigned char *) ((struct __FILE_public *)iob)->_p - 1;
-		j = (cnt = ((struct __FILE_public *)iob)->_r+1) < i ? cnt : i;
-#else
-		bp = sp = (unsigned char *) iob->_ptr - 1;
-		j = (cnt = iob->_cnt+1) < i ? cnt : i;
-#endif
-		while (--j >= 0 && (c = *bp++) != ':' && c != '\n')
-		    *cp++ = c;
+	    max = NAMESZ - 1;
+	    /* Get the field name.  The first time through the loop,
+	       this copies out the first character, which was loaded
+	       into c prior to loop entry.  Initialize n to 1 to
+	       account for that. */
+	    for (n = 1;
+		 c != ':'  &&  c != '\n'  &&  c != EOF  &&  n < max;
+		 ++n, c = Getc (s)) {
+		*cp++ = c;
+	    }
 
-		j = bp - sp;
-		if ((cnt -= j) <= 0) {
-#ifdef LINUX_STDIO
-		    iob->_IO_read_ptr = iob->_IO_read_end;
-		    if (__underflow(iob) == EOF) {
-#elif defined(__DragonFly__)
-		    if (__srget(iob) == EOF) {
-#else
-		    if (_filbuf(iob) == EOF) {
-#endif
-			*cp = *buf = 0;
-			advise (NULL, "eof encountered in field \"%s\"", name);
-			return FMTERR;
-		    }
-#ifdef LINUX_STDIO
-		iob->_IO_read_ptr++; /* NOT automatic in __underflow()! */
-#endif
-		} else {
-#ifdef LINUX_STDIO
-		    iob->_IO_read_ptr = bp + 1;
-#elif defined(__DragonFly__)
-		    ((struct __FILE_public *)iob)->_p = bp + 1;
-		    ((struct __FILE_public *)iob)->_r = cnt - 1;
-#else
-		    iob->_ptr = bp + 1;
-		    iob->_cnt = cnt - 1;
-#endif
-		}
-		if (c == ':')
-		    break;
-
-		/*
-		 * something went wrong.  possibilities are:
-		 *  . hit a newline (error)
-		 *  . got more than namesz chars. (error)
-		 *  . hit the end of the buffer. (loop)
-		 */
-		if (c == '\n') {
-		    /* We hit the end of the line without seeing ':' to
-		     * terminate the field name.  This is usually (always?)
-		     * spam.  But, blowing up is lame, especially when
-		     * scan(1)ing a folder with such messages.  Pretend such
-		     * lines are the first of the body (at least mutt also
-		     * handles it this way). */
-
-		    /* See if buf can hold this line, since we were assuming
-		     * we had a buffer of NAMESZ, not bufsz. */
-		    /* + 1 for the newline */
-		    if (bufsz < j + 1) {
-			/* No, it can't.  Oh well, guess we'll blow up. */
-			*cp = *buf = 0;
-			advise (NULL, "eol encountered in field \"%s\"", name);
-			state = FMTERR;
-			goto finish;
-		    }
-		    memcpy (buf, name, j - 1);
-		    buf[j - 1] = '\n';
-		    buf[j] = '\0';
-		    /* mhparse.c:get_content wants to find the position of the
-		     * body start, but it thinks there's a blank line between
-		     * the header and the body (naturally!), so seek back so
-		     * that things line up even though we don't have that
-		     * blank line in this case.  Simpler parsers (e.g. mhl)
-		     * get extra newlines, but that should be harmless enough,
-		     * right?  This is a corrupt message anyway. */
-		    fseek (iob, ftell (iob) - 2, SEEK_SET);
-		    return BODY;
-		}
-		if ((i -= j) <= 0) {
-		    *cp = *buf = 0;
-		    advise (NULL, "field name \"%s\" exceeds %d bytes", name, NAMESZ - 2);
-		    state = LENERR;
-		    goto finish;
+	    /* Check for next character, which is either the space after
+	       the ':' or the first folded whitespace. */
+	    {
+		int next_char;
+		if (c == EOF  ||  (next_char = Peek (s)) == EOF) {
+		    *bufsz = *cp = *buf = 0;
+		    advise (NULL, "eof encountered in field \"%s\"", name);
+		    leave_getfld (s);
+		    return s->state = FMTERR;
 		}
 	    }
 
-	    while (isspace (*--cp) && cp >= name)
-		;
+	    /* If c isn't ':' here, something went wrong.  Possibilities are:
+	     *  . hit a newline (error)
+	     *  . got more than namesz chars. (error)
+	     */
+	    if (c == ':') {
+		/* Finished header name, fall through to FLDPLUS below. */
+	    } else if (c == '\n') {
+		/* We hit the end of the line without seeing ':' to
+		 * terminate the field name.  This is usually (always?)
+		 * spam.  But, blowing up is lame, especially when
+		 * scan(1)ing a folder with such messages.  Pretend such
+		 * lines are the first of the body (at least mutt also
+		 * handles it this way). */
+
+		/* See if buf can hold this line, since we were assuming
+		 * we had a buffer of NAMESZ, not bufsz. */
+		/* + 1 for the newline */
+		if (*bufsz < n + 1) {
+		    /* No, it can't.  Oh well, guess we'll blow up. */
+		    *bufsz = *cp = *buf = 0;
+		    advise (NULL, "eol encountered in field \"%s\"", name);
+		    s->state = FMTERR;
+		    break;
+		}
+		memcpy (buf, name, n - 1);
+		buf[n - 1] = '\n';
+		buf[n] = '\0';
+		/* The last character read was '\n'.  s->bytes_read
+		   (and n) include that, but it was not put into the
+		   name array in the for loop above.  So subtract 1. */
+		*bufsz = --s->bytes_read;  /* == n - 1 */
+		leave_getfld (s);
+		return s->state = BODY;
+	    } else if (max <= n) {
+		/* By design, the loop above discards the last character
+                   it had read.  It's in c, use it. */
+		*cp++ = c;
+		*bufsz = *cp = *buf = 0;
+		advise (NULL, "field name \"%s\" exceeds %d bytes", name,
+			NAMESZ - 2);
+		s->state = LENERR;
+		break;
+	    }
+
+	    /* Trim any trailing spaces from the end of name. */
+	    while (isspace (*--cp) && cp >= name) continue;
 	    *++cp = 0;
+	    /* readpos points to the first character of the field body. */
 	    /* fall through */
 
-	case FLDPLUS: 
+	case FLDPLUS: {
 	    /*
-	     * get (more of) the text of a field.  take
+	     * get (more of) the text of a field.  Take
 	     * characters up to the end of this field (newline
 	     * followed by non-blank) or bufsz-1 characters.
 	     */
-	    cp = buf; i = bufsz-1;
-	    for (;;) {
-#ifdef LINUX_STDIO
-		cnt = (long) iob->_IO_read_end - (long) iob->_IO_read_ptr;
-		bp = (unsigned char *) --iob->_IO_read_ptr;
-#elif defined(__DragonFly__)
-		cnt = ((struct __FILE_public *)iob)->_r++;
-		bp = (unsigned char *) --((struct __FILE_public *)iob)->_p;
-#else
-		cnt = iob->_cnt++;
-		bp = (unsigned char *) --iob->_ptr;
-#endif
-		c = cnt < i ? cnt : i;
-		while ((ep = locc( c, bp, '\n' ))) {
-		    /*
-		     * if we hit the end of this field, return.
-		     */
-		    if ((j = *++ep) != ' ' && j != '\t') {
-#ifdef LINUX_STDIO
-			j = ep - (unsigned char *) iob->_IO_read_ptr;
-			memcpy (cp, iob->_IO_read_ptr, j);
-			iob->_IO_read_ptr = ep;
-#elif defined(__DragonFly__)
-			j = ep - (unsigned char *) ((struct __FILE_public *)iob)->_p;
-			memcpy (cp, ((struct __FILE_public *)iob)->_p, j);
-			((struct __FILE_public *)iob)->_p = ep;
-			((struct __FILE_public *)iob)->_r -= j;
-#else
-			j = ep - (unsigned char *) iob->_ptr;
-			memcpy (cp, iob->_ptr, j);
-			iob->_ptr = ep;
-			iob->_cnt -= j;
-#endif
-			cp += j;
-			state = FLD;
-			goto finish;
-		    }
-		    c -= ep - bp;
-		    bp = ep;
+	    int finished;
+
+	    cp = buf;
+	    max = *bufsz-1;
+	    n = 0;
+	    for (finished = 0; ! finished; ) {
+		while (c != '\n'  &&  c != EOF  &&  n++ < max) {
+		    *cp++ = c = Getc (s);
 		}
-		/*
-		 * end of input or dest buffer - copy what we've found.
-		 */
-#ifdef LINUX_STDIO
-		c += bp - (unsigned char *) iob->_IO_read_ptr;
-		memcpy( cp, iob->_IO_read_ptr, c);
-#elif defined(__DragonFly__)
-		c += bp - (unsigned char *) ((struct __FILE_public *)iob)->_p;
-		memcpy( cp, ((struct __FILE_public *)iob)->_p, c);
-#else
-		c += bp - (unsigned char *) iob->_ptr;
-		memcpy( cp, iob->_ptr, c);
-#endif
-		i -= c;
-		cp += c;
-		if (i <= 0) {
+
+		if (c != EOF) c = Peek (s);
+		if (max < n) {
 		    /* the dest buffer is full */
-#ifdef LINUX_STDIO
-		    iob->_IO_read_ptr += c;
-#elif defined(__DragonFly__)
-		    ((struct __FILE_public *)iob)->_r -= c;
-		    ((struct __FILE_public *)iob)->_p += c;
-#else
-		    iob->_cnt -= c;
-		    iob->_ptr += c;
-#endif
-		    state = FLDPLUS;
-		    break;
-		}
-		/* 
-		 * There's one character left in the input buffer.
-		 * Copy it & fill the buffer.  If the last char
-		 * was a newline and the next char is not whitespace,
-		 * this is the end of the field.  Otherwise loop.
-		 */
-		--i;
-#ifdef LINUX_STDIO
-		*cp++ = j = *(iob->_IO_read_ptr + c);
-		iob->_IO_read_ptr = iob->_IO_read_end;
-		c = __underflow(iob);
-		iob->_IO_read_ptr++;    /* NOT automatic! */
-#elif defined(__DragonFly__)
-		*cp++ =j = *(((struct __FILE_public *)iob)->_p + c);
-		c = __srget(iob);
-#else
-		*cp++ = j = *(iob->_ptr + c);
-		c = _filbuf(iob);
-#endif
-                if (c == EOF || 
-		  ((j == '\0' || j == '\n') && c != ' ' && c != '\t')) {
-		    if (c != EOF) {
-#ifdef LINUX_STDIO
-			--iob->_IO_read_ptr;
-#elif defined(__DragonFly__)
-			--((struct __FILE_public *)iob)->_p;
-			++((struct __FILE_public *)iob)->_r;
-#else
-			--iob->_ptr;
-			++iob->_cnt;
-#endif
-		    }
-		    state = FLD;
-		    break;
+		    s->state = FLDPLUS;
+		    finished = 1;
+		} else if (c != ' '  &&  c != '\t') {
+		    /* The next character is not folded whitespace, so
+		       prepare to move on to the next field.  It's OK
+		       if c is EOF, it will be handled on the next
+		       call to m_getfld (). */
+		    s->state = FLD;
+		    finished = 1;
+		} else {
+		    /* Folded header field, continues on the next line. */
 		}
 	    }
+	    *bufsz = s->bytes_read;
 	    break;
+        }
 
-	case BODY: 
 	body:
+	case BODY: {
 	    /*
 	     * get the message body up to bufsz characters or the
-	     * end of the message.  Sleazy hack: if bufsz is negative
-	     * we assume that we were called to copy directly into
-	     * the output buffer and we don't add an eos.
+	     * end of the message.
 	     */
-	    i = (bufsz < 0) ? -bufsz : bufsz-1;
-#ifdef LINUX_STDIO
-	    bp = (unsigned char *) --iob->_IO_read_ptr;
-	    cnt = (long) iob->_IO_read_end - (long) iob->_IO_read_ptr;
-#elif defined(__DragonFly__)
-	    bp = (unsigned char *) --((struct __FILE_public *)iob)->_p;
-	    cnt = ++((struct __FILE_public *)iob)->_r;
-#else
-	    bp = (unsigned char *) --iob->_ptr;
-	    cnt = ++iob->_cnt;
-#endif
-	    c = (cnt < i ? cnt : i);
-	    if (msg_style != MS_DEFAULT && c > 1) {
+	    unsigned char *bp;
+
+	    max = *bufsz-1;
+	    /* Back up and store the current position. */
+	    bp = --s->readpos;
+	    c = s->end - s->readpos < max  ?  s->end - s->readpos  :  max;
+	    if (s->msg_style != MS_DEFAULT && c > 1) {
 		/*
 		 * packed maildrop - only take up to the (possible)
 		 * start of the next message.  This "matchc" should
@@ -498,7 +655,9 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 		 * algorithms vs. brute force.)  Since I (currently)
 		 * run MH on a vax, we use the matchc instruction. --vj
 		 */
-		if ((ep = matchc( fdelimlen, fdelim, c, bp )))
+		unsigned char *ep;
+
+		if ((ep = matchc( s->fdelimlen, s->fdelim, c, bp )))
 		    c = ep - bp + 1;
 		else {
 		    /*
@@ -514,8 +673,10 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 		     * ends with one of the characters in the pattern
 		     * (excluding the first and last), we do only one test.
 		     */
+		    unsigned char *sp;
+
 		    ep = bp + c - 1;
-		    if ((sp = pat_map[*ep])) {
+		    if ((sp = s->pat_map[*ep])) {
 			do {
 			    /* This if() is true unless (a) the buffer is too
 			     * small to contain this delimiter prefix, or
@@ -527,7 +688,7 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 			     * should have found it.  Thus it's not a delim
 			     * and we know we won't get a match.
 			     */
-			    if (((sp - fdelim) + 2) <= c) {
+			    if (((sp - s->fdelim) + 2) <= c) {
 				cp = sp;
 				/* Unfortunately although fdelim has a preceding NUL
 				 * we can't use this as a sentinel in case the buffer
@@ -535,9 +696,9 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 				 * would cause us to run off the front of fdelim).
 				 */
 				while (*--ep == *--cp)
-				    if (cp < fdelim)
+				    if (cp < s->fdelim)
 					break;
-				if (cp < fdelim) {
+				if (cp < s->fdelim) {
 				    /* we matched the entire delim prefix,
 				     * so only take the buffer up to there.
 				     * we know ep >= bp -- check above prevents underrun
@@ -548,45 +709,47 @@ m_getfld (int state, unsigned char *name, unsigned char *buf,
 			    }
 			    /* try matching one less char of delim string */
 			    ep = bp + c - 1;
-			} while (--sp > fdelim);
+			} while (--sp > s->fdelim);
 		    }
 		}
 	    }
 	    memcpy( buf, bp, c );
-#ifdef LINUX_STDIO
-	    iob->_IO_read_ptr += c;
-#elif defined(__DragonFly__)
-	    ((struct __FILE_public *)iob)->_r -= c;
-	    ((struct __FILE_public *)iob)->_p += c;
-#else
-	    iob->_cnt -= c;
-	    iob->_ptr += c;
-#endif
-	    if (bufsz < 0) {
-		msg_count = c;
-		return (state);
-	    }
+	    /* Advance the current position to reflect the copy out.
+	       c is less than or equal to the number of bytes remaining
+	       in the read buffer, so will not overrun it. */
+	    s->readpos += c;
 	    cp = buf + c;
+	    /* Subtract 1 from c because the first character was read by
+	       Getc(), and therefore already accounted for in s->bytes_read. */
+	    s->bytes_read += c - 1;
+	    *bufsz = s->bytes_read;
 	    break;
+        }
 
-	default: 
-	    adios (NULL, "m_getfld() called with bogus state of %d", state);
+	default:
+	    adios (NULL, "m_getfld() called with bogus state of %d", s->state);
     }
-finish:
+
     *cp = 0;
-    msg_count = cp - buf;
-    return (state);
+    leave_getfld (s);
+
+    return s->state;
 }
 
 
 void
-m_unknown(FILE *iob)
+m_unknown(m_getfld_state_t *gstate, FILE *iob)
 {
+    m_getfld_state_t s;
     register int c;
-    register long pos;
-    char text[10];
+    char text[MAX_DELIMITER_SIZE];
+    char from[] = "From ";
     register char *cp;
     register char *delimstr;
+    unsigned int i;
+
+    enter_getfld (gstate, iob);
+    s = *gstate;
 
 /*
  * Figure out what the message delimitter string is for this
@@ -601,34 +764,35 @@ m_unknown(FILE *iob)
  * specified when nmh was built (or from the mts.conf file).
  */
 
-    msg_style = MS_UNKNOWN;
+    s->msg_style = MS_UNKNOWN;
 
-    pos = ftell (iob);
-    if (fread (text, sizeof(*text), 5, iob) == 5
-	    && strncmp (text, "From ", 5) == 0) {
-	msg_style = MS_MBOX;
+    for (i = 0, cp = text; i < sizeof text; ++i, ++cp) {
+	if ((*cp = Getc (s)) == EOF) {
+	    break;
+	}
+    }
+
+    if (i == sizeof from-1  &&  strncmp (text, "From ", sizeof from-1) == 0) {
+	s->msg_style = MS_MBOX;
 	delimstr = "\nFrom ";
-	while ((c = getc (iob)) != '\n' && c >= 0)
-	    ;
+	while ((c = Getc (s)) != '\n' && c >= 0) continue;
     } else {
 	/* not a Unix style maildrop */
-	fseek (iob, pos, SEEK_SET);
-	if (mmdlm2 == NULL || *mmdlm2 == 0)
-	    mmdlm2 = "\001\001\001\001\n";
+	s->readpos -= s->bytes_read;
 	delimstr = mmdlm2;
-	msg_style = MS_MMDF;
+	s->msg_style = MS_MMDF;
     }
     c = strlen (delimstr);
-    fdelim = (unsigned char *) mh_xmalloc((size_t) (c + 3));
-    *fdelim++ = '\0';
-    *fdelim = '\n';
-    msg_delim = (char *)fdelim+1;
-    edelim = (unsigned char *)msg_delim+1;
-    fdelimlen = c + 1;
-    edelimlen = c - 1;
-    strcpy (msg_delim, delimstr);
-    delimend = (unsigned char *)msg_delim + edelimlen;
-    if (edelimlen <= 1)
+    s->fdelim = (unsigned char *) mh_xmalloc((size_t) (c + 3));
+    *s->fdelim++ = '\0';
+    *s->fdelim = '\n';
+    s->msg_delim = (char *)s->fdelim+1;
+    s->edelim = (unsigned char *)s->msg_delim+1;
+    s->fdelimlen = c + 1;
+    s->edelimlen = c - 1; /* == strlen (delimstr) */
+    strcpy (s->msg_delim, delimstr);
+    s->delimend = (unsigned char *)s->msg_delim + s->edelimlen;
+    if (s->edelimlen <= 1)
 	adios (NULL, "maildrop delimiter must be at least 2 bytes");
     /*
      * build a Boyer-Moore end-position map for the matcher in m_getfld.
@@ -636,34 +800,36 @@ m_unknown(FILE *iob)
      * separator) or the last char (since the matchc would have found it
      * if it was a real delim).
      */
-    pat_map = (unsigned char **) calloc (256, sizeof(unsigned char *));
+    s->pat_map = (unsigned char **) calloc (256, sizeof(unsigned char *));
 
-    for (cp = (char *) fdelim + 1; cp < (char *) delimend; cp++ )
-	pat_map[(unsigned char)*cp] = (unsigned char *) cp;
+    for (cp = (char *) s->fdelim + 1; cp < (char *) s->delimend; cp++ )
+	s->pat_map[(unsigned char)*cp] = (unsigned char *) cp;
 
-    if (msg_style == MS_MMDF) {
+    if (s->msg_style == MS_MMDF) {
 	/* flush extra msg hdrs */
-	while ((c = Getc(iob)) >= 0 && eom (c, iob))
+	while ((c = Getc(s)) >= 0 && eom (c, s))
 	    ;
 	if (c >= 0)
-	    ungetc(c, iob);
+	    Ungetc(c, s);
     }
+
+    leave_getfld (s);
 }
 
 
 void
-m_eomsbr (int (*action)(int))
+m_eomsbr (m_getfld_state_t s, int (*action)(int))
 {
-    if ((eom_action = action)) {
-	msg_style = MS_MSH;
-	*msg_delim = 0;
-	fdelimlen = 1;
-	delimend = fdelim;
+    if ((s->eom_action = action)) {
+	s->msg_style = MS_MSH;
+	*s->msg_delim = 0;
+	s->fdelimlen = 1;
+	s->delimend = s->fdelim;
     } else {
-	msg_style = MS_MMDF;
-	msg_delim = (char *)fdelim + 1;
-	fdelimlen = strlen((char *)fdelim);
-	delimend = (unsigned char *)(msg_delim + edelimlen);
+	s->msg_style = MS_MMDF;
+	s->msg_delim = (char *)s->fdelim + 1;
+	s->fdelimlen = strlen((char *)s->fdelim);
+	s->delimend = (unsigned char *)(s->msg_delim + s->edelimlen);
     }
 }
 
@@ -673,32 +839,35 @@ m_eomsbr (int (*action)(int))
  */
 
 static int
-m_Eom (int c, FILE *iob)
+m_Eom (m_getfld_state_t s, int c)
 {
-    register long pos = 0L;
     register int i;
-    char text[10];
+    char text[MAX_DELIMITER_SIZE];
+    char *cp;
 
-    pos = ftell (iob);
-    if ((i = fread (text, sizeof *text, edelimlen, iob)) != edelimlen
-	    || strncmp (text, (char *)edelim, edelimlen)) {
-	if (i == 0 && msg_style == MS_MBOX)
+    for (i = 0, cp = text; i < s->edelimlen; ++i, ++cp) {
+	if ((*cp = Getc (s)) == EOF) {
+	    break;
+	}
+    }
+
+    if (i != s->edelimlen  ||
+        strncmp (text, (char *)s->edelim, s->edelimlen)) {
+	if (i == 0 && s->msg_style == MS_MBOX)
 	    /* the final newline in the (brain damaged) unix-format
 	     * maildrop is part of the delimitter - delete it.
 	     */
 	    return 1;
 
-#if 0
-	fseek (iob, pos, SEEK_SET);
-#endif
-
-	fseek (iob, (long)(pos-1), SEEK_SET);
-	getc (iob);		/* should be OK */
+	/* Did not find delimiter, so restore the read position.
+	   Note that on input, a character had already been read
+	   with Getc().  It will be unget by m_getfld () on return. */
+	s->readpos -= s->bytes_read - 1;
 	return 0;
     }
 
-    if (msg_style == MS_MBOX) {
-	while ((c = getc (iob)) != '\n')
+    if (s->msg_style == MS_MBOX) {
+	while ((c = Getc (s)) != '\n')
 	    if (c < 0)
 		break;
     }
@@ -725,22 +894,7 @@ matchc(int patln, char *pat, int strln, char *str)
 		sp = str; pp = pat;
 		while (pp < ep && *sp++ == *pp)
 			pp++;
-		if (pp >= ep) 
+		if (pp >= ep)
 			return ((unsigned char *)--str);
 	}
 }
-
-
-/*
- * Locate character "term" in the next "cnt" characters of "src".
- * If found, return its address, otherwise return 0.
- */
-
-static unsigned char *
-locc(int cnt, unsigned char *src, unsigned char term)
-{
-    while (*src++ != term && --cnt > 0);
-
-    return (cnt > 0 ? --src : (unsigned char *)0);
-}
-
