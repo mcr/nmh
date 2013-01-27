@@ -1027,9 +1027,10 @@ readid (int msgnum)
 		    else
 			continue;
 		}
-		while (state == FLDPLUS)
+		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
 		    state = m_getfld (&gstate, name, buf, &bufsz, zp);
+		}
 		continue;
 
 	    default: 

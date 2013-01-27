@@ -107,9 +107,10 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 			fmt_appendcomp(i, name, msgbuf);
 		    }
 		}
-		while (state == FLDPLUS)
+		while (state == FLDPLUS) {
 		    msg_count = sizeof msgbuf;
 		    state = m_getfld (&gstate, name, msgbuf, &msg_count, tmp);
+		}
 		break;
 
 	    case LENERR:
