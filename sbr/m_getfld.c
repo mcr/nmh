@@ -222,9 +222,9 @@ static unsigned char *matchc(int, char *, int, char *);
  * separate messages in a maildrop, such as mbox "From ".
  *
  * Some of the tests in the test suite assume a MSG_INPUT_SIZE
- * of 8192.
+ * of 4096.
  */
-#define MSG_INPUT_SIZE (BUFSIZ >= 1024 ? BUFSIZ : 1024)
+#define MSG_INPUT_SIZE 4096
 #define MAX_DELIMITER_SIZE 5
 
 struct m_getfld_state {
