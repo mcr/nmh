@@ -644,7 +644,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 {
     int pid, status, vecp;
     char altpath[BUFSIZ], linkpath[BUFSIZ];
-    char *cp, *vec[MAXARGS];
+    char *cp, *prog, **vec;
     struct stat st;
 
 #ifdef HAVE_LSTAT
@@ -712,15 +712,15 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 		m_putenv ("editalt", altpath);
 	    }
 
-	    vecp = 0;
-	    vec[vecp++] = r1bindex (*ed, '/');
+	    vec = argsplit(*ed, &prog, &vecp);
+
 	    if (arg)
 		while (*arg)
 		    vec[vecp++] = *arg++;
 	    vec[vecp++] = file;
 	    vec[vecp] = NULL;
 
-	    execvp (*ed, vec);
+	    execvp (prog, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (*ed);
 	    _exit (-1);
