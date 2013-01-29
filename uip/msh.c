@@ -808,6 +808,7 @@ msh_ready (int msgnum, int full)
 	return yp;
     }
 
+    scan_reset_m_getfld_state ();
     scan_eom_action ((int (*)()) 0);	/* XXX */
     fseek (fp, Msgs[msgnum].m_start, SEEK_SET);
     return fp;

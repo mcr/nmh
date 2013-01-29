@@ -112,6 +112,7 @@ int remdir (char *);
 void scan_detect_mbox_style (FILE *);
 void scan_finished ();
 void scan_eom_action (int (*)());
+void scan_reset_m_getfld_state ();
 int seq_addmsg (struct msgs *, char *, int, int, int);
 int seq_addsel (struct msgs *, char *, int, int);
 char *seq_bits (struct msgs *);
