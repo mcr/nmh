@@ -603,6 +603,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
      * Scan through the message and examine the various header fields,
      * as well as locate the beginning of the message body.
      */
+    m_getfld_track_filepos (&gstate, in);
     for (compnum = 1;;) {
 	int bufsz = sizeof buffer;
 	switch (state = m_getfld (&gstate, name, buffer, &bufsz, in)) {

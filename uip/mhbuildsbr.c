@@ -162,6 +162,7 @@ build_mime (char *infile, int directives)
      * draft into the linked list of header fields for
      * the new MIME message.
      */
+    m_getfld_track_filepos (&gstate, in);
     for (compnum = 1;;) {
 	int bufsz = sizeof buf;
 	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {

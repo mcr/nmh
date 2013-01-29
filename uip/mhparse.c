@@ -276,6 +276,7 @@ get_content (FILE *in, char *file, int toplevel)
      * Parse the header fields for this
      * content into a linked list.
      */
+    m_getfld_track_filepos (&gstate, in);
     for (compnum = 1;;) {
 	int bufsz = sizeof buf;
 	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {

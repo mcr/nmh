@@ -79,6 +79,7 @@ char *m_draft (char *, char *, int, int *);
 void m_eomsbr (m_getfld_state_t, int (*)(int));
 void m_getfld_state_reset (m_getfld_state_t *);
 void m_getfld_state_destroy (m_getfld_state_t *);
+void m_getfld_track_filepos (m_getfld_state_t *, FILE *);
 int m_getfld (m_getfld_state_t *, unsigned char[NAMESZ], unsigned char *, int *, FILE *);
 int m_gmprot (void);
 char *m_maildir (char *);

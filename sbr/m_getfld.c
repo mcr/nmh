@@ -266,6 +266,7 @@ struct m_getfld_state {
     int edelimlen;
     int (*eom_action)(int);
     int state;
+    int track_filepos;
 };
 
 static
@@ -285,6 +286,7 @@ m_getfld_state_init (m_getfld_state_t *gstate, FILE *iob) {
     s->fdelimlen = s->edelimlen = 0;
     s->eom_action = NULL;
     s->state = FLD;
+    s->track_filepos = 0;
 }
 
 /* scan() needs to force a state an initial state of FLD for each message. */
@@ -293,6 +295,18 @@ m_getfld_state_reset (m_getfld_state_t *gstate) {
     if (*gstate) {
 	(*gstate)->state = FLD;
     }
+}
+
+/* If the caller interleaves ftell*()/fseek*() calls with m_getfld()
+   calls, m_getfld() must keep track of the file position.  The caller
+   must use this function to inform m_getfld(). */
+void
+m_getfld_track_filepos (m_getfld_state_t *gstate, FILE *iob) {
+    if (! *gstate) {
+	m_getfld_state_init (gstate, iob);
+    }
+
+    (*gstate)->track_filepos = 1;
 }
 
 void m_getfld_state_destroy (m_getfld_state_t *gstate) {
@@ -353,7 +367,7 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
        readpos shift code being currently unused. */
     s->iob = iob;
 
-    if (pos != 0  ||  s->last_internal_pos != 0) {
+    if (s->track_filepos  &&  (pos != 0  ||  s->last_internal_pos != 0)) {
 	if (s->last_internal_pos == 0) {
 	    s->total_bytes_read = pos;
 	} else {
@@ -397,13 +411,16 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
 
 static void
 leave_getfld (m_getfld_state_t s) {
-    /* Save the internal file position that we use for the input buffer. */
-    s->last_internal_pos = ftello (s->iob);
-
-    /* Set file stream position so that callers can use ftell(). */
     s->total_bytes_read += s->bytes_read;
-    fseeko (s->iob, s->total_bytes_read, SEEK_SET);
-    s->last_caller_pos = ftello (s->iob);
+
+    if (s->track_filepos) {
+	/* Save the internal file position that we use for the input buffer. */
+	s->last_internal_pos = ftello (s->iob);
+
+	/* Set file stream position so that callers can use ftell(). */
+	fseeko (s->iob, s->total_bytes_read, SEEK_SET);
+	s->last_caller_pos = ftello (s->iob);
+    }
 }
 
 static size_t
