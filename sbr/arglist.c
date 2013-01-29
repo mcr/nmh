@@ -25,10 +25,10 @@
  *
  * - If there are no spaces or shell metacharacters in "command", then
  *   take it as-is.
- * - If there are spaces in command, space-split command string and
- *   append an argument list to it.
+ * - If there are spaces in command, space-split command string.
  * - If we have shell metacharacters, run the command using
- *   /bin/sh -c 'command "${@}"'.
+ *   /bin/sh -c 'command "$@"'.  In this case, any additional arguments
+ *   appended to the arglist will be expanded by "$@".
  *
  * In all cases additional arguments can be added to the argv[] array.
  */
@@ -122,4 +122,23 @@ argsplit(char *command, char **file, int *argp)
     	*argp = 4;
 
     return argvarray;
+}
+
+/*
+ * Free our argument array
+ */
+
+void
+arglist_free(char *command, char **argvarray)
+{
+    int i;
+
+    if (command != NULL)
+    	free(command);
+
+    if (argvarray != NULL) {
+    	for (i = 0; argvarray[i] != NULL; i++)
+	    free(argvarray[i]);
+	free(argvarray);
+    }
 }

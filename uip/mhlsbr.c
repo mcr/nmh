@@ -1648,6 +1648,8 @@ static void
 m_popen (char *name)
 {
     int pd[2];
+    char *file;
+    char **arglist;
 
     if (mhl_action && (sd = dup (fileno (stdout))) == NOTOK)
 	adios ("standard output", "unable to dup()");
@@ -1668,7 +1670,8 @@ m_popen (char *name)
 		dup2 (pd[0], fileno (stdin));
 		close (pd[0]);
 	    }
-	    execlp (name, r1bindex (name, '/'), NULL);
+	    arglist = argsplit(name, &file, NULL);
+	    execvp (file, arglist);
 	    fprintf (stderr, "unable to exec ");
 	    perror (name);
 	    _exit (-1);

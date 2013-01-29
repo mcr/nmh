@@ -27,6 +27,8 @@ void adios (char *, char *, ...) NORETURN;
 void admonish (char *, char *, ...);
 void advertise (char *, char *, char *, va_list);
 void advise (char *, char *, ...);
+char **argsplit (char *, char **, int *);
+void arglist_free (char *, char **);
 void ambigsw (char *, struct swit *);
 int atooi(char *);
 char **brkstring (char *, char *, char *);
