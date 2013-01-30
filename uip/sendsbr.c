@@ -908,8 +908,10 @@ static void
 alert (char *file, int out)
 {
     pid_t child_id;
-    int i, in;
+    int i, in, argp;
     char buf[BUFSIZ];
+    char *program;
+    char **arglist;
 
     for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
 	sleep (5);
@@ -949,8 +951,14 @@ alert (char *file, int out)
 	    snprintf (buf, sizeof(buf), "send failed on %s",
 			forwsw ? "enclosed draft" : file);
 
-	    execlp (mailproc, r1bindex (mailproc, '/'), getusername (),
-		    "-subject", buf, NULL);
+	    arglist = argsplit(mailproc, &program, &argp);
+
+	    arglist[argp++] = getusername();
+	    arglist[argp++] = "-subject";
+	    arglist[argp++] = buf;
+	    arglist[argp] = NULL;
+
+	    execvp (program, arglist);
 	    fprintf (stderr, "unable to exec ");
 	    perror (mailproc);
 	    _exit (-1);

@@ -24,7 +24,7 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 {
     pid_t pid;
     int msgnum, vecp, retval = 0;
-    char buf[100], *dp, **vec;
+    char buf[100], *dp, **vec, *prog;
     char	msgpath[BUFSIZ];
 
     /*
@@ -40,10 +40,18 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 	/* Mark that the sequence information has changed */
 	mp->msgflags |= SEQMOD;
 
-	vec = (char **) calloc ((size_t) (mp->numsel + 2), sizeof(*vec));
+	vec = argsplit(rmmproc, &prog, &vecp);
+
+	/*
+	 * argsplit allocates a MAXARGS vector by default,  If we need
+	 * something bigger, allocate it ourselves
+	 */
+
+	if (mp->numsel + vecp + 1 > MAXARGS)
+	    vec = (char **) realloc (vec, (size_t) ((mp->numsel + vecp + 1) *
+						     sizeof(*vec)));
 	if (vec == NULL)
 	    adios (NULL, "unable to allocate exec vector");
-	vecp = 1;
 	for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	    if (is_selected (mp, msgnum) &&
 		!(vec[vecp++] = strdup (m_name (msgnum))))
@@ -52,7 +60,6 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 	vec[vecp] = NULL;
 
 	fflush (stdout);
-	vec[0] = r1bindex (rmmproc, '/');
 
 	switch (pid = vfork()) {
 	case -1:
@@ -60,12 +67,13 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 	    return -1;
 
 	case 0:
-	    execvp (rmmproc, vec);
+	    execvp (prog, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (rmmproc);
 	    _exit (-1);
 
 	default:
+	    arglist_free(prog, vec);
 	    return (pidwait (pid, -1));
 	}
     }

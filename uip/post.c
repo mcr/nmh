@@ -1787,8 +1787,9 @@ static void
 fcc (char *file, char *folder)
 {
     pid_t child_id;
-    int i, status;
+    int i, status, argp;
     char fold[BUFSIZ];
+    char **arglist, *program;
 
     if (verbose)
 	printf ("  %sFcc %s: ", msgstate == RESENT ? "Resent-" : "", folder);
@@ -1811,8 +1812,14 @@ fcc (char *file, char *folder)
 		    *folder == '+' || *folder == '@' ? "" : "+", folder);
 
 	    /* now exec the fileproc */
-	    execlp (fileproc, r1bindex (fileproc, '/'),
-		    "-link", "-file", file, fold, NULL);
+
+	    arglist = argsplit(fileproc, &program, &argp);
+	    arglist[argp++] = "-link";
+	    arglist[argp++] = "-file";
+	    arglist[argp++] = file;
+	    arglist[argp++] = fold;
+	    arglist[argp] = NULL;
+	    execvp (program, arglist);
 	    _exit (-1);
 
 	default: 
