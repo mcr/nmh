@@ -128,10 +128,13 @@ check_for_hard_links () {
 #### If different, global variable "failed" is incremented.
 check() {
     #### POSIX diff should support -c.
-    if diff -c "$1" "$2"; then
+    if cmp -s "$1" "$2"; then
       test $# -lt 3 -o "$3" != 'keep first'  &&  rm -f "$1"
       rm -f "$2"
     else
+      echo
+      diff -c "$1" "$2"
+      echo
       echo "$0: test failed, outputs are in $1 and $2."
       failed=`expr ${failed:-0} + 1`
     fi
