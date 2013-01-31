@@ -258,7 +258,9 @@ EOF
 
 echo 13 >"$expected"
 
+set +e
 pick -subject foobar 13 >"$actual" 2>&1
+set -e
 check "$expected" "$actual"
 
 # Test -nosequence.
