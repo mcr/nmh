@@ -96,8 +96,14 @@ if [ -t 1 ] ; then
   }
 else
   # don't emit anything if stdout is not connected to a tty.
-  progress_update () :
-  progress_done () :
+  progress_update ()
+  {
+	:
+  }
+  progress_done ()
+  {
+	:
+  }
 fi
 
 check_for_hard_links () {
