@@ -24,6 +24,8 @@
 /sbr/dtimep.c
 /cscope.files
 /cscope.out
+/cscope.in.out
+/cscope.po.out
 
 # Removed by distclean:
 .deps/
@@ -101,6 +103,7 @@ a.out.dSYM/
 /test/fakepop
 /test/getfullname
 /test/getfqdn
+/test/getcwidth
 
 # Removed by mostlyclean:
 *.o

@@ -52,17 +52,18 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
     char name[NAMESZ], field[BUFSIZ];
     register struct node *np;
     register struct procstr *ps;
+    m_getfld_state_t gstate = 0;
 
     if (npp == NULL && (npp = opp) == NULL) {
 	admonish (NULL, "bug: readconfig called but pump not primed");
 	return;
     }
 
-    for (state = FLD;;) {
-	switch (state = m_getfld (state, name, field, sizeof(field), ib)) {
+    for (;;) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, ib)) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 		np = (struct node *) mh_xmalloc (sizeof(*np));
 		*npp = np;
 		*(npp = &np->n_next) = NULL;
@@ -70,7 +71,8 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 		if (state == FLDPLUS) {
 		    cp = getcpy (field);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, field, sizeof(field), ib);
+			fieldsz = sizeof field;
+			state = m_getfld (&gstate, name, field, &fieldsz, ib);
 			cp = add (field, cp);
 		    }
 		    np->n_field = trimcpy (cp);
@@ -89,12 +91,9 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 			*ps->procnaddr = np->n_field;
 			break;
 		    }
-		if (state == FLDEOF)
-		    break;
 		continue;
 
 	    case BODY:
-	    case BODYEOF:
 		adios (NULL, "no blank lines are permitted in %s", file);
 
 	    case FILEEOF:
@@ -105,6 +104,7 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * Special handling for the pager processes: lproc and moreproc.

@@ -10,25 +10,23 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	INPLSW	0
-    { "inplace", 0 },
-#define	NINPLSW	1
-    { "noinplace", 0 },
-#define	QIETSW	2
-    { "quiet", 0 },
-#define	NQIETSW	3
-    { "noquiet", 0 },
-#define	VERBSW	4
-    { "verbose", 0 },
-#define	NVERBSW	5
-    { "noverbose", 0 },
-#define VERSIONSW 6
-    { "version", 0 },
-#define	HELPSW	7
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define BURST_SWITCHES \
+    X("inplace", 0, INPLSW) \
+    X("noinplace", 0, NINPLSW) \
+    X("quiet", 0, QIETSW) \
+    X("noquiet", 0, NQIETSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(BURST);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(BURST, switches);
+#undef X
 
 struct smsg {
     off_t s_start;

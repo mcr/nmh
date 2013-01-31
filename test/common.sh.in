@@ -13,9 +13,8 @@ test -z "$auxexecdir"  &&  auxexecdir="@libdir@"
 test -z "$bindir"  &&  bindir="@bindir@"
 test -z "$mandir"  &&  mandir="@mandir@"
 test -z "$sysconfdir"  &&  sysconfdir="@sysconfdir@"
-test -z "$pagerpath"  &&  pagerpath="@pagerpath@"
 test -z "$MULTIBYTE_ENABLED"  &&  MULTIBYTE_ENABLED="@MULTIBYTE_ENABLED@"
-export MH_TEST_DIR auxexecdir bindir mandir sysconfdir pagerpath
+export MH_TEST_DIR auxexecdir bindir mandir sysconfdir
 export MULTIBYTE_ENABLED
 
 test -z "$MH_INST_DIR"  &&  MH_INST_DIR="${MH_TEST_DIR}/inst"

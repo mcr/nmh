@@ -3,8 +3,7 @@
 # Configures and builds nmh.
 # * This script must be invoked from an nmh source directory.
 # * This script retrieves configuration from the first existing nmh
-#   installation on your $PATH, if any, as well as any $EDITOR/$VISUAL
-#   and $PAGER environment variable settings.
+#   installation on your $PATH, if any.
 # * Unless the -y option is provided, this script then interactively
 #   walks you through confirmation of common configuration settings.
 #
@@ -45,7 +44,6 @@
 ####
 #### OS-specific setup.
 ####
-which=which
 ldd=ldd
 
 ####
@@ -111,19 +109,25 @@ config_mts=smtp
 config_smtpservers=localhost
 config_sasl=n
 config_tls=n
-config_editor=vi
-for i in more less most cat; do
-  if which $i >/dev/null 2>&1; then
-    config_pager=$i
-    break
-  fi
-done
 config_debug=n
+
+
+#### Find location of a program.  Bourne shell just puts the name in
+#### $0 if it's found from the PATH, so search that if necessary.
+finddir() {
+  case $1 in
+    */*) dirname "$1" ;;
+    *  ) IFS=:
+         for d in $PATH; do
+           [ -f "${d:=.}/$1"  -a  -x "$d/$1" ]  &&  printf %s "$d"  &&  break
+         done ;;
+  esac
+}
+
 
 if install-mh -check >/dev/null 2>&1; then
   # Determine config options from installed nmh.
-  mhparam=`which mhparam`
-  mhbin=`dirname "$mhparam"`
+  mhbin=`finddir install-mh`
 
   config_prefix=`cd $mhbin/.. && pwd`
 
@@ -153,14 +157,6 @@ if install-mh -check >/dev/null 2>&1; then
     config_tls=y
   fi
 fi
-
-if [ "$EDITOR" ]; then
-  config_editor="$EDITOR"
-elif [ "$VISUAL" ]; then
-  config_editor="$VISUAL"
-fi
-
-[ "$PAGER" ]  &&  config_pager="$PAGER"
 
 [ $debug -ge 1 ]  &&  config_debug=y
 
@@ -201,14 +197,6 @@ if [ $yes -eq 0 ]; then
     config_tls=n
   fi
 
-  printf 'Default editor [%s]: ' $config_editor
-  read editor
-  [ "$editor" ]  &&  config_editor="$editor"
-
-  printf 'Pager [%s]: ' $config_pager
-  read pager
-  [ "$pager" ]  &&  config_pager="$pager"
-
   #### Don't confirm debug here:  obey the -d option to this script.
 fi
 
@@ -225,10 +213,6 @@ config_opts="--prefix=$config_prefix"
   config_opts="$config_opts --with-cyrus-sasl"
 [ "$config_tls" = y ]  &&  \
   config_opts="$config_opts --with-tls"
-[ "$config_editor" ]  &&  \
-  config_opts="$config_opts --with-editor=$config_editor"
-[ "$config_pager" ]  &&  \
-  config_opts="$config_opts --with-pager=$config_pager"
 [ $config_debug = y ]  &&  \
   config_opts="$config_opts --enable-debug"
 
@@ -289,17 +273,19 @@ if [ $status -eq 0 ]; then
    fi
 
     [ $verbose -ge 1 ]  &&  echo testing . . .
-    checkoutput=`make $check 2>>"$logfile"`
+    checkoutput=`make $check AM_COLOR_TESTS=always 2>>"$logfile"`
     status=$?
 
     tests_summary=`echo "$checkoutput" | grep tests`
     #### If multiple tests not run, that line will be caught by the
     #### "grep tests" above.
     test_not_run=`echo "$checkoutput" | grep 'test was not run'`
+    fails=`echo "$checkoutput" | grep FAIL`
     if [ "$tests_summary" ]; then
       echo '===================' >>"$logfile"
-      echo "$tests_summary" >>"$logfile"
       [ "$test_not_run" ]  &&  echo "$test_not_run" >>"$logfile"
+      [ "$fails" ]  &&  echo "$fails" >>"$logfile"
+      echo "$tests_summary" >>"$logfile"
       echo '===================' >>"$logfile"
       [ "$check" = distcheck ]  &&  \
         echo "$checkoutput" | tail -n 4 >>"$logfile"

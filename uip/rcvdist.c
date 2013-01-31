@@ -14,15 +14,18 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	FORMSW       0
-    { "form formfile",  4 },
-#define VERSIONSW    1
-    { "version", 0 },
-#define	HELPSW       2
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define RCVDIST_SWITCHES \
+    X("form formfile", 4, FORMSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(RCVDIST);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(RCVDIST, switches);
+#undef X
 
 static char backup[BUFSIZ] = "";
 static char drft[BUFSIZ] = "";
@@ -173,6 +176,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
     char *cp, *scanl, name[NAMESZ], tmpbuf[SBUFSIZ];
     register struct comp *cptr;
     FILE *out;
+    m_getfld_state_t gstate = 0;
 
     if (!(out = fopen (drft, "w")))
 	adios (drft, "unable to create");
@@ -192,22 +196,26 @@ rcvdistout (FILE *inb, char *form, char *addrs)
     if (cptr)
 	cptr->c_text = addrs;
 
-    for (state = FLD;;) {
-	switch (state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb)) {
+    for (;;) {
+	int msg_count = SBUFSIZ;
+	switch (state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb)) {
 	    case FLD: 
 	    case FLDPLUS: 
 	    	i = fmt_addcomptext(name, tmpbuf);
 		if (i != -1) {
 		    char_read += msg_count;
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
+			msg_count = SBUFSIZ;
+			state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
 			fmt_appendcomp(i, name, tmpbuf);
 			char_read += msg_count;
 		    }
 		}
 
-		while (state == FLDPLUS)
-		    state = m_getfld (state, name, tmpbuf, SBUFSIZ, inb);
+		while (state == FLDPLUS) {
+		    msg_count = SBUFSIZ;
+		    state = m_getfld (&gstate, name, tmpbuf, &msg_count, inb);
+		}
 		break;
 
 	    case LENERR: 
@@ -221,6 +229,7 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 	}
     }
 finished: ;
+    m_getfld_state_destroy (&gstate);
 
     i = format_len + char_read + 256;
     scanl = mh_xmalloc ((size_t) i + 2);

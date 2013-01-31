@@ -17,21 +17,21 @@ extern char *mhetcdir;
 
 char *sbackup = BACKUP_PREFIX;
 
-static struct swit switches[] = {
-#define	COMPSW	  0
-    { "components", 0 },
-#define	NCOMPSW	  1
-    { "nocomponents", 0 },
-#define	ALLSW	  2
-    { "all", 0 },
-#define VERSIONSW 3
-    { "version", 0 },
-#define	HELPSW	  4
-    { "help", 0 },
-#define DEBUGSW   5
-    { "debug", 5 },
-    { NULL, 0 }
-};
+#define MHPARAM_SWITCHES \
+    X("components", 0, COMPSW) \
+    X("nocomponents", 0, NCOMPSW) \
+    X("all", 0, ALLSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("debug", 5, DEBUGSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHPARAM);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHPARAM, switches);
+#undef X
 
 struct proc {
     char *p_name;

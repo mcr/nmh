@@ -93,7 +93,7 @@ To: Somebody <somebody@example.com>
 Subject: Test
 Nmh-Attachment: $MH_TEST_DIR/attachment.txt
 
-¡Ay, caramba!
+Â¡Ay, caramba!
 EOF
 
 cat > "${testname}.expected" <<EOF
@@ -108,7 +108,7 @@ Date:
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 
-=A1Ay, caramba!
+=C2=A1Ay, caramba!
 
 ------- =_aaaaaaaaaa0
 Content-Type: text/plain; name="attachment.txt"
@@ -125,3 +125,9 @@ test_attachment "${testname}.expected"
 rm -f ${MHMTSCONF} "${MH_TEST_DIR}/attachment.txt"
 
 exit ${failed:-0}
+
+# emacs hackage to ensure that it writes the inverted exclamation
+# point as UTF-8 multibyte character \xC2\xA1 instead of just \xA1.
+# Local Variables:
+# coding: utf-8
+# End:

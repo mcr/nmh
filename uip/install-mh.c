@@ -10,17 +10,19 @@
 #include <h/utils.h>
 #include <pwd.h>				/* structure for getpwuid() results */
 
-static struct swit switches[] = {
-#define AUTOSW     0
-    { "auto", 0 },
-#define VERSIONSW  1
-    { "version", 0 },
-#define HELPSW     2
-    { "help", 0 },
-#define CHECKSW     3
-    { "check", 1 },
-    { NULL, 0 }
-};
+#define INSTALLMH_SWITCHES \
+    X("auto", 0, AUTOSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("check", 1, CHECKSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(INSTALLMH);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(INSTALLMH, switches);
+#undef X
 
 /*
  * static prototypes

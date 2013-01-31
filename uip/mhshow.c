@@ -20,59 +20,42 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	CHECKSW                 0
-    { "check", 0 },
-#define	NCHECKSW                1
-    { "nocheck", 0 },
-#define	PAUSESW                 2
-    { "pause", 0 },
-#define	NPAUSESW                3
-    { "nopause", 0 },
-#define	SERIALSW                4
-    { "serialonly", 0 },
-#define	NSERIALSW               5
-    { "noserialonly", 0 },
-#define	VERBSW                  6
-    { "verbose", 0 },
-#define	NVERBSW                 7
-    { "noverbose", 0 },
-#define	FILESW                  8	/* interface from show */
-    { "file file", 0 },
-#define	FORMSW                  9
-    { "form formfile", 0 },
-#define	PARTSW                 10
-    { "part number", 0 },
-#define	TYPESW                 11
-    { "type content", 0 },
-#define	RCACHESW               12
-    { "rcache policy", 0 },
-#define	WCACHESW               13
-    { "wcache policy", 0 },
-#define VERSIONSW              14
-    { "version", 0 },
-#define	HELPSW                 15
-    { "help", 0 },
+#define MHSHOW_SWITCHES \
+    X("check", 0, CHECKSW) \
+    X("nocheck", 0, NCHECKSW) \
+    X("pause", 0, PAUSESW) \
+    X("nopause", 0, NPAUSESW) \
+    X("serialonly", 0, SERIALSW) \
+    X("noserialonly", 0, NSERIALSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("file file", 0, FILESW) \
+    X("form formfile", 0, FORMSW) \
+    X("part number", 0, PARTSW) \
+    X("type content", 0, TYPESW) \
+    X("rcache policy", 0, RCACHESW) \
+    X("wcache policy", 0, WCACHESW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    /*					\
+     * switches for moreproc/mhlproc	\
+     */					\
+    X("moreproc program", -4, PROGSW) \
+    X("nomoreproc", -3, NPROGSW) \
+    X("length lines", -4, LENSW) \
+    X("width columns", -4, WIDTHSW) \
+    /*				\
+     * switches for debugging	\
+     */				\
+    X("debug", -5, DEBUGSW) \
 
-/*
- * switches for moreproc/mhlproc
- */
-#define	PROGSW                 16
-    { "moreproc program", -4 },
-#define	NPROGSW                17
-    { "nomoreproc", -3 },
-#define	LENSW                  18
-    { "length lines", -4 },
-#define	WIDTHSW                19
-    { "width columns", -4 },
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHSHOW);
+#undef X
 
-/*
- * switches for debugging
- */
-#define	DEBUGSW                20
-    { "debug", -5 },
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHSHOW, switches);
+#undef X
 
 
 /* mhparse.c */

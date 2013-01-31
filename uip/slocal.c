@@ -55,39 +55,30 @@
 #include <utmpx.h>
 #endif /* HAVE_GETUTXENT */
 
-static struct swit switches[] = {
-#define	ADDRSW         0
-    { "addr address", 0 },
-#define	USERSW         1
-    { "user name", 0 },
-#define	FILESW         2
-    { "file file", 0 },
-#define	SENDERSW       3
-    { "sender address", 0 },
-#define	MAILBOXSW      4
-    { "mailbox file", 0 },
-#define	HOMESW         5
-    { "home directory", -4 },
-#define	INFOSW         6
-    { "info data", 0 },
-#define	MAILSW         7
-    { "maildelivery file", 0 },
-#define	VERBSW         8
-    { "verbose", 0 },
-#define	NVERBSW        9
-    { "noverbose", 0 },
-#define SUPPRESSDUP   10
-    { "suppressdup", 0 },
-#define NSUPPRESSDUP 11
-    { "nosuppressdup", 0 },
-#define	DEBUGSW       12
-    { "debug", 0 },
-#define VERSIONSW     13
-    { "version", 0 },
-#define	HELPSW        14
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define SLOCAL_SWITCHES \
+    X("addr address", 0, ADDRSW) \
+    X("user name", 0, USERSW) \
+    X("file file", 0, FILESW) \
+    X("sender address", 0, SENDERSW) \
+    X("mailbox file", 0, MAILBOXSW) \
+    X("home directory", -4, HOMESW) \
+    X("info data", 0, INFOSW) \
+    X("maildelivery file", 0, MAILSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("suppressdup", 0, SUPPRESSDUP) \
+    X("nosuppressdup", 0, NSUPPRESSDUP) \
+    X("debug", 0, DEBUGSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SLOCAL);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SLOCAL, switches);
+#undef X
 
 static int globbed = 0;		/* have we built "vars" table yet?        */
 static int parsed = 0;		/* have we built header field table yet   */
@@ -716,6 +707,7 @@ parse (int fd)
     char name[NAMESZ], field[BUFSIZ];
     struct pair *p, *q;
     FILE  *in;
+    m_getfld_state_t gstate = 0;
 
     if (parsed++)
 	return 0;
@@ -739,14 +731,15 @@ parse (int fd)
      * Scan the headers of the message and build
      * a lookup table.
      */
-    for (i = 0, state = FLD;;) {
-	switch (state = m_getfld (state, name, field, sizeof(field), in)) {
+    for (i = 0;;) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, in)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		lp = add (field, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, field, sizeof(field), in);
+		    fieldsz = sizeof field;
+		    state = m_getfld (&gstate, name, field, &fieldsz, in);
 		    lp = add (field, lp);
 		}
 		for (p = hdrs; p->p_name; p++) {
@@ -775,12 +768,9 @@ parse (int fd)
 		    p++, i++;
 		    p->p_name = NULL;
 		}
-		if (state != FLDEOF)
-		    continue;
-		break;
+		continue;
 
 	    case BODY: 
-	    case BODYEOF: 
 	    case FILEEOF: 
 		break;
 
@@ -796,6 +786,7 @@ parse (int fd)
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
     fclose (in);
 
     if ((p = lookup (vars, "reply-to"))) {
@@ -1414,6 +1405,7 @@ suppress_duplicates (int fd, char *file)
     datum key, value;
     DBM *db;
     FILE *in;
+    m_getfld_state_t gstate = 0;
 
     if ((fd1 = dup (fd)) == -1)
 	return -1;
@@ -1423,22 +1415,25 @@ suppress_duplicates (int fd, char *file)
     }
     rewind (in);
 
-    for (state = FLD;;) {
-	state = m_getfld (state, name, buf, sizeof(buf), in);
+    for (;;) {
+	int bufsz = sizeof buf;
+	state = m_getfld (&gstate, name, buf, &bufsz, in);
 	switch (state) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 		/* Search for the message ID */
 		if (mh_strcasecmp (name, "Message-ID")) {
-		    while (state == FLDPLUS)
-			state = m_getfld (state, name, buf, sizeof(buf), in);
+		    while (state == FLDPLUS) {
+			bufsz = sizeof buf;
+			state = m_getfld (&gstate, name, buf, &bufsz, in);
+		    }
 		    continue;
 		}
 
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, in);
 		    cp = add (buf, cp);
 		}
 		key.dptr = trimcpy (cp);
@@ -1486,7 +1481,6 @@ suppress_duplicates (int fd, char *file)
 		break;
 
 	   case BODY:
-	   case BODYEOF:
 	   case FILEEOF:
 		break;
 
@@ -1498,6 +1492,7 @@ suppress_duplicates (int fd, char *file)
 
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     fclose (in);
     return 0;

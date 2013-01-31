@@ -31,25 +31,74 @@ LC_ALL=en_US.UTF-8; export LC_ALL
 #
 # Create a test message with RFC 2047 headers we can scan
 #
+# In this Subject header in this message is a "n" with a Combining Diaeresis
+# (U+0308).  There is different interpretation of this character with respect
+# to wcwidth() (which is supposed to return the column width of a character).
+# We use a test program to determine what the output width of U+0308 is
+# and adjust our test output appropriately.
+#
 
 cat > "${MH_TEST_DIR}/Mail/inbox/11" <<EOF
 From: David =?utf-8?q?=EF=AC=86?= Hubbins <hubbins@example.com>
 To: Sir Denis =?utf-8?q?Eton=E2=80=93Hogg? <sirdenis@example.com>
 Date: Friday, 2 Mar 1984 00:00:00
-Subject: =?utf-8?q?Spin=CC=88al_Tap_=E2=86=92_Tap_into_America!?=
+Subject: =?utf-8?q?Sp=C4=B1n=CC=88al_Tap_=E2=86=92_Tap_into_America!?=
 
 Things are looking great!
 EOF
 
-expected=$MH_TEST_DIR/$$.expected
-actual=$MH_TEST_DIR/$$.actual
+width=`${MH_OBJ_DIR}/test/getcwidth`
+if test $? -ne 0; then
+    echo "getcwidth failed to run"
+    exit 1
+fi
 
-cat > $expected <<EOF
-  11  03/02 David ﬆ Hubbins    Spin̈al Tap → Tap into America!<<Things are
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
+
+if test "$width" -eq 1; then
+cat > "$expected" <<EOF
+  11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are look
 EOF
+elif test "$width" -eq 0; then
+cat > "$expected" <<EOF
+  11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are looki
+EOF
+else
+    echo "Unsupported width for combining diaeresis: $width"
+    exit 1
+fi
 
 scan -width 80 +inbox 11 > $actual || exit 1
-
 check "$expected" "$actual"
+
+# check decoding with an invalid multibyte sequence
+cat >`mhpath new` <<EOF
+From: Test12 <test12@example.com>
+To: Some User <user@example.com>
+Date: Mon, 31 Dec 2012 00:00:00
+Message-Id: 12@test.nmh
+Subject: =?UTF-8?B?MjAxMyBOZXcgWWVhcuKAmXMgRGVhbHMhIFN0YXJ0IHRoZSB5ZWFy?=
+	=?UTF-8?B?IHJpZ2h0IHdpdGggYmlnIHNhdmluZ3M=?=
+
+This message has an encoded Subject with an invalid character for the
+ISO-8859-1 character set, but it (U+2019) is valid UTF-8.
+EOF
+
+cat >"$expected" <<EOF
+  12  12/31 Test12             2013 New Year?s Deals! Start the year right
+EOF
+
+LC_CTYPE=ISO-8859-1 MM_CHARSET=ISO-8859-1 scan -width 75 last >"$actual"
+check "$expected" "$actual"
+
+# check scan width with a valid multibyte sequence
+cat >"$expected" <<EOF
+  12  12/31 Test12             2013 New Year’s Deals! Start the year right
+EOF
+
+LC_CTYPE=en_US.UTF-8 MM_CHARSET=UTF-8 scan -width 75 last >"$actual"
+check "$expected" "$actual"
+
 
 exit $failed

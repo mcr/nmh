@@ -55,8 +55,7 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
     if (nedit) {
 	unputenv ("mheditor");
     } else {
-	m_putenv ("mheditor", ed ? ed : (ed = context_find ("editor"))
-	    ? ed : defaulteditor);
+	m_putenv ("mheditor", ed ? ed : (ed = get_default_editor()));
     }
     snprintf (buffer, sizeof(buffer), "%d", use);
     m_putenv ("mhuse", buffer);

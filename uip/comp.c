@@ -12,71 +12,58 @@
 #include <h/fmt_scan.h>
 #include <fcntl.h>
 
-static struct swit switches[] = {
-#define	DFOLDSW                0
-    { "draftfolder +folder", 0 },
-#define	DMSGSW                 1
-    { "draftmessage msg", 0 },
-#define	NDFLDSW                2
-    { "nodraftfolder", 0 },
-#define	EDITRSW                3
-    { "editor editor", 0 },
-#define	NEDITSW                4
-    { "noedit", 0 },
-#define	FILESW                 5
-    { "file file", 0 },
-#define	FORMSW                 6
-    { "form formfile", 0 },
-#define	USESW                  7
-    { "use", 0 },
-#define	NUSESW                 8
-    { "nouse", 0 },
-#define	WHATSW                 9
-    { "whatnowproc program", 0 },
-#define	NWHATSW               10
-    { "nowhatnowproc", 0 },
-#define VERSIONSW             11
-    { "version", 0 },
-#define	HELPSW                12
-    { "help", 0 },
-#define TOSW                  13
-    { "to address", 0 },
-#define CCSW                  14
-    { "cc address", 0 },
-#define FROMSW                15
-    { "from address", 0 },
-#define FCCSW                 16
-    { "fcc mailbox", 0 },
-#define WIDTHSW		      17
-    { "width colums", 0 },
-#define SUBJECTSW             18
-    { "subject text", 0 },
-    { NULL, 0 }
-};
+#define COMP_SWITCHES \
+    X("draftfolder +folder", 0, DFOLDSW) \
+    X("draftmessage msg", 0, DMSGSW) \
+    X("nodraftfolder", 0, NDFLDSW) \
+    X("editor editor", 0, EDITRSW) \
+    X("noedit", 0, NEDITSW) \
+    X("file file", 0, FILESW) \
+    X("form formfile", 0, FORMSW) \
+    X("use", 0, USESW) \
+    X("nouse", 0, NUSESW) \
+    X("whatnowproc program", 0, WHATSW) \
+    X("nowhatnowproc", 0, NWHATSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("to address", 0, TOSW) \
+    X("cc address", 0, CCSW) \
+    X("from address", 0, FROMSW) \
+    X("fcc mailbox", 0, FCCSW) \
+    X("width colums", 0, WIDTHSW) \
+    X("subject text", 0, SUBJECTSW) \
 
-static struct swit aqrunl[] = {
-#define	NOSW          0
-    { "quit", 0 },
-#define	YESW          1
-    { "replace", 0 },
-#define	USELSW        2
-    { "use", 0 },
-#define	LISTDSW       3
-    { "list", 0 },
-#define	REFILSW       4
-    { "refile +folder", 0 },
-#define NEWSW         5
-    { "new", 0 },
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(COMP);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(COMP, switches);
+#undef X
+
+#define DISPO_SWITCHES \
+    X("quit", 0, NOSW) \
+    X("replace", 0, YESW) \
+    X("use", 0, USELSW) \
+    X("list", 0, LISTDSW) \
+    X("refile +folder", 0, REFILSW) \
+    X("new", 0, NEWSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(DISPO);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(DISPO, aqrunl);
+#undef X
 
 static struct swit aqrul[] = {
-    { "quit", 0 },
-    { "replace", 0 },
-    { "use", 0 },
-    { "list", 0 },
-    { "refile", 0 },
-    { NULL, 0 }
+    { "quit", 0, NOSW },
+    { "replace", 0, YESW },
+    { "use", 0, USELSW },
+    { "list", 0, LISTDSW },
+    { "refile", 0, REFILSW },
+    { NULL, 0, 0 }
 };
 
 int

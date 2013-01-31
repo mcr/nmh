@@ -11,109 +11,84 @@
 #include <h/utils.h>
 
 
-static struct swit switches[] = {
-#define GROUPSW                0
-    { "group", 0 },
-#define NGROUPSW               1
-    { "nogroup", 0 },
-#define	ANNOSW                 2
-    { "annotate", 0 },
-#define	NANNOSW                3
-    { "noannotate", 0 },
-#define	CCSW                   4
-    { "cc all|to|cc|me", 0 },
-#define	NCCSW                  5
-    { "nocc type", 0 },
-#define	DFOLDSW                6
-    { "draftfolder +folder", 0 },
-#define	DMSGSW                 7
-    { "draftmessage msg", 0 },
-#define	NDFLDSW                8
-    { "nodraftfolder", 0 },
-#define	EDITRSW                9
-    { "editor editor", 0 },
-#define	NEDITSW               10
-    { "noedit", 0 },
-#define	FCCSW                 11
-    { "fcc folder", 0 },
-#define	FILTSW                12
-    { "filter filterfile", 0 },
-#define	FORMSW                13
-    { "form formfile", 0 },
-#define	FRMTSW                14
-    { "format", 5 },
-#define	NFRMTSW               15
-    { "noformat", 7 },
-#define	INPLSW                16
-    { "inplace", 0 },
-#define	NINPLSW               17
-    { "noinplace", 0 },
-#define MIMESW                18
-    { "mime", 0 },
-#define NMIMESW               19
-    { "nomime", 0 },
-#define	QURYSW                20
-    { "query", 0 },
-#define	NQURYSW               21
-    { "noquery", 0 },
-#define	WHATSW                22
-    { "whatnowproc program", 0 },
-#define	NWHATSW               23
-    { "nowhatnowproc", 0 },
-#define	WIDTHSW               24
-    { "width columns", 0 },
-#define VERSIONSW             25
-    { "version", 0 },
-#define	HELPSW                26
-    { "help", 0 },
-#define	FILESW                27
-    { "file file", 4 },			/* interface from msh */
-#define	BILDSW                28
-    { "build", 5 },			/* interface from mhe */
-#define ATFILESW              29
-    { "atfile", 0 },
-#define NOATFILESW            30
-    { "noatfile", 0 },
-#define FMTPROCSW             31
-    { "fmtproc program", 0 },
-#define NFMTPROCSW            32
-    { "nofmtproc", 0 },
+#define REPL_SWITCHES \
+    X("group", 0, GROUPSW) \
+    X("nogroup", 0, NGROUPSW) \
+    X("annotate", 0, ANNOSW) \
+    X("noannotate", 0, NANNOSW) \
+    X("cc all|to|cc|me", 0, CCSW) \
+    X("nocc type", 0, NCCSW) \
+    X("draftfolder +folder", 0, DFOLDSW) \
+    X("draftmessage msg", 0, DMSGSW) \
+    X("nodraftfolder", 0, NDFLDSW) \
+    X("editor editor", 0, EDITRSW) \
+    X("noedit", 0, NEDITSW) \
+    X("fcc folder", 0, FCCSW) \
+    X("filter filterfile", 0, FILTSW) \
+    X("form formfile", 0, FORMSW) \
+    X("format", 5, FRMTSW) \
+    X("noformat", 7, NFRMTSW) \
+    X("inplace", 0, INPLSW) \
+    X("noinplace", 0, NINPLSW) \
+    X("mime", 0, MIMESW) \
+    X("nomime", 0, NMIMESW) \
+    X("query", 0, QURYSW) \
+    X("noquery", 0, NQURYSW) \
+    X("whatnowproc program", 0, WHATSW) \
+    X("nowhatnowproc", 0, NWHATSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("file file", 4, FILESW) /* interface from msh */ \
+    X("build", 5, BILDSW) /* interface from mhe */ \
+    X("atfile", 0, ATFILESW) \
+    X("noatfile", 0, NOATFILESW) \
+    X("fmtproc program", 0, FMTPROCSW) \
+    X("nofmtproc", 0, NFMTPROCSW) \
 
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(REPL);
+#undef X
 
-static struct swit ccswitches[] = {
-#define	CTOSW	0
-    { "to", 0 },
-#define	CCCSW	1
-    { "cc", 0 },
-#define	CMESW	2
-    { "me", 0 },
-#define	CALSW	3
-    { "all", 0 },
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(REPL, switches);
+#undef X
 
-static struct swit aqrnl[] = {
-#define	NOSW         0
-    { "quit", 0 },
-#define	YESW         1
-    { "replace", 0 },
-#define	LISTDSW      2
-    { "list", 0 },
-#define	REFILSW      3
-    { "refile +folder", 0 },
-#define NEWSW        4
-    { "new", 0 },
-    { NULL, 0 }
-};
+#define CC_SWITCHES \
+    X("to", 0, CTOSW) \
+    X("cc", 0, CCCSW) \
+    X("me", 0, CMESW) \
+    X("all", 0, CALSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(CC);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(CC, ccswitches);
+#undef X
+
+#define DISPO_SWITCHES \
+    X("quit", 0, NOSW) \
+    X("replace", 0, YESW) \
+    X("list", 0, LISTDSW) \
+    X("refile +folder", 0, REFILSW) \
+    X("new", 0, NEWSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(DISPO);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(DISPO, aqrnl);
+#undef X
 
 static struct swit aqrl[] = {
-    { "quit", 0 },
-    { "replace", 0 },
-    { "list", 0 },
-    { "refile +folder", 0 },
-    { NULL, 0 }
+    { "quit", 0, NOSW },
+    { "replace", 0, YESW },
+    { "list", 0, LISTDSW },
+    { "refile +folder", 0, REFILSW },
+    { NULL, 0, 0 }
 };
 
 short ccto = -1;		/* global for replsbr */

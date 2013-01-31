@@ -16,94 +16,69 @@
 #define	IFORMAT	"digest-issue-%s"
 #define	VFORMAT	"digest-volume-%s"
 
-static struct swit switches[] = {
-#define	ANNOSW                 0
-    { "annotate", 0 },
-#define	NANNOSW                1
-    { "noannotate", 0 },
-#define	DFOLDSW                2
-    { "draftfolder +folder", 0 },
-#define	DMSGSW                 3
-    { "draftmessage msg", 0 },
-#define	NDFLDSW                4
-    { "nodraftfolder", 0 },
-#define	EDITRSW                5
-    { "editor editor", 0 },
-#define	NEDITSW                6
-    { "noedit", 0 },
-#define	FILTSW                 7
-    { "filter filterfile", 0 },
-#define	FORMSW                 8
-    { "form formfile", 0 },
-#define	FRMTSW                 9
-    { "format", 5 },
-#define	NFRMTSW               10
-    { "noformat", 7 },
-#define	INPLSW                11
-    { "inplace", 0 },
-#define	NINPLSW               12
-    { "noinplace", 0 },
-#define MIMESW                13
-    { "mime", 0 },
-#define NMIMESW               14
-    { "nomime", 0 },
-#define	DGSTSW                15
-    { "digest list", 0 },
-#define	ISSUESW               16
-    { "issue number", 0 },
-#define	VOLUMSW               17
-    { "volume number", 0 },
-#define	WHATSW                18
-    { "whatnowproc program", 0 },
-#define	NWHATSW               19
-    { "nowhatnowproc", 0 },
-#define	BITSTUFFSW            20
-    { "dashstuffing", 0 },		/* interface to mhl */
-#define	NBITSTUFFSW           21
-    { "nodashstuffing", 0 },
-#define VERSIONSW             22
-    { "version", 0 },
-#define	HELPSW                23
-    { "help", 0 },
-#define	FILESW                24
-    { "file file", 4 },			/* interface from msh */
-#define	BILDSW                25
-    { "build", 5 },			/* interface from mhe */
-#define FROMSW                26
-    { "from address", 0 },
-#define TOSW                  27
-    { "to address", 0 },
-#define CCSW                  28
-    { "cc address", 0 },
-#define SUBJECTSW             29
-    { "subject text", 0 },
-#define FCCSW                 30
-    { "fcc mailbox", 0 },
-#define WIDTHSW               31
-    { "width columns", 0 },
-    { NULL, 0 }
-};
+#define FORW_SWITCHES \
+    X("annotate", 0, ANNOSW) \
+    X("noannotate", 0, NANNOSW) \
+    X("draftfolder +folder", 0, DFOLDSW) \
+    X("draftmessage msg", 0, DMSGSW) \
+    X("nodraftfolder", 0, NDFLDSW) \
+    X("editor editor", 0, EDITRSW) \
+    X("noedit", 0, NEDITSW) \
+    X("filter filterfile", 0, FILTSW) \
+    X("form formfile", 0, FORMSW) \
+    X("format", 5, FRMTSW) \
+    X("noformat", 7, NFRMTSW) \
+    X("inplace", 0, INPLSW) \
+    X("noinplace", 0, NINPLSW) \
+    X("mime", 0, MIMESW) \
+    X("nomime", 0, NMIMESW) \
+    X("digest list", 0, DGSTSW) \
+    X("issue number", 0, ISSUESW) \
+    X("volume number", 0, VOLUMSW) \
+    X("whatnowproc program", 0, WHATSW) \
+    X("nowhatnowproc", 0, NWHATSW) \
+    X("dashstuffing", 0, BITSTUFFSW)          /* interface to mhl */ \
+    X("nodashstuffing", 0, NBITSTUFFSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("file file", 4, FILESW)                 /* interface from msh */ \
+    X("build", 5, BILDSW)                     /* interface from mhe */ \
+    X("from address", 0, FROMSW) \
+    X("to address", 0, TOSW) \
+    X("cc address", 0, CCSW) \
+    X("subject text", 0, SUBJECTSW) \
+    X("fcc mailbox", 0, FCCSW) \
+    X("width columns", 0, WIDTHSW) \
 
-static struct swit aqrnl[] = {
-#define	NOSW         0
-    { "quit", 0 },
-#define	YESW         1
-    { "replace", 0 },
-#define	LISTDSW      2
-    { "list", 0 },
-#define	REFILSW      3
-    { "refile +folder", 0 },
-#define NEWSW        4
-    { "new", 0 },
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(FORW);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(FORW, switches);
+#undef X
+
+#define DISPO_SWITCHES \
+    X("quit", 0, NOSW) \
+    X("replace", 0, YESW) \
+    X("list", 0, LISTDSW) \
+    X("refile +folder", 0, REFILSW) \
+    X("new", 0, NEWSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(DISPO);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(DISPO, aqrnl);
+#undef X
 
 static struct swit aqrl[] = {
-    { "quit", 0 },
-    { "replace", 0 },
-    { "list", 0 },
-    { "refile +folder", 0 },
-    { NULL, 0 }
+    { "quit", 0, NOSW },
+    { "replace", 0, YESW },
+    { "list", 0, LISTDSW },
+    { "refile +folder", 0, REFILSW },
+    { NULL, 0, 0 }
 };
 
 static char drft[BUFSIZ];

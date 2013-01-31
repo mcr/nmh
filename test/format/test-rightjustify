@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# Test that the right justification feature works correctly.
+#
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+actual=`${MH_LIB_DIR}/ap -format "%-30(friendly{text})<<End of test" "No Such User <nosuch@user.com>"`
+expected="                  No Such User<<End of test"
+##########123456789012345678901234567890
+
+if test x"$actual" != x"$expected"; then
+    echo "$0: right justification test expected:" 1>&2
+    echo "    $expected" 1>&2
+    echo "but instead got:" 1>&2
+    echo "    $actual" 1>&2
+    failed=`expr ${failed:-0} + 1`
+fi
+
+exit $failed

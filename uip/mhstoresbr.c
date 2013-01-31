@@ -1228,7 +1228,7 @@ clobber_check (char *original_file) {
         if (stat (file, &st) == OK) {
           enum answers { NMH_YES, NMH_NO, NMH_RENAME };
           static struct swit answer[4] = {
-            { "yes", 0 }, { "no", 0 }, { "rename", 0 }, { NULL, 0 } };
+            { "yes", 0, NMH_YES }, { "no", 0, NMH_NO }, { "rename", 0, NMH_RENAME }, { NULL, 0, 0 } };
           char **ans;
 
           if (isatty (fileno (stdin))) {

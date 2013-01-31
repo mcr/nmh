@@ -26,33 +26,27 @@
 # define CERASE '#'
 #endif
 
-static struct swit switches[] = {
-#define	ERASESW	0
-    { "erase chr", 0 },
-#define	KILLSW	1
-    { "kill chr", 0 },
-#define	PREPSW	2
-    { "prepend", 0 },
-#define	NPREPSW	3
-    { "noprepend", 0 },	
-#define	RAPDSW	4
-    { "rapid", 0 },
-#define	NRAPDSW	5
-    { "norapid", 0 },
-#define	BODYSW	6
-    { "body", -4 },
-#define	NBODYSW	7
-    { "nobody", -6 },
-#define	DOTSW	8
-    { "doteof", 0 },
-#define	NDOTSW	9
-    { "nodoteof", 0 },
-#define VERSIONSW 10
-    { "version", 0 },
-#define	HELPSW	11
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define PROMPTER_SWITCHES \
+    X("erase chr", 0, ERASESW) \
+    X("kill chr", 0, KILLSW) \
+    X("prepend", 0, PREPSW) \
+    X("noprepend", 0, NPREPSW) \
+    X("rapid", 0, RAPDSW) \
+    X("norapid", 0, NRAPDSW) \
+    X("body", -4, BODYSW) \
+    X("nobody", -6, NBODYSW) \
+    X("doteof", 0, DOTSW) \
+    X("nodoteof", 0, NDOTSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(PROMPTER);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(PROMPTER, switches);
+#undef X
 
 
 static struct termios tio;
@@ -84,6 +78,7 @@ main (int argc, char **argv)
     char **arguments, **argp;
     FILE *in, *out;
     char *tfile = NULL;
+    m_getfld_state_t gstate = 0;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -208,10 +203,10 @@ main (int argc, char **argv)
     /*
      * Loop through the lines of the draft skeleton.
      */
-    for (state = FLD;;) {
-	switch (state = m_getfld (state, name, field, sizeof(field), in)) {
+    for (;;) {
+	int fieldsz = sizeof field;
+	switch (state = m_getfld (&gstate, name, field, &fieldsz, in)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		/*
 		 * Check if the value of field contains anything
@@ -226,8 +221,8 @@ main (int argc, char **argv)
 		    printf ("%s:%s", name, field);
 		    fprintf (out, "%s:%s", name, field);
 		    while (state == FLDPLUS) {
-			state =
-			    m_getfld (state, name, field, sizeof(field), in);
+			fieldsz = sizeof field;
+			state = m_getfld (&gstate, name, field, &fieldsz, in);
 			printf ("%s", field);
 			fprintf (out, "%s", field);
 		    }
@@ -257,17 +252,9 @@ abort:
 		    }
 		}
 
-		if (state == FLDEOF) {	/* moby hack */
-		    fprintf (out, "--------\n");
-		    printf ("--------\n");
-		    if (!body)
-			break;
-		    goto no_body;
-		}
 		continue;
 
 	    case BODY: 
-	    case BODYEOF:
 	    case FILEEOF: 
 	        if (!body)
 	            break;
@@ -293,13 +280,14 @@ abort:
 			if (!rapid && !sigint)
 			    printf ("%s", field);
 		    } while (state == BODY &&
-			    (state = m_getfld (state, name, field, sizeof(field), in)));
+			    (fieldsz = sizeof field,
+			     state = m_getfld (&gstate, name, field, &fieldsz, in)));
 		    if (prepend || !body)
 			break;
 		    else
 			printf ("\n--------Enter additional text\n\n");
 		}
-no_body:
+
 		fflush (stdout);
 		for (;;) {
 		    getln (field, sizeof(field));
@@ -316,6 +304,7 @@ no_body:
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     if (body)
 	printf ("--------\n");

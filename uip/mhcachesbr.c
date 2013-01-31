@@ -376,25 +376,27 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
     int	state;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
+    m_getfld_state_t gstate = 0;
 
     if (!(fp = lkfopen (mapfile, "r")))
 	return NOTOK;
 
-    for (state = FLD;;) {
+    for (;;) {
 	int result;
 	char *cp, *dp;
+	int bufsz = sizeof buf;
 
-	switch (state = m_getfld (state, name, buf, sizeof(buf), fp)) {
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 	        strncpy (mapname, name, namelen);
 		if (state != FLDPLUS)
 		    cp = buf;
 		else {
 		    cp = add (buf, NULL);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buf, sizeof(buf), fp);
+			bufsz = sizeof buf;
+			state = m_getfld (&gstate, name, buf, &bufsz, fp);
 			cp = add (buf, cp);
 		    }
 		}
@@ -410,18 +412,16 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
 		    lkfclose (fp, mapfile);
 		    return OK;
 		}
-		if (state != FLDEOF)
-		    continue;
-		/* else fall... */
+		continue;
 
 	    case BODY:
-	    case BODYEOF:
 	    case FILEEOF:
 	    default:
 		break;
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     lkfclose (fp, mapfile);
     return NOTOK;

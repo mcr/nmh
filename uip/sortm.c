@@ -11,37 +11,29 @@
 #include <h/tws.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define DATESW                 0
-     { "datefield field", 0 },
-#define	TEXTSW                 1
-     { "textfield field", 0 },
-#define	NSUBJSW                2
-     { "notextfield", 0 },
-#define SUBJSW                 3
-     { "subject", -3 },		   /* backward-compatibility */
-#define LIMSW                  4
-     { "limit days", 0 },
-#define	NLIMSW                 5
-     { "nolimit", 0 },
-#define VERBSW                 6
-     { "verbose", 0 },
-#define NVERBSW                7
-     { "noverbose", 0 },
-#define ALLMSGS                8
-     { "all", 0 },
-#define NALLMSGS               9
-     { "noall", 0 },
-#define CHECKSW               10
-     { "check", 0 },
-#define NCHECKSW              11
-     { "nocheck", 0 },
-#define VERSIONSW             12
-     { "version", 0 },
-#define HELPSW                13
-     { "help", 0 },
-     { NULL, 0 }
-};
+#define SORTM_SWITCHES \
+    X("datefield field", 0, DATESW) \
+    X("textfield field", 0, TEXTSW) \
+    X("notextfield", 0, NSUBJSW) \
+    X("subject", -3, SUBJSW) /* backward-compatibility */ \
+    X("limit days", 0, LIMSW) \
+    X("nolimit", 0, NLIMSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("all", 0, ALLMSGS) \
+    X("noall", 0, NALLMSGS) \
+    X("check", 0, CHECKSW) \
+    X("nocheck", 0, NCHECKSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(SORTM);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(SORTM, switches);
+#undef X
 
 struct smsg {
     int s_msg;
@@ -365,21 +357,23 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
     register struct tws *tw;
     register char *datecomp = NULL, *subjcomp = NULL;
     register FILE *in;
+    m_getfld_state_t gstate = 0;
 
     if ((in = fopen (msgnam = m_name (msg), "r")) == NULL) {
 	admonish (msgnam, "unable to read message");
 	return (0);
     }
-    for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, nam, buf, sizeof(buf), in)) {
+    for (compnum = 1;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, nam, buf, &bufsz, in)) {
 	case FLD:
-	case FLDEOF:
 	case FLDPLUS:
 	    compnum++;
 	    if (!mh_strcasecmp (nam, datesw)) {
 		datecomp = add (buf, datecomp);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, nam, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
 		    datecomp = add (buf, datecomp);
 		}
 		if (!subjsort || subjcomp)
@@ -387,20 +381,22 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	    } else if (subjsort && !mh_strcasecmp (nam, subjsort)) {
 		subjcomp = add (buf, subjcomp);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, nam, buf, sizeof(buf), in);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
 		    subjcomp = add (buf, subjcomp);
 		}
 		if (datecomp)
 		    break;
 	    } else {
 		/* just flush this guy */
-		while (state == FLDPLUS)
-		    state = m_getfld (state, nam, buf, sizeof(buf), in);
+		while (state == FLDPLUS) {
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
+		}
 	    }
 	    continue;
 
 	case BODY:
-	case BODYEOF:
 	case FILEEOF:
 	    break;
 
@@ -423,6 +419,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * If no date component, then use the modification
@@ -431,7 +428,10 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
     if (!datecomp || (tw = dparsetime (datecomp)) == NULL) {
 	struct stat st;
 
-	admonish (NULL, "can't parse %s field in message %d", datesw, msg);
+	advise (NULL,
+		"can't parse %s field in message %d, "
+		"will use file modification time",
+		datesw, msg);
 	fstat (fileno (in), &st);
 	smsg->s_clock = st.st_mtime;
 	check_failed = 1;

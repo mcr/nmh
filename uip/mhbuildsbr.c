@@ -36,7 +36,6 @@
 extern int debugsw;
 extern int verbosw;
 
-extern int ebcdicsw;
 extern int listsw;
 extern int rfc934sw;
 extern int contentidsw;
@@ -135,6 +134,7 @@ build_mime (char *infile, int directives)
     struct part **pp;
     CT ct;
     FILE *in;
+    m_getfld_state_t gstate = 0;
 
     directive_init(directives);
 
@@ -162,11 +162,12 @@ build_mime (char *infile, int directives)
      * draft into the linked list of header fields for
      * the new MIME message.
      */
-    for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), in)) {
+    m_getfld_track_filepos (&gstate, in);
+    for (compnum = 1;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
-	case FLDEOF:
 	    compnum++;
 
 	    /* abort if draft has Mime-Version header field */
@@ -179,8 +180,10 @@ build_mime (char *infile, int directives)
 
 	    /* ignore any Content-Type fields in the header */
 	    if (!mh_strcasecmp (name, TYPE_FIELD)) {
-		while (state == FLDPLUS)
-		    state = m_getfld (state, name, buf, sizeof(buf), in);
+		while (state == FLDPLUS) {
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, in);
+		}
 		goto finish_field;
 	    }
 
@@ -190,7 +193,8 @@ build_mime (char *infile, int directives)
 
 	    /* if necessary, get rest of field */
 	    while (state == FLDPLUS) {
-		state = m_getfld (state, name, buf, sizeof(buf), in);
+		bufsz = sizeof buf;
+		state = m_getfld (&gstate, name, buf, &bufsz, in);
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 
@@ -199,16 +203,13 @@ build_mime (char *infile, int directives)
 
 finish_field:
 	    /* if this wasn't the last header field, then continue */
-	    if (state != FLDEOF)
-		continue;
-	    /* else fall... */
+	    continue;
 
 	case FILEEOF:
 	    adios (NULL, "draft has empty body -- no directives!");
 	    /* NOTREACHED */
 
 	case BODY:
-	case BODYEOF:
 	    fseek (in, (long) (-strlen (buf)), SEEK_CUR);
 	    break;
 
@@ -221,6 +222,7 @@ finish_field:
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     /*
      * Now add the MIME-Version header field
@@ -911,42 +913,6 @@ set_id (CT ct, int top)
 }
 
 
-static char ebcdicsafe[0x100] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01,
-    0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-};
-
-
 /*
  * Fill out, or expand the various contents in the composition
  * draft.  Read-in any necessary files.  Parse and execute any
@@ -1190,7 +1156,6 @@ scan_content (CT ct)
     int checklinelen = 0, linelen = 0;	  /* check for long lines                       */
     int checkboundary = 0, boundaryclash = 0; /* check if clashes with multipart boundary   */
     int checklinespace = 0, linespace = 0;  /* check if any line ends with space          */
-    int checkebcdic = 0, ebcdicunsafe = 0;  /* check if contains ebcdic unsafe characters */
     unsigned char *cp = NULL, buffer[BUFSIZ];
     struct text *t = NULL;
     FILE *in = NULL;
@@ -1231,11 +1196,9 @@ scan_content (CT ct)
 	check8bit = 1;
 	checkboundary = 1;
 	if (ct->c_subtype == TEXT_PLAIN) {
-	    checkebcdic = 0;
 	    checklinelen = 0;
 	    checklinespace = 0;
 	} else {
-	    checkebcdic = ebcdicsw;
 	    checklinelen = 1;
 	    checklinespace = 1;
 	}
@@ -1243,7 +1206,6 @@ scan_content (CT ct)
 
     case CT_APPLICATION:
 	check8bit = 1;
-	checkebcdic = ebcdicsw;
 	checklinelen = 1;
 	checklinespace = 1;
 	checkboundary = 1;
@@ -1251,7 +1213,6 @@ scan_content (CT ct)
 
     case CT_MESSAGE:
 	check8bit = 0;
-	checkebcdic = 0;
 	checklinelen = 0;
 	checklinespace = 0;
 
@@ -1270,7 +1231,6 @@ scan_content (CT ct)
 	 * since we are forcing use of base64.
 	 */
 	check8bit = 0;
-	checkebcdic = 0;
 	checklinelen = 0;
 	checklinespace = 0;
 	checkboundary = 0;
@@ -1294,14 +1254,6 @@ scan_content (CT ct)
 		    if (!isascii (*cp)) {
 			contains8bit = 1;
 			check8bit = 0;	/* no need to keep checking */
-		    }
-		    /*
-		     * Check if character is ebcdic-safe.  We only check
-		     * this if also checking for 8bit data.
-		     */
-		    if (checkebcdic && !ebcdicsafe[*cp & 0xff]) {
-			ebcdicunsafe = 1;
-			checkebcdic = 0; /* no need to keep checking */
 		    }
 		}
 	    }
@@ -1370,7 +1322,7 @@ scan_content (CT ct)
 	    *ep = cp;
 	}
 
-	if (contains8bit || ebcdicunsafe || linelen || linespace || checksw)
+	if (contains8bit || linelen || linespace || checksw)
 	    ct->c_encoding = CE_QUOTED;
 	else
 	    ct->c_encoding = CE_7BIT;
@@ -1378,7 +1330,7 @@ scan_content (CT ct)
 
     case CT_APPLICATION:
 	/* For application type, use base64, except when postscript */
-	if (contains8bit || ebcdicunsafe || linelen || linespace || checksw)
+	if (contains8bit || linelen || linespace || checksw)
 	    ct->c_encoding = (ct->c_subtype == APPLICATION_POSTSCRIPT)
 		? CE_QUOTED : CE_BASE64;
 	else

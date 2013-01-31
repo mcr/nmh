@@ -168,24 +168,24 @@ DisplayMsgHeader (CT ct, char *form)
 {
     pid_t child_id;
     int i, vecp;
-    char *vec[8];
+    char **vec;
+    char *file;
 
-    vecp = 0;
-    vec[vecp++] = r1bindex (mhlproc, '/');
-    vec[vecp++] = "-form";
-    vec[vecp++] = form;
-    vec[vecp++] = "-nobody";
-    vec[vecp++] = ct->c_file;
+    vec = argsplit(mhlproc, &file, &vecp);
+    vec[vecp++] = getcpy("-form");
+    vec[vecp++] = getcpy(form);
+    vec[vecp++] = getcpy("-nobody");
+    vec[vecp++] = getcpy(ct->c_file);
 
     /*
      * If we've specified -(no)moreproc,
      * then just pass that along.
      */
     if (nomore) {
-	vec[vecp++] = "-nomoreproc";
+	vec[vecp++] = getcpy("-nomoreproc");
     } else if (progsw) {
-	vec[vecp++] = "-moreproc";
-	vec[vecp++] = progsw;
+	vec[vecp++] = getcpy("-moreproc");
+	vec[vecp++] = getcpy(progsw);
     }
     vec[vecp] = NULL;
 
@@ -200,7 +200,7 @@ DisplayMsgHeader (CT ct, char *form)
 	/* NOTREACHED */
 
     case OK:
-	execvp (mhlproc, vec);
+	execvp (file, vec);
 	fprintf (stderr, "unable to exec ");
 	perror (mhlproc);
 	_exit (-1);
@@ -210,6 +210,8 @@ DisplayMsgHeader (CT ct, char *form)
 	xpid = -child_id;
 	break;
     }
+
+    arglist_free(file, vec);
 }
 
 

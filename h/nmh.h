@@ -61,4 +61,11 @@
 # endif
 #endif
 
+/*
+ * Defaults for programs if they aren't configured in a user's profile
+ */
+
+#define DEFAULT_PAGER "more"
+#define DEFAULT_EDITOR "vi"
+
 #include <signal.h>

@@ -36,6 +36,7 @@ static struct comp **used_buf = 0;	/* stack for comp that use buffers */
 static int dat[5];			/* aux. data for format routine    */
 
 char *scanl = 0;			/* text of most recent scanline    */
+m_getfld_state_t gstate;		/* for access by msh */
 
 #define DIEWRERR() adios (scnmsg, "write error on")
 
@@ -68,6 +69,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
     char *scnmsg = NULL;
     FILE *scnout = NULL;
     char name[NAMESZ];
+    int bufsz;
     static int rlwidth, slwidth;
     static size_t scanl_size;
 
@@ -162,7 +164,9 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
      * Get the first field.  If the message is non-empty
      * and we're doing an "inc", open the output file.
      */
-    if ((state = m_getfld (FLD, name, tmpbuf, rlwidth, inb)) == FILEEOF) {
+    bufsz = rlwidth;
+    m_getfld_state_reset (&gstate);
+    if ((state = m_getfld (&gstate, name, tmpbuf, &bufsz, inb)) == FILEEOF) {
 	if (ferror(inb)) {
 	    advise("read", "unable to"); /* "read error" */
 	    return SCNFAT;
@@ -184,7 +188,8 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
     }
 
     /* scan - main loop */
-    for (compnum = 1; ; state = m_getfld (state, name, tmpbuf, rlwidth, inb)) {
+    for (compnum = 1; ;
+	bufsz = rlwidth, state = m_getfld (&gstate, name, tmpbuf, &bufsz, inb)) {
 	switch (state) {
 	    case FLD: 
 	    case FLDPLUS: 
@@ -215,7 +220,8 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		}
 
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, tmpbuf, rlwidth, inb);
+		    bufsz = rlwidth;
+		    state = m_getfld (&gstate, name, tmpbuf, &bufsz, inb);
 		    if (outnum)
 			FPUTS (tmpbuf);
 		}
@@ -229,8 +235,8 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		 */
 
 		if ((i = strlen(tmpbuf)) < rlwidth) {
-		    state = m_getfld (state, name, tmpbuf + i,
-		    		      rlwidth - i, inb);
+		    bufsz = rlwidth - i;
+		    state = m_getfld (&gstate, name, tmpbuf + i, &bufsz, inb);
 		}
 
 		if (! outnum) {
@@ -264,7 +270,8 @@ body:;
 		}
 
 		while (state == BODY) {
-		    state = m_getfld(state, name, tmpbuf, rlwidth, inb);
+		    bufsz = rlwidth;
+		    state = m_getfld (&gstate, name, tmpbuf, &bufsz, inb);
 		    FPUTS(tmpbuf);
 		}
 		goto finished;
@@ -351,10 +358,8 @@ finished:
 
     /* return dynamically allocated buffers to pool */
     while ((cptr = *savecomp++)) {
-	*--nxtbuf = cptr->c_text;
 	cptr->c_text = NULL;
     }
-    *--nxtbuf = tmpbuf;
 
     if (outnum && (ferror(scnout) || fclose (scnout) == EOF))
 	DIEWRERR();
@@ -374,3 +379,23 @@ mh_fputs(char *s, FILE *stream)
     return (0);
 }
 
+/* The following three functions allow access to the global gstate above. */
+void
+scan_finished () {
+    m_getfld_state_destroy (&gstate);
+}
+
+void
+scan_detect_mbox_style (FILE *f) {
+    m_unknown (&gstate, f);
+}
+
+void
+scan_eom_action (int (*action)()) {
+    m_eomsbr (gstate, action);
+}
+
+void
+scan_reset_m_getfld_state () {
+    m_getfld_state_reset (&gstate);
+}

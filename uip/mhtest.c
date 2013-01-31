@@ -20,42 +20,29 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	CHECKSW                 0
-    { "check", 0 },
-#define	NCHECKSW                1
-    { "nocheck", 0 },
-#define	VERBSW                  2
-    { "verbose", 0 },
-#define	NVERBSW                 3
-    { "noverbose", 0 },
-#define	FILESW                  4
-    { "file file", 0 },
-#define OUTFILESW               5
-    { "outfile file", 0 },
-#define	PARTSW                  6
-    { "part number", 0 },
-#define	TYPESW                  7
-    { "type content", 0 },
-#define	RCACHESW                8
-    { "rcache policy", 0 },
-#define	WCACHESW                9
-    { "wcache policy", 0 },
-#define VERSIONSW              10
-    { "version", 0 },
-#define	HELPSW                 11
-    { "help", 0 },
+#define MHTEST_SWITCHES \
+    X("check", 0, CHECKSW) \
+    X("nocheck", 0, NCHECKSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("file file", 0, FILESW) \
+    X("outfile file", 0, OUTFILESW) \
+    X("part number", 0, PARTSW) \
+    X("type content", 0, TYPESW) \
+    X("rcache policy", 0, RCACHESW) \
+    X("wcache policy", 0, WCACHESW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("debug", -5, DEBUGSW) \
 
-/*
- * switches for debugging
- */
-#define	DEBUGSW                12
-    { "debug", -5 },
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHTEST);
+#undef X
 
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHTEST, switches);
+#undef X
 
-int ebcdicsw = 0;	/* hack for linking purposes */
 
 /* mhparse.c */
 extern char *tmp;	/* directory to place temp files */

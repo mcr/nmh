@@ -20,45 +20,31 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	CHECKSW                 0
-    { "check", 0 },
-#define	NCHECKSW                1
-    { "nocheck", 0 },
-#define	HEADSW                  2
-    { "headers", 0 },
-#define	NHEADSW                 3
-    { "noheaders", 0 },
-#define	SIZESW                  4
-    { "realsize", 0 },
-#define	NSIZESW                 5
-    { "norealsize", 0 },
-#define	VERBSW                  6
-    { "verbose", 0 },
-#define	NVERBSW                 7
-    { "noverbose", 0 },
-#define	FILESW                  8	/* interface from show */
-    { "file file", 0 },
-#define	PARTSW                  9
-    { "part number", 0 },
-#define	TYPESW                 10
-    { "type content", 0 },
-#define	RCACHESW               11
-    { "rcache policy", 0 },
-#define	WCACHESW               12
-    { "wcache policy", 0 },
-#define VERSIONSW              13
-    { "version", 0 },
-#define	HELPSW                 14
-    { "help", 0 },
+#define MHLIST_SWITCHES \
+    X("check", 0, CHECKSW) \
+    X("nocheck", 0, NCHECKSW) \
+    X("headers", 0, HEADSW) \
+    X("noheaders", 0, NHEADSW) \
+    X("realsize", 0, SIZESW) \
+    X("norealsize", 0, NSIZESW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("file file", 0, FILESW) \
+    X("part number", 0, PARTSW) \
+    X("type content", 0, TYPESW) \
+    X("rcache policy", 0, RCACHESW) \
+    X("wcache policy", 0, WCACHESW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("debug", -5, DEBUGSW) \
 
-/*
- * switches for debugging
- */
-#define	DEBUGSW                15
-    { "debug", -5 },
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHLIST);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHLIST, switches);
+#undef X
 
 
 /* mhparse.c */

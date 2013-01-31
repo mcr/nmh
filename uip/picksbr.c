@@ -17,39 +17,30 @@
 #endif
 #include <time.h>
 
-static struct swit parswit[] = {
-#define	PRAND                   0
-    { "and", 0 },
-#define	PROR                    1
-    { "or", 0 },
-#define	PRNOT                   2
-    { "not", 0 },
-#define	PRLBR                   3
-    { "lbrace", 0 },
-#define	PRRBR                   4
-    { "rbrace", 0 },
-#define	PRCC                    5
-    { "cc  pattern", 0 },
-#define	PRDATE                  6
-    { "date  pattern", 0 },
-#define	PRFROM                  7
-    { "from  pattern", 0 },
-#define	PRSRCH                  8
-    { "search  pattern", 0 },
-#define	PRSUBJ                  9
-    { "subject  pattern", 0 },
-#define	PRTO                   10
-    { "to  pattern", 0 },
-#define	PROTHR                 11
-    { "-othercomponent  pattern", 15 },
-#define	PRAFTR                 12
-    { "after date", 0 },
-#define	PRBEFR                 13
-    { "before date", 0 },
-#define	PRDATF                 14
-    { "datefield field", 5 },
-    { NULL, 0 }
-};
+#define PARSE_SWITCHES \
+    X("and", 0, PRAND) \
+    X("or", 0, PROR) \
+    X("not", 0, PRNOT) \
+    X("lbrace", 0, PRLBR) \
+    X("rbrace", 0, PRRBR) \
+    X("cc  pattern", 0, PRCC) \
+    X("date  pattern", 0, PRDATE) \
+    X("from  pattern", 0, PRFROM) \
+    X("search  pattern", 0, PRSRCH) \
+    X("subject  pattern", 0, PRSUBJ) \
+    X("to  pattern", 0, PRTO) \
+    X("-othercomponent  pattern", 15, PROTHR) \
+    X("after date", 0, PRAFTR) \
+    X("before date", 0, PRBEFR) \
+    X("datefield field", 5, PRDATF) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(PARSE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(PARSE, parswit);
+#undef X
 
 /* DEFINITIONS FOR PATTERN MATCHING */
 
@@ -943,28 +934,28 @@ plist
     register char *bp;
     char buf[BUFSIZ], name[NAMESZ];
     register struct tws *tw;
+    m_getfld_state_t gstate = 0;
     NMH_UNUSED (stop);
 
     fseek (fp, start, SEEK_SET);
-    for (state = FLD, bp = NULL;;) {
-	switch (state = m_getfld (state, name, buf, sizeof buf, fp)) {
+    for (bp = NULL;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		if (bp != NULL)
 		    free (bp), bp = NULL;
 		bp = add (buf, NULL);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof buf, fp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		    bp = add (buf, bp);
 		}
 		if (!mh_strcasecmp (name, n->n_datef))
 		    break;
-		if (state != FLDEOF)
-		    continue;
+		continue;
 
 	    case BODY: 
-	    case BODYEOF: 
 	    case FILEEOF: 
 	    case LENERR: 
 	    case FMTERR: 
@@ -979,6 +970,7 @@ plist
 	}
 	break;
     }
+    m_getfld_state_destroy (&gstate);
 
     if ((tw = dparsetime (bp)) == NULL)
 	advise (NULL, "unable to parse %s field in message %d, matching...",

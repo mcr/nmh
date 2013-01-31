@@ -32,6 +32,10 @@ NEW FEATURES
 - inc(1) now supports a -port switch to specify the port used by the
   POP server.
 - pick(1) now decodes MIME-encoded header fields before searching.
+- The VISUAL and EDITOR environment variables are now supported as fallbacks
+  if the user does not configure an editor entry in their profile.
+- The format engine (mh_format(5)) now properly accounts for multibyte
+  characters when accounting for column widths.
 
 
 ----------------------------
@@ -56,6 +60,7 @@ OBSOLETE/DEPRECATED FEATURES
   http://smtpfilter.sourceforge.net/esmtp.html
 - conflict(8) is deprecated and will be removed from the next release.
 - mhtest(8) is deprecated and will be removed from the next release.
+- msh(1) is deprecated and will be removed from the next release.
 - spost(8) has been merged into post(8).  Its functionality is enabled
   by selecting the sendmail/pipe mail transport method, described in
   the mh-tailor(5) man page.  The spost -noalias, -backup/-nobackup,
@@ -66,6 +71,16 @@ OBSOLETE/DEPRECATED FEATURES
   refuses to do that.  For backward compatibility, spost has been
   replaced by a simple shell script that exec's post -mts
   sendmail/pipe.
+- Support for the undocumented and deprecated --enable-nmh-debug configure
+  flag has been removed.
+- Support for encoding some characters designated as EBCDIC-unsafe
+  via the -ebcdicsafe and -noebcdicsafe switches to mhbuild has
+  been removed.
+- The configure flag --with-pager has been removed; the default pager
+  is now hardcoded as "more".  Users are still free to override the
+  default using the PAGER environment variable or entries in .mh_profile.
+- The configure flag --with-editor has been removed; the fallback editor
+  if none is configured is "vi".
 
 ---------
 BUG FIXES
@@ -86,3 +101,5 @@ BUG FIXES
 - Fixed pick(1) to properly unfold multiple-line header fields by
   removing newlines instead of replacing them with spaces [Bug #15215].
 - Removed the artificial limit of 1000 messages at a time for rmmproc.
+- Fixed decoding of header fields when they contain a character that
+  can't be converted.

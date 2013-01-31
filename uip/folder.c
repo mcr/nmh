@@ -14,57 +14,39 @@
 #include <h/utils.h>
 #include <errno.h>
 
-static struct swit switches[] = {
-#define	ALLSW           0
-    { "all", 0 },
-#define NALLSW		1
-    { "noall", 0 },
-#define	CREATSW         2
-    { "create", 0 },
-#define	NCREATSW        3
-    { "nocreate", 0 },
-#define	FASTSW          4
-    { "fast", 0 },
-#define	NFASTSW         5
-    { "nofast", 0 },
-#define	HDRSW           6
-    { "header", 0 },
-#define	NHDRSW          7
-    { "noheader", 0 },
-#define	PACKSW          8
-    { "pack", 0 },
-#define	NPACKSW         9
-    { "nopack", 0 },
-#define	VERBSW         10
-    { "verbose", 0 },
-#define	NVERBSW        11
-    { "noverbose", 0 },
-#define	RECURSW        12
-    { "recurse", 0 },
-#define	NRECRSW        13
-    { "norecurse", 0 },
-#define	TOTALSW        14
-    { "total", 0 },
-#define	NTOTLSW        15
-    { "nototal", 0 },
-#define	LISTSW         16
-    { "list", 0 },
-#define	NLISTSW        17
-    { "nolist", 0 },
-#define	PRNTSW         18
-    { "print", 0 },
-#define	NPRNTSW        19
-    { "noprint", -4 },
-#define	PUSHSW         20
-    { "push", 0 },
-#define	POPSW          21
-    { "pop", 0 },
-#define VERSIONSW      22
-    { "version", 0 },
-#define	HELPSW         23
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define FOLDER_SWITCHES \
+    X("all", 0, ALLSW) \
+    X("noall", 0, NALLSW) \
+    X("create", 0, CREATSW) \
+    X("nocreate", 0, NCREATSW) \
+    X("fast", 0, FASTSW) \
+    X("nofast", 0, NFASTSW) \
+    X("header", 0, HDRSW) \
+    X("noheader", 0, NHDRSW) \
+    X("pack", 0, PACKSW) \
+    X("nopack", 0, NPACKSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("recurse", 0, RECURSW) \
+    X("norecurse", 0, NRECRSW) \
+    X("total", 0, TOTALSW) \
+    X("nototal", 0, NTOTLSW) \
+    X("list", 0, LISTSW) \
+    X("nolist", 0, NLISTSW) \
+    X("print", 0, PRNTSW) \
+    X("noprint", -4, NPRNTSW) \
+    X("push", 0, PUSHSW) \
+    X("pop", 0, POPSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(FOLDER);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(FOLDER, switches);
+#undef X
 
 static int fshort   = 0;	/* output only folder names                 */
 static int fcreat   = 0;	/* should we ask to create new folders?     */

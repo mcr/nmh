@@ -32,39 +32,30 @@
 
 #define	QUOTE	'\\'		/* sigh */
 
-static struct swit switches[] = {
-#define	IDSW                  0
-    { "idstart number", -7 },		/* interface from bbc */
-#define	FDSW                  1
-    { "idstop number", -6 },		/*  .. */
-#define	QDSW                  2
-    { "idquit number", -6 },		/*  .. */
-#define	NMSW                  3
-    { "idname BBoard", -6 },		/*  .. */
-#define	PRMPTSW               4
-    { "prompt string", 0 },
-#define	SCANSW                5
-    { "scan", 0 },
-#define	NSCANSW               6
-    { "noscan", 0 },
-#define	READSW                7
-    { "vmhread fd", -7 },
-#define	WRITESW               8
-    { "vmhwrite fd", -8 },	
-#define	PREADSW               9
-    { "popread fd", -7 },
-#define	PWRITSW              10
-    { "popwrite fd", -8 },
-#define	TCURSW               11
-    { "topcur", 0 },
-#define	NTCURSW              12
-    { "notopcur", 0 },
-#define VERSIONSW            13
-    { "version", 0 },
-#define	HELPSW               14
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define MSH_SWITCHES \
+    X("idstart number", -7, IDSW) /* interface from bbc */ \
+    X("idstop number", -6, FDSW) /*  .. */ \
+    X("idquit number", -6, QDSW) /*  .. */ \
+    X("idname BBoard", -6, NMSW) /*  .. */ \
+    X("prompt string", 0, PRMPTSW) \
+    X("scan", 0, SCANSW) \
+    X("noscan", 0, NSCANSW) \
+    X("vmhread fd", -7, READSW) \
+    X("vmhwrite fd", -8, WRITESW) \
+    X("popread fd", -7, PREADSW) \
+    X("popwrite fd", -8, PWRITSW) \
+    X("topcur", 0, TCURSW) \
+    X("notopcur", 0, NTCURSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MSH);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MSH, switches);
+#undef X
 
 static int mbx_style = MMDF_FORMAT;
 
@@ -163,6 +154,8 @@ void m_reset (void);
 void seq_setcur (struct msgs *, int);
 void padios (char *, char *, ...);
 void padvise (char *, char *, ...);
+
+extern m_getfld_state_t gstate;	/* use the gstate in scansbr.c */
 
 
 /*
@@ -350,6 +343,7 @@ main (int argc, char **argv)
     display_info (id > 0 ? scansw : 0);
 
     msh (id > 0 ? scansw : 0);
+    scan_finished ();
 
     m_reset ();
     
@@ -358,65 +352,43 @@ main (int argc, char **argv)
 }
 
 
-static struct swit mshcmds[] = {
-#define	ADVCMD	0
-    { "advance", -7 },
-#define	ALICMD	1
-    { "ali", 0 },
-#define	EXPLCMD	2
-    { "burst", 0 },
-#define	COMPCMD	3
-    { "comp", 0 },
-#define	DISTCMD	4
-    { "dist", 0 },
-#define	EXITCMD	5
-    { "exit", 0 },
-#define	FOLDCMD	6
-    { "folder", 0 },
-#define	FORWCMD	7
-    { "forw", 0 },
-#define	HELPCMD	8
-    { "help", 0 },
-#define	INCMD	9
-    { "inc", 0 },
-#define	MARKCMD	10
-    { "mark", 0 },
-#define	MAILCMD	11
-    { "mhmail", 0 },
-#define	MHNCMD	12
-    { "mhn", 0 },
-#define	MSGKCMD	13
-    { "msgchk", 0 },
-#define	NEXTCMD	14
-    { "next", 0 },
-#define	PACKCMD	15
-    { "packf", 0 },
-#define	PICKCMD	16
-    { "pick", 0 },
-#define	PREVCMD	17
-    { "prev", 0 },
-#define	QUITCMD	18
-    { "quit", 0 },
-#define	FILECMD	19
-    { "refile", 0 },
-#define	REPLCMD	20
-    { "repl", 0 },
-#define	RMMCMD	21
-    { "rmm", 0 },
-#define	SCANCMD	22
-    { "scan", 0 },
-#define	SENDCMD	23
-    { "send", 0 },
-#define	SHOWCMD	24
-    { "show", 0 },
-#define	SORTCMD	25
-    { "sortm", 0 },
-#define	WHATCMD	26
-    { "whatnow", 0 },
-#define	WHOMCMD	27
-    { "whom", 0 },
-    { NULL, 0 }
-};
+#define MSHCMDS_SWITCHES \
+    X("advance", -7, ADVCMD) \
+    X("ali", 0, ALICMD) \
+    X("burst", 0, EXPLCMD) \
+    X("comp", 0, COMPCMD) \
+    X("dist", 0, DISTCMD) \
+    X("exit", 0, EXITCMD) \
+    X("folder", 0, FOLDCMD) \
+    X("forw", 0, FORWCMD) \
+    X("help", 0, HELPCMD) \
+    X("inc", 0, INCMD) \
+    X("mark", 0, MARKCMD) \
+    X("mhmail", 0, MAILCMD) \
+    X("mhn", 0, MHNCMD) \
+    X("msgchk", 0, MSGKCMD) \
+    X("next", 0, NEXTCMD) \
+    X("packf", 0, PACKCMD) \
+    X("pick", 0, PICKCMD) \
+    X("prev", 0, PREVCMD) \
+    X("quit", 0, QUITCMD) \
+    X("refile", 0, FILECMD) \
+    X("repl", 0, REPLCMD) \
+    X("rmm", 0, RMMCMD) \
+    X("scan", 0, SCANCMD) \
+    X("send", 0, SENDCMD) \
+    X("show", 0, SHOWCMD) \
+    X("sortm", 0, SORTCMD) \
+    X("whatnow", 0, WHATCMD) \
+    X("whom", 0, WHOMCMD) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MSHCMDS);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MSHCMDS, mshcmds);
+#undef X
 
 
 static void
@@ -713,7 +685,7 @@ setup (char *file)
     mp->msgattrs[0] = getcpy ("unseen");
     mp->msgattrs[1] = NULL;
 
-    m_unknown (fp);		/* the MAGIC invocation */    
+    scan_detect_mbox_style (fp);		/* the MAGIC invocation */
     if (fmsh) {
 	free (fmsh);
 	fmsh = NULL;
@@ -836,7 +808,8 @@ msh_ready (int msgnum, int full)
 	return yp;
     }
 
-    m_eomsbr ((int (*)()) 0);	/* XXX */
+    scan_reset_m_getfld_state ();
+    scan_eom_action ((int (*)()) 0);	/* XXX */
     fseek (fp, Msgs[msgnum].m_start, SEEK_SET);
     return fp;
 }
@@ -1005,15 +978,16 @@ readid (int msgnum)
 	return Msgs[msgnum].m_bboard_id;
 
     zp = msh_ready (msgnum, 0);
-    for (state = FLD;;)
-	switch (state = m_getfld (state, name, buf, sizeof(buf), zp)) {
+    for (;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, zp)) {
 	    case FLD: 
-	    case FLDEOF: 
 	    case FLDPLUS: 
 		if (!mh_strcasecmp (name, BBoard_ID)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buf, sizeof(buf), zp);
+			bufsz = sizeof buf;
+			state = m_getfld (&gstate, name, buf, &bufsz, zp);
 			bp = add (buf, bp);
 		    }
 		    i = atoi (bp);
@@ -1023,14 +997,16 @@ readid (int msgnum)
 		    else
 			continue;
 		}
-		while (state == FLDPLUS)
-		    state = m_getfld (state, name, buf, sizeof(buf), zp);
-		if (state != FLDEOF)
-		    continue;
+		while (state == FLDPLUS) {
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, zp);
+		}
+		continue;
 
 	    default: 
 		return 0;
 	}
+    }
 }
 
 

@@ -44,55 +44,38 @@
 
 #define	QUOTE	'\\'
 
-static struct swit mhlswitches[] = {
-#define	BELLSW         0
-    { "bell", 0 },
-#define	NBELLSW        1
-    { "nobell", 0 },
-#define	CLRSW          2
-    { "clear", 0 },
-#define	NCLRSW         3
-    { "noclear", 0 },
-#define	FOLDSW         4
-    { "folder +folder", 0 },
-#define	FORMSW         5
-    { "form formfile", 0 },
-#define	PROGSW         6
-    { "moreproc program", 0 },
-#define	NPROGSW        7
-    { "nomoreproc", 0 },
-#define	LENSW          8
-    { "length lines", 0 },
-#define	WIDTHSW        9
-    { "width columns", 0 },
-#define	SLEEPSW       10
-    { "sleep seconds",  0 },
-#define	BITSTUFFSW    11
-    { "dashstuffing", -12 },	/* interface from forw */
-#define	NBITSTUFFSW   12
-    { "nodashstuffing", -14 },	/* interface from forw */
-#define VERSIONSW     13
-    { "version", 0 },
-#define	HELPSW        14
-    { "help", 0 },
-#define	FORW1SW       15
-    { "forward", -7 },		/* interface from forw */
-#define	FORW2SW       16
-    { "forwall", -7 },		/* interface from forw */
-#define	DGSTSW        17
-    { "digest list", -6 },
-#define VOLUMSW       18
-    { "volume number", -6 },
-#define ISSUESW       19
-    { "issue number", -5 },
-#define NBODYSW       20
-    { "nobody", -6 },
-#define FMTPROCSW     21
-    { "fmtproc program", 0 },
-#define NFMTPROCSW    22
-    { "nofmtproc", 0 },
-    { NULL, 0 }
-};
+#define MHL_SWITCHES \
+    X("bell", 0, BELLSW) \
+    X("nobell", 0, NBELLSW) \
+    X("clear", 0, CLRSW) \
+    X("noclear", 0, NCLRSW) \
+    X("folder +folder", 0, FOLDSW) \
+    X("form formfile", 0, FORMSW) \
+    X("moreproc program", 0, PROGSW) \
+    X("nomoreproc", 0, NPROGSW) \
+    X("length lines", 0, LENSW) \
+    X("width columns", 0, WIDTHSW) \
+    X("sleep seconds", 0, SLEEPSW) \
+    X("dashstuffing", -12, BITSTUFFSW)    /* interface from forw */ \
+    X("nodashstuffing", -14, NBITSTUFFSW) /* interface from forw */ \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("forward", -7, FORW1SW)             /* interface from forw */ \
+    X("forwall", -7, FORW2SW)             /* interface from forw */ \
+    X("digest list", -6, DGSTSW) \
+    X("volume number", -6, VOLUMSW) \
+    X("issue number", -5, ISSUESW) \
+    X("nobody", -6, NBODYSW) \
+    X("fmtproc program", 0, FMTPROCSW) \
+    X("nofmtproc", 0, NFMTPROCSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHL);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHL, mhlswitches);
+#undef X
 
 #define NOCOMPONENT 0x000001	/* don't show component name         */
 #define UPPERCASE   0x000002	/* display in all upper case         */
@@ -353,7 +336,8 @@ static void quitser (int);
 static void mhladios (char *, char *, ...);
 static void mhldone (int);
 static void m_popen (char *);
-static void filterbody (struct mcomp *, char *, int, int, FILE *);
+static void filterbody (struct mcomp *, char *, int, int, FILE *,
+                        m_getfld_state_t);
 static void compile_formatfield(struct mcomp *);
 static void compile_filterargs (void);
 
@@ -953,6 +937,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
     int state, bucket;
     struct mcomp *c1, *c2, *c3;
     char **ip, name[NAMESZ], buf[BUFSIZ];
+    m_getfld_state_t gstate = 0;
 
     compile_filterargs();
 
@@ -1014,15 +999,17 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 	}
     }
 
-    for (state = FLD;;) {
-	switch (state = m_getfld (state, name, buf, sizeof(buf), fp)) {
+    for (;;) {
+	int bufsz = sizeof buf;
+	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	    case FLD: 
 	    case FLDPLUS: 
 	        bucket = fmt_addcomptext(name, buf);
 		for (ip = ignores; *ip; ip++)
 		    if (!mh_strcasecmp (name, *ip)) {
 			while (state == FLDPLUS) {
-			    state = m_getfld (state, name, buf, sizeof(buf), fp);
+			    bufsz = sizeof buf;
+			    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 			    fmt_appendcomp(bucket, name, buf);
 			}
 			break;
@@ -1044,7 +1031,8 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		if (c1 == NULL)
 		    c1 = add_queue (&msghd, &msgtl, name, buf, 0);
 		while (state == FLDPLUS) {
-		    state = m_getfld (state, name, buf, sizeof(buf), fp);
+		    bufsz = sizeof buf;
+		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		    c1->c_text = add (buf, c1->c_text);
 		    fmt_appendcomp(bucket, name, buf);
 		}
@@ -1077,14 +1065,15 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    if (dobody && !mh_strcasecmp (c1->c_name, "body")) {
 		    	if (c1->c_flags & FMTFILTER && state == BODY &&
 							formatproc != NULL) {
-			    filterbody(c1, buf, sizeof(buf), state, fp);
+			    filterbody(c1, buf, sizeof(buf), state, fp, gstate);
 			} else {
 			    holder.c_text = mh_xmalloc (sizeof(buf));
 			    strncpy (holder.c_text, buf, sizeof(buf));
 			    while (state == BODY) {
 				putcomp (c1, &holder, BODYCOMP);
-				state = m_getfld (state, name, holder.c_text,
-					    sizeof(buf), fp);
+				bufsz = sizeof buf;
+				state = m_getfld (&gstate, name, holder.c_text,
+					    &bufsz, fp);
 			    }
 			    free (holder.c_text);
 			    holder.c_text = NULL;
@@ -1110,6 +1099,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		adios (NULL, "getfld() returned %d", state);
 	}
     }
+    m_getfld_state_destroy (&gstate);
 }
 
 
@@ -1658,6 +1648,8 @@ static void
 m_popen (char *name)
 {
     int pd[2];
+    char *file;
+    char **arglist;
 
     if (mhl_action && (sd = dup (fileno (stdout))) == NOTOK)
 	adios ("standard output", "unable to dup()");
@@ -1678,7 +1670,8 @@ m_popen (char *name)
 		dup2 (pd[0], fileno (stdin));
 		close (pd[0]);
 	    }
-	    execlp (name, r1bindex (name, '/'), NULL);
+	    arglist = argsplit(name, &file, NULL);
+	    execvp (file, arglist);
 	    fprintf (stderr, "unable to exec ");
 	    perror (name);
 	    _exit (-1);
@@ -1784,7 +1777,8 @@ compile_filterargs (void)
  */
 
 static void
-filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp)
+filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp,
+            m_getfld_state_t gstate)
 {
     struct mcomp holder;
     char name[NAMESZ];
@@ -1838,8 +1832,9 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp)
 	 */
 
 	while (state == BODY) {
+	    int bufsz2 = bufsz;
 	    write(fdinput[1], buf, strlen(buf));
-	    state = m_getfld(state, name, buf, bufsz, fp);
+	    state = m_getfld (&gstate, name, buf, &bufsz2, fp);
 	}
 
 	/*

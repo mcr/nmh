@@ -10,17 +10,19 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define UNLINKSW      0
-    { "unlink", 0 },
-#define NUNLINKSW    1
-    { "nounlink", 0 },
-#define VERSIONSW     2
-    { "version", 0 },
-#define	HELPSW        3
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define RMM_SWITCHES \
+    X("unlink", 0, UNLINKSW) \
+    X("nounlink", 0, NUNLINKSW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(RMM);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(RMM, switches);
+#undef X
 
 
 int

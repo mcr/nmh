@@ -591,6 +591,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
     char subject[BUFSIZ];
     char name[NAMESZ], partnum[BUFSIZ];
     FILE *in;
+    m_getfld_state_t gstate = 0;
 
     if ((in = fopen (drft, "r")) == NULL)
 	adios (drft, "unable to open for reading");
@@ -602,19 +603,22 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
      * Scan through the message and examine the various header fields,
      * as well as locate the beginning of the message body.
      */
-    for (compnum = 1, state = FLD;;) {
-	switch (state = m_getfld (state, name, buffer, sizeof(buffer), in)) {
+    m_getfld_track_filepos (&gstate, in);
+    for (compnum = 1;;) {
+	int bufsz = sizeof buffer;
+	switch (state = m_getfld (&gstate, name, buffer, &bufsz, in)) {
 	    case FLD:
 	    case FLDPLUS:
-	    case FLDEOF:
 	        compnum++;
 
 		/*
 		 * This header field is discarded.
 		 */
 		if (!mh_strcasecmp (name, "Message-ID")) {
-		    while (state == FLDPLUS)
-			state = m_getfld (state, name, buffer, sizeof(buffer), in);
+		    while (state == FLDPLUS) {
+			bufsz = sizeof buffer;
+			state = m_getfld (&gstate, name, buffer, &bufsz, in);
+		    }
 		} else if (uprf (name, XXX_FIELD_PRF)
 			|| !mh_strcasecmp (name, VRSN_FIELD)
 			|| !mh_strcasecmp (name, "Subject")
@@ -638,7 +642,8 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 
 		    dp = add (concat (name, ":", buffer, NULL), dp);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buffer, sizeof(buffer), in);
+			bufsz = sizeof buffer;
+			state = m_getfld (&gstate, name, buffer, &bufsz, in);
 			dp = add (buffer, dp);
 		    }
 		} else {
@@ -648,19 +653,16 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 		     */
 		    cp = add (concat (name, ":", buffer, NULL), cp);
 		    while (state == FLDPLUS) {
-			state = m_getfld (state, name, buffer, sizeof(buffer), in);
+			bufsz = sizeof buffer;
+			state = m_getfld (&gstate, name, buffer, &bufsz, in);
 			cp = add (buffer, cp);
 		    }
 		}
 
-		if (state != FLDEOF) {
-		    start = ftell (in) + 1;
-		    continue;
-		}
-		/* else fall... */
+		start = ftell (in) + 1;
+		continue;
 
 	   case BODY:
-	   case BODYEOF:
 	   case FILEEOF:
 		break;
 
@@ -674,6 +676,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 
 	break;
     }
+    m_getfld_state_destroy (&gstate);
     if (cp == NULL)
 	adios (NULL, "headers missing from draft");
 
@@ -905,8 +908,10 @@ static void
 alert (char *file, int out)
 {
     pid_t child_id;
-    int i, in;
+    int i, in, argp;
     char buf[BUFSIZ];
+    char *program;
+    char **arglist;
 
     for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
 	sleep (5);
@@ -946,8 +951,14 @@ alert (char *file, int out)
 	    snprintf (buf, sizeof(buf), "send failed on %s",
 			forwsw ? "enclosed draft" : file);
 
-	    execlp (mailproc, r1bindex (mailproc, '/'), getusername (),
-		    "-subject", buf, NULL);
+	    arglist = argsplit(mailproc, &program, &argp);
+
+	    arglist[argp++] = getusername();
+	    arglist[argp++] = "-subject";
+	    arglist[argp++] = buf;
+	    arglist[argp] = NULL;
+
+	    execvp (program, arglist);
 	    fprintf (stderr, "unable to exec ");
 	    perror (mailproc);
 	    _exit (-1);

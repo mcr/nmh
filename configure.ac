@@ -3,12 +3,12 @@ dnl configure.ac -- autoconf template for nmh
 dnl
 
 dnl Move this up a bit
-AC_PREREQ([2.61])
+AC_PREREQ([2.68])
 
 AC_INIT([nmh], m4_normalize(m4_include([VERSION])), [nmh-workers@nongnu.org])
 AC_CONFIG_SRCDIR([h/nmh.h])
 AC_CONFIG_HEADER([config.h])
-AM_INIT_AUTOMAKE([-Wall foreign subdir-objects])
+AM_INIT_AUTOMAKE([-Wall color-tests foreign serial-tests subdir-objects 1.12])
 
 AC_CANONICAL_HOST
 
@@ -27,8 +27,6 @@ dnl --------------------------
 dnl Do you want to debug nmh?
 AC_ARG_ENABLE([debug],
   AS_HELP_STRING([--enable-debug],[enable nmh code debugging]))
-dnl The old redundant --enable-nmh-debug is deprecated and undocumented.
-AS_IF([test x"$enable_nmh_debug" = x"yes"], [enable_debug=yes])
 
 dnl Do you want to disable use of locale functions
 AH_TEMPLATE([LOCALE],
@@ -56,12 +54,6 @@ AS_IF([test x"$with_tls" != x -a x"$with_tls" != x"no"],[
       AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])dnl
       tls_support=yes],[tls_support=no])
 
-dnl What should be the default editor?
-AC_ARG_WITH([editor],
-  AS_HELP_STRING([--with-editor=EDITOR],[specify the default editor]))
-
-AS_IF([test -n "$with_editor"], [editorpath="$with_editor"])
-
 dnl Set the backup prefix
 AC_ARG_WITH([hash-backup],
   AS_HELP_STRING([--with-hash-backup],[use # as the backup prefix (default: ,)]))
@@ -77,26 +69,24 @@ AS_CASE(["$host_os"],
   [freebsd*|openbsd*|darwin*], [default_locktype="flock"; default_locking=FLOCK_LOCKING],
   [default_locktype="dot"; default_locking=DOT_LOCKING])
 
-AC_ARG_WITH(locking,
+AC_ARG_WITH([locking],
   AS_HELP_STRING([--with-locking=@<:@dot|fcntl|flock|lockf@:>@],
   [specify the file locking method]))
 
-if test x"$with_locking" = x"dot"; then
-  LOCKTYPE="dot"
-  AC_DEFINE(DOT_LOCKING, 1, [Define to use dot based file locking.])dnl
-elif test x"$with_locking" = x"flock"; then
-  LOCKTYPE="flock"
-  AC_DEFINE(FLOCK_LOCKING, 1, [Define to use flock() based locking.])dnl
-elif test x"$with_locking" = x"lockf"; then
-  LOCKTYPE="lockf"
-  AC_DEFINE(LOCKF_LOCKING, 1, [Define to use lockf() based locking.])dnl
-elif test x"$with_locking" = x"fcntl"; then
-  LOCKTYPE="fcntl"
-  AC_DEFINE(FCNTL_LOCKING, 1, [Define to use fnctl() based locking.])dnl
-else
-  LOCKTYPE="$default_locktype"
-  AC_DEFINE_UNQUOTED($default_locking, 1)dnl
-fi
+AS_IF([test x"$with_locking" = x"dot"],
+    [LOCKTYPE="dot"
+    AC_DEFINE([DOT_LOCKING], [1], [Define to use dot based file locking.])],
+  [test x"$with_locking" = x"flock"],
+    [LOCKTYPE="flock"
+    AC_DEFINE([FLOCK_LOCKING], [1], [Define to use flock() based locking.])],
+  [test x"$with_locking" = x"lockf"],
+    [LOCKTYPE="lockf"
+    AC_DEFINE([LOCKF_LOCKING], [1], [Define to use lockf() based locking.])],
+  [test x"$with_locking" = x"fcntl"],
+    [LOCKTYPE="fcntl"
+    AC_DEFINE([FCNTL_LOCKING], [1], [Define to use fnctl() based locking.])],
+  [LOCKTYPE="$default_locktype"
+  AC_DEFINE_UNQUOTED([$default_locking], [1])])
 
 dnl Should we use a locking directory?
 AC_ARG_ENABLE([lockdir],
@@ -121,25 +111,10 @@ AS_IF([test x"$with_mts" = x"smtp"], [MTS="smtp"],
       [MTS="smtp"])
 AC_SUBST([MTS])dnl
 
-dnl What should be the default pager?
-AC_ARG_WITH([pager],
-  AS_HELP_STRING([--with-pager=PAGER],[specify the default pager]))
-
-AS_IF([test -n "$with_pager"], [pagerpath="$with_pager"])
-
-dnl If a pager is not explicitly specified, then look for one.
-dnl Fall back to `cat', to avoid catastrophic failure of
-dnl `mhshow', et al., if pagerpath is set to `no'.
-if test -z "$pagerpath"; then
-  pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
-  AC_PATH_PROGS([pagerpath], [more less most cat], [no], [$pathtmp])
-fi
-AC_SUBST(pagerpath)dnl
-
 dnl What should be the default mail server(s)?
-AC_ARG_WITH(smtpservers,
-  AS_HELP_STRING([--with-smtpservers='SMTPSERVER1@<:@ SMTPSERVER2...@:>@'],
-  [specify the default SMTP server(s) @<:@localhost@:>@]))
+AC_ARG_WITH([smtpservers],
+  [AS_HELP_STRING([--with-smtpservers='SMTPSERVER1@<:@ SMTPSERVER2...@:>@'],
+  [specify the default SMTP server(s) @<:@localhost@:>@])])
 AS_IF([test -n "$with_smtpservers"], [smtpservers="$with_smtpservers"],
       [smtpservers="localhost"])
 AC_SUBST([smtpservers])dnl
@@ -174,7 +149,7 @@ if test "$nmh_cv_has_unusedmacros" = 'yes'; then
                       ||  CPPFLAGS="$CPPFLAGS -Wunused-macros"
   DISABLE_UNUSED_MACROS_WARNING=-Wno-unused-macros
 fi
-AC_SUBST(DISABLE_UNUSED_MACROS_WARNING)dnl
+AC_SUBST([DISABLE_UNUSED_MACROS_WARNING])dnl
 
 AC_CACHE_CHECK([whether compiler supports -Wno-sign-compare],
   [nmh_cv_has_nosigncompare],
@@ -187,7 +162,7 @@ AC_CACHE_CHECK([whether compiler supports -Wno-sign-compare],
 if test "$nmh_cv_has_nosigncompare" = 'yes'; then
   DISABLE_SIGN_COMPARE_WARNING=-Wno-sign-compare
 fi
-AC_SUBST(DISABLE_SIGN_COMPARE_WARNING)dnl
+AC_SUBST([DISABLE_SIGN_COMPARE_WARNING])dnl
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
@@ -274,8 +249,6 @@ if test -n "$auto_cflags"; then
   fi
 fi
 
-AC_C_CONST              dnl Does compiler support `const'.
-
 dnl ------------------
 dnl CHECK FOR PROGRAMS
 dnl ------------------
@@ -284,7 +257,7 @@ AC_PROG_INSTALL		dnl Check for BSD compatible `install'
 AC_PROG_RANLIB		dnl Check for `ranlib'
 AC_PROG_AWK             dnl Check for mawk,gawk,nawk, then awk
 AC_PROG_SED		dnl Check for Posix-compliant sed
-AC_PROG_LEX             dnl Check for lex/flex
+AM_PROG_LEX             dnl Check for lex/flex
 
 AM_PROG_AR
 
@@ -305,20 +278,16 @@ AC_SUBST([MD5FMT])
 dnl ----------------------------------------------
 dnl check for lclint, and lint if it doesn't exist
 dnl ----------------------------------------------
-AC_CHECK_PROG(linttmp1, lclint, lclint, no)dnl
-if test x$ac_cv_prog_linttmp1 != xno ; then
-  LINT=$ac_cv_prog_linttmp1
-  LINTFLAGS="-weak +posixlib -macrovarprefixexclude"
-else
-  AC_CHECK_PROG(linttmp2, lint, lint, no)dnl
-  if test x$ac_cv_prog_linttmp2 != xno ; then
-    LINT=$ac_cv_prog_linttmp2
-    LINTFLAGS=""
-  else
-    LINT="echo 'No lint program found'"
-    LINTFLAGS=""
-  fi
-fi
+AC_CHECK_PROG([linttmp1], [lclint], [lclint], [no])dnl
+AS_IF([test x$ac_cv_prog_linttmp1 != xno],
+  [LINT=$ac_cv_prog_linttmp1
+  LINTFLAGS="-weak +posixlib -macrovarprefixexclude"],
+  [AC_CHECK_PROG([linttmp2], [lint], [lint], [no])dnl
+  AS_IF([test x$ac_cv_prog_linttmp2 != xno],
+    [LINT=$ac_cv_prog_linttmp2
+    LINTFLAGS=""],
+    [LINT="echo 'No lint program found'"
+    LINTFLAGS=""])])
 AC_SUBST([LINT])dnl
 AC_SUBST([LINTFLAGS])dnl
 
@@ -327,32 +296,20 @@ pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
 AC_PATH_PROG([lspath], [ls], [no], [$pathtmp])
 
 dnl See how we get ls to display the owner and the group
-if test "$lspath" != "no"; then
-  AC_CACHE_CHECK([how to get ls to show us the group ownership of a file],
+AS_IF([test "$lspath" != "no"],
+  [AC_CACHE_CHECK([how to get ls to show us the group ownership of a file],
 		 [nmh_cv_ls_grpopt],
-  [if test x"`$lspath -dl / | $AWK '{print $9}'`" = x"/"; then
+  [AS_IF([test x"`$lspath -dl / | $AWK '{print $9}'`" = x"/"],[
     dnl There were 9 parameters, so unless this is a really bizarre, nonstandard
     dnl ls, it would seem -l gave us both the user and group.  On this type of
     dnl ls, -g makes _only_ the group be displayed (and not the user).
-    nmh_cv_ls_grpopt="-l"
-  else
+    nmh_cv_ls_grpopt="-l"],[
     dnl Looks like -l only gave us the user, so we need -g to get the group too.
-    nmh_cv_ls_grpopt="-lg"
-  fi])
-fi
+    nmh_cv_ls_grpopt="-lg"])])])
 
 dnl Look for `sendmail'
 pathtmp=/usr/lib:/usr/sbin:/usr/etc:/usr/ucblib:/usr/bin:/bin
 AC_PATH_PROG([sendmailpath], [sendmail], [/usr/sbin/sendmail], [$pathtmp])
-
-dnl Look for `vi'
-pathtmp=/usr/bin:/bin:/usr/ucb:/usr/local/bin
-AC_PATH_PROG([vipath], [vi], [/bin/vi], [$pathtmp])
-
-dnl If editor is not specified yet,
-dnl then use `vi' as the default.
-AS_IF([test -z "$editorpath"], [editorpath="$vipath"])
-AC_SUBST([editorpath])dnl
 
 dnl Cygwin FAT filesystems do not support hard links.  So default to
 dnl cp instead, even if running on an NTFS or other filesystem.
@@ -406,9 +363,8 @@ fi
 
 dnl Provide a way for distcheck to disable setgid_mail via
 dnl DISTCHECK_CONFIGURE_FLAGS.
-if test x"$DISABLE_SETGID_MAIL" != x -a x"$DISABLE_SETGID_MAIL" != x0; then
-  nmh_cv_dotlockfile_setgid=yes
-fi
+AS_IF([test x"$DISABLE_SETGID_MAIL" != x -a x"$DISABLE_SETGID_MAIL" != x0],
+  [nmh_cv_dotlockfile_setgid=yes])
 
 dnl If mailspool is not world-writable and dotlockfile is not setgid,
 dnl we need to #define MAILGROUP to 1 and make inc setgid.
@@ -418,7 +374,7 @@ if test x"$LOCKTYPE" = x"dot" -a x"$nmh_cv_mailspool_world_writable" = x"no" -a 
     [Define to 1 if you need to make `inc' set-group-id because your mail spool is not world writable. There are no guarantees as to the safety of doing this, but this #define will add some extra security checks.])dnl
   SETGID_MAIL=1
 fi
-AC_SUBST(SETGID_MAIL)dnl
+AC_SUBST([SETGID_MAIL])dnl
 
 dnl Use ls to see which group owns the mail spool directory.
 AC_CACHE_CHECK(what group owns the mail spool, nmh_cv_ls_mail_grp,
@@ -447,20 +403,9 @@ AS_CASE(["$host_os"],
 	  AS_IF([test -z "$CPPFLAGS"],[CPPFLAGS="-D_GNU_SOURCE"],
                 [CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"])])
 
-AC_HEADER_STDC
 AC_HEADER_TIOCGWINSZ
-AC_CHECK_HEADERS([errno.h fcntl.h crypt.h ncurses/termcap.h termcap.h \
-                  langinfo.h wchar.h wctype.h iconv.h netdb.h \
-                  sys/param.h sys/time.h sys/stream.h])
-
-dnl
-dnl Checks for _IO_write_ptr. A Linuxism used by nmh on linux. We
-dnl really use a whole set of them, but this check should be
-dnl sufficient.
-dnl
-AC_CHECK_HEADER(libio.h, [
-  AC_EGREP_HEADER(_IO_write_ptr, libio.h, [
-    AC_DEFINE(LINUX_STDIO,1,[Use the Linux _IO_*_ptr defines from <libio.h>.]) ]) ])
+AC_CHECK_HEADERS([fcntl.h ncurses/termcap.h termcap.h langinfo.h \
+                  wchar.h wctype.h sys/param.h sys/time.h sys/stream.h])
 
 AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
   [Define to 1 if `struct winsize' requires <sys/ptem.h>.]),,
@@ -494,7 +439,11 @@ AC_CHECK_FUNC([modf], , AC_CHECK_LIB([m], [modf]))
 dnl Checks for network libraries (nsl, socket)
 NMH_CHECK_NETLIBS
 
+dnl Check for readline support
 NMH_READLINE
+
+dnl Check for iconv
+NMH_CHECK_ICONV
 
 termcap_curses_order="termcap curses ncurses"
 for lib in $termcap_curses_order; do
@@ -504,53 +453,6 @@ AC_SUBST([TERMLIB])dnl
 AS_IF([test "x$TERMLIB" = "x"],
       [AC_MSG_FAILURE([Could not find tgetent in any library.  Is there a curses
 or ncurses library or package that you can install?])])
-
-
-dnl ---------------
-dnl CHECK FOR ICONV
-dnl ---------------
-
-dnl Find iconv. It may be in libiconv and may be iconv() or libiconv()
-if test "x$ac_cv_header_iconv_h" = "xyes"; then
-  AC_CHECK_FUNC(iconv, ac_found_iconv=yes, ac_found_iconv=no)
-  if test "x$ac_found_iconv" = "xno"; then
-    AC_CHECK_LIB(iconv, iconv, ac_found_iconv=yes)
-    if test "x$ac_found_iconv" = "xno"; then
-      AC_CHECK_LIB(iconv, libiconv, ac_found_iconv=yes)
-    fi
-    if test "x$ac_found_iconv" != "xno"; then
-      ICONVLIB="-liconv"
-    fi
-  else
-    dnl Handle case where there is a native iconv but iconv.h is from libiconv
-    AC_CHECK_DECL(_libiconv_version,
-      [ AC_CHECK_LIB(iconv, libiconv, LIBS="-liconv $LIBS") ],,
-      [ #include <iconv.h> ])
-  fi
-fi
-if test "x$ac_found_iconv" = xyes; then
-  AC_DEFINE([HAVE_ICONV], [1], [Define if you have the iconv() function.])
-fi
-AC_SUBST([ICONVLIB])
-
-dnl Check if iconv uses const in prototype declaration
-if test "x$ac_found_iconv" = "xyes"; then
-  AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
-    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-        #include <iconv.h>]],
-        [[#ifdef __cplusplus
-          "C"
-          #endif
-          #if defined(__STDC__) || defined(__cplusplus)
-          size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
-          #else
-          size_t iconv();
-          #endif]])],
-      [ac_cv_iconv_const=],
-      [ac_cv_iconv_const=const])])
-  AC_DEFINE_UNQUOTED([ICONV_CONST], $ac_cv_iconv_const,
-    [Define as const if the declaration of iconv() needs const.])
-fi
 
 dnl --------------
 dnl CHECK FOR NDBM
@@ -621,8 +523,8 @@ dnl ------------------
 dnl nmhrpm is used in the final summary, see below.  The default value is
 dnl reported there as ./RPM, consistent with the reporting of the default
 dnl source code location as ., but its absolute path is used in the Makefile.
-AC_ARG_WITH(rpmdir,
-  AS_HELP_STRING([--with-rpmdir=RPMDIR], [RPM build directory @<:@RPM@:>@]))
+AC_ARG_WITH([rpmdir],
+  [AS_HELP_STRING([--with-rpmdir=RPMDIR], [RPM build directory @<:@RPM@:>@])])
   AS_IF([test x"$with_rpmdir" = x], [rpmdir='$(abs_srcdir)/RPM'; nmhrpm=./RPM],
           [rpmdir="$with_rpmdir"; eval "nmhrpm=${rpmdir}"])
 AC_SUBST([rpmdir])
@@ -644,10 +546,12 @@ dnl -----------------
 
 AS_IF([test x"$tls_support" = x"yes"],[
   AC_CHECK_HEADER([openssl/ssl.h], , [AC_MSG_ERROR([openssl/ssl.h not found])])
-  AC_CHECK_LIB([crypto], [BIO_write], ,
+  AC_CHECK_LIB([crypto], [BIO_write], [TLSLIB="-lcrypto"],
     [AC_MSG_ERROR([OpenSSL crypto library not found])])
-  AC_CHECK_LIB([ssl], [SSL_library_init], ,
-    [AC_MSG_ERROR([OpenSSL library not found])])])
+  AC_CHECK_LIB([ssl], [SSL_library_init], [TLSLIB="-lssl $TLSLIB"],
+    [AC_MSG_ERROR([OpenSSL library not found])])],
+  [TLSLIB=])
+AC_SUBST([TLSLIB])
 
 dnl ---------------------
 dnl CHECK TERMCAP LIBRARY
@@ -774,8 +678,8 @@ dnl exist.
 dnl
 
 AC_CONFIG_COMMANDS([build-directories],
-[test -d etc || ${MKDIR_P} etc
-test -d man || ${MKDIR_P} man])
+[test -d etc || AS_MKDIR_P([etc])
+test -d man || AS_MKDIR_P([man])])
 
 AC_CONFIG_COMMANDS_POST([
 
@@ -812,7 +716,6 @@ transport system           : ${MTS}
 file locking type          : ${LOCKTYPE}
 default smtp servers       : ${smtpservers}
 default editor             : ${editorpath}
-default pager              : ${pagerpath}
 SASL support               : ${sasl_support}
 TLS support                : ${tls_support}
 ])])dnl

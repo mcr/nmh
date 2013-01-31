@@ -181,6 +181,18 @@ single:
 	 * check if message is in-range and exists.
 	 */
 	if (mp->msgflags & ALLOW_NEW) {
+	    /*
+	     * We can get into a case where the "cur" sequence is way out
+	     * of range, and because it's allowed to not exist (think
+	     * of "rmm; next") it doesn't get checked to make sure it's
+	     * within the range of messages in seq_init().  So if our
+	     * desired sequence is out of range of the allocated folder
+	     * limits simply reallocate the folder so it's within range.
+	     */
+	    if (first < mp->lowoff || first > mp->hghoff)
+	    	mp = folder_realloc(mp, first < mp->lowoff ? first : mp->lowoff,
+				    first > mp->hghoff ? first : mp->hghoff);
+
 	    set_select_empty (mp, first);
 	} else {
 	    if (first > mp->hghmsg

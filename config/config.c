@@ -83,9 +83,9 @@ try_it:
  */
 
 struct swit anoyes[] = {
-    { "no", 0 },
-    { "yes", 0 },
-    { NULL, 0 }
+    { "no", 0, 0 },
+    { "yes", 0, 1 },
+    { NULL, 0, 0 }
 };
 
 /* 
@@ -317,14 +317,6 @@ char *whatnowproc = nmhbindir (/whatnow);
  */
 
 char *whomproc = nmhbindir (/whom);
-
-/*
- * This is the editor invoked by the various message
- * composition programs.  It SHOULD be a full screen
- * editor, such as vi or emacs, but any editor will work.
- */
-
-char *defaulteditor = DEFAULT_EDITOR;
 
 /* 
  * This is the global nmh alias file.  It is somewhat obsolete, since

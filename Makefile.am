@@ -52,6 +52,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/format/test-dp test/format/test-fmtdump \
 	test/format/test-localmbox test/format/test-myname \
 	test/format/test-myhost test/format/test-mymbox \
+	test/format/test-rightjustify \
 	test/forw/test-forw-digest test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/inc/test-inc-scanout test/inc/test-msgchk \
@@ -61,8 +62,8 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/mhlist/test-mhlist test/mhmail/test-mhmail \
 	test/mhparam/test-mhparam test/mhpath/test-mhpath \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
-	test/mhshow/test-subpart test/mhstore/test-mhstore \
-	test/new/test-basic \
+	test/mhshow/test-subpart test/mhshow/test-msg-buffer-boundaries \
+	test/mhstore/test-mhstore test/new/test-basic \
 	test/pick/test-pick test/pick/test-stderr \
 	test/post/test-post-aliases test/post/test-post-basic \
 	test/post/test-post-multiple test/post/test-post-bcc \
@@ -76,13 +77,15 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/repl/test-multicomp test/repl/test-repl \
 	test/scan/test-scan test/scan/test-scan-multibyte \
 	test/sequences/test-flist test/sequences/test-mark \
+	test/sequences/test-out-of-range \
 	test/slocal/test-slocal \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
 	test/whatnow/test-ls test/whom/test-whom \
 	test/cleanup ## The "cleanup" test should always be last.
 
 check_SCRIPTS = test/common.sh
-check_PROGRAMS = test/getfullname test/getfqdn test/fakepop test/fakesmtp
+check_PROGRAMS = test/getfullname test/getfqdn test/fakepop test/fakesmtp \
+		 test/getcwidth
 DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 
 ##
@@ -97,7 +100,7 @@ clean-local:
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
 ##
-MAINTAINERCLEANFILES = cscope.files cscope.out
+MAINTAINERCLEANFILES = cscope.files cscope.out cscope.in.out cscope.po.out
 
 ##
 ## And our own superclean, to get everything left by maintainer-clean.
@@ -211,6 +214,27 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/whatnow.1 man/whom.1
 
 ##
+## Sources for our man pages
+##
+man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
+	   man/conflict.man man/dist.man man/dp.man man/flist.man \
+	   man/flists.man man/fmtdump.man man/fnext.man man/folder.man \
+	   man/folders.man man/forw.man man/fprev.man man/inc.man \
+	   man/install-mh.man man/mark.man man/mh-alias.man \
+	   man/mh-chart-gen.sh man/mh-draft.man man/mh-format.man \
+	   man/mh-mail.man man/mh-profile.man man/mh_profile.man \
+	   man/mh-sequence.man man/mh-tailor.man man/mhbuild.man man/mhl.man \
+	   man/mhlist.man man/mhmail.man man/mhn.man man/mhparam.man \
+	   man/mhpath.man man/mhshow.man man/mhstore.man man/msgchk.man \
+	   man/msh.man man/mts.conf.man man/new.man man/next.man man/nmh.man \
+	   man/packf.man man/pick.man man/post.man man/prev.man \
+	   man/prompter.man man/rcvdist.man man/rcvpack.man \
+	   man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
+	   man/rmf.man man/rmm.man man/scan.man man/send.man \
+	   man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
+	   man/unseen.man man/whatnow.man man/whom.man
+
+##
 ## Files we need to include in the distribution which aren't found by
 ## Automake using the automatic rules
 ##
@@ -218,28 +242,11 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
 	     etc/mhn.defaults.sh etc/sendfiles $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
-	     man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
-	     man/conflict.man man/dist.man man/dp.man man/flist.man \
-	     man/flists.man man/fmtdump.man man/fnext.man man/folder.man \
-	     man/folders.man man/forw.man man/fprev.man man/inc.man \
-	     man/install-mh.man man/mark.man man/mh-alias.man \
-	     man/mh-chart-gen.sh man/mh-draft.man man/mh-format.man \
-	     man/mh-mail.man man/mh-profile.man man/mh_profile.man \
-	     man/mh-sequence.man man/mh-tailor.man man/mhbuild.man man/mhl.man \
-	     man/mhlist.man man/mhmail.man man/mhn.man man/mhparam.man \
-	     man/mhpath.man man/mhshow.man man/mhstore.man man/msgchk.man \
-	     man/msh.man man/mts.conf.man man/new.man man/next.man man/nmh.man \
-	     man/packf.man man/pick.man man/post.man man/prev.man \
-	     man/prompter.man man/rcvdist.man man/rcvpack.man \
-	     man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
-	     man/rmf.man man/rmm.man man/scan.man man/send.man \
-	     man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
-	     man/unseen.man man/whatnow.man man/whom.man \
 	     test/README test/fakesendmail $(TESTS) test/inc/deb359167.mbox \
 	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
 	     test/inc/md5sums test/mhmail/attachment.txt \
 	     test/post/test-post-common.sh uip/mhmail \
-	     SPECS/nmh.spec SPECS/build-nmh-cygwin
+	     SPECS/nmh.spec SPECS/build-nmh-cygwin $(man_SRCS)
 
 ##
 ## These are all of the definitions for each of the programs listed above.
@@ -372,7 +379,7 @@ uip_mhtest_SOURCES = uip/mhtest.c uip/mhparse.c uip/mhcachesbr.c \
 uip_mhtest_LDADD = $(LDADD) $(TERMLIB)
 
 uip_post_SOURCES = uip/post.c uip/aliasbr.c
-uip_post_LDADD = mts/libmts.a $(LDADD) $(SASLLIB)
+uip_post_LDADD = mts/libmts.a $(LDADD) $(SASLLIB) $(TLSLIB)
 
 uip_rcvdist_SOURCES = uip/rcvdist.c uip/distsbr.c
 uip_rcvdist_LDADD = $(LDADD) $(ICONVLIB)
@@ -467,7 +474,8 @@ uninstall-hook:
 ##
 ## Our rules to build our internal libraries (libmh.a, libmts.a)
 ##
-sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/base64.c \
+sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
+		      sbr/base64.c \
 		      sbr/brkstring.c sbr/check_charset.c sbr/client.c \
 		      sbr/closefds.c sbr/concat.c sbr/context_del.c \
 		      sbr/context_find.c sbr/context_foil.c sbr/context_read.c \
@@ -480,7 +488,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/base64.c \
 		      sbr/folder_free.c sbr/folder_pack.c \
 		      sbr/folder_read.c sbr/folder_realloc.c sbr/gans.c \
 		      sbr/getans.c sbr/getanswer.c sbr/getarguments.c \
-		      sbr/getcpy.c sbr/getfolder.c sbr/getpass.c \
+		      sbr/getcpy.c sbr/geteditor.c sbr/getfolder.c \
+		      sbr/getpass.c \
 		      sbr/fmt_addr.c sbr/fmt_compile.c sbr/fmt_new.c \
 		      sbr/fmt_rfc2047.c sbr/fmt_scan.c sbr/lock_file.c \
 		      sbr/m_atoi.c sbr/m_backup.c sbr/m_convert.c \
@@ -499,16 +508,14 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/base64.c \
 		      sbr/showfile.c sbr/signals.c sbr/smatch.c \
 		      sbr/snprintb.c sbr/ssequal.c sbr/strcasecmp.c \
 		      sbr/strindex.c sbr/trimcpy.c sbr/uprf.c sbr/vfgets.c \
-		      sbr/fmt_def.c sbr/m_msgdef.c sbr/mf.c sbr/utils.c \
+		      sbr/fmt_def.c sbr/mf.c sbr/utils.c \
 		      sbr/m_mktemp.c sbr/getansreadline.c config/config.c \
 		      config/version.c
 
 sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 		-DMAILSPOOL='"$(mailspool)"' \
 		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
-		-DNMHLIBDIR='"$(libdir)"' \
-		-DDEFAULT_EDITOR='"$(editorpath)"' \
-		-DDEFAULT_PAGER='"$(pagerpath)"'
+		-DNMHLIBDIR='"$(libdir)"'
 
 sbr_libdtimep_a_SOURCES = sbr/dtimep.l
 sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) \
@@ -537,8 +544,6 @@ man/man.sed: Makefile
 	@echo 's,%mandir%,$(mandir),g' >> $@
 	@echo 's,%mailspool%,$(mailspool),g' >> $@
 	@echo 's,%sendmailpath%,$(sendmailpath),g' >> $@
-	@echo 's,%default_editor%,$(editorpath),g' >> $@
-	@echo 's,%default_pager%,$(pagerpath),g' >> $@
 	@echo 's,%manext1%,$(manext1),g' >> $@
 	@echo 's,%manext5%,$(manext5),g' >> $@
 	@echo 's,%manext7%,$(manext7),g' >> $@
@@ -550,7 +555,7 @@ man/man.sed: Makefile
 	@echo '/%mhl_reply%/r $(top_srcdir)/etc/mhl.reply' >> $@
 	@echo ' s,%mhl_reply%,,g' >> $@
 
-man/mh-chart.man:
+man/mh-chart.man: $(man_SRCS)
 	$(srcdir)/man/mh-chart-gen.sh > $@
 
 .man.$(manext1):
@@ -593,14 +598,6 @@ rpm: dist
 	  --define "_sysconfdir $(DESTDIR)$(sysconfdir)" \
 	  -ba SPECS/nmh.spec
 .PHONY: rpm
-
-##
-## A target to build information needed by cscope
-##
-cscope:
-	echo "-I $(srcdir)/h -I $(srcdir)/sbr -I $(srcdir)/uip -I $(srcdir)/mts/smtp" > cscope.files
-	find $(srcdir) \( -name docs -prune \) -o \( -name \*.c -o -name \*.l \) -print | grep -v dtimep.c >> cscope.files
-.PHONY: cscope
 
 
 ##

@@ -41,7 +41,6 @@ mhn \- display/list/store/cache MIME messages
 .B mhn
 .B \-build
 .I file
-.RB [ \-ebcdicsafe " | " \-noebcdicsafe ]
 .RB [ \-rfc934mode " | " \-norfc934mode ]
 .ad
 .SH DESCRIPTION

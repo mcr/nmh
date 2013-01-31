@@ -303,8 +303,10 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 			    break;
 			/* skip to next input character */
 			if (fromutf8) {
-			    for (start++;(start < q) && ((*start & 192) == 128);start++)
-			        inbytes--;
+			    for (++start, --inbytes;
+				 start < q  &&  (*start & 192) == 128;
+				 ++start, --inbytes)
+				continue;
 			} else
 			    start++, inbytes--;
 			if (start >= q)

@@ -20,43 +20,30 @@
 #include <h/mhcachesbr.h>
 #include <h/utils.h>
 
-static struct swit switches[] = {
-#define	AUTOSW                  0
-    { "auto", 0 },
-#define	NAUTOSW                 1
-    { "noauto", 0 },
-#define	CHECKSW                 2
-    { "check", 0 },
-#define	NCHECKSW                3
-    { "nocheck", 0 },
-#define	VERBSW                  4
-    { "verbose", 0 },
-#define	NVERBSW                 5
-    { "noverbose", 0 },
-#define	FILESW                  6	/* interface from show */
-    { "file file", 0 },
-#define	PARTSW                  7
-    { "part number", 0 },
-#define	TYPESW                  8
-    { "type content", 0 },
-#define	RCACHESW                9
-    { "rcache policy", 0 },
-#define	WCACHESW               10
-    { "wcache policy", 0 },
-#define VERSIONSW              11
-    { "version", 0 },
-#define	HELPSW                 12
-    { "help", 0 },
-#define	CLOBBERSW              13
-    { "clobber always|auto|suffix|ask|never", 0 },
+#define MHSTORE_SWITCHES \
+    X("auto", 0, AUTOSW) \
+    X("noauto", 0, NAUTOSW) \
+    X("check", 0, CHECKSW) \
+    X("nocheck", 0, NCHECKSW) \
+    X("verbose", 0, VERBSW) \
+    X("noverbose", 0, NVERBSW) \
+    X("file file", 0, FILESW)		/* interface from show */ \
+    X("part number", 0, PARTSW) \
+    X("type content", 0, TYPESW) \
+    X("rcache policy", 0, RCACHESW) \
+    X("wcache policy", 0, WCACHESW) \
+    X("version", 0, VERSIONSW) \
+    X("help", 0, HELPSW) \
+    X("clobber always|auto|suffix|ask|never", 0, CLOBBERSW) \
+    X("debug", -5, DEBUGSW) \
 
-/*
- * switches for debugging
- */
-#define	DEBUGSW                14
-    { "debug", -5 },
-    { NULL, 0 }
-};
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MHSTORE);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MHSTORE, switches);
+#undef X
 
 
 int save_clobber_policy (const char *);
