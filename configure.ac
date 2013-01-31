@@ -271,7 +271,7 @@ dnl
 AC_CHECK_PROGS([MD5SUM], [md5sum md5], [missing])
 AS_CASE(["${MD5SUM}"],
 	[md5sum], [MD5FMT="cat"],
-	[md5], [[MD5FMT="${SED} -e 's/MD5 *(\(.*\)) *= \([0-9a-f]*\)/\2  \1/'"]],
+	[md5], [[MD5FMT="${SED} -e 's/MD5 *(.*) *= \([0-9a-f]*\)/\1/'"]],
 	[MD5FMT="missing"])
 AC_SUBST([MD5FMT])
 
