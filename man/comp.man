@@ -231,26 +231,38 @@ program which starts the initial edit.  Hence,
 .B \-nowhatnowproc
 will prevent any edit from occurring.)
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%etcdir%/components~^The standard message skeleton
-^or <mh\-dir>/components~^Rather than the standard skeleton
-^$HOME/\&.mh\(ruprofile~^The user profile
-^<mh\-dir>/draft~^The draft file
-.fi
+.PD 0
+.TP 20
+%etcdir%/components
+The standard message skeleton.
+.TP
+<mh\-dir>/components
+An alternative to the standard skeleton.
+.TP
+$HOME/.mh\-profile
+The user's profile.
+.PD
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Draft\-Folder:~^To find the default draft\-folder
-^Editor:~^To override the default editor
-^Msg\-Protect:~^To set mode when creating a new message (draft)
-^fileproc:~^Program to refile the message
-^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
-.fi
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory.
+.TP
+Draft\-Folder:
+To find the default draft\-folder.
+.TP
+Editor:
+To override the default editor.
+.TP
+Msg\-Protect:
+To set mode when creating a new message (draft).
+.TP
+fileproc:
+Program to refile the message.
+.TP
+whatnowproc:
+Program to ask the \*(lqWhat now?\*(rq questions
+.PD
 .SH "SEE ALSO"
 .IR dist (1),
 .IR forw (1),
@@ -259,12 +271,18 @@ will prevent any edit from occurring.)
 .IR whatnow (1),
 .IR mh-profile (5)
 .SH DEFAULTS
-.nf
-.RB ` +folder "' defaults to the current folder"
-.RB ` msg "' defaults to the current message"
-.RB ` \-nodraftfolder '
-.RB ` \-nouse '
-.fi
+.PD 0
+.TP 20
++folder
+The current folder.
+.TP
+msg
+The current message.
+.TP
+\-nodraftfolder
+.TP
+\-nouse
+.PD
 .SH CONTEXT
 None
 .SH BUGS

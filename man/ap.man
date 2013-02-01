@@ -78,12 +78,14 @@ which says that if an error was detected, print the error, a `:', and
 the address in error.  Otherwise, output the 822\-proper format of
 the address.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-^%etcdir%/mts.conf~^nmh mts configuration file
-.fi
+.PD 0
+.TP 20
+$HOME/\&.mh\(ruprofile
+The user's profile.
+.TP
+%etcdir%/mts.conf
+The mts configuration file.
+.PD
 .SH "PROFILE COMPONENTS"
 None
 .SH "SEE ALSO"
@@ -93,10 +95,15 @@ None
 Standard for the Format of ARPA Internet Text Messages
 (RFC\-822)
 .SH DEFAULTS
-.nf
-.RB ` \-format "' defaults as described above"
-.RB ` \-normalize '
-.RB ` \-width "' defaults to the width of the terminal"
-.fi
+.PD 0
+.TP 20
+-format
+As described above.
+.TP
+\-normalize
+.TP
+\-width
+The width of the terminal.
+.PD
 .SH CONTEXT
 None

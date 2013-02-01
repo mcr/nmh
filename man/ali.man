@@ -59,30 +59,33 @@ switch will be read.  Each
 is processed as described in
 .IR mh\-alias (5).
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-^/etc/passwd~^List of users
-^/etc/group~^List of groups
-.fi
+.TP 20
+$HOME/.mh\-profile
+The user's profile.
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Aliasfile:~^For a default alias file
-.fi
+.PP
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory
+.TP
+Aliasfile:
+For a default alias file
+.PD
 .SH "SEE ALSO"
 .IR mh\-alias (5)
 .SH DEFAULTS
-.nf
-.RB ` aliasfiles "' defaults to %etcdir%/MailAliases"
-.RB ` \-nolist '
-.RB ` \-nonormalize '
-.RB ` \-nouser '
-.fi
+.PD 0
+.TP 20
+aliasfile
+%etcdir%/MailAliases
+.TP
+\-nolist
+.TP
+\-nonormalize
+.TP
+\-nouser
+.PD
 .SH CONTEXT
 None
 .SH BUGS

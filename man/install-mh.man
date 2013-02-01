@@ -67,19 +67,18 @@ been installed.
 This can be used by other programs to determine whether or not nmh has
 been installed without their having to know the internals of nmh.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-^%etcdir%/mh.profile~^Used to initialize user profile
-.fi
+.PD 0
+.TP 20
+$HOME/.mh\-profile
+The user's profile.
+.TP
+%etcdir%/mh.profile
+Used to initialize user's profile.
+.PD
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To set the user's nmh directory
-.fi
+.TP 20
+Path:
+To set the user's nmh directory.
 .SH CONTEXT
 With
 .BR \-auto ,

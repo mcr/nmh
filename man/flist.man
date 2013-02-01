@@ -174,35 +174,45 @@ addressed to you personally, those about a pet project, and those about
 mh-related things.  It places uninteresting folders at the end, and it
 puts everything else in the middle in alphabetical order.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-.fi
+.TP 20
+$HOME/.mh\-profile
+The user's profile.
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^mh-sequences:~^File that contains public sequences
-^Unseen-Sequence:~^The name of the unseen message sequence
-^Flist-Order:~^To sort folders by priority
-.fi
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory.
+.TP
+mh-sequences:
+File that contains public sequences.
+.TP
+Unseen-Sequence:
+The name of the unseen message sequence.
+.TP
+Flist-Order:
+To sort folders by priority.
+.PD
 .SH "SEE ALSO"
 .IR folder (1),
 .IR rcvstore (1),
 .IR slocal (1),
 .IR mh\-sequence (5)
 .SH DEFAULTS
-.nf
-.RB ` -sequence "' defaults to Unseen-Sequence profile entry"
-.RB ` \-showzero '
-.RB ` \-noall '
-.RB ` \-norecurse '
-.RB ` \-noalpha '
-.RB ` \-nofast '
-.fi
+.PD 0
+.TP 20
+-sequence
+The Unseen-Sequence profile entry.
+.TP
+\-showzero
+.TP
+\-noall
+.TP
+\-norecurse
+.TP
+\-noalpha
+.TP
+\-nofast
+.PD
 .SH CONTEXT
 If
 .I +folder
