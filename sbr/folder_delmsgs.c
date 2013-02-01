@@ -61,7 +61,7 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 
 	fflush (stdout);
 
-	switch (pid = vfork()) {
+	switch (pid = fork()) {
 	case -1:
 	    advise ("fork", "unable to");
 	    return -1;

@@ -1096,7 +1096,7 @@ raw:
 	    if ((out = fopen (ce->ce_file, "w")) == NULL)
 		adios (ce->ce_file, "unable to open for writing");
 
-	    for (i = 0; (child_id = vfork()) == NOTOK && i > 5; i++)
+	    for (i = 0; (child_id = fork()) == NOTOK && i > 5; i++)
 		sleep (5);
 	    switch (child_id) {
 	    case NOTOK:

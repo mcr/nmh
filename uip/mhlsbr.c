@@ -1657,7 +1657,7 @@ m_popen (char *name)
     if (pipe (pd) == NOTOK)
 	adios ("pipe", "unable to");
 
-    switch (m_pid = vfork()) {
+    switch (m_pid = fork()) {
 	case NOTOK: 
 	    adios ("fork", "unable to");
 

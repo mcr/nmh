@@ -25,7 +25,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
     if ((hook = context_find(hook_name)) == (char *)0)
 	return (OK);
 
-    switch (pid = vfork()) {
+    switch (pid = fork()) {
     case -1:
 	status = NOTOK;
 	advise(NULL, "external database may be out-of-date.");

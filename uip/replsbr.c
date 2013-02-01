@@ -424,7 +424,7 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
     rewind (in);
     lseek (fileno(in), (off_t) 0, SEEK_SET);
 
-    switch (pid = vfork()) {
+    switch (pid = fork()) {
 	case NOTOK: 
 	    adios ("fork", "unable to");
 
