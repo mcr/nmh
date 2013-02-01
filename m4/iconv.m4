@@ -4,7 +4,8 @@ dnl or libiconv()
 dnl
 
 AC_DEFUN([NMH_CHECK_ICONV],
-[AC_CHECK_HEADER([iconv.h],
+[ICONV_ENABLED=0
+AC_CHECK_HEADER([iconv.h],
   [AC_CHECK_FUNC([iconv],
     [dnl This is where iconv is found in the default libraries (LIBS)
     nmh_found_iconv=yes
@@ -21,7 +22,6 @@ AC_DEFUN([NMH_CHECK_ICONV],
     AS_IF([test "x$nmh_found_iconv" = "xyes"], [ICONVLIB="-liconv"])])
   dnl If we came out of that by finding iconv in some form, define
   dnl HAVE_ICONV
-  ICONV_ENABLED=0
   AS_IF([test "x$nmh_found_iconv" = "xyes"],
     [AC_DEFINE([HAVE_ICONV], [1],
 		   [Define if you have the iconv() function.])
