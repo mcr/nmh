@@ -134,7 +134,7 @@ check() {
       rm -f "$2"
     else
       echo
-      diff -c "$1" "$2"
+      diff -c "$1" "$2" || true
       echo
       echo "$0: test failed, outputs are in $1 and $2."
       failed=`expr ${failed:-0} + 1`
