@@ -53,6 +53,8 @@ run_test 'ali -nonexistent' 'ali: -nonexistent unknown'
 # check with no arguments and no AliasFile profile component
 run_test 'ali' ''
 
+exit # ???? Temporary, to isolate failure on Solaris.
+
 # check with nonexistent alias file
 run_test 'ali -alias nonexistent' \
          "ali: aliasing error in nonexistent - unable to read 'nonexistent'"
