@@ -54,7 +54,7 @@ main(int argc, char *argv[])
 
 	mbtowc(NULL, NULL, 0);
 
-	charlen = mbtowc(&c, string, strlen(string));
+	charlen = mbtowc(&c, (char *) string, strlen((char *) string));
 
 	if (charlen != 1) {
 		fprintf(stderr, "We expected a beginning character length "
@@ -62,7 +62,7 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	p = string + charlen;
+	p = (char *) (string + charlen);
 
 	charlen = mbtowc(&c, p, strlen(p));
 
