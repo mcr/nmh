@@ -99,8 +99,8 @@ cat >"$expected" <<EOF
 EOF
 check "$expected" "$actual"
 
-if test -w /dev/tty 2>/dev/null; then
-  if printf '' >/dev/tty; then
+if test -w /dev/tty; then
+  if (printf '' >/dev/tty) 2>/dev/null; then
     # Produce no standard output if no messages match and standard
     # output is a tty.  To test that even when run with stdout
     # detached, write directly to /dev/tty.  Can't capture the
