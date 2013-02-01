@@ -126,7 +126,7 @@ do_one_test_B () {
 # buffer size or to body size equal to buffer size.
 arith_eval $STDIO_BUFSZ - 16; START=$arith_val
 arith_eval $STDIO_BUFSZ + $HDRSZ + $FROMLINESZ + 32; FINISH=$arith_val
-echo \
+[ -t 1 ]  &&  echo \
 "Testing inc of files with various alignments of eom marker with buffer size..."
 i="$START"
 while test $i -le $FINISH; do
