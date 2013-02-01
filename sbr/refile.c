@@ -15,15 +15,16 @@ int
 refile (char **arg, char *file)
 {
     pid_t pid;
-    register int vecp;
-    char *vec[MAXARGS];
+    int vecp;
+    char **vec;
+    char *program;
 
-    vecp = 0;
-    vec[vecp++] = r1bindex (fileproc, '/');
-    vec[vecp++] = "-nolink";	/* override bad .mh_profile defaults */
-    vec[vecp++] = "-nopreserve";
-    vec[vecp++] = "-file";
-    vec[vecp++] = file;
+    vec = argsplit(fileproc, &program, &vecp);
+
+    vec[vecp++] = getcpy("-nolink");	/* override bad .mh_profile defaults */
+    vec[vecp++] = getcpy("-nopreserve");
+    vec[vecp++] = getcpy("-file");
+    vec[vecp++] = getcpy(file);
 
     if (arg) {
 	while (*arg)
@@ -40,12 +41,13 @@ refile (char **arg, char *file)
 	    return -1;
 
 	case 0: 
-	    execvp (fileproc, vec);
+	    execvp (program, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (fileproc);
 	    _exit (-1);
 
 	default: 
+	    arglist_free(program, vec);
 	    return (pidwait (pid, -1));
     }
 }

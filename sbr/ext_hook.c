@@ -16,7 +16,9 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
     char	*hook;			/* hook program from context */
     pid_t	pid;			/* ID of child process */
     int		status;			/* exit or other child process status */
-    char	*vec[4];		/* argument vector for child process */
+    char	**vec;			/* argument vector for child process */
+    int		vecp;			/* Vector index */
+    char 	*program;		/* Name of program to execute */
 
     static  int	did_message = 0;	/* set if we've already output a message */
 
@@ -30,11 +32,11 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
 	break;
 
     case 0:
-	vec[0] = r1bindex(hook, '/');
-	vec[1] = message_file_name_1;
-	vec[2] = message_file_name_2;
-	vec[3] = (char *)0;
-	execvp(hook, vec);
+        vec = argsplit(hook, &program, &vecp);
+	vec[vecp++] = message_file_name_1;
+	vec[vecp++] = message_file_name_2;
+	vec[vecp++] = NULL;
+	execvp(program, vec);
 	_exit(-1);
 	/* NOTREACHED */
 

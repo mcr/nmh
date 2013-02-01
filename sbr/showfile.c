@@ -15,7 +15,7 @@ showfile (char **arg, char *file)
 {
     pid_t pid;
     int isdraft, vecp;
-    char *vec[MAXARGS];
+    char **vec, *program;
 
     context_save();	/* save the context file */
     fflush(stdout);
@@ -36,8 +36,7 @@ showfile (char **arg, char *file)
 
     case 0:
 	/* child */
-	vecp = 0;
-	vec[vecp++] = r1bindex (lproc, '/');
+	vec = argsplit(lproc, &program, &vecp);
 	isdraft = 1;
 	if (arg) {
 	    while (*arg) {
@@ -53,7 +52,7 @@ showfile (char **arg, char *file)
 	}
 	vec[vecp] = NULL;
 
-	execvp (lproc, vec);
+	execvp (program, vec);
 	fprintf (stderr, "unable to exec ");
 	perror (lproc);
 	_exit (-1);
