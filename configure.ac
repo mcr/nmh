@@ -137,20 +137,6 @@ fi
 AC_PROG_CC
 AM_PROG_CC_C_O
 
-AC_CACHE_CHECK([whether preprocessor supports -Wunused-macros],
-  [nmh_cv_has_unusedmacros],
-  [nmh_saved_cppflags="$CPPFLAGS"
-   CPPFLAGS="$CPPFLAGS -Wunused-macros -Wno-unused-macros"
-   AC_TRY_COMPILE([],[],nmh_cv_has_unusedmacros=yes,nmh_cv_has_unusedmacros=no)
-   CPPFLAGS="$nmh_saved_cppflags"])
-
-if test "$nmh_cv_has_unusedmacros" = 'yes'; then
-  test -z "$CPPFLAGS"  &&  CPPFLAGS=-Wunused-macros \
-                      ||  CPPFLAGS="$CPPFLAGS -Wunused-macros"
-  DISABLE_UNUSED_MACROS_WARNING=-Wno-unused-macros
-fi
-AC_SUBST([DISABLE_UNUSED_MACROS_WARNING])dnl
-
 AC_CACHE_CHECK([whether compiler supports -Wno-sign-compare],
   [nmh_cv_has_nosigncompare],
   [nmh_saved_cppflags="$CPPFLAGS"
@@ -166,13 +152,19 @@ AC_SUBST([DISABLE_SIGN_COMPARE_WARNING])dnl
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
- CFLAGS="$CFLAGS -Wextra -Wno-clobbered"
+ CFLAGS="$CFLAGS -Wextra -Werror"
  AC_TRY_COMPILE([],[],nmh_cv_has_wextra=yes,nmh_cv_has_wextra=no)
+ CFLAGS="$nmh_saved_cflags"])
+
+AC_CACHE_CHECK([whether compiler supports -Wno-clobbered], [nmh_cv_has_noclobbered],
+[nmh_saved_cflags="$CFLAGS"
+ CFLAGS="$CFLAGS -Wno-clobbered -Werror"
+ AC_TRY_COMPILE([],[],nmh_cv_has_noclobbered=yes,nmh_cv_has_noclobbered=no)
  CFLAGS="$nmh_saved_cflags"])
 
 AC_CACHE_CHECK([whether compiler supports -Wno-pointer-sign], [nmh_cv_has_noptrsign],
 [nmh_saved_cflags="$CFLAGS"
- CFLAGS="$CFLAGS -Wno-pointer-sign"
+ CFLAGS="$CFLAGS -Wno-pointer-sign -Werror"
  AC_TRY_COMPILE([],[],nmh_cv_has_noptrsign=yes,nmh_cv_has_noptrsign=no)
  CFLAGS="$nmh_saved_cflags"])
 
@@ -203,24 +195,19 @@ dnl We use -Wall and -Wextra if supported.  If the compiler supports it we
 dnl also use -Wno-pointer-sign, because gcc 4 now produces a lot of new
 dnl warnings which are probably mostly spurious and which in any case we
 dnl don't want to deal with now.
-if test "$nmh_cv_has_noptrsign" = "yes"; then
-    if test "$nmh_cv_has_dash_ansi" = "yes"; then
-        nmh_gcc_common_flags="-ansi -pedantic -Wall"
-    else
-        nmh_gcc_common_flags="-Wall"
-    fi
-    if test "$nmh_cv_has_wextra" = "yes"; then
-        nmh_gcc_warnflags="${nmh_gcc_common_flags} -Wextra -Wno-clobbered "\
-"-Wno-pointer-sign"
-    else
-        nmh_gcc_warnflags="${nmh_gcc_common_flags} -Wno-pointer-sign"
-    fi
+if test "$nmh_cv_has_dash_ansi" = "yes"; then
+    nmh_gcc_warnflags="-ansi -pedantic -Wall"
 else
-    if test "$nmh_cv_has_wextra" = "yes"; then
-        nmh_gcc_warnflags="${nmh_gcc_common_flags} -Wextra -Wno-clobbered"
-    else
-        nmh_gcc_warnflags="${nmh_gcc_common_flags}"
-    fi
+    nmh_gcc_warnflags="-Wall"
+fi
+if test "$nmh_cv_has_wextra" = "yes"; then
+    nmh_gcc_warnflags="${nmh_gcc_warnflags} -Wextra"
+fi
+if test "$nmh_cv_has_noptrsign" = "yes"; then
+    nmh_gcc_warnflags="${nmh_gcc_warnflags} -Wno-pointer-sign"
+fi
+if test "$nmh_cv_has_noclobbered" = "yes"; then
+    nmh_gcc_warnflags="${nmh_gcc_warnflags} -Wno-clobbered"
 fi
 
 if test -n "$auto_cflags"; then
