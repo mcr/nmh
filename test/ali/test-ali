@@ -17,7 +17,6 @@ fi
 
 . "$MH_OBJ_DIR/test/common.sh"
 
-exit # ???? Temporary, to isolate failure on Solaris.
 setup_test
 
 expected=$MH_TEST_DIR/$$.expected
