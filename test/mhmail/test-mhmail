@@ -117,8 +117,6 @@ esac
 mhmail -nosend recipient@example.com -from sender@localhost \
   -server 127.0.0.1 -port $localport -body '' >"$actual" 2>"$actual_err"
 
-tmpfil=`head -1 $actual | sed -e 's/://'`
-
 cat > "$expected" <<EOF
 To: recipient@example.com
 From: sender@localhost
