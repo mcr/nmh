@@ -60,7 +60,8 @@ test_sendfiles ()
   inc -silent -file "$mbox"
   rm -f "$mbox" "$mbox.map"
 
-  mhlist -verbose last | sed -e 's/ *$//' >"$actual"
+  mhlist -verbose last | sed -e 's/ *$//' -e 's/\(octet-stream\).*$/\1/' \
+    >"$actual"
   (cd $MH_TEST_DIR/tmp  &&
    contents=`mhstore -noauto last 2>&1 | \
              sed -e 's/storing message.*as file //'`  &&
@@ -140,7 +141,7 @@ Usage: sendfiles [switches] -to recipient \
 # check with no compression
 cat >"$expected" <<EOF
  msg part  type/subtype              size description
-  11       application/octet-stream   10K
+  11       application/octet-stream
 	     type="tar"
 	     (extract with cat | tar xvpf -)
 EOF
@@ -150,7 +151,7 @@ test_sendfiles cat new -compress none
 # check with no compression, -none
 cat >"$expected" <<EOF
  msg part  type/subtype              size description
-  11       application/octet-stream   10K
+  11       application/octet-stream
 	     type="tar"
 	     (extract with cat | tar xvpf -)
 EOF
@@ -160,7 +161,7 @@ test_sendfiles cat new -none
 # check old argument style (without -to and -subject)
 cat >"$expected" <<EOF
  msg part  type/subtype              size description
-  11       application/octet-stream   10K
+  11       application/octet-stream
 	     type="tar"
 	     (extract with cat | tar xvpf -)
 EOF
@@ -170,7 +171,7 @@ test_sendfiles cat old -compress none
 # check -from
 cat >"$expected" <<EOF
  msg part  type/subtype              size description
-  11       application/octet-stream   10K
+  11       application/octet-stream
 	     type="tar"
 	     (extract with cat | tar xvpf -)
 EOF
@@ -180,7 +181,7 @@ test_sendfiles cat new -compress none -from 'Sender <sender@example.com>'
 # check PERSON environment variable
 cat >"$expected" <<EOF
  msg part  type/subtype              size description
-  11       application/octet-stream   10K
+  11       application/octet-stream
 	     type="tar"
 	     (extract with cat | tar xvpf -)
 EOF
@@ -190,7 +191,7 @@ PERSON='Sender <sender@example.com>' test_sendfiles cat new -compress none
 # check -delay, though for a small file it doesn't do anything
 cat >"$expected" <<EOF
  msg part  type/subtype              size description
-  11       application/octet-stream   10K
+  11       application/octet-stream
 	     type="tar"
 	     (extract with cat | tar xvpf -)
 EOF
@@ -200,7 +201,7 @@ test_sendfiles cat new -compress none -delay 5
 # check old style -delay, though for a small file it doesn't do anything
 cat >"$expected" <<EOF
  msg part  type/subtype              size description
-  11       application/octet-stream   10K
+  11       application/octet-stream
 	     type="tar"
 	     (extract with cat | tar xvpf -)
 EOF
