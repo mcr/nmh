@@ -164,29 +164,44 @@ to the first or last `n' messages of the sequence `name', respectively.
 Constructs of the form \*(lqname1\-name2\*(rq are forbidden for user
 defined sequences.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-.fi
+.TP 20
+$HOME/.mh\-profile
+The user's profile.
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Current\-Folder:~^To find the default current folder
-.fi
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory.
+.TP
+Current\-Folder:
+To find the default current folder.
+.PD
 .SH "SEE ALSO"
 .IR flist (1),
 .IR pick (1),
 .IR mh-sequence (5)
 .SH DEFAULTS
-.nf
-.RB ` +folder "' defaults to the current folder"
-.RB ` \-add "' if " \-sequence " is specified, " \-list " otherwise"
-.RB ` msgs "' defaults to cur (or all if " \-list " is specified)"
-.RB ` \-nozero '
+.PD 0
+.TP 20
++folder
+The current folder.
+.TP
+\-add
+If
+.B \-sequence
+is specified,
+.B \-list
+otherwise.
+.TP
+msgs
+The current message, or
+.B all
+if
+.B \-list
+is specified.
+.TP
+\-nozero
+.PD
 .SH CONTEXT
 If a folder is given, it will become the current folder.
 .SH "HELPFUL HINTS"

@@ -289,42 +289,72 @@ when viewing the POP transaction with the
 .B \-snoop
 switch.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-^%etcdir%/mts.conf~^nmh mts configuration file
-^%mailspool%/$USER~^Location of mail drop
-.fi
+.PD 0
+.TP 20
+$HOME/.mh\-profile
+The user's profile.
+.TP
+%etcdir%/mts.conf
+mts configuration file.
+.TP
+%mailspool%/$USER
+Location of the system mail drop.
+.PD
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Alternate\-Mailboxes:~^To determine the user's mailboxes
-^Inbox:~^To determine the inbox, default \*(lqinbox\*(rq
-^Folder\-Protect:~^To set mode when creating a new folder
-^Msg\-Protect:~^To set mode when creating a new message and audit\-file
-^Unseen\-Sequence:~^To name sequences denoting unseen messages
-.fi
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory.
+.TP
+Alternate\-Mailboxes:
+To determine the user's mailboxes.
+.TP
+Inbox:
+To determine the inbox.
+.TP
+Folder\-Protect:
+To set mode when creating a new folder.
+.TP
+Msg\-Protect:
+To set mode when creating a new message and audit\-file.
+.TP
+Unseen\-Sequence:
+To name sequences denoting unseen messages.
+.PD
 .SH "SEE ALSO"
 .IR mhmail (1),
 .IR scan (1),
 .IR mh\-mail (5),
 .IR post (8)
 .SH DEFAULTS
-.nf
-.RB ` +folder "' defaulted by \*(lqInbox\*(rq above"
-.RB ` \-noaudit '
-.RB ` \-changecur '
-.RB ` \-format "' defaulted as described above"
-.RB ` \-nosilent '
-.RB ` \-nosasl '
-.RB ` \-truncate "' if `" \-file " name' not given, `" \-notruncate "' otherwise"
-.RB ` \-width "' defaulted to the width of the terminal"
-.RB ` \-nopack '
-.fi
+.PD 0
+.TP 20
++folder
+defaulted by \*(lqInbox\*(rq above.
+.TP
+\-noaudit
+.TP
+\-changecur
+.TP
+\-format
+As described above.
+.TP
+\-nosilent
+.TP
+\-nosasl
+.TP
+\-truncate
+If
+.B \-file
+.I name
+not given,
+\-notruncate otherwise.
+.TP
+\-width
+The width of the terminal.
+.TP
+\-nopack
+.PD
 .SH CONTEXT
 The folder into which messages are being incorporated will become the
 current folder.  The first message incorporated will become the current

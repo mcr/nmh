@@ -395,32 +395,58 @@ section of the
 .B nmh
 User's Manual for more information on making digests.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%etcdir%/forwcomps~^The standard message skeleton
-^or <mh\-dir>/forwcomps~^Rather than the standard skeleton
-^%etcdir%/digestcomps~^The message skeleton if `\-digest' is given
-^or <mh\-dir>/digestcomps~^Rather than the standard skeleton
-^%etcdir%/mhl.forward~^The standard message filter
-^or <mh\-dir>/mhl.forward~^Rather than the standard filter
-^$HOME/\&.mh\(ruprofile~^The user profile
-^<mh\-dir>/draft~^The draft file
-.fi
+.PD 0
+.TP 25
+%etcdir%/forwcomps
+The standard message skeleton.
+.TP
+<mh\-dir>/forwcomps
+Rather than the standard skeleton.
+.TP
+%etcdir%/digestcomps
+The message skeleton if
+.B \-digest
+is given.
+.TP
+<mh\-dir>/digestcomps
+Rather than the standard skeleton.
+.TP
+^%etcdir%/mhl.forward
+The standard message filter.
+.TP
+<mh\-dir>/mhl.forward
+Rather than the standard filter.
+.TP
+^$HOME/.mh\-profile
+The user's profile.
+.PD
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Current\-Folder:~^To find the default current folder
-^Draft\-Folder:~^To find the default draft\-folder
-^Editor:~^To override the default editor
-^Msg\-Protect:~^To set mode when creating a new message (draft)
-^fileproc:~^Program to refile the message
-^mhlproc:~^Program to filter messages being forwarded
-^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
-.fi
+.PD 0
+.TP 25
+Path:
+To determine the user's nmh directory.
+.TP
+Current\-Folder:
+To find the default current folder.
+.TP
+Draft\-Folder:
+To find the default draft\-folder.
+.TP
+Editor:
+To override the default editor.
+.TP
+Msg\-Protect:
+To set mode when creating a new message (draft).
+.TP
+fileproc:
+Program to refile the message.
+.TP
+mhlproc:
+Program to filter messages being forwarded.
+.TP
+whatnowproc:
+Program to ask the \*(lqWhat now?\*(rq questions.
+.PD
 .SH "SEE ALSO"
 .IR comp (1),
 .IR mhbuild (1),
@@ -433,16 +459,26 @@ User's Manual for more information on making digests.
 Proposed Standard for Message Encapsulation
 (RFC\-934)
 .SH DEFAULTS
-.nf
-.RB ` +folder "' defaults to the current folder"
-.RB ` msgs "' defaults to cur"
-.RB ` \-noannotate '
-.RB ` \-nodraftfolder '
-.RB ` \-noformat '
-.RB ` \-inplace '
-.RB ` \-dashstuffing '
-.RB ` \-nomime '
-.fi
+.PD 0
+.TP 25
++folder
+The current folder.
+.TP
+msgs
+The current message.
+.TP
+\-noannotate
+.TP
+\-nodraftfolder
+.TP
+\-noformat
+.TP
+\-inplace
+.TP
+\-dashstuffing
+.TP
+\-nomime
+.PD
 .SH CONTEXT
 If a folder is given, it will become the current folder.
 The first message forwarded will become the current message.

@@ -151,30 +151,35 @@ A matching
 option exists that allows time preservation to be turned off if enabled
 in the profile.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-.fi
+.TP 20
+$HOME/\&.mh\(ruprofile
+The user's profile.
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Current\-Folder:~^To find the default current folder
-.fi
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory.
+.TP
+Current\-Folder:
+To find the default current folder.
+.PD
 .SH "SEE ALSO"
 .IR dist (1),
 .IR forw (1),
 .IR repl (1)
 .SH DEFAULTS
-.nf
-.RI ` +folder "' defaults to the current folder"
-.RI ` msgs "' defaults to cur"
-.RB ` \-inplace '
-.RB ` \-date '
-.fi
+.PD 0
+.TP 20
++folder
+The current folder.
+.TP
+msgs
+The current message.
+.TP
+-inplace
+.TP
+-date
+.PD
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The first
 message annotated will become the current message.

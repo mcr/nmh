@@ -36,19 +36,18 @@ See
 .IR mh-format (5)
 for the details.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-^%etcdir%/scan.default~^The default format file
-.fi
+.PD 0
+.TP 20
+$HOME/.mh\-profile
+The user's profile.
+.TP
+%etcdir%/scan.default
+The default format file.
+.PD
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-.fi
+.TP 20
+Path:
+To determine the user's nmh directory.
 .SH "SEE ALSO"
 .IR mh-format (5),
 .IR mh-sequences (8)

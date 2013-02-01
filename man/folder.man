@@ -261,38 +261,64 @@ and
 switches turn off
 .BR \-print .
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-.fi
+.TP 20
+$HOME/.mh\-profile
+The user's profile.
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Current\-Folder:~^To find the default current folder
-^Folder\-Protect:~^To set mode when creating a new folder
-^Folder\-Stack:~^To determine the folder stack
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory.
+.TP
+Current\-Folder:
+To find the default current folder.
+.TP
+Folder\-Protect:
+To set mode when creating a new folder.
+.TP
+Folder\-Stack:
+To determine the folder stack.
 .\" ^lsproc:~^Program to list the contents of a folder
-.fi
+.PD
 .SH "SEE ALSO"
 .IR mhpath (1),
 .IR refile (1)
 .SH DEFAULTS
-.nf
-.RB ` +folder "' defaults to the current folder"
-.RB ` msg "' defaults to none"
-.RB ` \-nofast '
-.RB ` \-noheader '
-.RB ` \-nototal '
-.RB ` \-nopack '
-.RB ` \-norecurse '
-.RB ` \-noverbose '
-.RB ` \-print "' is the default if no " \-list ", " \-push ", or " \-pop " is specified"
-.RB ` \-list "' is the default if " \-push ", or " \-pop " is specified"
-.fi
+.PD 0
+.TP 20
++folder
+The current folder.
+.TP
+msg
+\*(lqnone\*(rq
+.TP
+\-nofast
+.TP
+\-noheader
+.TP
+\-nototal
+.TP
+\-nopack
+.TP
+\-norecurse
+.TP
+\-noverbose
+.TP
+\-print
+is the default if no
+.BR -list ,
+.BR \-push ,
+or
+.B \-pop
+is specified.
+.TP
+\-list
+is the default if
+.BR \-push ,
+or
+.B \-pop
+is specified.
+.PD
 .SH CONTEXT
 If
 .I +folder
