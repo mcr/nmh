@@ -100,17 +100,13 @@ EOF
 check "$expected" "$actual"
 
 if test -w /dev/tty; then
-  if (printf '' >/dev/tty) 2>/dev/null; then
+  if printf '' >/dev/tty 2>/dev/null; then
     # Produce no standard output if no messages match and standard
     # output is a tty.  To test that even when run with stdout
     # detached, write directly to /dev/tty.  Can't capture the
     # output so hopefully the user will notice it.
     pick -subject message.3 -and -from Test4 >/dev/tty 2>/dev/null
-  else
-    echo "$0: skip tty test because can't write to /dev/tty"
   fi
-else
-  echo "$0: skip tty test because can't write to /dev/tty"
 fi
 
 # Also, check that the exit status is 1.
