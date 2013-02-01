@@ -259,7 +259,7 @@ EOF
 echo 13 >"$expected"
 
 set +e
-pick -subject foobar 13 >"$actual" 2>&1
+LC_CTYPE=en_US.UTF-8 pick -subject foobar 13 >"$actual" 2>&1
 set -e
 check "$expected" "$actual"
 
