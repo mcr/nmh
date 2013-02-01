@@ -72,8 +72,14 @@ fi
 scan -width 80 +inbox 11 > $actual || exit 1
 check "$expected" "$actual"
 
-# check decoding with an invalid multibyte sequence
-cat >`mhpath new` <<EOF
+#
+# Check decoding with an invalid multibyte sequence.  We skip this test
+# if we don't have iconv support, since it requires converting from one
+# character set to another
+#
+
+if test "$ICONV_ENABLED" -eq 1; then
+    cat >`mhpath new` <<EOF
 From: Test12 <test12@example.com>
 To: Some User <user@example.com>
 Date: Mon, 31 Dec 2012 00:00:00
@@ -85,12 +91,13 @@ This message has an encoded Subject with an invalid character for the
 ISO-8859-1 character set, but it (U+2019) is valid UTF-8.
 EOF
 
-cat >"$expected" <<EOF
+    cat >"$expected" <<EOF
   12  12/31 Test12             2013 New Year?s Deals! Start the year right
 EOF
 
-LC_CTYPE=ISO-8859-1 MM_CHARSET=ISO-8859-1 scan -width 75 last >"$actual"
-check "$expected" "$actual"
+    LC_CTYPE=ISO-8859-1 MM_CHARSET=ISO-8859-1 scan -width 75 last >"$actual"
+    check "$expected" "$actual"
+fi
 
 # check scan width with a valid multibyte sequence
 cat >"$expected" <<EOF

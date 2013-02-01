@@ -21,9 +21,11 @@ AC_DEFUN([NMH_CHECK_ICONV],
     AS_IF([test "x$nmh_found_iconv" = "xyes"], [ICONVLIB="-liconv"])])
   dnl If we came out of that by finding iconv in some form, define
   dnl HAVE_ICONV
+  ICONV_ENABLED=0
   AS_IF([test "x$nmh_found_iconv" = "xyes"],
     [AC_DEFINE([HAVE_ICONV], [1],
 		   [Define if you have the iconv() function.])
+    ICONV_ENABLED=1
     AC_CACHE_CHECK([for iconv declaration], [nmh_cv_iconv_const],
       [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
           #include <iconv.h>]],
@@ -40,3 +42,4 @@ AC_DEFUN([NMH_CHECK_ICONV],
     AC_DEFINE_UNQUOTED([ICONV_CONST], [$nmh_cv_iconv_const],
       [Define as const if the declaration of iconv() needs const.])])])
 AC_SUBST([ICONVLIB])])
+AC_SUBST([ICONV_ENABLED])

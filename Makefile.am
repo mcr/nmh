@@ -38,6 +38,7 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
 		    auxexecdir="$(auxexecdir)" bindir="$(bindir)" \
 		    mandir="$(mandir)" sysconfdir="$(sysconfdir)" \
 		    MULTIBYTE_ENABLED=$(MULTIBYTE_ENABLED) \
+		    ICONV_ENABLED=$(ICONV_ENABLED) \
 		    $(TESTS_SHELL) ## Keep at end of TESTS_ENVIRONMENT.
 ##
 ## Important note: the "cleanup" test should always be last
