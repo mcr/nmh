@@ -1,6 +1,6 @@
 NMH MANPAGE STYLE GUIDE
 
-nmh manpages should be in this general form:
+nmh manpages should be in this general form and section order:
 
 .TH COMP %manext1% "DATE" "%nmhversion%"
 .\"
@@ -8,6 +8,7 @@ nmh manpages should be in this general form:
 .\"
 .SH NAME
 comp \- compose a message
+.\"
 .SH SYNOPSIS
 .B comp 
 .RI [ +folder ]
@@ -20,13 +21,7 @@ comp \- compose a message
 .SH DESCRIPTION
 .B Comp
 is used to create a new message to be mailed.  It copies something.
-.SH FILES
-.TP
-filename1
-description of filename1
-.TP
-filename2
-description of filename2
+.\"
 .SH "PROFILE COMPONENTS"
 .TP
 Path
@@ -34,13 +29,7 @@ Location of the user's MH folder directory
 .TP
 moreproc
 The pager command name
-.SH "SEE ALSO"
-.IR dist (1),
-.IR forw (1),
-.IR repl (1),
-.IR send (1),
-.IR whatnow (1),
-.IR mh-profile (5)
+.\"
 .SH DEFAULTS
 .TP
 .RI + folder
@@ -48,6 +37,22 @@ defaults to the current folder
 .\"
 .SH CONTEXT
 None
+.\"
+.SH FILES
+.TP
+filename1
+description of filename1
+.TP
+filename2
+description of filename2
+.\"
+.SH "SEE ALSO"
+.IR dist (1),
+.IR forw (1),
+.IR repl (1),
+.IR send (1),
+.IR whatnow (1),
+.IR mh-profile (5)
 .\" Leave out the BUGS section if there are none worth describing.
 .SH BUGS
 None
@@ -68,7 +73,7 @@ Don't abbreviate the month.
 
 In the FILES section, prefer the default .TP indent. The pathnames are
 variable and long, so any indentation value that works for you won't
-work for someone else.
+work for someone using a different directory layout.
 
 
 Source files
@@ -199,7 +204,8 @@ Pointer manpages
 	
 
 CONTEXT
-    Don't include a CONTEXT section when contexts are out of context.
+    Don't include a CONTEXT section when contexts are not
+    applicable.
 
 
 AUTHOR and HISTORY sections
@@ -209,4 +215,4 @@ AUTHOR and HISTORY sections
 
 BUGS
 
-    The BUGS section goes last.
+    The BUGS section goes last. 
