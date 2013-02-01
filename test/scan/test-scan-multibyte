@@ -70,12 +70,14 @@ else
 fi
 
 scan -width 80 +inbox 11 > $actual || exit 1
+set -x
 oldfailed="${failed:-0}"
 check "$expected" "$actual"
 if test "$oldfailed" -ne "${failed:-0}"; then
 	echo "Complete UTF-8 width table for BMP"
 	${MH_OBJ_DIR}/test/getcwidth --dump
 fi
+set +x
 
 #
 # Check decoding with an invalid multibyte sequence.  We skip this test
