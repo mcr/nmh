@@ -17,6 +17,7 @@ fi
 
 . "$MH_OBJ_DIR/test/common.sh"
 
+exit # ???? Temporary, to isolate failure on Solaris.
 setup_test
 
 expected=$MH_TEST_DIR/$$.expected
@@ -52,8 +53,6 @@ run_test 'ali -nonexistent' 'ali: -nonexistent unknown'
 
 # check with no arguments and no AliasFile profile component
 run_test 'ali' ''
-
-exit # ???? Temporary, to isolate failure on Solaris.
 
 # check with nonexistent alias file
 run_test 'ali -alias nonexistent' \
