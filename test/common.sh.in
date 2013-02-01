@@ -215,12 +215,7 @@ EOF
     cp "${MH_INST_DIR}${sysconfdir}/${f}" "${MH_TEST_DIR}/Mail" || exit 1
   done
 
-  if [ -f $MH_INST_DIR/$prefix/bin/folder ]; then
-      :
-  else
-      echo 'installation not finished!'
-      sleep 10
-  fi
+  [ -d ${MH_TEST_DIR}/Mail ]  ||  mkdir ${MH_TEST_DIR}/Mail
   folder -create +inbox > /dev/null
   # create 10 basic messages
   for i in 1 2 3 4 5 6 7 8 9 10;
