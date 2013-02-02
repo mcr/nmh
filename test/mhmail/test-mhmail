@@ -39,6 +39,8 @@ test_mhmail ()
     #
 
 ls -l $actual >&2 # ???? temporary
+tail -n 2 $actual
+echo '' >>$actual
 
     sed -e 's/^Date:.*/Date:/' \
         -e 's/^Resent-Date:.*/Resent-Date:/' \
