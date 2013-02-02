@@ -19,7 +19,12 @@ fi
 
 setup_test
 
+#### ???? temporary
+ls -l ${MH_INST_DIR}$prefix/bin
+echo $PATH
+export PATH
 scan +inbox # ???? temporary
+#### ???? temporary
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err

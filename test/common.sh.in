@@ -90,7 +90,7 @@ if [ -t 1 ] ; then
     # note \r so next update will overwrite
     printf '%3d%%\r' $PERC
   }
-  
+
   progress_done ()
   {
     printf '100%%\n'
@@ -193,7 +193,7 @@ setup_test ()
   # clean old test data
   trap "rm -rf '$MH_TEST_DIR/Mail'" 0
   # setup test data
-  mkdir -p "$MH_TEST_DIR/Mail" || exit 1
+  mkdir "$MH_TEST_DIR/Mail" || exit 1
   cat > "$MH" <<EOF || exit 1
 Path: ${MH_TEST_DIR}/Mail
 buildmimeproc: ${MH_INST_DIR}${bindir}/mhbuild
@@ -215,7 +215,7 @@ EOF
     cp "${MH_INST_DIR}${sysconfdir}/${f}" "${MH_TEST_DIR}/Mail" || exit 1
   done
 
-  $MH_TEST_DIR/inst/$prefix/bin/folder -create +inbox > /dev/null
+  folder -create +inbox > /dev/null
   # create 10 basic messages
   for i in 1 2 3 4 5 6 7 8 9 10;
   do
