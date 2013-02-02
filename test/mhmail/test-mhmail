@@ -38,7 +38,7 @@ test_mhmail ()
     # Message-ID.
     #
 
-echo $actual >&2; tail -n 2 $actual >&2 # ???? temporary
+ls -l $actual >&2 # ???? temporary
 
     sed -e 's/^Date:.*/Date:/' \
         -e 's/^Resent-Date:.*/Resent-Date:/' \
