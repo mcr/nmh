@@ -9,6 +9,7 @@
 # -normalize, -nonormalize
 
 # ???? temporary   set -e
+set -x
 
 if test -z "${MH_OBJ_DIR}"; then
     srcdir=`dirname $0`/../..
