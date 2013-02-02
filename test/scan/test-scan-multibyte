@@ -47,7 +47,7 @@ Subject: =?utf-8?q?Sp=C4=B1n=CC=88al_Tap_=E2=86=92_Tap_into_America!?=
 Things are looking great!
 EOF
 
-width=`${MH_OBJ_DIR}/test/getcwidth`
+width=`${MH_OBJ_DIR}/test/getcwidth "ﬆ→n̈"`
 if test $? -ne 0; then
     echo "getcwidth failed to run"
     exit 1
@@ -56,28 +56,21 @@ fi
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 
-if test "$width" -eq 1; then
+if test "$width" -eq 4; then
 cat > "$expected" <<EOF
   11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are look
 EOF
-elif test "$width" -eq 0; then
+elif test "$width" -eq 3; then
 cat > "$expected" <<EOF
   11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are looki
 EOF
 else
-    echo "Unsupported width for combining diaeresis: $width"
+    echo "Unsupported width for UTF-8 test string: $width"
     exit 1
 fi
 
 scan -width 80 +inbox 11 > $actual || exit 1
-set -x
-oldfailed="${failed:-0}"
 check "$expected" "$actual"
-if test "$oldfailed" -ne "${failed:-0}"; then
-	echo "Complete UTF-8 width table for BMP"
-	${MH_OBJ_DIR}/test/getcwidth --dump
-fi
-set +x
 
 #
 # Check decoding with an invalid multibyte sequence.  We skip this test

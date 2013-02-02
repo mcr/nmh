@@ -1,7 +1,7 @@
 /*
- * getcwidth - Get the OS's idea of the width of a combining character
+ * getcwidth - Get the OS's idea of the width of Unicode codepoints
  *
- * This code is Copyright (c) 2012, by the authors of nmh.  See the
+ * This code is Copyright (c) 2013, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.
  */
@@ -20,91 +20,127 @@
 #include <wchar.h>
 #endif
 
+#ifdef MULTIBYTE_SUPPORT
 static void usage(char *);
 static void dumpwidth(void);
+static void getwidth(const char *);
+#endif /* MULTIBYTE_SUPPORT */
 
 int
 main(int argc, char *argv[])
 {
-	wchar_t c;
-	int charlen;
-	char *p;
-
-	/*
-	 * This is the UTF-8 for "n" + U+0308 (Combining Diaeresis)
-	 */
-
-	unsigned char string[] = "n\xcc\x88";
-
-	setlocale(LC_ALL, "");
-
-	if (argc > 2)
-		usage(argv[0]);
-
-	if (argc == 2) {
-		if (strcmp(argv[1], "--dump") == 0) {
-			dumpwidth();
-			exit(0);
-		} else {
-			usage(argv[0]);
-		}
-	}
-
 #ifndef MULTIBYTE_SUPPORT
 	fprintf(stderr, "Nmh was not configured with multibyte support\n");
 	exit(1);
 #else /* MULTIBYTE_SUPPORT */
+	wchar_t c;
+	int i;
+
+	setlocale(LC_ALL, "");
+
+	if (argc < 2)
+		usage(argv[0]);
+
+	if (strcmp(argv[1], "--dump") == 0) {
+		if (argc == 2) {
+			dumpwidth();
+			exit(0);
+		} else {
+			fprintf(stderr, "--dump cannot be combined with "
+				"other arguments\n");
+			exit(1);
+		}
+	}
+
 	/*
-	 * It's not clear to me that we can just call mbtowc() with a
-	 * combining character; just to be safe, feed it in a base
-	 * character first.
+	 * Process each argument.  If it begins with "U+", then try to
+	 * convert it to a Unicode codepoint.  Otherwise, take each
+	 * string and get the total width
 	 */
 
-	mbtowc(NULL, NULL, 0);
-
-	charlen = mbtowc(&c, (char *) string, strlen((char *) string));
-
-	if (charlen != 1) {
-		fprintf(stderr, "We expected a beginning character length "
-			"of 1, got %d instead\n", charlen);
-		exit(1);
+	for (i = 1; i < argc; i++) {
+		if (strncmp(argv[i], "U+", 2) == 0) {
+			/*
+			 * We're making a big assumption here that
+			 * wchar_t represents a Unicode codepoint.
+			 * That technically isn't valid unless the
+			 * C compiler defines __STDC_ISO_10646__, but
+			 * we're going to assume now that it works.
+			 */
+			errno = 0;
+			c = strtoul(argv[i] + 2, NULL, 16);
+			if (errno) {
+				fprintf(stderr, "Codepoint %s invalid\n",
+					argv[i]);
+				continue;
+			}
+			printf("%d\n", wcwidth(c));
+		} else {
+			getwidth(argv[i]);
+		}
 	}
-
-	p = (char *) (string + charlen);
-
-	charlen = mbtowc(&c, p, strlen(p));
-
-	if (charlen != 2) {
-		fprintf(stderr, "We expected a multibyte character length "
-			"of 2, got %d instead\n", charlen);
-		fprintf(stderr, "Are you using a UTF-8 locale?\n");
-		exit(1);
-	}
-
-	printf("%d\n", wcwidth(c));
 
 	exit(0);
-#endif /* MULTIBYTE_SUPPORT */
 }
 
 static void
 usage(char *argv0)
 {
 	fprintf(stderr, "Usage: %s [--dump]\n", argv0);
-	fprintf(stderr, "Returns the column width of a UTF-8 combining "
-		"multibyte character\n");
+	fprintf(stderr, "       %s U+XXXX [...]\n", argv0);
+	fprintf(stderr, "       %s utf-8-sequence [...]\n", argv0);
+	fprintf(stderr, "Returns the column width of a Unicode codepoint "
+		"or UTF-8 character sequence\n");
 	fprintf(stderr, "\t--dump\tDump complete width table\n");
 
 	exit(1);
 }
 
 static void
+getwidth(const char *string)
+{
+	wchar_t c;
+	int charlen, charleft = strlen(string);
+	int length = 0;
+
+	/*
+	 * In theory we should be able to use wcswidth(), but since we're
+	 * testing out how the format libraries behave we'll do it a character
+	 * at a time.
+	 */
+
+	mbtowc(NULL, NULL, 0);
+
+	while (charleft > 0) {
+		int clen;
+
+		charlen = mbtowc(&c, string, charleft);
+
+		if (charlen == 0)
+			break;
+
+		if (charlen < 0) {
+			fprintf(stderr, "Unable to convert string \"%s\"\n",
+				string);
+			return;
+		}
+
+		if ((clen = wcwidth(c)) < 0) {
+			fprintf(stderr, "U+%04X non-printable\n", c);
+			return;
+		}
+
+		length += clen;
+		string += charlen;
+		charleft -= charlen;
+	}
+
+	printf("%d\n", length);
+}
+
+static void
 dumpwidth(void)
 {
-#ifndef MULTIBYTE_SUPPORT
-	fprintf(stderr, "Nmh was not configured with multibyte support\n");
-	exit(1);
-#else /* MULTIBYTE_SUPPORT */
 	wchar_t wc, low;
 	int width, lastwidth;
 
@@ -120,5 +156,5 @@ dumpwidth(void)
 	width = wcwidth(wc - 1);
 	if (width == lastwidth)
 		printf("%04X - %04X = %d\n", low, wc - 1, width);
-#endif /* MULTIBYTE_SUPPORT */
 }
+#endif /* MULTIBYTE_SUPPORT */
