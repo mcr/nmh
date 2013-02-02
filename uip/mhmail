@@ -160,7 +160,8 @@ for arg in "$@"; do
          #### It's not strictly necessary to have one space after
          #### the : that separates the header field name from the
          #### body, but do it to avoid surprising someone.
-         add=`printf %s "$arg" | sed -e 's/:/: /' -e 's/:  /: /'`
+         #### Solaris sed wants the trailing newline in its input.
+         add=`printf '%s\n' "$arg" | sed -e 's/:/: /' -e 's/:  /: /'`
          headerfieldlist="${headerfieldlist:+$headerfieldlist}$add
 "
          headerfieldarg=0
