@@ -193,7 +193,7 @@ setup_test ()
   # clean old test data
   trap "rm -rf '$MH_TEST_DIR/Mail'" 0
   # setup test data
-  mkdir "$MH_TEST_DIR/Mail" || exit 1
+  mkdir -p "$MH_TEST_DIR/Mail" || exit 1
   cat > "$MH" <<EOF || exit 1
 Path: ${MH_TEST_DIR}/Mail
 buildmimeproc: ${MH_INST_DIR}${bindir}/mhbuild
