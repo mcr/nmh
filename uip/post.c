@@ -185,8 +185,6 @@ static short fccind = 0;	/* index into fccfold[] */
 static short outputlinelen = OUTPUTLINELEN;
 
 static int pfd = NOTOK;		/* fd to write annotation list to        */
-static uid_t myuid= -1;		/* my user id                            */
-static gid_t mygid= -1;		/* my group id                           */
 static int recipients = 0;	/* how many people will get a copy       */
 static int unkadr = 0;		/* how many of those were unknown        */
 static int badadr = 0;		/* number of bad addrs                   */
@@ -927,8 +925,6 @@ start_headers (void)
     char sigbuf[BUFSIZ];
     struct mailname *mp;
 
-    myuid = getuid ();
-    mygid = getgid ();
     time (&tclock);
 
     /*
