@@ -126,7 +126,8 @@ getwidth(const char *string)
 		}
 
 		if ((clen = wcwidth(c)) < 0) {
-			fprintf(stderr, "U+%04lX non-printable\n", c);
+			fprintf(stderr, "U+%04lX non-printable\n",
+				(unsigned long int) c);
 			return;
 		}
 
@@ -147,7 +148,8 @@ dumpwidth(void)
 	for (wc = low = 1, lastwidth = wcwidth(wc); wc <= 0xffff; wc++) {
 		width = wcwidth(wc);
 		if (width != lastwidth) {
-			printf("%04lX - %04lX = %d\n", low, wc - 1, lastwidth);
+			printf("%04lX - %04lX = %d\n", (unsigned long int) low,
+			       (unsigned long int) (wc - 1), lastwidth);
 			low = wc;
 		}
 		lastwidth = width;
@@ -155,6 +157,7 @@ dumpwidth(void)
 
 	width = wcwidth(wc - 1);
 	if (width == lastwidth)
-		printf("%04lX - %04lX = %d\n", low, wc - 1, width);
+		printf("%04lX - %04lX = %d\n", (unsigned long int) low,
+		       (unsigned long int) (wc - 1), width);
 }
 #endif /* MULTIBYTE_SUPPORT */
