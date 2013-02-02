@@ -8,7 +8,7 @@
 # Not tested:
 # -normalize, -nonormalize
 
-set -e
+# ???? temporary   set -e
 
 if test -z "${MH_OBJ_DIR}"; then
     srcdir=`dirname $0`/../..
@@ -18,6 +18,8 @@ fi
 . "$MH_OBJ_DIR/test/common.sh"
 
 setup_test
+
+scan +inbox # ???? temporary
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err
