@@ -384,7 +384,6 @@ static void
 pipeser (int i)
 {
     if (i == SIGQUIT) {
-	unlink ("core");
 	fflush (stdout);
 	fprintf (stderr, "\n");
 	fflush (stderr);
