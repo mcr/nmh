@@ -1087,19 +1087,20 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 				break;
 			}
 		}
+		m_getfld_state_destroy (&gstate);
 		return;
 
 	    case LENERR: 
 	    case FMTERR: 
 		advise (NULL, "format error in message %s", mname);
 		exitstat++;
+		m_getfld_state_destroy (&gstate);
 		return;
 
 	    default: 
 		adios (NULL, "getfld() returned %d", state);
 	}
     }
-    m_getfld_state_destroy (&gstate);
 }
 
 

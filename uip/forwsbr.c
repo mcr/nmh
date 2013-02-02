@@ -123,7 +123,6 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
 	    	adios(NULL, "m_getfld() returned %d", state);
 	}
     }
-    m_getfld_state_destroy (&gstate);
 
     /*
      * Override any components just in case they were included in the
@@ -136,6 +135,7 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
      */
 
 finished:
+    m_getfld_state_destroy (&gstate);
 
     cptr = fmt_findcomp ("digest");
     if (cptr) {

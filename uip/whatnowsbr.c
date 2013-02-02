@@ -940,6 +940,7 @@ check_draft (char *msgnam)
 		 */
 	        if (uprf (name, XXX_FIELD_PRF)) {
 		    fclose (fp);
+		    m_getfld_state_destroy (&gstate);
 		    return 0;
 		}
 		while (state == FLDPLUS) {
@@ -955,6 +956,7 @@ check_draft (char *msgnam)
 		    for (bp = buf; *bp; bp++)
 			if (*bp != ' ' && *bp != '\t' && *bp != '\n') {
 			    fclose (fp);
+			    m_getfld_state_destroy (&gstate);
 			    return 1;
 			}
 
@@ -965,10 +967,10 @@ check_draft (char *msgnam)
 
 	    default:
 		fclose (fp);
+		m_getfld_state_destroy (&gstate);
 		return 0;
 	}
     }
-    m_getfld_state_destroy (&gstate);
 }
 
 

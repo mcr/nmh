@@ -155,11 +155,13 @@ str2peer (char code, char *str)
 int
 fmt2peer (char code, char *fmt, ...)
 {
+    int     return_value;
     va_list ap;
 
     va_start(ap, fmt);
-    return verr2peer (code, NULL, fmt, ap);
+    return_value = verr2peer (code, NULL, fmt, ap);
     va_end(ap);
+    return return_value;
 }
 
 

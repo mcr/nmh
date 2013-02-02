@@ -172,12 +172,12 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 		adios (NULL, "m_getfld() returned %d", state);
 	}
     }
-    m_getfld_state_destroy (&gstate);
 
     /*
      * format and output the header lines.
      */
 finished:
+    m_getfld_state_destroy (&gstate);
 
     /*
      * if there's a "Subject" component, strip any "Re:"s off it

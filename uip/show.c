@@ -448,6 +448,7 @@ out:
 		free (cp);
 		if (result) {
 		    fclose (fp);
+		    m_getfld_state_destroy (&gstate);
 		    return result;
 		}
 		break;
@@ -475,6 +476,7 @@ out:
 		free (cp);
 		if (result) {
 		    fclose (fp);
+		    m_getfld_state_destroy (&gstate);
 		    return result;
 		}
 		break;
@@ -496,8 +498,8 @@ out:
 	     */
 	default:
 	    fclose (fp);
+	    m_getfld_state_destroy (&gstate);
 	    return 0;
 	}
     }
-    m_getfld_state_destroy (&gstate);
 }
