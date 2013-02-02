@@ -39,13 +39,12 @@ test_mhmail ()
     #
 
 ls -l $actual >&2 # ???? temporary
-echo actual:
-cat $actual
-echo end of actual
+od -t a $actual | tail -n 4
 
     sed -e 's/^Date:.*/Date:/' \
         -e 's/^Resent-Date:.*/Resent-Date:/' \
         -e 's/^Message-ID:.*/Message-ID:/' "$actual" > "$actual".nodate
+echo after sed # ???? temporary
     rm -f "$actual"
 
     check "$actual".nodate "$1"
