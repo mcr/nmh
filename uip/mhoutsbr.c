@@ -62,12 +62,14 @@ output_message (CT ct, char *file)
     FILE *fp;
     int status;
 
-    if ((fp = fopen (file, "w")) == NULL) {
+    if (! strcmp (file, "-")) {
+	fp = stdout;
+    } else if ((fp = fopen (file, "w")) == NULL) {
 	advise (file, "unable to open for writing");
 	return NOTOK;
     }
     status = output_message_fp(ct, fp, file);
-    fclose(fp);
+    if (strcmp (file, "-")) fclose(fp);
     return status;
 }
 
