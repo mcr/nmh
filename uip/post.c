@@ -1284,9 +1284,9 @@ make_bcc_file (int dashstuff)
 {
     int fd, i;
     pid_t child_id;
-    char *vec[6];
+    char **vec;
     FILE *out;
-    char *tfile = NULL;
+    char *tfile = NULL, *program;
 
     tfile = m_mktemp2(NULL, "bccs", NULL, &out);
     if (tfile == NULL) adios("bcc", "unable to create temporary file");
@@ -1349,7 +1349,7 @@ make_bcc_file (int dashstuff)
 	    case OK: 
 		dup2 (fileno (out), 1);
 
-		i = 1;
+		vec = argsplit(mhlproc, &program, &i);
 		vec[i++] = "-forward";
 		vec[i++] = "-form";
 		vec[i++] = filter;
@@ -1362,7 +1362,7 @@ make_bcc_file (int dashstuff)
 		    vec[i++] = "-nodashstuffing";
 		vec[i] = NULL;
 
-		execvp (mhlproc, vec);
+		execvp (program, vec);
 		fprintf (stderr, "unable to exec ");
 		perror (mhlproc);
 		_exit (-1);
