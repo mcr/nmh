@@ -163,9 +163,8 @@ setup_test ()
 {
   MH="${MH_TEST_DIR}/Mail/.mh_profile"
   MHMTSCONF="${MH_INST_DIR}${sysconfdir}/mts.conf"
-  PATH="${MH_INST_DIR}${bindir}:${PATH}"
   MH_LIB_DIR="${MH_INST_DIR}${auxexecdir}"
-  export MH MHMTSCONF MH_LIB_DIR PATH
+  export MH MHMTSCONF MH_LIB_DIR
 
   #
   # Only install once
@@ -189,6 +188,9 @@ setup_test ()
         -e 's%mmdflfil: *.*%mmdflfil: maildrop%' \
         "${MHMTSCONF}.old" >"${MHMTSCONF}"
   fi
+
+  PATH="${MH_INST_DIR}${bindir}:${PATH}"
+  export PATH
 
   # clean old test data
   trap "rm -rf '$MH_TEST_DIR/Mail'" 0
