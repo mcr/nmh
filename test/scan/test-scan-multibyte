@@ -47,7 +47,7 @@ Subject: =?utf-8?q?Sp=C4=B1n=CC=88al_Tap_=E2=86=92_Tap_into_America!?=
 Things are looking great!
 EOF
 
-width=`${MH_OBJ_DIR}/test/getcwidth "ﬆ→n̈"`
+width=`${MH_OBJ_DIR}/test/getcwidth "→n̈"`
 if test $? -ne 0; then
     echo "getcwidth failed to run"
     exit 1
@@ -56,11 +56,11 @@ fi
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 
-if test "$width" -eq 4; then
+if test "$width" -eq 3; then
 cat > "$expected" <<EOF
   11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are look
 EOF
-elif test "$width" -eq 3; then
+elif test "$width" -eq 2; then
 cat > "$expected" <<EOF
   11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are looki
 EOF
@@ -100,10 +100,29 @@ if test "$ICONV_ENABLED" -eq 1; then
     check "$expected" "$actual"
 fi
 
+#
+# Find out the width of our Unicode apostrophe (U+2019).  Some implementations
+# say it has a width of 2, but that seems totally bizarre to me.
+#
+
+width=`${MH_OBJ_DIR}/test/getcwidth U+2019`
+if test $? -ne 0; then
+    echo "getcwidth failed to run"
+    exit 1
+fi
+
 # check scan width with a valid multibyte sequence
-cat >"$expected" <<EOF
+if test "$width" -eq 1; then
+    cat >"$expected" <<EOF
   12  12/31 Test12             2013 New Year’s Deals! Start the year right
 EOF
+elif test "$width" -eq 2; then
+    cat >"$expected" <<EOF
+  12  12/31 Test12             2013 New Year’s Deals! Start the year righ
+EOF
+else
+    echo "Unsupported width for U+2019: $width"
+fi
 
 LC_CTYPE=en_US.UTF-8 MM_CHARSET=UTF-8 scan -width 75 last >"$actual"
 check "$expected" "$actual"
