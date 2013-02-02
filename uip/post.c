@@ -1338,8 +1338,6 @@ make_bcc_file (int dashstuff)
      * of MIME encapsulation.
      */
     if (filter != NULL) {
-	vec[0] = r1bindex (mhlproc, '/');
-
 	for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
 	    sleep (5);
 	switch (child_id) {
