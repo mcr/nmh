@@ -410,6 +410,9 @@ test_fakepop_LDADD =
 test_fakesmtp_SOURCES = test/fakesmtp.c
 test_fakesmtp_LDADD =
 
+test_getcwidth_SOURCES = test/getcwidth.c
+test_getcwidth_LDADD =
+
 ##
 ## Our rebuild rules for files that aren't built via the normal mechanisms
 ##
