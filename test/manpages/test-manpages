@@ -31,8 +31,15 @@ actual=$MH_TEST_DIR/$$.actual
 rm -f "$expected" "$actual"
 touch "$expected" "$actual"
 
+#### If the prefix is too long, groff will report that it can't break
+#### the `aliasfiles' line in ali.1.
+length=`echo $prefix | awk '{print length($0)}'`
+[ $length -gt 35 ]  &&  suppress_break_warning=-Wbreak
+
+warnings="-ww $suppress_break_warning"
+
 for manpage in man?/*.?; do
-  groff -Tutf8 -mandoc -ww "$manpage" > /dev/null 2>>"$actual"
+  groff -Tutf8 -mandoc $warnings "$manpage" > /dev/null 2>>"$actual"
 done
 
 check "$expected" "$actual"
