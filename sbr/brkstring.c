@@ -59,7 +59,7 @@ brkstring (char *str, char *brksep, char *brkterm)
 	if (!c || brkany (c, brkterm)) {
 	    *s = '\0';
 	    broken[i] = NULL;
-	    return broken;
+	    break;
 	}
 
 	/* set next start addr */
@@ -69,7 +69,7 @@ brkstring (char *str, char *brksep, char *brkterm)
 	    ;	/* empty body */
     }
 
-    return broken;	/* NOT REACHED */
+    return broken;
 }
 
 

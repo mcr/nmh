@@ -16,6 +16,7 @@ showfile (char **arg, char *file)
     pid_t pid;
     int isdraft, vecp;
     char **vec, *program;
+    int retval = 1;
 
     context_save();	/* save the context file */
     fflush(stdout);
@@ -32,7 +33,7 @@ showfile (char **arg, char *file)
     case -1:
 	/* fork error */
 	advise ("fork", "unable to");
-	return 1;
+	break;
 
     case 0:
 	/* child */
@@ -59,8 +60,8 @@ showfile (char **arg, char *file)
 
     default:
 	/* parent */
-	return (pidwait (pid, -1) & 0377 ? 1 : 0);
+	retval = pidwait (pid, -1) & 0377 ? 1 : 0;
     }
 
-    return 1;	/* NOT REACHED */
+    return retval;
 }
