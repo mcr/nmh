@@ -16,11 +16,11 @@ int
 m_atoi (char *str)
 {
     int i;
-    unsigned char *cp;
+    char *cp;
 
     for (i = 0, cp = str; *cp; cp++) {
 #ifdef LOCALE
-	if (!isdigit(*cp))
+	if (!isdigit((unsigned char) *cp))
 #else
 	if (*cp < '0' || *cp > '9')
 #endif

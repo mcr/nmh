@@ -70,8 +70,7 @@ int
 main (int argc, char **argv)
 {
     int	i, msgnum;
-    unsigned char *cp;
-    char *maildir, *datesw = NULL;
+    char *cp, *maildir, *datesw = NULL;
     char *folder = NULL, buf[BUFSIZ], **argp;
     char **arguments;
     struct msgs_array msgs = { 0, 0, NULL };
@@ -141,7 +140,7 @@ main (int argc, char **argv)
 		    submajor++;		/* sort subject-major */
 		    continue;
 		}
-		if (!isdigit(*cp) || !(datelimit = atoi(cp)))
+		if (!isdigit((unsigned char) *cp) || !(datelimit = atoi(cp)))
 		    adios (NULL, "impossible limit %s", cp);
 		datelimit *= 60*60*24;
 		continue;
@@ -365,7 +364,8 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
     }
     for (compnum = 1;;) {
 	int bufsz = sizeof buf;
-	switch (state = m_getfld (&gstate, nam, buf, &bufsz, in)) {
+	switch (state = m_getfld (&gstate, (unsigned char *) nam,
+				  (unsigned char *) buf, &bufsz, in)) {
 	case FLD:
 	case FLDPLUS:
 	    compnum++;
@@ -373,7 +373,8 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 		datecomp = add (buf, datecomp);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
+		    state = m_getfld (&gstate, (unsigned char *) nam,
+		    		      (unsigned char *) buf, &bufsz, in);
 		    datecomp = add (buf, datecomp);
 		}
 		if (!subjsort || subjcomp)
@@ -382,7 +383,8 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 		subjcomp = add (buf, subjcomp);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
+		    state = m_getfld (&gstate, (unsigned char *) nam,
+		    		      (unsigned char *) buf, &bufsz, in);
 		    subjcomp = add (buf, subjcomp);
 		}
 		if (datecomp)
@@ -391,7 +393,8 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 		/* just flush this guy */
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, nam, buf, &bufsz, in);
+		    state = m_getfld (&gstate, (unsigned char *) nam,
+		    		      (unsigned char *) buf, &bufsz, in);
 		}
 	    }
 	    continue;
@@ -446,14 +449,13 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	     * leading "re:", everything but letters & smash
 	     * letters to lower case.
 	     */
-	    register char  *cp, *cp2;
-	    register unsigned char c;
+	    register char  *cp, *cp2, c;
 
 	    cp = subjcomp;
 	    cp2 = subjcomp;
 	    if (strcmp (subjsort, "subject") == 0) {
 		while ((c = *cp)) {
-		    if (! isspace(c)) {
+		    if (! isspace((unsigned char) c)) {
 			if(uprf(cp, "re:"))
 			    cp += 2;
 			else
@@ -464,8 +466,9 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	    }
 
 	    while ((c = *cp++)) {
-		if (isalnum(c))
-		    *cp2++ = isupper(c) ? tolower(c) : c;
+		if (isascii((unsigned char) c) && isalnum((unsigned char) c))
+		    *cp2++ = isupper((unsigned char) c) ?
+		    			tolower((unsigned char) c) : c;
 	    }
 
 	    *cp2 = '\0';

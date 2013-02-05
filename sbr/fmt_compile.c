@@ -270,7 +270,7 @@ static struct ftable functable[] = {
 #define PUTC(c)			do { NEW(FT_CHAR,0,0); fp->f_char = (c); } while (0)
 
 static char *format_string;
-static unsigned char *usr_fstring;	/* for CERROR */
+static char *usr_fstring;	/* for CERROR */
 
 #define CERROR(str) compile_error (str, cp)
 
@@ -321,7 +321,7 @@ compile_error(char *str, char *cp)
 
     for (i = errpos-errctx; i < errpos; i++) {
 #ifdef LOCALE
-	if (iscntrl(usr_fstring[i]))
+	if (iscntrl((unsigned char) usr_fstring[i]))
 #else
 	if (usr_fstring[i] < 32)
 #endif

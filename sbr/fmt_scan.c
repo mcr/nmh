@@ -50,13 +50,24 @@ match (char *str, char *sub)
 
 #ifdef LOCALE
     while ((c1 = *sub)) {
-	c1 = (isalpha(c1) && isupper(c1)) ? tolower(c1) : c1;
-	while ((c2 = *str++) && c1 != ((isalpha(c2) && isupper(c2)) ? tolower(c2) : c2))
+	c1 = (isascii((unsigned char) c1) && isalpha((unsigned char) c1) &&
+	      isupper((unsigned char) c1)) ? tolower((unsigned char) c1) : c1;
+	while ((c2 = *str++) && c1 != ((isascii((unsigned char) c2) &&
+					isalpha((unsigned char) c2) &&
+					isupper((unsigned char) c2)) ?
+					    tolower((unsigned char) c2) : c2))
 	    ;
 	if (! c2)
 	    return 0;
 	s1 = sub + 1; s2 = str;
-	while ((c1 = *s1++) && ((isalpha(c1) && isupper(c1)) ? tolower(c1) : c1) == ((isalpha(c2 =*s2++) && isupper(c2)) ? tolower(c2) : c2))
+	while ((c1 = *s1++) && ((isascii((unsigned char) c1) &&
+				 isalpha((unsigned char) c1) &&
+				 isupper((unsigned char) c1)) ?
+				 	tolower(c1) : c1) ==
+			((isascii((unsigned char) (c2 =*s2++)) &&
+			  isalpha((unsigned char) c2) &&
+			  isupper((unsigned char) c2)) ?
+			  	tolower((unsigned char) c2) : c2))
 	    ;
 	if (! c1)
 	    return 1;
@@ -169,7 +180,7 @@ cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
 	    end--;
             /* isnctrl(), etc., take an int argument.  Cygwin's ctype.h
                intentionally warns if they are passed a char. */
-            c = *sp;
+            c = (unsigned char) *sp;
 	    if (iscntrl(c) || isspace(c)) {
 		sp++;
 #endif
@@ -266,7 +277,7 @@ cpstripped (char **dest, char **end, char *max, char *str)
 	if (iswcntrl(wide_char) || iswspace(wide_char)) {
 	    str += char_len;
 #else /* MULTIBYTE_SUPPORT */
-	int c = *str;
+	int c = (unsigned char) *str;
 	len--;
 	if (iscntrl(c) || isspace(c)) {
 	    str++;
@@ -342,10 +353,8 @@ get_x400_comp (char *mbox, char *key, char *buffer, int buffer_len)
 struct format *
 fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 {
-    char *cp, *ep;
-    unsigned char *sp;
-    char *savestr = NULL;
-    unsigned char *str = NULL;
+    char *cp, *ep, *sp;
+    char *savestr = NULL, *str = NULL;
     char buffer[BUFSIZ], buffer2[BUFSIZ];
     int i, c, ljust, n;
     int value = 0;
@@ -592,12 +601,12 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 
 	case FT_LS_TRIM:
 	    if (str) {
-		    unsigned char *xp;
+		    char *xp;
 
 		    strncpy(buffer, str, sizeof(buffer));
 		    buffer[sizeof(buffer)-1] = '\0';
 		    str = buffer;
-		    while (isspace(*str))
+		    while (isspace((unsigned char) *str))
 			    str++;
 		    ljust = 0;
 		    if ((i = fmt->f_width) < 0) {
@@ -609,7 +618,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 			    str[i] = '\0';
 		    xp = str;
 		    xp += strlen(str) - 1;
-		    while (xp > str && isspace(*xp))
+		    while (xp > str && isspace((unsigned char) *xp))
 			    *xp-- = '\0';
 		    if (ljust && i > 0 && (int) strlen(str) > i)
 			str += strlen(str) - i;
@@ -905,8 +914,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	     * (e.g., "To: ")
 	     */
 	    {
-	    unsigned char *lp;
-	    char *lastb;
+	    char *lp, *lastb;
 	    int indent, wid, len;
 
 	    lp = str;
@@ -919,21 +927,22 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	    	adios(NULL, "putaddr -- num register (%d) must be greater "
 			    "than label width (%d)", value, indent);
 	    }
-	    while( (c = *sp++) && cp < ep)
-		*cp++ = c;
+	    while( (c = (unsigned char) *sp++) && cp < ep)
+		*cp++ = (char) c;
 	    while (len > wid) {
 		/* try to break at a comma; failing that, break at a
 		 * space.
 		 */
 		lastb = 0; sp = lp + wid;
-		while (sp > lp && (c = *--sp) != ',') {
+		while (sp > lp && (c = (unsigned char) *--sp) != ',') {
 		    if (! lastb && isspace(c))
 			lastb = sp - 1;
 		}
 		if (sp == lp) {
 		    if (! (sp = lastb)) {
 			sp = lp + wid - 1;
-			while (*sp && *sp != ',' && !isspace(*sp))
+			while (*sp && *sp != ',' &&
+						!isspace((unsigned char) *sp))
 			    sp++;
 			if (*sp != ',')
 			    sp--;
@@ -942,7 +951,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 		len -= sp - lp + 1;
 		while (cp < ep && lp <= sp)
 		    *cp++ = *lp++;
-		while (isspace(*lp))
+		while (isspace((unsigned char) *lp))
 		    lp++, len--;
 		if (*lp) {
 		    if (cp < ep)
