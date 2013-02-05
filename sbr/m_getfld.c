@@ -53,11 +53,11 @@
    m_getfld_state_t variable.  These are used for detecting the end of
    each message when reading maildrops:
 
-     unsigned char **pat_map
-     unsigned char *fdelim
-     unsigned char *delimend
+     char **pat_map
+     char *fdelim
+     char *delimend
      int fdelimlen
-     unsigned char *edelim
+     char *edelim
      int edelimlen
      char *msg_delim
      int msg_style
@@ -208,7 +208,7 @@
  */
 struct m_getfld_state;
 static int m_Eom (m_getfld_state_t, int);
-static unsigned char *matchc(int, char *, int, char *);
+static char *matchc(int, char *, int, char *);
 
 #define eom(c,s)	(s->msg_style != MS_DEFAULT && \
 			 (((c) == *s->msg_delim && m_Eom(s,c)) || \
@@ -228,9 +228,9 @@ static unsigned char *matchc(int, char *, int, char *);
 #define MAX_DELIMITER_SIZE 5
 
 struct m_getfld_state {
-    unsigned char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
-    unsigned char *readpos;
-    unsigned char *end;  /* One past the last character read in. */
+    char msg_buf[2 * MSG_INPUT_SIZE + MAX_DELIMITER_SIZE];
+    char *readpos;
+    char *end;  /* One past the last character read in. */
     /* The following support tracking of the read position in the
        input file stream so that callers can interleave m_getfld()
        calls with ftell() and fseek().  ytes_read replaces the old
@@ -244,7 +244,7 @@ struct m_getfld_state {
     off_t last_internal_pos;
     FILE *iob;
 
-    unsigned char **pat_map;
+    char **pat_map;
     int msg_style;
     /*
      * The "full" delimiter string for a packed maildrop consists
@@ -259,10 +259,10 @@ struct m_getfld_state {
      * has been read and matched before m_Eom is called.
      */
     char *msg_delim;
-    unsigned char *fdelim;
-    unsigned char *delimend;
+    char *fdelim;
+    char *delimend;
     int fdelimlen;
-    unsigned char *edelim;
+    char *edelim;
     int edelimlen;
     int (*eom_action)(int);
     int state;
@@ -482,11 +482,11 @@ Ungetc (int c, m_getfld_state_t s) {
 
 
 int
-m_getfld (m_getfld_state_t *gstate, unsigned char name[NAMESZ],
-          unsigned char *buf, int *bufsz, FILE *iob)
+m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
+          FILE *iob)
 {
     m_getfld_state_t s;
-    register unsigned char *cp;
+    register char *cp;
     register int max, n, c;
 
     enter_getfld (gstate, iob);
@@ -606,7 +606,7 @@ m_getfld (m_getfld_state_t *gstate, unsigned char name[NAMESZ],
 	    }
 
 	    /* Trim any trailing spaces from the end of name. */
-	    while (isspace (*--cp) && cp >= name) continue;
+	    while (isspace ((unsigned char) *--cp) && cp >= name) continue;
 	    *++cp = 0;
 	    /* readpos points to the first character of the field body. */
 	    /* fall through */
@@ -653,7 +653,7 @@ m_getfld (m_getfld_state_t *gstate, unsigned char name[NAMESZ],
 	     * get the message body up to bufsz characters or the
 	     * end of the message.
 	     */
-	    unsigned char *bp;
+	    char *bp;
 
 	    max = *bufsz-1;
 	    /* Back up and store the current position. */
@@ -672,7 +672,7 @@ m_getfld (m_getfld_state_t *gstate, unsigned char name[NAMESZ],
 		 * algorithms vs. brute force.)  Since I (currently)
 		 * run MH on a vax, we use the matchc instruction. --vj
 		 */
-		unsigned char *ep;
+		char *ep;
 
 		if ((ep = matchc( s->fdelimlen, s->fdelim, c, bp )))
 		    c = ep - bp + 1;
@@ -690,10 +690,10 @@ m_getfld (m_getfld_state_t *gstate, unsigned char name[NAMESZ],
 		     * ends with one of the characters in the pattern
 		     * (excluding the first and last), we do only one test.
 		     */
-		    unsigned char *sp;
+		    char *sp;
 
 		    ep = bp + c - 1;
-		    if ((sp = s->pat_map[*ep])) {
+		    if ((sp = s->pat_map[(unsigned char) *ep])) {
 			do {
 			    /* This if() is true unless (a) the buffer is too
 			     * small to contain this delimiter prefix, or
@@ -800,15 +800,15 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
 	s->msg_style = MS_MMDF;
     }
     c = strlen (delimstr);
-    s->fdelim = (unsigned char *) mh_xmalloc((size_t) (c + 3));
+    s->fdelim = mh_xmalloc (c + 3);
     *s->fdelim++ = '\0';
     *s->fdelim = '\n';
-    s->msg_delim = (char *)s->fdelim+1;
-    s->edelim = (unsigned char *)s->msg_delim+1;
+    s->msg_delim = s->fdelim+1;
+    s->edelim = s->msg_delim+1;
     s->fdelimlen = c + 1;
     s->edelimlen = c - 1; /* == strlen (delimstr) */
     strcpy (s->msg_delim, delimstr);
-    s->delimend = (unsigned char *)s->msg_delim + s->edelimlen;
+    s->delimend = s->msg_delim + s->edelimlen;
     if (s->edelimlen <= 1)
 	adios (NULL, "maildrop delimiter must be at least 2 bytes");
     /*
@@ -817,10 +817,10 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
      * separator) or the last char (since the matchc would have found it
      * if it was a real delim).
      */
-    s->pat_map = (unsigned char **) calloc (256, sizeof(unsigned char *));
+    s->pat_map = (char **) calloc (256, sizeof(char *));
 
-    for (cp = (char *) s->fdelim + 1; cp < (char *) s->delimend; cp++ )
-	s->pat_map[(unsigned char)*cp] = (unsigned char *) cp;
+    for (cp = s->fdelim + 1; cp < s->delimend; cp++ )
+	s->pat_map[(unsigned char)*cp] = cp;
 
     if (s->msg_style == MS_MMDF) {
 	/* flush extra msg hdrs */
@@ -844,9 +844,9 @@ m_eomsbr (m_getfld_state_t s, int (*action)(int))
 	s->delimend = s->fdelim;
     } else {
 	s->msg_style = MS_MMDF;
-	s->msg_delim = (char *)s->fdelim + 1;
-	s->fdelimlen = strlen((char *)s->fdelim);
-	s->delimend = (unsigned char *)(s->msg_delim + s->edelimlen);
+	s->msg_delim = s->fdelim + 1;
+	s->fdelimlen = strlen (s->fdelim);
+	s->delimend = s->msg_delim + s->edelimlen;
     }
 }
 
@@ -893,7 +893,7 @@ m_Eom (m_getfld_state_t s, int c)
 }
 
 
-static unsigned char *
+static char *
 matchc(int patln, char *pat, int strln, char *str)
 {
 	register char *es = str + strln - patln;
@@ -912,6 +912,6 @@ matchc(int patln, char *pat, int strln, char *str)
 		while (pp < ep && *sp++ == *pp)
 			pp++;
 		if (pp >= ep)
-			return ((unsigned char *)--str);
+			return --str;
 	}
 }
