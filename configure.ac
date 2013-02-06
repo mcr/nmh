@@ -137,20 +137,6 @@ fi
 AC_PROG_CC
 AM_PROG_CC_C_O
 
-AC_CACHE_CHECK([whether compiler supports -Wno-sign-compare],
-  [nmh_cv_has_nosigncompare],
-  [nmh_saved_cppflags="$CPPFLAGS"
-   CPPFLAGS="$CPPFLAGS -Wno-sign-compare"
-   AC_TRY_COMPILE([],[],nmh_cv_has_nosigncompare=yes,
-                  nmh_cv_has_nosigncompare=no)
-   CPPFLAGS="$nmh_saved_cppflags"])
-
-if test "$nmh_cv_has_nosigncompare" = 'yes'; then
-  dnl DISABLE_SIGN_COMPARE_WARNING=-Wno-sign-compare
-  DISABLE_SIGN_COMPARE_WARNING=
-fi
-AC_SUBST([DISABLE_SIGN_COMPARE_WARNING])dnl
-
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
  CFLAGS="$CFLAGS -Wextra -Werror"
@@ -161,13 +147,6 @@ AC_CACHE_CHECK([whether compiler supports -Wno-clobbered], [nmh_cv_has_noclobber
 [nmh_saved_cflags="$CFLAGS"
  CFLAGS="$CFLAGS -Wno-clobbered -Werror"
  AC_TRY_COMPILE([],[],nmh_cv_has_noclobbered=yes,nmh_cv_has_noclobbered=no)
- CFLAGS="$nmh_saved_cflags"])
-
-AC_CACHE_CHECK([whether compiler supports -Wno-pointer-sign], [nmh_cv_has_noptrsign],
-[nmh_saved_cflags="$CFLAGS"
- CFLAGS="$CFLAGS -Wno-pointer-sign -Werror"
-dnl  AC_TRY_COMPILE([],[],nmh_cv_has_noptrsign=yes,nmh_cv_has_noptrsign=no)
- AC_TRY_COMPILE([],[],nmh_cv_has_noptrsign=no,nmh_cv_has_noptrsign=no)
  CFLAGS="$nmh_saved_cflags"])
 
 dnl Can't use -ansi with gcc 4.5.3 on Cygwin, at least through setup
@@ -204,9 +183,6 @@ else
 fi
 if test "$nmh_cv_has_wextra" = "yes"; then
     nmh_gcc_warnflags="${nmh_gcc_warnflags} -Wextra"
-fi
-if test "$nmh_cv_has_noptrsign" = "yes"; then
-    nmh_gcc_warnflags="${nmh_gcc_warnflags} -Wno-pointer-sign"
 fi
 if test "$nmh_cv_has_noclobbered" = "yes"; then
     nmh_gcc_warnflags="${nmh_gcc_warnflags} -Wno-clobbered"

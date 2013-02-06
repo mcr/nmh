@@ -14,7 +14,7 @@ ACLOCAL_AMFLAGS = -I m4
 ## LDADD is included in the program-specific LDADD since we want to add
 ## to this list of libraries, not replace it.
 ##
-LDADD = sbr/libmh.a ##sbr/libdtimep.a
+LDADD = sbr/libmh.a
 
 ##
 ## These are used to create the default mhn.defaults config file
@@ -521,10 +521,6 @@ sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 		-DMAILSPOOL='"$(mailspool)"' \
 		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
 		-DNMHLIBDIR='"$(libdir)"'
-
-##sbr_libdtimep_a_SOURCES = sbr/dtimep.l
-##sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) \
-##			 $(DISABLE_SIGN_COMPARE_WARNING)
 
 mts_libmts_a_SOURCES = mts/smtp/smtp.c
 
