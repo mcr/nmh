@@ -366,7 +366,7 @@ setup (void)
 			close (fd);
 		    }
 		execlp (mailproc, r1bindex (mailproc, '/'),
-			mail, "-subject", invo_name, NULL);
+			mail, "-subject", invo_name, (void *) NULL);
 		adios (mailproc, "unable to exec ");
 
 	    default: 

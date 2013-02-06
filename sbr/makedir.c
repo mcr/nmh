@@ -94,8 +94,8 @@ makedir (char *dir)
 		setgid (getgid ());
 		setuid (getuid ());
 		
-		execl ("/bin/mkdir", "mkdir", dir, NULL);
-		execl ("/usr/bin/mkdir", "mkdir", dir, NULL);
+		execl ("/bin/mkdir", "mkdir", dir, (void *) NULL);
+		execl ("/usr/bin/mkdir", "mkdir", dir, (void *) NULL);
 		fprintf (stderr, "unable to exec ");
 		perror ("mkdir");
 		_exit (-1);
