@@ -321,17 +321,19 @@ clsfolds (struct st_fold *folders, int nfolders)
 static void
 remove_files (int filep, char **files)
 {
-    int i;
-    char **vec;
+    int i, vecp;
+    char **vec, *program;
 
     /* If rmmproc is defined, we use that */
     if (rmmproc) {
-	vec = files++;		/* vec[0] = filevec[0] */
-	files[filep] = NULL;	/* NULL terminate list */
+    	vec = argsplit(rmmproc, &program, &vecp);
+	files++;		/* Yes, we need to do this */
+	for (i = 0; i < filep; i++)
+		vec[vecp++] = files[i];
+	vec[vecp] = NULL;	/* NULL terminate list */
 
 	fflush (stdout);
-	vec[0] = r1bindex (rmmproc, '/');
-	execvp (rmmproc, vec);
+	execvp (program, vec);
 	adios (rmmproc, "unable to exec");
     }
 

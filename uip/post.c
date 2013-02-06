@@ -1506,7 +1506,8 @@ post (char *file, int bccque, int talk, char *envelope)
     sigon ();
 
     if (sm_mts == MTS_SENDMAIL_PIPE) {
-	char *sargv[16], **argp;
+	char **argp, *program;
+	int argc;
 
 	for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
 	    sleep (5);
@@ -1519,17 +1520,16 @@ post (char *file, int bccque, int talk, char *envelope)
 		    adios (file, "can't reopen for sendmail");
 		}
 
-		argp = sargv;
-		*argp++ = "sendmail";
-		*argp++ = "-t"; /* read msg for recipients */
-		*argp++ = "-i"; /* don't stop on "." */
+		argp = argsplit(sendmail, &program, &argc);
+		argp[argc++] = "-t"; /* read msg for recipients */
+		argp[argc++] = "-i"; /* don't stop on "." */
 		if (whomsw)
-		    *argp++ = "-bv";
+		    argp[argc++] = "-bv";
 		if (snoop)
-		    *argp++ = "-v";
-		*argp = NULL;
+		    argp[argc++] = "-v";
+		argp[argc] = NULL;
 
-		execv (sendmail, sargv);
+		execv (program, argp);
 		adios (sendmail, "can't exec");
 
 	    default: 

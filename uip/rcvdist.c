@@ -42,9 +42,9 @@ int
 main (int argc, char **argv)
 {
     pid_t child_id;
-    int i, vecp = 1;
-    char *addrs = NULL, *cp, *form = NULL, buf[BUFSIZ];
-    char **argp, **arguments, *vec[MAXARGS];
+    int i, vecp;
+    char *addrs = NULL, *cp, *form = NULL, buf[BUFSIZ], *program;
+    char **argp, **arguments, **vec;
     FILE *fp;
     char *tfile = NULL;
 
@@ -57,6 +57,13 @@ main (int argc, char **argv)
 
     /* read user profile/context */
     context_read();
+
+    /*
+     * Configure this now, since any unknown switches to rcvdist get
+     * sent to postproc
+     */
+
+    vec = argsplit(postproc, &program, &vecp);
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 1);
@@ -114,7 +121,6 @@ main (int argc, char **argv)
     if (distout (drft, tmpfil, backup) == NOTOK)
 	done (1);
 
-    vec[0] = r1bindex (postproc, '/');
     vec[vecp++] = "-dist";
     vec[vecp++] = drft;
     if ((cp = context_find ("mhlproc"))) {
@@ -129,7 +135,7 @@ main (int argc, char **argv)
 	case NOTOK: 
 	    admonish (NULL, "unable to fork");/* fall */
 	case OK: 
-	    execvp (postproc, vec);
+	    execvp (program, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (postproc);
 	    _exit (1);

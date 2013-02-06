@@ -52,7 +52,7 @@ argsplit(char *command, char **file, int *argp)
 	}
     }
 
-    argvarray = (char **) mh_xmalloc((sizeof(char **) * MAXARGS));
+    argvarray = (char **) mh_xmalloc((sizeof(char **) * (MAXARGS + 5)));
 
     /*
      * The simple case - no spaces or shell metacharacters

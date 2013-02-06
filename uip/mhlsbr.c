@@ -1860,18 +1860,17 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp,
      */
 
     switch (filterpid = fork()) {
-        char **args;
+        char **args, *program;
 	struct arglist *a;
-	int i, dat[5], s;
+	int i, dat[5], s, argp;
 
     case 0:
     	/*
-	 * Allocate an argument array for us
+	 * Configure an argument array for us
 	 */
 
-	args = (char **) mh_xmalloc((filter_nargs + 2) * sizeof(char *));
-	args[0] = formatproc;
-	args[filter_nargs + 1] = NULL;
+	args = argsplit(formatproc, &program, &argp);
+	args[argp + filter_nargs] = NULL;
 	dat[0] = 0;
 	dat[1] = 0;
 	dat[2] = 0;
@@ -1882,7 +1881,7 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp,
 	 * Pull out each argument and scan them.
 	 */
 
-	for (a = arglist_head, i = 1; a != NULL; a = a->a_next, i++) {
+	for (a = arglist_head, i = argp; a != NULL; a = a->a_next, i++) {
 	    args[i] = mh_xmalloc(BUFSIZ);
 	    fmt_scan(a->a_fmt, args[i], BUFSIZ - 1, BUFSIZ, dat);
 	    /*
