@@ -11,9 +11,9 @@
 
 
 int
-seq_nameok (unsigned char *s)
+seq_nameok (char *s)
 {
-    unsigned char *pp;
+    char *pp;
 
     if (s == NULL || *s == '\0') {
 	advise (NULL, "empty sequence name");
@@ -38,7 +38,7 @@ seq_nameok (unsigned char *s)
      * First character in a sequence name must be
      * an alphabetic character ...
      */
-    if (!isalpha (*s)) {
+    if (!isalpha ((unsigned char) *s)) {
 	advise (NULL, "illegal sequence name: %s", s);
 	return 0;
     }
@@ -47,7 +47,7 @@ seq_nameok (unsigned char *s)
      * and can be followed by zero or more alphanumeric characters
      */
     for (pp = s + 1; *pp; pp++)
-	if (!isalnum (*pp)) {
+	if (!isalnum ((unsigned char) *pp)) {
 	    advise (NULL, "illegal sequence name: %s", s);
 	    return 0;
 	}

@@ -126,7 +126,7 @@ static int day_map[] = {
                        tw.tw_flags &= ~TW_SDAY; tw.tw_flags |= TW_SEXP; \
                        SKIPA(); }
 #define SETMON()     { cp++; \
-                       tw.tw_mon = month_map[(cp[0] + cp[1]) & 0x1f]; \
+                       tw.tw_mon = month_map[(((unsigned char) cp[0]) + ((unsigned char) cp[1])) & 0x1f]; \
   		       SKIPA(); }
 #define SETMON_NUM() { tw.tw_mon = atoi(cp)-1; \
   		       SKIPD(); }
@@ -146,17 +146,17 @@ static int day_map[] = {
                        tw.tw_flags |= TW_SZEXP; \
                        SKIPD(); }
 #define SETDST()     { tw.tw_flags |= TW_DST; }
-#define SKIPD()      { while ( isdigit(*cp++) ) ; \
+#define SKIPD()      { while ( isdigit((unsigned char) *cp++) ) ; \
                        --cp; }
-#define SKIPTOD()    { while ( !isdigit(*cp++) ) ; \
+#define SKIPTOD()    { while ( !isdigit((unsigned char) *cp++) ) ; \
                        --cp; }
-#define SKIPA()      { while ( isalpha(*cp++) ) ; \
+#define SKIPA()      { while ( isalpha((unsigned char) *cp++) ) ; \
                        --cp; }
-#define SKIPTOA()    { while ( !isalpha(*cp++) ) ; \
+#define SKIPTOA()    { while ( !isalpha((unsigned char) *cp++) ) ; \
                        --cp; }
-#define SKIPSP()     { while ( isspace(*cp++) ) ; \
+#define SKIPSP()     { while ( isspace((unsigned char) *cp++) ) ; \
                        --cp; }
-#define SKIPTOSP()   { while ( !isspace(*cp++) ) ; \
+#define SKIPTOSP()   { while ( !isspace((unsigned char) *cp++) ) ; \
                        --cp; }
 
 #ifdef ADJUST_NUMERIC_ONLY_TZ_OFFSETS_WRT_DST
@@ -230,7 +230,7 @@ nl      [ \t\n()]
   
   YY_BUFFER_STATE lexhandle;
 
-  register unsigned char *cp;
+  char *cp;
   static struct tws tw; 
 
   memset(&tw,0,sizeof(struct tws));

@@ -13,17 +13,17 @@
 
 
 char *
-trimcpy (unsigned char *cp)
+trimcpy (char *cp)
 {
-    unsigned char *sp;
+    char *sp;
 
     /* skip over leading whitespace */
-    while (isspace(*cp))
+    while (isspace((unsigned char) *cp))
 	cp++;
 
     /* start at the end and zap trailing whitespace */
     for (sp = cp + strlen(cp) - 1; sp >= cp; sp--) {
-	if (isspace(*sp))
+	if (isspace((unsigned char) *sp))
 	    *sp = '\0';
 	else
 	    break;
@@ -31,7 +31,7 @@ trimcpy (unsigned char *cp)
 
     /* replace remaining whitespace with spaces */
     for (sp = cp; *sp; sp++) {
-	if (isspace(*sp))
+	if (isspace((unsigned char) *sp))
 	    *sp = ' ';
     }
 

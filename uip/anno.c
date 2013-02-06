@@ -74,7 +74,7 @@ DEFINE_SWITCH_ARRAY(ANNO, switches);
 /*
  * static prototypes
  */
-static void make_comp (unsigned char **);
+static void make_comp (char **);
 
 
 int
@@ -83,8 +83,7 @@ main (int argc, char **argv)
     int inplace = 1, datesw = 1;
     int msgnum;
     char *cp, *maildir;
-    unsigned char *comp = NULL;
-    char *text = NULL, *folder = NULL, buf[BUFSIZ];
+    char *comp = NULL, *text = NULL, *folder = NULL, buf[BUFSIZ];
     char **argp, **arguments;
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
@@ -275,10 +274,9 @@ main (int argc, char **argv)
 }
 
 static void
-make_comp (unsigned char **ap)
+make_comp (char **ap)
 {
-    register unsigned char *cp;
-    char buffer[BUFSIZ];
+    char *cp, buffer[BUFSIZ];
 
     if (*ap == NULL) {
 	printf ("Enter component name: ");
@@ -299,6 +297,6 @@ make_comp (unsigned char **ap)
 	adios (NULL, "too large component name %s", *ap);
 
     for (cp = *ap; *cp; cp++)
-	if (!isalnum (*cp) && *cp != '-')
+	if (!isalnum ((unsigned char) *cp) && *cp != '-')
 	    adios (NULL, "invalid component name %s", *ap);
 }

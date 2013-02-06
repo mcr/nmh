@@ -277,17 +277,17 @@ main(int argc, char **argv)
 void
 GetFolderOrder(void)
 {
-    unsigned char *p, *s;
+    char *p, *s;
     int priority = 1;
     struct Folder *o;
 
     if (!(p = context_find("Flist-Order")))
 	return;
     for (;;) {
-	while (isspace(*p))
+	while (isspace((unsigned char) *p))
 	    ++p;
 	s = p;
-	while (*p && !isspace(*p))
+	while (*p && !isspace((unsigned char) *p))
 	    ++p;
 	if (p != s) {
 	    /* Found one. */
@@ -390,7 +390,7 @@ void
 BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
 {
     char *base, name[PATH_MAX];
-    unsigned char *n;
+    char *n;
     int nlinks;
     DIR *dir;
     struct dirent *dp;
@@ -430,7 +430,7 @@ BuildFolderListRecurse(char *dirName, struct stat *s, int searchdepth)
 	/* Check to see if the name of the file is a number
 	 * if it is, we assume it's a mail file and skip it
 	 */
-	for (n = dp->d_name; *n && isdigit(*n); n++);
+	for (n = dp->d_name; *n && isdigit((unsigned char) *n); n++);
 	if (!*n)
 	    continue;
 	strncpy (name, base, sizeof(name) - 2);

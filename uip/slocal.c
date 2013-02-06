@@ -645,7 +645,7 @@ static int
 split (char *cp, char **vec)
 {
     int i;
-    unsigned char *s;
+    char *s;
 
     s = cp;
 
@@ -654,7 +654,7 @@ split (char *cp, char **vec)
 	vec[i] = NULL;
 
 	/* zap any whitespace and comma's */
-	while (isspace (*s) || *s == ',')
+	while (isspace ((unsigned char) *s) || *s == ',')
 	    *s++ = 0;
 
 	/* end of buffer, time to leave */
@@ -684,7 +684,7 @@ split (char *cp, char **vec)
 	vec[i++] = s++;
 
 	/* move forward to next field delimiter */
-	while (*s && !isspace (*s) && *s != ',')
+	while (*s && !isspace ((unsigned char) *s) && *s != ',')
 	    s++;
     }
     vec[i] = NULL;
@@ -1153,8 +1153,8 @@ static void
 get_sender (char *envelope, char **sender)
 {
     int i;
-    unsigned char *cp;
-    unsigned char buffer[BUFSIZ];
+    char *cp;
+    char buffer[BUFSIZ];
 
     if (envelope == NULL) {
 	*sender = getcpy ("");
@@ -1174,7 +1174,7 @@ get_sender (char *envelope, char **sender)
     *cp = 0;
 
     for (cp = buffer + strlen (buffer) - 1; cp >= buffer; cp--)
-	if (isspace (*cp))
+	if (isspace ((unsigned char) *cp))
 	    *cp = 0;
 	else
 	    break;
@@ -1296,7 +1296,7 @@ static char *
 trim (char *cp)
 {
     char buffer[BUFSIZ*4];
-    unsigned char *bp, *sp;
+    char *bp, *sp;
 
     if (cp == NULL)
 	return NULL;
@@ -1306,12 +1306,12 @@ trim (char *cp)
     bp = buffer;
 
     /* skip over leading whitespace */
-    while (isspace(*bp))
+    while (isspace((unsigned char) *bp))
 	bp++;
 
     /* start at the end and zap trailing whitespace */
     for (sp = bp + strlen(bp) - 1; sp >= bp; sp--) {
-	if (isspace(*sp))
+	if (isspace((unsigned char) *sp))
 	    *sp = 0;
 	else
 	    break;
@@ -1319,7 +1319,7 @@ trim (char *cp)
 
     /* replace remaining whitespace with spaces */
     for (sp = bp; *sp; sp++)
-	if (isspace(*sp))
+	if (isspace((unsigned char) *sp))
 	    *sp = ' ';
 
     /* now return a copy */

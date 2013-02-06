@@ -28,8 +28,7 @@ int
 distout (char *drft, char *msgnam, char *backup)
 {
     int state;
-    register unsigned char *dp;
-    register char *resent;
+    char *dp, *resent;
     char name[NAMESZ], buffer[BUFSIZ];
     register FILE *ifp, *ofp;
     m_getfld_state_t gstate = 0;
@@ -74,7 +73,7 @@ distout (char *drft, char *msgnam, char *backup)
 
 	    case BODY: 
 		for (dp = buffer; *dp; dp++)
-		    if (!isspace (*dp)) {
+		    if (!isspace ((unsigned char) *dp)) {
 			advise (NULL, BADTXT, "draft");
 			goto leave_bad;
 		    }

@@ -69,8 +69,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     struct format *fmt;
     register char **ap;
     int	char_read = 0, format_len, mask;
-    char name[NAMESZ], *scanl;
-    unsigned char *cp;
+    char name[NAMESZ], *scanl, *cp;
     static int dat[5];			/* aux. data for format routine */
     m_getfld_state_t gstate = 0;
 
@@ -187,7 +186,7 @@ finished:
 	register char *sp = cp;
 
 	for (;;) {
-	    while (isspace(*cp))
+	    while (isspace((unsigned char) *cp))
 		cp++;
 	    if(uprf(cp, "re:"))
 		cp += 3;

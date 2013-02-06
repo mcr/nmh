@@ -562,8 +562,8 @@ gcompile (struct nexus *n, char *astr)
     int cclcnt;
     register unsigned char *ep, *dp, *sp, *lastep = 0;
 
-    dp = (ep = n->n_expbuf) + sizeof n->n_expbuf;
-    sp = astr;
+    dp = (ep = (unsigned char *) n->n_expbuf) + sizeof n->n_expbuf;
+    sp = (unsigned char *) astr;
     if (*sp == '^') {
 	n->n_circf = 1;
 	sp++;
@@ -802,7 +802,7 @@ advance (char *alp, char *aep)
 	star: 
 		do {
 		    lp--;
-		    if (advance (lp, ep))
+		    if (advance ((char *) lp, (char *) ep))
 			return (1);
 		} while (lp > curlp);
 		return 0;

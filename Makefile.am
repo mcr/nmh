@@ -14,7 +14,7 @@ ACLOCAL_AMFLAGS = -I m4
 ## LDADD is included in the program-specific LDADD since we want to add
 ## to this list of libraries, not replace it.
 ##
-LDADD = sbr/libmh.a sbr/libdtimep.a
+LDADD = sbr/libmh.a ##sbr/libdtimep.a
 
 ##
 ## These are used to create the default mhn.defaults config file
@@ -146,7 +146,7 @@ auxexec_SCRIPTS = uip/spost
 ## Internal libraries that we create as part of the build process
 ## but do not install
 ##
-noinst_LIBRARIES = sbr/libmh.a sbr/libdtimep.a mts/libmts.a
+noinst_LIBRARIES = sbr/libmh.a mts/libmts.a
 
 ##
 ## These are all of our header files.  Right now we don't install any of
@@ -486,7 +486,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/context_replace.c sbr/context_save.c \
 		      sbr/copy.c sbr/copyip.c sbr/cpydata.c \
 		      sbr/cpydgst.c sbr/crawl_folders.c sbr/discard.c \
-		      sbr/done.c sbr/dtime.c sbr/escape_addresses.c \
+		      sbr/done.c sbr/dtimep.l sbr/dtime.c \
+		      sbr/escape_addresses.c \
 		      sbr/error.c sbr/ext_hook.c sbr/fdcompare.c \
 		      sbr/folder_addmsg.c sbr/folder_delmsgs.c \
 		      sbr/folder_free.c sbr/folder_pack.c \
@@ -521,9 +522,9 @@ sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
 		-DNMHLIBDIR='"$(libdir)"'
 
-sbr_libdtimep_a_SOURCES = sbr/dtimep.l
-sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) \
-			 $(DISABLE_SIGN_COMPARE_WARNING)
+##sbr_libdtimep_a_SOURCES = sbr/dtimep.l
+##sbr_libdtimep_a_CFLAGS = $(sbr_libmh_a_CPPFLAGS) \
+##			 $(DISABLE_SIGN_COMPARE_WARNING)
 
 mts_libmts_a_SOURCES = mts/smtp/smtp.c
 

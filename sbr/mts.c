@@ -23,7 +23,7 @@
 /*
  * static prototypes
  */
-static char *tailor_value (unsigned char *);
+static char *tailor_value (char *);
 static void getuserinfo (void);
 static const char *get_mtsconf_pathname(void);
 static const char *get_mtsuserconf_pathname(void);
@@ -177,7 +177,7 @@ mts_init (char *name)
  */
 
 static char *
-tailor_value (unsigned char *s)
+tailor_value (char *s)
 {
     int i, r;
     char *bp;
@@ -200,13 +200,13 @@ tailor_value (unsigned char *s)
 		    break;
 
 		default: 
-		    if (!isdigit (*s)) {
+		    if (!isdigit ((unsigned char) *s)) {
 			*bp++ = QUOTE;
 			*bp = *s;
 		    }
-		    r = *s != '0' ? 10 : 8;
-		    for (i = 0; isdigit (*s); s++)
-			i = i * r + *s - '0';
+		    r = ((unsigned char) *s) != '0' ? 10 : 8;
+		    for (i = 0; isdigit ((unsigned char) *s); s++)
+			i = i * r + ((unsigned char) *s) - '0';
 		    s--;
 		    *bp = toascii (i);
 		    break;
@@ -359,9 +359,8 @@ getlocalmbox (void)
 static void
 getuserinfo (void)
 {
-    register unsigned char *cp;
-    register char *np;
-    register struct passwd *pw;
+    char *cp, *np;
+    struct passwd *pw;
 
     if ((pw = getpwuid (getuid ())) == NULL
 	    || pw->pw_name == NULL
@@ -461,8 +460,7 @@ get_mtsuserconf_pathname (void)
 static void
 mts_read_conf_file (FILE *fp)
 {
-    unsigned char *bp;
-    char *cp, buffer[BUFSIZ];
+    char *bp, *cp, buffer[BUFSIZ];
     struct bind *b;
 
     while (fgets (buffer, sizeof(buffer), fp)) {
@@ -474,7 +472,7 @@ mts_read_conf_file (FILE *fp)
 	if (!(bp = strchr(buffer, ':')))
 	    break;
 	*bp++ = 0;
-	while (isspace (*bp))
+	while (isspace ((unsigned char) *bp))
 	    *bp++ = 0;
 
 	for (b = binds; b->keyword; b++)

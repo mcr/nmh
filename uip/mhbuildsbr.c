@@ -403,8 +403,7 @@ static int
 user_content (FILE *in, char *file, char *buf, CT *ctp)
 {
     int	extrnal, vrsn;
-    unsigned char *cp;
-    char **ap;
+    char *cp, **ap;
     char buffer[BUFSIZ];
     struct multipart *m;
     struct part **pp;
@@ -677,7 +676,7 @@ use_forw:
 	if (ci->ci_magic) {
 	    /* check if specifies command to execute */
 	    if (*ci->ci_magic == '|' || *ci->ci_magic == '!') {
-		for (cp = ci->ci_magic + 1; isspace (*cp); cp++)
+		for (cp = ci->ci_magic + 1; isspace ((unsigned char) *cp); cp++)
 		    continue;
 		if (!*cp)
 		    adios (NULL, "empty pipe command for #%s directive", ci->ci_type);
@@ -1156,7 +1155,7 @@ scan_content (CT ct)
     int checklinelen = 0, linelen = 0;	  /* check for long lines                       */
     int checkboundary = 0, boundaryclash = 0; /* check if clashes with multipart boundary   */
     int checklinespace = 0, linespace = 0;  /* check if any line ends with space          */
-    unsigned char *cp = NULL, buffer[BUFSIZ];
+    char *cp = NULL, buffer[BUFSIZ];
     struct text *t = NULL;
     FILE *in = NULL;
     CE ce = ct->c_cefile;
@@ -1251,7 +1250,7 @@ scan_content (CT ct)
 	     */
 	    if (check8bit) {
 		for (cp = buffer; *cp; cp++) {
-		    if (!isascii (*cp)) {
+		    if (!isascii ((unsigned char) *cp)) {
 			contains8bit = 1;
 			check8bit = 0;	/* no need to keep checking */
 		    }
@@ -1269,7 +1268,7 @@ scan_content (CT ct)
 	    /*
 	     * Check if line ends with a space.
 	     */
-	    if (checklinespace && (cp = buffer + strlen (buffer) - 2) > buffer && isspace (*cp)) {
+	    if (checklinespace && (cp = buffer + strlen (buffer) - 2) > buffer && isspace ((unsigned char) *cp)) {
 		linespace = 1;
 		checklinespace = 0;	/* no need to keep checking */
 	    }
@@ -1280,10 +1279,10 @@ scan_content (CT ct)
 	     */
 	    if (checkboundary && buffer[0] == '-' && buffer[1] == '-') {
 		for (cp = buffer + strlen (buffer) - 1; cp >= buffer; cp--)
-		    if (!isspace (*cp))
+		    if (!isspace ((unsigned char) *cp))
 			break;
 		*++cp = '\0';
-		if (!strncmp(buffer + 2, prefix, len) && isdigit(buffer[2 + len])) {
+		if (!strncmp(buffer + 2, prefix, len) && isdigit((unsigned char) buffer[2 + len])) {
 		    boundaryclash = 1;
 		    checkboundary = 0;	/* no need to keep checking */
 		}
@@ -1642,7 +1641,8 @@ calculate_digest (CT ct, int asciiP)
     }
 
     /* encode the digest using base64 */
-    for (dp = digest, op = outbuf, cc = sizeof(digest) / sizeof(digest[0]);
+    for (dp = digest, op = (char *) outbuf,
+    				cc = sizeof(digest) / sizeof(digest[0]);
 		cc > 0; cc -= 3, op += 4) {
 	unsigned long bits;
 	char *bp;

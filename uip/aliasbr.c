@@ -35,7 +35,7 @@ char *akerror (int);
 
 static  char *akval (struct aka *, char *);
 static int aleq (char *, char *);
-static char *scanp (unsigned char *);
+static char *scanp (char *);
 static char *getp (char *);
 static char *seekp (char *, char *, char **);
 static int addfile (struct aka *, char *);
@@ -313,9 +313,9 @@ akerror (int i)
 
 
 static char *
-scanp (unsigned char *p)
+scanp (char *p)
 {
-    while (isspace (*p))
+    while (isspace ((unsigned char) *p))
 	p++;
     return p;
 }
@@ -324,10 +324,10 @@ scanp (unsigned char *p)
 static char *
 getp (char *p)
 {
-    register unsigned char  *cp = scanp (p);
+    char  *cp = scanp (p);
 
     p = cp;
-    while (!isspace (*cp) && *cp)
+    while (!isspace ((unsigned char) *cp) && *cp)
 	cp++;
     *cp = 0;
 
@@ -338,10 +338,10 @@ getp (char *p)
 static char *
 seekp (char *p, char *c, char **a)
 {
-    register unsigned char *cp;
+    char *cp;
 
     p = cp = scanp (p);
-    while (!isspace (*cp) && *cp && *cp != ':' && *cp != ';')
+    while (!isspace ((unsigned char) *cp) && *cp && *cp != ':' && *cp != ';')
 	cp++;
     *c = *cp;
     *cp++ = 0;
@@ -456,7 +456,7 @@ addall (struct aka *ak)
 static char *
 getalias (char *addrs)
 {
-    register unsigned char *pp, *qp;
+    char *pp, *qp;
     static char *cp = NULL;
 
     if (cp == NULL)
@@ -466,7 +466,7 @@ getalias (char *addrs)
 	    return (cp = NULL);
 
     /* Remove leading any space from the address. */
-    for (pp = cp; isspace (*pp); pp++)
+    for (pp = cp; isspace ((unsigned char) *pp); pp++)
 	continue;
     if (*pp == 0)
 	return (cp = NULL);
@@ -478,7 +478,7 @@ getalias (char *addrs)
 	*qp++ = 0;
     for (cp = qp, qp--; qp > pp; qp--)
 	if (*qp != 0) {
-	    if (isspace (*qp))
+	    if (isspace ((unsigned char) *qp))
 		*qp = 0;
 	    else
 		break;

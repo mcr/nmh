@@ -95,7 +95,7 @@ void free_encoding (CT, int);
  * static prototypes
  */
 static CT get_content (FILE *, char *, int);
-static int get_comment (CT, unsigned char **, int);
+static int get_comment (CT, char **, int);
 
 static int InitGeneric (CT);
 static int InitText (CT);
@@ -335,8 +335,7 @@ get_content (FILE *in, char *file, int toplevel)
 	/* Get MIME-Version field */
 	if (!mh_strcasecmp (hp->name, VRSN_FIELD)) {
 	    int ucmp;
-	    char c;
-	    unsigned char *cp, *dp;
+	    char c, *cp, *dp;
 
 	    if (ct->c_vrsn) {
 		advise (NULL, "message %s has multiple %s: fields",
@@ -348,12 +347,12 @@ get_content (FILE *in, char *file, int toplevel)
 	    /* Now, cleanup this field */
 	    cp = ct->c_vrsn;
 
-	    while (isspace (*cp))
+	    while (isspace ((unsigned char) *cp))
 		cp++;
 	    for (dp = strchr(cp, '\n'); dp; dp = strchr(dp, '\n'))
 		*dp++ = ' ';
 	    for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
-		if (!isspace (*dp))
+		if (!isspace ((unsigned char) *dp))
 		    break;
 	    *++dp = '\0';
 	    if (debugsw)
@@ -403,8 +402,7 @@ get_content (FILE *in, char *file, int toplevel)
 	}
 	else if (!mh_strcasecmp (hp->name, ENCODING_FIELD)) {
 	/* Get Content-Transfer-Encoding field */
-	    char c;
-	    unsigned char *cp, *dp;
+	    char c, *cp, *dp;
 	    struct str2init *s2i;
 
 	    /*
@@ -420,7 +418,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    /* get copy of this field */
 	    ct->c_celine = cp = add (hp->value, NULL);
 
-	    while (isspace (*cp))
+	    while (isspace ((unsigned char) *cp))
 		cp++;
 	    for (dp = cp; istoken (*dp); dp++)
 		continue;
@@ -445,8 +443,7 @@ get_content (FILE *in, char *file, int toplevel)
 	}
 	else if (!mh_strcasecmp (hp->name, MD5_FIELD)) {
 	/* Get Content-MD5 field */
-	    unsigned char *cp, *dp;
-	    char *ep;
+	    char *cp, *dp, *ep;
 
 	    if (!checksw)
 		goto next_header;
@@ -459,12 +456,12 @@ get_content (FILE *in, char *file, int toplevel)
 
 	    ep = cp = add (hp->value, NULL);	/* get a copy */
 
-	    while (isspace (*cp))
+	    while (isspace ((unsigned char) *cp))
 		cp++;
 	    for (dp = strchr(cp, '\n'); dp; dp = strchr(dp, '\n'))
 		*dp++ = ' ';
 	    for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
-		if (!isspace (*dp))
+		if (!isspace ((unsigned char) *dp))
 		    break;
 	    *++dp = '\0';
 	    if (debugsw)
@@ -475,7 +472,7 @@ get_content (FILE *in, char *file, int toplevel)
 		goto out;
 	    }
 
-	    for (dp = cp; *dp && !isspace (*dp); dp++)
+	    for (dp = cp; *dp && !isspace ((unsigned char) *dp); dp++)
 		continue;
 	    *dp = '\0';
 
@@ -578,7 +575,7 @@ add_header (CT ct, char *name, char *value)
    filename="foo".  If it doesn't and value does, use value from
    that. */
 static char *
-incl_name_value (unsigned char *buf, char *name, char *value) {
+incl_name_value (char *buf, char *name, char *value) {
     char *newbuf = buf;
 
     /* Assume that name is non-null. */
@@ -587,12 +584,11 @@ incl_name_value (unsigned char *buf, char *name, char *value) {
 
 	if (! strstr (buf, name_plus_equal)) {
 	    char *insertion;
-	    unsigned char *cp;
-	    char *prefix, *suffix;
+	    char *cp, *prefix, *suffix;
 
 	    /* Trim trailing space, esp. newline. */
 	    for (cp = &buf[strlen (buf) - 1];
-		 cp >= buf && isspace (*cp);
+		 cp >= buf && isspace ((unsigned char) *cp);
 		 --cp) {
 		*cp = '\0';
 	    }
@@ -658,11 +654,10 @@ extract_name_value (char *name_suffix, char *value) {
  * directives.  Fills in the information of the CTinfo structure.
  */
 int
-get_ctinfo (unsigned char *cp, CT ct, int magic)
+get_ctinfo (char *cp, CT ct, int magic)
 {
     int	i;
-    unsigned char *dp;
-    char **ap, **ep;
+    char *dp, **ap, **ep;
     char c;
     CI ci;
 
@@ -672,7 +667,7 @@ get_ctinfo (unsigned char *cp, CT ct, int magic)
     /* store copy of Content-Type line */
     cp = ct->c_ctline = add (cp, NULL);
 
-    while (isspace (*cp))	/* trim leading spaces */
+    while (isspace ((unsigned char) *cp))	/* trim leading spaces */
 	cp++;
 
     /* change newlines to spaces */
@@ -681,7 +676,7 @@ get_ctinfo (unsigned char *cp, CT ct, int magic)
 
     /* trim trailing spaces */
     for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
-	if (!isspace (*dp))
+	if (!isspace ((unsigned char) *dp))
 	    break;
     *++dp = '\0';
 
@@ -705,10 +700,10 @@ get_ctinfo (unsigned char *cp, CT ct, int magic)
 
     /* down case the content type string */
     for (dp = ci->ci_type; *dp; dp++)
-	if (isalpha(*dp) && isupper (*dp))
-	    *dp = tolower (*dp);
+	if (isalpha((unsigned char) *dp) && isupper ((unsigned char) *dp))
+	    *dp = tolower ((unsigned char) *dp);
 
-    while (isspace (*cp))
+    while (isspace ((unsigned char) *cp))
 	cp++;
 
     if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
@@ -721,7 +716,7 @@ get_ctinfo (unsigned char *cp, CT ct, int magic)
     }
 
     cp++;
-    while (isspace (*cp))
+    while (isspace ((unsigned char) *cp))
 	cp++;
 
     if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
@@ -742,11 +737,11 @@ get_ctinfo (unsigned char *cp, CT ct, int magic)
 
     /* down case the content subtype string */
     for (dp = ci->ci_subtype; *dp; dp++)
-	if (isalpha(*dp) && isupper (*dp))
-	    *dp = tolower (*dp);
+	if (isalpha((unsigned char) *dp) && isupper ((unsigned char) *dp))
+	    *dp = tolower ((unsigned char) *dp);
 
 magic_skip:
-    while (isspace (*cp))
+    while (isspace ((unsigned char) *cp))
 	cp++;
 
     if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
@@ -757,8 +752,7 @@ magic_skip:
      */
     ep = (ap = ci->ci_attrs) + NPARMS;
     while (*cp == ';') {
-	char *vp;
-	unsigned char *up;
+	char *vp, *up;
 
 	if (ap >= ep) {
 	    advise (NULL,
@@ -768,7 +762,7 @@ magic_skip:
 	}
 
 	cp++;
-	while (isspace (*cp))
+	while (isspace ((unsigned char) *cp))
 	    cp++;
 
 	if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
@@ -782,11 +776,11 @@ magic_skip:
 	}
 
 	/* down case the attribute name */
-	for (dp = cp; istoken (*dp); dp++)
-	    if (isalpha(*dp) && isupper (*dp))
-		*dp = tolower (*dp);
+	for (dp = cp; istoken ((unsigned char) *dp); dp++)
+	    if (isalpha((unsigned char) *dp) && isupper ((unsigned char) *dp))
+		*dp = tolower ((unsigned char) *dp);
 
-	for (up = dp; isspace (*dp);)
+	for (up = dp; isspace ((unsigned char) *dp);)
 	    dp++;
 	if (dp == cp || *dp != '=') {
 	    advise (NULL,
@@ -797,7 +791,7 @@ magic_skip:
 
 	vp = (*ap = add (cp, NULL)) + (up - cp);
 	*vp = '\0';
-	for (dp++; isspace (*dp);)
+	for (dp++; isspace ((unsigned char) *dp);)
 	    dp++;
 
 	/* now add the attribute value */
@@ -842,7 +836,7 @@ bad_quote:
 	}
 	ap++;
 
-	while (isspace (*cp))
+	while (isspace ((unsigned char) *cp))
 	    cp++;
 
 	if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
@@ -870,7 +864,7 @@ bad_quote:
 	*dp++ = c;
 	cp = dp;
 
-	while (isspace (*cp))
+	while (isspace ((unsigned char) *cp))
 	    cp++;
     }
 
@@ -897,7 +891,7 @@ bad_quote:
 	*dp++ = c;
 	cp = dp;
 
-	while (isspace (*cp))
+	while (isspace ((unsigned char) *cp))
 	    cp++;
     }
 
@@ -924,7 +918,7 @@ bad_quote:
 	*dp++ = c;
 	cp = dp;
 
-	while (isspace (*cp))
+	while (isspace ((unsigned char) *cp))
 	    cp++;
     }
 
@@ -959,11 +953,10 @@ bad_quote:
 
 
 static int
-get_comment (CT ct, unsigned char **ap, int istype)
+get_comment (CT ct, char **ap, int istype)
 {
     int i;
-    char *bp;
-    unsigned char *cp;
+    char *bp, *cp;
     char c, buffer[BUFSIZ], *dp;
     CI ci;
 
@@ -1013,7 +1006,7 @@ invalid:
 	}
     }
 
-    while (isspace (*cp))
+    while (isspace ((unsigned char) *cp))
 	cp++;
 
     *ap = cp;
@@ -1105,8 +1098,7 @@ InitMultiPart (CT ct)
 {
     int	inout;
     long last, pos;
-    unsigned char *cp, *dp;
-    char **ap, **ep;
+    char *cp, *dp, **ap, **ep;
     char *bp, buffer[BUFSIZ];
     struct multipart *m;
     struct k2v *kv;
@@ -1126,8 +1118,8 @@ InitMultiPart (CT ct)
 	char *cte = add (ct->c_celine ? ct->c_celine : "(null)", NULL);
 
 	bp = cte + strlen (cte) - 1;
-	while (bp >= cte && isspace (*bp)) *bp-- = '\0';
-	for (bp = cte; *bp && isblank (*bp); ++bp) continue;
+	while (bp >= cte && isspace ((unsigned char) *bp)) *bp-- = '\0';
+	for (bp = cte; *bp && isblank ((unsigned char) *bp); ++bp) continue;
 
 	admonish (NULL,
 		  "\"%s/%s\" type in message %s must be encoded in\n"
@@ -1172,7 +1164,7 @@ InitMultiPart (CT ct)
     ct->c_ctparams = (void *) m;
 
     /* check if boundary parameter contains only whitespace characters */
-    for (cp = bp; isspace (*cp); cp++)
+    for (cp = bp; isspace ((unsigned char) *cp); cp++)
 	continue;
     if (!*cp) {
 	advise (NULL, "invalid \"boundary\" parameter for \"%s/%s\" type in message %s's %s: field",
@@ -1182,7 +1174,7 @@ InitMultiPart (CT ct)
 
     /* remove trailing whitespace from boundary parameter */
     for (cp = bp, dp = cp + strlen (cp) - 1; dp > cp; dp--)
-	if (!isspace (*dp))
+	if (!isspace ((unsigned char) *dp))
 	    break;
     *++dp = '\0';
 
@@ -1731,8 +1723,7 @@ openBase64 (CT ct, char **file)
     int fd, len, skip, own_ct_fp = 0;
     uint32_t bits;
     unsigned char value, b;
-    unsigned char *cp, *ep;
-    char buffer[BUFSIZ];
+    char *cp, *ep, buffer[BUFSIZ];
     /* sbeck -- handle suffixes */
     CI ci;
     CE ce;
@@ -1828,13 +1819,13 @@ openBase64 (CT ct, char **file)
 	    for (ep = (cp = buffer) + cc; cp < ep; cp++) {
 		switch (*cp) {
 		default:
-		    if (isspace (*cp))
+		    if (isspace ((unsigned char) *cp))
 			break;
-		    if (skip || (*cp & 0x80)
-			|| (value = b642nib[*cp & 0x7f]) > 0x3f) {
+		    if (skip || (((unsigned char) *cp) & 0x80)
+			|| (value = b642nib[((unsigned char) *cp) & 0x7f]) > 0x3f) {
 			if (debugsw) {
 			    fprintf (stderr, "*cp=0x%x pos=%ld skip=%d\n",
-				*cp,
+				(unsigned char) *cp,
 				(long) (lseek (fd, (off_t) 0, SEEK_CUR) - (ep - cp)),
 				skip);
 			}
@@ -1965,7 +1956,7 @@ static int
 openQuoted (CT ct, char **file)
 {
     int	cc, digested, len, quoted, own_ct_fp = 0;
-    unsigned char *cp, *ep;
+    char *cp, *ep;
     char buffer[BUFSIZ];
     unsigned char mask;
     CE ce;
@@ -2057,7 +2048,7 @@ openQuoted (CT ct, char **file)
 	len -= cc;
 
 	for (ep = (cp = buffer) + cc - 1; cp <= ep; ep--)
-	    if (!isspace (*ep))
+	    if (!isspace ((unsigned char) *ep))
 		break;
 	*++ep = '\n', ep++;
 
@@ -2066,13 +2057,13 @@ openQuoted (CT ct, char **file)
 		/* in an escape sequence */
 		if (quoted == 1) {
 		    /* at byte 1 of an escape sequence */
-		    mask = hex2nib[*cp & 0x7f];
+		    mask = hex2nib[((unsigned char) *cp) & 0x7f];
 		    /* next is byte 2 */
 		    quoted = 2;
 		} else {
 		    /* at byte 2 of an escape sequence */
 		    mask <<= 4;
-		    mask |= hex2nib[*cp & 0x7f];
+		    mask |= hex2nib[((unsigned char) *cp) & 0x7f];
 		    putc (mask, ce->ce_fp);
 		    if (digested)
 			MD5Update (&mdContext, &mask, 1);
@@ -2099,7 +2090,8 @@ openQuoted (CT ct, char **file)
 		if (cp + 1 >= ep || cp + 2 >= ep) {
 		    /* We don't have 2 bytes left, so this is an invalid
 		     * escape sequence; just show the raw bytes (below). */
-		} else if (isxdigit (cp[1]) && isxdigit (cp[2])) {
+		} else if (isxdigit ((unsigned char) cp[1]) &&
+					isxdigit ((unsigned char) cp[2])) {
 		    /* Next 2 bytes are hex digits, making this a valid escape
 		     * sequence; let's decode it (above). */
 		    quoted = 1;

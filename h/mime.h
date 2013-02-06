@@ -13,7 +13,9 @@
 #define	DISPO_FIELD	"Content-Disposition"
 #define	MD5_FIELD	"Content-MD5"
 
-#define	isatom(c)   (!isspace (c) && !iscntrl (c) && (c) != '(' \
+#define	isatom(c)   (isascii((unsigned char) c) \
+                     && !isspace ((unsigned char) c) \
+		     && !iscntrl ((unsigned char) c) && (c) != '(' \
 	             && (c) != ')' && (c) != '<'  && (c) != '>' \
 	             && (c) != '@' && (c) != ','  && (c) != ';' \
 	             && (c) != ':' && (c) != '\\' && (c) != '"' \
@@ -23,7 +25,9 @@
  * Test for valid characters used in "token"
  * as defined in RFC2045
  */
-#define	istoken(c)  (!isspace (c) && !iscntrl (c) && (c) != '(' \
+#define	istoken(c)  (isascii((unsigned char) c) \
+                     && !isspace ((unsigned char) c) \
+		     && !iscntrl ((unsigned char) c) && (c) != '(' \
 	             && (c) != ')' && (c) != '<'  && (c) != '>' \
 	             && (c) != '@' && (c) != ','  && (c) != ';' \
 	             && (c) != ':' && (c) != '\\' && (c) != '"' \

@@ -261,7 +261,7 @@ static int insert (struct mailname *);
 static void pl (void);
 static void anno (void);
 static int annoaux (struct mailname *);
-static void insert_fcc (struct headers *, unsigned char *);
+static void insert_fcc (struct headers *, char *);
 static void make_bcc_file (int);
 static void verify_all_addresses (int, char *);
 static void chkadr (void);
@@ -921,8 +921,7 @@ putfmt (char *name, char *str, FILE *out)
 static void
 start_headers (void)
 {
-    unsigned char  *cp;
-    char sigbuf[BUFSIZ];
+    char  *cp, sigbuf[BUFSIZ];
     struct mailname *mp;
 
     time (&tclock);
@@ -1253,13 +1252,13 @@ annoaux (struct mailname *mp)
 
 
 static void
-insert_fcc (struct headers *hdr, unsigned char *pp)
+insert_fcc (struct headers *hdr, char *pp)
 {
-    unsigned char *cp;
+    char *cp;
 
-    for (cp = pp; isspace (*cp); cp++)
+    for (cp = pp; isspace ((unsigned char) *cp); cp++)
 	continue;
-    for (pp += strlen (pp) - 1; pp > cp && isspace (*pp); pp--)
+    for (pp += strlen (pp) - 1; pp > cp && isspace ((unsigned char) *pp); pp--)
 	continue;
     if (pp >= cp)
 	*++pp = 0;
@@ -1399,7 +1398,7 @@ static int
 find_prefix (void)
 {
     int	result = OK;
-    unsigned char buffer[BUFSIZ];
+    char buffer[BUFSIZ];
     FILE *in;
 
     if ((in = fopen (tmpfil, "r")) == NULL)
@@ -1407,10 +1406,10 @@ find_prefix (void)
 
     while (fgets (buffer, sizeof(buffer) - 1, in))
 	if (buffer[0] == '-' && buffer[1] == '-') {
-	    unsigned char *cp;
+	    char *cp;
 
 	    for (cp = buffer + strlen (buffer) - 1; cp >= buffer; cp--)
-		if (!isspace (*cp))
+		if (!isspace ((unsigned char) *cp))
 		    break;
 	    *++cp = '\0';
 	    if (strcmp (buffer + 2, prefix) == 0) {

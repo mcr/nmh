@@ -16,7 +16,7 @@
  * static prototypes
  */
 static char *getcpy (char *);
-static void compress (char *, unsigned char *);
+static void compress (char *, char *);
 static int isat (char *);
 static int parse_address (void);
 static int phrase (char *);
@@ -55,14 +55,16 @@ isfrom(char *string)
 
 
 int
-lequal (unsigned char *a, unsigned char *b)
+lequal (char *a, char *b)
 {
     for (; *a; a++, b++)
 	if (*b == 0)
 	    return FALSE;
 	else {
-	    char c1 = islower (*a) ? toupper (*a) : *a;
-	    char c2 = islower (*b) ? toupper (*b) : *b;
+	    char c1 = islower ((unsigned char) *a) ?
+	    				toupper ((unsigned char) *a) : *a;
+	    char c2 = islower ((unsigned char) *b) ?
+	    				toupper ((unsigned char) *b) : *b;
 	    if (c1 != c2)
 		return FALSE;
 	}
@@ -131,9 +133,8 @@ seekadrx (char *addrs)
 struct adrx *
 uucpadrx (char *addrs)
 {
-    register unsigned char *cp, *wp, *xp, *yp;
-    register char *zp;
-    register struct adrx *adrxp = &adrxs1;
+    char *cp, *wp, *xp, *yp, *zp;
+    struct adrx *adrxp = &adrxs1;
 
     if (vp == NULL) {
 	vp = tp = getcpy (addrs);
@@ -146,7 +147,7 @@ uucpadrx (char *addrs)
 	    return NULL;
 	}
 
-    for (cp = tp; isspace (*cp); cp++)
+    for (cp = tp; isspace ((unsigned char) *cp); cp++)
 	continue;
     if (*cp == 0) {
 	free (vp);
@@ -157,11 +158,11 @@ uucpadrx (char *addrs)
     if ((wp = strchr(cp, ',')) == NULL) {
 	if ((wp = strchr(cp, ' ')) != NULL) {
 	    xp = wp;
-	    while (isspace (*xp))
+	    while (isspace ((unsigned char) *xp))
 		xp++;
 	    if (*xp != 0 && isat (--xp)) {
 		yp = xp + 4;
-		while (isspace (*yp))
+		while (isspace ((unsigned char) *yp))
 		    yp++;
 		if (*yp != 0) {
 		    if ((zp = strchr(yp, ' ')) != NULL)
@@ -205,13 +206,12 @@ uucpadrx (char *addrs)
 
 
 static void
-compress (char *fp, unsigned char *tp)
+compress (char *fp, char *tp)
 {
-    register char c;
-    register unsigned char *cp;
+    char c, *cp;
 
     for (c = ' ', cp = tp; (*tp = *fp++) != 0;)
-	if (isspace (*tp)) {
+	if (isspace ((unsigned char) *tp)) {
 	    if (c != ' ')
 		*tp++ = c = ' ';
 	}
@@ -333,8 +333,8 @@ static int ingrp = 0;
 static int last_lex = LX_END;
 
 static char *dp = NULL;
-static unsigned char *cp = NULL;
-static unsigned char *ap = NULL;
+static char *cp = NULL;
+static char *ap = NULL;
 static char *pers = NULL;
 static char *mbox = NULL;
 static char *host = NULL;
@@ -416,7 +416,7 @@ getadrx (char *addrs)
 	    }
 	    break;
 	}
-    while (isspace (*ap))
+    while (isspace ((unsigned char) *ap))
 	ap++;
     if (cp)
 	sprintf (adr, "%.*s", (int)(cp - ap), ap);
@@ -759,8 +759,7 @@ my_lex (char *buffer)
 {
     /* buffer should be at least BUFSIZ bytes long */
     int i, gotat = 0;
-    register unsigned char c;
-    register char *bp;
+    char c, *bp;
 
 /* Add C to the buffer bp. After use of this macro *bp is guaranteed to be within the buffer. */
 #define ADDCHR(C) do { *bp++ = (C); if ((bp - buffer) == (BUFSIZ-1)) goto my_lex_buffull; } while (0)
@@ -772,7 +771,7 @@ my_lex (char *buffer)
 
     gotat = isat (cp);
     c = *cp++;
-    while (isspace (c))
+    while (isspace ((unsigned char) c))
 	c = *cp++;
     if (c == 0) {
 	cp = NULL;
@@ -862,7 +861,7 @@ my_lex (char *buffer)
 	if (c == special[i].lx_chr)
 	    return (last_lex = special[i].lx_val);
 
-    if (iscntrl (c))
+    if (iscntrl ((unsigned char) c))
 	return (last_lex = LX_ERR);
 
     for (;;) {
@@ -871,7 +870,7 @@ my_lex (char *buffer)
 	for (i = 0; special[i].lx_chr != 0; i++)
 	    if (c == special[i].lx_chr)
 		goto got_atom;
-	if (iscntrl (c) || isspace (c))
+	if (iscntrl ((unsigned char) c) || isspace ((unsigned char) c))
 	    break;
 	ADDCHR(c);
     }

@@ -24,9 +24,9 @@ mh_strcasecmp (const char *s1, const char *s2)
     us2 = (const unsigned char *) s2;
 
     if (!us1)
-	us1 = "";
+	us1 = (const unsigned char *) "";
     if (!us2)
-	us2 = "";
+	us2 = (const unsigned char *) "";
  
     while (tolower(*us1) == tolower(*us2++)) 
 	if (*us1++ == '\0')

@@ -1274,8 +1274,7 @@ static int
 parse (char *buffer, struct Cmd *cmdp)
 {
     int argp = 0;
-    unsigned char c, *cp;
-    char *pp;
+    char c, *cp, *pp;
 
     cmdp->line[0] = 0;
     pp = cmdp->args[argp++] = cmdp->line;
@@ -1284,7 +1283,7 @@ parse (char *buffer, struct Cmd *cmdp)
     cmdp->stream = NULL;
 
     for (cp = buffer; (c = *cp); cp++) {
-	if (!isspace (c))
+	if (!isspace ((unsigned char) c))
 	    break;
     }
     if (c == '\0') {
@@ -1294,8 +1293,8 @@ parse (char *buffer, struct Cmd *cmdp)
     }
 
     while ((c = *cp++)) {
-	if (isspace (c)) {
-	    while (isspace (c))
+	if (isspace ((unsigned char) c)) {
+	    while (isspace ((unsigned char) c))
 		c = *cp++;
 	    if (c == 0)
 		break;
@@ -1350,7 +1349,7 @@ parse (char *buffer, struct Cmd *cmdp)
 		}
 		cmdp->redirect = pp + 1;/* sigh */
 		for (; (c = *cp); cp++)
-		    if (!isspace (c))
+		    if (!isspace ((unsigned char) c))
 			break;
 		if (c == 0) {
 		    padvise (NULL, cmdp->direction != PIPIO
@@ -1361,7 +1360,7 @@ parse (char *buffer, struct Cmd *cmdp)
 		strcpy (cmdp->redirect, cp);
 		if (cmdp->direction != PIPIO) {
 		    for (; *cp; cp++)
-			if (isspace (*cp)) {
+			if (isspace ((unsigned char) *cp)) {
 			    padvise (NULL, "bad name for redirect");
 			    return NOTOK;
 			}
@@ -1593,7 +1592,7 @@ static int
 pINI (void)
 {
     int i, vrsn;
-    unsigned char *bp;
+    char *bp;
     struct record rcs, *rc;
 
     rc = &rcs;
@@ -1602,7 +1601,7 @@ pINI (void)
     switch (peer2rc (rc)) {
 	case RC_INI: 
 	    bp = rc->rc_data;
-	    while (isspace (*bp))
+	    while (isspace ((unsigned char) *bp))
 		bp++;
 	    if (sscanf (bp, "%d", &vrsn) != 1) {
 	bad_init: ;
@@ -1614,9 +1613,9 @@ pINI (void)
 		done (1);
 	    }
 
-	    while (*bp && !isspace (*bp))
+	    while (*bp && !isspace ((unsigned char) *bp))
 		bp++;
-	    while (isspace (*bp))
+	    while (isspace ((unsigned char) *bp))
 		bp++;
 	    if (sscanf (bp, "%d", &numwins) != 1 || numwins <= 0)
 		goto bad_init;
@@ -1624,9 +1623,9 @@ pINI (void)
 		numwins = NWIN;
 
 	    for (i = 1; i <= numwins; i++) {
-		while (*bp && !isspace (*bp))
+		while (*bp && !isspace ((unsigned char) *bp))
 		    bp++;
-		while (isspace (*bp))
+		while (isspace ((unsigned char) *bp))
 		    bp++;
 		if (sscanf (bp, "%d", &windows[i]) != 1 || windows[i] <= 0)
 		    goto bad_init;

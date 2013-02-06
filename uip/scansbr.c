@@ -61,8 +61,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
       int unseen, char *folder, long size, int noisy)
 {
     int i, compnum, encrypted, state;
-    unsigned char *cp, *tmpbuf, *startbody;
-    char **nxtbuf;
+    char *cp, *tmpbuf, *startbody, **nxtbuf;
     char *saved_c_text = NULL;
     struct comp *cptr;
     struct comp **savecomp;
@@ -210,7 +209,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 			cptr->c_text = tmpbuf;
 			for (cp = tmpbuf + strlen (tmpbuf) - 1; 
 					cp >= tmpbuf; cp--)
-			    if (isspace (*cp))
+			    if (isspace ((unsigned char) *cp))
 				*cp = 0;
 			    else
 				break;

@@ -273,7 +273,7 @@ extern struct str2init str2methods[];
 int pidcheck (int);
 CT parse_mime (char *);
 int add_header (CT, char *, char *);
-int get_ctinfo (unsigned char *, CT, int);
+int get_ctinfo (char *, CT, int);
 int params_external (CT, int);
 int open7Bit (CT, char **);
 void close_encoding (CT);

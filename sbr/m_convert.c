@@ -38,8 +38,7 @@ int
 m_convert (struct msgs *mp, char *name)
 {
     int first, last, found, range, err;
-    unsigned char *bp;
-    char *cp;
+    char *bp, *cp;
 
     /* check if user defined sequence */
     err = attr (mp, cp = name);
@@ -141,7 +140,7 @@ rangerr:
 	}
 	if ((range = atoi (bp = cp)) == 0)
 	    goto badlist;
-	while (isdigit (*bp))
+	while (isdigit ((unsigned char) *bp))
 	    bp++;
 	if (*bp)
 	    goto badelim;
@@ -250,14 +249,14 @@ single:
 static int
 m_conv (struct msgs *mp, char *str, int call)
 {
-    register int i;
-    register unsigned char *cp, *bp;
-    unsigned char buf[16];
+    int i;
+    char *cp, *bp;
+    char buf[16];
 
     convdir = 1;
     cp = bp = str;
-    if (isdigit (*cp)) {
-	while (isdigit (*bp))
+    if (isdigit ((unsigned char) *cp)) {
+	while (isdigit ((unsigned char) *bp))
 	    bp++;
 	delimp = bp;
 	i = atoi (cp);
@@ -274,7 +273,7 @@ m_conv (struct msgs *mp, char *str, int call)
 
 #ifdef LOCALE
     /* doesn't enforce lower case */
-    for (bp = buf; (isalpha(*cp) || *cp == '.')
+    for (bp = buf; (isalpha((unsigned char) *cp) || *cp == '.')
            && (bp - buf < (int) sizeof(buf) - 1); )
 #else
     for (bp = buf; ((*cp >= 'a' && *cp <= 'z') || *cp == '.')
@@ -337,9 +336,9 @@ m_conv (struct msgs *mp, char *str, int call)
 static int
 attr (struct msgs *mp, char *cp)
 {
-    register unsigned char *dp;
+    char *dp;
     char *bp = NULL;
-    register int i, j;
+    int i, j;
     int found,
 	inverted = 0,
 	range = 0,		/* no range */
@@ -359,7 +358,7 @@ attr (struct msgs *mp, char *cp)
 
     convdir = 1;	/* convert direction */
 
-    for (dp = cp; *dp && isalnum(*dp); dp++)
+    for (dp = cp; *dp && isalnum((unsigned char) *dp); dp++)
 	continue;
 
     if (*dp == ':') {
@@ -372,7 +371,7 @@ attr (struct msgs *mp, char *cp)
 	 * seq:first (or)
 	 * seq:last
 	 */
-	if (isalpha (*dp)) {
+	if (isalpha ((unsigned char) *dp)) {
 	    if (!strcmp (dp, "prev")) {
 		convdir = -1;
 		first = (mp->curmsg > 0) && (mp->curmsg <= mp->hghmsg)
@@ -407,7 +406,7 @@ attr (struct msgs *mp, char *cp)
 	    }
 	    if ((range = atoi(dp)) == 0)
 		return BADLST;
-	    while (isdigit (*dp))
+	    while (isdigit ((unsigned char) *dp))
 		dp++;
 	    if (*dp)
 		return BADLST;

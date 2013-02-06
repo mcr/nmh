@@ -146,7 +146,8 @@ AC_CACHE_CHECK([whether compiler supports -Wno-sign-compare],
    CPPFLAGS="$nmh_saved_cppflags"])
 
 if test "$nmh_cv_has_nosigncompare" = 'yes'; then
-  DISABLE_SIGN_COMPARE_WARNING=-Wno-sign-compare
+  dnl DISABLE_SIGN_COMPARE_WARNING=-Wno-sign-compare
+  DISABLE_SIGN_COMPARE_WARNING=
 fi
 AC_SUBST([DISABLE_SIGN_COMPARE_WARNING])dnl
 
@@ -165,7 +166,8 @@ AC_CACHE_CHECK([whether compiler supports -Wno-clobbered], [nmh_cv_has_noclobber
 AC_CACHE_CHECK([whether compiler supports -Wno-pointer-sign], [nmh_cv_has_noptrsign],
 [nmh_saved_cflags="$CFLAGS"
  CFLAGS="$CFLAGS -Wno-pointer-sign -Werror"
- AC_TRY_COMPILE([],[],nmh_cv_has_noptrsign=yes,nmh_cv_has_noptrsign=no)
+dnl  AC_TRY_COMPILE([],[],nmh_cv_has_noptrsign=yes,nmh_cv_has_noptrsign=no)
+ AC_TRY_COMPILE([],[],nmh_cv_has_noptrsign=no,nmh_cv_has_noptrsign=no)
  CFLAGS="$nmh_saved_cflags"])
 
 dnl Can't use -ansi with gcc 4.5.3 on Cygwin, at least through setup

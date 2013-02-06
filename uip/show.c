@@ -332,8 +332,7 @@ static int
 is_nontext (char *msgnam)
 {
     int	result, state;
-    unsigned char *bp, *dp;
-    char *cp;
+    char *bp, *dp, *cp;
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
     m_getfld_state_t gstate = 0;
@@ -363,7 +362,7 @@ is_nontext (char *msgnam)
 		passno = 1;
 
 again:
-		for (; isspace (*bp); bp++)
+		for (; isspace ((unsigned char) *bp); bp++)
 		    continue;
 		if (*bp == '(') {
 		    int i;
@@ -408,17 +407,17 @@ invalid:
 		    if ((result = (mh_strcasecmp (bp, "plain") != 0)))
 			goto out;
 		    *dp = c;
-		    for (dp++; isspace (*dp); dp++)
+		    for (dp++; isspace ((unsigned char) *dp); dp++)
 			continue;
 		    if (*dp) {
 			if ((result = !uprf (dp, "charset")))
 			    goto out;
 			dp += sizeof("charset") - 1;
-			while (isspace (*dp))
+			while (isspace ((unsigned char) *dp))
 			    dp++;
 			if (*dp++ != '=')
 			    goto invalid;
-			while (isspace (*dp))
+			while (isspace ((unsigned char) *dp))
 			    dp++;
 			if (*dp == '"') {
 			    if ((bp = strchr(++dp, '"')))
@@ -464,9 +463,9 @@ out:
 		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
 		    cp = add (buf, cp);
 		}
-		for (bp = cp; isspace (*bp); bp++)
+		for (bp = cp; isspace ((unsigned char) *bp); bp++)
 		    continue;
-		for (dp = bp; istoken (*dp); dp++)
+		for (dp = bp; istoken ((unsigned char) *dp); dp++)
 		    continue;
 		*dp = '\0';
 		result = (mh_strcasecmp (bp, "7bit")
