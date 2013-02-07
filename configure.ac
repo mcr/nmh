@@ -211,6 +211,8 @@ if test -n "$auto_cflags"; then
     else
       test -z "$CFLAGS" && CFLAGS=-O  || CFLAGS="$CFLAGS -O"
     fi
+    AC_DEFINE([NDEBUG], [1],
+              [Define to disable run-time debugging and asserts.])
   fi
 fi
 

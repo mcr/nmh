@@ -93,6 +93,7 @@ DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 ## Stuff that should be cleaned via "make clean"
 ##
 CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf \
+	     etc/gen-ctype-checked sbr/ctype-checked.h sbr/ctype-checked.c \
 	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS)
 clean-local:
 	@rm -rf RPM a.out.dSYM uip/a.out.dSYM
@@ -116,7 +117,7 @@ superclean: maintainer-clean
 ##
 ## Files that need to be built before everything else
 ##
-BUILT_SOURCES = sbr/sigmsg.h
+BUILT_SOURCES = sbr/sigmsg.h sbr/ctype-checked.c
 
 ##
 ## This is a list of all programs that get installed in the "bin" directory
@@ -157,7 +158,7 @@ noinst_HEADERS = h/addrsbr.h h/aliasbr.h h/crawl_folders.h h/dropsbr.h \
 		 h/mh.h h/mhcachesbr.h h/mhparse.h h/mime.h h/msh.h \
 		 h/mts.h h/nmh.h h/picksbr.h h/popsbr.h h/prototypes.h \
 		 h/rcvmail.h h/scansbr.h h/signals.h h/tws.h h/utils.h \
-		 h/vmhsbr.h mts/smtp/smtp.h
+		 h/vmhsbr.h mts/smtp/smtp.h sbr/ctype-checked.h
 
 ##
 ## Extra files we need to install in various places
@@ -240,6 +241,7 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 ## Automake using the automatic rules
 ##
 EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
+	     etc/gen-ctype-checked.c \
 	     etc/mhn.defaults.sh etc/sendfiles $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
@@ -422,6 +424,13 @@ config/version.c: Makefile
 sbr/sigmsg.h: $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H)
 	$(AWK) -f $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H) > $@
 
+sbr/ctype-checked.h: etc/gen-ctype-checked
+	etc/gen-ctype-checked
+
+sbr/ctype-checked.c: etc/gen-ctype-checked sbr/ctype-checked.h
+
+etc/gen-type-checked: etc/gen-type-checked.c
+
 etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 	@rm -f $@
 	$(SED) -e 's,%mts%,$(MTS),' \
@@ -513,7 +522,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/showfile.c sbr/signals.c sbr/smatch.c \
 		      sbr/snprintb.c sbr/ssequal.c sbr/strcasecmp.c \
 		      sbr/strindex.c sbr/trimcpy.c sbr/uprf.c sbr/vfgets.c \
-		      sbr/fmt_def.c sbr/mf.c sbr/utils.c \
+		      sbr/fmt_def.c sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
 		      sbr/m_mktemp.c sbr/getansreadline.c config/config.c \
 		      config/version.c
 

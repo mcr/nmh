@@ -10,6 +10,10 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <ctype.h>
+#ifndef NDEBUG
+  /* See etc/gen-ctype-checked.c. */
+# include <sbr/ctype-checked.h>
+#endif
 #include <sys/stat.h>
 
 # include <dirent.h>

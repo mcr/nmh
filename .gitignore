@@ -41,6 +41,7 @@
 /RPM/
 a.out.dSYM/
 /config/version.c
+/etc/gen-ctype-checked
 /etc/mhn.defaults
 /etc/mts.conf
 /man/*.[1578]
@@ -48,6 +49,7 @@ a.out.dSYM/
 /man/mh-chart.man
 /mts/libmts.a
 /sbr/*.a
+/sbr/ctype-checked.*
 /sbr/sigmsg.h
 /test/testdir/
 /uip/ali
