@@ -144,6 +144,13 @@ auxexec_PROGRAMS = uip/ap uip/conflict uip/dp uip/fmtdump uip/mhl uip/post \
 auxexec_SCRIPTS = uip/spost
 
 ##
+## Programs that MAY need to get built at some point; we need to list them
+## here if they don't appear in any other primary so Automake knows about
+## them and can properly record dependency information.
+##
+EXTRA_PROGRAMS = etc/gen-ctype-checked
+
+##
 ## Internal libraries that we create as part of the build process
 ## but do not install
 ##
@@ -241,7 +248,6 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 ## Automake using the automatic rules
 ##
 EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
-	     etc/gen-ctype-checked.c \
 	     etc/mhn.defaults.sh etc/sendfiles $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
@@ -415,6 +421,9 @@ test_fakesmtp_LDADD =
 test_getcwidth_SOURCES = test/getcwidth.c
 test_getcwidth_LDADD =
 
+etc_gen_ctype_checked_SOURCES = etc/gen-ctype-checked.c
+etc_gen_ctype_checked_LDADD =
+
 ##
 ## Our rebuild rules for files that aren't built via the normal mechanisms
 ##
@@ -428,8 +437,6 @@ sbr/ctype-checked.h: etc/gen-ctype-checked
 	etc/gen-ctype-checked
 
 sbr/ctype-checked.c: etc/gen-ctype-checked sbr/ctype-checked.h
-
-etc/gen-type-checked: etc/gen-type-checked.c
 
 etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 	@rm -f $@
