@@ -37,6 +37,12 @@ int checksw = 0;	/* check Content-MD5 field */
 char *tmp;
 
 /*
+ * Instruct parser not to detect invalid Content-Transfer-Encoding
+ * in a multipart.
+ */
+int skip_mp_cte_check;
+
+/*
  * Structures for TEXT messages
  */
 struct k2v SubText[] = {
@@ -1111,8 +1117,8 @@ InitMultiPart (CT ct)
      * The encoding for multipart messages must be either
      * 7bit, 8bit, or binary (per RFC2045).
      */
-    if (ct->c_encoding != CE_7BIT && ct->c_encoding != CE_8BIT
-	&& ct->c_encoding != CE_BINARY) {
+    if (! skip_mp_cte_check  &&  ct->c_encoding != CE_7BIT  &&
+        ct->c_encoding != CE_8BIT  &&  ct->c_encoding != CE_BINARY) {
 	/* Copy the Content-Transfer-Encoding header field body so we can
 	   remove any trailing whitespace and leading blanks from it. */
 	char *cte = add (ct->c_celine ? ct->c_celine : "(null)", NULL);
