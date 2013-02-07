@@ -183,9 +183,9 @@ static int
 via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
           char *cmntsw, int delay, char *fromsw)
 {
-    int	status, vecp = 1;
-    char tmpfil[BUFSIZ];
-    char *vec[MAXARGS];
+    int	status, vecp;
+    char tmpfil[BUFSIZ], *program;
+    char **vec;
     struct stat st;
     FILE *fp;
     char *tfile = NULL;
@@ -240,11 +240,12 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
 	splitsw = delay;
 
     status = 0;
-    vec[0] = r1bindex (postproc, '/');
+
+    vec = argsplit(postproc, &program, &vecp);
     if (verbsw)
 	vec[vecp++] = "-verbose";
 
-    switch (sendsbr (vec, vecp, tmpfil, &st, 0, (char *)0, 0)) {
+    switch (sendsbr (vec, vecp, program, tmpfil, &st, 0, (char *)0, 0)) {
 	case DONE:
 	case NOTOK:
 	    status++;

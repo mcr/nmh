@@ -46,7 +46,7 @@ static	FILE	*composition_file;			/* composition file pointer */
 /*
  * external prototypes
  */
-int sendsbr (char **, int, char *, struct stat *, int, char *, int);
+int sendsbr (char **, int, char *, char *, struct stat *, int, char *, int);
 char *getusername (void);
 
 /*
@@ -57,8 +57,8 @@ static void alert (char *, int);
 static int tmp_fd (void);
 static void anno (int, struct stat *);
 static void annoaux (int);
-static int splitmsg (char **, int, char *, struct stat *, int);
-static int sendaux (char **, int, char *, struct stat *);
+static int splitmsg (char **, int, char *, char *, struct stat *, int);
+static int sendaux (char **, int, char *, char *, struct stat *);
 
 static	int	attach(char *, char *, int);
 static	void	clean_up_temporary_files(void);
@@ -71,7 +71,8 @@ static	void	make_mime_composition_file_entry(char *, int, char *);
  */
 
 int
-sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, char *attachment_header_field_name, int attachformat)
+sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
+         int rename_drft, char *attachment_header_field_name, int attachformat)
 {
     int status;
     char buffer[BUFSIZ], file[BUFSIZ];
@@ -132,9 +133,9 @@ sendsbr (char **vec, int vecp, char *drft, struct stat *st, int rename_drft, cha
 	 */
 	if (splitsw >= 0 && !distfile && stat (drft, &sts) != NOTOK
 		&& sts.st_size >= CPERMSG) {
-	    status = splitmsg (vec, vecp, drft, st, splitsw) ? NOTOK : OK;
+	    status = splitmsg (vec, vecp, program, drft, st, splitsw) ? NOTOK : OK;
 	} else {
-	    status = sendaux (vec, vecp, drft, st) ? NOTOK : OK;
+	    status = sendaux (vec, vecp, program, drft, st) ? NOTOK : OK;
 	}
 
 	/* rename the original draft */
@@ -582,7 +583,8 @@ make_mime_composition_file_entry(char *file_name, int attachformat,
  */
 
 static int
-splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
+splitmsg (char **vec, int vecp, char *program, char *drft,
+	  struct stat *st, int delay)
 {
     int	compnum, nparts, partno, state, status;
     long pos, start;
@@ -698,7 +700,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 	    free (dp);
 
 	fclose (in);
-	return sendaux (vec, vecp, drft, st);
+	return sendaux (vec, vecp, program, drft, st);
     }
 
     if (!pushsw) {
@@ -788,7 +790,7 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 	}
 
 	snprintf (partnum, sizeof(partnum), "%d", partno);
-	status = sendaux (vec, vecp, tmpdrf, st);
+	status = sendaux (vec, vecp, program, tmpdrf, st);
 	unlink (tmpdrf);
 	if (status != OK)
 	    break;
@@ -811,11 +813,11 @@ splitmsg (char **vec, int vecp, char *drft, struct stat *st, int delay)
 
 /*
  * Annotate original message, and
- * call `postproc' to send message.
+ * call `postproc' (which is passed down in "program") to send message.
  */
 
 static int
-sendaux (char **vec, int vecp, char *drft, struct stat *st)
+sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 {
     pid_t child_id;
     int i, status, fd, fd2;
@@ -859,7 +861,7 @@ sendaux (char **vec, int vecp, char *drft, struct stat *st)
 	    dup2 (fd, fileno (stderr));
 	    close (fd);
 	}
-	execvp (postproc, vec);
+	execvp (program, vec);
 	fprintf (stderr, "unable to exec ");
 	perror (postproc);
 	_exit (-1);

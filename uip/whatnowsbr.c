@@ -1063,8 +1063,8 @@ static void
 sendit (char *sp, char **arg, char *file, int pushed)
 {
     int	vecp, n = 1;
-    char *cp, buf[BUFSIZ], **argp;
-    char **arguments, *vec[MAXARGS];
+    char *cp, buf[BUFSIZ], **argp, *program;
+    char **arguments, *savearg[MAXARGS], **vec;
     struct stat st;
     char	*attach = NMH_ATTACH_HEADER;/* attachment header field name */
     int		attachformat = 1;	/* mhbuild format specifier for
@@ -1076,17 +1076,17 @@ sendit (char *sp, char **arg, char *file, int pushed)
 
     /*
      * Make sure these are defined.  In particular, we need
-     * vec[1] to be NULL, in case "arg" is NULL below.  It
-     * doesn't matter what is the value of vec[0], but we
+     * savearg[1] to be NULL, in case "arg" is NULL below.  It
+     * doesn't matter what is the value of savearg[0], but we
      * set it to NULL, to help catch "off-by-one" errors.
      */
-    vec[0] = NULL;
-    vec[1] = NULL;
+    savearg[0] = NULL;
+    savearg[1] = NULL;
 
     /*
-     * Temporarily copy arg to vec, since the brkstring() call in
+     * Temporarily copy arg to savearg, since the brkstring() call in
      * getarguments() will wipe it out before it is merged in.
-     * Also, we skip the first element of vec, since getarguments()
+     * Also, we skip the first element of savearg, since getarguments()
      * skips it.  Then we count the number of arguments
      * copied.  The value of "n" will be one greater than
      * this in order to simulate the standard argc/argv.
@@ -1094,17 +1094,17 @@ sendit (char *sp, char **arg, char *file, int pushed)
     if (arg) {
 	char **bp;
 
-	copyip (arg, vec+1, MAXARGS-1);
-	bp = vec+1;
+	copyip (arg, savearg+1, MAXARGS-1);
+	bp = savearg+1;
 	while (*bp++)
 	    n++;
     }
 
     /*
-     * Merge any arguments from command line (now in vec)
+     * Merge any arguments from command line (now in savearg)
      * and arguments from profile.
      */
-    arguments = getarguments (sp, n, vec, 1);
+    arguments = getarguments (sp, n, savearg, 1);
     argp = arguments;
 
     debugsw = 0;
@@ -1116,7 +1116,12 @@ sendit (char *sp, char **arg, char *file, int pushed)
     annotext = NULL;
     distfile = NULL;
 
-    vecp = 1;			/* we'll get the zero'th element later */
+    /*
+     * Get our initial arguments for postproc now
+     */
+
+    vec = argsplit(postproc, &program, &vecp);
+
     vec[vecp++] = "-library";
     vec[vecp++] = getcpy (m_maildir (""));
 
@@ -1312,10 +1317,9 @@ sendit (char *sp, char **arg, char *file, int pushed)
     if ((pushsw = pushed))
 	push ();
 
-    vec[0] = r1bindex (postproc, '/');
     closefds (3);
 
-    if (sendsbr (vec, vecp, file, &st, 1, attach, attachformat) == OK)
+    if (sendsbr (vec, vecp, program, file, &st, 1, attach, attachformat) == OK)
 	done (0);
 }
 

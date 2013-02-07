@@ -114,12 +114,12 @@ extern char *distfile;
 int
 main (int argc, char **argv)
 {
-    int msgp = 0, distsw = 0, vecp = 1;
+    int msgp = 0, distsw = 0, vecp;
     int isdf = 0, mime = 0;
     int msgnum, status;
     char *cp, *dfolder = NULL, *maildir = NULL;
-    char buf[BUFSIZ], **ap, **argp, **arguments;
-    char *msgs[MAXARGS], *vec[MAXARGS];
+    char buf[BUFSIZ], **ap, **argp, **arguments, *program;
+    char *msgs[MAXARGS], **vec;
     struct msgs *mp;
     struct stat st;
     char *attach = NMH_ATTACH_HEADER;	/* header field name for attachments */
@@ -135,6 +135,8 @@ main (int argc, char **argv)
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
+
+    vec = argsplit(postproc, &program, &vecp);
 
     vec[vecp++] = "-library";
     vec[vecp++] = getcpy (m_maildir (""));
@@ -443,11 +445,10 @@ go_to_it:
 	push ();
 
     status = 0;
-    vec[0] = r1bindex (postproc, '/');
     closefds (3);
 
     for (msgnum = 0; msgnum < msgp; msgnum++) {
-	switch (sendsbr (vec, vecp, msgs[msgnum], &st, 1, attach,
+	switch (sendsbr (vec, vecp, program, msgs[msgnum], &st, 1, attach,
 			 attachformat)) {
 	    case DONE: 
 		done (++status);
