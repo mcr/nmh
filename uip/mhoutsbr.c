@@ -83,6 +83,14 @@ output_content (CT ct, FILE *out)
 {
     int result = 0;
     CI ci = &ct->c_ctinfo;
+    char *boundary = ci->ci_values[0], **ap, **vp;
+
+    for (ap = ci->ci_attrs, vp = ci->ci_values; *ap; ++ap, ++vp) {
+        if (! mh_strcasecmp ("boundary", *ap)) {
+            boundary = *vp;
+            break;
+        }
+    }
 
     /*
      * Output all header fields for this content
@@ -113,11 +121,11 @@ output_content (CT ct, FILE *out)
 	for (part = m->mp_parts; part; part = part->mp_next) {
 	    CT p = part->mp_part;
 
-	    fprintf (out, "\n--%s\n", ci->ci_values[0]);
+	    fprintf (out, "\n--%s\n", boundary);
 	    if (output_content (p, out) == NOTOK)
 		return NOTOK;
 	}
-	fprintf (out, "\n--%s--\n", ci->ci_values[0]);
+	fprintf (out, "\n--%s--\n", boundary);
     }
     break;
 
