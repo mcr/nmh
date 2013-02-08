@@ -83,7 +83,6 @@ int type_ok (CT, int);
 void flush_errors (void);
 
 /* mhfree.c */
-void free_content (CT);
 extern CT *cts;
 void freects_done (int) NORETURN;
 

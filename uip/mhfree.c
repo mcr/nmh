@@ -19,7 +19,6 @@ CT *cts = NULL;
 /*
  * prototypes
  */
-void free_content (CT);
 void free_header (CT);
 void free_ctinfo (CT);
 void free_encoding (CT, int);

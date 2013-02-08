@@ -62,7 +62,6 @@ void content_error (char *, CT, char *, ...);
 int find_cache (CT, int, int *, char *, char *, int);
 
 /* mhfree.c */
-void free_content (CT);
 void free_ctinfo (CT);
 void free_encoding (CT, int);
 

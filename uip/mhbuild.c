@@ -87,9 +87,6 @@ int output_message_fp (CT, FILE *, char*);
 /* mhlistsbr.c */
 int list_all_messages (CT *, int, int, int, int);
 
-/* mhfree.c */
-void free_content (CT);
-
 
 int
 main (int argc, char **argv)

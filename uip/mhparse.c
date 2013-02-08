@@ -94,7 +94,6 @@ int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 
 /* mhfree.c */
-void free_content (CT);
 void free_encoding (CT, int);
 
 /*

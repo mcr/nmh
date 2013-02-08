@@ -99,7 +99,6 @@ void flush_errors (void);
 void show_all_messages (CT *);
 
 /* mhfree.c */
-void free_content (CT);
 extern CT *cts;
 void freects_done (int) NORETURN;
 

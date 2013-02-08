@@ -277,5 +277,6 @@ int get_ctinfo (char *, CT, int);
 int params_external (CT, int);
 int open7Bit (CT, char **);
 void close_encoding (CT);
+void free_content (CT);
 
 extern int checksw;	/* Add Content-MD5 field */
