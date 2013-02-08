@@ -267,7 +267,8 @@ uip_ali_SOURCES = uip/ali.c uip/aliasbr.c
 
 uip_anno_SOURCES = uip/anno.c uip/annosbr.c
 
-uip_burst_SOURCES = uip/burst.c
+uip_burst_SOURCES = uip/burst.c uip/mhparse.c uip/mhmisc.c uip/mhfree.c \
+		    uip/mhcachesbr.c uip/md5.c
 
 uip_comp_SOURCES = uip/comp.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c

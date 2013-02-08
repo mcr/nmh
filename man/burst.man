@@ -11,6 +11,8 @@ burst \- explode digests into messages
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-inplace " | " \-noinplace ]
+.RB [ \-mime " | " \-nomime ]
+.RB [ \-automime ]
 .RB [ \-quiet " | " \-noquiet ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
@@ -35,6 +37,20 @@ If
 is given, each digest is preserved, no table of contents
 is produced, and the messages contained within the digest are placed at
 the end of the folder.  Other messages are not tampered with in any way.
+.PP
+If
+.B \-automime
+is given,
+.B burst
+will try to determine if the message is formatted with MIME and contains MIME parts of
+type \*(lqmessage/rfc822\*(rq. If it does, it will burst the message using MIME
+formatting rules.  The
+.B \-mime
+switch can be used to enforce the use of MIME formatting. The
+.B \-nomime
+switch will force
+.B burst
+to use RFC-934 rules.
 .PP
 The
 .B \-quiet
@@ -92,6 +108,8 @@ msgs
 The current message.
 .TP
 \-noinplace
+.TP
+\-automime
 .TP
 \-noquiet
 .TP

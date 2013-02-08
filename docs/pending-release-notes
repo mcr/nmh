@@ -36,7 +36,8 @@ NEW FEATURES
   if the user does not configure an editor entry in their profile.
 - The format engine (mh_format(5)) now properly accounts for multibyte
   characters when accounting for column widths.
-
+- burst(1) now can burst MIME-formatted digests (messages that contain
+  message/rfc822 parts instead of messages formatted with RFC 934).
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

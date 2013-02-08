@@ -9,10 +9,14 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
+#include <h/mhparse.h>
 
 #define BURST_SWITCHES \
     X("inplace", 0, INPLSW) \
     X("noinplace", 0, NINPLSW) \
+    X("mime", 0, MIMESW) \
+    X("nomime", 0, NMIMESW) \
+    X("automime", 0, AUTOMIMESW) \
     X("quiet", 0, QIETSW) \
     X("noquiet", 0, NQIETSW) \
     X("verbose", 0, VERBSW) \
@@ -34,11 +38,20 @@ struct smsg {
 };
 
 /*
+ * For the MIME parsing routines
+ */
+
+int debugsw = 0;
+pid_t xpid = 0;
+
+/*
  * static prototypes
  */
-static int find_delim (int, struct smsg *);
-static void burst (struct msgs **, int, struct smsg *, int, int, int, char *);
-static void cpybrst (FILE *, FILE *, char *, char *, int);
+static int find_delim (int, struct smsg *, int *);
+static void find_mime_parts (CT, struct smsg *, int *);
+static void burst (struct msgs **, int, struct smsg *, int, int, int,
+		   char *, int);
+static void cpybrst (FILE *, FILE *, char *, char *, int, int);
 
 /*
  * A macro to check to see if we have reached a message delimiter
@@ -54,7 +67,7 @@ static void cpybrst (FILE *, FILE *, char *, char *, int);
 int
 main (int argc, char **argv)
 {
-    int inplace = 0, quietsw = 0, verbosw = 0;
+    int inplace = 0, quietsw = 0, verbosw = 0, mimesw = 1;
     int hi, msgnum, numburst;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
     char **argp, **arguments;
@@ -96,6 +109,16 @@ main (int argc, char **argv)
 		continue;
 	    case NINPLSW: 
 		inplace = 0;
+		continue;
+
+	    case MIMESW:
+	    	mimesw = 2;
+		continue;
+	    case NMIMESW:
+	    	mimesw = 0;
+		continue;
+	    case AUTOMIMESW:
+	    	mimesw = 1;
 		continue;
 
 	    case QIETSW: 
@@ -158,11 +181,12 @@ main (int argc, char **argv)
     /* burst all the SELECTED messages */
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	if (is_selected (mp, msgnum)) {
-	    if ((numburst = find_delim (msgnum, smsgs)) >= 1) {
+	    if ((numburst = find_delim (msgnum, smsgs, &mimesw)) >= 1) {
 		if (verbosw)
 		    printf ("%d message%s exploded from digest %d\n",
 			    numburst, numburst > 1 ? "s" : "", msgnum);
-		burst (&mp, msgnum, smsgs, numburst, inplace, verbosw, maildir);
+		burst (&mp, msgnum, smsgs, numburst, inplace, verbosw,
+		       maildir, mimesw);
 	    } else {
 		if (numburst == 0) {
 		    if (!quietsw)
@@ -203,18 +227,49 @@ main (int argc, char **argv)
 /*
  * Scan the message and find the beginning and
  * end of all the messages in the digest.
+ *
+ * If requested, see if the message is MIME-formatted and contains any
+ * message/rfc822 parts; if so, burst those parts.
  */
 
 static int
-find_delim (int msgnum, struct smsg *smsgs)
+find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
 {
     int wasdlm = 0, msgp;
     off_t pos;
     char c, *msgnam;
     char buffer[BUFSIZ];
     FILE *in;
+    CT content;
 
-    if ((in = fopen (msgnam = m_name (msgnum), "r")) == NULL)
+    msgnam = m_name (msgnum);
+
+    /*
+     * If mimesw is 1 or 2, try to see if it's got proper MIME formatting.
+     */
+
+    if (*mimesw > 0) {
+    	content = parse_mime(msgnam);
+	if (! content && *mimesw == 2)
+	    return 0;
+	else if (content) {
+	    smsgs[0].s_start = 0;
+	    smsgs[0].s_stop = content->c_begin - 1;
+	    msgp = 1;
+	    find_mime_parts(content, smsgs, &msgp);
+	    free_content(content);
+	    if (msgp == 1 && *mimesw == 2) {
+	    	adios (msgnam, "does not have any message/rfc822 parts");
+	    } else if (msgp > 1) {
+	    	*mimesw = 1;
+		return (msgp - 1);
+	    }
+	}
+    }
+
+    *mimesw = 0;
+
+    if ((in = fopen (msgnam, "r")) == NULL)
 	adios (msgnam, "unable to read message");
 
     for (msgp = 0, pos = 0L; msgp <= MAXFOLDER;) {
@@ -276,12 +331,50 @@ find_delim (int msgnum, struct smsg *smsgs)
 
 
 /*
+ * Find any MIME content in the message that is a message/rfc822 and add
+ * it to the list of messages to burst.
+ */
+
+static void
+find_mime_parts (CT content, struct smsg *smsgs, int *msgp)
+{
+    struct multipart *m;
+    struct part *part;
+
+    /*
+     * If we have a message/rfc822, then it's easy.
+     */
+
+    if (content->c_type == CT_MESSAGE &&
+    			content->c_subtype == MESSAGE_RFC822) {
+	smsgs[*msgp].s_start = content->c_begin;
+	smsgs[*msgp].s_stop = content->c_end;
+	(*msgp)++;
+	return;
+    }
+
+    /*
+     * Otherwise, if we do have multiparts, try all of the sub-parts.
+     */
+
+    if (content->c_type == CT_MULTIPART) {
+    	m = (struct multipart *) content->c_ctparams;
+
+	for (part = m->mp_parts; part; part = part->mp_next)
+	    find_mime_parts(part->mp_part, smsgs, msgp);
+    }
+
+    return;
+}
+
+
+/*
  * Burst out the messages in the digest into the folder
  */
 
 static void
 burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
-	int inplace, int verbosw, char *maildir)
+	int inplace, int verbosw, char *maildir, int mimesw)
 {
     int i, j, mode;
     char *msgnam;
@@ -380,7 +473,7 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
 	chmod (f2, mode);
 	fseeko (in, smsgs[j].s_start, SEEK_SET);
 	cpybrst (in, out, msgnam, f2,
-		(int) (smsgs[j].s_stop - smsgs[j].s_start));
+		(int) (smsgs[j].s_stop - smsgs[j].s_start), mimesw);
 	fclose (out);
 
 	if (i == msgnum) {
@@ -408,6 +501,7 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
 #define	S1  0
 #define	S2  1
 #define	S3  2
+#define S4  3
 
 /*
  * Copy a mesage which is being burst out of a digest.
@@ -415,11 +509,11 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
  */
 
 static void
-cpybrst (FILE *in, FILE *out, char *ifile, char *ofile, int len)
+cpybrst (FILE *in, FILE *out, char *ifile, char *ofile, int len, int mime)
 {
     register int c, state;
 
-    for (state = S1; (c = fgetc (in)) != EOF && len > 0; len--) {
+    for (state = mime ? S4 : S1; (c = fgetc (in)) != EOF && len > 0; len--) {
 	if (c == 0)
 	    continue;
 	switch (state) {
@@ -459,6 +553,10 @@ cpybrst (FILE *in, FILE *out, char *ifile, char *ofile, int len)
 			fputc (c, out);
 			break;
 		}
+		break;
+
+	    case S4:
+	   	fputc (c, out);
 		break;
 	}
     }
