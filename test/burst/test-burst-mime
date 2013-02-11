@@ -1,0 +1,138 @@
+#!/bin/sh
+#
+# Tests to see if bursting MIME messages works correctly.
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${MH_OBJ_DIR}/test/common.sh"
+
+setup_test
+
+#
+# Create a one-part test message that we can burst
+#
+
+cat > "${MH_TEST_DIR}/Mail/inbox/11" <<EOF
+From: Test Burst Message <burst1@example.com>
+To: Test Recipient <recipient@example.com>
+Date: Friday, 29 Sep 2006 00:00:00
+Subject: Test MIME digest
+MIME-Version: 1.0
+Content-type: message/rfc822
+
+From: Mister Burster <burst2@example.com>
+To: Nobody 1 <nobody1@example.com>
+Date: Thursday, 28 Sep 2006 00:01:00
+Subject: Message one
+
+- - This line should not be unstuffed
+
+EOF
+
+burst 11
+
+run_test 'scan -width 80 11-last' \
+"  11  09/29 Test Burst Messag  Test MIME digest<<From: Mister Burster <burst2@e
+  12+ 09/28 Mister Burster     Message one<<- - This line should not be unstuff"
+
+#
+# Create another test message that does multipart/digest checking
+#
+
+cat > "${MH_TEST_DIR}/Mail/inbox/14" <<EOF
+From: Test Burst Message <burst1@example.com>
+To: Test Recipient <recipient@example.com>
+Date: Friday, 29 Sep 2006 00:00:00
+Subject: Test digest
+MIME-Version: 1.0
+Content-Type: multipart/digest; boundary="----- =_aaaaaaaaaa0"
+
+This is a preamble
+------- =_aaaaaaaaaa0
+Content-Type: message/rfc822
+
+From: Mister Burster <burst2@example.com>
+To: Nobody 1 <nobody1@example.com>
+Date: Thursday, 28 Sep 2006 00:01:00
+Subject: Message one
+
+- -This is message one
+
+------- =_aaaaaaaaaa0
+
+From: Mister Burster <burst3@example.com>
+To: Nobody 2 <nobody2@example.com>
+Date: Thursday, 28 Sep 2006 00:02:00
+Subject: Message two
+
+This is message two
+- For real.
+------- =_aaaaaaaaaa0
+
+From: Mister Burster <burst4@example.com>
+To: Nobody 3 <nobody3@example.com>
+Date: Thursday, 28 Sep 2006 00:03:00
+Subject: Message three
+
+Will this one work?
+
+
+------- =_aaaaaaaaaa0--
+EOF
+
+burst 14 || exit
+
+run_test 'scan -width 80 14-last' \
+"  14  09/29 Test Burst Messag  Test digest<<This is a preamble ------- =_aaaaaa
+  15+ 09/28 Mister Burster     Message one<<- -This is message one >>
+  16  09/28 Mister Burster     Message two<<This is message two - For real.>>
+  17  09/28 Mister Burster     Message three<<Will this one work? >>"
+
+#
+# Check to see if each message is what we expect
+#
+
+run_test 'show -noheader -noshow 15' \
+"From: Mister Burster <burst2@example.com>
+To: Nobody 1 <nobody1@example.com>
+Date: Thursday, 28 Sep 2006 00:01:00
+Subject: Message one
+
+- -This is message one"
+
+run_test 'show -noheader -noshow 16' \
+"From: Mister Burster <burst3@example.com>
+To: Nobody 2 <nobody2@example.com>
+Date: Thursday, 28 Sep 2006 00:02:00
+Subject: Message two
+
+This is message two
+- For real."
+
+#
+# The CR/LF that appears right before the boundary line is considered part
+# of the boundary line, so this has the practical effect of "eating" a
+# blank line if it's before the boundary (RFC 2046. 5.1.1).  So make sure
+# a double blank line results in only one blank line at the end of a message.
+#
+
+expected="${MH_TEST_DIR}/$$.expected"
+cat > "${expected}" <<EOF
+From: Mister Burster <burst4@example.com>
+To: Nobody 3 <nobody3@example.com>
+Date: Thursday, 28 Sep 2006 00:03:00
+Subject: Message three
+
+Will this one work?
+
+EOF
+
+check "${expected}" `mhpath 17`
+
+exit $failed

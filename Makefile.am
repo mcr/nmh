@@ -45,7 +45,7 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
 ##
 TESTS = test/ali/test-ali test/anno/test-anno \
 	test/bad-input/test-header \
-	test/burst/test-burst \
+	test/burst/test-burst test/burst/test-burst-mime \
 	test/comp/test-comp-format test/dist/test-dist \
 	test/folder/test-create test/folder/test-packf \
 	test/folder/test-recurse test/folder/test-sortm \
