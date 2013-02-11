@@ -204,6 +204,8 @@ free_multi (CT ct)
 	free (m->mp_start);
     if (m->mp_stop)
 	free (m->mp_stop);
+    free (m->mp_content_before);
+    free (m->mp_content_after);
 	
     for (part = m->mp_parts; part; part = next) {
 	next = part->mp_next;

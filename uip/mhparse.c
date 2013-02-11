@@ -123,6 +123,7 @@ static int openFTP (CT, char **);
 static int InitMail (CT);
 static int openMail (CT, char **);
 static int readDigest (CT, char *);
+static int get_leftover_mp_content (CT, int);
 
 struct str2init str2cts[] = {
     { "application", CT_APPLICATION, InitApplication },
@@ -1293,6 +1294,9 @@ last_part:
 	    }
 	}
     }
+
+    get_leftover_mp_content (ct, 1);
+    get_leftover_mp_content (ct, 0);
 
     fclose (ct->c_fp);
     ct->c_fp = NULL;
@@ -2883,6 +2887,112 @@ invalid_digest:
 	    fprintf (stderr, "%02x", *dp & 0xff);
 	fprintf (stderr, "\n");
     }
+
+    return OK;
+}
+
+
+/* Multipart parts might have content before the first subpart and/or
+   after the last subpart that hasn't been stored anywhere else, so do
+   that. */
+int
+get_leftover_mp_content (CT ct, int before /* or after */) {
+    struct multipart *m = (struct multipart *) ct->c_ctparams;
+    char *boundary;
+    int found_boundary = 0;
+    char buffer[BUFSIZ];
+    int max = BUFSIZ;
+    int read = 0;
+    char *content = NULL;
+
+    if (! m) return NOTOK;
+
+    if (before) {
+        if (! m->mp_parts  ||  ! m->mp_parts->mp_part) return NOTOK;
+
+        /* Isolate the beginning of this part to the beginning of the
+           first subpart and save any content between them. */
+        fseeko (ct->c_fp, ct->c_begin, SEEK_SET);
+        max = m->mp_parts->mp_part->c_begin - ct->c_begin;
+        boundary = concat ("--", m->mp_start, NULL);
+    } else {
+        struct part *last_subpart = NULL;
+        struct part *subpart;
+
+        /* Go to the last subpart to get its end position. */
+        for (subpart = m->mp_parts; subpart; subpart = subpart->mp_next) {
+            last_subpart = subpart;
+        }
+
+        if (last_subpart == NULL) return NOTOK;
+
+        /* Isolate the end of the last subpart to the end of this part
+           and save any content between them. */
+        fseeko (ct->c_fp, last_subpart->mp_part->c_end, SEEK_SET);
+        max = ct->c_end - last_subpart->mp_part->c_end;
+        boundary = concat ("--", m->mp_stop, NULL);
+    }
+
+    /* Back up by 1 to pick up the newline. */
+    while (fgets (buffer, sizeof(buffer) - 1, ct->c_fp)) {
+        read += strlen (buffer);
+        /* Don't look beyond beginning of first subpart (before) or
+           next part (after). */
+        if (read > max) buffer[read-max] = '\0';
+
+        if (before) {
+            if (! strcmp (buffer, boundary)) {
+                found_boundary = 1;
+            }
+        } else {
+            if (! found_boundary  &&  ! strcmp (buffer, boundary)) {
+                found_boundary = 1;
+                continue;
+            }
+        }
+
+        if ((before && ! found_boundary)  ||  (! before && found_boundary)) {
+            if (content) {
+                char *old_content = content;
+                content = concat (content, buffer, NULL);
+                free (old_content);
+            } else {
+                content = before
+                    ?  concat ("\n", buffer, NULL)
+                    :  concat (buffer, NULL);
+            }
+        }
+
+        if (before) {
+            if (found_boundary  ||  read > max) break;
+        } else {
+            if (read > max) break;
+        }
+    }
+
+    /* Skip the newline if that's all there is. */
+    if (content) {
+        char *cp;
+
+        /* Remove trailing newline, except at EOF. */
+        if ((before || ! feof (ct->c_fp)) &&
+            (cp = content + strlen (content)) > content  &&
+            *--cp == '\n') {
+            *cp = '\0';
+        }
+
+        if (strlen (content) > 1) {
+            if (before) {
+                m->mp_content_before = content;
+            } else {
+                m->mp_content_after = content;
+            }
+        } else {
+            free (content);
+        }
+    }
+
+    free (boundary);
 
     return OK;
 }

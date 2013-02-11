@@ -191,6 +191,8 @@ struct part {
 struct multipart {
     char *mp_start;		/* boundary string separating parts   */
     char *mp_stop;		/* terminating boundary string        */
+    char *mp_content_before;	/* any content before the first subpart */
+    char *mp_content_after;	/* any content after the last subpart */
     struct part *mp_parts;	/* pointer to first subpart structure */
 };
 
