@@ -1,0 +1,62 @@
+#! /bin/sh
+##
+ # rmmproc.messageid -- tries to back up a message/file to a file that's
+ #                      named based on Message ID
+ #
+ # This code is Copyright (c) 2013, by the authors of nmh.
+ # See the COPYRIGHT file in the root directory of the nmh
+ # distribution for complete copyright information.
+ #
+ # If called on a message, the current directory is the
+ # message folder and $1 is the message filename.
+ # If called on a file, $1 is the full path to the file.
+ #
+ # The backup directory will be:
+ #   1) If input is a message, the folder of the message.
+ #   2) If input is a file, the directory of the file.
+ #   3) If input is standard input (-), the user's MHPATH directory.
+ #
+ # The backup filename will be:
+ #   1) Message-ID with all / and \ converted to periods.
+ #      Message-IDs should not contain \, but some
+ #      filesystems can't handle them.  Message-IDs should
+ #      be unique, so there should be no need to backup a
+ #      file with the same name, especially if the result of
+ #      malicious action.  If the backup file already
+ #      exists, use 2).
+ #      NOTE: conversion of some characters in the filename
+ #      could result in an unintended name collision.  If
+ #      that is a concern, a program that uses mktemp(3) to
+ #      create a temporary file might be the basis for a
+ #      remedy.
+ #
+ #   2) Concatenation of BACKUP_PREFIX and input filename.
+ #      NOTE: if a file of that name already exists in the
+ #      destination directory, it will be overwritten by the
+ #      mv below.
+ #
+##
+
+if [ "$1" = - ]; then
+    #### Input is stdin; put backup in user's MHPATH directory.
+    dir=`mhparam path`
+    #### If Path is relative, prepend home directory.
+    [ `dirname "$dir"` = . ]  &&  dir="$HOME/$dir"
+else
+    dir=`dirname "$1"`
+fi
+
+#### Extract first Message-Id, remove <>, substitute / and \.
+messageid=`sed -n '
+    /^$/q; /^[Mm][Ee][Ss][Ss][Aa][Gg][Ee]-[Ii][Dd]:/!d
+    s/>.*//; s/.*<//; y#/\\\#..#; p
+    ' "$1"`
+
+if [ "$messageid"  -a  ! -f "$dir/$messageid" ]; then
+    filename="$dir/$messageid"
+else
+    filename="$dir"/`mhparam sbackup``basename "$1"`
+fi
+
+#### If unable to backup the message, exit with status 1.
+mv "$1" "$filename"
