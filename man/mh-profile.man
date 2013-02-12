@@ -410,14 +410,6 @@ to incorporate new mail when it
 is invoked with no arguments.
 .RE
 .PP
-.BR installproc :
-%libdir%/install\-mh
-.RS 5
-This program is called to initialize the environment for
-new users of
-.BR nmh .
-.RE
-.PP
 .BR lproc :
 more
 .RS 5

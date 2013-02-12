@@ -202,13 +202,6 @@ char *formatproc = NULL;
 char *incproc = nmhbindir (/inc);
 
 /*
- * When a user runs an nmh program for the first time, this program
- * is called to create his nmh profile, and mail directory.
- */
-
-char *installproc = nmhlibdir (/install-mh);
-
-/*
  * This is the default program invoked by a "list" response
  * at the "What now?" prompt.  It is also used by the draft
  * folder facility in comp/dist/forw/repl to display the

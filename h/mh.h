@@ -374,7 +374,6 @@ extern char *formatproc;
 extern char *forwcomps;
 extern char *inbox;
 extern char *incproc;
-extern char *installproc;
 extern char *lproc;
 extern char *mailproc;
 extern char *mh_defaults;
