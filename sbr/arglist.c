@@ -142,3 +142,81 @@ arglist_free(char *command, char **argvarray)
 	free(argvarray);
     }
 }
+
+/*
+ * Similar in functionality to argsplit, but is designed to deal with
+ * a msgs_array.
+ */
+
+void
+argsplit_msgarg(struct msgs_array *msgs, char *command, char **program)
+{
+    int argp, i;
+    char **vec;
+
+    vec = argsplit(command, program, &argp);
+
+    /*
+     * As usual, there is lousy memory management in nmh.  Nothing ever
+     * free's the msgs_array, and a lot of the arguments are allocated
+     * from static memory.  I could have app_msgarg() allocate new
+     * memory for each pointer, but for now I decided to stick with
+     * the existing interface; maybe that will be revisited later.
+     * So we'll just copy over our pointers and free the pointer list
+     * (not the actual pointers themselves).  Note that we don't
+     * include a trailing NULL, since we are expecting the application
+     * to take care of that.
+     */
+
+    for (i = 0; i < argp; i++) {
+    	app_msgarg(msgs, vec[i]);
+    }
+
+    free(vec);
+}
+
+/*
+ * Insert a arglist vector into the beginning of an struct msgs array
+ *
+ * Uses by some programs (e.g., show) who want to decide which proc
+ * to use after the argument vector has been constructed
+ */
+
+#ifndef MAXMSGS
+#define MAXMSGS 256
+#endif
+
+void
+argsplit_insert(struct msgs_array *msgs, char *command, char **program)
+{
+    int argp, i;
+    char **vec;
+
+    vec = argsplit(command, program, &argp);
+
+    /*
+     * Okay, we want to shuffle all of our arguments down so we have room
+     * for argp number of arguments.  This means we need to know about
+     * msgs_array internals.  If that changes, we need to change this
+     * code here.
+     */
+
+    if (msgs->size + argp >= msgs->max) {
+    	msgs->max += MAXMSGS > argp ? MAXMSGS : argp;
+	msgs->msgs = mh_xrealloc(msgs->msgs, msgs->max * sizeof(*msgs->msgs));
+    }
+
+    for (i = msgs->size - 1; i >= 0; i--)
+    	msgs->msgs[i + argp] = msgs->msgs[i];
+
+    msgs->size += argp;
+
+    /*
+     * Now fill in the arguments at the beginning of the vector.
+     */
+
+    for (i = 0; i < argp; i++)
+    	msgs->msgs[i] = vec[i];
+
+    free(vec);
+}

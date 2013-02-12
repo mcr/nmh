@@ -55,7 +55,7 @@ main (int argc, char **argv)
     int draftsw = 0, headersw = 1;
     int nshow = 0, checkmime = 1, mime;
     int isdf = 0, mode = SHOW, msgnum;
-    char *cp, *maildir, *file = NULL, *folder = NULL, *proc;
+    char *cp, *maildir, *file = NULL, *folder = NULL, *proc, *program;
     char buf[BUFSIZ], **argp, **arguments;
     struct msgs *mp = NULL;
     struct msgs_array msgs = { 0, 0, NULL };
@@ -65,8 +65,6 @@ main (int argc, char **argv)
     setlocale(LC_ALL, "");
 #endif
     invo_name = r1bindex (argv[0], '/');
-
-    app_msgarg(&vec, NULL);  /* placeholder, filled later with proc name */
 
     /* read user profile/context */
     context_read();
@@ -256,8 +254,8 @@ usage:
     context_replace (pfolder, folder);	/* update current folder   */
     context_save ();			/* save the context file   */
 
-    if (headersw && vec.size == 2)
-	printf ("(Message %s:%s)\n", folder, vec.msgs[1]);
+    if (headersw && vec.size == 1)
+	printf ("(Message %s:%s)\n", folder, vec.msgs[0]);
 
 go_to_it: ;
     fflush (stdout);
@@ -311,15 +309,15 @@ go_to_it: ;
 	}
     } else if (strcmp (r1bindex (proc, '/'), "mhl") == 0) {
 	/* If "mhl", then run it internally */
-	vec.msgs[0] = "mhl";
+	argsplit_insert(&vec, "mhl", &program);
 	app_msgarg(&vec, NULL);
 	mhl (vec.size, vec.msgs);
 	done (0);
     }
 
-    vec.msgs[0] = r1bindex (proc, '/');
+    argsplit_insert(&vec, proc, &program);
     app_msgarg(&vec, NULL);
-    execvp (proc, vec.msgs);
+    execvp (program, vec.msgs);
     adios (proc, "unable to exec");
     return 0;  /* dead code to satisfy the compiler */
 }

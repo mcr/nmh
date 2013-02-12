@@ -23,11 +23,16 @@ char *etcpath(char *);
 /*
  * prototypes from the nmh subroutine library
  */
+
+struct msgs_array;
+
 void adios (char *, char *, ...) NORETURN;
 void admonish (char *, char *, ...);
 void advertise (char *, char *, char *, va_list);
 void advise (char *, char *, ...);
 char **argsplit (char *, char **, int *);
+void argsplit_msgarg (struct msgs_array *, char *, char **);
+void argsplit_insert (struct msgs_array *, char *, char **);
 void arglist_free (char *, char **);
 void ambigsw (char *, struct swit *);
 int atooi(char *);

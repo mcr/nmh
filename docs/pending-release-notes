@@ -38,6 +38,9 @@ NEW FEATURES
   characters when accounting for column widths.
 - burst(1) now can burst MIME-formatted digests (messages that contain
   message/rfc822 parts instead of messages formatted with RFC 934).
+- All proc entries (showproc, moreproc, etc) can now accept entries that
+  contain spaces and shell metacharacters.  If found, such entries will
+  either be space-splitted or processed by /bin/sh.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

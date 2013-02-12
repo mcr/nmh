@@ -496,12 +496,13 @@ mhl_draft (int out, char *digest, int volume, int issue,
     int i, msgnum, pd[2];
     char buf1[BUFSIZ];
     char buf2[BUFSIZ];
+    char *program;
     struct msgs_array vec = { 0, 0, NULL };
 
     if (pipe (pd) == NOTOK)
 	adios ("pipe", "unable to create");
 
-    app_msgarg(&vec, r1bindex (mhlproc, '/'));
+    argsplit_msgarg(&vec, mhlproc, &program);
 
     for (i = 0; (child_id = fork()) == NOTOK && i < 5; i++)
 	sleep (5);
@@ -548,7 +549,7 @@ mhl_draft (int out, char *digest, int volume, int issue,
 
 	    app_msgarg(&vec, NULL);
 
-	    execvp (mhlproc, vec.msgs);
+	    execvp (program, vec.msgs);
 	    fprintf (stderr, "unable to exec ");
 	    perror (mhlproc);
 	    _exit (-1);

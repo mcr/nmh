@@ -816,7 +816,7 @@ sendfile (char **arg, char *file, int pushsw)
 {
     pid_t child_id;
     int i, vecp;
-    char *cp, *sp, *vec[MAXARGS];
+    char *cp, *sp, **vec, *program;
 
     /* Translate MIME composition file, if necessary */
     if ((cp = context_find ("automimeproc"))
@@ -851,7 +851,7 @@ sendfile (char **arg, char *file, int pushsw)
 	case NOTOK:
 	    advise (NULL, "unable to fork, so sending directly...");
 	case OK:
-	    vecp = 0;
+	    vec = argsplit(sendproc, &program, &vecp);
 	    vec[vecp++] = invo_name;
 	    if (pushsw)
 		vec[vecp++] = "-push";
@@ -861,7 +861,7 @@ sendfile (char **arg, char *file, int pushsw)
 	    vec[vecp++] = file;
 	    vec[vecp] = NULL;
 
-	    execvp (sendproc, vec);
+	    execvp (program, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (sendproc);
 	    _exit (-1);
@@ -1332,7 +1332,7 @@ whomfile (char **arg, char *file)
 {
     pid_t pid;
     int vecp;
-    char *vec[MAXARGS];
+    char **vec, *program;
 
     context_save ();	/* save the context file */
     fflush (stdout);
@@ -1343,7 +1343,7 @@ whomfile (char **arg, char *file)
 	    return 1;
 
 	case OK:
-	    vecp = 0;
+	    vec = argsplit(whomproc, &program, &vecp);
 	    vec[vecp++] = r1bindex (whomproc, '/');
 	    vec[vecp++] = file;
 	    if (arg)
@@ -1351,7 +1351,7 @@ whomfile (char **arg, char *file)
 		    vec[vecp++] = *arg++;
 	    vec[vecp] = NULL;
 
-	    execvp (whomproc, vec);
+	    execvp (program, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (whomproc);
 	    _exit (-1);		/* NOTREACHED */
