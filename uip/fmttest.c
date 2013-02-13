@@ -13,29 +13,25 @@
 #include <h/utils.h>
 #include <h/scansbr.h>
 
-static struct swit switches[] = {
-#define	FORMSW              0
-    { "form formatfile", 0 },
-#define	FMTSW               1
-    { "format string", 5 },
-#define DUMPSW              2
-    { "dump", 0 },
-#define ADDRSW              3
-    { "address", 0 },
-#define DATESW              4
-    { "date", 0 },
-#define WIDTHSW             5
-    { "width columns", 0 },
-#define BUFSZSW             6
-    { "bufsize size-in-bytes", 0 },
-#define VERSIONSW           7
-    { "version", 0 },
-#define OTHERSW             8
-    { "-component-name component-text", 0 },
-#define	HELPSW              9
-    { "help", 0 },
-    { NULL, 0 }
-};
+#define FMTTEST_SWITCHES \
+    X("form formatfile", 0, FORMSW) \
+    X("format string", 5, FMTSW) \
+    X("dump", 0, DUMPSW) \
+    X("address", 0, ADDRSW) \
+    X("date", 0, DATESW) \
+    X("width", 0, WIDTHSW) \
+    X("bufsize size-in-bytes", 0, BUFSZSW) \
+    X("version", 0, VERSIONSW) \
+    X("-component-name component-text", 0, OTHERSW) \
+    X("help", 0, HELPSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(FMTTEST);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(FMTTEST, switches);
+#undef X
 
 /*
  * An array containing labels used for branch instructions
@@ -48,7 +44,7 @@ static int lallocated = 0;
 /*
  * static prototypes
  */
-static void fmt_dump (struct format *);
+static void fmt_dump (char *, struct format *);
 static void dumpone(struct format *);
 static int findlabel(struct format *);
 static void assignlabel(struct format *);
@@ -173,7 +169,7 @@ main (int argc, char **argv)
     (void) fmt_compile(nfs, &fmt, 1);
 
     if (dump)
-	fmt_dump(fmt);
+	fmt_dump(nfs, fmt);
 
     if (compargs) {
     	for (i = 0; compargs[i] != NULL; i += 2) {
@@ -200,10 +196,12 @@ main (int argc, char **argv)
 }
 
 static void
-fmt_dump (struct format *fmth)
+fmt_dump (char *nfs, struct format *fmth)
 {
 	int i;
 	register struct format *fmt, *addr;
+
+	printf("Instruction dump of format string: \n%s\n", nfs);
 
 	/* Assign labels */
 	for (fmt = fmth; fmt; ++fmt) {
