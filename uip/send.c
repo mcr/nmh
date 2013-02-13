@@ -56,10 +56,6 @@
     X("help", 0, HELPSW) \
     X("dashstuffing", -12, BITSTUFFSW) \
     X("nodashstuffing", -14, NBITSTUFFSW) \
-    X("mail", -4, MAILSW) \
-    X("saml", -4, SAMLSW) \
-    X("send", -4, SENDSW) \
-    X("soml", -4, SOMLSW) \
     X("client host", -6, CLIESW) \
     X("server host", 6, SERVSW) \
     X("snoop", 5, SNOOPSW) \
@@ -245,10 +241,6 @@ main (int argc, char **argv)
 		case NMSGDSW: 
 		case WATCSW: 
 		case NWATCSW: 
-		case MAILSW: 
-		case SAMLSW: 
-		case SENDSW: 
-		case SOMLSW: 
 		case SNOOPSW: 
 		case SASLSW:
 		case NOSASLSW:

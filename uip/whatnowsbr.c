@@ -1013,10 +1013,6 @@ check_draft (char *msgnam)
     X("help", 0, SHELPSW) \
     X("dashstuffing", -12, BITSTUFFSW) \
     X("nodashstuffing", -14, NBITSTUFFSW) \
-    X("mail", -4, MAILSW) \
-    X("saml", -4, SAMLSW) \
-    X("send", -4, SSNDSW) \
-    X("soml", -4, SOMLSW) \
     X("client host", -6, CLIESW) \
     X("server host", 6, SERVSW) \
     X("snoop", -5, SNOOPSW) \
@@ -1202,10 +1198,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case NMSGDSW:
 		case WATCSW:
 		case NWATCSW:
-		case MAILSW:
-		case SAMLSW:
-		case SSNDSW:
-		case SOMLSW:
 		case SNOOPSW:
 		case SASLSW:
 		case NOSASLSW:
