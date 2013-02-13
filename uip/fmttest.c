@@ -58,11 +58,12 @@ static void litputc(char);
 int
 main (int argc, char **argv)
 {
-    char *cp, *form = NULL, *format = NULL;
+    char *cp, *form = NULL, *format = NULL, *folder = NULL;
     char buf[BUFSIZ], *nfs, **argp, **arguments;
     char **compargs = NULL;
     struct format *fmt;
     struct comp *cptr;
+    struct msgs_array msgs = { 0, 0, NULL };
     int dump = 0, compp = 0, comppalloc = 0, i;
     int width = 0, bufsize = 0;
     int dat[5];
@@ -144,10 +145,13 @@ main (int argc, char **argv)
 
 	    }
 	}
-	if (form)
-	    adios (NULL, "only one form at a time!");
-	else
-	    form = cp;
+	if (*cp == '+' || *cp == '@') {
+	    if (folder)
+	    	adios (NULL, "only one folder at a time!");
+	    else
+	    	folder = pluspath (cp);
+	} else
+	    app_msgarg(&msgs, cp);
     }
 
     if (compargs)
@@ -161,6 +165,10 @@ main (int argc, char **argv)
      *   other arguments.
      * - The arguments are interpreted as folders/messages.
      */
+
+   if (!dump && !compargs && msgs.size == 0) {
+   	adios (NULL, "usage: [switches] [+folder] msgs...]", invo_name);
+   }
 
     /*
      * Get new format string.  Must be before chdir().
