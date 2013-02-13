@@ -83,7 +83,6 @@ $MH_INST_DIR$bindir/mhbuild
 $MH_INST_DIR$bindir/refile
 700
 $bindir/inc
-$auxexecdir/install-mh
 more
 $bindir/mhmail
 $MH_INST_DIR$auxexecdir/mhl
@@ -110,7 +109,6 @@ buildmimeproc \
 fileproc \
 foldprot \
 incproc \
-installproc \
 lproc \
 mailproc \
 mhlproc \
