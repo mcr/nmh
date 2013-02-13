@@ -361,6 +361,13 @@ The
 .I \&.mh\(ruprofile
 can be used to select alternate programs if the
 user wishes.  The default values are given in the examples.
+.PP
+If the profile element contains spaces, the element is split at spaces
+into tokens and each token is given as a seperate argument to the
+.IR execvp (2)
+system call.  If the element contains shell metacharacters then the entire
+element is executed using
+.BR /bin/sh .
 .RE
 .PP
 .BR buildmimeproc :
