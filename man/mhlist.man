@@ -1,4 +1,4 @@
-.TH MHLIST %manext1% "January 9, 2001" "%nmhversion%"
+.TH MHLIST %manext1% "February 12, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -168,10 +168,9 @@ integrity of the content.
 ^Current\-Folder:~^To find the default current folder
 .fi
 .SH "SEE ALSO"
-,IR mhbuild (1),
+.IR mhbuild (1),
 .IR mhshow (1),
-.IR mhstore (1),
-.IR sendfiles (1)
+.IR mhstore (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"
