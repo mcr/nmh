@@ -19,8 +19,13 @@
     X("dump", 0, DUMPSW) \
     X("address", 0, ADDRSW) \
     X("date", 0, DATESW) \
-    X("width", 0, WIDTHSW) \
+    X("outsize size-in-characters", 0, OUTSIZESW) \
     X("bufsize size-in-bytes", 0, BUFSZSW) \
+    X("width column-width", 0, WIDTHSW) \
+    X("msgnum number", 0, MSGNUMSW) \
+    X("msgcur flag", 0, MSGCURSW) \
+    X("msgsize size", 0, MSGSIZESW) \
+    X("unseen flag", 0, UNSEENSW) \
     X("version", 0, VERSIONSW) \
     X("-component-name component-text", 0, OTHERSW) \
     X("help", 0, HELPSW) \
@@ -60,12 +65,12 @@ main (int argc, char **argv)
 {
     char *cp, *form = NULL, *format = NULL, *folder = NULL;
     char buf[BUFSIZ], *nfs, **argp, **arguments;
-    char **compargs = NULL;
     struct format *fmt;
     struct comp *cptr;
-    struct msgs_array msgs = { 0, 0, NULL };
-    int dump = 0, compp = 0, comppalloc = 0, i;
-    int width = 0, bufsize = 0;
+    struct msgs_array msgs = { 0, 0, NULL }, compargs = { 0, 0, NULL};
+    int dump = 0, i;
+    int outputsize = 0, bufsize = 0;
+    int colwidth = -1, msgnum = -1, msgcur = -1, msgsize = -1, msgunseen = -1;
     int dat[5];
 
 #ifdef LOCALE
@@ -86,17 +91,11 @@ main (int argc, char **argv)
 	     * save the component name and the next argument for the text.
 	     */
 	    if (*++cp == '-') {
-	    	/* it's -3 because of this ptr, next ptr, and trailing NULL */
-	    	if (compp > comppalloc - 3) {
-		    comppalloc += 32;
-		    compargs = (char **) mh_xrealloc(compargs, sizeof(char *) *
-		    						comppalloc);
-		}
-	        compargs[compp++] = --cp;
+		app_msgarg(&compargs, --cp);
 		/* Grab next argument for component text */
 		if (!(cp = *argp++))
 		    adios(NULL, "missing argument to %s", argp[-2]);
-		compargs[compp++] = cp;
+		app_msgarg(&compargs, cp);
 		continue;
 	    }
 	    switch (smatch (cp, switches)) {
@@ -120,7 +119,10 @@ main (int argc, char **argv)
 		case WIDTHSW:
 		    if (!(cp = *argp++) || *cp == '-')
 		    	adios(NULL, "missing argument to %s", argp[-2]);
-		    width = atoi(cp);
+		    if (strcmp(cp, "max") == 0)
+		    	outputsize = -1;
+		    else
+			outputsize = atoi(cp);
 		    continue;
 		case BUFSZSW:
 		    if (!(cp = *argp++) || *cp == '-')
@@ -154,9 +156,6 @@ main (int argc, char **argv)
 	    app_msgarg(&msgs, cp);
     }
 
-    if (compargs)
-    	compargs[compp] = NULL;
-
     /*
      * Here's our weird heuristic:
      *
@@ -166,7 +165,7 @@ main (int argc, char **argv)
      * - The arguments are interpreted as folders/messages.
      */
 
-   if (!dump && !compargs && msgs.size == 0) {
+   if (!dump && compargs.size == 0 && msgs.size == 0) {
    	adios (NULL, "usage: [switches] [+folder] msgs...]", invo_name);
    }
 
@@ -176,26 +175,31 @@ main (int argc, char **argv)
     nfs = new_fs (form, format, FORMAT);
     (void) fmt_compile(nfs, &fmt, 1);
 
-    if (dump)
+    if (dump) {
 	fmt_dump(nfs, fmt);
-
-    if (compargs) {
-    	for (i = 0; compargs[i] != NULL; i += 2) {
-	    cptr = fmt_findcomp(compargs[i]);
-	    if (cptr)
-	    	cptr->c_text = getcpy(compargs[i + 1]);
-	}
+	if (compargs.size == 0 && msgs.size == 0)
+	    done(0);
     }
 
-    if (width == 0)
-    	width = sc_width();
+    if (compargs.size) {
+    	for (i = 0; i < compargs.size; i += 2) {
+	    cptr = fmt_findcomp(compargs.msgs[i]);
+	    if (cptr)
+	    	cptr->c_text = getcpy(compargs.msgs[i + 1]);
+	}
+    }
 
     /*
      * If we don't specify a buffer size, allocate a default one.
      */
 
-    if (bufsize == 0) {
-    }
+    if (bufsize == 0)
+    	bufsize = BUFSIZ;
+
+    if (outputsize < 0)
+    	outputsize = bufsize - 1;	/* For the trailing NUL */
+    else if (outputsize == 0)
+    	outputsize = sc_width();
 
     fmt_free(fmt, 1);
 
