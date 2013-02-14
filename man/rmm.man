@@ -1,4 +1,4 @@
-.TH RMM %manext1% "November 9, 2010" "%nmhversion%"
+.TH RMM %manext1% "February 13, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -49,6 +49,13 @@ then instead of simply renaming the message file,
 will call
 the named program or script to handle the files that represent the
 messages to be deleted.
+.PP
+An example of a
+.I rmmproc
+script that saves a message based in its Message-ID is provided in
+%etcdir%/rmmproc.messageid.  To enable it, simply add a
+.I rmmproc
+component that names it to your profile.
 .PP
 Some users of
 .B csh
