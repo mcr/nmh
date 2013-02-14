@@ -253,7 +253,7 @@ cur		integer	message is current (0 or 1)
 unseen		integer	message is unseen (0 or 1)
 size		integer	size of message
 strlen		integer	length of \fIstr\fR
-width		integer	output buffer size in bytes
+width		integer	column width of terminal
 charleft		integer	bytes left in output buffer
 timenow		integer	seconds since the UNIX epoch
 me		string	the user's mailbox (username)
