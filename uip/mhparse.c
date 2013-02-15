@@ -37,10 +37,14 @@ int checksw = 0;	/* check Content-MD5 field */
 char *tmp;
 
 /*
- * Instruct parser not to detect invalid Content-Transfer-Encoding
- * in a multipart.
+ * These are for mhfixmsg to:
+ * 1) Instruct parser not to detect invalid Content-Transfer-Encoding
+ *    in a multipart.
+ * 2) Suppress the warning about bogus multipart content, and report it.
  */
 int skip_mp_cte_check;
+int suppress_bogus_mp_content_warning;
+int bogus_mp_content;
 
 /*
  * Structures for TEXT messages
@@ -1243,7 +1247,11 @@ end_part:
 	}
     }
 
-    advise (NULL, "bogus multipart content in message %s", ct->c_file);
+    if (suppress_bogus_mp_content_warning) {
+        bogus_mp_content = 1;
+    } else {
+        advise (NULL, "bogus multipart content in message %s", ct->c_file);
+    }
     if (!inout && part) {
 	p = part->mp_part;
 	p->c_end = ct->c_end;
