@@ -12,13 +12,18 @@
 #include <h/fmt_compile.h>
 #include <h/utils.h>
 #include <h/scansbr.h>
+#include <h/addrsbr.h>
 
 #define FMTTEST_SWITCHES \
     X("form formatfile", 0, FORMSW) \
     X("format string", 5, FMTSW) \
     X("dump", 0, DUMPSW) \
     X("address", 0, ADDRSW) \
+    X("raw", 0, RAWSW) \
     X("date", 0, DATESW) \
+    X("message", 0, MESSAGESW) \
+    X("normalize", 0, NORMSW) \
+    X("nonormalize", 0, NNORMSW) \
     X("outsize size-in-characters", 0, OUTSIZESW) \
     X("bufsize size-in-bytes", 0, BUFSZSW) \
     X("width column-width", 0, WIDTHSW) \
@@ -46,11 +51,16 @@ static struct format **lvec = NULL;
 static int lused = 0;
 static int lallocated = 0;
 
+enum mode_t { MESSAGE, ADDRESS, RAW };
+#define DEFADDRFORMAT "%<{error}%{error}: %{text}%|%(putstr(proper{text}))%>"
+#define DEFDATEFORMAT "%<(nodate{text})error: %{text}%|%(putstr(pretty{text}))%>"
+
 /*
  * static prototypes
  */
 static void fmt_dump (char *, struct format *);
 static void dumpone(struct format *);
+static void initlabels(struct format *);
 static int findlabel(struct format *);
 static void assignlabel(struct format *);
 static char *f_typestr(int);
@@ -58,19 +68,27 @@ static char *c_typestr(int);
 static char *c_flagsstr(int);
 static void litputs(char *);
 static void litputc(char);
+static void process_addresses(struct format *, struct msgs_array *, char *,
+			      int, int, int *, int);
+static void process_raw(struct format *, struct msgs_array *, char *,
+			int, int, int *);
+static void process_messages(struct format *, struct msgs_array *,
+			     struct msgs_array *, char *, int, int, int *);
 
 
 int
 main (int argc, char **argv)
 {
-    char *cp, *form = NULL, *format = NULL, *folder = NULL;
-    char buf[BUFSIZ], *nfs, **argp, **arguments;
+    char *cp, *form = NULL, *format = NULL, *defformat = FORMAT, *folder = NULL;
+    char buf[BUFSIZ], *nfs, **argp, **arguments, *buffer;
     struct format *fmt;
     struct comp *cptr;
     struct msgs_array msgs = { 0, 0, NULL }, compargs = { 0, 0, NULL};
     int dump = 0, i;
     int outputsize = 0, bufsize = 0;
     int colwidth = -1, msgnum = -1, msgcur = -1, msgsize = -1, msgunseen = -1;
+    int normalize = AD_HOST;
+    enum mode_t mode = MESSAGE;
     int dat[5];
 
 #ifdef LOCALE
@@ -116,11 +134,13 @@ main (int argc, char **argv)
 		    adios(NULL, "internal argument error!");
 		    continue;
 
-		case WIDTHSW:
+		case OUTSIZESW:
 		    if (!(cp = *argp++) || *cp == '-')
 		    	adios(NULL, "missing argument to %s", argp[-2]);
 		    if (strcmp(cp, "max") == 0)
 		    	outputsize = -1;
+		    else if (strcmp(cp, "width") == 0)
+		    	outputsize = sc_width();
 		    else
 			outputsize = atoi(cp);
 		    continue;
@@ -141,13 +161,67 @@ main (int argc, char **argv)
 		    form = NULL;
 		    continue;
 
+		case NORMSW:
+		    normalize = AD_HOST;
+		    continue;
+		case NNORMSW:
+		    normalize = AD_NHST;
+		    continue;
+
+		case ADDRSW:
+		    mode = ADDRESS;
+		    defformat = DEFADDRFORMAT;
+		    continue;
+		case RAWSW:
+		    mode = RAW;
+		    continue;
+		case MESSAGESW:
+		    mode = MESSAGE;
+		    defformat = FORMAT;
+		    continue;
+		case DATESW:
+		    mode = RAW;
+		    defformat = DEFDATEFORMAT;
+		    continue;
+
+		case WIDTHSW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    colwidth = atoi(cp);
+		    continue;
+		case MSGNUMSW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    msgnum = atoi(cp);
+		    continue;
+		case MSGCURSW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    msgcur = atoi(cp);
+		    continue;
+		case MSGSIZESW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    msgsize = atoi(cp);
+		    continue;
+		case UNSEENSW:
+		    if (!(cp = *argp++) || *cp == '-')
+		    	adios(NULL, "missing argument to %s", argp[-2]);
+		    msgunseen = atoi(cp);
+		    continue;
+
 		case DUMPSW:
 		    dump++;
 		    continue;
 
 	    }
 	}
-	if (*cp == '+' || *cp == '@') {
+
+	/*
+	 * Only interpret as a folder if we're in message mode
+	 */
+
+	if (mode == MESSAGE && (*cp == '+' || *cp == '@')) {
 	    if (folder)
 	    	adios (NULL, "only one folder at a time!");
 	    else
@@ -162,31 +236,25 @@ main (int argc, char **argv)
      * - We allow -dump without any other arguments.
      * - If you've given any component arguments, we don't require any
      *   other arguments.
-     * - The arguments are interpreted as folders/messages.
+     * - The arguments are interpreted as folders/messages _if_ we're in
+     *   message mode, otherwise pass as strings in the text component.
      */
 
    if (!dump && compargs.size == 0 && msgs.size == 0) {
-   	adios (NULL, "usage: [switches] [+folder] msgs...]", invo_name);
+   	adios (NULL, "usage: [switches] [+folder] msgs | strings...",
+	       invo_name);
    }
 
     /*
      * Get new format string.  Must be before chdir().
      */
-    nfs = new_fs (form, format, FORMAT);
+    nfs = new_fs (form, format, defformat);
     (void) fmt_compile(nfs, &fmt, 1);
 
     if (dump) {
 	fmt_dump(nfs, fmt);
 	if (compargs.size == 0 && msgs.size == 0)
 	    done(0);
-    }
-
-    if (compargs.size) {
-    	for (i = 0; i < compargs.size; i += 2) {
-	    cptr = fmt_findcomp(compargs.msgs[i]);
-	    if (cptr)
-	    	cptr->c_text = getcpy(compargs.msgs[i + 1]);
-	}
     }
 
     /*
@@ -196,10 +264,42 @@ main (int argc, char **argv)
     if (bufsize == 0)
     	bufsize = BUFSIZ;
 
+    buffer = mh_xmalloc(bufsize);
+
     if (outputsize < 0)
     	outputsize = bufsize - 1;	/* For the trailing NUL */
-    else if (outputsize == 0)
-    	outputsize = sc_width();
+    else if (outputsize == 0) {
+    	if (mode == ADDRESS) 
+	    outputsize = sc_width();
+	else
+	    outputsize = bufsize - 1;
+    }
+
+    dat[0] = msgnum;
+    dat[1] = msgcur;
+    dat[2] = msgsize;
+    dat[3] = colwidth == -1 ? outputsize : colwidth;
+    dat[4] = msgunseen;
+
+    if (mode == MESSAGE) {
+    	process_messages(fmt, &compargs, &msgs, buffer, bufsize, outputsize,
+			 dat);
+    } else {
+	if (compargs.size) {
+	    for (i = 0; i < compargs.size; i += 2) {
+		cptr = fmt_findcomp(compargs.msgs[i]);
+		if (cptr)
+		    cptr->c_text = getcpy(compargs.msgs[i + 1]);
+	    }
+	}
+
+	if (mode == ADDRESS) {
+    	    fmt_norm = normalize;
+	    process_addresses(fmt, &msgs, buffer, bufsize, outputsize, dat,
+	    		      normalize);
+	} else
+	    process_raw(fmt, &msgs, buffer, bufsize, outputsize, dat);
+    }
 
     fmt_free(fmt, 1);
 
@@ -207,32 +307,109 @@ main (int argc, char **argv)
     return 1;
 }
 
+/*
+ * Process each address with fmt_scan().
+ */
+
+struct pqpair {
+    char *pq_text;
+    char *pq_error;
+    struct pqpair *pq_next;
+};
+
+static void
+process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
+		  int bufsize, int outwidth, int *dat, int norm)
+{
+    int i;
+    char *cp, error[BUFSIZ];
+    struct mailname *mp;
+    struct pqpair *p, *q;
+    struct pqpair pq;
+    struct comp *c;
+
+    if (dat[0] == -1)
+    	dat[0] = 0;
+    if (dat[1] == -1)
+    	dat[1] = 0;
+    if (dat[2] == -1)
+    	dat[2] = 0;
+    if (dat[4] == -1)
+    	dat[4] = 0;
+
+    for (i = 0; i < addrs->size; i++) {
+    	(q = &pq)->pq_next = NULL;
+	while ((cp = getname(addrs->msgs[i]))) {
+	    if ((p = (struct pqpair *) calloc ((size_t) 1, sizeof(*p))) == NULL)
+	    	adios (NULL, "unable to allocate pqpair memory");
+	    if ((mp = getm(cp, NULL, 0, norm, error)) == NULL) {
+	    	p->pq_text = getcpy(cp);
+		p->pq_error = getcpy(error);
+	    } else {
+	    	p->pq_text = getcpy(mp->m_text);
+		mnfree(mp);
+	    }
+	    q = (q->pq_next = p);
+	}
+
+	for (p = pq.pq_next; p; p = q) {
+	    c = fmt_findcomp("text");
+	    if (c) {
+	    	if (c->c_text)
+		    free(c->c_text);
+		c->c_text = p->pq_text;
+		p->pq_text = NULL;
+	    }
+	    c = fmt_findcomp("error");
+	    if (c) {
+	    	if (c->c_text)
+		    free(c->c_text);
+		c->c_text = p->pq_error;
+		p->pq_error = NULL;
+	    }
+
+	    fmt_scan(fmt, buffer, bufsize, outwidth, dat);
+	    fputs(buffer, stdout);
+
+	    if (p->pq_text)
+	    	free(p->pq_text);
+	    if (p->pq_error)
+	    	free(p->pq_error);
+	    q = p->pq_next;
+	    free(p);
+	}
+    }
+}
+
+/*
+ * Process messages and run them through the format engine
+ */
+
+static void
+process_messages(struct format *fmt, struct msgs_array *comps,
+		 struct msgs_array *msgs, char *buffer, int bufsize,
+		 int outwidth, int *dat)
+{
+}
+
+/*
+ * Run text through the format engine with no special processing
+ */
+
+static void
+process_raw(struct format *fmt, struct msgs_array *text, char *buffer,
+	    int bufsize, int outwidth, int *dat)
+{
+}
+
 static void
 fmt_dump (char *nfs, struct format *fmth)
 {
-	int i;
-	register struct format *fmt, *addr;
+	struct format *fmt;
 
 	printf("Instruction dump of format string: \n%s\n", nfs);
 
-	/* Assign labels */
-	for (fmt = fmth; fmt; ++fmt) {
-		i = fmt->f_type;
-		if (i == FT_IF_S ||
-		    i == FT_IF_S_NULL ||
-		    i == FT_IF_V_EQ ||
-		    i == FT_IF_V_NE ||
-		    i == FT_IF_V_GT ||
-		    i == FT_IF_MATCH ||
-		    i == FT_IF_AMATCH ||
-		    i == FT_GOTO) {
-			addr = fmt + fmt->f_skip;
-			if (findlabel(addr) < 0)
-				assignlabel(addr);
-		}
-		if (fmt->f_type == FT_DONE && fmt->f_value == 0)
-			break;
-	}
+	initlabels(fmth);
 
 	/* Dump them out! */
 	for (fmt = fmth; fmt; ++fmt) {
@@ -418,6 +595,38 @@ dumpone(struct format *fmt)
 	}
 	putchar('\n');
 }
+
+/*
+ * Iterate over all instructions and assign labels to the targets of
+ * branch statements
+ */
+
+static void
+initlabels(struct format *fmth)
+{
+	struct format *fmt, *addr;
+	int i;
+
+	/* Assign labels */
+	for (fmt = fmth; fmt; ++fmt) {
+		i = fmt->f_type;
+		if (i == FT_IF_S ||
+		    i == FT_IF_S_NULL ||
+		    i == FT_IF_V_EQ ||
+		    i == FT_IF_V_NE ||
+		    i == FT_IF_V_GT ||
+		    i == FT_IF_MATCH ||
+		    i == FT_IF_AMATCH ||
+		    i == FT_GOTO) {
+			addr = fmt + fmt->f_skip;
+			if (findlabel(addr) < 0)
+				assignlabel(addr);
+		}
+		if (fmt->f_type == FT_DONE && fmt->f_value == 0)
+			break;
+	}
+}
+
 
 static int
 findlabel(struct format *addr)
