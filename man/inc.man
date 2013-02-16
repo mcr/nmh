@@ -1,4 +1,4 @@
-.TH INC %manext1% "November 6, 2012" "%nmhversion%"
+.TH INC %manext1% "February 16, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -152,6 +152,13 @@ to incorporate messages from a file other than the user's maildrop.
 Note that the name file will NOT be zeroed, unless the
 .B \-truncate
 switch is given.
+.PP
+The
+.B \-file
+switch does not support use of standard input.  Instead,
+the
+.B rcvstore
+command can be used to incorporate mail from the standard input stream.
 .PP
 If the environment variable
 .B $MAILDROP
@@ -325,7 +332,8 @@ To name sequences denoting unseen messages.
 .IR mhmail (1),
 .IR scan (1),
 .IR mh\-mail (5),
-.IR post (8)
+.IR post (8),
+.IR rcvstore (1)
 .SH DEFAULTS
 .PD 0
 .TP 20
