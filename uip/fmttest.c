@@ -73,7 +73,8 @@ static void process_addresses(struct format *, struct msgs_array *, char *,
 static void process_raw(struct format *, struct msgs_array *, char *,
 			int, int, int *);
 static void process_messages(struct format *, struct msgs_array *,
-			     struct msgs_array *, char *, int, int, int *);
+			     struct msgs_array *, char *, char *, int,
+			     int, int *);
 
 
 int
@@ -282,8 +283,8 @@ main (int argc, char **argv)
     dat[4] = msgunseen;
 
     if (mode == MESSAGE) {
-    	process_messages(fmt, &compargs, &msgs, buffer, bufsize, outputsize,
-			 dat);
+    	process_messages(fmt, &compargs, &msgs, buffer, folder, bufsize,
+			 outputsize, dat);
     } else {
 	if (compargs.size) {
 	    for (i = 0; i < compargs.size; i += 2) {
@@ -295,8 +296,8 @@ main (int argc, char **argv)
 
 	if (mode == ADDRESS) {
     	    fmt_norm = normalize;
-	    process_addresses(fmt, &msgs, buffer, bufsize, outputsize, dat,
-	    		      normalize);
+	    process_addresses(fmt, &msgs, buffer, bufsize, outputsize,
+	    		      dat, normalize);
 	} else
 	    process_raw(fmt, &msgs, buffer, bufsize, outputsize, dat);
     }
@@ -387,9 +388,35 @@ process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
 
 static void
 process_messages(struct format *fmt, struct msgs_array *comps,
-		 struct msgs_array *msgs, char *buffer, int bufsize,
-		 int outwidth, int *dat)
+		 struct msgs_array *msgs, char *buffer, char *folder,
+		 int bufsize, int outwidth, int *dat)
 {
+    int i;
+    char *maildir;
+    struct msgs *mp;
+
+    if (! folder)
+    	folder = getfolder(1);
+
+    maildir = m_maildir(folder);
+
+    if (chdir(maildir) < 0)
+    	adios(maildir, "unable to change directory to");
+
+    if (!(mp = folder_read(folder)))
+    	adios(NULL, "unable to read folder %s", folder);
+
+    if (mp->nummsg == 0)
+    	adios(NULL, "no messages in %s", folder);
+
+    for (i = 0; i < msgs->size; i++)
+    	if (!m_convert(mp, msgs->msgs[i]))
+	    done(1);
+    seq_setprev(mp);			/* set the Previous-Sequence */
+
+    context_replace(pfolder, folder);	/* update curren folder */
+    seq_save(mp);			/* synchronize message sequences */
+    context_save();			/* save the context file */
 }
 
 /*
@@ -400,6 +427,30 @@ static void
 process_raw(struct format *fmt, struct msgs_array *text, char *buffer,
 	    int bufsize, int outwidth, int *dat)
 {
+    int i;
+    struct comp *c;
+
+    if (dat[0] == -1)
+    	dat[0] = 0;
+    if (dat[1] == -1)
+    	dat[1] = 0;
+    if (dat[2] == -1)
+    	dat[2] = 0;
+    if (dat[4] == -1)
+    	dat[4] = 0;
+
+    c = fmt_findcomp("text");
+
+    for (i = 0; i < text->size; i++) {
+    	if (c != NULL) {
+	    if (c->c_text != NULL)
+	    	free(c->c_text);
+	    c->c_text = getcpy(text->msgs[i]);
+	}
+
+	fmt_scan(fmt, buffer, bufsize, outwidth, dat);
+	fputs(buffer, stdout);
+    }
 }
 
 static void
