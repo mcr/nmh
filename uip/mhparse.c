@@ -1247,11 +1247,11 @@ end_part:
 	}
     }
 
-    if (suppress_bogus_mp_content_warning) {
-        bogus_mp_content = 1;
-    } else {
+    if (! suppress_bogus_mp_content_warning) {
         advise (NULL, "bogus multipart content in message %s", ct->c_file);
     }
+    bogus_mp_content = 1;
+
     if (!inout && part) {
 	p = part->mp_part;
 	p->c_end = ct->c_end;
