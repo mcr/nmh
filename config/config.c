@@ -68,8 +68,13 @@ try_it:
 
 	default: 
 	    /* Check nmh Mail directory */
-	    if (access ((cp = m_mailpath (file)), R_OK) != NOTOK)
+	    if (access ((cp = m_mailpath (file)), R_OK) != NOTOK) {
+		/* Will leak because caller doesn't know cp was
+		   dynamically allocated. */
 		return cp;
+	    } else {
+		free (cp);
+	    }
     }
 
     /* Check nmh `etc' directory */
