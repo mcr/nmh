@@ -161,7 +161,14 @@ output_content (CT ct, FILE *out)
     default:
 	switch (ct->c_encoding) {
 	case CE_7BIT:
-	    putc ('\n', out);
+	    /* Special case:  if this is a non-MIME message with no
+	       body, don't emit the newline that would appear between
+	       the headers and body.  In that case, the call to
+	       write8Bit() shouldn't be needed, but is harmless. */
+	    if (ct->c_ctinfo.ci_attrs[0] != NULL  ||
+		ct->c_begin != ct->c_end) {
+		putc ('\n', out);
+	    }
 	    result = write8Bit (ct, out);
 	    break;
 
