@@ -74,7 +74,5 @@ int isfrom(char *);
 int lequal (char *, char *);
 int mfgets (FILE *, char **);
 char *legal_person (char *);
-struct adrx *seekadrx (char *);
 struct adrx *getadrx (char *);
-struct adrx *uucpadrx (char *);
 
