@@ -38,7 +38,7 @@ messages.
 .PP
 .B mhstore
 manipulates multi-media messages as specified in
-RFC\-2045 thru RFC\-2049.
+RFC\-2045 to RFC\-2049.
 .PP
 By default,
 .B mhstore

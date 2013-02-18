@@ -38,7 +38,7 @@ message or collection of messages.
 .PP
 .B mhshow
 manipulates multi-media messages as specified in
-RFC\-2045 thru RFC\-2049.  Currently
+RFC\-2045 to RFC\-2049.  Currently
 .B mhshow
 only supports
 encodings in message bodies, and does not support the encoding of

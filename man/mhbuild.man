@@ -28,7 +28,7 @@ a valid MIME message.
 .PP
 .B mhbuild
 creates multi-media messages as specified in RFC\-2045
-thru RFC\-2049.  Currently
+to RFC\-2049.  Currently
 .B mhbuild
 only supports encodings in
 message bodies, and does not support the encoding of message headers as

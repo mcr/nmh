@@ -38,7 +38,7 @@ MIME (multi-media) messages.
 .PP
 .B mhlist
 manipulates MIME (multi-media messages) as specified
-in RFC\-2045 thru RFC\-2049 (See
+in RFC\-2045 to RFC\-2049 (See
 .IR mhbuild (1)).
 .PP
 The
