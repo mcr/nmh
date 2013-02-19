@@ -1336,7 +1336,6 @@ whomfile (char **arg, char *file)
 
 	case OK:
 	    vec = argsplit(whomproc, &program, &vecp);
-	    vec[vecp++] = r1bindex (whomproc, '/');
 	    vec[vecp++] = file;
 	    if (arg)
 		while (*arg)
