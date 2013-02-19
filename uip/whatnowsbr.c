@@ -852,7 +852,6 @@ sendfile (char **arg, char *file, int pushsw)
 	    advise (NULL, "unable to fork, so sending directly...");
 	case OK:
 	    vec = argsplit(sendproc, &program, &vecp);
-	    vec[vecp++] = invo_name;
 	    if (pushsw)
 		vec[vecp++] = "-push";
 	    if (arg)
