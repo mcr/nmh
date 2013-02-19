@@ -1,4 +1,4 @@
-.TH RCVSTORE %manext1% "January 18, 2001" "%nmhversion%"
+.TH RCVSTORE %manext1% "February 18, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -98,6 +98,17 @@ and
 .B \-nopublic
 switches may be used
 to force these sequences to be public or private sequences.
+.SS LOCKING AND \-unseen
+If you use the \*(lqUnseen-Sequence\*(rq profile entry, rcvstore could
+try to read and update its sequence state while another
+.B nmh
+process is also trying to do so.  This can cause the sequence state to
+lose track.  To avoid this just between asynchronous invocations of
+.BR rcvstore ,
+do not use it without an external locking mechanism, for example, a
+.IR procmailrc (5)
+local lockfile, if you use the \*(lqUnseen-Sequence\*(rq profile
+entry.
 .SH FILES
 .fc ^ ~
 .nf
@@ -119,7 +130,9 @@ to force these sequences to be public or private sequences.
 .IR rcvdist (1),
 .IR rcvpack (1),
 .IR rcvtty (1),
-.IR mh\-sequence (5)
+.IR mh\-sequence (5),
+.IR procmailex (5),
+.IR procmailrc (5)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to \*(lqInbox\*(rq profile entry"
