@@ -383,7 +383,8 @@ process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
 }
 
 /*
- * Process messages and run them through the format engine
+ * Process messages and run them through the format engine.  A lot taken
+ * from scan.c.
  */
 
 static void
@@ -391,9 +392,11 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 		 struct msgs_array *msgs, char *buffer, char *folder,
 		 int bufsize, int outwidth, int *dat)
 {
-    int i;
-    char *maildir;
+    int i, state, msgnum, msgsize = dat[2], num = dat[0], cur = dat[1];
+    int num_unseen_seq = 0, seqnum[NUMATTRS];
+    char *maildir, *cp, name[NAMESZ], rbuf[BUFSIZ];
     struct msgs *mp;
+    FILE *in;
 
     if (! folder)
     	folder = getfolder(1);
@@ -417,6 +420,113 @@ process_messages(struct format *fmt, struct msgs_array *comps,
     context_replace(pfolder, folder);	/* update curren folder */
     seq_save(mp);			/* synchronize message sequences */
     context_save();			/* save the context file */
+
+    /*
+     * We want to set the unseen flag if requested, so we have to check
+     * the unseen sequence as well.
+     */
+
+    if (dat[4] == -1) {
+    	if ((cp = context_find(usequence)) && *cp) {
+	    char **ap, *dp;
+
+	    dp = getcpy(cp);
+	    ap = brkstring(dp, " ", "\n");
+	    for (i = 0; ap && *ap; i++, ap++)
+	    	seqnum[i] = seq_getnum(mp, *ap);
+		
+	    num_unseen_seq = i;
+	    if (dp)
+	    	free(dp);
+	}
+    }
+
+    for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
+    	if (is_selected(mp, msgnum)) {
+	    if ((in = fopen(cp = m_name(msgnum), "r")) == NULL) {
+	    	admonish(cp, "unable to open message");
+		continue;
+	    }
+
+	    fmt_freecomptext();
+
+	    if (num == -1)
+	    	dat[0] = msgnum;
+
+	    if (cur == -1)
+	    	dat[1] = msgnum == mp->curmsg;
+
+	    /*
+	     * Get our size if we didn't include one
+	     */
+
+	    if (msgsize == -1) {
+	    	struct stat st;
+
+		if (fstat(fileno(in), &st) < 0)
+		    dat[2] = 0;
+		else
+		    dat[2] = st.st_size;
+	    }
+
+	    /*
+	     * Check to see if this is in the unseen sequence
+	     */
+
+	    dat[4] = 0;
+	    for (i = 0; i < num_unseen_seq; i++) {
+	    	if (in_sequence(mp, seqnum[i], msgnum)) {
+		    dat[4] = 1;
+		    break;
+		}
+	    }
+
+	    /*
+	     * Read in the message and process the components
+	     */
+
+	    for (state = FLD;;) {
+	    	state = m_getfld(state, name, rbuf, sizeof(rbuf), in);
+		switch (state) {
+		case FLD:
+		case FLDPLUS:
+		    i = fmt_addcomptext(name, rbuf);
+		    if (i != -1) {
+		    	while (state == FLDPLUS) {
+			    state = m_getfld(state, name, rbuf,
+			    		     sizeof(rbuf), in);
+			    fmt_appendcomp(i, name, rbuf);
+			}
+		    }
+
+		    while (state == FLDPLUS)
+		    	state = m_getfld(state, name, rbuf,
+					 sizeof(rbuf), in);
+		    break;
+
+		case BODY:
+		    if (fmt_findcomp("body")) {
+			if ((i = strlen(rbuf)) < outwidth)
+			    state = m_getfld(state, name, rbuf + i,
+			    		     outwidth - 1, in);
+
+			fmt_addcomptext("body", rbuf);
+		    }
+		    /* fall through */
+
+		default:
+		    goto finished;
+		}
+	    }
+finished:
+	    fclose(in);
+	    fmt_scan(fmt, buffer, bufsize, outwidth, dat);
+	    fputs(buffer, stdout);
+	}
+    }
+
+    folder_free(mp);
+    return;
 }
 
 /*

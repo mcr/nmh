@@ -857,6 +857,24 @@ fmt_free(struct format *fmt, int reset_comptable)
 }
 
 /*
+ * Free just the text strings from all of the component hash table entries
+ */
+
+void
+fmt_freecomptext(void)
+{
+    unsigned int i;
+    struct comp *cm;
+
+    for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++)
+    	for (cm = wantcomp[i]; cm; cm = cm->c_next)
+	    if (cm->c_text) {
+	    	free(cm->c_text);
+		cm->c_text = NULL;
+	    }
+}
+	
+/*
  * Find a component in our hash table.  This is just a public interface to
  * the FINDCOMP macro, so we don't have to expose our hash table.
  */

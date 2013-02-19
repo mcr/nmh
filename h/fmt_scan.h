@@ -159,6 +159,12 @@ struct format *fmt_scan (struct format *format, char *scanl, size_t max,
 void fmt_free (struct format *fmt, int reset);
 
 /*
+ * Free all of the component text structures in the component hash table
+ */
+
+void fmt_freecomptext(void);
+
+/*
  * Search for a component structure in the component hash table.  Arguments are:
  *
  * component	- The name of the component to search for.  By convention
