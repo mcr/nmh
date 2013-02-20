@@ -28,6 +28,8 @@
     X("noccme", 0, NCCMESW) \
     X("normalize", 0, NORMSW) \
     X("nonormalize", 0, NNORMSW) \
+    X("trace", 0, TRACESW) \
+    X("notrace", 0, NTRACESW) \
     X("outsize size-in-characters", 0, OUTSIZESW) \
     X("bufsize size-in-bytes", 0, BUFSZSW) \
     X("width column-width", 0, WIDTHSW) \
@@ -60,6 +62,16 @@ enum mode_t { MESSAGE, ADDRESS, RAW };
 #define DEFDATEFORMAT "%<(nodate{text})error: %{text}%|%(putstr(pretty{text}))%>"
 
 /*
+ * Context structure used by the tracing routines
+ */
+
+struct trace_context {
+    int num;
+    char *str;
+    char *outbuf;
+};
+
+/*
  * static prototypes
  */
 static void fmt_dump (char *, struct format *);
@@ -79,6 +91,7 @@ static void process_raw(struct format *, struct msgs_array *, char *,
 static void process_messages(struct format *, struct msgs_array *,
 			     struct msgs_array *, char *, char *, int,
 			     int, int *, struct fmt_callbacks *);
+static void test_trace(void *, struct format *, int, char *, char *);
 static char *test_formataddr(char *, char *);
 static char *test_concataddr(char *, char *);
 static int insert(struct mailname *);
@@ -87,6 +100,7 @@ static void mlistfree(void);
 static int nodupcheck = 0;	/* If set, no check for duplicates */
 static int ccme = 0;		/* Should I cc myself? */
 static struct mailname mq;	/* Mail addresses to check for duplicates */
+static char *dummy = "dummy";
 
 int
 main (int argc, char **argv)
@@ -97,7 +111,7 @@ main (int argc, char **argv)
     struct comp *cptr;
     struct msgs_array msgs = { 0, 0, NULL }, compargs = { 0, 0, NULL};
     int dump = 0, i;
-    int outputsize = 0, bufsize = 0, dupaddrs = 1;
+    int outputsize = 0, bufsize = 0, dupaddrs = 1, trace = 0;
     int colwidth = -1, msgnum = -1, msgcur = -1, msgsize = -1, msgunseen = -1;
     int normalize = AD_HOST;
     enum mode_t mode = MESSAGE;
@@ -181,6 +195,13 @@ main (int argc, char **argv)
 		    continue;
 		case NNORMSW:
 		    normalize = AD_NHST;
+		    continue;
+
+		case TRACESW:
+		    trace++;
+		    continue;
+		case NTRACESW:
+		    trace = 0;
 		    continue;
 
 		case ADDRSW:
@@ -281,10 +302,13 @@ main (int argc, char **argv)
     nfs = new_fs (form, format, defformat);
     (void) fmt_compile(nfs, &fmt, 1);
 
-    if (dump) {
-	fmt_dump(nfs, fmt);
-	if (compargs.size == 0 && msgs.size == 0)
-	    done(0);
+    if (dump || trace) {
+        initlabels(fmt);
+	if (dump) {
+	    fmt_dump(nfs, fmt);
+	    if (compargs.size == 0 && msgs.size == 0)
+		done(0);
+	}
     }
 
     /*
@@ -316,13 +340,28 @@ main (int argc, char **argv)
      * callback, do that now.  Also, prime ismymbox if we use it.
      */
 
-    if (dupaddrs == 0) {
+    if (dupaddrs == 0 || trace) {
     	memset(&cb, 0, sizeof(cb));
-	cb.formataddr = test_formataddr;
-	cb.concataddr = test_concataddr;
 	cbp = &cb;
-	if (!ccme)
-	    ismymbox(NULL);
+
+	if (dupaddrs == 0) {
+	    cb.formataddr = test_formataddr;
+	    cb.concataddr = test_concataddr;
+	    if (!ccme)
+		ismymbox(NULL);
+	}
+
+	if (trace) {
+	    struct trace_context *ctx;
+
+	    ctx = mh_xmalloc(sizeof(*ctx));
+	    ctx->num = -1;
+	    ctx->str = dummy;
+	    ctx->outbuf = getcpy(NULL);
+
+	    cb.trace_func = test_trace;
+	    cb.trace_context = ctx;
+	}
     }
 
     if (mode == MESSAGE) {
@@ -625,14 +664,50 @@ process_raw(struct format *fmt, struct msgs_array *text, char *buffer,
     }
 }
 
+/*
+ * Our basic tracing support callback.
+ *
+ * Print out each instruction as it's executed, including the values of
+ * the num and str registers if they've changed.
+ */
+
+static void
+test_trace(void *context, struct format *fmt, int num, char *str, char *outbuf)
+{
+    struct trace_context *ctx = (struct trace_context *) context;
+    int changed = 0;
+
+    dumpone(fmt);
+
+    if (num != ctx->num) {
+    	printf("num=%d", num);
+	ctx->num = num;
+	changed++;
+    }
+
+    if (str != ctx->str) {
+    	if (changed++)
+	    printf(" ");
+	printf("str=\"%s\"", str ? str : "NULL");
+	ctx->str = str;
+    }
+
+    if (changed)
+    	printf("\n");
+
+    if (strcmp(outbuf, ctx->outbuf) != 0) {
+    	printf("outbuf=\"%s\"\n", outbuf);
+    	free(ctx->outbuf);
+	ctx->outbuf = getcpy(outbuf);
+    }
+}
+
 static void
 fmt_dump (char *nfs, struct format *fmth)
 {
 	struct format *fmt;
 
 	printf("Instruction dump of format string: \n%s\n", nfs);
-
-	initlabels(fmth);
 
 	/* Dump them out! */
 	for (fmt = fmth; fmt; ++fmt) {

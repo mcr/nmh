@@ -463,6 +463,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    break;
 
 	case FT_DONE:
+	    if (callbacks && callbacks->trace_func)
+		callbacks->trace_func(callbacks->trace_context, fmt, value,
+				      str, scanl);
 	    goto finished;
 
 	case FT_IF_S:
@@ -1001,6 +1004,14 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    }
 	    break;
 	}
+
+	/*
+	 * Call our tracing callback function, if one was supplied
+	 */
+
+	if (callbacks && callbacks->trace_func)
+	    callbacks->trace_func(callbacks->trace_context, fmt, value,
+	    			  str, scanl);
 	fmt++;
     }
 
@@ -1008,6 +1019,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
     while (fmt->f_type != FT_DONE) {
 	if (fmt->f_type == FT_LS_LIT) {
 	    str = fmt->f_text;
+	    if (callbacks && callbacks->trace_func)
+		callbacks->trace_func(callbacks->trace_context, fmt, value,
+				      str, scanl);
 	} else if (fmt->f_type == FT_STRLITZ) {
 	    /* Don't want to emit part of an escape sequence.  So if
 	       there isn't enough room in the buffer for the entire
@@ -1016,6 +1030,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    if (cp - scanl + strlen (str) + 1 < max) {
 		for (sp = str; *sp; *cp++ = *sp++) continue;
 	    }
+	    if (callbacks && callbacks->trace_func)
+		callbacks->trace_func(callbacks->trace_context, fmt, value,
+				      str, scanl);
 	}
 	fmt++;
     }
