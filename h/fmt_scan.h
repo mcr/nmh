@@ -82,6 +82,20 @@ struct format {
  */
 
 /*
+ * These are the definitions used by the callbacks for fmt_scan()
+ */
+
+typedef char * (*formataddr_cb)(char *, char *);
+typedef char * (*concataddr_cb)(char *, char *);
+typedef void (*trace_cb)(void *, int, int, char *, char *);
+
+struct fmt_callbacks {
+    formataddr_cb	formataddr;
+    concataddr_cb	concataddr;
+    trace_cb		trace;
+};
+
+/*
  * Create a new format string.  Arguments are:
  *
  * form		- Name of format file.  Will be searched by etcpath(), see that
@@ -140,12 +154,20 @@ int fmt_compile (char *fstring, struct format **fmt, int reset);
  *		dat[3] - %(width)
  *		dat[4] - %(unseen)
  *
+ * callbacks	- A set of a callback functions used by the format engine.
+ *		  Can be NULL.  If structure elements are NULL, a default
+ *		  function will be used.  Callback structure elements are:
+ *
+ *		formataddr	- A callback for the %(formataddr) instruction
+ *		concataddr	- A callback for the %(concataddr) instruction
+ *		trace		- Called for every format instruction executed
+ *
  * The return value is a pointer to the next format instruction to
  * execute, which is currently always NULL.
  */
 
 struct format *fmt_scan (struct format *format, char *scanl, size_t max,
-			 int width, int *dat);
+			 int width, int *dat, struct fmt_callbacks *callbacks);
 
 /*
  * Free a format structure and/or component hash table.  Arguments are:

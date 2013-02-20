@@ -369,7 +369,7 @@ process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
 		p->pq_error = NULL;
 	    }
 
-	    fmt_scan(fmt, buffer, bufsize, outwidth, dat);
+	    fmt_scan(fmt, buffer, bufsize, outwidth, dat, NULL);
 	    fputs(buffer, stdout);
 
 	    if (p->pq_text)
@@ -520,7 +520,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 	    }
 finished:
 	    fclose(in);
-	    fmt_scan(fmt, buffer, bufsize, outwidth, dat);
+	    fmt_scan(fmt, buffer, bufsize, outwidth, dat, NULL);
 	    fputs(buffer, stdout);
 	}
     }
@@ -558,7 +558,7 @@ process_raw(struct format *fmt, struct msgs_array *text, char *buffer,
 	    c->c_text = getcpy(text->msgs[i]);
 	}
 
-	fmt_scan(fmt, buffer, bufsize, outwidth, dat);
+	fmt_scan(fmt, buffer, bufsize, outwidth, dat, NULL);
 	fputs(buffer, stdout);
     }
 }

@@ -328,7 +328,8 @@ get_x400_comp (char *mbox, char *key, char *buffer, int buffer_len)
 }
 
 struct format *
-fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
+fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
+	  struct fmt_callbacks *callbacks)
 {
     char *cp, *ep;
     unsigned char *sp;
@@ -877,12 +878,18 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 
 	case FT_FORMATADDR:
 	    /* hook for custom address list formatting (see replsbr.c) */
-	    str = formataddr (savestr, str);
+	    if (callbacks && callbacks->formataddr)
+		str = callbacks->formataddr (savestr, str);
+	    else
+		str = formataddr (savestr, str);
 	    break;
 
 	case FT_CONCATADDR:
 	    /* The same as formataddr, but doesn't do duplicate suppression */
-	    str = concataddr (savestr, str);
+	    if (callbacks && callbacks->concataddr)
+		str = callbacks->concataddr (savestr, str);
+	    else
+		str = concataddr (savestr, str);
 	    break;
 
 	case FT_PUTADDR:

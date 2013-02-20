@@ -149,7 +149,7 @@ process (char *date, int length)
 	    free(cptr->c_text);
 	cptr->c_text = getcpy(date);
     }
-    fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat);
+    fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat, NULL);
     fputs (buffer, stdout);
 
     return status;

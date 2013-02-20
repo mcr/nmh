@@ -379,7 +379,7 @@ try_it_again:
 	dat[2] = 0;
 	dat[3] = outputlinelen;
 	dat[4] = 0;
-	fmt_scan(fmt, scanl, i + 1, i, dat);
+	fmt_scan(fmt, scanl, i + 1, i, dat, NULL);
 	write(out, scanl, strlen(scanl));
 	free(scanl);
     } else {

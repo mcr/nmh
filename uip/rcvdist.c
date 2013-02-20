@@ -229,7 +229,7 @@ finished: ;
     scanl = mh_xmalloc ((size_t) i + 2);
     dat[0] = dat[1] = dat[2] = dat[4] = 0;
     dat[3] = outputlinelen;
-    fmt_scan (fmt, scanl, i + 1, i, dat);
+    fmt_scan (fmt, scanl, i + 1, i, dat, NULL);
     fputs (scanl, out);
 
     if (ferror (out))
