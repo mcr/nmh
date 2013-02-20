@@ -443,6 +443,9 @@ read_more (m_getfld_state_t s) {
     return num_read;
 }
 
+/* The return values of the following functions are a bit
+   subtle.  They can return 0x00 - 0xff as a valid character,
+   but EOF is typically 0xffffffff. */
 static int
 Getc (m_getfld_state_t s) {
     if (s->end - s->readpos < 1) {
@@ -454,7 +457,7 @@ Getc (m_getfld_state_t s) {
     }
 
     ++s->bytes_read;
-    return s->readpos < s->end  ?  *s->readpos++  :  EOF;
+    return s->readpos < s->end  ?  (unsigned char) *s->readpos++  :  EOF;
 }
 
 static int
@@ -467,7 +470,7 @@ Peek (m_getfld_state_t s) {
 	}
     }
 
-    return s->readpos < s->end  ?  *s->readpos  :  EOF;
+    return s->readpos < s->end  ?  (unsigned char) *s->readpos  :  EOF;
 }
 
 static int
@@ -476,7 +479,7 @@ Ungetc (int c, m_getfld_state_t s) {
 	return EOF;
     } else {
 	--s->bytes_read;
-	return *--s->readpos = c;
+	return *--s->readpos = (unsigned char) c;
     }
 }
 
