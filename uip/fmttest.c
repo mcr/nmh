@@ -22,6 +22,10 @@
     X("raw", 0, RAWSW) \
     X("date", 0, DATESW) \
     X("message", 0, MESSAGESW) \
+    X("dupaddrs", 0, DUPADDRSW) \
+    X("nodupaddrs", 0, NDUPADDRSW) \
+    X("ccme", 0, CCMESW) \
+    X("noccme", 0, NCCMESW) \
     X("normalize", 0, NORMSW) \
     X("nonormalize", 0, NNORMSW) \
     X("outsize size-in-characters", 0, OUTSIZESW) \
@@ -69,13 +73,20 @@ static char *c_flagsstr(int);
 static void litputs(char *);
 static void litputc(char);
 static void process_addresses(struct format *, struct msgs_array *, char *,
-			      int, int, int *, int);
+			      int, int, int *, int, struct fmt_callbacks *);
 static void process_raw(struct format *, struct msgs_array *, char *,
-			int, int, int *);
+			int, int, int *, struct fmt_callbacks *);
 static void process_messages(struct format *, struct msgs_array *,
 			     struct msgs_array *, char *, char *, int,
-			     int, int *);
+			     int, int *, struct fmt_callbacks *);
+static char *test_formataddr(char *, char *);
+static char *test_concataddr(char *, char *);
+static int insert(struct mailname *);
+static void mlistfree(void);
 
+static int nodupcheck = 0;	/* If set, no check for duplicates */
+static int ccme = 0;		/* Should I cc myself? */
+static struct mailname mq;	/* Mail addresses to check for duplicates */
 
 int
 main (int argc, char **argv)
@@ -86,11 +97,12 @@ main (int argc, char **argv)
     struct comp *cptr;
     struct msgs_array msgs = { 0, 0, NULL }, compargs = { 0, 0, NULL};
     int dump = 0, i;
-    int outputsize = 0, bufsize = 0;
+    int outputsize = 0, bufsize = 0, dupaddrs = 1;
     int colwidth = -1, msgnum = -1, msgcur = -1, msgsize = -1, msgunseen = -1;
     int normalize = AD_HOST;
     enum mode_t mode = MESSAGE;
     int dat[5];
+    struct fmt_callbacks cb, *cbp = NULL;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -110,7 +122,9 @@ main (int argc, char **argv)
 	     * save the component name and the next argument for the text.
 	     */
 	    if (*++cp == '-') {
-		app_msgarg(&compargs, --cp);
+	    	if (*++cp == '\0')
+		    adios(NULL, "missing component name after --");
+		app_msgarg(&compargs, cp);
 		/* Grab next argument for component text */
 		if (!(cp = *argp++))
 		    adios(NULL, "missing argument to %s", argp[-2]);
@@ -179,10 +193,25 @@ main (int argc, char **argv)
 		case MESSAGESW:
 		    mode = MESSAGE;
 		    defformat = FORMAT;
+		    dupaddrs = 0;
 		    continue;
 		case DATESW:
 		    mode = RAW;
 		    defformat = DEFDATEFORMAT;
+		    continue;
+
+		case DUPADDRSW:
+		    dupaddrs++;
+		    continue;
+		case NDUPADDRSW:
+		    dupaddrs = 0;
+		    continue;
+
+		case CCMESW:
+		    ccme++;
+		    continue;
+		case NCCMESW:
+		    ccme = 0;
 		    continue;
 
 		case WIDTHSW:
@@ -270,7 +299,7 @@ main (int argc, char **argv)
     if (outputsize < 0)
     	outputsize = bufsize - 1;	/* For the trailing NUL */
     else if (outputsize == 0) {
-    	if (mode == ADDRESS) 
+    	if (mode == MESSAGE) 
 	    outputsize = sc_width();
 	else
 	    outputsize = bufsize - 1;
@@ -282,9 +311,23 @@ main (int argc, char **argv)
     dat[3] = colwidth == -1 ? outputsize : colwidth;
     dat[4] = msgunseen;
 
+    /*
+     * If we want to provide our own formataddr, concactaddr, or tracing
+     * callback, do that now.  Also, prime ismymbox if we use it.
+     */
+
+    if (dupaddrs == 0) {
+    	memset(&cb, 0, sizeof(cb));
+	cb.formataddr = test_formataddr;
+	cb.concataddr = test_concataddr;
+	cbp = &cb;
+	if (!ccme)
+	    ismymbox(NULL);
+    }
+
     if (mode == MESSAGE) {
     	process_messages(fmt, &compargs, &msgs, buffer, folder, bufsize,
-			 outputsize, dat);
+			 outputsize, dat, cbp);
     } else {
 	if (compargs.size) {
 	    for (i = 0; i < compargs.size; i += 2) {
@@ -297,9 +340,9 @@ main (int argc, char **argv)
 	if (mode == ADDRESS) {
     	    fmt_norm = normalize;
 	    process_addresses(fmt, &msgs, buffer, bufsize, outputsize,
-	    		      dat, normalize);
+	    		      dat, normalize, cbp);
 	} else
-	    process_raw(fmt, &msgs, buffer, bufsize, outputsize, dat);
+	    process_raw(fmt, &msgs, buffer, bufsize, outputsize, dat, cbp);
     }
 
     fmt_free(fmt, 1);
@@ -320,7 +363,8 @@ struct pqpair {
 
 static void
 process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
-		  int bufsize, int outwidth, int *dat, int norm)
+		  int bufsize, int outwidth, int *dat, int norm,
+		  struct fmt_callbacks *cb)
 {
     int i;
     char *cp, error[BUFSIZ];
@@ -369,8 +413,9 @@ process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
 		p->pq_error = NULL;
 	    }
 
-	    fmt_scan(fmt, buffer, bufsize, outwidth, dat, NULL);
+	    fmt_scan(fmt, buffer, bufsize, outwidth, dat, cb);
 	    fputs(buffer, stdout);
+	    mlistfree();
 
 	    if (p->pq_text)
 	    	free(p->pq_text);
@@ -390,12 +435,13 @@ process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
 static void
 process_messages(struct format *fmt, struct msgs_array *comps,
 		 struct msgs_array *msgs, char *buffer, char *folder,
-		 int bufsize, int outwidth, int *dat)
+		 int bufsize, int outwidth, int *dat, struct fmt_callbacks *cb)
 {
     int i, state, msgnum, msgsize = dat[2], num = dat[0], cur = dat[1];
     int num_unseen_seq = 0, seqnum[NUMATTRS];
     char *maildir, *cp, name[NAMESZ], rbuf[BUFSIZ];
     struct msgs *mp;
+    struct comp *c;
     FILE *in;
 
     if (! folder)
@@ -520,8 +566,23 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 	    }
 finished:
 	    fclose(in);
-	    fmt_scan(fmt, buffer, bufsize, outwidth, dat, NULL);
+
+	    /*
+	     * Do this now to override any components in the original message
+	     */
+	    if (comps->size) {
+		for (i = 0; i < comps->size; i += 2) {
+		    c = fmt_findcomp(comps->msgs[i]);
+		    if (c) {
+		    	if (c->c_text)
+			    free(c->c_text);
+			c->c_text = getcpy(comps->msgs[i + 1]);
+		    }
+		}
+	    }
+	    fmt_scan(fmt, buffer, bufsize, outwidth, dat, cb);
 	    fputs(buffer, stdout);
+	    mlistfree();
 	}
     }
 
@@ -535,7 +596,7 @@ finished:
 
 static void
 process_raw(struct format *fmt, struct msgs_array *text, char *buffer,
-	    int bufsize, int outwidth, int *dat)
+	    int bufsize, int outwidth, int *dat, struct fmt_callbacks *cb)
 {
     int i;
     struct comp *c;
@@ -558,8 +619,9 @@ process_raw(struct format *fmt, struct msgs_array *text, char *buffer,
 	    c->c_text = getcpy(text->msgs[i]);
 	}
 
-	fmt_scan(fmt, buffer, bufsize, outwidth, dat, NULL);
+	fmt_scan(fmt, buffer, bufsize, outwidth, dat, cb);
 	fputs(buffer, stdout);
+	mlistfree();
     }
 }
 
@@ -1004,4 +1066,167 @@ litputc(char c)
 		}
 	} else
 		putc(c, stdout);
+}
+
+/*
+ * Routines/code to support the duplicate address suppression code, adapted
+ * from replsbr.c
+ */
+
+static char *buf;		/* our current working buffer */
+static char *bufend;		/* end of working buffer */
+static char *last_dst;		/* buf ptr at end of last call */
+static unsigned int bufsiz=0;	/* current size of buf */
+
+#define BUFINCR 512		/* how much to expand buf when if fills */
+
+#define CPY(s) { cp = (s); while ((*dst++ = *cp++)) ; --dst; }
+
+/*
+ * check if there's enough room in buf for str.
+ * add more mem if needed
+ */
+#define CHECKMEM(str) \
+	    if ((len = strlen (str)) >= bufend - dst) {\
+		int i = dst - buf;\
+		int n = last_dst - buf;\
+		bufsiz += ((dst + len - bufend) / BUFINCR + 1) * BUFINCR;\
+		buf = mh_xrealloc (buf, bufsiz);\
+		dst = buf + i;\
+		last_dst = buf + n;\
+		bufend = buf + bufsiz;\
+	    }
+
+
+/*
+ * These are versions of similar routines from replsbr.c; the purpose is
+ * to suppress duplicate addresses from being added to a list when building
+ * up addresses for the %(formataddr) format function.  This is used by
+ * repl to prevent duplicate addresses from being added to the "to" line.
+ * See replsbr.c for more information.
+ *
+ * We can't use the functions in replsbr.c directly because they are slightly
+ * different and depend on the rest of replsbr.c
+ */
+static char *
+test_formataddr (char *orig, char *str)
+{
+    register int len;
+    char error[BUFSIZ];
+    register int isgroup;
+    register char *dst;
+    register char *cp;
+    register char *sp;
+    register struct mailname *mp = NULL;
+
+    /* if we don't have a buffer yet, get one */
+    if (bufsiz == 0) {
+	buf = mh_xmalloc (BUFINCR);
+	last_dst = buf;		/* XXX */
+	bufsiz = BUFINCR - 6;  /* leave some slop */
+	bufend = buf + bufsiz;
+    }
+    /*
+     * If "orig" points to our buffer we can just pick up where we
+     * left off.  Otherwise we have to copy orig into our buffer.
+     */
+    if (orig == buf)
+	dst = last_dst;
+    else if (!orig || !*orig) {
+	dst = buf;
+	*dst = '\0';
+    } else {
+	dst = last_dst;		/* XXX */
+	CHECKMEM (orig);
+	CPY (orig);
+    }
+
+    /* concatenate all the new addresses onto 'buf' */
+    for (isgroup = 0; (cp = getname (str)); ) {
+	if ((mp = getm (cp, NULL, 0, AD_NAME, error)) == NULL) {
+	    fprintf(stderr, "bad address \"%s\" -- %s\n", cp, error);
+	    continue;
+	}
+	if (isgroup && (mp->m_gname || !mp->m_ingrp)) {
+	    *dst++ = ';';
+	    isgroup = 0;
+	}
+	if (insert (mp)) {
+	    /* if we get here we're going to add an address */
+	    if (dst != buf) {
+		*dst++ = ',';
+		*dst++ = ' ';
+	    }
+	    if (mp->m_gname) {
+		CHECKMEM (mp->m_gname);
+		CPY (mp->m_gname);
+		isgroup++;
+	    }
+	    sp = adrformat (mp);
+	    CHECKMEM (sp);
+	    CPY (sp);
+	}
+    }
+
+    if (isgroup)
+	*dst++ = ';';
+
+    *dst = '\0';
+    last_dst = dst;
+    return (buf);
+}
+
+
+/*
+ * The companion to test_formataddr(); it behaves the same way, except doesn't
+ * do duplicate address detection.
+ */
+static char *
+test_concataddr(char *orig, char *str)
+{
+    char *cp;
+
+    nodupcheck = 1;
+    cp = test_formataddr(orig, str);
+    nodupcheck = 0;
+    return cp;
+}
+
+static int
+insert (struct mailname *np)
+{
+    struct mailname *mp;
+
+    if (nodupcheck)
+	return 1;
+
+    if (np->m_mbox == NULL)
+	return 0;
+
+    for (mp = &mq; mp->m_next; mp = mp->m_next) {
+	if (!mh_strcasecmp (np->m_host, mp->m_next->m_host)
+		&& !mh_strcasecmp (np->m_mbox, mp->m_next->m_mbox))
+	    return 0;
+    }
+    if (!ccme && ismymbox (np))
+	return 0;
+
+    mp->m_next = np;
+
+    return 1;
+}
+
+/*
+ * Reset our duplicate address list
+ */
+
+void
+mlistfree(void)
+{
+    struct mailname *mp, *mp2;
+
+    for (mp = mq.m_next; mp; mp = mp2->m_next) {
+    	mp2 = mp;
+	mnfree(mp);
+    }
 }
