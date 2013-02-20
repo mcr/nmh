@@ -1,0 +1,35 @@
+.TH FMTTEST %manext1% "February 19, 2013" "%nmhversion%"
+.\"
+.\" %nmhwarning%
+.\"
+.SH FMTTEST
+fmttest \- test tool for the
+.IR mh-format (5)
+language
+.SH SYNOPSIS
+.B fmttest
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR formatstring ]
+.RB [ \-dump ]
+.RB [ \-address " | " \-raw " | " \-date " | " \-message ]
+.RB [ \-normalize " | " -nonormalize ]
+.RB [ \-outsize
+.IR size-in-characters ]
+.RB [ \-bufsize
+.IR size-in-bytes ]
+.RB [ \-width
+.IR column-width ]
+.RB [ \-msgnum
+.IR number ]
+.RB [ \-msgcur
+.IR flag ]
+.RB [ \-msgsize
+.IR size ]
+.RB [ \-unseen
+.IR flag ]
+.RI [ +folder ]
+.RI [ msgs " | " strings ]
+.SH DESCRIPTION
+.SH FILES

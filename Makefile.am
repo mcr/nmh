@@ -197,7 +197,7 @@ dist_contrib_DATA = docs/contrib/replyfilter docs/contrib/build_nmh \
 ##
 man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/conflict.8 man/dist.1 man/dp.8 man/flist.1 man/flists.1 \
-	   man/fmtdump.8 man/fnext.1 man/folder.1 man/folders.1 \
+	   man/fmtdump.8 man/fmttest.1 man/fnext.1 man/folder.1 man/folders.1 \
 	   man/forw.1 man/fprev.1 man/inc.1 man/install-mh.1 man/mark.1 \
 	   man/mh-alias.5 man/mh-chart.7 man/mh-draft.5 man/mh-format.5 \
 	   man/mh-mail.5 man/mh-profile.5 man/mh_profile.5 man/mh-sequence.5 \
@@ -216,9 +216,9 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 ##
 man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 	   man/conflict.man man/dist.man man/dp.man man/flist.man \
-	   man/flists.man man/fmtdump.man man/fnext.man man/folder.man \
-	   man/folders.man man/forw.man man/fprev.man man/inc.man \
-	   man/install-mh.man man/mark.man man/mh-alias.man \
+	   man/flists.man man/fmtdump.man man/fmttest.man man/fnext.man \
+	   man/folder.man man/folders.man man/forw.man man/fprev.man
+	   man/inc.man man/install-mh.man man/mark.man man/mh-alias.man \
 	   man/mh-chart-gen.sh man/mh-draft.man man/mh-format.man \
 	   man/mh-mail.man man/mh-profile.man man/mh_profile.man \
 	   man/mh-sequence.man man/mh-tailor.man man/mhbuild.man man/mhl.man \
