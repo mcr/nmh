@@ -17,19 +17,17 @@
 #define FMTTEST_SWITCHES \
     X("form formatfile", 0, FORMSW) \
     X("format string", 5, FMTSW) \
-    X("dump", 0, DUMPSW) \
     X("address", 0, ADDRSW) \
     X("raw", 0, RAWSW) \
     X("date", 0, DATESW) \
     X("message", 0, MESSAGESW) \
+    X("-component-name component-text", 0, OTHERSW) \
     X("dupaddrs", 0, DUPADDRSW) \
     X("nodupaddrs", 0, NDUPADDRSW) \
     X("ccme", 0, CCMESW) \
     X("noccme", 0, NCCMESW) \
     X("normalize", 0, NORMSW) \
     X("nonormalize", 0, NNORMSW) \
-    X("trace", 0, TRACESW) \
-    X("notrace", 0, NTRACESW) \
     X("outsize size-in-characters", 0, OUTSIZESW) \
     X("bufsize size-in-bytes", 0, BUFSZSW) \
     X("width column-width", 0, WIDTHSW) \
@@ -37,8 +35,11 @@
     X("msgcur flag", 0, MSGCURSW) \
     X("msgsize size", 0, MSGSIZESW) \
     X("unseen flag", 0, UNSEENSW) \
+    X("dump", 0, DUMPSW) \
+    X("nodump", 0, NDUMPSW) \
+    X("trace", 0, TRACESW) \
+    X("notrace", 0, NTRACESW) \
     X("version", 0, VERSIONSW) \
-    X("-component-name component-text", 0, OTHERSW) \
     X("help", 0, HELPSW) \
 
 #define X(sw, minchars, id) id,
@@ -264,6 +265,9 @@ main (int argc, char **argv)
 		case DUMPSW:
 		    dump++;
 		    continue;
+		case NDUMPSW:
+		    dump = 0;
+		    continue;
 
 	    }
 	}
@@ -294,6 +298,16 @@ main (int argc, char **argv)
    if (!dump && compargs.size == 0 && msgs.size == 0) {
    	adios (NULL, "usage: [switches] [+folder] msgs | strings...",
 	       invo_name);
+   }
+
+   /*
+    * If you're picking "raw" as a mode, then you have to select
+    * a format.
+    */
+
+   if (mode == RAW && form == NULL && format == NULL) {
+   	adios (NULL, "You must specify a format with -form or -format when "
+	       "using -raw");
    }
 
     /*
