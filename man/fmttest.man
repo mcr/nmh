@@ -7,17 +7,19 @@ fmttest \- test tool for the
 .IR mh-format (5)
 language
 .SH SYNOPSIS
+.HP 5
+.na
 .B fmttest
 .RB [ \-form
 .IR formatfile ]
 .RB [ \-format
 .IR formatstring ]
-.RB [ \-dump ]
 .RB [ \-address " | " \-raw " | " \-date " | " \-message ]
+.RB [ \-\|\-component
+.IR component-text ]
 .RB [ \-dupaddrs " | " \-nodupaddrs ]
 .RB [ \-ccme " | " \-noccme ]
 .RB [ \-normalize " | " \-nonormalize ]
-.RB [ \-trace " | " \-notrace ]
 .RB [ \-outsize
 .IR size-in-characters ]
 .RB [ \-bufsize
@@ -32,8 +34,11 @@ language
 .IR size ]
 .RB [ \-unseen
 .IR flag ]
+.RB [ \-dump " | " \-nodump ]
+.RB [ \-trace " | " \-notrace ]
 .RI [ +folder ]
 .RI [ msgs " | " strings ]
+.ad
 .SH DESCRIPTION
 .B Fmttest
 is used to test programs written for the
@@ -47,4 +52,199 @@ and
 .B fmtdump
 programs.
 .PP
+.SS FORMAT PROGRAM SELECTION
+The
+.B \-format
+.I string
+and
+.B \-form
+.I formatfile
+switches may be used to specify a format string or a format file to read.
+If given a format string, it must be specified as a single argument to
+the
+.B \-format
+switch.  If given a format file name with
+.BR \-form ,
+the file is searched for using the normal
+.B nmh
+rules: absolute pathnames are accessed directly, tilde expansion is
+done on usernames, and files are searched for in the user's
+.I Mail
+directory as specified in their profile.  If not found there, the directory
+.RI \*(lq %etcdir% \*(rq
+is checked.
+.SS MODE SELECTION AND COMPONENT SPECIFICATION
+.B Fmttest
+has four operating modes: address mode, raw mode, date mode, and message
+mode.  These modes are selected by the
+.BR \-address ,
+.BR \-raw ,
+.BR \-date ,
+and
+.B \-message
+switches respectively.
+.PP
+Address mode treats every argument as an email address and processes it
+with nmh's email parser.  Each argument is processed with the specified
+format program with the parsed email address available as a special
+.RI %{ text }
+component escape, and the output from the program is printed on standard output.
+If there was an error parsing the email address the error message is
+stored in the
+.RI %{ error }
+component escape.  If no format program is given on the command line, the
+following default program is used:
+.PP
+.RS 5
+.nf
+%<{error}%{error}: %{text}%|%(putstr(proper{text}))%>
+.fi
+.RE
+.PP
+In this mode
+.B fmttest
+is equivant to
+.BR ap (8).
+.PP
+In raw mode, no processing of the specified arguments is done.  Each argument
+is run against the specified format program with the argument text available
+in the
+.RI %{ text }
+component.  You must specify a format with
+.B \-form
+or
+.B \-format
+when using raw mode.
+.PP
+Date mode is identical to raw mode, with one exception: if no format is
+specified, the following format string is used:
+.PP
+.RS 5
+.nf
+%<(nodate{text})error: %{text}%|%(putstr(pretty{text}))%>
+.fi
+.RE
+.PP
+Date mode is equivalent to
+.BR dp (8).
+.PP
+In message mode the arguments to
+.B fmttest
+are interpreted as an optional folder and messages.
+.B Fmttest
+will read each specified message and make all of the components in the
+message available to the format program.  Also, the appropriate information
+for the
+.RI %( msg ),
+.RI %( cur ),
+.RI %( unseen ),
+and
+.RI %( size )
+function escapes will be made available for each message.
+.PP
+The default format used in address mode is the default format used by
+.BR scan .
+The following command can replicate the functionality of the
+.B repl
+command.
+.PP
+.RS 5
+.nf
+fmttest -nodupaddrs -form replcomps -outsize max [+folder] message
+.fi
+.RE
+.PP
+Regardless of the mode, other components can be provided to the format
+program by the use of the
+.B \-\|\-component
+switch.  For example, the following program will test out the use of
+the
+.RB \*(lq encrypted \*(rq
+component:
+.PP
+.RS 5
+.nf
+fmttest --encrypted yes -message cur
+.fi
+.RE
+.PP
+In message mode components supplied on the command line will override
+components from messages.
+.SS ADDITIONAL SWITCHES
+The
+.B \-dupaddrs
+and
+.B \-nodupaddrs
+switches control whether duplicate addresses are allowed or suppressed by the
+.B FORMATADDR
+instruction, which is used by the
+.RI `%( formataddr )'
+function escape.  In normal operation duplicate addresses are only
+suppressed by
+.BR repl .
+.PP
+The
+.B \-ccme
+and
+.B \-noccme
+switches control whether or not to count the user's local mailbox as a
+duplicate address.  This replicates the behavior of the
+.B \-cc
+.I me
+switch to
+.BR repl ,
+and only applies if
+.B \-nodupaddrs
+is in effect.
+.PP
+The
+.B \-normalize
+and
+.B \-nonormalize
+switches control whether or not email addresses are normalized by the
+address parsing routines.  This is only functional when in address
+mode and is designed to replicate the switch of the same name to
+.BR ap (8).
+.PP
+The
+.B \-outsize
+switch controls the maximum number of printable characters that the format
+engine will produce.  Characters marked as non-printing by the format
+engine with
+.RI `%( zputlit )',
+characters with zero width, and extra bytes that are
+part of a multibyte character are not counted against this total.
+Two special values are supported: \*(lqmax\*(rq, which will set the value
+to the size of the output buffer, and \*(lqwidth\*(rq, which will set the
+value to the width of the terminal.  In message mode it defaults to the
+terminal width, otherwise the default is the output buffer size.
+.PP
+The
+.B \-bufsize
+switch controls the size of the output buffer.  By default it is set
+to the size of the
+.B BUFSIZ
+C preprocessor symbol, which is system-dependent.
+.PP
+The
+.B \-width
+switch controls the column width which is used by the
+.RI %( width )
+function escape.  By default is set to the terminal width.
+.PP
+The
+.BR \-msgnum ,
+.BR \-msgcur ,
+.BR \-msgsize ,
+and the
+.BR \-unseen
+switches all control the values used, respectively, by the following
+function escapes:
+.RI %( num ),
+.RI %( cur ),
+.RI %( size ),
+and
+.RI %( unseen ).
+If none are supplied these values are taken from the message in message mode;
+in all other modes the default values are 0.
 .SH FILES
