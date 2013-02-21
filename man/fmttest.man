@@ -14,7 +14,10 @@ language
 .IR formatstring ]
 .RB [ \-dump ]
 .RB [ \-address " | " \-raw " | " \-date " | " \-message ]
-.RB [ \-normalize " | " -nonormalize ]
+.RB [ \-dupaddrs " | " \-nodupaddrs ]
+.RB [ \-ccme " | " \-noccme ]
+.RB [ \-normalize " | " \-nonormalize ]
+.RB [ \-trace " | " \-notrace ]
 .RB [ \-outsize
 .IR size-in-characters ]
 .RB [ \-bufsize
@@ -32,4 +35,16 @@ language
 .RI [ +folder ]
 .RI [ msgs " | " strings ]
 .SH DESCRIPTION
+.B Fmttest
+is used to test programs written for the
+.B nmh
+format language as specified by
+.IR mh-format (5).
+It is also intended to replace the
+.BR ap ,
+.BR dp ,
+and
+.B fmtdump
+programs.
+.PP
 .SH FILES
