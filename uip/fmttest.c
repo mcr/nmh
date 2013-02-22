@@ -496,6 +496,8 @@ process_messages(struct format *fmt, struct msgs_array *comps,
     struct msgs *mp;
     struct comp *c;
     FILE *in;
+    m_getfld_state_t gstate = 0;
+    int bufsz;
 
     if (! folder)
     	folder = getfolder(1);
@@ -585,29 +587,33 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 	     */
 
 	    for (state = FLD;;) {
-	    	state = m_getfld(state, name, rbuf, sizeof(rbuf), in);
+	    	bufsz = sizeof(rbuf);
+	    	state = m_getfld(&gstate, name, rbuf, &bufsz, in);
 		switch (state) {
 		case FLD:
 		case FLDPLUS:
 		    i = fmt_addcomptext(name, rbuf);
 		    if (i != -1) {
 		    	while (state == FLDPLUS) {
-			    state = m_getfld(state, name, rbuf,
-			    		     sizeof(rbuf), in);
+			    bufsz = sizeof(rbuf);
+			    state = m_getfld(&gstate, name, rbuf, &bufsz, in);
 			    fmt_appendcomp(i, name, rbuf);
 			}
 		    }
 
-		    while (state == FLDPLUS)
-		    	state = m_getfld(state, name, rbuf,
-					 sizeof(rbuf), in);
+		    while (state == FLDPLUS) {
+		    	bufsz = sizeof(rbuf);
+		    	state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+		    }
 		    break;
 
 		case BODY:
 		    if (fmt_findcomp("body")) {
-			if ((i = strlen(rbuf)) < outwidth)
-			    state = m_getfld(state, name, rbuf + i,
-			    		     outwidth - 1, in);
+			if ((i = strlen(rbuf)) < outwidth) {
+			    bufsz = outwidth - 1;
+			    state = m_getfld(&gstate, name, rbuf + i,
+			    		     &bufsz, in);
+			}
 
 			fmt_addcomptext("body", rbuf);
 		    }
@@ -619,6 +625,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 	    }
 finished:
 	    fclose(in);
+	    m_getfld_state_destroy(&gstate);
 
 	    /*
 	     * Do this now to override any components in the original message
