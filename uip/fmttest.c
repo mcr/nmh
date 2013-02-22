@@ -1073,7 +1073,7 @@ f_typestr(int t)
 	case FT_V_MATCH: return("V_MATCH");
 	case FT_V_AMATCH: return("V_AMATCH");
 	default:
-		printf(buf, "/* ??? #%d */", t);
+		snprintf(buf, sizeof(buf), "/* ??? #%d */", t);
 		return(buf);
 	}
 }
