@@ -988,8 +988,8 @@ f_typestr(int t)
 	case FT_LS_COMP: return("LS_COMP");
 	case FT_LS_LIT: return("LS_LIT");
 	case FT_LS_GETENV: return("LS_GETENV");
-	case FT_LS_DECODECOMP: return("FT_LS_DECODECOMP");
-	case FT_LS_DECODE: return("FT_LS_DECODE");
+	case FT_LS_DECODECOMP: return("LS_DECODECOMP");
+	case FT_LS_DECODE: return("LS_DECODE");
 	case FT_LS_TRIM: return("LS_TRIM");
 	case FT_LV_COMP: return("LV_COMP");
 	case FT_LV_COMPFLAG: return("LV_COMPFLAG");
