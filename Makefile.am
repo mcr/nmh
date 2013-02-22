@@ -228,7 +228,7 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 	   man/conflict.man man/dist.man man/dp.man man/flist.man \
 	   man/flists.man man/fmtdump.man man/fmttest.man man/fnext.man \
-	   man/folder.man man/folders.man man/forw.man man/fprev.man
+	   man/folder.man man/folders.man man/forw.man man/fprev.man \
 	   man/inc.man man/install-mh.man man/mark.man man/mh-alias.man \
 	   man/mh-chart-gen.sh man/mh-draft.man man/mh-format.man \
 	   man/mh-mail.man man/mh-profile.man man/mh_profile.man \
