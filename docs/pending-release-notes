@@ -41,6 +41,7 @@ NEW FEATURES
 - All proc entries (showproc, moreproc, etc) can now accept entries that
   contain spaces and shell metacharacters.  If found, such entries will
   either be space-splitted or processed by /bin/sh.
+- A new program, fmttest(1) is included to help debug format files
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES
