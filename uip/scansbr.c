@@ -344,7 +344,7 @@ finished:
 	}
     }
 
-    fmt_scan (fmt, scanl, scanl_size, slwidth, dat);
+    fmt_scan (fmt, scanl, scanl_size, slwidth, dat, NULL);
 
     if (bodycomp)
 	bodycomp->c_text = saved_c_text;

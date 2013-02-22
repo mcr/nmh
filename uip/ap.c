@@ -198,7 +198,7 @@ process (char *arg, int length, int norm)
 	    p->pq_error = NULL;
 	}
 
-	fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat);
+	fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat, NULL);
 	fputs (buffer, stdout);
 
 	if (p->pq_text)

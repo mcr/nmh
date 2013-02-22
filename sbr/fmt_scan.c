@@ -351,7 +351,8 @@ get_x400_comp (char *mbox, char *key, char *buffer, int buffer_len)
 }
 
 struct format *
-fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
+fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
+	  struct fmt_callbacks *callbacks)
 {
     char *cp, *ep, *sp;
     char *savestr = NULL, *str = NULL;
@@ -483,6 +484,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	    break;
 
 	case FT_DONE:
+	    if (callbacks && callbacks->trace_func)
+		callbacks->trace_func(callbacks->trace_context, fmt, value,
+				      str, scanl);
 	    goto finished;
 
 	case FT_IF_S:
@@ -898,12 +902,18 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 
 	case FT_FORMATADDR:
 	    /* hook for custom address list formatting (see replsbr.c) */
-	    str = formataddr (savestr, str);
+	    if (callbacks && callbacks->formataddr)
+		str = callbacks->formataddr (savestr, str);
+	    else
+		str = formataddr (savestr, str);
 	    break;
 
 	case FT_CONCATADDR:
 	    /* The same as formataddr, but doesn't do duplicate suppression */
-	    str = concataddr (savestr, str);
+	    if (callbacks && callbacks->concataddr)
+		str = callbacks->concataddr (savestr, str);
+	    else
+		str = concataddr (savestr, str);
 	    break;
 
 	case FT_PUTADDR:
@@ -1015,6 +1025,14 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	    }
 	    break;
 	}
+
+	/*
+	 * Call our tracing callback function, if one was supplied
+	 */
+
+	if (callbacks && callbacks->trace_func)
+	    callbacks->trace_func(callbacks->trace_context, fmt, value,
+	    			  str, scanl);
 	fmt++;
     }
 
@@ -1022,6 +1040,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
     while (fmt->f_type != FT_DONE) {
 	if (fmt->f_type == FT_LS_LIT) {
 	    str = fmt->f_text;
+	    if (callbacks && callbacks->trace_func)
+		callbacks->trace_func(callbacks->trace_context, fmt, value,
+				      str, scanl);
 	} else if (fmt->f_type == FT_STRLITZ) {
 	    /* Don't want to emit part of an escape sequence.  So if
 	       there isn't enough room in the buffer for the entire
@@ -1030,6 +1051,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat)
 	    if (cp - scanl + strlen (str) + 1 < max) {
 		for (sp = str; *sp; *cp++ = *sp++) continue;
 	    }
+	    if (callbacks && callbacks->trace_func)
+		callbacks->trace_func(callbacks->trace_context, fmt, value,
+				      str, scanl);
 	}
 	fmt++;
     }

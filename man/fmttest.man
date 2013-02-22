@@ -1,0 +1,398 @@
+.TH FMTTEST %manext1% "February 19, 2013" "%nmhversion%"
+.\"
+.\" %nmhwarning%
+.\"
+.SH FMTTEST
+fmttest \- test tool for the
+.IR mh-format (5)
+language
+.SH SYNOPSIS
+.HP 5
+.na
+.B fmttest
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR formatstring ]
+.RB [ \-address " | " \-raw " | " \-date " | " \-message ]
+.RB [ \-\|\-component
+.IR component-text ]
+.RB [ \-dupaddrs " | " \-nodupaddrs ]
+.RB [ \-ccme " | " \-noccme ]
+.RB [ \-normalize " | " \-nonormalize ]
+.RB [ \-outsize
+.IR size-in-characters ]
+.RB [ \-bufsize
+.IR size-in-bytes ]
+.RB [ \-width
+.IR column-width ]
+.RB [ \-msgnum
+.IR number ]
+.RB [ \-msgcur
+.IR flag ]
+.RB [ \-msgsize
+.IR size ]
+.RB [ \-unseen
+.IR flag ]
+.RB [ \-dump " | " \-nodump ]
+.RB [ \-trace " | " \-notrace ]
+.RI [ +folder ]
+.RI [ msgs " | " strings ]
+.ad
+.SH DESCRIPTION
+.B Fmttest
+is used to test programs written for the
+.B nmh
+format language as specified by
+.IR mh-format (5).
+It is also intended to replace the
+.BR ap ,
+.BR dp ,
+and
+.B fmtdump
+programs.
+.PP
+.SS FORMAT PROGRAM SELECTION
+The
+.B \-format
+.I string
+and
+.B \-form
+.I formatfile
+switches may be used to specify a format string or a format file to read.
+If given a format string, it must be specified as a single argument to
+the
+.B \-format
+switch.  If given a format file name with
+.BR \-form ,
+the file is searched for using the normal
+.B nmh
+rules: absolute pathnames are accessed directly, tilde expansion is
+done on usernames, and files are searched for in the user's
+.I Mail
+directory as specified in their profile.  If not found there, the directory
+.RI \*(lq %etcdir% \*(rq
+is checked.
+.SS MODE SELECTION AND COMPONENT SPECIFICATION
+.B Fmttest
+has four operating modes: address mode, raw mode, date mode, and message
+mode.  These modes are selected by the
+.BR \-address ,
+.BR \-raw ,
+.BR \-date ,
+and
+.B \-message
+switches respectively.
+.PP
+Address mode treats every argument as an email address and processes it
+with nmh's email parser.  Each argument is processed with the specified
+format program with the parsed email address available as a special
+.RI %{ text }
+component escape, and the output from the program is printed on standard output.
+If there was an error parsing the email address the error message is
+stored in the
+.RI %{ error }
+component escape.  If no format program is given on the command line, the
+following default program is used:
+.PP
+.RS 5
+.nf
+%<{error}%{error}: %{text}%|%(putstr(proper{text}))%>
+.fi
+.RE
+.PP
+In this mode
+.B fmttest
+is equivant to
+.BR ap (8).
+.PP
+In raw mode, no processing of the specified arguments is done.  Each argument
+is run against the specified format program with the argument text available
+in the
+.RI %{ text }
+component.  You must specify a format with
+.B \-form
+or
+.B \-format
+when using raw mode.
+.PP
+Date mode is identical to raw mode, with one exception: if no format is
+specified, the following format string is used:
+.PP
+.RS 5
+.nf
+%<(nodate{text})error: %{text}%|%(putstr(pretty{text}))%>
+.fi
+.RE
+.PP
+Date mode is equivalent to
+.BR dp (8).
+.PP
+In message mode the arguments to
+.B fmttest
+are interpreted as an optional folder and messages.
+.B Fmttest
+will read each specified message and make all of the components in the
+message available to the format program.  Also, the appropriate information
+for the
+.RI %( msg ),
+.RI %( cur ),
+.RI %( unseen ),
+and
+.RI %( size )
+function escapes will be made available for each message.
+.PP
+The default format used in address mode is the default format used by
+.BR scan .
+The following command can replicate the functionality of the
+.B repl
+command.
+.PP
+.RS 5
+.nf
+fmttest \-nodupaddrs \-form replcomps \-outsize max [+folder] message
+.fi
+.RE
+.PP
+Regardless of the mode, other components can be provided to the format
+program by the use of the
+.B \-\|\-component
+switch.  For example, the following program will test out the use of
+the
+.RB \*(lq encrypted \*(rq
+component:
+.PP
+.RS 5
+.nf
+fmttest \-\|\-encrypted yes \-message cur
+.fi
+.RE
+.PP
+In message mode components supplied on the command line will override
+components from messages.
+.SS ADDITIONAL SWITCHES
+The
+.B \-dupaddrs
+and
+.B \-nodupaddrs
+switches control whether duplicate addresses are allowed or suppressed by the
+.B FORMATADDR
+instruction, which is used by the
+.RI `%( formataddr )'
+function escape.  In normal operation duplicate addresses are only
+suppressed by
+.BR repl .
+.PP
+The
+.B \-ccme
+and
+.B \-noccme
+switches control whether or not to count the user's local mailbox as a
+duplicate address.  This replicates the behavior of the
+.B \-cc
+.I me
+switch to
+.BR repl ,
+and only applies if
+.B \-nodupaddrs
+is in effect.
+.PP
+The
+.B \-normalize
+and
+.B \-nonormalize
+switches control whether or not email addresses are normalized by the
+address parsing routines.  This is only functional when in address
+mode and is designed to replicate the switch of the same name to
+.BR ap (8).
+.PP
+The
+.B \-outsize
+switch controls the maximum number of printable characters that the format
+engine will produce.  Characters marked as non-printing by the format
+engine with
+.RI `%( zputlit )',
+characters with zero width, and extra bytes that are
+part of a multibyte character are not counted against this total.
+Two special values are supported:
+.RB \*(lq max \*(rq,
+which will set the value
+to the size of the output buffer, and
+.RB \*(lq width \*(rq,
+which will set the
+value to the width of the terminal.  In message mode it defaults to the
+terminal width, otherwise the default is the output buffer size.
+.PP
+The
+.B \-bufsize
+switch controls the size of the output buffer.  By default it is set
+to the size of the
+.B BUFSIZ
+C preprocessor symbol, which is system-dependent.
+.PP
+The
+.B \-width
+switch controls the column width which is used by the
+.RI `%( width )'
+function escape.  By default is set to the terminal width.
+.PP
+The
+.BR \-msgnum ,
+.BR \-msgcur ,
+.BR \-msgsize ,
+and the
+.B \-unseen
+switches all control the values used, respectively, by the following
+function escapes:
+.RI `%( num )',
+.RI `%( cur )',
+.RI `%( size )',
+and
+.RI `%( unseen )'.
+If none are supplied these values are taken from the message in message mode;
+in all other modes the default values are 0.
+.SS COMPILING AND TRACING FORMAT PROGRAMS
+The
+.B \-dump
+switch outputs the complete set of format instructions for the specified
+format program.  The
+.B \-trace switch will output each format instruction as it is being
+executed, and show the values of the
+.I num
+and
+.I str
+registers if they have changed from the previous instruction.
+The output buffer is also printed if it has changed from the previous
+instruction.
+.SS FORMAT INSTRUCTIONS
+It should be noted that there is not a one-to-one correspondence between
+format escapes and format instructions; many instructions have side
+effects.  Instructions prefixed with
+.RI \*(lq LV \*(rq
+generally return a integer into the
+.I num
+(value) register; instructions prefixed with a
+.RI \*(lq LS \*(rq
+return a string into the
+.I str
+register.
+.PP
+.nf
+.ta \w'LS_DECODECOMP 'u
+.I Instruction	Description
+COMP	Output component
+COMPF	Formatted output component
+LIT	Output literal text
+LITF	Formatted literal text output
+CHAR	Output single character
+NUM	Output the \fInum\fR register
+NUMF	Formatted output of the \fInum\fR register
+STR	Output the \fIstr\fR register
+STRF	Formatted output of the \fIstr\fR register
+STRFW	Not used
+PUTADDR	Output address list in \fIstr\fR register
+STRLIT	Output \fIstr\fR, no space compression
+STRLITZ	Like \fBSTRLIT\fR, but not counted against width
+LS_COMP	Write component to \fIstr\fR register
+LS_LIT	Write literal to \fIstr\fR register
+LS_GETENV	Write environment var to \fIstr\fR register
+LS_DECODECOMP	Decode RFC-2047 encoded component to \fIstr\fR register
+LS_DECODE	Decode RFC-2047 encoded string to \fIstr\fR register
+LS_TRIM		Trim trailing whitespace from \fIstr\fR register
+LV_COMP		Convert component to integer, store in \fInum\fR register
+LV_COMPFLAG	Set \fInum\fR to 1 if \fBTRUE\fR set in component
+LV_LIT	Load literal value into \fInum\fR register
+LV_DAT	Load value from \fIdat\fR array into \fInum\fR register (see note)
+LV_STRLEN	Set \fInum\fR to the length of \fIstr\fR
+LV_PLUS_L	Add value to \fInum\fR register
+LV_MINUS_L	Substract value from \fInum\fR register
+LV_DIVIDE_L	Divide \fInum\fR register by value
+LV_MODULO_L	\fInum\fR modulo value
+LV_CHAR_LEFT	Store remaining number of printable chars in \fInum\fR
+LS_MONTH	Write short name of month to \fIstr\fR from date component
+LS_LMONTH	Write long name of month to \fIstr\fR from date component
+LS_ZONE		Write time zone offset to \fIstr\fR from date component
+LS_DAY		Write short name of day of week to \fIstr\fR from date component
+LS_WEEKDAY	Write long name of day of week to \fIstr\fR from date component
+LS_822DATE	Write RFC-822 compatible date to \fIstr\fR from date component
+LS_PRETTY	Write date with \*(lqpretty\*(rq timezone to \fIstr\fR
+LV_SEC	Write date component seconds to \fInum\fR
+LV_MIN	Write date component minutes to \fInum\fR
+LV_HOUR	Write date component hour to \fInum\fR
+LV_MON	Write date component numeric month to \fInum\fR (start at 1)
+LV_YEAR	Write date component year to \fInum\fR
+LV_YDAY	Write date component Julian day to \fInum\fR
+LV_WDAY	Write date component day of week to \fInum\fR (0 == Sunday)
+LV_ZONE	Write date component time zone offset to \fInum\fR
+LV_CLOCK	Write date component in Unix epoch time to \fInum\fR
+LV_RCLOCK	Write offset of date component from current time to \fInum\fR
+LV_DAYF	Write 1 to \fInum\fR if day of week is explicit
+LV_DST	Write 1 to \fInum\fR if DST is in effect for date component
+LV_ZONEF	Write 1 to \fInum\fR if timezone is explicit
+LS_ADDR	Write email address of addr component to \fIstr\fR
+LS_PERS	Write personal name of addr component to \fIstr\fR
+LS_MBOX	Write mailbox (username) of addr component to \fIstr\fR
+LS_HOST	Write host of addr component to \fIstr\fR
+LS_PATH	Write host route of addr component to \fIstr\fR
+LS_GNAME	Write group name of addr component to \fIstr\fR
+LS_NOTE	Write note portion of addr component to \fIstr\fR
+LS_822ADDR	Write \*(lqproper\*(rq RFC-822 version of addr component to \fIstr\fR
+LS_FRIENDLY	Write friendly (name or note) of address component to \fIstr\fR
+LV_HOSTTYPE	Set \fInum\fR to type of host (0=local, 1=network)
+LV_INGRPF	Set \fInum\fR to 1 if address was inside of group
+LV_NOHOSTF	Set \fInum\fR to 1 of no host was present in address component
+LOCALDATE	Convert date component to local timezone
+GMTDATE	Convert date component to GMT
+PARSEDATE	Parse date component
+PARSEADDR	Parse address component
+FORMATADDR	Add address component to list in \fIstr\fR
+CONCATADDR	Like \fBFORMATADDR\fR, but will not suppress duplicates
+MYMBOX	Set \fInum\fR if address component is a local address
+SAVESTR		Save \fIstr\fR register temporarily
+DONE	End program
+NOP	No operation
+GOTO	Jump to new instruction
+IF_S_NULL	Branch if \fIstr\fR is \fBNULL\fR
+IF_S	Branch if \fIstr\fR is not \fBNULL\fR
+IF_V_EQ	Branch if \fInum\fR is equal to value
+IF_V_NE	Branch if \fInum\fR is not equal to value
+IF_V_GT	Branch if \fInum\fR is greater than value
+IF_MATCH	Branch if \fIstr\fR contains string
+IF_AMATCH	Branch if \fIstr\fR starts with string
+S_NULL	Set \fInum\fR to 1 if \fIstr\fR is \fBNULL\fR
+S_NONNULL	Set \fInum\fR to 1 if \fIstr\fR is not \fBNULL\fR
+V_EQ	Set \fInum\fR to 1 if \fInum\fR equals value
+V_NE	Set \fInum\fR to 1 if \fInum\fR does not equal value
+V_GT	Set \fInum\fR to 1 if \fInum\fR is greater than value
+V_MATCH	Set \fInum\fR to 1 if \fIstr\fR contains string
+V_AMATCH Set \fInum\fR to 1 if \fIstr\fR starts with string
+.fi
+.PP
+The
+.B LV_DAT
+instruction is a bit special.  Callers of the format library pass in an
+array of integers that are used by certain format escapes.  The current
+list of format escapes and the indexes they use are:
+.PP
+.RS 5
+.nf
+.ta \w'dat[5]\0\0'u
+dat[0]	%(\fInum\fR)
+dat[1]	%(\fIcur\fR)
+dat[2]	%(\fIsize\fR)
+dat[3]	%(\fIwidth\fR)
+dat[4]	%(\fIunseen\fR)
+.fi
+.RE
+.SH "SEE ALSO"
+.IR mh-format (5),
+.IR repl (1),
+.IR ap (8),
+.IR dp (8),
+.SH DEFAULTS
+.nf
+.RB ` \-message '
+.RB ` \-dupaddrs '
+.fi
+.SH BUGS
+It shouldn't require as much code from other programs as it does.

@@ -10,6 +10,8 @@ nmh manpages should be in this general form and section order:
 comp \- compose a message
 .\"
 .SH SYNOPSIS
+.HP 5
+.na
 .B comp 
 .RI [ +folder ]
 .RI [ msgs ]
@@ -18,6 +20,7 @@ comp \- compose a message
 .RB [ \-use " | " \-nouse ]
 .RB [ \-version ]
 .RB [ \-help ]
+.ad
 .SH DESCRIPTION
 .B Comp
 is used to create a new message to be mailed.  It copies something.

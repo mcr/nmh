@@ -57,6 +57,8 @@ static char *addrcomps[] = {
  */
 static int insert (struct mailname *);
 static void replfilter (FILE *, FILE *, char *, int);
+static char *replformataddr(char *, char *);
+static char *replconcataddr(char *, char *);
 
 
 void
@@ -72,6 +74,7 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     char name[NAMESZ], *scanl, *cp;
     static int dat[5];			/* aux. data for format routine */
     m_getfld_state_t gstate = 0;
+    struct fmt_callbacks cb;
 
     FILE *out;
     NMH_UNUSED (msg);
@@ -207,7 +210,10 @@ finished:
     dat[2] = 0;
     dat[3] = outputlinelen;
     dat[4] = 0;
-    fmt_scan (fmt, scanl, i + 1, i, dat);
+    memset(&cb, 0, sizeof(cb));
+    cb.formataddr = replformataddr;
+    cb.concataddr = replconcataddr;
+    fmt_scan (fmt, scanl, i + 1, i, dat, &cb);
     fputs (scanl, out);
     if (badaddrs) {
 	fputs ("\nrepl: bad addresses:\n", out);
@@ -275,8 +281,8 @@ static unsigned int bufsiz=0;	/* current size of buf */
  * don't call "getcpy") but still place no upper limit on the
  * length of the result string.
  */
-char *
-formataddr (char *orig, char *str)
+static char *
+replformataddr (char *orig, char *str)
 {
     register int len;
     char baddr[BUFSIZ], error[BUFSIZ];
@@ -351,19 +357,19 @@ formataddr (char *orig, char *str)
  * like formataddr, except that it does NOT suppress duplicate addresses
  * between calls.
  *
- * As an implementation detail: I thought about splitting out formataddr()
+ * As an implementation detail: I thought about splitting out replformataddr()
  * into the generic part and duplicate-suppressing part, but the call to
  * insert() was buried deep within a couple of loops and I didn't see a
  * way to do it easily.  So instead we simply set a special flag to stop
- * the duplicate check and call formataddr().
+ * the duplicate check and call replformataddr().
  */
-char *
-concataddr(char *orig, char *str)
+static char *
+replconcataddr(char *orig, char *str)
 {
     char *cp;
 
     nodupcheck = 1;
-    cp = formataddr(orig, str);
+    cp = replformataddr(orig, str);
     nodupcheck = 0;
     return cp;
 }
