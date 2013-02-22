@@ -279,7 +279,7 @@ register.
 .PP
 .nf
 .ta \w'LS_DECODECOMP 'u
-.I Instruction	Description
+.I "Instruction	Description"
 COMP	Output component
 COMPF	Formatted output component
 LIT	Output literal text
