@@ -298,6 +298,7 @@ static int
 write8Bit (CT ct, FILE *out)
 {
     int fd;
+    size_t inbytes;
     char c, *file, buffer[BUFSIZ];
     CE ce = ct->c_cefile;
 
@@ -306,9 +307,9 @@ write8Bit (CT ct, FILE *out)
 	return NOTOK;
 
     c = '\n';
-    while (fgets (buffer, sizeof(buffer) - 1, ce->ce_fp)) {
-	c = buffer[strlen (buffer) - 1];
-	fputs (buffer, out);
+    while ((inbytes = fread (buffer, 1, sizeof buffer, ce->ce_fp)) > 0) {
+        c = buffer[inbytes - 1];
+        fwrite (buffer, 1, inbytes, out);
     }
     if (c != '\n')
 	putc ('\n', out);
