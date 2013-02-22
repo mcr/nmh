@@ -338,6 +338,7 @@ LS_GNAME	Write group name of addr component to \fIstr\fR
 LS_NOTE	Write note portion of addr component to \fIstr\fR
 LS_822ADDR	Write \*(lqproper\*(rq RFC-822 version of addr component to \fIstr\fR
 LS_FRIENDLY	Write friendly (name or note) of address component to \fIstr\fR
+LS_UNQUOTE	Remove RFC-2822 quotes from string
 LV_HOSTTYPE	Set \fInum\fR to type of host (0=local, 1=network)
 LV_INGRPF	Set \fInum\fR to 1 if address was inside of group
 LV_NOHOSTF	Set \fInum\fR to 1 of no host was present in address component
