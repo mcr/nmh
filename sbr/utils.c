@@ -94,7 +94,7 @@ pwd(void)
  *       -- malloc'ed memory.  Then free "s1".
  */
 char *
-add (char *s2, char *s1)
+add (const char *s2, char *s1)
 {
     char *cp;
     size_t len1 = 0, len2 = 0;
@@ -127,7 +127,7 @@ add (char *s2, char *s1)
  *	Append an item to a comma separated list
  */
 char *
-addlist (char *list, char *item)
+addlist (char *list, const char *item)
 {
     if (list)
     	list = add (", ", list);
@@ -139,7 +139,7 @@ addlist (char *list, char *item)
  * folder_exists
  *      Check to see if a folder exists.
  */
-int folder_exists(char *folder)
+int folder_exists(const char *folder)
 {
     struct stat st;
     int exists = 0;
