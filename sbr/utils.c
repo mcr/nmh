@@ -241,3 +241,41 @@ open_form(char **form, char *def)
 	}
 	return in;
 }
+
+
+/*
+ * Finds first occurrence of str in buf.  buf is not a C string but a
+ * byte array of length buflen.  str is a null-terminated C string.
+ * find_str() does not modify buf but passes back a non-const char *
+ * pointer so that the caller can modify it.
+ */
+char *
+find_str (const char buf[], size_t buflen, const char *str) {
+    const size_t len = strlen (str);
+    size_t i;
+
+    for (i = 0; i + len <= buflen; ++i, ++buf) {
+        if (! memcmp (buf, str, len)) return (char *) buf;
+    }
+
+    return NULL;
+}
+
+
+/*
+ * Finds last occurrence of str in buf.  buf is not a C string but a
+ * byte array of length buflen.  str is a null-terminated C string.
+ * find_str() does not modify buf but passes back a non-const char *
+ * pointer so that the caller can modify it.
+ */
+char *
+rfind_str (const char buf[], size_t buflen, const char *str) {
+    const size_t len = strlen (str);
+    size_t i;
+
+    for (i = 0, buf += buflen - len; i + len <= buflen; ++i, --buf) {
+        if (! memcmp (buf, str, len)) return (char *) buf;
+    }
+
+    return NULL;
+}
