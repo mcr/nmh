@@ -37,10 +37,17 @@ LC_ALL=en_US.UTF-8; export LC_ALL
 # We use a test program to determine what the output width of U+0308 is
 # and adjust our test output appropriately.
 #
+# True Spın̈al Tap fans will note that David ﬆ Hubbins was born in Squatney,
+# London, England, and thus having his name language-tagged with "cy" is almost
+# certainly incorrect.  But in his own words: "Here lies David ﬆ Hubbins,
+# and why not?".
+#
+# The second "* in the To line is just to exercise the parser a bit.
+#
 
 cat > "${MH_TEST_DIR}/Mail/inbox/11" <<EOF
-From: David =?utf-8?q?=EF=AC=86?= Hubbins <hubbins@example.com>
-To: Sir Denis =?utf-8?q?Eton=E2=80=93Hogg? <sirdenis@example.com>
+From: David =?utf-8*cy?q?=EF=AC=86?= Hubbins <hubbins@example.com>
+To: Sir Denis =?utf-8*?q?Eton=E2=80=93Hogg? <sirdenis@example.com>
 Date: Friday, 2 Mar 1984 00:00:00
 Subject: =?utf-8?q?Sp=C4=B1n=CC=88al_Tap_=E2=86=92_Tap_into_America!?=
 

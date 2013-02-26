@@ -61,7 +61,7 @@ int
 decode_rfc2047 (char *str, char *dst, size_t dstlen)
 {
     char *p, *q, *pp;
-    char *startofmime, *endofmime;
+    char *startofmime, *endofmime, *endofcharset;
     int c, quoted_printable;
     int encoding_found = 0;	/* did we decode anything?                */
     int between_encodings = 0;	/* are we between two encodings?          */
@@ -127,11 +127,25 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	    if (!*pp)
 		continue;
 
+	    /*
+	     * RFC 2231 specifies that language information can appear
+	     * in a charset specification like so:
+	     *
+	     * =?us-ascii*en?Q?Foo?=
+	     *
+	     * Right now we don't use language information, so ignore it.
+	     */
+
+	    for (endofcharset = startofmime;
+	    		*endofcharset != '*' && endofcharset < pp;
+							endofcharset++)
+		;
+
 	    /* Check if character set can be handled natively */
-	    if (!check_charset(startofmime, pp - startofmime)) {
+	    if (!check_charset(startofmime, endofcharset - startofmime)) {
 #ifdef HAVE_ICONV
 	        /* .. it can't. We'll use iconv then. */
-		*pp = '\0';
+		*endofcharset = '\0';
 	        cd = iconv_open(get_charset(), startofmime);
 		fromutf8 = !mh_strcasecmp(startofmime, "UTF-8");
 		*pp = '?';
