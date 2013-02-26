@@ -13,7 +13,7 @@
 
 
 char *
-concat (char *s1, ...)
+concat (const char *s1, ...)
 {
     char *cp, *dp, *sp;
     size_t len;

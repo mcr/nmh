@@ -10,7 +10,7 @@
 #include <h/mh.h>
 
 char *
-copy(char *from, char *to)
+copy(const char *from, char *to)
 {
     while ((*to = *from)) {
 	to++;
