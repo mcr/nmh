@@ -198,8 +198,7 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
     if (ct->c_descr) {
 	char *dp;
 
-	dp = trimcpy (cp = add (ct->c_descr, NULL));
-	free (cp);
+	dp = cpytrim (ct->c_descr);
 	printf (LSTFMT2d1, dp);
 	free (dp);
     }
@@ -220,8 +219,7 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
 	if (ci->ci_comment) {
 	    char *dp;
 
-	    dp = trimcpy (cp = add (ci->ci_comment, NULL));
-	    free (cp);
+	    dp = cpytrim (ci->ci_comment);
 	    snprintf (buffer, sizeof(buffer), "(%s)", dp);
 	    free (dp);
 	    printf (LSTFMT2d2, buffer);

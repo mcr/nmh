@@ -51,6 +51,7 @@ char *copy (const char *, char *);
 char **copyip (char **, char **, int);
 void cpydata (int, int, char *, char *);
 void cpydgst (int, int, char *, char *);
+char *cpytrim (const char *);
 int decode_rfc2047 (char *, char *, size_t);
 void discard (FILE *);
 int default_done (int);

@@ -10,6 +10,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 
 char *
@@ -37,4 +38,37 @@ trimcpy (char *cp)
 
     /* now return a copy */
     return getcpy(cp);
+}
+
+
+/*
+ * cpytrim() -- return a copy of the argument with:
+ *           -- stripped leading and trailing whitespace, and
+ *           -- internal whitespace replaced with spaces.
+ *
+ * This code is Copyright (c) 2013, by the authors of nmh.  See the
+ * COPYRIGHT file in the root directory of the nmh distribution for
+ * complete copyright information.
+ */
+char *
+cpytrim (const char *sp) {
+    char *dp;
+    char *cp;
+
+    /* skip over leading whitespace */
+    while (isspace ((unsigned char) *sp)) ++sp;
+
+    dp = add (sp, NULL);
+
+    /* start at the end and zap trailing whitespace */
+    for (cp = dp + strlen (dp) - 1;
+         cp >= dp  &&  isspace ((unsigned char) *cp);
+         *cp-- = '\0') continue;
+
+    /* replace remaining whitespace with spaces */
+    for (cp = dp; *cp; ++cp) {
+        if (isspace ((unsigned char) *cp)) *cp = ' ';
+    }
+
+    return dp;
 }
