@@ -21,3 +21,4 @@ void app_msgarg(struct msgs_array *, char *);
 int open_form(char **, char *);
 char *find_str (const char [], size_t, const char *);
 char *rfind_str (const char [], size_t, const char *);
+char *nmh_strcasestr (const char *, const char *);

@@ -279,3 +279,27 @@ rfind_str (const char buf[], size_t buflen, const char *str) {
 
     return NULL;
 }
+
+
+/* POSIX doesn't have strcasestr() so emulate it. */
+char *
+nmh_strcasestr (const char *s1, const char *s2) {
+    const size_t len = strlen (s2);
+
+    if (isupper ((unsigned char) s2[0])  ||  islower ((unsigned char)s2[0])) {
+        char first[3];
+        first[0] = (char) toupper ((unsigned char) s2[0]);
+        first[1] = (char) tolower ((unsigned char) s2[0]);
+        first[2] = '\0';
+
+        for (s1 = strpbrk (s1, first); s1; s1 = strpbrk (++s1, first)) {
+            if (! strncasecmp (s1, s2, len)) return (char *) s1;
+        }
+    } else {
+        for (s1 = strchr (s1, s2[0]); s1; s1 = strchr (++s1, s2[0])) {
+            if (! strncasecmp (s1, s2, len)) return (char *) s1;
+        }
+    }
+
+    return NULL;
+}
