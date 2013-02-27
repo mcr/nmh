@@ -3004,3 +3004,132 @@ get_leftover_mp_content (CT ct, int before /* or after */) {
 
     return OK;
 }
+
+
+char *
+ct_type_str (int type) {
+    switch (type) {
+    case CT_APPLICATION:
+        return "application";
+    case CT_AUDIO:
+        return "audio";
+    case CT_IMAGE:
+        return "image";
+    case CT_MESSAGE:
+        return "message";
+    case CT_MULTIPART:
+        return "multipart";
+    case CT_TEXT:
+        return "text";
+    case CT_VIDEO:
+        return "video";
+    case CT_EXTENSION:
+        return "extension";
+    default:
+        return "unknown_type";
+    }
+}
+
+
+char *
+ct_subtype_str (int type, int subtype) {
+    switch (type) {
+    case CT_APPLICATION:
+        switch (subtype) {
+        case APPLICATION_OCTETS:
+            return "octets";
+        case APPLICATION_POSTSCRIPT:
+            return "postscript";
+        default:
+            return "unknown_app_subtype";
+        }
+    case CT_MESSAGE:
+        switch (subtype) {
+        case MESSAGE_RFC822:
+            return "rfc822";
+        case MESSAGE_PARTIAL:
+            return "partial";
+        case MESSAGE_EXTERNAL:
+            return "external";
+        default:
+            return "unknown_msg_subtype";
+        }
+    case CT_MULTIPART:
+        switch (subtype) {
+        case MULTI_MIXED:
+            return "mixed";
+        case MULTI_ALTERNATE:
+            return "alternative";
+        case MULTI_DIGEST:
+            return "digest";
+        case MULTI_PARALLEL:
+            return "parallel";
+        default:
+            return "unknown_multipart_subtype";
+        }
+    case CT_TEXT:
+        switch (subtype) {
+        case TEXT_PLAIN:
+            return "plain";
+        case TEXT_RICHTEXT:
+            return "richtext";
+        case TEXT_ENRICHED:
+            return "enriched";
+        default:
+            return "unknown_text_subtype";
+        }
+    default:
+        return "unknown_type";
+    }
+}
+
+
+/* Find the content type and InitFunc for the CT. */
+const struct str2init *
+get_ct_init (int type) {
+    const struct str2init *sp;
+
+    for (sp = str2cts; sp->si_key; ++sp) {
+        if (type == sp->si_val) {
+            return sp;
+        }
+    }
+
+    return NULL;
+}
+
+const char *
+ce_str (int encoding) {
+    switch (encoding) {
+    case CE_BASE64:
+        return "base64";
+    case CE_QUOTED:
+        return "quoted";
+    case CE_8BIT:
+        return "8bit";
+    case CE_7BIT:
+        return "7bit";
+    case CE_BINARY:
+        return "binary";
+    case CE_EXTENSION:
+        return "extension";
+    case CE_EXTERNAL:
+        return "external";
+    default:
+        return "unknown";
+    }
+}
+
+/* Find the content type and InitFunc for the content encoding method. */
+const struct str2init *
+get_ce_method (const char *method) {
+    struct str2init *sp;
+
+    for (sp = str2ces; sp->si_key; ++sp) {
+        if (! strcasecmp (method, sp->si_key)) {
+            return sp;
+        }
+    }
+
+    return NULL;
+}

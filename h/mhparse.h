@@ -280,5 +280,10 @@ int params_external (CT, int);
 int open7Bit (CT, char **);
 void close_encoding (CT);
 void free_content (CT);
+char *ct_type_str (int);
+char *ct_subtype_str (int, int);
+const struct str2init *get_ct_init (int);
+const char *ce_str (int);
+const struct str2init *get_ce_method (const char *);
 
 extern int checksw;	/* Add Content-MD5 field */
