@@ -31,11 +31,14 @@
     X(isspace) \
     X(isupper) \
     X(isxdigit) \
+    X(tolower) \
+    X(toupper) \
 
 #if (defined (_BSD_SOURCE) && _BSD_SOURCE) || \
     (defined (_SVID_SOURCE) && _SVID_SOURCE) || \
     (defined (_XOPEN_SOURCE) && _XOPEN_SOURCE)
-# define CTYPE_FUNCTION_ISASCII X(isascii)
+# define CTYPE_FUNCTION_ISASCII X(isascii) \
+                                X(toascii)
 #else
 # define CTYPE_FUNCTION_ISASCII
 #endif
