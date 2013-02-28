@@ -109,7 +109,7 @@ static int get_comment (CT, char **, int);
 static int InitGeneric (CT);
 static int InitText (CT);
 static int InitMultiPart (CT);
-static void reverse_parts (CT);
+void reverse_parts (CT);
 static int InitMessage (CT);
 static int InitApplication (CT);
 static int init_encoding (CT, OpenCEFunc);
@@ -1313,48 +1313,23 @@ last_part:
 
 
 /*
- * reverse the order of the parts of a multipart
+ * reverse the order of the parts of a multipart/alternative
  */
 
-static void
+void
 reverse_parts (CT ct)
 {
-    int i;
-    struct multipart *m;
-    struct part **base, **bmp, **next, *part;
+    struct multipart *m = (struct multipart *) ct->c_ctparams;
+    struct part *part;
+    struct part *next;
 
-    m = (struct multipart *) ct->c_ctparams;
-
-    /* if only one part, just return */
-    if (!m->mp_parts || !m->mp_parts->mp_next)
-	return;
-
-    /* count number of parts */
-    i = 0;
-    for (part = m->mp_parts; part; part = part->mp_next)
-	i++;
-
-    /* allocate array of pointers to the parts */
-    if (!(base = (struct part **) calloc ((size_t) (i + 1), sizeof(*base))))
-	adios (NULL, "out of memory");
-    bmp = base;
-
-    /* point at all the parts */
-    for (part = m->mp_parts; part; part = part->mp_next)
-	*bmp++ = part;
-    *bmp = NULL;
-
-    /* reverse the order of the parts */
-    next = &m->mp_parts;
-    for (bmp--; bmp >= base; bmp--) {
-	part = *bmp;
-	*next = part;
-	next = &part->mp_next;
+    /* Reverse the order of its parts by walking the mp_parts list
+       and pushing each node to the front. */
+    for (part = m->mp_parts, m->mp_parts = NULL; part; part = next) {
+        next = part->mp_next;
+        part->mp_next = m->mp_parts;
+        m->mp_parts = part;
     }
-    *next = NULL;
-
-    /* free array of pointers */
-    free ((char *) base);
 }
 
 
