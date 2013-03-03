@@ -1,0 +1,104 @@
+.TH MH-MAIL %manext5% "March 3, 2013" "%nmhversion%"
+.\"
+.\" %nmhwarning%
+.\"
+.SH NAME
+mh-folders \- specification of storage format used by nmh message system
+.SH DESCRIPTION
+.B nmh
+stores messages in the files and directories of the host filesystem
+according to the following rules:
+.PP
+.B one folder per directory
+.RS 5
+A
+.B nmh
+folder corresponds to directory.  There are no limits on folder
+names beyond those of the host filesystem.
+.I Is that right?
+.RE
+.PP
+.B one message per file
+.RS 5
+The file name is a positive integer.  The filename for a new
+message is one greater than the highest numbered message in
+the folder; its full path can be shown by
+.B mh-path
+.IR new .
+.PP
+.RE
+.B context
+.RS 5
+There is one context file.  Its default location is in the
+user's Path and default name is
+.IR context ,
+but those can be overridden with the $MHCONTEXT environment
+variable.
+.B context
+has the following format:
+.PP
+.RS 5
+.BI "Current-Folder: +" folder
+.RE
+.RS 5
+.BI "atr-" sequence-path ": " "m[-n] [...]"
+.RE
+.PP
+where
+.I folder
+is the directory name of the current folder.  Lines beginning
+with \*(lqatr\*(rq are used for private sequences.
+.I sequence
+is the name of the private sequence,
+.I path
+is the full path to the folder with the private sequence, and
+.I m[-n]
+is a message number or range of message numbers in the sequence.
+.RE
+.PP
+.B sequences
+.RS 5
+There is one sequences file in each
+.B .nmh
+folder.  Its default name is
+.IR \&.mh\(rusequences ,
+but that can be overridden with the \*(lqmh\-sequences\*(rq profile entry.
+.B sequences
+has the following format:
+.PP
+.RS 5
+.BI "sequence: " "m[-n] [...]"
+.RE
+.PP
+showing the message numbers and/or ranges of message numbers in
+each sequence.
+.RE
+.PP
+.SS Locking
+.B nmh
+programs read and write the context and sequences files, and lock
+these files when accessing them.  Any program outside of
+.B nmh
+that accesses these files must be sure to lock them using the same
+locking method.  The locking method is selected when
+.B nmh
+is configured.  By default, kernel-level locking is used if
+appropriate for the platform, and it is for popular platforms.  That
+default should also be the same as used by the
+.B mail
+program, if provided on the platform.
+.I Should we add a lockmethod component to mhparam so users can easily detect it?
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'%etcdir%/ExtraBigFileName  'u
+^<mh\-dir>/context~^The user context
+^or $MHCONTEXT~^Rather than the standard context
+^<folder>/\&.mh\(rusequences~^Public sequences for <folder>
+.fi
+.SH "SEE ALSO"
+.I
+.IR mail (1),
+.IR mh\-path (1),
+.IR mh\-profile (5),
+.IR mh\-sequence (5)

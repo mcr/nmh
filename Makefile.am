@@ -210,10 +210,10 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/conflict.8 man/dist.1 man/dp.8 man/flist.1 man/flists.1 \
 	   man/fmtdump.8 man/fmttest.1 man/fnext.1 man/folder.1 man/folders.1 \
 	   man/forw.1 man/fprev.1 man/inc.1 man/install-mh.1 man/mark.1 \
-	   man/mh-alias.5 man/mh-chart.7 man/mh-draft.5 man/mh-format.5 \
-	   man/mh-mail.5 man/mh-profile.5 man/mh_profile.5 man/mh-sequence.5 \
-	   man/mh-tailor.5 man/mhbuild.1 man/mhl.1 man/mhlist.1 \
-	   man/mhmail.1 man/mhn.1 man/mhparam.1 man/mhpath.1 \
+	   man/mh-alias.5 man/mh-chart.7 man/mh-draft.5 man/mh-folders.5 \
+	   man/mh-format.5 man/mh-mail.5 man/mh-profile.5 man/mh_profile.5 \
+	   man/mh-sequence.5 man/mh-tailor.5 man/mhbuild.1 man/mhl.1 \
+	   man/mhlist.1 man/mhmail.1 man/mhn.1 man/mhparam.1 man/mhpath.1 \
 	   man/mhshow.1 man/mhstore.1 man/msgchk.1 man/msh.1 \
 	   man/mts.conf.5 man/new.1 man/next.1 man/nmh.7 man/packf.1 \
 	   man/pick.1 man/post.8 man/prev.1 man/prompter.1 man/rcvdist.1 \
@@ -230,12 +230,13 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 	   man/flists.man man/fmtdump.man man/fmttest.man man/fnext.man \
 	   man/folder.man man/folders.man man/forw.man man/fprev.man \
 	   man/inc.man man/install-mh.man man/mark.man man/mh-alias.man \
-	   man/mh-chart-gen.sh man/mh-draft.man man/mh-format.man \
-	   man/mh-mail.man man/mh-profile.man man/mh_profile.man \
-	   man/mh-sequence.man man/mh-tailor.man man/mhbuild.man man/mhl.man \
-	   man/mhlist.man man/mhmail.man man/mhn.man man/mhparam.man \
-	   man/mhpath.man man/mhshow.man man/mhstore.man man/msgchk.man \
-	   man/msh.man man/mts.conf.man man/new.man man/next.man man/nmh.man \
+	   man/mh-chart-gen.sh man/mh-draft.man man/mh-folders.man \
+	   man/mh-format.man man/mh-mail.man man/mh-profile.man \
+	   man/mh_profile.man man/mh-sequence.man man/mh-tailor.man \
+	   man/mhbuild.man man/mhl.man man/mhlist.man man/mhmail.man \
+	   man/mhn.man man/mhparam.man man/mhpath.man man/mhshow.man \
+	   man/mhstore.man man/msgchk.man man/msh.man man/mts.conf.man \
+	   man/new.man man/next.man man/nmh.man \
 	   man/packf.man man/pick.man man/post.man man/prev.man \
 	   man/prompter.man man/rcvdist.man man/rcvpack.man \
 	   man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
