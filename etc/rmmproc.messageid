@@ -8,8 +8,8 @@
  # distribution for complete copyright information.
  #
  # If called on messages, the current directory is the message folder
- # and the scripts arguments are is the message filenames.  If called
- # on files, the arguments are the full paths to the files.
+ # and the script arguments are the message filenames.  If called on
+ # files, the arguments are the full paths to the files.
  #
  # The backup directory will be:
  #   1) If input is messages, the folder of the messages.
