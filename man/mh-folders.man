@@ -70,8 +70,10 @@ has the following format:
 .BI "sequence: " "m[-n] [...]"
 .RE
 .PP
-showing the message numbers and/or ranges of message numbers in
-each sequence.
+showing the (possibly empty) message numbers and/or ranges of message
+numbers in each sequence.  The
+.B cur
+sequence has at most just a single message number, not a range.
 .RE
 .PP
 .SS Locking
