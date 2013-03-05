@@ -20,11 +20,35 @@ names beyond those of the host filesystem.
 .PP
 .B one message per file
 .RS 5
-The file name is a positive integer.  The filename for a new
+The file name is a positive integer.  Other files containing metadata or
+arbitrary names can exist in a folder; while the preference is that non\-message
+files begin with \*(lq.\*(rq, all files that are not positive integers
+.B must
+be ignored by a
+.BR MH \-compatible
+implementation.  However, implementations are free to indicate to the user
+the existence of non\-message files that are not prefixed with a \*(lq.\*(rq.
+.PP
+The filename for a new
 message is one greater than the highest numbered message in
-the folder; its full path can be shown by
-.B mh-path
-.IR new .
+the folder; its full path can be accessed by the pseudo\-sequence 
+.I new
+(e.g.,
+.B mhpath
+.IR new ).
+New messages are
+.B only
+permitted to be added to a folder at the end of the message number range.
+.PP
+To add a new message to a folder, the recommended sequence is:
+.PP
+.IP \(bu 4
+Create a temporary file in the desired folder.
+.IP \(bu 4
+Attempt to link the temporary file to the new message number.
+.IP \(bu 4
+If successful, remove the temporary file.  If the link fails increment the
+message number and try again.
 .PP
 .RE
 .B context
@@ -74,6 +98,18 @@ showing the (possibly empty) message numbers and/or ranges of message
 numbers in each sequence.  The
 .B cur
 sequence has at most just a single message number, not a range.
+.PP
+Sequence names have a maximum size of 998 characters.  Each line is also
+limited to a maximum of 998 characters, but RFC\-822 continuation rules
+apply; sequences can be continued across multiple lines by prefixing
+continuation lines with a whitespace character.
+.PP
+If an implementation finds messages in a sequence that do not exist,
+the sequence file should be updated to remove the missing messages
+from the sequence.  If a sequence contains no messages, it should be
+removed from the sequence file.  The exception to this is the
+.B cur
+sequence, which can refer to a nonexistant message.
 .RE
 .PP
 .SS Locking
