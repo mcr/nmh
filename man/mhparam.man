@@ -50,9 +50,11 @@ the locations of the nmh
 .I etcdir
 and
 .I libdir
-install directories and all
+install directories, all
 .I proc
-settings.  The
+settings, and the locking method with which the
+.B nmh
+installation was configured.  The
 .B \-debug
 switch displays all such other information available from
 .BR mhparam .
@@ -88,6 +90,9 @@ context: context
 
 % mhparam libdir
 %libdir%
+
+% mhparam lockmethod
+fcntl
 .fi
 .RE
 .PP

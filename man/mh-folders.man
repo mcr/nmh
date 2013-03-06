@@ -1,4 +1,4 @@
-.TH MH-MAIL %manext5% "March 3, 2013" "%nmhversion%"
+.TH MH-MAIL %manext5% "March 5, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -15,7 +15,6 @@ A
 .B nmh
 folder corresponds to directory.  There are no limits on folder
 names beyond those of the host filesystem.
-.I Is that right?
 .RE
 .PP
 .B one message per file
@@ -31,7 +30,7 @@ the existence of non\-message files that are not prefixed with a \*(lq.\*(rq.
 .PP
 The filename for a new
 message is one greater than the highest numbered message in
-the folder; its full path can be accessed by the pseudo\-sequence 
+the folder; its full path can be accessed by the pseudo\-sequence
 .I new
 (e.g.,
 .B mhpath
@@ -120,12 +119,13 @@ these files when accessing them.  Any program outside of
 that accesses these files must be sure to lock them using the same
 locking method.  The locking method is selected when
 .B nmh
-is configured.  By default, kernel-level locking is used if
-appropriate for the platform, and it is for popular platforms.  That
-default should also be the same as used by the
+is configured and can be accessed as a string using
+.BR "mhparam lockmethod" .
+By default, kernel-level locking is used if appropriate for the
+platform, and it is for popular platforms.  That default should also
+be the same as used by the
 .B mail
 program, if provided on the platform.
-.I Should we add a lockmethod component to mhparam so users can easily detect it?
 .SH FILES
 .fc ^ ~
 .nf
@@ -137,6 +137,7 @@ program, if provided on the platform.
 .SH "SEE ALSO"
 .I
 .IR mail (1),
+.IR mh\-param (1),
 .IR mh\-path (1),
 .IR mh\-profile (5),
 .IR mh\-sequence (5)

@@ -12,11 +12,6 @@
 
 #include <h/mh.h>
 
-extern char *mhlibdir;
-extern char *mhetcdir;
-
-char *sbackup = BACKUP_PREFIX;
-
 #define MHPARAM_SWITCHES \
     X("components", 0, COMPSW) \
     X("nocomponents", 0, NCOMPSW) \
@@ -32,6 +27,25 @@ DEFINE_SWITCH_ENUM(MHPARAM);
 #define X(sw, minchars, id) { sw, minchars, id },
 DEFINE_SWITCH_ARRAY(MHPARAM, switches);
 #undef X
+
+extern char *mhlibdir;
+extern char *mhetcdir;
+
+char *sbackup = BACKUP_PREFIX;
+
+char *lockmethod =
+#if defined FCNTL_LOCKING
+    "fcntl"
+#elif defined FLOCK_LOCKING
+    "flock"
+#elif defined LOCKF_LOCKING
+    "lockf"
+#elif defined DOT_LOCKING
+    "dot"
+#else
+    "none"
+#endif
+    ;
 
 struct proc {
     char *p_name;
@@ -65,6 +79,7 @@ static struct proc procs [] = {
      { "etcdir",        &mhetcdir },
      { "libdir",        &mhlibdir },
      { "sbackup",       &sbackup },
+     { "lockmethod",    &lockmethod },
      { NULL,            NULL },
 };
 
