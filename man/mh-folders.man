@@ -1,4 +1,4 @@
-.TH MH-MAIL %manext5% "March 5, 2013" "%nmhversion%"
+.TH MH-MAIL %manext5% "March 7, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -46,7 +46,7 @@ Create a temporary file in the desired folder.
 .IP \(bu 4
 Attempt to link the temporary file to the new message number.
 .IP \(bu 4
-If successful, remove the temporary file.  If the link fails increment the
+If successful, remove the temporary file.  If the link fails, increment the
 message number and try again.
 .PP
 .RE
@@ -82,7 +82,7 @@ is a message number or range of message numbers in the sequence.
 .B sequences
 .RS 5
 There is one sequences file in each
-.B .nmh
+.B nmh
 folder.  Its default name is
 .IR \&.mh\(rusequences ,
 but that can be overridden with the \*(lqmh\-sequences\*(rq profile entry.
@@ -114,10 +114,21 @@ sequence, which can refer to a nonexistant message.
 .SS Locking
 .B nmh
 programs read and write the context and sequences files, and lock
-these files when accessing them.  Any program outside of
+these files when accessing them.  There should not be a need to
+access these files directly; instead, programs such as
+.BR flist ,
+.BR folder ,
+.BR mark ,
+.BR pick ,
+and
+.B rcvstore
+should be used to query and update their contents.  Any program
+outside of
 .B nmh
 that accesses these files must be sure to lock them using the same
-locking method.  The locking method is selected when
+locking method as
+.BR nmh .
+The locking method is selected when
 .B nmh
 is configured and can be accessed as a string using
 .BR "mhparam lockmethod" .
@@ -129,15 +140,20 @@ program, if provided on the platform.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'^<folder>/\&.mh\(rusequences~'u
 ^<mh\-dir>/context~^The user context
 ^or $MHCONTEXT~^Rather than the standard context
 ^<folder>/\&.mh\(rusequences~^Public sequences for <folder>
 .fi
 .SH "SEE ALSO"
 .I
+.IR flist (1),
+.IR folder (1),
 .IR mail (1),
+.IR mark (1),
 .IR mh\-param (1),
 .IR mh\-path (1),
 .IR mh\-profile (5),
-.IR mh\-sequence (5)
+.IR mh\-sequence (5),
+.IR pick (1),
+.IR rcvstore (1)
