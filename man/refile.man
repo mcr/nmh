@@ -7,7 +7,7 @@ refile \- file message in other folders
 .SH SYNOPSIS
 .HP 5
 .na
-.B refile 
+.B refile
 .RI [ msgs ]
 .RB [ \-draft ]
 .RB [ \-link " | " \-nolink ]
@@ -103,7 +103,7 @@ whereas,
 Normally when a message is refiled, for each destination folder it
 is assigned the number which is one above the current highest message
 number in that folder.  Use of the
-.B \-preserv
+.B \-preserve
 switch will override
 this message renaming, and try to preserve the number of the message.
 If a conflict for a particular folder occurs when using the
