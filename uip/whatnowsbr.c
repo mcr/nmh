@@ -552,10 +552,10 @@ writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
     int trailln = strlen(trailcmd) + 4;
     if (ln < 0 || ln + trailln > bufsz)
 	adios((char *)0, "arguments too long");
-    
+
     cp = buf + ln;
-    
-    while (*++argp != (char *)0) {
+
+    while (*argp  &&  *++argp) {
 	ln = strlen(*argp);
 	/* +1 for leading space */
 	if (ln + trailln + 1 > bufsz - (cp-buf))
@@ -618,7 +618,7 @@ popen_in_dir(const char *dir, const char *cmd, const char *type)
     /* ensure that $SHELL exists, as the cmd was written relying on
        a non-blank $SHELL... */
     setenv("SHELL","/bin/sh",0); /* don't overwrite */
-    
+
     if (getcwd(olddir, sizeof(olddir)) == 0)
 	adios("getcwd", "could not get working directory");
     if (chdir(dir) != 0)
