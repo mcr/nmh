@@ -308,7 +308,9 @@ if [ $status -eq 0 ]; then
 fi
 
 grep 'Error' "$logfile"
-grep 'warn' "$logfile"
+#### Ignore the warning when sbr/dtimep.c is built with flex 2.5.36
+#### or 2.5.37.
+grep 'warn' "$logfile" | grep -v 'sbr/dtimep.c:.*-Wsign-compare'
 if [ $status -ne 0 ]; then
   echo build failed!
   echo build log is in "$logfile"
