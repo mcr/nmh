@@ -234,7 +234,7 @@ separated accordingly.  For example,
     type=tar; \\
     conversions=compress \\
     [this is the nmh distribution] \\
-    {application; filename="nmh.tar.gz"} \\
+    {attachment; filename="nmh.tar.gz"} \\
     name="nmh.tar.gz"; \\
     directory="/pub/nmh"; \\
     site="ftp.math.gatech.edu"; \\
