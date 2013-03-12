@@ -436,6 +436,8 @@ ftp
 local-file
 .IP \(bu 4
 mail-server
+.IP \(bu 4
+url
 .PP
 For the \*(lqanon-ftp\*(rq and \*(lqftp\*(rq access types,
 .B mhshow
@@ -464,6 +466,14 @@ local filename
 .PP
 The program should terminate with an exit status of zero if the
 retrieval is successful, and a non-zero exit status otherwise.
+.PP
+For the \*(lqurl\*(rq access\-type, 
+.B mhshow
+will look for the \*(lqnmh-access-url\*(rq
+profile entry.  See
+.IR mhstore (1)
+for more details.
+.PP
 .SS "The Content Cache"
 When
 .B mhshow
@@ -569,6 +579,7 @@ installation.
 ^Unseen\-Sequence:~^To name sequences denoting unseen messages
 ^mhlproc:~^Default program to display message headers
 ^nmh-access-ftp:~^Program to retrieve contents via FTP
+^nmh-access-url:~^Program to retrieve contents via HTTP
 ^nmh-cache~^Public directory to store cached external contents
 ^nmh-private-cache~^Personal directory to store cached external contents
 ^mhshow-charset-<charset>~^Template for environment to render character sets

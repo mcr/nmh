@@ -255,7 +255,7 @@ These parameters are of the form:
 .RS 5
 .nf
 .ta \w'access-type=  'u
-access-type=	usually \fIanon-ftp\fR or \fImail-server\fR
+access-type=	usually \fIanon-ftp\fR, \fImail-server\fR, or \fIurl\fR
 name=	filename
 permission=	read-only or read-write
 site=	hostname
@@ -265,8 +265,23 @@ size=	number of octets
 server=	mailbox
 subject=	subject to send
 body=	command to send for retrieval
+url=	URL of content
 .fi
 .RE
+.PP
+A mimimum \*(lqexternal\-type\*(rq directive for the
+.B url
+.I access\-type
+would be as follows:
+.PP
+.RS 3
+.nf
+#@application/octet-stream [] access-type=url; \\
+  url="http://download.savannah.gnu.org/releases/nmh/nmh-1.5.tar.gz"
+.fi
+.RE
+.PP
+Any long URLs will be wrapped according to RFC\-2017 rules.
 .PP
 The \*(lqmessage\*(rq directive (#forw) is used to specify a message or
 group of messages to include.  You may optionally specify the name of
@@ -680,6 +695,8 @@ line         ::=     "##" text EOL
 .PP
 .I "Multipurpose Internet Mail Extensions (MIME) Part Five: Conformance Criteria and Examples"
 (RFC\-2049)
+.I "Definition of the URL MIME External-Body Access-Type"
+(RRC\-2017)
 .SH DEFAULTS
 .nf
 .RB ` \-headers '

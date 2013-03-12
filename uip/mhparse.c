@@ -128,6 +128,8 @@ static int InitMail (CT);
 static int openMail (CT, char **);
 static int readDigest (CT, char *);
 static int get_leftover_mp_content (CT, int);
+static int InitURL (CT);
+static int openURL (CT, char **);
 
 struct str2init str2cts[] = {
     { "application", CT_APPLICATION, InitApplication },
@@ -162,6 +164,7 @@ struct str2init str2methods[] = {
     { "ftp",         0,	InitFTP },
     { "local-file",  0,	InitFile },
     { "mail-server", 0,	InitMail },
+    { "url",         0, InitURL },
     { NULL,          0, NULL }
 };
 
@@ -1438,6 +1441,7 @@ invalid_param:
 		e->eb_parent = ct;
 		e->eb_content = p;
 		p->c_ctexbody = e;
+		p->c_ceopenfnx = NULL;
 		if ((exresult = params_external (ct, 0)) != NOTOK
 		        && p->c_ceopenfnx == openMail) {
 		    int	cc, size;
@@ -1510,6 +1514,7 @@ params_external (CT ct, int composing)
     struct exbody *e = (struct exbody *) ct->c_ctparams;
     CI ci = &ct->c_ctinfo;
 
+    ct->c_ceopenfnx = NULL;
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
 	if (!mh_strcasecmp (*ap, "access-type")) {
 	    struct str2init *s2i;
@@ -1563,6 +1568,23 @@ params_external (CT ct, int composing)
 	}
 	if (!mh_strcasecmp (*ap, "subject")) {
 	    e->eb_subject = *ep;
+	    continue;
+	}
+	if (!mh_strcasecmp (*ap, "url")) {
+	    /*
+	     * According to RFC 2017, we have to remove all whitespace from
+	     * the URL
+	     */
+
+	    char *u, *p = *ep;
+	    e->eb_url = u = mh_xmalloc(strlen(*ep) + 1);
+
+	    for (; *p != '\0'; p++) {
+	    	if (! isspace((unsigned char) *p))
+		    *u++ = *p;
+	    }
+
+	    *u = '\0';
 	    continue;
 	}
 	if (composing && !mh_strcasecmp (*ap, "body")) {
@@ -2798,6 +2820,141 @@ openMail (CT ct, char **file)
     return fileno (ce->ce_fp);
 }
 
+
+/*
+ * URL
+ */
+
+static int
+InitURL (CT ct)
+{
+    return init_encoding (ct, openURL);
+}
+
+
+static int
+openURL (CT ct, char **file)
+{
+    struct exbody *e = ct->c_ctexbody;
+    CE ce = ct->c_cefile;
+    char *urlprog, *program;
+    char buffer[BUFSIZ], cachefile[BUFSIZ];
+    int fd, caching, cachetype;
+    struct msgs_array args = { 0, 0, NULL};
+    pid_t child_id;
+
+    if ((urlprog = context_find(nmhaccessurl)) && *urlprog == '\0')
+    	urlprog = NULL;
+
+    if (! urlprog) {
+    	content_error(NULL, ct, "No entry for nmh-access-url in profile");
+    	return NOTOK;
+    }
+
+    switch (openExternal(e->eb_parent, e->eb_content, ce, file, &fd)) {
+    	case NOTOK:
+	    return NOTOK;
+
+	case OK:
+	    break;
+
+	case DONE:
+	    return fd;
+    }
+
+    if (!e->eb_url) {
+    	content_error(NULL, ct, "missing url parameter");
+	return NOTOK;
+    }
+
+    if (xpid) {
+	if (xpid < 0)
+	    xpid = -xpid;
+	pidcheck (pidwait (xpid, NOTOK));
+	xpid = 0;
+    }
+
+    ce->ce_unlink = (*file == NULL);
+    caching = 0;
+    cachefile[0] = '\0';
+
+    if (find_cache(NULL, wcachesw, &cachetype, e->eb_content->c_id,
+    		   cachefile, sizeof(cachefile)) != NOTOK) {
+	if (*file == NULL) {
+	    ce->ce_unlink = 0;
+	    caching = 1;
+	}
+    }
+
+    if (*file)
+    	ce->ce_file = add(*file, NULL);
+    else if (caching)
+    	ce->ce_file = add(cachefile, NULL);
+    else
+    	ce->ce_file = add(m_mktemp(tmp, NULL, NULL), NULL);
+
+    if ((ce->ce_fp = fopen(ce->ce_file, "w+")) == NULL) {
+    	content_error(ce->ce_file, ct, "unable to fopen for read/writing");
+	return NOTOK;
+    }
+
+    switch (child_id = fork()) {
+    case NOTOK:
+    	adios ("fork", "unable to");
+	/* NOTREACHED */
+
+    case OK:
+    	argsplit_msgarg(&args, urlprog, &program);
+	app_msgarg(&args, e->eb_url);
+	app_msgarg(&args, NULL);
+	dup2(fileno(ce->ce_fp), 1);
+	close(fileno(ce->ce_fp));
+	execvp(program, args.msgs);
+	fprintf(stderr, "Unable to exec ");
+	perror(program);
+	_exit(-1);
+	/* NOTREACHED */
+
+    default:
+    	if (pidXwait(child_id, NULL)) {
+	    ce->ce_unlink = 1;
+	    return NOTOK;
+	}
+    }
+
+    if (cachefile[0]) {
+    	if (caching)
+	    chmod(cachefile, cachetype ? m_gmprot() : 0444);
+	else {
+	    int mask;
+	    FILE *fp;
+
+	    mask = umask (cachetype ? ~m_gmprot() : 0222);
+	    if ((fp = fopen(cachefile, "w"))) {
+	    	int cc;
+		FILE *gp = ce->ce_fp;
+
+		fseeko(gp, 0, SEEK_SET);
+
+		while ((cc = fread(buffer, sizeof(*buffer),
+				   sizeof(buffer), gp)) > 0)
+		    fwrite(buffer, sizeof(*buffer), cc, fp);
+
+		fflush(fp);
+
+		if (ferror(gp)) {
+		    admonish(ce->ce_file, "error reading");
+		    unlink(cachefile);
+		}
+	    }
+	    umask(mask);
+	}
+    }
+
+    fseeko(ce->ce_fp, 0, SEEK_SET);
+    *file = ce->ce_file;
+    return fd;
+}
 
 static int
 readDigest (CT ct, char *cp)

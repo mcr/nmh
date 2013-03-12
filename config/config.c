@@ -138,6 +138,9 @@ char *nmhprivcache = "nmh-private-cache";
 /* profile entry for external ftp access command */
 char *nmhaccessftp = "nmh-access-ftp";
 
+/* profile entry for external url access command */
+char *nmhaccessurl = "nmh-access-url";
+
 char *mhlibdir = NMHLIBDIR;
 char *mhetcdir = NMHETCDIR;
 

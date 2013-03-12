@@ -395,6 +395,8 @@ ftp
 local-file
 .IP \(bu 4
 mail-server
+.IP \(bu 4
+url
 .PP
 For the \*(lqanon-ftp\*(rq and \*(lqftp\*(rq access types,
 .B mhstore
@@ -422,6 +424,19 @@ local filename
 .PP
 The program should terminate with an exit status of zero if the
 retrieval is successful, and a non-zero exit status otherwise.
+.PP
+For the \*(lqurl\*(rq access types,
+.B mhstore
+will look for the \*(lqnmh-access-url\*(rq profile entry, e.g.,
+.PP
+.RS 5
+nmh-access-url: curl -l
+.RE
+.PP
+to determine the program to use to perform the HTTP retrieval.  This program
+is invoked with one argument: the URL of the content to retrieve.  The program
+should write the content to standard out, and should terminate with a status of zero if the retrieval is successful and a non\-zero exit status otherwise.
+.PP
 .SS "The Content Cache"
 When
 .B mhstore
@@ -514,6 +529,7 @@ installation.
 ^Path:~^To determine the user's nmh directory
 ^Current\-Folder:~^To find the default current folder
 ^nmh-access-ftp:~^Program to retrieve contents via FTP
+^nmh-access-url:~^Program to retrieve contents via HTTP
 ^nmh-cache~^Public directory to store cached external contents
 ^nmh-private-cache~^Personal directory to store cached external contents
 ^nmh-storage~^Directory to store contents

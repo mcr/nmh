@@ -54,6 +54,12 @@ pid_t xpid = 0;
 
 static char prefix[] = "----- =_aaaaaaaaaa";
 
+/*
+ * Maximum size of URL token in message/external-body
+ */
+
+#define MAXURLTOKEN 40
+
 
 /* mhmisc.c */
 void content_error (char *, CT, char *, ...);
@@ -1360,7 +1366,7 @@ scan_content (CT ct)
 static int
 build_headers (CT ct)
 {
-    int	cc, mailbody, len;
+    int	cc, mailbody, extbody, len;
     char **ap, **ep;
     char *np, *vp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -1402,9 +1408,8 @@ build_headers (CT ct)
     len = strlen (TYPE_FIELD) + strlen (ci->ci_type)
 		+ strlen (ci->ci_subtype) + 3;
 
-    mailbody = ct->c_type == CT_MESSAGE
-	&& ct->c_subtype == MESSAGE_EXTERNAL
-	&& ((struct exbody *) ct->c_ctparams)->eb_body;
+    extbody = ct->c_type == CT_MESSAGE && ct->c_subtype == MESSAGE_EXTERNAL;
+    mailbody = extbody && ((struct exbody *) ct->c_ctparams)->eb_body;
 
     /*
      * Append the attribute/value pairs to
@@ -1416,6 +1421,42 @@ build_headers (CT ct)
 
 	vp = add (";", vp);
 	len++;
+
+	/*
+	 * According to RFC 2017, if we have a URL longer than 40 characters
+	 * we have to break it across multiple lines
+	 */
+
+	if (extbody && mh_strcasecmp (*ap, "url") == 0) {
+	    char *value = *ep;
+
+	    /* 7 here refers to " url=\"\"" */
+	    if (len + 1 + (cc = (min(MAXURLTOKEN, strlen(value)) + 7)) >=
+	    							CPERLIN) {
+	    	vp = add ("\n\t", vp);
+		len = 8;
+	    } else {
+	    	vp = add (" ", vp);
+		len++;
+	    }
+
+	    vp = add ("url=\"", vp);
+	    len += 5;
+
+	    while (strlen(value) > MAXURLTOKEN) {
+		strncpy(buffer, value, MAXURLTOKEN);
+		buffer[MAXURLTOKEN] = '\0';
+		vp = add (buffer, vp);
+		vp = add ("\n\t", vp);
+		value += MAXURLTOKEN;
+		len = 8;
+	    }
+
+	    vp = add (value, vp);
+	    vp = add ("\"", vp);
+	    len += strlen(value) + 1;
+	    continue;
+	}
 
 	snprintf (buffer, sizeof(buffer), "%s=\"%s\"", *ap, *ep);
 	if (len + 1 + (cc = strlen (buffer)) >= CPERLIN) {

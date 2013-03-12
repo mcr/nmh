@@ -387,6 +387,7 @@ extern char *moreproc;
 extern char *msgprot;
 extern char *mshproc;
 extern char *nmhaccessftp;
+extern char *nmhaccessurl;
 extern char *nmhstorage;
 extern char *nmhcache;
 extern char *nmhprivcache;

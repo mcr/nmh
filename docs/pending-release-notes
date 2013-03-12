@@ -42,6 +42,8 @@ NEW FEATURES
   contain spaces and shell metacharacters.  If found, such entries will
   either be space-splitted or processed by /bin/sh.
 - A new program, fmttest(1) is included to help debug format files
+- mhshow/mhstore now have support for RFC-2017 (access-type=url) for
+  external message bodies.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

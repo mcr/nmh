@@ -246,6 +246,8 @@ free_external (CT ct)
     free_content (e->eb_content);
     if (e->eb_body)
 	free (e->eb_body);
+    if (e->eb_url)
+    	free (e->eb_url);
 
     free ((char *) e);
     ct->c_ctparams = NULL;

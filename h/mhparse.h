@@ -231,6 +231,7 @@ struct exbody {
     char *eb_server;
     char *eb_subject;
     char *eb_body;
+    char *eb_url;
 };
 
 /*
