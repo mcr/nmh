@@ -646,9 +646,8 @@ man page install path      : ${nmhman}
 RPM build root             : ${nmhrpm}
 backup prefix              : ${backup_prefix}
 transport system           : ${MTS}
-file locking type          : ${LOCKTYPE}
+spool default locking type : ${with_locking}
 default smtp servers       : ${smtpservers}
-default editor             : ${editorpath}
 SASL support               : ${sasl_support}
 TLS support                : ${tls_support}
 ])])dnl

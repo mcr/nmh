@@ -71,15 +71,30 @@ struct lock {
     struct lock *l_next;
 };
 
+enum locktype { FCNTL_LOCKING, FLOCK_LOCKING, LOCKF_LOCKING, DOT_LOCKING };
+
+/*
+ * Flags to indicate whether we've initialized the lock types, and
+ * our saved lock types
+ */
+static int datalockinit = 0;
+static int spoollockinit = 0;
+enum locktype datalocking, spoollocking;
+
+
 /* top of list containing all open locks */
 static struct lock *l_top = NULL;
+
+static int lkopen(char *, int, mode_t, enum locktype, int);
+static FILE *lkfopen(char *, const char *, mode_t, int);
 
 static int lkopen_fcntl (char *, int, mode_t, int);
 #ifdef HAVE_LOCKF
 static int lkopen_lockf (char *, int, mode_t, int);
 #endif /* HAVE_LOCKF */
 
-#ifdef DOT_LOCKING
+static enum locktype init_locktype(const char *);
+
 static int lkopen_dot (char *, int, mode_t);
 static void lockname (char *, struct lockinfo *, int);
 static void timerON (char *, int);
@@ -89,23 +104,62 @@ static void alrmser (int);
 #if !defined(HAVE_LIBLOCKFILE)
 static int lockit (struct lockinfo *);
 #endif
-#endif
 
 /*
- * Base routine to open and lock a file,
- * and return a file descriptor.
+ * Base function: determine the data type used to lock files and
+ * call the underlying function.
  */
 
 int
-lkopen (char *file, int access, mode_t mode)
+lkopendata(char *file, int access, mode_t mode, int exclusive)
 {
-#ifdef KERNEL_LOCKING
-    return lkopen_kernel(file, access, mode);
-#endif
+    if (! datalockinit) {
+    	char *cp = context_find("datalocking");
 
-#ifdef DOT_LOCKING
-    return lkopen_dot(file, access, mode);
-#endif
+	if (cp) {
+	    datalocking = init_locktype(cp);
+	} else {
+	    /* We default to fcntl locking for data files */
+	    datalocking = FCNTL_LOCKING;
+	}
+
+	datalockinit = 1;
+    }
+
+    return lkopen(file, access, mode, datalocking, exclusive);
+}
+
+/*
+ * Internal routine to switch between different locking types.
+ */
+
+static int
+lkopen (char *file, int access, mode_t mode, enum locktype ltype,
+	int exclusive)
+{
+    switch (ltype) {
+
+    case FCNTL_LOCKING:
+    	return lkopen_fcntl(file, access, mode, exclusive);
+
+    case DOT_LOCKING:
+    	return lkopen_dot(file, access, mode, exclusive);
+
+#ifdef HAVE_FLOCK
+    case FLOCK_LOCKING:
+    	return lkopen_flock(file, access, mode, exclusive);
+#endif /* HAVE_FLOCK */
+
+#ifdef HAVE_LOCKF
+    case LOCKF_LOCKING:
+    	return lkopen_lockf(file, access, mode, exclusive);
+#endif /* HAVE_FLOCK */
+
+    default:
+    	adios(NULL, "Internal locking error: unsupported lock type used!");
+    }
+
+    return -1;
 }
 
 
@@ -168,7 +222,7 @@ lkclose (int fd, char *file)
  */
 
 FILE *
-lkfopen (char *file, char *mode)
+lkfopen (char *file, char *mode, int exclusive)
 {
     int fd, access;
     FILE *fp;
@@ -190,7 +244,7 @@ lkfopen (char *file, char *mode)
 	return NULL;
     }
 
-    if ((fd = lkopen (file, access, 0666)) == -1)
+    if ((fd = lkopen (file, access, 0666, exclusive)) == -1)
 	return NULL;
 
     if ((fp = fdopen (fd, mode)) == NULL) {
@@ -601,7 +655,7 @@ alrmser (int sig)
  * Return a locking algorithm based on the string name
  */
 
-enum locktype
+static enum locktype
 init_locktype(const char *lockname)
 {
     if (mh_strcasecmp(lockname, "fcntl") == 0) {
@@ -621,7 +675,7 @@ init_locktype(const char *lockname)
     } else if (mh_strcasecmp(lockname, "dot") == 0) {
     	return DOT_LOCKING;
     } else {
-    	adios(NULL, "Unknown lock type: \"%s\"", lockname)
+    	adios(NULL, "Unknown lock type: \"%s\"", lockname);
 	/* NOTREACHED */
 	return 0;
     }

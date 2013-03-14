@@ -80,18 +80,26 @@ char *getcpy (char *);
 char *get_default_editor(void);
 char *getfolder(int);
 /*
- * Parse a lock type and return the type of lock it is
+ * Lock open/close routines.
+ *
+ * The lk[f]opendata() functions are designed to open "data" files (anything
+ * not a mail spool file) using the locking mechanism configured for data
+ * files.  The lk[f]openspool() functions are for opening the mail spool
+ * file, which will use the locking algorithm configured for the mail
+ * spool.
+ *
+ * All of these functions have a third argument, an integer which
+ * indicates the type of lock.  A "0" means a shared (read) lock, and a
+ * "1" indicates an exclusive (write) lock.
  */
-enum locktype init_locktype(const char *);
-/*
- * Lock open/close routines.  The 3rd argument to lkopen/lfkopen is an
- * integer which indicates the type of lock.  A "0" means a shared (read)
- * lock, and a "1" indicates an exclusive (write) lock.
- */
-int lkclose(int, char*);
-int lkfclose(FILE *, char *);
-FILE *lkfopen(char *, char *, int);
-int lkopen(char *, int, mode_t, int);
+int lkclosedata(int, char*);
+int lkclosespool(int, char*);
+int lkfclosedata(FILE *, char *);
+int lkfclosespool(FILE *, char *);
+FILE *lkfopendata(char *, char *, int);
+int lkopendata(char *, int, mode_t, int);
+FILE *lkfopenspool(char *, char *, int);
+int lkopenspool(char *, int, mode_t, int);
 int m_atoi (char *);
 char *m_backup (char *);
 int m_convert (struct msgs *, char *);
