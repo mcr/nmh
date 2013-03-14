@@ -62,43 +62,6 @@ AS_IF([test x"$with_hash_backup" != x -a x"$with_hash_backup" != x"no"],
 AC_DEFINE_UNQUOTED([BACKUP_PREFIX], "$backup_prefix",
     [The prefix that is prepended to the name of message files when they are "removed" by rmm. This should typically be `,' or `#'.])dnl
 
-dnl What method of locking to use?
-AS_CASE(["$host_os"],
-  [aix*|cygwin*|linux*],
-    [default_locktype="fcntl"; default_locking=FCNTL_LOCKING],
-  [freebsd*|openbsd*|darwin*], [default_locktype="flock"; default_locking=FLOCK_LOCKING],
-  [default_locktype="dot"; default_locking=DOT_LOCKING])
-
-AC_ARG_WITH([locking],
-  AS_HELP_STRING([--with-locking=@<:@dot|fcntl|flock|lockf@:>@],
-  [specify the file locking method]))
-
-AS_IF([test x"$with_locking" = x"dot"],
-    [LOCKTYPE="dot"
-    AC_DEFINE([DOT_LOCKING], [1], [Define to use dot based file locking.])],
-  [test x"$with_locking" = x"flock"],
-    [LOCKTYPE="flock"
-    AC_DEFINE([FLOCK_LOCKING], [1], [Define to use flock() based locking.])],
-  [test x"$with_locking" = x"lockf"],
-    [LOCKTYPE="lockf"
-    AC_DEFINE([LOCKF_LOCKING], [1], [Define to use lockf() based locking.])],
-  [test x"$with_locking" = x"fcntl"],
-    [LOCKTYPE="fcntl"
-    AC_DEFINE([FCNTL_LOCKING], [1], [Define to use fnctl() based locking.])],
-  [LOCKTYPE="$default_locktype"
-  AC_DEFINE_UNQUOTED([$default_locking], [1])])
-
-dnl Should we use a locking directory?
-AC_ARG_ENABLE([lockdir],
-  [AS_HELP_STRING([--enable-lockdir=dir], [Store dot-lock files in "dir"])], [
-  AS_IF([test "x$enableval" = xyes],[
-    AC_MSG_ERROR([--enable-lockdir requires an argument])])
-  AS_IF([test "x$LOCKTYPE" != xdot],[
-    AC_MSG_ERROR([Can only use --enable-lockdir with dot locking])])
-  AC_DEFINE_UNQUOTED([LOCKDIR], ["$enableval"],
-  		     [Directory to store dot-locking lock files])
-])
-
 dnl What method of posting should post use?
 AC_ARG_WITH([mts],
   AS_HELP_STRING([--with-mts=@<:@smtp|sendmail/smtp|sendmail/pipe@:>@],
@@ -408,6 +371,9 @@ NMH_CHECK_NETLIBS
 
 dnl Check for readline support
 NMH_READLINE
+
+dnl Check the locking functions supported and what we should use by default
+NMH_LOCKING
 
 dnl Check for iconv
 NMH_CHECK_ICONV

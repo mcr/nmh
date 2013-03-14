@@ -1,6 +1,9 @@
 
 /*
  * prototypes.h -- various prototypes
+ *
+ * If you modify functions here, please document their current behavior
+ * as much as practical.
  */
 
 /*
@@ -76,10 +79,19 @@ char *get_charset(void);
 char *getcpy (char *);
 char *get_default_editor(void);
 char *getfolder(int);
+/*
+ * Parse a lock type and return the type of lock it is
+ */
+enum locktype init_locktype(const char *);
+/*
+ * Lock open/close routines.  The 3rd argument to lkopen/lfkopen is an
+ * integer which indicates the type of lock.  A "0" means a shared (read)
+ * lock, and a "1" indicates an exclusive (write) lock.
+ */
 int lkclose(int, char*);
 int lkfclose(FILE *, char *);
-FILE *lkfopen(char *, char *);
-int lkopen(char *, int, mode_t);
+FILE *lkfopen(char *, char *, int);
+int lkopen(char *, int, mode_t, int);
 int m_atoi (char *);
 char *m_backup (char *);
 int m_convert (struct msgs *, char *);

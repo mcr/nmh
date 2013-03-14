@@ -24,15 +24,12 @@
 #endif
 #include <time.h>
 #include <errno.h>
-
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
+#include <fcntl.h>
+#ifdef HAVE_FLOCK
 # include <sys/file.h>
 #endif
-
-#if defined(LOCKF_LOCKING) || defined(FLOCK_LOCKING)
-# include <sys/file.h>
+#ifdef HAVE_LOCKF
+# include <unistd.h>
 #endif
 
 #include <signal.h>
@@ -44,13 +41,6 @@
 #ifdef LOCKDIR
 char *lockdir = LOCKDIR;
 #endif
-
-/* Are we using any kernel locking? */
-#if defined (FLOCK_LOCKING) || defined(LOCKF_LOCKING) || defined(FCNTL_LOCKING)
-# define KERNEL_LOCKING
-#endif
-
-#ifdef DOT_LOCKING
 
 /* struct for getting name of lock file to create */
 struct lockinfo {
@@ -83,14 +73,11 @@ struct lock {
 
 /* top of list containing all open locks */
 static struct lock *l_top = NULL;
-#endif /* DOT_LOCKING */
 
-/*
- * static prototypes
- */
-#ifdef KERNEL_LOCKING
-static int lkopen_kernel (char *, int, mode_t);
-#endif
+static int lkopen_fcntl (char *, int, mode_t, int);
+#ifdef HAVE_LOCKF
+static int lkopen_lockf (char *, int, mode_t, int);
+#endif /* HAVE_LOCKF */
 
 #ifdef DOT_LOCKING
 static int lkopen_dot (char *, int, mode_t);
@@ -609,3 +596,33 @@ alrmser (int sig)
 }
 
 #endif /* DOT_LOCKING */
+
+/*
+ * Return a locking algorithm based on the string name
+ */
+
+enum locktype
+init_locktype(const char *lockname)
+{
+    if (mh_strcasecmp(lockname, "fcntl") == 0) {
+    	return FCNTL_LOCKING;
+    } else if (mh_strcasecmp(lockname, "lockf") == 0) {
+#ifdef HAVE_LOCKF
+	return LOCKF_LOCKING;
+#else /* ! HAVE_LOCKF */
+	adios(NULL, "lockf not supported on this system");
+#endif /* HAVE_LOCKF */
+    } else if (mh_strcasecmp(lockname, "flock") == 0) {
+#ifdef HAVE_FLOCK
+	return FLOCK_LOCKING;
+#else /* ! HAVE_FLOCK */
+	adios(NULL, "flock not supported on this system");
+#endif /* HAVE_FLOCK */
+    } else if (mh_strcasecmp(lockname, "dot") == 0) {
+    	return DOT_LOCKING;
+    } else {
+    	adios(NULL, "Unknown lock type: \"%s\"", lockname)
+	/* NOTREACHED */
+	return 0;
+    }
+}

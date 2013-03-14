@@ -317,6 +317,12 @@ typedef struct m_getfld_state *m_getfld_state_t;
 #define NMH_ATTACH_HEADER "Nmh-Attachment"  /* Default header for -attach */
 
 /*
+ * The type of locking we support
+ */
+
+enum locktype { FCNTL_LOCKING, FLOCK_LOCKING, LOCKF_LOCKING, DOT_LOCKING };
+
+/*
  * miscellaneous macros
  */
 #define	pidXwait(pid,cp) pidstatus (pidwait (pid, NOTOK), stdout, cp)
