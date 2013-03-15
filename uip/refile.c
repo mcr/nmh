@@ -381,7 +381,7 @@ m_file (struct msgs *mp, char *msgfile, int oldmsgnum,
 
 /*
  * Copy sequence information for a refiled message to its
- * new folder(s).  Skip the cur sequence.
+ * new folder.  Skip the cur sequence.
  */
 static void
 copy_seqs (struct msgs *oldmp, int oldmsgnum, struct msgs *newmp, int newmsgnum)
