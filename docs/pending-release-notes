@@ -44,6 +44,7 @@ NEW FEATURES
 - A new program, fmttest(1) is included to help debug format files
 - mhshow/mhstore now have support for RFC-2017 (access-type=url) for
   external message bodies.
+- Added -retainsequences switch to refile(1).
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

@@ -12,6 +12,7 @@ refile \- file message in other folders
 .RB [ \-draft ]
 .RB [ \-link " | " \-nolink ]
 .RB [ \-preserve " | " \-nopreserve ]
+.RB [ \-retainsequences " | " \-noretainsequences ]
 .RB [ \-unlink " | " \-nounlink ]
 .RB [ \-src
 .IR +folder ]
@@ -113,6 +114,11 @@ switch, then
 will use the next available message number
 which is above the message number you wish to preserve.
 .PP
+The
+.B \-retainsequences
+switch causes the memberships in sequences, except \*(lqcur\*(rq, of
+the refiled messages to be carried over to each destination folder.
+.PP
 If
 .B \-link
 is not specified (or
@@ -184,6 +190,7 @@ to file the <mh\-dir>/draft.
 .fi
 .SH "SEE ALSO"
 .IR folder (1),
+.IR mh-sequence (5),
 .IR rmf (1),
 .IR rmm (1)
 .SH DEFAULTS
@@ -193,6 +200,7 @@ to file the <mh\-dir>/draft.
 .RB ` \-nolink '
 .RB ` \-nounlink '
 .RB ` \-nopreserve '
+.RB ` \-noretainsequences '
 .fi
 .SH CONTEXT
 If

@@ -218,5 +218,13 @@ other      has 9 messages  (1-15).
 
 TOTAL = 13 messages in 3 folders.'
 
+# test -retainsequences
+mark first -seq seq1
+mark last -seq seq2
+refile first last -retainsequences +other
+run_test 'mark +other -list -sequence seq1 -sequence seq2' \
+         "seq1: 16
+seq2: 17"
+
 
 exit $failed

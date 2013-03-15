@@ -12,6 +12,7 @@
 #include <h/utils.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <assert.h>
 
 #define REFILE_SWITCHES \
     X("draft", 0, DRAFTSW) \
@@ -19,6 +20,8 @@
     X("nolink", 0, NLINKSW) \
     X("preserve", 0, PRESSW) \
     X("nopreserve", 0, NPRESSW) \
+    X("retainsequences", 0, RETAINSEQSSW) \
+    X("noretainsequences", 0, NRETAINSEQSSW) \
     X("unlink", 0, UNLINKSW) \
     X("nounlink", 0, NUNLINKSW) \
     X("src +folder", 0, SRCSW) \
@@ -49,13 +52,14 @@ struct st_fold {
 static void opnfolds (struct st_fold *, int);
 static void clsfolds (struct st_fold *, int);
 static void remove_files (int, char **);
-static int m_file (char *, struct st_fold *, int, int, int);
+static int m_file (struct msgs *, char *, int, struct st_fold *, int, int, int);
+static void copy_seqs (struct msgs *, int, struct msgs *, int);
 
 
 int
 main (int argc, char **argv)
 {
-    int	linkf = 0, preserve = 0, filep = 0;
+    int	linkf = 0, preserve = 0, retainseqs = 0, filep = 0;
     int foldp = 0, isdf = 0, unlink_msgs = 0;
     int i, msgnum;
     char *cp, *folder = NULL, buf[BUFSIZ];
@@ -83,13 +87,13 @@ main (int argc, char **argv)
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
-	    case AMBIGSW: 
+	    case AMBIGSW:
 		ambigsw (cp, switches);
 		done (1);
-	    case UNKWNSW: 
+	    case UNKWNSW:
 		adios (NULL, "-%s unknown\n", cp);
 
-	    case HELPSW: 
+	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [msgs] [switches] +folder ...",
 			  invo_name);
 		print_help (buf, switches, 1);
@@ -98,18 +102,25 @@ main (int argc, char **argv)
 		print_version(invo_name);
 		done (0);
 
-	    case LINKSW: 
+	    case LINKSW:
 		linkf++;
 		continue;
-	    case NLINKSW: 
+	    case NLINKSW:
 		linkf = 0;
 		continue;
 
-	    case PRESSW: 
+	    case PRESSW:
 		preserve++;
 		continue;
-	    case NPRESSW: 
+	    case NPRESSW:
 		preserve = 0;
+		continue;
+
+	    case RETAINSEQSSW:
+		retainseqs = 1;
+		continue;
+	    case NRETAINSEQSSW:
+		retainseqs = 0;
 		continue;
 
 	    case UNLINKSW:
@@ -119,7 +130,7 @@ main (int argc, char **argv)
 		unlink_msgs = 0;
 		continue;
 
-	    case SRCSW: 
+	    case SRCSW:
 		if (folder)
 		    adios (NULL, "only one source folder at a time!");
 		if (!(cp = *argp++) || *cp == '-')
@@ -133,7 +144,7 @@ main (int argc, char **argv)
 		isdf = 0;
 		files[filep++] = getcpy (m_draft (NULL, NULL, 1, &isdf));
 		continue;
-	    case FILESW: 
+	    case FILESW:
 		if (filep > NFOLDERS)
 		    adios (NULL, "only %d files allowed!", NFOLDERS);
 		if (!(cp = *argp++) || *cp == '-')
@@ -141,11 +152,11 @@ main (int argc, char **argv)
 		files[filep++] = path (cp, TFILE);
 		continue;
 
-	    case RPROCSW: 
+	    case RPROCSW:
 		if (!(rmmproc = *argp++) || *rmmproc == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
-	    case NRPRCSW: 
+	    case NRPRCSW:
 		rmmproc = NULL;
 		continue;
 	    }
@@ -177,7 +188,7 @@ main (int argc, char **argv)
 	    adios (NULL, "use -file or some messages, not both");
 	opnfolds (folders, foldp);
 	for (i = 0; i < filep; i++)
-	    if (m_file (files[i], folders, foldp, preserve, 0))
+	    if (m_file (0, files[i], 0, folders, foldp, preserve, 0))
 		done (1);
 	/* If -nolink, then "remove" files */
 	if (!linkf)
@@ -220,7 +231,8 @@ main (int argc, char **argv)
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	if (is_selected (mp, msgnum)) {
 	    cp = getcpy (m_name (msgnum));
-	    if (m_file (cp, folders, foldp, preserve, !linkf))
+	    if (m_file (mp, cp, retainseqs ? msgnum : 0, folders, foldp,
+                        preserve, !linkf))
 		done (1);
 	    free (cp);
 	}
@@ -347,12 +359,13 @@ remove_files (int filep, char **files)
 
 
 /*
- * Link (or copy) the message into each of
- * the destination folders.
+ * Link (or copy) the message into each of the destination folders.
+ * If oldmsgnum is not 0, call copy_seqs().
  */
 
 static int
-m_file (char *msgfile, struct st_fold *folders, int nfolders, int preserve, int refile)
+m_file (struct msgs *mp, char *msgfile, int oldmsgnum,
+	struct st_fold *folders, int nfolders, int preserve, int refile)
 {
     int msgnum;
     struct st_fold *fp, *ep;
@@ -360,6 +373,29 @@ m_file (char *msgfile, struct st_fold *folders, int nfolders, int preserve, int 
     for (fp = folders, ep = folders + nfolders; fp < ep; fp++) {
 	if ((msgnum = folder_addmsg (&fp->f_mp, msgfile, 1, 0, preserve, nfolders == 1 && refile, maildir)) == -1)
 	    return 1;
+	if (oldmsgnum) copy_seqs (mp, oldmsgnum, fp->f_mp, msgnum);
     }
     return 0;
+}
+
+
+/*
+ * Copy sequence information for a refiled message to its
+ * new folder(s).  Skip the cur sequence.
+ */
+static void
+copy_seqs (struct msgs *oldmp, int oldmsgnum, struct msgs *newmp, int newmsgnum)
+{
+    char **seq;
+    int seqnum;
+
+    for (seq = oldmp->msgattrs, seqnum = 0; *seq; ++seq, ++seqnum) {
+	if (strcmp (current, *seq)) {
+	    assert (seqnum == seq_getnum (oldmp, *seq));
+	    if (in_sequence (oldmp, seqnum, oldmsgnum)) {
+		seq_addmsg (newmp, *seq, newmsgnum,
+			    is_seq_private (oldmp, seqnum) ? 0 : 1, 0);
+	    }
+	}
+    }
 }
