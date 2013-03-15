@@ -96,7 +96,7 @@ cache_content (CT ct)
 {
     int	cachetype;
     char *file, cachefile[BUFSIZ];
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
 
     if (!ct->c_id) {
 	advise (NULL, "no %s: field in %s", ID_FIELD, ct->c_file);

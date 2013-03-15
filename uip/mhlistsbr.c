@@ -280,7 +280,7 @@ list_debug (CT ct)
 
     /* print internal flags for transfer encoding */
     fprintf (stderr, "    transfer encoding 0x%x params 0x%x\n",
-	     ct->c_encoding, (unsigned int)(unsigned long) ct->c_cefile);
+	     ct->c_encoding, (unsigned int)(unsigned long) &ct->c_cefile);
 
     /* print Content-ID */
     if (ct->c_id)
@@ -422,12 +422,11 @@ list_application (CT ct, int toplevel, int realsize, int verbose, int debug)
 static int
 list_encoding (CT ct)
 {
-    CE ce;
+    CE ce = &ct->c_cefile;
 
-    if ((ce = ct->c_cefile))
-	fprintf (stderr, "    decoded fp 0x%x file \"%s\"\n",
-		 (unsigned int)(unsigned long) ce->ce_fp,
-		 ce->ce_file ? ce->ce_file : "");
+    fprintf (stderr, "    decoded fp 0x%x file \"%s\"\n",
+	     (unsigned int)(unsigned long) ce->ce_fp,
+	     ce->ce_file ? ce->ce_file : "");
 
     return OK;
 }

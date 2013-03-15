@@ -97,7 +97,7 @@ struct Content {
     int	c_subtype;		/* internal flag for content subtype */
 
     /* Content-Transfer-Encoding info (decoded contents) */
-    CE c_cefile;		/* structure holding decoded content */
+    struct cefile c_cefile;	/* structure holding decoded content */
     int	c_encoding;		/* internal flag for encoding type   */
 
     /* Content-MD5 info */

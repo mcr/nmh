@@ -347,12 +347,6 @@ finish_field:
 static int
 init_decoded_content (CT ct)
 {
-    CE ce;
-
-    if ((ce = (CE) calloc (1, sizeof(*ce))) == NULL)
-	adios (NULL, "out of memory");
-
-    ct->c_cefile     = ce;
     ct->c_ceopenfnx  = open7Bit;	/* since unencoded */
     ct->c_ceclosefnx = close_encoding;
     ct->c_cesizefnx  = NULL;		/* since unencoded */
@@ -430,7 +424,7 @@ user_content (FILE *in, char *file, char *buf, CT *ctp)
 
     /* allocate basic structure for handling decoded content */
     init_decoded_content (ct);
-    ce = ct->c_cefile;
+    ce = &ct->c_cefile;
 
     ci = &ct->c_ctinfo;
     set_id (ct, 0);
@@ -791,7 +785,7 @@ use_forw:
 		    if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
 			adios (NULL, "out of memory");
 		    init_decoded_content (p);
-		    pe = p->c_cefile;
+		    pe = &p->c_cefile;
 		    if (get_ctinfo ("message/rfc822", p, 0) == NOTOK)
 			done (1);
 		    p->c_type = CT_MESSAGE;
@@ -926,7 +920,7 @@ set_id (CT ct, int top)
 static int
 compose_content (CT ct)
 {
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
 
     switch (ct->c_type) {
     case CT_MULTIPART:
@@ -1163,7 +1157,7 @@ scan_content (CT ct)
     char *cp = NULL, buffer[BUFSIZ];
     struct text *t = NULL;
     FILE *in = NULL;
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
 
     /*
      * handle multipart by scanning all subparts
@@ -1632,7 +1626,7 @@ calculate_digest (CT ct, int asciiP)
     unsigned char digest[16];
     unsigned char outbuf[25];
     MD5_CTX mdContext;
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
     char *infilename = ce->ce_file ? ce->ce_file : ct->c_file;
     FILE *in;
 

@@ -300,7 +300,7 @@ write8Bit (CT ct, FILE *out)
     int fd;
     size_t inbytes;
     char c, *file, buffer[BUFSIZ];
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
 
     file = NULL;
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
@@ -329,7 +329,7 @@ writeQuoted (CT ct, FILE *out)
     int fd;
     char *cp, *file;
     char c, buffer[BUFSIZ];
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
 
     file = NULL;
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
@@ -400,7 +400,7 @@ writeBase64ct (CT ct, FILE *out)
 {
     int	fd, result;
     char *file;
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
 
     file = NULL;
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)

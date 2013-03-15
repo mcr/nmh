@@ -1631,12 +1631,6 @@ InitApplication (CT ct)
 static int
 init_encoding (CT ct, OpenCEFunc openfnx)
 {
-    CE ce;
-
-    if ((ce = (CE) calloc (1, sizeof(*ce))) == NULL)
-	adios (NULL, "out of memory");
-
-    ct->c_cefile     = ce;
     ct->c_ceopenfnx  = openfnx;
     ct->c_ceclosefnx = close_encoding;
     ct->c_cesizefnx  = size_encoding;
@@ -1648,10 +1642,7 @@ init_encoding (CT ct, OpenCEFunc openfnx)
 void
 close_encoding (CT ct)
 {
-    CE ce;
-
-    if (!(ce = ct->c_cefile))
-	return;
+    CE ce = &ct->c_cefile;
 
     if (ce->ce_fp) {
 	fclose (ce->ce_fp);
@@ -1666,11 +1657,8 @@ size_encoding (CT ct)
     int	fd;
     unsigned long size;
     char *file;
-    CE ce;
+    CE ce = &ct->c_cefile;
     struct stat st;
-
-    if (!(ce = ct->c_cefile))
-	return (ct->c_end - ct->c_begin);
 
     if (ce->ce_fp && fstat (fileno (ce->ce_fp), &st) != NOTOK)
 	return (long) st.st_size;
@@ -1740,10 +1728,9 @@ openBase64 (CT ct, char **file)
     char *cp, *ep, buffer[BUFSIZ];
     /* sbeck -- handle suffixes */
     CI ci;
-    CE ce;
+    CE ce = &ct->c_cefile;
     MD5_CTX mdContext;
 
-    ce = ct->c_cefile;
     if (ce->ce_fp) {
 	fseek (ce->ce_fp, 0L, SEEK_SET);
 	goto ready_to_go;
@@ -1973,12 +1960,11 @@ openQuoted (CT ct, char **file)
     char *cp, *ep;
     char buffer[BUFSIZ];
     unsigned char mask;
-    CE ce;
+    CE ce = &ct->c_cefile;
     /* sbeck -- handle suffixes */
     CI ci;
     MD5_CTX mdContext;
 
-    ce = ct->c_cefile;
     if (ce->ce_fp) {
 	fseek (ce->ce_fp, 0L, SEEK_SET);
 	goto ready_to_go;
@@ -2201,9 +2187,8 @@ open7Bit (CT ct, char **file)
     /* sbeck -- handle suffixes */
     char *cp;
     CI ci;
-    CE ce;
+    CE ce = &ct->c_cefile;
 
-    ce = ct->c_cefile;
     if (ce->ce_fp) {
 	fseek (ce->ce_fp, 0L, SEEK_SET);
 	goto ready_to_go;
@@ -2422,7 +2407,7 @@ openFile (CT ct, char **file)
     int	fd, cachetype;
     char cachefile[BUFSIZ];
     struct exbody *e = ct->c_ctexbody;
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
 
     switch (openExternal (e->eb_parent, e->eb_content, ce, file, &fd)) {
 	case NOTOK:
@@ -2505,12 +2490,11 @@ openFTP (CT ct, char **file)
     char *bp, *ftp, *user, *pass;
     char buffer[BUFSIZ], cachefile[BUFSIZ];
     struct exbody *e;
-    CE ce;
+    CE ce = &ct->c_cefile;
     static char *username = NULL;
     static char *password = NULL;
 
     e  = ct->c_ctexbody;
-    ce = ct->c_cefile;
 
     if ((ftp = context_find (nmhaccessftp)) && !*ftp)
 	ftp = NULL;
@@ -2717,7 +2701,7 @@ openMail (CT ct, char **file)
     int len, buflen;
     char *bp, buffer[BUFSIZ], *vec[7];
     struct exbody *e = ct->c_ctexbody;
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
 
     switch (openExternal (e->eb_parent, e->eb_content, ce, file, &fd)) {
 	case NOTOK:
@@ -2836,7 +2820,7 @@ static int
 openURL (CT ct, char **file)
 {
     struct exbody *e = ct->c_ctexbody;
-    CE ce = ct->c_cefile;
+    CE ce = &ct->c_cefile;
     char *urlprog, *program;
     char buffer[BUFSIZ], cachefile[BUFSIZ];
     int fd, caching, cachetype;

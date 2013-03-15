@@ -262,10 +262,7 @@ free_external (CT ct)
 void
 free_encoding (CT ct, int toplevel)
 {
-    CE ce;
-
-    if (!(ce = ct->c_cefile))
-	return;
+    CE ce = &ct->c_cefile;
 
     if (ce->ce_fp) {
 	fclose (ce->ce_fp);
@@ -279,10 +276,7 @@ free_encoding (CT ct, int toplevel)
 	ce->ce_file = NULL;
     }
 
-    if (toplevel) {
-	free ((char *) ce);
-	ct->c_cefile = NULL;
-    } else {
+    if (! toplevel) {
 	ct->c_ceopenfnx = NULL;
     }
 }
