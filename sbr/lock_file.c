@@ -229,8 +229,13 @@ lkclosedata(int fd, const char *name)
 int
 lkfclosedata(FILE *f, const char *name)
 {
-    int fd = fileno(f);
-    int rc = fclose(f);
+    int fd, rc;
+
+    if (f == NULL)
+    	return 0;
+    
+    fd = fileno(f);
+    rc = fclose(f);
 
     if (datalocktype == DOT_LOCKING)
     	lkclose_dot(fd, name);
@@ -252,8 +257,13 @@ lkclosespool(int fd, const char *name)
 int
 lkfclosespool(FILE *f, const char *name)
 {
-    int fd = fileno(f);
-    int rc = fclose(f);
+    int fd, rc;
+
+    if (f == NULL)
+    	return 0;
+    
+    fd = fileno(f);
+    rc = fclose(f);
 
     if (spoollocktype == DOT_LOCKING)
     	lkclose_dot(fd, name);
