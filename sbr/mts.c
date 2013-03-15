@@ -54,6 +54,8 @@ char *uucplfil = "";
 char *mmdlm1 = "\001\001\001\001\n";
 char *mmdlm2 = "\001\001\001\001\n";
 
+char *spoollocking = DEFAULT_LOCKING;
+
 /* Cache the username, fullname, and mailbox of the user */
 static char username[BUFSIZ];
 static char fullname[BUFSIZ];
@@ -102,6 +104,7 @@ static struct bind binds[] = {
     { "systemname", &systemname },
     { "mmdfldir", &mmdfldir },
     { "mmdflfil", &mmdflfil },
+    { "spoollocking", &spoollocking },
     { "uucpldir", &uucpldir },
     { "uucplfil", &uucplfil },
     { "mmdelim1", &mmdlm1 },

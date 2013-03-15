@@ -344,19 +344,19 @@ use_raw:
 
     make_intermediates (mapfile);
     mask = umask (writing == 2 ? 0077 : 0);
-    if (!(fp = lkfopen (mapfile, "a")) && errno == ENOENT) {
+    if (!(fp = lkfopendata (mapfile, "a")) && errno == ENOENT) {
 	int fd;
 
 	if ((fd = creat (mapfile, 0666)) != NOTOK) {
 	    close (fd);
-	    fp = lkfopen (mapfile, "a");
+	    fp = lkfopendata (mapfile, "a");
 	}
     }
     umask (mask);
     if (!fp)
 	return NOTOK;
     fprintf (fp, "%s: %s\n", mapname, id);
-    lkfclose (fp, mapfile);
+    lkfclosedata (fp, mapfile);
 
 done_map:
     if (*mapname == '/')
@@ -378,7 +378,7 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
     FILE *fp;
     m_getfld_state_t gstate = 0;
 
-    if (!(fp = lkfopen (mapfile, "r")))
+    if (!(fp = lkfopendata (mapfile, "r")))
 	return NOTOK;
 
     for (;;) {
@@ -409,7 +409,7 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
 		result = strcmp (id, dp);
 		free (dp);
 		if (result == 0) {
-		    lkfclose (fp, mapfile);
+		    lkfclosedata (fp, mapfile);
 		    return OK;
 		}
 		continue;
@@ -423,6 +423,6 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
     }
     m_getfld_state_destroy (&gstate);
 
-    lkfclose (fp, mapfile);
+    lkfclosedata (fp, mapfile);
     return NOTOK;
 }

@@ -88,18 +88,18 @@ char *getfolder(int);
  * file, which will use the locking algorithm configured for the mail
  * spool.
  *
- * All of these functions have a third argument, an integer which
- * indicates the type of lock.  A "0" means a shared (read) lock, and a
- * "1" indicates an exclusive (write) lock.
+ * Files opened for reading are locked with a read lock (if possible by
+ * the underlying lock mechanism), files opened for writing are locked
+ * using an exclusive lock.
  */
-int lkclosedata(int, char*);
-int lkclosespool(int, char*);
-int lkfclosedata(FILE *, char *);
-int lkfclosespool(FILE *, char *);
-FILE *lkfopendata(char *, char *, int);
-int lkopendata(char *, int, mode_t, int);
-FILE *lkfopenspool(char *, char *, int);
-int lkopenspool(char *, int, mode_t, int);
+int lkclosedata(int, const char *);
+int lkclosespool(int, const char *);
+int lkfclosedata(FILE *, const char *);
+int lkfclosespool(FILE *, const char *);
+FILE *lkfopendata(const char *, const char *);
+int lkopendata(const char *, int, mode_t);
+FILE *lkfopenspool(const char *, const char *);
+int lkopenspool(const char *, int, mode_t);
 int m_atoi (char *);
 char *m_backup (char *);
 int m_convert (struct msgs *, char *);

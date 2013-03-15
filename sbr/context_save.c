@@ -43,7 +43,7 @@ context_save (void)
     sigaddset (&set, SIGTERM);
     sigprocmask (SIG_BLOCK, &set, &oset);
 
-    if (!(out = lkfopendata (ctxpath, "w", 1)))
+    if (!(out = lkfopendata (ctxpath, "w")))
 	adios (ctxpath, "unable to write");
     for (np = m_defs; np; np = np->n_next)
 	if (np->n_context)

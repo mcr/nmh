@@ -74,9 +74,9 @@ priv:
 		 * If that fails (probably because folder is
 		 * readonly), then make sequence private.
 		 */
-		if ((fp = lkfopen (seqfile, "w")) == NULL
+		if ((fp = lkfopendata (seqfile, "w")) == NULL
 			&& (unlink (seqfile) == -1 ||
-			    (fp = lkfopen (seqfile, "w")) == NULL)) {
+			    (fp = lkfopendata (seqfile, "w")) == NULL)) {
 		    admonish (attr, "unable to write");
 		    goto priv;
 		}
@@ -94,7 +94,7 @@ priv:
     }
 
     if (fp) {
-	lkfclose (fp, seqfile);
+	lkfclosedata (fp, seqfile);
 	sigprocmask (SIG_SETMASK, &oset, &set);  /* reset signal mask */
     } else {
 	/*

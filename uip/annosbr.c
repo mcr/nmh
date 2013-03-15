@@ -35,7 +35,7 @@ annotate (char *file, char *comp, char *text, int inplace, int datesw, int delet
     struct stat		s;
 
     /* open and lock the file to be annotated */
-    if ((fd = lkopen (file, O_RDWR, 0)) == NOTOK) {
+    if ((fd = lkopendata (file, O_RDWR, 0)) == NOTOK) {
 	switch (errno) {
 	    case ENOENT:
 		break;
@@ -60,7 +60,7 @@ annotate (char *file, char *comp, char *text, int inplace, int datesw, int delet
     if (preserve_actime_and_modtime && utime(file, &b) == -1)
 	advise("can't set access and modification times for %s", file);
 
-    lkclose (fd, file);
+    lkclosedata (fd, file);
     return i;
 }
 

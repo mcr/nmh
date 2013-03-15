@@ -1097,7 +1097,7 @@ quit (void)
     if (vmh) 
 	ttyNaux (NULLCMD, "FAST");
     cp = NULL;
-    if ((dp = lkfopen (mp->foldpath, "r")) == NULL) {
+    if ((dp = lkfopendata (mp->foldpath, "r")) == NULL) {
 	advise (mp->foldpath, "unable to lock");
 	if (vmh) {
 	    ttyR (NULLCMD);
@@ -1161,7 +1161,7 @@ quit (void)
 release: ;
     if (cp)
 	free (cp);
-    lkfclose (dp, mp->foldpath);
+    lkfclosedata (dp, mp->foldpath);
     if (vmh) {
 	ttyR (NULLCMD);
 	pFIN ();

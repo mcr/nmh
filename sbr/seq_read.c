@@ -73,7 +73,7 @@ seq_public (struct msgs *mp)
     /* get filename of sequence file */
     snprintf (seqfile, sizeof(seqfile), "%s/%s", mp->foldpath, mh_seq);
 
-    if ((fp = lkfopen (seqfile, "r")) == NULL)
+    if ((fp = lkfopendata (seqfile, "r")) == NULL)
 	return;
 
     /* Use m_getfld to scan sequence file */
@@ -110,7 +110,7 @@ seq_public (struct msgs *mp)
     }
     m_getfld_state_destroy (&gstate);
 
-    lkfclose (fp, seqfile);
+    lkfclosedata (fp, seqfile);
 }
 
 

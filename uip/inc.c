@@ -531,7 +531,7 @@ go_to_it:
 	    }
 
             GETGROUPPRIVS();       /* Reset gid to lock mail file */
-            in = lkfopen (newmail, "r");
+            in = lkfopenspool (newmail, "r");
             DROPGROUPPRIVS();
             if (in == NULL)
 		adios (NULL, "unable to lock and fopen %s", newmail);
@@ -875,7 +875,7 @@ go_to_it:
     if (incerr < 0) {		/* error */
 	if (locked) {
             GETGROUPPRIVS();      /* Be sure we can unlock mail file */
-            (void) lkfclose (in, newmail); in = NULL;
+            (void) lkfclosespool (in, newmail); in = NULL;
             DROPGROUPPRIVS();    /* And then return us to normal privileges */
 	} else {
 	    fclose (in); in = NULL;
@@ -932,7 +932,7 @@ go_to_it:
     if (inc_type == INC_FILE && Maildir == NULL) {
 	if (locked) {
            GETGROUPPRIVS();        /* Be sure we can unlock mail file */
-           (void) lkfclose (in, newmail); in = NULL;
+           (void) lkfclosespool (in, newmail); in = NULL;
            DROPGROUPPRIVS();       /* And then return us to normal privileges */
 	} else {
 	    fclose (in); in = NULL;
@@ -955,7 +955,7 @@ inc_done (int status)
     if (locked)
     {
         GETGROUPPRIVS();
-        lkfclose(in, newmail);
+        lkfclosespool(in, newmail);
         DROPGROUPPRIVS();
     }
     exit (status);

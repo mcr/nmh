@@ -33,7 +33,7 @@ AS_CASE([$with_locking],
     [AC_MSG_ERROR([--without-locking not supported])],
   [AC_MSG_ERROR([Unknown locking type $with_locking])])
 
-AC_DEFINE_UNQUOTED([DEFAULT_LOCKING], [$with_locking],
+AC_DEFINE_UNQUOTED([DEFAULT_LOCKING], ["$with_locking"],
   [The default lock type for the mail spool file])
 
 AC_MSG_RESULT([$with_locking])

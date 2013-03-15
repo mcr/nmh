@@ -48,7 +48,8 @@ mbx_open (char *file, int mbx_style, uid_t uid, gid_t gid, mode_t mode)
 
     /* attempt to open and lock file */
     for (count = 4; count > 0; count--) {
-	if ((fd = lkopen (file, O_RDWR | O_CREAT | O_NONBLOCK, mode)) == NOTOK) {
+	if ((fd = lkopenspool (file, O_RDWR | O_CREAT |
+			       O_NONBLOCK, mode)) == NOTOK) {
 	    switch (errno) {
 #if defined(FCNTL_LOCKING) || defined(LOCKF_LOCKING)
 		case EACCES:
@@ -463,7 +464,7 @@ mbx_size (int md, off_t start, off_t stop)
 int
 mbx_close (char *mailbox, int md)
 {
-    if (lkclose (md, mailbox) == 0)
+    if (lkclosespool (md, mailbox) == 0)
         return OK;
     return NOTOK;
 }
