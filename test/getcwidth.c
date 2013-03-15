@@ -145,19 +145,19 @@ dumpwidth(void)
 	wchar_t wc, low;
 	int width, lastwidth;
 
-	for (wc = low = 1, lastwidth = wcwidth(wc); wc <= 0xffff; wc++) {
-		width = wcwidth(wc);
+	for (wc = 0, low = 1, lastwidth = wcwidth(1); wc < 0xffff; wc++) {
+		width = wcwidth(wc+1);
 		if (width != lastwidth) {
 			printf("%04lX - %04lX = %d\n", (unsigned long int) low,
-			       (unsigned long int) (wc - 1), lastwidth);
-			low = wc;
+			       (unsigned long int) (wc), lastwidth);
+			low = wc+1;
 		}
 		lastwidth = width;
 	}
 
-	width = wcwidth(wc - 1);
+	width = wcwidth(wc);
 	if (width == lastwidth)
 		printf("%04lX - %04lX = %d\n", (unsigned long int) low,
-		       (unsigned long int) (wc - 1), width);
+		       (unsigned long int) (wc), width);
 }
 #endif /* MULTIBYTE_SUPPORT */
