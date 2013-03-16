@@ -37,6 +37,7 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
 		    MH_TEST_DIR="@abs_builddir@/test/testdir" \
 		    auxexecdir="$(auxexecdir)" bindir="$(bindir)" \
 		    mandir="$(mandir)" sysconfdir="$(sysconfdir)" \
+		    supported_locks="$(supported_locks)" \
 		    MULTIBYTE_ENABLED=$(MULTIBYTE_ENABLED) \
 		    ICONV_ENABLED=$(ICONV_ENABLED) \
 		    $(TESTS_SHELL) ## Keep at end of TESTS_ENVIRONMENT.
@@ -58,7 +59,9 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/inc/test-inc-scanout test/inc/test-msgchk \
 	test/inc/test-pop \
-	test/install-mh/test-install-mh test/manpages/test-manpages \
+	test/install-mh/test-install-mh \
+	test/locking/test-datalocking test/locking/test-spoollocking \
+	test/manpages/test-manpages \
 	test/mhbuild/test-forw test/mhbuild/test-utf8-body \
 	test/mhlist/test-mhlist test/mhmail/test-mhmail \
 	test/mhparam/test-mhparam test/mhpath/test-mhpath \
@@ -448,6 +451,8 @@ etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 	$(SED) -e 's,%mts%,$(MTS),' \
 	       -e 's,%mailspool%,$(mailspool),' \
 	       -e 's,%smtpservers%,$(smtpservers),' \
+	       -e 's,%default_locking%,$(default_locking),' \
+	       -e 's,%supported_locks%,$(supported_locks),' \
 				< $(srcdir)/etc/mts.conf.in > $@
 
 etc/mhn.defaults: $(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPROG)

@@ -35,8 +35,16 @@ AS_CASE([$with_locking],
 
 AC_DEFINE_UNQUOTED([DEFAULT_LOCKING], ["$with_locking"],
   [The default lock type for the mail spool file])
+AC_SUBST([default_locking], [$with_locking])
 
 AC_MSG_RESULT([$with_locking])
+
+supported_locks="fcntl dot"
+AS_IF([test x"$ac_cv_func_flock" = x"yes"],
+  [supported_locks="$supported_locks flock"])
+AS_IF([test x"$ac_cv_func_lockf" = x"yes"],
+  [supported_locks="$supported_locks lockf"])
+AC_SUBST([supported_locks])
 
 dnl Should we use a locking directory?
 AC_ARG_ENABLE([lockdir],
