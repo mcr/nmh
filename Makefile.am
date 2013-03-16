@@ -570,6 +570,8 @@ man/man.sed: Makefile
 	@echo 's,%mandir%,$(mandir),g' >> $@
 	@echo 's,%mailspool%,$(mailspool),g' >> $@
 	@echo 's,%sendmailpath%,$(sendmailpath),g' >> $@
+	@echo 's,%default_locking%,$(default_locking),g' >> $@
+	@echo 's,%supported_locks%,$(supported_locks),g' >> $@
 	@echo 's,%manext1%,$(manext1),g' >> $@
 	@echo 's,%manext5%,$(manext5),g' >> $@
 	@echo 's,%manext7%,$(manext7),g' >> $@

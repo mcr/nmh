@@ -189,6 +189,25 @@ for an explanation of the octal number.
 (profile, default: 700)
 .RE
 .PP
+.BR datalocking :
+fcntl
+.RS 5
+The locking algorithm used to lock changes to any
+.B nmh
+data files, such as sequences or the context.  The locking algorithm is
+any one of the following entries:
+.PP
+.RS 5
+.nf
+%supported_locks%
+.fi
+.RE
+.PP
+Available locking algorithms can vary depending on what is supported by
+the operating system.
+(profile, default: fcntl)
+.RE
+.PP
 .IR program :
 .I default switches
 .RS 5
