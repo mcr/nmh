@@ -103,7 +103,7 @@ following default program is used:
 .PP
 In this mode
 .B fmttest
-is equivant to
+is equivalent to
 .BR ap (8).
 .PP
 In raw mode, no processing of the specified arguments is done.  Each argument
