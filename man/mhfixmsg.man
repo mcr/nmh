@@ -1,0 +1,281 @@
+.TH MHFIXMSG %manext1% "March 17, 2013" "%nmhversion%"
+.\"
+.\" %nmhwarning%
+.\"
+.SH NAME
+mhfixmsg \- rewrite MIME messages with various transformations
+.SH SYNOPSIS
+.HP 5
+.na
+.B mhfixmsg
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-decodetext
+8bit/7bit |
+.BR \-nodecodetext ]
+.RB [ \-textcodeset
+.I codeset
+.RB "| " \-notextcodeset ]
+.RB [ \-reformat " | " \-noreformat ]
+.RB [ \-fixboundary " | " \-nofixboundary ]
+.RB [ \-fixcte " | " \-nofixcte ]
+.RB [ \-file
+.IR file ]
+.RB [ \-outfile
+.IR outfile ]
+.RB [ \-verbose " | " \-noverbose ]
+.RB [ \-version ]
+.RB [ \-help ]
+.ad
+.SH DESCRIPTION
+.B mhfixmsg
+rewrites MIME messages, applying specific transformations such as
+decoding of MIME-encoded message parts and repairing invalid MIME
+headers.
+.PP
+MIME messages are specified in RFC\-2045 to RFC\-2049
+(see
+.IR mhbuild (1)).
+The
+.B mhlist
+command is invaluable for viewing the content structure of MIME
+messages.
+.B mhfixmsg
+passes non-MIME messages through without any transformations.  If no
+transformations apply to a MIME message, the original message or file
+is not modified or removed.
+.PP
+The
+.B \-decodetext
+switch enables a transformation to decode each base64 and
+quoted-printable text message part to the selected 8bit or 7bit
+encoding.  If the decoded text would not fit the selected encoding as
+defined by RFC-2045, the part is not decoded.
+.PP
+The
+.B \-textcodeset
+switch specifies that all text/plain parts of the message(s)
+should be converted to
+.IR codeset .
+Codeset conversions require that
+.B nmh
+be built with
+.IR iconv (3).
+To convert text parts other than text/plain, an external program can
+be used, via the
+.B \-reformat
+switch.
+.PP
+The
+.B \-reformat
+switch enables a transformation for text parts in the message.  For
+each text part that is not text/plain and that does not have a
+corresponding text/plain in a multipart/alternative part,
+.B mhfixmsg
+looks for a mhfixmsg-format-text/subtype profile entry that matches
+the subtype of the part.  If one is found and can be used to
+successfully convert the part to text/plain,
+.B mhfixmsg
+inserts that text/plain part at the beginning of the containing
+multipart/alternative part, if present.  If not, it creates a
+multipart/alternative part.
+.PP
+.B \-reformat
+requires a profile entry for each text part subtype to be reformatted.
+The mhfixmsg-format-text/subtype profile entries are based on external
+conversion programs, and are used the same way that
+.B mhshow
+uses its mhshow-show-text/subtype entries.  When
+.B nmh
+is installed, it searches for a conversion program for text/html
+content, and if one is found, inserts a mhfixmsg-format-text/html
+entry in %etcdir%/mhn.defaults.  An entry of the same name in the
+user's profile takes precedence.  The user can add entries for
+other text subtypes to their profile.
+.PP
+The
+.B \-fixboundary
+switch enables a transformation to repair the boundary portion of the
+Content-Type header field of the message to match the boundaries of
+the outermost multipart part of the message, if it does not.  That
+condition is indicated by a \*(lqbogus multipart content in
+message\*(rq error message from
+.B mhlist
+and other
+.B nmh
+programs that parse MIME messages.
+.PP
+The
+.B \-fixcte
+switch enables a transformation to change the
+Content-Transfer-Encoding from an invalid value to 8bit in message
+parts with a Content-Type of multipart, as required by RFC 2045,
+Section 6.4.  That condition is indicated by a \*(lqmust be encoded in
+7bit, 8bit, or binary\*(rq error message from
+.B mhlist
+and other
+.B nmh
+programs that parse MIME messages.
+.PP
+The
+.B \-verbose
+switch directs
+.B mhfixmsg
+to output informational message for each transformation applied.
+.PP
+The
+.B \-file
+.I file
+switch directs
+.B mhfixmsg
+to use the specified
+file as the source message, rather than a message from a folder.
+If this file is \*(lq-\*(rq, then
+.B mhfixmsg
+accepts the source message on the standard input stream.  If
+the
+.B \-outfile
+switch is not enabled when using the standard input stream,
+.B mhfixmsg
+will not produce a transformed output message.
+.PP
+.BR mhfixmsg ,
+by default, transforms the message in place.  If the
+.B \-outfile
+switch is enabled, then
+.B mhfixmsg
+does not modify the input message or file, but instead places its
+output in the specified file.  An outfile name of \*(lq-\*(rq
+specifies the standard output stream.
+.PP
+Combined with the
+.B \-verbose
+switch, the
+.B \-outfile
+switch can be used to show what transformations
+.B mhfixmsg
+would apply without actually applying them, e.g.,
+.PP
+.RS 5
+mhfixmsg -outfile /dev/null -verbose
+.RE
+.PP
+As always, this usage obeys any
+.B mhfixmsg
+switches in the user's profile.
+.PP
+.B \-outfile
+can be combined with
+.B rcvstore
+to add a single transformed message to a different folder, e.g.,
+.PP
+.RS 5
+mhfixmsg -outfile - | \\
+.RS 0
+%libdir%/rcvstore +folder
+.RE
+.RE
+.SS Summary of Applicability
+The transformations apply to the parts of a message depending on
+content type and/or encoding as follows:
+.PP
+.RS 5
+.nf
+.ta \w'\-fixboundary 'u
+\-decodetext   base64 and quoted-printable encoded text parts
+\-textcodeset  text/plain parts
+\-reformat     text parts that are not text/plain
+\-fixboundary  outermost multipart part
+\-fixcte       multipart part
+.fi
+.RE
+.PP
+.SS "Backup of Original Message/File"
+If it applies any transformations to a message or file,
+and the
+.B \-outfile
+switch is not used,
+.B mhfixmsg
+backs up the original the same way as
+.BR rmm .
+That is, it uses the
+.I rmmproc
+profile component, if present.  If not present,
+.B mhfixmsg
+moves the original message to a backup file.
+.PP
+.SS "Integration with procmail"
+By way of example, here is an excerpt from a procmailrc file
+that filters messages through
+.B mhfixmsg
+before storing them in the user's
+.I nmh-workers
+folder.  It also stores the incoming message in the
+.I Backups
+folder in a filename generated by
+.BR mktemp ,
+which is a non-POSIX utility to generate a temporary file.
+If you do not have that utility, then the
+.BR mkstemp (3)
+function could form the basis for a substitute.  Or,
+.B mhfixmsg
+could be called on the message after it is stored.
+.PP
+.RS 5
+.nf
+.ta \w'\-fixboundary 'u
+PATH = %bindir%:$PATH
+MAILDIR = `mhparam path`
+MKTEMP = 'mktemp Backups/mhfixmsg.XXXXXXXX'
+MHFIXMSG = 'mhfixmsg -noverbose -file - -outfile -'
+STORE = %libdir%/rcvstore
+
+:0 w: nmh/procmail.$LOCKEXT
+* ^TOnmh-workers@nongnu.org
+| tee `$MKTEMP` | $MHFIXMSG | $STORE +nmh-workers
+.fi
+.RE
+.PP
+.SH FILES
+.fc ^ ~
+.nf
+.ta \w'%etcdir%/mhn.defaults  'u
+^$HOME/\&.mh\(ruprofile~^The user profile
+^%etcdir%/mhn.defaults~^Default mhfixmsg conversion entries
+.fi
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName  'u
+^Path:~^To determine the user's nmh directory
+^Current\-Folder:~^To find the default current folder
+^rmmproc:~^Program to delete original messages or files
+.fi
+.SH "SEE ALSO"
+.IR mh-profile (5),
+.IR mhbuild (1),
+.IR mhlist (1),
+.IR mhshow (1),
+.IR mkstemp (3),
+.IR procmail (1),
+.IR procmailrc (5),
+.IR rcvstore (1),
+.IR rmm (1)
+.SH DEFAULTS
+.nf
+.RB ` +folder "' defaults to the current folder"
+.RB ` msgs "' defaults to cur"
+.RB ` "\-decodetext 8bit"'
+.RB ` \-notextcodeset '
+.RB ` \-reformat '
+.RB ` \-fixboundary '
+.RB ` \-fixcte '
+.RB ` \-noverbose '
+.fi
+.SH CONTEXT
+If a folder is given, it will become the current folder.  The last
+message selected from a folder will become the current message.  If
+the
+.B \-file
+switch is used, the context will not be modified.

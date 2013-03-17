@@ -45,6 +45,8 @@ NEW FEATURES
 - mhshow/mhstore now have support for RFC-2017 (access-type=url) for
   external message bodies.
 - Added -retainsequences switch to refile(1).
+- A new program, mhfixmsg(1), is included to rewrite MIME messages with
+  various transformations.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

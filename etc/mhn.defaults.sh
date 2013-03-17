@@ -25,6 +25,18 @@ fi
 TMP=/tmp/nmh_temp.$$
 trap "rm -f $TMP" 0 1 2 3 13 15
 
+
+if [ ! -z "`$SEARCHPROG $SEARCHPATH w3m`" ]; then
+  echo "mhfixmsg-format-text/html: w3m -dump -T text/html -O utf-8 '%F'" >> $TMP
+elif [ ! -z "`$SEARCHPROG $SEARCHPATH lynx`" ]; then
+  #### lynx indents with 3 spaces, remove them and any trailing spaces.
+  echo "mhfixmsg-format-text/html: lynx -child -dump -force_html '%F' | \
+expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
+elif [ ! -z "`$SEARCHPROG $SEARCHPATH elinks`" ]; then
+  echo "mhfixmsg-format-text/html: elinks -dump -force_html -no-numbering '%F'" >> $TMP
+fi
+
+
 echo "mhstore-store-text: %m%P.txt" >> $TMP
 echo "mhstore-store-text/richtext: %m%P.rt" >> $TMP
 echo "mhstore-store-video/mpeg: %m%P.mpg" >> $TMP
