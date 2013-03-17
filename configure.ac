@@ -8,7 +8,7 @@ AC_PREREQ([2.68])
 AC_INIT([nmh], m4_normalize(m4_include([VERSION])), [nmh-workers@nongnu.org])
 AC_CONFIG_SRCDIR([h/nmh.h])
 AC_CONFIG_HEADER([config.h])
-AM_INIT_AUTOMAKE([-Wall color-tests foreign serial-tests subdir-objects 1.12])
+AM_INIT_AUTOMAKE([-Wall foreign serial-tests subdir-objects 1.12])
 
 AC_CANONICAL_HOST
 
