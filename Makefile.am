@@ -305,7 +305,7 @@ uip_mhfixmsg_SOURCES = uip/mhfixmsg.c uip/mhparse.c uip/mhcachesbr.c \
 		       uip/mhoutsbr.c uip/mhmisc.c uip/mhfree.c \
 		       uip/mhshowsbr.c uip/mhlistsbr.c \
 		       uip/termsbr.c uip/md5.c
-uip_mhfixmsg_LDADD = $(LDADD) $(TERMLIB)
+uip_mhfixmsg_LDADD = $(LDADD) $(ICONVLIB) $(TERMLIB)
 
 uip_mhlist_SOURCES = uip/mhlist.c uip/mhparse.c uip/mhcachesbr.c \
 		     uip/mhlistsbr.c uip/mhmisc.c uip/mhfree.c uip/termsbr.c \
