@@ -1815,13 +1815,10 @@ static int
 remove_file (char *file) {
     if (rmmproc) {
         char *rmm_command = concat (rmmproc, " ", file, NULL);
-        int status = WIFEXITED (status = system (rmm_command))
-            ?  WEXITSTATUS (status)
-            :  NOTOK;
+        int status = system (rmm_command);
 
         free (rmm_command);
-
-        return status;
+        return WIFEXITED (status)  ?  WEXITSTATUS (status)  :  NOTOK;
     } else {
         /* This is OK for a non-message file, it still uses the
            BACKUP_PREFIX form.  The backup file will be in the same
