@@ -205,6 +205,18 @@ struct msgs {
      * in a particular sequence.
      */
     seqset_t *msgstats;		/* msg status */
+
+    /*
+     * A FILE handle containing an open filehandle for the sequence file
+     * for this folder.  If non-NULL, use it when the sequence file is
+     * written.
+     */
+    FILE *seqhandle;
+
+    /*
+     * The name of the public sequence file; required by lkfclose()
+     */
+    char *seqname;
 };
 
 /*

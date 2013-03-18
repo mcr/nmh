@@ -507,7 +507,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
     if (chdir(maildir) < 0)
     	adios(maildir, "unable to change directory to");
 
-    if (!(mp = folder_read(folder)))
+    if (!(mp = folder_read(folder, 1)))
     	adios(NULL, "unable to read folder %s", folder);
 
     if (mp->nummsg == 0)

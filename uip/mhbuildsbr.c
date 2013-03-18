@@ -753,7 +753,7 @@ use_forw:
 	if (!folder)
 	    folder = add (getfolder (1), NULL);
 
-	if (!(mp = folder_read (folder)))
+	if (!(mp = folder_read (folder, 0)))
 	    adios (NULL, "unable to read folder %s", folder);
 	for (ap = arguments; *ap; ap++) {
 	    cp = *ap;

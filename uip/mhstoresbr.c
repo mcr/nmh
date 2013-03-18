@@ -872,7 +872,7 @@ output_content_folder (char *folder, char *filename)
     struct msgs *mp;
 
     /* Read the folder. */
-    if ((mp = folder_read (folder))) {
+    if ((mp = folder_read (folder, 0))) {
 	/* Link file into folder */
 	msgnum = folder_addmsg (&mp, filename, 0, 0, 0, 0, (char *)0);
     } else {

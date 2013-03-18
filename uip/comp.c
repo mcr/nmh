@@ -256,7 +256,7 @@ main (int argc, char **argv)
 	    adios (maildir, "unable to change directory to");
 
 	/* read folder and create message structure */
-	if (!(mp = folder_read (folder)))
+	if (!(mp = folder_read (folder, 1)))
 	    adios (NULL, "unable to read folder %s", folder);
 
 	/* check for empty folder */
@@ -267,6 +267,7 @@ main (int argc, char **argv)
 	if (!m_convert (mp, msg))
 	    done (1);
 	seq_setprev (mp);	/* set the previous-sequence */
+	seq_save (mp);
 
 	if (mp->numsel > 1)
 	    adios (NULL, "only one message at a time!");

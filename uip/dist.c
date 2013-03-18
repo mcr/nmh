@@ -281,7 +281,7 @@ try_it_again:
 	    adios (maildir, "unable to change directory to");
 
 	/* read folder and create message structure */
-	if (!(mp = folder_read (folder)))
+	if (!(mp = folder_read (folder, 1)))
 	    adios (NULL, "unable to read folder %s", folder);
 
 	/* check for empty folder */

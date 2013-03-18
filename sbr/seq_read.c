@@ -15,7 +15,7 @@
  * static prototypes
  */
 static int seq_init (struct msgs *, char *, char *);
-static void seq_public (struct msgs *);
+static void seq_public (struct msgs *, int);
 static void seq_private (struct msgs *);
 
 
@@ -26,7 +26,7 @@ static void seq_private (struct msgs *);
  */
 
 void
-seq_read (struct msgs *mp)
+seq_read (struct msgs *mp, int lockflag)
 {
     /*
      * Initialize the list of sequence names.  Go ahead and
@@ -41,7 +41,7 @@ seq_read (struct msgs *mp)
 	return;
 
     /* Initialize the public sequences */
-    seq_public (mp);
+    seq_public (mp, lockflag);
 
     /* Initialize the private sequences */
     seq_private (mp);
@@ -53,7 +53,7 @@ seq_read (struct msgs *mp)
  */
 
 static void
-seq_public (struct msgs *mp)
+seq_public (struct msgs *mp, int lockflag)
 {
     int state;
     char *cp, seqfile[PATH_MAX];
@@ -73,7 +73,7 @@ seq_public (struct msgs *mp)
     /* get filename of sequence file */
     snprintf (seqfile, sizeof(seqfile), "%s/%s", mp->foldpath, mh_seq);
 
-    if ((fp = lkfopendata (seqfile, "r")) == NULL)
+    if ((fp = lkfopendata (seqfile, lockflag ? "r+" : "r")) == NULL)
 	return;
 
     /* Use m_getfld to scan sequence file */
@@ -96,7 +96,8 @@ seq_public (struct msgs *mp)
 		}
 		continue;
 
-	    case BODY: 
+	    case BODY:
+	    	lkfclosedata (fp, seqfile);
 		adios (NULL, "no blank lines are permitted in %s", seqfile);
 		/* fall */
 
@@ -104,13 +105,19 @@ seq_public (struct msgs *mp)
 		break;
 
 	    default: 
+	    	lkfclosedata (fp, seqfile);
 		adios (NULL, "%s is poorly formatted", seqfile);
 	}
 	break;	/* break from for loop */
     }
     m_getfld_state_destroy (&gstate);
 
-    lkfclosedata (fp, seqfile);
+    if (lockflag) {
+	mp->seqhandle = fp;
+	mp->seqname = getcpy(seqfile);
+    } else {
+	lkfclosedata (fp, seqfile);
+    }
 }
 
 

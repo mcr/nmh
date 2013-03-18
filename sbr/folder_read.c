@@ -23,7 +23,7 @@
  */
 
 struct msgs *
-folder_read (char *name)
+folder_read (char *name, int lockflag)
 {
     int msgnum, prefix_len, len, *mi;
     struct msgs *mp;
@@ -54,6 +54,8 @@ folder_read (char *name)
     mp->hghsel = 0;
     mp->numsel = 0;
     mp->nummsg = 0;
+    mp->seqhandle = NULL;
+    mp->seqname = NULL;
 
     if (access (name, W_OK) == -1)
 	set_readonly (mp);
@@ -151,7 +153,7 @@ folder_read (char *name)
     /*
      * Read and initialize the sequence information.
      */
-    seq_read (mp);
+    seq_read (mp, lockflag);
 
     return mp;
 }

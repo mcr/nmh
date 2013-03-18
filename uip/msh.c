@@ -604,7 +604,7 @@ fsetup (char *folder)
 	padios (maildir, "unable to change directory to");
 
     /* read folder and create message structure */
-    if (!(mp = folder_read (folder)))
+    if (!(mp = folder_read (folder, 0)))
 	padios (NULL, "unable to read folder %s", folder);
 
     /* check for empty folder */
@@ -831,7 +831,7 @@ check_folder (int scansw)
 	low = mp->hghmsg + 1;
 	folder_free (mp);		/* free folder/message structure */
 
-	if (!(mp = folder_read (fmsh)))
+	if (!(mp = folder_read (fmsh, 0)))
 	    padios (NULL, "unable to re-read folder %s", fmsh);
 
 	hgh = mp->hghmsg;

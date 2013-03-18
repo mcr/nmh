@@ -1064,7 +1064,7 @@ annoaux (int fd)
 	    admonish (maildir, "unable to change directory to");
 	return;
     }
-    if (!(mp = folder_read (folder))) {
+    if (!(mp = folder_read (folder, 0))) {
 	if (debugsw)
 	    admonish (NULL, "unable to read folder %s", folder);
 	return;

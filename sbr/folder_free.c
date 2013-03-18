@@ -25,6 +25,14 @@ folder_free (struct msgs *mp)
     for (i = 0; mp->msgattrs[i]; i++)
 	free (mp->msgattrs[i]);
 
+    /* Close/free the sequence file if it is open */
+
+    if (mp->seqhandle)
+    	lkfclosedata (mp->seqhandle, mp->seqname);
+
+    if (mp->seqname)
+    	free (mp->seqname);
+
     free (mp->msgstats);	/* free message status area   */
     free (mp);			/* free main folder structure */
 }

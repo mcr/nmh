@@ -66,7 +66,19 @@ int folder_addmsg (struct msgs **, char *, int, int, int, int, char *);
 int folder_delmsgs (struct msgs *, int, int);
 void folder_free (struct msgs *);
 int folder_pack (struct msgs **, int);
-struct msgs *folder_read (char *);
+
+/*
+ * Read a MH folder structure and return an allocated "struct msgs"
+ * corresponding to the contents of the folder.
+ *
+ * Arguments include:
+ *
+ * name		- Name of folder
+ * lockflag	- If true, write-lock (and keep open) metadata files.
+ *		  See comments for seq_read() for more information.
+ */
+struct msgs *folder_read (char *name, int lockflag);
+
 struct msgs *folder_realloc (struct msgs *, int, int);
 int gans (char *, struct swit *);
 char **getans (char *, struct swit *);
@@ -152,7 +164,21 @@ char *seq_list (struct msgs *, char *);
 int seq_nameok (char *);
 void seq_print (struct msgs *, char *);
 void seq_printall (struct msgs *);
-void seq_read (struct msgs *);
+
+/*
+ * Read the sequence files for the folder referenced in the given
+ * struct msgs and populate the sequence entries in the struct msgs.
+ *
+ * Arguments:
+ *
+ * mp		- Folder structure to add sequence entries to
+ * lockflag	- If true, obtain a write lock on the sequence file.
+ *		  Additionally, the sequence file will remain open
+ *		  and a pointer to the filehandle will be stored in
+ *		  folder structure, where it will later be used by
+ *		  seq_save().
+ */
+void seq_read (struct msgs * mp, int lockflag);
 void seq_save (struct msgs *);
 void seq_setcur (struct msgs *, int);
 void seq_setprev (struct msgs *);

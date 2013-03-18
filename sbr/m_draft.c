@@ -38,7 +38,7 @@ m_draft (char *folder, char *msg, int use, int *isdf)
     if (chdir (buffer) == -1)
 	adios (buffer, "unable to change directory to");
 
-    if (!(mp = folder_read (folder)))
+    if (!(mp = folder_read (folder, 1)))
 	adios (NULL, "unable to read folder %s", folder);
 
     /*
