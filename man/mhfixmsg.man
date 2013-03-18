@@ -230,7 +230,7 @@ MKTEMP = 'mktemp Backups/mhfixmsg.XXXXXXXX'
 MHFIXMSG = 'mhfixmsg -noverbose -file - -outfile -'
 STORE = %libdir%/rcvstore
 
-:0 w: nmh/procmail.$LOCKEXT
+:0 w: nmh-worker/procmail.$LOCKEXT
 * ^TOnmh-workers@nongnu.org
 | tee `$MKTEMP` | $MHFIXMSG | $STORE +nmh-workers
 .fi
