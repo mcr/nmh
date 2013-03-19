@@ -13,6 +13,8 @@
 #define RMM_SWITCHES \
     X("unlink", 0, UNLINKSW) \
     X("nounlink", 0, NUNLINKSW) \
+    X("rmmproc program", 0, RPROCSW) \
+    X("normmproc", 0, NRPRCSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
 
@@ -50,13 +52,13 @@ main (int argc, char **argv)
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
-	    case AMBIGSW: 
+	    case AMBIGSW:
 		ambigsw (cp, switches);
 		done (1);
-	    case UNKWNSW: 
+	    case UNKWNSW:
 		adios (NULL, "-%s unknown\n", cp);
 
-	    case HELPSW: 
+	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
 			  invo_name);
 		print_help (buf, switches, 1);
@@ -71,6 +73,14 @@ main (int argc, char **argv)
 	    case NUNLINKSW:
 		unlink_msgs = 0;
 		continue;
+
+            case RPROCSW:
+                if (!(rmmproc = *argp++) || *rmmproc == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
+                continue;
+            case NRPRCSW:
+                rmmproc = NULL;
+                continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {

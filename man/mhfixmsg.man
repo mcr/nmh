@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "March 17, 2013" "%nmhversion%"
+.TH MHFIXMSG %manext1% "March 18, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -23,6 +23,9 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .IR file ]
 .RB [ \-outfile
 .IR outfile ]
+.RB [ \-rmmproc
+.IR program ]
+.RB [ \-normmproc ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -203,6 +206,15 @@ That is, it uses the
 profile component, if present.  If not present,
 .B mhfixmsg
 moves the original message to a backup file.
+The
+.B \-rmmproc
+switch may be used to override this profile component.  The
+.B \-normmproc
+switch disables the use of any
+.I rmmproc
+profile component and negates all prior
+.B \-rmmproc
+switches.
 .PP
 .SS "Integration with procmail"
 By way of example, here is an excerpt from a procmailrc file

@@ -1,4 +1,4 @@
-.TH REFILE %manext1% "January 18, 2001" "%nmhversion%"
+.TH REFILE %manext1% "March 18, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -223,7 +223,9 @@ for information concerning the previous sequence.
 .SH BUGS
 Since
 .B refile
-uses your
+and
+.B rmm
+use your
 .I rmmproc
 to delete the message,
 the
@@ -232,6 +234,8 @@ must
 .B NOT
 call
 .B refile
+or
+.B rmm
 without specifying
 .BR \-normmproc ,
 or you will create an infinite loop.

@@ -1,4 +1,4 @@
-.TH MH-PROFILE %manext5% "November 6, 2012" "%nmhversion%"
+.TH MH-PROFILE %manext5% "March 18, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -535,9 +535,10 @@ to do address verification.
 none
 .RS 5
 This is the program used by
-.B rmm
+.BR rmm ,
+.BR refile ,
 and
-.B refile
+.B mhfixmsg
 to delete a message from a folder.
 .RE
 .PP

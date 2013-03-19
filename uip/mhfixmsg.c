@@ -31,6 +31,8 @@
     X("nofixcte", 0, NFIXCTESW) \
     X("file file", 0, FILESW) \
     X("outfile file", 0, OUTFILESW) \
+    X("rmmproc program", 0, RPROCSW) \
+    X("normmproc", 0, NRPRCSW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
     X("version", 0, VERSIONSW) \
@@ -214,6 +216,14 @@ main (int argc, char **argv) {
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
                     adios (NULL, "missing argument to %s", argp[-2]);
                 outfile = *cp == '-'  ?  add (cp, NULL)  :  path (cp, TFILE);
+                continue;
+
+            case RPROCSW:
+                if (!(rmmproc = *argp++) || *rmmproc == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
+                continue;
+            case NRPRCSW:
+                rmmproc = NULL;
                 continue;
 
             case VERBSW:

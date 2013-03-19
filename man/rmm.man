@@ -1,4 +1,4 @@
-.TH RMM %manext1% "February 13, 2013" "%nmhversion%"
+.TH RMM %manext1% "March 18, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -11,6 +11,9 @@ rmm \- remove messages
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-unlink " | " \-nounlink ]
+.RB [ \-rmmproc
+.IR program ]
+.RB [ \-normmproc ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -44,11 +47,20 @@ add a profile component such as
 rmmproc:	/home/foouser/bin/rmm_msgs
 .RE
 .PP
-then instead of simply renaming the message file,
+Then instead of simply renaming the message file,
 .B rmm
 will call
 the named program or script to handle the files that represent the
 messages to be deleted.
+The
+.B \-rmmproc
+switch may be used to override this profile component.  The
+.B \-normmproc
+switch disables the use of any
+.I rmmproc
+profile component and negates all prior
+.B \-rmmproc
+switches.
 .PP
 An example of a
 .I rmmproc
@@ -106,8 +118,10 @@ advance to the next message in the folder as expected.
 If a folder is given, it will become the current folder.
 .SH BUGS
 Since
+.B rmm
+and
 .B refile
-uses your
+use your
 .I rmmproc
 to delete the message,
 the
@@ -115,7 +129,9 @@ the
 must
 .B NOT
 call
+.B rmm
+or
 .B refile
 without specifying
 .BR \-normmproc ,
-or you will create an infinte loop.
+or you will create an infinite loop.

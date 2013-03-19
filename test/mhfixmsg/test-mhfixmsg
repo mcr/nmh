@@ -45,6 +45,8 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   -[no]fixcte
   -file file
   -outfile file
+  -rmmproc program
+  -normmproc
   -[no]verbose
   -version
   -help
@@ -855,6 +857,22 @@ cp "${MH_TEST_DIR}/Mail/inbox/14" "${MH_TEST_DIR}/Mail/inbox/14.original"
 run_test 'mhfixmsg 14' ''
 check "${MH_TEST_DIR}/Mail/inbox/14.backup" \
       "${MH_TEST_DIR}/Mail/inbox/14.original"
+
+
+# check -normmproc
+cp "${MH_TEST_DIR}/Mail/inbox/18" "${MH_TEST_DIR}/Mail/inbox/19"
+
+run_test 'mhfixmsg 18 -normmproc'
+check "${MH_TEST_DIR}/Mail/inbox/19" \
+      "${MH_TEST_DIR}/Mail/inbox/,18" 'keep first'
+
+
+# check -rmmproc
+run_test 'mhfixmsg 19 -rmmproc true'
+if test -f '${MH_TEST_DIR}/Mail/inbox/19.backup'; then
+  echo check of mhfixmsg -rmmproc FAILED, should not have created backup file
+  failed=`expr ${failed:-0} + 1`
+fi
 
 
 # make sure there are no tmp files left over
