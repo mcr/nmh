@@ -545,6 +545,13 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/m_mktemp.c sbr/getansreadline.c config/config.c \
 		      config/version.c
 
+##
+## Because these files use the definitions in the libmh rule below,
+## they need to be rebuilt if the Makefile changes.
+##
+
+config/sbr_libmh_a-config.$(OBJEXT) sbr/sbr_libmh_a-mts.$(OBJEXT): Makefile
+
 sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
 		-DMAILSPOOL='"$(mailspool)"' \
 		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
