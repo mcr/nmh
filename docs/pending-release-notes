@@ -47,6 +47,7 @@ NEW FEATURES
 - Added -retainsequences switch to refile(1).
 - A new program, mhfixmsg(1), is included to rewrite MIME messages with
   various transformations.
+- Added -[no]rmmproc switches to rmm(1).
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES
