@@ -48,6 +48,8 @@ NEW FEATURES
 - A new program, mhfixmsg(1), is included to rewrite MIME messages with
   various transformations.
 - Added -[no]rmmproc switches to rmm(1).
+- Added support for Content-Disposition header (RFC 2183) to mhstore(1)
+  and mhn(1) when used with -auto.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

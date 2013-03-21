@@ -110,7 +110,6 @@ MHN/MHSHOW/MHLIST/MHSTORE
   handling type, such as multipart/mixed.
 * add way so user can tell mhn to use a certain `proc' such
   as moreproc, for certain content types.
-* add support for Content-Disposition header (rfc1806, rfc2183).
 * merge the two places in which mhshowsbr.c reads display
   strings.
 * when storing to a folder, should we save the folder context

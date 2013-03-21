@@ -1,4 +1,4 @@
-.TH MHSTORE %manext1% "September 15, 2012" "%nmhversion%"
+.TH MHSTORE %manext1% "March 20, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -157,15 +157,15 @@ If the
 .B \-auto
 switch is given, then
 .B mhstore
-will check if
-the message contains information indicating the filename that should
-be used to store the content.  This information should be specified
-as the attribute \*(lqname=filename\*(rq in the \*(lqContent-Type\*(rq header
-for the content you are storing.  For security reasons, this filename
-will be ignored if it begins with the character '/', '.', '|', or '!',
-or if it contains the character '%'.  For the sake of security,
-this switch is not the default, and it is recommended that you do
-NOT put the
+will check if the message contains information indicating the filename
+that should be used to store the content.  This information should be
+specified as the \*(lqfilename\*(rq attribute in the
+\*(lqContent-Disposition\*(rq header or as the \*(lqname\*(rq
+attribute in the \*(lqContent-Type\*(rq header for the content you are
+storing.  For security reasons, this filename will be ignored if it
+begins with the character '/', '.', '|', or '!', or if it contains the
+character '%'.  For the sake of security, this switch is not the
+default, and it is recommended that you do NOT put the
 .B \-auto
 switch in your
 .I \&.mh\(ruprofile

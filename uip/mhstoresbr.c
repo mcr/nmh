@@ -1021,7 +1021,7 @@ static void
 get_storeproc (CT ct)
 {
     char **ap, **ep, *cp;
-    CI ci = &ct->c_ctinfo;
+    CI ci;
 
     /*
      * If the storeproc has already been defined,
@@ -1032,12 +1032,43 @@ get_storeproc (CT ct)
 	return;
 
     /*
+     * If there's a Content-Disposition header and it has a filename,
+     * use that (RFC-2183).
+     */
+    if (ct->c_dispo) {
+	char *cp = strchr (ct->c_dispo, ';');
+	CI ci = calloc (1, sizeof *ci);
+	int status;
+	int found_filename = 0;
+
+	if (cp  &&  parse_header_attrs (ct->c_file, strlen (invo_name) + 2, &cp,
+                                        ci, &status) == OK) {
+	    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
+		if (! strcasecmp (*ap, "filename")
+		    && *(cp = *ep) != '/'
+		    && *cp != '.'
+		    && *cp != '|'
+		    && *cp != '!'
+		    && !strchr (cp, '%')) {
+		    ct->c_storeproc = add (cp, NULL);
+		    found_filename = 1;
+		}
+		free (*ap);
+	    }
+	}
+
+	free (ci);
+	if (found_filename) return;
+    }
+
+    /*
      * Check the attribute/value pairs, for the attribute "name".
      * If found, do a few sanity checks and copy the value into
      * the storeproc.
      */
+    ci = &ct->c_ctinfo;
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!mh_strcasecmp (*ap, "name")
+	if (! strcasecmp (*ap, "name")
 	    && *(cp = *ep) != '/'
 	    && *cp != '.'
 	    && *cp != '|'

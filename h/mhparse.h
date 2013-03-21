@@ -286,5 +286,6 @@ char *ct_subtype_str (int, int);
 const struct str2init *get_ct_init (int);
 const char *ce_str (int);
 const struct str2init *get_ce_method (const char *);
+int parse_header_attrs (const char *, int, char **, CI, int *);
 
 extern int checksw;	/* Add Content-MD5 field */

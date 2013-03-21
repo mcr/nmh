@@ -169,6 +169,14 @@ run_test 'mhstore last -part 4 -verbose -noverbose' \
   'storing message 11 part 4 as file 11.4.txt'
 check $expected 11.4.txt
 
+# check that -auto obeys Content-Disposition header
+cat > $expected <<EOF
+This is the first text/plain part, in a subpart.
+EOF
+run_test 'mhstore last -part 1.1 -auto' \
+  'storing message 11 part 1.1 as file test1.txt'
+check $expected test1.txt
+
 # check -check
 cat > $expected <<EOF
 This is the second text/plain part.

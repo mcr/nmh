@@ -104,7 +104,7 @@ void free_encoding (CT, int);
  * static prototypes
  */
 static CT get_content (FILE *, char *, int);
-static int get_comment (CT, char **, int);
+static int get_comment (const char *, CI, char **, int);
 
 static int InitGeneric (CT);
 static int InitText (CT);
@@ -371,7 +371,8 @@ get_content (FILE *in, char *file, int toplevel)
 	    if (debugsw)
 		fprintf (stderr, "%s: %s\n", VRSN_FIELD, cp);
 
-	    if (*cp == '(' && get_comment (ct, &cp, 0) == NOTOK)
+	    if (*cp == '('  &&
+                get_comment (ct->c_file, &ct->c_ctinfo, &cp, 0) == NOTOK)
 		goto out;
 
 	    for (dp = cp; istoken (*dp); dp++)
@@ -480,7 +481,8 @@ get_content (FILE *in, char *file, int toplevel)
 	    if (debugsw)
 		fprintf (stderr, "%s: %s\n", MD5_FIELD, cp);
 
-	    if (*cp == '(' && get_comment (ct, &cp, 0) == NOTOK) {
+	    if (*cp == '('  &&
+                get_comment (ct->c_file, &ct->c_ctinfo, &cp, 0) == NOTOK) {
 		free (ep);
 		goto out;
 	    }
@@ -670,9 +672,10 @@ int
 get_ctinfo (char *cp, CT ct, int magic)
 {
     int	i;
-    char *dp, **ap, **ep;
+    char *dp;
     char c;
     CI ci;
+    int status;
 
     ci = &ct->c_ctinfo;
     i = strlen (invo_name) + 2;
@@ -696,7 +699,7 @@ get_ctinfo (char *cp, CT ct, int magic)
     if (debugsw)
 	fprintf (stderr, "%s: %s\n", TYPE_FIELD, cp);
 
-    if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
 	return NOTOK;
 
     for (dp = cp; istoken (*dp); dp++)
@@ -719,7 +722,7 @@ get_ctinfo (char *cp, CT ct, int magic)
     while (isspace ((unsigned char) *cp))
 	cp++;
 
-    if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
 	return NOTOK;
 
     if (*cp != '/') {
@@ -732,7 +735,7 @@ get_ctinfo (char *cp, CT ct, int magic)
     while (isspace ((unsigned char) *cp))
 	cp++;
 
-    if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
 	return NOTOK;
 
     for (dp = cp; istoken (*dp); dp++)
@@ -757,103 +760,11 @@ magic_skip:
     while (isspace ((unsigned char) *cp))
 	cp++;
 
-    if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
 	return NOTOK;
 
-    /*
-     * Parse attribute/value pairs given with Content-Type
-     */
-    ep = (ap = ci->ci_attrs) + NPARMS;
-    while (*cp == ';') {
-	char *vp, *up;
-
-	if (ap >= ep) {
-	    advise (NULL,
-		    "too many parameters in message %s's %s: field (%d max)",
-		    ct->c_file, TYPE_FIELD, NPARMS);
-	    return NOTOK;
-	}
-
-	cp++;
-	while (isspace ((unsigned char) *cp))
-	    cp++;
-
-	if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
-	    return NOTOK;
-
-	if (*cp == 0) {
-	    advise (NULL,
-		    "extraneous trailing ';' in message %s's %s: parameter list",
-		    ct->c_file, TYPE_FIELD);
-	    return OK;
-	}
-
-	/* down case the attribute name */
-	for (dp = cp; istoken ((unsigned char) *dp); dp++)
-	    if (isalpha((unsigned char) *dp) && isupper ((unsigned char) *dp))
-		*dp = tolower ((unsigned char) *dp);
-
-	for (up = dp; isspace ((unsigned char) *dp);)
-	    dp++;
-	if (dp == cp || *dp != '=') {
-	    advise (NULL,
-		    "invalid parameter in message %s's %s: field\n%*.*sparameter %s (error detected at offset %d)",
-		    ct->c_file, TYPE_FIELD, i, i, "", cp, dp - cp);
-	    return NOTOK;
-	}
-
-	vp = (*ap = add (cp, NULL)) + (up - cp);
-	*vp = '\0';
-	for (dp++; isspace ((unsigned char) *dp);)
-	    dp++;
-
-	/* now add the attribute value */
-	ci->ci_values[ap - ci->ci_attrs] = vp = *ap + (dp - cp);
-
-	if (*dp == '"') {
-	    for (cp = ++dp, dp = vp;;) {
-		switch (c = *cp++) {
-		    case '\0':
-bad_quote:
-		        advise (NULL,
-				"invalid quoted-string in message %s's %s: field\n%*.*s(parameter %s)",
-				ct->c_file, TYPE_FIELD, i, i, "", *ap);
-			return NOTOK;
-
-		    case '\\':
-			*dp++ = c;
-			if ((c = *cp++) == '\0')
-			    goto bad_quote;
-			/* else fall... */
-
-		    default:
-    			*dp++ = c;
-    			continue;
-
-		    case '"':
-			*dp = '\0';
-			break;
-		}
-		break;
-	    }
-	} else {
-	    for (cp = dp, dp = vp; istoken (*cp); cp++, dp++)
-		continue;
-	    *dp = '\0';
-	}
-	if (!*vp) {
-	    advise (NULL,
-		    "invalid parameter in message %s's %s: field\n%*.*s(parameter %s)",
-		    ct->c_file, TYPE_FIELD, i, i, "", *ap);
-	    return NOTOK;
-	}
-	ap++;
-
-	while (isspace ((unsigned char) *cp))
-	    cp++;
-
-	if (*cp == '(' && get_comment (ct, &cp, 1) == NOTOK)
-	    return NOTOK;
+    if (parse_header_attrs (ct->c_file, i, &cp, ci, &status) == NOTOK) {
+	return status;
     }
 
     /*
@@ -966,14 +877,12 @@ bad_quote:
 
 
 static int
-get_comment (CT ct, char **ap, int istype)
+get_comment (const char *filename, CI ci, char **ap, int istype)
 {
     int i;
     char *bp, *cp;
     char c, buffer[BUFSIZ], *dp;
-    CI ci;
 
-    ci = &ct->c_ctinfo;
     cp = *ap;
     bp = buffer;
     cp++;
@@ -983,7 +892,7 @@ get_comment (CT ct, char **ap, int istype)
 	case '\0':
 invalid:
 	advise (NULL, "invalid comment in message %s's %s: field",
-		ct->c_file, istype ? TYPE_FIELD : VRSN_FIELD);
+		filename, istype ? TYPE_FIELD : VRSN_FIELD);
 	return NOTOK;
 
 	case '\\':
@@ -3248,4 +3157,125 @@ get_ce_method (const char *method) {
     }
 
     return NULL;
+}
+
+int
+parse_header_attrs (const char *filename, int len, char **header_attrp, CI ci,
+                    int *status) {
+    char **attr = ci->ci_attrs;
+    char *cp = *header_attrp;
+
+    while (*cp == ';') {
+	char *dp, *vp, *up, c;
+
+        /* Relies on knowledge of this declaration:
+         *   char *ci_attrs[NPARMS + 2];
+         */
+	if (attr >= ci->ci_attrs + sizeof ci->ci_attrs/sizeof (char *) - 2) {
+	    advise (NULL,
+		    "too many parameters in message %s's %s: field (%d max)",
+		    filename, TYPE_FIELD, NPARMS);
+	    *status = NOTOK;
+	    return NOTOK;
+	}
+
+	cp++;
+	while (isspace ((unsigned char) *cp))
+	    cp++;
+
+	if (*cp == '('  &&
+            get_comment (filename, ci, &cp, 1) == NOTOK) {
+	    *status = NOTOK;
+	    return NOTOK;
+        }
+
+	if (*cp == 0) {
+	    advise (NULL,
+		    "extraneous trailing ';' in message %s's %s: "
+                    "parameter list",
+		    filename, TYPE_FIELD);
+	    *status = OK;
+	    return NOTOK;
+	}
+
+	/* down case the attribute name */
+	for (dp = cp; istoken ((unsigned char) *dp); dp++)
+	    if (isalpha((unsigned char) *dp) && isupper ((unsigned char) *dp))
+		*dp = tolower ((unsigned char) *dp);
+
+	for (up = dp; isspace ((unsigned char) *dp);)
+	    dp++;
+	if (dp == cp || *dp != '=') {
+	    advise (NULL,
+		    "invalid parameter in message %s's %s: "
+                    "field\n%*.*sparameter %s (error detected at offset %d)",
+		    filename, TYPE_FIELD, len, len, "", cp, dp - cp);
+	    *status = NOTOK;
+	    return NOTOK;
+	}
+
+	vp = (*attr = add (cp, NULL)) + (up - cp);
+	*vp = '\0';
+	for (dp++; isspace ((unsigned char) *dp);)
+	    dp++;
+
+	/* Now store the attribute value. */
+	ci->ci_values[attr - ci->ci_attrs] = vp = *attr + (dp - cp);
+
+	if (*dp == '"') {
+	    for (cp = ++dp, dp = vp;;) {
+		switch (c = *cp++) {
+		    case '\0':
+bad_quote:
+		        advise (NULL,
+				"invalid quoted-string in message %s's %s: "
+                                "field\n%*.*s(parameter %s)",
+				filename, TYPE_FIELD, len, len, "", *attr);
+			*status = NOTOK;
+			return NOTOK;
+
+		    case '\\':
+			*dp++ = c;
+			if ((c = *cp++) == '\0')
+			    goto bad_quote;
+			/* else fall... */
+
+		    default:
+			*dp++ = c;
+			continue;
+
+		    case '"':
+			*dp = '\0';
+			break;
+		}
+		break;
+	    }
+	} else {
+	    for (cp = dp, dp = vp; istoken (*cp); cp++, dp++)
+		continue;
+	    *dp = '\0';
+	}
+	if (!*vp) {
+	    advise (NULL,
+		    "invalid parameter in message %s's %s: "
+                    "field\n%*.*s(parameter %s)",
+		    filename, TYPE_FIELD, len, len, "", *attr);
+	    *status = NOTOK;
+	    return NOTOK;
+	}
+
+	while (isspace ((unsigned char) *cp))
+	    cp++;
+
+	if (*cp == '('  &&
+            get_comment (filename, ci, &cp, 1) == NOTOK) {
+	    *status = NOTOK;
+	    return NOTOK;
+        }
+
+        ++attr;
+    }
+
+    *header_attrp = cp;
+    return OK;
 }
