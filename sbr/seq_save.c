@@ -31,8 +31,12 @@ seq_save (struct msgs *mp)
 
     /* check if sequence information has changed */
     if (!(mp->msgflags & SEQMOD)) {
-    	if (mp->seqhandle)
+    	if (mp->seqhandle) {
 	    lkfclosedata (mp->seqhandle, mp->seqname);
+	    mp->seqhandle = NULL;
+	    free(mp->seqname);
+	    mp->seqname = NULL;
+	}
 	return;
     }
     mp->msgflags &= ~SEQMOD;
