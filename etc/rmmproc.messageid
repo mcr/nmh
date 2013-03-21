@@ -25,7 +25,7 @@
  #      exists, use 2).
  #      NOTE: conversion of some characters in the filename could
  #      result in an unintended name collision.  If that is a concern,
- #      a program that uses mktemp(3) to create a temporary file might
+ #      a program that uses mkstemp(3) to create a temporary file might
  #      be the basis for a remedy.
  #   2) Concatenation of BACKUP_PREFIX and input filename.
  #      NOTE: if a file of that name already exists in the destination
