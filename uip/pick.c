@@ -56,12 +56,13 @@ main (int argc, char **argv)
 {
     int publicsw = -1, zerosw = 1, vecp = 0;
     size_t seqp = 0;
-    int lo, hi, msgnum;
+    int msgnum;
     char *maildir, *folder = NULL, buf[100];
     char *cp, **argp, **arguments;
     char *seqs[NUMATTRS + 1], *vec[MAXARGS];
     struct msgs_array msgs = { 0, 0, NULL };
-    struct msgs *mp;
+    struct msgnum_array nums = { 0, 0, NULL };
+    struct msgs *mp, *mp2;
     register FILE *fp;
 
     done=putzero_done;
@@ -204,7 +205,6 @@ main (int argc, char **argv)
     for (msgnum = 0; msgnum < msgs.size; msgnum++)
 	if (!m_convert (mp, msgs.msgs[msgnum]))
 	    done (1);
-    seq_setprev (mp);	/* set the previous-sequence */
 
     /*
      * If we aren't saving the results to a sequence,
@@ -219,9 +219,6 @@ main (int argc, char **argv)
     if (!pcompile (vec, NULL))
 	done (1);
 
-    lo = mp->lowsel;
-    hi = mp->hghsel;
-
     /* If printing message numbers to standard out, force line buffering on.
      */
     if (listsw)
@@ -229,56 +226,76 @@ main (int argc, char **argv)
 
     /*
      * Scan through all the SELECTED messages and check for a
-     * match.  If the message does not match, then unselect it.
+     * match.  If there is NOT a match, then add it to a list to
+     * remove from the final sequence (it will make sense later)
      */
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	if (is_selected (mp, msgnum)) {
 	    if ((fp = fopen (cp = m_name (msgnum), "r")) == NULL)
 		admonish (cp, "unable to read message");
 	    if (fp && pmatches (fp, msgnum, 0L, 0L)) {
-		if (msgnum < lo)
-		    lo = msgnum;
-		if (msgnum > hi)
-		    hi = msgnum;
-
 		if (listsw)
 		    printf ("%s\n", m_name (msgnum));
 	    } else {
-		/* if it doesn't match, then unselect it */
-		unset_selected (mp, msgnum);
-		mp->numsel--;
+	    	app_msgnum(&nums, msgnum);
 	    }
 	    if (fp)
 		fclose (fp);
 	}
     }
 
-    mp->lowsel = lo;
-    mp->hghsel = hi;
-
-    if (mp->numsel <= 0)
+    if (nums.size >= mp->numsel)
 	adios (NULL, "no messages match specification");
 
     seqs[seqp] = NULL;
 
     /*
+     * So, what's happening here?
+     *
+     * - Re-read the folder and sequences, but with locking.
+     * - Recreate the original set of selected messages from the command line
+     * - Set the previous sequence
+     * - Remove any messages that did NOT result in hits from the selection
+     * - Add to any new sequences
+     */
+
+    if (!(mp2 = folder_read (folder, 1)))
+	adios (NULL, "unable to reread folder %s", folder);
+
+    for (msgnum = 0; msgnum < msgs.size; msgnum++)
+	if (!m_convert (mp2, msgs.msgs[msgnum]))
+	    done (1);
+    seq_setprev (mp2);	/* set the previous-sequence */
+
+    /*
+     * Nums contains a list of messages that we did NOT match.  Remove
+     * that from the selection.
+     */
+
+    for (msgnum = 0; msgnum < nums.size; msgnum++) {
+    	unset_selected(mp2, nums.msgnums[msgnum]);
+	mp2->numsel--;
+    }
+
+    /*
      * Add the matching messages to sequences
      */
     for (seqp = 0; seqs[seqp]; seqp++)
-	if (!seq_addsel (mp, seqs[seqp], publicsw, zerosw))
+	if (!seq_addsel (mp2, seqs[seqp], publicsw, zerosw))
 	    done (1);
 
     /*
      * Print total matched if not printing each matched message number.
      */
     if (!listsw) {
-	printf ("%d hit%s\n", mp->numsel, mp->numsel == 1 ? "" : "s");
+	printf ("%d hit%s\n", mp2->numsel, mp2->numsel == 1 ? "" : "s");
     }
 
     context_replace (pfolder, folder);	/* update current folder         */
-    seq_save (mp);			/* synchronize message sequences */
+    seq_save (mp2);			/* synchronize message sequences */
     context_save ();			/* save the context file         */
     folder_free (mp);			/* free folder/message structure */
+    folder_free (mp2);
     done (0);
     return 1;
 }
