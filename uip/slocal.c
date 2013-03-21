@@ -1453,7 +1453,7 @@ suppress_duplicates (int fd, char *file)
 		 * This will fail if your Maildelivery file doesn't
 		 * exist.
 		 */
-		if ((lockfd = lkopen(file, O_RDWR, 0)) == -1) {
+		if ((lockfd = lkopendata(file, O_RDWR, 0)) == -1) {
 		    advise (file, "unable to perform file locking on");
 		    free (cp);
 		    fclose (in);
@@ -1474,7 +1474,7 @@ suppress_duplicates (int fd, char *file)
 		}
 
 		dbm_close (db);
-		lkclose(lockfd, file);
+		lkclosedata(lockfd, file);
 		free (cp);
 		fclose (in);
 		return result;

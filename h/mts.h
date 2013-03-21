@@ -16,6 +16,7 @@ extern char *mmdfldir;
 extern char *mmdflfil;
 extern char *uucpldir;
 extern char *uucplfil;
+extern char *spoollocking;
 
 #define	MAILDIR	(mmdfldir && *mmdfldir ? mmdfldir : getenv ("HOME"))
 #define	MAILFIL	(mmdflfil && *mmdflfil ? mmdflfil : getusername ())

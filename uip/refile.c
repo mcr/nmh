@@ -206,7 +206,7 @@ main (int argc, char **argv)
 	adios (maildir, "unable to change directory to");
 
     /* read source folder and create message structure */
-    if (!(mp = folder_read (folder)))
+    if (!(mp = folder_read (folder, 1)))
 	adios (NULL, "unable to read folder %s", folder);
 
     /* check for empty folder */
@@ -294,7 +294,7 @@ opnfolds (struct st_fold *folders, int nfolders)
 
 	if (chdir (nmaildir) == NOTOK)
 	    adios (nmaildir, "unable to change directory to");
-	if (!(mp = folder_read (fp->f_name)))
+	if (!(mp = folder_read (fp->f_name, 1)))
 	    adios (NULL, "unable to read folder %s", fp->f_name);
 	mp->curmsg = 0;
 

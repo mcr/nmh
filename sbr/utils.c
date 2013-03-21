@@ -226,6 +226,22 @@ app_msgarg(struct msgs_array *msgs, char *cp)
 	msgs->msgs[msgs->size++] = cp;
 }
 
+/*
+ * Append a message number to an array of them, resizing it if necessary.
+ * Like app_msgarg, but with a vector-of-ints instead.
+ */
+
+void
+app_msgnum(struct msgnum_array *msgs, int msgnum)
+{
+	if (msgs->size >= msgs->max) {
+		msgs->max += MAXMSGS;
+		msgs->msgnums = mh_xrealloc(msgs->msgnums,
+			msgs->max * sizeof(*msgs->msgnums));
+	}
+	msgs->msgnums[msgs->size++] = msgnum;
+}
+
 /* Open a form or components file */
 int
 open_form(char **form, char *def)

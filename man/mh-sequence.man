@@ -254,6 +254,36 @@ or
 displays a message, that message will be removed from
 any sequences named by the \*(lqUnseen\-Sequence\*(rq entry in the
 profile.
+.SS Sequence File Locking
+The \*(lqdatalocking\*(rq profile entry controls the type of locking used
+when reading and writing sequence files.  The locking mechanisms supported
+are detailed in
+.IR mh\-profile (5).
+This protects sequence file integrity when multiple
+.B nmh
+commands are run simultaneously.
+.B Nmh
+commands that modify the sequence file use transactional locks; the lock
+is held from the time the sequence file is read until it it written out.
+This ensures that modifications to the sequence file will not be lost
+if multiple commands are run simultaneously.  Long\-running
+.B nmh
+commands, such as
+.B inc
+and
+.BR pick ,
+will release the sequence lock during the bulk of their runtime and reread
+the sequence file after their processing is complete to reduce lock
+contention time.
+.PP
+.B Note:
+Currently transactional locks are
+.B only
+supported for public sequences; private sequences will not get corrupted, but
+the possibility exists that two
+.B nmh
+commands run simultaneously that add messages to a private sequence could result in
+one command's messages not appearing on the requested sequence.
 .SH FILES
 .fc ^ ~
 .nf

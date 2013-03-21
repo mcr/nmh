@@ -18,21 +18,19 @@
 #include <h/mh.h>
 #include <h/signals.h>
 #include <h/utils.h>
+#include <h/mts.h>
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
 #endif
 #include <time.h>
 #include <errno.h>
-
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
+#include <fcntl.h>
+#ifdef HAVE_FLOCK
 # include <sys/file.h>
 #endif
-
-#if defined(LOCKF_LOCKING) || defined(FLOCK_LOCKING)
-# include <sys/file.h>
+#ifdef HAVE_LOCKF
+# include <unistd.h>
 #endif
 
 #include <signal.h>
@@ -45,13 +43,6 @@
 char *lockdir = LOCKDIR;
 #endif
 
-/* Are we using any kernel locking? */
-#if defined (FLOCK_LOCKING) || defined(LOCKF_LOCKING) || defined(FCNTL_LOCKING)
-# define KERNEL_LOCKING
-#endif
-
-#ifdef DOT_LOCKING
-
 /* struct for getting name of lock file to create */
 struct lockinfo {
     char curlock[BUFSIZ];
@@ -59,6 +50,11 @@ struct lockinfo {
     char tmplock[BUFSIZ];
 #endif
 };
+
+/*
+ * Number of tries to retry locking
+ */
+#define LOCK_RETRIES 5
 
 /*
  * Amount of time to wait before
@@ -81,20 +77,36 @@ struct lock {
     struct lock *l_next;
 };
 
-/* top of list containing all open locks */
-static struct lock *l_top = NULL;
-#endif /* DOT_LOCKING */
+enum locktype { FCNTL_LOCKING, FLOCK_LOCKING, LOCKF_LOCKING, DOT_LOCKING };
 
 /*
- * static prototypes
+ * Flags to indicate whether we've initialized the lock types, and
+ * our saved lock types
  */
-#ifdef KERNEL_LOCKING
-static int lkopen_kernel (char *, int, mode_t);
-#endif
+static int datalockinit = 0;
+static int spoollockinit = 0;
+static enum locktype datalocktype, spoollocktype;
 
-#ifdef DOT_LOCKING
-static int lkopen_dot (char *, int, mode_t);
-static void lockname (char *, struct lockinfo *, int);
+
+/* top of list containing all open locks */
+static struct lock *l_top = NULL;
+
+static int lkopen(const char *, int, mode_t, enum locktype);
+static int str2accbits(const char *);
+
+static int lkopen_fcntl (const char *, int, mode_t);
+#ifdef HAVE_LOCKF
+static int lkopen_lockf (const char *, int, mode_t);
+#endif /* HAVE_LOCKF */
+#ifdef HAVE_FLOCK
+static int lkopen_flock (const char *, int, mode_t);
+#endif /* HAVE_FLOCK */
+
+static enum locktype init_locktype(const char *);
+
+static int lkopen_dot (const char *, int, mode_t);
+static void lkclose_dot (int, const char *);
+static void lockname (const char *, struct lockinfo *, int);
 static void timerON (char *, int);
 static void timerOFF (int);
 static void alrmser (int);
@@ -102,108 +114,88 @@ static void alrmser (int);
 #if !defined(HAVE_LIBLOCKFILE)
 static int lockit (struct lockinfo *);
 #endif
-#endif
 
 /*
- * Base routine to open and lock a file,
- * and return a file descriptor.
+ * Base functions: determine the data type used to lock files and
+ * call the underlying function.
  */
 
 int
-lkopen (char *file, int access, mode_t mode)
+lkopendata(const char *file, int access, mode_t mode)
 {
-#ifdef KERNEL_LOCKING
-    return lkopen_kernel(file, access, mode);
-#endif
+    if (! datalockinit) {
+    	char *cp = context_find("datalocking");
 
-#ifdef DOT_LOCKING
-    return lkopen_dot(file, access, mode);
-#endif
+	if (cp) {
+	    datalocktype = init_locktype(cp);
+	} else {
+	    /* We default to fcntl locking for data files */
+	    datalocktype = FCNTL_LOCKING;
+	}
+
+	datalockinit = 1;
+    }
+
+    return lkopen(file, access, mode, datalocktype);
 }
 
 
 /*
- * Base routine to close and unlock a file,
- * given a file descriptor.
+ * Locking using the spool locking algorithm
  */
 
-int
-lkclose (int fd, char *file)
+int lkopenspool(const char *file, int access, mode_t mode)
 {
-#ifdef FCNTL_LOCKING
-    struct flock buf;
-#endif
+    if (! spoollockinit) {
+    	spoollocktype = init_locktype(spoollocking);
 
-#ifdef DOT_LOCKING
-    struct lockinfo lkinfo;
-#endif
+	spoollockinit = 1;
+    }
 
-    if (fd == -1)
-	return 0;
-
-#ifdef FCNTL_LOCKING
-    buf.l_type   = F_UNLCK;
-    buf.l_whence = SEEK_SET;
-    buf.l_start  = 0;
-    buf.l_len    = 0;
-    fcntl(fd, F_SETLK, &buf);
-#endif
-
-#ifdef FLOCK_LOCKING
-    flock (fd, LOCK_UN);
-#endif
-
-#ifdef LOCKF_LOCKING
-    /* make sure we unlock the whole thing */
-    lseek (fd, (off_t) 0, SEEK_SET);
-    lockf (fd, F_ULOCK, 0L);
-#endif	
-
-#ifdef DOT_LOCKING
-    lockname (file, &lkinfo, 0);	/* get name of lock file */
-#if !defined(HAVE_LIBLOCKFILE)
-    unlink (lkinfo.curlock);		/* remove lock file      */
-#else
-    lockfile_remove(lkinfo.curlock);
-#endif /* HAVE_LIBLOCKFILE */
-    timerOFF (fd);			/* turn off lock timer   */
-#else  /* DOT_LOCKING */
-    NMH_UNUSED (file);
-#endif /* DOT_LOCKING */
-
-    return (close (fd));
+    return lkopen(file, access, mode, spoollocktype);
 }
 
 
 /*
- * Base routine to open and lock a file,
- * and return a FILE pointer
+ * Versions of lkopen that return a FILE *
  */
 
 FILE *
-lkfopen (char *file, char *mode)
+lkfopendata(const char *file, const char *mode)
 {
-    int fd, access;
     FILE *fp;
+    int oflags = str2accbits(mode);
+    int fd;
 
-    if (strcmp (mode, "r") == 0)
-	access = O_RDONLY;
-    else if (strcmp (mode, "r+") == 0)
-	access = O_RDWR;
-    else if (strcmp (mode, "w") == 0)
-	access = O_WRONLY | O_CREAT | O_TRUNC;
-    else if (strcmp (mode, "w+") == 0)
-	access = O_RDWR | O_CREAT | O_TRUNC;
-    else if (strcmp (mode, "a") == 0)
-	access = O_WRONLY | O_CREAT | O_APPEND;
-    else if (strcmp (mode, "a+") == 0)
-	access = O_RDWR | O_CREAT | O_APPEND;
-    else {
-	errno = EINVAL;
+    if (oflags == -1) {
+    	errno = EINVAL;
 	return NULL;
     }
 
-    if ((fd = lkopen (file, access, 0666)) == -1)
+    if ((fd = lkopendata(file, oflags, 0666)) == -1)
+	return NULL;
+
+    if ((fp = fdopen (fd, mode)) == NULL) {
+	close (fd);
+	return NULL;
+    }
+
+    return fp;
+}
+
+FILE *
+lkfopenspool(const char *file, const char *mode)
+{
+    FILE *fp;
+    int oflags = str2accbits(mode);
+    int fd;
+
+    if (oflags == -1) {
+    	errno = EINVAL;
+	return NULL;
+    }
+
+    if ((fd = lkopenspool(file, oflags, 0666)) == -1)
 	return NULL;
 
     if ((fp = fdopen (fd, mode)) == NULL) {
@@ -216,140 +208,276 @@ lkfopen (char *file, char *mode)
 
 
 /*
- * Base routine to close and unlock a file,
- * given a FILE pointer
+ * Corresponding close functions.
+ *
+ * A note here: All of the kernel locking functions terminate the lock
+ * when the descriptor is closed, so why write the code to explicitly
+ * unlock the file?  We only need to do this in the dot-locking case.
  */
 
 int
-lkfclose (FILE *fp, char *file)
+lkclosedata(int fd, const char *name)
 {
-#ifdef FCNTL_LOCKING
-    struct flock buf;
-#endif
+    int rc = close(fd);
 
-#ifdef DOT_LOCKING
+    if (datalocktype == DOT_LOCKING)
+    	lkclose_dot(fd, name);
+
+    return rc;
+}
+
+int
+lkfclosedata(FILE *f, const char *name)
+{
+    int fd, rc;
+
+    if (f == NULL)
+    	return 0;
+    
+    fd = fileno(f);
+    rc = fclose(f);
+
+    if (datalocktype == DOT_LOCKING)
+    	lkclose_dot(fd, name);
+
+    return rc;
+}
+
+int
+lkclosespool(int fd, const char *name)
+{
+    int rc = close(fd);
+
+    if (spoollocktype == DOT_LOCKING)
+    	lkclose_dot(fd, name);
+
+    return rc;
+}
+
+int
+lkfclosespool(FILE *f, const char *name)
+{
+    int fd, rc;
+
+    if (f == NULL)
+    	return 0;
+    
+    fd = fileno(f);
+    rc = fclose(f);
+
+    if (spoollocktype == DOT_LOCKING)
+    	lkclose_dot(fd, name);
+
+    return rc;
+}
+
+
+/*
+ * Convert fopen() mode argument to open() bits
+ */
+
+static int
+str2accbits(const char *mode)
+{
+    if (strcmp (mode, "r") == 0)
+	return O_RDONLY;
+    else if (strcmp (mode, "r+") == 0)
+	return O_RDWR;
+    else if (strcmp (mode, "w") == 0)
+	return O_WRONLY | O_CREAT | O_TRUNC;
+    else if (strcmp (mode, "w+") == 0)
+	return O_RDWR | O_CREAT | O_TRUNC;
+    else if (strcmp (mode, "a") == 0)
+	return O_WRONLY | O_CREAT | O_APPEND;
+    else if (strcmp (mode, "a+") == 0)
+	return O_RDWR | O_CREAT | O_APPEND;
+    else {
+	errno = EINVAL;
+	return -1;
+    }
+}
+
+/*
+ * Internal routine to switch between different locking types.
+ */
+
+static int
+lkopen (const char *file, int access, mode_t mode, enum locktype ltype)
+{
+    switch (ltype) {
+
+    case FCNTL_LOCKING:
+    	return lkopen_fcntl(file, access, mode);
+
+    case DOT_LOCKING:
+    	return lkopen_dot(file, access, mode);
+
+#ifdef HAVE_FLOCK
+    case FLOCK_LOCKING:
+    	return lkopen_flock(file, access, mode);
+#endif /* HAVE_FLOCK */
+
+#ifdef HAVE_LOCKF
+    case LOCKF_LOCKING:
+    	return lkopen_lockf(file, access, mode);
+#endif /* HAVE_FLOCK */
+
+    default:
+    	adios(NULL, "Internal locking error: unsupported lock type used!");
+    }
+
+    return -1;
+}
+
+
+/*
+ * Routine to clean up the dot locking file
+ */
+
+static void
+lkclose_dot (int fd, const char *file)
+{
     struct lockinfo lkinfo;
-#endif
 
-    if (fp == NULL)
-	return 0;
-
-#ifdef FCNTL_LOCKING
-    buf.l_type   = F_UNLCK;
-    buf.l_whence = SEEK_SET;
-    buf.l_start  = 0;
-    buf.l_len    = 0;
-    fcntl(fileno(fp), F_SETLK, &buf);
-#endif
-
-#ifdef FLOCK_LOCKING
-    flock (fileno(fp), LOCK_UN);
-#endif
-
-#ifdef LOCKF_LOCKING
-    /* make sure we unlock the whole thing */
-    fseek (fp, 0L, SEEK_SET);
-    lockf (fileno(fp), F_ULOCK, 0L);
-#endif
-
-#ifdef DOT_LOCKING
     lockname (file, &lkinfo, 0);	/* get name of lock file */
 #if !defined(HAVE_LIBLOCKFILE)
     unlink (lkinfo.curlock);		/* remove lock file      */
 #else
     lockfile_remove(lkinfo.curlock);
 #endif /* HAVE_LIBLOCKFILE */
-    timerOFF (fileno(fp));		/* turn off lock timer   */
-#else  /* DOT_LOCKING */
-    NMH_UNUSED (file);
-#endif /* DOT_LOCKING */
-
-    return (fclose (fp));
+    timerOFF (fd);			/* turn off lock timer   */
 }
 
 
-#ifdef KERNEL_LOCKING
-
 /*
- * open and lock a file, using kernel locking
+ * Open and lock a file, using fcntl locking
  */
 
 static int
-lkopen_kernel (char *file, int access, mode_t mode)
+lkopen_fcntl(const char *file, int access, mode_t mode)
 {
-    int fd, i, j;
+    int fd, i, saved_errno;
+    struct flock flk;
 
-# ifdef FCNTL_LOCKING
-    struct flock buf;
-# endif /* FCNTL_LOCKING */
+    /*
+     * The assumption here is that if you open the file for writing, you
+     * need an exclusive lock.
+     */
 
-    for (i = 0; i < 5; i++) {
-
-# if defined(LOCKF_LOCKING) || defined(FCNTL_LOCKING)
-	/* remember the original mode */
-	j = access;
-
-	/* make sure we open at the beginning */
-	access &= ~O_APPEND;
-
-	/*
-	 * We MUST have write permission or
-	 * lockf/fcntl() won't work
-	 */
-	if ((access & 03) == O_RDONLY) {
-	    access &= ~O_RDONLY;
-	    access |= O_RDWR;
-	}
-# endif /* LOCKF_LOCKING || FCNTL_LOCKING */
-
-	if ((fd = open (file, access | O_NDELAY, mode)) == -1)
+    for (i = 0; i < LOCK_RETRIES; i++) {
+    	if ((fd = open(file, access, mode)) == -1)
 	    return -1;
 
-# ifdef FCNTL_LOCKING
-	buf.l_type   = F_WRLCK;
-	buf.l_whence = SEEK_SET;
-	buf.l_start  = 0;
-	buf.l_len    = 0;
-	if (fcntl (fd, F_SETLK, &buf) != -1)
-	    return fd;
-# endif
+	flk.l_start = 0;
+	flk.l_len = 0;
+	flk.l_type = (access & O_ACCMODE) == O_RDONLY ? F_RDLCK : F_WRLCK;
+	flk.l_whence = SEEK_SET;
 
-# ifdef FLOCK_LOCKING
-	if (flock (fd, (((access & 03) == O_RDONLY) ? LOCK_SH : LOCK_EX)
-		   | LOCK_NB) != -1)
+	if (fcntl(fd, F_SETLK, &flk) != -1)
 	    return fd;
-# endif
 
-# ifdef LOCKF_LOCKING
-	if (lockf (fd, F_TLOCK, 0L) != -1) {
-	    /* see if we should be at the end */
-	    if (j & O_APPEND)
-		lseek (fd, (off_t) 0, SEEK_END);
-	    return fd;
-	}
-# endif
-
-	j = errno;
-	close (fd);
-	sleep (5);
+	saved_errno = errno;
+	close(fd);
+	sleep(1);
     }
 
-    close (fd);
-    errno = j;
+    errno = saved_errno;
     return -1;
 }
 
-#endif /* KERNEL_LOCKING */
+
+/*
+ * Open and lock a file, using flock locking
+ */
+
+static int
+lkopen_flock(const char *file, int access, mode_t mode)
+{
+    int fd, i, saved_errno, locktype;
+
+    /*
+     * The assumption here is that if you open the file for writing, you
+     * need an exclusive lock.
+     */
+
+    locktype = (((access & O_ACCMODE) == O_RDONLY) ? LOCK_SH : LOCK_EX) |
+    							LOCK_NB;
+
+    for (i = 0; i < LOCK_RETRIES; i++) {
+    	if ((fd = open(file, access, mode)) == -1)
+	    return -1;
+
+	if (flock(fd, locktype) != -1)
+	    return fd;
+
+	saved_errno = errno;
+	close(fd);
+	sleep(1);
+    }
+
+    errno = saved_errno;
+    return -1;
+}
 
 
-#ifdef DOT_LOCKING
+/*
+ * Open and lock a file, using lockf locking
+ */
+
+static int
+lkopen_lockf(const char *file, int access, mode_t mode)
+{
+    int fd, i, saved_errno, saved_access;
+
+    /*
+     * Two notes:
+     *
+     * Because lockf locks start from the current offset, mask off O_APPEND
+     * and seek to the end of the file later if it was requested.
+     *
+     * lockf locks require write access to the file, so always add it
+     * even if it wasn't requested.
+     */
+
+    saved_access = access;
+
+    access &= ~O_APPEND;
+
+    if ((access & O_ACCMODE) == O_RDONLY) {
+    	access &= ~O_RDONLY;
+	access |= O_RDWR;
+    }
+
+    for (i = 0; i < LOCK_RETRIES; i++) {
+    	if ((fd = open(file, access, mode)) == -1)
+	    return -1;
+
+	if (lockf(fd, F_TLOCK, 0) != -1) {
+	    /*
+	     * Seek to end if requested
+	     */
+	    if (saved_access & O_APPEND) {
+	    	lseek(fd, 0, SEEK_END);
+	    }
+	    return fd;
+	}
+
+	saved_errno = errno;
+	close(fd);
+	sleep(1);
+    }
+
+    errno = saved_errno;
+    return -1;
+}
+
 
 /*
  * open and lock a file, using dot locking
  */
 
 static int
-lkopen_dot (char *file, int access, mode_t mode)
+lkopen_dot (const char *file, int access, mode_t mode)
 {
     int fd;
     struct lockinfo lkinfo;
@@ -456,10 +584,11 @@ lockit (struct lockinfo *li)
  */
 
 static void
-lockname (char *file, struct lockinfo *li, int isnewlock)
+lockname (const char *file, struct lockinfo *li, int isnewlock)
 {
     int bplen, tmplen;
-    char *bp, *cp;
+    char *bp;
+    const char *cp;
 
 #if 0
     struct stat st;
@@ -608,4 +737,33 @@ alrmser (int sig)
     alarm (NSECS);
 }
 
-#endif /* DOT_LOCKING */
+
+/*
+ * Return a locking algorithm based on the string name
+ */
+
+static enum locktype
+init_locktype(const char *lockname)
+{
+    if (mh_strcasecmp(lockname, "fcntl") == 0) {
+    	return FCNTL_LOCKING;
+    } else if (mh_strcasecmp(lockname, "lockf") == 0) {
+#ifdef HAVE_LOCKF
+	return LOCKF_LOCKING;
+#else /* ! HAVE_LOCKF */
+	adios(NULL, "lockf not supported on this system");
+#endif /* HAVE_LOCKF */
+    } else if (mh_strcasecmp(lockname, "flock") == 0) {
+#ifdef HAVE_FLOCK
+	return FLOCK_LOCKING;
+#else /* ! HAVE_FLOCK */
+	adios(NULL, "flock not supported on this system");
+#endif /* HAVE_FLOCK */
+    } else if (mh_strcasecmp(lockname, "dot") == 0) {
+    	return DOT_LOCKING;
+    } else {
+    	adios(NULL, "Unknown lock type: \"%s\"", lockname);
+	/* NOTREACHED */
+	return 0;
+    }
+}

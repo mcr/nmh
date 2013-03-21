@@ -468,7 +468,7 @@ AddFolder(char *name, int force)
     struct msgs *mp;
 
     /* Read folder and create message structure */
-    if (!(mp = folder_read (name))) {
+    if (!(mp = folder_read (name, 0))) {
 	/* Oops, error occurred.  Record it and continue. */
 	AllocFolders(&folders, &nFoldersAlloced, nFolders + 1);
 	f = &folders[nFolders++];

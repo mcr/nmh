@@ -1,0 +1,55 @@
+#!/bin/sh
+######################################################
+#
+# Test the locking of nmh spool file
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+testmessage="$MH_TEST_DIR/testmessage"
+
+cat > "$testmessage" <<EOM
+Received: From somewhere
+From: No Such User <nosuch@example.com>
+To: Some Other User <someother@example.com>
+Subject: Hello, how are you?
+Date: Sun, 17 Dec 2006 12:13:14 -0500
+
+This is a test; will it work?
+EOM
+
+#
+# invoke "inc" for each locking algorithm
+#
+
+for locktype in $supported_locks
+do
+    mv -f ${MHMTSCONF} ${MHMTSCONF}.backup
+    sed -e '/^datalocking:/d' < ${MHMTSCONF}.backup > ${MHMTSCONF}
+    rm -f ${MHMTSCONF}.backup
+
+    echo "spoollocking: $locktype" >> ${MHMTSCONF}
+
+    run_test "inc -notruncate -width 80 -file $testmessage" \
+"Incorporating new mail into inbox...
+
+  11+ 12/17 No Such User       Hello, how are you?<<This is a test; will it wor
+$testmessage not zero'd"
+
+    rmm 11
+
+done
+
+rm -f "$testmessage"
+
+exit ${failed:-0}

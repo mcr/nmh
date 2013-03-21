@@ -604,7 +604,7 @@ fsetup (char *folder)
 	padios (maildir, "unable to change directory to");
 
     /* read folder and create message structure */
-    if (!(mp = folder_read (folder)))
+    if (!(mp = folder_read (folder, 0)))
 	padios (NULL, "unable to read folder %s", folder);
 
     /* check for empty folder */
@@ -831,7 +831,7 @@ check_folder (int scansw)
 	low = mp->hghmsg + 1;
 	folder_free (mp);		/* free folder/message structure */
 
-	if (!(mp = folder_read (fmsh)))
+	if (!(mp = folder_read (fmsh, 0)))
 	    padios (NULL, "unable to re-read folder %s", fmsh);
 
 	hgh = mp->hghmsg;
@@ -1097,7 +1097,7 @@ quit (void)
     if (vmh) 
 	ttyNaux (NULLCMD, "FAST");
     cp = NULL;
-    if ((dp = lkfopen (mp->foldpath, "r")) == NULL) {
+    if ((dp = lkfopendata (mp->foldpath, "r")) == NULL) {
 	advise (mp->foldpath, "unable to lock");
 	if (vmh) {
 	    ttyR (NULLCMD);
@@ -1161,7 +1161,7 @@ quit (void)
 release: ;
     if (cp)
 	free (cp);
-    lkfclose (dp, mp->foldpath);
+    lkfclosedata (dp, mp->foldpath);
     if (vmh) {
 	ttyR (NULLCMD);
 	pFIN ();

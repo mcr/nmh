@@ -43,12 +43,12 @@ context_save (void)
     sigaddset (&set, SIGTERM);
     sigprocmask (SIG_BLOCK, &set, &oset);
 
-    if (!(out = lkfopen (ctxpath, "w")))
+    if (!(out = lkfopendata (ctxpath, "w")))
 	adios (ctxpath, "unable to write");
     for (np = m_defs; np; np = np->n_next)
 	if (np->n_context)
 	    fprintf (out, "%s: %s\n", np->n_name, np->n_field);
-    lkfclose (out, ctxpath);
+    lkfclosedata (out, ctxpath);
 
     sigprocmask (SIG_SETMASK, &oset, &set); /* reset the signal mask */
 

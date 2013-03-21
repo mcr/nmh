@@ -184,6 +184,19 @@ The beginning-of-message delimiter for maildrops.
 The end-of-message delimiter for maildrops.
 .RE
 .PP
+.BR spoollocking :
+%default_locking%
+.RS 5
+The locking algorithm to use when opening the maildrop.  Can be any one of
+the following:
+.PP
+.RS 5
+.nf
+%supported_locks%
+.fi
+.RE
+.RE
+.PP
 .BR maildelivery :
 %libdir%/maildelivery
 .RS 5

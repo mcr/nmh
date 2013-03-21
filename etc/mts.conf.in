@@ -27,6 +27,22 @@ mmdfldir: %mailspool%
 # are kept.  If this is empty, the user's login name is used.
 mmdflfil:
 
+#
+# The locking algorithm to use on the spool file.  Valid settings are:
+#
+#   fcntl	Locking using the fcntl() function
+#   dot		"Dot" locking using an external lock file
+#   flock	Locking using the flock() function (if supported by OS)
+#   lockf	Locking using the lockf() function (if supported by OS)
+#
+# Locking algorithms supported on this installation are:
+#
+#	%supported_locks%
+#
+# The default spool locking configured on this system is %default_locking%;
+# change the line below to get a different value
+#spoollocking: %default_locking%
+
 # Hardcoded POP server name (prevents inc'ing from local mail spool).
 #pophost: localhost
 

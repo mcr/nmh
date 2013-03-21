@@ -30,8 +30,11 @@ seq_save (struct msgs *mp)
     sigset_t set, oset;
 
     /* check if sequence information has changed */
-    if (!(mp->msgflags & SEQMOD))
+    if (!(mp->msgflags & SEQMOD)) {
+    	if (mp->seqhandle)
+	    lkfclosedata (mp->seqhandle, mp->seqname);
 	return;
+    }
     mp->msgflags &= ~SEQMOD;
 
     fp = NULL;
@@ -74,9 +77,17 @@ priv:
 		 * If that fails (probably because folder is
 		 * readonly), then make sequence private.
 		 */
-		if ((fp = lkfopen (seqfile, "w")) == NULL
+
+		if (mp->seqhandle) {
+		    fp = mp->seqhandle;
+		    mp->seqhandle = NULL;
+		    free(mp->seqname);
+		    mp->seqname = NULL;
+		    rewind(fp);
+		    ftruncate(fileno(fp), 0);
+		} else if ((fp = lkfopendata (seqfile, "w")) == NULL
 			&& (unlink (seqfile) == -1 ||
-			    (fp = lkfopen (seqfile, "w")) == NULL)) {
+			    (fp = lkfopendata (seqfile, "w")) == NULL)) {
 		    admonish (attr, "unable to write");
 		    goto priv;
 		}
@@ -94,7 +105,7 @@ priv:
     }
 
     if (fp) {
-	lkfclose (fp, seqfile);
+	lkfclosedata (fp, seqfile);
 	sigprocmask (SIG_SETMASK, &oset, &set);  /* reset signal mask */
     } else {
 	/*

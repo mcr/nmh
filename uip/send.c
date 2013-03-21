@@ -350,7 +350,7 @@ main (int argc, char **argv)
 	    adios (maildir, "unable to change directory to");
 
 	/* read folder and create message structure */
-	if (!(mp = folder_read (dfolder)))
+	if (!(mp = folder_read (dfolder, 1)))
 	    adios (NULL, "unable to read folder %s", dfolder);
 
 	/* check for empty folder */

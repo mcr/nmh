@@ -1,0 +1,47 @@
+#!/bin/sh
+######################################################
+#
+# Test the locking of nmh metadata
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+#
+# Set things up so we have a "cur" sequence
+#
+
+show +inbox 1 -nocheckmime -showproc cat > /dev/null
+
+#
+# mark read & writes sequences files, so use it to exercise the locking code
+# for each locking algorithm
+#
+
+for locktype in $supported_locks
+do
+    mv -f ${MH} ${MH}.old
+    sed -e '/^datalocking:/d' < ${MH}.old > ${MH}
+    rm -f ${MH}.old
+
+    echo "datalocking: $locktype" >> ${MH}
+
+    mark 2 4 6 -sequence test -add
+
+    run_test 'mark -list' 'cur: 1
+test: 2 4 6'
+
+    mark all -sequence test -delete
+
+done
+
+exit ${failed:-0}
