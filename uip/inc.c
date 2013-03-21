@@ -593,14 +593,6 @@ go_to_it:
 		adios (NULL, "unable to fdopen %s", packfile);
 	} else {
 	    hghnum = msgnum = mp->hghmsg;
-	    /*
-	     * Check if we have enough message space for all the new
-	     * messages.  If not, then realloc the folder and add enough
-	     * space for all new messages plus 10 additional slots.
-	     */
-	    if (mp->hghmsg + nmsgs >= mp->hghoff
-		&& !(mp = folder_realloc (mp, mp->lowoff, mp->hghmsg + nmsgs + 10)))
-		adios (NULL, "unable to allocate folder storage");
 	}
 
 	for (i = 1; i <= nmsgs; i++) {
@@ -658,12 +650,6 @@ go_to_it:
 		    fputs (scanl, aud);
 		if (noisy)
 		    fflush (stdout);
-		if (!packfile) {
-		    clear_msg_flags (mp, msgnum);
-		    set_exists (mp, msgnum);
-		    set_unseen (mp, msgnum);
-		    mp->msgflags |= SEQMOD;
-		}
 		break;
 	    }
 	    if (packfile) {
@@ -706,17 +692,6 @@ go_to_it:
 	scan_detect_mbox_style (in);		/* the MAGIC invocation... */
 	hghnum = msgnum = mp->hghmsg;
 	for (;;) {
-	    /*
-	     * Check if we need to allocate more space for message status.
-	     * If so, then add space for an additional 100 messages.
-	     */
-	    if (msgnum >= mp->hghoff
-		&& !(mp = folder_realloc (mp, mp->lowoff, mp->hghoff + 100))) {
-		advise (NULL, "unable to allocate folder storage");
-		incerr = NOTOK;
-		break;
-	    }
-
 	    /* create scanline for new message */
 	    switch (incerr = scan (in, msgnum + 1, msgnum + 1, nfs, width,
 			      msgnum == hghnum && chgflag, 1, NULL, 0L, noisy)) {
@@ -753,14 +728,6 @@ go_to_it:
 		    fflush (stdout);
 
 		msgnum++;
-		mp->hghmsg++;
-		mp->nummsg++;
-		if (mp->lowmsg == 0) mp->lowmsg = 1;
-
-		clear_msg_flags (mp, msgnum);
-		set_exists (mp, msgnum);
-		set_unseen (mp, msgnum);
-		mp->msgflags |= SEQMOD;
 		continue;
 	    }
 	    /* If we get here there was some sort of error from scan(),
@@ -776,16 +743,6 @@ go_to_it:
 	hghnum = msgnum = mp->hghmsg;
 	for (i = 0; i < num_maildir_entries; i++) {
 	    msgnum++;
-	    /*
-	     * Check if we need to allocate more space for message status.
-	     * If so, then add space for an additional 100 messages.
-	     */
-	    if (msgnum >= mp->hghoff
-		&& !(mp = folder_realloc (mp, mp->lowoff, mp->hghoff + 100))) {
-		advise (NULL, "unable to allocate folder storage");
-		incerr = NOTOK;
-		break;
-	    }
 
 	    sp = Maildir[i].filename;
 	    cp = getcpy (m_name (msgnum));
@@ -846,12 +803,6 @@ go_to_it:
 		    fputs (scanl, aud);
 		if (noisy)
 		    fflush (stdout);
-		if (!packfile) {
-		    clear_msg_flags (mp, msgnum);
-		    set_exists (mp, msgnum);
-		    set_unseen (mp, msgnum);
-		    mp->msgflags |= SEQMOD;
-		}
 		break;
 	    }
 	    if (ferror(pf) || fclose (pf)) {
@@ -916,15 +867,51 @@ go_to_it:
     if (msgnum == hghnum) {
 	admonish (NULL, "no messages incorporated");
     } else {
+    	/*
+	 * Lock the sequence file now, and loop to set the right flags
+	 * in the folder structure
+	 */
+
+	struct msgs *mp2;
+	int i;
+
 	context_replace (pfolder, folder);	/* update current folder */
+
+	if ((mp2 = folder_read(folder, 1)) == NULL) {
+	    admonish(NULL, "Unable to reread folder %s", folder);
+	    goto skip;
+	}
+
+	/*
+	 * Shouldn't happen, but just in case ...
+	 */
+
+	if (msgnum >= mp2->hghoff
+		&& !(mp2 = folder_realloc (mp2, mp2->lowoff, msgnum + 1))) {
+	    advise (NULL, "unable to reallocate folder storage");
+	    goto skip;
+	}
+
 	if (chgflag)
-	    mp->curmsg = hghnum + 1;
-	mp->hghmsg = msgnum;
-	if (mp->lowmsg == 0)
-	    mp->lowmsg = 1;
+	    mp2->curmsg = hghnum + 1;
+	mp2->hghmsg = msgnum;
+
+	if (mp2->lowmsg == 0)
+	    mp2->lowmsg = 1;
 	if (chgflag)		/* sigh... */
-	    seq_setcur (mp, mp->curmsg);
+	    seq_setcur (mp2, mp2->curmsg);
+
+	for (i = hghnum + 1; i <= msgnum; i++) {
+	    clear_msg_flags (mp2, i);
+	    set_exists (mp2, i);
+	    set_unseen (mp2, i);
+	}
+	mp2->msgflags |= SEQMOD;
+	seq_setunseen(mp2, 0);	/* Set the Unseen-Sequence */
+	seq_save(mp2);		/* Save the sequence file */
+	folder_free(mp2);
     }
+skip:
 
     /*
      * unlock the mail spool
@@ -939,8 +926,6 @@ go_to_it:
 	}
     }
 
-    seq_setunseen (mp, 0);	/* set the Unseen-Sequence */
-    seq_save (mp);		/* synchronize sequences   */
     context_save ();		/* save the context file   */
     done (0);
     return 1;
