@@ -44,6 +44,7 @@ NEW FEATURES
 - A new program, fmttest(1) is included to help debug format files
 - mhshow/mhstore now have support for RFC-2017 (access-type=url) for
   external message bodies.
+- All nmh commands now support transactional locking for sequence files.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

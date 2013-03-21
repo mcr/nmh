@@ -204,7 +204,10 @@ any one of the following entries:
 .RE
 .PP
 Available locking algorithms can vary depending on what is supported by
-the operating system.
+the operating system.  Note: currently transactional locking is only
+supported on public sequences; see
+.IR mh\-sequence (5)
+for more information.
 (profile, default: fcntl)
 .RE
 .PP
