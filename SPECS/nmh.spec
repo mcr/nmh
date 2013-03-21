@@ -57,9 +57,9 @@ single comprehensive program.  Instead, it consists of a number of
 fairly simple single-purpose programs for sending, receiving, saving,
 retrieving and otherwise manipulating email messages.  You can freely
 intersperse nmh commands with other shell commands or write custom
-scripts which utilize nmh commands.  If you want to use nmh as a true
-email user agent, you'll want to also install exmh to provide a user
-interface for it--nmh only has a command line interface.
+scripts which utilize nmh commands.  nmh only has a command line
+interface; if you want a more sophisticated user interface, you'll
+want to also install exmh.
 
 
 %prep
@@ -80,7 +80,7 @@ if [ -f %srcdir/config.status ]; then
   ./config.status
 else
   %if %{undefined configure_opts}
-    %define configure_opts --with-cyrus-sasl --with-locking=fcntl
+    %define configure_opts --with-cyrus-sasl
   %endif
   %configure %configure_opts
 fi
