@@ -44,8 +44,8 @@ returning to the current folder from which the list was extracted.
 .PP
 If
 .B rmf
-s used on a read\-only folder, it will delete all the
-(private) sequences
+is used on a read\-only folder, it will delete all the
+private sequences
 (i.e.,
 .RI \*(lqatr\- seq \- folder \*(rq
 entries) for this folder
