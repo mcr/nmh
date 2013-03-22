@@ -13,6 +13,7 @@
 #include <h/signals.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #ifdef HAVE_ICONV
 #   include <iconv.h>
@@ -933,28 +934,30 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods) {
         } else {
             /* Slip new text/plain part into a new multipart/alternative. */
             CT tp_part = build_text_plain_part (*ct);
-            CT mp_alt = build_multipart_alt (*ct, tp_part, CT_MULTIPART,
-                                             MULTI_ALTERNATE);
-            struct multipart *mp = (struct multipart *) mp_alt->c_ctparams;
 
-            if (mp  &&  mp->mp_parts  &&  (mp->mp_parts->mp_part = tp_part)) {
-                /* Make the new multipart/alternative the parent. */
-                *ct = mp_alt;
+            if (tp_part) {
+                CT mp_alt = build_multipart_alt (*ct, tp_part, CT_MULTIPART,
+                                                 MULTI_ALTERNATE);
+                if (mp_alt) {
+                    struct multipart *mp =
+                        (struct multipart *) mp_alt->c_ctparams;
 
-                ++*message_mods;
-                if (verbosw) {
-                    report ((*ct)->c_partno, (*ct)->c_file,
-                            "insert text/plain part");
+                    if (mp  &&  mp->mp_parts) {
+                        mp->mp_parts->mp_part = tp_part;
+                        /* Make the new multipart/alternative the parent. */
+                        *ct = mp_alt;
+
+                        ++*message_mods;
+                        if (verbosw) {
+                            report ((*ct)->c_partno, (*ct)->c_file,
+                                    "insert text/plain part");
+                        }
+                    } else {
+                        free_content (tp_part);
+                        free_content (mp_alt);
+                        status = NOTOK;
+                    }
                 }
-            } else {
-                free_content (tp_part);
-
-                /* Undo enough of what build_multipart_alt() did so
-                   that free_content() can be called on mp_alt. */
-                mp->mp_parts->mp_part = NULL;
-                mp->mp_parts->mp_next->mp_part = NULL;
-                free_content (mp_alt);
-                status = NOTOK;
             }
         }
         break;
@@ -1784,14 +1787,39 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
 
                 if (remove_file (infile) == OK) {
                     if (rename (outfile, infile)) {
-                        /* The -file argument processing used path() to
-                           expand filename to absolute path. */
-                        int file = ct->c_file  &&  ct->c_file[0] == '/';
+                        /* Rename didn't work, possibly because of an
+                           attempt to rename across filesystems.  Try
+                           brute force copy. */
+                        int old = open (outfile, O_RDONLY);
+                        int new =
+                            open (infile, O_WRONLY | O_CREAT, m_gmprot ());
+                        int i = -1;
 
-                        admonish (NULL, "unable to rename %s %s to %s",
-                                  file ? "file" : "message", outfile, infile);
+                        if (old != -1  &&  new != -1) {
+                            char buffer[BUFSIZ];
+
+                            while ((i = read (old, buffer, sizeof buffer)) >
+                                   0) {
+                                if (write (new, buffer, i) != i) {
+                                    i = -1;
+                                    break;
+                                }
+                            }
+                        }
+                        if (new != -1) close (new);
+                        if (old != -1) close (old);
                         unlink (outfile);
-                        status = NOTOK;
+
+                        if (i < 0) {
+                            /* The -file argument processing used path() to
+                               expand filename to absolute path. */
+                            int file = ct->c_file  &&  ct->c_file[0] == '/';
+
+                            admonish (NULL, "unable to rename %s %s to %s",
+                                      file ? "file" : "message", outfile,
+                                      infile);
+                            status = NOTOK;
+                        }
                     }
                 } else {
                     admonish (NULL, "unable to remove input file %s, "

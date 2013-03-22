@@ -33,7 +33,7 @@ elif [ ! -z "`$SEARCHPROG $SEARCHPATH lynx`" ]; then
   echo "mhfixmsg-format-text/html: lynx -child -dump -force_html '%F' | \
 expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
 elif [ ! -z "`$SEARCHPROG $SEARCHPATH elinks`" ]; then
-  echo "mhfixmsg-format-text/html: elinks -dump -force_html -no-numbering '%F'" >> $TMP
+  echo "mhfixmsg-format-text/html: elinks -dump -force-html -no-numbering '%F'" >> $TMP
 fi
 
 
