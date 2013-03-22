@@ -104,7 +104,7 @@ following default program is used:
 In this mode
 .B fmttest
 is equivalent to
-.BR ap (8).
+.IR ap (8).
 .PP
 In raw mode, no processing of the specified arguments is done.  Each argument
 is run against the specified format program with the argument text available
@@ -126,7 +126,7 @@ specified, the following format string is used:
 .RE
 .PP
 Date mode is equivalent to
-.BR dp (8).
+.IR dp (8).
 .PP
 In message mode the arguments to
 .B fmttest
@@ -204,7 +204,7 @@ and
 switches control whether or not email addresses are normalized by the
 address parsing routines.  This is only functional when in address
 mode and is designed to replicate the switch of the same name to
-.BR ap (8).
+.IR ap (8).
 .PP
 The
 .B \-outsize
@@ -215,10 +215,10 @@ engine with
 characters with zero width, and extra bytes that are
 part of a multibyte character are not counted against this total.
 Two special values are supported:
-.RB \*(lq max \*(rq,
+.RI \*(lq max \*(rq,
 which will set the value
 to the size of the output buffer, and
-.RB \*(lq width \*(rq,
+.RI \*(lq width \*(rq,
 which will set the
 value to the width of the terminal.  In message mode it defaults to the
 terminal width, otherwise the default is the output buffer size.
