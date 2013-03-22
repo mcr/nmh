@@ -256,7 +256,8 @@ The
 .B \-dump
 switch outputs the complete set of format instructions for the specified
 format program.  The
-.B \-trace switch will output each format instruction as it is being
+.B \-trace
+switch will output each format instruction as it is being
 executed, and show the values of the
 .I num
 and
