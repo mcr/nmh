@@ -353,19 +353,10 @@ main (int argc, char **argv) {
             }
         }
 
-        /*
-         * This is a hack.  If we are using an external rmmproc,
-         * then save the current folder to the context file,
-         * so the external rmmproc will remove files from the correct
-         * directory.  This should be moved to folder_delmsgs().
-         */
-        if (rmmproc) {
-            context_replace (pfolder, folder);/* update current folder  */
-            seq_setcur (mp, mp->hghsel);      /* update current message */
-            seq_save (mp);                    /* synchronize sequences  */
-            context_save ();                  /* save the context file  */
-            fflush (stdout);
-        }
+        seq_setcur (mp, mp->hghsel);      /* update current message */
+        seq_save (mp);                    /* synchronize sequences  */
+        context_replace (pfolder, folder);/* update current folder  */
+        context_save ();                  /* save the context file  */
     }
 
     if (*cts) {
