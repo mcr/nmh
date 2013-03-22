@@ -1,4 +1,4 @@
-.TH REPL %manext1% "July 1, 2012" "%nmhversion%"
+.TH REPL %manext1% "March 21, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -484,6 +484,15 @@ The same caveats apply to this option as to the
 .B \-build
 switch.
 .SH FILES
+.B repl
+looks for all format, filter and template files in multiple locations:
+absolute pathnames are accessed directly, tilde expansion is done on
+usernames, and files are searched for in the user's
+.I Mail
+directory as specified in their profile.  If not found there, the directory
+.RI \*(lq %etcdir% \*(rq
+is checked.
+.PP
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u

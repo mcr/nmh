@@ -1,4 +1,4 @@
-.TH ALI %manext1% "January 1, 2001" "%nmhversion%"
+.TH ALI %manext1% "March 21, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -59,6 +59,18 @@ switch will be read.  Each
 is processed as described in
 .IR mh\-alias (5).
 .SH FILES
+Alias files are looked up in multiple locations: if the pathname is
+absolute or starts with
+.RI \*(lq . \*(rq
+or
+.RI \*(lq .. \*(rq
+then it's accessed directly; otherwise tilde expansion is done on
+usernames, then files are searched for in the user's
+.I Mail
+directory as specified in their profile.  If not found there, the directory
+.RI \*(lq %etcdir% \*(rq
+is checked.
+.PP
 .TP 20
 $HOME/.mh\-profile
 The user's profile.

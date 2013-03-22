@@ -1,4 +1,4 @@
-.TH FORW %manext1% "February 28, 2012" "%nmhversion%"
+.TH FORW %manext1% "March 21, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -395,6 +395,15 @@ section of the
 .B nmh
 User's Manual for more information on making digests.
 .SH FILES
+.B forw
+looks for format and filter files in multiple locations: absolute
+pathnames are accessed directly, tilde expansion is done on usernames,
+and files are searched for in the user's
+.I Mail
+directory as specified in their profile.  If not found there, the directory
+.RI \*(lq %etcdir% \*(rq
+is checked.
+.PP
 .PD 0
 .TP 25
 %etcdir%/forwcomps

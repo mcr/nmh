@@ -1,4 +1,4 @@
-.TH MHSTORE %manext1% "March 20, 2013" "%nmhversion%"
+.TH MHSTORE %manext1% "March 21, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -514,6 +514,15 @@ which is created automatically during
 .B nmh
 installation.
 .SH FILES
+.B mhstore
+looks for additional profile files in multiple locations: absolute
+pathnames are accessed directly, tilde expansion is done on usernames,
+and files are searched for in the user's
+.I Mail
+directory as specified in their profile.  If not found there, the directory
+.RI \*(lq %etcdir% \*(rq
+is checked.
+.PP
 .fc ^ ~
 .nf
 .ta \w'%etcdir%/ExtraBigFileName  'u
