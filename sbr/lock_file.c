@@ -745,21 +745,21 @@ alrmser (int sig)
 static enum locktype
 init_locktype(const char *lockname)
 {
-    if (mh_strcasecmp(lockname, "fcntl") == 0) {
+    if (strcasecmp(lockname, "fcntl") == 0) {
     	return FCNTL_LOCKING;
-    } else if (mh_strcasecmp(lockname, "lockf") == 0) {
+    } else if (strcasecmp(lockname, "lockf") == 0) {
 #ifdef HAVE_LOCKF
 	return LOCKF_LOCKING;
 #else /* ! HAVE_LOCKF */
 	adios(NULL, "lockf not supported on this system");
 #endif /* HAVE_LOCKF */
-    } else if (mh_strcasecmp(lockname, "flock") == 0) {
+    } else if (strcasecmp(lockname, "flock") == 0) {
 #ifdef HAVE_FLOCK
 	return FLOCK_LOCKING;
 #else /* ! HAVE_FLOCK */
 	adios(NULL, "flock not supported on this system");
 #endif /* HAVE_FLOCK */
-    } else if (mh_strcasecmp(lockname, "dot") == 0) {
+    } else if (strcasecmp(lockname, "dot") == 0) {
     	return DOT_LOCKING;
     } else {
     	adios(NULL, "Unknown lock type: \"%s\"", lockname);

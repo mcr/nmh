@@ -873,7 +873,7 @@ fmt_freecomptext(void)
 		cm->c_text = NULL;
 	    }
 }
-	
+
 /*
  * Find a component in our hash table.  This is just a public interface to
  * the FINDCOMP macro, so we don't have to expose our hash table.
@@ -899,7 +899,7 @@ fmt_findcasecomp(char *component)
     struct comp *cm;
 
     for (cm = wantcomp[CHASH(component)]; cm; cm = cm->c_next)
-    	if (mh_strcasecmp(component, cm->c_name) == 0)
+	if (strcasecmp(component, cm->c_name ? cm->c_name : "") == 0)
 	    break;
 
     return cm;
@@ -951,18 +951,18 @@ fmt_addcomptext(char *component, char *text)
     char *cp;
 
     while (cptr) {
-    	if (mh_strcasecmp(component, cptr->c_name) == 0) {
+	if (strcasecmp(component, cptr->c_name ? cptr->c_name : "") == 0) {
 	    found++;
 	    if (! cptr->c_text) {
-	    	cptr->c_text = getcpy(text);
+		cptr->c_text = getcpy(text);
 	    } else {
-	    	i = strlen(cp = cptr->c_text) - 1;
+		i = strlen(cp = cptr->c_text) - 1;
 		if (cp[i] == '\n') {
 		    if (cptr->c_type & CT_ADDR) {
-		    	cp[i] = '\0';
+			cp[i] = '\0';
 			cp = add(",\n\t", cp);
 		    } else {
-		    	cp = add("\t", cp);
+			cp = add("\t", cp);
 		    }
 		}
 		cptr->c_text = add(text, cp);
@@ -986,7 +986,7 @@ fmt_appendcomp(int bucket, char *component, char *text)
 
     if (bucket != -1) {
     	for (cptr = wantcomp[bucket]; cptr; cptr = cptr->c_next)
-	    if (mh_strcasecmp(component, cptr->c_name) == 0)
+	    if (strcasecmp(component, cptr->c_name ? cptr->c_name : "") == 0)
 	    	cptr->c_text = add(text, cptr->c_text);
     }
 }

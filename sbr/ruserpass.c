@@ -90,7 +90,7 @@ ruserpass(char *host, char **aname, char **apass)
 		/*
 		 * Allow match either for user's host name.
 		 */
-		if (mh_strcasecmp(host, tokval) == 0)
+		if (strcasecmp(host, tokval) == 0)
 		    goto match;
 		continue;
 	    }

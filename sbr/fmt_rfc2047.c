@@ -147,7 +147,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	        /* .. it can't. We'll use iconv then. */
 		*endofcharset = '\0';
 	        cd = iconv_open(get_charset(), startofmime);
-		fromutf8 = !mh_strcasecmp(startofmime, "UTF-8");
+		fromutf8 = !strcasecmp(startofmime, "UTF-8");
 		*pp = '?';
                 if (cd == (iconv_t)-1) continue;
 		use_iconv = 1;
