@@ -346,7 +346,7 @@ get_content (FILE *in, char *file, int toplevel)
     hp = ct->c_first_hf;	/* start at first header field */
     while (hp) {
 	/* Get MIME-Version field */
-	if (!mh_strcasecmp (hp->name, VRSN_FIELD)) {
+	if (!strcasecmp (hp->name, VRSN_FIELD)) {
 	    int ucmp;
 	    char c, *cp, *dp;
 
@@ -379,14 +379,14 @@ get_content (FILE *in, char *file, int toplevel)
 		continue;
 	    c = *dp;
 	    *dp = '\0';
-	    ucmp = !mh_strcasecmp (cp, VRSN_VALUE);
+	    ucmp = !strcasecmp (cp, VRSN_VALUE);
 	    *dp = c;
 	    if (!ucmp) {
 		admonish (NULL, "message %s has unknown value for %s: field (%s)",
 		ct->c_file, VRSN_FIELD, cp);
 	    }
 	}
-	else if (!mh_strcasecmp (hp->name, TYPE_FIELD)) {
+	else if (!strcasecmp (hp->name, TYPE_FIELD)) {
 	/* Get Content-Type field */
 	    struct str2init *s2i;
 	    CI ci = &ct->c_ctinfo;
@@ -407,14 +407,14 @@ get_content (FILE *in, char *file, int toplevel)
 	     * flag for this content type.
 	     */
 	    for (s2i = str2cts; s2i->si_key; s2i++)
-		if (!mh_strcasecmp (ci->ci_type, s2i->si_key))
+		if (!strcasecmp (ci->ci_type, s2i->si_key))
 		    break;
 	    if (!s2i->si_key && !uprf (ci->ci_type, "X-"))
 		s2i++;
 	    ct->c_type = s2i->si_val;
 	    ct->c_ctinitfnx = s2i->si_init;
 	}
-	else if (!mh_strcasecmp (hp->name, ENCODING_FIELD)) {
+	else if (!strcasecmp (hp->name, ENCODING_FIELD)) {
 	/* Get Content-Transfer-Encoding field */
 	    char c, *cp, *dp;
 	    struct str2init *s2i;
@@ -444,7 +444,7 @@ get_content (FILE *in, char *file, int toplevel)
 	     * for this transfer encoding.
 	     */
 	    for (s2i = str2ces; s2i->si_key; s2i++)
-		if (!mh_strcasecmp (cp, s2i->si_key))
+		if (!strcasecmp (cp, s2i->si_key))
 		    break;
 	    if (!s2i->si_key && !uprf (cp, "X-"))
 		s2i++;
@@ -455,7 +455,7 @@ get_content (FILE *in, char *file, int toplevel)
 	    if (s2i->si_init && (*s2i->si_init) (ct) == NOTOK)
 		goto out;
 	}
-	else if (!mh_strcasecmp (hp->name, MD5_FIELD)) {
+	else if (!strcasecmp (hp->name, MD5_FIELD)) {
 	/* Get Content-MD5 field */
 	    char *cp, *dp, *ep;
 
@@ -495,15 +495,15 @@ get_content (FILE *in, char *file, int toplevel)
 	    free (ep);
 	    ct->c_digested++;
 	}
-	else if (!mh_strcasecmp (hp->name, ID_FIELD)) {
+	else if (!strcasecmp (hp->name, ID_FIELD)) {
 	/* Get Content-ID field */
 	    ct->c_id = add (hp->value, ct->c_id);
 	}
-	else if (!mh_strcasecmp (hp->name, DESCR_FIELD)) {
+	else if (!strcasecmp (hp->name, DESCR_FIELD)) {
 	/* Get Content-Description field */
 	    ct->c_descr = add (hp->value, ct->c_descr);
 	}
-	else if (!mh_strcasecmp (hp->name, DISPO_FIELD)) {
+	else if (!strcasecmp (hp->name, DISPO_FIELD)) {
 	/* Get Content-Disposition field */
 	    ct->c_dispo = add (hp->value, ct->c_dispo);
 	}
@@ -972,7 +972,7 @@ InitText (CT ct)
 
     /* match subtype */
     for (kv = SubText; kv->kv_key; kv++)
-	if (!mh_strcasecmp (ci->ci_subtype, kv->kv_key))
+	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
 	    break;
     ct->c_subtype = kv->kv_value;
 
@@ -983,7 +983,7 @@ InitText (CT ct)
 
     /* scan for charset parameter */
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-	if (!mh_strcasecmp (*ap, "charset"))
+	if (!strcasecmp (*ap, "charset"))
 	    break;
 
     /* check if content specified a character set */
@@ -1056,7 +1056,7 @@ InitMultiPart (CT ct)
 
     /* match subtype */
     for (kv = SubMultiPart; kv->kv_key; kv++)
-	if (!mh_strcasecmp (ci->ci_subtype, kv->kv_key))
+	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
 	    break;
     ct->c_subtype = kv->kv_value;
 
@@ -1066,7 +1066,7 @@ InitMultiPart (CT ct)
      */
     bp = 0;
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!mh_strcasecmp (*ap, "boundary")) {
+	if (!strcasecmp (*ap, "boundary")) {
 	    bp = *ep;
 	    break;
 	}
@@ -1268,7 +1268,7 @@ InitMessage (CT ct)
 
     /* match subtype */
     for (kv = SubMessage; kv->kv_key; kv++)
-	if (!mh_strcasecmp (ci->ci_subtype, kv->kv_key))
+	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
 	    break;
     ct->c_subtype = kv->kv_value;
 
@@ -1287,11 +1287,11 @@ InitMessage (CT ct)
 
 		/* scan for parameters "id", "number", and "total" */
 		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		    if (!mh_strcasecmp (*ap, "id")) {
+		    if (!strcasecmp (*ap, "id")) {
 			p->pm_partid = add (*ep, NULL);
 			continue;
 		    }
-		    if (!mh_strcasecmp (*ap, "number")) {
+		    if (!strcasecmp (*ap, "number")) {
 			if (sscanf (*ep, "%d", &p->pm_partno) != 1
 			        || p->pm_partno < 1) {
 invalid_param:
@@ -1303,7 +1303,7 @@ invalid_param:
 			}
 			continue;
 		    }
-		    if (!mh_strcasecmp (*ap, "total")) {
+		    if (!strcasecmp (*ap, "total")) {
 			if (sscanf (*ep, "%d", &p->pm_maxno) != 1
 			        || p->pm_maxno < 1)
 			    goto invalid_param;
@@ -1425,12 +1425,12 @@ params_external (CT ct, int composing)
 
     ct->c_ceopenfnx = NULL;
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!mh_strcasecmp (*ap, "access-type")) {
+	if (!strcasecmp (*ap, "access-type")) {
 	    struct str2init *s2i;
 	    CT p = e->eb_content;
 
 	    for (s2i = str2methods; s2i->si_key; s2i++)
-		if (!mh_strcasecmp (*ep, s2i->si_key))
+		if (!strcasecmp (*ep, s2i->si_key))
 		    break;
 	    if (!s2i->si_key) {
 		e->eb_access = *ep;
@@ -1447,39 +1447,39 @@ params_external (CT ct, int composing)
 		return NOTOK;
 	    continue;
 	}
-	if (!mh_strcasecmp (*ap, "name")) {
+	if (!strcasecmp (*ap, "name")) {
 	    e->eb_name = *ep;
 	    continue;
 	}
-	if (!mh_strcasecmp (*ap, "permission")) {
+	if (!strcasecmp (*ap, "permission")) {
 	    e->eb_permission = *ep;
 	    continue;
 	}
-	if (!mh_strcasecmp (*ap, "site")) {
+	if (!strcasecmp (*ap, "site")) {
 	    e->eb_site = *ep;
 	    continue;
 	}
-	if (!mh_strcasecmp (*ap, "directory")) {
+	if (!strcasecmp (*ap, "directory")) {
 	    e->eb_dir = *ep;
 	    continue;
 	}
-	if (!mh_strcasecmp (*ap, "mode")) {
+	if (!strcasecmp (*ap, "mode")) {
 	    e->eb_mode = *ep;
 	    continue;
 	}
-	if (!mh_strcasecmp (*ap, "size")) {
+	if (!strcasecmp (*ap, "size")) {
 	    sscanf (*ep, "%lu", &e->eb_size);
 	    continue;
 	}
-	if (!mh_strcasecmp (*ap, "server")) {
+	if (!strcasecmp (*ap, "server")) {
 	    e->eb_server = *ep;
 	    continue;
 	}
-	if (!mh_strcasecmp (*ap, "subject")) {
+	if (!strcasecmp (*ap, "subject")) {
 	    e->eb_subject = *ep;
 	    continue;
 	}
-	if (!mh_strcasecmp (*ap, "url")) {
+	if (!strcasecmp (*ap, "url")) {
 	    /*
 	     * According to RFC 2017, we have to remove all whitespace from
 	     * the URL
@@ -1496,7 +1496,7 @@ params_external (CT ct, int composing)
 	    *u = '\0';
 	    continue;
 	}
-	if (composing && !mh_strcasecmp (*ap, "body")) {
+	if (composing && !strcasecmp (*ap, "body")) {
 	    e->eb_body = getcpy (*ep);
 	    continue;
 	}
@@ -1525,7 +1525,7 @@ InitApplication (CT ct)
 
     /* match subtype */
     for (kv = SubApplication; kv->kv_key; kv++)
-	if (!mh_strcasecmp (ci->ci_subtype, kv->kv_key))
+	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
 	    break;
     ct->c_subtype = kv->kv_value;
 
@@ -2342,7 +2342,7 @@ openFile (CT ct, char **file)
 	return NOTOK;
     }
 
-    if ((!e->eb_permission || mh_strcasecmp (e->eb_permission, "read-write"))
+    if ((!e->eb_permission || strcasecmp (e->eb_permission, "read-write"))
 	    && find_cache (NULL, wcachesw, &cachetype, e->eb_content->c_id,
 		cachefile, sizeof(cachefile)) != NOTOK) {
 	int mask;
@@ -2488,7 +2488,7 @@ openFTP (CT ct, char **file)
     ce->ce_unlink = (*file == NULL);
     caching = 0;
     cachefile[0] = '\0';
-    if ((!e->eb_permission || mh_strcasecmp (e->eb_permission, "read-write"))
+    if ((!e->eb_permission || strcasecmp (e->eb_permission, "read-write"))
 	    && find_cache (NULL, wcachesw, &cachetype, e->eb_content->c_id,
 		cachefile, sizeof(cachefile)) != NOTOK) {
 	if (*file == NULL) {
@@ -2521,7 +2521,7 @@ openFTP (CT ct, char **file)
 	vec[vecp++] = e->eb_dir;
 	vec[vecp++] = e->eb_name;
 	vec[vecp++] = ce->ce_file,
-	vec[vecp++] = e->eb_mode && !mh_strcasecmp (e->eb_mode, "ascii")
+	vec[vecp++] = e->eb_mode && !strcasecmp (e->eb_mode, "ascii")
 	    		? "ascii" : "binary";
 	vec[vecp] = NULL;
 
