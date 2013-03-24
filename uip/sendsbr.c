@@ -438,7 +438,8 @@ make_mime_composition_file_entry(char *file_name, int attachformat,
 
     if ((p = strrchr(file_name, '.')) != (char *)0) {
 	for (np = m_defs; np; np = np->n_next) {
-	    if (strncasecmp(np->n_name, "mhshow-suffix-", 14) == 0 && mh_strcasecmp(p, np->n_field) == 0) {
+	    if (strncasecmp(np->n_name, "mhshow-suffix-", 14) == 0 &&
+                strcasecmp(p, np->n_field ? np->n_field : "") == 0) {
 		content_type = np->n_name + 14;
 		break;
 	    }
@@ -616,15 +617,15 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 		/*
 		 * This header field is discarded.
 		 */
-		if (!mh_strcasecmp (name, "Message-ID")) {
+		if (!strcasecmp (name, "Message-ID")) {
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buffer;
 			state = m_getfld (&gstate, name, buffer, &bufsz, in);
 		    }
 		} else if (uprf (name, XXX_FIELD_PRF)
-			|| !mh_strcasecmp (name, VRSN_FIELD)
-			|| !mh_strcasecmp (name, "Subject")
-		        || !mh_strcasecmp (name, "Encrypted")) {
+			|| !strcasecmp (name, VRSN_FIELD)
+			|| !strcasecmp (name, "Subject")
+		        || !strcasecmp (name, "Encrypted")) {
 		    /*
 		     * These header fields are copied to the enclosed
 		     * header of the first message in the collection
@@ -633,7 +634,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 		     * version of it, can be copied to the header
 		     * of each messsage/partial in the collection.
 		     */
-		    if (!mh_strcasecmp (name, "Subject")) {
+		    if (!strcasecmp (name, "Subject")) {
 			size_t sublen;
 
 			strncpy (subject, buffer, BUFSIZ);

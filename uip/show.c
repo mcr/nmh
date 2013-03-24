@@ -69,9 +69,9 @@ main (int argc, char **argv)
     /* read user profile/context */
     context_read();
 
-    if (!mh_strcasecmp (invo_name, "next")) {
+    if (!strcasecmp (invo_name, "next")) {
 	mode = NEXT;
-    } else if (!mh_strcasecmp (invo_name, "prev")) {
+    } else if (!strcasecmp (invo_name, "prev")) {
 	mode = PREV;
     }
     arguments = getarguments (invo_name, argc, argv, 1);
@@ -346,7 +346,7 @@ is_nontext (char *msgnam)
 	    /*
 	     * Check Content-Type field
 	     */
-	    if (!mh_strcasecmp (name, TYPE_FIELD)) {
+	    if (!strcasecmp (name, TYPE_FIELD)) {
 		int passno;
 		char c;
 
@@ -402,7 +402,7 @@ invalid:
 		if (!*bp)
 		    goto invalid;
 		if (passno > 1) {
-		    if ((result = (mh_strcasecmp (bp, "plain") != 0)))
+		    if ((result = (strcasecmp (bp, "plain") != 0)))
 			goto out;
 		    *dp = c;
 		    for (dp++; isspace ((unsigned char) *dp); dp++)
@@ -434,7 +434,7 @@ invalid:
 		    /* Check the character set */
 		    result = !check_charset (dp, strlen (dp));
 		} else {
-		    if (!(result = (mh_strcasecmp (bp, "text") != 0))) {
+		    if (!(result = (strcasecmp (bp, "text") != 0))) {
 			*dp = c;
 			bp = dp;
 			passno = 2;
@@ -454,7 +454,7 @@ out:
 	    /*
 	     * Check Content-Transfer-Encoding field
 	     */
-	    if (!mh_strcasecmp (name, ENCODING_FIELD)) {
+	    if (!strcasecmp (name, ENCODING_FIELD)) {
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
@@ -466,9 +466,9 @@ out:
 		for (dp = bp; istoken ((unsigned char) *dp); dp++)
 		    continue;
 		*dp = '\0';
-		result = (mh_strcasecmp (bp, "7bit")
-		       && mh_strcasecmp (bp, "8bit")
-		       && mh_strcasecmp (bp, "binary"));
+		result = (strcasecmp (bp, "7bit")
+		       && strcasecmp (bp, "8bit")
+		       && strcasecmp (bp, "binary"));
 
 		free (cp);
 		if (result) {
