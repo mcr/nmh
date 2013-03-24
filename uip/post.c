@@ -1071,7 +1071,7 @@ get_header (char *header, struct headers *table)
     struct headers *h;
 
     for (h = table; h->value; h++)
-	if (!mh_strcasecmp (header, h->value))
+	if (!strcasecmp (header ? header : "", h->value ? h->value : ""))
 	    return (h - table);
 
     return NOTOK;
@@ -1172,9 +1172,11 @@ insert (struct mailname *np)
 	    : &netaddrs;
 	    mp->m_next;
 	    mp = mp->m_next)
-	if (!mh_strcasecmp (np->m_host, mp->m_next->m_host)
-		&& !mh_strcasecmp (np->m_mbox, mp->m_next->m_mbox)
-		&& np->m_bcc == mp->m_next->m_bcc)
+	if (!strcasecmp (np->m_host ? np->m_host : "",
+			 mp->m_next->m_host ? mp->m_next->m_host : "") &&
+	    !strcasecmp (np->m_mbox ? np->m_mbox : "",
+			 mp->m_next->m_mbox ? mp->m_next->m_mbox : "") &&
+	    np->m_bcc == mp->m_next->m_bcc)
 	    return 0;
 
     mp->m_next = np;

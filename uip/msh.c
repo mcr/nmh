@@ -983,7 +983,7 @@ readid (int msgnum)
 	switch (state = m_getfld (&gstate, name, buf, &bufsz, zp)) {
 	    case FLD: 
 	    case FLDPLUS: 
-		if (!mh_strcasecmp (name, BBoard_ID)) {
+		if (!strcasecmp (name, BBoard_ID)) {
 		    bp = getcpy (buf);
 		    while (state == FLDPLUS) {
 			bufsz = sizeof buf;

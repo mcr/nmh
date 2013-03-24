@@ -1301,8 +1301,10 @@ insert (struct mailname *np)
 	return 0;
 
     for (mp = &mq; mp->m_next; mp = mp->m_next) {
-	if (!mh_strcasecmp (np->m_host, mp->m_next->m_host)
-		&& !mh_strcasecmp (np->m_mbox, mp->m_next->m_mbox))
+	if (!strcasecmp (np->m_host ? np->m_host : "",
+			 mp->m_next->m_host ? mp->m_next->m_host : "") &&
+	    !strcasecmp (np->m_mbox ? np->m_mbox : "",
+			 mp->m_next->m_mbox ? mp->m_next->m_mbox : ""))
 	    return 0;
     }
     if (!ccme && ismymbox (np))
