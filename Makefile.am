@@ -544,7 +544,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/seq_print.c sbr/seq_read.c sbr/seq_save.c \
 		      sbr/seq_setcur.c sbr/seq_setprev.c sbr/seq_setunseen.c \
 		      sbr/showfile.c sbr/signals.c sbr/smatch.c \
-		      sbr/snprintb.c sbr/ssequal.c sbr/strcasecmp.c \
+		      sbr/snprintb.c sbr/ssequal.c \
 		      sbr/strindex.c sbr/trimcpy.c sbr/uprf.c sbr/vfgets.c \
 		      sbr/fmt_def.c sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
 		      sbr/m_mktemp.c sbr/getansreadline.c config/config.c \

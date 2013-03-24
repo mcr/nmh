@@ -23,10 +23,10 @@ static char message_id_[BUFSIZ];
 /* Convert name of message id style to integer value and store it. */
 int
 save_message_id_style (const char *value) {
-  if (! mh_strcasecmp (value, "localname")) {
+  if (! strcasecmp (value, "localname")) {
     message_id_style = NMH_MESSAGE_ID_LOCALNAME;
     return 0;
-  } else if (! mh_strcasecmp (value, "random")) {
+  } else if (! strcasecmp (value, "random")) {
     message_id_style = NMH_MESSAGE_ID_RANDOM;
     return 0;
   } else {
