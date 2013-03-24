@@ -86,7 +86,7 @@ output_content (CT ct, FILE *out)
     char *boundary = ci->ci_values[0], **ap, **vp;
 
     for (ap = ci->ci_attrs, vp = ci->ci_values; *ap; ++ap, ++vp) {
-        if (! mh_strcasecmp ("boundary", *ap)) {
+        if (! strcasecmp ("boundary", *ap)) {
             boundary = *vp;
             break;
         }
@@ -249,7 +249,7 @@ writeExternalBody (CT ct, FILE *out)
 
 	    case 'N':
 		for (ap = ci2->ci_attrs, ep = ci2->ci_values; *ap; ap++, ep++)
-		    if (!mh_strcasecmp (*ap, "name")) {
+		    if (!strcasecmp (*ap, "name")) {
 			fprintf (out, "%s", *ep);
 			break;
 		    }

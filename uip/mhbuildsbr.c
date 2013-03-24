@@ -176,15 +176,15 @@ build_mime (char *infile, int directives)
 	    compnum++;
 
 	    /* abort if draft has Mime-Version header field */
-	    if (!mh_strcasecmp (name, VRSN_FIELD))
+	    if (!strcasecmp (name, VRSN_FIELD))
 		adios (NULL, "draft shouldn't contain %s: field", VRSN_FIELD);
 
 	    /* abort if draft has Content-Transfer-Encoding header field */
-	    if (!mh_strcasecmp (name, ENCODING_FIELD))
+	    if (!strcasecmp (name, ENCODING_FIELD))
 		adios (NULL, "draft shouldn't contain %s: field", ENCODING_FIELD);
 
 	    /* ignore any Content-Type fields in the header */
-	    if (!mh_strcasecmp (name, TYPE_FIELD)) {
+	    if (!strcasecmp (name, TYPE_FIELD)) {
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
 		    state = m_getfld (&gstate, name, buf, &bufsz, in);
@@ -541,7 +541,7 @@ rock_and_roll:
 	    done (1);
 
 	for (s2i = str2cts; s2i->si_key; s2i++)
-	    if (!mh_strcasecmp (ci->ci_type, s2i->si_key))
+	    if (!strcasecmp (ci->ci_type, s2i->si_key))
 		break;
 	if (!s2i->si_key && !uprf (ci->ci_type, "X-"))
 	    s2i++;
@@ -551,7 +551,7 @@ rock_and_roll:
 	 */
 	switch (ct->c_type = s2i->si_val) {
 	case CT_MESSAGE:
-	    if (!mh_strcasecmp (ci->ci_subtype, "rfc822")) {
+	    if (!strcasecmp (ci->ci_subtype, "rfc822")) {
 		ct->c_encoding = CE_7BIT;
 		goto call_init;
 	    }
@@ -587,7 +587,7 @@ call_init:
 
     /* check directive against the list of MIME types */
     for (s2i = str2cts; s2i->si_key; s2i++)
-	if (!mh_strcasecmp (ci->ci_type, s2i->si_key))
+	if (!strcasecmp (ci->ci_type, s2i->si_key))
 	    break;
 
     /*
@@ -608,10 +608,10 @@ call_init:
 	    /* NOTREACHED */
 
 	case CT_MESSAGE:
-	    if (!mh_strcasecmp (ci->ci_subtype, "partial"))
+	    if (!strcasecmp (ci->ci_subtype, "partial"))
 		adios (NULL, "sorry, \"#%s/%s\" isn't supported",
 		       ci->ci_type, ci->ci_subtype);
-	    if (!mh_strcasecmp (ci->ci_subtype, "external-body"))
+	    if (!strcasecmp (ci->ci_subtype, "external-body"))
 		adios (NULL, "use \"#@type/subtype ... [] ...\" instead of \"#%s/%s\"",
 		       ci->ci_type, ci->ci_subtype);
 use_forw:
@@ -718,7 +718,7 @@ use_forw:
      * Message directive
      * #forw [+folder] [msgs]
      */
-    if (!mh_strcasecmp (ci->ci_type, "forw")) {
+    if (!strcasecmp (ci->ci_type, "forw")) {
 	int msgnum;
 	char *folder, *arguments[MAXARGS];
 	struct msgs *mp;
@@ -824,7 +824,7 @@ use_forw:
     /*
      * #end
      */
-    if (!mh_strcasecmp (ci->ci_type, "end")) {
+    if (!strcasecmp (ci->ci_type, "end")) {
 	free_content (ct);
 	*ctp = NULL;
 	return DONE;
@@ -833,14 +833,14 @@ use_forw:
     /*
      * #begin [ alternative | parallel ]
      */
-    if (!mh_strcasecmp (ci->ci_type, "begin")) {
+    if (!strcasecmp (ci->ci_type, "begin")) {
 	if (!ci->ci_magic) {
 	    vrsn = MULTI_MIXED;
 	    cp = SubMultiPart[vrsn - 1].kv_key;
-	} else if (!mh_strcasecmp (ci->ci_magic, "alternative")) {
+	} else if (!strcasecmp (ci->ci_magic, "alternative")) {
 	    vrsn = MULTI_ALTERNATE;
 	    cp = SubMultiPart[vrsn - 1].kv_key;
-	} else if (!mh_strcasecmp (ci->ci_magic, "parallel")) {
+	} else if (!strcasecmp (ci->ci_magic, "parallel")) {
 	    vrsn = MULTI_PARALLEL;
 	    cp = SubMultiPart[vrsn - 1].kv_key;
 	} else if (uprf (ci->ci_magic, "digest")) {
@@ -1410,7 +1410,7 @@ build_headers (CT ct)
      * the end of the Content-Type line.
      */
     for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (mailbody && !mh_strcasecmp (*ap, "body"))
+	if (mailbody && !strcasecmp (*ap, "body"))
 	    continue;
 
 	vp = add (";", vp);
@@ -1421,7 +1421,7 @@ build_headers (CT ct)
 	 * we have to break it across multiple lines
 	 */
 
-	if (extbody && mh_strcasecmp (*ap, "url") == 0) {
+	if (extbody && strcasecmp (*ap, "url") == 0) {
 	    char *value = *ep;
 
 	    /* 7 here refers to " url=\"\"" */
