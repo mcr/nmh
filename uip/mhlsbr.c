@@ -611,7 +611,7 @@ mhl_format (char *file, int length, int width)
 		 * Split this list of fields to ignore, and copy
 		 * it to the end of the current "ignores" list.
 		 */
-		if (!mh_strcasecmp (name, "ignores")) {
+		if (!strcasecmp (name, "ignores")) {
 		    char **tmparray, **p;
 		    int n = 0;
 
@@ -720,17 +720,17 @@ evalvar (struct mcomp *c1)
 	return 0;
     strncpy (name, parse(), sizeof(name));
 
-    if (!mh_strcasecmp (name, "component")) {
+    if (!strcasecmp (name, "component")) {
 	if (ptos (name, &c1->c_text))
 	    return 1;
 	c1->c_flags &= ~NOCOMPONENT;
 	return 0;
     }
 
-    if (!mh_strcasecmp (name, "overflowtext"))
+    if (!strcasecmp (name, "overflowtext"))
 	return ptos (name, &c1->c_ovtxt);
 
-    if (!mh_strcasecmp (name, "formatfield")) {
+    if (!strcasecmp (name, "formatfield")) {
 	if (ptos (name, &cp))
 	    return 1;
 	c1->c_nfs = getcpy (new_fs (NULL, NULL, cp));
@@ -739,40 +739,40 @@ evalvar (struct mcomp *c1)
 	return 0;
     }
 
-    if (!mh_strcasecmp (name, "decode")) {
+    if (!strcasecmp (name, "decode")) {
 	c1->c_nfs = getcpy (new_fs (NULL, NULL, "%(decode{text})"));
 	compile_formatfield(c1);
 	c1->c_flags |= FORMAT;
 	return 0;
     }
 
-    if (!mh_strcasecmp (name, "offset"))
+    if (!strcasecmp (name, "offset"))
 	return ptoi (name, &c1->c_offset);
-    if (!mh_strcasecmp (name, "overflowoffset"))
+    if (!strcasecmp (name, "overflowoffset"))
 	return ptoi (name, &c1->c_ovoff);
-    if (!mh_strcasecmp (name, "width"))
+    if (!strcasecmp (name, "width"))
 	return ptoi (name, &c1->c_width);
-    if (!mh_strcasecmp (name, "compwidth"))
+    if (!strcasecmp (name, "compwidth"))
 	return ptoi (name, &c1->c_cwidth);
-    if (!mh_strcasecmp (name, "length"))
+    if (!strcasecmp (name, "length"))
 	return ptoi (name, &c1->c_length);
-    if (!mh_strcasecmp (name, "nodashstuffing"))
+    if (!strcasecmp (name, "nodashstuffing"))
 	return (dashstuff = -1);
 
     for (ap = triples; ap->t_name; ap++)
-	if (!mh_strcasecmp (ap->t_name, name)) {
+	if (!strcasecmp (ap->t_name, name)) {
 	    c1->c_flags |= ap->t_on;
 	    c1->c_flags &= ~ap->t_off;
 	    return 0;
 	}
 
-   if (!mh_strcasecmp (name, "formatarg")) {
+   if (!strcasecmp (name, "formatarg")) {
 	struct arglist *args;
 
 	if (ptos (name, &cp))
 	    return 1;
 
-	if (mh_strcasecmp (c1->c_name, "body")) {
+	if (! c1->c_name  ||  strcasecmp (c1->c_name, "body")) {
 	    advise (NULL, "format filters are currently only supported on "
 	    	    "the \"body\" component");
 	    return 1;
@@ -1006,7 +1006,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 	    case FLDPLUS: 
 	        bucket = fmt_addcomptext(name, buf);
 		for (ip = ignores; *ip; ip++)
-		    if (!mh_strcasecmp (name, *ip)) {
+		    if (!strcasecmp (name, *ip)) {
 			while (state == FLDPLUS) {
 			    bufsz = sizeof buf;
 			    state = m_getfld (&gstate, name, buf, &bufsz, fp);
@@ -1018,12 +1018,13 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    continue;
 
 		for (c2 = fmthd; c2; c2 = c2->c_next)
-		    if (!mh_strcasecmp (c2->c_name, name))
+		    if (!strcasecmp (c2->c_name ? c2->c_name : "", name))
 			break;
 		c1 = NULL;
 		if (!((c3 = c2 ? c2 : &global)->c_flags & SPLIT))
 		    for (c1 = msghd; c1; c1 = c1->c_next)
-			if (!mh_strcasecmp (c1->c_name, c3->c_name)) {
+			if (!strcasecmp (c1->c_name ? c1->c_name : "",
+					 c3->c_name ? c3->c_name : "")) {
 			    c1->c_text =
 				mcomp_add (c1->c_flags, buf, c1->c_text);
 			    break;
@@ -1048,7 +1049,8 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			putcomp (c1, c1, ONECOMP);
 			continue;
 		    }
-		    if (!mh_strcasecmp (c1->c_name, "messagename")) {
+		    if (!c1->c_name  ||
+			!strcasecmp (c1->c_name, "messagename")) {
 			holder.c_text = concat ("(Message ", mname, ")\n",
 					    NULL);
 			putcomp (c1, &holder, ONECOMP);
@@ -1056,13 +1058,14 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			holder.c_text = NULL;
 			continue;
 		    }
-		    if (!mh_strcasecmp (c1->c_name, "extras")) {
+		    if (!c1->c_name  ||  !strcasecmp (c1->c_name, "extras")) {
 			for (c2 = msghd; c2; c2 = c2->c_next)
 			    if (c2->c_flags & EXTRA)
 				putcomp (c1, c2, TWOCOMP);
 			continue;
 		    }
-		    if (dobody && !mh_strcasecmp (c1->c_name, "body")) {
+		    if (dobody && (!c1->c_name  ||
+				   !strcasecmp (c1->c_name, "body"))) {
 		    	if (c1->c_flags & FMTFILTER && state == BODY &&
 							formatproc != NULL) {
 			    filterbody(c1, buf, sizeof(buf), state, fp, gstate);
@@ -1081,7 +1084,8 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			continue;
 		    }
 		    for (c2 = msghd; c2; c2 = c2->c_next)
-			if (!mh_strcasecmp (c2->c_name, c1->c_name)) {
+			if (!strcasecmp (c2->c_name ? c2->c_name : "",
+					 c1->c_name ? c1->c_name : "")) {
 			    putcomp (c1, c2, ONECOMP);
 			    if (!(c1->c_flags & SPLIT))
 				break;
@@ -1110,7 +1114,7 @@ mcomp_flags (char *name)
     struct pair *ap;
 
     for (ap = pairs; ap->p_name; ap++)
-	if (!mh_strcasecmp (ap->p_name, name))
+	if (!strcasecmp (ap->p_name, name))
 	    return (ap->p_flags);
 
     return 0;
