@@ -40,6 +40,14 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 	/* Mark that the sequence information has changed */
 	mp->msgflags |= SEQMOD;
 
+	/*
+	 * Write out the sequence and context files; this will release
+	 * any locks before the rmmproc is called.
+	 */
+
+	seq_save (mp);
+	context_save ();
+
 	vec = argsplit(rmmproc, &prog, &vecp);
 
 	/*
@@ -131,6 +139,13 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 
     /* Mark that the sequence information has changed */
     mp->msgflags |= SEQMOD;
+
+    /*
+     * Write out sequence and context files
+     */
+
+    seq_save (mp);
+    context_save ();
 
     return retval;
 }

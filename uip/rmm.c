@@ -118,24 +118,16 @@ main (int argc, char **argv)
     seq_setprev (mp);		/* set the previous-sequence      */
 
     /*
-     * This is hackish.  If we are using a external rmmproc,
-     * then we need to update the current folder in the
-     * context so the external rmmproc will remove files
-     * from the correct directory.  This should be moved to
-     * folder_delmsgs().
+     * As part of the new world locking order, folder_delmsgs() now updates
+     * the sequence and context for us.  But since folder_delmsgs() doesn't
+     * have access to the folder name, change the context now.
      */
-    if (rmmproc) {
-	context_replace (pfolder, folder);
-	context_save ();
-	fflush (stdout);
-    }
+
+    context_replace (pfolder, folder);
 
     /* "remove" the SELECTED messages */
     folder_delmsgs (mp, unlink_msgs, 0);
 
-    seq_save (mp);		/* synchronize message sequences  */
-    context_replace (pfolder, folder);	/* update current folder   */
-    context_save ();			/* save the context file   */
     folder_free (mp);			/* free folder structure   */
     done (0);
     return 1;

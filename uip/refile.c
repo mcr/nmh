@@ -239,16 +239,19 @@ main (int argc, char **argv)
     }
 
     /*
-     * This is a hack.  If we are using an external rmmproc,
-     * then save the current folder to the context file,
-     * so the external rmmproc will remove files from the correct
-     * directory.  This should be moved to folder_delmsgs().
+     * Update this now, since folder_delmsgs() will save the context
+     * but doesn't have access to the folder name.
      */
-    if (rmmproc) {
-	context_replace (pfolder, folder);
-	context_save ();
-	fflush (stdout);
-    }
+
+    context_replace (pfolder, folder);	/* update current folder   */
+
+    /*
+     * Adjust "cur" if necessary
+     */
+
+    if (mp->hghsel != mp->curmsg
+	&& (mp->numsel != mp->nummsg || linkf))
+	seq_setcur (mp, mp->hghsel);
 
     /* If -nolink, then "remove" messages from source folder.
      *
@@ -257,17 +260,13 @@ main (int argc, char **argv)
      */
     if (!linkf) {
 	folder_delmsgs (mp, unlink_msgs, 1);
+    } else {
+	seq_save (mp);	/* synchronize message sequences */
+	context_save ();			/* save the context file   */
     }
 
     clsfolds (folders, foldp);
 
-    if (mp->hghsel != mp->curmsg
-	&& (mp->numsel != mp->nummsg || linkf))
-	seq_setcur (mp, mp->hghsel);
-    seq_save (mp);	/* synchronize message sequences */
-
-    context_replace (pfolder, folder);	/* update current folder   */
-    context_save ();			/* save the context file   */
     folder_free (mp);			/* free folder structure   */
     done (0);
     return 1;
