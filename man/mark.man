@@ -1,4 +1,4 @@
-.TH MARK %manext1% "February 11, 2012" "%nmhversion%"
+.TH MARK %manext1% "March 25, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -97,8 +97,8 @@ As expected, the command
 .B \-sequence
 .I foo
 .B \-delete
-all\*(rq
-deletes the sequence \*(lqfoo\*(rq from the current folder.
+all\*(rq empties the sequence \*(lqfoo\*(rq, and therefore removes
+that sequence from the current folder's list of sequences.
 .PP
 When creating or modifying sequences, you can specify the switches
 .B \-public
