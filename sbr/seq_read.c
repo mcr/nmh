@@ -191,6 +191,7 @@ seq_init (struct msgs *mp, char *name, char *field)
 
     /* Return error, if too many sequences */
     if (i >= NUMATTRS) {
+	admonish (NULL, "Too many sequences, sequence %s ignored", name);
 	free (name);
 	free (field);
 	return -1;
