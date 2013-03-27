@@ -22,7 +22,7 @@ struct Cmd {
 #define	MHNCHK 0x0001	/* did nontext check           */
 #define	MHNYES 0x0002	/* .. and known to be non-text */
 
-#define CUR (1 << (FFATTRSLOT + NUMATTRS - 1))
+#define CUR ((seqset_t)1 << (FFATTRSLOT + NUMATTRS - 1))
 
 #ifdef BPOP
 # define VIRTUAL SELECT_EMPTY

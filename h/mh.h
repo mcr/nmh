@@ -134,20 +134,20 @@ extern struct swit anoyes[];	/* standard yes/no switches */
 /*
  * type for holding the sequence set of a message
  */
-typedef unsigned int seqset_t;
-
-/*
- * Determine the number of user defined sequences we
- * can have.  The first 5 sequence flags are for
- * internal nmh message flags.
- */
-#define	NUMATTRS  ((sizeof(seqset_t) * Nbby) - 5)
+typedef unsigned long seqset_t;
 
 /*
  * first free slot for user defined sequences
  * and attributes
  */
 #define	FFATTRSLOT  5
+
+/*
+ * Determine the number of user defined sequences we
+ * can have.  The first FFATTRSLOT sequence flags are for
+ * internal nmh message flags.
+ */
+#define	NUMATTRS  ((sizeof(seqset_t) * Nbby) - FFATTRSLOT)
 
 /*
  * internal messages attributes (sequences)
@@ -254,18 +254,18 @@ struct msgs {
 #define set_deleted(mp,msgnum)    ((mp)->msgstats[(msgnum) - mp->lowoff] |= DELETED)
 
 #define in_sequence(mp,seqnum,msgnum) \
-           ((mp)->msgstats[(msgnum) - mp->lowoff] & (1 << (FFATTRSLOT + seqnum)))
+           ((mp)->msgstats[(msgnum) - mp->lowoff] & ((seqset_t)1 << (FFATTRSLOT + seqnum)))
 #define clear_sequence(mp,seqnum,msgnum) \
-           ((mp)->msgstats[(msgnum) - mp->lowoff] &= ~(1 << (FFATTRSLOT + seqnum)))
+           ((mp)->msgstats[(msgnum) - mp->lowoff] &= ~((seqset_t)1 << (FFATTRSLOT + seqnum)))
 #define add_sequence(mp,seqnum,msgnum) \
-           ((mp)->msgstats[(msgnum) - mp->lowoff] |= (1 << (FFATTRSLOT + seqnum)))
+           ((mp)->msgstats[(msgnum) - mp->lowoff] |= ((seqset_t)1 << (FFATTRSLOT + seqnum)))
 
 #define is_seq_private(mp,seqnum) \
-           ((mp)->attrstats & (1 << (FFATTRSLOT + seqnum)))
+           ((mp)->attrstats & ((seqset_t)1 << (FFATTRSLOT + seqnum)))
 #define make_seq_public(mp,seqnum) \
-           ((mp)->attrstats &= ~(1 << (FFATTRSLOT + seqnum)))
+           ((mp)->attrstats &= ~((seqset_t)1 << (FFATTRSLOT + seqnum)))
 #define make_seq_private(mp,seqnum) \
-           ((mp)->attrstats |= (1 << (FFATTRSLOT + seqnum)))
+           ((mp)->attrstats |= ((seqset_t)1 << (FFATTRSLOT + seqnum)))
 #define make_all_public(mp) \
            ((mp)->attrstats = 0)
 
