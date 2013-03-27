@@ -51,6 +51,7 @@ NEW FEATURES
 - Added support for Content-Disposition header (RFC 2183) to mhstore(1)
   and mhn(1) when used with -auto.
 - All nmh commands now support transactional locking for sequence files.
+- The per-folder maximum number of sequences is now 59 on LP64 systems.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES

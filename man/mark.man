@@ -153,7 +153,7 @@ be one of the (reserved) message names \*(lqnew\*(rq, \*(lqfirst\*(rq,
 .PP
 .IP \(bu 2
 Only a certain number of sequences may be defined for a given folder.
-This number is usually limited to 27 (11 on small systems).  (The
+This number is usually limited to 59 (27 on small systems).  (The
 internal implementation relies on bitmasks, with some bits set aside
 for internal use.)
 .PP
