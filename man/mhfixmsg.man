@@ -52,8 +52,13 @@ The
 .B \-decodetext
 switch enables a transformation to decode each base64 and
 quoted-printable text message part to the selected 8bit or 7bit
-encoding.  If the decoded text would not fit the selected encoding as
-defined by RFC-2045, the part is not decoded.
+encoding.  If 7bit is selected for a base64 part but it will only fit
+8bit, as defined by RFC-2045, then it will be decoded to 8bit
+quoted-printable.  Otherwise, if the decoded text would not fit the
+selected encoding, the part is not decoded (and a message will be
+displayed if
+.B \-verbose
+is enabled).
 .PP
 The
 .B \-textcodeset

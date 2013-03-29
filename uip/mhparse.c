@@ -3129,7 +3129,7 @@ ce_str (int encoding) {
     case CE_BASE64:
         return "base64";
     case CE_QUOTED:
-        return "quoted";
+        return "quoted-printable";
     case CE_8BIT:
         return "8bit";
     case CE_7BIT:

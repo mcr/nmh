@@ -308,8 +308,7 @@ main (int argc, char **argv) {
             adios (NULL, "out of memory");
         ctp = cts;
 
-        if ((ct = parse_mime (file)))
-            *ctp++ = ct;
+        if ((ct = parse_mime (file))) *ctp++ = ct;
     } else {
         /*
          * message(s) are coming from a folder
@@ -348,8 +347,7 @@ main (int argc, char **argv) {
                 char *msgnam;
 
                 msgnam = m_name (msgnum);
-                if ((ct = parse_mime (msgnam)))
-                    *ctp++ = ct;
+                if ((ct = parse_mime (msgnam))) *ctp++ = ct;
             }
         }
 
@@ -520,12 +518,14 @@ fix_boundary (CT *ct, int *message_mods) {
                         char *filename = add ((*ct)->c_file, NULL);
 
                         free_content (*ct);
-                        *ct = parse_mime (fixed);
-                        (*ct)->c_unlink = 1;
+                        if ((*ct = parse_mime (fixed))) {
+                            (*ct)->c_unlink = 1;
 
-                        ++*message_mods;
-                        if (verbosw) {
-                            report (NULL, filename, "fix multipart boundary");
+                            ++*message_mods;
+                            if (verbosw) {
+                                report (NULL, filename,
+                                        "fix multipart boundary");
+                            }
                         }
                         free (filename);
                     } else {
@@ -601,15 +601,18 @@ get_multipart_boundary (CT ct, char **part_boundary) {
 
                 if (cp  &&  cp - buffer >= 2  &&  *--cp == '-'  &&
                     *--cp == '-'  &&  (cp > buffer  &&  *--cp == '\n')) {
+                    status = OK;
                     break;
                 }
-                /* Else the start and end boundaries didn't match, or
-                   the start boundary doesn't begin with "\n--" (or
-                   "--" if at the beginning of buffer).  Keep trying. */
             } else {
+                /* The start and end boundaries didn't match, or the
+                   start boundary doesn't begin with "\n--" (or "--"
+                   if at the beginning of buffer).  Keep trying. */
                 status = NOTOK;
             }
         }
+    } else {
+	status = NOTOK;
     }
 
     if (status == OK) {
@@ -1457,7 +1460,8 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                     unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
-                } else if (ct_encoding == CE_8BIT  &&  encoding == CE_7BIT) {
+                } else if (ct->c_encoding == CE_QUOTED &&
+                           ct_encoding == CE_8BIT  &&  encoding == CE_7BIT) {
                     if (verbosw) {
                         report (ct->c_partno, ct->c_file,
                                 "will not decode%s because it is 8bit",
@@ -1469,9 +1473,13 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
                 } else {
-                    int enc = ct_encoding == CE_BINARY
-                        ?  CE_BINARY
-                        :  charset_encoding (ct);
+                    int enc;
+                    if (ct_encoding == CE_BINARY)
+                        enc = CE_BINARY;
+                    else if (ct_encoding == CE_8BIT  &&  encoding == CE_7BIT)
+                        enc = CE_QUOTED;
+                    else
+                        enc = charset_encoding (ct);
                     if (set_ce (ct, enc) == OK) {
                         ++*message_mods;
                         if (verbosw) {
