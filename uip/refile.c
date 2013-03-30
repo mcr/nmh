@@ -12,7 +12,6 @@
 #include <h/utils.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <assert.h>
 
 #define REFILE_SWITCHES \
     X("draft", 0, DRAFTSW) \

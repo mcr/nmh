@@ -14,6 +14,7 @@
   /* See etc/gen-ctype-checked.c. */
 # include <sbr/ctype-checked.h>
 #endif
+#include <assert.h>
 #include <sys/stat.h>
 
 # include <dirent.h>

@@ -431,7 +431,7 @@ read_more (m_getfld_state_t s) {
     size_t num_read;
 
     if (retain < s->end - s->readpos) retain = s->end - s->readpos;
-    /* assert (retain <= s->readpos - s->msg_buf <= sizeof msg_buf); */
+    assert (retain <= s->readpos - s->msg_buf);
 
     /* Move what we want to retain at end of the buffer to the beginning. */
     memmove (s->msg_buf, s->readpos - retain, retain);

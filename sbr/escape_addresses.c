@@ -6,10 +6,8 @@
  * complete copyright information.
  */
 
-#include <sys/types.h>
+#include <h/nmh.h>
 #include <h/utils.h>
-#include <string.h>
-#include <stdlib.h>
 
 static void
 escape_component (char *name, size_t namesize, char *chars);
@@ -77,8 +75,8 @@ escape_component (char *name, size_t namesize, char *chars_to_escape) {
         }
 
         if (strcmp (tmp, "\"")) {
-            /* assert (strlen(tmp) + 1 == destp - tmp); */
             size_t len = destp - tmp;
+            assert ((ssize_t) strlen(tmp) + 1 == destp - tmp);
             strncpy (name, tmp, len <= namesize  ?  len  :  namesize);
         } else {
             /* Handle just " as special case here instead of above. */
