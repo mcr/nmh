@@ -88,6 +88,7 @@
     X("user", SASLminc(-4), USERSW) \
     X("port server port name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
+    X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
     X("fileproc", -4, FILEPROCSW) \
     X("mhlproc", -3, MHLPROCSW) \
@@ -468,7 +469,11 @@ main (int argc, char **argv)
 		    continue;
 
 		case TLSSW:
-		    tls++;
+		    tls = 1;
+		    continue;
+
+		case INITTLSSW:
+		    tls = 2;
 		    continue;
 
 		case NTLSSW:

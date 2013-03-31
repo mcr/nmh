@@ -126,6 +126,8 @@ static SSL *ssl = NULL;
 static BIO *sbior = NULL;
 static BIO *sbiow = NULL;
 static BIO *io = NULL;
+
+static int tls_negotiate(void);
 #endif /* TLS_SUPPORT */
 
 #if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
@@ -265,6 +267,25 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 
     tls_active = 0;
 
+#ifdef TLS_SUPPORT
+    /*
+     * If tls == 2, that means that the user requested "initial" TLS,
+     * which happens right after the connection has opened.  Do that
+     * negotiation now
+     */
+
+    if (tls == 2) {
+    	result = tls_negotiate();
+
+	/*
+	 * Note: if tls_negotiate() fails it will call sm_end() for us,
+	 * which closes the connection.
+	 */
+	if (result != RP_OK)
+	    return result;
+    }
+#endif /* TLS_SUPPORT */
+
     sm_alarmed = 0;
     alarm (SM_OPEN);
     result = smhear ();
@@ -302,9 +323,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
      * restart the EHLO dialog after TLS negotiation is complete.
      */
 
-    if (tls) {
-	BIO *ssl_bio;
-
+    if (tls == 1) {
 	if (! EHLOset("STARTTLS")) {
 	    sm_end(NOTOK);
 	    return sm_ierror("SMTP server does not support TLS");
@@ -322,86 +341,10 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	 * negotiation.  Oblige them.
 	 */
 
-	if (! sslctx) {
-	    const SSL_METHOD *method;
+	result = tls_negotiate();
 
-	    SSL_library_init();
-	    SSL_load_error_strings();
-
-	    method = TLSv1_client_method();	/* Not sure about this */
-
-	    sslctx = SSL_CTX_new(method);
-
-	    if (! sslctx) {
-		sm_end(NOTOK);
-		return sm_ierror("Unable to initialize OpenSSL context: %s",
-				 ERR_error_string(ERR_get_error(), NULL));
-	    }
-	}
-
-	ssl = SSL_new(sslctx);
-
-	if (! ssl) {
-	    sm_end(NOTOK);
-	    return sm_ierror("Unable to create SSL connection: %s",
-			     ERR_error_string(ERR_get_error(), NULL));
-	}
-
-	sbior = BIO_new_socket(fileno(sm_rfp), BIO_NOCLOSE);
-	sbiow = BIO_new_socket(fileno(sm_wfp), BIO_NOCLOSE);
-
-	if (sbior == NULL || sbiow == NULL) {
-	    sm_end(NOTOK);
-	    return sm_ierror("Unable to create BIO endpoints: %s",
-			     ERR_error_string(ERR_get_error(), NULL));
-	}
-
-	SSL_set_bio(ssl, sbior, sbiow);
-	SSL_set_connect_state(ssl);
-
-	/*
-	 * Set up a BIO to handle buffering for us
-	 */
-
-	io = BIO_new(BIO_f_buffer());
-
-	if (! io) {
-	    sm_end(NOTOK);
-	    return sm_ierror("Unable to create a buffer BIO: %s",
-			     ERR_error_string(ERR_get_error(), NULL));
-	}
-
-	ssl_bio = BIO_new(BIO_f_ssl());
-
-	if (! ssl_bio) {
-	    sm_end(NOTOK);
-	    return sm_ierror("Unable to create a SSL BIO: %s",
-			     ERR_error_string(ERR_get_error(), NULL));
-	}
-
-	BIO_set_ssl(ssl_bio, ssl, BIO_CLOSE);
-	BIO_push(io, ssl_bio);
-
-	/*
-	 * Try doing the handshake now
-	 */
-
-	if (BIO_do_handshake(io) < 1) {
-	    sm_end(NOTOK);
-	    return sm_ierror("Unable to negotiate SSL connection: %s",
-			     ERR_error_string(ERR_get_error(), NULL));
-	}
-
-	if (sm_debug) {
-	    const SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
-	    printf("SSL negotiation successful: %s(%d) %s\n",
-		   SSL_CIPHER_get_name(cipher),
-		   SSL_CIPHER_get_bits(cipher, NULL),
-		   SSL_CIPHER_get_version(cipher));
-
-	}
-
-	tls_active = 1;
+	if (result != RP_OK)
+	    return result;
 
 	doingEHLO = 1;
 	result = smtalk (SM_HELO, "EHLO %s", client);
@@ -1311,6 +1254,101 @@ sm_fwrite(char *buffer, int len)
 #endif /* CYRUS_SASL */
     return ferror(sm_wfp) ? NOTOK : RP_OK;
 }
+
+#ifdef TLS_SUPPORT
+/*
+ * Negotiate Transport Layer Security
+ */
+
+static int
+tls_negotiate(void)
+{
+    BIO *ssl_bio;
+
+    if (! sslctx) {
+	SSL_METHOD *method;
+
+	SSL_library_init();
+	SSL_load_error_strings();
+
+	method = TLSv1_client_method();	/* Not sure about this */
+
+	sslctx = SSL_CTX_new(method);
+
+	if (! sslctx) {
+	    sm_end(NOTOK);
+	    return sm_ierror("Unable to initialize OpenSSL context: %s",
+			     ERR_error_string(ERR_get_error(), NULL));
+	}
+    }
+
+    ssl = SSL_new(sslctx);
+
+    if (! ssl) {
+	sm_end(NOTOK);
+	return sm_ierror("Unable to create SSL connection: %s",
+			 ERR_error_string(ERR_get_error(), NULL));
+    }
+
+    sbior = BIO_new_socket(fileno(sm_rfp), BIO_NOCLOSE);
+    sbiow = BIO_new_socket(fileno(sm_wfp), BIO_NOCLOSE);
+
+    if (sbior == NULL || sbiow == NULL) {
+	sm_end(NOTOK);
+	return sm_ierror("Unable to create BIO endpoints: %s",
+			 ERR_error_string(ERR_get_error(), NULL));
+    }
+
+    SSL_set_bio(ssl, sbior, sbiow);
+    SSL_set_connect_state(ssl);
+
+    /*
+     * Set up a BIO to handle buffering for us
+     */
+
+    io = BIO_new(BIO_f_buffer());
+
+    if (! io) {
+	sm_end(NOTOK);
+	return sm_ierror("Unable to create a buffer BIO: %s",
+			 ERR_error_string(ERR_get_error(), NULL));
+    }
+
+    ssl_bio = BIO_new(BIO_f_ssl());
+
+    if (! ssl_bio) {
+	sm_end(NOTOK);
+	return sm_ierror("Unable to create a SSL BIO: %s",
+			 ERR_error_string(ERR_get_error(), NULL));
+    }
+
+    BIO_set_ssl(ssl_bio, ssl, BIO_CLOSE);
+    BIO_push(io, ssl_bio);
+
+    /*
+     * Try doing the handshake now
+     */
+
+    if (BIO_do_handshake(io) < 1) {
+	sm_end(NOTOK);
+	return sm_ierror("Unable to negotiate SSL connection: %s",
+			 ERR_error_string(ERR_get_error(), NULL));
+    }
+
+    if (sm_debug) {
+	const SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
+	printf("SSL negotiation successful: %s(%d) %s\n",
+	       SSL_CIPHER_get_name(cipher),
+	       SSL_CIPHER_get_bits(cipher, NULL),
+	       SSL_CIPHER_get_version(cipher));
+
+    }
+
+    tls_active = 1;
+
+    return RP_OK;
+}
+#endif /* TLS_SUPPORT */
 
 /*
  * Convenience functions to replace occurences of fputs() and fputc()

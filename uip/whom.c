@@ -41,6 +41,7 @@
     X("user username", SASLminc(-4), USERSW) \
     X("port server port name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
+    X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 0, MTSSW) \
 
@@ -104,6 +105,7 @@ main (int argc, char **argv)
 		case SNOOPSW:
 		case SASLSW:
 		case TLSSW:
+		case INITTLSSW:
 		case NTLSSW:
 		    vec[vecp++] = --cp;
 		    continue;

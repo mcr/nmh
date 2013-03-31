@@ -1028,6 +1028,7 @@ check_draft (char *msgnam)
     X("attachformat", 7, SNDATTACHFORMAT) \
     X("port server-port-name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
+    X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
@@ -1201,6 +1202,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case SASLSW:
 		case NOSASLSW:
 		case TLSSW:
+		case INITTLSSW:
 		case NTLSSW:
 		    vec[vecp++] = --cp;
 		    continue;

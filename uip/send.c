@@ -69,6 +69,7 @@
     X("attachformat", 7, ATTACHFORMATSW) \
     X("port server-port-name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
+    X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
@@ -245,6 +246,7 @@ main (int argc, char **argv)
 		case SASLSW:
 		case NOSASLSW:
 		case TLSSW:
+		case INITTLSSW:
 		case NTLSSW:
 		    vec[vecp++] = --cp;
 		    continue;
