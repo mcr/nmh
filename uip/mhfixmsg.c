@@ -12,8 +12,6 @@
 #include <h/utils.h>
 #include <h/signals.h>
 #include <signal.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
 #include <fcntl.h>
 #ifdef HAVE_ICONV
 #   include <iconv.h>

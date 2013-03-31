@@ -16,6 +16,7 @@
 #endif
 #include <assert.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 # include <dirent.h>
 #define NLENGTH(dirent) strlen((dirent)->d_name)
