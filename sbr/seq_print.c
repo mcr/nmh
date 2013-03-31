@@ -17,12 +17,12 @@
 void
 seq_printall (struct msgs *mp)
 {
-    int i;
+    size_t i;
     char *list;
 
-    for (i = 0; mp->msgattrs[i]; i++) {
-	list = seq_list (mp, mp->msgattrs[i]);
-	printf ("%s%s: %s\n", mp->msgattrs[i],
+    for (i = 0; i < svector_size (mp->msgattrs); i++) {
+	list = seq_list (mp, svector_at (mp->msgattrs, i));
+	printf ("%s%s: %s\n", svector_at (mp->msgattrs, i),
 	    is_seq_private (mp, i) ? " (private)" : "", empty(list));
     }
 }

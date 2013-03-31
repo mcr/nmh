@@ -14,10 +14,10 @@
 int
 seq_getnum (struct msgs *mp, char *seqname)
 {
-    int i;
+    size_t i;
 
-    for (i = 0; mp->msgattrs[i]; i++)
-	if (!strcmp (mp->msgattrs[i], seqname))
+    for (i = 0; i < svector_size (mp->msgattrs); i++)
+	if (!strcmp (svector_at (mp->msgattrs, i), seqname))
 	    return i;
 
     return -1;

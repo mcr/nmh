@@ -24,7 +24,7 @@
 void
 seq_save (struct msgs *mp)
 {
-    int i;
+    size_t i;
     char flags, *cp, attr[BUFSIZ], seqfile[PATH_MAX];
     FILE *fp;
     sigset_t set, oset;
@@ -54,11 +54,12 @@ seq_save (struct msgs *mp)
     else
 	snprintf (seqfile, sizeof(seqfile), "%s/%s", mp->foldpath, mh_seq);
 
-    for (i = 0; mp->msgattrs[i]; i++) {
-	snprintf (attr, sizeof(attr), "atr-%s-%s", mp->msgattrs[i], mp->foldpath);
+    for (i = 0; i < svector_size (mp->msgattrs); i++) {
+	snprintf (attr, sizeof(attr), "atr-%s-%s",
+		  svector_at (mp->msgattrs, i), mp->foldpath);
 
 	/* get space separated list of sequence ranges */
-	if (!(cp = seq_list(mp, mp->msgattrs[i]))) {
+	if (!(cp = seq_list(mp, svector_at (mp->msgattrs, i)))) {
 	    context_del (attr);			/* delete sequence from context */
 	    continue;
 	}
@@ -104,7 +105,7 @@ priv:
 		sigaddset(&set, SIGTERM);
 		sigprocmask (SIG_BLOCK, &set, &oset);
 	    }
-	    fprintf (fp, "%s: %s\n", mp->msgattrs[i], cp);
+	    fprintf (fp, "%s: %s\n", svector_at (mp->msgattrs, i), cp);
 	}
     }
 

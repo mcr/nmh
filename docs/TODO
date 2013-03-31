@@ -39,9 +39,6 @@ MAN PAGES
 
 SEQUENCES
 ---------
-* Change so you can have more than 26 sequences.  Unfortunately,
-  given the way that the bit flags for sequences work, this is
-  not easy.
 * Maybe add option gracefully handle empty sequences (-force).
 
 ENVIRONMENT/PROFILE

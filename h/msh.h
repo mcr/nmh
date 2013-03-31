@@ -22,7 +22,13 @@ struct Cmd {
 #define	MHNCHK 0x0001	/* did nontext check           */
 #define	MHNYES 0x0002	/* .. and known to be non-text */
 
-#define CUR ((seqset_t)1 << (FFATTRSLOT + NUMATTRS - 1))
+/*
+ * Determine the number of user defined sequences we
+ * can have.  The first FFATTRSLOT sequence flags are for
+ * internal nmh message flags.
+ */
+#define	NUMATTRS  (27)
+#define CUR (FFATTRSLOT + NUMATTRS - 1)
 
 #ifdef BPOP
 # define VIRTUAL SELECT_EMPTY
@@ -37,7 +43,7 @@ struct Msg {
     char *m_scanl;
     struct tws m_tb;
     short m_flags;
-    seqset_t m_stats;
+    bvector_t m_stats;
 };
 
 #define	m_bboard_id  m_drop.d_id

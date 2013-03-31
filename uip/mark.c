@@ -48,7 +48,7 @@ main (int argc, char **argv)
     unsigned int seqp = 0;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
     char **argp, **arguments;
-    char *seqs[NUMATTRS + 1];
+    svector_t seqs = svector_create (0);
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
 
@@ -101,10 +101,8 @@ main (int argc, char **argv)
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 
-		/* check if too many sequences specified */
-		if (seqp >= NUMATTRS)
-		    adios (NULL, "too many sequences (more than %d) specified", NUMATTRS);
-		seqs[seqp++] = cp;
+		svector_push_back (seqs, cp);
+		seqp++;
 		continue;
 
 	    case PUBLSW: 
@@ -185,19 +183,18 @@ main (int argc, char **argv)
     if (seqp == 0 && (addsw || deletesw))
 	adios (NULL, "-%s requires at least one -sequence argument",
 	       addsw ? "add" : "delete");
-    seqs[seqp] = NULL;
 
     /* Adding messages to sequences */
     if (addsw) {
-	for (seqp = 0; seqs[seqp]; seqp++)
-	    if (!seq_addsel (mp, seqs[seqp], publicsw, zerosw))
+	for (seqp = 0; seqp < svector_size (seqs); seqp++)
+	    if (!seq_addsel (mp, svector_at (seqs, seqp), publicsw, zerosw))
 		done (1);
     }
 
     /* Deleting messages from sequences */
     if (deletesw) {
-	for (seqp = 0; seqs[seqp]; seqp++)
-	    if (!seq_delsel (mp, seqs[seqp], publicsw, zerosw))
+	for (seqp = 0; seqp < svector_size (seqs); seqp++)
+	    if (!seq_delsel (mp, svector_at (seqs, seqp), publicsw, zerosw))
 		done (1);
     }
 
@@ -205,8 +202,8 @@ main (int argc, char **argv)
     if (listsw) {
 	if (seqp) {
 	    /* print the sequences given */
-	    for (seqp = 0; seqs[seqp]; seqp++)
-		seq_print (mp, seqs[seqp]);
+	    for (seqp = 0; seqp < svector_size (seqs); seqp++)
+		seq_print (mp, svector_at (seqs, seqp));
 	} else {
 	    /* else print them all */
 	    seq_printall (mp);
@@ -217,6 +214,7 @@ main (int argc, char **argv)
 	    seq_printdebug (mp);
     }
 
+    svector_free (seqs);
     seq_save (mp);			/* synchronize message sequences */
     context_replace (pfolder, folder);	/* update current folder         */
     context_save ();			/* save the context file         */
@@ -254,18 +252,22 @@ print_debug (struct msgs *mp)
 /*
  * Print debugging info about all the SELECTED
  * messages and the sequences they are in.
+ * Due limitattions of snprintb(), only a limited
+ * number of sequences will be printed.  See the
+ * comments in sbr/seq_bits.c.
  */
 static void
 seq_printdebug (struct msgs *mp)
 {
     int msgnum;
-    char buf[100];
+    char buf[BUFSIZ];
 
     printf ("\n");
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	if (is_selected (mp, msgnum))
 	    printf ("%*d: %s\n", DMAXFOLDER, msgnum,
-		snprintb (buf, sizeof(buf),
-		(unsigned) mp->msgstats[msgnum - mp->lowoff], seq_bits (mp)));
+		    snprintb (buf, sizeof buf,
+			      (unsigned) *bvector_bits (msgstat (mp, msgnum)),
+			      seq_bits (mp)));
     }
 }

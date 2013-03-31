@@ -51,7 +51,8 @@ main (int argc, char **argv)
     int fd, msgnum;
     size_t seqp = 0;
     char *cp, *maildir, *folder = NULL, buf[BUFSIZ];
-    char **argp, **arguments, *seqs[NUMATTRS+1];
+    char **argp, **arguments;
+    svector_t seqs = svector_create (0);
     struct msgs *mp;
     struct stat st;
 
@@ -92,10 +93,8 @@ main (int argc, char **argv)
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument name to %s", argp[-2]);
 
-		/* check if too many sequences specified */
-		if (seqp >= NUMATTRS)
-		    adios (NULL, "too many sequences (more than %d) specified", NUMATTRS);
-		seqs[seqp++] = cp;
+		svector_push_back (seqs, cp);
+		seqp++;
 		continue;
 
 	    case UNSEENSW:
@@ -136,8 +135,6 @@ main (int argc, char **argv)
 	    adios (NULL, "usage: %s [+folder] [switches]", invo_name);
 	}
     }
-
-    seqs[seqp] = NULL;	/* NULL terminate list of sequences */
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
@@ -207,11 +204,17 @@ main (int argc, char **argv)
      * Add the message to any extra sequences
      * that have been specified.
      */
-    for (seqp = 0; seqs[seqp]; seqp++) {
-	if (!seq_addmsg (mp, seqs[seqp], msgnum, publicsw, zerosw))
-	    done (1);
+    if (seqp) {
+	/* The only reason that seqp was checked to be non-zero is in
+	   case a -nosequence switch is added. */
+	for (seqp = 0; seqp < svector_size (seqs); seqp++) {
+	    if (!seq_addmsg (mp, svector_at (seqs, seqp), msgnum, publicsw,
+			     zerosw))
+		done (1);
+	}
     }
 
+    svector_free (seqs);
     seq_setunseen (mp, 0);	/* synchronize any Unseen-Sequence's      */
     seq_save (mp);		/* synchronize and save message sequences */
     folder_free (mp);		/* free folder/message structure          */

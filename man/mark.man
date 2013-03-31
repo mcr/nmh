@@ -1,4 +1,4 @@
-.TH MARK %manext1% "March 25, 2013" "%nmhversion%"
+.TH MARK %manext1% "March 31, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -143,19 +143,13 @@ will be listed.  The
 switch does not affect the operation of
 .BR \-list .
 .PP
-The current restrictions on sequences are:
+The restrictions on sequences are:
 .PP
 .IP \(bu 2
 The name used to denote a message sequence must consist of an alphabetic
 character followed by zero or more alphanumeric characters, and cannot
 be one of the (reserved) message names \*(lqnew\*(rq, \*(lqfirst\*(rq,
 \*(lqlast\*(rq, \*(lqall\*(rq, \*(lqnext\*(rq, or \*(lqprev\*(rq.
-.PP
-.IP \(bu 2
-Only a certain number of sequences may be defined for a given folder.
-This number is usually limited to 59 (27 on small systems).  (The
-internal implementation relies on bitmasks, with some bits set aside
-for internal use.)
 .PP
 .IP \(bu 2
 Message ranges with user\-defined sequence names are restricted to the

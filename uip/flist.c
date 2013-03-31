@@ -57,8 +57,8 @@ struct Folder {
     int priority;
     int error;			/* error == 1 for unreadable folder     */
     int nMsgs;			/* number of messages in folder         */
-    int nSeq[NUMATTRS];		/* number of messages in each sequence  */
-    int private[NUMATTRS];	/* is given sequence, public or private */
+    ivector_t nSeq;		/* number of messages in each sequence  */
+    ivector_t private;		/* is given sequence, public or private */
 };
 
 static struct Folder *orders = NULL;
@@ -74,8 +74,7 @@ static int numfolders;
 static int maxfolders;
 
 /* info on sequences to search for */
-static char *sequencesToDo[NUMATTRS];
-static unsigned int numsequences;
+static svector_t sequencesToDo;
 
 static int all        = FALSE;  /* scan all folders in top level?           */
 static int alphaOrder = FALSE;	/* want alphabetical order only             */
@@ -140,7 +139,7 @@ main(int argc, char **argv)
     foldersToDo = (char **) mh_xmalloc ((size_t) (maxfolders * sizeof(*foldersToDo)));
 
     /* no sequences yet */
-    numsequences = 0;
+    sequencesToDo = svector_create (0);
 
     /* parse arguments */
     while ((cp = *argp++)) {
@@ -165,10 +164,7 @@ main(int argc, char **argv)
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 
-		/* check if too many sequences specified */
-		if (numsequences >= NUMATTRS)
-		    adios (NULL, "too many sequences (more than %d) specified", NUMATTRS);
-		sequencesToDo[numsequences++] = cp;
+		svector_push_back (sequencesToDo, cp);
 		break;
 
 	    case ALLSW:
@@ -239,23 +235,16 @@ main(int argc, char **argv)
     /*
      * If we didn't specify any sequences, we search
      * for the "Unseen-Sequence" profile entry and use
-     * all the sequences defined there.  We check to
-     * make sure that the Unseen-Sequence entry doesn't
-     * contain more than NUMATTRS sequences.
+     * all the sequences defined there.
      */
-    if (numsequences == 0) {
+    if (svector_size (sequencesToDo) == 0) {
 	if ((cp = context_find(usequence)) && *cp) {
 	    char **ap, *dp;
 
 	    dp = getcpy(cp);
 	    ap = brkstring (dp, " ", "\n");
-	    for (; ap && *ap; ap++) {
-		if (numsequences >= NUMATTRS)
-		    adios (NULL, "too many sequences (more than %d) in %s profile entry",
-			   NUMATTRS, usequence);
-		else
-		    sequencesToDo[numsequences++] = *ap;
-	    }
+	    for (; ap && *ap; ap++)
+		svector_push_back (sequencesToDo, *ap);
 	} else {
 	    adios (NULL, "no sequence specified or %s profile entry found", usequence);
 	}
@@ -265,6 +254,7 @@ main(int argc, char **argv)
     ScanFolders();
     qsort(folders, nFolders, sizeof(struct Folder), (qsort_comp) CompareFolders);
     PrintFolders();
+    svector_free (sequencesToDo);
     done (0);
     return 1;
 }
@@ -463,9 +453,10 @@ AddFolder(char *name, int force)
 {
     unsigned int i;
     int msgnum, nonzero;
-    int seqnum[NUMATTRS], nSeq[NUMATTRS];
+    ivector_t seqnum = ivector_create (0), nSeq = ivector_create (0);
     struct Folder *f;
     struct msgs *mp;
+    char *cp;
 
     /* Read folder and create message structure */
     if (!(mp = folder_read (name, 0))) {
@@ -478,27 +469,27 @@ AddFolder(char *name, int force)
 	return 0;
     }
 
-    for (i = 0; i < numsequences; i++) {
+    for (i = 0; i < svector_size (sequencesToDo); i++) {
 	/* Convert sequences to their sequence numbers */
-	if (sequencesToDo[i])
-	    seqnum[i] = seq_getnum(mp, sequencesToDo[i]);
+	if ((cp = svector_at (sequencesToDo, i)))
+	    ivector_push_back (seqnum, seq_getnum(mp, cp));
 	else
-	    seqnum[i] = -1;
+	    ivector_push_back (seqnum, -1);
 
 	/* Now count messages in this sequence */
-	nSeq[i] = 0;
-	if (mp->nummsg > 0 && seqnum[i] != -1) {
+	ivector_push_back (nSeq, 0);
+	if (mp->nummsg > 0 && ivector_at (seqnum, i) != -1) {
 	    for (msgnum = mp->lowmsg; msgnum <= mp->hghmsg; msgnum++) {
-		if (in_sequence(mp, seqnum[i], msgnum))
-		    nSeq[i]++;
+		if (in_sequence(mp, ivector_at (seqnum, i), msgnum))
+		    (*ivector_atp (nSeq, i))++;
 	    }
 	}
     }
 
     /* Check if any of the sequence checks were nonzero */
     nonzero = 0;
-    for (i = 0; i < numsequences; i++) {
-	if (nSeq[i] > 0) {
+    for (i = 0; i < svector_size (sequencesToDo); i++) {
+	if (ivector_at (nSeq, i) > 0) {
 	    nonzero = 1;
 	    break;
 	}
@@ -510,16 +501,23 @@ AddFolder(char *name, int force)
 	f = &folders[nFolders++];
 	f->name = getcpy(name);
 	f->nMsgs = mp->nummsg;
+	f->nSeq = ivector_create (0);
+	f->private = ivector_create (0);
 	f->error = 0;
 	f->priority = AssignPriority(f->name);
 
 	/* record the sequence information */
-	for (i = 0; i < numsequences; i++) {
-	    f->nSeq[i] = nSeq[i];
-	    f->private[i] = (seqnum[i] != -1) ? is_seq_private(mp, seqnum[i]) : 0;
+	for (i = 0; i < svector_size (sequencesToDo); i++) {
+	    *ivector_atp (f->nSeq, i) = ivector_at (nSeq, i);
+	    ivector_push_back (f->private,
+			       ivector_at (seqnum, i) != -1
+			       ? is_seq_private(mp, ivector_at (seqnum, i))
+			       : 0);
 	}
     }
 
+    ivector_free (nSeq);
+    ivector_free (seqnum);
     folder_free (mp);	/* free folder/message structure */
     return 1;
 }
@@ -559,26 +557,27 @@ PrintFolders(void)
 	if (folders[i].nMsgs > maxnum)
 	    maxnum = folders[i].nMsgs;
 
-	for (j = 0; j < numsequences; j++) {
+	for (j = 0; j < svector_size (sequencesToDo); j++) {
 	    /* find maximum width of sequence name */
-	    len = strlen (sequencesToDo[j]);
-	    if ((folders[i].nSeq[j] > 0 || showzero) && (len > maxseqlen))
+	    len = strlen (svector_at (sequencesToDo, j));
+	    if ((ivector_at (folders[i].nSeq, j) > 0 || showzero) &&
+		(len > maxseqlen))
 		maxseqlen = len;
 
 	    /* find the maximum number of messages in sequence */
-	    if (folders[i].nSeq[j] > maxseq)
-		maxseq = folders[i].nSeq[j];
+	    if (ivector_at (folders[i].nSeq, j) > maxseq)
+		maxseq = ivector_at (folders[i].nSeq, j);
 
 	    /* check if this sequence is private in any of the folders */
-	    if (folders[i].private[j])
+	    if (ivector_at (folders[i].private, j))
 		has_private = 1;
 	}
     }
 
     /* Now print all the folder/sequence information */
     for (i = 0; i < nFolders; i++) {
-	for (j = 0; j < numsequences; j++) {
-	    if (folders[i].nSeq[j] > 0 || showzero) {
+	for (j = 0; j < svector_size (sequencesToDo); j++) {
+	    if (ivector_at (folders[i].nSeq, j) > 0 || showzero) {
 		/* Add `+' to end of name of current folder */
 		if (strcmp(curfolder, folders[i].name))
 		    snprintf(tmpname, sizeof(tmpname), "%s", folders[i].name);
@@ -592,9 +591,10 @@ PrintFolders(void)
 
 		printf("%-*s has %*d in sequence %-*s%s; out of %*d\n",
 		       maxfolderlen+1, tmpname,
-		       num_digits(maxseq), folders[i].nSeq[j],
-		       maxseqlen, sequencesToDo[j],
-		       !has_private ? "" : folders[i].private[j] ? " (private)" : "          ",
+		       num_digits(maxseq), ivector_at (folders[i].nSeq, j),
+		       maxseqlen, svector_at (sequencesToDo, j),
+		       !has_private ? "" : ivector_at (folders[i].private, j)
+			   ? " (private)" : "	       ",
 		       num_digits(maxnum), folders[i].nMsgs);
 	    }
 	}

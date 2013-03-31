@@ -56,7 +56,7 @@ No such file or directory"
 
 # Test private sequence creation.
 # Set current message for following tests.
-folder +inbox 1 > /dev/null
+folder +inbox 1 >/dev/null
 run_test 'mark 1 -sequence privateseq -add -nopublic' ''
 run_test 'mark -list' 'cur: 1
 odd: 1 3 5 7 9
@@ -77,11 +77,22 @@ run_test 'mark -sequence privateseq -list' 'privateseq (private): 1-2'
 run_test 'mark -sequence privateseq -list -public' 'privateseq (private): 1-2'
 
 # Test mark on empty folder.
-folder -create +other > /dev/null
+folder -create +other >/dev/null
 run_test 'mark +other -sequence unseen all' 'mark: no messages in other'
 
 # Test removal of indication of cur message.
 mark +inbox -sequence cur -delete all
 run_test 'pick -nolist cur' 'pick: no cur message'
+
+# Check large number of sequences.
+for i in 1 2 3 4 5; do
+  for j in 0 1 2 3 4 5 6 7 8 9; do
+    mark $i -seq seq$i${j}0 -seq seq$i${j}1 -seq seq$i${j}2 -seq seq$i${j}3 \
+            -seq seq$i${j}4 -seq seq$i${j}5 -seq seq$i${j}6 -seq seq$i${j}7 \
+            -seq seq$i${j}8 -seq seq$i${j}9
+    run_test "pick seq$i${j}0 seq$i${j}1 seq$i${j}2 seq$i${j}3 seq$i${j}4 \
+                   seq$i${j}5 seq$i${j}6 seq$i${j}7 seq$i${j}8 seq$i${j}9" $i
+  done
+done
 
 exit $failed

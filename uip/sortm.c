@@ -565,7 +565,7 @@ static void
 rename_msgs (struct msgs *mp, struct smsg **mlist)
 {
     int i, j, old, new;
-    seqset_t tmpset;
+    bvector_t tmpset = bvector_create (0);
     char f1[BUFSIZ], tmpfil[BUFSIZ];
     char newbuf[PATH_MAX + 1];
     struct smsg *sp;
@@ -605,7 +605,7 @@ rename_msgs (struct msgs *mp, struct smsg **mlist)
 	if (rename (f1, tmpfil) == NOTOK)
 	    adios (tmpfil, "unable to rename %s to ", f1);
 
-	get_msg_flags (mp, &tmpset, old);
+	get_msg_flags (mp, tmpset, old);
 
 	rename_chain (mp, mlist, j, i);
 
@@ -620,7 +620,9 @@ rename_msgs (struct msgs *mp, struct smsg **mlist)
 	if (rename (tmpfil, m_name(new)) == NOTOK)
 	    adios (m_name(new), "unable to rename %s to", tmpfil);
 
-	set_msg_flags (mp, &tmpset, new);
+	set_msg_flags (mp, tmpset, new);
 	mp->msgflags |= SEQMOD;
     }
+
+    bvector_free (tmpset);
 }

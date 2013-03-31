@@ -50,7 +50,8 @@ main (int argc, char **argv)
     int clearflag = 0, hdrflag = 0, ontty;
     int width = 0, revflag = 0;
     int i, state, msgnum;
-    int seqnum[NUMATTRS], unseen, num_unseen_seq = 0;
+    ivector_t seqnum = ivector_create (0);
+    int unseen, num_unseen_seq = 0;
     char *cp, *maildir, *file = NULL, *folder = NULL;
     char *form = NULL, *format = NULL, buf[BUFSIZ];
     char **argp, *nfs, **arguments;
@@ -228,7 +229,7 @@ main (int argc, char **argv)
 	dp = getcpy(cp);
 	ap = brkstring (dp, " ", "\n");
 	for (i = 0; ap && *ap; i++, ap++)
-	    seqnum[i] = seq_getnum (mp, *ap);
+	    ivector_push_back (seqnum, seq_getnum (mp, *ap));
 
 	num_unseen_seq = i;
 	if (dp)
@@ -256,7 +257,7 @@ main (int argc, char **argv)
 	     */
 	    unseen = 0;
 	    for (i = 0; i < num_unseen_seq; i++) {
-		if (in_sequence(mp, seqnum[i], msgnum)) {
+		if (in_sequence(mp, ivector_at (seqnum, i), msgnum)) {
 		    unseen = 1;
 		    break;
 		}
@@ -285,6 +286,7 @@ main (int argc, char **argv)
 	}
     }
 
+    ivector_free (seqnum);
     folder_free (mp);	/* free folder/message structure */
     if (clearflag)
 	clear_screen ();

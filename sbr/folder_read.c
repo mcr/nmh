@@ -30,6 +30,8 @@ folder_read (char *name, int lockflag)
     struct stat st;
     struct dirent *dp;
     DIR *dd;
+    bvector_t *v;
+    size_t i;
 
     name = m_mailpath (name);
     if (!(dd = opendir (name))) {
@@ -131,7 +133,13 @@ folder_read (char *name, int lockflag)
     /*
      * Allocate space for status of each message.
      */
-    mp->msgstats = mh_xmalloc (MSGSTATSIZE(mp, mp->lowoff, mp->hghoff));
+    mp->num_msgstats = MSGSTATNUM (mp->lowoff, mp->hghoff);
+    mp->msgstats = mh_xmalloc (MSGSTATSIZE(mp));
+    for (i = 0, v = mp->msgstats; i < mp->num_msgstats; ++i, ++v) {
+	*v = bvector_create (0);
+    }
+
+    mp->msgattrs = svector_create (0);
 
     /*
      * Clear all the flag bits for all the message

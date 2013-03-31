@@ -13,7 +13,8 @@
 void
 folder_free (struct msgs *mp)
 {
-    int i;
+    size_t i;
+    bvector_t *v;
 
     if (!mp)
 	return;
@@ -22,8 +23,14 @@ folder_free (struct msgs *mp)
 	free (mp->foldpath);
 
     /* free the sequence names */
-    for (i = 0; mp->msgattrs[i]; i++)
-	free (mp->msgattrs[i]);
+    for (i = 0; i < svector_size (mp->msgattrs); i++)
+	free (svector_at (mp->msgattrs, i));
+    svector_free (mp->msgattrs);
+
+    for (i = 0, v = mp->msgstats; i < mp->num_msgstats; ++i, ++v) {
+	bvector_free (*v);
+    }
+    free (mp->msgstats);
 
     /* Close/free the sequence file if it is open */
 
@@ -33,6 +40,6 @@ folder_free (struct msgs *mp)
     if (mp->seqname)
     	free (mp->seqname);
 
-    free (mp->msgstats);	/* free message status area   */
+    bvector_free (mp->attrstats);
     free (mp);			/* free main folder structure */
 }

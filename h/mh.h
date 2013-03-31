@@ -132,33 +132,56 @@ extern struct swit anoyes[];	/* standard yes/no switches */
 #define	FBITS "\020\01READONLY\02SEQMOD\03ALLOW_NEW\04OTHERS\05MODIFIED"
 
 /*
- * type for holding the sequence set of a message
- */
-typedef unsigned long seqset_t;
-
-/*
  * first free slot for user defined sequences
  * and attributes
  */
 #define	FFATTRSLOT  5
 
 /*
- * Determine the number of user defined sequences we
- * can have.  The first FFATTRSLOT sequence flags are for
- * internal nmh message flags.
- */
-#define	NUMATTRS  ((sizeof(seqset_t) * Nbby) - FFATTRSLOT)
-
-/*
  * internal messages attributes (sequences)
  */
-#define EXISTS        (1<<0)	/* exists            */
-#define DELETED       (1<<1)	/* deleted           */
-#define SELECTED      (1<<2)	/* selected for use  */
-#define SELECT_EMPTY  (1<<3)	/* "new" message     */
-#define	SELECT_UNSEEN (1<<4)	/* inc/show "unseen" */
+#define EXISTS        (0)	/* exists            */
+#define DELETED       (1)	/* deleted           */
+#define SELECTED      (2)	/* selected for use  */
+#define SELECT_EMPTY  (3)	/* "new" message     */
+#define	SELECT_UNSEEN (4)	/* inc/show "unseen" */
 
 #define	MBITS "\020\01EXISTS\02DELETED\03SELECTED\04NEW\05UNSEEN"
+
+/*
+ * type for holding the sequence set of a message
+ */
+typedef struct bvector *bvector_t;
+
+bvector_t bvector_create (size_t /* initial size in bits, can be 0 */);
+void bvector_copy (bvector_t, bvector_t);
+void bvector_free (bvector_t);
+void bvector_clear (bvector_t, size_t);
+void bvector_clear_all (bvector_t);
+void bvector_set (bvector_t, size_t);
+unsigned int bvector_at (bvector_t, size_t);
+const unsigned long *bvector_bits (bvector_t);
+size_t bvector_maxsize (bvector_t);
+
+struct svector;
+typedef struct svector *svector_t;
+
+svector_t svector_create (size_t);
+void svector_free (svector_t);
+char *svector_push_back (svector_t, char *);
+char *svector_at (svector_t, size_t);
+char **svector_strs (svector_t);
+size_t svector_size (svector_t);
+
+struct ivector;
+typedef struct ivector *ivector_t;
+
+ivector_t ivector_create (size_t);
+void ivector_free (ivector_t);
+int ivector_push_back (ivector_t, int);
+int ivector_at (ivector_t, size_t);
+int *ivector_atp (ivector_t, size_t);
+size_t ivector_size (ivector_t);
 
 /*
  * Primary structure of folder/message information
@@ -178,16 +201,15 @@ struct msgs {
     char *foldpath;	/* Pathname of folder                */
 
     /*
-     * Name of sequences in this folder.  We add an
-     * extra slot, so we can NULL terminate the list.
+     * Name of sequences in this folder.
      */
-    char *msgattrs[NUMATTRS + 1];
+    svector_t msgattrs;
 
     /*
      * bit flags for whether sequence
      * is public (0), or private (1)
      */
-    seqset_t attrstats;
+    bvector_t attrstats;
 
     /*
      * These represent the lowest and highest possible
@@ -198,13 +220,14 @@ struct msgs {
     int	hghoff;
 
     /*
-     * This is an array of seqset_t which we allocate dynamically.
-     * Each seqset_t is a set of bits flags for a particular message.
+     * This is an array of bvector_t which we allocate dynamically.
+     * Each bvector_t is a set of bits flags for a particular message.
      * These bit flags represent general attributes such as
      * EXISTS, SELECTED, etc. as well as track if message is
      * in a particular sequence.
      */
-    seqset_t *msgstats;		/* msg status */
+    size_t num_msgstats;
+    bvector_t *msgstats;	/* msg status */
 
     /*
      * A FILE handle containing an open filehandle for the sequence file
@@ -221,53 +244,59 @@ struct msgs {
 
 /*
  * Amount of space to allocate for msgstats.  Allocate
- * the array to have space for messages numbers lo to hi.
+ * the array to have space for messages numbered lo to hi.
+ * Use MSGSTATNUM to load mp->num_msgstats first.
  */
-#define MSGSTATSIZE(mp,lo,hi) ((size_t) (((hi) - (lo) + 1) * sizeof(*(mp)->msgstats)))
+#define MSGSTATNUM(lo, hi) ((size_t) ((hi) - (lo) + 1))
+#define MSGSTATSIZE(mp) ((mp)->num_msgstats * sizeof *(mp)->msgstats)
 
 /*
  * macros for message and sequence manipulation
  */
-#define clear_msg_flags(mp,msgnum) ((mp)->msgstats[(msgnum) - mp->lowoff] = 0)
-#define copy_msg_flags(mp,i,j) \
-	((mp)->msgstats[(i) - mp->lowoff] = (mp)->msgstats[(j) - mp->lowoff])
-#define get_msg_flags(mp,ptr,msgnum)  (*(ptr) = (mp)->msgstats[(msgnum) - mp->lowoff])
-#define set_msg_flags(mp,ptr,msgnum)  ((mp)->msgstats[(msgnum) - mp->lowoff] = *(ptr))
+#define msgstat(mp,n) (mp)->msgstats[(n) - mp->lowoff]
+#define clear_msg_flags(mp,msgnum)   bvector_clear_all (msgstat(mp, msgnum))
+#define copy_msg_flags(mp,i,j)       bvector_copy (msgstat(mp,i), msgstat(mp,j))
+#define get_msg_flags(mp,ptr,msgnum) bvector_copy (ptr, msgstat(mp, msgnum))
+#define set_msg_flags(mp,ptr,msgnum) bvector_copy (msgstat(mp, msgnum), ptr)
 
-#define does_exist(mp,msgnum)     ((mp)->msgstats[(msgnum) - mp->lowoff] & EXISTS)
-#define unset_exists(mp,msgnum)   ((mp)->msgstats[(msgnum) - mp->lowoff] &= ~EXISTS)
-#define set_exists(mp,msgnum)     ((mp)->msgstats[(msgnum) - mp->lowoff] |= EXISTS)
+#define does_exist(mp,msgnum)     bvector_at (msgstat(mp, msgnum), EXISTS)
+#define unset_exists(mp,msgnum)   bvector_clear (msgstat(mp, msgnum), EXISTS)
+#define set_exists(mp,msgnum)     bvector_set (msgstat(mp, msgnum), EXISTS)
 
-#define is_selected(mp,msgnum)    ((mp)->msgstats[(msgnum) - mp->lowoff] & SELECTED)
-#define unset_selected(mp,msgnum) ((mp)->msgstats[(msgnum) - mp->lowoff] &= ~SELECTED)
-#define set_selected(mp,msgnum)   ((mp)->msgstats[(msgnum) - mp->lowoff] |= SELECTED)
+#define is_selected(mp,msgnum)    bvector_at (msgstat(mp, msgnum), SELECTED)
+#define unset_selected(mp,msgnum) bvector_clear (msgstat(mp, msgnum), SELECTED)
+#define set_selected(mp,msgnum)   bvector_set (msgstat(mp, msgnum), SELECTED)
 
-#define is_select_empty(mp,msgnum) ((mp)->msgstats[(msgnum) - mp->lowoff] & SELECT_EMPTY)
+#define is_select_empty(mp,msgnum)  \
+        bvector_at (msgstat(mp, msgnum), SELECT_EMPTY)
 #define set_select_empty(mp,msgnum) \
-	((mp)->msgstats[(msgnum) - mp->lowoff] |= SELECT_EMPTY)
+        bvector_set (msgstat(mp, msgnum), SELECT_EMPTY)
 
-#define is_unseen(mp,msgnum)      ((mp)->msgstats[(msgnum) - mp->lowoff] & SELECT_UNSEEN)
-#define unset_unseen(mp,msgnum)   ((mp)->msgstats[(msgnum) - mp->lowoff] &= ~SELECT_UNSEEN)
-#define set_unseen(mp,msgnum)     ((mp)->msgstats[(msgnum) - mp->lowoff] |= SELECT_UNSEEN)
+#define is_unseen(mp,msgnum) \
+        bvector_at (msgstat(mp, msgnum), SELECT_UNSEEN)
+#define unset_unseen(mp,msgnum) \
+        bvector_clear (msgstat(mp, msgnum), SELECT_UNSEEN)
+#define set_unseen(mp,msgnum) \
+        bvector_set (msgstat(mp, msgnum), SELECT_UNSEEN)
 
 /* for msh only */
-#define set_deleted(mp,msgnum)    ((mp)->msgstats[(msgnum) - mp->lowoff] |= DELETED)
+#define set_deleted(mp,msgnum)     bvector_set (msgstat(mp, msgnum), DELETED)
 
 #define in_sequence(mp,seqnum,msgnum) \
-           ((mp)->msgstats[(msgnum) - mp->lowoff] & ((seqset_t)1 << (FFATTRSLOT + seqnum)))
+        bvector_at (msgstat(mp, msgnum), FFATTRSLOT + seqnum)
 #define clear_sequence(mp,seqnum,msgnum) \
-           ((mp)->msgstats[(msgnum) - mp->lowoff] &= ~((seqset_t)1 << (FFATTRSLOT + seqnum)))
+        bvector_clear (msgstat(mp, msgnum), FFATTRSLOT + seqnum)
 #define add_sequence(mp,seqnum,msgnum) \
-           ((mp)->msgstats[(msgnum) - mp->lowoff] |= ((seqset_t)1 << (FFATTRSLOT + seqnum)))
+        bvector_set (msgstat(mp, msgnum), FFATTRSLOT + seqnum)
 
 #define is_seq_private(mp,seqnum) \
-           ((mp)->attrstats & ((seqset_t)1 << (FFATTRSLOT + seqnum)))
+        bvector_at (mp->attrstats, FFATTRSLOT + seqnum)
 #define make_seq_public(mp,seqnum) \
-           ((mp)->attrstats &= ~((seqset_t)1 << (FFATTRSLOT + seqnum)))
+        bvector_clear (mp->attrstats, FFATTRSLOT + seqnum)
 #define make_seq_private(mp,seqnum) \
-           ((mp)->attrstats |= ((seqset_t)1 << (FFATTRSLOT + seqnum)))
+        bvector_set (mp->attrstats, FFATTRSLOT + seqnum)
 #define make_all_public(mp) \
-           ((mp)->attrstats = 0)
+        mp->attrstats = bvector_create(0); bvector_clear_all (mp->attrstats)
 
 /*
  * macros for folder attributes

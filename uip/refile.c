@@ -385,11 +385,13 @@ static void
 copy_seqs (struct msgs *oldmp, int oldmsgnum, struct msgs *newmp, int newmsgnum)
 {
     char **seq;
-    int seqnum;
+    size_t seqnum;
 
-    for (seq = oldmp->msgattrs, seqnum = 0; *seq; ++seq, ++seqnum) {
+    for (seq = svector_strs (oldmp->msgattrs), seqnum = 0;
+	 *seq && seqnum < svector_size (oldmp->msgattrs);
+	 ++seq, ++seqnum) {
 	if (strcmp (current, *seq)) {
-	    assert (seqnum == seq_getnum (oldmp, *seq));
+	    assert ((int) seqnum == seq_getnum (oldmp, *seq));
 	    if (in_sequence (oldmp, seqnum, oldmsgnum)) {
 		seq_addmsg (newmp, *seq, newmsgnum,
 			    is_seq_private (oldmp, seqnum) ? 0 : 1, 0);

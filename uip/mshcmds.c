@@ -1228,8 +1228,9 @@ markcmd (char **args)
 			(long) Msgs[msgnum].m_start,
 			(long) Msgs[msgnum].m_stop,
 			snprintb (buf, sizeof(buf),
-				(unsigned) mp->msgstats[msgnum - mp->lowoff],
-				seq_bits (mp)));
+				  (unsigned) *bvector_bits (msgstat (mp,
+                                                                     msgnum)),
+				  seq_bits (mp)));
 		    if (Msgs[msgnum].m_scanl)
 			printf ("%s", Msgs[msgnum].m_scanl);
 		}			    
@@ -2614,9 +2615,10 @@ sortcmd (char **args)
 	}
 	else			/* m_scaln is already NULL */
 	    twscopy (&Msgs[msgnum].m_tb, &tb);
-	Msgs[msgnum].m_stats = mp->msgstats[msgnum - mp->lowoff];
+	Msgs[msgnum].m_stats = bvector_create (0);
+	bvector_copy (Msgs[msgnum].m_stats, msgstat (mp, msgnum));
 	if (mp->curmsg == msgnum)
-	    Msgs[msgnum].m_stats |= CUR;
+            bvector_set (Msgs[msgnum].m_stats, CUR);
     }
 
     qsort ((char *) &Msgs[mp->lowsel], mp->hghsel - mp->lowsel + 1,
@@ -2627,8 +2629,9 @@ sortcmd (char **args)
 	    free (Msgs[msgnum].m_scanl);	/* from subjsort */
 	    Msgs[msgnum].m_scanl = NULL;
 	}
-	mp->msgstats[msgnum - mp->lowoff] = Msgs[msgnum].m_stats & ~CUR;
-	if (Msgs[msgnum].m_stats & CUR)
+	bvector_clear (Msgs[msgnum].m_stats, CUR);
+	bvector_copy (msgstat (mp, msgnum), Msgs[msgnum].m_stats);
+	if (bvector_at (Msgs[msgnum].m_stats, CUR))
 	    seq_setcur (mp, msgnum);
     }
 	    

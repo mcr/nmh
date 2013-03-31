@@ -32,8 +32,7 @@ seq_read (struct msgs *mp, int lockflag)
      * Initialize the list of sequence names.  Go ahead and
      * add the "cur" sequence to the list of sequences.
      */
-    mp->msgattrs[0] = getcpy (current);
-    mp->msgattrs[1] = NULL;
+    svector_push_back (mp->msgattrs, getcpy (current));
     make_all_public (mp);	/* initially, make all public */
 
     /* If folder is empty, don't scan for sequence information */
@@ -181,31 +180,22 @@ seq_init (struct msgs *mp, char *name, char *field)
      * then clear the bit for this sequence from all the
      * mesages in this folder.
      */
-    for (i = 0; mp->msgattrs[i]; i++) {
-	if (!strcmp (mp->msgattrs[i], name)) {
+    for (i = 0; i < svector_size (mp->msgattrs); i++) {
+	if (!strcmp (svector_at (mp->msgattrs, i), name)) {
 	    for (j = mp->lowmsg; j <= mp->hghmsg; j++)
 		clear_sequence (mp, i, j);
 	    break;
 	}
     }
 
-    /* Return error, if too many sequences */
-    if (i >= NUMATTRS) {
-	admonish (NULL, "Too many sequences, sequence %s ignored", name);
-	free (name);
-	free (field);
-	return -1;
-    }
-
     /*
      * If we've already seen this sequence name, just free the
      * name string.  Else add it to the list of sequence names.
      */
-    if (mp->msgattrs[i]) {
+    if (svector_at (mp->msgattrs, i)) {
 	free (name);
     } else {
-	mp->msgattrs[i] = name;
-	mp->msgattrs[i + 1] = NULL;
+	svector_push_back (mp->msgattrs, name);
     }
 
     /*

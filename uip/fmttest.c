@@ -491,7 +491,8 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 		 int bufsize, int outwidth, int *dat, struct fmt_callbacks *cb)
 {
     int i, state, msgnum, msgsize = dat[2], num = dat[0], cur = dat[1];
-    int num_unseen_seq = 0, seqnum[NUMATTRS];
+    int num_unseen_seq = 0;
+    ivector_t seqnum = ivector_create (0);
     char *maildir, *cp, name[NAMESZ], rbuf[BUFSIZ];
     struct msgs *mp;
     struct comp *c;
@@ -534,7 +535,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 	    dp = getcpy(cp);
 	    ap = brkstring(dp, " ", "\n");
 	    for (i = 0; ap && *ap; i++, ap++)
-	    	seqnum[i] = seq_getnum(mp, *ap);
+		ivector_push_back (seqnum, seq_getnum(mp, *ap));
 		
 	    num_unseen_seq = i;
 	    if (dp)
@@ -576,7 +577,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 
 	    dat[4] = 0;
 	    for (i = 0; i < num_unseen_seq; i++) {
-	    	if (in_sequence(mp, seqnum[i], msgnum)) {
+		if (in_sequence(mp, ivector_at (seqnum, i), msgnum)) {
 		    dat[4] = 1;
 		    break;
 		}
@@ -646,6 +647,7 @@ finished:
 	}
     }
 
+    ivector_free (seqnum);
     folder_free(mp);
     return;
 }

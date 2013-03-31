@@ -59,7 +59,8 @@ main (int argc, char **argv)
     int msgnum;
     char *maildir, *folder = NULL, buf[100];
     char *cp, **argp, **arguments;
-    char *seqs[NUMATTRS + 1], *vec[MAXARGS];
+    svector_t seqs = svector_create (0);
+    char *vec[MAXARGS];
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgnum_array nums = { 0, 0, NULL };
     struct msgs *mp, *mp2;
@@ -133,14 +134,11 @@ main (int argc, char **argv)
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 
-		/* check if too many sequences specified */
-		if (seqp >= NUMATTRS)
-		    adios (NULL, "too many sequences (more than %d) specified", NUMATTRS);
-
                 if (!seq_nameok (cp))
                   done (1);
 
-		seqs[seqp++] = cp;
+		svector_push_back (seqs, cp);
+		seqp++;
 		continue;
 	    case NSEQSW:
 		seqp = 0;
@@ -247,8 +245,6 @@ main (int argc, char **argv)
     if (nums.size >= mp->numsel)
 	adios (NULL, "no messages match specification");
 
-    seqs[seqp] = NULL;
-
     /*
      * So, what's happening here?
      *
@@ -280,9 +276,11 @@ main (int argc, char **argv)
     /*
      * Add the matching messages to sequences
      */
-    for (seqp = 0; seqs[seqp]; seqp++)
-	if (!seq_addsel (mp2, seqs[seqp], publicsw, zerosw))
-	    done (1);
+    if (seqp > 0) {
+	for (seqp = 0; seqp < svector_size (seqs); seqp++)
+	    if (!seq_addsel (mp2, svector_at (seqs, seqp), publicsw, zerosw))
+		done (1);
+    }
 
     /*
      * Print total matched if not printing each matched message number.
@@ -291,6 +289,7 @@ main (int argc, char **argv)
 	printf ("%d hit%s\n", mp2->numsel, mp2->numsel == 1 ? "" : "s");
     }
 
+    svector_free (seqs);
     context_replace (pfolder, folder);	/* update current folder         */
     seq_save (mp2);			/* synchronize message sequences */
     context_save ();			/* save the context file         */

@@ -41,8 +41,8 @@ seq_addsel (struct msgs *mp, char *cp, int public, int zero)
     /*
      * Get the number for this sequence
      */
-    for (i = 0; mp->msgattrs[i]; i++) {
-	if (!strcmp (mp->msgattrs[i], cp)) {
+    for (i = 0; i < svector_size (mp->msgattrs); i++) {
+	if (!strcmp (svector_at (mp->msgattrs, i), cp)) {
 	    new_seq = 0;
 	    break;
 	}
@@ -52,15 +52,10 @@ seq_addsel (struct msgs *mp, char *cp, int public, int zero)
      * If this is a new sequence, add a slot for it
      */
     if (new_seq) {
-	if (i >= NUMATTRS) {
-	    advise (NULL, "only %d sequences allowed (no room for %s)!", NUMATTRS, cp);
-	    return 0;
-	}
-	if (!(mp->msgattrs[i] = strdup (cp))) {
+	if (!(svector_push_back (mp->msgattrs, strdup (cp)))) {
 	    advise (NULL, "strdup failed");
 	    return 0;
 	}
-	mp->msgattrs[i + 1] = NULL;
     }
 
     /*
@@ -133,8 +128,8 @@ seq_addmsg (struct msgs *mp, char *cp, int msgnum, int public, int zero)
     /*
      * Get the number for this sequence
      */
-    for (i = 0; mp->msgattrs[i]; i++) {
-	if (!strcmp (mp->msgattrs[i], cp)) {
+    for (i = 0; i < svector_size (mp->msgattrs); i++) {
+	if (!strcmp (svector_at (mp->msgattrs, i), cp)) {
 	    new_seq = 0;
 	    break;
 	}
@@ -144,15 +139,10 @@ seq_addmsg (struct msgs *mp, char *cp, int msgnum, int public, int zero)
      * If this is a new sequence, add a slot for it
      */
     if (new_seq) {
-	if (i >= NUMATTRS) {
-	    advise (NULL, "only %d sequences allowed (no room for %s)!", NUMATTRS, cp);
-	    return 0;
-	}
-	if (!(mp->msgattrs[i] = strdup (cp))) {
+	if (!(svector_push_back (mp->msgattrs, strdup (cp)))) {
 	    advise (NULL, "strdup failed");
 	    return 0;
 	}
-	mp->msgattrs[i + 1] = NULL;
     }
 
     /*

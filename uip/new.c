@@ -404,13 +404,10 @@ main(int argc, char **argv)
     char **ap, *cp, **argp, **arguments;
     char help[BUFSIZ];
     char *folders = NULL;
-    char *sequences[NUMATTRS + 1];
+    svector_t sequences = svector_create (0);
     int i = 0;
     char *unseen;
     struct node *folder;
-
-    sequences[0] = NULL;
-    sequences[1] = NULL;
 
 #ifdef LOCALE
     setlocale(LC_ALL, "");
@@ -456,9 +453,9 @@ main(int argc, char **argv)
 	    }
 	}
 	/* have a sequence argument */
-	if (!seq_in_list(cp, sequences)) {
-	    sequences[i++] = cp;
-	    sequences[i] = NULL;
+	if (!seq_in_list(cp, svector_strs (sequences))) {
+	    svector_push_back (sequences, cp);
+	    ++i;
 	}
     }
 
@@ -485,12 +482,12 @@ main(int argc, char **argv)
 	    adios(NULL, "must specify sequences or set %s", usequence);
 	}
 	for (ap = brkstring(unseen, " ", "\n"); *ap; ap++) {
-	    sequences[i++] = *ap;
+	    svector_push_back (sequences, *ap);
+	    ++i;
 	}
     }
-    sequences[i] = NULL;
 
-    folder = doit(context_find(pfolder), folders, sequences);
+    folder = doit(context_find(pfolder), folders, svector_strs (sequences));
     if (folder == NULL) {
         done(0);
         return 1;
@@ -514,6 +511,7 @@ main(int argc, char **argv)
 
     context_save();
 
+    svector_free (sequences);
     done (0);
     return 1;
 }

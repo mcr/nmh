@@ -682,8 +682,7 @@ setup (char *file)
     }
     m_init ();
 
-    mp->msgattrs[0] = getcpy ("unseen");
-    mp->msgattrs[1] = NULL;
+    svector_push_back (mp->msgattrs, getcpy ("unseen"));
 
     scan_detect_mbox_style (fp);		/* the MAGIC invocation */
     if (fmsh) {
