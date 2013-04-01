@@ -1273,7 +1273,8 @@ tls_negotiate(void)
 
 	method = TLSv1_client_method();	/* Not sure about this */
 
-	sslctx = SSL_CTX_new(method);
+	/* Older ssl takes a non-const arg. */
+	sslctx = SSL_CTX_new((SSL_METHOD *) method);
 
 	if (! sslctx) {
 	    sm_end(NOTOK);
