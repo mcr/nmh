@@ -1,4 +1,4 @@
-.TH POST %manext8% "July 21, 2012" "%nmhversion%"
+.TH POST %manext8% "March 31, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -37,6 +37,7 @@ post \- deliver a message
 .RB [ \-user
 .IR username ]
 .RB [ \-tls ]
+.RB [ \-initialtls ]
 .RB [ \-notls ]
 .I file
 .RB [ \-version ]
@@ -229,13 +230,22 @@ If
 has been compiled with TLS support, the
 .B \-tls
 and
-.B \-notls
-switches will require and disable the negotiation of TLS support when
-connecting to the
-SMTP MTA.  Encrypted data is labelled with `(tls-encrypted)' and
+.B \-initialtls
+switches will require the negotiation of TLS when
+connecting to the SMTP MTA.  The
+.B \-tls
+switch will negotiate TLS as part of the normal SMTP protocol
+using the STARTTLS command.  The
+.B \-initialtls
+will negotiate TLS immediately after the connection has
+taken place, before any SMTP commands are sent or received.  Encrypted data
+is labelled with `(tls-encrypted)' and
 `(tls-decrypted)' when viewing the SMTP transction with the
 .B \-snoop
 switch.
+The
+.B \-notls
+switch will disable all attempts to negotiate TLS.
 .SH FILES
 .fc ^ ~
 .nf

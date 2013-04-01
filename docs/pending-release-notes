@@ -52,6 +52,8 @@ NEW FEATURES
   and mhn(1) when used with -auto.
 - All nmh commands now support transactional locking for sequence files.
 - There is no longer a per-folder maximum number of sequences.
+- For the SMTP MTA TLS can now be negotiated at the beginning of the
+  connection with the -initialtls switch.
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES
