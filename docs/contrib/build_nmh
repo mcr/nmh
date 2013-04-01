@@ -149,11 +149,11 @@ if install-mh -check >/dev/null 2>&1; then
     fi
   fi
 
-  if $ldd "$mhbin/inc" | grep sasl >/dev/null; then
+  if $ldd "`$mhbin/mhparam libdir`/post" | grep sasl >/dev/null; then
     config_sasl=y
   fi
 
-  if $ldd "$mhbin/inc" | grep ssl >/dev/null; then
+  if $ldd "`$mhbin/mhparam libdir`/post" | grep ssl >/dev/null; then
     config_tls=y
   fi
 fi
