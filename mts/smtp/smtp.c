@@ -1266,7 +1266,7 @@ tls_negotiate(void)
     BIO *ssl_bio;
 
     if (! sslctx) {
-	SSL_METHOD *method;
+	const SSL_METHOD *method;
 
 	SSL_library_init();
 	SSL_load_error_strings();
