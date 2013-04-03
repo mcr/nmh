@@ -77,12 +77,15 @@ client (char *args, char *service, char *response, int len_response, int debug)
 	for (ai = res; ai != NULL; ai = ai->ai_next) {
 	    if (debug) {
 		char address[NI_MAXHOST];
+		char port[NI_MAXSERV];
 
 		rc = getnameinfo(ai->ai_addr, ai->ai_addrlen, address,
-				 sizeof(address), NULL, 0, NI_NUMERICHOST);
+				 sizeof(address), port, sizeof port,
+				 NI_NUMERICHOST | NI_NUMERICSERV);
 
-		fprintf(stderr, "Connecting to %s...\n",
-			rc ? "unknown" : address);
+		fprintf(stderr, "Connecting to %s:%s...\n",
+			rc ? "unknown" : address,
+			rc ? "--" : port);
 	    }
 
 	    sd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
@@ -166,7 +169,7 @@ static int
 client_brkany (char chr, char *strg)
 {
     register char *sp;
- 
+
     if (strg)
 	for (sp = strg; *sp; sp++)
 	    if (chr == *sp)
@@ -202,4 +205,3 @@ client_getcpy (char *str)
     memcpy (cp, str, len);
     return cp;
 }
-
