@@ -456,6 +456,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     }
 
     if (modify_inplace) {
+        if (status != OK) unlink (outfile);
         free (outfile);
         outfile = NULL;
     }
@@ -949,7 +950,11 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods) {
                         free_content (mp_alt);
                         status = NOTOK;
                     }
+                } else {
+                    status = NOTOK;
                 }
+            } else {
+                status = NOTOK;
             }
         }
         break;
@@ -1458,6 +1463,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                     unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
+                    status = NOTOK;
                 } else if (ct->c_encoding == CE_QUOTED &&
                            ct_encoding == CE_8BIT  &&  encoding == CE_7BIT) {
                     if (verbosw) {
@@ -1470,6 +1476,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                     unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
+                    status = NOTOK;
                 } else {
                     int enc;
                     if (ct_encoding == CE_BINARY)
@@ -1826,6 +1833,8 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
                 }
 
                 free (infile);
+            } else {
+                status = NOTOK;
             }
         } else {
             /* No modifications and didn't need the tmp outfile. */

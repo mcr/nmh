@@ -557,7 +557,9 @@ Db2yPbwK
 EOF
 
 cp -p `mhpath last` "$expected"
+set +e
 mhfixmsg last
+set -e
 check `mhpath last` "$expected" 'keep first'
 
 
@@ -628,13 +630,12 @@ mhfixmsg last -textcodeset utf-8 -outfile "$actual" 2>"$actual.err"
 if grep "mhfixmsg: Can't convert .* to .* without iconv" "$actual.err" \
   >/dev/null; then
   echo skipping -textcodeset check because nmh was built without iconv
-  set +e
   rm -f "$expected" "$actual" "$actual.err"
 else
-  set +e
   check "$expected" "$actual"
   rm "$actual.err"
 fi
+set -e
 
 
 # check -nofixboundary
