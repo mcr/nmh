@@ -64,6 +64,14 @@ The interpretation of `n' may be overridden by preceding `n' with a
 plus or minus sign; `+n' always means up to `n' messages starting with
 `name', and `\-n' always means up to `n' messages ending with `name'.
 .PP
+Substituting `=' for `:' (i.e., \*(lqname=n\*(rq) will reduce the
+selection from a range of up to `n' messages, to a selection of
+just the `n'th message.  So for example, while \*(lqname:-3\*(rq
+selects the 3 messages ending with `name', \*(lqname=-3\*(rq selects
+just the 2nd previous message.  It is an error if the requested
+message does not exist (i.e., there aren't enough messages in the
+folder).
+.PP 
 In commands which accept a `msgs' argument, the default is either
 \*(lqcur\*(rq or \*(lqall\*(rq, depending on which makes more sense
 for each command (see the individual man pages for details).  Repeated
@@ -106,6 +114,15 @@ equivalent to \*(lqname:1\*(rq and \*(lqname:\-1\*(rq, respectively.  The
 specification \*(lqname:cur\*(rq is not allowed (use just \*(lqcur\*(rq
 instead).  The syntax of these message range specifications is subject
 to change in the future.
+.PP
+Single messages (as opposed to ranges) may also be selected by
+substituting `=' for `:', as in \*(lqname=n\*(rq.  This will reduce
+the selection from being a range of up to `n' messages, to being a
+selection of just the `n'th message.  So while \*(lqseq:5\*(rq
+selects the first 5 messages of seqence `seq', \*(lqseq=5\*(rq
+selects just the 5th message of the sequence.  It is
+an error if the requested message does not exist (i.e., there aren't
+at least `n' messages in the sequence).
 .PP
 User-defined sequence names are specific to each folder.  They are
 defined using the

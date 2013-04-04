@@ -54,6 +54,8 @@ NEW FEATURES
 - There is no longer a per-folder maximum number of sequences.
 - For the SMTP MTA TLS can now be negotiated at the beginning of the
   connection with the -initialtls switch.
+- Messages can now be selected using a relative offset from some other
+  message, or from the start or end of a sequence.  See mh-sequences(5).
 
 ----------------------------
 OBSOLETE/DEPRECATED FEATURES
