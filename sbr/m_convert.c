@@ -22,6 +22,7 @@
 #define	FIRST	1
 #define	LAST	2
 
+
 #define	getnew(mp) (mp->hghmsg + 1)
 
 static int convdir;	/* convert direction */
@@ -37,7 +38,7 @@ static int attr (struct msgs *, char *);
 int
 m_convert (struct msgs *mp, char *name)
 {
-    int first, last, found, range, err;
+    int first, last, found, count, is_range, err;
     char *bp, *cp;
 
     /* check if user defined sequence */
@@ -54,6 +55,7 @@ m_convert (struct msgs *mp, char *name)
      */
 
     found = 0;
+    is_range = 1;
 
     /*
      * Check for special "new" sequence, which
@@ -73,7 +75,7 @@ m_convert (struct msgs *mp, char *name)
 	goto badmsg;
 
     cp = delimp;
-    if (*cp != '\0' && *cp != '-' && *cp != ':') {
+    if (*cp != '\0' && *cp != '-' && *cp != ':' && *cp != '=') {
 badelim:
 	advise (NULL, "illegal argument delimiter: `%c'(0%o)", *delimp, *delimp);
 	return 0;
@@ -127,18 +129,23 @@ rangerr:
 	if (first < mp->lowmsg)
 	    first = mp->lowmsg;
 
-    } else if (*cp == ':') {
+    } else if (*cp == ':' || *cp == '=') {
+
+	if (*cp == '=')
+	    is_range = 0;
+
 	cp++;
+
 	if (*cp == '-') {
+	    /* foo:-3 or foo=-3 */
 	    convdir = -1;
 	    cp++;
-	} else {
-	    if (*cp == '+') {
-		convdir = 1;
-		cp++;
-	    }
+	} else if (*cp == '+') {
+	    /* foo:+3 or foo=+3 is same as foo:3 or foo=3 */
+	    convdir = 1;
+	    cp++;
 	}
-	if ((range = atoi (bp = cp)) == 0)
+	if ((count = atoi (bp = cp)) == 0)
 	    goto badlist;
 	while (isdigit ((unsigned char) *bp))
 	    bp++;
@@ -158,16 +165,24 @@ rangerr:
 	     last >= mp->lowmsg && last <= mp->hghmsg;
 	     last += convdir)
 	    if (does_exist (mp, last))
-		if (--range <= 0)
+		if (--count <= 0)
 		    break;
-	if (last < mp->lowmsg)
-	    last = mp->lowmsg;
-	if (last > mp->hghmsg)
-	    last = mp->hghmsg;
-	if (last < first) {
-	    range = last;
-	    last = first;
-	    first = range;
+	if (is_range) { /* a range includes any messages that exist */
+	    if (last < mp->lowmsg)
+		last = mp->lowmsg;
+	    if (last > mp->hghmsg)
+		last = mp->hghmsg;
+	    if (last < first) {
+		count = last;
+		last = first;
+		first = count;
+	    }
+	} else { /* looking for the nth message.  if not enough, fail. */
+	    if (last < mp->lowmsg || last > mp->hghmsg) {
+		advise (NULL, "no such message");
+		return 0;
+	    }
+	    first = last;
 	}
     } else {
 
@@ -338,17 +353,23 @@ attr (struct msgs *mp, char *cp)
 {
     char *dp;
     char *bp = NULL;
+    char *ep;
+    char op;
     int i, j;
     int found,
 	inverted = 0,
-	range = 0,		/* no range */
-	first = 0;
+	count = 0,		/* range given?  else use entire sequence */
+	just_one = 0,		/* want entire sequence or range */
+	first = 0,
+	start = 0;
 
     /* hack for "cur-name", "cur-n", etc. */
     if (!strcmp (cp, "cur"))
 	return 0;
-    if (ssequal ("cur:", cp))	/* this code need to be rewritten... */
-	return 0;
+    if (strncmp ("cur", cp, 3) == 0) {
+	if (cp[3] == ':' || cp[3] == '=')
+	    return 0;
+    }
 
     /* Check for sequence negation */
     if ((dp = context_find (nsequence)) && *dp != '\0' && ssequal (dp, cp)) {
@@ -363,7 +384,7 @@ attr (struct msgs *mp, char *cp)
 
     if (*dp == ':') {
 	bp = dp++;
-	range = 1;
+	count = 1;
 
 	/*
 	 * seq:prev  (or)
@@ -377,80 +398,118 @@ attr (struct msgs *mp, char *cp)
 		first = (mp->curmsg > 0) && (mp->curmsg <= mp->hghmsg)
 			? mp->curmsg - 1
 			: mp->hghmsg;
+		start = first;
 	    }
 	    else if (!strcmp (dp, "next")) {
 		convdir = 1;
 		first = (mp->curmsg >= mp->lowmsg)
 			    ? mp->curmsg + 1
 			    : mp->lowmsg;
+		start = first;
 	    }
 	    else if (!strcmp (dp, "first")) {
 		convdir = 1;
+		start = mp->lowmsg;
 	    }
 	    else if (!strcmp (dp, "last")) {
 		convdir = -1;
+		start = mp->hghmsg;
 	    }
-	    else
+	    else {
 		return BADLST;
+	    }
 	} else {
 	    /*
 	     * seq:n  (or)
 	     * seq:+n (or)
 	     * seq:-n
              */
-	    if (*dp == '+')
+	    if (*dp == '+') {
+		/* foo:+3 is same as foo:3 */
 		dp++;
-	    else if (*dp == '-') {
+		convdir = 1;
+		start = mp->lowmsg;
+	    } else if (*dp == '-' || *dp == ':') {
+		/* foo:-3 or foo::3 */
 		dp++;
 		convdir = -1;
+		start = mp->hghmsg;
 	    }
-	    if ((range = atoi(dp)) == 0)
-		return BADLST;
-	    while (isdigit ((unsigned char) *dp))
-		dp++;
-	    if (*dp)
+	    count = strtol(dp,&ep,10);
+	    if (count == 0 || *ep)     /* 0 illegal */
 		return BADLST;
 	}
 
+	op = *bp;
+	*bp = '\0';	/* temporarily terminate sequence name */
+    } else if (*dp == '=') {
+
+	bp = dp++;
+
+	if (*dp == '+') {
+	    /* foo=+3 is same as foo=3 */
+	    dp++;
+	    convdir = 1;
+	    start = mp->lowmsg;
+	} else if (*dp == '-') {
+	    /* foo=-3 */
+	    dp++;
+	    convdir = -1;
+	    start = mp->hghmsg;
+	}
+
+	count = strtol(dp,&ep,10);     /* 0 illegal */
+	if (count == 0 || *ep)
+	    return BADLST;
+
+	just_one = 1;
+
+	op = *bp;
 	*bp = '\0';	/* temporarily terminate sequence name */
     }
 
     i = seq_getnum (mp, cp);	/* get index of sequence */
 
     if (bp)
-	*bp = ':';		/* restore sequence name */
+	*bp = op;		/* restore sequence name */
     if (i == -1)
 	return 0;
 
     found = 0;	/* count the number we select for this argument */
 
-    for (j = first ? first : (convdir > 0) ? mp->lowmsg : mp->hghmsg;
-		j >= mp->lowmsg && j <= mp->hghmsg; j += convdir) {
+    if (!start)
+	start = mp->lowmsg;
+
+    for (j = start; j >= mp->lowmsg && j <= mp->hghmsg; j += convdir) {
+
 	if (does_exist (mp, j)
 		&& inverted ? !in_sequence (mp, i, j) : in_sequence (mp, i, j)) {
-	    if (!is_selected (mp, j)) {
-		set_selected (mp, j);
-		mp->numsel++;
-		if (mp->lowsel == 0 || j < mp->lowsel)
-		    mp->lowsel = j;
-		if (j > mp->hghsel)
-		    mp->hghsel = j;
-	    }
 	    found++;
-
+	    /* we want all that we find, or just the last in the +/_ case */
+	    if (!just_one || found >= count) {
+		if (!is_selected (mp, j)) {
+		    set_selected (mp, j);
+		    mp->numsel++;
+		    if (mp->lowsel == 0 || j < mp->lowsel)
+			mp->lowsel = j;
+		    if (j > mp->hghsel)
+			mp->hghsel = j;
+		}
+	    }
 	    /*
-	     * If we have a range, then break out
+	     * If we have any sort of limit, then break out
 	     * once we've found enough.
              */
-	    if (range && found >= range)
+	    if (count && found >= count)
 		break;
+
 	}
     }
 
-    if (found > 0)
-	return found;
+    if (mp->numsel > 0)
+	return mp->numsel;
 
-    if (first)
+    if (first || just_one)
 	return BADMSG;
     advise (NULL, "sequence %s %s", cp, inverted ? "full" : "empty");
     return -1;
