@@ -205,7 +205,7 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 ##
 contribdir = $(docdir)/contrib
 dist_contrib_DATA = docs/contrib/replyfilter docs/contrib/build_nmh \
-		    docs/contrib/ml
+		    docs/contrib/ml docs/contrib/vpick
 
 ##
 ## Our man pages
