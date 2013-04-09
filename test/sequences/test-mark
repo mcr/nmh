@@ -54,6 +54,39 @@ run_test 'mark +nonexistent' \
          "mark: unable to change directory to `mhpath +`/nonexistent: \
 No such file or directory"
 
+# Test message ranges
+# Set current message for following tests.
+folder +inbox 5 >/dev/null
+run_test 'mark -s foo -zero cur' ''
+run_test 'mark -s foo -list' 'foo: 5'
+run_test 'mark -s foo -zero 5:-3' ''
+run_test 'mark -s foo -list' 'foo: 3-5'
+run_test 'mark -s foo -zero 5:2' ''
+run_test 'mark -s foo -list' 'foo: 5-6'
+run_test 'mark -s foo -zero 5=1' ''
+run_test 'mark -s foo -list' 'foo: 5'
+run_test 'mark -s foo -zero 5=-2' ''
+run_test 'mark -s foo -list' 'foo: 4'
+run_test 'mark -s foo -zero 5=7' 'mark: no such message'
+
+run_test 'mark -s onesix -zero 1 2 3 4 5 6'
+run_test 'mark -s onesix -list' 'onesix: 1-6'
+run_test 'mark -s foo -zero onesix:2'
+run_test 'mark -s foo -list' 'foo: 1-2'
+run_test 'mark -s foo -zero onesix=3'
+run_test 'mark -s foo -list' 'foo: 3'
+run_test 'mark -s foo -zero onesix:-3'
+run_test 'mark -s foo -list' 'foo: 4-6'
+run_test 'mark -s foo -zero onesix=-3'
+run_test 'mark -s foo -list' 'foo: 4'
+run_test 'mark -s foo -zero onesix:8'
+run_test 'mark -s foo -list' 'foo: 1-6'
+run_test 'mark -s foo -zero onesix=11' 'mark: no onesix=11 message'
+
+run_test 'mark -s foo -delete all' ''
+run_test 'mark -s onesix -delete all' ''
+
+
 # Test private sequence creation.
 # Set current message for following tests.
 folder +inbox 1 >/dev/null
