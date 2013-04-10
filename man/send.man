@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "March 31, 2013" "%nmhversion%"
+.TH SEND %manext1% "April 9, 2013" "%nmhversion%"
 .SH NAME
 send \- send a message
 .SH SYNOPSIS
@@ -399,7 +399,7 @@ user (but the
 file can be used to store this password).
 .B \-saslmech
 switch can be used to select a particular SASL mechanism,
-and the the
+and the
 .B \-user
 switch can be used to select a authorization userid
 to provide to SASL other than the default.

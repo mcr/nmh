@@ -1,4 +1,4 @@
-.TH WHOM %manext1% "July 11, 2012" "%nmhversion%"
+.TH WHOM %manext1% "April 9, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -88,7 +88,7 @@ user (but the
 file can be used to store this password).
 .B \-saslmech
 switch can be used to select a particular SASL mechanism,
-and the the
+and the
 .B \-user
 switch can be used to select a authorization userid
 to provide to SASL other than the default.

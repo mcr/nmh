@@ -1,4 +1,4 @@
-.TH POST %manext8% "March 31, 2013" "%nmhversion%"
+.TH POST %manext8% "April 9, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -145,7 +145,7 @@ delivery).
 Under normal circumstances,
 .B post
 uses the \*(lqFrom:\*(rq line in the message draft as the identity of
-the the originating mailbox.  A \*(lqFrom:\*(rq line is required in
+the originating mailbox.  A \*(lqFrom:\*(rq line is required in
 all message draft.  By default the message composition utilities such
 as
 .BR comp ,
@@ -208,7 +208,7 @@ user (but the
 file can be used to store this password).
 .B \-saslmech
 switch can be used to select a particular SASL mechanism,
-and the the
+and the
 .B \-user
 switch can be used to select a authorization userid
 to provide to SASL other than the default.

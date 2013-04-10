@@ -1,4 +1,4 @@
-.TH REPL %manext1% "March 21, 2013" "%nmhversion%"
+.TH REPL %manext1% "April 9, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -119,7 +119,7 @@ If the switch
 .B \-group
 is given, then
 .B repl
-will use the the
+will use the
 standard forms file \*(lqreplgroupcomps\*(rq.  This will construct a
 draft message that is intended as a group or followup reply.  If a file
 named \*(lqreplgroupcomps\*(rq exists in the user's nmh directory, it
