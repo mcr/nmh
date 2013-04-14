@@ -12,7 +12,6 @@
  */
 
 #include <h/mh.h>
-#include <errno.h>
 #include <sys/param.h>
 #include <sys/file.h>
 	

@@ -14,7 +14,6 @@
 #include <h/scansbr.h>
 #include <h/tws.h>
 #include <h/mts.h>
-#include <errno.h>
 #include <signal.h>
 #include <h/msh.h>
 #include <h/picksbr.h>

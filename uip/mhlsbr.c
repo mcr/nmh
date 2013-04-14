@@ -15,7 +15,6 @@
 #include <h/utils.h>
 #include <setjmp.h>
 #include <signal.h>
-#include <errno.h>
 #include <sys/types.h>
 
 /*

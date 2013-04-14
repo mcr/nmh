@@ -24,7 +24,6 @@
 # include <sys/time.h>
 #endif
 #include <time.h>
-#include <errno.h>
 #include <fcntl.h>
 #ifdef HAVE_FLOCK
 # include <sys/file.h>

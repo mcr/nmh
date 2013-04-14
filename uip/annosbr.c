@@ -11,7 +11,6 @@
 #include <h/tws.h>
 #include <h/utils.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <utime.h>
 
 

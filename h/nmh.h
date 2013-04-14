@@ -29,8 +29,9 @@
 # include <sys/param.h>
 #endif
 
-# include <locale.h>
-# include <limits.h>
+#include <locale.h>
+#include <limits.h>
+#include <errno.h>
 
 /*
  * we should be getting this value from pathconf(_PC_PATH_MAX)

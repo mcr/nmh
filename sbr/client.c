@@ -10,7 +10,6 @@
 #include <h/mh.h>
 #include <h/mts.h>
 #include <h/utils.h>
-#include <errno.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>

@@ -11,7 +11,6 @@
 #include <h/utils.h>
 #ifdef HAVE_ICONV
 #  include <iconv.h>
-#  include <errno.h>
 #endif
 
 static signed char hexindex[] = {

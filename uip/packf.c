@@ -11,7 +11,6 @@
 #include <fcntl.h>
 #include <h/dropsbr.h>
 #include <h/utils.h>
-#include <errno.h>
 
 #define PACKF_SWITCHES \
     X("file name", 0, FILESW) \

@@ -13,7 +13,6 @@
 #include <h/tws.h>
 #include <h/mts.h>
 #include <h/utils.h>
-#include <errno.h>
 
 #define SCAN_SWITCHES \
     X("clear", 0, CLRSW) \

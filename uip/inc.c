@@ -37,7 +37,6 @@
 #include <h/signals.h>
 #include <h/tws.h>
 #include <h/mts.h>
-#include <errno.h>
 #include <signal.h>
 
 #ifndef CYRUS_SASL

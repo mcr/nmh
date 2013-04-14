@@ -12,7 +12,6 @@
 #include <h/fmt_scan.h>
 #include <h/utils.h>
 #include <sys/file.h>		/* L_SET */
-#include <errno.h>
 
 extern short ccto;		/* from repl.c */
 extern short cccc;

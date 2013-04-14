@@ -11,7 +11,6 @@
 #include <h/signals.h>
 #include <setjmp.h>
 #include <signal.h>
-#include <errno.h>
 
 #ifdef READLINE_SUPPORT
 #include <readline/readline.h>

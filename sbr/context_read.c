@@ -23,7 +23,6 @@
  */
 
 #include <h/mh.h>				/* mh internals */
-#include <errno.h>				/* system call errors */
 #include <pwd.h>				/* structure for getpwuid() results */
 
 void

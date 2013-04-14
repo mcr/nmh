@@ -11,7 +11,6 @@
 #include <h/utils.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <errno.h>
 
 /*
  * We allocate space for messages (msgs array)

@@ -6,7 +6,6 @@
  * complete copyright information.
  */
 
-#include <errno.h>
 #include <h/mh.h>
 
 static char *get_temp_dir();

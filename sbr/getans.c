@@ -11,7 +11,6 @@
 #include <h/signals.h>
 #include <setjmp.h>
 #include <signal.h>
-#include <errno.h>
 
 static char ansbuf[BUFSIZ];
 static sigjmp_buf sigenv;

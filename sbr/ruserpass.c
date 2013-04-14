@@ -23,7 +23,6 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <pwd.h>
-#include <errno.h>
 
 static FILE *cfile;
 

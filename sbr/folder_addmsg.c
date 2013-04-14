@@ -9,7 +9,6 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
-#include <errno.h>
 
 /*
  * Link message into a folder.  Return the new number

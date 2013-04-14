@@ -14,7 +14,6 @@
 #include <h/dropsbr.h>
 #include <h/mts.h>
 #include <h/tws.h>
-#include <errno.h>
 
 #ifdef NTOHLSWAP
 # include <netinet/in.h>

@@ -15,7 +15,6 @@
 #include <h/mh.h>
 #include <h/vmhsbr.h>
 #include <h/utils.h>
-#include <errno.h>
 
 static char *types[] = {
     "OK",

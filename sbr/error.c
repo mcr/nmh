@@ -14,8 +14,6 @@
 # include <sys/uio.h>
 #endif
 
-#include <errno.h>
-
 
 /*
  * print out error message
