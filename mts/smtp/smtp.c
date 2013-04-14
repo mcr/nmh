@@ -9,7 +9,6 @@
 #include <h/mh.h>
 #include "smtp.h"
 #include <h/mts.h>
-#include <signal.h>
 #include <h/signals.h>
 
 #ifdef CYRUS_SASL

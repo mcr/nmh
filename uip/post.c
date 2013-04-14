@@ -15,11 +15,8 @@
 #include <h/dropsbr.h>
 #include <h/mime.h>
 #include <h/utils.h>
-
 #include <h/tws.h>
 #include <h/mts.h>
-
-#include <signal.h>
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>

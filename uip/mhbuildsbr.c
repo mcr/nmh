@@ -19,7 +19,6 @@
 #include <fcntl.h>
 #include <h/signals.h>
 #include <h/md5.h>
-#include <signal.h>
 #include <h/mts.h>
 #include <h/tws.h>
 #include <h/mime.h>

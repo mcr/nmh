@@ -31,7 +31,6 @@
 #include <h/utils.h>
 
 #include <pwd.h>
-#include <signal.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 

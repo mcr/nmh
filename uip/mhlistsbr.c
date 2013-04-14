@@ -11,7 +11,6 @@
 #include <h/mh.h>
 #include <fcntl.h>
 #include <h/signals.h>
-#include <signal.h>
 #include <h/mts.h>
 #include <h/tws.h>
 #include <h/mime.h>

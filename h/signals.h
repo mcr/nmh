@@ -4,8 +4,10 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+# include <config.h>
 #endif
+
+#include <signal.h>
 
 /*
  * The type for a signal handler

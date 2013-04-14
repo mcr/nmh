@@ -10,7 +10,6 @@
 #include <h/mh.h>
 #include <h/signals.h>
 #include <setjmp.h>
-#include <signal.h>
 #include <fcntl.h>
 #include <h/mime.h>
 #include <h/tws.h>

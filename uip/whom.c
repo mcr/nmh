@@ -9,7 +9,6 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
-#include <signal.h>
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)

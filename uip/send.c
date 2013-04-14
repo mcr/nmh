@@ -9,7 +9,6 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
-#include <signal.h>
 
 
 #ifndef CYRUS_SASL

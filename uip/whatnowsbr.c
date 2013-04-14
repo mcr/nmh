@@ -40,7 +40,6 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
-#include <signal.h>
 #include <h/mime.h>
 #include <h/utils.h>
 

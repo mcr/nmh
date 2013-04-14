@@ -32,8 +32,6 @@
 # include <unistd.h>
 #endif
 
-#include <signal.h>
-
 #if defined(HAVE_LIBLOCKFILE)
 #include <lockfile.h>
 #endif

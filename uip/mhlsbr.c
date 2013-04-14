@@ -14,7 +14,6 @@
 #include <h/tws.h>
 #include <h/utils.h>
 #include <setjmp.h>
-#include <signal.h>
 #include <sys/types.h>
 
 /*

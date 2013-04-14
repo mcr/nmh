@@ -10,7 +10,6 @@
 #include <h/mh.h>
 #include <h/signals.h>
 #include <setjmp.h>
-#include <signal.h>
 
 static char ansbuf[BUFSIZ];
 static sigjmp_buf sigenv;

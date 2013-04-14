@@ -26,7 +26,6 @@
 
 #include <pwd.h>
 #include <setjmp.h>
-#include <signal.h>
 #include <h/msh.h>
 #include <h/vmhsbr.h>
 

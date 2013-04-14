@@ -9,7 +9,6 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
-#include <signal.h>
 
 
 void

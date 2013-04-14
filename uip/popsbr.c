@@ -23,7 +23,6 @@
 
 #include <h/popsbr.h>
 #include <h/signals.h>
-#include <signal.h>
 
 #define	TRM	"."
 #define	TRMLEN	(sizeof TRM - 1)
