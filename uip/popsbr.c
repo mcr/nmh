@@ -46,6 +46,7 @@ static int sasl_get_user(void *, int, const char **, unsigned *);
 static int sasl_get_pass(sasl_conn_t *, void *, int, sasl_secret_t **);
 struct pass_context {
     char *user;
+    char *password;
     char *host;
 };
 
@@ -71,7 +72,7 @@ static int command(const char *, ...);
 static int multiline(void);
 
 #ifdef CYRUS_SASL
-static int pop_auth_sasl(char *, char *, char *);
+static int pop_auth_sasl(char *, char *, char *, char *);
 static int sasl_fgetc(FILE *);
 #endif /* CYRUS_SASL */
 
@@ -91,7 +92,7 @@ static int putline (char *, FILE *);
  */
 
 int
-pop_auth_sasl(char *user, char *host, char *mech)
+pop_auth_sasl(char *user, char *password, char *host, char *mech)
 {
     int result, status, sasl_capability = 0;
     unsigned int buflen, outlen;
@@ -159,6 +160,7 @@ pop_auth_sasl(char *user, char *host, char *mech)
     callbacks[POP_SASL_CB_N_USER].context = user;
     p_context.user = user;
     p_context.host = host;
+    p_context.password = password;
     callbacks[POP_SASL_CB_N_PASS].context = &p_context;
 
     result = sasl_client_init(callbacks);
@@ -351,15 +353,13 @@ static int
 sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
 {
     struct pass_context *p_context = (struct pass_context *) context;
-    char *pass = NULL;
+    char *pass = p_context->password;
     int len;
 
     NMH_UNUSED (conn);
 
     if (! psecret || id != SASL_CB_PASS)
 	return SASL_BADPARAM;
-
-    ruserpass(p_context->user, &(p_context->host), &pass);
 
     len = strlen(pass);
 
@@ -510,7 +510,7 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	    if (*response == '+') {
 #  ifdef CYRUS_SASL
 		if (sasl) {
-		    if (pop_auth_sasl(user, host, mech) != NOTOK)
+		    if (pop_auth_sasl(user, pass, host, mech) != NOTOK)
 			return OK;
 		} else
 #  endif /* CYRUS_SASL */

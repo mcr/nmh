@@ -148,7 +148,7 @@ char *pwd (void);
 char *r1bindex(char *, int);
 void readconfig (struct node **, FILE *, char *, int);
 int refile (char **, char *);
-void ruserpass(char *, char **, char **);
+void ruserpass (char *, char **, char **);
 int remdir (char *);
 void scan_detect_mbox_style (FILE *);
 void scan_finished ();
@@ -228,3 +228,9 @@ int what_now (char *, int, int, char *, char *,
 int WhatNow(int, char **);
 int writeBase64aux(FILE *, FILE *);
 int writeBase64 (unsigned char *, size_t, unsigned char *);
+
+/*
+ * credentials management
+ */
+void init_credentials_file ();
+int nmh_get_credentials (char *, char *, int, nmh_creds_t);

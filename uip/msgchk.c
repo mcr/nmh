@@ -80,7 +80,7 @@ main (int argc, char **argv)
     int datesw = 1, notifysw = NT_ALL;
     int status = 0, sasl = 0;
     int snoop = 0, vecp = 0;
-    char *cp, *host = NULL, *port = NULL, *user, *proxy = NULL; 
+    char *cp, *host = NULL, *port = NULL, *user = NULL, *proxy = NULL;
     char buf[BUFSIZ], *saslmech = NULL; 
     char **argp, **arguments, *vec[MAXVEC];
     struct passwd *pw;
@@ -94,7 +94,6 @@ main (int argc, char **argv)
     context_read();
 
     mts_init (invo_name);
-    user = getusername();
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -151,7 +150,7 @@ main (int argc, char **argv)
 		    if (vecp >= MAXVEC-1)
 			adios (NULL, "you can only check %d users at a time", MAXVEC-1);
 		    else
-			vec[vecp++] = cp;
+			user = vec[vecp++] = cp;
 		    continue;
 
 		case SNOOPSW:
@@ -206,26 +205,26 @@ main (int argc, char **argv)
 				      snoop, sasl, saslmech);
 	}
     } else {
+	if (user == NULL) user = getusername ();
+	if (vecp == 0) {
+	    char *home;
 
-    if (vecp == 0) {
-	char *home;
-
-        /* Not sure this check makes sense... */
-	if (!geteuid() || NULL == (home = getenv("HOME"))) {
-	    pw = getpwnam (user);
-	    if (pw == NULL)
-		adios (NULL, "unable to get information about user");
-	    home = pw->pw_dir;
+	    /* Not sure this check makes sense... */
+	    if (!geteuid() || NULL == (home = getenv("HOME"))) {
+		pw = getpwnam (user);
+		if (pw == NULL)
+		    adios (NULL, "unable to get information about user");
+		home = pw->pw_dir;
+	    }
+	    status = checkmail (user, home, datesw, notifysw, 1);
+	} else {
+	    for (vecp = 0; vec[vecp]; vecp++) {
+		if ((pw = getpwnam (vec[vecp])))
+		    status += checkmail (pw->pw_name, pw->pw_dir, datesw, notifysw, 0);
+		else
+		    advise (NULL, "no such user as %s", vec[vecp]);
+	    }
 	}
-	status = checkmail (user, home, datesw, notifysw, 1);
-    } else {
-	for (vecp = 0; vec[vecp]; vecp++) {
-	    if ((pw = getpwnam (vec[vecp])))
-		status += checkmail (pw->pw_name, pw->pw_dir, datesw, notifysw, 0);
-	    else
-		advise (NULL, "no such user as %s", vec[vecp]);
-	}
-    }
     }		/* host == NULL */
 
     done (status);
@@ -327,19 +326,14 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 	    int personal, int snoop, int sasl, char *saslmech)
 {
     int nmsgs, nbytes, status;
-    char *pass = NULL;
-
-    if (user == NULL)
-	user = getusername ();
-    if (sasl)
-	pass = getusername ();
-    else
-	ruserpass (host, &user, &pass);
+    struct nmh_creds creds = { 0, 0, 0 };
 
     /* open the POP connection */
-    if (pop_init (host, port, user, pass, proxy, snoop, sasl, saslmech) == NOTOK
-	    || pop_stat (&nmsgs, &nbytes) == NOTOK	/* check for messages  */
-	    || pop_quit () == NOTOK) {			/* quit POP connection */
+    nmh_get_credentials (host, user, sasl, &creds);
+    if (pop_init (host, port, creds.user, creds.password, proxy, snoop, sasl,
+		  saslmech) == NOTOK
+	    || pop_stat (&nmsgs, &nbytes) == NOTOK     /* check for messages  */
+	    || pop_quit () == NOTOK) {                 /* quit POP connection */
 	advise (NULL, "%s", response);
 	return 1;
     }

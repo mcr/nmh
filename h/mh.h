@@ -358,6 +358,17 @@ typedef struct m_getfld_state *m_getfld_state_t;
 #define NMH_ATTACH_HEADER "Nmh-Attachment"  /* Default header for -attach */
 
 /*
+ * credentials management
+ */
+struct nmh_creds {
+    char *host;
+    char *user;
+    char *password;
+};
+
+typedef struct nmh_creds *nmh_creds_t;
+
+/*
  * miscellaneous macros
  */
 #define	pidXwait(pid,cp) pidstatus (pidwait (pid, NOTOK), stdout, cp)
@@ -405,6 +416,7 @@ extern char *catproc;
 extern char *components;
 extern char *context;
 extern char *current;
+extern char *credentials_file;
 extern char *defaultfolder;
 extern char *digestcomps;
 extern char *distcomps;

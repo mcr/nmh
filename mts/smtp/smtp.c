@@ -99,7 +99,7 @@ static FILE *sm_wfp = NULL;
 static sasl_conn_t *conn = NULL;	/* SASL connection state */
 static int sasl_complete = 0;		/* Has authentication succeded? */
 static sasl_ssf_t sasl_ssf;		/* Our security strength factor */
-static char *sasl_pw_context[2];	/* Context to pass into sm_get_pass */
+static char *sasl_pw_context[3];	/* Context to pass into sm_get_pass */
 static int maxoutbuf;			/* Maximum crypto output buffer */
 static char *sasl_outbuffer;		/* SASL output buffer for encryption */
 static int sasl_outbuflen;		/* Current length of data in outbuf */
@@ -109,10 +109,10 @@ static int sm_get_pass(sasl_conn_t *, void *, int, sasl_secret_t **);
 static sasl_callback_t callbacks[] = {
     { SASL_CB_USER, (sasl_callback_ft) sm_get_user, NULL },
 #define SM_SASL_N_CB_USER 0
-    { SASL_CB_PASS, (sasl_callback_ft) sm_get_pass, NULL },
-#define SM_SASL_N_CB_PASS 1
     { SASL_CB_AUTHNAME, (sasl_callback_ft) sm_get_user, NULL },
-#define SM_SASL_N_CB_AUTHNAME 2
+#define SM_SASL_N_CB_AUTHNAME 1
+    { SASL_CB_PASS, (sasl_callback_ft) sm_get_pass, NULL },
+#define SM_SASL_N_CB_PASS 2
     { SASL_CB_LIST_END, NULL, NULL },
 };
 
@@ -820,16 +820,11 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
     sasl_security_properties_t secprops;
     sasl_ssf_t *ssf;
     int *outbufmax;
+    char *pass = NULL;
 
     /*
      * Initialize the callback contexts
      */
-
-    if (user == NULL)
-	user = getusername();
-
-    callbacks[SM_SASL_N_CB_USER].context = user;
-    callbacks[SM_SASL_N_CB_AUTHNAME].context = user;
 
     /*
      * This is a _bit_ of a hack ... but if the hostname wasn't supplied
@@ -861,8 +856,12 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 	strncpy(host, inhost, sizeof(host) - 1);
     }
 
+    callbacks[SM_SASL_N_CB_USER].context = user;
+    callbacks[SM_SASL_N_CB_AUTHNAME].context = user;
+
     sasl_pw_context[0] = host;
     sasl_pw_context[1] = user;
+    sasl_pw_context[2] = pass;
 
     callbacks[SM_SASL_N_CB_PASS].context = sasl_pw_context;
 
@@ -1072,7 +1071,6 @@ sm_get_pass(sasl_conn_t *conn, void *context, int id,
 	    sasl_secret_t **psecret)
 {
     char **pw_context = (char **) context;
-    char *pass = NULL;
     int len;
 
     NMH_UNUSED (conn);
@@ -1080,20 +1078,14 @@ sm_get_pass(sasl_conn_t *conn, void *context, int id,
     if (! psecret || id != SASL_CB_PASS)
 	return SASL_BADPARAM;
 
-    ruserpass(pw_context[0], &(pw_context[1]), &pass);
+    len = strlen (pw_context[2]);
 
-    len = strlen(pass);
-
-    *psecret = (sasl_secret_t *) malloc(sizeof(sasl_secret_t) + len);
-
-    if (! *psecret) {
-	free(pass);
+    if (! (*psecret = (sasl_secret_t *) malloc(sizeof(sasl_secret_t) + len))) {
 	return SASL_NOMEM;
     }
 
     (*psecret)->len = len;
-    strcpy((char *) (*psecret)->data, pass);
-/*    free(pass); */
+    strcpy((char *) (*psecret)->data, pw_context[2]);
 
     return SASL_OK;
 }

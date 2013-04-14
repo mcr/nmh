@@ -120,3 +120,7 @@ BUG FIXES
 - Removed the artificial limit of 1000 messages at a time for rmmproc.
 - Fixed decoding of header fields when they contain a character that
   can't be converted.
+- post(8) -sasl now honours username in .netrc [Bug #23168].  whom(1),
+  send(1), inc(1), and msgchk(1) also benefit from this fix.  And, nmh
+  now supports specification of any valid filename in place of
+  $HOME/.netrc.

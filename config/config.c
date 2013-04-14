@@ -103,6 +103,9 @@ char *mh_defaults = nmhetcdir (/mh.profile);
 /* default name of user profile */
 char *mh_profile = ".mh_profile";
 
+/* name of credentials file, defaults to .netrc in either Path or $HOME. */
+char *credentials_file;
+
 /* name of current message "sequence" */
 char *current = "cur";
 

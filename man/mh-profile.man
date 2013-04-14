@@ -1,4 +1,4 @@
-.TH MH-PROFILE %manext5% "March 18, 2013" "%nmhversion%"
+.TH MH-PROFILE %manext5% "April 14, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -373,6 +373,92 @@ Your signature will be added to the address
 puts in the \*(lqFrom:\*(rq header; do not include an address in the
 signature text.  The \*(lqLocal\-Mailbox\*(rq profile component
 supersedes all of this.  (profile, no default)
+.RE
+.PP
+.BR credentials :
+\&legacy
+.RS 5
+Indicates how the username and password credentials will be retrieved
+for access to external servers, such as those that provide SMTP or POP
+service.  The supported entry values are \*(lqlegacy\*(rq and
+.RI \*(lqfile: netrc \*(rq.
+With \*(lqlegacy\*(rq, or if there is no credentials entry, the
+username is the first of:
+.PP
+.RS 5
+1)
+.B \-user
+switch to
+.BR send ,
+.BR post ,
+.BR whom ,
+.BR inc ,
+or
+.B msgchk
+program
+.br
+2) the login name on the local machine
+.RE
+.PP
+The password for SMTP services is the first of:
+.PP
+.RS 5
+1) password value from matching entry in file named \*(lq.netrc\*(rq
+in the user's home directory
+.br
+2) password obtained by interactively prompting the user
+.RE
+.PP
+The password for POP service when the
+.B \-sasl
+switch is used with one of these programs is the login name on the
+local machine.
+.PP
+With a
+.RI \*(lqfile: netrc \*(rq
+.B credentials
+entry, the username is the first of:
+.PP
+.RS 5
+1)
+.B \-user
+switch to program
+.br
+2) login name from matching entry in
+.I netrc
+file
+.br
+3) value provided by user in response to interactive query
+.RE
+.PP
+Similarly, the password is provided either in the
+.I netrc
+file or interactively.
+.I netrc
+can be any valid filename, either absolute or relative to Path or
+$HOME.  The
+.I netrc
+file contains authentication information, for each server,
+using a line of the following form.  Replace the words
+.IR myserver ,
+.IR mylogin ,
+and
+.I mypassword
+with your own account information:
+.PP
+.RS 5
+.B machine
+.I myserver
+.B login
+.I mylogin
+.B password
+.I mypassword
+.RE
+.PP
+This
+.I netrc
+file must be owned and readable only by you.
+(profile, default: legacy)
 .RE
 .SS "Process Profile Entries"
 The following profile elements are used whenever an

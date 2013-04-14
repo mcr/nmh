@@ -190,7 +190,6 @@ main (int argc, char **argv)
     char *maildir_copy = NULL;	/* copy of mail directory because the static gets overwritten */
 
     int nmsgs, nbytes;
-    char *pass = NULL;
     char *MAILHOST_env_variable;
 
     done=inc_done;
@@ -391,18 +390,14 @@ main (int argc, char **argv)
      * a POP server?
      */
     if (inc_type == INC_POP) {
-	if (user == NULL)
-	    user = getusername ();
-	if (sasl)
-	    pass = getusername ();
-	else
-	    ruserpass (host, &user, &pass);
+	struct nmh_creds creds = { 0, 0, 0 };
 
 	/*
 	 * initialize POP connection
 	 */
-	if (pop_init (host, port, user, pass, proxy, snoop, sasl,
-		      saslmech) == NOTOK)
+	nmh_get_credentials (host, user, sasl, &creds);
+	if (pop_init (host, port, creds.user, creds.password, proxy, snoop,
+		      sasl, saslmech) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */

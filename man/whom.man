@@ -1,4 +1,4 @@
-.TH WHOM %manext1% "April 9, 2013" "%nmhversion%"
+.TH WHOM %manext1% "April 14, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -84,14 +84,17 @@ switch will enable
 the use of SASL authentication with the SMTP MTA.  Depending on the
 SASL mechanism used, this may require an additional password prompt from the
 user (but the
-.RI \*(lq \&.netrc \*(rq
-file can be used to store this password).
+.I netrc
+file can be used to store this password, as described in the
+mh-profile(5) man page).  The
 .B \-saslmech
 switch can be used to select a particular SASL mechanism,
 and the
 .B \-user
-switch can be used to select a authorization userid
-to provide to SASL other than the default.
+switch can be used to select a authorization userid to provide to SASL
+other than the default.  The credentials profile entry in the
+mh_profile(5) man page describes the ways to supply a username and
+password.
 .PP
 If SASL authentication is successful, 
 .BR nmh
@@ -145,6 +148,7 @@ for more information.
 .fi
 .SH "SEE ALSO"
 .IR mh\-alias (5),
+.IR mh\-profile (5),
 .IR post (8)
 .SH DEFAULTS
 .nf

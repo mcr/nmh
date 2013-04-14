@@ -1,4 +1,4 @@
-.TH INC %manext1% "February 16, 2013" "%nmhversion%"
+.TH INC %manext1% "April 14, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -212,40 +212,11 @@ the environment variable.  The
 switch specifies the port name or number used to connect to the POP
 server.  If unspecified the default is \*(lqpop3\*(rq.
 .PP
-The default is for
-.B inc
-to assume that your account name on
-the POP server is the same as your current username.  To specify
-a different username, use the
+To specify a username for authentication with the POP server, use the
 .B \-user
 .I username
-switch.
-.PP
-When using POP, you will normally need to type the password for
-your account on the POP server, in order to retrieve your messages.
-It is possible to automate this process by creating a
-.RI \*(lq .netrc \*(rq
-file containing your login account information for this POP server.
-For each POP server, this file should have a line of the following
-form.  Replace the words
-.IR mypopserver ,
-.IR mylogin ,
-and
-.I mypassword
-with your own account information.
-.PP
-.RS 5
-.B machine
-.I mypopserver
-.B login
-.I mylogin
-.B password
-.I mypassword
-.RE
-.PP
-This
-.RI \*(lq .netrc \*(rq
-file should be owned and readable only by you.
+switch.  The credentials profile entry in the mh_profile(5) man page
+describes the ways to supply a username and password.
 .PP
 If passed the
 .B \-proxy
@@ -283,8 +254,9 @@ has been compiled with SASL support, the
 switch will enable
 the use of SASL authentication.  Depending on the SASL mechanism used, this
 may require an additional password prompt from the user (but the
-.RI \*(lq .netrc \*(rq
-file can be used to store this password).  The
+.I netrc
+file can be used to store this password, as described in the
+mh-profile(5) man page).  The
 .B \-saslmech
 switch can be used to select a particular SASL mechanism.
 .PP
@@ -332,6 +304,7 @@ To name sequences denoting unseen messages.
 .IR mhmail (1),
 .IR scan (1),
 .IR mh\-mail (5),
+.IR mh\-profile (5),
 .IR post (8),
 .IR rcvstore (1)
 .SH DEFAULTS

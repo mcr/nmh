@@ -14,6 +14,10 @@
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * Portions of this code are Copyright (c) 2013, by the authors of
+ * nmh.  See the COPYRIGHT file in the root directory of the nmh
+ * distribution for complete copyright information.
  */
 
 #include <h/mh.h>
@@ -22,10 +26,6 @@
 #include <errno.h>
 
 static FILE *cfile;
-
-#ifndef MAXHOSTNAMELEN
-# define MAXHOSTNAMELEN 64
-#endif
 
 #define	DEFAULT	1
 #define	LOGIN	2
@@ -62,78 +62,78 @@ static int token(void);
 void
 ruserpass(char *host, char **aname, char **apass)
 {
-    char *hdir, buf[BUFSIZ];
     int t, usedefault = 0;
     struct stat stb;
 
-    hdir = getenv("HOME");
-    if (hdir == NULL)
-	hdir = ".";
-    snprintf(buf, sizeof(buf), "%s/.netrc", hdir);
-    cfile = fopen(buf, "r");
+    init_credentials_file ();
+
+    cfile = fopen (credentials_file, "r");
     if (cfile == NULL) {
 	if (errno != ENOENT)
-	    perror(buf);
-	goto done;
-    }
+	    perror (credentials_file);
+    } else {
+	while ((t = token())) {
+	    switch(t) {
+	    case DEFAULT:
+		usedefault = 1;
+		/* FALL THROUGH */
 
-    while ((t = token())) {
-	switch(t) {
-	case DEFAULT:
-	    usedefault = 1;
-	    /* FALL THROUGH */
-
-	case MACH:
-	    if (!usedefault) {
-		if (token() != ID)
+	    case MACH:
+		if (!usedefault) {
+		    if (token() != ID)
+			continue;
+		    /*
+		     * Allow match either for user's host name.
+		     */
+		    if (strcasecmp(host, tokval) == 0)
+			goto match;
 		    continue;
-		/*
-		 * Allow match either for user's host name.
-		 */
-		if (strcasecmp(host, tokval) == 0)
-		    goto match;
-		continue;
-	    }
-match:
-	    while ((t = token()) && t != MACH && t != DEFAULT) {
-		switch(t) {
-		case LOGIN:
-		    if (token() && *aname == 0) {
-			*aname = mh_xmalloc((size_t) strlen(tokval) + 1);
-			strcpy(*aname, tokval);
-		    }
-		    break;
-		case PASSWD:
-		    if (fstat(fileno(cfile), &stb) >= 0 &&
-			(stb.st_mode & 077) != 0) {
-			/* We make this a fatal error to force the user to correct it */
-			advise(NULL, "Error - ~/.netrc file must not be world or group readable.");
-			adios(NULL, "Remove password or correct file permissions.");
-		    }
-		    if (token() && *apass == 0) {
-			*apass = mh_xmalloc((size_t) strlen(tokval) + 1);
-			strcpy(*apass, tokval);
-		    }
-		    break;
-		case ACCOUNT:
-		    break;
-
-		case MACDEF:
-		    goto done_close;
-		    break;
-		default:
-		    fprintf(stderr, "Unknown .netrc keyword %s\n", tokval);
-		    break;
 		}
+	    match:
+		while ((t = token()) && t != MACH && t != DEFAULT) {
+		    switch(t) {
+		    case LOGIN:
+			if (token() && *aname == 0) {
+			    *aname = mh_xmalloc((size_t) strlen(tokval) + 1);
+			    strcpy(*aname, tokval);
+			}
+			break;
+
+		    case PASSWD:
+			if (fstat(fileno(cfile), &stb) >= 0 &&
+			    (stb.st_mode & 077) != 0) {
+			    /* We make this a fatal error to force the
+			       user to correct it. */
+			    advise(NULL, "Error - file %s must not be world or "
+				   "group readable.", credentials_file);
+			    adios(NULL, "Remove password or correct file "
+				  "permissions.");
+			}
+			if (token() && *apass == 0) {
+			    *apass = mh_xmalloc((size_t) strlen(tokval) + 1);
+			    strcpy(*apass, tokval);
+			}
+			break;
+
+		    case ACCOUNT:
+			break;
+
+		    case MACDEF:
+			fclose(cfile);
+			return;
+
+		    default:
+			fprintf(stderr,
+				"Unknown keyword %s in credentials file %s\n",
+				tokval, credentials_file);
+			break;
+		    }
+		}
+		return;
 	    }
-	    goto done;
 	}
     }
 
-done_close:
-    fclose(cfile);
-
-done:
     if (!*aname) {
 	char tmp[80];
 	char *myname;
