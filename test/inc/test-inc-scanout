@@ -332,16 +332,17 @@ rm -f  "$MH_TEST_DIR/msgbox"
 # check mbox with two blank lines between header and body
 cat >>"$MH_TEST_DIR/msgbox" <<EOF
 From 
+Date: Mon, 15 Apr 2013 21:02:12 -0500
 From: me@example.com
 
 
 test
 EOF
 
-run_test "inc -width 80 -file $MH_TEST_DIR/msgbox -truncate" \
+run_test "inc -width 60 -file $MH_TEST_DIR/msgbox -truncate" \
 'Incorporating new mail into inbox...
 
-  25+ 04/15*me@example.com     <<test >>'
+  25+ 04/15 me@example.com     <<test >>'
 rm -f  "$MH_TEST_DIR/msgbox"
 
 
