@@ -799,6 +799,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
     } else {
 	/* not a Unix style maildrop */
 	s->readpos -= s->bytes_read;
+	s->bytes_read = 0;
 	delimstr = mmdlm2;
 	s->msg_style = MS_MMDF;
     }
@@ -883,6 +884,7 @@ m_Eom (m_getfld_state_t s, int c)
 	   Note that on input, a character had already been read
 	   with Getc().  It will be unget by m_getfld () on return. */
 	s->readpos -= s->bytes_read - 1;
+	s->bytes_read = 1;
 	return 0;
     }
 

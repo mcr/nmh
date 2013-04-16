@@ -329,5 +329,20 @@ run_test "inc -width 80 -file $MH_TEST_DIR/msgbox -truncate" \
   24  12/18 foo@example.edu    test'
 rm -f  "$MH_TEST_DIR/msgbox"
 
+# check mbox with two blank lines between header and body
+cat >>"$MH_TEST_DIR/msgbox" <<EOF
+From 
+From: me@example.com
+
+
+test
+EOF
+
+run_test "inc -width 80 -file $MH_TEST_DIR/msgbox -truncate" \
+'Incorporating new mail into inbox...
+
+  25+ 04/15*me@example.com     <<test >>'
+rm -f  "$MH_TEST_DIR/msgbox"
+
 
 exit ${failed:-0}
