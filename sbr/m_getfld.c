@@ -313,7 +313,10 @@ void m_getfld_state_destroy (m_getfld_state_t *gstate) {
     m_getfld_state_t s = *gstate;
 
     if (s) {
-	if (s->fdelim) free (s->fdelim-1);
+	if (s->fdelim) {
+	    free (s->fdelim-1);
+	    free (s->pat_map);
+	}
 	free (s);
 	*gstate = 0;
     }
