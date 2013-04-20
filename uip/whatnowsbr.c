@@ -416,7 +416,7 @@ WhatNow (int argc, char **argv)
 	     *	Build a command line that causes the user's shell to list the file name
 	     *	arguments.  This handles and wildcard expansion, tilde expansion, etc.
 	     */
-	    writelscmd(buf, sizeof(buf), "-d", argp);
+	    writelscmd(buf, sizeof(buf), "-d --", argp);
 
 	    /*
 	     *	Read back the response from the shell, which contains a number of lines
@@ -505,7 +505,7 @@ WhatNow (int argc, char **argv)
 	     * We feed all the file names to the shell at once, otherwise you can't
 	     * provide a file name with a space in it.
 	     */
-	    writelscmd(buf, sizeof(buf), "-d", argp);
+	    writelscmd(buf, sizeof(buf), "-d --", argp);
 	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
 		while (fgets(shell, sizeof (shell), f) != (char *)0) {
 		    *(strchr(shell, '\n')) = '\0';
@@ -579,7 +579,7 @@ writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
 static void
 writelscmd(char *buf, int bufsz, char *lsoptions, char **argp)
 {
-  char *lscmd = concat ("ls ", lsoptions, " --", NULL);
+  char *lscmd = concat ("ls ", lsoptions, NULL);
   writesomecmd(buf, bufsz, lscmd, "", argp);
   free (lscmd);
 }
