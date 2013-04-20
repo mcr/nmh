@@ -142,6 +142,10 @@ act on a message/external-body content, then the
 switch must
 be used twice: once for message/external-body and once for the content
 externally referenced.
+.PP
+The parts of a multipart/alternative part are listed in the reverse
+order of their placement in the message.  The listing therefore is
+in decreasing order of preference, as defined in RFC 1521.
 .SS "Checking the Contents"
 The
 .B \-check

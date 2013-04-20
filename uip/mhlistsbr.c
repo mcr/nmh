@@ -44,14 +44,14 @@ static int list_encoding (CT);
 /*
  * various formats for -list option
  */
-#define	LSTFMT1		"%4s %-5s %-24s %5s %-36s\n"
+#define	LSTFMT1		"%4s %-5s %-24s %5s %s\n"
 #define	LSTFMT2a	"%4d "
 #define	LSTFMT2b	"%-5s %-24.24s "
 #define	LSTFMT2c1	"%5lu"
 #define	LSTFMT2c2	"%4lu%c"
 #define	LSTFMT2c3	"huge "
 #define	LSTFMT2c4	"     "
-#define	LSTFMT2d1	" %-36.36s"
+#define	LSTFMT2d1	" %.36s"
 #define	LSTFMT2d2	"\t     %-65.65s\n"
 
 
