@@ -34,7 +34,7 @@ struct mailname {
  */
 void mnfree(struct mailname *);
 int ismymbox(struct mailname *);
-char *getname(char *);
+char *getname(const char *);
 char *getlocaladdr(void);
 char *auxformat(struct mailname *, int);
 struct mailname *getm(char *, char *, int, int, char *);

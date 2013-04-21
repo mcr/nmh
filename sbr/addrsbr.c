@@ -78,7 +78,7 @@ static char adr[BUFSIZ];
 
 
 char *
-getname (char *addrs)
+getname (const char *addrs)
 {
     struct adrx *ap;
 
