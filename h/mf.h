@@ -70,9 +70,9 @@ struct adrx {
 /*
  * prototypes
  */
-int isfrom(char *);
-int lequal (char *, char *);
+int isfrom(const char *);
+int lequal (const char *, const char *);
 int mfgets (FILE *, char **);
-char *legal_person (char *);
-struct adrx *getadrx (char *);
+char *legal_person (const char *);
+struct adrx *getadrx (const char *);
 

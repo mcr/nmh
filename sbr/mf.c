@@ -15,8 +15,8 @@
 /*
  * static prototypes
  */
-static char *getcpy (char *);
-static int isat (char *);
+static char *getcpy (const char *);
+static int isat (const char *);
 static int parse_address (void);
 static int phrase (char *);
 static int route_addr (char *);
@@ -27,7 +27,7 @@ static int my_lex (char *);
 
 
 static char *
-getcpy (char *s)
+getcpy (const char *s)
 {
     register char *p;
 
@@ -46,7 +46,7 @@ getcpy (char *s)
 
 
 int
-isfrom(char *string)
+isfrom(const char *string)
 {
     return (strncmp (string, "From ", 5) == 0
 	    || strncmp (string, ">From ", 6) == 0);
@@ -54,7 +54,7 @@ isfrom(char *string)
 
 
 int
-lequal (char *a, char *b)
+lequal (const char *a, const char *b)
 {
     for (; *a; a++, b++)
 	if (*b == 0)
@@ -73,7 +73,7 @@ lequal (char *a, char *b)
 
 
 static int
-isat (char *p)
+isat (const char *p)
 {
     return (strncmp (p, " AT ", 4)
 	    && strncmp (p, " At ", 4)
@@ -197,7 +197,7 @@ static struct adrx  adrxs2;
 
 
 struct adrx *
-getadrx (char *addrs)
+getadrx (const char *addrs)
 {
     register char *bp;
     register struct adrx *adrxp = &adrxs2;
@@ -741,14 +741,14 @@ got_atom: ;
 
 
 char *
-legal_person (char *p)
+legal_person (const char *p)
 {
     int i;
-    register char *cp;
+    register const char *cp;
     static char buffer[BUFSIZ];
 
     if (*p == '"')
-	return p;
+	return (char *) p;
     for (cp = p; *cp; cp++)
 	for (i = 0; special[i].lx_chr; i++)
 	    if (*cp == special[i].lx_chr) {
@@ -756,7 +756,7 @@ legal_person (char *p)
 		return buffer;
 	    }
 
-    return p;
+    return (char *) p;
 }
 
 
