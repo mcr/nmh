@@ -72,7 +72,7 @@ run_test "repl -nonexistent" 'repl: -nonexistent unknown'
 run_test "repl" 'repl: no cur message'
 
 
-printf 'Local-Mailbox: mymailbox@localhost\n' >> $MH
+printf 'Local-Mailbox: mymailbox@localhost\n' >> "$MH"
 
 # check -cc me
 cat >$expected <<EOF
@@ -110,7 +110,7 @@ check $expected $actual
 
 # check -cc me with Local- and Alternate-Mailbox addtions, Bug #36635:
 # -nocc me doesn't account for Alternate-Mailboxes.
-printf 'Alternate-Mailboxes: user@example.com\n' >> $MH
+printf 'Alternate-Mailboxes: user@example.com\n' >> "$MH"
 
 cat >$expected <<EOF
 From: mymailbox@localhost
@@ -145,6 +145,37 @@ Comments: In-reply-to Test1 <test1@example.com>
 EOF
 
 repl -cc me -nocc me -editor true -nowhatnowproc 1
+check $expected $actual
+
+
+# check quoting of local part of invalid address, Bug #26780
+cat >`mhpath new` <<EOF
+From: Test11 <test11@example.com>
+To: before_auser@example.com, A. User <auser@example.com>,
+ after_user@example.com
+Date: Fri, 29 Sep 2006 00:00:11
+Message-Id: 11@test.nmh
+Subject: Testing message 11
+
+This is message number 11
+
+EOF
+
+cat >$expected <<EOF
+From: mymailbox@localhost
+To: Test11 <test11@example.com>
+cc: before_auser@example.com, "A. User" <auser@example.com>,
+    after_user@example.com
+Fcc: +outbox
+Subject: Re: Testing message 11
+In-reply-to: 11@test.nmh
+References: 11@test.nmh
+Comments: In-reply-to Test11 <test11@example.com>
+   message dated "Fri, 29 Sep 2006 00:00:11."
+--------
+EOF
+
+repl -cc to -editor true -nowhatnowproc 11
 check $expected $actual
 
 

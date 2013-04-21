@@ -58,6 +58,7 @@ static int insert (struct mailname *);
 static void replfilter (FILE *, FILE *, char *, int);
 static char *replformataddr(char *, char *);
 static char *replconcataddr(char *, char *);
+static char *fix_addresses (char *);
 
 
 void
@@ -290,6 +291,7 @@ replformataddr (char *orig, char *str)
     register char *cp;
     register char *sp;
     register struct mailname *mp = NULL;
+    char *fixed_str = fix_addresses (str);
 
     /* if we don't have a buffer yet, get one */
     if (bufsiz == 0) {
@@ -314,7 +316,7 @@ replformataddr (char *orig, char *str)
     }
 
     /* concatenate all the new addresses onto 'buf' */
-    for (isgroup = 0; (cp = getname (str)); ) {
+    for (isgroup = 0; (cp = getname (fixed_str)); ) {
 	if ((mp = getm (cp, dfhost, dftype, AD_NAME, error)) == NULL) {
 	    snprintf (baddr, sizeof(baddr), "\t%s -- %s\n", cp, error);
 	    badaddrs = add (baddr, badaddrs);
@@ -340,6 +342,8 @@ replformataddr (char *orig, char *str)
 	    CPY (sp);
 	}
     }
+
+    free (fixed_str);
 
     if (isgroup)
 	*dst++ = ';';
@@ -475,5 +479,132 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 		done (1);
 	    fseek (out, 0L, SEEK_END);
 	    break;
+    }
+}
+
+
+static
+char *
+fix_addresses (char *str) {
+    char *fixed_str = NULL;
+    int fixed_address = 0;
+
+    if (str) {
+        /*
+         * Attempt to parse each of the addresses in str.  If any fail
+         * and can be fixed with escape_local_part(), do that.  This
+         * is extra ugly because getm()'s state can only be reset by
+         * call getname(), and getname() needs to be called repeatedly
+         * until it returns NULL to reset its state.
+         */
+        struct adr_node {
+            char *adr;
+            int escape_local_part;
+            int fixed;
+            struct adr_node *next;
+        } *adrs = NULL;
+        struct adr_node *np = adrs;
+        char *cp;
+
+        /*
+         * First, put each of the addresses in a linked list.  Note
+         * invalid addresses that might be fixed by escaping the
+         * local part.
+         */
+        while ((cp = getname (str))) {
+            struct adr_node *adr_nodep = mh_xmalloc (sizeof *adr_nodep);
+            char error[BUFSIZ];
+            struct mailname *mp;
+
+            adr_nodep->adr = strdup (cp);
+            adr_nodep->escape_local_part = 0;
+            adr_nodep->fixed = 0;
+            adr_nodep->next = NULL;
+
+            /* With AD_NAME, errors are not reported to user. */
+            if ((mp = getm (cp, dfhost, dftype, AD_NAME, error)) == NULL) {
+                const char *no_at_sign = "no at-sign after local-part";
+
+                adr_nodep->escape_local_part =
+                    ! strncmp (error, no_at_sign, strlen (no_at_sign));
+            } else {
+                mnfree (mp);
+            }
+
+            if (np) {
+                np = np->next = adr_nodep;
+            } else {
+                np = adrs = adr_nodep;
+            }
+        }
+
+        /*
+         * Walk the list and try to fix broken addresses.
+         */
+        for (np = adrs; np; np = np->next) {
+            char *display_name = strdup (np->adr);
+            size_t len = strlen (display_name);
+
+            if (np->escape_local_part) {
+                char *local_part_end = strrchr (display_name, '<');
+                char *angle_addr = strdup (local_part_end);
+                struct mailname *mp;
+                char *new_adr, *adr;
+
+                *local_part_end = '\0';
+                /* Trim any trailing whitespace. */
+                while (local_part_end > display_name  &&
+                       isspace ((unsigned char) *--local_part_end)) {
+                    *local_part_end = '\0';
+                }
+                escape_local_part (display_name, len);
+                new_adr = concat (display_name, " ", angle_addr, NULL);
+                adr = getname (new_adr);
+                if (adr != NULL  &&
+                    (mp = getm (adr, dfhost, dftype, AD_NAME, NULL)) != NULL) {
+                    fixed_address = 1;
+                    mnfree (mp);
+                }
+                free (angle_addr);
+                free (new_adr);
+                free (np->adr);
+                np->adr = strdup (adr);
+
+                /* Need to flush getname() */
+                while ((cp = getname (""))) continue;
+            } /* else the np->adr is OK, so use it as-is. */
+
+            free (display_name);
+        }
+
+        /*
+         * If any addresses were repaired, build new address string,
+         * replacing broken addresses.
+         */
+        for (np = adrs; np; ) {
+            struct adr_node *next = np->next;
+
+            if (fixed_address) {
+                if (fixed_str) {
+                    char *new_str = concat (fixed_str, ", ", np->adr, NULL);
+
+                    free (fixed_str);
+                    fixed_str = new_str;
+                } else {
+                    fixed_str = strdup (np->adr);
+                }
+            }
+
+            free (np->adr);
+            free (np);
+            np = next;
+        }
+    }
+
+    if (fixed_address) {
+        return fixed_str;
+    } else {
+        free (fixed_str);
+        return str  ?  strdup (str)  :  NULL;
     }
 }

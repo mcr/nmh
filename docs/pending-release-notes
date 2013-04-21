@@ -126,3 +126,5 @@ BUG FIXES
   send(1), inc(1), and msgchk(1) also benefit from this fix.  And, nmh
   now supports specification of any valid filename in place of
   $HOME/.netrc.
+- Added quoting of local part of invalid address in message being
+  replied to [Bug #26780].
