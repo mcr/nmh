@@ -10,7 +10,7 @@ repl \- reply to a message
 .B repl
 .RI [ +folder ]
 .RI [ msgs ]
-.RB [ \-annotate " | " \-noannotate ] 
+.RB [ \-annotate " | " \-noannotate ]
 .RB [ \-group " | " \-nogroup ]
 .RB [ \-cc
 all/to/cc/me]
@@ -94,7 +94,7 @@ Subject: Re: <Subject>
 In\-Reply\-To: <Message\-Id>
 References: <Message\-Id>
 Comments: In\-Reply\-To <From> or <apparently from> or <Sender>
-.ti +3 
+.ti +3
 message dated <date>
 --------
 .fi
@@ -109,8 +109,8 @@ addresses to this default with the
 .B \-cc
 .I type
 switch.  This switch takes an
-argument (
-.IR all / to / cc / me )
+argument
+.RI ( all / to / cc / me )
 which specifies who gets added to the default
 \*(lqcc:\*(rq list of the reply.  You may give this switch multiple times (with
 different arguments) if you wish to add multiple types of addresses.
@@ -472,14 +472,14 @@ No mail is actually sent.
 The
 .B \-file
 .I msgfile
-switch specifies the message to be replied to as an 
+switch specifies the message to be replied to as an
 exact filename rather than as an
 .B nmh
-folder and message number. It is 
+folder and message number. It is
 intended to be used by the
 .B msh
 interface to
-.BR nmh . 
+.BR nmh .
 The same caveats apply to this option as to the
 .B \-build
 switch.
