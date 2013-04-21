@@ -15,7 +15,6 @@
 /*
  * static prototypes
  */
-static char *getcpy (const char *);
 static int isat (const char *);
 static int parse_address (void);
 static int phrase (char *);
@@ -24,25 +23,6 @@ static int local_part (char *);
 static int domain (char *);
 static int route (char *);
 static int my_lex (char *);
-
-
-static char *
-getcpy (const char *s)
-{
-    register char *p;
-
-    if (!s) {
-/* causes compiles to blow up because the symbol _cleanup is undefined 
-   where did this ever come from? */
-	/* _cleanup(); */
-	abort();
-	for(;;)
-	    pause();
-    }
-    p = mh_xmalloc ((size_t) (strlen (s) + 2));
-    strcpy (p, s);
-    return p;
-}
 
 
 int
@@ -218,7 +198,7 @@ getadrx (const char *addrs)
     err[0] = 0;
 
     if (dp == NULL) {
-	dp = cp = getcpy (addrs ? addrs : "");
+	dp = cp = strdup (addrs ? addrs : "");
 	glevel = 0;
     }
     else
@@ -299,7 +279,7 @@ again: ;
     switch (my_lex (buffer)) {
 	case LX_ATOM: 
 	case LX_QSTR: 
-	    pers = getcpy (buffer);
+	    pers = strdup (buffer);
 	    break;
 
 	case LX_SEMI: 
@@ -553,7 +533,7 @@ domain (char *buffer)
 static int
 route (char *buffer)
 {
-    path = getcpy ("@");
+    path = strdup ("@");
 
     for (;;) {
 	switch (my_lex (buffer)) {
@@ -652,7 +632,7 @@ my_lex (char *buffer)
 		    if (--i < 0) {
 			*bp = 0;
 			note = note ? add (buffer, add (" ", note))
-			    : getcpy (buffer);
+			    : strdup (buffer);
 			return my_lex (buffer);
 		    }
 	    }
