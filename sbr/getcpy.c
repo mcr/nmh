@@ -16,7 +16,7 @@
 
 
 char *
-getcpy (char *str)
+getcpy (const char *str)
 {
     char *cp;
     size_t len;

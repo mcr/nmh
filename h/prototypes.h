@@ -88,7 +88,7 @@ char **getans_via_readline (char *, struct swit *);
 int getanswer (char *);
 char **getarguments (char *, int, char **, int);
 char *get_charset(void);
-char *getcpy (char *);
+char *getcpy (const char *);
 char *get_default_editor(void);
 char *getfolder(int);
 /*
