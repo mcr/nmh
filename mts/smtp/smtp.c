@@ -818,7 +818,7 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
     sasl_security_properties_t secprops;
     sasl_ssf_t *ssf;
     int *outbufmax;
-    char *pass = NULL;
+    struct nmh_creds creds = { 0, 0, 0 };
 
     /*
      * Initialize the callback contexts
@@ -857,9 +857,11 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
     callbacks[SM_SASL_N_CB_USER].context = user;
     callbacks[SM_SASL_N_CB_AUTHNAME].context = user;
 
+    nmh_get_credentials (host, user, 1, &creds);
+
     sasl_pw_context[0] = host;
-    sasl_pw_context[1] = user;
-    sasl_pw_context[2] = pass;
+    sasl_pw_context[1] = creds.user;
+    sasl_pw_context[2] = creds.password;
 
     callbacks[SM_SASL_N_CB_PASS].context = sasl_pw_context;
 
@@ -960,7 +962,6 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 	} else {
 	    result = sasl_decode64(sm_reply.text, sm_reply.length,
 				   outbuf, sizeof(outbuf), &outlen);
-	
 	    if (result != SASL_OK) {
 		smtalk(SM_AUTH, "*");
 		sm_ierror("SASL base64 decode failed: %s",

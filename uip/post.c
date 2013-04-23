@@ -89,6 +89,7 @@
     X("fileproc", -4, FILEPROCSW) \
     X("mhlproc", -3, MHLPROCSW) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
+    X("credentials legacy|file:filename", 0, CREDENTIALSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
 
 #define X(sw, minchars, id) id,
@@ -493,6 +494,21 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
                     save_mts_method (cp);
 		    continue;
+
+		case CREDENTIALSSW: {
+		    /* post doesn't read the profile, so insert credentials
+		       entry the hard way. */
+		    struct node *np = (struct node *) mh_xmalloc (sizeof *np);
+
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    np->n_name = "credentials";
+		    np->n_field = cp;
+		    np->n_context = 0;
+		    np->n_next = m_defs;
+		    m_defs = np;
+		    continue;
+		}
 
 		case MESSAGEIDSW:
 		    if (!(cp = *argp++) || *cp == '-')
