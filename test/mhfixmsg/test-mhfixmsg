@@ -409,8 +409,7 @@ This is a text/plain part.
 ------- =_aaaaaaaaaa0--
 EOF
 
-msgfile=`mhpath new`
-cat >$msgfile <<EOF
+cat >`mhpath new` <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg decode test
@@ -482,8 +481,7 @@ This is the fourth text/plain part.
 This is additional content after the last subpart of the multipart.
 EOF
 
-msgfile=`mhpath new`
-cat >$msgfile <<EOF
+cat >`mhpath new` <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg decode test 2
@@ -539,8 +537,7 @@ check "$expected" "$actual"
 # check attempted -decode of binary text
 #### Generated the encoded text below with:
 ####   $ printf '\x0d\xbd\xb2=\xbc\n' | base64
-msgfile=`mhpath new`
-cat >$msgfile <<EOF
+cat >`mhpath new` <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg attempted binary decode test
@@ -585,6 +582,95 @@ rm -f "$expected"
 rmm last
 
 
+# check that -reformat succeeds when decode of binary text fails
+cat >"$expected" <<'EOF'
+MIME-Version: 1.0
+Date: Thu, 11 Apr 2013 02:47:08 -0700
+To: <me@example.com>
+From: <sender@example.com>
+Subject: body requires binary encoding
+Content-Type: multipart/alternative; boundary="----=_nmh-multipart"
+
+------=_nmh-multipart
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8bit
+
+Mile                                     $0.00
+Time                                    $78.71
+State Tax                                $5.90
+Vehicle License Fee                      $1.84
+State Txn Tax                            $6.00
+
+------=_nmh-multipart
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<body>
+<table width=3D"325" border=3D"0" cellspacing=3D"0" cellpadding=3D"0">
+<tr><td><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=
+=3D"2"><strong>Mile</strong></font></td><td height=3D"3">&nbsp;</td><td al=
+ign=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333=
+" size=3D"2">$0.00</font></td></tr><tr><td><font face=3D"Arial, Helvetica,=
+ sans-serif" color=3D"#333333" size=3D"2"><strong>Time</strong></font></td=
+><td height=3D"3">&nbsp;</td><td align=3D"right"><font face=3D"Arial, Helv=
+etica, sans-serif" color=3D"#333333" size=3D"2">$78.71</font></td></tr><tr=
+><td><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=3D=
+"2"><strong>State Tax</strong></font></td><td height=3D"3">&nbsp;</td><td =
+align=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"#3333=
+33" size=3D"2">$5.90</font></td></tr><tr><td><font face=3D"Arial, Helvetic=
+a, sans-serif" color=3D"#333333" size=3D"2"><strong>Vehicle License Fee</s=
+trong></font></td><td height=3D"3">&nbsp;</td><td align=3D"right"><font fa=
+ce=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=3D"2">$1.84</fo=
+nt></td></tr><tr><td><font face=3D"Arial, Helvetica, sans-serif" color=3D"=
+#333333" size=3D"2"><strong>State Txn Tax</strong></font></td><td height=3D=
+"3">&nbsp;</td><td align=3D"right"><font face=3D"Arial, Helvetica, sans-se=
+rif" color=3D"#333333" size=3D"2">$6.00</font></td></tr>
+
+</body>
+</html>
+
+------=_nmh-multipart--
+EOF
+
+cat >`mhpath new` <<'EOF'
+MIME-Version: 1.0
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 11 Apr 2013 02:47:08 -0700
+To: <me@example.com>
+From: <sender@example.com>
+Subject: body requires binary encoding
+
+<body>
+<table width=3D"325" border=3D"0" cellspacing=3D"0" cellpadding=3D"0">
+<tr><td><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=
+=3D"2"><strong>Mile</strong></font></td><td height=3D"3">&nbsp;</td><td ali=
+gn=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" =
+size=3D"2">$0.00</font></td></tr><tr><td><font face=3D"Arial, Helvetica, sa=
+ns-serif" color=3D"#333333" size=3D"2"><strong>Time</strong></font></td><td=
+ height=3D"3">&nbsp;</td><td align=3D"right"><font face=3D"Arial, Helvetica=
+, sans-serif" color=3D"#333333" size=3D"2">$78.71</font></td></tr><tr><td><=
+font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=3D"2"><st=
+rong>State Tax</strong></font></td><td height=3D"3">&nbsp;</td><td align=3D=
+"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=
+=3D"2">$5.90</font></td></tr><tr><td><font face=3D"Arial, Helvetica, sans-s=
+erif" color=3D"#333333" size=3D"2"><strong>Vehicle License Fee</strong></fo=
+nt></td><td height=3D"3">&nbsp;</td><td align=3D"right"><font face=3D"Arial=
+, Helvetica, sans-serif" color=3D"#333333" size=3D"2">$1.84</font></td></tr=
+><tr><td><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=
+=3D"2"><strong>State Txn Tax</strong></font></td><td height=3D"3">&nbsp;</t=
+d><td align=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"=
+#333333" size=3D"2">$6.00</font></td></tr>
+
+</body>
+</html>
+EOF
+
+#### lynx inserts multiple blank lines, so use uniq to squeeze them.
+mhfixmsg last -outfile - | uniq >"$actual"
+check "$expected" "$actual" 'ignore space'
+
+
 # check -textcodeset
 # Also checks preservation of attributes after one (charset) that is
 # modified.
@@ -607,8 +693,7 @@ EOF
 
 #### Generated the encoded text below with:
 ####   $ printf '\xbd\xb2=\xbc\n' | base64
-msgfile=`mhpath new`
-cat >$msgfile <<EOF
+cat >`mhpath new` <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg textcodeset test
@@ -665,7 +750,7 @@ EOF
 cp -p `mhpath last` `mhpath new`
 
 run_test 'mhfixmsg last -nofixboundary' ''
-check "$MH_TEST_DIR"/Mail/inbox/16 "$MH_TEST_DIR"/Mail/inbox/17 'keep first'
+check "$MH_TEST_DIR"/Mail/inbox/17 "$MH_TEST_DIR"/Mail/inbox/18 'keep first'
 
 
 # check that message is not output when fed through stdin
@@ -704,7 +789,7 @@ The boundaries of this part don't match the header boundary.
 EOF
 
 run_test 'mhfixmsg last -outfile '"$actual"' -verbose' \
-         "mhfixmsg: 16, fix multipart boundary"
+         "mhfixmsg: 17, fix multipart boundary"
 check "$expected" "$actual"
 
 
@@ -853,24 +938,24 @@ mv "$1" "$1.backup"
 EOF
 chmod a+x "${MH_TEST_DIR}/Mail/rmmproc"
 echo "rmmproc: ${MH_TEST_DIR}/Mail/rmmproc" >>"$MH"
-cp "${MH_TEST_DIR}/Mail/inbox/14" "${MH_TEST_DIR}/Mail/inbox/14.original"
+cp "${MH_TEST_DIR}/Mail/inbox/15" "${MH_TEST_DIR}/Mail/inbox/15.original"
 
-run_test 'mhfixmsg 14' ''
-check "${MH_TEST_DIR}/Mail/inbox/14.backup" \
-      "${MH_TEST_DIR}/Mail/inbox/14.original"
+run_test 'mhfixmsg 15' ''
+check "${MH_TEST_DIR}/Mail/inbox/15.backup" \
+      "${MH_TEST_DIR}/Mail/inbox/15.original"
 
 
 # check -normmproc
-cp "${MH_TEST_DIR}/Mail/inbox/18" "${MH_TEST_DIR}/Mail/inbox/19"
+cp "${MH_TEST_DIR}/Mail/inbox/19" "${MH_TEST_DIR}/Mail/inbox/20"
 
-run_test 'mhfixmsg 18 -normmproc'
-check "${MH_TEST_DIR}/Mail/inbox/19" \
-      "${MH_TEST_DIR}/Mail/inbox/,18" 'keep first'
+run_test 'mhfixmsg 19 -normmproc'
+check "${MH_TEST_DIR}/Mail/inbox/20" \
+      "${MH_TEST_DIR}/Mail/inbox/,19" 'keep first'
 
 
 # check -rmmproc
-run_test 'mhfixmsg 19 -rmmproc true'
-if test -f '${MH_TEST_DIR}/Mail/inbox/19.backup'; then
+run_test 'mhfixmsg 20 -rmmproc true'
+if test -f '${MH_TEST_DIR}/Mail/inbox/20.backup'; then
   echo check of mhfixmsg -rmmproc FAILED, should not have created backup file
   failed=`expr ${failed:-0} + 1`
 fi

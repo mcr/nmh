@@ -610,7 +610,7 @@ get_multipart_boundary (CT ct, char **part_boundary) {
             }
         }
     } else {
-	status = NOTOK;
+        status = NOTOK;
     }
 
     if (status == OK) {
@@ -1452,6 +1452,8 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
             if (decode_part (ct) == OK  &&  ct->c_cefile.ce_file) {
                 if ((ct_encoding = content_encoding (ct)) == CE_BINARY  &&
                     encoding != CE_BINARY) {
+                    /* The decoding isn't acceptable so discard it.
+                       Leave status as OK to allow other transformations. */
                     if (verbosw) {
                         report (ct->c_partno, ct->c_file,
                                 "will not decode%s because it is binary",
@@ -1462,9 +1464,10 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                     unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
-                    status = NOTOK;
-                } else if (ct->c_encoding == CE_QUOTED &&
+                } else if (ct->c_encoding == CE_QUOTED  &&
                            ct_encoding == CE_8BIT  &&  encoding == CE_7BIT) {
+                    /* The decoding isn't acceptable so discard it.
+                       Leave status as OK to allow other transformations. */
                     if (verbosw) {
                         report (ct->c_partno, ct->c_file,
                                 "will not decode%s because it is 8bit",
@@ -1475,7 +1478,6 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                     unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
-                    status = NOTOK;
                 } else {
                     int enc;
                     if (ct_encoding == CE_BINARY)
