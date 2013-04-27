@@ -129,20 +129,43 @@ check_for_hard_links () {
 #### check() requires two arguments, each the name of a file to be
 #### diff'ed.
 #### If the same, the second file is removed.  And the first file is
-####   removed unless the optional third argument has a value of
+####   removed unless there's an optional argument with a value of
 ####   'keep first'.
 #### If different, global variable "failed" is incremented.
+#### If there's an optional 'ignore space' argument, diff -b will
+#### be used instead of cmp to compare the files.
 check() {
-    #### POSIX diff should support -c.
-    if cmp -s "$1" "$2"; then
-      test $# -lt 3 -o "$3" != 'keep first'  &&  rm -f "$1"
-      rm -f "$2"
+    first=$1; shift
+    second=$1; shift
+    keepfirst=
+    ignorespace=
+    while [ $# -gt 0 ]; do
+        case $1 in
+            'keep first')   keepfirst=1 ;;
+            'ignore space') ignorespace=1 ;;
+            *) echo "$0: invalid command $1" ;;
+        esac
+        shift
+    done
+
+    success=
+    if [ "$ignorespace" ]; then
+        #### POSIX diff should support -b.
+        diff -b "$first" "$second" >/dev/null  &&  success=1
     else
-      echo
-      diff -c "$1" "$2" || true
-      echo
-      echo "$0: test failed, outputs are in $1 and $2."
-      failed=`expr ${failed:-0} + 1`
+        cmp -s "$first" "$second"  &&  success=1
+    fi
+
+    if [ "$success" ]; then
+        [ "$keepfirst" ]  ||  rm -f "$first"
+        rm -f "$second"
+    else
+        echo
+        #### POSIX diff should support -c.
+        diff -c "$first" "$second" || true
+        echo
+        echo "$0: test failed, outputs are in $first and $second."
+        failed=`expr ${failed:-0} + 1`
     fi
 }
 
