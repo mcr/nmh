@@ -12,7 +12,6 @@
  */
 
 #include <h/mh.h>
-#include <sys/param.h>
 #include <sys/file.h>
 	
 int
@@ -30,7 +29,7 @@ makedir (char *dir)
 
     if (!(folder_perms_ASCII = context_find ("folder-protect")))
 	folder_perms_ASCII = foldprot;  /* defaults to "700" */
-    
+
     /* Because mh-profile.man documents "Folder-Protect:" as an octal constant,
        and we don't want to force the user to remember to include a leading
        zero, we call atooi(folder_perms_ASCII) here rather than
@@ -45,7 +44,7 @@ makedir (char *dir)
     saved_umask = umask(0);
 
     if (getuid () == geteuid ()) {
-	c = strncpy(path, dir, sizeof(path));     
+	c = strncpy(path, dir, sizeof(path));
 	
 	while (!had_an_error && (c = strchr((c + 1), '/')) != NULL) {	
 	    *c = (char)0;
@@ -85,11 +84,11 @@ makedir (char *dir)
 
 	   -- Dan Harkless <dan-nmh@dilvish.speed.net> */
 	switch (pid = fork()) {
-	    case -1: 
+	    case -1:
 		advise ("fork", "unable to");
 		return 0;
 		
-	    case 0: 
+	    case 0:
 		setgid (getgid ());
 		setuid (getuid ());
 		
@@ -99,7 +98,7 @@ makedir (char *dir)
 		perror ("mkdir");
 		_exit (-1);
 		
-	    default: 
+	    default:
 		if (pidXwait(pid, "mkdir"))
 		    return 0;
 		break;
