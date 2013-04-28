@@ -135,7 +135,7 @@ cat "${MH_TEST_DIR}/Mail/inbox/1" >>"$expected"
 anno 1 -component Nmh-test -nodate -text 'test of anno -list'
 run_test 'anno 1 -component Nmh-test -list' 'test of anno -list'
 # check -text
-check "$expected" "${MH_TEST_DIR}/Mail/inbox/1" "$actual"
+check "$expected" "${MH_TEST_DIR}/Mail/inbox/1"
 cp -f "${MH_TEST_DIR}/Mail/inbox/11" "${MH_TEST_DIR}/Mail/inbox/1"
 
 # check -list -number
@@ -144,7 +144,7 @@ cat "${MH_TEST_DIR}/Mail/inbox/1" >>"$expected"
 anno 1 -component Nmh-test -nodate -text 'test of anno -list -number'
 run_test 'anno 1 -component Nmh-test -list -number' \
          '1	test of anno -list -number'
-check "$expected" "${MH_TEST_DIR}/Mail/inbox/1" "$actual"
+check "$expected" "${MH_TEST_DIR}/Mail/inbox/1"
 cp -f "${MH_TEST_DIR}/Mail/inbox/11" "${MH_TEST_DIR}/Mail/inbox/1"
 
 # check -delete
