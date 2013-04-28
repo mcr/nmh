@@ -278,7 +278,15 @@ store_multi (CT ct)
 	CT  p = part->mp_part;
 
 	if (part_ok (p, 1) && type_ok (p, 1)) {
+	    if (ct->c_storage) {
+		/* Support mhstore -outfile.  The MIME parser doesn't
+		   load c_storage, so we know that p->c_storage is
+		   NULL here. */
+		p->c_storage = ct->c_storage;
+	    }
 	    result = store_switch (p);
+	    p->c_storage = NULL;
+
 	    if (result == OK && ct->c_subtype == MULTI_ALTERNATE)
 		break;
 	}
@@ -438,7 +446,13 @@ store_external (CT ct)
     p->c_partno = ct->c_partno;
 
     /* we probably need to check if content is really there */
+    if (ct->c_storage) {
+	/* Support mhstore -outfile.  The MIME parser doesn't load
+	   c_storage, so we know that p->c_storage is NULL here. */
+	p->c_storage = ct->c_storage;
+    }
     result = store_switch (p);
+    p->c_storage = NULL;
 
     p->c_partno = NULL;
     return result;
@@ -512,11 +526,13 @@ store_content (CT ct, CT p)
 	 */
 	if (p) {
 	    appending = 1;
-	    ct->c_storage = add (p->c_storage, NULL);
+            if (! ct->c_storage) {
+		ct->c_storage = add (p->c_storage, NULL);
 
-	    /* record the folder name */
-	    if (p->c_folder) {
-		ct->c_folder = add (p->c_folder, NULL);
+		/* record the folder name */
+		if (p->c_folder) {
+		    ct->c_folder = add (p->c_folder, NULL);
+		}
 	    }
 	    goto got_filename;
 	}
@@ -544,52 +560,54 @@ store_content (CT ct, CT p)
 	}
     }
 
-    /*
-     * Check the beginning of storage formatting string
-     * to see if we are saving content to a folder.
-     */
-    if (*cp == '+' || *cp == '@') {
-	char *tmpfilenam, *folder;
+    if (! ct->c_storage) {
+	/*
+	 * Check the beginning of storage formatting string
+	 * to see if we are saving content to a folder.
+	 */
+	if (*cp == '+' || *cp == '@') {
+	    char *tmpfilenam, *folder;
 
-	/* Store content in temporary file for now */
-	tmpfilenam = m_mktemp(invo_name, NULL, NULL);
-	ct->c_storage = add (tmpfilenam, NULL);
+	    /* Store content in temporary file for now */
+	    tmpfilenam = m_mktemp(invo_name, NULL, NULL);
+	    ct->c_storage = add (tmpfilenam, NULL);
 
-	/* Get the folder name */
-	if (cp[1])
-	    folder = pluspath (cp);
-	else
-	    folder = getfolder (1);
+	    /* Get the folder name */
+	    if (cp[1])
+		folder = pluspath (cp);
+	    else
+		folder = getfolder (1);
 
-	/* Check if folder exists */
-	create_folder(m_mailpath(folder), 0, exit);
+	    /* Check if folder exists */
+	    create_folder(m_mailpath(folder), 0, exit);
 
-	/* Record the folder name */
-	ct->c_folder = add (folder, NULL);
+	    /* Record the folder name */
+	    ct->c_folder = add (folder, NULL);
 
-	if (cp[1])
-	    free (folder);
+	    if (cp[1])
+		free (folder);
 
-	goto got_filename;
-    }
+	    goto got_filename;
+	}
 
-    /*
-     * Parse and expand the storage formatting string
-     * in `cp' into `buffer'.
-     */
-    parse_format_string (ct, cp, buffer, sizeof(buffer), dir);
+	/*
+	 * Parse and expand the storage formatting string
+	 * in `cp' into `buffer'.
+	 */
+	parse_format_string (ct, cp, buffer, sizeof(buffer), dir);
 
-    /*
-     * If formatting begins with '|' or '!', then pass
-     * content to standard input of a command and return.
-     */
-    if (buffer[0] == '|' || buffer[0] == '!')
-	return show_content_aux (ct, 1, 0, buffer + 1, dir);
+	/*
+	 * If formatting begins with '|' or '!', then pass
+	 * content to standard input of a command and return.
+	 */
+	if (buffer[0] == '|' || buffer[0] == '!')
+	    return show_content_aux (ct, 1, 0, buffer + 1, dir);
 
-    /* record the filename */
-    if ((ct->c_storage = clobber_check (add (buffer, NULL))) == NULL) {
-      return NOTOK;
-    }
+        /* record the filename */
+	if ((ct->c_storage = clobber_check (add (buffer, NULL))) == NULL) {
+	    return NOTOK;
+	}
+    } /* else output filename was explicitly specified, so use it */
 
 got_filename:
     /* flush the output stream */
@@ -1210,11 +1228,11 @@ static char *
 clobber_check (char *original_file) {
   /* clobber policy        return value
    * --------------        ------------
-   *   -always                 file
-   *   -auto           file-<digits>.extension
-   *   -suffix             file.<digits>
-   *   -ask          file, 0, or another filename/path
-   *   -never                   0
+   *   -always             original_file
+   *   -auto               original_file-<digits>.extension
+   *   -suffix             original_file.<digits>
+   *   -ask                original_file, 0, or another filename/path
+   *   -never              0
    */
 
   char *file;

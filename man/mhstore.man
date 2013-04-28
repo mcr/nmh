@@ -12,6 +12,8 @@ mhstore \- store contents of MIME messages into files
 .RI [ msgs ]
 .RB [ \-file
 .IR file ]
+.RB [ \-outfile
+.IR outfile ]
 .RB [ \-part
 .IR number ]
 \&...
@@ -53,10 +55,10 @@ switches, you may limit the scope of
 to particular
 subparts (of a multipart content) and/or particular content types.
 .PP
-The option
+The
 .B \-file
 .I file
-directs
+switch directs
 .B mhstore
 to use the specified
 file as the source message, rather than a message from a folder.
@@ -154,6 +156,9 @@ If this entry isn't present,
 the current working directory is used.
 .PP
 If the
+.B \-outfile
+switch is given, its argument is used for the filename to store the
+content, with \*(lq-\*(rq indicating standard output.  If the
 .B \-auto
 switch is given, then
 .B mhstore
@@ -336,6 +341,12 @@ terminal,
 .I ask
 behaves the same as
 .IR always .
+.PP
+The
+.B \-clobber
+switch is ignored if the
+.B \-outfile
+switch is used.
 .SS "Reassembling Messages of Type message/partial"
 .B mhstore
 is also able to reassemble messages that have been

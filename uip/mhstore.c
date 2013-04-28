@@ -26,6 +26,7 @@
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
     X("file file", 0, FILESW)		/* interface from show */ \
+    X("outfile outfile", 0, OUTFILESW) \
     X("part number", 0, PARTSW) \
     X("type content", 0, TYPESW) \
     X("rcache policy", 0, RCACHESW) \
@@ -97,7 +98,7 @@ int
 main (int argc, char **argv)
 {
     int msgnum, *icachesw;
-    char *cp, *file = NULL, *folder = NULL;
+    char *cp, *file = NULL, *outfile = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
     char **arguments;
     struct msgs_array msgs = { 0, 0, NULL };
@@ -196,6 +197,12 @@ do_cache:
 		file = *cp == '-' ? cp : path (cp, TFILE);
 		continue;
 
+	    case OUTFILESW:
+		if (!(cp = *argp++) || (*cp == '-' && cp[1]))
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		outfile = *cp == '-' ? cp : path (cp, TFILE);
+		continue;
+
 	    case VERBSW: 
 		verbosw = 1;
 		continue;
@@ -286,8 +293,12 @@ do_cache:
 	    adios (NULL, "out of memory");
 	ctp = cts;
 
-	if ((ct = parse_mime (file)))
+	if ((ct = parse_mime (file))) {
 	    *ctp++ = ct;
+	    if (outfile) {
+		ct->c_storage = outfile;
+	    }
+        }
     } else {
 	/*
 	 * message(s) are coming from a folder
@@ -324,8 +335,12 @@ do_cache:
 		char *msgnam;
 
 		msgnam = m_name (msgnum);
-		if ((ct = parse_mime (msgnam)))
+		if ((ct = parse_mime (msgnam))) {
 		    *ctp++ = ct;
+		    if (outfile) {
+			ct->c_storage = add (outfile, NULL);
+		    }
+                }
 	    }
 	}
     }

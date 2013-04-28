@@ -24,6 +24,7 @@ NEW FEATURES
   (pseudo)random bytes and uses microsecond-resolution time.
 - Added -clobber switch to mhstore(1) to control overwriting of
   existing files.
+- Added -outfile switch to mhstore(1).
 - Added -noall/-all switches to sortm(1).  sortm -noall requires
   a messages argument.
 - $PAGER overrides the compiled-in default pager command.
