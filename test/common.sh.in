@@ -143,7 +143,7 @@ check() {
         case $1 in
             'keep first')   keepfirst=1 ;;
             'ignore space') ignorespace=1 ;;
-            *) echo "$0: invalid command $1" ;;
+            *) echo "$0: invalid check() argument \"$1\" in test suite" ;;
         esac
         shift
     done
