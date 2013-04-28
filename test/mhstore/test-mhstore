@@ -51,9 +51,8 @@ stored_contents=`mhstore -file - < $MH_TEST_DIR/Mail/inbox/5 2>&1 | \
 check $expected $stored_contents 'keep first'
 
 # check -outfile
-set +e
-mhstore 5 -outfile "$actual" 2>&1 | grep -v '^storing'
-set -e
+mhstore 5 -outfile "$actual" 2>&1 | grep -v '^storing' && \
+  echo unexpected output from test-mhstore check -outfile
 check $expected "$actual" 'keep first'
 
 # check -outfile -
