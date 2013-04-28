@@ -854,11 +854,12 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 	strncpy(host, inhost, sizeof(host) - 1);
     }
 
-    callbacks[SM_SASL_N_CB_USER].context = user;
-    callbacks[SM_SASL_N_CB_AUTHNAME].context = user;
-
     nmh_get_credentials (host, user, 1, &creds);
 
+    /* It's OK to copy the creds pointers here.  The callbacks that
+       use them will only be called before this function returns. */
+    callbacks[SM_SASL_N_CB_USER].context = creds.user;
+    callbacks[SM_SASL_N_CB_AUTHNAME].context = creds.user;
     sasl_pw_context[0] = host;
     sasl_pw_context[1] = creds.user;
     sasl_pw_context[2] = creds.password;
