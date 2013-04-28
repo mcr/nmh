@@ -157,8 +157,8 @@ the current working directory is used.
 .PP
 If the
 .B \-outfile
-switch is given, its argument is used for the filename to store the
-content, with \*(lq-\*(rq indicating standard output.  If the
+switch is given, its argument is used for the filename to store all
+of the content, with \*(lq-\*(rq indicating standard output.  If the
 .B \-auto
 switch is given, then
 .B mhstore
@@ -341,12 +341,6 @@ terminal,
 .I ask
 behaves the same as
 .IR always .
-.PP
-The
-.B \-clobber
-switch is ignored if the
-.B \-outfile
-switch is used.
 .SS "Reassembling Messages of Type message/partial"
 .B mhstore
 is also able to reassemble messages that have been

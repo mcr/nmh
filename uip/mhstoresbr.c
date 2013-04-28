@@ -607,7 +607,13 @@ store_content (CT ct, CT p)
 	if ((ct->c_storage = clobber_check (add (buffer, NULL))) == NULL) {
 	    return NOTOK;
 	}
-    } /* else output filename was explicitly specified, so use it */
+    } else {
+        /* The output filename was explicitly specified, so use it. */
+	if ((ct->c_storage = clobber_check (add (ct->c_storage, NULL))) ==
+            NULL) {
+	    return NOTOK;
+	}
+    }
 
 got_filename:
     /* flush the output stream */
