@@ -133,7 +133,7 @@ check_for_hard_links () {
 ####   'keep first'.
 #### If different, global variable "failed" is incremented.
 #### If there's an optional 'ignore space' argument, diff -b will
-#### be used instead of cmp to compare the files.
+####   be used instead of cmp to compare the files.
 check() {
     first=$1; shift
     second=$1; shift
@@ -143,7 +143,7 @@ check() {
         case $1 in
             'keep first')   keepfirst=1 ;;
             'ignore space') ignorespace=1 ;;
-            *) echo "$0: invalid check() argument \"$1\" in test suite" ;;
+            *) echo "$0: invalid check() argument \"$1\" in test suite" >&2 ;;
         esac
         shift
     done

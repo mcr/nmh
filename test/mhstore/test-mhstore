@@ -52,11 +52,11 @@ check $expected $stored_contents 'keep first'
 
 # check -outfile
 mhstore 5 -outfile "$actual" 2>&1 | grep -v '^storing' && \
-  echo unexpected output from test-mhstore check -outfile
+  echo unexpected output from test-mhstore check -outfile >&2
 check $expected "$actual" 'keep first'
 
 # check -outfile -
-echo 'storing message 5 to stdout' >> "$expected"
+echo 'storing message 5 to stdout' >>"$expected"
 mhstore 5 -outfile - >"$actual" 2>&1
 check $expected "$actual"
 
