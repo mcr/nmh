@@ -31,10 +31,8 @@
  * SUCH DAMAGE.
  */
 
-#include <stdio.h>
+#include <h/mh.h>
 #include <termios.h>
-#include <unistd.h>   /* for isatty() */
-#include "h/mh.h"     /* for adios() */
 
 /* We don't use MAX_PASS here because the maximum password length on a remote
    POP daemon will have nothing to do with the length on our OS.  256 is

@@ -28,12 +28,9 @@
 #ifdef HAVE_FLOCK
 # include <sys/file.h>
 #endif
-#ifdef HAVE_LOCKF
-# include <unistd.h>
-#endif
 
 #if defined(HAVE_LIBLOCKFILE)
-#include <lockfile.h>
+# include <lockfile.h>
 #endif
 
 #ifdef LOCKDIR

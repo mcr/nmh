@@ -8,9 +8,7 @@
  */
 
 #include <h/mh.h>
-#include <unistd.h>    /* for getpid() */
 #include <sys/time.h>  /* for gettimeofday() */
-#include <stdio.h>
 
 
 static enum {
