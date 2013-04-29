@@ -13,10 +13,6 @@
 
 #include <sys/types.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <h/mh.h>
 #include <h/crawl_folders.h>
 #include <h/utils.h>

@@ -8,7 +8,6 @@
  */
 
 #include <h/mh.h>
-#include <stdio.h>
 
 
 int

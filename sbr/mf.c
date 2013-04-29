@@ -8,8 +8,6 @@
  */
 
 #include <h/mf.h>
-#include <ctype.h>
-#include <stdio.h>
 #include <h/utils.h>
 
 /*
