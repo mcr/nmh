@@ -187,6 +187,7 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     struct stat st;
     FILE *fp;
     char *tfile = NULL;
+    char *cp;
 
     umask (~m_gmprot ());
 
@@ -242,6 +243,12 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     vec = argsplit(postproc, &program, &vecp);
     if (verbsw)
 	vec[vecp++] = "-verbose";
+
+    if ((cp = context_find ("credentials"))) {
+	/* post doesn't read context so need to pass credentials. */
+	vec[vecp++] = "-credentials";
+	vec[vecp++] = cp;
+    }
 
     switch (sendsbr (vec, vecp, program, tmpfil, &st, 0, (char *)0, 0)) {
 	case DONE:

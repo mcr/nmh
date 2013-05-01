@@ -1121,13 +1121,19 @@ sendit (char *sp, char **arg, char *file, int pushed)
     vec[vecp++] = getcpy (m_maildir (""));
 
     if ((cp = context_find ("fileproc"))) {
-      vec[vecp++] = "-fileproc";
-      vec[vecp++] = cp;
+	vec[vecp++] = "-fileproc";
+	vec[vecp++] = cp;
     }
 
     if ((cp = context_find ("mhlproc"))) {
-      vec[vecp++] = "-mhlproc";
-      vec[vecp++] = cp;
+	vec[vecp++] = "-mhlproc";
+	vec[vecp++] = cp;
+    }
+
+    if ((cp = context_find ("credentials"))) {
+	/* post doesn't read context so need to pass credentials. */
+	vec[vecp++] = "-credentials";
+	vec[vecp++] = cp;
     }
 
     while ((cp = *argp++)) {
