@@ -9,7 +9,6 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
-#include <stdlib.h>
 #include <fcntl.h>
 
 /*
