@@ -635,7 +635,13 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 
 		if (c != EOF) c = Peek (s);
 		if (max < n) {
-		    /* the dest buffer is full */
+		    /* The dest buffer is full.  Need to back the read
+                       pointer up by one because when m_getfld() is
+                       reentered, it will read a character.  Then
+                       we'll jump right to the FLDPLUS handling code,
+                       which will not store that character, but
+                       instead move on to the next one. */
+                    if (s->readpos > s->msg_buf) --s->readpos;
 		    s->state = FLDPLUS;
 		    finished = 1;
 		} else if (c != ' '  &&  c != '\t') {

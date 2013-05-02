@@ -297,6 +297,42 @@ run_test 'scan -width 80 -file '"$MH_TEST_DIR"'/mess' \
          '   1  01/16 No Such User       FLDPLUS test'
 rm -f "$MH_TEST_DIR/mess"
 
+# check inc of message with header field body with more than 511 characters
+cat >"$expected" <<EOF
+Comments: The important characteristic of this message is that this header
+          field body is more than 511 bytes long.  That tests the logic in
+          m_getfld () for transitioning to the FLDPLUS state.  This is the
+          only use for the FLDPLUS state, handling header field bodies that
+          are longer than the buffer used to retrieve them.  The trailing
+          newline after the last character is the 512th character.  The 511th
+          character, counting all spaces, even the leading one, is*
+          And, it continues onto this line.
+From: No Such User <nosuch@example.com>
+To: Some Other User <someother@example.com>
+Subject: FLDPLUS test
+Date: Wed, 16 Jan 2013 20:33:58 -0600
+EOF
+
+cat >"$MH_TEST_DIR/mess" <<EOF
+From nosuch@example.com  Wed 16 Jan 2013 20:33:58 -0600
+Comments: The important characteristic of this message is that this header
+          field body is more than 511 bytes long.  That tests the logic in
+          m_getfld () for transitioning to the FLDPLUS state.  This is the
+          only use for the FLDPLUS state, handling header field bodies that
+          are longer than the buffer used to retrieve them.  The trailing
+          newline after the last character is the 512th character.  The 511th
+          character, counting all spaces, even the leading one, is*
+          And, it continues onto this line.
+From: No Such User <nosuch@example.com>
+To: Some Other User <someother@example.com>
+Subject: FLDPLUS test
+Date: Wed, 16 Jan 2013 20:33:58 -0600
+
+EOF
+inc -file "$MH_TEST_DIR/mess" >/dev/null
+check "$expected" `mhpath last`  ||  rmm last
+rm -f "$MH_TEST_DIR/mess"
+
 # check scan and inc of mbox with multiple messages
 echo y | packf -file "$MH_TEST_DIR/msgbox"
 run_test "scan -width 80 -file $MH_TEST_DIR/msgbox" \
