@@ -166,6 +166,8 @@ check() {
         echo
         echo "$0: test failed, outputs are in $first and $second."
         failed=`expr ${failed:-0} + 1`
+        #### Set return status of the function.
+        [ $failed -eq 0 ]
     fi
 }
 
