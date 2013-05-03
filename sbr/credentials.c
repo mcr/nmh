@@ -48,14 +48,11 @@ nmh_get_credentials (char *host, char *user, int sasl, nmh_creds_t creds) {
     creds->host = host;
 
     if (cred_style == NULL  ||  ! strcmp (cred_style, "legacy")) {
-        /* This is what inc.c and msgchk.c used to contain. */
-        if (user == NULL) {
-            creds->user = getusername ();
-        }
         if (sasl) {
+            /* This is what inc.c and msgchk.c used to contain. */
+            /* Only inc.c and msgchk.c do this.  smtp.c doesn't. */
+            creds->user = user == NULL  ?  getusername ()  :  user;
             creds->password = getusername ();
-        } else {
-            ruserpass (host, &creds->user, &creds->password);
         }
     } else if (! strncasecmp (cred_style, "file:", 5)) {
         /*
@@ -67,8 +64,11 @@ nmh_get_credentials (char *host, char *user, int sasl, nmh_creds_t creds) {
          *    credentials file didn't have a "default" token)
          */
         creds->user = user;
-        ruserpass (host, &creds->user, &creds->password);
+    } else {
+        admonish (NULL, "unknown credentials style %s", cred_style);
+        return NOTOK;
     }
 
+    ruserpass (host, &creds->user, &creds->password);
     return OK;
 }

@@ -854,7 +854,7 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 	strncpy(host, inhost, sizeof(host) - 1);
     }
 
-    nmh_get_credentials (host, user, 1, &creds);
+    nmh_get_credentials (host, user, 0, &creds);
 
     /* It's OK to copy the creds pointers here.  The callbacks that
        use them will only be called before this function returns. */
