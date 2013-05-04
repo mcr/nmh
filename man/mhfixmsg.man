@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "March 21, 2013" "%nmhversion%"
+.TH MHFIXMSG %manext1% "May 4, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -59,6 +59,11 @@ selected encoding, the part is not decoded (and a message will be
 displayed if
 .B \-verbose
 is enabled).
+.PP
+When the
+.B \-decodetext
+switch is enabled, each carriage return character that precedes a
+linefeed character is removed from ASCII-encoded text parts.
 .PP
 The
 .B \-textcodeset

@@ -103,8 +103,10 @@ static void transfer_noncontent_headers (CT, CT);
 static int set_ct_type (CT, int type, int subtype, int encoding);
 static int decode_text_parts (CT, int, int *);
 static int content_encoding (CT);
+static int strip_crs (CT);
 static int convert_codesets (CT, char *, int *);
 static int convert_codeset (CT, char *, int *);
+static char *content_codeset (CT);
 static int write_content (CT, char *, char *, int, int);
 static int remove_file (char *);
 static void report (char *, char *, char *, ...);
@@ -1158,24 +1160,15 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
 }
 
 
-/* Identifies 7bit or 8bit content based on charset, if specified. */
+/* Identifies 7bit or 8bit content based on charset. */
 static int
 charset_encoding (CT ct) {
-    int encoding = CE_8BIT;
-    CI ctinfo = &ct->c_ctinfo;
-    char **ap, **vp;
+    /* norm_charmap() is case sensitive. */
+    char *codeset = upcase (content_codeset (ct));
+    int encoding =
+        strcmp (norm_charmap (codeset), "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
 
-    for (ap = ctinfo->ci_attrs, vp = ctinfo->ci_values; *ap; ++ap, ++vp) {
-        if (! strcasecmp (*ap, "charset")) {
-            /* norm_charmap() is case sensitive. */
-            char *ch = upcase (*vp);
-
-            if (! strcmp (norm_charmap (ch), "US-ASCII")) encoding = CE_7BIT;
-            free (ch);
-            break;
-        }
-    }
-
+    free (codeset);
     return encoding;
 }
 
@@ -1492,6 +1485,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                             report (ct->c_partno, ct->c_file, "decode%s",
                                     ct->c_ctline ? ct->c_ctline : "");
                         }
+                        strip_crs (ct);
                     } else {
                         status = NOTOK;
                     }
@@ -1501,9 +1495,14 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
             }
             break;
         }
+        case CE_8BIT:
+        case CE_7BIT:
+            strip_crs (ct);
+            break;
         default:
             break;
         }
+
         break;
 
     case CT_MULTIPART: {
@@ -1584,6 +1583,151 @@ content_encoding (CT ct) {
 
 
 static int
+strip_crs (CT ct) {
+    /* norm_charmap() is case sensitive. */
+    char *codeset = upcase (content_codeset (ct));
+    int status = OK;
+
+    /* Only strip carriage returns if content is ASCII. */
+    if (! strcmp (norm_charmap (codeset), "US-ASCII")) {
+        char **file = NULL;
+        FILE **fp = NULL;
+        size_t begin;
+        ssize_t end;
+        int has_crs = 0;
+        int opened_input_file = 0;
+
+        if (ct->c_cefile.ce_file) {
+            file = &ct->c_cefile.ce_file;
+            fp = &ct->c_cefile.ce_fp;
+            begin = end = 0;
+        } else if (ct->c_file) {
+            file = &ct->c_file;
+            fp = &ct->c_fp;
+            begin = (size_t) ct->c_begin;
+            end = (ssize_t) ct->c_end;
+        } /* else don't know where the content is */
+
+        if (file  &&  *file  &&  fp) {
+            if (! *fp) {
+                if ((*fp = fopen (*file, "r")) == NULL) {
+                    advise (*file, "unable to open for reading");
+                    status = NOTOK;
+                } else {
+                    opened_input_file = 1;
+                }
+            }
+        }
+
+        if (fp  &&  *fp) {
+            char buffer[BUFSIZ];
+            size_t bytes_read;
+            ssize_t max = end > 0  ?  end - begin  :  sizeof buffer;
+
+            fseeko (*fp, begin, SEEK_SET);
+            while ((bytes_read = fread (buffer, 1, max, *fp)) > 0) {
+                /* Look for CR followed by a LF.  This is supposed to
+                   be text so there should be LF's.  If not, don't
+                   modify the content. */
+                char *cp;
+                size_t i;
+                int last_char_was_cr = 0;
+
+                if (end > 0) max -= bytes_read;
+
+                for (i = 0, cp = buffer; i < bytes_read; ++i, ++cp) {
+                    if (*cp == '\n'  &&  last_char_was_cr) {
+                        has_crs = 1;
+                        break;
+                    }
+
+                    last_char_was_cr = *cp == '\r'  ?  1  :  0;
+                }
+            }
+
+            if (has_crs) {
+                int fd;
+                char *stripped_content_file =
+                    add (m_mktemp2 (tmp, invo_name, &fd, NULL), NULL);
+
+                /* Strip each CR before a LF from the content. */
+                fseeko (*fp, begin, SEEK_SET);
+                while ((bytes_read = fread (buffer, 1, sizeof buffer, *fp)) > 0) {
+                    char *cp;
+                    size_t i;
+                    int last_char_was_cr = 0;
+
+                    for (i = 0, cp = buffer; i < bytes_read; ++i, ++cp) {
+                        if (*cp == '\r') {
+                            last_char_was_cr = 1;
+                        } else if (last_char_was_cr) {
+                            if (*cp != '\n') write (fd, "\r", 1);
+                            write (fd, cp, 1);
+                            last_char_was_cr = 0;
+                        } else {
+                            write (fd, cp, 1);
+                            last_char_was_cr = 0;
+                        }
+
+                    }
+                }
+
+                if (close (fd)) {
+                    admonish (NULL, "unable to write temporaty file %s",
+                              stripped_content_file);
+                    unlink (stripped_content_file);
+                    status = NOTOK;
+                }
+
+                if (status == OK) {
+                    /* Replace the decoded file with the converted one. */
+                    if (ct->c_cefile.ce_file) {
+                        if (ct->c_cefile.ce_unlink) {
+                            unlink (ct->c_cefile.ce_file);
+                        }
+                        free (ct->c_cefile.ce_file);
+                    }
+                    ct->c_cefile.ce_file = stripped_content_file;
+                    ct->c_cefile.ce_unlink = 1;
+                }
+            }
+
+            if (opened_input_file) {
+                fclose (*fp);
+                *fp = NULL;
+            }
+        }
+    }
+
+    free (codeset);
+    return status;
+}
+
+
+char *
+content_codeset (CT ct) {
+    const char *const charset = "charset";
+    char *default_codeset = NULL;
+    CI ctinfo = &ct->c_ctinfo;
+    char **ap, **vp;
+    char **src_codeset = NULL;
+
+    for (ap = ctinfo->ci_attrs, vp = ctinfo->ci_values; *ap; ++ap, ++vp) {
+        if (! strcasecmp (*ap, charset)) {
+            src_codeset = vp;
+            break;
+        }
+    }
+
+    /* RFC 2045, Sec. 5.2:  default to us-ascii. */
+    if (src_codeset == NULL) src_codeset = &default_codeset;
+    if (*src_codeset == NULL) *src_codeset = "US-ASCII";
+
+    return *src_codeset;
+}
+
+
+static int
 convert_codesets (CT ct, char *dest_codeset, int *message_mods) {
     int status = OK;
 
@@ -1627,39 +1771,34 @@ convert_codesets (CT ct, char *dest_codeset, int *message_mods) {
 
 static int
 convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
-    const char *const charset = "charset";
-    char **src_codeset = NULL;
-    char *default_codeset = NULL;
-    CI ctinfo = &ct->c_ctinfo;
-    char **ap, **vp;
+    char *src_codeset = content_codeset (ct);
     int status = OK;
 
-    for (ap = ctinfo->ci_attrs, vp = ctinfo->ci_values; *ap; ++ap, ++vp) {
-        if (! strcasecmp (*ap, charset)) {
-            src_codeset = vp;
-            break;
-        }
-    }
-    /* RFC 2045, Sec. 5.2:  default to us-ascii. */
-    if (src_codeset == NULL) src_codeset = &default_codeset;
-    if (*src_codeset == NULL) *src_codeset = "US-ASCII";
+    /* norm_charmap() is case sensitive. */
+    char *src_codeset_u = upcase (src_codeset);
+    char *dest_codeset_u = upcase (dest_codeset);
+    int different_codesets =
+        strcmp (norm_charmap (src_codeset), norm_charmap (dest_codeset));
 
-    if (strcmp (norm_charmap (*src_codeset), norm_charmap (dest_codeset))) {
+    free (dest_codeset_u);
+    free (src_codeset_u);
+
+    if (different_codesets) {
 #ifdef HAVE_ICONV
         iconv_t conv_desc = NULL;
         char *dest;
         int fd = -1;
         char **file = NULL;
         FILE **fp = NULL;
-        long begin;
-        long end;
+        size_t begin;
+        ssize_t end;
         int opened_input_file = 0;
         char src_buffer[BUFSIZ];
         HF hf;
 
-        if ((conv_desc = iconv_open (dest_codeset, *src_codeset)) ==
+        if ((conv_desc = iconv_open (dest_codeset, src_codeset)) ==
             (iconv_t) -1) {
-            advise (NULL, "Can't convert %s to %s", *src_codeset, dest_codeset);
+            advise (NULL, "Can't convert %s to %s", src_codeset, dest_codeset);
             return -1;
         }
 
@@ -1673,8 +1812,8 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
         } else if (ct->c_file) {
             file = &ct->c_file;
             fp = &ct->c_fp;
-            begin = ct->c_begin;
-            end = ct->c_end;
+            begin = (size_t) ct->c_begin;
+            end = (ssize_t) ct->c_end;
         } /* else no input file: shouldn't happen */
 
         if (file  &&  *file  &&  fp) {
@@ -1690,7 +1829,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
 
         if (fp  &&  *fp) {
             size_t inbytes;
-            size_t max = end > 0  ?  (size_t) (end-begin)  :  sizeof src_buffer;
+            ssize_t max = end > 0  ?  end - begin  :  sizeof src_buffer;
 
             fseeko (*fp, begin, SEEK_SET);
             while (status == OK  &&  max > 0  &&
@@ -1734,11 +1873,11 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
             ++*message_mods;
             if (verbosw) {
                 report (ct->c_partno, ct->c_file, "convert %s to %s",
-                        *src_codeset, dest_codeset);
+                        src_codeset, dest_codeset);
             }
 
             /* Update ci_attrs. */
-            *src_codeset = dest_codeset;
+            src_codeset = dest_codeset;
 
             /* Update ct->c_ctline. */
             if (ct->c_ctline) {
@@ -1768,7 +1907,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
 #else  /* ! HAVE_ICONV */
         NMH_UNUSED (message_mods);
 
-        advise (NULL, "Can't convert %s to %s without iconv", *src_codeset,
+        advise (NULL, "Can't convert %s to %s without iconv", src_codeset,
                 dest_codeset);
         status = NOTOK;
 #endif /* ! HAVE_ICONV */

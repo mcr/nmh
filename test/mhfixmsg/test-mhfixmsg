@@ -932,6 +932,33 @@ run_test 'mhfixmsg last -outfile '"$actual" ''
 check "$expected" "$actual"
 
 
+# check stripping of CRs from ASCII text context
+cat >"$expected" <<EOF
+MIME-Version: 1.0
+From: sender@example.com
+To: recipient@example.com
+Subject: message with CR's
+Date: Mon, 29 Apr 2013 11:51:45 -0400
+
+There are two CR-LF pairs at the end of this sentence.
+
+EOF
+
+cat >`mhpath new` <<'EOF'
+MIME-Version: 1.0
+From: sender@example.com
+To: recipient@example.com
+Subject: message with CR's
+Date: Mon, 29 Apr 2013 11:51:45 -0400
+
+There are two CR-LF pairs at the end of this sentence.
+
+EOF
+
+mhfixmsg last -outfile "$actual"
+check "$expected" "$actual"
+
+
 # check rmmproc
 cat >"$MH_TEST_DIR/Mail/rmmproc" <<'EOF'
 mv "$1" "$1.backup"
