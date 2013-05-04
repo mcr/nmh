@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "April 9, 2013" "%nmhversion%"
+.TH MHSHOW %manext1% "May 4, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -264,7 +264,7 @@ redirected from the terminal to the content.
 .PP
 If a display string is not found,
 .B mhshow
-has several default values:
+behaves as if these profile entries were supplied and supported:
 .PP
 .RS 5
 .nf
@@ -272,6 +272,9 @@ mhshow-show-text/plain: %pmoreproc '%F'
 mhshow-show-message/rfc822: %pshow -file '%F'
 .fi
 .RE
+.PP
+Note that \*(lqmoreproc\*(rq is not supported in user profile display
+strings.
 .PP
 If a subtype of type text doesn't have a profile entry, it will be
 treated as text/plain.
@@ -467,7 +470,7 @@ local filename
 The program should terminate with an exit status of zero if the
 retrieval is successful, and a non-zero exit status otherwise.
 .PP
-For the \*(lqurl\*(rq access\-type, 
+For the \*(lqurl\*(rq access\-type,
 .B mhshow
 will look for the \*(lqnmh-access-url\*(rq
 profile entry.  See
