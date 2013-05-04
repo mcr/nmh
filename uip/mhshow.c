@@ -69,7 +69,6 @@ extern char *cache_private;
 extern int pausesw;
 extern int serialsw;
 extern char *progsw;
-extern int nolist;
 extern int nomore;	/* flags for moreproc/header display */
 extern char *formsw;
 
