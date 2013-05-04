@@ -155,3 +155,18 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 
     opp = npp;
 }
+
+
+void
+add_profile_entry (const char *key, const char *value) {
+    struct node *newnode = (struct node *) mh_xmalloc (sizeof *newnode);
+
+    /* This inserts the new node at the beginning of m_defs because
+       that doesn't require traversing it or checking to see if it's
+       empty. */
+    newnode->n_name = getcpy (key);
+    newnode->n_field = getcpy (value);
+    newnode->n_context = 0;
+    newnode->n_next = m_defs;
+    m_defs = newnode;
+}
