@@ -620,7 +620,7 @@ show_text (CT ct, int serial, int alternate)
      */
     if (!alternate || ct->c_subtype == TEXT_PLAIN) {
 	snprintf (buffer, sizeof(buffer), "%%p%s '%%F'", progsw ? progsw :
-		moreproc && *moreproc ? moreproc : "more");
+		moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
 	cp = (ct->c_showproc = add (buffer, NULL));
 	return show_content_aux (ct, serial, alternate, cp, NULL);
     }
