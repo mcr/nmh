@@ -128,17 +128,13 @@ appropriate.  (See example below.)
 .PP
 An approximation of the way aliases are resolved at posting time is
 (it's not really done this way):
-.PP
-.RS 2
-.IP 1) 3
+.IP 1)
 Build a list of all addresses from the message to be delivered,
 eliminating duplicate addresses.
-.PP
-.IP 2) 3
+.IP 2)
 If this draft originated on the local host, then for those addresses in
 the message that have no host specified, perform alias resolution.
-.PP
-.IP 3) 3
+.IP 3)
 For each line in the alias file, compare \*(lqalias\*(rq against all of
 the existing addresses.  If a match, remove the matched \*(lqalias\*(rq
 from the address list, and add each new address in the address\-group to
@@ -153,7 +149,6 @@ This makes replies possible since
 .B nmh
 aliases
 and personal aliases are unknown to the mail transport system.
-.RE
 .PP
 Since the alias file is read line by line, forward references work, but
 backward references are not recognized, thus, there is no recursion.
@@ -228,32 +223,25 @@ expanded into the headers of messages delivered.
 To use aliasing in
 .B nmh
 quickly, do the following:
-.PP
-.RS 2
-.IP 1) 3
+.IP 1)
 In your
 .IR \&.mh\(ruprofile ,
 choose a name for your alias file, say
 .RI \*(lq aliases \*(rq,
 and add the line:
-.PP
-.RS 5
-.nf
+.sp
 Aliasfile: aliases
 .\" ali: \-alias aliases
 .\" send: \-alias aliases
 .\" whom: \-alias aliases
-.fi
 .RE
-.PP
-.IP 2) 3
+.IP 2)
 Create the file
 .RI \*(lq aliases \*(rq
 in your
 .B nmh
 directory.
-.PP
-.IP 3) 3
+.IP 3)
 Start adding aliases to your
 .RI \*(lq aliases \*(rq
 file as appropriate.
@@ -266,18 +254,13 @@ address group of a blind list.
 .B post
 will append the semicolon to the blind list name.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%etcdir%/MailAliases~^global nmh alias file
-.fi
+.TP 20
+%etcdir%/MailAliases
+global nmh alias file
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Aliasfile:~^For a default alias file
-.fi
+.TP 20
+Aliasfile:
+Default alias file
 .SH "SEE ALSO"
 .IR ali (1),
 .IR send (1),
