@@ -1593,7 +1593,7 @@ strip_crs (CT ct) {
         char **file = NULL;
         FILE **fp = NULL;
         size_t begin;
-        ssize_t end;
+        size_t end;
         int has_crs = 0;
         int opened_input_file = 0;
 
@@ -1605,7 +1605,7 @@ strip_crs (CT ct) {
             file = &ct->c_file;
             fp = &ct->c_fp;
             begin = (size_t) ct->c_begin;
-            end = (ssize_t) ct->c_end;
+            end = (size_t) ct->c_end;
         } /* else don't know where the content is */
 
         if (file  &&  *file  &&  fp) {
@@ -1622,10 +1622,13 @@ strip_crs (CT ct) {
         if (fp  &&  *fp) {
             char buffer[BUFSIZ];
             size_t bytes_read;
-            ssize_t max = end > 0  ?  end - begin  :  sizeof buffer;
+            size_t bytes_to_read =
+                end > 0 && end > begin  ?  end - begin  :  sizeof buffer;
 
             fseeko (*fp, begin, SEEK_SET);
-            while ((bytes_read = fread (buffer, 1, max, *fp)) > 0) {
+            while ((bytes_read = fread (buffer, 1,
+                                        min (bytes_to_read, sizeof buffer),
+                                        *fp)) > 0) {
                 /* Look for CR followed by a LF.  This is supposed to
                    be text so there should be LF's.  If not, don't
                    modify the content. */
@@ -1633,7 +1636,7 @@ strip_crs (CT ct) {
                 size_t i;
                 int last_char_was_cr = 0;
 
-                if (end > 0) max -= bytes_read;
+                if (end > 0) bytes_to_read -= bytes_read;
 
                 for (i = 0, cp = buffer; i < bytes_read; ++i, ++cp) {
                     if (*cp == '\n'  &&  last_char_was_cr) {
@@ -1652,7 +1655,8 @@ strip_crs (CT ct) {
 
                 /* Strip each CR before a LF from the content. */
                 fseeko (*fp, begin, SEEK_SET);
-                while ((bytes_read = fread (buffer, 1, sizeof buffer, *fp)) > 0) {
+                while ((bytes_read = fread (buffer, 1, sizeof buffer, *fp)) >
+                       0) {
                     char *cp;
                     size_t i;
                     int last_char_was_cr = 0;
@@ -1677,9 +1681,7 @@ strip_crs (CT ct) {
                               stripped_content_file);
                     unlink (stripped_content_file);
                     status = NOTOK;
-                }
-
-                if (status == OK) {
+                } else {
                     /* Replace the decoded file with the converted one. */
                     if (ct->c_cefile.ce_file) {
                         if (ct->c_cefile.ce_unlink) {
@@ -1791,7 +1793,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
         char **file = NULL;
         FILE **fp = NULL;
         size_t begin;
-        ssize_t end;
+        size_t end;
         int opened_input_file = 0;
         char src_buffer[BUFSIZ];
         HF hf;
@@ -1807,13 +1809,12 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
         if (ct->c_cefile.ce_file) {
             file = &ct->c_cefile.ce_file;
             fp = &ct->c_cefile.ce_fp;
-            begin = 0;
-            end = -1;
+            begin = end = 0;
         } else if (ct->c_file) {
             file = &ct->c_file;
             fp = &ct->c_fp;
             begin = (size_t) ct->c_begin;
-            end = (ssize_t) ct->c_end;
+            end = (size_t) ct->c_end;
         } /* else no input file: shouldn't happen */
 
         if (file  &&  *file  &&  fp) {
@@ -1829,17 +1830,19 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
 
         if (fp  &&  *fp) {
             size_t inbytes;
-            ssize_t max = end > 0  ?  end - begin  :  sizeof src_buffer;
+            size_t bytes_to_read =
+                end > 0 && end > begin  ?  end - begin  :  sizeof src_buffer;
 
             fseeko (*fp, begin, SEEK_SET);
-            while (status == OK  &&  max > 0  &&
-                   (inbytes = fread (src_buffer, 1, max, *fp)) > 0) {
+            while ((inbytes = fread (src_buffer, 1,
+                                     min (bytes_to_read, sizeof src_buffer),
+                                     *fp)) > 0) {
                 char dest_buffer[BUFSIZ];
                 char *ib = src_buffer, *ob = dest_buffer;
                 size_t outbytes = sizeof dest_buffer;
                 size_t outbytes_before = outbytes;
 
-                if (end > 0) max -= inbytes;
+                if (end > 0) bytes_to_read -= inbytes;
 
                 if (iconv (conv_desc, &ib, &inbytes, &ob, &outbytes) ==
                     (size_t) -1) {
