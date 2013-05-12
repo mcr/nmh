@@ -666,9 +666,14 @@ d><td align=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"=
 </html>
 EOF
 
-#### lynx inserts multiple blank lines, so use uniq to squeeze them.
-mhfixmsg last -outfile - | uniq >"$actual"
-check "$expected" "$actual" 'ignore space'
+if [ $can_reformat_texthtml -eq 1 ]; then
+  #### lynx inserts multiple blank lines, so use uniq to squeeze them.
+  mhfixmsg last -outfile - | uniq >"$actual"
+  check "$expected" "$actual" 'ignore space'
+else
+  cp -p "$MH_TEST_DIR/Mail/inbox/15" "$MH_TEST_DIR/Mail/inbox/15.backup"
+  rm -f "$expected"
+fi
 
 
 # check -textcodeset
@@ -868,6 +873,7 @@ if [ $can_reformat_texthtml -eq 1 ]; then
 else
   rm -f "$expected"
 fi
+
 
 # check handling of rfc822 message type
 cat >"$expected" <<EOF

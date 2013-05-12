@@ -103,7 +103,7 @@ static void transfer_noncontent_headers (CT, CT);
 static int set_ct_type (CT, int type, int subtype, int encoding);
 static int decode_text_parts (CT, int, int *);
 static int content_encoding (CT);
-static int strip_crs (CT);
+static int strip_crs (CT, int *);
 static int convert_codesets (CT, char *, int *);
 static int convert_codeset (CT, char *, int *);
 static char *content_codeset (CT);
@@ -1485,7 +1485,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                             report (ct->c_partno, ct->c_file, "decode%s",
                                     ct->c_ctline ? ct->c_ctline : "");
                         }
-                        strip_crs (ct);
+                        strip_crs (ct, message_mods);
                     } else {
                         status = NOTOK;
                     }
@@ -1497,7 +1497,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
         }
         case CE_8BIT:
         case CE_7BIT:
-            strip_crs (ct);
+            strip_crs (ct, message_mods);
             break;
         default:
             break;
@@ -1583,7 +1583,7 @@ content_encoding (CT ct) {
 
 
 static int
-strip_crs (CT ct) {
+strip_crs (CT ct, int *message_mods) {
     /* norm_charmap() is case sensitive. */
     char *codeset = upcase (content_codeset (ct));
     int status = OK;
@@ -1691,6 +1691,11 @@ strip_crs (CT ct) {
                     }
                     ct->c_cefile.ce_file = stripped_content_file;
                     ct->c_cefile.ce_unlink = 1;
+
+                    ++*message_mods;
+                    if (verbosw) {
+                        report (NULL, *file, "stripped CRs");
+                    }
                 }
             }
 
