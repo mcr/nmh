@@ -3,45 +3,30 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-mh-alias \- alias file for nmh message system
-.SH SYNOPSIS
-any
-.B nmh
-command
+mh-alias \- format of nmh alias files
 .SH DESCRIPTION
-This describes both
-.B nmh
-personal alias files and
-the global alias file for
-.B nmh
-mail delivery, the file
 .PP
-.RS 5
-%etcdir%/MailAliases
-.RE
-.PP
-It does
-.B not
-describe aliases files used by the message transport system.
-Each line of the alias file has the format:
+Each line of an
+.B nmh
+alias file takes one of the following forms:
 .PP
 .RS 5
 .I alias
 .B :
 .I address\-group
 .RE
-or
+.sp
 .RS 5
 .I alias
 .B ;
 .I address\-group
 .RE
-or
+.sp
 .RS 5
 .B <
 .I alias\-file
 .RE
-or
+.sp
 .RS 5
 .B ;
 |
@@ -66,68 +51,67 @@ where:
 .fi
 .RE
 .PP
-Continuation lines in alias files end with `\\' followed by the newline
-character.  This applies to comment lines.  Thus, a line following a
-comment line that ends with a `\\' will be treated as a continuation of
-the comment.
+Continuation lines end with \*(lq\\\*(rq followed by a newline
+character.  This also applies to comment lines.  Thus, the line following a
+\*(lq\\\*(rq\-terminated
+comment line is a continuation of
+that comment line.
 .PP
-.RI \*(lq  Alias\-file \*(rq
+.I Alias\-file
 and
-.RI \*(lq file \*(rq
+.I file
 are UNIX file names.
 .I UNIX\-group
-is a group name (or number) from
-.IR /etc/group .
-An address is a \*(lqsimple\*(rq
-Internet\-style address.  Througout this file, case is ignored, except
-for file names.
+is a group name or number from
+the system's group database.
+Alias file contents are case-insensitive, with the exception
+of filesystem path names.
 .PP
-If the line starts with a `<', then the file named after the `<' is
+If the line starts with a \*(lq<\*(rq, the file named after the \*(lq<\*(rq is
 read for more alias definitions.  The reading is done recursively, so a
-`<' may occur in the beginning of an alias file with the expected results.
+\*(lq<\*(rq may occur in the beginning of an alias file with the expected results.
 .PP
 If the
 .I address\-group
-starts with a `<', then the file named after the
-`<' is read and its contents are added to the
+starts with a \*(lq<\*(rq, the file named after the
+\*(lq<\*(rq is read and its contents are added to the
 .I address\-list
 for the alias.
 .PP
 If the
 .I address\-group
-starts with an `=', then the file
-.I /etc/group
-is consulted for the UNIX\-group named after the `='.  Each login name
+starts with an \*(lq=\*(rq, the
+system's group database
+is consulted for the UNIX\-group named after the \*(lq=\*(rq.  Each login name
 occurring as a member of the group is added to the
 .I address\-list
 for the alias.
 .PP
 In contrast, if the
 .I address\-group
-starts with a `+', then the file
-.I /etc/group
+starts with a \*(lq+\*(rq, the system's group database
 is consulted to determine the group\-id of the
-UNIX\-group named after the `+'.  Each login name occurring in the
-.I /etc/passwd
-file whose group\-id is indicated by this group is
+UNIX\-group named after the \*(lq+\*(rq.  Each login name occurring in the
+system's password database
+whose group\-id is indicated by this group is
 added to the
 .I address\-list
 for the alias.
 .PP
 If the
 .I address\-group
-is simply `*', then the file
-.I /etc/passwd
+is simply \*(lq*\*(rq, the system's password database
 is consulted and all login names with a userid
 greater than some magic number (usually 200) are added to the
 .I address\-list
 for the alias.
+.B
+This feature is obsolescent and will be remove in a future release.
 .PP
 In match, a trailing \*(lq*\*(rq on an alias will match just about anything
-appropriate.  (See example below.)
+appropriate.
 .PP
-An approximation of the way aliases are resolved at posting time is
-(it's not really done this way):
+An approximation of the way aliases are resolved at posting time is:
 .IP 1)
 Build a list of all addresses from the message to be delivered,
 eliminating duplicate addresses.
@@ -140,143 +124,89 @@ the existing addresses.  If a match, remove the matched \*(lqalias\*(rq
 from the address list, and add each new address in the address\-group to
 the address list if it is not already on the list.  The alias itself is
 not usually output, rather the address\-group that the alias maps to is
-output instead.  If \*(lqalias\*(rq is terminated with a `;' instead of
-a `:', then both the \*(lqalias\*(rq and the address are output in the
+output instead.  If \*(lqalias\*(rq is terminated with a \*(lq;\*(rq instead of
+a \*(lq:\*(rq, then both the \*(lqalias\*(rq and the address are output in the
 correct format (with the alias quoted if necessary and the address
 wrapped in <>).
 .PP
-This makes replies possible since
-.B nmh
-aliases
-and personal aliases are unknown to the mail transport system.
-.PP
-Since the alias file is read line by line, forward references work, but
-backward references are not recognized, thus, there is no recursion.
-.PP
-Example Alias File:
+Since the
+.I mh-alias
+file is read line by line, forward references work, but
+backward references are not recognized.
+.SS
+Example Alias File
 .PP
 .RS 5
 .nf
 <%etcdir%/BBoardAliases
+fred: frated@UCI.example
 sgroup: fred, fear, freida
 b-people: Blind List: bill, betty
-fred: frated@UCI
 UNIX\-committee: <unix.aliases
 staff: =staff
 wheels: +wheel
-everyone: *
 news.*: news
 .fi
 .RE
 .PP
 The first line says that more aliases should immediately be read from
 the file
-.IR %etcdir%/BBoardAliases .
+.BR %etcdir%/BBoardAliases .
 Following this, \*(lqfred\*(rq
-is defined as an alias for \*(lqfrated@UCI\*(rq, and \*(lqsgroup\*(rq
-is defined as an alias for the three names \*(lqfrated@UCI\*(rq,
+is defined as an alias for \*(lqfrated@UCI.example\*(rq, and \*(lqsgroup\*(rq
+is defined as an alias for the three names \*(lqfrated@UCI.example\*(rq,
 \*(rqfear\*(rq, and \*(rqfreida\*(rq.
 .PP
 The alias \*(lqb-people\*(rq is a blind list which includes the addresses
 \*(lqbill\*(rq and \*(lqbetty\*(rq; the message will be delivered to those
 addresses, but the message header will show only \*(lqBlind List: ;\*(rq
 (not the addresses).  The alias must not be terminated with, or contain,
-a semicolon; see
-.B Helpful Hints
-below.  Note that blind lists are not supported with the
+a semicolon.
+Note that blind lists are not supported with the
 .B sendmail/pipe
 mail transport method.
 .PP
 Next, the definition of \*(lqUNIX\-committee\*(rq is given by
 reading the file
 .I unix.aliases
-in the users
+in the user's
 .B nmh
 directory,
 \*(lqstaff\*(rq is defined as all users who are listed as members of the
 group \*(lqstaff\*(rq in the
-.I /etc/group
-file, and \*(lqwheels\*(rq
+system's group database, and \*(lqwheels\*(rq
 is defined as all users whose group\-id in
-.I /etc/passwd
+the system's password database
 is equivalent to the \*(lqwheel\*(rq group.
-.PP
-Finally, \*(lqeveryone\*(rq is defined as all users with a user\-id
-in
-.I /etc/passwd
-greater than 200, and all aliases of the form
-\*(lqnews.<anything>\*(rq are defined to be \*(lqnews\*(rq.
-.PP
-The key thing to understand about aliasing in
-.B nmh
-is that aliases in
-.B nmh
-alias files are expanded into the headers of messages posted.
-This aliasing occurs first, at posting time, without the knowledge of the
-message transport system.  In contrast, once the message transport system
-is given a message to deliver to a list of addresses, for each address
-that appears to be local, a system\-wide alias file is consulted.  These
-aliases are
-.B not
-expanded into the headers of messages delivered.
-.SH "HELPFUL HINTS"
-To use aliasing in
-.B nmh
-quickly, do the following:
-.IP 1)
-In your
-.IR \&.mh\(ruprofile ,
-choose a name for your alias file, say
-.RI \*(lq aliases \*(rq,
-and add the line:
-.sp
-Aliasfile: aliases
-.\" ali: \-alias aliases
-.\" send: \-alias aliases
-.\" whom: \-alias aliases
-.RE
-.IP 2)
-Create the file
-.RI \*(lq aliases \*(rq
-in your
-.B nmh
-directory.
-.IP 3)
-Start adding aliases to your
-.RI \*(lq aliases \*(rq
-file as appropriate.
-.RE
-.PP
-Earlier versions of this man page showed a semicolon at the end of the
-blind list example.  That caused the preceeding alias to not be
-expanded.  There must not be a semicolon at the end of, or within, the
-address group of a blind list.
-.B post
-will append the semicolon to the blind list name.
-.SH FILES
-.TP 20
-%etcdir%/MailAliases
-global nmh alias file
 .SH "PROFILE COMPONENTS"
 .TP 20
 Aliasfile:
-Default alias file
+Default alias file.
+.SH FILES
+.TP 20
+%etcdir%/MailAliases
+System-wide default alias file.
 .SH "SEE ALSO"
 .IR ali (1),
 .IR send (1),
 .IR whom (1),
-.IR group (5),
-.IR passwd (5),
+.IR getgrent (3),
+.IR getpwent (3),
 .IR conflict (8),
 .IR post (8)
-.SH CONTEXT
-None
 .SH BUGS
 Although the forward-referencing semantics of
-.B mh\-alias
+mh\-alias
 files prevent recursion, the
-.RI \*(lq< " alias\-file" \*(rq
-command may defeat this.
-Since the number of file descriptors is finite (and very limited), such
+.B alias\-file
+directive may defeat this.
+Since the number of file descriptors is finite, such
 infinite recursion will terminate with a meaningless diagnostic when
 all the fds are used up.
+.PP
+Earlier versions of this man page showed a semicolon at the end of the
+blind list example.  That caused the preceding alias to not be
+expanded.  There must not be a semicolon at the end of, or within, the
+address group of a blind list.
+.B post
+will append the semicolon to the blind list name.
