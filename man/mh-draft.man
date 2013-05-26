@@ -43,7 +43,7 @@ profile entry may be used to declare a default draft folder for use with
 and
 .B whom ).
 .PP
-If the swith
+If the switch
 .B \-draftmessage
 .I msg
 is given, the specified draft is used to compose the message.  If
