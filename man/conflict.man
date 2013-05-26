@@ -17,9 +17,9 @@ conflict \- search for alias/password conflicts
 .RI [ aliasfiles
 \&...]
 .ad
-.SH STATUS
-.B Conflict is deprecated and will be removed from the next nmh release.
 .SH DESCRIPTION
+.B "Conflict is deprecated and will be removed from the next nmh release."
+.PP
 .B Conflict
 is a program that checks to see if the interface between
 .B nmh
