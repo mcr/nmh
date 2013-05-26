@@ -7,10 +7,6 @@
 .\"
 .SH NAME
 nmh \- new MH message system
-.SH SYNOPSIS
-any
-.B nmh
-command
 .SH DESCRIPTION
 .B nmh
 is the name of a powerful message handling system.  Rather than
