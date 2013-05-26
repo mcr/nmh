@@ -4,10 +4,6 @@
 .\"
 .SH NAME
 mh-draft \- draft folder facility for nmh message system
-.SH SYNOPSIS
-any
-.B nmh
-command
 .SH DESCRIPTION
 There are a number of interesting advanced facilities for the composition of
 outgoing mail.

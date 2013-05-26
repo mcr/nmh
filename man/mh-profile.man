@@ -4,8 +4,6 @@
 .\"
 .SH NAME
 mh-profile \- user profile customization for nmh message handler
-.SH SYNOPSIS
-.I $HOME/.mh\(ruprofile
 .SH DESCRIPTION
 Each user of
 .B nmh

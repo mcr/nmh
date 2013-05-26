@@ -4,8 +4,6 @@
 .\"
 .SH NAME
 mh-tailor, mts.conf \- mail transport configuration for nmh message handler
-.SH SYNOPSIS
-.I %etcdir%/mts.conf
 .SH DESCRIPTION
 The file
 .I %etcdir%/mts.conf

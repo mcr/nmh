@@ -4,10 +4,6 @@
 .\"
 .SH NAME
 mh-mail \- message format for nmh message system
-.SH SYNOPSIS
-any
-.B nmh
-command
 .SH DESCRIPTION
 .B nmh
 processes messages in a particular format.  It should be noted

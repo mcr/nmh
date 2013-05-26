@@ -4,10 +4,6 @@
 .\"
 .SH NAME
 mh-sequence \- sequence specification for nmh message system
-.SH SYNOPSIS
-most
-.B nmh
-commands
 .SH DESCRIPTION
 A sequence (or sequence set) is a symbolic name representing a
 message or collection of messages.
