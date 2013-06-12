@@ -363,7 +363,7 @@ date2gmt	date		coerce date to GMT
 dst	date	integer	daylight savings in effect? (0 or 1)
 clock	date	integer	seconds since the UNIX epoch
 rclock	date	integer	seconds prior to current time
-tws	date	string	official 822 rendering
+tws	date	string	official RFC 822 rendering
 pretty	date	string	user-friendly rendering
 .fi
 .RE
@@ -376,7 +376,7 @@ the first address present in the header component.
 .nf
 .ta \w'Fformataddr 'u +\w'Aboolean 'u +\w'Rboolean 'u
 .I "Function	Argument	Return	Description"
-proper	addr	string	official 822 rendering
+proper	addr	string	official RFC 822 rendering
 friendly	addr	string	user-friendly rendering
 addr	addr	string	mbox@host or host!mbox rendering*
 pers	addr	string	the personal name*

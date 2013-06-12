@@ -151,7 +151,7 @@ Both the
 .B \-after
 and
 .B \-before
-switches take legal 822\-style date
+switches take legal RFC 822\-style date
 specifications as arguments.
 .B Pick
 will default certain missing
@@ -160,7 +160,7 @@ are (in order of defaulting): timezone, time and timezone, date, date
 and timezone.  All defaults are taken from the current date, time,
 and timezone.
 .PP
-In addition to 822\-style dates,
+In addition to RFC 822\-style dates,
 .B pick
 will also recognize any of
 the days of the week (\*(lqsunday\*(rq, \*(lqmonday\*(rq, and so on),

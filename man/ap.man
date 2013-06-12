@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-ap \- parse addresses 822-style
+ap \- parse addresses RFC 822-style
 .SH SYNOPSIS
 .HP 5
 .na
@@ -31,7 +31,7 @@ will interpret an address.
 The
 .B ap
 program treats each argument as one or more addresses, and
-prints those addresses out in the official 822\-format.  Hence, it is
+prints those addresses out in the official RFC 822 format.  Hence, it is
 usually best to enclose each argument in quotes for the shell.
 .PP
 To override the output format used by
@@ -75,7 +75,7 @@ Here is the default format string used by
 .RE
 .PP
 which says that if an error was detected, print the error, a `:', and
-the address in error.  Otherwise, output the 822\-proper format of
+the address in error.  Otherwise, output the RFC 822\-proper format of
 the address.
 .SH FILES
 .PD 0

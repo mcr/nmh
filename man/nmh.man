@@ -460,13 +460,13 @@ Indirectly Invoked Commands
 .TP \n(ttu
 .PD 0
 .IR ap (8)
-parse addresses 822\-style
+parse addresses RFC 822\-style
 .TP
 .IR conflict (8)
 search for alias/password conflicts
 .TP
 .IR dp (8)
-parse dates 822\-style
+parse dates RFC 822\-style
 .TP
 .IR fmtdump (8)
 decode

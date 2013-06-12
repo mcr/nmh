@@ -3,7 +3,7 @@
 .\" %nmhwarning%
 .\"
 .SH NAME
-dp \- parse dates 822-style
+dp \- parse dates RFC 822-style
 .SH SYNOPSIS
 .HP 5
 .na
@@ -32,7 +32,7 @@ will interpret a date.
 The
 .B dp
 program treats each argument as a single date,
-and prints the date out in the official 822\-format.
+and prints the date out in the official RFC 822 format.
 Hence, it is usually best to enclose each argument in quotes for the
 shell.
 .PP
@@ -60,7 +60,7 @@ Here is the default format string used by
 .PP
 which says that if an error was detected, print the error, a `:',
 and the date in error.
-Otherwise, output the 822\-proper format of the date.
+Otherwise, output the RFC 822\-proper format of the date.
 .SH FILES
 .TP 20
 $HOME/.mh\-profile

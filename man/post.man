@@ -290,6 +290,6 @@ consult the user's
 None
 .SH BUGS
 \*(lqReply\-To:\*(rq fields are allowed to have groups in them according
-to the 822 specification, but
+to the RFC 822 specification, but
 .B post
 won't let you use them.
