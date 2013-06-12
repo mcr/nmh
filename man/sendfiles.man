@@ -195,7 +195,7 @@ to perform the extraction.
 .IR mh-format (5)
 .PP
 .I "Proposed Standard for Message Encapsulation"
-(RFC\-934)
+(RFC 934)
 .SH DEFAULTS
 .nf
 .RB ` "\-delay\ 0" '

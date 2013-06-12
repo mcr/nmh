@@ -32,7 +32,7 @@ manipulates header fields or
 .I annotations
 in messages.
 Header fields consist of a field name and an optional field body
-as defined by RFC-2822.
+as defined by RFC 2822.
 The
 .B -component
 option specifies the field name, and the

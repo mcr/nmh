@@ -253,7 +253,7 @@ originally used headers of the form
 .RI \*(lq Distribute\-xxx: \*(rq
 instead of
 .RI \*(lq Resent\-xxx: \*(rq.
-In order to conform with the ARPA Internet standard, RFC\-822, the
+In order to conform with the ARPA Internet standard, RFC 822, the
 .RI \*(lq Resent\-xxx: \*(rq
 form is now used.
 .B Dist

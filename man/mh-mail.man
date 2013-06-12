@@ -28,7 +28,7 @@ Messages are expected to consist of lines of text.  Graphics and binary
 data are not handled.  No data compression is accepted.  All text is
 clear ASCII 7-bit data.
 .PP
-The general \*(lqmemo\*(rq framework of RFC\-822 is used.  A message
+The general \*(lqmemo\*(rq framework of RFC 822 is used.  A message
 consists of a block of information in a rigid format, followed by
 general text with no specified format.  The rigidly formatted first
 part of a message is called the header, and the free-format portion is
@@ -56,7 +56,7 @@ are indicated by leading spaces or tabs.
 Each header item is called a component and is composed of a keyword or
 name, along with associated text.  The keyword begins at the left margin,
 may NOT contain spaces or tabs, may not exceed 63 characters (as specified
-by RFC\-822), and is terminated by a colon (`:').  Certain components
+by RFC 822), and is terminated by a colon (`:').  Certain components
 (as identified by their keywords) must follow rigidly defined formats
 in their text portions.
 .PP
@@ -291,6 +291,6 @@ option.
 .SH "SEE ALSO"
 .I
 Standard for the Format of ARPA Internet Text Messages
-(RFC\-822)
+(RFC 822)
 .SH CONTEXT
 None

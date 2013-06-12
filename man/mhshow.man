@@ -38,11 +38,11 @@ message or collection of messages.
 .PP
 .B mhshow
 manipulates multi-media messages as specified in
-RFC\-2045 to RFC\-2049.  Currently
+RFC 2045 to RFC 2049.  Currently
 .B mhshow
 only supports
 encodings in message bodies, and does not support the encoding of
-message headers as specified in RFC\-2047.
+message headers as specified in RFC 2047.
 .PP
 By default
 .B mhshow
@@ -92,7 +92,7 @@ switch will not prevent the content from being acted upon.
 .PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes can
-be found in RFC\-2046.
+be found in RFC 2046.
 .PP
 A list of commonly used contents is briefly reproduced here:
 .PP

@@ -127,7 +127,7 @@ command will be given.
 .PP
 Although the
 .B HELO
-command is required by RFC\-821, many SMTP servers
+command is required by RFC 821, many SMTP servers
 do not require it.  Early versions of
 .I SendMail
 will fail if the hostname

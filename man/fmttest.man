@@ -297,8 +297,8 @@ STRLITZ	Like \fBSTRLIT\fR, but not counted against width
 LS_COMP	Write component to \fIstr\fR register
 LS_LIT	Write literal to \fIstr\fR register
 LS_GETENV	Write environment var to \fIstr\fR register
-LS_DECODECOMP	Decode RFC-2047 encoded component to \fIstr\fR register
-LS_DECODE	Decode RFC-2047 encoded string to \fIstr\fR register
+LS_DECODECOMP	Decode RFC 2047 encoded component to \fIstr\fR register
+LS_DECODE	Decode RFC 2047 encoded string to \fIstr\fR register
 LS_TRIM		Trim trailing whitespace from \fIstr\fR register
 LV_COMP		Convert component to integer, store in \fInum\fR register
 LV_COMPFLAG	Set \fInum\fR to 1 if \fBTRUE\fR set in component
@@ -315,7 +315,7 @@ LS_LMONTH	Write long name of month to \fIstr\fR from date component
 LS_ZONE		Write time zone offset to \fIstr\fR from date component
 LS_DAY		Write short name of day of week to \fIstr\fR from date component
 LS_WEEKDAY	Write long name of day of week to \fIstr\fR from date component
-LS_822DATE	Write RFC-822 compatible date to \fIstr\fR from date component
+LS_822DATE	Write RFC 822 compatible date to \fIstr\fR from date component
 LS_PRETTY	Write date with \*(lqpretty\*(rq timezone to \fIstr\fR
 LV_SEC	Write date component seconds to \fInum\fR
 LV_MIN	Write date component minutes to \fInum\fR
@@ -337,9 +337,9 @@ LS_HOST	Write host of addr component to \fIstr\fR
 LS_PATH	Write host route of addr component to \fIstr\fR
 LS_GNAME	Write group name of addr component to \fIstr\fR
 LS_NOTE	Write note portion of addr component to \fIstr\fR
-LS_822ADDR	Write \*(lqproper\*(rq RFC-822 version of addr component to \fIstr\fR
+LS_822ADDR	Write \*(lqproper\*(rq RFC 822 version of addr component to \fIstr\fR
 LS_FRIENDLY	Write friendly (name or note) of address component to \fIstr\fR
-LS_UNQUOTE	Remove RFC-2822 quotes from string
+LS_UNQUOTE	Remove RFC 2822 quotes from string
 LV_HOSTTYPE	Set \fInum\fR to type of host (0=local, 1=network)
 LV_INGRPF	Set \fInum\fR to 1 if address was inside of group
 LV_NOHOSTF	Set \fInum\fR to 1 of no host was present in address component

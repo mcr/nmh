@@ -250,7 +250,7 @@ By default, any dashes in the first column of the forwarded messages
 will be prepended with `\-\ ' so that when received, the message is
 suitable for bursting by
 .BR burst .
-This follows the Internet RFC\-934 guidelines.  You may use the flag
+This follows the Internet RFC 934 guidelines.  You may use the flag
 .B \-nodashstuffing
 in order
 to suppress this form of quoting to the forwarded messages.
@@ -466,7 +466,7 @@ Program to ask the \*(lqWhat now?\*(rq questions.
 .PP
 .I
 Proposed Standard for Message Encapsulation
-(RFC\-934)
+(RFC 934)
 .SH DEFAULTS
 .PD 0
 .TP 25

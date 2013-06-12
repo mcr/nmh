@@ -249,7 +249,7 @@ newline	flag	print newline at end of components
 nonewline	flag	don't print newline at end of components
 formatfield	string	format string for this component
 		(see below)
-decode	flag	decode text as RFC-2047 encoded
+decode	flag	decode text as RFC 2047 encoded
 		header field
 addrfield	flag	field contains addresses
 datefield	flag	field contains dates

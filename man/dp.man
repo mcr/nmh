@@ -71,7 +71,7 @@ None
 .IR ap (8),
 .PP
 .I "Standard for the Format of ARPA Internet Text Messages"
-(RFC\-822)
+(RFC 822)
 .SH DEFAULTS
 .PD 0
 .TP 20

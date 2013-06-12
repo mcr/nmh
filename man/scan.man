@@ -68,7 +68,7 @@ produced if there are format errors in any of the messages.
 .PP
 By default,
 .B scan
-will decode RFC-2047 (MIME) encoding in
+will decode RFC 2047 (MIME) encoding in
 these scan listings.
 .B Scan
 will only decode these fields if your

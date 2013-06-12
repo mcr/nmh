@@ -99,7 +99,7 @@ numbers in each sequence.  The
 sequence has at most just a single message number, not a range.
 .PP
 Sequence names have a maximum size of 998 characters.  Each line is also
-limited to a maximum of 998 characters, but RFC\-822 continuation rules
+limited to a maximum of 998 characters, but RFC 822 continuation rules
 apply; sequences can be continued across multiple lines by prefixing
 continuation lines with a whitespace character.
 .PP

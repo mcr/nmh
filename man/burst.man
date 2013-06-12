@@ -50,7 +50,7 @@ switch can be used to enforce the use of MIME formatting. The
 .B \-nomime
 switch will force
 .B burst
-to use RFC-934 rules.
+to use RFC 934 rules.
 .PP
 The
 .B \-quiet
@@ -97,7 +97,7 @@ To set mode when creating a new message.
 .PP
 .I
 Proposed Standard for Message Encapsulation
-(RFC\-934)
+(RFC 934)
 .SH DEFAULTS
 .PD 0
 .TP 20

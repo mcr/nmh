@@ -36,7 +36,7 @@ rewrites MIME messages, applying specific transformations such as
 decoding of MIME-encoded message parts and repairing invalid MIME
 headers.
 .PP
-MIME messages are specified in RFC\-2045 to RFC\-2049
+MIME messages are specified in RFC 2045 to RFC 2049
 (see
 .IR mhbuild (1)).
 The
@@ -53,7 +53,7 @@ The
 switch enables a transformation to decode each base64 and
 quoted-printable text message part to the selected 8bit or 7bit
 encoding.  If 7bit is selected for a base64 part but it will only fit
-8bit, as defined by RFC-2045, then it will be decoded to 8bit
+8bit, as defined by RFC 2045, then it will be decoded to 8bit
 quoted-printable.  Otherwise, if the decoded text would not fit the
 selected encoding, the part is not decoded (and a message will be
 displayed if

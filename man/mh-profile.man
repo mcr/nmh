@@ -260,7 +260,7 @@ by the default component files by tools like
 and
 .B repl
 to construct your default \*(lqFrom\*(rq header.  The text used here will
-be copied exactly to your From: header, so it should already be RFC-822
+be copied exactly to your From: header, so it should already be RFC 822
 compliant.  If this is set, the
 .B Signature
 profile entry is NOT used, so it should include a signature as well.  (profile,
@@ -789,7 +789,7 @@ With this environment variable, you can specify
 the native character set you are using.  You must be able to display
 this character set on your terminal.
 .PP
-This variable is checked to see if a RFC-2047 header field should be
+This variable is checked to see if a RFC 2047 header field should be
 decoded (in
 .BR inc ,
 .BR scan ,

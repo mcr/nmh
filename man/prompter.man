@@ -26,7 +26,7 @@ is an editor front\-end for
 which allows rapid
 composition of messages.  This program is not normally invoked directly by
 users but takes the place of an editor and acts as an editor front\-end.
-It operates on an RFC\-822 style message draft skeleton specified by
+It operates on an RFC 822 style message draft skeleton specified by
 .IR file ,
 normally provided by the
 .B nmh

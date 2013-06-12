@@ -38,7 +38,7 @@ MIME (multi-media) messages.
 .PP
 .B mhlist
 manipulates MIME (multi-media messages) as specified
-in RFC\-2045 to RFC\-2049 (See
+in RFC 2045 to RFC 2049 (See
 .IR mhbuild (1)).
 .PP
 The
@@ -106,7 +106,7 @@ switch will not prevent the content from being acted upon.
 .PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes can
-be found in RFC\-2046.
+be found in RFC 2046.
 .PP
 A list of commonly used contents is briefly reproduced here:
 .PP

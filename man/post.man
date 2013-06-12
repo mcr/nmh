@@ -273,7 +273,7 @@ consult the user's
 .IR mh\-tailor (5)
 .PP
 .I "Standard for the Format of ARPA Internet Text Messages"
-(RFC\-822)
+(RFC 822)
 .SH DEFAULTS
 .nf
 .RB ` \-alias "' defaults to %etcdir%/MailAliases"
