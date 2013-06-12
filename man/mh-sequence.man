@@ -1,4 +1,4 @@
-.TH MH-SEQUENCE %manext5% "January 9, 2001" "%nmhversion%"
+.TH MH-SEQUENCE %manext5% "June 11, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -40,7 +40,7 @@ is 94, then \*(lqprev\*(rq is 10 and \*(lqnext\*(rq is 177.
 .PP
 The word `msgs' indicates that one or more messages may be specified.
 Such a specification consists of one message designation or of several
-message designations separated by spaces.  A message designation consists
+message designations, as separate arguments.  A message designation consists
 either of a message name as defined above, or a message range.
 .PP
 A message range is specified as \*(lqname1\-name2\*(rq or
@@ -191,7 +191,7 @@ command.  The entry \*(lqPrevious\-Sequence\*(rq
 should be defined in the
 .B nmh
 profile; its value should be a sequence
-name or multiple sequence names separated by spaces.  If this entry
+name or multiple sequence names, as separate arguments.  If this entry
 is defined, when when an
 .B nmh
 command finishes, it will define the
@@ -236,7 +236,7 @@ honor the profile entry
 in the
 .I \&.mh\(ruprofile
 should be defined as one or more sequence
-names separated by spaces.  If there is a value for
+names, as separate arguments.  If there is a value for
 \*(lqUnseen\-Sequence\*(rq in the profile, then whenever new messages
 are placed in a folder (using
 .B inc
