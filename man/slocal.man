@@ -139,7 +139,7 @@ file controls how
 .B slocal
 filters and delivers
 incoming mail.  Each line of this file consists of five fields, separated
-by white-space or comma.  Since double-quotes are honored, these
+by whitespace or comma.  Since double-quotes are honored, these
 characters may be included in a single argument by enclosing the entire
 argument in double-quotes.  A double-quote can be included by preceding it
 with a backslash.  Lines beginning with `#' and blank lines are ignored.
