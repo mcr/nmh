@@ -238,7 +238,7 @@ AS_IF([test "$lspath" != "no"],
     nmh_cv_ls_grpopt="-lg"])])])
 
 dnl Look for `sendmail'
-pathtmp=/usr/lib:/usr/sbin:/usr/etc:/usr/ucblib:/usr/bin:/bin
+pathtmp=/usr/sbin:/usr/lib:/usr/etc:/usr/ucblib:/usr/bin:/bin
 AC_PATH_PROG([sendmailpath], [sendmail], [/usr/sbin/sendmail], [$pathtmp])
 
 dnl Cygwin FAT filesystems do not support hard links.  So default to
