@@ -667,7 +667,7 @@ d><td align=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"=
 EOF
 
 # ???? debug on Solaris
-egrep mhfixmsg $(mhparam etcdir)/mhn.defaults # ????
+egrep mhfixmsg ${MH_TEST_DIR}/Mail/mhn.defaults # ????
 if [ $can_reformat_texthtml -eq 1 ]; then
   #### lynx inserts multiple blank lines, so use uniq to squeeze them.
   # ???? mhfixmsg last -outfile - | uniq >"$actual"
