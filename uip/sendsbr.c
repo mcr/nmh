@@ -1135,6 +1135,4 @@ static void
 armed_done (int status)
 {
     longjmp (env, status ? status : NOTOK);
-
-    exit (status);
 }
