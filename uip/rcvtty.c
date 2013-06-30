@@ -167,7 +167,6 @@ main (int argc, char **argv)
 #endif /* HAVE_GETUTXENT */
 
     exit (RCV_MOK);
-    return 0;  /* dead code to satisfy the compiler */
 }
 
 
@@ -236,7 +235,6 @@ message_fd (char **vec)
     setpgid ((pid_t) 0, getpid ());	/* put in own process group */
     execvp (vec[0], vec);
     _exit (-1);
-    return 1;  /* dead code to satisfy compiler */
 }
 
 
