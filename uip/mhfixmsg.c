@@ -1559,7 +1559,10 @@ content_encoding (CT ct) {
             size_t line_len = 0;
             int last_char_was_cr = 0;
 
+            fprintf (stderr, "%s:%d; %*s\n", __FILE__, __LINE__, inbytes, buffer); /* ???? */
+
             for (i = 0, cp = buffer; i < inbytes; ++i, ++cp) {
+                fprintf (stderr, "line_len=%d\n", line_len); /* ???? */
                 if (*cp == '\0'  ||  ++line_len > 998  ||
                     (*cp != '\n'  &&  last_char_was_cr)) {
                     encoding = CE_BINARY;

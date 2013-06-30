@@ -64,6 +64,51 @@ case `mhfixmsg -version` in
      failed=`expr ${failed:-0} + 1`;;
 esac
 
+# ????
+cat >`mhpath new` <<'EOF'
+MIME-Version: 1.0
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 11 Apr 2013 02:47:08 -0700
+To: <me@example.com>
+From: <sender@example.com>
+Subject: body requires binary encoding
+
+<body>
+<table width=3D"325" border=3D"0" cellspacing=3D"0" cellpadding=3D"0">
+<tr><td><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=
+=3D"2"><strong>Mile</strong></font></td><td height=3D"3">&nbsp;</td><td ali=
+gn=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" =
+size=3D"2">$0.00</font></td></tr><tr><td><font face=3D"Arial, Helvetica, sa=
+ns-serif" color=3D"#333333" size=3D"2"><strong>Time</strong></font></td><td=
+ height=3D"3">&nbsp;</td><td align=3D"right"><font face=3D"Arial, Helvetica=
+, sans-serif" color=3D"#333333" size=3D"2">$78.71</font></td></tr><tr><td><=
+font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=3D"2"><st=
+rong>State Tax</strong></font></td><td height=3D"3">&nbsp;</td><td align=3D=
+"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=
+=3D"2">$5.90</font></td></tr><tr><td><font face=3D"Arial, Helvetica, sans-s=
+erif" color=3D"#333333" size=3D"2"><strong>Vehicle License Fee</strong></fo=
+nt></td><td height=3D"3">&nbsp;</td><td align=3D"right"><font face=3D"Arial=
+, Helvetica, sans-serif" color=3D"#333333" size=3D"2">$1.84</font></td></tr=
+><tr><td><font face=3D"Arial, Helvetica, sans-serif" color=3D"#333333" size=
+=3D"2"><strong>State Txn Tax</strong></font></td><td height=3D"3">&nbsp;</t=
+d><td align=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"=
+#333333" size=3D"2">$6.00</font></td></tr>
+
+</body>
+</html>
+EOF
+
+if [ $can_reformat_texthtml -eq 1 ]; then
+  #### lynx inserts multiple blank lines, so use uniq to squeeze them.
+  mhfixmsg last -outfile - | uniq >"$actual"
+  check "$expected" "$actual" 'ignore space'
+else
+  cp -p "$MH_TEST_DIR/Mail/inbox/15" "$MH_TEST_DIR/Mail/inbox/15.backup"
+  rm -f "$expected"
+fi
+exit # ????
+
 
 # check that non-MIME messages aren't modified
 # check -outfile
@@ -666,17 +711,11 @@ d><td align=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"=
 </html>
 EOF
 
-# ???? debug on Solaris
-egrep mhfixmsg ${MH_TEST_DIR}/Mail/mhn.defaults # ????
 if [ $can_reformat_texthtml -eq 1 ]; then
   #### lynx inserts multiple blank lines, so use uniq to squeeze them.
-  # ???? mhfixmsg last -outfile - | uniq >"$actual"
-  # ???? temporarily add -verbose to debug on Solaris
-  mhfixmsg -verbose last -outfile - | uniq >"$actual" # ????
+  mhfixmsg last -outfile - | uniq >"$actual"
   check "$expected" "$actual" 'ignore space'
 else
-  # ???? temporarily added to debug on Solaris
-  echo "can't reformat text/html" # ????
   cp -p "$MH_TEST_DIR/Mail/inbox/15" "$MH_TEST_DIR/Mail/inbox/15.backup"
   rm -f "$expected"
 fi
