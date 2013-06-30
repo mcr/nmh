@@ -75,14 +75,14 @@ test_rcvdist ()
 }
 
 # check with address
-
 cat > "$expected" <<EOF
 From: Test1 <test1@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
 Message-Id: 1@test.nmh
 Subject: Testing message 1
-Resent-From: `${MH_LIB_DIR}/ap -format '%(localmbox)' 0`
+Resent-From: `${MH_LIB_DIR}/ap -format '%(localmbox)' 0 | \
+              sed -e 's/^<//; s/>$//;'`
 Resent-To: recipient@example.com
 Resent-Date:
 

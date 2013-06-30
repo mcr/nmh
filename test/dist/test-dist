@@ -20,7 +20,7 @@ expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err
 actual=$MH_TEST_DIR/$$.actual
 actual_err=$MH_TEST_DIR/$$.actual_err
-localmbox=`${MH_LIB_DIR}/ap -format "%(localmbox)" 0`
+localmbox=`${MH_LIB_DIR}/ap -format "%(localmbox)" 0 | sed -e 's/^<//; s/>$//;'`
 
 #### Use sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
