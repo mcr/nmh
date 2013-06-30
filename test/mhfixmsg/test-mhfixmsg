@@ -666,11 +666,17 @@ d><td align=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"=
 </html>
 EOF
 
+# ???? debug on Solaris
+egrep mhfixmsg $(mhparam etcdir)/mhn.defaults # ????
 if [ $can_reformat_texthtml -eq 1 ]; then
   #### lynx inserts multiple blank lines, so use uniq to squeeze them.
-  mhfixmsg last -outfile - | uniq >"$actual"
+  # ???? mhfixmsg last -outfile - | uniq >"$actual"
+  # ???? temporarily add -verbose to debug on Solaris
+  mhfixmsg -verbose last -outfile - | uniq >"$actual" # ????
   check "$expected" "$actual" 'ignore space'
 else
+  # ???? temporarily added to debug on Solaris
+  echo "can't reformat text/html" # ????
   cp -p "$MH_TEST_DIR/Mail/inbox/15" "$MH_TEST_DIR/Mail/inbox/15.backup"
   rm -f "$expected"
 fi
