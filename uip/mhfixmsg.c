@@ -1559,7 +1559,7 @@ content_encoding (CT ct) {
             size_t line_len = 0;
             int last_char_was_cr = 0;
 
-            fprintf (stderr, "%s:%d; %*s\n", __FILE__, __LINE__, inbytes, buffer); /* ???? */
+            fprintf (stderr, "%s:%d; (%ld bytes) %*s\n", __FILE__, __LINE__, (long) inbytes, inbytes, buffer); /* ???? */
 
             for (i = 0, cp = buffer; i < inbytes; ++i, ++cp) {
                 fprintf (stderr, "line_len=%d\n", line_len); /* ???? */
