@@ -380,6 +380,7 @@ lkopen_fcntl(const char *file, int access, mode_t mode)
 }
 
 
+#ifdef HAVE_FLOCK
 /*
  * Open and lock a file, using flock locking
  */
@@ -412,7 +413,7 @@ lkopen_flock(const char *file, int access, mode_t mode)
     errno = saved_errno;
     return -1;
 }
-
+#endif /* HAVE_FLOCK */
 
 /*
  * Open and lock a file, using lockf locking
