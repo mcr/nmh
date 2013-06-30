@@ -1543,6 +1543,7 @@ content_encoding (CT ct) {
     int encoding = CE_7BIT;
 
     if (ce->ce_file) {
+        size_t line_len = 0;
         char buffer[BUFSIZ];
         size_t inbytes;
 
@@ -1556,13 +1557,9 @@ content_encoding (CT ct) {
                (inbytes = fread (buffer, 1, sizeof buffer, ce->ce_fp)) > 0) {
             char *cp;
             size_t i;
-            size_t line_len = 0;
             int last_char_was_cr = 0;
 
-            fprintf (stderr, "%s:%d; (%ld bytes) %*s\n", __FILE__, __LINE__, (long) inbytes, inbytes, buffer); /* ???? */
-
             for (i = 0, cp = buffer; i < inbytes; ++i, ++cp) {
-                fprintf (stderr, "line_len=%d\n", line_len); /* ???? */
                 if (*cp == '\0'  ||  ++line_len > 998  ||
                     (*cp != '\n'  &&  last_char_was_cr)) {
                     encoding = CE_BINARY;
