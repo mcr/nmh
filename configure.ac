@@ -192,7 +192,7 @@ AM_PROG_LEX             dnl Check for lex/flex
 AM_PROG_AR
 
 dnl Look for `cut'
-pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
+pathtmp=/usr/xpg4/bin:/usr/bin:/bin:/usr/local/bin:/usr/ucb
 AC_PATH_PROG([cutpath], [cut], [no], [$pathtmp])
 
 dnl
@@ -222,7 +222,7 @@ AC_SUBST([LINT])dnl
 AC_SUBST([LINTFLAGS])dnl
 
 dnl Look for `ls'
-pathtmp=/usr/bin:/bin:/usr/local/bin:/usr/xpg4/bin:/usr/ucb
+pathtmp=/usr/xpg4/bin:/usr/bin:/bin:/usr/local/bin:/usr/ucb
 AC_PATH_PROG([lspath], [ls], [no], [$pathtmp])
 
 dnl See how we get ls to display the owner and the group
