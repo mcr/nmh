@@ -7,6 +7,8 @@
 %;
 %; These next lines slurp in lots of addresses for To: and cc:.
 %; Use with repl -query or else you may get flooded with addresses!
+%; Currently %(decode) should NOT be used on address fields, in case invalid
+%; characters are in an address.
 %;
 %; If no To:/cc:/Fcc: text, we output empty fields for prompter to fill in.
 %;

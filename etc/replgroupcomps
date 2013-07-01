@@ -20,6 +20,9 @@
 %;     cc              (and)
 %;     personal address
 %;
+%; Note that addresses should not have %(decode) run on them in case invalid
+%; characters are in the address field.
+%;
 %(void(localmbox))%(void(width))%(putaddr From: )
 %(lit)%(formataddr{mail-followup-to})\
 %<(nonnull)%(void(width))%(putaddr To: )\n\
