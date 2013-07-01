@@ -183,72 +183,48 @@ static int
 message_fd (char **vec)
 {
     pid_t child_id;
-    int bytes, fd, seconds, bailout;
+    int bytes, fd, seconds;
     char tmpfil[BUFSIZ];
     struct stat st;
 
-    bailout = 0;
     fd = mkstemp (strncpy (tmpfil, "/tmp/rcvttyXXXXX", sizeof(tmpfil)));
     unlink (tmpfil);
 
     if ((child_id = fork()) == NOTOK) {
-
 	/* fork error */
 	close (fd);
 	return header_fd ();
-
     } else if (child_id) {
-
 	/* parent process */
 	if (!setjmp (myctx)) {
-
 	    SIGNAL (SIGALRM, alrmser);
 	    bytes = fstat(fileno (stdin), &st) != NOTOK ? (int) st.st_size : 100;
 
 	    /* amount of time to wait depends on message size */
 	    if (bytes <= 100) {
-
 		/* give at least 5 minutes */
 		seconds = 300;
-
 	    } else if (bytes >= 90000) {
-
 		/* but 30 minutes should be long enough */
 		seconds = 1800;
-
 	    } else {
-
 		seconds = (bytes / 60) + 300;
-
 	    }
-
 	    alarm ((unsigned int) seconds);
 	    pidwait(child_id, OK);
 	    alarm (0);
 
+	    if (fstat (fd, &st) != NOTOK && st.st_size > (off_t) 0)
+		return fd;
 	} else {
-
 	    /*
 	     * Ruthlessly kill the child and anything
 	     * else in its process group.
 	     */
 	    killpg(child_id, SIGKILL);
-	    bailout = 1;
-
 	}
-
-	if (bailout) {
-
-            if (fstat (fd, &st) != NOTOK && st.st_size > (off_t) 0) {
-	        return fd;
-	    }
-
-	} else {
-
-	    close (fd);
-	    return header_fd ();
-
-	}
+	close (fd);
+	return header_fd ();
     }
 
     /* child process */

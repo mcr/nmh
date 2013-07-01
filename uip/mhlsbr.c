@@ -870,10 +870,9 @@ parse (void)
  */
 
 static void
-process (char *folder, char *filename, int ofilen, int ofilec)
+process (char *folder, char *fname, int ofilen, int ofilec)
 {
     char *cp = NULL;
-    char *fname = filename;
     FILE *fp = NULL;
     struct mcomp *c1;
     struct stat st;
