@@ -134,6 +134,7 @@ cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
     int char_len;      /* bytes in current character */
     int w;
     wchar_t wide_char;
+    char *altstr = NULL;
 #endif
     char *sp;          /* current position in source string */
     char *cp = *dest;  /* current position in destination string */
@@ -153,6 +154,17 @@ cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
 	while (*sp && remaining > 0 && end > 0) {
 #ifdef MULTIBYTE_SUPPORT
 	    char_len = mbtowc(&wide_char, sp, end);
+
+	    /*
+	     * See the relevant comments in cpstripped() to explain what's
+	     * going on here; we want to handle the case where we get
+	     * characters that mbtowc() cannot handle
+	     */
+
+	    if (char_len < 0) {
+	    	altstr = "?";
+		char_len = mbtowc(&wide_char, altstr, 1);
+	    }
 
 	    if (char_len <= 0)
 	    	break;
@@ -196,9 +208,10 @@ cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
 
 #ifdef MULTIBYTE_SUPPORT
 	    if (w >= 0 && remaining >= w) {
-		strncpy(cp, sp, char_len);
+		strncpy(cp, altstr ? altstr : sp, char_len);
 		cp += char_len;
 		remaining -= w;
+		altstr = NULL;
 	    }
 	    sp += char_len;
 #else
@@ -239,6 +252,7 @@ cpstripped (char **dest, char **end, char *max, char *str)
 #ifdef MULTIBYTE_SUPPORT
     int char_len, w;
     wchar_t wide_char;
+    char *altstr = NULL;
 #endif /* MULTIBYTE_SUPPORT */
 
     if (!str)
@@ -269,6 +283,19 @@ cpstripped (char **dest, char **end, char *max, char *str)
 	    *end += char_len - w;
 	}
 
+	/*
+	 * If mbrtowc() failed, then we have a character that isn't valid
+	 * in the current encoding.  Replace it with a '?'.  We do that by
+	 * setting the alstr variable to the value of the replacement string;
+	 * altstr is used below when the bytes are copied into the output
+	 * buffer.
+	 */
+
+	if (char_len < 0) {
+	    altstr = "?";
+	    char_len = mbtowc(&wide_char, altstr, 1);
+	}
+
 	if (char_len <= 0 || *dest + char_len > *end)
 	    break;
 
@@ -293,9 +320,10 @@ cpstripped (char **dest, char **end, char *max, char *str)
 	prevCtrl = 0;
 
 #ifdef MULTIBYTE_SUPPORT
-	memcpy(*dest, str, char_len);
+	memcpy(*dest, altstr ? altstr : str, char_len);
 	str += char_len;
 	*dest += char_len;
+	altstr = NULL;
 #else /* MULTIBYE_SUPPORT */
 	*(*dest)++ = *str++
 #endif /* MULTIBYTE_SUPPORT */
