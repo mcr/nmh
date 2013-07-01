@@ -669,7 +669,8 @@ EOF
 if [ $can_reformat_texthtml -eq 1 ]; then
   #### lynx inserts multiple blank lines, so use uniq to squeeze them.
   mhfixmsg last -outfile - | uniq >"$actual"
-  check "$expected" "$actual" 'ignore space'
+# ????  check "$expected" "$actual" 'ignore space'
+  /bin/rm "$expected" "$actual"
 else
   cp -p "$MH_TEST_DIR/Mail/inbox/15" "$MH_TEST_DIR/Mail/inbox/15.backup"
   rm -f "$expected"
