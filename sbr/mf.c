@@ -739,7 +739,7 @@ contains8bit(const char *p)
     	return 0;
 
     for (; *p; p++) {
-    	if (! isascii(*p))
+	if (! isascii((unsigned char) *p))
 	    return 1;
     }
 
