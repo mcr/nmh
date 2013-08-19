@@ -23,6 +23,8 @@
     X("notextcodeset", 0, NTEXTCODESETSW) \
     X("reformat", 0, REFORMATSW) \
     X("noreformat", 0, NREFORMATSW) \
+    X("replacetextplain", 0, REPLACETEXTPLAINSW) \
+    X("noreplacetextplain", 0, NREPLACETEXTPLAINSW) \
     X("fixboundary", 0, FIXBOUNDARYSW) \
     X("nofixboundary", 0, NFIXBOUNDARYSW) \
     X("fixcte", 0, FIXCTESW) \
@@ -78,6 +80,7 @@ typedef struct fix_transformations {
     int fixboundary;
     int fixcte;
     int reformat;
+    int replacetextplain;
     int decodetext;
     char *textcodeset;
 } fix_transformations;
@@ -90,7 +93,7 @@ static int replace_boundary (CT, char *, const char *);
 static char *update_attr (char *, const char *, const char *e);
 static int fix_multipart_cte (CT, int *);
 static int set_ce (CT, int);
-static int ensure_text_plain (CT *, CT, int *);
+static int ensure_text_plain (CT *, CT, int *, int);
 static CT build_text_plain_part (CT);
 static CT divide_part (CT);
 static void copy_ctinfo (CI, CI);
@@ -128,6 +131,7 @@ main (int argc, char **argv) {
     int status = OK;
     fix_transformations fx;
     fx.reformat = fx.fixcte = fx.fixboundary = 1;
+    fx.replacetextplain = 0;
     fx.decodetext = CE_8BIT;
     fx.textcodeset = NULL;
 
@@ -204,6 +208,12 @@ main (int argc, char **argv) {
                 continue;
             case NREFORMATSW:
                 fx.reformat = 0;
+                continue;
+            case REPLACETEXTPLAINSW:
+                fx.replacetextplain = 1;
+                continue;
+            case NREPLACETEXTPLAINSW:
+                fx.replacetextplain = 0;
                 continue;
 
             case FILESW:
@@ -410,7 +420,8 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
         status = fix_multipart_cte (*ctp, &message_mods);
     }
     if (status == OK  &&  fx->reformat) {
-        status = ensure_text_plain (ctp, NULL, &message_mods);
+        status =
+            ensure_text_plain (ctp, NULL, &message_mods, fx->replacetextplain);
     }
     if (status == OK  &&  fx->decodetext) {
         status = decode_text_parts (*ctp, fx->decodetext, &message_mods);
@@ -873,7 +884,7 @@ set_ce (CT ct, int encoding) {
 
 /* Make sure each text part has a corresponding text/plain part. */
 static int
-ensure_text_plain (CT *ct, CT parent, int *message_mods) {
+ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
     int status = OK;
 
     switch ((*ct)->c_type) {
@@ -886,17 +897,36 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods) {
         if (parent  &&  parent->c_type == CT_MULTIPART  &&
             parent->c_subtype == MULTI_ALTERNATE) {
             struct multipart *mp = (struct multipart *) parent->c_ctparams;
-            struct part *part;
+            struct part *part, *prev;
             int new_subpart_number = 1;
 
             /* See if there is a sibling text/plain. */
-            for (part = mp->mp_parts; part; part = part->mp_next) {
+            for (prev = part = mp->mp_parts; part; part = part->mp_next) {
                 ++new_subpart_number;
                 if (part->mp_part->c_type == CT_TEXT  &&
                     part->mp_part->c_subtype == TEXT_PLAIN) {
-                    has_text_plain = 1;
+                    if (replacetextplain) {
+                        struct part *old_part;
+                        if (part == mp->mp_parts) {
+                            old_part = mp->mp_parts;
+                            mp->mp_parts = part->mp_next;
+                        } else {
+                            old_part = prev->mp_next;
+                            prev->mp_next = part->mp_next;
+                        }
+                        if (verbosw) {
+                            report (parent->c_partno, parent->c_file,
+                                    "remove text/plain part %s",
+                                    old_part->mp_part->c_partno);
+                        }
+                        free_content (old_part->mp_part);
+                        free (old_part);
+                    } else {
+                        has_text_plain = 1;
+                    }
                     break;
                 }
+                prev = part;
             }
 
             if (! has_text_plain) {
@@ -967,7 +997,8 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods) {
 
         for (part = mp->mp_parts; status == OK && part; part = part->mp_next) {
             if ((*ct)->c_type == CT_MULTIPART) {
-                status = ensure_text_plain (&part->mp_part, *ct, message_mods);
+                status = ensure_text_plain (&part->mp_part, *ct, message_mods,
+                                            replacetextplain);
             }
         }
         break;
@@ -978,7 +1009,8 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods) {
             struct exbody *e;
 
             e = (struct exbody *) (*ct)->c_ctparams;
-            status = ensure_text_plain (&e->eb_content, *ct, message_mods);
+            status = ensure_text_plain (&e->eb_content, *ct, message_mods,
+                                        replacetextplain);
         }
         break;
     }

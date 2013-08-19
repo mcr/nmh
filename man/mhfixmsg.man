@@ -17,6 +17,7 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .I codeset
 .RB "| " \-notextcodeset ]
 .RB [ \-reformat " | " \-noreformat ]
+.RB [ \-replacetextplain " | " \-noreplacetextplain ]
 .RB [ \-fixboundary " | " \-nofixboundary ]
 .RB [ \-fixcte " | " \-nofixcte ]
 .RB [ \-file
@@ -92,6 +93,16 @@ successfully convert the part to text/plain,
 inserts that text/plain part at the beginning of the containing
 multipart/alternative part, if present.  If not, it creates a
 multipart/alternative part.
+.PP
+The
+.B \-replacetextplain
+switch broadens the applicability of
+.B \-reformat
+by always replacing a corresponding text/plain part, if one exists.
+If
+.B \-verbose
+if enabled, the replacement will be shown as two steps:  a removal of
+the text/plain part followed by the usual insertion of a new part.
 .PP
 .B \-reformat
 requires a profile entry for each text part subtype to be reformatted.
@@ -300,6 +311,7 @@ is checked.
 .RB ` "\-decodetext 8bit"'
 .RB ` \-notextcodeset '
 .RB ` \-reformat '
+.RB ` \-noreplacetextplain '
 .RB ` \-fixboundary '
 .RB ` \-fixcte '
 .RB ` \-noverbose '

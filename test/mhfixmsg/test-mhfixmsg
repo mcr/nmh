@@ -41,6 +41,7 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   -nodecodetext
   -[no]textcodeset
   -[no]reformat
+  -[no]replacetextplain
   -[no]fixboundary
   -[no]fixcte
   -file file
@@ -940,6 +941,104 @@ There are two CR-LF pairs at the end of this sentence.
 EOF
 
 mhfixmsg last -outfile "$actual"
+check "$expected" "$actual"
+
+
+# check -replacetextplain
+cat >"$expected" <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg replacement of bad text/plain part test
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="----=_Part_876302"
+
+------=_Part_876302
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+Yes, the text/plain part really was empty.
+
+------=_Part_876302
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+
+<html><head>
+<title>eticket</title>
+</head>
+<body>
+  Yes, the text/plain part really was empty.
+</body>
+</html>
+
+------=_Part_876302--
+EOF
+
+cat >`mhpath new` <<'EOF'
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg replacement of bad text/plain part test
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="----=_Part_876302"
+
+------=_Part_876302
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+
+------=_Part_876302
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+
+<html><head>
+<title>eticket</title>
+</head>
+<body>
+  Yes, the text/plain part really was empty.
+</body>
+</html>
+
+------=_Part_876302--
+EOF
+
+mhfixmsg last -replacetextplain -outfile "$actual"
+check "$expected" "$actual"
+
+# check -noreplacetextplain
+cat >"$expected" <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg replacement of bad text/plain part test
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="----=_Part_876302"
+
+------=_Part_876302
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+
+------=_Part_876302
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+
+<html><head>
+<title>eticket</title>
+</head>
+<body>
+  Yes, the text/plain part really was empty.
+</body>
+</html>
+
+------=_Part_876302--
+EOF
+
+mhfixmsg last -replacetextplain -noreplacetextplain -outfile "$actual"
 check "$expected" "$actual"
 
 
