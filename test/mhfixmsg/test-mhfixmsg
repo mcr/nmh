@@ -244,6 +244,8 @@ mhfixmsg: 12 part 1, decode text/html; charset=\"Windows-1252\"" \
   mhfixmsg last -outfile - -verbose 2>"$actual.err" | uniq >"$actual"
   check "$expected" "$actual"
   check "$expected.err" "$actual.err"
+else
+  rm -f "$expected"
 fi
 
 
@@ -319,6 +321,8 @@ mhfixmsg: 12 part 1, decode text/html; charset=\"Windows-1252\"" \
   mhfixmsg last -outfile - -verbose 2>"$actual.err" | uniq >"$actual"
   check "$expected" "$actual"
   check "$expected.err" "$actual.err"
+else
+  rm -f "$expected"
 fi
 
 
@@ -389,6 +393,8 @@ if [ $can_reformat_texthtml -eq 1 ]; then
   mhfixmsg last -nodecode -outfile - -verbose 2>"$actual.err" | uniq >"$actual"
   check "$expected" "$actual"
   check "$expected.err" "$actual.err"
+else
+  rm -f "$expected"
 fi
 
 
@@ -1004,9 +1010,13 @@ Content-Disposition: inline
 ------=_Part_876302--
 EOF
 
-#### lynx inserts multiple blank lines, so use uniq to squeeze them.
-mhfixmsg last -replacetextplain -outfile - | uniq > "$actual"
-check "$expected" "$actual"
+if [ $can_reformat_texthtml -eq 1 ]; then
+  #### lynx inserts multiple blank lines, so use uniq to squeeze them.
+  mhfixmsg last -replacetextplain -outfile - | uniq > "$actual"
+  check "$expected" "$actual"
+else
+  rm -f "$expected"
+fi
 
 
 # check -noreplacetextplain
