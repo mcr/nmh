@@ -1004,8 +1004,10 @@ Content-Disposition: inline
 ------=_Part_876302--
 EOF
 
-mhfixmsg last -replacetextplain -outfile "$actual"
+#### lynx inserts multiple blank lines, so use uniq to squeeze them.
+mhfixmsg last -replacetextplain -outfile - | uniq > "$actual"
 check "$expected" "$actual"
+
 
 # check -noreplacetextplain
 cat >"$expected" <<EOF
