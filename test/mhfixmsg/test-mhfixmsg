@@ -25,7 +25,7 @@ if grep mhfixmsg-format-text/html "${MH_TEST_DIR}/Mail/mhn.defaults" \
   >/dev/null; then
   can_reformat_texthtml=1
 else
-  echo "$0: skipping -reformat check because
+  echo "$0: skipping -reformat check because \
     mhfixmsg-format-text/html is not available"
   can_reformat_texthtml=0
 fi
@@ -704,7 +704,7 @@ set +e
 mhfixmsg last -textcodeset utf-8 -outfile "$actual" 2>"$actual.err"
 if grep "mhfixmsg: Can't convert .* to .* without iconv" "$actual.err" \
   >/dev/null; then
-  echo skipping -textcodeset check because nmh was built without iconv
+  echo "$0: skipping -textcodeset check because nmh was built without iconv"
   rm -f "$expected" "$actual" "$actual.err"
 else
   check "$expected" "$actual"
