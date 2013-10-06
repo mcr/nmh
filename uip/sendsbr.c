@@ -534,13 +534,18 @@ make_mime_composition_file_entry(char *file_name, int attachformat,
             (void) fprintf (composition_file, "#%s <>", content_type);
         } else {
             /* Suppress Content-Id, insert simple Content-Disposition
-               and Content-Description with filename. */
+               and Content-Description with filename.
+               The Content-Disposition type needs to be "inline" for
+               MS Outlook and BlackBerry calendar programs to properly
+               handle a text/calendar attachment. */
             p = strrchr(file_name, '/');
             (void) fprintf (composition_file,
-                            "#%s; name=\"%s\" <> [%s]{attachment}",
+                            "#%s; name=\"%s\" <> [%s]{%s}",
                             content_type,
                             (p == (char *)0) ? file_name : p + 1,
-                            (p == (char *)0) ? file_name : p + 1);
+                            (p == (char *)0) ? file_name : p + 1,
+                            strcmp ("text/calendar", content_type)
+                              ? "attachment" : "inline");
         }
 
         break;
@@ -553,13 +558,19 @@ make_mime_composition_file_entry(char *file_name, int attachformat,
             (void) fprintf (composition_file, "#%s <>", content_type);
         } else {
             /* Suppress Content-Id, insert Content-Disposition with
-               modification date and Content-Description wtih filename. */
+               modification date and Content-Description wtih filename.
+               The Content-Disposition type needs to be "inline" for
+               MS Outlook and BlackBerry calendar programs to properly
+               handle a text/calendar attachment. */
             p = strrchr(file_name, '/');
             (void) fprintf (composition_file,
-                            "#%s; name=\"%s\" <>[%s]{attachment; modification-date=\"%s\"}",
+                            "#%s; name=\"%s\" <>[%s]{%s; "
+                            "modification-date=\"%s\"}",
                             content_type,
                             (p == (char *)0) ? file_name : p + 1,
                             (p == (char *)0) ? file_name : p + 1,
+                            strcmp ("text/calendar", content_type)
+                              ? "attachment" : "inline",
                             dtime (&st.st_mtime, 0));
         }
 
