@@ -156,15 +156,11 @@ char *mhetcdir = NMHETCDIR;
 char *context = "context";
 
 /*
- * Default name of file for public sequences.  If NULL,
- * then nmh will use private sequences by default, unless the
- * user defines a value using the "mh-sequences" profile entry.
+ * Default name of file for public sequences.  If "\0" (an empty
+ * "mh-sequences" profile entry), then nmh will use private sequences by
+ * default.
  */
-#ifdef NOPUBLICSEQ
-char *mh_seq = NULL;
-#else
 char *mh_seq = ".mh_sequences";
-#endif
 
 /* 
  * nmh globals

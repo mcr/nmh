@@ -93,6 +93,8 @@ OBSOLETE FEATURES
   default using the PAGER environment variable or entries in .mh_profile.
 - The configure flag --with-editor has been removed; the fallback editor
   if none is configured is "vi".
+- The support for the undocumented NOPUBLICSEQ preprocessor definition
+  to disable public sequence support has been removed.
 
 -------------------
 DEPRECATED FEATURES

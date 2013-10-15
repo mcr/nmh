@@ -61,8 +61,7 @@ seq_public (struct msgs *mp, int lockflag)
     m_getfld_state_t gstate = 0;
 
     /*
-     * If mh_seq == NULL (such as if nmh been compiled with
-     * NOPUBLICSEQ), or if *mh_seq == '\0' (the user has defined
+     * If mh_seq == NULL or if *mh_seq == '\0' (the user has defined
      * the "mh-sequences" profile entry, but left it empty),
      * then just return, and do not initialize any public sequences.
      */
