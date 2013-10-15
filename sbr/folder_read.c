@@ -27,7 +27,6 @@ folder_read (char *name, int lockflag)
 {
     int msgnum, prefix_len, len, *mi;
     struct msgs *mp;
-    struct stat st;
     struct dirent *dp;
     DIR *dd;
     bvector_t *v;
@@ -35,11 +34,6 @@ folder_read (char *name, int lockflag)
 
     name = m_mailpath (name);
     if (!(dd = opendir (name))) {
-	free (name);
-	return NULL;
-    }
-
-    if (stat (name, &st) == -1) {
 	free (name);
 	return NULL;
     }
