@@ -89,20 +89,35 @@ seq_in_list(char *name, char *sequences[])
 static char *
 get_msgnums(char *folder, char *sequences[])
 {
-    char *seqfile = concat(m_maildir(folder), "/", mh_seq, (void *)NULL);
-    FILE *fp = fopen(seqfile, "r");
+    char *seqfile = NULL;
+    FILE *fp;
     int state;
     char name[NAMESZ], field[BUFSIZ];
     char *cp;
     char *msgnums = NULL, *this_msgnums, *old_msgnums;
     m_getfld_state_t gstate = 0;
 
-    /* no sequences file -> no messages */
-    if (fp == NULL) {
-        return NULL;
+    /* copied from seq_read.c:seq_public */
+    /*
+     * If mh_seq == NULL or if *mh_seq == '\0' (the user has defined
+     * the "mh-sequences" profile entry, but left it empty),
+     * then just return, and do not initialize any public sequences.
+     */
+    if (mh_seq == NULL || *mh_seq == '\0')
+	return NULL;
+
+    /* get filename of sequence file */
+    seqfile = concat(m_maildir(folder), "/", mh_seq, (void *)NULL);
+
+    if (seqfile == NULL)
+    	return NULL;
+
+    if ((fp = lkfopendata (seqfile, "r")) == NULL) {
+    	free(seqfile);
+	return NULL;
     }
 
-    /* copied from seq_read.c:seq_public */
+    /* Use m_getfld to scan sequence file */
     for (;;) {
 	int fieldsz = sizeof field;
 	switch (state = m_getfld (&gstate, name, field, &fieldsz, fp)) {
@@ -163,7 +178,9 @@ get_msgnums(char *folder, char *sequences[])
     }
     m_getfld_state_destroy (&gstate);
 
-    fclose(fp);
+    lkfclosedata (fp, seqfile);
+
+    free(seqfile);
 
     return msgnums;
 }
