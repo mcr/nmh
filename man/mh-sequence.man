@@ -267,6 +267,28 @@ or
 displays a message, that message will be removed from
 any sequences named by the \*(lqUnseen\-Sequence\*(rq entry in the
 profile.
+.SS Sequence File Format
+The sequence file format is based on the RFC\-5322 message format.  Each line
+of the sequence file corresponds to one sequence.  The line starts with the
+sequence name followed by a `:', then followed by a space-separated list of message numbers
+that correspond to messages that are part of the named sequence.  A contiguous
+range of messages can be represented as \*(lqlownum\-highnum\*(rq.
+.PP
+.B Sample sequence file
+.PP
+.RS 5
+.nf
+work: 3 6 8 22-33 46
+unseen: 47 49-51 54
+cur: 46
+.fi
+.RE
+.PP
+.B Nmh
+commands that modify the sequence file will silently remove sequences for
+nonexistant messages when the sequence file is updated.  The exception to 
+this is the \*(lqcur\*(rq sequence, which is allowed to point to a
+nonexistant message.
 .SS Sequence File Locking
 The \*(lqdatalocking\*(rq profile entry controls the type of locking used
 when reading and writing sequence files.  The locking mechanisms supported
