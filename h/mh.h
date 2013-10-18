@@ -79,7 +79,7 @@ struct swit {
 /*
  * Macros to use when declaring struct swit arrays.
  *
- * These macros are what known as X-Macros.  In your source code you
+ * These macros use a technique known as X-Macros.  In your source code you
  * use them like this:
  *
  * #define FOO_SWITCHES \
@@ -89,6 +89,10 @@ struct swit {
  *
  * The argument to each entry in FOO_SWITCHES are the switch name (sw),
  * the minchars field (see above) and the return value for this switch.
+ * Note that the last entry in the above definition must either omit the
+ * continuation backslash, or be followed by a blank line.  In the nmh
+ * code the style is to have every line include a backslash and follow
+ * the SWITCHES macro definition by a blank line.
  *
  * After you define FOO_SWITCHES, you instantiate it as follows:
  *
