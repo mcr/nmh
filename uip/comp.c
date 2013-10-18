@@ -24,6 +24,7 @@
     X("nouse", 0, NUSESW) \
     X("whatnowproc program", 0, WHATSW) \
     X("nowhatnowproc", 0, NWHATSW) \
+    X("build", 5, BILDSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("to address", 0, TOSW) \
@@ -69,7 +70,7 @@ static struct swit aqrul[] = {
 int
 main (int argc, char **argv)
 {
-    int use = NOUSE, nedit = 0, nwhat = 0;
+    int use = NOUSE, nedit = 0, nwhat = 0, build = 0;
     int i, in = NOTOK, isdf = 0, out, dat[5], format_len = 0;
     int outputlinelen = OUTPUTLINELEN;
     char *cp, *cwd, *maildir, *dfolder = NULL;
@@ -125,6 +126,10 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    nwhat = 0;
 		    continue;
+
+		case BILDSW:
+		    build++;
+		    /* fall through */
 		case NWHATSW: 
 		    nwhat++;
 		    continue;
@@ -316,12 +321,13 @@ main (int argc, char **argv)
     }
 
 try_it_again:
-    strncpy (drft, m_draft (dfolder, file, use, &isdf), sizeof(drft));
+    strncpy (drft, build ? m_maildir ("draft")
+    			: m_draft (dfolder, file, use, &isdf), sizeof(drft));
 
     /*
      * Check if we have an existing draft
      */
-    if ((out = open (drft, O_RDONLY)) != NOTOK) {
+    if (!build && (out = open (drft, O_RDONLY)) != NOTOK) {
 	i = fdcompare (in, out);
 	close (out);
 

@@ -38,6 +38,7 @@ comp \- compose a message
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
+.RB [ \-build ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -230,6 +231,16 @@ the
 program which starts the initial edit.  Hence,
 .B \-nowhatnowproc
 will prevent any edit from occurring.)
+.PP
+The
+.B \-build
+switch is intended to be used by the Emacs mh-e interface to
+.BR nmh .
+It implies
+.BR \-nowhatnowproc .
+It causes a file <mh\-dir>/draft to be created, containing the draft message that
+would normally be presented to the user for editing.
+No mail is actually sent.
 .SH FILES
 .PD 0
 .TP 20
