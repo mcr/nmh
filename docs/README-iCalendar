@@ -1,0 +1,64 @@
+To view an iCalendar (text/calendar, .ics, RFC 5545) attachment with
+mhshow or mhn, all I had to do was install calcurse
+(http://www.calcurse.org/), set it up once, and add this to my
+profile:
+
+#: With mhshow, the following just views the calendar attachment.
+#: With mhn, it inserts it into my personal calcurse calendar.
+#: calcurse must be set up before or at first use.  To set up beforehand,
+#:   either run it without any arguments and then "qqqy", or:
+#:   $ echo qqqy | calcurse
+#: The range of 60 is in days:  anything after that range (or before the
+#:   current date) won't be shown.
+#: The grep of TZID works around a current (v. 3.1.4) calcurse
+#:   deficiency:  it doesn't support timezones.
+#: The | cat below allows a sequence of shell commands.
+mhshow-show-text/calendar:
+  %lcalcurse -c /dev/null --read-only --import '%F' --range=60 --todo | cat;
+  calcurse --gc;
+  grep TZID: '%F'
+mhn-show-text/calendar:
+  %lcalcurse --import '%F' | cat;
+  grep TZID: '%F'
+
+
+To create and send out a calendar request:
+  1) Launch calcurse and create the calendar request.
+  2) Export the calendar request to a file, either using the
+     "x" command from within interactive calcurse or using the
+     -x/--export command-line option.  The output filename
+     should have an extension of .ics if you'll use send -attach.
+  3) For compatibility with MS Outlook, edit the calendar
+     request file and insert this line into the VCALENDAR
+     section:
+METHOD:REQUEST
+     and insert this line into the VEVENT section:
+UID:<uid string>
+     where <uid string> should be unique.
+
+     If you insert the following 5 lines just before the
+     END:VEVENT line, it will enable alarms for recipients who
+     have support for them:
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:REMINDER
+TRIGGER;RELATED=START:-PT15M
+END:VALARM
+  4) Attach the calendar request file to a message.  With
+     mhbuild, be sure to specify a Content-Disposition type
+     of "inline", using {inline}.  The send -attach support
+     handles this properly.
+
+
+To respond to a calendar request:
+  1) Store the calendar request in a file using, e.g.,
+     mhstore -type text/calendar
+  2) Edit the calendar request, changing the METHOD and your
+     ATTENDEE lines to look like:
+METHOD:REPLY
+ATTENDEE;PARTSTAT=<action>;MAILTO:<your email address>
+     where <action> is one of ACCEPTED, DECLINED, TENTATIVE,
+     or DELEGATED (or COMPLETED or IN-PROCESS for to-do's).
+  3) Send that edited request by attaching it to a reply to
+     the meeting requestor; see last step under "To create and
+     send out a calendar request" above.
