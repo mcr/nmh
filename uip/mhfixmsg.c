@@ -1620,8 +1620,15 @@ strip_crs (CT ct, int *message_mods) {
     char *codeset = upcase (content_codeset (ct));
     int status = OK;
 
-    /* Only strip carriage returns if content is ASCII. */
-    if (! strcmp (norm_charmap (codeset), "US-ASCII")) {
+    /* Only strip carriage returns if content is ASCII or another
+       codeset that has the same readily recognizable CR followed by a
+       LF.  We can include UTF-8 here because if the high-order bit of
+       a UTF-8 byte is 0, then it must be a single-byte ASCII
+       character. */
+    if (! strcmp (norm_charmap (codeset), "US-ASCII")  ||
+        ! strncmp (norm_charmap (codeset), "ISO-8859-", 9)  ||
+        ! strncmp (norm_charmap (codeset), "UTF-8", 5)  ||
+        ! strncmp (norm_charmap (codeset), "WINDOWS-12", 10)) {
         char **file = NULL;
         FILE **fp = NULL;
         size_t begin;
@@ -1704,12 +1711,11 @@ strip_crs (CT ct, int *message_mods) {
                             write (fd, cp, 1);
                             last_char_was_cr = 0;
                         }
-
                     }
                 }
 
                 if (close (fd)) {
-                    admonish (NULL, "unable to write temporaty file %s",
+                    admonish (NULL, "unable to write temporary file %s",
                               stripped_content_file);
                     unlink (stripped_content_file);
                     status = NOTOK;
@@ -1726,7 +1732,9 @@ strip_crs (CT ct, int *message_mods) {
 
                     ++*message_mods;
                     if (verbosw) {
-                        report (NULL, *file, "stripped CRs");
+                        report (NULL,
+                                 begin == 0 && end == 0 ? "(tmpfile)" : *file,
+                                "stripped CRs");
                     }
                 }
             }

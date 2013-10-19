@@ -64,7 +64,8 @@ is enabled).
 When the
 .B \-decodetext
 switch is enabled, each carriage return character that precedes a
-linefeed character is removed from ASCII-encoded text parts.
+linefeed character is removed from text parts encoded in ASCII,
+ISO-8859-x, UTF-8, or Windows-12xx.
 .PP
 The
 .B \-textcodeset
