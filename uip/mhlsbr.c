@@ -877,6 +877,8 @@ process (char *folder, char *fname, int ofilen, int ofilec)
     struct mcomp *c1;
     struct stat st;
     struct arglist *ap;
+    /* volatile to prevent "might be clobbered" warning from gcc: */
+    char *volatile fname2 = fname ? fname : "(stdin)";
 
     switch (setjmp (env)) {
 	case OK: 
@@ -888,7 +890,6 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 		    return;
 		}
 	    } else {
-		fname = "(stdin)";
 		fp = stdin;
 	    }
 	    if (fstat(fileno(fp), &st) == 0) {
@@ -896,7 +897,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 	    } else {
 	    	filesize = 0;
 	    }
-	    cp = folder ? concat (folder, ":", fname, NULL) : getcpy (fname);
+	    cp = folder ? concat (folder, ":", fname2, NULL) : getcpy (fname2);
 	    if (ontty != PITTY)
 		SIGNAL (SIGINT, intrser);
 	    mhlfile (fp, cp, ofilen, ofilec);  /* FALL THROUGH! */

@@ -106,12 +106,6 @@ AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
  AC_TRY_COMPILE([],[],nmh_cv_has_wextra=yes,nmh_cv_has_wextra=no)
  CFLAGS="$nmh_saved_cflags"])
 
-AC_CACHE_CHECK([whether compiler supports -Wno-clobbered], [nmh_cv_has_noclobbered],
-[nmh_saved_cflags="$CFLAGS"
- CFLAGS="$CFLAGS -Wno-clobbered -Werror"
- AC_TRY_COMPILE([],[],nmh_cv_has_noclobbered=yes,nmh_cv_has_noclobbered=no)
- CFLAGS="$nmh_saved_cflags"])
-
 dnl Can't use -ansi with gcc 4.5.3 on Cygwin, at least through setup
 dnl setup version 2.763, because it disables some features in the
 dnl system system header files and warns about them with -Wall.  Try
@@ -146,9 +140,6 @@ else
 fi
 if test "$nmh_cv_has_wextra" = "yes"; then
     nmh_gcc_warnflags="${nmh_gcc_warnflags} -Wextra"
-fi
-if test "$nmh_cv_has_noclobbered" = "yes"; then
-    nmh_gcc_warnflags="${nmh_gcc_warnflags} -Wno-clobbered"
 fi
 
 if test -n "$auto_cflags"; then
