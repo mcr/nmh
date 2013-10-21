@@ -68,6 +68,16 @@ struct cefile {
 
 /*
  * Primary structure for handling Content (Entity)
+ *
+ * Some more explanation of this:
+ *
+ * This structure recursively describes a complete MIME message.
+ * At the top level, the c_first_hf list has a list of all message
+ * headers.  If the content-type is multipart (c_type == CT_MULTIPART)
+ * then c_ctparams will contain a pointer to a struct multipart.
+ * A struct multipart contains (among other trhings) a linked list
+ * of struct part elements, and THOSE contain a pointer to the sub-part's
+ * Content structure.
  */
 struct Content {
     /* source (read) file */
