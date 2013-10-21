@@ -59,6 +59,27 @@ char *cpytrim (const char *);
 int decode_rfc2047 (char *, char *, size_t);
 void discard (FILE *);
 int default_done (int);
+
+/*
+ * Encode a message header using RFC 2047 encoding.  If the message contains
+ * no non-ASCII characters, then leave the header as-is.
+ *
+ * Arguments include:
+ *
+ * name		- Message header name
+ * value	- Message header content; must point to allocated memory
+ *		  (may be changed if encoding is necessary)
+ * encoding	- Encoding type.  May be one of CE_UNKNOWN (function chooses
+ *		  the encoding), CE_BASE64 or CE_QUOTED
+ * charset	- Charset used for encoding.  If NULL, obtain from system
+ *		  locale.
+ *
+ * Returns 0 on success, any other value on failure.
+ */
+
+int encode_rfc2047(const char *name, char **value, int encoding,
+		   const char *charset);
+
 void escape_display_name (char *, size_t);
 void escape_local_part (char *, size_t);
 int ext_hook(char *, char *, char *);
