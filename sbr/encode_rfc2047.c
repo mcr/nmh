@@ -9,6 +9,11 @@
 #include <h/mh.h>
 
 /*
+ * List of headers that contain addresses and as a result require special
+ * handling
+ */
+
+/*
  * Encode a message header using RFC 2047 encoding.  We make the assumption
  * that all characters < 128 are ASCII and as a consequence don't need any
  * encoding.
@@ -41,3 +46,4 @@ encode:
      * Also, we're not permitted to encode email addresses, so
      * we need to actually _parse_ email addresses and only encode
      * the right bits.  
+     */
