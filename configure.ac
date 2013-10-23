@@ -559,13 +559,15 @@ LIBS="$nmh_save_LIBS"
 dnl ----------------
 dnl CHECK FLEX FIXUP
 dnl ----------------
-dnl Use LFLAGS make variable setting to work around bug in flex
-dnl 2.5.35-37 that causes signed/unsigned mismatch,
+dnl Use LFLAGS make variable setting to work around bugs in flex
+dnl 2.5.35-37 that cause signed/unsigned mismatch,
 dnl http://sourceforge.net/p/flex/bugs/140/
 AS_IF([test "$LEX" = flex],
       [AS_CASE([`$LEX -V`],
-               [flex\ 2.5.3@<:@567@:>@], [[LFLAGS=\
-'; cat $@; cp -p $@ $@.ORIGINAL; printf "%s\n" '\''1,$$s/\(	\)int i;/\1yy_size_t i;/'\'' w q | ed -s $@; diff $@ $@.ORIGINAL || true']])
+               [flex\ 2.5.35], [[LFLAGS=\
+'; cp -p $@ $@.ORIGINAL; printf "%s\n" '\''1,$$s/(size_t) \(num_to_read\)/\1/'\'' w q | ed -s $@; diff $@ $@.ORIGINAL || true']])
+               [flex\ 2.5.3@<:@67@:>@], [[LFLAGS=\
+'; printf "%s\n" '\''1,$$s/\(	\)int i;/\1yy_size_t i;/'\'' w q | ed -s $@']])
        AC_SUBST([LFLAGS])])
 
 dnl --------------
