@@ -307,15 +307,14 @@ if [ $status -eq 0 ]; then
   fi
 fi
 
-grep 'Error' "$logfile"
-#### Ignore the warning when sbr/dtimep.c is built with flex 2.5.36
-#### or 2.5.37.
-grep 'warn' "$logfile" | \
-  grep -v 'sbr/dtimep.c:.*comparison between signed and unsigned'
-if [ $status -ne 0 ]; then
+grep Error "$logfile"
+grep warn "$logfile"
+
+if [ $status -eq 0 ]; then
+  [ $verbose -ge 1 ]  &&  echo build completed successfully
+else
   echo build failed!
   echo build log is in "$logfile"
 fi
-[ $status -eq 0  -a  $verbose -ge 1 ]  &&  echo build completed successfully
 
 exit $status
