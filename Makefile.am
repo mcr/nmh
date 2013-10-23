@@ -520,6 +520,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/copy.c sbr/copyip.c sbr/cpydata.c \
 		      sbr/cpydgst.c sbr/crawl_folders.c sbr/credentials.c \
 		      sbr/discard.c sbr/done.c sbr/dtimep.l sbr/dtime.c \
+		      sbr/encode_rfc2047.c \
 		      sbr/escape_addresses.c \
 		      sbr/error.c sbr/ext_hook.c sbr/fdcompare.c \
 		      sbr/folder_addmsg.c sbr/folder_delmsgs.c \
