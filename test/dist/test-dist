@@ -247,21 +247,21 @@ EOF
 
   # check -inplace
   # Hard link the message and verify that the new one does get annotated.
-  ln "${MH_TEST_DIR}/Mail/inbox/8" "${MH_TEST_DIR}/Mail/inbox/8.link"
+  ln "${MH_TEST_DIR}/Mail/inbox/9" "${MH_TEST_DIR}/Mail/inbox/9.link"
   cat >"$expected" <<EOF
-From: Test8 <test8@example.com>
+From: Test9 <test9@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
-Message-Id: 8@test.nmh
-Subject: Testing message 8
+Message-Id: 9@test.nmh
+Subject: Testing message 9
 Resent-From: ${localmbox}
 Resent-To: somebody@example.com
 Resent-Date:
 
-This is message number 8
+This is message number 9
 EOF
-  test_dist 8 -noedit -to somebody@example.com -annotate -noinplace -inplace
-  check "${MH_TEST_DIR}/Mail/inbox/8" "${MH_TEST_DIR}/Mail/inbox/8.link"
+  test_dist 9 -noedit -to somebody@example.com -annotate -noinplace -inplace
+  check "${MH_TEST_DIR}/Mail/inbox/9" "${MH_TEST_DIR}/Mail/inbox/9.link"
 fi
 
 # check -draftfolder

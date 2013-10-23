@@ -235,7 +235,7 @@ AC_PATH_PROG([sendmailpath], [sendmail], [/usr/sbin/sendmail], [$pathtmp])
 dnl Cygwin FAT filesystems do not support hard links.  So default to
 dnl cp instead, even if running on an NTFS or other filesystem.
 AS_CASE(["$host_os"],
-  [cygwin*],[LN=cp],
+  [cygwin*], [LN=cp],
   [LN=ln])
 AC_SUBST([LN])
 
@@ -555,6 +555,18 @@ fi
 dnl Now put the libraries back to what it was before we
 dnl starting checking the termcap library.
 LIBS="$nmh_save_LIBS"
+
+dnl ----------------
+dnl CHECK FLEX FIXUP
+dnl ----------------
+dnl Use LFLAGS make variable setting to work around bug in flex
+dnl 2.5.36 and .37 that causes signed/unsigned mismatch,
+dnl http://sourceforge.net/p/flex/bugs/140/
+AS_IF([test "$LEX" = flex],
+      [AS_CASE([`$LEX -V`],
+               [flex\ 2.5.3@<:@67@:>@], [[LFLAGS=\
+'; flex -V; cp -p $@ $@.ORIGINAL; printf "%s\n" '\''1,$$s/\(	\)int i;/\1yy_size_t i;/'\'' w q | ed -s $@; diff $@ $@.ORIGINAL || true']])
+       AC_SUBST([LFLAGS])])
 
 dnl --------------
 dnl CHECK TYPEDEFS
