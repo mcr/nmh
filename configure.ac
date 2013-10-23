@@ -565,7 +565,7 @@ dnl http://sourceforge.net/p/flex/bugs/140/
 AS_IF([test "$LEX" = flex],
       [AS_CASE([`$LEX -V`],
                [flex\ 2.5.3@<:@567@:>@], [[LFLAGS=\
-'; flex -V; cp -p $@ $@.ORIGINAL; printf "%s\n" '\''1,$$s/\(	\)int i;/\1yy_size_t i;/'\'' w q | ed -s $@; diff $@ $@.ORIGINAL || true']])
+'; cat $@; cp -p $@ $@.ORIGINAL; printf "%s\n" '\''1,$$s/\(	\)int i;/\1yy_size_t i;/'\'' w q | ed -s $@; diff $@ $@.ORIGINAL || true']])
        AC_SUBST([LFLAGS])])
 
 dnl --------------
