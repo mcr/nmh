@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "May 4, 2013" "%nmhversion%"
+.TH MHFIXMSG %manext1% "October 27, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -9,7 +9,10 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .na
 .B mhfixmsg
 .RI [ +folder ]
-.RI [ msgs ]
+.RI [ msgs " | "
+.IR "absolute pathname" " | "
+.RB \-file
+.IR file ]
 .RB [ \-decodetext
 8bit/7bit |
 .BR \-nodecodetext ]
@@ -20,8 +23,6 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .RB [ \-replacetextplain " | " \-noreplacetextplain ]
 .RB [ \-fixboundary " | " \-nofixboundary ]
 .RB [ \-fixcte " | " \-nofixcte ]
-.RB [ \-file
-.IR file ]
 .RB [ \-outfile
 .IR outfile ]
 .RB [ \-rmmproc
@@ -155,7 +156,12 @@ switch directs
 .B mhfixmsg
 to use the specified
 file as the source message, rather than a message from a folder.
-If this file is \*(lq-\*(rq, then
+Only one file argument may be provided.  The
+.B \-file
+switch is implied if
+.I file
+is an absolute pathname.
+If the file is \*(lq-\*(rq, then
 .B mhfixmsg
 accepts the source message on the standard input stream.  If
 the
@@ -238,6 +244,24 @@ profile component and negates all prior
 .B \-rmmproc
 switches.
 .PP
+.SS "Integration with inc"
+.B mhfixmsg
+can be used as an add-hook, as described in %docdir%/README-HOOKS.
+Note that add-hooks are called from all
+.B nmh
+programs that add a message to a folder, not just
+.BR inc .
+Alternatively, a simple shell alias or function can be used to
+call
+.B mhfixmsg
+immediately after a successful invocation of
+.BR inc .
+For example, with bash:
+.PP
+.RS 5
+alias inc='inc && mhfixmsg'
+.RE
+.PP
 .SS "Integration with procmail"
 By way of example, here is an excerpt from a procmailrc file
 that filters messages through
@@ -296,6 +320,7 @@ is checked.
 ^rmmproc:~^Program to delete original messages or files
 .fi
 .SH "SEE ALSO"
+.IR inc (1),
 .IR mh-profile (5),
 .IR mhbuild (1),
 .IR mhlist (1),
@@ -322,4 +347,5 @@ If a folder is given, it will become the current folder.  The last
 message selected from a folder will become the current message.  If
 the
 .B \-file
-switch is used, the context will not be modified.
+switch or an absolute pathname is used, the context will not be
+modified.

@@ -249,6 +249,10 @@ else
 fi
 
 
+# check implicit -file with absolute pathname
+run_test "mhfixmsg `mhpath last` -outfile /dev/null" ''
+
+
 # check handling of boundary string that appears in message body
 #
 cat >"$expected" <<EOF

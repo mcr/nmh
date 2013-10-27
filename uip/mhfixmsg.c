@@ -215,19 +215,16 @@ main (int argc, char **argv) {
             case NREPLACETEXTPLAINSW:
                 fx.replacetextplain = 0;
                 continue;
-
             case FILESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
                     adios (NULL, "missing argument to %s", argp[-2]);
                 file = *cp == '-'  ?  add (cp, NULL)  :  path (cp, TFILE);
                 continue;
-
             case OUTFILESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
                     adios (NULL, "missing argument to %s", argp[-2]);
                 outfile = *cp == '-'  ?  add (cp, NULL)  :  path (cp, TFILE);
                 continue;
-
             case RPROCSW:
                 if (!(rmmproc = *argp++) || *rmmproc == '-')
                     adios (NULL, "missing argument to %s", argp[-2]);
@@ -235,7 +232,6 @@ main (int argc, char **argv) {
             case NRPRCSW:
                 rmmproc = NULL;
                 continue;
-
             case VERBSW:
                 verbosw = 1;
                 continue;
@@ -249,8 +245,14 @@ main (int argc, char **argv) {
                 adios (NULL, "only one folder at a time!");
             else
                 folder = pluspath (cp);
-        } else
-                app_msgarg(&msgs, cp);
+        } else {
+            if (*cp == '/') {
+                /* Interpret a full path as a filename, not a message. */
+                file = add (cp, NULL);
+            } else {
+                app_msgarg (&msgs, cp);
+            }
+        }
     }
 
     SIGNAL (SIGQUIT, quitser);
