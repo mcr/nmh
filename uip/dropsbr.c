@@ -40,7 +40,7 @@ static int map_open (char *, int);
 int
 mbx_open (char *file, int mbx_style, uid_t uid, gid_t gid, mode_t mode)
 {
-    int j, count, fd;
+    int j, count, fd = NOTOK;
     struct stat st;
 
     j = 0;

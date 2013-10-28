@@ -649,9 +649,13 @@ main (int argc, char **argv)
     p_refile (tmpfil);
     unlink (tmpfil);
 
-    if (verbose)
-	printf (partno ? "Partial Message #%s Processed\n" : "Message Processed\n",
-		partno);
+    if (verbose) {
+    	if (partno)
+	    printf ("Partial Message #%s Processed\n", partno);
+	else
+	    printf ("Message Processed\n");
+    }
+
     done (0);
     return 1;
 }

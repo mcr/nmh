@@ -285,7 +285,10 @@ checkmail (char *user, char *home, int datesw, int notifysw, int personal)
 
     if ((mf & UUCPOK) || (mf & MMDFOK)) {
 	if (notifysw & NT_MAIL) {
-	    printf (personal ? "You have " : "%s has ", user);
+	    if (personal)
+		printf ("You have ");
+	    else
+		printf ("%s has ", user);
 	    if (mf & UUCPOK)
 		printf ("%s old-style bell", mf & UUCPOLD ? "old" : "new");
 	    if ((mf & UUCPOK) && (mf & MMDFOK))
@@ -340,7 +343,11 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 
     if (nmsgs) {
 	if (notifysw & NT_MAIL) {
-	    printf (personal ? "You have " : "%s has ", user);
+	    if (personal)
+		printf ("You have ");
+	    else
+		printf ("%s has ", user);
+
 	    printf ("%d message%s (%d bytes)",
 		    nmsgs, nmsgs != 1 ? "s" : "", nbytes);
 	}

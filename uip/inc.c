@@ -547,10 +547,15 @@ go_to_it:
 	else if (i == NOTOK)
 	    chmod (audfile, m_gmprot ());
 
-	fprintf (aud, from ? "<<inc>> %s -ms %s\n"
-		 : host ? "<<inc>> %s -host %s -user %s\n"
-		 : "<<inc>> %s\n",
-		 dtimenow (0), from ? from : host, user);
+	if (from)
+	    fprintf (aud, "<<inc>> %s -ms %s\n", dtimenow(0), from);
+	else {
+	    if (host)
+	    	fprintf (aud, "<<inc>> %s -host %s -user %s\n", dtimenow(0),
+			 host, user);
+	    else
+		fprintf (aud, "<<inc>> %s\n", dtimenow (0));
+	}
     }
 
     /* Get new format string */

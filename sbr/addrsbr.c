@@ -242,10 +242,13 @@ auxformat (struct mailname *mp, int extras)
 	    strncpy (addr, mp->m_mbox ? mp->m_mbox : "", sizeof(addr));
 	else
 
-	if (mp->m_type != UUCPHOST)
-	    snprintf (addr, sizeof(addr), mp->m_host ? "%s%s@%s" : "%s%s",
-		empty(mp->m_path), empty(mp->m_mbox), mp->m_host);
-	else
+	if (mp->m_type != UUCPHOST) {
+	    if (mp->m_host)
+	    	snprintf (addr, sizeof(addr), "%s%s@%s", empty(mp->m_path),
+			  empty(mp->m_mbox), mp->m_host);
+	    else snprintf (addr, sizeof(addr), "%s%s", empty(mp->m_path),
+	    		   empty(mp->m_mbox));
+	} else
 	    snprintf (addr, sizeof(addr), "%s!%s", mp->m_host, mp->m_mbox);
 
     if (!extras)

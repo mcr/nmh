@@ -277,10 +277,12 @@ body:;
 
 	    case LENERR: 
 	    case FMTERR: 
-		fprintf (stderr, 
-			innum ? "??Format error (message %d) in "
-			      : "??Format error in ",
-			outnum ? outnum : innum);
+	    	if (innum)
+		    fprintf (stderr, "??Format error (message %d) in ",
+			     outnum ? outnum : innum);
+		else
+		    fprintf (stderr, "??Format error in ");
+
 		fprintf (stderr, "component %d\n", compnum);
 
 		if (outnum) {

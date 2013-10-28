@@ -159,8 +159,11 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
 
-    printf (toplevel > 0 ? LSTFMT2a : toplevel < 0 ? "part " : "     ",
-	    atoi (r1bindex (empty (ct->c_file), '/')));
+    if (toplevel > 0)
+    	printf (LSTFMT2a, atoi (r1bindex (empty (ct->c_file), '/')));
+    else
+    	printf(toplevel < 0 ? "part " : "     ");
+
     snprintf (buffer, sizeof(buffer), "%s/%s", empty (ci->ci_type),
 		empty (ci->ci_subtype));
     printf (LSTFMT2b, empty (ct->c_partno), buffer);
