@@ -1,0 +1,54 @@
+#!/bin/sh
+######################################################
+#
+# Test charset conversion functionality
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+echo 'mhshow-charset-windows-1252: echo "This is a test"' >> $MH_TEST_DIR/Mail/.mh_profile
+
+# Write message with bogus quoted-printable data.
+msgfile=`mhpath new`
+msgnum=`basename $msgfile`
+cat > $msgfile <<EOF
+From: foo@example.edu
+To: bar@example.edu
+Subject: test
+MIME-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+4 =F7 2 =3D 2
+EOF
+
+cat > $expected <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test
+
+MIME-Version: 1.0
+
+part       text/plain                  10
+This is a test
+EOF
+
+mhshow -nopause $msgnum > $actual 2>&1
+check "$expected" "$actual"
+
+exit $failed
