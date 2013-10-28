@@ -434,6 +434,8 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
     rewind (in);
     lseek (fileno(in), (off_t) 0, SEEK_SET);
 
+    arglist = argsplit(mhlproc, &mhl, &argnum);
+
     switch (pid = fork()) {
 	case NOTOK: 
 	    adios ("fork", "unable to");
@@ -448,7 +450,6 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 	     * because we never call arglist_free().  But if we ever change
 	     * that be sure to use getcpy() for the extra arguments.
 	     */
-	    arglist = argsplit(mhlproc, &mhl, &argnum);
 	    arglist[argnum++] = "-form";
 	    arglist[argnum++] = filter;
 	    arglist[argnum++] = "-noclear";
