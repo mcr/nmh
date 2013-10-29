@@ -37,8 +37,15 @@ static char *address_headers[] = {
 
 #define is_fws(c) (c == '\t' || c == ' ')
 
+#define qpspecial(c) (c < ' ' || c == '=' && c == '?' && c == '_')
+
+#define ENCODELINELIMIT	76
+
 static void unfold_header(char **, int);
 static int field_encode_address(const char *, char **, int, const char *);
+static int field_encode_quoted(const char *, char **, int, const char *,
+			       int, int);
+static int utf8len(const char *);
 
 /*
  * Encode a message header using RFC 2047 encoding.  We make the assumption
@@ -50,7 +57,7 @@ int
 encode_rfc2047(const char *name, char **value, int encoding,
 	       const char *charset)
 {
-    int i, count = 0, len;
+    int i, asciicount = 0, eightbitcount = 0, qpspecialcount = 0;
     char *p;
 
     /*
@@ -58,11 +65,15 @@ encode_rfc2047(const char *name, char **value, int encoding,
      */
 
     for (p = *value; *p != '\0'; p++) {
-	if (! isascii((int) *p))
-	count++;
+	if (isascii((int) *p)) {
+	    asciicount++;
+	    if (qpspecial(*p))
+	    	qpspecialcount++;
+	} else
+	    eightbitcount++;
     }
 
-    if (count == 0)
+    if (eightbitcount == 0)
     	return 0;
 
     /*
@@ -105,38 +116,177 @@ encode_rfc2047(const char *name, char **value, int encoding,
      * - If a specified encoding is passed in, we use that.
      * - If more than 50% of the characters are high-bit, we use base64
      *   and encode the whole field as one atom (possibly split).
-     *   Otherwise, we use quoted-printable.
-     * - If more than 10% of the characters are high-bit, then we encode
-     *   the entire header as one (possibly split) atom.  Otherwise,
-     *   take each atom as they come and encode it on a per-atom basis.
+     * - Otherwise, we use quoted-printable.
      */
 
-    len = strlen(*value);
-
     if (encoding == CE_UNKNOWN)
-    	encoding = (count * 10 / len > 5) ? CE_BASE64 : CE_QUOTED;
+    	encoding = (eightbitcount * 10 / (asciicount + eightbitcount) > 5) ?
+						CE_BASE64 : CE_QUOTED;
+
+    unfold_header(value, asciicount + eightbitcount);
 
     switch (encoding) {
 
+#if 0
     case CE_BASE64:
-    	return field_encode_base64(value, charset, len, NULL);
+    	return field_encode_base64(name, value, encoding, charset);
+#endif
 
     case CE_QUOTED:
-    	if (count * 100 / len > 10) {
-	    return field_encode_quoted(value, charset, len, NULL);
-	} else {
-	    /*
-	     * Break it down by atoms.
-	     */
+	return field_encode_quoted(name, value, encoding, charset, asciicount,
+				   eightbitcount + qpspecialcount);
 
-	    unfold_header(value, len);
-	}
     default:
     	advise(NULL, "Internal error: unknown RFC-2047 encoding type");
 	return 1;
     }
+}
+
+/*
+ * Encode our specified header using quoted-printable
+ */
+
+static int
+field_encode_quoted(const char *name, char **value, int encoding,
+		    const char *charset, int ascii, int encoded)
+{
+    int prefixlen = name ? strlen(name) + 2: 0, outlen = 0, column, newline = 1;
+    int charsetlen = strlen(charset), utf8;
+    char *output = NULL, *p, *q;
+
+    /*
+     * Right now we just encode the whole thing.  Maybe later on we'll
+     * only encode things on a per-atom basis.
+     */
+
+    p = *value;
+
+    column = prefixlen + 2;	/* Header name plus ": " */
+
+    utf8 = strcasecmp(charset, "UTF-8") == 0;
+
+    while (*p != '\0') {
+    	/*
+	 * Start a new line, if it's time
+	 */
+    	if (newline) {
+	    /*
+	     * If it's the start of the header, we don't need to pad it
+	     *
+	     * The length of the output string is ...
+	     * =?charset?Q?...?=  so that's 7+strlen(charset) + 1 for NUL
+	     *
+	     * plus 1 for every ASCII character and 3 for every eight bit
+	     * or special character (eight bit characters are written as =XX).
+	     *
+	     */
+
+	    outlen += 8 + charsetlen + ascii + 3 * encoded;
+	    if (output) {
+	        int curlen = q - output, i;
+		outlen += prefixlen + 1;	/* Header plus \n ": " */
+		output = mh_xrealloc(output, outlen);
+		q = output + curlen;
+		*q++ = '?';
+		*q++ = '=';
+		*q++ = '\n';
+		for (i = 0; i < prefixlen; i++)
+		    *q++ = ' ';
+	    } else {
+	    	output = mh_xmalloc(outlen);
+		q = output;
+	    }
+
+	    q += snprintf(q, outlen - (q - output), "=?%s?Q?", charset);
+	    column = prefixlen;
+	    newline = 0;
+	}
+
+	/*
+	 * Process each character, encoding if necessary
+	 */
+
+	column++;
+
+	if (*p == ' ') {
+	    *q++ = '_';
+	    ascii--;
+	} else if (!qpspecial(*p)) {
+	    *q++ = *p;
+	    ascii--;
+	} else {
+	    snprintf(q, outlen - (q - output), "=%02X", (unsigned int) *p);
+	    q += 2;
+	    column += 2;
+	    encoded--;
+	}
+
+	p++;
+
+	/*
+	 * We're not allowed more than ENCODELINELIMIT characters per line,
+	 * so reserve some room for the final ?=.
+	 *
+	 * If prefixlen == 0, we haven't been passed in a header name, so
+	 * don't ever wrap the field (we're likely doing an address).
+	 */
+
+	if (prefixlen == 0)
+	    continue;
+
+	if (column >= ENCODELINELIMIT - 2) {
+	    newline = 1;
+	} else if (utf8) {
+	    /*
+	     * Okay, this is a bit weird, but to explain a bit more ...
+	     *
+	     * RFC 2047 prohibits the splitting of multibyte characters
+	     * across encoded words.  Right now we only handle the case
+	     * of UTF-8, the most common multibyte encoding.
+	     *
+	     * p is now pointing at the next input character.  If we're
+	     * using UTF-8 _and_ we'd go over ENCODELINELIMIT given the
+	     * length of the complete character, then trigger a newline
+	     * now
+	     */
+	    if (column + utf8len(p) > ENCODELINELIMIT - 2) {
+	    	newline = 1;
+	    }
+	}
+    }
+
+    strcat(q, "?=");
+
+    free(*value);
+
+    *value = output;
 
     return 0;
+}
+
+/*
+ * Calculate the length of a UTF-8 character.
+ *
+ * If it's not a UTF-8 character (or we're in the middle of a multibyte
+ * character) then simply return 1.
+ */
+
+static int
+utf8len(const char *p)
+{
+    int len = 1;
+
+    if (*p == '\0')
+    	return 0;
+
+    if (isascii((int) *p) || (*((unsigned char *) p) & 0xc0) == 0x80)
+    	return 1;
+
+    p++;
+    while ((*((unsigned char *) p++) & 0xc0) == 0x80)
+    	len++;
+
+    return len;
 }
 
 /*
@@ -173,4 +323,11 @@ unfold_header(char **value, int len)
 
     free(*value);
     *value = str;
+}
+
+static int
+field_encode_address(const char *name, char **value, int encoding,
+		     const char *charset)
+{
+    return 0;
 }
