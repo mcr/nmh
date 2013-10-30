@@ -216,8 +216,8 @@ field_encode_quoted(const char *name, char **value, int encoding,
 	    ascii--;
 	} else {
 	    snprintf(q, outlen - (q - output), "=%02X", (unsigned int) *p);
-	    q += 2;
-	    column += 2;
+	    q += 3;
+	    column += 3;
 	    encoded--;
 	}
 
@@ -247,9 +247,10 @@ field_encode_quoted(const char *name, char **value, int encoding,
 	     * p is now pointing at the next input character.  If we're
 	     * using UTF-8 _and_ we'd go over ENCODELINELIMIT given the
 	     * length of the complete character, then trigger a newline
-	     * now
+	     * now.  Note that we check the length * 3 since we have to
+	     * allow for the encoded output.
 	     */
-	    if (column + utf8len(p) > ENCODELINELIMIT - 2) {
+	    if (column + (utf8len(p) * 3) > ENCODELINELIMIT - 2) {
 	    	newline = 1;
 	    }
 	}
@@ -268,7 +269,7 @@ field_encode_quoted(const char *name, char **value, int encoding,
  * Calculate the length of a UTF-8 character.
  *
  * If it's not a UTF-8 character (or we're in the middle of a multibyte
- * character) then simply return 1.
+ * character) then simply return 0.
  */
 
 static int
@@ -280,7 +281,7 @@ utf8len(const char *p)
     	return 0;
 
     if (isascii((int) *p) || (*((unsigned char *) p) & 0xc0) == 0x80)
-    	return 1;
+    	return 0;
 
     p++;
     while ((*((unsigned char *) p++) & 0xc0) == 0x80)
