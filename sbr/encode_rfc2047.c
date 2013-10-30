@@ -37,7 +37,7 @@ static char *address_headers[] = {
 
 #define is_fws(c) (c == '\t' || c == ' ')
 
-#define qpspecial(c) (c < ' ' || c == '=' && c == '?' && c == '_')
+#define qpspecial(c) (c < ' ' || c == '=' || c == '?' || c == '_')
 
 #define ENCODELINELIMIT	76
 
@@ -66,7 +66,7 @@ encode_rfc2047(const char *name, char **value, int encoding,
     for (p = *value; *p != '\0'; p++) {
 	if (isascii((int) *p)) {
 	    asciicount++;
-	    if (qpspecial(*p))
+	    if (qpspecial((int) *p))
 	    	qpspecialcount++;
 	} else
 	    eightbitcount++;
@@ -223,7 +223,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	if (*p == ' ') {
 	    *q++ = '_';
 	    ascii--;
-	} else if (!qpspecial(*p)) {
+	} else if (isascii((int) *p) && !qpspecial((int) *p)) {
 	    *q++ = *p;
 	    ascii--;
 	} else {
