@@ -43,8 +43,7 @@ static char *address_headers[] = {
 
 static void unfold_header(char **, int);
 static int field_encode_address(const char *, char **, int, const char *);
-static int field_encode_quoted(const char *, char **, int, const char *,
-			       int, int);
+static int field_encode_quoted(const char *, char **, const char *, int, int);
 static int utf8len(const char *);
 
 /*
@@ -133,7 +132,7 @@ encode_rfc2047(const char *name, char **value, int encoding,
 #endif
 
     case CE_QUOTED:
-	return field_encode_quoted(name, value, encoding, charset, asciicount,
+	return field_encode_quoted(name, value, charset, asciicount,
 				   eightbitcount + qpspecialcount);
 
     default:
@@ -147,8 +146,8 @@ encode_rfc2047(const char *name, char **value, int encoding,
  */
 
 static int
-field_encode_quoted(const char *name, char **value, int encoding,
-		    const char *charset, int ascii, int encoded)
+field_encode_quoted(const char *name, char **value, const char *charset,
+		    int ascii, int encoded)
 {
     int prefixlen = name ? strlen(name) + 2: 0, outlen = 0, column, newline = 1;
     int charsetlen = strlen(charset), utf8;
