@@ -173,14 +173,20 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	     * If it's the start of the header, we don't need to pad it
 	     *
 	     * The length of the output string is ...
-	     * =?charset?Q?...?=  so that's 7+strlen(charset) + 1 for NUL
+	     * =?charset?Q?...?=  so that's 7+strlen(charset) + 2 for \n NUL
 	     *
 	     * plus 1 for every ASCII character and 3 for every eight bit
 	     * or special character (eight bit characters are written as =XX).
 	     *
 	     */
 
-	    outlen += 8 + charsetlen + ascii + 3 * encoded;
+	    outlen += 9 + charsetlen + ascii + 3 * encoded;
+
+	    /*
+	     * If output is set, then we're continuing the header.  Otherwise
+	     * do the initial allocation.
+	     */
+
 	    if (output) {
 	        int curlen = q - output, i;
 		outlen += prefixlen + 1;	/* Header plus \n ": " */
@@ -192,8 +198,15 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 		for (i = 0; i < prefixlen; i++)
 		    *q++ = ' ';
 	    } else {
+	    	/*
+		 * A bit of a hack here; the header can contain multiple
+		 * spaces (probably at least one) until we get to the
+		 * actual text.  Copy until we get to a non-space.
+		 */
 	    	output = mh_xmalloc(outlen);
 		q = output;
+		while (is_fws(*p))
+		    *q++ = *p++;
 	    }
 
 	    q += snprintf(q, outlen - (q - output), "=?%s?Q?", charset);
@@ -214,7 +227,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	    *q++ = *p;
 	    ascii--;
 	} else {
-	    snprintf(q, outlen - (q - output), "=%02X", (unsigned int) *p);
+	    snprintf(q, outlen - (q - output), "=%02X", *((unsigned char *) p));
 	    q += 3;
 	    column += 3;
 	    encoded--;
@@ -255,7 +268,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	}
     }
 
-    strcat(q, "?=");
+    strcat(q, "?=\n");
 
     free(*value);
 
@@ -307,9 +320,12 @@ unfold_header(char **value, int len)
 	    /*
 	     * When we get a newline, skip to the next non-whitespace
 	     * character and add a space to replace all of the whitespace
+	     *
+	     * This has the side effect of stripping off the final newline
+	     * for the header; we put it back in the encoding routine.
 	     */
-	    while (is_fws(*q))
-	    	q++;
+	    while (is_fws(*q++))
+	    	;
 	    if (*q == '\0')
 	    	break;
 
