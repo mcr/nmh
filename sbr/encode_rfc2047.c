@@ -44,6 +44,7 @@ static char *address_headers[] = {
 static void unfold_header(char **, int);
 static int field_encode_address(const char *, char **, int, const char *);
 static int field_encode_quoted(const char *, char **, const char *, int, int);
+static int field_encode_base64(const char *, char **, const char *);
 static int utf8len(const char *);
 
 /*
@@ -126,10 +127,8 @@ encode_rfc2047(const char *name, char **value, int encoding,
 
     switch (encoding) {
 
-#if 0
     case CE_BASE64:
-    	return field_encode_base64(name, value, encoding, charset);
-#endif
+    	return field_encode_base64(name, value, charset);
 
     case CE_QUOTED:
 	return field_encode_quoted(name, value, charset, asciicount,
@@ -142,7 +141,7 @@ encode_rfc2047(const char *name, char **value, int encoding,
 }
 
 /*
- * Encode our specified header using quoted-printable
+ * Encode our specified header (or field) using quoted-printable
  */
 
 static int
@@ -277,6 +276,19 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 
     *value = output;
 
+    return 0;
+}
+
+/*
+ * Encode our specified header (or field) using base64.
+ *
+ * This is a little easier since every character gets encoded, we can
+ * calculate the line wrap up front.
+ */
+
+static int
+field_encode_base64(const char *name, char **value, const char *encoding)
+{
     return 0;
 }
 
