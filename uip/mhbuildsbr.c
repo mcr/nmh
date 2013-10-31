@@ -70,11 +70,6 @@ void free_ctinfo (CT);
 void free_encoding (CT, int);
 
 /*
- * prototypes
- */
-CT build_mime (char *, int);
-
-/*
  * static prototypes
  */
 static int init_decoded_content (CT);
@@ -128,7 +123,7 @@ static void directive_pop(void)
  */
 
 CT
-build_mime (char *infile, int directives)
+build_mime (char *infile, int directives, int header_encoding)
 {
     int	compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -234,7 +229,7 @@ finish_field:
      */
 
     for (hp = ct->c_first_hf; hp != NULL; hp = hp->next) {
-    	if (encode_rfc2047(hp->name, &hp->value, CE_UNKNOWN, NULL)) {
+    	if (encode_rfc2047(hp->name, &hp->value, header_encoding, NULL)) {
 	    adios(NULL, "Unable to encode header \"%s\"", hp->name);
 	}
     }

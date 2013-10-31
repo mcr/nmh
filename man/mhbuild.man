@@ -17,6 +17,9 @@ mhbuild \- translate MIME composition draft
 .RB [ \-contentid " | " \-nocontentid ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-check " | " \-nocheck ]
+.RB [ \-headerencoding 
+.IR encoding\-algorithm
+.RB " | " \-autoheaderencoding ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -28,11 +31,8 @@ a valid MIME message.
 .PP
 .B mhbuild
 creates multi-media messages as specified in RFC 2045
-to RFC 2049.  Currently
-.B mhbuild
-only supports encodings in
-message bodies, and does not support the encoding of message headers as
-specified in RFC 2047.
+to RFC 2049.  This includes the encoding of message headers as specified
+by RFC 2047.
 .PP
 If you specify the name of the composition file as \*(lq-\*(rq,
 then
@@ -77,6 +77,20 @@ switch
 is present, then the listing will show any \*(lqextra\*(rq information
 that is present in the message, such as comments in the
 \*(lqContent-Type\*(rq header.
+.PP
+The
+.B \-headerencoding
+switch will indicate which algorithm to use when encoding any message headers
+that contain 8\-bit characters.  The valid arguments are
+.I base64
+for based\-64 encoding and 
+.I quoted
+for quoted\-printable encoding.  The
+.B \-autoheaderencoding
+switch will instruct
+.B mhbuild
+to automatically pick the encoding algorithm based on the frequency of
+8\-bit characters.
 .SS "Translating the Composition File"
 .B mhbuild
 is essentially a filter to aid in the composition of MIME
@@ -714,4 +728,5 @@ is checked.
 .RB ` \-contentid '
 .RB ` \-nocheck '
 .RB ` \-noverbose '
+.RB ` \-autoheaderencoding '
 .fi
