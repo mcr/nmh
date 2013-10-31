@@ -64,9 +64,9 @@ encode_rfc2047(const char *name, char **value, int encoding,
      */
 
     for (p = *value; *p != '\0'; p++) {
-	if (isascii((int) *p)) {
+	if (isascii((unsigned char) *p)) {
 	    asciicount++;
-	    if (qpspecial((int) *p))
+	    if (qpspecial((unsigned char) *p))
 	    	qpspecialcount++;
 	} else
 	    eightbitcount++;
@@ -230,7 +230,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	    *q++ = *p;
 	    ascii--;
 	} else {
-	    snprintf(q, outlen - (q - output), "=%02X", *((unsigned char *) p));
+	    snprintf(q, outlen - (q - output), "=%02X", (unsigned char) *p);
 	    q += 3;
 	    column += 2;	/* column already incremented by 1 above */
 	    encoded--;
@@ -295,11 +295,11 @@ utf8len(const char *p)
     if (*p == '\0')
     	return 0;
 
-    if (isascii((int) *p) || (*((unsigned char *) p) & 0xc0) == 0x80)
+    if (isascii((unsigned char) *p) || (((unsigned char) *p) & 0xc0) == 0x80)
     	return 0;
 
     p++;
-    while ((*((unsigned char *) p++) & 0xc0) == 0x80)
+    while ((((unsigned char) *p++) & 0xc0) == 0x80)
     	len++;
 
     return len;
