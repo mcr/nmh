@@ -35,7 +35,7 @@ static char *address_headers[] = {
  * Macros we use for parsing headers
  */
 
-#define is_fws(c) (c == '\t' || c == ' ')
+#define is_fws(c) (c == '\t' || c == ' ' || c == '\n')
 
 #define qpspecial(c) (c < ' ' || c == '=' || c == '?' || c == '_')
 
@@ -180,6 +180,8 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	     *
 	     */
 
+	    int tokenlen;
+
 	    outlen += 9 + charsetlen + ascii + 3 * encoded;
 
 	    /*
@@ -209,8 +211,9 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 		    *q++ = *p++;
 	    }
 
-	    q += snprintf(q, outlen - (q - output), "=?%s?Q?", charset);
-	    column = prefixlen;
+	    tokenlen = snprintf(q, outlen - (q - output), "=?%s?Q?", charset);
+	    q += tokenlen;
+	    column = prefixlen + tokenlen;
 	    newline = 0;
 	}
 
@@ -229,7 +232,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	} else {
 	    snprintf(q, outlen - (q - output), "=%02X", *((unsigned char *) p));
 	    q += 3;
-	    column += 3;
+	    column += 2;	/* column already incremented by 1 above */
 	    encoded--;
 	}
 
