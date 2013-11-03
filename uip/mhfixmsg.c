@@ -1734,8 +1734,8 @@ strip_crs (CT ct, int *message_mods) {
 
                     ++*message_mods;
                     if (verbosw) {
-                        report (NULL,
-                                 begin == 0 && end == 0 ? "(tmpfile)" : *file,
+                        report (ct->c_partno,
+                                begin == 0 && end == 0  ?  ""  :  *file,
                                 "stripped CRs");
                     }
                 }
