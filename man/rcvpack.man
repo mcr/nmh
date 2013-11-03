@@ -35,7 +35,7 @@ CTRL\-A's and a newline.
 .B rcvpack
 will correctly lock and unlock the file to serialize
 access to the file, when running multiple copies of
-.B rcvpack .
+.BR rcvpack .
 .PP
 In general, its use is obsoleted by the
 .B file
