@@ -250,6 +250,7 @@ int what_now (char *, int, int, char *, char *,
 int WhatNow(int, char **);
 int writeBase64aux(FILE *, FILE *);
 int writeBase64 (unsigned char *, size_t, unsigned char *);
+int writeBase64raw (unsigned char *, size_t, unsigned char *);
 
 /*
  * credentials management

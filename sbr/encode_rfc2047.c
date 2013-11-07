@@ -37,7 +37,14 @@ static char *address_headers[] = {
 
 #define is_fws(c) (c == '\t' || c == ' ' || c == '\n')
 
+#define qphrasevalid(c) ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || \
+			 (c >= 'a' && c <= 'z') || \
+			 c == '!' || c == '*' || c == '+' || c == '-' || \
+			 c == '/' || c == '=' || c == '_')
 #define qpspecial(c) (c < ' ' || c == '=' || c == '?' || c == '_')
+
+#define base64len(n) (((n + 2) / 3 ) * 4)	/* String len to base64 len */
+#define strbase64(n) (n * 3 / 4)		/* Chars that fit in base64 */
 
 #define ENCODELINELIMIT	76
 
@@ -287,8 +294,72 @@ field_encode_quoted(const char *name, char **value, const char *charset,
  */
 
 static int
-field_encode_base64(const char *name, char **value, const char *encoding)
+field_encode_base64(const char *name, char **value, const char *charset)
 {
+    int prefixlen = name ? strlen(name) + 2 : 0, charsetlen = strlen(charset);
+    int outlen = 0, numencode;
+    char *output = NULL, *p = *value, *q, *linestart;
+
+    /*
+     * If we had a zero-length prefix, then just encode the whole field
+     * as-is, without line wrapping.  Note that in addition to the encoding
+     *
+     * The added length we need is =? + charset + ?B? ... ?=
+     *
+     * That's 7 + strlen(charset) + 2 (for \n NUL).
+     */
+
+    while (prefixlen && ((base64len(strlen(p)) + 7 + charsetlen +
+    			  prefixlen) > ENCODELINELIMIT)) {
+
+	/*
+	 * Our very first time, don't pad the line in the front
+	 */
+
+
+	if (! output) {
+	    outlen += ENCODELINELIMIT - prefixlen + 1;
+	    output = q = mh_xmalloc(outlen);
+	    linestart = q - prefixlen;	/* Yes, this is intentional */
+	} else {
+	    int curlen = q - output;
+
+	    outlen += ENCODELINELIMIT + 1;
+	    output = mh_xrealloc(output, outlen);
+	    linestart = q = output + curlen;
+	    q += snprintf(q, outlen - (q - output), "%*s", prefixlen, "");
+	}
+
+	/*
+	 * We should have enough space now, so prepend the encoding markers
+	 * and character set information
+	 */
+
+	q += snprintf(q, outlen - (q - output), "=?%s?B?", charset);
+
+	/*
+	 * Find out how much room we have left on the line and see how many
+	 * characters we can stuff in.  The start of our line is marked
+	 * by "linestart", so use that to figure out how many characters
+	 * are left out of ENCODELINELIMIT.  Reserve 2 characters for the
+	 * end markers, and calculate how many characters we can fit into
+	 * that space given the base64 encoding expansion.
+	 */
+
+	numencode = strbase64(ENCODELINELIMIT - (q - linestart) - 2);
+
+	if (numencode <= 0) {
+	    advise(NULL, "Internal error: tried to encode %d characters "
+	    	   "in base64", numencode);
+	    return 1;
+	}
+
+	/*
+	 * RFC 2047 prohibits spanning multibyte characters across tokens.
+	 * Right now we only check for UTF-8.
+	 */
+    }
+
     return 0;
 }
 

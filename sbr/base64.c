@@ -114,3 +114,49 @@ writeBase64 (unsigned char *in, size_t length, unsigned char *out)
 
     return OK;
 }
+
+/* 
+ * Essentially a duplicate of writeBase64, but without line wrapping or
+ * newline termination (note: string IS NUL terminated)
+ */
+
+int
+writeBase64raw (unsigned char *in, size_t length, unsigned char *out)
+{
+    while (1) {
+	unsigned long bits;
+	unsigned char *bp;
+	unsigned int cc;
+	for (cc = 0, bp = in; length > 0 && cc < 3; ++cc, ++bp, --length)
+          /* empty */ ;
+
+	if (cc == 0) {
+	    break;
+	} else {
+	    bits = (in[0] & 0xff) << 16;
+	    if (cc > 1) {
+		bits |= (in[1] & 0xff) << 8;
+		if (cc > 2) {
+		    bits |= in[2] & 0xff;
+		}
+	    }
+	}
+
+	for (bp = out + 4; bp > out; bits >>= 6)
+	    *--bp = nib2b64[bits & 0x3f];
+	if (cc < 3) {
+	    out[3] = '=';
+	    if (cc < 2)
+		out[2] = '=';
+	    out += 4;
+	    break;
+	}
+
+	in += 3;
+	out += 4;
+    }
+
+    *out = '\0';
+
+    return OK;
+}
