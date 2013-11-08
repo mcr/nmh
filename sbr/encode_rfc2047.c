@@ -43,8 +43,8 @@ static char *address_headers[] = {
 			 c == '/' || c == '=' || c == '_')
 #define qpspecial(c) (c < ' ' || c == '=' || c == '?' || c == '_')
 
-#define base64len(n) (((n + 2) / 3 ) * 4)	/* String len to base64 len */
-#define strbase64(n) (n * 3 / 4)		/* Chars that fit in base64 */
+#define base64len(n) ((((n) + 2) / 3 ) * 4)	/* String len to base64 len */
+#define strbase64(n) ((n) * 3 / 4)		/* Chars that fit in base64 */
 
 #define ENCODELINELIMIT	76
 
@@ -277,7 +277,10 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	}
     }
 
-    strcat(q, "?=\n");
+    strcat(q, "?=");
+
+    if (prefixlen)
+    	strcat(q, "\n");
 
     free(*value);
 
@@ -297,8 +300,8 @@ static int
 field_encode_base64(const char *name, char **value, const char *charset)
 {
     int prefixlen = name ? strlen(name) + 2 : 0, charsetlen = strlen(charset);
-    int outlen = 0, numencode;
-    char *output = NULL, *p = *value, *q, *linestart;
+    int outlen = 0, numencode, curlen;
+    char *output = NULL, *p = *value, *q = NULL, *linestart;
 
     /*
      * If we had a zero-length prefix, then just encode the whole field
@@ -322,7 +325,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
 	    output = q = mh_xmalloc(outlen);
 	    linestart = q - prefixlen;	/* Yes, this is intentional */
 	} else {
-	    int curlen = q - output;
+	    curlen = q - output;
 
 	    outlen += ENCODELINELIMIT + 1;
 	    output = mh_xrealloc(output, outlen);
@@ -357,8 +360,69 @@ field_encode_base64(const char *name, char **value, const char *charset)
 	/*
 	 * RFC 2047 prohibits spanning multibyte characters across tokens.
 	 * Right now we only check for UTF-8.
+	 *
+	 * So note the key here ... we want to make sure the character BEYOND
+	 * our last character is not a continuation byte.  If it's the start
+	 * of a new multibyte character or a single-byte character, that's ok.
 	 */
+
+	if (strcasecmp(charset, "UTF-8") == 0) {
+	    /*
+	     * p points to the start of our current buffer, so p + numencode
+	     * is one past the last character to encode
+	     */
+
+	    while (numencode > 0 && ((*(p + numencode) & 0xc0) == 0x80))
+	    	numencode--;
+
+	    if (numencode == 0) {
+	    	advise(NULL, "Internal error: could not find start of "
+		       "UTF-8 character when base64 encoding header");
+		return 1;
+	    }
+	}
+
+	if (writeBase64raw((unsigned char *) p, numencode,
+			   (unsigned char *) q) != OK) {
+	    advise(NULL, "Internal error: base64 encoding of header failed");
+	    return 1;
+	}
+
+	p += numencode;
+	q += base64len(numencode);
+	*q++ = '?';
+	*q++ = '=';
+	*q++ = '\n';
+	*q++ = '\0';
     }
+
+    /*
+     * We're here if there is either no prefix, or we can fit it in less
+     * than ENCODELINELIMIT characters.  Encode the whole thing.
+     */
+
+    outlen += prefixlen + 9 + charsetlen + base64len(strlen(p));
+    curlen = q - output;
+
+    output = mh_xrealloc(output, outlen);
+    q = output + curlen;
+
+    q += snprintf(q, outlen - (q - output), "=?%s?B?", charset);
+
+    if (writeBase64raw((unsigned char *) p, strlen(p),
+    		       (unsigned char *) q) != OK) {
+	advise(NULL, "Internal error: base64 encoding of header failed");
+	return 1;
+    }
+
+    strcat(q, "?=");
+
+    if (prefixlen)
+    	strcat(q, "\n");
+
+    free(*value);
+
+    *value = output;
 
     return 0;
 }
