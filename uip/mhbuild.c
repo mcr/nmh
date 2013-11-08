@@ -37,7 +37,7 @@
     X("wcache policy", 0, WCACHESW) \
     X("contentid", 0, CONTENTIDSW) \
     X("nocontentid", 0, NCONTENTIDSW) \
-    X("headerencoding", 0, HEADERENCSW) \
+    X("headerencoding encoding-algorithm", 0, HEADERENCSW) \
     X("autoheaderencoding", 0, AUTOHEADERENCSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
@@ -238,6 +238,7 @@ main (int argc, char **argv)
 		default:
 		    adios (NULL, "Internal error: algorithm %s", cp);
 		}
+		continue;
 	    }
 
 	    case AUTOHEADERENCSW:
