@@ -57,6 +57,7 @@ NEW FEATURES
   connection with the -initialtls switch.
 - Messages can now be selected using a relative offset from some other
   message, or from the start or end of a sequence.  See mh-sequences(5).
+- The -changecur and -nochangecur switches have been added to mhlist(1).
 
 -----------------
 OBSOLETE FEATURES

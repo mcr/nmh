@@ -172,6 +172,13 @@ run_test 'mhlist last -part 2 -noheader -check -nocheck' \
      1     multipart/related          180
      2     text/plain                  36'
 
+#
+# Set the cur sequence to 1 to test default behavior of changecur after
+# this test.
+#
+
+mark 1 -sequence cur -add -zero
+
 # check -verbose
 run_test 'mhlist 11 -verbose -noheader' \
 '  11       multipart/mixed            936
@@ -189,5 +196,18 @@ run_test 'mhlist 11 -verbose -noheader' \
      4     text/plain                  36
 	     charset="iso-8859-1"'
 
+#
+# Check default changecur behavior
+#
+
+run_test 'mark -sequence cur -list' 'cur: 11'
+
+#
+# Now test -nochangecur
+#
+
+mhlist -nochangecur 1 >/dev/null
+
+run_test 'mark -sequence cur -list' 'cur: 11'
 
 exit $failed

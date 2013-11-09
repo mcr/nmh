@@ -25,6 +25,7 @@ mhlist \- list information about MIME messages
 .RB [ \-wcache
 .IR policy ]
 .RB [ \-check " | " \-nocheck ]
+.RB [ \-changecur " | " \-nochangecur ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -184,8 +185,11 @@ integrity of the content.
 .RB ` \-realsize '
 .RB ` \-rcache\ ask '
 .RB ` \-wcache\ ask '
+.RB ` \-changecur '
 .RB ` \-noverbose '
 .fi
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
-message selected will become the current message.
+message selected will become the current message, unless the
+.B \-nochangecur
+option is specified.

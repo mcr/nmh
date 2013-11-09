@@ -32,6 +32,8 @@
     X("type content", 0, TYPESW) \
     X("rcache policy", 0, RCACHESW) \
     X("wcache policy", 0, WCACHESW) \
+    X("changecur", 0, CHGSW) \
+    X("nochangecur", 0, NCHGSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("debug", -5, DEBUGSW) \
@@ -96,7 +98,7 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1;
+    int sizesw = 1, headsw = 1, chgflag = 1;
     int msgnum, *icachesw;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
@@ -201,6 +203,13 @@ do_cache:
 		if (!(cp = *argp++) || (*cp == '-' && cp[1]))
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		file = *cp == '-' ? cp : path (cp, TFILE);
+		continue;
+
+	    case CHGSW:
+	    	chgflag++;
+		continue;
+	    case NCHGSW:
+	    	chgflag = 0;
 		continue;
 
 	    case VERBSW: 
@@ -341,7 +350,8 @@ do_cache:
     /* If reading from a folder, do some updating */
     if (mp) {
 	context_replace (pfolder, folder);/* update current folder  */
-	seq_setcur (mp, mp->hghsel);	  /* update current message */
+	if (chgflag)
+	    seq_setcur (mp, mp->hghsel);  /* update current message */
 	seq_save (mp);			  /* synchronize sequences  */
 	context_save ();		  /* save the context file  */
     }
