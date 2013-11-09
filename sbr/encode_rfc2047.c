@@ -393,7 +393,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
 	*q++ = '?';
 	*q++ = '=';
 	*q++ = '\n';
-	*q++ = '\0';
+	*q = '\0';
     }
 
     /*
