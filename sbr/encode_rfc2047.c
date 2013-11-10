@@ -44,7 +44,7 @@ static char *address_headers[] = {
 #define qpspecial(c) (c < ' ' || c == '=' || c == '?' || c == '_')
 
 #define base64len(n) ((((n) + 2) / 3 ) * 4)	/* String len to base64 len */
-#define strbase64(n) ((n) * 3 / 4)		/* Chars that fit in base64 */
+#define strbase64(n) ((n) / 4 * 3)		/* Chars that fit in base64 */
 
 #define ENCODELINELIMIT	76
 
@@ -304,6 +304,13 @@ field_encode_base64(const char *name, char **value, const char *charset)
     char *output = NULL, *p = *value, *q = NULL, *linestart;
 
     /*
+     * Skip over any leading white space.
+     */
+
+    while (*p == ' ' || *p == '\t')
+    	p++;
+
+    /*
      * If we had a zero-length prefix, then just encode the whole field
      * as-is, without line wrapping.  Note that in addition to the encoding
      *
@@ -317,36 +324,40 @@ field_encode_base64(const char *name, char **value, const char *charset)
 
 	/*
 	 * Our very first time, don't pad the line in the front
+	 *
+	 * Note ENCODELINELIMIT is + 2 because of \n \0
 	 */
 
 
 	if (! output) {
-	    outlen += ENCODELINELIMIT - prefixlen + 1;
+	    outlen += ENCODELINELIMIT + 2;
 	    output = q = mh_xmalloc(outlen);
 	    linestart = q - prefixlen;	/* Yes, this is intentional */
 	} else {
+	    int curstart = linestart - output;
 	    curlen = q - output;
 
-	    outlen += ENCODELINELIMIT + 1;
+	    outlen += ENCODELINELIMIT + 2;
 	    output = mh_xrealloc(output, outlen);
-	    linestart = q = output + curlen;
-	    q += snprintf(q, outlen - (q - output), "%*s", prefixlen, "");
+	    q = output + curlen;
+	    linestart = output + curstart;
 	}
 
 	/*
 	 * We should have enough space now, so prepend the encoding markers
-	 * and character set information
+	 * and character set information.  The leading space is intentional.
 	 */
 
-	q += snprintf(q, outlen - (q - output), "=?%s?B?", charset);
+	q += snprintf(q, outlen - (q - output), " =?%s?B?", charset);
 
 	/*
-	 * Find out how much room we have left on the line and see how many
-	 * characters we can stuff in.  The start of our line is marked
-	 * by "linestart", so use that to figure out how many characters
-	 * are left out of ENCODELINELIMIT.  Reserve 2 characters for the
-	 * end markers, and calculate how many characters we can fit into
-	 * that space given the base64 encoding expansion.
+         * Find out how much room we have left on the line and see how
+         * many characters we can stuff in.  The start of our line
+         * is marked by "linestart", so use that to figure out how
+         * many characters are left out of ENCODELINELIMIT.  Reserve
+         * 2 characters for the end markers and calculate how many
+         * characters we can fit into that space given the base64
+         * encoding expansion.
 	 */
 
 	numencode = strbase64(ENCODELINELIMIT - (q - linestart) - 2);
@@ -390,10 +401,27 @@ field_encode_base64(const char *name, char **value, const char *charset)
 
 	p += numencode;
 	q += base64len(numencode);
-	*q++ = '?';
-	*q++ = '=';
-	*q++ = '\n';
-	*q = '\0';
+
+	/*
+	 * This will point us at the beginning of the new line (trust me).
+	 */
+
+	linestart = q + 3;
+
+	/*
+	 * What's going on here?  Well, we know we're continuing to the next
+	 * line, so we want to add continuation padding.  We also add the
+	 * trailing marker for the RFC 2047 token at this time as well.
+	 * This uses a trick of snprintf(); we tell it to print a zero-length
+	 * string, but pad it out to prefixlen - 1 characters; that ends
+	 * up always printing out the requested number of spaces.  We use
+	 * prefixlen - 1 because we always add a space on the starting
+	 * token marker; this makes things work out correctly for the first
+	 * line, which should have a space between the ':' and the start
+	 * of the token.
+	 */
+
+	q += snprintf(q, outlen - (q - output), "?=\n%*s", prefixlen - 1, "");
     }
 
     /*
@@ -407,7 +435,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
     output = mh_xrealloc(output, outlen);
     q = output + curlen;
 
-    q += snprintf(q, outlen - (q - output), "=?%s?B?", charset);
+    q += snprintf(q, outlen - (q - output), " =?%s?B?", charset);
 
     if (writeBase64raw((unsigned char *) p, strlen(p),
     		       (unsigned char *) q) != OK) {
