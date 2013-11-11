@@ -419,6 +419,8 @@ field_encode_base64(const char *name, char **value, const char *charset)
 	 * token marker; this makes things work out correctly for the first
 	 * line, which should have a space between the ':' and the start
 	 * of the token.
+	 *
+	 * It's okay if you don't follow all of that.
 	 */
 
 	q += snprintf(q, outlen - (q - output), "?=\n%*s", prefixlen - 1, "");
@@ -435,7 +437,8 @@ field_encode_base64(const char *name, char **value, const char *charset)
     output = mh_xrealloc(output, outlen);
     q = output + curlen;
 
-    q += snprintf(q, outlen - (q - output), " =?%s?B?", charset);
+    q += snprintf(q, outlen - (q - output), "%s=?%s?B?",
+    		  prefixlen ? " " : "", charset);
 
     if (writeBase64raw((unsigned char *) p, strlen(p),
     		       (unsigned char *) q) != OK) {
@@ -519,9 +522,13 @@ unfold_header(char **value, int len)
     *value = str;
 }
 
+/*
+ * Decode a header containing addresses.  This means we have to parse
+ * each address and only encode the display-name or comment field.
+ */
+
 static int
 field_encode_address(const char *name, char **value, int encoding,
 		     const char *charset)
 {
-    return 0;
 }
