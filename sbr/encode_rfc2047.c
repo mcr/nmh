@@ -8,6 +8,7 @@
 
 #include <h/mh.h>
 #include <h/mhparse.h>
+#include <h/addrsbr.h>
 #include <h/utils.h>
 
 /*
@@ -50,8 +51,10 @@ static char *address_headers[] = {
 
 static void unfold_header(char **, int);
 static int field_encode_address(const char *, char **, int, const char *);
-static int field_encode_quoted(const char *, char **, const char *, int, int);
+static int field_encode_quoted(const char *, char **, const char *, int,
+			       int, int);
 static int field_encode_base64(const char *, char **, const char *);
+static int scanstring(const char *, int *, int *, int *);
 static int utf8len(const char *);
 
 /*
@@ -139,7 +142,7 @@ encode_rfc2047(const char *name, char **value, int encoding,
 
     case CE_QUOTED:
 	return field_encode_quoted(name, value, charset, asciicount,
-				   eightbitcount + qpspecialcount);
+				   eightbitcount + qpspecialcount, 0);
 
     default:
     	advise(NULL, "Internal error: unknown RFC-2047 encoding type");
@@ -153,7 +156,7 @@ encode_rfc2047(const char *name, char **value, int encoding,
 
 static int
 field_encode_quoted(const char *name, char **value, const char *charset,
-		    int ascii, int encoded)
+		    int ascii, int encoded, int phraserules)
 {
     int prefixlen = name ? strlen(name) + 2: 0, outlen = 0, column, newline = 1;
     int charsetlen = strlen(charset), utf8;
@@ -225,6 +228,9 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 
 	/*
 	 * Process each character, encoding if necessary
+	 *
+	 * Note that we have a different set of rules if we're processing
+	 * RFC 5322 'phrase' (something you'd see in an address header).
 	 */
 
 	column++;
@@ -232,7 +238,9 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	if (*p == ' ') {
 	    *q++ = '_';
 	    ascii--;
-	} else if (isascii((int) *p) && !qpspecial((int) *p)) {
+	} else if (isascii((unsigned char) *p) &&
+		   (phraserules ? qphrasevalid((unsigned char) *p) :
+		   			!qpspecial((unsigned char) *p))) {
 	    *q++ = *p;
 	    ascii--;
 	} else {
@@ -531,4 +539,59 @@ static int
 field_encode_address(const char *name, char **value, int encoding,
 		     const char *charset)
 {
+    int prefixlen = strlen(name) + 2, column = prefixlen, groupflag, errflag;
+    int eightbitchars;
+    char *mp, *output = NULL;
+    struct mailname *mn;
+
+    /*
+     * Because these are addresses, we need to handle them individually.
+     *
+     * Break them down and process them one by one.  This means we have to
+     * rewrite the whole header, but that's unavoidable.
+     */
+
+    /*
+     * The output headers always have to start with a space first.
+     */
+
+    output = add(" ", output);
+
+    for (groupflag = 0; mp = getname(*value); ) {
+    	if ((mn = getm(mp, NULL, 0, AD_HOST, NULL)) == NULL) {
+	    errflag++;
+	    continue;
+	}
+
+	/*
+	 * We only care if the phrase (m_pers) or any trailing comment
+	 * (m_note) have 8-bit characters.  If doing q-p, we also need
+	 * to encode anything marked as qspecial().
+	 */
+    }
+}
+
+/*
+ * Scan a string, check for characters that need to be encoded
+ */
+
+static int
+scanstring(const char *string, int *asciilen, int *eightbitchars,
+	   int *specialchars)
+{
+    *asciilen = 0;
+    *eightbitchars = 0;
+    *specialchars = 0;
+
+    for (; *string != '\0'; string++) {
+    	if ((isascii((unsigned char) *string))) {
+	    (*asciilen++);
+	    if (!qphrasevalid((unsigned char) *string))
+	    	(*specialchars)++;
+	} else {
+	    (*eightbitchars)++;
+	}
+    }
+
+    return eightbitchars > 0;
 }
