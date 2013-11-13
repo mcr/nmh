@@ -58,7 +58,7 @@ static struct format **lvec = NULL;
 static int lused = 0;
 static int lallocated = 0;
 
-enum mode_t { MESSAGE, ADDRESS, RAW };
+enum mode_t { MESSAGE, ADDRESS, DATE, RAW };
 #define DEFADDRFORMAT "%<{error}%{error}: %{text}%|%(putstr(proper{text}))%>"
 #define DEFDATEFORMAT "%<(nodate{text})error: %{text}%|%(putstr(pretty{text}))%>"
 
@@ -218,7 +218,7 @@ main (int argc, char **argv)
 		    dupaddrs = 0;
 		    continue;
 		case DATESW:
-		    mode = RAW;
+		    mode = DATE;
 		    defformat = DEFDATEFORMAT;
 		    continue;
 
@@ -394,7 +394,7 @@ main (int argc, char **argv)
     	    fmt_norm = normalize;
 	    process_addresses(fmt, &msgs, buffer, bufsize, outputsize,
 	    		      dat, normalize, cbp);
-	} else
+	} else /* Fall-through for RAW or DATE */
 	    process_raw(fmt, &msgs, buffer, bufsize, outputsize, dat, cbp);
     }
 
