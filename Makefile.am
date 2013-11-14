@@ -55,6 +55,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/format/test-localmbox test/format/test-myname \
 	test/format/test-myhost test/format/test-mymbox \
 	test/format/test-rightjustify \
+	test/format/test-unquote \
 	test/forw/test-forw-digest test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/inc/test-inc-scanout test/inc/test-msgchk \
