@@ -1081,47 +1081,23 @@ f_typestr(int t)
 	}
 }
 
-#define FNORD(v, s) if (t & (v)) { \
-	if (i++ > 0) \
-		strcat(buf, "|"); \
-	strcat(buf, s); }
-
 static char *
 c_typestr(int t)
 {
-	register int i;
 	static char buf[64];
 
-	buf[0] = '\0';
-	if (t & ~(CT_ADDR|CT_DATE))
-		printf(buf, "0x%x ", t);
-	strcat(buf, "<");
-	i = 0;
-	FNORD(CT_ADDR, "ADDR");
-	FNORD(CT_DATE, "DATE");
-	strcat(buf, ">");
+	snprintb(buf, sizeof(buf), t, CT_BITS);
 	return(buf);
 }
 
 static char *
 c_flagsstr(int t)
 {
-	register int i;
 	static char buf[64];
 
-	buf[0] = '\0';
-	if (t & ~(CF_TRUE|CF_PARSED|CF_DATEFAB|CF_TRIMMED))
-		printf(buf, "0x%x ", t);
-	strcat(buf, "<");
-	i = 0;
-	FNORD(CF_TRUE, "TRUE");
-	FNORD(CF_PARSED, "PARSED");
-	FNORD(CF_DATEFAB, "DATEFAB");
-	FNORD(CF_TRIMMED, "TRIMMED");
-	strcat(buf, ">");
+	snprintb(buf, sizeof(buf), t, CF_BITS);
 	return(buf);
 }
-#undef FNORD
 
 static void
 litputs(char *s)

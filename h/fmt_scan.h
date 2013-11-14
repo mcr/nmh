@@ -37,6 +37,8 @@ struct comp {
 #define	CT_ADDR       (1<<0)	/* referenced as address    */
 #define	CT_DATE       (1<<1)	/* referenced as date       */
 
+#define CT_BITS       "\020\01ADDR\02DATE"
+
 /*
  * c_flags bits
  */
@@ -44,6 +46,8 @@ struct comp {
 #define	CF_PARSED     (1<<1)	/* address/date has been parsed */
 #define	CF_DATEFAB    (1<<2)	/* datefield fabricated */
 #define CF_TRIMMED    (1<<3)	/* Component has been trimmed */
+
+#define CF_BITS       "\020\01TRUE\02PARSED\03CF_DATEFAB\04TRIMMED"
 
 extern int fmt_norm;
 
