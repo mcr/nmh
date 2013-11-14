@@ -18,21 +18,28 @@ snprintb (char *buffer, size_t n, unsigned v, char *bits)
 
     snprintf (buffer, n, bits && *bits == 010 ? "0%o" : "0x%x", v);
     bp = buffer + strlen(buffer);
+    n -= strlen(buffer);
 
     if (bits && *++bits) {
 	j = 0;
 	*bp++ = '<';
-	while ((i = *bits++))
+	while ((i = *bits++) && n > 1)
 	    if (v & (1 << (i - 1))) {
-		if (j++)
+		if (j++ && n > 1) {
 		    *bp++ = ',';
-		for (; (c = *bits) > 32; bits++)
+		    n--;
+		}
+		for (; (c = *bits) > 32 && n > 1; bits++) {
 		    *bp++ = c;
+		    n--;
+		}
 	    }
 	    else
 		for (; *bits > 32; bits++)
 		    continue;
-	*bp++ = '>';
+	if (n > 1)
+	    *bp++ = '>';
+
 	*bp = 0;
     }
 
