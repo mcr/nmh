@@ -16,9 +16,21 @@ setup_test
 # Test various unquoting scenarios
 #
 
-name='"Mr. Foo Bar"'
-
-run_test "fmttest -raw -format %(unquote{text}) $name" \
+run_test 'eval fmttest -raw -format "%(unquote{text})" "Mr. Foo Bar"' \
 		'Mr. Foo Bar'
+
+run_test 'eval fmttest -raw -format "%(unquote{text})" "Mr. \"Foo\" Bar"' \
+		'Mr. Foo Bar'
+
+#
+# Note here: the string we wanted passed on the command line is:
+#
+# "Mr. \"Foo\" Bar"
+#
+# The extra \ are necessary to get it past the shell
+#
+
+run_test 'eval fmttest -raw -format "%(unquote{text})" "Mr. \\\"Foo\\\" Bar"' \
+		'Mr. "Foo" Bar'
 
 exit ${failed:-0}
