@@ -540,8 +540,10 @@ field_encode_address(const char *name, char **value, int encoding,
 		     const char *charset)
 {
     int prefixlen = strlen(name) + 2, column = prefixlen, groupflag, errflag;
-    int eightbitchars;
+    int asciichars, specialchars, eightbitchars, reformat, len;
     char *mp, *output = NULL;
+    char *tmpbuf = NULL;
+    size_t tmpbufsize = 0;
     struct mailname *mn;
 
     /*
@@ -552,7 +554,8 @@ field_encode_address(const char *name, char **value, int encoding,
      */
 
     /*
-     * The output headers always have to start with a space first.
+     * The output headers always have to start with a space first; this
+     * is just the way the API works right now.
      */
 
     output = add(" ", output);
@@ -566,8 +569,22 @@ field_encode_address(const char *name, char **value, int encoding,
 	/*
 	 * We only care if the phrase (m_pers) or any trailing comment
 	 * (m_note) have 8-bit characters.  If doing q-p, we also need
-	 * to encode anything marked as qspecial().
+	 * to encode anything marked as qspecial().  Unquote it first
+	 * so the specialchars count is right.
 	 */
+
+	if ((len = strlen(mn->m_pers)) + 1 > tmpbufsize) {
+	    tmpbuf = mh_xrealloc(tmpbuf, tmpbufsize = len + 1);
+	}
+
+	unquote_string(mn->m_pers, tmpbuf);
+
+	if (scanstring(tmpbuf, &asciichars, &eightbitchars,
+		       &specialchars)) {
+		/*
+		 * If we have 8-bit characters, encode it.
+		 */
+
     }
 }
 
