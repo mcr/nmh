@@ -56,6 +56,7 @@ static int field_encode_quoted(const char *, char **, const char *, int,
 static int field_encode_base64(const char *, char **, const char *);
 static int scanstring(const char *, int *, int *, int *);
 static int utf8len(const char *);
+static int pref_encoding(int, int, int);
 
 /*
  * Encode a message header using RFC 2047 encoding.  We make the assumption
@@ -540,7 +541,7 @@ field_encode_address(const char *name, char **value, int encoding,
 		     const char *charset)
 {
     int prefixlen = strlen(name) + 2, column = prefixlen, groupflag, errflag;
-    int asciichars, specialchars, eightbitchars, reformat, len;
+    int asciichars, specialchars, eightbitchars, reformat, len, retval;
     char *mp, *output = NULL;
     char *tmpbuf = NULL;
     size_t tmpbufsize = 0;
@@ -560,7 +561,7 @@ field_encode_address(const char *name, char **value, int encoding,
 
     output = add(" ", output);
 
-    for (groupflag = 0; mp = getname(*value); ) {
+    for (groupflag = 0; (mp = getname(*value)); ) {
     	if ((mn = getm(mp, NULL, 0, AD_HOST, NULL)) == NULL) {
 	    errflag++;
 	    continue;
@@ -585,6 +586,29 @@ field_encode_address(const char *name, char **value, int encoding,
 		 * If we have 8-bit characters, encode it.
 		 */
 
+	    if (encoding == CE_UNKNOWN)
+	    	encoding = prefencoding(asciichars, specialchars,
+					eightbitchars);
+
+	    strcpy(mn->m_pers, tmpbuf);
+
+	    switch (encoding) {
+
+	    case CE_BASE64:
+	    	retval = field_encode_base64(NULL, &mn->m_pers, charset);
+		break;
+
+	    case CE_QUOTED:
+	    	retval = field_encode_quoted(NULL, &mn->m_pers, charset,
+					     asciichars,
+					     eightbitchars + specialchars, 1);
+		break;
+
+	    default:
+		advise(NULL, "Internal error: unknown RFC-2047 encoding type");
+		return 1;
+	    }
+	}
     }
 }
 
@@ -611,4 +635,37 @@ scanstring(const char *string, int *asciilen, int *eightbitchars,
     }
 
     return eightbitchars > 0;
+}
+
+/*
+ * This function is to be used to decide which encoding algorithm we should
+ * use if one is not given.  Basically, we pick whichever one is the shorter
+ * of the two.
+ *
+ * Arguments are:
+ *
+ * ascii	- Number of ASCII characters in to-be-encoded string.
+ * specials	- Number of ASCII characters in to-be-encoded string that
+ *		  still require encoding under quoted-printable.  Note that
+ *		  these are included in the "ascii" total.
+ * eightbit	- Eight-bit characters in the to-be-encoded string.
+ *
+ * Returns one of CE_BASE64 or CE_QUOTED.
+ */
+
+static int
+prefencoding(int ascii, int specials, int eightbits)
+{
+    /*
+     * The length of the q-p encoding is:
+     *
+     * ascii - specials + (specials + eightbits) * 3.
+     *
+     * The length of the base64 encoding is:
+     *
+     * base64len(ascii + eightbits)	(See macro for details)
+     */
+
+    return base64len(ascii + eightbits) < (ascii - specials +
+    			(specials + eightbits) * 3) ? CE_BASE64 : CE_QUOTED;
 }
