@@ -540,8 +540,10 @@ static int
 field_encode_address(const char *name, char **value, int encoding,
 		     const char *charset)
 {
-    int prefixlen = strlen(name) + 2, column = prefixlen, groupflag, errflag;
-    int asciichars, specialchars, eightbitchars, reformat, len, retval;
+    int prefixlen = strlen(name) + 2, column = prefixlen, groupflag;
+    int asciichars, specialchars, eightbitchars, reformat = 0, errflag = 0;
+    int retval;
+    size_t len;
     char *mp, *output = NULL;
     char *tmpbuf = NULL;
     size_t tmpbufsize = 0;
@@ -587,8 +589,13 @@ field_encode_address(const char *name, char **value, int encoding,
 		 */
 
 	    if (encoding == CE_UNKNOWN)
-	    	encoding = prefencoding(asciichars, specialchars,
-					eightbitchars);
+	    	encoding = pref_encoding(asciichars, specialchars,
+					 eightbitchars);
+
+	    /*
+	     * This is okay, because the output of scanstring will be either
+	     * equal or shorter than the original.
+	     */
 
 	    strcpy(mn->m_pers, tmpbuf);
 
@@ -606,10 +613,20 @@ field_encode_address(const char *name, char **value, int encoding,
 
 	    default:
 		advise(NULL, "Internal error: unknown RFC-2047 encoding type");
-		return 1;
+		errflag++;
+		goto out;
 	    }
+
+	    reformat++;
 	}
     }
+
+out:
+
+    if (tmpbuf)
+    	free(tmpbuf);
+
+    return errflag > 0;
 }
 
 /*
@@ -626,7 +643,7 @@ scanstring(const char *string, int *asciilen, int *eightbitchars,
 
     for (; *string != '\0'; string++) {
     	if ((isascii((unsigned char) *string))) {
-	    (*asciilen++);
+	    (*asciilen)++;
 	    if (!qphrasevalid((unsigned char) *string))
 	    	(*specialchars)++;
 	} else {
@@ -634,7 +651,7 @@ scanstring(const char *string, int *asciilen, int *eightbitchars,
 	}
     }
 
-    return eightbitchars > 0;
+    return *eightbitchars > 0;
 }
 
 /*
@@ -654,7 +671,7 @@ scanstring(const char *string, int *asciilen, int *eightbitchars,
  */
 
 static int
-prefencoding(int ascii, int specials, int eightbits)
+pref_encoding(int ascii, int specials, int eightbits)
 {
     /*
      * The length of the q-p encoding is:
