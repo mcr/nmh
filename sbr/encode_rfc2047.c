@@ -576,6 +576,9 @@ field_encode_address(const char *name, char **value, int encoding,
 	 * so the specialchars count is right.
 	 */
 
+	if (! mn->m_pers)
+	    goto check_note;
+
 	if ((len = strlen(mn->m_pers)) + 1 > tmpbufsize) {
 	    tmpbuf = mh_xrealloc(tmpbuf, tmpbufsize = len + 1);
 	}
@@ -584,16 +587,16 @@ field_encode_address(const char *name, char **value, int encoding,
 
 	if (scanstring(tmpbuf, &asciichars, &eightbitchars,
 		       &specialchars)) {
-		/*
-		 * If we have 8-bit characters, encode it.
-		 */
+	    /*
+	     * If we have 8-bit characters, encode it.
+	     */
 
 	    if (encoding == CE_UNKNOWN)
 	    	encoding = pref_encoding(asciichars, specialchars,
 					 eightbitchars);
 
 	    /*
-	     * This is okay, because the output of scanstring will be either
+	     * This is okay, because the output of unquote_string will be either
 	     * equal or shorter than the original.
 	     */
 
@@ -619,6 +622,68 @@ field_encode_address(const char *name, char **value, int encoding,
 
 	    reformat++;
 	}
+
+	check_note:
+
+	/*
+	 * The "note" field is generally a comment at the end of the address,
+	 * at least as how it's implemented here.  Notes are always surrounded
+	 * by parenthesis (since they're comments).  Strip them out and
+	 * then put them back when we format the final field, but they do
+	 * not get encoded.
+	 */
+
+	if (! mn->m_note)
+	    goto do_reformat;
+
+	len = strlen(mn->m_note);
+
+	if ((len = strlen(mn->m_pers)) + 1 > tmpbufsize) {
+	    tmpbuf = mh_xrealloc(tmpbuf, tmpbufsize = len + 1);
+	}
+
+	if (mn->m_note[0] != '(' || mn->m_note[len - 1] != ')') {
+	    advise(NULL, "Internal error: Invalid note field \"%s\"",
+	    	   mn->m_note);
+	    errflag++;
+	    goto out;
+	}
+
+	strncpy(tmpbuf, mn->m_note + 1, len - 1);
+	tmpbuf[len - 2] = '\0';
+
+	if (scanstring(tmpbuf, &asciichars, &eightbitchars,
+		       &specialchars)) {
+	    /*
+	     * If we have 8-bit characters, encode it.
+	     */
+
+	    if (encoding == CE_UNKNOWN)
+	    	encoding = pref_encoding(asciichars, specialchars,
+					 eightbitchars);
+
+	    switch (encoding) {
+
+	    case CE_BASE64:
+	    	retval = field_encode_base64(NULL, &tmpbuf, charset);
+		break;
+
+	    case CE_QUOTED:
+	    	retval = field_encode_quoted(NULL, &tmpbuf, charset,
+					     asciichars,
+					     eightbitchars + specialchars, 1);
+		break;
+
+	    default:
+		advise(NULL, "Internal error: unknown RFC-2047 encoding type");
+		errflag++;
+		goto out;
+	    }
+
+	    reformat++;
+	}
+
+
     }
 
 out:
