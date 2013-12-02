@@ -57,7 +57,7 @@ int ismymbox(struct mailname *);
  */
 
 char *getname(const char *header);
-char *getlocaladdr(void);
+
 char *auxformat(struct mailname *, int);
 
 /*

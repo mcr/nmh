@@ -271,24 +271,6 @@ auxformat (struct mailname *mp, int extras)
 }
 
 
-/*
- * This used to be adrsprintf() (where it would format an address for you
- * given a username and a domain).  But somewhere we got to the point where
- * the only caller was post, and it only called it with both arguments NULL.
- * So the function was renamed with a more sensible name.
- */
-
-char *
-getlocaladdr(void)
-{
-    char	 *username;
-
-    username = getusername();
-
-    return username;
-}
-
-
 #define	W_NIL	0x0000
 #define	W_MBEG	0x0001
 #define	W_MEND	0x0002
