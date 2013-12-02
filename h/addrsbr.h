@@ -32,6 +32,10 @@ struct mailname {
     char *m_note;		/* Note (post-address comment) */
 };
 
+/*
+ * See notes for auxformat() below.
+ */
+
 #define	adrformat(m) auxformat ((m), 1)
 
 /*
@@ -58,7 +62,23 @@ int ismymbox(struct mailname *);
 
 char *getname(const char *header);
 
-char *auxformat(struct mailname *, int);
+/*
+ * Format an email address given a struct mailname.
+ *
+ * This function takes a pointer to a struct mailname and returns a pointer
+ * to a static buffer holding the resulting email address.
+ *
+ * It is worth noting that group names are NOT handled, so if you want to
+ * do something with groups you need to handle it externally to this function.
+ *
+ * Arguments include:
+ *
+ * mp		- Pointer to mailname structure
+ * extras	- If true, include the personal name and/or note in the
+ *		  address.  Otherwise, omit it.
+ */
+
+char *auxformat(struct mailname *mp, int extras);
 
 /*
  * Parse an email address into it's components.
