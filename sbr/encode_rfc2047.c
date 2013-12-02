@@ -544,7 +544,7 @@ field_encode_address(const char *name, char **value, int encoding,
     int asciichars, specialchars, eightbitchars, reformat = 0, errflag = 0;
     int retval;
     size_t len;
-    char *mp, *output = NULL;
+    char *mp, *cp = NULL, *output = NULL;
     char *tmpbuf = NULL;
     size_t tmpbufsize = 0;
     struct mailname *mn;
@@ -568,6 +568,8 @@ field_encode_address(const char *name, char **value, int encoding,
 	    errflag++;
 	    continue;
 	}
+
+	reformat = 0;
 
 	/*
 	 * We only care if the phrase (m_pers) or any trailing comment
@@ -681,15 +683,94 @@ field_encode_address(const char *name, char **value, int encoding,
 	    }
 
 	    reformat++;
+
+	    /*
+	     * Make sure the size of tmpbuf is correct (it always gets
+	     * reallocated in the above functions).
+	     */
+
+	    tmpbufsize = strlen(tmpbuf) + 1;
+
+	    /*
+	     * Put the note field back surrounded by parenthesis.
+	     */
+
+	    mn->m_note = mh_xrealloc(mn->m_note, tmpbufsize + 2);
+
+	    snprintf(mn->m_note, tmpbufsize + 2, "(%s)", tmpbuf);
 	}
 
+do_reformat:
 
+	/*
+	 * So, some explanation is in order.
+	 *
+	 * We know we need to rewrite at least one address in the header,
+	 * otherwise we wouldn't be here.  If we had to reformat this
+	 * particular address, then run it through adrformat().  Otherwise
+	 * we can use m_text directly.
+	 */
+
+	if (reformat) {
+	    if (mn->m_gname) {
+	    	cp = add(mn->m_gname, NULL);
+	    }
+	    cp = add(adrformat(mn), cp);
+	} else {
+	    cp = add(mn->m_text, NULL);
+	}
+
+	len = strlen(cp);
+
+	/*
+	 * If we're not at the beginning of the line, add a command and
+	 * either a space or a newline.
+	 */
+
+	if (column != prefixlen) {
+	    if (len + column + 2 > OUTPUTLINELEN) {
+
+	    	if ((size_t) (prefixlen + 3) < tmpbufsize)
+		    tmpbuf = mh_xrealloc(tmpbuf, tmpbufsize = prefixlen + 3);
+
+		snprintf(tmpbuf, tmpbufsize, ",\n%*s", column = prefixlen, "");
+		output = add(tmpbuf, output);
+	    } else {
+	    	output = add(", ", output);
+		column += 2;
+	    }
+	}
+
+	/*
+	 * Finally add the address
+	 */
+
+	output = add(cp, output);
+	column += len;
+	free(cp);
+	cp = NULL;
+
+	/*
+	 * If we were in a group but are no longer, make sure we add a
+	 * trailing semicolon.
+	 */
+
+	if (groupflag && ! mn->m_ingrp) {
+	    output = add(";", output);
+	}
+
+	groupflag = mn->m_ingrp;
     }
+
+   *value = output;
+   output = NULL;
 
 out:
 
     if (tmpbuf)
     	free(tmpbuf);
+    if (output)
+    	free(output);
 
     return errflag > 0;
 }
