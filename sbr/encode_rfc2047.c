@@ -125,14 +125,14 @@ encode_rfc2047(const char *name, char **value, int encoding,
      * On the encoding we choose, and the specifics of encoding:
      *
      * - If a specified encoding is passed in, we use that.
-     * - If more than 50% of the characters are high-bit, we use base64
-     *   and encode the whole field as one atom (possibly split).
-     * - Otherwise, we use quoted-printable.
+     * - Otherwise, pick which encoding is shorter.
+     *
+     * We don't quite handle continuation right here, but it should be
+     * pretty close.
      */
 
     if (encoding == CE_UNKNOWN)
-    	encoding = (eightbitcount * 10 / (asciicount + eightbitcount) > 5) ?
-						CE_BASE64 : CE_QUOTED;
+        encoding = pref_encoding(asciicount, qpspecialcount, eightbitcount);
 
     unfold_header(value, asciicount + eightbitcount);
 
