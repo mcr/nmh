@@ -286,10 +286,13 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	}
     }
 
-    strcat(q, "?=");
+    *q++ = '?';
+    *q++ = '=';
 
     if (prefixlen)
-    	strcat(q, "\n");
+    	*q++ = '\n';
+
+    *q = '\0';
 
     free(*value);
 
@@ -711,13 +714,27 @@ do_reformat:
 	 * we can use m_text directly.
 	 */
 
+	/*
+	 * If we were in a group but are no longer, make sure we add a
+	 * semicolon (which needs to be FIRST, as it needs to be at the end
+	 * of the last address).
+	 */
+
+	if (groupflag && ! mn->m_ingrp) {
+	    output = add("; ", output);
+	    column += 2;
+	}
+
+	groupflag = mn->m_ingrp;
+
+	if (mn->m_gname) {
+	    cp = add(mn->m_gname, NULL);
+	}
+
 	if (reformat) {
-	    if (mn->m_gname) {
-	    	cp = add(mn->m_gname, NULL);
-	    }
 	    cp = add(adrformat(mn), cp);
 	} else {
-	    cp = add(mn->m_text, NULL);
+	    cp = add(mn->m_text, cp);
 	}
 
 	len = strlen(cp);
@@ -749,21 +766,21 @@ do_reformat:
 	column += len;
 	free(cp);
 	cp = NULL;
-
-	/*
-	 * If we were in a group but are no longer, make sure we add a
-	 * trailing semicolon.
-	 */
-
-	if (groupflag && ! mn->m_ingrp) {
-	    output = add(";", output);
-	}
-
-	groupflag = mn->m_ingrp;
     }
 
-   *value = output;
-   output = NULL;
+    /*
+     * Just in case we're at the end of a list
+     */
+
+    if (groupflag) {
+	output = add(";", output);
+    }
+
+    output = add("\n", output);
+
+    free(*value);
+    *value = output;
+    output = NULL;
 
 out:
 
@@ -790,7 +807,12 @@ scanstring(const char *string, int *asciilen, int *eightbitchars,
     for (; *string != '\0'; string++) {
     	if ((isascii((unsigned char) *string))) {
 	    (*asciilen)++;
-	    if (!qphrasevalid((unsigned char) *string))
+	    /*
+	     * So, a space is not a valid phrase character, but we're counting
+	     * an exception here, because in q-p a space can be directly
+	     * encoded as an underscore.
+	     */
+	    if (!qphrasevalid((unsigned char) *string) && *string != ' ')
 	    	(*specialchars)++;
 	} else {
 	    (*eightbitchars)++;
