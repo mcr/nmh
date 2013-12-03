@@ -1,0 +1,118 @@
+#!/bin/sh
+######################################################
+#
+# Test encoding headers according to RFC 2047
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${MH_OBJ_DIR}/test/common.sh"
+
+setup_test
+testname="${MH_TEST_DIR}/$$"
+
+#
+# We're going to hardcode UTF-8 for this test.
+#
+
+LC_ALL=en_US.UTF-8; export LC_ALL
+
+#
+# Basic test of encoding a short subject
+#
+cat > "${testname}.basic.actual" <<EOF
+From: Mr Foo Bar <foobar@example.com>
+To: Somebody <somebody@example.com>
+Subject: This is ä test
+
+This is a test
+EOF
+
+cat > "${testname}.basic.expected" <<EOF
+From: Mr Foo Bar <foobar@example.com>
+To: Somebody <somebody@example.com>
+Subject: =?UTF-8?Q?This_is_=C3=A4_test?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test
+EOF
+
+mhbuild "${testname}.basic.actual"
+
+check "${testname}.basic.actual" "${testname}.basic.expected" 'keep first'
+
+#
+# Make sure we can undo the encoding
+#
+
+run_test 'eval fmttest -outsize max -format "%(decode{subject})" -message -file "${testname}.basic.actual"' 'This is ä test'
+
+rm -f "${testname}.basic.actual"
+
+#
+# Basic test of encoding a short subject, but with base64
+#
+cat > "${testname}.basic.actual" <<EOF
+From: Mr Foo Bar <foobar@example.com>
+To: Somebody <somebody@example.com>
+Subject: This is ä test
+
+This is a test
+EOF
+
+cat > "${testname}.basic.expected" <<EOF
+From: Mr Foo Bar <foobar@example.com>
+To: Somebody <somebody@example.com>
+Subject: =?UTF-8?B?VGhpcyBpcyDDpCB0ZXN0?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test
+EOF
+
+mhbuild -headerencoding base64 "${testname}.basic.actual"
+
+check "${testname}.basic.actual" "${testname}.basic.expected" 'keep first'
+
+run_test 'eval fmttest -outsize max -format "%(decode{subject})" -message -file "${testname}.basic.actual"' 'This is ä test'
+
+rm -f "${testname}.basic.actual"
+
+#
+# Have a subject that will pick base64 as the shorter encoding
+#
+
+cat > "${testname}.autopick.actual" <<EOF
+From: Mr Foo Bar <foobar@example.com>
+To: Somebody <somebody@example.com>
+Subject: This is ä tëst©
+
+This is a test
+EOF
+
+cat > "${testname}.autopick.expected" <<EOF
+From: Mr Foo Bar <foobar@example.com>
+To: Somebody <somebody@example.com>
+Subject: =?UTF-8?B?VGhpcyBpcyDDpCB0w6tzdMKp?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test
+EOF
+
+mhbuild "${testname}.autopick.actual"
+
+check "${testname}.autopick.actual" "${testname}.autopick.expected" 'keep first'
+
+run_test 'eval fmttest -outsize max -format "%(decode{subject})" -message -file "${testname}.autopick.actual"' 'This is ä tëst©'
+
+rm -f "${testname}.basic.autopick"
+
+exit ${failed:-0}
