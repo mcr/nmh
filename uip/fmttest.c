@@ -21,6 +21,8 @@
     X("raw", 0, RAWSW) \
     X("date", 0, DATESW) \
     X("message", 0, MESSAGESW) \
+    X("file", 0, FILESW) \
+    X("nofile", 0, NFILESW) \
     X("-component-name component-text", 0, OTHERSW) \
     X("dupaddrs", 0, DUPADDRSW) \
     X("nodupaddrs", 0, NDUPADDRSW) \
@@ -91,7 +93,10 @@ static void process_raw(struct format *, struct msgs_array *, char *,
 			int, int, int *, struct fmt_callbacks *);
 static void process_messages(struct format *, struct msgs_array *,
 			     struct msgs_array *, char *, char *, int,
-			     int, int *, struct fmt_callbacks *);
+			     int, int, int *, struct fmt_callbacks *);
+static void process_single_file(FILE *, struct msgs_array *, int *, int,
+				struct format *, char *, int, int,
+				struct fmt_callbacks *);
 static void test_trace(void *, struct format *, int, char *, char *);
 static char *test_formataddr(char *, char *);
 static char *test_concataddr(char *, char *);
@@ -112,7 +117,7 @@ main (int argc, char **argv)
     struct comp *cptr;
     struct msgs_array msgs = { 0, 0, NULL }, compargs = { 0, 0, NULL};
     int dump = 0, i;
-    int outputsize = 0, bufsize = 0, dupaddrs = 1, trace = 0;
+    int outputsize = 0, bufsize = 0, dupaddrs = 1, trace = 0, files = 0;
     int colwidth = -1, msgnum = -1, msgcur = -1, msgsize = -1, msgunseen = -1;
     int normalize = AD_HOST;
     enum mode_t mode = MESSAGE;
@@ -222,6 +227,13 @@ main (int argc, char **argv)
 		    defformat = DEFDATEFORMAT;
 		    continue;
 
+		case FILESW:
+		    files++;
+		    continue;
+		case NFILESW:
+		    files = 0;
+		    continue;
+
 		case DUPADDRSW:
 		    dupaddrs++;
 		    continue;
@@ -276,7 +288,7 @@ main (int argc, char **argv)
 	 * Only interpret as a folder if we're in message mode
 	 */
 
-	if (mode == MESSAGE && (*cp == '+' || *cp == '@')) {
+	if (mode == MESSAGE && !files && (*cp == '+' || *cp == '@')) {
 	    if (folder)
 	    	adios (NULL, "only one folder at a time!");
 	    else
@@ -380,7 +392,7 @@ main (int argc, char **argv)
 
     if (mode == MESSAGE) {
     	process_messages(fmt, &compargs, &msgs, buffer, folder, bufsize,
-			 outputsize, dat, cbp);
+			 outputsize, files, dat, cbp);
     } else {
 	if (compargs.size) {
 	    for (i = 0; i < compargs.size; i += 2) {
@@ -488,17 +500,33 @@ process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
 static void
 process_messages(struct format *fmt, struct msgs_array *comps,
 		 struct msgs_array *msgs, char *buffer, char *folder,
-		 int bufsize, int outwidth, int *dat, struct fmt_callbacks *cb)
+		 int bufsize, int outwidth, int files, int *dat,
+		 struct fmt_callbacks *cb)
 {
-    int i, state, msgnum, msgsize = dat[2], num = dat[0], cur = dat[1];
+    int i, msgnum, msgsize = dat[2], num = dat[0], cur = dat[1];
     int num_unseen_seq = 0;
     ivector_t seqnum = ivector_create (0);
-    char *maildir, *cp, name[NAMESZ], rbuf[BUFSIZ];
+    char *maildir, *cp;
     struct msgs *mp;
-    struct comp *c;
     FILE *in;
-    m_getfld_state_t gstate = 0;
-    int bufsz;
+
+    /*
+     * If 'files' is set, short-circuit everything else and just process
+     * everything now.
+     */
+
+    if (files) {
+	for (i = 0; i < msgs->size; i++) {
+	    if ((in = fopen(cp = msgs->msgs[i], "r")) == NULL) {
+	    	admonish(cp, "unable to open file");
+		continue;
+	    }
+	    process_single_file(in, comps, dat, msgsize, fmt, buffer,
+	    			bufsize, outwidth, cb);
+	}
+
+	return;
+    }
 
     if (! folder)
     	folder = getfolder(1);
@@ -559,19 +587,6 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 	    	dat[1] = msgnum == mp->curmsg;
 
 	    /*
-	     * Get our size if we didn't include one
-	     */
-
-	    if (msgsize == -1) {
-	    	struct stat st;
-
-		if (fstat(fileno(in), &st) < 0)
-		    dat[2] = 0;
-		else
-		    dat[2] = st.st_size;
-	    }
-
-	    /*
 	     * Check to see if this is in the unseen sequence
 	     */
 
@@ -587,69 +602,116 @@ process_messages(struct format *fmt, struct msgs_array *comps,
 	     * Read in the message and process the components
 	     */
 
-	    for (state = FLD;;) {
-	    	bufsz = sizeof(rbuf);
-	    	state = m_getfld(&gstate, name, rbuf, &bufsz, in);
-		switch (state) {
-		case FLD:
-		case FLDPLUS:
-		    i = fmt_addcomptext(name, rbuf);
-		    if (i != -1) {
-		    	while (state == FLDPLUS) {
-			    bufsz = sizeof(rbuf);
-			    state = m_getfld(&gstate, name, rbuf, &bufsz, in);
-			    fmt_appendcomp(i, name, rbuf);
-			}
-		    }
-
-		    while (state == FLDPLUS) {
-		    	bufsz = sizeof(rbuf);
-		    	state = m_getfld(&gstate, name, rbuf, &bufsz, in);
-		    }
-		    break;
-
-		case BODY:
-		    if (fmt_findcomp("body")) {
-			if ((i = strlen(rbuf)) < outwidth) {
-			    bufsz = outwidth - 1;
-			    state = m_getfld(&gstate, name, rbuf + i,
-			    		     &bufsz, in);
-			}
-
-			fmt_addcomptext("body", rbuf);
-		    }
-		    /* fall through */
-
-		default:
-		    goto finished;
-		}
-	    }
-finished:
-	    fclose(in);
-	    m_getfld_state_destroy(&gstate);
-
-	    /*
-	     * Do this now to override any components in the original message
-	     */
-	    if (comps->size) {
-		for (i = 0; i < comps->size; i += 2) {
-		    c = fmt_findcomp(comps->msgs[i]);
-		    if (c) {
-		    	if (c->c_text)
-			    free(c->c_text);
-			c->c_text = getcpy(comps->msgs[i + 1]);
-		    }
-		}
-	    }
-	    fmt_scan(fmt, buffer, bufsize, outwidth, dat, cb);
-	    fputs(buffer, stdout);
-	    mlistfree();
+	    process_single_file(in, comps, dat, msgsize, fmt, buffer,
+	    			bufsize, outwidth, cb);
 	}
     }
 
     ivector_free (seqnum);
     folder_free(mp);
     return;
+}
+
+/*
+ * Process a single file in message mode
+ */
+
+static void
+process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
+		    struct format *fmt, char *buffer, int bufsize,
+		    int outwidth, struct fmt_callbacks *cb)
+{
+    int i, state;
+    char name[NAMESZ], rbuf[BUFSIZ];
+    m_getfld_state_t gstate = 0;
+    struct comp *c;
+    int bufsz;
+
+    /*
+     * Get our size if we didn't include one
+     */
+
+    if (msgsize == -1) {
+	struct stat st;
+
+	if (fstat(fileno(in), &st) < 0)
+	    dat[2] = 0;
+	else
+	    dat[2] = st.st_size;
+    }
+
+    /*
+     * Initialize everyting else
+     */
+
+    if (dat[0] == -1)
+    	dat[0] = 0;
+    if (dat[1] == -1)
+    	dat[1] = 0;
+    if (dat[4] == -1)
+    	dat[4] = 0;
+
+    /*
+     * Read in the message and process the components
+     */
+
+    for (state = FLD;;) {
+	bufsz = sizeof(rbuf);
+	state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+	switch (state) {
+	case FLD:
+	case FLDPLUS:
+	    i = fmt_addcomptext(name, rbuf);
+	    if (i != -1) {
+		while (state == FLDPLUS) {
+		    bufsz = sizeof(rbuf);
+		    state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+		    fmt_appendcomp(i, name, rbuf);
+		}
+	    }
+
+	    while (state == FLDPLUS) {
+		bufsz = sizeof(rbuf);
+		state = m_getfld(&gstate, name, rbuf, &bufsz, in);
+	    }
+	    break;
+
+	case BODY:
+	    if (fmt_findcomp("body")) {
+		if ((i = strlen(rbuf)) < outwidth) {
+		    bufsz = outwidth - 1;
+		    state = m_getfld(&gstate, name, rbuf + i,
+				     &bufsz, in);
+		}
+
+		fmt_addcomptext("body", rbuf);
+	    }
+	    /* fall through */
+
+	default:
+	    goto finished;
+	}
+    }
+finished:
+    fclose(in);
+    m_getfld_state_destroy(&gstate);
+
+    /*
+     * Do this now to override any components in the original message
+     */
+    if (comps->size) {
+	for (i = 0; i < comps->size; i += 2) {
+	    c = fmt_findcomp(comps->msgs[i]);
+	    if (c) {
+		if (c->c_text)
+		    free(c->c_text);
+		c->c_text = getcpy(comps->msgs[i + 1]);
+	    }
+	}
+    }
+    fmt_scan(fmt, buffer, bufsize, outwidth, dat, cb);
+    fputs(buffer, stdout);
+    mlistfree();
 }
 
 /*

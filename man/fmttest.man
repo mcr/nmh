@@ -15,6 +15,7 @@ language
 .RB [ \-format
 .IR formatstring ]
 .RB [ \-address " | " \-raw " | " \-date " | " \-message ]
+.RB [ \-file " | " \-nofile ]
 .RB [ \-\|\-component
 .IR component-text ]
 .RB [ \-dupaddrs " | " \-nodupaddrs ]
@@ -140,7 +141,15 @@ for the
 .RI %( unseen ),
 and
 .RI %( size )
-function escapes will be made available for each message.
+function escapes will be made available for each message.  If the
+.B \-file
+switch is given, the arguments are interpreted as filenames instead of
+message numbers, but otherwise the behavior is the same (except that the
+.RI %( msg ),
+.RI %( cur ),
+and
+.RI %( unseen )
+function escapes will not provide any useful information).
 .PP
 The default format used in address mode is the default format used by
 .BR scan .
@@ -394,6 +403,7 @@ dat[4]	%(\fIunseen\fR)
 .SH DEFAULTS
 .nf
 .RB ` \-message '
+.RB ` \-nofile '
 .RB ` \-dupaddrs '
 .fi
 .SH BUGS
