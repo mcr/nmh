@@ -721,8 +721,8 @@ do_reformat:
 	 */
 
 	if (groupflag && ! mn->m_ingrp) {
-	    output = add("; ", output);
-	    column += 2;
+	    output = add(";", output);
+	    column += 1;
 	}
 
 	groupflag = mn->m_ingrp;
