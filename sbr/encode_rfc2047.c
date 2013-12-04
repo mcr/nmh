@@ -313,7 +313,7 @@ field_encode_base64(const char *name, char **value, const char *charset)
 {
     int prefixlen = name ? strlen(name) + 2 : 0, charsetlen = strlen(charset);
     int outlen = 0, numencode, curlen;
-    char *output = NULL, *p = *value, *q = NULL, *linestart;
+    char *output = NULL, *p = *value, *q = NULL, *linestart = NULL;
 
     /*
      * Skip over any leading white space.
