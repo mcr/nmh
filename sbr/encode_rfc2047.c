@@ -161,7 +161,7 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 {
     int prefixlen = name ? strlen(name) + 2: 0, outlen = 0, column, newline = 1;
     int charsetlen = strlen(charset), utf8;
-    char *output = NULL, *p, *q;
+    char *output = NULL, *p, *q = NULL;
 
     /*
      * Right now we just encode the whole thing.  Maybe later on we'll
@@ -545,7 +545,6 @@ field_encode_address(const char *name, char **value, int encoding,
 {
     int prefixlen = strlen(name) + 2, column = prefixlen, groupflag;
     int asciichars, specialchars, eightbitchars, reformat = 0, errflag = 0;
-    int retval;
     size_t len;
     char *mp, *cp = NULL, *output = NULL;
     char *tmpbuf = NULL;
@@ -610,13 +609,18 @@ field_encode_address(const char *name, char **value, int encoding,
 	    switch (encoding) {
 
 	    case CE_BASE64:
-	    	retval = field_encode_base64(NULL, &mn->m_pers, charset);
+	    	if (field_encode_base64(NULL, &mn->m_pers, charset)) {
+		    errflag++;
+		    goto out;
+		}
 		break;
 
 	    case CE_QUOTED:
-	    	retval = field_encode_quoted(NULL, &mn->m_pers, charset,
-					     asciichars,
-					     eightbitchars + specialchars, 1);
+	    	if (field_encode_quoted(NULL, &mn->m_pers, charset, asciichars,
+					eightbitchars + specialchars, 1)) {
+		    errflag++;
+		    goto out;
+		}
 		break;
 
 	    default:
@@ -668,13 +672,18 @@ field_encode_address(const char *name, char **value, int encoding,
 	    switch (encoding) {
 
 	    case CE_BASE64:
-	    	retval = field_encode_base64(NULL, &tmpbuf, charset);
+	    	if (field_encode_base64(NULL, &tmpbuf, charset)) {
+		    errflag++;
+		    goto out;
+		}
 		break;
 
 	    case CE_QUOTED:
-	    	retval = field_encode_quoted(NULL, &tmpbuf, charset,
-					     asciichars,
-					     eightbitchars + specialchars, 1);
+	    	if (field_encode_quoted(NULL, &tmpbuf, charset, asciichars,
+					eightbitchars + specialchars, 1)) {
+		    errflag++;
+		    goto out;
+		}
 		break;
 
 	    default:
