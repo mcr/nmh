@@ -123,7 +123,7 @@ cat > "${testname}.longsubject1.actual" <<EOF
 From: Mr Foo Bar <foobar@example.com>
 To: Somebody <somebody@example.com>
 Subject: This is ä tëst of a rather long sübject line; will it overflow
-  the line length?  I sure hope thät ='s and "'s are encoded properly.  Will
+  the line length?  I sure hope thät ='s and _'s are encoded properly.  Will
   they be?
 
 This is a test of a very long subject line.
@@ -134,8 +134,8 @@ From: Mr Foo Bar <foobar@example.com>
 To: Somebody <somebody@example.com>
 Subject: =?UTF-8?Q?This_is_=C3=A4_t=C3=ABst_of_a_rather_long_s=C3=BCbject_?=
          =?UTF-8?Q?line;_will_it_overflow_the_line_length=3F__I_sure_hope_?=
-         =?UTF-8?Q?th=C3=A4t_=3D's_and_"'s_are_encoded_properly.__Will_the?=
-         =?UTF-8?Q?y_be=3F?=
+         =?UTF-8?Q?th=C3=A4t_=3D's_and_=5F's_are_encoded_properly.__Will_t?=
+         =?UTF-8?Q?hey_be=3F?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 
@@ -146,7 +146,7 @@ mhbuild "${testname}.longsubject1.actual"
 
 check "${testname}.longsubject1.actual" "${testname}.longsubject1.expected" 'keep first'
 
-run_test 'eval fmttest -outsize max -format "%(putlit(decode(trim{subject})))" -message -file "${testname}.longsubject1.actual"' "This is ä tëst of a rather long sübject line; will it overflow the line length?  I sure hope thät ='s and \"'s are encoded properly.  Will they be?"
+run_test 'eval fmttest -outsize max -format "%(putlit(decode(trim{subject})))" -message -file "${testname}.longsubject1.actual"' "This is ä tëst of a rather long sübject line; will it overflow the line length?  I sure hope thät ='s and _'s are encoded properly.  Will they be?"
 
 rm -f "${testname}.longsubject1.actual"
 
@@ -183,5 +183,63 @@ mhbuild "${testname}.longsubject2.actual"
 check "${testname}.longsubject2.actual" "${testname}.longsubject2.expected" 'keep first'
 
 run_test 'eval fmttest -outsize max -format "%(putlit(decode(trim{subject})))" -message -file "${testname}.longsubject2.actual"' "This is ä tëst øf ä räthër løng sübjëct line; will it øvërfløw the line length?  I sure hope thät ='s and \"'s are encoded properly.  Will they be?"
+
+#
+# Test out some basic email address encoding
+#
+
+cat > "${testname}.basicemail1.actual" <<EOF
+From: Mr Foo Bär <foobar@example.com>
+To: Somebody <somebody@example.com>
+Subject: Impørtant stuff
+
+This is important information
+EOF
+
+cat > "${testname}.basicemail1.expected" <<EOF
+From: =?UTF-8?Q?Mr_Foo_B=C3=A4r?= <foobar@example.com>
+To: Somebody <somebody@example.com>
+Subject: =?UTF-8?Q?Imp=C3=B8rtant_stuff?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+
+This is important information
+EOF
+
+mhbuild "${testname}.basicemail1.actual"
+
+check "${testname}.basicemail1.actual" "${testname}.basicemail1.expected" 'keep first'
+
+run_test 'eval fmttest -outsize max -format "%(decode{from})" -message -file "${testname}.basicemail1.actual"' "Mr Foo Bär <foobar@example.com>"
+run_test 'eval fmttest -outsize max -format "%(decode(friendly{from}))" -message -file "${testname}.basicemail1.actual"' "Mr Foo Bär"
+
+rm -f "${testname}.basicemail1.actual"
+
+cat > "${testname}.basicemail2.actual" <<EOF
+From: foobar@example.com (Mr Foo Bär)
+To: Somebody <somebody@example.com>
+Subject: Impørtant stuff
+
+This is important information
+EOF
+
+cat > "${testname}.basicemail2.expected" <<EOF
+From: foobar@example.com (=?UTF-8?Q?Mr_Foo_B=C3=A4r?=)
+To: Somebody <somebody@example.com>
+Subject: =?UTF-8?Q?Imp=C3=B8rtant_stuff?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+
+This is important information
+EOF
+
+mhbuild "${testname}.basicemail2.actual"
+
+check "${testname}.basicemail2.actual" "${testname}.basicemail2.expected" 'keep first'
+
+run_test 'eval fmttest -outsize max -format "%(decode{from})" -message -file "${testname}.basicemail2.actual"' "foobar@example.com (Mr Foo Bär)"
+run_test 'eval fmttest -outsize max -format "%(decode(friendly{from}))" -message -file "${testname}.basicemail2.actual"' "Mr Foo Bär"
+
+rm -f "${testname}.basicemail2.actual"
 
 exit ${failed:-0}
