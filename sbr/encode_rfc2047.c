@@ -517,8 +517,8 @@ unfold_header(char **value, int len)
 	     * This has the side effect of stripping off the final newline
 	     * for the header; we put it back in the encoding routine.
 	     */
-	    while (is_fws(*q++))
-	    	;
+	    while (is_fws(*q))
+	    	q++;
 	    if (*q == '\0')
 	    	break;
 
