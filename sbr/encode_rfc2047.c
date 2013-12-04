@@ -641,9 +641,7 @@ field_encode_address(const char *name, char **value, int encoding,
 	if (! mn->m_note)
 	    goto do_reformat;
 
-	len = strlen(mn->m_note);
-
-	if ((len = strlen(mn->m_pers)) + 1 > tmpbufsize) {
+	if ((len = strlen(mn->m_note)) + 1 > tmpbufsize) {
 	    tmpbuf = mh_xrealloc(tmpbuf, tmpbufsize = len + 1);
 	}
 
