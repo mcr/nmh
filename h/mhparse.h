@@ -285,6 +285,21 @@ extern struct str2init str2methods[];
  */
 int pidcheck (int);
 CT parse_mime (char *);
+
+/*
+ * Translate a composition file into a MIME data structure.  Arguments are:
+ *
+ * infile	- Name of input filename
+ * directives	- A flag to control whether or not build directives are
+ *		  processed by default.
+ * encoding	- The default encoding to use when doing RFC 2047 header
+ *		  encoding.  Must be one of CE_UNKNOWN, CE_BASE64, or
+ *		  CE_QUOTED;
+ *
+ * Returns a CT structure describing the resulting MIME message.
+ */
+CT build_mime (char *infile, int directives, int encoding);
+
 int add_header (CT, char *, char *);
 int get_ctinfo (char *, CT, int);
 int params_external (CT, int);

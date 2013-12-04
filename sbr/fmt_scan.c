@@ -868,32 +868,10 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		/* UNQUOTEs RFC-2822 quoted-string and quoted-pair */
 	case FT_LS_UNQUOTE:
 	    if (str) {	  	
-		int m;
 		strncpy(buffer, str, sizeof(buffer));
 		/* strncpy doesn't NUL-terminate if it fills the buffer */
 		buffer[sizeof(buffer)-1] = '\0';
-		str = buffer;
-	
-		/* we will parse from buffer to buffer2 */
-		n = 0; /* n is the input position in str */
-		m = 0; /* m is the ouput position in buffer2 */
-
-		while ( str[n] != '\0') {
-		    switch ( str[n] ) {
-			case '\\':
-			    n++;
-			    if ( str[n] != '\0')
-				buffer2[m++] = str[n++];
-			    break;
-			case '"':
-			    n++;
-			    break;
-			default:
-			    buffer2[m++] = str[n++];
-			    break;
-			}
-		}
-		buffer2[m] = '\0';
+		unquote_string(buffer, buffer2);
 		str = buffer2;
             }
 	    break;

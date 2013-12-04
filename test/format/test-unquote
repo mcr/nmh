@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Test that the unquote function works properly.
+#
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+#
+# Test various unquoting scenarios
+#
+
+run_test 'eval fmttest -raw -format "%(unquote{text})" "Mr. Foo Bar"' \
+		'Mr. Foo Bar'
+
+run_test 'eval fmttest -raw -format "%(unquote{text})" "Mr. \"Foo\" Bar"' \
+		'Mr. Foo Bar'
+
+#
+# Note here: the string we wanted passed on the command line is:
+#
+# "Mr. \"Foo\" Bar"
+#
+# The extra \ are necessary to get it past the shell
+#
+
+run_test 'eval fmttest -raw -format "%(unquote{text})" "Mr. \\\"Foo\\\" Bar"' \
+		'Mr. "Foo" Bar'
+
+exit ${failed:-0}

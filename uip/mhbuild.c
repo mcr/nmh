@@ -37,6 +37,8 @@
     X("wcache policy", 0, WCACHESW) \
     X("contentid", 0, CONTENTIDSW) \
     X("nocontentid", 0, NCONTENTIDSW) \
+    X("headerencoding encoding-algorithm", 0, HEADERENCSW) \
+    X("autoheaderencoding", 0, AUTOHEADERENCSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("debug", -5, DEBUGSW) \
@@ -49,6 +51,17 @@ DEFINE_SWITCH_ENUM(MHBUILD);
 DEFINE_SWITCH_ARRAY(MHBUILD, switches);
 #undef X
 
+#define MIMEENCODING_SWITCHES \
+    X("base64", 0, BASE64SW) \
+    X("quoted-printable", 0, QUOTEDPRINTSW) \
+
+#define X(sw, minchars, id) id,
+DEFINE_SWITCH_ENUM(MIMEENCODING);
+#undef X
+
+#define X(sw, minchars, id) { sw, minchars, id },
+DEFINE_SWITCH_ARRAY(MIMEENCODING, encodingswitches);
+#undef X
 
 /* mhbuildsbr.c */
 extern char *tmp;	/* directory to place temp files */
@@ -78,7 +91,6 @@ static int unlink_outfile = 0;
 static void unlink_done (int) NORETURN;
 
 /* mhbuildsbr.c */
-CT build_mime (char *, int);
 int output_message (CT, char *);
 int output_message_fp (CT, FILE *, char*);
 
@@ -97,6 +109,7 @@ main (int argc, char **argv)
     CT ct, cts[2];
     FILE *fp = NULL;
     FILE *fp_out = NULL;
+    int header_encoding = CE_UNKNOWN;
 
     done=unlink_done;
 
@@ -205,6 +218,33 @@ main (int argc, char **argv)
 		contentidsw = 0;
 		continue;
 
+	    case HEADERENCSW: {
+	    	int encoding;
+
+		if (!(cp = *argp++) || *cp == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		switch (encoding = smatch (cp, encodingswitches)) {
+		case AMBIGSW:
+		    ambigsw (cp, encodingswitches);
+		    done (1);
+		case UNKWNSW:
+		    adios (NULL, "%s unknown encoding algorithm", cp);
+		case BASE64SW:
+		    header_encoding = CE_BASE64;
+		    break;
+		case QUOTEDPRINTSW:
+		    header_encoding = CE_QUOTED;
+		    break;
+		default:
+		    adios (NULL, "Internal error: algorithm %s", cp);
+		}
+		continue;
+	    }
+
+	    case AUTOHEADERENCSW:
+	    	header_encoding = CE_UNKNOWN;
+		continue;
+
 	    case VERBSW: 
 		verbosw++;
 		continue;
@@ -280,7 +320,7 @@ main (int argc, char **argv)
 	unlink_infile = 1;
 
 	/* build the content structures for MIME message */
-	ct = build_mime (infile, directives);
+	ct = build_mime (infile, directives, header_encoding);
 	cts[0] = ct;
 	cts[1] = NULL;
 
@@ -314,7 +354,7 @@ main (int argc, char **argv)
      */
 
     /* build the content structures for MIME message */
-    ct = build_mime (compfile, directives);
+    ct = build_mime (compfile, directives, header_encoding);
     cts[0] = ct;
     cts[1] = NULL;
 

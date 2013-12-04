@@ -70,11 +70,6 @@ void free_ctinfo (CT);
 void free_encoding (CT, int);
 
 /*
- * prototypes
- */
-CT build_mime (char *, int);
-
-/*
  * static prototypes
  */
 static int init_decoded_content (CT);
@@ -128,7 +123,7 @@ static void directive_pop(void)
  */
 
 CT
-build_mime (char *infile, int directives)
+build_mime (char *infile, int directives, int header_encoding)
 {
     int	compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -137,6 +132,7 @@ build_mime (char *infile, int directives)
     struct part **pp;
     CT ct;
     FILE *in;
+    HF hp;
     m_getfld_state_t gstate = 0;
 
     directive_init(directives);
@@ -226,6 +222,17 @@ finish_field:
 	break;
     }
     m_getfld_state_destroy (&gstate);
+
+    /*
+     * Iterate through the list of headers and call the function to MIME-ify
+     * them if required.
+     */
+
+    for (hp = ct->c_first_hf; hp != NULL; hp = hp->next) {
+    	if (encode_rfc2047(hp->name, &hp->value, header_encoding, NULL)) {
+	    adios(NULL, "Unable to encode header \"%s\"", hp->name);
+	}
+    }
 
     /*
      * Now add the MIME-Version header field

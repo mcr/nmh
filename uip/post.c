@@ -223,7 +223,6 @@ static char from[BUFSIZ];	/* my network address            */
 static char sender[BUFSIZ];	/* my Sender: header		 */
 static char efrom[BUFSIZ];	/* my Envelope-From: header	 */
 static char fullfrom[BUFSIZ];	/* full contents of From header  */
-static char signature[BUFSIZ];	/* my signature                  */
 static char *filter = NULL;	/* the filter for BCC'ing        */
 static char *subject = NULL;	/* the subject field for BCC'ing */
 static char *fccfold[FCCS];	/* foldernames for FCC'ing       */
@@ -934,9 +933,6 @@ putfmt (char *name, char *str, FILE *out)
 static void
 start_headers (void)
 {
-    char  *cp, sigbuf[BUFSIZ];
-    struct mailname *mp;
-
     time (&tclock);
 
     /*
@@ -947,21 +943,6 @@ start_headers (void)
     efrom[0] = '\0';
     sender[0] = '\0';
     fullfrom[0] = '\0';
-
-    if ((cp = getfullname ()) && *cp) {
-	strncpy (sigbuf, cp, sizeof(sigbuf));
-	snprintf (signature, sizeof(signature), "%s <%s>",
-		sigbuf, getlocaladdr());
-	if ((cp = getname (signature)) == NULL)
-	    adios (NULL, "getname () failed -- you lose extraordinarily big");
-	if ((mp = getm (cp, NULL, 0, AD_HOST, NULL)) == NULL)
-	    adios (NULL, "bad signature '%s'", sigbuf);
-	mnfree (mp);
-	while (getname (""))
-	    continue;
-    } else {
-	strncpy (signature, getlocaladdr(), sizeof(signature));
-    }
 }
 
 

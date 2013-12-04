@@ -59,6 +59,27 @@ char *cpytrim (const char *);
 int decode_rfc2047 (char *, char *, size_t);
 void discard (FILE *);
 int default_done (int);
+
+/*
+ * Encode a message header using RFC 2047 encoding.  If the message contains
+ * no non-ASCII characters, then leave the header as-is.
+ *
+ * Arguments include:
+ *
+ * name		- Message header name
+ * value	- Message header content; must point to allocated memory
+ *		  (may be changed if encoding is necessary)
+ * encoding	- Encoding type.  May be one of CE_UNKNOWN (function chooses
+ *		  the encoding), CE_BASE64 or CE_QUOTED
+ * charset	- Charset used for encoding.  If NULL, obtain from system
+ *		  locale.
+ *
+ * Returns 0 on success, any other value on failure.
+ */
+
+int encode_rfc2047(const char *name, char **value, int encoding,
+		   const char *charset);
+
 void escape_display_name (char *, size_t);
 void escape_local_part (char *, size_t);
 int ext_hook(char *, char *, char *);
@@ -224,6 +245,23 @@ int ssequal (char *, char *);
 int stringdex (char *, char *);
 char *trimcpy (char *);
 int unputenv (char *);
+
+/*
+ * Remove quotes and quoted-pair sequences from RFC-5322 atoms.
+ *
+ * Currently the actual algorithm is simpler than it technically should
+ * be: any quotes are simply eaten, unless they're preceded by the escape
+ * character (\).  This seems to be sufficient for our needs for now.
+ *
+ * Arguments:
+ *
+ * input	- The input string
+ * output	- The output string; is assumed to have at least as much
+ *		  room as the input string.  At worst the output string will
+ *		  be the same size as the input string; it might be smaller.
+ *
+ */
+void unquote_string(const char *input, char *output);
 int uprf (char *, char *);
 int vfgets (FILE *, char **);
 char *write_charset_8bit (void);
@@ -262,6 +300,7 @@ int what_now (char *, int, int, char *, char *,
 int WhatNow(int, char **);
 int writeBase64aux(FILE *, FILE *);
 int writeBase64 (unsigned char *, size_t, unsigned char *);
+int writeBase64raw (unsigned char *, size_t, unsigned char *);
 
 /*
  * credentials management

@@ -55,6 +55,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/format/test-localmbox test/format/test-myname \
 	test/format/test-myhost test/format/test-mymbox \
 	test/format/test-rightjustify \
+	test/format/test-unquote \
 	test/forw/test-forw-digest test/forw/test-forw-format \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/inc/test-inc-scanout test/inc/test-msgchk \
@@ -62,7 +63,8 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/install-mh/test-install-mh \
 	test/locking/test-datalocking test/locking/test-spoollocking \
 	test/manpages/test-manpages \
-	test/mhbuild/test-forw test/mhbuild/test-utf8-body \
+	test/mhbuild/test-forw test/mhbuild/test-header-encode \
+	test/mhbuild/test-utf8-body \
 	test/mhfixmsg/test-mhfixmsg \
 	test/mhlist/test-mhlist test/mhmail/test-mhmail \
 	test/mhparam/test-mhparam test/mhpath/test-mhpath \
@@ -521,6 +523,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/copy.c sbr/copyip.c sbr/cpydata.c \
 		      sbr/cpydgst.c sbr/crawl_folders.c sbr/credentials.c \
 		      sbr/discard.c sbr/done.c sbr/dtimep.l sbr/dtime.c \
+		      sbr/encode_rfc2047.c \
 		      sbr/escape_addresses.c \
 		      sbr/error.c sbr/ext_hook.c sbr/fdcompare.c \
 		      sbr/folder_addmsg.c sbr/folder_delmsgs.c \
@@ -546,7 +549,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/seq_setcur.c sbr/seq_setprev.c sbr/seq_setunseen.c \
 		      sbr/showfile.c sbr/signals.c sbr/smatch.c \
 		      sbr/snprintb.c sbr/ssequal.c \
-		      sbr/strindex.c sbr/trimcpy.c sbr/uprf.c sbr/vfgets.c \
+		      sbr/strindex.c sbr/trimcpy.c sbr/unquote.c \
+		      sbr/uprf.c sbr/vfgets.c \
 		      sbr/fmt_def.c sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
 		      sbr/m_mktemp.c sbr/getansreadline.c sbr/vector.c \
 		      config/config.c config/version.c
