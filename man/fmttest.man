@@ -376,7 +376,7 @@ V_EQ	Set \fInum\fR to 1 if \fInum\fR equals value
 V_NE	Set \fInum\fR to 1 if \fInum\fR does not equal value
 V_GT	Set \fInum\fR to 1 if \fInum\fR is greater than value
 V_MATCH	Set \fInum\fR to 1 if \fIstr\fR contains string
-V_AMATCH Set \fInum\fR to 1 if \fIstr\fR starts with string
+V_AMATCH	Set \fInum\fR to 1 if \fIstr\fR starts with string
 .fi
 .PP
 The
