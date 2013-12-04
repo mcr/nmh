@@ -89,8 +89,7 @@ for quoted\-printable encoding.  The
 .B \-autoheaderencoding
 switch will instruct
 .B mhbuild
-to automatically pick the encoding algorithm based on the frequency of
-8\-bit characters.
+to automatically pick the algorithm that results in a shorter encoded string.
 .SS "Translating the Composition File"
 .B mhbuild
 is essentially a filter to aid in the composition of MIME
