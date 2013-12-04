@@ -35,7 +35,7 @@ part of a message is called the header, and the free-format portion is
 called the body.  The header must always exist, but the body is optional.
 These parts are separated by an empty line, i.e., two consecutive newline
 characters.  Within
-.B nmh ,
+.BR nmh ,
 the header and body may be separated by a line consisting of dashes:
 .PP
 .RS 5
