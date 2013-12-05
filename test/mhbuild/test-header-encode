@@ -16,6 +16,7 @@ fi
 
 setup_test
 testname="${MH_TEST_DIR}/$$"
+backupname="${MH_TEST_DIR}/,$$"
 
 #
 # We're going to hardcode UTF-8 for this test.
@@ -83,7 +84,7 @@ check "${testname}.basic.actual" "${testname}.basic.expected" 'keep first'
 
 run_test 'eval fmttest -outsize max -format "%(decode{subject})" -message -file "${testname}.basic.actual"' 'This is ä test'
 
-rm -f "${testname}.basic.actual"
+rm -f "${testname}.basic.actual" "${backupname}.basic.actual.orig"
 
 #
 # Have a subject that will pick base64 as the shorter encoding
@@ -113,7 +114,7 @@ check "${testname}.autopick.actual" "${testname}.autopick.expected" 'keep first'
 
 run_test 'eval fmttest -outsize max -format "%(decode{subject})" -message -file "${testname}.autopick.actual"' 'This is ä tëst©'
 
-rm -f "${testname}.basic.autopick"
+rm -f "${testname}.autopick.actual" "${backupname}.autopick.actual.orig"
 
 #
 # Tests using longer subject lines.
@@ -148,7 +149,7 @@ check "${testname}.longsubject1.actual" "${testname}.longsubject1.expected" 'kee
 
 run_test 'eval fmttest -outsize max -format "%(putlit(decode(trim{subject})))" -message -file "${testname}.longsubject1.actual"' "This is ä tëst of a rather long sübject line; will it overflow the line length?  I sure hope thät ='s and _'s are encoded properly.  Will they be?"
 
-rm -f "${testname}.longsubject1.actual"
+rm -f "${testname}.longsubject1.actual" "${backupname}.longsubject1.actual.orig"
 
 #
 # Test a longer line with base64 encoding
@@ -184,7 +185,7 @@ check "${testname}.longsubject2.actual" "${testname}.longsubject2.expected" 'kee
 
 run_test 'eval fmttest -outsize max -format "%(putlit(decode(trim{subject})))" -message -file "${testname}.longsubject2.actual"' "This is ä tëst øf ä räthër løng sübjëct line; will it øvërfløw the line length?  I sure hope thät ='s and \"'s are encoded properly.  Will they be?"
 
-rm -f "${testname}.longsubject2.actual"
+rm -f "${testname}.longsubject2.actual" "${backupname}.longsubject2.actual.orig"
 
 #
 # Another long test, but make sure multibyte characters are not split across
@@ -219,7 +220,7 @@ check "${testname}.longsubject3.actual" "${testname}.longsubject3.expected" 'kee
 
 run_test 'eval fmttest -outsize max -format "%(putlit(decode(trim{subject})))" -message -file "${testname}.longsubject3.actual"' "This is a test of a big UTF-8 multibyte character (😉); will this work properly, or will it get truncated? 😨! Hopefully not"
 
-rm -f "${testname}.longsubject3.actual"
+rm -f "${testname}.longsubject3.actual" "${backupname}.longsubject3.actual.orig"
 
 cat > "${testname}.longsubject4.actual" <<EOF
 From: Mr Foo Bar <foobar@example.com>
@@ -249,7 +250,7 @@ check "${testname}.longsubject4.actual" "${testname}.longsubject4.expected" 'kee
 
 run_test 'eval fmttest -outsize max -format "%(putlit(decode(trim{subject})))" -message -file "${testname}.longsubject4.actual"' "This is ä tëst øf å big ÜTF-8 (😉) mültibyte character; will this wørk prøperly, ør will it get trµnᴬted? 😨! Hopefully nøt"
 
-rm -f "${testname}.longsubject4.actual"
+rm -f "${testname}.longsubject4.actual" "${backupname}.longsubject4.actual.orig"
 
 #
 # Test out some basic email address encoding
@@ -280,7 +281,7 @@ check "${testname}.basicemail1.actual" "${testname}.basicemail1.expected" 'keep 
 run_test 'eval fmttest -outsize max -format "%(decode{from})" -message -file "${testname}.basicemail1.actual"' "Mr Foo Bär <foobar@example.com>"
 run_test 'eval fmttest -outsize max -format "%(decode(friendly{from}))" -message -file "${testname}.basicemail1.actual"' "Mr Foo Bär"
 
-rm -f "${testname}.basicemail1.actual"
+rm -f "${testname}.basicemail1.actual" "${backupname}.basicemail1.actual.orig"
 
 cat > "${testname}.basicemail2.actual" <<EOF
 From: foobar@example.com (Mr Foo Bär)
@@ -307,7 +308,7 @@ check "${testname}.basicemail2.actual" "${testname}.basicemail2.expected" 'keep 
 run_test 'eval fmttest -outsize max -format "%(decode{from})" -message -file "${testname}.basicemail2.actual"' "foobar@example.com (Mr Foo Bär)"
 run_test 'eval fmttest -outsize max -format "%(decode(friendly{from}))" -message -file "${testname}.basicemail2.actual"' "Mr Foo Bär"
 
-rm -f "${testname}.basicemail2.actual"
+rm -f "${testname}.basicemail2.actual" "${backupname}.basicemail2.actual.orig"
 
 #
 # Make sure the base64 encoder is tested as well
@@ -338,7 +339,7 @@ check "${testname}.basicemail3.actual" "${testname}.basicemail3.expected" 'keep 
 run_test 'eval fmttest -outsize max -format "%(decode{from})" -message -file "${testname}.basicemail3.actual"' "Mr Føø Bär <foobar@example.com>"
 run_test 'eval fmttest -outsize max -format "%(decode(friendly{from}))" -message -file "${testname}.basicemail3.actual"' "Mr Føø Bär"
 
-rm -f "${testname}.basicemail3.actual"
+rm -f "${testname}.basicemail3.actual" "${backupname}.basicemail3.actual.orig"
 
 cat > "${testname}.basicemail4.actual" <<EOF
 From: foobar@example.com (Mr Føø Bär)
@@ -365,7 +366,7 @@ check "${testname}.basicemail4.actual" "${testname}.basicemail4.expected" 'keep 
 run_test 'eval fmttest -outsize max -format "%(decode{from})" -message -file "${testname}.basicemail4.actual"' "foobar@example.com (Mr Føø Bär)"
 run_test 'eval fmttest -outsize max -format "%(decode(friendly{from}))" -message -file "${testname}.basicemail4.actual"' "Mr Føø Bär"
 
-rm -f "${testname}.basicemail4.actual"
+rm -f "${testname}.basicemail4.actual" "${backupname}.basicemail4.actual.orig"
 
 #
 # A more complicated header; it includes groups, addresses that require
@@ -408,6 +409,6 @@ check "${testname}.complexemail1.actual" "${testname}.complexemail1.expected" 'k
 run_test 'eval fmttest -outsize max -format "%(decode{to})" -message -file "${testname}.complexemail1.actual"' "\"Mr F. One\" <foo1@example.com>, Mr F. Twø <foo2@example.com>, foo list: Føø Thrëë <foo3@example.com>, Foo Four <foo4@example.com>, Foo Fivë <foo5@example.com>;, Føø Sîx <foo6@example.com>, \"Mr F. Seven\" <foo7@example.com>"
 run_test 'eval fmttest -outsize max -format "%(decode{cc})" -message -file "${testname}.complexemail1.actual"' "The Distingµishëd F. Sëvën <foo7@example.com>"
 
-rm -f "${testname}.complexemail1.actual"
+rm -f "${testname}.complexemail1.actual" "${backupname}.complexemail1.actual.orig"
 
 exit ${failed:-0}
