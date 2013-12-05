@@ -14,15 +14,6 @@ fi
 
 . "${srcdir}/test/post/test-post-common.sh"
 
-#### w3m needs $HOME to be writeable.
-if [ -w "$HOME" ]; then
-  :
-else
-  #### $HOME isn't writeable, so use a directory that should be.
-  HOME="$MHTMPDIR"
-  export HOME
-fi
-
 expected="$MH_TEST_DIR/test-mhfixmsg$$.expected"
 expected_err="$MH_TEST_DIR/test-mhfixmsg$$.expected_err"
 actual="$MH_TEST_DIR/test-mhfixmsg$$.actual"
@@ -32,6 +23,16 @@ set +e
 if grep mhfixmsg-format-text/html "${MH_TEST_DIR}/Mail/mhn.defaults" \
   >/dev/null; then
   can_reformat_texthtml=1
+  if grep 'mhfixmsg-format-text/html.*w3m' "${MH_TEST_DIR}/Mail/mhn.defaults" \
+    >/dev/null; then
+    #### w3m uses $HOME/.w3m/, and creates it if it doesn't exist.  To
+    #### support testing with non-writeable $HOME, and to not leave
+    #### relics from this test if it is writeable but doesn't already
+    #### have a .w3m, and to not depend on whatever is in that if it
+    #### does already exist, overwrite $HOME if using w3m.
+    HOME="$MHTMPDIR"
+    export HOME
+  fi
 else
   echo "$0: skipping -reformat check because \
     mhfixmsg-format-text/html is not available"
