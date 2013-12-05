@@ -104,6 +104,12 @@ akval (struct aka *ak, char *s)
     if (!s)
 	return s;			/* XXX */
 
+    /* It'd be tempting to check for a trailing semicolon and remove
+       it.  But that would break the EXMH alias parser on what would
+       then be valid expressions:
+       http://lists.gnu.org/archive/html/nmh-workers/2012-10/msg00039.html
+     */
+
     for (; ak; ak = ak->ak_next) {
 	if (aleq (s, ak->ak_name)) {
 	    return akresult (ak);
