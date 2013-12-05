@@ -210,4 +210,158 @@ mhlist -nochangecur 1 >/dev/null
 
 run_test 'mark -sequence cur -list' 'cur: 11'
 
+# check MIME parser and m_getfld
+cat > $expected <<EOF
+ msg part  type/subtype              size description
+  12       multipart/related          204
+     1     multipart/alternative       74
+     1.1   text/plain                  17
+     2     text/plain                  17
+EOF
+
+msgfile=`mhpath new`
+cat > $msgfile <<EOF
+To: recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    recipient@example.com, recipient@example.com, recipient@example.com,
+    re@example.com
+From: sender@example.com
+Subject: very long header
+Date: Wed, 4 Dec 2013 21:12:00 -0500
+MIME-Version: 1.0
+Content-Type: multipart/related; boundary="1"
+
+--1
+Content-Type: multipart/alternative; boundary="2"
+
+--2
+Content-Type: text/plain; charset="us-ascii"
+
+This is part 1.
+
+
+--2--
+
+--1
+Content-Type: text/plain; charset="us-ascii"
+
+This is part 2.
+
+
+--1--
+EOF
+
+mhlist last > $actual 2>&1
+check $expected $actual
+
+
 exit $failed
