@@ -31,7 +31,6 @@ Usage: ali [switches] aliases ...
   switches are:
   -alias aliasfile
   -[no]list
-  -[no]normalize
   -[no]user
   -version
   -help

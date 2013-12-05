@@ -126,7 +126,7 @@ akval (struct aka *ak, char *s)
 	    if (name) {
 		/* s is of the form "Blind list: address".  If address
 		   is an alias, expand it. */
-		struct mailname *mp = getm (name, NULL, 0, AD_NAME, NULL);
+		struct mailname *mp = getm (name, NULL, 0, NULL, 0);
 
 		if (mp	&&  mp->m_ingrp) {
 		    char *gname = add (mp->m_gname, NULL);

@@ -22,8 +22,6 @@
 #define AP_SWITCHES \
     X("form formatfile", 0, FORMSW) \
     X("format string", 5, FMTSW) \
-    X("normalize", 0, NORMSW) \
-    X("nonormalize", 0, NNORMSW) \
     X("width columns", 0, WIDTHSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
@@ -43,13 +41,13 @@ static int dat[5];
 /*
  * static prototypes
  */
-static int process (char *, int, int);
+static int process (char *, int);
 
 
 int
 main (int argc, char **argv)
 {
-    int addrp = 0, normalize = AD_HOST;
+    int addrp = 0;
     int width = 0, status = 0;
     char *cp, *form = NULL, *format = NULL, *nfs;
     char buf[BUFSIZ], **argp;
@@ -102,13 +100,6 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    width = atoi (cp);
 		    continue;
-
-		case NORMSW: 
-		    normalize = AD_HOST;
-		    continue;
-		case NNORMSW: 
-		    normalize = AD_NHST;
-		    continue;
 	    }
 	}
 	if (addrp > NADDRS)
@@ -131,7 +122,6 @@ main (int argc, char **argv)
     }
     if (width > WBUFSIZ)
 	width = WBUFSIZ;
-    fmt_norm = normalize;
     fmt_compile (nfs, &fmt, 1);
 
     dat[0] = 0;
@@ -141,7 +131,7 @@ main (int argc, char **argv)
     dat[4] = 0;
 
     for (addrp = 0; addrs[addrp]; addrp++)
-	status += process (addrs[addrp], width, normalize);
+	status += process (addrs[addrp], width);
 
     fmt_free (fmt, 1);
     done (status);
@@ -156,7 +146,7 @@ struct pqpair {
 
 
 static int
-process (char *arg, int length, int norm)
+process (char *arg, int length)
 {
     int	status = 0;
     register char *cp;
@@ -170,7 +160,7 @@ process (char *arg, int length, int norm)
     while ((cp = getname (arg))) {
 	if ((p = (struct pqpair *) calloc ((size_t) 1, sizeof(*p))) == NULL)
 	    adios (NULL, "unable to allocate pqpair memory");
-	if ((mp = getm (cp, NULL, 0, norm, error)) == NULL) {
+	if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
 	    p->pq_text = getcpy (cp);
 	    p->pq_error = getcpy (error);
 	    status++;

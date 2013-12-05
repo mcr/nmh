@@ -104,35 +104,32 @@ getname (const char *addrs)
 
 
 struct mailname *
-getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
+getm (char *str, char *dfhost, int dftype, char *eresult, size_t eresultsize)
 {
     char *pp;
     struct mailname *mp;
 
     if (err[0]) {
-	if (eresult)
-	    strcpy (eresult, err);
-	else
-	    if (wanthost == AD_HOST)
-		admonish (NULL, "bad address '%s' - %s", str, err);
+	if (eresult) {
+	    strncpy (eresult, err, eresultsize);
+	    eresult[eresultsize - 1] = '\0';
+	}
 	return NULL;
     }
     if (pers == NULL
 	    && mbox == NULL && host == NULL && route == NULL
 	    && grp == NULL) {
-	if (eresult)
-	    strcpy (eresult, "null address");
-	else
-	    if (wanthost == AD_HOST)
-		admonish (NULL, "null address '%s'", str);
+	if (eresult) {
+	    strncpy (eresult, "null address", eresultsize);
+	    eresult[eresultsize - 1] = '\0';
+	}
 	return NULL;
     }
     if (mbox == NULL && grp == NULL) {
-	if (eresult)
-	    strcpy (eresult, "no mailbox in address");
-	else
-	    if (wanthost == AD_HOST)
-		admonish (NULL, "no mailbox in address '%s'", str);
+	if (eresult) {
+	    strncpy (eresult, "no mailbox in address", eresultsize);
+	    eresult[eresultsize - 1] = '\0';
+	}
 	return NULL;
     }
 
@@ -143,11 +140,11 @@ getm (char *str, char *dfhost, int dftype, int wanthost, char *eresult)
 
     mp = (struct mailname *) calloc ((size_t) 1, sizeof(*mp));
     if (mp == NULL) {
-	if (eresult)
-	   strcpy (eresult, "insufficient memory to represent address");
-	else
-	    if (wanthost == AD_HOST)
-		adios (NULL, "insufficient memory to represent address");
+	if (eresult) {
+	    strncpy (eresult, "insufficient memory to represent address",
+	   	     eresultsize);
+	    eresult[eresultsize - 1] = '\0';
+	}
 	return NULL;
     }
 
@@ -317,7 +314,7 @@ ismymbox (struct mailname *np)
 		return 0;
 	    }
 
-	    if ((mq.m_next = getm (cp, NULL, 0, AD_NAME, NULL)) == NULL) {
+	    if ((mq.m_next = getm (cp, NULL, 0, NULL, 0)) == NULL) {
 	    	admonish (NULL, "invalid entry in local-mailbox: %s", cp);
 		return 0;
 	    }
@@ -337,7 +334,7 @@ ismymbox (struct mailname *np)
 	    mp = mq.m_next ? mq.m_next : &mq;
 	    oops = 0;
 	    while ((cp = getname (am))) {
-		if ((mp->m_next = getm (cp, NULL, 0, AD_NAME, NULL)) == NULL) {
+		if ((mp->m_next = getm (cp, NULL, 0, NULL, 0)) == NULL) {
 		    admonish (NULL, "illegal address: %s", cp);
 		    oops++;
 		} else {

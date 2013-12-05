@@ -669,7 +669,7 @@ putfmt (char *name, char *str, FILE *out)
 {
     int count, grp, i, keep;
     char *cp, *pp, *qp;
-    char namep[BUFSIZ];
+    char namep[BUFSIZ], error[BUFSIZ];
     struct mailname *mp = NULL, *np = NULL;
     struct headers *hdr;
 
@@ -732,18 +732,20 @@ putfmt (char *name, char *str, FILE *out)
 
     tmpaddrs.m_next = NULL;
     for (count = 0; (cp = getname (str)); count++)
-	if ((mp = getm (cp, NULL, 0, AD_HOST, NULL))) {
+	if ((mp = getm (cp, NULL, 0, error, sizeof(error)))) {
 	    if (tmpaddrs.m_next)
 		np->m_next = mp;
 	    else
 		tmpaddrs.m_next = mp;
 	    np = mp;
 	}
-	else
+	else {
+	    admonish(cp, "%s", error);
 	    if (hdr->flags & HTRY)
 		badadr++;
 	    else
 		badmsg++;
+	}
 
     if (count < 1) {
 	if (hdr->flags & HNIL)
@@ -784,7 +786,8 @@ putfmt (char *name, char *str, FILE *out)
 	    if (np->m_gname)
 		putgrp (namep, np->m_gname, out, hdr->flags);
 	    while ((cp = getname (pp))) {
-		if (!(mp = getm (cp, NULL, 0, AD_HOST, NULL))) {
+		if (!(mp = getm (cp, NULL, 0, error, sizeof(error)))) {
+		    admonish(cp, "%s", error);
 		    badadr++;
 		    continue;
 		}

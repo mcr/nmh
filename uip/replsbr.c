@@ -317,7 +317,7 @@ replformataddr (char *orig, char *str)
 
     /* concatenate all the new addresses onto 'buf' */
     for (isgroup = 0; (cp = getname (fixed_str)); ) {
-	if ((mp = getm (cp, dfhost, dftype, AD_NAME, error)) == NULL) {
+	if ((mp = getm (cp, dfhost, dftype, error, sizeof(error))) == NULL) {
 	    snprintf (baddr, sizeof(baddr), "\t%s -- %s\n", cp, error);
 	    badaddrs = add (baddr, badaddrs);
 	    continue;
@@ -523,7 +523,8 @@ fix_addresses (char *str) {
             adr_nodep->next = NULL;
 
             /* With AD_NAME, errors are not reported to user. */
-            if ((mp = getm (cp, dfhost, dftype, AD_NAME, error)) == NULL) {
+            if ((mp = getm (cp, dfhost, dftype, error,
+	    		    sizeof(error))) == NULL) {
                 const char *no_at_sign = "no at-sign after local-part";
 
                 adr_nodep->escape_local_part =
@@ -562,7 +563,7 @@ fix_addresses (char *str) {
                 new_adr = concat (display_name, " ", angle_addr, NULL);
                 adr = getname (new_adr);
                 if (adr != NULL  &&
-                    (mp = getm (adr, dfhost, dftype, AD_NAME, NULL)) != NULL) {
+                    (mp = getm (adr, dfhost, dftype, NULL, 0)) != NULL) {
                     fixed_address = 1;
                     mnfree (mp);
                 }

@@ -25,7 +25,6 @@
 #  include <wchar.h>
 #endif
 
-extern int fmt_norm;		/* defined in sbr/fmt_def.c = AD_NAME */
 struct mailname fmt_mnull = { NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0,
 			      NULL, NULL };
 
@@ -987,7 +986,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    if (comp->c_mn != &fmt_mnull)
 		mnfree (comp->c_mn);
 	    if ((sp = comp->c_text) && (sp = getname(sp)) &&
-		(mn = getm (sp, NULL, 0, fmt_norm, NULL))) {
+		(mn = getm (sp, NULL, 0, NULL, 0))) {
 		comp->c_mn = mn;
 		while (getname(""))
 		    ;
@@ -1009,7 +1008,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    if (comp->c_mn != &fmt_mnull)
 		mnfree (comp->c_mn);
 	    if ((sp = comp->c_text) && (sp = getname(sp)) &&
-		(mn = getm (sp, NULL, 0, AD_NAME, NULL))) {
+		(mn = getm (sp, NULL, 0, NULL, 0))) {
 		comp->c_mn = mn;
 		if (ismymbox(mn))
 		    comp->c_flags |= CF_TRUE;
@@ -1017,7 +1016,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		    comp->c_flags &= ~CF_TRUE;
 		while ((sp = getname(sp)))
 		    if ((comp->c_flags & CF_TRUE) == 0 &&
-			(mn = getm (sp, NULL, 0, AD_NAME, NULL)))
+			(mn = getm (sp, NULL, 0, NULL, 0)))
 			if (ismymbox(mn))
 			    comp->c_flags |= CF_TRUE;
 	    } else {

@@ -12,7 +12,6 @@ ap \- parse addresses RFC 822-style
 .IR formatfile ]
 .RB [ \-format
 .IR string ]
-.RB [ \-normalize " | " \-nonormalize ]
 .RB [ \-width
 .IR columns ]
 .RB [ \-version ]
@@ -60,13 +59,6 @@ error	string	A diagnostic if the parse failed
 .RE
 .fi
 .PP
-If the
-.B \-normalize
-switch is given,
-.B ap
-will try to track down
-the official hostname of the address.
-.PP
 Here is the default format string used by
 .BR ap :
 .PP
@@ -99,8 +91,6 @@ Standard for the Format of ARPA Internet Text Messages
 .TP 20
 -format
 As described above.
-.TP
-\-normalize
 .TP
 \-width
 The width of the terminal.

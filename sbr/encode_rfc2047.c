@@ -550,6 +550,7 @@ field_encode_address(const char *name, char **value, int encoding,
     char *tmpbuf = NULL;
     size_t tmpbufsize = 0;
     struct mailname *mn;
+    char errbuf[BUFSIZ];
 
     /*
      * Because these are addresses, we need to handle them individually.
@@ -566,7 +567,8 @@ field_encode_address(const char *name, char **value, int encoding,
     output = add(" ", output);
 
     for (groupflag = 0; (mp = getname(*value)); ) {
-    	if ((mn = getm(mp, NULL, 0, AD_HOST, NULL)) == NULL) {
+    	if ((mn = getm(mp, NULL, 0, errbuf, sizeof(errbuf))) == NULL) {
+	    advise(mp, "%s", errbuf);
 	    errflag++;
 	    continue;
 	}

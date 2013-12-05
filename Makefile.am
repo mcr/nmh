@@ -551,7 +551,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/snprintb.c sbr/ssequal.c \
 		      sbr/strindex.c sbr/trimcpy.c sbr/unquote.c \
 		      sbr/uprf.c sbr/vfgets.c \
-		      sbr/fmt_def.c sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
+		      sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
 		      sbr/m_mktemp.c sbr/getansreadline.c sbr/vector.c \
 		      config/config.c config/version.c
 

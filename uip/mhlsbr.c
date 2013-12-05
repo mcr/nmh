@@ -1180,7 +1180,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	if ((p = (struct pqpair *) calloc ((size_t) 1, sizeof(*p))) == NULL)
 	    adios (NULL, "unable to allocate pqpair memory");
 
-	if ((mp = getm (cp, NULL, 0, AD_NAME, error)) == NULL) {
+	if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
 	    p->pq_text = getcpy (cp);
 	    p->pq_error = getcpy (error);
 	} else {

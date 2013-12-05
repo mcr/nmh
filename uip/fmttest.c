@@ -28,8 +28,6 @@
     X("nodupaddrs", 0, NDUPADDRSW) \
     X("ccme", 0, CCMESW) \
     X("noccme", 0, NCCMESW) \
-    X("normalize", 0, NORMSW) \
-    X("nonormalize", 0, NNORMSW) \
     X("outsize size-in-characters", 0, OUTSIZESW) \
     X("bufsize size-in-bytes", 0, BUFSZSW) \
     X("width column-width", 0, WIDTHSW) \
@@ -88,7 +86,7 @@ static char *c_flagsstr(int);
 static void litputs(char *);
 static void litputc(char);
 static void process_addresses(struct format *, struct msgs_array *, char *,
-			      int, int, int *, int, struct fmt_callbacks *);
+			      int, int, int *, struct fmt_callbacks *);
 static void process_raw(struct format *, struct msgs_array *, char *,
 			int, int, int *, struct fmt_callbacks *);
 static void process_messages(struct format *, struct msgs_array *,
@@ -119,7 +117,6 @@ main (int argc, char **argv)
     int dump = 0, i;
     int outputsize = 0, bufsize = 0, dupaddrs = 1, trace = 0, files = 0;
     int colwidth = -1, msgnum = -1, msgcur = -1, msgsize = -1, msgunseen = -1;
-    int normalize = AD_HOST;
     enum mode_t mode = MESSAGE;
     int dat[5];
     struct fmt_callbacks cb, *cbp = NULL;
@@ -194,13 +191,6 @@ main (int argc, char **argv)
 		    if (!(format = *argp++) || *format == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    form = NULL;
-		    continue;
-
-		case NORMSW:
-		    normalize = AD_HOST;
-		    continue;
-		case NNORMSW:
-		    normalize = AD_NHST;
 		    continue;
 
 		case TRACESW:
@@ -403,9 +393,8 @@ main (int argc, char **argv)
 	}
 
 	if (mode == ADDRESS) {
-    	    fmt_norm = normalize;
 	    process_addresses(fmt, &msgs, buffer, bufsize, outputsize,
-	    		      dat, normalize, cbp);
+	    		      dat, cbp);
 	} else /* Fall-through for RAW or DATE */
 	    process_raw(fmt, &msgs, buffer, bufsize, outputsize, dat, cbp);
     }
@@ -428,8 +417,7 @@ struct pqpair {
 
 static void
 process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
-		  int bufsize, int outwidth, int *dat, int norm,
-		  struct fmt_callbacks *cb)
+		  int bufsize, int outwidth, int *dat, struct fmt_callbacks *cb)
 {
     int i;
     char *cp, error[BUFSIZ];
@@ -452,7 +440,7 @@ process_addresses(struct format *fmt, struct msgs_array *addrs, char *buffer,
 	while ((cp = getname(addrs->msgs[i]))) {
 	    if ((p = (struct pqpair *) calloc ((size_t) 1, sizeof(*p))) == NULL)
 	    	adios (NULL, "unable to allocate pqpair memory");
-	    if ((mp = getm(cp, NULL, 0, norm, error)) == NULL) {
+	    if ((mp = getm(cp, NULL, 0, error, sizeof(error))) == NULL) {
 	    	p->pq_text = getcpy(cp);
 		p->pq_error = getcpy(error);
 	    } else {
@@ -1280,7 +1268,7 @@ test_formataddr (char *orig, char *str)
 
     /* concatenate all the new addresses onto 'buf' */
     for (isgroup = 0; (cp = getname (str)); ) {
-	if ((mp = getm (cp, NULL, 0, AD_NAME, error)) == NULL) {
+	if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
 	    fprintf(stderr, "bad address \"%s\" -- %s\n", cp, error);
 	    continue;
 	}

@@ -3,10 +3,6 @@
  * addrsbr.h -- definitions for the address parsing system
  */
 
-#define	AD_HOST	1		/* getm(): lookup official hostname    */
-#define	AD_NHST	0		/* getm(): do not lookup official name */
-#define	AD_NAME	AD_NHST		/* AD_HOST is TOO slow                 */
-
 #define	UUCPHOST	(-1)
 #define	LOCALHOST	0
 #define	NETHOST		1
@@ -93,21 +89,17 @@ char *auxformat(struct mailname *mp, int extras);
  *		  localhost().
  * dftype	- If dfhost is given, use dftype as the email address type
  *		  if no host is in the email address.
- * wanthost	- One of AD_HOST or AD_NHST.  If AD_HOST, look up the
- *		  "official name" of the host.  Well, that's what the
- *		  documentation says, at least ... support for that
- *		  functionality was removed when hostable support was
- *		  removed and the address parser was converted by default
- *		  to always being in DUMB mode.  So nowadays this only
- *		  affects where error messages are put if there is no
- *		  host part (set it to AD_HOST if you want error messages
- *		  to appear on standard error).
- * eresult	- Any error string returned by the address parser.  String
- *		  must contain sufficient room for the error message.
- *		  (BUFSIZ is used in general by the code).  Can be NULL.
+ * eresult	- A buffer containing an error message returned by the
+ *		  address parser.  May be NULL.
+ * eresultsize	- The size of the buffer passed in eresult.
  *
  * A pointer to an allocated struct mailname corresponding to the email
  * address is returned.
+ *
+ * This function used to have an argument called 'wanthost' which would
+ * control whether or not it would canonicalize hostnames in email
+ * addresses.  This functionalit was removed for nmh 1.5, and eventually
+ * all of the code that used this argument was garbage collected.
  */
-struct mailname *getm(char *str, char *dfhost, int dftype,
-		      int wanthost, char *eresult);
+struct mailname *getm(char *str, char *dfhost, int dftype, char *eresult,
+		      size_t eresultsize);

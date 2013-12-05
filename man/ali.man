@@ -11,7 +11,6 @@ ali \- list mail aliases
 .RB [ \-alias
 .IR aliasfile ]
 .RB [ \-list " | " \-nolist ]
-.RB [ \-normalize " | " \-nonormalize ]
 .RB [ \-user " | " \-nouser ]
 .RB [ \-version ]
 .RB [ \-help ] 
@@ -42,12 +41,7 @@ an inverted fashion: instead of listing the addresses that each given
 alias expands to,
 .B ali
 will list the aliases that expand to each
-given address.  If the
-.B \-normalize
-switch is given,
-.B ali
-will
-try to track down the official hostname of the address.
+given address.
 .PP
 The files specified by the profile entry
 .RI \*(lq Aliasfile \*(rq
@@ -93,8 +87,6 @@ aliasfile
 %etcdir%/MailAliases
 .TP
 \-nolist
-.TP
-\-nonormalize
 .TP
 \-nouser
 .PD

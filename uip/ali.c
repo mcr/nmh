@@ -18,8 +18,6 @@
     X("noalias", -7, NALIASW) \
     X("list", 0, LISTSW) \
     X("nolist", 0, NLISTSW) \
-    X("normalize", 0, NORMSW) \
-    X("nonormalize", 0, NNORMSW) \
     X("user", 0, USERSW) \
     X("nouser", 0, NUSERSW) \
     X("version", 0, VERSIONSW) \
@@ -41,14 +39,14 @@ extern struct aka *akahead;
  * prototypes
  */
 static void print_aka (char *, int, int);
-static void print_usr (char *, int, int);
+static void print_usr (char *, int);
 
 
 int
 main (int argc, char **argv)
 {
     int i, vecp = 0, inverted = 0, list = 0;
-    int noalias = 0, normalize = AD_NHST;
+    int noalias = 0;
     char *cp, **ap, **argp, buf[BUFSIZ];
     /* Really only need to allocate for argc-1, but must allocate at least 1,
        so go ahead and allocate for argc char pointers. */
@@ -102,13 +100,6 @@ main (int argc, char **argv)
 		    list = 0;
 		    continue;
 
-		case NORMSW: 
-		    normalize = AD_HOST;
-		    continue;
-		case NNORMSW: 
-		    normalize = AD_NHST;
-		    continue;
-
 		case USERSW: 
 		    inverted++;
 		    continue;
@@ -150,7 +141,7 @@ main (int argc, char **argv)
 		   invo_name);
 
 	for (i = 0; i < vecp; i++)
-	    print_usr (vec[i], list, normalize);
+	    print_usr (vec[i], list);
     } else {
 	if (vecp) {
 	    /* print specified aliases */
@@ -212,7 +203,7 @@ print_aka (char *p, int list, int margin)
 }
 
 static void
-print_usr (char *s, int list, int norm)
+print_usr (char *s, int list)
 {
     register char *cp, *pp, *vp;
     register struct aka *ak;
@@ -220,7 +211,7 @@ print_usr (char *s, int list, int norm)
 
     if ((pp = getname (s)) == NULL)
 	adios (NULL, "no address in \"%s\"", s);
-    if ((mp = getm (pp, NULL, 0, norm, NULL)) == NULL)
+    if ((mp = getm (pp, NULL, 0, NULL, 0)) == NULL)
 	adios (NULL, "bad address \"%s\"", s);
     while (getname (""))
 	continue;
@@ -229,7 +220,7 @@ print_usr (char *s, int list, int norm)
     for (ak = akahead; ak; ak = ak->ak_next) {
 	pp = akresult (ak);
 	while ((cp = getname (pp))) {
-	    if ((np = getm (cp, NULL, 0, norm, NULL)) == NULL)
+	    if ((np = getm (cp, NULL, 0, NULL, 0)) == NULL)
 		continue;
 	    if (!strcasecmp (mp->m_host ? mp->m_host : "",
 			     np->m_host ? np->m_host : "")  &&

@@ -49,8 +49,6 @@ struct comp {
 
 #define CF_BITS       "\020\01TRUE\02PARSED\03CF_DATEFAB\04TRIMMED"
 
-extern int fmt_norm;
-
 /*
  * This structure defines one formatting instruction.
  */

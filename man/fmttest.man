@@ -20,7 +20,6 @@ language
 .IR component-text ]
 .RB [ \-dupaddrs " | " \-nodupaddrs ]
 .RB [ \-ccme " | " \-noccme ]
-.RB [ \-normalize " | " \-nonormalize ]
 .RB [ \-outsize
 .IR size-in-characters ]
 .RB [ \-bufsize
@@ -205,15 +204,6 @@ switch to
 and only applies if
 .B \-nodupaddrs
 is in effect.
-.PP
-The
-.B \-normalize
-and
-.B \-nonormalize
-switches control whether or not email addresses are normalized by the
-address parsing routines.  This is only functional when in address
-mode and is designed to replicate the switch of the same name to
-.IR ap (8).
 .PP
 The
 .B \-outsize
