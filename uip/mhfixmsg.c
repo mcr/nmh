@@ -1885,7 +1885,8 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
                                      min (bytes_to_read, sizeof src_buffer),
                                      *fp)) > 0) {
                 char dest_buffer[BUFSIZ];
-                ICONV_CONST char *ib = src_buffer, *ob = dest_buffer;
+                ICONV_CONST char *ib = src_buffer;
+                char *ob = dest_buffer;
                 size_t outbytes = sizeof dest_buffer;
                 size_t outbytes_before = outbytes;
 
