@@ -114,6 +114,10 @@ esac
 
 # check -nosend
 # Not supported by compiled mhmail.
+#### TEMPORARY hack to diagnose failure on Solaris.
+echo before
+sh -x mhmail -nosend recipient@example.com -from sender1@localhost -body '' 2>&1
+echo after
 mhmail -nosend recipient@example.com -from sender1@localhost \
   -server 127.0.0.1 -port $localport -body '' >"$actual" 2>"$actual_err"
 
