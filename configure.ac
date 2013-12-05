@@ -93,8 +93,7 @@ dnl ------------------
 dnl We want these before the checks,
 dnl so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS= auto_cflags=1
-dnl TEMPORARILY ENABLE DEBUG
-if test x"$enable_debug" = x""; then
+if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
@@ -144,8 +143,7 @@ if test "$nmh_cv_has_wextra" = "yes"; then
 fi
 
 if test -n "$auto_cflags"; then
-  dnl TEMPORARILY ENABLE DEBUG
-  if test x"$enable_debug" = x""; then
+  if test x"$enable_debug" = x"yes"; then
     if test -n "$GCC"; then
       test -z "$CFLAGS" && CFLAGS="$nmh_gcc_warnflags -g" || CFLAGS="$CFLAGS $nmh_gcc_warnflags -g"
     else
@@ -665,6 +663,3 @@ dnl ---------------
 AC_CONFIG_FILES([Makefile test/common.sh])
 AC_CONFIG_FILES([uip/spost], [chmod +x uip/spost])
 AC_OUTPUT
-
-dnl TEMPORARY
-cat /usr/include/iconv.h
