@@ -14,6 +14,14 @@ fi
 
 . "${srcdir}/test/post/test-post-common.sh"
 
+#### w3m needs $HOME to be writeable.
+if [ -w "$HOME" ]; then
+  :
+else
+  #### $HOME isn't writeable, so use a directory that should be.
+  HOME="$MHTMPDIR"
+  export HOME
+fi
 
 expected="$MH_TEST_DIR/test-mhfixmsg$$.expected"
 expected_err="$MH_TEST_DIR/test-mhfixmsg$$.expected_err"
