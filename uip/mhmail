@@ -53,7 +53,7 @@ nmhbindir=`cd "$bindir" && pwd`
 if printf 'OK\n' | tail -n 1 2>&1 | grep OK >/dev/null; then
     tail='tail -n'
 else
-    tail=tail
+    tail='tail -'
 fi
 
 
@@ -261,12 +261,12 @@ if [ "$body"x = x ]; then
   fi
 
   #### Add trailing newline to body if it doesn't have one.
-  if [ `tail -n 1 "$message_file" | wc -l` -ne 1 ]; then
+  if [ `${tail}1 "$message_file" | wc -l` -ne 1 ]; then
     printf '\n' >>"$message_file" || exit 2
   fi
 else
   #### Add trailing newline to body if it doesn't have one.
-  [ `printf %s "$body" | tail -n 1 | wc -l` -ne 1 ]  &&  body="$body
+  [ `printf %s "$body" | ${tail}1 | wc -l` -ne 1 ]  &&  body="$body
 "
 
   if [ "$tmpfileresent" ]; then
