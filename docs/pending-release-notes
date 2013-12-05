@@ -98,6 +98,8 @@ OBSOLETE FEATURES
   if none is configured is "vi".
 - The support for the undocumented NOPUBLICSEQ preprocessor definition
   to disable public sequence support has been removed.
+- Support for the -normalize and -nonormalize switches to the ali(1) and
+  ap(8) commands has been removed.
 
 -------------------
 DEPRECATED FEATURES
