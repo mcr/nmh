@@ -114,12 +114,12 @@ esac
 
 # check -nosend
 # Not supported by compiled mhmail.
-mhmail -nosend recipient@example.com -from sender@localhost \
+mhmail -nosend recipient@example.com -from sender1@localhost \
   -server 127.0.0.1 -port $localport -body '' >"$actual" 2>"$actual_err"
 
 cat > "$expected" <<EOF
 To: recipient@example.com
-From: sender@localhost
+From: sender1@localhost
 
 
 EOF
@@ -136,11 +136,11 @@ check "$expected_err" "$actual_err"
 # Not supported by compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender2@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender2@localhost
 Date:
 
 message
@@ -148,7 +148,7 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost -nosend -send" '|' message
+test_mhmail "$expected" "-from sender2@localhost -nosend -send" '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -156,11 +156,11 @@ test_mhmail "$expected" "-from sender@localhost -nosend -send" '|' message
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender3@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender3@localhost
 Date:
 
 message
@@ -168,7 +168,7 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" '|' message
+test_mhmail "$expected" "-from sender3@localhost" '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -176,11 +176,11 @@ test_mhmail "$expected" "-from sender@localhost" '|' message
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender4@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender4@localhost
 Date:
 
 body
@@ -188,7 +188,7 @@ body
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost" -b body
+test_mhmail "$expected" "-from sender4@localhost" -b body
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -196,13 +196,13 @@ test_mhmail "$expected" "-from sender@localhost" -b body
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender5@localhost>
 RCPT TO:<recipient@example.com>
 RCPT TO:<recipient2@example.com>
 DATA
 To: recipient@example.com
 Cc: recipient2@example.com
-From: sender@localhost
+From: sender5@localhost
 Date:
 
 message
@@ -211,7 +211,7 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-    "-from sender@localhost -cc recipient2@example.com" '|' message
+    "-from sender5@localhost -cc recipient2@example.com" '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -219,7 +219,7 @@ test_mhmail "$expected" \
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender6@localhost>
 RCPT TO:<recipient@example.com>
 RCPT TO:<recipient2@example.com>
 RCPT TO:<recipient3@example.com>
@@ -228,7 +228,7 @@ DATA
 To: recipient@example.com
 Cc: recipient2@example.com, recipient3@example.com,
     recipient4@example.com
-From: sender@localhost
+From: sender6@localhost
 Date:
 
 message
@@ -237,8 +237,8 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-    '-from sender@localhost -cc recipient2@example.com recipient3@example.com '\
-'recipient4@example.com' '|' message
+    '-from sender6@localhost -cc recipient2@example.com '\
+'recipient3@example.com recipient4@example.com' '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -246,12 +246,12 @@ test_mhmail "$expected" \
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender7@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
 Subject: Test
-From: sender@localhost
+From: sender7@localhost
 Date:
 
 message
@@ -259,7 +259,7 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost -subject Test' '|' message
+test_mhmail "$expected" '-from sender7@localhost -subject Test' '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -272,11 +272,11 @@ printf 'send: -msgid\n' >> $MH
 
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender8@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender8@localhost
 Date:
 Message-ID:
 
@@ -285,7 +285,7 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost -profile' '|' message
+test_mhmail "$expected" '-from sender8@localhost -profile' '|' message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -293,12 +293,12 @@ test_mhmail "$expected" '-from sender@localhost -profile' '|' message
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender2@localhost>
+MAIL FROM:<sender9@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
 Subject: Subject2
-From: sender2@localhost
+From: sender9@localhost
 Date:
 
 message
@@ -306,7 +306,7 @@ message
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost -from sender2@localhost '\
+test_mhmail "$expected" '-from sender9@localhost -from sender9@localhost '\
 '-subject Subject1 -subject Subject2' -b message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
@@ -314,11 +314,11 @@ test_mhmail "$expected" '-from sender@localhost -from sender2@localhost '\
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender10@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender10@localhost
 Date:
 
 body2
@@ -326,7 +326,7 @@ body2
 QUIT
 EOF
 
-test_mhmail "$expected" "-from sender@localhost -body body1" -b body2
+test_mhmail "$expected" "-from sender10@localhost -body body1" -b body2
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -334,14 +334,14 @@ test_mhmail "$expected" "-from sender@localhost -body body1" -b body2
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender11@localhost>
 RCPT TO:<recipient@example.com>
 RCPT TO:<cc1@example.com>
 RCPT TO:<cc2@example.com>
 DATA
 To: recipient@example.com
 Cc: cc1@example.com, cc2@example.com
-From: sender@localhost
+From: sender11@localhost
 Date:
 
 message
@@ -350,7 +350,7 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  '-from sender@localhost -cc cc1@example.com -cc cc2@example.com' -b message
+  '-from sender11@localhost -cc cc1@example.com -cc cc2@example.com' -b message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -358,7 +358,7 @@ test_mhmail "$expected" \
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender12@localhost>
 RCPT TO:<recipient@example.com>
 RCPT TO:<cc1@example.com>
 RCPT TO:<cc2@example.com>
@@ -366,7 +366,7 @@ DATA
 To: recipient@example.com
 Cc: cc1@example.com, cc2@example.com
 Subject: Test
-From: sender@localhost
+From: sender12@localhost
 Date:
 
 message
@@ -375,8 +375,8 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  '-from sender@localhost -cc cc1@example.com -subject Test cc2@example.com' \
-  -b message
+  '-from sender12@localhost -cc cc1@example.com -subject '\
+'Test cc2@example.com' -b message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -384,7 +384,7 @@ test_mhmail "$expected" \
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender13@localhost>
 RCPT TO:<recipient@example.com>
 RCPT TO:<recipient2@example.com>
 RCPT TO:<cc1@example.com>
@@ -392,7 +392,7 @@ DATA
 To: recipient@example.com, recipient2@example.com
 Cc: cc1@example.com
 Subject: Test
-From: sender@localhost
+From: sender13@localhost
 Date:
 
 message
@@ -401,7 +401,7 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  "-from sender@localhost -cc cc1@example.com -subject Test \
+  "-from sender13@localhost -cc cc1@example.com -subject Test \
    -to recipient2@example.com" \
   -b message
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
@@ -430,11 +430,11 @@ check "$expected_err" "$actual_err"
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender14@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender14@localhost
 Date:
 
 
@@ -442,7 +442,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' '|' '
+test_mhmail "$expected" '-from sender14@localhost' '|' '
 '
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
@@ -451,11 +451,11 @@ test_mhmail "$expected" '-from sender@localhost' '|' '
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender15@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender15@localhost
 Date:
 
 
@@ -465,7 +465,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' '|' '
+test_mhmail "$expected" '-from sender15@localhost' '|' '
 
 
 '
@@ -476,11 +476,11 @@ test_mhmail "$expected" '-from sender@localhost' '|' '
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender16@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender16@localhost
 Date:
 
 no newline in input
@@ -488,7 +488,7 @@ no newline in input
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' '|' 'no newline in input'
+test_mhmail "$expected" '-from sender16@localhost' '|' 'no newline in input'
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -496,11 +496,11 @@ test_mhmail "$expected" '-from sender@localhost' '|' 'no newline in input'
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender17@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender17@localhost
 Date:
 
 here's some text
@@ -510,7 +510,7 @@ here's some text
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' '|' "here's some text
+test_mhmail "$expected" '-from sender17@localhost' '|' "here's some text
 
 
 "
@@ -521,11 +521,11 @@ test_mhmail "$expected" '-from sender@localhost' '|' "here's some text
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender18@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender18@localhost
 Date:
 
 
@@ -533,7 +533,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' -b ''
+test_mhmail "$expected" '-from sender18@localhost' -b ''
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -541,11 +541,11 @@ test_mhmail "$expected" '-from sender@localhost' -b ''
 # Shows different behavior than compiled mhmail, which suppressed the newline.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender19@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender19@localhost
 Date:
 
 
@@ -554,7 +554,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' -b '
+test_mhmail "$expected" '-from sender19@localhost' -b '
 '
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
@@ -564,11 +564,11 @@ test_mhmail "$expected" '-from sender@localhost' -b '
 #   of the newlines.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender20@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender20@localhost
 Date:
 
 
@@ -579,7 +579,7 @@ Date:
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' -b '
+test_mhmail "$expected" '-from sender20@localhost' -b '
 
 
 '
@@ -590,11 +590,11 @@ test_mhmail "$expected" '-from sender@localhost' -b '
 # Verified same behavior as compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender21@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender21@localhost
 Date:
 
 no newline in input
@@ -602,7 +602,7 @@ no newline in input
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' -b 'no newline in input'
+test_mhmail "$expected" '-from sender21@localhost' -b 'no newline in input'
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
 
 
@@ -611,11 +611,11 @@ test_mhmail "$expected" '-from sender@localhost' -b 'no newline in input'
 #   of the newlines.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@localhost>
+MAIL FROM:<sender22@localhost>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender22@localhost
 Date:
 
 here's some text
@@ -625,7 +625,7 @@ here's some text
 QUIT
 EOF
 
-test_mhmail "$expected" '-from sender@localhost' -b "here's some text
+test_mhmail "$expected" '-from sender22@localhost' -b "here's some text
 
 "
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
@@ -641,7 +641,7 @@ DATA
 Resent-To: recipient@example.com
 Resent-From: orig_recipient@example.com
 To: recipient@example.com
-From: sender@localhost
+From: sender23@localhost
 Date:
 Resent-Date:
 
@@ -652,7 +652,7 @@ EOF
 
 test_mhmail "$expected" '-from orig_recipient@example.com -resent' \
   -b 'To: recipient@example.com
-From: sender@localhost
+From: sender23@localhost
 Date: Sat Jun 16 18:35:15 -0500
 
 please resend this message, 1'
@@ -667,7 +667,7 @@ MAIL FROM:<orig_recipient@example.com>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender24@localhost
 Date:
 Resent-To: recipient@example.com
 Resent-From: orig_recipient@example.com
@@ -681,7 +681,7 @@ EOF
 test_mhmail "$expected" \
   '-from orig_recipient@example.com -resent -profile -nomsgid' \
   '|' 'To: recipient@example.com
-From: sender@localhost
+From: sender24@localhost
 Date: Sat Jun 16 18:35:15 -0500
 
 please resend this message, 2'
@@ -697,7 +697,7 @@ MAIL FROM:<orig_recipient@example.com>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@localhost
+From: sender25@localhost
 Date:
 Resent-To: recipient@example.com
 Resent-From: orig_recipient@example.com
@@ -711,7 +711,7 @@ EOF
 test_mhmail "$expected" \
   '-from orig_recipient@example.com -resent -profile -nomsgid' \
   -b 'To: recipient@example.com
-From: sender@localhost
+From: sender25@localhost
 Date: Sat Jun 16 18:35:15 -0500
 
 please resend this message, 3'
@@ -723,11 +723,11 @@ please resend this message, 3'
 # Not supported by compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@example.com>
+MAIL FROM:<sender26@example.com>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@example.com
+From: sender26@example.com
 User-Agent: nmh
 Date:
 
@@ -737,7 +737,7 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  '-from sender@example.com -headerfield User-Agent:nmh' \
+  '-from sender26@example.com -headerfield User-Agent:nmh' \
   -b 'with added header field'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
@@ -747,11 +747,11 @@ test_mhmail "$expected" \
 # Not supported by compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@example.com>
+MAIL FROM:<sender27@example.com>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@example.com
+From: sender27@example.com
 MIME-Version: 1.0
 Content-Type: text/plain;charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -763,7 +763,7 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  "-from sender@example.com -headerfield MIME-Version:1.0 \
+  "-from sender27@example.com -headerfield MIME-Version:1.0 \
 -headerfield Content-Type:text/plain;charset=utf-8 \
 -headerfield Content-Transfer-Encoding:8bit" \
   -b 'with added header fields'
@@ -775,11 +775,11 @@ test_mhmail "$expected" \
 # Not supported by compiled mhmail.
 cat > "$expected" <<EOF
 EHLO nosuchhost.example.com
-MAIL FROM:<sender@example.com>
+MAIL FROM:<sender28@example.com>
 RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
-From: sender@example.com
+From: sender28@example.com
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
 Date:
@@ -805,7 +805,7 @@ QUIT
 EOF
 
 test_mhmail "$expected" \
-  "-from sender@example.com -attach ${srcdir}/test/mhmail/attachment.txt" \
+  "-from sender28@example.com -attach ${srcdir}/test/mhmail/attachment.txt" \
   -b 'See how easy it is to add an attachment!'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}
