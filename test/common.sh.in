@@ -35,7 +35,7 @@ output_md5()
   #### the same line, the caller needs to add it.  This avoids
   #### differences due to a leading '*' binary file indicator, for
   #### text files, on some platforms (Cygwin).
-  @MD5SUM@ $* | @MD5FMT@ | cut -d ' ' -f 1
+  @MD5SUM@ $* | @MD5FMT@ | awk '{print $1}'
 }
 
 #### Use built-in $((...)) in test suite if shell supports it.
