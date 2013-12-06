@@ -13,7 +13,7 @@
 #include <limits.h>  /* for _POSIX_HOST_NAME_MAX */
 #include <string.h>  /* for memset */
 #include <stdio.h>
-#include <sys/errno.h>
+#include <errno.h>
 
 
 int
