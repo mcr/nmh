@@ -156,7 +156,8 @@ if test -n "$auto_cflags"; then
  	  LDFLAGS=
           ;;
 	*)
-	  LDFLAGS=-s
+#	  LDFLAGS=-s
+	  LDFLAGS=
 	  ;;
       esac
     fi
