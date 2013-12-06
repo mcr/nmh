@@ -103,11 +103,11 @@ a.out.dSYM/
 /uip/whatnow
 /uip/whom
 /uip/*.exe
-/test/fakesmtp
 /test/fakepop
-/test/getfullname
-/test/getfqdn
+/test/fakesmtp
+/test/getcanon
 /test/getcwidth
+/test/getfullname
 
 # Removed by mostlyclean:
 *.o

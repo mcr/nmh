@@ -18,7 +18,7 @@ setup_test
 #### suite, or the user's login name.  ap will escape (quote) it if
 #### needed.
 user=`${MH_LIB_DIR}/ap -format '%(me)' 0`
-host=`${MH_OBJ_DIR}/test/getfqdn`
+host=`${MH_OBJ_DIR}/test/getcanon`
 
 output=`${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${user}"`
 run_test "echo $output" 1 "Basic user test"

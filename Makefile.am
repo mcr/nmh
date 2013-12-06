@@ -92,7 +92,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/cleanup ## The "cleanup" test should always be last.
 
 check_SCRIPTS = test/common.sh
-check_PROGRAMS = test/getfullname test/getfqdn test/fakepop test/fakesmtp \
+check_PROGRAMS = test/getfullname test/getcanon test/fakepop test/fakesmtp \
 		 test/getcwidth
 DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 
@@ -427,8 +427,8 @@ uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/mhoutsbr.c uip/sendsbr.c \
 test_getfullname_SOURCES = test/getfullname.c
 test_getfullname_LDADD = sbr/libmh.a
 
-test_getfqdn_SOURCES = test/getfqdn.c
-test_getfqdn_LDADD =
+test_getcanon_SOURCES = test/getcanon.c
+test_getcanon_LDADD =
 
 test_fakepop_SOURCES = test/fakepop.c
 test_fakepop_LDADD =

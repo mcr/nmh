@@ -1,5 +1,5 @@
 /*
- * getfqdn.c - Print the FQDN of a host, default to localhost.
+ * getcanon.c - Print the canonical name of a host, default to localhost.
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
@@ -32,7 +32,7 @@ main(int argc, char *argv[])
   } else if (argc == 2) {
     hostname = argv[1];
   } else if (argc > 2) {
-    fprintf (stderr, "usage: %s [hostname]\n", argv[0]);
+    fprintf(stderr, "usage: %s [hostname]\n", argv[0]);
     return 1;
   }
 
@@ -43,7 +43,7 @@ main(int argc, char *argv[])
     hints.ai_family = AF_UNSPEC;
 
     if ((status = getaddrinfo(hostname, NULL, &hints, &res)) == 0) {
-      printf ("%s\n", res->ai_canonname);
+      printf("%s\n", res->ai_canonname);
       freeaddrinfo(res);
     } else {
       printf("%s\n", hostname);

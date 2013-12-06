@@ -13,7 +13,7 @@ fi
 
 setup_test
 
-host=`${MH_OBJ_DIR}/test/getfqdn`
+host=`${MH_OBJ_DIR}/test/getcanon`
 run_test "${MH_LIB_DIR}/ap -format %(myhost) ignore" "$host" \
          "local hostname test"
 
