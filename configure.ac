@@ -156,14 +156,12 @@ if test -n "$auto_cflags"; then
  	  LDFLAGS=
           ;;
 	*)
-#	  LDFLAGS=-s
-	  LDFLAGS=
+	  LDFLAGS=-s
 	  ;;
       esac
     fi
     if test -n "$GCC"; then
-#      test -z "$CFLAGS" && CFLAGS="$nmh_gcc_warnflags -O2" || CFLAGS="$CFLAGS $nmh_gcc_warnflags -O2"
-      test -z "$CFLAGS" && CFLAGS="$nmh_gcc_warnflags -g" || CFLAGS="$CFLAGS $nmh_gcc_warnflags -g"
+      test -z "$CFLAGS" && CFLAGS="$nmh_gcc_warnflags -O2" || CFLAGS="$CFLAGS $nmh_gcc_warnflags -O2"
     else
       test -z "$CFLAGS" && CFLAGS=-O  || CFLAGS="$CFLAGS -O"
     fi

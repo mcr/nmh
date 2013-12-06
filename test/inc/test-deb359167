@@ -27,6 +27,5 @@ fi
 #
 
 chmod 755 ${MH_INST_DIR}${bindir}/inc
-file ${MH_INST_DIR}${bindir}/inc
 
 valgrind --error-exitcode=1 --quiet inc -silent -file "$TESTMBOX"
