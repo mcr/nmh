@@ -111,16 +111,31 @@ dnl setup version 2.763, because it disables some features in the
 dnl system system header files and warns about them with -Wall.  Try
 dnl to test for that generally, though still with gcc.
 if test "$GCC" = yes; then
-  AC_CACHE_CHECK([whether we can use -ansi with gcc], [nmh_cv_has_dash_ansi],
-    [nmh_saved_cppflags="$CPPFLAGS"
-     nmh_saved_cflags="$CFLAGS"
-     CPPFLAGS="-D_GNU_SOURCE"
-     CFLAGS="-ansi -Wall -Werror"
+  AC_CACHE_CHECK([whether we can use -ansi with linker],
+                 [nmh_cv_has_dash_ansi_with_linker],
+    [nmh_saved_ldflags="$LDFLAGS"
+     LDFLAGS="-ansi"
      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <time.h>],[tzset();])],
-       [nmh_cv_has_dash_ansi=yes],
-       [nmh_cv_has_dash_ansi=no])
-     CPPFLAGS="$nmh_saved_cppflags"
-     CFLAGS="$nmh_saved_cflags"])
+       [nmh_cv_has_dash_ansi_with_linker=yes],
+       [nmh_cv_has_dash_ansi_with_linker=no])
+     LDFLAGS="$nmh_saved_ldflags"])
+
+  dnl Can't use -ansi with the linker on FreeBSD 10.  If -ansi can't
+  dnl be used with the linker, don't try to put it in CFLAGS.
+  if test "$nmh_cv_has_dash_ansi_with_linker" = yes; then
+    AC_CACHE_CHECK([whether we can use -ansi with gcc], [nmh_cv_has_dash_ansi],
+      [nmh_saved_cppflags="$CPPFLAGS"
+       nmh_saved_cflags="$CFLAGS"
+       CPPFLAGS="-D_GNU_SOURCE"
+       CFLAGS="-ansi -Wall -Werror"
+       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <time.h>],[tzset();])],
+         [nmh_cv_has_dash_ansi=yes],
+         [nmh_cv_has_dash_ansi=no])
+       CPPFLAGS="$nmh_saved_cppflags"
+       CFLAGS="$nmh_saved_cflags"])
+  else
+    nmh_cv_has_dash_ansi=no
+  fi
 else
   nmh_cv_has_dash_ansi=no
 fi
