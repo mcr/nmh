@@ -13,6 +13,7 @@
 #include <limits.h>  /* for _POSIX_HOST_NAME_MAX */
 #include <string.h>  /* for memset */
 #include <stdio.h>
+#include <sys/errno.h>
 
 
 int
@@ -44,7 +45,11 @@ main(int argc, char *argv[])
     if ((status = getaddrinfo(hostname, NULL, &hints, &res)) == 0) {
       printf ("%s\n", res->ai_canonname);
       freeaddrinfo(res);
+    } else {
+      printf("%s\n", hostname);
     }
+  } else {
+    fprintf(stderr, "gethostname() failed: %s\n", strerror(errno));
   }
 
   return status;
