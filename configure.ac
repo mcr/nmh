@@ -114,7 +114,7 @@ if test "$GCC" = yes; then
   AC_CACHE_CHECK([whether we can use -ansi with linker],
                  [nmh_cv_has_dash_ansi_with_linker],
     [nmh_saved_ldflags="$LDFLAGS"
-     LDFLAGS="-ansi"
+     LDFLAGS="-ansi -pedantic-errors"
      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <time.h>],[tzset();])],
        [nmh_cv_has_dash_ansi_with_linker=yes],
        [nmh_cv_has_dash_ansi_with_linker=no])
