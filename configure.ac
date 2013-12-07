@@ -111,19 +111,33 @@ dnl setup version 2.763, because it disables some features in the
 dnl system system header files and warns about them with -Wall.  Try
 dnl to test for that generally, though still with gcc.
 if test "$GCC" = yes; then
-    AC_CACHE_CHECK([whether we can use -ansi with gcc], [nmh_cv_has_dash_ansi],
-      [nmh_saved_cppflags="$CPPFLAGS"
-       nmh_saved_cflags="$CFLAGS"
-       CPPFLAGS="-D_GNU_SOURCE"
-       CFLAGS="-ansi -Wall -Werror"
-       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <time.h>],[tzset();])],
-         [nmh_cv_has_dash_ansi=yes],
-         [nmh_cv_has_dash_ansi=no])
-       CPPFLAGS="$nmh_saved_cppflags"
-       CFLAGS="$nmh_saved_cflags"])
-  else
-    nmh_cv_has_dash_ansi=no
+  AC_CACHE_CHECK([whether we can use -ansi with gcc], [nmh_cv_has_dash_ansi],
+    [nmh_saved_cppflags="$CPPFLAGS"
+     nmh_saved_cflags="$CFLAGS"
+     CPPFLAGS="-D_GNU_SOURCE"
+     CFLAGS="-ansi -Wall -Werror"
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <time.h>],[tzset();])],
+       [nmh_cv_has_dash_ansi=yes],
+       [nmh_cv_has_dash_ansi=no])
+     CPPFLAGS="$nmh_saved_cppflags"
+     CFLAGS="$nmh_saved_cflags"])
+
+  dnl Disable clang complaint about unused -ansi when linking.
+  AC_CACHE_CHECK([whether linker supports -Qunused-arguments],
+                 [nmh_cv_has_q_unused_arguments],
+    [nmh_saved_ldflags="$LDFLAGS"
+     LDFLAGS="$LDFLAGS -Qunused-arguments"
+     AC_TRY_LINK([],[],nmh_cv_has_q_unused_arguments=yes,
+                 nmh_cv_has_q_unused_arguments=no)
+     LDFLAGS="$nmh_saved_ldflags"])
+
+  if test "$nmh_cv_has_q_unused_arguments" = "yes"; then
+    test -z "$LDFLAGS" && LDFLAGS=-Qunused-arguments \
+                       || LDFLAGS="$LDFLAGS -Qunused-arguments"
   fi
+else
+  nmh_cv_has_dash_ansi=no
+fi
 
 dnl if the user hasn't specified CFLAGS, then
 dnl   if compiler is gcc, then
