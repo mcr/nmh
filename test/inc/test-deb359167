@@ -11,6 +11,14 @@ fi
 
 setup_test
 
+# valgrind throws a strange error on FreeBSD >= 10; skip the test
+# for now while we try to track down the underlying cause.
+if [ $(uname -s) == 'FreeBSD' ]; then
+  case $(uname -r) in
+    1?.*) test_skip 'valgrind fails on FreeBSD >= 10' ;;
+  esac
+fi
+
 require_prog valgrind
 
 THISDIR="$srcdir/test/inc"
