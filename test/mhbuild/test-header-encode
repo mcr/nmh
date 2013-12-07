@@ -16,7 +16,7 @@ fi
 
 setup_test
 testname="${MH_TEST_DIR}/$$"
-backupname="${MH_TEST_DIR}/,$$"
+backupname="${MH_TEST_DIR}/`mhparam sbackup`$$"
 
 #
 # We're going to hardcode UTF-8 for this test.
