@@ -120,15 +120,32 @@ git
 As of December 2010, nmh has switched to using git for revision control
 instead of CVS.  While the topic of git is beyond the scope of this FAQ,
 to get started with git & nmh, you can run the following command to checkout
-the nmh repository:
+the nmh repository (with read-only access to it):
 
     % git clone git://git.savannah.nongnu.org/nmh.git
 
-That will create a workspace call nmh.  To update that workspace
+That will create a workspace called nmh.  To update that workspace
 with changes to the master, cd to it and run:
 
     % git pull
 
+If you are a project member and want write access to the repository,
+you'll have to checkout with the following command instead of the one
+above:
+
+    % git clone <username>@git.sv.nongnu.org:/srv/git/nmh.git
+
+We suggest using git pull --rebase instead of the default merge for
+git pull.  If you don't want to add the --rebase option every time,
+you can tell git pull to always rebase in your nmh workspace by
+cd'ing to it and running the following command:
+
+    % git config --bool branch.master.rebase true
+
+And you'll probably want the following, also, so that --rebase applies
+to any new branches that you create:
+
+    % git config branch.autosetuprebase always
 
 -------------------------------------------------------
 nmh-local functions to use in preference to OS versions
