@@ -133,10 +133,9 @@ squeeze_lines() {
   sed '/^$/N;/\n$/D'
 }
 
-#### Filter that inserts initial whitespace and converts non-breakable
-#### space U+00A0 to an ASCII space.
+#### Filter that converts non-breakable space U+00A0 to an ASCII space.
 prepare_space() {
-  sed 's/^/ /; s/'"`printf '\\302\\240'`"'/ /g'
+  sed 's/'"`printf '\\302\\240'`"'/ /g'
 }
 
 #### check() requires two arguments, each the name of a file to be
