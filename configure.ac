@@ -131,6 +131,9 @@ if test "$GCC" = yes; then
                  nmh_cv_has_q_unused_arguments=no)
      LDFLAGS="$nmh_saved_ldflags"])
 
+  dnl TEMPORARY
+  echo gcc `gcc -dumpversion`
+
   if test "$nmh_cv_has_q_unused_arguments" = "yes"; then
     test -z "$LDFLAGS" && LDFLAGS=-Qunused-arguments \
                        || LDFLAGS="$LDFLAGS -Qunused-arguments"
