@@ -126,14 +126,27 @@ check_for_hard_links () {
   set -e
 }
 
+#### Filter that squeezes blank lines, emulating GNU cat -s.
+squeeze_lines() {
+  awk '!length && e {next} {e = !length} 1'
+}
+
+#### Filter that inserts initial whitespace and converts non-breakable
+#### space U+00A0 to an ASCII space.
+prepare_space() {
+  sed 's/^/ /; s/'"`printf '\\302\\240'`"'/ /g'
+}
+
 #### check() requires two arguments, each the name of a file to be
 #### diff'ed.
 #### If the same, the second file is removed.  And the first file is
 ####   removed unless there's an optional argument with a value of
 ####   'keep first'.
 #### If different, global variable "failed" is incremented.
-#### If there's an optional 'ignore space' argument, diff -b will
-####   be used instead of cmp to compare the files.
+#### If there's an optional 'ignore space' argument, spacing differences
+####   will not be considered signficant, emulating GNU diff -w.  It
+####   is assumed that the first file has already been run through
+####   prepare_space.
 check() {
     first=$1; shift
     second=$1; shift
@@ -151,7 +164,7 @@ check() {
     success=
     if [ "$ignorespace" ]; then
         #### POSIX diff should support -b.
-        diff -b "$first" "$second" >/dev/null  &&  success=1
+        prepare_space <"$second" | diff -b "$first" - >/dev/null  &&  success=1
     else
         cmp -s "$first" "$second"  &&  success=1
     fi

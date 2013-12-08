@@ -19,6 +19,9 @@ expected_err="$MH_TEST_DIR/test-mhfixmsg$$.expected_err"
 actual="$MH_TEST_DIR/test-mhfixmsg$$.actual"
 actual_err="$MH_TEST_DIR/test-mhfixmsg$$.actual_err"
 
+#### Make sure that html-to-text conversion is what we expect.
+LC_ALL=en_US.UTF-8; export LC_ALL
+
 set +e
 if grep mhfixmsg-format-text/html "${MH_TEST_DIR}/Mail/mhn.defaults" \
   >/dev/null; then
@@ -187,7 +190,7 @@ check "$MH_TEST_DIR"/Mail/inbox/,11 "$MH_TEST_DIR"/Mail/inbox/11.original
 # check -reformat (enabled by default):  addition of text/plain part
 # to solitary text/html part
 #
-cat >"$expected" <<EOF
+prepare_space >"$expected" <<EOF
 MIME-Version: 1.0
 From: sender@example.com
 To: bonquiqui@example.com
@@ -249,9 +252,9 @@ if [ $can_reformat_texthtml -eq 1 ]; then
 mhfixmsg: 12 part 1, decode text/html; charset=\"Windows-1252\"" \
        >"$expected.err"
 
-  #### lynx inserts multiple blank lines, so use uniq to squeeze them.
-  mhfixmsg last -outfile - -verbose 2>"$actual.err" | uniq >"$actual"
-  check "$expected" "$actual"
+  #### lynx inserts multiple blank lines, so squeeze them.
+  mhfixmsg last -outfile - -verbose 2>"$actual.err" | squeeze_lines >"$actual"
+  check "$expected" "$actual" 'ignore space'
   check "$expected.err" "$actual.err"
 else
   rm -f "$expected"
@@ -264,7 +267,7 @@ run_test "mhfixmsg `mhpath last` -outfile /dev/null" ''
 
 # check handling of boundary string that appears in message body
 #
-cat >"$expected" <<EOF
+prepare_space >"$expected" <<EOF
 MIME-Version: 1.0
 From: sender@example.com
 To: bonquiqui@example.com
@@ -330,9 +333,9 @@ if [ $can_reformat_texthtml -eq 1 ]; then
 mhfixmsg: 12 part 1, decode text/html; charset=\"Windows-1252\"" \
        >"$expected.err"
 
-  #### lynx inserts multiple blank lines, so use uniq to squeeze them.
-  mhfixmsg last -outfile - -verbose 2>"$actual.err" | uniq >"$actual"
-  check "$expected" "$actual"
+  #### lynx inserts multiple blank lines, so squeeze them.
+  mhfixmsg last -outfile - -verbose 2>"$actual.err" | squeeze_lines >"$actual"
+  check "$expected" "$actual" 'ignore space'
   check "$expected.err" "$actual.err"
 else
   rm -f "$expected"
@@ -340,7 +343,7 @@ fi
 
 
 # check -nodecode
-cat >"$expected" <<EOF
+prepare_space >"$expected" <<EOF
 MIME-Version: 1.0
 From: sender@example.com
 To: bonquiqui@example.com
@@ -402,9 +405,10 @@ EOF
 if [ $can_reformat_texthtml -eq 1 ]; then
   printf '%s\n' 'mhfixmsg: 12, insert text/plain part' >"$expected.err"
 
-  #### lynx inserts multiple blank lines, so use uniq to squeeze them.
-  mhfixmsg last -nodecode -outfile - -verbose 2>"$actual.err" | uniq >"$actual"
-  check "$expected" "$actual"
+  #### lynx inserts multiple blank lines, so squeeze them.
+  mhfixmsg last -nodecode -outfile - -verbose 2>"$actual.err" | \
+    squeeze_lines >"$actual"
+  check "$expected" "$actual" 'ignore space'
   check "$expected.err" "$actual.err"
 else
   rm -f "$expected"
@@ -603,7 +607,7 @@ rmm last
 
 
 # check that -reformat succeeds when decode of binary text fails
-cat >"$expected" <<'EOF'
+prepare_space >"$expected" <<'EOF'
 MIME-Version: 1.0
 Date: Thu, 11 Apr 2013 02:47:08 -0700
 To: <me@example.com>
@@ -663,10 +667,10 @@ d><td align=3D"right"><font face=3D"Arial, Helvetica, sans-serif" color=3D"=
 EOF
 
 if [ $can_reformat_texthtml -eq 1 ]; then
-  #### lynx inserts multiple blank lines, so use uniq to squeeze them.
+  #### lynx inserts multiple blank lines, so squeeze them.
   #### Truncate to avoid comparing the html portion because it can
   #### get reformatted.
-  mhfixmsg last -outfile - | uniq | head -22 >"$actual"
+  mhfixmsg last -outfile - | squeeze_lines | head -22 >"$actual"
   check "$expected" "$actual" 'ignore space'
 else
   cp -p "$MH_TEST_DIR/Mail/inbox/15" "$MH_TEST_DIR/Mail/inbox/15.backup"
@@ -797,7 +801,7 @@ check "$expected" "$actual"
 
 
 # check that text/plain part is added to lone text/html in multipart/related
-cat >"$expected" <<EOF
+prepare_space >"$expected" <<EOF
 MIME-Version: 1.0
 Date: Tue, 26 Feb 2013 18:07:20 -0600
 Subject: multipart/related, not /alternative
@@ -865,9 +869,9 @@ Your email client does not support HTML messages
 EOF
 
 if [ $can_reformat_texthtml -eq 1 ]; then
-  #### lynx inserts multiple blank lines, so use uniq to squeeze them.
-  mhfixmsg last -outfile - | uniq >"$actual"
-  check "$expected" "$actual"
+  #### lynx inserts multiple blank lines, so squeeze them.
+  mhfixmsg last -outfile - | squeeze_lines >"$actual"
+  check "$expected" "$actual" 'ignore space'
 else
   rm -f "$expected"
 fi
@@ -964,7 +968,7 @@ check "$expected" "$actual"
 
 
 # check -replacetextplain
-cat >"$expected" <<EOF
+prepare_space >"$expected" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg replacement of bad text/plain part test
@@ -1024,9 +1028,9 @@ Content-Disposition: inline
 EOF
 
 if [ $can_reformat_texthtml -eq 1 ]; then
-  #### lynx inserts multiple blank lines, so use uniq to squeeze them.
-  mhfixmsg last -replacetextplain -outfile - | uniq > "$actual"
-  check "$expected" "$actual"
+  #### lynx inserts multiple blank lines, so squeeze them.
+  mhfixmsg last -replacetextplain -outfile - | squeeze_lines > "$actual"
+  check "$expected" "$actual" 'ignore space'
 else
   rm -f "$expected"
 fi
