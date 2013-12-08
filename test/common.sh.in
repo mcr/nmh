@@ -126,11 +126,11 @@ check_for_hard_links () {
   set -e
 }
 
-#### Filter that squeezes blank lines, emulating GNU cat -s.
+#### Filter that squeezes blank lines, partially emulating GNU cat -s,
+#### but sufficient for our purpose.
+#### From http://www-rohan.sdsu.edu/doc/sed.html, compiled by Eric Pement.
 squeeze_lines() {
-  awk 'length($0) == 0 && e == 1 { next }
-          { e = length($0) == 0 }
-          { print }'
+  sed '/^$/N;/\n$/D'
 }
 
 #### Filter that inserts initial whitespace and converts non-breakable
