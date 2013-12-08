@@ -128,7 +128,7 @@ check_for_hard_links () {
 
 #### Filter that squeezes blank lines, emulating GNU cat -s.
 squeeze_lines() {
-  awk '!length && e {next} {e = !length} 1'
+  awk '!length() && e {next} {e = !length()} 1'
 }
 
 #### Filter that inserts initial whitespace and converts non-breakable
