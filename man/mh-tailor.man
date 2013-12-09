@@ -249,10 +249,6 @@ The pathname to the
 program.
 .RE
 .SS "Post Office Protocol"
-This option is only available if you have compiled
-.B nmh
-with POP support enabled (i.e., \*(lq--enable-pop\*(rq).
-.PP
 .BR pophost :
 .RS 5
 The name of the default POP service host.  If this is not set, then
@@ -260,71 +256,70 @@ The name of the default POP service host.  If this is not set, then
 looks in the standard maildrop areas for waiting mail, otherwise
 the named POP service host is consulted.
 .RE
-\"  .SS "BBoards Delivery"
-\"  This option is only available if you compiled \fInmh\fP with
-\"  \*(lqbbdelivery:\ on\*(rq.
-\"  .PP
-\"  .BR bbdomain :
-\"  .RS 5
-\"  The local BBoards domain (a UCI hack).
-\"  .RE
-\"  .SS "BBoards & The POP"
-\"  These options are only available if you compiled \fInmh\fP with
-\"  \*(lqbboards:\ pop\*(rq and \*(lqpop:\ on\*(rq.
-\"  .PP
-\"  .BR popbbhost :
-\"  .RS 5
-\"  The POP service host which also acts as a BBoard server.  This variable
-\"  should be set on the POP BBoards client host.
-\"  .RE
-\"  .PP
-\"  .BR popbbuser :
-\"  .RS 5
-\"  The guest account on the POP/BB service host.  This should be a different
-\"  login ID than either the POP user or the BBoards user.  (The user-id
-\"  \*(lqftp\*(rq is highly recommended.)  This variable should be set on
-\"  both the POP BBoards client and service hosts.
-\"  .RE
-\"  .PP
-\"  .BR popbblist :
-\"  %etcdir%/hosts.popbb
-\"  .RS 5
-\"  A file containing of lists of hosts that are allowed to use the POP
-\"  facility to access BBoards using the guest account.  If this file is not
-\"  present, then no check is made.  This variable should be set on the POP
-\"  BBoards service host.
-\"  .RE
+.\"  .SS "BBoards Delivery"
+.\"  This option is only available if you compiled \fInmh\fP with
+.\"  \*(lqbbdelivery:\ on\*(rq.
+.\"  .PP
+.\"  .BR bbdomain :
+.\"  .RS 5
+.\"  The local BBoards domain (a UCI hack).
+.\"  .RE
+.\"  .SS "BBoards & The POP"
+.\"  These options are only available if you compiled \fInmh\fP with
+.\"  \*(lqbboards:\ pop\*(rq and \*(lqpop:\ on\*(rq.
+.\"  .PP
+.\"  .BR popbbhost :
+.\"  .RS 5
+.\"  The POP service host which also acts as a BBoard server.  This variable
+.\"  should be set on the POP BBoards client host.
+.\"  .RE
+.\"  .PP
+.\"  .BR popbbuser :
+.\"  .RS 5
+.\"  The guest account on the POP/BB service host.  This should be a different
+.\"  login ID than either the POP user or the BBoards user.  (The user-id
+.\"  \*(lqftp\*(rq is highly recommended.)  This variable should be set on
+.\"  both the POP BBoards client and service hosts.
+.\"  .RE
+.\"  .PP
+.\"  .BR popbblist :
+.\"  %etcdir%/hosts.popbb
+.\"  .RS 5
+.\"  A file containing of lists of hosts that are allowed to use the POP
+.\"  facility to access BBoards using the guest account.  If this file is not
+.\"  present, then no check is made.  This variable should be set on the POP
+.\"  BBoards service host.
+.\"  .RE
 .SS "File Locking"
 A few words on locking:
 .B nmh
-has several methods for creating locks
-on files.  When configuring
-.BR nmh ,
-you will need to decide on the
-locking style and locking directory (if any).  The first controls the
-method of locking, the second says where lock files should be created.
+has two main uses for locking: locking the mail spool during mail
+incorporation, and locking metadata files (sequence files, the context)
+during updates.  These locking methods can be configured separately
+from each other.
 .PP
-To configure
-.B nmh
-for kernel locking, use the \*(lq--with-locking=flock\*(rq configure option if
-you want to use the
-.B flock
-system call; use \*(lq--with-locking=lockf\*(rq if
-you want to use the
-.B lockf
-system call; or use \*(lq--with-locking=fcntl\*(rq
-if you want to use the
-.B fcntl
-system call for kernel-level locking.
+For locking the mail spool, the
+.I spoollocking
+entry in
+.IR mh\-tailor (5)
+will control the locking algorithm to use when
+.B inc
+incorporates mail from the spool file.  If no entry is given, a default
+based on the operating system type will be chosen.
 .PP
-Instead of kernel locking, you can configure
-.B nmh
-to use dot locking by using \*(lq--with-locking=dot\*(rq.  Dot locking
-specifies that
-a file should be created whose existence means \*(lqlocked\*(rq and
-whose non-existence means \*(lqunlocked\*(rq.  The name of this file is
-constructed by appending \*(lq.lock\*(rq to the name of the file being
-locked.  If \*(lq--enable-lockdir=directory\*(rq
+For locking all other files, the
+.I datalocking
+entry in
+.IR mh-profile (5)
+controls the locking algorithm used for all other file access.
+If no entry is given, the
+.I fcntl
+lock method will be chosen.
+.PP
+If you do not wish to use kernel\-based locking,
+.I dot
+locking is an option available.
+If \*(lq--enable-lockdir=directory\*(rq
 is not specified at build time, lock files will be created
 in the directory where the file being locked resides.  Otherwise, lock
 files will be created in the directory specified by
