@@ -47,6 +47,20 @@ char *lockmethod =
 #endif
     ;
 
+char *sasl =
+#ifdef CYRUS_SASL
+    "cyrus_sasl";
+#else
+    "";
+#endif
+
+char *tls =
+#ifdef TLS_SUPPORT
+    "tls";
+#else
+    "";
+#endif
+
 struct proc {
     char *p_name;
     char **p_field;
@@ -80,6 +94,8 @@ static struct proc procs [] = {
      { "libdir",        &mhlibdir },
      { "sbackup",       &sbackup },
      { "lockmethod",    &lockmethod },
+     { "sasl",          &sasl },
+     { "tls",           &tls },
      { NULL,            NULL },
 };
 

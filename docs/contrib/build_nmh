@@ -42,11 +42,6 @@
 
 
 ####
-#### OS-specific setup.
-####
-ldd=ldd
-
-####
 #### Interpret command arguments.
 ####
 check=check
@@ -149,12 +144,14 @@ if install-mh -check >/dev/null 2>&1; then
     fi
   fi
 
-  if $ldd "`$mhbin/mhparam libdir`/post" | grep sasl >/dev/null; then
-    config_sasl=y
-  fi
+  if test -x "$mhbin/mhparam"; then
+    case `$mhbin/mhparam sasl` in
+      *sasl*) config_sasl=y ;;
+    esac
 
-  if $ldd "`$mhbin/mhparam libdir`/post" | grep ssl >/dev/null; then
-    config_tls=y
+    case `$mhbin/mhparam tls` in
+      *tls*) config_tls=y ;;
+    esac
   fi
 fi
 
