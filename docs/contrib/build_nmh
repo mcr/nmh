@@ -145,13 +145,18 @@ if install-mh -check >/dev/null 2>&1; then
   fi
 
   if test -x "$mhbin/mhparam"; then
-    case `$mhbin/mhparam sasl` in
-      *sasl*) config_sasl=y ;;
-    esac
+    if mhparam sasl >/dev/null; then
+      case `$mhbin/mhparam sasl` in
+        *sasl*) config_sasl=y ;;
+      esac
 
-    case `$mhbin/mhparam tls` in
-      *tls*) config_tls=y ;;
-    esac
+      case `$mhbin/mhparam tls` in
+        *tls*) config_tls=y ;;
+     esac
+    else
+      echo "$0: -y not supported with currently installed nmh"
+      exit 1
+    fi
   fi
 fi
 
