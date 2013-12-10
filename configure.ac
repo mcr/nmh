@@ -98,7 +98,10 @@ if test x"$enable_debug" = x"yes"; then
 fi
 
 dnl Use SunStudio cc on Solaris.
-test -d /opt/solarisstudio12.3/bin  &&  PATH=/opt/solarisstudio12.3/bin:$PATH
+if test -d /opt/solarisstudio12.3/bin; then
+  PATH=/opt/solarisstudio12.3/bin:$PATH
+  CC=/opt/solarisstudio12.3/bin/cc; export CC
+fi
 
 AC_PROG_CC([cc clang gcc])
 AM_PROG_CC_C_O
