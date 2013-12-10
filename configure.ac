@@ -97,12 +97,6 @@ if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
-dnl Use SunStudio cc on Solaris.
-if test -d /opt/solarisstudio12.3/bin; then
-  PATH=/opt/solarisstudio12.3/bin:$PATH
-  CC=/opt/solarisstudio12.3/bin/cc; export CC
-fi
-
 AC_PROG_CC([cc clang gcc])
 AM_PROG_CC_C_O
 
