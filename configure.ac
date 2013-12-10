@@ -100,7 +100,7 @@ fi
 dnl Use SunStudio cc on Solaris.
 if test -d /opt/solarisstudio12.3/bin; then
   PATH=/opt/solarisstudio12.3/bin:$PATH
-  CC=/opt/solarisstudio12.3/bin/cc; export CC
+  CC='/opt/solarisstudio12.3/bin/cc +w2'; export CC
 fi
 
 AC_PROG_CC([cc clang gcc])
