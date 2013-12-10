@@ -99,6 +99,9 @@ fi
 
 AC_PROG_CC
 AM_PROG_CC_C_O
+dnl TEMPORARY probe on buildbot
+uname -a
+find /opt -name cc
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
