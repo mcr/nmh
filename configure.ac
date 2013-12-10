@@ -97,7 +97,7 @@ if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
-AC_PROG_CC([cc clang gcc])
+AC_PROG_CC
 AM_PROG_CC_C_O
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
