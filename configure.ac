@@ -97,11 +97,8 @@ if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
-AC_PROG_CC
+AC_PROG_CC([cc /opt/solarisstudio12.3/bin/cc clang gcc])
 AM_PROG_CC_C_O
-dnl TEMPORARY probe on buildbot
-uname -a
-find /opt -name cc
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
