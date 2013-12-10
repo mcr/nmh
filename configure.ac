@@ -97,7 +97,10 @@ if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
-AC_PROG_CC([cc /opt/solarisstudio12.3/bin/cc clang gcc])
+dnl Use SunStudio cc on Solaris.
+test -d /opt/solarisstudio12.3/bin  &&  PATH=/opt/solarisstudio12.3/bin:$PATH
+
+AC_PROG_CC([cc clang gcc])
 AM_PROG_CC_C_O
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
@@ -107,9 +110,9 @@ AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
  CFLAGS="$nmh_saved_cflags"])
 
 dnl Can't use -ansi with gcc 4.5.3 on Cygwin, at least through setup
-dnl setup version 2.763, because it disables some features in the
-dnl system system header files and warns about them with -Wall.  Try
-dnl to test for that generally, though still with gcc.
+dnl version 2.763, because it disables some features in the system
+dnl header files and warns about them with -Wall.  Try to test for
+dnl that generally, though still with gcc.
 if test "$GCC" = yes; then
   AC_CACHE_CHECK([whether we can use -ansi with gcc], [nmh_cv_has_dash_ansi],
     [nmh_saved_cppflags="$CPPFLAGS"
