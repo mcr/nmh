@@ -97,7 +97,14 @@ if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
-AC_PROG_CC([cc clang gcc])
+dnl Use SunStudio cc, with -v, on Solaris if user didn't set CC.
+if test -z "$CC"  -a  -d /opt/solarisstudio12.3/bin; then
+  CC=cc; export CC
+  ${CC} -V
+  CFLAGS="${CFLAGS:+$CFLAGS }-v"
+fi
+
+AC_PROG_CC
 AM_PROG_CC_C_O
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
