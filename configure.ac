@@ -97,11 +97,6 @@ if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
-dnl Use SunStudio cc, if present, on Solaris if user didn't set CC.
-if test -z "$CC"  -a  -d /opt/solarisstudio12.3/bin; then
-  CC=/opt/solarisstudio12.3/bin/cc; export CC
-fi
-
 AC_PROG_CC
 AM_PROG_CC_C_O
 
