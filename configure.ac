@@ -106,10 +106,10 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 
 dnl Use -v and some other options with SunStudio cc.
-case `cc -V` in
-  cc:\ Sun\ C*) CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes"
-                CFLAGS="${CFLAGS} -erroff=E_STATEMENT_NOT_REACHED" ;;
-esac
+dnl case `cc -V` in
+dnl   cc:\ Sun\ C*) CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes"
+dnl                CFLAGS="${CFLAGS} -erroff=E_STATEMENT_NOT_REACHED" ;;
+dnl esac
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
