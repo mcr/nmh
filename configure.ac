@@ -97,15 +97,19 @@ if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
-dnl Use SunStudio cc, with -v, on Solaris if user didn't set CC.
+dnl Use SunStudio cc, if present, on Solaris if user didn't set CC.
 if test -z "$CC"  -a  -d /opt/solarisstudio12.3/bin; then
   CC=/opt/solarisstudio12.3/bin/cc; export CC
-  ${CC} -V
-  CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes -erroff=E_STATEMENT_NOT_REACHED"
 fi
 
 AC_PROG_CC
 AM_PROG_CC_C_O
+
+dnl Use -v and some other options with SunStudio cc.
+case `cc -V` in
+  cc:\ Sun\ C*) CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes"
+                CFLAGS="${CFLAGS} -erroff=E_STATEMENT_NOT_REACHED" ;;
+esac
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
