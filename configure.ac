@@ -97,7 +97,7 @@ if test x"$enable_debug" = x"yes"; then
   test -z "$LDFLAGS" && LDFLAGS=-g
 fi
 
-AC_PROG_CC
+AC_PROG_CC(cc gcc)
 AM_PROG_CC_C_O
 
 dnl Use -v and some other options with SunStudio cc.
