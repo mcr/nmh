@@ -1852,7 +1852,6 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp,
 	 * buffers that we have duplicated from the parent.
 	 */
 	_exit(0);
-	break;
     case -1:
     	adios(NULL, "Unable to fork for filter writer process");
 	break;

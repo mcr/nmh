@@ -106,40 +106,32 @@ list_switch (CT ct, int toplevel, int realsize, int verbose, int debug)
     switch (ct->c_type) {
 	case CT_MULTIPART:
 	    return list_multi (ct, toplevel, realsize, verbose, debug);
-	    break;
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
 		case MESSAGE_PARTIAL:
 		    return list_partial (ct, toplevel, realsize, verbose, debug);
-		    break;
 
 		case MESSAGE_EXTERNAL:
 		    return list_external (ct, toplevel, realsize, verbose, debug);
-		    break;
 
 		case MESSAGE_RFC822:
 		default:
 		    return list_content (ct, toplevel, realsize, verbose, debug);
-		    break;
 	    }
-	    break;
 
 	case CT_TEXT:
 	case CT_AUDIO:
 	case CT_IMAGE:
 	case CT_VIDEO:
 	    return list_content (ct, toplevel, realsize, verbose, debug);
-	    break;
 
 	case CT_APPLICATION:
 	    return list_application (ct, toplevel, realsize, verbose, debug);
-	    break;
 
 	default:
 	    /* list_debug (ct); */
 	    adios (NULL, "unknown content type %d", ct->c_type);
-	    break;
     }
 
     return 0;	/* NOT REACHED */

@@ -61,7 +61,7 @@ mbx_open (char *file, int mbx_style, uid_t uid, gid_t gid, mode_t mode)
 		case ETXTBSY: 
 		    j = errno;
 		    sleep (5);
-		    break;
+		    continue;
 
 		default: 
 		    /* just return error */

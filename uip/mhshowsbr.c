@@ -223,39 +223,31 @@ show_switch (CT ct, int serial, int alternate)
     switch (ct->c_type) {
 	case CT_MULTIPART:
 	    return show_multi (ct, serial, alternate);
-	    break;
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
 		case MESSAGE_PARTIAL:
 		    return show_partial (ct, serial, alternate);
-		    break;
 
 		case MESSAGE_EXTERNAL:
 		    return show_external (ct, serial, alternate);
-		    break;
 
 		case MESSAGE_RFC822:
 		default:
 		    return show_message_rfc822 (ct, serial, alternate);
-		    break;
 	    }
-	    break;
 
 	case CT_TEXT:
 	    return show_text (ct, serial, alternate);
-	    break;
 
 	case CT_AUDIO:
 	case CT_IMAGE:
 	case CT_VIDEO:
 	case CT_APPLICATION:
 	    return show_content (ct, serial, alternate);
-	    break;
 
 	default:
 	    adios (NULL, "unknown content type %d", ct->c_type);
-	    break;
     }
 
     return 0;	/* NOT REACHED */

@@ -1477,7 +1477,6 @@ suppress_duplicates (int fd, char *file)
 		free (cp);
 		fclose (in);
 		return result;
-		break;
 
 	   case BODY:
 	   case FILEEOF:

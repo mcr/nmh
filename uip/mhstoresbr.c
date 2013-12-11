@@ -135,13 +135,11 @@ store_switch (CT ct)
     switch (ct->c_type) {
 	case CT_MULTIPART:
 	    return store_multi (ct);
-	    break;
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
 		case MESSAGE_PARTIAL:
 		    return store_partial (ct);
-		    break;
 
 		case MESSAGE_EXTERNAL:
 		    return store_external (ct);
@@ -149,24 +147,19 @@ store_switch (CT ct)
 		case MESSAGE_RFC822:
 		default:
 		    return store_generic (ct);
-		    break;
 	    }
-	    break;
 
 	case CT_APPLICATION:
 	    return store_application (ct);
-	    break;
 
 	case CT_TEXT:
 	case CT_AUDIO:
 	case CT_IMAGE:
 	case CT_VIDEO:
 	    return store_generic (ct);
-	    break;
 
 	default:
 	    adios (NULL, "unknown content type %d", ct->c_type);
-	    break;
     }
 
     return OK;	/* NOT REACHED */

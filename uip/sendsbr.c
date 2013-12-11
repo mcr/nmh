@@ -876,7 +876,6 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 	fprintf (stderr, "unable to exec ");
 	perror (postproc);
 	_exit (-1);
-	break;	/* NOT REACHED */
 
     default:
 	/*
