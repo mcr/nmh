@@ -101,7 +101,7 @@ dnl Use SunStudio cc, with -v, on Solaris if user didn't set CC.
 if test -z "$CC"  -a  -d /opt/solarisstudio12.3/bin; then
   CC=/opt/solarisstudio12.3/bin/cc; export CC
   ${CC} -V
-  CFLAGS="${CFLAGS:+$CFLAGS }-v"
+  CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes"
 fi
 
 AC_PROG_CC
