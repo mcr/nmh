@@ -5,4 +5,10 @@
 # building from a distributed tarball.
 
 set -x
+
+if [ "`uname`" = "OpenBSD" ] ; then
+	export AUTOCONF_VERSION=2.69
+	export AUTOMAKE_VERSION=1.13
+fi
+
 autoreconf -v -i
