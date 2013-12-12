@@ -100,17 +100,10 @@ fi
 AC_PROG_CC(cc gcc)
 AM_PROG_CC_C_O
 
-dnl temporary, to see how CC was set
-case ${CC} in
-  cc) ${CC} -V ;;
-  */cc) ${CC} -V ;;
-  *) echo CC=${CC} ;;
-esac
 dnl Use -v and some other options with SunStudio cc.
-dnl E_STATEMENT_NOT_REACHED suppresses warnings from sbr/dtimep.c/.l.
 case `${CC} -V 2>/dev/null` in
-  cc:*Sun*C*) CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes"
-              CFLAGS="${CFLAGS} -erroff=E_STATEMENT_NOT_REACHED" ;;
+  cc:\ Sun\ C*) CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes"
+                CFLAGS="${CFLAGS} -erroff=E_STATEMENT_NOT_REACHED" ;;
 esac
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
