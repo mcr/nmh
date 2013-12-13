@@ -56,7 +56,7 @@ DEFINE_SWITCH_ARRAY(WHOM, switches);
 int
 main (int argc, char **argv)
 {
-    pid_t child_id;
+    pid_t child_id = OK;
     int i, status, isdf = 0;
     int distsw = 0, vecp = 0;
     char *cp, *dfolder = NULL, *dmsg = NULL;
