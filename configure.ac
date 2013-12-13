@@ -93,9 +93,6 @@ dnl ------------------
 dnl We want these before the checks,
 dnl so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS= auto_cflags=1
-if test x"$enable_debug" = x"yes"; then
-  test -z "$LDFLAGS" && LDFLAGS=-g
-fi
 
 AC_PROG_CC(cc gcc)
 AM_PROG_CC_C_O
@@ -127,20 +124,6 @@ if test "$GCC" = yes; then
        [nmh_cv_has_dash_ansi=no])
      CPPFLAGS="$nmh_saved_cppflags"
      CFLAGS="$nmh_saved_cflags"])
-
-  dnl Disable clang complaint about unused -ansi when linking.
-  AC_CACHE_CHECK([whether linker supports -Qunused-arguments],
-                 [nmh_cv_has_q_unused_arguments],
-    [nmh_saved_ldflags="$LDFLAGS"
-     LDFLAGS="$LDFLAGS -Qunused-arguments"
-     AC_TRY_LINK([],[],nmh_cv_has_q_unused_arguments=yes,
-                 nmh_cv_has_q_unused_arguments=no)
-     LDFLAGS="$nmh_saved_ldflags"])
-
-  if test "$nmh_cv_has_q_unused_arguments" = "yes"; then
-    test -z "$LDFLAGS" && LDFLAGS=-Qunused-arguments \
-                       || LDFLAGS="$LDFLAGS -Qunused-arguments"
-  fi
 else
   nmh_cv_has_dash_ansi=no
 fi
@@ -170,16 +153,6 @@ if test -n "$auto_cflags"; then
       test -z "$CFLAGS" && CFLAGS=-g || CFLAGS="$CFLAGS -g"
     fi
   else
-    if test -z "$LDFLAGS"; then
-      case "$build_os" in
-	darwin*)
- 	  LDFLAGS=
-          ;;
-	*)
-	  LDFLAGS=-s
-	  ;;
-      esac
-    fi
     if test -n "$GCC"; then
       test -z "$CFLAGS" && CFLAGS="$nmh_gcc_warnflags -O2" || CFLAGS="$CFLAGS $nmh_gcc_warnflags -O2"
     else
@@ -187,6 +160,34 @@ if test -n "$auto_cflags"; then
     fi
     AC_DEFINE([NDEBUG], [1],
               [Define to disable run-time debugging and asserts.])
+  fi
+fi
+
+dnl -----------------
+dnl CUSTOMIZE LDFLAGS
+dnl -----------------
+if test "$GCC" = yes; then
+  dnl Disable clang complaint about unused -ansi when linking.
+  AC_CACHE_CHECK([whether linker supports -Qunused-arguments],
+                 [nmh_cv_has_q_unused_arguments],
+                 [nmh_saved_ldflags="$LDFLAGS"
+                  LDFLAGS="$LDFLAGS -Qunused-arguments"
+                  AC_TRY_LINK([],[],nmh_cv_has_q_unused_arguments=yes,
+                                    nmh_cv_has_q_unused_arguments=no)
+                  LDFLAGS="$nmh_saved_ldflags"])
+  test "$nmh_cv_has_q_unused_arguments" = "yes"  &&  \
+    LDFLAGS="${LDFLAGS:+$LDFLAGS }-Qunused-arguments"
+fi
+
+dnl This really shouldn't be necessary.  And we really shouldn't add -s.
+if test x"$enable_debug" = x"yes"; then
+  test -z "$LDFLAGS" && LDFLAGS=-g
+else
+  if test -z "$LDFLAGS"; then
+    case "$build_os" in
+      darwin*) LDFLAGS= ;;
+            *) LDFLAGS=-s ;;
+    esac
   fi
 fi
 
