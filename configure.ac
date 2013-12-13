@@ -158,8 +158,6 @@ if test -n "$auto_cflags"; then
     else
       test -z "$CFLAGS" && CFLAGS=-O  || CFLAGS="$CFLAGS -O"
     fi
-    AC_DEFINE([NDEBUG], [1],
-              [Define to disable run-time debugging and asserts.])
   fi
 fi
 
@@ -190,6 +188,8 @@ else
     esac
   fi
 fi
+
+AC_HEADER_ASSERT
 
 dnl ------------------
 dnl CHECK FOR PROGRAMS
@@ -585,10 +585,10 @@ dnl 2.5.35-37 that cause signed/unsigned mismatch,
 dnl http://sourceforge.net/p/flex/bugs/140/
 AS_IF([test "$LEX" = flex],
       [AS_CASE([`$LEX -V`],
-               [flex\ 2.5.35], [[LFLAGS=\
-'; printf "%s\n" '\''1,$$s/(size_t) \(num_to_read\)/\1/'\'' w q | ed -s $@']],
-               [flex\ 2.5.3@<:@67@:>@], [[LFLAGS=\
-'; printf "%s\n" '\''1,$$s/\(	\)int i;/\1yy_size_t i;/'\'' w q | ed -s $@']])
+               [flex\ 2.5.35], [LFLAGS=\
+'; printf "%s\n" '\''1,$$s/(size_t) \(num_to_read\)/\1/'\'' w q | ed -s $@'],
+               [flex\ 2.5.3@<:@67@:>@], [LFLAGS=\
+'; printf "%s\n" '\''1,$$s/\(	\)int i;/\1yy_size_t i;/'\'' w q | ed -s $@'])
        AC_SUBST([LFLAGS])])
 
 dnl --------------
