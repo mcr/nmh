@@ -36,10 +36,15 @@ touch "$expected" "$actual"
 length=`echo $prefix | awk '{print length($0)}'`
 [ $length -gt 35 ]  &&  suppress_break_warning=-Wbreak
 
+#### OpenBSD's mandoc spits out a lot of warnings.
+case `uname -s` in
+  OpenBSD) macpac=-man ;;
+  *)       macpac=-mandoc ;;
+esac
 warnings="-ww $suppress_break_warning"
 
 for manpage in man?/*.?; do
-  groff -Tutf8 -mandoc $warnings "$manpage" > /dev/null 2>>"$actual"
+  groff -Tutf8 $macpac $warnings "$manpage" >/dev/null 2>>"$actual"
 done
 
 check "$expected" "$actual"
