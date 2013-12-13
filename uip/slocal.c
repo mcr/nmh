@@ -1042,8 +1042,9 @@ usr_folder (int fd, char *string)
  */
 
 static int
-usr_pipe (int fd, char *cmd, char *pgm, char **vec, int suppress)
+usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 {
+    volatile int fd = fd_arg;
     pid_t child_id;
     int i, bytes, seconds, status;
     struct stat st;
