@@ -69,7 +69,9 @@ char *getusername(void);
 static void alrmser (int);
 static int message_fd (char **);
 static int header_fd (void);
+#if HAVE_GETUTXENT
 static void alert (char *, int);
+#endif /* HAVE_GETUTXENT */
 
 
 int
@@ -164,6 +166,9 @@ main (int argc, char **argv)
         }
     }
     endutxent();
+#else
+    NMH_UNUSED (tty);
+    NMH_UNUSED (utp);
 #endif /* HAVE_GETUTXENT */
 
     exit (RCV_MOK);
@@ -235,8 +240,11 @@ message_fd (char **vec)
 	_exit (-1);
     closefds (3);
     setpgid ((pid_t) 0, getpid ());	/* put in own process group */
-    execvp (vec[0], vec);
-    _exit (-1);
+    if (execvp (vec[0], vec) == NOTOK) {
+        _exit (-1);
+    }
+
+    return NOTOK;
 }
 
 
@@ -267,6 +275,7 @@ header_fd (void)
 }
 
 
+#if HAVE_GETUTXENT
 static void
 alert (char *tty, int md)
 {
@@ -304,4 +313,4 @@ alert (char *tty, int md)
 
     close (td);
 }
-
+#endif /* HAVE_GETUTXENT */
