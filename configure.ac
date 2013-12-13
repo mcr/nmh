@@ -94,14 +94,13 @@ dnl We want these before the checks,
 dnl so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS= auto_cflags=1
 
-AC_PROG_CC(cc gcc)
+AC_PROG_CC([cc gcc])
 AM_PROG_CC_C_O
 
 dnl Use -v and some other options with SunStudio cc.
-case `${CC} -V 2>&1` in
-  cc:\ Sun\ C*) CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes"
-                CFLAGS="${CFLAGS} -erroff=E_STATEMENT_NOT_REACHED" ;;
-esac
+AS_CASE([`${CC} -V 2>&1`],
+	[cc:\ Sun\ C*], [CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes"
+			 CFLAGS="${CFLAGS} -erroff=E_STATEMENT_NOT_REACHED"])
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
 [nmh_saved_cflags="$CFLAGS"
