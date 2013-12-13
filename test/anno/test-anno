@@ -122,8 +122,8 @@ check "$expected" "$actual"
 rm "${MH_TEST_DIR}/Mail/draft"
 
 # check -append
-sed -e '5a\
-Nmh-test:' "${MH_TEST_DIR}/Mail/inbox/1" >"$expected"
+awk --posix 'NR==6{print "Nmh-test:"}1' <"${MH_TEST_DIR}/Mail/inbox/1" \
+  >"$expected"
 anno 1 -component Nmh-test -append
 sed -e 's/^Nmh-test:.*/Nmh-test:/' "${MH_TEST_DIR}/Mail/inbox/1" >"$actual"
 check "$expected" "$actual"
