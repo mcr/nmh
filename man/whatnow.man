@@ -196,6 +196,18 @@ useful) feature.  Consult the
 .IR mh-draft (5)
 man page for more
 information.
+.PP
+If your
+.B nmh
+was configured with readline enabled, you'll be able to use filename
+completion and other readline features at the prompt.  These are
+particularly useful with the
+.BR cd ,
+.BR ls ,
+.BR attach ,
+and
+.B detach
+commands for managing MIME attachments.
 .SH FILES
 .fc ^ ~
 .nf
