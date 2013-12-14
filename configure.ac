@@ -150,7 +150,7 @@ dnl CUSTOMIZE LINK
 dnl --------------
 if test `uname` = OpenBSD; then
   dnl Filter out "often/almost always misused" warnings from OpenBSD linker.
-  POSTLINK=["2>&1 | egrep -v 'warning'; true"]
+  [POSTLINK='2>&1 | egrep -v warning; true']
 fi
 AC_SUBST([POSTLINK])
 
