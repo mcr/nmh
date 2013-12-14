@@ -6,16 +6,21 @@
  * complete copyright information.
  */
 
-#include <stdlib.h>  /* for abs(), srand(), rand() */
+#include <stdlib.h>  /* for abs(), srand(), rand(), arc4random() */
 #include <stdio.h>   /* for fopen(), fread(), fclose() */
 #include <unistd.h>  /* for getpid() */
 #include <time.h>    /* for time() */
 
+#include <config.h>
+
+#if !HAVE_ARC4RANDOM
 static int seeded = 0;
+#endif
 
 
 int
 m_rand (unsigned char *buf, size_t n) {
+#if !HAVE_ARC4RANDOM
   if (! seeded) {
     FILE *devurandom;
     unsigned int seed;
@@ -46,6 +51,9 @@ m_rand (unsigned char *buf, size_t n) {
       *buf++ = *rndp++;
     }
   }
+#else
+  arc4random_buf(buf, n);
+#endif
 
   return 0;
 }
