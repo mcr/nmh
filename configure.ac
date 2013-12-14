@@ -92,57 +92,72 @@ dnl CHECK THE COMPILER
 dnl ------------------
 dnl We want these before the checks,
 dnl so the checks can modify their values.
-test -z "$CFLAGS"  &&  auto_cflags=1
+test -z "$CFLAGS" && CFLAGS= auto_cflags=1
 
 AC_PROG_CC([cc gcc])
 AM_PROG_CC_C_O
 
-dnl ----------------
-dnl CUSTOMIZE CFLAGS
-dnl ----------------
+dnl Use -v and some other options with SunStudio cc.
+AS_CASE([`${CC} -V 2>&1`],
+	[cc:\ Sun\ C*], [CFLAGS="${CFLAGS:+$CFLAGS }-v -errtags=yes"
+			 CFLAGS="${CFLAGS} -erroff=E_STATEMENT_NOT_REACHED"])
+
+AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
+[nmh_saved_cflags="$CFLAGS"
+ CFLAGS="$CFLAGS -Wextra -Werror"
+ AC_TRY_COMPILE([],[],nmh_cv_has_wextra=yes,nmh_cv_has_wextra=no)
+ CFLAGS="$nmh_saved_cflags"])
+
+dnl Can't use -ansi with gcc 4.5.3 on Cygwin, at least through setup
+dnl version 2.763, because it disables some features in the system
+dnl header files and warns about them with -Wall.  Try to test for
+dnl that generally, though still with gcc.
+if test "$GCC" = yes; then
+  AC_CACHE_CHECK([whether we can use -ansi with gcc], [nmh_cv_has_dash_ansi],
+    [nmh_saved_cppflags="$CPPFLAGS"
+     nmh_saved_cflags="$CFLAGS"
+     CPPFLAGS="-D_GNU_SOURCE"
+     CFLAGS="-ansi -Wall -Werror"
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <time.h>],[tzset();])],
+       [nmh_cv_has_dash_ansi=yes],
+       [nmh_cv_has_dash_ansi=no])
+     CPPFLAGS="$nmh_saved_cppflags"
+     CFLAGS="$nmh_saved_cflags"])
+else
+  nmh_cv_has_dash_ansi=no
+fi
+
+dnl if the user hasn't specified CFLAGS, then
+dnl   if compiler is gcc, then
+dnl    use -O2 and some warning flags
+dnl   else use -O
+dnl We use -Wall and -Wextra if supported.  If the compiler supports it we
+dnl also use -Wno-pointer-sign, because gcc 4 now produces a lot of new
+dnl warnings which are probably mostly spurious and which in any case we
+dnl don't want to deal with now.
+if test "$nmh_cv_has_dash_ansi" = "yes"; then
+    nmh_gcc_warnflags="-ansi -pedantic -Wall"
+else
+    nmh_gcc_warnflags="-Wall"
+fi
+if test "$nmh_cv_has_wextra" = "yes"; then
+    nmh_gcc_warnflags="${nmh_gcc_warnflags} -Wextra"
+fi
+
 if test -n "$auto_cflags"; then
-  dnl The user didn't specify CFLAGS, so customize them.
-  if test "$GCC" = yes; then
-    dnl Can't use -ansi with gcc 4.5.3 on Cygwin, at least through setup
-    dnl version 2.763, because it disables some features in the system
-    dnl header files and warns about them with -Wall.  Try to test for
-    dnl that generally, with gcc.
-    AC_CACHE_CHECK([whether we can use -ansi with gcc], [nmh_cv_has_dash_ansi],
-      [nmh_saved_cppflags="$CPPFLAGS"
-       nmh_saved_cflags="$CFLAGS"
-       CPPFLAGS="-D_GNU_SOURCE"
-       CFLAGS="-ansi -Wall -Werror"
-       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <time.h>],[tzset();])],
-         [nmh_cv_has_dash_ansi=yes],
-         [nmh_cv_has_dash_ansi=no])
-       CPPFLAGS="$nmh_saved_cppflags"
-       CFLAGS="$nmh_saved_cflags"])
-    test "$nmh_cv_has_dash_ansi" = "yes"  &&  \
-      CFLAGS="${CFLAGS:+$CFLAGS }-ansi -pedantic"
+  if test x"$enable_debug" = x"yes"; then
+    if test -n "$GCC"; then
+      test -z "$CFLAGS" && CFLAGS="$nmh_gcc_warnflags -g" || CFLAGS="$CFLAGS $nmh_gcc_warnflags -g"
+    else
+      test -z "$CFLAGS" && CFLAGS=-g || CFLAGS="$CFLAGS -g"
+    fi
   else
-    dnl Use -v and some other options with SunStudio cc.  lex produces
-    dnl code that causes unreachable-statement warnings.  It might be
-    dnl better to use an autoconf test, except -v will probably succeed
-    dnl with many other compilers but have different meaning.
-    AS_CASE([`${CC} -V 2>&1`],
-            [cc:\ Sun\ C*], [CFLAGS=\
-"${CFLAGS:+$CFLAGS }-v -errtags=yes -erroff=E_STATEMENT_NOT_REACHED"])
+    if test -n "$GCC"; then
+      test -z "$CFLAGS" && CFLAGS="$nmh_gcc_warnflags -O2" || CFLAGS="$CFLAGS $nmh_gcc_warnflags -O2"
+    else
+      test -z "$CFLAGS" && CFLAGS=-O  || CFLAGS="$CFLAGS -O"
+    fi
   fi
-
-  AC_CACHE_CHECK([whether compiler supports -Wall], [nmh_cv_has_wall],
-                 [nmh_saved_cflags="$CFLAGS"
-                 CFLAGS="$CFLAGS -Wall -Werror"
-                 AC_TRY_COMPILE([],[],nmh_cv_has_wall=yes,nmh_cv_has_wall=no)
-                 CFLAGS="$nmh_saved_cflags"])
-  test "$nmh_cv_has_wall" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wall"
-
-  AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
-                 [nmh_saved_cflags="$CFLAGS"
-                 CFLAGS="$CFLAGS -Wextra -Werror"
-                 AC_TRY_COMPILE([],[],nmh_cv_has_wextra=yes,
-                                nmh_cv_has_wextra=no)
-                 CFLAGS="$nmh_saved_cflags"])
-  test "$nmh_cv_has_wextra" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wextra"
 fi
 
 dnl --------------
@@ -150,7 +165,8 @@ dnl CUSTOMIZE LINK
 dnl --------------
 if test `uname` = OpenBSD; then
   dnl Filter out "often/almost always misused" warnings from OpenBSD linker.
-  [POSTLINK='2>&1 | egrep -v warning; true']
+  [POSTLINK="2>&1 | egrep -v ': [w]arning: s[a-z]+\(\) is \
+(almost always|often) misused, please use'; true"]
 fi
 AC_SUBST([POSTLINK])
 
