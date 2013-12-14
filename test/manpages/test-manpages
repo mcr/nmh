@@ -19,7 +19,7 @@ require_prog groff
 
 cd ${MH_INST_DIR}${mandir} || exit 1
 
-# groff will still exit with status zero even if warnings
+# groff will exit with zero status even if warnings
 # were emitted, so we have to jump through hoops to
 # find out if any were emitted.
 
@@ -31,16 +31,23 @@ actual=$MH_TEST_DIR/$$.actual
 rm -f "$expected" "$actual"
 touch "$expected" "$actual"
 
+
+warnings="-ww"
+
 #### If the prefix is too long, groff will report that it can't break
 #### the `aliasfiles' line in ali.1.
 length=`echo $prefix | awk '{print length($0)}'`
-[ $length -gt 35 ]  &&  suppress_break_warning=-Wbreak
+[ $length -gt 35 ]  &&  warnings="${warnings} -Wbreak"
 
-#### OpenBSD's mandoc spits out a lot of warnings.
-case `uname -s` in
-  OpenBSD) warnings="-ww -Wel $suppress_break_warning" ;;
-  *)       warnings="-ww $suppress_break_warning" ;;
-esac
+#### OpenBSD's mandoc spits out a lot of "unbalance .el request" warnings;
+#### -Wel suppresses them.
+groff -Tutf8 -mandoc -ww man1/ali.1 >/dev/null 2>>"$actual"
+if grep warning "$actual" >/dev/null; then
+  warnings="$warnings -Wel"
+fi
+rm -f "$actual"
+touch "$actual"
+
 
 for manpage in man?/*.?; do
   groff -Tutf8 -mandoc $warnings "$manpage" >/dev/null 2>>"$actual"
