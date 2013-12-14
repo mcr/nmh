@@ -160,6 +160,16 @@ if test -n "$auto_cflags"; then
   fi
 fi
 
+dnl --------------
+dnl CUSTOMIZE LINK
+dnl --------------
+if test `uname` = OpenBSD; then
+  dnl Filter out "often/almost always misused" warnings from OpenBSD linker.
+  POSTLINK=["2>&1 | egrep -v ': warning: s[a-z]+\(\) is (almost always|often) \
+misused, please use'; true"]
+fi
+AC_SUBST([POSTLINK])
+
 dnl -----------------
 dnl CUSTOMIZE LDFLAGS
 dnl -----------------
