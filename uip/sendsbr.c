@@ -418,7 +418,7 @@ make_mime_composition_file_entry(char *file_name, int attachformat,
 {
     int			binary;			/* binary character found flag */
     int			c;			/* current character */
-    char		cmd[PATH_MAX + 6];	/* file command buffer */
+    char		cmd[PATH_MAX + 8];	/* file command buffer */
     char		*content_type;		/* mime content type */
     FILE		*fp;			/* content and pipe file pointer */
     struct	node	*np;			/* context scan node pointer */
