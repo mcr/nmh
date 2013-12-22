@@ -17,6 +17,9 @@ fi
 # Find MIME type string, using mimetypeproc if configured with it.
 MIMETYPEPROC=`mhparam mimetypeproc`
 content_type_string() {
+echo $MIMETYPEPROC; $MIMETYPEPROC $1 # temporary, for debugging on OpenBSD
+ls -l dead.letter; /bin/rm -f dead.letter # temporary, for debugging on OpenBSD
+
   if test -z "$MIMETYPEPROC"; then
     echo "text/plain; name=\"`basename $1`\"; charset=\"us-ascii\""
   else
