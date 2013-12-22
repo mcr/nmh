@@ -613,8 +613,10 @@ mime_type (const char *file_name) {
     if ((int) snprintf (cmd, sizeof cmd, mimetypeproc, file_name) <
         (int) sizeof cmd) {
         if ((fp = popen (cmd, "r")) != NULL) {
-            if (fgets (buf, sizeof buf, fp)) {
-                char *cp;
+            /* Make sure that buf has space for one additional
+               character, the semicolon that might be added below. */
+            if (fgets (buf, sizeof buf - 1, fp)) {
+                char *cp, *space;
 
                 /* Skip leading <filename>:<whitespace>, if present. */
                 if ((content_type = strchr (buf, ':')) != NULL) {
@@ -629,6 +631,23 @@ mime_type (const char *file_name) {
                 /* Truncate at newline (LF or CR), if present. */
                 if ((cp = strpbrk (content_type, "\n\n")) != NULL) {
                     *cp = '\0';
+                }
+
+                /* If necessary, insert semicolon between content type
+                   and charset.  Assume that the first space is between
+                   them. */
+                if ((space = strchr (content_type, ' ')) != NULL) {
+                    ssize_t len = strlen (content_type);
+
+                    if (space - content_type > 0  &&
+                        len > space - content_type + 1) {
+                        if (*(space - 1) != ';') {
+                            /* The +1 is for the terminating NULL. */
+                            memmove (space + 1, space,
+                                     len - (space - content_type) + 1);
+                            *space = ';';
+                        }
+                    }
                 }
             } else {
                 advise (NULL, "unable to read mime type");
