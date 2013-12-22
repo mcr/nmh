@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "April 14, 2013" "%nmhversion%"
+.TH SEND %manext1% "December 22, 2013" "%nmhversion%"
 .SH NAME
 send \- send a message
 .SH SYNOPSIS
@@ -103,7 +103,27 @@ The body of each header field whose name matches the
 is interpreted as a file name, and each file named is included as a separate
 part in the MIME message.
 .PP
-For file names with dot suffixes, the profile is scanned for a
+Determination of the content MIME type inserted into the Content-Type
+header for each part depends on how the
+.B nmh
+installation was configured.  If a program, such as
+.B file
+with a
+.B --mime
+or
+.B -i
+option, was found that can specify the type of a file as a MIME type
+string, then that will be used.  To determine if your
+.B nmh
+was so configured, run
+.B mhparam mimetypeproc
+and see if a non-empty string is displayed.
+.PP
+If your
+.B nmh
+was not configured with a program to specify a file type as a MIME
+string, then a different method is used to determine the content-type
+string.  For file names with dot suffixes, the profile is scanned for a
 .I mhshow-suffix-
 entry for that suffix.
 The content-type for the part is taken from that profile entry if a match is
@@ -473,7 +493,9 @@ for more information.
 .SH "SEE ALSO"
 .IR comp (1),
 .IR dist (1),
+.IR file (1),
 .IR forw (1),
+.IR mhparam (1),
 .IR repl (1),
 .IR whatnow (1),
 .IR mh\-alias (5),

@@ -61,6 +61,13 @@ char *tls =
     "";
 #endif
 
+char *mimetypeproc =
+#ifdef MIMETYPEPROC
+    MIMETYPEPROC;
+#else
+    "";
+#endif
+
 struct proc {
     char *p_name;
     char **p_field;
@@ -77,6 +84,7 @@ static struct proc procs [] = {
      { "lproc",         &lproc },
      { "mailproc",      &mailproc },
      { "mhlproc",       &mhlproc },
+     { "mimetypeproc",  &mimetypeproc },
      { "moreproc",      &moreproc },
      { "msgprot",       &msgprot },
      { "mshproc",       &mshproc },

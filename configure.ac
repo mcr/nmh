@@ -324,6 +324,19 @@ AC_CACHE_CHECK(what group owns the mail spool, nmh_cv_ls_mail_grp,
 MAIL_SPOOL_GRP=$nmh_cv_ls_mail_grp
 AC_SUBST(MAIL_SPOOL_GRP)dnl
 
+dnl ---------------------------------------------
+dnl CHECK FOR PROGRAM TO PROVIDE MIME TYPE STRING
+dnl ---------------------------------------------
+AS_IF([file --mime "${srcdir}"/configure >/dev/null 2>&1],
+      [nmh_mimetypeproc='"file --mime"'])
+if test x"$nmh_mimetypeproc" = x; then
+  AS_IF([file -i "${srcdir}"/configure >/dev/null 2>&1],
+      [nmh_mimetypeproc='"file -i"'])
+fi
+AS_CASE([$nmh_mimetypeproc], [?*],
+        [AC_DEFINE_UNQUOTED([MIMETYPEPROC], [$nmh_mimetypeproc],
+          [Program, with arguments, that provides MIME type string.])])
+
 dnl ------------------
 dnl CHECK HEADER FILES
 dnl ------------------

@@ -14,6 +14,20 @@ fi
 
 . "${srcdir}/test/post/test-post-common.sh"
 
+# Find MIME type string, using mimetypeproc if configured with it.
+MIMETYPEPROC=`mhparam mimetypeproc`
+content_type_string() {
+  if test -z "$MIMETYPEPROC"; then
+    echo "text/plain; name=\"`basename $1`\"; charset=\"us-ascii\""
+  else
+    # 1) Excise leading filename followed by : and any whitespace.
+    # 2) Wrap charset value in double quotes.  Assume that it isn't already.
+    printf "%s %s%s" \
+      `$MIMETYPEPROC $1 | sed -e 's/.*: *//' -e 's/\(charset=\)\(.*\)/\1"\2"/'`\
+      "; name=\"`basename $1`\""
+  fi
+}
+
 # Customize test_post () for use with mhmail.
 # $1 is expected output file, provided by caller
 # $2 is mhmail switches, except for -body
@@ -791,7 +805,7 @@ Content-Type: text/plain; charset="us-ascii"
 See how easy it is to add an attachment!
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; name="attachment.txt"; charset="us-ascii"
+Content-Type: `content_type_string ${srcdir}/test/mhmail/attachment.txt`
 Content-Description: attachment.txt
 Content-Disposition: attachment; filename="attachment.txt"
 

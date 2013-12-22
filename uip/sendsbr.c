@@ -63,6 +63,7 @@ static	int	attach(char *, char *, int);
 static	void	clean_up_temporary_files(void);
 static	int	get_line(void);
 static	void	make_mime_composition_file_entry(char *, int, char *);
+static  char   *mime_type (const char *);
 
 
 /*
@@ -425,24 +426,28 @@ make_mime_composition_file_entry(char *file_name, int attachformat,
     char		*p;			/* miscellaneous string pointer */
     struct	stat	st;			/* file status buffer */
 
-    content_type = default_content_type;
+    if ((content_type = mime_type (file_name)) == NULL) {
+        /*
+         * Check the file name for a suffix.  Scan the context for
+         * that suffix on a mhshow-suffix- entry.  We use these
+         * entries to be compatible with mhnshow, and there's no
+         * reason to make the user specify each suffix twice.  Context
+         * entries of the form "mhshow-suffix-contenttype" in the name
+         * have the suffix in the field, including the dot.
+         */
+        if ((p = strrchr(file_name, '.')) != (char *)0) {
+            for (np = m_defs; np; np = np->n_next) {
+                if (strncasecmp(np->n_name, "mhshow-suffix-", 14) == 0 &&
+                    strcasecmp(p, np->n_field ? np->n_field : "") == 0) {
+                    content_type = strdup (np->n_name + 14);
+                    break;
+                }
+            }
+        }
 
-    /*
-     *	Check the file name for a suffix.  Scan the context for that suffix on a
-     *	mhshow-suffix- entry.  We use these entries to be compatible with mhnshow,
-     *	and there's no reason to make the user specify each suffix twice.  Context
-     *	entries of the form "mhshow-suffix-contenttype" in the name have the suffix
-     *	in the field, including the dot.
-     */
-
-    if ((p = strrchr(file_name, '.')) != (char *)0) {
-	for (np = m_defs; np; np = np->n_next) {
-	    if (strncasecmp(np->n_name, "mhshow-suffix-", 14) == 0 &&
-                strcasecmp(p, np->n_field ? np->n_field : "") == 0) {
-		content_type = np->n_name + 14;
-		break;
-	    }
-	}
+        if (content_type == NULL  &&  default_content_type != NULL) {
+            content_type = strdup (default_content_type);
+        }
     }
 
     /*
@@ -468,7 +473,8 @@ make_mime_composition_file_entry(char *file_name, int attachformat,
 
 	(void)fclose(fp);
 
-	content_type = binary ? "application/octet-stream" : "text/plain";
+	content_type =
+            strdup (binary ? "application/octet-stream" : "text/plain");
     }
 
     /*
@@ -579,6 +585,8 @@ make_mime_composition_file_entry(char *file_name, int attachformat,
         adios ((char *)0, "unsupported attachformat %d", attachformat);
     }
 
+    free (content_type);
+
     /*
      *	Finish up with the file name.
      */
@@ -586,6 +594,56 @@ make_mime_composition_file_entry(char *file_name, int attachformat,
     (void)fprintf(composition_file, " %s\n", file_name);
 
     return;
+}
+
+/*
+ * Try to use external command to determine mime type, and possibly
+ * encoding.  Caller is responsible for free'ing returned memory.
+ */
+static char *
+mime_type (const char *file_name) {
+    char *content_type = NULL;  /* mime content type */
+
+#ifdef MIMETYPEPROC
+    char cmd[2 * PATH_MAX + 2];   /* file command buffer */
+    char buf[BUFSIZ >= 2048  ?  BUFSIZ  : 2048];
+    FILE *fp;                   /* content and pipe file pointer */
+    char mimetypeproc[] = MIMETYPEPROC " '%s'";
+
+    if ((int) snprintf (cmd, sizeof cmd, mimetypeproc, file_name) <
+        (int) sizeof cmd) {
+        if ((fp = popen (cmd, "r")) != NULL) {
+            if (fgets (buf, sizeof cmd, fp)) {
+                char *cp;
+
+                /* Skip leading <filename>:<whitespace>, if present. */
+                if ((content_type = strchr (buf, ':')) != NULL) {
+                    ++content_type;
+                    while (*content_type  &&  isblank (*content_type)) {
+                        ++content_type;
+                    }
+                } else {
+                    content_type = buf;
+                }
+
+                /* Truncate at newline (LF or CR), if present. */
+                if ((cp = strpbrk (content_type, "\n\n")) != NULL) {
+                    *cp = '\0';
+                }
+            } else {
+                advise (NULL, "unable to read mime type");
+            }
+        } else {
+            advise (NULL, "unable to run %s", buf);
+        }
+    } else {
+        advise (NULL, "filename to large to deduce mime type");
+    }
+#else
+    NMH_UNUSED (file_name);
+#endif
+
+    return content_type ? strdup (content_type) : NULL;
 }
 
 /*

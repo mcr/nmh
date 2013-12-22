@@ -60,6 +60,10 @@ NEW FEATURES
 - The -changecur and -nochangecur switches have been added to mhlist(1).
 - mhbuild(1) can now encode 8-bit message headers using RFC-2047 encoding
   rules.
+- The whatnow(1) attach feature will determine the content type of an
+  attachment using a program such as file --mime, if available at
+  configuration time.  If not, it will use mhshow-suffix- entries as
+  before.
 
 -----------------
 OBSOLETE FEATURES

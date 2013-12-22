@@ -39,7 +39,7 @@ test_attachment ()
   # use, so we'll just use sed to remove the actual date so we can easily
   # compare it against our "correct" output.  And same for charset.
   #
-  sed -e 's/^Date:.*/Date:/' -e 's/; charset=".*//' \
+  sed -e 's/^Date:.*/Date:/' -e 's/; charset="[^;]*//' \
       "`mhpath cur`" > "${testname}.actual"
 
   check "${testname}.actual" "$1"
