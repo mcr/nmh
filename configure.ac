@@ -324,11 +324,6 @@ AC_CACHE_CHECK(what group owns the mail spool, nmh_cv_ls_mail_grp,
 MAIL_SPOOL_GRP=$nmh_cv_ls_mail_grp
 AC_SUBST(MAIL_SPOOL_GRP)dnl
 
-dnl Temporary probe to see what these file commands will do.
-file --mime configure; echo $?
-file -i configure; echo $?
-dnl
-
 dnl ------------------
 dnl CHECK HEADER FILES
 dnl ------------------
