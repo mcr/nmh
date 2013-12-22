@@ -1,4 +1,4 @@
-.TH ALI %manext1% "March 21, 2013" "%nmhversion%"
+.TH ALI %manext1% "December 4, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

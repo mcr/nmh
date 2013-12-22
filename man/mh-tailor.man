@@ -1,4 +1,4 @@
-.TH MH-TAILOR %manext5% "July 11, 2012" "%nmhversion%"
+.TH MH-TAILOR %manext5% "December 8, 2013" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
