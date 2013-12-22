@@ -613,7 +613,7 @@ mime_type (const char *file_name) {
     if ((int) snprintf (cmd, sizeof cmd, mimetypeproc, file_name) <
         (int) sizeof cmd) {
         if ((fp = popen (cmd, "r")) != NULL) {
-            if (fgets (buf, sizeof cmd, fp)) {
+            if (fgets (buf, sizeof buf, fp)) {
                 char *cp;
 
                 /* Skip leading <filename>:<whitespace>, if present. */
