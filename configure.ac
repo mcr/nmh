@@ -328,14 +328,14 @@ dnl ---------------------------------------------
 dnl CHECK FOR PROGRAM TO PROVIDE MIME TYPE STRING
 dnl ---------------------------------------------
 AS_IF([file --mime "${srcdir}"/configure >/dev/null 2>&1],
-      [nmh_mimetypeproc='"file --mime"'])
-if test -n "$nmh_mimetypeproc"; then
-  AS_IF([file --brief --mime "${srcdir}"/configure >/dev/null 2>&1],
-      [nmh_mimetypeproc='"file --brief --mime"'])
-fi
+      [AS_IF([file --brief --mime "${srcdir}"/configure >/dev/null 2>&1],
+             [nmh_mimetypeproc='"file --brief --mime"'],
+             [nmh_mimetypeproc='"file --mime"'])])
 AS_CASE([$nmh_mimetypeproc], [?*],
         [AC_DEFINE_UNQUOTED([MIMETYPEPROC], [$nmh_mimetypeproc],
           [Program, with arguments, that provides MIME type string.])])
+AS_ECHO_N(["AS_ESCAPE([checking program to provide MIME type string ... ])"])
+AS_ECHO(["AS_ESCAPE([$nmh_mimetypeproc], [""])"])
 
 dnl ------------------
 dnl CHECK HEADER FILES
