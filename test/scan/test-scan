@@ -30,7 +30,7 @@ cat >"$expected" <<EOF
   10  09/29 Test10             Testing message 10<<This is message number 10 >>
 EOF
 
-scan +inbox -width 80 >"$actual" || exit 1
+run_prog scan +inbox -width 80 >"$actual" || exit 1
 check "$expected" "$actual"
 
 # check highlighting
@@ -50,7 +50,7 @@ EOF
 printf 'Unseen-Sequence: unseen\n' >> $MH
 mark -sequence cur 5
 mark -sequence unseen 10
-scan -form scan.highlighted -width 80 >"$actual" || exit 1
+run_prog scan -form scan.highlighted -width 80 >"$actual" || exit 1
 check "$expected" "$actual"
 
 

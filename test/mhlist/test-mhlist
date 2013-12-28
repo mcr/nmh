@@ -29,26 +29,26 @@ cat > $expected <<EOF
  msg part  type/subtype              size description
    5       text/plain                  25
 EOF
-mhlist > $actual 2>&1
+run_prog mhlist > $actual 2>&1
 check $expected $actual 'keep first'
 
 # check -noheaders
 run_test 'mhlist 5 -noheaders' '   5       text/plain                  25'
 
 # check -headers
-mhlist -noheaders -headers > $actual 2>&1
+run_prog mhlist -noheaders -headers > $actual 2>&1
 check $expected $actual 'keep first'
 
 # check with folder and current message
-mhlist +inbox > $actual 2>&1
+run_prog mhlist +inbox > $actual 2>&1
 check $expected $actual 'keep first'
 
 # check with specified message
-mhlist 5 > $actual 2>&1
+run_prog mhlist 5 > $actual 2>&1
 check $expected $actual 'keep first'
 
 # check -file
-mhlist -file "$MH_TEST_DIR/Mail/inbox/5" > $actual 2>&1
+run_prog mhlist -file "$MH_TEST_DIR/Mail/inbox/5" > $actual 2>&1
 check $expected $actual
 
 # check -file -
@@ -56,7 +56,7 @@ cat > $expected <<EOF
  msg part  type/subtype              size description
    0       text/plain                  25
 EOF
-mhlist -file - < "$MH_TEST_DIR/Mail/inbox/5" > $actual 2>&1
+run_prog mhlist -file - < "$MH_TEST_DIR/Mail/inbox/5" > $actual 2>&1
 check $expected $actual
 
 # check message number greater than highest
@@ -68,7 +68,7 @@ cat > $expected <<EOF
    2       text/plain                  25
    8       text/plain                  25
 EOF
-mhlist 2 8 > $actual 2>&1
+run_prog mhlist 2 8 > $actual 2>&1
 check $expected $actual
 
 # Write message with a text/plain subpart.
@@ -360,7 +360,7 @@ This is part 2.
 --1--
 EOF
 
-mhlist last > $actual 2>&1
+run_prog mhlist last > $actual 2>&1
 check $expected $actual
 
 

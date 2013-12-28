@@ -77,8 +77,9 @@ run_test 'pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace' \
 11'
 
 # Test MHPDEBUG.
-MHPDEBUG=1 pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace \
- >/dev/null 2>"$actual"
+# Don't use run_prog here because it loses the environment setting.
+MHPDEBUG=1 pick -not -lbrace -subject NoMatch -and -subject message.3 \
+  -rbrace >/dev/null 2>"$actual"
 cat >"$expected" <<EOF
 NOT
 | AND
@@ -92,7 +93,8 @@ set +e
 # Produce 0 if no messages match and standard output is not a tty.
 # Note that there is an error message on stderr, but it's redirected
 # to /dev/null here.
-echo `pick -subject message.3 -and -from Test4 >"$actual" 2>/dev/null` \
+echo \
+  `run_prog pick -subject message.3 -and -from Test4 >"$actual" 2>/dev/null` \
   >/dev/null
 cat >"$expected" <<EOF
 0
@@ -104,11 +106,11 @@ if test -t 1  &&  (printf '' >/dev/tty) 2>/dev/null; then
   # output is a tty.  To test that even when run with stdout
   # detached, write directly to /dev/tty.  Can't capture the
   # output so hopefully the user will notice it.
-  pick -subject message.3 -and -from Test4 >/dev/tty 2>/dev/null
+  run_prog pick -subject message.3 -and -from Test4 >/dev/tty 2>/dev/null
 fi
 
 # Also, check that the exit status is 1.
-pick -subject message.3 -and -from Test4 >/dev/null 2>&1
+run_prog pick -subject message.3 -and -from Test4 >/dev/null 2>&1
 run_test "echo $?" '1'
 
 set -e
@@ -135,7 +137,7 @@ run_test 'pick -to some -nolist' '11 hits'
 run_test 'pick -to user@example.com -nolist' '11 hits'
 
 # Test -after.
-pick -after '28 Sep 2008 00:00:00' >"$actual" 2>&1
+run_prog pick -after '28 Sep 2008 00:00:00' >"$actual" 2>&1
 cat >"$expected" <<EOF
 11
 EOF
@@ -143,7 +145,7 @@ check "$expected" "$actual"
 
 # Invert exit status so execution doesn't terminate due to -e.
 set +e
-pick -after '29 Sep 2008 00:00:00' >"$actual" 2>/dev/null
+run_prog pick -after '29 Sep 2008 00:00:00' >"$actual" 2>/dev/null
 set -e
 cat >"$expected" <<EOF
 0
@@ -151,21 +153,21 @@ EOF
 check "$expected" "$actual"
 
 # Test -before.  While -after doesn't include the specified date, -before does.
-pick -before '29 Sep 2008 00:00:01' last:3 >"$actual" 2>&1
+run_prog pick -before '29 Sep 2008 00:00:01' last:3 >"$actual" 2>&1
 cat >"$expected" <<EOF
 9
 10
 11
 EOF
 check "$expected" "$actual"
-pick -before '28 Sep 2008 00:00:00:' last:3 >"$actual" 2>&1
+run_prog pick -before '28 Sep 2008 00:00:00:' last:3 >"$actual" 2>&1
 cat >"$expected" <<EOF
 9
 10
 EOF
 check "$expected" "$actual"
 set +e
-pick -before '28 Sep 2006 00:00:00' last:3 >"$actual" 2>/dev/null
+run_prog pick -before '28 Sep 2006 00:00:00' last:3 >"$actual" 2>/dev/null
 set -e
 cat >"$expected" <<EOF
 0
@@ -174,13 +176,15 @@ check "$expected" "$actual"
 
 # Test -datefield.
 set +e
-pick -datefield date -after '29 Sep 2008 00:00:00' >"$actual" 2>/dev/null
+run_prog pick -datefield date -after '29 Sep 2008 00:00:00' \
+  >"$actual" 2>/dev/null
 set -e
 cat >"$expected" <<EOF
 0
 EOF
 check "$expected" "$actual"
-pick -datefield delivery-date -after '29 Sep 2008 00:00:00' >"$actual" 2>&1
+run_prog pick -datefield delivery-date -after '29 Sep 2008 00:00:00' \
+  >"$actual" 2>&1
 cat >"$expected" <<EOF
 11
 EOF
@@ -239,7 +243,7 @@ EOF
 
 echo 12 >"$expected"
 
-pick -subject 'multi-line header field' 12 >"$actual" 2>&1
+run_prog pick -subject 'multi-line header field' 12 >"$actual" 2>&1
 check "$expected" "$actual"
 
 # Test MIME-encoded header.
@@ -257,7 +261,7 @@ EOF
 echo 13 >"$expected"
 
 set +e
-LC_CTYPE=en_US.UTF-8 pick -subject foobar 13 >"$actual" 2>&1
+LC_CTYPE=en_US.UTF-8 run_prog pick -subject foobar 13 >"$actual" 2>&1
 set -e
 check "$expected" "$actual"
 

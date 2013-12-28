@@ -48,7 +48,7 @@ cd "${MH_TEST_DIR}"  ||  exit 1
 printf 'y\n' >Mail/yes
 
 # check with no switches
-packf <Mail/yes
+run_prog packf <Mail/yes
 inc +inbox2 -file msgbox <Mail/yes >/dev/null
 rm -f msgbox .msgbox.map
 for i in `pick +inbox`; do
@@ -58,7 +58,7 @@ run_test "printf $i" '10'
 rmm +inbox2 -unlink `pick +inbox2`
 
 # check +folder
-packf +inbox <Mail/yes
+run_prog packf +inbox <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
 rm -f msgbox .msgbox.map
 for i in `pick +inbox`; do
@@ -68,7 +68,7 @@ run_test "printf $i" '10'
 rmm +inbox2 -unlink `pick +inbox2`
 
 # check msgs
-packf +inbox 1 2 3 <Mail/yes
+run_prog packf +inbox 1 2 3 <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
 rm -f msgbox .msgbox.map
 for i in `pick +inbox2`; do
@@ -78,7 +78,7 @@ run_test "printf $i" '3'
 rmm +inbox2 -unlink `pick +inbox2`
 
 # check -file
-packf +inbox -file msgbox2 <Mail/yes
+run_prog packf +inbox -file msgbox2 <Mail/yes
 inc +inbox2 -file msgbox2 >/dev/null
 for i in `pick +inbox2`; do
   diff "`mhpath +inbox $i`" "`mhpath +inbox2 $i`"
@@ -87,7 +87,7 @@ run_test "printf $i" '10'
 rmm +inbox2 -unlink `pick +inbox2`
 
 # check append to existing mbox file
-packf +inbox -file msgbox2 <Mail/yes
+run_prog packf +inbox -file msgbox2 <Mail/yes
 inc +inbox2 -file msgbox2 >/dev/null
 rm -f msgbox2 .msgbox2.map
 for i in `pick +inbox2`; do
@@ -102,7 +102,7 @@ run_test "printf $i" '20'
 rmm +inbox2 -unlink `pick +inbox2`
 
 # check -mbox
-packf +inbox -mbox <Mail/yes
+run_prog packf +inbox -mbox <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
 rm -f msgbox .msgbox.map
 for i in `pick +inbox2`; do
@@ -112,7 +112,7 @@ run_test "printf $i" '10'
 rmm +inbox2 -unlink `pick +inbox2`
 
 # check -mmdf
-packf +inbox -mmdf <Mail/yes
+run_prog packf +inbox -mmdf <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
 rm -f msgbox .msgbox.map
 for i in `pick +inbox2`; do
@@ -122,7 +122,7 @@ run_test "printf $i" '10'
 rmm +inbox2 -unlink `pick +inbox2`
 
 # check append to existing mmdf file
-packf +inbox -mmdf <Mail/yes
+run_prog packf +inbox -mmdf <Mail/yes
 inc +inbox2 -file msgbox >/dev/null
 rm -f msgbox .msgbox.map
 for i in `pick +inbox2`; do

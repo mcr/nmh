@@ -48,7 +48,7 @@ Usage: whom [switches] [file]
   -help
 EOF
 
-whom -help | head -10 >$actual 2>&1
+run_prog whom -help | head -10 >$actual 2>&1
 check $expected $actual
 
 # check -version

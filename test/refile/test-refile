@@ -21,14 +21,14 @@ actual=$MH_TEST_DIR/$$.actual
 
 cd $MH_TEST_DIR
 
-folder -create +other -fast >/dev/null
-folder -create +another -fast >/dev/null
+run_prog folder -create +other -fast >/dev/null
+run_prog folder -create +another -fast >/dev/null
 
 # check with no options and no current message
 run_test 'refile' 'refile: no folder specified'
 
 # check with current message
-folder +inbox 4 >/dev/null
+run_prog folder +inbox 4 >/dev/null
 run_test 'refile +other' ''
 run_test 'folders -noheader' \
 'another  has no messages.
@@ -38,7 +38,7 @@ other    has  1 message   (1- 1).
 TOTAL = 10 messages in 3 folders.'
 
 # check with specified message
-folder +inbox 5 >/dev/null
+run_prog folder +inbox 5 >/dev/null
 run_test 'refile 5 +other' ''
 run_test 'folders -noheader' \
 'another  has no messages.
@@ -67,7 +67,7 @@ TOTAL = 11 messages in 3 folders.'
 
 # check message number greater than highest
 run_test 'refile 11 +other' "refile: message 11 doesn't exist"
-folder -f +another >/dev/null
+run_prog folder -f +another >/dev/null
 
 # check -src
 run_test 'refile 9 -src +inbox +other' ''

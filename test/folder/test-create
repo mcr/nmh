@@ -14,14 +14,14 @@ fi
 
 setup_test
 
-folder -create +testfolder > /dev/null
+run_prog folder -create +testfolder > /dev/null
 if [ -d "$MH_TEST_DIR/Mail/testfolder" ]; then
     :
 else
     exit 1
 fi
 
-rmf +testfolder > /dev/null
+run_prog rmf +testfolder > /dev/null
 if [ -d "$MH_TEST_DIR/Mail/testfolder" ]; then
     # Test failed
     exit 1

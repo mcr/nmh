@@ -14,9 +14,9 @@ fi
 
 setup_test
 
-folder -create +testfolder > /dev/null
-folder -create +testfolder/folder1 > /dev/null
-folder -create +testfolder/folder2 > /dev/null
+run_prog folder -create +testfolder > /dev/null
+run_prog folder -create +testfolder/folder1 > /dev/null
+run_prog folder -create +testfolder/folder2 > /dev/null
 
 run_test 'folder -recurse +testfolder' 'testfolder+         has no messages       ;        (others).
 testfolder/folder1  has no messages.

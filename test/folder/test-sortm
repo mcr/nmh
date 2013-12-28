@@ -37,7 +37,7 @@ Usage: sortm [+folder] [msgs] [switches]
   -help
 EOF
 
-sortm -help >"$actual" 2>&1
+run_prog sortm -help >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
@@ -83,7 +83,7 @@ cat >"$expected" <<EOF
   12  09/29 Test11             Re: common subject<<This is message number 11 >>
 EOF
 
-sortm
+run_prog sortm
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -104,7 +104,7 @@ cat >"$expected" <<EOF
 EOF
 
 refile first +inbox; folder -pack >/dev/null
-sortm +inbox
+run_prog sortm +inbox
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -138,7 +138,7 @@ message 1 becomes message 2
 EOF
 
 refile first +inbox; folder -pack >/dev/null
-sortm -verbose >"$actual"
+run_prog sortm -verbose >"$actual"
 scan >>"$actual"
 check "$expected" "$actual"
 
@@ -159,7 +159,7 @@ cat >"$expected" <<EOF
 EOF
 
 refile first +inbox; folder -pack >/dev/null
-sortm -verbose -noverbose >"$actual"
+run_prog sortm -verbose -noverbose >"$actual"
 scan >>"$actual"
 check "$expected" "$actual"
 
@@ -180,7 +180,7 @@ cat >"$expected" <<EOF
 EOF
 
 refile first +inbox; folder -pack >/dev/null
-sortm first last
+run_prog sortm first last
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -200,7 +200,7 @@ cat >"$expected" <<EOF
   12+ 09/29 Test1              Testing message 1<<This is message number 1 >>
 EOF
 
-sortm -datefield Alt-Date 1 11
+run_prog sortm -datefield Alt-Date 1 11
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -220,7 +220,7 @@ cat >"$expected" <<EOF
   12+ 09/29 Test1              Testing message 1<<This is message number 1 >>
 EOF
 
-sortm -textfield subject
+run_prog sortm -textfield subject
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -240,7 +240,7 @@ cat >"$expected" <<EOF
   12+ 09/29 Test1              Testing message 1<<This is message number 1 >>
 EOF
 
-sortm -textfield subject -limit 0 -nolimit
+run_prog sortm -textfield subject -limit 0 -nolimit
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -261,7 +261,7 @@ cat >"$expected" <<EOF
 EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
-sortm -textfield subject -limit 0
+run_prog sortm -textfield subject -limit 0
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -282,7 +282,7 @@ cat >"$expected" <<EOF
 EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
-sortm -textfield from -limit 0
+run_prog sortm -textfield from -limit 0
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -313,7 +313,7 @@ cat >"$expected" <<EOF
 EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
-sortm -textfield subject -limit 10
+run_prog sortm -textfield subject -limit 10
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -335,7 +335,7 @@ cat >"$expected" <<EOF
 EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
-sortm -textfield subject -limit 60
+run_prog sortm -textfield subject -limit 60
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -357,7 +357,7 @@ cat >"$expected" <<EOF
 EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
-sortm -textfield subject -limit 60 -notextfield
+run_prog sortm -textfield subject -limit 60 -notextfield
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -382,7 +382,7 @@ cat >"$expected" <<EOF
 EOF
 
 refile first +inbox; folder -pack >/dev/null
-sortm -noall -all
+run_prog sortm -noall -all
 scan >"$actual"
 check "$expected" "$actual"
 
@@ -394,7 +394,7 @@ EOF
 
 sed -e 's/Sep//' $MH_TEST_DIR/Mail/inbox/7 > $MH_TEST_DIR/Mail/inbox/14
 set +e
-sortm -check >"$actual" 2>&1
+run_prog sortm -check >"$actual" 2>&1
 set -e
 check "$expected" "$actual"
 

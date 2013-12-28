@@ -35,12 +35,12 @@ do
 
     echo "datalocking: $locktype" >> ${MH}
 
-    mark 2 4 6 -sequence test -add
+    run_prog mark 2 4 6 -sequence test -add
 
     run_test 'mark -list' 'cur: 1
 test: 2 4 6'
 
-    mark all -sequence test -delete
+    run_prog mark all -sequence test -delete
 
 done
 

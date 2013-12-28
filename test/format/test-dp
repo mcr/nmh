@@ -36,7 +36,7 @@ Usage: dp [switches] dates ...
   -help
 EOF
 
-$dp -help >"$actual" 2>&1
+run_prog $dp -help >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
@@ -57,7 +57,7 @@ cat >"$expected" <<EOF
 Sun, 01 Jul 2012 00:00:00
 EOF
 
-$dp 'Sun Jul  1 2012' > "$actual" 2>&1
+run_prog $dp 'Sun Jul  1 2012' > "$actual" 2>&1
 check "$expected" "$actual"
 
 # check with two valid dates
@@ -66,7 +66,7 @@ Sun, 01 Jul 2012 00:00:00
 Mon, 02 Jul 2012 00:00:00
 EOF
 
-$dp 'Sun Jul  1 2012' 'Mon Jul  2 2012' > "$actual" 2>&1
+run_prog $dp 'Sun Jul  1 2012' 'Mon Jul  2 2012' > "$actual" 2>&1
 check "$expected" "$actual"
 
 # check with invalid date
@@ -77,7 +77,7 @@ EOF
 cat >"$expected_err" <<EOF
 EOF
 
-$dp 'not a date' > "$actual" 2> "$actual_err"
+run_prog $dp 'not a date' > "$actual" 2> "$actual_err"
 check "$expected" "$actual"
 check "$expected_err" "$actual_err"
 
@@ -91,7 +91,7 @@ cat >"$expected" <<EOF
 Sun
 EOF
 
-$dp -form "$form" 'Jul 1 2012' >$actual 2>&1
+run_prog $dp -form "$form" 'Jul 1 2012' >$actual 2>&1
 check $expected $actual
 rm -f "$form"
 
@@ -100,7 +100,7 @@ cat >"$expected" <<EOF
 Sun
 EOF
 
-$dp -format '%(day{text})' 'Jul 1 2012' >$actual 2>&1
+run_prog $dp -format '%(day{text})' 'Jul 1 2012' >$actual 2>&1
 check $expected $actual
 
 # check -width
@@ -108,7 +108,7 @@ cat >"$expected" <<EOF
 Sun, 01 Jul 2012
 EOF
 
-$dp -width 17 'Sun Jul  1 2012' > "$actual" 2>&1
+run_prog $dp -width 17 'Sun Jul  1 2012' > "$actual" 2>&1
 check "$expected" "$actual"
 
 

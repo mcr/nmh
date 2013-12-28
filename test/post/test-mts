@@ -54,7 +54,7 @@ MHMTSCONF="$mts_fakesendmail"
 # remaining arguments: expected output(s)
 test_sendmail ()
 {
-  send -draft -mts "$1"
+  run_prog send -draft -mts "$1"
   shift
 
   # fakesendmail drops the message and any cc's into this mbox.

@@ -64,6 +64,7 @@ cat >> "$expected" <<EOF
 ------- End of Forwarded Message
 EOF
 
+run_prog \
 forw -editor true -form "${form}" -from "${from}" -to "${to1}" -to "${to2}" \
     -cc "${cc1}" -cc "${cc2}" -cc "${cc3}" -cc "${cc4}" -fcc "${fcc1}" \
     -fcc "${fcc2}" -subject "${subject}" -width 60 -nowhatnowproc 1 || exit 1

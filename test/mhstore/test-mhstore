@@ -46,18 +46,18 @@ run_test "mhstore -file $MH_TEST_DIR/Mail/inbox/5" \
 check $expected 5.txt 'keep first'
 
 # check -file -
-stored_contents=`mhstore -file - < $MH_TEST_DIR/Mail/inbox/5 2>&1 | \
+stored_contents=`run_prog mhstore -file - < $MH_TEST_DIR/Mail/inbox/5 2>&1 | \
   sed 's/.*as file //'`
 check $expected $stored_contents 'keep first'
 
 # check -outfile
-mhstore 5 -outfile "$actual" 2>&1 | grep -v '^storing' && \
+run_prog mhstore 5 -outfile "$actual" 2>&1 | grep -v '^storing' && \
   echo unexpected output from test-mhstore check -outfile >&2
 check $expected "$actual" 'keep first'
 
 # check -outfile -
 echo 'storing message 5 to stdout' >>"$expected"
-mhstore 5 -outfile - >"$actual" 2>&1
+run_prog mhstore 5 -outfile - >"$actual" 2>&1
 check $expected "$actual"
 
 # check message number greater than highest

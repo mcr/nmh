@@ -33,7 +33,7 @@ Usage: rcvpack [switches] file
   -help
 EOF
 
-$rcvpack -help >"$actual" 2>&1
+run_prog $rcvpack -help >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
@@ -50,29 +50,30 @@ run_test "$rcvpack -nonexistent" 'rcvpack: -nonexistent unknown'
 run_test "$rcvpack" 'rcvpack: rcvpack [switches] file'
 
 # check mbox creation
-$rcvpack <${MH_TEST_DIR}/Mail/inbox/1 ${MH_TEST_DIR}/Mail/mbox
+run_prog $rcvpack <${MH_TEST_DIR}/Mail/inbox/1 ${MH_TEST_DIR}/Mail/mbox
 inc -file ${MH_TEST_DIR}/Mail/mbox -silent
 check "${MH_TEST_DIR}/Mail/inbox/1" "${MH_TEST_DIR}/Mail/inbox/11" 'keep first'
 
 # check -mbox
-$rcvpack -mmdf -mbox <${MH_TEST_DIR}/Mail/inbox/1 ${MH_TEST_DIR}/Mail/mbox2
+run_prog $rcvpack -mmdf -mbox ${MH_TEST_DIR}/Mail/mbox2 \
+  <${MH_TEST_DIR}/Mail/inbox/1
 # Filter out "From " lines because their timestamps can differ by a second.
 grep -v '^From ' "${MH_TEST_DIR}/Mail/mbox" >"${MH_TEST_DIR}/Mail/mbox-filt"
 grep -v '^From ' "${MH_TEST_DIR}/Mail/mbox2" >"${MH_TEST_DIR}/Mail/mbox2-filt"
 check "${MH_TEST_DIR}/Mail/mbox-filt" "${MH_TEST_DIR}/Mail/mbox2-filt"
 
 # check append to existing mbox file
-$rcvpack <${MH_TEST_DIR}/Mail/inbox/2 ${MH_TEST_DIR}/Mail/mbox
+run_prog $rcvpack <${MH_TEST_DIR}/Mail/inbox/2 ${MH_TEST_DIR}/Mail/mbox
 inc -file ${MH_TEST_DIR}/Mail/mbox -silent
 check "${MH_TEST_DIR}/Mail/inbox/2" "${MH_TEST_DIR}/Mail/inbox/12" 'keep first'
 
 # check -mmdf
-$rcvpack -mmdf <${MH_TEST_DIR}/Mail/inbox/3 ${MH_TEST_DIR}/Mail/mmdf
+run_prog $rcvpack -mmdf <${MH_TEST_DIR}/Mail/inbox/3 ${MH_TEST_DIR}/Mail/mmdf
 inc -file ${MH_TEST_DIR}/Mail/mmdf -silent
 check "${MH_TEST_DIR}/Mail/inbox/3" "${MH_TEST_DIR}/Mail/inbox/12" 'keep first'
 
 # check append to existing mmdf file
-$rcvpack -mmdf <${MH_TEST_DIR}/Mail/inbox/4 ${MH_TEST_DIR}/Mail/mmdf
+run_prog $rcvpack -mmdf <${MH_TEST_DIR}/Mail/inbox/4 ${MH_TEST_DIR}/Mail/mmdf
 inc -file ${MH_TEST_DIR}/Mail/mmdf -silent
 check "${MH_TEST_DIR}/Mail/inbox/4" "${MH_TEST_DIR}/Mail/inbox/13" 'keep first'
 

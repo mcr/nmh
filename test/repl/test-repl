@@ -55,7 +55,7 @@ Usage: repl: [+folder] [msg] [switches]
   -nofmtproc
 EOF
 
-repl -help >$actual 2>&1
+run_prog repl -help >$actual 2>&1
 check $expected $actual
 
 # check -version
@@ -88,7 +88,7 @@ Comments: In-reply-to Test1 <test1@example.com>
 --------
 EOF
 
-repl -cc me -editor true -nowhatnowproc 1
+run_prog repl -cc me -editor true -nowhatnowproc 1
 check $expected $actual
 
 # check -nocc me
@@ -105,7 +105,7 @@ Comments: In-reply-to Test1 <test1@example.com>
 --------
 EOF
 
-repl -cc me -nocc me -editor true -nowhatnowproc 1
+run_prog repl -cc me -nocc me -editor true -nowhatnowproc 1
 check $expected $actual
 
 # check -cc me with Local- and Alternate-Mailbox addtions, Bug #36635:
@@ -125,7 +125,7 @@ Comments: In-reply-to Test1 <test1@example.com>
 --------
 EOF
 
-repl -cc me -editor true -nowhatnowproc 1
+run_prog repl -cc me -editor true -nowhatnowproc 1
 check $expected $actual
 
 
@@ -144,7 +144,7 @@ Comments: In-reply-to Test1 <test1@example.com>
 --------
 EOF
 
-repl -cc me -nocc me -editor true -nowhatnowproc 1
+run_prog repl -cc me -nocc me -editor true -nowhatnowproc 1
 check $expected $actual
 
 
@@ -175,7 +175,7 @@ Comments: In-reply-to Test11 <test11@example.com>
 --------
 EOF
 
-repl -cc to -editor true -nowhatnowproc 11
+run_prog repl -cc to -editor true -nowhatnowproc 11
 check $expected $actual
 
 

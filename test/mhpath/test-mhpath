@@ -28,7 +28,7 @@ Usage: mhpath [+folder] [msgs] [switches]
   -help
 EOF
 
-mhpath -help > $actual 2>&1
+run_prog mhpath -help > $actual 2>&1
 check $expected $actual
 
 # check -version
@@ -61,7 +61,7 @@ $MH_TEST_DIR/Mail/inbox/8
 $MH_TEST_DIR/Mail/inbox/9
 $MH_TEST_DIR/Mail/inbox/10
 EOF
-mhpath all > $actual 2>&1
+run_prog mhpath all > $actual 2>&1
 check $expected $actual
 
 # check message number greater than highest
@@ -81,7 +81,7 @@ $MH_TEST_DIR/Mail/inbox/8
 $MH_TEST_DIR/Mail/inbox/9
 $MH_TEST_DIR/Mail/inbox/10
 EOF
-mhpath 1-99999 > $actual 2>&1
+run_prog mhpath 1-99999 > $actual 2>&1
 check $expected $actual
 
 # check new
@@ -93,7 +93,7 @@ $MH_TEST_DIR/Mail/inbox/1
 $MH_TEST_DIR/Mail/inbox/10
 $MH_TEST_DIR/Mail/inbox/11
 EOF
-mhpath first last new > $actual 2>&1
+run_prog mhpath first last new > $actual 2>&1
 check $expected $actual
 
 # check invalid message list using names
@@ -124,7 +124,7 @@ cat > $expected <<EOF
 $MH_TEST_DIR/Mail/inbox/3
 $MH_TEST_DIR/Mail/inbox/4
 EOF
-mhpath first:2 > $actual 2>&1
+run_prog mhpath first:2 > $actual 2>&1
 check $expected $actual
 
 # check reference to non-existant messages
@@ -132,7 +132,7 @@ cat > $expected <<EOF
 $MH_TEST_DIR/Mail/inbox/1
 $MH_TEST_DIR/Mail/inbox/2
 EOF
-mhpath 1 2 > $actual 2>&1
+run_prog mhpath 1 2 > $actual 2>&1
 check $expected $actual
 
 

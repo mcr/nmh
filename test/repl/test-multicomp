@@ -52,8 +52,8 @@ Test1 writes:
 > This is a new test message
 EOF
 
-repl -editor true -cc cc -format -form $form -width 72 -nowhatnowproc 11 \
-						|| exit 1
+run_prog repl -editor true -cc cc -format -form $form -width 72 \
+  -nowhatnowproc 11 || exit 1
 
 check "$expected" "$actual"
 

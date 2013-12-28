@@ -37,7 +37,7 @@ EOF
 cat >"$expected" <<EOF
   11  12/18 foo@example.edu    test<<This is a multi-part message in MIME forma
 EOF
-scan -width 80 last > "$actual" 2>&1
+run_prog scan -width 80 last > "$actual" 2>&1
 check "$expected" "$actual"
 
 # check show (mhl)
@@ -54,7 +54,7 @@ This is a multi-part message in MIME format.
 
 I am a stupid spammer.
 EOF
-show last > "$actual" 2>&1
+run_prog show last > "$actual" 2>&1
 check "$expected" "$actual"
 
 # check mhshow
@@ -71,7 +71,7 @@ This is a multi-part message in MIME format.
 
 I am a stupid spammer.
 EOF
-mhshow -nopause last > "$actual" 2>&1
+run_prog mhshow -nopause last > "$actual" 2>&1
 check "$expected" "$actual"
 
 # check m_getfld() handling of empty header field
@@ -85,7 +85,7 @@ scan: eof encountered in field "Received"
 ??Format error (message 12) in component 2
 EOF
 
-scan -width 13 last >"$actual" 2>"$actual_err"
+run_prog scan -width 13 last >"$actual" 2>"$actual_err"
 check "$expected" "$actual"
 check "$expected_err" "$actual_err"
 
@@ -99,7 +99,7 @@ cat >"$expected" <<EOF
   13  01/15 
 EOF
 
-scan -width 13 last >"$actual" 2>"$actual_err"
+run_prog scan -width 13 last >"$actual" 2>"$actual_err"
 check "$expected" "$actual"
 # Cygwin has a BUFSIZ of 1024 so the error message gets truncated.
 # Deal with that by grepping to verify that scan showed the proper error.
@@ -134,7 +134,7 @@ scan: eol encountered in field "If a header field name has at least 512 characte
 ??Format error (message 14) in component 2
 EOF
 
-scan -width 13 last >"$actual" 2>"$actual_err"
+run_prog scan -width 13 last >"$actual" 2>"$actual_err"
 check "$expected" "$actual"
 check "$expected_err" "$actual_err"
 

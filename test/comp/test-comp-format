@@ -54,6 +54,7 @@ Subject: ${subject}
 --------
 EOF
 
+run_prog \
 comp -editor true -form "${form}" -from "${from}" -to "${to1}" -to "${to2}" \
     -cc "${cc1}" -cc "${cc2}" -cc "${cc3}" -cc "${cc4}" -fcc "${fcc1}" \
     -fcc "${fcc2}" -subject "${subject}" -width 60 -nowhatnowproc || exit 1

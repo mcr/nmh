@@ -42,7 +42,7 @@ Usage: slocal [switches]
   -help
 EOF
 
-$slocal -help >"$actual" 2>&1
+run_prog $slocal -help >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
@@ -78,28 +78,29 @@ cat >"$md"  <<EOF
 EOF
 chmod go-w "$md"
 
-$slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/1
+run_prog $slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/1
 check "$MH_TEST_DIR/Mail/inbox/1" "$actual" 'keep first'
 
 if [ ${failed:-0} -eq 1 ]; then
   printf "\nRerunning failed basic slocal command with -verbose -debug to help
     diagnose test failure . . .\n\n"
-  $slocal -verbose -debug -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/1
+  run_prog $slocal -verbose -debug -maildelivery "$md" $mbox \
+    <"$MH_TEST_DIR"/Mail/inbox/1
   exit 1
 fi
 
 # check -debug
-$slocal -debug -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/1 \
+run_prog $slocal -debug -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/1 \
   >"$actual2" 2>&1
 run_test "grep ^retrieving $actual2" 'retrieving message from stdin'
 
 # check -verbose
-$slocal -verbose -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/1 \
-  >"$actual2" 2>&1
+run_prog $slocal -verbose -maildelivery "$md" $mbox \
+  <"$MH_TEST_DIR"/Mail/inbox/1 >"$actual2" 2>&1
 run_test "grep ^delivering $actual2" "delivering to pipe \"$tee\", success."
 
 # check -noverbose
-$slocal -verbose -noverbose -maildelivery "$md" $mbox \
+run_prog $slocal -verbose -noverbose -maildelivery "$md" $mbox \
   <"$MH_TEST_DIR"/Mail/inbox/1 >"$actual2" 2>&1
 run_test "grep ^delivering $actual2" ''
 rm -f "$actual2"
@@ -109,7 +110,7 @@ cat >"$md"  <<EOF
 From test2@example.com qpipe A "$tee $actual"
 EOF
 
-$slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/2
+run_prog $slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/2
 check "$MH_TEST_DIR/Mail/inbox/2" "$actual" 'keep first'
 
 # check R and ?
@@ -118,7 +119,7 @@ From test3@example.com qpipe R "$tee $actual"
 From test3@example.com qpipe ? "$tee $actual2"
 EOF
 
-$slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/3
+run_prog $slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/3
 check "$MH_TEST_DIR/Mail/inbox/3" "$actual" 'keep first'
 check "$MH_TEST_DIR/Mail/inbox/3" "$actual2" 'keep first'
 
@@ -128,7 +129,7 @@ From test4@example.com qpipe R "$tee $actual"
 From test4@example.com qpipe N "$tee $actual2"
 EOF
 
-$slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/4
+run_prog $slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/4
 check "$MH_TEST_DIR/Mail/inbox/4" "$actual" 'keep first'
 check "$MH_TEST_DIR/Mail/inbox/4" "$actual2" 'keep first'
 
@@ -138,7 +139,7 @@ From test5@example.com qpipe R "$tee $actual"
 default 1 qpipe A "$tee $actual2"
 EOF
 
-$slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/5
+run_prog $slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/5
 check "$MH_TEST_DIR/Mail/inbox/5" "$actual" 'keep first'
 check "$MH_TEST_DIR/Mail/inbox/5" "$actual2" 'keep first'
 
@@ -151,7 +152,8 @@ cat >"$md"  <<EOF
 addr "$me" qpipe A "$tee $actual"
 EOF
 
-$slocal -addr "$me" -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/6
+run_prog $slocal -addr "$me" -maildelivery "$md" $mbox \
+  <"$MH_TEST_DIR"/Mail/inbox/6
 check "$MH_TEST_DIR/Mail/inbox/6" "$actual" 'keep first'
 
 # check -info
@@ -159,7 +161,8 @@ cat >"$md"  <<EOF
 * - qpipe A "\$(info) $actual"
 EOF
 
-$slocal -info $tee -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/7
+run_prog $slocal -info $tee -maildelivery "$md" $mbox \
+  <"$MH_TEST_DIR"/Mail/inbox/7
 check "$MH_TEST_DIR/Mail/inbox/7" "$actual" 'keep first'
 
 # check -sender, which is compared with "source"
@@ -167,7 +170,8 @@ cat >"$md"  <<EOF
 source "$me" qpipe A "$tee $actual"
 EOF
 
-$slocal -sender "$me" -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/8
+run_prog $slocal -sender "$me" -maildelivery "$md" $mbox \
+  <"$MH_TEST_DIR"/Mail/inbox/8
 check "$MH_TEST_DIR/Mail/inbox/8" "$actual" 'keep first'
 
 # check -user
@@ -175,20 +179,23 @@ cat >"$md"  <<EOF
 * - qpipe A "$tee $actual"
 EOF
 
-$slocal -user "$me" -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/9
+run_prog $slocal -user "$me" -maildelivery "$md" $mbox \
+  <"$MH_TEST_DIR"/Mail/inbox/9
 check "$MH_TEST_DIR/Mail/inbox/9" "$actual" 'keep first'
 
 # check -mailbox
 cat >"$md"  <<EOF
 EOF
 
-$slocal -mailbox "$actual" -maildelivery "$md" <"$MH_TEST_DIR"/Mail/inbox/10
+run_prog $slocal -mailbox "$actual" -maildelivery "$md" \
+  <"$MH_TEST_DIR"/Mail/inbox/10
 inc -file "$actual" -silent -truncate
 rm -f "$actual"
 check "$MH_TEST_DIR/Mail/inbox/10" "$MH_TEST_DIR/Mail/inbox/11" 'keep first'
 
 # check -file
-$slocal -mailbox "$actual" -maildelivery "$md" -file "$MH_TEST_DIR"/Mail/inbox/1
+run_prog $slocal -mailbox "$actual" -maildelivery "$md" \
+  -file "$MH_TEST_DIR"/Mail/inbox/1
 inc -file "$actual" -silent -truncate
 rm -f "$actual"
 check "$MH_TEST_DIR/Mail/inbox/1" "$MH_TEST_DIR/Mail/inbox/11" 'keep first'
@@ -198,17 +205,19 @@ cat >"$md"  <<EOF
 * - qpipe A "$tee $actual"
 EOF
 
-$slocal -suppressdup -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/2
+run_prog $slocal -suppressdup -maildelivery "$md" $mbox \
+  <"$MH_TEST_DIR"/Mail/inbox/2
 check "$MH_TEST_DIR/Mail/inbox/2" "$actual" 'keep first'
 
-$slocal -suppressdup -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/2
+run_prog $slocal -suppressdup -maildelivery "$md" $mbox \
+  <"$MH_TEST_DIR"/Mail/inbox/2
 if [ -f "$actual" ]; then
   echo $0: check -suppressdup failed
   failed=`expr ${failed:-0} + 1`
 fi
 
 # check -nosuppressdup
-$slocal -suppress -nosuppressdup -maildelivery "$md" $mbox \
+run_prog $slocal -suppress -nosuppressdup -maildelivery "$md" $mbox \
   <"$MH_TEST_DIR"/Mail/inbox/2
 check "$MH_TEST_DIR/Mail/inbox/2" "$actual" 'keep first'
 

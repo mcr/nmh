@@ -65,7 +65,7 @@ End of digest-test Digest [Volume 2 Issue 3]
 ********************************************
 EOF
 
-forw -editor true -from "${from}" -to "${to1}" -to "${to2}" \
+run_prog forw -editor true -from "${from}" -to "${to1}" -to "${to2}" \
     -cc "${cc1}" -cc "${cc2}" -cc "${cc3}" -cc "${cc4}" -fcc "${fcc1}" \
     -fcc "${fcc2}" -width 60 -issue 3 -volume 2 -nowhatnowproc \
     -digest digest-test +inbox 1-6 || exit 1
@@ -111,7 +111,7 @@ End of digest-test Digest [Volume 2 Issue 4]
 ********************************************
 EOF
 
-forw -editor true -from "${from}" -nowhatnowproc -digest digest-test \
+run_prog forw -editor true -from "${from}" -nowhatnowproc -digest digest-test \
     -subject "This is a test" +inbox 7-8 || exit 1
 
 check "${expected}" "${actual}"

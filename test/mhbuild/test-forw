@@ -66,7 +66,7 @@ This is message number 2
 ------- =_aaaaaaaaaa0--
 EOF
 mkdraft
-mhbuild $draft
+run_prog mhbuild $draft
 check $expected $draft
 test ${failed:-0} -eq 0  &&  rm "$draftorig"
 
@@ -104,7 +104,7 @@ This is message number 2
 ------- =_aaaaaaaaaa0--
 EOF
 mkdraft
-mhbuild -rfc934 $draft
+run_prog mhbuild -rfc934 $draft
 check $expected $draft
 test ${failed:-0} -eq 0  &&  rm "$draftorig"
 

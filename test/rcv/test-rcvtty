@@ -37,7 +37,7 @@ Usage: rcvtty [command ...]
   -help
 EOF
 
-$rcvtty -help >"$actual" 2>&1
+run_prog $rcvtty -help >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
@@ -54,7 +54,7 @@ esac
 # any of their ttys.
 cat >"$expected" <<EOF
 EOF
-$rcvtty <${MH_TEST_DIR}/Mail/inbox/1 -biff >"$actual" 2>&1
+run_prog $rcvtty <${MH_TEST_DIR}/Mail/inbox/1 -biff >"$actual" 2>&1
 check "$expected" "$actual"
 
 

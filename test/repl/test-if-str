@@ -40,7 +40,8 @@ Test1 writes:
 > This is message number 1
 EOF
 
-repl -editor true -format -form $form -group -nocc me -nowhatnowproc 1 || exit 1
+run_prog repl -editor true -format -form $form -group -nocc me \
+  -nowhatnowproc 1 || exit 1
 
 check "$expected" "$actual"
 

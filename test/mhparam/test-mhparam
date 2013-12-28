@@ -50,18 +50,18 @@ run_test 'mhparam -nonexistent' 'mhparam: -nonexistent unknown'
 cp $MH_TEST_DIR/Mail/.mh_profile $expected
 # -all adds current folder
 echo 'Current-Folder: '`folder -f` >>$expected
-mhparam -all >$actual
+run_prog mhparam -all >$actual
 check $expected $actual 'keep first'
 
 # check -all with a component
 echo 'mhparam: profile-components ignored with -all' >$expected_err
-mhparam -all path >$actual 2>$actual_err
+run_prog mhparam -all path >$actual 2>$actual_err
 check $expected $actual 'keep first'
 check $expected_err $actual_err
 
 # check -all with -components
 echo 'mhparam: -components ignored with -all' >$expected_err
-mhparam -all -components >$actual 2>$actual_err
+run_prog mhparam -all -components >$actual 2>$actual_err
 check $expected $actual
 check $expected_err $actual_err
 
@@ -102,7 +102,7 @@ $sysconfdir
 ${MH_LIB_DIR}
 EOF
 
-mhparam -nocomponent \
+run_prog mhparam -nocomponent \
 context \
 mh-sequences \
 buildmimeproc \

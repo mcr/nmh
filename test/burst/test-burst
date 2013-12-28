@@ -46,7 +46,7 @@ For real.
 End of all messages
 EOF
 
-burst 11 || exit
+run_prog burst 11 || exit
 
 run_test 'scan -width 80 11-last' \
 "  11  09/29 Test Burst Messag  Test digest<<------- Message one From: Mister Bu
@@ -97,7 +97,7 @@ Will this one work?
 End of all messages
 EOF
 
-burst 14 || exit
+run_prog burst 14 || exit
 
 run_test 'scan -width 80 14-last' \
 "  14  09/29 Test Burst Messag  Test digest<<This is a preamble ------- Message 

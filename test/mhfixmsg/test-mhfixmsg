@@ -65,7 +65,7 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   -help
 EOF
 
-mhfixmsg -help >"$actual" 2>&1
+run_prog mhfixmsg -help >"$actual" 2>&1
 check "$expected" "$actual"
 
 
@@ -253,7 +253,8 @@ mhfixmsg: 12 part 1, decode text/html; charset=\"Windows-1252\"" \
        >"$expected.err"
 
   #### lynx inserts multiple blank lines, so squeeze them.
-  mhfixmsg last -outfile - -verbose 2>"$actual.err" | squeeze_lines >"$actual"
+  run_prog mhfixmsg last -outfile - -verbose 2>"$actual.err" | \
+    squeeze_lines >"$actual"
   check "$expected" "$actual" 'ignore space'
   check "$expected.err" "$actual.err"
 else
@@ -334,7 +335,8 @@ mhfixmsg: 12 part 1, decode text/html; charset=\"Windows-1252\"" \
        >"$expected.err"
 
   #### lynx inserts multiple blank lines, so squeeze them.
-  mhfixmsg last -outfile - -verbose 2>"$actual.err" | squeeze_lines >"$actual"
+  run_prog mhfixmsg last -outfile - -verbose 2>"$actual.err" | \
+    squeeze_lines >"$actual"
   check "$expected" "$actual" 'ignore space'
   check "$expected.err" "$actual.err"
 else
@@ -406,7 +408,7 @@ if [ $can_reformat_texthtml -eq 1 ]; then
   printf '%s\n' 'mhfixmsg: 12, insert text/plain part' >"$expected.err"
 
   #### lynx inserts multiple blank lines, so squeeze them.
-  mhfixmsg last -nodecode -outfile - -verbose 2>"$actual.err" | \
+  run_prog mhfixmsg last -nodecode -outfile - -verbose 2>"$actual.err" | \
     squeeze_lines >"$actual"
   check "$expected" "$actual" 'ignore space'
   check "$expected.err" "$actual.err"
@@ -450,7 +452,7 @@ VGhpcyBpcyBhIHRleHQvcGxhaW4gcGFydC4K
 ------- =_aaaaaaaaaa0--
 EOF
 
-mhfixmsg last -outfile "$actual"
+run_prog mhfixmsg last -outfile "$actual"
 check "$expected" "$actual"
 
 
@@ -554,7 +556,7 @@ VGhpcyBpcyB0aGUgZm91cnRoIHRleHQvcGxhaW4gcGFydC4K
 
 This is additional content after the last subpart of the multipart.
 EOF
-mhfixmsg last -outfile "$actual"
+run_prog mhfixmsg last -outfile "$actual"
 check "$expected" "$actual"
 
 
@@ -579,7 +581,7 @@ EOF
 
 cp -p `mhpath last` "$expected"
 set +e
-mhfixmsg last
+run_prog mhfixmsg last
 set -e
 check `mhpath last` "$expected" 'keep first'
 
@@ -670,7 +672,7 @@ if [ $can_reformat_texthtml -eq 1 ]; then
   #### lynx inserts multiple blank lines, so squeeze them.
   #### Truncate to avoid comparing the html portion because it can
   #### get reformatted.
-  mhfixmsg last -outfile - | squeeze_lines | head -22 >"$actual"
+  run_prog mhfixmsg last -outfile - | squeeze_lines | head -22 >"$actual"
   check "$expected" "$actual" 'ignore space'
 else
   cp -p "$MH_TEST_DIR/Mail/inbox/15" "$MH_TEST_DIR/Mail/inbox/15.backup"
@@ -718,7 +720,7 @@ vbI9vAo=
 EOF
 
 set +e
-mhfixmsg last -textcodeset utf-8 -outfile "$actual" 2>"$actual.err"
+run_prog mhfixmsg last -textcodeset utf-8 -outfile "$actual" 2>"$actual.err"
 if grep "mhfixmsg: Can't convert .* to .* without iconv" "$actual.err" \
   >/dev/null; then
   echo "$0: skipping -textcodeset check because nmh was built without iconv"
@@ -761,7 +763,7 @@ check "$MH_TEST_DIR"/Mail/inbox/17 "$MH_TEST_DIR"/Mail/inbox/18 'keep first'
 
 
 # check that message is not output when fed through stdin
-mhfixmsg -file - -verbose <`mhpath last` >"$actual" 2>"$actual.err"
+run_prog mhfixmsg -file - -verbose <`mhpath last` >"$actual" 2>"$actual.err"
 check "$expected" "$actual"
 if grep "mhfixmsg: $MH_TEST_DIR/Mail/.*, fix multipart boundary" \
    "$actual.err" >/dev/null; then
@@ -870,7 +872,7 @@ EOF
 
 if [ $can_reformat_texthtml -eq 1 ]; then
   #### lynx inserts multiple blank lines, so squeeze them.
-  mhfixmsg last -outfile - | squeeze_lines >"$actual"
+  run_prog mhfixmsg last -outfile - | squeeze_lines >"$actual"
   check "$expected" "$actual" 'ignore space'
 else
   rm -f "$expected"
@@ -963,7 +965,7 @@ There are two CR-LF pairs at the end of this sentence.
 
 EOF
 
-mhfixmsg last -outfile "$actual"
+run_prog mhfixmsg last -outfile "$actual"
 check "$expected" "$actual"
 
 
@@ -1029,7 +1031,8 @@ EOF
 
 if [ $can_reformat_texthtml -eq 1 ]; then
   #### lynx inserts multiple blank lines, so squeeze them.
-  mhfixmsg last -replacetextplain -outfile - | squeeze_lines > "$actual"
+  run_prog mhfixmsg last -replacetextplain -outfile - | \
+    squeeze_lines > "$actual"
   check "$expected" "$actual" 'ignore space'
 else
   rm -f "$expected"
@@ -1067,7 +1070,7 @@ Content-Disposition: inline
 ------=_Part_876302--
 EOF
 
-mhfixmsg last -replacetextplain -noreplacetextplain -outfile "$actual"
+run_prog mhfixmsg last -replacetextplain -noreplacetextplain -outfile "$actual"
 check "$expected" "$actual"
 
 

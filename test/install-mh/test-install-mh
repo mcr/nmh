@@ -26,7 +26,7 @@ run_test "install-mh -auto" 'install-mh: invocation error'
 # check -check, with nmh already installed
 run_test "install-mh -check" ''
 # make sure exit status is 0
-install-mh -check
+run_prog install-mh -check
 run_test "echo $?" '0'
 
 # Remove the nmh installation so that install-mh can install.
@@ -36,7 +36,7 @@ rm -rf $MH_TEST_DIR/Mail
 run_test "install-mh -check" ''
 # make sure exit status is 1
 set +e
-install-mh -check
+run_prog install-mh -check
 run_test "echo $?" '1'
 set -e
 
@@ -47,10 +47,10 @@ echo "n
 n
 n
 $installpath
-y" | install-mh >/dev/null
+y" | run_prog install-mh >/dev/null
 
 if [ -f $MH_TEST_DIR/Mail/context  -a  -f $MH_TEST_DIR/Mail/.mh_profile ]; then
-  install-mh -check
+  run_prog install-mh -check
 else
   failed=`expr ${failed:-0} + 1`
 fi
@@ -62,7 +62,7 @@ rm -rf $MH_TEST_DIR/Mail
 HOME=$MH_TEST_DIR install-mh -auto >/dev/null
 
 if [ -f $MH_TEST_DIR/Mail/context  -a  -f $MH_TEST_DIR/Mail/.mh_profile ]; then
-  install-mh -check
+  run_prog install-mh -check
 else
   failed=`expr ${failed:-0} + 1`
 fi

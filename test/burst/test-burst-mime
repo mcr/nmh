@@ -35,7 +35,7 @@ Subject: Message one
 
 EOF
 
-burst 11
+run_prog burst 11
 
 run_test 'scan -width 80 11-last' \
 "  11  09/29 Test Burst Messag  Test MIME digest<<From: Mister Burster <burst2@e
@@ -86,7 +86,7 @@ Will this one work?
 ------- =_aaaaaaaaaa0--
 EOF
 
-burst 14 || exit
+run_prog burst 14 || exit
 
 run_test 'scan -width 80 14-last' \
 "  14  09/29 Test Burst Messag  Test digest<<This is a preamble ------- =_aaaaaa

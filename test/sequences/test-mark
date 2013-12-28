@@ -120,9 +120,10 @@ run_test 'pick -nolist cur' 'pick: no cur message'
 # Check large number of sequences.
 for i in 1 2 3 4 5; do
   for j in 0 1 2 3 4 5 6 7 8 9; do
-    mark $i -seq seq$i${j}0 -seq seq$i${j}1 -seq seq$i${j}2 -seq seq$i${j}3 \
-            -seq seq$i${j}4 -seq seq$i${j}5 -seq seq$i${j}6 -seq seq$i${j}7 \
-            -seq seq$i${j}8 -seq seq$i${j}9
+    run_prog mark $i -seq seq$i${j}0 -seq seq$i${j}1 -seq seq$i${j}2 \
+                     -seq seq$i${j}3 -seq seq$i${j}4 -seq seq$i${j}5 \
+                     -seq seq$i${j}6 -seq seq$i${j}7 -seq seq$i${j}8 \
+                     -seq seq$i${j}9
     run_test "pick seq$i${j}0 seq$i${j}1 seq$i${j}2 seq$i${j}3 seq$i${j}4 \
                    seq$i${j}5 seq$i${j}6 seq$i${j}7 seq$i${j}8 seq$i${j}9" $i
   done

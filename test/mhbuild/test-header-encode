@@ -45,7 +45,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is a test
 EOF
 
-mhbuild "${testname}.basic.actual"
+run_prog mhbuild "${testname}.basic.actual"
 
 check "${testname}.basic.actual" "${testname}.basic.expected" 'keep first'
 
@@ -78,7 +78,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is a test
 EOF
 
-mhbuild -headerencoding base64 "${testname}.basic.actual"
+run_prog mhbuild -headerencoding base64 "${testname}.basic.actual"
 
 check "${testname}.basic.actual" "${testname}.basic.expected" 'keep first'
 
@@ -108,7 +108,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is a test
 EOF
 
-mhbuild "${testname}.autopick.actual"
+run_prog mhbuild "${testname}.autopick.actual"
 
 check "${testname}.autopick.actual" "${testname}.autopick.expected" 'keep first'
 
@@ -143,7 +143,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is a test of a very long subject line.
 EOF
 
-mhbuild "${testname}.longsubject1.actual"
+run_prog mhbuild "${testname}.longsubject1.actual"
 
 check "${testname}.longsubject1.actual" "${testname}.longsubject1.expected" 'keep first'
 
@@ -179,7 +179,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is a test of a very long subject line using base64.
 EOF
 
-mhbuild "${testname}.longsubject2.actual"
+run_prog mhbuild "${testname}.longsubject2.actual"
 
 check "${testname}.longsubject2.actual" "${testname}.longsubject2.expected" 'keep first'
 
@@ -214,7 +214,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is another long test.
 EOF
 
-mhbuild "${testname}.longsubject3.actual"
+run_prog mhbuild "${testname}.longsubject3.actual"
 
 check "${testname}.longsubject3.actual" "${testname}.longsubject3.expected" 'keep first'
 
@@ -244,7 +244,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is another long test.
 EOF
 
-mhbuild "${testname}.longsubject4.actual"
+run_prog mhbuild "${testname}.longsubject4.actual"
 
 check "${testname}.longsubject4.actual" "${testname}.longsubject4.expected" 'keep first'
 
@@ -274,7 +274,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is important information
 EOF
 
-mhbuild "${testname}.basicemail1.actual"
+run_prog mhbuild "${testname}.basicemail1.actual"
 
 check "${testname}.basicemail1.actual" "${testname}.basicemail1.expected" 'keep first'
 
@@ -301,7 +301,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is important information
 EOF
 
-mhbuild "${testname}.basicemail2.actual"
+run_prog mhbuild "${testname}.basicemail2.actual"
 
 check "${testname}.basicemail2.actual" "${testname}.basicemail2.expected" 'keep first'
 
@@ -332,7 +332,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is important information
 EOF
 
-mhbuild "${testname}.basicemail3.actual"
+run_prog mhbuild "${testname}.basicemail3.actual"
 
 check "${testname}.basicemail3.actual" "${testname}.basicemail3.expected" 'keep first'
 
@@ -359,7 +359,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is important information
 EOF
 
-mhbuild "${testname}.basicemail4.actual"
+run_prog mhbuild "${testname}.basicemail4.actual"
 
 check "${testname}.basicemail4.actual" "${testname}.basicemail4.expected" 'keep first'
 
@@ -402,7 +402,7 @@ Content-Type: text/plain; charset="us-ascii"
 This is a lot of people on this email!
 EOF
 
-mhbuild "${testname}.complexemail1.actual"
+run_prog mhbuild "${testname}.complexemail1.actual"
 
 check "${testname}.complexemail1.actual" "${testname}.complexemail1.expected" 'keep first'
 

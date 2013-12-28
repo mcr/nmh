@@ -27,7 +27,7 @@ MHMTSCONF="$mts_fakesendmail"
 # argument: expected output
 test_attachment ()
 {
-  send -draft -mts sendmail/pipe
+  run_prog send -draft -mts sendmail/pipe
 
   # fakesendmail drops the message and any cc's into this mbox.
   mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox

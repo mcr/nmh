@@ -35,7 +35,7 @@ Usage: prompter [switches] file
   -help
 EOF
 
-prompter -help >$actual 2>&1
+run_prog prompter -help >$actual 2>&1
 check $expected $actual
 
 # check -version
@@ -70,7 +70,7 @@ Resent-fcc:
 EOF
 
 printf 'recipient@example.com\ncc@example.com\n+outbox\nmessage body\n' | \
-  prompter $MH_TEST_DIR/prompter-file > /dev/null
+  run_prog prompter $MH_TEST_DIR/prompter-file >/dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file" 'keep first'
 
@@ -83,7 +83,7 @@ Resent-fcc:
 EOF
 
 printf 'recipient@example.com\ncc@example.com\n+outbox\nmessage body\n.\n' | \
-  prompter -doteof $MH_TEST_DIR/prompter-file > /dev/null
+  run_prog prompter -doteof $MH_TEST_DIR/prompter-file >/dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file" 'keep first'
 
@@ -96,7 +96,7 @@ Resent-fcc:
 EOF
 
 printf 'recipient@example.com\ncc@example.com\n+outbox\nmessage body\n' | \
-  prompter -doteof -nodoteof $MH_TEST_DIR/prompter-file > /dev/null
+  run_prog prompter -doteof -nodoteof $MH_TEST_DIR/prompter-file >/dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file" 'keep first'
 
@@ -110,10 +110,10 @@ Resent-fcc:
 message body
 EOF
 
-printf 'appendage\n' >> "$expected"
+printf 'appendage\n' >>"$expected"
 
 printf 'recipient@example.com\ncc@example.com\n+outbox\nappendage\n' | \
-  prompter -noprepend $MH_TEST_DIR/prompter-file > /dev/null
+  run_prog prompter -noprepend $MH_TEST_DIR/prompter-file >/dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file"
 
@@ -138,7 +138,7 @@ message body
 EOF
 
 printf 'recipient@example.com\ncc@example.com\n+outbox\nprependage\n' | \
-  prompter -noprepend -prepend $MH_TEST_DIR/prompter-file > /dev/null
+  run_prog prompter -noprepend -prepend $MH_TEST_DIR/prompter-file >/dev/null
 
 check "$MH_TEST_DIR/prompter-file" "$expected" 'keep first'
 
@@ -154,7 +154,7 @@ Resent-fcc: +outbox
 --------
 EOF
 
-prompter -rapid $MH_TEST_DIR/prompter-file > "$actual" < /dev/null
+run_prog prompter -rapid $MH_TEST_DIR/prompter-file >"$actual" </dev/null
 
 check "$expected" "$actual"
 
@@ -172,7 +172,8 @@ message body
 --------
 EOF
 
-prompter -rapid -norapid $MH_TEST_DIR/prompter-file > "$actual" < /dev/null
+run_prog prompter -rapid -norapid $MH_TEST_DIR/prompter-file \
+  >"$actual" </dev/null
 
 check "$expected" "$actual"
 
@@ -195,7 +196,7 @@ message body
 EOF
 
 printf 'woot woot\n' | \
-  prompter -erase '' -kill '' $MH_TEST_DIR/prompter-file > "$actual"
+  run_prog prompter -erase '' -kill '' $MH_TEST_DIR/prompter-file >"$actual"
 
 check "$expected" "$actual"
 
@@ -215,7 +216,8 @@ message body
 --------
 EOF
 
-prompter -nobody -body $MH_TEST_DIR/prompter-file > "$actual" < /dev/null
+run_prog prompter -nobody -body $MH_TEST_DIR/prompter-file >"$actual" \
+  </dev/null
 
 check "$expected" "$actual"
 
@@ -227,7 +229,7 @@ Resent-cc: cc@example.com
 Resent-fcc: +outbox
 EOF
 
-prompter -nobody $MH_TEST_DIR/prompter-file > /dev/null
+run_prog prompter -nobody $MH_TEST_DIR/prompter-file >/dev/null
 
 check "$expected" "$MH_TEST_DIR/prompter-file"
 

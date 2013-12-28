@@ -329,7 +329,7 @@ Subject: FLDPLUS test
 Date: Wed, 16 Jan 2013 20:33:58 -0600
 
 EOF
-inc -file "$MH_TEST_DIR/mess" >/dev/null
+run_prog inc -file "$MH_TEST_DIR/mess" >/dev/null
 check "$expected" `mhpath last`  ||  rmm last
 rm -f "$MH_TEST_DIR/mess"
 

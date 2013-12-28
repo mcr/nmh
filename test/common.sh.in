@@ -140,9 +140,9 @@ prepare_space() {
 
 #### check() requires two arguments, each the name of a file to be
 #### diff'ed.
-#### If the same, the second file is removed.  And the first file is
-####   removed unless there's an optional argument with a value of
-####   'keep first'.
+#### If the contents are same, the second file is removed.  And the
+####   first file is removed unless there's an optional argument with
+####   a value of 'keep first'.
 #### If different, global variable "failed" is incremented.
 #### If there's an optional 'ignore space' argument, spacing differences
 ####   will not be considered signficant, emulating GNU diff -w.  It
@@ -185,6 +185,25 @@ check() {
     fi
 }
 
+
+#### Shortcut to enable use of valgrind:  set NMH_VALGRIND environment
+#### variable (to anything) so run_* will use valgrind.
+if [ "${NMH_VALGRIND}"  -a  -z "${NMH_TEST_PREFIX}" ]; then
+  NMH_TEST_PREFIX="valgrind --quiet --error-exitcode=1 \
+                            --suppressions=$MH_OBJ_DIR/test/valgrind.supp"
+fi
+
+#### Run test under another program by setting NMH_TEST_PREFIX
+#### environment variable to, e.g., 'valgrind --quiet'.
+run_prog() {
+  case $1 in
+    #### Don't run valgrind on shell built-in.
+    eval\ *) "$@" ;;
+    *) ${NMH_TEST_PREFIX} "$@" ;;
+  esac
+}
+
+
 #### run_test() requires two arguments, the first is a program and
 #### arguments, the second is its expected one-line output string.
 #### If the actual output does not match that string:
@@ -192,7 +211,11 @@ check() {
 #### if there is an optional third argument, it is used in the error message.
 run_test() {
   set +e
-  actual_output=`$1 2>&1`
+  case $1 in
+    #### Don't run valgrind on shell built-in.
+    eval\ *) actual_output=`$1 2>&1` ;;
+    *) actual_output=`${NMH_TEST_PREFIX} $1 2>&1` ;;
+  esac
   set -e
   if test x"$actual_output" != x"$2"; then
     echo "$0: ${3:-\"$1\"} expected:" 1>&2

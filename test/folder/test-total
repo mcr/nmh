@@ -14,7 +14,7 @@ fi
 
 setup_test
 
-output=`folder -total +inbox`
+output=`run_prog folder -total +inbox`
 if test x"$output" != x'TOTAL = 10 messages in 1 folder.' ; then
     exit 1
 fi

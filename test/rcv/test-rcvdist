@@ -32,7 +32,7 @@ Usage: rcvdist [switches] [switches for postproc] address ...
   -help
 EOF
 
-$rcvdist -help >"$actual" 2>&1
+run_prog $rcvdist -help >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
@@ -59,7 +59,7 @@ MHMTSCONF="$mts_fakesendmail"
 # arguments: rcvdist switches
 test_rcvdist ()
 {
-  $rcvdist "$@"
+  run_prog $rcvdist "$@"
 
   # fakesendmail drops the message and any cc's into this mbox.
   mbox="${MH_TEST_DIR}"/Mail/fakesendmail.mbox

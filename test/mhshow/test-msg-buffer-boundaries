@@ -157,7 +157,7 @@ part 1.1   text/plain                  29
 This is the text/plain part.
 EOF
 
-mhshow -part 1.1 -form mhl.null -nopause $msgnum >"$actual" 2>&1
+run_prog mhshow -part 1.1 -form mhl.null -nopause $msgnum >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check a boundary condition in m_getfld():  its internal message
@@ -297,7 +297,7 @@ part 1.1   text/plain                  29
 This is the text/plain part.
 EOF
 
-mhshow -part 1.1 -form mhl.null -nopause $msgnum >"$actual" 2>&1
+run_prog mhshow -part 1.1 -form mhl.null -nopause $msgnum >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check a boundary condition in m_getfld():  its internal message
@@ -385,7 +385,7 @@ part 1.1   text/plain                  29
 This is the text/plain part.
 EOF
 
-mhshow -part 1.1 -form mhl.null -nopause $msgnum >"$actual" 2>&1
+run_prog mhshow -part 1.1 -form mhl.null -nopause $msgnum >"$actual" 2>&1
 check "$expected" "$actual"
 
 

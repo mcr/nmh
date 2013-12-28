@@ -55,7 +55,7 @@ MHMTSCONF="$mts_fakesendmail"
 test_messageid ()
 {
   msgid_style="$1"
-  send -draft -mts sendmail/pipe -msgid -messageid "$msgid_style"
+  run_prog send -draft -mts sendmail/pipe -msgid -messageid "$msgid_style"
   shift
 
   # fakesendmail drops the message and any cc's into this mbox.

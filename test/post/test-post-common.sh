@@ -28,7 +28,7 @@ echo "clientname: nosuchhost.example.com" >> ${MHMTSCONF}
 test_post ()
 { pid=`"${MH_OBJ_DIR}/test/fakesmtp" "$1" $localport`
 
-    send -draft -server 127.0.0.1 -port $localport $3 || exit 1
+    run_prog send -draft -server 127.0.0.1 -port $localport $3 || exit 1
 
     #
     # It's hard to calculate the exact Date: header post is going to

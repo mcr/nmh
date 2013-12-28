@@ -47,11 +47,11 @@ test_sendfiles ()
 
   if [ "$argstyle" = 'new' ]; then
     (cd "$MH_TEST_DIR"  &&
-     sendfiles "$@" -to recipient@example.com -subject "sendfiles test" \
-       "$testfile" >/dev/null 2>&1)
+     run_prog sendfiles "$@" -to recipient@example.com \
+       -subject "sendfiles test" "$testfile" >/dev/null 2>&1)
   elif [ "$argstyle" = 'old' ]; then
     (cd "$MH_TEST_DIR"  &&
-     sendfiles "$@" recipient@example.com "sendfiles test" \
+     run_prog sendfiles "$@" recipient@example.com "sendfiles test" \
        "$testfile" >/dev/null 2>&1)
   fi
 
@@ -89,7 +89,7 @@ Usage: sendfiles [switches] -to recipient -subject subject file1 [file2 ...]
   Can use PERSON environment variable instead of -from switch.
 EOF
 
-sendfiles -help >"$actual" 2>&1
+run_prog sendfiles -help >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

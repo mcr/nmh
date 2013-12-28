@@ -39,7 +39,7 @@ Usage: msgchk [switches] [users ...]
   -help
 EOF
 
-msgchk -help | head -9 >"$actual" 2>&1
+run_prog msgchk -help | head -9 >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
@@ -65,7 +65,7 @@ cat >"$expected" <<EOF
 You have new mail waiting; last read on
 EOF
 
-msgchk | sed -e 's/last read on.*/last read on/' >"$actual"
+run_prog msgchk | sed -e 's/last read on.*/last read on/' >"$actual"
 check "$expected" "$actual"
 
 # check -date
@@ -73,7 +73,8 @@ cat >"$expected" <<EOF
 You have new mail waiting; last read on
 EOF
 
-msgchk -nodate -date | sed -e 's/last read on.*/last read on/' >"$actual"
+run_prog msgchk -nodate -date | sed -e 's/last read on.*/last read on/' \
+  >"$actual"
 check "$expected" "$actual"
 
 # check -nodate
@@ -97,7 +98,7 @@ run_test 'msgchk -nonotify nomail -nodate' 'You have new mail waiting'
 # check -nonotify all, when there is mail
 run_test 'msgchk -nonotify nomail -nonotify all -nodate' ''
 
-inc -silent
+run_prog inc -silent
 
 # check -notify mail, when there is no mail
 run_test 'msgchk -notify mail -nodate' "You don't have any mail waiting"

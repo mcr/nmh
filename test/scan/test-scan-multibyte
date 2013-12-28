@@ -76,7 +76,7 @@ else
     exit 1
 fi
 
-scan -width 80 +inbox 11 > $actual || exit 1
+run_prog scan -width 80 +inbox 11 > $actual || exit 1
 check "$expected" "$actual"
 
 #
@@ -103,6 +103,7 @@ cat >"$expected" <<EOF
 EOF
 
 if test "$ICONV_ENABLED" -eq 1; then
+    # Don't use run_prog here because it loses those environment settings.
     LC_CTYPE=ISO-8859-1 MM_CHARSET=ISO-8859-1 scan -width 75 last >"$actual"
     check "$expected" "$actual"
 fi
@@ -131,7 +132,7 @@ else
     echo "Unsupported width for U+2019: $width"
 fi
 
-LC_CTYPE=en_US.UTF-8 MM_CHARSET=UTF-8 scan -width 75 last >"$actual"
+LC_CTYPE=en_US.UTF-8 MM_CHARSET=UTF-8 run_prog scan -width 75 last >"$actual"
 check "$expected" "$actual"
 
 
