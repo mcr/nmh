@@ -72,10 +72,10 @@ main (int argc, char **argv)
     int doteof = 0, fdi, fdo, i, state;
     char *cp, *drft = NULL, *erasep = NULL;
     char *killp = NULL, name[NAMESZ], field[BUFSIZ];
-    char buffer[BUFSIZ], tmpfil[BUFSIZ];
+    char buffer[BUFSIZ];
     char **arguments, **argp;
     FILE *in, *out;
-    char *tfile = NULL;
+    char *tmpfil;
     m_getfld_state_t gstate = 0;
 
 #ifdef LOCALE
@@ -154,10 +154,9 @@ main (int argc, char **argv)
     if ((in = fopen (drft, "r")) == NULL)
 	adios (drft, "unable to open");
 
-    tfile = m_mktemp2(NULL, invo_name, NULL, &out);
-    if (tfile == NULL) adios("prompter", "unable to create temporary file");
+    tmpfil = m_mktemp2(NULL, invo_name, NULL, &out);
+    if (tmpfil == NULL) adios("prompter", "unable to create temporary file");
     chmod (tmpfil, 0600);
-    strncpy (tmpfil, tfile, sizeof(tmpfil));
 
     /*
      * Are we changing the kill or erase character?
