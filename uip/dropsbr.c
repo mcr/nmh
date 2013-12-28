@@ -306,6 +306,10 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 	    }
 		    
 	    while ((i = read (fd, buffer, sizeof(buffer))) > 0) {
+                /* valgrind noticed that stringdex depends on null
+                   termination. */
+                buffer[i] = '\0';
+
 		for (j = 0;
 			(j = stringdex (mmdlm1, buffer)) >= 0;
 			buffer[j]++)
