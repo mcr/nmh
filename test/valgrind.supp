@@ -12,7 +12,6 @@
    Syscall param sendmsg(msg.msg_name) points to uninitialised byte(s)
    Memcheck:Param
    sendmsg(msg.msg_name)
-   fun:__sendmsg_nocancel
+   fun:*sendmsg*
    fun:readline
-   fun:getans_via_readline
 }
