@@ -78,8 +78,8 @@ run_test 'pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace' \
 
 # Test MHPDEBUG.
 # Don't use run_prog here because it loses the environment setting.
-MHPDEBUG=1 pick -not -lbrace -subject NoMatch -and -subject message.3 \
-  -rbrace >/dev/null 2>"$actual"
+MHPDEBUG=1 pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace \
+ >/dev/null 2>"$actual"
 cat >"$expected" <<EOF
 NOT
 | AND
@@ -261,7 +261,9 @@ EOF
 echo 13 >"$expected"
 
 set +e
-LC_CTYPE=en_US.UTF-8 run_prog pick -subject foobar 13 >"$actual" 2>&1
+
+# Don't use run_prog here because it loses the environment setting.
+LC_CTYPE=en_US.UTF-8 pick -subject foobar 13 >"$actual" 2>&1
 set -e
 check "$expected" "$actual"
 
