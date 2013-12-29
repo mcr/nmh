@@ -189,8 +189,9 @@ check() {
 #### Shortcut to enable use of valgrind:  set NMH_VALGRIND environment
 #### variable (to anything) so run_* will use valgrind.
 if [ "${NMH_VALGRIND}"  -a  -z "${NMH_TEST_PREFIX}" ]; then
+  #### Need absolute path to valgrind.supp in case the test does a cd.
   NMH_TEST_PREFIX="valgrind --quiet --error-exitcode=1 \
-                            --suppressions=$MH_OBJ_DIR/test/valgrind.supp"
+                     --suppressions=`cd ${srcdir} && pwd`/test/valgrind.supp"
 fi
 
 #### Run test under another program by setting NMH_TEST_PREFIX
