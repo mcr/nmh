@@ -285,11 +285,11 @@ uip_burst_LDADD = $(LDADD) $(POSTLINK)
 
 uip_comp_SOURCES = uip/comp.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c
-uip_comp_LDADD = $(LDADD) $(ICONVLIB) $(READLINELIB) $(POSTLINK)
+uip_comp_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(READLINELIB) $(POSTLINK)
 
 uip_dist_SOURCES = uip/dist.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c uip/forwsbr.c
-uip_dist_LDADD = $(LDADD) $(ICONVLIB) $(READLINELIB) $(POSTLINK)
+uip_dist_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(READLINELIB) $(POSTLINK)
 
 uip_flist_SOURCES = uip/flist.c
 uip_flist_LDADD = $(LDADD) $(POSTLINK)
@@ -299,7 +299,7 @@ uip_folder_LDADD = $(LDADD) $(POSTLINK)
 
 uip_forw_SOURCES = uip/forw.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c uip/forwsbr.c
-uip_forw_LDADD = $(LDADD) $(ICONVLIB) $(READLINELIB) $(POSTLINK)
+uip_forw_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(READLINELIB) $(POSTLINK)
 
 uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/termsbr.c \
 		  uip/popsbr.c
@@ -372,7 +372,7 @@ uip_refile_LDADD = $(LDADD) $(POSTLINK)
 
 uip_repl_SOURCES = uip/repl.c uip/replsbr.c uip/whatnowproc.c \
 		   uip/whatnowsbr.c uip/sendsbr.c uip/annosbr.c uip/distsbr.c
-uip_repl_LDADD = $(LDADD) $(ICONVLIB) $(READLINELIB) $(POSTLINK)
+uip_repl_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(READLINELIB) $(POSTLINK)
 
 uip_rmf_SOURCES = uip/rmf.c
 uip_rmf_LDADD = $(LDADD) $(POSTLINK)
@@ -413,7 +413,7 @@ uip_dp_SOURCES = uip/dp.c uip/termsbr.c
 uip_dp_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_fmtdump_SOURCES = uip/fmtdump.c
-uip_fmtdump_LDADD = $(LDADD) $(ICONVLIB) $(POSTLINK)
+uip_fmtdump_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_fmttest_SOURCES = uip/fmttest.c uip/termsbr.c
 uip_fmttest_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
@@ -430,7 +430,7 @@ uip_post_SOURCES = uip/post.c uip/aliasbr.c
 uip_post_LDADD = mts/libmts.a $(LDADD) $(SASLLIB) $(TLSLIB) $(POSTLINK)
 
 uip_rcvdist_SOURCES = uip/rcvdist.c uip/distsbr.c
-uip_rcvdist_LDADD = $(LDADD) $(ICONVLIB) $(POSTLINK)
+uip_rcvdist_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_rcvpack_SOURCES = uip/rcvpack.c uip/dropsbr.c
 uip_rcvpack_LDADD = $(LDADD) $(POSTLINK)

@@ -1,0 +1,51 @@
+%; scan.curses
+%;
+%; This file shows how to use function escapes to enable hilighting
+%; sequences for terminals that have the appropriate entries in their
+%; termcap/terminfo files.  Also it goes into more detail on exactly
+%; what each line does.
+%;
+%; See mh-format(5) for more information on these function escapes.
+%;
+%;
+%; First, test to see if this is the current message.  If it is, then
+%; output the bold sequence for this terminal.  We use %(zputlit) so the
+%; characters we output don't count against the terminal width.
+%;
+%<(cur)%(zputlit(bold))%>\
+%;
+%; If it's unseen, mark it with an underline
+%;
+%<(unseen)%(zputlit(underline))%>\
+%;
+%; Next, output the message number.  We print it out using 4 digits, right-
+%; justified, padding with spaces.
+%;
+%4(msg)\
+%;
+%; If it's the current message, output a '+' in the next column, otherwise
+%; a space.  Also use '-' if it's got a "Replied" header and 'E' if it's
+%; encrypted (not currently supported)
+%;
+%<(cur)+%| %>%<{replied}-%?{encrypted}E%| %>\
+%;
+%; Output the date, but mark it with a '*' if it's missing and was synthesized.
+%; Note the use of 02 to make sure the date is padded with a leading zero.
+%;
+%02(mon{date})/%02(mday{date})%<{date} %|*%>\
+%;
+%; If the message is from me, print out who the message was sent to.
+%; Otherwise, print out who it was from.
+%<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>\
+%<(zero)%17(decode(friendly{from}))%>  \
+%;
+%; Print out the subject and any of th mesage body that will fit on the
+%; rest of the line.  After that, print the terminal reset code to reset
+%; all of the attributes to the next line.
+%;
+%; There's actually special handling in the format engine that will output
+%; any data specified with %(zputlit) even if you've exceeded the column
+%; width, so it's safe to put any reset characters at the end; they'll
+%; still be output.
+%;
+%(decode{subject})%<{body}<<%{body}>>%>%(zputlit(resetterm))
