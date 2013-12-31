@@ -49,6 +49,7 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
+#include <curses.h>
 #include <term.h>
 
 #ifdef HAVE_SYS_TIME_H
