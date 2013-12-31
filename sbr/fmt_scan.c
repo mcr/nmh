@@ -518,6 +518,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 
 	case FT_IF_S:
 	    if (!(value = (str && *str))) {
+		if (callbacks && callbacks->trace_func)
+		    callbacks->trace_func(callbacks->trace_context, fmt, value,
+					  str, scanl);
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -525,6 +528,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 
 	case FT_IF_S_NULL:
 	    if (!(value = (str == NULL || *str == 0))) {
+		if (callbacks && callbacks->trace_func)
+		    callbacks->trace_func(callbacks->trace_context, fmt, value,
+					  str, scanl);
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -532,6 +538,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 
 	case FT_IF_V_EQ:
 	    if (value != fmt->f_value) {
+		if (callbacks && callbacks->trace_func)
+		    callbacks->trace_func(callbacks->trace_context, fmt, value,
+					  str, scanl);
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -539,6 +548,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 
 	case FT_IF_V_NE:
 	    if (value == fmt->f_value) {
+		if (callbacks && callbacks->trace_func)
+		    callbacks->trace_func(callbacks->trace_context, fmt, value,
+					  str, scanl);
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -546,6 +558,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 
 	case FT_IF_V_GT:
 	    if (value <= fmt->f_value) {
+		if (callbacks && callbacks->trace_func)
+		    callbacks->trace_func(callbacks->trace_context, fmt, value,
+					  str, scanl);
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -553,6 +568,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 
 	case FT_IF_MATCH:
 	    if (!(value = (str && match (str, fmt->f_text)))) {
+		if (callbacks && callbacks->trace_func)
+		    callbacks->trace_func(callbacks->trace_context, fmt, value,
+					  str, scanl);
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -567,6 +585,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 
 	case FT_IF_AMATCH:
 	    if (!(value = (str && uprf (str, fmt->f_text)))) {
+		if (callbacks && callbacks->trace_func)
+		    callbacks->trace_func(callbacks->trace_context, fmt, value,
+					  str, scanl);
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -597,6 +618,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    break;
 
 	case FT_GOTO:
+	    if (callbacks && callbacks->trace_func)
+		callbacks->trace_func(callbacks->trace_context, fmt, value,
+				      str, scanl);
 	    fmt += fmt->f_skip;
 	    continue;
 
