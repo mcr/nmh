@@ -761,7 +761,8 @@ test_trace(void *context, struct format *fmt, int num, char *str, char *outbuf)
     if (str != ctx->str) {
     	if (changed++)
 	    printf(" ");
-	printf("str=\"%s\"", str ? str : "NULL");
+	printf("str=");
+	litputs(str);
 	ctx->str = str;
     }
 
@@ -769,7 +770,9 @@ test_trace(void *context, struct format *fmt, int num, char *str, char *outbuf)
     	printf("\n");
 
     if (strcmp(outbuf, ctx->outbuf) != 0) {
-    	printf("outbuf=\"%s\"\n", outbuf);
+    	printf("outbuf=");
+	litputs(outbuf);
+	putchar('\n');
     	free(ctx->outbuf);
 	ctx->outbuf = getcpy(outbuf);
     }
