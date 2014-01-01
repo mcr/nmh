@@ -49,6 +49,11 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
+#if defined HAVE_NCURSES_TERMCAP_H
+# include <ncurses/termcap.h>
+#elif defined HAVE_TERMCAP_H
+# include <termcap.h>
+#endif
 #include <curses.h>
 #include <term.h>
 
