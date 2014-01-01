@@ -96,13 +96,13 @@ short cccc = -1;
 short ccme = -1;
 short querysw = 0;
 
-short outputlinelen = OUTPUTLINELEN;
-short groupreply = 0;		/* Is this a group reply?        */
+static short outputlinelen = OUTPUTLINELEN;
+static short groupreply = 0;		/* Is this a group reply?        */
 
-int mime = 0;			/* include original as MIME part */
-char *form   = NULL;		/* form (components) file        */
-char *filter = NULL;		/* message filter file           */
-char *fcc    = NULL;		/* folders to add to Fcc: header */
+static int mime = 0;			/* include original as MIME part */
+static char *form   = NULL;		/* form (components) file        */
+static char *filter = NULL;		/* message filter file           */
+static char *fcc    = NULL;		/* folders to add to Fcc: header */
 
 
 /*
