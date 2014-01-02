@@ -20,14 +20,6 @@
 # include <ncurses/termcap.h>
 #endif
 
-/* <sys/ioctl.h> is need anyway for ioctl()
-#ifdef GWINSZ_IN_SYS_IOCTL
-*/
-# include <sys/ioctl.h>
-/*
-#endif
-*/
-
 #ifdef WINSIZE_IN_PTEM
 # include <sys/stream.h>
 # include <sys/ptem.h>
