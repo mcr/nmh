@@ -1119,19 +1119,20 @@ get_term_stringcap(struct ftable *t, char *cap)
     if (termstatus == 0)
     	initialize_terminfo();
 
+    termcbufp = termcbuf;
+
     if (termstatus == -1)
-    	return;
+    	goto out;
 
     parm = tigetstr(cap);
 
     if (parm == (char *) -1 || parm == NULL) {
-    	return;
+    	goto out;
     }
-
-    termcbufp = termcbuf;
 
     tputs(parm, 1, termbytes);
 
+out:
     termcbufp = '\0';
 
     LS(t->f_type, termcbuf);
