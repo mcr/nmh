@@ -39,8 +39,6 @@
 # define TXTSIZ BUFSIZ
 #endif
 
-static long speedcode;
-
 static int initLI = 0;
 static int initCO = 0;
 
@@ -63,7 +61,6 @@ read_termcap(void)
     char termbuf[TXTSIZ];
 #endif
 
-    struct termios tio;
     static int inited = 0;
 
     if (inited++)
@@ -82,8 +79,6 @@ read_termcap(void)
     if (tgetent (termbuf, term) != TGETENT_SUCCESS)
 	return;
 #endif
-
-    speedcode = cfgetospeed(&tio);
 
     if (!initCO && (CO = tgetnum ("co")) <= 0)
 	CO = 80;
@@ -147,12 +142,10 @@ clear_screen (void)
 {
     read_termcap ();
 
-    if (CL && speedcode)
+    if (CL)
 	tputs (CL, LI, outc);
     else {
 	printf ("\f");
-	if (speedcode)
-	    printf ("\200");
     }
 
     fflush (stdout);
