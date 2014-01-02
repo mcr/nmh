@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Test that a NULL str register doesn't cause the string handling format
+# escapes to fail.
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+#
+# %{null} is arbitrary; it could be any component that does not exist.
+#
+
+run_test "fmttest -raw -format Test%(putstr{null}) dummy" "Test" \
+	"Test of %(putstr)"
+run_test "fmttest -raw -format Test%10(putstrf{null}) dummy" "Test          " \
+	"Test of %(putstrf)"
+run_test "fmttest -raw -format Test%(putlit{null}) dummy" "Test" \
+	"Test of %(putlit)"
+run_test "fmttest -raw -format Test%(zputlit{null}) dummy" "Test" \
+	"Test of %(zputlit)"
+
+exit $failed

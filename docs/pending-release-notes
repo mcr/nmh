@@ -145,3 +145,5 @@ BUG FIXES
   $HOME/.netrc.
 - Added quoting of local part of invalid address in message being
   replied to [Bug #26780].
+- Fix segmentation fauls for %(putlit) and %(zputlit) format escapes when
+  the "str" register was NULL.

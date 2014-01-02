@@ -467,29 +467,31 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		       scanl + max - 1);
 	    break;
 	case FT_STRLIT:
-	    sp = str;
-	    while ((c = *sp++) && cp < ep)
-		*cp++ = c;
+	    if (str) {
+		sp = str;
+		while ((c = *sp++) && cp < ep)
+		    *cp++ = c;
+	    }
 	    break;
-	case FT_STRLITZ: {
-	    size_t len = strlen (str);
+	case FT_STRLITZ:
+	    if (str) {
+		size_t len = strlen (str);
 
-	    /* Don't want to emit part of an escape sequence.  So if
-	       there isn't enough room in the buffer for the entire
-	       string, skip it completely. */
-	    if (cp - scanl + len + 1 < max) {
-		for (sp = str; *sp; *cp++ = *sp++) continue;
+		/* Don't want to emit part of an escape sequence.  So if
+		   there isn't enough room in the buffer for the entire
+		   string, skip it completely. */
+		if (cp - scanl + len + 1 < max) {
+		    for (sp = str; *sp; *cp++ = *sp++) continue;
 
-		/* This string doesn't count against the width.	 So
-		   increase ep the same amount as cp, only if the
-		   scan buffer will always be large enough. */
-		if (ep - scanl + len + 1 < max) {
-		    ep += len;
+		    /* This string doesn't count against the width.
+		       So increase ep the same amount as cp, only if the
+		       scan buffer will always be large enough. */
+		    if (ep - scanl + len + 1 < max) {
+			ep += len;
+		    }
 		}
 	    }
-
 	    break;
-	}
 	case FT_STRFW:
 	    adios (NULL, "internal error (FT_STRFW)");
 
