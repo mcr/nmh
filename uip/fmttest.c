@@ -1168,11 +1168,8 @@ static void
 litputc(char c)
 {
 	if (c & ~ 0177) {
-		putc('M', stdout);
-		putc('-', stdout);
-		c &= 0177;
-	}
-	if (c < 0x20 || c == 0177) {
+		printf("\\x%02x", (unsigned char) c);
+	} else if (c < 0x20 || c == 0177) {
 		if (c == '\b') {
 			putc('\\', stdout);
 			putc('b', stdout);
