@@ -44,7 +44,6 @@ static long speedcode;
 static int initLI = 0;
 static int initCO = 0;
 
-static int HC = 0;       /* are we on a hardcopy terminal?        */
 static int LI = 40;      /* number of lines                       */
 static int CO = 80;      /* number of colums                      */
 static char *CL = NULL;  /* termcap string to clear screen        */
@@ -85,8 +84,6 @@ read_termcap(void)
 #endif
 
     speedcode = cfgetospeed(&tio);
-
-    HC = tgetflag ("hc");
 
     if (!initCO && (CO = tgetnum ("co")) <= 0)
 	CO = 80;
@@ -183,16 +180,5 @@ SOprintf (char *fmt, ...)
     tputs (SE, 1, outc);
 
     return OK;
-}
-
-/*
- * Is this a hardcopy terminal?
- */
-
-int
-sc_hardcopy(void)
-{
-    read_termcap();
-    return HC;
 }
 

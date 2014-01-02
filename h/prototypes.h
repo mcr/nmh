@@ -288,7 +288,6 @@ int mhlsbr(int, char **, FILE *(*)(char *));
 int distout (char *, char *, char *);
 void replout (FILE *, char *, char *, struct msgs *, int,
 	int, char *, char *, char *, int);
-int sc_hardcopy(void);
 int sc_length(void);
 int sc_width(void);
 int build_form (char *, char *, int *, char *, char *, char *, char *,

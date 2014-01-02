@@ -478,7 +478,7 @@ mhl (int argc, char **argv)
 	folder = getenv ("mhfolder");
 
     if (isatty (fileno (stdout))) {
-	if (!nomore && !sc_hardcopy() && moreproc && *moreproc != '\0') {
+	if (!nomore && moreproc && *moreproc != '\0') {
 	    if (mhl_action) {
 		SIGNAL (SIGINT, SIG_IGN);
 		SIGNAL2 (SIGQUIT, quitser);
