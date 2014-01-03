@@ -21,6 +21,8 @@
 #elif defined (HAVE_NCURSES_TERMCAP_H)
 # include <ncurses/termcap.h>
 #endif
+
+#include <curses.h>
 #include <term.h>
 
 #ifdef WINSIZE_IN_PTEM
@@ -31,15 +33,15 @@
 static int initLI = 0;
 static int initCO = 0;
 
-static int LI = 40;             /* number of lines                        */
-static int CO = 80;             /* number of colums                       */
-static char *clear = NULL;      /* terminfo string to clear screen        */
-static char *standend = NULL;   /* terminfo string to end standout mode   */
-static char *standbegin = NULL; /* terminfo string to begin standout mode */
-static int termstatus = 0;	/* terminfo initialization status         */
-static char *termcbuf = NULL;	/* tputs() output buffer                  */
-static char *termcbufp = NULL;	/* tputs() output buffer pointer          */
-static size_t termcbufsz = 0;	/* Size of termcbuf                       */
+static int LI = 40;                /* number of lines                        */
+static int CO = 80;                /* number of colums                       */
+static char *ti_clear = NULL;      /* terminfo string to clear screen        */
+static char *ti_standend = NULL;   /* terminfo string to end standout mode   */
+static char *ti_standbegin = NULL; /* terminfo string to begin standout mode */
+static int termstatus = 0;	   /* terminfo initialization status         */
+static char *termcbuf = NULL;	   /* tputs() output buffer                  */
+static char *termcbufp = NULL;	   /* tputs() output buffer pointer          */
+static size_t termcbufsz = 0;	   /* Size of termcbuf                       */
 
 static void initialize_terminfo(void);
 static int termbytes(int);
@@ -70,9 +72,9 @@ initialize_terminfo(void)
     if (!initLI && (LI = tigetnum ("lines")) <= 0)
 	LI = 24;
 
-    clear = tigetstr ("clear");
-    standbegin = tigetstr ("smso");
-    standend = tigetstr ("rmso");
+    ti_clear = tigetstr ("clear");
+    ti_standbegin = tigetstr ("smso");
+    ti_standend = tigetstr ("rmso");
 }
 
 
@@ -125,7 +127,7 @@ nmh_clear_screen (void)
     initialize_terminfo ();
 
     if (clear)
-	tputs (clear, LI, outc);
+	tputs (ti_clear, LI, outc);
     else {
 	printf ("\f");
     }
@@ -143,16 +145,16 @@ SOprintf (char *fmt, ...)
     va_list ap;
 
     initialize_terminfo ();
-    if (!(standbegin && standend))
+    if (!(ti_standbegin && ti_standend))
 	return NOTOK;
 
-    tputs (standbegin, 1, outc);
+    tputs (ti_standbegin, 1, outc);
 
     va_start(ap, fmt);
     vprintf (fmt, ap);
     va_end(ap);
 
-    tputs (standend, 1, outc);
+    tputs (ti_standend, 1, outc);
 
     return OK;
 }
