@@ -35,7 +35,7 @@ static char *termcbufp = NULL;	   /* tputs() output buffer pointer          */
 static size_t termcbufsz = 0;	   /* Size of termcbuf                       */
 
 static void initialize_terminfo(void);
-static int termbytes(int);
+static int termbytes(TPUTS_PUTC_ARG);
 
 /*
  * Initialize the terminfo library.
@@ -185,7 +185,7 @@ get_term_stringcap(char *capability)
  */
 
 static int
-termbytes(int c)
+termbytes(TPUTS_PUTC_ARG c)
 {
     size_t offset;
 

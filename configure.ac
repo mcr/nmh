@@ -402,13 +402,16 @@ NMH_LOCKING
 dnl Check for iconv
 NMH_CHECK_ICONV
 
+dnl Check for tputs() callback argument
+NMH_TPUTS_PUTC_ARG
+
 termcap_curses_order="termcap curses ncurses"
 for lib in $termcap_curses_order; do
-  AC_CHECK_LIB(${lib}, tgetent, [TERMLIB="-l$lib"; break])
+  AC_CHECK_LIB([${lib}], [setupterm], [TERMLIB="-l$lib"; break])
 done
 AC_SUBST([TERMLIB])dnl
 AS_IF([test "x$TERMLIB" = "x"],
-      [AC_MSG_FAILURE([Could not find tgetent in any library.  Is there a curses
+      [AC_MSG_FAILURE([Could not find setupterm in any library.  Is there a curses
 or ncurses library or package that you can install?])])
 
 dnl --------------
