@@ -365,6 +365,7 @@ clock	date	integer	seconds since the UNIX epoch
 rclock	date	integer	seconds prior to current time
 tws	date	string	official RFC 822 rendering
 pretty	date	string	user-friendly rendering
+nodate	date	integer	returns 1 if date is invalid
 .fi
 .RE
 .PP
@@ -510,16 +511,14 @@ clause sets the
 register.
 .PP
 As an additional note, the (\fIformataddr\fR\^) and (\fIconcataddr\fR\^)
-functions have some behavior when it comes to the
+functions have special behavior when it comes to the
 .I str
 register.  The starting point of the register is saved and is used to
 build up entries in the address list.
 .PP
 You will find the
-.B ap
-and
-.B fmtdump
-utilities invaluable in debugging problems with format strings.
+.B fmttest
+utility invaluable when debugging problems with format strings.
 .SS Examples
 With all this in mind,
 here's the default format string for
@@ -749,7 +748,6 @@ at 4 digits.
 .SH "SEE ALSO"
 .IR scan (1),
 .IR repl (1),
-.IR ap (8),
-.IR dp (8)
+.IR fmttest (1),
 .SH CONTEXT
 None
