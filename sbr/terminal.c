@@ -181,6 +181,52 @@ get_term_stringcap(char *capability)
 }
 
 /*
+ * Return a parameterized terminfo capability
+ */
+
+char *
+get_term_stringparm(char *capability, long arg1, long arg2)
+{
+    char *parm;
+
+    initialize_terminfo();
+
+    if (termstatus == -1)
+    	return NULL;
+
+    termcbufp = termcbuf;
+
+    parm = tigetstr(capability);
+
+    if (parm == (char *) -1 || parm == NULL) {
+    	return NULL;
+    }
+
+    parm = tparm(parm, arg1, arg2, 0, 0, 0, 0, 0, 0, 0);
+
+    tputs(parm, 1, termbytes);
+
+    termcbufp = '\0';
+
+    return termcbuf;
+}
+
+/*
+ * Return the value of the specified numeric capability
+ */
+
+int
+get_term_numcap(char *capability)
+{
+    initialize_terminfo();
+
+    if (termstatus == -1)
+    	return -1;
+
+    return tigetnum(capability);
+}
+
+/*
  * Store a sequence of characters in our local buffer
  */
 

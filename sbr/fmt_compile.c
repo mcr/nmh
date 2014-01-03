@@ -86,6 +86,7 @@ extern struct mailname fmt_mnull;
 #define TF_UNDERLN 13       /* special - enter underline mode     */
 #define TF_STNDOUT 14       /* special - enter underline mode     */
 #define TF_RESET   15       /* special - reset terminal modes     */
+#define TF_HASCLR  16       /* special - terminal have color?     */
 
 /* ftable->flags */
 /* NB that TFL_PUTS is also used to decide whether the test
@@ -223,6 +224,7 @@ static struct ftable functable[] = {
      { "underline",  TF_UNDERLN,FT_LS_LIT,	0,		TFL_PUTS },
      { "standout",   TF_STNDOUT,FT_LS_LIT,	0,		TFL_PUTS },
      { "resetterm",  TF_RESET,	FT_LS_LIT,	0,		TFL_PUTS },
+     { "hascolor",   TF_HASCLR, FT_LV_LIT,	0,		0 },
 
      { NULL,         0,		0,		0,		0 }
 };
@@ -654,6 +656,10 @@ do_func(char *sp)
 
     case TF_RESET:
     	LS(t->f_type, get_term_stringcap("sgr0"));
+	break;
+
+    case TF_HASCLR:
+    	LV(t->f_type, get_term_numcap("colors") > 1);
 	break;
 
     case TF_NOW:

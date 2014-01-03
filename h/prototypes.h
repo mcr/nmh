@@ -112,12 +112,46 @@ char *getfolder(int);
  *
  * Arguments:
  *
- * capability	- The name of a terminfo capability (see terminfo(5)).
+ * capability	- The name of the terminfo capability (see terminfo(5)).
  *
  * Returns a tputs-processed string, or NULL if terminal initialization failed
  * or the capability wasn't found.
  */
 char *get_term_stringcap(char *capability);
+
+/*
+ * Get a parameterized string from the terminfo database for the current
+ * terminal.
+ *
+ * We don't yet have a standardized tparm() that will take a stdarg
+ * argument.  Right now we don't want many parameters, so we only
+ * take two.  Everything gets passed to tparm() as-is.  If we need
+ * a capability with more arguments, we'll just add more later.
+ *
+ * Arguments:
+ *
+ * capability	- The name of the terminfo capability (see terminfo(5)).
+ * arg1..argN	- Arguments 1-N.
+ *
+ * Returns a tparm and tputs-processed string, or NULL if there was a problem
+ * initializating the terminal or retrieving the capability.
+ */
+char *get_term_stringparm(char *capability, long arg1, long arg2);
+
+/*
+ * Get a number from the terminfo database for the current terminal.
+ *
+ * Retrieve the specified terminfo capability and return the numeric
+ * value of that capability from the terminfo database.
+ *
+ * Arguments:
+ *
+ * capability	- The name of the terminfo capability (see terminfo(5)).
+ *
+ * Returns the output of tigetnum() for that capability, or -1 if it was
+ * unable to initialize the terminfo database.
+ */
+int get_term_numcap(char *capability);
 
 /*
  * Lock open/close routines.
