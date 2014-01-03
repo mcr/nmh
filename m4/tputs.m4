@@ -25,7 +25,6 @@ AC_DEFUN([NMH_TPUTS_PUTC_ARG],
   done
   AS_IF([test "X$nmh_cv_tputs_putc_arg" = X],
     [AC_MSG_FAILURE([cannot determine tputs callback argument])])])
-AC_MSG_RESULT([$nmh_cv_tputs_putc_arg])
 AC_DEFINE_UNQUOTED([TPUTS_PUTC_ARG], [$nmh_cv_tputs_putc_arg],
 		   [The type of the argument of the tputs() callback])
 ])
