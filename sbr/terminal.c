@@ -13,15 +13,6 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 
-/* It might be better to tie this to the termcap_curses_order in
-   configure.ac.  It would be fine to check for ncurses/termcap.h
-   first on Linux, it's a symlink to termcap.h.  */
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#elif defined (HAVE_NCURSES_TERMCAP_H)
-# include <ncurses/termcap.h>
-#endif
-
 #include <curses.h>
 #include <term.h>
 
