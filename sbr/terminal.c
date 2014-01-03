@@ -117,7 +117,7 @@ nmh_clear_screen (void)
 {
     initialize_terminfo ();
 
-    if (clear)
+    if (ti_clear)
 	tputs (ti_clear, LI, outc);
     else {
 	printf ("\f");
