@@ -358,8 +358,8 @@ AS_CASE(["$host_os"],
                 [CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"])])
 
 AC_HEADER_TIOCGWINSZ
-AC_CHECK_HEADERS([fcntl.h ncurses/termcap.h termcap.h langinfo.h \
-                  wchar.h wctype.h sys/param.h sys/time.h sys/stream.h])
+AC_CHECK_HEADERS([fcntl.h langinfo.h wchar.h wctype.h sys/param.h \
+		  sys/time.h sys/stream.h])
 
 AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
   [Define to 1 if `struct winsize' requires <sys/ptem.h>.]),,
