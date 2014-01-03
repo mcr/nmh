@@ -106,7 +106,7 @@ sc_length (void)
 
 
 static int
-outc (int c)
+outc (TPUTS_PUTC_ARG c)
 {
     return putchar(c);
 }
