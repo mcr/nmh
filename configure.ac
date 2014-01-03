@@ -216,22 +216,6 @@ AS_CASE(["${MD5SUM}"],
 	[MD5FMT="missing"])
 AC_SUBST([MD5FMT])
 
-dnl ----------------------------------------------
-dnl check for lclint, and lint if it doesn't exist
-dnl ----------------------------------------------
-AC_CHECK_PROG([linttmp1], [lclint], [lclint], [no])dnl
-AS_IF([test x$ac_cv_prog_linttmp1 != xno],
-  [LINT=$ac_cv_prog_linttmp1
-  LINTFLAGS="-weak +posixlib -macrovarprefixexclude"],
-  [AC_CHECK_PROG([linttmp2], [lint], [lint], [no])dnl
-  AS_IF([test x$ac_cv_prog_linttmp2 != xno],
-    [LINT=$ac_cv_prog_linttmp2
-    LINTFLAGS=""],
-    [LINT="echo 'No lint program found'"
-    LINTFLAGS=""])])
-AC_SUBST([LINT])dnl
-AC_SUBST([LINTFLAGS])dnl
-
 dnl Look for `ls'
 pathtmp=/usr/xpg4/bin:/usr/bin:/bin:/usr/local/bin:/usr/ucb
 AC_PATH_PROG([lspath], [ls], [no], [$pathtmp])
@@ -311,7 +295,7 @@ dnl If mailspool is not world-writable and dotlockfile is not setgid,
 dnl we need to #define MAILGROUP to 1 and make inc setgid.
 if test x"$LOCKTYPE" = x"dot" -a x"$nmh_cv_mailspool_world_writable" = x"no" -a x"$nmh_cv_dotlockfile_setgid" != x"yes" ; then
   dnl do we really need both of these?
-  AC_DEFINE(MAILGROUP,1,
+  AC_DEFINE([MAILGROUP],[1],
     [Define to 1 if you need to make `inc' set-group-id because your mail spool is not world writable. There are no guarantees as to the safety of doing this, but this #define will add some extra security checks.])dnl
   SETGID_MAIL=1
 fi
@@ -322,7 +306,7 @@ AC_CACHE_CHECK(what group owns the mail spool, nmh_cv_ls_mail_grp,
 [nmh_cv_ls_mail_grp=`$lspath -dL $nmh_cv_ls_grpopt $mailspool|$AWK '{print $4}'`
 ])
 MAIL_SPOOL_GRP=$nmh_cv_ls_mail_grp
-AC_SUBST(MAIL_SPOOL_GRP)dnl
+AC_SUBST([MAIL_SPOOL_GRP])dnl
 
 dnl ---------------------------------------------
 dnl CHECK FOR PROGRAM TO PROVIDE MIME TYPE STRING
@@ -371,7 +355,7 @@ AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
 dnl ---------------
 dnl CHECK FUNCTIONS
 dnl ---------------
-AC_CHECK_FUNCS([wcwidth mbtowc writev lstat nl_langinfo getutxent arc4random])
+AC_CHECK_FUNCS([wcwidth mbtowc nl_langinfo getutxent arc4random])
 
 dnl Check for multibyte character set support
 AS_IF([test "x$ac_cv_header_wchar_h" = "xyes" -a \
@@ -387,9 +371,6 @@ AC_SUBST([MULTIBYTE_ENABLED])
 dnl -------------------
 dnl CHECK FOR LIBRARIES
 dnl -------------------
-dnl Check location of modf
-AC_CHECK_FUNC([modf], , AC_CHECK_LIB([m], [modf]))
-
 dnl Checks for network libraries (nsl, socket)
 NMH_CHECK_NETLIBS
 
@@ -513,85 +494,6 @@ AS_IF([test x"$tls_support" = x"yes"],[
   [TLSLIB=])
 AC_SUBST([TLSLIB])
 
-dnl ---------------------
-dnl CHECK TERMCAP LIBRARY
-dnl ---------------------
-
-dnl Add the termcap library, so that the following configure
-dnl tests will find it when it tries to link test programs.
-nmh_save_LIBS="$LIBS"
-LIBS="$TERMLIB $LIBS"
-
-dnl Check if tgetent accepts NULL (and will allocate its own termcap buffer)
-dnl Some termcaps reportedly accept a zero buffer, but then dump core
-dnl in tgetstr().
-dnl Under Cygwin test program crashes but exit code is still 0. So,
-dnl we test for a file that porgram should create
-AH_TEMPLATE([TGETENT_ACCEPTS_NULL],
-[Define to 1 if tgetent() accepts NULL as a buffer.])
-AC_CACHE_CHECK(if tgetent accepts NULL,
-nmh_cv_func_tgetent_accepts_null,
-[AC_TRY_RUN([
-main()
-{
-    char buf[4096];
-    int r1 = tgetent(buf, "vt100");
-    int r2 = tgetent((char*)0,"vt100");
-    if (r1 >= 0 && r1 == r2) {
-        char tbuf[1024], *u;
-        u = tbuf;
-    	tgetstr("cl", &u);
-	creat("conftest.tgetent", 0640);
-    }
-    exit((r1 != r2) || r2 == -1);
-}
-],
-  if test -f conftest.tgetent; then
-    nmh_cv_func_tgetent_accepts_null=yes
-  else
-    nmh_cv_func_tgetent_accepts_null=no
-  fi,
-  nmh_cv_func_tgetent_accepts_null=no,
-  nmh_cv_func_tgetent_accepts_null=no)])
-if test x$nmh_cv_func_tgetent_accepts_null = xyes; then
-  AC_DEFINE(TGETENT_ACCEPTS_NULL)
-fi
-AC_CACHE_CHECK(if tgetent returns 0 on success,
-nmh_cv_func_tgetent_zero_success,
-[AC_TRY_RUN([
-main()
-{
-    char buf[4096];
-    int r1 = tgetent(buf, "!@#$%^&*");
-    int r2 = tgetent(buf, "vt100");
-    if (r1 < 0 && r2 == 0) {
-        char tbuf[1024], *u;
-        u = tbuf;
-    	tgetstr("cl", &u);
-	creat("conftest.tgetent0", 0640);
-    }
-    exit(r1 == r2);
-}
-],
-  if test -f conftest.tgetent0; then
-    nmh_cv_func_tgetent_zero_success=yes
-  else
-    nmh_cv_func_tgetent_zero_success=no
-  fi,
-  nmh_cv_func_tgetent_zero_success=no,
-  nmh_cv_func_tgetent_zero_success=no)])
-AH_TEMPLATE([TGETENT_SUCCESS],
-[Define to what tgetent() returns on success (0 on HP-UX X/Open curses).])
-if test x$nmh_cv_func_tgetent_zero_success = xyes; then
-  AC_DEFINE(TGETENT_SUCCESS, 0)
-else
-  AC_DEFINE(TGETENT_SUCCESS, 1)
-fi
-
-dnl Now put the libraries back to what it was before we
-dnl starting checking the termcap library.
-LIBS="$nmh_save_LIBS"
-
 dnl ----------------
 dnl CHECK FLEX FIXUP
 dnl ----------------
@@ -607,15 +509,6 @@ true'],
 '; printf "%s\n" '\''1,$$s/\(	\)int i;/\1yy_size_t i;/'\'' w q | ed -s $@; \
 true'])
        AC_SUBST([LFLAGS])])
-
-dnl --------------
-dnl CHECK TYPEDEFS
-dnl --------------
-AC_TYPE_PID_T
-AC_TYPE_OFF_T
-AC_TYPE_UID_T
-AC_TYPE_MODE_T
-AC_TYPE_SIZE_T
 
 dnl ----------------
 dnl CHECK STRUCTURES
@@ -654,8 +547,7 @@ dnl exist.
 dnl
 
 AC_CONFIG_COMMANDS([build-directories],
-[test -d etc || AS_MKDIR_P([etc])
-test -d man || AS_MKDIR_P([man])])
+[test -d man || AS_MKDIR_P([man])])
 
 AC_CONFIG_COMMANDS_POST([
 

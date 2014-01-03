@@ -109,11 +109,7 @@ static void writelscmd(char *, int, char *, char **);
 static void writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp);
 static FILE* popen_in_dir(const char *dir, const char *cmd, const char *type);
 static int system_in_dir(const char *dir, const char *cmd);
-
-
-#ifdef HAVE_LSTAT
 static int copyf (char *, char *);
-#endif
 
 
 int
@@ -646,9 +642,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
     char *cp, *prog, **vec;
     struct stat st;
 
-#ifdef HAVE_LSTAT
     int	slinked = 0;
-#endif /* HAVE_LSTAT */
 
     /* Was there a previous edit session? */
     if (reedit) {
@@ -680,16 +674,12 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 
 	if (atfile) {
 	    unlink (linkpath);
-#ifdef HAVE_LSTAT
 	    if (link (altpath, linkpath) == NOTOK) {
 		symlink (altpath, linkpath);
 		slinked = 1;
 	    } else {
 		slinked = 0;
 	    }
-#else /* not HAVE_LSTAT */
-	    link (altpath, linkpath);
-#endif /* not HAVE_LSTAT */
 	}
     }
 
@@ -740,7 +730,6 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    }
 
 	    reedit++;
-#ifdef HAVE_LSTAT
 	    if (altmsg
 		    && mp
 		    && !is_readonly(mp)
@@ -753,16 +742,6 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 				&& (unlink (altpath) == NOTOK
 					|| link (linkpath, altpath) == NOTOK)))
 		advise (linkpath, "unable to update %s from", altmsg);
-#else /* HAVE_LSTAT */
-	    if (altmsg
-		    && mp
-		    && !is_readonly(mp)
-		    && stat (linkpath, &st) != NOTOK
-		    && st.st_nlink == 1
-		    && (unlink (altpath) == NOTOK
-			|| link (linkpath, altpath) == NOTOK))
-		advise (linkpath, "unable to update %s from", altmsg);
-#endif /* HAVE_LSTAT */
     }
 
     /* normally, we remember which editor we used */
@@ -777,7 +756,6 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 }
 
 
-#ifdef HAVE_LSTAT
 static int
 copyf (char *ifile, char *ofile)
 {
@@ -803,7 +781,6 @@ copyf (char *ifile, char *ofile)
     close (out);
     return i;
 }
-#endif /* HAVE_LSTAT */
 
 
 /*

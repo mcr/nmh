@@ -9,10 +9,8 @@
 
 #include <h/mh.h>
 
-#ifdef HAVE_WRITEV
-# include <sys/types.h>
-# include <sys/uio.h>
-#endif
+#include <sys/types.h>
+#include <sys/uio.h>
 
 
 /*
@@ -60,25 +58,16 @@ admonish (char *what, char *fmt, ...)
 
 /*
  * main routine for printing error messages.
- *
- * Use writev() if available, for slightly better performance.
- * Why?  Well, there are a couple of reasons.  Primarily, it
- * gives a smoother output...  More importantly though, it's a
- * sexy syscall()...
  */
 void
 advertise (char *what, char *tail, char *fmt, va_list ap)
 {
     int	eindex = errno;
-
-#ifdef HAVE_WRITEV
     char buffer[BUFSIZ], err[BUFSIZ];
     struct iovec iob[20], *iov;
-#endif
 
     fflush (stdout);
 
-#ifdef HAVE_WRITEV
     fflush (stderr);
     iov = iob;
 
@@ -118,23 +107,4 @@ advertise (char *what, char *tail, char *fmt, va_list ap)
     iov->iov_len = strlen (iov->iov_base = "\n");
     iov++;
     writev (fileno (stderr), iob, iov - iob);
-#else
-    if (invo_name && *invo_name)
-	fprintf (stderr, "%s: ", invo_name);
-    vfprintf (stderr, fmt, ap);
-
-    if (what) {
-	char *s;
-
-	if (*what)
-	    fprintf (stderr, " %s: ", what);
-	if ((s = strerror(eindex)))
-	    fprintf (stderr, "%s", s);
-	else
-	    fprintf (stderr, "Error %d", eindex);
-    }
-    if (tail)
-	fprintf (stderr, ", %s", tail);
-    fputc ('\n', stderr);
-#endif
 }
