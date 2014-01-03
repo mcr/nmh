@@ -8,8 +8,10 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 #include <termios.h>
+#include <sys/ioctl.h>
 
 /* It might be better to tie this to the termcap_curses_order in
    configure.ac.  It would be fine to check for ncurses/termcap.h
@@ -19,70 +21,58 @@
 #elif defined (HAVE_NCURSES_TERMCAP_H)
 # include <ncurses/termcap.h>
 #endif
+#include <term.h>
 
 #ifdef WINSIZE_IN_PTEM
 # include <sys/stream.h>
 # include <sys/ptem.h>
 #endif
 
-#if BUFSIZ<2048
-# define TXTSIZ	2048
-#else
-# define TXTSIZ BUFSIZ
-#endif
-
 static int initLI = 0;
 static int initCO = 0;
 
-static int LI = 40;      /* number of lines                       */
-static int CO = 80;      /* number of colums                      */
-static char *CL = NULL;  /* termcap string to clear screen        */
-static char *SE = NULL;  /* termcap string to end standout mode   */
-static char *SO = NULL;  /* termcap string to begin standout mode */
+static int LI = 40;             /* number of lines                        */
+static int CO = 80;             /* number of colums                       */
+static char *clear = NULL;      /* terminfo string to clear screen        */
+static char *standend = NULL;   /* terminfo string to end standout mode   */
+static char *standbegin = NULL; /* terminfo string to begin standout mode */
+static int termstatus = 0;	/* terminfo initialization status         */
+static char *termcbuf = NULL;	/* tputs() output buffer                  */
+static char *termcbufp = NULL;	/* tputs() output buffer pointer          */
+static size_t termcbufsz = 0;	/* Size of termcbuf                       */
 
-static char termcap[TXTSIZ];
-
-
-static void
-read_termcap(void)
-{
-    char *cp;
-    char *term;
-
-#ifndef TGETENT_ACCEPTS_NULL
-    char termbuf[TXTSIZ];
-#endif
-
-    static int inited = 0;
-
-    if (inited++)
-	return;
-
-    if (!(term = getenv ("TERM")))
-	return;
+static void initialize_terminfo(void);
+static int termbytes(int);
 
 /*
- * If possible, we let tgetent allocate its own termcap buffer
+ * Initialize the terminfo library.
  */
-#ifdef TGETENT_ACCEPTS_NULL
-    if (tgetent (NULL, term) != TGETENT_SUCCESS)
-	return;
-#else
-    if (tgetent (termbuf, term) != TGETENT_SUCCESS)
-	return;
-#endif
 
-    if (!initCO && (CO = tgetnum ("co")) <= 0)
+static void
+initialize_terminfo(void)
+{
+    int errret, rc;
+
+    if (termstatus)
+    	return;
+
+    rc = setupterm(NULL, fileno(stdout), &errret);
+
+    if (rc != 0 || errret != 1) {
+    	termstatus = -1;
+	return;
+    } else {
+    	termstatus = 1;
+    }
+
+    if (!initCO && (CO = tigetnum ("cols")) <= 0)
 	CO = 80;
-    if (!initLI && (LI = tgetnum ("li")) <= 0)
+    if (!initLI && (LI = tigetnum ("lines")) <= 0)
 	LI = 24;
 
-    cp = termcap;
-    CL = tgetstr ("cl", &cp);
-    if (tgetnum ("sg") <= 0) {
-	SE = tgetstr ("se", &cp);
-	SO = tgetstr ("so", &cp);
-    }
+    clear = tigetstr ("clear");
+    standbegin = tigetstr ("smso");
+    standend = tigetstr ("rmso");
 }
 
 
@@ -99,7 +89,7 @@ sc_width (void)
 	initCO++;
     } else
 #endif /* TIOCGWINSZ */
-	read_termcap();
+	initialize_terminfo();
 
     return CO;
 }
@@ -116,7 +106,7 @@ sc_length (void)
 	initLI++;
     else
 #endif /* TIOCGWINSZ */
-	read_termcap();
+	initialize_terminfo();
 
     return LI;
 }
@@ -130,12 +120,12 @@ outc (int c)
 
 
 void
-clear_screen (void)
+nmh_clear_screen (void)
 {
-    read_termcap ();
+    initialize_terminfo ();
 
-    if (CL)
-	tputs (CL, LI, outc);
+    if (clear)
+	tputs (clear, LI, outc);
     else {
 	printf ("\f");
     }
@@ -152,18 +142,72 @@ SOprintf (char *fmt, ...)
 {
     va_list ap;
 
-    read_termcap ();
-    if (!(SO && SE))
+    initialize_terminfo ();
+    if (!(standbegin && standend))
 	return NOTOK;
 
-    tputs (SO, 1, outc);
+    tputs (standbegin, 1, outc);
 
     va_start(ap, fmt);
     vprintf (fmt, ap);
     va_end(ap);
 
-    tputs (SE, 1, outc);
+    tputs (standend, 1, outc);
 
     return OK;
 }
 
+/*
+ * Return the specified capability as a string that has already been
+ * processed with tputs().
+ */
+
+char *
+get_term_stringcap(char *capability)
+{
+    char *parm;
+
+    initialize_terminfo();
+
+    if (termstatus == -1)
+    	return NULL;
+
+    termcbufp = termcbuf;
+
+    parm = tigetstr(capability);
+
+    if (parm == (char *) -1 || parm == NULL) {
+    	return NULL;
+    }
+
+    tputs(parm, 1, termbytes);
+
+    termcbufp = '\0';
+
+    return termcbuf;
+}
+
+/*
+ * Store a sequence of characters in our local buffer
+ */
+
+static int
+termbytes(int c)
+{
+    size_t offset;
+
+    /*
+     * Bump up the buffer size if we've reached the end (leave room for
+     * a trailing NUL)
+     */
+
+    if ((offset = termcbufp - termcbuf) - 1 >= termcbufsz) {
+        termcbufsz += 64;
+    	termcbuf = mh_xrealloc(termcbuf, termcbufsz);
+	termcbufp = termcbuf + offset;
+    }
+
+    *termcbufp++ = c;
+
+    return 0;
+}

@@ -113,6 +113,24 @@ char *get_charset(void);
 char *getcpy (const char *);
 char *get_default_editor(void);
 char *getfolder(int);
+
+/*
+ * Get a string from the terminfo database for the current terminal.
+ *
+ * Retrieve the specified terminfo capability and return a string that
+ * can be output to the terminal.  The string returned has already been
+ * processed by tputs(), so it is safe to output directly.  The return
+ * value of this function is valid until the next call.
+ *
+ * Arguments:
+ *
+ * capability	- The name of a terminfo capability (see terminfo(5)).
+ *
+ * Returns a tputs-processed string, or NULL if terminal initialization failed
+ * or the capability wasn't found.
+ */
+char *get_term_stringcap(char *capability);
+
 /*
  * Lock open/close routines.
  *
@@ -154,6 +172,11 @@ char *m_mktemp2(const char *, const char *, int *, FILE **);
 void m_unknown(m_getfld_state_t *, FILE *);
 int makedir (char *);
 char *message_id (time_t, int);
+
+/*
+ * Clear the screen, using the appropriate entry from the terminfo database
+ */
+void nmh_clear_screen(void);
 char *nmh_getpass(const char *);
 char *norm_charmap(char *);
 char *new_fs (char *, char *, char *);
@@ -280,7 +303,6 @@ char *SystemName(void);
 int annotate (char *, char *, char *, int, int, int, int);
 void annolist(char *, char *, char *, int);
 void annopreserve(int);
-void clear_screen(void);
 void m_pclose(void);
 int make_intermediates(char *);
 int mhl(int, char **);

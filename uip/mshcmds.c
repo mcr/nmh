@@ -2070,7 +2070,7 @@ scancmd (char **args)
 	}
 
     if (clearsw)
-	clear_screen ();
+	nmh_clear_screen ();
 }
 
 

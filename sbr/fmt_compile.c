@@ -49,9 +49,6 @@
 #include <h/mts.h>
 #include <h/utils.h>
 
-#include <curses.h>
-#include <term.h>
-
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
 #endif
@@ -69,10 +66,6 @@ static struct comp *cm;			/* most recent comp ref  */
 static struct ftable *ftbl;		/* most recent func ref  */
 static int ncomp;
 static int infunction;			/* function nesting cnt  */
-static int termstatus = 0;		/* 0=uninit,1=ok,-1=fail */
-static char *termcbuf = NULL;		/* Capability output str */
-static char *termcbufp = NULL;		/* Capability buf ptr    */
-static size_t termcbufsz = 0;		/* Size of termcbuf      */
 
 extern struct mailname fmt_mnull;
 
@@ -91,7 +84,8 @@ extern struct mailname fmt_mnull;
 #define TF_LMBOX   11       /* special - get full local mailbox   */
 #define TF_BOLD    12	    /* special - enter terminal bold mode */
 #define TF_UNDERLN 13       /* special - enter underline mode     */
-#define TF_RESET   14       /* special - reset terminal modes     */
+#define TF_STNDOUT 14       /* special - enter underline mode     */
+#define TF_RESET   15       /* special - reset terminal modes     */
 
 /* ftable->flags */
 /* NB that TFL_PUTS is also used to decide whether the test
@@ -227,6 +221,7 @@ static struct ftable functable[] = {
 
      { "bold",       TF_BOLD,	FT_LS_LIT,	0,		TFL_PUTS },
      { "underline",  TF_UNDERLN,FT_LS_LIT,	0,		TFL_PUTS },
+     { "standout",   TF_STNDOUT,FT_LS_LIT,	0,		TFL_PUTS },
      { "resetterm",  TF_RESET,	FT_LS_LIT,	0,		TFL_PUTS },
 
      { NULL,         0,		0,		0,		0 }
@@ -302,9 +297,6 @@ static char *do_loop(char *);
 static char *do_if(char *);
 static void free_component(struct comp *);
 static void free_comptable(void);
-static void initialize_terminfo(void);
-static void get_term_stringcap(struct ftable *, char *);
-static int termbytes(int);
 
 /*
  * Lookup a function name in the functable
@@ -649,15 +641,19 @@ do_func(char *sp)
 	break;
 
     case TF_BOLD:
-    	get_term_stringcap(t, "bold");
+    	LS(t->f_type, get_term_stringcap("bold"));
 	break;
 
     case TF_UNDERLN:
-   	get_term_stringcap(t, "smul");
+   	LS(t->f_type, get_term_stringcap("smul"));
+	break;
+
+    case TF_STNDOUT:
+    	LS(t->f_type, get_term_stringcap("smso"));
 	break;
 
     case TF_RESET:
-    	get_term_stringcap(t, "sgr0");
+    	LS(t->f_type, get_term_stringcap("sgr0"));
 	break;
 
     case TF_NOW:
@@ -1062,103 +1058,4 @@ free_component(struct comp *cm)
 	    mnfree(cm->c_mn);
     	free(cm);
     }
-}
-
-/*
- * These functions handles the case of outputting terminal strings depending
- * on the terminfo setting.
- */
-
-/*
- * We should only be called if we haven't yet called setupterm()
- */
-
-void
-initialize_terminfo(void)
-{
-    int errret, rc;
-
-    rc = setupterm(NULL, fileno(stdout), &errret);
-
-    if (rc != 0 || errret != 1)
-    	termstatus = -1;
-    else
-    	termstatus = 1;
-}
-
-/*
- * Place the results of the specified string entry into the str register.
- *
- * Arguments are:
- *
- * t	- Pointer to instruction table entry (used to create fmt instruction)
- * cap	- Name of terminfo capability to insert (e.g., "bold", or "sgr0").
- *
- * This ended up being more complicated than I hoped.  You need to fetch the
- * entry via tigetstr(), but there MAY be a padding format embedded in what
- * gets returned by tigetstr(), so you have to run it through tputs().
- * And of course tputs() is designed to output to a terminal, so you have
- * capture every byte output by the tputs() callback to get the final
- * string to write to the format engine.
- *
- * If padding bytes are NULs that will be a problem for us, but some quick
- * experimentation suggests that padding bytes are mostly a non-issue anymore.
- * If they still crop up we'll have to figure out how to deal with them.
- */
-
-void
-get_term_stringcap(struct ftable *t, char *cap)
-{
-    char *parm;
-
-    /*
-     * Common to all functions; initialize the termcap if we need it.
-     * If it didn't initialize successfully, return silently
-     */
-
-    if (termstatus == 0)
-    	initialize_terminfo();
-
-    termcbufp = termcbuf;
-
-    if (termstatus == -1)
-    	goto out;
-
-    parm = tigetstr(cap);
-
-    if (parm == (char *) -1 || parm == NULL) {
-    	goto out;
-    }
-
-    tputs(parm, 1, termbytes);
-
-out:
-    termcbufp = '\0';
-
-    LS(t->f_type, termcbuf);
-}
-
-/*
- * Store a sequence of characters in our local buffer
- */
-
-static int
-termbytes(int c)
-{
-    size_t offset;
-
-    /*
-     * Bump up the buffer size if we've reached the end (leave room for
-     * a trailing NUL)
-     */
-
-    if ((offset = termcbufp - termcbuf) - 1 >= termcbufsz) {
-        termcbufsz += 64;
-    	termcbuf = mh_xrealloc(termcbuf, termcbufsz);
-	termcbufp = termcbuf + offset;
-    }
-
-    *termcbufp++ = c;
-
-    return 0;
 }

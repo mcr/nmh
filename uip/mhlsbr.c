@@ -531,7 +531,7 @@ mhl (int argc, char **argv)
     }
     
     if (clearflg > 0 && ontty == NOTTY)
-	clear_screen ();
+	nmh_clear_screen ();
 
     if (ontty == PITTY)
 	m_pclose ();
@@ -956,7 +956,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		if (ofilec > 1) {
 		    if (ofilen > 1) {
 			if ((global.c_flags & CLEARSCR))
-			    clear_screen ();
+			    nmh_clear_screen ();
 			else
 			    printf ("\n\n\n");
 		    }
@@ -978,7 +978,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		}
 		if (strchr(buf, '\n')) {
 		    if ((global.c_flags & CLEARSCR))
-			clear_screen ();
+			nmh_clear_screen ();
 		}
 		else
 		    printf ("\n");
@@ -989,7 +989,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    if (ofilen > 1) {
 			printf ("\n\n\n");
 			if (clearflg > 0)
-			    clear_screen ();
+			    nmh_clear_screen ();
 		    }
 		    printf (">>> %s\n\n", mname);
 		}
@@ -1485,7 +1485,7 @@ putch (char ch, long flags)
 	    read (fileno (stdout), buf, sizeof(buf));
 	    if (strchr(buf, '\n')) {
 		if (global.c_flags & CLEARSCR)
-		    clear_screen ();
+		    nmh_clear_screen ();
 		row = 0;
 	    } else {
 		putchar ('\n');

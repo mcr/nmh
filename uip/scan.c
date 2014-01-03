@@ -37,12 +37,6 @@ DEFINE_SWITCH_ARRAY(SCAN, switches);
 #undef X
 
 
-/*
- * prototypes
- */
-void clear_screen(void);  /* from termsbr.c */
-
-
 int
 main (int argc, char **argv)
 {
@@ -288,7 +282,7 @@ main (int argc, char **argv)
     ivector_free (seqnum);
     folder_free (mp);	/* free folder/message structure */
     if (clearflag)
-	clear_screen ();
+	nmh_clear_screen ();
 
     done (0);
     return 1;
