@@ -183,7 +183,8 @@ dist_sysconf_DATA = etc/MailAliases etc/components etc/digestcomps \
 		    etc/mhl.format etc/mhl.forward etc/mhl.headers \
 		    etc/mhl.reply etc/rcvdistcomps etc/rcvdistcomps.outbox \
 		    etc/replcomps etc/replgroupcomps etc/scan.MMDDYY \
-		    etc/scan.YYYYMMDD etc/scan.default etc/scan.highlighted \
+		    etc/scan.YYYYMMDD etc/scan.curses etc/scan.default \
+		    etc/scan.highlighted \
 		    etc/scan.mailx etc/scan.nomime etc/scan.size etc/scan.time \
 		    etc/scan.timely etc/scan.unseen
 
