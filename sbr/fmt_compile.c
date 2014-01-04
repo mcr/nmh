@@ -87,6 +87,8 @@ extern struct mailname fmt_mnull;
 #define TF_STNDOUT 14       /* special - enter underline mode     */
 #define TF_RESET   15       /* special - reset terminal modes     */
 #define TF_HASCLR  16       /* special - terminal have color?     */
+#define TF_FGCOLR  17       /* special - foreground term color    */
+#define TF_BGCOLR  18       /* special - background term color    */
 
 /* ftable->flags */
 /* NB that TFL_PUTS is also used to decide whether the test
@@ -105,7 +107,9 @@ extern struct mailname fmt_mnull;
  *	    what maps a particular function name into a format instruction.
  * type -   The type of argument this function expects.  Those types are
  *	    listed above (with the TF_ prefix).  This affects what gets
- *	    placed in the format instruction (the f_un union).
+ *	    placed in the format instruction (the f_un union).  Also,
+ *	    instructions that require special handling are distinguished
+ *	    here (TF_MYMBOX is one example).
  * f_type - The instruction corresponding to this function (from the list
  *	    in fmt_compile.h).
  * extra  - Used by some functions to provide extra data to the compiler.
@@ -225,8 +229,38 @@ static struct ftable functable[] = {
      { "standout",   TF_STNDOUT,FT_LS_LIT,	0,		TFL_PUTS },
      { "resetterm",  TF_RESET,	FT_LS_LIT,	0,		TFL_PUTS },
      { "hascolor",   TF_HASCLR, FT_LV_LIT,	0,		0 },
+     { "fgcolor",    TF_FGCOLR, FT_LS_LIT,	0,		TFL_PUTS },
+     { "bgcolor",    TF_BGCOLR, FT_LS_LIT,	0,		TFL_PUTS },
 
      { NULL,         0,		0,		0,		0 }
+};
+
+/*
+ * A mapping of color names to terminfo color numbers.
+ *
+ * There are two sets of terminal-setting codes: 'setaf/setab' (ANSI) and
+ * 'setf/setb'.  Different terminals support different capabilities, so
+ * we provide a mapping for both.  I'm not crazy about putting numbers
+ * directly in here, but it seems these are well defined by terminfo
+ * so it should be okay.
+ */
+
+struct colormap {
+    char *colorname;	/* Name of color */
+    int ansinum;	/* The ANSI escape color number */
+    int nonansinum;	/* The non-ANSI escape color number */
+};
+
+static struct colormap colortable[] = {
+    { "black",		0,	0 },
+    { "red",		1,	4 },
+    { "green",		2,	2 },
+    { "yellow",		3,	6 },
+    { "blue",		4,	1 },
+    { "magenta",	5,	5 },
+    { "cyan",		6,	3 },
+    { "white",		7,	7 },
+    { NULL,		0,	0 }
 };
 
 /* 
@@ -661,6 +695,42 @@ do_func(char *sp)
     case TF_HASCLR:
     	LV(t->f_type, get_term_numcap("colors") > 1);
 	break;
+
+    case TF_FGCOLR:
+    case TF_BGCOLR: {
+	struct colormap *cmap = colortable;
+    	char *code;
+
+	sp = cp - 1;
+	while (c && c != ')')
+	    c = *cp++;
+	cp[-1] = '\0';
+
+	while (cmap->colorname != NULL) {
+	    if (strcasecmp(sp, cmap->colorname) == 0)
+	    	break;
+	    cmap++;
+	}
+
+	if (cmap->colorname == NULL) {
+	    CERROR("Unknown color name");
+	    break;
+	}
+
+	code = get_term_stringparm(t->type == TF_FGCOLR ? "setaf" : "setab",
+				   cmap->ansinum, 0);
+
+	/*
+	 * If this doesn't have anything, try falling back to setf/setb
+	 */
+
+	if (! code)
+	    code = get_term_stringparm(t->type == TF_FGCOLR ? "setf" : "setb",
+	    			       cmap->nonansinum, 0);
+
+	LS(t->f_type, code);
+	break;
+    }
 
     case TF_NOW:
 	LV(t->f_type, time((time_t *) 0));

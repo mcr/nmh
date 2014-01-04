@@ -9,14 +9,15 @@
 %;
 %;
 %; First, test to see if this is the current message.  If it is, then
-%; output the bold sequence for this terminal.  We use %(zputlit) so the
+%; output the standout sequence for this terminal (or the color red).
+%; We use %(zputlit) so the
 %; characters we output don't count against the terminal width.
 %;
-%<(cur)%(zputlit(bold))%>\
+%<(cur)%<(hascolor)%(zputlit(fgcolor red))%|%(zputlit(standout))%>%>\
 %;
-%; If it's unseen, mark it with an underline
+%; If it's unseen, mark it with bold (or the color green)
 %;
-%<(unseen)%(zputlit(underline))%>\
+%<(unseen)%<(hascolor)%(zputlit(fgcolor green))%|%(zputlit(bold))%>%>\
 %;
 %; Next, output the message number.  We print it out using 4 digits, right-
 %; justified, padding with spaces.

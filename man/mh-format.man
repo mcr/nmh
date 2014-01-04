@@ -298,6 +298,13 @@ putnumf	expr		print \fInum\fR in a fixed width
 putlit	expr		print \fIstr\fR without space compression
 zputlit	expr		print \fIstr\fR without space compression;
 			\fIstr\fR must occupy no width on display
+bold		string	set terminal bold mode
+underline		string	set terminal underlined mode
+standout		string	set terminal standout mode
+resetterm		string	reset all terminal attributes
+hascolor		boolean	terminal supports color
+fgcolor	literal	string	set terminal foreground color
+bgcolor	literal	string	set terminal background color
 formataddr	expr		append \fIarg\fR to \fIstr\fR as a
 			(comma separated) address list
 concataddr	expr		append \fIarg\fR to \fIstr\fR as a
@@ -433,8 +440,29 @@ the str register, but requires that those contents not occupy any
 output width.  It can therefore be used for outputting terminal escape
 sequences.
 .PP
+There are a limited number of function escapes to output terminal escape
+sequences. These sequences are retrieved from the
+.IR terminfo (5)
+database according to the current terminal setting.  The (\fIbold\fR\^),
+(\fIunderline\fR\^), and (\fIstandout\fR\^) escapes set bold mode,
+underline mode, and standout mode respectively.
+.PP
+(\fIhascolor\fR\^)
+can be used to determine if the current terminal supports color.
+(\fIfgcolor\fR\^) and (\fIbgcolor\fR\^) set the foreground and
+background colors respectively.  Both of these escapes take one literal
+argument, the color name, which can be one of: black, red, green, yellow,
+blue, magenta, cyan, white.  (\fIresetterm\fR\^) resets all terminal
+attributes back to their default setting.
+.PP
+All of these terminal escape should be used in conjunction with
+(\fIzputlit\fR\^) (preferred) or (\fIputlit\fR\^), as the normal
+(\fputstr\fR\^) function will strip out control characters.
+.PP
 The available output width is kept in an internal register; any output
-past this width will be truncated.
+past this width will be truncated.  The one exception to this is
+(\fIzputlit\fR\^) functions will still be executed in case a terminal reset
+code is being placed at the end of the line.
 .SS Special Handling
 A few functions have different behavior depending on what command they are
 being invoked from.

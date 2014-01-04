@@ -1079,7 +1079,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	       there isn't enough room in the buffer for the entire
 	       string, skip it completely.  Need room for null
 	       terminator, and maybe trailing newline (added below). */
-	    if (cp - scanl + strlen (str) + 1 < max) {
+	    if (str && (cp - scanl + strlen (str) + 1 < max)) {
 		for (sp = str; *sp; *cp++ = *sp++) continue;
 	    }
 	    if (callbacks && callbacks->trace_func)
