@@ -346,6 +346,14 @@ int writeBase64 (unsigned char *, size_t, unsigned char *);
 int writeBase64raw (unsigned char *, size_t, unsigned char *);
 
 /*
+ * prototypes to support whatnow attach
+ */
+int   attach(char *, char *, char *, size_t, char *, size_t, int);
+void  clean_up_temporary_files(const char *, const char *);
+char *mime_type (const char *);
+
+
+/*
  * credentials management
  */
 void init_credentials_file ();
