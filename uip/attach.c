@@ -10,11 +10,8 @@
 #include <h/utils.h>
 #include <h/tws.h>
 
-static int   get_line(char *, size_t);
-static int   make_mime_composition_file_entry(char *, int, char *);
-
-static	FILE	*draft_file;				/* draft file pointer */
-static	FILE	*composition_file;			/* composition file pointer */
+static int   get_line(FILE *, char *, size_t);
+static int   make_mime_composition_file_entry(FILE *, char *, int, char *);
 
 int
 attach(char *attachment_header_field_name, char *draft_file_name,
@@ -30,8 +27,11 @@ attach(char *attachment_header_field_name, char *draft_file_name,
     char		*p;			/* miscellaneous string pointer */
     FILE		*fp;			/* pointer for mhn.defaults */
     FILE		*body_file = NULL;	/* body file pointer */
+    FILE		*draft_file;		/* draft file pointer */
     int			field_size;		/* size of header field buffer */
     char		*field;			/* header field buffer */
+    FILE		*composition_file;	/* composition file pointer */
+
 
     /*
      *	Open up the draft file.
@@ -59,7 +59,7 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     has_attachment = 0;
 
-    while (get_line(field, field_size) != EOF && *field != '\0' &&
+    while (get_line(draft_file, field, field_size) != EOF && *field != '\0' &&
            *field != '-') {
 	if (strncasecmp(field, attachment_header_field_name, length) == 0 &&
 	    field[length] == ':') {
@@ -81,7 +81,7 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     has_body = 0;
 
-    while (get_line(field, field_size) != EOF) {
+    while (get_line(draft_file, field, field_size) != EOF) {
 	for (p = field; *p != '\0'; p++) {
 	    if (*p != ' ' && *p != '\t') {
 		has_body = 1;
@@ -122,7 +122,7 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     rewind(draft_file);
 
-    while (get_line(field, field_size) != EOF && *field != '\0' &&
+    while (get_line(draft_file, field, field_size) != EOF && *field != '\0' &&
            *field != '-')
 	if (strncasecmp(field, attachment_header_field_name, length) != 0 ||
             field[length] != ':')
@@ -148,8 +148,8 @@ attach(char *attachment_header_field_name, char *draft_file_name,
      */
 
     if (has_body)
-	if (make_mime_composition_file_entry(body_file_name, attachformat,
-					     "text/plain")) {
+	if (make_mime_composition_file_entry(composition_file, body_file_name,
+					     attachformat, "text/plain")) {
 	    clean_up_temporary_files(body_file_name, composition_file_name);
 	    adios (NULL, "exiting");
 	}
@@ -167,7 +167,7 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     rewind(draft_file);
 
-    while (get_line(field, field_size) != EOF && *field != '\0' &&
+    while (get_line(draft_file, field, field_size) != EOF && *field != '\0' &&
            *field != '-') {
 	if (strncasecmp(field, attachment_header_field_name, length) == 0 &&
             field[length] == ':') {
@@ -182,7 +182,9 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 		      /* Don't set the default content type so take
 			 make_mime_composition_file_entry() will try
 			 to infer it from the file type. */
-			if (make_mime_composition_file_entry(p, attachformat, 0)) {
+			if (make_mime_composition_file_entry(composition_file,
+							     p, attachformat,
+							     0)) {
 			    clean_up_temporary_files(body_file_name,
                                                      composition_file_name);
 			    adios (NULL, "exiting");
@@ -226,7 +228,7 @@ clean_up_temporary_files(const char *body_file_name,
 }
 
 static int
-get_line(char *field, size_t field_size)
+get_line(FILE *draft_file, char *field, size_t field_size)
 {
     int		c;	/* current character */
     size_t	n;	/* number of bytes in buffer */
@@ -263,8 +265,8 @@ get_line(char *field, size_t field_size)
 }
 
 static int
-make_mime_composition_file_entry(char *file_name, int attachformat,
-                                 char *default_content_type)
+make_mime_composition_file_entry(FILE *composition_file, char *file_name,
+                                 int attachformat, char *default_content_type)
 {
     int			binary;			/* binary character found flag */
     int			c;			/* current character */
