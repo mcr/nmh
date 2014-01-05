@@ -175,7 +175,7 @@ get_term_stringcap(char *capability)
 
     tputs(parm, 1, termbytes);
 
-    termcbufp = '\0';
+    *termcbufp = '\0';
 
     return termcbuf;
 }
@@ -206,7 +206,7 @@ get_term_stringparm(char *capability, long arg1, long arg2)
 
     tputs(parm, 1, termbytes);
 
-    termcbufp = '\0';
+    *termcbufp = '\0';
 
     return termcbuf;
 }
