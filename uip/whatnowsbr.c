@@ -81,7 +81,7 @@ DEFINE_SWITCH_ARRAY(WHATNOW, whatnowswitches);
     X("pwd", 0, PWDCMDSW) \
     X("ls", 2, LSCMDSW) \
     X("attach", 0, ATTACHCMDSW) \
-    X("detach [-n]", 2, DETACHCMDSW) \
+    X("detach [-n]", 0, DETACHCMDSW) \
     X("alist [-ln] ", 2, ALISTCMDSW) \
 
 #define X(sw, minchars, id) id,
