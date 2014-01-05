@@ -999,7 +999,7 @@ check_draft (char *msgnam)
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech", SASLminc(-5), SASLMECHSW) \
     X("user", SASLminc(-4), USERSW) \
-    X("attach file", 6, SNDATTACHSW) \
+    X("attach fieldname", 6, SNDATTACHSW) \
     X("noattach", 0, SNDNOATTACHSW) \
     X("attachformat", 7, SNDATTACHFORMAT) \
     X("port server-port-name/number", 4, PORTSW) \
