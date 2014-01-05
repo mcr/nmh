@@ -10,11 +10,9 @@
 #include <h/utils.h>
 #include <h/tws.h>
 
-static int   get_line(void);
+static int   get_line(char *, size_t);
 static int   make_mime_composition_file_entry(char *, int, char *);
 
-static	int	field_size;				/* size of header field buffer */
-static	char	*field;					/* header field buffer */
 static	FILE	*draft_file;				/* draft file pointer */
 static	FILE	*composition_file;			/* composition file pointer */
 
@@ -32,6 +30,8 @@ attach(char *attachment_header_field_name, char *draft_file_name,
     char		*p;			/* miscellaneous string pointer */
     FILE		*fp;			/* pointer for mhn.defaults */
     FILE		*body_file = NULL;	/* body file pointer */
+    int			field_size;		/* size of header field buffer */
+    char		*field;			/* header field buffer */
 
     /*
      *	Open up the draft file.
@@ -59,7 +59,8 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     has_attachment = 0;
 
-    while (get_line() != EOF && *field != '\0' && *field != '-') {
+    while (get_line(field, field_size) != EOF && *field != '\0' &&
+           *field != '-') {
 	if (strncasecmp(field, attachment_header_field_name, length) == 0 &&
 	    field[length] == ':') {
 	    for (p = field + length + 1; *p == ' ' || *p == '\t'; p++)
@@ -80,7 +81,7 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     has_body = 0;
 
-    while (get_line() != EOF) {
+    while (get_line(field, field_size) != EOF) {
 	for (p = field; *p != '\0'; p++) {
 	    if (*p != ' ' && *p != '\t') {
 		has_body = 1;
@@ -121,7 +122,8 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     rewind(draft_file);
 
-    while (get_line() != EOF && *field != '\0' && *field != '-')
+    while (get_line(field, field_size) != EOF && *field != '\0' &&
+           *field != '-')
 	if (strncasecmp(field, attachment_header_field_name, length) != 0 ||
             field[length] != ':')
 	    (void)fprintf(composition_file, "%s\n", field);
@@ -165,7 +167,8 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     rewind(draft_file);
 
-    while (get_line() != EOF && *field != '\0' && *field != '-') {
+    while (get_line(field, field_size) != EOF && *field != '\0' &&
+           *field != '-') {
 	if (strncasecmp(field, attachment_header_field_name, length) == 0 &&
             field[length] == ':') {
 	    for (p = field + length + 1; *p == ' ' || *p == '\t'; p++)
@@ -223,10 +226,10 @@ clean_up_temporary_files(const char *body_file_name,
 }
 
 static int
-get_line(void)
+get_line(char *field, size_t field_size)
 {
     int		c;	/* current character */
-    int		n;	/* number of bytes in buffer */
+    size_t	n;	/* number of bytes in buffer */
     char	*p;	/* buffer pointer */
 
     /*
