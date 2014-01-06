@@ -32,7 +32,7 @@ actual=$MH_TEST_DIR/$$.actual
 #
 
 set +e
-whatnowtest=`echo cd | TERM=dumb run_prog whatnow -prompt ''`
+whatnowtest=`echo cd | TERM=dumb whatnow -prompt ''`
 set -e
 
 case ${whatnowtest} in
@@ -58,8 +58,7 @@ EOF
 # ||true to ignore whatnow's exit status
 # watch the quoting -- shell and printf and then the shell run inside whatnow
 printf 'cd %s/foo\\'"'"'s\\ bar\npwd\n' "$MH_TEST_DIR" | \
-  TERM=dumb run_prog whatnow -noedit -prompt '' 2> "$actualerr" > "$actual" || \
-  true
+  TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" > "$actual" || true
 
 check "$expectederr" "$actualerr"
 check "$expected" "$actual"
