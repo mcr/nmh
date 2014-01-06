@@ -1,0 +1,92 @@
+#!/bin/sh
+#
+# Test that the curses function escapes work
+#
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
+
+require_prog tput
+
+tput -Txterm-color sgr0 >/dev/null 2>&1 ||
+			test_skip "missing terminfo entry for xterm-color"
+tput -Tvt100 sgr0 > /dev/null 2>&1 ||
+			test_skip "missing terminfo entry for vt100"
+
+#
+# Set up things so messages 7-10 are unseen, and message 6 is cur
+#
+
+echo "Unseen-Sequence: unseen" >> "$MH"
+mark +inbox 7-10 -seq unseen -add
+mark 6 -seq cur -add -zero
+
+#
+# Right now, in scan.curses cur is marked with standout for monochrome, red
+# for color, and unseen is marked with with bold/green for unseen.
+#
+
+TERM=vt100; export TERM
+
+standout=`tput smso`
+bold=`tput bold`
+reset=`tput sgr0`
+
+cat > "$expected" <<EOF
+   1  09/29 Test1              Testing message 1<<This is message number 1 >>${reset}
+   2  09/29 Test2              Testing message 2<<This is message number 2 >>${reset}
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>${reset}
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>${reset}
+   5  09/29 Test5              Testing message 5<<This is message number 5 >>${reset}
+${standout}   6+ 09/29 Test6              Testing message 6<<This is message number 6 >>${reset}
+${bold}   7  09/29 Test7              Testing message 7<<This is message number 7 >>${reset}
+${bold}   8  09/29 Test8              Testing message 8<<This is message number 8 >>${reset}
+${bold}   9  09/29 Test9              Testing message 9<<This is message number 9 >>${reset}
+${bold}  10  09/29 Test10             Testing message 10<<This is message number 10 >>${reset}
+EOF
+
+run_prog scan -width 80 -form scan.curses > "$actual"
+check "$expected" "$actual"
+
+#
+# xterm-color should cause %(hascolor) to return true, so we should execute
+# all of the color-based scan output.  According to the terminfo
+# documentation the color red should be 1, where green is 2.  But the
+# format code will fall back to the older setf capability if setaf isn't
+# supported, which has a different color numbering scheme; we should
+# test for that at some point.
+#
+
+TERM=xterm-color; export TERM
+
+red=`tput setaf 1`
+green=`tput setaf 2`
+reset=`tput sgr0`
+
+cat > "$expected" <<EOF
+   1  09/29 Test1              Testing message 1<<This is message number 1 >>${reset}
+   2  09/29 Test2              Testing message 2<<This is message number 2 >>${reset}
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>${reset}
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>${reset}
+   5  09/29 Test5              Testing message 5<<This is message number 5 >>${reset}
+${red}   6+ 09/29 Test6              Testing message 6<<This is message number 6 >>${reset}
+${green}   7  09/29 Test7              Testing message 7<<This is message number 7 >>${reset}
+${green}   8  09/29 Test8              Testing message 8<<This is message number 8 >>${reset}
+${green}   9  09/29 Test9              Testing message 9<<This is message number 9 >>${reset}
+${green}  10  09/29 Test10             Testing message 10<<This is message number 10 >>${reset}
+EOF
+
+run_prog scan -width 80 -form scan.curses > "$actual"
+check "$expected" "$actual"
+
+exit $failed
