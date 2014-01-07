@@ -125,6 +125,16 @@ folder_read (char *name, int lockflag)
     /* mp->hghoff = max (mp->hghmsg, 1); */
 
     /*
+     * If for some reason hghoff < lowoff (like we got an integer overflow)
+     * the complain about this now.
+     */
+
+    if (mp->hghoff < mp->lowoff) {
+	adios(NULL, "Internal failure: high message limit < low message "
+	      "limit; possible overflow?");
+    }
+
+    /*
      * Allocate space for status of each message.
      */
     mp->num_msgstats = MSGSTATNUM (mp->lowoff, mp->hghoff);
