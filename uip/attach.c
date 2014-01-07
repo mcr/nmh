@@ -10,8 +10,7 @@
 #include <h/utils.h>
 #include <h/tws.h>
 
-static int   get_line(FILE *, char *, size_t);
-static int   make_mime_composition_file_entry(FILE *, char *, int, char *);
+static int get_line(FILE *, char *, size_t);
 
 int
 attach(char *attachment_header_field_name, char *draft_file_name,
@@ -19,18 +18,20 @@ attach(char *attachment_header_field_name, char *draft_file_name,
        char *composition_file_name, size_t composition_file_name_len,
        int attachformat)
 {
-    char		buf[PATH_MAX + 6];	/* miscellaneous buffer */
-    int			c;			/* current character for body copy */
-    int			has_attachment;		/* draft has at least one attachment */
-    int			has_body;		/* draft has a message body */
-    int			length;			/* length of attachment header field name */
-    char		*p;			/* miscellaneous string pointer */
-    FILE		*fp;			/* pointer for mhn.defaults */
-    FILE		*body_file = NULL;	/* body file pointer */
-    FILE		*draft_file;		/* draft file pointer */
-    int			field_size;		/* size of header field buffer */
-    char		*field;			/* header field buffer */
-    FILE		*composition_file;	/* composition file pointer */
+    char        buf[PATH_MAX + 6];      /* miscellaneous buffer */
+    int         c;                      /* current character for body copy */
+    int         has_attachment;         /* draft has at least one attachment */
+    int         has_body;               /* draft has a message body */
+    int         length;                 /* of attachment header field name */
+    char        *p;                     /* miscellaneous string pointer */
+    struct stat st;                     /* file status buffer */
+    FILE        *fp;                    /* pointer for mhn.defaults */
+    FILE        *body_file = NULL;      /* body file pointer */
+    FILE        *draft_file;            /* draft file pointer */
+    int         field_size;             /* size of header field buffer */
+    char        *field;                 /* header field buffer */
+    FILE        *composition_file;      /* composition file pointer */
+    char        *build_directive;       /* mhbuild directive */
 
 
     /*
@@ -38,7 +39,7 @@ attach(char *attachment_header_field_name, char *draft_file_name,
      */
 
     if ((draft_file = fopen(draft_file_name, "r")) == (FILE *)0)
-	adios((char *)0, "can't open draft file `%s'.", draft_file_name);
+	adios(NULL, "can't open draft file `%s'.", draft_file_name);
 
     /*
      *  Allocate a buffer to hold the header components as they're read in.
@@ -111,7 +112,7 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 
     if ((has_body && body_file == (FILE *)0) || composition_file == (FILE *)0) {
 	clean_up_temporary_files(body_file_name, composition_file_name);
-	adios((char *)0, "unable to open all of the temporary files.");
+	adios(NULL, "unable to open all of the temporary files.");
     }
 
     /*
@@ -148,11 +149,24 @@ attach(char *attachment_header_field_name, char *draft_file_name,
      */
 
     if (has_body)
-	if (make_mime_composition_file_entry(composition_file, body_file_name,
-					     attachformat, "text/plain")) {
-	    clean_up_temporary_files(body_file_name, composition_file_name);
-	    adios (NULL, "exiting");
-	}
+        /*
+         * Make sure that the attachment file exists and is readable.
+         */
+        if (stat(body_file_name, &st) != OK  ||
+            access(body_file_name, R_OK) != OK) {
+            advise(NULL, "unable to access file \"%s\"", body_file_name);
+            return NOTOK;
+        }
+
+    if ((build_directive = construct_build_directive (body_file_name,
+                                                      "text/plain",
+                                                      attachformat)) == NULL) {
+        clean_up_temporary_files(body_file_name, composition_file_name);
+        adios (NULL, "exiting due to failure in attach()");
+    } else {
+        (void) fputs(build_directive, composition_file);
+        free(build_directive);
+    }
 
     /*
      *	Now, go back to the beginning of the draft file and look for
@@ -177,18 +191,20 @@ attach(char *attachment_header_field_name, char *draft_file_name,
 	    /* Skip empty attachment_header_field_name lines. */
 	    if (strlen (p) > 0) {
 		struct stat st;
-		if (stat (p, &st) == OK) {
+		if (stat(p, &st) == OK  &&  access(p, R_OK) == OK) {
 		    if (S_ISREG (st.st_mode)) {
-		      /* Don't set the default content type so take
-			 make_mime_composition_file_entry() will try
-			 to infer it from the file type. */
-			if (make_mime_composition_file_entry(composition_file,
-							     p, attachformat,
-							     0)) {
-			    clean_up_temporary_files(body_file_name,
+		      /* Don't set the default content type so that
+			 construct_build_directive() will try to infer
+			 it from the file type. */
+                        if ((build_directive = construct_build_directive (p, 0,
+                               attachformat)) == NULL) {
+                            clean_up_temporary_files(body_file_name,
                                                      composition_file_name);
-			    adios (NULL, "exiting");
-			}
+                            adios (NULL, "exiting due to failure in attach()");
+                        } else {
+                            (void) fputs(build_directive, composition_file);
+                            free(build_directive);
+                        }
 		    } else {
 			adios (NULL, "unable to attach %s, not a plain file",
 			       p);
@@ -221,8 +237,8 @@ void
 clean_up_temporary_files(const char *body_file_name,
                          const char *composition_file_name)
 {
-    (void)unlink(body_file_name);
-    (void)unlink(composition_file_name);
+    (void) unlink(body_file_name);
+    (void) unlink(composition_file_name);
 
     return;
 }
@@ -235,10 +251,10 @@ get_line(FILE *draft_file, char *field, size_t field_size)
     char	*p;	/* buffer pointer */
 
     /*
-     *	Get a line from the input file, growing the field buffer as needed.  We do this
-     *	so that we can fit an entire line in the buffer making it easy to do a string
-     *	comparison on both the field name and the field body which might be a long path
-     *	name.
+     * Get a line from the input file, growing the field buffer as
+     * needed.  We do this so that we can fit an entire line in the
+     * buffer making it easy to do a string comparison on both the
+     * field name and the field body which might be a long path name.
      */
 
     for (n = 0, p = field; (c = getc(draft_file)) != EOF; *p++ = c) {
@@ -264,189 +280,6 @@ get_line(FILE *draft_file, char *field, size_t field_size)
     return (c);
 }
 
-static int
-make_mime_composition_file_entry(FILE *composition_file, char *file_name,
-                                 int attachformat, char *default_content_type)
-{
-    int			binary;			/* binary character found flag */
-    int			c;			/* current character */
-    char		cmd[PATH_MAX + 8];	/* file command buffer */
-    char		*content_type;		/* mime content type */
-    FILE		*fp;			/* content and pipe file pointer */
-    struct	node	*np;			/* context scan node pointer */
-    char		*p;			/* miscellaneous string pointer */
-    struct	stat	st;			/* file status buffer */
-
-    if ((content_type = mime_type (file_name)) == NULL) {
-        /*
-         * Check the file name for a suffix.  Scan the context for
-         * that suffix on a mhshow-suffix- entry.  We use these
-         * entries to be compatible with mhnshow, and there's no
-         * reason to make the user specify each suffix twice.  Context
-         * entries of the form "mhshow-suffix-contenttype" in the name
-         * have the suffix in the field, including the dot.
-         */
-        if ((p = strrchr(file_name, '.')) != (char *)0) {
-            for (np = m_defs; np; np = np->n_next) {
-                if (strncasecmp(np->n_name, "mhshow-suffix-", 14) == 0 &&
-                    strcasecmp(p, np->n_field ? np->n_field : "") == 0) {
-                    content_type = strdup (np->n_name + 14);
-                    break;
-                }
-            }
-        }
-
-        if (content_type == NULL  &&  default_content_type != NULL) {
-            content_type = strdup (default_content_type);
-        }
-    }
-
-    /*
-     *	No content type was found, either because there was no matching entry in the
-     *	context or because the file name has no suffix.  Open the file and check for
-     *	non-ASCII characters.  Choose the content type based on this check.
-     */
-
-    if (content_type == (char *)0) {
-	if ((fp = fopen(file_name, "r")) == (FILE *)0) {
-	    advise((char *)0, "unable to access file \"%s\"", file_name);
-            return NOTOK;
-	}
-
-	binary = 0;
-
-	while ((c = getc(fp)) != EOF) {
-	    if (c > 127 || c < 0) {
-		binary = 1;
-		break;
-	    }
-	}
-
-	(void)fclose(fp);
-
-	content_type =
-            strdup (binary ? "application/octet-stream" : "text/plain");
-    }
-
-    /*
-     *	Make sure that the attachment file exists and is readable.  Append a mhbuild
-     *	directive to the draft file.  This starts with the content type.  Append a
-     *	file name attribute and a private x-unix-mode attribute.  Also append a
-     *	description obtained (if possible) by running the "file" command on the file.
-     */
-
-    if (stat(file_name, &st) == -1 || access(file_name, R_OK) != 0) {
-	advise((char *)0, "unable to access file \"%s\"", file_name);
-        return NOTOK;
-    }
-
-    switch (attachformat) {
-    case 0:
-        /* Insert name, file mode, and Content-Id. */
-        (void)fprintf(composition_file, "#%s; name=\"%s\"; x-unix-mode=0%.3ho",
-            content_type, ((p = strrchr(file_name, '/')) == (char *)0) ? file_name : p + 1, (unsigned short)(st.st_mode & 0777));
-
-        if (strlen(file_name) > PATH_MAX) {
-            advise((char *)0, "attachment file name `%s' too long.", file_name);
-            return NOTOK;
-        }
-
-        (void)sprintf(cmd, "file '%s'", file_name);
-
-        if ((fp = popen(cmd, "r")) != (FILE *)0 && fgets(cmd, sizeof (cmd), fp) != (char *)0) {
-            *strchr(cmd, '\n') = '\0';
-
-            /*
-             *  The output of the "file" command is of the form
-             *
-             *  	file:	description
-             *
-             *  Strip off the "file:" and subsequent white space.
-             */
-
-            for (p = cmd; *p != '\0'; p++) {
-                if (*p == ':') {
-                    for (p++; *p != '\0'; p++) {
-                        if (*p != '\t')
-                            break;
-                    }
-                    break;
-                }
-            }
-
-            if (*p != '\0')
-                /* Insert Content-Description. */
-                (void)fprintf(composition_file, " [ %s ]", p);
-
-            (void)pclose(fp);
-        }
-
-        break;
-    case 1:
-        if (stringdex (m_maildir(invo_name), file_name) == 0) {
-            /* Content had been placed by send into a temp file.
-               Don't generate Content-Disposition header, because
-               it confuses Microsoft Outlook, Build 10.0.6626, at
-               least. */
-            (void) fprintf (composition_file, "#%s <>", content_type);
-        } else {
-            /* Suppress Content-Id, insert simple Content-Disposition
-               and Content-Description with filename.
-               The Content-Disposition type needs to be "inline" for
-               MS Outlook and BlackBerry calendar programs to properly
-               handle a text/calendar attachment. */
-            p = strrchr(file_name, '/');
-            (void) fprintf (composition_file,
-                            "#%s; name=\"%s\" <> [%s]{%s}",
-                            content_type,
-                            (p == (char *)0) ? file_name : p + 1,
-                            (p == (char *)0) ? file_name : p + 1,
-                            strcmp ("text/calendar", content_type)
-                              ? "attachment" : "inline");
-        }
-
-        break;
-    case 2:
-        if (stringdex (m_maildir(invo_name), file_name) == 0) {
-            /* Content had been placed by send into a temp file.
-               Don't generate Content-Disposition header, because
-               it confuses Microsoft Outlook, Build 10.0.6626, at
-               least. */
-            (void) fprintf (composition_file, "#%s <>", content_type);
-        } else {
-            /* Suppress Content-Id, insert Content-Disposition with
-               modification date and Content-Description wtih filename.
-               The Content-Disposition type needs to be "inline" for
-               MS Outlook and BlackBerry calendar programs to properly
-               handle a text/calendar attachment. */
-            p = strrchr(file_name, '/');
-            (void) fprintf (composition_file,
-                            "#%s; name=\"%s\" <>[%s]{%s; "
-                            "modification-date=\"%s\"}",
-                            content_type,
-                            (p == (char *)0) ? file_name : p + 1,
-                            (p == (char *)0) ? file_name : p + 1,
-                            strcmp ("text/calendar", content_type)
-                              ? "attachment" : "inline",
-                            dtime (&st.st_mtime, 0));
-        }
-
-        break;
-    default:
-        adios ((char *)0, "unsupported attachformat %d", attachformat);
-    }
-
-    free (content_type);
-
-    /*
-     *	Finish up with the file name.
-     */
-
-    (void)fprintf(composition_file, " %s\n", file_name);
-
-    return OK;
-}
-
 /*
  * Try to use external command to determine mime type, and possibly
  * encoding.  Caller is responsible for free'ing returned memory.
@@ -456,7 +289,7 @@ mime_type (const char *file_name) {
     char *content_type = NULL;  /* mime content type */
 
 #ifdef MIMETYPEPROC
-    char cmd[2 * PATH_MAX + 2];   /* file command buffer */
+    char cmd[2 * PATH_MAX + 2]; /* file command buffer */
     char buf[BUFSIZ >= 2048  ?  BUFSIZ  : 2048];
     FILE *fp;                   /* content and pipe file pointer */
     char mimetypeproc[] = MIMETYPEPROC " '%s'";
@@ -507,11 +340,213 @@ mime_type (const char *file_name) {
             advise (NULL, "unable to run %s", buf);
         }
     } else {
-        advise (NULL, "filename to large to deduce mime type");
+        advise (NULL, "filename too large to deduce mime type");
     }
 #else
     NMH_UNUSED (file_name);
 #endif
 
     return content_type ? strdup (content_type) : NULL;
+}
+
+
+/*
+ * Construct an mhbuild directive for the draft file.  This starts
+ * with the content type.  Append a file name attribute, and depending
+ * on attachformat value a private x-unix-mode attribute and a
+ * description obtained (if possible) by running the "file" command on
+ * the file.  Caller is responsible for free'ing returned memory.
+ */
+char *
+construct_build_directive (char *file_name, const char *default_content_type,
+                           int attachformat) {
+    char *build_directive = NULL;  /* Return value. */
+    char *content_type;            /* mime content type */
+    char  cmd[PATH_MAX + 8];       /* file command buffer */
+    struct stat st;                /* file status buffer */
+    char *p;                       /* miscellaneous temporary variables */
+    FILE *fp;
+    int   c;                       /* current character */
+
+    if ((content_type = mime_type (file_name)) == NULL) {
+        /*
+         * Check the file name for a suffix.  Scan the context for
+         * that suffix on a mhshow-suffix- entry.  We use these
+         * entries to be compatible with mhnshow, and there's no
+         * reason to make the user specify each suffix twice.  Context
+         * entries of the form "mhshow-suffix-contenttype" in the name
+         * have the suffix in the field, including the dot.
+         */
+        struct node *np;          /* context scan node pointer */
+
+        if ((p = strrchr(file_name, '.')) != NULL) {
+            for (np = m_defs; np; np = np->n_next) {
+                if (strncasecmp(np->n_name, "mhshow-suffix-", 14) == 0 &&
+                    strcasecmp(p, np->n_field ? np->n_field : "") == 0) {
+                    content_type = strdup (np->n_name + 14);
+                    break;
+                }
+            }
+        }
+
+        if (content_type == NULL  &&  default_content_type != NULL) {
+            content_type = strdup (default_content_type);
+        }
+    }
+
+    /*
+     * No content type was found, either because there was no matching
+     * entry in the context or because the file name has no suffix.
+     * Open the file and check for non-ASCII characters.  Choose the
+     * content type based on this check.
+     */
+    if (content_type == NULL) {
+        int  binary; /* binary character found flag */
+
+        if ((fp = fopen(file_name, "r")) == (FILE *)0) {
+            advise(NULL, "unable to access file \"%s\"", file_name);
+            return NULL;
+        }
+
+        binary = 0;
+
+        while ((c = getc(fp)) != EOF) {
+            if (c > 127 || c < 0) {
+                binary = 1;
+                break;
+            }
+        }
+
+        (void) fclose(fp);
+
+        content_type =
+            strdup (binary ? "application/octet-stream" : "text/plain");
+    }
+
+    switch (attachformat) {
+    case 0: {
+        struct stat st;
+        char m[4];
+
+        /* Insert name, file mode, and Content-Id. */
+        if (stat(file_name, &st) != OK  ||  access(file_name, R_OK) != OK) {
+            advise(NULL, "unable to access file \"%s\"", file_name);
+            return NULL;
+        }
+
+        snprintf (m, sizeof m, "%.3ho", (unsigned short)(st.st_mode & 0777));
+        build_directive = concat ("#", content_type, "; name=\"",
+                                  ((p = strrchr(file_name, '/')) == NULL)
+                                  ?  file_name
+                                  :  p + 1,
+                                  "\"; x-unix-mode=0", m, NULL);
+
+        if (strlen(file_name) > PATH_MAX) {
+            advise(NULL, "attachment file name `%s' too long.", file_name);
+            return NULL;
+        }
+
+        (void) sprintf(cmd, "file '%s'", file_name);
+
+        if ((fp = popen(cmd, "r")) != NULL  &&
+            fgets(cmd, sizeof (cmd), fp) != NULL) {
+            *strchr(cmd, '\n') = '\0';
+
+            /*
+             *  The output of the "file" command is of the form
+             *
+             *          file: description
+             *
+             *  Strip off the "file:" and subsequent white space.
+             */
+            for (p = cmd; *p != '\0'; p++) {
+                if (*p == ':') {
+                    for (p++; *p != '\0'; p++) {
+                        if (*p != '\t')
+                            break;
+                    }
+                    break;
+                }
+            }
+
+            if (*p != '\0') {
+                /* Insert Content-Description. */
+                build_directive =
+                    concat (build_directive, " [ ", p, " ]", NULL);
+            }
+
+            (void) pclose(fp);
+        }
+        break;
+    }
+    case 1:
+        if (stringdex (m_maildir(invo_name), file_name) == 0) {
+            /* Content had been placed by send into a temp file.
+               Don't generate Content-Disposition header, because
+               it confuses Microsoft Outlook, Build 10.0.6626, at
+               least. */
+            build_directive = concat ("#", content_type, " <>", NULL);
+        } else {
+            /* Suppress Content-Id, insert simple Content-Disposition
+               and Content-Description with filename.
+               The Content-Disposition type needs to be "inline" for
+               MS Outlook and BlackBerry calendar programs to properly
+               handle a text/calendar attachment. */
+            p = strrchr(file_name, '/');
+            build_directive = concat ("#", content_type, "; name=\"",
+                                      (p == NULL) ? file_name : p + 1,
+                                      "\" <> [",
+                                      (p == NULL) ? file_name : p + 1,
+                                      "]{",
+                                      strcmp ("text/calendar", content_type)
+                                        ? "attachment" : "inline",
+                                      "}", NULL);
+        }
+
+        break;
+    case 2:
+        if (stringdex (m_maildir(invo_name), file_name) == 0) {
+            /* Content had been placed by send into a temp file.
+               Don't generate Content-Disposition header, because
+               it confuses Microsoft Outlook, Build 10.0.6626, at
+               least. */
+            build_directive = concat ("#", content_type, " <>", NULL);
+        } else {
+            /* Suppress Content-Id, insert Content-Disposition with
+               modification date and Content-Description wtih filename.
+               The Content-Disposition type needs to be "inline" for
+               MS Outlook and BlackBerry calendar programs to properly
+               handle a text/calendar attachment. */
+
+            if (stat(file_name, &st) != OK  ||  access(file_name, R_OK) != OK) {
+                advise(NULL, "unable to access file \"%s\"", file_name);
+                return NULL;
+            }
+
+            p = strrchr(file_name, '/');
+            build_directive = concat ("#", content_type, "; name=\"",
+                                      (p == NULL) ? file_name : p + 1,
+                                      "\" <> [",
+                                      (p == NULL) ? file_name : p + 1,
+                                      "]{",
+                                      strcmp ("text/calendar", content_type)
+                                        ? "attachment" : "inline",
+                                      "; modification-date=\"",
+                                      dtime (&st.st_mtime, 0),
+                                      "}", NULL);
+        }
+
+        break;
+    default:
+        advise (NULL, "unsupported attachformat %d", attachformat);
+    }
+
+    free(content_type);
+
+    /*
+     * Finish up with the file name.
+     */
+    build_directive = concat (build_directive, " ", file_name, "\n", NULL);
+
+    return build_directive;
 }

@@ -350,8 +350,8 @@ int writeBase64raw (unsigned char *, size_t, unsigned char *);
  */
 int   attach(char *, char *, char *, size_t, char *, size_t, int);
 void  clean_up_temporary_files(const char *, const char *);
-char *mime_type (const char *);
-
+char *mime_type(const char *);
+char *construct_build_directive(char *, const char *, int);
 
 /*
  * credentials management
