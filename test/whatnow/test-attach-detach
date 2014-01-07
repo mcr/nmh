@@ -17,6 +17,9 @@ fi
 
 setup_test
 
+# Set TERM to get consistent output.
+TERM=dumb; export TERM
+
 cd "$MH_TEST_DIR"
 testname="baz's boz"
 testname_quoted="baz\'s\ boz"
@@ -38,7 +41,7 @@ touch $expected $expectederr $actual $actualerr
 #
 
 set +e
-whatnowtest=`echo cd | TERM=dumb whatnow -prompt ''`
+whatnowtest=`echo cd | whatnow -prompt ''`
 set -e
 
 case ${whatnowtest} in
@@ -63,13 +66,13 @@ esac
 # whatnow's exit status is always 1 so that is not a failure
 set +e
 echo "attach $testname_quoted" | \
-  TERM=dumb whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
-echo "alist" | TERM=dumb whatnow -attach foo -noedit -prompt '' \
-				2>> $actualerr >> $actual
+  run_prog whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+echo "alist" | \
+  run_prog whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
 echo "detach $testname_quoted" | \
-  TERM=dumb whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
-echo "alist" | TERM=dumb whatnow -attach foo -noedit -prompt '' \
-				2>> $actualerr >> $actual
+  run_prog whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+echo "alist" | \
+  run_prog whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
 set -e
 
 check "$expectederr" "$actualerr"

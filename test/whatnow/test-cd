@@ -17,6 +17,9 @@ fi
 
 setup_test
 
+# Set TERM to get consistent output.
+TERM=dumb; export TERM
+
 SPDIR="$MH_TEST_DIR/foo's bar"
 rm -rf "$SPDIR"
 mkdir "$SPDIR"
@@ -32,7 +35,7 @@ actual=$MH_TEST_DIR/$$.actual
 #
 
 set +e
-whatnowtest=`echo cd | TERM=dumb whatnow -prompt ''`
+whatnowtest=`echo cd | whatnow -prompt ''`
 set -e
 
 case ${whatnowtest} in
@@ -58,7 +61,7 @@ EOF
 # ||true to ignore whatnow's exit status
 # watch the quoting -- shell and printf and then the shell run inside whatnow
 printf 'cd %s/foo\\'"'"'s\\ bar\npwd\n' "$MH_TEST_DIR" | \
-  TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" > "$actual" || true
+  run_prog whatnow -noedit -prompt '' 2> "$actualerr" > "$actual" || true
 
 check "$expectederr" "$actualerr"
 check "$expected" "$actual"

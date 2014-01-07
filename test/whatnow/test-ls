@@ -17,6 +17,9 @@ fi
 
 setup_test
 
+# Set TERM to get consistent output.
+TERM=dumb; export TERM
+
 SPDIR="$MH_TEST_DIR/foo's bar"
 rm -rf "$SPDIR"
 mkdir "$SPDIR"
@@ -33,7 +36,7 @@ actual=$MH_TEST_DIR/$$.actual
 #
 
 set +e
-whatnowtest=`echo cd | TERM=dumb whatnow -prompt ''`
+whatnowtest=`echo cd | whatnow -prompt ''`
 set -e
 
 case ${whatnowtest} in
@@ -58,7 +61,7 @@ cat > $expectederr <<EOF
 EOF
 
 # NB use of sort as the order of output of ls is not guaranteed
-echo 'ls' | TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" | \
+echo 'ls' | run_prog whatnow -noedit -prompt '' 2> "$actualerr" | \
 	sort > "$actual"
 
 check "$expectederr" "$actualerr" 'keep first'
@@ -68,7 +71,7 @@ check "$expected" "$actual" 'keep first'
 # /bin/sh sets SHELL, which bash does.
 unset SHELL
 
-echo 'ls' | TERM=dumb whatnow -noedit -prompt '' 2> "$actualerr" | \
+echo 'ls' | run_prog whatnow -noedit -prompt '' 2> "$actualerr" | \
 	sort > "$actual"
 
 check "$expectederr" "$actualerr"
