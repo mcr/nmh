@@ -22,12 +22,12 @@ require_prog tput
 # back to termcap capability codes.  Its tigetstr(3X) does handle
 # them, so the nmh curses support, including etc/scan.curses, works
 # just fine.
-if tput sgr0 >/dev/null 2>&1; then
+if tput -Txterm-color sgr0 >/dev/null 2>&1; then
     standout_code=smso
     bold_code=bold
     reset_code=sgr0
     foreground_code=setaf
-elif tput me >/dev/null 2>&1; then
+elif tput-Txterm-color  me >/dev/null 2>&1; then
     standout_code=so
     bold_code=md
     reset_code=me
