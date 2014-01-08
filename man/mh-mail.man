@@ -1,4 +1,4 @@
-.TH MH-MAIL %manext5% "July 9, 2012" "%nmhversion%"
+.TH MH-MAIL %manext5% "January 8, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -103,6 +103,19 @@ A \*(lqFrom:\*(rq
 header MUST exist when the message is sent to
 .BR post,
 otherwise the message will be rejected.
+.RE
+.PP
+.BR Envelope\-From :
+.RS 5
+Used by
+.B post
+to specify a value for the sender's envelope address to the mail transport
+system.  If omitted, 
+.B post
+will use the value of the \*(lqSender:\*(rq or the \*(lqFrom:\*(rq header.
+See
+.IR send (1)
+for more details.
 .RE
 .PP
 .BR Mail\-Reply\-To :
@@ -220,8 +233,10 @@ Added when redistributing a message by
 .PP
 .BR Resent\-From :
 .RS 5
-Added when redistributing a message by
-.BR post .
+Used instead of the \*(lqFrom:\*(rq header when
+.B post 
+redistributes a message.  See \*(lqFrom:\*(rq for more information about
+this header is used.
 .RE
 .PP
 .BR Resent\-To:
@@ -281,6 +296,15 @@ Annotation for
 under the
 .B \-annotate
 option.
+.RE
+.PP
+.BR Attach :
+.RS 5
+Used by
+.B mhbuild
+to specify a filename to attach to this message.  See
+.IR mhbuild (1)
+for more information.
 .RE
 .SH FILES
 .fc ^ ~
