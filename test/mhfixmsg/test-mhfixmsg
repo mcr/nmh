@@ -33,12 +33,10 @@ if grep mhfixmsg-format-text/html "${MH_TEST_DIR}/Mail/mhn.defaults" \
     #### relics from this test if it is writeable but doesn't already
     #### have a .w3m, and to not depend on whatever is in that if it
     #### does already exist, overwrite $HOME if using w3m.
-    HOME="$MHTMPDIR"
-    export HOME
+    HOME="$MHTMPDIR"; export HOME
   fi
 else
-  echo "$0: skipping -reformat check because \
-    mhfixmsg-format-text/html is not available"
+  echo "$0: skipping -reformat check because no text browser was found"
   can_reformat_texthtml=0
 fi
 set -e
