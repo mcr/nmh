@@ -18,9 +18,27 @@ actual="$MH_TEST_DIR/$$.actual"
 
 require_prog tput
 
-tput -Txterm-color sgr0 >/dev/null 2>&1 ||
+# FreeBSD 9's tput(1) doesn't handle terminfo capabilities, so fall
+# back to termcap capability codes.  Its tigetstr(3X) does handle
+# them, so the nmh curses support, including etc/scan.curses, works
+# just fine.
+if tput sgr0 >/dev/null 2>&1; then
+    standout_code=smso
+    bold_code=bold
+    reset_code=sgr0
+    foreground_code=setaf
+elif tput me >/dev/null 2>&1; then
+    standout_code=so
+    bold_code=md
+    reset_code=me
+    foreground_code=AF
+else
+    test_skip "unable to use terminfo or termcap capabilities"
+fi
+
+tput -Txterm-color ${reset_code} >/dev/null 2>&1 ||
 			test_skip "missing terminfo entry for xterm-color"
-tput -Tvt100 sgr0 > /dev/null 2>&1 ||
+tput -Tvt100 ${reset_code} > /dev/null 2>&1 ||
 			test_skip "missing terminfo entry for vt100"
 
 #
@@ -38,9 +56,9 @@ mark 6 -seq cur -add -zero
 
 TERM=vt100; export TERM
 
-standout=`tput smso`
-bold=`tput bold`
-reset=`tput sgr0`
+standout=`tput ${standout_code}`
+bold=`tput ${bold_code}`
+reset=`tput ${reset_code}`
 
 cat > "$expected" <<EOF
    1  09/29 Test1              Testing message 1<<This is message number 1 >>${reset}
@@ -69,9 +87,9 @@ check "$expected" "$actual"
 
 TERM=xterm-color; export TERM
 
-red=`tput setaf 1`
-green=`tput setaf 2`
-reset=`tput sgr0`
+red=`tput ${foreground_code} 1`
+green=`tput ${foreground_code} 2`
+reset=`tput ${reset_code}`
 
 cat > "$expected" <<EOF
    1  09/29 Test1              Testing message 1<<This is message number 1 >>${reset}
