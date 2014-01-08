@@ -27,7 +27,7 @@ if tput -Txterm-color sgr0 >/dev/null 2>&1; then
     bold_code=bold
     reset_code=sgr0
     foreground_code=setaf
-elif tput-Txterm-color  me >/dev/null 2>&1; then
+elif tput -Txterm-color me >/dev/null 2>&1; then
     standout_code=so
     bold_code=md
     reset_code=me
