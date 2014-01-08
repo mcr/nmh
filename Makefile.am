@@ -100,8 +100,9 @@ DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 
 ##
 ## Stuff that should be cleaned via "make clean"
+## automake 1.12.6 on FreeBSD 9 needs the sbr/dtimep.c.
 ##
-CLEANFILES = config/version.c sbr/sigmsg.h etc/mts.conf \
+CLEANFILES = config/version.c sbr/sigmsg.h sbr/dtimep.c etc/mts.conf \
 	     etc/gen-ctype-checked sbr/ctype-checked.h sbr/ctype-checked.c \
 	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS)
 clean-local:
