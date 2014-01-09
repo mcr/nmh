@@ -122,7 +122,8 @@ check "$expected" "$actual"
 rm "${MH_TEST_DIR}/Mail/draft"
 
 # check -append
-awk 'NR==6{print "Nmh-test:"}1' <"${MH_TEST_DIR}/Mail/inbox/1" >"$expected"
+sed -e 's/\(Subject: Testing message 1\)/\1\
+Nmh-test:/' <"${MH_TEST_DIR}/Mail/inbox/1" >"$expected"
 run_prog anno 1 -component Nmh-test -append
 sed -e 's/^Nmh-test:.*/Nmh-test:/' "${MH_TEST_DIR}/Mail/inbox/1" >"$actual"
 check "$expected" "$actual"
