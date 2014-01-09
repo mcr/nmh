@@ -52,6 +52,11 @@ pid_t xpid = 0;
 
 static char prefix[] = "----- =_aaaaaaaaaa";
 
+struct attach_list {
+    char *filename;
+    struct attach_list *next;
+};
+
 /*
  * Maximum size of URL token in message/external-body
  */
@@ -73,6 +78,7 @@ void free_encoding (CT, int);
  * static prototypes
  */
 static int init_decoded_content (CT);
+static void setup_attach_content(CT, const char *);
 static char *fgetstr (char *, int, FILE *);
 static int user_content (FILE *, char *, char *, CT *);
 static void set_id (CT, int);
@@ -134,6 +140,7 @@ build_mime (char *infile, int directives, int header_encoding)
     FILE *in;
     HF hp;
     m_getfld_state_t gstate = 0;
+    struct attach_list *attach_head = NULL, *attach_tail = NULL, *at_entry;
 
     directive_init(directives);
 
@@ -197,8 +204,25 @@ build_mime (char *infile, int directives, int header_encoding)
 		vp = add (buf, vp);	/* add to previous value */
 	    }
 
-	    /* Now add the header data to the list */
-	    add_header (ct, np, vp);
+	    /*
+	     * Now add the header data to the list, unless it's an attach
+	     * header; in that case, add it to our attach list
+	     */
+
+	    if (strcasecmp(ATTACH_FIELD, np) == 0) {
+	    	struct attach_list *entry;
+	    	free(np);
+		entry = mh_xmalloc(sizeof(*entry));
+		entry->filename = vp;
+		if (! attach_tail) {
+		    attach_tail->next = entry;
+		    attach_tail = entry;
+		} else {
+		    attach_head = attach_tail = entry;
+		}
+	    } else {
+		add_header (ct, np, vp);
+	    }
 
 finish_field:
 	    /* if this wasn't the last header field, then continue */
@@ -285,6 +309,44 @@ finish_field:
      * it's not needed any longer.
      */
     fclose (in);
+
+    /*
+     * Add any Attach headers to the list of MIME parts at the end of the
+     * message.
+     */
+
+    for (at_entry = attach_head; at_entry; ) {
+    	struct attach_list *at_prev = at_entry;
+    	struct part *part;
+	CT p;
+
+	if (! access(at_entry->filename, R_OK)) {
+	    adios("reading", "Unable to open %s for", at_entry->filename);
+	}
+
+	if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
+	    adios(NULL, "out of memory");
+
+	init_decoded_content(p);
+
+	/*
+	 * Initialize our content structure based on the filename,
+	 * and fill in all of the relevant fields.  Also place MIME
+	 * parameters in the attributes array.
+	 */
+
+	setup_attach_content(p, at_entry->filename);
+
+	if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
+	    adios (NULL, "out of memory");
+	*pp = part;
+	pp = &part->mp_next;
+	part->mp_part = p;
+
+	at_entry = at_entry->next;
+	free(at_prev->filename);
+	free(at_prev);
+    }
 
     /* check if any contents were found */
     if (!m->mp_parts)
@@ -1708,4 +1770,103 @@ calculate_digest (CT ct, int asciiP)
     /* now make copy and return string */
     vp = concat (" ", outbuf, "\n", NULL);
     return vp;
+}
+
+/*
+ * Set things up for the content structure for file "filename" that
+ * we want to attach
+ */
+
+static void
+setup_attach_content(CT ct, const char *filename)
+{
+    char *type, **ap, **ep;
+    struct str2init *s2i;
+
+    if (! (type = mime_type(filename))) {
+    	adios(NULL, "Unable to determine MIME type of \"%s\"", filename);
+    }
+
+    /*
+     * Parse the Content-Type.  get_ctinfo() parses MIME parameters, but
+     * since we're just feeding it a MIME type we have to add those ourself.
+     * Map that to a valid content-type label and call any initialization
+     * function.
+     */
+
+    if (get_ctinfo(type, ct, 0) == NOTOK)
+    	done(1);
+
+    free(type);
+
+    for (s2i = str2cts; s2i->si_key; s2i++)
+    	if (strcasecmp(ct->c_ctinfo.ci_type, s2i->si_key) == 0)
+	    break;
+    if (!s2i->si_key && !uprf(ct->c_ctinfo.ci_type, "X-"))
+	s2i++;
+
+    /*
+     * Make sure the type isn't incompatible with what we can handle
+     */
+
+    switch (ct->c_type = s2i->si_val) {
+    case CT_MULTIPART:
+    	adios (NULL, "multipart types must be specified by mhbuild directives");
+	/* NOTREACHED */
+
+    case CT_MESSAGE:
+    	if (strcasecmp(ct->c_ctinfo.ci_subtype, "partial") == 0)
+	    adios(NULL, "Sorry, %s/%s isn't supported", ct->c_ctinfo.ci_type,
+	    	  ct->c_ctinfo.ci_subtype);
+	if (strcasecmp(ct->c_ctinfo.ci_subtype, "external-body") == 0)
+	    adios(NULL, "external-body messages must be specified "
+	    	  "by mhbuild directives");
+	/* Fall through */
+
+    default:
+    	/*
+	 * This sets the subtype, if it's significant
+	 */
+    	if ((ct->c_ctinitfnx = s2i->si_init))
+	    (*ct->c_ctinitfnx)(ct);
+	break;
+    }
+
+    /*
+     * Feed in a few attributes; specifically, the name attribute, the
+     * content-description, and the content-disposition.
+     */
+
+    for (ap = ct->c_ctinfo.ci_attrs, ep = ct->c_ctinfo.ci_values; *ap;
+    	 ap++, ep++) {
+	if (strcasecmp(*ap, "name") == 0) {
+	    if (*ep)
+	    	free(*ep);
+	    *ep = getcpy(filename);
+	    break;
+	}
+    }
+
+    if (*ap == NULL) {
+	*ap = getcpy("name");
+	*ep = getcpy(filename);
+    }
+
+    ct->c_descr = getcpy(filename);
+
+    /*
+     * If it's a text/calendar, we need to make sure it's an inline,
+     * otherwise it won't work with some calendar programs.  Otherwise
+     * assume attachment
+     */
+
+    if (strcasecmp(ct->c_ctinfo.ci_type, "text") == 0 &&
+	strcasecmp(ct->c_ctinfo.ci_subtype, "calendar") == 0) {
+	ct->c_dispo = getcpy("inline; filename=\"");
+    } else {
+    	ct->c_dispo = getcpy("attachment; filename=\"");
+    }
+
+    ct->c_dispo = add(filename, ct->c_dispo);
+    ct->c_dispo = add("\"", ct->c_dispo);
 }

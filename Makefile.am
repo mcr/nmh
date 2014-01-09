@@ -316,7 +316,7 @@ uip_mark_LDADD = $(LDADD) $(POSTLINK)
 
 uip_mhbuild_SOURCES = uip/mhbuild.c uip/mhbuildsbr.c uip/mhcachesbr.c \
 		      uip/mhlistsbr.c uip/mhoutsbr.c uip/mhmisc.c  \
-		      uip/mhfree.c uip/mhparse.c uip/md5.c
+		      uip/mhfree.c uip/mhparse.c uip/md5.c uip/attach.c
 uip_mhbuild_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
 
 uip_mhfixmsg_SOURCES = uip/mhfixmsg.c uip/mhparse.c uip/mhcachesbr.c \
