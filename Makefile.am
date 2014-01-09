@@ -471,8 +471,12 @@ etc_gen_ctype_checked_LDADD = $(POSTLINK)
 ##
 ## Our rebuild rules for files that aren't built via the normal mechanisms
 ##
+
+## Hard-code the config/version.c target, instead of using $@, so this
+## rule works for the distcheck target with Solaris (System V) make.
+## distcheck uses VPATH, causes that make to prepend the VPATH to $@.
 config/version.c: Makefile
-	sh $(srcdir)/config/version.sh $(VERSION) > $@
+	sh $(srcdir)/config/version.sh $(VERSION) > ./config/version.c
 
 sbr/sigmsg.h: $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H)
 	$(AWK) -f $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H) > $@
