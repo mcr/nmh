@@ -50,11 +50,10 @@ finddir() {
 
 bindir=`finddir $0`
 nmhbindir=`cd "$bindir" && pwd`
-if printf 'OK\n' | tail -n 1 2>&1 | grep OK >/dev/null; then
-    tail='tail -n'
-else
-    tail='tail -'
-fi
+case `printf 'OK\n' | tail -n 1 2>&1` in
+  OK) tail='tail -n ' ;;
+  *)  tail='tail -' ;;
+esac
 
 
 #### Checks for missing mandatory arguments.
