@@ -211,10 +211,30 @@ build_mime (char *infile, int directives, int header_encoding)
 
 	    if (strcasecmp(ATTACH_FIELD, np) == 0) {
 	    	struct attach_list *entry;
+		char *s = vp, *e = vp + strlen(vp) - 1;
 	    	free(np);
+
+		/*
+		 * Make sure we can find the start of this filename.
+		 * If it's blank, we skip completely.  Otherwise, strip
+		 * off any leading spaces and trailing newlines.
+		 */
+
+		while (isspace((unsigned char) *s))
+		    s++;
+
+		while (e > s && *e == '\n')
+		    *e-- = '\0';
+
+		if (*s == '\0') {
+		    free(vp);
+		    goto finish_field;
+		}
+
 		entry = mh_xmalloc(sizeof(*entry));
-		entry->filename = vp;
-		if (! attach_tail) {
+		entry->filename = getcpy(s);
+		free(vp);
+		if (attach_tail) {
 		    attach_tail->next = entry;
 		    attach_tail = entry;
 		} else {
@@ -320,7 +340,7 @@ finish_field:
     	struct part *part;
 	CT p;
 
-	if (! access(at_entry->filename, R_OK)) {
+	if (access(at_entry->filename, R_OK) != 0) {
 	    adios("reading", "Unable to open %s for", at_entry->filename);
 	}
 
@@ -1853,6 +1873,7 @@ setup_attach_content(CT ct, const char *filename)
     }
 
     ct->c_descr = getcpy(filename);
+    ct->c_cefile.ce_file = getcpy(filename);
 
     /*
      * If it's a text/calendar, we need to make sure it's an inline,
