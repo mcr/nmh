@@ -78,7 +78,7 @@ void free_encoding (CT, int);
  * static prototypes
  */
 static int init_decoded_content (CT);
-static void setup_attach_content(CT, const char *);
+static void setup_attach_content(CT, char *);
 static char *fgetstr (char *, int, FILE *);
 static int user_content (FILE *, char *, char *, CT *);
 static void set_id (CT, int);
@@ -1798,9 +1798,9 @@ calculate_digest (CT ct, int asciiP)
  */
 
 static void
-setup_attach_content(CT ct, const char *filename)
+setup_attach_content(CT ct, char *filename)
 {
-    char *type, **ap, **ep;
+    char *type, **ap, **ep, *simplename = r1bindex(filename, '/');
     struct str2init *s2i;
 
     if (! (type = mime_type(filename))) {
@@ -1862,17 +1862,18 @@ setup_attach_content(CT ct, const char *filename)
 	if (strcasecmp(*ap, "name") == 0) {
 	    if (*ep)
 	    	free(*ep);
-	    *ep = getcpy(filename);
+	    *ep = getcpy(simplename);
 	    break;
 	}
     }
 
     if (*ap == NULL) {
 	*ap = getcpy("name");
-	*ep = getcpy(filename);
+	*ep = getcpy(simplename);
     }
 
-    ct->c_descr = getcpy(filename);
+    ct->c_descr = getcpy(simplename);
+    ct->c_descr = add("\n", ct->c_descr);
     ct->c_cefile.ce_file = getcpy(filename);
 
     /*
@@ -1888,6 +1889,6 @@ setup_attach_content(CT ct, const char *filename)
     	ct->c_dispo = getcpy("attachment; filename=\"");
     }
 
-    ct->c_dispo = add(filename, ct->c_dispo);
-    ct->c_dispo = add("\"", ct->c_dispo);
+    ct->c_dispo = add(simplename, ct->c_dispo);
+    ct->c_dispo = add("\"\n", ct->c_dispo);
 }
