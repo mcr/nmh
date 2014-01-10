@@ -248,12 +248,10 @@ finish_field:
 	    /* if this wasn't the last header field, then continue */
 	    continue;
 
-	case FILEEOF:
-	    adios (NULL, "draft has empty body -- no directives!");
-	    /* NOTREACHED */
-
 	case BODY:
 	    fseek (in, (long) (-strlen (buf)), SEEK_CUR);
+	    /* fall through */
+	case FILEEOF:
 	    break;
 
 	case LENERR:
