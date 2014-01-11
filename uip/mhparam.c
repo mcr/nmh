@@ -68,43 +68,51 @@ char *mimetypeproc =
     "";
 #endif
 
+char *mimeencodingproc =
+#ifdef MIMEENCODINGPROC
+    MIMEENCODINGPROC;
+#else
+    "";
+#endif
+
 struct proc {
     char *p_name;
     char **p_field;
 };
 
 static struct proc procs [] = {
-     { "context",       &context },
-     { "mh-sequences",  &mh_seq },
-     { "buildmimeproc", &buildmimeproc },
-     { "fileproc",      &fileproc },
-     { "foldprot",      &foldprot },
-     { "formatproc",	&formatproc },
-     { "incproc",       &incproc },
-     { "lproc",         &lproc },
-     { "mailproc",      &mailproc },
-     { "mhlproc",       &mhlproc },
-     { "mimetypeproc",  &mimetypeproc },
-     { "moreproc",      &moreproc },
-     { "msgprot",       &msgprot },
-     { "mshproc",       &mshproc },
-     { "packproc",      &packproc },
-     { "postproc",      &postproc },
-     { "rmmproc",       &rmmproc },
-     { "sendproc",      &sendproc },
-     { "showmimeproc",  &showmimeproc },
-     { "showproc",      &showproc },
-     { "version",       &version_num },
-     { "vmhproc",       &vmhproc },
-     { "whatnowproc",   &whatnowproc },
-     { "whomproc",      &whomproc },
-     { "etcdir",        &mhetcdir },
-     { "libdir",        &mhlibdir },
-     { "sbackup",       &sbackup },
-     { "lockmethod",    &lockmethod },
-     { "sasl",          &sasl },
-     { "tls",           &tls },
-     { NULL,            NULL },
+     { "context",          &context },
+     { "mh-sequences",     &mh_seq },
+     { "buildmimeproc",    &buildmimeproc },
+     { "fileproc",         &fileproc },
+     { "foldprot",         &foldprot },
+     { "formatproc",	   &formatproc },
+     { "incproc",          &incproc },
+     { "lproc",            &lproc },
+     { "mailproc",         &mailproc },
+     { "mhlproc",          &mhlproc },
+     { "mimetypeproc",     &mimetypeproc },
+     { "mimeencodingproc", &mimeencodingproc },
+     { "moreproc",         &moreproc },
+     { "msgprot",          &msgprot },
+     { "mshproc",          &mshproc },
+     { "packproc",         &packproc },
+     { "postproc",         &postproc },
+     { "rmmproc",          &rmmproc },
+     { "sendproc",         &sendproc },
+     { "showmimeproc",     &showmimeproc },
+     { "showproc",         &showproc },
+     { "version",          &version_num },
+     { "vmhproc",          &vmhproc },
+     { "whatnowproc",      &whatnowproc },
+     { "whomproc",         &whomproc },
+     { "etcdir",           &mhetcdir },
+     { "libdir",           &mhlibdir },
+     { "sbackup",          &sbackup },
+     { "lockmethod",       &lockmethod },
+     { "sasl",             &sasl },
+     { "tls",              &tls },
+     { NULL,               NULL },
 };
 
 

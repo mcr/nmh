@@ -14,16 +14,18 @@ fi
 
 . "${srcdir}/test/post/test-post-common.sh"
 
-# Find MIME type string, using mimetypeproc if configured with it.
+# Find MIME type string, using configured procs if available.
 MIMETYPEPROC=`mhparam mimetypeproc`
+MIMEENCODINGPROC=`mhparam mimeencodingproc`
 content_type_string() {
-  if test -z "$MIMETYPEPROC"; then
+  if test -z "$MIMETYPEPROC"  -o  -z "$MIMEENCODINGPROC"; then
+    #### This should be the order of name and charset.
     echo "text/plain; name=\"`basename $1`\"; charset=\"us-ascii\""
   else
-    # 1) Excise leading filename followed by : and any whitespace.
-    # 2) Wrap charset value in double quotes.  Assume that it isn't already.
-    printf "%s%s" \
-      `$MIMETYPEPROC $1` "; name=\"`basename $1`\"; charset=\"us-ascii\""
+    #### Excise any leading filename followed by : and whitespace.
+    printf '%s; charset="%s"; name="%s"' \
+      `$MIMETYPEPROC $1 | sed -e 's/.*: *//'` \
+      `$MIMEENCODINGPROC $1 | sed -e 's/.*: *//'` `basename $1`
   fi
 }
 

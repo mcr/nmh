@@ -308,6 +308,7 @@ MAIL_SPOOL_GRP=$nmh_cv_ls_mail_grp
 AC_SUBST([MAIL_SPOOL_GRP])dnl
 
 NMH_MIMETYPEPROC
+NMH_MIMEENCODINGPROC
 
 dnl ------------------
 dnl CHECK HEADER FILES

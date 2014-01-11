@@ -11,6 +11,9 @@
 #include <h/tws.h>
 
 static int get_line(FILE *, char *, size_t);
+#ifdef MIMETYPEPROC
+static char *get_file_info(const char *, const char *);
+#endif /* MIMETYPEPROC */
 
 int
 attach(char *attachment_header_field_name, char *draft_file_name,
@@ -285,69 +288,98 @@ get_line(FILE *draft_file, char *field, size_t field_size)
  * encoding.  Caller is responsible for free'ing returned memory.
  */
 char *
-mime_type (const char *file_name) {
+mime_type(const char *file_name) {
     char *content_type = NULL;  /* mime content type */
 
 #ifdef MIMETYPEPROC
-    char cmd[2 * PATH_MAX + 2]; /* file command buffer */
-    char buf[BUFSIZ >= 2048  ?  BUFSIZ  : 2048];
-    FILE *fp;                   /* content and pipe file pointer */
-    char mimetypeproc[] = MIMETYPEPROC " '%s'";
+    char *mimetype;
 
-    if ((int) snprintf (cmd, sizeof cmd, mimetypeproc, file_name) <
-        (int) sizeof cmd) {
-        if ((fp = popen (cmd, "r")) != NULL) {
-            /* Make sure that buf has space for one additional
-               character, the semicolon that might be added below. */
-            if (fgets (buf, sizeof buf - 1, fp)) {
-                char *cp, *space;
+    if ((mimetype = get_file_info(MIMETYPEPROC, file_name))) {
+#ifdef MIMEENCODINGPROC
+        /* Try to append charset for text content. */
+        char *mimeencoding;
+
+        if (strncasecmp(mimetype, "text", 4) == 0) {
+            if ((mimeencoding = get_file_info(MIMEENCODINGPROC, file_name))) {
+                content_type = concat(mimetype, "; charset=", mimeencoding,
+                                      NULL);
+            } else {
+                content_type = strdup(mimetype);
+            }
+        } else {
+            content_type = strdup(mimetype);
+        }
+#else  /* MIMEENCODINGPROC */
+        content_type = strdup(mimetype);
+#endif /* MIMEENCODINGPROC */
+    }
+#else  /* MIMETYPEPROC */
+    NMH_UNUSED(file_name);
+#endif /* MIMETYPEPROC */
+
+    return content_type;
+}
+
+
+#ifdef MIMETYPEPROC
+/*
+ * Get information using proc about a file.
+ */
+static char *
+get_file_info(const char *proc, const char *file_name) {
+    char buf[BUFSIZ >= 2048  ?  BUFSIZ  : 2048];
+    char *cmd, *cp;
+    char *quotec = "'";
+    FILE *fp;
+
+    if ((cp = strchr(file_name, '\''))) {
+        /* file_name contains a single quote. */
+        if (strchr(file_name, '"')) {
+            advise(NULL, "filenames containing both single and double quotes "
+                   "are unsupported for attachment");
+            return NULL;
+        } else {
+            quotec = "\"";
+        }
+    }
+
+    cmd = concat(proc, " ", quotec, file_name, quotec, NULL);
+    if ((cmd = concat(proc, " ", quotec, file_name, quotec, NULL))) {
+        if ((fp = popen(cmd, "r")) != NULL) {
+            if (fgets(buf, sizeof buf, fp)) {
+                char *eol;
 
                 /* Skip leading <filename>:<whitespace>, if present. */
-                if ((content_type = strchr (buf, ':')) != NULL) {
-                    ++content_type;
-                    while (*content_type  &&  isblank (*content_type)) {
-                        ++content_type;
+                if ((cp = strchr(buf, ':')) != NULL) {
+                    ++cp;
+                    while (*cp  &&  isblank((unsigned char) *cp)) {
+                        ++cp;
                     }
                 } else {
-                    content_type = buf;
+                    cp = buf;
                 }
 
                 /* Truncate at newline (LF or CR), if present. */
-                if ((cp = strpbrk (content_type, "\n\n")) != NULL) {
-                    *cp = '\0';
-                }
-
-                /* If necessary, insert semicolon between content type
-                   and charset.  Assume that the first space is between
-                   them. */
-                if ((space = strchr (content_type, ' ')) != NULL) {
-                    ssize_t len = strlen (content_type);
-
-                    if (space - content_type > 0  &&
-                        len > space - content_type + 1) {
-                        if (*(space - 1) != ';') {
-                            /* The +1 is for the terminating NULL. */
-                            memmove (space + 1, space,
-                                     len - (space - content_type) + 1);
-                            *space = ';';
-                        }
-                    }
+                if ((eol = strpbrk(cp, "\n\r")) != NULL) {
+                    *eol = '\0';
                 }
             } else {
-                advise (NULL, "unable to read mime type");
+                advise(NULL, "unable to read mime type");
             }
-        } else {
-            advise (NULL, "unable to run %s", buf);
-        }
-    } else {
-        advise (NULL, "filename too large to deduce mime type");
-    }
-#else
-    NMH_UNUSED (file_name);
-#endif
 
-    return content_type ? strdup (content_type) : NULL;
+            (void) pclose(fp);
+        } else {
+            advise(NULL, "no output from %s", cmd);
+        }
+
+        free(cmd);
+    } else {
+        advise(NULL, "concat with \"%s\" failed, out of memory?", proc);
+    }
+
+    return cp  ?  strdup(cp)  :  NULL;
 }
+#endif /* MIMETYPEPROC */
 
 
 /*
