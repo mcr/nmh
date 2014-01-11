@@ -164,11 +164,11 @@ fi
 dnl --------------
 dnl CUSTOMIZE LINK
 dnl --------------
-if test `uname` = OpenBSD; then
-  dnl Filter out "often/almost always misused" warnings from OpenBSD linker.
-  [POSTLINK="2>&1 | egrep -v ': [w]arning: s[a-z]+\(\) is \
-(almost always|often) misused, please use' || true"]
-fi
+AS_IF([test `uname` = OpenBSD],
+      dnl Munge "often/almost always misused" warnings from OpenBSD linker
+      dnl so that they don't color the waterfall.
+      [POSTLINK="2>&1 | sed -e \
+'s/: w\(arning: s.*() is .* misused, please use\)/: W\1/'"])
 AC_SUBST([POSTLINK])
 
 dnl -----------------
