@@ -19,7 +19,7 @@ expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 
 #
-# Test out a simple draft
+# Test out a simple draft, one part.
 #
 
 cat > "$draft" <<EOF
@@ -28,11 +28,45 @@ cc:
 Fcc: +outbox
 Attach: ${srcdir}/test/mhbuild/tiny.jpg
 ------
-Test
 EOF
 
 mhbuild "$draft"
 
-cat $draft
+cat > "$actual" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: image/jpeg; name="tiny.jpg"
+Content-Description: tiny.jpg
+Content-Disposition: attachment; filename="tiny.jpg"
+Content-Transfer-Encoding: base64
 
-exit $failed
+/9g=
+EOF
+
+check "$draft" "$actual"
+
+#
+# Check out more common case, one (or more) attachments
+# along with message text.
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Attach: ${srcdir}/test/mhbuild/tiny.jpg
+------
+This is a test
+EOF
+
+mhbuild "$draft"
+
+cat "$draft"
+
+#
+# Two parts, one attachment
+#
+
+exit ${failed:-0}
