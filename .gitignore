@@ -42,6 +42,7 @@
 a.out.dSYM/
 /config/version.c
 /etc/gen-ctype-checked
+/etc/gen-ctype-checked.exe
 /etc/mhn.defaults
 /etc/mts.conf
 /man/*.[1578]
@@ -108,6 +109,7 @@ a.out.dSYM/
 /test/getcanon
 /test/getcwidth
 /test/getfullname
+/test/*.exe
 
 # Removed by mostlyclean:
 *.o
