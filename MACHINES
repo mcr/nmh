@@ -6,7 +6,7 @@ nmh is known to compile on the following platforms (save the
 exceptions noted below), using an ANSI C compiler, such as gcc.
 
 AIX 4.1.5.0.01
-Cygwin (setup version 2.763, other versions may be fine)
+Cygwin (setup version 2.831, other versions may be fine)
 FreeBSD
 IRIX 6.5
 Linux 2.2 to current (glibc 2.1 to current)
@@ -20,20 +20,25 @@ Known Compilation problems:
 --------------------------------------
 Cygwin:
 
-Be sure to install these Cygwin packages:
-  gdbm
-  libgdbm4
+Be sure to install these Cygwin packages (or later versions):
+  libdb4.8
+  libdb4.8-devel
   libgdbm-devel
-  libncurses10
   libncurses-devel
+
+Some versions of libncurses-devel do not install /usr/include/curses.h,
+/usr/include/term.h, and /usr/include/termcap.h.  If yours does not,
+add /usr/include/ symlinks to those files in /usr/include/ncurses/.
+
+The database packages are only used by slocal(1).
 
 If configuring with --with-cyrus-sasl, install these Cygwin packages:
   libsasl2
   libsasl2-devel
 
-If configuring with --with-tls, install these Cygwin packages:
-  gnutls-devel
-  libgnutls26
+If configuring with --with-tls, install this Cygwin package (or a
+later version):
+  libgnutls28
 
 When running the nmh test suite ("make check"), it helps to have
 /usr/bin/ ahead of any Windows directories on your PATH.
@@ -68,11 +73,19 @@ use GNU make instead of Irix make.)
 --------------------------------------
 Linux:
 
-The configuration script does a test to discover if your vi is broken
-(if it reports non-zero exit codes on certain pseudo-errors).  This test
-will hang if the program `ex' on your system is a link to the vi clone
-`vile'.  The workaround is to replace the command ex as a link to another
-vi clone such as nvi or elvis.
+These packages are required at runtime:
+  ncurses-libs
+  libdb (only for slocal(1))
+  cyrus-sasl-lib (if configured with --with-cyrus-sasl)
+  gnutls (if configured with --with-tls)
+
+For building, these packages are required:
+  ncurses-devel
+  libdb-devel (only for slocal(1))
+  gdbm-devel (only for slocal(1))
+
+If configuring with --with-cyrus-sasl, install these packages:
+  cyrus-sasl-lib-devel
 
 --------------------------------------
 Solaris:
