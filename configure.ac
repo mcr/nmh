@@ -160,7 +160,7 @@ dnl --------------
 if test `uname` = OpenBSD; then
   dnl Filter out "often/almost always misused" warnings from OpenBSD linker.
   [POSTLINK="2>&1 | egrep -v ': [w]arning: s[a-z]+\(\) is \
-(almost always|often) misused, please use'; true"]
+(almost always|often) misused, please use' || true"]
 fi
 AC_SUBST([POSTLINK])
 
