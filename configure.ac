@@ -136,6 +136,15 @@ if test -n "$auto_cflags"; then
                  CFLAGS="$nmh_saved_cflags"])
   test "$nmh_cv_has_wall" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wall"
 
+  AC_CACHE_CHECK([whether compiler supports -Wno-unused-result],
+                 [nmh_cv_has_wnur],
+                 [nmh_saved_cflags="$CFLAGS"
+                 CFLAGS="$CFLAGS -Wno-unused-result -Werror"
+                 AC_TRY_COMPILE([],[],nmh_cv_has_wnur=yes,nmh_cv_has_wnur=no)
+                 CFLAGS="$nmh_saved_cflags"])
+  test "$nmh_cv_has_wnur" = "yes"  && \
+    CFLAGS="${CFLAGS:+$CFLAGS }-Wno-unused-result"
+
   AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
                  [nmh_saved_cflags="$CFLAGS"
                  CFLAGS="$CFLAGS -Wextra -Werror"
