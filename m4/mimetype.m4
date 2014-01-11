@@ -21,14 +21,17 @@ AS_IF([test X"$nmh_cv_mimetype_proc" != X],
        AC_DEFINE_UNQUOTED([MIMETYPEPROC], [$mimetype_proc],
 		  [Program, with arguments, to provides MIME type.])])])
 
+dnl The OpenBSD 5.4 file (4.24) reports --mime-encoding of text
+dnl files as "binary".  Detect that by only accepting "us-ascii".
 AC_DEFUN([NMH_MIMEENCODINGPROC],
 [AC_CACHE_CHECK([for a program to provide a MIME encoding string],
 		[nmh_cv_mimeencoding_proc],
   [nmh_cv_mimeencoding_proc=
    for mprog in 'file --brief --mime-encoding' 'file --mime-encoding'
    do
-     AS_IF([$mprog "${srcdir}/configure" > /dev/null 2>&1],
-	   [nmh_cv_mimeencoding_proc="$mprog"; break])
+     AS_IF([$mprog "${srcdir}/DATE" > /dev/null 2>&1],
+		AS_CASE([`$mprog "${srcdir}/DATE"`],
+			[us-ascii],[nmh_cv_mimeencoding_proc="$mprog"; break]))
    done])
 AS_IF([test X"$nmh_cv_mimeencoding_proc" != X],
       [mimeencoding_proc="\"${nmh_cv_mimeencoding_proc}\""
