@@ -136,6 +136,7 @@ if test -n "$auto_cflags"; then
                  CFLAGS="$nmh_saved_cflags"])
   test "$nmh_cv_has_wall" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wall"
 
+  dnl for Ubuntu
   AC_CACHE_CHECK([whether compiler supports -Wno-unused-result],
                  [nmh_cv_has_wnur],
                  [nmh_saved_cflags="$CFLAGS"
@@ -167,15 +168,17 @@ AC_SUBST([POSTLINK])
 dnl -----------------
 dnl CUSTOMIZE LDFLAGS
 dnl -----------------
-AS_IF([test "$GCC" = yes  &&  `${CC} --version 2>&1 | grep clang >/dev/null`],
-  dnl Disable clang complaint about unused -ansi when linking.
-  [AC_CACHE_CHECK([whether linker supports -Qunused-arguments],
-                  [nmh_cv_has_q_unused_arguments],
-                  [nmh_saved_ldflags="$LDFLAGS"
-                   LDFLAGS="$LDFLAGS -Qunused-arguments"
-                   AC_TRY_LINK([],[],nmh_cv_has_q_unused_arguments=yes,
-                                     nmh_cv_has_q_unused_arguments=no)
-                   LDFLAGS="$nmh_saved_ldflags"])])
+dnl Disable clang complaint about unused -ansi when linking.
+AC_CACHE_CHECK([whether linker supports -Qunused-arguments],
+               [nmh_cv_has_q_unused_arguments],
+               [AS_IF([test "$GCC" = yes  &&  `${CC} --version 2>&1 | \
+                       grep clang >/dev/null`],
+                      [nmh_saved_ldflags="$LDFLAGS"
+                       LDFLAGS="$LDFLAGS -Qunused-arguments"
+                       AC_TRY_LINK([],[],nmh_cv_has_q_unused_arguments=yes,
+                                         nmh_cv_has_q_unused_arguments=no)
+                       LDFLAGS="$nmh_saved_ldflags"],
+                       [nmh_cv_has_q_unused_arguments=no])])
 test "$nmh_cv_has_q_unused_arguments" = "yes"  &&  \
   LDFLAGS="${LDFLAGS:+$LDFLAGS }-Qunused-arguments"
 
