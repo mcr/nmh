@@ -167,18 +167,17 @@ AC_SUBST([POSTLINK])
 dnl -----------------
 dnl CUSTOMIZE LDFLAGS
 dnl -----------------
-if test "$GCC" = yes; then
+AS_IF([test "$GCC" = yes  &&  `${CC} --version 2>&1 | grep clang >/dev/null`],
   dnl Disable clang complaint about unused -ansi when linking.
-  AC_CACHE_CHECK([whether linker supports -Qunused-arguments],
-                 [nmh_cv_has_q_unused_arguments],
-                 [nmh_saved_ldflags="$LDFLAGS"
-                  LDFLAGS="$LDFLAGS -Qunused-arguments"
-                  AC_TRY_LINK([],[],nmh_cv_has_q_unused_arguments=yes,
-                                    nmh_cv_has_q_unused_arguments=no)
-                  LDFLAGS="$nmh_saved_ldflags"])
-  test "$nmh_cv_has_q_unused_arguments" = "yes"  &&  \
-    LDFLAGS="${LDFLAGS:+$LDFLAGS }-Qunused-arguments"
-fi
+  [AC_CACHE_CHECK([whether linker supports -Qunused-arguments],
+                  [nmh_cv_has_q_unused_arguments],
+                  [nmh_saved_ldflags="$LDFLAGS"
+                   LDFLAGS="$LDFLAGS -Qunused-arguments"
+                   AC_TRY_LINK([],[],nmh_cv_has_q_unused_arguments=yes,
+                                     nmh_cv_has_q_unused_arguments=no)
+                   LDFLAGS="$nmh_saved_ldflags"])])
+test "$nmh_cv_has_q_unused_arguments" = "yes"  &&  \
+  LDFLAGS="${LDFLAGS:+$LDFLAGS }-Qunused-arguments"
 
 dnl This hack turns off assertions by default, assuming
 dnl that configure still uses this shell variable.  Without
