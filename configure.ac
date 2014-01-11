@@ -180,18 +180,6 @@ if test "$GCC" = yes; then
     LDFLAGS="${LDFLAGS:+$LDFLAGS }-Qunused-arguments"
 fi
 
-dnl This really shouldn't be necessary.  And we really shouldn't add -s.
-if test x"$enable_debug" = x"yes"; then
-  test -z "$LDFLAGS" && LDFLAGS=-g
-else
-  if test -z "$LDFLAGS"; then
-    case "$build_os" in
-      darwin*) LDFLAGS= ;;
-            *) LDFLAGS=-s ;;
-    esac
-  fi
-fi
-
 dnl This hack turns off assertions by default, assuming
 dnl that configure still uses this shell variable.  Without
 dnl it, AC_HEADER_ASSERT enables assertions by default.

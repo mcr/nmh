@@ -104,6 +104,8 @@ OBSOLETE FEATURES
   to disable public sequence support has been removed.
 - Support for the -normalize and -nonormalize switches to the ali(1) and
   ap(8) commands has been removed.
+- "make install" no longer strips executables.  Use "make install-strip"
+  instead.
 
 -------------------
 DEPRECATED FEATURES
