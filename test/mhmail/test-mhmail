@@ -21,12 +21,9 @@ content_type_string() {
     echo "text/plain; name=\"`basename $1`\"; charset=\"us-ascii\""
   else
     # 1) Excise leading filename followed by : and any whitespace.
-    # 2) Insert semicolon if there isn't one before the first space.
-    #    OpenBSD file --mime spits out things like "text/plain charset=...".
-    # 3) Wrap charset value in double quotes.  Assume that it isn't already.
-    printf "%s %s%s" \
-      `$MIMETYPEPROC $1 | sed -e 's/.*: *//' -e 's/\([^;]\) /\1; /' \
-         -e 's/\(charset=\)\(.*\)/\1"\2"/'` "; name=\"`basename $1`\""
+    # 2) Wrap charset value in double quotes.  Assume that it isn't already.
+    printf "%s%s" \
+      `$MIMETYPEPROC $1` "; name=\"`basename $1`\"; charset=\"us-ascii\""
   fi
 }
 
