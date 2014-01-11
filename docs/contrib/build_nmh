@@ -157,10 +157,12 @@ if install-mh -check >/dev/null 2>&1; then
 
       case `$mhbin/mhparam tls` in
         *tls*) config_tls=y ;;
-     esac
+      esac
     else
-      echo "$0: -y not supported with currently installed nmh"
-      exit 1
+      tput smso
+      echo "$0: SASL and TLS detection not supported with current nmh"
+      [ $yes -eq 1 ]  &&  echo "will not configure either one in"
+      tput rmso
     fi
   fi
 fi
