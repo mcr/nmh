@@ -26,8 +26,12 @@
  *				pwd command and exists to allow the user
  *				to verify the directory.
  *
- *	attach files		This option attaches the named files to
- *				the draft.
+ *	attach [-v [-a 0|1|2]] files
+ *				This option attaches the named files to
+ *				the draft.  -v displays the mhbuild
+ *				directive, using the optionally specified
+ *				attachformat [-a] if that is also provided
+ *				to send(1).
  *
  *	alist [-ln]		This option lists the attachments on the
  *				draft.  -l gets long listings, -n gets
@@ -80,7 +84,7 @@ DEFINE_SWITCH_ARRAY(WHATNOW, whatnowswitches);
     X("cd [directory]", 0, CDCMDSW) \
     X("pwd", 0, PWDCMDSW) \
     X("ls", 2, LSCMDSW) \
-    X("attach", 0, ATTACHCMDSW) \
+    X("attach [-v [-a 0|1|2]]", 0, ATTACHCMDSW) \
     X("detach [-n]", 0, DETACHCMDSW) \
     X("alist [-ln] ", 2, ALISTCMDSW) \
 
@@ -393,18 +397,47 @@ WhatNow (int argc, char **argv)
 
 	    break;
 
-	case ATTACHCMDSW:
+	case ATTACHCMDSW: {
 	    /*
 	     *	Attach files to current draft.
 	     */
+
+            int verbose = 0;
+            int attachformat = 1;
+            char **ap;
 
 	    if (attach == (char *)0) {
 		advise((char *)0, "can't attach because no header field name was given.");
 		break;
 	    }
 
+	    for (ap = argp+1; *ap; ++ap) {
+		if (strcmp(*ap, "-v") == 0) {
+		    ++argp;
+		    verbose = 1;
+		} else if (strcmp(*ap, "-a") == 0) {
+		    ++argp;
+		    if (*(ap+1) == NULL	 ||
+			! isdigit ((unsigned char) *(ap+1)[0])) {
+			advise(NULL,
+			       "ignoring attach -a without format argument.");
+		    } else {
+			++argp;
+			++ap;
+			if ((attachformat = atoi(*ap)) > 2) {
+			    advise(NULL,
+				   "ingoring invalid attachformat value of %d",
+				   attachformat);
+			    attachformat = 1;
+			}
+		    }
+		} else if (*ap[0] != '-') {
+		    break;
+		}
+	    }
+
 	    if (*(argp+1) == (char *)0) {
-		advise((char *)0, "attach command requires file argument(s).");
+		advise(NULL, "attach command requires file argument(s).");
 		break;
 	    }
 
@@ -424,13 +457,30 @@ WhatNow (int argc, char **argv)
 
 	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
 		while (fgets(shell, sizeof (shell), f) != (char *)0) {
+		    char *build_directive;
+
 		    *(strchr(shell, '\n')) = '\0';
 
-		    if (*shell == '/')
+		    if (*shell == '/') {
 			(void)annotate(drft, attach, shell, 1, 0, -2, 1);
-		    else {
+			if (verbose) {
+			    build_directive =
+				construct_build_directive (shell, NULL,
+							   attachformat);
+			}
+		    } else {
 			(void)sprintf(file, "%s/%s", cwd, shell);
 			(void)annotate(drft, attach, file, 1, 0, -2, 1);
+			if (verbose) {
+			    build_directive =
+				construct_build_directive (file, NULL,
+							   attachformat);
+			}
+		    }
+
+		    if (verbose) {
+			printf ("%s", build_directive);
+			free (build_directive);
 		    }
 		}
 
@@ -441,7 +491,7 @@ WhatNow (int argc, char **argv)
 	    }
 
 	    break;
-
+	}
 	case DETACHCMDSW:
 	    /*
 	     *	Detach files from current draft.

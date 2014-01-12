@@ -45,7 +45,7 @@ whatnowtest=`echo cd | whatnow -prompt ''`
 set -e
 
 case ${whatnowtest} in
-    cd) cat > "$expected" <<EOF
+    cd) cat >"$expected" <<EOF
 attach $testname_quoted
 alist
 $testname
@@ -53,7 +53,7 @@ detach $testname_quoted
 alist
 EOF
     ;;
-    "") cat > "$expected" <<EOF
+    "") cat >"$expected" <<EOF
 $testname
 EOF
     ;;
@@ -66,16 +66,84 @@ esac
 # whatnow's exit status is always 1 so that is not a failure
 set +e
 echo "attach $testname_quoted" | \
-  run_prog whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+  run_prog whatnow -attach foo -noedit -prompt '' 2>>$actualerr >>$actual
 echo "alist" | \
-  run_prog whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+  run_prog whatnow -attach foo -noedit -prompt '' 2>>$actualerr >>$actual
 echo "detach $testname_quoted" | \
-  run_prog whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+  run_prog whatnow -attach foo -noedit -prompt '' 2>>$actualerr >>$actual
 echo "alist" | \
-  run_prog whatnow -attach foo -noedit -prompt '' 2>> $actualerr >> $actual
+  run_prog whatnow -attach foo -noedit -prompt '' 2>>$actualerr >>$actual
 set -e
 
 check "$expectederr" "$actualerr"
+check "$expected" "$actual"
+
+cat >"$expected" <<EOF
+
+What now? at
+whatnow: attach command requires file argument(s).
+
+What now? at -v
+whatnow: attach command requires file argument(s).
+
+What now? at -v -a
+whatnow: ignoring attach -a without format argument.
+whatnow: attach command requires file argument(s).
+
+What now? at -v -a 0
+whatnow: attach command requires file argument(s).
+
+What now? at -a
+whatnow: ignoring attach -a without format argument.
+whatnow: attach command requires file argument(s).
+
+What now? at -a -v
+whatnow: ignoring attach -a without format argument.
+whatnow: attach command requires file argument(s).
+
+What now? at -a 0 -v
+whatnow: attach command requires file argument(s).
+
+What now? at -a 0 Mail/context
+
+What now? at -v -a Mail/context
+whatnow: ignoring attach -a without format argument.
+#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+
+What now? at -v -a 3 Mail/context
+whatnow: ingoring invalid attachformat value of 3
+#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+
+What now? at -v Mail/context
+#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+
+What now? at -v -a 1 Mail/context
+#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+
+What now? at -v -a 0 Mail/context
+#text/plain; charset=us-ascii; name="context"; x-unix-mode=0644 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
+
+What now? quit -delete
+EOF
+
+set +e
+printf '%s\n' \
+'at' \
+'at -v' \
+'at -v -a' \
+'at -v -a 0' \
+'at -a' \
+'at -a -v' \
+'at -a 0 -v' \
+'at -a 0 Mail/context' \
+'at -v -a Mail/context' \
+'at -v -a 3 Mail/context' \
+'at -v Mail/context' \
+'at -v -a 1 Mail/context' \
+'at -v -a 0 Mail/context' \
+'quit -delete' | whatnow >$actual 2>&1
+set -e
+
 check "$expected" "$actual"
 
 test ${failed:-0} -eq 0  &&  rm "$testname"
