@@ -111,7 +111,7 @@ What now? #text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Ma
 
 What now? #text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
-What now? #text/plain; name="context"; x-unix-mode=0600 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
+What now? #text/plain; name="context"; x-unix-mode=0600 [ ASCII text ] ${MH_TEST_DIR}/Mail/context
 
 What now? 
 EOF
@@ -159,7 +159,7 @@ What now? at -v -a 1 Mail/context
 #text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
 What now? at -v -a 0 Mail/context
-#text/plain; name="context"; x-unix-mode=0600 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
+#text/plain; name="context"; x-unix-mode=0600 [ ASCII text ] ${MH_TEST_DIR}/Mail/context
 
 What now? quit -delete
 EOF
@@ -183,11 +183,18 @@ printf '%s\n' \
 'at -v Mail/context' \
 'at -v -a 1 Mail/context' \
 'at -v -a 0 Mail/context' \
-'quit -delete' | whatnow 2>&1 | sed -e 's/; charset=us-ascii//' >"$actual"
+'quit -delete' | whatnow 2>&1 | \
+  sed -e 's/; charset=us-ascii//' -e 's/ *ASCII text/ ASCII text/' \
+      -e 's/ *ascii text/ ASCII text/'  >"$actual"
 set -e
 
-#### Without readline, need to add trailing newline.
-[ "$readline" = 0 ] && printf '\n' >>"$actual"
+#### Without readline, need to add trailing newline.  And the final
+#### prompt that might have been lost.
+if [ "$readline" = 0 ]; then
+  printf '\n' >>"$actual"
+  sed -e '32,32s/^$/What now? /' "$actual" >"$actual.tmp"
+  mv "$actual.tmp" "$actual"
+fi
 
 check "$expected" "$actual"
 
