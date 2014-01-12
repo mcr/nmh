@@ -287,6 +287,8 @@ EOF
   done
 
   folder -create +inbox > /dev/null
+  # test/whatnow/test-attach-detach depends on the mode of context:
+  chmod 0600 ${MH_TEST_DIR}/Mail/context
   # create 10 basic messages
   for i in 1 2 3 4 5 6 7 8 9 10;
   do

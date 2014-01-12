@@ -52,10 +52,12 @@ $testname
 detach $testname_quoted
 alist
 EOF
+readline=1
     ;;
     "") cat >"$expected" <<EOF
 $testname
 EOF
+readline=0
     ;;
     *) echo "Unknown response to whatnow readline test"
     echo "Response is: ${whatnowtest}"
@@ -78,6 +80,42 @@ set -e
 check "$expectederr" "$actualerr"
 check "$expected" "$actual"
 
+if [ "$readline" = 0 ]; then
+cat >"$expected" <<EOF
+
+What now? whatnow: attach command requires file argument(s).
+
+What now? whatnow: attach command requires file argument(s).
+
+What now? whatnow: ignoring attach -a without format argument.
+whatnow: attach command requires file argument(s).
+
+What now? whatnow: attach command requires file argument(s).
+
+What now? whatnow: ignoring attach -a without format argument.
+whatnow: attach command requires file argument(s).
+
+What now? whatnow: ignoring attach -a without format argument.
+whatnow: attach command requires file argument(s).
+
+What now? whatnow: attach command requires file argument(s).
+
+What now? 
+What now? whatnow: ignoring attach -a without format argument.
+#text/plain; charset=us-ascii; name="context" <> [context]{attachment} /home/levine/lib/src/nmh/test/testdir/Mail/context
+
+What now? whatnow: ingoring invalid attachformat value of 3
+#text/plain; charset=us-ascii; name="context" <> [context]{attachment} /home/levine/lib/src/nmh/test/testdir/Mail/context
+
+What now? #text/plain; charset=us-ascii; name="context" <> [context]{attachment} /home/levine/lib/src/nmh/test/testdir/Mail/context
+
+What now? #text/plain; charset=us-ascii; name="context" <> [context]{attachment} /home/levine/lib/src/nmh/test/testdir/Mail/context
+
+What now? #text/plain; charset=us-ascii; name="context"; x-unix-mode=0600 [  ASCII text ] /home/levine/lib/src/nmh/test/testdir/Mail/context
+
+What now? 
+EOF
+else
 cat >"$expected" <<EOF
 
 What now? at
@@ -121,10 +159,11 @@ What now? at -v -a 1 Mail/context
 #text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
 What now? at -v -a 0 Mail/context
-#text/plain; charset=us-ascii; name="context"; x-unix-mode=0644 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
+#text/plain; charset=us-ascii; name="context"; x-unix-mode=0600 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
 
 What now? quit -delete
 EOF
+fi
 
 set +e
 printf '%s\n' \
@@ -141,8 +180,11 @@ printf '%s\n' \
 'at -v Mail/context' \
 'at -v -a 1 Mail/context' \
 'at -v -a 0 Mail/context' \
-'quit -delete' | whatnow >$actual 2>&1
+'quit -delete' | whatnow >"$actual" 2>&1
 set -e
+
+#### Without readline, need to add trailing newline.
+[ "$readline" = 0 ] && printf '\n' >>"$actual"
 
 check "$expected" "$actual"
 
