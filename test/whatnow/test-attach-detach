@@ -102,16 +102,16 @@ What now? whatnow: attach command requires file argument(s).
 
 What now? 
 What now? whatnow: ignoring attach -a without format argument.
-#text/plain; charset=us-ascii; name="context" <> [context]{attachment} /home/levine/lib/src/nmh/test/testdir/Mail/context
+#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
 What now? whatnow: ingoring invalid attachformat value of 3
-#text/plain; charset=us-ascii; name="context" <> [context]{attachment} /home/levine/lib/src/nmh/test/testdir/Mail/context
+#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
-What now? #text/plain; charset=us-ascii; name="context" <> [context]{attachment} /home/levine/lib/src/nmh/test/testdir/Mail/context
+What now? #text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
-What now? #text/plain; charset=us-ascii; name="context" <> [context]{attachment} /home/levine/lib/src/nmh/test/testdir/Mail/context
+What now? #text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
-What now? #text/plain; charset=us-ascii; name="context"; x-unix-mode=0600 [  ASCII text ] /home/levine/lib/src/nmh/test/testdir/Mail/context
+What now? #text/plain; charset=us-ascii; name="context"; x-unix-mode=0600 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
 
 What now? 
 EOF
