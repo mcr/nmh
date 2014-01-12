@@ -102,16 +102,16 @@ What now? whatnow: attach command requires file argument(s).
 
 What now? 
 What now? whatnow: ignoring attach -a without format argument.
-#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+#text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
 What now? whatnow: ingoring invalid attachformat value of 3
-#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+#text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
-What now? #text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+What now? #text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
-What now? #text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+What now? #text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
-What now? #text/plain; charset=us-ascii; name="context"; x-unix-mode=0600 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
+What now? #text/plain; name="context"; x-unix-mode=0600 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
 
 What now? 
 EOF
@@ -146,20 +146,20 @@ What now? at -a 0 Mail/context
 
 What now? at -v -a Mail/context
 whatnow: ignoring attach -a without format argument.
-#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+#text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
 What now? at -v -a 3 Mail/context
 whatnow: ingoring invalid attachformat value of 3
-#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+#text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
 What now? at -v Mail/context
-#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+#text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
 What now? at -v -a 1 Mail/context
-#text/plain; charset=us-ascii; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+#text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
 
 What now? at -v -a 0 Mail/context
-#text/plain; charset=us-ascii; name="context"; x-unix-mode=0600 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
+#text/plain; name="context"; x-unix-mode=0600 [  ASCII text ] ${MH_TEST_DIR}/Mail/context
 
 What now? quit -delete
 EOF
@@ -183,7 +183,7 @@ printf '%s\n' \
 'at -v Mail/context' \
 'at -v -a 1 Mail/context' \
 'at -v -a 0 Mail/context' \
-'quit -delete' | whatnow >"$actual" 2>&1
+'quit -delete' | whatnow 2>&1 | sed -e 's/; charset=us-ascii//' >"$actual"
 set -e
 
 #### Without readline, need to add trailing newline.
