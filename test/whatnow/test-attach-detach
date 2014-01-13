@@ -168,6 +168,17 @@ fi
 # Don't depend on the mode of Mail/context:
 chmod 0600 ${MH_TEST_DIR}/Mail/context
 
+if [ "$readline" = 0 ]; then
+  #### Ensure that there will be a newline at the end whatnow's output.
+  whatnowtest () {
+    whatnow; echo
+  }
+else
+  whatnowtest () {
+    whatnow
+  }
+fi
+
 set +e
 printf '%s\n' \
 'at' \
@@ -183,18 +194,10 @@ printf '%s\n' \
 'at -v Mail/context' \
 'at -v -a 1 Mail/context' \
 'at -v -a 0 Mail/context' \
-'quit -delete' | whatnow 2>&1 | \
+'quit -delete' | whatnowtest 2>&1 | \
   sed -e 's/; charset=us-ascii//' -e 's/ *ASCII text/ ASCII text/' \
       -e 's/ *ascii text/ ASCII text/'  >"$actual"
 set -e
-
-#### Without readline, need to add trailing newline.  And the final
-#### prompt that might have been lost.
-if [ "$readline" = 0 ]; then
-  printf '\n' >>"$actual"
-  sed -e '32,32s/^$/What now? /' "$actual" >"$actual.tmp"
-  mv "$actual.tmp" "$actual"
-fi
 
 check "$expected" "$actual"
 
