@@ -119,6 +119,22 @@ if test -n "$auto_cflags"; then
        CFLAGS="$nmh_saved_cflags"])
     test "$nmh_cv_has_dash_ansi" = "yes"  &&  \
       CFLAGS="${CFLAGS:+$CFLAGS }-ansi -pedantic"
+
+    dnl For Ubuntu gcc 4.8.1, with -O2.  It would be better to fix all these,
+    dnl but until then, suppress the warning.
+    AC_CACHE_CHECK([whether compiler needs -Wno-unused-result],
+                   [nmh_cv_needs_wnur],
+                   [nmh_saved_cflags="$CFLAGS"
+                    CFLAGS="$CFLAGS -Werror -O2"
+                    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <unistd.h>],
+                                        [extern const char *path;
+                                         chdir (path);
+                                         return 0;])],
+                                       [nmh_cv_needs_wnur=no],
+                                       [nmh_cv_needs_wnur=yes])
+                    CFLAGS="$nmh_saved_cflags"])
+    AS_IF([test "$nmh_cv_needs_wnur" = yes],
+          [CFLAGS="${CFLAGS:+$CFLAGS }-Wno-unused-result"])
   else
     dnl Use -v and some other options with SunStudio cc.  lex produces
     dnl code that causes unreachable-statement warnings.  It might be
@@ -143,22 +159,6 @@ if test -n "$auto_cflags"; then
                                 nmh_cv_has_wextra=no)
                  CFLAGS="$nmh_saved_cflags"])
   test "$nmh_cv_has_wextra" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wextra"
-
-  dnl For Ubuntu gcc 4.8.1, with -O2.  It would be better to fix all these,
-  dnl but until then, suppress the warning.
-  AC_CACHE_CHECK([whether compiler needs -Wno-unused-result],
-                 [nmh_cv_needs_wnur],
-                 [nmh_saved_cflags="$CFLAGS"
-                  CFLAGS="$CFLAGS -Werror -O2"
-                  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <unistd.h>],
-                                                     [extern const char *path;
-                                                      chdir (path);
-                                                      return 0;])],
-                                                     [nmh_cv_needs_wnur=no],
-                                                     [nmh_cv_needs_wnur=yes])
-                  CFLAGS="$nmh_saved_cflags"])
-  AS_IF([test "$nmh_cv_needs_wnur" = yes],
-        [CFLAGS="${CFLAGS:+$CFLAGS }-Wno-unused-result"])
 fi
 
 dnl --------------
