@@ -175,11 +175,11 @@ cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
 	     * widths, so use the column width to bump the end pointer when
 	     * appropriate.
 	     */
-	    if (char_len > 1 && epmax - *ep >= char_len - w) {
+	    if (w >= 0  &&  char_len > 1 && epmax - *ep >= char_len - w) {
 		*ep += char_len - w;
 	    }
 
-	    if (cp + w > *ep)
+	    if (w >= 0  &&  cp + w > *ep)
 		break;
 
 	    end -= char_len;
@@ -278,7 +278,7 @@ cpstripped (char **dest, char **end, char *max, char *str)
 	 * by the number of "extra" bytes in this character.  That's the
 	 * character length (char_len) minus the column width (w).
 	 */
-	if (char_len > 1  &&  max - *end >= char_len - w) {
+	if (w >= 0  &&  char_len > 1  &&  max - *end >= char_len - w) {
 	    *end += char_len - w;
 	}
 
