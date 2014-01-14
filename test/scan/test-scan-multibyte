@@ -136,14 +136,11 @@ LC_CTYPE=en_US.UTF-8 MM_CHARSET=UTF-8 scan -width 75 last >"$actual"
 check "$expected" "$actual"
 
 
-#### Skip this test if we don't have iconv support because it
-#### requires converting from ISO-8859-1 to UTF-8.
-if test "$ICONV_ENABLED" -eq 1; then
-    cat >"$expected" <<EOF
-  13  01/13 sender@example.co  <<The Subject: is an encoded single quote, 0x92.
+cat >"$expected" <<EOF
+  13  01/13 sender@example.co  ? <<The Subject: is an encoded single quote, 0x9
 EOF
 
-    cat >"${MH_TEST_DIR}/Mail/inbox/13" <<EOF
+cat >"${MH_TEST_DIR}/Mail/inbox/13" <<EOF
 From: <sender@example.com>
 Subject: =?iso-8859-1?B?kgo=?=
 Date: Mon, 13 Jan 2014 14:18:33 -0600
@@ -156,9 +153,8 @@ properly count it when decoding, which could be seen with:
 The scan listing was two characters too long.
 EOF
 
-    run_prog scan -width 80 last >"$actual"
-    check "$expected" "$actual"
-fi
+LC_CTYPE=ISO-8859-1 MM_CHARSET=ISO-8859-1 scan -width 80 last >"$actual"
+check "$expected" "$actual"
 
 
 exit $failed
