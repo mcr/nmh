@@ -426,7 +426,7 @@ WhatNow (int argc, char **argv)
 			++ap;
 			if ((attachformat = atoi(*ap)) > 2) {
 			    advise(NULL,
-				   "ingoring invalid attachformat value of %d",
+				   "ignoring invalid attachformat value of %d",
 				   attachformat);
 			    attachformat = 1;
 			}

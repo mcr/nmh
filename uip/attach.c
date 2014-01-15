@@ -327,10 +327,8 @@ mime_type(const char *file_name) {
  */
 static char *
 get_file_info(const char *proc, const char *file_name) {
-    char buf[BUFSIZ >= 2048  ?  BUFSIZ  : 2048];
     char *cmd, *cp;
     char *quotec = "'";
-    FILE *fp;
 
     if ((cp = strchr(file_name, '\''))) {
         /* file_name contains a single quote. */
@@ -345,7 +343,12 @@ get_file_info(const char *proc, const char *file_name) {
 
     cmd = concat(proc, " ", quotec, file_name, quotec, NULL);
     if ((cmd = concat(proc, " ", quotec, file_name, quotec, NULL))) {
+        FILE *fp;
+
         if ((fp = popen(cmd, "r")) != NULL) {
+            char buf[BUFSIZ >= 2048  ?  BUFSIZ  : 2048];
+
+            buf[0] = '\0';
             if (fgets(buf, sizeof buf, fp)) {
                 char *eol;
 
@@ -363,8 +366,12 @@ get_file_info(const char *proc, const char *file_name) {
                 if ((eol = strpbrk(cp, "\n\r")) != NULL) {
                     *eol = '\0';
                 }
-            } else {
-                advise(NULL, "unable to read mime type");
+            } else if (buf[0] == '\0') {
+                /* This can happen on Cygwin if the popen()
+                   mysteriously fails.  Return NULL so that the caller
+                   will use another method to determine the info. */
+                free (cp);
+                cp = NULL;
             }
 
             (void) pclose(fp);
