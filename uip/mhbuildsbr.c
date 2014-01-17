@@ -129,7 +129,7 @@ static void directive_pop(void)
  */
 
 CT
-build_mime (char *infile, int directives, int header_encoding)
+build_mime (char *infile, int autobuild, int directives, int header_encoding)
 {
     int	compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -176,13 +176,16 @@ build_mime (char *infile, int directives, int header_encoding)
 	case FLDPLUS:
 	    compnum++;
 
-	    /* abort if draft has Mime-Version header field */
-	    if (!strcasecmp (name, VRSN_FIELD))
-		adios (NULL, "draft shouldn't contain %s: field", VRSN_FIELD);
-
-	    /* abort if draft has Content-Transfer-Encoding header field */
-	    if (!strcasecmp (name, ENCODING_FIELD))
-		adios (NULL, "draft shouldn't contain %s: field", ENCODING_FIELD);
+	    /* abort if draft has Mime-Version or C-T-E header field */
+	    if (strcasecmp (name, VRSN_FIELD) == 0 ||
+	    	strcasecmp (name, ENCODING_FIELD) == 0) {
+		if (autobuild) {
+		    fclose(in);
+		    return NULL;
+		} else {
+		    adios (NULL, "draft shouldn't contain %s: field", name);
+		}
+	    }
 
 	    /* ignore any Content-Type fields in the header */
 	    if (!strcasecmp (name, TYPE_FIELD)) {

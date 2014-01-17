@@ -65,6 +65,8 @@ NEW FEATURES
   configuration time.  If not, it will use mhshow-suffix- entries as
   before.  The -v switch to attach causes it to display the mhbuild
   directive for an attachformat specied by an optional -a switch.
+- mhbuild(1) now supports the -auto/-noauto flags (to be used by send(1)
+  when invoking mhbuild automatically).
 
 -----------------
 OBSOLETE FEATURES

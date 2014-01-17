@@ -9,6 +9,7 @@ mhbuild \- translate MIME composition draft
 .HP 5
 .B mhbuild
 .I file
+.RB [ \-auto " | " \-noauto ]
 .RB [ \-list " | " \-nolist ]
 .RB [ \-realsize " | " \-norealsize ]
 .RB [ \-headers " | " \-noheaders ]
@@ -77,19 +78,6 @@ switch
 is present, then the listing will show any \*(lqextra\*(rq information
 that is present in the message, such as comments in the
 \*(lqContent-Type\*(rq header.
-.PP
-The
-.B \-headerencoding
-switch will indicate which algorithm to use when encoding any message headers
-that contain 8\-bit characters.  The valid arguments are
-.I base64
-for based\-64 encoding and 
-.I quoted
-for quoted\-printable encoding.  The
-.B \-autoheaderencoding
-switch will instruct
-.B mhbuild
-to automatically pick the algorithm that results in a shorter encoded string.
 .SS "Translating the Composition File"
 .B mhbuild
 is essentially a filter to aid in the composition of MIME
@@ -467,6 +455,19 @@ If a text content contains only 7\-bit characters and the character set
 is not specified as above, then the character set will be labeled as
 \*(lqus-ascii\*(rq.
 .PP
+The
+.B \-headerencoding
+switch will indicate which algorithm to use when encoding any message headers
+that contain 8\-bit characters.  The valid arguments are
+.I base64
+for based\-64 encoding and 
+.I quoted
+for quoted\-printable encoding.  The
+.B \-autoheaderencoding
+switch will instruct
+.B mhbuild
+to automatically pick the algorithm that results in a shorter encoded string.
+.PP
 Putting this all together,
 here is an example of a more complicated message draft.  The
 following draft will expand into a multipart/mixed message
@@ -544,6 +545,14 @@ prior to sending the draft.  This will cause
 to execute
 .B mhbuild
 to translate the composition file into MIME format.
+.PP
+Normally it is an error to invoke
+.B mhbuild
+on file that already in MIME format.  The 
+.B \-auto
+switch will cause
+.B mhbuild
+to exit without error if the input file already has valid MIME headers.
 .PP
 It is also possible to have the
 .B whatnow

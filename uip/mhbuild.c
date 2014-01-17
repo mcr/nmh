@@ -19,6 +19,8 @@
 #include <h/utils.h>
 
 #define MHBUILD_SWITCHES \
+    X("auto", 0, AUTOSW) \
+    X("noauto", 0, NAUTOSW) \
     X("check", 0, CHECKSW) \
     X("nocheck", 0, NCHECKSW) \
     X("directives", 0, DIRECTIVES) \
@@ -101,7 +103,7 @@ int list_all_messages (CT *, int, int, int, int);
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1, directives = 1;
+    int sizesw = 1, headsw = 1, directives = 1, autobuild = 0;
     int *icachesw;
     char *cp, buf[BUFSIZ];
     char buffer[BUFSIZ], *compfile = NULL;
@@ -149,6 +151,20 @@ main (int argc, char **argv)
 	    case VERSIONSW:
 		print_version(invo_name);
 		done (0);
+
+	    case AUTOSW:
+	    	/* -auto implies -nodirectives */
+		autobuild = 1;
+		directives = 0;
+		continue;
+	    case NAUTOSW:
+	    	/*
+		 * We're turning directives back on since this is likely here
+		 * to override a profile entry
+		 */
+		autobuild = 0;
+		directives = 1;
+		continue;
 
 	    case RCACHESW:
 		icachesw = &rcachesw;
@@ -320,32 +336,28 @@ main (int argc, char **argv)
 	unlink_infile = 1;
 
 	/* build the content structures for MIME message */
-	ct = build_mime (infile, directives, header_encoding);
-	cts[0] = ct;
-	cts[1] = NULL;
+	ct = build_mime (infile, autobuild, directives, header_encoding);
 
-	/* output MIME message to this temporary file */
-	strncpy (outfile, m_mktemp(invo_name, NULL, &fp_out), sizeof(outfile));
-	unlink_outfile = 1;
+	/*
+	 * If ct == NULL, that means that -auto was set and a MIME version
+	 * header was already seen.  Just use the input file as the output
+	 */
 
-	/* output the message */
-	output_message_fp (ct, fp_out, outfile);
-        fclose(fp_out);
-
-	/* output the temp file to standard output */
-	if ((fp = fopen (outfile, "r")) == NULL)
-	    adios (outfile, "unable to open");
-	while (fgets (buffer, BUFSIZ, fp))
-	    fputs (buffer, stdout);
-	fclose (fp);
+	if (!ct) {
+	    if (! (fp = fopen(infile, "r"))) {
+		adios(NULL, "Unable to open %s for reading", infile);
+	    }
+	    while (fgets(buffer, BUFSIZ, fp))
+		fputs(buffer, stdout);
+	} else {
+	    /* output the message */
+	    output_message_fp (ct, stdout, NULL);
+	    free_content (ct);
+	}
 
 	unlink (infile);
 	unlink_infile = 0;
 
-	unlink (outfile);
-	unlink_outfile = 0;
-
-	free_content (ct);
 	done (0);
     }
 
@@ -354,7 +366,16 @@ main (int argc, char **argv)
      */
 
     /* build the content structures for MIME message */
-    ct = build_mime (compfile, directives, header_encoding);
+    ct = build_mime (compfile, autobuild, directives, header_encoding);
+
+    /*
+     * If ct == NULL, that means -auto was set and we found a MIME version
+     * header.  Simply exit and do nothing.
+     */
+
+    if (! ct)
+	done(0);
+
     cts[0] = ct;
     cts[1] = NULL;
 
