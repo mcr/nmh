@@ -369,9 +369,6 @@ dnl -------------------
 dnl Checks for network libraries (nsl, socket)
 NMH_CHECK_NETLIBS
 
-dnl Check for readline support
-NMH_READLINE
-
 dnl Check the locking functions supported and what we should use by default
 NMH_LOCKING
 
@@ -387,8 +384,11 @@ for lib in $termcap_curses_order; do
 done
 AC_SUBST([TERMLIB])dnl
 AS_IF([test "x$TERMLIB" = "x"],
-      [AC_MSG_FAILURE([Could not find setupterm in any library.  Is there a curses
-or ncurses library or package that you can install?])])
+      [AC_MSG_FAILURE([Could not find setupterm in any library.  Is there a
+curses or ncurses library or package that you can install?])])
+
+dnl Check for readline support
+NMH_READLINE
 
 dnl --------------
 dnl CHECK FOR NDBM

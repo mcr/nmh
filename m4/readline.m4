@@ -14,11 +14,12 @@ AS_IF([test x"$with_readline" = xyes -o x"$with_readline" = xmaybe],
     [save_LIBS="$LIBS"
     LIBS=
     AC_SEARCH_LIBS([readline], [readline editline],
-    		   [READLINELIB="$LIBS"
+		   [READLINELIB="$LIBS"
 		   AC_DEFINE([READLINE_SUPPORT], [1],
 			     [Support for using readline() in whatnow])],
-    		   [AS_IF([test x"$with_readline" = xyes],
-		   	  [AC_MSG_ERROR([Unable to find a readline library])])])
+		   [AS_IF([test x"$with_readline" = xyes],
+			  [AC_MSG_ERROR([Unable to find a readline library])])],
+		   [$TERMLIB])
     LIBS="$save_LIBS"])
 ])
 
