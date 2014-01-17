@@ -173,11 +173,6 @@ main (int argc, char **argv)
     if (foldp == 0)
 	adios (NULL, "no folder specified");
 
-#ifdef WHATNOW
-    if (!msgs.size && !foldp && !filep && (cp = getenv ("mhdraft")) && *cp)
-	files[filep++] = cp;
-#endif /* WHATNOW */
-
     /*
      * We are refiling a file to the folders
      */

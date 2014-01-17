@@ -163,9 +163,6 @@ main (int argc, char **argv)
     }
 
     if (msg == NULL) {
-#ifdef	WHATNOW
-	if (dfolder || (cp = getenv ("mhdraft")) == NULL || *cp == '\0')
-#endif	/* WHATNOW */
 	    cp  = getcpy (m_draft (dfolder, dmsg, 1, &isdf));
 	msg = vec[vecp++] = cp;
     }

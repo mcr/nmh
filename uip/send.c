@@ -314,12 +314,6 @@ main (int argc, char **argv)
 
     if (dfolder == NULL) {
 	if (msgp == 0) {
-#ifdef WHATNOW
-	    if ((cp = getenv ("mhdraft")) && *cp) {
-		msgs[msgp++] = cp;
-		goto go_to_it;
-	    }
-#endif /* WHATNOW */
 	    msgs[msgp++] = getcpy (m_draft (NULL, NULL, 1, &isdf));
 	    if (stat (msgs[0], &st) == NOTOK)
 		adios (msgs[0], "unable to stat draft file");

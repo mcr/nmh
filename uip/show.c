@@ -191,14 +191,6 @@ usage:
 	goto go_to_it;
     }
 
-#ifdef WHATNOW
-    if (!msgs.size && !folder && mode == SHOW && (cp = getenv ("mhdraft")) && *cp) {
-	draftsw++;
-	app_msgarg(&vec, cp);
-	goto go_to_it;
-    }
-#endif /* WHATNOW */
-
     if (!msgs.size) {
 	switch (mode) {
 	    case NEXT:
