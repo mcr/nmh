@@ -28,7 +28,6 @@ attach(char *attachment_header_field_name, char *draft_file_name,
     int         length;                 /* of attachment header field name */
     char        *p;                     /* miscellaneous string pointer */
     struct stat st;                     /* file status buffer */
-    FILE        *fp;                    /* pointer for mhn.defaults */
     FILE        *body_file = NULL;      /* body file pointer */
     FILE        *draft_file;            /* draft file pointer */
     int         field_size;             /* size of header field buffer */
@@ -176,11 +175,6 @@ attach(char *attachment_header_field_name, char *draft_file_name,
      *	header fields that specify attachments.  Add a mhbuild MIME
      *	composition file for each.
      */
-
-    if ((fp = fopen (p = etcpath ("mhn.defaults"), "r"))) {
-	readconfig ((struct node **) NULL, fp, p, 0);
-	fclose(fp);
-    }
 
     rewind(draft_file);
 
@@ -404,7 +398,6 @@ construct_build_directive (char *file_name, const char *default_content_type,
     char  cmd[PATH_MAX + 8];       /* file command buffer */
     struct stat st;                /* file status buffer */
     char *p;                       /* miscellaneous temporary variables */
-    FILE *fp;
     int   c;                       /* current character */
 
     if ((content_type = mime_type (file_name)) == NULL) {
@@ -417,6 +410,12 @@ construct_build_directive (char *file_name, const char *default_content_type,
          * have the suffix in the field, including the dot.
          */
         struct node *np;          /* context scan node pointer */
+        static FILE *fp = NULL;   /* pointer for mhn.defaults */
+
+        if (fp == NULL  &&  (fp = fopen (p = etcpath ("mhn.defaults"), "r"))) {
+            readconfig ((struct node **) NULL, fp, p, 0);
+            fclose(fp);
+        }
 
         if ((p = strrchr(file_name, '.')) != NULL) {
             for (np = m_defs; np; np = np->n_next) {
@@ -441,6 +440,7 @@ construct_build_directive (char *file_name, const char *default_content_type,
      */
     if (content_type == NULL) {
         int  binary; /* binary character found flag */
+        FILE *fp;
 
         if ((fp = fopen(file_name, "r")) == (FILE *)0) {
             advise(NULL, "unable to access file \"%s\"", file_name);
@@ -465,6 +465,7 @@ construct_build_directive (char *file_name, const char *default_content_type,
     switch (attachformat) {
     case 0: {
         struct stat st;
+        FILE *fp;
         char m[4];
 
         /* Insert name, file mode, and Content-Id. */
