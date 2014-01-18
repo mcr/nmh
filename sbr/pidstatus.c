@@ -22,6 +22,14 @@
 # define WCOREDUMP(s) ((s) & 0x80)
 #endif
 
+/*
+ * Return 0 if the command exited with an exit code of zero, a nonzero code
+ * otherwise.
+ *
+ * Print out an appropriate status message we didn't exit with an exit code
+ * of zero.
+ */
+
 int
 pidstatus (int status, FILE *fp, char *cp)
 {
@@ -42,6 +50,7 @@ pidstatus (int status, FILE *fp, char *cp)
 		fprintf (fp, "%s: ", cp);
 	    fprintf (fp, "exit %d\n", signum);
 	}
+	return signum;
     } else if (WIFSIGNALED(status)) {
 	/* If child process terminated due to receipt of a signal */
 	signum = WTERMSIG(status);
