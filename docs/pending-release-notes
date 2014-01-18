@@ -64,7 +64,7 @@ NEW FEATURES
   attachment using a program such as file --mime-type, if available at
   configuration time.  If not, it will use mhshow-suffix- entries as
   before.  The -v switch to attach causes it to display the mhbuild
-  directive for an attachformat specied by an optional -a switch.
+  directive that send(1) will use.
 - mhbuild(1) now supports the -auto/-noauto flags (to be used by send(1)
   when invoking mhbuild automatically).
 

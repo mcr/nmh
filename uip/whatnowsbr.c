@@ -26,12 +26,9 @@
  *				pwd command and exists to allow the user
  *				to verify the directory.
  *
- *	attach [-v [-a 0|1|2]] files
- *				This option attaches the named files to
+ *	attach [-v] files	This option attaches the named files to
  *				the draft.  -v displays the mhbuild
- *				directive, using the optionally specified
- *				attachformat [-a] if that is also provided
- *				to send(1).
+ *				directive that send(1) will use.
  *
  *	alist [-ln]		This option lists the attachments on the
  *				draft.  -l gets long listings, -n gets
@@ -84,7 +81,7 @@ DEFINE_SWITCH_ARRAY(WHATNOW, whatnowswitches);
     X("cd [directory]", 0, CDCMDSW) \
     X("pwd", 0, PWDCMDSW) \
     X("ls", 2, LSCMDSW) \
-    X("attach [-v [-a 0|1|2]]", 0, ATTACHCMDSW) \
+    X("attach [-v]", 0, ATTACHCMDSW) \
     X("detach [-n]", 0, DETACHCMDSW) \
     X("alist [-ln] ", 2, ALISTCMDSW) \
 
@@ -403,7 +400,6 @@ WhatNow (int argc, char **argv)
 	     */
 
             int verbose = 0;
-            int attachformat = 1;
             char **ap;
 
 	    if (attach == (char *)0) {
@@ -415,22 +411,6 @@ WhatNow (int argc, char **argv)
 		if (strcmp(*ap, "-v") == 0) {
 		    ++argp;
 		    verbose = 1;
-		} else if (strcmp(*ap, "-a") == 0) {
-		    ++argp;
-		    if (*(ap+1) == NULL	 ||
-			! isdigit ((unsigned char) *(ap+1)[0])) {
-			advise(NULL,
-			       "ignoring attach -a without format argument.");
-		    } else {
-			++argp;
-			++ap;
-			if ((attachformat = atoi(*ap)) > 2) {
-			    advise(NULL,
-				   "ignoring invalid attachformat value of %d",
-				   attachformat);
-			    attachformat = 1;
-			}
-		    }
 		} else if (*ap[0] != '-') {
 		    break;
 		}
@@ -465,16 +445,14 @@ WhatNow (int argc, char **argv)
 			(void)annotate(drft, attach, shell, 1, 0, -2, 1);
 			if (verbose) {
 			    build_directive =
-				construct_build_directive (shell, NULL,
-							   attachformat);
+				construct_build_directive (shell, NULL, 1);
 			}
 		    } else {
 			(void)sprintf(file, "%s/%s", cwd, shell);
 			(void)annotate(drft, attach, file, 1, 0, -2, 1);
 			if (verbose) {
 			    build_directive =
-				construct_build_directive (file, NULL,
-							   attachformat);
+				construct_build_directive (file, NULL, 1);
 			}
 		    }
 

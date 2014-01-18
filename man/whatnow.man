@@ -1,4 +1,4 @@
-.TH WHATNOW %manext1% "January 12, 2014" "%nmhversion%"
+.TH WHATNOW %manext1% "January 17, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -108,11 +108,11 @@ print the working directory for attachment files
 .B ls [ls-options]
 list files in the attachment working directory using the ls command
 .TP \w'refilezzzzfolderz'u
-.B attach [-v [-a 0|1|2]] files
+.B attach [-v] files
 add the named files to the message as MIME attachments; -v displays
-the mhbuild directive, using the optionally specified attachformat
-[-a] if that is also provided to
+the mhbuild directive that
 .IR send (1)
+will use
 .TP \w'refilezzzzfolderz'u
 .B alist [-ln]
 list the MIME attachments, either short, long [-l] or numbered [-n]
