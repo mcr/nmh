@@ -1066,9 +1066,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
     char *cp, buf[BUFSIZ], **argp, *program;
     char **arguments, *savearg[MAXARGS], **vec;
     struct stat st;
-    char	*attach = NMH_ATTACH_HEADER;/* attachment header field name */
-    int		attachformat = 1;	/* mhbuild format specifier for
-					   attachments */
 
 #ifndef	lint
     int	distsw = 0;
@@ -1246,28 +1243,14 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    continue;
 
 		case SNDATTACHSW:
-		    if (!(attach = *argp++) || *attach == '-') {
-			advise (NULL, "missing argument to %s", argp[-2]);
-			return;
-		    }
+		    advise(NULL, "The -attach switch is deprecated");
 		    continue;
 		case SNDNOATTACHSW:
-		    attach = NULL;
+		    advise(NULL, "The -noattach switch is deprecated");
 		    continue;
 
 		case SNDATTACHFORMAT:
-		    if (! *argp || **argp == '-')
-			adios (NULL, "missing argument to %s", argp[-1]);
-		    else {
-			attachformat = atoi (*argp);
-			if (attachformat < 0 ||
-			    attachformat > ATTACHFORMATS - 1) {
-			    advise (NULL, "unsupported attachformat %d",
-				    attachformat);
-			    continue;
-			}
-		    }
-		    ++argp;
+		    advise(NULL, "The -attachformat switch is deprecated");
 		    continue;
 	    }
 	}
@@ -1322,7 +1305,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 
     closefds (3);
 
-    if (sendsbr (vec, vecp, program, file, &st, 1, attach, attachformat) == OK)
+    if (sendsbr (vec, vecp, program, file, &st, 1) == OK)
 	done (0);
 }
 

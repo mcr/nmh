@@ -14,6 +14,7 @@
 #include <h/mime.h>
 #include <h/tws.h>
 #include <h/utils.h>
+#include <h/mts.h>
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -35,12 +36,6 @@ char *distfile = NULL;
 static jmp_buf env;
 
 /*
- * external prototypes
- */
-int sendsbr (char **, int, char *, char *, struct stat *, int, char *, int);
-char *getusername (void);
-
-/*
  * static prototypes
  */
 static void armed_done (int) NORETURN;
@@ -58,47 +53,39 @@ static int sendaux (char **, int, char *, char *, struct stat *);
 
 int
 sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
-         int rename_drft, char *attachment_header_field_name, int attachformat)
+         int rename_drft)
 {
-    int status;
+    int status, i;
+    pid_t child;
     char buffer[BUFSIZ], file[BUFSIZ];
     struct stat sts;
-    char	*original_draft;		/* name of original draft file */
-    char	*p;				/* string pointer for building file name */
-    char	composition_file_name[PATH_MAX + 1]; /* name of mhbuild composition temporary file */
-    char	body_file_name[PATH_MAX + 1];	/* name of temporary file for body content */
+    char **buildvec, *buildprogram;
 
     /*
-     *	Save the original name of the draft file.  The name of the draft file is changed
-     *	to a temporary file containing the built MIME message if there are attachments.
-     *	We need the original name so that it can be renamed after the message is sent.
+     * Run the mimebuildproc (which is by default mhbuild) on the message
+     * with the addition of the "-auto" flag
      */
 
-    original_draft = drft;
+    switch (child = fork()) {
+    case NOTOK:
+	adios("fork", "unable to");
+	break;
 
-    /*
-     *	There might be attachments if a header field name for attachments is supplied.
-     *	Convert the draft to a MIME message.  Use the mhbuild composition file for the
-     *	draft if there was a successful conversion because that now contains the MIME
-     *	message.  A nice side effect of this is that it leaves the original draft file
-     *	untouched so that it can be retrieved and modified if desired.
-     */
+    case OK:
+	buildvec = argsplit(buildmimeproc, &buildprogram, &i);
+	buildvec[i++] = "-auto";
+	buildvec[i++] = drft;
+	buildvec[i] = NULL;
+	execvp(buildprogram, buildvec);
+	fprintf(stderr, "unable to exec ");
+	perror(buildmimeproc);
+	_exit(-1);
+	break;
 
-    if (attachment_header_field_name != (char *)0) {
-	switch (attach(attachment_header_field_name, drft,
-                       body_file_name, sizeof body_file_name,
-                       composition_file_name, sizeof composition_file_name,
-                       attachformat)) {
-	case OK:
-	    drft = composition_file_name;
-	    break;
-
-	case NOTOK:
-	    return (NOTOK);
-
-	case DONE:
-	    break;
-	}
+    default:
+    	if (pidXwait(child, buildmimeproc))
+	    return NOTOK;
+	break;
     }
 
     done=armed_done;
@@ -131,7 +118,7 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
 
 	/* rename the original draft */
 	if (rename_drft && status == OK &&
-		rename (original_draft, strncpy (buffer, m_backup (original_draft), sizeof(buffer))) == NOTOK)
+		rename (drft, strncpy (buffer, m_backup (drft), sizeof(buffer))) == NOTOK)
 	    advise (buffer, "unable to rename %s to", drft);
 	break;
 
@@ -143,33 +130,6 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
     done=exit;
     if (distfile)
 	unlink (distfile);
-
-    /*
-     *	Get rid of any temporary files that we created for attachments.  Also get rid of
-     *	the renamed composition file that mhbuild leaves as a turd.  It looks confusing,
-     *	but we use the body file name to help build the renamed composition file name.
-     */
-
-    if (drft == composition_file_name) {
-	clean_up_temporary_files(body_file_name, composition_file_name);
-
-	if (strlen(composition_file_name) >= sizeof (composition_file_name) - 6)
-	    advise((char *)0, "unable to remove original composition file.");
-
-	else {
-	    if ((p = strrchr(composition_file_name, '/')) == (char *)0)
-		p = composition_file_name;
-	    else
-		p++;
-	    
-	    (void)strcpy(body_file_name, p);
-	    *p++ = ',';
-	    (void)strcpy(p, body_file_name);
-	    (void)strcat(p, ".orig");
-	    
-	    (void)unlink(composition_file_name);
-	}
-    }
 
     return status;
 }

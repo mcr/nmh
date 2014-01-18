@@ -250,7 +250,7 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
 	vec[vecp++] = cp;
     }
 
-    switch (sendsbr (vec, vecp, program, tmpfil, &st, 0, (char *)0, 0)) {
+    switch (sendsbr (vec, vecp, program, tmpfil, &st, 0)) {
 	case DONE:
 	case NOTOK:
 	    status++;
