@@ -80,7 +80,7 @@ void free_encoding (CT, int);
 static int init_decoded_content (CT);
 static void setup_attach_content(CT, char *);
 static char *fgetstr (char *, int, FILE *);
-static int user_content (FILE *, char *, char *, CT *);
+static int user_content (FILE *, char *, CT *);
 static void set_id (CT, int);
 static int compose_content (CT);
 static int scan_content (CT);
@@ -311,7 +311,7 @@ finish_field:
 	struct part *part;
 	CT p;
 
-	if (user_content (in, infile, buf, &p) == DONE) {
+	if (user_content (in, buf, &p) == DONE) {
 	    admonish (NULL, "ignoring spurious #end");
 	    continue;
 	}
@@ -369,9 +369,11 @@ finish_field:
 	free(at_prev);
     }
 
+#if 0
     /* check if any contents were found */
     if (!m->mp_parts)
 	adios (NULL, "no content directives found");
+#endif
 
     /*
      * If only one content was found, then remove and
@@ -487,7 +489,7 @@ fgetstr (char *s, int n, FILE *stream)
  */
 
 static int
-user_content (FILE *in, char *file, char *buf, CT *ctp)
+user_content (FILE *in, char *buf, CT *ctp)
 {
     int	extrnal, vrsn;
     char *cp, **ap;
@@ -954,7 +956,7 @@ use_forw:
 	    struct part *part;
 	    CT p;
 
-	    if (user_content (in, file, buffer, &p) == DONE) {
+	    if (user_content (in, buffer, &p) == DONE) {
 		if (!m->mp_parts)
 		    adios (NULL, "empty \"#begin ... #end\" sequence");
 		return OK;
