@@ -326,12 +326,6 @@ finish_field:
     }
 
     /*
-     * close the composition draft since
-     * it's not needed any longer.
-     */
-    fclose (in);
-
-    /*
      * Add any Attach headers to the list of MIME parts at the end of the
      * message.
      */
@@ -369,11 +363,55 @@ finish_field:
 	free(at_prev);
     }
 
-#if 0
-    /* check if any contents were found */
-    if (!m->mp_parts)
-	adios (NULL, "no content directives found");
-#endif
+    /*
+     * To allow for empty message bodies, if we've found NO content at all
+     * yet cook up an empty text/plain part.
+     */
+
+    if (!m->mp_parts) {
+    	CT p;
+    	struct part *part;
+	struct text *t;
+
+	if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
+	    adios(NULL, "out of memory");
+
+	init_decoded_content(p);
+
+	if (get_ctinfo ("text/plain", p, 0) == NOTOK)
+	    done (1);
+
+	p->c_type = CT_TEXT;
+	p->c_subtype = TEXT_PLAIN;
+	p->c_encoding = CE_7BIT;
+	p->c_file = getcpy(infile);
+	/*
+	 * Sigh.  ce_file contains the "decoded" contents of this part.
+	 * So this seems like the best option available since we're going
+	 * to call scan_content() on this.
+	 */
+	p->c_cefile.ce_file = getcpy("/dev/null");
+	p->c_begin = ftell(in);
+	p->c_end = ftell(in);
+
+	if ((t = (struct text *) calloc (1, sizeof (*t))) == NULL)
+	    adios (NULL, "out of memory");
+
+	t->tx_charset = CHARSET_SPECIFIED;
+	p->c_ctparams = t;
+
+	if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
+	    adios (NULL, "out of memory");
+	*pp = part;
+	pp = &part->mp_next;
+	part->mp_part = p;
+    }
+
+    /*
+     * close the composition draft since
+     * it's not needed any longer.
+     */
+    fclose (in);
 
     /*
      * If only one content was found, then remove and
