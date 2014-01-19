@@ -2,116 +2,113 @@
 # MACHINES -- operating system specific information
 #
 
-nmh is known to compile on the following platforms (save the
-exceptions noted below), using an ANSI C compiler, such as gcc.
+nmh is routinely built and tested on recent versions of the following
+platforms:
+    Cygwin (32- and 64-bit)
+    FreeBSD 9
+    FreeBSD 10
+    Linux (Fedora and Ubuntu distributions)
+    Mac OS X
+    OpenBSD
+    Solaris 11
 
-AIX 4.1.5.0.01
-Cygwin (setup version 2.831, other versions may be fine)
-FreeBSD
-IRIX 6.5
-Linux 2.2 to current (glibc 2.1 to current)
-Mac OS X
-NetBSD 1.4.2
-OpenBSD
-Solaris 7 and 8 (sparc,x86)
-SunOS 4.1
+nmh was known in the distant past to compile on the following platforms (save
+the exceptions noted below), using an ANSI C compiler, such as gcc:
+    AIX 4.1.5.0.01
+    IRIX 6.5
+    NetBSD 1.4.2
+    Solaris 7 and 8 (sparc,x86)
+    SunOS 4.1
 
-Known Compilation problems:
---------------------------------------
-Cygwin:
+Platform-specific notes follow.
 
-Be sure to install these Cygwin packages (or later versions):
-  libdb4.8
-  libdb4.8-devel
-  libgdbm-devel
-  libncurses-devel
+------------------------------------------------------------------------------
+                                    Linux
+------------------------------------------------------------------------------
 
-Some versions of libncurses-devel do not install /usr/include/curses.h,
-/usr/include/term.h, and /usr/include/termcap.h.  If yours does not,
-add /usr/include/ symlinks to those files in /usr/include/ncurses/.
+Run-time package requirements:
+    ncurses-libs
+    libdb (only needed for slocal(1))
+    readline (if you want readline support)
+    cyrus-sasl-lib / libsasl2 (if configured with --with-cyrus-sasl)
+    openssl-libs / libssl (if configured with --with-tls)
 
-The database packages are only used by slocal(1).
+Additional build-time package requirements:
+    flex
+    ncurses-devel / libncurses5-devel
+    libdb-devel / libdb-dev (only needed for slocal(1))
+    readline-devel (if you want readline support)
+    cyrus-sasl-devel / libsasl2-dev (if configuring with --with-cyrus-sasl)
+    openssl-devel / libssl-dev (if configuring with --with-tls)
 
-If configuring with --with-cyrus-sasl, install these Cygwin packages:
-  libsasl2
-  libsasl2-devel
+Packages required to regenerate the configure script:
+    autoconf
+    automake
 
-If configuring with --with-tls, install this Cygwin package (or a
-later version):
-  libgnutls28
+------------------------------------------------------------------------------
+                                    Cygwin
+------------------------------------------------------------------------------
 
-When running the nmh test suite ("make check"), it helps to have
-/usr/bin/ ahead of any Windows directories on your PATH.
+Run-time package requirements:
+    file
+    libncurses10 or libncursesw10
+    libgdbm4 (only needed for slocal(1))
+    libiconv or libiconv2 (if you want iconv support)
+    libreadline7 (if you want readline support)
+    libsasl2_3 (if configured with --with-cyrus-sasl)
+    openssl (if configured with --with-tls)
 
-Note that the -link switch to refile cannot be used on FAT32 and
-similar filesystems.
+Additional build-time package requirements:
+    flex
+    libncurses-devel or libncursesw-devel
+    libgdbm4-devel (only needed for slocal(1))
+    libiconv-devel (if you want iconv support)
+    libreadline-devel (if you want readline support)
+    libsasl2-devel (if configuring with --with-cyrus-sasl)
+    openssl-devel (if configuring with --with-tls)
 
---------------------------------------
-HPUX:
+    Older versions of libncurses-devel do not install /usr/include/curses.h,
+    /usr/include/term.h, and /usr/include/termcap.h.  If yours does not,
+    either add symlinks in /usr/include/ to those files in its ncurses/
+    subdirectory, or build with:
+        make DEFAULT_INCLUDES='-I. -I/usr/include/ncurses'
+
+Packages required to regenerate the configure script:
+    autoconf
+    automake
+
+When running the nmh test suite ("make check"), it helps to have /usr/bin/
+ahead of any Windows directories on your PATH.
+
+Note that the -link switch to refile cannot be used on FAT32 and similar
+filesystems.
+
+------------------------------------------------------------------------------
+                                     HPUX
+------------------------------------------------------------------------------
 
 Lots of problems have been reported with using HPUX `cc'.  In particular,
-problems with `scan' giving incorrect dates (everything is 01/00).
-It is highly recommended that you use `gcc' instead.
+problems with `scan' giving incorrect dates (everything is 01/00).  It is
+highly recommended that you use `gcc' instead.
 
-Also, new versions of HPUX (10.20?) will core dump in `scan' because
-of some workaround code in zotnet/tws/lexstring.c.  This workaround is
-needed for older versions of HPUX, but causes problems on newer versions.
-The solution is the added line (minus our indentation):
-
-    #undef hpux
-
-after line 15 of the file zotnet/tws/lexstring.c.
-
---------------------------------------
-Irix (SGI):
+------------------------------------------------------------------------------
+                                  Irix (SGI)
+------------------------------------------------------------------------------
 
 Irix make is notoriously buggy. If you're using it, you should "touch
-config.h.in" before configuring to prevent a problem where it tries to
-rebuild targets that shouldn't be rebuilt. (Alternately, you can just
-use GNU make instead of Irix make.)
+config.h.in" before configuring to prevent a problem where it tries to rebuild
+targets that shouldn't be rebuilt. (Alternately, you can just use GNU make
+instead of Irix make.)
 
---------------------------------------
-Linux:
+------------------------------------------------------------------------------
+                           SunOS 4.1.1/4.1.3/4.1.4
+------------------------------------------------------------------------------
 
-These packages are required at runtime:
-  ncurses-libs
-  libdb (only for slocal(1))
-  cyrus-sasl-lib (if configured with --with-cyrus-sasl)
-  gnutls (if configured with --with-tls)
+You can't use the C compiler that comes with SunOS 4 since it isn't ANSI C.
+But nmh builds just fine with gcc.
 
-For building, these packages are required:
-  ncurses-devel
-  libdb-devel (only for slocal(1))
-  gdbm-devel (only for slocal(1))
+------------------------------------------------------------------------------
 
-If configuring with --with-cyrus-sasl, install these packages:
-  cyrus-sasl-lib-devel
-
---------------------------------------
-Solaris:
-
-With --enable-debug you'll see a lot of warnings. This is even worse
-when compiling using the Sun Workshop compiler since it issues a
-warning for every instance of a problem instead of summarizing them.
-The main one concerns arrays with an index of type char. This is ok.
-The array itself is a hash of chars, so the array size and the type
-match. There isn't another safe and portable way to do this at the
-moment. An explicit cast would get rid of the warnings, but I think
-it's better to leave it complaining for now until we come up with
-a better solution. The whole thing is probablly going to be chucked
-with UTF-8 support anyway.
-
-Other than the warnings, it builds ok.
-
---------------------------------------
-SunOS 4.1.1/4.1.3/4.1.4:
-
-You can't use the C compiler that comes with SunOS 4 since
-it isn't ANSI C.  But nmh builds just fine with gcc. With
---enable-debug you will see a lot of warnings.
-
---------------------------------------
-
---
+----------
 The nmh team
 nmh-workers@nongnu.org
