@@ -568,7 +568,7 @@ field_encode_address(const char *name, char **value, int encoding,
 
     for (groupflag = 0; (mp = getname(*value)); ) {
     	if ((mn = getm(mp, NULL, 0, errbuf, sizeof(errbuf))) == NULL) {
-	    advise(mp, "%s", errbuf);
+	    advise(NULL, "%s: %s", errbuf, mp);
 	    errflag++;
 	    continue;
 	}
