@@ -21,6 +21,7 @@ mhbuild \- translate MIME composition draft
 .RB [ \-headerencoding 
 .IR encoding\-algorithm
 .RB " | " \-autoheaderencoding ]
+.RB [ \-dist ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -585,6 +586,14 @@ What now? list
 .RE
 .PP
 will work as you expect.
+.PP
+The
+.B \-dist
+switch is intended to be used by
+.BR dist .
+It will cause mhbuild to not generate any MIME headers in the composition
+file (such as \*(lqMIME-Version\*(rq or \*(lqContent-Type\*(rq), but it
+will still encode message headers according to RFC 2047.
 .SS "User Environment"
 Because the environment in which
 .B mhbuild
