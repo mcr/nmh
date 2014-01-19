@@ -129,7 +129,8 @@ static void directive_pop(void)
  */
 
 CT
-build_mime (char *infile, int autobuild, int directives, int header_encoding)
+build_mime (char *infile, int autobuild, int dist, int directives,
+	    int header_encoding)
 {
     int	compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -283,9 +284,12 @@ finish_field:
      * Now add the MIME-Version header field
      * to the list of header fields.
      */
-    np = add (VRSN_FIELD, NULL);
-    vp = concat (" ", VRSN_VALUE, "\n", NULL);
-    add_header (ct, np, vp);
+
+    if (! dist) {
+	np = add (VRSN_FIELD, NULL);
+	vp = concat (" ", VRSN_VALUE, "\n", NULL);
+	add_header (ct, np, vp);
+    }
 
     /*
      * We initally assume we will find multiple contents in the
@@ -461,7 +465,8 @@ finish_field:
     }
 
     /* Build the rest of the header field structures */
-    build_headers (ct);
+    if (! dist)
+	build_headers (ct);
 
     return ct;
 }

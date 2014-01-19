@@ -74,6 +74,8 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
     case OK:
 	buildvec = argsplit(buildmimeproc, &buildprogram, &i);
 	buildvec[i++] = "-auto";
+	if (distfile)
+	    buildvec[i++] = "-dist";
 	buildvec[i++] = drft;
 	buildvec[i] = NULL;
 	execvp(buildprogram, buildvec);

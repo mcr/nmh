@@ -44,6 +44,7 @@
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("debug", -5, DEBUGSW) \
+    X("dist", -4, DISTSW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(MHBUILD);
@@ -103,7 +104,7 @@ int list_all_messages (CT *, int, int, int, int);
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1, directives = 1, autobuild = 0;
+    int sizesw = 1, headsw = 1, directives = 1, autobuild = 0, dist = 0;
     int *icachesw;
     char *cp, buf[BUFSIZ];
     char buffer[BUFSIZ], *compfile = NULL;
@@ -270,6 +271,9 @@ main (int argc, char **argv)
 	    case DEBUGSW:
 		debugsw = 1;
 		continue;
+	    case DISTSW:
+		dist = 1;
+		continue;
 	    }
 	}
 	if (compfile)
@@ -336,7 +340,7 @@ main (int argc, char **argv)
 	unlink_infile = 1;
 
 	/* build the content structures for MIME message */
-	ct = build_mime (infile, autobuild, directives, header_encoding);
+	ct = build_mime (infile, autobuild, dist, directives, header_encoding);
 
 	/*
 	 * If ct == NULL, that means that -auto was set and a MIME version
@@ -366,7 +370,7 @@ main (int argc, char **argv)
      */
 
     /* build the content structures for MIME message */
-    ct = build_mime (compfile, autobuild, directives, header_encoding);
+    ct = build_mime (compfile, autobuild, dist, directives, header_encoding);
 
     /*
      * If ct == NULL, that means -auto was set and we found a MIME version
