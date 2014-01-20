@@ -94,8 +94,8 @@ Message-Id: 12@test.nmh
 Subject: =?UTF-8?B?MjAxMyBOZXcgWWVhcuKAmXMgRGVhbHMhIFN0YXJ0IHRoZSB5ZWFy?=
 	=?UTF-8?B?IHJpZ2h0IHdpdGggYmlnIHNhdmluZ3M=?=
 
-This message has an encoded Subject with an invalid character for the
-ISO-8859-1 character set, but it (U+2019) is valid UTF-8.
+This message has an encoded Subject with an invalid character for
+single-byte character sets, but it (U+2019) is valid UTF-8.
 EOF
 
 if test "$ICONV_ENABLED" -eq 1; then
@@ -103,8 +103,8 @@ if test "$ICONV_ENABLED" -eq 1; then
   12  12/31 Test12             2013 New Year?s Deals! Start the year right
 EOF
 
-    # Don't use run_prog here because it loses those environment settings.
-    LC_ALL=en_US.ISO8859-1 scan -width 75 last >"$actual"
+    # Don't use run_prog here because it loses the environment setting.
+    LC_ALL=C scan -width 75 last >"$actual"
     check "$expected" "$actual"
 fi
 
@@ -132,15 +132,16 @@ else
     echo "Unsupported width for U+2019: $width"
 fi
 
-LC_ALL=en_US.UTF-8 scan -width 75 last >"$actual"
+run_prog scan -width 75 last >"$actual"
 check "$expected" "$actual"
 
 
-cat >"$expected" <<EOF
+if test "$ICONV_ENABLED" -eq 1; then
+  cat >"$expected" <<EOF
   13  01/13 sender@example.co  <<The Subject: is an encoded single quote, 0x92.
 EOF
 
-cat >"${MH_TEST_DIR}/Mail/inbox/13" <<EOF
+  cat >"${MH_TEST_DIR}/Mail/inbox/13" <<EOF
 From: <sender@example.com>
 Subject: =?iso-8859-1?B?kgo=?=
 Date: Mon, 13 Jan 2014 14:18:33 -0600
@@ -153,8 +154,9 @@ properly count it when decoding, which could be seen with:
 The scan listing was two characters too long.
 EOF
 
-LC_ALL=en_US.ISO8859-1 scan -width 80 last >"$actual"
-check "$expected" "$actual"
+  run_prog scan -width 80 last >"$actual"
+  check "$expected" "$actual"
+fi
 
 
 exit $failed
