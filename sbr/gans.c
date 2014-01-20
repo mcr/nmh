@@ -26,12 +26,7 @@ gans (char *prompt, struct swit *ansp)
 	    if (i == EOF)
 		return 0;
 	    if (cp < &ansbuf[sizeof ansbuf - 1]) {
-#ifdef LOCALE
 		i = (isalpha(i) && isupper(i)) ? tolower(i) : i;
-#else
-		if (i >= 'A' && i <= 'Z')
-		    i += 'a' - 'A';
-#endif
 		*cp++ = i;
 	    }
 	}

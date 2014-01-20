@@ -68,9 +68,7 @@ main (int argc, char **argv)
 
     done=putzero_done;
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */

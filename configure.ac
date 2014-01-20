@@ -28,14 +28,6 @@ dnl Do you want to debug nmh?
 AC_ARG_ENABLE([debug],
   AS_HELP_STRING([--enable-debug],[enable nmh code debugging]))
 
-dnl Do you want to disable use of locale functions
-AH_TEMPLATE([LOCALE],
-[Undefine if you don't want locale features.  By default this is defined.])
-AC_ARG_ENABLE([locale],
-  [AS_HELP_STRING([--disable-locale], [turn off locale features])],
-  [AS_IF([test x$enableval = xyes], [AC_DEFINE(LOCALE)])],
-  [AC_DEFINE(LOCALE)])
-
 dnl Do you want client-side support for using SASL for authentication?
 dnl Note that this code will be enabled for both POP and SMTP
 AC_ARG_WITH([cyrus-sasl], AS_HELP_STRING([--with-cyrus-sasl],

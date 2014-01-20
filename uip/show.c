@@ -61,9 +61,7 @@ main (int argc, char **argv)
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs_array vec = { 0, 0, NULL };
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */

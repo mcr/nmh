@@ -286,14 +286,9 @@ m_conv (struct msgs *mp, char *str, int call)
 	    return BADNUM;
     }
 
-#ifdef LOCALE
     /* doesn't enforce lower case */
     for (bp = buf; (isalpha((unsigned char) *cp) || *cp == '.')
            && (bp - buf < (int) sizeof(buf) - 1); )
-#else
-    for (bp = buf; ((*cp >= 'a' && *cp <= 'z') || *cp == '.')
-           && (bp - buf < (int) sizeof(buf) - 1); )
-#endif /* LOCALE */
     {
 	*bp++ = *cp++;
     }

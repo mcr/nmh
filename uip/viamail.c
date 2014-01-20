@@ -58,9 +58,7 @@ main (int argc, char **argv)
     char *cp, buf[BUFSIZ];
     char **argp, **arguments;
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* foil search of user profile/context */

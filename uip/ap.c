@@ -53,9 +53,7 @@ main (int argc, char **argv)
     char buf[BUFSIZ], **argp;
     char **arguments, *addrs[NADDRS];
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */

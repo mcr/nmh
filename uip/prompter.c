@@ -78,9 +78,7 @@ main (int argc, char **argv)
     char *tmpfil;
     m_getfld_state_t gstate = 0;
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */

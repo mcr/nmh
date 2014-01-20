@@ -19,11 +19,7 @@ m_atoi (char *str)
     char *cp;
 
     for (i = 0, cp = str; *cp; cp++) {
-#ifdef LOCALE
 	if (!isdigit((unsigned char) *cp))
-#else
-	if (*cp < '0' || *cp > '9')
-#endif
 	    return 0;
 
 	i *= 10;

@@ -85,9 +85,7 @@ main (int argc, char **argv)
     char **argp, **arguments, *vec[MAXVEC];
     struct passwd *pw;
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */

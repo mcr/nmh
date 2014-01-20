@@ -42,9 +42,7 @@ main (int argc, char **argv)
     FILE *in, *out;
     int		check;
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
     arguments = getarguments (invo_name, argc, argv, 0);
     argp = arguments;

@@ -94,9 +94,7 @@ main (int argc, char **argv)
     int		list = 0;		/* list header elements if set */
     int		number = 0;		/* delete specific number of like elements if set */
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */

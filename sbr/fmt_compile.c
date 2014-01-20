@@ -364,11 +364,7 @@ compile_error(char *str, char *cp)
     usr_fstring[errpos] = '\0';
 
     for (i = errpos-errctx; i < errpos; i++) {
-#ifdef LOCALE
 	if (iscntrl((unsigned char) usr_fstring[i]))
-#else
-	if (usr_fstring[i] < 32)
-#endif
 	    usr_fstring[i] = '_';
     }
 

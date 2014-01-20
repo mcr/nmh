@@ -81,9 +81,8 @@ main (int argc, char **argv)
     char *cp, *user, buf[BUFSIZ], tty[BUFSIZ];
     char **argp, **arguments, *vec[MAXARGS];
     struct utmpx *utp;
-#ifdef LOCALE
+
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */

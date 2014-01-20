@@ -75,9 +75,7 @@ main (int argc, char **argv)
     struct smsg *smsgs;
     struct msgs *mp;
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */

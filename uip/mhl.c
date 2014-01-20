@@ -13,9 +13,7 @@
 int
 main (int argc, char **argv)
 {
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     done (mhl (argc, argv));
     return 1;
 }

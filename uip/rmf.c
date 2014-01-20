@@ -37,9 +37,7 @@ main (int argc, char **argv)
     char *cp, *folder = NULL, newfolder[BUFSIZ];
     char buf[BUFSIZ], **argp, **arguments;
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */

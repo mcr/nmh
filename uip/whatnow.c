@@ -13,8 +13,6 @@
 int
 main (int argc, char **argv)
 {
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     return WhatNow (argc, argv);
 }

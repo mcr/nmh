@@ -47,7 +47,6 @@ match (char *str, char *sub)
     int c1, c2;
     char *s1, *s2;
 
-#ifdef LOCALE
     while ((c1 = *sub)) {
 	c1 = (isascii((unsigned char) c1) && isalpha((unsigned char) c1) &&
 	      isupper((unsigned char) c1)) ? tolower((unsigned char) c1) : c1;
@@ -71,19 +70,6 @@ match (char *str, char *sub)
 	if (! c1)
 	    return 1;
     }
-#else
-    while ((c1 = *sub)) {
-	while ((c2 = *str++) && (c1 | 040) != (c2 | 040))
-	    ;
-	if (! c2)
-	    return 0;
-	s1 = sub + 1; s2 = str;
-	while ((c1 = *s1++) && (c1 | 040) == (*s2++ | 040))
-	    ;
-	if (! c1)
-	    return 1;
-    }
-#endif
     return 1;
 }
 

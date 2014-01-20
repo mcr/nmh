@@ -188,9 +188,7 @@ main (int argc, char **argv)
     char mailbox[BUFSIZ], tmpfil[BUFSIZ];
     char **argp, **arguments;
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (*argv, '/');
 
     /* foil search of user profile/context */

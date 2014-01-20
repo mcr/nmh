@@ -121,9 +121,7 @@ main (int argc, char **argv)
     int dat[5];
     struct fmt_callbacks cb, *cbp = NULL;
 
-#ifdef LOCALE
     setlocale(LC_ALL, "");
-#endif
     invo_name = r1bindex (argv[0], '/');
 
     /* read user profile/context */
