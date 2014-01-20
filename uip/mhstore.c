@@ -48,9 +48,6 @@ DEFINE_SWITCH_ARRAY(MHSTORE, switches);
 int save_clobber_policy (const char *);
 extern int files_not_clobbered;
 
-/* mhparse.c */
-extern char *tmp;	/* directory to place temp files */
-
 /* mhcachesbr.c */
 extern int rcachesw;
 extern int wcachesw;
@@ -268,16 +265,6 @@ do_cache:
      * Cache the current directory before we do any chdirs()'s.
      */
     cwd = getcpy (pwd());
-
-    /*
-     * Check for storage directory.  If specified,
-     * then store temporary files there.  Else we
-     * store them in standard nmh directory.
-     */
-    if ((cp = context_find (nmhstorage)) && *cp)
-	tmp = concat (cp, "/", invo_name, NULL);
-    else
-	tmp = add (m_maildir (invo_name), NULL);
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));

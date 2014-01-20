@@ -53,7 +53,6 @@ int debugsw; /* Needed by mhparse.c. */
 #define quitser pipeser
 
 /* mhparse.c */
-extern char *tmp;                             /* directory to place tmp files */
 extern int skip_mp_cte_check;                 /* flag to InitMultiPart */
 extern int suppress_bogus_mp_content_warning; /* flag to InitMultiPart */
 extern int bogus_mp_content;                  /* flag from InitMultiPart */
@@ -266,16 +265,6 @@ main (int argc, char **argv) {
         fclose (fp);
     }
 
-    /*
-     * Check for storage directory.  If specified,
-     * then store temporary files there.  Else we
-     * store them in standard nmh directory.
-     */
-    if ((cp = context_find (nmhstorage)) && *cp)
-        tmp = concat (cp, "/", invo_name, NULL);
-    else
-        tmp = add (m_maildir (invo_name), NULL);
-
     suppress_bogus_mp_content_warning = skip_mp_cte_check = 1;
 
     if (! context_find ("path"))
@@ -300,7 +289,7 @@ main (int argc, char **argv) {
 
             using_stdin = 1;
 
-            if ((cp = m_mktemp2 (tmp, invo_name, &fd, NULL)) == NULL) {
+            if ((cp = m_mktemp2 (NULL, invo_name, &fd, NULL)) == NULL) {
                 adios (NULL, "unable to create temporary file");
             } else {
                 free (file);
@@ -386,7 +375,6 @@ main (int argc, char **argv) {
     }
 
     free (outfile);
-    free (tmp);
     free (file);
 
     /* done is freects_done, which will clean up all of cts. */
@@ -408,7 +396,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
         modify_inplace = 1;
 
         if ((*ctp)->c_file) {
-            outfile = add (m_mktemp2 (tmp, invo_name, NULL, NULL), NULL);
+            outfile = add (m_mktemp2 (NULL, invo_name, NULL, NULL), NULL);
         } else {
             adios (NULL, "missing both input and output filenames\n");
         }
@@ -526,7 +514,7 @@ fix_boundary (CT *ct, int *message_mods) {
             if (get_multipart_boundary (*ct, &part_boundary) == OK) {
                 char *fixed;
 
-                if ((fixed = m_mktemp2 (tmp, invo_name, NULL, &(*ct)->c_fp))) {
+                if ((fixed = m_mktemp2 (NULL, invo_name, NULL, &(*ct)->c_fp))) {
                     if (replace_boundary (*ct, fixed, part_boundary) == OK) {
                         char *filename = add ((*ct)->c_file, NULL);
 
@@ -1031,7 +1019,7 @@ build_text_plain_part (CT encoded_part) {
            contains the decoded contents.  And the decoding function, such
            as openQuoted, will have set ...->ce_unlink to 1 so that it will
            be unlinked by free_content (). */
-        tmp_plain_file = add (m_mktemp2 (tmp, invo_name, NULL, NULL), NULL);
+        tmp_plain_file = add (m_mktemp2 (NULL, invo_name, NULL, NULL), NULL);
         if (reformat_part (tp_part, tmp_plain_file,
                            tp_part->c_ctinfo.ci_type,
                            tp_part->c_ctinfo.ci_subtype,
@@ -1103,7 +1091,7 @@ decode_part (CT ct) {
     char *tmp_decoded;
     int status;
 
-    tmp_decoded = add (m_mktemp2 (tmp, invo_name, NULL, NULL), NULL);
+    tmp_decoded = add (m_mktemp2 (NULL, invo_name, NULL, NULL), NULL);
     /* The following call will load ct->c_cefile.ce_file with the tmp
        filename of the decoded content.  tmp_decoded will contain the
        encoded output, get rid of that. */
@@ -1692,7 +1680,7 @@ strip_crs (CT ct, int *message_mods) {
             if (has_crs) {
                 int fd;
                 char *stripped_content_file =
-                    add (m_mktemp2 (tmp, invo_name, &fd, NULL), NULL);
+                    add (m_mktemp2 (NULL, invo_name, &fd, NULL), NULL);
 
                 /* Strip each CR before a LF from the content. */
                 fseeko (*fp, begin, SEEK_SET);
@@ -1851,7 +1839,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
             return -1;
         }
 
-        dest = add (m_mktemp2 (tmp, invo_name, &fd, NULL), NULL);
+        dest = add (m_mktemp2 (NULL, invo_name, &fd, NULL), NULL);
 
         if (ct->c_cefile.ce_file) {
             file = &ct->c_cefile.ce_file;

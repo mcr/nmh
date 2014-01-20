@@ -47,9 +47,6 @@ DEFINE_SWITCH_ARRAY(MHLIST, switches);
 #undef X
 
 
-/* mhparse.c */
-extern char *tmp;	/* directory to place temp files */
-
 /* mhcachesbr.c */
 extern int rcachesw;
 extern int wcachesw;
@@ -244,16 +241,6 @@ do_cache:
     if (!(cache_private = context_find (nmhprivcache)))
 	cache_private = ".cache";
     cache_private = getcpy (m_maildir (cache_private));
-
-    /*
-     * Check for storage directory.  If specified,
-     * then store temporary files there.  Else we
-     * store them in standard nmh directory.
-     */
-    if ((cp = context_find (nmhstorage)) && *cp)
-	tmp = concat (cp, "/", invo_name, NULL);
-    else
-	tmp = add (m_maildir (invo_name), NULL);
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
