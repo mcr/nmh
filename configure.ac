@@ -329,8 +329,7 @@ AS_CASE(["$host_os"],
                 [CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"])])
 
 AC_HEADER_TIOCGWINSZ
-AC_CHECK_HEADERS([fcntl.h langinfo.h wchar.h wctype.h sys/param.h \
-		  sys/time.h sys/stream.h])
+AC_CHECK_HEADERS([fcntl.h wchar.h wctype.h sys/param.h sys/time.h sys/stream.h])
 
 AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
   [Define to 1 if `struct winsize' requires <sys/ptem.h>.]),,
@@ -342,7 +341,7 @@ AC_CHECK_HEADER([sys/ptem.h], AC_DEFINE(WINSIZE_IN_PTEM,1,
 dnl ---------------
 dnl CHECK FUNCTIONS
 dnl ---------------
-AC_CHECK_FUNCS([wcwidth mbtowc nl_langinfo getutxent arc4random])
+AC_CHECK_FUNCS([wcwidth mbtowc getutxent arc4random])
 
 dnl Check for multibyte character set support
 AS_IF([test "x$ac_cv_header_wchar_h" = "xyes" -a \
