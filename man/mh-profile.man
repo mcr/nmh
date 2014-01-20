@@ -783,48 +783,6 @@ additional user profile (file) to be read by
 in addition to the mhn.defaults profile.
 .RE
 .PP
-.B $MM_CHARSET
-.RS 5
-With this environment variable, you can specify
-the native character set you are using.  You must be able to display
-this character set on your terminal.
-.PP
-This variable is checked to see if a RFC 2047 header field should be
-decoded (in
-.BR inc ,
-.BR scan ,
-.BR mhl ).
-This variable is
-checked by
-.B show
-to see if the
-.I showproc
-or
-.I showmimeproc
-should
-be called, since showmimeproc will be called if a text message uses
-a character set that doesn't match
-.BR $MM_CHARSET .
-This variable is
-checked by
-.B mhshow
-for matches against the charset parameter
-of text contents to decide it the text content can be displayed
-without modifications to your terminal.  This variable is checked by
-.B mhbuild
-to decide what character set to specify in the charset
-parameter of text contents containing 8\-bit characters.
-.PP
-When decoding text in such an alternate character set,
-.B nmh
-must be able to determine which characters are alphabetic, which
-are control characters, etc.  For many operating systems, this
-will require enabling the support for locales (such as setting
-the environment variable
-.B $LC_CTYPE
-to iso_8859_1).
-.RE
-.PP
 .B $MAILDROP
 .RS 5
 This variable tells

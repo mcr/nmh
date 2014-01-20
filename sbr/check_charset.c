@@ -8,9 +8,8 @@
  */
 
 #include <h/mh.h>
-#ifdef HAVE_LANGINFO_H
-# include <langinfo.h>
-#endif
+
+#include <langinfo.h>
 
 
 /*
@@ -19,12 +18,7 @@
 char *
 get_charset ()
 {
-    char *charset = getenv ("MM_CHARSET");
-#if defined(HAVE_NL_LANGINFO) && defined(CODESET)
-    if (!charset)
-	charset = norm_charmap(nl_langinfo (CODESET));
-#endif
-    return charset;
+    return norm_charmap(nl_langinfo (CODESET));
 }
 
 

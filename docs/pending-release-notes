@@ -109,6 +109,9 @@ OBSOLETE FEATURES
   ap(8) commands has been removed.
 - "make install" no longer strips executables.  Use "make install-strip"
   instead.
+- The environment variable MM_CHARSET to indicate the native character
+  set is no longer supported.  The native character set will be solely
+  determined by the locale settings.
 
 -------------------
 DEPRECATED FEATURES

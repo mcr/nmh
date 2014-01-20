@@ -117,7 +117,7 @@ do_viewhtml()
 	> /tmp/ml-mhshow-html$$
 
     MHSHOW=/tmp/ml-mhshow-html$$ \
-    MM_CHARSET=us-ascii \
+    LC_ALL=C \
 	mhshow -type text/html "$@"
 
     rm -f /tmp/ml-mhshow-html$$

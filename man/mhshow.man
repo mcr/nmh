@@ -328,15 +328,15 @@ encounters a \*(lqcharset\*(rq parameter for
 this content, it checks if your terminal can display this character
 set natively.
 .B mhn
-checks this by examining the environment
-variable
-.BR $MM_CHARSET .
-If the value of this environment variable is equal
+checks this by examining the current character set defined by the
+.IR locale (1)
+environment variables.
+If the value of the locale character set is equal
 to the value of the charset parameter, then
 .B mhshow
 assumes it can
-display this content without any additional setup.  If this environment
-variable is not set,
+display this content without any additional setup.  If the locale is not
+set properly,
 .B mhshow
 will assume a value of \*(lqUS-ASCII\*(rq.
 If the character set cannot be displayed natively, then

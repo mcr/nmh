@@ -92,14 +92,15 @@ specify a transfer encoding (such as MIME quoted-printable or
 base64) or specify a character set that
 .B show
 doesn't believe
-can be displayed natively.  The environment variable
-.B $MM_CHARSET
+can be displayed natively.  The appropriate
+.IR locale (1)
+environment variables
 should be set to the terminal's native character set to avoid
 gratuitous invocations of the
 .IR showmimeproc .
 See the
-.IR mh-profile (5)
-man page for details about this environment variable.
+.IR locale (1)
+man page for details about these environment variables.
 .PP
 The option
 .B \-checkmime

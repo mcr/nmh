@@ -448,7 +448,9 @@ If a text content contains any 8\-bit characters (characters with the
 high bit set) and the character set is not specified as above, then
 .B mhbuild
 will assume the character set is of the type given by the
-environment variable MM_CHARSET.  If this environment variable is not
+standard
+.IR locale (1)
+environment variables.  If these environment variables are not
 set, then the character set will be labeled as \*(lqx-unknown\*(rq.
 .PP
 If a text content contains only 7\-bit characters and the character set

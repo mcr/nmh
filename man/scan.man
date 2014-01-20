@@ -73,9 +73,12 @@ these scan listings.
 .B Scan
 will only decode these fields if your
 terminal can natively display the character set used in the encoding.
-You should set the MM_CHARSET environment variable to your native
-character set, if it is not US-ASCII.  See the mh-profile(5) man
-page for details about this environment variable.
+You should set the appropriate
+.IR locale (1)
+environment variables to your native
+character set, if it is not US-ASCII.  See
+.IR locale (1)
+for more details on the appropriate environment variables.
 .PP
 The switch
 .BR \-reverse ,
