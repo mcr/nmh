@@ -29,12 +29,6 @@ extern int wcachesw;	/* mhcachesbr.c */
 int checksw = 0;	/* check Content-MD5 field */
 
 /*
- * Directory to place temp files.  This must
- * be set before these routines are called.
- */
-char *tmp;
-
-/*
  * These are for mhfixmsg to:
  * 1) Instruct parser not to detect invalid Content-Transfer-Encoding
  *    in a multipart.
@@ -1652,7 +1646,7 @@ openBase64 (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
+	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -1886,7 +1880,7 @@ openQuoted (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
+	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -2110,7 +2104,7 @@ open7Bit (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
+	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -2500,7 +2494,7 @@ openFTP (CT ct, char **file)
     else if (caching)
 	ce->ce_file = add (cachefile, NULL);
     else
-	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
+	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
 	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");
@@ -2688,7 +2682,7 @@ openMail (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_mktemp(tmp, NULL, NULL), NULL);
+	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -2782,7 +2776,7 @@ openURL (CT ct, char **file)
     else if (caching)
     	ce->ce_file = add(cachefile, NULL);
     else
-    	ce->ce_file = add(m_mktemp(tmp, NULL, NULL), NULL);
+	ce->ce_file = add(m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
 
     if ((ce->ce_fp = fopen(ce->ce_file, "w+")) == NULL) {
     	content_error(ce->ce_file, ct, "unable to fopen for read/writing");

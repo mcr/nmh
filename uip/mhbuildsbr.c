@@ -42,12 +42,6 @@ extern int contentidsw;
 extern int rcachesw;	/* mhcachesbr.c */
 extern int wcachesw;	/* mhcachesbr.c */
 
-/*
- * Directory to place tmp files.  This must
- * be set before these routines are called.
- */
-char *tmp;
-
 pid_t xpid = 0;
 
 static char prefix[] = "----- =_aaaaaaaaaa";
