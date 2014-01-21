@@ -1,4 +1,4 @@
-.TH MHPATH %manext1% "November 6, 2012" "%nmhversion%"
+.TH MHPATH %manext1% "January 20, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -115,6 +115,7 @@ is also useful in backquoted operations:
 /r/phyl/Mail
 .fi
 .RE
+.PP
 Because
 .B mhpath
 expands and sorts
@@ -138,12 +139,14 @@ mv `mhpath 501` `mhpath 500`
 .PP
 will do the trick.
 .PP
-Out of range message 0 is treated far more severely than large out of
-range message numbers.
+Out-of-range message 0 produces a different error message than large
+out-of-range message numbers.  But both cause
+.B mhpath
+to exit with non-zero status.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'ExtraBigProfileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
