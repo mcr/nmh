@@ -101,10 +101,10 @@ attach(char *attachment_header_field_name, char *draft_file_name,
      */
 
     (void)strncpy(body_file_name,
-                  m_mktemp(m_maildir(invo_name), NULL, NULL),
+                  m_mktemp2(NULL, invo_name, NULL, NULL),
                   body_file_name_len);
     (void)strncpy(composition_file_name,
-                  m_mktemp(m_maildir(invo_name), NULL, NULL),
+                  m_mktemp2(NULL, invo_name, NULL, NULL),
                   composition_file_name_len);
 
     if (has_body)

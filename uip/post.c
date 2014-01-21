@@ -535,12 +535,9 @@ main (int argc, char **argv)
 	    if ((out = fopen ("/dev/null", "w")) == NULL)
 		adios ("/dev/null", "unable to open");
 	} else {
-            char *cp = m_mktemp(m_maildir(invo_name), NULL, &out);
+            char *cp = m_mktemp2(NULL, invo_name, NULL, &out);
             if (cp == NULL) {
-                cp = m_mktemp2(NULL, invo_name, NULL, &out);
-                if (cp == NULL) {
-		    adios ("post", "unable to create temporary file");
-                }
+                adios ("post", "unable to create temporary file");
             }
             strncpy(tmpfil, cp, sizeof(tmpfil));
 	    chmod (tmpfil, 0600);

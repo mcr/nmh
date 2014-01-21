@@ -316,7 +316,7 @@ main (int argc, char **argv)
      */
     if (compfile[0] == '-' && compfile[1] == '\0') {
 	/* copy standard input to temporary file */
-	strncpy (infile, m_mktemp(invo_name, NULL, &fp), sizeof(infile));
+	strncpy (infile, m_mktemp2(NULL, invo_name, NULL, &fp), sizeof(infile));
 	while (fgets (buffer, BUFSIZ, stdin))
 	    fputs (buffer, fp);
 	fclose (fp);
