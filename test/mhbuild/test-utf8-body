@@ -54,7 +54,7 @@ cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody <somebody@example.com>
 Subject: Test
-Nmh-Attachment: $MH_TEST_DIR/attachment.txt
+Attach: $MH_TEST_DIR/attachment.txt
 
 This is a test.
 EOF
@@ -91,7 +91,7 @@ cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody <somebody@example.com>
 Subject: Test
-Nmh-Attachment: $MH_TEST_DIR/attachment.txt
+Attach: $MH_TEST_DIR/attachment.txt
 
 ¡Ay, caramba!
 EOF
