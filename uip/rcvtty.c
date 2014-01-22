@@ -255,8 +255,10 @@ header_fd (void)
     char *nfs;
     char *tfile = NULL;
 
-    tfile = m_mktemp2(NULL, invo_name, &fd, NULL);
-    if (tfile == NULL) return NOTOK;
+    if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) {
+	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
+        return NOTOK;
+    }
     unlink (tfile);
 
     rewind (stdin);

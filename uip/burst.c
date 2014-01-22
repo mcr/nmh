@@ -464,8 +464,14 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
 
     i = inplace ? msgnum + numburst : mp->hghmsg;
     for (j = numburst; j >= (inplace ? 0 : 1); i--, j--) {
+        char *tempfile;
+
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, &out)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	strncpy (f2, tempfile, sizeof(f2));
 	strncpy (f1, m_name (i), sizeof(f1));
-	strncpy (f2, m_mktemp2(NULL, invo_name, NULL, &out), sizeof(f2));
 
 	if (verbosw && i != msgnum)
 	    printf ("message %d of digest %d becomes message %d\n", j, msgnum, i);

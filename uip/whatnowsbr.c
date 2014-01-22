@@ -1304,7 +1304,11 @@ sendit (char *sp, char **arg, char *file, int pushed)
 #endif /* not lint */
 	    && altmsg) {
 	vec[vecp++] = "-dist";
-	distfile = getcpy (m_mktemp2(altmsg, invo_name, NULL, NULL));
+	if ((cp = m_mktemp2(altmsg, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	distfile = getcpy (cp);
 	unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK)
 	    adios (distfile, "unable to link %s to", altmsg);

@@ -194,11 +194,11 @@ parse_mime (char *file)
     if ((is_stdin = !(strcmp (file, "-")))) {
         char *tfile = m_mktemp2(NULL, invo_name, NULL, &fp);
         if (tfile == NULL) {
-            advise("mhparse", "unable to create temporary file");
+            advise("mhparse", "unable to create temporary file in %s",
+		   get_temp_dir());
             return NULL;
         }
 	file = add (tfile, NULL);
-	chmod (file, 0600);
 
 	while (fgets (buffer, sizeof(buffer), stdin))
 	    fputs (buffer, fp);
@@ -1646,7 +1646,12 @@ openBase64 (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
+	char *tempfile;
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	ce->ce_file = add (tempfile, NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -1880,7 +1885,12 @@ openQuoted (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
+	char *tempfile;
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	ce->ce_file = add (tempfile, NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -2104,7 +2114,12 @@ open7Bit (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
+	char *tempfile;
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	ce->ce_file = add (tempfile, NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -2493,8 +2508,14 @@ openFTP (CT ct, char **file)
 	ce->ce_file = add (*file, NULL);
     else if (caching)
 	ce->ce_file = add (cachefile, NULL);
-    else
-	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
+    else {
+	char *tempfile;
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	ce->ce_file = add (tempfile, NULL);
+    }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
 	content_error (ce->ce_file, ct, "unable to fopen for reading/writing");
@@ -2682,7 +2703,12 @@ openMail (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	ce->ce_file = add (m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
+	char *tempfile;
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	ce->ce_file = add (tempfile, NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -2775,8 +2801,14 @@ openURL (CT ct, char **file)
     	ce->ce_file = add(*file, NULL);
     else if (caching)
     	ce->ce_file = add(cachefile, NULL);
-    else
-	ce->ce_file = add(m_mktemp2(NULL, invo_name, NULL, NULL), NULL);
+    else {
+	char *tempfile;
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	ce->ce_file = add (tempfile, NULL);
+    }
 
     if ((ce->ce_fp = fopen(ce->ce_file, "w+")) == NULL) {
     	content_error(ce->ce_file, ct, "unable to fopen for read/writing");

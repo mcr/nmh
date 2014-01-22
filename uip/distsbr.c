@@ -141,9 +141,8 @@ ready_msg (char *msgnam)
 
     cp = m_mktemp2(NULL, "dist", &hdrfd, NULL);
     if (cp == NULL) {
-        adios("distsbr", "unable to create temporary file");
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
     }
-    fchmod(hdrfd, 0600);
     strncpy(tmpfil, cp, sizeof(tmpfil));
     if ((out = dup (hdrfd)) == NOTOK
 	    || (ofp = fdopen (out, "w")) == NULL)
@@ -170,7 +169,8 @@ ready_msg (char *msgnam)
 
                 cp = m_mktemp2(NULL, "dist", &txtfd, NULL);
                 if (cp == NULL) {
-                    adios("distsbr", "unable to create temporary file");
+		    adios(NULL, "unable to create temporary file in %s",
+			  get_temp_dir());
                 }
                 fchmod(txtfd, 0600);
 		strncpy (tmpfil, cp, sizeof(tmpfil));

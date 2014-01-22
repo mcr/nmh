@@ -562,7 +562,10 @@ store_content (CT ct, CT p)
 	    char *tmpfilenam, *folder;
 
 	    /* Store content in temporary file for now */
-	    tmpfilenam = m_mktemp(invo_name, NULL, NULL);
+	    if ((tmpfilenam = m_mktemp(invo_name, NULL, NULL)) == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
 	    ct->c_storage = add (tmpfilenam, NULL);
 
 	    /* Get the folder name */

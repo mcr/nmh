@@ -100,12 +100,15 @@ attach(char *attachment_header_field_name, char *draft_file_name,
      *	Make names for the temporary files.
      */
 
-    (void)strncpy(body_file_name,
-                  m_mktemp2(NULL, invo_name, NULL, NULL),
-                  body_file_name_len);
-    (void)strncpy(composition_file_name,
-                  m_mktemp2(NULL, invo_name, NULL, NULL),
-                  composition_file_name_len);
+    if ((p = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
+    (void)strncpy(body_file_name, p, body_file_name_len);
+    if ((p = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+        unlink(body_file_name);
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
+    (void)strncpy(composition_file_name, p, composition_file_name_len);
 
     if (has_body)
 	body_file = fopen(body_file_name, "w");

@@ -290,11 +290,11 @@ main (int argc, char **argv) {
             using_stdin = 1;
 
             if ((cp = m_mktemp2 (NULL, invo_name, &fd, NULL)) == NULL) {
-                adios (NULL, "unable to create temporary file");
+                adios (NULL, "unable to create temporary file in %s",
+                       get_temp_dir());
             } else {
                 free (file);
                 file = add (cp, NULL);
-                chmod (file, 0600);
                 cpydata (STDIN_FILENO, fd, "-", file);
             }
 
@@ -396,7 +396,12 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
         modify_inplace = 1;
 
         if ((*ctp)->c_file) {
-            outfile = add (m_mktemp2 (NULL, invo_name, NULL, NULL), NULL);
+            char *tempfile;
+            if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
+                adios (NULL, "unable to create temporary file in %s",
+                       get_temp_dir());
+            }
+            outfile = add (tempfile, NULL);
         } else {
             adios (NULL, "missing both input and output filenames\n");
         }
@@ -534,7 +539,8 @@ fix_boundary (CT *ct, int *message_mods) {
                         status = NOTOK;
                     }
                 } else {
-                    advise (NULL, "unable to create temporary file");
+                    advise (NULL, "unable to create temporary file in %s",
+                            get_temp_dir());
                     status = NOTOK;
                 }
 
@@ -1019,7 +1025,13 @@ build_text_plain_part (CT encoded_part) {
            contains the decoded contents.  And the decoding function, such
            as openQuoted, will have set ...->ce_unlink to 1 so that it will
            be unlinked by free_content (). */
-        tmp_plain_file = add (m_mktemp2 (NULL, invo_name, NULL, NULL), NULL);
+        char *tempfile;
+
+        if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
+            advise (NULL, "unable to create temporary file in %s",
+                    get_temp_dir());
+        }
+        tmp_plain_file = add (tempfile, NULL);
         if (reformat_part (tp_part, tmp_plain_file,
                            tp_part->c_ctinfo.ci_type,
                            tp_part->c_ctinfo.ci_subtype,
@@ -1090,8 +1102,12 @@ static int
 decode_part (CT ct) {
     char *tmp_decoded;
     int status;
+    char *tempfile;
 
-    tmp_decoded = add (m_mktemp2 (NULL, invo_name, NULL, NULL), NULL);
+    if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
+        adios (NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
+    tmp_decoded = add (tempfile, NULL);
     /* The following call will load ct->c_cefile.ce_file with the tmp
        filename of the decoded content.  tmp_decoded will contain the
        encoded output, get rid of that. */
@@ -1679,8 +1695,14 @@ strip_crs (CT ct, int *message_mods) {
 
             if (has_crs) {
                 int fd;
-                char *stripped_content_file =
-                    add (m_mktemp2 (NULL, invo_name, &fd, NULL), NULL);
+                char *stripped_content_file;
+                char *tempfile = m_mktemp2 (NULL, invo_name, &fd, NULL); 
+
+                if (tempfile == NULL) {
+                    adios (NULL, "unable to create temporary file in %s",
+                           get_temp_dir());
+                }
+                stripped_content_file = add (tempfile, NULL);
 
                 /* Strip each CR before a LF from the content. */
                 fseeko (*fp, begin, SEEK_SET);
@@ -1832,6 +1854,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
         int opened_input_file = 0;
         char src_buffer[BUFSIZ];
         HF hf;
+        char *tempfile;
 
         if ((conv_desc = iconv_open (dest_codeset, src_codeset)) ==
             (iconv_t) -1) {
@@ -1839,7 +1862,11 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
             return -1;
         }
 
-        dest = add (m_mktemp2 (NULL, invo_name, &fd, NULL), NULL);
+        if ((tempfile = m_mktemp2 (NULL, invo_name, &fd, NULL)) == NULL) {
+            adios (NULL, "unable to create temporary file in %s",
+                   get_temp_dir());
+        }
+        dest = add (tempfile, NULL);
 
         if (ct->c_cefile.ce_file) {
             file = &ct->c_cefile.ce_file;

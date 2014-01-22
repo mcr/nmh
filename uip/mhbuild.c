@@ -315,8 +315,13 @@ main (int argc, char **argv)
      * Process the composition file from standard input.
      */
     if (compfile[0] == '-' && compfile[1] == '\0') {
+	if ((cp = m_mktemp2(NULL, invo_name, NULL, &fp)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+
 	/* copy standard input to temporary file */
-	strncpy (infile, m_mktemp2(NULL, invo_name, NULL, &fp), sizeof(infile));
+	strncpy (infile, cp, sizeof(infile));
 	while (fgets (buffer, BUFSIZ, stdin))
 	    fputs (buffer, fp);
 	fclose (fp);
@@ -367,8 +372,10 @@ main (int argc, char **argv)
     cts[1] = NULL;
 
     /* output MIME message to this temporary file */
-    strncpy(outfile, m_mktemp2(compfile, invo_name, NULL, &fp_out),
-            sizeof(outfile));
+    if ((cp = m_mktemp2(compfile, invo_name, NULL, &fp_out)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
+    strncpy(outfile, cp, sizeof(outfile));
     unlink_outfile = 1;
 
     /* output the message */

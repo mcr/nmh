@@ -535,12 +535,12 @@ main (int argc, char **argv)
 	    if ((out = fopen ("/dev/null", "w")) == NULL)
 		adios ("/dev/null", "unable to open");
 	} else {
-            char *cp = m_mktemp2(NULL, invo_name, NULL, &out);
-            if (cp == NULL) {
-                adios ("post", "unable to create temporary file");
-            }
+	    char *cp = m_mktemp2(NULL, invo_name, NULL, &out);
+	    if (cp == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
             strncpy(tmpfil, cp, sizeof(tmpfil));
-	    chmod (tmpfil, 0600);
 	}
     }
 
@@ -1279,8 +1279,9 @@ make_bcc_file (int dashstuff)
     FILE *out;
     char *tfile = NULL, *program;
 
-    tfile = m_mktemp2(NULL, "bccs", NULL, &out);
-    if (tfile == NULL) adios("bcc", "unable to create temporary file");
+    if ((tfile = m_mktemp2(NULL, "bccs", NULL, &out)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
     strncpy (bccfil, tfile, sizeof(bccfil));
 
     fprintf (out, "From: %s\n", fullfrom);

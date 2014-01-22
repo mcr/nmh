@@ -154,9 +154,9 @@ main (int argc, char **argv)
     if ((in = fopen (drft, "r")) == NULL)
 	adios (drft, "unable to open");
 
-    tmpfil = m_mktemp2(NULL, invo_name, NULL, &out);
-    if (tmpfil == NULL) adios("prompter", "unable to create temporary file");
-    chmod (tmpfil, 0600);
+    if ((tmpfil = m_mktemp2(NULL, invo_name, NULL, &out)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
 
     /*
      * Are we changing the kill or erase character?

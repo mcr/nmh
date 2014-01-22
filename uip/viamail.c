@@ -191,9 +191,9 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
 
     umask (~m_gmprot ());
 
-    tfile = m_mktemp2(NULL, invo_name, NULL, &fp);
-    if (tfile == NULL) adios("viamail", "unable to create temporary file");
-    chmod(tfile, 0600);
+    if ((tfile = m_mktemp2(NULL, invo_name, NULL, &fp)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
     strncpy (tmpfil, tfile, sizeof(tmpfil));
 
     if (!strchr(mailsw, '@'))

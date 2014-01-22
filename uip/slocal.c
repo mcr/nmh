@@ -317,14 +317,16 @@ main (int argc, char **argv)
 	if (debug)
 	    debug_printf ("retrieving message from file \"%s\"\n", file);
 	if ((fd = copy_message (tempfd, tmpfil, 1)) == -1)
-	    adios (NULL, "unable to create temporary file");
+	    adios(NULL, "unable to create temporary file in %s",
+                  get_temp_dir());
 	close (tempfd);
     } else {
 	/* getting message from stdin */
 	if (debug)
 	    debug_printf ("retrieving message from stdin\n");
 	if ((fd = copy_message (fileno (stdin), tmpfil, 1)) == -1)
-	    adios (NULL, "unable to create temporary file");
+	    adios(NULL, "unable to create temporary file in %s",
+                  get_temp_dir());
     }
 
     if (debug)
@@ -1198,7 +1200,6 @@ copy_message (int qd, char *tmpfil, int fold)
 
     tfile = m_mktemp2(NULL, invo_name, &fd1, NULL);
     if (tfile == NULL) return -1;
-    fchmod(fd1, 0600);
     strncpy (tmpfil, tfile, BUFSIZ);
 
     if (!fold) {

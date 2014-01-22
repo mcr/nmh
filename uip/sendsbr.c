@@ -109,10 +109,11 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
 	 * rename the draft file.  I'm not quite sure why.
 	 */
 	if (pushsw && unique) {
-            char *cp = m_mktemp2(drft, invo_name, NULL, NULL);
-            if (cp == NULL) {
-                adios ("sendsbr", "unable to create temporary file");
-            }
+	    char *cp = m_mktemp2(drft, invo_name, NULL, NULL);
+	    if (cp == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
 	    if (rename (drft, strncpy(file, cp, sizeof(file))) == NOTOK)
 		adios (file, "unable to rename %s to", drft);
 	    drft = file;
@@ -321,10 +322,10 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 
 	char *cp = m_mktemp2(drft, invo_name, NULL, &out);
         if (cp == NULL) {
-	    adios (drft, "unable to create temporary file for");
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
         }
 	strncpy(tmpdrf, cp, sizeof(tmpdrf));
-	chmod (tmpdrf, 0600);
 
 	/*
 	 * Output the header fields
@@ -430,7 +431,8 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 	    snprintf (buf, sizeof(buf), "%d", fd2);
 	    vec[vecp++] = buf;
 	} else {
-	    admonish (NULL, "unable to create file for annotation list");
+	    admonish (NULL, "unable to create temporary file in %s "
+                      "for annotation list", get_temp_dir());
 	}
     }
     if (distfile && distout (drft, distfile, backup) == NOTOK)
@@ -571,11 +573,9 @@ static int
 tmp_fd (void)
 {
     int fd;
-    char *tfile = NULL;
+    char *tfile;
 
-    tfile = m_mktemp2(NULL, invo_name, &fd, NULL);
-    if (tfile == NULL) return NOTOK;
-    fchmod(fd, 0600);
+    if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) return NOTOK;
 
     if (debugsw)
 	advise (NULL, "temporary file %s selected", tfile);

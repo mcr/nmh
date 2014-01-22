@@ -164,7 +164,7 @@ main (int argc, char **argv)
     /* create a temporary file */
     tmpfilenam = m_mktemp (invo_name, &fd, NULL);
     if (tmpfilenam == NULL) {
-	adios ("rcvstore", "unable to create temporary file");
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
     }
     chmod (tmpfilenam, m_gmprot());
 

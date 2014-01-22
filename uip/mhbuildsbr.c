@@ -527,8 +527,10 @@ user_content (FILE *in, char *file, char *buf, CT *ctp)
 	FILE *out;
         char *cp;
 
-        cp = m_mktemp2(NULL, invo_name, NULL, &out);
-        if (cp == NULL) adios("mhbuildsbr", "unable to create temporary file");
+	if ((cp = m_mktemp2(NULL, invo_name, NULL, &out)) == NULL) {
+	    adios("mhbuildsbr", "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
 
 	/* use a temp file to collect the plain text lines */
 	ce->ce_file = add (cp, NULL);
@@ -1087,10 +1089,10 @@ compose_content (CT ct)
 	    if (!(cp = ci->ci_magic))
 		adios (NULL, "internal error(5)");
 
-            tfile = m_mktemp2(NULL, invo_name, NULL, NULL);
-            if (tfile == NULL) {
-                adios("mhbuildsbr", "unable to create temporary file");
-            }
+	    if ((tfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+		adios("mhbuildsbr", "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
 	    ce->ce_file = add (tfile, NULL);
 	    ce->ce_unlink = 1;
 
