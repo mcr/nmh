@@ -8,8 +8,6 @@
 
 #include <h/mh.h>
 
-static char *get_temp_dir();
-
 /*  Create a temporary file.  If pfx_in is null, the temporary file
  *  will be created in the temporary directory (more on that later).
  *  If pfx_in is not null, then the temporary file location will be
@@ -26,7 +24,7 @@ static char *get_temp_dir();
  *
  *  When pfx_in is null, the temporary directory is determined as
  *  follows, in order:
- *  
+ *
  *    MHTMPDIR envvar
  *    TMPDIR envvar
  *    TMP envvar
@@ -90,7 +88,7 @@ m_mktemp (
  * by created based on a given pathname.  Although m_mktemp() technically
  * supports this, this version is when the directory is defined by
  * a separate variable from the prefix, eliminating the caller from having
- * to do string manipulation to generate the desired. pathname prefix.
+ * to do string manipulation to generate the desired pathname prefix.
  *
  * The pfx_in parameter specifies a basename prefix for the file.  If dir_in
  * is NULL, then the defined temporary directory (see comments to m_mktemp()
@@ -126,7 +124,7 @@ m_mktemp2 (
 }
 
 
-static char *
+char *
 get_temp_dir()
 {
     /* Ignore envvars if we are setuid */
