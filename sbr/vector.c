@@ -174,6 +174,24 @@ svector_at (svector_t vec, size_t i) {
     return vec->strs[i];
 }
 
+/*
+ * Return address of first element that stringwise matches s.
+ * The caller can replace the contents of the return address.
+ */
+char **
+svector_find (svector_t vec, const char *s) {
+    size_t i;
+    char **str = vec->strs;
+
+    for (i = 0; i < vec->size; ++i, ++str) {
+        if (*str  &&  ! strcmp(*str, s)) {
+            return str;
+        }
+    }
+
+    return NULL;
+}
+
 char **
 svector_strs (svector_t vec) {
     return vec->strs;
