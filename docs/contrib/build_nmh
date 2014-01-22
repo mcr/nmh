@@ -223,7 +223,7 @@ config_opts="--prefix=$config_prefix"
 [ "$config_tls" = y ]  &&  \
   config_opts="$config_opts --with-tls"
 [ $config_debug = y ]  &&  \
-  config_opts="$config_opts --enable-debug"
+  config_opts="$config_opts --enable-debug --enable-assert"
 
 
 #### dotlocking, the usual default, requires chgrp and chmod of inc.
