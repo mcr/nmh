@@ -21,9 +21,6 @@ whatnow \- prompting front-end for sending messages
 .RI [ file ]
 .RB [ \-version ]
 .RB [ \-help ]
-.RB [ \-attach
-.IR header-field-name ]
-.RB [ \-noattach ]
 .ad
 .SH DESCRIPTION
 .B Whatnow
@@ -243,7 +240,6 @@ commands for managing MIME attachments.
 .SH DEFAULTS
 .nf
 .RB ` \-prompt "' defaults to \*(lqWhat\ Now?\ \*(rq"
-.RB ` \-attach "' defaults to \*(lqNmh-Attachment\*(rq"
 .fi
 .SH BUGS
 If the initial edit fails,

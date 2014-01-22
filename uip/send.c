@@ -62,8 +62,8 @@
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech mechanism", SASLminc(-5), SASLMECHSW) \
     X("user username", SASLminc(-4), USERSW) \
-    X("attach", 6, ATTACHSW) \
-    X("noattach", 0, NOATTACHSW) \
+    X("attach", -6, ATTACHSW) \
+    X("noattach", -8, NOATTACHSW) \
     X("attachformat", 7, ATTACHFORMATSW) \
     X("port server-port-name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \

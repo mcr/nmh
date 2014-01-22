@@ -54,11 +54,6 @@ send \- send a message
 \&...]
 .RB [ \-version ]
 .RB [ \-help ]
-.RB [ \-attach
-.IR header-field-name ]
-.RB [ \-noattach ]
-.RB [ \-attachformat
-.IR 0 " | " 1 " | " 2 ]
 .ad
 .SH DESCRIPTION
 .B Send

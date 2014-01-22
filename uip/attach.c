@@ -15,6 +15,7 @@ static int get_line(FILE *, char *, size_t);
 static char *get_file_info(const char *, const char *);
 #endif /* MIMETYPEPROC */
 
+#if 0
 int
 attach(char *attachment_header_field_name, char *draft_file_name,
        char *body_file_name, size_t body_file_name_len,
@@ -277,6 +278,8 @@ get_line(FILE *draft_file, char *field, size_t field_size)
     return (c);
 }
 
+#endif
+
 /*
  * Try to use external command to determine mime type, and possibly
  * encoding.  Caller is responsible for free'ing returned memory.
@@ -383,6 +386,7 @@ get_file_info(const char *proc, const char *file_name) {
 #endif /* MIMETYPEPROC */
 
 
+#if 0
 /*
  * Construct an mhbuild directive for the draft file.  This starts
  * with the content type.  Append a file name attribute, and depending
@@ -590,3 +594,4 @@ construct_build_directive (char *file_name, const char *default_content_type,
 
     return build_directive;
 }
+#endif

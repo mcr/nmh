@@ -68,13 +68,13 @@ esac
 # whatnow's exit status is always 1 so that is not a failure
 set +e
 echo "attach $testname_quoted" | \
-  run_prog whatnow -attach foo -noedit -prompt '' 2>>$actualerr >>$actual
+  run_prog whatnow -noedit -prompt '' 2>>$actualerr >>$actual
 echo "alist" | \
-  run_prog whatnow -attach foo -noedit -prompt '' 2>>$actualerr >>$actual
+  run_prog whatnow -noedit -prompt '' 2>>$actualerr >>$actual
 echo "detach $testname_quoted" | \
-  run_prog whatnow -attach foo -noedit -prompt '' 2>>$actualerr >>$actual
+  run_prog whatnow -noedit -prompt '' 2>>$actualerr >>$actual
 echo "alist" | \
-  run_prog whatnow -attach foo -noedit -prompt '' 2>>$actualerr >>$actual
+  run_prog whatnow -noedit -prompt '' 2>>$actualerr >>$actual
 set -e
 
 check "$expectederr" "$actualerr"
@@ -84,7 +84,7 @@ if [ "$readline" = 0 ]; then
 cat >"$expected" <<EOF
 whatnow: attach command requires file argument(s).
 whatnow: attach command requires file argument(s).
-#text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+Attaching ${MH_TEST_DIR}/Mail/context as a text/plain
 EOF
 else
 cat >"$expected" <<EOF
@@ -93,7 +93,7 @@ whatnow: attach command requires file argument(s).
 at -v
 whatnow: attach command requires file argument(s).
 at -v Mail/context
-#text/plain; name="context" <> [context]{attachment} ${MH_TEST_DIR}/Mail/context
+Attaching ${MH_TEST_DIR}/Mail/context as a text/plain
 quit -delete
 EOF
 fi
