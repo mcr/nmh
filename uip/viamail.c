@@ -54,7 +54,6 @@ main (int argc, char **argv)
     int delay = 0;
     char *f1 = NULL, *f2 = NULL, *f3 = NULL;
     char *f4 = NULL, *f5 = NULL, *f7 = NULL;
-    static char postpath[PATH_MAX];
     char *cp, buf[BUFSIZ];
     char **argp, **arguments;
 
@@ -63,9 +62,7 @@ main (int argc, char **argv)
 #endif
     invo_name = r1bindex (argv[0], '/');
 
-    /* foil search of user profile/context */
-    if (context_foil (NULL) == -1)
-	done (1);
+    context_read();
 
     arguments = getarguments (invo_name, argc, argv, 0);
     argp = arguments;
@@ -139,34 +136,6 @@ main (int argc, char **argv)
 
     if (!f1)
 	adios (NULL, "missing -viamail \"mailpath\" switch");
-
-    /* viamail doesn't read the context and postproc isn't always what
-       we want, such as when running make distcheck.  If we have the
-       absolute path, set postproc to point to post in the same
-       directory as this executable.
-       This could be generalized to handle relative paths (by
-       converting to absolute), to find the full path from PATH given
-       just the basename, and to squash out ../ but it's only needed
-       here.  viamail is typically called from sendfiles, which
-       provides the absolute path.
-     */
-    if (argv[0]  &&  argv[0][0] == '/'  &&
-	    strlen(argv[0]) - 3 < sizeof postpath) {
-	strncpy (postpath, argv[0], sizeof postpath - 1);
-	postpath[sizeof postpath - 1] = '\0';
-	if ((cp = strrchr (postpath, '/'))) {
-	    struct stat st;
-
-	    *(cp + 1) = '\0';
-	    /* strlen ("post") <= sizeof postpath - (cp - postpath) - 2
-	       but use strncat just in case the code above changes. */
-	    strncat (postpath, "post", sizeof postpath - (cp - postpath) - 2);
-
-	    if (stat (postpath, &st) == OK) {
-		postproc = postpath;
-	    }
-	}
-    }
 
     via_mail (f1, f2, f3, f4, f5, delay, f7);
     return 0;  /* dead code to satisfy the compiler */
