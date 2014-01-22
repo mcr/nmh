@@ -30,6 +30,8 @@ DATA
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a test
@@ -94,6 +96,8 @@ cat > "${testname}.expected" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a test
@@ -118,6 +122,8 @@ cat > "${testname}.expected" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a test
@@ -141,6 +147,8 @@ cat > "${testname}.expected1" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a test
@@ -157,6 +165,8 @@ Subject: Test
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a test

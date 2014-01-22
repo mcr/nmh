@@ -39,6 +39,8 @@ From: Mr Nobody One <nobody1@example.com>,
 Sender: Mr Nobody Three <nobody3@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Sender test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a test of the Sender header.
@@ -73,6 +75,8 @@ From: Mr Nobody One <nobody1@example.com>,
 Sender: Mr Nobody Three <nobody3@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Envelope-From test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a test of the Envelope-From header.
@@ -106,6 +110,8 @@ From: Mr Nobody One <nobody1@example.com>,
       Mr Nobody Two <nobody2@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Envelope-From and Sender test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 Sender: nobody4@example.com
 
@@ -137,6 +143,8 @@ DATA
 From: Mr Nobody One <nobody1@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Solo Envelope-From test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a solo test of the Envelope-From header.
@@ -167,6 +175,8 @@ DATA
 From: Mr Nobody One <nobody1@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Blank Envelope-From test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a blank test of the Envelope-From header.

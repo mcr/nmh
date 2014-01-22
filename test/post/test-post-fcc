@@ -34,6 +34,8 @@ DATA
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Fcc test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a fcc test
@@ -47,6 +49,8 @@ cat > "${testname}.msg.expected" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody Else <somebody@example.com>
 Subject: Fcc test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is a fcc test
