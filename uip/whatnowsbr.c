@@ -104,7 +104,6 @@ static int editfile (char **, char **, char *, int, struct msgs *,
 static int sendfile (char **, char *, int);
 static void sendit (char *, char **, char *, int);
 static int buildfile (char **, char *);
-static int check_draft (char *);
 static int whomfile (char **, char *);
 static int removefile (char *);
 static void writelscmd(char *, int, char *, char **);
@@ -882,66 +881,6 @@ buildfile (char **argp, char *file)
     free (args);
 
     return (i ? NOTOK : OK);
-}
-
-
-/*
- *  Check if draft is a mhbuild composition file
- */
-
-static int
-check_draft (char *msgnam)
-{
-    int	state;
-    char buf[BUFSIZ], name[NAMESZ];
-    FILE *fp;
-    m_getfld_state_t gstate = 0;
-
-    if ((fp = fopen (msgnam, "r")) == NULL)
-	return 0;
-    for (;;) {
-	int bufsz = sizeof buf;
-	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
-	    case FLD:
-	    case FLDPLUS:
-		/*
-		 * If draft already contains any of the
-		 * Content-XXX fields, then assume it already
-		 * been converted.
-		 */
-	        if (uprf (name, XXX_FIELD_PRF)) {
-		    fclose (fp);
-		    m_getfld_state_destroy (&gstate);
-		    return 0;
-		}
-		while (state == FLDPLUS) {
-		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
-		}
-		break;
-
-	    case BODY:
-	        do {
-		    char *bp;
-
-		    for (bp = buf; *bp; bp++)
-			if (*bp != ' ' && *bp != '\t' && *bp != '\n') {
-			    fclose (fp);
-			    m_getfld_state_destroy (&gstate);
-			    return 1;
-			}
-
-		    bufsz = sizeof buf;
-		    state = m_getfld (&gstate, name, buf, &bufsz, fp);
-		} while (state == BODY);
-		/* and fall... */
-
-	    default:
-		fclose (fp);
-		m_getfld_state_destroy (&gstate);
-		return 0;
-	}
-    }
 }
 
 

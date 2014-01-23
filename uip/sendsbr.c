@@ -52,7 +52,7 @@ static int sendaux (char **, int, char *, char *, struct stat *);
  */
 
 int
-sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
+sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
          int rename_drft)
 {
     int status, i;
@@ -60,6 +60,7 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
     char buffer[BUFSIZ], file[BUFSIZ];
     struct stat sts;
     char **buildvec, *buildprogram;
+    volatile char *drft = draft;
 
     /*
      * Run the mimebuildproc (which is by default mhbuild) on the message
@@ -76,7 +77,7 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
 	buildvec[i++] = "-auto";
 	if (distfile)
 	    buildvec[i++] = "-dist";
-	buildvec[i++] = drft;
+	buildvec[i++] = (char *) drft;
 	buildvec[i] = NULL;
 	execvp(buildprogram, buildvec);
 	fprintf(stderr, "unable to exec ");
@@ -98,11 +99,12 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
 	 * rename the draft file.  I'm not quite sure why.
 	 */
 	if (pushsw && unique) {
-            char *cp = m_mktemp2(drft, invo_name, NULL, NULL);
+            char *cp = m_mktemp2((char *) drft, invo_name, NULL, NULL);
             if (cp == NULL) {
                 adios ("sendsbr", "unable to create temporary file");
             }
-	    if (rename (drft, strncpy(file, cp, sizeof(file))) == NOTOK)
+	    if (rename ((char *) drft,
+	    		strncpy(file, cp, sizeof(file))) == NOTOK)
 		adios (file, "unable to rename %s to", drft);
 	    drft = file;
 	}
@@ -111,17 +113,21 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
 	 * Check if we need to split the message into
 	 * multiple messages of type "message/partial".
 	 */
-	if (splitsw >= 0 && !distfile && stat (drft, &sts) != NOTOK
+	if (splitsw >= 0 && !distfile && stat ((char *) drft, &sts) != NOTOK
 		&& sts.st_size >= CPERMSG) {
-	    status = splitmsg (vec, vecp, program, drft, st, splitsw) ? NOTOK : OK;
+	    status = splitmsg (vec, vecp, program, (char *) drft,
+	    		       st, splitsw) ? NOTOK : OK;
 	} else {
-	    status = sendaux (vec, vecp, program, drft, st) ? NOTOK : OK;
+	    status = sendaux (vec, vecp, program, (char *) drft,
+	    		      st) ? NOTOK : OK;
 	}
 
 	/* rename the original draft */
 	if (rename_drft && status == OK &&
-		rename (drft, strncpy (buffer, m_backup (drft), sizeof(buffer))) == NOTOK)
-	    advise (buffer, "unable to rename %s to", drft);
+		rename ((char *) drft,
+			strncpy (buffer, m_backup ((char *) drft),
+				 sizeof(buffer))) == NOTOK)
+	    advise (buffer, "unable to rename %s to", (char *) drft);
 	break;
 
     default: 
