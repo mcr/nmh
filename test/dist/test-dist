@@ -384,5 +384,26 @@ EOF
 test_dist +inbox 1 -noedit -to somebody@example.com -fcc +outbox
 run_test 'scan +outbox -width 6 2' '   2 '
 
+#
+# Check that dist encodes headers using RFC-2047 properly
+#
+
+export LC_ALL=en_US.UTF-8
+
+cat >"$expected" <<EOF
+From: Test1 <test1@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 1@test.nmh
+Subject: Testing message 1
+Resent-From: =?UTF-8?Q?Mr_F=C3=B8o_Bar?= <foo@bar.com>
+Resent-To: =?UTF-8?Q?Mr_Nobod=C3=BF?= <nobody@nowhere.com>
+Resent-Date:
+
+This is message number 1
+EOF
+
+test_dist +inbox 1 -noedit -from 'Mr Føo Bar <foo@bar.com>' \
+	  -to 'Mr Nobodÿ <nobody@nowhere.com>' -fcc +outbox
 
 exit ${failed:-0}

@@ -34,6 +34,8 @@ From: Mr Nobody <nobody@example.com>
 To: Somebody One <somebody1@example.com>,
     Somebody Two <somebody2@example.com>
 Subject: Test multiple
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is test of multiple recipients.

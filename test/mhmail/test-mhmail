@@ -292,6 +292,8 @@ RCPT TO:<recipient@example.com>
 DATA
 To: recipient@example.com
 From: sender8@localhost
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 Message-ID:
 

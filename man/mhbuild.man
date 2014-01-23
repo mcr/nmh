@@ -1,4 +1,4 @@
-.TH MHBUILD %manext1% "March 21, 2013" "%nmhversion%"
+.TH MHBUILD %manext1% "January 23, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -21,6 +21,7 @@ mhbuild \- translate MIME composition draft
 .RB [ \-headerencoding 
 .IR encoding\-algorithm
 .RB " | " \-autoheaderencoding ]
+.RB [ \-dist ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -78,6 +79,21 @@ switch
 is present, then the listing will show any \*(lqextra\*(rq information
 that is present in the message, such as comments in the
 \*(lqContent-Type\*(rq header.
+.SS "Simplified Attachment Interface"
+For users who wish to simply attach files to text content,
+.B mhbuild
+will scan the composition file for \*(lqAttach\*(rq headers.  An
+\*(lqAttach\*(rq header contains a filename that will be appended to the
+message using normal MIME encapsulation rules.  One filename is allowed
+per \*(lqAttach\*(rq header, but multiple \*(lqAttach\*(rq headers are
+allowed ber composition file.
+.PP
+These files will be appended after any other MIME content, including any
+content specified by
+.B mhbuild
+directives (see below).  See
+.IR send (1)
+for more details.
 .SS "Translating the Composition File"
 .B mhbuild
 is essentially a filter to aid in the composition of MIME
@@ -555,20 +571,11 @@ on file that already in MIME format.  The
 switch will cause
 .B mhbuild
 to exit without error if the input file already has valid MIME headers.
-.PP
-It is also possible to have the
-.B whatnow
-program invoke
-.B mhbuild
-automatically when a message is sent.  To do this, you must add the line
-.PP
-.RS 5
-automimeproc: 1
-.RE
-.PP
-to your
-.I \&.mh\(ruprofile
-file.
+The use of
+.B \-auto
+also enables the
+.B \-nodirectives
+switch.
 .PP
 Finally, you should consider adding this line to your profile:
 .PP
@@ -587,6 +594,14 @@ What now? list
 .RE
 .PP
 will work as you expect.
+.PP
+The
+.B \-dist
+switch is intended to be used by
+.BR dist .
+It will cause mhbuild to not generate any MIME headers in the composition
+file (such as \*(lqMIME-Version\*(rq or \*(lqContent-Type\*(rq), but it
+will still encode message headers according to RFC 2047.
 .SS "User Environment"
 Because the environment in which
 .B mhbuild

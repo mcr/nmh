@@ -62,8 +62,8 @@
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech mechanism", SASLminc(-5), SASLMECHSW) \
     X("user username", SASLminc(-4), USERSW) \
-    X("attach", 6, ATTACHSW) \
-    X("noattach", 0, NOATTACHSW) \
+    X("attach", -6, ATTACHSW) \
+    X("noattach", -8, NOATTACHSW) \
     X("attachformat", 7, ATTACHFORMATSW) \
     X("port server-port-name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
@@ -117,8 +117,6 @@ main (int argc, char **argv)
     char *msgs[MAXARGS], **vec;
     struct msgs *mp;
     struct stat st;
-    char *attach = NMH_ATTACH_HEADER;	/* header field name for attachments */
-    int attachformat = 1; /* mhbuild format specifier for attachments */
 
     setlocale(LC_ALL, "");
     invo_name = r1bindex (argv[0], '/');
@@ -271,26 +269,14 @@ main (int argc, char **argv)
 		    continue;
 		
 		case ATTACHSW:
-		    if (!(attach = *argp++) || *attach == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+		    advise(NULL, "The -attach switch is deprecated");
 		    continue;
 		case NOATTACHSW:
-		    attach = NULL;
+		    advise(NULL, "The -noattach switch is deprecated");
 		    continue;
 
 		case ATTACHFORMATSW:
-		    if (! *argp || **argp == '-')
-			adios (NULL, "missing argument to %s", argp[-1]);
-		    else {
-			attachformat = atoi (*argp);
-			if (attachformat < 0 ||
-			    attachformat > ATTACHFORMATS - 1) {
-			    advise (NULL, "unsupported attachformat %d",
-				    attachformat);
-			    continue;
-			}
-		    }
-		    ++argp;
+		    advise(NULL, "The -attachformat switch is deprecated");
 		    continue;
 	    }
 	} else {
@@ -438,8 +424,7 @@ go_to_it:
     closefds (3);
 
     for (msgnum = 0; msgnum < msgp; msgnum++) {
-	switch (sendsbr (vec, vecp, program, msgs[msgnum], &st, 1, attach,
-			 attachformat)) {
+	switch (sendsbr (vec, vecp, program, msgs[msgnum], &st, 1)) {
 	    case DONE: 
 		done (++status);
 	    case NOTOK: 

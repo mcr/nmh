@@ -84,8 +84,7 @@ fi
 tolist=                     ## To: addresses
 toarg=0                     ## whether currently handling -to
 attacharg=0                 ## whether currently handling -attach
-attach_send_switch_added=0  ## whether added "-attach Nmh-Attachment" switch
-attachind=Nmh-Attachment    ## attachment indicator
+attachind=Attach            ## attachment indicator
 body=                       ## contents of the message body
 bodyarg=0                   ## whether currently handling -body
 cclist=                     ## Cc: addresses
@@ -114,11 +113,7 @@ for arg in "$@"; do
        mhmailswitch=1
        attacharg=1
        use_send=1
-       if [ $attach_send_switch_added -eq 0 ]; then
-         #### Override any send -attach switch in user's profile.
-         postsendargs="${postsendargs:+$postsendargs }-attach $attachind"
-         attach_send_switch_added=1
-       fi ;;
+       ;;
     -b|-bo|-bod|-body) mhmailswitch=1; bodyarg=1 ;;
     -c|-cc) mhmailswitch=1; ccarg=1 ;;
     -f|-fr|-fro|-from) mhmailswitch=1; fromarg=1 ;;

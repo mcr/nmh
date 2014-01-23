@@ -33,6 +33,8 @@ DATA
 From: Mr Nobody <nobody@example.com>
 To: our-group: ;
 Subject: Group test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Date:
 
 This is test of group recipients.

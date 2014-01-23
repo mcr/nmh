@@ -296,6 +296,9 @@ CT parse_mime (char *);
  *		  that the composition file is already in MIME format
  *		  and will not be processed further.  Otherwise, an
  *		  error is generated.
+ * dist		- A flag to indicate if we are being run by "dist".  In
+ *		  that case, add no MIME headers to the message.  Existing
+ *		  headers will still be encoded by RFC 2047.
  * directives	- A flag to control whether or not build directives are
  *		  processed by default.
  * encoding	- The default encoding to use when doing RFC 2047 header
@@ -306,7 +309,8 @@ CT parse_mime (char *);
  * -auto flag is set and a MIME-Version header is encountered, the return
  * value is NULL.
  */
-CT build_mime (char *infile, int autobuild, int directives, int encoding);
+CT build_mime (char *infile, int autobuild, int dist, int directives,
+	       int encoding);
 
 int add_header (CT, char *, char *);
 int get_ctinfo (char *, CT, int);

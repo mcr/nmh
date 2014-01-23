@@ -122,8 +122,6 @@ struct swit {
 
 extern struct swit anoyes[];	/* standard yes/no switches */
 
-#define ATTACHFORMATS 3		/* Number of send attach formats. */
-
 /*
  * general folder attributes
  */
@@ -358,8 +356,6 @@ typedef struct m_getfld_state *m_getfld_state_t;
 
 #define LINK	"@"		/* Name of link to file to which you are */
 				/* replying. */
-
-#define NMH_ATTACH_HEADER "Nmh-Attachment"  /* Default header for -attach */
 
 /*
  * credentials management

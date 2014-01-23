@@ -80,7 +80,7 @@ void free_encoding (CT, int);
 static int init_decoded_content (CT);
 static void setup_attach_content(CT, char *);
 static char *fgetstr (char *, int, FILE *);
-static int user_content (FILE *, char *, char *, CT *);
+static int user_content (FILE *, char *, CT *);
 static void set_id (CT, int);
 static int compose_content (CT);
 static int scan_content (CT);
@@ -129,7 +129,8 @@ static void directive_pop(void)
  */
 
 CT
-build_mime (char *infile, int autobuild, int directives, int header_encoding)
+build_mime (char *infile, int autobuild, int dist, int directives,
+	    int header_encoding)
 {
     int	compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -283,9 +284,12 @@ finish_field:
      * Now add the MIME-Version header field
      * to the list of header fields.
      */
-    np = add (VRSN_FIELD, NULL);
-    vp = concat (" ", VRSN_VALUE, "\n", NULL);
-    add_header (ct, np, vp);
+
+    if (! dist) {
+	np = add (VRSN_FIELD, NULL);
+	vp = concat (" ", VRSN_VALUE, "\n", NULL);
+	add_header (ct, np, vp);
+    }
 
     /*
      * We initally assume we will find multiple contents in the
@@ -311,7 +315,7 @@ finish_field:
 	struct part *part;
 	CT p;
 
-	if (user_content (in, infile, buf, &p) == DONE) {
+	if (user_content (in, buf, &p) == DONE) {
 	    admonish (NULL, "ignoring spurious #end");
 	    continue;
 	}
@@ -324,12 +328,6 @@ finish_field:
 	pp = &part->mp_next;
 	part->mp_part = p;
     }
-
-    /*
-     * close the composition draft since
-     * it's not needed any longer.
-     */
-    fclose (in);
 
     /*
      * Add any Attach headers to the list of MIME parts at the end of the
@@ -369,9 +367,55 @@ finish_field:
 	free(at_prev);
     }
 
-    /* check if any contents were found */
-    if (!m->mp_parts)
-	adios (NULL, "no content directives found");
+    /*
+     * To allow for empty message bodies, if we've found NO content at all
+     * yet cook up an empty text/plain part.
+     */
+
+    if (!m->mp_parts) {
+    	CT p;
+    	struct part *part;
+	struct text *t;
+
+	if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
+	    adios(NULL, "out of memory");
+
+	init_decoded_content(p);
+
+	if (get_ctinfo ("text/plain", p, 0) == NOTOK)
+	    done (1);
+
+	p->c_type = CT_TEXT;
+	p->c_subtype = TEXT_PLAIN;
+	p->c_encoding = CE_7BIT;
+	p->c_file = getcpy(infile);
+	/*
+	 * Sigh.  ce_file contains the "decoded" contents of this part.
+	 * So this seems like the best option available since we're going
+	 * to call scan_content() on this.
+	 */
+	p->c_cefile.ce_file = getcpy("/dev/null");
+	p->c_begin = ftell(in);
+	p->c_end = ftell(in);
+
+	if ((t = (struct text *) calloc (1, sizeof (*t))) == NULL)
+	    adios (NULL, "out of memory");
+
+	t->tx_charset = CHARSET_SPECIFIED;
+	p->c_ctparams = t;
+
+	if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
+	    adios (NULL, "out of memory");
+	*pp = part;
+	pp = &part->mp_next;
+	part->mp_part = p;
+    }
+
+    /*
+     * close the composition draft since
+     * it's not needed any longer.
+     */
+    fclose (in);
 
     /*
      * If only one content was found, then remove and
@@ -421,7 +465,8 @@ finish_field:
     }
 
     /* Build the rest of the header field structures */
-    build_headers (ct);
+    if (! dist)
+	build_headers (ct);
 
     return ct;
 }
@@ -487,7 +532,7 @@ fgetstr (char *s, int n, FILE *stream)
  */
 
 static int
-user_content (FILE *in, char *file, char *buf, CT *ctp)
+user_content (FILE *in, char *buf, CT *ctp)
 {
     int	extrnal, vrsn;
     char *cp, **ap;
@@ -954,7 +999,7 @@ use_forw:
 	    struct part *part;
 	    CT p;
 
-	    if (user_content (in, file, buffer, &p) == DONE) {
+	    if (user_content (in, buffer, &p) == DONE) {
 		if (!m->mp_parts)
 		    adios (NULL, "empty \"#begin ... #end\" sequence");
 		return OK;

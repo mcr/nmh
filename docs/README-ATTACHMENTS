@@ -1,3 +1,10 @@
+This document describes the previous attach interface.  The attach
+interface has changes for nmh 1.6 and later.  The interface is
+documented in send(1), whatnow(1), and mhbuild(1).  No configuration
+is required, and the same commands exist in whatnow; the two main
+differences are that the header is now named "Attach", and mhbuild takes
+care of the actual header processing.
+
 Jon Steinhart's (jon@fourwinds.com) Attachment Handling Mods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

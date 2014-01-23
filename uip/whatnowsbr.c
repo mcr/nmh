@@ -53,8 +53,9 @@
     X("prompt string", 4, PRMPTSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
-    X("attach header-field-name", 0, ATTACHSW) \
-    X("noattach", 0, NOATTACHSW) \
+    X("attach header-field-name", -6, ATTACHSW) \
+    X("noattach", -8, NOATTACHSW) \
+
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(WHATNOW);
@@ -122,7 +123,6 @@ WhatNow (int argc, char **argv)
     char buf[BUFSIZ], prompt[BUFSIZ];
     char **argp, **arguments;
     struct stat st;
-    char	*attach = NMH_ATTACH_HEADER;/* attachment header field name */
     char	cwd[PATH_MAX + 1];	/* current working directory */
     char	file[PATH_MAX + 1];	/* file name buffer */
     char	shell[PATH_MAX + 1];	/* shell response buffer */
@@ -197,12 +197,11 @@ WhatNow (int argc, char **argv)
 		continue;
 
 	    case ATTACHSW:
-		if (!(attach = *argp++) || *attach == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
+		advise(NULL, "The -attach switch is deprecated");
 		continue;
 
 	    case NOATTACHSW:
-	    	attach = NULL;
+		advise(NULL, "The -noattach switch is deprecated");
 		continue;
 	    }
 	}
@@ -360,11 +359,6 @@ WhatNow (int argc, char **argv)
 	     *	 -n	numbers listing
 	     */
 
-	    if (attach == (char *)0) {
-		advise((char *)0, "can't list because no header field name was given.");
-		break;
-	    }
-
 	    l = (char *)0;
 	    n = 0;
 
@@ -390,7 +384,7 @@ WhatNow (int argc, char **argv)
 		advise((char *)0, "usage is alist [-ln].");
 
 	    else
-		annolist(drft, attach, l, n);
+		annolist(drft, ATTACH_FIELD, l, n);
 
 	    break;
 
@@ -401,11 +395,6 @@ WhatNow (int argc, char **argv)
 
             int verbose = 0;
             char **ap;
-
-	    if (attach == (char *)0) {
-		advise((char *)0, "can't attach because no header field name was given.");
-		break;
-	    }
 
 	    for (ap = argp+1; *ap; ++ap) {
 		if (strcmp(*ap, "-v") == 0) {
@@ -437,28 +426,25 @@ WhatNow (int argc, char **argv)
 
 	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
 		while (fgets(shell, sizeof (shell), f) != (char *)0) {
-		    char *build_directive;
+		    char *ctype;
 
 		    *(strchr(shell, '\n')) = '\0';
 
 		    if (*shell == '/') {
-			(void)annotate(drft, attach, shell, 1, 0, -2, 1);
-			if (verbose) {
-			    build_directive =
-				construct_build_directive (shell, NULL, 1);
-			}
+		    	strncpy(file, shell, sizeof(file));
+			file[sizeof(file) - 1] = '\0';
 		    } else {
-			(void)sprintf(file, "%s/%s", cwd, shell);
-			(void)annotate(drft, attach, file, 1, 0, -2, 1);
-			if (verbose) {
-			    build_directive =
-				construct_build_directive (file, NULL, 1);
-			}
+			snprintf(file, sizeof(file), "%s/%s", cwd, shell);
+		    }
+
+		    annotate(drft, ATTACH_FIELD, file, 1, 0, -2, 1);
+		    if (verbose) {
+			ctype = mime_type(file);
 		    }
 
 		    if (verbose) {
-			printf ("%s", build_directive);
-			free (build_directive);
+			printf ("Attaching %s as a %s", file, ctype);
+			free (ctype);
 		    }
 		}
 
@@ -474,11 +460,6 @@ WhatNow (int argc, char **argv)
 	    /*
 	     *	Detach files from current draft.
 	     */
-
-	    if (attach == (char *)0) {
-		advise((char *)0, "can't detach because no header field name was given.");
-		break;
-	    }
 
 	    /*
 	     *	Scan the arguments for a -n.  Mixed file names and numbers aren't allowed,
@@ -506,7 +487,7 @@ WhatNow (int argc, char **argv)
 
 		    if (**arguments != '\0') {
 			n = atoi(*arguments);
-			(void)annotate(drft, attach, (char *)0, 1, 0, n, 1);
+			annotate(drft, ATTACH_FIELD, (char *)0, 1, 0, n, 1);
 
 			for (argp = arguments + 1; *argp != (char *)0; argp++) {
 			    if (atoi(*argp) > n) {
@@ -533,7 +514,7 @@ WhatNow (int argc, char **argv)
 	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
 		while (fgets(shell, sizeof (shell), f) != (char *)0) {
 		    *(strchr(shell, '\n')) = '\0';
-		    (void)annotate(drft, attach, shell, 1, 0, 0, 1);
+		    annotate(drft, ATTACH_FIELD, shell, 1, 0, 0, 1);
 		}
 		pclose(f);
 	    } else {
@@ -822,19 +803,6 @@ sendfile (char **arg, char *file, int pushsw)
     int i, vecp;
     char *cp, *sp, **vec, *program;
 
-    /* Translate MIME composition file, if necessary */
-    if ((cp = context_find ("automimeproc"))
-	    && (!strcmp (cp, "1"))
-	    && check_draft (file)
-	    && (buildfile (NULL, file) == NOTOK))
-	return 0;
-
-    /* For backwards compatibility */
-    if ((cp = context_find ("automhnproc"))
-	    && check_draft (file)
-	    && (i = editfile (&cp, NULL, file, NOUSE, NULL, NULL, NULL, 0, 0)))
-	return 0;
-
     /*
      * If the sendproc is the nmh command `send', then we call
      * those routines directly rather than exec'ing the command.
@@ -1066,9 +1034,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
     char *cp, buf[BUFSIZ], **argp, *program;
     char **arguments, *savearg[MAXARGS], **vec;
     struct stat st;
-    char	*attach = NMH_ATTACH_HEADER;/* attachment header field name */
-    int		attachformat = 1;	/* mhbuild format specifier for
-					   attachments */
 
 #ifndef	lint
     int	distsw = 0;
@@ -1246,28 +1211,14 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    continue;
 
 		case SNDATTACHSW:
-		    if (!(attach = *argp++) || *attach == '-') {
-			advise (NULL, "missing argument to %s", argp[-2]);
-			return;
-		    }
+		    advise(NULL, "The -attach switch is deprecated");
 		    continue;
 		case SNDNOATTACHSW:
-		    attach = NULL;
+		    advise(NULL, "The -noattach switch is deprecated");
 		    continue;
 
 		case SNDATTACHFORMAT:
-		    if (! *argp || **argp == '-')
-			adios (NULL, "missing argument to %s", argp[-1]);
-		    else {
-			attachformat = atoi (*argp);
-			if (attachformat < 0 ||
-			    attachformat > ATTACHFORMATS - 1) {
-			    advise (NULL, "unsupported attachformat %d",
-				    attachformat);
-			    continue;
-			}
-		    }
-		    ++argp;
+		    advise(NULL, "The -attachformat switch is deprecated");
 		    continue;
 	    }
 	}
@@ -1322,7 +1273,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 
     closefds (3);
 
-    if (sendsbr (vec, vecp, program, file, &st, 1, attach, attachformat) == OK)
+    if (sendsbr (vec, vecp, program, file, &st, 1) == OK)
 	done (0);
 }
 
