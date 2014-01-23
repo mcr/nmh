@@ -237,7 +237,9 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 
 		entry = mh_xmalloc(sizeof(*entry));
 		entry->filename = getcpy(s);
+		entry->next = NULL;
 		free(vp);
+
 		if (attach_tail) {
 		    attach_tail->next = entry;
 		    attach_tail = entry;
