@@ -14,6 +14,8 @@ fi
 
 setup_test
 
+export LC_ALL=en_US.UTF-8
+
 draft="$MH_TEST_DIR/$$.draft"
 expected="$MH_TEST_DIR/$$.expected"
 
@@ -187,7 +189,7 @@ Fcc: +outbox
 Subject: An empty dist test
 EOF
 
-LC_ALL=en_US.UTF-8 run_prog mhbuild -dist "$draft"
+run_prog mhbuild -dist "$draft"
 
 cat > "$expected" <<EOF
 To: =?UTF-8?Q?Se=C3=B1or_Test?= <mrtest@example.com>
@@ -222,7 +224,7 @@ This is some HTML tëxt.
 #end
 EOF
 
-LC_ALL=en_US.UTF-8 run_prog mhbuild "$draft"
+run_prog mhbuild "$draft"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
