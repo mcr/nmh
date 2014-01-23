@@ -67,6 +67,11 @@ NEW FEATURES
   directive that send(1) will use.
 - mhbuild(1) now supports the -auto/-noauto flags (to be used by send(1)
   when invoking mhbuild automatically).
+- mhbuild(1) now is automatically run by send, to insure that all outgoing
+  messages have proper MIME formatting.
+- A new header, "Attach", is supported by mhbuild; it is used to replace
+  previous functionality (which by default used a header named
+  Nmh-Attachment).
 
 -----------------
 OBSOLETE FEATURES
