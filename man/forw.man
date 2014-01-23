@@ -275,18 +275,7 @@ composition file. Note that
 .B nmh
 will not invoke
 .B mhbuild
-automatically, unless you
-add this line to your
-.I \&.mh\(ruprofile
-file:
-.PP
-.RS 5
-.nf
-automimeproc: 1
-.fi
-.RE
-.PP
-Otherwise, you must specifically give the command
+automatically; you must specifically give the command
 .PP
 .RS 5
 .nf

@@ -225,9 +225,6 @@ commands for managing MIME attachments.
 ^Editor:~^To override the default editor
 ^<lasteditor>\-next:~^To name an editor to be used after exit
 ^~^from <lasteditor>
-^automimeproc:~^If value is 1, and the draft is a MIME
-^~^composition file, then automatically call
-^~^buildmimeproc prior to sending.
 ^buildmimeproc:~^Program to translate MIME composition files
 ^fileproc:~^Program to refile the message
 ^lproc:~^Program to list the contents of a message

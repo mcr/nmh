@@ -803,19 +803,6 @@ sendfile (char **arg, char *file, int pushsw)
     int i, vecp;
     char *cp, *sp, **vec, *program;
 
-    /* Translate MIME composition file, if necessary */
-    if ((cp = context_find ("automimeproc"))
-	    && (!strcmp (cp, "1"))
-	    && check_draft (file)
-	    && (buildfile (NULL, file) == NOTOK))
-	return 0;
-
-    /* For backwards compatibility */
-    if ((cp = context_find ("automhnproc"))
-	    && check_draft (file)
-	    && (i = editfile (&cp, NULL, file, NOUSE, NULL, NULL, NULL, 0, 0)))
-	return 0;
-
     /*
      * If the sendproc is the nmh command `send', then we call
      * those routines directly rather than exec'ing the command.

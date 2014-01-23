@@ -156,16 +156,6 @@ EDITOR environment variables.
 (profile, default: vi)
 .RE
 .PP
-.BR automimeproc :
-.RS 5
-If defined and set to 1, then the
-.B whatnow
-program will automatically
-invoke the buildmimeproc (discussed below) to process each message as a MIME
-composition draft before it is sent.
-(profile, no default)
-.RE
-.PP
 .BR Msg\-Protect :
 600
 .RS 5

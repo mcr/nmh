@@ -555,20 +555,6 @@ switch will cause
 .B mhbuild
 to exit without error if the input file already has valid MIME headers.
 .PP
-It is also possible to have the
-.B whatnow
-program invoke
-.B mhbuild
-automatically when a message is sent.  To do this, you must add the line
-.PP
-.RS 5
-automimeproc: 1
-.RE
-.PP
-to your
-.I \&.mh\(ruprofile
-file.
-.PP
 Finally, you should consider adding this line to your profile:
 .PP
 .RS 5
