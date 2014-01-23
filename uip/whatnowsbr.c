@@ -443,7 +443,7 @@ WhatNow (int argc, char **argv)
 		    }
 
 		    if (verbose) {
-			printf ("Attaching %s as a %s", file, ctype);
+			printf ("Attaching %s as a %s\n", file, ctype);
 			free (ctype);
 		    }
 		}
