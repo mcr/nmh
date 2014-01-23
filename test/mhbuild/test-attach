@@ -16,7 +16,6 @@ setup_test
 
 draft="$MH_TEST_DIR/$$.draft"
 expected="$MH_TEST_DIR/$$.expected"
-actual="$MH_TEST_DIR/$$.actual"
 
 #
 # Test out a simple draft, one part.
@@ -30,9 +29,9 @@ Attach: ${srcdir}/test/mhbuild/tiny.jpg
 ------
 EOF
 
-mhbuild "$draft"
+run_prog mhbuild "$draft"
 
-cat > "$actual" <<EOF
+cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
 Fcc: +outbox
@@ -45,7 +44,7 @@ Content-Transfer-Encoding: base64
 /9g=
 EOF
 
-check "$draft" "$actual"
+check "$draft" "$expected"
 
 #
 # Check out more common case, one (or more) attachments
@@ -61,12 +60,210 @@ Attach: ${srcdir}/test/mhbuild/tiny.jpg
 This is a test
 EOF
 
-mhbuild "$draft"
+run_prog mhbuild "$draft"
 
-cat "$draft"
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg; name="tiny.jpg"
+Content-Description: tiny.jpg
+Content-Disposition: attachment; filename="tiny.jpg"
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
 
 #
-# Two parts, one attachment
+# An empty Attach header
 #
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Attach:
+------
+This is a test of an empty attach header.
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test of an empty attach header.
+EOF
+
+check "$draft" "$expected"
+
+#
+# Check a completely empty message
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: Test of an empty body
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: Test of an empty body
+MIME-Version: 1.0
+Content-Type: text/plain
+EOF
+
+check "$draft" "$expected"
+
+#
+# Make sure we fail if we run into a MIME-Version header
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: Test of an already-MIMEified message
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a preformatted MIME content test.
+EOF
+
+set +e
+run_test 'eval mhbuild "$draft"' "mhbuild: draft shouldn't contain MIME-Version: field"
+set -e
+
+#
+# Run it again using -auto
+#
+
+run_prog mhbuild -auto "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: Test of an already-MIMEified message
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a preformatted MIME content test.
+EOF
+
+check "$draft" "$expected"
+
+#
+# Make sure -dist does nothing but encode headers
+#
+
+cat > "$draft" <<EOF
+To: Señor Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: An empty dist test
+EOF
+
+LC_ALL=en_US.UTF-8 run_prog mhbuild -dist "$draft"
+
+cat > "$expected" <<EOF
+To: =?UTF-8?Q?Se=C3=B1or_Test?= <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: An empty dist test
+EOF
+
+check "$draft" "$expected"
+
+#
+# Two parts, one attachment; make sure mixing of multiparts at different
+# levels works
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: A more complete multipart test
+Attach: ${srcdir}/test/mhbuild/tiny.jpg
+--------
+#begin alternative
+#<text/plain
+This is some tëxt.
+#<text/html
+<html>
+<body>
+This is some HTML tëxt.
+</body>
+</html>
+#end
+EOF
+
+LC_ALL=en_US.UTF-8 run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: A more complete multipart test
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: multipart/alternative; boundary="----- =_aaaaaaaaaa1"
+
+------- =_aaaaaaaaaa1
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+This is some t=C3=ABxt.
+
+------- =_aaaaaaaaaa1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<body>
+This is some HTML t=C3=ABxt.
+</body>
+</html>
+
+------- =_aaaaaaaaaa1--
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg; name="tiny.jpg"
+Content-Description: tiny.jpg
+Content-Disposition: attachment; filename="tiny.jpg"
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
 
 exit ${failed:-0}
