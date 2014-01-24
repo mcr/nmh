@@ -21,6 +21,8 @@ static char *get_file_info(const char *, const char *);
 char *
 mime_type(const char *file_name) {
     char *content_type = NULL;  /* mime content type */
+    char *p;
+    static int loaded_defaults = 0;
 
 #ifdef MIMETYPEPROC
     char *mimetype;
@@ -44,9 +46,62 @@ mime_type(const char *file_name) {
         content_type = strdup(mimetype);
 #endif /* MIMEENCODINGPROC */
     }
-#else  /* MIMETYPEPROC */
-    NMH_UNUSED(file_name);
 #endif /* MIMETYPEPROC */
+
+    /*
+     * If we didn't get the MIME type from the contents (or we don't support
+     * the necessary command) then use the mhshow suffix.
+     */
+
+    if (content_type == NULL) {
+	struct node *np;		/* Content scan node pointer */
+	FILE *fp;			/* File pointer for mhn.defaults */
+
+	if (! loaded_defaults &&
+			(fp = fopen(p = etcpath("mhn.defaults"), "r"))) {
+	    loaded_defaults = 1;
+	    readconfig(NULL, fp, p, 0);
+	    fclose(fp);
+	}
+
+	if ((p = strrchr(file_name, '.')) != NULL) {
+	    for (np = m_defs; np; np = np->n_next) {
+		if (strncasecmp(np->n_name, "mhshow-suffix-", 14) == 0 &&
+		    strcasecmp(p, np->n_field ? np->n_field : "") == 0) {
+		    content_type = strdup(np->n_name + 14);
+		    break;
+		}
+	    }
+	}
+
+	/*
+	 * If we didn't match any filename extension, try to infer the
+	 * content type. If we have binary, assume application/octet-stream;
+	 * otherwise, assume text/plain.
+	 */
+
+	if (content_type == NULL) {
+	    FILE *fp;
+	    int binary = 0, c;
+
+	    if (!(fp = fopen(file_name, "r"))) {
+		advise (NULL, "unable to access file \"%s\"", file_name);
+		return NULL;
+	    }
+
+	    while ((c = getc(fp)) != EOF) {
+		if (! isascii(c)) {
+		    binary = 1;
+		    break;
+		}
+	    }
+
+	    fclose(fp);
+
+	    content_type =
+		strdup(binary ? "application/octet-stream" : "text/plain");
+	}
+    }
 
     return content_type;
 }
