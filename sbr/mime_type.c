@@ -1,7 +1,7 @@
 /*
- * attach.c -- routines to help attach files via whatnow
+ * mime_type.c -- routine to determine the MIME Content-Type of a file
  *
- * This code is Copyright (c) 2002, by the authors of nmh.  See the
+ * This code is Copyright (c) 2014, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
  * complete copyright information.
  */
@@ -16,7 +16,8 @@ static char *get_file_info(const char *, const char *);
 
 /*
  * Try to use external command to determine mime type, and possibly
- * encoding.  Caller is responsible for free'ing returned memory.
+ * encoding.  If that fails try using the filename extension.  Caller
+ * is responsible for free'ing returned memory.
  */
 char *
 mime_type(const char *file_name) {

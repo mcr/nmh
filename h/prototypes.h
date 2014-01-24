@@ -196,6 +196,26 @@ int makedir (char *);
 char *message_id (time_t, int);
 
 /*
+ * Return a MIME content-type string for the specified file.
+ *
+ * If the system supports it, will use the "file" command to determine
+ * the appropriate content-type.  Otherwise it will try to determine the
+ * content-type from the suffix.  If that fails, the file will be scanned
+ * and either assigned a MIME type of text/plain or application/octet-stream
+ * depending if binary content is present.
+ *
+ * Arguments:
+ *
+ * filename	- The name of the file to determine the MIME type of.
+ *
+ * Returns a pointer to a content-type string (which may include MIME
+ * parameters, such as charset).  Returns a NULL if it cannot determine
+ * the MIME type of the file.  Returns allocated storage that must be
+ * free'd.
+ */
+char *mime_type(const char *filename);
+
+/*
  * Clear the screen, using the appropriate entry from the terminfo database
  */
 void nmh_clear_screen(void);
@@ -344,14 +364,6 @@ int WhatNow(int, char **);
 int writeBase64aux(FILE *, FILE *);
 int writeBase64 (unsigned char *, size_t, unsigned char *);
 int writeBase64raw (unsigned char *, size_t, unsigned char *);
-
-/*
- * prototypes to support whatnow attach
- */
-int   attach(char *, char *, char *, size_t, char *, size_t, int);
-void  clean_up_temporary_files(const char *, const char *);
-char *mime_type(const char *);
-char *construct_build_directive(char *, const char *, int);
 
 /*
  * credentials management
