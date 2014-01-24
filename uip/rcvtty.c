@@ -189,13 +189,14 @@ message_fd (char **vec)
 {
     pid_t child_id;
     int bytes, seconds;
-    /* volatile to prevent "might be clobbered" warning from gcc: */
-    volatile int fd;
-    char tmpfil[BUFSIZ];
+    int fd;
+    char *tfile;
     struct stat st;
 
-    fd = mkstemp (strncpy (tmpfil, "/tmp/rcvttyXXXXX", sizeof(tmpfil)));
-    unlink (tmpfil);
+    if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) {
+	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
+	return NOTOK;
+    }
 
     if ((child_id = fork()) == NOTOK) {
 	/* fork error */
@@ -259,7 +260,6 @@ header_fd (void)
 	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
         return NOTOK;
     }
-    unlink (tfile);
 
     rewind (stdin);
 
