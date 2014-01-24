@@ -60,7 +60,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
     char buffer[BUFSIZ], file[BUFSIZ];
     struct stat sts;
     char **buildvec, *buildprogram;
-    volatile char *drft = draft;
+    char *volatile drft = draft;
 
     /*
      * Run the mimebuildproc (which is by default mhbuild) on the message
@@ -99,12 +99,11 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	 * rename the draft file.  I'm not quite sure why.
 	 */
 	if (pushsw && unique) {
-            char *cp = m_mktemp2((char *) drft, invo_name, NULL, NULL);
+            char *cp = m_mktemp2(drft, invo_name, NULL, NULL);
             if (cp == NULL) {
                 adios ("sendsbr", "unable to create temporary file");
             }
-	    if (rename ((char *) drft,
-	    		strncpy(file, cp, sizeof(file))) == NOTOK)
+	    if (rename (drft, strncpy(file, cp, sizeof(file))) == NOTOK)
 		adios (file, "unable to rename %s to", drft);
 	    drft = file;
 	}
@@ -115,19 +114,17 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	 */
 	if (splitsw >= 0 && !distfile && stat ((char *) drft, &sts) != NOTOK
 		&& sts.st_size >= CPERMSG) {
-	    status = splitmsg (vec, vecp, program, (char *) drft,
+	    status = splitmsg (vec, vecp, program, drft,
 	    		       st, splitsw) ? NOTOK : OK;
 	} else {
-	    status = sendaux (vec, vecp, program, (char *) drft,
-	    		      st) ? NOTOK : OK;
+	    status = sendaux (vec, vecp, program, drft, st) ? NOTOK : OK;
 	}
 
 	/* rename the original draft */
 	if (rename_drft && status == OK &&
-		rename ((char *) drft,
-			strncpy (buffer, m_backup ((char *) drft),
+		rename (drft, strncpy (buffer, m_backup (drft),
 				 sizeof(buffer))) == NOTOK)
-	    advise (buffer, "unable to rename %s to", (char *) drft);
+	    advise (buffer, "unable to rename %s to", drft);
 	break;
 
     default: 
