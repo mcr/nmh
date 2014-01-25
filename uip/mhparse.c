@@ -1669,17 +1669,7 @@ openBase64 (CT ct, char **file)
         cp = context_find (buffer);
     }
     if (cp != NULL && *cp != '\0') {
-        if (ce->ce_unlink) {
-            /* Temporary file already exists, so we rename to
-               version with extension. */
-            char *file_org = strdup(ce->ce_file);
-            ce->ce_file = add (cp, ce->ce_file);
-            if (rename(file_org, ce->ce_file)) {
-                adios (ce->ce_file, "unable to rename %s to ", file_org);
-            }
-            free(file_org);
-
-        } else {
+        if (! ce->ce_unlink) {
             ce->ce_file = add (cp, ce->ce_file);
         }
     }
@@ -1908,17 +1898,7 @@ openQuoted (CT ct, char **file)
         cp = context_find (buffer);
     }
     if (cp != NULL && *cp != '\0') {
-        if (ce->ce_unlink) {
-            /* Temporary file already exists, so we rename to
-               version with extension. */
-            char *file_org = strdup(ce->ce_file);
-            ce->ce_file = add (cp, ce->ce_file);
-            if (rename(file_org, ce->ce_file)) {
-                adios (ce->ce_file, "unable to rename %s to ", file_org);
-            }
-            free(file_org);
-
-        } else {
+        if (! ce->ce_unlink) {
             ce->ce_file = add (cp, ce->ce_file);
         }
     }
@@ -2137,17 +2117,7 @@ open7Bit (CT ct, char **file)
         cp = context_find (buffer);
     }
     if (cp != NULL && *cp != '\0') {
-        if (ce->ce_unlink) {
-            /* Temporary file already exists, so we rename to
-               version with extension. */
-            char *file_org = strdup(ce->ce_file);
-            ce->ce_file = add (cp, ce->ce_file);
-            if (rename(file_org, ce->ce_file)) {
-                adios (ce->ce_file, "unable to rename %s to ", file_org);
-            }
-            free(file_org);
-
-        } else {
+        if (! ce->ce_unlink) {
             ce->ce_file = add (cp, ce->ce_file);
         }
     }
