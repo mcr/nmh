@@ -37,6 +37,9 @@ push(void)
 	    SIGNAL (SIGTTIN, SIG_IGN);
 	    SIGNAL (SIGTTOU, SIG_IGN);
 #endif
+
+	    unregister_for_removal(0);
+
 	    freopen ("/dev/null", "r", stdin);
 	    freopen ("/dev/null", "w", stdout);
 	    break;

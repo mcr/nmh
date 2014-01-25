@@ -623,6 +623,8 @@ anno (int fd, struct stat *st)
 	    sigaddset (&set, SIGTERM);
 	    sigprocmask (SIG_BLOCK, &set, &oset);
 
+	    unregister_for_removal(0);
+
 	    annoaux (fd);
 	    if (child_id == OK)
 		_exit (0);
