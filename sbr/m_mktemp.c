@@ -7,6 +7,11 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
+#include <h/signals.h>
+
+static void register_for_removal(const char *);
+
 
 /*  Create a temporary file.  If pfx_in is null, the temporary file
  *  will be created in the temporary directory (more on that later).
@@ -56,10 +61,14 @@ m_mktemp (
     }
 
     fd = mkstemp(tmpfil);
+
     if (fd < 0) {
         umask(oldmode);
         return NULL;
     }
+
+    register_for_removal(tmpfil);
+
     if (fd_ret != NULL) {
         *fd_ret = fd;
         keep_open = 1;
@@ -140,4 +149,126 @@ get_temp_dir()
         if (tmpdir != NULL && *tmpdir != '\0') return tmpdir;
     }
     return m_maildir("");
+}
+
+
+/*
+ * Array of files (full pathnames) to remove on process exit.
+ * Instead of removing slots from the array, just set to NULL
+ * to indicate that the file should no longer be removed.
+ */
+static svector_t exit_filelist = NULL;
+
+/*
+ * Register a file for removal at program termination.
+ */
+static void
+register_for_removal(const char *pathname) {
+    if (exit_filelist == NULL) exit_filelist = svector_create(20);
+    (void) svector_push_back(exit_filelist, add(pathname, NULL));
+}
+
+/*
+ * Unregister all files that were registered to be removed at program
+ * termination.  When called with remove_files of 0, this function is
+ * intended for use by one of the programs after a fork(3) without a
+ * subsequent call to one of the exec(3) functions or _exit(3).  When
+ * called with non-0 remove_files argument, it is intended for use by
+ * an atexit() function.
+ *
+ * Right after a fork() and before calling exec() or _exit(), if the
+ * child catches one of the appropriate signals, it will remove
+ * all the registered temporary files.  Some of those may be needed by
+ * the parent.  Some nmh programs ignore or block some of the signals
+ * in the child right after fork().  For the other programs, rather
+ * than complicate things by preventing that, just take the chance
+ * that it might happen.  It is harmless to attempt to unlink a
+ * temporary file twice, assuming another one wasn't created too
+ * quickly created with the same name.
+ */
+void
+unregister_for_removal(int remove_files) {
+    if (exit_filelist) {
+        size_t i;
+
+        for (i = 0; i < svector_size(exit_filelist); ++i) {
+            char *filename = svector_at(exit_filelist, i);
+
+            if (filename) {
+                if (remove_files) (void) unlink(filename);
+                free(filename);
+            }
+        }
+
+        svector_free(exit_filelist);
+        exit_filelist = NULL;
+    }
+}
+
+/*
+ * If the file was registered for removal, deregister it.  In
+ * any case, unlink it.
+ */
+int
+m_unlink(const char *pathname) {
+    if (exit_filelist) {
+        char **slot = svector_find(exit_filelist, pathname);
+
+        if (slot  &&  *slot) {
+            free(*slot);
+            *slot = NULL;
+        }
+    }
+
+    return unlink(pathname);
+    /* errno should be set to ENOENT if file was not found */
+}
+
+/*
+ * Remove all registered temporary files.
+ */
+void
+remove_registered_files_atexit() {
+    unregister_for_removal(1);
+}
+
+/*
+ * Remove all registered temporary files.  Suitable for use as a
+ * signal handler.  If the signal is one of the usual process
+ * termination signals, calls exit().  Otherwise, disables itself
+ * by restoring the default action and then re-raises the signal,
+ * in case the use was expecting a core dump.
+ */
+void
+remove_registered_files(int sig) {
+    struct sigaction act;
+
+    /*
+     * Ignore this signal for the duration.  And we either exit() or
+     * disable this signal handler below, so don't restore this handler.
+     */
+    act.sa_handler = SIG_IGN;
+    (void) sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+    (void) sigaction(sig, &act, 0);
+
+    if (sig == SIGHUP || sig == SIGINT || sig == SIGQUIT || sig == SIGTERM) {
+        /*
+         * We don't need to call remove_registered_files_atexit() if
+         * it was registered with atexit(), but let's not assume that.
+         * It's harmless to call it twice.
+         */
+        remove_registered_files_atexit();
+
+        exit(1);
+    } else {
+        act.sa_handler = SIG_DFL;
+        (void) sigemptyset(&act.sa_mask);
+        act.sa_flags = 0;
+        (void) sigaction(sig, &act, 0);
+
+        remove_registered_files_atexit();
+
+        (void) raise(sig);
+    }
 }

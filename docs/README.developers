@@ -22,6 +22,15 @@ commit checklist
 8. notify nmh-users?
 
 
+---------------------------------
+C library/system call usage notes
+---------------------------------
+* Use m_mktemp2() or m_mktemp() instead of mkstemp(3) (see section on
+  nmh temporary files below).
+* Use m_unlink() instead of unlink(3).
+* Use done() instead of _exit(3) except after a fork(3).
+
+
 -------------------------
 autoconf & automake files
 -------------------------
@@ -160,6 +169,21 @@ functions:
 OS function  nmh-local version to use instead
 ===========  ================================
 getpass()    nmh_getpass()
+
+
+-------------------
+nmh temporary files
+-------------------
+
+To create a temporary file, use m_mktemp2() or m_mktemp().  They use
+mkstemp(3), but they also register the temporary file for removal on
+program termination.  So, do not use mkstemp() directly.
+
+To further support this, nmh_init() must be called at the beginning of
+main().  And, if a child process is not going to immediately call one
+of the exec(3) functions or _exit(3) after a fork(3), it should call
+unregister_for_removal(0).  Finally, nmh_init() sets up signal handlers
+for several signals:  these signal handlers should not be disabled.
 
 
 --------------

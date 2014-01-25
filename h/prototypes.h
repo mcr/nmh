@@ -359,3 +359,10 @@ char *construct_build_directive(char *, const char *, int);
  */
 void init_credentials_file ();
 int nmh_get_credentials (char *, char *, int, nmh_creds_t);
+
+/*
+ * temporary file management
+ */
+int nmh_init(const char *argv0, int read_context);
+int m_unlink(const char *);
+void unregister_for_removal(int remove_files);

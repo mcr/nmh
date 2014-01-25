@@ -131,10 +131,7 @@ main(int argc, char **argv)
     char *cp, buf[BUFSIZ], **argp;
     char **arguments, *comps[MAXARGS];
 
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

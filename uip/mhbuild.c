@@ -110,15 +110,9 @@ main (int argc, char **argv)
     FILE *fp_out = NULL;
     int header_encoding = CE_UNKNOWN;
 
+    if (nmh_init(argv[0], 1)) { return 1; }
+
     done=unlink_done;
-
-#ifdef LOCALE
-    setlocale(LC_ALL, "");
-#endif
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

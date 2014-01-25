@@ -164,15 +164,9 @@ main (int argc, char **argv)
     CT ct, *ctp;
     FILE *fp;
 
+    if (nmh_init(argv[0], 1)) { return 1; }
+
     done=freects_done;
-
-#ifdef LOCALE
-    setlocale(LC_ALL, "");
-#endif
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

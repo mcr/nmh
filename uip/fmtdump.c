@@ -51,13 +51,7 @@ main (int argc, char **argv)
     char buf[BUFSIZ], *nfs, **argp, **arguments;
     struct format *fmt;
 
-#ifdef LOCALE
-    setlocale(LC_ALL, "");
-#endif
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

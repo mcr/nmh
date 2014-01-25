@@ -283,14 +283,7 @@ main (int argc, char **argv)
     FILE *in, *out;
     m_getfld_state_t gstate = 0;
 
-#ifdef LOCALE
-    setlocale(LC_ALL, "");
-#endif
-    invo_name = r1bindex (argv[0], '/');
-
-    /* foil search of user profile/context */
-    if (context_foil (NULL) == -1)
-	done (1);
+    if (nmh_init(argv[0], 0 /* use context_foil() */)) { return 1; }
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 0);

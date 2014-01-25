@@ -11,6 +11,13 @@
 #include <h/utils.h>
 #include <fcntl.h>
 
+/* sbr/signals.c */
+extern int setup_signal_handlers();
+
+/* sbr/m_mktemp.c */
+extern void remove_registered_files_atexit();
+
+
 /*
  * We allocate space for messages (msgs array)
  * this number of elements at a time.
@@ -316,4 +323,34 @@ nmh_strcasestr (const char *s1, const char *s2) {
     }
 
     return NULL;
+}
+
+
+int
+nmh_init(const char *argv0, int read_context) {
+#ifdef LOCALE
+    setlocale(LC_ALL, "");
+#endif
+
+    invo_name = r1bindex ((char *) argv0, '/');
+
+    if (setup_signal_handlers()) {
+        admonish("sigaction", "unable to set up signal handlers");
+    }
+
+    /* POSIX atexit() does not define any error conditions. */
+    if (atexit(remove_registered_files_atexit)) {
+        admonish("atexit", "unable to register atexit function");
+    }
+
+    if (read_context) {
+        context_read();
+        return OK;
+    } else {
+        int status = context_foil(NULL);
+        if (status != OK) {
+            advise("", "failed to create minimal profile/conext");
+        }
+        return status;
+    }
 }

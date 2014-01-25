@@ -40,13 +40,7 @@ main (int argc, char **argv)
     char *cp, *file = NULL, buf[BUFSIZ];
     char **argp, **arguments;
 
-#ifdef LOCALE
-    setlocale(LC_ALL, "");
-#endif
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 1);

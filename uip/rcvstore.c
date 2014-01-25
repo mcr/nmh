@@ -54,15 +54,9 @@ main (int argc, char **argv)
     struct msgs *mp;
     struct stat st;
 
+    if (nmh_init(argv[0], 1)) { return 1; }
+
     done=unlink_done;
-
-#ifdef LOCALE
-    setlocale(LC_ALL, "");
-#endif
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 1);

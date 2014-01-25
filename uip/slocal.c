@@ -188,14 +188,7 @@ main (int argc, char **argv)
     char mailbox[BUFSIZ], tmpfil[BUFSIZ];
     char **argp, **arguments;
 
-#ifdef LOCALE
-    setlocale(LC_ALL, "");
-#endif
-    invo_name = r1bindex (*argv, '/');
-
-    /* foil search of user profile/context */
-    if (context_foil (NULL) == -1)
-	done (1);
+    if (nmh_init(argv[0], 0 /* use context_foil() */)) { return 1; }
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 0);

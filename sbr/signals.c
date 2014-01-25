@@ -10,6 +10,9 @@
 #include <h/mh.h>
 #include <h/signals.h>
 
+/* sbr/m_mktemp.c */
+extern void remove_registered_files(int);
+
 
 /*
  * A version of the function `signal' that uses reliable
@@ -78,3 +81,30 @@ SIGNAL2 (int sig, SIGNAL_HANDLER func)
     return (oact.sa_handler);
 }
 
+
+/*
+ * For use by nmh_init().
+ */
+int
+setup_signal_handlers() {
+    /*
+     * Catch HUP, INT, QUIT, and TERM so that we can clean up tmp
+     * files when the user terminates the process early.  And also a
+     * few other common signals that can be thrown due to bugs, stack
+     * overflow, etc.
+     */
+
+    if (SIGNAL(SIGHUP,  remove_registered_files) == SIG_ERR  ||
+        SIGNAL(SIGINT,  remove_registered_files) == SIG_ERR  ||
+        SIGNAL(SIGQUIT, remove_registered_files) == SIG_ERR  ||
+        SIGNAL(SIGTERM, remove_registered_files) == SIG_ERR  ||
+        SIGNAL(SIGILL,  remove_registered_files) == SIG_ERR  ||
+#       ifdef SIGBUS
+        SIGNAL(SIGBUS,  remove_registered_files) == SIG_ERR  ||
+#       endif
+        SIGNAL(SIGSEGV, remove_registered_files) == SIG_ERR) {
+        return NOTOK;
+    }
+
+    return OK;
+}

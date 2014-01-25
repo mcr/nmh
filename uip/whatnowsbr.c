@@ -130,11 +130,6 @@ WhatNow (int argc, char **argv)
     char	*l;			/* set on -l to alist  command */
     int		n;			/* set on -n to alist command */
 
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
-
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
