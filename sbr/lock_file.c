@@ -543,17 +543,18 @@ static int
 lockit (struct lockinfo *li)
 {
     int fd;
-    char *curlock, *tmplock;
+    char *curlock, *tmpfile;
 
 #if 0
     char buffer[128];
 #endif
 
     curlock = li->curlock;
-    tmplock = li->tmplock;
 
-    if ((fd = mkstemp(tmplock)) == -1)
+    if ((tmpfile = m_mktemp(li->tmplock, &fd, NULL)) == NULL) {
+        advise(NULL, "unable to create temporary file in %s", get_temp_dir());
 	return -1;
+    }
 
 #if 0
     /* write our process id into lock file */
@@ -567,8 +568,8 @@ lockit (struct lockinfo *li)
      * Now try to create the real lock file
      * by linking to the temporary file.
      */
-    fd = link(tmplock, curlock);
-    unlink(tmplock);
+    fd = link(tmpfile, curlock);
+    unlink(tmpfile);
 
     return (fd == -1 ? -1 : 0);
 }
