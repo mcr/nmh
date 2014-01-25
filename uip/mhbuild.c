@@ -341,7 +341,7 @@ main (int argc, char **argv)
 	    free_content (ct);
 	}
 
-	unlink (infile);
+	(void) m_unlink (infile);
 	unlink_infile = 0;
 
 	done (0);
@@ -410,9 +410,9 @@ unlink_done (int status)
      * temporary files.
      */
     if (unlink_infile)
-	unlink (infile);
+	(void) m_unlink (infile);
     if (unlink_outfile)
-	unlink (outfile);
+	(void) m_unlink (outfile);
 
     exit (status);
 }

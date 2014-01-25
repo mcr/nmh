@@ -23,6 +23,6 @@ m_backup (char *file)
 	snprintf(buffer, sizeof(buffer), "%.*s%s%s", (int)(cp - file), file,
 		BACKUP_PREFIX, cp);
 
-    unlink(buffer);
+    (void) m_unlink(buffer);
     return buffer;
 }

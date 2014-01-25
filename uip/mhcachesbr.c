@@ -143,11 +143,11 @@ cache_content (CT ct)
 
 	    if (ferror (gp)) {
 		admonish (ce->ce_file, "error reading");
-		unlink (cachefile);
+		(void) m_unlink (cachefile);
 	    } else {
 		if (ferror (fp)) {
 		    admonish (cachefile, "error writing");
-		    unlink (cachefile);
+		    (void) m_unlink (cachefile);
 		}
 	    }
 	    fclose (fp);
@@ -273,7 +273,7 @@ got_it:
     if (status == OK && writing) {
 	if (*writing && strchr(buffer, '/'))
 	    make_intermediates (buffer);
-	unlink (buffer);
+	(void) m_unlink (buffer);
     }
 
     free (id);

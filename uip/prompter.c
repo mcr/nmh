@@ -227,7 +227,7 @@ abort:
 			if (killp || erasep) {
 			    tcsetattr(0, TCSADRAIN, &tio);
 			}
-			unlink (tmpfil);
+			(void) m_unlink (tmpfil);
 			done (1);
 		    }
 		    if (i != 0 || (field[0] != '\n' && field[0] != 0)) {
@@ -316,7 +316,7 @@ abort:
     cpydata (fdi, fdo, tmpfil, drft);
     close (fdi);
     close (fdo);
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
 
     context_save ();	/* save the context file */
     done (0);

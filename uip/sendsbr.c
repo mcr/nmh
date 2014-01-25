@@ -143,7 +143,7 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
 
     done=exit;
     if (distfile)
-	unlink (distfile);
+	(void) m_unlink (distfile);
 
     /*
      *	Get rid of any temporary files that we created for attachments.  Also get rid of
@@ -168,7 +168,7 @@ sendsbr (char **vec, int vecp, char *program, char *drft, struct stat *st,
 	    (void)strcpy(p, body_file_name);
 	    (void)strcat(p, ".orig");
 	    
-	    (void)unlink(composition_file_name);
+	    (void)m_unlink(composition_file_name);
 	}
     }
 
@@ -389,7 +389,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 
 	snprintf (partnum, sizeof(partnum), "%d", partno);
 	status = sendaux (vec, vecp, program, tmpdrf, st);
-	unlink (tmpdrf);
+	(void) m_unlink (tmpdrf);
 	if (status != OK)
 	    break;
 
@@ -487,7 +487,7 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 	    if (annotext && fd2 != NOTOK)
 		close (fd2);
 	    if (distfile) {
-		unlink (drft);
+		(void) m_unlink (drft);
 		if (rename (backup, drft) == NOTOK)
 		    advise (drft, "unable to rename %s to", backup);
 	    }
@@ -580,7 +580,7 @@ tmp_fd (void)
     if (debugsw)
 	advise (NULL, "temporary file %s selected", tfile);
     else
-	if (unlink (tfile) == NOTOK)
+	if (m_unlink (tfile) == NOTOK)
 	    advise (tfile, "unable to remove");
 
     return fd;

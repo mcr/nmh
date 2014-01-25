@@ -105,7 +105,7 @@ attach(char *attachment_header_field_name, char *draft_file_name,
     }
     (void)strncpy(body_file_name, p, body_file_name_len);
     if ((p = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-        unlink(body_file_name);
+        (void) m_unlink(body_file_name);
 	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
     }
     (void)strncpy(composition_file_name, p, composition_file_name_len);
@@ -237,8 +237,8 @@ void
 clean_up_temporary_files(const char *body_file_name,
                          const char *composition_file_name)
 {
-    (void) unlink(body_file_name);
-    (void) unlink(composition_file_name);
+    (void) m_unlink(body_file_name);
+    (void) m_unlink(composition_file_name);
 
     return;
 }

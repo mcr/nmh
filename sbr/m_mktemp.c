@@ -77,7 +77,7 @@ m_mktemp (
         FILE *fp = fdopen(fd, "w+");
         if (fp == NULL) {
             int olderr = errno;
-            unlink(tmpfil);
+            (void) m_unlink(tmpfil);
             close(fd);
             errno = olderr;
             umask(oldmode);

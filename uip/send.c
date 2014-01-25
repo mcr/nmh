@@ -397,7 +397,7 @@ go_to_it:
 		  get_temp_dir());
 	}
 	distfile = getcpy (cp);
-	unlink(distfile);
+	(void) m_unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK) {
 	    /* Cygwin with FAT32 filesystem produces EPERM. */
 	    if (errno != EXDEV  &&  errno != EPERM

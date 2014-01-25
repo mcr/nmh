@@ -253,11 +253,11 @@ static void
 unlink_done (int status)
 {
     if (backup[0])
-	unlink (backup);
+	(void) m_unlink (backup);
     if (drft[0])
-	unlink (drft);
+	(void) m_unlink (drft);
     if (tmpfil[0])
-	unlink (tmpfil);
+	(void) m_unlink (tmpfil);
 
     exit (status ? RCV_MBX : RCV_MOK);
 }

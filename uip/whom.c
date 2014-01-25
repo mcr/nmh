@@ -196,7 +196,7 @@ main (int argc, char **argv)
 
 	    status = pidwait(child_id, OK);
 
-	    unlink (msg);
+	    (void) m_unlink (msg);
 	    if (rename (backup, msg) == NOTOK)
 		adios (msg, "unable to rename %s to", backup);
 	    done (status);

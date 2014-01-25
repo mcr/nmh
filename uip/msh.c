@@ -1114,7 +1114,7 @@ quit (void)
 		close (i);
 	    else
 		advise (mp->foldpath, "error zero'ing");
-	    unlink (map_name (mp->foldpath));/* XXX */
+	    (void) m_unlink (map_name (mp->foldpath));/* XXX */
 	}
 	goto release;
     }
@@ -1131,8 +1131,8 @@ quit (void)
     for (msgnum = mp->lowmsg; msgnum <= mp->hghmsg; msgnum++)
 	if (does_exist(mp, msgnum) && pack (tmpfil, md, msgnum) == NOTOK) {
 	    mbx_close (tmpfil, md);
-	    unlink (tmpfil);
-	    unlink (map_name (tmpfil));
+	    (void) m_unlink (tmpfil);
+	    (void) m_unlink (map_name (tmpfil));
 	    goto release;
 	}
     mbx_close (tmpfil, md);
@@ -1145,8 +1145,8 @@ quit (void)
 
 	if (rename (map1, map2) == NOTOK) {
 	    admonish (map2, "unable to rename %s to", map1);
-	    unlink (map1);
-	    unlink (map2);
+	    (void) m_unlink (map1);
+	    (void) m_unlink (map2);
 	}
     }
 

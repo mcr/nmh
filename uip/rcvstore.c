@@ -166,7 +166,7 @@ main (int argc, char **argv)
     cpydata (fileno (stdin), fd, "standard input", tmpfilenam);
 
     if (fstat (fd, &st) == NOTOK) {
-	unlink (tmpfilenam);
+	(void) m_unlink (tmpfilenam);
 	adios (tmpfilenam, "unable to fstat");
     }
     if (close (fd) == NOTOK)
@@ -174,7 +174,7 @@ main (int argc, char **argv)
 
     /* don't add file if it is empty */
     if (st.st_size == 0) {
-	unlink (tmpfilenam);
+	(void) m_unlink (tmpfilenam);
 	advise (NULL, "empty file");
 	done (0);
     }
@@ -212,7 +212,7 @@ main (int argc, char **argv)
     folder_free (mp);		/* free folder/message structure          */
 
     context_save ();		/* save the global context file           */
-    unlink (tmpfilenam);	/* remove temporary file                  */
+    (void) m_unlink (tmpfilenam); /* remove temporary file                  */
     tmpfilenam = NULL;
 
     done (0);
@@ -226,6 +226,6 @@ static void
 unlink_done(int status)
 {
     if (tmpfilenam && *tmpfilenam)
-	unlink (tmpfilenam);
+	(void) m_unlink (tmpfilenam);
     exit (status);
 }

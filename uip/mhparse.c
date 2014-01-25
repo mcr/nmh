@@ -205,12 +205,12 @@ parse_mime (char *file)
 	fflush (fp);
 
 	if (ferror (stdin)) {
-	    unlink (file);
+	    (void) m_unlink (file);
 	    advise ("stdin", "error reading");
 	    return NULL;
 	}
 	if (ferror (fp)) {
-	    unlink (file);
+	    (void) m_unlink (file);
 	    advise (file, "error writing");
 	    return NULL;
 	}
@@ -222,7 +222,7 @@ parse_mime (char *file)
 
     if (!(ct = get_content (fp, file, 1))) {
 	if (is_stdin)
-	    unlink (file);
+	    (void) m_unlink (file);
 	advise (NULL, "unable to decode %s", file);
 	return NULL;
     }
@@ -2340,12 +2340,12 @@ openFile (CT ct, char **file)
 
 	    if (ferror (gp)) {
 		admonish (ce->ce_file, "error reading");
-		unlink (cachefile);
+		(void) m_unlink (cachefile);
 	    }
 	    else
 		if (ferror (fp)) {
 		    admonish (cachefile, "error writing");
-		    unlink (cachefile);
+		    (void) m_unlink (cachefile);
 		}
 	    fclose (fp);
 	}
@@ -2556,12 +2556,12 @@ openFTP (CT ct, char **file)
 
 		if (ferror (gp)) {
 		    admonish (ce->ce_file, "error reading");
-		    unlink (cachefile);
+		    (void) m_unlink (cachefile);
 		}
 		else
 		    if (ferror (fp)) {
 			admonish (cachefile, "error writing");
-			unlink (cachefile);
+			(void) m_unlink (cachefile);
 		    }
 		fclose (fp);
 	    }
@@ -2831,7 +2831,7 @@ openURL (CT ct, char **file)
 
 		if (ferror(gp)) {
 		    admonish(ce->ce_file, "error reading");
-		    unlink(cachefile);
+		    (void) m_unlink (cachefile);
 		}
 	    }
 	    umask(mask);

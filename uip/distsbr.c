@@ -87,7 +87,7 @@ distout (char *drft, char *msgnam, char *backup)
 	leave_bad: ;
 		fclose (ifp);
 		fclose (ofp);
-		unlink (drft);
+		(void) m_unlink (drft);
 		if (rename (backup, drft) == NOTOK)
 		    adios (drft, "unable to rename %s to", backup);
 		return NOTOK;
@@ -104,7 +104,7 @@ process: ;
     if (!resent) {
 	advise (NULL, BADMSG, "draft");
 	fclose (ofp);
-	unlink (drft);
+	(void) m_unlink (drft);
 	if (rename (backup, drft) == NOTOK)
 	    adios (drft, "unable to rename %s to", backup);
 	return NOTOK;
@@ -147,7 +147,7 @@ ready_msg (char *msgnam)
     if ((out = dup (hdrfd)) == NOTOK
 	    || (ofp = fdopen (out, "w")) == NULL)
 	adios (NULL, "no file descriptors -- you lose big");
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
 
     for (;;) {
 	int buffersz = sizeof buffer;
@@ -177,7 +177,7 @@ ready_msg (char *msgnam)
 		if ((out = dup (txtfd)) == NOTOK
 			|| (ofp = fdopen (out, "w")) == NULL)
 		    adios (NULL, "no file descriptors -- you lose big");
-		unlink (tmpfil);
+		(void) m_unlink (tmpfil);
 		fprintf (ofp, "\n%s", buffer);
 		while (state == BODY) {
 		    buffersz = sizeof buffer;

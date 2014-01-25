@@ -335,7 +335,7 @@ lkclose_dot (int fd, const char *file)
 
     lockname (file, &lkinfo, 0);	/* get name of lock file */
 #if !defined(HAVE_LIBLOCKFILE)
-    unlink (lkinfo.curlock);		/* remove lock file      */
+    (void) m_unlink (lkinfo.curlock);	/* remove lock file      */
 #else
     lockfile_remove(lkinfo.curlock);
 #endif /* HAVE_LIBLOCKFILE */
@@ -513,7 +513,7 @@ lkopen_dot (const char *file, int access, mode_t mode)
 		    
 		    /* check for stale lockfile, else sleep */
 		    if (curtime > st.st_ctime + RSECS)
-			unlink (lkinfo.curlock);
+			(void) m_unlink (lkinfo.curlock);
 		    else
 			sleep (5);
 		}
@@ -569,7 +569,7 @@ lockit (struct lockinfo *li)
      * by linking to the temporary file.
      */
     fd = link(tmpfile, curlock);
-    unlink(tmpfile);
+    (void) m_unlink(tmpfile);
 
     return (fd == -1 ? -1 : 0);
 }

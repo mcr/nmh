@@ -338,7 +338,7 @@ remove_files (int filep, char **files)
     /* Else just unlink the files */
     files++;	/* advance past filevec[0] */
     for (i = 0; i < filep; i++) {
-	if (unlink (files[i]) == NOTOK)
+	if (m_unlink (files[i]) == NOTOK)
 	    admonish (files[i], "unable to unlink");
     }
 }

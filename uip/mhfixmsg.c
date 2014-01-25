@@ -293,7 +293,7 @@ main (int argc, char **argv) {
             }
 
             if (close (fd)) {
-                unlink (file);
+                (void) m_unlink (file);
                 adios (NULL, "failed to write temporary file");
             }
         }
@@ -356,7 +356,7 @@ main (int argc, char **argv) {
             status += mhfixmsgsbr (ctp, &fx, outfile);
 
             if (using_stdin) {
-                unlink (file);
+                (void) m_unlink (file);
 
                 if (! outfile) {
                     /* Just calling m_backup() unlinks the backup file. */
@@ -457,7 +457,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     }
 
     if (modify_inplace) {
-        if (status != OK) unlink (outfile);
+        if (status != OK) (void) m_unlink (outfile);
         free (outfile);
         outfile = NULL;
     }
@@ -1035,7 +1035,7 @@ build_text_plain_part (CT encoded_part) {
     }
 
     free_content (tp_part);
-    unlink (tmp_plain_file);
+    (void) m_unlink (tmp_plain_file);
     free (tmp_plain_file);
 
     return NULL;
@@ -1106,7 +1106,7 @@ decode_part (CT ct) {
        filename of the decoded content.  tmp_decoded will contain the
        encoded output, get rid of that. */
     status = output_message (ct, tmp_decoded);
-    unlink (tmp_decoded);
+    (void) m_unlink (tmp_decoded);
     free (tmp_decoded);
 
     return status;
@@ -1166,7 +1166,7 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
     /* Unlink decoded content tmp file and free its filename to avoid
        leaks.  The file stream should already have been closed. */
     if (ct->c_cefile.ce_unlink) {
-        unlink (ct->c_cefile.ce_file);
+        (void) m_unlink (ct->c_cefile.ce_file);
         free (ct->c_cefile.ce_file);
         ct->c_cefile.ce_file = NULL;
         ct->c_cefile.ce_unlink = 0;
@@ -1486,7 +1486,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                                               :  ct->c_ctline  ?  ct->c_ctline
                                                                :  "");
                     }
-                    unlink (ct->c_cefile.ce_file);
+                    (void) m_unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
                 } else if (ct->c_encoding == CE_QUOTED  &&
@@ -1500,7 +1500,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                                               :  ct->c_ctline  ?  ct->c_ctline
                                                                :  "");
                     }
-                    unlink (ct->c_cefile.ce_file);
+                    (void) m_unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
                 } else {
@@ -1723,13 +1723,13 @@ strip_crs (CT ct, int *message_mods) {
                 if (close (fd)) {
                     admonish (NULL, "unable to write temporary file %s",
                               stripped_content_file);
-                    unlink (stripped_content_file);
+                    (void) m_unlink (stripped_content_file);
                     status = NOTOK;
                 } else {
                     /* Replace the decoded file with the converted one. */
                     if (ct->c_cefile.ce_file) {
                         if (ct->c_cefile.ce_unlink) {
-                            unlink (ct->c_cefile.ce_file);
+                            (void) m_unlink (ct->c_cefile.ce_file);
                         }
                         free (ct->c_cefile.ce_file);
                     }
@@ -1923,7 +1923,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
             /* Replace the decoded file with the converted one. */
             if (ct->c_cefile.ce_file) {
                 if (ct->c_cefile.ce_unlink) {
-                    unlink (ct->c_cefile.ce_file);
+                    (void) m_unlink (ct->c_cefile.ce_file);
                 }
                 free (ct->c_cefile.ce_file);
             }
@@ -1962,7 +1962,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
                 }
             }
         } else {
-            unlink (dest);
+            (void) m_unlink (dest);
         }
 #else  /* ! HAVE_ICONV */
         NMH_UNUSED (message_mods);
@@ -2012,7 +2012,7 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
                         }
                         if (new != -1) close (new);
                         if (old != -1) close (old);
-                        unlink (outfile);
+                        (void) m_unlink (outfile);
 
                         if (i < 0) {
                             /* The -file argument processing used path() to
@@ -2028,7 +2028,7 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
                 } else {
                     admonish (NULL, "unable to remove input file %s, "
                               "not modifying it", infile);
-                    unlink (outfile);
+                    (void) m_unlink (outfile);
                     status = NOTOK;
                 }
 
@@ -2038,7 +2038,7 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
             }
         } else {
             /* No modifications and didn't need the tmp outfile. */
-            unlink (outfile);
+            (void) m_unlink (outfile);
         }
     } else {
         /* Output is going to some file.  Produce it whether or not

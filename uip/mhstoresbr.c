@@ -626,7 +626,7 @@ got_filename:
      */
     if (ct->c_folder && (!is_partial || last_partial)) {
 	msgnum = output_content_folder (ct->c_folder, ct->c_storage);
-	unlink (ct->c_storage);
+	(void) m_unlink (ct->c_storage);
 	if (msgnum == NOTOK)
 	    return NOTOK;
     }

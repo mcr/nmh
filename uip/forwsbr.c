@@ -178,7 +178,7 @@ finished:
 	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
     }
     strncpy (tmpfil, cp, sizeof(tmpfil));
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
     if ((in = dup (fileno (tmp))) == NOTOK)
 	adios ("dup", "unable to");
 

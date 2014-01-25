@@ -1011,7 +1011,7 @@ forw (char *proc, char *filter, int vecp, char **vec)
 		break;
 	}
 
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
 }
 
 
@@ -2842,7 +2842,7 @@ ready: ;
     }
 
     if (!fmsh)
-	unlink (tmpfil);
+	(void) m_unlink (tmpfil);
     return status;
 }
 

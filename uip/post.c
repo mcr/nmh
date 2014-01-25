@@ -630,13 +630,13 @@ main (int argc, char **argv)
 	    post (tmpfil, 0, verbose, envelope);
 	}
 	post (bccfil, 1, verbose, envelope);
-	unlink (bccfil);
+	(void) m_unlink (bccfil);
     } else {
 	post (tmpfil, 0, isatty (1), envelope);
     }
 
     p_refile (tmpfil);
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
 
     if (verbose) {
     	if (partno)
@@ -1705,9 +1705,9 @@ sigser (int i)
 {
     NMH_UNUSED (i);
 
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
     if (msgflags & MINV)
-	unlink (bccfil);
+	(void) m_unlink (bccfil);
 
     if (!whomsw || checksw)
 	sm_end (NOTOK);
@@ -1829,9 +1829,9 @@ die (char *what, char *fmt, ...)
 {
     va_list ap;
 
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
     if (msgflags & MINV)
-	unlink (bccfil);
+	(void) m_unlink (bccfil);
 
     if (!whomsw || checksw)
 	sm_end (NOTOK);

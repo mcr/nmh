@@ -336,7 +336,7 @@ main (int argc, char **argv)
        thing would be to delay this unlink() until later if debug == 1, but I'll
        leave that for someone who cares about the temp-file-accessing
        functionality (they'll have to watch out for cases where we adios()). */
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
 
     if (!(fp = fdopen (fd, "r+")))
 	adios (NULL, "unable to access temporary file");
@@ -1200,7 +1200,7 @@ copy_message (int qd, char *tmpfil, int fold)
 	    if (write (fd1, buffer, i) != i) {
 you_lose:
 		close (fd1);
-		unlink (tmpfil);
+		(void) m_unlink (tmpfil);
 		return -1;
 	    }
 	if (i == -1)

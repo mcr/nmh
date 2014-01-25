@@ -112,7 +112,7 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 
 	    if (unlink_msgs) {
 		/* just unlink the messages */
-		if (unlink (dp) == -1) {
+		if (m_unlink (dp) == -1) {
 		    admonish (dp, "unable to unlink");
 		    retval = -1;
 		    continue;

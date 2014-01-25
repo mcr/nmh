@@ -179,7 +179,7 @@ rmf (char *folder)
 		others++;
 		continue;
 	}
-	if (unlink (dp->d_name) == NOTOK) {
+	if (m_unlink (dp->d_name) == NOTOK) {
 	    admonish (dp->d_name, "unable to unlink %s:", folder);
 	    others++;
 	}

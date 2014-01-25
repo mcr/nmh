@@ -235,7 +235,7 @@ WhatNow (int argc, char **argv)
 #else /* ! READLINE_SUPPORT */
 	if (!(argp = getans (prompt, aleqs))) {
 #endif /* READLINE_SUPPORT */
-	    unlink (LINK);
+	    (void) m_unlink (LINK);
 	    done (1);
 	}
 	switch (smatch (*argp, aleqs)) {
@@ -696,7 +696,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    snprintf (linkpath, sizeof(linkpath), "%s/%s", cwd, LINK);
 
 	if (atfile) {
-	    unlink (linkpath);
+	    (void) m_unlink (linkpath);
 	    if (link (altpath, linkpath) == NOTOK) {
 		symlink (altpath, linkpath);
 		slinked = 1;
@@ -762,7 +762,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 				&& copyf (linkpath, altpath) == NOTOK
 		           : stat (linkpath, &st) != NOTOK
 				&& st.st_nlink == 1
-				&& (unlink (altpath) == NOTOK
+				&& (m_unlink (altpath) == NOTOK
 					|| link (linkpath, altpath) == NOTOK)))
 		advise (linkpath, "unable to update %s from", altmsg);
     }
@@ -773,7 +773,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 
     *ed = NULL;
     if (altmsg && atfile)
-	unlink (linkpath);
+	(void) m_unlink (linkpath);
 
     return status;
 }
@@ -1304,7 +1304,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		  get_temp_dir());
 	}
 	distfile = getcpy (cp);
-	unlink(distfile);
+	(void) m_unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK)
 	    adios (distfile, "unable to link %s to", altmsg);
     } else {
@@ -1370,7 +1370,7 @@ whomfile (char **arg, char *file)
 static int
 removefile (char *drft)
 {
-    if (unlink (drft) == NOTOK)
+    if (m_unlink (drft) == NOTOK)
 	adios (drft, "unable to unlink");
 
     return OK;
