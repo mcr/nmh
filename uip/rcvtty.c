@@ -192,6 +192,7 @@ message_fd (char **vec)
 	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
 	return NOTOK;
     }
+    m_unlink(tfile);  /* Use fd, no longer need the file name. */
 
     if ((child_id = fork()) == NOTOK) {
 	/* fork error */
@@ -255,6 +256,7 @@ header_fd (void)
 	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
         return NOTOK;
     }
+    m_unlink(tfile);  /* Use fd, no longer need the file name. */
 
     rewind (stdin);
 
