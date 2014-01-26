@@ -32,7 +32,6 @@ static void register_for_removal(const char *);
  *
  *    MHTMPDIR envvar
  *    TMPDIR envvar
- *    TMP envvar
  *    User's mail directory.
  *
  *  NOTE: One will probably use m_mktemp2() instead of this function.
@@ -143,9 +142,6 @@ get_temp_dir()
         if (tmpdir != NULL && *tmpdir != '\0') return tmpdir;
 
         tmpdir = getenv("TMPDIR");
-        if (tmpdir != NULL && *tmpdir != '\0') return tmpdir;
-
-        tmpdir = getenv("TMP");
         if (tmpdir != NULL && *tmpdir != '\0') return tmpdir;
     }
     return m_maildir("");
