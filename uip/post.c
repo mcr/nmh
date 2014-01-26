@@ -283,12 +283,7 @@ main (int argc, char **argv)
     FILE *in, *out;
     m_getfld_state_t gstate = 0;
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* foil search of user profile/context */
-    if (context_foil (NULL) == -1)
-	done (1);
+    if (nmh_init(argv[0], 0 /* use context_foil() */)) { return 1; }
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 0);
@@ -533,15 +528,12 @@ main (int argc, char **argv)
 	    if ((out = fopen ("/dev/null", "w")) == NULL)
 		adios ("/dev/null", "unable to open");
 	} else {
-            char *cp = m_mktemp(m_maildir(invo_name), NULL, &out);
-            if (cp == NULL) {
-                cp = m_mktemp2(NULL, invo_name, NULL, &out);
-                if (cp == NULL) {
-		    adios ("post", "unable to create temporary file");
-                }
-            }
+	    char *cp = m_mktemp2(NULL, invo_name, NULL, &out);
+	    if (cp == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
             strncpy(tmpfil, cp, sizeof(tmpfil));
-	    chmod (tmpfil, 0600);
 	}
     }
 
@@ -638,13 +630,13 @@ main (int argc, char **argv)
 	    post (tmpfil, 0, verbose, envelope);
 	}
 	post (bccfil, 1, verbose, envelope);
-	unlink (bccfil);
+	(void) m_unlink (bccfil);
     } else {
 	post (tmpfil, 0, isatty (1), envelope);
     }
 
     p_refile (tmpfil);
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
 
     if (verbose) {
     	if (partno)
@@ -1280,8 +1272,9 @@ make_bcc_file (int dashstuff)
     FILE *out;
     char *tfile = NULL, *program;
 
-    tfile = m_mktemp2(NULL, "bccs", NULL, &out);
-    if (tfile == NULL) adios("bcc", "unable to create temporary file");
+    if ((tfile = m_mktemp2(NULL, "bccs", NULL, &out)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
     strncpy (bccfil, tfile, sizeof(bccfil));
 
     fprintf (out, "From: %s\n", fullfrom);
@@ -1712,9 +1705,9 @@ sigser (int i)
 {
     NMH_UNUSED (i);
 
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
     if (msgflags & MINV)
-	unlink (bccfil);
+	(void) m_unlink (bccfil);
 
     if (!whomsw || checksw)
 	sm_end (NOTOK);
@@ -1836,9 +1829,9 @@ die (char *what, char *fmt, ...)
 {
     va_list ap;
 
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
     if (msgflags & MINV)
-	unlink (bccfil);
+	(void) m_unlink (bccfil);
 
     if (!whomsw || checksw)
 	sm_end (NOTOK);

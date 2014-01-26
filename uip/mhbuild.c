@@ -66,9 +66,6 @@ DEFINE_SWITCH_ENUM(MIMEENCODING);
 DEFINE_SWITCH_ARRAY(MIMEENCODING, encodingswitches);
 #undef X
 
-/* mhbuildsbr.c */
-extern char *tmp;	/* directory to place temp files */
-
 /* mhcachesbr.c */
 extern int rcachesw;
 extern int wcachesw;
@@ -114,13 +111,9 @@ main (int argc, char **argv)
     FILE *fp_out = NULL;
     int header_encoding = CE_UNKNOWN;
 
+    if (nmh_init(argv[0], 1)) { return 1; }
+
     done=unlink_done;
-
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -309,16 +302,6 @@ main (int argc, char **argv)
 	cache_private = ".cache";
     cache_private = getcpy (m_maildir (cache_private));
 
-    /*
-     * Check for storage directory.  If defined, we
-     * will store temporary files there.  Else we
-     * store them in standard nmh directory.
-     */
-    if ((cp = context_find (nmhstorage)) && *cp)
-	tmp = concat (cp, "/", invo_name, NULL);
-    else
-	tmp = add (m_maildir (invo_name), NULL);
-
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
 
@@ -330,8 +313,13 @@ main (int argc, char **argv)
      * Process the composition file from standard input.
      */
     if (compfile[0] == '-' && compfile[1] == '\0') {
+	if ((cp = m_mktemp2(NULL, invo_name, NULL, &fp)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+
 	/* copy standard input to temporary file */
-	strncpy (infile, m_mktemp(invo_name, NULL, &fp), sizeof(infile));
+	strncpy (infile, cp, sizeof(infile));
 	while (fgets (buffer, BUFSIZ, stdin))
 	    fputs (buffer, fp);
 	fclose (fp);
@@ -357,7 +345,7 @@ main (int argc, char **argv)
 	    free_content (ct);
 	}
 
-	unlink (infile);
+	(void) m_unlink (infile);
 	unlink_infile = 0;
 
 	done (0);
@@ -382,8 +370,10 @@ main (int argc, char **argv)
     cts[1] = NULL;
 
     /* output MIME message to this temporary file */
-    strncpy(outfile, m_mktemp2(compfile, invo_name, NULL, &fp_out),
-            sizeof(outfile));
+    if ((cp = m_mktemp2(compfile, invo_name, NULL, &fp_out)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
+    strncpy(outfile, cp, sizeof(outfile));
     unlink_outfile = 1;
 
     /* output the message */
@@ -424,9 +414,9 @@ unlink_done (int status)
      * temporary files.
      */
     if (unlink_infile)
-	unlink (infile);
+	(void) m_unlink (infile);
     if (unlink_outfile)
-	unlink (outfile);
+	(void) m_unlink (outfile);
 
     exit (status);
 }

@@ -191,6 +191,7 @@ int m_putenv (char *, char *);
 int m_rand (unsigned char *, size_t);
 char *m_mktemp(const char *, int *, FILE **);
 char *m_mktemp2(const char *, const char *, int *, FILE **);
+char *get_temp_dir();
 void m_unknown(m_getfld_state_t *, FILE *);
 int makedir (char *);
 char *message_id (time_t, int);
@@ -370,3 +371,10 @@ int writeBase64raw (unsigned char *, size_t, unsigned char *);
  */
 void init_credentials_file ();
 int nmh_get_credentials (char *, char *, int, nmh_creds_t);
+
+/*
+ * temporary file management
+ */
+int nmh_init(const char *argv0, int read_context);
+int m_unlink(const char *);
+void unregister_for_removal(int remove_files);

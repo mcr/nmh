@@ -115,11 +115,7 @@ main(int argc, char **argv)
     char **arguments;
     char buf[BUFSIZ];
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex(argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     /*
      * If program was invoked with name ending

@@ -129,11 +129,6 @@ WhatNow (int argc, char **argv)
     char	*l;			/* set on -l to alist  command */
     int		n;			/* set on -n to alist command */
 
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
-
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
@@ -238,7 +233,7 @@ WhatNow (int argc, char **argv)
 #else /* ! READLINE_SUPPORT */
 	if (!(argp = getans (prompt, aleqs))) {
 #endif /* READLINE_SUPPORT */
-	    unlink (LINK);
+	    (void) m_unlink (LINK);
 	    done (1);
 	}
 	switch (smatch (*argp, aleqs)) {
@@ -681,7 +676,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    snprintf (linkpath, sizeof(linkpath), "%s/%s", cwd, LINK);
 
 	if (atfile) {
-	    unlink (linkpath);
+	    (void) m_unlink (linkpath);
 	    if (link (altpath, linkpath) == NOTOK) {
 		symlink (altpath, linkpath);
 		slinked = 1;
@@ -747,7 +742,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 				&& copyf (linkpath, altpath) == NOTOK
 		           : stat (linkpath, &st) != NOTOK
 				&& st.st_nlink == 1
-				&& (unlink (altpath) == NOTOK
+				&& (m_unlink (altpath) == NOTOK
 					|| link (linkpath, altpath) == NOTOK)))
 		advise (linkpath, "unable to update %s from", altmsg);
     }
@@ -758,7 +753,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 
     *ed = NULL;
     if (altmsg && atfile)
-	unlink (linkpath);
+	(void) m_unlink (linkpath);
 
     return status;
 }
@@ -1194,8 +1189,12 @@ sendit (char *sp, char **arg, char *file, int pushed)
 #endif /* not lint */
 	    && altmsg) {
 	vec[vecp++] = "-dist";
-	distfile = getcpy (m_mktemp2(altmsg, invo_name, NULL, NULL));
-	unlink(distfile);
+	if ((cp = m_mktemp2(altmsg, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	distfile = getcpy (cp);
+	(void) m_unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK)
 	    adios (distfile, "unable to link %s to", altmsg);
     } else {
@@ -1261,7 +1260,7 @@ whomfile (char **arg, char *file)
 static int
 removefile (char *drft)
 {
-    if (unlink (drft) == NOTOK)
+    if (m_unlink (drft) == NOTOK)
 	adios (drft, "unable to unlink");
 
     return OK;

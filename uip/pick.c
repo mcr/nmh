@@ -66,13 +66,9 @@ main (int argc, char **argv)
     struct msgs *mp, *mp2;
     register FILE *fp;
 
+    if (nmh_init(argv[0], 1)) { return 1; }
+
     done=putzero_done;
-
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

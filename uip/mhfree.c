@@ -106,7 +106,7 @@ free_content (CT ct)
 
     if (ct->c_file) {
 	if (ct->c_unlink)
-	    unlink (ct->c_file);
+	    (void) m_unlink (ct->c_file);
 	free (ct->c_file);
     }
     if (ct->c_fp)
@@ -270,7 +270,7 @@ free_encoding (CT ct, int toplevel)
 
     if (ce->ce_file) {
 	if (ce->ce_unlink)
-	    unlink (ce->ce_file);
+	    (void) m_unlink (ce->ce_file);
 	free (ce->ce_file);
 	ce->ce_file = NULL;
     }

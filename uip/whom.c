@@ -63,11 +63,7 @@ main (int argc, char **argv)
     char *msg = NULL, **ap, **argp, backup[BUFSIZ];
     char buf[BUFSIZ], **arguments, *vec[MAXARGS];
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -200,7 +196,7 @@ main (int argc, char **argv)
 
 	    status = pidwait(child_id, OK);
 
-	    unlink (msg);
+	    (void) m_unlink (msg);
 	    if (rename (backup, msg) == NOTOK)
 		adios (msg, "unable to rename %s to", backup);
 	    done (status);

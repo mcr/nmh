@@ -99,10 +99,11 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	 * rename the draft file.  I'm not quite sure why.
 	 */
 	if (pushsw && unique) {
-            char *cp = m_mktemp2(drft, invo_name, NULL, NULL);
-            if (cp == NULL) {
-                adios ("sendsbr", "unable to create temporary file");
-            }
+	    char *cp = m_mktemp2(drft, invo_name, NULL, NULL);
+	    if (cp == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
 	    if (rename (drft, strncpy(file, cp, sizeof(file))) == NOTOK)
 		adios (file, "unable to rename %s to", drft);
 	    drft = file;
@@ -134,7 +135,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 
     done=exit;
     if (distfile)
-	unlink (distfile);
+	(void) m_unlink (distfile);
 
     return status;
 }
@@ -286,10 +287,10 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 
 	char *cp = m_mktemp2(drft, invo_name, NULL, &out);
         if (cp == NULL) {
-	    adios (drft, "unable to create temporary file for");
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
         }
 	strncpy(tmpdrf, cp, sizeof(tmpdrf));
-	chmod (tmpdrf, 0600);
 
 	/*
 	 * Output the header fields
@@ -353,7 +354,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 
 	snprintf (partnum, sizeof(partnum), "%d", partno);
 	status = sendaux (vec, vecp, program, tmpdrf, st);
-	unlink (tmpdrf);
+	(void) m_unlink (tmpdrf);
 	if (status != OK)
 	    break;
 
@@ -395,7 +396,8 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 	    snprintf (buf, sizeof(buf), "%d", fd2);
 	    vec[vecp++] = buf;
 	} else {
-	    admonish (NULL, "unable to create file for annotation list");
+	    admonish (NULL, "unable to create temporary file in %s "
+                      "for annotation list", get_temp_dir());
 	}
     }
     if (distfile && distout (drft, distfile, backup) == NOTOK)
@@ -450,7 +452,7 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
 	    if (annotext && fd2 != NOTOK)
 		close (fd2);
 	    if (distfile) {
-		unlink (drft);
+		(void) m_unlink (drft);
 		if (rename (backup, drft) == NOTOK)
 		    advise (drft, "unable to rename %s to", backup);
 	    }
@@ -536,16 +538,14 @@ static int
 tmp_fd (void)
 {
     int fd;
-    char *tfile = NULL;
+    char *tfile;
 
-    tfile = m_mktemp2(NULL, invo_name, &fd, NULL);
-    if (tfile == NULL) return NOTOK;
-    fchmod(fd, 0600);
+    if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) return NOTOK;
 
     if (debugsw)
 	advise (NULL, "temporary file %s selected", tfile);
     else
-	if (unlink (tfile) == NOTOK)
+	if (m_unlink (tfile) == NOTOK)
 	    advise (tfile, "unable to remove");
 
     return fd;
@@ -587,6 +587,8 @@ anno (int fd, struct stat *st)
 	    sigaddset (&set, SIGQUIT);
 	    sigaddset (&set, SIGTERM);
 	    sigprocmask (SIG_BLOCK, &set, &oset);
+
+	    unregister_for_removal(0);
 
 	    annoaux (fd);
 	    if (child_id == OK)

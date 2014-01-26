@@ -184,7 +184,10 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 
     mode = fstat (fd, &st) != NOTOK ? (int) (st.st_mode & 0777) : m_gmprot ();
 
-    strncpy (tmpfil, m_mktemp2(file, "annotate", NULL, &tmp), sizeof(tmpfil));
+    if ((cp = m_mktemp2(file, "annotate", NULL, &tmp)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
+    strncpy (tmpfil, cp, sizeof(tmpfil));
     chmod (tmpfil, mode);
 
     /*
@@ -412,13 +415,13 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 
 	cpydata (tmpfd, fd, tmpfil, file);
 	close (tmpfd);
-	unlink (tmpfil);
+	(void) m_unlink (tmpfil);
     } else {
 	strncpy (buffer, m_backup (file), sizeof(buffer));
 	if (rename (file, buffer) == NOTOK) {
 	    switch (errno) {
 		case ENOENT:	/* unlinked early - no annotations */
-		    unlink (tmpfil);
+		    (void) m_unlink (tmpfil);
 		    break;
 
 		default:

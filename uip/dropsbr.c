@@ -567,7 +567,7 @@ map_write (char *mailbox, int md, int id, long last, off_t start,
 	clear = 1;
 
     if (!clear && map_chk (file, fd, &d1, pos, noisy)) {
-	unlink (file);
+	(void) m_unlink (file);
 	mbx_close (file, fd);
 	if ((fd = map_open (file, md)) == NOTOK)
 	    return NOTOK;

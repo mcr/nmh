@@ -172,6 +172,7 @@ svector_t svector_create (size_t);
 void svector_free (svector_t);
 char *svector_push_back (svector_t, char *);
 char *svector_at (svector_t, size_t);
+char **svector_find(svector_t, const char *);
 char **svector_strs (svector_t);
 size_t svector_size (svector_t);
 

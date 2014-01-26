@@ -349,11 +349,6 @@ mhl (int argc, char **argv)
     char buf[BUFSIZ], *files[MAXARGS];
     char **argp, **arguments;
 
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
-
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 

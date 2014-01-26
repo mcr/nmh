@@ -78,11 +78,7 @@ main (int argc, char **argv)
     char *tmpfil;
     m_getfld_state_t gstate = 0;
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -152,9 +148,9 @@ main (int argc, char **argv)
     if ((in = fopen (drft, "r")) == NULL)
 	adios (drft, "unable to open");
 
-    tmpfil = m_mktemp2(NULL, invo_name, NULL, &out);
-    if (tmpfil == NULL) adios("prompter", "unable to create temporary file");
-    chmod (tmpfil, 0600);
+    if ((tmpfil = m_mktemp2(NULL, invo_name, NULL, &out)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
 
     /*
      * Are we changing the kill or erase character?
@@ -231,7 +227,7 @@ abort:
 			if (killp || erasep) {
 			    tcsetattr(0, TCSADRAIN, &tio);
 			}
-			unlink (tmpfil);
+			(void) m_unlink (tmpfil);
 			done (1);
 		    }
 		    if (i != 0 || (field[0] != '\n' && field[0] != 0)) {
@@ -320,7 +316,7 @@ abort:
     cpydata (fdi, fdo, tmpfil, drft);
     close (fdi);
     close (fdo);
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
 
     context_save ();	/* save the context file */
     done (0);

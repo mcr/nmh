@@ -118,11 +118,7 @@ main (int argc, char **argv)
     struct msgs *mp;
     struct stat st;
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -382,8 +378,12 @@ go_to_it:
 	    && (distsw = atoi (cp))
 	    && altmsg) {
 	vec[vecp++] = "-dist";
-	distfile = getcpy (m_mktemp2 (altmsg, invo_name, NULL, NULL));
-	unlink(distfile);
+	if ((cp = m_mktemp2(altmsg, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	distfile = getcpy (cp);
+	(void) m_unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK) {
 	    /* Cygwin with FAT32 filesystem produces EPERM. */
 	    if (errno != EXDEV  &&  errno != EPERM
@@ -393,7 +393,11 @@ go_to_it:
 		)
 		adios (distfile, "unable to link %s to", altmsg);
 	    free (distfile);
-	    distfile = getcpy (m_mktemp2(NULL, invo_name, NULL, NULL));
+	    if ((cp = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
+	    distfile = getcpy (cp);
 	    {
 		int in, out;
 		struct stat st;

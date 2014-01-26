@@ -37,11 +37,7 @@ main (int argc, char **argv)
     char *cp, *folder = NULL, newfolder[BUFSIZ];
     char buf[BUFSIZ], **argp, **arguments;
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -183,7 +179,7 @@ rmf (char *folder)
 		others++;
 		continue;
 	}
-	if (unlink (dp->d_name) == NOTOK) {
+	if (m_unlink (dp->d_name) == NOTOK) {
 	    admonish (dp->d_name, "unable to unlink %s:", folder);
 	    others++;
 	}

@@ -197,11 +197,7 @@ main (int argc, char **argv)
     SAVEGROUPPRIVS();
     TRYDROPGROUPPRIVS();
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 1);
@@ -660,7 +656,7 @@ go_to_it:
 	    } else {
 		if (ferror(pf) || fclose (pf)) {
 		    int e = errno;
-		    unlink (cp);
+		    (void) m_unlink (cp);
 		    pop_quit ();
 		    errno = e;
 		    adios (cp, "write error on");
@@ -755,7 +751,7 @@ go_to_it:
 			break;
 		if (ferror(sf) || fflush(pf) || ferror(pf)) {
 			int e = errno;
-			fclose(pf); fclose(sf); unlink(cp);
+			fclose(pf); fclose(sf); (void) m_unlink(cp);
 			errno = e;
 			adios(cp, "copy error %s -> %s", sp, cp);
 		}
@@ -802,14 +798,14 @@ go_to_it:
 	    }
 	    if (ferror(pf) || fclose (pf)) {
 		int e = errno;
-		unlink (cp);
+		(void) m_unlink (cp);
 		errno = e;
 		adios (cp, "write error on");
 	    }
 	    pf = NULL;
 	    free (cp);
 
-	    if (trnflag && unlink (sp) == NOTOK)
+	    if (trnflag && m_unlink (sp) == NOTOK)
 		adios (sp, "couldn't unlink");
 	    free (sp); /* Free Maildir[i]->filename */
 	}
@@ -851,7 +847,7 @@ go_to_it:
 		    close (newfd);
 		else
 		    admonish (newmail, "error zero'ing");
-		unlink(map_name(newmail));
+		(void) m_unlink(map_name(newmail));
 	    }
 	} else {
 	    if (noisy)

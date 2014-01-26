@@ -94,11 +94,7 @@ main (int argc, char **argv)
     int		list = 0;		/* list header elements if set */
     int		number = 0;		/* delete specific number of like elements if set */
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

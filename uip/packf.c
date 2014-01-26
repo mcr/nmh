@@ -46,13 +46,9 @@ main (int argc, char **argv)
     struct msgs *mp;
     struct stat st;
 
+    if (nmh_init(argv[0], 1)) { return 1; }
+
     done=mbxclose_done;
-
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

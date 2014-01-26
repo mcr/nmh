@@ -57,10 +57,7 @@ main (int argc, char **argv)
     char *cp, buf[BUFSIZ];
     char **argp, **arguments;
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 0);
     argp = arguments;
@@ -158,9 +155,9 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
 
     umask (~m_gmprot ());
 
-    tfile = m_mktemp2(NULL, invo_name, NULL, &fp);
-    if (tfile == NULL) adios("viamail", "unable to create temporary file");
-    chmod(tfile, 0600);
+    if ((tfile = m_mktemp2(NULL, invo_name, NULL, &fp)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
     strncpy (tmpfil, tfile, sizeof(tmpfil));
 
     if (!strchr(mailsw, '@'))
@@ -227,8 +224,8 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     }
 
     fclose (fp);
-    if (unlink (tmpfil) == -1)
-	advise (NULL, "unable to remove temp file %s", tmpfil);
+    if (m_unlink (tmpfil) == -1)
+	advise (tmpfil, "unable to remove temp file %s", tmpfil);
     done (status);
     return 1;
 }

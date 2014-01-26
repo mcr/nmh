@@ -82,11 +82,7 @@ main (int argc, char **argv)
     char **argp, **arguments, *vec[MAXARGS];
     struct utmpx *utp;
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 1);
@@ -188,13 +184,15 @@ message_fd (char **vec)
 {
     pid_t child_id;
     int bytes, seconds;
-    /* volatile to prevent "might be clobbered" warning from gcc: */
-    volatile int fd;
-    char tmpfil[BUFSIZ];
+    int fd;
+    char *tfile;
     struct stat st;
 
-    fd = mkstemp (strncpy (tmpfil, "/tmp/rcvttyXXXXX", sizeof(tmpfil)));
-    unlink (tmpfil);
+    if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) {
+	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
+	return NOTOK;
+    }
+    (void) m_unlink(tfile);  /* Use fd, no longer need the file name. */
 
     if ((child_id = fork()) == NOTOK) {
 	/* fork error */
@@ -254,9 +252,11 @@ header_fd (void)
     char *nfs;
     char *tfile = NULL;
 
-    tfile = m_mktemp2(NULL, invo_name, &fd, NULL);
-    if (tfile == NULL) return NOTOK;
-    unlink (tfile);
+    if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) {
+	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
+        return NOTOK;
+    }
+    (void) m_unlink(tfile);  /* Use fd, no longer need the file name. */
 
     rewind (stdin);
 

@@ -54,13 +54,9 @@ main (int argc, char **argv)
     struct msgs *mp;
     struct stat st;
 
+    if (nmh_init(argv[0], 1)) { return 1; }
+
     done=unlink_done;
-
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 1);
@@ -162,7 +158,7 @@ main (int argc, char **argv)
     /* create a temporary file */
     tmpfilenam = m_mktemp (invo_name, &fd, NULL);
     if (tmpfilenam == NULL) {
-	adios ("rcvstore", "unable to create temporary file");
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
     }
     chmod (tmpfilenam, m_gmprot());
 
@@ -170,7 +166,7 @@ main (int argc, char **argv)
     cpydata (fileno (stdin), fd, "standard input", tmpfilenam);
 
     if (fstat (fd, &st) == NOTOK) {
-	unlink (tmpfilenam);
+	(void) m_unlink (tmpfilenam);
 	adios (tmpfilenam, "unable to fstat");
     }
     if (close (fd) == NOTOK)
@@ -178,7 +174,7 @@ main (int argc, char **argv)
 
     /* don't add file if it is empty */
     if (st.st_size == 0) {
-	unlink (tmpfilenam);
+	(void) m_unlink (tmpfilenam);
 	advise (NULL, "empty file");
 	done (0);
     }
@@ -216,7 +212,7 @@ main (int argc, char **argv)
     folder_free (mp);		/* free folder/message structure          */
 
     context_save ();		/* save the global context file           */
-    unlink (tmpfilenam);	/* remove temporary file                  */
+    (void) m_unlink (tmpfilenam); /* remove temporary file                  */
     tmpfilenam = NULL;
 
     done (0);
@@ -230,6 +226,6 @@ static void
 unlink_done(int status)
 {
     if (tmpfilenam && *tmpfilenam)
-	unlink (tmpfilenam);
+	(void) m_unlink (tmpfilenam);
     exit (status);
 }

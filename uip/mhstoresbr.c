@@ -562,7 +562,10 @@ store_content (CT ct, CT p)
 	    char *tmpfilenam, *folder;
 
 	    /* Store content in temporary file for now */
-	    tmpfilenam = m_mktemp(invo_name, NULL, NULL);
+	    if ((tmpfilenam = m_mktemp(invo_name, NULL, NULL)) == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
 	    ct->c_storage = add (tmpfilenam, NULL);
 
 	    /* Get the folder name */
@@ -623,7 +626,7 @@ got_filename:
      */
     if (ct->c_folder && (!is_partial || last_partial)) {
 	msgnum = output_content_folder (ct->c_folder, ct->c_storage);
-	unlink (ct->c_storage);
+	(void) m_unlink (ct->c_storage);
 	if (msgnum == NOTOK)
 	    return NOTOK;
     }

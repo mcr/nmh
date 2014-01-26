@@ -188,12 +188,7 @@ main (int argc, char **argv)
     char mailbox[BUFSIZ], tmpfil[BUFSIZ];
     char **argp, **arguments;
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (*argv, '/');
-
-    /* foil search of user profile/context */
-    if (context_foil (NULL) == -1)
-	done (1);
+    if (nmh_init(argv[0], 0 /* use context_foil() */)) { return 1; }
 
     mts_init (invo_name);
     arguments = getarguments (invo_name, argc, argv, 0);
@@ -315,14 +310,16 @@ main (int argc, char **argv)
 	if (debug)
 	    debug_printf ("retrieving message from file \"%s\"\n", file);
 	if ((fd = copy_message (tempfd, tmpfil, 1)) == -1)
-	    adios (NULL, "unable to create temporary file");
+	    adios(NULL, "unable to create temporary file in %s",
+                  get_temp_dir());
 	close (tempfd);
     } else {
 	/* getting message from stdin */
 	if (debug)
 	    debug_printf ("retrieving message from stdin\n");
 	if ((fd = copy_message (fileno (stdin), tmpfil, 1)) == -1)
-	    adios (NULL, "unable to create temporary file");
+	    adios(NULL, "unable to create temporary file in %s",
+                  get_temp_dir());
     }
 
     if (debug)
@@ -339,7 +336,7 @@ main (int argc, char **argv)
        thing would be to delay this unlink() until later if debug == 1, but I'll
        leave that for someone who cares about the temp-file-accessing
        functionality (they'll have to watch out for cases where we adios()). */
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
 
     if (!(fp = fdopen (fd, "r+")))
 	adios (NULL, "unable to access temporary file");
@@ -1196,7 +1193,6 @@ copy_message (int qd, char *tmpfil, int fold)
 
     tfile = m_mktemp2(NULL, invo_name, &fd1, NULL);
     if (tfile == NULL) return -1;
-    fchmod(fd1, 0600);
     strncpy (tmpfil, tfile, BUFSIZ);
 
     if (!fold) {
@@ -1204,7 +1200,7 @@ copy_message (int qd, char *tmpfil, int fold)
 	    if (write (fd1, buffer, i) != i) {
 you_lose:
 		close (fd1);
-		unlink (tmpfil);
+		(void) m_unlink (tmpfil);
 		return -1;
 	    }
 	if (i == -1)

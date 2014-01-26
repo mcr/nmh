@@ -174,9 +174,11 @@ finished:
     }
 
     cp = m_mktemp2(NULL, invo_name, NULL, &tmp);
-    if (cp == NULL) adios("forw", "unable to create temporary file");
+    if (cp == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
     strncpy (tmpfil, cp, sizeof(tmpfil));
-    unlink (tmpfil);
+    (void) m_unlink (tmpfil);
     if ((in = dup (fileno (tmp))) == NOTOK)
 	adios ("dup", "unable to");
 

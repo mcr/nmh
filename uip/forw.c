@@ -116,14 +116,9 @@ main (int argc, char **argv)
     char **argp, **arguments;
     struct stat st;
     struct msgs_array msgs = { 0, 0, NULL };
-
     int buildsw = 0;
 
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
+    if (nmh_init(argv[0], 1)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

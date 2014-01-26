@@ -91,7 +91,7 @@ priv:
 		    rewind(fp);
 		    ftruncate(fileno(fp), 0);
 		} else if ((fp = lkfopendata (seqfile, "w")) == NULL
-			&& (unlink (seqfile) == -1 ||
+			&& (m_unlink (seqfile) == -1 ||
 			    (fp = lkfopendata (seqfile, "w")) == NULL)) {
 		    admonish (attr, "unable to write");
 		    goto priv;
@@ -118,7 +118,7 @@ priv:
 	 * public sequences, then remove that file.
 	 */
 	if (!is_readonly(mp))
-	    unlink (seqfile);
+	    (void) m_unlink (seqfile);
     }
 
     /*

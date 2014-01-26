@@ -335,7 +335,7 @@ lkclose_dot (int fd, const char *file)
 
     lockname (file, &lkinfo, 0);	/* get name of lock file */
 #if !defined(HAVE_LIBLOCKFILE)
-    unlink (lkinfo.curlock);		/* remove lock file      */
+    (void) m_unlink (lkinfo.curlock);	/* remove lock file      */
 #else
     lockfile_remove(lkinfo.curlock);
 #endif /* HAVE_LIBLOCKFILE */
@@ -513,7 +513,7 @@ lkopen_dot (const char *file, int access, mode_t mode)
 		    
 		    /* check for stale lockfile, else sleep */
 		    if (curtime > st.st_ctime + RSECS)
-			unlink (lkinfo.curlock);
+			(void) m_unlink (lkinfo.curlock);
 		    else
 			sleep (5);
 		}
@@ -543,17 +543,18 @@ static int
 lockit (struct lockinfo *li)
 {
     int fd;
-    char *curlock, *tmplock;
+    char *curlock, *tmpfile;
 
 #if 0
     char buffer[128];
 #endif
 
     curlock = li->curlock;
-    tmplock = li->tmplock;
 
-    if ((fd = mkstemp(tmplock)) == -1)
+    if ((tmpfile = m_mktemp(li->tmplock, &fd, NULL)) == NULL) {
+        advise(NULL, "unable to create temporary file in %s", get_temp_dir());
 	return -1;
+    }
 
 #if 0
     /* write our process id into lock file */
@@ -567,8 +568,8 @@ lockit (struct lockinfo *li)
      * Now try to create the real lock file
      * by linking to the temporary file.
      */
-    fd = link(tmplock, curlock);
-    unlink(tmplock);
+    fd = link(tmpfile, curlock);
+    (void) m_unlink(tmpfile);
 
     return (fd == -1 ? -1 : 0);
 }

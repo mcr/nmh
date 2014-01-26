@@ -53,6 +53,8 @@ context_save (void)
     sigprocmask (SIG_SETMASK, &oset, &set); /* reset the signal mask */
 
     if (action == 0)
+	/* This must be _exit(), not exit(), because the child didn't
+	   call unregister_for_removal() in m_chkids(). */
 	_exit (0);		/* we are child, time to die */
 }
 
@@ -83,6 +85,8 @@ m_chkids (void)
 	    break;
 
 	case 0:
+	    /* It's not necessary to call unregister_for_removal(0)
+               because the child calls _exit() in context_save(). */
 	    setgid (getgid ());
 	    setuid (getuid ());
 	    break;

@@ -53,7 +53,6 @@ int debugsw; /* Needed by mhparse.c. */
 #define quitser pipeser
 
 /* mhparse.c */
-extern char *tmp;                             /* directory to place tmp files */
 extern int skip_mp_cte_check;                 /* flag to InitMultiPart */
 extern int suppress_bogus_mp_content_warning; /* flag to InitMultiPart */
 extern int bogus_mp_content;                  /* flag from InitMultiPart */
@@ -135,13 +134,9 @@ main (int argc, char **argv) {
     fx.decodetext = CE_8BIT;
     fx.textcodeset = NULL;
 
+    if (nmh_init(argv[0], 1)) { return 1; }
+
     done = freects_done;
-
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -264,16 +259,6 @@ main (int argc, char **argv) {
         fclose (fp);
     }
 
-    /*
-     * Check for storage directory.  If specified,
-     * then store temporary files there.  Else we
-     * store them in standard nmh directory.
-     */
-    if ((cp = context_find (nmhstorage)) && *cp)
-        tmp = concat (cp, "/", invo_name, NULL);
-    else
-        tmp = add (m_maildir (invo_name), NULL);
-
     suppress_bogus_mp_content_warning = skip_mp_cte_check = 1;
 
     if (! context_find ("path"))
@@ -298,17 +283,17 @@ main (int argc, char **argv) {
 
             using_stdin = 1;
 
-            if ((cp = m_mktemp2 (tmp, invo_name, &fd, NULL)) == NULL) {
-                adios (NULL, "unable to create temporary file");
+            if ((cp = m_mktemp2 (NULL, invo_name, &fd, NULL)) == NULL) {
+                adios (NULL, "unable to create temporary file in %s",
+                       get_temp_dir());
             } else {
                 free (file);
                 file = add (cp, NULL);
-                chmod (file, 0600);
                 cpydata (STDIN_FILENO, fd, "-", file);
             }
 
             if (close (fd)) {
-                unlink (file);
+                (void) m_unlink (file);
                 adios (NULL, "failed to write temporary file");
             }
         }
@@ -371,7 +356,7 @@ main (int argc, char **argv) {
             status += mhfixmsgsbr (ctp, &fx, outfile);
 
             if (using_stdin) {
-                unlink (file);
+                (void) m_unlink (file);
 
                 if (! outfile) {
                     /* Just calling m_backup() unlinks the backup file. */
@@ -384,7 +369,6 @@ main (int argc, char **argv) {
     }
 
     free (outfile);
-    free (tmp);
     free (file);
 
     /* done is freects_done, which will clean up all of cts. */
@@ -406,7 +390,12 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
         modify_inplace = 1;
 
         if ((*ctp)->c_file) {
-            outfile = add (m_mktemp2 (tmp, invo_name, NULL, NULL), NULL);
+            char *tempfile;
+            if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
+                adios (NULL, "unable to create temporary file in %s",
+                       get_temp_dir());
+            }
+            outfile = add (tempfile, NULL);
         } else {
             adios (NULL, "missing both input and output filenames\n");
         }
@@ -468,7 +457,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     }
 
     if (modify_inplace) {
-        if (status != OK) unlink (outfile);
+        if (status != OK) (void) m_unlink (outfile);
         free (outfile);
         outfile = NULL;
     }
@@ -524,7 +513,7 @@ fix_boundary (CT *ct, int *message_mods) {
             if (get_multipart_boundary (*ct, &part_boundary) == OK) {
                 char *fixed;
 
-                if ((fixed = m_mktemp2 (tmp, invo_name, NULL, &(*ct)->c_fp))) {
+                if ((fixed = m_mktemp2 (NULL, invo_name, NULL, &(*ct)->c_fp))) {
                     if (replace_boundary (*ct, fixed, part_boundary) == OK) {
                         char *filename = add ((*ct)->c_file, NULL);
 
@@ -544,7 +533,8 @@ fix_boundary (CT *ct, int *message_mods) {
                         status = NOTOK;
                     }
                 } else {
-                    advise (NULL, "unable to create temporary file");
+                    advise (NULL, "unable to create temporary file in %s",
+                            get_temp_dir());
                     status = NOTOK;
                 }
 
@@ -1029,7 +1019,13 @@ build_text_plain_part (CT encoded_part) {
            contains the decoded contents.  And the decoding function, such
            as openQuoted, will have set ...->ce_unlink to 1 so that it will
            be unlinked by free_content (). */
-        tmp_plain_file = add (m_mktemp2 (tmp, invo_name, NULL, NULL), NULL);
+        char *tempfile;
+
+        if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
+            advise (NULL, "unable to create temporary file in %s",
+                    get_temp_dir());
+        }
+        tmp_plain_file = add (tempfile, NULL);
         if (reformat_part (tp_part, tmp_plain_file,
                            tp_part->c_ctinfo.ci_type,
                            tp_part->c_ctinfo.ci_subtype,
@@ -1039,7 +1035,7 @@ build_text_plain_part (CT encoded_part) {
     }
 
     free_content (tp_part);
-    unlink (tmp_plain_file);
+    (void) m_unlink (tmp_plain_file);
     free (tmp_plain_file);
 
     return NULL;
@@ -1100,13 +1096,17 @@ static int
 decode_part (CT ct) {
     char *tmp_decoded;
     int status;
+    char *tempfile;
 
-    tmp_decoded = add (m_mktemp2 (tmp, invo_name, NULL, NULL), NULL);
+    if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
+        adios (NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
+    tmp_decoded = add (tempfile, NULL);
     /* The following call will load ct->c_cefile.ce_file with the tmp
        filename of the decoded content.  tmp_decoded will contain the
        encoded output, get rid of that. */
     status = output_message (ct, tmp_decoded);
-    unlink (tmp_decoded);
+    (void) m_unlink (tmp_decoded);
     free (tmp_decoded);
 
     return status;
@@ -1166,7 +1166,7 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
     /* Unlink decoded content tmp file and free its filename to avoid
        leaks.  The file stream should already have been closed. */
     if (ct->c_cefile.ce_unlink) {
-        unlink (ct->c_cefile.ce_file);
+        (void) m_unlink (ct->c_cefile.ce_file);
         free (ct->c_cefile.ce_file);
         ct->c_cefile.ce_file = NULL;
         ct->c_cefile.ce_unlink = 0;
@@ -1486,7 +1486,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                                               :  ct->c_ctline  ?  ct->c_ctline
                                                                :  "");
                     }
-                    unlink (ct->c_cefile.ce_file);
+                    (void) m_unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
                 } else if (ct->c_encoding == CE_QUOTED  &&
@@ -1500,7 +1500,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                                               :  ct->c_ctline  ?  ct->c_ctline
                                                                :  "");
                     }
-                    unlink (ct->c_cefile.ce_file);
+                    (void) m_unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = NULL;
                 } else {
@@ -1689,8 +1689,14 @@ strip_crs (CT ct, int *message_mods) {
 
             if (has_crs) {
                 int fd;
-                char *stripped_content_file =
-                    add (m_mktemp2 (tmp, invo_name, &fd, NULL), NULL);
+                char *stripped_content_file;
+                char *tempfile = m_mktemp2 (NULL, invo_name, &fd, NULL); 
+
+                if (tempfile == NULL) {
+                    adios (NULL, "unable to create temporary file in %s",
+                           get_temp_dir());
+                }
+                stripped_content_file = add (tempfile, NULL);
 
                 /* Strip each CR before a LF from the content. */
                 fseeko (*fp, begin, SEEK_SET);
@@ -1717,13 +1723,13 @@ strip_crs (CT ct, int *message_mods) {
                 if (close (fd)) {
                     admonish (NULL, "unable to write temporary file %s",
                               stripped_content_file);
-                    unlink (stripped_content_file);
+                    (void) m_unlink (stripped_content_file);
                     status = NOTOK;
                 } else {
                     /* Replace the decoded file with the converted one. */
                     if (ct->c_cefile.ce_file) {
                         if (ct->c_cefile.ce_unlink) {
-                            unlink (ct->c_cefile.ce_file);
+                            (void) m_unlink (ct->c_cefile.ce_file);
                         }
                         free (ct->c_cefile.ce_file);
                     }
@@ -1842,6 +1848,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
         int opened_input_file = 0;
         char src_buffer[BUFSIZ];
         HF hf;
+        char *tempfile;
 
         if ((conv_desc = iconv_open (dest_codeset, src_codeset)) ==
             (iconv_t) -1) {
@@ -1849,7 +1856,11 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
             return -1;
         }
 
-        dest = add (m_mktemp2 (tmp, invo_name, &fd, NULL), NULL);
+        if ((tempfile = m_mktemp2 (NULL, invo_name, &fd, NULL)) == NULL) {
+            adios (NULL, "unable to create temporary file in %s",
+                   get_temp_dir());
+        }
+        dest = add (tempfile, NULL);
 
         if (ct->c_cefile.ce_file) {
             file = &ct->c_cefile.ce_file;
@@ -1912,7 +1923,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
             /* Replace the decoded file with the converted one. */
             if (ct->c_cefile.ce_file) {
                 if (ct->c_cefile.ce_unlink) {
-                    unlink (ct->c_cefile.ce_file);
+                    (void) m_unlink (ct->c_cefile.ce_file);
                 }
                 free (ct->c_cefile.ce_file);
             }
@@ -1951,7 +1962,7 @@ convert_codeset (CT ct, char *dest_codeset, int *message_mods) {
                 }
             }
         } else {
-            unlink (dest);
+            (void) m_unlink (dest);
         }
 #else  /* ! HAVE_ICONV */
         NMH_UNUSED (message_mods);
@@ -2001,7 +2012,7 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
                         }
                         if (new != -1) close (new);
                         if (old != -1) close (old);
-                        unlink (outfile);
+                        (void) m_unlink (outfile);
 
                         if (i < 0) {
                             /* The -file argument processing used path() to
@@ -2017,7 +2028,7 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
                 } else {
                     admonish (NULL, "unable to remove input file %s, "
                               "not modifying it", infile);
-                    unlink (outfile);
+                    (void) m_unlink (outfile);
                     status = NOTOK;
                 }
 
@@ -2027,7 +2038,7 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
             }
         } else {
             /* No modifications and didn't need the tmp outfile. */
-            unlink (outfile);
+            (void) m_unlink (outfile);
         }
     } else {
         /* Output is going to some file.  Produce it whether or not

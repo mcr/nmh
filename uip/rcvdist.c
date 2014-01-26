@@ -48,13 +48,9 @@ main (int argc, char **argv)
     FILE *fp;
     char *tfile = NULL;
 
+    if (nmh_init(argv[0], 1)) { return 1; }
+
     done=unlink_done;
-
-    setlocale(LC_ALL, "");
-    invo_name = r1bindex (argv[0], '/');
-
-    /* read user profile/context */
-    context_read();
 
     /*
      * Configure this now, since any unknown switches to rcvdist get
@@ -102,15 +98,17 @@ main (int argc, char **argv)
 
     umask (~m_gmprot ());
 
-    tfile = m_mktemp2(NULL, invo_name, NULL, &fp);
-    if (tfile == NULL) adios("rcvdist", "unable to create temporary file");
+    if ((tfile = m_mktemp2(NULL, invo_name, NULL, &fp)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
     strncpy (tmpfil, tfile, sizeof(tmpfil));
 
     cpydata (fileno (stdin), fileno (fp), "message", tmpfil);
     fseek (fp, 0L, SEEK_SET);
 
-    tfile = m_mktemp2(NULL, invo_name, NULL, NULL);
-    if (tfile == NULL) adios("forw", "unable to create temporary file");
+    if ((tfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	adios(NULL, "unable to create temporary file in %s", get_temp_dir());
+    }
     strncpy (drft, tfile, sizeof(tmpfil));
 
     rcvdistout (fp, form, addrs);
@@ -255,11 +253,11 @@ static void
 unlink_done (int status)
 {
     if (backup[0])
-	unlink (backup);
+	(void) m_unlink (backup);
     if (drft[0])
-	unlink (drft);
+	(void) m_unlink (drft);
     if (tmpfil[0])
-	unlink (tmpfil);
+	(void) m_unlink (tmpfil);
 
     exit (status ? RCV_MBX : RCV_MOK);
 }
