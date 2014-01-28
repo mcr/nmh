@@ -129,6 +129,7 @@ WhatNow (int argc, char **argv)
     char	*l;			/* set on -l to alist  command */
     int		n;			/* set on -n to alist command */
 
+    /* Need this if called from what_now(). */
     invo_name = r1bindex (argv[0], '/');
 
     arguments = getarguments (invo_name, argc, argv, 1);

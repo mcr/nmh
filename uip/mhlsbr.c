@@ -349,6 +349,9 @@ mhl (int argc, char **argv)
     char buf[BUFSIZ], *files[MAXARGS];
     char **argp, **arguments;
 
+    /* Need this if called from main() of show(1). */
+    invo_name = r1bindex (argv[0], '/');
+
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
