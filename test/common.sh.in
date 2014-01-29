@@ -24,6 +24,9 @@ export MH_INST_DIR
 
 unset MHBUILD MHCONTEXT MHMTSUSERCONF MHN MHSHOW MHSTORE
 unset MHLDEBUG MHPDEBUG MHWDEBUG PAGER
+#### Set LC_ALL in individual tests as needed.  Unset these so
+#### that we don't depend on user's settings in other tests.
+unset LANG LC_ALL LC_TYPE
 
 #### Use a test dir for tmp files when MHTMPDIR applies.
 MHTMPDIR=$MH_TEST_DIR/Mail
