@@ -109,6 +109,7 @@ struct Content {
     /* Content-Transfer-Encoding info (decoded contents) */
     struct cefile c_cefile;	/* structure holding decoded content */
     int	c_encoding;		/* internal flag for encoding type   */
+    int c_reqencoding;		/* Requested encoding (by mhbuild)   */
 
     /* Content-MD5 info */
     int	c_digested;		/* have we seen this header before?  */

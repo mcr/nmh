@@ -80,6 +80,19 @@ struct k2v SubApplication[] = {
     { NULL,           APPLICATION_UNKNOWN }	/* this one must be last! */
 };
 
+/*
+ * Mapping of names of CTE types in mhbuild directives
+ */
+static struct k2v EncodingType[] = {
+    { "8bit",			CE_8BIT },
+    { "qp",			CE_QUOTED },
+    { "q-p",			CE_QUOTED },
+    { "quoted-printable",	CE_QUOTED },
+    { "b64",			CE_BASE64 },
+    { "base64",			CE_BASE64 },
+    { NULL,			0 },
+};
+
 
 /* mhcachesbr.c */
 int find_cache (CT, int, int *, char *, char *, int);
@@ -833,6 +846,47 @@ magic_skip:
 	    ct->c_dispo = NULL;
 	*dp++ = c;
 	cp = dp;
+
+	while (isspace ((unsigned char) *cp))
+	    cp++;
+    }
+
+    /*
+     * Get any extension directives (right now just the content transfer
+     * encoding, but maybe others) that we care about.
+     */
+
+    if (magic && *cp == '*') {
+    	/*
+	 * See if it's a CTE we match on
+	 */
+	struct k2v *kv;
+
+	dp = ++cp;
+	while (*cp != '\0' && ! isspace((unsigned char) *cp))
+	    cp++;
+
+	if (dp == cp) {
+	    advise (NULL, "invalid null transfer encoding specification");
+	    return NOTOK;
+	}
+
+	if (*cp != '\0')
+	    *cp++ = '\0';
+
+	ct->c_reqencoding = CE_UNKNOWN;
+
+	for (kv = EncodingType; kv->kv_key; kv++) {
+	    if (strcasecmp(kv->kv_key, dp) == 0) {
+		ct->c_reqencoding = kv->kv_value;
+		break;
+	    }
+	}
+
+	if (ct->c_reqencoding == CE_UNKNOWN) {
+	    advise (NULL, "invalid CTE specification: \"%s\"", dp);
+	    return NOTOK;
+	}
 
 	while (isspace ((unsigned char) *cp))
 	    cp++;
