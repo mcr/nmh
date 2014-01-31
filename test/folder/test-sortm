@@ -84,7 +84,7 @@ cat >"$expected" <<EOF
 EOF
 
 run_prog sortm
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check +folder
@@ -105,7 +105,7 @@ EOF
 
 refile first +inbox; folder -pack >/dev/null
 run_prog sortm +inbox
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -verbose
@@ -139,7 +139,7 @@ EOF
 
 refile first +inbox; folder -pack >/dev/null
 run_prog sortm -verbose >"$actual"
-scan >>"$actual"
+scan -width 80 >>"$actual"
 check "$expected" "$actual"
 
 # check -noverbose
@@ -160,7 +160,7 @@ EOF
 
 refile first +inbox; folder -pack >/dev/null
 run_prog sortm -verbose -noverbose >"$actual"
-scan >>"$actual"
+scan -width 80 >>"$actual"
 check "$expected" "$actual"
 
 # check msgs
@@ -181,7 +181,7 @@ EOF
 
 refile first +inbox; folder -pack >/dev/null
 run_prog sortm first last
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -datefield
@@ -201,7 +201,7 @@ cat >"$expected" <<EOF
 EOF
 
 run_prog sortm -datefield Alt-Date 1 11
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -textfield subject (datefield major, subjects grouped)
@@ -221,7 +221,7 @@ cat >"$expected" <<EOF
 EOF
 
 run_prog sortm -textfield subject
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -nolimit
@@ -241,7 +241,7 @@ cat >"$expected" <<EOF
 EOF
 
 run_prog sortm -textfield subject -limit 0 -nolimit
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -textfield subject -limit 0 (subject sort)
@@ -262,7 +262,7 @@ EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
 run_prog sortm -textfield subject -limit 0
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -textfield -limit 0 (text sort)
@@ -283,7 +283,7 @@ EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
 run_prog sortm -textfield from -limit 0
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -textfield with finite -limit that doesn't cover message 13
@@ -314,7 +314,7 @@ EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
 run_prog sortm -textfield subject -limit 10
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -textfield with finite -limit that does cover message 13
@@ -336,7 +336,7 @@ EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
 run_prog sortm -textfield subject -limit 60
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -notextfield
@@ -358,7 +358,7 @@ EOF
 
 refile 2-7 +inbox; refile 1 +inbox; folder -pack last >/dev/null
 run_prog sortm -textfield subject -limit 60 -notextfield
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -noall
@@ -383,7 +383,7 @@ EOF
 
 refile first +inbox; folder -pack >/dev/null
 run_prog sortm -noall -all
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -check
@@ -414,7 +414,7 @@ cat >"$expected" <<EOF
   13  10/31 Test13             Re: common subject<<This is message number 13 >>
   14  01/00 Test9              Testing message 9<<This is message number 9 >>
 EOF
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 # check -nocheck
@@ -439,7 +439,7 @@ sed -e 's/Sep//' $MH_TEST_DIR/Mail/inbox/7 > $MH_TEST_DIR/Mail/inbox/14
 run_test 'sortm -check -nocheck' \
          "sortm: can't parse date field in message 14, will use file \
 modification time"
-scan >"$actual"
+scan -width 80 >"$actual"
 check "$expected" "$actual"
 
 
