@@ -404,7 +404,7 @@ writeBase64ct (CT ct, FILE *out)
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
 	return NOTOK;
 
-    result = writeBase64aux (ce->ce_fp, out);
+    result = writeBase64aux (ce->ce_fp, out, (ct->c_type == CT_TEXT));
     (*ct->c_ceclosefnx) (ct);
     return result;
 }

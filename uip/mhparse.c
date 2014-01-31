@@ -1677,7 +1677,7 @@ static int
 openBase64 (CT ct, char **file)
 {
     int	bitno, cc, digested;
-    int fd, len, skip, own_ct_fp = 0;
+    int fd, len, skip, own_ct_fp = 0, text = ct->c_type == CT_TEXT;
     uint32_t bits;
     unsigned char value, b;
     char *cp, *ep, buffer[BUFSIZ];
@@ -1789,17 +1789,20 @@ openBase64 (CT ct, char **file)
 test_end:
 		    if ((bitno -= 6) < 0) {
 		    	b = (bits >> 16) & 0xff;
-			putc ((char) b, ce->ce_fp);
+			if (!text || b != '\r')
+			    putc ((char) b, ce->ce_fp);
 			if (digested)
 			    MD5Update (&mdContext, &b, 1);
 			if (skip < 2) {
 			    b = (bits >> 8) & 0xff;
-			    putc ((char) b, ce->ce_fp);
+			    if (! text || b != '\r')
+				putc ((char) b, ce->ce_fp);
 			    if (digested)
 				MD5Update (&mdContext, &b, 1);
 			    if (skip < 1) {
 			    	b = bits & 0xff;
-				putc ((char) b, ce->ce_fp);
+				if (! text || b != '\r')
+				    putc ((char) b, ce->ce_fp);
 				if (digested)
 				    MD5Update (&mdContext, &b, 1);
 			    }
