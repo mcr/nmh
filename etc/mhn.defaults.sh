@@ -207,7 +207,12 @@ EOF
 # that another netscape is already running and certain things can't be done).
 PGM="`$SEARCHPROG $SEARCHPATH lynx`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-text/html: %p$PGM '%F'" >> $TMP
+	echo "mhshow-show-text/html: %p$PGM -force-html '%F'" >> $TMP
+else
+  PGM="`$SEARCHPROG $SEARCHPATH w3m`"
+  if [ ! -z "$PGM" ]; then
+	echo "mhshow-show-text/html: %p$PGM -T text/html '%F'" >> $TMP
+  fi
 fi
 
 PGM="`$SEARCHPROG $SEARCHPATH richtext`"
