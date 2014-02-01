@@ -362,7 +362,20 @@ int SOprintf (char *, ...);
 int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);
 int WhatNow(int, char **);
-int writeBase64aux(FILE *, FILE *);
+
+/*
+ * Copy data from one file to another, converting to base64-encoding.
+ *
+ * Arguments include:
+ *
+ * in		- Input filehandle (unencoded data)
+ * out		- Output filename (base64-encoded data)
+ * crlf		- If set, output encoded CRLF for every LF on input.
+ *
+ * Returns OK on success, NOTOK otherwise.
+ */
+int writeBase64aux(FILE *in, FILE *out, int crlf);
+
 int writeBase64 (unsigned char *, size_t, unsigned char *);
 int writeBase64raw (unsigned char *, size_t, unsigned char *);
 

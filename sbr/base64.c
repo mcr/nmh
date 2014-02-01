@@ -13,10 +13,10 @@ static char nib2b64[0x40+1] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 int
-writeBase64aux (FILE *in, FILE *out)
+writeBase64aux (FILE *in, FILE *out, int crlf)
 {
     unsigned int cc, n;
-    char inbuf[3];
+    unsigned char inbuf[3];
 
     n = BPERLIN;
     while ((cc = fread (inbuf, sizeof(*inbuf), sizeof(inbuf), in)) > 0) {
@@ -29,6 +29,36 @@ writeBase64aux (FILE *in, FILE *out)
 	    if (cc < sizeof(inbuf) - 1)
 		inbuf[1] = 0;
 	}
+
+	/*
+	 * Convert a LF to a CRLF if desired.  That means we need to push
+	 * data back into the input stream.
+	 */
+
+	if (crlf) {
+	    unsigned int i;
+
+	    for (i = 0; i < cc; i++) {
+		if (inbuf[i] == '\n') {
+		    inbuf[i] = '\r';
+		    /*
+		     * If it's the last character in the buffer, we can just
+		     * substitute a \r and push a \n back.  Otherwise shuffle
+		     * everything down and push the last character back.
+		     */
+		    if (i == cc - 1) {
+			ungetc('\n', in);
+		    } else {
+		    	/* This only works as long as sizeof(inbuf) == 3 */
+			ungetc(inbuf[cc - 1], in);
+			if (cc == 3 && i == 0)
+			    inbuf[2] = inbuf[1];
+			inbuf[++i] = '\n';
+		    }
+		}
+	    }
+	}
+
 	bits = (inbuf[0] & 0xff) << 16;
 	bits |= (inbuf[1] & 0xff) << 8;
 	bits |= inbuf[2] & 0xff;

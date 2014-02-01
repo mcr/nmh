@@ -190,7 +190,7 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
     if (fflush (fp))
 	adios (tmpfil, "error writing to");
 
-    writeBase64aux (stdin, fp);
+    writeBase64aux (stdin, fp, 0);
     if (fflush (fp))
 	adios (tmpfil, "error writing to");
 
