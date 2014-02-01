@@ -116,7 +116,8 @@ Content-Type: text/plain; charset="iso-8859-1"; name="test4.txt"
 Content-Disposition: attachment; filename="test4.txt"
 Content-Transfer-Encoding: base64
 
-VGhpcyBpcyB0aGUgZm91cnRoIHRleHQvcGxhaW4gcGFydC4K
+VGhpcyBpcyB0aGUgZm91cnRoIHRleHQvcGxhaW4gcGFydC4NClRoaXMgdGVzdCBoYXMgbXVsdGlw
+bGUgbGluZXMuDQo=
 
 ------- =_aaaaaaaaaa0--
 EOF
@@ -153,12 +154,14 @@ EOF
 check $expected 11.3.txt
 cat > $expected <<EOF
 This is the fourth text/plain part.
+This test has multiple lines.
 EOF
 check $expected 11.4.txt
 
 # check -auto
 cat > $expected <<EOF
 This is the fourth text/plain part.
+This test has multiple lines.
 EOF
 run_test 'mhstore last -part 4 -auto' \
   'storing message 11 part 4 as file test4.txt'
@@ -307,6 +310,7 @@ mkdir "$dir"
 echo "nmh-storage: $storagedir" >> $MH
 cat > $expected <<EOF
 This is the fourth text/plain part.
+This test has multiple lines.
 EOF
 run_test 'mhstore 11 -part 4' \
 "storing message 11 part 4 as file $storagedir/11.4.txt"
