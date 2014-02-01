@@ -22,7 +22,6 @@ actual_err="$MH_TEST_DIR/test-mhfixmsg$$.actual_err"
 #### Make sure that html-to-text conversion is what we expect.
 LC_ALL=en_US.UTF-8; export LC_ALL
 
-set +e
 if grep mhfixmsg-format-text/html "${MH_TEST_DIR}/Mail/mhn.defaults" \
   >/dev/null; then
   can_reformat_texthtml=1
@@ -39,7 +38,6 @@ else
   echo "$0: skipping -reformat check because no text browser was found"
   can_reformat_texthtml=0
 fi
-set -e
 
 
 # check -help
@@ -578,9 +576,7 @@ Db2yPbwK
 EOF
 
 cp -p `mhpath last` "$expected"
-set +e
 run_prog mhfixmsg last
-set -e
 check `mhpath last` "$expected" 'keep first'
 
 
