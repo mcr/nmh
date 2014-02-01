@@ -120,7 +120,9 @@ OBSOLETE FEATURES
 - Temporary files are stored in the first non-null location of
   {MHTMPDIR environment variable, TMPDIR environment variable, MH Path}.
   They are no longer be stored in the location specified by the TMP
-  environment variable.
+  environment variable.  As part of this change, suffixes were removed
+  from filenames of temporary files.  This will break the use of display
+  applications that rely on the suffix to determine the file type.
 
 -------------------
 DEPRECATED FEATURES
