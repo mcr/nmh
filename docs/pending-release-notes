@@ -166,3 +166,4 @@ BUG FIXES
   replied to [Bug #26780].
 - Fix segmentation fauls for %(putlit) and %(zputlit) format escapes when
   the "str" register was NULL.
+- Encode and decode text MIME types with canonical line breaks properly.
