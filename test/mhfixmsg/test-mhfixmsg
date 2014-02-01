@@ -560,7 +560,7 @@ check "$expected" "$actual"
 
 # check attempted -decode of binary text
 #### Generated the encoded text below with:
-####   $ printf '\x0d\xbd\xb2=\xbc\n' | base64
+####   $ printf '\x0\xbd\xb2=\xbc\n' | base64
 cat >`mhpath new` <<EOF
 To: recipient@example.com
 From: sender@example.com
@@ -572,7 +572,7 @@ Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
 Content-Type: text/plain; charset="iso-8859-1"; name="square.txt"
 Content-Transfer-Encoding: base64
 
-Db2yPbwK
+AL2yPbwK
 
 ------- =_aaaaaaaaaa0--
 EOF
