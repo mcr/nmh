@@ -1700,12 +1700,6 @@ openBase64 (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	char *tempfile;
-	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
-		  get_temp_dir());
-	}
-	ce->ce_file = add (tempfile, NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -1723,9 +1717,22 @@ openBase64 (CT ct, char **file)
         cp = context_find (buffer);
     }
     if (cp != NULL && *cp != '\0') {
-        if (! ce->ce_unlink) {
-            ce->ce_file = add (cp, ce->ce_file);
-        }
+	if (ce->ce_unlink) {
+	    /* Create temporary file with filename extension. */
+	    if ((ce->ce_file = m_mktemps(invo_name, cp, NULL, NULL)) == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
+	} else {
+	    ce->ce_file = add (cp, ce->ce_file);
+	}
+    } else if (*file == NULL) {
+	char *tempfile;
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	ce->ce_file = add (tempfile, NULL);
     }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
@@ -1932,12 +1939,6 @@ openQuoted (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	char *tempfile;
-	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
-		  get_temp_dir());
-	}
-	ce->ce_file = add (tempfile, NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -1955,9 +1956,22 @@ openQuoted (CT ct, char **file)
         cp = context_find (buffer);
     }
     if (cp != NULL && *cp != '\0') {
-        if (! ce->ce_unlink) {
-            ce->ce_file = add (cp, ce->ce_file);
-        }
+	if (ce->ce_unlink) {
+	    /* Create temporary file with filename extension. */
+	    if ((ce->ce_file = m_mktemps(invo_name, cp, NULL, NULL)) == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
+	} else {
+	    ce->ce_file = add (cp, ce->ce_file);
+	}
+    } else if (*file == NULL) {
+	char *tempfile;
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	ce->ce_file = add (tempfile, NULL);
     }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {
@@ -2151,12 +2165,6 @@ open7Bit (CT ct, char **file)
     }
 
     if (*file == NULL) {
-	char *tempfile;
-	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
-	    adios(NULL, "unable to create temporary file in %s",
-		  get_temp_dir());
-	}
-	ce->ce_file = add (tempfile, NULL);
 	ce->ce_unlink = 1;
     } else {
 	ce->ce_file = add (*file, NULL);
@@ -2174,9 +2182,22 @@ open7Bit (CT ct, char **file)
         cp = context_find (buffer);
     }
     if (cp != NULL && *cp != '\0') {
-        if (! ce->ce_unlink) {
-            ce->ce_file = add (cp, ce->ce_file);
-        }
+	if (ce->ce_unlink) {
+	    /* Create temporary file with filename extension. */
+	    if ((ce->ce_file = m_mktemps(invo_name, cp, NULL, NULL)) == NULL) {
+		adios(NULL, "unable to create temporary file in %s",
+		      get_temp_dir());
+	    }
+	} else {
+	    ce->ce_file = add (cp, ce->ce_file);
+	}
+    } else if (*file == NULL) {
+	char *tempfile;
+	if ((tempfile = m_mktemp2(NULL, invo_name, NULL, NULL)) == NULL) {
+	    adios(NULL, "unable to create temporary file in %s",
+		  get_temp_dir());
+	}
+	ce->ce_file = add (tempfile, NULL);
     }
 
     if ((ce->ce_fp = fopen (ce->ce_file, "w+")) == NULL) {

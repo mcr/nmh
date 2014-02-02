@@ -132,6 +132,119 @@ m_mktemp2 (
 }
 
 
+/*
+ * This version supports a suffix for the temp filename.
+ * It has two other differences from m_mktemp() and m_mktemp2():
+ * 1) It does not support specification of a directory for the temp
+ *    file.  Instead it always uses get_temp_dir().
+ * 2) It returns a dynamically allocated string.  The caller is
+ *    responsible for freeing the allocated memory.
+ */
+char *
+m_mktemps(
+    const char *pfx_in,   /* Basename prefix for temp file. */
+    const char *suffix,   /* Suffix, including any '.', for temp file. */
+    int *fd_ret,          /* (return,optional) File descriptor to temp file. */
+    FILE **fp_ret         /* (return,optional) FILE pointer to temp file. */
+)
+{
+    char *tmpfil;
+    int fd = -1;
+    int keep_open = 0;
+    mode_t oldmode = umask(077);
+
+    if (suffix == NULL) {
+        if ((tmpfil = m_mktemp2(NULL, pfx_in, fd_ret, fp_ret))) {
+            return add(tmpfil, NULL);
+        } else {
+            return NULL;
+        }
+    }
+
+#if HAVE_MKSTEMPS
+    if (pfx_in == NULL) {
+        tmpfil = concat(get_temp_dir(), "/nmhXXXXXX", suffix, NULL);
+    } else {
+        tmpfil = concat(get_temp_dir(), "/", pfx_in, "XXXXXX", suffix, NULL);
+    }
+
+    fd = mkstemps(tmpfil, (int) strlen(suffix));
+#else  /* ! HAVE_MKSTEMPS */
+    /* Solaris 10, e.g. */
+
+    if (pfx_in == NULL) {
+        tmpfil = concat(get_temp_dir(), "/nmhXXXXXX", NULL);
+    } else {
+        tmpfil = concat(get_temp_dir(), "/", pfx_in, "XXXXXX", NULL);
+    }
+
+    fd = mkstemp(tmpfil);
+    {
+        char *oldfilename = tmpfil;
+
+        tmpfil = concat(oldfilename, suffix, NULL);
+
+        /* link(2) requires that the new path not exist.  And if we
+           have to resort to rename(2), at least try to remove a file
+           that would be in the way. */
+        if (unlink(tmpfil) != 0  &&  errno != ENOENT) {
+            advise("unlink", "Failed to unlink \"%s\"", tmpfil);
+            (void) unlink(oldfilename);
+            free(oldfilename);
+            free(tmpfil);
+            return NULL;
+        }
+
+        /* link() doesn't always work, such as on Windows FAT
+           filesystems.  If it fails, try rename(). */
+        if (link(oldfilename, tmpfil) != 0  &&
+            rename(oldfilename, tmpfil) != 0) {
+            (void) unlink(oldfilename);
+            free(oldfilename);
+            free(tmpfil);
+            return NULL;
+        }
+
+        (void) unlink(oldfilename);
+        free(oldfilename);
+    }
+#endif /* ! HAVE_MKSTEMPS */
+
+    if (fd < 0) {
+        umask(oldmode);
+        free(tmpfil);
+        return NULL;
+    }
+
+    register_for_removal(tmpfil);
+
+    if (fd_ret != NULL) {
+        *fd_ret = fd;
+        keep_open = 1;
+    }
+    if (fp_ret != NULL) {
+        FILE *fp = fdopen(fd, "w+");
+        if (fp == NULL) {
+            int olderr = errno;
+            (void) m_unlink(tmpfil);
+            close(fd);
+            errno = olderr;
+            umask(oldmode);
+            free(tmpfil);
+            return NULL;
+        }
+        *fp_ret = fp;
+        keep_open = 1;
+    }
+    if (!keep_open) {
+        close(fd);
+    }
+    umask(oldmode);
+
+    return tmpfil;
+}
+
+
 char *
 get_temp_dir()
 {
