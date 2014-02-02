@@ -87,8 +87,6 @@ m_chkids (void)
 	case 0:
 	    /* It's not necessary to call unregister_for_removal(0)
                because the child calls _exit() in context_save(). */
-	    setgid (getgid ());
-	    setuid (getuid ());
 	    break;
 
 	default:

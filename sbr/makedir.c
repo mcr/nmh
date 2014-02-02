@@ -89,9 +89,6 @@ makedir (char *dir)
 		return 0;
 		
 	    case 0:
-		setgid (getgid ());
-		setuid (getuid ());
-		
 		execl ("/bin/mkdir", "mkdir", dir, (void *) NULL);
 		execl ("/usr/bin/mkdir", "mkdir", dir, (void *) NULL);
 		fprintf (stderr, "unable to exec ");

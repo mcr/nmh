@@ -481,8 +481,6 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 		vec[vecp++] = "-ov";
 	    vec[vecp++] = NULL;
 
-	    setgid (getegid ());
-	    setuid (geteuid ());
 	    execvp (sendmail, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror (sendmail);

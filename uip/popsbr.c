@@ -435,9 +435,6 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
        int inpipe[2];	  /* for reading from the server */
        int outpipe[2];    /* for sending to the server */
 
-       /* first give up any root priviledges we may have for rpop */
-       setuid(getuid());
-
        pipe(inpipe);
        pipe(outpipe);
 

@@ -34,10 +34,6 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 
-/* Hopefully, grp.h declares initgroups().  If we run into a platform
-   where it doesn't, we could consider declaring it here as well. */
-#include <grp.h>
-
 /* This define is needed for Berkeley db v2 and above to
  * make the header file expose the 'historical' ndbm APIs.
  * We define it unconditionally because this is simple and
@@ -282,12 +278,6 @@ main (int argc, char **argv)
 	chdir ("/");
     umask (0077);
 
-    if (geteuid() == 0) {
-	setgid (pw->pw_gid);
-	initgroups (pw->pw_name, pw->pw_gid);
-	setuid (pw->pw_uid);
-    }
-    
     if (info == NULL)
 	info = "";
 
