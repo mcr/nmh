@@ -11,7 +11,7 @@ AC_DEFUN([NMH_LOCKING],
 AS_CASE(["$host_os"],
   [aix*|cygwin*|linux*],
     [default_locktype="fcntl"],
-  [freebsd*|openbsd*|darwin*], [default_locktype="flock"],
+  [freebsd*|*netbsd*|openbsd*|darwin*], [default_locktype="flock"],
   [default_locktype="dot"])
 
 AC_MSG_CHECKING([default locking method for the mail spool])
