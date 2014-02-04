@@ -72,6 +72,8 @@ NEW FEATURES
 - A new header, "Attach", is supported by mhbuild; it is used to replace
   previous functionality (which by default used a header named
   Nmh-Attachment).
+- The default Content-Transfer-Encoding for text parts is now 8bit.
+- mhbuild(1) now supports a selectable Content-Transfer-Encoding
 
 -----------------
 OBSOLETE FEATURES

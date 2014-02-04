@@ -21,6 +21,8 @@ mhbuild \- translate MIME composition draft
 .RB [ \-headerencoding 
 .IR encoding\-algorithm
 .RB " | " \-autoheaderencoding ]
+.RB [ \-maxunencoded
+.IR line\-length ]
 .RB [ \-dist ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -401,6 +403,18 @@ characters.  The
 switch suppresses creation of all \*(lqContent-ID:\*(rq headers,
 even in the top level of the message.
 .PP
+Normally
+.B mhbuild
+will choose an appropriate Content\-Transfer\-Encoding based on the content
+and the MIME Content\-Type.  However, you can override that in an
+.B mhbuild
+directive by specifying \*(lq*\*(rq and the encoding.  Acceptable encoding
+values are \*(lq8bit\*(rq, \*(lqqp\(*rq (for quoted\-printable), and
+\*(lqb64\*(rq (for base64 encoding).  It should be noted that undesired
+results may occur if 8bit or quoted\-printable is selected for binary
+content, due to the translation between Unix line endings and the line
+endings use by the mail transport system.
+.PP
 In addition to the various directives, plaintext can be present.
 Plaintext is gathered, until a directive is found or the draft is
 exhausted, and this is made to form a text content.  If the plaintext
@@ -472,6 +486,13 @@ set, then the character set will be labeled as \*(lqx-unknown\*(rq.
 If a text content contains only 7\-bit characters and the character set
 is not specified as above, then the character set will be labeled as
 \*(lqus-ascii\*(rq.
+.PP
+By default text content with the high bit set is encoded with a 8bit
+Content\-Transfer\-Encoding.  If the text has lines longer than the value
+of
+.B \-maxunencoded
+(which defaults to 78) then the text is encoded using the quoted\-printable
+encoding.
 .PP
 The
 .B \-headerencoding
@@ -643,6 +664,7 @@ directive    ::=     "#" type "/" subtype
                          [ "<" id ">" ]
                          [ "[" description "]" ]
                          [ "{" disposition "}" ]
+			 [ "*8bit" | "*qp" | "*b64" ]
                          [ filename ]
                          EOL
 
@@ -652,6 +674,7 @@ directive    ::=     "#" type "/" subtype
                          [ "<" id ">" ]
                          [ "[" description "]" ]
                          [ "{" disposition "}" ]
+			 [ "*8bit" | "*qp" | "*b64" ]
                          external-parameters
                          EOL
 
@@ -683,6 +706,7 @@ plaintext    ::=     [ "Content-Description:"
                          [ "(" comment ")" ]
                          [ "[" description "]" ]
                          [ "{" disposition "}" ]
+			 [ "*8bit" | "*qp" | "*b64" ]
                          EOL
                          1*line
                      [ "#" EOL ]
@@ -754,4 +778,5 @@ is checked.
 .RB ` \-nocheck '
 .RB ` \-noverbose '
 .RB ` \-autoheaderencoding '
+.RB ` "\-maxunencoded\ 78"'
 .fi
