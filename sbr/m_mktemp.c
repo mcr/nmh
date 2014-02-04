@@ -170,7 +170,7 @@ m_mktemps(
 
     fd = mkstemps(tmpfil, (int) strlen(suffix));
 #else  /* ! HAVE_MKSTEMPS */
-    /* Solaris 10, e.g. */
+    /* NetBSD, Solaris 10 */
 
     if (pfx_in == NULL) {
         tmpfil = concat(get_temp_dir(), "/nmhXXXXXX", NULL);
@@ -355,12 +355,12 @@ remove_registered_files(int sig) {
 
         exit(1);
     } else {
+        remove_registered_files_atexit();
+
         act.sa_handler = SIG_DFL;
         (void) sigemptyset(&act.sa_mask);
         act.sa_flags = 0;
         (void) sigaction(sig, &act, 0);
-
-        remove_registered_files_atexit();
 
         (void) raise(sig);
     }
