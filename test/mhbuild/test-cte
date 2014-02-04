@@ -347,4 +347,31 @@ set +e
 run_test 'eval mhbuild "$draft" 2>&1' 'mhbuild: Line in content exceeds maximum line limit (998)'
 set -e
 
+#
+# Check to make sure -maxunencoded does what we want.
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+This is the test of a lønger line than the ususal limit.  Assuming we set the maxunencded parameter properly, this should end up as 8bit?
+EOF
+
+run_prog mhbuild -maxunencoded 200 "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+This is the test of a lønger line than the ususal limit.  Assuming we set the maxunencded parameter properly, this should end up as 8bit?
+EOF
+
+check "$draft" "$expected"
+
 exit ${failed:-0}
