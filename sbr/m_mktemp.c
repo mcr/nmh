@@ -181,31 +181,15 @@ m_mktemps(
     fd = mkstemp(tmpfil);
     {
         char *oldfilename = tmpfil;
-
         tmpfil = concat(oldfilename, suffix, NULL);
 
-        /* link(2) requires that the new path not exist.  And if we
-           have to resort to rename(2), at least try to remove a file
-           that would be in the way. */
-        if (unlink(tmpfil) != 0  &&  errno != ENOENT) {
-            advise("unlink", "Failed to unlink \"%s\"", tmpfil);
+        if (rename(oldfilename, tmpfil) != 0) {
             (void) unlink(oldfilename);
             free(oldfilename);
             free(tmpfil);
             return NULL;
         }
 
-        /* link() doesn't always work, such as on Windows FAT
-           filesystems.  If it fails, try rename(). */
-        if (link(oldfilename, tmpfil) != 0  &&
-            rename(oldfilename, tmpfil) != 0) {
-            (void) unlink(oldfilename);
-            free(oldfilename);
-            free(tmpfil);
-            return NULL;
-        }
-
-        (void) unlink(oldfilename);
         free(oldfilename);
     }
 #endif /* ! HAVE_MKSTEMPS */

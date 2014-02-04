@@ -191,7 +191,7 @@ int m_putenv (char *, char *);
 int m_rand (unsigned char *, size_t);
 char *m_mktemp(const char *, int *, FILE **);
 char *m_mktemp2(const char *, const char *, int *, FILE **);
-char *m_mktemps(const char *pfx, const char *, int *, FILE **);
+char *m_mktemps(const char *pfx, const char *suffix, int *, FILE **);
 char *get_temp_dir();
 void m_unknown(m_getfld_state_t *, FILE *);
 int makedir (char *);
