@@ -46,7 +46,8 @@ This is a test of a message with a sh=C3=B8rt line.
 EOF
 
 #
-# Force some text to be base64
+# Force some text to be base64, to test out the encoder.  Try at different
+# line lengths to check out the padding on the 
 #
 
 cat > "$draft" <<EOF
@@ -69,6 +70,30 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: base64
 
 VGhpcyBpcyBhIHRlc3Qgb2YgYSBtZXNzYWdlIHdpdGggYSBzaMO4cnQgbGluZS4NCg==
+EOF
+
+check "$draft" "$expected"
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+#<text/plain *b64
+This is a test of a mëssage with a shørt line.
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc2FnZSB3aXRoIGEgc2jDuHJ0IGxpbmUuDQo=
 EOF
 
 check "$draft" "$expected"

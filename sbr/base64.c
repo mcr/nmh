@@ -48,7 +48,15 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
 		     * everything down and push the last character back.
 		     */
 		    if (i == cc - 1) {
-			ungetc('\n', in);
+		    	/*
+			 * If we're at the end of the input, there might be
+			 * more room in inbuf; if so, add it there.  Otherwise
+			 * push it back to the input.
+			 */
+		    	if (cc < sizeof(inbuf))
+			    inbuf[cc++] = '\n';
+			else
+			    ungetc('\n', in);
 			skipnl = 1;
 		    } else {
 		    	/* This only works as long as sizeof(inbuf) == 3 */
