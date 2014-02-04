@@ -17,6 +17,7 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
 {
     unsigned int cc, n;
     unsigned char inbuf[3];
+    int skipnl = 0;
 
     n = BPERLIN;
     while ((cc = fread (inbuf, sizeof(*inbuf), sizeof(inbuf), in)) > 0) {
@@ -39,7 +40,7 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
 	    unsigned int i;
 
 	    for (i = 0; i < cc; i++) {
-		if (inbuf[i] == '\n') {
+		if (inbuf[i] == '\n' && !skipnl) {
 		    inbuf[i] = '\r';
 		    /*
 		     * If it's the last character in the buffer, we can just
@@ -48,6 +49,7 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
 		     */
 		    if (i == cc - 1) {
 			ungetc('\n', in);
+			skipnl = 1;
 		    } else {
 		    	/* This only works as long as sizeof(inbuf) == 3 */
 			ungetc(inbuf[cc - 1], in);
@@ -55,6 +57,8 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
 			    inbuf[2] = inbuf[1];
 			inbuf[++i] = '\n';
 		    }
+		} else {
+		    skipnl = 0;
 		}
 	    }
 	}
