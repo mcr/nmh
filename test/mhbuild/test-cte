@@ -1,0 +1,50 @@
+#!/bin/sh
+#########################################################
+#
+# Test the use of explicit Content-Transfer-Encoding tags
+#
+#########################################################
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+LC_ALL=en_US.UTF-8; export LC_ALL
+
+draft="$MH_TEST_DIR/$$.draft"
+expected="$MH_TEST_DIR/$$.expected"
+
+#
+# Force some text to be quoted-printable
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+#<text/plain *qp
+This is a test of a message with a shørt line.
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+This is a test of a message with a sh=C3=B8rt line.
+EOF
+
+check "$draft" "$expected"
+
+exit ${failed:-0}
