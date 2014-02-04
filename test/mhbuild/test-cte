@@ -202,4 +202,36 @@ EOF
 
 check "$draft" "$expected"
 
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+#<text/plain *b64
+This is a test of a mëssäge with a shørt line.
+
+
+This is a second line.
+
+
+
+
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc8OkZ2Ugd2l0aCBhIHNow7hydCBsaW5lLg0KDQoNClRo
+aXMgaXMgYSBzZWNvbmQgbGluZS4NCg0KDQoNCg0K
+EOF
+
+check "$draft" "$expected"
+
 exit ${failed:-0}
