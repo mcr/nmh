@@ -1319,8 +1319,17 @@ scan_content (CT ct, size_t maxunencoded)
     }
 
     /*
-     * Decide what to check while scanning this content.
+     * Decide what to check while scanning this content.  Note that
+     * for text content we always check for 8bit characters if the
+     * charset is unspecified, because that controls whether or not the
+     * character set is us-ascii or retrieved from the locale.
      */
+
+    if (ct->c_type == CT_TEXT) {
+	t = (struct text *) ct->c_ctparams;
+	if (t->tx_charset == CHARSET_UNSPECIFIED)
+	    check8bit = 1;
+    }
 
     switch (ct->c_reqencoding) {
     case CE_8BIT:
@@ -1331,14 +1340,12 @@ scan_content (CT ct, size_t maxunencoded)
     	checkboundary = 1;
 	break;
     case CE_BASE64:
-	/* We check nothing here */
 	break;
     case CE_UNKNOWN:
     	/* Use the default rules based on content-type */
 	switch (ct->c_type) {
 	case CT_TEXT:
 	    checkboundary = 1;
-	    check8bit = 1;
 	    checklinelen = 1;
 	    if (ct->c_subtype == TEXT_PLAIN) {
 		checklinespace = 0;
@@ -1451,6 +1458,34 @@ scan_content (CT ct, size_t maxunencoded)
     }
 
     /*
+     * If the content is text and didn't specify a character set,
+     * we need to figure out which one was used.
+     */
+
+    if (ct->c_type == CT_TEXT) {
+	t = (struct text *) ct->c_ctparams;
+	if (t->tx_charset == CHARSET_UNSPECIFIED) {
+	    CI ci = &ct->c_ctinfo;
+	    char **ap, **ep;
+
+	    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
+		continue;
+
+	    if (contains8bit) {
+		*ap = concat ("charset=", write_charset_8bit(), NULL);
+	    } else {
+		*ap = add ("charset=us-ascii", NULL);
+	    }
+	    t->tx_charset = CHARSET_SPECIFIED;
+
+	    cp = strchr(*ap++, '=');
+	    *ap = NULL;
+	    *cp++ = '\0';
+	    *ep = cp;
+	}
+    }
+
+    /*
      * Decide which transfer encoding to use.
      */
 
@@ -1459,31 +1494,6 @@ scan_content (CT ct, size_t maxunencoded)
     else
 	switch (ct->c_type) {
 	case CT_TEXT:
-	    /*
-	     * If the text content didn't specify a character
-	     * set, we need to figure out which one was used.
-	     */
-	    t = (struct text *) ct->c_ctparams;
-	    if (t->tx_charset == CHARSET_UNSPECIFIED) {
-		CI ci = &ct->c_ctinfo;
-		char **ap, **ep;
-
-		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-		    continue;
-
-		if (contains8bit) {
-		    *ap = concat ("charset=", write_charset_8bit(), NULL);
-		} else {
-		    *ap = add ("charset=us-ascii", NULL);
-		}
-		t->tx_charset = CHARSET_SPECIFIED;
-
-		cp = strchr(*ap++, '=');
-		*ap = NULL;
-		*cp++ = '\0';
-		*ep = cp;
-	    }
-
 	    if (contains8bit && !linelen && !linespace && !checksw)
 		ct->c_encoding = CE_8BIT;
 	    else if (contains8bit || linelen || linespace || checksw)
