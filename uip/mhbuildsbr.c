@@ -77,7 +77,7 @@ static char *fgetstr (char *, int, FILE *);
 static int user_content (FILE *, char *, CT *);
 static void set_id (CT, int);
 static int compose_content (CT);
-static int scan_content (CT);
+static int scan_content (CT, size_t);
 static int build_headers (CT);
 static char *calculate_digest (CT, int);
 
@@ -124,7 +124,7 @@ static void directive_pop(void)
 
 CT
 build_mime (char *infile, int autobuild, int dist, int directives,
-	    int header_encoding)
+	    int header_encoding, size_t maxunencoded)
 {
     int	compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -449,7 +449,7 @@ finish_field:
      * check if prefix for multipart boundary clashes with
      * any of the contents.
      */
-    while (scan_content (ct) == NOTOK) {
+    while (scan_content (ct, maxunencoded) == NOTOK) {
 	if (*cp < 'z') {
 	    (*cp)++;
         } else {
@@ -1278,11 +1278,12 @@ raw:
  */
 
 static int
-scan_content (CT ct)
+scan_content (CT ct, size_t maxunencoded)
 {
     int len;
-    int check8bit = 0, contains8bit = 0;  /* check if contains 8bit data                */
-    int checklinelen = 0, linelen = 0;	  /* check for long lines                       */
+    int check8bit = 0, contains8bit = 0;  /* check if contains 8bit data */
+    int checklinelen = 0, linelen = 0;  /* check for long lines */ 
+    int checkllinelen = 0; /* check for extra-long lines */
     int checkboundary = 0, boundaryclash = 0; /* check if clashes with multipart boundary   */
     int checklinespace = 0, linespace = 0;  /* check if any line ends with space          */
     char *cp = NULL, buffer[BUFSIZ];
@@ -1304,7 +1305,7 @@ scan_content (CT ct)
 	for (part = m->mp_parts; part; part = part->mp_next) {
 	    CT p = part->mp_part;
 
-	    if (scan_content (p) == NOTOK)	/* choose encoding for subpart */
+	    if (scan_content (p, maxunencoded) == NOTOK)	/* choose encoding for subpart */
 		return NOTOK;
 
 	    /* if necessary, enlarge encoding for enclosing multipart */
@@ -1320,56 +1321,72 @@ scan_content (CT ct)
     /*
      * Decide what to check while scanning this content.
      */
-    switch (ct->c_type) {
-    case CT_TEXT:
-	check8bit = 1;
+
+    switch (ct->c_reqencoding) {
+    case CE_8BIT:
+    	checkllinelen = 1;
 	checkboundary = 1;
-	if (ct->c_subtype == TEXT_PLAIN) {
-	    checklinelen = 0;
-	    checklinespace = 0;
-	} else {
+	break;
+    case CE_QUOTED:
+    	checkboundary = 1;
+	break;
+    case CE_BASE64:
+	/* We check nothing here */
+	break;
+    case CE_UNKNOWN:
+    	/* Use the default rules based on content-type */
+	switch (ct->c_type) {
+	case CT_TEXT:
+	    checkboundary = 1;
+	    check8bit = 1;
+	    checklinelen = 1;
+	    if (ct->c_subtype == TEXT_PLAIN) {
+		checklinespace = 0;
+	    } else {
+		checklinespace = 1;
+	    }
+	break;
+
+	case CT_APPLICATION:
+	    check8bit = 1;
 	    checklinelen = 1;
 	    checklinespace = 1;
-	}
-	break;
-
-    case CT_APPLICATION:
-	check8bit = 1;
-	checklinelen = 1;
-	checklinespace = 1;
-	checkboundary = 1;
-	break;
-
-    case CT_MESSAGE:
-	check8bit = 0;
-	checklinelen = 0;
-	checklinespace = 0;
-
-	/* don't check anything for message/external */
-	if (ct->c_subtype == MESSAGE_EXTERNAL)
-	    checkboundary = 0;
-	else
 	    checkboundary = 1;
 	break;
 
-    case CT_AUDIO:
-    case CT_IMAGE:
-    case CT_VIDEO:
-	/*
-	 * Don't check anything for these types,
-	 * since we are forcing use of base64.
-	 */
-	check8bit = 0;
-	checklinelen = 0;
-	checklinespace = 0;
-	checkboundary = 0;
-	break;
+	case CT_MESSAGE:
+	    check8bit = 0;
+	    checklinelen = 0;
+	    checklinespace = 0;
+
+	    /* don't check anything for message/external */
+	    if (ct->c_subtype == MESSAGE_EXTERNAL)
+		checkboundary = 0;
+	    else
+		checkboundary = 1;
+	    break;
+
+	case CT_AUDIO:
+	case CT_IMAGE:
+	case CT_VIDEO:
+	    /*
+	     * Don't check anything for these types,
+	     * since we are forcing use of base64, unless
+	     * the content-type was specified by a mhbuild directive.
+	     */
+	    check8bit = 0;
+	    checklinelen = 0;
+	    checklinespace = 0;
+	    checkboundary = 0;
+	    break;
+	}
     }
 
     /*
      * Scan the unencoded content
      */
-    if (check8bit || checklinelen || checklinespace || checkboundary) {
+    if (check8bit || checklinelen || checklinespace || checkboundary ||
+	checkllinelen) {
 	if ((in = fopen (ce->ce_file, "r")) == NULL)
 	    adios (ce->ce_file, "unable to open for reading");
 	len = strlen (prefix);
@@ -1390,9 +1407,21 @@ scan_content (CT ct)
 	    /*
 	     * Check line length.
 	     */
-	    if (checklinelen && (strlen (buffer) > CPERLIN + 1)) {
+	    if (checklinelen && (strlen (buffer) > maxunencoded + 1)) {
 		linelen = 1;
 		checklinelen = 0;	/* no need to keep checking */
+	    }
+
+	    /*
+	     * RFC 5322 specifies that a message cannot contain a line
+	     * greater than 998 characters (excluding the CRLF).  If we
+	     * get one of those lines and linelen is NOT set, then abort.
+	     */
+
+	    if (checkllinelen && !linelen &&
+					(strlen(buffer) > MAXLONGLINE + 1)) {
+		adios(NULL, "Line in content exceeds maximum line limit (%d)",
+		      MAXLONGLINE);
 	    }
 
 	    /*
@@ -1424,59 +1453,65 @@ scan_content (CT ct)
     /*
      * Decide which transfer encoding to use.
      */
-    switch (ct->c_type) {
-    case CT_TEXT:
-	/*
-	 * If the text content didn't specify a character
-	 * set, we need to figure out which one was used.
-	 */
-	t = (struct text *) ct->c_ctparams;
-	if (t->tx_charset == CHARSET_UNSPECIFIED) {
-	    CI ci = &ct->c_ctinfo;
-	    char **ap, **ep;
 
-	    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-		continue;
+    if (ct->c_reqencoding != CE_UNKNOWN)
+    	ct->c_encoding = ct->c_reqencoding;
+    else
+	switch (ct->c_type) {
+	case CT_TEXT:
+	    /*
+	     * If the text content didn't specify a character
+	     * set, we need to figure out which one was used.
+	     */
+	    t = (struct text *) ct->c_ctparams;
+	    if (t->tx_charset == CHARSET_UNSPECIFIED) {
+		CI ci = &ct->c_ctinfo;
+		char **ap, **ep;
 
-	    if (contains8bit) {
-		*ap = concat ("charset=", write_charset_8bit(), NULL);
-	    } else {
-		*ap = add ("charset=us-ascii", NULL);
+		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
+		    continue;
+
+		if (contains8bit) {
+		    *ap = concat ("charset=", write_charset_8bit(), NULL);
+		} else {
+		    *ap = add ("charset=us-ascii", NULL);
+		}
+		t->tx_charset = CHARSET_SPECIFIED;
+
+		cp = strchr(*ap++, '=');
+		*ap = NULL;
+		*cp++ = '\0';
+		*ep = cp;
 	    }
-	    t->tx_charset = CHARSET_SPECIFIED;
 
-	    cp = strchr(*ap++, '=');
-	    *ap = NULL;
-	    *cp++ = '\0';
-	    *ep = cp;
-	}
+	    if (contains8bit && !linelen && !linespace && !checksw)
+		ct->c_encoding = CE_8BIT;
+	    else if (contains8bit || linelen || linespace || checksw)
+		ct->c_encoding = CE_QUOTED;
+	    else
+		ct->c_encoding = CE_7BIT;
+	    break;
 
-	if (contains8bit || linelen || linespace || checksw)
-	    ct->c_encoding = CE_QUOTED;
-	else
+	case CT_APPLICATION:
+	    /* For application type, use base64, except when postscript */
+	    if (contains8bit || linelen || linespace || checksw)
+		ct->c_encoding = (ct->c_subtype == APPLICATION_POSTSCRIPT)
+		    ? CE_QUOTED : CE_BASE64;
+	    else
+		ct->c_encoding = CE_7BIT;
+	    break;
+
+	case CT_MESSAGE:
 	    ct->c_encoding = CE_7BIT;
-	break;
+	    break;
 
-    case CT_APPLICATION:
-	/* For application type, use base64, except when postscript */
-	if (contains8bit || linelen || linespace || checksw)
-	    ct->c_encoding = (ct->c_subtype == APPLICATION_POSTSCRIPT)
-		? CE_QUOTED : CE_BASE64;
-	else
-	    ct->c_encoding = CE_7BIT;
-	break;
-
-    case CT_MESSAGE:
-	ct->c_encoding = CE_7BIT;
-	break;
-
-    case CT_AUDIO:
-    case CT_IMAGE:
-    case CT_VIDEO:
-	/* For audio, image, and video contents, just use base64 */
-	ct->c_encoding = CE_BASE64;
-	break;
-    }
+	case CT_AUDIO:
+	case CT_IMAGE:
+	case CT_VIDEO:
+	    /* For audio, image, and video contents, just use base64 */
+	    ct->c_encoding = CE_BASE64;
+	    break;
+        }
 
     return (boundaryclash ? NOTOK : OK);
 }

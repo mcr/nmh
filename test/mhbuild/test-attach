@@ -233,23 +233,25 @@ Fcc: +outbox
 Subject: A more complete multipart test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-Transfer-Encoding: 8bit
 
 ------- =_aaaaaaaaaa0
 Content-Type: multipart/alternative; boundary="----- =_aaaaaaaaaa1"
+Content-Transfer-Encoding: 8bit
 
 ------- =_aaaaaaaaaa1
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-This is some t=C3=ABxt.
+This is some tëxt.
 
 ------- =_aaaaaaaaaa1
 Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
 <html>
 <body>
-This is some HTML t=C3=ABxt.
+This is some HTML tëxt.
 </body>
 </html>
 

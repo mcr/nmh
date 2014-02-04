@@ -41,6 +41,7 @@
     X("nocontentid", 0, NCONTENTIDSW) \
     X("headerencoding encoding-algorithm", 0, HEADERENCSW) \
     X("autoheaderencoding", 0, AUTOHEADERENCSW) \
+    X("maxunencoded", 0, MAXUNENCSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("debug", -5, DEBUGSW) \
@@ -102,6 +103,7 @@ int
 main (int argc, char **argv)
 {
     int sizesw = 1, headsw = 1, directives = 1, autobuild = 0, dist = 0;
+    size_t maxunencoded = MAXTEXTPERLN;
     int *icachesw;
     char *cp, buf[BUFSIZ];
     char buffer[BUFSIZ], *compfile = NULL;
@@ -253,6 +255,15 @@ main (int argc, char **argv)
 	    	header_encoding = CE_UNKNOWN;
 		continue;
 
+	    case MAXUNENCSW:
+		if (!(cp = *argp++) || *cp == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		if ((maxunencoded = atoi(cp)) < 1)
+		    adios (NULL, "Invalid argument for %s: %s", argp[-2], cp);
+		if (maxunencoded > 998)
+		    adios (NULL, "limit of -maxunencoded is 998");
+		continue;
+
 	    case VERBSW: 
 		verbosw++;
 		continue;
@@ -326,7 +337,8 @@ main (int argc, char **argv)
 	unlink_infile = 1;
 
 	/* build the content structures for MIME message */
-	ct = build_mime (infile, autobuild, dist, directives, header_encoding);
+	ct = build_mime (infile, autobuild, dist, directives, header_encoding,
+			 maxunencoded);
 
 	/*
 	 * If ct == NULL, that means that -auto was set and a MIME version
@@ -356,7 +368,8 @@ main (int argc, char **argv)
      */
 
     /* build the content structures for MIME message */
-    ct = build_mime (compfile, autobuild, dist, directives, header_encoding);
+    ct = build_mime (compfile, autobuild, dist, directives, header_encoding,
+    		     maxunencoded);
 
     /*
      * If ct == NULL, that means -auto was set and we found a MIME version

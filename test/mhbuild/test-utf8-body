@@ -102,13 +102,14 @@ To: Somebody <somebody@example.com>
 Subject: Test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-Transfer-Encoding: 8bit
 Date:
 
 ------- =_aaaaaaaaaa0
 Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-=C2=A1Ay, caramba!
+¡Ay, caramba!
 
 ------- =_aaaaaaaaaa0
 Content-Type: text/plain; name="attachment.txt"

@@ -35,6 +35,8 @@
 	             && (c) != '/' && (c) != '['  && (c) != ']' \
 	             && (c) != '?' && (c) != '=')
 
+#define	MAXTEXTPERLN 78
+#define	MAXLONGLINE 998
 #define	CPERLIN	76
 #define	BPERLIN	(CPERLIN / 4)
 #define	LPERMSG	632

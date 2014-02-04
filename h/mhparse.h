@@ -304,14 +304,16 @@ CT parse_mime (char *);
  *		  processed by default.
  * encoding	- The default encoding to use when doing RFC 2047 header
  *		  encoding.  Must be one of CE_UNKNOWN, CE_BASE64, or
- *		  CE_QUOTED;
+ *		  CE_QUOTED.
+ * maxunencoded	- The maximum line length before the default encoding for
+ *		  text parts is quoted-printable.
  *
  * Returns a CT structure describing the resulting MIME message.  If the
  * -auto flag is set and a MIME-Version header is encountered, the return
  * value is NULL.
  */
 CT build_mime (char *infile, int autobuild, int dist, int directives,
-	       int encoding);
+	       int encoding, size_t maxunencoded);
 
 int add_header (CT, char *, char *);
 int get_ctinfo (char *, CT, int);
