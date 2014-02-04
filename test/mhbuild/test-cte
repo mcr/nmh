@@ -47,7 +47,9 @@ EOF
 
 #
 # Force some text to be base64, to test out the encoder.  Try at different
-# line lengths to check out the padding on the 
+# line lengths to check out the padding on the routines to convert LF to
+# CR LF.  The current implementation reads in using a 3 byte buffer, so make
+# sure we catch all of those cases.
 #
 
 cat > "$draft" <<EOF
@@ -94,6 +96,108 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: base64
 
 VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc2FnZSB3aXRoIGEgc2jDuHJ0IGxpbmUuDQo=
+EOF
+
+check "$draft" "$expected"
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+#<text/plain *b64
+This is a test of a mëssäge with a shørt line.
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc8OkZ2Ugd2l0aCBhIHNow7hydCBsaW5lLg0K
+EOF
+
+check "$draft" "$expected"
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+#<text/plain *b64
+This is a test of a message with a shørt line.
+This is a second line.
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhIHRlc3Qgb2YgYSBtZXNzYWdlIHdpdGggYSBzaMO4cnQgbGluZS4NClRoaXMgaXMg
+YSBzZWNvbmQgbGluZS4NCg==
+EOF
+
+check "$draft" "$expected"
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+#<text/plain *b64
+This is a test of a mëssage with a shørt line.
+This is a second line.
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc2FnZSB3aXRoIGEgc2jDuHJ0IGxpbmUuDQpUaGlzIGlz
+IGEgc2Vjb25kIGxpbmUuDQo=
+EOF
+
+check "$draft" "$expected"
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+#<text/plain *b64
+This is a test of a mëssäge with a shørt line.
+This is a second line.
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhIHRlc3Qgb2YgYSBtw6tzc8OkZ2Ugd2l0aCBhIHNow7hydCBsaW5lLg0KVGhpcyBp
+cyBhIHNlY29uZCBsaW5lLg0K
 EOF
 
 check "$draft" "$expected"
