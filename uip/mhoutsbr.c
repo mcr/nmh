@@ -328,13 +328,13 @@ writeQuoted (CT ct, FILE *out)
     char *cp, *file;
     char c, buffer[BUFSIZ];
     CE ce = &ct->c_cefile;
+    int n = 0;
 
     file = NULL;
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
 	return NOTOK;
 
     while (fgets (buffer, sizeof(buffer) - 1, ce->ce_fp)) {
-	int n;
 
 	cp = buffer + strlen (buffer) - 1;
 	if ((c = *cp) == '\n')
@@ -342,10 +342,9 @@ writeQuoted (CT ct, FILE *out)
 
 	if (strncmp (cp = buffer, "From ", sizeof("From ") - 1) == 0) {
 	    fprintf (out, "=%02X", *cp++ & 0xff);
-	    n = 3;
-	} else {
-	    n = 0;
+	    n += 3;
 	}
+
 	for (; *cp; cp++) {
 	    if (n > CPERLIN - 3) {
 		fputs ("=\n", out);
@@ -379,10 +378,12 @@ three_print:
 		fputs ("=\n", out);
 
 	    putc ('\n', out);
-	} else {
-	    fputs ("=\n", out);
+	    n = 0;
 	}
     }
+
+    if (c != '\n')
+    	putc ('\n', out);
 
     (*ct->c_ceclosefnx) (ct);
     return OK;
