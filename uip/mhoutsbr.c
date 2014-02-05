@@ -326,7 +326,7 @@ writeQuoted (CT ct, FILE *out)
 {
     int fd;
     char *cp, *file;
-    char c, buffer[BUFSIZ];
+    char c = '\0', buffer[BUFSIZ];
     CE ce = &ct->c_cefile;
     int n = 0;
 
