@@ -16,9 +16,10 @@ typedef struct hfield *HF;
 /*
  * Abstract types for MIME parsing/building
  */
-typedef struct cefile  *CE;
-typedef struct CTinfo  *CI;
-typedef struct Content *CT;
+typedef struct cefile		*CE;
+typedef struct CTinfo		*CI;
+typedef struct Content		*CT;
+typedef struct Parameter	*PM;
 
 /*
  * type for Init function (both type and transfer encoding)
@@ -44,14 +45,25 @@ struct hfield {
 };
 
 /*
+ * Structure for holding MIME parameter elements.
+ */
+struct Parameter {
+    char *pm_name;	/* Parameter name */
+    char *pm_value;	/* Parameter value */
+    char *pm_charset;	/* Parameter character set (optional) */
+    char *pm_lang;	/* Parameter language tag (optional) */
+    PM   *pm_next;	/* Pointer to next element */
+};
+
+/*
  * Structure for storing parsed elements
  * of the Content-Type component.
  */
 struct CTinfo {
     char *ci_type;		/* content type     */
     char *ci_subtype;		/* content subtype  */
-    char *ci_attrs[NPARMS + 2];	/* attribute names  */
-    char *ci_values[NPARMS];	/* attribute values */
+    PM   *ci_first_pm;		/* Pointer to first MIME parameter */
+    PM   *ci_last_pm;		/* Pointer to last MIME parameter */
     char *ci_comment;		/* RFC-822 comments */
     char *ci_magic;
 };
@@ -99,6 +111,9 @@ struct Content {
     char *c_id;			/* Content-ID:                       */
     char *c_descr;		/* Content-Description:              */
     char *c_dispo;		/* Content-Disposition:              */
+    char *c_dispo_type;		/* Type of Content-Disposition       */
+    PM *c_dispo_first;		/* Pointer to first disposition parm */
+    PM *c_dispo_last;		/* Pointer to last disposition parm  */
     char *c_partno;		/* within multipart content          */
 
     /* Content-Type info */
