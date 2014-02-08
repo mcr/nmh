@@ -352,3 +352,16 @@ nmh_init(const char *argv0, int read_context) {
         return status;
     }
 }
+
+
+/* Returns copy of argument str with all characters converted to upper
+   case, and trimmed whitespace (see cpytrim()) . */
+char *
+upcase (const char *str) {
+    char *up = cpytrim (str);
+    char *cp;
+
+    for (cp = up; *cp; ++cp) { *cp = toupper ((unsigned char) *cp); }
+
+    return up;
+}

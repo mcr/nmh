@@ -17,6 +17,9 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#ifdef HAVE_ICONV
+#   include <iconv.h>
+#endif
 
 extern int debugsw;
 
@@ -1060,6 +1063,157 @@ show_external (CT ct, int serial, int alternate)
 	return OK;
 
     return show_switch (p, serial, alternate);
+}
+
+
+int
+convert_charset (CT ct, char *dest_charset, int *message_mods) {
+    char *src_charset = content_charset (ct);
+    int status = OK;
+
+    /* norm_charmap() is case sensitive. */
+    char *src_charset_u = upcase (src_charset);
+    char *dest_charset_u = upcase (dest_charset);
+    int different_charsets =
+        strcmp (norm_charmap (src_charset), norm_charmap (dest_charset));
+
+    free (dest_charset_u);
+    free (src_charset_u);
+
+    if (different_charsets) {
+#ifdef HAVE_ICONV
+        iconv_t conv_desc = NULL;
+        char *dest;
+        int fd = -1;
+        char **file = NULL;
+        FILE **fp = NULL;
+        size_t begin;
+        size_t end;
+        int opened_input_file = 0;
+        char src_buffer[BUFSIZ];
+        HF hf;
+        char *tempfile;
+
+        if ((conv_desc = iconv_open (dest_charset, src_charset)) ==
+            (iconv_t) -1) {
+            advise (NULL, "Can't convert %s to %s", src_charset, dest_charset);
+            return NOTOK;
+        }
+
+        if ((tempfile = m_mktemp2 (NULL, invo_name, &fd, NULL)) == NULL) {
+            adios (NULL, "unable to create temporary file in %s",
+                   get_temp_dir());
+        }
+        dest = add (tempfile, NULL);
+
+        if (ct->c_cefile.ce_file) {
+            file = &ct->c_cefile.ce_file;
+            fp = &ct->c_cefile.ce_fp;
+            begin = end = 0;
+        } else if (ct->c_file) {
+            file = &ct->c_file;
+            fp = &ct->c_fp;
+            begin = (size_t) ct->c_begin;
+            end = (size_t) ct->c_end;
+        } /* else no input file: shouldn't happen */
+
+        if (file  &&  *file  &&  fp) {
+            if (! *fp) {
+                if ((*fp = fopen (*file, "r")) == NULL) {
+                    advise (*file, "unable to open for reading");
+                    status = NOTOK;
+                } else {
+                    opened_input_file = 1;
+                }
+            }
+        }
+
+        if (fp  &&  *fp) {
+            size_t inbytes;
+            size_t bytes_to_read =
+                end > 0 && end > begin  ?  end - begin  :  sizeof src_buffer;
+
+            fseeko (*fp, begin, SEEK_SET);
+            while ((inbytes = fread (src_buffer, 1,
+                                     min (bytes_to_read, sizeof src_buffer),
+                                     *fp)) > 0) {
+                char dest_buffer[BUFSIZ];
+                ICONV_CONST char *ib = src_buffer;
+                char *ob = dest_buffer;
+                size_t outbytes = sizeof dest_buffer;
+                size_t outbytes_before = outbytes;
+
+                if (end > 0) bytes_to_read -= inbytes;
+
+                if (iconv (conv_desc, &ib, &inbytes, &ob, &outbytes) ==
+                    (size_t) -1) {
+                    status = NOTOK;
+                    break;
+                } else {
+                    write (fd, dest_buffer, outbytes_before - outbytes);
+                }
+            }
+
+            if (opened_input_file) {
+                fclose (*fp);
+                *fp = NULL;
+            }
+        }
+
+        iconv_close (conv_desc);
+        close (fd);
+
+        if (status == OK) {
+            /* Replace the decoded file with the converted one. */
+            if (ct->c_cefile.ce_file) {
+                if (ct->c_cefile.ce_unlink) {
+                    (void) m_unlink (ct->c_cefile.ce_file);
+                }
+                free (ct->c_cefile.ce_file);
+            }
+            ct->c_cefile.ce_file = dest;
+            ct->c_cefile.ce_unlink = 1;
+
+            ++*message_mods;
+
+            /* Update ci_attrs. */
+            src_charset = dest_charset;
+
+            /* Update ct->c_ctline. */
+            if (ct->c_ctline) {
+                char *ctline =
+                    update_attr (ct->c_ctline, "charset=", dest_charset);
+
+                free (ct->c_ctline);
+                ct->c_ctline = ctline;
+            } /* else no CT line, which is odd */
+
+            /* Update Content-Type header field. */
+            for (hf = ct->c_first_hf; hf; hf = hf->next) {
+                if (! strcasecmp (TYPE_FIELD, hf->name)) {
+                    char *ctline_less_newline =
+                        update_attr (hf->value, "charset=", dest_charset);
+                    char *ctline = concat (ctline_less_newline, "\n", NULL);
+                    free (ctline_less_newline);
+
+                    free (hf->value);
+                    hf->value = ctline;
+                    break;
+                }
+            }
+        } else {
+            (void) m_unlink (dest);
+        }
+#else  /* ! HAVE_ICONV */
+        NMH_UNUSED (message_mods);
+
+        advise (NULL, "Can't convert %s to %s without iconv", src_charset,
+                dest_charset);
+        status = NOTOK;
+#endif /* ! HAVE_ICONV */
+    }
+
+    return status;
 }
 
 

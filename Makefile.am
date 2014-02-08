@@ -334,7 +334,7 @@ uip_mhlist_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
 uip_mhn_SOURCES = uip/mhn.c uip/mhparse.c uip/mhcachesbr.c uip/mhshowsbr.c \
 		  uip/mhlistsbr.c uip/mhstoresbr.c uip/mhmisc.c uip/mhfree.c \
 		  uip/md5.c
-uip_mhn_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
+uip_mhn_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhparam_SOURCES = uip/mhparam.c
 uip_mhparam_LDADD = $(LDADD) $(POSTLINK)
@@ -345,12 +345,12 @@ uip_mhpath_LDADD = $(LDADD) $(POSTLINK)
 uip_mhshow_SOURCES = uip/mhshow.c uip/mhparse.c uip/mhcachesbr.c \
 		     uip/mhshowsbr.c uip/mhlistsbr.c uip/mhmisc.c \
 		     uip/mhfree.c uip/md5.c
-uip_mhshow_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
+uip_mhshow_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhstore_SOURCES = uip/mhstore.c uip/mhparse.c uip/mhcachesbr.c \
 		      uip/mhshowsbr.c uip/mhlistsbr.c uip/mhstoresbr.c \
 		      uip/mhmisc.c uip/mhfree.c uip/md5.c
-uip_mhstore_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
+uip_mhstore_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_msgchk_SOURCES = uip/msgchk.c uip/popsbr.c
 uip_msgchk_LDADD = $(LDADD) $(SASLLIB) $(POSTLINK)

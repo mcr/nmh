@@ -3351,3 +3351,64 @@ bad_quote:
     *header_attrp = cp;
     return OK;
 }
+
+
+char *
+content_charset (CT ct) {
+    const char *const charset = "charset";
+    char *default_charset = NULL;
+    CI ctinfo = &ct->c_ctinfo;
+    char **ap, **vp;
+    char **src_charset = NULL;
+
+    for (ap = ctinfo->ci_attrs, vp = ctinfo->ci_values; *ap; ++ap, ++vp) {
+        if (! strcasecmp (*ap, charset)) {
+            src_charset = vp;
+            break;
+        }
+    }
+
+    /* RFC 2045, Sec. 5.2:  default to us-ascii. */
+    if (src_charset == NULL) src_charset = &default_charset;
+    if (*src_charset == NULL) *src_charset = "US-ASCII";
+
+    return *src_charset;
+}
+
+
+/* Change the value of a name=value pair in a header field body.
+   If the name isn't there, append them.  In any case, a new
+   string will be allocated and must be free'd by the caller.
+   Trims any trailing newlines. */
+char *
+update_attr (char *body, const char *name, const char *value) {
+    char *bp = nmh_strcasestr (body, name);
+    char *new_body;
+
+    if (bp) {
+        char *other_attrs = strchr (bp, ';');
+
+        *(bp + strlen (name)) = '\0';
+        new_body = concat (body, "\"", value, "\"", NULL);
+
+        if (other_attrs) {
+            char *cp;
+
+            /* Trim any trailing newlines. */
+            for (cp = &other_attrs[strlen (other_attrs) - 1];
+                 cp > other_attrs  &&  *cp == '\n';
+                 *cp-- = '\0') continue;
+            new_body = add (other_attrs, new_body);
+        }
+    } else {
+        char *cp;
+
+        /* Append name/value pair, after first removing a final newline
+           and (extraneous) semicolon. */
+        if (*(cp = &body[strlen (body) - 1]) == '\n') *cp = '\0';
+        if (*(cp = &body[strlen (body) - 1]) == ';') *cp = '\0';
+        new_body = concat (body, "; ", name, "\"", value, "\"", NULL);
+    }
+
+    return new_body;
+}

@@ -46,6 +46,7 @@ void cpydgst (int, int, char *, char *);
 char *cpytrim (const char *);
 int decode_rfc2047 (char *, char *, size_t);
 void discard (FILE *);
+char *upcase (const char *);
 int default_done (int);
 
 /*
