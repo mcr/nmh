@@ -17,8 +17,7 @@ fi
 setup_test
 
 if test "$ICONV_ENABLED" -eq 0; then
-  echo "$0: skipping test-textcharset because nmh was built without iconv"
-  exit 0
+  test_skip 'test-textcharset requires that nmh have been built with iconv'
 fi
 
 expected="$MH_TEST_DIR"/$$.expected
