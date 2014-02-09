@@ -34,7 +34,7 @@ static FILE *cfile;
 #define	ID	10
 #define	MACH	11
 
-static char tokval[100];
+#define MAX_TOKVAL_SIZE 1024
 
 struct toktab {
     char *tokstr;
@@ -55,7 +55,7 @@ static struct toktab toktabs[] = {
 /*
  * prototypes
  */
-static int token(void);
+static int token(char *);
 
 
 void
@@ -71,7 +71,10 @@ ruserpass(char *host, char **aname, char **apass)
 	if (errno != ENOENT)
 	    perror (credentials_file);
     } else {
-	while ((t = token())) {
+        char tokval[MAX_TOKVAL_SIZE];
+        tokval[0] = '\0';
+
+	while ((t = token(tokval))) {
 	    switch(t) {
 	    case DEFAULT:
 		usedefault = 1;
@@ -79,7 +82,7 @@ ruserpass(char *host, char **aname, char **apass)
 
 	    case MACH:
 		if (!usedefault) {
-		    if (token() != ID)
+		    if (token(tokval) != ID)
 			continue;
 		    /*
 		     * Allow match either for user's host name.
@@ -89,10 +92,10 @@ ruserpass(char *host, char **aname, char **apass)
 		    continue;
 		}
 	    match:
-		while ((t = token()) && t != MACH && t != DEFAULT) {
+		while ((t = token(tokval)) && t != MACH && t != DEFAULT) {
 		    switch(t) {
 		    case LOGIN:
-			if (token() && *aname == 0) {
+			if (token(tokval) && *aname == 0) {
 			    *aname = mh_xmalloc((size_t) strlen(tokval) + 1);
 			    strcpy(*aname, tokval);
 			}
@@ -108,7 +111,7 @@ ruserpass(char *host, char **aname, char **apass)
 			    adios(NULL, "Remove password or correct file "
 				  "permissions.");
 			}
-			if (token() && *apass == 0) {
+			if (token(tokval) && *apass == 0) {
 			    *apass = mh_xmalloc((size_t) strlen(tokval) + 1);
 			    strcpy(*apass, tokval);
 			}
@@ -161,7 +164,7 @@ ruserpass(char *host, char **aname, char **apass)
 
 	snprintf(prompt, sizeof(prompt), "Password (%s:%s): ", host, *aname);
 	mypass = nmh_getpass(prompt);
-	
+
 	if (*mypass == '\0') {
 	    mypass = *aname;
 	}
@@ -173,7 +176,7 @@ ruserpass(char *host, char **aname, char **apass)
 }
 
 static int
-token(void)
+token(char *tokval)
 {
     char *cp;
     int c;
@@ -192,6 +195,10 @@ token(void)
 	    if (c == '\\')
 		c = getc(cfile);
 	    *cp++ = c;
+            if (cp - tokval > MAX_TOKVAL_SIZE-1) {
+                adios(NULL, "credential tokens restricted to length %d",
+                      MAX_TOKVAL_SIZE - 1);
+            }
 	}
     } else {
 	*cp++ = c;
@@ -200,6 +207,10 @@ token(void)
 	    if (c == '\\')
 		c = getc(cfile);
 	    *cp++ = c;
+            if (cp - tokval > MAX_TOKVAL_SIZE-1) {
+                adios(NULL, "credential tokens restricted to length %d",
+                      MAX_TOKVAL_SIZE - 1);
+            }
 	}
     }
     *cp = 0;
