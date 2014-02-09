@@ -567,7 +567,7 @@ MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; charset="iso-8859-1"; name="square.txt"
+Content-Type: text/plain; charset="iso-8859-1"; name="nul+square.txt"
 Content-Transfer-Encoding: base64
 
 AL2yPbwK
@@ -588,7 +588,7 @@ MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary=\"----- =_aaaaaaaaaa0\"
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; charset=\"iso-8859-1\"; name=\"square.txt\"
+Content-Type: text/plain; charset=\"iso-8859-1\"; name=\"nul+square.txt\"
 Content-Transfer-Encoding: binary
 
 " "
@@ -713,17 +713,13 @@ vbI9vAo=
 ------- =_aaaaaaaaaa0--
 EOF
 
-set +e
-run_prog mhfixmsg last -textcharset utf-8 -outfile "$actual" 2>"$actual.err"
-if grep "mhfixmsg: Can't convert .* to .* without iconv" "$actual.err" \
-  >/dev/null; then
-  echo "$0: skipping -textcharset check because nmh was built without iconv"
-  rm -f "$expected" "$actual" "$actual.err"
-else
+if test "$ICONV_ENABLED" -eq 1; then
+  run_prog mhfixmsg last -textcharset utf-8 -outfile "$actual" 2>&1
   check "$expected" "$actual"
-  rm "$actual.err"
+else
+  echo "$0: skipping -textcharset check because nmh was built without iconv"
+  rm -f "$expected"
 fi
-set -e
 
 
 # check -nofixboundary
