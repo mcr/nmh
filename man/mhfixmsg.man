@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "October 27, 2013" "%nmhversion%"
+.TH MHFIXMSG %manext1% "February 8, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -16,9 +16,9 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .RB [ \-decodetext
 8bit/7bit |
 .BR \-nodecodetext ]
-.RB [ \-textcodeset
-.I codeset
-.RB "| " \-notextcodeset ]
+.RB [ \-textcharset
+.I charset
+.RB "| " \-notextcharset ]
 .RB [ \-reformat " | " \-noreformat ]
 .RB [ \-replacetextplain " | " \-noreplacetextplain ]
 .RB [ \-fixboundary " | " \-nofixboundary ]
@@ -69,11 +69,11 @@ linefeed character is removed from text parts encoded in ASCII,
 ISO-8859-x, UTF-8, or Windows-12xx.
 .PP
 The
-.B \-textcodeset
+.B \-textcharset
 switch specifies that all text/plain parts of the message(s)
 should be converted to
-.IR codeset .
-Codeset conversions require that
+.IR charset .
+Charset conversions require that
 .B nmh
 be built with
 .IR iconv (3).
@@ -214,7 +214,7 @@ content type and/or encoding as follows:
 .nf
 .ta \w'\-fixboundary 'u
 \-decodetext   base64 and quoted-printable encoded text parts
-\-textcodeset  text/plain parts
+\-textcharset  text/plain parts
 \-reformat     text parts that are not text/plain
 \-fixboundary  outermost multipart part
 \-fixcte       multipart part
@@ -321,6 +321,7 @@ is checked.
 .fi
 .SH "SEE ALSO"
 .IR inc (1),
+.IR iconv (3),
 .IR mh-profile (5),
 .IR mhbuild (1),
 .IR mhlist (1),
@@ -335,7 +336,7 @@ is checked.
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
 .RB ` "\-decodetext 8bit"'
-.RB ` \-notextcodeset '
+.RB ` \-notextcharset '
 .RB ` \-reformat '
 .RB ` \-noreplacetextplain '
 .RB ` \-fixboundary '

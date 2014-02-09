@@ -47,7 +47,7 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   switches are:
   -decodetext 8bit|7bit
   -nodecodetext
-  -[no]textcodeset
+  -[no]textcharset
   -[no]reformat
   -[no]replacetextplain
   -[no]fixboundary
@@ -674,13 +674,13 @@ else
 fi
 
 
-# check -textcodeset
+# check -textcharset
 # Also checks preservation of attributes after one (charset) that is
 # modified.
 cat >"$expected" <<EOF
 To: recipient@example.com
 From: sender@example.com
-Subject: mhfixmsg textcodeset test
+Subject: mhfixmsg textcharset test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
 
@@ -699,7 +699,7 @@ EOF
 cat >`mhpath new` <<EOF
 To: recipient@example.com
 From: sender@example.com
-Subject: mhfixmsg textcodeset test
+Subject: mhfixmsg textcharset test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
 
@@ -714,10 +714,10 @@ vbI9vAo=
 EOF
 
 set +e
-run_prog mhfixmsg last -textcodeset utf-8 -outfile "$actual" 2>"$actual.err"
+run_prog mhfixmsg last -textcharset utf-8 -outfile "$actual" 2>"$actual.err"
 if grep "mhfixmsg: Can't convert .* to .* without iconv" "$actual.err" \
   >/dev/null; then
-  echo "$0: skipping -textcodeset check because nmh was built without iconv"
+  echo "$0: skipping -textcharset check because nmh was built without iconv"
   rm -f "$expected" "$actual" "$actual.err"
 else
   check "$expected" "$actual"

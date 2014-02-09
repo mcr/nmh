@@ -19,7 +19,7 @@
 #include <h/utils.h>
 #ifdef HAVE_ICONV
 #   include <iconv.h>
-#endif
+#endif /* ! HAVE_ICONV */
 
 extern int debugsw;
 
@@ -267,13 +267,13 @@ show_content (CT ct, int serial, int alternate)
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
 
-    /* Check for mhn-show-type/subtype */
+    /* Check for invo_name-show-type/subtype */
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
 	return show_content_aux (ct, serial, alternate, cp, NULL);
 
-    /* Check for mhn-show-type */
+    /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
 	return show_content_aux (ct, serial, alternate, cp, NULL);
@@ -313,7 +313,7 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 	return NOTOK;
     if (ct->c_showproc && !strcmp (ct->c_showproc, "true"))
 	return (alternate ? DONE : OK);
-    
+
     xlist  = 0;
     xpause = 0;
     xstdin = 0;
@@ -492,7 +492,7 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
     pid_t child_id;
     int i;
     char *vec[4], exec[BUFSIZ + sizeof "exec "];
-    
+
     if (debugsw || cracked) {
 	fflush (stdout);
 
@@ -598,13 +598,13 @@ show_text (CT ct, int serial, int alternate)
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
 
-    /* Check for mhn-show-type/subtype */
+    /* Check for invo_name-show-type/subtype */
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
 	return show_content_aux (ct, serial, alternate, cp, NULL);
 
-    /* Check for mhn-show-type */
+    /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
 	return show_content_aux (ct, serial, alternate, cp, NULL);
@@ -634,13 +634,13 @@ show_multi (CT ct, int serial, int alternate)
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
 
-    /* Check for mhn-show-type/subtype */
+    /* Check for invo_name-show-type/subtype */
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
 	return show_multi_aux (ct, serial, alternate, cp);
 
-    /* Check for mhn-show-type */
+    /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
 	return show_multi_aux (ct, serial, alternate, cp);
@@ -701,7 +701,7 @@ show_multi_internal (CT ct, int serial, int alternate)
 
 /*
  * alternate   -> we are a part inside an multipart/alternative
- * alternating -> we are a multipart/alternative 
+ * alternating -> we are a multipart/alternative
  */
 
     result = alternate ? NOTOK : OK;
@@ -884,7 +884,7 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
 		/* insert filename(s) containing content */
 	    {
 		char *s = "";
-			
+
 		for (part = m->mp_parts; part; part = part->mp_next) {
 		    p = part->mp_part;
 
@@ -1003,13 +1003,13 @@ show_message_rfc822 (CT ct, int serial, int alternate)
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
 
-    /* Check for mhn-show-type/subtype */
+    /* Check for invo_name-show-type/subtype */
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
 	return show_content_aux (ct, serial, alternate, cp, NULL);
 
-    /* Check for mhn-show-type */
+    /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
 	return show_content_aux (ct, serial, alternate, cp, NULL);

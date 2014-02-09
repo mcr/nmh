@@ -16,8 +16,8 @@
 #define MHFIXMSG_SWITCHES \
     X("decodetext 8bit|7bit", 0, DECODETEXTSW) \
     X("nodecodetext", 0, NDECODETEXTSW) \
-    X("textcodeset", 0, TEXTCODESETSW) \
-    X("notextcodeset", 0, NTEXTCODESETSW) \
+    X("textcharset", 0, TEXTCHARSETSW) \
+    X("notextcharset", 0, NTEXTCHARSETSW) \
     X("reformat", 0, REFORMATSW) \
     X("noreformat", 0, NREFORMATSW) \
     X("replacetextplain", 0, REPLACETEXTPLAINSW) \
@@ -78,7 +78,7 @@ typedef struct fix_transformations {
     int reformat;
     int replacetextplain;
     int decodetext;
-    char *textcodeset;
+    char *textcharset;
 } fix_transformations;
 
 int mhfixmsgsbr (CT *, const fix_transformations *, char *);
@@ -102,7 +102,7 @@ static int set_ct_type (CT, int type, int subtype, int encoding);
 static int decode_text_parts (CT, int, int *);
 static int content_encoding (CT);
 static int strip_crs (CT, int *);
-static int convert_codesets (CT, char *, int *);
+static int convert_charsets (CT, char *, int *);
 static int write_content (CT, char *, char *, int, int);
 static int remove_file (char *);
 static void report (char *, char *, char *, ...);
@@ -125,7 +125,7 @@ main (int argc, char **argv) {
     fx.reformat = fx.fixcte = fx.fixboundary = 1;
     fx.replacetextplain = 0;
     fx.decodetext = CE_8BIT;
-    fx.textcodeset = NULL;
+    fx.textcharset = NULL;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -169,13 +169,13 @@ main (int argc, char **argv) {
             case NDECODETEXTSW:
                 fx.decodetext = 0;
                 continue;
-            case TEXTCODESETSW:
+            case TEXTCHARSETSW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
                     adios (NULL, "missing argument to %s", argp[-2]);
-                fx.textcodeset = cp;
+                fx.textcharset = cp;
                 continue;
-            case NTEXTCODESETSW:
-                fx.textcodeset = 0;
+            case NTEXTCHARSETSW:
+                fx.textcharset = 0;
                 continue;
             case FIXBOUNDARYSW:
                 fx.fixboundary = 1;
@@ -408,8 +408,8 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     if (status == OK  &&  fx->decodetext) {
         status = decode_text_parts (*ctp, fx->decodetext, &message_mods);
     }
-    if (status == OK  &&  fx->textcodeset != NULL) {
-        status = convert_codesets (*ctp, fx->textcodeset, &message_mods);
+    if (status == OK  &&  fx->textcharset != NULL) {
+        status = convert_charsets (*ctp, fx->textcharset, &message_mods);
     }
 
     if (! (*ctp)->c_umask) {
@@ -1151,11 +1151,11 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
 static int
 charset_encoding (CT ct) {
     /* norm_charmap() is case sensitive. */
-    char *codeset = upcase (content_charset (ct));
+    char *charset = upcase (content_charset (ct));
     int encoding =
-        strcmp (norm_charmap (codeset), "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
+        strcmp (norm_charmap (charset), "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
 
-    free (codeset);
+    free (charset);
     return encoding;
 }
 
@@ -1572,18 +1572,18 @@ content_encoding (CT ct) {
 static int
 strip_crs (CT ct, int *message_mods) {
     /* norm_charmap() is case sensitive. */
-    char *codeset = upcase (content_charset (ct));
+    char *charset = upcase (content_charset (ct));
     int status = OK;
 
     /* Only strip carriage returns if content is ASCII or another
-       codeset that has the same readily recognizable CR followed by a
+       charset that has the same readily recognizable CR followed by a
        LF.  We can include UTF-8 here because if the high-order bit of
        a UTF-8 byte is 0, then it must be a single-byte ASCII
        character. */
-    if (! strcmp (norm_charmap (codeset), "US-ASCII")  ||
-        ! strncmp (norm_charmap (codeset), "ISO-8859-", 9)  ||
-        ! strncmp (norm_charmap (codeset), "UTF-8", 5)  ||
-        ! strncmp (norm_charmap (codeset), "WINDOWS-12", 10)) {
+    if (! strcmp (norm_charmap (charset), "US-ASCII")  ||
+        ! strncmp (norm_charmap (charset), "ISO-8859-", 9)  ||
+        ! strncmp (norm_charmap (charset), "UTF-8", 5)  ||
+        ! strncmp (norm_charmap (charset), "WINDOWS-12", 10)) {
         char **file = NULL;
         FILE **fp = NULL;
         size_t begin;
@@ -1645,7 +1645,7 @@ strip_crs (CT ct, int *message_mods) {
             if (has_crs) {
                 int fd;
                 char *stripped_content_file;
-                char *tempfile = m_mktemp2 (NULL, invo_name, &fd, NULL); 
+                char *tempfile = m_mktemp2 (NULL, invo_name, &fd, NULL);
 
                 if (tempfile == NULL) {
                     adios (NULL, "unable to create temporary file in %s",
@@ -1707,22 +1707,22 @@ strip_crs (CT ct, int *message_mods) {
         }
     }
 
-    free (codeset);
+    free (charset);
     return status;
 }
 
 
 static int
-convert_codesets (CT ct, char *dest_codeset, int *message_mods) {
+convert_charsets (CT ct, char *dest_charset, int *message_mods) {
     int status = OK;
 
     switch (ct->c_type) {
     case CT_TEXT:
         if (ct->c_subtype == TEXT_PLAIN) {
-            status = convert_charset (ct, dest_codeset, message_mods);
+            status = convert_charset (ct, dest_charset, message_mods);
             if (verbosw  &&  status == OK) {
                report (ct->c_partno, ct->c_file, "convert %s to %s",
-                       content_charset(ct), dest_codeset);
+                       content_charset(ct), dest_charset);
             }
         }
         break;
@@ -1735,7 +1735,7 @@ convert_codesets (CT ct, char *dest_codeset, int *message_mods) {
            For now, it gets passed along as-is by InitMultiPart(). */
         for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
             status =
-                convert_codesets (part->mp_part, dest_codeset, message_mods);
+                convert_charsets (part->mp_part, dest_charset, message_mods);
         }
         break;
     }
@@ -1746,7 +1746,7 @@ convert_codesets (CT ct, char *dest_codeset, int *message_mods) {
 
             e = (struct exbody *) ct->c_ctparams;
             status =
-                convert_codesets (e->eb_content, dest_codeset, message_mods);
+                convert_charsets (e->eb_content, dest_charset, message_mods);
         }
         break;
 
