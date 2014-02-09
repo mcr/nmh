@@ -49,7 +49,7 @@ n
 $installpath
 y" | run_prog install-mh >/dev/null
 
-if [ -f $MH_TEST_DIR/Mail/context  -a  -f $MH_TEST_DIR/Mail/.mh_profile ]; then
+if [ -f $MH_TEST_DIR/Mail/context  -a  -f "$MH" ]; then
   run_prog install-mh -check
 else
   failed=`expr ${failed:-0} + 1`
@@ -61,7 +61,7 @@ fi
 rm -rf $MH_TEST_DIR/Mail
 HOME=$MH_TEST_DIR install-mh -auto >/dev/null
 
-if [ -f $MH_TEST_DIR/Mail/context  -a  -f $MH_TEST_DIR/Mail/.mh_profile ]; then
+if [ -f $MH_TEST_DIR/Mail/context  -a  -f "$MH" ]; then
   run_prog install-mh -check
 else
   failed=`expr ${failed:-0} + 1`

@@ -53,7 +53,7 @@ other+ has  4 in sequence unseen; out of  4
 other+ has  0 in sequence odd   ; out of  4'
 
 # Test Flist-Order with -noalpha.
-echo 'Flist-Order: o* i*' >> $MH_TEST_DIR/Mail/.mh_profile
+echo 'Flist-Order: o* i*' >> "$MH"
 run_test 'flists -seq unseen -seq odd -noalpha' \
          'other+ has  4 in sequence unseen; out of  4
 other+ has  0 in sequence odd   ; out of  4

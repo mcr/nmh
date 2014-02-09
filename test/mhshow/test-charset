@@ -19,7 +19,7 @@ setup_test
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
-echo 'mhshow-charset-windows-1252: echo "This is a test"' >> $MH_TEST_DIR/Mail/.mh_profile
+echo 'mhshow-charset-windows-1252: echo "This is a test"' >> "$MH"
 
 # Write message with bogus quoted-printable data.
 msgfile=`mhpath new`

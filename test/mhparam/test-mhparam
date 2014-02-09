@@ -47,7 +47,7 @@ esac
 run_test 'mhparam -nonexistent' 'mhparam: -nonexistent unknown'
 
 # check -all
-cp $MH_TEST_DIR/Mail/.mh_profile $expected
+cp "$MH" $expected
 # -all adds current folder
 echo 'Current-Folder: '`folder -f` >>$expected
 run_prog mhparam -all >$actual
@@ -69,7 +69,7 @@ check $expected_err $actual_err
 run_test 'mhparam path' "$MH_TEST_DIR/Mail"
 
 # check more than one component, which enables -component
-echo 'AliasFile: aliases' >>"$MH_TEST_DIR/Mail/.mh_profile"
+echo 'AliasFile: aliases' >>"$MH"
 run_test 'mhparam path AliasFile' "path: $MH_TEST_DIR/Mail
 AliasFile: aliases"
 
