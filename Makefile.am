@@ -72,7 +72,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/mhfixmsg/test-mhfixmsg \
 	test/mhlist/test-mhlist test/mhmail/test-mhmail \
 	test/mhparam/test-mhparam test/mhpath/test-mhpath \
-	test/mhshow/test-charset \
+	test/mhshow/test-charset test/mhshow/test-textcharset \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
 	test/mhshow/test-subpart test/mhshow/test-msg-buffer-boundaries \
 	test/mhstore/test-mhstore test/new/test-basic \

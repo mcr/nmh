@@ -1,0 +1,75 @@
+#!/bin/sh
+##########################################################
+#
+# Test display of text/plain parts with charset conversion
+#
+##########################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+if test "$ICONV_ENABLED" -eq 0; then
+  echo "$0: skipping test-textcharset because nmh was built without iconv"
+  exit 0
+fi
+
+expected="$MH_TEST_DIR"/$$.expected
+actual="$MH_TEST_DIR"/$$.actual
+
+msgfile=`mhpath new`
+cat >"$msgfile" <<EOF
+From: foo@example.edu
+To: bar@example.edu
+Subject: test display with charset conversion
+MIME-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+4 =F7 2 =3D 2
+EOF
+
+# Check -notextcharset.
+cat >"$expected" <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test display with charset conversion
+
+MIME-Version: 1.0
+
+EOF
+
+run_prog mhshow -textcharset UTF-8 -notextcharset -nopause last >"$actual" 2>&1
+check "$expected" "$actual"
+
+# Check -textcharset.
+cat >"$expected" <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test display with charset conversion
+
+MIME-Version: 1.0
+
+part       text/plain                  10
+4 ÷ 2 = 2
+EOF
+
+run_prog mhshow -textcharset UTF-8 -nopause last >"$actual" 2>&1
+check "$expected" "$actual" 'keep first'
+
+# Check use of user's locale.
+LC_ALL=en_US.UTF-8; export LC_ALL
+run_prog mhshow -nopause last >"$actual" 2>&1
+check "$expected" "$actual"
+
+exit $failed

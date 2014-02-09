@@ -28,6 +28,7 @@ int serialsw = 0;
 int nolist   = 0;
 
 char *progsw = NULL;
+char *display_charset = NULL;
 
 /* flags for moreproc/header display */
 int nomore   = 0;
@@ -69,6 +70,7 @@ static int show_multi_aux (CT, int, int, char *);
 static int show_message_rfc822 (CT, int, int);
 static int show_partial (CT, int, int);
 static int show_external (CT, int, int);
+static int convert_content_charset (CT, char **);
 static void intrser (int);
 
 
@@ -313,6 +315,17 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 	return NOTOK;
     if (ct->c_showproc && !strcmp (ct->c_showproc, "true"))
 	return (alternate ? DONE : OK);
+
+    if (! strcmp(invo_name, "mhshow")  &&
+        ct->c_type == CT_TEXT  &&  ct->c_subtype == TEXT_PLAIN) {
+        /* This has to be done after calling c_ceopenfnx, so
+           unfortunately the type checks are necessary without
+           some code rearrangement.  And to make this really ugly,
+           only do it in mhshow, not mhfixmsg, mhn, or mhstore. */
+        if (convert_content_charset (ct, &file) != OK) {
+            return NOTOK;
+        }
+    }
 
     xlist  = 0;
     xpause = 0;
@@ -1214,6 +1227,39 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
     }
 
     return status;
+}
+
+
+static int
+convert_content_charset (CT ct, char **file) {
+    /* Convert character set if needed and if built with iconv. */
+#ifdef HAVE_ICONV
+    if (display_charset == NULL) {
+        /* The user did not specify a display charset, so use
+           current setting and see if the content will need to be
+           converted. */
+        char *charset = content_charset (ct);
+
+        if (! check_charset (charset, strlen (charset))) {
+            int unused = 0;
+            if (convert_charset (ct, get_charset (), &unused) == 0) {
+                *file = ct->c_cefile.ce_file;
+            } else {
+                return NOTOK;
+            }
+        }
+    } else {
+        /* The user requested display with a specific charset. */
+        int unused = 0;
+        if (convert_charset (ct, display_charset, &unused) == 0) {
+            *file = ct->c_cefile.ce_file;
+        } else {
+            return NOTOK;
+        }
+    }
+#endif /* ! HAVE_ICONV */
+
+    return OK;
 }
 
 

@@ -74,6 +74,10 @@ NEW FEATURES
   Nmh-Attachment).
 - The default Content-Transfer-Encoding for text parts is now 8bit.
 - mhbuild(1) now supports a selectable Content-Transfer-Encoding
+- Added -[no]textcharset switches to mhshow(1).  These only apply if
+  nmh was configured with iconv(3) support.  If -textcharset is not
+  used, mhshow will convert, if necessary, the charset of text/plain
+  content to match the user's locale setting.
 
 -----------------
 OBSOLETE FEATURES

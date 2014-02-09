@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "May 4, 2013" "%nmhversion%"
+.TH MHSHOW %manext1% "February 9, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -22,6 +22,9 @@ mhshow \- display MIME messages
 .RB [ \-pause " | " \-nopause ]
 .RB [ \-form
 .IR formfile ]
+.RB [ \-textcharset
+.I charset
+.RB "| " \-notextcharset ]
 .RB [ \-rcache
 .IR policy ]
 .RB [ \-wcache
@@ -321,6 +324,20 @@ switch can be given to tell
 .B mhshow
 to never display parts in parallel.
 .SS "Showing Alternate Character Sets"
+If
+.B mhshow
+was built with
+.IR iconv (3),
+then all text/plain parts of the message(s) will be displayed
+using the character set of the current locale.  This character
+set can be overridden with the
+.B \-textcharset
+switch.  To convert text parts other than text/plain, or if
+.B mhshow
+was not built with
+.IR iconv ,
+an external program can be used, as described next.
+.PP
 Because a content of type text might be in a non-ASCII character
 set, when
 .B mhshow
@@ -379,29 +396,24 @@ needed beforehand.
 Note that many pagers strip off the high-order bit or have problems
 displaying text with the high-order bit set.  However, the pager
 .B less
-has support for single-octet character sets.  The source
-to
-.B less
-is available on many ftp sites carrying free software.
-In order to view messages sent in the ISO-8859-1 character set using
+has support for single-octet character sets.  For example, messages
+encoded in the ISO-8859-1 character set can be view using
 .BR less ,
-.PP
-put these lines in your
-.I \&.login
-file:
+with these environment variable settings:
 .PP
 .RS 5
 .nf
-setenv LESSCHARSET latin1
-setenv LESS "-f"
+.ta \w'%F  'u
+LESSCHARSET latin1
+LESS        -f
 .fi
 .RE
 .PP
-The first line tells
+The first setting tells
 .B less
 to use the ISO-8859-1 definition for
 determining whether a character is \*(lqnormal\*(rq, \*(lqcontrol\*(lq,
-or \*(lqbinary\*(rq.  The second line tells
+or \*(lqbinary\*(rq.  The second setting tells
 .B less
 not to warn you
 if it encounters a file that has non-ASCII characters.  Then, simply
@@ -599,6 +611,7 @@ is checked.
 ^moreproc:~^Default program to display text/plain content
 .fi
 .SH "SEE ALSO"
+.IR iconv (3),
 .IR mhbuild (1),
 .IR mhl (1),
 .IR mhlist (1),
@@ -611,6 +624,7 @@ is checked.
 .RB ` \-nocheck '
 .RB ` \-form\ mhl.headers '
 .RB ` \-pause '
+.RB ` \-notextcharset '
 .RB ` \-rcache\ ask '
 .RB ` \-noserialonly '
 .RB ` \-wcache\ ask '
