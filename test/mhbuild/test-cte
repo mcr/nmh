@@ -19,6 +19,7 @@ set -e
 LC_ALL=en_US.UTF-8; export LC_ALL
 
 draft="$MH_TEST_DIR/$$.draft"
+backup="${MH_TEST_DIR}/`mhparam sbackup`$$.draft.orig"
 expected="$MH_TEST_DIR/$$.expected"
 
 #
@@ -356,7 +357,7 @@ To: Mr Test <mrtest@example.com>
 cc:
 Fcc: +outbox
 ------
-This is the test of a lønger line than the ususal limit.  Assuming we set the maxunencded parameter properly, this should end up as 8bit?
+This is the test of a lønger line than the usual limit.  Assuming we set the maxunencded parameter properly, this should end up as 8bit?
 EOF
 
 run_prog mhbuild -maxunencoded 200 "$draft"
@@ -369,9 +370,11 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 
-This is the test of a lønger line than the ususal limit.  Assuming we set the maxunencded parameter properly, this should end up as 8bit?
+This is the test of a lønger line than the usual limit.  Assuming we set the maxunencded parameter properly, this should end up as 8bit?
 EOF
 
 check "$draft" "$expected"
+
+[ ${failed:=0} -eq 0 ]  &&  rm -f ${backup}
 
 exit ${failed:-0}
