@@ -28,7 +28,6 @@ int serialsw = 0;
 int nolist   = 0;
 
 char *progsw = NULL;
-char *display_charset = NULL;
 
 /* flags for moreproc/header display */
 int nomore   = 0;
@@ -323,7 +322,10 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
            some code rearrangement.  And to make this really ugly,
            only do it in mhshow, not mhfixmsg, mhn, or mhstore. */
         if (convert_content_charset (ct, &file) != OK) {
-            return NOTOK;
+            admonish (NULL, "unable to convert character set%s to %s",
+                      ct->c_partno  ?  "of part "  :  "",
+                      ct->c_partno  ?  ct->c_partno  :  "",
+                      content_charset (ct));
         }
     }
 
@@ -1232,26 +1234,16 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
 
 static int
 convert_content_charset (CT ct, char **file) {
-    /* Convert character set if needed and if built with iconv. */
 #ifdef HAVE_ICONV
-    if (display_charset == NULL) {
-        /* The user did not specify a display charset, so use
-           current setting and see if the content will need to be
-           converted. */
-        char *charset = content_charset (ct);
+    /* Using current locale, see if the content needs to be converted. */
 
-        if (! check_charset (charset, strlen (charset))) {
-            int unused = 0;
-            if (convert_charset (ct, get_charset (), &unused) == 0) {
-                *file = ct->c_cefile.ce_file;
-            } else {
-                return NOTOK;
-            }
-        }
-    } else {
-        /* The user requested display with a specific charset. */
+    /* content_charset() cannot return NULL. */
+    char *charset = content_charset (ct);
+
+    if (! check_charset (charset, strlen (charset))) {
         int unused = 0;
-        if (convert_charset (ct, display_charset, &unused) == 0) {
+
+        if (convert_charset (ct, get_charset (), &unused) == 0) {
             *file = ct->c_cefile.ce_file;
         } else {
             return NOTOK;

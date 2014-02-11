@@ -22,9 +22,6 @@ mhshow \- display MIME messages
 .RB [ \-pause " | " \-nopause ]
 .RB [ \-form
 .IR formfile ]
-.RB [ \-textcharset
-.I charset
-.RB "| " \-notextcharset ]
 .RB [ \-rcache
 .IR policy ]
 .RB [ \-wcache
@@ -328,11 +325,9 @@ If
 .B mhshow
 was built with
 .IR iconv (3),
-then all text/plain parts of the message(s) will be displayed
-using the character set of the current locale.  This character
-set can be overridden with the
-.B \-textcharset
-switch.  To convert text parts other than text/plain, or if
+then all text/plain parts of the message(s) will be displayed using
+the character set of the current locale.  To convert text parts other
+than text/plain, or if
 .B mhshow
 was not built with
 .IR iconv ,
@@ -624,7 +619,6 @@ is checked.
 .RB ` \-nocheck '
 .RB ` \-form\ mhl.headers '
 .RB ` \-pause '
-.RB ` \-notextcharset '
 .RB ` \-rcache\ ask '
 .RB ` \-noserialonly '
 .RB ` \-wcache\ ask '

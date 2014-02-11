@@ -31,8 +31,6 @@
     X("form formfile", 0, FORMSW) \
     X("part number", 0, PARTSW) \
     X("type content", 0, TYPESW) \
-    X("textcharset", 0, TEXTCHARSETSW) \
-    X("notextcharset", 0, NTEXTCHARSETSW) \
     X("rcache policy", 0, RCACHESW) \
     X("wcache policy", 0, WCACHESW) \
     X("version", 0, VERSIONSW) \
@@ -68,7 +66,6 @@ extern char *cache_private;
 extern int pausesw;
 extern int serialsw;
 extern char *progsw;
-extern char *display_charset;
 extern int nomore;	/* flags for moreproc/header display */
 extern char *formsw;
 
@@ -202,16 +199,6 @@ do_cache:
 			   cp, NTYPES);
 		types[ntype++] = cp;
 		continue;
-
-	    case TEXTCHARSETSW:
-		if (!(cp = *argp++) || *cp == '-')
-		    adios (NULL, "missing argument to %s", argp[-2]);
-		display_charset = cp;
-		continue;
-
-            case NTEXTCHARSETSW:
-                display_charset = NULL;
-                continue;
 
 	    case FILESW:
 		if (!(cp = *argp++) || (*cp == '-' && cp[1]))

@@ -20,6 +20,8 @@ if test "$ICONV_ENABLED" -eq 0; then
   test_skip 'test-textcharset requires that nmh have been built with iconv'
 fi
 
+LC_ALL=en_US.UTF-8; export LC_ALL
+
 expected="$MH_TEST_DIR"/$$.expected
 actual="$MH_TEST_DIR"/$$.actual
 
@@ -36,22 +38,6 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-# Check -notextcharset.
-cat >"$expected" <<EOF
-Date:    Sun, 18 Dec 2005 00:52:39 +0100
-To:      bar@example.edu
-From:    foo@example.edu
-Subject: test display with charset conversion
-
-MIME-Version: 1.0
-
-EOF
-
-LC_ALL=C; export LC_ALL
-run_prog mhshow -textcharset UTF-8 -notextcharset -nopause last >"$actual" 2>&1
-check "$expected" "$actual"
-
-# Check -textcharset.
 cat >"$expected" <<EOF
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
@@ -64,11 +50,6 @@ part       text/plain                  10
 4 ÷ 2 = 2
 EOF
 
-run_prog mhshow -textcharset UTF-8 -nopause last >"$actual" 2>&1
-check "$expected" "$actual" 'keep first'
-
-# Check use of user's locale.
-LC_ALL=en_US.UTF-8; export LC_ALL
 run_prog mhshow -nopause last >"$actual" 2>&1
 check "$expected" "$actual"
 
