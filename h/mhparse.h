@@ -52,7 +52,7 @@ struct Parameter {
     char *pm_value;	/* Parameter value */
     char *pm_charset;	/* Parameter character set (optional) */
     char *pm_lang;	/* Parameter language tag (optional) */
-    PM   *pm_next;	/* Pointer to next element */
+    PM   pm_next;	/* Pointer to next element */
 };
 
 /*
@@ -62,8 +62,8 @@ struct Parameter {
 struct CTinfo {
     char *ci_type;		/* content type     */
     char *ci_subtype;		/* content subtype  */
-    PM   *ci_first_pm;		/* Pointer to first MIME parameter */
-    PM   *ci_last_pm;		/* Pointer to last MIME parameter */
+    PM   ci_first_pm;		/* Pointer to first MIME parameter */
+    PM   ci_last_pm;		/* Pointer to last MIME parameter */
     char *ci_comment;		/* RFC-822 comments */
     char *ci_magic;
 };
@@ -112,8 +112,8 @@ struct Content {
     char *c_descr;		/* Content-Description:              */
     char *c_dispo;		/* Content-Disposition:              */
     char *c_dispo_type;		/* Type of Content-Disposition       */
-    PM *c_dispo_first;		/* Pointer to first disposition parm */
-    PM *c_dispo_last;		/* Pointer to last disposition parm  */
+    PM c_dispo_first;		/* Pointer to first disposition parm */
+    PM c_dispo_last;		/* Pointer to last disposition parm  */
     char *c_partno;		/* within multipart content          */
 
     /* Content-Type info */
@@ -342,5 +342,21 @@ const struct str2init *get_ct_init (int);
 const char *ce_str (int);
 const struct str2init *get_ce_method (const char *);
 int parse_header_attrs (const char *, int, char **, CI, int *);
+
+/*
+ * Given a linked list of parameters, build an output string for them.  This
+ * string is designed to be concatenated on an already-built header.
+ *
+ * Arguments are:
+ *
+ * initialwidth	- Current width of the header.  Used to compute when to wrap
+ *		  parameters on the first line.  The following lines will
+ *		  be prefixed by a tab (\t) character.
+ * params	- Pointer to head of linked list of parameters.
+ *
+ * Returns a pointer to the resulting parameter string.  This string must
+ * be free()'d by the caller.  Returns NULL on error.
+ */
+char *output_params(size_t initialwidth, PM params);
 
 extern int checksw;	/* Add Content-MD5 field */

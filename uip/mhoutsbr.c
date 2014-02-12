@@ -81,11 +81,12 @@ output_content (CT ct, FILE *out)
 {
     int result = 0;
     CI ci = &ct->c_ctinfo;
-    char *boundary = ci->ci_values[0], **ap, **vp;
+    PM pm;
+    char *boundary = "";
 
-    for (ap = ci->ci_attrs, vp = ci->ci_values; *ap; ++ap, ++vp) {
-        if (! strcasecmp ("boundary", *ap)) {
-            boundary = *vp;
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+        if (! strcasecmp ("boundary", pm->pm_name)) {
+            boundary = pm->pm_value;
             break;
         }
     }
@@ -163,7 +164,7 @@ output_content (CT ct, FILE *out)
 	       body, don't emit the newline that would appear between
 	       the headers and body.  In that case, the call to
 	       write8Bit() shouldn't be needed, but is harmless. */
-	    if (ct->c_ctinfo.ci_attrs[0] != NULL  ||
+	    if (ct->c_ctinfo.ci_first_pm != NULL  ||
 		ct->c_begin != ct->c_end) {
 		putc ('\n', out);
 	    }
@@ -226,7 +227,8 @@ output_headers (CT ct, FILE *out)
 static int
 writeExternalBody (CT ct, FILE *out)
 {
-    char **ap, **ep, *cp;
+    char *cp;
+    PM pm;
     struct exbody *e = (struct exbody *) ct->c_ctparams;
 		
     putc ('\n', out);
@@ -246,17 +248,17 @@ writeExternalBody (CT ct, FILE *out)
 		continue;
 
 	    case 'N':
-		for (ap = ci2->ci_attrs, ep = ci2->ci_values; *ap; ap++, ep++)
-		    if (!strcasecmp (*ap, "name")) {
-			fprintf (out, "%s", *ep);
+		for (pm = ci2->ci_first_pm; pm; pm = pm->pm_next)
+		    if (!strcasecmp (pm->pm_name, "name")) {
+			fprintf (out, "%s", pm->pm_value);
 			break;
 		    }
 		continue;
 
 	    case 'T':
 		fprintf (out, "%s/%s", ci2->ci_type, ci2->ci_subtype);
-		for (ap = ci2->ci_attrs, ep = ci2->ci_values; *ap; ap++, ep++)
-		    fprintf (out, "; %s=\"%s\"", *ap, *ep);
+		for (pm = ci2->ci_first_pm; pm; pm = pm->pm_next)
+		    fprintf (out, "; %s=\"%s\"", pm->pm_name, pm->pm_value);
 		continue;
 
 	    case 'n':

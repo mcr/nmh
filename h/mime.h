@@ -35,6 +35,19 @@
 	             && (c) != '/' && (c) != '['  && (c) != ']' \
 	             && (c) != '?' && (c) != '=')
 
+/*
+ * Definitions for RFC 2231 encoding
+ */
+#define istspecial(c)  ((c) == '(' || (c) == ')' || (c) == '<' || (c) == '>' \
+		        || (c) == '@' || (c) == ',' || (c) == ';' \
+			|| (c) == ':' || (c) == '\\' || (c) == '"' \
+			|| (c) == '/' || (c) == '[' || (c) == ']' \
+			|| (c) == '?' || (c) == '=')
+
+#define isparamencode(c)  (!isascii((unsigned char) c) || \
+			   iscntrl((unsigned char) c) || istspecial(c) || \
+			   (c) == '*' || (c) == '\'' || (c) == '%')
+
 #define	MAXTEXTPERLN 78
 #define	MAXLONGLINE 998
 #define	CPERLIN	76

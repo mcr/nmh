@@ -135,6 +135,7 @@ static int readDigest (CT, char *);
 static int get_leftover_mp_content (CT, int);
 static int InitURL (CT);
 static int openURL (CT, char **);
+static size_t param_len(PM, int, size_t, int *);
 
 struct str2init str2cts[] = {
     { "application", CT_APPLICATION, InitApplication },
@@ -1007,7 +1008,8 @@ InitText (CT ct)
 {
     char buffer[BUFSIZ];
     char *chset = NULL;
-    char **ap, **ep, *cp;
+    char *cp;
+    PM pm;
     struct k2v *kv;
     struct text *t;
     CI ci = &ct->c_ctinfo;
@@ -1028,13 +1030,13 @@ InitText (CT ct)
     ct->c_ctparams = (void *) t;
 
     /* scan for charset parameter */
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-	if (!strcasecmp (*ap, "charset"))
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next)
+	if (!strcasecmp (pm->pm_name, "charset"))
 	    break;
 
     /* check if content specified a character set */
-    if (*ap) {
-	chset = *ep;
+    if (pm) {
+	chset = pm->pm_value;
 	t->tx_charset = CHARSET_SPECIFIED;
     } else {
 	t->tx_charset = CHARSET_UNSPECIFIED;
@@ -1066,7 +1068,8 @@ InitMultiPart (CT ct)
 {
     int	inout;
     long last, pos;
-    char *cp, *dp, **ap, **ep;
+    char *cp, *dp;
+    PM pm;
     char *bp, buffer[BUFSIZ];
     struct multipart *m;
     struct k2v *kv;
@@ -1111,15 +1114,15 @@ InitMultiPart (CT ct)
      * required for multipart messages.
      */
     bp = 0;
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!strcasecmp (*ap, "boundary")) {
-	    bp = *ep;
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+	if (!strcasecmp (pm->pm_name, "boundary")) {
+	    bp = pm->pm_value;
 	    break;
 	}
     }
 
     /* complain if boundary parameter is missing */
-    if (!*ap) {
+    if (!pm) {
 	advise (NULL,
 		"a \"boundary\" parameter is mandatory for \"%s/%s\" type in message %s's %s: field",
 		ci->ci_type, ci->ci_subtype, ct->c_file, TYPE_FIELD);
@@ -1324,7 +1327,7 @@ InitMessage (CT ct)
 
 	case MESSAGE_PARTIAL:
 	    {
-		char **ap, **ep;
+		PM pm;
 		struct partial *p;
 
 		if ((p = (struct partial *) calloc (1, sizeof(*p))) == NULL)
@@ -1332,25 +1335,25 @@ InitMessage (CT ct)
 		ct->c_ctparams = (void *) p;
 
 		/* scan for parameters "id", "number", and "total" */
-		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		    if (!strcasecmp (*ap, "id")) {
-			p->pm_partid = add (*ep, NULL);
+		for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+		    if (!strcasecmp (pm->pm_name, "id")) {
+			p->pm_partid = add (pm->pm_value, NULL);
 			continue;
 		    }
-		    if (!strcasecmp (*ap, "number")) {
-			if (sscanf (*ep, "%d", &p->pm_partno) != 1
+		    if (!strcasecmp (pm->pm_name, "number")) {
+			if (sscanf (pm->pm_value, "%d", &p->pm_partno) != 1
 			        || p->pm_partno < 1) {
 invalid_param:
 			    advise (NULL,
 				    "invalid %s parameter for \"%s/%s\" type in message %s's %s field",
-				    *ap, ci->ci_type, ci->ci_subtype,
+				    pm->pm_name, ci->ci_type, ci->ci_subtype,
 				    ct->c_file, TYPE_FIELD);
 			    return NOTOK;
 			}
 			continue;
 		    }
-		    if (!strcasecmp (*ap, "total")) {
-			if (sscanf (*ep, "%d", &p->pm_maxno) != 1
+		    if (!strcasecmp (pm->pm_name, "total")) {
+			if (sscanf (pm->pm_value, "%d", &p->pm_maxno) != 1
 			        || p->pm_maxno < 1)
 			    goto invalid_param;
 			continue;
@@ -1465,21 +1468,21 @@ no_body:
 int
 params_external (CT ct, int composing)
 {
-    char **ap, **ep;
+    PM pm;
     struct exbody *e = (struct exbody *) ct->c_ctparams;
     CI ci = &ct->c_ctinfo;
 
     ct->c_ceopenfnx = NULL;
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!strcasecmp (*ap, "access-type")) {
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+	if (!strcasecmp (pm->pm_name, "access-type")) {
 	    struct str2init *s2i;
 	    CT p = e->eb_content;
 
 	    for (s2i = str2methods; s2i->si_key; s2i++)
-		if (!strcasecmp (*ep, s2i->si_key))
+		if (!strcasecmp (pm->pm_value, s2i->si_key))
 		    break;
 	    if (!s2i->si_key) {
-		e->eb_access = *ep;
+		e->eb_access = pm->pm_value;
 		e->eb_flags = NOTOK;
 		p->c_encoding = CE_EXTERNAL;
 		continue;
@@ -1493,46 +1496,46 @@ params_external (CT ct, int composing)
 		return NOTOK;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "name")) {
-	    e->eb_name = *ep;
+	if (!strcasecmp (pm->pm_name, "name")) {
+	    e->eb_name = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "permission")) {
-	    e->eb_permission = *ep;
+	if (!strcasecmp (pm->pm_name, "permission")) {
+	    e->eb_permission = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "site")) {
-	    e->eb_site = *ep;
+	if (!strcasecmp (pm->pm_name, "site")) {
+	    e->eb_site = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "directory")) {
-	    e->eb_dir = *ep;
+	if (!strcasecmp (pm->pm_name, "directory")) {
+	    e->eb_dir = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "mode")) {
-	    e->eb_mode = *ep;
+	if (!strcasecmp (pm->pm_name, "mode")) {
+	    e->eb_mode = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "size")) {
-	    sscanf (*ep, "%lu", &e->eb_size);
+	if (!strcasecmp (pm->pm_name, "size")) {
+	    sscanf (pm->pm_value, "%lu", &e->eb_size);
 	    continue;
 	}
-	if (!strcasecmp (*ap, "server")) {
-	    e->eb_server = *ep;
+	if (!strcasecmp (pm->pm_name, "server")) {
+	    e->eb_server = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "subject")) {
-	    e->eb_subject = *ep;
+	if (!strcasecmp (pm->pm_name, "subject")) {
+	    e->eb_subject = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "url")) {
+	if (!strcasecmp (pm->pm_name, "url")) {
 	    /*
 	     * According to RFC 2017, we have to remove all whitespace from
 	     * the URL
 	     */
 
-	    char *u, *p = *ep;
-	    e->eb_url = u = mh_xmalloc(strlen(*ep) + 1);
+	    char *u, *p = pm->pm_value;
+	    e->eb_url = u = mh_xmalloc(strlen(pm->pm_value) + 1);
 
 	    for (; *p != '\0'; p++) {
 	    	if (! isspace((unsigned char) *p))
@@ -1542,8 +1545,8 @@ params_external (CT ct, int composing)
 	    *u = '\0';
 	    continue;
 	}
-	if (composing && !strcasecmp (*ap, "body")) {
-	    e->eb_body = getcpy (*ep);
+	if (composing && !strcasecmp (pm->pm_name, "body")) {
+	    e->eb_body = getcpy (pm->pm_value);
 	    continue;
 	}
     }
@@ -2206,18 +2209,18 @@ open7Bit (CT ct, char **file)
     }
 
     if (ct->c_type == CT_MULTIPART) {
-	char **ap, **ep;
+	PM pm;
 	CI ci = &ct->c_ctinfo;
 
 	len = 0;
 	fprintf (ce->ce_fp, "%s: %s/%s", TYPE_FIELD, ci->ci_type, ci->ci_subtype);
 	len += strlen (TYPE_FIELD) + 2 + strlen (ci->ci_type)
 	    + 1 + strlen (ci->ci_subtype);
-	for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
+	for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
 	    putc (';', ce->ce_fp);
 	    len++;
 
-	    snprintf (buffer, sizeof(buffer), "%s=\"%s\"", *ap, *ep);
+	    snprintf (buffer, sizeof(buffer), "%s=\"%s\"", , *ep);
 
 	    if (len + 1 + (cc = strlen (buffer)) >= CPERLIN) {
 		fputs ("\n\t", ce->ce_fp);
@@ -3350,4 +3353,125 @@ bad_quote:
 
     *header_attrp = cp;
     return OK;
+}
+
+/*
+ * Create a string based on a list of output parameters.  Assume that this
+ * parameter string will be appended to an existing header, so start out
+ * with the separator (;).  Perform RFC 2231 encoding when necessary.
+ */
+
+char *
+output_params(size_t initialwidth, PM params)
+{
+    char *paramout = NULL;
+    char line[CPERLIN + 1], *q;
+    int curlen, index, eightbit;
+    size_t valoff;
+
+    while (params != NULL) {
+	index = 0;
+	valoff = 0;
+	q = line;
+
+	curlen = param_len(params, index, valoff, &eightbit);
+
+	/*
+	 * If this won't fit on the line, start a new one.  Save room in
+	 * case we need a semicolon on the end
+	 */
+
+	if (initialwidth + curlen > CPERLIN - 1) {
+	    paramout = add(";\n\t", paramout);
+	    initialwidth = 8;
+	}
+
+	/*
+	 * Loop until we get a parameter that fits within a line.
+	 */
+
+	while (initialwidth + curlen > CPERLIN - 1) {
+	    int curvallen = strlen(params->pm_value + valoff) -
+	    			(initialwidth + curlen - (CPERLIN - 1));
+
+	    /*
+	     * curvallen holds how many characters we take from this
+	     * current value.  Make sure it's at least 1.
+	     */
+
+	    if (curvallen < 1)
+	    	curvallen = 1;
+	}
+	params = params->pm_next;
+    }
+
+    return paramout;
+}
+
+/*
+ * Calculate the size of a parameter.  Include any necessary encoding.
+ * Start the length computation from where "offset" is marked.
+ */
+
+static size_t
+param_len(PM pm, int index, size_t valueoff, int *eightbit)
+{
+    char *start = pm->pm_value + valueoff, *p;
+    size_t len = 0;
+
+    *eightbit = 0;
+
+    /*
+     * Add up the length.  First, start with the parameter name, and include
+     * the equal sign.
+     */
+
+    len += strlen(pm->pm_name) + 1;
+
+    /*
+     * Scan the parameter value.  If we find an 8-bit character, then
+     * we need to compute the locale name for the length.
+     */
+
+    for (p = start; *p != '\0'; p++) {
+    	if (! isascii((unsigned char) *p)) {
+	    *eightbit = 1;
+	    break;
+	}
+    }
+
+    /*
+     * If we've got 8-bit character, put the locale on the front (if we're
+     * doing part 0.  Also compute the length of the string based on the
+     * encoding we need to do.
+     */
+
+    if (*eightbit) {
+	len++;		/* For the encoding we need to do */
+	if (index == 0) {
+	    len += strlen(write_charset_8bit()) + 2;	/* Plus extra '' */
+	} else {
+	    /*
+	     * We know we definitely need to include an index.
+	     * This will get the length wrong if we have more than 99
+	     * sections. I can live with that.
+	     */
+	    len += 2;	/* *<N> */
+	    if (index > 9)
+		len++;
+	}
+	for (p = start; *p != '\0'; p++) {
+	    if (isparamencode(*p))
+		len += 3;
+	    else
+	    	len++;
+	}
+    } else {
+    	/*
+	 * Much simpler!  Don't forget opening and closing quotes.
+	 */
+	len += strlen(start) + 2;
+    }
+
+    return len;
 }
