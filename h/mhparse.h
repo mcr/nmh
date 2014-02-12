@@ -353,10 +353,12 @@ int parse_header_attrs (const char *, int, char **, CI, int *);
  *		  parameters on the first line.  The following lines will
  *		  be prefixed by a tab (\t) character.
  * params	- Pointer to head of linked list of parameters.
+ * offsetout	- The final line offset after all the parameters have been
+ *		  output.  May be NULL.
  *
  * Returns a pointer to the resulting parameter string.  This string must
  * be free()'d by the caller.  Returns NULL on error.
  */
-char *output_params(size_t initialwidth, PM params);
+char *output_params(size_t initialwidth, PM params, int *offsetout);
 
 extern int checksw;	/* Add Content-MD5 field */

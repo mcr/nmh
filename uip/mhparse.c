@@ -2209,28 +2209,18 @@ open7Bit (CT ct, char **file)
     }
 
     if (ct->c_type == CT_MULTIPART) {
-	PM pm;
 	CI ci = &ct->c_ctinfo;
+	char *buffer;
 
 	len = 0;
 	fprintf (ce->ce_fp, "%s: %s/%s", TYPE_FIELD, ci->ci_type, ci->ci_subtype);
 	len += strlen (TYPE_FIELD) + 2 + strlen (ci->ci_type)
 	    + 1 + strlen (ci->ci_subtype);
-	for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
-	    putc (';', ce->ce_fp);
-	    len++;
+	buffer = output_params(len, ci->ci_first_pm, &len);
 
-	    snprintf (buffer, sizeof(buffer), "%s=\"%s\"", , *ep);
-
-	    if (len + 1 + (cc = strlen (buffer)) >= CPERLIN) {
-		fputs ("\n\t", ce->ce_fp);
-		len = 8;
-	    } else {
-		putc (' ', ce->ce_fp);
-		len++;
-	    }
-	    fprintf (ce->ce_fp, "%s", buffer);
-	    len += cc;
+	if (buffer) {
+	    fputs (buffer, ce->ce_fp);
+	    free(buffer);
 	}
 
 	if (ci->ci_comment) {
@@ -3362,17 +3352,25 @@ bad_quote:
  */
 
 char *
-output_params(size_t initialwidth, PM params)
+output_params(size_t initialwidth, PM params, int *offsetout)
 {
     char *paramout = NULL;
-    char line[CPERLIN + 1], *q;
-    int curlen, index, eightbit;
+    char line[CPERLIN * 2], *q;
+    int curlen, index, eightbit, encode;
     size_t valoff;
 
     while (params != NULL) {
+	encode = 0;
 	index = 0;
 	valoff = 0;
 	q = line;
+
+	if (strlen(params->pm_name) > CPERLIN) {
+	    advise(NULL, "Parameter name \"%s\" is too long", params->pm_name);
+	    if (paramout)
+		free(paramout);
+	    return NULL;
+	}
 
 	curlen = param_len(params, index, valoff, &eightbit);
 
@@ -3384,6 +3382,9 @@ output_params(size_t initialwidth, PM params)
 	if (initialwidth + curlen > CPERLIN - 1) {
 	    paramout = add(";\n\t", paramout);
 	    initialwidth = 8;
+	} else {
+	    paramout = add("; ", paramout);
+	    initialwidth += 2;
 	}
 
 	/*
@@ -3401,9 +3402,34 @@ output_params(size_t initialwidth, PM params)
 
 	    if (curvallen < 1)
 	    	curvallen = 1;
-	}
+
+	    /*
+	     * At this point we're definitely continuing the line, so
+	     * be sure to include the parameter name and section index.
+	     */
+
+	    q += snprintf(line, sizeof(line), "%s*%d", params->pm_name, index);
+
+	    /*
+	     * If eightbit was set and we're on index 0, we need to include
+	     * the character set and encode the first section.  Otherwise
+	     * only encode if the section we're on contains an 8bit character.
+	     */
+
+	    if (eightbit && index == 0)
+	    	encode = 1;
+	    else if (eightbit && contains8bit(params->pm_value + valoff,
+	    				params->pm_value + valoff + curvallen))
+		encode = 1;
+
+	    if (encode) {
+		if (index == 0) {
+		    q +
 	params = params->pm_next;
     }
+
+    if (offsetout)
+	*offsetout = initialwidth;
 
     return paramout;
 }
@@ -3419,8 +3445,6 @@ param_len(PM pm, int index, size_t valueoff, int *eightbit)
     char *start = pm->pm_value + valueoff, *p;
     size_t len = 0;
 
-    *eightbit = 0;
-
     /*
      * Add up the length.  First, start with the parameter name, and include
      * the equal sign.
@@ -3433,12 +3457,7 @@ param_len(PM pm, int index, size_t valueoff, int *eightbit)
      * we need to compute the locale name for the length.
      */
 
-    for (p = start; *p != '\0'; p++) {
-    	if (! isascii((unsigned char) *p)) {
-	    *eightbit = 1;
-	    break;
-	}
-    }
+    *eightbit = contains8bit(start, NULL);
 
     /*
      * If we've got 8-bit character, put the locale on the front (if we're
@@ -3468,10 +3487,57 @@ param_len(PM pm, int index, size_t valueoff, int *eightbit)
 	}
     } else {
     	/*
-	 * Much simpler!  Don't forget opening and closing quotes.
+	 * Calculate the string length, but add room for quoting \
+	 * and " if necessary.  Also account for quotes at beginning
+	 * and end.
 	 */
-	len += strlen(start) + 2;
+	for (p = start; *p != '\0'; p++) {
+	    switch (*p) {
+	    case '"':
+	    case '\':
+	    	len++;
+	    /* FALL THROUGH */
+	    default:
+		len++;
+	    }
+	}
+
+	len += 2;
     }
 
     return len;
 }
+
+/*
+ * Output an encoded parameter string.
+ */
+
+static size_t
+encoded_param(char *output, size_t len, const char *value, size_t valuelen,
+	      int index)
+{
+    size_t outlen = 0, n;
+    char *endptr = output + len;
+
+    /*
+     * First, output the marker for an encoded string.
+     */
+
+    *output++ = '*';
+    *output++ = '=';
+    outlen += 2;
+
+    /*
+     * If the index is 0, output the character set.
+     */
+
+    n = snprintf(output, len - outlen, "%s''", write_charset_8bit());
+
+    output += n;
+    outlen += n;
+
+    /*
+     * Copy over the value, encoding if necessary
+     */
+
+    
