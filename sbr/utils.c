@@ -352,3 +352,20 @@ nmh_init(const char *argv0, int read_context) {
         return status;
     }
 }
+
+/*
+ * Scan for any 8-bit characters.  Return 1 if they exist.
+ *
+ * Scan up until the given endpoint (but not the actual endpoint itself).
+ * If the endpoint is NULL, scan until a '\0' is reached.
+ */
+
+int
+contains8bit(const char *start, const char *end)
+{
+    while (*start != '\0' && (!end || (start < end)))
+	if (! isascii((unsigned char) *start++))
+	    return 1;
+
+    return 0;
+}

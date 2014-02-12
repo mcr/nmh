@@ -21,7 +21,6 @@ static int local_part (char *);
 static int domain (char *);
 static int route (char *);
 static int my_lex (char *);
-static int contains8bit (const char *);
 
 
 int
@@ -235,8 +234,8 @@ getadrx (const char *addrs)
      * Reject the address if key fields contain 8bit characters
      */
 
-    if (contains8bit(mbox) || contains8bit(host) || contains8bit(path) ||
-    	contains8bit(grp)) {
+    if (contains8bit(mbox, NULL) || contains8bit(host, NULL) ||
+	contains8bit(path, NULL) || contains8bit(grp, NULL)) {
     	strcpy(err, "Address contains 8-bit characters");
     }
 
@@ -725,25 +724,6 @@ got_atom: ;
     /* Out of buffer space. *bp is the last byte in the buffer */
     *bp = 0;
     return (last_lex = LX_ERR);
-}
-
-
-/*
- * Return true if the string contains an 8-bit character
- */
-
-static int
-contains8bit(const char *p)
-{
-    if (! p)
-    	return 0;
-
-    for (; *p; p++) {
-	if (! isascii((unsigned char) *p))
-	    return 1;
-    }
-
-    return 0;
 }
 
 
