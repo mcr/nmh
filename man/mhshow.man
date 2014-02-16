@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "February 9, 2014" "%nmhversion%"
+.TH MHSHOW %manext1% "February 16, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -224,16 +224,17 @@ The display string may contain the following escapes:
 .PP
 .RS 5
 .nf
-.ta \w'%F  'u
-%a	Insert parameters from Content-Type field
-%e	exclusive execution
-%f	Insert filename containing content
-%F	%e, %f, and stdin is terminal not content
-%l	display listing prior to displaying content
-%p	%l, and ask for confirmation
-%s	Insert content subtype
-%d	Insert content description
-%%	Insert the character %
+.ta \w'%F      'u
+%a	   Insert parameters from Content-Type field
+%{charset} Insert the charset value from the Content-Type field
+%e	   exclusive execution
+%f	   Insert filename containing content
+%F	   %e, %f, and stdin is terminal not content
+%l	   display listing prior to displaying content
+%p	   %l, and ask for confirmation
+%s	   Insert content subtype
+%d	   Insert content description
+%%	   Insert the character %
 .fi
 .RE
 .PP

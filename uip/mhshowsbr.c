@@ -73,6 +73,7 @@ static int show_external (CT, int, int);
 static int parse_display_string (CT, char *, int *, int *, int *, int *, char *,
                                  char *, size_t, int multipart);
 static int convert_content_charset (CT, char **);
+static int parameter_value (CI, const char *, const char *, const char **);
 static void intrser (int);
 
 
@@ -833,40 +834,40 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		/* and fall... */
 
 	    case 'f':
-                if (multipart) {
-                    /* insert filename(s) containing content */
-                    struct multipart *m = (struct multipart *) ct->c_ctparams;
-                    struct part *part;
-                    char *s = "";
-                    CT p;
+		if (multipart) {
+		    /* insert filename(s) containing content */
+		    struct multipart *m = (struct multipart *) ct->c_ctparams;
+		    struct part *part;
+		    char *s = "";
+		    CT p;
 
-                    for (part = m->mp_parts; part; part = part->mp_next) {
-                        p = part->mp_part;
+		    for (part = m->mp_parts; part; part = part->mp_next) {
+			p = part->mp_part;
 
-                        snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
-                        len = strlen (bp);
-                        bp += len;
-                        buflen -= len;
-                        s = " ";
-                    }
-                    /* set our starting pointer back to bp, to avoid
-                     * requoting the filenames we just added
-                     */
-                    pp = bp;
-                } else {
-                    /* insert filename containing content */
-                    snprintf (bp, buflen, "'%s'", file);
-                    /* since we've quoted the file argument, set things up
-                     * to look past it, to avoid problems with the quoting
-                     * logic below.  (I know, I should figure out what's
-                     * broken with the quoting logic, but..)
-                     */
-                    len = strlen(bp);
-                    buflen -= len;
-                    bp += len;
-                    pp = bp;
-                }
-                break;
+			snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
+			len = strlen (bp);
+			bp += len;
+			buflen -= len;
+			s = " ";
+		    }
+		    /* set our starting pointer back to bp, to avoid
+		     * requoting the filenames we just added
+		     */
+		    pp = bp;
+		} else {
+		    /* insert filename containing content */
+		    snprintf (bp, buflen, "'%s'", file);
+		    /* since we've quoted the file argument, set things up
+		     * to look past it, to avoid problems with the quoting
+		     * logic below.  (I know, I should figure out what's
+		     * broken with the quoting logic, but..)
+		     */
+		    len = strlen(bp);
+		    buflen -= len;
+		    bp += len;
+		    pp = bp;
+		}
+		break;
 
 	    case 'p':
 		/* %l, and pause prior to displaying content */
@@ -886,6 +887,52 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 	    case '%':
 		/* insert character % */
 		goto raw;
+
+	    case '{' : {
+		static const char param[] = "charset";
+		const char *value;
+		const int found = parameter_value (ci, param, cp, &value);
+
+		if (found == OK) {
+		    /* Because it'll get incremented in the next iteration,
+		       just increment by 1 for the '{'. */
+		    cp += strlen(param) + 1;
+
+		    /* cp points to the param and it's set in the
+		       Content-Type header. */
+		    strncpy (bp, value, buflen);
+		    break;
+		} else if (found == 1) {
+		    /* cp points to the param and it's not set in the
+		       Content-Type header, so skip it. */
+		    cp += strlen(param) + 1;
+
+		    if (*cp == '\0') {
+			break;
+		    } else {
+			if (*(cp + 1) == '\0') {
+			    break;
+			} else {
+			    ++cp;
+			    /* Increment cp again so that the last
+			       character of the %{} token isn't output
+			       after falling thru below. */
+			    ++cp;
+			}
+		    }
+		} else {
+		    /* cp points to an unrecognized parameter.  Output
+		       it as-is, starting here with the "%{". */
+		    *bp++ = '%';
+		    *bp++ = '{';
+		    *bp = '\0';
+		    buflen -= 2;
+		    break;
+		}
+
+		/* No parameter was found, so fall thru to default to
+		   output the rest of the text as-is. */
+	    }
 
 	    default:
 		*bp++ = *--cp;
@@ -1129,6 +1176,37 @@ convert_content_charset (CT ct, char **file) {
 #endif /* ! HAVE_ICONV */
 
     return OK;
+}
+
+
+/*
+ * Return values:
+ *   NOTOK if cp doesn't point to {param}
+ *   OK    if cp points to {param} and that attribute exists, and returns
+ *         its value
+ *   1     if cp points to {param} and that attribute doesn't exist
+ */
+int
+parameter_value (CI ci, const char *param, const char *cp, const char **value) {
+    int found = NOTOK;
+    char *braced_param = concat ("{", param, "}", NULL);
+
+    if (! strncasecmp(cp, braced_param, strlen (braced_param))) {
+        char **ap, **ep;
+
+        found = 1;
+
+        for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ++ap, ++ep) {
+            if (!strcasecmp (*ap, param)) {
+                found = OK;
+                *value = *ep;
+                break;
+            }
+        }
+    }
+
+    free (braced_param);
+    return found;
 }
 
 

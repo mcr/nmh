@@ -25,6 +25,7 @@ LC_ALL=en_US.UTF-8; export LC_ALL
 expected="$MH_TEST_DIR"/$$.expected
 actual="$MH_TEST_DIR"/$$.actual
 
+# check charset conversion
 msgfile=`mhpath new`
 cat >"$msgfile" <<EOF
 From: foo@example.edu
@@ -52,5 +53,166 @@ EOF
 
 run_prog mhshow -nopause last >"$actual" 2>&1
 check "$expected" "$actual"
+
+cat >>"$MH" <<'EOF'
+mhshow-show-text/plain: echo %{charset}
+EOF
+
+# check expansion of %{charset} by itself
+msgfile=`mhpath new`
+cat >"$msgfile" <<EOF
+From: foo@example.edu
+To: bar@example.edu
+Subject: test display with %{charset} expansion
+MIME-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+4 =F7 2 =3D 2
+EOF
+
+cat >"$expected" <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test display with %{charset} expansion
+
+MIME-Version: 1.0
+
+windows-1252
+EOF
+
+run_prog mhshow -nopause last >"$actual" 2>&1
+check "$expected" "$actual"
+
+# check expansion of empty %{charset} by itself
+msgfile=`mhpath new`
+cat >"$msgfile" <<EOF
+From: foo@example.edu
+To: bar@example.edu
+Subject: test display with empty %{charset} expansion
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+4 =F7 2 =3D 2
+EOF
+
+cat >"$expected" <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test display with empty %{charset} expansion
+
+MIME-Version: 1.0
+
+
+EOF
+
+run_prog mhshow -nopause last >"$actual" 2>&1
+check "$expected" "$actual"
+
+grep -v 'mhshow-show-text/plain:' "$MH" >"$MH.new"
+mv -f "$MH.new" "$MH"
+cat >>"$MH" <<'EOF'
+mhshow-show-text/plain: echo `ap -format '%(void(lit %{charset}))%<(nonnull)-I %(putstr)%>' 0`
+EOF
+
+# check expansion of embedded %{charset} with no text following
+cat >"$expected" <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test display with %{charset} expansion
+
+MIME-Version: 1.0
+
+-I windows-1252
+EOF
+
+run_prog mhshow -nopause prev >"$actual" 2>&1
+check "$expected" "$actual"
+
+# check expansion of empty embedded %{charset} with no text following
+cat >"$expected" <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test display with empty %{charset} expansion
+
+MIME-Version: 1.0
+
+
+EOF
+
+run_prog mhshow -nopause last >"$actual" 2>&1
+check "$expected" "$actual"
+
+sed -e 's%\(mhshow-show-text/plain:.*\)%\1 file%' "$MH" >"$MH.new"
+mv -f "$MH.new" "$MH"
+
+# check expansion of embedded %{charset} with text following
+cat >"$expected" <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test display with %{charset} expansion
+
+MIME-Version: 1.0
+
+-I windows-1252 file
+EOF
+
+run_prog mhshow -nopause prev >"$actual" 2>&1
+check "$expected" "$actual"
+
+# check expansion of empty embedded %{charset} with text following
+cat >"$expected" <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test display with empty %{charset} expansion
+
+MIME-Version: 1.0
+
+file
+EOF
+
+run_prog mhshow -nopause last >"$actual" 2>&1
+check "$expected" "$actual"
+
+sed -e 's/%{charset}/%{unknown}/' "$MH" >"$MH.new"
+mv -f "$MH.new" "$MH"
+
+# check expansion of unknown parameter
+msgfile=`mhpath new`
+cat >"$msgfile" <<EOF
+From: foo@example.edu
+To: bar@example.edu
+Subject: test display with unknown C-T parameter expansion
+MIME-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+4 =F7 2 =3D 2
+EOF
+
+cat >"$expected" <<EOF
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test display with unknown C-T parameter expansion
+
+MIME-Version: 1.0
+
+-I %{unknown} file
+EOF
+
+run_prog mhshow -nopause last >"$actual" 2>&1
+check "$expected" "$actual"
+
 
 exit $failed

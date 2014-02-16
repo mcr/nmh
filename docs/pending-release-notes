@@ -77,6 +77,7 @@ NEW FEATURES
 - If nmh was configured with iconv(3) support, mhshow will convert, if
   necessary, the charset of text/plain content to match the user's
   locale setting.
+- Added support for %{charset} display string escape to mhshow(1).
 
 -----------------
 OBSOLETE FEATURES
