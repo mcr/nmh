@@ -137,9 +137,12 @@ if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-application/x-ivs: %p$PGM -o '%F'" >> $TMP
 fi
 
+# The application/vnd.openxmlformats-officedocument.wordprocessingml.document
+# through application/onenote associations are from
+# http://technet.microsoft.com/en-us/library/cc179224.aspx
+
 cat <<EOF >> ${TMP}
 mhshow-suffix-application/msword: .doc
-mhshow-suffix-application/msword: .docx
 mhshow-suffix-application/ogg: .ogg
 mhshow-suffix-application/pdf: .pdf
 mhshow-suffix-application/postscript: .ps
@@ -150,13 +153,35 @@ mhshow-suffix-application/vnd.ms-excel: .xld
 mhshow-suffix-application/vnd.ms-excel: .xll
 mhshow-suffix-application/vnd.ms-excel: .xlm
 mhshow-suffix-application/vnd.ms-excel: .xls
-mhshow-suffix-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: .xlsx
 mhshow-suffix-application/vnd.ms-excel: .xlt
 mhshow-suffix-application/vnd.ms-excel: .xlw
 mhshow-suffix-application/vnd.ms-powerpoint: .pot
 mhshow-suffix-application/vnd.ms-powerpoint: .pps
 mhshow-suffix-application/vnd.ms-powerpoint: .ppt
 mhshow-suffix-application/vnd.ms-powerpoint: .ppz
+mhshow-suffix-application/vnd.openxmlformats-officedocument.wordprocessingml.document: .docx
+mhshow-suffix-application/vnd.ms-word.document.macroEnabled.12: .docm
+mhshow-suffix-application/vnd.openxmlformats-officedocument.wordprocessingml.template: .dotx
+mhshow-suffix-application/vnd.ms-word.template.macroEnabled.12: .dotm
+mhshow-suffix-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: .xlsx
+mhshow-suffix-application/vnd.ms-excel.sheet.macroEnabled.12: .xlsm
+mhshow-suffix-application/vnd.openxmlformats-officedocument.spreadsheetml.template: .xltx
+mhshow-suffix-application/vnd.ms-excel.template.macroEnabled.12: .xltm
+mhshow-suffix-application/vnd.ms-excel.sheet.binary.macroEnabled.12: .xlsb
+mhshow-suffix-application/vnd.ms-excel.addin.macroEnabled.12: .xlam
+mhshow-suffix-application/vnd.openxmlformats-officedocument.presentationml.presentation: .pptx
+mhshow-suffix-application/vnd.ms-powerpoint.presentation.macroEnabled.12: .pptm
+mhshow-suffix-application/vnd.openxmlformats-officedocument.presentationml.slideshow: .ppsx
+mhshow-suffix-application/vnd.ms-powerpoint.slideshow.macroEnabled.12: .ppsm
+mhshow-suffix-application/vnd.openxmlformats-officedocument.presentationml.template: .potx
+mhshow-suffix-application/vnd.ms-powerpoint.template.macroEnabled.12: .potm
+mhshow-suffix-application/vnd.ms-powerpoint.addin.macroEnabled.12: .ppam
+mhshow-suffix-application/vnd.openxmlformats-officedocument.presentationml.slide: .sldx
+mhshow-suffix-application/vnd.ms-powerpoint.slide.macroEnabled.12: .sldm
+mhshow-suffix-application/onenote: .onetoc
+mhshow-suffix-application/onenote: .onetoc2
+mhshow-suffix-application/onenote: .onetmp
+mhshow-suffix-application/onenote: .onepkg
 mhshow-suffix-application/x-bzip2: .bz2
 mhshow-suffix-application/x-cpio: .cpio
 mhshow-suffix-application/x-dvi: .dvi
