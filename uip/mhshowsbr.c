@@ -61,7 +61,8 @@ static void show_single_message (CT, char *);
 static void DisplayMsgHeader (CT, char *);
 static int show_switch (CT, int, int);
 static int show_content (CT, int, int);
-static int show_content_aux2 (CT, int, int, char *, char *, int, int, int, int, int);
+static int show_content_aux2 (CT, int, int, char *, char *, int, int, int, int,
+                              int);
 static int show_text (CT, int, int);
 static int show_multi (CT, int, int);
 static int show_multi_internal (CT, int, int);
@@ -69,6 +70,8 @@ static int show_multi_aux (CT, int, int, char *);
 static int show_message_rfc822 (CT, int, int);
 static int show_partial (CT, int, int);
 static int show_external (CT, int, int);
+static int parse_display_string (CT, char *, int *, int *, int *, int *, char *,
+                                 char *, size_t, int multipart);
 static int convert_content_charset (CT, char **);
 static void intrser (int);
 
@@ -297,10 +300,9 @@ show_content (CT ct, int serial, int alternate)
 int
 show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 {
-    int fd, len, buflen, quoted;
-    int	xstdin, xlist, xpause, xtty;
-    char *bp, *pp, *file, buffer[BUFSIZ];
-    CI ci = &ct->c_ctinfo;
+    int fd;
+    int xstdin = 0, xlist = 0, xpause = 0, xtty = 0;
+    char *file, buffer[BUFSIZ];
 
     if (!ct->c_ceopenfnx) {
 	if (!alternate)
@@ -329,165 +331,15 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
         }
     }
 
-    xlist  = 0;
-    xpause = 0;
-    xstdin = 0;
-    xtty   = 0;
-
     if (cracked) {
 	strncpy (buffer, cp, sizeof(buffer));
 	goto got_command;
     }
 
-    /* get buffer ready to go */
-    bp = buffer;
-    buflen = sizeof(buffer) - 1;
-    bp[0] = bp[buflen] = '\0';
-    quoted = 0;
-
-    /* Now parse display string */
-    for ( ; *cp && buflen > 0; cp++) {
-	if (*cp == '%') {
-	    pp = bp;
-
-	    switch (*++cp) {
-	    case 'a':
-		/* insert parameters from Content-Type field */
-	    {
-		char **ap, **ep;
-		char *s = "";
-
-		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		    snprintf (bp, buflen, "%s%s=\"%s\"", s, *ap, *ep);
-		    len = strlen (bp);
-		    bp += len;
-		    buflen -= len;
-		    s = " ";
-		}
-	    }
-	    break;
-
-	    case 'd':
-		/* insert content description */
-		if (ct->c_descr) {
-		    char *s;
-
-		    s = trimcpy (ct->c_descr);
-		    strncpy (bp, s, buflen);
-		    free (s);
-		}
-		break;
-
-	    case 'e':
-		/* exclusive execution */
-		xtty = 1;
-		break;
-
-	    case 'F':
-		/* %e, %f, and stdin is terminal not content */
-		xstdin = 1;
-		xtty = 1;
-		/* and fall... */
-
-	    case 'f':
-		/* insert filename containing content */
-		snprintf (bp, buflen, "'%s'", file);
-		/* since we've quoted the file argument, set things up
-		 * to look past it, to avoid problems with the quoting
-		 * logic below.  (I know, I should figure out what's
-		 * broken with the quoting logic, but..)
-		 */
-		len = strlen(bp);
-		buflen -= len;
-		bp += len;
-		pp = bp;
-		break;
-
-	    case 'p':
-		/* %l, and pause prior to displaying content */
-		xpause = pausesw;
-		/* and fall... */
-
-	    case 'l':
-		/* display listing prior to displaying content */
-		xlist = !nolist;
-		break;
-
-	    case 's':
-		/* insert subtype of content */
-		strncpy (bp, ci->ci_subtype, buflen);
-		break;
-
-	    case '%':
-		/* insert character % */
-		goto raw;
-
-	    default:
-		*bp++ = *--cp;
-		*bp = '\0';
-		buflen--;
-		continue;
-	    }
-	    len = strlen (bp);
-	    bp += len;
-	    buflen -= len;
-
-	    /* Did we actually insert something? */
-	    if (bp != pp) {
-		/* Insert single quote if not inside quotes already */
-		if (!quoted && buflen) {
-		    len = strlen (pp);
-		    memmove (pp + 1, pp, len);
-		    *pp++ = '\'';
-		    buflen--;
-		    bp++;
-		}
-		/* Escape existing quotes */
-		while ((pp = strchr (pp, '\'')) && buflen > 3) {
-		    len = strlen (pp++);
-		    memmove (pp + 3, pp, len);
-		    *pp++ = '\\';
-		    *pp++ = '\'';
-		    *pp++ = '\'';
-		    buflen -= 3;
-		    bp += 3;
-		}
-		/* If pp is still set, that means we ran out of space. */
-		if (pp)
-		    buflen = 0;
-		if (!quoted && buflen) {
-		    *bp++ = '\'';
-		    *bp = '\0';
-		    buflen--;
-		}
-	    }
-	} else {
-raw:
-	    *bp++ = *cp;
-	    *bp = '\0';
-	    buflen--;
-
-	    if (*cp == '\'')
-		quoted = !quoted;
-	}
-    }
-
-    if (buflen <= 0 ||
-        (ct->c_termproc && (size_t) buflen <= strlen(ct->c_termproc))) {
-	/* content_error would provide a more useful error message
-	 * here, except that if we got overrun, it probably would
-	 * too.
-	 */
-	fprintf(stderr, "Buffer overflow constructing show command!\n");
+    if (parse_display_string (ct, cp, &xstdin, &xlist, &xpause, &xtty, file,
+			      buffer, sizeof(buffer) - 1, 0)) {
+	admonish (NULL, "Buffer overflow constructing show command!\n");
 	return NOTOK;
-    }
-
-    /* use charset string to modify display method */
-    if (ct->c_termproc) {
-	char term[BUFSIZ];
-
-	strncpy (term, buffer, sizeof(term));
-	snprintf (buffer, sizeof(buffer), ct->c_termproc, term);
     }
 
 got_command:
@@ -812,12 +664,12 @@ out:
 static int
 show_multi_aux (CT ct, int serial, int alternate, char *cp)
 {
-    int len, buflen, quoted;
-    int xlist, xpause, xtty;
-    char *bp, *pp, *file, buffer[BUFSIZ];
+    /* xstdin is only used in the call to parse_display_string():
+       its value is ignored in the function. */
+    int xstdin = 0, xlist = 0, xpause = 0, xtty = 0;
+    char *file, buffer[BUFSIZ];
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
-    CI ci = &ct->c_ctinfo;
     CT p;
 
     for (part = m->mp_parts; part; part = part->mp_next) {
@@ -843,164 +695,10 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
 	}
     }
 
-    xlist     = 0;
-    xpause    = 0;
-    xtty      = 0;
-
-    /* get buffer ready to go */
-    bp = buffer;
-    buflen = sizeof(buffer) - 1;
-    bp[0] = bp[buflen] = '\0';
-    quoted = 0;
-
-    /* Now parse display string */
-    for ( ; *cp && buflen > 0; cp++) {
-	if (*cp == '%') {
-	    pp = bp;
-	    switch (*++cp) {
-	    case 'a':
-		/* insert parameters from Content-Type field */
-	    {
-		char **ap, **ep;
-		char *s = "";
-
-		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		    snprintf (bp, buflen, "%s%s=\"%s\"", s, *ap, *ep);
-		    len = strlen (bp);
-		    bp += len;
-		    buflen -= len;
-		    s = " ";
-		}
-	    }
-	    break;
-
-	    case 'd':
-		/* insert content description */
-		if (ct->c_descr) {
-		    char *s;
-
-		    s = trimcpy (ct->c_descr);
-		    strncpy (bp, s, buflen);
-		    free (s);
-		}
-		break;
-
-	    case 'e':
-		/* exclusive execution */
-		xtty = 1;
-		break;
-
-	    case 'F':
-		/* %e and %f */
-		xtty = 1;
-		/* and fall... */
-
-	    case 'f':
-		/* insert filename(s) containing content */
-	    {
-		char *s = "";
-
-		for (part = m->mp_parts; part; part = part->mp_next) {
-		    p = part->mp_part;
-
-		    snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
-		    len = strlen (bp);
-		    bp += len;
-		    buflen -= len;
-		    s = " ";
-		}
-		/* set our starting pointer back to bp, to avoid
-		 * requoting the filenames we just added
-		 */
-		pp = bp;
-	    }
-	    break;
-
-	    case 'p':
-		/* %l, and pause prior to displaying content */
-		xpause = pausesw;
-		/* and fall... */
-
-	    case 'l':
-		/* display listing prior to displaying content */
-		xlist = !nolist;
-		break;
-
-	    case 's':
-		/* insert subtype of content */
-		strncpy (bp, ci->ci_subtype, buflen);
-		break;
-
-	    case '%':
-		/* insert character % */
-		goto raw;
-
-	    default:
-		*bp++ = *--cp;
-		*bp = '\0';
-		buflen--;
-		continue;
-	    }
-	    len = strlen (bp);
-	    bp += len;
-	    buflen -= len;
-
-	    /* Did we actually insert something? */
-	    if (bp != pp) {
-		/* Insert single quote if not inside quotes already */
-		if (!quoted && buflen) {
-		    len = strlen (pp);
-		    memmove (pp + 1, pp, len);
-		    *pp++ = '\'';
-		    buflen--;
-		    bp++;
-		}
-		/* Escape existing quotes */
-		while ((pp = strchr (pp, '\'')) && buflen > 3) {
-		    len = strlen (pp++);
-		    memmove (pp + 3, pp, len);
-		    *pp++ = '\\';
-		    *pp++ = '\'';
-		    *pp++ = '\'';
-		    buflen -= 3;
-		    bp += 3;
-		}
-		/* If pp is still set, that means we ran out of space. */
-		if (pp)
-		    buflen = 0;
-		if (!quoted && buflen) {
-		    *bp++ = '\'';
-		    *bp = '\0';
-		    buflen--;
-		}
-	    }
-	} else {
-raw:
-	    *bp++ = *cp;
-	    *bp = '\0';
-	    buflen--;
-
-	    if (*cp == '\'')
-		quoted = !quoted;
-	}
-    }
-
-    if (buflen <= 0 ||
-        (ct->c_termproc && buflen <= (ssize_t) strlen(ct->c_termproc))) {
-	/* content_error would provide a more useful error message
-	 * here, except that if we got overrun, it probably would
-	 * too.
-	 */
-	fprintf(stderr, "Buffer overflow constructing show command!\n");
+    if (parse_display_string (ct, cp, &xstdin, &xlist, &xpause, &xtty, file,
+			      buffer, sizeof(buffer) - 1, 1)) {
+	admonish (NULL, "Buffer overflow constructing show command!\n");
 	return NOTOK;
-    }
-
-    /* use charset string to modify display method */
-    if (ct->c_termproc) {
-	char term[BUFSIZ];
-
-	strncpy (term, buffer, sizeof(term));
-	snprintf (buffer, sizeof(buffer), ct->c_termproc, term);
     }
 
     return show_content_aux2 (ct, serial, alternate, NULL, buffer,
@@ -1078,6 +776,185 @@ show_external (CT ct, int serial, int alternate)
 	return OK;
 
     return show_switch (p, serial, alternate);
+}
+
+
+static int
+parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
+                      int *xtty, char *file, char *buffer, size_t buflen,
+                      int multipart) {
+    int len, quoted = 0;
+    char *bp = buffer, *pp;
+    CI ci = &ct->c_ctinfo;
+
+    bp[0] = bp[buflen] = '\0';
+
+    for ( ; *cp && buflen > 0; cp++) {
+	if (*cp == '%') {
+	    pp = bp;
+
+	    switch (*++cp) {
+	    case 'a':
+		/* insert parameters from Content-Type field */
+	    {
+		char **ap, **ep;
+		char *s = "";
+
+		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
+		    snprintf (bp, buflen, "%s%s=\"%s\"", s, *ap, *ep);
+		    len = strlen (bp);
+		    bp += len;
+		    buflen -= len;
+		    s = " ";
+		}
+	    }
+	    break;
+
+	    case 'd':
+		/* insert content description */
+		if (ct->c_descr) {
+		    char *s;
+
+		    s = trimcpy (ct->c_descr);
+		    strncpy (bp, s, buflen);
+		    free (s);
+		}
+		break;
+
+	    case 'e':
+		/* exclusive execution */
+		*xtty = 1;
+		break;
+
+	    case 'F':
+		/* %e, %f, and stdin is terminal not content */
+		*xstdin = 1;
+		*xtty = 1;
+		/* and fall... */
+
+	    case 'f':
+                if (multipart) {
+                    /* insert filename(s) containing content */
+                    struct multipart *m = (struct multipart *) ct->c_ctparams;
+                    struct part *part;
+                    char *s = "";
+                    CT p;
+
+                    for (part = m->mp_parts; part; part = part->mp_next) {
+                        p = part->mp_part;
+
+                        snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
+                        len = strlen (bp);
+                        bp += len;
+                        buflen -= len;
+                        s = " ";
+                    }
+                    /* set our starting pointer back to bp, to avoid
+                     * requoting the filenames we just added
+                     */
+                    pp = bp;
+                } else {
+                    /* insert filename containing content */
+                    snprintf (bp, buflen, "'%s'", file);
+                    /* since we've quoted the file argument, set things up
+                     * to look past it, to avoid problems with the quoting
+                     * logic below.  (I know, I should figure out what's
+                     * broken with the quoting logic, but..)
+                     */
+                    len = strlen(bp);
+                    buflen -= len;
+                    bp += len;
+                    pp = bp;
+                }
+                break;
+
+	    case 'p':
+		/* %l, and pause prior to displaying content */
+		*xpause = pausesw;
+		/* and fall... */
+
+	    case 'l':
+		/* display listing prior to displaying content */
+		*xlist = !nolist;
+		break;
+
+	    case 's':
+		/* insert subtype of content */
+		strncpy (bp, ci->ci_subtype, buflen);
+		break;
+
+	    case '%':
+		/* insert character % */
+		goto raw;
+
+	    default:
+		*bp++ = *--cp;
+		*bp = '\0';
+		buflen--;
+		continue;
+	    }
+	    len = strlen (bp);
+	    bp += len;
+	    buflen -= len;
+
+	    /* Did we actually insert something? */
+	    if (bp != pp) {
+		/* Insert single quote if not inside quotes already */
+		if (!quoted && buflen) {
+		    len = strlen (pp);
+		    memmove (pp + 1, pp, len);
+		    *pp++ = '\'';
+		    buflen--;
+		    bp++;
+		}
+		/* Escape existing quotes */
+		while ((pp = strchr (pp, '\'')) && buflen > 3) {
+		    len = strlen (pp++);
+		    memmove (pp + 3, pp, len);
+		    *pp++ = '\\';
+		    *pp++ = '\'';
+		    *pp++ = '\'';
+		    buflen -= 3;
+		    bp += 3;
+		}
+		/* If pp is still set, that means we ran out of space. */
+		if (pp)
+		    buflen = 0;
+		if (!quoted && buflen) {
+		    *bp++ = '\'';
+		    *bp = '\0';
+		    buflen--;
+		}
+	    }
+	} else {
+raw:
+	    *bp++ = *cp;
+	    *bp = '\0';
+	    buflen--;
+
+	    if (*cp == '\'')
+		quoted = !quoted;
+	}
+    }
+
+    if (buflen <= 0 ||
+        (ct->c_termproc && buflen <= strlen(ct->c_termproc))) {
+	/* content_error would provide a more useful error message
+	 * here, except that if we got overrun, it probably would
+	 * too.
+	 */
+	return NOTOK;
+    }
+
+    /* use charset string to modify display method */
+    if (ct->c_termproc) {
+	char term[BUFSIZ];
+
+	strncpy (term, buffer, sizeof(term));
+	snprintf (buffer, buflen, ct->c_termproc, term);
+    }
+
+    return OK;
 }
 
 
