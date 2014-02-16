@@ -16,6 +16,9 @@ fi
 
 setup_test
 
+#### Use ap from PATH.
+PATH=`mhparam libdir`:$PATH
+
 if test "$ICONV_ENABLED" -eq 0; then
   test_skip 'test-textcharset requires that nmh have been built with iconv'
 fi
