@@ -204,14 +204,17 @@ if [ "$headerfieldlist" ]; then
   header="$header$headerfieldlist"
 fi
 
-#### Set up a file to supply as a draft to post/send.  And set a
-#### trap to remove it.  send moves the file to a backup, so it will
-#### remove that, too.
+#### Set up a file to supply as a draft to post/send.  And set a trap
+#### to remove it.  send moves the file to a backup and can create a
+#### .orig file, so it will remove them, too.
 umask 077
-tmpdir="${MHTMPDIR:-${TMPDIR:-${TMP:-`$nmhbindir/mhpath +`}}}"
+tmpdir="${MHTMPDIR:-${TMPDIR:-`$nmhbindir/mhpath +`}}"
 tmpfile="$tmpdir/mhmail$$"
-tmpfilebackup="'$tmpdir'/,mhmail$$ '$tmpdir'/#mhmail$$"
+backup_char=`"$nmhbindir"/mhparam sbackup`
+tmpfilebackup="'$tmpdir'/${backup_char}mhmail$$*"
 tmpfileresent=
+
+trap "rm -f '$tmpfile' $tmpfilebackup ${tmpfileresent:+'$tmpfileresent'}" 0
 
 message_file=
 if [ $resent -eq 0 ]; then
@@ -234,8 +237,6 @@ else
     printf '' >"$message_file"  || exit 2
   fi
 fi
-
-trap "rm -f '$tmpfile' $tmpfilebackup ${tmpfileresent:+'$tmpfileresent'}" 0
 
 if [ "$body"x = x ]; then
   #### First put message header in the file.

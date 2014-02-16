@@ -1,4 +1,4 @@
-.TH MH-PROFILE %manext5% "April 14, 2013" "%nmhversion%"
+.TH MH-PROFILE %manext5% "February 16, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -859,7 +859,6 @@ default.  See mh-tailor(5).
 .PP
 .B $MHTMPDIR
 .B $TMPDIR
-.B $TMP
 .RS 5
 These variables are searched, in order, for the directory in which to
 create some temporary files.
