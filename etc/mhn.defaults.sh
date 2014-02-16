@@ -122,13 +122,18 @@ if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-video/mpeg: %p$PGM '%f'" >> $TMP
 fi
 
-PGM="`$SEARCHPROG $SEARCHPATH lpr`"
+PGM="`$SEARCHPROG $SEARCHPATH okular`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/PostScript: %plpr -Pps" >> $TMP
+	echo "mhshow-show-application/PostScript: %pokular '%F'" >> $TMP
 else
-    PGM="`$SEARCHPROG $SEARCHPATH lp`"
+    PGM="`$SEARCHPROG $SEARCHPATH evince`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/PostScript: %plp -dps" >> $TMP
+	echo "mhshow-show-application/PostScript: %pevince '%F'" >> $TMP
+    else
+	PGM="`$SEARCHPROG $SEARCHPATH gv`"
+	if [ ! -z "$PGM" ]; then
+	    echo "mhshow-show-application/PostScript: %pgv '%F'" >> $TMP
+	fi
     fi
 fi
 

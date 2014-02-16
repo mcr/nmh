@@ -126,6 +126,8 @@ OBSOLETE FEATURES
   {MHTMPDIR environment variable, TMPDIR environment variable, MH Path}.
   They are no longer be stored in the location specified by the TMP
   environment variable.
+- Instead of printing PostScript attachments, by default, from mhshow,
+  try to find a suitable viewer.
 
 -------------------
 DEPRECATED FEATURES
