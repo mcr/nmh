@@ -1173,6 +1173,9 @@ convert_content_charset (CT ct, char **file) {
             return NOTOK;
         }
     }
+#else  /* ! HAVE_ICONV */
+    NMH_UNUSED (ct);
+    NMH_UNUSED (file);
 #endif /* ! HAVE_ICONV */
 
     return OK;
