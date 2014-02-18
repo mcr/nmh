@@ -68,11 +68,11 @@ $outcharset = 'utf-8';
 $maxcolwidth = 78;
 
 #
-# Out HTML converter program & arguments
+# Out HTML converter program & arguments. charset will be appended
 #
 
 @htmlconv = ('w3m', '-dump', '-cols', $maxcolwidth - 2, '-T', 'text/html',
-	     '-O', $outcharset);
+	     '-O', $outcharset, '-I');
 
 
 die "Usage: $0 Content-type content-transfer-encoding quote-prefix\n"
@@ -400,7 +400,8 @@ sub process_html (*$$;$)
 		# Exec our converter
 		#
 
-		exec (@htmlconv) ||
+		my @conv = (@htmlconv, $charset);
+		exec (@conv) ||
 				die "Unable to exec $filterprogram: $!\n";
 	} else {
 		die "Fork for $htmlconv[0] failed: $!\n";
