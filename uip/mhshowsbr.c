@@ -358,8 +358,8 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
                    int fd, int xlist, int xpause, int xstdin, int xtty)
 {
     pid_t child_id;
-    int i;
-    char *vec[4];
+    int i, vecp;
+    char **vec, *file;
 
     if (debugsw || cracked) {
 	fflush (stdout);
@@ -411,10 +411,8 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	}
     }
 
-    vec[0] = "/bin/sh";
-    vec[1] = "-c";
-    vec[2] = buffer;
-    vec[3] = NULL;
+    vec = argsplit(buffer, &file, &vecp);
+    vec[vecp++] = NULL;
 
     fflush (stdout);
 
@@ -432,13 +430,15 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	    if (!xstdin)
 		dup2 (fd, 0);
 	    close (fd);
-	    execvp ("/bin/sh", vec);
+	    execvp (file, vec);
 	    fprintf (stderr, "unable to exec ");
 	    perror ("/bin/sh");
 	    _exit (-1);
 	    /* NOTREACHED */
 
 	default:
+	    arglist_free(file, vec);
+
 	    if (!serial) {
 		ct->c_pid = child_id;
 		if (xtty)
