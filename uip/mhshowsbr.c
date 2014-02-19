@@ -359,7 +359,7 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 {
     pid_t child_id;
     int i;
-    char *vec[4], exec[BUFSIZ + sizeof "exec "];
+    char *vec[4];
 
     if (debugsw || cracked) {
 	fflush (stdout);
@@ -411,11 +411,9 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	}
     }
 
-    snprintf (exec, sizeof(exec), "exec %s", buffer);
-
     vec[0] = "/bin/sh";
     vec[1] = "-c";
-    vec[2] = exec;
+    vec[2] = buffer;
     vec[3] = NULL;
 
     fflush (stdout);
@@ -898,9 +896,20 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		       just increment by 1 for the '{'. */
 		    cp += strlen(param) + 1;
 
-		    /* cp points to the param and it's set in the
+		    /* cp pointed to the param and it's set in the
 		       Content-Type header. */
 		    strncpy (bp, value, buflen);
+
+		    /* since we've quoted the file argument, set things up
+		     * to look past it, to avoid problems with the quoting
+		     * logic below.  (I know, I should figure out what's
+		     * broken with the quoting logic, but..)
+		     */
+		    len = strlen(bp);
+		    buflen -= len;
+		    bp += len;
+		    pp = bp;
+
 		    break;
 		} else if (found == 1) {
 		    /* cp points to the param and it's not set in the
@@ -927,7 +936,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		    *bp++ = '{';
 		    *bp = '\0';
 		    buflen -= 2;
-		    break;
+		    continue;
 		}
 
 		/* No parameter was found, so fall thru to default to

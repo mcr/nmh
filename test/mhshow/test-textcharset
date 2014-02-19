@@ -16,9 +16,6 @@ fi
 
 setup_test
 
-#### Use ap from PATH.
-PATH=`mhparam libdir`:$PATH
-
 if test "$ICONV_ENABLED" -eq 0; then
   test_skip 'test-textcharset requires that nmh have been built with iconv'
 fi
@@ -120,7 +117,7 @@ check "$expected" "$actual"
 grep -v 'mhshow-show-text/plain:' "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
 cat >>"$MH" <<'EOF'
-mhshow-show-text/plain: echo `ap -format '%(void(lit %{charset}))%<(nonnull)-I %(putstr)%>' 0`
+mhshow-show-text/plain: charset="%{charset}"; echo ${charset:+-I $charset}
 EOF
 
 # check expansion of embedded %{charset} with no text following
