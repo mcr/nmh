@@ -36,7 +36,7 @@ elif [ ! -z "`$SEARCHPROG $SEARCHPATH lynx`" ]; then
 expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
 elif [ ! -z "`$SEARCHPROG $SEARCHPATH elinks`" ]; then
   echo "mhfixmsg-format-text/html: elinks -dump -force-html -no-numbering \
--eval 'set document.browse.margin_width = 0' '%F'" >> $TMP
+-eval 'set document.browse.margin_width = 0' %F" >> $TMP
 fi
 
 
@@ -61,7 +61,7 @@ fi
 
 PGM="`$SEARCHPROG $SEARCHPATH xv`"
 if [ ! -z "$PGM" ]; then
-    echo "mhshow-show-image: %p$PGM -geometry =-0+0 '%f'" >> $TMP
+    echo "mhshow-show-image: %p$PGM -geometry =-0+0 %f" >> $TMP
 elif [ ! -z $"NETPBM" -a ! -z "$XWUD" ]; then
     echo "mhshow-show-image/gif: %p${NETPBMDIR}giftopnm | ${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
     echo "mhshow-show-image/x-pnm: %p${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
@@ -79,7 +79,7 @@ if [ -f "/dev/audioIU" ]; then
     PGM="`$SEARCHPROG $SEARCHPATH recorder`"
     if [ ! -z "$PGM" ]; then
 	echo "mhstore-store-audio/basic: %m%P.au" >> $TMP
-        echo "mhbuild-compose-audio/basic: ${AUDIODIR}recorder '%f' -au -pause > /dev/tty" >> $TMP
+        echo "mhbuild-compose-audio/basic: ${AUDIODIR}recorder %f -au -pause > /dev/tty" >> $TMP
         echo "mhshow-show-audio/basic: %p${AUDIODIR}splayer -au" >> $TMP
     fi
 elif [ -f "/dev/audio" ]; then
@@ -90,7 +90,7 @@ elif [ -f "/dev/audio" ]; then
         echo "mhstore-store-audio/x-next: %m%P.au" >> $TMP
 	AUDIOTOOL="`$SEARCHPROG $SEARCHPATH audiotool`"
 	if [ ! -z "$AUDIOTOOL" ]; then
-	    echo "mhbuild-compose-audio/basic: $AUDIOTOOL '%f' && ${AUDIODIR}raw2audio -F < '%f'" >> $TMP
+	    echo "mhbuild-compose-audio/basic: $AUDIOTOOL %f && ${AUDIODIR}raw2audio -F < %f" >> $TMP
 	else
 	    echo "mhbuild-compose-audio/basic: trap \"exit 0\" 2 && ${AUDIODIR}record | ${AUDIODIR}raw2audio -F" >> $TMP
 	fi
@@ -100,14 +100,14 @@ elif [ -f "/dev/audio" ]; then
 	if [ ! -z "$PGM" ]; then
 	    DIR="`echo $PGM | awk -F/ '{ for(i=2;i<NF;i++)printf "/%s", $i;}'`"/
 	    if [ ! -z "$AUDIOTOOL" ]; then
-		echo "mhbuild-compose-audio/x-next: $AUDIOTOOL '%f' && ${DIR}adpcm_enc < '%f'" >> $TMP
+		echo "mhbuild-compose-audio/x-next: $AUDIOTOOL %f && ${DIR}adpcm_enc < %f" >> $TMP
 	    else
 		echo "mhbuild-compose-audio/x-next: ${AUDIODIR}record | ${DIR}adpcm_enc" >> $TMP
 	    fi
 	    echo "mhshow-show-audio/x-next: %p${DIR}adpcm_dec | ${AUDIODIR}play" >> $TMP
 	else
 	    if [ ! -z "$AUDIOTOOL" ]; then
-		echo "mhbuild-compose-audio/x-next: $AUDIOTOOL '%f'" >> $TMP
+		echo "mhbuild-compose-audio/x-next: $AUDIOTOOL %f" >> $TMP
 	    else
 		echo "mhbuild-compose-audio/x-next: ${AUDIODIR}record" >> $TMP
 	    fi
@@ -121,27 +121,27 @@ fi
 
 PGM="`$SEARCHPROG $SEARCHPATH mpeg_play`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-video/mpeg: %p$PGM '%f'" >> $TMP
+	echo "mhshow-show-video/mpeg: %p$PGM %f" >> $TMP
 fi
 
 PGM="`$SEARCHPROG $SEARCHPATH okular`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/PostScript: %pokular '%F'" >> $TMP
+	echo "mhshow-show-application/PostScript: %pokular %F" >> $TMP
 else
     PGM="`$SEARCHPROG $SEARCHPATH evince`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/PostScript: %pevince '%F'" >> $TMP
+	echo "mhshow-show-application/PostScript: %pevince %F" >> $TMP
     else
 	PGM="`$SEARCHPROG $SEARCHPATH gv`"
 	if [ ! -z "$PGM" ]; then
-	    echo "mhshow-show-application/PostScript: %pgv '%F'" >> $TMP
+	    echo "mhshow-show-application/PostScript: %pgv %F" >> $TMP
 	fi
     fi
 fi
 
 PGM="`$SEARCHPROG $SEARCHPATH ivs_replay`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/x-ivs: %p$PGM -o '%F'" >> $TMP
+	echo "mhshow-show-application/x-ivs: %p$PGM -o %F" >> $TMP
 fi
 
 # The application/vnd.openxmlformats-officedocument.wordprocessingml.document
@@ -251,18 +251,18 @@ fi
 
 PGM="`$SEARCHPROG $SEARCHPATH richtext`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-text/richtext: %p$PGM -p '%F'" >> $TMP
+	echo "mhshow-show-text/richtext: %p$PGM -p %F" >> $TMP
 else
     PGM="`$SEARCHPROG $SEARCHPATH rt2raw`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-text/richtext: %p$PGM < '%f' | fmt -78 | more" >> $TMP
+	echo "mhshow-show-text/richtext: %p$PGM < %f | fmt -78 | more" >> $TMP
     fi
 fi
 
 # staroffice to read .doc files
 PGM="`$SEARCHPROG $SEARCHPATH soffice`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/msword: %psoffice '%F'" >> $TMP
+	echo "mhshow-show-application/msword: %psoffice %F" >> $TMP
 	echo "mhshow-suffix-application/msword: .doc" >> $TMP
 fi
 
@@ -279,7 +279,7 @@ if [ "$DISPLAY" = "unix:0.0" -a ! -z "$PGM" ]; then
 else
     PGM="`$SEARCHPROG $SEARCHPATH gs`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/PostScript: %p$PGM -- '%F'" >> $TMP
+	echo "mhshow-show-application/PostScript: %p$PGM -- %F" >> $TMP
 	echo "mhshow-suffix-application/PostScript: .ps" >> $TMP
     fi
 fi
@@ -288,5 +288,5 @@ fi
 
 PGM="`$SEARCHPROG $SEARCHPATH ivs_record`"
 if [ ! -z "$PGM" ]; then
-	echo "mhbuild-compose-application/x-ivs: $PGM -u localhost '%F'" >> $TMP
+	echo "mhbuild-compose-application/x-ivs: $PGM -u localhost %F" >> $TMP
 fi

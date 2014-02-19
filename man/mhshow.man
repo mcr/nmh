@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "February 16, 2014" "%nmhversion%"
+.TH MHSHOW %manext1% "February 18, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -258,6 +258,20 @@ control-\\) will tell
 .B mhshow
 to wrap things up immediately.
 .PP
+The {charset} escape is typically used in a command line argument that
+should only be present if it has a non-null value.  Shell parameter
+expansion can construct the argument only when it is non-null, e.g.,
+.PP
+.RS 5
+.nf
+mhshow-show-text/html: charset="%{charset}";
+  w3m ${charset:+-I $charset} -T text/html %F
+.fi
+.RE
+.PP
+That example also shows the use of indentation to signify continuation:
+the two text lines combine to form a single entry.
+.PP
 Note that if the content being displayed is multipart, but not one of
 the subtypes listed above, then the f- and F-escapes expand to multiple
 filenames, one for each subordinate content.  Further, stdin is not
@@ -269,8 +283,8 @@ behaves as if these profile entries were supplied and supported:
 .PP
 .RS 5
 .nf
-mhshow-show-text/plain: %pmoreproc '%F'
-mhshow-show-message/rfc822: %pshow -file '%F'
+mhshow-show-text/plain: %pmoreproc %F
+mhshow-show-message/rfc822: %pshow -file %F
 .fi
 .RE
 .PP
@@ -300,14 +314,13 @@ Example entries might be:
 .RS 5
 .nf
 mhshow-show-audio/basic: raw2audio 2>/dev/null | play
-mhshow-show-image: xv '%f'
+mhshow-show-image: xv %f
 mhshow-show-application/PostScript: lpr -Pps
 .fi
 .RE
 .PP
-Note that when using the f- or F-escape, it's a good idea to use
-single-quotes around the escape.  This prevents misinterpretation by
-the shell of any funny characters that might be present in the filename.
+If an f- or F-escape is not quoted with single quotes, double quotes,
+or backticks, its expansion will be wrapped with single quotes.
 .PP
 Finally,
 .B mhshow

@@ -842,29 +842,46 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		    for (part = m->mp_parts; part; part = part->mp_next) {
 			p = part->mp_part;
 
-			snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
+			/* Don't quote filename if it's already quoted.  Assume
+			   it's quoted if previous character was a quote. */
+			if (p->c_storage  &&  (*(p->c_storage-1) == '\'' ||
+					       *(p->c_storage-1) == '"' ||
+					       *(p->c_storage-1) == '`')) {
+			    snprintf (bp, buflen, "%s%s", s, p->c_storage);
+			} else {
+			    snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
+			}
+
 			len = strlen (bp);
 			bp += len;
 			buflen -= len;
 			s = " ";
 		    }
-		    /* set our starting pointer back to bp, to avoid
-		     * requoting the filenames we just added
-		     */
-		    pp = bp;
 		} else {
 		    /* insert filename containing content */
-		    snprintf (bp, buflen, "'%s'", file);
+		    if (bp > buffer  &&
+                        (*(bp-1) == '\'' || *(bp-1) == '"' || *(bp-1) == '`')) {
+			/* Don't quote filename if it's already quoted.  Assume
+			   it's quoted if previous character was a quote. */
+			snprintf (bp, buflen, "%s", file);
+		    } else {
+			snprintf (bp, buflen, "'%s'", file);
+		    }
+
 		    /* since we've quoted the file argument, set things up
 		     * to look past it, to avoid problems with the quoting
 		     * logic below.  (I know, I should figure out what's
 		     * broken with the quoting logic, but..)
 		     */
 		    len = strlen(bp);
-		    buflen -= len;
 		    bp += len;
-		    pp = bp;
+		    buflen -= len;
 		}
+
+		/* set our starting pointer back to bp, to avoid
+		 * requoting the filenames we just added
+		 */
+                pp = bp;
 		break;
 
 	    case 'p':
@@ -906,8 +923,8 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		     * broken with the quoting logic, but..)
 		     */
 		    len = strlen(bp);
-		    buflen -= len;
 		    bp += len;
+		    buflen -= len;
 		    pp = bp;
 
 		    break;
