@@ -136,6 +136,8 @@ static int get_leftover_mp_content (CT, int);
 static int InitURL (CT);
 static int openURL (CT, char **);
 static size_t param_len(PM, int, size_t, int *);
+static size_t encode_param(PM, char *, size_t, size_t, size_t, int);
+static size_t normal_param(PM, char *, size_t, size_t, size_t);
 
 struct str2init str2cts[] = {
     { "application", CT_APPLICATION, InitApplication },
@@ -3355,8 +3357,8 @@ char *
 output_params(size_t initialwidth, PM params, int *offsetout)
 {
     char *paramout = NULL;
-    char line[CPERLIN * 2], *q;
-    int curlen, index, eightbit, encode;
+    char line[CPERLIN * 2], *p, *q;
+    int curlen, index, eightbit, encode, i;
     size_t valoff;
 
     while (params != NULL) {
@@ -3375,25 +3377,18 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 	curlen = param_len(params, index, valoff, &eightbit);
 
 	/*
-	 * If this won't fit on the line, start a new one.  Save room in
-	 * case we need a semicolon on the end
+	 * Loop until we get a parameter that fits within a line.  We
+	 * assume new lines start with a tab, so check our overflow based
+	 * on that.
 	 */
 
-	if (initialwidth + curlen > CPERLIN - 1) {
-	    paramout = add(";\n\t", paramout);
-	    initialwidth = 8;
-	} else {
-	    paramout = add("; ", paramout);
-	    initialwidth += 2;
-	}
-
-	/*
-	 * Loop until we get a parameter that fits within a line.
-	 */
-
-	while (initialwidth + curlen > CPERLIN - 1) {
+	while (curlen + 8 > CPERLIN - 1) {
 	    int curvallen = strlen(params->pm_value + valoff) -
 	    			(initialwidth + curlen - (CPERLIN - 1));
+
+	    *q++ = ';';
+	    *q++ = '\n';
+	    *q++ = '\t';
 
 	    /*
 	     * curvallen holds how many characters we take from this
@@ -3408,7 +3403,8 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 	     * be sure to include the parameter name and section index.
 	     */
 
-	    q += snprintf(line, sizeof(line), "%s*%d", params->pm_name, index);
+	    q += snprintf(q, sizeof(line) - (q - line), "%s*%d",
+			  params->pm_name, index);
 
 	    /*
 	     * If eightbit was set and we're on index 0, we need to include
@@ -3422,9 +3418,88 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 	    				params->pm_value + valoff + curvallen))
 		encode = 1;
 
-	    if (encode) {
-		if (index == 0) {
-		    q +
+	    /*
+	     * Both of these functions do a NUL termination
+	     */
+
+	    if (encode)
+		i = encode_param(params, q, sizeof(line) - (q - line),
+				 curvallen, valoff, index);
+	    else
+		i = normal_param(params, q, sizeof(line) - (q - line),
+				 curvallen, valoff);
+
+	    if (i == 0) {
+		if (paramout)
+		    free(paramout);
+		return NULL;
+	    }
+
+	    valoff += curvallen;
+	    index++;
+	    curlen = param_len(params, index, valoff, &eightbit);
+	    q = line;
+
+	    /*
+	     * "line" starts with a ;\n\t, so that doesn't count against
+	     * the length.  But add 8 since it starts with a tab; that's
+	     * how we end up with 5.
+	     */
+
+	    initialwidth = strlen(line) + 5;
+
+	    /*
+	     * At this point the line should be built, so add it to our
+	     * current output buffer.
+	     */
+
+	    paramout = add(line, paramout);
+	}
+
+	/*
+	 * If this won't fit on the line, start a new one.  Save room in
+	 * case we need a semicolon on the end
+	 */
+
+	if (initialwidth + curlen > CPERLIN - 1) {
+	    *q++ = ';';
+	    *q++ = '\n';
+	    *q++ = '\t';
+	    initialwidth = 8;
+	} else {
+	    *q++ = ';';
+	    *q++ = ' ';
+	    initialwidth += 2;
+	}
+
+	/*
+	 * At this point, we're either finishing a contined parameter, or
+	 * we're working on a new one.
+	 */
+
+	if (index > 0) {
+	    q += snprintf(q, sizeof(line) - (q - line), "%s*%d",
+	    		  params->pm_name, index);
+	} else {
+	    q = strncpy(q, params->pm_name, sizeof(line) - (q - line));
+	}
+
+	if (eightbit)
+	    i = encode_param(params, q, sizeof(line) - (q - line),
+	    		     strlen(params->pm_value + valoff), valoff, index);
+	else
+	    i = normal_param(params, q, sizeof(line) - (q - line),
+	    		     strlen(params->pm_value + valoff), valoff);
+
+	if (i == 0) {
+	    if (paramout)
+		free(paramout);
+	    return NULL;
+	}
+
+	paramout = add(line, paramout);
+	initialwidth += strlen(line);
+
 	params = params->pm_next;
     }
 
@@ -3466,9 +3541,19 @@ param_len(PM pm, int index, size_t valueoff, int *eightbit)
      */
 
     if (*eightbit) {
+	/*
+	 * If we don't have a charset or language tag in this parameter,
+	 * add them now.
+	 */
+
+	if (! pm->pm_charset)
+	    pm->pm_charset = getcpy(write_charset_8bit());
+	if (! pm->pm_lang)
+	    pm->pm_lang = getcpy(NULL);	/* Default to a blank lang tag */
+
 	len++;		/* For the encoding we need to do */
 	if (index == 0) {
-	    len += strlen(write_charset_8bit()) + 2;	/* Plus extra '' */
+	    len += strlen(pm->pm_charset) + strlen(pm->pm_lang) + 2;
 	} else {
 	    /*
 	     * We know we definitely need to include an index.
@@ -3494,7 +3579,7 @@ param_len(PM pm, int index, size_t valueoff, int *eightbit)
 	for (p = start; *p != '\0'; p++) {
 	    switch (*p) {
 	    case '"':
-	    case '\':
+	    case '\\':
 	    	len++;
 	    /* FALL THROUGH */
 	    default:
@@ -3513,11 +3598,11 @@ param_len(PM pm, int index, size_t valueoff, int *eightbit)
  */
 
 static size_t
-encoded_param(char *output, size_t len, const char *value, size_t valuelen,
-	      int index)
+encode_param(PM pm, char *output, size_t len, size_t valuelen,
+	      size_t valueoff, int index)
 {
     size_t outlen = 0, n;
-    char *endptr = output + len;
+    char *endptr = output + len, *p;
 
     /*
      * First, output the marker for an encoded string.
@@ -3528,16 +3613,88 @@ encoded_param(char *output, size_t len, const char *value, size_t valuelen,
     outlen += 2;
 
     /*
-     * If the index is 0, output the character set.
+     * If the index is 0, output the character set and language tag.
+     * If theses were NULL, they should have already been filled in
+     * by param_len().
      */
 
-    n = snprintf(output, len - outlen, "%s''", write_charset_8bit());
-
-    output += n;
-    outlen += n;
+    if (index == 0) {
+	n = snprintf(output, len - outlen, "%s'%s'", pm->pm_charset,
+		     pm->pm_lang);
+	output += n;
+	outlen += n;
+	if (output > endptr) {
+	    advise(NULL, "Internal error: parameter buffer overflow");
+	    return 0;
+	}
+    }
 
     /*
      * Copy over the value, encoding if necessary
      */
 
-    
+    p = pm->pm_value + valueoff;
+    while (valuelen-- > 0) {
+	if (isparamencode(*p)) {
+	    n = snprintf(output, len - outlen, "%%%02X", (unsigned char) *p++);
+	    output += n;
+	    outlen += n;
+	} else {
+	    *output++ = *p++;
+	    outlen++;
+	}
+	if (output > endptr) {
+	    advise(NULL, "Internal error: parameter buffer overflow");
+	    return 0;
+	}
+    }
+
+    *output = '\0';
+
+    return outlen;
+}
+
+/*
+ * Output a "normal" parameter, without encoding.  Be sure to escape
+ * quotes and backslashes if necessary.
+ */
+
+static size_t
+normal_param(PM pm, char *output, size_t len, size_t valuelen,
+	     size_t valueoff)
+{
+    size_t outlen = 0, n;
+    char *endptr = output + len, *p;
+
+    *output++ = '=';
+    *output++ = '"';
+    outlen += 2;
+
+    p = pm->pm_value + valueoff;
+
+    while (valuelen-- > 0) {
+	switch (*p) {
+	case '\\':
+	case '"':
+	    *output++ = '\\';
+	    outlen++;
+	default:
+	    *output++ = *p++;
+	    outlen++;
+	}
+	if (output > endptr) {
+	    advise(NULL, "Internal error: parameter buffer overflow");
+	    return 0;
+	}
+    }
+
+    if (output - 2 > endptr) {
+	advise(NULL, "Internal error: parameter buffer overflow");
+	return 0;
+    }
+
+    *output++ = '"';
+    *output++ = '\0';
+
+    return outlen + 1;
+}
