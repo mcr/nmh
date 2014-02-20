@@ -21,7 +21,7 @@ init_credentials_file () {
             struct stat st;
             char *filename = cred_style + 5;
 
-            while (*filename  &&  isspace ((int) *filename)) ++filename;
+            while (*filename && isspace ((unsigned char) *filename)) ++filename;
 
             if (*filename == '/') {
                 credentials_file = filename;
