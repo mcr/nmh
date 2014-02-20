@@ -685,7 +685,6 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
 	    if ((*p->c_ceopenfnx) (p, &file) == NOTOK)
 		return NOTOK;
 
-	    /* I'm not sure if this is necessary? */
 	    p->c_storage = add (file, NULL);
 
 	    if (p->c_showproc && !strcmp (p->c_showproc, "true"))
@@ -842,25 +841,10 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		    for (part = m->mp_parts; part; part = part->mp_next) {
 			p = part->mp_part;
 
-			/* Don't quote filename if it's already quoted. */
-			if (p->c_storage  &&  *(p->c_storage-1) == '\'') {
-			    /* If there isn't a matching close quote, bail
-			       out. */
-			    if (*(cp+1) != '\'') {
-				adios(NULL, "%%f/%%F not properly escaped: "
-				      "%s%s\n",
-				      buffer, cp);
-			    }
-			    snprintf (bp, buflen, "%s%s", s, p->c_storage);
-			} else {
-			    if (*(cp+1) != '\0'  &&  *(cp+1) == '\'') {
-				adios(NULL, "%%f/%%F not properly escaped: "
-				      "%s%s\n",
-				      buffer, cp);
-			    }
-			    snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
-			}
-
+			/* Always quote the filename.  I'm not sure if that's
+			   right.  And maybe not necessary:  is this always
+			   a temp file?  If so, the quoting is harmless. */
+			snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
 			len = strlen (bp);
 			bp += len;
 			buflen -= len;
