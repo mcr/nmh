@@ -100,7 +100,7 @@ static int boundary_in_content (FILE **, char *, const char *);
 static void transfer_noncontent_headers (CT, CT);
 static int set_ct_type (CT, int type, int subtype, int encoding);
 static int decode_text_parts (CT, int, int *);
-static int content_encoding (CT);
+static int content_encoding (CT, const char **);
 static int strip_crs (CT, int *);
 static int convert_charsets (CT, char *, int *);
 static int write_content (CT, char *, char *, int, int);
@@ -1430,16 +1430,19 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
             int ct_encoding;
 
             if (decode_part (ct) == OK  &&  ct->c_cefile.ce_file) {
-                if ((ct_encoding = content_encoding (ct)) == CE_BINARY  &&
-                    encoding != CE_BINARY) {
+                const char *reason = NULL;
+
+                if ((ct_encoding = content_encoding (ct, &reason)) == CE_BINARY
+                    &&  encoding != CE_BINARY) {
                     /* The decoding isn't acceptable so discard it.
                        Leave status as OK to allow other transformations. */
                     if (verbosw) {
                         report (ct->c_partno, ct->c_file,
-                                "will not decode%s because it is binary",
+                                "will not decode%s because it is binary (%s)",
                                 ct->c_partno  ?  ""
                                               :  ct->c_ctline  ?  ct->c_ctline
-                                                               :  "");
+                                                               :  "",
+                                reason);
                     }
                     (void) m_unlink (ct->c_cefile.ce_file);
                     free (ct->c_cefile.ce_file);
@@ -1523,9 +1526,10 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
 
 /* See if the decoded content is 7bit, 8bit, or binary.  It's binary
    if it has any NUL characters, a CR not followed by a LF, or lines
-   greater than 998 characters in length. */
+   greater than 998 characters in length.  If binary, reason is set
+   to a string explaining why. */
 static int
-content_encoding (CT ct) {
+content_encoding (CT ct, const char **reason) {
     CE ce = &ct->c_cefile;
     int encoding = CE_7BIT;
 
@@ -1550,6 +1554,16 @@ content_encoding (CT ct) {
                 if (*cp == '\0'  ||  ++line_len > 998  ||
                     (*cp != '\n'  &&  last_char_was_cr)) {
                     encoding = CE_BINARY;
+                    if (*cp == '\0') {
+                        *reason = "null character";
+                    } else if (line_len > 998) {
+                        *reason = "line length > 998";
+                    } else if (*cp != '\n'  &&  last_char_was_cr) {
+                        *reason = "CR not followed by LF";
+                    } else {
+                        /* Should not reach this. */
+                        *reason = "";
+                    }
                     break;
                 } else if (*cp == '\n') {
                     line_len = 0;
