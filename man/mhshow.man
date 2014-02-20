@@ -319,8 +319,8 @@ mhshow-show-application/PostScript: lpr -Pps
 .fi
 .RE
 .PP
-If an f- or F-escape is not quoted with single quotes, double quotes,
-or backticks, its expansion will be wrapped with single quotes.
+If an f- or F-escape is not quoted with single quotes, its expansion
+will be wrapped with single quotes.
 .PP
 Finally,
 .B mhshow

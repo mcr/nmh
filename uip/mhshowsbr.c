@@ -842,13 +842,22 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		    for (part = m->mp_parts; part; part = part->mp_next) {
 			p = part->mp_part;
 
-			/* Don't quote filename if it's already quoted.  Assume
-			   it's quoted if previous character was a quote. */
-			if (p->c_storage  &&  (*(p->c_storage-1) == '\'' ||
-					       *(p->c_storage-1) == '"' ||
-					       *(p->c_storage-1) == '`')) {
+			/* Don't quote filename if it's already quoted. */
+			if (p->c_storage  &&  *(p->c_storage-1) == '\'') {
+			    /* If there isn't a matching close quote, bail
+			       out. */
+			    if (*(cp+1) != '\'') {
+				adios(NULL, "%%f/%%F not properly escaped: "
+				      "%s%s\n",
+				      buffer, cp);
+			    }
 			    snprintf (bp, buflen, "%s%s", s, p->c_storage);
 			} else {
+			    if (*(cp+1) != '\0'  &&  *(cp+1) == '\'') {
+				adios(NULL, "%%f/%%F not properly escaped: "
+				      "%s%s\n",
+				      buffer, cp);
+			    }
 			    snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
 			}
 
@@ -859,12 +868,20 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		    }
 		} else {
 		    /* insert filename containing content */
-		    if (bp > buffer  &&
-                        (*(bp-1) == '\'' || *(bp-1) == '"' || *(bp-1) == '`')) {
-			/* Don't quote filename if it's already quoted.  Assume
-			   it's quoted if previous character was a quote. */
+		    if (bp > buffer  &&  *(bp-1) == '\'') {
+			/* Don't quote filename if it's already quoted. */
+			/* If there isn't a matching close quote, bail
+			   out. */
+			if (*(cp+1) != '\'') {
+			    adios(NULL, "%%f/%%F not properly escaped: %s%s\n",
+				  buffer, cp);
+			}
 			snprintf (bp, buflen, "%s", file);
 		    } else {
+			if (*(cp+1) != '\0'  &&  *(cp+1) == '\'') {
+			    adios(NULL, "%%f/%%F not properly escaped: %s%s\n",
+				  buffer, cp);
+			}
 			snprintf (bp, buflen, "'%s'", file);
 		    }
 
@@ -872,6 +889,24 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		     * to look past it, to avoid problems with the quoting
 		     * logic below.  (I know, I should figure out what's
 		     * broken with the quoting logic, but..)
+		     */
+		    /*
+		     * Here's the email that submitted the patch with
+		     * the comment above:
+		     *   https://www.mail-archive.com/nmh-workers@mhost.com/
+		     *     msg00288.html
+		     * I can't tell from that exactly what was broken,
+		     * beyond misquoting of the filename.  The profile
+		     * had appearances of %F both with and without quotes.
+		     * The unquoted ones should have been quoted by the
+		     * code below.
+		     * The fix was to always quote the filename.  But
+		     * that broke '%F' because it expanded to ''filename''.
+		     * That's why I added the condition above to not
+		     * quote if the escape was wrapped with single
+		     * quotes.  It would be (much) better to rely on
+		     * the quoting code below, but until I understand
+		     * what is wrong with it, I won't do that.
 		     */
 		    len = strlen(bp);
 		    bp += len;
