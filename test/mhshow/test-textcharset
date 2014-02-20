@@ -27,7 +27,7 @@ actual="$MH_TEST_DIR"/$$.actual
 
 # check charset conversion
 msgfile=`mhpath new`
-cat >"$msgfile" <<EOF
+cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
 Subject: test display with charset conversion
@@ -39,7 +39,7 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-cat >"$expected" <<EOF
+cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -60,7 +60,7 @@ EOF
 
 # check expansion of %{charset} by itself
 msgfile=`mhpath new`
-cat >"$msgfile" <<EOF
+cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
 Subject: test display with %{charset} expansion
@@ -72,7 +72,7 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-cat >"$expected" <<EOF
+cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -88,7 +88,7 @@ check "$expected" "$actual"
 
 # check expansion of empty %{charset} by itself
 msgfile=`mhpath new`
-cat >"$msgfile" <<EOF
+cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
 Subject: test display with empty %{charset} expansion
@@ -100,7 +100,7 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-cat >"$expected" <<EOF
+cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -117,11 +117,11 @@ check "$expected" "$actual"
 grep -v 'mhshow-show-text/plain:' "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
 cat >>"$MH" <<'EOF'
-mhshow-show-text/plain: charset="%{charset}"; echo ${charset:+-I $charset}
+mhshow-show-text/plain: charset=%{charset}; echo ${charset:+-I $charset}
 EOF
 
 # check expansion of embedded %{charset} with no text following
-cat >"$expected" <<EOF
+cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -136,7 +136,7 @@ run_prog mhshow -nopause prev >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check expansion of empty embedded %{charset} with no text following
-cat >"$expected" <<EOF
+cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -154,7 +154,7 @@ sed -e 's%\(mhshow-show-text/plain:.*\)%\1 file%' "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
 
 # check expansion of embedded %{charset} with text following
-cat >"$expected" <<EOF
+cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -169,7 +169,7 @@ run_prog mhshow -nopause prev >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check expansion of empty embedded %{charset} with text following
-cat >"$expected" <<EOF
+cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -183,12 +183,43 @@ EOF
 run_prog mhshow -nopause last >"$actual" 2>&1
 check "$expected" "$actual"
 
-sed -e 's/%{charset}/%{unknown}/' "$MH" >"$MH.new"
+sed -e 's/charset/method/g' "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
 
-# check expansion of unknown parameter
+# check parameter value quoting
 msgfile=`mhpath new`
-cat >"$msgfile" <<EOF
+cat >"$msgfile" <<'EOF'
+From: foo@example.edu
+To: bar@example.edu
+Subject: test C-T parameter expansion quoting
+MIME-Version: 1.0
+Content-Type: text/plain; method=$QUOTEME'
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+4 =F7 2 =3D 2
+EOF
+
+cat >"$expected" <<'EOF'
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: test C-T parameter expansion quoting
+
+MIME-Version: 1.0
+
+-I $QUOTEME' file
+EOF
+
+run_prog mhshow -nopause last >"$actual" 2>&1
+check "$expected" "$actual"
+
+sed -e 's/method/unknown/g' "$MH" >"$MH.new"
+mv -f "$MH.new" "$MH"
+
+# check that unknown parameter is not expanded
+msgfile=`mhpath new`
+cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
 Subject: test display with unknown C-T parameter expansion
@@ -200,7 +231,7 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-cat >"$expected" <<EOF
+cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -208,7 +239,7 @@ Subject: test display with unknown C-T parameter expansion
 
 MIME-Version: 1.0
 
--I %{unknown} file
+file
 EOF
 
 run_prog mhshow -nopause last >"$actual" 2>&1

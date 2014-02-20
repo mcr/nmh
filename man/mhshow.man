@@ -224,9 +224,9 @@ The display string may contain the following escapes:
 .PP
 .RS 5
 .nf
-.ta \w'%F      'u
+.ta \w'%F        'u
 %a	   Insert parameters from Content-Type field
-%{charset} Insert the charset value from the Content-Type field
+%{parameter} Insert the parameter value from the Content-Type field
 %e	   exclusive execution
 %f	   Insert filename containing content
 %F	   %e, %f, and stdin is terminal not content
@@ -258,13 +258,15 @@ control-\\) will tell
 .B mhshow
 to wrap things up immediately.
 .PP
-The {charset} escape is typically used in a command line argument that
-should only be present if it has a non-null value.  Shell parameter
-expansion can construct the argument only when it is non-null, e.g.,
+The {parameter} escape is typically used in a command line argument
+that should only be present if it has a non-null value.  Its value
+will be wrapped with single quotes if the escape is not so wrapped.
+Shell parameter expansion can construct the argument only when it is
+non-null, e.g.,
 .PP
 .RS 5
 .nf
-mhshow-show-text/html: charset="%{charset}";
+mhshow-show-text/html: charset=%{charset};
   w3m ${charset:+-I $charset} -T text/html %F
 .fi
 .RE

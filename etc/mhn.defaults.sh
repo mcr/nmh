@@ -27,11 +27,11 @@ trap "rm -f $TMP" 0 1 2 3 13 15
 
 
 if [ ! -z "`$SEARCHPROG $SEARCHPATH w3m`" ]; then
-  echo 'mhfixmsg-format-text/html: charset="%{charset}"; '"\
+  echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
 "'w3m -dump -T text/html "${charset:+-I $charset}" -O utf-8 %F' >> $TMP
 elif [ ! -z "`$SEARCHPROG $SEARCHPATH lynx`" ]; then
   #### lynx indents with 3 spaces, remove them and any trailing spaces.
-  echo 'mhfixmsg-format-text/html: charset="%{charset}"; '"\
+  echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
 "'lynx -child -dump -force_html "${charset:+--assume_charset $charset}" %F | '"\
 expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
 elif [ ! -z "`$SEARCHPROG $SEARCHPATH elinks`" ]; then
@@ -239,12 +239,12 @@ EOF
 # that another netscape is already running and certain things can't be done).
 PGM="`$SEARCHPROG $SEARCHPATH lynx`"
 if [ ! -z "$PGM" ]; then
-	echo 'mhshow-show-text/html: charset="%{charset}"; '"\
+	echo 'mhshow-show-text/html: charset=%{charset}; '"\
 %p$PGM"' -force-html "${charset:+--assume_charset $charset}" %F' >> $TMP
 else
   PGM="`$SEARCHPROG $SEARCHPATH w3m`"
   if [ ! -z "$PGM" ]; then
-	echo 'mhshow-show-text/html: charset="%{charset}"; '"\
+	echo 'mhshow-show-text/html: charset=%{charset}; '"\
 %p$PGM"' "${charset:+-I $charset}" -T text/html %F' >> $TMP
   fi
 fi

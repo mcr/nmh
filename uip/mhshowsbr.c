@@ -73,7 +73,7 @@ static int show_external (CT, int, int);
 static int parse_display_string (CT, char *, int *, int *, int *, int *, char *,
                                  char *, size_t, int multipart);
 static int convert_content_charset (CT, char **);
-static int parameter_value (CI, const char *, const char *, const char **);
+static const char *parameter_value (CI, const char *);
 static void intrser (int);
 
 
@@ -939,60 +939,38 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		goto raw;
 
 	    case '{' : {
-		static const char param[] = "charset";
-		const char *value;
-		const int found = parameter_value (ci, param, cp, &value);
+		const char *closing_brace = strchr(cp, '}');
 
-		if (found == OK) {
-		    /* Because it'll get incremented in the next iteration,
-		       just increment by 1 for the '{'. */
-		    cp += strlen(param) + 1;
+		if (closing_brace) {
+		    const size_t param_len = closing_brace - cp - 1;
+		    char *param = mh_xmalloc(param_len + 1);
+		    const char *value;
 
-		    /* cp pointed to the param and it's set in the
-		       Content-Type header. */
-		    strncpy (bp, value, buflen);
+		    (void) strncpy(param, cp + 1, param_len);
+		    param[param_len] = '\0';
+		    value = parameter_value(ci, param);
+		    free(param);
 
-		    /* since we've quoted the file argument, set things up
-		     * to look past it, to avoid problems with the quoting
-		     * logic below.  (I know, I should figure out what's
-		     * broken with the quoting logic, but..)
-		     */
-		    len = strlen(bp);
-		    bp += len;
-		    buflen -= len;
-		    pp = bp;
+		    cp += param_len + 1; /* Skip both braces, too. */
 
-		    break;
-		} else if (found == 1) {
-		    /* cp points to the param and it's not set in the
-		       Content-Type header, so skip it. */
-		    cp += strlen(param) + 1;
-
-		    if (*cp == '\0') {
-			break;
+		    if (value) {
+			/* %{param} is set in the Content-Type header.
+			   After the break below, quote it if necessary. */
+			(void) strncpy(bp, value, buflen);
 		    } else {
-			if (*(cp + 1) == '\0') {
-			    break;
-			} else {
-			    ++cp;
-			    /* Increment cp again so that the last
-			       character of the %{} token isn't output
-			       after falling thru below. */
-			    ++cp;
-			}
+			/* %{param} not found, so skip it completely.  cp
+			   was advanced above. */
+			continue;
 		    }
 		} else {
-		    /* cp points to an unrecognized parameter.  Output
-		       it as-is, starting here with the "%{". */
-		    *bp++ = '%';
-		    *bp++ = '{';
-		    *bp = '\0';
-		    buflen -= 2;
-		    continue;
+		    /* This will get confused if there are multiple %{}'s,
+		       but its real purpose is to avoid doing bad things
+		       above if a closing brace wasn't found. */
+		    admonish(NULL,
+			     "no closing brace for display string escape %s",
+			     cp);
 		}
-
-		/* No parameter was found, so fall thru to default to
-		   output the rest of the text as-is. */
+		break;
 	    }
 
 	    default:
@@ -1244,33 +1222,22 @@ convert_content_charset (CT ct, char **file) {
 
 
 /*
- * Return values:
- *   NOTOK if cp doesn't point to {param}
- *   OK    if cp points to {param} and that attribute exists, and returns
- *         its value
- *   1     if cp points to {param} and that attribute doesn't exist
+ * If a Content-Type parameter named param exists, returns its value.
+ * Otherwise, returns NULL.
  */
-int
-parameter_value (CI ci, const char *param, const char *cp, const char **value) {
-    int found = NOTOK;
-    char *braced_param = concat ("{", param, "}", NULL);
+static const char *
+parameter_value (CI ci, const char *param) {
+    const char *value = NULL;
+    char **ap, **vp;
 
-    if (! strncasecmp(cp, braced_param, strlen (braced_param))) {
-        char **ap, **ep;
-
-        found = 1;
-
-        for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ++ap, ++ep) {
-            if (!strcasecmp (*ap, param)) {
-                found = OK;
-                *value = *ep;
-                break;
-            }
+    for (ap = ci->ci_attrs, vp = ci->ci_values; *ap; ++ap, ++vp) {
+        if (! strcasecmp (*ap, param)) {
+            value = *vp;
+            break;
         }
     }
 
-    free (braced_param);
-    return found;
+    return value;
 }
 
 
