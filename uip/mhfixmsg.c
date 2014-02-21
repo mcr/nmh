@@ -1073,19 +1073,19 @@ divide_part (CT ct) {
 
 static void
 copy_ctinfo (CI dest, CI src) {
-    char **s_ap, **d_ap, **s_vp, **d_vp;
+    PM s_pm, d_pm;
 
     dest->ci_type = src->ci_type ? add (src->ci_type, NULL) : NULL;
     dest->ci_subtype = src->ci_subtype ? add (src->ci_subtype, NULL) : NULL;
 
-    for (s_ap = src->ci_attrs, d_ap = dest->ci_attrs,
-             s_vp = src->ci_values, d_vp = dest->ci_values;
-         *s_ap;
-         ++s_ap, ++d_ap, ++s_vp, ++d_vp) {
-        *d_ap = add (*s_ap, NULL);
-        *d_vp = *s_vp;
+    for (s_pm = src->ci_first_pm; s_pm; s_pm = s_pm->pm_next) {
+    	d_pm = add_param(&dest->ci_first_pm, &dest->ci_last_pm, s_pm->pm_name,
+			 s_pm->pm_value);
+	if (s_pm->pm_charset)
+	    d_pm->pm_charset = getcpy(s_pm->pm_charset);
+	if (s_pm->pm_lang)
+	    d_pm->pm_lang = getcpy(s_pm->pm_lang);
     }
-    *d_ap = NULL;
 
     dest->ci_comment = src->ci_comment ? add (src->ci_comment, NULL) : NULL;
     dest->ci_magic = src->ci_magic ? add (src->ci_magic, NULL) : NULL;

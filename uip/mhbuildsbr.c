@@ -1159,11 +1159,12 @@ compose_content (CT ct)
 		    case 'a':
 		    {
 			/* insert parameters from directive */
-			char **ep;
 			char *s = "";
+			PM pm;
 
-			for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-			    snprintf (bp, buflen, "%s%s=\"%s\"", s, *ap, *ep);
+			for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+			    snprintf (bp, buflen, "%s%s=\"%s\"", s,
+			    	      pm->pm_name, pm->pm_value);
 			    len = strlen (bp);
 			    bp += len;
 			    buflen -= len;
@@ -1466,22 +1467,10 @@ scan_content (CT ct, size_t maxunencoded)
 	t = (struct text *) ct->c_ctparams;
 	if (t->tx_charset == CHARSET_UNSPECIFIED) {
 	    CI ci = &ct->c_ctinfo;
-	    char **ap, **ep;
 
-	    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-		continue;
-
-	    if (contains8bit) {
-		*ap = concat ("charset=", write_charset_8bit(), NULL);
-	    } else {
-		*ap = add ("charset=us-ascii", NULL);
-	    }
+	    add_param(&ci->ci_first_pm, &ci->ci_last_pm, "charset",
+	    	      contains8bit ? write_charset_8bit() : "us-ascii");
 	    t->tx_charset = CHARSET_SPECIFIED;
-
-	    cp = strchr(*ap++, '=');
-	    *ap = NULL;
-	    *cp++ = '\0';
-	    *ep = cp;
 	}
     }
 
@@ -1537,25 +1526,19 @@ static int
 build_headers (CT ct)
 {
     int	cc, mailbody, extbody, len;
-    char **ap, **ep;
     char *np, *vp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
+    PM pm;
 
     /*
      * If message is type multipart, then add the multipart
      * boundary to the list of attribute/value pairs.
      */
     if (ct->c_type == CT_MULTIPART) {
-	char *cp;
 	static int level = 0;	/* store nesting level */
 
-	ap = ci->ci_attrs;
-	ep = ci->ci_values;
-	snprintf (buffer, sizeof(buffer), "boundary=%s%d", prefix, level++);
-	cp = strchr(*ap++ = add (buffer, NULL), '=');
-	*ap = NULL;
-	*cp++ = '\0';
-	*ep = cp;
+	snprintf (buffer, sizeof(buffer), "%s%d", prefix, level++);
+	add_param(&ci->ci_first_pm, &ci->ci_last_pm, "boundary", buffer);
     }
 
     /*
@@ -1585,8 +1568,8 @@ build_headers (CT ct)
      * Append the attribute/value pairs to
      * the end of the Content-Type line.
      */
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (mailbody && !strcasecmp (*ap, "body"))
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+	if (mailbody && !strcasecmp (pm->pm_name, "body"))
 	    continue;
 
 	vp = add (";", vp);
@@ -1597,8 +1580,8 @@ build_headers (CT ct)
 	 * we have to break it across multiple lines
 	 */
 
-	if (extbody && strcasecmp (*ap, "url") == 0) {
-	    char *value = *ep;
+	if (extbody && strcasecmp (pm->pm_name, "url") == 0) {
+	    char *value = pm->pm_value;
 
 	    /* 7 here refers to " url=\"\"" */
 	    if (len + 1 + (cc = (min(MAXURLTOKEN, strlen(value)) + 7)) >=
@@ -1628,7 +1611,7 @@ build_headers (CT ct)
 	    continue;
 	}
 
-	snprintf (buffer, sizeof(buffer), "%s=\"%s\"", *ap, *ep);
+	snprintf (buffer, sizeof(buffer), "%s=\"%s\"", pm->pm_name, pm->pm_value);
 	if (len + 1 + (cc = strlen (buffer)) >= CPERLIN) {
 	    vp = add ("\n\t", vp);
 	    len = 8;
@@ -1889,8 +1872,9 @@ calculate_digest (CT ct, int asciiP)
 static void
 setup_attach_content(CT ct, char *filename)
 {
-    char *type, **ap, **ep, *simplename = r1bindex(filename, '/');
+    char *type, *simplename = r1bindex(filename, '/');
     struct str2init *s2i;
+    PM pm;
 
     if (! (type = mime_type(filename))) {
     	adios(NULL, "Unable to determine MIME type of \"%s\"", filename);
@@ -1946,20 +1930,18 @@ setup_attach_content(CT ct, char *filename)
      * content-description, and the content-disposition.
      */
 
-    for (ap = ct->c_ctinfo.ci_attrs, ep = ct->c_ctinfo.ci_values; *ap;
-    	 ap++, ep++) {
-	if (strcasecmp(*ap, "name") == 0) {
-	    if (*ep)
-	    	free(*ep);
-	    *ep = getcpy(simplename);
+    for (pm = ct->c_ctinfo.ci_first_pm; pm; pm = pm->pm_next) {
+	if (strcasecmp(pm->pm_name, "name") == 0) {
+	    if (pm->pm_value)
+	    	free(pm->pm_value);
+	    pm->pm_value = getcpy(simplename);
 	    break;
 	}
     }
 
-    if (*ap == NULL) {
-	*ap = getcpy("name");
-	*ep = getcpy(simplename);
-    }
+    if (pm == NULL)
+    	add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
+		  "name", simplename);
 
     ct->c_descr = getcpy(simplename);
     ct->c_descr = add("\n", ct->c_descr);

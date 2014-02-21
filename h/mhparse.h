@@ -341,7 +341,28 @@ char *ct_subtype_str (int, int);
 const struct str2init *get_ct_init (int);
 const char *ce_str (int);
 const struct str2init *get_ce_method (const char *);
-int parse_header_attrs (const char *, int, char **, CI, int *);
+
+/*
+ * Parse a series of MIME attributes (or parameters) given a header as
+ * input.
+ *
+ * Arguments include:
+ *
+ * filename	- Name of input file (for error messages)
+ * fieldname	- Name of field being processed
+ * headerp	- Pointer to pointer of the beginning of the MIME attributes.
+ *		  Updated to point to end of attributes when finished.
+ * param_head	- Pointer to head of parameter list
+ * param_tail	- Pointer to tail of parameter list
+ * commentp	- Pointer to header comment pointer (may be NULL)
+ *
+ * Returns OK if parsing was successful, NOTOK if parsing failed, and
+ * DONE to indicate a benign error (minor parsing error, but the program
+ * should continue).
+ */
+int parse_header_attrs (const char *filename, const char *fieldname,
+			char **headerp, PM *param_head, PM *param_tail,
+			char **commentp);
 
 /*
  * Given a linked list of parameters, build an output string for them.  This
@@ -360,5 +381,19 @@ int parse_header_attrs (const char *, int, char **, CI, int *);
  * be free()'d by the caller.  Returns NULL on error.
  */
 char *output_params(size_t initialwidth, PM params, int *offsetout);
+
+/*
+ * Add a parameter to the parameter linked list.
+ *
+ * Arguments are:
+ *
+ * first	- Pointer to head of linked list
+ * last		- Pointer to tail of linked list
+ * name		- Name of parameter
+ * value	- Value of parameter
+ *
+ * Returned allocated parameter element
+ */
+PM add_param(PM *first, PM *last, const char *name, const char *value);
 
 extern int checksw;	/* Add Content-MD5 field */

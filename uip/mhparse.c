@@ -109,7 +109,7 @@ void free_encoding (CT, int);
  * static prototypes
  */
 static CT get_content (FILE *, char *, int);
-static int get_comment (const char *, CI, char **, int);
+static int get_comment (const char *, const char *, char **, char **);
 
 static int InitGeneric (CT);
 static int InitText (CT);
@@ -380,7 +380,7 @@ get_content (FILE *in, char *file, int toplevel)
 		fprintf (stderr, "%s: %s\n", VRSN_FIELD, cp);
 
 	    if (*cp == '('  &&
-                get_comment (ct->c_file, &ct->c_ctinfo, &cp, 0) == NOTOK)
+                get_comment (ct->c_file, VRSN_FIELD, &cp, NULL) == NOTOK)
 		goto out;
 
 	    for (dp = cp; istoken (*dp); dp++)
@@ -490,7 +490,7 @@ get_content (FILE *in, char *file, int toplevel)
 		fprintf (stderr, "%s: %s\n", MD5_FIELD, cp);
 
 	    if (*cp == '('  &&
-                get_comment (ct->c_file, &ct->c_ctinfo, &cp, 0) == NOTOK) {
+                get_comment (ct->c_file, MD5_FIELD, &cp, NULL) == NOTOK) {
 		free (ep);
 		goto out;
 	    }
@@ -686,7 +686,6 @@ get_ctinfo (char *cp, CT ct, int magic)
     int status;
 
     ci = &ct->c_ctinfo;
-    i = strlen (invo_name) + 2;
 
     /* store copy of Content-Type line */
     cp = ct->c_ctline = add (cp, NULL);
@@ -707,7 +706,8 @@ get_ctinfo (char *cp, CT ct, int magic)
     if (debugsw)
 	fprintf (stderr, "%s: %s\n", TYPE_FIELD, cp);
 
-    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
+    				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     for (dp = cp; istoken (*dp); dp++)
@@ -730,7 +730,8 @@ get_ctinfo (char *cp, CT ct, int magic)
     while (isspace ((unsigned char) *cp))
 	cp++;
 
-    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
+    				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     if (*cp != '/') {
@@ -743,7 +744,8 @@ get_ctinfo (char *cp, CT ct, int magic)
     while (isspace ((unsigned char) *cp))
 	cp++;
 
-    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
+    				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     for (dp = cp; istoken (*dp); dp++)
@@ -768,11 +770,14 @@ magic_skip:
     while (isspace ((unsigned char) *cp))
 	cp++;
 
-    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
+    				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
-    if (parse_header_attrs (ct->c_file, i, &cp, ci, &status) == NOTOK) {
-	return status;
+    if ((status = parse_header_attrs (ct->c_file, TYPE_FIELD, &cp,
+    				      &ci->ci_first_pm, &ci->ci_last_pm,
+				      &ci->ci_comment)) != OK) {
+	return status == NOTOK ? NOTOK : OK;
     }
 
     /*
@@ -926,7 +931,8 @@ magic_skip:
 
 
 static int
-get_comment (const char *filename, CI ci, char **ap, int istype)
+get_comment (const char *filename, const char *fieldname, char **ap,
+	     char **commentp)
 {
     int i;
     char *bp, *cp;
@@ -941,7 +947,7 @@ get_comment (const char *filename, CI ci, char **ap, int istype)
 	case '\0':
 invalid:
 	advise (NULL, "invalid comment in message %s's %s: field",
-		filename, istype ? TYPE_FIELD : VRSN_FIELD);
+		filename, fieldname);
 	return NOTOK;
 
 	case '\\':
@@ -968,12 +974,12 @@ invalid:
     }
     *bp = '\0';
 
-    if (istype) {
-	if ((dp = ci->ci_comment)) {
-	    ci->ci_comment = concat (dp, " ", buffer, NULL);
+    if (commentp) {
+	if ((dp = *commentp)) {
+	    *commentp = concat (dp, " ", buffer, NULL);
 	    free (dp);
 	} else {
-	    ci->ci_comment = add (buffer, NULL);
+	    *commentp = add (buffer, NULL);
 	}
     }
 
@@ -3227,32 +3233,22 @@ get_ce_method (const char *method) {
 }
 
 int
-parse_header_attrs (const char *filename, int len, char **header_attrp, CI ci,
-                    int *status) {
-    char **attr = ci->ci_attrs;
+parse_header_attrs (const char *filename, const char *fieldname,
+		    char **header_attrp, PM *param_head, PM *param_tail,
+		    char **commentp)
+{
     char *cp = *header_attrp;
+    PM pm;
 
     while (*cp == ';') {
 	char *dp, *vp, *up, c;
-
-        /* Relies on knowledge of this declaration:
-         *   char *ci_attrs[NPARMS + 2];
-         */
-	if (attr >= ci->ci_attrs + sizeof ci->ci_attrs/sizeof (char *) - 2) {
-	    advise (NULL,
-		    "too many parameters in message %s's %s: field (%d max)",
-		    filename, TYPE_FIELD, NPARMS);
-	    *status = NOTOK;
-	    return NOTOK;
-	}
 
 	cp++;
 	while (isspace ((unsigned char) *cp))
 	    cp++;
 
 	if (*cp == '('  &&
-            get_comment (filename, ci, &cp, 1) == NOTOK) {
-	    *status = NOTOK;
+            get_comment (filename, fieldname, &cp, commentp) == NOTOK) {
 	    return NOTOK;
         }
 
@@ -3260,9 +3256,8 @@ parse_header_attrs (const char *filename, int len, char **header_attrp, CI ci,
 	    advise (NULL,
 		    "extraneous trailing ';' in message %s's %s: "
                     "parameter list",
-		    filename, TYPE_FIELD);
-	    *status = OK;
-	    return NOTOK;
+		    filename, fieldname);
+	    return DONE;
 	}
 
 	/* down case the attribute name */
@@ -3275,19 +3270,23 @@ parse_header_attrs (const char *filename, int len, char **header_attrp, CI ci,
 	if (dp == cp || *dp != '=') {
 	    advise (NULL,
 		    "invalid parameter in message %s's %s: "
-                    "field\n%*.*sparameter %s (error detected at offset %d)",
-		    filename, TYPE_FIELD, len, len, "", cp, dp - cp);
-	    *status = NOTOK;
+                    "field\n%*sparameter %s (error detected at offset %d)",
+		    filename, fieldname, strlen(invo_name) + 2, "",cp, dp - cp);
 	    return NOTOK;
 	}
 
-	vp = (*attr = add (cp, NULL)) + (up - cp);
+	pm = mh_xmalloc(sizeof(*pm));
+	memset(pm, 0, sizeof(*pm));
+
+	/* This is all mega-bozo and needs cleanup */
+	vp = (pm->pm_name = add (cp, NULL)) + (up - cp);
 	*vp = '\0';
 	for (dp++; isspace ((unsigned char) *dp);)
 	    dp++;
 
 	/* Now store the attribute value. */
-	ci->ci_values[attr - ci->ci_attrs] = vp = *attr + (dp - cp);
+
+	pm->pm_value = vp = pm->pm_name + (dp - cp);
 
 	if (*dp == '"') {
 	    for (cp = ++dp, dp = vp;;) {
@@ -3296,9 +3295,9 @@ parse_header_attrs (const char *filename, int len, char **header_attrp, CI ci,
 bad_quote:
 		        advise (NULL,
 				"invalid quoted-string in message %s's %s: "
-                                "field\n%*.*s(parameter %s)",
-				filename, TYPE_FIELD, len, len, "", *attr);
-			*status = NOTOK;
+                                "field\n%*s(parameter %s)",
+				filename, fieldname, strlen(invo_name) + 2, "",
+				pm->pm_name);
 			return NOTOK;
 
 		    case '\\':
@@ -3325,9 +3324,9 @@ bad_quote:
 	if (!*vp) {
 	    advise (NULL,
 		    "invalid parameter in message %s's %s: "
-                    "field\n%*.*s(parameter %s)",
-		    filename, TYPE_FIELD, len, len, "", *attr);
-	    *status = NOTOK;
+                    "field\n%*s(parameter %s)",
+		    filename, fieldname, strlen(invo_name) + 2, "",
+		    pm->pm_name);
 	    return NOTOK;
 	}
 
@@ -3335,12 +3334,17 @@ bad_quote:
 	    cp++;
 
 	if (*cp == '('  &&
-            get_comment (filename, ci, &cp, 1) == NOTOK) {
-	    *status = NOTOK;
+            get_comment (filename, fieldname, &cp, commentp) == NOTOK) {
 	    return NOTOK;
         }
 
-        ++attr;
+	if (*param_head == NULL) {
+	    *param_head = pm;
+	    *param_tail = pm;
+	} else {
+	    (*param_tail)->pm_next = pm;
+	    *param_tail = pm;
+	}
     }
 
     *header_attrp = cp;
@@ -3697,4 +3701,29 @@ normal_param(PM pm, char *output, size_t len, size_t valuelen,
     *output++ = '\0';
 
     return outlen + 1;
+}
+
+/*
+ * Add a parameter to the parameter linked list
+ */
+
+PM
+add_param(PM *first, PM *last, const char *name, const char *value)
+{
+    PM pm = mh_xmalloc(sizeof(*pm));
+
+    memset(pm, 0, sizeof(*pm));
+
+    pm->pm_name = getcpy(name);
+    pm->pm_value = getcpy(name);
+
+    if (*first) {
+	(*last)->pm_next = pm;
+	*last = pm;
+    } else {
+    	*first = pm;
+	*last = pm;
+    }
+
+    return pm;
 }

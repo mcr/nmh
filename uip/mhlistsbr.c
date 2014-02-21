@@ -199,11 +199,11 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
     printf ("\n");
 
     if (verbose) {
-	char **ap, **ep;
 	CI ci = &ct->c_ctinfo;
+	PM pm;
 
-	for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-	    printf ("\t     %s=\"%s\"\n", *ap, *ep);
+	for (pm = ci->ci_first_pm; pm; pm = pm->pm_next)
+	    printf ("\t     %s=\"%s\"\n", pm->pm_name, pm->pm_value);
 
 	/*
 	 * If verbose, print any RFC-822 comments in the
@@ -233,8 +233,8 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
 static int
 list_debug (CT ct)
 {
-    char **ap, **ep;
     CI ci = &ct->c_ctinfo;
+    PM pm;
 
     fflush (stdout);
     fprintf (stderr, "  partno \"%s\"\n", empty (ct->c_partno));
@@ -255,8 +255,8 @@ list_debug (CT ct)
 
     /* print parsed parameters attached to content type */
     fprintf (stderr, "    parameters\n");
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-	fprintf (stderr, "      %s=\"%s\"\n", *ap, *ep);
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next)
+	fprintf (stderr, "      %s=\"%s\"\n", pm->pm_name, pm->pm_value);
 
     /* print internal flags for type/subtype */
     fprintf (stderr, "    type 0x%x subtype 0x%x params 0x%x\n",
