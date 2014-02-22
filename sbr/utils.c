@@ -363,6 +363,9 @@ nmh_init(const char *argv0, int read_context) {
 int
 contains8bit(const char *start, const char *end)
 {
+    if (! start)
+	return 0;
+
     while (*start != '\0' && (!end || (start < end)))
 	if (! isascii((unsigned char) *start++))
 	    return 1;

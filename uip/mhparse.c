@@ -138,6 +138,7 @@ static int openURL (CT, char **);
 static size_t param_len(PM, int, size_t, int *);
 static size_t encode_param(PM, char *, size_t, size_t, size_t, int);
 static size_t normal_param(PM, char *, size_t, size_t, size_t);
+static int get_dispo (char *, CT);
 
 struct str2init str2cts[] = {
     { "application", CT_APPLICATION, InitApplication },
@@ -513,7 +514,8 @@ get_content (FILE *in, char *file, int toplevel)
 	}
 	else if (!strcasecmp (hp->name, DISPO_FIELD)) {
 	/* Get Content-Disposition field */
-	    ct->c_dispo = add (hp->value, ct->c_dispo);
+	    if (get_dispo(hp->value, ct) == NOTOK)
+		goto out;
 	}
 
 next_header:
@@ -679,7 +681,6 @@ extract_name_value (char *name_suffix, char *value) {
 int
 get_ctinfo (char *cp, CT ct, int magic)
 {
-    int	i;
     char *dp;
     char c;
     CI ci;
@@ -922,8 +923,67 @@ magic_skip:
         }
 	else
 	    advise (NULL,
-		    "extraneous information in message %s's %s: field\n%*.*s(%s)",
-                    ct->c_file, TYPE_FIELD, i, i, "", cp);
+		    "extraneous information in message %s's %s: field\n%*s(%s)",
+                    ct->c_file, TYPE_FIELD, strlen(invo_name) + 2, "", cp);
+    }
+
+    return OK;
+}
+
+
+/*
+ * Parse out a Content-Disposition header.  A lot of this is cribbed from
+ * get_ctinfo().
+ */
+static int
+get_dispo (char *cp, CT ct)
+{
+    char *dp;
+    char c;
+    int status;
+
+    /* Save the whole copy of the Content-Disposition header */
+
+    ct->c_dispo = add(cp, NULL);
+
+    while (isspace ((unsigned char) *cp))	/* trim leading spaces */
+	cp++;
+
+    /* change newlines to spaces */
+    for (dp = strchr(cp, '\n'); dp; dp = strchr(dp, '\n'))
+	*dp++ = ' ';
+
+    /* trim trailing spaces */
+    for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
+	if (!isspace ((unsigned char) *dp))
+	    break;
+    *++dp = '\0';
+
+    if (debugsw)
+	fprintf (stderr, "%s: %s\n", DISPO_FIELD, cp);
+
+    if (*cp == '(' && get_comment (ct->c_file, DISPO_FIELD, &cp, NULL) == NOTOK)
+	return NOTOK;
+
+    for (dp = cp; istoken (*dp); dp++)
+	continue;
+    c = *dp, *dp = '\0';
+    ct->c_dispo_type = add (cp, NULL);	/* store disposition type */
+    *dp = c, cp = dp;
+
+    if (*cp == '(' && get_comment (ct->c_file, DISPO_FIELD, &cp, NULL) == NOTOK)
+	return NOTOK;
+
+    if ((status = parse_header_attrs (ct->c_file, DISPO_FIELD, &cp,
+    				      &ct->c_dispo_first, &ct->c_dispo_last,
+				      NULL)) != OK) {
+	return status == NOTOK ? NOTOK : OK;
+    }
+
+    if (*cp) {
+	advise (NULL,
+		"extraneous information in message %s's %s: field\n%*s(%s)",
+                    ct->c_file, DISPO_FIELD, strlen(invo_name) + 2, "", cp);
     }
 
     return OK;
@@ -3286,7 +3346,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 
 	/* Now store the attribute value. */
 
-	pm->pm_value = vp = pm->pm_name + (dp - cp);
+	vp = pm->pm_name + (dp - cp);
 
 	if (*dp == '"') {
 	    for (cp = ++dp, dp = vp;;) {
@@ -3321,6 +3381,7 @@ bad_quote:
 		continue;
 	    *dp = '\0';
 	}
+	pm->pm_value = getcpy(vp); 
 	if (!*vp) {
 	    advise (NULL,
 		    "invalid parameter in message %s's %s: "
@@ -3361,7 +3422,7 @@ char *
 output_params(size_t initialwidth, PM params, int *offsetout)
 {
     char *paramout = NULL;
-    char line[CPERLIN * 2], *p, *q;
+    char line[CPERLIN * 2], *q;
     int curlen, index, eightbit, encode, i;
     size_t valoff;
 
@@ -3667,7 +3728,7 @@ static size_t
 normal_param(PM pm, char *output, size_t len, size_t valuelen,
 	     size_t valueoff)
 {
-    size_t outlen = 0, n;
+    size_t outlen = 0;
     char *endptr = output + len, *p;
 
     *output++ = '=';
@@ -3715,7 +3776,7 @@ add_param(PM *first, PM *last, const char *name, const char *value)
     memset(pm, 0, sizeof(*pm));
 
     pm->pm_name = getcpy(name);
-    pm->pm_value = getcpy(name);
+    pm->pm_value = getcpy(value);
 
     if (*first) {
 	(*last)->pm_next = pm;

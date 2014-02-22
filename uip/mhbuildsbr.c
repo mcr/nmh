@@ -1127,7 +1127,7 @@ compose_content (CT ct)
 	if (!ce->ce_file) {
 	    pid_t child_id;
 	    int i, xstdout, len, buflen;
-	    char *bp, **ap, *cp;
+	    char *bp, *cp;
 	    char *vec[4], buffer[BUFSIZ];
 	    FILE *out;
 	    CI ci = &ct->c_ctinfo;

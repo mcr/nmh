@@ -336,11 +336,12 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 	    case 'a':
 		/* insert parameters from Content-Type field */
 	    {
-		char **ap, **ep;
+		PM pm;
 		char *s = "";
 
-		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		    snprintf (bp, buflen, "%s%s=\"%s\"", s, *ap, *ep);
+		for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+		    snprintf (bp, buflen, "%s%s=\"%s\"", s, pm->pm_name,
+		    	      pm->pm_value);
 		    len = strlen (bp);
 		    bp += len;
 		    buflen -= len;
@@ -843,11 +844,12 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
 	    case 'a':
 		/* insert parameters from Content-Type field */
 	    {
-		char **ap, **ep;
+		PM pm;
 		char *s = "";
 
-		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		    snprintf (bp, buflen, "%s%s=\"%s\"", s, *ap, *ep);
+		for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+		    snprintf (bp, buflen, "%s%s=\"%s\"", s, pm->pm_name,
+			      pm->pm_value);
 		    len = strlen (bp);
 		    bp += len;
 		    buflen -= len;

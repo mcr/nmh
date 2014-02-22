@@ -1214,7 +1214,6 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     CT ct;
     struct part *p;
     struct multipart *m;
-    char *cp;
     const struct str2init *ctinit;
 
     if ((ct = (CT) calloc (1, sizeof *ct)) == NULL)
@@ -1314,14 +1313,8 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
         ct->c_ctinfo.ci_subtype = add (subtypename, NULL);
     }
 
-    name = concat (" ", typename, "/", subtypename, boundary_indicator,
-                   boundary, NULL);
-    if ((cp = strstr (name, boundary_indicator))) {
-        ct->c_ctinfo.ci_attrs[0] = name;
-        ct->c_ctinfo.ci_attrs[1] = NULL;
-        /* ci_values don't get free'd, so point into ci_attrs. */
-        ct->c_ctinfo.ci_values[0] = cp + strlen (boundary_indicator);
-    }
+    add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
+    	      "boundary", boundary);
 
     p = (struct part *) mh_xmalloc (sizeof *p);
     p->mp_next = (struct part *) mh_xmalloc (sizeof *p->mp_next);
@@ -1762,19 +1755,22 @@ content_codeset (CT ct) {
     const char *const charset = "charset";
     char *default_codeset = NULL;
     CI ctinfo = &ct->c_ctinfo;
-    char **ap, **vp;
     char **src_codeset = NULL;
+    PM pm;
 
-    for (ap = ctinfo->ci_attrs, vp = ctinfo->ci_values; *ap; ++ap, ++vp) {
-        if (! strcasecmp (*ap, charset)) {
-            src_codeset = vp;
+    for (pm = ctinfo->ci_first_pm; pm; pm = pm->pm_next) {
+        if (! strcasecmp (pm->pm_name, charset)) {
+            src_codeset = &pm->pm_value;
             break;
         }
     }
 
     /* RFC 2045, Sec. 5.2:  default to us-ascii. */
-    if (src_codeset == NULL) src_codeset = &default_codeset;
-    if (*src_codeset == NULL) *src_codeset = "US-ASCII";
+    if (src_codeset == NULL) {
+	src_codeset = &default_codeset;
+	if (*src_codeset == NULL)
+	    *src_codeset = "US-ASCII";
+    }
 
     return *src_codeset;
 }
