@@ -944,7 +944,7 @@ get_dispo (char *cp, CT ct)
 
     /* Save the whole copy of the Content-Disposition header */
 
-    ct->c_dispo = add(cp, NULL);
+    cp = ct->c_dispo = add(cp, NULL);
 
     while (isspace ((unsigned char) *cp))	/* trim leading spaces */
 	cp++;
