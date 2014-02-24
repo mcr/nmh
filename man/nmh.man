@@ -1,4 +1,4 @@
-.TH NMH %manext7% "November 30, 2012" "%nmhversion%"
+.TH NMH %manext7% "February 21, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -194,7 +194,7 @@ messages, if they exist.
 Commands that take a folder name
 .RB ( inc ,
 .BR refile ,
-.BR scan, 
+.BR scan,
 \&...) accept the folder name in two formats:  \*(lq+folder\*(rq or
 \*(lq@folder\*(rq.  In both cases, \*(lqfolder\*(rq can be a
 \*(lq/\*(rq-separated path, e.g. \*(lqfoo/bar\*(rq.  \*(lq+folder\*(rq
@@ -487,23 +487,31 @@ Files Used by nmh Commands
 .IR mh\-alias (5)
 alias file for nmh message system
 .TP
-.IR mh\-draft (5)
-draft folder facility
-.TP
 .IR mh\-format (5)
 format file for nmh message system
-.TP
-.IR mh\-mail (5)
-message format for nmh message system
 .TP
 .IR mh\-profile (5)
 user customization for nmh message system
 .TP
-.IR mh\-sequence (5)
-sequence specification for nmh message system
-.TP
 .IR mh\-tailor (5)
 mail transport customization for nmh message system
+.PD
+.ne 4
+.SS
+Formats
+.TP \n(ttu
+.PD 0
+.IR mh\-draft (5)
+draft folder facility
+.TP
+.IR mh\-folders (5)
+nmh message storage format specification
+.TP
+.IR mh\-mail (5)
+message format for nmh message system
+.TP
+.IR mh\-sequence (5)
+sequence specification for nmh message system
 .PD
 .ne 4
 .SH FILES
