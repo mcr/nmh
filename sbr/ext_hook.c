@@ -37,6 +37,7 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
 	vec[vecp++] = message_file_name_2;
 	vec[vecp++] = NULL;
 	execvp(program, vec);
+	advise(program, "Unable to execute");
 	_exit(-1);
 	/* NOTREACHED */
 
@@ -47,11 +48,14 @@ ext_hook(char *hook_name, char *message_file_name_1, char *message_file_name_2)
 
     if (status != OK) {
 	if (did_message == 0) {
-	    if ((hook = context_find("msg-hook")) != (char *)0)
-		advise(NULL, hook);
-	    else
-		advise(NULL, "external hook (%s) did not work properly.", hook);
-	
+	    char *msghook;
+	    if ((msghook = context_find("msg-hook")) != (char *)0)
+		advise(NULL, msghook);
+	    else {
+	    	char errbuf[BUFSIZ];
+		snprintf(errbuf, sizeof(errbuf), "external hook \"%s\"", hook);
+		pidstatus(status, stderr, errbuf);
+	    }
 	    did_message = 1;
 	}
 
