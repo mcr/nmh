@@ -630,7 +630,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 	    n = 0;
 	    for (finished = 0; ! finished; ) {
 		while (c != '\n'  &&  c != EOF  &&  n++ < max) {
-		    *cp++ = c = Getc (s);
+		    if ((c = Getc (s)) != EOF) { *cp++ = c; }
 		}
 
 		if (c != EOF) c = Peek (s);

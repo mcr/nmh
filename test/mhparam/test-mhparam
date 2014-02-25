@@ -165,4 +165,8 @@ set -e
 # check for correctness here.
 mhparam -debug >/dev/null
 
+# check with text file that does not end with newline
+printf 'Editor: emacs' >>"$MH"
+run_test 'mhparam -nocomponent editor' 'emacs'
+
 exit $failed
