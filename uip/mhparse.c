@@ -138,7 +138,7 @@ static int openURL (CT, char **);
 static size_t param_len(PM, int, size_t, int *);
 static size_t encode_param(PM, char *, size_t, size_t, size_t, int);
 static size_t normal_param(PM, char *, size_t, size_t, size_t);
-static int get_dispo (char *, CT);
+static int get_dispo (char *, CT, int);
 
 struct str2init str2cts[] = {
     { "application", CT_APPLICATION, InitApplication },
@@ -514,7 +514,7 @@ get_content (FILE *in, char *file, int toplevel)
 	}
 	else if (!strcasecmp (hp->name, DISPO_FIELD)) {
 	/* Get Content-Disposition field */
-	    if (get_dispo(hp->value, ct) == NOTOK)
+	    if (get_dispo(hp->value, ct, 0) == NOTOK)
 		goto out;
 	}
 
@@ -837,7 +837,7 @@ magic_skip:
      * Get any {Content-Disposition} given in buffer.
      */
     if (magic && *cp == '{') {
-        ct->c_dispo = ++cp;
+        ++cp;
 	for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
 	    if (*dp == '}')
 		break;
@@ -849,10 +849,10 @@ magic_skip:
 	
 	c = *dp;
 	*dp = '\0';
-	if (*ct->c_dispo)
-	    ct->c_dispo = concat (ct->c_dispo, "\n", NULL);
-	else
-	    ct->c_dispo = NULL;
+
+	if (get_dispo(cp, ct, 1) != OK)
+	    return NOTOK;
+
 	*dp++ = c;
 	cp = dp;
 
@@ -936,15 +936,20 @@ magic_skip:
  * get_ctinfo().
  */
 static int
-get_dispo (char *cp, CT ct)
+get_dispo (char *cp, CT ct, int buildflag)
 {
-    char *dp;
+    char *dp, *dispoheader;
     char c;
     int status;
 
-    /* Save the whole copy of the Content-Disposition header */
+    /*
+     * Save the whole copy of the Content-Disposition header, unless we're
+     * processing a mhbuild directive.  A NULL c_dispo will be a flag to
+     * mhbuild that the disposition header needs to be generated at that
+     * time.
+     */
 
-    cp = ct->c_dispo = add(cp, NULL);
+    dispoheader = cp = add(cp, NULL);
 
     while (isspace ((unsigned char) *cp))	/* trim leading spaces */
 	cp++;
@@ -962,8 +967,11 @@ get_dispo (char *cp, CT ct)
     if (debugsw)
 	fprintf (stderr, "%s: %s\n", DISPO_FIELD, cp);
 
-    if (*cp == '(' && get_comment (ct->c_file, DISPO_FIELD, &cp, NULL) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, DISPO_FIELD, &cp, NULL) ==
+    							NOTOK) {
+	free(dispoheader);
 	return NOTOK;
+    }
 
     for (dp = cp; istoken (*dp); dp++)
 	continue;
@@ -977,14 +985,20 @@ get_dispo (char *cp, CT ct)
     if ((status = parse_header_attrs (ct->c_file, DISPO_FIELD, &cp,
     				      &ct->c_dispo_first, &ct->c_dispo_last,
 				      NULL)) != OK) {
-	return status == NOTOK ? NOTOK : OK;
-    }
-
-    if (*cp) {
+	if (status == NOTOK) {
+	    free(dispoheader);
+	    return NOTOK;
+	}
+    } else if (*cp) {
 	advise (NULL,
 		"extraneous information in message %s's %s: field\n%*s(%s)",
                     ct->c_file, DISPO_FIELD, strlen(invo_name) + 2, "", cp);
     }
+
+    if (buildflag)
+    	free(dispoheader);
+    else
+	ct->c_dispo = dispoheader;
 
     return OK;
 }
@@ -3546,7 +3560,8 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 	    q += snprintf(q, sizeof(line) - (q - line), "%s*%d",
 	    		  params->pm_name, index);
 	} else {
-	    q = strncpy(q, params->pm_name, sizeof(line) - (q - line));
+	    strncpy(q, params->pm_name, sizeof(line) - (q - line));
+	    q += strlen(q);
 	}
 
 	if (eightbit)

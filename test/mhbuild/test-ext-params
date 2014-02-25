@@ -26,6 +26,7 @@ expected="$MH_TEST_DIR/$$.expected"
 cat > "$draft" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
+Fcc: +outbox
 ------
 This is a test message
 #image/jpeg {attachment; filename="tïny.jpg"} ${srcdir}/test/mhbuild/tiny.jpg
@@ -38,12 +39,21 @@ To: Mr Test <mrtest@example.com>
 cc:
 Fcc: +outbox
 MIME-Version: 1.0
-Content-Type: image/jpeg; name="tiny.jpg"
-Content-Description: tiny.jpg
-Content-Disposition: attachment; filename="tiny.jpg"
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test message
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg
+Content-Disposition: attachment; filename*=UTF-8''t%C3%AFny.jpg
 Content-Transfer-Encoding: base64
 
 /9g=
+
+------- =_aaaaaaaaaa0--
 EOF
 
 check "$draft" "$expected"

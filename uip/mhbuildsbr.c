@@ -1650,7 +1650,6 @@ build_headers (CT ct)
 	vp = concat (" ", ct->c_id, NULL);
 	add_header (ct, np, vp);
     }
-
     /*
      * output the Content-Description
      */
@@ -1661,12 +1660,22 @@ build_headers (CT ct)
     }
 
     /*
-     * output the Content-Disposition
+     * output the Content-Disposition.  If it's NULL but c_dispo_type is
+     * set, then we need to build it.
      */
     if (ct->c_dispo) {
 	np = add (DISPO_FIELD, NULL);
 	vp = concat (" ", ct->c_dispo, NULL);
 	add_header (ct, np, vp);
+    } else if (ct->c_dispo_type) {
+	vp = concat (" ", ct->c_dispo_type, NULL);
+	len = strlen(DISPO_FIELD) + strlen(vp) + 1;
+	np = output_params(len, ct->c_dispo_first, NULL);
+	vp = add(np, vp);
+	vp = add("\n", vp);
+	if (np)
+	    free(np);
+	add_header (ct, getcpy(DISPO_FIELD), vp);
     }
 
 skip_headers:
