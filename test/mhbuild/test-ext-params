@@ -1,0 +1,51 @@
+#!/bin/sh
+######################################################
+#
+# Test the creation of RFC 2231 encoded parameters
+#
+######################################################
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+LC_ALL=en_US.UTF-8; export LC_ALL
+
+draft="$MH_TEST_DIR/$$.draft"
+expected="$MH_TEST_DIR/$$.expected"
+
+#
+# Try out a draft with some 8-bit encoded parameters
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+------
+This is a test message
+#image/jpeg {attachment; filename="tïny.jpg"} ${srcdir}/test/mhbuild/tiny.jpg
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: image/jpeg; name="tiny.jpg"
+Content-Description: tiny.jpg
+Content-Disposition: attachment; filename="tiny.jpg"
+Content-Transfer-Encoding: base64
+
+/9g=
+EOF
+
+check "$draft" "$expected"
+
+exit ${failed:-0}

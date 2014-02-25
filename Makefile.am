@@ -67,6 +67,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/manpages/test-manpages \
 	test/mhbuild/test-attach \
 	test/mhbuild/test-cte \
+	test/mhbuild/test-ext-params \
 	test/mhbuild/test-forw test/mhbuild/test-header-encode \
 	test/mhbuild/test-utf8-body \
 	test/mhfixmsg/test-mhfixmsg \
