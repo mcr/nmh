@@ -100,4 +100,46 @@ EOF
 
 check "$draft" "$expected"
 
+#
+# Try out both!
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+This is a test message
+#image/jpeg {attachment; filename="This is an ëxample of a rather long filename that is longer than would fit on a normal line.jpg"} \
+${srcdir}/test/mhbuild/tiny.jpg
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test message
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg
+Content-Disposition: attachment;
+	filename*0="This is an example of a rather long filename that is lon";
+	filename*1="ger than would fit on a normal line.jpg"
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
 exit ${failed:-0}
