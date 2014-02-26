@@ -46,7 +46,8 @@
 
 #define isparamencode(c)  (!isascii((unsigned char) c) || \
 			   iscntrl((unsigned char) c) || istspecial(c) || \
-			   (c) == '*' || (c) == '\'' || (c) == '%')
+			   (c) == ' ' || (c) == '*' || (c) == '\'' || \
+			   (c) == '%')
 
 #define	MAXTEXTPERLN 78
 #define	MAXLONGLINE 998
