@@ -3463,7 +3463,7 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 
 	while (curlen + 8 > CPERLIN - 1) {
 	    int curvallen = strlen(params->pm_value + valoff) -
-	    			(initialwidth + curlen - (CPERLIN - 1));
+	    			(curlen + 8 - (CPERLIN - 1));
 
 	    *q++ = ';';
 	    *q++ = '\n';
