@@ -104,6 +104,8 @@ free_content (CT ct)
 	free (ct->c_descr);
     if (ct->c_dispo)
 	free (ct->c_dispo);
+    if (ct->c_dispo_type)
+	free (ct->c_dispo_type);
     free_pmlist (ct->c_dispo_first);
 
     if (ct->c_file) {
@@ -152,7 +154,6 @@ free_header (CT ct)
 void
 free_ctinfo (CT ct)
 {
-    char **ap;
     CI ci;
 
     ci = &ct->c_ctinfo;
