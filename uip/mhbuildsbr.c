@@ -78,7 +78,7 @@ static int user_content (FILE *, char *, CT *);
 static void set_id (CT, int);
 static int compose_content (CT);
 static int scan_content (CT, size_t);
-static int build_headers (CT);
+static int build_headers (CT, int);
 static char *calculate_digest (CT, int);
 
 
@@ -462,7 +462,7 @@ finish_field:
 
     /* Build the rest of the header field structures */
     if (! dist)
-	build_headers (ct);
+	build_headers (ct, header_encoding);
 
     return ct;
 }
@@ -1523,7 +1523,7 @@ scan_content (CT ct, size_t maxunencoded)
  */
 
 static int
-build_headers (CT ct)
+build_headers (CT ct, int header_encoding)
 {
     int	cc, mailbody, extbody, len;
     char *np, *vp, buffer[BUFSIZ];
@@ -1656,6 +1656,8 @@ build_headers (CT ct)
     if (ct->c_descr) {
 	np = add (DESCR_FIELD, NULL);
 	vp = concat (" ", ct->c_descr, NULL);
+	if (encode_rfc2047(DESCR_FIELD, &vp, header_encoding, NULL))
+	    adios(NULL, "Unable to encode %s header", DESCR_FIELD);
 	add_header (ct, np, vp);
     }
 
@@ -1759,7 +1761,7 @@ skip_headers:
 	    CT p;
 
 	    p = part->mp_part;
-	    build_headers (p);
+	    build_headers (p, header_encoding);
 	}
     }
 	break;
@@ -1769,7 +1771,7 @@ skip_headers:
 	    struct exbody *e;
 
 	    e = (struct exbody *) ct->c_ctparams;
-	    build_headers (e->eb_content);
+	    build_headers (e->eb_content, header_encoding);
 	}
 	break;
 
@@ -1964,11 +1966,10 @@ setup_attach_content(CT ct, char *filename)
 
     if (strcasecmp(ct->c_ctinfo.ci_type, "text") == 0 &&
 	strcasecmp(ct->c_ctinfo.ci_subtype, "calendar") == 0) {
-	ct->c_dispo = getcpy("inline; filename=\"");
+	ct->c_dispo_type = getcpy("inline");
     } else {
-    	ct->c_dispo = getcpy("attachment; filename=\"");
+    	ct->c_dispo_type = getcpy("attachment");
     }
 
-    ct->c_dispo = add(simplename, ct->c_dispo);
-    ct->c_dispo = add("\"\n", ct->c_dispo);
+    add_param(&ct->c_dispo_first, &ct->c_dispo_last, "filename", simplename);
 }
