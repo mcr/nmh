@@ -135,7 +135,7 @@ static int readDigest (CT, char *);
 static int get_leftover_mp_content (CT, int);
 static int InitURL (CT);
 static int openURL (CT, char **);
-static size_t param_len(PM, int, size_t, int *);
+static size_t param_len(PM, int, size_t, int *, int *, size_t *);
 static size_t encode_param(PM, char *, size_t, size_t, size_t, int);
 static size_t normal_param(PM, char *, size_t, size_t, size_t);
 static int get_dispo (char *, CT, int);
@@ -3437,8 +3437,8 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 {
     char *paramout = NULL;
     char line[CPERLIN * 2], *q;
-    int curlen, index, eightbit, encode, i;
-    size_t valoff;
+    int curlen, index, cont, encode, i;
+    size_t valoff, numchars;
 
     while (params != NULL) {
 	encode = 0;
@@ -3453,7 +3453,7 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 	    return NULL;
 	}
 
-	curlen = param_len(params, index, valoff, &eightbit);
+	curlen = param_len(params, index, valoff, &encode, &cont, &numchars);
 
 	/*
 	 * Loop until we get a parameter that fits within a line.  We
@@ -3461,21 +3461,10 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 	 * on that.
 	 */
 
-	while (curlen + 8 > CPERLIN - 1) {
-	    int curvallen = strlen(params->pm_value + valoff) -
-	    			(curlen + 8 - (CPERLIN - 1));
-
+	while (cont) {
 	    *q++ = ';';
 	    *q++ = '\n';
 	    *q++ = '\t';
-
-	    /*
-	     * curvallen holds how many characters we take from this
-	     * current value.  Make sure it's at least 1.
-	     */
-
-	    if (curvallen < 1)
-	    	curvallen = 1;
 
 	    /*
 	     * At this point we're definitely continuing the line, so
@@ -3486,27 +3475,15 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 			  params->pm_name, index);
 
 	    /*
-	     * If eightbit was set and we're on index 0, we need to include
-	     * the character set and encode the first section.  Otherwise
-	     * only encode if the section we're on contains an 8bit character.
-	     */
-
-	    if (eightbit && index == 0)
-	    	encode = 1;
-	    else if (eightbit && contains8bit(params->pm_value + valoff,
-	    				params->pm_value + valoff + curvallen))
-		encode = 1;
-
-	    /*
 	     * Both of these functions do a NUL termination
 	     */
 
 	    if (encode)
 		i = encode_param(params, q, sizeof(line) - (q - line),
-				 curvallen, valoff, index);
+				 numchars, valoff, index);
 	    else
 		i = normal_param(params, q, sizeof(line) - (q - line),
-				 curvallen, valoff);
+				 numchars, valoff);
 
 	    if (i == 0) {
 		if (paramout)
@@ -3514,9 +3491,10 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 		return NULL;
 	    }
 
-	    valoff += curvallen;
+	    valoff += numchars;
 	    index++;
-	    curlen = param_len(params, index, valoff, &eightbit);
+	    curlen = param_len(params, index, valoff, &encode, &cont,
+			       &numchars);
 	    q = line;
 
 	    /*
@@ -3564,7 +3542,7 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 	    q += strlen(q);
 	}
 
-	if (eightbit)
+	if (encode)
 	    i = encode_param(params, q, sizeof(line) - (q - line),
 	    		     strlen(params->pm_value + valoff), valoff, index);
 	else
@@ -3590,37 +3568,82 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 }
 
 /*
- * Calculate the size of a parameter.  Include any necessary encoding.
- * Start the length computation from where "offset" is marked.
+ * Calculate the size of a parameter.
+ *
+ * Arguments include
+ *
+ * pm		- The parameter being output
+ * index	- If continuing the parameter, the index of the section
+ *		  we're on.
+ * valueoff	- The current offset into the parameter value that we're
+ *		  working on (previous sections have consumed valueoff bytes).
+ * encode	- Set if we should perform encoding on this parameter section
+ *		  (given that we're consuming bytesfit bytes).
+ * cont		- Set if the remaining data in value will not fit on a single
+ *		  line and will need to be continued.
+ * bytesfit	- The number of bytes that we can consume from the parameter
+ *		  value and still fit on a completely new line.  The
+ *		  calculation assumes the new line starts with a tab,
+ *		  includes the parameter name and any encoding, and fits
+ *		  within CPERLIN bytes.  Will always be at least 1.
  */
 
 static size_t
-param_len(PM pm, int index, size_t valueoff, int *eightbit)
+param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
+	  size_t *bytesfit)
 {
-    char *start = pm->pm_value + valueoff, *p;
-    size_t len = 0;
+    char *start = pm->pm_value + valueoff, *p, indexchar[32];
+    size_t len = 0, fit = 0;
+    int fitlimit = 0, eightbit, maxfit;
+
+    *encode = 0;
 
     /*
-     * Add up the length.  First, start with the parameter name, and include
-     * the equal sign.
+     * Add up the length.  First, start with the parameter name.
      */
 
-    len += strlen(pm->pm_name) + 1;
+    len = strlen(pm->pm_name);
 
     /*
-     * Scan the parameter value.  If we find an 8-bit character, then
-     * we need to compute the locale name for the length.
+     * Scan the parameter value and see if we need to do encoding for this
+     * section.
      */
 
-    *eightbit = contains8bit(start, NULL);
+    eightbit = contains8bit(start, NULL);
 
     /*
-     * If we've got 8-bit character, put the locale on the front (if we're
-     * doing part 0.  Also compute the length of the string based on the
-     * encoding we need to do.
+     * Determine if we need to encode this section.  Encoding is necessary if:
+     *
+     * - There are any 8-bit characters at all and we're on the first
+     *   section.
+     * - There are 8-bit characters within N bytes of our section start.
+     *   N is calculated based on the number of bytes it would take to
+     *   reach CPERLIN - 1.  Specifically:
+     *		8 (starting tab) +
+     *		strlen(param name) +
+     *		4 ('* for section marker, '=', opening/closing '"')
+     *		strlen (index)
+     *	is the number of bytes used by everything that isn't part of the
+     *  value.  So that gets subtracted from CPERLIN - 1.
      */
 
-    if (*eightbit) {
+    snprintf(indexchar, sizeof(indexchar), "%d", index);
+    maxfit = CPERLIN - (13 + len + strlen(indexchar));
+    if ((eightbit && index == 0) || contains8bit(start, start + maxfit)) {
+	*encode = 1;
+    }
+
+    len++;	/* Add in equal sign */
+
+    if (*encode) {
+	/*
+	 * We're using maxfit as a marker for how many characters we can
+	 * fit into the line.  Bump it by two because we're not using quotes
+	 * when encoding.
+	 */
+
+	maxfit += 2;
+
 	/*
 	 * If we don't have a charset or language tag in this parameter,
 	 * add them now.
@@ -3631,24 +3654,31 @@ param_len(PM pm, int index, size_t valueoff, int *eightbit)
 	if (! pm->pm_lang)
 	    pm->pm_lang = getcpy(NULL);	/* Default to a blank lang tag */
 
-	len++;		/* For the encoding we need to do */
+	len++;		/* For the encoding marker */
 	if (index == 0) {
 	    len += strlen(pm->pm_charset) + strlen(pm->pm_lang) + 2;
 	} else {
 	    /*
 	     * We know we definitely need to include an index.
-	     * This will get the length wrong if we have more than 99
-	     * sections. I can live with that.
 	     */
-	    len += 2;	/* *<N> */
-	    if (index > 9)
-		len++;
+	    len += strlen(indexchar);
 	}
 	for (p = start; *p != '\0'; p++) {
-	    if (isparamencode(*p))
+	    if (isparamencode(*p)) {
 		len += 3;
-	    else
+		maxfit -= 3;
+	    } else {
 	    	len++;
+		maxfit--;
+	    }
+	    /*
+	     * Just so there's no confusion: maxfit is counting OUTPUT
+	     * characters (post-encoding).  fit is counting INPUT characters.
+	     */
+	    if (! fitlimit && maxfit >= 0)
+		fit++;
+	    else if (! fitlimit)
+		fitlimit++;
 	}
     } else {
     	/*
@@ -3661,14 +3691,26 @@ param_len(PM pm, int index, size_t valueoff, int *eightbit)
 	    case '"':
 	    case '\\':
 	    	len++;
+		maxfit--;
 	    /* FALL THROUGH */
 	    default:
 		len++;
+		maxfit--;
 	    }
+	    if (! fitlimit && maxfit >= 0)
+		fit++;
+	    else if (! fitlimit)
+		fitlimit++;
 	}
 
 	len += 2;
     }
+
+    if (fit < 1)
+	fit = 1;
+
+    *cont = fitlimit;
+    *bytesfit = fit;
 
     return len;
 }
