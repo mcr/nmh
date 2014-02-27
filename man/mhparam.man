@@ -1,4 +1,4 @@
-.TH MHPARAM %manext1% "November 6, 2012" "%nmhversion%"
+.TH MHPARAM %manext1% "February 26, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -52,7 +52,7 @@ and
 .I libdir
 install directories, all
 .I proc
-settings, and the locking method with which the
+settings, and the default locking method with which the
 .B nmh
 installation was configured.  The
 .B \-debug
@@ -91,8 +91,11 @@ context: context
 % mhparam libdir
 %libdir%
 
-% mhparam lockmethod
+% mhparam datalocking
 fcntl
+
+% mhparam spoollocking
+flock
 .fi
 .RE
 .PP

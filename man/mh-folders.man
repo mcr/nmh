@@ -1,4 +1,4 @@
-.TH MH-FOLDERS %manext5% "February 23, 2014" "%nmhversion%"
+.TH MH-FOLDERS %manext5% "February 26, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -128,10 +128,24 @@ outside of
 that accesses these files must be sure to lock them using the same
 locking method as
 .BR nmh .
-The locking method is selected when
+The default data locking method is selected when
 .B nmh
 is configured and can be accessed as a string using
-.BR "mhparam lockmethod" .
+.BR "mhparam datalocking" .
+By default, fcntl locking is used, but this may be overridden with
+the
+.B datalocking
+profile entry.
+.PP
+A second, possibly different, locking method is used by
+.BR inc (1)
+when accessing the user's mail spool file or by
+.B nmh
+programs that open any mbox file.  This locking method is selected
+when
+.B nmh
+is configured and can be accessed as a string using
+.BR "mhparam spoollocking" .
 By default, kernel-level locking is used if appropriate for the
 platform, and it is for popular platforms.  That default should also
 be the same as used by the

@@ -33,19 +33,9 @@ extern char *mhetcdir;
 
 char *sbackup = BACKUP_PREFIX;
 
-char *lockmethod =
-#if defined FCNTL_LOCKING
-    "fcntl"
-#elif defined FLOCK_LOCKING
-    "flock"
-#elif defined LOCKF_LOCKING
-    "lockf"
-#elif defined DOT_LOCKING
-    "dot"
-#else
-    "none"
-#endif
-    ;
+char *datalocking = "fcntl";
+
+extern char *spoollocking;
 
 char *sasl =
 #ifdef CYRUS_SASL
@@ -109,7 +99,8 @@ static struct proc procs [] = {
      { "etcdir",           &mhetcdir },
      { "libdir",           &mhlibdir },
      { "sbackup",          &sbackup },
-     { "lockmethod",       &lockmethod },
+     { "datalocking",      &datalocking },
+     { "spoollocking",     &spoollocking },
      { "sasl",             &sasl },
      { "tls",              &tls },
      { NULL,               NULL },
@@ -191,6 +182,9 @@ main(int argc, char **argv)
     } else if (debug) {
 	struct proc *ps;
 
+	/* Need to see if datalocking was set in profile. */
+	if ((cp = context_find("datalocking"))) { datalocking = cp; }
+
 	/*
 	 * Print the current value of everything in
 	 * procs array.  This will show their current
@@ -218,7 +212,7 @@ main(int argc, char **argv)
 	        missed++;
 	}
     }
-    
+
     done (missed);
     return 1;
 }

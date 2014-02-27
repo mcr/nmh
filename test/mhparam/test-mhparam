@@ -100,6 +100,8 @@ $bindir/whatnow
 $bindir/whom
 $sysconfdir
 ${MH_LIB_DIR}
+fcntl
+${default_locking}
 EOF
 
 run_prog mhparam -nocomponent \
@@ -125,7 +127,9 @@ vmhproc \
 whatnowproc \
 whomproc \
 etcdir \
-libdir >$actual 2>&1
+libdir \
+datalocking \
+spoollocking >$actual 2>&1
 
 check $expected $actual
 

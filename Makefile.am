@@ -38,6 +38,7 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
 		    auxexecdir="$(auxexecdir)" bindir="$(bindir)" \
 		    mandir="$(mandir)" sysconfdir="$(sysconfdir)" \
 		    supported_locks="$(supported_locks)" \
+		    default_locking="${default_locking}" \
 		    MULTIBYTE_ENABLED=$(MULTIBYTE_ENABLED) \
 		    ICONV_ENABLED=$(ICONV_ENABLED) \
 		    $(TESTS_SHELL) ## Keep at end of TESTS_ENVIRONMENT.
