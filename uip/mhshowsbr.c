@@ -480,7 +480,7 @@ show_text (CT ct, int serial, int alternate)
      * if it is not a text part of a multipart/alternative
      */
     if (!alternate || ct->c_subtype == TEXT_PLAIN) {
-	snprintf (buffer, sizeof(buffer), "%%p%s '%%F'", progsw ? progsw :
+	snprintf (buffer, sizeof(buffer), "%%p%s %%F", progsw ? progsw :
 		moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
 	cp = (ct->c_showproc = add (buffer, NULL));
 	return show_content_aux (ct, serial, alternate, cp, NULL);
@@ -730,7 +730,7 @@ show_message_rfc822 (CT ct, int serial, int alternate)
 
     /* default method for message/rfc822 */
     if (ct->c_subtype == MESSAGE_RFC822) {
-	cp = (ct->c_showproc = add ("%pshow -file '%F'", NULL));
+	cp = (ct->c_showproc = add ("%pecho -file %F", NULL));
 	return show_content_aux (ct, serial, alternate, cp, NULL);
     }
 
@@ -841,10 +841,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		    for (part = m->mp_parts; part; part = part->mp_next) {
 			p = part->mp_part;
 
-			/* Always quote the filename.  I'm not sure if that's
-			   right.  And maybe not necessary:  is this always
-			   a temp file?  If so, the quoting is harmless. */
-			snprintf (bp, buflen, "%s'%s'", s, p->c_storage);
+			snprintf (bp, buflen, "%s%s", s, p->c_storage);
 			len = strlen (bp);
 			bp += len;
 			buflen -= len;
@@ -852,23 +849,12 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		    }
 		} else {
 		    /* insert filename containing content */
-		    if (bp > buffer  &&  *(bp-1) == '\'') {
-			/* Don't quote filename if it's already quoted. */
-			/* If there isn't a matching close quote, bail
-			   out. */
-			if (*(cp+1) != '\'') {
-			    adios(NULL, "%%f/%%F not properly escaped: %s%s\n",
-				  buffer, cp);
-			}
-			snprintf (bp, buflen, "%s", file);
-		    } else {
-			if (*(cp+1) != '\0'  &&  *(cp+1) == '\'') {
-			    adios(NULL, "%%f/%%F not properly escaped: %s%s\n",
-				  buffer, cp);
-			}
-			snprintf (bp, buflen, "'%s'", file);
-		    }
+		    snprintf (bp, buflen, "%s", file);
 
+		    /*
+		     * Old comments below are left here for posterity.
+		     * This was/is tricky.
+		     */
 		    /* since we've quoted the file argument, set things up
 		     * to look past it, to avoid problems with the quoting
 		     * logic below.  (I know, I should figure out what's
@@ -886,21 +872,12 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		     * code below.
 		     * The fix was to always quote the filename.  But
 		     * that broke '%F' because it expanded to ''filename''.
-		     * That's why I added the condition above to not
-		     * quote if the escape was wrapped with single
-		     * quotes.  It would be (much) better to rely on
-		     * the quoting code below, but until I understand
-		     * what is wrong with it, I won't do that.
 		     */
-		    len = strlen(bp);
-		    bp += len;
-		    buflen -= len;
+		    /*
+		     * Old comments above are left here for posterity.
+		     * The quoting below should work properly now.
+		     */
 		}
-
-		/* set our starting pointer back to bp, to avoid
-		 * requoting the filenames we just added
-		 */
-                pp = bp;
 		break;
 
 	    case 'p':
@@ -966,45 +943,86 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 	    len = strlen (bp);
 	    bp += len;
 	    buflen -= len;
+	    *bp = '\0';
 
 	    /* Did we actually insert something? */
 	    if (bp != pp) {
 		/* Insert single quote if not inside quotes already */
 		if (!quoted && buflen) {
 		    len = strlen (pp);
-		    memmove (pp + 1, pp, len);
+		    memmove (pp + 1, pp, len+1);
 		    *pp++ = '\'';
 		    buflen--;
 		    bp++;
+		    quoted = 1;
 		}
 		/* Escape existing quotes */
 		while ((pp = strchr (pp, '\'')) && buflen > 3) {
 		    len = strlen (pp++);
-		    memmove (pp + 3, pp, len);
-		    *pp++ = '\\';
-		    *pp++ = '\'';
-		    *pp++ = '\'';
-		    buflen -= 3;
-		    bp += 3;
+		    if (quoted) {
+			/* Quoted.  Let this quote close that quoting.
+			   Insert an escaped quote to replace it and
+			   another quote to reopen quoting, which will be
+			   closed below. */
+			memmove (pp + 2, pp, len);
+			*pp++ = '\\';
+			*pp++ = '\'';
+			buflen -= 2;
+			bp += 2;
+			quoted = 0;
+		    } else {
+			/* Not quoted.  This should not be reached with
+			   the current code, but handle the condition
+			   in case the code changes.  Just escape the
+			   quote. */
+			memmove (pp, pp-1, len+1);
+			*(pp++-1) = '\\';
+			buflen -= 1;
+			bp += 1;
+		    }
 		}
 		/* If pp is still set, that means we ran out of space. */
 		if (pp)
 		    buflen = 0;
-		if (!quoted && buflen) {
-		    *bp++ = '\'';
-		    *bp = '\0';
-		    buflen--;
+		/* Close quoting. */
+		if (quoted && buflen) {
+		    /* See if we need to close the quote by looking
+		       for an odd number of unescaped close quotes in
+		       the remainder of the display string. */
+		    int found_quote = 0, escaped = 0;
+		    char *c;
+
+		    for (c = cp+1; *c; ++c) {
+			if (*c == '\\') {
+			    escaped = ! escaped;
+			} else {
+			    if (escaped) {
+				escaped = 0;
+			    } else {
+				if (*c == '\'') {
+				    found_quote = ! found_quote;
+				}
+			    }
+			}
+		    }
+		    if (! found_quote) {
+			*bp++ = '\'';
+			buflen--;
+		    }
+
+		    quoted = 0;
 		}
 	    }
 	} else {
 raw:
 	    *bp++ = *cp;
-	    *bp = '\0';
 	    buflen--;
 
 	    if (*cp == '\'')
 		quoted = !quoted;
 	}
+
+	*bp = '\0';
     }
 
     if (buflen <= 0 ||
