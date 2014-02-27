@@ -89,8 +89,8 @@ This is a test message
 ------- =_aaaaaaaaaa0
 Content-Type: image/jpeg
 Content-Disposition: attachment;
-	filename*0="This is an example of a rather long filename that is lon";
-	filename*1="ger than would fit on a normal line.jpg"
+	filename*0="This is an example of a rather long filename that is lo";
+	filename*1="nger than would fit on a normal line.jpg"
 Content-Transfer-Encoding: base64
 
 /9g=
@@ -131,8 +131,9 @@ This is a test message
 ------- =_aaaaaaaaaa0
 Content-Type: image/jpeg
 Content-Disposition: attachment;
-	filename*0="This is an example of a rather long filename that is lon";
-	filename*1="ger than would fit on a normal line.jpg"
+	filename*0*=UTF-8''This%20is%20an%20%C3%ABxample%20of%20a%20rather;
+	filename*1=" long filename that is longer than would fit on a norma";
+	filename*2="l line.jpg"
 Content-Transfer-Encoding: base64
 
 /9g=

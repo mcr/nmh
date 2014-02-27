@@ -3618,17 +3618,17 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
      *   section.
      * - There are 8-bit characters within N bytes of our section start.
      *   N is calculated based on the number of bytes it would take to
-     *   reach CPERLIN - 1.  Specifically:
+     *   reach CPERLIN.  Specifically:
      *		8 (starting tab) +
      *		strlen(param name) +
      *		4 ('* for section marker, '=', opening/closing '"')
      *		strlen (index)
      *	is the number of bytes used by everything that isn't part of the
-     *  value.  So that gets subtracted from CPERLIN - 1.
+     *  value.  So that gets subtracted from CPERLIN.
      */
 
     snprintf(indexchar, sizeof(indexchar), "%d", index);
-    maxfit = CPERLIN - (13 + len + strlen(indexchar));
+    maxfit = CPERLIN - (12 + len + strlen(indexchar));
     if ((eightbit && index == 0) || contains8bit(start, start + maxfit)) {
 	*encode = 1;
     }
@@ -3655,11 +3655,15 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
 	    pm->pm_lang = getcpy(NULL);	/* Default to a blank lang tag */
 
 	len++;		/* For the encoding marker */
+	maxfit--;
 	if (index == 0) {
-	    len += strlen(pm->pm_charset) + strlen(pm->pm_lang) + 2;
+	    int enclen = strlen(pm->pm_charset) + strlen(pm->pm_lang) + 2;
+	    len += enclen;
+	    maxfit-= enclen;
 	} else {
 	    /*
-	     * We know we definitely need to include an index.
+	     * We know we definitely need to include an index.  maxfit already
+	     * includes the section marker.
 	     */
 	    len += strlen(indexchar);
 	}
