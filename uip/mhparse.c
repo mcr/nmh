@@ -3899,7 +3899,7 @@ get_param(PM first, const char *name, char replace, int fetchonly)
 		q = convbuf;
 
 		while (inbytes) {
-		    if (iconv(cd, &p, &inbytes, &q, &outbytes) == -1) {
+		    if (iconv(cd, &p, &inbytes, &q, &outbytes) == (size_t)-1) {
 			if (errno != EILSEQ) {
 			    iconv_close(cd);
 			    goto noconvert;
