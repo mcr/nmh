@@ -1528,7 +1528,6 @@ build_headers (CT ct, int header_encoding)
     int	cc, mailbody, extbody, len;
     char *np, *vp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
-    PM pm;
 
     /*
      * If message is type multipart, then add the multipart
@@ -1568,59 +1567,16 @@ build_headers (CT ct, int header_encoding)
      * Append the attribute/value pairs to
      * the end of the Content-Type line.
      */
-    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
-	if (mailbody && !strcasecmp (pm->pm_name, "body"))
-	    continue;
 
-	vp = add (";", vp);
-	len++;
+    if (ci->ci_first_pm) {
+	char *s = output_params(len, ci->ci_first_pm, &len, mailbody);
 
-	/*
-	 * According to RFC 2017, if we have a URL longer than 40 characters
-	 * we have to break it across multiple lines
-	 */
+	if (!s)
+	    adios(NULL, "Internal error: failed outputting Content-Type "
+	    	  "parameters");
 
-	if (extbody && strcasecmp (pm->pm_name, "url") == 0) {
-	    char *value = pm->pm_value;
-
-	    /* 7 here refers to " url=\"\"" */
-	    if (len + 1 + (cc = (min(MAXURLTOKEN, strlen(value)) + 7)) >=
-	    							CPERLIN) {
-	    	vp = add ("\n\t", vp);
-		len = 8;
-	    } else {
-	    	vp = add (" ", vp);
-		len++;
-	    }
-
-	    vp = add ("url=\"", vp);
-	    len += 5;
-
-	    while (strlen(value) > MAXURLTOKEN) {
-		strncpy(buffer, value, MAXURLTOKEN);
-		buffer[MAXURLTOKEN] = '\0';
-		vp = add (buffer, vp);
-		vp = add ("\n\t", vp);
-		value += MAXURLTOKEN;
-		len = 8;
-	    }
-
-	    vp = add (value, vp);
-	    vp = add ("\"", vp);
-	    len += strlen(value) + 1;
-	    continue;
-	}
-
-	snprintf (buffer, sizeof(buffer), "%s=\"%s\"", pm->pm_name, pm->pm_value);
-	if (len + 1 + (cc = strlen (buffer)) >= CPERLIN) {
-	    vp = add ("\n\t", vp);
-	    len = 8;
-	} else {
-	    vp = add (" ", vp);
-	    len++;
-	}
-	vp = add (buffer, vp);
-	len += cc;
+	vp = add (s, vp);
+	free(s);
     }
 
     /*
@@ -1672,7 +1628,7 @@ build_headers (CT ct, int header_encoding)
     } else if (ct->c_dispo_type) {
 	vp = concat (" ", ct->c_dispo_type, NULL);
 	len = strlen(DISPO_FIELD) + strlen(vp) + 1;
-	np = output_params(len, ct->c_dispo_first, NULL);
+	np = output_params(len, ct->c_dispo_first, NULL, 0);
 	vp = add(np, vp);
 	vp = add("\n", vp);
 	if (np)

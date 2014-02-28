@@ -16,6 +16,9 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#ifdef HAVE_ICONV
+# include <iconv.h>
+#endif /* HAVE_ICONV */
 
 
 extern int debugsw;
@@ -2298,7 +2301,7 @@ open7Bit (CT ct, char **file)
 	fprintf (ce->ce_fp, "%s: %s/%s", TYPE_FIELD, ci->ci_type, ci->ci_subtype);
 	len += strlen (TYPE_FIELD) + 2 + strlen (ci->ci_type)
 	    + 1 + strlen (ci->ci_subtype);
-	buffer = output_params(len, ci->ci_first_pm, &len);
+	buffer = output_params(len, ci->ci_first_pm, &len, 0);
 
 	if (buffer) {
 	    fputs (buffer, ce->ce_fp);
@@ -3433,7 +3436,7 @@ bad_quote:
  */
 
 char *
-output_params(size_t initialwidth, PM params, int *offsetout)
+output_params(size_t initialwidth, PM params, int *offsetout, int external)
 {
     char *paramout = NULL;
     char line[CPERLIN * 2], *q;
@@ -3445,6 +3448,9 @@ output_params(size_t initialwidth, PM params, int *offsetout)
 	index = 0;
 	valoff = 0;
 	q = line;
+
+	if (external && strcasecmp(params->pm_name, "body") == 0)
+	    continue;
 
 	if (strlen(params->pm_name) > CPERLIN) {
 	    advise(NULL, "Parameter name \"%s\" is too long", params->pm_name);
@@ -3848,4 +3854,109 @@ add_param(PM *first, PM *last, const char *name, const char *value)
     }
 
     return pm;
+}
+
+/*
+ * Retrieve a parameter value from a parameter linked list.  If the parameter
+ * value needs converted to the local character set, do that now.
+ */
+
+char *
+get_param(PM first, const char *name, char replace, int fetchonly)
+{
+    while (first != NULL) {
+	if (strcasecmp(name, first->pm_name) == 0) {
+	    if (fetchonly)
+	    	return first->pm_value;
+	    else {
+		char convbuf[BUFSIZ];
+		size_t inbytes, outbytes = sizeof(convbuf);
+#ifdef HAVE_ICONV
+		int utf8;
+		iconv_t cd;
+		ICONV_CONST char *p;
+		char *q;
+#endif /* HAVE_ICONV */
+		if (!first->pm_charset ||
+				check_charset(first->pm_charset,
+					      strlen(first->pm_charset))) {
+		    /*
+		     * No conversion necessary
+		     */
+		    return getcpy(first->pm_value);
+		}
+#ifdef HAVE_ICONV
+		utf8 = strcasecmp(first->pm_charset, "UTF-8") == 0;
+
+		cd = iconv_open(get_charset(), first->pm_charset);
+		if (cd == (iconv_t) -1) {
+		    goto noconvert;
+		}
+
+		inbytes = strlen(first->pm_value);
+		outbytes = sizeof(convbuf);
+		p = first->pm_value;
+		q = convbuf;
+
+		while (inbytes) {
+		    if (iconv(cd, &p, &inbytes, &q, &outbytes) == -1) {
+			if (errno != EILSEQ) {
+			    iconv_close(cd);
+			    goto noconvert;
+			}
+			/*
+			 * Reset shift state, substitute our character,
+			 * try to restart conversion.
+			 */
+			iconv(cd, NULL, NULL, &q, &outbytes);
+			if (outbytes == 0) {
+			    iconv_close(cd);
+			    goto noconvert;
+			}
+			*q++ = replace;
+			outbytes--;
+			if (outbytes == 0) {
+			    iconv_close(cd);
+			    goto noconvert;
+			}
+			if (utf8) {
+			    for (++p, --inbytes; inbytes > 0 &&
+			    		(((unsigned char) *q) & 0xc0) == 0x80;
+				 ++p, --inbytes)
+				continue;
+			} else {
+			    p++;
+			    inbytes--;
+			}
+		    }
+		}
+
+		iconv_close(cd);
+
+		if (outbytes == 0)
+		    q--;
+		*q = '\0';
+
+		return getcpy(convbuf);
+#endif /* HAVE_ICONV */
+noconvert:
+		for (p = first->pm_value, q = convbuf; *p && outbytes > 1;
+		     p++, q++, outbytes--) {
+		    if (isascii((unsigned char) p) &&
+					isprint((unsigned char) p))
+			*q = *p;
+		    else
+			*q = replace;
+		}
+
+		*q = '\0';
+
+		return getcpy(convbuf);
+	    }
+	}
+
+	first = first->pm_next;
+    }
+
+    return NULL;
 }

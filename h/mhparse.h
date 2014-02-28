@@ -376,11 +376,14 @@ int parse_header_attrs (const char *filename, const char *fieldname,
  * params	- Pointer to head of linked list of parameters.
  * offsetout	- The final line offset after all the parameters have been
  *		  output.  May be NULL.
- *
+ * external	- If set, outputting an external-body type and will not
+ *		  output a "body" parameter.
+ 
  * Returns a pointer to the resulting parameter string.  This string must
  * be free()'d by the caller.  Returns NULL on error.
  */
-char *output_params(size_t initialwidth, PM params, int *offsetout);
+char *output_params(size_t initialwidth, PM params, int *offsetout,
+		    int external);
 
 /*
  * Add a parameter to the parameter linked list.
@@ -395,5 +398,24 @@ char *output_params(size_t initialwidth, PM params, int *offsetout);
  * Returned allocated parameter element
  */
 PM add_param(PM *first, PM *last, const char *name, const char *value);
+
+/*
+ * Retrieve a parameter value from a parameter linked list.  Convert to the
+ * local character set if required.
+ *
+ * Arguments are:
+ *
+ * first	- Pointer to head of parameter linked list.
+ * name		- Name of parameter.
+ * replace	- If characters in the parameter list cannot be converted to
+ *		  the local character set, replace with this character.
+ * fetchonly	- If true, return pointer to original value, no conversion
+ *		  performed.
+ *
+ * Returns parameter value if found, NULL otherwise.  Memory must be free()'d
+ * unless fetchonly is set.
+ */
+
+char *get_param(PM first, const char *name, char replace, int fetchonly);
 
 extern int checksw;	/* Add Content-MD5 field */

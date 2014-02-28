@@ -101,17 +101,18 @@ EOF
 check "$draft" "$expected"
 
 #
-# Try out both!
+# Try out attach with a filename with 8-bit characters
 #
+
+cp "${srcdir}/test/mhbuild/tiny.jpg" "$MH_TEST_DIR/tïny.jpg"
 
 cat > "$draft" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
 Fcc: +outbox
+Attach: $MH_TEST_DIR/tïny.jpg
 ------
 This is a test message
-#image/jpeg {attachment; filename="This is an ëxample of a rather long filename that is longer than would fit on a normal line.jpg"} \
-${srcdir}/test/mhbuild/tiny.jpg
 EOF
 
 run_prog mhbuild "$draft"
@@ -129,11 +130,9 @@ Content-Type: text/plain; charset="us-ascii"
 This is a test message
 
 ------- =_aaaaaaaaaa0
-Content-Type: image/jpeg
-Content-Disposition: attachment;
-	filename*0*=UTF-8''This%20is%20an%20%C3%ABxample%20of%20a%20rather;
-	filename*1=" long filename that is longer than would fit on a norma";
-	filename*2="l line.jpg"
+Content-Type: image/jpeg; name*=UTF-8''t%C3%AFny.jpg
+Content-Description: =?UTF-8?B?dMOvbnkuanBn?=
+Content-Disposition: attachment; filename*=UTF-8''t%C3%AFny.jpg
 Content-Transfer-Encoding: base64
 
 /9g=
