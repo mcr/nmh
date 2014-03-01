@@ -28,7 +28,7 @@ Platform-specific notes follow.
 
 Run-time package requirements:
     ncurses-libs
-    libdb (only needed for slocal(1))
+    gdbm, db4, or libdb (only needed for slocal(1))
     readline (if you want readline support)
     cyrus-sasl-lib / libsasl2 (if configured with --with-cyrus-sasl)
     openssl-libs / libssl (if configured with --with-tls)
@@ -36,7 +36,7 @@ Run-time package requirements:
 Additional build-time package requirements:
     flex
     ncurses-devel / libncurses5-devel
-    libdb-devel / libdb-dev (only needed for slocal(1))
+    gdbm-devel, db4-devel or libdb-devel/libdb-dev (only needed for slocal(1))
     readline-devel (if you want readline support)
     cyrus-sasl-devel / libsasl2-dev (if configuring with --with-cyrus-sasl)
     openssl-devel / libssl-dev (if configuring with --with-tls)

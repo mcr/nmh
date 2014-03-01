@@ -43,7 +43,7 @@ Summary:       A capable mail handling system with a command line interface
 Group:         Applications/Internet
 License:       BSD
 URL:           http://savannah.nongnu.org/projects/nmh
-BuildRequires: gdbm-devel ncurses-devel
+BuildRequires: flex ncurses-devel
 %define        tarfile nmh-%rawversion.tar.gz
 Source0:       %tarfile
 Source1:       VERSION
