@@ -165,7 +165,6 @@ unsigned int bvector_at (bvector_t, size_t);
 const unsigned long *bvector_bits (bvector_t);
 size_t bvector_maxsize (bvector_t);
 
-struct svector;
 typedef struct svector *svector_t;
 
 svector_t svector_create (size_t);
@@ -176,7 +175,6 @@ char **svector_find(svector_t, const char *);
 char **svector_strs (svector_t);
 size_t svector_size (svector_t);
 
-struct ivector;
 typedef struct ivector *ivector_t;
 
 ivector_t ivector_create (size_t);
