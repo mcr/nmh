@@ -1,4 +1,4 @@
-.TH NMH %manext7% "February 21, 2014" "%nmhversion%"
+.TH NMH %manext7% "March 1, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -122,16 +122,28 @@ its
 .B attach
 and related responses, as described in its man page.
 .PP
+.B nmh
+command arguments are usually called
+.IR switches .
+Some switches have a corresponding \*(lq\-no\*(rq switch, which
+negates all previous occurrences of that switch on the command line.
+This allows a user to conveniently override, on the command line, a
+switch in their profile.  Switches may be abbreviated as long as there
+is no ambiguity with another switch of the same command.  To avoid
+ambiguity with any switches that may be added in the future, it is
+recommended that full switch names be used in durable code such as
+shell scripts, functions, and aliases.
+.PP
 All the
 .B nmh
-commands may be run with the single argument
+commands may be run with the single switch
 .BR \-help ,
-which causes them to print a list of the arguments they may be invoked
+which causes them to print a list of the switches they may be invoked
 with and then exit.
 .PP
 All the
 .B nmh
-commands may be run with the single argument
+commands may be run with the single switch
 .BR \-version ,
 which causes them to print the version number of the
 .B nmh
