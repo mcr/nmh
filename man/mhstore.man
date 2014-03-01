@@ -170,12 +170,7 @@ specified as the \*(lqfilename\*(rq attribute in the
 attribute in the \*(lqContent-Type\*(rq header for the content you are
 storing.  For security reasons, this filename will be ignored if it
 begins with the character '/', '.', '|', or '!', or if it contains the
-character '%'.  For the sake of security, this switch is not the
-default, and it is recommended that you do NOT put the
-.B \-auto
-switch in your
-.I \&.mh\(ruprofile
-file.
+character '%'.
 .PP
 If the
 .B \-auto
@@ -211,15 +206,17 @@ folder.
 If the formatting string consists solely of a \*(lq-\*(rq character,
 then the content is sent to the standard output.
 .PP
-If the formatting string starts with a '|', then the display string
-will represent a command for
+If the formatting string starts with a '|', then it represents
+a command for
 .B mhstore
 to execute which should
 ultimately store the content.  The content will be passed to the
 standard input of the command.  Before the command is executed,
 .B mhstore
 will change to the appropriate directory, and any
-escapes (given below) in the display string will be expanded.
+escapes (given below) in the formatting string will be expanded.
+The use of the \*(lq%a\*(rq sequence is not recommended because
+the user has no control over the Content-Type parameter data.
 .PP
 Otherwise the formatting string will represent a pathname in which
 to store the content.  If the formatting string starts with a '/',
@@ -237,7 +234,7 @@ listed above) content, the p-escapes are ignored.
 .RS 5
 .nf
 .ta \w'%P  'u
-%a	Parameters from Content-type  (only valid with command)
+%a	Parameters from Content-Type  (only valid with command)
 %m	Insert message number
 %P	Insert part number with leading dot
 %p	Insert part number without leading dot
@@ -505,7 +502,7 @@ nmh-private-cache: .cache
 .PP
 (which is the default value).
 .SS "User Environment"
-Because the display environment in which
+Because the environment in which
 .B mhstore
 operates may vary for
 different machines,
