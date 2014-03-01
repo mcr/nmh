@@ -58,6 +58,7 @@ cat >>"$MH" <<'EOF'
 mhshow-show-text/plain: echo %{charset}
 EOF
 
+
 # check expansion of %{charset} by itself
 msgfile=`mhpath new`
 cat >"$msgfile" <<'EOF'
@@ -85,6 +86,7 @@ EOF
 
 run_prog mhshow -nopause last >"$actual" 2>&1
 check "$expected" "$actual"
+
 
 # check expansion of empty %{charset} by itself
 msgfile=`mhpath new`
@@ -114,6 +116,7 @@ EOF
 run_prog mhshow -nopause last >"$actual" 2>&1
 check "$expected" "$actual"
 
+
 grep -v 'mhshow-show-text/plain:' "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
 cat >>"$MH" <<'EOF'
@@ -135,6 +138,7 @@ EOF
 run_prog mhshow -nopause prev >"$actual" 2>&1
 check "$expected" "$actual"
 
+
 # check expansion of empty embedded %{charset} with no text following
 cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
@@ -149,6 +153,7 @@ EOF
 
 run_prog mhshow -nopause last >"$actual" 2>&1
 check "$expected" "$actual"
+
 
 sed -e 's%\(mhshow-show-text/plain:.*\)%\1 file%' "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
@@ -168,6 +173,7 @@ EOF
 run_prog mhshow -nopause prev >"$actual" 2>&1
 check "$expected" "$actual"
 
+
 # check expansion of empty embedded %{charset} with text following
 cat >"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
@@ -182,6 +188,7 @@ EOF
 
 run_prog mhshow -nopause last >"$actual" 2>&1
 check "$expected" "$actual"
+
 
 sed -e 's/charset/method/g' "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
@@ -214,6 +221,7 @@ EOF
 run_prog mhshow -nopause last >"$actual" 2>&1
 check "$expected" "$actual"
 
+
 sed -e 's/method/unknown/g' "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
 
@@ -240,6 +248,39 @@ Subject: test display with unknown C-T parameter expansion
 MIME-Version: 1.0
 
 file
+EOF
+
+run_prog mhshow -nopause last >"$actual" 2>&1
+check "$expected" "$actual"
+
+
+grep -v '^mhshow-show-text/plain: ' "$MH" >>"$MH.new"
+mv -f "$MH.new" "$MH"
+cat >>"$MH" <<EOF
+mhshow-show-text/plain: true '%F' %F
+EOF
+
+# check parameter value quoting with text following
+msgfile=`mhpath new`
+cat >"$msgfile" <<'EOF'
+From: foo@example.edu
+To: bar@example.edu
+Subject: check parameter value quoting with text following
+MIME-Version: 1.0
+Content-Type: text/plain
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+This is a test.
+EOF
+
+cat >"$expected" <<'EOF'
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: check parameter value quoting with text following
+
+MIME-Version: 1.0
+
 EOF
 
 run_prog mhshow -nopause last >"$actual" 2>&1

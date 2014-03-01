@@ -1008,9 +1008,8 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		    if (! found_quote) {
 			*bp++ = '\'';
 			buflen--;
+			quoted = 0;
 		    }
-
-		    quoted = 0;
 		}
 	    }
 	} else {
