@@ -91,10 +91,6 @@ extern int nolist;
 extern int nomore;	/* flags for moreproc/header display */
 extern char *formsw;
 
-/* mhstoresbr.c */
-extern int autosw;
-extern char *cwd;	/* cache current working directory */
-
 /* mhmisc.c */
 extern int npart;
 extern int ntype;
@@ -136,7 +132,10 @@ void show_all_messages (CT *);
 void list_all_messages (CT *, int, int, int, int);
 
 /* mhstoresbr.c */
-void store_all_messages (CT *);
+typedef struct mhstoreinfo *mhstoreinfo_t;
+mhstoreinfo_t mhstoreinfo_create(CT *, char *, const char *, int, int);
+void mhstoreinfo_free(mhstoreinfo_t);
+void store_all_messages (mhstoreinfo_t);
 
 /* mhcachesbr.c */
 void cache_all_messages (CT *);
@@ -154,15 +153,17 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1;
+    int sizesw = 1, headsw = 1, autosw = 0;
     int msgnum, *icachesw;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
     char **arguments;
+    char *cwd;
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp = NULL;
     CT ct, *ctp;
     FILE *fp;
+    mhstoreinfo_t info;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -402,7 +403,7 @@ do_cache:
     /*
      * Cache the current directory before we do any chdirs()'s.
      */
-    cwd = getcpy (pwd());
+    cwd = add(pwd(), NULL);
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
@@ -561,8 +562,11 @@ do_cache:
     /*
      * Store the message content
      */
-    if (storesw)
-	store_all_messages (cts);
+    if (storesw) {
+	info = mhstoreinfo_create (cts, cwd, "always", autosw, verbosw);;
+	store_all_messages (info);
+	mhstoreinfo_free (info);
+    }
 
     /*
      * Cache the message content
@@ -580,7 +584,7 @@ do_cache:
     for (ctp = cts; *ctp; ctp++)
 	free_content (*ctp);
 
-    free ((char *) cts);
+    free (cts);
     cts = NULL;
 
     /* If reading from a folder, do some updating */

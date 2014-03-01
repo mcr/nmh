@@ -17,24 +17,58 @@
 #include <h/mhparse.h>
 #include <h/utils.h>
 
+enum clobber_policy_t {
+  NMH_CLOBBER_ALWAYS = 0,
+  NMH_CLOBBER_AUTO,
+  NMH_CLOBBER_SUFFIX,
+  NMH_CLOBBER_ASK,
+  NMH_CLOBBER_NEVER
+};
 
-/*
- * The list of top-level contents to display
- */
-extern CT *cts;
+static enum clobber_policy_t clobber_policy (const char *);
 
-int autosw = 0;
+struct mhstoreinfo {
+    CT *cts;                 /* Top-level list of contents to store. */
+    char *cwd;               /* cached current directory */
+    int autosw;              /* -auto enabled */
+    int verbosw;             /* -verbose enabled */
+    int files_not_clobbered; /* output flag indicating that store failed
+                                in order to not clobber an existing file */
 
-/*
- * Cache of current directory.  This must be
- * set before these routines are called.
- */
-char *cwd;
+    /* The following must never be touched by a caller:  they are for
+       internal use by the mhstoresbr functions. */
+    char *dir;               /* directory in which to store contents */
+    enum clobber_policy_t clobber_policy;  /* -clobber selection */
+};
 
-/*
- * The directory in which to store the contents.
- */
-static char *dir;
+typedef struct mhstoreinfo *mhstoreinfo_t;
+
+mhstoreinfo_t
+mhstoreinfo_create (CT *ct, char *pwd, const char *csw, int asw, int vsw) {
+    mhstoreinfo_t info = mh_xmalloc (sizeof *info);
+
+    info->cts = ct;
+    info->cwd = pwd;
+    info->autosw = asw;
+    info->verbosw = vsw;
+    info->files_not_clobbered = 0;
+    info->dir = NULL;
+    info->clobber_policy = clobber_policy (csw);
+
+    return info;
+}
+
+void
+mhstoreinfo_free (mhstoreinfo_t info) {
+    free (info->cwd);
+    free (info);
+}
+
+int
+mhstoreinfo_files_not_clobbered (const mhstoreinfo_t info) {
+    return info->files_not_clobbered;
+}
+
 
 /*
  * Type for a compare function for qsort.  This keeps
@@ -54,26 +88,26 @@ int show_content_aux (CT, int, int, char *, char *);
 /*
  * prototypes
  */
-void store_all_messages (CT *);
+void store_all_messages (mhstoreinfo_t);
 
 /*
  * static prototypes
  */
-static void store_single_message (CT);
-static int store_switch (CT);
-static int store_generic (CT);
-static int store_application (CT);
-static int store_multi (CT);
-static int store_partial (CT);
-static int store_external (CT);
+static void store_single_message (CT, mhstoreinfo_t);
+static int store_switch (CT, mhstoreinfo_t);
+static int store_generic (CT, mhstoreinfo_t);
+static int store_application (CT, mhstoreinfo_t);
+static int store_multi (CT, mhstoreinfo_t);
+static int store_partial (CT, mhstoreinfo_t);
+static int store_external (CT, mhstoreinfo_t);
 static int ct_compar (CT *, CT *);
-static int store_content (CT, CT);
+static int store_content (CT, CT, mhstoreinfo_t);
 static int output_content_file (CT, int);
 static int output_content_folder (char *, char *);
 static int parse_format_string (CT, char *, char *, int, char *);
 static void get_storeproc (CT);
 static int copy_some_headers (FILE *, CT);
-static char *clobber_check (char *);
+static char *clobber_check (char *, mhstoreinfo_t);
 
 /*
  * Main entry point to store content
@@ -81,7 +115,7 @@ static char *clobber_check (char *);
  */
 
 void
-store_all_messages (CT *cts)
+store_all_messages (mhstoreinfo_t info)
 {
     CT ct, *ctp;
     char *cp;
@@ -91,13 +125,13 @@ store_all_messages (CT *cts)
      * store any contents.
      */
     if ((cp = context_find (nmhstorage)) && *cp)
-	dir = getcpy (cp);
+	info->dir = getcpy (cp);
     else
-	dir = getcpy (cwd);
+	info->dir = getcpy (info->cwd);
 
-    for (ctp = cts; *ctp; ctp++) {
+    for (ctp = info->cts; *ctp; ctp++) {
 	ct = *ctp;
-	store_single_message (ct);
+	store_single_message (ct, info);
     }
 
     flush_errors ();
@@ -110,11 +144,11 @@ store_all_messages (CT *cts)
  */
 
 static void
-store_single_message (CT ct)
+store_single_message (CT ct, mhstoreinfo_t info)
 {
     if (type_ok (ct, 1)) {
 	umask (ct->c_umask);
-	store_switch (ct);
+	store_switch (ct, info);
 	if (ct->c_fp) {
 	    fclose (ct->c_fp);
 	    ct->c_fp = NULL;
@@ -130,33 +164,33 @@ store_single_message (CT ct)
  */
 
 static int
-store_switch (CT ct)
+store_switch (CT ct, mhstoreinfo_t info)
 {
     switch (ct->c_type) {
 	case CT_MULTIPART:
-	    return store_multi (ct);
+	    return store_multi (ct, info);
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
 		case MESSAGE_PARTIAL:
-		    return store_partial (ct);
+		    return store_partial (ct, info);
 
 		case MESSAGE_EXTERNAL:
-		    return store_external (ct);
+		    return store_external (ct, info);
 
 		case MESSAGE_RFC822:
 		default:
-		    return store_generic (ct);
+		    return store_generic (ct, info);
 	    }
 
 	case CT_APPLICATION:
-	    return store_application (ct);
+	    return store_application (ct, info);
 
 	case CT_TEXT:
 	case CT_AUDIO:
 	case CT_IMAGE:
 	case CT_VIDEO:
-	    return store_generic (ct);
+	    return store_generic (ct, info);
 
 	default:
 	    adios (NULL, "unknown content type %d", ct->c_type);
@@ -172,17 +206,17 @@ store_switch (CT ct)
  */
 
 static int
-store_generic (CT ct)
+store_generic (CT ct, mhstoreinfo_t info)
 {
     /*
      * Check if the content specifies a filename.
      * Don't bother with this for type "message"
      * (only "message/rfc822" will use store_generic).
      */
-    if (autosw && ct->c_type != CT_MESSAGE)
+    if (info->autosw && ct->c_type != CT_MESSAGE)
 	get_storeproc (ct);
 
-    return store_content (ct, NULL);
+    return store_content (ct, NULL, info);
 }
 
 
@@ -191,13 +225,13 @@ store_generic (CT ct)
  */
 
 static int
-store_application (CT ct)
+store_application (CT ct, mhstoreinfo_t info)
 {
     char **ap, **ep;
     CI ci = &ct->c_ctinfo;
 
     /* Check if the content specifies a filename */
-    if (autosw)
+    if (info->autosw)
 	get_storeproc (ct);
 
     /*
@@ -237,7 +271,7 @@ store_application (CT ct)
 				  : (gzP ? "%egzip -dc | tar tvf -"
 				     : "%etar tvf -"), NULL);
 	    if (!ct->c_storeproc) {
-		if (autosw) {
+		if (info->autosw) {
 		    ct->c_storeproc = add (zP ? "| uncompress | tar xvpf -"
 					   : (gzP ? "| gzip -dc | tar xvpf -"
 					      : "| tar xvpf -"), NULL);
@@ -251,7 +285,7 @@ store_application (CT ct)
 	}
     }
 
-    return store_content (ct, NULL);
+    return store_content (ct, NULL, info);
 }
 
 
@@ -260,7 +294,7 @@ store_application (CT ct)
  */
 
 static int
-store_multi (CT ct)
+store_multi (CT ct, mhstoreinfo_t info)
 {
     int	result;
     struct multipart *m = (struct multipart *) ct->c_ctparams;
@@ -277,7 +311,7 @@ store_multi (CT ct)
 		   NULL here. */
 		p->c_storage = ct->c_storage;
 	    }
-	    result = store_switch (p);
+	    result = store_switch (p, info);
 	    p->c_storage = NULL;
 
 	    if (result == OK && ct->c_subtype == MULTI_ALTERNATE)
@@ -295,7 +329,7 @@ store_multi (CT ct)
  */
 
 static int
-store_partial (CT ct)
+store_partial (CT ct, mhstoreinfo_t info)
 {
     int	cur, hi, i;
     CT p, *ctp, *ctq;
@@ -307,7 +341,7 @@ store_partial (CT ct)
 	return OK;
 
     hi = i = 0;
-    for (ctp = cts; *ctp; ctp++) {
+    for (ctp = info->cts; *ctp; ctp++) {
 	p = *ctp;
 	if (p->c_type == CT_MESSAGE && p->c_subtype == ct->c_subtype) {
 	    pm = (struct partial *) p->c_ctparams;
@@ -333,7 +367,7 @@ store_partial (CT ct)
 	adios (NULL, "out of memory");
 
     ctq = base;
-    for (ctp = cts; *ctp; ctp++) {
+    for (ctp = info->cts; *ctp; ctp++) {
 	p = *ctp;
 	if (p->c_type == CT_MESSAGE && p->c_subtype == ct->c_subtype) {
 	    pm = (struct partial *) p->c_ctparams;
@@ -379,7 +413,7 @@ missing_part:
 
     ctq = base;
     ct = *ctq++;
-    if (store_content (ct, NULL) == NOTOK) {
+    if (store_content (ct, NULL, info) == NOTOK) {
 losing:
 	free ((char *) base);
 	return NOTOK;
@@ -387,7 +421,7 @@ losing:
 
     for (; *ctq; ctq++) {
 	p = *ctq;
-	if (store_content (p, ct) == NOTOK)
+	if (store_content (p, ct, info) == NOTOK)
 	    goto losing;
     }
 
@@ -401,7 +435,7 @@ losing:
  */
 
 static int
-store_external (CT ct)
+store_external (CT ct, mhstoreinfo_t info)
 {
     int	result = NOTOK;
     struct exbody *e = (struct exbody *) ct->c_ctparams;
@@ -414,7 +448,7 @@ store_external (CT ct)
      * Check if the parameters for the external body
      * specified a filename.
      */
-    if (autosw) {
+    if (info->autosw) {
 	char *cp;
 
 	if ((cp = e->eb_name)
@@ -444,7 +478,7 @@ store_external (CT ct)
 	   c_storage, so we know that p->c_storage is NULL here. */
 	p->c_storage = ct->c_storage;
     }
-    result = store_switch (p);
+    result = store_switch (p, info);
     p->c_storage = NULL;
 
     p->c_partno = NULL;
@@ -479,7 +513,7 @@ ct_compar (CT *a, CT *b)
  */
 
 static int
-store_content (CT ct, CT p)
+store_content (CT ct, CT p, mhstoreinfo_t info)
 {
     int appending = 0, msgnum = 0;
     int is_partial = 0, first_partial = 0;
@@ -590,23 +624,24 @@ store_content (CT ct, CT p)
 	 * Parse and expand the storage formatting string
 	 * in `cp' into `buffer'.
 	 */
-	parse_format_string (ct, cp, buffer, sizeof(buffer), dir);
+	parse_format_string (ct, cp, buffer, sizeof(buffer), info->dir);
 
 	/*
 	 * If formatting begins with '|' or '!', then pass
 	 * content to standard input of a command and return.
 	 */
 	if (buffer[0] == '|' || buffer[0] == '!')
-	    return show_content_aux (ct, 1, 0, buffer + 1, dir);
+	    return show_content_aux (ct, 1, 0, buffer + 1, info->dir);
 
         /* record the filename */
-	if ((ct->c_storage = clobber_check (add (buffer, NULL))) == NULL) {
+	if ((ct->c_storage = clobber_check (add (buffer, NULL), info)) ==
+	    NULL) {
 	    return NOTOK;
 	}
     } else {
-        /* The output filename was explicitly specified, so use it. */
-	if ((ct->c_storage = clobber_check (add (ct->c_storage, NULL))) ==
-            NULL) {
+	/* The output filename was explicitly specified, so use it. */
+	if ((ct->c_storage = clobber_check (add (ct->c_storage, NULL), info)) ==
+	    NULL) {
 	    return NOTOK;
 	}
     }
@@ -631,42 +666,44 @@ got_filename:
 	    return NOTOK;
     }
 
-    /*
-     * Now print out the name/number of the message
-     * that we are storing.
-     */
-    if (is_partial) {
-	if (first_partial)
-	    fprintf (stderr, "reassembling partials ");
-	if (last_partial)
-	    fprintf (stderr, "%s", ct->c_file);
-	else
-	    fprintf (stderr, "%s,", ct->c_file);
-    } else {
-	fprintf (stderr, "storing message %s", ct->c_file);
-	if (ct->c_partno)
-	    fprintf (stderr, " part %s", ct->c_partno);
-    }
+    if (info->verbosw) {
+        /*
+         * Now print out the name/number of the message
+         * that we are storing.
+         */
+        if (is_partial) {
+            if (first_partial)
+                fprintf (stderr, "reassembling partials ");
+            if (last_partial)
+                fprintf (stderr, "%s", ct->c_file);
+            else
+                fprintf (stderr, "%s,", ct->c_file);
+        } else {
+            fprintf (stderr, "storing message %s", ct->c_file);
+            if (ct->c_partno)
+                fprintf (stderr, " part %s", ct->c_partno);
+        }
 
-    /*
-     * Unless we are in the "middle" of group of message/partials,
-     * we now print the name of the file, folder, and/or message
-     * to which we are storing the content.
-     */
-    if (!is_partial || last_partial) {
-	if (ct->c_folder) {
-	    fprintf (stderr, " to folder %s as message %d\n", ct->c_folder, msgnum);
-	} else if (!strcmp(ct->c_storage, "-")) {
-	    fprintf (stderr, " to stdout\n");
-	} else {
-	    int cwdlen;
+        /*
+         * Unless we are in the "middle" of group of message/partials,
+         * we now print the name of the file, folder, and/or message
+         * to which we are storing the content.
+         */
+        if (!is_partial || last_partial) {
+            if (ct->c_folder) {
+                fprintf (stderr, " to folder %s as message %d\n", ct->c_folder,
+                         msgnum);
+            } else if (!strcmp(ct->c_storage, "-")) {
+                fprintf (stderr, " to stdout\n");
+            } else {
+                int cwdlen = strlen (info->cwd);
 
-	    cwdlen = strlen (cwd);
-	    fprintf (stderr, " as file %s\n",
-		strncmp (ct->c_storage, cwd, cwdlen)
-		|| ct->c_storage[cwdlen] != '/'
-		? ct->c_storage : ct->c_storage + cwdlen + 1);
-	}
+                fprintf (stderr, " as file %s\n",
+                         strncmp (ct->c_storage, info->cwd, cwdlen)
+                         || ct->c_storage[cwdlen] != '/'
+                         ? ct->c_storage : ct->c_storage + cwdlen + 1);
+            }
+        }
     }
 
     return OK;
@@ -1131,35 +1168,23 @@ copy_some_headers (FILE *out, CT ct)
 /******************************************************************************/
 /* -clobber support */
 
-enum clobber_policy_t {
-  NMH_CLOBBER_ALWAYS,
-  NMH_CLOBBER_AUTO,
-  NMH_CLOBBER_SUFFIX,
-  NMH_CLOBBER_ASK,
-  NMH_CLOBBER_NEVER
-};
-
-static enum clobber_policy_t clobber_policy = NMH_CLOBBER_ALWAYS;
-
-int files_not_clobbered = 0;
-
-int
-save_clobber_policy (const char *value) {
-  if (! strcasecmp (value, "always")) {
-    clobber_policy = NMH_CLOBBER_ALWAYS;
+static
+enum clobber_policy_t
+clobber_policy (const char *value) {
+  if (value == NULL  ||  ! strcasecmp (value, "always")) {
   } else if (! strcasecmp (value, "auto")) {
-    clobber_policy = NMH_CLOBBER_AUTO;
+    return NMH_CLOBBER_AUTO;
   } else if (! strcasecmp (value, "suffix")) {
-    clobber_policy = NMH_CLOBBER_SUFFIX;
+    return NMH_CLOBBER_SUFFIX;
   } else if (! strcasecmp (value, "ask")) {
-    clobber_policy = NMH_CLOBBER_ASK;
+    return NMH_CLOBBER_ASK;
   } else if (! strcasecmp (value, "never")) {
-    clobber_policy = NMH_CLOBBER_NEVER;
+    return NMH_CLOBBER_NEVER;
   } else {
-    return 1;
+    adios (NULL, "invalid argument, %s, to clobber", value);
   }
 
-  return 0;
+  return NMH_CLOBBER_ALWAYS;
 }
 
 
@@ -1196,7 +1221,6 @@ next_version (char *file, enum clobber_policy_t clobber_policy) {
         /* Should never get here. */
         advise (NULL, "will not overwrite %s, invalid clobber policy", buffer);
         free (buffer);
-        ++files_not_clobbered;
         return NULL;
     }
 
@@ -1219,7 +1243,6 @@ next_version (char *file, enum clobber_policy_t clobber_policy) {
     advise (NULL, "will not overwrite %s, too many versions", buffer);
     free (buffer);
     buffer = NULL;
-    ++files_not_clobbered;
   }
 
   return buffer;
@@ -1227,7 +1250,7 @@ next_version (char *file, enum clobber_policy_t clobber_policy) {
 
 
 static char *
-clobber_check (char *original_file) {
+clobber_check (char *original_file, mhstoreinfo_t info) {
   /* clobber policy        return value
    * --------------        ------------
    *   -always             original_file
@@ -1241,7 +1264,7 @@ clobber_check (char *original_file) {
   char *cwd = NULL;
   int check_again;
 
-  if (clobber_policy == NMH_CLOBBER_ASK) {
+  if (info->clobber_policy == NMH_CLOBBER_ASK) {
     /* Save cwd for possible use in loop below. */
     char *slash;
 
@@ -1262,14 +1285,17 @@ clobber_check (char *original_file) {
     file = original_file;
     check_again = 0;
 
-    switch (clobber_policy) {
+    switch (info->clobber_policy) {
       case NMH_CLOBBER_ALWAYS:
         break;
 
       case NMH_CLOBBER_SUFFIX:
       case NMH_CLOBBER_AUTO:
         if (stat (file, &st) == OK) {
-          file = next_version (original_file, clobber_policy);
+          if ((file = next_version (original_file, info->clobber_policy)) ==
+              NULL) {
+              ++info->files_not_clobbered;
+          }
         }
         break;
 
@@ -1277,7 +1303,10 @@ clobber_check (char *original_file) {
         if (stat (file, &st) == OK) {
           enum answers { NMH_YES, NMH_NO, NMH_RENAME };
           static struct swit answer[4] = {
-            { "yes", 0, NMH_YES }, { "no", 0, NMH_NO }, { "rename", 0, NMH_RENAME }, { NULL, 0, 0 } };
+            { "yes", 0, NMH_YES },
+            { "no", 0, NMH_NO },
+            { "rename", 0, NMH_RENAME },
+            { NULL, 0, 0 } };
           char **ans;
 
           if (isatty (fileno (stdin))) {
@@ -1297,7 +1326,7 @@ clobber_check (char *original_file) {
             case NMH_NO:
               free (file);
               file = NULL;
-              ++files_not_clobbered;
+              ++info->files_not_clobbered;
               break;
             case NMH_RENAME: {
               char buf[PATH_MAX];
@@ -1305,7 +1334,7 @@ clobber_check (char *original_file) {
               if (fgets (buf, sizeof buf, stdin) == NULL  ||
                   buf[0] == '\0') {
                 file = NULL;
-                ++files_not_clobbered;
+                ++info->files_not_clobbered;
               } else {
                 char *newline = strchr (buf, '\n');
                 if (newline) {
@@ -1337,7 +1366,7 @@ clobber_check (char *original_file) {
           advise (NULL, "will not overwrite %s with -clobber never", file);
           free (file);
           file = NULL;
-          ++files_not_clobbered;
+          ++info->files_not_clobbered;
         }
         break;
     }

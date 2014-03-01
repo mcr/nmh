@@ -45,9 +45,6 @@ DEFINE_SWITCH_ARRAY(MHSTORE, switches);
 #undef X
 
 
-int save_clobber_policy (const char *);
-extern int files_not_clobbered;
-
 /* mhcachesbr.c */
 extern int rcachesw;
 extern int wcachesw;
@@ -55,8 +52,10 @@ extern char *cache_public;
 extern char *cache_private;
 
 /* mhstoresbr.c */
-extern int autosw;
-extern char *cwd;	/* cache current working directory */
+typedef struct mhstoreinfo *mhstoreinfo_t;
+mhstoreinfo_t mhstoreinfo_create(CT *, char *, const char *, int, int);
+int mhstoreinfo_files_not_clobbered(const mhstoreinfo_t);
+void mhstoreinfo_free(mhstoreinfo_t);
 
 /* mhmisc.c */
 extern int npart;
@@ -65,12 +64,10 @@ extern char *parts[NPARTS + 1];
 extern char *types[NTYPES + 1];
 extern int userrs;
 
-int debugsw = 0;
-int verbosw = 0;
-
 #define	quitser	pipeser
 
 /* mhparse.c */
+int debugsw = 0;
 CT parse_mime (char *);
 
 /* mhmisc.c */
@@ -79,7 +76,7 @@ int type_ok (CT, int);
 void flush_errors (void);
 
 /* mhstoresbr.c */
-void store_all_messages (CT *);
+void store_all_messages (mhstoreinfo_t);
 
 /* mhfree.c */
 extern CT *cts;
@@ -94,14 +91,19 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int msgnum, *icachesw;
+    /* verbosw defaults to 1 for backward compatibility. */
+    int msgnum, *icachesw, autosw = 0, verbosw = 1;
+    const char *clobbersw = "always";
     char *cp, *file = NULL, *outfile = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
     char **arguments;
+    char *cwd;
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp = NULL;
     CT ct, *ctp;
     FILE *fp;
+    int files_not_clobbered;
+    mhstoreinfo_t info;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -116,13 +118,13 @@ main (int argc, char **argv)
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
-	    case AMBIGSW: 
+	    case AMBIGSW:
 		ambigsw (cp, switches);
 		done (1);
-	    case UNKWNSW: 
+	    case UNKWNSW:
 		adios (NULL, "-%s unknown", cp);
 
-	    case HELPSW: 
+	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
 			invo_name);
 		print_help (buf, switches, 1);
@@ -194,19 +196,16 @@ do_cache:
 		outfile = *cp == '-' ? cp : path (cp, TFILE);
 		continue;
 
-	    case VERBSW: 
+	    case VERBSW:
 		verbosw = 1;
 		continue;
-	    case NVERBSW: 
+	    case NVERBSW:
 		verbosw = 0;
 		continue;
             case CLOBBERSW:
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
-                if (save_clobber_policy (cp)) {
-                  adios (NULL, "invalid argument, %s, to %s", argp[-1],
-                         argp[-2]);
-                }
+		clobbersw = cp;
 		continue;
 	    case DEBUGSW:
 		debugsw = 1;
@@ -258,7 +257,7 @@ do_cache:
     /*
      * Cache the current directory before we do any chdirs()'s.
      */
-    cwd = getcpy (pwd());
+    cwd = add(pwd(), NULL);
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
@@ -351,13 +350,16 @@ do_cache:
     /*
      * Store the message content
      */
-    store_all_messages (cts);
+    info = mhstoreinfo_create (cts, cwd, clobbersw, autosw, verbosw);
+    store_all_messages (info);
+    files_not_clobbered = mhstoreinfo_files_not_clobbered(info);
+    mhstoreinfo_free(info);
 
     /* Now free all the structures for the content */
     for (ctp = cts; *ctp; ctp++)
 	free_content (*ctp);
 
-    free ((char *) cts);
+    free (cts);
     cts = NULL;
 
     /* If reading from a folder, do some updating */

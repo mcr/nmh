@@ -172,14 +172,13 @@ run_test 'mhstore last -part 4 -auto -noauto' \
   'storing message 11 part 4 as file 11.4.txt'
 check $expected 11.4.txt 'keep first'
 
-# check -verbose, which doesn't do anything
-run_test 'mhstore last -part 4 -verbose' \
+# check -verbose, the default
+run_test 'mhstore last -part 4 -noverbose -verbose' \
   'storing message 11 part 4 as file 11.4.txt'
 check $expected 11.4.txt 'keep first'
 
-# check -noverbose, the default
-run_test 'mhstore last -part 4 -verbose -noverbose' \
-  'storing message 11 part 4 as file 11.4.txt'
+# check -noverbose
+run_test 'mhstore last -part 4 -noverbose' ''
 check $expected 11.4.txt
 
 # check that -auto obeys Content-Disposition header

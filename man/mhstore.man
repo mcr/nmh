@@ -1,4 +1,4 @@
-.TH MHSTORE %manext1% "March 21, 2013" "%nmhversion%"
+.TH MHSTORE %manext1% "March 1, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -28,6 +28,7 @@ mhstore \- store contents of MIME messages into files
 .RB [ \-wcache
 .IR policy ]
 .RB [ \-check " | " \-nocheck ]
+.RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -274,6 +275,15 @@ mhstore-store-image/jpeg: %m%P.jpg
 mhstore-store-application/PostScript: %m%P.ps
 .fi
 .RE
+.PP
+The
+.B \-verbose
+switch directs
+.B mhstore
+to print out the names of files that it stores.  For backward
+compatibility, it is the default.  The
+.B \-noverbose
+switch suppresses these printouts.
 .PP
 .SS "Overwriting Existing Files"
 The
@@ -563,6 +573,7 @@ is checked.
 .RB ` \-nocheck '
 .RB ` \-rcache\ ask '
 .RB ` \-wcache\ ask '
+.RB ` \-verbose '
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
 message selected will become the current message.
