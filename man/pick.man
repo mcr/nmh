@@ -1,4 +1,4 @@
-.TH PICK %manext1% "November 6, 2012" "%nmhversion%"
+.TH PICK %manext1% "March 1, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -287,6 +287,39 @@ in the
 same way
 .B mark
 uses them.
+.SS "Output when no messages are matched"
+If
+.B pick
+is used in a backquoted operation, such as
+.PP
+.RS 5
+scan\0`pick\0\-from\0jones`
+.RE
+.PP
+and
+.B pick
+selects no messages (e.g., no messages are from
+\*(lqjones\*(rq), then the shell will still run the outer command (e.g.,
+.BR scan ).
+Since no messages were matched,
+.B pick
+produced
+no output, and the argument given to the outer command as a result of
+backquoting
+.B pick
+is empty.  In the case of
+.B nmh
+programs,
+the outer command now acts as if the default `msg' or `msgs' should be
+used (e.g., \*(lqall\*(rq in the case of
+.BR scan ).
+To prevent this
+unexpected behavior, if
+.B \-list
+was given, and if its standard output is not a tty, then
+.B pick
+outputs the illegal message number \*(lq0\*(rq
+when it fails.  This lets the outer command fail gracefully as well.
 .SH FILES
 .fc ^ ~
 .nf
@@ -370,39 +403,6 @@ must occur prior to the
 or
 .B \-before
 switch it applies to.
-.PP
-If
-.B pick
-is used in a backquoted operation, such as
-.PP
-.RS 5
-scan\0`pick\0\-from\0jones`
-.RE
-.PP
-and
-.B pick
-selects no messages (e.g., no messages are from
-\*(lqjones\*(rq), then the shell will still run the outer command (e.g.,
-.BR scan ).
-Since no messages were matched,
-.B pick
-produced
-no output, and the argument given to the outer command as a result of
-backquoting
-.B pick
-is empty.  In the case of
-.B nmh
-programs,
-the outer command now acts as if the default `msg' or `msgs' should be
-used (e.g., \*(lqall\*(rq in the case of
-.BR scan ).
-To prevent this
-unexpected behavior, if
-.B \-list
-was given, and if its standard output is not a tty, then
-.B pick
-outputs the illegal message number \*(lq0\*(rq
-when it fails.  This lets the outer command fail gracefully as well.
 .PP
 The pattern syntax \*(lq[l-r]\*(rq is not supported; each letter to be
 matched must be included within the square brackets.
