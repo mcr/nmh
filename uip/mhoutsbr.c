@@ -81,14 +81,10 @@ output_content (CT ct, FILE *out)
 {
     int result = 0;
     CI ci = &ct->c_ctinfo;
-    PM pm;
-    char *boundary = "";
+    char *boundary = "", *cp;
 
-    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
-        if (! strcasecmp ("boundary", pm->pm_name)) {
-            boundary = pm->pm_value;
-            break;
-        }
+    if ((cp = get_param(ci->ci_first_pm, "boundary, '-', 0)))
+	boundary = cp;
     }
 
     /*
@@ -101,8 +97,11 @@ output_content (CT ct, FILE *out)
      * "message/external", then we are done with the
      * headers (since it has no body).
      */
-    if (ct->c_ctexbody)
+    if (ct->c_ctexbody) {
+	if (boundary && *boundary != '\0')
+	    free(boundary);
 	return OK;
+    }
 
     /*
      * Now output the content bodies.
@@ -126,8 +125,11 @@ output_content (CT ct, FILE *out)
 	    CT p = part->mp_part;
 
 	    fprintf (out, "\n--%s\n", boundary);
-	    if (output_content (p, out) == NOTOK)
+	    if (output_content (p, out) == NOTOK) {
+		if (boundary && *boundary != '\0')
+		    free(boundary);
 		return NOTOK;
+	    }
 	}
 	fprintf (out, "\n--%s--\n", boundary);
 
@@ -199,6 +201,9 @@ output_content (CT ct, FILE *out)
 	break;
     }
 
+    if (boundary && *boundary != '\0')
+	free(boundary);
+
     return result;
 }
 
@@ -228,7 +233,6 @@ static int
 writeExternalBody (CT ct, FILE *out)
 {
     char *cp;
-    PM pm;
     struct exbody *e = (struct exbody *) ct->c_ctparams;
 		
     putc ('\n', out);

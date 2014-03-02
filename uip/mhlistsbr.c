@@ -258,7 +258,7 @@ list_debug (CT ct)
     /* print parsed parameters attached to content type */
     fprintf (stderr, "    parameters\n");
     for (pm = ci->ci_first_pm; pm; pm = pm->pm_next)
-	fprintf (stderr, "      %s=\"%s\"\n", pm->pm_name, pm->pm_value);
+	fprintf (stderr, "      %s=\"%s\"\n", pm->pm_name, get_param_value(pm));
 
     /* print internal flags for type/subtype */
     fprintf (stderr, "    type 0x%x subtype 0x%x params 0x%x\n",

@@ -341,7 +341,7 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 
 		for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
 		    snprintf (bp, buflen, "%s%s=\"%s\"", s, pm->pm_name,
-		    	      pm->pm_value);
+		    	      get_param_value(pm));
 		    len = strlen (bp);
 		    bp += len;
 		    buflen -= len;
@@ -849,7 +849,7 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
 
 		for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
 		    snprintf (bp, buflen, "%s%s=\"%s\"", s, pm->pm_name,
-			      pm->pm_value);
+			      get_param_value(pm));
 		    len = strlen (bp);
 		    bp += len;
 		    buflen -= len;
