@@ -202,8 +202,10 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
 	CI ci = &ct->c_ctinfo;
 	PM pm;
 
-	for (pm = ci->ci_first_pm; pm; pm = pm->pm_next)
-	    printf ("\t     %s=\"%s\"\n", pm->pm_name, pm->pm_value);
+	for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+	    printf ("\t     %s=\"%s\"\n", pm->pm_name,
+	    	    get_param_value(pm, '?'));
+	}
 
 	/*
 	 * If verbose, print any RFC-822 comments in the

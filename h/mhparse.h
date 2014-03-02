@@ -418,4 +418,21 @@ PM add_param(PM *first, PM *last, const char *name, const char *value);
 
 char *get_param(PM first, const char *name, char replace, int fetchonly);
 
+/*
+ * Fetch a parameter value from a parameter structure, converting it to
+ * the local character set.
+ *
+ * Arguments are:
+ *
+ * pm		- Pointer to parameter structure
+ * replace	- If characters in the parameter list cannot be converted to
+ *		  the local character set, replace with this character.
+ *
+ * Returns a pointer to the parameter value.  Memory is stored in an
+ * internal buffer, so the returned value is only valid until the next
+ * call to get_param_value() or get_param() (get_param() uses get_param_value()
+ * internally).
+ */
+char *get_param_value(PM pm, char replace);
+
 extern int checksw;	/* Add Content-MD5 field */

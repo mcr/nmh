@@ -194,7 +194,6 @@ static int
 store_application (CT ct)
 {
     CI ci = &ct->c_ctinfo;
-    PM pm;
 
     /* Check if the content specifies a filename */
     if (autosw)
@@ -207,32 +206,23 @@ store_application (CT ct)
      */
     if (!ct->c_storeproc && ct->c_subtype == APPLICATION_OCTETS) {
 	int tarP = 0, zP = 0, gzP = 0;
+	char *cp;
 
-	for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
-	    /* check for "type=tar" attribute */
-	    if (!strcasecmp (pm->pm_name, "type")) {
-		if (strcasecmp (pm->pm_value, "tar"))
-		    break;
-
+	if ((cp = get_param(ci->ci_first_pm, "type", ' ', 1))) {
+	    if (strcasecmp (cp, "tar") == 0)
 		tarP = 1;
-		continue;
-	    }
+	}
 
-	    /* check for "conversions=compress" attribute */
-	    if ((!strcasecmp (pm->pm_name, "conversions") ||
-	    	 !strcasecmp (pm->pm_name, "x-conversions"))
-		&& (!strcasecmp (pm->pm_value, "compress") ||
-		    !strcasecmp (pm->pm_value, "x-compress"))) {
+	/* check for "conversions=compress" attribute */
+	if ((cp = get_param(ci->ci_first_pm, "conversions", ' ', 1)) ||
+	    (cp = get_param(ci->ci_first_pm, "x-conversions", ' ', 1))) {
+	    if (strcasecmp (cp, "compress") == 0 ||
+		    strcasecmp (cp, "x-compress") == 0) {
 		zP = 1;
-		continue;
 	    }
-	    /* check for "conversions=gzip" attribute */
-	    if ((!strcasecmp (pm->pm_name, "conversions") ||
-	    	 !strcasecmp (pm->pm_name, "x-conversions"))
-		&& (!strcasecmp (pm->pm_value, "gzip") ||
-		    !strcasecmp (pm->pm_value, "x-gzip"))) {
+	    if (strcasecmp (cp, "gzip") == 0 ||
+		    strcasecmp (cp, "x-gzip") == 0) {
 		gzP = 1;
-		continue;
 	    }
 	}
 
@@ -970,7 +960,7 @@ parse_format_string (CT ct, char *cp, char *buffer, int buflen, char *dir)
 
 			for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
 			    snprintf (bp, buflen, "%s%s=\"%s\"", s,
-				      pm->pm_name, pm->pm_value);
+				      pm->pm_name, get_param_value(pm, '?'));
 			    len = strlen (bp);
 			    bp += len;
 			    buflen -= len;
@@ -1044,7 +1034,6 @@ get_storeproc (CT ct)
 {
     char *cp;
     CI ci;
-    PM pm;
 
     /*
      * If the storeproc has already been defined,
@@ -1059,21 +1048,18 @@ get_storeproc (CT ct)
      * use that (RFC-2183).
      */
     if (ct->c_dispo) {
-	int found_filename = 0;
-
-	for (pm = ct->c_dispo_first; pm; pm = pm->pm_next) {
-	    if (! strcasecmp (pm->pm_name, "filename")
-		    && *(cp = pm->pm_value) != '/'
-		    && *cp != '.'
-		    && *cp != '|'
-		    && *cp != '!'
-		    && !strchr (cp, '%')) {
+	if ((cp = get_param(ct->c_dispo_first, "filename", '_', 0))
+		&& *cp != '/'
+		&& *cp != '.'
+		&& *cp != '|'
+		&& *cp != '!'
+		&& !strchr (cp, '%')) {
 		ct->c_storeproc = add (cp, NULL);
-		found_filename = 1;
-	    }
+		free(cp);
+		return;
 	}
-
-	if (found_filename) return;
+	if (cp)
+	    free(cp);
     }
 
     /*
@@ -1082,17 +1068,17 @@ get_storeproc (CT ct)
      * the storeproc.
      */
     ci = &ct->c_ctinfo;
-    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
-	if (! strcasecmp (pm->pm_name, "name")
-	    && *(cp = pm->pm_value) != '/'
-	    && *cp != '.'
-	    && *cp != '|'
-	    && *cp != '!'
-	    && !strchr (cp, '%')) {
+    if ((cp = get_param(ci->ci_first_pm, "name", '_', 0))
+	  && *cp != '/'
+	  && *cp != '.'
+	  && *cp != '|'
+	  && *cp != '!'
+	  && !strchr (cp, '%')) {
 	    ct->c_storeproc = add (cp, NULL);
-	    return;
-	}
+
     }
+    if (cp)
+	free(cp);
 }
 
 

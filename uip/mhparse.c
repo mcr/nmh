@@ -3868,95 +3868,121 @@ get_param(PM first, const char *name, char replace, int fetchonly)
 	if (strcasecmp(name, first->pm_name) == 0) {
 	    if (fetchonly)
 	    	return first->pm_value;
-	    else {
-		char convbuf[BUFSIZ];
-		size_t inbytes, outbytes = sizeof(convbuf);
-#ifdef HAVE_ICONV
-		int utf8;
-		iconv_t cd;
-		ICONV_CONST char *p;
-		char *q;
-#endif /* HAVE_ICONV */
-		if (!first->pm_charset ||
-				check_charset(first->pm_charset,
-					      strlen(first->pm_charset))) {
-		    /*
-		     * No conversion necessary
-		     */
-		    return getcpy(first->pm_value);
-		}
-#ifdef HAVE_ICONV
-		utf8 = strcasecmp(first->pm_charset, "UTF-8") == 0;
-
-		cd = iconv_open(get_charset(), first->pm_charset);
-		if (cd == (iconv_t) -1) {
-		    goto noconvert;
-		}
-
-		inbytes = strlen(first->pm_value);
-		outbytes = sizeof(convbuf);
-		p = first->pm_value;
-		q = convbuf;
-
-		while (inbytes) {
-		    if (iconv(cd, &p, &inbytes, &q, &outbytes) == (size_t)-1) {
-			if (errno != EILSEQ) {
-			    iconv_close(cd);
-			    goto noconvert;
-			}
-			/*
-			 * Reset shift state, substitute our character,
-			 * try to restart conversion.
-			 */
-			iconv(cd, NULL, NULL, &q, &outbytes);
-			if (outbytes == 0) {
-			    iconv_close(cd);
-			    goto noconvert;
-			}
-			*q++ = replace;
-			outbytes--;
-			if (outbytes == 0) {
-			    iconv_close(cd);
-			    goto noconvert;
-			}
-			if (utf8) {
-			    for (++p, --inbytes; inbytes > 0 &&
-			    		(((unsigned char) *q) & 0xc0) == 0x80;
-				 ++p, --inbytes)
-				continue;
-			} else {
-			    p++;
-			    inbytes--;
-			}
-		    }
-		}
-
-		iconv_close(cd);
-
-		if (outbytes == 0)
-		    q--;
-		*q = '\0';
-
-		return getcpy(convbuf);
-#endif /* HAVE_ICONV */
-noconvert:
-		for (p = first->pm_value, q = convbuf; *p && outbytes > 1;
-		     p++, q++, outbytes--) {
-		    if (isascii((unsigned char) p) &&
-					isprint((unsigned char) p))
-			*q = *p;
-		    else
-			*q = replace;
-		}
-
-		*q = '\0';
-
-		return getcpy(convbuf);
-	    }
+	    else
+	    	return getcpy(get_param_value(first, replace));
 	}
-
 	first = first->pm_next;
     }
 
     return NULL;
+}
+
+/*
+ * Return a parameter value, converting to the local character set if
+ * necessary
+ */
+
+char *get_param_value(PM pm, char replace)
+{
+    static char buffer[4096];		/* I hope no parameters are larger */
+    size_t bufsize = sizeof(buffer);
+#ifdef HAVE_ICONV
+    size_t inbytes;
+    int utf8;
+    iconv_t cd;
+    ICONV_CONST char *p;
+#endif /* HAVE_ICONV */
+    char *q;
+
+    /*
+     * If we don't have a character set indicated, it's assumed to be
+     * US-ASCII.  If it matches our character set, we don't need to convert
+     * anything.
+     */
+
+    if (!pm->pm_charset || check_charset(pm->pm_charset,
+    					 strlen(pm->pm_charset))) {
+	return pm->pm_value;
+    }
+
+    /*
+     * In this case, we need to convert.  If we have iconv support, use
+     * that.  Otherwise, go through and simply replace every non-ASCII
+     * character with the substitution character.
+     */
+
+#ifdef HAVE_ICONV
+    q = buffer;
+    bufsize = sizeof(buffer);
+    utf8 = strcasecmp(pm->pm_charset, "UTF-8") == 0;
+
+    cd = iconv_open(get_charset(), pm->pm_charset);
+    if (cd == (iconv_t) -1) {
+	goto noiconv;
+    }
+
+    inbytes = strlen(pm->pm_value);
+    p = pm->pm_value;
+
+    while (inbytes) {
+	if (iconv(cd, &p, &inbytes, &q, &bufsize) == (size_t)-1) {
+	    if (errno != EILSEQ) {
+		iconv_close(cd);
+		goto noiconv;
+	    }
+	    /*
+	     * Reset shift state, substitute our character,
+	     * try to restart conversion.
+	     */
+
+	    iconv(cd, NULL, NULL, &q, &bufsize);
+
+	    if (bufsize == 0) {
+		iconv_close(cd);
+		goto noiconv;
+	    }
+	    *q++ = replace;
+	    bufsize--;
+	    if (bufsize == 0) {
+		iconv_close(cd);
+		goto noiconv;
+	    }
+	    if (utf8) {
+		for (++p, --inbytes;
+		     inbytes > 0 && (((unsigned char) *q) & 0xc0) == 0x80;
+		     ++p, --inbytes)
+		    continue;
+	    } else {
+		p++;
+		inbytes--;
+	    }
+	}
+    }
+
+    iconv_close(cd);
+
+    if (bufsize == 0)
+	q--;
+    *q = '\0';
+
+    return buffer;
+#endif /* HAVE_ICONV */
+
+noiconv:
+    /*
+     * Take everything non-ASCII and substituite the replacement character
+     */
+
+    q = buffer;
+    bufsize = sizeof(buffer);
+    for (p = pm->pm_value; *p != '\0' && bufsize > 1; p++, q++, bufsize--) {
+	if (isascii((unsigned char) *p) && !iscntrl((unsigned char) *p))
+	    *q = *p;
+	else
+	    *q = replace;
+    }
+
+    *q = '\0';
+
+    return buffer;
 }
