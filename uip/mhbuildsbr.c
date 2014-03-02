@@ -1164,7 +1164,7 @@ compose_content (CT ct)
 
 			for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
 			    snprintf (bp, buflen, "%s%s=\"%s\"", s,
-			    	      pm->pm_name, get_param_value(pm));
+			    	      pm->pm_name, get_param_value(pm, '?'));
 			    len = strlen (bp);
 			    bp += len;
 			    buflen -= len;

@@ -83,9 +83,8 @@ output_content (CT ct, FILE *out)
     CI ci = &ct->c_ctinfo;
     char *boundary = "", *cp;
 
-    if ((cp = get_param(ci->ci_first_pm, "boundary, '-', 0)))
+    if ((cp = get_param(ci->ci_first_pm, "boundary", '-', 0)))
 	boundary = cp;
-    }
 
     /*
      * Output all header fields for this content
@@ -252,17 +251,22 @@ writeExternalBody (CT ct, FILE *out)
 		continue;
 
 	    case 'N':
-		for (pm = ci2->ci_first_pm; pm; pm = pm->pm_next)
-		    if (!strcasecmp (pm->pm_name, "name")) {
-			fprintf (out, "%s", pm->pm_value);
-			break;
-		    }
+		cp = get_param(ci2->ci_first_pm, "name", '_', 0);
+		if (cp) {
+		    fputs (cp, out);
+		    free (cp);
+		}
 		continue;
 
 	    case 'T':
 		fprintf (out, "%s/%s", ci2->ci_type, ci2->ci_subtype);
-		for (pm = ci2->ci_first_pm; pm; pm = pm->pm_next)
-		    fprintf (out, "; %s=\"%s\"", pm->pm_name, pm->pm_value);
+		cp = output_params(strlen(ci2->ci_type) +
+				   strlen(ci2->ci_subtype) + 1,
+				   ci2->ci_first_pm, NULL, 0);
+		if (cp) {
+		    fputs (cp, out);
+		    free (cp);
+		}
 		continue;
 
 	    case 'n':
