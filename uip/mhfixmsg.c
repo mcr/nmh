@@ -1269,6 +1269,15 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
         ct->c_ctinfo.ci_subtype = add (subtypename, NULL);
     }
 
+    /*
+     * The boundary indicator string must be stored in a
+     * c_ctinfo.ci_values slot.  We use the first slot because this is
+     * a new object.  ci_attrs[0] can be anything, it is never output.
+     * It is chosen to be very unlikely to collide with a real
+     * attribute, to contains text that ci_values[0] can point to, and
+     * gives traceability back to the origin of this part, though that
+     * would only be useful in a debugger.
+     */
     name = concat (" ", typename, "/", subtypename, boundary_indicator,
                    boundary, NULL);
     if ((cp = strstr (name, boundary_indicator))) {
