@@ -450,7 +450,7 @@ uip_rcvtty_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 uip_slocal_SOURCES = uip/slocal.c uip/aliasbr.c uip/dropsbr.c
 uip_slocal_LDADD = $(LDADD) $(NDBM_LIBS) $(POSTLINK)
 
-uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/mhoutsbr.c uip/sendsbr.c \
+uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
 uip_viamail_LDADD = $(LDADD) $(POSTLINK)
 
