@@ -1,4 +1,4 @@
-.TH MHSTORE %manext1% "March 1, 2014" "%nmhversion%"
+.TH MHSTORE %manext1% "March 2, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -170,7 +170,11 @@ specified as the \*(lqfilename\*(rq attribute in the
 attribute in the \*(lqContent-Type\*(rq header for the content you are
 storing.  For security reasons, this filename will be ignored if it
 begins with the character '/', '.', '|', or '!', or if it contains the
-character '%'.
+character '%'.  We also recommend using a \*(lqnmh-storage\*(rq profile
+entry or a
+.B \-clobber
+switch setting other than the default of \*(lqalways\*(rq to avoid
+overwriting existing files.
 .PP
 If the
 .B \-auto
