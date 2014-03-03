@@ -21,6 +21,14 @@ static signed char hexindex[] = {
     -1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     -1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 };
 
@@ -37,8 +45,12 @@ static signed char index_64[128] = {
 
 #define char64(c) (((unsigned char) (c) > 127) ? -1 : index_64[(unsigned char) (c)])
 
-static int
-unqp (unsigned char byte1, unsigned char byte2)
+/*
+ * Decode two quoted-pair characters
+ */
+
+int
+decode_qp (unsigned char byte1, unsigned char byte2)
 {
     if (hexindex[byte1] == -1 || hexindex[byte2] == -1)
 	return -1;
@@ -234,7 +246,7 @@ decode_rfc2047 (char *str, char *dst, size_t dstlen)
 	    if (quoted_printable) {
 		for (pp = startofmime; pp < endofmime; pp++) {
 		    if (*pp == '=') {
-			c = unqp (pp[1], pp[2]);
+			c = decode_qp (pp[1], pp[2]);
 			if (c == -1)
 			    continue;
 			if (c != 0)
