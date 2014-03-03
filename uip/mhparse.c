@@ -138,6 +138,8 @@ static int readDigest (CT, char *);
 static int get_leftover_mp_content (CT, int);
 static int InitURL (CT);
 static int openURL (CT, char **);
+static int parse_header_attrs (const char *, const char *, char **, PM *,
+			       PM *, char **);
 static size_t param_len(PM, int, size_t, int *, int *, size_t *);
 static size_t encode_param(PM, char *, size_t, size_t, size_t, int);
 static size_t normal_param(PM, char *, size_t, size_t, size_t);
@@ -3224,7 +3226,26 @@ get_ce_method (const char *method) {
     return NULL;
 }
 
-int
+/*
+ * Parse a series of MIME attributes (or parameters) given a header as
+ * input.
+ *
+ * Arguments include:
+ *
+ * filename	- Name of input file (for error messages)
+ * fieldname	- Name of field being processed
+ * headerp	- Pointer to pointer of the beginning of the MIME attributes.
+ *		  Updated to point to end of attributes when finished.
+ * param_head	- Pointer to head of parameter list
+ * param_tail	- Pointer to tail of parameter list
+ * commentp	- Pointer to header comment pointer (may be NULL)
+ *
+ * Returns OK if parsing was successful, NOTOK if parsing failed, and
+ * DONE to indicate a benign error (minor parsing error, but the program
+ * should continue).
+ */
+
+static int
 parse_header_attrs (const char *filename, const char *fieldname,
 		    char **header_attrp, PM *param_head, PM *param_tail,
 		    char **commentp)

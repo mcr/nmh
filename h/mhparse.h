@@ -343,28 +343,6 @@ const char *ce_str (int);
 const struct str2init *get_ce_method (const char *);
 
 /*
- * Parse a series of MIME attributes (or parameters) given a header as
- * input.
- *
- * Arguments include:
- *
- * filename	- Name of input file (for error messages)
- * fieldname	- Name of field being processed
- * headerp	- Pointer to pointer of the beginning of the MIME attributes.
- *		  Updated to point to end of attributes when finished.
- * param_head	- Pointer to head of parameter list
- * param_tail	- Pointer to tail of parameter list
- * commentp	- Pointer to header comment pointer (may be NULL)
- *
- * Returns OK if parsing was successful, NOTOK if parsing failed, and
- * DONE to indicate a benign error (minor parsing error, but the program
- * should continue).
- */
-int parse_header_attrs (const char *filename, const char *fieldname,
-			char **headerp, PM *param_head, PM *param_tail,
-			char **commentp);
-
-/*
  * Given a linked list of parameters, build an output string for them.  This
  * string is designed to be concatenated on an already-built header.
  *
