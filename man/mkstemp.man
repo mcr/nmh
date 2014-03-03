@@ -1,0 +1,81 @@
+.TH MKSTEMP %manext1% "March 2, 2014" "%nmhversion%"
+.\"
+.\" %nmhwarning%
+.\"
+.SH NAME
+mkstemp \- create a temporary file
+.SH SYNOPSIS
+.HP 5
+.na
+.B %libdir%/mkstemp
+.RB [ \-directory
+.IR directory ]
+.RB [ \-prefix
+.IR prefix ]
+.RB [ \-suffix
+.IR suffix ]
+.RB [ \-version ]
+.RB [ \-help ]
+.ad
+.SH DESCRIPTION
+.B mkstemp
+creates a temporary file using
+.IR mkstemp (3),
+or if the
+.B \-suffix
+switch is available and used,
+.IR mkstemps (3).
+The file name identifies a unique, newly created file, and always
+contains 6 characters that appear to be random.
+.PP
+The
+.B \-directory
+switch specifies a
+.I directory
+in which to create the file.
+.PP
+The
+.B \-prefix
+switch specifies an initial part, before the 6 characters, of the file
+name.
+.PP
+The
+.B \-suffix
+switch is only supported on platforms that provide the
+.IR mkstemps (3)
+library function.  It specifies a
+.I suffix
+to appear after the 6 characters; if it should begin with a special
+character such as a period, that must be explicit in
+.IR suffix .
+.PP
+Unlike arguments to most switches of other
+.B nmh
+commands, the arguments to
+.B mkstemp
+switches can begin with a dash.
+.SH "EXIT STATUS"
+If
+.B mkstemp
+successfully creates the temporary file, it prints the file name on
+standard output and exits with status 0.  On failure, it prints a
+diagnostic message on standard error and exits with status -1.
+.SH "PROFILE COMPONENTS"
+None
+.SH "SEE ALSO"
+.IR mkstemp (3),
+.IR mkstemps (3)
+.SH DEFAULTS
+.PD 0
+.TP 14
+\-directory
+current directory
+.TP
+\-prefix
+none
+.TP
+\-suffix
+none
+.PD
+.SH CONTEXT
+None

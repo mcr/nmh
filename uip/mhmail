@@ -215,9 +215,11 @@ fi
 #### .orig file, so it will remove them, too.
 umask 077
 tmpdir="${MHTMPDIR:-${TMPDIR:-`$nmhbindir/mhpath +`}}"
-tmpfile="$tmpdir/mhmail$$"
+tmpfilename=`cd "$tmpdir"  &&  "${nmhlibdir}/mkstemp" -p mhmail`
+[ $? -ne 0 ]  &&  die "mhmail: failed to create temporary file in $tmpdir"
+tmpfile="$tmpdir/$tmpfilename"
 backup_char=`"$nmhbindir"/mhparam sbackup`
-tmpfilebackup="'$tmpdir'/${backup_char}mhmail$$*"
+tmpfilebackup="$tmpdir/${backup_char}${tmpfilename}*"
 tmpfileresent=
 
 message_file=
@@ -234,7 +236,8 @@ else
     #### When resending with send, tmpfile will just contain the
     #### Resent- header fields.  "$tmpfileresent" will contain
     #### the message that is being resent.
-    tmpfileresent="$tmpdir/mhmail-resent$$"
+    tmpfileresent=`"${nmhlibdir}/mkstemp" -d "$tmpdir" -p mhmail-resent`
+    [ $? -ne 0 ]  &&  die "mhmail: failed to create temporary file in $tmpdir"
     mhdist=1; export mhdist
     mhaltmsg=$tmpfileresent; export mhaltmsg
     message_file="$tmpfileresent"

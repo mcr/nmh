@@ -76,8 +76,8 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/mhshow/test-charset test/mhshow/test-textcharset \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
 	test/mhshow/test-subpart test/mhshow/test-msg-buffer-boundaries \
-	test/mhstore/test-mhstore test/new/test-basic \
-	test/pick/test-pick test/pick/test-stderr \
+	test/mhstore/test-mhstore test/mkstemp/test-mkstemp \
+	test/new/test-basic test/pick/test-pick test/pick/test-stderr \
 	test/post/test-post-aliases test/post/test-post-basic \
 	test/post/test-post-multiple test/post/test-post-bcc \
 	test/post/test-post-dcc test/post/test-post-fcc \
@@ -150,9 +150,9 @@ bin_SCRIPTS = uip/mhmail etc/sendfiles
 ##
 ## This is all programs that get installed in the "lib" directory
 ##
-auxexec_PROGRAMS = uip/ap uip/conflict uip/dp uip/fmtdump uip/mhl uip/post \
-		   uip/rcvdist uip/rcvpack uip/rcvstore uip/rcvtty uip/slocal \
-		   uip/viamail uip/mhtest
+auxexec_PROGRAMS = uip/ap uip/conflict uip/dp uip/fmtdump uip/mhl uip/mkstemp \
+		   uip/post uip/rcvdist uip/rcvpack uip/rcvstore uip/rcvtty \
+		   uip/slocal uip/viamail uip/mhtest
 
 auxexec_SCRIPTS = uip/spost
 
@@ -228,8 +228,8 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/mh-format.5 man/mh-mail.5 man/mh-profile.5 man/mh_profile.5 \
 	   man/mh-sequence.5 man/mh-tailor.5 man/mhbuild.1 man/mhfixmsg.1 \
 	   man/mhl.1 man/mhlist.1 man/mhmail.1 man/mhn.1 man/mhparam.1 \
-	   man/mhpath.1 man/mhshow.1 man/mhstore.1 man/msgchk.1 man/msh.1 \
-	   man/mts.conf.5 man/new.1 man/next.1 man/nmh.7 man/packf.1 \
+	   man/mhpath.1 man/mhshow.1 man/mhstore.1 man/mkstemp.1 man/msgchk.1 \
+	   man/msh.1 man/mts.conf.5 man/new.1 man/next.1 man/nmh.7 man/packf.1 \
 	   man/pick.1 man/post.8 man/prev.1 man/prompter.1 man/rcvdist.1 \
 	   man/rcvpack.1 man/rcvstore.1 man/rcvtty.1 man/refile.1 \
 	   man/repl.1 man/rmf.1 man/rmm.1 man/scan.1 man/send.1 \
@@ -249,8 +249,8 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 	   man/mh_profile.man man/mh-sequence.man man/mh-tailor.man \
 	   man/mhbuild.man man/mhfixmsg.man man/mhl.man man/mhlist.man \
 	   man/mhmail.man man/mhn.man man/mhparam.man man/mhpath.man \
-	   man/mhshow.man man/mhstore.man man/msgchk.man man/msh.man \
-	   man/mts.conf.man man/new.man man/next.man man/nmh.man \
+	   man/mhshow.man man/mhstore.man man/mkstemp.man man/msgchk.man \
+	   man/msh.man man/mts.conf.man man/new.man man/next.man man/nmh.man \
 	   man/packf.man man/pick.man man/post.man man/prev.man \
 	   man/prompter.man man/rcvdist.man man/rcvpack.man \
 	   man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
@@ -431,6 +431,9 @@ uip_mhtest_SOURCES = uip/mhtest.c uip/mhparse.c uip/mhcachesbr.c \
 		     uip/mhoutsbr.c uip/mhmisc.c uip/mhfree.c \
 		     uip/md5.c
 uip_mhtest_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
+
+uip_mkstemp_SOURCES = uip/mkstemp.c
+uip_mkstemp_LDADD = $(LDADD) $(POSTLINK)
 
 uip_post_SOURCES = uip/post.c uip/aliasbr.c
 uip_post_LDADD = mts/libmts.a $(LDADD) $(SASLLIB) $(TLSLIB) $(POSTLINK)
