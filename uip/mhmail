@@ -48,8 +48,16 @@ finddir() {
   esac
 }
 
+#### Convenience function to allow concise code below.
+die() {
+    [ $# -gt 0 ]  &&  printf '%s\n' "$1" >&2
+    exit 1
+}
+
+
 bindir=`finddir $0`
 nmhbindir=`cd "$bindir" && pwd`
+nmhlibdir=`$nmhbindir/mhparam libdir`
 case `printf 'OK\n' | tail -n 1 2>&1` in
   OK) tail='tail -n ' ;;
   *)  tail='tail -' ;;
@@ -59,19 +67,19 @@ esac
 #### Checks for missing mandatory arguments.
 checkforargs() {
   if [ $attacharg -eq 1 ]; then
-    printf 'mhmail: missing argument to -attach\n' >&2; exit 1
+    die 'mhmail: missing argument to -attach'
   elif [ $bodyarg -eq 1 ]; then
-    printf 'mhmail: missing argument to -body\n' >&2; exit 1
+    die 'mhmail: missing argument to -body'
   elif [ $ccarg -eq 1  -a  "$cclist"x = x ]; then
-    printf 'mhmail: missing argument to -cc\n' >&2; exit 1
+    die 'mhmail: missing argument to -cc'
   elif [ $fromarg -eq 1 ]; then
-    printf 'mhmail: missing argument to -from\n' >&2; exit 1
+    die 'mhmail: missing argument to -from'
   elif [ $headerfieldarg -eq 1 ]; then
-    printf 'mhmail: missing argument to -headerfield\n' >&2; exit 1
+    die 'mhmail: missing argument to -headerfield'
   elif [ $subjectarg -eq 1 ]; then
-    printf 'mhmail: missing argument to -subject\n' >&2; exit 1
+    die 'mhmail: missing argument to -subject'
   elif [ $toarg -eq 1 ]; then
-    printf 'mhmail: missing argument to -to\n' >&2; exit 1
+    die 'mhmail: missing argument to -to'
   fi
 }
 
@@ -122,8 +130,7 @@ for arg in "$@"; do
     -hel|-help) printf '%s\n' "$usage"; exit ;;
     -nose|-nosen|-nosend) mhmailswitch=1; sendsw=0 ;;
     -p|-pr|-pro|-prof|-profi|-profil|-profile) mhmailswitch=1; use_send=1 ;;
-    -resend) printf 'mhmail: did you mean -resent instead of -resend?\n' >&2
-       exit 1 ;;
+    -resend) die 'mhmail: did you mean -resent instead of -resend?' ;;
     -r|-re|-res|-rese|-resen|-resent) mhmailswitch=1; resent=1 ;;
     -se|-sen|-send) mhmailswitch=1; sendsw=1 ;;
     -su|-sub|-subj|-subje|-subjec|-subject) mhmailswitch=1; subjectarg=1 ;;
@@ -179,11 +186,10 @@ done
 
 #### Check for at least one address and -from.
 if [ "$tolist"x = x ]; then
-  printf 'Usage: mhmail [-t(o)] addrs ... [switches]\n' >&2; exit 1
+  die 'Usage: mhmail [-t(o)] addrs ... [switches]'
 fi
 if [ "$from"x = x ]; then
-  nmhlibdir=`$nmhbindir/mhparam libdir`/
-  from=`${nmhlibdir}ap -format '%(localmbox)' 0`
+  from=`${nmhlibdir}/ap -format '%(localmbox)' 0`
 fi
 
 #### Check for missing mandatory arguments.
@@ -214,8 +220,6 @@ backup_char=`"$nmhbindir"/mhparam sbackup`
 tmpfilebackup="'$tmpdir'/${backup_char}mhmail$$*"
 tmpfileresent=
 
-trap "rm -f '$tmpfile' $tmpfilebackup ${tmpfileresent:+'$tmpfileresent'}" 0
-
 message_file=
 if [ $resent -eq 0 ]; then
   #### Add blank line after header if not resending.
@@ -238,6 +242,8 @@ else
   fi
 fi
 
+trap "rm -f '$tmpfile' $tmpfilebackup ${tmpfileresent:+'$tmpfileresent'}" 0
+
 if [ "$body"x = x ]; then
   #### First put message header in the file.
   printf %s "$header" >"$tmpfile" || exit 2
@@ -251,8 +257,7 @@ if [ "$body"x = x ]; then
   #### Don't allow an empty body (from stdin).  Use string
   #### comparison so we don't have to strip the filename, etc.
   if [ "$tmpfile_size_before" = "$tmpfile_size_after" ]; then
-    printf 'mhmail: empty message not sent, use -body '"''"' to force.\n' >&2
-    exit 1
+    die 'mhmail: empty message not sent, use -body '"''"' to force.'
   fi
 
   #### Add trailing newline to body if it doesn't have one.
