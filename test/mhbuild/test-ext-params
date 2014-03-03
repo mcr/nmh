@@ -142,4 +142,43 @@ EOF
 
 check "$draft" "$expected"
 
+#
+# Alternate version; specify a disposion, but not an explicit filename
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+This is a test message
+#image/jpeg {attachment} $MH_TEST_DIR/tïny.jpg
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test message
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg
+Content-Disposition: attachment; filename*=UTF-8''t%C3%AFny.jpg
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
 exit ${failed:-0}
