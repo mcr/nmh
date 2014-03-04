@@ -3256,7 +3256,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	char *value;
 	int index;
 	struct sectlist *next;
-    } *sp;
+    } *sp, *sp2;
     struct parmlist {
 	char *name;
 	char *charset;
@@ -3266,7 +3266,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
     } *pp, *phead = NULL;
 
     while (*cp == ';') {
-	char *dp, *vp, *up, c, *nameptr, *valptr, *charset, *lang;
+	char *dp, *vp, *up, c, *nameptr, *valptr, *charset = NULL, *lang = NULL;
 	int encoded = 0, partial = 0, index = 0, len = 0;
 
 	cp++;
@@ -3313,15 +3313,15 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	 * If there's a * and one or more digits, then it's section N.
 	 *
 	 * Remember we can have one or the other, or both.  cp points to
-	 * beginning of name, up points to the last character in the
+	 * beginning of name, up points past the last character in the
 	 * parameter name.
 	 */
 
-	for (vp = cp; vp <= up; vp++) {
-	    if (*vp == '*' && vp < up) {
+	for (vp = cp; vp < up; vp++) {
+	    if (*vp == '*' && vp < up - 1) {
 		partial = 1;
 		continue;
-	    } else if (*vp == '*' && vp == up) {
+	    } else if (*vp == '*' && vp == up - 1) {
 	    	encoded = 1;
 	    } else if (partial) {
 		if (isdigit((unsigned char) *vp))
@@ -3369,7 +3369,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 			charset = NULL;
 		    }
 		} else {
-		    advise(NULL, "missing charset in message %s's %s:
+		    advise(NULL, "missing charset in message %s's %s: "
 			   "field\n%*s(parameter %s)", filename, fieldname,
 			   strlen(invo_name) + 2, "", nameptr);
 		    free(nameptr);
@@ -3407,7 +3407,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	     * length so we can allocate the correct buffer size.
 	     */
 
-	    for (dp = vp, len = 0; *vp != '\0' && !isspace((unsigned char *vp);
+	    for (dp = vp, len = 0; *vp != '\0' && !isspace((unsigned char) *vp);
 	    							vp++) {
 		if (*vp == '%') {
 		     if (*(vp + 1) == '\0' ||
@@ -3432,8 +3432,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 
 	    up = valptr = mh_xmalloc(len + 1);
 
-	    for (vp = dp; *vp != '\0' && !isspace((unsigned char *vp); vp++) {
-		if (*vp = '%') {
+	    for (vp = dp; *vp != '\0' && !isspace((unsigned char) *vp); vp++) {
+		if (*vp == '%') {
 		    *up++ = decode_qp(*(vp + 1), *(vp + 2));
 		    vp += 2;
 		} else {
@@ -3451,13 +3451,12 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	     * buffer.
 	     */
 
-	    dp = vp;
 	    len = 0;
 
 	    if (*dp == '"') {
 		for (cp = dp + 1;;) {
 		    switch (*cp++) {
-		    case '\0:
+		    case '\0':
 bad_quote:
 		        advise (NULL,
 				"invalid quoted-string in message %s's %s: "
@@ -3484,9 +3483,30 @@ bad_quote:
 		    break;
 		}
 
-		valptr = mh_xmalloc(len + 1);
-	    } else 
+	    } else {
+		for (cp = dp; istoken (*cp); cp++) {
+		    len++;
+		}
+	    }
 
+	    valptr = mh_xmalloc(len + 1);
+
+	    if (*dp == '"') {
+	    	int i;
+		for (cp = dp + 1, vp = valptr, i = 0; i < len; i++) {
+		    if (*cp == '\\') {
+			cp++;
+		    }
+		    *vp++ = *cp++;
+		}
+		cp++;
+	    } else {
+	    	strncpy(valptr, dp, len);
+		cp += len;
+	    }
+
+	    valptr[len] = '\0';
+	}
 
 	/*
 	 * If 'partial' is set, we don't allocate a parameter now.  We
@@ -3510,60 +3530,62 @@ bad_quote:
 		phead = pp;
 	    }
 
-	    if (index == 0 && encoded) {
+	    /*
+	     * Insert this into the section linked list
+	     */
 
-	pm = mh_xmalloc(sizeof(*pm));
-	memset(pm, 0, sizeof(*pm));
+	    sp = mh_xmalloc(sizeof(*sp));
+	    memset(sp, 0, sizeof(*sp));
+	    sp->value = valptr;
+	    sp->index = index;
 
-	/* This is all mega-bozo and needs cleanup */
-	vp = (pm->pm_name = add (cp, NULL)) + (up - cp);
-	*vp = '\0';
-
-	/* Now store the attribute value. */
-
-	vp = pm->pm_name + (dp - cp);
-
-	if (*dp == '"') {
-	    for (cp = ++dp, dp = vp;;) {
-		switch (*cp++) {
-		    case '\0':
-bad_quote:
-		        advise (NULL,
-				"invalid quoted-string in message %s's %s: "
-                                "field\n%*s(parameter %s)",
+	    if (pp->sechead == NULL || pp->sechead->index > index) {
+		sp->next = pp->sechead;
+		pp->sechead = sp;
+	    } else {
+		for (sp2 = pp->sechead; sp2 != NULL; sp2 = sp2->next) {
+		    if (sp2->index == sp->index) {
+			advise (NULL, "duplicate index (%d) in message "
+				"%s's %s: field\n%*s(parameter %s)", sp->index,
 				filename, fieldname, strlen(invo_name) + 2, "",
-				pm->pm_name);
+				nameptr);
 			return NOTOK;
-
-		    case '\\':
-			*dp++ = c;
-			if ((c = *cp++) == '\0')
-			    goto bad_quote;
-			/* else fall... */
-
-		    default:
-			*dp++ = c;
-			continue;
-
-		    case '"':
-			*dp = '\0';
+		    }
+		    if (sp2->index < sp->index &&
+			(sp2->next == NULL || sp2->next->index < sp->index)) {
+			sp->next = sp2->next;
+			sp2->next = sp;
 			break;
+		    }
 		}
-		break;
+
+		if (sp2 == NULL) {
+		    advise(NULL, "Internal error: cannot insert partial "
+		    	   "param in message %s's %s: field\n*s(parameter %s)",
+			   filename, fieldname, strlen(invo_name) + 2, "",
+			   nameptr);
+		    return NOTOK;
+		}
+	    }
+
+	    /*
+	     * Save our charset and lang tags.
+	     */
+
+	    if (index == 0 && encoded) {
+		if (pp->charset)
+		    free(pp->charset);
+	    	pp->charset = charset;
+		if (pp->lang)
+		    free(pp->lang);
+		pp->lang = lang;
 	    }
 	} else {
-	    for (cp = dp, dp = vp; istoken (*cp); cp++, dp++)
-		continue;
-	    *dp = '\0';
-	}
-	pm->pm_value = getcpy(vp); 
-	if (!*vp) {
-	    advise (NULL,
-		    "invalid parameter in message %s's %s: "
-                    "field\n%*s(parameter %s)",
-		    filename, fieldname, strlen(invo_name) + 2, "",
-		    pm->pm_name);
-	    return NOTOK;
+	    pm = add_param(param_head, param_tail, nameptr, valptr);
+	    free(nameptr);
+	    free(valptr);
+	    pm->pm_charset = charset;
+	    pm->pm_lang = lang;
 	}
 
 	while (isspace ((unsigned char) *cp))
@@ -3573,14 +3595,6 @@ bad_quote:
             get_comment (filename, fieldname, &cp, commentp) == NOTOK) {
 	    return NOTOK;
         }
-
-	if (*param_head == NULL) {
-	    *param_head = pm;
-	    *param_tail = pm;
-	} else {
-	    (*param_tail)->pm_next = pm;
-	    *param_tail = pm;
-	}
     }
 
     *header_attrp = cp;
