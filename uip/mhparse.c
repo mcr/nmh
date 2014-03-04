@@ -3252,9 +3252,22 @@ parse_header_attrs (const char *filename, const char *fieldname,
 {
     char *cp = *header_attrp;
     PM pm;
+    struct sectlist {
+	char *value;
+	int index;
+	struct sectlist *next;
+    } *sp;
+    struct parmlist {
+	char *name;
+	char *charset;
+	char *lang;
+	struct sectlist *sechead;
+	struct parmlist *next;
+    } *pp, *phead = NULL;
 
     while (*cp == ';') {
-	char *dp, *vp, *up, c;
+	char *dp, *vp, *up, c, *nameptr, *valptr, *charset, *lang;
+	int encoded = 0, partial = 0, index = 0, len = 0;
 
 	cp++;
 	while (isspace ((unsigned char) *cp))
@@ -3288,14 +3301,223 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	    return NOTOK;
 	}
 
+	/*
+	 * To handle RFC 2231, we have to deal with the following extensions:
+	 *
+	 * name*=encoded-value
+	 * name*<N>=part-N-of-a-parameter-value
+	 * name*<N>*=encoded-part-N-of-a-parameter-value
+	 *
+	 * So the rule is:
+	 * If there's a * right before the equal sign, it's encoded.
+	 * If there's a * and one or more digits, then it's section N.
+	 *
+	 * Remember we can have one or the other, or both.  cp points to
+	 * beginning of name, up points to the last character in the
+	 * parameter name.
+	 */
+
+	for (vp = cp; vp <= up; vp++) {
+	    if (*vp == '*' && vp < up) {
+		partial = 1;
+		continue;
+	    } else if (*vp == '*' && vp == up) {
+	    	encoded = 1;
+	    } else if (partial) {
+		if (isdigit((unsigned char) *vp))
+		    index = *vp - '0' + index * 10;
+		else {
+		    advise (NULL, "invalid parameter index in message %s's "
+			    "%s: field\n%*s(parameter %s)", filename,
+			    fieldname, strlen(invo_name) + 2, "", cp);
+		    return NOTOK;
+		}
+	    } else {
+		len++;
+	    }
+	}
+
+	/*
+	 * Break out the parameter name and value sections and allocate
+	 * memory for each.
+	 */
+
+	nameptr = mh_xmalloc(len + 1);
+	strncpy(nameptr, cp, len);
+	nameptr[len] = '\0';
+
+	for (dp++; isspace ((unsigned char) *dp);)
+	    dp++;
+
+	if (encoded) {
+	    /*
+	     * Single quotes delimit the character set and language tag.
+	     * They are required on the first section (or a complete
+	     * parameter).
+	     */
+	    if (index == 0) {
+	    	vp = dp;
+		while (*vp != '\'' && !isspace((unsigned char) *vp))
+		    vp++;
+		if (*vp == '\'') {
+		    if (vp != dp) {
+			len = vp - dp;
+			charset = mh_xmalloc(len + 1);
+			strncpy(charset, dp, len);
+			charset[len] = '\0';
+		    } else {
+			charset = NULL;
+		    }
+		} else {
+		    advise(NULL, "missing charset in message %s's %s:
+			   "field\n%*s(parameter %s)", filename, fieldname,
+			   strlen(invo_name) + 2, "", nameptr);
+		    free(nameptr);
+		    return NOTOK;
+		}
+	    }
+
+	    vp = (dp = vp);
+	    while (*vp != '\'' && !isspace((unsigned char) *vp))
+		vp++;
+
+	    if (*vp == '\'') {
+		if (vp != dp) {
+		    len = vp - dp;
+		    lang = mh_xmalloc(len + 1);
+		    strncpy(lang, dp, len);
+		    lang[len] = '\0';
+		} else {
+		    charset = NULL;
+		}
+	    } else {
+		advise(NULL, "missing language tag in message %s's %s: "
+		       "field\n%*s(parameter %s)", filename, fieldname,
+		       strlen(invo_name) + 2, "", nameptr);
+		free(nameptr);
+		if (charset)
+		     free(charset);
+		return NOTOK;
+	    }
+
+	    /*
+	     * At this point vp should be pointing at the beginning
+	     * of the encoded value/section.  Continue until we reach
+	     * the end or get whitespace.  But first, calculate the
+	     * length so we can allocate the correct buffer size.
+	     */
+
+	    for (dp = vp, len = 0; *vp != '\0' && !isspace((unsigned char *vp);
+	    							vp++) {
+		if (*vp == '%') {
+		     if (*(vp + 1) == '\0' ||
+				!isxdigit((unsigned char) *(vp + 1)) ||
+				*(vp + 2) == '\0' ||
+				!isxdigit((unsigned char) *(vp + 2))) {
+			advise(NULL, "invalid encoded sequence in message "
+			       "%s's %s: field\n%*s(parameter %s)",
+			       filename, fieldname, strlen(invo_name) + 2,
+			       "", nameptr);
+			free(nameptr);
+			if (charset)
+			    free(charset);
+			if (lang)
+			    free(lang);
+			return NOTOK;
+		    }
+		    vp += 2;
+		}
+		len++;
+	    }
+
+	    up = valptr = mh_xmalloc(len + 1);
+
+	    for (vp = dp; *vp != '\0' && !isspace((unsigned char *vp); vp++) {
+		if (*vp = '%') {
+		    *up++ = decode_qp(*(vp + 1), *(vp + 2));
+		    vp += 2;
+		} else {
+		    *up++ = *vp;
+		}
+	    }
+
+	    *up = '\0';
+	} else {
+	    /*
+	     * A "normal" string.  If it's got a leading quote, then we
+	     * strip the quotes out.  Otherwise go until we reach the end
+	     * or get whitespace.  Note we scan it twice; once to get the
+	     * length, then the second time copies it into the destination
+	     * buffer.
+	     */
+
+	    dp = vp;
+	    len = 0;
+
+	    if (*dp == '"') {
+		for (cp = dp + 1;;) {
+		    switch (*cp++) {
+		    case '\0:
+bad_quote:
+		        advise (NULL,
+				"invalid quoted-string in message %s's %s: "
+                                "field\n%*s(parameter %s)",
+				filename, fieldname, strlen(invo_name) + 2, "",
+				nameptr);
+			free(nameptr);
+			if (charset)
+			    free(charset);
+			if (lang)
+			    free(lang);
+			return NOTOK;
+		    case '"':
+			break;
+
+		    case '\\':
+			if (*++cp == '\0')
+			    goto bad_quote;
+			/* FALL THROUGH */
+		    default:
+			len++;
+			continue;
+		    }
+		    break;
+		}
+
+		valptr = mh_xmalloc(len + 1);
+	    } else 
+
+
+	/*
+	 * If 'partial' is set, we don't allocate a parameter now.  We
+	 * put it on the parameter linked list to be reassembled later.
+	 *
+	 * "phead" points to a list of all parameters we need to reassemble.
+	 * Each parameter has a list of sections. We insert the sections in
+	 * order.
+	 */
+
+	if (partial) {
+	    for (pp = phead; pp != NULL; pp = pp->next) {
+		if (strcasecmp(nameptr, pp->name) == 0)
+		    break;
+	    }
+
+	    if (pp == NULL) {
+		pp = mh_xmalloc(sizeof(*pp));
+		memset(pp, 0, sizeof(*pp));
+		pp->next = phead;
+		phead = pp;
+	    }
+
+	    if (index == 0 && encoded) {
+
 	pm = mh_xmalloc(sizeof(*pm));
 	memset(pm, 0, sizeof(*pm));
 
 	/* This is all mega-bozo and needs cleanup */
 	vp = (pm->pm_name = add (cp, NULL)) + (up - cp);
 	*vp = '\0';
-	for (dp++; isspace ((unsigned char) *dp);)
-	    dp++;
 
 	/* Now store the attribute value. */
 
@@ -3303,7 +3525,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 
 	if (*dp == '"') {
 	    for (cp = ++dp, dp = vp;;) {
-		switch (c = *cp++) {
+		switch (*cp++) {
 		    case '\0':
 bad_quote:
 		        advise (NULL,
