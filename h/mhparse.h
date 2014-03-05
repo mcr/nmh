@@ -322,13 +322,14 @@ CT parse_mime (char *);
  *		  CE_QUOTED.
  * maxunencoded	- The maximum line length before the default encoding for
  *		  text parts is quoted-printable.
+ * verbose	- If 1, output verbose information during message composition
  *
  * Returns a CT structure describing the resulting MIME message.  If the
  * -auto flag is set and a MIME-Version header is encountered, the return
  * value is NULL.
  */
 CT build_mime (char *infile, int autobuild, int dist, int directives,
-	       int encoding, size_t maxunencoded);
+	       int encoding, size_t maxunencoded, int verbose);
 
 int add_header (CT, char *, char *);
 int get_ctinfo (char *, CT, int);
@@ -341,6 +342,51 @@ char *ct_subtype_str (int, int);
 const struct str2init *get_ct_init (int);
 const char *ce_str (int);
 const struct str2init *get_ce_method (const char *);
+
+/*
+ * Given a list of messages, display information about them on standard
+ * output.
+ *
+ * Argumens are:
+ *
+ * cts		- An array of CT elements of messages that need to be
+ *		  displayed.  Array is terminated by a NULL.
+ * headsw	- If 1, display a column header.
+ * sizesw	- If 1, display the size of the part.
+ * verbosw	- If 1, display verbose information
+ * debugsw	- If 1, turn on debugging for the output.
+ * disposw	- If 1, display MIME part disposition information.
+ *
+ */
+void list_all_messages(CT *cts, int headsw, int sizesw, int verbosw,
+		       int debugsw, int disposw);
+
+/*
+ * List the content information of a single MIME part on stdout.
+ *
+ * Arguments are:
+ *
+ * ct		- MIME Content structure to display.
+ * toplevel	- If set, we're at the top level of a message
+ * realsize	- If set, determine the real size of the content
+ * verbose	- If set, output verbose information
+ * debug	- If set, turn on debugging for the output
+ * dispo	- If set, display MIME part disposition information.
+ *
+ * Returns OK on success, NOTOK otherwise.
+ */
+int list_content(CT ct, int toplevel, int realsize, int verbose, int debug,
+		 int dispo);
+
+/*
+ * Display content-appropriate information on MIME parts, decending recursively
+ * into multipart content if appropriate.  Uses list_content() for displaying
+ * generic information.
+ *
+ * Arguments and return value are the same as list_content().
+ */
+int list_switch(CT ct, int toplevel, int realsize, int verbose, int debug,
+		int dispo);
 
 /*
  * Given a linked list of parameters, build an output string for them.  This

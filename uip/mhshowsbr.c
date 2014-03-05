@@ -41,10 +41,6 @@ int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
 
-/* mhlistsbr.c */
-int list_switch (CT, int, int, int, int);
-int list_content (CT, int, int, int, int);
-
 /*
  * prototypes
  */
@@ -515,9 +511,9 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	char prompt[BUFSIZ];
 
 	if (ct->c_type == CT_MULTIPART)
-	    list_content (ct, -1, 1, 0, 0);
+	    list_content (ct, -1, 1, 0, 0, 0);
 	else
-	    list_switch (ct, -1, 1, 0, 0);
+	    list_switch (ct, -1, 1, 0, 0, 0);
 
 	if (xpause && isatty (fileno (stdout))) {
 	    int	intr;

@@ -17,6 +17,7 @@ mhbuild \- translate MIME composition draft
 .RB [ \-rfc934mode " | " \-norfc934mode ]
 .RB [ \-contentid " | " \-nocontentid ]
 .RB [ \-verbose " | " \-noverbose ]
+.RB [ \-disposition " | " \-nodisposition ]
 .RB [ \-check " | " \-nocheck ]
 .RB [ \-headerencoding 
 .IR encoding\-algorithm
@@ -81,6 +82,11 @@ switch
 is present, then the listing will show any \*(lqextra\*(rq information
 that is present in the message, such as comments in the
 \*(lqContent-Type\*(rq header.
+.PP
+If the
+.B \-disposition
+switch is present, then the listing will show any relevant information from
+the \*(lqContent-Disposition\*(rq header.
 .SS "Simplified Attachment Interface"
 For users who wish to simply attach files to text content,
 .B mhbuild
@@ -777,6 +783,7 @@ is checked.
 .RB ` \-contentid '
 .RB ` \-nocheck '
 .RB ` \-noverbose '
+.RB ` \-nodisposition '
 .RB ` \-autoheaderencoding '
 .RB ` "\-maxunencoded\ 78"'
 .fi

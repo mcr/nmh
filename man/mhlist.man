@@ -27,6 +27,7 @@ mhlist \- list information about MIME messages
 .RB [ \-check " | " \-nocheck ]
 .RB [ \-changecur " | " \-nochangecur ]
 .RB [ \-verbose " | " \-noverbose ]
+.RB [ \-disposition " | " \-nodisposition ]
 .RB [ \-version ]
 .RB [ \-help ]
 .ad
@@ -60,6 +61,11 @@ If the
 switch is present, then the listing will show
 any \*(lqextra\*(rq information that is present in the message,
 such as comments in the \*(lqContent-Type\*(rq header.
+.PP
+If the
+.B \-disposition
+switch is present, then the listing will show any relevant information from
+the \*(lqContent-Disposition\*(rq header.
 .PP
 The option
 .B \-file
@@ -187,6 +193,7 @@ integrity of the content.
 .RB ` \-wcache\ ask '
 .RB ` \-changecur '
 .RB ` \-noverbose '
+.RB ` \-nodisposition '
 .fi
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last

@@ -27,6 +27,8 @@
     X("norealsize", 0, NSIZESW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
+    X("disposition", 0, DISPOSW) \
+    X("nodisposition", 0, NDISPOSW) \
     X("file file", 0, FILESW) \
     X("part number", 0, PARTSW) \
     X("type content", 0, TYPESW) \
@@ -67,7 +69,6 @@ extern int userrs;
 pid_t xpid  = 0;
 
 int debugsw = 0;
-int verbosw = 0;
 
 #define	quitser	pipeser
 
@@ -78,9 +79,6 @@ CT parse_mime (char *);
 int part_ok (CT, int);
 int type_ok (CT, int);
 void flush_errors (void);
-
-/* mhlistsbr.c */
-void list_all_messages (CT *, int, int, int, int);
 
 /* mhfree.c */
 extern CT *cts;
@@ -95,7 +93,7 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int sizesw = 1, headsw = 1, chgflag = 1;
+    int sizesw = 1, headsw = 1, chgflag = 1, verbosw = 0, dispo = 0;
     int msgnum, *icachesw;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
@@ -209,6 +207,12 @@ do_cache:
 	    case NVERBSW: 
 		verbosw = 0;
 		continue;
+	    case DISPOSW:
+		dispo = 1;
+		continue;
+	    case NDISPOSW:
+		dispo = 0;
+		continue;
 	    case DEBUGSW:
 		debugsw = 1;
 		continue;
@@ -319,7 +323,7 @@ do_cache:
     /*
      * List the message content
      */
-    list_all_messages (cts, headsw, sizesw, verbosw, debugsw);
+    list_all_messages (cts, headsw, sizesw, verbosw, debugsw, dispo);
 
     /* Now free all the structures for the content */
     for (ctp = cts; *ctp; ctp++)

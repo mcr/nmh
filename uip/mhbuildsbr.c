@@ -32,7 +32,6 @@
 
 
 extern int debugsw;
-extern int verbosw;
 
 extern int listsw;
 extern int rfc934sw;
@@ -76,7 +75,7 @@ static void setup_attach_content(CT, char *);
 static char *fgetstr (char *, int, FILE *);
 static int user_content (FILE *, char *, CT *);
 static void set_id (CT, int);
-static int compose_content (CT);
+static int compose_content (CT, int);
 static int scan_content (CT, size_t);
 static int build_headers (CT, int);
 static char *calculate_digest (CT, int);
@@ -124,7 +123,7 @@ static void directive_pop(void)
 
 CT
 build_mime (char *infile, int autobuild, int dist, int directives,
-	    int header_encoding, size_t maxunencoded)
+	    int header_encoding, size_t maxunencoded, int verbose)
 {
     int	compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -439,7 +438,7 @@ finish_field:
      * Fill out, or expand directives.  Parse and execute
      * commands specified by profile composition strings.
      */
-    compose_content (ct);
+    compose_content (ct, verbose);
 
     if ((cp = strchr(prefix, 'a')) == NULL)
 	adios (NULL, "internal error(4)");
@@ -1049,7 +1048,7 @@ set_id (CT ct, int top)
  */
 
 static int
-compose_content (CT ct)
+compose_content (CT ct, int verbose)
 {
     CE ce = &ct->c_cefile;
 
@@ -1075,7 +1074,7 @@ compose_content (CT ct)
 
 	    sprintf (pp, "%d", partnum);
 	    p->c_partno = add (partnam, NULL);
-	    if (compose_content (p) == NOTOK)
+	    if (compose_content (p, verbose) == NOTOK)
 		return NOTOK;
 	}
 
@@ -1212,7 +1211,7 @@ raw:
 		}
 	    }
 
-	    if (verbosw)
+	    if (verbose)
 		printf ("composing content %s/%s from command\n\t%s\n",
 			ci->ci_type, ci->ci_subtype, buffer);
 
