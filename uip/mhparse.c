@@ -3368,6 +3368,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		    } else {
 			charset = NULL;
 		    }
+		    vp++;
 		} else {
 		    advise(NULL, "missing charset in message %s's %s: "
 			   "field\n%*s(parameter %s)", filename, fieldname,
@@ -3388,8 +3389,9 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		    strncpy(lang, dp, len);
 		    lang[len] = '\0';
 		} else {
-		    charset = NULL;
+		    lang = NULL;
 		}
+		vp++;
 	    } else {
 		advise(NULL, "missing language tag in message %s's %s: "
 		       "field\n%*s(parameter %s)", filename, fieldname,
@@ -3442,6 +3444,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	    }
 
 	    *up = '\0';
+	    cp = vp;
 	} else {
 	    /*
 	     * A "normal" string.  If it's got a leading quote, then we
