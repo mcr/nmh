@@ -3358,7 +3358,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	     */
 	    if (index == 0) {
 	    	vp = dp;
-		while (*vp != '\'' && !isspace((unsigned char) *vp))
+		while (*vp != '\'' && !isspace((unsigned char) *vp) &&
+							*vp != '\0')
 		    vp++;
 		if (*vp == '\'') {
 		    if (vp != dp) {
@@ -3377,30 +3378,31 @@ parse_header_attrs (const char *filename, const char *fieldname,
 		    free(nameptr);
 		    return NOTOK;
 		}
-	    }
+		dp = vp;
 
-	    vp = (dp = vp);
-	    while (*vp != '\'' && !isspace((unsigned char) *vp))
-		vp++;
+		while (*vp != '\'' && !isspace((unsigned char) *vp) &&
+							*vp != '\0')
+		    vp++;
 
-	    if (*vp == '\'') {
-		if (vp != dp) {
-		    len = vp - dp;
-		    lang = mh_xmalloc(len + 1);
-		    strncpy(lang, dp, len);
-		    lang[len] = '\0';
+		if (*vp == '\'') {
+		    if (vp != dp) {
+			len = vp - dp;
+			lang = mh_xmalloc(len + 1);
+			strncpy(lang, dp, len);
+			lang[len] = '\0';
+		    } else {
+			lang = NULL;
+		    }
+		    vp++;
 		} else {
-		    lang = NULL;
+		    advise(NULL, "missing language tag in message %s's %s: "
+			   "field\n%*s(parameter %s)", filename, fieldname,
+			   strlen(invo_name) + 2, "", nameptr);
+		    free(nameptr);
+		    if (charset)
+			free(charset);
+		    return NOTOK;
 		}
-		vp++;
-	    } else {
-		advise(NULL, "missing language tag in message %s's %s: "
-		       "field\n%*s(parameter %s)", filename, fieldname,
-		       strlen(invo_name) + 2, "", nameptr);
-		free(nameptr);
-		if (charset)
-		     free(charset);
-		return NOTOK;
 	    }
 
 	    /*
