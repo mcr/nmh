@@ -222,8 +222,7 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug,
     }
 
     if (dispo && ct->c_dispo_type) {
-	printf (LSTFMT2d2, ct->c_dispo_type);
-	printf ("\n");
+	printf ("\t     disposition \"%s\"\n", ct->c_dispo_type);
 
 	if (verbose) {
 	    for (pm = ct->c_dispo_first; pm; pm = pm->pm_next) {
