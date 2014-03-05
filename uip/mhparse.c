@@ -3414,7 +3414,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	     * length so we can allocate the correct buffer size.
 	     */
 
-	    for (len = 0; istoken(*vp); vp++) {
+	    for (vp = dp, len = 0; istoken(*vp); vp++) {
 		if (*vp == '%') {
 		     if (*(vp + 1) == '\0' ||
 				!isxdigit((unsigned char) *(vp + 1)) ||
