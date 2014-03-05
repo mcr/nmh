@@ -3403,6 +3403,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 			free(charset);
 		    return NOTOK;
 		}
+
+		dp = vp;
 	    }
 
 	    /*
@@ -3412,8 +3414,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	     * length so we can allocate the correct buffer size.
 	     */
 
-	    for (dp = vp, len = 0; *vp != '\0' && !isspace((unsigned char) *vp);
-	    							vp++) {
+	    for (len = 0; istoken(*vp); vp++) {
 		if (*vp == '%') {
 		     if (*(vp + 1) == '\0' ||
 				!isxdigit((unsigned char) *(vp + 1)) ||
@@ -3437,7 +3438,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 
 	    up = valptr = mh_xmalloc(len + 1);
 
-	    for (vp = dp; *vp != '\0' && !isspace((unsigned char) *vp); vp++) {
+	    for (vp = dp; istoken(*vp); vp++) {
 		if (*vp == '%') {
 		    *up++ = decode_qp(*(vp + 1), *(vp + 2));
 		    vp += 2;
