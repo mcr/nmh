@@ -37,7 +37,7 @@ a valid MIME message.
 .B mhbuild
 creates multi-media messages as specified in RFC 2045
 to RFC 2049.  This includes the encoding of message headers as specified
-by RFC 2047.
+by RFC 2047, and the encoding of MIME parameters as specified in RFC 2231.
 .PP
 If you specify the name of the composition file as \*(lq-\*(rq,
 then
@@ -306,7 +306,7 @@ would be as follows:
 .fi
 .RE
 .PP
-Any long URLs will be wrapped according to RFC 2017 rules.
+Any long URLs will be wrapped according to RFC 2231 rules.
 .PP
 The \*(lqmessage\*(rq directive (#forw) is used to specify a message or
 group of messages to include.  You may optionally specify the name of
