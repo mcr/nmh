@@ -1,0 +1,70 @@
+#!/bin/sh
+######################################################
+#
+# Test mhlist with extended parameters (RFC 2231)
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+LC_ALL=en_US.UTF-8; export LC_ALL
+
+#
+# Write a message with some extended parameters
+#
+
+msgfile=`mhpath new`
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist ext param test 1
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset=us-ascii;
+	name*=utf-8''This%20%C3%AFs%20the%20filename
+
+This is a test
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg;
+	name*0="This is an example of a very long filename. I wonder ";
+	name*1=if;
+	name*2=" this filename might be too long.  It should not be.  But";
+	name*3=" will it be?.jpg"
+Content-Disposition: attachment;
+	filename*0="This is an example of a very long filename. I wonder ";
+	filename*1=if;
+	filename*2=" this filename might be too long.  It should not be.  But";
+	filename*3=" will it be?.jpg"
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+# check to see if we decode parameters correctly.
+
+run_test 'mhlist last -noheader -verbose' \
+'  11       multipart/mixed            637
+	     boundary="----- =_aaaaaaaaaa0"
+     1     text/plain                  15
+	     charset="us-ascii"
+	     name="This ïs the filename"
+     2     image/jpeg                   2
+	     name="This is an example of a very long filename. I wonder if this filename might be too long.  It should not be.  But will it be?.jpg"'
+
+exit $failed

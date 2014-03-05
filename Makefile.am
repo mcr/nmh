@@ -71,7 +71,8 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/mhbuild/test-forw test/mhbuild/test-header-encode \
 	test/mhbuild/test-utf8-body \
 	test/mhfixmsg/test-mhfixmsg \
-	test/mhlist/test-mhlist test/mhmail/test-mhmail \
+	test/mhlist/test-mhlist test/mhlist/test-ext-params \
+	test/mhmail/test-mhmail \
 	test/mhparam/test-mhparam test/mhpath/test-mhpath \
 	test/mhshow/test-charset \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
