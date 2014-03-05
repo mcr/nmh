@@ -181,4 +181,46 @@ EOF
 
 check "$draft" "$expected"
 
+#
+# Test out message/external-body decoding
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+This is a test message
+#@application/octet-stream [Test of a long URL] {attachment; \
+filename=test.tar.gz} access-type=url; url="http://www.example.com/this/is/an/example/of/a/very/long/url/that-should-be-wrapped/name.tar.gz"
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test message
+
+------- =_aaaaaaaaaa0
+Content-Type: message/external-body; access-type="url";
+	url*0="http://www.example.com/this/is/an/example/of/a/very/long/url";
+	url*1="/that-should-be-wrapped/name.tar.gz"
+
+Content-Type: application/octet-stream
+Content-Description: Test of a long URL
+Content-Disposition: attachment; filename="test.tar.gz"
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
 exit ${failed:-0}
