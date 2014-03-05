@@ -3266,7 +3266,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
     } *pp, *phead = NULL;
 
     while (*cp == ';') {
-	char *dp, *vp, *up, c, *nameptr, *valptr, *charset = NULL, *lang = NULL;
+	char *dp, *vp, *up, *nameptr, *valptr, *charset = NULL, *lang = NULL;
 	int encoded = 0, partial = 0, index = 0, len = 0;
 
 	cp++;
@@ -3501,7 +3501,7 @@ bad_quote:
 		}
 		cp++;
 	    } else {
-	    	strncpy(valptr, dp, len);
+	    	strncpy(valptr, cp = dp, len);
 		cp += len;
 	    }
 
