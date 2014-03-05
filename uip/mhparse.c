@@ -3526,6 +3526,7 @@ bad_quote:
 	    if (pp == NULL) {
 		pp = mh_xmalloc(sizeof(*pp));
 		memset(pp, 0, sizeof(*pp));
+		pp->name = nameptr;
 		pp->next = phead;
 		phead = pp;
 	    }
