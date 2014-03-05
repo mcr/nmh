@@ -3255,6 +3255,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
     struct sectlist {
 	char *value;
 	int index;
+	int len;
 	struct sectlist *next;
     } *sp, *sp2;
     struct parmlist {
@@ -3263,11 +3264,11 @@ parse_header_attrs (const char *filename, const char *fieldname,
 	char *lang;
 	struct sectlist *sechead;
 	struct parmlist *next;
-    } *pp, *phead = NULL;
+    } *pp, *pp2, *phead = NULL;
 
     while (*cp == ';') {
 	char *dp, *vp, *up, *nameptr, *valptr, *charset = NULL, *lang = NULL;
-	int encoded = 0, partial = 0, index = 0, len = 0;
+	int encoded = 0, partial = 0, len = 0, index = 0;
 
 	cp++;
 	while (isspace ((unsigned char) *cp))
@@ -3542,6 +3543,7 @@ bad_quote:
 	    memset(sp, 0, sizeof(*sp));
 	    sp->value = valptr;
 	    sp->index = index;
+	    sp->len = len;
 
 	    if (pp->sechead == NULL || pp->sechead->index > index) {
 		sp->next = pp->sechead;
@@ -3556,7 +3558,7 @@ bad_quote:
 			return NOTOK;
 		    }
 		    if (sp2->index < sp->index &&
-			(sp2->next == NULL || sp2->next->index < sp->index)) {
+			(sp2->next == NULL || sp2->next->index > sp->index)) {
 			sp->next = sp2->next;
 			sp2->next = sp;
 			break;
@@ -3565,7 +3567,7 @@ bad_quote:
 
 		if (sp2 == NULL) {
 		    advise(NULL, "Internal error: cannot insert partial "
-		    	   "param in message %s's %s: field\n*s(parameter %s)",
+		    	   "param in message %s's %s: field\n%*s(parameter %s)",
 			   filename, fieldname, strlen(invo_name) + 2, "",
 			   nameptr);
 		    return NOTOK;
@@ -3599,6 +3601,47 @@ bad_quote:
             get_comment (filename, fieldname, &cp, commentp) == NOTOK) {
 	    return NOTOK;
         }
+    }
+
+    /*
+     * Now that we're done, reassemble all of the partial parameters.
+     */
+
+    for (pp = phead; pp != NULL; ) {
+    	char *p, *q;
+	size_t tlen = 0;
+	int pindex = 0;
+	for (sp = pp->sechead; sp != NULL; sp = sp->next) {
+	    if (sp->index != pindex++) {
+		advise(NULL, "missing section %d for parameter in "
+		       "message %s's %s: field\n%*s(parameter %s)", pindex - 1,
+		       filename, fieldname, strlen(invo_name) + 2, "",
+		       pp->name);
+		return NOTOK;
+	    }
+	    tlen += sp->len;
+	}
+
+	p = q = mh_xmalloc(tlen + 1);
+	for (sp = pp->sechead; sp != NULL; ) {
+	    memcpy(q, sp->value, sp->len);
+	    q += sp->len;
+	    free(sp->value);
+	    sp2 = sp->next;
+	    free(sp);
+	    sp = sp2;
+	}
+
+	p[tlen] = '\0';
+
+	pm = add_param(param_head, param_tail, pp->name, p);
+	pm->pm_charset = pp->charset;
+	pm->pm_lang = pp->lang;
+	free(pp->name);
+	free(p);
+	pp2 = pp->next;
+	free(pp);
+	pp = pp2;
     }
 
     *header_attrp = cp;
