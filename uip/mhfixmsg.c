@@ -1080,7 +1080,7 @@ copy_ctinfo (CI dest, CI src) {
 
     for (s_pm = src->ci_first_pm; s_pm; s_pm = s_pm->pm_next) {
     	d_pm = add_param(&dest->ci_first_pm, &dest->ci_last_pm, s_pm->pm_name,
-			 s_pm->pm_value);
+			 s_pm->pm_value, 0);
 	if (s_pm->pm_charset)
 	    d_pm->pm_charset = getcpy(s_pm->pm_charset);
 	if (s_pm->pm_lang)
@@ -1314,7 +1314,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     }
 
     add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
-    	      "boundary", boundary);
+    	      "boundary", boundary, 0);
 
     p = (struct part *) mh_xmalloc (sizeof *p);
     p->mp_next = (struct part *) mh_xmalloc (sizeof *p->mp_next);

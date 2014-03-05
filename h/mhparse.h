@@ -418,10 +418,14 @@ char *output_params(size_t initialwidth, PM params, int *offsetout,
  * last		- Pointer to tail of linked list
  * name		- Name of parameter
  * value	- Value of parameter
+ * nocopy	- If set, will use the pointer values directly for "name"
+ *		  and "value" instead of making their own copy.  These
+ *		  pointers will be free()'d later by the MIME routines, so
+ *		  they should not be used after calling this function!
  *
- * Returned allocated parameter element
+ * Returns allocated parameter element
  */
-PM add_param(PM *first, PM *last, const char *name, const char *value);
+PM add_param(PM *first, PM *last, char *name, char *value, int nocopy);
 
 /*
  * Retrieve a parameter value from a parameter linked list.  Convert to the

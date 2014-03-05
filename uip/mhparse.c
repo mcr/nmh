@@ -838,7 +838,7 @@ magic_skip:
             if (ct->c_dispo_type &&
 		!get_param(ct->c_dispo_first, "filename", '_', 1)) {
 		add_param(&ct->c_dispo_first, &ct->c_dispo_last, "filename",
-			  r1bindex(ci->ci_magic, '/'));
+			  r1bindex(ci->ci_magic, '/'), 0);
 	    }
         }
 	else
@@ -3590,9 +3590,7 @@ bad_quote:
 		pp->lang = lang;
 	    }
 	} else {
-	    pm = add_param(param_head, param_tail, nameptr, valptr);
-	    free(nameptr);
-	    free(valptr);
+	    pm = add_param(param_head, param_tail, nameptr, valptr, 1);
 	    pm->pm_charset = charset;
 	    pm->pm_lang = lang;
 	}
@@ -3637,11 +3635,9 @@ bad_quote:
 
 	p[tlen] = '\0';
 
-	pm = add_param(param_head, param_tail, pp->name, p);
+	pm = add_param(param_head, param_tail, pp->name, p, 1);
 	pm->pm_charset = pp->charset;
 	pm->pm_lang = pp->lang;
-	free(pp->name);
-	free(p);
 	pp2 = pp->next;
 	free(pp);
 	pp = pp2;
@@ -4058,14 +4054,14 @@ normal_param(PM pm, char *output, size_t len, size_t valuelen,
  */
 
 PM
-add_param(PM *first, PM *last, const char *name, const char *value)
+add_param(PM *first, PM *last, char *name, char *value, int nocopy)
 {
     PM pm = mh_xmalloc(sizeof(*pm));
 
     memset(pm, 0, sizeof(*pm));
 
-    pm->pm_name = getcpy(name);
-    pm->pm_value = getcpy(value);
+    pm->pm_name = nocopy ? name : getcpy(name);
+    pm->pm_value = nocopy ? value : getcpy(value);
 
     if (*first) {
 	(*last)->pm_next = pm;

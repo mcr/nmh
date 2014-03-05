@@ -1468,7 +1468,7 @@ scan_content (CT ct, size_t maxunencoded)
 	    CI ci = &ct->c_ctinfo;
 
 	    add_param(&ci->ci_first_pm, &ci->ci_last_pm, "charset",
-	    	      contains8bit ? write_charset_8bit() : "us-ascii");
+	    	      contains8bit ? write_charset_8bit() : "us-ascii", 0);
 	    t->tx_charset = CHARSET_SPECIFIED;
 	}
     }
@@ -1536,7 +1536,7 @@ build_headers (CT ct, int header_encoding)
 	static int level = 0;	/* store nesting level */
 
 	snprintf (buffer, sizeof(buffer), "%s%d", prefix, level++);
-	add_param(&ci->ci_first_pm, &ci->ci_last_pm, "boundary", buffer);
+	add_param(&ci->ci_first_pm, &ci->ci_last_pm, "boundary", buffer, 0);
     }
 
     /*
@@ -1907,7 +1907,7 @@ setup_attach_content(CT ct, char *filename)
 
     if (pm == NULL)
     	add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
-		  "name", simplename);
+		  "name", simplename, 0);
 
     ct->c_descr = getcpy(simplename);
     ct->c_descr = add("\n", ct->c_descr);
@@ -1926,5 +1926,5 @@ setup_attach_content(CT ct, char *filename)
     	ct->c_dispo_type = getcpy("attachment");
     }
 
-    add_param(&ct->c_dispo_first, &ct->c_dispo_last, "filename", simplename);
+    add_param(&ct->c_dispo_first, &ct->c_dispo_last, "filename", simplename, 0);
 }
