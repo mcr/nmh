@@ -77,7 +77,7 @@ msgfile=`mhpath new`
 cat > $msgfile <<EOF
 To: recipient@example.com
 From: sender@example.com
-Subject: mhlist ext param test 1
+Subject: mhlist ext param test 2
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
 
@@ -113,5 +113,68 @@ run_test 'mhlist last -noheader -verbose' \
      2     image/jpeg                   2
 	     longparam="I Cannot Believe It, it Looks Like It Might be our Long Lost Band The Öne And Only Spın̈al Tap!"
 	     name="This is an example of a very long filename. I wonder if this filename might be too long.  It should not be.  But will it be?.jpg"'
+
+#
+# Test out message/external-body types, and also make sure we will correctly
+# decode a URL wrapped with RFC 2017 rules.
+#
+
+msgfile=`mhpath new`
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist ext param test 3
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset=us-ascii;
+	name*=utf-8''This%20%C3%AFs%20the%20filename
+
+This is a test
+
+------- =_aaaaaaaaaa0
+Content-Type: message/external-body; access-type="url";
+	url*1="/that/should-be-wrapped/image.jpeg";
+	url*0="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url"
+
+Content-Type: image/jpeg
+Content-Description: Test of a long URL
+Content-Disposition: attachment; filename=image.jpeg
+
+------- =_aaaaaaaaaa0
+Content-Type: message/external-body; access-type="url";
+	url*0="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url
+	       /that/should-be-wrapped/image.jpeg"
+
+Content-Type: image/jpeg
+Content-Description: Test of a long URL
+Content-Disposition: attachment; filename=image.jpeg
+
+------- =_aaaaaaaaaa0--
+EOF
+
+run_test 'mhlist last -noheader -verbose -disposition' \
+'  13       multipart/mixed            775
+	     boundary="----- =_aaaaaaaaaa0"
+     1     text/plain                  15
+	     charset="us-ascii"
+	     name="This ïs the filename"
+     2     message/external-body      118
+	     access-type="url"
+	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url/that/should-be-wrapped/image.jpeg"
+	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url/that/should-be-wrapped/image.jpeg"
+	     access-type="url"
+           image/jpeg                     Test of a long URL
+	     disposition "attachment"
+	       filename="image.jpeg"
+     3     message/external-body      118
+	     access-type="url"
+	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url 	       /that/should-be-wrapped/image.jpeg"
+	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url/that/should-be-wrapped/image.jpeg"
+	     access-type="url"
+           image/jpeg                     Test of a long URL
+	     disposition "attachment"
+	       filename="image.jpeg"'
 
 exit $failed
