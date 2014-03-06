@@ -1159,13 +1159,13 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
             if (ct->c_ctline) {
                 char *ctline = concat(" ", ct->c_ctinfo.ci_type, "/",
 				      ct->c_ctinfo.ci_subtype, NULL);
+		char *outline;
+
 		replace_param(&ct->c_ctinfo.ci_first_pm,
 			      &ct->c_ctinfo.ci_last_pm, "charset",
 			      dest_charset, 0);
-		char *outline = output_params(strlen(TYPE_FIELD) + 1 +
-					      strlen(ctline),
-					      ct->c_ctinfo.ci_first_pm,
-					      NULL, 0);
+		outline = output_params(strlen(TYPE_FIELD) + 1 + strlen(ctline),
+					ct->c_ctinfo.ci_first_pm, NULL, 0);
 		if (outline) {
 		    ctline = add(outline, ctline);
 		    free(outline);

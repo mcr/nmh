@@ -4155,7 +4155,10 @@ char *get_param_value(PM pm, char replace)
     int utf8;
     iconv_t cd;
     ICONV_CONST char *p;
+#else /* HAVE_ICONV */
+    char *p;
 #endif /* HAVE_ICONV */
+
     char *q;
 
     /*
@@ -4230,9 +4233,10 @@ char *get_param_value(PM pm, char replace)
     *q = '\0';
 
     return buffer;
-#endif /* HAVE_ICONV */
 
 noiconv:
+#endif /* HAVE_ICONV */
+
     /*
      * Take everything non-ASCII and substituite the replacement character
      */
