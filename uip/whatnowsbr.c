@@ -106,6 +106,7 @@ static void sendit (char *, char **, char *, int);
 static int buildfile (char **, char *);
 static int whomfile (char **, char *);
 static int removefile (char *);
+static int checkmimeheader (char *);
 static void writelscmd(char *, int, char *, char **);
 static void writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp);
 static FILE* popen_in_dir(const char *dir, const char *cmd, const char *type);
@@ -356,6 +357,9 @@ WhatNow (int argc, char **argv)
 	     *	 -n	numbers listing
 	     */
 
+	    if (checkmimeheader(drft))
+		break;
+
 	    l = (char *)0;
 	    n = 0;
 
@@ -392,6 +396,9 @@ WhatNow (int argc, char **argv)
 
             int verbose = 0;
             char **ap;
+
+	    if (checkmimeheader(drft))
+		break;
 
 	    for (ap = argp+1; *ap; ++ap) {
 		if (strcmp(*ap, "-v") == 0) {
@@ -462,6 +469,9 @@ WhatNow (int argc, char **argv)
 	     *	Scan the arguments for a -n.  Mixed file names and numbers aren't allowed,
 	     *	so this catches a -n anywhere in the argument list.
 	     */
+
+	    if (checkmimeheader(drft))
+		break;
 
 	    for (n = 0, arguments = argp + 1; *arguments != (char *)0; arguments++) {
 		if (strcmp(*arguments, "-n") == 0) {
@@ -1267,4 +1277,46 @@ removefile (char *drft)
 	adios (drft, "unable to unlink");
 
     return OK;
+}
+
+
+/*
+ * Return 1 if we already have a MIME-Verson header, 0 otherwise.
+ */
+
+static int
+checkmimeheader (char *drft)
+{
+    FILE *f;
+    m_getfld_state_t gstate = 0;
+    char buf[BUFSIZ], name[NAMESZ];
+    int state, retval = 0;
+
+    if ((f = fopen(drft, "r")) == NULL) {
+	admonish(drft, "unable to read draft");
+	return (0);
+    }
+
+    for (;;) {
+	int bufsz = sizeof(buf);
+	switch (state = m_getfld(&gstate, name, buf, &bufsz, f)) {
+	case FLD:
+	case FLDPLUS:
+	    if (strcasecmp(name, VRSN_FIELD) == 0) {
+		advise(NULL, "Cannot use attach commands with already-"
+		       "formatted MIME message \"%s\"", drft);
+		retval = 1;
+		break;
+	    }
+	    continue;
+	default:
+	    break;
+	}
+	break;
+    }
+
+    m_getfld_state_destroy(&gstate);
+    fclose(f);
+
+    return retval;
 }
