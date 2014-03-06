@@ -272,7 +272,11 @@ mhshow-show-text/html: charset=%{charset};
 .RE
 .PP
 That example also shows the use of indentation to signify continuation:
-the two text lines combine to form a single entry.
+the two text lines combine to form a single entry.  Note that when
+dealing with text that has been converted internally by
+.IR iconv (3),
+the \*(lqcharset\*(rq parameter will reflect the target character set
+of the text, rather than the original character set in the message.
 .PP
 Note that if the content being displayed is multipart, but not one of
 the subtypes listed above, then the f- and F-escapes expand to multiple
