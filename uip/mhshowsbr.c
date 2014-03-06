@@ -1152,9 +1152,6 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
 
             ++*message_mods;
 
-            /* Update ci_attrs. */
-            src_charset = dest_charset;
-
             /* Update ct->c_ctline. */
             if (ct->c_ctline) {
                 char *ctline = concat(" ", ct->c_ctinfo.ci_type, "/",
