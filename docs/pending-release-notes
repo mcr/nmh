@@ -74,6 +74,8 @@ NEW FEATURES
   Nmh-Attachment).
 - The default Content-Transfer-Encoding for text parts is now 8bit.
 - mhbuild(1) now supports a selectable Content-Transfer-Encoding
+- The MIME parsing and generating routines now support RFC 2231 extended
+  parameter information.
 
 -----------------
 OBSOLETE FEATURES
