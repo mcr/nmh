@@ -81,7 +81,7 @@ Subject: test display with %{charset} expansion
 
 MIME-Version: 1.0
 
-windows-1252
+UTF-8
 EOF
 
 run_prog mhshow -nopause last >"$actual" 2>&1
@@ -132,7 +132,7 @@ Subject: test display with %{charset} expansion
 
 MIME-Version: 1.0
 
--I windows-1252
+-I UTF-8
 EOF
 
 run_prog mhshow -nopause prev >"$actual" 2>&1
@@ -167,7 +167,7 @@ Subject: test display with %{charset} expansion
 
 MIME-Version: 1.0
 
--I windows-1252 file
+-I UTF-8 file
 EOF
 
 run_prog mhshow -nopause prev >"$actual" 2>&1
