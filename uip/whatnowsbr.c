@@ -651,7 +651,7 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
     int	slinked = 0;
 
     /* Was there a previous edit session? */
-    if (reedit) {
+    if (reedit && (*ed || edsave)) {
 	if (!*ed) {		/* no explicit editor      */
 	    *ed = edsave;	/* so use the previous one */
 	    if ((cp = r1bindex (*ed, '/')) == NULL)
