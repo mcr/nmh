@@ -47,6 +47,19 @@ char *cpytrim (const char *);
 int decode_rfc2047 (char *, char *, size_t);
 void discard (FILE *);
 char *upcase (const char *);
+
+/*
+ * Decode two characters into their quoted-printable representation.
+ *
+ * Arguments are:
+ *
+ * byte1	- First character of Q-P representation
+ * byte2	- Second character of Q-P representation
+ *
+ * Returns the decoded value, -1 if the conversion failed.
+ */
+int decode_qp(unsigned char byte1, unsigned char byte2);
+
 int default_done (int);
 
 /*

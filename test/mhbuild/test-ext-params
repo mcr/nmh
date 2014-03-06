@@ -1,0 +1,226 @@
+#!/bin/sh
+######################################################
+#
+# Test the creation of RFC 2231 encoded parameters
+#
+######################################################
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+LC_ALL=en_US.UTF-8; export LC_ALL
+
+draft="$MH_TEST_DIR/$$.draft"
+expected="$MH_TEST_DIR/$$.expected"
+
+#
+# Try out a draft with some 8-bit encoded parameters
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+This is a test message
+#image/jpeg {attachment; filename="tïny.jpg"} ${srcdir}/test/mhbuild/tiny.jpg
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test message
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg
+Content-Disposition: attachment; filename*=UTF-8''t%C3%AFny.jpg
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
+#
+# Try out a draft with some long parameters
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+This is a test message
+#image/jpeg {attachment; filename="This is an example of a rather long filename that is longer than would fit on a normal line.jpg"} \
+${srcdir}/test/mhbuild/tiny.jpg
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test message
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg
+Content-Disposition: attachment;
+	filename*0="This is an example of a rather long filename that is lo";
+	filename*1="nger than would fit on a normal line.jpg"
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
+#
+# Try out attach with a filename with 8-bit characters
+#
+
+cp "${srcdir}/test/mhbuild/tiny.jpg" "$MH_TEST_DIR/tïny.jpg"
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Attach: $MH_TEST_DIR/tïny.jpg
+------
+This is a test message
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test message
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg; name*=UTF-8''t%C3%AFny.jpg
+Content-Description: =?UTF-8?B?dMOvbnkuanBn?=
+Content-Disposition: attachment; filename*=UTF-8''t%C3%AFny.jpg
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
+#
+# Alternate version; specify a disposion, but not an explicit filename
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+This is a test message
+#image/jpeg {attachment} $MH_TEST_DIR/tïny.jpg
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test message
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg
+Content-Disposition: attachment; filename*=UTF-8''t%C3%AFny.jpg
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
+#
+# Test out message/external-body decoding
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+This is a test message
+#@application/octet-stream [Test of a long URL] {attachment; \
+filename=test.tar.gz} access-type=url; url="http://www.example.com/this/is/an/example/of/a/very/long/url/that-should-be-wrapped/name.tar.gz"
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+This is a test message
+
+------- =_aaaaaaaaaa0
+Content-Type: message/external-body; access-type="url";
+	url*0="http://www.example.com/this/is/an/example/of/a/very/long/url";
+	url*1="/that-should-be-wrapped/name.tar.gz"
+
+Content-Type: application/octet-stream
+Content-Description: Test of a long URL
+Content-Disposition: attachment; filename="test.tar.gz"
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
+exit ${failed:-0}

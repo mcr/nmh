@@ -770,7 +770,7 @@ fi
 cat >"$expected" <<EOF
 Date: Fri, 13 May 2011 08:21:12 -0500
 Content-Type: multipart/alternative;
-        boundary="----=_NextPart_000_1781A1A_01CC1147.81EBA8D4"
+	boundary="----=_NextPart_000_1781A1A_01CC1147.81EBA8D4"
 Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
 From: <sender@example.com>

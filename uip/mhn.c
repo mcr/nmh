@@ -128,9 +128,6 @@ void flush_errors (void);
 /* mhshowsbr.c */
 void show_all_messages (CT *);
 
-/* mhlistsbr.c */
-void list_all_messages (CT *, int, int, int, int);
-
 /* mhstoresbr.c */
 typedef struct mhstoreinfo *mhstoreinfo_t;
 mhstoreinfo_t mhstoreinfo_create(CT *, char *, const char *, int, int);
@@ -557,7 +554,7 @@ do_cache:
      * List the message content
      */
     if (listsw)
-	list_all_messages (cts, headsw, sizesw, verbosw, debugsw);
+	list_all_messages (cts, headsw, sizesw, verbosw, debugsw, 0);
 
     /*
      * Store the message content

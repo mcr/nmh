@@ -44,10 +44,6 @@ int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
 
-/* mhlistsbr.c */
-int list_switch (CT, int, int, int, int);
-int list_content (CT, int, int, int, int);
-
 /*
  * prototypes
  */
@@ -73,7 +69,6 @@ static int show_external (CT, int, int);
 static int parse_display_string (CT, char *, int *, int *, int *, int *, char *,
                                  char *, size_t, int multipart);
 static int convert_content_charset (CT, char **);
-static const char *parameter_value (CI, const char *);
 static void intrser (int);
 
 
@@ -385,9 +380,9 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	char prompt[BUFSIZ];
 
 	if (ct->c_type == CT_MULTIPART)
-	    list_content (ct, -1, 1, 0, 0);
+	    list_content (ct, -1, 1, 0, 0, 0);
 	else
-	    list_switch (ct, -1, 1, 0, 0);
+	    list_switch (ct, -1, 1, 0, 0, 0);
 
 	if (xpause && isatty (fileno (stdout))) {
 	    int	intr;
@@ -795,11 +790,12 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 	    case 'a':
 		/* insert parameters from Content-Type field */
 	    {
-		char **ap, **ep;
+		PM pm;
 		char *s = "";
 
-		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		    snprintf (bp, buflen, "%s%s=\"%s\"", s, *ap, *ep);
+		for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+		    snprintf (bp, buflen, "%s%s=\"%s\"", s, pm->pm_name,
+			      get_param_value(pm, '?'));
 		    len = strlen (bp);
 		    bp += len;
 		    buflen -= len;
@@ -905,11 +901,11 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		if (closing_brace) {
 		    const size_t param_len = closing_brace - cp - 1;
 		    char *param = mh_xmalloc(param_len + 1);
-		    const char *value;
+		    char *value;
 
 		    (void) strncpy(param, cp + 1, param_len);
 		    param[param_len] = '\0';
-		    value = parameter_value(ci, param);
+		    value = get_param(ci->ci_first_pm, param, '?', 0);
 		    free(param);
 
 		    cp += param_len + 1; /* Skip both braces, too. */
@@ -918,6 +914,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 			/* %{param} is set in the Content-Type header.
 			   After the break below, quote it if necessary. */
 			(void) strncpy(bp, value, buflen);
+			free(value);
 		    } else {
 			/* %{param} not found, so skip it completely.  cp
 			   was advanced above. */
@@ -1160,8 +1157,19 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
 
             /* Update ct->c_ctline. */
             if (ct->c_ctline) {
-                char *ctline =
-                    update_attr (ct->c_ctline, "charset=", dest_charset);
+                char *ctline = concat(" ", ct->c_ctinfo.ci_type, "/",
+				      ct->c_ctinfo.ci_subtype, NULL);
+		replace_param(&ct->c_ctinfo.ci_first_pm,
+			      &ct->c_ctinfo.ci_last_pm, "charset",
+			      dest_charset, 0);
+		char *outline = output_params(strlen(TYPE_FIELD) + 1 +
+					      strlen(ctline),
+					      ct->c_ctinfo.ci_first_pm,
+					      NULL, 0);
+		if (outline) {
+		    ctline = add(outline, ctline);
+		    free(outline);
+		}
 
                 free (ct->c_ctline);
                 ct->c_ctline = ctline;
@@ -1170,10 +1178,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
             /* Update Content-Type header field. */
             for (hf = ct->c_first_hf; hf; hf = hf->next) {
                 if (! strcasecmp (TYPE_FIELD, hf->name)) {
-                    char *ctline_less_newline =
-                        update_attr (hf->value, "charset=", dest_charset);
-                    char *ctline = concat (ctline_less_newline, "\n", NULL);
-                    free (ctline_less_newline);
+                    char *ctline = concat (ct->c_ctline, "\n", NULL);
 
                     free (hf->value);
                     hf->value = ctline;
@@ -1219,26 +1224,6 @@ convert_content_charset (CT ct, char **file) {
 #endif /* ! HAVE_ICONV */
 
     return OK;
-}
-
-
-/*
- * If a Content-Type parameter named param exists, returns its value.
- * Otherwise, returns NULL.
- */
-static const char *
-parameter_value (CI ci, const char *param) {
-    const char *value = NULL;
-    char **ap, **vp;
-
-    for (ap = ci->ci_attrs, vp = ci->ci_values; *ap; ++ap, ++vp) {
-        if (! strcasecmp (*ap, param)) {
-            value = *vp;
-            break;
-        }
-    }
-
-    return value;
 }
 
 

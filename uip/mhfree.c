@@ -30,6 +30,7 @@ static void free_text (CT);
 static void free_multi (CT);
 static void free_partial (CT);
 static void free_external (CT);
+static void free_pmlist (PM);
 
 
 /*
@@ -103,6 +104,9 @@ free_content (CT ct)
 	free (ct->c_descr);
     if (ct->c_dispo)
 	free (ct->c_dispo);
+    if (ct->c_dispo_type)
+	free (ct->c_dispo_type);
+    free_pmlist (ct->c_dispo_first);
 
     if (ct->c_file) {
 	if (ct->c_unlink)
@@ -150,7 +154,6 @@ free_header (CT ct)
 void
 free_ctinfo (CT ct)
 {
-    char **ap;
     CI ci;
 
     ci = &ct->c_ctinfo;
@@ -162,10 +165,7 @@ free_ctinfo (CT ct)
 	free (ci->ci_subtype);
 	ci->ci_subtype = NULL;
     }
-    for (ap = ci->ci_attrs; *ap; ap++) {
-	free (*ap);
-	*ap = NULL;
-    }
+    free_pmlist(ci->ci_first_pm);
     if (ci->ci_comment) {
 	free (ci->ci_comment);
 	ci->ci_comment = NULL;
@@ -250,6 +250,27 @@ free_external (CT ct)
 
     free ((char *) e);
     ct->c_ctparams = NULL;
+}
+
+
+static void
+free_pmlist (PM pm)
+{
+    PM pm2;
+
+    while (pm != NULL) {
+    	if (pm->pm_name)
+	    free (pm->pm_name);
+    	if (pm->pm_value)
+	    free (pm->pm_value);
+    	if (pm->pm_charset)
+	    free (pm->pm_charset);
+    	if (pm->pm_lang)
+	    free (pm->pm_lang);
+	pm2 = pm->pm_next;
+	free(pm);
+	pm = pm2;
+    }
 }
 
 

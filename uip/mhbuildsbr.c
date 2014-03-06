@@ -32,7 +32,6 @@
 
 
 extern int debugsw;
-extern int verbosw;
 
 extern int listsw;
 extern int rfc934sw;
@@ -76,9 +75,9 @@ static void setup_attach_content(CT, char *);
 static char *fgetstr (char *, int, FILE *);
 static int user_content (FILE *, char *, CT *);
 static void set_id (CT, int);
-static int compose_content (CT);
+static int compose_content (CT, int);
 static int scan_content (CT, size_t);
-static int build_headers (CT);
+static int build_headers (CT, int);
 static char *calculate_digest (CT, int);
 
 
@@ -124,7 +123,7 @@ static void directive_pop(void)
 
 CT
 build_mime (char *infile, int autobuild, int dist, int directives,
-	    int header_encoding, size_t maxunencoded)
+	    int header_encoding, size_t maxunencoded, int verbose)
 {
     int	compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -439,7 +438,7 @@ finish_field:
      * Fill out, or expand directives.  Parse and execute
      * commands specified by profile composition strings.
      */
-    compose_content (ct);
+    compose_content (ct, verbose);
 
     if ((cp = strchr(prefix, 'a')) == NULL)
 	adios (NULL, "internal error(4)");
@@ -462,7 +461,7 @@ finish_field:
 
     /* Build the rest of the header field structures */
     if (! dist)
-	build_headers (ct);
+	build_headers (ct, header_encoding);
 
     return ct;
 }
@@ -1049,7 +1048,7 @@ set_id (CT ct, int top)
  */
 
 static int
-compose_content (CT ct)
+compose_content (CT ct, int verbose)
 {
     CE ce = &ct->c_cefile;
 
@@ -1075,7 +1074,7 @@ compose_content (CT ct)
 
 	    sprintf (pp, "%d", partnum);
 	    p->c_partno = add (partnam, NULL);
-	    if (compose_content (p) == NOTOK)
+	    if (compose_content (p, verbose) == NOTOK)
 		return NOTOK;
 	}
 
@@ -1127,7 +1126,7 @@ compose_content (CT ct)
 	if (!ce->ce_file) {
 	    pid_t child_id;
 	    int i, xstdout, len, buflen;
-	    char *bp, **ap, *cp;
+	    char *bp, *cp;
 	    char *vec[4], buffer[BUFSIZ];
 	    FILE *out;
 	    CI ci = &ct->c_ctinfo;
@@ -1159,11 +1158,12 @@ compose_content (CT ct)
 		    case 'a':
 		    {
 			/* insert parameters from directive */
-			char **ep;
 			char *s = "";
+			PM pm;
 
-			for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-			    snprintf (bp, buflen, "%s%s=\"%s\"", s, *ap, *ep);
+			for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+			    snprintf (bp, buflen, "%s%s=\"%s\"", s,
+			    	      pm->pm_name, get_param_value(pm, '?'));
 			    len = strlen (bp);
 			    bp += len;
 			    buflen -= len;
@@ -1211,7 +1211,7 @@ raw:
 		}
 	    }
 
-	    if (verbosw)
+	    if (verbose)
 		printf ("composing content %s/%s from command\n\t%s\n",
 			ci->ci_type, ci->ci_subtype, buffer);
 
@@ -1466,22 +1466,10 @@ scan_content (CT ct, size_t maxunencoded)
 	t = (struct text *) ct->c_ctparams;
 	if (t->tx_charset == CHARSET_UNSPECIFIED) {
 	    CI ci = &ct->c_ctinfo;
-	    char **ap, **ep;
 
-	    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-		continue;
-
-	    if (contains8bit) {
-		*ap = concat ("charset=", write_charset_8bit(), NULL);
-	    } else {
-		*ap = add ("charset=us-ascii", NULL);
-	    }
+	    add_param(&ci->ci_first_pm, &ci->ci_last_pm, "charset",
+	    	      contains8bit ? write_charset_8bit() : "us-ascii", 0);
 	    t->tx_charset = CHARSET_SPECIFIED;
-
-	    cp = strchr(*ap++, '=');
-	    *ap = NULL;
-	    *cp++ = '\0';
-	    *ep = cp;
 	}
     }
 
@@ -1534,10 +1522,9 @@ scan_content (CT ct, size_t maxunencoded)
  */
 
 static int
-build_headers (CT ct)
+build_headers (CT ct, int header_encoding)
 {
     int	cc, mailbody, extbody, len;
-    char **ap, **ep;
     char *np, *vp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
 
@@ -1546,16 +1533,10 @@ build_headers (CT ct)
      * boundary to the list of attribute/value pairs.
      */
     if (ct->c_type == CT_MULTIPART) {
-	char *cp;
 	static int level = 0;	/* store nesting level */
 
-	ap = ci->ci_attrs;
-	ep = ci->ci_values;
-	snprintf (buffer, sizeof(buffer), "boundary=%s%d", prefix, level++);
-	cp = strchr(*ap++ = add (buffer, NULL), '=');
-	*ap = NULL;
-	*cp++ = '\0';
-	*ep = cp;
+	snprintf (buffer, sizeof(buffer), "%s%d", prefix, level++);
+	add_param(&ci->ci_first_pm, &ci->ci_last_pm, "boundary", buffer, 0);
     }
 
     /*
@@ -1585,59 +1566,16 @@ build_headers (CT ct)
      * Append the attribute/value pairs to
      * the end of the Content-Type line.
      */
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (mailbody && !strcasecmp (*ap, "body"))
-	    continue;
 
-	vp = add (";", vp);
-	len++;
+    if (ci->ci_first_pm) {
+	char *s = output_params(len, ci->ci_first_pm, &len, mailbody);
 
-	/*
-	 * According to RFC 2017, if we have a URL longer than 40 characters
-	 * we have to break it across multiple lines
-	 */
+	if (!s)
+	    adios(NULL, "Internal error: failed outputting Content-Type "
+	    	  "parameters");
 
-	if (extbody && strcasecmp (*ap, "url") == 0) {
-	    char *value = *ep;
-
-	    /* 7 here refers to " url=\"\"" */
-	    if (len + 1 + (cc = (min(MAXURLTOKEN, strlen(value)) + 7)) >=
-	    							CPERLIN) {
-	    	vp = add ("\n\t", vp);
-		len = 8;
-	    } else {
-	    	vp = add (" ", vp);
-		len++;
-	    }
-
-	    vp = add ("url=\"", vp);
-	    len += 5;
-
-	    while (strlen(value) > MAXURLTOKEN) {
-		strncpy(buffer, value, MAXURLTOKEN);
-		buffer[MAXURLTOKEN] = '\0';
-		vp = add (buffer, vp);
-		vp = add ("\n\t", vp);
-		value += MAXURLTOKEN;
-		len = 8;
-	    }
-
-	    vp = add (value, vp);
-	    vp = add ("\"", vp);
-	    len += strlen(value) + 1;
-	    continue;
-	}
-
-	snprintf (buffer, sizeof(buffer), "%s=\"%s\"", *ap, *ep);
-	if (len + 1 + (cc = strlen (buffer)) >= CPERLIN) {
-	    vp = add ("\n\t", vp);
-	    len = 8;
-	} else {
-	    vp = add (" ", vp);
-	    len++;
-	}
-	vp = add (buffer, vp);
-	len += cc;
+	vp = add (s, vp);
+	free(s);
     }
 
     /*
@@ -1667,23 +1605,34 @@ build_headers (CT ct)
 	vp = concat (" ", ct->c_id, NULL);
 	add_header (ct, np, vp);
     }
-
     /*
      * output the Content-Description
      */
     if (ct->c_descr) {
 	np = add (DESCR_FIELD, NULL);
 	vp = concat (" ", ct->c_descr, NULL);
+	if (encode_rfc2047(DESCR_FIELD, &vp, header_encoding, NULL))
+	    adios(NULL, "Unable to encode %s header", DESCR_FIELD);
 	add_header (ct, np, vp);
     }
 
     /*
-     * output the Content-Disposition
+     * output the Content-Disposition.  If it's NULL but c_dispo_type is
+     * set, then we need to build it.
      */
     if (ct->c_dispo) {
 	np = add (DISPO_FIELD, NULL);
 	vp = concat (" ", ct->c_dispo, NULL);
 	add_header (ct, np, vp);
+    } else if (ct->c_dispo_type) {
+	vp = concat (" ", ct->c_dispo_type, NULL);
+	len = strlen(DISPO_FIELD) + strlen(vp) + 1;
+	np = output_params(len, ct->c_dispo_first, NULL, 0);
+	vp = add(np, vp);
+	vp = add("\n", vp);
+	if (np)
+	    free(np);
+	add_header (ct, getcpy(DISPO_FIELD), vp);
     }
 
 skip_headers:
@@ -1767,7 +1716,7 @@ skip_headers:
 	    CT p;
 
 	    p = part->mp_part;
-	    build_headers (p);
+	    build_headers (p, header_encoding);
 	}
     }
 	break;
@@ -1777,7 +1726,7 @@ skip_headers:
 	    struct exbody *e;
 
 	    e = (struct exbody *) ct->c_ctparams;
-	    build_headers (e->eb_content);
+	    build_headers (e->eb_content, header_encoding);
 	}
 	break;
 
@@ -1889,8 +1838,9 @@ calculate_digest (CT ct, int asciiP)
 static void
 setup_attach_content(CT ct, char *filename)
 {
-    char *type, **ap, **ep, *simplename = r1bindex(filename, '/');
+    char *type, *simplename = r1bindex(filename, '/');
     struct str2init *s2i;
+    PM pm;
 
     if (! (type = mime_type(filename))) {
     	adios(NULL, "Unable to determine MIME type of \"%s\"", filename);
@@ -1946,20 +1896,18 @@ setup_attach_content(CT ct, char *filename)
      * content-description, and the content-disposition.
      */
 
-    for (ap = ct->c_ctinfo.ci_attrs, ep = ct->c_ctinfo.ci_values; *ap;
-    	 ap++, ep++) {
-	if (strcasecmp(*ap, "name") == 0) {
-	    if (*ep)
-	    	free(*ep);
-	    *ep = getcpy(simplename);
+    for (pm = ct->c_ctinfo.ci_first_pm; pm; pm = pm->pm_next) {
+	if (strcasecmp(pm->pm_name, "name") == 0) {
+	    if (pm->pm_value)
+	    	free(pm->pm_value);
+	    pm->pm_value = getcpy(simplename);
 	    break;
 	}
     }
 
-    if (*ap == NULL) {
-	*ap = getcpy("name");
-	*ep = getcpy(simplename);
-    }
+    if (pm == NULL)
+    	add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
+		  "name", simplename, 0);
 
     ct->c_descr = getcpy(simplename);
     ct->c_descr = add("\n", ct->c_descr);
@@ -1973,11 +1921,10 @@ setup_attach_content(CT ct, char *filename)
 
     if (strcasecmp(ct->c_ctinfo.ci_type, "text") == 0 &&
 	strcasecmp(ct->c_ctinfo.ci_subtype, "calendar") == 0) {
-	ct->c_dispo = getcpy("inline; filename=\"");
+	ct->c_dispo_type = getcpy("inline");
     } else {
-    	ct->c_dispo = getcpy("attachment; filename=\"");
+    	ct->c_dispo_type = getcpy("attachment");
     }
 
-    ct->c_dispo = add(simplename, ct->c_dispo);
-    ct->c_dispo = add("\"\n", ct->c_dispo);
+    add_param(&ct->c_dispo_first, &ct->c_dispo_last, "filename", simplename, 0);
 }

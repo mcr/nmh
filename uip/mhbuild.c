@@ -35,6 +35,8 @@
     X("norfc934mode", 0, NRFC934SW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
+    X("disposition", 0, DISPOSW) \
+    X("nodisposition", 0, NDISPOSW) \
     X("rcache policy", 0, RCACHESW) \
     X("wcache policy", 0, WCACHESW) \
     X("contentid", 0, CONTENTIDSW) \
@@ -74,7 +76,6 @@ extern char *cache_public;
 extern char *cache_private;
 
 int debugsw = 0;
-int verbosw = 0;
 
 int listsw   = 0;
 int rfc934sw = 0;
@@ -95,14 +96,12 @@ static void unlink_done (int) NORETURN;
 int output_message (CT, char *);
 int output_message_fp (CT, FILE *, char*);
 
-/* mhlistsbr.c */
-int list_all_messages (CT *, int, int, int, int);
-
 
 int
 main (int argc, char **argv)
 {
     int sizesw = 1, headsw = 1, directives = 1, autobuild = 0, dist = 0;
+    int verbosw = 0, dispo = 0;
     size_t maxunencoded = MAXTEXTPERLN;
     int *icachesw;
     char *cp, buf[BUFSIZ];
@@ -270,6 +269,12 @@ main (int argc, char **argv)
 	    case NVERBSW: 
 		verbosw = 0;
 		continue;
+	    case DISPOSW:
+		dispo = 1;
+		continue;
+	    case NDISPOSW:
+		dispo = 0;
+		continue;
 	    case DEBUGSW:
 		debugsw = 1;
 		continue;
@@ -338,7 +343,7 @@ main (int argc, char **argv)
 
 	/* build the content structures for MIME message */
 	ct = build_mime (infile, autobuild, dist, directives, header_encoding,
-			 maxunencoded);
+			 maxunencoded, verbosw);
 
 	/*
 	 * If ct == NULL, that means that -auto was set and a MIME version
@@ -369,7 +374,7 @@ main (int argc, char **argv)
 
     /* build the content structures for MIME message */
     ct = build_mime (compfile, autobuild, dist, directives, header_encoding,
-    		     maxunencoded);
+    		     maxunencoded, verbosw);
 
     /*
      * If ct == NULL, that means -auto was set and we found a MIME version
@@ -397,7 +402,7 @@ main (int argc, char **argv)
      * List the message info
      */
     if (listsw)
-	list_all_messages (cts, headsw, sizesw, verbosw, debugsw);
+	list_all_messages (cts, headsw, sizesw, verbosw, debugsw, dispo);
 
     /* Rename composition draft */
     snprintf (buffer, sizeof(buffer), "%s.orig", m_backup (compfile));

@@ -23,21 +23,14 @@ int type_ok (CT, int);
 void flush_errors (void);
 
 /*
- * prototypes
- */
-void list_all_messages (CT *, int, int, int, int);
-int list_switch (CT, int, int, int, int);
-int list_content (CT, int, int, int, int);
-
-/*
  * static prototypes
  */
-static void list_single_message (CT, int, int, int);
+static void list_single_message (CT, int, int, int, int);
 static int list_debug (CT);
-static int list_multi (CT, int, int, int, int);
-static int list_partial (CT, int, int, int, int);
-static int list_external (CT, int, int, int, int);
-static int list_application (CT, int, int, int, int);
+static int list_multi (CT, int, int, int, int, int);
+static int list_partial (CT, int, int, int, int, int);
+static int list_external (CT, int, int, int, int, int);
+static int list_application (CT, int, int, int, int, int);
 static int list_encoding (CT);
 
 
@@ -60,7 +53,8 @@ static int list_encoding (CT);
  */
 
 void
-list_all_messages (CT *cts, int headers, int realsize, int verbose, int debug)
+list_all_messages (CT *cts, int headers, int realsize, int verbose, int debug,
+		   int dispo)
 {
     CT ct, *ctp;
 
@@ -69,7 +63,7 @@ list_all_messages (CT *cts, int headers, int realsize, int verbose, int debug)
 
     for (ctp = cts; *ctp; ctp++) {
 	ct = *ctp;
-	list_single_message (ct, realsize, verbose, debug);
+	list_single_message (ct, realsize, verbose, debug, dispo);
     }
 
     flush_errors ();
@@ -81,11 +75,11 @@ list_all_messages (CT *cts, int headers, int realsize, int verbose, int debug)
  */
 
 static void
-list_single_message (CT ct, int realsize, int verbose, int debug)
+list_single_message (CT ct, int realsize, int verbose, int debug, int dispo)
 {
     if (type_ok (ct, 1)) {
 	umask (ct->c_umask);
-	list_switch (ct, 1, realsize, verbose, debug);
+	list_switch (ct, 1, realsize, verbose, debug, dispo);
 	if (ct->c_fp) {
 	    fclose (ct->c_fp);
 	    ct->c_fp = NULL;
@@ -101,33 +95,38 @@ list_single_message (CT ct, int realsize, int verbose, int debug)
  */
 
 int
-list_switch (CT ct, int toplevel, int realsize, int verbose, int debug)
+list_switch (CT ct, int toplevel, int realsize, int verbose, int debug,
+	     int dispo)
 {
     switch (ct->c_type) {
 	case CT_MULTIPART:
-	    return list_multi (ct, toplevel, realsize, verbose, debug);
+	    return list_multi (ct, toplevel, realsize, verbose, debug, dispo);
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
 		case MESSAGE_PARTIAL:
-		    return list_partial (ct, toplevel, realsize, verbose, debug);
+		    return list_partial (ct, toplevel, realsize, verbose,
+					 debug, dispo);
 
 		case MESSAGE_EXTERNAL:
-		    return list_external (ct, toplevel, realsize, verbose, debug);
+		    return list_external (ct, toplevel, realsize, verbose,
+					  debug, dispo);
 
 		case MESSAGE_RFC822:
 		default:
-		    return list_content (ct, toplevel, realsize, verbose, debug);
+		    return list_content (ct, toplevel, realsize, verbose,
+					 debug, dispo);
 	    }
 
 	case CT_TEXT:
 	case CT_AUDIO:
 	case CT_IMAGE:
 	case CT_VIDEO:
-	    return list_content (ct, toplevel, realsize, verbose, debug);
+	    return list_content (ct, toplevel, realsize, verbose, debug, dispo);
 
 	case CT_APPLICATION:
-	    return list_application (ct, toplevel, realsize, verbose, debug);
+	    return list_application (ct, toplevel, realsize, verbose, debug,
+	    			     dispo);
 
 	default:
 	    /* list_debug (ct); */
@@ -145,11 +144,13 @@ list_switch (CT ct, int toplevel, int realsize, int verbose, int debug)
  */
 
 int
-list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
+list_content (CT ct, int toplevel, int realsize, int verbose, int debug,
+	     int dispo)
 {
     unsigned long size;
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
+    PM pm;
 
     if (toplevel > 0)
     	printf (LSTFMT2a, atoi (r1bindex (empty (ct->c_file), '/')));
@@ -199,11 +200,12 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
     printf ("\n");
 
     if (verbose) {
-	char **ap, **ep;
 	CI ci = &ct->c_ctinfo;
 
-	for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-	    printf ("\t     %s=\"%s\"\n", *ap, *ep);
+	for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+	    printf ("\t     %s=\"%s\"\n", pm->pm_name,
+	    	    get_param_value(pm, '?'));
+	}
 
 	/*
 	 * If verbose, print any RFC-822 comments in the
@@ -216,6 +218,17 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
 	    snprintf (buffer, sizeof(buffer), "(%s)", dp);
 	    free (dp);
 	    printf (LSTFMT2d2, buffer);
+	}
+    }
+
+    if (dispo && ct->c_dispo_type) {
+	printf ("\t     disposition \"%s\"\n", ct->c_dispo_type);
+
+	if (verbose) {
+	    for (pm = ct->c_dispo_first; pm; pm = pm->pm_next) {
+		printf ("\t       %s=\"%s\"\n", pm->pm_name,
+			get_param_value(pm, '?'));
+	    }
 	}
     }
 
@@ -233,8 +246,8 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug)
 static int
 list_debug (CT ct)
 {
-    char **ap, **ep;
     CI ci = &ct->c_ctinfo;
+    PM pm;
 
     fflush (stdout);
     fprintf (stderr, "  partno \"%s\"\n", empty (ct->c_partno));
@@ -255,8 +268,9 @@ list_debug (CT ct)
 
     /* print parsed parameters attached to content type */
     fprintf (stderr, "    parameters\n");
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-	fprintf (stderr, "      %s=\"%s\"\n", *ap, *ep);
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next)
+	fprintf (stderr, "      %s=\"%s\"\n", pm->pm_name,
+		 get_param_value(pm, '?'));
 
     /* print internal flags for type/subtype */
     fprintf (stderr, "    type 0x%x subtype 0x%x params 0x%x\n",
@@ -283,6 +297,16 @@ list_debug (CT ct)
     if (ct->c_descr)
 	fprintf (stderr, "  %s:%s", DESCR_FIELD, ct->c_descr);
 
+    /* print Content-Disposition */
+    if (ct->c_dispo)
+	fprintf (stderr, "  %s:%s", DISPO_FIELD, ct->c_dispo);
+
+    fprintf(stderr, "    disposition \"%s\"\n", empty (ct->c_dispo_type));
+    fprintf(stderr, "    disposition parameters\n");
+    for (pm = ct->c_dispo_first; pm; pm = pm->pm_next)
+	fprintf (stderr, "      %s=\"%s\"\n", pm->pm_name,
+		 get_param_value(pm, '?'));
+
     fprintf (stderr, "    read fp 0x%x file \"%s\" begin %ld end %ld\n",
 	     (unsigned int)(unsigned long) ct->c_fp, empty (ct->c_file),
 	     ct->c_begin, ct->c_end);
@@ -301,20 +325,21 @@ list_debug (CT ct)
  */
 
 static int
-list_multi (CT ct, int toplevel, int realsize, int verbose, int debug)
+list_multi (CT ct, int toplevel, int realsize, int verbose, int debug,
+	    int dispo)
 {
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
 
     /* list the content for toplevel of this multipart */
-    list_content (ct, toplevel, realsize, verbose, debug);
+    list_content (ct, toplevel, realsize, verbose, debug, dispo);
 
     /* now list for all the subparts */
     for (part = m->mp_parts; part; part = part->mp_next) {
 	CT p = part->mp_part;
 
 	if (part_ok (p, 1) && type_ok (p, 1))
-	    list_switch (p, 0, realsize, verbose, debug);
+	    list_switch (p, 0, realsize, verbose, debug, dispo);
     }
 
     return OK;
@@ -326,11 +351,12 @@ list_multi (CT ct, int toplevel, int realsize, int verbose, int debug)
  */
 
 static int
-list_partial (CT ct, int toplevel, int realsize, int verbose, int debug)
+list_partial (CT ct, int toplevel, int realsize, int verbose, int debug,
+	      int dispo)
 {
     struct partial *p = (struct partial *) ct->c_ctparams;
 
-    list_content (ct, toplevel, realsize, verbose, debug);
+    list_content (ct, toplevel, realsize, verbose, debug, dispo);
     if (verbose) {
 	printf ("\t     [message %s, part %d", p->pm_partid, p->pm_partno);
 	if (p->pm_maxno)
@@ -347,7 +373,8 @@ list_partial (CT ct, int toplevel, int realsize, int verbose, int debug)
  */
 
 static int
-list_external (CT ct, int toplevel, int realsize, int verbose, int debug)
+list_external (CT ct, int toplevel, int realsize, int verbose, int debug,
+	       int dispo)
 {
     struct exbody *e = (struct exbody *) ct->c_ctparams;
 
@@ -355,7 +382,7 @@ list_external (CT ct, int toplevel, int realsize, int verbose, int debug)
      * First list the information for the
      * message/external content itself.
      */
-    list_content (ct, toplevel, realsize, verbose, debug);
+    list_content (ct, toplevel, realsize, verbose, debug, dispo);
 
     if (verbose) {
 	if (e->eb_name)
@@ -368,6 +395,8 @@ list_external (CT ct, int toplevel, int realsize, int verbose, int debug)
 	    printf ("\t     server=\"%s\"\n", e->eb_server);
 	if (e->eb_subject)
 	    printf ("\t     subject=\"%s\"\n", e->eb_subject);
+	if (e->eb_url)
+	    printf ("\t     url=\"%s\"\n", e->eb_url);
 
 	/* This must be defined */
 	printf     ("\t     access-type=\"%s\"\n", e->eb_access);
@@ -379,13 +408,14 @@ list_external (CT ct, int toplevel, int realsize, int verbose, int debug)
 
 	if (e->eb_flags == NOTOK)
 	    printf ("\t     [service unavailable]\n");
+
     }
 
     /*
      * Now list the information for the external content
      * to which this content points.
      */
-    list_content (e->eb_content, 0, realsize, verbose, debug);
+    list_content (e->eb_content, 0, realsize, verbose, debug, dispo);
 
     return OK;
 }
@@ -399,9 +429,10 @@ list_external (CT ct, int toplevel, int realsize, int verbose, int debug)
  */
 
 static int
-list_application (CT ct, int toplevel, int realsize, int verbose, int debug)
+list_application (CT ct, int toplevel, int realsize, int verbose, int debug,
+		  int dispo)
 {
-    list_content (ct, toplevel, realsize, verbose, debug);
+    list_content (ct, toplevel, realsize, verbose, debug, dispo);
 
     return OK;
 }

@@ -81,14 +81,10 @@ output_content (CT ct, FILE *out)
 {
     int result = 0;
     CI ci = &ct->c_ctinfo;
-    char *boundary = ci->ci_values[0], **ap, **vp;
+    char *boundary = "", *cp;
 
-    for (ap = ci->ci_attrs, vp = ci->ci_values; *ap; ++ap, ++vp) {
-        if (! strcasecmp ("boundary", *ap)) {
-            boundary = *vp;
-            break;
-        }
-    }
+    if ((cp = get_param(ci->ci_first_pm, "boundary", '-', 0)))
+	boundary = cp;
 
     /*
      * Output all header fields for this content
@@ -100,8 +96,11 @@ output_content (CT ct, FILE *out)
      * "message/external", then we are done with the
      * headers (since it has no body).
      */
-    if (ct->c_ctexbody)
+    if (ct->c_ctexbody) {
+	if (boundary && *boundary != '\0')
+	    free(boundary);
 	return OK;
+    }
 
     /*
      * Now output the content bodies.
@@ -125,8 +124,11 @@ output_content (CT ct, FILE *out)
 	    CT p = part->mp_part;
 
 	    fprintf (out, "\n--%s\n", boundary);
-	    if (output_content (p, out) == NOTOK)
+	    if (output_content (p, out) == NOTOK) {
+		if (boundary && *boundary != '\0')
+		    free(boundary);
 		return NOTOK;
+	    }
 	}
 	fprintf (out, "\n--%s--\n", boundary);
 
@@ -163,7 +165,7 @@ output_content (CT ct, FILE *out)
 	       body, don't emit the newline that would appear between
 	       the headers and body.  In that case, the call to
 	       write8Bit() shouldn't be needed, but is harmless. */
-	    if (ct->c_ctinfo.ci_attrs[0] != NULL  ||
+	    if (ct->c_ctinfo.ci_first_pm != NULL  ||
 		ct->c_begin != ct->c_end) {
 		putc ('\n', out);
 	    }
@@ -198,6 +200,9 @@ output_content (CT ct, FILE *out)
 	break;
     }
 
+    if (boundary && *boundary != '\0')
+	free(boundary);
+
     return result;
 }
 
@@ -226,7 +231,7 @@ output_headers (CT ct, FILE *out)
 static int
 writeExternalBody (CT ct, FILE *out)
 {
-    char **ap, **ep, *cp;
+    char *cp;
     struct exbody *e = (struct exbody *) ct->c_ctparams;
 		
     putc ('\n', out);
@@ -246,17 +251,22 @@ writeExternalBody (CT ct, FILE *out)
 		continue;
 
 	    case 'N':
-		for (ap = ci2->ci_attrs, ep = ci2->ci_values; *ap; ap++, ep++)
-		    if (!strcasecmp (*ap, "name")) {
-			fprintf (out, "%s", *ep);
-			break;
-		    }
+		cp = get_param(ci2->ci_first_pm, "name", '_', 0);
+		if (cp) {
+		    fputs (cp, out);
+		    free (cp);
+		}
 		continue;
 
 	    case 'T':
 		fprintf (out, "%s/%s", ci2->ci_type, ci2->ci_subtype);
-		for (ap = ci2->ci_attrs, ep = ci2->ci_values; *ap; ap++, ep++)
-		    fprintf (out, "; %s=\"%s\"", *ap, *ep);
+		cp = output_params(strlen(ci2->ci_type) +
+				   strlen(ci2->ci_subtype) + 1,
+				   ci2->ci_first_pm, NULL, 0);
+		if (cp) {
+		    fputs (cp, out);
+		    free (cp);
+		}
 		continue;
 
 	    case 'n':

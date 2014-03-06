@@ -227,7 +227,6 @@ store_generic (CT ct, mhstoreinfo_t info)
 static int
 store_application (CT ct, mhstoreinfo_t info)
 {
-    char **ap, **ep;
     CI ci = &ct->c_ctinfo;
 
     /* Check if the content specifies a filename */
@@ -241,28 +240,23 @@ store_application (CT ct, mhstoreinfo_t info)
      */
     if (!ct->c_storeproc && ct->c_subtype == APPLICATION_OCTETS) {
 	int tarP = 0, zP = 0, gzP = 0;
+	char *cp;
 
-	for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	    /* check for "type=tar" attribute */
-	    if (!strcasecmp (*ap, "type")) {
-		if (strcasecmp (*ep, "tar"))
-		    break;
-
+	if ((cp = get_param(ci->ci_first_pm, "type", ' ', 1))) {
+	    if (strcasecmp (cp, "tar") == 0)
 		tarP = 1;
-		continue;
-	    }
+	}
 
-	    /* check for "conversions=compress" attribute */
-	    if ((!strcasecmp (*ap, "conversions") || !strcasecmp (*ap, "x-conversions"))
-		&& (!strcasecmp (*ep, "compress") || !strcasecmp (*ep, "x-compress"))) {
+	/* check for "conversions=compress" attribute */
+	if ((cp = get_param(ci->ci_first_pm, "conversions", ' ', 1)) ||
+	    (cp = get_param(ci->ci_first_pm, "x-conversions", ' ', 1))) {
+	    if (strcasecmp (cp, "compress") == 0 ||
+		    strcasecmp (cp, "x-compress") == 0) {
 		zP = 1;
-		continue;
 	    }
-	    /* check for "conversions=gzip" attribute */
-	    if ((!strcasecmp (*ap, "conversions") || !strcasecmp (*ap, "x-conversions"))
-		&& (!strcasecmp (*ep, "gzip") || !strcasecmp (*ep, "x-gzip"))) {
+	    if (strcasecmp (cp, "gzip") == 0 ||
+		    strcasecmp (cp, "x-gzip") == 0) {
 		gzP = 1;
-		continue;
 	    }
 	}
 
@@ -998,12 +992,12 @@ parse_format_string (CT ct, char *cp, char *buffer, int buflen, char *dir)
 			buflen--;
 			continue;
 		    } else {
-			char **ap, **ep;
+			PM pm;
 			char *s = "";
 
-			for (ap = ci->ci_attrs, ep = ci->ci_values;
-			         *ap; ap++, ep++) {
-			    snprintf (bp, buflen, "%s%s=\"%s\"", s, *ap, *ep);
+			for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+			    snprintf (bp, buflen, "%s%s=\"%s\"", s,
+				      pm->pm_name, get_param_value(pm, '?'));
 			    len = strlen (bp);
 			    bp += len;
 			    buflen -= len;
@@ -1075,7 +1069,7 @@ raw:
 static void
 get_storeproc (CT ct)
 {
-    char **ap, **ep, *cp;
+    char *cp;
     CI ci;
 
     /*
@@ -1091,29 +1085,18 @@ get_storeproc (CT ct)
      * use that (RFC-2183).
      */
     if (ct->c_dispo) {
-	char *cp = strchr (ct->c_dispo, ';');
-	CI ci = calloc (1, sizeof *ci);
-	int status;
-	int found_filename = 0;
-
-	if (cp  &&  parse_header_attrs (ct->c_file, strlen (invo_name) + 2, &cp,
-                                        ci, &status) == OK) {
-	    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		if (! strcasecmp (*ap, "filename")
-		    && *(cp = *ep) != '/'
-		    && *cp != '.'
-		    && *cp != '|'
-		    && *cp != '!'
-		    && !strchr (cp, '%')) {
-		    ct->c_storeproc = add (cp, NULL);
-		    found_filename = 1;
-		}
-		free (*ap);
-	    }
+	if ((cp = get_param(ct->c_dispo_first, "filename", '_', 0))
+		&& *cp != '/'
+		&& *cp != '.'
+		&& *cp != '|'
+		&& *cp != '!'
+		&& !strchr (cp, '%')) {
+		ct->c_storeproc = add (cp, NULL);
+		free(cp);
+		return;
 	}
-
-	free (ci);
-	if (found_filename) return;
+	if (cp)
+	    free(cp);
     }
 
     /*
@@ -1122,17 +1105,17 @@ get_storeproc (CT ct)
      * the storeproc.
      */
     ci = &ct->c_ctinfo;
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (! strcasecmp (*ap, "name")
-	    && *(cp = *ep) != '/'
-	    && *cp != '.'
-	    && *cp != '|'
-	    && *cp != '!'
-	    && !strchr (cp, '%')) {
+    if ((cp = get_param(ci->ci_first_pm, "name", '_', 0))
+	  && *cp != '/'
+	  && *cp != '.'
+	  && *cp != '|'
+	  && *cp != '!'
+	  && !strchr (cp, '%')) {
 	    ct->c_storeproc = add (cp, NULL);
-	    return;
-	}
+
     }
+    if (cp)
+	free(cp);
 }
 
 

@@ -16,6 +16,9 @@
 #include <h/mime.h>
 #include <h/mhparse.h>
 #include <h/utils.h>
+#ifdef HAVE_ICONV
+# include <iconv.h>
+#endif /* HAVE_ICONV */
 
 
 extern int debugsw;
@@ -109,7 +112,7 @@ void free_encoding (CT, int);
  * static prototypes
  */
 static CT get_content (FILE *, char *, int);
-static int get_comment (const char *, CI, char **, int);
+static int get_comment (const char *, const char *, char **, char **);
 
 static int InitGeneric (CT);
 static int InitText (CT);
@@ -135,6 +138,12 @@ static int readDigest (CT, char *);
 static int get_leftover_mp_content (CT, int);
 static int InitURL (CT);
 static int openURL (CT, char **);
+static int parse_header_attrs (const char *, const char *, char **, PM *,
+			       PM *, char **);
+static size_t param_len(PM, int, size_t, int *, int *, size_t *);
+static size_t encode_param(PM, char *, size_t, size_t, size_t, int);
+static size_t normal_param(PM, char *, size_t, size_t, size_t);
+static int get_dispo (char *, CT, int);
 
 struct str2init str2cts[] = {
     { "application", CT_APPLICATION, InitApplication },
@@ -377,7 +386,7 @@ get_content (FILE *in, char *file, int toplevel)
 		fprintf (stderr, "%s: %s\n", VRSN_FIELD, cp);
 
 	    if (*cp == '('  &&
-                get_comment (ct->c_file, &ct->c_ctinfo, &cp, 0) == NOTOK)
+                get_comment (ct->c_file, VRSN_FIELD, &cp, NULL) == NOTOK)
 		goto out;
 
 	    for (dp = cp; istoken (*dp); dp++)
@@ -487,7 +496,7 @@ get_content (FILE *in, char *file, int toplevel)
 		fprintf (stderr, "%s: %s\n", MD5_FIELD, cp);
 
 	    if (*cp == '('  &&
-                get_comment (ct->c_file, &ct->c_ctinfo, &cp, 0) == NOTOK) {
+                get_comment (ct->c_file, MD5_FIELD, &cp, NULL) == NOTOK) {
 		free (ep);
 		goto out;
 	    }
@@ -510,7 +519,8 @@ get_content (FILE *in, char *file, int toplevel)
 	}
 	else if (!strcasecmp (hp->name, DISPO_FIELD)) {
 	/* Get Content-Disposition field */
-	    ct->c_dispo = add (hp->value, ct->c_dispo);
+	    if (get_dispo(hp->value, ct, 0) == NOTOK)
+		goto out;
 	}
 
 next_header:
@@ -587,88 +597,6 @@ add_header (CT ct, char *name, char *value)
 }
 
 
-/* Make sure that buf contains at least one appearance of name,
-   followed by =.  If not, insert both name and value, just after
-   first semicolon, if any.  Note that name should not contain a
-   trailing =.	And quotes will be added around the value.  Typical
-   usage:  make sure that a Content-Disposition header contains
-   filename="foo".  If it doesn't and value does, use value from
-   that. */
-static char *
-incl_name_value (char *buf, char *name, char *value) {
-    char *newbuf = buf;
-
-    /* Assume that name is non-null. */
-    if (buf && value) {
-	char *name_plus_equal = concat (name, "=", NULL);
-
-	if (! strstr (buf, name_plus_equal)) {
-	    char *insertion;
-	    char *cp, *prefix, *suffix;
-
-	    /* Trim trailing space, esp. newline. */
-	    for (cp = &buf[strlen (buf) - 1];
-		 cp >= buf && isspace ((unsigned char) *cp);
-		 --cp) {
-		*cp = '\0';
-	    }
-
-	    insertion = concat ("; ", name, "=", "\"", value, "\"", NULL);
-
-	    /* Insert at first semicolon, if any.  If none, append to
-	       end. */
-	    prefix = add (buf, NULL);
-	    if ((cp = strchr (prefix, ';'))) {
-		suffix = concat (cp, NULL);
-		*cp = '\0';
-		newbuf = concat (prefix, insertion, suffix, "\n", NULL);
-		free (suffix);
-	    } else {
-		/* Append to end. */
-		newbuf = concat (buf, insertion, "\n", NULL);
-	    }
-
-	    free (prefix);
-	    free (insertion);
-	    free (buf);
-	}
-
-	free (name_plus_equal);
-    }
-
-    return newbuf;
-}
-
-/* Extract just name_suffix="foo", if any, from value.	If there isn't
-   one, return the entire value.  Note that, for example, a name_suffix
-   of name will match filename="foo", and return foo. */
-static char *
-extract_name_value (char *name_suffix, char *value) {
-    char *extracted_name_value = value;
-    char *name_suffix_plus_quote = concat (name_suffix, "=\"", NULL);
-    char *name_suffix_equals = strstr (value, name_suffix_plus_quote);
-    char *cp;
-
-    free (name_suffix_plus_quote);
-    if (name_suffix_equals) {
-	char *name_suffix_begin;
-
-	/* Find first \". */
-	for (cp = name_suffix_equals; *cp != '"'; ++cp) /* empty */;
-	name_suffix_begin = ++cp;
-	/* Find second \". */
-	for (; *cp != '"'; ++cp) /* empty */;
-
-	extracted_name_value = mh_xmalloc (cp - name_suffix_begin + 1);
-	memcpy (extracted_name_value,
-		name_suffix_begin,
-		cp - name_suffix_begin);
-	extracted_name_value[cp - name_suffix_begin] = '\0';
-    }
-
-    return extracted_name_value;
-}
-
 /*
  * Parse Content-Type line and (if `magic' is non-zero) mhbuild composition
  * directives.  Fills in the information of the CTinfo structure.
@@ -676,14 +604,12 @@ extract_name_value (char *name_suffix, char *value) {
 int
 get_ctinfo (char *cp, CT ct, int magic)
 {
-    int	i;
     char *dp;
     char c;
     CI ci;
     int status;
 
     ci = &ct->c_ctinfo;
-    i = strlen (invo_name) + 2;
 
     /* store copy of Content-Type line */
     cp = ct->c_ctline = add (cp, NULL);
@@ -704,7 +630,8 @@ get_ctinfo (char *cp, CT ct, int magic)
     if (debugsw)
 	fprintf (stderr, "%s: %s\n", TYPE_FIELD, cp);
 
-    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
+    				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     for (dp = cp; istoken (*dp); dp++)
@@ -727,7 +654,8 @@ get_ctinfo (char *cp, CT ct, int magic)
     while (isspace ((unsigned char) *cp))
 	cp++;
 
-    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
+    				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     if (*cp != '/') {
@@ -740,7 +668,8 @@ get_ctinfo (char *cp, CT ct, int magic)
     while (isspace ((unsigned char) *cp))
 	cp++;
 
-    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
+    				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
     for (dp = cp; istoken (*dp); dp++)
@@ -765,11 +694,14 @@ magic_skip:
     while (isspace ((unsigned char) *cp))
 	cp++;
 
-    if (*cp == '(' && get_comment (ct->c_file, &ct->c_ctinfo, &cp, 1) == NOTOK)
+    if (*cp == '(' && get_comment (ct->c_file, TYPE_FIELD, &cp,
+    				   &ci->ci_comment) == NOTOK)
 	return NOTOK;
 
-    if (parse_header_attrs (ct->c_file, i, &cp, ci, &status) == NOTOK) {
-	return status;
+    if ((status = parse_header_attrs (ct->c_file, TYPE_FIELD, &cp,
+    				      &ci->ci_first_pm, &ci->ci_last_pm,
+				      &ci->ci_comment)) != OK) {
+	return status == NOTOK ? NOTOK : OK;
     }
 
     /*
@@ -828,7 +760,7 @@ magic_skip:
      * Get any {Content-Disposition} given in buffer.
      */
     if (magic && *cp == '{') {
-        ct->c_dispo = ++cp;
+        ++cp;
 	for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
 	    if (*dp == '}')
 		break;
@@ -840,10 +772,10 @@ magic_skip:
 	
 	c = *dp;
 	*dp = '\0';
-	if (*ct->c_dispo)
-	    ct->c_dispo = concat (ct->c_dispo, "\n", NULL);
-	else
-	    ct->c_dispo = NULL;
+
+	if (get_dispo(cp, ct, 1) != OK)
+	    return NOTOK;
+
 	*dp++ = c;
 	cp = dp;
 
@@ -903,27 +835,98 @@ magic_skip:
                have a *filename=, extract it from the magic contents.
                The r1bindex call skips any leading directory
                components. */
-            if (ct->c_dispo)
-                ct->c_dispo =
-                    incl_name_value (ct->c_dispo,
-                                     "filename",
-                                     r1bindex (extract_name_value ("name",
-                                                                   ci->
-                                                                   ci_magic),
-                                               '/'));
+            if (ct->c_dispo_type &&
+		!get_param(ct->c_dispo_first, "filename", '_', 1)) {
+		add_param(&ct->c_dispo_first, &ct->c_dispo_last, "filename",
+			  r1bindex(ci->ci_magic, '/'), 0);
+	    }
         }
 	else
 	    advise (NULL,
-		    "extraneous information in message %s's %s: field\n%*.*s(%s)",
-                    ct->c_file, TYPE_FIELD, i, i, "", cp);
+		    "extraneous information in message %s's %s: field\n%*s(%s)",
+                    ct->c_file, TYPE_FIELD, strlen(invo_name) + 2, "", cp);
     }
 
     return OK;
 }
 
 
+/*
+ * Parse out a Content-Disposition header.  A lot of this is cribbed from
+ * get_ctinfo().
+ */
 static int
-get_comment (const char *filename, CI ci, char **ap, int istype)
+get_dispo (char *cp, CT ct, int buildflag)
+{
+    char *dp, *dispoheader;
+    char c;
+    int status;
+
+    /*
+     * Save the whole copy of the Content-Disposition header, unless we're
+     * processing a mhbuild directive.  A NULL c_dispo will be a flag to
+     * mhbuild that the disposition header needs to be generated at that
+     * time.
+     */
+
+    dispoheader = cp = add(cp, NULL);
+
+    while (isspace ((unsigned char) *cp))	/* trim leading spaces */
+	cp++;
+
+    /* change newlines to spaces */
+    for (dp = strchr(cp, '\n'); dp; dp = strchr(dp, '\n'))
+	*dp++ = ' ';
+
+    /* trim trailing spaces */
+    for (dp = cp + strlen (cp) - 1; dp >= cp; dp--)
+	if (!isspace ((unsigned char) *dp))
+	    break;
+    *++dp = '\0';
+
+    if (debugsw)
+	fprintf (stderr, "%s: %s\n", DISPO_FIELD, cp);
+
+    if (*cp == '(' && get_comment (ct->c_file, DISPO_FIELD, &cp, NULL) ==
+    							NOTOK) {
+	free(dispoheader);
+	return NOTOK;
+    }
+
+    for (dp = cp; istoken (*dp); dp++)
+	continue;
+    c = *dp, *dp = '\0';
+    ct->c_dispo_type = add (cp, NULL);	/* store disposition type */
+    *dp = c, cp = dp;
+
+    if (*cp == '(' && get_comment (ct->c_file, DISPO_FIELD, &cp, NULL) == NOTOK)
+	return NOTOK;
+
+    if ((status = parse_header_attrs (ct->c_file, DISPO_FIELD, &cp,
+    				      &ct->c_dispo_first, &ct->c_dispo_last,
+				      NULL)) != OK) {
+	if (status == NOTOK) {
+	    free(dispoheader);
+	    return NOTOK;
+	}
+    } else if (*cp) {
+	advise (NULL,
+		"extraneous information in message %s's %s: field\n%*s(%s)",
+                    ct->c_file, DISPO_FIELD, strlen(invo_name) + 2, "", cp);
+    }
+
+    if (buildflag)
+    	free(dispoheader);
+    else
+	ct->c_dispo = dispoheader;
+
+    return OK;
+}
+
+
+static int
+get_comment (const char *filename, const char *fieldname, char **ap,
+	     char **commentp)
 {
     int i;
     char *bp, *cp;
@@ -938,7 +941,7 @@ get_comment (const char *filename, CI ci, char **ap, int istype)
 	case '\0':
 invalid:
 	advise (NULL, "invalid comment in message %s's %s: field",
-		filename, istype ? TYPE_FIELD : VRSN_FIELD);
+		filename, fieldname);
 	return NOTOK;
 
 	case '\\':
@@ -965,12 +968,12 @@ invalid:
     }
     *bp = '\0';
 
-    if (istype) {
-	if ((dp = ci->ci_comment)) {
-	    ci->ci_comment = concat (dp, " ", buffer, NULL);
+    if (commentp) {
+	if ((dp = *commentp)) {
+	    *commentp = concat (dp, " ", buffer, NULL);
 	    free (dp);
 	} else {
-	    ci->ci_comment = add (buffer, NULL);
+	    *commentp = add (buffer, NULL);
 	}
     }
 
@@ -1007,7 +1010,8 @@ InitText (CT ct)
 {
     char buffer[BUFSIZ];
     char *chset = NULL;
-    char **ap, **ep, *cp;
+    char *cp;
+    PM pm;
     struct k2v *kv;
     struct text *t;
     CI ci = &ct->c_ctinfo;
@@ -1028,13 +1032,13 @@ InitText (CT ct)
     ct->c_ctparams = (void *) t;
 
     /* scan for charset parameter */
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++)
-	if (!strcasecmp (*ap, "charset"))
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next)
+	if (!strcasecmp (pm->pm_name, "charset"))
 	    break;
 
     /* check if content specified a character set */
-    if (*ap) {
-	chset = *ep;
+    if (pm) {
+	chset = pm->pm_value;
 	t->tx_charset = CHARSET_SPECIFIED;
     } else {
 	t->tx_charset = CHARSET_UNSPECIFIED;
@@ -1066,7 +1070,8 @@ InitMultiPart (CT ct)
 {
     int	inout;
     long last, pos;
-    char *cp, *dp, **ap, **ep;
+    char *cp, *dp;
+    PM pm;
     char *bp, buffer[BUFSIZ];
     struct multipart *m;
     struct k2v *kv;
@@ -1111,15 +1116,15 @@ InitMultiPart (CT ct)
      * required for multipart messages.
      */
     bp = 0;
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!strcasecmp (*ap, "boundary")) {
-	    bp = *ep;
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+	if (!strcasecmp (pm->pm_name, "boundary")) {
+	    bp = pm->pm_value;
 	    break;
 	}
     }
 
     /* complain if boundary parameter is missing */
-    if (!*ap) {
+    if (!pm) {
 	advise (NULL,
 		"a \"boundary\" parameter is mandatory for \"%s/%s\" type in message %s's %s: field",
 		ci->ci_type, ci->ci_subtype, ct->c_file, TYPE_FIELD);
@@ -1324,7 +1329,7 @@ InitMessage (CT ct)
 
 	case MESSAGE_PARTIAL:
 	    {
-		char **ap, **ep;
+		PM pm;
 		struct partial *p;
 
 		if ((p = (struct partial *) calloc (1, sizeof(*p))) == NULL)
@@ -1332,25 +1337,25 @@ InitMessage (CT ct)
 		ct->c_ctparams = (void *) p;
 
 		/* scan for parameters "id", "number", and "total" */
-		for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-		    if (!strcasecmp (*ap, "id")) {
-			p->pm_partid = add (*ep, NULL);
+		for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+		    if (!strcasecmp (pm->pm_name, "id")) {
+			p->pm_partid = add (pm->pm_value, NULL);
 			continue;
 		    }
-		    if (!strcasecmp (*ap, "number")) {
-			if (sscanf (*ep, "%d", &p->pm_partno) != 1
+		    if (!strcasecmp (pm->pm_name, "number")) {
+			if (sscanf (pm->pm_value, "%d", &p->pm_partno) != 1
 			        || p->pm_partno < 1) {
 invalid_param:
 			    advise (NULL,
 				    "invalid %s parameter for \"%s/%s\" type in message %s's %s field",
-				    *ap, ci->ci_type, ci->ci_subtype,
+				    pm->pm_name, ci->ci_type, ci->ci_subtype,
 				    ct->c_file, TYPE_FIELD);
 			    return NOTOK;
 			}
 			continue;
 		    }
-		    if (!strcasecmp (*ap, "total")) {
-			if (sscanf (*ep, "%d", &p->pm_maxno) != 1
+		    if (!strcasecmp (pm->pm_name, "total")) {
+			if (sscanf (pm->pm_value, "%d", &p->pm_maxno) != 1
 			        || p->pm_maxno < 1)
 			    goto invalid_param;
 			continue;
@@ -1465,21 +1470,21 @@ no_body:
 int
 params_external (CT ct, int composing)
 {
-    char **ap, **ep;
+    PM pm;
     struct exbody *e = (struct exbody *) ct->c_ctparams;
     CI ci = &ct->c_ctinfo;
 
     ct->c_ceopenfnx = NULL;
-    for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	if (!strcasecmp (*ap, "access-type")) {
+    for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
+	if (!strcasecmp (pm->pm_name, "access-type")) {
 	    struct str2init *s2i;
 	    CT p = e->eb_content;
 
 	    for (s2i = str2methods; s2i->si_key; s2i++)
-		if (!strcasecmp (*ep, s2i->si_key))
+		if (!strcasecmp (pm->pm_value, s2i->si_key))
 		    break;
 	    if (!s2i->si_key) {
-		e->eb_access = *ep;
+		e->eb_access = pm->pm_value;
 		e->eb_flags = NOTOK;
 		p->c_encoding = CE_EXTERNAL;
 		continue;
@@ -1493,46 +1498,46 @@ params_external (CT ct, int composing)
 		return NOTOK;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "name")) {
-	    e->eb_name = *ep;
+	if (!strcasecmp (pm->pm_name, "name")) {
+	    e->eb_name = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "permission")) {
-	    e->eb_permission = *ep;
+	if (!strcasecmp (pm->pm_name, "permission")) {
+	    e->eb_permission = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "site")) {
-	    e->eb_site = *ep;
+	if (!strcasecmp (pm->pm_name, "site")) {
+	    e->eb_site = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "directory")) {
-	    e->eb_dir = *ep;
+	if (!strcasecmp (pm->pm_name, "directory")) {
+	    e->eb_dir = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "mode")) {
-	    e->eb_mode = *ep;
+	if (!strcasecmp (pm->pm_name, "mode")) {
+	    e->eb_mode = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "size")) {
-	    sscanf (*ep, "%lu", &e->eb_size);
+	if (!strcasecmp (pm->pm_name, "size")) {
+	    sscanf (pm->pm_value, "%lu", &e->eb_size);
 	    continue;
 	}
-	if (!strcasecmp (*ap, "server")) {
-	    e->eb_server = *ep;
+	if (!strcasecmp (pm->pm_name, "server")) {
+	    e->eb_server = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "subject")) {
-	    e->eb_subject = *ep;
+	if (!strcasecmp (pm->pm_name, "subject")) {
+	    e->eb_subject = pm->pm_value;
 	    continue;
 	}
-	if (!strcasecmp (*ap, "url")) {
+	if (!strcasecmp (pm->pm_name, "url")) {
 	    /*
 	     * According to RFC 2017, we have to remove all whitespace from
 	     * the URL
 	     */
 
-	    char *u, *p = *ep;
-	    e->eb_url = u = mh_xmalloc(strlen(*ep) + 1);
+	    char *u, *p = pm->pm_value;
+	    e->eb_url = u = mh_xmalloc(strlen(pm->pm_value) + 1);
 
 	    for (; *p != '\0'; p++) {
 	    	if (! isspace((unsigned char) *p))
@@ -1542,8 +1547,8 @@ params_external (CT ct, int composing)
 	    *u = '\0';
 	    continue;
 	}
-	if (composing && !strcasecmp (*ap, "body")) {
-	    e->eb_body = getcpy (*ep);
+	if (composing && !strcasecmp (pm->pm_name, "body")) {
+	    e->eb_body = getcpy (pm->pm_value);
 	    continue;
 	}
     }
@@ -2206,28 +2211,18 @@ open7Bit (CT ct, char **file)
     }
 
     if (ct->c_type == CT_MULTIPART) {
-	char **ap, **ep;
 	CI ci = &ct->c_ctinfo;
+	char *buffer;
 
 	len = 0;
 	fprintf (ce->ce_fp, "%s: %s/%s", TYPE_FIELD, ci->ci_type, ci->ci_subtype);
 	len += strlen (TYPE_FIELD) + 2 + strlen (ci->ci_type)
 	    + 1 + strlen (ci->ci_subtype);
-	for (ap = ci->ci_attrs, ep = ci->ci_values; *ap; ap++, ep++) {
-	    putc (';', ce->ce_fp);
-	    len++;
+	buffer = output_params(len, ci->ci_first_pm, &len, 0);
 
-	    snprintf (buffer, sizeof(buffer), "%s=\"%s\"", *ap, *ep);
-
-	    if (len + 1 + (cc = strlen (buffer)) >= CPERLIN) {
-		fputs ("\n\t", ce->ce_fp);
-		len = 8;
-	    } else {
-		putc (' ', ce->ce_fp);
-		len++;
-	    }
-	    fprintf (ce->ce_fp, "%s", buffer);
-	    len += cc;
+	if (buffer) {
+	    fputs (buffer, ce->ce_fp);
+	    free(buffer);
 	}
 
 	if (ci->ci_comment) {
@@ -3231,33 +3226,56 @@ get_ce_method (const char *method) {
     return NULL;
 }
 
-int
-parse_header_attrs (const char *filename, int len, char **header_attrp, CI ci,
-                    int *status) {
-    char **attr = ci->ci_attrs;
+/*
+ * Parse a series of MIME attributes (or parameters) given a header as
+ * input.
+ *
+ * Arguments include:
+ *
+ * filename	- Name of input file (for error messages)
+ * fieldname	- Name of field being processed
+ * headerp	- Pointer to pointer of the beginning of the MIME attributes.
+ *		  Updated to point to end of attributes when finished.
+ * param_head	- Pointer to head of parameter list
+ * param_tail	- Pointer to tail of parameter list
+ * commentp	- Pointer to header comment pointer (may be NULL)
+ *
+ * Returns OK if parsing was successful, NOTOK if parsing failed, and
+ * DONE to indicate a benign error (minor parsing error, but the program
+ * should continue).
+ */
+
+static int
+parse_header_attrs (const char *filename, const char *fieldname,
+		    char **header_attrp, PM *param_head, PM *param_tail,
+		    char **commentp)
+{
     char *cp = *header_attrp;
+    PM pm;
+    struct sectlist {
+	char *value;
+	int index;
+	int len;
+	struct sectlist *next;
+    } *sp, *sp2;
+    struct parmlist {
+	char *name;
+	char *charset;
+	char *lang;
+	struct sectlist *sechead;
+	struct parmlist *next;
+    } *pp, *pp2, *phead = NULL;
 
     while (*cp == ';') {
-	char *dp, *vp, *up, c;
-
-        /* Relies on knowledge of this declaration:
-         *   char *ci_attrs[NPARMS + 2];
-         */
-	if (attr >= ci->ci_attrs + sizeof ci->ci_attrs/sizeof (char *) - 2) {
-	    advise (NULL,
-		    "too many parameters in message %s's %s: field (%d max)",
-		    filename, TYPE_FIELD, NPARMS);
-	    *status = NOTOK;
-	    return NOTOK;
-	}
+	char *dp, *vp, *up, *nameptr, *valptr, *charset = NULL, *lang = NULL;
+	int encoded = 0, partial = 0, len = 0, index = 0;
 
 	cp++;
 	while (isspace ((unsigned char) *cp))
 	    cp++;
 
 	if (*cp == '('  &&
-            get_comment (filename, ci, &cp, 1) == NOTOK) {
-	    *status = NOTOK;
+            get_comment (filename, fieldname, &cp, commentp) == NOTOK) {
 	    return NOTOK;
         }
 
@@ -3265,9 +3283,8 @@ parse_header_attrs (const char *filename, int len, char **header_attrp, CI ci,
 	    advise (NULL,
 		    "extraneous trailing ';' in message %s's %s: "
                     "parameter list",
-		    filename, TYPE_FIELD);
-	    *status = OK;
-	    return NOTOK;
+		    filename, fieldname);
+	    return DONE;
 	}
 
 	/* down case the attribute name */
@@ -3280,135 +3297,956 @@ parse_header_attrs (const char *filename, int len, char **header_attrp, CI ci,
 	if (dp == cp || *dp != '=') {
 	    advise (NULL,
 		    "invalid parameter in message %s's %s: "
-                    "field\n%*.*sparameter %s (error detected at offset %d)",
-		    filename, TYPE_FIELD, len, len, "", cp, dp - cp);
-	    *status = NOTOK;
+                    "field\n%*sparameter %s (error detected at offset %d)",
+		    filename, fieldname, strlen(invo_name) + 2, "",cp, dp - cp);
 	    return NOTOK;
 	}
 
-	vp = (*attr = add (cp, NULL)) + (up - cp);
-	*vp = '\0';
+	/*
+	 * To handle RFC 2231, we have to deal with the following extensions:
+	 *
+	 * name*=encoded-value
+	 * name*<N>=part-N-of-a-parameter-value
+	 * name*<N>*=encoded-part-N-of-a-parameter-value
+	 *
+	 * So the rule is:
+	 * If there's a * right before the equal sign, it's encoded.
+	 * If there's a * and one or more digits, then it's section N.
+	 *
+	 * Remember we can have one or the other, or both.  cp points to
+	 * beginning of name, up points past the last character in the
+	 * parameter name.
+	 */
+
+	for (vp = cp; vp < up; vp++) {
+	    if (*vp == '*' && vp < up - 1) {
+		partial = 1;
+		continue;
+	    } else if (*vp == '*' && vp == up - 1) {
+	    	encoded = 1;
+	    } else if (partial) {
+		if (isdigit((unsigned char) *vp))
+		    index = *vp - '0' + index * 10;
+		else {
+		    advise (NULL, "invalid parameter index in message %s's "
+			    "%s: field\n%*s(parameter %s)", filename,
+			    fieldname, strlen(invo_name) + 2, "", cp);
+		    return NOTOK;
+		}
+	    } else {
+		len++;
+	    }
+	}
+
+	/*
+	 * Break out the parameter name and value sections and allocate
+	 * memory for each.
+	 */
+
+	nameptr = mh_xmalloc(len + 1);
+	strncpy(nameptr, cp, len);
+	nameptr[len] = '\0';
+
 	for (dp++; isspace ((unsigned char) *dp);)
 	    dp++;
 
-	/* Now store the attribute value. */
-	ci->ci_values[attr - ci->ci_attrs] = vp = *attr + (dp - cp);
+	if (encoded) {
+	    /*
+	     * Single quotes delimit the character set and language tag.
+	     * They are required on the first section (or a complete
+	     * parameter).
+	     */
+	    if (index == 0) {
+	    	vp = dp;
+		while (*vp != '\'' && !isspace((unsigned char) *vp) &&
+							*vp != '\0')
+		    vp++;
+		if (*vp == '\'') {
+		    if (vp != dp) {
+			len = vp - dp;
+			charset = mh_xmalloc(len + 1);
+			strncpy(charset, dp, len);
+			charset[len] = '\0';
+		    } else {
+			charset = NULL;
+		    }
+		    vp++;
+		} else {
+		    advise(NULL, "missing charset in message %s's %s: "
+			   "field\n%*s(parameter %s)", filename, fieldname,
+			   strlen(invo_name) + 2, "", nameptr);
+		    free(nameptr);
+		    return NOTOK;
+		}
+		dp = vp;
 
-	if (*dp == '"') {
-	    for (cp = ++dp, dp = vp;;) {
-		switch (c = *cp++) {
+		while (*vp != '\'' && !isspace((unsigned char) *vp) &&
+							*vp != '\0')
+		    vp++;
+
+		if (*vp == '\'') {
+		    if (vp != dp) {
+			len = vp - dp;
+			lang = mh_xmalloc(len + 1);
+			strncpy(lang, dp, len);
+			lang[len] = '\0';
+		    } else {
+			lang = NULL;
+		    }
+		    vp++;
+		} else {
+		    advise(NULL, "missing language tag in message %s's %s: "
+			   "field\n%*s(parameter %s)", filename, fieldname,
+			   strlen(invo_name) + 2, "", nameptr);
+		    free(nameptr);
+		    if (charset)
+			free(charset);
+		    return NOTOK;
+		}
+
+		dp = vp;
+	    }
+
+	    /*
+	     * At this point vp should be pointing at the beginning
+	     * of the encoded value/section.  Continue until we reach
+	     * the end or get whitespace.  But first, calculate the
+	     * length so we can allocate the correct buffer size.
+	     */
+
+	    for (vp = dp, len = 0; istoken(*vp); vp++) {
+		if (*vp == '%') {
+		     if (*(vp + 1) == '\0' ||
+				!isxdigit((unsigned char) *(vp + 1)) ||
+				*(vp + 2) == '\0' ||
+				!isxdigit((unsigned char) *(vp + 2))) {
+			advise(NULL, "invalid encoded sequence in message "
+			       "%s's %s: field\n%*s(parameter %s)",
+			       filename, fieldname, strlen(invo_name) + 2,
+			       "", nameptr);
+			free(nameptr);
+			if (charset)
+			    free(charset);
+			if (lang)
+			    free(lang);
+			return NOTOK;
+		    }
+		    vp += 2;
+		}
+		len++;
+	    }
+
+	    up = valptr = mh_xmalloc(len + 1);
+
+	    for (vp = dp; istoken(*vp); vp++) {
+		if (*vp == '%') {
+		    *up++ = decode_qp(*(vp + 1), *(vp + 2));
+		    vp += 2;
+		} else {
+		    *up++ = *vp;
+		}
+	    }
+
+	    *up = '\0';
+	    cp = vp;
+	} else {
+	    /*
+	     * A "normal" string.  If it's got a leading quote, then we
+	     * strip the quotes out.  Otherwise go until we reach the end
+	     * or get whitespace.  Note we scan it twice; once to get the
+	     * length, then the second time copies it into the destination
+	     * buffer.
+	     */
+
+	    len = 0;
+
+	    if (*dp == '"') {
+		for (cp = dp + 1;;) {
+		    switch (*cp++) {
 		    case '\0':
 bad_quote:
 		        advise (NULL,
 				"invalid quoted-string in message %s's %s: "
-                                "field\n%*.*s(parameter %s)",
-				filename, TYPE_FIELD, len, len, "", *attr);
-			*status = NOTOK;
+                                "field\n%*s(parameter %s)",
+				filename, fieldname, strlen(invo_name) + 2, "",
+				nameptr);
+			free(nameptr);
+			if (charset)
+			    free(charset);
+			if (lang)
+			    free(lang);
 			return NOTOK;
+		    case '"':
+			break;
 
 		    case '\\':
-			*dp++ = c;
-			if ((c = *cp++) == '\0')
+			if (*++cp == '\0')
 			    goto bad_quote;
-			/* else fall... */
-
+			/* FALL THROUGH */
 		    default:
-			*dp++ = c;
+			len++;
 			continue;
-
-		    case '"':
-			*dp = '\0';
-			break;
+		    }
+		    break;
 		}
-		break;
+
+	    } else {
+		for (cp = dp; istoken (*cp); cp++) {
+		    len++;
+		}
+	    }
+
+	    valptr = mh_xmalloc(len + 1);
+
+	    if (*dp == '"') {
+	    	int i;
+		for (cp = dp + 1, vp = valptr, i = 0; i < len; i++) {
+		    if (*cp == '\\') {
+			cp++;
+		    }
+		    *vp++ = *cp++;
+		}
+		cp++;
+	    } else {
+	    	strncpy(valptr, cp = dp, len);
+		cp += len;
+	    }
+
+	    valptr[len] = '\0';
+	}
+
+	/*
+	 * If 'partial' is set, we don't allocate a parameter now.  We
+	 * put it on the parameter linked list to be reassembled later.
+	 *
+	 * "phead" points to a list of all parameters we need to reassemble.
+	 * Each parameter has a list of sections. We insert the sections in
+	 * order.
+	 */
+
+	if (partial) {
+	    for (pp = phead; pp != NULL; pp = pp->next) {
+		if (strcasecmp(nameptr, pp->name) == 0)
+		    break;
+	    }
+
+	    if (pp == NULL) {
+		pp = mh_xmalloc(sizeof(*pp));
+		memset(pp, 0, sizeof(*pp));
+		pp->name = nameptr;
+		pp->next = phead;
+		phead = pp;
+	    }
+
+	    /*
+	     * Insert this into the section linked list
+	     */
+
+	    sp = mh_xmalloc(sizeof(*sp));
+	    memset(sp, 0, sizeof(*sp));
+	    sp->value = valptr;
+	    sp->index = index;
+	    sp->len = len;
+
+	    if (pp->sechead == NULL || pp->sechead->index > index) {
+		sp->next = pp->sechead;
+		pp->sechead = sp;
+	    } else {
+		for (sp2 = pp->sechead; sp2 != NULL; sp2 = sp2->next) {
+		    if (sp2->index == sp->index) {
+			advise (NULL, "duplicate index (%d) in message "
+				"%s's %s: field\n%*s(parameter %s)", sp->index,
+				filename, fieldname, strlen(invo_name) + 2, "",
+				nameptr);
+			return NOTOK;
+		    }
+		    if (sp2->index < sp->index &&
+			(sp2->next == NULL || sp2->next->index > sp->index)) {
+			sp->next = sp2->next;
+			sp2->next = sp;
+			break;
+		    }
+		}
+
+		if (sp2 == NULL) {
+		    advise(NULL, "Internal error: cannot insert partial "
+		    	   "param in message %s's %s: field\n%*s(parameter %s)",
+			   filename, fieldname, strlen(invo_name) + 2, "",
+			   nameptr);
+		    return NOTOK;
+		}
+	    }
+
+	    /*
+	     * Save our charset and lang tags.
+	     */
+
+	    if (index == 0 && encoded) {
+		if (pp->charset)
+		    free(pp->charset);
+	    	pp->charset = charset;
+		if (pp->lang)
+		    free(pp->lang);
+		pp->lang = lang;
 	    }
 	} else {
-	    for (cp = dp, dp = vp; istoken (*cp); cp++, dp++)
-		continue;
-	    *dp = '\0';
-	}
-	if (!*vp) {
-	    advise (NULL,
-		    "invalid parameter in message %s's %s: "
-                    "field\n%*.*s(parameter %s)",
-		    filename, TYPE_FIELD, len, len, "", *attr);
-	    *status = NOTOK;
-	    return NOTOK;
+	    pm = add_param(param_head, param_tail, nameptr, valptr, 1);
+	    pm->pm_charset = charset;
+	    pm->pm_lang = lang;
 	}
 
 	while (isspace ((unsigned char) *cp))
 	    cp++;
 
 	if (*cp == '('  &&
-            get_comment (filename, ci, &cp, 1) == NOTOK) {
-	    *status = NOTOK;
+            get_comment (filename, fieldname, &cp, commentp) == NOTOK) {
 	    return NOTOK;
         }
+    }
 
-        ++attr;
+    /*
+     * Now that we're done, reassemble all of the partial parameters.
+     */
+
+    for (pp = phead; pp != NULL; ) {
+    	char *p, *q;
+	size_t tlen = 0;
+	int pindex = 0;
+	for (sp = pp->sechead; sp != NULL; sp = sp->next) {
+	    if (sp->index != pindex++) {
+		advise(NULL, "missing section %d for parameter in "
+		       "message %s's %s: field\n%*s(parameter %s)", pindex - 1,
+		       filename, fieldname, strlen(invo_name) + 2, "",
+		       pp->name);
+		return NOTOK;
+	    }
+	    tlen += sp->len;
+	}
+
+	p = q = mh_xmalloc(tlen + 1);
+	for (sp = pp->sechead; sp != NULL; ) {
+	    memcpy(q, sp->value, sp->len);
+	    q += sp->len;
+	    free(sp->value);
+	    sp2 = sp->next;
+	    free(sp);
+	    sp = sp2;
+	}
+
+	p[tlen] = '\0';
+
+	pm = add_param(param_head, param_tail, pp->name, p, 1);
+	pm->pm_charset = pp->charset;
+	pm->pm_lang = pp->lang;
+	pp2 = pp->next;
+	free(pp);
+	pp = pp2;
     }
 
     *header_attrp = cp;
     return OK;
 }
 
+/*
+ * Return the charset for a particular content type.  Return pointer is
+ * only valid until the next call to content_charset().
+ */
 
 char *
 content_charset (CT ct) {
-    const char *const charset = "charset";
-    char *default_charset = NULL;
-    CI ctinfo = &ct->c_ctinfo;
-    char **ap, **vp;
-    char **src_charset = NULL;
+    static char *ret_charset = NULL;
 
-    for (ap = ctinfo->ci_attrs, vp = ctinfo->ci_values; *ap; ++ap, ++vp) {
-        if (! strcasecmp (*ap, charset)) {
-            src_charset = vp;
-            break;
-        }
+    if (ret_charset != NULL) {
+	free(ret_charset);
     }
 
-    /* RFC 2045, Sec. 5.2:  default to us-ascii. */
-    if (src_charset == NULL) src_charset = &default_charset;
-    if (*src_charset == NULL) *src_charset = "US-ASCII";
+    ret_charset = get_param(ct->c_ctinfo.ci_first_pm, "charset", '?', 0);
 
-    return *src_charset;
+    return ret_charset ? ret_charset : "US-ASCII";
 }
 
 
-/* Change the value of a name=value pair in a header field body.
-   If the name isn't there, append them.  In any case, a new
-   string will be allocated and must be free'd by the caller.
-   Trims any trailing newlines. */
+/*
+ * Create a string based on a list of output parameters.  Assume that this
+ * parameter string will be appended to an existing header, so start out
+ * with the separator (;).  Perform RFC 2231 encoding when necessary.
+ */
+
 char *
-update_attr (char *body, const char *name, const char *value) {
-    char *bp = nmh_strcasestr (body, name);
-    char *new_body;
+output_params(size_t initialwidth, PM params, int *offsetout, int external)
+{
+    char *paramout = NULL;
+    char line[CPERLIN * 2], *q;
+    int curlen, index, cont, encode, i;
+    size_t valoff, numchars;
 
-    if (bp) {
-        char *other_attrs = strchr (bp, ';');
+    while (params != NULL) {
+	encode = 0;
+	index = 0;
+	valoff = 0;
+	q = line;
 
-        *(bp + strlen (name)) = '\0';
-        new_body = concat (body, "\"", value, "\"", NULL);
+	if (external && strcasecmp(params->pm_name, "body") == 0)
+	    continue;
 
-        if (other_attrs) {
-            char *cp;
+	if (strlen(params->pm_name) > CPERLIN) {
+	    advise(NULL, "Parameter name \"%s\" is too long", params->pm_name);
+	    if (paramout)
+		free(paramout);
+	    return NULL;
+	}
 
-            /* Trim any trailing newlines. */
-            for (cp = &other_attrs[strlen (other_attrs) - 1];
-                 cp > other_attrs  &&  *cp == '\n';
-                 *cp-- = '\0') continue;
-            new_body = add (other_attrs, new_body);
-        }
-    } else {
-        char *cp;
+	curlen = param_len(params, index, valoff, &encode, &cont, &numchars);
 
-        /* Append name/value pair, after first removing a final newline
-           and (extraneous) semicolon. */
-        if (*(cp = &body[strlen (body) - 1]) == '\n') *cp = '\0';
-        if (*(cp = &body[strlen (body) - 1]) == ';') *cp = '\0';
-        new_body = concat (body, "; ", name, "\"", value, "\"", NULL);
+	/*
+	 * Loop until we get a parameter that fits within a line.  We
+	 * assume new lines start with a tab, so check our overflow based
+	 * on that.
+	 */
+
+	while (cont) {
+	    *q++ = ';';
+	    *q++ = '\n';
+	    *q++ = '\t';
+
+	    /*
+	     * At this point we're definitely continuing the line, so
+	     * be sure to include the parameter name and section index.
+	     */
+
+	    q += snprintf(q, sizeof(line) - (q - line), "%s*%d",
+			  params->pm_name, index);
+
+	    /*
+	     * Both of these functions do a NUL termination
+	     */
+
+	    if (encode)
+		i = encode_param(params, q, sizeof(line) - (q - line),
+				 numchars, valoff, index);
+	    else
+		i = normal_param(params, q, sizeof(line) - (q - line),
+				 numchars, valoff);
+
+	    if (i == 0) {
+		if (paramout)
+		    free(paramout);
+		return NULL;
+	    }
+
+	    valoff += numchars;
+	    index++;
+	    curlen = param_len(params, index, valoff, &encode, &cont,
+			       &numchars);
+	    q = line;
+
+	    /*
+	     * "line" starts with a ;\n\t, so that doesn't count against
+	     * the length.  But add 8 since it starts with a tab; that's
+	     * how we end up with 5.
+	     */
+
+	    initialwidth = strlen(line) + 5;
+
+	    /*
+	     * At this point the line should be built, so add it to our
+	     * current output buffer.
+	     */
+
+	    paramout = add(line, paramout);
+	}
+
+	/*
+	 * If this won't fit on the line, start a new one.  Save room in
+	 * case we need a semicolon on the end
+	 */
+
+	if (initialwidth + curlen > CPERLIN - 1) {
+	    *q++ = ';';
+	    *q++ = '\n';
+	    *q++ = '\t';
+	    initialwidth = 8;
+	} else {
+	    *q++ = ';';
+	    *q++ = ' ';
+	    initialwidth += 2;
+	}
+
+	/*
+	 * At this point, we're either finishing a contined parameter, or
+	 * we're working on a new one.
+	 */
+
+	if (index > 0) {
+	    q += snprintf(q, sizeof(line) - (q - line), "%s*%d",
+	    		  params->pm_name, index);
+	} else {
+	    strncpy(q, params->pm_name, sizeof(line) - (q - line));
+	    q += strlen(q);
+	}
+
+	if (encode)
+	    i = encode_param(params, q, sizeof(line) - (q - line),
+	    		     strlen(params->pm_value + valoff), valoff, index);
+	else
+	    i = normal_param(params, q, sizeof(line) - (q - line),
+	    		     strlen(params->pm_value + valoff), valoff);
+
+	if (i == 0) {
+	    if (paramout)
+		free(paramout);
+	    return NULL;
+	}
+
+	paramout = add(line, paramout);
+	initialwidth += strlen(line);
+
+	params = params->pm_next;
     }
 
-    return new_body;
+    if (offsetout)
+	*offsetout = initialwidth;
+
+    return paramout;
+}
+
+/*
+ * Calculate the size of a parameter.
+ *
+ * Arguments include
+ *
+ * pm		- The parameter being output
+ * index	- If continuing the parameter, the index of the section
+ *		  we're on.
+ * valueoff	- The current offset into the parameter value that we're
+ *		  working on (previous sections have consumed valueoff bytes).
+ * encode	- Set if we should perform encoding on this parameter section
+ *		  (given that we're consuming bytesfit bytes).
+ * cont		- Set if the remaining data in value will not fit on a single
+ *		  line and will need to be continued.
+ * bytesfit	- The number of bytes that we can consume from the parameter
+ *		  value and still fit on a completely new line.  The
+ *		  calculation assumes the new line starts with a tab,
+ *		  includes the parameter name and any encoding, and fits
+ *		  within CPERLIN bytes.  Will always be at least 1.
+ */
+
+static size_t
+param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
+	  size_t *bytesfit)
+{
+    char *start = pm->pm_value + valueoff, *p, indexchar[32];
+    size_t len = 0, fit = 0;
+    int fitlimit = 0, eightbit, maxfit;
+
+    *encode = 0;
+
+    /*
+     * Add up the length.  First, start with the parameter name.
+     */
+
+    len = strlen(pm->pm_name);
+
+    /*
+     * Scan the parameter value and see if we need to do encoding for this
+     * section.
+     */
+
+    eightbit = contains8bit(start, NULL);
+
+    /*
+     * Determine if we need to encode this section.  Encoding is necessary if:
+     *
+     * - There are any 8-bit characters at all and we're on the first
+     *   section.
+     * - There are 8-bit characters within N bytes of our section start.
+     *   N is calculated based on the number of bytes it would take to
+     *   reach CPERLIN.  Specifically:
+     *		8 (starting tab) +
+     *		strlen(param name) +
+     *		4 ('* for section marker, '=', opening/closing '"')
+     *		strlen (index)
+     *	is the number of bytes used by everything that isn't part of the
+     *  value.  So that gets subtracted from CPERLIN.
+     */
+
+    snprintf(indexchar, sizeof(indexchar), "%d", index);
+    maxfit = CPERLIN - (12 + len + strlen(indexchar));
+    if ((eightbit && index == 0) || contains8bit(start, start + maxfit)) {
+	*encode = 1;
+    }
+
+    len++;	/* Add in equal sign */
+
+    if (*encode) {
+	/*
+	 * We're using maxfit as a marker for how many characters we can
+	 * fit into the line.  Bump it by two because we're not using quotes
+	 * when encoding.
+	 */
+
+	maxfit += 2;
+
+	/*
+	 * If we don't have a charset or language tag in this parameter,
+	 * add them now.
+	 */
+
+	if (! pm->pm_charset)
+	    pm->pm_charset = getcpy(write_charset_8bit());
+	if (! pm->pm_lang)
+	    pm->pm_lang = getcpy(NULL);	/* Default to a blank lang tag */
+
+	len++;		/* For the encoding marker */
+	maxfit--;
+	if (index == 0) {
+	    int enclen = strlen(pm->pm_charset) + strlen(pm->pm_lang) + 2;
+	    len += enclen;
+	    maxfit-= enclen;
+	} else {
+	    /*
+	     * We know we definitely need to include an index.  maxfit already
+	     * includes the section marker.
+	     */
+	    len += strlen(indexchar);
+	}
+	for (p = start; *p != '\0'; p++) {
+	    if (isparamencode(*p)) {
+		len += 3;
+		maxfit -= 3;
+	    } else {
+	    	len++;
+		maxfit--;
+	    }
+	    /*
+	     * Just so there's no confusion: maxfit is counting OUTPUT
+	     * characters (post-encoding).  fit is counting INPUT characters.
+	     */
+	    if (! fitlimit && maxfit >= 0)
+		fit++;
+	    else if (! fitlimit)
+		fitlimit++;
+	}
+    } else {
+    	/*
+	 * Calculate the string length, but add room for quoting \
+	 * and " if necessary.  Also account for quotes at beginning
+	 * and end.
+	 */
+	for (p = start; *p != '\0'; p++) {
+	    switch (*p) {
+	    case '"':
+	    case '\\':
+	    	len++;
+		maxfit--;
+	    /* FALL THROUGH */
+	    default:
+		len++;
+		maxfit--;
+	    }
+	    if (! fitlimit && maxfit >= 0)
+		fit++;
+	    else if (! fitlimit)
+		fitlimit++;
+	}
+
+	len += 2;
+    }
+
+    if (fit < 1)
+	fit = 1;
+
+    *cont = fitlimit;
+    *bytesfit = fit;
+
+    return len;
+}
+
+/*
+ * Output an encoded parameter string.
+ */
+
+static size_t
+encode_param(PM pm, char *output, size_t len, size_t valuelen,
+	      size_t valueoff, int index)
+{
+    size_t outlen = 0, n;
+    char *endptr = output + len, *p;
+
+    /*
+     * First, output the marker for an encoded string.
+     */
+
+    *output++ = '*';
+    *output++ = '=';
+    outlen += 2;
+
+    /*
+     * If the index is 0, output the character set and language tag.
+     * If theses were NULL, they should have already been filled in
+     * by param_len().
+     */
+
+    if (index == 0) {
+	n = snprintf(output, len - outlen, "%s'%s'", pm->pm_charset,
+		     pm->pm_lang);
+	output += n;
+	outlen += n;
+	if (output > endptr) {
+	    advise(NULL, "Internal error: parameter buffer overflow");
+	    return 0;
+	}
+    }
+
+    /*
+     * Copy over the value, encoding if necessary
+     */
+
+    p = pm->pm_value + valueoff;
+    while (valuelen-- > 0) {
+	if (isparamencode(*p)) {
+	    n = snprintf(output, len - outlen, "%%%02X", (unsigned char) *p++);
+	    output += n;
+	    outlen += n;
+	} else {
+	    *output++ = *p++;
+	    outlen++;
+	}
+	if (output > endptr) {
+	    advise(NULL, "Internal error: parameter buffer overflow");
+	    return 0;
+	}
+    }
+
+    *output = '\0';
+
+    return outlen;
+}
+
+/*
+ * Output a "normal" parameter, without encoding.  Be sure to escape
+ * quotes and backslashes if necessary.
+ */
+
+static size_t
+normal_param(PM pm, char *output, size_t len, size_t valuelen,
+	     size_t valueoff)
+{
+    size_t outlen = 0;
+    char *endptr = output + len, *p;
+
+    *output++ = '=';
+    *output++ = '"';
+    outlen += 2;
+
+    p = pm->pm_value + valueoff;
+
+    while (valuelen-- > 0) {
+	switch (*p) {
+	case '\\':
+	case '"':
+	    *output++ = '\\';
+	    outlen++;
+	default:
+	    *output++ = *p++;
+	    outlen++;
+	}
+	if (output > endptr) {
+	    advise(NULL, "Internal error: parameter buffer overflow");
+	    return 0;
+	}
+    }
+
+    if (output - 2 > endptr) {
+	advise(NULL, "Internal error: parameter buffer overflow");
+	return 0;
+    }
+
+    *output++ = '"';
+    *output++ = '\0';
+
+    return outlen + 1;
+}
+
+/*
+ * Add a parameter to the parameter linked list
+ */
+
+PM
+add_param(PM *first, PM *last, char *name, char *value, int nocopy)
+{
+    PM pm = mh_xmalloc(sizeof(*pm));
+
+    memset(pm, 0, sizeof(*pm));
+
+    pm->pm_name = nocopy ? name : getcpy(name);
+    pm->pm_value = nocopy ? value : getcpy(value);
+
+    if (*first) {
+	(*last)->pm_next = pm;
+	*last = pm;
+    } else {
+    	*first = pm;
+	*last = pm;
+    }
+
+    return pm;
+}
+
+/*
+ * Either replace a current parameter with a new value, or add the parameter
+ * to the parameter linked list.
+ */
+
+PM
+replace_param(PM *first, PM *last, char *name, char *value, int nocopy)
+{
+    PM pm;
+
+    for (pm = *first; pm != NULL; pm = pm->pm_next) {
+	if (strcasecmp(name, pm->pm_name) == 0) {
+	    /*
+	     * If nocopy is set, it's assumed that we own both name
+	     * and value.  We don't need name, so we discard it now.
+	     */
+	    if (nocopy)
+		free(name);
+	    free(pm->pm_value);
+	    pm->pm_value = nocopy ? value : getcpy(value);
+	    return pm;
+	}
+    }
+
+    return add_param(first, last, name, value, nocopy);
+}
+
+/*
+ * Retrieve a parameter value from a parameter linked list.  If the parameter
+ * value needs converted to the local character set, do that now.
+ */
+
+char *
+get_param(PM first, const char *name, char replace, int fetchonly)
+{
+    while (first != NULL) {
+	if (strcasecmp(name, first->pm_name) == 0) {
+	    if (fetchonly)
+	    	return first->pm_value;
+	    else
+	    	return getcpy(get_param_value(first, replace));
+	}
+	first = first->pm_next;
+    }
+
+    return NULL;
+}
+
+/*
+ * Return a parameter value, converting to the local character set if
+ * necessary
+ */
+
+char *get_param_value(PM pm, char replace)
+{
+    static char buffer[4096];		/* I hope no parameters are larger */
+    size_t bufsize = sizeof(buffer);
+#ifdef HAVE_ICONV
+    size_t inbytes;
+    int utf8;
+    iconv_t cd;
+    ICONV_CONST char *p;
+#endif /* HAVE_ICONV */
+    char *q;
+
+    /*
+     * If we don't have a character set indicated, it's assumed to be
+     * US-ASCII.  If it matches our character set, we don't need to convert
+     * anything.
+     */
+
+    if (!pm->pm_charset || check_charset(pm->pm_charset,
+    					 strlen(pm->pm_charset))) {
+	return pm->pm_value;
+    }
+
+    /*
+     * In this case, we need to convert.  If we have iconv support, use
+     * that.  Otherwise, go through and simply replace every non-ASCII
+     * character with the substitution character.
+     */
+
+#ifdef HAVE_ICONV
+    q = buffer;
+    bufsize = sizeof(buffer);
+    utf8 = strcasecmp(pm->pm_charset, "UTF-8") == 0;
+
+    cd = iconv_open(get_charset(), pm->pm_charset);
+    if (cd == (iconv_t) -1) {
+	goto noiconv;
+    }
+
+    inbytes = strlen(pm->pm_value);
+    p = pm->pm_value;
+
+    while (inbytes) {
+	if (iconv(cd, &p, &inbytes, &q, &bufsize) == (size_t)-1) {
+	    if (errno != EILSEQ) {
+		iconv_close(cd);
+		goto noiconv;
+	    }
+	    /*
+	     * Reset shift state, substitute our character,
+	     * try to restart conversion.
+	     */
+
+	    iconv(cd, NULL, NULL, &q, &bufsize);
+
+	    if (bufsize == 0) {
+		iconv_close(cd);
+		goto noiconv;
+	    }
+	    *q++ = replace;
+	    bufsize--;
+	    if (bufsize == 0) {
+		iconv_close(cd);
+		goto noiconv;
+	    }
+	    if (utf8) {
+		for (++p, --inbytes;
+		     inbytes > 0 && (((unsigned char) *q) & 0xc0) == 0x80;
+		     ++p, --inbytes)
+		    continue;
+	    } else {
+		p++;
+		inbytes--;
+	    }
+	}
+    }
+
+    iconv_close(cd);
+
+    if (bufsize == 0)
+	q--;
+    *q = '\0';
+
+    return buffer;
+#endif /* HAVE_ICONV */
+
+noiconv:
+    /*
+     * Take everything non-ASCII and substituite the replacement character
+     */
+
+    q = buffer;
+    bufsize = sizeof(buffer);
+    for (p = pm->pm_value; *p != '\0' && bufsize > 1; p++, q++, bufsize--) {
+	if (isascii((unsigned char) *p) && !iscntrl((unsigned char) *p))
+	    *q = *p;
+	else
+	    *q = replace;
+    }
+
+    *q = '\0';
+
+    return buffer;
 }

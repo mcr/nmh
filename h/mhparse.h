@@ -16,9 +16,10 @@ typedef struct hfield *HF;
 /*
  * Abstract types for MIME parsing/building
  */
-typedef struct cefile  *CE;
-typedef struct CTinfo  *CI;
-typedef struct Content *CT;
+typedef struct cefile		*CE;
+typedef struct CTinfo		*CI;
+typedef struct Content		*CT;
+typedef struct Parameter	*PM;
 
 /*
  * type for Init function (both type and transfer encoding)
@@ -44,14 +45,25 @@ struct hfield {
 };
 
 /*
+ * Structure for holding MIME parameter elements.
+ */
+struct Parameter {
+    char *pm_name;	/* Parameter name */
+    char *pm_value;	/* Parameter value */
+    char *pm_charset;	/* Parameter character set (optional) */
+    char *pm_lang;	/* Parameter language tag (optional) */
+    PM   pm_next;	/* Pointer to next element */
+};
+
+/*
  * Structure for storing parsed elements
  * of the Content-Type component.
  */
 struct CTinfo {
     char *ci_type;		/* content type     */
     char *ci_subtype;		/* content subtype  */
-    char *ci_attrs[NPARMS + 2];	/* attribute names  */
-    char *ci_values[NPARMS];	/* attribute values */
+    PM   ci_first_pm;		/* Pointer to first MIME parameter */
+    PM   ci_last_pm;		/* Pointer to last MIME parameter */
     char *ci_comment;		/* RFC-822 comments */
     char *ci_magic;
 };
@@ -99,6 +111,9 @@ struct Content {
     char *c_id;			/* Content-ID:                       */
     char *c_descr;		/* Content-Description:              */
     char *c_dispo;		/* Content-Disposition:              */
+    char *c_dispo_type;		/* Type of Content-Disposition       */
+    PM c_dispo_first;		/* Pointer to first disposition parm */
+    PM c_dispo_last;		/* Pointer to last disposition parm  */
     char *c_partno;		/* within multipart content          */
 
     /* Content-Type info */
@@ -307,13 +322,14 @@ CT parse_mime (char *);
  *		  CE_QUOTED.
  * maxunencoded	- The maximum line length before the default encoding for
  *		  text parts is quoted-printable.
+ * verbose	- If 1, output verbose information during message composition
  *
  * Returns a CT structure describing the resulting MIME message.  If the
  * -auto flag is set and a MIME-Version header is encountered, the return
  * value is NULL.
  */
 CT build_mime (char *infile, int autobuild, int dist, int directives,
-	       int encoding, size_t maxunencoded);
+	       int encoding, size_t maxunencoded, int verbose);
 
 int add_header (CT, char *, char *);
 int get_ctinfo (char *, CT, int);
@@ -326,9 +342,136 @@ char *ct_subtype_str (int, int);
 const struct str2init *get_ct_init (int);
 const char *ce_str (int);
 const struct str2init *get_ce_method (const char *);
-int parse_header_attrs (const char *, int, char **, CI, int *);
-char *update_attr (char *, const char *, const char *e);
 char *content_charset (CT);
 int convert_charset (CT, char *, int *);
+
+/*
+ * Given a list of messages, display information about them on standard
+ * output.
+ *
+ * Argumens are:
+ *
+ * cts		- An array of CT elements of messages that need to be
+ *		  displayed.  Array is terminated by a NULL.
+ * headsw	- If 1, display a column header.
+ * sizesw	- If 1, display the size of the part.
+ * verbosw	- If 1, display verbose information
+ * debugsw	- If 1, turn on debugging for the output.
+ * disposw	- If 1, display MIME part disposition information.
+ *
+ */
+void list_all_messages(CT *cts, int headsw, int sizesw, int verbosw,
+		       int debugsw, int disposw);
+
+/*
+ * List the content information of a single MIME part on stdout.
+ *
+ * Arguments are:
+ *
+ * ct		- MIME Content structure to display.
+ * toplevel	- If set, we're at the top level of a message
+ * realsize	- If set, determine the real size of the content
+ * verbose	- If set, output verbose information
+ * debug	- If set, turn on debugging for the output
+ * dispo	- If set, display MIME part disposition information.
+ *
+ * Returns OK on success, NOTOK otherwise.
+ */
+int list_content(CT ct, int toplevel, int realsize, int verbose, int debug,
+		 int dispo);
+
+/*
+ * Display content-appropriate information on MIME parts, decending recursively
+ * into multipart content if appropriate.  Uses list_content() for displaying
+ * generic information.
+ *
+ * Arguments and return value are the same as list_content().
+ */
+int list_switch(CT ct, int toplevel, int realsize, int verbose, int debug,
+		int dispo);
+
+/*
+ * Given a linked list of parameters, build an output string for them.  This
+ * string is designed to be concatenated on an already-built header.
+ *
+ * Arguments are:
+ *
+ * initialwidth	- Current width of the header.  Used to compute when to wrap
+ *		  parameters on the first line.  The following lines will
+ *		  be prefixed by a tab (\t) character.
+ * params	- Pointer to head of linked list of parameters.
+ * offsetout	- The final line offset after all the parameters have been
+ *		  output.  May be NULL.
+ * external	- If set, outputting an external-body type and will not
+ *		  output a "body" parameter.
+ 
+ * Returns a pointer to the resulting parameter string.  This string must
+ * be free()'d by the caller.  Returns NULL on error.
+ */
+char *output_params(size_t initialwidth, PM params, int *offsetout,
+		    int external);
+
+/*
+ * Add a parameter to the parameter linked list.
+ *
+ * Arguments are:
+ *
+ * first	- Pointer to head of linked list
+ * last		- Pointer to tail of linked list
+ * name		- Name of parameter
+ * value	- Value of parameter
+ * nocopy	- If set, will use the pointer values directly for "name"
+ *		  and "value" instead of making their own copy.  These
+ *		  pointers will be free()'d later by the MIME routines, so
+ *		  they should not be used after calling this function!
+ *
+ * Returns allocated parameter element
+ */
+PM add_param(PM *first, PM *last, char *name, char *value, int nocopy);
+
+/*
+ * Replace (or add) a parameter to the parameter linked list.
+ *
+ * If the named parameter already exists on the parameter linked list,
+ * replace the value with the new one.  Otherwise add it to the linked
+ * list.  All parameters are identical to add_param().
+ */
+PM replace_param(PM *first, PM *last, char *name, char *value, int nocopy);
+
+/*
+ * Retrieve a parameter value from a parameter linked list.  Convert to the
+ * local character set if required.
+ *
+ * Arguments are:
+ *
+ * first	- Pointer to head of parameter linked list.
+ * name		- Name of parameter.
+ * replace	- If characters in the parameter list cannot be converted to
+ *		  the local character set, replace with this character.
+ * fetchonly	- If true, return pointer to original value, no conversion
+ *		  performed.
+ *
+ * Returns parameter value if found, NULL otherwise.  Memory must be free()'d
+ * unless fetchonly is set.
+ */
+
+char *get_param(PM first, const char *name, char replace, int fetchonly);
+
+/*
+ * Fetch a parameter value from a parameter structure, converting it to
+ * the local character set.
+ *
+ * Arguments are:
+ *
+ * pm		- Pointer to parameter structure
+ * replace	- If characters in the parameter list cannot be converted to
+ *		  the local character set, replace with this character.
+ *
+ * Returns a pointer to the parameter value.  Memory is stored in an
+ * internal buffer, so the returned value is only valid until the next
+ * call to get_param_value() or get_param() (get_param() uses get_param_value()
+ * internally).
+ */
+char *get_param_value(PM pm, char replace);
 
 extern int checksw;	/* Add Content-MD5 field */

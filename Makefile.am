@@ -68,10 +68,12 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/manpages/test-manpages \
 	test/mhbuild/test-attach \
 	test/mhbuild/test-cte \
+	test/mhbuild/test-ext-params \
 	test/mhbuild/test-forw test/mhbuild/test-header-encode \
 	test/mhbuild/test-utf8-body \
 	test/mhfixmsg/test-mhfixmsg \
-	test/mhlist/test-mhlist test/mhmail/test-mhmail \
+	test/mhlist/test-mhlist test/mhlist/test-ext-params \
+	test/mhmail/test-mhmail \
 	test/mhparam/test-mhparam test/mhpath/test-mhpath \
 	test/mhshow/test-charset test/mhshow/test-textcharset \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
@@ -289,7 +291,7 @@ uip_anno_LDADD = $(LDADD) $(POSTLINK)
 
 uip_burst_SOURCES = uip/burst.c uip/mhparse.c uip/mhmisc.c uip/mhfree.c \
 		    uip/mhcachesbr.c uip/md5.c
-uip_burst_LDADD = $(LDADD) $(POSTLINK)
+uip_burst_LDADD = $(LDADD) $(ICONVLIB) $(POSTLINK)
 
 uip_comp_SOURCES = uip/comp.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c
@@ -321,7 +323,7 @@ uip_mark_LDADD = $(LDADD) $(POSTLINK)
 uip_mhbuild_SOURCES = uip/mhbuild.c uip/mhbuildsbr.c uip/mhcachesbr.c \
 		      uip/mhlistsbr.c uip/mhoutsbr.c uip/mhmisc.c  \
 		      uip/mhfree.c uip/mhparse.c uip/md5.c
-uip_mhbuild_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
+uip_mhbuild_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhfixmsg_SOURCES = uip/mhfixmsg.c uip/mhparse.c uip/mhcachesbr.c \
 		       uip/mhoutsbr.c uip/mhmisc.c uip/mhfree.c \
@@ -330,7 +332,7 @@ uip_mhfixmsg_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhlist_SOURCES = uip/mhlist.c uip/mhparse.c uip/mhcachesbr.c \
 		     uip/mhlistsbr.c uip/mhmisc.c uip/mhfree.c uip/md5.c
-uip_mhlist_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
+uip_mhlist_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhn_SOURCES = uip/mhn.c uip/mhparse.c uip/mhcachesbr.c uip/mhshowsbr.c \
 		  uip/mhlistsbr.c uip/mhstoresbr.c uip/mhmisc.c uip/mhfree.c \
@@ -430,7 +432,7 @@ uip_mhl_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 uip_mhtest_SOURCES = uip/mhtest.c uip/mhparse.c uip/mhcachesbr.c \
 		     uip/mhoutsbr.c uip/mhmisc.c uip/mhfree.c \
 		     uip/md5.c
-uip_mhtest_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
+uip_mhtest_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mkstemp_SOURCES = uip/mkstemp.c
 uip_mkstemp_LDADD = $(LDADD) $(POSTLINK)
@@ -453,7 +455,7 @@ uip_rcvtty_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 uip_slocal_SOURCES = uip/slocal.c uip/aliasbr.c uip/dropsbr.c
 uip_slocal_LDADD = $(LDADD) $(NDBM_LIBS) $(POSTLINK)
 
-uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/mhoutsbr.c uip/sendsbr.c \
+uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
 uip_viamail_LDADD = $(LDADD) $(POSTLINK)
 

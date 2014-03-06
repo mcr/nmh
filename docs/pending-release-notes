@@ -78,6 +78,8 @@ NEW FEATURES
   necessary, the charset of text/plain content to match the user's
   locale setting.
 - Added support for %{charset} display string escape to mhshow(1).
+- The MIME parsing and generating routines now support RFC 2231 extended
+  parameter information.
 
 -----------------
 OBSOLETE FEATURES

@@ -1,0 +1,180 @@
+#!/bin/sh
+######################################################
+#
+# Test mhlist with extended parameters (RFC 2231)
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+LC_ALL=en_US.UTF-8; export LC_ALL
+
+#
+# Write a message with some extended parameters
+#
+
+msgfile=`mhpath new`
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist ext param test 1
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset=us-ascii;
+	name*=utf-8''This%20%C3%AFs%20the%20filename
+
+This is a test
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg;
+	name*0="This is an example of a very long filename. I wonder ";
+	name*1=if;
+	name*2=" this filename might be too long.  It should not be.  But";
+	name*3=" will it be?.jpg"
+Content-Disposition: attachment;
+	filename*0="This is an example of a very long filename. I wonder ";
+	filename*1=if;
+	filename*2=" this filename might be too long.  It should not be.  But";
+	filename*3=" will it be?.jpg"
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+# check to see if we decode parameters correctly.
+
+run_test 'mhlist last -noheader -verbose -disposition' \
+'  11       multipart/mixed            637
+	     boundary="----- =_aaaaaaaaaa0"
+     1     text/plain                  15
+	     charset="us-ascii"
+	     name="This ïs the filename"
+     2     image/jpeg                   2
+	     name="This is an example of a very long filename. I wonder if this filename might be too long.  It should not be.  But will it be?.jpg"
+	     disposition "attachment"
+	       filename="This is an example of a very long filename. I wonder if this filename might be too long.  It should not be.  But will it be?.jpg"'
+
+#
+# Make some more complicated message parameters.
+#
+
+msgfile=`mhpath new`
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist ext param test 2
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset=us-ascii;
+	name*=utf-8''This%20%C3%AFs%20the%20filename
+
+This is a test
+
+------- =_aaaaaaaaaa0
+Content-Type: image/jpeg; name*3=" will it be?.jpg";
+	longparam*5*=Sp%C4%B1n%CC%88al%20Tap!;
+	longparam*2=It; name*1=if;
+	longparam*3=" Might be our Long Lost Band";
+	longparam*0*=UTF-8'en'I%20Cannot%20Believe%20It;
+	name*0="This is an example of a very long filename. I wonder ";
+	longparam*4*=%20The%20%C3%96ne%20And%20Only%20;
+	name*2=" this filename might be too long.  It should not be.  But";
+	longparam*1=", it Looks Like "
+Content-Transfer-Encoding: base64
+
+/9g=
+
+------- =_aaaaaaaaaa0--
+EOF
+
+run_test 'mhlist last -noheader -verbose' \
+'  12       multipart/mixed            647
+	     boundary="----- =_aaaaaaaaaa0"
+     1     text/plain                  15
+	     charset="us-ascii"
+	     name="This ïs the filename"
+     2     image/jpeg                   2
+	     longparam="I Cannot Believe It, it Looks Like It Might be our Long Lost Band The Öne And Only Spın̈al Tap!"
+	     name="This is an example of a very long filename. I wonder if this filename might be too long.  It should not be.  But will it be?.jpg"'
+
+#
+# Test out message/external-body types, and also make sure we will correctly
+# decode a URL wrapped with RFC 2017 rules.
+#
+
+msgfile=`mhpath new`
+cat > $msgfile <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhlist ext param test 3
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset=us-ascii;
+	name*=utf-8''This%20%C3%AFs%20the%20filename
+
+This is a test
+
+------- =_aaaaaaaaaa0
+Content-Type: message/external-body; access-type="url";
+	url*1="/that/should-be-wrapped/image.jpeg";
+	url*0="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url"
+
+Content-Type: image/jpeg
+Content-Description: Test of a long URL
+Content-Disposition: attachment; filename=image.jpeg
+
+------- =_aaaaaaaaaa0
+Content-Type: message/external-body; access-type="url";
+	url*0="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url
+	       /that/should-be-wrapped/image.jpeg"
+
+Content-Type: image/jpeg
+Content-Description: Test of a long URL
+Content-Disposition: attachment; filename=image.jpeg
+
+------- =_aaaaaaaaaa0--
+EOF
+
+run_test 'mhlist last -noheader -verbose -disposition' \
+'  13       multipart/mixed            775
+	     boundary="----- =_aaaaaaaaaa0"
+     1     text/plain                  15
+	     charset="us-ascii"
+	     name="This ïs the filename"
+     2     message/external-body      118
+	     access-type="url"
+	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url/that/should-be-wrapped/image.jpeg"
+	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url/that/should-be-wrapped/image.jpeg"
+	     access-type="url"
+           image/jpeg                     Test of a long URL
+	     disposition "attachment"
+	       filename="image.jpeg"
+     3     message/external-body      118
+	     access-type="url"
+	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url 	       /that/should-be-wrapped/image.jpeg"
+	     url="http://www.kremvax.ru/this/is/an/example/of/a/very/long/url/that/should-be-wrapped/image.jpeg"
+	     access-type="url"
+           image/jpeg                     Test of a long URL
+	     disposition "attachment"
+	       filename="image.jpeg"'
+
+exit $failed

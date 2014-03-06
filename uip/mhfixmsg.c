@@ -85,7 +85,7 @@ int mhfixmsgsbr (CT *, const fix_transformations *, char *);
 static void reverse_alternative_parts (CT);
 static int fix_boundary (CT *, int *);
 static int get_multipart_boundary (CT, char **);
-static int replace_boundary (CT, char *, const char *);
+static int replace_boundary (CT, char *, char *);
 static int fix_multipart_cte (CT, int *);
 static int set_ce (CT, int);
 static int ensure_text_plain (CT *, CT, int *, int);
@@ -622,7 +622,7 @@ get_multipart_boundary (CT ct, char **part_boundary) {
 
 /* Open and copy ct->c_file to file, replacing the multipart boundary. */
 static int
-replace_boundary (CT ct, char *file, const char *boundary) {
+replace_boundary (CT ct, char *file, char *boundary) {
     FILE *fpin, *fpout;
     int compnum, state;
     char buf[BUFSIZ], name[NAMESZ];
@@ -668,10 +668,22 @@ replace_boundary (CT ct, char *file, const char *boundary) {
             if (strcasecmp (TYPE_FIELD, np)) {
                 fprintf (fpout, "%s:%s", np, vp);
             } else {
-                char *new_boundary = update_attr (vp, "boundary=", boundary);
+	    	char *new_ctline, *new_params;
 
-                fprintf (fpout, "%s:%s\n", np, new_boundary);
-                free (new_boundary);
+	    	replace_param(&ct->c_ctinfo.ci_first_pm,
+			      &ct->c_ctinfo.ci_last_pm, "boundary",
+			      boundary, 0);
+
+		new_ctline = concat(" ", ct->c_ctinfo.ci_type, "/",
+				    ct->c_ctinfo.ci_subtype, NULL);
+		new_params = output_params(strlen(TYPE_FIELD) +
+					   strlen(new_ctline) + 1,
+					   ct->c_ctinfo.ci_first_pm, NULL, 0);
+                fprintf (fpout, "%s:%s%s\n", np, new_ctline,
+			 new_params ? new_params : "");
+		free(new_ctline);
+		if (new_params)
+		    free(new_params);
             }
 
             free (vp);
@@ -1028,19 +1040,19 @@ divide_part (CT ct) {
 
 static void
 copy_ctinfo (CI dest, CI src) {
-    char **s_ap, **d_ap, **s_vp, **d_vp;
+    PM s_pm, d_pm;
 
     dest->ci_type = src->ci_type ? add (src->ci_type, NULL) : NULL;
     dest->ci_subtype = src->ci_subtype ? add (src->ci_subtype, NULL) : NULL;
 
-    for (s_ap = src->ci_attrs, d_ap = dest->ci_attrs,
-             s_vp = src->ci_values, d_vp = dest->ci_values;
-         *s_ap;
-         ++s_ap, ++d_ap, ++s_vp, ++d_vp) {
-        *d_ap = add (*s_ap, NULL);
-        *d_vp = *s_vp;
+    for (s_pm = src->ci_first_pm; s_pm; s_pm = s_pm->pm_next) {
+    	d_pm = add_param(&dest->ci_first_pm, &dest->ci_last_pm, s_pm->pm_name,
+			 s_pm->pm_value, 0);
+	if (s_pm->pm_charset)
+	    d_pm->pm_charset = getcpy(s_pm->pm_charset);
+	if (s_pm->pm_lang)
+	    d_pm->pm_lang = getcpy(s_pm->pm_lang);
     }
-    *d_ap = NULL;
 
     dest->ci_comment = src->ci_comment ? add (src->ci_comment, NULL) : NULL;
     dest->ci_magic = src->ci_magic ? add (src->ci_magic, NULL) : NULL;
@@ -1169,7 +1181,6 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     CT ct;
     struct part *p;
     struct multipart *m;
-    char *cp;
     const struct str2init *ctinit;
 
     if ((ct = (CT) calloc (1, sizeof *ct)) == NULL)
@@ -1269,23 +1280,8 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
         ct->c_ctinfo.ci_subtype = add (subtypename, NULL);
     }
 
-    /*
-     * The boundary indicator string must be stored in a
-     * c_ctinfo.ci_values slot.  We use the first slot because this is
-     * a new object.  ci_attrs[0] can be anything, it is never output.
-     * It is chosen to be very unlikely to collide with a real
-     * attribute, to contains text that ci_values[0] can point to, and
-     * gives traceability back to the origin of this part, though that
-     * would only be useful in a debugger.
-     */
-    name = concat (" ", typename, "/", subtypename, boundary_indicator,
-                   boundary, NULL);
-    if ((cp = strstr (name, boundary_indicator))) {
-        ct->c_ctinfo.ci_attrs[0] = name;
-        ct->c_ctinfo.ci_attrs[1] = NULL;
-        /* ci_values don't get free'd, so point into ci_attrs. */
-        ct->c_ctinfo.ci_values[0] = cp + strlen (boundary_indicator);
-    }
+    add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
+    	      "boundary", boundary, 0);
 
     p = (struct part *) mh_xmalloc (sizeof *p);
     p->mp_next = (struct part *) mh_xmalloc (sizeof *p->mp_next);
