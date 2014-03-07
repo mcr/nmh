@@ -116,7 +116,7 @@ main () {
 
         /* Need to put a symbol in the .c file with NDEBUG so the
            compilation unit isn't empty. */
-        fputs ("#else  /* NDEBUG */\n\nint ctype_checked;\n\n", cfile);
+        fputs ("#else  /* NDEBUG */\n\nvoid ctype_checked();\n\n", cfile);
         fputs ("#endif /* NDEBUG */\n", cfile);
         fprintf (header, "#endif /* CTYPE_CHECKED_H */\n");
     } else {
