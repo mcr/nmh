@@ -142,13 +142,12 @@ static int tls_active = 0;
 
 static char *sm_noreply = "No reply text given";
 static char *sm_moreply = "; ";
-
-struct smtp sm_reply;		/* global... */
+static struct smtp sm_reply;
 
 #define	MAXEHLO	20
 
 static int doingEHLO;
-char *EHLOkeys[MAXEHLO + 1];
+static char *EHLOkeys[MAXEHLO + 1];
 
 /*
  * static prototypes
