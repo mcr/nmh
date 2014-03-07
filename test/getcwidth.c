@@ -30,6 +30,8 @@ int
 main(int argc, char *argv[])
 {
 #ifndef MULTIBYTE_SUPPORT
+	(void) argc;
+	(void) argv;
 	fprintf(stderr, "Nmh was not configured with multibyte support\n");
 	exit(1);
 #else /* MULTIBYTE_SUPPORT */
@@ -159,5 +161,5 @@ dumpwidth(void)
 	if (width == lastwidth)
 		printf("%04lX - %04lX = %d\n", (unsigned long int) low,
 		       (unsigned long int) (wc), width);
-}
 #endif /* MULTIBYTE_SUPPORT */
+}
