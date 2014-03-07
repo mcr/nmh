@@ -287,6 +287,7 @@ main (int argc, char **argv)
 	    }
 	}
 	*fp = 0;
+	free (il);
 	free (slist);
 	free (dlist);
 	dlist = flist;

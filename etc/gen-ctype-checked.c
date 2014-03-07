@@ -74,10 +74,11 @@ main () {
  */\n\n";
     char headername[] = "sbr/ctype-checked.h";
     const char cfilename[] =  "sbr/ctype-checked.c";
-    FILE *header, *cfile;
+    FILE *header = fopen (headername, "w");
+    FILE *cfile = fopen (cfilename, "w");
+    int status = 0;
 
-    if ((header = fopen (headername, "w")) != 0  &&
-        (cfile = fopen (cfilename, "w")) != 0) {
+    if (header != 0  &&  cfile != 0) {
         struct ctype_func *f;
 
         fprintf (header, copyright, headername);
@@ -121,8 +122,11 @@ main () {
         fprintf (header, "#endif /* CTYPE_CHECKED_H */\n");
     } else {
         perror ("fopen in sbr/");
-        return -1;
+        status = -1;
     }
 
-    return 0;
+    if (header) { fclose(header); }
+    if (cfile) { fclose(cfile); }
+
+    return status;
 }

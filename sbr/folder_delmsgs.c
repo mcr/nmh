@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /*
  * 1) If we are using an external rmmproc, then exec it.
@@ -56,7 +57,8 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 	 */
 
 	if (mp->numsel + vecp + 1 > MAXARGS)
-	    vec = (char **) realloc (vec, (size_t) ((mp->numsel + vecp + 1) *
+	    vec = (char **) mh_xrealloc (vec,
+                                         (size_t) ((mp->numsel + vecp + 1) *
 						     sizeof(*vec)));
 	if (vec == NULL)
 	    adios (NULL, "unable to allocate exec vector");

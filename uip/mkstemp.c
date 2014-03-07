@@ -48,7 +48,9 @@ main(int argc, char *argv[]) {
     if ((suffix_len = strlen(suffix)) > 0) {
 #       if HAVE_MKSTEMPS
         if ((fd = mkstemps(template, suffix_len)) < 0) { perror("mkstemps"); }
-#       endif /* HAVE_MKSTEMPS */
+#       else  /* ! HAVE_MKSTEMPS */
+        fd = 0;
+#       endif /* ! HAVE_MKSTEMPS */
     } else {
         if ((fd = mkstemp(template)) < 0) { perror("mkstemp"); }
     }
