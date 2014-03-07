@@ -457,7 +457,7 @@ attributes back to their default setting.
 .PP
 All of these terminal escape should be used in conjunction with
 (\fIzputlit\fR\^) (preferred) or (\fIputlit\fR\^), as the normal
-(\fputstr\fR\^) function will strip out control characters.
+(\fIputstr\fR\^) function will strip out control characters.
 .PP
 The available output width is kept in an internal register; any output
 past this width will be truncated.  The one exception to this is
