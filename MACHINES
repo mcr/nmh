@@ -46,6 +46,24 @@ Packages required to regenerate the configure script:
     automake
 
 ------------------------------------------------------------------------------
+                                   Mac OS X
+------------------------------------------------------------------------------
+
+If configured with --with-tls on Mac OS 10.7 or later, there will be
+compile warnings from mts/smtp/smtp.c about the deprecated OpenSSL
+that is supplied with that system.  nmh will build and run with that
+OpenSSL, though it may be an old version.  Alternatively, the OpenSSL
+source code is available from http://www.openssl.org/source/.  To
+build 64-bit libraries, the OpenSSL configure command should start
+with, e.g.,
+    ./Configure darwin64-x86_64-cc
+
+To build nmh with those OpenSSL libraries, the CPPFLAGS and LDFLAGS
+can be set by adding the following to the nmh configure command line,
+or in the shell environment before calling configure or build_nmh:
+    CPPFLAGS='-D__arch64__ -IOpenSSL-include-path' LDFLAGS=-LOpenSSL-lib-path
+
+------------------------------------------------------------------------------
                                     Cygwin
 ------------------------------------------------------------------------------
 
