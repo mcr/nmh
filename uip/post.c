@@ -238,8 +238,6 @@ static int snoop      = 0;
 static char *clientsw = NULL;
 static char *serversw = NULL;
 
-extern struct smtp sm_reply;
-
 static char prefix[] = "----- =_aaaaaaaaaa";
 
 static char *partno = NULL;
