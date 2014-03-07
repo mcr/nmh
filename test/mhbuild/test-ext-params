@@ -17,6 +17,7 @@ setup_test
 LC_ALL=en_US.UTF-8; export LC_ALL
 
 draft="$MH_TEST_DIR/$$.draft"
+backup="${MH_TEST_DIR}/`mhparam sbackup`$$.draft.orig"
 expected="$MH_TEST_DIR/$$.expected"
 
 #
@@ -156,6 +157,7 @@ This is a test message
 EOF
 
 run_prog mhbuild "$draft"
+rm -f "$MH_TEST_DIR/tïny.jpg"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
@@ -222,5 +224,7 @@ Content-Disposition: attachment; filename="test.tar.gz"
 EOF
 
 check "$draft" "$expected"
+
+[ ${failed:=0} -eq 0 ]  &&  rm -f ${backup}
 
 exit ${failed:-0}
