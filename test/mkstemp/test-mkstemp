@@ -20,20 +20,32 @@ expected="$MH_TEST_DIR"/$$.expected
 actual="$MH_TEST_DIR"/$$.actual
 
 mkstemp="${MH_LIB_DIR}/mkstemp"
+$mkstemp -help | grep suffix >/dev/null  &&  has_mkstemps=1  ||  has_mkstemps=0
 
 cd "$MHTMPDIR"
 
 
 # check -help
-cat >$expected <<'EOF'
-Usage: mkstemp [switches]
-  switches are:
-  -directory
-  -prefix
-  -suffix
-  -version
-  -help
-EOF
+if [ $has_mkstemps -eq 1 ]; then
+    cat >$expected <<-'EOF'
+	Usage: mkstemp [switches]
+	  switches are:
+	  -directory
+	  -prefix
+	  -suffix
+	  -version
+	  -help
+	EOF
+else
+    cat >$expected <<-'EOF'
+	Usage: mkstemp [switches]
+	  switches are:
+	  -directory
+	  -prefix
+	  -version
+	  -help
+	EOF
+fi
 
 $mkstemp -h >$actual 2>&1
 check $expected $actual
@@ -42,9 +54,9 @@ check $expected $actual
 # check -version
 # Verified same behavior as compiled mhmail.
 case `$mkstemp -v` in
-  mkstemp\ --*) ;;
-  *          ) printf '%s: mkstemp -v generated unexpected output\n' "$0" >&2
-               failed=`expr ${failed:-0} + 1`;;
+    mkstemp\ --*) ;;
+    *           ) printf '%s: mkstemp -v generated unexpected output\n' "$0" >&2
+                  failed=`expr ${failed:-0} + 1`;;
 esac
 
 
@@ -71,11 +83,13 @@ check_tmpfile=`echo $tmpfile | grep '^mkstemptest......$' >/dev/null`
 run_test `echo $check_tmpfile` ''
 
 
-# check -suffix
-tmpfile=`$mkstemp -suffix .txt`
-[ -f "$tmpfile" ]  &&  rm "$tmpfile"  ||  failed=`expr ${failed:-0} + 1`
-check_tmpfile=`echo $tmpfile | grep '^......\.txt$' >/dev/null`
-run_test `echo $check_tmpfile` ''
+if [ $has_mkstemps -eq 1 ]; then
+    # check -suffix
+    tmpfile=`$mkstemp -suffix .txt`
+    [ -f "$tmpfile" ]  &&  rm "$tmpfile"  ||  failed=`expr ${failed:-0} + 1`
+    check_tmpfile=`echo $tmpfile | grep '^......\.txt$' >/dev/null`
+    run_test `echo $check_tmpfile` ''
+fi
 
 
 exit $failed
