@@ -25,20 +25,25 @@ fi
 TMP=/tmp/nmh_temp.$$
 trap "rm -f $TMP" 0 1 2 3 13 15
 
-
-if [ ! -z "`$SEARCHPROG $SEARCHPATH w3m`" ]; then
+PGM="`$SEARCHPROG $SEARCHPATH w3m`"
+if [ ! -z "$PGM" ]; then
   echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
-"'w3m -dump -T text/html "${charset:+-I $charset}" -O utf-8 %F' >> $TMP
-elif [ ! -z "`$SEARCHPROG $SEARCHPATH lynx`" ]; then
-  #### lynx indents with 3 spaces, remove them and any trailing spaces.
-  echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
-"'lynx -child -dump -force_html "${charset:+--assume_charset $charset}" %F | '"\
+$PGM "'-dump "${charset:+-I $charset}" -O utf-8 -T text/html %F' >> $TMP
+else
+  PGM="`$SEARCHPROG $SEARCHPATH lynx`"
+  if [ ! -z "$PGM" ]; then
+    #### lynx indents with 3 spaces, remove them and any trailing spaces.
+    echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
+$PGM "'-child -dump -force_html "${charset:+--assume_charset $charset}" %F | '"\
 expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
-elif [ ! -z "`$SEARCHPROG $SEARCHPATH elinks`" ]; then
-  echo "mhfixmsg-format-text/html: elinks -dump -force-html -no-numbering \
+  else
+    PGM="`$SEARCHPROG $SEARCHPATH elinks`"
+    if [ ! -z "$PGM" ]; then
+      echo "mhfixmsg-format-text/html: $PGM -dump -force-html -no-numbering \
 -eval 'set document.browse.margin_width = 0' %F" >> $TMP
+    fi
+  fi
 fi
-
 
 echo "mhstore-store-text: %m%P.txt" >> $TMP
 echo "mhstore-store-text/richtext: %m%P.rt" >> $TMP
@@ -237,15 +242,21 @@ EOF
 # but only once I've added a new %-escape that makes more permanent temp files,
 # so netscape -remote can be used (without -remote you get a complaint dialog
 # that another netscape is already running and certain things can't be done).
-PGM="`$SEARCHPROG $SEARCHPATH lynx`"
+PGM="`$SEARCHPROG $SEARCHPATH w3m`"
 if [ ! -z "$PGM" ]; then
 	echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%p$PGM"' -force-html "${charset:+--assume_charset $charset}" %F' >> $TMP
+%p$PGM"' "${charset:+-I $charset}" -T text/html %F' >> $TMP
 else
-  PGM="`$SEARCHPROG $SEARCHPATH w3m`"
+  PGM="`$SEARCHPROG $SEARCHPATH lynx`"
   if [ ! -z "$PGM" ]; then
 	echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%p$PGM"' "${charset:+-I $charset}" -T text/html %F' >> $TMP
+%p$PGM"' -force-html "${charset:+--assume_charset $charset}" %F' >> $TMP
+  else
+    PGM="`$SEARCHPROG $SEARCHPATH elinks`"
+    if [ ! -z "$PGM" ]; then
+      echo "mhshow-show-text/html: $PGM -force-html \
+-eval 'set document.browse.margin_width = 0' %F" >> $TMP
+    fi
   fi
 fi
 
