@@ -1,4 +1,4 @@
-.TH NMH %manext7% "March 1, 2014" "%nmhversion%"
+.TH NMH %manext7% "March 13, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -549,7 +549,8 @@ The user's nmh profile
 .SH "SEE ALSO"
 .IR install-mh (1),
 .IR mh-profile (5),
-.IR mh-chart (7)
+.IR mh-chart (7),
+.IR mh-mime (7)
 .ne 4
 .SH BUGS
 If problems are encountered with an

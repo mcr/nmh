@@ -1,0 +1,161 @@
+.TH MH\-MIME %manext7% " March 13, 2014" "%nmhversion%"
+.\"
+.\" %nmhwarning%
+.\"
+.SH NAME
+mh\-mime \- Overview of
+.IR nmh (7)
+MIME message composition and display
+.\"
+.SH DESCRIPTION
+The acronym MIME stands for Multipurpose Internet Mail Extensions, the
+format of Internet messages used to send multi\-media content.
+The
+.B nmh
+command suite has support for the display and composition of MIME messages, but 
+currently MIME support is not completely integrated into all tools.  This
+document provides an overview as to which tools support MIME message display,
+storage, and composition.
+.SS
+Local Character Set Conversion
+All of the
+.B nmh
+commands convert non\-native character sets to the local character set,
+as specified by the operating system locale settings.  The
+.IR locale (1)
+man page has more details on the environment variables used to set the
+local character set.  Character set conversion will only take place if
+.B nmh
+was built with
+.IR icov (3)
+support.
+.PP
+Depending on the source and target character set, it may not be possible
+to convert all characters to the local character set. In this case a
+substitution character will be used for the characters that cannot be
+converted.
+.SS
+Message Display
+The default format used by
+.B scan
+will automatically decode MIME-encoded headers.  If you have a custom
+scan format, see the examples provided with the
+.B nmh
+distribution (found in the
+.RI \*(lq %etcdir% \*(rq
+directory) and the
+.IR mh\-format (5)
+man page for details on how to make sure your MIME headers are properly
+decoded.
+.PP
+By default, if
+.B show
+detects that it is reading a MIME message it will invoke
+.BR mhshow .
+The default behavior of
+.B mhshow
+is to only display text parts that are not marked as attachments.  See the
+.IR mhshow (1)
+man page for details on how to control what
+.B mhshow
+will display.
+.SS
+Message Interrogation and Storage
+The
+.B mhlist
+command will display a listing of the MIME parts contained within a
+message.  That information can be used in conjuction with the
+.B mhstore
+command to save individual parts or content types of a message.  See
+the
+.IR mhlist (1)
+and
+.IR mhstore (1)
+man pages for more details on how these commands work.
+.SS
+Message Composition and Reply
+All messages sent by
+.B send
+will automatically be processed by
+.B mhbuild
+before being passed to
+.B post
+for message submission.
+.B Mhbuild
+will use the locale settings to mark text content with the appropriate
+character set and apply any necessary encoding.  If you wish to include
+text in your message using a character set that does not match your
+locale, you will need to specify the character set using a
+.B mhbuild
+directive; see
+.IR mhbuild (1)
+for more information.
+.PP
+For attaching files or composing other non-text content, there are two options: the attach system and
+.B mhbuild
+directives.
+.PP
+The attach system is best suited for content where one or more files are
+being attached to a message.  You can use the attach system by either
+using the
+.B attach
+command at the \*(lqWhat now?\*(rq prompt, or by inserting an \*(lqAttach:\*(rq
+header in the message draft containing the name of the file you wish to
+attach to the message (it should be noted all that the
+.B attach
+command does is place an \*(lqAttach\*(rq header in the message draft).
+.B Mhbuild
+will then automatically include the specified file(s) in the outgoing
+message.  See the
+.IR send (1)
+man page for details on how
+.B mhbuild
+determines the proper content type of attached files.
+.PP
+The other method of composing MIME messages is to use
+.B mhbuild
+directives.  This allows exact control over the contents and format of
+the MIME message, but has a more complicated syntax.  The
+.IR mhbuild (1)
+man page contains details on the directive syntax and examples of directives
+for different media types.  It is important to note that when using
+.B mhbuild
+directives the user must run
+.B mhbuild
+outside of
+.B send
+to have it process directives; when being run by
+.BR send ,
+.B mhbuild
+is configured to not process directives so normal user text is not mistaken
+for a directive.  When using directives a user typically uses the
+.B mime
+command at the \*(lqWhat now?\*(rq prompt to process them.
+.PP
+When replying to messages using
+.B repl
+the traditional MH method of including the original text in the reply does
+not interoperate with MIME messages.  As of this writing there is no
+native solution for addressing this issue, but the contrib directory
+.RI ( %docdir%/contrib )
+contains a Perl program called
+.B replyfilter
+which will decode text parts and present them in an appropriate manner
+to be included in a message reply.  See the comments at the top of
+.B replyfilter
+for instructions on how to configure
+.B nmh
+to work with it.
+.SH "SEE ALSO"
+.IR nmh (7),
+.IR mhbuild (1),
+.IR comp (1),
+.IR repl (1),
+.IR whatnow (1),
+.IR mh\-format (5)
+.PP
+.I %docdir%/contrib/replyfilter
+.SH BUGS
+MIME support should be more integrated into all of the 
+.B nmh
+tools than it currently is.

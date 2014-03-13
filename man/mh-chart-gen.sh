@@ -40,5 +40,6 @@ cat <<'EOF'
 .ad
 
 .SH "SEE ALSO"
-nmh(7)
+.IR nmh (7),
+.IR mh\-mime (7)
 EOF
