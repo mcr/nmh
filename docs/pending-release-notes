@@ -80,6 +80,7 @@ NEW FEATURES
 - Added support for %{charset} display string escape to mhshow(1).
 - The MIME parsing and generating routines now support RFC 2231 extended
   parameter information.
+- mh-mime(7) now provides an introduction to nmh's MIME handling.
 
 -----------------
 OBSOLETE FEATURES
