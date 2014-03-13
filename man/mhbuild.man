@@ -1,4 +1,4 @@
-.TH MHBUILD %manext1% "January 23, 2014" "%nmhversion%"
+.TH MHBUILD %manext1% "March 13, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -772,9 +772,13 @@ is checked.
 (RFC 2048),
 .PP
 .I "Multipurpose Internet Mail Extensions (MIME) Part Five: Conformance Criteria and Examples"
-(RFC 2049)
+(RFC 2049),
+.PP
 .I "Definition of the URL MIME External-Body Access-Type"
-(RFC 2017)
+(RFC 2017),
+.PP
+.I "MIME Parameter Value and Encoded Word Extensions: Character Sets, Languages, and Continuations"
+(RFC 2231)
 .SH DEFAULTS
 .nf
 .RB ` \-headers '
