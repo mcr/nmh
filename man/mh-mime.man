@@ -21,14 +21,34 @@ Local Character Set Conversion
 All of the
 .B nmh
 commands convert non\-native character sets to the local character set,
-as specified by the operating system locale settings.  The
+as specified by the operating system locale settings.  See
 .IR locale (1)
-man page has more details on the environment variables used to set the
+for more details on the environment variables used to set the
 local character set.  Character set conversion will only take place if
 .B nmh
 was built with
-.IR icov (3)
-support.
+.IR iconv (3)
+support.  You can check the status of
+.IR iconv (3)
+support in
+.B nmh
+by executing the command
+.PP
+.RS 5
+.nf
+mhparam\0\iconv
+.fi
+.RE
+.PP
+If it returns
+.IR iconv ,
+then
+.B nmh
+is built with
+.IR iconv (3)
+support.  If it is blank, then
+.IR iconv (3)
+support is not included.
 .PP
 Depending on the source and target character set, it may not be possible
 to convert all characters to the local character set. In this case a
@@ -37,49 +57,49 @@ converted.
 .SS
 Message Display
 The default format used by
-.B scan
+.IR scan (1)
 will automatically decode MIME-encoded headers.  If you have a custom
-scan format, see the examples provided with the
+.B scan
+format, see the examples provided with the
 .B nmh
 distribution (found in the
 .RI \*(lq %etcdir% \*(rq
-directory) and the
+directory) and
 .IR mh\-format (5)
-man page for details on how to make sure your MIME headers are properly
+for details on how to make sure your MIME headers are properly
 decoded.
 .PP
 By default, if
 .B show
 detects that it is reading a MIME message it will invoke
-.BR mhshow .
+.IR mhshow (1).
 The default behavior of
 .B mhshow
-is to only display text parts that are not marked as attachments.  See the
+is to only display text parts that are not marked as attachments.  See
 .IR mhshow (1)
-man page for details on how to control what
+for details on how to control what
 .B mhshow
 will display.
 .SS
 Message Interrogation and Storage
 The
-.B mhlist
+.IR mhlist (1)
 command will display a listing of the MIME parts contained within a
-message.  That information can be used in conjuction with the
+message.  That information can be used in conjunction with the
 .B mhstore
 command to save individual parts or content types of a message.  See
-the
 .IR mhlist (1)
 and
 .IR mhstore (1)
-man pages for more details on how these commands work.
+for more details on how these commands work.
 .SS
 Message Composition and Reply
 All messages sent by
-.B send
+.IR send (1)
 will automatically be processed by
-.B mhbuild
+.IR mhbuild (1)
 before being passed to
-.B post
+.IR post (1)
 for message submission.
 .B Mhbuild
 will use the locale settings to mark text content with the appropriate
@@ -106,18 +126,18 @@ attach to the message (it should be noted all that the
 command does is place an \*(lqAttach\*(rq header in the message draft).
 .B Mhbuild
 will then automatically include the specified file(s) in the outgoing
-message.  See the
+message.  See
 .IR send (1)
-man page for details on how
+for details on how
 .B mhbuild
 determines the proper content type of attached files.
 .PP
 The other method of composing MIME messages is to use
 .B mhbuild
 directives.  This allows exact control over the contents and format of
-the MIME message, but has a more complicated syntax.  The
+the MIME message, but has a more complicated syntax.
 .IR mhbuild (1)
-man page contains details on the directive syntax and examples of directives
+contains details on the directive syntax and examples of directives
 for different media types.  It is important to note that when using
 .B mhbuild
 directives the user must run
@@ -133,7 +153,7 @@ for a directive.  When using directives a user typically uses the
 command at the \*(lqWhat now?\*(rq prompt to process them.
 .PP
 When replying to messages using
-.B repl
+.IR repl (1)
 the traditional MH method of including the original text in the reply does
 not interoperate with MIME messages.  As of this writing there is no
 native solution for addressing this issue, but the contrib directory
