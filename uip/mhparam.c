@@ -11,6 +11,7 @@
  */
 
 #include <h/mh.h>
+#include <h/mts.h>
 
 #define MHPARAM_SWITCHES \
     X("components", 0, COMPSW) \
@@ -31,36 +32,44 @@ DEFINE_SWITCH_ARRAY(MHPARAM, switches);
 extern char *mhlibdir;
 extern char *mhetcdir;
 
-char *sbackup = BACKUP_PREFIX;
+static char *sbackup = BACKUP_PREFIX;
 
-char *datalocking = "fcntl";
+static char *datalocking = "fcntl";
+static char *localmbox = "";
 
 extern char *spoollocking;
 
-char *sasl =
+static char *sasl =
 #ifdef CYRUS_SASL
     "cyrus_sasl";
 #else
     "";
 #endif
 
-char *tls =
+static char *tls =
 #ifdef TLS_SUPPORT
     "tls";
 #else
     "";
 #endif
 
-char *mimetypeproc =
+static char *mimetypeproc =
 #ifdef MIMETYPEPROC
     MIMETYPEPROC;
 #else
     "";
 #endif
 
-char *mimeencodingproc =
+static char *mimeencodingproc =
 #ifdef MIMEENCODINGPROC
     MIMEENCODINGPROC;
+#else
+    "";
+#endif
+
+static char *iconv =
+#ifdef HAVE_ICONV
+    "iconv";
 #else
     "";
 #endif
@@ -98,9 +107,11 @@ static struct proc procs [] = {
      { "whomproc",         &whomproc },
      { "etcdir",           &mhetcdir },
      { "libdir",           &mhlibdir },
+     { "localmbox",	   &localmbox },
      { "sbackup",          &sbackup },
      { "datalocking",      &datalocking },
      { "spoollocking",     &spoollocking },
+     { "iconv",		   &iconv },
      { "sasl",             &sasl },
      { "tls",              &tls },
      { NULL,               NULL },
@@ -184,6 +195,9 @@ main(int argc, char **argv)
 
 	/* Need to see if datalocking was set in profile. */
 	if ((cp = context_find("datalocking"))) { datalocking = cp; }
+
+	/* Also set localmbox here */
+	localmbox = getlocalmbox();
 
 	/*
 	 * Print the current value of everything in
