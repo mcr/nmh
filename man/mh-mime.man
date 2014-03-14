@@ -36,7 +36,7 @@ by executing the command
 .PP
 .RS 5
 .nf
-mhparam\0\iconv
+mhparam\0iconv
 .fi
 .RE
 .PP
