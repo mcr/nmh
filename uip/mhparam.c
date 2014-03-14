@@ -36,6 +36,7 @@ static char *sbackup = BACKUP_PREFIX;
 
 static char *datalocking = "fcntl";
 static char *localmbox = "";
+static int localmbox_primed = 0;
 
 extern char *spoollocking;
 
@@ -173,6 +174,10 @@ main(int argc, char **argv)
 	    }
 	} else {
 	    comps[compp++] = cp;
+	    if (strcmp("localmbox", cp) == 0 && ! localmbox_primed) {
+		localmbox = getlocalmbox();
+		localmbox_primed = 1;
+	    }
 	}
     }
 
@@ -197,7 +202,10 @@ main(int argc, char **argv)
 	if ((cp = context_find("datalocking"))) { datalocking = cp; }
 
 	/* Also set localmbox here */
-	localmbox = getlocalmbox();
+	if (! localmbox_primed) {
+	    localmbox = getlocalmbox();
+	    localmbox_primed = 1;
+	}
 
 	/*
 	 * Print the current value of everything in
