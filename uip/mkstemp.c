@@ -104,7 +104,7 @@ build_template(const char *directory, const char *prefix, const char *suffix) {
         tp += sizeof pattern - 1;
 
         (void) strncpy(tp, suffix, suffix_len);
-        tp += suffix_len;
+        /* tp += suffix_len; */
 
         template[len-1] = '\0';
 

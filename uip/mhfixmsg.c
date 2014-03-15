@@ -563,10 +563,11 @@ get_multipart_boundary (CT ct, char **part_boundary) {
     while (begin >= (off_t) ct->c_begin) {
         fseeko (ct->c_fp, begin, SEEK_SET);
         while ((bytes_read = fread (buffer, 1, sizeof buffer, ct->c_fp)) > 0) {
-            char *end = buffer + bytes_read - 1;
-            char *cp;
+            char *cp = rfind_str (buffer, bytes_read, "--");
 
-            if ((cp = rfind_str (buffer, bytes_read, "--"))) {
+            if (cp) {
+                char *end;
+
                 /* Trim off trailing "--" and anything beyond. */
                 *cp-- = '\0';
                 if ((end = rfind_str (buffer, cp - buffer, "\n"))) {
@@ -1222,6 +1223,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
                      boundary_in_content (&new_part->c_cefile.ce_fp,
                                           new_part->c_cefile.ce_file,
                                           boundary)) == -1) {
+                    free (ct);
                     return NULL;
                 }
             }
@@ -1232,6 +1234,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
                 if ((found_boundary = boundary_in_content (&new_part->c_fp,
                                                            new_part->c_file,
                                                            boundary)) == -1) {
+                    free (ct);
                     return NULL;
                 }
             }
@@ -1252,6 +1255,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
 
         if (found_boundary) {
             advise (NULL, "giving up trying to find a unique boundary");
+            free (ct);
             return NULL;
         }
     }
