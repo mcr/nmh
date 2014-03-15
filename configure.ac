@@ -490,7 +490,7 @@ dnl Use LFLAGS make variable setting to work around bugs in flex
 dnl 2.5.36 that cause signed/unsigned mismatch,
 dnl http://sourceforge.net/p/flex/bugs/140/
 AS_IF([test "$LEX" = flex],
-      [AS_CASE([`$LEX -V`],
+      [$LEX -V; AS_CASE([`$LEX -V`],
                [flex\ 2.5.35], [LFLAGS=\
 '; sed -e "s/	int n;/	size_t n;/" $@ >$@.tmp && mv -f $@.tmp $@; true'],
                [flex\ 2.5.36], [LFLAGS=\
