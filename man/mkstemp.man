@@ -77,5 +77,3 @@ none
 \-suffix
 none
 .PD
-.SH CONTEXT
-None

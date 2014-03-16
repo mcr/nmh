@@ -160,7 +160,7 @@ command can apply various transformations to MIME messages, including
 decoding of text parts, converting the character set of text parts,
 and insertion of text/plain parts to correspond to text parts of other
 subtypes.
-.I mhfixmsg
+.B mhfixmsg
 can also repair defects in MIME messages, such as mismatched top-level
 boundary indicators and invalid Content-Transfer-Encoding values.
 .SH "SEE ALSO"
