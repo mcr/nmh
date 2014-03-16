@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "February 8, 2014" "%nmhversion%"
+.TH MHFIXMSG %manext1% "March 16, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -76,7 +76,12 @@ should be converted to
 Charset conversions require that
 .B nmh
 be built with
-.IR iconv (3).
+.IR iconv (3);
+see the
+.BR mhparam (1)
+man page for how determine whether your
+.B nmh
+installation includes that.
 To convert text parts other than text/plain, an external program can
 be used, via the
 .B \-reformat
@@ -325,6 +330,7 @@ is checked.
 .IR mh-profile (5),
 .IR mhbuild (1),
 .IR mhlist (1),
+.IR mhparam (1),
 .IR mhshow (1),
 .IR mkstemp (3),
 .IR procmail (1),

@@ -1,4 +1,4 @@
-.TH MH\-MIME %manext7% " March 13, 2014" "%nmhversion%"
+.TH MH\-MIME %manext7% "March 16, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -12,7 +12,7 @@ The acronym MIME stands for Multipurpose Internet Mail Extensions, the
 format of Internet messages used to send multi\-media content.
 The
 .B nmh
-command suite has support for the display and composition of MIME messages, but 
+command suite has support for the display and composition of MIME messages, but
 currently MIME support is not completely integrated into all tools.  This
 document provides an overview as to which tools support MIME message display,
 storage, and composition.
@@ -28,27 +28,13 @@ local character set.  Character set conversion will only take place if
 .B nmh
 was built with
 .IR iconv (3)
-support.  You can check the status of
-.IR iconv (3)
-support in
+support.  See the
+.IR mhparam (1)
+man page for how determine whether your
 .B nmh
-by executing the command
-.PP
-.RS 5
-.nf
-mhparam\0iconv
-.fi
-.RE
-.PP
-If it returns
-.IR iconv ,
-then
-.B nmh
-is built with
+installation includes
 .IR iconv (3)
-support.  If it is blank, then
-.IR iconv (3)
-support is not included.
+support.
 .PP
 Depending on the source and target character set, it may not be possible
 to convert all characters to the local character set. In this case a
@@ -166,16 +152,30 @@ to be included in a message reply.  See the comments at the top of
 for instructions on how to configure
 .B nmh
 to work with it.
+.SS
+Message Rewrite
+The
+.IR mhfixmsg (1)
+command can apply various transformations to MIME messages, including
+decoding of text parts, converting the character set of text parts,
+and insertion of text/plain parts to correspond to text parts of other
+subtypes.
+.I mhfixmsg
+can also repair defects in MIME messages, such as mismatched top-level
+boundary indicators and invalid Content-Transfer-Encoding values.
 .SH "SEE ALSO"
-.IR nmh (7),
-.IR mhbuild (1),
 .IR comp (1),
+.IR iconv (3),
+.IR mh\-format (5)
+.IR mhbuild (1),
+.IR mhfixmsg (1),
+.IR mhparam (1),
+.IR nmh (7),
 .IR repl (1),
 .IR whatnow (1),
-.IR mh\-format (5)
 .PP
 .I %docdir%/contrib/replyfilter
 .SH BUGS
-MIME support should be more integrated into all of the 
+MIME support should be more integrated into all of the
 .B nmh
 tools than it currently is.

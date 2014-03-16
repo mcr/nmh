@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "February 18, 2014" "%nmhversion%"
+.TH MHSHOW %manext1% "March 16, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -346,7 +346,13 @@ If
 was built with
 .IR iconv (3),
 then all text/plain parts of the message(s) will be displayed using
-the character set of the current locale.  To convert text parts other
+the character set of the current locale.  See the
+.BR mhparam (1)
+man page for how determine whether your
+.B nmh
+installation includes
+.IR iconv (3)
+support.  To convert text parts other
 than text/plain, or if
 .B mhshow
 was not built with
@@ -630,6 +636,7 @@ is checked.
 .IR mhbuild (1),
 .IR mhl (1),
 .IR mhlist (1),
+.IR mhparam (1),
 .IR mhstore (1),
 .IR sendfiles (1)
 .SH DEFAULTS

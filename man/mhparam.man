@@ -1,4 +1,4 @@
-.TH MHPARAM %manext1% "February 26, 2014" "%nmhversion%"
+.TH MHPARAM %manext1% "March 16, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -45,16 +45,37 @@ is specified, then all components in the nmh profile are
 displayed and other arguments are ignored.
 .PP
 .BR mhparam
-can provide other information, such as
-the locations of the nmh
+can provide other information, such as the
+.B nmh
+version identifier, the locations of the nmh
 .I etcdir
 and
 .I libdir
 install directories, all
 .I proc
-settings, and the default locking method with which the
+settings, and the
+.I datalocking
+method described in the
+.IR mh_profile (5)
+man page.  Information about the configuration of the
 .B nmh
-installation was configured.  The
+installation is also available, including the default mail spool
+locking method.  To test whether the configuration includes
+support for SASL, TLS, and
+.IR iconv (3),
+the following commands, respectively, will output a non-null string to
+indicate support:
+.PP
+.RS 5
+.nf
+mhparam\0sasl
+mhparam\0tls
+mhparam\0iconv
+.fi
+.RE
+.PP
+Conversely, no output means that the specified support is not included.
+The
 .B \-debug
 switch displays all such other information available from
 .BR mhparam .
@@ -85,17 +106,29 @@ rmmproc
 Path: Mail
 context: context
 
+% mhparam version
+%nmhversion%
+
 % mhparam etcdir
 %etcdir%
 
 % mhparam libdir
 %libdir%
 
+% mhparam spoollocking
+%default_locking%
+
 % mhparam datalocking
 fcntl
 
-% mhparam spoollocking
-flock
+% mhparam sasl
+cyrus_sasl
+
+% mhparam tls
+tls
+
+% mhparam iconv
+iconv
 .fi
 .RE
 .PP
@@ -112,7 +145,7 @@ returns the number of components that were not found.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'ExtraBigProfileName  'u
 ^$HOME/.mh_profile~^The user profile
 ^or $MH~^Rather than the standard profile
 ^<mh-dir>/context~^The user context
