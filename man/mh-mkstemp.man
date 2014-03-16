@@ -1,4 +1,4 @@
-.TH MKSTEMP %manext1% "March 2, 2014" "%nmhversion%"
+.TH MH-MKSTEMP %manext1% "March 16, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

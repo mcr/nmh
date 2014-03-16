@@ -231,7 +231,7 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/mh_profile.5 man/mh-sequence.5 man/mh-tailor.5 man/mhbuild.1 \
 	   man/mhfixmsg.1 man/mhl.1 man/mhlist.1 man/mhmail.1 man/mhn.1 \
 	   man/mhparam.1 man/mhpath.1 man/mhshow.1 man/mhstore.1 \
-	   man/mkstemp.1 man/msgchk.1 man/msh.1 man/mts.conf.5 man/new.1 \
+	   man/mh-mkstemp.1 man/msgchk.1 man/msh.1 man/mts.conf.5 man/new.1 \
 	   man/next.1 man/nmh.7 man/packf.1 man/pick.1 man/post.8 man/prev.1 \
 	   man/prompter.1 man/rcvdist.1 man/rcvpack.1 man/rcvstore.1 \
 	   man/rcvtty.1 man/refile.1 man/repl.1 man/rmf.1 man/rmm.1 \
@@ -251,7 +251,7 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 	   man/mh-profile.man man/mh_profile.man man/mh-sequence.man \
 	   man/mh-tailor.man man/mhbuild.man man/mhfixmsg.man man/mhl.man \
 	   man/mhlist.man man/mhmail.man man/mhn.man man/mhparam.man \
-	   man/mhpath.man man/mhshow.man man/mhstore.man man/mkstemp.man \
+	   man/mhpath.man man/mhshow.man man/mhstore.man man/mh-mkstemp.man \
 	   man/msgchk.man man/msh.man man/mts.conf.man man/new.man \
 	   man/next.man man/nmh.man man/packf.man man/pick.man man/post.man \
 	   man/prev.man man/prompter.man man/rcvdist.man man/rcvpack.man \
