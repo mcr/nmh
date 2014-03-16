@@ -50,12 +50,12 @@ filename2
 description of filename2
 .\"
 .SH "SEE ALSO"
-.IR dist (1),
-.IR forw (1),
-.IR repl (1),
-.IR send (1),
-.IR whatnow (1),
-.IR mh-profile (5)
+.BR dist (1),
+.BR forw (1),
+.BR repl (1),
+.BR send (1),
+.BR whatnow (1),
+.BR mh-profile (5)
 .\" Leave out the BUGS section if there are none worth describing.
 .SH BUGS
 None
@@ -117,9 +117,10 @@ Program names
 		.B comp
 		.BR comp ,
 
-	If this is a manpage reference, use:
+	The first reference to a documented command should be in the form of
+	a manpage reference:
 
-		.IR mh-draft (5)
+		.BR comp (1)
 
 SYNPOSIS section
 
