@@ -28,13 +28,13 @@ trap "rm -f $TMP" 0 1 2 3 13 15
 PGM="`$SEARCHPROG $SEARCHPATH w3m`"
 if [ ! -z "$PGM" ]; then
   echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
-$PGM "'-dump "${charset:+-I $charset}" -O utf-8 -T text/html %F' >> $TMP
+$PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F' >> $TMP
 else
   PGM="`$SEARCHPROG $SEARCHPATH lynx`"
   if [ ! -z "$PGM" ]; then
     #### lynx indents with 3 spaces, remove them and any trailing spaces.
     echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
-$PGM "'-child -dump -force_html "${charset:+--assume_charset $charset}" %F | '"\
+$PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} %F | '"\
 expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
   else
     PGM="`$SEARCHPROG $SEARCHPATH elinks`"
@@ -245,12 +245,12 @@ EOF
 PGM="`$SEARCHPROG $SEARCHPATH w3m`"
 if [ ! -z "$PGM" ]; then
 	echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%p$PGM"' "${charset:+-I $charset}" -T text/html %F' >> $TMP
+%p$PGM"' ${charset:+-I "$charset"} -T text/html %F' >> $TMP
 else
   PGM="`$SEARCHPROG $SEARCHPATH lynx`"
   if [ ! -z "$PGM" ]; then
 	echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%p$PGM"' -force-html "${charset:+--assume_charset $charset}" %F' >> $TMP
+%p$PGM"' -force-html ${charset:+--assume_charset "$charset"} %F' >> $TMP
   else
     PGM="`$SEARCHPROG $SEARCHPATH elinks`"
     if [ ! -z "$PGM" ]; then
