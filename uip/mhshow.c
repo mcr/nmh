@@ -23,8 +23,6 @@
     X("nocheck", 0, NCHECKSW) \
     X("pause", 0, PAUSESW) \
     X("nopause", 0, NPAUSESW) \
-    X("serialonly", 0, SERIALSW) \
-    X("noserialonly", 0, NSERIALSW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
     X("file file", 0, FILESW) \
@@ -64,7 +62,6 @@ extern char *cache_private;
 
 /* mhshowsbr.c */
 extern int pausesw;
-extern int serialsw;
 extern char *progsw;
 extern int nomore;	/* flags for moreproc/header display */
 extern char *formsw;
@@ -173,13 +170,6 @@ do_cache:
 		continue;
 	    case NPAUSESW:
 		pausesw = 0;
-		continue;
-
-	    case SERIALSW:
-		serialsw = 1;
-		continue;
-	    case NSERIALSW:
-		serialsw = 0;
 		continue;
 
 	    case PARTSW:

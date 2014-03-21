@@ -41,8 +41,6 @@ extern int contentidsw;
 extern int rcachesw;	/* mhcachesbr.c */
 extern int wcachesw;	/* mhcachesbr.c */
 
-pid_t xpid = 0;
-
 static char prefix[] = "----- =_aaaaaaaaaa";
 
 struct attach_list {

@@ -42,7 +42,6 @@ struct smsg {
  */
 
 int debugsw = 0;
-pid_t xpid = 0;
 
 /*
  * static prototypes

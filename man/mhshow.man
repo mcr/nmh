@@ -18,7 +18,6 @@ mhshow \- display MIME messages
 .RB [ \-type
 .IR content ]
 \&...
-.RB [ \-serialonly " | " \-noserialonly ]
 .RB [ \-pause " | " \-nopause ]
 .RB [ \-form
 .IR formfile ]
@@ -227,7 +226,6 @@ The display string may contain the following escapes:
 .ta \w'%F        'u
 %a	   Insert parameters from Content-Type field
 %{parameter} Insert the parameter value from the Content-Type field
-%e	   exclusive execution
 %f	   Insert filename containing content
 %F	   %e, %f, and stdin is terminal not content
 %l	   display listing prior to displaying content
@@ -332,14 +330,7 @@ Finally,
 .B mhshow
 will process each message serially\0--\0it won't start
 showing the next message until all the commands executed to display the
-current message have terminated.  In the case of a multipart content
-(of any subtype listed above), the content contains advice indicating if
-the parts should be displayed serially or in parallel.  Because this may
-cause confusion, particularly on uni-window displays, the
-.B \-serialonly
-switch can be given to tell
-.B mhshow
-to never display parts in parallel.
+current message have terminated.
 .SS "Showing Alternate Character Sets"
 If
 .B mhshow
@@ -647,7 +638,6 @@ is checked.
 .RB ` \-form\ mhl.headers '
 .RB ` \-pause '
 .RB ` \-rcache\ ask '
-.RB ` \-noserialonly '
 .RB ` \-wcache\ ask '
 .fi
 .SH CONTEXT

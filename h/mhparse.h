@@ -141,7 +141,6 @@ struct Content {
     SizeCEFunc  c_cesizefnx;	/* size of decoded contents          */
 
     int	c_umask;		/* associated umask                  */
-    pid_t c_pid;		/* process doing display             */
     int	c_rfc934;		/* rfc934 compatibility flag         */
 
     char *c_showproc;		/* default, if not in profile        */

@@ -23,8 +23,6 @@
 
 extern int debugsw;
 
-extern pid_t xpid;	/* mhshowsbr.c  */
-
 /* cache policies */
 extern int rcachesw;	/* mhcachesbr.c */
 extern int wcachesw;	/* mhcachesbr.c */
@@ -2478,13 +2476,6 @@ openFTP (CT ct, char **file)
 	return NOTOK;
     }
 
-    if (xpid) {
-	if (xpid < 0)
-	    xpid = -xpid;
-	pidcheck (pidwait (xpid, NOTOK));
-	xpid = 0;
-    }
-
     /* Get the buffer ready to go */
     bp = buffer;
     buflen = sizeof(buffer);
@@ -2684,13 +2675,6 @@ openMail (CT ct, char **file)
 	return NOTOK;
     }
 
-    if (xpid) {
-	if (xpid < 0)
-	    xpid = -xpid;
-	pidcheck (pidwait (xpid, NOTOK));
-	xpid = 0;
-    }
-
     /* Get buffer ready to go */
     bp = buffer;
     buflen = sizeof(buffer);
@@ -2819,13 +2803,6 @@ openURL (CT ct, char **file)
     if (!e->eb_url) {
     	content_error(NULL, ct, "missing url parameter");
 	return NOTOK;
-    }
-
-    if (xpid) {
-	if (xpid < 0)
-	    xpid = -xpid;
-	pidcheck (pidwait (xpid, NOTOK));
-	xpid = 0;
     }
 
     ce->ce_unlink = (*file == NULL);

@@ -59,8 +59,6 @@ extern int userrs;
  * This is currently needed to keep mhparse happy.
  * This needs to be changed.
  */
-pid_t xpid  = 0;
-
 int debugsw = 0;
 int verbosw = 0;
 

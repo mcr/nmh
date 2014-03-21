@@ -25,8 +25,6 @@
 
 extern int debugsw;
 
-extern pid_t xpid;	/* mhshowsbr.c or mhbuildsbr.c */
-
 /* cache policies */
 int rcachesw = CACHE_ASK;
 int wcachesw = CACHE_ASK;
@@ -225,13 +223,6 @@ got_it:
     if (status == OK && policy == CACHE_ASK) {
 	int len, buflen;
 	char *bp, query[BUFSIZ];
-
-	if (xpid) {
-	    if (xpid < 0)
-		xpid = -xpid;
-	    pidcheck (pidwait (xpid, NOTOK));
-	    xpid = 0;
-	}
 
 	/* Get buffer ready to go */
 	bp = query;

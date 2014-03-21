@@ -60,7 +60,7 @@ void reverse_parts (CT);
 int output_message (CT, char *);
 
 /* mhshowsbr.c */
-int show_content_aux (CT, int, int, char *, char *);
+int show_content_aux (CT, int, char *, char *);
 
 /* mhmisc.c */
 void flush_errors (void);
@@ -1128,7 +1128,7 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
     free (cp);
 
     cp = concat (cf, " >", file, NULL);
-    status = show_content_aux (ct, 1, 0, cp, NULL);
+    status = show_content_aux (ct, 0, cp, NULL);
     free (cp);
 
     /* Unlink decoded content tmp file and free its filename to avoid
@@ -1196,7 +1196,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
        c_cefile, c_encoding,
        c_digested, c_digest[16], c_ctexbody,
        c_ctinitfnx, c_ceopenfnx, c_ceclosefnx, c_cesizefnx,
-       c_umask, c_pid, c_rfc934,
+       c_umask, c_rfc934,
        c_showproc, c_termproc, c_storeproc, c_storage, c_folder
     */
 

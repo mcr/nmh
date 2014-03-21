@@ -33,8 +33,6 @@
     X("nopause", 0, NPAUSESW) \
     X("realsize", 0, SIZESW) \
     X("norealsize", 0, NSIZESW) \
-    X("serialonly", 0, SERIALSW) \
-    X("noserialonly", 0, NSERIALSW) \
     X("show", 0, SHOWSW) \
     X("noshow", 0, NSHOWSW) \
     X("store", 0, STORESW) \
@@ -85,7 +83,6 @@ extern char *cache_private;
 
 /* mhshowsbr.c */
 extern int pausesw;
-extern int serialsw;
 extern char *progsw;
 extern int nolist;
 extern int nomore;	/* flags for moreproc/header display */
@@ -249,13 +246,6 @@ do_cache:
 		continue;
 	    case NPAUSESW:
 		pausesw = 0;
-		continue;
-
-	    case SERIALSW:
-		serialsw = 1;
-		continue;
-	    case NSERIALSW:
-		serialsw = 0;
 		continue;
 
 	    case SHOWSW:

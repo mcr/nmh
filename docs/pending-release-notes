@@ -132,6 +132,9 @@ OBSOLETE FEATURES
   environment variable.
 - Instead of printing PostScript attachments, by default, from mhshow,
   try to find a suitable viewer.
+- Support for parallel display of multipart/parallel content has been
+  removed from mhshow; all multipart content will be displayed in
+  serial.
 
 -------------------
 DEPRECATED FEATURES

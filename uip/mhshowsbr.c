@@ -24,7 +24,6 @@
 extern int debugsw;
 
 int pausesw  = 1;
-int serialsw = 0;
 int nolist   = 0;
 
 char *progsw = NULL;
@@ -32,8 +31,6 @@ char *progsw = NULL;
 /* flags for moreproc/header display */
 int nomore   = 0;
 char *formsw = NULL;
-
-pid_t xpid = 0;
 
 static sigjmp_buf intrenv;
 
@@ -48,25 +45,24 @@ void flush_errors (void);
  * prototypes
  */
 void show_all_messages (CT *);
-int show_content_aux (CT, int, int, char *, char *);
+int show_content_aux (CT, int, char *, char *);
 
 /*
  * static prototypes
  */
 static void show_single_message (CT, char *);
 static void DisplayMsgHeader (CT, char *);
-static int show_switch (CT, int, int);
-static int show_content (CT, int, int);
-static int show_content_aux2 (CT, int, int, char *, char *, int, int, int, int,
-                              int);
-static int show_text (CT, int, int);
-static int show_multi (CT, int, int);
-static int show_multi_internal (CT, int, int);
-static int show_multi_aux (CT, int, int, char *);
-static int show_message_rfc822 (CT, int, int);
-static int show_partial (CT, int, int);
-static int show_external (CT, int, int);
-static int parse_display_string (CT, char *, int *, int *, int *, int *, char *,
+static int show_switch (CT, int);
+static int show_content (CT, int);
+static int show_content_aux2 (CT, int, char *, char *, int, int, int, int);
+static int show_text (CT, int);
+static int show_multi (CT, int);
+static int show_multi_internal (CT, int);
+static int show_multi_aux (CT, int, char *);
+static int show_message_rfc822 (CT, int);
+static int show_partial (CT, int);
+static int show_external (CT, int);
+static int parse_display_string (CT, char *, int *, int *, int *, char *,
                                  char *, size_t, int multipart);
 static int convert_content_charset (CT, char **);
 static void intrser (int);
@@ -125,11 +121,9 @@ show_single_message (CT ct, char *form)
      */
     if (form)
 	DisplayMsgHeader(ct, form);
-    else
-	xpid = 0;
 
     /* Show the body of the message */
-    show_switch (ct, 1, 0);
+    show_switch (ct, 0);
 
     if (ct->c_fp) {
 	fclose (ct->c_fp);
@@ -154,7 +148,6 @@ show_single_message (CT ct, char *form)
     /* reset the signal mask */
     sigprocmask (SIG_SETMASK, &oset, &set);
 
-    xpid = 0;
     flush_errors ();
 }
 
@@ -207,7 +200,7 @@ DisplayMsgHeader (CT ct, char *form)
 	/* NOTREACHED */
 
     default:
-	xpid = -child_id;
+	pidcheck(pidwait(child_id, NOTOK));
 	break;
     }
 
@@ -221,33 +214,33 @@ DisplayMsgHeader (CT ct, char *form)
  */
 
 static int
-show_switch (CT ct, int serial, int alternate)
+show_switch (CT ct, int alternate)
 {
     switch (ct->c_type) {
 	case CT_MULTIPART:
-	    return show_multi (ct, serial, alternate);
+	    return show_multi (ct, alternate);
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
 		case MESSAGE_PARTIAL:
-		    return show_partial (ct, serial, alternate);
+		    return show_partial (ct, alternate);
 
 		case MESSAGE_EXTERNAL:
-		    return show_external (ct, serial, alternate);
+		    return show_external (ct, alternate);
 
 		case MESSAGE_RFC822:
 		default:
-		    return show_message_rfc822 (ct, serial, alternate);
+		    return show_message_rfc822 (ct, alternate);
 	    }
 
 	case CT_TEXT:
-	    return show_text (ct, serial, alternate);
+	    return show_text (ct, alternate);
 
 	case CT_AUDIO:
 	case CT_IMAGE:
 	case CT_VIDEO:
 	case CT_APPLICATION:
-	    return show_content (ct, serial, alternate);
+	    return show_content (ct, alternate);
 
 	default:
 	    adios (NULL, "unknown content type %d", ct->c_type);
@@ -262,7 +255,7 @@ show_switch (CT ct, int serial, int alternate)
  */
 
 static int
-show_content (CT ct, int serial, int alternate)
+show_content (CT ct, int alternate)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -271,15 +264,15 @@ show_content (CT ct, int serial, int alternate)
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
 
     /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
 
     if ((cp = ct->c_showproc))
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
 
     /* complain if we are not a part of a multipart/alternative */
     if (!alternate)
@@ -294,10 +287,10 @@ show_content (CT ct, int serial, int alternate)
  */
 
 int
-show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
+show_content_aux (CT ct, int alternate, char *cp, char *cracked)
 {
     int fd;
-    int xstdin = 0, xlist = 0, xpause = 0, xtty = 0;
+    int xstdin = 0, xlist = 0, xpause = 0;
     char *file, buffer[BUFSIZ];
 
     if (!ct->c_ceopenfnx) {
@@ -332,15 +325,15 @@ show_content_aux (CT ct, int serial, int alternate, char *cp, char *cracked)
 	goto got_command;
     }
 
-    if (parse_display_string (ct, cp, &xstdin, &xlist, &xpause, &xtty, file,
+    if (parse_display_string (ct, cp, &xstdin, &xlist, &xpause, file,
 			      buffer, sizeof(buffer) - 1, 0)) {
 	admonish (NULL, "Buffer overflow constructing show command!\n");
 	return NOTOK;
     }
 
 got_command:
-    return show_content_aux2 (ct, serial, alternate, cracked, buffer,
-			      fd, xlist, xpause, xstdin, xtty);
+    return show_content_aux2 (ct, alternate, cracked, buffer,
+			      fd, xlist, xpause, xstdin);
 }
 
 
@@ -349,8 +342,8 @@ got_command:
  */
 
 static int
-show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer,
-                   int fd, int xlist, int xpause, int xstdin, int xtty)
+show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
+                   int fd, int xlist, int xpause, int xstdin)
 {
     pid_t child_id;
     int i, vecp;
@@ -367,13 +360,6 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	    fprintf (stderr, " using command (cd %s; %s)\n", cracked, buffer);
 	else
 	    fprintf (stderr, " using command %s\n", buffer);
-    }
-
-    if (xpid < 0 || (xtty && xpid)) {
-	if (xpid < 0)
-	    xpid = -xpid;
-	pidcheck(pidwait (xpid, NOTOK));
-	xpid = 0;
     }
 
     if (xlist) {
@@ -434,13 +420,7 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
 	default:
 	    arglist_free(file, vec);
 
-	    if (!serial) {
-		ct->c_pid = child_id;
-		if (xtty)
-		    xpid = child_id;
-	    } else {
-		pidcheck (pidXwait (child_id, NULL));
-	    }
+	    pidcheck (pidXwait (child_id, NULL));
 
 	    if (fd != NOTOK)
 		(*ct->c_ceclosefnx) (ct);
@@ -454,7 +434,7 @@ show_content_aux2 (CT ct, int serial, int alternate, char *cracked, char *buffer
  */
 
 static int
-show_text (CT ct, int serial, int alternate)
+show_text (CT ct, int alternate)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -463,12 +443,12 @@ show_text (CT ct, int serial, int alternate)
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
 
     /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
 
     /*
      * Use default method if content is text/plain, or if
@@ -478,7 +458,7 @@ show_text (CT ct, int serial, int alternate)
 	snprintf (buffer, sizeof(buffer), "%%p%s %%F", progsw ? progsw :
 		moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
 	cp = (ct->c_showproc = add (buffer, NULL));
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
     }
 
     return NOTOK;
@@ -490,7 +470,7 @@ show_text (CT ct, int serial, int alternate)
  */
 
 static int
-show_multi (CT ct, int serial, int alternate)
+show_multi (CT ct, int alternate)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -499,22 +479,22 @@ show_multi (CT ct, int serial, int alternate)
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_multi_aux (ct, serial, alternate, cp);
+	return show_multi_aux (ct, alternate, cp);
 
     /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_multi_aux (ct, serial, alternate, cp);
+	return show_multi_aux (ct, alternate, cp);
 
     if ((cp = ct->c_showproc))
-	return show_multi_aux (ct, serial, alternate, cp);
+	return show_multi_aux (ct, alternate, cp);
 
     /*
      * Use default method to display this multipart content.  Even
      * unknown types are displayable, since they're treated as mixed
      * per RFC 2046.
      */
-    return show_multi_internal (ct, serial, alternate);
+    return show_multi_internal (ct, alternate);
 }
 
 
@@ -524,40 +504,19 @@ show_multi (CT ct, int serial, int alternate)
  */
 
 static int
-show_multi_internal (CT ct, int serial, int alternate)
+show_multi_internal (CT ct, int alternate)
 {
-    int	alternating, nowalternate, nowserial, result;
+    int	alternating, nowalternate, result;
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
     CT p;
-    sigset_t set, oset;
 
     alternating = 0;
     nowalternate = alternate;
 
-    if (ct->c_subtype == MULTI_PARALLEL) {
-	nowserial = serialsw;
-    } else if (ct->c_subtype == MULTI_ALTERNATE) {
+    if (ct->c_subtype == MULTI_ALTERNATE) {
 	nowalternate = 1;
 	alternating  = 1;
-	nowserial = serial;
-    } else {
-	/*
-	 * multipart/mixed
-	 * mutlipart/digest
-	 * unknown subtypes of multipart (treat as mixed per rfc2046)
-	 */
-	nowserial = serial;
-    }
-
-    /* block a few signals */
-    if (!nowserial) {
-	sigemptyset (&set);
-	sigaddset (&set, SIGHUP);
-	sigaddset (&set, SIGINT);
-	sigaddset (&set, SIGQUIT);
-	sigaddset (&set, SIGTERM);
-	sigprocmask (SIG_BLOCK, &set, &oset);
     }
 
 /*
@@ -573,7 +532,7 @@ show_multi_internal (CT ct, int serial, int alternate)
 	if (part_ok (p, 1) && type_ok (p, 1)) {
 	    int	inneresult;
 
-	    inneresult = show_switch (p, nowserial, nowalternate);
+	    inneresult = show_switch (p, nowalternate);
 	    switch (inneresult) {
 		case NOTOK:
 		    if (alternate && !alternating) {
@@ -606,46 +565,7 @@ show_multi_internal (CT ct, int serial, int alternate)
 	goto out;
     }
 
-    if (serial && !nowserial) {
-	pid_t pid;
-	int kids;
-	int status;
-
-	kids = 0;
-	for (part = m->mp_parts; part; part = part->mp_next) {
-	    p = part->mp_part;
-
-	    if (p->c_pid > OK) {
-		if (kill (p->c_pid, 0) == NOTOK)
-		    p->c_pid = 0;
-		else
-		    kids++;
-	    }
-	}
-
-	while (kids > 0 && (pid = wait (&status)) != NOTOK) {
-	    pidcheck (status);
-
-	    for (part = m->mp_parts; part; part = part->mp_next) {
-		p = part->mp_part;
-
-		if (xpid == pid)
-		    xpid = 0;
-		if (p->c_pid == pid) {
-		    p->c_pid = 0;
-		    kids--;
-		    break;
-		}
-	    }
-	}
-    }
-
 out:
-    if (!nowserial) {
-	/* reset the signal mask */
-	sigprocmask (SIG_SETMASK, &oset, &set);
-    }
-
     return result;
 }
 
@@ -656,11 +576,11 @@ out:
  */
 
 static int
-show_multi_aux (CT ct, int serial, int alternate, char *cp)
+show_multi_aux (CT ct, int alternate, char *cp)
 {
     /* xstdin is only used in the call to parse_display_string():
        its value is ignored in the function. */
-    int xstdin = 0, xlist = 0, xpause = 0, xtty = 0;
+    int xstdin = 0, xlist = 0, xpause = 0;
     char *file, buffer[BUFSIZ];
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
@@ -688,14 +608,14 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
 	}
     }
 
-    if (parse_display_string (ct, cp, &xstdin, &xlist, &xpause, &xtty, file,
+    if (parse_display_string (ct, cp, &xstdin, &xlist, &xpause, file,
 			      buffer, sizeof(buffer) - 1, 1)) {
 	admonish (NULL, "Buffer overflow constructing show command!\n");
 	return NOTOK;
     }
 
-    return show_content_aux2 (ct, serial, alternate, NULL, buffer,
-			      NOTOK, xlist, xpause, 0, xtty);
+    return show_content_aux2 (ct, alternate, NULL, buffer,
+			      NOTOK, xlist, xpause, 0);
 }
 
 
@@ -704,7 +624,7 @@ show_multi_aux (CT ct, int serial, int alternate, char *cp)
  */
 
 static int
-show_message_rfc822 (CT ct, int serial, int alternate)
+show_message_rfc822 (CT ct, int alternate)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -713,20 +633,20 @@ show_message_rfc822 (CT ct, int serial, int alternate)
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
 
     /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
 
     if ((cp = ct->c_showproc))
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
 
     /* default method for message/rfc822 */
     if (ct->c_subtype == MESSAGE_RFC822) {
 	cp = (ct->c_showproc = add ("%pecho -file %F", NULL));
-	return show_content_aux (ct, serial, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL);
     }
 
     /* complain if we are not a part of a multipart/alternative */
@@ -742,9 +662,8 @@ show_message_rfc822 (CT ct, int serial, int alternate)
  */
 
 static int
-show_partial (CT ct, int serial, int alternate)
+show_partial (CT ct, int alternate)
 {
-    NMH_UNUSED (serial);
     NMH_UNUSED (alternate);
 
     content_error (NULL, ct,
@@ -760,7 +679,7 @@ show_partial (CT ct, int serial, int alternate)
  */
 
 static int
-show_external (CT ct, int serial, int alternate)
+show_external (CT ct, int alternate)
 {
     struct exbody *e = (struct exbody *) ct->c_ctparams;
     CT p = e->eb_content;
@@ -768,13 +687,13 @@ show_external (CT ct, int serial, int alternate)
     if (!type_ok (p, 0))
 	return OK;
 
-    return show_switch (p, serial, alternate);
+    return show_switch (p, alternate);
 }
 
 
 static int
 parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
-                      int *xtty, char *file, char *buffer, size_t buflen,
+                      char *file, char *buffer, size_t buflen,
                       int multipart) {
     int len, quoted = 0;
     char *bp = buffer, *pp;
@@ -816,14 +735,12 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		break;
 
 	    case 'e':
-		/* exclusive execution */
-		*xtty = 1;
+		/* no longer implemented */
 		break;
 
 	    case 'F':
 		/* %e, %f, and stdin is terminal not content */
 		*xstdin = 1;
-		*xtty = 1;
 		/* and fall... */
 
 	    case 'f':
