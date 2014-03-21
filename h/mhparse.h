@@ -298,7 +298,6 @@ extern struct str2init str2methods[];
 /*
  * prototypes
  */
-int pidcheck (int);
 CT parse_mime (char *);
 
 /*

@@ -181,19 +181,6 @@ struct str2init str2methods[] = {
 };
 
 
-int
-pidcheck (int status)
-{
-    if ((status & 0xff00) == 0xff00 || (status & 0x007f) != SIGQUIT)
-	return status;
-
-    fflush (stdout);
-    fflush (stderr);
-    done (1);
-    return 1;
-}
-
-
 /*
  * Main entry point for parsing a MIME message or file.
  * It returns the Content structure for the top level

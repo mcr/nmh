@@ -62,6 +62,7 @@ static int show_external (CT, int);
 static int parse_display_string (CT, char *, int *, int *, char *, char *,
 				 size_t, int multipart);
 static int convert_content_charset (CT, char **);
+static int pidcheck(int);
 
 
 /*
@@ -1109,4 +1110,21 @@ convert_content_charset (CT ct, char **file) {
 #endif /* ! HAVE_ICONV */
 
     return OK;
+}
+
+/*
+ * Exit if the display process returned with a nonzero exit code, or terminated
+ * with a SIGQUIT signal.
+ */
+
+static int
+pidcheck (int status)
+{
+    if ((status & 0xff00) == 0xff00 || (status & 0x007f) != SIGQUIT)
+	return status;
+
+    fflush (stdout);
+    fflush (stderr);
+    done (1);
+    return 1;
 }
