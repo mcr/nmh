@@ -71,7 +71,7 @@ This is a multi-part message in MIME format.
 
 I am a stupid spammer.
 EOF
-run_prog mhshow -nopause last > "$actual" 2>&1
+run_prog mhshow last > "$actual" 2>&1
 check "$expected" "$actual"
 
 # check m_getfld() handling of empty header field

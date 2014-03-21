@@ -29,8 +29,6 @@
     X("noheaders", 0, NHEADSW) \
     X("list", 0, LISTSW) \
     X("nolist", 0, NLISTSW) \
-    X("pause", 0, PAUSESW) \
-    X("nopause", 0, NPAUSESW) \
     X("realsize", 0, SIZESW) \
     X("norealsize", 0, NSIZESW) \
     X("show", 0, SHOWSW) \
@@ -82,7 +80,6 @@ extern char *cache_public;
 extern char *cache_private;
 
 /* mhshowsbr.c */
-extern int pausesw;
 extern char *progsw;
 extern int nolist;
 extern int nomore;	/* flags for moreproc/header display */
@@ -239,13 +236,6 @@ do_cache:
 		continue;
 	    case NLISTSW:
 		listsw = 0;
-		continue;
-
-	    case PAUSESW:
-		pausesw = 1;
-		continue;
-	    case NPAUSESW:
-		pausesw = 0;
 		continue;
 
 	    case SHOWSW:

@@ -135,6 +135,7 @@ OBSOLETE FEATURES
 - Support for parallel display of multipart/parallel content has been
   removed from mhshow; all multipart content will be displayed in
   serial.
+- Support for -pause/-nopause switches on mhshow has been removed.
 
 -------------------
 DEPRECATED FEATURES

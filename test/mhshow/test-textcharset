@@ -51,7 +51,7 @@ part       text/plain                  10
 4 ÷ 2 = 2
 EOF
 
-run_prog mhshow -nopause last >"$actual" 2>&1
+run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual"
 
 cat >>"$MH" <<'EOF'
@@ -84,7 +84,7 @@ MIME-Version: 1.0
 UTF-8
 EOF
 
-run_prog mhshow -nopause last >"$actual" 2>&1
+run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual"
 
 
@@ -113,7 +113,7 @@ MIME-Version: 1.0
 
 EOF
 
-run_prog mhshow -nopause last >"$actual" 2>&1
+run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual"
 
 
@@ -135,7 +135,7 @@ MIME-Version: 1.0
 -I UTF-8
 EOF
 
-run_prog mhshow -nopause prev >"$actual" 2>&1
+run_prog mhshow prev >"$actual" 2>&1
 check "$expected" "$actual"
 
 
@@ -151,7 +151,7 @@ MIME-Version: 1.0
 
 EOF
 
-run_prog mhshow -nopause last >"$actual" 2>&1
+run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual"
 
 
@@ -170,7 +170,7 @@ MIME-Version: 1.0
 -I UTF-8 file
 EOF
 
-run_prog mhshow -nopause prev >"$actual" 2>&1
+run_prog mhshow prev >"$actual" 2>&1
 check "$expected" "$actual"
 
 
@@ -186,7 +186,7 @@ MIME-Version: 1.0
 file
 EOF
 
-run_prog mhshow -nopause last >"$actual" 2>&1
+run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual"
 
 
@@ -218,7 +218,7 @@ MIME-Version: 1.0
 -I $QUOTEME' file
 EOF
 
-run_prog mhshow -nopause last >"$actual" 2>&1
+run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual"
 
 
@@ -250,7 +250,7 @@ MIME-Version: 1.0
 file
 EOF
 
-run_prog mhshow -nopause last >"$actual" 2>&1
+run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual"
 
 
@@ -283,7 +283,7 @@ MIME-Version: 1.0
 
 EOF
 
-run_prog mhshow -nopause last >"$actual" 2>&1
+run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual"
 
 

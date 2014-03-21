@@ -68,7 +68,7 @@ just a newline
 =l
 = ^H (backspace) character, probably erased = in diff output
 EOF
-run_prog mhshow -nopause $msgnum > $actual 2>&1
+run_prog mhshow $msgnum > $actual 2>&1
 check "$expected" "$actual"
 
 exit $failed

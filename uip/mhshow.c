@@ -21,8 +21,6 @@
 #define MHSHOW_SWITCHES \
     X("check", 0, CHECKSW) \
     X("nocheck", 0, NCHECKSW) \
-    X("pause", 0, PAUSESW) \
-    X("nopause", 0, NPAUSESW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
     X("file file", 0, FILESW) \
@@ -61,7 +59,6 @@ extern char *cache_public;
 extern char *cache_private;
 
 /* mhshowsbr.c */
-extern int pausesw;
 extern char *progsw;
 extern int nomore;	/* flags for moreproc/header display */
 extern char *formsw;
@@ -163,13 +160,6 @@ do_cache:
 		continue;
 	    case NCHECKSW:
 		checksw = 0;
-		continue;
-
-	    case PAUSESW:
-		pausesw = 1;
-		continue;
-	    case NPAUSESW:
-		pausesw = 0;
 		continue;
 
 	    case PARTSW:

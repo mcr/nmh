@@ -50,7 +50,7 @@ part       text/plain                  10
 This is a test
 EOF
 
-run_prog mhshow -nopause $msgnum > $actual 2>&1
+run_prog mhshow $msgnum > $actual 2>&1
 check "$expected" "$actual"
 
 exit $failed

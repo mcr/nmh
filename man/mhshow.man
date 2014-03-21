@@ -18,7 +18,6 @@ mhshow \- display MIME messages
 .RB [ \-type
 .IR content ]
 \&...
-.RB [ \-pause " | " \-nopause ]
 .RB [ \-form
 .IR formfile ]
 .RB [ \-rcache
@@ -227,34 +226,19 @@ The display string may contain the following escapes:
 %a	   Insert parameters from Content-Type field
 %{parameter} Insert the parameter value from the Content-Type field
 %f	   Insert filename containing content
-%F	   %e, %f, and stdin is terminal not content
+%F	   %f, and stdin is terminal not content
 %l	   display listing prior to displaying content
-%p	   %l, and ask for confirmation
 %s	   Insert content subtype
 %d	   Insert content description
 %%	   Insert the character %
 .fi
 .RE
 .PP
-For those display strings containing the e- or F-escape,
-.B mhshow
+.B Mhshow
 will
-execute at most one of these at any given time.  Although the F-escape
-expands to be the filename containing the content, the e-escape has no
-expansion as far as the shell is concerned.
-.PP
-When the p-escape prompts for confirmation, typing INTR (usually
-control-C) will tell
-.B mhshow
-not to display that content.
-The p-escape can be disabled by specifying the switch
-.BR \-nopause .
-Further, when
-.B mhshow
-is display a content, typing QUIT (usually
-control-\\) will tell
-.B mhshow
-to wrap things up immediately.
+execute at most one display string at any given time, and wait for the
+current display string to finish execution before executing the next
+display string.
 .PP
 The {parameter} escape is typically used in a command line argument
 that should only be present if it has a non-null value.  Its value
@@ -287,8 +271,8 @@ behaves as if these profile entries were supplied and supported:
 .PP
 .RS 5
 .nf
-mhshow-show-text/plain: %pmoreproc %F
-mhshow-show-message/rfc822: %pshow -file %F
+mhshow-show-text/plain: %lmoreproc %F
+mhshow-show-message/rfc822: %lshow -file %F
 .fi
 .RE
 .PP
@@ -636,7 +620,6 @@ is checked.
 .RB ` msgs "' defaults to cur"
 .RB ` \-nocheck '
 .RB ` \-form\ mhl.headers '
-.RB ` \-pause '
 .RB ` \-rcache\ ask '
 .RB ` \-wcache\ ask '
 .fi

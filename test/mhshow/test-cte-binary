@@ -46,7 +46,7 @@ Content-Disposition: inline
 part       text/plain                  34
 This is a test; this is the body.
 EOF
-run_prog mhshow -nopause $msgnum > $actual 2>&1
+run_prog mhshow $msgnum > $actual 2>&1
 check "$expected" "$actual"
 
 exit $failed

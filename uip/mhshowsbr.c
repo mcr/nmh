@@ -23,7 +23,6 @@
 
 extern int debugsw;
 
-int pausesw  = 1;
 int nolist   = 0;
 
 char *progsw = NULL;
@@ -31,8 +30,6 @@ char *progsw = NULL;
 /* flags for moreproc/header display */
 int nomore   = 0;
 char *formsw = NULL;
-
-static sigjmp_buf intrenv;
 
 
 /* mhmisc.c */
@@ -54,7 +51,7 @@ static void show_single_message (CT, char *);
 static void DisplayMsgHeader (CT, char *);
 static int show_switch (CT, int);
 static int show_content (CT, int);
-static int show_content_aux2 (CT, int, char *, char *, int, int, int, int);
+static int show_content_aux2 (CT, int, char *, char *, int, int, int);
 static int show_text (CT, int);
 static int show_multi (CT, int);
 static int show_multi_internal (CT, int);
@@ -62,10 +59,9 @@ static int show_multi_aux (CT, int, char *);
 static int show_message_rfc822 (CT, int);
 static int show_partial (CT, int);
 static int show_external (CT, int);
-static int parse_display_string (CT, char *, int *, int *, int *, char *,
-                                 char *, size_t, int multipart);
+static int parse_display_string (CT, char *, int *, int *, char *, char *,
+				 size_t, int multipart);
 static int convert_content_charset (CT, char **);
-static void intrser (int);
 
 
 /*
@@ -290,7 +286,7 @@ int
 show_content_aux (CT ct, int alternate, char *cp, char *cracked)
 {
     int fd;
-    int xstdin = 0, xlist = 0, xpause = 0;
+    int xstdin = 0, xlist = 0;
     char *file, buffer[BUFSIZ];
 
     if (!ct->c_ceopenfnx) {
@@ -325,15 +321,15 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked)
 	goto got_command;
     }
 
-    if (parse_display_string (ct, cp, &xstdin, &xlist, &xpause, file,
-			      buffer, sizeof(buffer) - 1, 0)) {
+    if (parse_display_string (ct, cp, &xstdin, &xlist, file, buffer,
+    			      sizeof(buffer) - 1, 0)) {
 	admonish (NULL, "Buffer overflow constructing show command!\n");
 	return NOTOK;
     }
 
 got_command:
     return show_content_aux2 (ct, alternate, cracked, buffer,
-			      fd, xlist, xpause, xstdin);
+			      fd, xlist, xstdin);
 }
 
 
@@ -343,7 +339,7 @@ got_command:
 
 static int
 show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
-                   int fd, int xlist, int xpause, int xstdin)
+                   int fd, int xlist, int xstdin)
 {
     pid_t child_id;
     int i, vecp;
@@ -363,33 +359,10 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
     }
 
     if (xlist) {
-	char prompt[BUFSIZ];
-
 	if (ct->c_type == CT_MULTIPART)
 	    list_content (ct, -1, 1, 0, 0, 0);
 	else
 	    list_switch (ct, -1, 1, 0, 0, 0);
-
-	if (xpause && isatty (fileno (stdout))) {
-	    int	intr;
-	    SIGNAL_HANDLER istat;
-
-	    if (SOprintf ("Press <return> to show content..."))
-		printf ("Press <return> to show content...");
-
-	    istat = SIGNAL (SIGINT, intrser);
-	    if ((intr = sigsetjmp (intrenv, 1)) == OK) {
-		fflush (stdout);
-		prompt[0] = 0;
-		read (fileno (stdout), prompt, sizeof(prompt));
-	    }
-	    SIGNAL (SIGINT, istat);
-	    if (intr != OK || prompt[0] == 'n') {
-		(*ct->c_ceclosefnx) (ct);
-		return (alternate ? DONE : NOTOK);
-	    }
-	    if (prompt[0] == 'q') done(OK);
-	}
     }
 
     vec = argsplit(buffer, &file, &vecp);
@@ -455,7 +428,7 @@ show_text (CT ct, int alternate)
      * if it is not a text part of a multipart/alternative
      */
     if (!alternate || ct->c_subtype == TEXT_PLAIN) {
-	snprintf (buffer, sizeof(buffer), "%%p%s %%F", progsw ? progsw :
+	snprintf (buffer, sizeof(buffer), "%%l%s %%F", progsw ? progsw :
 		moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
 	cp = (ct->c_showproc = add (buffer, NULL));
 	return show_content_aux (ct, alternate, cp, NULL);
@@ -580,7 +553,7 @@ show_multi_aux (CT ct, int alternate, char *cp)
 {
     /* xstdin is only used in the call to parse_display_string():
        its value is ignored in the function. */
-    int xstdin = 0, xlist = 0, xpause = 0;
+    int xstdin = 0, xlist = 0;
     char *file, buffer[BUFSIZ];
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
@@ -608,14 +581,13 @@ show_multi_aux (CT ct, int alternate, char *cp)
 	}
     }
 
-    if (parse_display_string (ct, cp, &xstdin, &xlist, &xpause, file,
+    if (parse_display_string (ct, cp, &xstdin, &xlist, file,
 			      buffer, sizeof(buffer) - 1, 1)) {
 	admonish (NULL, "Buffer overflow constructing show command!\n");
 	return NOTOK;
     }
 
-    return show_content_aux2 (ct, alternate, NULL, buffer,
-			      NOTOK, xlist, xpause, 0);
+    return show_content_aux2 (ct, alternate, NULL, buffer, NOTOK, xlist, 0);
 }
 
 
@@ -692,7 +664,7 @@ show_external (CT ct, int alternate)
 
 
 static int
-parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
+parse_display_string (CT ct, char *cp, int *xstdin, int *xlist,
                       char *file, char *buffer, size_t buflen,
                       int multipart) {
     int len, quoted = 0;
@@ -739,7 +711,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		break;
 
 	    case 'F':
-		/* %e, %f, and stdin is terminal not content */
+		/* %f, and stdin is terminal not content */
 		*xstdin = 1;
 		/* and fall... */
 
@@ -794,8 +766,7 @@ parse_display_string (CT ct, char *cp, int *xstdin, int *xlist, int *xpause,
 		break;
 
 	    case 'p':
-		/* %l, and pause prior to displaying content */
-		*xpause = pausesw;
+		/* No longer supported */
 		/* and fall... */
 
 	    case 'l':
@@ -1138,14 +1109,4 @@ convert_content_charset (CT ct, char **file) {
 #endif /* ! HAVE_ICONV */
 
     return OK;
-}
-
-
-static void
-intrser (int i)
-{
-    NMH_UNUSED (i);
-
-    putchar ('\n');
-    siglongjmp (intrenv, DONE);
 }
