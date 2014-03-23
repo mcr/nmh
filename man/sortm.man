@@ -1,4 +1,4 @@
-.TH SORTM %manext1% "October 27, 2012" "%nmhversion%"
+.TH SORTM %manext1% "March 23, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -112,6 +112,9 @@ messages, and exits with non-zero status.  With the default of
 .B sortm
 sorts messages with a missing or invalid
 \*(lqDate:\*(rq field using their file modification times.
+.PP
+When ordering messages based on their dates, if they have the same
+dates, their original message order is preserved.
 .SH FILES
 .fc ^ ~
 .nf
