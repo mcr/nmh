@@ -9,7 +9,7 @@
 if [ -n "$1" ]; then
     SEARCHPATH=$1
 else
-    SEARCHPATH="$PATH:/usr/demo/SOUND"
+    SEARCHPATH="$PATH"
 fi
 
 # If a search program is passed to the script, we

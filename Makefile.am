@@ -21,7 +21,7 @@ LDADD = sbr/libmh.a
 ## MHNSEARCHPATH is the default path to look for MIME content handlers
 ## MHNSEARCHPROG is the script used to find the support programs
 ##
-MHNSEARCHPATH = "$(PATH):/usr/demo/SOUND"
+MHNSEARCHPATH = "$(PATH)"
 MHNSEARCHPROG = $(srcdir)/etc/mhn.find.sh
 
 ##
