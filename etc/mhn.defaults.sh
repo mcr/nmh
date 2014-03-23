@@ -27,20 +27,20 @@ trap "rm -f $TMP" 0 1 2 3 13 15
 
 PGM="`$SEARCHPROG $SEARCHPATH w3m`"
 if [ ! -z "$PGM" ]; then
-  echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
+    echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
 $PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F' >> $TMP
 else
-  PGM="`$SEARCHPROG $SEARCHPATH lynx`"
-  if [ ! -z "$PGM" ]; then
-    #### lynx indents with 3 spaces, remove them and any trailing spaces.
-    echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
+    PGM="`$SEARCHPROG $SEARCHPATH lynx`"
+    if [ ! -z "$PGM" ]; then
+        #### lynx indents with 3 spaces, remove them and any trailing spaces.
+        echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
 $PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} %F | '"\
 expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
-  else
-    PGM="`$SEARCHPROG $SEARCHPATH elinks`"
-    if [ ! -z "$PGM" ]; then
-      echo "mhfixmsg-format-text/html: $PGM -dump -force-html -no-numbering \
--eval 'set document.browse.margin_width = 0' %F" >> $TMP
+    else
+        PGM="`$SEARCHPROG $SEARCHPATH elinks`"
+        if [ ! -z "$PGM" ]; then
+          echo "mhfixmsg-format-text/html: $PGM -dump -force-html \
+-no-numbering -eval 'set document.browse.margin_width = 0' %F" >> $TMP
     fi
   fi
 fi
@@ -131,15 +131,40 @@ fi
 
 PGM="`$SEARCHPROG $SEARCHPATH okular`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/PostScript: %pokular %F" >> $TMP
+    echo "mhshow-show-application/PostScript: %p$PGM %F" >> $TMP
 else
     PGM="`$SEARCHPROG $SEARCHPATH evince`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/PostScript: %pevince %F" >> $TMP
+	echo "mhshow-show-application/PostScript: %p$PGM %F" >> $TMP
     else
 	PGM="`$SEARCHPROG $SEARCHPATH gv`"
 	if [ ! -z "$PGM" ]; then
-	    echo "mhshow-show-application/PostScript: %pgv %F" >> $TMP
+	    echo "mhshow-show-application/PostScript: %p$PGM %F" >> $TMP
+	fi
+    fi
+fi
+
+PGM="`$SEARCHPROG $SEARCHPATH acroread`"
+if [ ! -z "$PGM" ]; then
+    echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+else
+    PGM="`$SEARCHPROG $SEARCHPATH okular`"
+    if [ ! -z "$PGM" ]; then
+	echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+    else
+	PGM="`$SEARCHPROG $SEARCHPATH evince`"
+	if [ ! -z "$PGM" ]; then
+	    echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+        else
+	    PGM="`$SEARCHPROG $SEARCHPATH xpdf`"
+	    if [ ! -z "$PGM" ]; then
+		echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+            else
+	        PGM="`$SEARCHPROG $SEARCHPATH gv`"
+	        if [ ! -z "$PGM" ]; then
+		    echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+	        fi
+	    fi
 	fi
     fi
 fi
@@ -244,20 +269,20 @@ EOF
 # that another netscape is already running and certain things can't be done).
 PGM="`$SEARCHPROG $SEARCHPATH w3m`"
 if [ ! -z "$PGM" ]; then
-	echo 'mhshow-show-text/html: charset=%{charset}; '"\
+    echo 'mhshow-show-text/html: charset=%{charset}; '"\
 %p$PGM"' ${charset:+-I "$charset"} -T text/html %F' >> $TMP
 else
-  PGM="`$SEARCHPROG $SEARCHPATH lynx`"
-  if [ ! -z "$PGM" ]; then
+    PGM="`$SEARCHPROG $SEARCHPATH lynx`"
+    if [ ! -z "$PGM" ]; then
 	echo 'mhshow-show-text/html: charset=%{charset}; '"\
 %p$PGM"' -force-html ${charset:+--assume_charset "$charset"} %F' >> $TMP
-  else
-    PGM="`$SEARCHPROG $SEARCHPATH elinks`"
-    if [ ! -z "$PGM" ]; then
-      echo "mhshow-show-text/html: $PGM -force-html \
+    else
+      PGM="`$SEARCHPROG $SEARCHPATH elinks`"
+      if [ ! -z "$PGM" ]; then
+          echo "mhshow-show-text/html: $PGM -force-html \
 -eval 'set document.browse.margin_width = 0' %F" >> $TMP
+      fi
     fi
-  fi
 fi
 
 PGM="`$SEARCHPROG $SEARCHPATH richtext`"
@@ -273,8 +298,7 @@ fi
 # staroffice to read .doc files
 PGM="`$SEARCHPROG $SEARCHPATH soffice`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/msword: %psoffice %F" >> $TMP
-	echo "mhshow-suffix-application/msword: .doc" >> $TMP
+	echo "mhshow-show-application/msword: %p$PGM %F" >> $TMP
 fi
 
 # output a sorted version of the file
@@ -282,18 +306,14 @@ sort < $TMP
 
 exit 0
 
-: not until we get a "safe" postscript environment...
 
-PGM="`$SEARCHPROG $SEARCHPATH pageview`"
-if [ "$DISPLAY" = "unix:0.0" -a ! -z "$PGM" ]; then
-    echo "mhshow-show-application/PostScript: %p$PGM -" >> $TMP
-else
-    PGM="`$SEARCHPROG $SEARCHPATH gs`"
-    if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/PostScript: %p$PGM -- %F" >> $TMP
-	echo "mhshow-suffix-application/PostScript: .ps" >> $TMP
-    fi
-fi
+###############################################################################
+###############################################################################
+####
+#### Note the exit 0 above; everything below is unused.
+####
+###############################################################################
+###############################################################################
 
 : have to experiment more with this
 
