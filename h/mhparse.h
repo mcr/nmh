@@ -472,4 +472,20 @@ char *get_param(PM first, const char *name, char replace, int fetchonly);
  */
 char *get_param_value(PM pm, char replace);
 
+/*
+ * Display MIME message(s) on standard out.
+ *
+ * Arguments are:
+ *
+ * cts		- NULL terminated array of CT structures for messages
+ *		  to display
+ * concat	- If true, concatenate all MIME parts.  If false, show each
+ *		  MIME part under a separate pager.
+ * textonly	- If true, only display "text" MIME parts
+ * inlineonly	- If true, only display MIME parts that are marked with
+ *		  a disposition of "inline" (includes parts that lack a
+ *		  Content-Disposition header).
+ */
+void show_all_messages(CT *cts, int concat, int textonly, int inlineonly);
+
 extern int checksw;	/* Add Content-MD5 field */

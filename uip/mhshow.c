@@ -23,6 +23,8 @@
     X("nocheck", 0, NCHECKSW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
+    X("concat", 0, CONCATSW) \
+    X("noconcat", 0, NCONCATSW) \
     X("file file", 0, FILESW) \
     X("form formfile", 0, FORMSW) \
     X("part number", 0, PARTSW) \
@@ -83,9 +85,6 @@ int part_ok (CT, int);
 int type_ok (CT, int);
 void flush_errors (void);
 
-/* mhshowsbr.c */
-void show_all_messages (CT *);
-
 /* mhfree.c */
 extern CT *cts;
 void freects_done (int) NORETURN;
@@ -99,7 +98,7 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int msgnum, *icachesw;
+    int msgnum, *icachesw, concatsw = 1, textonly = 1, inlineonly = 1;
     char *cp, *file = NULL, *folder = NULL;
     char *maildir, buf[100], **argp;
     char **arguments;
@@ -160,6 +159,13 @@ do_cache:
 		continue;
 	    case NCHECKSW:
 		checksw = 0;
+		continue;
+
+	    case CONCATSW:
+		concatsw = 1;
+		continue;
+	    case NCONCATSW:
+		concatsw = 0;
 		continue;
 
 	    case PARTSW:
@@ -234,6 +240,16 @@ do_cache:
     /* null terminate the list of acceptable parts/types */
     parts[npart] = NULL;
     types[ntype] = NULL;
+
+    /*
+     * If we had any specific parts or types specified, turn off text only
+     * content.
+     */
+
+    if (npart > 0 || ntype > 0) {
+	textonly = 0;
+	inlineonly = 0;
+    }
 
     /*
      * Check if we've specified an additional profile
@@ -369,7 +385,7 @@ do_cache:
     /*
      * Show the message content
      */
-    show_all_messages (cts);
+    show_all_messages (cts, concatsw, textonly, inlineonly);
 
     /* Now free all the structures for the content */
     for (ctp = cts; *ctp; ctp++)

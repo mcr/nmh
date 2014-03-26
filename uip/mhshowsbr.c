@@ -41,24 +41,23 @@ void flush_errors (void);
 /*
  * prototypes
  */
-void show_all_messages (CT *);
 int show_content_aux (CT, int, char *, char *);
 
 /*
  * static prototypes
  */
-static void show_single_message (CT, char *);
-static void DisplayMsgHeader (CT, char *);
-static int show_switch (CT, int);
+static void show_single_message (CT, char *, int, int, int);
+static void DisplayMsgHeader (CT, char *, int);
+static int show_switch (CT, int, int, int, int);
 static int show_content (CT, int);
 static int show_content_aux2 (CT, int, char *, char *, int, int, int);
 static int show_text (CT, int);
-static int show_multi (CT, int);
-static int show_multi_internal (CT, int);
+static int show_multi (CT, int, int, int, int);
+static int show_multi_internal (CT, int, int, int, int);
 static int show_multi_aux (CT, int, char *);
 static int show_message_rfc822 (CT, int);
 static int show_partial (CT, int);
-static int show_external (CT, int);
+static int show_external (CT, int, int, int, int);
 static int parse_display_string (CT, char *, int *, int *, char *, char *,
 				 size_t, int multipart);
 static int convert_content_charset (CT, char **);
@@ -70,7 +69,7 @@ static int pidcheck(int);
  */
 
 void
-show_all_messages (CT *cts)
+show_all_messages (CT *cts, int concat, int textonly, int inlineonly)
 {
     CT ct, *ctp;
 
@@ -92,7 +91,7 @@ show_all_messages (CT *cts)
 
 	/* if top-level type is ok, then display message */
 	if (type_ok (ct, 1))
-	    show_single_message (ct, formsw);
+	    show_single_message (ct, formsw, concat, textonly, inlineonly);
     }
 }
 
@@ -102,7 +101,8 @@ show_all_messages (CT *cts)
  */
 
 static void
-show_single_message (CT ct, char *form)
+show_single_message (CT ct, char *form, int concat, int textonly,
+		     int inlineonly)
 {
     sigset_t set, oset;
 
@@ -117,10 +117,10 @@ show_single_message (CT ct, char *form)
      * the message headers.
      */
     if (form)
-	DisplayMsgHeader(ct, form);
+	DisplayMsgHeader(ct, form, concat);
 
     /* Show the body of the message */
-    show_switch (ct, 0);
+    show_switch (ct, 0, concat, textonly, inlineonly);
 
     if (ct->c_fp) {
 	fclose (ct->c_fp);
@@ -154,7 +154,7 @@ show_single_message (CT ct, char *form)
  */
 
 static void
-DisplayMsgHeader (CT ct, char *form)
+DisplayMsgHeader (CT ct, char *form, int concat)
 {
     pid_t child_id;
     int i, vecp;
@@ -171,7 +171,7 @@ DisplayMsgHeader (CT ct, char *form)
      * If we've specified -(no)moreproc,
      * then just pass that along.
      */
-    if (nomore) {
+    if (nomore || concat) {
 	vec[vecp++] = getcpy("-nomoreproc");
     } else if (progsw) {
 	vec[vecp++] = getcpy("-moreproc");
@@ -211,11 +211,11 @@ DisplayMsgHeader (CT ct, char *form)
  */
 
 static int
-show_switch (CT ct, int alternate)
+show_switch (CT ct, int alternate, int concat, int textonly, int inlineonly)
 {
     switch (ct->c_type) {
 	case CT_MULTIPART:
-	    return show_multi (ct, alternate);
+	    return show_multi (ct, alternate, concat, textonly, inlineonly);
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
@@ -223,7 +223,8 @@ show_switch (CT ct, int alternate)
 		    return show_partial (ct, alternate);
 
 		case MESSAGE_EXTERNAL:
-		    return show_external (ct, alternate);
+		    return show_external (ct, alternate, concat, textonly,
+					  inlineonly);
 
 		case MESSAGE_RFC822:
 		default:
@@ -444,7 +445,7 @@ show_text (CT ct, int alternate)
  */
 
 static int
-show_multi (CT ct, int alternate)
+show_multi (CT ct, int alternate, int concat, int textonly, int inlineonly)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -468,7 +469,7 @@ show_multi (CT ct, int alternate)
      * unknown types are displayable, since they're treated as mixed
      * per RFC 2046.
      */
-    return show_multi_internal (ct, alternate);
+    return show_multi_internal (ct, alternate, concat, textonly, inlineonly);
 }
 
 
@@ -478,7 +479,8 @@ show_multi (CT ct, int alternate)
  */
 
 static int
-show_multi_internal (CT ct, int alternate)
+show_multi_internal (CT ct, int alternate, int concat, int textonly,
+		     int inlineonly)
 {
     int	alternating, nowalternate, result;
     struct multipart *m = (struct multipart *) ct->c_ctparams;
@@ -506,7 +508,8 @@ show_multi_internal (CT ct, int alternate)
 	if (part_ok (p, 1) && type_ok (p, 1)) {
 	    int	inneresult;
 
-	    inneresult = show_switch (p, nowalternate);
+	    inneresult = show_switch (p, nowalternate, concat, textonly,
+				      inlineonly);
 	    switch (inneresult) {
 		case NOTOK:
 		    if (alternate && !alternating) {
@@ -652,7 +655,7 @@ show_partial (CT ct, int alternate)
  */
 
 static int
-show_external (CT ct, int alternate)
+show_external (CT ct, int alternate, int concat, int textonly, int inlineonly)
 {
     struct exbody *e = (struct exbody *) ct->c_ctparams;
     CT p = e->eb_content;
@@ -660,7 +663,7 @@ show_external (CT ct, int alternate)
     if (!type_ok (p, 0))
 	return OK;
 
-    return show_switch (p, alternate);
+    return show_switch (p, alternate, concat, textonly, inlineonly);
 }
 
 
