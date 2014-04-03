@@ -382,6 +382,9 @@ do_cache:
 	context_save ();		  /* save the context file  */
     }
 
+    if (concat)
+	m_popen(moreproc, 0);
+
     /*
      * Show the message content
      */
@@ -393,6 +396,9 @@ do_cache:
 
     free ((char *) cts);
     cts = NULL;
+
+    if (concat)
+	m_pclose();
 
     done (0);
     return 1;

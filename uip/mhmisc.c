@@ -75,6 +75,29 @@ type_ok (CT ct, int sP)
 }
 
 
+/*
+ * Returns true if this content is marked as "inline".
+ *
+ * Technically we should check parent content to see if they have
+ * disposition to use as a default, but we don't right now.  Maybe
+ * later ....
+ */
+
+int
+is_inline(CT ct)
+{
+    /*
+     * If there isn't any disposition at all, it's "inline".  Obviously
+     * if it's "inline", then it's inline.  RFC 2183 says if it's an unknown
+     * disposition, treat it as 'attachment'.
+     */
+
+    if (! ct->c_dispo_type || strcasecmp(ct->c_dispo_type, "inline") == 0)
+	return 1;
+    else
+	return 0;
+}
+
 int
 make_intermediates (char *file)
 {

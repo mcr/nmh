@@ -207,6 +207,23 @@ char *m_mktemp(const char *, int *, FILE **);
 char *m_mktemp2(const char *, const char *, int *, FILE **);
 char *m_mktemps(const char *pfx, const char *suffix, int *, FILE **);
 char *get_temp_dir();
+
+/*
+ * Create a subprocess and redirect our standard output to it.
+ *
+ * Arguments are:
+ *
+ * name		- Name of process to create
+ * savestdout	- If true, will save the current stdout file descriptor and
+ *		  m_pclose() will close it at the appropriate time.
+ */
+void m_popen(char *name, int savestdout);
+
+/*
+ * Wait for the last process opened by m_popen().
+ */
+void m_pclose(void);
+
 void m_unknown(m_getfld_state_t *, FILE *);
 int makedir (char *);
 char *message_id (time_t, int);

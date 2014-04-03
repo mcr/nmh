@@ -51,7 +51,7 @@ static void DisplayMsgHeader (CT, char *, int);
 static int show_switch (CT, int, int, int, int);
 static int show_content (CT, int);
 static int show_content_aux2 (CT, int, char *, char *, int, int, int);
-static int show_text (CT, int);
+static int show_text (CT, int, int);
 static int show_multi (CT, int, int, int, int);
 static int show_multi_internal (CT, int, int, int, int);
 static int show_multi_aux (CT, int, char *);
@@ -137,7 +137,7 @@ show_single_message (CT ct, char *form, int concat, int textonly,
     sigaddset (&set, SIGTERM);
     sigprocmask (SIG_BLOCK, &set, &oset);
 
-    while (wait (&status) != NOTOK) {
+    while (!concat && wait (&status) != NOTOK) {
 	pidcheck (status);
 	continue;
     }
@@ -232,7 +232,7 @@ show_switch (CT ct, int alternate, int concat, int textonly, int inlineonly)
 	    }
 
 	case CT_TEXT:
-	    return show_text (ct, alternate);
+	    return show_text (ct, alternate, concat);
 
 	case CT_AUDIO:
 	case CT_IMAGE:
@@ -310,7 +310,11 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked)
            unfortunately the type checks are necessary without
            some code rearrangement.  And to make this really ugly,
            only do it in mhshow, not mhfixmsg, mhn, or mhstore. */
-        if (convert_content_charset (ct, &file) != OK) {
+        if (convert_content_charset (ct, &file) == OK) {
+            close_encoding (ct);
+            if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
+                return NOTOK;
+        } else {
             admonish (NULL, "unable to convert character set%s to %s",
                       ct->c_partno  ?  "of part "  :  "",
                       ct->c_partno  ?  ct->c_partno  :  "",
@@ -367,6 +371,33 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	    list_switch (ct, -1, 1, 0, 0, 0);
     }
 
+    /*
+     * If the command is a zero-length string, just write the output on
+     * stdout.
+     */
+
+    if (buffer[0] == '\0') {
+	char readbuf[BUFSIZ];
+	ssize_t cc;
+
+	if (fd == NOTOK) {
+	    advise(NULL, "Cannot use NULL command to display content-type "
+		   "%s/%s", ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype);
+	    return NOTOK;
+	}
+
+	while ((cc = read(fd, readbuf, sizeof(readbuf))) > 0) {
+	    fwrite(readbuf, sizeof(char), cc, stdout);
+	}
+
+	if (cc < 0) {
+	    advise("read", "while reading text content");
+	    return NOTOK;
+	}
+
+	return OK;
+    }
+
     vec = argsplit(buffer, &file, &vecp);
     vec[vecp++] = NULL;
 
@@ -409,7 +440,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
  */
 
 static int
-show_text (CT ct, int alternate)
+show_text (CT ct, int alternate, int concat)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -430,8 +461,11 @@ show_text (CT ct, int alternate)
      * if it is not a text part of a multipart/alternative
      */
     if (!alternate || ct->c_subtype == TEXT_PLAIN) {
-	snprintf (buffer, sizeof(buffer), "%%l%s %%F", progsw ? progsw :
-		moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
+	if (concat)
+	    snprintf(buffer, sizeof(buffer), "%%l");
+	else
+	    snprintf (buffer, sizeof(buffer), "%%l%s %%F", progsw ? progsw :
+		      moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
 	cp = (ct->c_showproc = add (buffer, NULL));
 	return show_content_aux (ct, alternate, cp, NULL);
     }
@@ -505,7 +539,8 @@ show_multi_internal (CT ct, int alternate, int concat, int textonly,
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
 
-	if (part_ok (p, 1) && type_ok (p, 1)) {
+	if (part_ok (p, 1) && type_ok (p, 1) &&
+					(!inlineonly || is_inline(ct))) {
 	    int	inneresult;
 
 	    inneresult = show_switch (p, nowalternate, concat, textonly,
@@ -660,7 +695,7 @@ show_external (CT ct, int alternate, int concat, int textonly, int inlineonly)
     struct exbody *e = (struct exbody *) ct->c_ctparams;
     CT p = e->eb_content;
 
-    if (!type_ok (p, 0))
+    if (!type_ok (p, 0) || (inlineonly && !is_inline(p)))
 	return OK;
 
     return show_switch (p, alternate, concat, textonly, inlineonly);

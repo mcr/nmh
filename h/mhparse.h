@@ -344,10 +344,20 @@ char *content_charset (CT);
 int convert_charset (CT, char *, int *);
 
 /*
+ * Given a content structure, return true if the content has a disposition
+ * of "inline".
+ *
+ * Arguments are:
+ *
+ * ct		- Content structure to examine
+ */
+int is_inline(CT ct);
+
+/*
  * Given a list of messages, display information about them on standard
  * output.
  *
- * Argumens are:
+ * Arguments are:
  *
  * cts		- An array of CT elements of messages that need to be
  *		  displayed.  Array is terminated by a NULL.

@@ -332,7 +332,6 @@ static void pipeser (int);
 static void quitser (int);
 static void mhladios (char *, char *, ...);
 static void mhldone (int);
-static void m_popen (char *);
 static void filterbody (struct mcomp *, char *, int, int, FILE *,
                         m_getfld_state_t);
 static void compile_formatfield(struct mcomp *);
@@ -482,7 +481,7 @@ mhl (int argc, char **argv)
 		SIGNAL2 (SIGQUIT, quitser);
 	    }
 	    SIGNAL2 (SIGPIPE, pipeser);
-	    m_popen (moreproc);
+	    m_popen (moreproc, mhl_action != NULL);
 	    ontty = PITTY;
 	} else {
 	    SIGNAL (SIGINT, SIG_IGN);
@@ -1641,74 +1640,6 @@ mhldone (int status)
 	longjmp (mhlenv, DONE);
     else
 	done (exitstat);
-}
-
-
-static	int m_pid = NOTOK;
-static  int sd = NOTOK;
-
-static void
-m_popen (char *name)
-{
-    int pd[2];
-    char *file;
-    char **arglist;
-
-    if (mhl_action && (sd = dup (fileno (stdout))) == NOTOK)
-	adios ("standard output", "unable to dup()");
-
-    if (pipe (pd) == NOTOK)
-	adios ("pipe", "unable to");
-
-    switch (m_pid = fork()) {
-	case NOTOK: 
-	    adios ("fork", "unable to");
-
-	case OK: 
-	    SIGNAL (SIGINT, SIG_DFL);
-	    SIGNAL (SIGQUIT, SIG_DFL);
-
-	    close (pd[1]);
-	    if (pd[0] != fileno (stdin)) {
-		dup2 (pd[0], fileno (stdin));
-		close (pd[0]);
-	    }
-	    arglist = argsplit(name, &file, NULL);
-	    execvp (file, arglist);
-	    fprintf (stderr, "unable to exec ");
-	    perror (name);
-	    _exit (-1);
-
-	default: 
-	    close (pd[0]);
-	    if (pd[1] != fileno (stdout)) {
-		dup2 (pd[1], fileno (stdout));
-		close (pd[1]);
-	    }
-    }
-}
-
-
-void
-m_pclose (void)
-{
-    if (m_pid == NOTOK)
-	return;
-
-    if (sd != NOTOK) {
-	fflush (stdout);
-	if (dup2 (sd, fileno (stdout)) == NOTOK)
-	    adios ("standard output", "unable to dup2()");
-
-	clearerr (stdout);
-	close (sd);
-	sd = NOTOK;
-    }
-    else
-	fclose (stdout);
-
-    pidwait (m_pid, OK);
-    m_pid = NOTOK;
 }
 
 

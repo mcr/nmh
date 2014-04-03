@@ -575,7 +575,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/fmt_rfc2047.c sbr/fmt_scan.c sbr/lock_file.c \
 		      sbr/m_atoi.c sbr/m_backup.c sbr/m_convert.c \
 		      sbr/m_draft.c sbr/m_getfld.c sbr/m_gmprot.c \
-		      sbr/m_maildir.c sbr/m_name.c sbr/m_rand.c \
+		      sbr/m_maildir.c sbr/m_name.c sbr/m_popen.c sbr/m_rand.c \
 		      sbr/makedir.c sbr/message_id.c sbr/mime_type.c sbr/mts.c \
 		      sbr/norm_charmap.c sbr/path.c \
 		      sbr/peekc.c sbr/pidwait.c sbr/pidstatus.c \
