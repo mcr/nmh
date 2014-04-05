@@ -545,6 +545,14 @@ do_cache:
 	mhstoreinfo_free (info);
     }
 
+    /* If reading from a folder, do some updating */
+    if (mp) {
+	context_replace (pfolder, folder);/* update current folder  */
+	seq_setcur (mp, mp->hghsel);	  /* update current message */
+	seq_save (mp);			  /* synchronize sequences  */
+	context_save ();		  /* save the context file  */
+    }
+
     /*
      * Cache the message content
      */
@@ -563,14 +571,6 @@ do_cache:
 
     free (cts);
     cts = NULL;
-
-    /* If reading from a folder, do some updating */
-    if (mp) {
-	context_replace (pfolder, folder);/* update current folder  */
-	seq_setcur (mp, mp->hghsel);	  /* update current message */
-	seq_save (mp);			  /* synchronize sequences  */
-	context_save ();		  /* save the context file  */
-    }
 
     done (0);
     return 1;
