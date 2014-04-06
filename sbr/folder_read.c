@@ -165,7 +165,15 @@ folder_read (char *name, int lockflag)
     /*
      * Read and initialize the sequence information.
      */
-    seq_read (mp, lockflag);
+    if (seq_read (mp, lockflag) == NOTOK) {
+        char seqfile[PATH_MAX];
+
+        /* Failed to lock sequence file. */
+        snprintf (seqfile, sizeof(seqfile), "%s/%s", mp->foldpath, mh_seq);
+        advise (seqfile, "failed to lock");
+
+        return NULL;
+    }
 
     return mp;
 }

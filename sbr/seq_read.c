@@ -15,7 +15,7 @@
  * static prototypes
  */
 static int seq_init (struct msgs *, char *, char *);
-static void seq_public (struct msgs *, int);
+static int seq_public (struct msgs *, int);
 static void seq_private (struct msgs *);
 
 
@@ -25,7 +25,7 @@ static void seq_private (struct msgs *);
  * or context file (for private sequences).
  */
 
-void
+int
 seq_read (struct msgs *mp, int lockflag)
 {
     /*
@@ -37,13 +37,20 @@ seq_read (struct msgs *mp, int lockflag)
 
     /* If folder is empty, don't scan for sequence information */
     if (mp->nummsg == 0)
-	return;
+	return OK;
 
     /* Initialize the public sequences */
-    seq_public (mp, lockflag);
+    if (seq_public (mp, lockflag) == NOTOK) {
+	if (errno == EACCES  ||  errno == EAGAIN  ||  errno == EWOULDBLOCK) {
+	    /* Failed to lock sequence file. */
+	    return NOTOK;
+        }
+    }
 
     /* Initialize the private sequences */
     seq_private (mp);
+
+    return OK;
 }
 
 
@@ -51,7 +58,7 @@ seq_read (struct msgs *mp, int lockflag)
  * read folder's sequences file for public sequences
  */
 
-static void
+static int
 seq_public (struct msgs *mp, int lockflag)
 {
     int state;
@@ -66,13 +73,13 @@ seq_public (struct msgs *mp, int lockflag)
      * then just return, and do not initialize any public sequences.
      */
     if (mh_seq == NULL || *mh_seq == '\0')
-	return;
+	return OK;
 
     /* get filename of sequence file */
     snprintf (seqfile, sizeof(seqfile), "%s/%s", mp->foldpath, mh_seq);
 
     if ((fp = lkfopendata (seqfile, lockflag ? "r+" : "r")) == NULL)
-	return;
+	return NOTOK;
 
     /* Use m_getfld to scan sequence file */
     for (;;) {
@@ -116,6 +123,8 @@ seq_public (struct msgs *mp, int lockflag)
     } else {
 	lkfclosedata (fp, seqfile);
     }
+
+    return OK;
 }
 
 

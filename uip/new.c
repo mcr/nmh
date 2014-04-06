@@ -114,7 +114,13 @@ get_msgnums(char *folder, char *sequences[])
 
     if ((fp = lkfopendata (seqfile, "r")) == NULL) {
     	free(seqfile);
-	return NULL;
+
+	if (errno == EACCES  ||  errno == EAGAIN  ||  errno == EWOULDBLOCK) {
+	    /* Failed to lock sequence file. */
+	    adios (seqfile, "failed to lock");
+	} else {
+	    return NULL;
+	}
     }
 
     /* Use m_getfld to scan sequence file */

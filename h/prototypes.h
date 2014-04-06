@@ -280,8 +280,12 @@ void seq_printall (struct msgs *);
  *		  and a pointer to the filehandle will be stored in
  *		  folder structure, where it will later be used by
  *		  seq_save().
+ *
+ * Return values:
+ *     OK       - successfully read the sequence files, or they don't exist
+ *     NOTOK    - failed to lock sequence file
  */
-void seq_read (struct msgs * mp, int lockflag);
+int seq_read (struct msgs * mp, int lockflag);
 void seq_save (struct msgs *);
 void seq_setcur (struct msgs *, int);
 void seq_setprev (struct msgs *);

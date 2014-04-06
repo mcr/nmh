@@ -48,7 +48,7 @@ struct lockinfo {
 /*
  * Number of tries to retry locking
  */
-#define LOCK_RETRIES 5
+#define LOCK_RETRIES 60
 
 /*
  * Amount of time to wait before
