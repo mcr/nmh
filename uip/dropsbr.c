@@ -47,26 +47,16 @@ mbx_open (char *file, int mbx_style, uid_t uid, gid_t gid, mode_t mode)
 
     /* attempt to open and lock file */
     for (count = 4; count > 0; count--) {
+        int failed_to_lock = 0;
 	if ((fd = lkopenspool (file, O_RDWR | O_CREAT |
-			       O_NONBLOCK, mode)) == NOTOK) {
-	    switch (errno) {
-#if defined(FCNTL_LOCKING) || defined(LOCKF_LOCKING)
-		case EACCES:
-		case EAGAIN:
-#endif
-
-#ifdef FLOCK_LOCKING
-		case EWOULDBLOCK:
-#endif
-		case ETXTBSY: 
-		    j = errno;
-		    sleep (5);
-		    continue;
-
-		default: 
-		    /* just return error */
-		    return NOTOK;
-	    }
+			       O_NONBLOCK, mode, &failed_to_lock)) == NOTOK) {
+            if (failed_to_lock) {
+                j = errno;
+                sleep (5);
+                continue;
+            } else {
+                return NOTOK;
+            }
 	}
 
 	/* good file descriptor */

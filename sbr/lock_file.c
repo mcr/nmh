@@ -85,20 +85,20 @@ static enum locktype datalocktype, spoollocktype;
 /* top of list containing all open locks */
 static struct lock *l_top = NULL;
 
-static int lkopen(const char *, int, mode_t, enum locktype);
+static int lkopen(const char *, int, mode_t, enum locktype, int *);
 static int str2accbits(const char *);
 
-static int lkopen_fcntl (const char *, int, mode_t);
+static int lkopen_fcntl (const char *, int, mode_t, int *);
 #ifdef HAVE_LOCKF
-static int lkopen_lockf (const char *, int, mode_t);
+static int lkopen_lockf (const char *, int, mode_t, int *);
 #endif /* HAVE_LOCKF */
 #ifdef HAVE_FLOCK
-static int lkopen_flock (const char *, int, mode_t);
+static int lkopen_flock (const char *, int, mode_t, int *);
 #endif /* HAVE_FLOCK */
 
 static enum locktype init_locktype(const char *);
 
-static int lkopen_dot (const char *, int, mode_t);
+static int lkopen_dot (const char *, int, mode_t, int *);
 static void lkclose_dot (int, const char *);
 static void lockname (const char *, struct lockinfo *, int);
 static void timerON (char *, int);
@@ -115,7 +115,7 @@ static int lockit (struct lockinfo *);
  */
 
 int
-lkopendata(const char *file, int access, mode_t mode)
+lkopendata(const char *file, int access, mode_t mode, int *failed_to_lock)
 {
     if (! datalockinit) {
     	char *cp = context_find("datalocking");
@@ -130,7 +130,7 @@ lkopendata(const char *file, int access, mode_t mode)
 	datalockinit = 1;
     }
 
-    return lkopen(file, access, mode, datalocktype);
+    return lkopen(file, access, mode, datalocktype, failed_to_lock);
 }
 
 
@@ -138,7 +138,7 @@ lkopendata(const char *file, int access, mode_t mode)
  * Locking using the spool locking algorithm
  */
 
-int lkopenspool(const char *file, int access, mode_t mode)
+int lkopenspool(const char *file, int access, mode_t mode, int *failed_to_lock)
 {
     if (! spoollockinit) {
     	spoollocktype = init_locktype(spoollocking);
@@ -146,7 +146,7 @@ int lkopenspool(const char *file, int access, mode_t mode)
 	spoollockinit = 1;
     }
 
-    return lkopen(file, access, mode, spoollocktype);
+    return lkopen(file, access, mode, spoollocktype, failed_to_lock);
 }
 
 
@@ -155,7 +155,7 @@ int lkopenspool(const char *file, int access, mode_t mode)
  */
 
 FILE *
-lkfopendata(const char *file, const char *mode)
+lkfopendata(const char *file, const char *mode, int *failed_to_lock)
 {
     FILE *fp;
     int oflags = str2accbits(mode);
@@ -166,7 +166,7 @@ lkfopendata(const char *file, const char *mode)
 	return NULL;
     }
 
-    if ((fd = lkopendata(file, oflags, 0666)) == -1)
+    if ((fd = lkopendata(file, oflags, 0666, failed_to_lock)) == -1)
 	return NULL;
 
     if ((fp = fdopen (fd, mode)) == NULL) {
@@ -182,6 +182,7 @@ lkfopenspool(const char *file, const char *mode)
 {
     FILE *fp;
     int oflags = str2accbits(mode);
+    int failed_to_lock = 0;
     int fd;
 
     if (oflags == -1) {
@@ -189,7 +190,7 @@ lkfopenspool(const char *file, const char *mode)
 	return NULL;
     }
 
-    if ((fd = lkopenspool(file, oflags, 0666)) == -1)
+    if ((fd = lkopenspool(file, oflags, 0666, &failed_to_lock)) == -1)
 	return NULL;
 
     if ((fp = fdopen (fd, mode)) == NULL) {
@@ -296,24 +297,25 @@ str2accbits(const char *mode)
  */
 
 static int
-lkopen (const char *file, int access, mode_t mode, enum locktype ltype)
+lkopen (const char *file, int access, mode_t mode, enum locktype ltype,
+        int *failed_to_lock)
 {
     switch (ltype) {
 
     case FCNTL_LOCKING:
-    	return lkopen_fcntl(file, access, mode);
+    	return lkopen_fcntl(file, access, mode, failed_to_lock);
 
     case DOT_LOCKING:
-    	return lkopen_dot(file, access, mode);
+    	return lkopen_dot(file, access, mode, failed_to_lock);
 
 #ifdef HAVE_FLOCK
     case FLOCK_LOCKING:
-    	return lkopen_flock(file, access, mode);
+    	return lkopen_flock(file, access, mode, failed_to_lock);
 #endif /* HAVE_FLOCK */
 
 #ifdef HAVE_LOCKF
     case LOCKF_LOCKING:
-    	return lkopen_lockf(file, access, mode);
+    	return lkopen_lockf(file, access, mode, failed_to_lock);
 #endif /* HAVE_FLOCK */
 
     default:
@@ -348,7 +350,7 @@ lkclose_dot (int fd, const char *file)
  */
 
 static int
-lkopen_fcntl(const char *file, int access, mode_t mode)
+lkopen_fcntl(const char *file, int access, mode_t mode, int *failed_to_lock)
 {
     int fd, i, saved_errno;
     struct flock flk;
@@ -375,6 +377,7 @@ lkopen_fcntl(const char *file, int access, mode_t mode)
 	sleep(1);
     }
 
+    *failed_to_lock = 1;
     errno = saved_errno;
     return -1;
 }
@@ -386,7 +389,7 @@ lkopen_fcntl(const char *file, int access, mode_t mode)
  */
 
 static int
-lkopen_flock(const char *file, int access, mode_t mode)
+lkopen_flock(const char *file, int access, mode_t mode, int *failed_to_lock)
 {
     int fd, i, saved_errno, locktype;
 
@@ -410,6 +413,7 @@ lkopen_flock(const char *file, int access, mode_t mode)
 	sleep(1);
     }
 
+    *failed_to_lock = 1;
     errno = saved_errno;
     return -1;
 }
@@ -420,7 +424,7 @@ lkopen_flock(const char *file, int access, mode_t mode)
  */
 
 static int
-lkopen_lockf(const char *file, int access, mode_t mode)
+lkopen_lockf(const char *file, int access, mode_t mode, int *failed_to_lock)
 {
     int fd, i, saved_errno, saved_access;
 
@@ -462,6 +466,7 @@ lkopen_lockf(const char *file, int access, mode_t mode)
 	sleep(1);
     }
 
+    *failed_to_lock = 1;
     errno = saved_errno;
     return -1;
 }
@@ -472,7 +477,7 @@ lkopen_lockf(const char *file, int access, mode_t mode)
  */
 
 static int
-lkopen_dot (const char *file, int access, mode_t mode)
+lkopen_dot (const char *file, int access, mode_t mode, int *failed_to_lock)
 {
     int fd;
     struct lockinfo lkinfo;
@@ -503,8 +508,10 @@ lkopen_dot (const char *file, int access, mode_t mode)
 		 */
 		struct stat st;
 		if (stat (lkinfo.curlock, &st) == -1) {
-		    if (i++ > 5)
+		    if (i++ > 5) {
+			*failed_to_lock = 1;
 			return -1;
+                    }
 		    sleep (5);
 		} else {
 		    time_t curtime;
@@ -528,6 +535,7 @@ lkopen_dot (const char *file, int access, mode_t mode)
     }
     else {
         close(fd);
+	*failed_to_lock = 1;
         return -1;
     }
 #endif /* HAVE_LIBLOCKFILE */

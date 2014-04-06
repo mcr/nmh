@@ -279,6 +279,7 @@ find_cache_aux (int writing, char *directory, char *id,
     int	mask, usemap;
     char mapfile[BUFSIZ], mapname[BUFSIZ];
     FILE *fp;
+    int failed_to_lock = 0;
     static int partno, pid;
     static time_t clock = 0;
 
@@ -333,12 +334,15 @@ use_raw:
 
     make_intermediates (mapfile);
     mask = umask (writing == 2 ? 0077 : 0);
-    if (!(fp = lkfopendata (mapfile, "a")) && errno == ENOENT) {
+    if (!(fp = lkfopendata (mapfile, "a", &failed_to_lock)) && errno == ENOENT) {
 	int fd;
 
 	if ((fd = creat (mapfile, 0666)) != NOTOK) {
 	    close (fd);
-	    fp = lkfopendata (mapfile, "a");
+	    fp = lkfopendata (mapfile, "a", &failed_to_lock);
+            if (failed_to_lock) {
+		adios (mapfile, "failed to lock");
+            }
 	}
     }
     umask (mask);
@@ -366,8 +370,9 @@ find_cache_aux2 (char *mapfile, char *id, char *mapname, int namelen)
     char buf[BUFSIZ], name[NAMESZ];
     FILE *fp;
     m_getfld_state_t gstate = 0;
+    int failed_to_lock = 0;
 
-    if (!(fp = lkfopendata (mapfile, "r")))
+    if (!(fp = lkfopendata (mapfile, "r", &failed_to_lock)))
 	return NOTOK;
 
     for (;;) {

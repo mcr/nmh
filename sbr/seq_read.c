@@ -15,7 +15,7 @@
  * static prototypes
  */
 static int seq_init (struct msgs *, char *, char *);
-static int seq_public (struct msgs *, int);
+static int seq_public (struct msgs *, int, int *);
 static void seq_private (struct msgs *);
 
 
@@ -28,6 +28,8 @@ static void seq_private (struct msgs *);
 int
 seq_read (struct msgs *mp, int lockflag)
 {
+    int failed_to_lock = 0;
+
     /*
      * Initialize the list of sequence names.  Go ahead and
      * add the "cur" sequence to the list of sequences.
@@ -40,11 +42,8 @@ seq_read (struct msgs *mp, int lockflag)
 	return OK;
 
     /* Initialize the public sequences */
-    if (seq_public (mp, lockflag) == NOTOK) {
-	if (errno == EACCES  ||  errno == EAGAIN  ||  errno == EWOULDBLOCK) {
-	    /* Failed to lock sequence file. */
-	    return NOTOK;
-        }
+    if (seq_public (mp, lockflag, &failed_to_lock) == NOTOK) {
+	if (failed_to_lock) return NOTOK;
     }
 
     /* Initialize the private sequences */
@@ -59,7 +58,7 @@ seq_read (struct msgs *mp, int lockflag)
  */
 
 static int
-seq_public (struct msgs *mp, int lockflag)
+seq_public (struct msgs *mp, int lockflag, int *failed_to_lock)
 {
     int state;
     char *cp, seqfile[PATH_MAX];
@@ -78,7 +77,8 @@ seq_public (struct msgs *mp, int lockflag)
     /* get filename of sequence file */
     snprintf (seqfile, sizeof(seqfile), "%s/%s", mp->foldpath, mh_seq);
 
-    if ((fp = lkfopendata (seqfile, lockflag ? "r+" : "r")) == NULL)
+    if ((fp = lkfopendata (seqfile, lockflag ? "r+" : "r", failed_to_lock))
+	== NULL)
 	return NOTOK;
 
     /* Use m_getfld to scan sequence file */

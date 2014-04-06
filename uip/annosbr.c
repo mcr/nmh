@@ -32,15 +32,20 @@ annotate (char *file, char *comp, char *text, int inplace, int datesw, int delet
     int			i, fd;
     struct utimbuf	b;
     struct stat		s;
+    int			failed_to_lock = 0;
 
     /* open and lock the file to be annotated */
-    if ((fd = lkopendata (file, O_RDWR, 0)) == NOTOK) {
+    if ((fd = lkopendata (file, O_RDWR, 0, &failed_to_lock)) == NOTOK) {
 	switch (errno) {
 	    case ENOENT:
 		break;
 
 	    default:
-		admonish (file, "unable to lock and open");
+		if (failed_to_lock) {
+		    admonish (file, "unable to lock");
+		} else {
+		    admonish (file, "unable to open");
+		}
 		break;
 	}
 	return 1;

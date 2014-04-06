@@ -178,16 +178,17 @@ int get_term_numcap(char *capability);
  *
  * Files opened for reading are locked with a read lock (if possible by
  * the underlying lock mechanism), files opened for writing are locked
- * using an exclusive lock.
+ * using an exclusive lock.  The int * argument is used to indicate failure
+ * to acquire a lock.
  */
 int lkclosedata(int, const char *);
 int lkclosespool(int, const char *);
 int lkfclosedata(FILE *, const char *);
 int lkfclosespool(FILE *, const char *);
-FILE *lkfopendata(const char *, const char *);
-int lkopendata(const char *, int, mode_t);
+FILE *lkfopendata(const char *, const char *, int *);
+int lkopendata(const char *, int, mode_t, int *);
 FILE *lkfopenspool(const char *, const char *);
-int lkopenspool(const char *, int, mode_t);
+int lkopenspool(const char *, int, mode_t, int *);
 int m_atoi (char *);
 char *m_backup (char *);
 int m_convert (struct msgs *, char *);

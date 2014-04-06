@@ -23,6 +23,7 @@ context_save (void)
     register struct node *np;
     FILE *out;
     sigset_t set, oset;
+    int failed_to_lock = 0;
     
     /* No context in use -- silently ignore any changes! */
     if (!ctxpath)
@@ -43,8 +44,13 @@ context_save (void)
     sigaddset (&set, SIGTERM);
     sigprocmask (SIG_BLOCK, &set, &oset);
 
-    if (!(out = lkfopendata (ctxpath, "w")))
-	adios (ctxpath, "unable to write");
+    if (!(out = lkfopendata (ctxpath, "w", &failed_to_lock))) {
+	if (failed_to_lock) {
+	    adios (ctxpath, "failed to lock");
+	} else {
+	    adios (ctxpath, "unable to write");
+	}
+    }
     for (np = m_defs; np; np = np->n_next)
 	if (np->n_context)
 	    fprintf (out, "%s: %s\n", np->n_name, np->n_field);
