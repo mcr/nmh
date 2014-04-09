@@ -18,6 +18,8 @@ setup_test
 
 LC_ALL=en_US.UTF-8; export LC_ALL
 
+test "$ICONV_ENABLED" -eq 0  &&  text_size=10  || text_size=11
+
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
@@ -46,7 +48,7 @@ Subject: test
 
 MIME-Version: 1.0
 
-part       text/plain                  11
+part       text/plain                  $text_size
 This is a test
 EOF
 
