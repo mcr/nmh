@@ -495,7 +495,7 @@ lkopen_dot (const char *file, int access, mode_t mode, int *failed_to_lock)
 #if !defined(HAVE_LIBLOCKFILE)
     {
 	int i;
-	for (i = 0;;) {
+	for (i = 0; i < LOCK_RETRIES; ++i) {
 	    /* attempt to create lock file */
 	    if (lockit (&lkinfo) == 0) {
 		/* if successful, turn on timer and return */
@@ -504,29 +504,30 @@ lkopen_dot (const char *file, int access, mode_t mode, int *failed_to_lock)
 	    } else {
 		/*
 		 * Abort locking, if we fail to lock after 5 attempts
-		 * and are never able to stat the lock file.
+		 * and are never able to stat the lock file.  Or, if
+		 * we can stat the lockfile but exceed LOCK_RETRIES
+		 * seconds waiting for it (by falling out of the loop).
 		 */
 		struct stat st;
 		if (stat (lkinfo.curlock, &st) == -1) {
-		    if (i++ > 5) {
-			*failed_to_lock = 1;
-			return -1;
-                    }
-		    sleep (5);
+		    if (i++ > 5) break;
+		    sleep (1);
 		} else {
 		    time_t curtime;
-		    i = 0;
 		    time (&curtime);
 		    
 		    /* check for stale lockfile, else sleep */
 		    if (curtime > st.st_ctime + RSECS)
 			(void) m_unlink (lkinfo.curlock);
 		    else
-			sleep (5);
+			sleep (1);
 		}
 		lockname (file, &lkinfo, 1);
 	    }
 	}
+
+        *failed_to_lock = 1;
+        return -1;
     }
 #else
     if (lockfile_create(lkinfo.curlock, 5, 0) == L_SUCCESS) {
