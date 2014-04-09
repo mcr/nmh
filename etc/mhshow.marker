@@ -1,0 +1,6 @@
+%;
+%; This is provided as reference only; it shows the default content marker
+%; used by mhshow when it decides to not display content.
+%;
+[ part %{part} - %{content-type} - %<{description}\
+%{description}%?{cdispo-filename}%{cdispo-filename}%|%{ctype-name}%> ]
