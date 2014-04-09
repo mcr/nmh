@@ -406,7 +406,7 @@ do_cache:
 	context_save ();		  /* save the context file  */
     }
 
-    if (concat)
+    if (concatsw)
 	m_popen(moreproc, 0);
 
     /*
@@ -421,7 +421,7 @@ do_cache:
     free ((char *) cts);
     cts = NULL;
 
-    if (concat)
+    if (concatsw)
 	m_pclose();
 
     done (0);
