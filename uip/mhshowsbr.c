@@ -358,7 +358,7 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked)
            some code rearrangement.  And to make this really ugly,
            only do it in mhshow, not mhfixmsg, mhn, or mhstore. */
         if (convert_content_charset (ct, &file) == OK) {
-            close_encoding (ct);
+            (*ct->c_ceclosefnx) (ct);
             if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
                 return NOTOK;
         } else {
