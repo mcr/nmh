@@ -388,7 +388,7 @@ do_cache:
     /*
      * Show the message content
      */
-    show_all_messages (cts, concatsw, textonly, inlineonly, NULL, NULL);
+    show_all_messages (cts, concatsw, textonly, inlineonly, NULL);
 
     /* Now free all the structures for the content */
     for (ctp = cts; *ctp; ctp++)

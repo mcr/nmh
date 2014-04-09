@@ -62,7 +62,7 @@ static int show_external (CT, int, int, int, int, struct format *);
 static int parse_display_string (CT, char *, int *, int *, char *, char *,
 				 size_t, int multipart);
 static int convert_content_charset (CT, char **);
-static struct format *compile_marker(char *, char *);
+static struct format *compile_marker(char *);
 static void output_marker (CT, struct format *);
 static void free_markercomps (void);
 static int pidcheck(int);
@@ -93,7 +93,7 @@ static struct param_comp_list *dispo_pc_list = NULL;
 
 void
 show_all_messages (CT *cts, int concat, int textonly, int inlineonly,
-		   char *markerform, char *markerformat)
+		   char *markerform)
 {
     CT ct, *ctp;
     struct format *fmt;
@@ -108,7 +108,7 @@ show_all_messages (CT *cts, int concat, int textonly, int inlineonly,
     /*
      * Compile the content marker format line
      */
-    fmt = compile_marker(markerform, markerformat);
+    fmt = compile_marker(markerform);
 
     /*
      * If form is "mhl.null", suppress display of header.
@@ -1207,7 +1207,7 @@ convert_content_charset (CT ct, char **file) {
 		       "%|%{ctype-name}%> ]"
 
 static struct format *
-compile_marker(char *markerform, char *markerformat)
+compile_marker(char *markerform)
 {
     struct format *fmt;
     char *fmtstring;
@@ -1215,7 +1215,7 @@ compile_marker(char *markerform, char *markerformat)
     unsigned int bucket;
     struct param_comp_list *pc_entry;
 
-    fmtstring = new_fs(markerform, markerformat, DEFAULT_MARKER);
+    fmtstring = new_fs(markerform, NULL, DEFAULT_MARKER);
 
     (void) fmt_compile(fmtstring, &fmt, 1);
     free(fmtstring);
