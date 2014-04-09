@@ -268,6 +268,25 @@ int fmt_addcomptext(char *component, char *text);
 void fmt_appendcomp(int bucket, char *component, char *text);
 
 /*
+ * Iterate over the complete hash table of component structures.
+ *
+ * Arguments are:
+ *
+ * comp		- Pointer to the current component structure.  The next
+ *		  component in the hash table after this component.  To
+ *		  start (or restart) the iteration of the hash table
+ *		  this argument should be NULL.
+ * bucket	- Pointer to hash bucket.  Will be managed by this function,
+ *		  the caller should not modify this value.
+ *
+ * Returns the next component in the hash table.  This value should be
+ * passed into the next call to fmt_nextcomp().  Returns NULL at the end
+ * of the hash table.
+ */
+
+struct comp *fmt_nextcomp(struct comp *comp, unsigned int *bucket);
+
+/*
  * The implementation of the %(formataddr) function.  This is available for
  * programs to provide their own local implementation if they wish to do
  * special processing (see uip/replsbr.c for an example).  Arguments are:

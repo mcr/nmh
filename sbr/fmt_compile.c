@@ -1088,6 +1088,25 @@ fmt_appendcomp(int bucket, char *component, char *text)
 }
 
 /*
+ * Iterate over our component hash table
+ */
+
+struct comp *
+fmt_nextcomp(struct comp *comp, unsigned int *bucket)
+{
+    if (comp == NULL)
+	*bucket = 0;
+    else
+	comp = comp->c_next;
+
+    while (comp == NULL && *bucket < sizeof(wantcomp)/sizeof(wantcomp[0])) {
+	comp = wantcomp[(*bucket)++];
+    }
+
+    return comp;
+}
+
+/*
  * Free and reset our component hash table
  */
 
