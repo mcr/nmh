@@ -46,7 +46,7 @@ Subject: test
 
 MIME-Version: 1.0
 
-part       text/plain                  10
+part       text/plain                  11
 This is a test
 EOF
 

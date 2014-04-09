@@ -119,9 +119,6 @@ int part_ok (CT, int);
 int type_ok (CT, int);
 void flush_errors (void);
 
-/* mhshowsbr.c */
-void show_all_messages (CT *);
-
 /* mhstoresbr.c */
 typedef struct mhstoreinfo *mhstoreinfo_t;
 mhstoreinfo_t mhstoreinfo_create(CT *, char *, const char *, int, int);
@@ -563,7 +560,7 @@ do_cache:
      * Show the message content
      */
     if (showsw)
-	show_all_messages (cts);
+	show_all_messages (cts, 0, 0, 0, NULL);
 
     /* Now free all the structures for the content */
     for (ctp = cts; *ctp; ctp++)

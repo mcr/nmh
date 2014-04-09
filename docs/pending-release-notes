@@ -81,6 +81,9 @@ NEW FEATURES
 - The MIME parsing and generating routines now support RFC 2231 extended
   parameter information.
 - mh-mime(7) now provides an introduction to nmh's MIME handling.
+- mhshow(1) will now by default display all text content under one pager,
+  and display markers for non-text and non-inline content.  The content
+  markers are changeable via mh-format(5).
 
 -----------------
 OBSOLETE FEATURES

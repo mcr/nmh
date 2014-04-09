@@ -344,10 +344,20 @@ char *content_charset (CT);
 int convert_charset (CT, char *, int *);
 
 /*
+ * Given a content structure, return true if the content has a disposition
+ * of "inline".
+ *
+ * Arguments are:
+ *
+ * ct		- Content structure to examine
+ */
+int is_inline(CT ct);
+
+/*
  * Given a list of messages, display information about them on standard
  * output.
  *
- * Argumens are:
+ * Arguments are:
  *
  * cts		- An array of CT elements of messages that need to be
  *		  displayed.  Array is terminated by a NULL.
@@ -471,5 +481,24 @@ char *get_param(PM first, const char *name, char replace, int fetchonly);
  * internally).
  */
 char *get_param_value(PM pm, char replace);
+
+/*
+ * Display MIME message(s) on standard out.
+ *
+ * Arguments are:
+ *
+ * cts		- NULL terminated array of CT structures for messages
+ *		  to display
+ * concat	- If true, concatenate all MIME parts.  If false, show each
+ *		  MIME part under a separate pager.
+ * textonly	- If true, only display "text" MIME parts
+ * inlineonly	- If true, only display MIME parts that are marked with
+ *		  a disposition of "inline" (includes parts that lack a
+ *		  Content-Disposition header).
+ * markerform	- The name of a file containg mh-format(5) code used to
+ *		  display markers about non-displayed MIME parts.
+ */
+void show_all_messages(CT *cts, int concat, int textonly, int inlineonly,
+		       char *markerform);
 
 extern int checksw;	/* Add Content-MD5 field */

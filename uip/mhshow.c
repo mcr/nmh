@@ -23,8 +23,15 @@
     X("nocheck", 0, NCHECKSW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
+    X("concat", 0, CONCATSW) \
+    X("noconcat", 0, NCONCATSW) \
+    X("textonly", 0, TEXTONLYSW) \
+    X("notextonly", 0, NTEXTONLYSW) \
+    X("inlineonly", 0, INLINESW) \
+    X("noinlineonly", 0, NINLINESW) \
     X("file file", 0, FILESW) \
     X("form formfile", 0, FORMSW) \
+    X("markform formfile", 0, MARKFORMSW) \
     X("part number", 0, PARTSW) \
     X("type content", 0, TYPESW) \
     X("rcache policy", 0, RCACHESW) \
@@ -83,9 +90,6 @@ int part_ok (CT, int);
 int type_ok (CT, int);
 void flush_errors (void);
 
-/* mhshowsbr.c */
-void show_all_messages (CT *);
-
 /* mhfree.c */
 extern CT *cts;
 void freects_done (int) NORETURN;
@@ -99,8 +103,8 @@ static void pipeser (int);
 int
 main (int argc, char **argv)
 {
-    int msgnum, *icachesw;
-    char *cp, *file = NULL, *folder = NULL;
+    int msgnum, *icachesw, concatsw = -1, textonly = -1, inlineonly = -1;
+    char *cp, *file = NULL, *folder = NULL, *markform = NULL;
     char *maildir, buf[100], **argp;
     char **arguments;
     struct msgs_array msgs = { 0, 0, NULL };
@@ -162,6 +166,25 @@ do_cache:
 		checksw = 0;
 		continue;
 
+	    case CONCATSW:
+		concatsw = 1;
+		continue;
+	    case NCONCATSW:
+		concatsw = 0;
+		continue;
+	    case TEXTONLYSW:
+		textonly = 1;
+		continue;
+	    case NTEXTONLYSW:
+		textonly = 0;
+		continue;
+	    case INLINESW:
+		inlineonly = 1;
+		continue;
+	    case NINLINESW:
+		inlineonly = 1;
+		continue;
+
 	    case PARTSW:
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
@@ -192,6 +215,11 @@ do_cache:
 		if (formsw)
 		    free (formsw);
 		formsw = getcpy (etcpath (cp));
+		continue;
+
+	    case MARKFORMSW:
+		if (!(markform = *argp++) || *markform == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
 
 	    /*
@@ -234,6 +262,18 @@ do_cache:
     /* null terminate the list of acceptable parts/types */
     parts[npart] = NULL;
     types[ntype] = NULL;
+
+    /*
+     * If we had any specific parts or types specified, turn off text only
+     * content.
+     */
+
+    if (npart > 0 || ntype > 0) {
+	if (textonly == -1)
+	    textonly = 0;
+	if (inlineonly == -1)
+	    inlineonly = 0;
+    }
 
     /*
      * Check if we've specified an additional profile
@@ -366,10 +406,13 @@ do_cache:
 	context_save ();		  /* save the context file  */
     }
 
+    if (concatsw)
+	m_popen(moreproc, 0);
+
     /*
      * Show the message content
      */
-    show_all_messages (cts);
+    show_all_messages (cts, concatsw, textonly, inlineonly, markform);
 
     /* Now free all the structures for the content */
     for (ctp = cts; *ctp; ctp++)
@@ -377,6 +420,9 @@ do_cache:
 
     free ((char *) cts);
     cts = NULL;
+
+    if (concatsw)
+	m_pclose();
 
     done (0);
     return 1;

@@ -47,7 +47,7 @@ Subject: test display with charset conversion
 
 MIME-Version: 1.0
 
-part       text/plain                  10
+part       text/plain                  11
 4 ÷ 2 = 2
 EOF
 

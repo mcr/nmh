@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "March 16, 2014" "%nmhversion%"
+.TH MHSHOW %manext1% "April 9, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -18,7 +18,12 @@ mhshow \- display MIME messages
 .RB [ \-type
 .IR content ]
 \&...
+.RB [ \-concat " | " \-noconcat ]
+.RB [ \-textonly " | " \-notextonly ]
+.RB [ \-inlineonly " | " \-noinlineonly ]
 .RB [ \-form
+.IR formfile ]
+.RB [ \-markform
 .IR formfile ]
 .RB [ \-rcache
 .IR policy ]
@@ -44,16 +49,34 @@ message headers as specified in RFC 2047.
 .PP
 By default
 .B mhshow
-will display all parts of a multipart
-message.  By using the
+will display only text parts of a message that are not marked as attachments.
+This behavior can be changed by the
+.B \-notextonly
+and
+.B \-noinlineonly
+switches.
+In addition, by using the
 .B \-part
 and
 .B \-type
 switches, you may
-limit the scope of
+further limit the scope of
 .B mhshow
 to particular subparts (of a
-multipart content) and/or particular content types.
+multipart content) and/or particular content types.  The inclusion of any
+.B \-part
+or
+.B \-type
+switches will override the default settings of
+.B \-textonly
+and
+.BR \-inlineonly.
+.PP
+By default
+.B mhshow
+will concatenate all content under one pager.  If you which each part to
+displayed separately, you can override the default behavior with
+.B \-noconcat.
 .PP
 The option
 .B \-file
@@ -571,6 +594,45 @@ e.g.,
 which is created automatically during
 .B nmh
 installation.
+.PP
+SS Content\-Type Marker
+If
+.B mhshow
+decides to not display a particular part due to the switches of
+.B \-textonly
+or
+.B \-inlineonly
+it will display a marker containing information about the part.  This
+marker is processed via
+.IR mh\-format (5)
+and can be changed by the use of the
+.B \-markform
+switch to specify a file containing the
+.IR mh\-format (5)
+instructions to use when displaying the content marker.  In addition to
+the normal set of
+.IR mh\-format (5)
+instructions, the following
+.I component
+escapes are supported:
+.PP
+.RS 5
+.nf
+.ta \w'cdispo-<PARAM>  'u +\w'Returns   'u
+.I "Escape	Returns	Description"
+part	string	MIME part number
+content\-type	string	MIME Content\-Type of part
+description	string	Content\-Description header
+disposition	string	Content disposition (attachment or inline)
+ctype-<PARAM>	string	Value of <PARAM> from Content\-Type header
+cdispo-<PARAM>	string	Value of <PARAM> from
+		Content\-Disposition header
+.fi
+.RE
+All MIME parameters and the \*(lqContent-Description\*(rq header will have
+RFC 2231 decoding applied and be converted
+to the local character set.
+.PP
 .SH FILES
 .B mhshow
 looks for all format files and mhn.defaults in multiple locations:
@@ -588,6 +650,7 @@ is checked.
 ^$MHSHOW~^Additional profile entries
 ^%etcdir%/mhn.defaults~^System default MIME profile entries
 ^%etcdir%/mhl.headers~^The headers template
+^%etcdir%/mhshow.marker~^Example content marker
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
@@ -619,6 +682,9 @@ is checked.
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
 .RB ` \-nocheck '
+.RB ` \-concat '
+.RB ` \-textonly '
+.RB ` \-inlineonly '
 .RB ` \-form\ mhl.headers '
 .RB ` \-rcache\ ask '
 .RB ` \-wcache\ ask '

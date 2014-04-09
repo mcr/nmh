@@ -16,6 +16,7 @@
 #include <h/tws.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
+#include <h/fmt_scan.h>
 #include <h/utils.h>
 #ifdef HAVE_ICONV
 #   include <iconv.h>
@@ -41,28 +42,49 @@ void flush_errors (void);
 /*
  * prototypes
  */
-void show_all_messages (CT *);
 int show_content_aux (CT, int, char *, char *);
 
 /*
  * static prototypes
  */
-static void show_single_message (CT, char *);
-static void DisplayMsgHeader (CT, char *);
-static int show_switch (CT, int);
-static int show_content (CT, int);
+static void show_single_message (CT, char *, int, int, int, struct format *);
+static void DisplayMsgHeader (CT, char *, int);
+static int show_switch (CT, int, int, int, int, struct format *);
+static int show_content (CT, int, int, int, struct format *fmt);
 static int show_content_aux2 (CT, int, char *, char *, int, int, int);
-static int show_text (CT, int);
-static int show_multi (CT, int);
-static int show_multi_internal (CT, int);
+static int show_text (CT, int, int);
+static int show_multi (CT, int, int, int, int, struct format *);
+static int show_multi_internal (CT, int, int, int, int, struct format *fmt);
 static int show_multi_aux (CT, int, char *);
 static int show_message_rfc822 (CT, int);
 static int show_partial (CT, int);
-static int show_external (CT, int);
+static int show_external (CT, int, int, int, int, struct format *);
 static int parse_display_string (CT, char *, int *, int *, char *, char *,
 				 size_t, int multipart);
 static int convert_content_charset (CT, char **);
+static struct format *compile_marker(char *);
+static void output_marker (CT, struct format *);
+static void free_markercomps (void);
 static int pidcheck(int);
+
+/*
+ * Components (and list of parameters/components) we care about for the
+ * content marker display.
+ */
+
+static struct comp *part_comp = NULL;
+static struct comp *ctype_comp = NULL;
+static struct comp *description_comp = NULL;
+static struct comp *dispo_comp = NULL;
+
+struct param_comp_list {
+    char *param;
+    struct comp *comp;
+    struct param_comp_list *next;
+};
+
+static struct param_comp_list *ctype_pc_list = NULL;
+static struct param_comp_list *dispo_pc_list = NULL;
 
 
 /*
@@ -70,9 +92,11 @@ static int pidcheck(int);
  */
 
 void
-show_all_messages (CT *cts)
+show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly,
+		   char *markerform)
 {
     CT ct, *ctp;
+    struct format *fmt;
 
     /*
      * If form is not specified, then get default form
@@ -80,6 +104,11 @@ show_all_messages (CT *cts)
      */
     if (!formsw)
 	formsw = getcpy (etcpath ("mhl.headers"));
+
+    /*
+     * Compile the content marker format line
+     */
+    fmt = compile_marker(markerform);
 
     /*
      * If form is "mhl.null", suppress display of header.
@@ -92,8 +121,12 @@ show_all_messages (CT *cts)
 
 	/* if top-level type is ok, then display message */
 	if (type_ok (ct, 1))
-	    show_single_message (ct, formsw);
+	    show_single_message (ct, formsw, concatsw, textonly, inlineonly,
+				 fmt);
     }
+
+    free_markercomps();
+    fmt_free(fmt, 1);
 }
 
 
@@ -102,7 +135,8 @@ show_all_messages (CT *cts)
  */
 
 static void
-show_single_message (CT ct, char *form)
+show_single_message (CT ct, char *form, int concatsw, int textonly,
+		     int inlineonly, struct format *fmt)
 {
     sigset_t set, oset;
 
@@ -117,10 +151,10 @@ show_single_message (CT ct, char *form)
      * the message headers.
      */
     if (form)
-	DisplayMsgHeader(ct, form);
+	DisplayMsgHeader(ct, form, concatsw);
 
     /* Show the body of the message */
-    show_switch (ct, 0);
+    show_switch (ct, 0, concatsw, textonly, inlineonly, fmt);
 
     if (ct->c_fp) {
 	fclose (ct->c_fp);
@@ -137,7 +171,7 @@ show_single_message (CT ct, char *form)
     sigaddset (&set, SIGTERM);
     sigprocmask (SIG_BLOCK, &set, &oset);
 
-    while (wait (&status) != NOTOK) {
+    while (!concatsw && wait (&status) != NOTOK) {
 	pidcheck (status);
 	continue;
     }
@@ -154,7 +188,7 @@ show_single_message (CT ct, char *form)
  */
 
 static void
-DisplayMsgHeader (CT ct, char *form)
+DisplayMsgHeader (CT ct, char *form, int concatsw)
 {
     pid_t child_id;
     int i, vecp;
@@ -171,7 +205,7 @@ DisplayMsgHeader (CT ct, char *form)
      * If we've specified -(no)moreproc,
      * then just pass that along.
      */
-    if (nomore) {
+    if (nomore || concatsw) {
 	vec[vecp++] = getcpy("-nomoreproc");
     } else if (progsw) {
 	vec[vecp++] = getcpy("-moreproc");
@@ -211,11 +245,13 @@ DisplayMsgHeader (CT ct, char *form)
  */
 
 static int
-show_switch (CT ct, int alternate)
+show_switch (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
+	     struct format *fmt)
 {
     switch (ct->c_type) {
 	case CT_MULTIPART:
-	    return show_multi (ct, alternate);
+	    return show_multi (ct, alternate, concatsw, textonly,
+			       inlineonly, fmt);
 
 	case CT_MESSAGE:
 	    switch (ct->c_subtype) {
@@ -223,7 +259,8 @@ show_switch (CT ct, int alternate)
 		    return show_partial (ct, alternate);
 
 		case MESSAGE_EXTERNAL:
-		    return show_external (ct, alternate);
+		    return show_external (ct, alternate, concatsw, textonly,
+					  inlineonly, fmt);
 
 		case MESSAGE_RFC822:
 		default:
@@ -231,13 +268,13 @@ show_switch (CT ct, int alternate)
 	    }
 
 	case CT_TEXT:
-	    return show_text (ct, alternate);
+	    return show_text (ct, alternate, concatsw);
 
 	case CT_AUDIO:
 	case CT_IMAGE:
 	case CT_VIDEO:
 	case CT_APPLICATION:
-	    return show_content (ct, alternate);
+	    return show_content (ct, alternate, textonly, inlineonly, fmt);
 
 	default:
 	    adios (NULL, "unknown content type %d", ct->c_type);
@@ -252,10 +289,21 @@ show_switch (CT ct, int alternate)
  */
 
 static int
-show_content (CT ct, int alternate)
+show_content (CT ct, int alternate, int textonly, int inlineonly,
+	      struct format *fmt)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
+
+    /*
+     * If we're here, we are not a text type.  So we don't need to check
+     * the content-type.
+     */
+
+    if (textonly || (inlineonly && is_inline(ct))) {
+	output_marker(ct, fmt);
+	return OK;
+    }
 
     /* Check for invo_name-show-type/subtype */
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
@@ -309,7 +357,11 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked)
            unfortunately the type checks are necessary without
            some code rearrangement.  And to make this really ugly,
            only do it in mhshow, not mhfixmsg, mhn, or mhstore. */
-        if (convert_content_charset (ct, &file) != OK) {
+        if (convert_content_charset (ct, &file) == OK) {
+            close_encoding (ct);
+            if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
+                return NOTOK;
+        } else {
             admonish (NULL, "unable to convert character set%s to %s",
                       ct->c_partno  ?  "of part "  :  "",
                       ct->c_partno  ?  ct->c_partno  :  "",
@@ -366,6 +418,33 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	    list_switch (ct, -1, 1, 0, 0, 0);
     }
 
+    /*
+     * If the command is a zero-length string, just write the output on
+     * stdout.
+     */
+
+    if (buffer[0] == '\0') {
+	char readbuf[BUFSIZ];
+	ssize_t cc;
+
+	if (fd == NOTOK) {
+	    advise(NULL, "Cannot use NULL command to display content-type "
+		   "%s/%s", ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype);
+	    return NOTOK;
+	}
+
+	while ((cc = read(fd, readbuf, sizeof(readbuf))) > 0) {
+	    fwrite(readbuf, sizeof(char), cc, stdout);
+	}
+
+	if (cc < 0) {
+	    advise("read", "while reading text content");
+	    return NOTOK;
+	}
+
+	return OK;
+    }
+
     vec = argsplit(buffer, &file, &vecp);
     vec[vecp++] = NULL;
 
@@ -408,7 +487,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
  */
 
 static int
-show_text (CT ct, int alternate)
+show_text (CT ct, int alternate, int concatsw)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -429,8 +508,11 @@ show_text (CT ct, int alternate)
      * if it is not a text part of a multipart/alternative
      */
     if (!alternate || ct->c_subtype == TEXT_PLAIN) {
-	snprintf (buffer, sizeof(buffer), "%%l%s %%F", progsw ? progsw :
-		moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
+	if (concatsw)
+	    snprintf(buffer, sizeof(buffer), "%%l");
+	else
+	    snprintf (buffer, sizeof(buffer), "%%l%s %%F", progsw ? progsw :
+		      moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
 	cp = (ct->c_showproc = add (buffer, NULL));
 	return show_content_aux (ct, alternate, cp, NULL);
     }
@@ -444,7 +526,8 @@ show_text (CT ct, int alternate)
  */
 
 static int
-show_multi (CT ct, int alternate)
+show_multi (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
+	    struct format *fmt)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -468,7 +551,8 @@ show_multi (CT ct, int alternate)
      * unknown types are displayable, since they're treated as mixed
      * per RFC 2046.
      */
-    return show_multi_internal (ct, alternate);
+    return show_multi_internal (ct, alternate, concatsw, textonly,
+				inlineonly, fmt);
 }
 
 
@@ -478,7 +562,8 @@ show_multi (CT ct, int alternate)
  */
 
 static int
-show_multi_internal (CT ct, int alternate)
+show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
+		     int inlineonly, struct format *fmt)
 {
     int	alternating, nowalternate, result;
     struct multipart *m = (struct multipart *) ct->c_ctparams;
@@ -506,7 +591,8 @@ show_multi_internal (CT ct, int alternate)
 	if (part_ok (p, 1) && type_ok (p, 1)) {
 	    int	inneresult;
 
-	    inneresult = show_switch (p, nowalternate);
+	    inneresult = show_switch (p, nowalternate, concatsw, textonly,
+				      inlineonly, fmt);
 	    switch (inneresult) {
 		case NOTOK:
 		    if (alternate && !alternating) {
@@ -652,7 +738,8 @@ show_partial (CT ct, int alternate)
  */
 
 static int
-show_external (CT ct, int alternate)
+show_external (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
+	       struct format *fmt)
 {
     struct exbody *e = (struct exbody *) ct->c_ctparams;
     CT p = e->eb_content;
@@ -660,7 +747,7 @@ show_external (CT ct, int alternate)
     if (!type_ok (p, 0))
 	return OK;
 
-    return show_switch (p, alternate);
+    return show_switch (p, alternate, concatsw, textonly, inlineonly, fmt);
 }
 
 
@@ -1110,6 +1197,146 @@ convert_content_charset (CT ct, char **file) {
 #endif /* ! HAVE_ICONV */
 
     return OK;
+}
+
+/*
+ * Compile our format string and save any parameters we care about.
+ */
+
+#define DEFAULT_MARKER "[ part %{part} - %{content-type} - %<{description}" \
+		       "%{description}%?{cdispo-filename}%{cdispo-filename}" \
+		       "%|%{ctype-name}%> ]"
+
+static struct format *
+compile_marker(char *markerform)
+{
+    struct format *fmt;
+    char *fmtstring;
+    struct comp *comp = NULL;
+    unsigned int bucket;
+    struct param_comp_list *pc_entry;
+
+    fmtstring = new_fs(markerform, NULL, DEFAULT_MARKER);
+
+    (void) fmt_compile(fmtstring, &fmt, 1);
+    free(fmtstring);
+
+    /*
+     * Things we care about:
+     *
+     * part		- Part name (e.g., 1.1)
+     * content-type	- Content-Type
+     * description	- Content-Description
+     * disposition	- Content-Disposition (inline, attachment)
+     * ctype-<param>	- Content-Type parameter
+     * cdispo-<param>	- Content-Disposition parameter
+     */
+
+    while ((comp = fmt_nextcomp(comp, &bucket)) != NULL) {
+	if (strcasecmp(comp->c_name, "part") == 0) {
+	    part_comp = comp;
+	} else if (strcasecmp(comp->c_name, "content-type") == 0) {
+	    ctype_comp = comp;
+	} else if (strcasecmp(comp->c_name, "description") == 0) {
+	    description_comp = comp;
+	} else if (strcasecmp(comp->c_name, "disposition") == 0) {
+	    dispo_comp = comp;
+	} else if (strncasecmp(comp->c_name, "ctype-", 6) == 0 &&
+		   strlen(comp->c_name) > 6) {
+	    pc_entry = mh_xmalloc(sizeof(*pc_entry));
+	    pc_entry->param = getcpy(comp->c_name + 6);
+	    pc_entry->comp = comp;
+	    pc_entry->next = ctype_pc_list;
+	    ctype_pc_list = pc_entry;
+	} else if (strncasecmp(comp->c_name, "cdispo-", 7) == 0 &&
+		   strlen(comp->c_name) > 7) {
+	    pc_entry = mh_xmalloc(sizeof(*pc_entry));
+	    pc_entry->param = getcpy(comp->c_name + 7);
+	    pc_entry->comp = comp;
+	    pc_entry->next = dispo_pc_list;
+	    dispo_pc_list = pc_entry;
+	}
+    }
+
+    return fmt;
+}
+
+/*
+ * Output on stdout an appropriate marker for this content, using mh-format
+ */
+
+static void
+output_marker(CT ct, struct format *fmt)
+{
+    char outbuf[BUFSIZ];
+    struct param_comp_list *pcentry;
+    int dat[5];
+
+    /*
+     * Grab any items we care about.
+     */
+
+    if (ctype_comp && ct->c_ctinfo.ci_type) {
+	ctype_comp->c_text = concat(ct->c_ctinfo.ci_type, "/",
+				    ct->c_ctinfo.ci_subtype, NULL);
+    }
+
+    if (part_comp && ct->c_partno) {
+	part_comp->c_text = getcpy(ct->c_partno);
+    }
+
+    if (description_comp && ct->c_descr) {
+	description_comp->c_text = getcpy(ct->c_descr);
+    }
+
+    if (dispo_comp && ct->c_dispo_type) {
+	dispo_comp->c_text = getcpy(ct->c_dispo_type);
+    }
+
+    for (pcentry = ctype_pc_list; pcentry != NULL; pcentry = pcentry->next) {
+	pcentry->comp->c_text = get_param(ct->c_ctinfo.ci_first_pm,
+					  pcentry->param, '?', 0);
+    }
+
+    for (pcentry = dispo_pc_list; pcentry != NULL; pcentry = pcentry->next) {
+	pcentry->comp->c_text = get_param(ct->c_dispo_first,
+					  pcentry->param, '?', 0);
+    }
+
+    fmt_scan(fmt, outbuf, sizeof(outbuf), sizeof(outbuf), dat, NULL);
+
+    fputs(outbuf, stdout);
+
+    fmt_freecomptext();
+}
+
+/*
+ * Reset (and free) any of the saved marker text
+ */
+
+static void
+free_markercomps(void)
+{
+    struct param_comp_list *pc_entry, *pc2;
+
+    part_comp = NULL;
+    ctype_comp = NULL;
+    description_comp = NULL;
+    dispo_comp = NULL;
+
+    for (pc_entry = ctype_pc_list; pc_entry != NULL; ) {
+	free(pc_entry->param);
+	pc2 = pc_entry->next;
+	free(pc_entry);
+	pc_entry = pc2;
+    }
+
+    for (pc_entry = dispo_pc_list; pc_entry != NULL; ) {
+	free(pc_entry->param);
+	pc2 = pc_entry->next;
+	free(pc_entry);
+	pc_entry = pc2;
+    }
 }
 
 /*
