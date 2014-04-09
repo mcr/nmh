@@ -650,6 +650,7 @@ is checked.
 ^$MHSHOW~^Additional profile entries
 ^%etcdir%/mhn.defaults~^System default MIME profile entries
 ^%etcdir%/mhl.headers~^The headers template
+^%etcdir%/mhshow.marker~^Example content marker
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
