@@ -329,6 +329,7 @@ getln (char *buffer, int n)
 {
     int c;
     char *cp;
+    static int quoting = 0;
 
     cp = buffer;
     *cp = 0;
@@ -350,12 +351,13 @@ getln (char *buffer, int n)
     for (;;) {
 	switch (c = getchar ()) {
 	    case EOF: 
+		quoting = 0;
 		clearerr (stdin);
 		longjmp (sigenv, DONE);
 
 	    case '\n': 
-		if (cp[-1] == QUOTE) {
-		    cp[-1] = c;
+		if (quoting) {
+		    *(cp - 1) = c;
 		    wtuser = 0;
 		    return 1;
 		}
@@ -365,6 +367,11 @@ getln (char *buffer, int n)
 		return 0;
 
 	    default: 
+		if (c == QUOTE) {
+		    quoting = 1;
+		} else {
+		    quoting = 0;
+		}
 		if (cp < buffer + n)
 		    *cp++ = c;
 		*cp = 0;
