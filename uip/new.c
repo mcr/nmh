@@ -114,11 +114,11 @@ get_msgnums(char *folder, char *sequences[])
     	return NULL;
 
     if ((fp = lkfopendata (seqfile, "r", & failed_to_lock)) == NULL) {
-    	free(seqfile);
 
 	if (failed_to_lock) {
 	    adios (seqfile, "failed to lock");
 	} else {
+    	    free(seqfile);
 	    return NULL;
 	}
     }
