@@ -406,8 +406,11 @@ doit(char *cur, char *folders, char *sequences[])
 
     /* If we're fnext, we haven't checked the last node yet.  If it's the
      * current folder, return the first node. */
-    if (run_mode == FNEXT && strcmp(last->n_name, cur) == 0) {
-        return first;
+    if (run_mode == FNEXT) {
+	assert(last != NULL);
+	if (strcmp(last->n_name, cur) == 0) {
+            return first;
+	}
     }
 
     if (run_mode == NEW) {
