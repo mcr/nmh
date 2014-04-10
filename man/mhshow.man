@@ -595,7 +595,7 @@ which is created automatically during
 .B nmh
 installation.
 .PP
-SS Content\-Type Marker
+.SS Content\-Type Marker
 If
 .B mhshow
 decides to not display a particular part due to the switches of
