@@ -183,7 +183,7 @@ int
 main (int argc, char **argv)
 {
     int fd, status;
-    FILE *fp = stdin;
+    FILE *fp;
     char *cp, *mdlvr = NULL, buf[BUFSIZ];
     char mailbox[BUFSIZ], tmpfil[BUFSIZ];
     char **argp, **arguments;
