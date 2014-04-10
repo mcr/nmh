@@ -182,7 +182,7 @@ do_cache:
 		inlineonly = 1;
 		continue;
 	    case NINLINESW:
-		inlineonly = 1;
+		inlineonly = 0;
 		continue;
 
 	    case PARTSW:
