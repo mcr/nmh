@@ -300,7 +300,7 @@ show_content (CT ct, int alternate, int textonly, int inlineonly,
      * the content-type.
      */
 
-    if (textonly || (inlineonly && is_inline(ct))) {
+    if (textonly || (inlineonly && !is_inline(ct))) {
 	output_marker(ct, fmt);
 	return OK;
     }
