@@ -34,6 +34,7 @@ context_read (void)
     struct	stat		st;		/* stat() results */
     register	struct	passwd	*pw;		/* getpwuid() results */
     register	FILE		*ib;		/* profile and context file pointer */
+    int failed_to_lock = 0;
 
     /*
      *  If this routine _is_ called again (despite the wanings in the
@@ -135,7 +136,7 @@ context_read (void)
     
     ctxpath = getcpy (m_maildir (cp));
 
-    if ((ib = lkfopendata (ctxpath, "r"))) {
+    if ((ib = lkfopendata (ctxpath, "r", &failed_to_lock))) {
 	readconfig ((struct node **) 0, ib, cp, 1);
 	lkfclosedata (ib, ctxpath);
     }

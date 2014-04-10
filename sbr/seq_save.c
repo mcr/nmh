@@ -77,6 +77,8 @@ priv:
 	    context_del (attr);			/* delete sequence from context */
 
 	    if (!fp) {
+		int failed_to_lock = 0;
+
 		/*
 		 * Attempt to open file for public sequences.
 		 * If that fails (probably because folder is
@@ -90,10 +92,16 @@ priv:
 		    mp->seqname = NULL;
 		    rewind(fp);
 		    ftruncate(fileno(fp), 0);
-		} else if ((fp = lkfopendata (seqfile, "w")) == NULL
+		} else if ((fp = lkfopendata (seqfile, "w", &failed_to_lock))
+			   == NULL
 			&& (m_unlink (seqfile) == -1 ||
-			    (fp = lkfopendata (seqfile, "w")) == NULL)) {
-		    admonish (attr, "unable to write");
+			    (fp = lkfopendata (seqfile, "w", &failed_to_lock))
+			    == NULL)) {
+		    if (failed_to_lock) {
+			admonish (attr, "unable to lock");
+		    } else {
+			admonish (attr, "unable to write");
+		    }
 		    goto priv;
 		}
 

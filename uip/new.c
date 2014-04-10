@@ -95,6 +95,7 @@ get_msgnums(char *folder, char *sequences[])
     char name[NAMESZ], field[BUFSIZ];
     char *cp;
     char *msgnums = NULL, *this_msgnums, *old_msgnums;
+    int failed_to_lock = 0;
     m_getfld_state_t gstate = 0;
 
     /* copied from seq_read.c:seq_public */
@@ -112,9 +113,14 @@ get_msgnums(char *folder, char *sequences[])
     if (seqfile == NULL)
     	return NULL;
 
-    if ((fp = lkfopendata (seqfile, "r")) == NULL) {
+    if ((fp = lkfopendata (seqfile, "r", & failed_to_lock)) == NULL) {
     	free(seqfile);
-	return NULL;
+
+	if (failed_to_lock) {
+	    adios (seqfile, "failed to lock");
+	} else {
+	    return NULL;
+	}
     }
 
     /* Use m_getfld to scan sequence file */

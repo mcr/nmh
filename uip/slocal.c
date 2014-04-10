@@ -1414,6 +1414,7 @@ suppress_duplicates (int fd, char *file)
     rewind (in);
 
     for (;;) {
+        int failed_to_lock = 0;
 	int bufsz = sizeof buf;
 	state = m_getfld (&gstate, name, buf, &bufsz, in);
 	switch (state) {
@@ -1451,7 +1452,8 @@ suppress_duplicates (int fd, char *file)
 		 * This will fail if your Maildelivery file doesn't
 		 * exist.
 		 */
-		if ((lockfd = lkopendata(file, O_RDWR, 0)) == -1) {
+		if ((lockfd = lkopendata(file, O_RDWR, 0, &failed_to_lock))
+		    == -1) {
 		    advise (file, "unable to perform file locking on");
 		    free (cp);
 		    fclose (in);

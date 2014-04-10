@@ -1079,6 +1079,7 @@ quit (void)
     char map1[BUFSIZ], map2[BUFSIZ];
     struct stat st;
     FILE *dp;
+    int failed_to_lock = 0;
 
     if (!(mp->msgflags & MODIFIED) || is_readonly(mp) || fmsh) {
 	    if (vmh)
@@ -1089,7 +1090,7 @@ quit (void)
     if (vmh) 
 	ttyNaux (NULLCMD, "FAST");
     cp = NULL;
-    if ((dp = lkfopendata (mp->foldpath, "r")) == NULL) {
+    if ((dp = lkfopendata (mp->foldpath, "r", &failed_to_lock)) == NULL) {
 	advise (mp->foldpath, "unable to lock");
 	if (vmh) {
 	    ttyR (NULLCMD);
