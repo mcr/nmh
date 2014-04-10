@@ -275,7 +275,7 @@ else
     PGM="`$SEARCHPROG $SEARCHPATH lynx`"
     if [ ! -z "$PGM" ]; then
 	echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%p$PGM"' -force-html ${charset:+--assume_charset "$charset"} %F' >> $TMP
+%p$PGM"' -child -dump -force-html ${charset:+--assume_charset "$charset"} %F' >> $TMP
     else
       PGM="`$SEARCHPROG $SEARCHPATH elinks`"
       if [ ! -z "$PGM" ]; then
