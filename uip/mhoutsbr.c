@@ -231,7 +231,7 @@ output_headers (CT ct, FILE *out)
 static int
 writeExternalBody (CT ct, FILE *out)
 {
-    char *cp;
+    char *cp, *dp;
     struct exbody *e = (struct exbody *) ct->c_ctparams;
 		
     putc ('\n', out);
@@ -243,7 +243,7 @@ writeExternalBody (CT ct, FILE *out)
 	    switch (*++cp) {
 	    case 'I':
 		if (ct2->c_id) {
-		    char *dp = trimcpy (ct2->c_id);
+		    dp = trimcpy (ct2->c_id);
 
 		    fputs (dp, out);
 		    free (dp);
@@ -251,21 +251,21 @@ writeExternalBody (CT ct, FILE *out)
 		continue;
 
 	    case 'N':
-		cp = get_param(ci2->ci_first_pm, "name", '_', 0);
-		if (cp) {
-		    fputs (cp, out);
-		    free (cp);
+		dp = get_param(ci2->ci_first_pm, "name", '_', 0);
+		if (dp) {
+		    fputs (dp, out);
+		    free (dp);
 		}
 		continue;
 
 	    case 'T':
 		fprintf (out, "%s/%s", ci2->ci_type, ci2->ci_subtype);
-		cp = output_params(strlen(ci2->ci_type) +
+		dp = output_params(strlen(ci2->ci_type) +
 				   strlen(ci2->ci_subtype) + 1,
 				   ci2->ci_first_pm, NULL, 0);
-		if (cp) {
-		    fputs (cp, out);
-		    free (cp);
+		if (dp) {
+		    fputs (dp, out);
+		    free (dp);
 		}
 		continue;
 
