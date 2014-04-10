@@ -270,7 +270,7 @@ EOF
 PGM="`$SEARCHPROG $SEARCHPATH w3m`"
 if [ ! -z "$PGM" ]; then
     echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%p$PGM"' ${charset:+-I "$charset"} -T text/html %F' >> $TMP
+%p$PGM"' -dump ${charset:+-I "$charset"} -T text/html %F' >> $TMP
 else
     PGM="`$SEARCHPROG $SEARCHPATH lynx`"
     if [ ! -z "$PGM" ]; then
@@ -279,7 +279,7 @@ else
     else
       PGM="`$SEARCHPROG $SEARCHPATH elinks`"
       if [ ! -z "$PGM" ]; then
-          echo "mhshow-show-text/html: $PGM -force-html \
+          echo "mhshow-show-text/html: $PGM -dump -force-html \
 -eval 'set document.browse.margin_width = 0' %F" >> $TMP
       fi
     fi
