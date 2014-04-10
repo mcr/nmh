@@ -358,6 +358,7 @@ getln (char *buffer, int n)
 	    case '\n': 
 		if (quoting) {
 		    *(cp - 1) = c;
+		    quoting = 0;
 		    wtuser = 0;
 		    return 1;
 		}
