@@ -362,8 +362,8 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked)
             if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
                 return NOTOK;
         } else {
-            admonish (NULL, "unable to convert character set%s to %s",
-                      ct->c_partno  ?  "of part "  :  "",
+            admonish (NULL, "unable to convert character set%s%s to %s",
+                      ct->c_partno  ?  " of part "  :  "",
                       ct->c_partno  ?  ct->c_partno  :  "",
                       content_charset (ct));
         }
