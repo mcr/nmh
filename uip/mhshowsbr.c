@@ -1043,6 +1043,8 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
         size_t end;
         int opened_input_file = 0;
         char src_buffer[BUFSIZ];
+	size_t dest_buffer_size = BUFSIZ;
+	char *dest_buffer = mh_xmalloc(dest_buffer_size);
         HF hf;
         char *tempfile;
 
@@ -1089,16 +1091,30 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
             while ((inbytes = fread (src_buffer, 1,
                                      min (bytes_to_read, sizeof src_buffer),
                                      *fp)) > 0) {
-                char dest_buffer[BUFSIZ];
                 ICONV_CONST char *ib = src_buffer;
                 char *ob = dest_buffer;
-                size_t outbytes = sizeof dest_buffer;
+                size_t outbytes = dest_buffer_size;
                 size_t outbytes_before = outbytes;
 
                 if (end > 0) bytes_to_read -= inbytes;
 
+iconv_start:
                 if (iconv (conv_desc, &ib, &inbytes, &ob, &outbytes) ==
                     (size_t) -1) {
+		    if (errno == E2BIG) {
+			/*
+			 * Bump up the buffer by at least a factor of 2
+			 * over what we need.
+			 */
+			size_t bumpup = inbytes * 2, ob_off = ob - dest_buffer;
+			dest_buffer_size += bumpup;
+			dest_buffer = mh_xrealloc(dest_buffer,
+						  dest_buffer_size);
+			ob = dest_buffer + ob_off;
+			outbytes += bumpup;
+			outbytes_before += bumpup;
+			goto iconv_start;
+		    }
                     status = NOTOK;
                     break;
                 } else {
@@ -1161,6 +1177,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
         } else {
             (void) m_unlink (dest);
         }
+	free(dest_buffer);
 #else  /* ! HAVE_ICONV */
         NMH_UNUSED (message_mods);
 

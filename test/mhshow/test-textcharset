@@ -286,5 +286,874 @@ EOF
 run_prog mhshow last >"$actual" 2>&1
 check "$expected" "$actual"
 
+#
+# test a large file that needs to be converted to UTF-8
+#
+
+grep -v '^mhshow-show-text/plain: ' "$MH" >>"$MH.new"
+mv -f "$MH.new" "$MH"
+msgfile=`mhpath new`
+cat >"$msgfile" <<'EOF'
+From: foo@example.edu
+To: bar@example.edu
+Subject: check charset conversion of a large file
+MIME-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 18 Dec 2005 00:52:39 +0100
+
+1.  The Earthquake
+
+
+The train from 'Frisco was very late.  It should have arrived at
+Hugson's Siding at midnight, but it was already five o'clock and the
+gray dawn was breaking in the east when the little train slowly rumbled
+up to the open shed that served for the station-house.  As it came to a
+stop the conductor called out in a loud voice:
+
+=93Hugson's Siding!=94
+
+At once a little girl rose from her seat and walked to the door of the
+car, carrying a wicker suit-case in one hand and a round bird-cage
+covered up with newspapers in the other, while a parasol was tucked
+under her arm.  The conductor helped her off the car and then the
+engineer started his train again, so that it puffed and groaned and
+moved slowly away up the track.  The reason he was so late was because
+all through the night there were times when the solid earth shook and
+trembled under him, and the engineer was afraid that at any moment the
+rails might spread apart and an accident happen to his passengers.  So
+he moved the cars slowly and with caution.
+
+The little girl stood still to watch until the train had disappeared
+around a curve; then she turned to see where she was.
+
+The shed at Hugson's Siding was bare save for an old wooden bench, and
+did not look very inviting.  As she peered through the soft gray light
+not a house of any sort was visible near the station, nor was any
+person in sight; but after a while the child discovered a horse and
+buggy standing near a group of trees a short distance away.  She walked
+toward it and found the horse tied to a tree and standing motionless,
+with its head hanging down almost to the ground.  It was a big horse,
+tall and bony, with long legs and large knees and feet.  She could
+count his ribs easily where they showed through the skin of his body,
+and his head was long and seemed altogether too big for him, as if it
+did not fit.  His tail was short and scraggly, and his harness had been
+broken in many places and fastened together again with cords and bits
+of wire.  The buggy seemed almost new, for it had a shiny top and side
+curtains.  Getting around in front, so that she could look inside, the
+girl saw a boy curled up on the seat, fast asleep.
+
+She set down the bird-cage and poked the boy with her parasol.
+Presently he woke up, rose to a sitting position and rubbed his eyes
+briskly.
+
+=93Hello!=94 he said, seeing her, =93are you Dorothy Gale?=94
+
+=93Yes,=94 she answered, looking gravely at his tousled hair and blinking
+gray eyes.  =93Have you come to take me to Hugson's Ranch?=94
+
+=93Of course,=94 he answered.  =93Train in?=94
+
+=93I couldn't be here if it wasn't,=94 she said.
+
+He laughed at that, and his laugh was merry and frank.  Jumping out of
+the buggy he put Dorothy's suit-case under the seat and her bird-cage
+on the floor in front.
+
+=93Canary-birds?=94 he asked.
+
+=93Oh no; it's just Eureka, my kitten.  I thought that was the best way
+to carry her.=94
+
+The boy nodded.
+
+=93Eureka's a funny name for a cat,=94 he remarked.
+
+=93I named my kitten that because I found it,=94 she explained.  =93Uncle
+Henry says 'Eureka' means 'I have found it.'=94
+
+=93All right; hop in.=94
+
+She climbed into the buggy and he followed her.  Then the boy picked up
+the reins, shook them, and said =93Gid-dap!=94
+
+The horse did not stir.  Dorothy thought he just wiggled one of his
+drooping ears, but that was all.
+
+=93Gid-dap!=94 called the boy, again.
+
+The horse stood still.
+
+=93Perhaps,=94 said Dorothy, =93if you untied him, he would go.=94
+
+The boy laughed cheerfully and jumped out.
+
+=93Guess I'm half asleep yet,=94 he said, untying the horse.  =93But Jim
+knows his business all right--don't you, Jim?=94 patting the long nose of
+the animal.
+
+Then he got into the buggy again and took the reins, and the horse at
+once backed away from the tree, turned slowly around, and began to trot
+down the sandy road which was just visible in the dim light.
+
+=93Thought that train would never come,=94 observed the boy.  =93I've wait=
+ed
+at that station for five hours.=94
+
+=93We had a lot of earthquakes,=94 said Dorothy.  =93Didn't you feel the
+ground shake?=94
+
+=93Yes; but we're used to such things in California,=94 he replied.  =93Th=
+ey
+don't scare us much.=94
+
+=93The conductor said it was the worst quake he ever knew.=94
+
+=93Did he?  Then it must have happened while I was asleep,=94 he said
+thoughtfully.
+
+=93How is Uncle Henry?=94 she enquired, after a pause during which the
+horse continued to trot with long, regular strides.
+
+=93He's pretty well.  He and Uncle Hugson have been having a fine visit.=94
+
+=93Is Mr. Hugson your uncle?=94 she asked.
+
+=93Yes.  Uncle Bill Hugson married your Uncle Henry's wife's sister; so
+we must be second cousins,=94 said the boy, in an amused tone.  =93I work
+for Uncle Bill on his ranch, and he pays me six dollars a month and my
+board.=94
+
+=93Isn't that a great deal?=94 she asked, doubtfully.
+
+=93Why, it's a great deal for Uncle Hugson, but not for me.  I'm a
+splendid worker.  I work as well as I sleep,=94 he added, with a laugh.
+
+=93What is your name?=94 said Dorothy, thinking she liked the boy's manner
+and the cheery tone of his voice.
+
+=93Not a very pretty one,=94 he answered, as if a little ashamed.  =93My
+whole name is Zebediah; but folks just call me 'Zeb.'  You've been to
+Australia, haven't you?=94
+
+=93Yes; with Uncle Henry,=94 she answered.  =93We got to San Francisco a w=
+eek
+ago, and Uncle Henry went right on to Hugson's Ranch for a visit while
+I stayed a few days in the city with some friends we had met.=94
+
+=93How long will you be with us?=94 he asked.
+
+=93Only a day.  Tomorrow Uncle Henry and I must start back for Kansas.
+We've been away for a long time, you know, and so we're anxious to get
+home again.=94
+
+The boy flicked the big, boney horse with his whip and looked
+thoughtful.  Then he started to say something to his little companion,
+but before he could speak the buggy began to sway dangerously from side
+to side and the earth seemed to rise up before them.  Next minute there
+was a roar and a sharp crash, and at her side Dorothy saw the ground
+open in a wide crack and then come together again.
+
+=93Goodness!=94 she cried, grasping the iron rail of the seat.  =93What wa=
+s
+that?=94
+
+=93That was an awful big quake,=94 replied Zeb, with a white face.  =93It
+almost got us that time, Dorothy.=94
+
+The horse had stopped short, and stood firm as a rock.  Zeb shook the
+reins and urged him to go, but Jim was stubborn.  Then the boy cracked
+his whip and touched the animal's flanks with it, and after a low moan
+of protest Jim stepped slowly along the road.
+
+Neither the boy nor the girl spoke again for some minutes.  There was a
+breath of danger in the very air, and every few moments the earth would
+shake violently.  Jim's ears were standing erect upon his head and
+every muscle of his big body was tense as he trotted toward home.  He
+was not going very fast, but on his flanks specks of foam began to
+appear and at times he would tremble like a leaf.
+
+The sky had grown darker again and the wind made queer sobbing sounds
+as it swept over the valley.
+
+Suddenly there was a rending, tearing sound, and the earth split into
+another great crack just beneath the spot where the horse was standing.
+With a wild neigh of terror the animal fell bodily into the pit,
+drawing the buggy and its occupants after him.
+
+Dorothy grabbed fast hold of the buggy top and the boy did the same.
+The sudden rush into space confused them so that they could not think.
+
+Blackness engulfed them on every side, and in breathless silence they
+waited for the fall to end and crush them against jagged rocks or for
+the earth to close in on them again and bury them forever in its
+dreadful depths.
+
+The horrible sensation of falling, the darkness and the terrifying
+noises, proved more than Dorothy could endure and for a few moments the
+little girl lost consciousness.  Zeb, being a boy, did not faint, but
+he was badly frightened, and clung to the buggy seat with a tight grip,
+expecting every moment would be his last.
+
+
+
+
+2.  The Glass City
+
+
+When Dorothy recovered her senses they were still falling, but not so
+fast.  The top of the buggy caught the air like a parachute or an
+umbrella filled with wind, and held them back so that they floated
+downward with a gentle motion that was not so very disagreeable to
+bear.  The worst thing was their terror of reaching the bottom of this
+great crack in the earth, and the natural fear that sudden death was
+about to overtake them at any moment.  Crash after crash echoed far
+above their heads, as the earth came together where it had split, and
+stones and chunks of clay rattled around them on every side.  These
+they could not see, but they could feel them pelting the buggy top, and
+Jim screamed almost like a human being when a stone overtook him and
+struck his boney body.  They did not really hurt the poor horse,
+because everything was falling together; only the stones and rubbish
+fell faster than the horse and buggy, which were held back by the
+pressure of the air, so that the terrified animal was actually more
+frightened than he was injured.
+
+How long this state of things continued Dorothy could not even guess,
+she was so greatly bewildered.  But bye and bye, as she stared ahead
+into the black chasm with a beating heart, she began to dimly see the
+form of the horse Jim--his head up in the air, his ears erect and his
+long legs sprawling in every direction as he tumbled through space.
+Also, turning her head, she found that she could see the boy beside
+her, who had until now remained as still and silent as she herself.
+
+Dorothy sighed and commenced to breathe easier.  She began to realize
+that death was not in store for her, after all, but that she had merely
+started upon another adventure, which promised to be just as queer and
+unusual as were those she had before encountered.
+
+With this thought in mind the girl took heart and leaned her head over
+the side of the buggy to see where the strange light was coming from.
+Far below her she found six great glowing balls suspended in the air.
+The central and largest one was white, and reminded her of the sun.
+Around it were arranged, like the five points of a star, the other five
+brilliant balls; one being rose colored, one violet, one yellow, one
+blue and one orange.  This splendid group of colored suns sent rays
+darting in every direction, and as the horse and buggy--with Dorothy
+and Zeb--sank steadily downward and came nearer to the lights, the rays
+began to take on all the delicate tintings of a rainbow, growing more
+and more distinct every moment until all the space was brilliantly
+illuminated.
+
+Dorothy was too dazed to say much, but she watched one of Jim's big
+ears turn to violet and the other to rose, and wondered that his tail
+should be yellow and his body striped with blue and orange like the
+stripes of a zebra.  Then she looked at Zeb, whose face was blue and
+whose hair was pink, and gave a little laugh that sounded a bit nervous.
+
+=93Isn't it funny?=94 she said.
+
+The boy was startled and his eyes were big.  Dorothy had a green streak
+through the center of her face where the blue and yellow lights came
+together, and her appearance seemed to add to his fright.
+
+=93I--I don't s-s-see any-thing funny--'bout it!=94 he stammered.
+
+Just then the buggy tipped slowly over upon its side, the body of the
+horse tipping also.  But they continued to fall, all together, and the
+boy and girl had no difficulty in remaining upon the seat, just as they
+were before.  Then they turned bottom side up, and continued to roll
+slowly over until they were right side up again.  During this time Jim
+struggled frantically, all his legs kicking the air; but on finding
+himself in his former position the horse said, in a relieved tone of
+voice:
+
+=93Well, that's better!=94
+
+Dorothy and Zeb looked at one another in wonder.
+
+=93Can your horse talk?=94 she asked.
+
+=93Never knew him to, before,=94 replied the boy.
+
+=93Those were the first words I ever said,=94 called out the horse, who ha=
+d
+overheard them, =93and I can't explain why I happened to speak then.
+This is a nice scrape you've got me into, isn't it?=94
+
+=93As for that, we are in the same scrape ourselves,=94 answered Dorothy,
+cheerfully.  =93But never mind; something will happen pretty soon.=94
+
+=93Of course,=94 growled the horse, =93and then we shall be sorry it
+happened.=94
+
+Zeb gave a shiver.  All this was so terrible and unreal that he could
+not understand it at all, and so had good reason to be afraid.
+
+Swiftly they drew near to the flaming colored suns, and passed close
+beside them.  The light was then so bright that it dazzled their eyes,
+and they covered their faces with their hands to escape being blinded.
+There was no heat in the colored suns, however, and after they had
+passed below them the top of the buggy shut out many of the piercing
+rays so that the boy and girl could open their eyes again.
+
+=93We've got to come to the bottom some time,=94 remarked Zeb, with a deep
+sigh.  =93We can't keep falling forever, you know.=94
+
+=93Of course not,=94 said Dorothy.  =93We are somewhere in the middle of t=
+he
+earth, and the chances are we'll reach the other side of it before
+long.  But it's a big hollow, isn't it?=94
+
+=93Awful big!=94 answered the boy.
+
+=93We're coming to something now,=94 announced the horse.
+
+At this they both put their heads over the side of the buggy and looked
+down.  Yes; there was land below them; and not so very far away,
+either.  But they were floating very, very slowly--so slowly that it
+could no longer be called a fall--and the children had ample time to
+take heart and look about them.
+
+They saw a landscape with mountains and plains, lakes and rivers, very
+like those upon the earth's surface; but all the scene was splendidly
+colored by the variegated lights from the six suns.  Here and there
+were groups of houses that seemed made of clear glass, because they
+sparkled so brightly.
+
+=93I'm sure we are in no danger,=94 said Dorothy, in a sober voice.  =93We
+are falling so slowly that we can't be dashed to pieces when we land,
+and this country that we are coming to seems quite pretty.=94
+
+=93We'll never get home again, though!=94 declared Zeb, with a groan.
+
+=93Oh, I'm not so sure of that,=94 replied the girl.  =93But don't let us
+worry over such things, Zeb; we can't help ourselves just now, you
+know, and I've always been told it's foolish to borrow trouble.=94
+
+The boy became silent, having no reply to so sensible a speech, and
+soon both were fully occupied in staring at the strange scenes spread
+out below them.  They seemed to be falling right into the middle of a
+big city which had many tall buildings with glass domes and
+sharp-pointed spires.  These spires were like great spear-points, and
+if they tumbled upon one of them they were likely to suffer serious
+injury.
+
+Jim the horse had seen these spires, also, and his ears stood straight
+up with fear, while Dorothy and Zeb held their breaths in suspense.
+But no; they floated gently down upon a broad, flat roof, and came to a
+stop at last.
+
+When Jim felt something firm under his feet the poor beast's legs
+trembled so much that he could hardly stand; but Zeb at once leaped out
+of the buggy to the roof, and he was so awkward and hasty that he
+kicked over Dorothy's bird-cage, which rolled out upon the roof so that
+the bottom came off.  At once a pink kitten crept out of the upset
+cage, sat down upon the glass roof, and yawned and blinked its round
+eyes.
+
+=93Oh,=94 said Dorothy.  =93There's Eureka.=94
+
+=93First time I ever saw a pink cat,=94 said Zeb.
+
+=93Eureka isn't pink; she's white.  It's this queer light that gives her
+that color.=94
+
+=93Where's my milk?=94 asked the kitten, looking up into Dorothy's face.
+=93I'm 'most starved to death.=94
+
+=93Oh, Eureka!  Can you talk?=94
+
+=93Talk!  Am I talking?  Good gracious, I believe I am.  Isn't it funny?=94
+asked the kitten.
+
+=93It's all wrong,=94 said Zeb, gravely.  =93Animals ought not to talk.  B=
+ut
+even old Jim has been saying things since we had our accident.=94
+
+=93I can't see that it's wrong,=94 remarked Jim, in his gruff tones.  =93A=
+t
+least, it isn't as wrong as some other things.  What's going to become
+of us now?=94
+
+=93I don't know,=94 answered the boy, looking around him curiously.
+
+The houses of the city were all made of glass, so clear and transparent
+that one could look through the walls as easily as through a window.
+Dorothy saw, underneath the roof on which she stood, several rooms used
+for rest chambers, and even thought she could make out a number of
+queer forms huddled into the corners of these rooms.
+
+The roof beside them had a great hole smashed through it, and pieces of
+glass were lying scattered in every direction.  A nearby steeple had
+been broken off short and the fragments lay heaped beside it.  Other
+buildings were cracked in places or had corners chipped off from them;
+but they must have been very beautiful before these accidents had
+happened to mar their perfection.  The rainbow tints from the colored
+suns fell upon the glass city softly and gave to the buildings many
+delicate, shifting hues which were very pretty to see.
+
+But not a sound had broken the stillness since the strangers had
+arrived, except that of their own voices.  They began to wonder if
+there were no people to inhabit this magnificent city of the inner
+world.
+
+Suddenly a man appeared through a hole in the roof next to the one they
+were on and stepped into plain view.  He was not a very large man, but
+was well formed and had a beautiful face--calm and serene as the face
+of a fine portrait.  His clothing fitted his form snugly and was
+gorgeously colored in brilliant shades of green, which varied as the
+sunbeams touched them but was not wholly influenced by the solar rays.
+
+The man had taken a step or two across the glass roof before he noticed
+the presence of the strangers; but then he stopped abruptly.  There was
+no expression of either fear or surprise upon his tranquil face, yet he
+must have been both astonished and afraid; for after his eyes had
+rested upon the ungainly form of the horse for a moment he walked
+rapidly to the furthest edge of the roof, his head turned back over his
+shoulder to gaze at the strange animal.
+
+=93Look out!=94 cried Dorothy, who noticed that the beautiful man did not
+look where he was going; =93be careful, or you'll fall off!=94
+
+But he paid no attention to her warning.  He reached the edge of the
+tall roof, stepped one foot out into the air, and walked into space as
+calmly as if he were on firm ground.
+
+The girl, greatly astonished, ran to lean over the edge of the roof,
+and saw the man walking rapidly through the air toward the ground.
+Soon he reached the street and disappeared through a glass doorway into
+one of the glass buildings.
+
+=93How strange!=94 she exclaimed, drawing a long breath.
+EOF
+
+cat >"$expected" <<'EOF'
+Date:    Sun, 18 Dec 2005 00:52:39 +0100
+To:      bar@example.edu
+From:    foo@example.edu
+Subject: check charset conversion of a large file
+
+MIME-Version: 1.0
+
+part       text/plain                 18K
+1.  The Earthquake
+
+
+The train from 'Frisco was very late.  It should have arrived at
+Hugson's Siding at midnight, but it was already five o'clock and the
+gray dawn was breaking in the east when the little train slowly rumbled
+up to the open shed that served for the station-house.  As it came to a
+stop the conductor called out in a loud voice:
+
+“Hugson's Siding!”
+
+At once a little girl rose from her seat and walked to the door of the
+car, carrying a wicker suit-case in one hand and a round bird-cage
+covered up with newspapers in the other, while a parasol was tucked
+under her arm.  The conductor helped her off the car and then the
+engineer started his train again, so that it puffed and groaned and
+moved slowly away up the track.  The reason he was so late was because
+all through the night there were times when the solid earth shook and
+trembled under him, and the engineer was afraid that at any moment the
+rails might spread apart and an accident happen to his passengers.  So
+he moved the cars slowly and with caution.
+
+The little girl stood still to watch until the train had disappeared
+around a curve; then she turned to see where she was.
+
+The shed at Hugson's Siding was bare save for an old wooden bench, and
+did not look very inviting.  As she peered through the soft gray light
+not a house of any sort was visible near the station, nor was any
+person in sight; but after a while the child discovered a horse and
+buggy standing near a group of trees a short distance away.  She walked
+toward it and found the horse tied to a tree and standing motionless,
+with its head hanging down almost to the ground.  It was a big horse,
+tall and bony, with long legs and large knees and feet.  She could
+count his ribs easily where they showed through the skin of his body,
+and his head was long and seemed altogether too big for him, as if it
+did not fit.  His tail was short and scraggly, and his harness had been
+broken in many places and fastened together again with cords and bits
+of wire.  The buggy seemed almost new, for it had a shiny top and side
+curtains.  Getting around in front, so that she could look inside, the
+girl saw a boy curled up on the seat, fast asleep.
+
+She set down the bird-cage and poked the boy with her parasol.
+Presently he woke up, rose to a sitting position and rubbed his eyes
+briskly.
+
+“Hello!” he said, seeing her, “are you Dorothy Gale?”
+
+“Yes,” she answered, looking gravely at his tousled hair and blinking
+gray eyes.  “Have you come to take me to Hugson's Ranch?”
+
+“Of course,” he answered.  “Train in?”
+
+“I couldn't be here if it wasn't,” she said.
+
+He laughed at that, and his laugh was merry and frank.  Jumping out of
+the buggy he put Dorothy's suit-case under the seat and her bird-cage
+on the floor in front.
+
+“Canary-birds?” he asked.
+
+“Oh no; it's just Eureka, my kitten.  I thought that was the best way
+to carry her.”
+
+The boy nodded.
+
+“Eureka's a funny name for a cat,” he remarked.
+
+“I named my kitten that because I found it,” she explained.  “Uncle
+Henry says 'Eureka' means 'I have found it.'”
+
+“All right; hop in.”
+
+She climbed into the buggy and he followed her.  Then the boy picked up
+the reins, shook them, and said “Gid-dap!”
+
+The horse did not stir.  Dorothy thought he just wiggled one of his
+drooping ears, but that was all.
+
+“Gid-dap!” called the boy, again.
+
+The horse stood still.
+
+“Perhaps,” said Dorothy, “if you untied him, he would go.”
+
+The boy laughed cheerfully and jumped out.
+
+“Guess I'm half asleep yet,” he said, untying the horse.  “But Jim
+knows his business all right--don't you, Jim?” patting the long nose of
+the animal.
+
+Then he got into the buggy again and took the reins, and the horse at
+once backed away from the tree, turned slowly around, and began to trot
+down the sandy road which was just visible in the dim light.
+
+“Thought that train would never come,” observed the boy.  “I've waited
+at that station for five hours.”
+
+“We had a lot of earthquakes,” said Dorothy.  “Didn't you feel the
+ground shake?”
+
+“Yes; but we're used to such things in California,” he replied.  “They
+don't scare us much.”
+
+“The conductor said it was the worst quake he ever knew.”
+
+“Did he?  Then it must have happened while I was asleep,” he said
+thoughtfully.
+
+“How is Uncle Henry?” she enquired, after a pause during which the
+horse continued to trot with long, regular strides.
+
+“He's pretty well.  He and Uncle Hugson have been having a fine visit.”
+
+“Is Mr. Hugson your uncle?” she asked.
+
+“Yes.  Uncle Bill Hugson married your Uncle Henry's wife's sister; so
+we must be second cousins,” said the boy, in an amused tone.  “I work
+for Uncle Bill on his ranch, and he pays me six dollars a month and my
+board.”
+
+“Isn't that a great deal?” she asked, doubtfully.
+
+“Why, it's a great deal for Uncle Hugson, but not for me.  I'm a
+splendid worker.  I work as well as I sleep,” he added, with a laugh.
+
+“What is your name?” said Dorothy, thinking she liked the boy's manner
+and the cheery tone of his voice.
+
+“Not a very pretty one,” he answered, as if a little ashamed.  “My
+whole name is Zebediah; but folks just call me 'Zeb.'  You've been to
+Australia, haven't you?”
+
+“Yes; with Uncle Henry,” she answered.  “We got to San Francisco a week
+ago, and Uncle Henry went right on to Hugson's Ranch for a visit while
+I stayed a few days in the city with some friends we had met.”
+
+“How long will you be with us?” he asked.
+
+“Only a day.  Tomorrow Uncle Henry and I must start back for Kansas.
+We've been away for a long time, you know, and so we're anxious to get
+home again.”
+
+The boy flicked the big, boney horse with his whip and looked
+thoughtful.  Then he started to say something to his little companion,
+but before he could speak the buggy began to sway dangerously from side
+to side and the earth seemed to rise up before them.  Next minute there
+was a roar and a sharp crash, and at her side Dorothy saw the ground
+open in a wide crack and then come together again.
+
+“Goodness!” she cried, grasping the iron rail of the seat.  “What was
+that?”
+
+“That was an awful big quake,” replied Zeb, with a white face.  “It
+almost got us that time, Dorothy.”
+
+The horse had stopped short, and stood firm as a rock.  Zeb shook the
+reins and urged him to go, but Jim was stubborn.  Then the boy cracked
+his whip and touched the animal's flanks with it, and after a low moan
+of protest Jim stepped slowly along the road.
+
+Neither the boy nor the girl spoke again for some minutes.  There was a
+breath of danger in the very air, and every few moments the earth would
+shake violently.  Jim's ears were standing erect upon his head and
+every muscle of his big body was tense as he trotted toward home.  He
+was not going very fast, but on his flanks specks of foam began to
+appear and at times he would tremble like a leaf.
+
+The sky had grown darker again and the wind made queer sobbing sounds
+as it swept over the valley.
+
+Suddenly there was a rending, tearing sound, and the earth split into
+another great crack just beneath the spot where the horse was standing.
+With a wild neigh of terror the animal fell bodily into the pit,
+drawing the buggy and its occupants after him.
+
+Dorothy grabbed fast hold of the buggy top and the boy did the same.
+The sudden rush into space confused them so that they could not think.
+
+Blackness engulfed them on every side, and in breathless silence they
+waited for the fall to end and crush them against jagged rocks or for
+the earth to close in on them again and bury them forever in its
+dreadful depths.
+
+The horrible sensation of falling, the darkness and the terrifying
+noises, proved more than Dorothy could endure and for a few moments the
+little girl lost consciousness.  Zeb, being a boy, did not faint, but
+he was badly frightened, and clung to the buggy seat with a tight grip,
+expecting every moment would be his last.
+
+
+
+
+2.  The Glass City
+
+
+When Dorothy recovered her senses they were still falling, but not so
+fast.  The top of the buggy caught the air like a parachute or an
+umbrella filled with wind, and held them back so that they floated
+downward with a gentle motion that was not so very disagreeable to
+bear.  The worst thing was their terror of reaching the bottom of this
+great crack in the earth, and the natural fear that sudden death was
+about to overtake them at any moment.  Crash after crash echoed far
+above their heads, as the earth came together where it had split, and
+stones and chunks of clay rattled around them on every side.  These
+they could not see, but they could feel them pelting the buggy top, and
+Jim screamed almost like a human being when a stone overtook him and
+struck his boney body.  They did not really hurt the poor horse,
+because everything was falling together; only the stones and rubbish
+fell faster than the horse and buggy, which were held back by the
+pressure of the air, so that the terrified animal was actually more
+frightened than he was injured.
+
+How long this state of things continued Dorothy could not even guess,
+she was so greatly bewildered.  But bye and bye, as she stared ahead
+into the black chasm with a beating heart, she began to dimly see the
+form of the horse Jim--his head up in the air, his ears erect and his
+long legs sprawling in every direction as he tumbled through space.
+Also, turning her head, she found that she could see the boy beside
+her, who had until now remained as still and silent as she herself.
+
+Dorothy sighed and commenced to breathe easier.  She began to realize
+that death was not in store for her, after all, but that she had merely
+started upon another adventure, which promised to be just as queer and
+unusual as were those she had before encountered.
+
+With this thought in mind the girl took heart and leaned her head over
+the side of the buggy to see where the strange light was coming from.
+Far below her she found six great glowing balls suspended in the air.
+The central and largest one was white, and reminded her of the sun.
+Around it were arranged, like the five points of a star, the other five
+brilliant balls; one being rose colored, one violet, one yellow, one
+blue and one orange.  This splendid group of colored suns sent rays
+darting in every direction, and as the horse and buggy--with Dorothy
+and Zeb--sank steadily downward and came nearer to the lights, the rays
+began to take on all the delicate tintings of a rainbow, growing more
+and more distinct every moment until all the space was brilliantly
+illuminated.
+
+Dorothy was too dazed to say much, but she watched one of Jim's big
+ears turn to violet and the other to rose, and wondered that his tail
+should be yellow and his body striped with blue and orange like the
+stripes of a zebra.  Then she looked at Zeb, whose face was blue and
+whose hair was pink, and gave a little laugh that sounded a bit nervous.
+
+“Isn't it funny?” she said.
+
+The boy was startled and his eyes were big.  Dorothy had a green streak
+through the center of her face where the blue and yellow lights came
+together, and her appearance seemed to add to his fright.
+
+“I--I don't s-s-see any-thing funny--'bout it!” he stammered.
+
+Just then the buggy tipped slowly over upon its side, the body of the
+horse tipping also.  But they continued to fall, all together, and the
+boy and girl had no difficulty in remaining upon the seat, just as they
+were before.  Then they turned bottom side up, and continued to roll
+slowly over until they were right side up again.  During this time Jim
+struggled frantically, all his legs kicking the air; but on finding
+himself in his former position the horse said, in a relieved tone of
+voice:
+
+“Well, that's better!”
+
+Dorothy and Zeb looked at one another in wonder.
+
+“Can your horse talk?” she asked.
+
+“Never knew him to, before,” replied the boy.
+
+“Those were the first words I ever said,” called out the horse, who had
+overheard them, “and I can't explain why I happened to speak then.
+This is a nice scrape you've got me into, isn't it?”
+
+“As for that, we are in the same scrape ourselves,” answered Dorothy,
+cheerfully.  “But never mind; something will happen pretty soon.”
+
+“Of course,” growled the horse, “and then we shall be sorry it
+happened.”
+
+Zeb gave a shiver.  All this was so terrible and unreal that he could
+not understand it at all, and so had good reason to be afraid.
+
+Swiftly they drew near to the flaming colored suns, and passed close
+beside them.  The light was then so bright that it dazzled their eyes,
+and they covered their faces with their hands to escape being blinded.
+There was no heat in the colored suns, however, and after they had
+passed below them the top of the buggy shut out many of the piercing
+rays so that the boy and girl could open their eyes again.
+
+“We've got to come to the bottom some time,” remarked Zeb, with a deep
+sigh.  “We can't keep falling forever, you know.”
+
+“Of course not,” said Dorothy.  “We are somewhere in the middle of the
+earth, and the chances are we'll reach the other side of it before
+long.  But it's a big hollow, isn't it?”
+
+“Awful big!” answered the boy.
+
+“We're coming to something now,” announced the horse.
+
+At this they both put their heads over the side of the buggy and looked
+down.  Yes; there was land below them; and not so very far away,
+either.  But they were floating very, very slowly--so slowly that it
+could no longer be called a fall--and the children had ample time to
+take heart and look about them.
+
+They saw a landscape with mountains and plains, lakes and rivers, very
+like those upon the earth's surface; but all the scene was splendidly
+colored by the variegated lights from the six suns.  Here and there
+were groups of houses that seemed made of clear glass, because they
+sparkled so brightly.
+
+“I'm sure we are in no danger,” said Dorothy, in a sober voice.  “We
+are falling so slowly that we can't be dashed to pieces when we land,
+and this country that we are coming to seems quite pretty.”
+
+“We'll never get home again, though!” declared Zeb, with a groan.
+
+“Oh, I'm not so sure of that,” replied the girl.  “But don't let us
+worry over such things, Zeb; we can't help ourselves just now, you
+know, and I've always been told it's foolish to borrow trouble.”
+
+The boy became silent, having no reply to so sensible a speech, and
+soon both were fully occupied in staring at the strange scenes spread
+out below them.  They seemed to be falling right into the middle of a
+big city which had many tall buildings with glass domes and
+sharp-pointed spires.  These spires were like great spear-points, and
+if they tumbled upon one of them they were likely to suffer serious
+injury.
+
+Jim the horse had seen these spires, also, and his ears stood straight
+up with fear, while Dorothy and Zeb held their breaths in suspense.
+But no; they floated gently down upon a broad, flat roof, and came to a
+stop at last.
+
+When Jim felt something firm under his feet the poor beast's legs
+trembled so much that he could hardly stand; but Zeb at once leaped out
+of the buggy to the roof, and he was so awkward and hasty that he
+kicked over Dorothy's bird-cage, which rolled out upon the roof so that
+the bottom came off.  At once a pink kitten crept out of the upset
+cage, sat down upon the glass roof, and yawned and blinked its round
+eyes.
+
+“Oh,” said Dorothy.  “There's Eureka.”
+
+“First time I ever saw a pink cat,” said Zeb.
+
+“Eureka isn't pink; she's white.  It's this queer light that gives her
+that color.”
+
+“Where's my milk?” asked the kitten, looking up into Dorothy's face.
+“I'm 'most starved to death.”
+
+“Oh, Eureka!  Can you talk?”
+
+“Talk!  Am I talking?  Good gracious, I believe I am.  Isn't it funny?”
+asked the kitten.
+
+“It's all wrong,” said Zeb, gravely.  “Animals ought not to talk.  But
+even old Jim has been saying things since we had our accident.”
+
+“I can't see that it's wrong,” remarked Jim, in his gruff tones.  “At
+least, it isn't as wrong as some other things.  What's going to become
+of us now?”
+
+“I don't know,” answered the boy, looking around him curiously.
+
+The houses of the city were all made of glass, so clear and transparent
+that one could look through the walls as easily as through a window.
+Dorothy saw, underneath the roof on which she stood, several rooms used
+for rest chambers, and even thought she could make out a number of
+queer forms huddled into the corners of these rooms.
+
+The roof beside them had a great hole smashed through it, and pieces of
+glass were lying scattered in every direction.  A nearby steeple had
+been broken off short and the fragments lay heaped beside it.  Other
+buildings were cracked in places or had corners chipped off from them;
+but they must have been very beautiful before these accidents had
+happened to mar their perfection.  The rainbow tints from the colored
+suns fell upon the glass city softly and gave to the buildings many
+delicate, shifting hues which were very pretty to see.
+
+But not a sound had broken the stillness since the strangers had
+arrived, except that of their own voices.  They began to wonder if
+there were no people to inhabit this magnificent city of the inner
+world.
+
+Suddenly a man appeared through a hole in the roof next to the one they
+were on and stepped into plain view.  He was not a very large man, but
+was well formed and had a beautiful face--calm and serene as the face
+of a fine portrait.  His clothing fitted his form snugly and was
+gorgeously colored in brilliant shades of green, which varied as the
+sunbeams touched them but was not wholly influenced by the solar rays.
+
+The man had taken a step or two across the glass roof before he noticed
+the presence of the strangers; but then he stopped abruptly.  There was
+no expression of either fear or surprise upon his tranquil face, yet he
+must have been both astonished and afraid; for after his eyes had
+rested upon the ungainly form of the horse for a moment he walked
+rapidly to the furthest edge of the roof, his head turned back over his
+shoulder to gaze at the strange animal.
+
+“Look out!” cried Dorothy, who noticed that the beautiful man did not
+look where he was going; “be careful, or you'll fall off!”
+
+But he paid no attention to her warning.  He reached the edge of the
+tall roof, stepped one foot out into the air, and walked into space as
+calmly as if he were on firm ground.
+
+The girl, greatly astonished, ran to lean over the edge of the roof,
+and saw the man walking rapidly through the air toward the ground.
+Soon he reached the street and disappeared through a glass doorway into
+one of the glass buildings.
+
+“How strange!” she exclaimed, drawing a long breath.
+EOF
+
+run_prog mhshow last >"$actual" 2>&1
+check "$expected" "$actual"
 
 exit $failed
