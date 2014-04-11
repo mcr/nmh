@@ -466,7 +466,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	    close (fd);
 	    execvp (file, vec);
 	    fprintf (stderr, "unable to exec ");
-	    perror ("/bin/sh");
+	    perror (buffer);
 	    _exit (-1);
 	    /* NOTREACHED */
 
