@@ -30,6 +30,11 @@
     X("nofmtproc", 0, NFMTPROCSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
+    /*				\
+     * switches for mhlproc	\
+     */				\
+    X("concat", -6, CONCATSW) \
+    X("noconcat", -8, NCONCATSW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(SHOW);
@@ -53,7 +58,7 @@ int
 main (int argc, char **argv)
 {
     int draftsw = 0, headersw = 1;
-    int nshow = 0, checkmime = 1, mime;
+    int nshow = 0, checkmime = 1, mime = 0;
     int isdf = 0, mode = SHOW, msgnum;
     char *cp, *maildir, *file = NULL, *folder = NULL, *proc, *program;
     char buf[BUFSIZ], **argp, **arguments;
@@ -77,6 +82,13 @@ main (int argc, char **argv)
 		case AMBIGSW: 
 		    ambigsw (cp, switches);
 		    done (1);
+
+		case CONCATSW:
+		case NCONCATSW:
+		    /* Use showmimeproc if one of these switches was
+		       specified because mhl doesn't understand them. */
+		    mime = 1;
+		    /* fall thru */
 		case UNKWNSW: 
 		case NPROGSW:
 		case NFMTPROCSW:
@@ -249,12 +261,11 @@ go_to_it: ;
     /*
      * Decide which "proc" to use
      */
-    mime = 0;
     if (nshow) {
 	proc = catproc;
     } else {
 	/* check if any messages are non-text MIME messages */
-	if (checkmime) {
+	if (! mime  &&  checkmime) {
 	    if (!draftsw && !file) {
 		/* loop through selected messages and check for MIME */
 		for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)
