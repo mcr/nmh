@@ -704,7 +704,7 @@ show_message_rfc822 (CT ct, int alternate)
 
     /* default method for message/rfc822 */
     if (ct->c_subtype == MESSAGE_RFC822) {
-	cp = (ct->c_showproc = add ("%pecho -file %F", NULL));
+	cp = (ct->c_showproc = add ("%pshow -file %F", NULL));
 	return show_content_aux (ct, alternate, cp, NULL);
     }
 
