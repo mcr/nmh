@@ -282,7 +282,8 @@ To determine the folder stack.
 .PD
 .SH "SEE ALSO"
 .IR mhpath (1),
-.IR refile (1)
+.IR refile (1),
+.IR rmf (1)
 .SH DEFAULTS
 .PD 0
 .TP 20

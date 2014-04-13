@@ -70,7 +70,8 @@ use it with caution.
 ^Inbox:~^To find the default inbox
 .fi
 .SH "SEE ALSO"
-.IR rmm (1)
+.IR rmm (1),
+.IR folder (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder, usually with confirmation"
