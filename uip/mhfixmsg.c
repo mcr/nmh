@@ -105,7 +105,7 @@ static int strip_crs (CT, int *);
 static int convert_charsets (CT, char *, int *);
 static int write_content (CT, char *, char *, int, int);
 static int remove_file (char *);
-static void report (char *, char *, char *, ...);
+static void report (char *, char *, char *, char *, ...);
 static void pipeser (int);
 
 
@@ -516,7 +516,7 @@ fix_boundary (CT *ct, int *message_mods) {
 
                             ++*message_mods;
                             if (verbosw) {
-                                report (NULL, filename,
+                                report (NULL, NULL, filename,
                                         "fix multipart boundary");
                             }
                         }
@@ -759,7 +759,7 @@ fix_multipart_cte (CT ct, int *message_mods) {
                     ++*message_mods;
                     if (verbosw) {
                         char *encoding = cpytrim (hf->value);
-                        report (ct->c_partno, ct->c_file,
+                        report (NULL, ct->c_partno, ct->c_file,
                                 "replace Content-Transfer-Encoding of %s "
                                 "with 8 bit", encoding);
                         free (encoding);
@@ -873,7 +873,7 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
                             prev->mp_next = part->mp_next;
                         }
                         if (verbosw) {
-                            report (parent->c_partno, parent->c_file,
+                            report (NULL, parent->c_partno, parent->c_file,
                                     "remove text/plain part %s",
                                     old_part->mp_part->c_partno);
                         }
@@ -904,7 +904,7 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
 
                     ++*message_mods;
                     if (verbosw) {
-                        report (parent->c_partno, parent->c_file,
+                        report (NULL, parent->c_partno, parent->c_file,
                                 "insert text/plain part");
                     }
                 } else {
@@ -931,7 +931,7 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
 
                         ++*message_mods;
                         if (verbosw) {
-                            report ((*ct)->c_partno, (*ct)->c_file,
+                            report (NULL, (*ct)->c_partno, (*ct)->c_file,
                                     "insert text/plain part");
                         }
                     } else {
@@ -1446,7 +1446,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                     /* The decoding isn't acceptable so discard it.
                        Leave status as OK to allow other transformations. */
                     if (verbosw) {
-                        report (ct->c_partno, ct->c_file,
+                        report (NULL, ct->c_partno, ct->c_file,
                                 "will not decode%s because it is binary (%s)",
                                 ct->c_partno  ?  ""
                                               :  ct->c_ctline  ?  ct->c_ctline
@@ -1461,7 +1461,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                     /* The decoding isn't acceptable so discard it.
                        Leave status as OK to allow other transformations. */
                     if (verbosw) {
-                        report (ct->c_partno, ct->c_file,
+                        report (NULL, ct->c_partno, ct->c_file,
                                 "will not decode%s because it is 8bit",
                                 ct->c_partno  ?  ""
                                               :  ct->c_ctline  ?  ct->c_ctline
@@ -1481,7 +1481,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                     if (set_ce (ct, enc) == OK) {
                         ++*message_mods;
                         if (verbosw) {
-                            report (ct->c_partno, ct->c_file, "decode%s",
+                            report (NULL, ct->c_partno, ct->c_file, "decode%s",
                                     ct->c_ctline ? ct->c_ctline : "");
                         }
                         strip_crs (ct, message_mods);
@@ -1716,7 +1716,7 @@ strip_crs (CT ct, int *message_mods) {
 
                     ++*message_mods;
                     if (verbosw) {
-                        report (ct->c_partno,
+                        report (NULL, ct->c_partno,
                                 begin == 0 && end == 0  ?  ""  :  *file,
                                 "stripped CRs");
                     }
@@ -1743,9 +1743,16 @@ convert_charsets (CT ct, char *dest_charset, int *message_mods) {
     case CT_TEXT:
         if (ct->c_subtype == TEXT_PLAIN) {
             status = convert_charset (ct, dest_charset, message_mods);
-            if (verbosw  &&  status == OK) {
-               report (ct->c_partno, ct->c_file, "convert %s to %s",
-                       content_charset(ct), dest_charset);
+            if (status == OK) {
+                if (verbosw) {
+                    report (NULL, ct->c_partno, ct->c_file,
+                            "convert %s to %s",
+                            content_charset(ct), dest_charset);
+                }
+            } else {
+                report ("iconv", ct->c_partno, ct->c_file,
+                        "failed to convert %s to %s",
+                        content_charset(ct), dest_charset);
             }
         }
         break;
@@ -1877,7 +1884,7 @@ remove_file (char *file) {
 
 
 static void
-report (char *partno, char *filename, char *message, ...) {
+report (char *what, char *partno, char *filename, char *message, ...) {
     va_list args;
     char *fmt;
 
@@ -1886,7 +1893,7 @@ report (char *partno, char *filename, char *message, ...) {
         fmt = concat (filename, partno ? " part " : ", ",
                       partno ? partno : "", partno ? ", " : "", message, NULL);
 
-        advertise (NULL, NULL, fmt, args);
+        advertise (what, NULL, fmt, args);
 
         free (fmt);
         va_end (args);

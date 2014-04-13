@@ -1186,6 +1186,7 @@ iconv_start:
 
         advise (NULL, "Can't convert %s to %s without iconv", src_charset,
                 dest_charset);
+        errno = ENOSYS;
         status = NOTOK;
 #endif /* ! HAVE_ICONV */
     }
