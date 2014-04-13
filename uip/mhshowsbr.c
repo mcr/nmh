@@ -508,9 +508,12 @@ show_text (CT ct, int alternate, int concatsw)
      * if it is not a text part of a multipart/alternative
      */
     if (!alternate || ct->c_subtype == TEXT_PLAIN) {
-	if (concatsw)
-	    snprintf(buffer, sizeof(buffer), "%%l");
-	else
+	if (concatsw) {
+	    if (ct->c_termproc)
+		snprintf(buffer, sizeof(buffer), "%%lcat");
+	    else
+		snprintf(buffer, sizeof(buffer), "%%l");
+	} else
 	    snprintf (buffer, sizeof(buffer), "%%l%s %%F", progsw ? progsw :
 		      moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
 	cp = (ct->c_showproc = add (buffer, NULL));
