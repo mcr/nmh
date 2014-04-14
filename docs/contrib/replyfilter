@@ -10,11 +10,16 @@
 #
 # - Put the path to this program in your .mh_profile under formatproc:
 # 
-#   formatproc: replyfilter
+#      formatproc: replyfilter
 #
-# - Create a mhl reply filter that consists of the following line:
+#   or invoke repl with "-fmtproc replyfilter".
 #
-#   body:nocomponent,format,nowrap,formatarg="%(trim{content-type})%(putstr)",formatarg="%(trim{content-transfer-encoding})%(putstr)",formatarg=">"
+# - Create an mhl reply filter that consists of the following line:
+#
+#      body:nocomponent,format,nowrap,formatarg="%(trim{content-type})%(putstr)",formatarg="%(trim{content-transfer-encoding})%(putstr)",formatarg=">"
+#
+#   By default, repl will look for the mhl reply filter by the name
+#   "mhl.reply", but it will look elsewhere if the -filter switch is given.
 #
 #   To decode this a bit:
 #
@@ -23,8 +28,8 @@
 #		  component prefix of ">" as a quote character, but we're
 #		  going to have replyfilter do that).
 #   nowrap	- Don't wrap lines if they exceed the column width
-#   formatarg   - Arguments to fmtproc.  The first argument is the value of
-#		  the Content-type header; the second is the value of the
+#   formatarg   - Arguments to formatproc.  The first argument is the value
+#		  of the Content-type header; the second is the value of the
 #		  Content-Transfer-Encoding header.  The last "formatarg"
 #		  is used as your quoting prefix.  Replace it with whatever
 #		  you want.
