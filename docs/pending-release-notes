@@ -184,3 +184,6 @@ BUG FIXES
   the "str" register was NULL.
 - Encode and decode text MIME types with canonical line breaks properly.
 - mhstore(1) now obeys its -noverbose switch.
+- Properly report the input filename when mhbuild encounters errors.
+- Set the content-transfer-encoding properly when attaching message/rfc822
+  content.
