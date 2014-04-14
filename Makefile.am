@@ -211,7 +211,7 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 		docs/MAIL.FILTERING docs/MAILING-LISTS docs/README-ATTACHMENTS \
 		docs/README-HOOKS docs/README-components docs/README.about \
 		docs/README.SASL docs/README.developers docs/README.manpages \
-		docs/TODO
+		docs/README-iCalendar docs/TODO
 
 ##
 ## Contribs that get installed in docdir/contrib/
