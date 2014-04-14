@@ -1,4 +1,270 @@
 #
+# NEWS - Release notes for nmh 1.6
+#
+
+Welcome to nmh, the new version of the classic MH mail handling system.
+It's been nearly two years since the last release of nmh, and there have
+been a number of significant changes since the last release.  Long-time
+MH and nmh uses should read careful the NOTEABLE CHANGES section, as there
+are some significant changes to nmh behavior.  Otherwise, please see the
+README and INSTALL files for help on getting started with nmh.
+
+------------
+NEW FEATURES
+------------
+
+The following are new features for the 1.6 release of nmh:
+
+- All nmh programs will now warn about multiple profile entries for
+  the same non-null, non-comment component.  In previous versions, all
+  but the first were silently ignored.
+- mhmail now supports all post(8) options, or optionally can use
+  send(1) with all of its options.  Its formerly undocumented -resent
+  switch has been documented.  And it has new -attach, -headerfield,
+  and -send/-nosend switches.
+- Default to flock() locking on OpenBSD and Darwin.
+- Added -directives support to mhbuild(1) to control whether or not
+  mhbuild will honor MIME directives by default.  And added support
+  for special #on/#off/#pop directives to control the MIME directive
+  processing state.
+- Added -messageid switch to send(1) and post(8).  This allows
+  selection of the style to use for generated Message-ID and
+  Content-ID header fields.  The default localname style is
+  pid.time@localname, where time is in seconds, and matches previous
+  behavior.  The random style replaces the localname with some
+  (pseudo)random bytes and uses microsecond-resolution time.
+- Added -clobber switch to mhstore(1) to control overwriting of
+  existing files.
+- Added -outfile switch to mhstore(1).
+- Added -noall/-all switches to sortm(1).  sortm -noall requires
+  a messages argument.
+- $PAGER overrides the compiled-in default pager command.
+- Added etc/scan.highlighted format file, as an example of how to
+  highlight/colorize the output of scan(1).
+- inc(1) now supports a -port switch to specify the port used by the
+  POP server.
+- pick(1) now decodes MIME-encoded header fields before searching.
+- The VISUAL and EDITOR environment variables are now supported as fallbacks
+  if the user does not configure an editor entry in their profile.
+- The format engine (mh_format(5)) now properly accounts for multibyte
+  characters when accounting for column widths.
+- burst(1) now can burst MIME-formatted digests (messages that contain
+  message/rfc822 parts instead of messages formatted with RFC 934).
+- All proc entries (showproc, moreproc, etc) can now accept entries that
+  contain spaces and shell metacharacters.  If found, such entries will
+  either be space-splitted or processed by /bin/sh.
+- A new program, fmttest(1) is included to help debug format files.  See
+  NOTABLE CHANGES below.
+- mhshow/mhstore now have support for RFC-2017 (access-type=url) for
+  external message bodies.
+- Added -retainsequences switch to refile(1).
+- A new program, mhfixmsg(1), is included to rewrite MIME messages with
+  various transformations.  See NOTABLE CHANGES below.
+- Added -[no]rmmproc switches to rmm(1).
+- Added support for Content-Disposition header (RFC 2183) to mhstore(1)
+  and mhn(1) when used with -auto.
+- All nmh commands now support transactional locking for sequence files.
+  See NOTABLE CHANGES below.
+- There is no longer a per-folder maximum number of sequences.
+- For the SMTP MTA TLS can now be negotiated at the beginning of the
+  connection with the -initialtls switch.
+- Messages can now be selected using a relative offset from some other
+  message, or from the start or end of a sequence.  See mh-sequences(5).
+- The -changecur and -nochangecur switches have been added to mhlist(1).
+- mhbuild(1) can now encode 8-bit message headers using RFC-2047 encoding
+  rules.  See NOTABLE CHANGES below.
+- The whatnow(1) attach feature will determine the content type of an
+  attachment using a program such as file --mime-type, if available at
+  configuration time.  If not, it will use mhshow-suffix- entries as
+  before.  The -v switch to attach causes it to display the mhbuild
+  directive that send(1) will use.
+- mhbuild(1) now supports the -auto/-noauto flags (to be used by send(1)
+  when invoking mhbuild automatically).
+- mhbuild(1) now is automatically run by send, to insure that all outgoing
+  messages have proper MIME formatting.  See NOTABLE CHANGES below.
+- A new header, "Attach", is supported by mhbuild; it is used to replace
+  previous functionality (which by default used a header named
+  Nmh-Attachment).  See NOTABLE CHANGES below.
+- The default Content-Transfer-Encoding for text parts is now 8bit.
+- mhbuild(1) now supports a selectable Content-Transfer-Encoding
+- If nmh was configured with iconv(3) support, mhshow will convert, if
+  necessary, the charset of text/plain content to match the user's
+  locale setting.  See NOTABLE CHANGES below.
+- Added support for %{charset} display string escape to mhshow(1).
+- The MIME parsing and generating routines now support RFC 2231 extended
+  parameter information.
+- mh-mime(7) now provides an introduction to nmh's MIME handling.
+- mhshow(1) will now by default display all text content under one pager,
+  and display markers for non-text and non-inline content.  The content
+  markers are changeable via mh-format(5).  See NOTABLE CHANGES bellow.
+
+-----------------
+OBSOLETE FEATURES
+-----------------
+- Changed exit status of each nmh command's -version and -help
+  switches from 1 to 0.
+- The following environment variables were deprecated in nmh 1.5
+  and removed from this release:
+    MHPOPDEBUG (use -snoop command line switch instead)
+    MM_NOASK (use -nolist and -nopause command line switches instead)
+    NOMHNPROC (use -nocheckmime command line switch instead)
+    FACEPROC (undocumented faceproc feature removed)
+- Changed repl and dist default to -noatfile.  The default of -atfile
+  was deprecated in nmh 1.5.  If there are no requests to maintain
+  -atfile, it will be removed in the future.
+- The undocumented -queue switch to mhmail has been removed.
+- spost(8) has been merged into post(8).  Its functionality is enabled
+  by selecting the sendmail/pipe mail transport method, described in
+  the mh-tailor(5) man page.  The spost -noalias, -backup/-nobackup,
+  -push/-nopush, and -remove/-noremove switches are not supported by
+  post.  Note that spost did not support -whom or Dcc, and neither
+  does post when using sendmail/pipe.  And spost would expand blind
+  aliases and send them in the message; post with sendmail/pipe
+  refuses to do that.  For backward compatibility, spost has been
+  replaced by a simple shell script that exec's post -mts
+  sendmail/pipe.  See NOTABLE CHANGES below.
+- Support for the undocumented and deprecated --enable-nmh-debug configure
+  flag has been removed.
+- Support for encoding some characters designated as EBCDIC-unsafe
+  via the -ebcdicsafe and -noebcdicsafe switches to mhbuild has
+  been removed.
+- The configure flag --with-pager has been removed; the default pager
+  is now hardcoded as "more".  Users are still free to override the
+  default using the PAGER environment variable or entries in .mh_profile.
+- The configure flag --with-editor has been removed; the fallback editor
+  if none is configured is "vi".
+- The support for the undocumented NOPUBLICSEQ preprocessor definition
+  to disable public sequence support has been removed.
+- Support for the -normalize and -nonormalize switches to the ali(1) and
+  ap(8) commands has been removed.
+- "make install" no longer strips executables.  Use "make install-strip"
+  instead.
+- The environment variable MM_CHARSET to indicate the native character
+  set is no longer supported.  The native character set will be solely
+  determined by the locale settings.
+- Temporary files are stored in the first non-null location of
+  {MHTMPDIR environment variable, TMPDIR environment variable, MH Path}.
+  They are no longer be stored in the location specified by the TMP
+  environment variable.
+- Instead of printing PostScript attachments, by default, from mhshow,
+  try to find a suitable viewer.
+- Support for parallel display of multipart/parallel content has been
+  removed from mhshow; all multipart content will be displayed in
+  serial.
+- Support for -pause/-nopause switches on mhshow has been removed.
+
+-------------------
+DEPRECATED FEATURES
+-------------------
+- The undocumented -queue switch to post is deprecated/obsolete
+  and will be removed in the next release.  It supports the
+  SMTP XQUE verb, which is obsolete according to
+  http://smtpfilter.sourceforge.net/esmtp.html
+- conflict(8) is deprecated and will be removed from the next release.
+- mhtest(8) is deprecated and will be removed from the next release.
+- msh(1) is deprecated and will be removed from the next release.
+- Support in alias files for the the "*" address-group is obsolescent
+  and will be removed in a future release.
+
+---------
+BUG FIXES
+---------
+
+- Replaced utilities that operate on pbm files with those that operate
+  on pnm files in etc/mhn.defaults [Bug #15152].
+- Removed obsolete BUGS section at end of rcvstore(1) man page [Bug #4361].
+- Fixed -nocc me doesn't account for Alternate-Mailboxes [Bug #36635].
+- Propagate Mail-Followup-To [Bug #5571].
+- "mark -sequence cur -delete all" now works for cur as well as any
+  other sequence, to allow clearing of the current message indication.
+- The first alias contained in a blind list is now expanded.  The
+  mh-alias(5) man page was updated to show that blind lists must not
+  be terminated with, or contain, a trailing semicolon [Bug #15604].
+- Fixed sendfiles(1) to always provide a From: address.  Also, updated
+  its switches.
+- Fixed pick(1) to properly unfold multiple-line header fields by
+  removing newlines instead of replacing them with spaces [Bug #15215].
+- Removed the artificial limit of 1000 messages at a time for rmmproc.
+- Fixed decoding of header fields when they contain a character that
+  can't be converted.
+- post(8) -sasl now honours username in .netrc [Bug #23168].  whom(1),
+  send(1), inc(1), and msgchk(1) also benefit from this fix.  And, nmh
+  now supports specification of any valid filename in place of
+  $HOME/.netrc.
+- Added quoting of local part of invalid address in message being
+  replied to [Bug #26780].
+- Fix segmentation faults for %(putlit) and %(zputlit) format escapes when
+  the "str" register was NULL.
+- Encode and decode text MIME types with canonical line breaks properly.
+- mhstore(1) now obeys its -noverbose switch.
+- Properly report the input filename when mhbuild encounters errors.
+- Set the content-transfer-encoding properly when attaching message/rfc822
+  content.
+
+---------------
+NOTABLE CHANGES
+---------------
+
+The biggest changes in this release are in the arena of MIME handling.
+Specifically relating to MIME composition and display.  On the
+composition front, mhbuild(1) will now automatically be run by send(1)
+for all drafts.  Specifically, mhbuild is now run with the new -auto
+flag, which will suppress the processing of mhbuild directives and cause
+mhbuild to silently exit if the draft is already MIME-formatted.  When
+invoking mhbuild manually via the "mime" command at the WhatNow? prompt,
+mhbuild will behave as before and process mhbuild directives.
+
+In both cases (automatic and manual invocation) mhbuild will encode email
+headers according to RFC-2047 rules.  Mhbuild also will use RFC 2231
+encoding rules for MIME parameters when appropriate.  In addition, the
+attach system has been substantially reworked; the new header name is
+now "Attach" (to better align with other MUA behavior) and cannot be
+changed by the end-user.  The existing "attach" command simply adds
+the filename(s) to the draft in new Attach: headers, and the actual
+file processing is done by mhbuild; this attachment processing will
+take place in either automatic or manual mode.
+
+On the display front, mhshow(1) will now automatically convert text
+into the user's native character set using iconv, if nmh was built
+with iconv support.  Also, mhshow will now by default only display
+text content that was not marked as an attachment.  By default all
+displayed content wll be run under one pager, as opposed to individual
+pagers for each part as was in the past.  Non-displayed parts will be
+indicated using a marker string, which can be customized by a new
+mh-format(5) string.
+
+All nmh utilites now understand RFC 2231-encoded MIME parameters and
+will automatically convert the encoded parameters into the native
+character set, when appropriate (again, assuming nmh was built with
+iconv support).
+
+In other changes, sequence files are now locked using transactional
+locks: locks that are held across sequence file reading, modification,
+and writing.  The locking algorithm used for spool files and nmh data
+files is now runtime configurable.
+
+For people that struggle with mh-format(5) files, a new utility for testing
+them has been developed: fmttest(1).  It includes the ability to trace the
+execution of format instructions.
+
+For users that wish to use Unix utilities on their mail, a new utility
+to transform MIME messages to more easily-digestable format is now
+available: mhfixmsg(1).  It supports a number of options to control
+the message transformation.
+
+For users of spost(8), the support for spost has been rolled into post(8)
+under a new sendmail/pipe MTS.  A shell script emulating the old behavior
+of spost has been provided.
+
+As always, feedback is welcome.
+
+--
+The nmh team
+nmh-workers@nongnu.org
+
+----------------------------------------------------------------------------
+
+#
 # NEWS - Release notes for nmh 1.5
 #
 
