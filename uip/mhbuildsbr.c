@@ -1360,15 +1360,17 @@ scan_content (CT ct, size_t maxunencoded)
 	break;
 
 	case CT_MESSAGE:
-	    check8bit = 0;
 	    checklinelen = 0;
 	    checklinespace = 0;
 
 	    /* don't check anything for message/external */
-	    if (ct->c_subtype == MESSAGE_EXTERNAL)
+	    if (ct->c_subtype == MESSAGE_EXTERNAL) {
 		checkboundary = 0;
-	    else
+		check8bit = 0;
+	    } else {
 		checkboundary = 1;
+		check8bit = 1;
+	    }
 	    break;
 
 	case CT_AUDIO:
@@ -1405,6 +1407,7 @@ scan_content (CT ct, size_t maxunencoded)
 		    if (!isascii ((unsigned char) *cp)) {
 			contains8bit = 1;
 			check8bit = 0;	/* no need to keep checking */
+			break;
 		    }
 		}
 	    }
@@ -1498,7 +1501,7 @@ scan_content (CT ct, size_t maxunencoded)
 	    break;
 
 	case CT_MESSAGE:
-	    ct->c_encoding = CE_7BIT;
+	    ct->c_encoding = contains8bit ? CE_8BIT : CE_7BIT;
 	    break;
 
 	case CT_AUDIO:
@@ -1660,9 +1663,6 @@ skip_headers:
 	break;
 
     case CE_8BIT:
-	if (ct->c_type == CT_MESSAGE)
-	    adios (NULL, "internal error, invalid encoding");
-
 	np = add (ENCODING_FIELD, NULL);
 	vp = concat (" ", "8bit", "\n", NULL);
 	add_header (ct, np, vp);
