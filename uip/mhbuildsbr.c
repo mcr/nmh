@@ -68,10 +68,10 @@ void free_encoding (CT, int);
 /*
  * static prototypes
  */
-static int init_decoded_content (CT);
+static int init_decoded_content (CT, const char *);
 static void setup_attach_content(CT, char *);
 static char *fgetstr (char *, int, FILE *);
-static int user_content (FILE *, char *, CT *);
+static int user_content (FILE *, char *, CT *, const char *infilename);
 static void set_id (CT, int);
 static int compose_content (CT, int);
 static int scan_content (CT, size_t);
@@ -153,7 +153,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
      * for this part.  We don't really need this, but
      * allocate it to remain consistent.
      */
-    init_decoded_content (ct);
+    init_decoded_content (ct, infile);
 
     /*
      * Parse some of the header fields in the composition
@@ -293,7 +293,6 @@ finish_field:
 	done (1);
     ct->c_type = CT_MULTIPART;
     ct->c_subtype = MULTI_MIXED;
-    ct->c_file = add (infile, NULL);
 
     if ((m = (struct multipart *) calloc (1, sizeof(*m))) == NULL)
 	adios (NULL, "out of memory");
@@ -308,7 +307,7 @@ finish_field:
 	struct part *part;
 	CT p;
 
-	if (user_content (in, buf, &p) == DONE) {
+	if (user_content (in, buf, &p, infile) == DONE) {
 	    admonish (NULL, "ignoring spurious #end");
 	    continue;
 	}
@@ -339,7 +338,7 @@ finish_field:
 	if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
 	    adios(NULL, "out of memory");
 
-	init_decoded_content(p);
+	init_decoded_content(p, infile);
 
 	/*
 	 * Initialize our content structure based on the filename,
@@ -373,7 +372,7 @@ finish_field:
 	if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
 	    adios(NULL, "out of memory");
 
-	init_decoded_content(p);
+	init_decoded_content(p, infile);
 
 	if (get_ctinfo ("text/plain", p, 0) == NOTOK)
 	    done (1);
@@ -381,7 +380,6 @@ finish_field:
 	p->c_type = CT_TEXT;
 	p->c_subtype = TEXT_PLAIN;
 	p->c_encoding = CE_7BIT;
-	p->c_file = getcpy(infile);
 	/*
 	 * Sigh.  ce_file contains the "decoded" contents of this part.
 	 * So this seems like the best option available since we're going
@@ -471,11 +469,12 @@ finish_field:
  */
 
 static int
-init_decoded_content (CT ct)
+init_decoded_content (CT ct, const char *filename)
 {
     ct->c_ceopenfnx  = open7Bit;	/* since unencoded */
     ct->c_ceclosefnx = close_encoding;
     ct->c_cesizefnx  = NULL;		/* since unencoded */
+    ct->c_file = add(filename, NULL);
 
     return OK;
 }
@@ -525,7 +524,7 @@ fgetstr (char *s, int n, FILE *stream)
  */
 
 static int
-user_content (FILE *in, char *buf, CT *ctp)
+user_content (FILE *in, char *buf, CT *ctp, const char *infilename)
 {
     int	extrnal, vrsn;
     char *cp, **ap;
@@ -549,7 +548,7 @@ user_content (FILE *in, char *buf, CT *ctp)
     *ctp = ct;
 
     /* allocate basic structure for handling decoded content */
-    init_decoded_content (ct);
+    init_decoded_content (ct, infilename);
     ce = &ct->c_cefile;
 
     ci = &ct->c_ctinfo;
@@ -912,7 +911,7 @@ use_forw:
 
 		    if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
 			adios (NULL, "out of memory");
-		    init_decoded_content (p);
+		    init_decoded_content (p, infilename);
 		    pe = &p->c_cefile;
 		    if (get_ctinfo ("message/rfc822", p, 0) == NOTOK)
 			done (1);
@@ -994,7 +993,7 @@ use_forw:
 	    struct part *part;
 	    CT p;
 
-	    if (user_content (in, buffer, &p) == DONE) {
+	    if (user_content (in, buffer, &p, infilename) == DONE) {
 		if (!m->mp_parts)
 		    adios (NULL, "empty \"#begin ... #end\" sequence");
 		return OK;
