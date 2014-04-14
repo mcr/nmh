@@ -211,18 +211,35 @@ To make a public release of nmh (we'll use version 1.5 as the example
 here; the convention for release candidates is to use something like
 "1.5-RC1"):
 
- 1. % echo 1.5 > VERSION
+ 1. Create a release branch.  The convention is to name release branches
+    with the name "<version>-release".
+
+    % git branch 1.5-release
+
+    Note you are still on the master branch at this point.  So mark that
+    master will now be post-1.5:
+
+    % echo 1.5+dev > VERSION
+    % git commit VERSION; git push
+
+    Then do:
+
+    % git checkout 1.5-release
+
+    You are now on the 1.5 release branch.
+
+ 2. % echo 1.5 > VERSION
     % date +"%e %B %Y" > DATE
     (DATE should contain something like "30 December 2000")
 
- 2. % git commit VERSION DATE; git push
+ 3. % git commit VERSION DATE; git push
 
- 3. % git tag -a 1.5 -m 'Releasing nmh-1.5.'
+ 4. % git tag -a 1.5 -m 'Releasing nmh-1.5.'
 
     Note that the new convention for tagging is to simply tag with the
     version number (tag formats in the past have varied).
 
- 4. % make distcheck
+ 5. % make distcheck
 
     If you want to check the distribution build with some particular
     configure options, set the DISTCHECK_CONFIGURE_FLAGS variable.
@@ -230,13 +247,7 @@ here; the convention for release candidates is to use something like
 
     % make distcheck DISTCHECK_CONFIGURE_FLAGS=--with-cyrus-sasl
 
- 5. If all is well and your tarball is final, go back to your workspace and do:
-
-    % echo 1.5+dev > VERSION
-
- 6. % git commit VERSION; git push
-
- 7. Upload the distribution file to savannah.  You can automate this process
+ 6. Upload the distribution file to savannah.  You can automate this process
     by doing:
 
     % make upload SAVANNAH_USERNAME=username
@@ -244,13 +255,13 @@ here; the convention for release candidates is to use something like
     This will automatically call gpg to sign the release.  You can bypass
     this step by setting the SKIP_GPG_SIG variable.
 
- 8. Update the http://www.nongnu.org/nmh/ homepage. (It lives in the CVS
+ 7. Update the http://www.nongnu.org/nmh/ homepage. (It lives in the CVS
     'webpages repository'; see https://savannah.nongnu.org/cvs/?group=nmh)
 
- 9. Add a news item to the savannah nmh page. You'll have to submit it first
+ 8. Add a news item to the savannah nmh page. You'll have to submit it first
     and then separately approve it (under News->Manage).
 
-10. Send the release announcement email to the following places:
+ 9. Send the release announcement email to the following places:
      nmh-workers@nongnu.org
      nmh-announce@nongnu.org
      exmh-users@redhat.com
