@@ -666,6 +666,8 @@ go_to_it:
 
 	    if (trnflag && pop_dele (i) == NOTOK)
 		adios (NULL, "%s", response);
+
+	    scan_finished();
 	}
 
 	if (pop_quit () == NOTOK)
