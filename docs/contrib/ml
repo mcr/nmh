@@ -1,4 +1,5 @@
 #!/bin/bash
+# see several paragraphs below for more on the choice of shell interpreter.
 
 # ml is a mail reading interface for mh(1).  the design is that of
 # a thin wrapper (this script) which uses 'less' for message
@@ -24,6 +25,13 @@
 #
 # this script uses the sequences 'ml', 'mldel', 'mlspam', 'mlunr',
 # 'mlkeep', and 'mlrepl'.  it also manipulates the user's Unseen-sequence.
+#
+# the shell dialect used is very conservative.  dash (debian's
+# /bin/sh), bash, ksh, and solaris /bin/sh will all work, and probably
+# the current bsd /bin/sh variants as well, with very slightly
+# improved function in bash or ksh.  the only non-posix shell feature
+# used is an argument to "read".  search for the function ask_init()
+# for more detail.
 #
 # paul fox, pgf@foxharp.boston.ma.us, february 2012
 # ------------
@@ -229,18 +237,26 @@ normal_quit()
     exit
 }
 
+ask_init()
+{
+    # if "read -n 1" gives an error message, it's unsupported,
+    # so don't use it -- the user will need to hit <enter>.
+    # this test works on dash, bash, ksh, and a recent solaris
+    # /bin/sh, but fails on zsh.
+    no_immed=$(read -n 1 < /dev/null 2>&1)
+}
+
 ask()
 {
     immed=;
 
     if [ "$1" = -i ]
     then
-	immed="-n 1"
+	test "$no_immed" || immed="-n 1"
 	shift
     fi
     echo -n "${1}? [N/y] "
     read $immed a
-    #read a
     case $a in
     [Yy]*) return 0 ;;
     *) return 1 ;;
@@ -693,6 +709,8 @@ mark -zero -sequence mlkeep ml
 
 # save a copy of the unseen sequence, for restore if 'X' is used to quit.
 mark -zero -sequence saveunseen $ml_unseen_seq
+
+ask_init
 
 char_init
 color_init
