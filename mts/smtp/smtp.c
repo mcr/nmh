@@ -97,7 +97,6 @@ static FILE *sm_wfp = NULL;
 static sasl_conn_t *conn = NULL;	/* SASL connection state */
 static int sasl_complete = 0;		/* Has authentication succeded? */
 static sasl_ssf_t sasl_ssf;		/* Our security strength factor */
-static char *sasl_pw_context[3];	/* Context to pass into sm_get_pass */
 static int maxoutbuf;			/* Maximum crypto output buffer */
 static char *sasl_outbuffer;		/* SASL output buffer for encryption */
 static int sasl_outbuflen;		/* Current length of data in outbuf */
@@ -851,17 +850,13 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 	strncpy(host, inhost, sizeof(host) - 1);
     }
 
-    nmh_get_credentials (host, user, 0, &creds);
-
-    /* It's OK to copy the creds pointers here.  The callbacks that
-       use them will only be called before this function returns. */
-    callbacks[SM_SASL_N_CB_USER].context = creds.user;
-    callbacks[SM_SASL_N_CB_AUTHNAME].context = creds.user;
-    sasl_pw_context[0] = host;
-    sasl_pw_context[1] = creds.user;
-    sasl_pw_context[2] = creds.password;
-
-    callbacks[SM_SASL_N_CB_PASS].context = sasl_pw_context;
+    /* It's OK to copy the addresses here.  The callbacks that use
+       them will only be called before this function returns. */
+    creds.host = host;
+    creds.user = user;
+    callbacks[SM_SASL_N_CB_USER].context = &creds;
+    callbacks[SM_SASL_N_CB_AUTHNAME].context = &creds;
+    callbacks[SM_SASL_N_CB_PASS].context = &creds;
 
     result = sasl_client_init(callbacks);
 
@@ -1051,14 +1046,25 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 static int
 sm_get_user(void *context, int id, const char **result, unsigned *len)
 {
-    char *user = (char *) context;
+    nmh_creds_t creds = (nmh_creds_t) context;
 
     if (! result || ((id != SASL_CB_USER) && (id != SASL_CB_AUTHNAME)))
 	return SASL_BADPARAM;
 
-    *result = user;
+    if (creds->user == NULL) {
+        /*
+         * Pass the 1 third argument to nmh_get_credentials() so
+         * that a default user if the -user switch to send(1)/post(8)
+         * wasn't used, and so that a default password will be supplied.
+         * That's used when those values really don't matter, and only
+         * with legacy/.netrc, i.e., with a credentials profile entry.
+         */
+        nmh_get_credentials (creds->host, creds->user, 1, creds);
+    }
+
+    *result = creds->user;
     if (len)
-	*len = strlen(user);
+	*len = strlen(creds->user);
 
     return SASL_OK;
 }
@@ -1067,7 +1073,7 @@ static int
 sm_get_pass(sasl_conn_t *conn, void *context, int id,
 	    sasl_secret_t **psecret)
 {
-    char **pw_context = (char **) context;
+    nmh_creds_t creds = (nmh_creds_t) context;
     int len;
 
     NMH_UNUSED (conn);
@@ -1075,14 +1081,24 @@ sm_get_pass(sasl_conn_t *conn, void *context, int id,
     if (! psecret || id != SASL_CB_PASS)
 	return SASL_BADPARAM;
 
-    len = strlen (pw_context[2]);
+    if (creds->password == NULL) {
+        /*
+         * Pass the 0 third argument to nmh_get_credentials() so
+         * that the default password isn't used.  With legacy/.netrc
+         * credentials support, we'll only get here if the -user
+         * switch to send(1)/post(8) wasn used.
+         */
+        nmh_get_credentials (creds->host, creds->user, 0, creds);
+    }
+
+    len = strlen (creds->password);
 
     if (! (*psecret = (sasl_secret_t *) malloc(sizeof(sasl_secret_t) + len))) {
 	return SASL_NOMEM;
     }
 
     (*psecret)->len = len;
-    strcpy((char *) (*psecret)->data, pw_context[2]);
+    strcpy((char *) (*psecret)->data, creds->password);
 
     return SASL_OK;
 }
