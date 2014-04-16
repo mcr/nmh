@@ -38,7 +38,7 @@ for the details.
 .SH FILES
 .PD 0
 .TP 20
-$HOME/.mh\-profile
+$HOME/.mh_profile
 The user's profile.
 .TP
 %etcdir%/scan.default

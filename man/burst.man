@@ -76,7 +76,7 @@ or
 .BR send .
 .SH FILES
 .TP 20
-$HOME/.mh\-profile
+$HOME/.mh_profile
 The user's profile.
 .SH "PROFILE COMPONENTS"
 .PD 0

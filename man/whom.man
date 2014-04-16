@@ -93,7 +93,7 @@ and the
 .B \-user
 switch can be used to select a authorization userid to provide to SASL
 other than the default.  The credentials profile entry in the
-mh_profile(5) man page describes the ways to supply a username and
+mh\-profile(5) man page describes the ways to supply a username and
 password.
 .PP
 If SASL authentication is successful, 

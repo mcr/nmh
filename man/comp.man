@@ -250,7 +250,7 @@ The standard message skeleton.
 <mh\-dir>/components
 An alternative to the standard skeleton.
 .TP
-$HOME/.mh\-profile
+$HOME/.mh_profile
 The user's profile.
 .PD
 .SH "PROFILE COMPONENTS"

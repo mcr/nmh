@@ -63,7 +63,7 @@ and the date in error.
 Otherwise, output the RFC 822\-proper format of the date.
 .SH FILES
 .TP 20
-$HOME/.mh\-profile
+$HOME/.mh_profile
 The user's profile.
 .SH "PROFILE COMPONENTS"
 None

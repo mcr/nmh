@@ -415,7 +415,7 @@ The standard message filter.
 <mh\-dir>/mhl.forward
 Rather than the standard filter.
 .TP
-^$HOME/.mh\-profile
+^$HOME/.mh_profile
 The user's profile.
 .PD
 .SH "PROFILE COMPONENTS"

@@ -56,7 +56,7 @@ install directories, all
 settings, and the
 .I datalocking
 method described in the
-.IR mh_profile (5)
+.IR mh\-profile (5)
 man page.  Information about the configuration of the
 .B nmh
 installation is also available, including the default mail spool

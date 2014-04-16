@@ -69,7 +69,7 @@ been installed without their having to know the internals of nmh.
 .SH FILES
 .PD 0
 .TP 20
-$HOME/.mh\-profile
+$HOME/.mh_profile
 The user's profile.
 .TP
 %etcdir%/mh.profile

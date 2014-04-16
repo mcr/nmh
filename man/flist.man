@@ -175,7 +175,7 @@ mh-related things.  It places uninteresting folders at the end, and it
 puts everything else in the middle in alphabetical order.
 .SH FILES
 .TP 20
-$HOME/.mh\-profile
+$HOME/.mh_profile
 The user's profile.
 .SH "PROFILE COMPONENTS"
 .PD 0
