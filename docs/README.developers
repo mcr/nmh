@@ -225,7 +225,9 @@ here; the convention for release candidates is to use something like
     convention here is to use VERSION+dev as the version number).
 
     % echo 1.5+dev > VERSION
-    % git commit VERSION; git push --tags
+    % git commit VERSION
+    % git push
+    % git push --tags
 
     Then do:
 
@@ -237,7 +239,7 @@ here; the convention for release candidates is to use something like
     % date +"%e %B %Y" > DATE
     (DATE should contain something like "30 December 2000")
 
- 3. % git commit VERSION DATE
+ 3. % git commit VERSION DATE; git push
 
  4. % git tag -a 1.5 -m 'Releasing nmh-1.5.'
     % git push --tags
