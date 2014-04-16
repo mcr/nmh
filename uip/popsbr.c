@@ -70,7 +70,7 @@ static int command(const char *, ...);
 static int multiline(void);
 
 #ifdef CYRUS_SASL
-static int pop_auth_sasl(char *, char *, char *, char *);
+static int pop_auth_sasl(char *, char *, char *);
 static int sasl_fgetc(FILE *);
 #endif /* CYRUS_SASL */
 
@@ -90,7 +90,7 @@ static int putline (char *, FILE *);
  */
 
 int
-pop_auth_sasl(char *user, char *password, char *host, char *mech)
+pop_auth_sasl(char *user, char *host, char *mech)
 {
     int result, status, sasl_capability = 0;
     unsigned int buflen, outlen;
@@ -158,7 +158,6 @@ pop_auth_sasl(char *user, char *password, char *host, char *mech)
     callbacks[POP_SASL_CB_N_USER].context = user;
     p_context.user = user;
     p_context.host = host;
-    p_context.password = password;
     callbacks[POP_SASL_CB_N_PASS].context = &p_context;
 
     result = sasl_client_init(callbacks);
@@ -351,7 +350,7 @@ static int
 sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
 {
     struct pass_context *p_context = (struct pass_context *) context;
-    char *pass = p_context->password;
+    struct nmh_creds creds = { 0, 0, 0 };
     int len;
 
     NMH_UNUSED (conn);
@@ -359,12 +358,25 @@ sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
     if (! psecret || id != SASL_CB_PASS)
 	return SASL_BADPARAM;
 
-    len = strlen(pass);
+    if (creds.password == NULL) {
+        /*
+         * Pass the 0 third argument to nmh_get_credentials() so
+         * that the default password isn't used.  With legacy/.netrc
+         * credentials support, we'll only get here if the -user
+         * switch to send(1)/post(8) wasn't used.
+         */
+        if (nmh_get_credentials (p_context->host, p_context->user, 0, &creds)
+            != OK) {
+            return SASL_BADPARAM;
+        }
+    }
+
+    len = strlen (creds.password);
 
     *psecret = (sasl_secret_t *) mh_xmalloc(sizeof(sasl_secret_t) + len);
 
     (*psecret)->len = len;
-    strcpy((char *) (*psecret)->data, pass);
+    strcpy((char *) (*psecret)->data, creds.password);
 
     return SASL_OK;
 }
@@ -505,7 +517,7 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	    if (*response == '+') {
 #  ifdef CYRUS_SASL
 		if (sasl) {
-		    if (pop_auth_sasl(user, pass, host, mech) != NOTOK)
+		    if (pop_auth_sasl(user, host, mech) != NOTOK)
 			return OK;
 		} else
 #  endif /* CYRUS_SASL */

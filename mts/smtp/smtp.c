@@ -1059,7 +1059,9 @@ sm_get_user(void *context, int id, const char **result, unsigned *len)
          * That's used when those values really don't matter, and only
          * with legacy/.netrc, i.e., with a credentials profile entry.
          */
-        nmh_get_credentials (creds->host, creds->user, 1, creds);
+        if (nmh_get_credentials (creds->host, creds->user, 1, creds) != OK) {
+            return SASL_BADPARAM;
+        }
     }
 
     *result = creds->user;
@@ -1086,9 +1088,11 @@ sm_get_pass(sasl_conn_t *conn, void *context, int id,
          * Pass the 0 third argument to nmh_get_credentials() so
          * that the default password isn't used.  With legacy/.netrc
          * credentials support, we'll only get here if the -user
-         * switch to send(1)/post(8) wasn used.
+         * switch to send(1)/post(8) wasn't used.
          */
-        nmh_get_credentials (creds->host, creds->user, 0, creds);
+        if (nmh_get_credentials (creds->host, creds->user, 0, creds) != OK) {
+            return SASL_BADPARAM;
+        }
     }
 
     len = strlen (creds->password);
