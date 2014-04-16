@@ -216,11 +216,16 @@ here; the convention for release candidates is to use something like
 
     % git branch 1.5-release
 
-    Note you are still on the master branch at this point.  So mark that
-    master will now be post-1.5:
+    Note you are still on the master branch at this point.  Mark the
+    current revision as the branchpoint for the new release branch:
+    
+    % git tag -a -m "This tag marks the point where we started the branch for 1.5" 1.5-branchpoint
+
+    Now mark the master branch with a post-release version number (the
+    convention here is to use VERSION+dev as the version number).
 
     % echo 1.5+dev > VERSION
-    % git commit VERSION; git push
+    % git commit VERSION; git push --tags
 
     Then do:
 
@@ -232,9 +237,10 @@ here; the convention for release candidates is to use something like
     % date +"%e %B %Y" > DATE
     (DATE should contain something like "30 December 2000")
 
- 3. % git commit VERSION DATE; git push
+ 3. % git commit VERSION DATE
 
  4. % git tag -a 1.5 -m 'Releasing nmh-1.5.'
+    % git push --tags
 
     Note that the new convention for tagging is to simply tag with the
     version number (tag formats in the past have varied).
