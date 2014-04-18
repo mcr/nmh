@@ -5,9 +5,6 @@
  */
 
 extern char *AliasFile;		/* mh-alias(5)             */
-#define	PASSWD	"/etc/passwd"	/* passwd(5)               */
-#define GROUP   "/etc/group"	/* group(5)                */
-#define EVERYONE 200		/* lowest uid for everyone */
 
 struct aka {
     char *ak_name;		/* name to match against             */
@@ -52,8 +49,3 @@ char *akerror (int);
 #define	AK_ERROR	2	/* error parsing file 	 */
 #define	AK_LIMIT	3	/* memory limit exceeded */
 #define	AK_NOGROUP	4	/* no such group 	 */
-
-/* should live here, not in mts.c */
-
-extern int Everyone;
-extern char *NoShell;

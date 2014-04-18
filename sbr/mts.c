@@ -79,13 +79,6 @@ char *maildelivery = nmhetcdir(/maildelivery);
 
 
 /*
- * Aliasing Facility (doesn't belong here)
- */
-int Everyone = NOTOK;
-static char *everyone = "-1";
-char *NoShell = "";
-
-/*
  * Customize the MTS settings for nmh by adjusting
  * the file mts.conf in the nmh etc directory.
  */
@@ -113,8 +106,6 @@ static struct bind binds[] = {
     { "pophost", &pophost },
 
     { "maildelivery", &maildelivery },
-    { "everyone", &everyone },
-    { "noshell", &NoShell },
     { NULL, NULL }
 };
 
@@ -162,8 +153,6 @@ mts_init (char *name)
         mts_read_conf_file(fp);
         fclose (fp);
     }
-
-    Everyone = atoi (everyone);
 
     save_mts_method (mts_method);
 }

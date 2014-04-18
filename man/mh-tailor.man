@@ -203,21 +203,6 @@ See
 .IR slocal (1)
 for the details.
 .RE
-.PP
-.BR everyone :
-200
-.RS 5
-The highest user-id which should NOT receive mail addressed to
-\*(lqeveryone\*(rq.
-.RE
-.PP
-.BR noshell :
-.RS 5
-If set, then each user-id greater than \*(lqeveryone\*(rq that has a
-login shell equivalent to the given value (e.g., \*(lq/bin/csh\*(rq)
-indicates that mail for \*(lqeveryone\*(rq should not be sent to them.
-This is useful for handling admin, dummy, and guest logins.
-.RE
 .SS "SMTP support"
 This option is only available if you set
 .B mts

@@ -12,6 +12,8 @@ OBSOLETE FEATURES
 - conflict(8) was deprecated in nmh 1.6, and was removed in this release.
 - mhtest(8) was deprecated in nmh 1.6, and was removed in this release.
 - msh(1) was deprecated in nmh 1.6, and was removed in this release.
+- Support in alias files for the the "*" address-group (everyone) was
+  deprecated in nmh 1.6, and was removed in this release.
 
 -------------------
 DEPRECATED FEATURES

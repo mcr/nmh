@@ -63,9 +63,3 @@ extern char *pophost;
  * Global MailDelivery File
  */
 extern char *maildelivery;
-
-/*
- * Aliasing Facility (doesn't belong here)
- */
-extern int Everyone;
-extern char *NoShell;

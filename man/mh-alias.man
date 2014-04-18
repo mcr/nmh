@@ -44,7 +44,6 @@ where:
 .RI "			|  < " file
 .RI "			|  = " UNIX\-group
 .RI "			|  + " UNIX\-group
-			|  *
 
 .IR address\-list "	:= " address
 .RI "			|  " address\-list ", " address
@@ -97,16 +96,6 @@ whose group\-id is indicated by this group is
 added to the
 .I address\-list
 for the alias.
-.PP
-If the
-.I address\-group
-is simply \*(lq*\*(rq, the system's password database
-is consulted and all login names with a userid
-greater than some magic number (usually 200) are added to the
-.I address\-list
-for the alias.
-.B
-This feature is obsolescent and will be removed in a future release.
 .PP
 In match, a trailing \*(lq*\*(rq on an alias will match just about anything
 appropriate.

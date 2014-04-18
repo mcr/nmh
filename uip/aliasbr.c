@@ -41,7 +41,6 @@ static char *seekp (char *, char *, char **);
 static int addfile (struct aka *, char *);
 static int addgroup (struct aka *, char *);
 static int addmember (struct aka *, char *);
-static int addall (struct aka *);
 static char *getalias (char *);
 static void add_aka (struct aka *, char *);
 static struct aka *akalloc (char *);
@@ -271,10 +270,6 @@ alias (char *file)
 		}
 		break;
 
-	    case '*': 		/* Everyone */
-		addall (ak);
-		break;
-
 	    default: 		/* list */
 		while ((cp = getalias (pp)))
 		    add_aka (ak, cp);
@@ -436,26 +431,6 @@ addmember (struct aka *ak, char *grp)
 	    add_aka (ak, hm->h_name);
 
     return 1;
-}
-
-
-static int
-addall (struct aka *ak)
-{
-    int noshell = NoShell == NULL || *NoShell == 0;
-    register struct home *hm;
-
-    init_pw ();
-
-    if (Everyone < 0)
-	Everyone = EVERYONE;
-
-    for (hm = homehead; hm; hm = hm->h_next)
-        if ((int) hm->h_uid > Everyone
-		&& (noshell || strcmp (hm->h_shell, NoShell)))
-	    add_aka (ak, hm->h_name);
-
-    return homehead != NULL;
 }
 
 
