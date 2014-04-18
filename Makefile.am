@@ -154,7 +154,7 @@ bin_SCRIPTS = uip/mhmail etc/sendfiles
 ##
 auxexec_PROGRAMS = uip/ap uip/dp uip/fmtdump uip/mhl uip/mkstemp \
 		   uip/post uip/rcvdist uip/rcvpack uip/rcvstore uip/rcvtty \
-		   uip/slocal uip/viamail uip/mhtest
+		   uip/slocal uip/viamail
 
 auxexec_SCRIPTS = uip/spost
 
@@ -426,11 +426,6 @@ uip_fmttest_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhl_SOURCES = uip/mhl.c uip/mhlsbr.c
 uip_mhl_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
-
-uip_mhtest_SOURCES = uip/mhtest.c uip/mhparse.c uip/mhcachesbr.c \
-		     uip/mhoutsbr.c uip/mhmisc.c uip/mhfree.c \
-		     uip/md5.c
-uip_mhtest_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mkstemp_SOURCES = uip/mkstemp.c
 uip_mkstemp_LDADD = $(LDADD) $(POSTLINK)
