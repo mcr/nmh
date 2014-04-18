@@ -6,6 +6,10 @@ NEW FEATURES
 -----------------
 OBSOLETE FEATURES
 -----------------
+
+- The undocumented -queue switch to post was deprecated in nmh 1.6, and
+  removed in this release.
+
 -------------------
 DEPRECATED FEATURES
 -------------------

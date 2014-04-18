@@ -151,9 +151,9 @@ static char *EHLOkeys[MAXEHLO + 1];
 /*
  * static prototypes
  */
-static int smtp_init (char *, char *, char *, int, int, int, int, int, int,
+static int smtp_init (char *, char *, char *, int, int, int, int, int,
 		      char *, char *, int);
-static int sendmail_init (char *, char *, int, int, int, int, int, int,
+static int sendmail_init (char *, char *, int, int, int, int, int,
                           char *, char *);
 
 static int rclient (char *, char *);
@@ -183,22 +183,19 @@ static int sm_auth_sasl(char *, int, char *, char *);
 
 int
 sm_init (char *client, char *server, char *port, int watch, int verbose,
-         int debug, int queued, int sasl, int saslssf,
-	 char *saslmech, char *user, int tls)
+         int debug, int sasl, int saslssf, char *saslmech, char *user, int tls)
 {
     if (sm_mts == MTS_SMTP)
 	return smtp_init (client, server, port, watch, verbose,
-			  debug, queued, sasl, saslssf, saslmech,
-			  user, tls);
+			  debug, sasl, saslssf, saslmech, user, tls);
     else
 	return sendmail_init (client, server, watch, verbose,
-                              debug, queued, sasl, saslssf, saslmech,
-			      user);
+                              debug, sasl, saslssf, saslmech, user);
 }
 
 static int
 smtp_init (char *client, char *server, char *port, int watch, int verbose,
-	   int debug, int queued,
+	   int debug,
            int sasl, int saslssf, char *saslmech, char *user, int tls)
 {
     int result, sd1, sd2;
@@ -387,16 +384,13 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 send_options: ;
     if (watch && EHLOset ("XVRB"))
 	smtalk (SM_HELO, "VERB on");
-    if (queued && EHLOset ("XQUE"))
-	smtalk (SM_HELO, "QUED");
 
     return RP_OK;
 }
 
 int
 sendmail_init (char *client, char *server, int watch, int verbose,
-               int debug, int queued,
-               int sasl, int saslssf, char *saslmech, char *user)
+               int debug, int sasl, int saslssf, char *saslmech, char *user)
 {
     unsigned int i, result, vecp;
     int pdi[2], pdo[2];
@@ -472,7 +466,7 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 	    vecp = 0;
 	    vec[vecp++] = r1bindex (sendmail, '/');
 	    vec[vecp++] = "-bs";
-	    vec[vecp++] = watch ? "-odi" : queued ? "-odq" : "-odb";
+	    vec[vecp++] = watch ? "-odi" : "-odb";
 	    vec[vecp++] = "-oem";
 	    vec[vecp++] = "-om";
 	    if (verbose)

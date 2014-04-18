@@ -76,7 +76,6 @@
     X("server host", 6, SERVSW) /* specify alternate SMTP server */ \
     X("snoop", -5, SNOOPSW) /* snoop the SMTP transaction */ \
     X("partno", -6, PARTSW) \
-    X("queued", -6, QUEUESW) \
     X("sasl", SASLminc(-4), SASLSW) \
     X("nosasl", SASLminc(-6), NOSASLSW) \
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
@@ -241,7 +240,6 @@ static char *serversw = NULL;
 static char prefix[] = "----- =_aaaaaaaaaa";
 
 static char *partno = NULL;
-static int queued = 0;
 
 /*
  * static prototypes
@@ -422,10 +420,6 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 
-		case QUEUESW:
-		    queued++;
-		    continue;
-		
 		case SASLSW:
 		    sasl++;
 		    continue;
@@ -1526,8 +1520,8 @@ post (char *file, int bccque, int talk, char *envelope)
 	}
     } else {
         if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
-                                        verbose, snoop, queued, sasl,
-                                        saslssf, saslmech, user, tls))  ||
+                                        verbose, snoop, sasl, saslssf,
+					saslmech, user, tls))  ||
             rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
@@ -1566,8 +1560,8 @@ verify_all_addresses (int talk, char *envelope)
 
     if (!whomsw || checksw)
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
-					verbose, snoop, queued, sasl,
-					saslssf, saslmech, user, tls))
+					verbose, snoop, sasl, saslssf,
+					saslmech, user, tls))
 		|| rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
