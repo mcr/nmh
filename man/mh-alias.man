@@ -1,4 +1,4 @@
-.TH MH-ALIAS %manext5% "Oct 14, 2012" "%nmhversion%"
+.TH MH-ALIAS %manext5% "Apr 18, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -192,7 +192,6 @@ System-wide default alias file.
 .IR whom (1),
 .IR getgrent (3),
 .IR getpwent (3),
-.IR conflict (8),
 .IR post (8)
 .SH BUGS
 Although the forward-referencing semantics of

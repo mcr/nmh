@@ -1,4 +1,4 @@
-.TH MH-PROFILE %manext5% "February 16, 2014" "%nmhversion%"
+.TH MH-PROFILE %manext5% "April 18, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -537,10 +537,6 @@ supersedes the default built-in pager command.)
 .RS 5
 This is the program used to automatically mail various messages
 and notifications.  It is used by
-.B conflict
-when using the
-.B \-mail
-option.  It is used by
 .B send
 to post failure notices.
 It is used to retrieve an external-body with access-type `mail-server'

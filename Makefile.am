@@ -152,7 +152,7 @@ bin_SCRIPTS = uip/mhmail etc/sendfiles
 ##
 ## This is all programs that get installed in the "lib" directory
 ##
-auxexec_PROGRAMS = uip/ap uip/conflict uip/dp uip/fmtdump uip/mhl uip/mkstemp \
+auxexec_PROGRAMS = uip/ap uip/dp uip/fmtdump uip/mhl uip/mkstemp \
 		   uip/post uip/rcvdist uip/rcvpack uip/rcvstore uip/rcvtty \
 		   uip/slocal uip/viamail uip/mhtest
 
@@ -224,7 +224,7 @@ dist_contrib_DATA = docs/contrib/replyfilter docs/contrib/build_nmh \
 ## Our man pages
 ##
 man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
-	   man/conflict.8 man/dist.1 man/dp.8 man/flist.1 man/flists.1 \
+	   man/dist.1 man/dp.8 man/flist.1 man/flists.1 \
 	   man/fmtdump.8 man/fmttest.1 man/fnext.1 man/folder.1 man/folders.1 \
 	   man/forw.1 man/fprev.1 man/inc.1 man/install-mh.1 man/mark.1 \
 	   man/mh-alias.5 man/mh-chart.7 man/mh-draft.5 man/mh-folders.5 \
@@ -243,7 +243,7 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 ## Sources for our man pages
 ##
 man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
-	   man/conflict.man man/dist.man man/dp.man man/flist.man \
+	   man/dist.man man/dp.man man/flist.man \
 	   man/flists.man man/fmtdump.man man/fmttest.man man/fnext.man \
 	   man/folder.man man/folders.man man/forw.man man/fprev.man \
 	   man/inc.man man/install-mh.man man/mark.man man/mh-alias.man \
@@ -414,9 +414,6 @@ uip_whom_LDADD = $(LDADD) $(POSTLINK)
 
 uip_ap_SOURCES = uip/ap.c
 uip_ap_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
-
-uip_conflict_SOURCES = uip/conflict.c uip/aliasbr.c
-uip_conflict_LDADD = $(LDADD) $(POSTLINK)
 
 uip_dp_SOURCES = uip/dp.c
 uip_dp_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)

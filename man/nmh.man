@@ -1,4 +1,4 @@
-.TH NMH %manext7% "March 13, 2014" "%nmhversion%"
+.TH NMH %manext7% "April 18, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -473,9 +473,6 @@ Indirectly Invoked Commands
 .PD 0
 .IR ap (8)
 parse addresses RFC 822\-style
-.TP
-.IR conflict (8)
-search for alias/password conflicts
 .TP
 .IR dp (8)
 parse dates RFC 822\-style

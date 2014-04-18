@@ -1,4 +1,4 @@
-.TH MH-TAILOR %manext5% "December 8, 2013" "%nmhversion%"
+.TH MH-TAILOR %manext5% "April 18, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -12,7 +12,6 @@ defines run-time options for those
 programs which interact (in some form) with the message transport system.
 At present, these (user) programs are:
 .BR ap ,
-.BR conflict ,
 .BR inc ,
 .BR msgchk ,
 .BR msh ,
