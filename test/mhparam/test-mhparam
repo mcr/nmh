@@ -88,14 +88,12 @@ $bindir/mhmail
 $MH_INST_DIR$auxexecdir/mhl
 cat
 600
-$bindir/msh
 $bindir/packf
 $MH_INST_DIR$auxexecdir/post
 $bindir/send
 $bindir/mhshow
 $MH_INST_DIR$auxexecdir/mhl
 nmh-`cat ${srcdir}/VERSION`
-$bindir/msh
 $bindir/whatnow
 $bindir/whom
 $sysconfdir
@@ -116,14 +114,12 @@ mailproc \
 mhlproc \
 moreproc \
 msgprot \
-mshproc \
 packproc \
 postproc \
 sendproc \
 showmimeproc \
 showproc \
 version \
-vmhproc \
 whatnowproc \
 whomproc \
 etcdir \

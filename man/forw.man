@@ -1,4 +1,4 @@
-.TH FORW %manext1% "March 21, 2013" "%nmhversion%"
+.TH FORW %manext1% "April 18, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -336,11 +336,7 @@ The
 switch specifies the message to be forwarded as an 
 exact filename rather than as an
 .B nmh
-folder and message number. It is 
-intended to be used by the
-.B msh
-interface to
-.BR nmh . 
+folder and message number.
 This switch implies
 .BR \-noannotate .
 The forwarded message is simply

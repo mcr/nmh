@@ -442,9 +442,6 @@ Convenience Wrappers
 .PD 0
 .IR mhmail (1)
 send or read mail
-.TP
-.IR msh (1)
-nmh shell
 .PD
 .ne 4
 .SS

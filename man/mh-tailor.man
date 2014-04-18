@@ -14,7 +14,6 @@ At present, these (user) programs are:
 .BR ap ,
 .BR inc ,
 .BR msgchk ,
-.BR msh ,
 .BR post ,
 .BR rcvdist ,
 and

@@ -1,4 +1,4 @@
-.TH PACKF %manext1% "January 8, 2012" "%nmhversion%"
+.TH PACKF %manext1% "April 18, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -75,7 +75,6 @@ can be unpacked using
 .fi
 .SH "SEE ALSO"
 .IR inc (1),
-.IR msh (1)
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

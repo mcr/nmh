@@ -1,4 +1,4 @@
-.TH REPL %manext1% "April 9, 2013" "%nmhversion%"
+.TH REPL %manext1% "April 18, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -466,11 +466,7 @@ The
 switch specifies the message to be replied to as an
 exact filename rather than as an
 .B nmh
-folder and message number. It is
-intended to be used by the
-.B msh
-interface to
-.BR nmh .
+folder and message number.
 The same caveats apply to this option as to the
 .B \-build
 switch.

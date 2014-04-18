@@ -1,4 +1,4 @@
-.TH BURST %manext1% "January 1, 2001" "%nmhversion%"
+.TH BURST %manext1% "April 18, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -92,7 +92,6 @@ To set mode when creating a new message.
 .PD
 .SH "SEE ALSO"
 .IR inc (1),
-.IR msh (1),
 .IR pack (1)
 .PP
 .I

@@ -437,7 +437,6 @@ extern char *mhlproc;
 extern char *mhlreply;
 extern char *moreproc;
 extern char *msgprot;
-extern char *mshproc;
 extern char *nmhaccessftp;
 extern char *nmhaccessurl;
 extern char *nmhstorage;
@@ -459,7 +458,6 @@ extern char *showproc;
 extern char *usequence;
 extern char *version_num;
 extern char *version_str;
-extern char *vmhproc;
 extern char *whatnowproc;
 extern char *whomproc;
 

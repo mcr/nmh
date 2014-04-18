@@ -590,12 +590,6 @@ to display message bodies (or message parts) of type text/plain.
 supersedes the default built-in pager command.)
 .RE
 .PP
-.BR mshproc :
-%bindir%/msh
-.RS 5
-Currently not used.
-.RE
-.PP
 .BR packproc :
 %bindir%/packf
 .RS 5
