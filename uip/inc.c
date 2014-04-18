@@ -810,6 +810,8 @@ go_to_it:
 	    if (trnflag && m_unlink (sp) == NOTOK)
 		adios (sp, "couldn't unlink");
 	    free (sp); /* Free Maildir[i]->filename */
+
+	    scan_finished();
 	}
 	free (Maildir); /* From now on Maildir is just a flag - don't dref! */
     }
