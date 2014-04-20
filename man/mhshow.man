@@ -363,7 +363,7 @@ set, when
 encounters a \*(lqcharset\*(rq parameter for
 this content, it checks if your terminal can display this character
 set natively.
-.B mhn
+.B mhshow
 checks this by examining the current character set defined by the
 .IR locale (1)
 environment variables.
