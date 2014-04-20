@@ -778,6 +778,7 @@ use_forw:
 	     */
 	    if ((ct = (CT) calloc (1, sizeof(*ct))) == NULL)
 		adios (NULL, "out of memory");
+	    init_decoded_content(ct, infilename);
 	    *ctp = ct;
 	    ci = &ct->c_ctinfo;
 	    if (get_ctinfo (buffer, ct, 0) == NOTOK)
