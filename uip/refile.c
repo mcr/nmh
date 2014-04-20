@@ -240,6 +240,14 @@ main (int argc, char **argv)
 	&& (mp->numsel != mp->nummsg || linkf))
 	seq_setcur (mp, mp->hghsel);
 
+    /*
+     * Close destination folders now; if we are using private sequences
+     * we need to have all of our calls to seq_save() complete before we
+     * call context_save().
+     */
+
+    clsfolds (folders, foldp);
+
     /* If -nolink, then "remove" messages from source folder.
      *
      * Note that folder_delmsgs does not call the delete hook
@@ -251,8 +259,6 @@ main (int argc, char **argv)
 	seq_save (mp);	/* synchronize message sequences */
 	context_save ();			/* save the context file   */
     }
-
-    clsfolds (folders, foldp);
 
     folder_free (mp);			/* free folder structure   */
     done (0);
