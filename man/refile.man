@@ -114,10 +114,13 @@ switch, then
 will use the next available message number
 which is above the message number you wish to preserve.
 .PP
-The
+As message sequences are folder-specific,
+moving the message from the source folder removes it from all its
+sequences in that folder.
 .B \-retainsequences
-switch causes the memberships in sequences, except \*(lqcur\*(rq, of
-the refiled messages to be carried over to each destination folder.
+adds it to those same sequences in the destination folder,
+creating any that don't exist.
+This adding does not apply for the \*(lqcur\*(rq sequence.
 .PP
 If
 .B \-link
