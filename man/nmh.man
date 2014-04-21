@@ -1,4 +1,4 @@
-.TH NMH %manext7% "April 18, 2014" "%nmhversion%"
+.TH NMH %manext7% "April 21, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -448,6 +448,9 @@ send or read mail
 Utilities
 .TP \n(ttu
 .PD 0
+.IR mhfixmsg (1)
+rewrite MIME messages with various transformations
+.TP
 .IR mhparam (1)
 print nmh profile components
 .TP
