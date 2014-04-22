@@ -69,7 +69,7 @@ The following are new features for the 1.6 release of nmh:
 - For the SMTP MTA TLS can now be negotiated at the beginning of the
   connection with the -initialtls switch.
 - Messages can now be selected using a relative offset from some other
-  message, or from the start or end of a sequence.  See mh-sequences(5).
+  message, or from the start or end of a sequence.  See mh-sequence(5).
 - The -changecur and -nochangecur switches have been added to mhlist(1).
 - mhbuild(1) can now encode 8-bit message headers using RFC-2047 encoding
   rules.  See NOTABLE CHANGES below.
