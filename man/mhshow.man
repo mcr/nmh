@@ -584,8 +584,7 @@ mhshow-show-<type>
 .PP
 need be present in this additional profile. Finally,
 .B mhshow
-will attempt to consult one other additional user profile,
-e.g.,
+will attempt to consult
 .PP
 .RS 5
 %etcdir%/mhn.defaults
@@ -595,6 +594,9 @@ which is created automatically during
 .B nmh
 installation.
 .PP
+See "Profile Lookup" in
+.IR mh-profile (5)
+for the profile search order, and for how duplicate entries are treated.
 .SS Content\-Type Marker
 If
 .B mhshow

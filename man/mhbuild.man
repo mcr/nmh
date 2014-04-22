@@ -644,15 +644,17 @@ definitions useful for that machine.
 .PP
 Finally,
 .B mhbuild
-will attempt to consult a global
-.B mhbuild
-user profile, e.g.,
+will attempt to consult
 .PP
 .RS 5
 %etcdir%/mhn.defaults
 .RE
 .PP
 if it exists.
+.PP
+See "Profile Lookup" in
+.IR mh-profile (5)
+for the profile search order, and for how duplicate entries are treated.
 .SS "Syntax of Composition Files"
 The following is the formal syntax of a
 .B mhbuild

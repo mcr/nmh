@@ -519,8 +519,7 @@ particular machine, this environment variable should be set to
 refer to a file containing definitions useful for that machine.
 Finally,
 .B mhstore
-will attempt to consult one other additional
-user profile, e.g.,
+will attempt to consult
 .PP
 .RS 5
 %etcdir%/mhn.defaults
@@ -529,6 +528,10 @@ user profile, e.g.,
 which is created automatically during
 .B nmh
 installation.
+.PP
+See "Profile Lookup" in
+.IR mh-profile (5)
+for the profile search order, and for how duplicate entries are treated.
 .SH FILES
 .B mhstore
 looks for additional profile files in multiple locations: absolute
