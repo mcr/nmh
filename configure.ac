@@ -418,8 +418,11 @@ if test "$nmh_ndbm" = "autodetect"; then
                 NMH_CHECK_NDBM(gdbm/ndbm.h,gdbm,,
                   NMH_CHECK_NDBM(gdbm/ndbm.h,gdbm_compat -lgdbm,,
                     NMH_CHECK_NDBM(ndbm.h,gdbm,,
-                      NMH_CHECK_NDBM(ndbm.h,gdbm_compat -lgdbm))))))))))
-
+                      NMH_CHECK_NDBM(ndbm.h,gdbm_compat -lgdbm
+                        NMH_CHECK_NDBM(gdbm-ndbm.h,gdbm_compat)))))))))))
+    dnl Please don't remove gdbm-ndbm.h,gdbm_compat.  (On Linux,
+    dnl libgdbm_compat.so loads libgdbm.so as well, so it doesn't
+    dnl need to be explicit.).
   fi
 else
   dnl We don't really need to check that the user-specified values work,
