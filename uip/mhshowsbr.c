@@ -42,7 +42,7 @@ void flush_errors (void);
 /*
  * prototypes
  */
-int show_content_aux (CT, int, char *, char *);
+int show_content_aux (CT, int, char *, char *, struct format *fmt);
 
 /*
  * static prototypes
@@ -50,20 +50,20 @@ int show_content_aux (CT, int, char *, char *);
 static void show_single_message (CT, char *, int, int, int, struct format *);
 static void DisplayMsgHeader (CT, char *, int);
 static int show_switch (CT, int, int, int, int, struct format *);
-static int show_content (CT, int, int, int, struct format *fmt);
-static int show_content_aux2 (CT, int, char *, char *, int, int, int);
-static int show_text (CT, int, int);
+static int show_content (CT, int, int, int, struct format *);
+static int show_content_aux2 (CT, int, char *, char *, int, int, int, struct format *);
+static int show_text (CT, int, int, struct format *);
 static int show_multi (CT, int, int, int, int, struct format *);
-static int show_multi_internal (CT, int, int, int, int, struct format *fmt);
-static int show_multi_aux (CT, int, char *);
-static int show_message_rfc822 (CT, int);
+static int show_multi_internal (CT, int, int, int, int, struct format *);
+static int show_multi_aux (CT, int, char *, struct format *);
+static int show_message_rfc822 (CT, int, struct format *);
 static int show_partial (CT, int);
 static int show_external (CT, int, int, int, int, struct format *);
 static int parse_display_string (CT, char *, int *, int *, char *, char *,
 				 size_t, int multipart);
 static int convert_content_charset (CT, char **);
 static struct format *compile_marker(char *);
-static void output_marker (CT, struct format *);
+static void output_marker (CT, struct format *, int);
 static void free_markercomps (void);
 static int pidcheck(int);
 
@@ -264,11 +264,11 @@ show_switch (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
 
 		case MESSAGE_RFC822:
 		default:
-		    return show_message_rfc822 (ct, alternate);
+		    return show_message_rfc822 (ct, alternate, fmt);
 	    }
 
 	case CT_TEXT:
-	    return show_text (ct, alternate, concatsw);
+	    return show_text (ct, alternate, concatsw, fmt);
 
 	case CT_AUDIO:
 	case CT_IMAGE:
@@ -301,7 +301,7 @@ show_content (CT ct, int alternate, int textonly, int inlineonly,
      */
 
     if (textonly || (inlineonly && !is_inline(ct))) {
-	output_marker(ct, fmt);
+	output_marker(ct, fmt, 1);
 	return OK;
     }
 
@@ -309,15 +309,15 @@ show_content (CT ct, int alternate, int textonly, int inlineonly,
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     if ((cp = ct->c_showproc))
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     /* complain if we are not a part of a multipart/alternative */
     if (!alternate)
@@ -332,7 +332,7 @@ show_content (CT ct, int alternate, int textonly, int inlineonly,
  */
 
 int
-show_content_aux (CT ct, int alternate, char *cp, char *cracked)
+show_content_aux (CT ct, int alternate, char *cp, char *cracked, struct format *fmt)
 {
     int fd;
     int xstdin = 0, xlist = 0;
@@ -382,7 +382,7 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked)
 
 got_command:
     return show_content_aux2 (ct, alternate, cracked, buffer,
-			      fd, xlist, xstdin);
+			      fd, xlist, xstdin, fmt);
 }
 
 
@@ -392,7 +392,7 @@ got_command:
 
 static int
 show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
-                   int fd, int xlist, int xstdin)
+                   int fd, int xlist, int xstdin, struct format *fmt)
 {
     pid_t child_id;
     int i, vecp;
@@ -412,10 +412,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
     }
 
     if (xlist) {
-	if (ct->c_type == CT_MULTIPART)
-	    list_content (ct, -1, 1, 0, 0, 0);
-	else
-	    list_switch (ct, -1, 1, 0, 0, 0);
+	output_marker(ct, fmt, 0);
     }
 
     /*
@@ -487,7 +484,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
  */
 
 static int
-show_text (CT ct, int alternate, int concatsw)
+show_text (CT ct, int alternate, int concatsw, struct format *fmt)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -496,12 +493,12 @@ show_text (CT ct, int alternate, int concatsw)
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     /*
      * Use default method if content is text/plain, or if
@@ -517,7 +514,7 @@ show_text (CT ct, int alternate, int concatsw)
 	    snprintf (buffer, sizeof(buffer), "%%l%s %%F", progsw ? progsw :
 		      moreproc && *moreproc ? moreproc : DEFAULT_PAGER);
 	cp = (ct->c_showproc = add (buffer, NULL));
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
     }
 
     return NOTOK;
@@ -539,15 +536,15 @@ show_multi (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_multi_aux (ct, alternate, cp);
+	return show_multi_aux (ct, alternate, cp, fmt);
 
     /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_multi_aux (ct, alternate, cp);
+	return show_multi_aux (ct, alternate, cp, fmt);
 
     if ((cp = ct->c_showproc))
-	return show_multi_aux (ct, alternate, cp);
+	return show_multi_aux (ct, alternate, cp, fmt);
 
     /*
      * Use default method to display this multipart content.  Even
@@ -643,7 +640,7 @@ out:
  */
 
 static int
-show_multi_aux (CT ct, int alternate, char *cp)
+show_multi_aux (CT ct, int alternate, char *cp, struct format *fmt)
 {
     /* xstdin is only used in the call to parse_display_string():
        its value is ignored in the function. */
@@ -681,7 +678,7 @@ show_multi_aux (CT ct, int alternate, char *cp)
 	return NOTOK;
     }
 
-    return show_content_aux2 (ct, alternate, NULL, buffer, NOTOK, xlist, 0);
+    return show_content_aux2 (ct, alternate, NULL, buffer, NOTOK, xlist, 0, fmt);
 }
 
 
@@ -690,7 +687,7 @@ show_multi_aux (CT ct, int alternate, char *cp)
  */
 
 static int
-show_message_rfc822 (CT ct, int alternate)
+show_message_rfc822 (CT ct, int alternate, struct format *fmt)
 {
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
@@ -699,20 +696,20 @@ show_message_rfc822 (CT ct, int alternate)
     snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
 		invo_name, ci->ci_type, ci->ci_subtype);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     /* Check for invo_name-show-type */
     snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
     if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     if ((cp = ct->c_showproc))
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     /* default method for message/rfc822 */
     if (ct->c_subtype == MESSAGE_RFC822) {
 	cp = (ct->c_showproc = add ("%pshow -file %F", NULL));
-	return show_content_aux (ct, alternate, cp, NULL);
+	return show_content_aux (ct, alternate, cp, NULL, fmt);
     }
 
     /* complain if we are not a part of a multipart/alternative */
@@ -1230,7 +1227,7 @@ convert_content_charset (CT ct, char **file) {
 
 #define DEFAULT_MARKER "[ part %{part} - %{content-type} - %<{description}" \
 		       "%{description}%?{cdispo-filename}%{cdispo-filename}" \
-		       "%|%{ctype-name}%> ]"
+		       "%|%{ctype-name}%> %<(unseen)\\(suppressed\\)%> ]"
 
 static struct format *
 compile_marker(char *markerform)
@@ -1291,7 +1288,7 @@ compile_marker(char *markerform)
  */
 
 static void
-output_marker(CT ct, struct format *fmt)
+output_marker(CT ct, struct format *fmt, int hidden)
 {
     char outbuf[BUFSIZ];
     struct param_comp_list *pcentry;
@@ -1327,6 +1324,12 @@ output_marker(CT ct, struct format *fmt)
 	pcentry->comp->c_text = get_param(ct->c_dispo_first,
 					  pcentry->param, '?', 0);
     }
+
+    /* make the part's hidden aspect available by overloading the
+     * %(unseen) function.  see comments in h/fmt_scan.h.
+     */
+    dat[0] = dat[1] = dat[2] = dat[3] = 0;
+    dat[4] = hidden;
 
     fmt_scan(fmt, outbuf, sizeof(outbuf), sizeof(outbuf), dat, NULL);
 

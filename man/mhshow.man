@@ -598,18 +598,11 @@ See "Profile Lookup" in
 .IR mh-profile (5)
 for the profile search order, and for how duplicate entries are treated.
 .SS Content\-Type Marker
-If
 .B mhshow
-decides to not display a particular part due to the switches of
-.B \-textonly
-or
-.B \-inlineonly
-it will display a marker containing information about the part.  This
-marker is processed via
-.IR mh\-format (5)
-and can be changed by the use of the
+will display a marker containing information about the part being displayed
+next.  The default marker can be changed using the
 .B \-markform
-switch to specify a file containing the
+switch to specify a file containing
 .IR mh\-format (5)
 instructions to use when displaying the content marker.  In addition to
 the normal set of
@@ -629,7 +622,15 @@ disposition	string	Content disposition (attachment or inline)
 ctype-<PARAM>	string	Value of <PARAM> from Content\-Type header
 cdispo-<PARAM>	string	Value of <PARAM> from
 		Content\-Disposition header
+%(unseen)	boolean	Returns true for suppressed parts.
 .fi
+In this context, the %(unseen) function indicates whether
+.B mhshow
+has decided to not display a particular part due to the
+.B \-textonly
+or
+.B \-inlineonly
+switches.
 .RE
 All MIME parameters and the \*(lqContent-Description\*(rq header will have
 RFC 2231 decoding applied and be converted
