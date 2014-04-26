@@ -571,6 +571,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     int	alternating, nowalternate, result;
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
+    int any_part_ok;
     CT p;
 
     alternating = 0;
@@ -587,12 +588,15 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
  */
 
     result = alternate ? NOTOK : OK;
+    any_part_ok = 0;
 
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
 
 	if (part_ok (p, 1) && type_ok (p, 1)) {
 	    int	inneresult;
+
+	    any_part_ok = 1;
 
 	    inneresult = show_switch (p, nowalternate, concatsw, textonly,
 				      inlineonly, fmt);
@@ -621,7 +625,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 	}
     }
 
-    if (alternating && !part) {
+    if (alternating && !part && any_part_ok) {
 	if (!alternate)
 	    content_error (NULL, ct, "don't know how to display any of the contents");
 	result = NOTOK;
