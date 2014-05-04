@@ -130,7 +130,7 @@ readconfig (struct node **npp, FILE *ib, char *file, int ctx)
 	   mhn.defaults can be overridden without triggering
 	   warnings.
 
-	   Note that that mhn.defaults, $MHN, $MHBUILD, $MHSHOW, and
+	   Note that mhn.defaults, $MHN, $MHBUILD, $MHSHOW, and
 	   $MHSTORE all put their entries into just one list, m_defs,
 	   the same list that the profile uses. */
 
