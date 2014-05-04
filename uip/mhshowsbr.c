@@ -1030,9 +1030,12 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
     /* norm_charmap() is case sensitive. */
     char *src_charset_u = upcase (src_charset);
     char *dest_charset_u = upcase (dest_charset);
-    int different_charsets =
-        strcmp (norm_charmap (src_charset), norm_charmap (dest_charset));
+    char *src_charset_n = getcpy (norm_charmap (src_charset));
+    char *dest_charset_n = getcpy (norm_charmap (dest_charset));
+    int different_charsets = strcmp (src_charset_n, dest_charset_n);
 
+    free (dest_charset_n);
+    free (src_charset_n);
     free (dest_charset_u);
     free (src_charset_u);
 
@@ -1198,6 +1201,8 @@ iconv_start:
 
 static int
 convert_content_charset (CT ct, char **file) {
+    int status = OK;
+
 #ifdef HAVE_ICONV
     /* Using current locale, see if the content needs to be converted. */
 
@@ -1207,18 +1212,22 @@ convert_content_charset (CT ct, char **file) {
     if (! check_charset (charset, strlen (charset))) {
         int unused = 0;
 
-        if (convert_charset (ct, get_charset (), &unused) == 0) {
+        char *charset = getcpy (get_charset ());
+
+        if (convert_charset (ct, charset, &unused) == 0) {
             *file = ct->c_cefile.ce_file;
         } else {
-            return NOTOK;
+            status = NOTOK;
         }
+
+        free (charset);
     }
 #else  /* ! HAVE_ICONV */
     NMH_UNUSED (ct);
     NMH_UNUSED (file);
 #endif /* ! HAVE_ICONV */
 
-    return OK;
+    return status;
 }
 
 /*
