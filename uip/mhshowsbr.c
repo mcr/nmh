@@ -1027,19 +1027,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
     char *src_charset = content_charset (ct);
     int status = OK;
 
-    /* norm_charmap() is case sensitive. */
-    char *src_charset_u = upcase (src_charset);
-    char *dest_charset_u = upcase (dest_charset);
-    char *src_charset_n = getcpy (norm_charmap (src_charset));
-    char *dest_charset_n = getcpy (norm_charmap (dest_charset));
-    int different_charsets = strcmp (src_charset_n, dest_charset_n);
-
-    free (dest_charset_n);
-    free (src_charset_n);
-    free (dest_charset_u);
-    free (src_charset_u);
-
-    if (different_charsets) {
+    if (strcasecmp (src_charset, dest_charset)) {
 #ifdef HAVE_ICONV
         iconv_t conv_desc = NULL;
         char *dest;

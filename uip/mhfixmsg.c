@@ -1163,12 +1163,9 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
 /* Identifies 7bit or 8bit content based on charset. */
 static int
 charset_encoding (CT ct) {
-    /* norm_charmap() is case sensitive. */
-    char *charset = upcase (content_charset (ct));
     int encoding =
-        strcmp (norm_charmap (charset), "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
+        strcasecmp (content_charset (ct), "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
 
-    free (charset);
     return encoding;
 }
 
@@ -1595,7 +1592,7 @@ content_encoding (CT ct, const char **reason) {
 static int
 strip_crs (CT ct, int *message_mods) {
     /* norm_charmap() is case sensitive. */
-    char *charset = upcase (content_charset (ct));
+    char *charset = content_charset (ct);
     int status = OK;
 
     /* Only strip carriage returns if content is ASCII or another
@@ -1603,10 +1600,10 @@ strip_crs (CT ct, int *message_mods) {
        LF.  We can include UTF-8 here because if the high-order bit of
        a UTF-8 byte is 0, then it must be a single-byte ASCII
        character. */
-    if (! strcmp (norm_charmap (charset), "US-ASCII")  ||
-        ! strncmp (norm_charmap (charset), "ISO-8859-", 9)  ||
-        ! strncmp (norm_charmap (charset), "UTF-8", 5)  ||
-        ! strncmp (norm_charmap (charset), "WINDOWS-12", 10)) {
+    if (! strcasecmp (charset, "US-ASCII")  ||
+        ! strcasecmp (charset, "UTF-8")  ||
+        ! strncasecmp (charset, "ISO-8859-", 9)  ||
+        ! strncasecmp (charset, "WINDOWS-12", 10)) {
         char **file = NULL;
         FILE **fp = NULL;
         size_t begin;
@@ -1730,7 +1727,6 @@ strip_crs (CT ct, int *message_mods) {
         }
     }
 
-    free (charset);
     return status;
 }
 
