@@ -1591,7 +1591,6 @@ content_encoding (CT ct, const char **reason) {
 
 static int
 strip_crs (CT ct, int *message_mods) {
-    /* norm_charmap() is case sensitive. */
     char *charset = content_charset (ct);
     int status = OK;
 
