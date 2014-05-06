@@ -622,7 +622,8 @@ disposition	string	Content disposition (attachment or inline)
 ctype-<PARAM>	string	Value of <PARAM> from Content\-Type header
 cdispo-<PARAM>	string	Value of <PARAM> from
 		Content\-Disposition header
-%(unseen)	boolean	Returns true for suppressed parts.
+%(size)	integer	The size of the decoded part, in bytes
+%(unseen)	boolean	Returns true for suppressed parts
 .fi
 In this context, the %(unseen) function indicates whether
 .B mhshow

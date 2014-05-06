@@ -1289,6 +1289,7 @@ output_marker(CT ct, struct format *fmt, int hidden)
 {
     char outbuf[BUFSIZ];
     struct param_comp_list *pcentry;
+    int partsize;
     int dat[5];
 
     /*
@@ -1322,11 +1323,18 @@ output_marker(CT ct, struct format *fmt, int hidden)
 					  pcentry->param, '?', 0);
     }
 
+    if (ct->c_cesizefnx)
+	partsize = (*ct->c_cesizefnx) (ct);
+    else
+	partsize = ct->c_end - ct->c_begin;
+
     /* make the part's hidden aspect available by overloading the
-     * %(unseen) function.  see comments in h/fmt_scan.h.
+     * %(unseen) function.  make the part's size available via %(size).
+     * see comments in h/fmt_scan.h.
      */
-    dat[0] = dat[1] = dat[2] = dat[3] = 0;
+    dat[2] = partsize;
     dat[4] = hidden;
+    dat[0] = dat[1] = dat[3] = 0;
 
     fmt_scan(fmt, outbuf, sizeof(outbuf), sizeof(outbuf), dat, NULL);
 
