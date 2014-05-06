@@ -490,6 +490,41 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		    cp += n;
 	    }
 	    break;
+	case FT_LS_UNITS:
+	    {
+		char *unitcp;
+		unsigned int whole, tenths;
+
+		if (value < 1000) {
+		    snprintf(buffer, sizeof(buffer), "%u", value);
+		} else {
+
+		    /* find correct scale for size (Kilo/Mega/Giga/Tera) */
+		    for (unitcp = "KMGT"; value > 999999; value /= 1000) {
+			if (!*++unitcp)
+			    break;
+		    }
+
+		    if (!*unitcp) {
+			strcpy(buffer, "huge");
+		    } else {
+			/* round up to next higer tenth of kilo-/mega-/giga- */
+			value += 99; value /= 100;
+
+			/* want one digit after decimal, avoid float */
+			whole = value / 10;
+			tenths = value - (whole * 10);
+
+			if (tenths) {
+			    snprintf(buffer, sizeof(buffer), "%u.%u%c", whole, tenths, *unitcp);
+			} else {
+			    snprintf(buffer, sizeof(buffer), "%u%c", whole, *unitcp);
+			}
+		    }
+		}
+		str = buffer;
+	    }
+	    break;
 	case FT_NUMF:
 	    cpnumber (&cp, value, fmt->f_width, fmt->f_fill, ep - cp);
 	    break;

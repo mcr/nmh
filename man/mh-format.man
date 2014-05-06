@@ -290,6 +290,7 @@ decode	expr	string	decode \fIstr\fR as RFC 2047 (MIME-encoded)
 			component
 unquote	expr	string	remove RFC 2822 quotes from \fIstr\fR
 trim	expr		trim trailing whitespace from \fIstr\fR
+units	expr	string	convert number to SI units ("15.1K")
 putstr	expr		print \fIstr\fR
 putstrf	expr		print \fIstr\fR in a fixed width
 putnum	expr		print \fInum\fR
