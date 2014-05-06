@@ -153,7 +153,7 @@ EOF
 
 # Write the expected output.
 cat >"$expected" <<EOF
-part 1.1   text/plain                  29
+[ part 1.1 - text/plain -   29B  ]
 This is the text/plain part.
 EOF
 
@@ -293,7 +293,7 @@ EOF
 
 # Write the expected output.
 cat >"$expected" <<EOF
-part 1.1   text/plain                  29
+[ part 1.1 - text/plain -   29B  ]
 This is the text/plain part.
 EOF
 
@@ -371,6 +371,7 @@ The 4096'th character is the '2' at the end of the following NextPart_002.
 --NextPart_002
 Content-Type: text/plain;
     charset="utf-8"
+Content-Description: the text/plain part
 
 This is the text/plain part.
 
@@ -381,7 +382,7 @@ EOF
 
 # Write the expected output.
 cat >"$expected" <<EOF
-part 1.1   text/plain                  29
+[ part 1.1 - text/plain - the text/plain part  29B  ]
 This is the text/plain part.
 EOF
 

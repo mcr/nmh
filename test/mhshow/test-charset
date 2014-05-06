@@ -18,8 +18,6 @@ setup_test
 
 LC_ALL=en_US.UTF-8; export LC_ALL
 
-test "$ICONV_ENABLED" -eq 0  &&  text_size=10  || text_size=11
-
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
 
@@ -35,6 +33,7 @@ Subject: test
 MIME-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: quoted-printable
+Content-Description: bogus quoted-printable data
 Date: Sun, 18 Dec 2005 00:52:39 +0100
 
 4 =F7 2 =3D 2
@@ -47,8 +46,9 @@ From:    foo@example.edu
 Subject: test
 
 MIME-Version: 1.0
+Content-Description: bogus quoted-printable data
 
-part       text/plain                  $text_size
+[ part  - text/plain - bogus quoted-printable data  11B  ]
 This is a test
 EOF
 

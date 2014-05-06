@@ -65,7 +65,7 @@ From:    foo@example.edu
 Subject: test
 
 
-part       text/plain                  70
+[ part  - text/plain -   70B  ]
 
 This is a multi-part message in MIME format.
 

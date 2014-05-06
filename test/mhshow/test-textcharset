@@ -47,7 +47,7 @@ Subject: test display with charset conversion
 
 MIME-Version: 1.0
 
-part       text/plain                  11
+[ part  - text/plain -   11B  ]
 4 ÷ 2 = 2
 EOF
 
@@ -735,7 +735,7 @@ Subject: check charset conversion of a large file
 
 MIME-Version: 1.0
 
-part       text/plain                 18K
+[ part  - text/plain -   18.9KB  ]
 1.  The Earthquake
 
 

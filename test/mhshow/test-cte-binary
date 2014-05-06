@@ -43,7 +43,7 @@ Subject: test
 MIME-Version: 1.0
 Content-Disposition: inline
 
-part       text/plain                  34
+[ part  - text/plain -   34B  ]
 This is a test; this is the body.
 EOF
 run_prog mhshow $msgnum > $actual 2>&1
