@@ -109,7 +109,8 @@ DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 ##
 CLEANFILES = config/version.c sbr/sigmsg.h sbr/dtimep.c etc/mts.conf \
 	     etc/gen-ctype-checked sbr/ctype-checked.h sbr/ctype-checked.c \
-	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS)
+	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS) \
+	     *.plist
 clean-local:
 	@rm -rf RPM a.out.dSYM uip/a.out.dSYM
 	@rm -rf test/testdir
@@ -117,7 +118,7 @@ clean-local:
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
 ##
-MAINTAINERCLEANFILES = cscope.files cscope.out cscope.in.out cscope.po.out
+MAINTAINERCLEANFILES = cscope.files cscope.out cscope.in.out cscope.po.out *.plist
 
 ##
 ## And our own superclean, to get everything left by maintainer-clean.
