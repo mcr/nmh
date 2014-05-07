@@ -1222,9 +1222,11 @@ convert_content_charset (CT ct, char **file) {
  * Compile our format string and save any parameters we care about.
  */
 
-#define DEFAULT_MARKER "[ part %{part} - %{content-type} - %<{description}" \
-		       "%{description}%?{cdispo-filename}%{cdispo-filename}" \
-		       "%|%{ctype-name}%> %<(unseen)\\(suppressed\\)%> ]"
+#define DEFAULT_MARKER "[ part %{part} - %{content-type} - " \
+		       "%<{description}%{description}" \
+		         "%?{cdispo-filename}%{cdispo-filename}" \
+		         "%|%{ctype-name}%>  " \
+		       "%(units(size))B %<(unseen)\\(suppressed\\)%> ]"
 
 static struct format *
 compile_marker(char *markerform)
