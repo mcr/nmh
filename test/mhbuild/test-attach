@@ -280,6 +280,55 @@ EOF
 
 check "$draft" "$expected"
 
+#
+# One attachment, text/plain containing some binary characters,
+# include NUL bytes.
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: Testing some binary chars
+--------
+This is some tëxt.
+#text/plain; name="somebinary" [ - ] {attachment} ${srcdir}/test/mhbuild/somebinary
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: Testing some binary chars
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-Transfer-Encoding: 8bit
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+This is some tëxt.
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; name="somebinary"; charset="us-ascii"
+Content-Description:  - 
+Content-Disposition: attachment; filename="somebinary"
+Content-Transfer-Encoding: quoted-printable
+
+
+=46rom here on, this is only =
+
+a test, though it contains =13ome
+=00odd=00 bytes.
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
 [ ${failed:=0} -eq 0 ]  &&  rm -f ${backup}
 
 exit ${failed:-0}
