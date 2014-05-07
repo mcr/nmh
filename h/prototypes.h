@@ -29,6 +29,18 @@ void arglist_free (char *, char **);
 void ambigsw (char *, struct swit *);
 int atooi(char *);
 char **brkstring (char *, char *, char *);
+
+/*
+ * Check to see if we can display a given character set natively.
+ * Arguments include:
+ *
+ * str	- Name of character set to check against
+ * len	- Length of "str"
+ *
+ * Returns 1 if the specified character set can be displayed natively,
+ * 0 otherwise.
+ */
+
 int check_charset (char *, int);
 int client(char *, char *, char *, int, int);
 void closefds(int);
@@ -111,7 +123,15 @@ char **getans_via_readline (char *, struct swit *);
 #endif /* READLINE_SUPPORT */
 int getanswer (char *);
 char **getarguments (char *, int, char **, int);
+
+/*
+ * Returns the MIME character set indicated by the current locale setting.
+ * Should be used by routines that want to convert to/from the local
+ * character set, or if you want to check to see if you can display content
+ * in the local character set.
+ */
 char *get_charset(void);
+
 char *getcpy (const char *);
 char *get_default_editor(void);
 char *getfolder(int);
@@ -367,6 +387,11 @@ int unputenv (char *);
 void unquote_string(const char *input, char *output);
 int uprf (char *, char *);
 int vfgets (FILE *, char **);
+
+/*
+ * Output the local character set name, but make sure it is suitable for
+ * 8-bit characters.
+ */
 char *write_charset_8bit (void);
 
 
