@@ -1,5 +1,6 @@
 # Not removed by any Makefile target:
 .DS_Store
+/docs/doxygen/
 
 # Removed by superclean:
 /ChangeLog
