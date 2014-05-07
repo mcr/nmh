@@ -336,26 +336,35 @@ writeQuoted (CT ct, FILE *out)
 {
     int fd;
     char *cp, *file;
-    char c = '\0', buffer[BUFSIZ];
+    char c = '\0';
     CE ce = &ct->c_cefile;
     int n = 0;
+    char *bufp = NULL;
+    size_t buflen;
+    ssize_t gotlen;
 
     file = NULL;
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
 	return NOTOK;
 
-    while (fgets (buffer, sizeof(buffer) - 1, ce->ce_fp)) {
+    while ((gotlen = getline(&bufp, &buflen, ce->ce_fp)) != -1) {
 
-	cp = buffer + strlen (buffer) - 1;
+	cp = bufp + gotlen - 1;
 	if ((c = *cp) == '\n')
-	    *cp = '\0';
+	    gotlen--;
 
-	if (strncmp (cp = buffer, "From ", sizeof("From ") - 1) == 0) {
-	    fprintf (out, "=%02X", *cp++ & 0xff);
+	/*
+	 * if the line starts with "From ", encode the 'F' so it
+	 * doesn't falsely match an mbox delimiter.
+	 */
+	cp = bufp;
+	if (gotlen >= 5 && strncmp (cp, "From ", 5) == 0) {
+	    fprintf (out, "=%02X", 'F');
+	    cp++;
 	    n += 3;
 	}
 
-	for (; *cp; cp++) {
+	for (; cp < bufp + gotlen; cp++) {
 	    if (n > CPERLIN - 3) {
 		fputs ("=\n", out);
 		n = 0;
@@ -384,7 +393,7 @@ three_print:
 	}
 
 	if (c == '\n') {
-	    if (cp > buffer && (*--cp == ' ' || *cp == '\t'))
+	    if (cp > bufp && (*--cp == ' ' || *cp == '\t'))
 		fputs ("=\n", out);
 
 	    putc ('\n', out);
