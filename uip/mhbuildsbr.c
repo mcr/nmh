@@ -1279,13 +1279,17 @@ raw:
 static int
 scan_content (CT ct, size_t maxunencoded)
 {
-    int len;
+    int prefix_len;
     int check8bit = 0, contains8bit = 0;  /* check if contains 8bit data */
+    int checknul = 0, containsnul = 0;  /* check if contains NULs */
     int checklinelen = 0, linelen = 0;  /* check for long lines */ 
     int checkllinelen = 0; /* check for extra-long lines */
     int checkboundary = 0, boundaryclash = 0; /* check if clashes with multipart boundary   */
     int checklinespace = 0, linespace = 0;  /* check if any line ends with space          */
-    char *cp = NULL, buffer[BUFSIZ];
+    char *cp = NULL;
+    char *bufp = NULL;
+    size_t buflen;
+    ssize_t gotlen;
     struct text *t = NULL;
     FILE *in = NULL;
     CE ce = &ct->c_cefile;
@@ -1326,8 +1330,10 @@ scan_content (CT ct, size_t maxunencoded)
 
     if (ct->c_type == CT_TEXT) {
 	t = (struct text *) ct->c_ctparams;
-	if (t->tx_charset == CHARSET_UNSPECIFIED)
+	if (t->tx_charset == CHARSET_UNSPECIFIED) {
 	    check8bit = 1;
+	    checknul = 1;
+	}
     }
 
     switch (ct->c_reqencoding) {
@@ -1355,6 +1361,7 @@ scan_content (CT ct, size_t maxunencoded)
 
 	case CT_APPLICATION:
 	    check8bit = 1;
+	    checknul = 1;
 	    checklinelen = 1;
 	    checklinespace = 1;
 	    checkboundary = 1;
@@ -1394,29 +1401,31 @@ scan_content (CT ct, size_t maxunencoded)
      * Scan the unencoded content
      */
     if (check8bit || checklinelen || checklinespace || checkboundary ||
-	checkllinelen) {
+	checkllinelen || checknul) {
 	if ((in = fopen (ce->ce_file, "r")) == NULL)
 	    adios (ce->ce_file, "unable to open for reading");
-	len = strlen (prefix);
+	prefix_len = strlen (prefix);
 
-	while (fgets (buffer, sizeof(buffer) - 1, in)) {
+	while ((gotlen = getline(&bufp, &buflen, in)) != -1) {
 	    /*
-	     * Check for 8bit data.
+	     * Check for 8bit and NUL data.
 	     */
-	    if (check8bit) {
-		for (cp = buffer; *cp; cp++) {
-		    if (!isascii ((unsigned char) *cp)) {
-			contains8bit = 1;
-			check8bit = 0;	/* no need to keep checking */
-			break;
-		    }
+	    for (cp = bufp; (check8bit || checknul) &&
+	    				cp < bufp + gotlen; cp++) {
+		if (!isascii ((unsigned char) *cp)) {
+		    contains8bit = 1;
+		    check8bit = 0;	/* no need to keep checking */
+		}
+		if (!*cp) {
+		    containsnul = 1;
+		    checknul = 0;	/* no need to keep checking */
 		}
 	    }
 
 	    /*
 	     * Check line length.
 	     */
-	    if (checklinelen && (strlen (buffer) > maxunencoded + 1)) {
+	    if (checklinelen && ((size_t)gotlen > maxunencoded + 1)) {
 		linelen = 1;
 		checklinelen = 0;	/* no need to keep checking */
 	    }
@@ -1428,7 +1437,7 @@ scan_content (CT ct, size_t maxunencoded)
 	     */
 
 	    if (checkllinelen && !linelen &&
-					(strlen(buffer) > MAXLONGLINE + 1)) {
+					(gotlen > MAXLONGLINE + 1)) {
 		adios(NULL, "Line in content exceeds maximum line limit (%d)",
 		      MAXLONGLINE);
 	    }
@@ -1436,7 +1445,8 @@ scan_content (CT ct, size_t maxunencoded)
 	    /*
 	     * Check if line ends with a space.
 	     */
-	    if (checklinespace && (cp = buffer + strlen (buffer) - 2) > buffer && isspace ((unsigned char) *cp)) {
+	    if (checklinespace && (cp = bufp + gotlen - 2) > bufp &&
+	    		isspace ((unsigned char) *cp)) {
 		linespace = 1;
 		checklinespace = 0;	/* no need to keep checking */
 	    }
@@ -1445,18 +1455,20 @@ scan_content (CT ct, size_t maxunencoded)
 	     * Check if content contains a line that clashes
 	     * with our standard boundary for multipart messages.
 	     */
-	    if (checkboundary && buffer[0] == '-' && buffer[1] == '-') {
-		for (cp = buffer + strlen (buffer) - 1; cp >= buffer; cp--)
+	    if (checkboundary && bufp[0] == '-' && bufp[1] == '-') {
+		for (cp = bufp + gotlen - 1; cp >= bufp; cp--)
 		    if (!isspace ((unsigned char) *cp))
 			break;
 		*++cp = '\0';
-		if (!strncmp(buffer + 2, prefix, len) && isdigit((unsigned char) buffer[2 + len])) {
+		if (!strncmp(bufp + 2, prefix, prefix_len) &&
+			    isdigit((unsigned char) bufp[2 + prefix_len])) {
 		    boundaryclash = 1;
 		    checkboundary = 0;	/* no need to keep checking */
 		}
 	    }
 	}
 	fclose (in);
+	free(bufp);
     }
 
     /*
@@ -1484,9 +1496,9 @@ scan_content (CT ct, size_t maxunencoded)
     else
 	switch (ct->c_type) {
 	case CT_TEXT:
-	    if (contains8bit && !linelen && !linespace && !checksw)
+	    if (contains8bit && !containsnul && !linelen && !linespace && !checksw)
 		ct->c_encoding = CE_8BIT;
-	    else if (contains8bit || linelen || linespace || checksw)
+	    else if (contains8bit || containsnul || linelen || linespace || checksw)
 		ct->c_encoding = CE_QUOTED;
 	    else
 		ct->c_encoding = CE_7BIT;
@@ -1494,7 +1506,7 @@ scan_content (CT ct, size_t maxunencoded)
 
 	case CT_APPLICATION:
 	    /* For application type, use base64, except when postscript */
-	    if (contains8bit || linelen || linespace || checksw)
+	    if (containsnul || contains8bit || linelen || linespace || checksw)
 		ct->c_encoding = (ct->c_subtype == APPLICATION_POSTSCRIPT)
 		    ? CE_QUOTED : CE_BASE64;
 	    else
