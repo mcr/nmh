@@ -38,6 +38,7 @@
 /stamp-h1
 
 # Removed by clean:
+/*.plist
 /RPM/
 a.out.dSYM/
 /config/version.c
