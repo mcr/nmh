@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Run the clang static analyzer across the code base.
+# The '--user-analyzer /usr/bin/clang' is here to work around a bug
+# in the version of CSA for MacOS.  It runs the wrong clang binary, otherwise.
+#
+# Note: you must run configure before running this script.
+
+echo cleaning ...; make clean >/dev/null 2>&1
+scan-build -V -v -stats -maxloop 10 --use-analyzer /usr/bin/clang -o /tmp/nmh make

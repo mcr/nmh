@@ -1,0 +1,12 @@
+This directory contains tools, scripts, and supporting files used
+by the developers while writing, debugging, and testing the code.
+By definition, anything in this directory is not portable.  The
+files can (and probably do) depends on specific programs being
+installed, might only run on a specific operating system release,
+or have dependacies on the ritual sacrifice of politicians.
+
+In the interest of consistency, scripts or programs placed here
+should be written to be invoked from the top-level nmh source code
+directory.  E.g., 'tools/csa' should do the right thing when run
+from this directory's parent.  If that's not possible, please add
+a note here or in the relevant script saying how to run things.
