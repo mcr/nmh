@@ -170,7 +170,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 
 	    /* abort if draft has Mime-Version or C-T-E header field */
 	    if (strcasecmp (name, VRSN_FIELD) == 0 ||
-	    	strcasecmp (name, ENCODING_FIELD) == 0) {
+		strcasecmp (name, ENCODING_FIELD) == 0) {
 		if (autobuild) {
 		    fclose(in);
 		    return NULL;
@@ -205,9 +205,9 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 	     */
 
 	    if (strcasecmp(ATTACH_FIELD, np) == 0) {
-	    	struct attach_list *entry;
+		struct attach_list *entry;
 		char *s = vp, *e = vp + strlen(vp) - 1;
-	    	free(np);
+		free(np);
 
 		/*
 		 * Make sure we can find the start of this filename.
@@ -268,7 +268,7 @@ finish_field:
      */
 
     for (hp = ct->c_first_hf; hp != NULL; hp = hp->next) {
-    	if (encode_rfc2047(hp->name, &hp->value, header_encoding, NULL)) {
+	if (encode_rfc2047(hp->name, &hp->value, header_encoding, NULL)) {
 	    adios(NULL, "Unable to encode header \"%s\"", hp->name);
 	}
     }
@@ -327,8 +327,8 @@ finish_field:
      */
 
     for (at_entry = attach_head; at_entry; ) {
-    	struct attach_list *at_prev = at_entry;
-    	struct part *part;
+	struct attach_list *at_prev = at_entry;
+	struct part *part;
 	CT p;
 
 	if (access(at_entry->filename, R_OK) != 0) {
@@ -365,8 +365,8 @@ finish_field:
      */
 
     if (!m->mp_parts) {
-    	CT p;
-    	struct part *part;
+	CT p;
+	struct part *part;
 	struct text *t;
 
 	if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
@@ -450,7 +450,7 @@ finish_field:
         } else {
 	    if (*++cp == 0)
 		adios (NULL, "giving up trying to find a unique delimiter string");
-    	    else
+	    else
 		(*cp)++;
 	}
     }
@@ -1162,7 +1162,7 @@ compose_content (CT ct, int verbose)
 
 			for (pm = ci->ci_first_pm; pm; pm = pm->pm_next) {
 			    snprintf (bp, buflen, "%s%s=\"%s\"", s,
-			    	      pm->pm_name, get_param_value(pm, '?'));
+				    pm->pm_name, get_param_value(pm, '?'));
 			    len = strlen (bp);
 			    bp += len;
 			    buflen -= len;
@@ -1282,7 +1282,7 @@ scan_content (CT ct, size_t maxunencoded)
     int prefix_len;
     int check8bit = 0, contains8bit = 0;  /* check if contains 8bit data */
     int checknul = 0, containsnul = 0;  /* check if contains NULs */
-    int checklinelen = 0, linelen = 0;  /* check for long lines */ 
+    int checklinelen = 0, linelen = 0;  /* check for long lines */
     int checkllinelen = 0; /* check for extra-long lines */
     int checkboundary = 0, boundaryclash = 0; /* check if clashes with multipart boundary   */
     int checklinespace = 0, linespace = 0;  /* check if any line ends with space          */
@@ -1338,16 +1338,16 @@ scan_content (CT ct, size_t maxunencoded)
 
     switch (ct->c_reqencoding) {
     case CE_8BIT:
-    	checkllinelen = 1;
+	checkllinelen = 1;
 	checkboundary = 1;
 	break;
     case CE_QUOTED:
-    	checkboundary = 1;
+	checkboundary = 1;
 	break;
     case CE_BASE64:
 	break;
     case CE_UNKNOWN:
-    	/* Use the default rules based on content-type */
+	/* Use the default rules based on content-type */
 	switch (ct->c_type) {
 	case CT_TEXT:
 	    checkboundary = 1;
@@ -1411,7 +1411,7 @@ scan_content (CT ct, size_t maxunencoded)
 	     * Check for 8bit and NUL data.
 	     */
 	    for (cp = bufp; (check8bit || checknul) &&
-	    				cp < bufp + gotlen; cp++) {
+					cp < bufp + gotlen; cp++) {
 		if (!isascii ((unsigned char) *cp)) {
 		    contains8bit = 1;
 		    check8bit = 0;	/* no need to keep checking */
@@ -1446,7 +1446,7 @@ scan_content (CT ct, size_t maxunencoded)
 	     * Check if line ends with a space.
 	     */
 	    if (checklinespace && (cp = bufp + gotlen - 2) > bufp &&
-	    		isspace ((unsigned char) *cp)) {
+			isspace ((unsigned char) *cp)) {
 		linespace = 1;
 		checklinespace = 0;	/* no need to keep checking */
 	    }
@@ -1482,7 +1482,7 @@ scan_content (CT ct, size_t maxunencoded)
 	    CI ci = &ct->c_ctinfo;
 
 	    add_param(&ci->ci_first_pm, &ci->ci_last_pm, "charset",
-	    	      contains8bit ? write_charset_8bit() : "us-ascii", 0);
+			contains8bit ? write_charset_8bit() : "us-ascii", 0);
 	    t->tx_charset = CHARSET_SPECIFIED;
 	}
     }
@@ -1492,7 +1492,7 @@ scan_content (CT ct, size_t maxunencoded)
      */
 
     if (ct->c_reqencoding != CE_UNKNOWN)
-    	ct->c_encoding = ct->c_reqencoding;
+	ct->c_encoding = ct->c_reqencoding;
     else
 	switch (ct->c_type) {
 	case CT_TEXT:
@@ -1586,7 +1586,7 @@ build_headers (CT ct, int header_encoding)
 
 	if (!s)
 	    adios(NULL, "Internal error: failed outputting Content-Type "
-	    	  "parameters");
+		"parameters");
 
 	vp = add (s, vp);
 	free(s);
@@ -1812,7 +1812,7 @@ calculate_digest (CT ct, int asciiP)
 
     /* encode the digest using base64 */
     for (dp = digest, op = (char *) outbuf,
-    				cc = sizeof(digest) / sizeof(digest[0]);
+				cc = sizeof(digest) / sizeof(digest[0]);
 		cc > 0; cc -= 3, op += 4) {
 	unsigned long bits;
 	char *bp;
@@ -1854,7 +1854,7 @@ setup_attach_content(CT ct, char *filename)
     PM pm;
 
     if (! (type = mime_type(filename))) {
-    	adios(NULL, "Unable to determine MIME type of \"%s\"", filename);
+	adios(NULL, "Unable to determine MIME type of \"%s\"", filename);
     }
 
     /*
@@ -1865,12 +1865,12 @@ setup_attach_content(CT ct, char *filename)
      */
 
     if (get_ctinfo(type, ct, 0) == NOTOK)
-    	done(1);
+	done(1);
 
     free(type);
 
     for (s2i = str2cts; s2i->si_key; s2i++)
-    	if (strcasecmp(ct->c_ctinfo.ci_type, s2i->si_key) == 0)
+	if (strcasecmp(ct->c_ctinfo.ci_type, s2i->si_key) == 0)
 	    break;
     if (!s2i->si_key && !uprf(ct->c_ctinfo.ci_type, "X-"))
 	s2i++;
@@ -1881,23 +1881,23 @@ setup_attach_content(CT ct, char *filename)
 
     switch (ct->c_type = s2i->si_val) {
     case CT_MULTIPART:
-    	adios (NULL, "multipart types must be specified by mhbuild directives");
+	adios (NULL, "multipart types must be specified by mhbuild directives");
 	/* NOTREACHED */
 
     case CT_MESSAGE:
-    	if (strcasecmp(ct->c_ctinfo.ci_subtype, "partial") == 0)
+	if (strcasecmp(ct->c_ctinfo.ci_subtype, "partial") == 0)
 	    adios(NULL, "Sorry, %s/%s isn't supported", ct->c_ctinfo.ci_type,
-	    	  ct->c_ctinfo.ci_subtype);
+		ct->c_ctinfo.ci_subtype);
 	if (strcasecmp(ct->c_ctinfo.ci_subtype, "external-body") == 0)
 	    adios(NULL, "external-body messages must be specified "
-	    	  "by mhbuild directives");
+		"by mhbuild directives");
 	/* Fall through */
 
     default:
-    	/*
+	/*
 	 * This sets the subtype, if it's significant
 	 */
-    	if ((ct->c_ctinitfnx = s2i->si_init))
+	if ((ct->c_ctinitfnx = s2i->si_init))
 	    (*ct->c_ctinitfnx)(ct);
 	break;
     }
@@ -1910,14 +1910,14 @@ setup_attach_content(CT ct, char *filename)
     for (pm = ct->c_ctinfo.ci_first_pm; pm; pm = pm->pm_next) {
 	if (strcasecmp(pm->pm_name, "name") == 0) {
 	    if (pm->pm_value)
-	    	free(pm->pm_value);
+		free(pm->pm_value);
 	    pm->pm_value = getcpy(simplename);
 	    break;
 	}
     }
 
     if (pm == NULL)
-    	add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
+	add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
 		  "name", simplename, 0);
 
     ct->c_descr = getcpy(simplename);
@@ -1934,7 +1934,7 @@ setup_attach_content(CT ct, char *filename)
 	strcasecmp(ct->c_ctinfo.ci_subtype, "calendar") == 0) {
 	ct->c_dispo_type = getcpy("inline");
     } else {
-    	ct->c_dispo_type = getcpy("attachment");
+	ct->c_dispo_type = getcpy("attachment");
     }
 
     add_param(&ct->c_dispo_first, &ct->c_dispo_last, "filename", simplename, 0);
