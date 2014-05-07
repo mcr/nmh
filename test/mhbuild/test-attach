@@ -59,6 +59,7 @@ To: Mr Test <mrtest@example.com>
 cc:
 Fcc: +outbox
 Attach: ${srcdir}/test/mhbuild/tiny.jpg
+Attach: ${srcdir}/test/mhbuild/nulls
 ------
 This is a test
 EOF
@@ -84,6 +85,14 @@ Content-Disposition: attachment; filename="tiny.jpg"
 Content-Transfer-Encoding: base64
 
 /9g=
+
+------- =_aaaaaaaaaa0
+Content-Type: application/octet-stream; name="nulls"
+Content-Description: nulls
+Content-Disposition: attachment; filename="nulls"
+Content-Transfer-Encoding: base64
+
+AAAAAAAAAAAAAAAAAAAA
 
 ------- =_aaaaaaaaaa0--
 EOF
