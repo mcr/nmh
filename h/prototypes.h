@@ -274,7 +274,6 @@ char *mime_type(const char *filename);
  */
 void nmh_clear_screen(void);
 char *nmh_getpass(const char *);
-char *norm_charmap(char *);
 char *new_fs (char *, char *, char *);
 char *path(char *, int);
 int peekc(FILE *ib);

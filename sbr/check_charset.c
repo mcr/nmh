@@ -11,6 +11,9 @@
 
 #include <langinfo.h>
 
+/* Only get_charset() should use norm_charmap(), so hide its
+   declaration here. */
+char *norm_charmap(char *);
 
 /*
  * Get the current character set
