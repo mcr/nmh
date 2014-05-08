@@ -274,6 +274,9 @@ EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
 	     test/inc/fromline.txt test/inc/msgheader.txt test/inc/filler.txt \
 	     test/inc/md5sums test/mhmail/attachment.txt \
 	     test/mhbuild/tiny.jpg \
+	     test/mhbuild/somebinary \
+	     test/mhbuild/nulls \
+	     test/mhbuild/textplain \
 	     test/post/test-post-common.sh test/valgrind.supp uip/mhmail \
 	     SPECS/nmh.spec SPECS/build-nmh-cygwin $(man_SRCS)
 
