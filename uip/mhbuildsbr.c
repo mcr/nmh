@@ -1757,7 +1757,7 @@ static char *
 calculate_digest (CT ct, int asciiP)
 {
     int	cc;
-    char buffer[BUFSIZ], *vp, *op;
+    char *vp, *op;
     unsigned char *dp;
     unsigned char digest[16];
     unsigned char outbuf[25];
@@ -1775,20 +1775,24 @@ calculate_digest (CT ct, int asciiP)
 
     /* calculate md5 message digest */
     if (asciiP) {
-	while (fgets (buffer, sizeof(buffer) - 1, in)) {
+	char *bufp = NULL;
+	size_t buflen;
+	ssize_t gotlen;
+	while ((gotlen = getline(&bufp, &buflen, in)) != -1) {
 	    char c, *cp;
 
-	    cp = buffer + strlen (buffer) - 1;
+	    cp = bufp + gotlen - 1;
 	    if ((c = *cp) == '\n')
-		*cp = '\0';
+		gotlen--;
 
-	    MD5Update (&mdContext, (unsigned char *) buffer,
-		       (unsigned int) strlen (buffer));
+	    MD5Update (&mdContext, (unsigned char *) bufp,
+		       (unsigned int) gotlen);
 
 	    if (c == '\n')
 		MD5Update (&mdContext, (unsigned char *) "\r\n", 2);
 	}
     } else {
+	char buffer[BUFSIZ];
 	while ((cc = fread (buffer, sizeof(*buffer), sizeof(buffer), in)) > 0)
 	    MD5Update (&mdContext, (unsigned char *) buffer, (unsigned int) cc);
     }
