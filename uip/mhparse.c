@@ -194,6 +194,7 @@ parse_mime (char *file)
     char buffer[BUFSIZ];
     FILE *fp;
     CT ct;
+    size_t n;
 
     /*
      * Check if file is actually standard input
@@ -207,8 +208,13 @@ parse_mime (char *file)
         }
 	file = add (tfile, NULL);
 
-	while (fgets (buffer, sizeof(buffer), stdin))
-	    fputs (buffer, fp);
+	while ((n = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
+	    if (fwrite(buffer, 1, n, fp) != n) {
+		(void) m_unlink (file);
+		advise (file, "error copying to temporary file");
+		return NULL;
+	    }
+	}
 	fflush (fp);
 
 	if (ferror (stdin)) {
@@ -1057,7 +1063,10 @@ InitMultiPart (CT ct)
     long last, pos;
     char *cp, *dp;
     PM pm;
-    char *bp, buffer[BUFSIZ];
+    char *bp;
+    char *bufp = NULL;
+    size_t buflen;
+    ssize_t gotlen;
     struct multipart *m;
     struct k2v *kv;
     struct part *part, **next;
@@ -1151,15 +1160,15 @@ InitMultiPart (CT ct)
     part = NULL;
     inout = 1;
 
-    while (fgets (buffer, sizeof(buffer) - 1, fp)) {
+    while ((gotlen = getline(&bufp, &buflen, fp)) != -1) {
 	if (pos > last)
 	    break;
 
-	pos += strlen (buffer);
-	if (buffer[0] != '-' || buffer[1] != '-')
+	pos += gotlen;
+	if (bufp[0] != '-' || bufp[1] != '-')
 	    continue;
 	if (inout) {
-	    if (strcmp (buffer + 2, m->mp_start))
+	    if (strcmp (bufp + 2, m->mp_start))
 		continue;
 next_part:
 	    if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
@@ -1169,6 +1178,8 @@ next_part:
 
 	    if (!(p = get_content (fp, ct->c_file,
 			ct->c_subtype == MULTI_DIGEST ? -1 : 0))) {
+		free(bufp);
+		fclose (ct->c_fp);
 		ct->c_fp = NULL;
 		return NOTOK;
 	    }
@@ -1178,18 +1189,18 @@ next_part:
 	    fseek (fp, pos, SEEK_SET);
 	    inout = 0;
 	} else {
-	    if (strcmp (buffer + 2, m->mp_start) == 0) {
+	    if (strcmp (bufp + 2, m->mp_start) == 0) {
 		inout = 1;
 end_part:
 		p = part->mp_part;
-		p->c_end = ftell(fp) - (strlen(buffer) + 1);
+		p->c_end = ftell(fp) - (gotlen + 1);
 		if (p->c_end < p->c_begin)
 		    p->c_begin = p->c_end;
 		if (inout)
 		    goto next_part;
 		goto last_part;
 	    } else {
-		if (strcmp (buffer + 2, m->mp_stop) == 0)
+		if (strcmp (bufp + 2, m->mp_stop) == 0)
 		    goto end_part;
 	    }
 	}
@@ -1244,6 +1255,7 @@ last_part:
 
 	    /* initialize the content of the subparts */
 	    if (p->c_ctinitfnx && (*p->c_ctinitfnx) (p) == NOTOK) {
+		free(bufp);
 		fclose (ct->c_fp);
 		ct->c_fp = NULL;
 		return NOTOK;
@@ -1254,6 +1266,7 @@ last_part:
     get_leftover_mp_content (ct, 1);
     get_leftover_mp_content (ct, 0);
 
+    free(bufp);
     fclose (ct->c_fp);
     ct->c_fp = NULL;
     return OK;
@@ -1909,6 +1922,9 @@ openQuoted (CT ct, char **file)
     int	cc, digested, len, quoted, own_ct_fp = 0;
     char *cp, *ep;
     char buffer[BUFSIZ];
+    char *bufp = NULL;
+    size_t buflen;
+    ssize_t gotlen;
     unsigned char mask;
     CE ce = &ct->c_cefile;
     /* sbeck -- handle suffixes */
@@ -1990,16 +2006,16 @@ openQuoted (CT ct, char **file)
 
     fseek (ct->c_fp, ct->c_begin, SEEK_SET);
     while (len > 0) {
-	if (fgets (buffer, sizeof(buffer) - 1, ct->c_fp) == NULL) {
+	if ((gotlen = getline(&bufp, &buflen, ct->c_fp)) == -1) {
 	    content_error (NULL, ct, "premature eof");
 	    goto clean_up;
 	}
 
-	if ((cc = strlen (buffer)) > len)
+	if ((cc = gotlen) > len)
 	    cc = len;
 	len -= cc;
 
-	for (ep = (cp = buffer) + cc - 1; cp <= ep; ep--)
+	for (ep = (cp = bufp) + cc - 1; cp <= ep; ep--)
 	    if (!isspace ((unsigned char) *ep))
 		break;
 	*++ep = '\n', ep++;
@@ -2960,12 +2976,15 @@ invalid_digest:
    after the last subpart that hasn't been stored anywhere else, so do
    that. */
 int
-get_leftover_mp_content (CT ct, int before /* or after */) {
+get_leftover_mp_content (CT ct, int before /* or after */)
+{
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     char *boundary;
     int found_boundary = 0;
-    char buffer[BUFSIZ];
     int max = BUFSIZ;
+    char *bufp = NULL;
+    size_t buflen;
+    ssize_t gotlen;
     int read = 0;
     char *content = NULL;
 
@@ -2998,18 +3017,18 @@ get_leftover_mp_content (CT ct, int before /* or after */) {
     }
 
     /* Back up by 1 to pick up the newline. */
-    while (fgets (buffer, sizeof(buffer) - 1, ct->c_fp)) {
-        read += strlen (buffer);
+    while ((gotlen = getline(&bufp, &buflen, ct->c_fp)) != -1) {
+        read += gotlen;
         /* Don't look beyond beginning of first subpart (before) or
            next part (after). */
-        if (read > max) buffer[read-max] = '\0';
+        if (read > max) bufp[read-max] = '\0';
 
         if (before) {
-            if (! strcmp (buffer, boundary)) {
+            if (! strcmp (bufp, boundary)) {
                 found_boundary = 1;
             }
         } else {
-            if (! found_boundary  &&  ! strcmp (buffer, boundary)) {
+            if (! found_boundary  &&  ! strcmp (bufp, boundary)) {
                 found_boundary = 1;
                 continue;
             }
@@ -3018,12 +3037,12 @@ get_leftover_mp_content (CT ct, int before /* or after */) {
         if ((before && ! found_boundary)  ||  (! before && found_boundary)) {
             if (content) {
                 char *old_content = content;
-                content = concat (content, buffer, NULL);
+                content = concat (content, bufp, NULL);
                 free (old_content);
             } else {
                 content = before
-                    ?  concat ("\n", buffer, NULL)
-                    :  concat (buffer, NULL);
+                    ?  concat ("\n", bufp, NULL)
+                    :  concat (bufp, NULL);
             }
         }
 
@@ -3057,6 +3076,7 @@ get_leftover_mp_content (CT ct, int before /* or after */) {
     }
 
     free (boundary);
+    free (bufp);
 
     return OK;
 }
