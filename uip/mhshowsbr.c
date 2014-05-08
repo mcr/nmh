@@ -274,10 +274,8 @@ show_switch (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
 	case CT_IMAGE:
 	case CT_VIDEO:
 	case CT_APPLICATION:
-	    return show_content (ct, alternate, textonly, inlineonly, fmt);
-
 	default:
-	    adios (NULL, "unknown content type %d", ct->c_type);
+	    return show_content (ct, alternate, textonly, inlineonly, fmt);
     }
 
     return 0;	/* NOT REACHED */

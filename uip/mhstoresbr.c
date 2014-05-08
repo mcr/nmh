@@ -184,6 +184,7 @@ store_switch (CT ct, mhstoreinfo_t info)
 	    }
 
 	case CT_APPLICATION:
+	default:
 	    return store_application (ct, info);
 
 	case CT_TEXT:
@@ -191,9 +192,6 @@ store_switch (CT ct, mhstoreinfo_t info)
 	case CT_IMAGE:
 	case CT_VIDEO:
 	    return store_generic (ct, info);
-
-	default:
-	    adios (NULL, "unknown content type %d", ct->c_type);
     }
 
     return OK;	/* NOT REACHED */

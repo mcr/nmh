@@ -125,12 +125,9 @@ list_switch (CT ct, int toplevel, int realsize, int verbose, int debug,
 	    return list_content (ct, toplevel, realsize, verbose, debug, dispo);
 
 	case CT_APPLICATION:
+	default:
 	    return list_application (ct, toplevel, realsize, verbose, debug,
 	    			     dispo);
-
-	default:
-	    /* list_debug (ct); */
-	    adios (NULL, "unknown content type %d", ct->c_type);
     }
 
     return 0;	/* NOT REACHED */
