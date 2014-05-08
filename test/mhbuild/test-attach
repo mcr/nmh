@@ -148,6 +148,36 @@ MIME-Version: 1.0
 Content-Type: text/plain
 EOF
 
+#
+# Check an md5'd attachment
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: Test of digested part
+
+#text/plain; name="textplain" [ - ] ${srcdir}/test/mhbuild/textplain
+
+EOF
+
+mhbuild -check "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: Test of digested part
+MIME-Version: 1.0
+Content-Type: text/plain; name="textplain"; charset="us-ascii"
+Content-Description:  - 
+Content-MD5: x3hNJn10cGowZv+ILUkycw==
+Content-Transfer-Encoding: quoted-printable
+
+This is a text/plain part.
+EOF
+
 check "$draft" "$expected"
 
 #
