@@ -111,6 +111,7 @@ main (int argc, char **argv)
     FILE *fp = NULL;
     FILE *fp_out = NULL;
     int header_encoding = CE_UNKNOWN;
+    size_t n;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -334,12 +335,17 @@ main (int argc, char **argv)
 		  get_temp_dir());
 	}
 
-	/* copy standard input to temporary file */
+	/* save a copy of the name for later removal */
 	strncpy (infile, cp, sizeof(infile));
-	while (fgets (buffer, BUFSIZ, stdin))
-	    fputs (buffer, fp);
-	fclose (fp);
 	unlink_infile = 1;
+
+	/* copy standard input to temporary file */
+	while ((n = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
+	    if (fwrite(buffer, 1, n, fp) != n) {
+		adios (NULL, "error copying to temporary file");
+	    }
+	}
+	fclose (fp);
 
 	/* build the content structures for MIME message */
 	ct = build_mime (infile, autobuild, dist, directives, header_encoding,
@@ -354,16 +360,16 @@ main (int argc, char **argv)
 	    if (! (fp = fopen(infile, "r"))) {
 		adios(NULL, "Unable to open %s for reading", infile);
 	    }
-	    while (fgets(buffer, BUFSIZ, fp))
-		fputs(buffer, stdout);
+	    while ((n = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
+		if (fwrite(buffer, 1, n, stdout) != n) {
+		    adios(NULL, "error copying %s to stdout", infile);
+		}
+	    }
 	} else {
 	    /* output the message */
 	    output_message_fp (ct, stdout, NULL);
 	    free_content (ct);
 	}
-
-	(void) m_unlink (infile);
-	unlink_infile = 0;
 
 	done (0);
     }
