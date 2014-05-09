@@ -404,7 +404,7 @@ if test "$nmh_ndbm" = "autodetect"; then
     dnl first so we don't accidentally link in a pointless but harmless
     dnl library in one of the later ndbm.h+libfoo tests:
     NMH_CHECK_NDBM(ndbm.h,,,
-    dnl Berkeley DBv2 emulating ndbm: header in db.h:
+    dnl Berkeley DBv2 emulating ndbm: header in db.h, e.g., 32-bit Cygwin:
       NMH_CHECK_NDBM(db.h,db,,
     dnl Berkeley DBv1 emulating ndbm:
         NMH_CHECK_NDBM(ndbm.h,db,,
@@ -418,11 +418,11 @@ if test "$nmh_ndbm" = "autodetect"; then
                 NMH_CHECK_NDBM(gdbm/ndbm.h,gdbm,,
                   NMH_CHECK_NDBM(gdbm/ndbm.h,gdbm_compat -lgdbm,,
                     NMH_CHECK_NDBM(ndbm.h,gdbm,,
-                      NMH_CHECK_NDBM(ndbm.h,gdbm_compat -lgdbm
+    dnl 64-bit Cygwin:
+                      NMH_CHECK_NDBM(ndbm.h,gdbm_compat -lgdbm,,
+    dnl On Linux, libgdbm_compat.so loads libgdbm.so as well, so it doesn't
+    dnl need to be explicit:
                         NMH_CHECK_NDBM(gdbm-ndbm.h,gdbm_compat)))))))))))
-    dnl Please don't remove gdbm-ndbm.h,gdbm_compat.  (On Linux,
-    dnl libgdbm_compat.so loads libgdbm.so as well, so it doesn't
-    dnl need to be explicit.).
   fi
 else
   dnl We don't really need to check that the user-specified values work,
