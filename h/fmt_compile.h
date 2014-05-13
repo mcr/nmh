@@ -44,7 +44,7 @@
 #define FT_LS_WEEKDAY	35	/* set "str" to long tws weekday            */
 #define FT_LS_822DATE	36	/* set "str" to 822 date str                */
 #define FT_LS_PRETTY	37	/* set "str" to pretty (?) date str         */
-#define FT_LS_UNITS	38	/* set "str" to "<value>[KMGT]"		    */
+#define FT_LS_KILO	38	/* set "str" to "<value>[KMGT]"		    */
 #define FT_LV_SEC	39	/* set "value" to tws second                */
 #define FT_LV_MIN	40	/* set "value" to tws minute                */
 #define FT_LV_HOUR	41	/* set "value" to tws hour                  */

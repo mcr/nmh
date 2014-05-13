@@ -490,7 +490,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		    cp += n;
 	    }
 	    break;
-	case FT_LS_UNITS:
+	case FT_LS_KILO:
 	    {
 		char *unitcp;
 		unsigned int whole, tenths;

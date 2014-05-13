@@ -1224,7 +1224,7 @@ convert_content_charset (CT ct, char **file) {
 		       "%<{description}%{description}" \
 		         "%?{cdispo-filename}%{cdispo-filename}" \
 		         "%|%{ctype-name}%>  " \
-		       "%(units(size))B %<(unseen)\\(suppressed\\)%> ]"
+		       "%(kilo(size))B %<(unseen)\\(suppressed\\)%> ]"
 
 static struct format *
 compile_marker(char *markerform)

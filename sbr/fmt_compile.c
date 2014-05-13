@@ -159,7 +159,7 @@ static struct ftable functable[] = {
      { "decodecomp", TF_COMP,	FT_LS_DECODECOMP, 0,		TFL_PUTS },
      { "decode",     TF_EXPR,	FT_LS_DECODE,	0,		TFL_PUTS },
      { "trim",       TF_EXPR,	FT_LS_TRIM,	0,		0 },
-     { "units",      TF_EXPR,	FT_LS_UNITS,	0,		TFL_PUTS  },
+     { "kilo",       TF_EXPR,	FT_LS_KILO,	0,		TFL_PUTS },
      { "compval",    TF_COMP,	FT_LV_COMP,	0,		TFL_PUTN },
      { "compflag",   TF_COMP,	FT_LV_COMPFLAG,	0,		TFL_PUTN },
      { "num",        TF_NUM,	FT_LV_LIT,	0,		TFL_PUTN },

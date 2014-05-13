@@ -371,7 +371,7 @@ f_typestr(int t)
 	case FT_LV_DIVIDE_L: return("LV_DIVIDE_L");
 	case FT_LV_MODULO_L: return("LV_MODULO_L");
 	case FT_LV_CHAR_LEFT: return("LV_CHAR_LEFT");
-	case FT_LS_UNITS: return("LS_UNITS");
+	case FT_LS_KILO: return("LS_KILO");
 	case FT_LS_MONTH: return("LS_MONTH");
 	case FT_LS_LMONTH: return("LS_LMONTH");
 	case FT_LS_ZONE: return("LS_ZONE");

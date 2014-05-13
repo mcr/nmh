@@ -4,4 +4,4 @@
 %;
 [ part %{part} - %{content-type} - %<{description}\
 %{description}%?{cdispo-filename}%{cdispo-filename}%|%{ctype-name}%>  \
-%(units(size))B %<(unseen)\(suppressed\)%> ]
+%(kilo(size))B %<(unseen)\(suppressed\)%> ]
