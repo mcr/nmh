@@ -11,7 +11,10 @@ AC_DEFUN([NMH_MIMETYPEPROC],
 [AC_CACHE_CHECK([for a program to provide a MIME type string],
 		[nmh_cv_mimetype_proc],
   [nmh_cv_mimetype_proc=
-   for mprog in 'file --brief --mime-type' 'file --mime-type'
+   for mprog in 'file --brief --dereference --mime-type' \
+                'file --dereference --mime-type' \
+                'file --brief --mime-type' \
+                'file --mime-type'
    do
      AS_IF([$mprog "${srcdir}/configure" > /dev/null 2>&1],
 	   [nmh_cv_mimetype_proc="$mprog"; break])
@@ -27,7 +30,10 @@ AC_DEFUN([NMH_MIMEENCODINGPROC],
 [AC_CACHE_CHECK([for a program to provide a MIME encoding string],
 		[nmh_cv_mimeencoding_proc],
   [nmh_cv_mimeencoding_proc=
-   for mprog in 'file --brief --mime-encoding' 'file --mime-encoding'
+   for mprog in 'file --brief --dereference --mime-encoding' \
+                'file --dereference --mime-encoding' \
+                'file --brief --mime-encoding' \
+                'file --mime-encoding'
    do
      AS_IF([$mprog "${srcdir}/DATE" > /dev/null 2>&1],
 		AS_CASE([`$mprog "${srcdir}/DATE"`],
