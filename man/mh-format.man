@@ -291,6 +291,9 @@ decode	expr	string	decode \fIstr\fR as RFC 2047 (MIME-encoded)
 unquote	expr	string	remove RFC 2822 quotes from \fIstr\fR
 trim	expr		trim trailing whitespace from \fIstr\fR
 kilo	expr	string	express in SI units: 15.9K, 2.3M, etc.
+			%(kilo) scales by factors of 1000,
+kibi	expr	string	express in IEC units: 15.5Ki, 2.2Mi.
+			%(kibi) scales by factors of 1024.
 putstr	expr		print \fIstr\fR
 putstrf	expr		print \fIstr\fR in a fixed width
 putnum	expr		print \fInum\fR

@@ -491,16 +491,25 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    }
 	    break;
 	case FT_LS_KILO:
+	case FT_LS_KIBI:
 	    {
 		char *unitcp;
 		unsigned int whole, tenths;
+		unsigned int scale;
+		unsigned int val = (unsigned int)value;
+		char *kibisuff;
 
-		if (value < 1000) {
-		    snprintf(buffer, sizeof(buffer), "%u", value);
+		switch (fmt->f_type) {
+		case FT_LS_KILO: scale = 1000; kibisuff = ""; break;
+		case FT_LS_KIBI: scale = 1024; kibisuff = "i"; break;
+		}
+
+		if (val < scale) {
+		    snprintf(buffer, sizeof(buffer), "%u", val);
 		} else {
 
 		    /* find correct scale for size (Kilo/Mega/Giga/Tera) */
-		    for (unitcp = "KMGT"; value > 999999; value /= 1000) {
+		    for (unitcp = "KMGT"; val > (scale * scale); val /= scale) {
 			if (!*++unitcp)
 			    break;
 		    }
@@ -508,17 +517,22 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		    if (!*unitcp) {
 			strcpy(buffer, "huge");
 		    } else {
-			/* round up to next higer tenth of kilo-/mega-/giga- */
-			value += 99; value /= 100;
+			/* val is scale times too big.  we want tenths */
+			val *= 10;
 
-			/* want one digit after decimal, avoid float */
-			whole = value / 10;
-			tenths = value - (whole * 10);
+			/* round up */
+			val += (scale - 1);
+			val /= scale;
+
+			whole = val / 10;
+			tenths = val - (whole * 10);
 
 			if (tenths) {
-			    snprintf(buffer, sizeof(buffer), "%u.%u%c", whole, tenths, *unitcp);
+			    snprintf(buffer, sizeof(buffer), "%u.%u%c%s",
+				    whole, tenths, *unitcp, kibisuff);
 			} else {
-			    snprintf(buffer, sizeof(buffer), "%u%c", whole, *unitcp);
+			    snprintf(buffer, sizeof(buffer), "%u%c%s",
+				    whole, *unitcp, kibisuff);
 			}
 		    }
 		}
