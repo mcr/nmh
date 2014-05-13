@@ -1493,24 +1493,30 @@ scan_content (CT ct, size_t maxunencoded)
 
     if (ct->c_reqencoding != CE_UNKNOWN)
 	ct->c_encoding = ct->c_reqencoding;
-    else
+    else {
+	int wants_q_p = (containsnul || linelen || linespace || checksw);
+
 	switch (ct->c_type) {
 	case CT_TEXT:
-	    if (contains8bit && !containsnul && !linelen && !linespace && !checksw)
-		ct->c_encoding = CE_8BIT;
-	    else if (contains8bit || containsnul || linelen || linespace || checksw)
-		ct->c_encoding = CE_QUOTED;
-	    else
-		ct->c_encoding = CE_7BIT;
+            if (wants_q_p)
+                 ct->c_encoding = CE_QUOTED;
+            else if (contains8bit)
+                 ct->c_encoding = CE_8BIT;
+            else
+                 ct->c_encoding = CE_7BIT;
+
 	    break;
 
 	case CT_APPLICATION:
 	    /* For application type, use base64, except when postscript */
-	    if (containsnul || contains8bit || linelen || linespace || checksw)
-		ct->c_encoding = (ct->c_subtype == APPLICATION_POSTSCRIPT)
-		    ? CE_QUOTED : CE_BASE64;
-	    else
+	    if (wants_q_p || contains8bit) {
+		if (ct->c_subtype == APPLICATION_POSTSCRIPT)
+		    ct->c_encoding = CE_QUOTED;  // historical
+		else
+		    ct->c_encoding = CE_BASE64;
+	    } else {
 		ct->c_encoding = CE_7BIT;
+	    }
 	    break;
 
 	case CT_MESSAGE:
@@ -1524,6 +1530,7 @@ scan_content (CT ct, size_t maxunencoded)
 	    ct->c_encoding = CE_BASE64;
 	    break;
         }
+    }
 
     return (boundaryclash ? NOTOK : OK);
 }
