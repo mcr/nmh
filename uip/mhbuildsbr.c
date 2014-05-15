@@ -1511,7 +1511,7 @@ scan_content (CT ct, size_t maxunencoded)
 	    /* For application type, use base64, except when postscript */
 	    if (wants_q_p || contains8bit) {
 		if (ct->c_subtype == APPLICATION_POSTSCRIPT)
-		    ct->c_encoding = CE_QUOTED;  // historical
+		    ct->c_encoding = CE_QUOTED;  /* historical */
 		else
 		    ct->c_encoding = CE_BASE64;
 	    } else {
