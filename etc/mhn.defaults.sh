@@ -124,6 +124,17 @@ elif [ -f "/dev/audio" ]; then
     fi
 fi
 
+####
+#### mhbuild-disposition-<type>[/<subtype>] entries are used by the
+#### WhatNow attach for deciding whether the Content-Disposition
+#### should be 'attachment' or 'inline'.  Only those values are
+#### supported.
+####
+cat <<EOF >> ${TMP}
+mhbuild-disposition-text/calendar: inline
+mhbuild-disposition-message/rfc822: inline
+EOF
+
 PGM="`$SEARCHPROG $SEARCHPATH mpeg_play`"
 if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-video/mpeg: %p$PGM %f" >> $TMP

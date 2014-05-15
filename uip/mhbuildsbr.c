@@ -1856,6 +1856,8 @@ setup_attach_content(CT ct, char *filename)
     char *type, *simplename = r1bindex(filename, '/');
     struct str2init *s2i;
     PM pm;
+    char buffer[BUFSIZ], *cp;
+    int no_subtype = 0;
 
     if (! (type = mime_type(filename))) {
 	adios(NULL, "Unable to determine MIME type of \"%s\"", filename);
@@ -1929,14 +1931,36 @@ setup_attach_content(CT ct, char *filename)
     ct->c_cefile.ce_file = getcpy(filename);
 
     /*
-     * If it's a text/calendar, we need to make sure it's an inline,
-     * otherwise it won't work with some calendar programs.  Otherwise
-     * assume attachment
+     * Look for mhbuild-disposition-<type>/<subtype> entry
+     * that specifies Content-Disposition type.  Only
+     * 'attachment' and 'inline' are allowed.  Default to
+     * 'attachment'.
      */
 
-    if (strcasecmp(ct->c_ctinfo.ci_type, "text") == 0 &&
-	strcasecmp(ct->c_ctinfo.ci_subtype, "calendar") == 0) {
-	ct->c_dispo_type = getcpy("inline");
+    snprintf (buffer, sizeof(buffer), "%s-disposition-%s/%s",
+              invo_name, ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype);
+    cp = context_find (buffer);
+    if (cp == NULL || *cp == '\0') {
+        no_subtype = 1;
+        snprintf (buffer, sizeof(buffer), "%s-disposition-%s", invo_name,
+                  ct->c_ctinfo.ci_type);
+        cp = context_find (buffer);
+    }
+    if (cp != NULL && *cp != '\0') {
+        if (strcasecmp (cp, "attachment")  &&
+            strcasecmp (cp, "inline")) {
+            admonish (NULL, "configuration problem: %s-disposition-%s%s%s "
+                      "specifies '%s' but only 'attachment' and 'inline' are "
+                      "allowed", invo_name,
+                      ct->c_ctinfo.ci_type,
+                      no_subtype ? "" : "/",
+                      no_subtype ? "" : ct->c_ctinfo.ci_subtype,
+                      cp);
+        }
+    }
+
+    if (cp) {
+	ct->c_dispo_type = getcpy(cp);
     } else {
 	ct->c_dispo_type = getcpy("attachment");
     }

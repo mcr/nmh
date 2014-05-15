@@ -156,6 +156,10 @@ Content-Description: VERSION
 Content-Disposition: attachment; filename="VERSION"
 .fi
 .PP
+See
+.IR mhbuild (1)
+for explanation of how the Content-Disposition value is selected.
+.PP
 If
 .B \-push
 is specified,
@@ -466,6 +470,7 @@ for more information.
 .IR dist (1),
 .IR file (1),
 .IR forw (1),
+.IR mhbuild (1),
 .IR mhparam (1),
 .IR repl (1),
 .IR whatnow (1),

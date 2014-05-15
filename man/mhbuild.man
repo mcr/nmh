@@ -102,6 +102,23 @@ content specified by
 directives (see below).  See
 .IR send (1)
 for more details.
+.PP
+By default, the Content-Disposition will be \*(lqattachment\*(rq.
+.B mhbuild
+looks for user profile and mhn.defaults entries of the form
+.PP
+.RS 5
+mhbuild-disposition-<type>/<subtype>
+.RE
+or
+.RS 5
+mhbuild-disposition-<type>
+.RE
+.PP
+to supply the disposition value.  The only supported values are
+.I attachment
+and
+.IR inline.
 .SS "Translating the Composition File"
 .B mhbuild
 is essentially a filter to aid in the composition of MIME
