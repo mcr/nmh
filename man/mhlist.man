@@ -55,6 +55,8 @@ switch tells
 to evaluate the
 \*(lqnative\*(rq (decoded) format of each content prior to listing.
 This provides an accurate count at the expense of a small delay.
+In either case, sizes will be expressed using SI prefix abbreviations
+(K/M/G/T), which are based on factors of 1000.
 .PP
 If the
 .B \-verbose

@@ -164,7 +164,7 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug,
 	size = ct->c_end - ct->c_begin;
 
     /* find correct scale for size (Kilo/Mega/Giga/Tera) */
-    for (cp = " KMGT"; size > 9999; size >>= 10)
+    for (cp = " KMGT"; size > 9999; size /= 1000)
 	if (!*++cp)
 	    break;
 
