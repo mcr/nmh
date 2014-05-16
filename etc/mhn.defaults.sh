@@ -66,17 +66,17 @@ fi
 
 PGM="`$SEARCHPROG $SEARCHPATH xv`"
 if [ ! -z "$PGM" ]; then
-    echo "mhshow-show-image: %p$PGM -geometry =-0+0 %f" >> $TMP
+    echo "mhshow-show-image: %l$PGM -geometry =-0+0 %f" >> $TMP
 elif [ ! -z $"NETPBM" -a ! -z "$XWUD" ]; then
-    echo "mhshow-show-image/gif: %p${NETPBMDIR}giftopnm | ${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
-    echo "mhshow-show-image/x-pnm: %p${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
-    echo "mhshow-show-image/x-pgm: %p${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
-    echo "mhshow-show-image/x-ppm: %p${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
-    echo "mhshow-show-image/x-xwd: %p$XWUD -geometry =-0+0" >> $TMP
+    echo "mhshow-show-image/gif: %l${NETPBMDIR}giftopnm | ${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+    echo "mhshow-show-image/x-pnm: %l${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+    echo "mhshow-show-image/x-pgm: %l${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+    echo "mhshow-show-image/x-ppm: %l${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+    echo "mhshow-show-image/x-xwd: %l$XWUD -geometry =-0+0" >> $TMP
 
     PGM="`$SEARCHPROG $SEARCHPATH djpeg`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-image/jpeg: %p$PGM -Pg | ${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
+	echo "mhshow-show-image/jpeg: %l$PGM -Pg | ${NETPBMDIR}ppmtopgm | ${NETPBMDIR}pgmtopbm | ${NETPBMDIR}pnmtoxwd | $XWUD -geometry =-0+0" >> $TMP
     fi
 fi
 
@@ -85,7 +85,7 @@ if [ -f "/dev/audioIU" ]; then
     if [ ! -z "$PGM" ]; then
 	echo "mhstore-store-audio/basic: %m%P.au" >> $TMP
         echo "mhbuild-compose-audio/basic: ${AUDIODIR}recorder %f -au -pause > /dev/tty" >> $TMP
-        echo "mhshow-show-audio/basic: %p${AUDIODIR}splayer -au" >> $TMP
+        echo "mhshow-show-audio/basic: %l${AUDIODIR}splayer -au" >> $TMP
     fi
 elif [ -f "/dev/audio" ]; then
     PGM="`$SEARCHPROG $SEARCHPATH raw2audio`"
@@ -99,7 +99,7 @@ elif [ -f "/dev/audio" ]; then
 	else
 	    echo "mhbuild-compose-audio/basic: trap \"exit 0\" 2 && ${AUDIODIR}record | ${AUDIODIR}raw2audio -F" >> $TMP
 	fi
-	echo "mhshow-show-audio/basic: %p${AUDIODIR}raw2audio 2>/dev/null | ${AUDIODIR}play" >> $TMP
+	echo "mhshow-show-audio/basic: %l${AUDIODIR}raw2audio 2>/dev/null | ${AUDIODIR}play" >> $TMP
 
 	PGM="`$SEARCHPROG $SEARCHPATH adpcm_enc`"
 	if [ ! -z "$PGM" ]; then
@@ -109,18 +109,18 @@ elif [ -f "/dev/audio" ]; then
 	    else
 		echo "mhbuild-compose-audio/x-next: ${AUDIODIR}record | ${DIR}adpcm_enc" >> $TMP
 	    fi
-	    echo "mhshow-show-audio/x-next: %p${DIR}adpcm_dec | ${AUDIODIR}play" >> $TMP
+	    echo "mhshow-show-audio/x-next: %l${DIR}adpcm_dec | ${AUDIODIR}play" >> $TMP
 	else
 	    if [ ! -z "$AUDIOTOOL" ]; then
 		echo "mhbuild-compose-audio/x-next: $AUDIOTOOL %f" >> $TMP
 	    else
 		echo "mhbuild-compose-audio/x-next: ${AUDIODIR}record" >> $TMP
 	    fi
-	    echo "mhshow-show-audio/x-next: %p${AUDIODIR}play" >> $TMP
+	    echo "mhshow-show-audio/x-next: %l${AUDIODIR}play" >> $TMP
 	fi
     else
 	echo "mhbuild-compose-audio/basic: cat < /dev/audio" >> $TMP
-        echo "mhshow-show-audio/basic: %pcat > /dev/audio" >> $TMP
+        echo "mhshow-show-audio/basic: %lcat > /dev/audio" >> $TMP
     fi
 fi
 
@@ -137,43 +137,43 @@ EOF
 
 PGM="`$SEARCHPROG $SEARCHPATH mpeg_play`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-video/mpeg: %p$PGM %f" >> $TMP
+	echo "mhshow-show-video/mpeg: %l$PGM %f" >> $TMP
 fi
 
 PGM="`$SEARCHPROG $SEARCHPATH okular`"
 if [ ! -z "$PGM" ]; then
-    echo "mhshow-show-application/PostScript: %p$PGM %F" >> $TMP
+    echo "mhshow-show-application/PostScript: %l$PGM %F" >> $TMP
 else
     PGM="`$SEARCHPROG $SEARCHPATH evince`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/PostScript: %p$PGM %F" >> $TMP
+	echo "mhshow-show-application/PostScript: %l$PGM %F" >> $TMP
     else
 	PGM="`$SEARCHPROG $SEARCHPATH gv`"
 	if [ ! -z "$PGM" ]; then
-	    echo "mhshow-show-application/PostScript: %p$PGM %F" >> $TMP
+	    echo "mhshow-show-application/PostScript: %l$PGM %F" >> $TMP
 	fi
     fi
 fi
 
 PGM="`$SEARCHPROG $SEARCHPATH acroread`"
 if [ ! -z "$PGM" ]; then
-    echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+    echo "mhshow-show-application/pdf: %l$PGM %F" >> $TMP
 else
     PGM="`$SEARCHPROG $SEARCHPATH okular`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+	echo "mhshow-show-application/pdf: %l$PGM %F" >> $TMP
     else
 	PGM="`$SEARCHPROG $SEARCHPATH evince`"
 	if [ ! -z "$PGM" ]; then
-	    echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+	    echo "mhshow-show-application/pdf: %l$PGM %F" >> $TMP
         else
 	    PGM="`$SEARCHPROG $SEARCHPATH xpdf`"
 	    if [ ! -z "$PGM" ]; then
-		echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+		echo "mhshow-show-application/pdf: %l$PGM %F" >> $TMP
             else
 	        PGM="`$SEARCHPROG $SEARCHPATH gv`"
 	        if [ ! -z "$PGM" ]; then
-		    echo "mhshow-show-application/pdf: %p$PGM %F" >> $TMP
+		    echo "mhshow-show-application/pdf: %l$PGM %F" >> $TMP
 	        fi
 	    fi
 	fi
@@ -182,7 +182,7 @@ fi
 
 PGM="`$SEARCHPROG $SEARCHPATH ivs_replay`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/x-ivs: %p$PGM -o %F" >> $TMP
+	echo "mhshow-show-application/x-ivs: %l$PGM -o %F" >> $TMP
 fi
 
 # The application/vnd.openxmlformats-officedocument.wordprocessingml.document
@@ -281,12 +281,12 @@ EOF
 PGM="`$SEARCHPROG $SEARCHPATH w3m`"
 if [ ! -z "$PGM" ]; then
     echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%p$PGM"' -dump ${charset:+-I "$charset"} -T text/html %F' >> $TMP
+%l$PGM"' -dump ${charset:+-I "$charset"} -T text/html %F' >> $TMP
 else
     PGM="`$SEARCHPROG $SEARCHPATH lynx`"
     if [ ! -z "$PGM" ]; then
 	echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%p$PGM"' -child -dump -force-html ${charset:+--assume_charset "$charset"} %F' >> $TMP
+%l$PGM"' -child -dump -force-html ${charset:+--assume_charset "$charset"} %F' >> $TMP
     else
       PGM="`$SEARCHPROG $SEARCHPATH elinks`"
       if [ ! -z "$PGM" ]; then
@@ -298,18 +298,18 @@ fi
 
 PGM="`$SEARCHPROG $SEARCHPATH richtext`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-text/richtext: %p$PGM -p %F" >> $TMP
+	echo "mhshow-show-text/richtext: %l$PGM -p %F" >> $TMP
 else
     PGM="`$SEARCHPROG $SEARCHPATH rt2raw`"
     if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-text/richtext: %p$PGM < %f | fmt -78 | more" >> $TMP
+	echo "mhshow-show-text/richtext: %l$PGM < %f | fmt -78 | more" >> $TMP
     fi
 fi
 
 # staroffice to read .doc files
 PGM="`$SEARCHPROG $SEARCHPATH soffice`"
 if [ ! -z "$PGM" ]; then
-	echo "mhshow-show-application/msword: %p$PGM %F" >> $TMP
+	echo "mhshow-show-application/msword: %l$PGM %F" >> $TMP
 fi
 
 # output a sorted version of the file
