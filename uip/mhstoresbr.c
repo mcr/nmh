@@ -82,9 +82,6 @@ int part_ok (CT, int);
 int type_ok (CT, int);
 void flush_errors (void);
 
-/* mhshowsbr.c */
-int show_content_aux (CT, int, int, char *, char *);
-
 /*
  * prototypes
  */
@@ -623,7 +620,7 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 	 * content to standard input of a command and return.
 	 */
 	if (buffer[0] == '|' || buffer[0] == '!')
-	    return show_content_aux (ct, 1, 0, buffer + 1, info->dir);
+	    return show_content_aux (ct, 0, buffer + 1, info->dir, NULL);
 
         /* record the filename */
 	if ((ct->c_storage = clobber_check (add (buffer, NULL), info)) ==

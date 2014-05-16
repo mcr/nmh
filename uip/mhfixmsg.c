@@ -53,14 +53,10 @@ int debugsw; /* Needed by mhparse.c. */
 extern int skip_mp_cte_check;                 /* flag to InitMultiPart */
 extern int suppress_bogus_mp_content_warning; /* flag to InitMultiPart */
 extern int bogus_mp_content;                  /* flag from InitMultiPart */
-CT parse_mime (char *);
 void reverse_parts (CT);
 
 /* mhoutsbr.c */
 int output_message (CT, char *);
-
-/* mhshowsbr.c */
-int show_content_aux (CT, int, char *, char *);
 
 /* mhmisc.c */
 void flush_errors (void);
@@ -1128,7 +1124,7 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
     free (cp);
 
     cp = concat (cf, " >", file, NULL);
-    status = show_content_aux (ct, 0, cp, NULL);
+    status = show_content_aux (ct, 0, cp, NULL, NULL);
     free (cp);
 
     /* Unlink decoded content tmp file and free its filename to avoid

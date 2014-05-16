@@ -40,11 +40,6 @@ void content_error (char *, CT, char *, ...);
 void flush_errors (void);
 
 /*
- * prototypes
- */
-int show_content_aux (CT, int, char *, char *, struct format *fmt);
-
-/*
  * static prototypes
  */
 static void show_single_message (CT, char *, int, int, int, struct format *);
@@ -409,7 +404,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	    fprintf (stderr, " using command %s\n", buffer);
     }
 
-    if (xlist) {
+    if (xlist && fmt) {
 	output_marker(ct, fmt, 0);
     }
 
