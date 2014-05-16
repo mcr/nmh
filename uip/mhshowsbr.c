@@ -416,6 +416,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
     if (buffer[0] == '\0') {
 	char readbuf[BUFSIZ];
 	ssize_t cc;
+	char lastchar = '\n';
 
 	if (fd == NOTOK) {
 	    advise(NULL, "Cannot use NULL command to display content-type "
@@ -425,12 +426,27 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 
 	while ((cc = read(fd, readbuf, sizeof(readbuf))) > 0) {
 	    fwrite(readbuf, sizeof(char), cc, stdout);
+	    lastchar = readbuf[cc - 1];
 	}
 
 	if (cc < 0) {
 	    advise("read", "while reading text content");
 	    return NOTOK;
 	}
+
+	/*
+	 * The MIME standards allow content to not have a trailing newline.
+	 * But because we are (presumably) sending this to stdout, include
+	 * a newline for text content if the final character was not a
+	 * newline.  Only do this for mhshow.
+	 */
+
+	if (strcmp(invo_name, "mhshow") == 0 && ct->c_type == CT_TEXT &&
+	    ct->c_subtype == TEXT_PLAIN && lastchar != '\n') {
+	    putc('\n', stdout);
+	}
+
+	fflush(stdout);
 
 	return OK;
     }
