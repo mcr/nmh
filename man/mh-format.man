@@ -45,7 +45,8 @@ A format string consists of ordinary text, and special multi-character
 escape sequences which begin with `%'.  When specifying a format
 string, the usual C backslash characters are honored: `\\b', `\\f',
 `\\n', `\\r', and `\\t'.  Continuation lines in format files end with
-`\\' followed by the newline character.
+`\\' followed by the newline character. A literal `%' can be inserted into
+a format file by using the sequence `%%'.
 .\" TALK ABOUT SYNTAX FIRST, THEN SEMANTICS
 .SS SYNTAX
 Format strings are built around
