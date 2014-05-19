@@ -1,11 +1,16 @@
 # This spec supports two methods of RPM creation:
 #
 # 1) Start from an nmh workspace, run configure as desired and then "make rpm".
-#    For example:
+#    For example, from a tarball:
+#      $ tar xpf nmh-1.6.tar.gz
+#      $ cd nmh-1.6
+#      $ ./configure --with-cyrus-sasl --with-tls  &&  make rpm
+#
+#    Another example, starting from the source code repository:
 #      $ git clone git://git.savannah.nongnu.org/nmh.git
 #      $ cd nmh
 #      $ ./autogen.sh
-#      $ ./configure --with-cyrus-sasl --with-locking=fcntl  &&  make rpm
+#      $ ./configure --with-cyrus-sasl --with-tls  &&  make rpm
 #
 # 2) Start with a source RPM and use rpmbuild.  Configure options are hard
 #    coded below, but they can be overridden on the rpmbuild command line
@@ -14,7 +19,7 @@
 #      $ rpm -i nmh-1.4-0.fc16.src.rpm
 #      $ rpmbuild --rmsource --rmspec \
 #          --define '_sysconfdir /usr/local/nmh/etc' \
-#          --define 'configure_opts --with-cyrus-sasl --with-locking=fcntl' \
+#          --define 'configure_opts --with-cyrus-sasl --with-tls' \
 #          --bb ~/lib/rpmbuild/SPECS/nmh.spec
 #
 # If configure has previously been run successfully in the workspace,
