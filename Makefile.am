@@ -266,7 +266,7 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 ## Files we need to include in the distribution which aren't found by
 ## Automake using the automatic rules
 ##
-EXTRA_DIST = config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
+EXTRA_DIST = autogen.sh config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
 	     etc/mhn.defaults.sh etc/sendfiles $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
