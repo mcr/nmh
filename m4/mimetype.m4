@@ -22,7 +22,7 @@ AC_DEFUN([NMH_MIMETYPEPROC],
 AS_IF([test X"$nmh_cv_mimetype_proc" != X],
       [mimetype_proc="\"${nmh_cv_mimetype_proc}\""
        AC_DEFINE_UNQUOTED([MIMETYPEPROC], [$mimetype_proc],
-		  [Program, with arguments, to provides MIME type.])])])
+		  [Program, with arguments, to provide MIME type.])])])
 
 dnl The OpenBSD 5.4 file (4.24) reports --mime-encoding of text
 dnl files as "binary".  Detect that by only accepting "us-ascii".
@@ -42,4 +42,4 @@ AC_DEFUN([NMH_MIMEENCODINGPROC],
 AS_IF([test X"$nmh_cv_mimeencoding_proc" != X],
       [mimeencoding_proc="\"${nmh_cv_mimeencoding_proc}\""
        AC_DEFINE_UNQUOTED([MIMEENCODINGPROC], [$mimeencoding_proc],
-		  [Program, with arguments, to provides MIME encoding.])])])
+		  [Program, with arguments, to provide MIME encoding.])])])
