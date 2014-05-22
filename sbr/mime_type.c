@@ -91,7 +91,7 @@ mime_type(const char *file_name) {
 	    }
 
 	    while ((c = getc(fp)) != EOF) {
-		if (! isascii(c)) {
+		if (! isascii(c)  ||  c == 0) {
 		    binary = 1;
 		    break;
 		}
