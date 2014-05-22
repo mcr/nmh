@@ -64,7 +64,7 @@ main (int argc, char **argv)
     char buf[BUFSIZ], **argp, **arguments;
     struct msgs *mp = NULL;
     struct msgs_array msgs = { 0, 0, NULL };
-    struct msgs_array vec = { 0, 0, NULL };
+    struct msgs_array vec = { 0, 0, NULL }, non_mhl_vec = { 0, 0, NULL };
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -85,10 +85,10 @@ main (int argc, char **argv)
 
 		case CONCATSW:
 		case NCONCATSW:
-		    /* Use showmimeproc if one of these switches was
-		       specified because mhl doesn't understand them. */
-		    mime = 1;
-		    /* fall thru */
+		    /* mhl can't handle these, so keep them separate. */
+		    app_msgarg(&non_mhl_vec, --cp);
+		    continue;
+
 		case UNKWNSW: 
 		case NPROGSW:
 		case NFMTPROCSW:
@@ -290,26 +290,35 @@ go_to_it: ;
     if (folder && !draftsw && !file)
 	m_putenv ("mhfolder", folder);
 
-    if (strcmp (r1bindex (proc, '/'), "mhn") == 0) {
-	/* Add "-file" if showing file or draft, */
-	if (draftsw || file) {
-	    app_msgarg(&vec, vec.msgs[vec.size - 1]);
-	    vec.msgs[vec.size - 2] = "-file";
-	}
-	/* and add -show for backward compatibility */
-	app_msgarg(&vec, "-show");
-    } else if (strcmp (r1bindex (proc, '/'), "mhshow") == 0) {
-	/* If "mhshow", add "-file" if showing file or draft. */
-	if (draftsw || file) {
-	    app_msgarg(&vec, vec.msgs[vec.size - 1]);
-	    vec.msgs[vec.size - 2] = "-file";
-	}
-    } else if (strcmp (r1bindex (proc, '/'), "mhl") == 0) {
+    if (strcmp (r1bindex (proc, '/'), "mhl") == 0) {
 	/* If "mhl", then run it internally */
 	argsplit_insert(&vec, "mhl", &program);
 	app_msgarg(&vec, NULL);
 	mhl (vec.size, vec.msgs);
 	done (0);
+    } else {
+	int i;
+	char **mp;
+
+	for (i = 0, mp = non_mhl_vec.msgs; i < non_mhl_vec.size; ++i, ++mp) {
+	    app_msgarg(&vec, *mp);
+	}
+
+	if (strcmp (r1bindex (proc, '/'), "mhn") == 0) {
+	    /* Add "-file" if showing file or draft, */
+	    if (draftsw || file) {
+		app_msgarg(&vec, vec.msgs[vec.size - 1]);
+		vec.msgs[vec.size - 2] = "-file";
+	    }
+	    /* and add -show for backward compatibility */
+	    app_msgarg(&vec, "-show");
+	} else if (strcmp (r1bindex (proc, '/'), "mhshow") == 0) {
+	    /* If "mhshow", add "-file" if showing file or draft. */
+	    if (draftsw || file) {
+		app_msgarg(&vec, vec.msgs[vec.size - 1]);
+		vec.msgs[vec.size - 2] = "-file";
+	    }
+	}
     }
 
     argsplit_insert(&vec, proc, &program);
