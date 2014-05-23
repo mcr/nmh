@@ -301,7 +301,13 @@ go_to_it: ;
 	char **mp;
 
 	for (i = 0, mp = non_mhl_vec.msgs; i < non_mhl_vec.size; ++i, ++mp) {
-	    app_msgarg(&vec, *mp);
+	    if (draftsw || file) {
+		/* Insert the switch before the filename. */
+		app_msgarg(&vec, vec.msgs[vec.size - 1]);
+		vec.msgs[vec.size - 2] = *mp;
+	    } else {
+		app_msgarg(&vec, *mp);
+	    }
 	}
 
 	if (strcmp (r1bindex (proc, '/'), "mhn") == 0) {
