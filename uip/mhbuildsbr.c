@@ -827,14 +827,10 @@ use_forw:
 	 * No [file] argument, so check profile for
 	 * method to compose content.
 	 */
-	snprintf (buffer, sizeof(buffer), "%s-compose-%s/%s",
-		invo_name, ci->ci_type, ci->ci_subtype);
-	if ((cp = context_find (buffer)) == NULL || *cp == '\0') {
-	    snprintf (buffer, sizeof(buffer), "%s-compose-%s", invo_name, ci->ci_type);
-	    if ((cp = context_find (buffer)) == NULL || *cp == '\0') {
-		content_error (NULL, ct, "don't know how to compose content");
-		done (1);
-	    }
+	cp = context_find_by_type ("compose", ci->ci_type, ci->ci_subtype);
+	if (cp == NULL) {
+	    content_error (NULL, ct, "don't know how to compose content");
+	    done (1);
 	}
 	ci->ci_magic = add (cp, NULL);
 	return OK;
@@ -1863,8 +1859,7 @@ setup_attach_content(CT ct, char *filename)
     char *type, *simplename = r1bindex(filename, '/');
     struct str2init *s2i;
     PM pm;
-    char buffer[BUFSIZ], *cp;
-    int no_subtype = 0;
+    char *cp;
 
     if (! (type = mime_type(filename))) {
 	adios(NULL, "Unable to determine MIME type of \"%s\"", filename);
@@ -1944,24 +1939,16 @@ setup_attach_content(CT ct, char *filename)
      * 'attachment'.
      */
 
-    snprintf (buffer, sizeof(buffer), "%s-disposition-%s/%s",
-              invo_name, ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype);
-    cp = context_find (buffer);
-    if (cp == NULL || *cp == '\0') {
-        no_subtype = 1;
-        snprintf (buffer, sizeof(buffer), "%s-disposition-%s", invo_name,
-                  ct->c_ctinfo.ci_type);
-        cp = context_find (buffer);
-    }
-    if (cp != NULL && *cp != '\0') {
-        if (strcasecmp (cp, "attachment")  &&
-            strcasecmp (cp, "inline")) {
+    cp = context_find_by_type ("disposition", ct->c_ctinfo.ci_type,
+                               ct->c_ctinfo.ci_subtype);
+    if (cp != NULL) {
+        if (strcasecmp (cp, "attachment")  &&  strcasecmp (cp, "inline")) {
             admonish (NULL, "configuration problem: %s-disposition-%s%s%s "
                       "specifies '%s' but only 'attachment' and 'inline' are "
                       "allowed", invo_name,
                       ct->c_ctinfo.ci_type,
-                      no_subtype ? "" : "/",
-                      no_subtype ? "" : ct->c_ctinfo.ci_subtype,
+                      ct->c_ctinfo.ci_subtype ? "/" : "",
+                      ct->c_ctinfo.ci_subtype ? ct->c_ctinfo.ci_subtype : "",
                       cp);
         }
     }

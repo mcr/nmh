@@ -11,7 +11,7 @@
 
 
 char *
-context_find (char *str)
+context_find (const char *str)
 {
     struct node *np;
 
@@ -20,4 +20,34 @@ context_find (char *str)
 	    return (np->n_field);
 
     return NULL;
+}
+
+
+/*
+ * Helper function to search first, if subtype is non-NULL, for
+ * invoname-string-type/subtype and then invoname-string-type.
+ * If entry is found but is empty, returns NULL.
+ */
+char *
+context_find_by_type (const char *string, const char *type,
+                      const char *subtype) {
+    char *value = NULL;
+
+    if (subtype) {
+        char *cp;
+
+        cp = concat (invo_name, "-", string, "-", type, "/", subtype, NULL);
+        if ((value = context_find (cp)) != NULL && *value == '\0') value = NULL;
+        free (cp);
+    }
+
+    if (value == NULL) {
+        char *cp;
+
+        cp = concat (invo_name, "-", string, "-", type, NULL);
+        if ((value = context_find (cp)) != NULL && *value == '\0') value = NULL;
+        free (cp);
+    }
+
+    return value;
 }

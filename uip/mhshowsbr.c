@@ -292,7 +292,7 @@ static int
 show_content (CT ct, int alternate, int textonly, int inlineonly,
 	      struct format *fmt)
 {
-    char *cp, buffer[BUFSIZ];
+    char *cp;
     CI ci = &ct->c_ctinfo;
 
     /*
@@ -305,15 +305,8 @@ show_content (CT ct, int alternate, int textonly, int inlineonly,
 	return OK;
     }
 
-    /* Check for invo_name-show-type/subtype */
-    snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
-		invo_name, ci->ci_type, ci->ci_subtype);
-    if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, alternate, cp, NULL, fmt);
-
-    /* Check for invo_name-show-type */
-    snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
-    if ((cp = context_find (buffer)) && *cp != '\0')
+    /* Check for invo_name-show-type[/subtype] */
+    if ((cp = context_find_by_type ("show", ci->ci_type, ci->ci_subtype)))
 	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     if ((cp = ct->c_showproc))
@@ -505,15 +498,8 @@ show_text (CT ct, int alternate, int concatsw, struct format *fmt)
     char *cp, buffer[BUFSIZ];
     CI ci = &ct->c_ctinfo;
 
-    /* Check for invo_name-show-type/subtype */
-    snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
-		invo_name, ci->ci_type, ci->ci_subtype);
-    if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, alternate, cp, NULL, fmt);
-
-    /* Check for invo_name-show-type */
-    snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
-    if ((cp = context_find (buffer)) && *cp != '\0')
+    /* Check for invo_name-show-type[/subtype] */
+    if ((cp = context_find_by_type ("show", ci->ci_type, ci->ci_subtype)))
 	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     /*
@@ -545,18 +531,11 @@ static int
 show_multi (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
 	    struct format *fmt)
 {
-    char *cp, buffer[BUFSIZ];
+    char *cp;
     CI ci = &ct->c_ctinfo;
 
-    /* Check for invo_name-show-type/subtype */
-    snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
-		invo_name, ci->ci_type, ci->ci_subtype);
-    if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_multi_aux (ct, alternate, cp, fmt);
-
-    /* Check for invo_name-show-type */
-    snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
-    if ((cp = context_find (buffer)) && *cp != '\0')
+    /* Check for invo_name-show-type[/subtype] */
+    if ((cp = context_find_by_type ("show", ci->ci_type, ci->ci_subtype)))
 	return show_multi_aux (ct, alternate, cp, fmt);
 
     if ((cp = ct->c_showproc))
@@ -705,18 +684,11 @@ show_multi_aux (CT ct, int alternate, char *cp, struct format *fmt)
 static int
 show_message_rfc822 (CT ct, int alternate, struct format *fmt)
 {
-    char *cp, buffer[BUFSIZ];
+    char *cp;
     CI ci = &ct->c_ctinfo;
 
-    /* Check for invo_name-show-type/subtype */
-    snprintf (buffer, sizeof(buffer), "%s-show-%s/%s",
-		invo_name, ci->ci_type, ci->ci_subtype);
-    if ((cp = context_find (buffer)) && *cp != '\0')
-	return show_content_aux (ct, alternate, cp, NULL, fmt);
-
-    /* Check for invo_name-show-type */
-    snprintf (buffer, sizeof(buffer), "%s-show-%s", invo_name, ci->ci_type);
-    if ((cp = context_find (buffer)) && *cp != '\0')
+    /* Check for invo_name-show-type[/subtype] */
+    if ((cp = context_find_by_type ("show", ci->ci_type, ci->ci_subtype)))
 	return show_content_aux (ct, alternate, cp, NULL, fmt);
 
     if ((cp = ct->c_showproc))

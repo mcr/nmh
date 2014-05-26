@@ -566,13 +566,9 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
     if ((cp = ct->c_storeproc) == NULL || *cp == '\0') {
 	CI ci = &ct->c_ctinfo;
 
-	snprintf (buffer, sizeof(buffer), "%s-store-%s/%s",
-		invo_name, ci->ci_type, ci->ci_subtype);
-	if ((cp = context_find (buffer)) == NULL || *cp == '\0') {
-	    snprintf (buffer, sizeof(buffer), "%s-store-%s", invo_name, ci->ci_type);
-	    if ((cp = context_find (buffer)) == NULL || *cp == '\0') {
-		cp = ct->c_type == CT_MESSAGE ? "+" : "%m%P.%s";
-	    }
+	cp = context_find_by_type ("store", ci->ci_type, ci->ci_subtype);
+	if (cp == NULL) {
+	    cp = ct->c_type == CT_MESSAGE ? "+" : "%m%P.%s";
 	}
     }
 

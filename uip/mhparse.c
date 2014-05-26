@@ -1711,15 +1711,7 @@ openBase64 (CT ct, char **file)
 
     /* sbeck@cise.ufl.edu -- handle suffixes */
     ci = &ct->c_ctinfo;
-    snprintf (buffer, sizeof(buffer), "%s-suffix-%s/%s",
-              invo_name, ci->ci_type, ci->ci_subtype);
-    cp = context_find (buffer);
-    if (cp == NULL || *cp == '\0') {
-        snprintf (buffer, sizeof(buffer), "%s-suffix-%s", invo_name,
-                  ci->ci_type);
-        cp = context_find (buffer);
-    }
-    if (cp != NULL && *cp != '\0') {
+    if ((cp = context_find_by_type ("suffix", ci->ci_type, ci->ci_subtype))) {
 	if (ce->ce_unlink) {
 	    /* Create temporary file with filename extension. */
 	    if ((ce->ce_file = m_mktemps(invo_name, cp, NULL, NULL)) == NULL) {
@@ -1921,7 +1913,6 @@ openQuoted (CT ct, char **file)
 {
     int	cc, digested, len, quoted, own_ct_fp = 0;
     char *cp, *ep;
-    char buffer[BUFSIZ];
     char *bufp = NULL;
     size_t buflen;
     ssize_t gotlen;
@@ -1953,15 +1944,7 @@ openQuoted (CT ct, char **file)
 
     /* sbeck@cise.ufl.edu -- handle suffixes */
     ci = &ct->c_ctinfo;
-    snprintf (buffer, sizeof(buffer), "%s-suffix-%s/%s",
-              invo_name, ci->ci_type, ci->ci_subtype);
-    cp = context_find (buffer);
-    if (cp == NULL || *cp == '\0') {
-        snprintf (buffer, sizeof(buffer), "%s-suffix-%s", invo_name,
-                  ci->ci_type);
-        cp = context_find (buffer);
-    }
-    if (cp != NULL && *cp != '\0') {
+    if ((cp = context_find_by_type ("suffix", ci->ci_type, ci->ci_subtype))) {
 	if (ce->ce_unlink) {
 	    /* Create temporary file with filename extension. */
 	    if ((ce->ce_file = m_mktemps(invo_name, cp, NULL, NULL)) == NULL) {
@@ -2179,15 +2162,7 @@ open7Bit (CT ct, char **file)
 
     /* sbeck@cise.ufl.edu -- handle suffixes */
     ci = &ct->c_ctinfo;
-    snprintf (buffer, sizeof(buffer), "%s-suffix-%s/%s",
-              invo_name, ci->ci_type, ci->ci_subtype);
-    cp = context_find (buffer);
-    if (cp == NULL || *cp == '\0') {
-        snprintf (buffer, sizeof(buffer), "%s-suffix-%s", invo_name,
-                  ci->ci_type);
-        cp = context_find (buffer);
-    }
-    if (cp != NULL && *cp != '\0') {
+    if ((cp = context_find_by_type ("suffix", ci->ci_type, ci->ci_subtype))) {
 	if (ce->ce_unlink) {
 	    /* Create temporary file with filename extension. */
 	    if ((ce->ce_file = m_mktemps(invo_name, cp, NULL, NULL)) == NULL) {

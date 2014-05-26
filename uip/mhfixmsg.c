@@ -1091,37 +1091,22 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
        Could show_multi() in mhshowsbr.c avoid this? */
 
     /* Check for invo_name-format-type/subtype. */
-    cp = concat (invo_name, "-format-", type, "/", subtype, NULL);
-    if ((cf = context_find (cp))  &&  *cf != '\0') {
+    if ((cf = context_find_by_type ("format", type, subtype)) == NULL) {
+        if (verbosw) {
+            advise (NULL, "Don't know how to convert %s, there is no "
+                    "%s-format-%s/%s profile entry",
+                    ct->c_file, invo_name, type, subtype);
+        }
+        return NOTOK;
+    } else {
         if (strchr (cf, '>')) {
-            free (cp);
             advise (NULL, "'>' prohibited in \"%s\",\nplease fix your "
                     "%s-format-%s/%s profile entry", cf, invo_name, type,
-                    subtype);
-            return NOTOK;
-        }
-    } else {
-        free (cp);
+                    subtype ? subtype : "");
 
-        /* Check for invo_name-format-type. */
-        cp = concat (invo_name, "-format-", type, NULL);
-        if (! (cf = context_find (cp))  ||  *cf == '\0') {
-            free (cp);
-            if (verbosw) {
-                advise (NULL, "Don't know how to convert %s, there is no "
-                        "%s-format-%s/%s profile entry",
-                        ct->c_file, invo_name, type, subtype);
-            }
-            return NOTOK;
-        }
-
-        if (strchr (cf, '>')) {
-            free (cp);
-            advise (NULL, "'>' prohibited in \"%s\"", cf);
             return NOTOK;
         }
     }
-    free (cp);
 
     cp = concat (cf, " >", file, NULL);
     status = show_content_aux (ct, 0, cp, NULL, NULL);
