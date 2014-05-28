@@ -400,6 +400,8 @@ insert (struct mailname *np)
 	return 0;
 
     if (querysw) {
+        /* Don't change the "Reply to %s? " prompt format, so that
+           scripts can rely on it. */
 	snprintf (buffer, sizeof(buffer), "Reply to %s? ", adrformat (np));
 	if (!gans (buffer, anoyes))
 	return 0;
