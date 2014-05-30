@@ -25,8 +25,9 @@ context_find (const char *str)
 
 /*
  * Helper function to search first, if subtype is non-NULL, for
- * invoname-string-type/subtype and then invoname-string-type.
- * If entry is found but is empty, returns NULL.
+ * invoname-string-type/subtype and then, if not yet found,
+ * invoname-string-type.  If entry is found but is empty, it is
+ * treated as not found.
  */
 char *
 context_find_by_type (const char *string, const char *type,
