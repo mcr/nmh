@@ -179,15 +179,8 @@ switch modifies the action of
 switch by
 interactively asking you if each address that normally would be placed in
 the \*(lqTo:\*(rq and \*(lqcc:\*(rq list should actually be sent a copy.
-This is useful for special\-purpose replies.  The prompt format is
-.PP
-.RS 5
-Reply to
-.IR address ?
-.RE
-.PP
-That prompt will not change, so that scripts can rely on it.  Note
-that the position of the
+This is useful for special\-purpose replies.  Note that the position of
+the
 .B \-cc
 and
 .B \-nocc
