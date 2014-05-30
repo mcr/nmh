@@ -108,7 +108,7 @@ static char *fcc    = NULL;		/* folders to add to Fcc: header */
 /*
  * prototypes
  */
-void docc (char *, int);
+static void docc (char *, int);
 
 
 int
