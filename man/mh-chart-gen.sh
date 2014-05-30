@@ -7,7 +7,7 @@ nmhmandir=`dirname $0`
 
 # The following ensures the generated date field in the manpage is divorced
 # from the local build environment when building distribution packages.
-export LC_TIME=C
+LC_TIME=C; export LC_TIME
 unset LANG
 datestamp=`date '+%B %d, %Y'`
 
