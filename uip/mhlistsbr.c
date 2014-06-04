@@ -40,12 +40,14 @@ static int list_encoding (CT);
 #define	LSTFMT1		"%4s %-5s %-24s %5s %s\n"
 #define	LSTFMT2a	"%4d "
 #define	LSTFMT2b	"%-5s %-24.24s "
+#define	LSTFMT2bv	"%-5s %-24s "
 #define	LSTFMT2c1	"%5lu"
 #define	LSTFMT2c2	"%4lu%c"
 #define	LSTFMT2c3	"huge "
 #define	LSTFMT2c4	"     "
 #define	LSTFMT2d1	" %.36s"
-#define	LSTFMT2d2	"\t     %-65.65s\n"
+#define	LSTFMT2d1v	" %s"
+#define	LSTFMT2d2	"\t     %-65s\n"
 
 
 /*
@@ -156,7 +158,10 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug,
 
     snprintf (buffer, sizeof(buffer), "%s/%s", empty (ci->ci_type),
 		empty (ci->ci_subtype));
-    printf (LSTFMT2b, empty (ct->c_partno), buffer);
+    if (verbose)
+	printf (LSTFMT2bv, empty (ct->c_partno), buffer);
+    else
+	printf (LSTFMT2b, empty (ct->c_partno), buffer);
 
     if (ct->c_cesizefnx && realsize)
 	size = (*ct->c_cesizefnx) (ct);
@@ -190,7 +195,10 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug,
 	char *dp;
 
 	dp = cpytrim (ct->c_descr);
-	printf (LSTFMT2d1, dp);
+	if (verbose)
+	    printf (LSTFMT2d1v, dp);
+	else
+	    printf (LSTFMT2d1, dp);
 	free (dp);
     }
 
