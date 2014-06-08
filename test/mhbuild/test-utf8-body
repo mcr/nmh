@@ -16,6 +16,8 @@ fi
 
 setup_test
 testname="${MH_TEST_DIR}/$$"
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
 
 LC_ALL=en_US.UTF-8; export LC_ALL
 
@@ -123,6 +125,31 @@ this is an attachment
 EOF
 
 test_attachment "${testname}.expected"
+
+# Repeat the previous test, but make sure that the locale is set to C, which 
+# should cause mhbuild to fail
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody <somebody@example.com>
+Subject: Test
+Attach: $MH_TEST_DIR/attachment.txt
+
+¡Ay, caramba!
+EOF
+
+LC_ALL="C"; export LC_ALL
+
+set +e
+run_prog send -draft -mts sendmail/pipe > "$actual" 2>&1
+set -e
+
+cat > "$expected" <<EOF
+mhbuild: Text content contains 8 bit characters, but character set is US-ASCII
+${MH_INST_DIR}${bindir}/mhbuild: exit 1
+EOF
+
+check "$expected" "$actual"
 
 rm -f ${MHMTSCONF} "${MH_TEST_DIR}/attachment.txt"
 

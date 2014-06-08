@@ -3851,8 +3851,12 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
 	 * add them now.
 	 */
 
-	if (! pm->pm_charset)
+	if (! pm->pm_charset) {
 	    pm->pm_charset = getcpy(write_charset_8bit());
+	    if (strcasecmp(pm->pm_charset, "US-ASCII") == 0)
+		adios(NULL, "8-bit characters in parameter \"%s\", but "
+		      "local character set is US-ASCII", pm->pm_name);
+	}
 	if (! pm->pm_lang)
 	    pm->pm_lang = getcpy(NULL);	/* Default to a blank lang tag */
 

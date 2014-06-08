@@ -157,7 +157,6 @@ This is a test message
 EOF
 
 run_prog mhbuild "$draft"
-rm -f "$MH_TEST_DIR/tïny.jpg"
 
 cat > "$expected" <<EOF
 To: Mr Test <mrtest@example.com>
@@ -182,6 +181,31 @@ Content-Transfer-Encoding: base64
 EOF
 
 check "$draft" "$expected"
+
+#
+# Test to make sure things fail if we try to put 8-bit characters when the
+# locale is US-ASCII
+#
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+------
+This is a test message
+#image/jpeg {attachment} $MH_TEST_DIR/tïny.jpg
+EOF
+
+old_locale="$LC_ALL"
+LC_ALL=C; export LC_ALL
+
+set +e
+run_test 'eval mhbuild "$draft" 2>&1' 'mhbuild: 8-bit characters in parameter "filename", but local character set is US-ASCII'
+set -e
+
+LC_ALL="$old_locale"; export LC_ALL
+
+rm -f "$MH_TEST_DIR/tïny.jpg"
 
 #
 # Test out message/external-body decoding

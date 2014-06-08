@@ -1476,9 +1476,16 @@ scan_content (CT ct, size_t maxunencoded)
 	t = (struct text *) ct->c_ctparams;
 	if (t->tx_charset == CHARSET_UNSPECIFIED) {
 	    CI ci = &ct->c_ctinfo;
+	    char *eightbitcharset = write_charset_8bit();
+
+	    if (contains8bit && strcasecmp(eightbitcharset, "US-ASCII") == 0) {
+		adios(NULL, "Text content contains 8 bit characters, but "
+		      "character set is US-ASCII");
+	    }
 
 	    add_param(&ci->ci_first_pm, &ci->ci_last_pm, "charset",
-			contains8bit ? write_charset_8bit() : "us-ascii", 0);
+			contains8bit ? eightbitcharset : "us-ascii", 0);
+
 	    t->tx_charset = CHARSET_SPECIFIED;
 	}
     }
