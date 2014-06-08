@@ -17,6 +17,7 @@ fi
 setup_test
 testname="${MH_TEST_DIR}/$$"
 
+LC_ALL=en_US.UTF-8; export LC_ALL
 
 #### Rely on sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"
