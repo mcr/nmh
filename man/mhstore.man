@@ -446,7 +446,7 @@ For the \*(lqurl\*(rq access types,
 will look for the \*(lqnmh-access-url\*(rq profile entry, e.g.,
 .PP
 .RS 5
-nmh-access-url: curl -l
+nmh-access-url: curl -L
 .RE
 .PP
 to determine the program to use to perform the HTTP retrieval.  This program
