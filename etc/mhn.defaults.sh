@@ -312,6 +312,13 @@ if [ ! -z "$PGM" ]; then
 	echo "mhshow-show-application/msword: %l$PGM %F" >> $TMP
 fi
 
+# This entry is used to retrieve external-body types that use a "url"
+# access-type.
+PGM="`$SEARCHPROG $SEARCHPATH curl`"
+if [ ! -z "$PGM" ]; then
+	echo "nmh-access-url: $PGM -L" >> $TMP
+fi
+
 # output a sorted version of the file
 sort < $TMP
 
