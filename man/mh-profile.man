@@ -672,26 +672,17 @@ This is the program used by
 to determine to whom a message would be sent.
 .RE
 .SS "Profile Lookup"
-Some
-.B nmh
-programs will look in more than just the user's 
-.I \&.mh\(ruprofile
-for profile entries.  In particular, 
-.BR mhbuild ,
-.BR mhshow ,
-.BR mhstore ,
-and
-.BR mhn 
-will also all look in a file specified by a program-specific
-environment variable (see below), and after that in 
-the system-installed profile (%etcdir%/mhn.defaults).  (The
-.B mhfixmsg
-program is similar, but doesn't consult an environment variable.)
-The first match found for a particular component will be used,
-allowing user-supplied entries to override those that are system-supplied.
-A profile component with a blank value field will "hide" any later
-occurrences of the component, and will make the entry appear to be
-absent.
+After consulting .mh_profile,
+some programs read an optional profile specified by a
+program-specific environment variable,
+and then the system-wide profile %etcdir%/mhn.defaults.
+These programs are mhbuild, mhshow, mhstore, and mhn.
+mhfixmsg is similar, but has no optional profile.
+
+The first occurrence of a component is used,
+e.g.\& .mh_profile's trumps $MHSHOW's.
+A component with no value still stops further occurrences being used,
+but is considered absent.
 .SS "Environment Variables"
 The operation of
 .B nmh
