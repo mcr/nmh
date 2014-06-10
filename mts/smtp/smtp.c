@@ -10,6 +10,7 @@
 #include "smtp.h"
 #include <h/mts.h>
 #include <h/signals.h>
+#include <h/utils.h>
 
 #ifdef CYRUS_SASL
 #include <sasl/sasl.h>
@@ -798,17 +799,26 @@ sm_end (int type)
  * completes successfully, then authentication is successful and we've
  * (optionally) negotiated a security layer.
  */
+
+#define CHECKB64SIZE(insize, outbuf, outsize) \
+    { size_t wantout = (((insize + 2) / 3) * 4) + 32; \
+      if (wantout > outsize) { \
+          outbuf = mh_xrealloc(outbuf, outsize = wantout); \
+      } \
+    }
+
 static int
 sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 {
     int result, status;
     unsigned int buflen, outlen;
-    char *buf, outbuf[BUFSIZ], host[NI_MAXHOST];
+    char *buf, *outbuf = NULL, host[NI_MAXHOST];
     const char *chosen_mech;
     sasl_security_properties_t secprops;
     sasl_ssf_t *ssf;
     int *outbufmax;
     struct nmh_creds creds = { 0, 0, 0 };
+    size_t outbufsize = 0;
 
     /*
      * Initialize the callback contexts
@@ -905,10 +915,13 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
      */
 
     if (buflen) {
-	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
+	CHECKB64SIZE(buflen, outbuf, outbufsize);
+	status = sasl_encode64(buf, buflen, outbuf, outbufsize, NULL);
 	if (status != SASL_OK) {
 	    sm_ierror("SASL base64 encode failed: %s",
 		      sasl_errstring(status, NULL, NULL));
+	    if (outbuf)
+		free(outbuf);
 	    return NOTOK;
 	}
 
@@ -935,8 +948,11 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 
 	if (status == 235)
 	    break;
-	else if (status < 300 || status > 399)
+	else if (status < 300 || status > 399) {
+	    if (outbuf)
+		free(outbuf);
 	    return RP_BHST;
+	}
 	
 	/*
 	 * Special case; a zero-length response from the SMTP server
@@ -947,12 +963,18 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 	if (strcmp("=", sm_reply.text) == 0) {
 	    outlen = 0;
 	} else {
+	    if (sm_reply.length > (int) outbufsize) {
+		outbuf = mh_xrealloc(outbuf, outbufsize = sm_reply.length);
+	    }
+
 	    result = sasl_decode64(sm_reply.text, sm_reply.length,
-				   outbuf, sizeof(outbuf), &outlen);
+				   outbuf, outbufsize, &outlen);
 	    if (result != SASL_OK) {
 		smtalk(SM_AUTH, "*");
 		sm_ierror("SASL base64 decode failed: %s",
 			  sasl_errstring(result, NULL, NULL));
+		if (outbuf)
+		    free(outbuf);
 		return NOTOK;
 	    }
 	}
@@ -964,20 +986,28 @@ sm_auth_sasl(char *user, int saslssf, char *mechlist, char *inhost)
 	    smtalk(SM_AUTH, "*");
 	    sm_ierror("SASL client negotiation failed: %s",
 		      sasl_errstring(result, NULL, NULL));
+	    if (outbuf)
+		free(outbuf);
 	    return NOTOK;
 	}
 
-	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
+	CHECKB64SIZE(buflen, outbuf, outbufsize);
+	status = sasl_encode64(buf, buflen, outbuf, outbufsize, NULL);
 
 	if (status != SASL_OK) {
 	    smtalk(SM_AUTH, "*");
 	    sm_ierror("SASL base64 encode failed: %s",
 		      sasl_errstring(status, NULL, NULL));
+	    if (outbuf)
+		free(outbuf);
 	    return NOTOK;
 	}
 	
 	status = smtalk(SM_AUTH, outbuf);
     }
+
+    if (outbuf)
+	free(outbuf);
 
     /*
      * Make sure that we got the correct response
@@ -1122,11 +1152,21 @@ smtalk (int time, char *fmt, ...)
 {
     va_list ap;
     int result;
-    char buffer[BUFSIZ];
+    char *buffer;
+    size_t bufsize = BUFSIZ;
+
+    buffer = mh_xmalloc(bufsize);
 
     va_start(ap, fmt);
-    vsnprintf (buffer, sizeof(buffer), fmt, ap);
+    result = vsnprintf (buffer, bufsize, fmt, ap);
     va_end(ap);
+
+    if (result > (int) bufsize) {
+	buffer = mh_xrealloc(buffer, bufsize = result + 1);
+	va_start(ap, fmt);
+	vsnprintf (buffer, bufsize, fmt, ap);
+	va_end(ap);
+    }
 
     if (sm_debug) {
 	if (sasl_ssf)
@@ -1142,6 +1182,8 @@ smtalk (int time, char *fmt, ...)
     if ((result = sm_wrecord (buffer, strlen (buffer))) != NOTOK)
 	result = smhear ();
     alarm (0);
+
+    free(buffer);
 
     return result;
 }

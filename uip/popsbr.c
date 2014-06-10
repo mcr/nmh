@@ -89,12 +89,20 @@ static int putline (char *, FILE *);
  * layer.
  */
 
+#define CHECKB64SIZE(insize, outbuf, outsize) \
+    { size_t wantout = (((insize + 2) / 3) * 4) + 32; \
+      if (wantout > outsize) { \
+          outbuf = mh_xrealloc(outbuf, outsize = wantout); \
+      } \
+    }
+
 int
 pop_auth_sasl(char *user, char *host, char *mech)
 {
     int result, status, sasl_capability = 0;
     unsigned int buflen, outlen;
-    char server_mechs[256], *buf, outbuf[BUFSIZ];
+    char server_mechs[256], *buf, *outbuf = NULL;
+    size_t outbufsize = 0;
     const char *chosen_mech;
     sasl_security_properties_t secprops;
     struct pass_context p_context;
@@ -209,10 +217,13 @@ pop_auth_sasl(char *user, char *host, char *mech)
     }
 
     if (buflen) {
-	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
+	CHECKB64SIZE(buflen, outbuf, outbufsize);
+	status = sasl_encode64(buf, buflen, outbuf, outbufsize, NULL);
 	if (status != SASL_OK) {
 	    snprintf(response, sizeof(response), "SASL base64 encode "
 		     "failed: %s", sasl_errstring(status, NULL, NULL));
+	    if (outbuf)
+		free(outbuf);
 	    return NOTOK;
 	}
 
@@ -221,8 +232,13 @@ pop_auth_sasl(char *user, char *host, char *mech)
 	status = command("AUTH %s", chosen_mech);
 
     while (result == SASL_CONTINUE) {
-	if (status == NOTOK)
+	size_t inlen;
+
+	if (status == NOTOK) {
+	    if (outbuf)
+		free(outbuf);
 	    return NOTOK;
+	}
 	
 	/*
 	 * If we get a "+OK" prefix to our response, then we should
@@ -241,16 +257,31 @@ pop_auth_sasl(char *user, char *host, char *mech)
 	    command("*");
 	    snprintf(response, sizeof(response),
 		     "Malformed authentication message from server");
+	    if (outbuf)
+		free(outbuf);
 	    return NOTOK;
 	}
 
+	/*
+	 * For decode, it will always be shorter, so just make sure
+	 * that outbuf is as at least as big as the encoded response.
+	 */
+
+	inlen = strlen(response + 2);
+
+	if (inlen > outbufsize) {
+	    outbuf = mh_xrealloc(outbuf, outbufsize = inlen);
+	}
+
 	result = sasl_decode64(response + 2, strlen(response + 2),
-			       outbuf, sizeof(outbuf), &outlen);
+			       outbuf, outbufsize, &outlen);
 	
 	if (result != SASL_OK) {
 	    command("*");
 	    snprintf(response, sizeof(response), "SASL base64 decode "
 		     "failed: %s", sasl_errstring(result, NULL, NULL));
+	    if (outbuf)
+		free(outbuf);
 	    return NOTOK;
 	}
 
@@ -261,20 +292,29 @@ pop_auth_sasl(char *user, char *host, char *mech)
 	    command("*");
 	    snprintf(response, sizeof(response), "SASL client negotiaton "
 		     "failed: %s", sasl_errdetail(conn));
+	    if (outbuf)
+		free(outbuf);
 	    return NOTOK;
 	}
 
-	status = sasl_encode64(buf, buflen, outbuf, sizeof(outbuf), NULL);
+	CHECKB64SIZE(buflen, outbuf, outbufsize);
+
+	status = sasl_encode64(buf, buflen, outbuf, outbufsize, NULL);
 
 	if (status != SASL_OK) {
 	    command("*");
 	    snprintf(response, sizeof(response), "SASL base64 encode "
 		     "failed: %s", sasl_errstring(status, NULL, NULL));
+	    if (outbuf)
+		free(outbuf);
 	    return NOTOK;
 	}
 
 	status = command(outbuf);
     }
+
+    if (outbuf)
+	free(outbuf);
 
     /*
      * If we didn't get a positive final response, then error out
@@ -753,9 +793,10 @@ command(const char *fmt, ...)
 static int
 vcommand (const char *fmt, va_list ap)
 {
-    char *cp, buffer[BUFSIZ];
+    char *cp, buffer[65536];
 
     vsnprintf (buffer, sizeof(buffer), fmt, ap);
+
     if (poprint) {
 #ifdef CYRUS_SASL
 	if (sasl_ssf)
