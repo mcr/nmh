@@ -48,8 +48,8 @@ nmh_get_credentials (char *host, char *user, int sasl, nmh_creds_t creds) {
     creds->host = host;
 
     if (cred_style == NULL  ||  ! strcmp (cred_style, "legacy")) {
+	creds->user = user == NULL  ?  getusername ()  :  user;
         if (sasl) {
-            creds->user = user == NULL  ?  getusername ()  :  user;
 
             /* This is what inc.c and msgchk.c used to contain. */
             /* Only inc.c and msgchk.c do this.  smtp.c doesn't. */
