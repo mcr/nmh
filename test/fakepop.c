@@ -49,37 +49,61 @@ main(int argc, char *argv[])
 {
 	struct addrinfo hints, *res;
 	struct stat st;
-	FILE *f, *pid;
+	FILE **mfiles, *pid;
 	char line[LINESIZE];
 	fd_set readfd;
 	struct timeval tv;
 	pid_t child;
-	int octets = 0, rc, l, s, on, user = 0, pass = 0, deleted = 0;
+	int rc, l, s, on, user = 0, pass = 0, i, j;
+	int numfiles;
+	size_t *octets;
 
-	if (argc != 5) {
-		fprintf(stderr, "Usage: %s mail-file port username "
-			"password\n", argv[0]);
+	if (argc < 5) {
+		fprintf(stderr, "Usage: %s port username "
+			"password mail-file [mail-file ...]\n", argv[0]);
 		exit(1);
 	}
 
-	if (!(f = fopen(argv[1], "r"))) {
-		fprintf(stderr, "Unable to open message file \"%s\": %s\n",
-			argv[1], strerror(errno));
+	numfiles = argc - 4;
+
+	mfiles = malloc(sizeof(FILE *) * numfiles);
+
+	if (! mfiles) {
+		fprintf(stderr, "Unable to allocate %d bytes for file "
+			"array\n", (int) (sizeof(FILE *) * numfiles));
 		exit(1);
 	}
 
-	/*
-	 * POP wants the size of the maildrop in bytes, but with \r\n line
-	 * endings.  Calculate that.
-	 */
+	octets = malloc(sizeof(*octets) * numfiles);
 
-	while (fgets(line, sizeof(line), f)) {
-		octets += strlen(line);
-		if (strrchr(line, '\n'))
-			octets++;
+	if (! octets) {
+		fprintf(stderr, "Unable to allocate %d bytes for size "
+			"array\n", (int) (sizeof(FILE *) * numfiles));
+		exit(1);
 	}
 
-	rewind(f);
+	for (i = 4, j = 0; i < argc; i++, j++) {
+		if (!(mfiles[j] = fopen(argv[i], "r"))) {
+			fprintf(stderr, "Unable to open message file \"%s\""
+				": %s\n", argv[i], strerror(errno));
+			exit(1);
+		}
+
+		/*
+		 * POP wants the size of the maildrop in bytes, but
+		 * with \r\n line endings.  Calculate that.
+		 */
+
+		octets[j] = 0;
+
+		while (fgets(line, sizeof(line), mfiles[j])) {
+			octets[j] += strlen(line);
+			if (strrchr(line, '\n'))
+				octets[j]++;
+		}
+
+		rewind(mfiles[j]);
+	}
 
 	/*
 	 * If there is a pid file around, kill the previously running
@@ -114,11 +138,11 @@ main(int argc, char *argv[])
 	hints.ai_protocol = IPPROTO_TCP;
 	hints.ai_flags = AI_PASSIVE;
 
-	rc = getaddrinfo("127.0.0.1", argv[2], &hints, &res);
+	rc = getaddrinfo("127.0.0.1", argv[1], &hints, &res);
 
 	if (rc) {
 		fprintf(stderr, "Unable to resolve localhost/%s: %s\n",
-			argv[2], gai_strerror(rc));
+			argv[1], gai_strerror(rc));
 		exit(1);
 	}
 
@@ -241,7 +265,7 @@ main(int argc, char *argv[])
 			putpopbulk(s, "+OK We have no capabilities, really\r\n"
 				   "FAKE-CAPABILITY\r\n.\r\n");
 		} else if (strncasecmp(linebuf, "USER ", 5) == 0) {
-			if (strcmp(linebuf + 5, argv[3]) == 0) {
+			if (strcmp(linebuf + 5, argv[2]) == 0) {
 				putpop(s, "+OK Niiiice!");
 				user = 1;
 			} else {
@@ -249,7 +273,7 @@ main(int argc, char *argv[])
 			}
 		} else if (strncasecmp(linebuf, "PASS ", 5) == 0) {
 			CHECKUSER();
-			if (strcmp(linebuf + 5, argv[4]) == 0) {
+			if (strcmp(linebuf + 5, argv[3]) == 0) {
 				putpop(s, "+OK Aren't you a sight "
 				       "for sore eyes!");
 				pass = 1;
@@ -257,39 +281,57 @@ main(int argc, char *argv[])
 				putpop(s, "-ERR C'mon!");
 			}
 		} else if (strcasecmp(linebuf, "STAT") == 0) {
+			size_t total = 0;
 			CHECKUSERPASS();
-			if (deleted) {
-				strncpy(linebuf, "+OK 0 0", sizeof(linebuf));
-			} else {
-				snprintf(linebuf, sizeof(linebuf),
-					 "+OK 1 %d", octets);
+			for (i = 0, j = 0; i < numfiles; i++) {
+				if (mfiles[i]) {
+					total += octets[i];
+					j++;
+				}
 			}
+			snprintf(linebuf, sizeof(linebuf),
+					 "+OK %d %d", i, (int) total);
 			putpop(s, linebuf);
-		} else if (strcasecmp(linebuf, "RETR 1") == 0) {
+		} else if (strncasecmp(linebuf, "RETR ", 5) == 0) {
 			CHECKUSERPASS();
-			if (deleted) {
+			rc = sscanf(linebuf + 5, "%d", &i);
+			if (rc != 1) {
+				putpop(s, "-ERR Whaaaa...?");
+				continue;
+			}
+			if (i < 1 || i > numfiles) {
+				putpop(s, "-ERR That message number is "
+				       "out of range, jerkface!");
+				continue;
+			}
+			if (mfiles[i - 1] == NULL) {
 				putpop(s, "-ERR Sorry, don't have it anymore");
 			} else {
-				char *buf = readmessage(f);
+				char *buf = readmessage(mfiles[i - 1]);
 				putpop(s, "+OK Here you go ...");
 				putpopbulk(s, buf);
 				free(buf);
 			}
-		} else if (strncasecmp(linebuf, "RETR ", 5) == 0) {
+		} else if (strncasecmp(linebuf, "DELE ", 5) == 0) {
 			CHECKUSERPASS();
-			putpop(s, "-ERR Sorry man, out of range!");
-		} else if (strcasecmp(linebuf, "DELE 1") == 0) {
-			CHECKUSERPASS();
-			if (deleted) {
+			rc = sscanf(linebuf + 5, "%d", &i);
+			if (rc != 1) {
+				putpop(s, "-ERR Whaaaa...?");
+				continue;
+			}
+			if (i < 1 || i > numfiles) {
+				putpop(s, "-ERR That message number is "
+				       "out of range, jerkface!");
+				continue;
+			}
+			if (mfiles[i - 1] == NULL) {
 				putpop(s, "-ERR Um, didn't you tell me "
 				       "to delete it already?");
 			} else {
+				fclose(mfiles[i - 1]);
+				mfiles[i - 1] = NULL;
 				putpop(s, "+OK Alright man, I got rid of it");
-				deleted = 1;
 			}
-		} else if (strncasecmp(linebuf, "DELE ", 5) == 0) {
-			CHECKUSERPASS();
-			putpop(s, "-ERR Sorry man, out of range!");
 		} else if (strcasecmp(linebuf, "QUIT") == 0) {
 			putpop(s, "+OK See ya, wouldn't want to be ya!");
 			close(s);
@@ -415,6 +457,8 @@ readmessage(FILE *file)
 	HAVEROOM(buffer, bufsize, used, 3);
 
 	strcat(buffer, ".\r\n");
+
+	rewind(file);
 
 	return buffer;
 }

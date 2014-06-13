@@ -50,8 +50,8 @@ Hey man, how's it going?
 Hope you're doing better.
 EOM
 
-pid=`"${MH_OBJ_DIR}/test/fakepop" "$testmessage" "$testport" \
-			"$TESTUSER" "$TESTPASS"`
+pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" \
+			"$TESTUSER" "$TESTPASS" "$testmessage"`
 
 run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 80" \
 	"Incorporating new mail into inbox...
@@ -60,8 +60,8 @@ run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 80" \
 check $testmessage `mhpath +inbox 11` 'keep first'
 
 # check -pack
-pid=`"${MH_OBJ_DIR}/test/fakepop" "$testmessage" "$testport" \
-			"$TESTUSER" "$TESTPASS"`
+pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" \
+			"$TESTUSER" "$TESTPASS" "$testmessage"`
 
 touch "$MH_TEST_DIR/inc.mbox"
 run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 80 \
@@ -88,8 +88,8 @@ echo "default login ${TESTUSER} password ${TESTPASS}" > "$netrc"
 chmod 600 "$netrc"
 echo "credentials: file:${netrc}" >>$MH
 
-pid=`"${MH_OBJ_DIR}/test/fakepop" "$testmessage" "$testport" \
-			"$TESTUSER" "$TESTPASS"`
+pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" \
+			"$TESTUSER" "$TESTPASS" "$testmessage"`
 
 touch "$MH_TEST_DIR/inc.mbox"
 run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 65 \
