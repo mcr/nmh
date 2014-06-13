@@ -38,7 +38,7 @@ actual=$MH_TEST_DIR/$$.actual
 actual_err=$MH_TEST_DIR/$$.actual_err
 testmessage=$MH_TEST_DIR/testmessage
 
-cat > $testmessage <<EOM
+cat > "$testmessage" <<EOM
 Received: From somewhere
 From: No Such User <nosuch@example.com>
 To: Some Other User <someother@example.com>
@@ -50,6 +50,26 @@ Hey man, how's it going?
 Hope you're doing better.
 EOM
 
+cat > "${testmessage}.2" <<EOM
+Received: From somewhere
+From: A Real User <real@example.com>
+To: Some Other User <someother@example.com>
+Subject: Anything new?
+Date: Monday, 18 Dec 2006 14:13:14 -0500
+
+What's been happening at your place?
+EOM
+
+cat > "${testmessage}.3" <<EOM
+Received: From somewhere
+From: Nathan Explosion <nathan@dethklok.com>
+To: Some Other User <someother@example.com>
+Subject: Brutal
+Date: Tuesday, 19 Dec 2006 4:15:16 -0500
+
+Dude, nmh is totally brutal.
+EOM
+
 pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" \
 			"$TESTUSER" "$TESTPASS" "$testmessage"`
 
@@ -57,7 +77,24 @@ run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 80" \
 	"Incorporating new mail into inbox...
 
   11+ 12/17 No Such User       Hello<<Hey man, how's it going? . Hope you're do"
-check $testmessage `mhpath +inbox 11` 'keep first'
+check "$testmessage" `mhpath +inbox 11` 'keep first'
+
+# Check multiple messages at once
+
+pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" \
+			"$TESTUSER" "$TESTPASS" "$testmessage" \
+			"${testmessage}.2" "${testmessage}.3"`
+
+run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport -width 80" \
+	"Incorporating new mail into inbox...
+
+  11+ 12/17 No Such User       Hello<<Hey man, how's it going? . Hope you're do
+  12  12/18 A Real User        Anything new?<<What's been happening at your pla
+  13  12/19 Nathan Explosion   Brutal<<Dude, nmh is totally brutal. >>"
+
+check "$testmessage" `mhpath +inbox 11` 'keep first'
+check "${testmessage}.2" `mhpath +inbox 12`
+check "${testmessage}.3" `mhpath +inbox 13`
 
 # check -pack
 pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" \
