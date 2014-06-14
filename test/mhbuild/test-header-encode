@@ -21,7 +21,7 @@ backupname="${MH_TEST_DIR}/`mhparam sbackup`$$"
 #
 # We're going to hardcode UTF-8 for this test.
 #
-
+require_locale en_US.utf8
 LC_ALL=en_US.UTF-8; export LC_ALL
 
 #

@@ -26,6 +26,7 @@ if test "${MULTIBYTE_ENABLED}" -ne 1; then
     test_skip "configure did not detect multibyte support"
 fi
 
+require_locale en_US.utf8
 LC_ALL=en_US.UTF-8; export LC_ALL
 
 #

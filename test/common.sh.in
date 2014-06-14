@@ -85,6 +85,18 @@ require_prog ()
   fi
 }
 
+# Skip test if none of the offered locales are supported.
+require_locale ()
+{
+  for locale in "$@"; do
+    if locale -a | grep -i "$locale" >/dev/null; then
+        return
+    fi
+  done
+
+  test_skip "no suitable locale available"
+}
+
 # Some stuff for doing silly progress indicators
 if [ -t 1 ] ; then
   progress_update ()

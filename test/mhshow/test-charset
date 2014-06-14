@@ -16,6 +16,7 @@ fi
 
 setup_test
 
+require_locale en_US.utf8
 LC_ALL=en_US.UTF-8; export LC_ALL
 
 test "$ICONV_ENABLED" -eq 0  &&  text_size=10  || text_size=11
