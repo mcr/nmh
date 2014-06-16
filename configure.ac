@@ -153,6 +153,12 @@ if test -n "$auto_cflags"; then
   test "$nmh_cv_has_wextra" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wextra"
 fi
 
+dnl FreeBSD needs a bit of magic to bring getline() into scope.
+dnl We do this here rather than in (say) h/mh.h because this macro must
+dnl be defined before <stdio.h> is pulled in.
+AS_IF([test `uname` = FreeBSD],
+	[CPPFLAGS="$CPPFLAGS -D_WITH_GETLINE"])
+
 dnl --------------
 dnl CUSTOMIZE LINK
 dnl --------------
