@@ -10,11 +10,11 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-#include <termios.h>
 #include <sys/ioctl.h>
 
 #include <curses.h>
 #include <term.h>
+#include <termios.h>
 
 #ifdef WINSIZE_IN_PTEM
 # include <sys/stream.h>
