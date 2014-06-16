@@ -14,7 +14,7 @@ fi
 
 setup_test
 
-require_locale en_US.utf8
+require_locale en_US.utf-8 en_US.utf8
 LC_ALL=en_US.UTF-8; export LC_ALL
 
 draft="$MH_TEST_DIR/$$.draft"

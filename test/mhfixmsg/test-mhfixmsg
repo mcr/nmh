@@ -15,7 +15,7 @@ fi
 . "${srcdir}/test/post/test-post-common.sh"
 
 #### Make sure that html-to-text conversion is what we expect.
-require_locale en_US.utf8
+require_locale en_US.utf-8 en_US.utf8
 LC_ALL=en_US.UTF-8; export LC_ALL
 
 expected="$MH_TEST_DIR/test-mhfixmsg$$.expected"
