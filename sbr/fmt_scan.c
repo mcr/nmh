@@ -495,9 +495,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    {
 		char *unitcp;
 		unsigned int whole, tenths;
-		unsigned int scale;
+		unsigned int scale = 0;
 		unsigned int val = (unsigned int)value;
-		char *kibisuff;
+		char *kibisuff = NULL;
 
 		switch (fmt->f_type) {
 		case FT_LS_KILO: scale = 1000; kibisuff = ""; break;
