@@ -38,7 +38,10 @@ main(int argc, char *argv[])
 	wchar_t c;
 	int i;
 
-	setlocale(LC_ALL, "");
+	if (! setlocale(LC_ALL, "")) {
+		fprintf(stderr, "setlocale failed, check your LC_ALL, "
+		    "LC_CTYPE, and LANG environment variables\n");
+	}
 
 	if (argc < 2)
 		usage(argv[0]);

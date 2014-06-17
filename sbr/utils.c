@@ -328,7 +328,10 @@ nmh_strcasestr (const char *s1, const char *s2) {
 
 int
 nmh_init(const char *argv0, int read_context) {
-    setlocale(LC_ALL, "");
+    if (! setlocale(LC_ALL, "")) {
+        admonish(NULL, "setlocale failed, check your LC_ALL, LC_CTYPE, and "
+                 "LANG environment variables");
+    }
 
     invo_name = r1bindex ((char *) argv0, '/');
 
