@@ -7,6 +7,7 @@ NEW FEATURES
 OBSOLETE FEATURES
 -----------------
 
+- post now defaults to port 587 on 'smtp' message submission.
 - The undocumented -queue switch to post was deprecated in nmh 1.6, and was
   removed in this release.
 - conflict(8) was deprecated in nmh 1.6, and was removed in this release.

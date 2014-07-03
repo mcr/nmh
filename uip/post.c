@@ -81,7 +81,7 @@
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech", SASLminc(-5), SASLMECHSW) \
     X("user", SASLminc(-4), USERSW) \
-    X("port server port name/number", 4, PORTSW) \
+    X("port server submission port name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
@@ -200,7 +200,7 @@ static int sasl=0;		/* Use SASL auth for SMTP                */
 static int saslssf=-1;		/* Our maximum SSF for SASL              */
 static char *saslmech=NULL;	/* Force use of particular SASL mech     */
 static char *user=NULL;		/* Authenticate as this user             */
-static char *port="smtp";	/* Name of server port for SMTP		 */
+static char *port="submission";	/* Name of server port for SMTP submission */
 static int tls=0;		/* Use TLS for encryption		 */
 static int fromcount=0;		/* Count of addresses on From: header	 */
 static int seensender=0;	/* Have we seen a Sender: header?	 */
