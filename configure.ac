@@ -44,7 +44,7 @@ dnl Do you want client-side support for encryption with TLS?
 AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
 AS_IF([test x"$with_tls" != x -a x"$with_tls" != x"no"],[
       AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])dnl
-      tls_support=yes],[tls_support=no])
+      tls_support=no],[tls_support=yes])
 
 dnl Set the backup prefix
 AC_ARG_WITH([hash-backup],
