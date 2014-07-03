@@ -38,7 +38,7 @@ AS_IF([test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"],[
       AS_IF([test x"$with_cyrus_sasl" != xyes],[
 	    AC_MSG_WARN([Arguments to --with-cyrus-sasl now ignored])
 	    AC_MSG_WARN([Please pass the appropriate arguments to CPPFLAGS/LDFLAGS])])
-      sasl_support=yes], [sasl_support=no])
+      sasl_support=no], [sasl_support=yes])
 
 dnl Do you want client-side support for encryption with TLS?
 AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
