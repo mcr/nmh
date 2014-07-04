@@ -1,8 +1,6 @@
 dnl
 dnl configure.ac -- autoconf template for nmh
 dnl
-
-dnl Move this up a bit
 AC_PREREQ([2.68])
 
 AC_INIT([nmh], m4_normalize(m4_include([VERSION])), [nmh-workers@nongnu.org])
