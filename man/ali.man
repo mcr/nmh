@@ -92,10 +92,3 @@ aliasfile
 .PD
 .SH CONTEXT
 None
-.SH BUGS
-The
-.B \-user
-option with
-.B \-nonormalize
-is not entirely accurate, as it
-does not replace local nicknames for hosts with their official site names.
