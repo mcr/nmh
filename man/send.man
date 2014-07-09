@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "January 23, 2014" "%nmhversion%"
+.TH SEND %manext1% "July 8, 2014" "%nmhversion%"
 .SH NAME
 send \- send a message
 .SH SYNOPSIS
@@ -435,6 +435,12 @@ switch.
 The
 .B \-notls
 switch will disable all attempts to negotiate TLS.
+.PP
+If port 465 is specified and none of the TLS switches were enabled,
+.B \-initialtls
+will be implied if TLS support was compiled in.  Though port 465 for
+SMTPS (SMTP over SSL) was deregistered by IANA in 1998, it is still
+used for that service.
 .PP
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
 additional alias files given by the

@@ -201,7 +201,7 @@ static int saslssf=-1;		/* Our maximum SSF for SASL              */
 static char *saslmech=NULL;	/* Force use of particular SASL mech     */
 static char *user=NULL;		/* Authenticate as this user             */
 static char *port="submission";	/* Name of server port for SMTP submission */
-static int tls=0;		/* Use TLS for encryption		 */
+static int tls=-1;		/* Use TLS for encryption		 */
 static int fromcount=0;		/* Count of addresses on From: header	 */
 static int seensender=0;	/* Have we seen a Sender: header?	 */
 
@@ -600,6 +600,21 @@ main (int argc, char **argv)
     	envelope = sender;
     } else {
     	envelope = from;
+    }
+
+    if (tls == -1) {
+#ifdef TLS_SUPPORT
+	/*
+	 * The user didn't specify any of the tls switches.  Try to
+	 * help them by implying -initialtls if they're using port 465
+	 * (smtps, until IANA revoked that registration in 1998).
+	 */
+	tls = ! strcmp (port, "465")  ||  ! strcasecmp (port, "smtps")
+	    ?  2
+	    :  0;
+#else  /* ! TLS_SUPPORT */
+	tls = 0;
+#endif /* ! TLS_SUPPORT */
     }
 
     /* If we are doing a "whom" check */

@@ -1,4 +1,4 @@
-.TH POST %manext8% "April 14, 2013" "%nmhversion%"
+.TH POST %manext8% "July 8, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -249,6 +249,12 @@ switch.
 The
 .B \-notls
 switch will disable all attempts to negotiate TLS.
+.PP
+If port 465 is specified and none of the TLS switches were enabled,
+.B \-initialtls
+will be implied if TLS support was compiled in.  Though port 465 for
+SMTPS (SMTP over SSL) was deregistered by IANA in 1998, it is still
+used for that service.
 .SH FILES
 .fc ^ ~
 .nf
