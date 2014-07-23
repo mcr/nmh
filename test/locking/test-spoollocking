@@ -32,11 +32,11 @@ EOM
 # invoke "inc" for each locking algorithm
 #
 
+mv -f ${MHMTSCONF} ${MHMTSCONF}.backup
+
 for locktype in $supported_locks
 do
-    mv -f ${MHMTSCONF} ${MHMTSCONF}.backup
-    sed -e '/^datalocking:/d' < ${MHMTSCONF}.backup > ${MHMTSCONF}
-    rm -f ${MHMTSCONF}.backup
+    sed -e '/^spoollocking:/d' < ${MHMTSCONF}.backup > ${MHMTSCONF}
 
     echo "spoollocking: $locktype" >> ${MHMTSCONF}
 
@@ -47,8 +47,10 @@ do
 $testmessage not zero'd"
 
     rmm 11
-
 done
+
+#### Restore mts.conf so subsequent tests use expected spoollocking.
+mv -f ${MHMTSCONF}.backup ${MHMTSCONF}
 
 rm -f "$testmessage"
 
