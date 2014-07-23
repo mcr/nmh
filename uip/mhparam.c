@@ -189,15 +189,19 @@ main(int argc, char **argv)
 	    advise(NULL, "-%scomponents ignored with -all",
 		   components ? "" : "no");
 
-	/* print all entries in context/profile list */
+	/* Print all entries in context/profile list.  That does not
+	   include entries in mts.conf, such as spoollocking. */
 	for (np = m_defs; np; np = np->n_next)
 	    printf("%s: %s\n", np->n_name, np->n_field);
 
     } else if (debug) {
 	struct proc *ps;
 
-	/* Need to see if datalocking was set in profile. */
+	/* In case datalocking was set in profile. */
 	if ((cp = context_find("datalocking"))) { datalocking = cp; }
+
+	/* In case spoollocking was set in mts.conf. */
+	mts_init(invo_name);
 
 	/* Also set localmbox here */
 	if (! localmbox_primed) {
@@ -219,6 +223,11 @@ main(int argc, char **argv)
 
 	for (i = 0; i < compp; i++)  {
 	    register char *value;
+
+	    if (! strcmp ("spoollocking", comps[i])) {
+		/* In case spoollocking was set in mts.conf. */
+		mts_init(invo_name);
+            }
 
 	    value = context_find (comps[i]);
 	    if (!value)
