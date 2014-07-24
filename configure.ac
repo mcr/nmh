@@ -501,9 +501,9 @@ dnl http://sourceforge.net/p/flex/bugs/140/
 AS_IF([test "$LEX" = flex],
       [AS_CASE([`$LEX -V`],
                [flex\ 2.5.35], [LFLAGS=\
-'; sed -e "s/	int n;/	size_t n;/" $@ >$@.tmp && mv -f $@.tmp $@'],
+'; sed "s/	int n;/	size_t n;/" $@ >$@.tmp && mv -f $@.tmp $@'],
                [flex\ 2.5.3[[67]]], [LFLAGS=\
-'; sed -s "s/\(	\)int i;/\1yy_size_t i;/" $@ >$@.tmp && mv -f $@.tmp $@'])
+'; sed "s/\(	\)int i;/\1yy_size_t i;/" $@ >$@.tmp && mv -f $@.tmp $@'])
        AC_SUBST([LFLAGS])])
 
 dnl ----------------
