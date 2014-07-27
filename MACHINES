@@ -7,7 +7,7 @@ platforms:
     Cygwin (32- and 64-bit)
     FreeBSD 9
     FreeBSD 10
-    Linux (Fedora and Ubuntu distributions)
+    Linux (Fedora, Ubuntu, and CentOS distributions)
     Mac OS X 10.9
     OpenBSD 5.4
     Solaris 11
@@ -19,6 +19,13 @@ the exceptions noted below), using an ANSI C compiler, such as gcc:
     NetBSD 1.4.2
     Solaris 7 and 8 (sparc,x86)
     SunOS 4.1
+
+On all platforms, the following programs are required to build nmh from a
+snapshot of the source code repository:
+    autoconf
+    automake
+    flex
+They are not required if building from an nmh distribution (.tar.gz) file.
 
 Platform-specific notes follow.
 
@@ -34,16 +41,11 @@ Run-time package requirements:
     openssl-libs / libssl (if configured with --with-tls)
 
 Additional build-time package requirements:
-    flex
     ncurses-devel / libncurses5-devel
     gdbm-devel, db4-devel or libdb-devel/libdb-dev (only needed for slocal(1))
     readline-devel (if you want readline support)
     cyrus-sasl-devel / libsasl2-dev (if configuring with --with-cyrus-sasl)
     openssl-devel / libssl-dev (if configuring with --with-tls)
-
-Packages required to regenerate the configure script:
-    autoconf
-    automake
 
 ------------------------------------------------------------------------------
                                    Mac OS X
@@ -84,7 +86,6 @@ Run-time package requirements:
     openssl (if configured with --with-tls)
 
 Additional build-time package requirements:
-    flex
     libncurses-devel or libncursesw-devel
     libgdbm4-devel (only needed for slocal(1))
     libiconv-devel (if you want iconv support)
@@ -98,15 +99,11 @@ Additional build-time package requirements:
     subdirectory, or build with:
         make DEFAULT_INCLUDES='-I. -I/usr/include/ncurses'
 
-Packages required to regenerate the configure script:
-    autoconf
-    automake
-
 When running the nmh test suite ("make check"), it helps to have /usr/bin/
 ahead of any Windows directories on your PATH.
 
-Note that the -link switch to refile cannot be used on FAT32 and similar
-filesystems.
+Note that the -link switch to refile cannot be used on FAT32 and other
+filesystems that do not support hard links.
 
 ------------------------------------------------------------------------------
                                      HPUX
