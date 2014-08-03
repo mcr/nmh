@@ -47,7 +47,7 @@ struct st_fold {
 /*
  * static prototypes
  */
-static void opnfolds (struct st_fold *, int);
+static void opnfolds (struct msgs *, struct st_fold *, int);
 static void clsfolds (struct st_fold *, int);
 static void remove_files (int, char **);
 static int m_file (struct msgs *, char *, int, struct st_fold *, int, int, int);
@@ -57,7 +57,7 @@ static void copy_seqs (struct msgs *, int, struct msgs *, int);
 int
 main (int argc, char **argv)
 {
-    int	linkf = 0, preserve = 0, retainseqs = 0, filep = 0;
+    int linkf = 0, preserve = 0, retainseqs = 0, filep = 0;
     int foldp = 0, isdf = 0, unlink_msgs = 0;
     int i, msgnum;
     char *cp, *folder = NULL, buf[BUFSIZ];
@@ -173,7 +173,7 @@ main (int argc, char **argv)
     if (filep > 0) {
 	if (folder || msgs.size)
 	    adios (NULL, "use -file or some messages, not both");
-	opnfolds (folders, foldp);
+	opnfolds (NULL, folders, foldp);
 	for (i = 0; i < filep; i++)
 	    if (m_file (0, files[i], 0, folders, foldp, preserve, 0))
 		done (1);
@@ -207,7 +207,7 @@ main (int argc, char **argv)
     seq_setprev (mp);	/* set the previous-sequence */
 
     /* create folder structures for each destination folder */
-    opnfolds (folders, foldp);
+    opnfolds (mp, folders, foldp);
 
     /* Link all the selected messages into destination folders.
      *
@@ -272,7 +272,7 @@ main (int argc, char **argv)
  */
 
 static void
-opnfolds (struct st_fold *folders, int nfolders)
+opnfolds (struct msgs *src_folder, struct st_fold *folders, int nfolders)
 {
     char nmaildir[BUFSIZ];
     register struct st_fold *fp, *ep;
@@ -282,15 +282,25 @@ opnfolds (struct st_fold *folders, int nfolders)
 	chdir (m_maildir (""));
 	strncpy (nmaildir, m_maildir (fp->f_name), sizeof(nmaildir));
 
-    create_folder (nmaildir, 0, done);
+	/*
+	 * Null src_folder indicates that we are refiling a file to
+	 * the folders, in which case we don't want to short-circuit
+	 * fp->f_mp to any "source folder".
+	 */
+	if (! src_folder  ||  strcmp (src_folder->foldpath, nmaildir)) {
+	    create_folder (nmaildir, 0, done);
 
-	if (chdir (nmaildir) == NOTOK)
-	    adios (nmaildir, "unable to change directory to");
-	if (!(mp = folder_read (fp->f_name, 1)))
-	    adios (NULL, "unable to read folder %s", fp->f_name);
-	mp->curmsg = 0;
+	    if (chdir (nmaildir) == NOTOK)
+		adios (nmaildir, "unable to change directory to");
+	    if (!(mp = folder_read (fp->f_name, 1)))
+		adios (NULL, "unable to read folder %s", fp->f_name);
+	    mp->curmsg = 0;
 
-	fp->f_mp = mp;
+	    fp->f_mp = mp;
+	} else {
+	    /* Source and destination folders are the same. */
+	    fp->f_mp = src_folder;
+	}
 
 	chdir (maildir);
     }
@@ -363,7 +373,16 @@ m_file (struct msgs *mp, char *msgfile, int oldmsgnum,
     struct st_fold *fp, *ep;
 
     for (fp = folders, ep = folders + nfolders; fp < ep; fp++) {
-	if ((msgnum = folder_addmsg (&fp->f_mp, msgfile, 1, 0, preserve, nfolders == 1 && refile, maildir)) == -1)
+	/*
+	 * With same source and destination folder, don't indicate that
+	 * the new message is selected so that 1) folder_delmsgs() doesn't
+	 * delete it later and 2) it is not reflected in mp->hghsel, and
+	 * therefore won't be assigned to be the current message.
+	 */
+	if ((msgnum = folder_addmsg (&fp->f_mp, msgfile,
+				     mp == fp->f_mp ? 0 : 1,
+				     0, preserve, nfolders == 1 && refile,
+				     maildir)) == -1)
 	    return 1;
 	if (oldmsgnum) copy_seqs (mp, oldmsgnum, fp->f_mp, msgnum);
     }

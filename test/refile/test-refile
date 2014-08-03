@@ -222,9 +222,18 @@ TOTAL = 13 messages in 3 folders.'
 mark first -seq seq1
 mark last -seq seq2
 refile first last -retainsequences +other
+#### The following command changes the current folder to +other.
 run_test 'mark +other -list -sequence seq1 -sequence seq2' \
          "seq1: 16
 seq2: 17"
 
+# test -retainsequences when refiling to same folder (+other)
+# cur is set to the original message number of the last message refiled.
+mark first -seq seq1 -zero
+mark first=2 -seq seq2 -zero
+refile first:2 -retainsequences +other
+run_test 'mark -list' "cur: 2
+seq1: 18
+seq2: 19"
 
 exit $failed
