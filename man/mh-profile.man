@@ -878,6 +878,13 @@ will emit debugging information.
 If this variable is set to a non-null value,
 .B pick
 will emit a representation of the search pattern.
+.B $MHPDEBUG
+is deprecated, so support for this variable will
+be removed from a future nmh release.  Instead,
+.B pick
+now supports a
+.B \-debug
+switch.
 .RE
 .PP
 .B $MHWDEBUG

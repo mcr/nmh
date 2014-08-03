@@ -7,4 +7,4 @@
  * prototypes
  */
 int pcompile (char **, char *);
-int pmatches (FILE *, int, long, long);
+int pmatches (FILE *, int, long, long, int);

@@ -36,6 +36,7 @@
     X("nozero", 0, NZEROSW) \
     X("list", 0, LISTSW) \
     X("nolist", 0, NLISTSW) \
+    X("debug", 0, DEBUGSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
 
@@ -65,10 +66,15 @@ main (int argc, char **argv)
     struct msgnum_array nums = { 0, 0, NULL };
     struct msgs *mp, *mp2;
     register FILE *fp;
+    int debug = 0;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
     done=putzero_done;
+
+    /* Deprecated.  Use -debug instead. */
+    if ((cp = getenv ("MHPDEBUG")) && *cp)
+	++debug;
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -156,6 +162,10 @@ main (int argc, char **argv)
 	    case NLISTSW: 
 		listsw = 0;
 		continue;
+
+	    case DEBUGSW:
+		++debug;
+		continue;
 	    }
 	}
 	if (*cp == '+' || *cp == '@') {
@@ -225,7 +235,7 @@ main (int argc, char **argv)
 	if (is_selected (mp, msgnum)) {
 	    if ((fp = fopen (cp = m_name (msgnum), "r")) == NULL)
 		admonish (cp, "unable to read message");
-	    if (fp && pmatches (fp, msgnum, 0L, 0L)) {
+	    if (fp && pmatches (fp, msgnum, 0L, 0L, debug)) {
 		if (listsw)
 		    printf ("%s\n", m_name (msgnum));
 	    } else {

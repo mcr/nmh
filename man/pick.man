@@ -1,4 +1,4 @@
-.TH PICK %manext1% "March 1, 2014" "%nmhversion%"
+.TH PICK %manext1% "August 3, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -46,6 +46,7 @@ pick \- search for messages by content
 .RB [ \-public " | " \-nopublic ]
 .RB [ \-zero " | " \-nozero ]
 .RB [ \-list " | " \-nolist ] 
+.RB [ \-debug ]
 .RB [ \-version ]
 .RB [ \-help ]
 .PP
@@ -287,6 +288,11 @@ in the
 same way
 .B mark
 uses them.
+.PP
+The
+.B \-debug
+switch causes pick to output a representation of the search
+pattern.
 .SS "Output when no messages are matched"
 If
 .B pick

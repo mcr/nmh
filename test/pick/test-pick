@@ -76,10 +76,9 @@ run_test 'pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace' \
 10
 11'
 
-# Test MHPDEBUG.
-# Don't use run_prog here because it loses the environment setting.
-MHPDEBUG=1 pick -not -lbrace -subject NoMatch -and -subject message.3 -rbrace \
- >/dev/null 2>"$actual"
+# Test -debug.
+run_prog pick -debug -not -lbrace -subject NoMatch -and -subject message.3 \
+  -rbrace >/dev/null 2>"$actual"
 cat >"$expected" <<EOF
 NOT
 | AND

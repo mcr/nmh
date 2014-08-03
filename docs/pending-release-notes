@@ -22,6 +22,10 @@ OBSOLETE FEATURES
 -------------------
 DEPRECATED FEATURES
 -------------------
+
+- Support for the MHPDEBUG environment variable is deprecated and will be
+  removed from a future nmh release.  Instead, use the -debug switch to pick.
+
 ---------
 BUG FIXES
 ---------

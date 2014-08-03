@@ -157,7 +157,6 @@ struct nexus {
 #define	n_tws	 un.st3.un_tws
 
 static int talked;
-static int pdebug = 0;
 
 static char *datesw;
 static char **argp;
@@ -195,11 +194,6 @@ static int TWSaction();
 int
 pcompile (char **vec, char *date)
 {
-    register char *cp;
-
-    if ((cp = getenv ("MHPDEBUG")) && *cp)
-	pdebug++;
-
     argp = vec;
     if ((datesw = date) == NULL)
 	datesw = "date";
@@ -474,12 +468,12 @@ newnexus (int (*action)())
 		    stop;
 
 int
-pmatches (FILE *fp, int msgnum, long start, long stop)
+pmatches (FILE *fp, int msgnum, long start, long stop, int debug)
 {
     if (!head)
 	return 1;
 
-    if (!talked++ && pdebug)
+    if (!talked++ && debug)
 	PRaction (head, 0);
 
     return (*head->n_action) (args (head));
