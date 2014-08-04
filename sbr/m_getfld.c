@@ -58,7 +58,6 @@
      int edelimlen
      char *msg_delim
      int msg_style
-     int (*eom_action)(int)
 
    Usage
    =====
@@ -208,8 +207,7 @@ static int m_Eom (m_getfld_state_t, int);
 static char *matchc(int, char *, int, char *);
 
 #define eom(c,s)	(s->msg_style != MS_DEFAULT && \
-			 (((c) == *s->msg_delim && m_Eom(s,c)) || \
-			  (s->eom_action && (*s->eom_action)(c))))
+			 ((c) == *s->msg_delim && m_Eom(s,c)))
 
 /* This replaces the old approach, with its direct access to stdio
  * internals.  It uses one fread() to load a buffer that we manage.
@@ -261,7 +259,6 @@ struct m_getfld_state {
     int fdelimlen;
     char *edelim;
     int edelimlen;
-    int (*eom_action)(int);
     int state;
     int track_filepos;
 };
@@ -281,7 +278,6 @@ m_getfld_state_init (m_getfld_state_t *gstate, FILE *iob) {
     s->msg_delim = "";
     s->fdelim = s->delimend = s->edelim = NULL;
     s->fdelimlen = s->edelimlen = 0;
-    s->eom_action = NULL;
     s->state = FLD;
     s->track_filepos = 0;
 }
@@ -501,14 +497,12 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 	return s->state = FILEEOF;
     }
     if (eom (c, s)) {
-	if (! s->eom_action) {
-	    /* flush null messages */
-	    while ((c = Getc(s)) >= 0 && eom (c, s))
-		;
+	/* flush null messages */
+	while ((c = Getc(s)) >= 0 && eom (c, s))
+	    ;
 
-	    if (c >= 0)
-		Ungetc(c, s);
-	}
+	if (c >= 0)
+	    Ungetc(c, s);
 	*bufsz = *buf = 0;
 	leave_getfld (s);
 	return s->state = FILEEOF;
@@ -521,13 +515,11 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 		while (c != '\n' && (c = Getc(s)) >= 0) continue;
 
 		if (c < 0 || (c = Getc(s)) < 0 || eom (c, s)) {
-		    if (! s->eom_action) {
-			/* flush null messages */
-			while ((c = Getc(s)) >= 0 && eom (c, s))
-			    ;
-			if (c >= 0)
-			    Ungetc(c, s);
-		    }
+		    /* flush null messages */
+		    while ((c = Getc(s)) >= 0 && eom (c, s))
+			;
+		    if (c >= 0)
+			Ungetc(c, s);
 		    *bufsz = *buf = 0;
 		    leave_getfld (s);
 		    return s->state = FILEEOF;
