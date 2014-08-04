@@ -1561,62 +1561,6 @@ quitser (int i)
 }
 
 
-int
-mhlsbr (int argc, char **argv, FILE *(*action)())
-{
-    SIGNAL_HANDLER istat = NULL, pstat = NULL, qstat = NULL;
-    char *cp = NULL;
-    struct mcomp *c1;
-    struct arglist *a, *a2;
-
-    switch (setjmp (mhlenv)) {
-	case OK: 
-	    cp = invo_name;
-	    sleepsw = 0;	/* XXX */
-	    bellflg = clearflg = forwflg = forwall = exitstat = 0;
-	    digest = NULL;
-	    ontty = NOTTY;
-	    mhl_action = action;
-
-	    /*
-	     * If signal is at default action, then start ignoring
-	     * it, else let it set to its current action.
-	     */
-	    if ((istat = SIGNAL (SIGINT, SIG_IGN)) != SIG_DFL)
-		SIGNAL (SIGINT, istat);
-	    if ((qstat = SIGNAL (SIGQUIT, SIG_IGN)) != SIG_DFL)
-		SIGNAL (SIGQUIT, qstat);
-	    pstat = SIGNAL (SIGPIPE, pipeser);
-	    mhl (argc, argv);                  /* FALL THROUGH! */
-
-	default: 
-	    SIGNAL (SIGINT, istat);
-	    SIGNAL (SIGQUIT, qstat);
-	    SIGNAL (SIGPIPE, SIG_IGN);/* should probably change to block instead */
-	    if (ontty == PITTY)
-		m_pclose ();
-	    SIGNAL (SIGPIPE, pstat);
-	    invo_name = cp;
-	    if (holder.c_text) {
-		free (holder.c_text);
-		holder.c_text = NULL;
-	    }
-	    free_queue (&msghd, &msgtl);
-	    for (c1 = fmthd; c1; c1 = c1->c_next)
-		c1->c_flags &= ~HDROUTPUT;
-
-	    a = arglist_head;
-	    while (a) {
-	    	if (a->a_nfs)
-		    free(a->a_nfs);
-		a2 = a->a_next;
-		free(a);
-		a = a2;
-	    }
-	    return exitstat;
-    }
-}
-
 #undef adios
 #undef done
 
