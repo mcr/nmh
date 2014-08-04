@@ -41,11 +41,8 @@
    state to FLD.
 
    void m_unknown(FILE *iob):  Determines the message delimiter string
-   for the maildrop.  Called by inc, scan, and msh when reading from a
+   for the maildrop.  Called by inc and scan when reading from a
    maildrop file.
-
-   void m_eomsbr (int (*action)(int)):  Sets the hook to check for end
-   of message in a maildrop.  Called only by msh.
 
    State variables
    ===============
@@ -847,23 +844,6 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
     }
 
     leave_getfld (s);
-}
-
-
-void
-m_eomsbr (m_getfld_state_t s, int (*action)(int))
-{
-    if ((s->eom_action = action)) {
-	s->msg_style = MS_MSH;
-	*s->msg_delim = 0;
-	s->fdelimlen = 1;
-	s->delimend = s->fdelim;
-    } else {
-	s->msg_style = MS_MMDF;
-	s->msg_delim = s->fdelim + 1;
-	s->fdelimlen = strlen (s->fdelim);
-	s->delimend = s->msg_delim + s->edelimlen;
-    }
 }
 
 

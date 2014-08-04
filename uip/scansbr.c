@@ -392,11 +392,6 @@ scan_detect_mbox_style (FILE *f) {
 }
 
 void
-scan_eom_action (int (*action)()) {
-    m_eomsbr (gstate, action);
-}
-
-void
 scan_reset_m_getfld_state () {
     m_getfld_state_reset (&gstate);
 }
