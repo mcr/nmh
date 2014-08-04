@@ -203,11 +203,11 @@
  * static prototypes
  */
 struct m_getfld_state;
-static int m_Eom (m_getfld_state_t, int);
+static int m_Eom (m_getfld_state_t);
 static char *matchc(int, char *, int, char *);
 
 #define eom(c,s)	(s->msg_style != MS_DEFAULT && \
-			 ((c) == *s->msg_delim && m_Eom(s,c)))
+			 ((c) == *s->msg_delim && m_Eom(s)))
 
 /* This replaces the old approach, with its direct access to stdio
  * internals.  It uses one fread() to load a buffer that we manage.
@@ -847,7 +847,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
  */
 
 static int
-m_Eom (m_getfld_state_t s, int c)
+m_Eom (m_getfld_state_t s)
 {
     register int i;
     char text[MAX_DELIMITER_SIZE];
@@ -881,6 +881,7 @@ m_Eom (m_getfld_state_t s, int c)
     }
 
     if (s->msg_style == MS_MBOX) {
+	int c;
 	while ((c = Getc (s)) != '\n')
 	    if (c < 0)
 		break;
