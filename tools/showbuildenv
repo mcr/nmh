@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# Print a description of the build environment.  This is here mainly
+# for the use of the buildbot cluster, allowing developers to see the
+# build environment on machines they can't login on.  It also provides
+# a history in the build logs that might be useful in catching
+# regressions.
+# 
+# This script should *only* report basic information about the build
+# environment, and only that necessary to reproduce the build
+# environment.
+
+offset () {
+    sed -e 's/^/    /'
+}
+header () {
+    echo
+    echo $*
+    echo
+}
+
+os=`uname`
+
+for i in a m p r s v; do
+    eval uname_${i}=\'$(uname -${i} 2>/dev/null)\'
+done
+
+header Shell Variables:
+set | sort -d -t= | offset
+echo
+
+
+case ${os} in
+
+  FreeBSD)
+  	header Installed packages:
+	(pkg info 2>/dev/null | offset) || true
+	(pkg_info 2>/dev/null | offset) || true
+	;;
+
+esac
