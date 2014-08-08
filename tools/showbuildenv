@@ -27,12 +27,23 @@ done
 
 header Shell Variables:
 set | sort -d -t= | offset
-echo
 
 
 case ${os} in
 
+  Darwin)
+	header Compilers:
+	cc -v 2>&1 | offset
+	echo
+	lex --version | offset
+	echo
+	yacc --version | offset
+	;;
+
   FreeBSD)
+	header Compilers:
+	cc -v 2>&1 | offset
+
   	header Installed packages:
 	(pkg info 2>/dev/null | offset) || true
 	(pkg_info 2>/dev/null | offset) || true
