@@ -47,6 +47,9 @@ Additional build-time package requirements:
     cyrus-sasl-devel / libsasl2-dev (if configuring with --with-cyrus-sasl)
     openssl-devel / libssl-dev (if configuring with --with-tls)
 
+Test suite package requirements:
+    ncurses (tput is needed to run test/format/test-curses)
+
 ------------------------------------------------------------------------------
                                    Mac OS X
 ------------------------------------------------------------------------------
@@ -99,8 +102,8 @@ Additional build-time package requirements:
     subdirectory, or build with:
         make DEFAULT_INCLUDES='-I. -I/usr/include/ncurses'
 
-When running the nmh test suite ("make check"), it helps to have /usr/bin/
-ahead of any Windows directories on your PATH.
+Test suite package requirements:
+    ncurses (tput is needed to run test/format/test-curses)
 
 Note that the -link switch to refile cannot be used on FAT32 and other
 filesystems that do not support hard links.
