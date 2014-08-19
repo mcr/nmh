@@ -218,8 +218,8 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 ## Contribs that get installed in docdir/contrib/
 ##
 contribdir = $(docdir)/contrib
-dist_contrib_DATA = docs/contrib/replyfilter docs/contrib/build_nmh \
-		    docs/contrib/ml docs/contrib/vpick
+dist_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
+		       docs/contrib/ml docs/contrib/vpick
 
 ##
 ## Our man pages
