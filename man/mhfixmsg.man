@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "March 16, 2014" "%nmhversion%"
+.TH MHFIXMSG %manext1% "August 20, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"

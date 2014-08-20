@@ -1,4 +1,4 @@
-.TH MHLIST %manext1% "February 12, 2013" "%nmhversion%"
+.TH MHLIST %manext1% "August 20, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -154,7 +154,7 @@ externally referenced.
 .PP
 The parts of a multipart/alternative part are listed in the reverse
 order of their placement in the message.  The listing therefore is
-in decreasing order of preference, as defined in RFC 1521.
+in decreasing order of preference, as defined in RFC 2046.
 .SS "Checking the Contents"
 The
 .B \-check
