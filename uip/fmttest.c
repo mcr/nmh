@@ -83,7 +83,7 @@ static void assignlabel(struct format *);
 static char *f_typestr(int);
 static char *c_typestr(int);
 static char *c_flagsstr(int);
-static void litputs(char *);
+static void litputs(const char *);
 static void litputc(char);
 static void process_addresses(struct format *, struct msgs_array *, char *,
 			      int, int, int *, struct fmt_callbacks *);
@@ -95,7 +95,7 @@ static void process_messages(struct format *, struct msgs_array *,
 static void process_single_file(FILE *, struct msgs_array *, int *, int,
 				struct format *, char *, int, int,
 				struct fmt_callbacks *);
-static void test_trace(void *, struct format *, int, char *, char *);
+static void test_trace(void *, struct format *, int, char *, const char *);
 static char *test_formataddr(char *, char *);
 static char *test_concataddr(char *, char *);
 static int insert(struct mailname *);
@@ -331,9 +331,9 @@ main (int argc, char **argv)
     buffer = mh_xmalloc(bufsize);
 
     if (outputsize < 0)
-    	outputsize = bufsize - 1;	/* For the trailing NUL */
+	outputsize = bufsize - 1;	/* For the trailing NUL */
     else if (outputsize == 0) {
-    	if (mode == MESSAGE) 
+	if (mode == MESSAGE)
 	    outputsize = sc_width();
 	else
 	    outputsize = bufsize - 1;
@@ -500,7 +500,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
     if (files) {
 	for (i = 0; i < msgs->size; i++) {
 	    if ((in = fopen(cp = msgs->msgs[i], "r")) == NULL) {
-	    	admonish(cp, "unable to open file");
+		admonish(cp, "unable to open file");
 		continue;
 	    }
 	    process_single_file(in, comps, dat, msgsize, fmt, buffer,
@@ -739,7 +739,8 @@ process_raw(struct format *fmt, struct msgs_array *text, char *buffer,
  */
 
 static void
-test_trace(void *context, struct format *fmt, int num, char *str, char *outbuf)
+test_trace(void *context, struct format *fmt, int num, char *str,
+	   const char *outbuf)
 {
     struct trace_context *ctx = (struct trace_context *) context;
     int changed = 0;
@@ -1147,7 +1148,7 @@ c_flagsstr(int t)
 }
 
 static void
-litputs(char *s)
+litputs(const char *s)
 {
 	if (s) {
 		putc('"', stdout);

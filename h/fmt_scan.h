@@ -89,7 +89,7 @@ struct format {
 
 typedef char * (*formataddr_cb)(char *, char *);
 typedef char * (*concataddr_cb)(char *, char *);
-typedef void (*trace_cb)(void *, struct format *, int, char *, char *);
+typedef void (*trace_cb)(void *, struct format *, int, char *, const char *);
 
 struct fmt_callbacks {
     formataddr_cb	formataddr;
