@@ -371,18 +371,18 @@ try_it_again:
     if ((out = creat (drft, m_gmprot ())) == NOTOK)
 	adios (drft, "unable to create");
     if (cp) {
-    	char *scanl;
+	charstring_t scanl;
 
 	i = format_len + 1024;
-	scanl = mh_xmalloc((size_t) i + 2);
+	scanl = charstring_create (i + 2);
 	dat[0] = 0;
 	dat[1] = 0;
 	dat[2] = 0;
 	dat[3] = outputlinelen;
 	dat[4] = 0;
-	fmt_scan(fmt, scanl, i + 1, i, dat, NULL);
-	write(out, scanl, strlen(scanl));
-	free(scanl);
+	fmt_scan(fmt, scanl, i, dat, NULL);
+	write(out, charstring_buffer (scanl), charstring_bytes (scanl));
+	charstring_free(scanl);
     } else {
 	cpydata (in, out, form, drft);
 	close (in);

@@ -1277,7 +1277,7 @@ compile_marker(char *markerform)
 static void
 output_marker(CT ct, struct format *fmt, int hidden)
 {
-    char outbuf[BUFSIZ];
+    charstring_t outbuf = charstring_create (BUFSIZ);
     struct param_comp_list *pcentry;
     int partsize;
     int dat[5];
@@ -1326,9 +1326,10 @@ output_marker(CT ct, struct format *fmt, int hidden)
     dat[4] = hidden;
     dat[0] = dat[1] = dat[3] = 0;
 
-    fmt_scan(fmt, outbuf, sizeof(outbuf), sizeof(outbuf), dat, NULL);
+    fmt_scan(fmt, outbuf, BUFSIZ, dat, NULL);
 
-    fputs(outbuf, stdout);
+    fputs(charstring_buffer (outbuf), stdout);
+    charstring_free (outbuf);
 
     fmt_freecomptext();
 }

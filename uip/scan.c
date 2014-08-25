@@ -165,8 +165,11 @@ main (int argc, char **argv)
 
 	scan_detect_mbox_style (in);
 	for (msgnum = 1; ; ++msgnum) {
+	    charstring_t scanl = NULL;
+
 	    state = scan (in, msgnum, -1, nfs, width, 0, 0,
-		    hdrflag ? file : NULL, 0L, 1);
+			  hdrflag ? file : NULL, 0L, 1, &scanl);
+	    charstring_free (scanl);
 	    if (state != SCNMSG && state != SCNENC)
 		break;
 	}
@@ -229,6 +232,8 @@ main (int argc, char **argv)
 	 (revflag ? msgnum >= mp->lowsel : msgnum <= mp->hghsel);
 	 msgnum += (revflag ? -1 : 1)) {
 	if (is_selected(mp, msgnum)) {
+	    charstring_t scanl = NULL;
+
 	    if ((in = fopen (cp = m_name (msgnum), "r")) == NULL) {
 		    admonish (cp, "unable to open message");
 		continue;
@@ -252,7 +257,7 @@ main (int argc, char **argv)
 
 	    switch (state = scan (in, msgnum, 0, nfs, width,
 			msgnum == mp->curmsg, unseen,
-			folder, 0L, 1)) {
+			folder, 0L, 1, &scanl)) {
 		case SCNMSG: 
 		case SCNENC: 
 		case SCNERR: 
@@ -265,6 +270,7 @@ main (int argc, char **argv)
 		    advise (NULL, "message %d: empty", msgnum);
 		    break;
 	    }
+	    charstring_free (scanl);
 	    scan_finished ();
 	    hdrflag = 0;
 	    fclose (in);

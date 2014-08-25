@@ -71,7 +71,8 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     struct format *fmt;
     register char **ap;
     int	char_read = 0, format_len, mask;
-    char name[NAMESZ], *scanl, *cp;
+    char name[NAMESZ], *cp;
+    charstring_t scanl;
     static int dat[5];			/* aux. data for format routine */
     m_getfld_state_t gstate = 0;
     struct fmt_callbacks cb;
@@ -204,7 +205,7 @@ finished:
 	}
     }
     i = format_len + char_read + 256;
-    scanl = mh_xmalloc ((size_t) i + 2);
+    scanl = charstring_create (i + 2);
     dat[0] = 0;
     dat[1] = 0;
     dat[2] = 0;
@@ -213,8 +214,8 @@ finished:
     memset(&cb, 0, sizeof(cb));
     cb.formataddr = replformataddr;
     cb.concataddr = replconcataddr;
-    fmt_scan (fmt, scanl, i + 1, i, dat, &cb);
-    fputs (scanl, out);
+    fmt_scan (fmt, scanl, i, dat, &cb);
+    fputs (charstring_buffer (scanl), out);
     if (badaddrs) {
 	fputs ("\nrepl: bad addresses:\n", out);
 	fputs ( badaddrs, out);
@@ -241,7 +242,7 @@ finished:
     fclose (out);
 
     /* return dynamically allocated buffers */
-    free (scanl);
+    charstring_free (scanl);
     fmt_free(fmt, 1);
 }
 

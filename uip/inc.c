@@ -587,6 +587,8 @@ go_to_it:
 	}
 
 	for (i = 1; i <= nmsgs; i++) {
+	    charstring_t scanl = NULL;
+
 	    msgnum++;
 	    if (packfile) {
 		fseek (pf, 0L, SEEK_CUR);
@@ -619,7 +621,7 @@ go_to_it:
 	    }
 	    switch (incerr = scan (pf, msgnum, 0, nfs, width,
 			      packfile ? 0 : msgnum == mp->hghmsg + 1 && chgflag,
-			      1, NULL, stop - start, noisy)) {
+			      1, NULL, stop - start, noisy, &scanl)) {
 	    case SCNEOF: 
 		printf ("%*d  empty\n", DMAXFOLDER, msgnum);
 		break;
@@ -638,11 +640,13 @@ go_to_it:
 	    case SCNENC:
 	    default: 
 		if (aud)
-		    fputs (scanl, aud);
+		    fputs (charstring_buffer (scanl), aud);
 		if (noisy)
 		    fflush (stdout);
 		break;
 	    }
+	    charstring_free (scanl);
+
 	    if (packfile) {
 		fseek (pf, stop, SEEK_SET);
 		fwrite (mmdlm2, 1, strlen (mmdlm2), pf);
@@ -685,9 +689,12 @@ go_to_it:
 	scan_detect_mbox_style (in);		/* the MAGIC invocation... */
 	hghnum = msgnum = mp->hghmsg;
 	for (;;) {
+	    charstring_t scanl = NULL;
+
 	    /* create scanline for new message */
 	    switch (incerr = scan (in, msgnum + 1, msgnum + 1, nfs, width,
-			      msgnum == hghnum && chgflag, 1, NULL, 0L, noisy)) {
+			      msgnum == hghnum && chgflag, 1, NULL, 0L, noisy,
+			      &scanl)) {
 	    case SCNFAT:
 	    case SCNEOF: 
 		break;
@@ -716,13 +723,15 @@ go_to_it:
 		(void)ext_hook("add-hook", b, (char *)0);
 
 		if (aud)
-		    fputs (scanl, aud);
+		    fputs (charstring_buffer (scanl), aud);
 		if (noisy)
 		    fflush (stdout);
 
 		msgnum++;
 		continue;
 	    }
+	    charstring_free (scanl);
+
 	    /* If we get here there was some sort of error from scan(),
 	     * so stop processing anything more from the spool.
 	     */
@@ -735,6 +744,8 @@ go_to_it:
 
 	hghnum = msgnum = mp->hghmsg;
 	for (i = 0; i < num_maildir_entries; i++) {
+	    charstring_t scanl = NULL;
+
 	    msgnum++;
 
 	    sp = Maildir[i].filename;
@@ -767,7 +778,7 @@ go_to_it:
 	    fseek (pf, 0L, SEEK_SET);
 	    switch (incerr = scan (pf, msgnum, 0, nfs, width,
 			      msgnum == mp->hghmsg + 1 && chgflag,
-			      1, NULL, stop - start, noisy)) {
+			      1, NULL, stop - start, noisy, &scanl)) {
 	    case SCNEOF: 
 		printf ("%*d  empty\n", DMAXFOLDER, msgnum);
 		break;
@@ -793,11 +804,13 @@ go_to_it:
 		(void)ext_hook("add-hook", b, (char *)0);
 
 		if (aud)
-		    fputs (scanl, aud);
+		    fputs (charstring_buffer (scanl), aud);
 		if (noisy)
 		    fflush (stdout);
 		break;
 	    }
+	    charstring_free (scanl);
+
 	    if (ferror(pf) || fclose (pf)) {
 		int e = errno;
 		(void) m_unlink (cp);

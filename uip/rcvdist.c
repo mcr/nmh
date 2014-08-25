@@ -175,7 +175,8 @@ rcvdistout (FILE *inb, char *form, char *addrs)
 {
     register int char_read = 0, format_len, i, state;
     register char **ap;
-    char *cp, *scanl, name[NAMESZ], tmpbuf[SBUFSIZ];
+    char *cp, name[NAMESZ], tmpbuf[SBUFSIZ];
+    charstring_t scanl;
     register struct comp *cptr;
     FILE *out;
     m_getfld_state_t gstate = 0;
@@ -234,17 +235,17 @@ finished: ;
     m_getfld_state_destroy (&gstate);
 
     i = format_len + char_read + 256;
-    scanl = mh_xmalloc ((size_t) i + 2);
+    scanl = charstring_create (i + 2);
     dat[0] = dat[1] = dat[2] = dat[4] = 0;
     dat[3] = outputlinelen;
-    fmt_scan (fmt, scanl, i + 1, i, dat, NULL);
-    fputs (scanl, out);
+    fmt_scan (fmt, scanl, i, dat, NULL);
+    fputs (charstring_buffer (scanl), out);
 
     if (ferror (out))
 	adios (drft, "error writing");
     fclose (out);
 
-    free (scanl);
+    charstring_free (scanl);
     fmt_free(fmt, 1);
 }
 

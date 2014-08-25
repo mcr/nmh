@@ -144,7 +144,7 @@ process (char *arg, int length)
 {
     int	status = 0;
     register char *cp;
-    char buffer[WBUFSIZ + 1], error[BUFSIZ];
+    char error[BUFSIZ];
     register struct comp *cptr;
     register struct pqpair *p, *q;
     struct pqpair pq;
@@ -167,6 +167,8 @@ process (char *arg, int length)
     }
 
     for (p = pq.pq_next; p; p = q) {
+	charstring_t scanl = charstring_create (length);
+
 	cptr = fmt_findcomp ("text");
 	if (cptr) {
 	    if (cptr->c_text)
@@ -182,8 +184,9 @@ process (char *arg, int length)
 	    p->pq_error = NULL;
 	}
 
-	fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat, NULL);
-	fputs (buffer, stdout);
+	fmt_scan (fmt, scanl, length, dat, NULL);
+	fputs (charstring_buffer (scanl), stdout);
+	charstring_free (scanl);
 
 	if (p->pq_text)
 	    free (p->pq_text);

@@ -15,6 +15,7 @@
 #include <h/fmt_scan.h>
 #include <h/tws.h>
 #include <h/fmt_compile.h>
+#include <h/utils.h>
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -76,45 +77,54 @@ match (char *str, char *sub)
 /*
  * copy a number to the destination subject to a maximum width
  */
-static void
-cpnumber(char **dest, int num, unsigned int wid, char fill, size_t n) {
-    int i, c;
-    char *sp;
-    char *cp = *dest;
-    char *ep = cp + n;
+void
+cpnumber(charstring_t dest, int num, unsigned int wid, char fill, size_t max) {
+    if (wid < (num >= 0 ? max : max-1)) {
+	/* Build up the string representation of num in reverse. */
+	charstring_t rev = charstring_create (0);
+	int i = num >= 0 ? num : -num;
 
-    if (cp + wid < ep) {
-	if ((i = (num)) < 0)
-	    i = -(num);
-	if ((c = (wid)) < 0)
-	    c = -c;
-	sp = cp + c;
 	do {
-	    *--sp = (i % 10) + '0';
+	    charstring_push_back (rev, i % 10  +  '0');
 	    i /= 10;
-	} while (i > 0 && sp > cp);
-	if (i > 0)
-	    *sp = '?';
-	else if ((num) < 0 && sp > cp)
-	    *--sp = '-';
-	while (sp > cp)
-	    *--sp = fill;
-	cp += c;
+	} while (--wid > 0  &&  i > 0);
+	if (i > 0) {
+	    /* Overflowed the field (wid). */
+	    charstring_push_back (rev, '?');
+	} else if (num < 0  &&  wid > 0) {
+	    /* Shouldn't need the wid > 0 check, that's why the condition
+               at the top checks wid < max-1 when num < 0. */
+	    charstring_push_back (rev, '-');
+	    --wid;
+	}
+	while (wid-- > 0  &&  fill != 0) {
+	    charstring_push_back (rev, fill);
+	}
+
+	{
+	    /* Output the string in reverse. */
+	    size_t b = charstring_bytes (rev);
+	    const char *cp = b  ?  &charstring_buffer (rev)[b]  :  NULL;
+
+	    for (; b > 0; --b) {
+		charstring_push_back (dest, *--cp);
+	    }
+	}
+
+	charstring_free (rev);
     }
-    *dest = cp;
 }
 
 /*
- * copy string from str to dest padding with the fill character to a size
- * of wid characters. if wid is negative, the string is right aligned
- * no more than n bytes are copied
+ * copy string from str to dest padding with the fill character to a
+ * size of wid characters. if wid is negative, the string is right
+ * aligned no more than max characters are copied
  */
-static void
-cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
-	  char *epmax) {
+void
+cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
     int remaining;     /* remaining output width available */
-    int c, ljust;
-    int end;           /* number of input bytes remaining in str */
+    int rjust;
+    size_t end;        /* number of input bytes remaining in str */
 #ifdef MULTIBYTE_SUPPORT
     int char_len;      /* bytes in current character */
     int w;
@@ -122,16 +132,17 @@ cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
     char *altstr = NULL;
 #endif
     char *sp;          /* current position in source string */
-    char *cp = *dest;  /* current position in destination string */
     int prevCtrl = 1;
 
     /* get alignment */
-    ljust = 0;
-    if ((remaining = (wid)) < 0) {
+    rjust = 0;
+    if ((remaining = wid) < 0) {
 	remaining = -remaining;
-	ljust++;
+	rjust++;
     }
-    if ((sp = (str))) {
+    if (remaining > (int) max) { remaining = max; }
+
+    if ((sp = str)) {
 #ifdef MULTIBYTE_SUPPORT
 	mbtowc(NULL, NULL, 0); /* reset shift state */
 #endif
@@ -151,22 +162,16 @@ cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
 		char_len = mbtowc(&wide_char, altstr, 1);
 	    }
 
-	    if (char_len <= 0)
+	    if (char_len <= 0) {
 	    	break;
+	    }
 
 	    w = wcwidth(wide_char);
 
-	    /*
-	     * Multibyte characters can have a variable number of column
-	     * widths, so use the column width to bump the end pointer when
-	     * appropriate.
-	     */
-	    if (w >= 0  &&  char_len > 1 && epmax - *ep >= char_len - w) {
-		*ep += char_len - w;
-	    }
-
-	    if (w >= 0  &&  cp + w > *ep)
+	    /* If w > remaining, w must be positive. */
+	    if (w > remaining) {
 		break;
+	    }
 
 	    end -= char_len;
 
@@ -182,7 +187,7 @@ cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
 		sp++;
 #endif
 		if (!prevCtrl) {
-		    *cp++ = ' ';
+		    charstring_push_back (dest, ' ');
 		    remaining--;
 		}
 
@@ -193,44 +198,44 @@ cptrimmed(char **dest, char **ep, char *str, unsigned int wid, char fill,
 
 #ifdef MULTIBYTE_SUPPORT
 	    if (w >= 0 && remaining >= w) {
-		strncpy(cp, altstr ? altstr : sp, char_len);
-		cp += char_len;
+		charstring_push_back_chars (dest, altstr ? altstr : sp,
+					    char_len, w);
 		remaining -= w;
 		altstr = NULL;
 	    }
 	    sp += char_len;
 #else
-	    *cp++ = *sp++;
+	    charstring_push_back (dest, *sp++);
 	    remaining--;
 #endif
 	}
     }
 
-    if (ljust) {
-        char *endfield;
-	if (cp + remaining > *ep)
-	    remaining = *ep - cp;
-	endfield = cp + remaining;
+    if (rjust) {
 	if (remaining > 0) {
 	    /* copy string to the right */
-	    while (--cp >= *dest)
-		*(cp + remaining) = *cp;
+	    charstring_t copy = charstring_copy (dest);
+
 	    /* add padding at the beginning */
-	    cp += remaining;
-	    for (c=remaining; c>0; c--)
-		*cp-- = fill;
+	    charstring_clear (dest);
+	    for (; remaining > 0; --remaining) {
+		charstring_push_back (dest, fill);
+	    }
+
+	    charstring_append (dest, copy);
+
+	    charstring_free (copy);
 	}
-	*dest = endfield;
     } else {
 	/* pad remaining space */
-	while (remaining-- > 0 && cp < *ep)
-		*cp++ = fill;
-	*dest = cp;
+	while (remaining-- > 0) {
+	    charstring_push_back (dest, fill);
+	}
     }
 }
 
 static void
-cpstripped (char **dest, char **end, char *max, char *str)
+cpstripped (charstring_t dest, size_t max, char *str)
 {
     int prevCtrl = 1;	/* This is 1 so we strip out leading spaces */
     int len;
@@ -240,8 +245,9 @@ cpstripped (char **dest, char **end, char *max, char *str)
     char *altstr = NULL;
 #endif /* MULTIBYTE_SUPPORT */
 
-    if (!str)
+    if (!str) {
 	return;
+    }
 
     len = strlen(str);
 
@@ -254,19 +260,10 @@ cpstripped (char **dest, char **end, char *max, char *str)
      * then deal with that here.
      */
 
-    while (*str != '\0' && len > 0 && *dest < *end) {
+    while (*str != '\0' && len > 0 && max > 0) {
 #ifdef MULTIBYTE_SUPPORT
-    	char_len = mbtowc(&wide_char, str, len);
+	char_len = mbtowc(&wide_char, str, len);
 	w = wcwidth(wide_char);
-
-	/*
-	 * Account for multibyte characters, and increment the end pointer
-	 * by the number of "extra" bytes in this character.  That's the
-	 * character length (char_len) minus the column width (w).
-	 */
-	if (w >= 0  &&  char_len > 1  &&  max - *end >= char_len - w) {
-	    *end += char_len - w;
-	}
 
 	/*
 	 * If mbrtowc() failed, then we have a character that isn't valid
@@ -281,8 +278,9 @@ cpstripped (char **dest, char **end, char *max, char *str)
 	    char_len = mbtowc(&wide_char, altstr, 1);
 	}
 
-	if (char_len <= 0 || *dest + char_len > *end)
+	if (char_len <= 0) {
 	    break;
+	}
 
 	len -= char_len;
 
@@ -295,7 +293,8 @@ cpstripped (char **dest, char **end, char *max, char *str)
 	    str++;
 #endif /* MULTIBYTE_SUPPORT */
 	    if (! prevCtrl) {
-	    	*(*dest)++ = ' ';
+		charstring_push_back (dest, ' ');
+		--max;
 	    }
 
 	    prevCtrl = 1;
@@ -305,12 +304,13 @@ cpstripped (char **dest, char **end, char *max, char *str)
 	prevCtrl = 0;
 
 #ifdef MULTIBYTE_SUPPORT
-	memcpy(*dest, altstr ? altstr : str, char_len);
+	charstring_push_back_chars (dest, altstr ? altstr : str, char_len, w);
+        max -= w;
 	str += char_len;
-	*dest += char_len;
 	altstr = NULL;
 #else /* MULTIBYE_SUPPORT */
-	*(*dest)++ = *str++
+	charstring_push_back (dest, *str++);
+        --max;
 #endif /* MULTIBYTE_SUPPORT */
     }
 }
@@ -364,25 +364,35 @@ get_x400_comp (char *mbox, char *key, char *buffer, int buffer_len)
 }
 
 struct format *
-fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
+fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	  struct fmt_callbacks *callbacks)
 {
-    char *cp, *ep, *sp;
-    char *savestr = NULL, *str = NULL;
+    char *sp;
+    char *savestr, *str;
     char buffer[BUFSIZ], buffer2[BUFSIZ];
-    int i, c, ljust, n;
-    int value = 0;
+    int i, c, rjust;
+    int value;
     time_t t;
+    size_t max;
     struct format *fmt;
     struct comp *comp;
     struct tws *tws;
     struct mailname *mn;
 
-    /* ep keeps track of displayed characters.  They're limited by width.
-       The total number of characters, cp - scanl + 1 (for trailing NULL),
-       includes invisible control characters and is limited by max. */
-    cp = scanl;
-    ep = scanl + (width <= (int) max ? width : (int) max) - 1;
+    /*
+     * The newline counts in the display width, for backward
+     * compatibility.  To change that so that the newline doesn't
+     * count, remove the following statement.
+     */
+    --width;
+
+    /*
+     * max is the same as width, but unsigned.  So comparisons
+     * with charstring_chars() won't raise compile warning.
+     */
+    max = width;
+    savestr = str = NULL;
+    value = 0;
 
     for (fmt = format; fmt->f_type != FT_DONE; fmt++)
 	switch (fmt->f_type) {
@@ -415,81 +425,70 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 
     fmt = format;
 
-    while (cp < ep) {
+    for ( ; charstring_chars (scanlp) < max; ) {
 	switch (fmt->f_type) {
 
 	case FT_COMP:
-	    cpstripped (&cp, &ep, scanl + max - 1, fmt->f_comp->c_text);
+	    cpstripped (scanlp, max - charstring_chars (scanlp),
+                        fmt->f_comp->c_text);
 	    break;
 	case FT_COMPF:
-	    cptrimmed (&cp, &ep, fmt->f_comp->c_text, fmt->f_width, fmt->f_fill,
-		       scanl + max - 1);
+	    cptrimmed (scanlp, fmt->f_comp->c_text, fmt->f_width,
+		       fmt->f_fill, max - charstring_chars (scanlp));
 	    break;
 
 	case FT_LIT:
 	    sp = fmt->f_text;
-	    while( (c = *sp++) && cp < ep)
-		*cp++ = c;
+	    while ((c = *sp++) && charstring_chars (scanlp) < max) {
+		charstring_push_back (scanlp, c);
+	    }
 	    break;
 	case FT_LITF:
 	    sp = fmt->f_text;
-	    ljust = 0;
+	    rjust = 0;
 	    i = fmt->f_width;
 	    if (i < 0) {
 		i = -i;
-		ljust++;		/* XXX should do something with this */
+		rjust++;		/* XXX should do something with this */
 	    }
-	    while( (c = *sp++) && --i >= 0 && cp < ep)
-		*cp++ = c;
-	    while( --i >= 0 && cp < ep)
-		*cp++ = fmt->f_fill;
+	    while ((c = *sp++) && --i >= 0 && charstring_chars (scanlp) < max) {
+		charstring_push_back (scanlp, c);
+	    }
+	    while (--i >= 0 && charstring_chars (scanlp) < max) {
+		charstring_push_back (scanlp, fmt->f_fill);
+	    }
 	    break;
 
 	case FT_STR:
-	    cpstripped (&cp, &ep, scanl + max - 1, str);
+	    cpstripped (scanlp, max - charstring_chars (scanlp), str);
 	    break;
 	case FT_STRF:
-	    cptrimmed (&cp, &ep, str, fmt->f_width, fmt->f_fill, 
-		       scanl + max - 1);
+	    cptrimmed (scanlp, str, fmt->f_width, fmt->f_fill,
+		       max - charstring_chars (scanlp));
 	    break;
 	case FT_STRLIT:
 	    if (str) {
 		sp = str;
-		while ((c = *sp++) && cp < ep)
-		    *cp++ = c;
+		while ((c = *sp++) && charstring_chars (scanlp) < max) {
+		    charstring_push_back (scanlp, c);
+		}
 	    }
 	    break;
 	case FT_STRLITZ:
-	    if (str) {
-		size_t len = strlen (str);
-
-		/* Don't want to emit part of an escape sequence.  So if
-		   there isn't enough room in the buffer for the entire
-		   string, skip it completely. */
-		if (cp - scanl + len + 1 < max) {
-		    for (sp = str; *sp; *cp++ = *sp++) continue;
-
-		    /* This string doesn't count against the width.
-		       So increase ep the same amount as cp, only if the
-		       scan buffer will always be large enough. */
-		    if (ep - scanl + len + 1 < max) {
-			ep += len;
-		    }
-		}
-	    }
+	    if (str) charstring_push_back_chars (scanlp, str, strlen (str), 0);
 	    break;
 	case FT_STRFW:
 	    adios (NULL, "internal error (FT_STRFW)");
 
-	case FT_NUM:
-	    n = snprintf(cp, ep - cp + 1, "%d", value);
-	    if (n >= 0) {
-		if (n >= ep - cp) {
-		    cp = ep;
-		} else
-		    cp += n;
-	    }
+	case FT_NUM: {
+	    int num = value;
+	    unsigned int wid;
+
+	    for (wid = num <= 0  ?  1  :  0; num; ++wid, num /= 10) {}
+	    cpnumber (scanlp, value, wid, ' ',
+		      max - charstring_chars (scanlp));
 	    break;
+        }
 	case FT_LS_KILO:
 	case FT_LS_KIBI:
 	    {
@@ -540,24 +539,25 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    }
 	    break;
 	case FT_NUMF:
-	    cpnumber (&cp, value, fmt->f_width, fmt->f_fill, ep - cp);
+	    cpnumber (scanlp, value, fmt->f_width, fmt->f_fill,
+		      max - charstring_chars (scanlp));
 	    break;
 
 	case FT_CHAR:
-	    *cp++ = fmt->f_char;
+	    charstring_push_back (scanlp, fmt->f_char);
 	    break;
 
 	case FT_DONE:
 	    if (callbacks && callbacks->trace_func)
 		callbacks->trace_func(callbacks->trace_context, fmt, value,
-				      str, scanl);
+				      str, charstring_buffer (scanlp));
 	    goto finished;
 
 	case FT_IF_S:
 	    if (!(value = (str && *str))) {
 		if (callbacks && callbacks->trace_func)
 		    callbacks->trace_func(callbacks->trace_context, fmt, value,
-					  str, scanl);
+					  str, charstring_buffer (scanlp));
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -567,7 +567,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    if (!(value = (str == NULL || *str == 0))) {
 		if (callbacks && callbacks->trace_func)
 		    callbacks->trace_func(callbacks->trace_context, fmt, value,
-					  str, scanl);
+					  str, charstring_buffer (scanlp));
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -577,7 +577,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    if (value != fmt->f_value) {
 		if (callbacks && callbacks->trace_func)
 		    callbacks->trace_func(callbacks->trace_context, fmt, value,
-					  str, scanl);
+					  str, charstring_buffer (scanlp));
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -587,7 +587,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    if (value == fmt->f_value) {
 		if (callbacks && callbacks->trace_func)
 		    callbacks->trace_func(callbacks->trace_context, fmt, value,
-					  str, scanl);
+					  str, charstring_buffer (scanlp));
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -597,7 +597,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    if (value <= fmt->f_value) {
 		if (callbacks && callbacks->trace_func)
 		    callbacks->trace_func(callbacks->trace_context, fmt, value,
-					  str, scanl);
+					  str, charstring_buffer (scanlp));
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -607,7 +607,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    if (!(value = (str && match (str, fmt->f_text)))) {
 		if (callbacks && callbacks->trace_func)
 		    callbacks->trace_func(callbacks->trace_context, fmt, value,
-					  str, scanl);
+					  str, charstring_buffer (scanlp));
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -624,7 +624,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    if (!(value = (str && uprf (str, fmt->f_text)))) {
 		if (callbacks && callbacks->trace_func)
 		    callbacks->trace_func(callbacks->trace_context, fmt, value,
-					  str, scanl);
+					  str, charstring_buffer (scanlp));
 		fmt += fmt->f_skip;
 		continue;
 	    }
@@ -657,7 +657,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	case FT_GOTO:
 	    if (callbacks && callbacks->trace_func)
 		callbacks->trace_func(callbacks->trace_context, fmt, value,
-				      str, scanl);
+				      str, charstring_buffer (scanlp));
 	    fmt += fmt->f_skip;
 	    continue;
 
@@ -700,19 +700,19 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		    str = buffer;
 		    while (isspace((unsigned char) *str))
 			    str++;
-		    ljust = 0;
+		    rjust = 0;
 		    if ((i = fmt->f_width) < 0) {
 			    i = -i;
-			    ljust++;
+			    rjust++;
 		    }
 
-		    if (!ljust && i > 0 && (int) strlen(str) > i)
+		    if (!rjust && i > 0 && (int) strlen(str) > i)
 			    str[i] = '\0';
 		    xp = str;
 		    xp += strlen(str) - 1;
 		    while (xp > str && isspace((unsigned char) *xp))
 			    *xp-- = '\0';
-		    if (ljust && i > 0 && (int) strlen(str) > i)
+		    if (rjust && i > 0 && (int) strlen(str) > i)
 			str += strlen(str) - i;
 	    }
 	    break;
@@ -736,7 +736,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		    value = 0;
 	    break;
 	case FT_LV_CHAR_LEFT:
-	    value = width - (cp - scanl);
+	    value = max - charstring_bytes (scanlp);
 	    break;
 	case FT_LV_PLUS_L:
 	    value += fmt->f_value;
@@ -900,7 +900,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	            }
 	        } else if (!(str = get_x400_friendly (mn->m_mbox,
 				buffer, sizeof(buffer)))) {
-	unfriendly: ;
+	unfriendly:
 		  switch (mn->m_type) {
 		    case LOCALHOST:
 			str = mn->m_mbox;
@@ -960,7 +960,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		*comp->c_tws = *tws;
 		comp->c_flags &= ~CF_TRUE;
 	    } else if ((comp->c_flags & CF_DATEFAB) == 0) {
-		memset ((char *) comp->c_tws, 0, sizeof *comp->c_tws);
+		memset (comp->c_tws, 0, sizeof *comp->c_tws);
 		comp->c_flags = CF_TRUE;
 	    }
 	    comp->c_flags |= CF_PARSED;
@@ -1003,8 +1003,9 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    	adios(NULL, "putaddr -- num register (%d) must be greater "
 			    "than label width (%d)", value, indent);
 	    }
-	    while( (c = (unsigned char) *sp++) && cp < ep)
-		*cp++ = (char) c;
+	    while ((c = *sp++) && charstring_chars (scanlp) < max) {
+		charstring_push_back (scanlp, c);
+	    }
 	    while (len > wid) {
 		/* try to break at a comma; failing that, break at a
 		 * space.
@@ -1025,18 +1026,22 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 		    }
 		}
 		len -= sp - lp + 1;
-		while (cp < ep && lp <= sp)
-		    *cp++ = *lp++;
+		while (lp <= sp && charstring_chars (scanlp) < max) {
+		    charstring_push_back (scanlp, *lp++);
+		}
 		while (isspace((unsigned char) *lp))
 		    lp++, len--;
 		if (*lp) {
-		    if (cp < ep)
-			*cp++ = '\n';
-		    for (i=indent; cp < ep && i > 0; i--)
-			*cp++ = ' ';
+		    if (charstring_chars (scanlp) < max) {
+			charstring_push_back (scanlp, '\n');
+                    }
+		    for (i=indent;
+			 charstring_chars (scanlp) < max && i > 0;
+			 i--)
+			charstring_push_back (scanlp, ' ');
 		}
 	    }
-	    cpstripped (&cp, &ep, scanl + max - 1, lp);
+	    cpstripped (scanlp, max - charstring_chars (scanlp), lp);
 	    }
 	    break;
 
@@ -1098,7 +1103,7 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 
 	if (callbacks && callbacks->trace_func)
 	    callbacks->trace_func(callbacks->trace_context, fmt, value,
-	    			  str, scanl);
+				  str, charstring_buffer (scanlp));
 	fmt++;
     }
 
@@ -1108,30 +1113,45 @@ fmt_scan (struct format *format, char *scanl, size_t max, int width, int *dat,
 	    str = fmt->f_text;
 	    if (callbacks && callbacks->trace_func)
 		callbacks->trace_func(callbacks->trace_context, fmt, value,
-				      str, scanl);
+				      str, charstring_buffer (scanlp));
 	} else if (fmt->f_type == FT_STRLITZ) {
 	    /* Don't want to emit part of an escape sequence.  So if
 	       there isn't enough room in the buffer for the entire
 	       string, skip it completely.  Need room for null
 	       terminator, and maybe trailing newline (added below). */
-	    if (str && (cp - scanl + strlen (str) + 1 < max)) {
-		for (sp = str; *sp; *cp++ = *sp++) continue;
+	    if (str) {
+		for (sp = str; *sp; ++sp) {
+		    charstring_push_back (scanlp, *sp);
+		}
 	    }
 	    if (callbacks && callbacks->trace_func)
 		callbacks->trace_func(callbacks->trace_context, fmt, value,
-				      str, scanl);
+				      str, charstring_buffer (scanlp));
 	}
 	fmt++;
     }
 
-    finished:;
-    if (cp > scanl  &&  cp[-1] != '\n') {
-	if (cp - scanl < (int) max - 1) {
-	    *cp++ = '\n';
-	} else {
-	    cp[-1] = '\n';
+    finished:
+    if (charstring_bytes (scanlp) > 0) {
+	/*
+	 * Append a newline if the last character wasn't.
+	 */
+#ifdef MULTIBYTE_SUPPORT
+	/*
+	 * It's a little tricky because the last byte might be part of
+	 * a multibyte character, in which case we assume that wasn't
+	 * a newline.
+	 */
+	size_t last_char_len = charstring_last_char_len (scanlp);
+#else  /* ! MULTIBYTE_SUPPORT */
+	size_t last_char_len = 1;
+#endif /* ! MULTIBYTE_SUPPORT */
+
+	if (last_char_len > 1  ||
+	    charstring_buffer (scanlp)[charstring_bytes (scanlp) - 1] != '\n') {
+	    charstring_push_back (scanlp, '\n');
 	}
     }
-    *cp = '\0';
+
     return ((struct format *)0);
 }

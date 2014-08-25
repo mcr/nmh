@@ -542,7 +542,7 @@ mhl_format (char *file, int length, int width)
 {
     int i;
     char *bp, *cp, **ip;
-    char *ap, buffer[BUFSIZ], name[NAMESZ];
+    char *ap, name[NAMESZ];
     struct mcomp *c1;
     struct stat st;
     FILE *fp;
@@ -663,6 +663,8 @@ mhl_format (char *file, int length, int width)
 
     if (mhldebug) {
 	for (c1 = fmthd; c1; c1 = c1->c_next) {
+	    char buffer[BUFSIZ];
+
 	    fprintf (stderr, "c1: name=\"%s\" text=\"%s\" ovtxt=\"%s\"\n",
 		    c1->c_name, c1->c_text, c1->c_ovtxt);
 	    fprintf (stderr, "\tnfs=0x%x fmt=0x%x\n",
@@ -1143,7 +1145,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 {
     int dat[5];
     char *ap, *cp;
-    char buffer[BUFSIZ], error[BUFSIZ];
+    char error[BUFSIZ];
     struct pqpair *p, *q;
     struct pqpair pq;
     struct mailname *mp;
@@ -1153,20 +1155,22 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
     dat[0] = 0;
     dat[1] = 0;
     dat[2] = filesize;
-    dat[3] = sizeof(buffer) - 1;
+    dat[3] = BUFSIZ - 1;
     dat[4] = 0;
 
     if (!(c1->c_flags & ADDRFMT)) {
+	charstring_t scanl = charstring_create (BUFSIZ);
+
 	if (c1->c_c_text)
 	    c1->c_c_text->c_text = ap;
 	if ((cp = strrchr(ap, '\n')))	/* drop ending newline */
 	    if (!cp[1])
 		*cp = 0;
 
-	fmt_scan (c1->c_fmt, buffer, sizeof buffer - 1, sizeof buffer - 1,
-		  dat, NULL);
+	fmt_scan (c1->c_fmt, scanl, BUFSIZ - 1, dat, NULL);
 	/* Don't need to append a newline, dctime() already did */
-	c2->c_text = getcpy (buffer);
+	c2->c_text = charstring_buffer_copy (scanl);
+	charstring_free (scanl);
 
 	/* ap is now owned by the component struct, so do NOT free it here */
 	return;
@@ -1188,6 +1192,9 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
     }
 
     for (p = pq.pq_next; p; p = q) {
+	charstring_t scanl = charstring_create (BUFSIZ);
+	char *buffer;
+
 	if (c1->c_c_text) {
 	    c1->c_c_text->c_text = p->pq_text;
 	    p->pq_text = NULL;
@@ -1197,15 +1204,16 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	    p->pq_error = NULL;
 	}
 
-	fmt_scan (c1->c_fmt, buffer, sizeof buffer - 1, sizeof buffer - 1,
-		  dat, NULL);
-	if (*buffer) {
+	fmt_scan (c1->c_fmt, scanl, BUFSIZ - 1, dat, NULL);
+	buffer = charstring_buffer_copy (scanl);
+	if (strlen (buffer) > 0) {
 	    if (c2->c_text)
 		c2->c_text = add (",\n", c2->c_text);
 	    if (*(cp = buffer + strlen (buffer) - 1) == '\n')
 		*cp = 0;
 	    c2->c_text = add (buffer, c2->c_text);
 	}
+	charstring_free (scanl);
 
 	if (p->pq_text)
 	    free (p->pq_text);
@@ -1758,22 +1766,25 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp,
 	 */
 
 	for (a = arglist_head, i = argp; a != NULL; a = a->a_next, i++) {
-	    args[i] = mh_xmalloc(BUFSIZ);
-	    fmt_scan(a->a_fmt, args[i], BUFSIZ - 1, BUFSIZ, dat, NULL);
+	    charstring_t scanl = charstring_create (BUFSIZ);
+
+	    fmt_scan(a->a_fmt, scanl, BUFSIZ, dat, NULL);
+	    args[i] = charstring_buffer_copy (scanl);
+	    charstring_free (scanl);
 	    /*
 	     * fmt_scan likes to put a trailing newline at the end of the
 	     * format string.  If we have one, get rid of it.
 	     */
 	    s = strlen(args[i]);
 	    if (args[i][s - 1] == '\n')
-	    	args[i][s - 1] = '\0';
+		args[i][s - 1] = '\0';
 
 	    if (mhldebug)
-	    	fprintf(stderr, "filterarg: fmt=\"%s\", output=\"%s\"\n",
+		fprintf(stderr, "filterarg: fmt=\"%s\", output=\"%s\"\n",
 			a->a_nfs, args[i]);
 	}
 
-    	if (dup2(fdinput[0], STDIN_FILENO) < 0) {
+	if (dup2(fdinput[0], STDIN_FILENO) < 0) {
 	    adios("formatproc", "Unable to dup2() standard input");
 	}
 	if (dup2(fdoutput[1], STDOUT_FILENO) < 0) {

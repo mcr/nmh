@@ -91,14 +91,14 @@ main (int argc, char **argv)
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
-		case AMBIGSW: 
+		case AMBIGSW:
 		    ambigsw (cp, switches);
 		    done (1);
-		case UNKWNSW: 
+		case UNKWNSW:
 		    vec[vecp++] = --cp;
 		    continue;
 
-		case HELPSW: 
+		case HELPSW:
 		    snprintf (buf, sizeof(buf), "%s [command ...]", invo_name);
 		    print_help (buf, switches, 1);
 		    done (0);
@@ -110,12 +110,12 @@ main (int argc, char **argv)
 		    biff = 1;
 		    continue;
 
-		case FORMSW: 
+		case FORMSW:
 		    if (!(form = *argp++) || *form == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    format = NULL;
 		    continue;
-		case FMTSW: 
+		case FMTSW:
 		    if (!(format = *argp++) || *format == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    form = NULL;
@@ -251,6 +251,7 @@ header_fd (void)
     int fd;
     char *nfs;
     char *tfile = NULL;
+    charstring_t scanl = NULL;
 
     if ((tfile = m_mktemp2(NULL, invo_name, &fd, NULL)) == NULL) {
 	advise(NULL, "unable to create temporary file in %s", get_temp_dir());
@@ -262,11 +263,12 @@ header_fd (void)
 
     /* get new format string */
     nfs = new_fs (form, format, SCANFMT);
-    scan (stdin, 0, 0, nfs, width, 0, 0, NULL, 0L, 0);
+    scan (stdin, 0, 0, nfs, width, 0, 0, NULL, 0L, 0, &scanl);
     scan_finished ();
     if (newline)
         write (fd, "\n\r", 2);
-    write (fd, scanl, strlen (scanl));
+    write (fd, charstring_buffer (scanl), charstring_bytes (scanl));
+    charstring_free (scanl);
     if (bell)
         write (fd, "\007", 1);
 

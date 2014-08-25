@@ -35,7 +35,6 @@ static struct comp **used_buf = 0;	/* stack for comp that use buffers */
 
 static int dat[5];			/* aux. data for format routine    */
 
-char *scanl = 0;			/* text of most recent scanline    */
 m_getfld_state_t gstate;		/* for access by msh */
 
 #define DIEWRERR() adios (scnmsg, "write error on")
@@ -50,15 +49,9 @@ m_getfld_state_t gstate;		/* for access by msh */
  */
 static int mh_fputs(char *, FILE *);
 
-#ifdef MULTIBYTE_SUPPORT
-#define SCAN_CHARWIDTH MB_CUR_MAX
-#else
-#define SCAN_CHARWIDTH 1
-#endif
-
 int
 scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
-      int unseen, char *folder, long size, int noisy)
+      int unseen, char *folder, long size, int noisy, charstring_t *scanl)
 {
     int i, compnum, encrypted, state;
     char *cp, *tmpbuf, *startbody, **nxtbuf;
@@ -70,10 +63,11 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
     char name[NAMESZ];
     int bufsz;
     static int rlwidth, slwidth;
-    static size_t scanl_size;
 
-    /* first-time only initialization */
-    if (!scanl) {
+    /* first-time only initialization, which will always happen the
+       way the code is now, with callers initializing *scanl to NULL.
+       scanl used to be a global. */
+    if (! *scanl) {
 	if (width == 0) {
 	    if ((width = sc_width ()) < WIDTH/2)
 		width = WIDTH/2;
@@ -81,10 +75,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		width = MAXSCANL;
 	}
 	dat[3] = slwidth = width;
-	/* Arbitrarily allocate 20 * slwidth to provide room for lots
-	   of escape sequences. */
-	scanl_size = SCAN_CHARWIDTH * (20 * slwidth + 2);
-	scanl = (char *) mh_xmalloc (scanl_size);
+	*scanl = charstring_create (width);
 	if (outnum)
 	    umask(~m_gmprot());
 
@@ -346,13 +337,13 @@ finished:
 	}
     }
 
-    fmt_scan (fmt, scanl, scanl_size, slwidth, dat, NULL);
+    fmt_scan (fmt, *scanl, slwidth, dat, NULL);
 
     if (bodycomp)
 	bodycomp->c_text = saved_c_text;
 
     if (noisy)
-	fputs (scanl, stdout);
+	fputs (charstring_buffer (*scanl), stdout);
 
     cptr = fmt_findcomp ("encrypted");
     encrypted = cptr && cptr->c_text;

@@ -3,8 +3,6 @@
  * scansbr.h -- definitions for scan()
  */
 
-extern char *scanl;
-
 #define	SCNENC	2		/* message just fine, but encrypted(!!) */
 #define	SCNMSG	1		/* message just fine                    */
 #define	SCNEOF	0		/* empty message                        */
@@ -37,4 +35,5 @@ extern char *scanl;
 /*
  * prototypes
  */
-int scan (FILE *, int, int, char *, int, int, int, char *, long, int);
+int scan (FILE *, int, int, char *, int, int, int, char *, long, int,
+          charstring_t *);

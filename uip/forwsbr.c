@@ -49,7 +49,8 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
     int fmtsize, state;
     int i;
     register char *nfs;
-    char *line, tmpfil[BUFSIZ], name[NAMESZ], **ap;
+    char tmpfil[BUFSIZ], name[NAMESZ], **ap;
+    charstring_t line;
     FILE *tmp;
     register struct comp *cptr;
     struct format *fmt;
@@ -182,10 +183,10 @@ finished:
     if ((in = dup (fileno (tmp))) == NOTOK)
 	adios ("dup", "unable to");
 
-    line = mh_xmalloc ((unsigned) fmtsize);
-    fmt_scan (fmt, line, fmtsize - 1, fmtsize, dat, NULL);
-    fputs (line, tmp);
-    free (line);
+    line = charstring_create (fmtsize);
+    fmt_scan (fmt, line, fmtsize, dat, NULL);
+    fputs (charstring_buffer (line), tmp);
+    charstring_free (line);
     if (fclose (tmp))
 	adios (tmpfil, "error writing");
 

@@ -1,4 +1,4 @@
-.TH FMTTEST %manext1% "December 4, 2013" "%nmhversion%"
+.TH FMTTEST %manext1% "August 24, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -22,8 +22,6 @@ language
 .RB [ \-ccme " | " \-noccme ]
 .RB [ \-outsize
 .IR size-in-characters ]
-.RB [ \-bufsize
-.IR size-in-bytes ]
 .RB [ \-width
 .IR column-width ]
 .RB [ \-msgnum
@@ -215,19 +213,11 @@ characters with zero width, and extra bytes that are
 part of a multibyte character are not counted against this total.
 Two special values are supported:
 .RI \*(lq max \*(rq,
-which will set the value
-to the size of the output buffer, and
+which will set the value to the maximum value of an integer, and
 .RI \*(lq width \*(rq,
 which will set the
 value to the width of the terminal.  In message mode it defaults to the
-terminal width, otherwise the default is the output buffer size.
-.PP
-The
-.B \-bufsize
-switch controls the size of the output buffer.  By default it is set
-to the size of the
-.B BUFSIZ
-C preprocessor symbol, which is system-dependent.
+terminal width, otherwise the default is the maximum value of an integer.
 .PP
 The
 .B \-width

@@ -134,7 +134,7 @@ static int
 process (char *date, int length)
 {
     int status = 0;
-    char buffer[WBUFSIZ + 1];
+    charstring_t scanl = charstring_create (length);
     register struct comp *cptr;
 
     cptr = fmt_findcomp ("text");
@@ -143,8 +143,9 @@ process (char *date, int length)
 	    free(cptr->c_text);
 	cptr->c_text = getcpy(date);
     }
-    fmt_scan (fmt, buffer, sizeof buffer - 1, length, dat, NULL);
-    fputs (buffer, stdout);
+    fmt_scan (fmt, scanl, length, dat, NULL);
+    fputs (charstring_buffer (scanl), stdout);
+    charstring_free (scanl);
 
     return status;
 }
