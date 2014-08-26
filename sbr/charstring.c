@@ -166,8 +166,9 @@ charstring_last_char_len (const charstring_t s) {
     while (*sp  &&  remaining > 0) {
         wchar_t wide_char;
 
-        len = mbtowc (&wide_char, sp,
-                      (size_t) MB_CUR_MAX < remaining ? MB_CUR_MAX : remaining);
+        len = mbtowc (&wide_char, sp, (size_t) MB_CUR_MAX < remaining
+                                          ? (size_t) MB_CUR_MAX
+                                          : remaining);
         sp += len > 0 ? len : 1;
         remaining -= len > 0 ? len : 1;
     }
