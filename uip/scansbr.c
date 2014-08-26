@@ -35,7 +35,7 @@ static struct comp **used_buf = 0;	/* stack for comp that use buffers */
 
 static int dat[5];			/* aux. data for format routine    */
 
-m_getfld_state_t gstate;		/* for access by msh */
+static m_getfld_state_t gstate;		/* for accessor functions below    */
 
 #define DIEWRERR() adios (scnmsg, "write error on")
 
@@ -371,7 +371,7 @@ mh_fputs(char *s, FILE *stream)
     return (0);
 }
 
-/* The following three functions allow access to the global gstate above. */
+/* The following two functions allow access to the global gstate above. */
 void
 scan_finished () {
     m_getfld_state_destroy (&gstate);
@@ -380,9 +380,4 @@ scan_finished () {
 void
 scan_detect_mbox_style (FILE *f) {
     m_unknown (&gstate, f);
-}
-
-void
-scan_reset_m_getfld_state () {
-    m_getfld_state_reset (&gstate);
 }
