@@ -115,7 +115,7 @@ static int get_comment (const char *, const char *, char **, char **);
 static int InitGeneric (CT);
 static int InitText (CT);
 static int InitMultiPart (CT);
-void reverse_parts (CT);
+static void reverse_parts (CT);
 static int InitMessage (CT);
 static int InitApplication (CT);
 static int init_encoding (CT, OpenCEFunc);
@@ -1277,7 +1277,7 @@ last_part:
  * reverse the order of the parts of a multipart/alternative
  */
 
-void
+static void
 reverse_parts (CT ct)
 {
     struct multipart *m = (struct multipart *) ct->c_ctparams;
@@ -1290,6 +1290,30 @@ reverse_parts (CT ct)
         next = part->mp_next;
         part->mp_next = m->mp_parts;
         m->mp_parts = part;
+    }
+}
+
+
+
+
+/* parse_mime() arranges alternates in reverse (priority) order.  This
+   function can be used to reverse them back.  This will put, for
+   example, a text/plain part before a text/html part in a
+   multipart/alternative part, for example, where it belongs. */
+void
+reverse_alternative_parts (CT ct) {
+    if (ct->c_type == CT_MULTIPART) {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        if (ct->c_subtype == MULTI_ALTERNATE) {
+            reverse_parts (ct);
+        }
+
+        /* And call recursively on each part of a multipart. */
+        for (part = m->mp_parts; part; part = part->mp_next) {
+            reverse_alternative_parts (part->mp_part);
+        }
     }
 }
 

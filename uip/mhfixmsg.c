@@ -53,7 +53,6 @@ int debugsw; /* Needed by mhparse.c. */
 extern int skip_mp_cte_check;                 /* flag to InitMultiPart */
 extern int suppress_bogus_mp_content_warning; /* flag to InitMultiPart */
 extern int bogus_mp_content;                  /* flag from InitMultiPart */
-void reverse_parts (CT);
 
 /* mhoutsbr.c */
 int output_message (CT, char *);
@@ -78,7 +77,6 @@ typedef struct fix_transformations {
 } fix_transformations;
 
 int mhfixmsgsbr (CT *, const fix_transformations *, char *);
-static void reverse_alternative_parts (CT);
 static int fix_boundary (CT *, int *);
 static int get_multipart_boundary (CT, char **);
 static int replace_boundary (CT, char *, char *);
@@ -456,27 +454,6 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     free (input_filename);
 
     return status;
-}
-
-
-/* parse_mime() arranges alternates in reverse (priority) order, so
-   reverse them back.  This will put a text/plain part at the front of
-   a multipart/alternative part, for example, where it belongs. */
-static void
-reverse_alternative_parts (CT ct) {
-    if (ct->c_type == CT_MULTIPART) {
-        struct multipart *m = (struct multipart *) ct->c_ctparams;
-        struct part *part;
-
-        if (ct->c_subtype == MULTI_ALTERNATE) {
-            reverse_parts (ct);
-        }
-
-        /* And call recursively on each part of a multipart. */
-        for (part = m->mp_parts; part; part = part->mp_next) {
-            reverse_alternative_parts (part->mp_part);
-        }
-    }
 }
 
 

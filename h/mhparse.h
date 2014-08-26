@@ -342,6 +342,7 @@ const char *ce_str (int);
 const struct str2init *get_ce_method (const char *);
 char *content_charset (CT);
 int convert_charset (CT, char *, int *);
+void reverse_alternative_parts (CT);
 
 /*
  * Given a content structure, return true if the content has a disposition
