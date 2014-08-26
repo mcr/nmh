@@ -1646,16 +1646,16 @@ strip_crs (CT ct, int *message_mods) {
                         } else if (last_char_was_cr) {
                             if (*cp != '\n') {
                                 if (write (fd, "\r", 1) < 0) {
-                                    advise (tempfile, "write of CR failed");
+                                    advise (tempfile, "CR write");
                                 }
                             }
                             if (write (fd, cp, 1) < 0) {
-                                advise (tempfile, "write failed");
+                                advise (tempfile, "write");
                             }
                             last_char_was_cr = 0;
                         } else {
                             if (write (fd, cp, 1) < 0) {
-                                advise (tempfile, "write failed");
+                                advise (tempfile, "write");
                             }
                             last_char_was_cr = 0;
                         }

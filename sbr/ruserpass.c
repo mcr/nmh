@@ -148,7 +148,9 @@ ruserpass(char *host, char **aname, char **apass)
 	}
 	printf("Name (%s:%s): ", host, myname);
 
-	fgets(tmp, sizeof(tmp) - 1, stdin);
+	if (fgets(tmp, sizeof(tmp) - 1, stdin) == NULL) {
+	    advise ("tmp", "fgets");
+	}
 	tmp[strlen(tmp) - 1] = '\0';
 	if (*tmp != '\0') {
 	    myname = tmp;

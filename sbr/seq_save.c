@@ -91,7 +91,9 @@ priv:
 		    free(mp->seqname);
 		    mp->seqname = NULL;
 		    rewind(fp);
-		    ftruncate(fileno(fp), 0);
+		    if (ftruncate(fileno(fp), 0) < 0) {
+			advise ("sequence file", "ftruncate");
+		    }
 		} else if ((fp = lkfopendata (seqfile, "w", &failed_to_lock))
 			   == NULL
 			&& (m_unlink (seqfile) == -1 ||

@@ -106,5 +106,7 @@ advertise (char *what, char *tail, char *fmt, va_list ap)
     }
     iov->iov_len = strlen (iov->iov_base = "\n");
     iov++;
-    writev (fileno (stderr), iob, iov - iob);
+    if (writev (fileno (stderr), iob, iov - iob) < 0) {
+	advise ("stderr", "writev");
+    }
 }

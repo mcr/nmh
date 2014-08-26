@@ -79,7 +79,9 @@ pwd(void)
         if (!mypath || !*mypath
                 || (strcpy (curwd, mypath), chdir (curwd)) == -1) {
             strcpy (curwd, "/");
-            chdir (curwd);
+            if (chdir (curwd) < 0) {
+                advise (curwd, "chdir");
+            }
         }
         return curwd;
     }

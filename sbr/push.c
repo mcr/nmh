@@ -40,8 +40,12 @@ push(void)
 
 	    unregister_for_removal(0);
 
-	    freopen ("/dev/null", "r", stdin);
-	    freopen ("/dev/null", "w", stdout);
+	    if (freopen ("/dev/null", "r", stdin) == NULL) {
+		advise ("stdin", "freopen");
+            }
+	    if (freopen ("/dev/null", "w", stdout) == NULL) {
+		advise ("stdout", "freopen");
+            }
 	    break;
 
 	default:
