@@ -54,6 +54,9 @@ a.out.dSYM/
 /sbr/*.a
 /sbr/ctype-checked.*
 /sbr/sigmsg.h
+/sbr/addrparse.tab.c
+/sbr/addrparse.tab.h
+/sbr/addrparse.output
 /test/testdir/
 /uip/ali
 /uip/anno
