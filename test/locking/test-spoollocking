@@ -43,7 +43,7 @@ do
     run_test "inc -notruncate -width 80 -file $testmessage" \
 "Incorporating new mail into inbox...
 
-  11+ 12/17 No Such User       Hello, how are you?<<This is a test; will it wor
+  11+ 12/17 No Such User       Hello, how are you?<<This is a test; will it work
 $testmessage not zero'd"
 
     rmm 11

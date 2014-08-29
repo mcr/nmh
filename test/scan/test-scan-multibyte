@@ -66,11 +66,11 @@ actual="$MH_TEST_DIR/$$.actual"
 
 if test "$width" -eq 3; then
 cat > "$expected" <<EOF
-  11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are look
+  11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are looki
 EOF
 elif test "$width" -eq 2; then
 cat > "$expected" <<EOF
-  11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are looki
+  11  03/02 David ﬆ Hubbins    Spın̈al Tap → Tap into America!<<Things are lookin
 EOF
 else
     echo "Unsupported width for UTF-8 test string: $width"
@@ -105,7 +105,7 @@ if test "$ICONV_ENABLED" -eq 1; then
 EOF
 
     # Don't use run_prog here because it loses the environment setting.
-    LC_ALL=C scan -width 75 last >"$actual"
+    LC_ALL=C scan -width 74 last >"$actual"
     check "$expected" "$actual"
 fi
 
@@ -133,13 +133,13 @@ else
     echo "Unsupported width for U+2019: $width"
 fi
 
-run_prog scan -width 75 last >"$actual"
+run_prog scan -width 74 last >"$actual"
 check "$expected" "$actual"
 
 
 if test "$ICONV_ENABLED" -eq 1; then
   cat >"$expected" <<EOF
-  13  01/13 sender@example.co  <<The Subject: is an encoded single quote, 0x92.
+  13  01/13 sender@example.co  <<The Subject: is an encoded single quote, 0x92. 
 EOF
 
   cat >"${MH_TEST_DIR}/Mail/inbox/13" <<EOF

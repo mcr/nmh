@@ -191,13 +191,13 @@ EOF
 run_test "inc -file ${MH_TEST_DIR}/test.mbox -width 120 -truncate" \
 	"Incorporating new mail into inbox...
 
-  11+ 03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And why not, the man's entitled to it. Cos"
+  11+ 03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And why not, the man's entitled to it. Cost"
 
 check `mhpath +inbox 11` "${MH_TEST_DIR}/test.mbox.2" "keep first"
 rm -f "${MH_TEST_DIR}/test.mbox" "${MH_TEST_DIR}/test.mbox.2"
 
 run_test "scan -width 120 +inbox 11" \
-	"  11+ 03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And why not, the man's entitled to it. Cos"
+	"  11+ 03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And why not, the man's entitled to it. Cost"
 
 # check header field name with ':' character than lands on m_getfld() buffer
 cat >"$MH_TEST_DIR/mess" <<EOF
@@ -346,7 +346,7 @@ run_test "scan -width 80 -file $MH_TEST_DIR/msgbox" \
    8  09/29 Test8              Testing message 8<<This is message number 8 >>
    9  09/29 Test9              Testing message 9<<This is message number 9 >>
   10  09/29 Test10             Testing message 10<<This is message number 10 >>
-  11  03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. An
+  11  03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And
   12  12/18 foo@example.edu    test'
 run_test "inc -width 80 -file $MH_TEST_DIR/msgbox -truncate" \
 'Incorporating new mail into inbox...
@@ -361,7 +361,7 @@ run_test "inc -width 80 -file $MH_TEST_DIR/msgbox -truncate" \
   20  09/29 Test8              Testing message 8<<This is message number 8 >>
   21  09/29 Test9              Testing message 9<<This is message number 9 >>
   22  09/29 Test10             Testing message 10<<This is message number 10 >>
-  23  03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. An
+  23  03/01 Mr Nobody          Who is on first?<<Abbott: Every dollar of it. And
   24  12/18 foo@example.edu    test'
 rm -f  "$MH_TEST_DIR/msgbox"
 

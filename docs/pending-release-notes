@@ -29,3 +29,7 @@ DEPRECATED FEATURES
 ---------
 BUG FIXES
 ---------
+
+- The format scanner no longer subtracts 1 from the width.  This has the
+  effect of no longer counting the trailing newline in the output of
+  scan(1), inc(1), and the other programs that rely on the format scanner.

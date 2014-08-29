@@ -105,7 +105,7 @@ check $expected $actual
 
 # check -width
 cat >"$expected" <<EOF
-Sun, 01 Jul 2012
+Sun, 01 Jul 2012 
 EOF
 
 run_prog $dp -width 17 'Sun Jul  1 2012' > "$actual" 2>&1

@@ -48,8 +48,8 @@ EOF
 
 run_prog burst 11 || exit
 
-run_test 'scan -width 80 11-last' \
-"  11  09/29 Test Burst Messag  Test digest<<------- Message one From: Mister Bu
+run_test 'scan -width 80 11-last' "\
+  11  09/29 Test Burst Messag  Test digest<<------- Message one From: Mister Bur
   12+ 09/28 Mister Burster     Message one<<This is message one >>
   13  09/28 Mister Burster     Message two<<This is message two For real. >>"
 
@@ -99,8 +99,8 @@ EOF
 
 run_prog burst 14 || exit
 
-run_test 'scan -width 80 14-last' \
-"  14  09/29 Test Burst Messag  Test digest<<This is a preamble ------- Message 
+run_test 'scan -width 80 14-last' "\
+  14  09/29 Test Burst Messag  Test digest<<This is a preamble ------- Message o
   15+ 09/28 Mister Burster     Message one<<-This is message one >>
   16  09/28 Mister Burster     Message two<<This is message two For real. >>
   17  09/28 Mister Burster     Message three<<Will this one work? >>"

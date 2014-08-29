@@ -366,7 +366,7 @@ This is message number 1
 EOF
 
 test_dist 1 -noedit -to somebody@example.com -fcc outbox
-run_test 'scan +outbox -width 6' '   1 '
+run_test 'scan +outbox -width 6' '   1  '
 
 cat >"$expected" <<EOF
 From: Test1 <test1@example.com>
@@ -382,7 +382,7 @@ This is message number 1
 EOF
 
 test_dist +inbox 1 -noedit -to somebody@example.com -fcc +outbox
-run_test 'scan +outbox -width 6 2' '   2 '
+run_test 'scan +outbox -width 6 2' '   2  '
 
 #
 # Check that dist encodes headers using RFC-2047 properly

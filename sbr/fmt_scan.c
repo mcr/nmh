@@ -380,15 +380,8 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
     struct mailname *mn;
 
     /*
-     * The newline counts in the display width, for backward
-     * compatibility.  To change that so that the newline doesn't
-     * count, remove the following statement.
-     */
-    --width;
-
-    /*
-     * max is the same as width, but unsigned.  So comparisons
-     * with charstring_chars() won't raise compile warning.
+     * max is the same as width, but unsigned so comparisons
+     * with charstring_chars() won't raise compile warnings.
      */
     max = width;
     savestr = str = NULL;
