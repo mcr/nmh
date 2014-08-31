@@ -54,7 +54,7 @@ static jmp_buf myctx;
 static int bell = 1;
 static int newline = 1;
 static int biff = 0;
-static int width = 0;
+static int width = -1;
 static char *form = NULL;
 static char *format = NULL;
 

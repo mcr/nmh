@@ -171,7 +171,7 @@ int
 main (int argc, char **argv)
 {
     int chgflag = 1, trnflag = 1;
-    int noisy = 1, width = 0;
+    int noisy = 1, width = -1;
     int hghnum = 0, msgnum = 0;
     int sasl = 0;
     int incerr = 0; /* <0 if inc hits an error which means it should not truncate mailspool */

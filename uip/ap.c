@@ -15,7 +15,6 @@
 #define	NADDRS	100
 
 #define	WIDTH	78
-#define	WBUFSIZ	BUFSIZ
 
 #define	FORMAT	"%<{error}%{error}: %{text}%|%(putstr(proper{text}))%>"
 
@@ -48,7 +47,7 @@ int
 main (int argc, char **argv)
 {
     int addrp = 0;
-    int width = 0, status = 0;
+    int width = -1, status = 0;
     char *cp, *form = NULL, *format = NULL, *nfs;
     char buf[BUFSIZ], **argp;
     char **arguments, *addrs[NADDRS];
@@ -109,13 +108,16 @@ main (int argc, char **argv)
     /* get new format string */
     nfs = new_fs (form, format, FORMAT);
 
-    if (width == 0) {
-	if ((width = sc_width ()) < WIDTH / 2)
+    if (width == -1) {
+	if ((width = sc_width ()) < WIDTH / 2) {
+	    /* Default:  width of the terminal, but at least WIDTH/2. */
 	    width = WIDTH / 2;
+	} else if (width == 0) {
+	    /* Unlimited width. */
+	    width = INT_MAX;
+	}
 	width -= 2;
     }
-    if (width > WBUFSIZ)
-	width = WBUFSIZ;
     fmt_compile (nfs, &fmt, 1);
 
     dat[0] = 0;

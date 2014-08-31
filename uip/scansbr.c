@@ -14,8 +14,6 @@
 #include <h/tws.h>
 #include <h/utils.h>
 
-#define MAXSCANL 256		/* longest possible scan line */
-
 /*
  * Buffer size for content part of header fields.  We want this
  * to be large enough so that we don't do a lot of extra FLDPLUS
@@ -68,11 +66,13 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
        way the code is now, with callers initializing *scanl to NULL.
        scanl used to be a global. */
     if (! *scanl) {
-	if (width == 0) {
+	if (width == -1) {
+	    /* Default:  width of the terminal, but at least WIDTH/2. */
 	    if ((width = sc_width ()) < WIDTH/2)
 		width = WIDTH/2;
-	    else if (width > MAXSCANL)
-		width = MAXSCANL;
+	} else if (width == 0) {
+	    /* Unlimited width. */
+	    width = INT_MAX;
 	}
 	dat[3] = slwidth = width;
 	*scanl = charstring_create (width);

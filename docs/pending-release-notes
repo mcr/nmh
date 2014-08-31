@@ -6,6 +6,10 @@ NEW FEATURES
 
 - builds use OpenSSL if available.
 - post now defaults to port 587 on 'smtp' message submission.
+- A value of 0 for the width switch of scan(1), inc(1), ap(1), dp(1),
+  fmttest(1), and mhl(1) now means as many characters as the format
+  engine can produce [Bug #15274].  That amount is limited by internal
+  buffers.
 
 -----------------
 OBSOLETE FEATURES

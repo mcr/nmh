@@ -1,4 +1,4 @@
-.TH FMTTEST %manext1% "August 24, 2014" "%nmhversion%"
+.TH FMTTEST %manext1% "August 31, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -213,11 +213,14 @@ characters with zero width, and extra bytes that are
 part of a multibyte character are not counted against this total.
 Two special values are supported:
 .RI \*(lq max \*(rq,
-which will set the value to the maximum value of an integer, and
+which means as many characters as the format engine can produce
+(limited by internal buffers), and
 .RI \*(lq width \*(rq,
 which will set the
-value to the width of the terminal.  In message mode it defaults to the
-terminal width, otherwise the default is the maximum value of an integer.
+value to the width of the terminal.  In message mode it defaults to
+.RI \*(lq width \*(rq,
+otherwise the default is
+.RI \*(lq max \*(rq.
 .PP
 The
 .B \-width

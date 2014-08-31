@@ -41,7 +41,7 @@ int
 main (int argc, char **argv)
 {
     int clearflag = 0, hdrflag = 0, ontty;
-    int width = 0, revflag = 0;
+    int width = -1, revflag = 0;
     int i, state, msgnum;
     ivector_t seqnum = ivector_create (0);
     int unseen, num_unseen_seq = 0;
