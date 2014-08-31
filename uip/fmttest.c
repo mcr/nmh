@@ -649,7 +649,7 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
 	case BODY:
 	    if (fmt_findcomp("body")) {
 		if ((i = strlen(rbuf)) < outwidth) {
-		    bufsz = outwidth - 1;
+		    bufsz = min (outwidth, (int) sizeof rbuf - i);
 		    state = m_getfld(&gstate, name, rbuf + i,
 				     &bufsz, in);
 		}
