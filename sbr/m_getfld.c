@@ -217,9 +217,9 @@ static char *matchc(int, char *, int, char *);
  * separate messages in a maildrop, such as mbox "From ".
  *
  * Some of the tests in the test suite assume a MSG_INPUT_SIZE
- * of 4096.
+ * of 8192.
  */
-#define MSG_INPUT_SIZE 4096
+#define MSG_INPUT_SIZE NMH_BUFSIZ
 #define MAX_DELIMITER_SIZE 5
 
 struct m_getfld_state {

@@ -592,7 +592,7 @@ process_single_file(FILE *in, struct msgs_array *comps, int *dat, int msgsize,
 		    struct fmt_callbacks *cb)
 {
     int i, state;
-    char name[NAMESZ], rbuf[BUFSIZ];
+    char name[NAMESZ], rbuf[NMH_BUFSIZ];
     m_getfld_state_t gstate = 0;
     struct comp *c;
     int bufsz;
