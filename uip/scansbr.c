@@ -134,7 +134,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	if (used_buf == NULL)
 	    adios (NULL, "unable to allocate component buffer stack");
 	used_buf += ncomps+1; *--used_buf = 0;
-	rlwidth = bodycomp && (width > SBUFSIZ) ? width : SBUFSIZ;
+	rlwidth = bodycomp && (width > SBUFSIZ) ? min (width, BUFSIZ) : SBUFSIZ;
 	for (i = ncomps; i--; )
 	    *nxtbuf++ = mh_xmalloc(rlwidth);
     }
