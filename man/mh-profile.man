@@ -755,7 +755,7 @@ additional user profile (file) to be read by
 .BR mhn ,
 in addition to the mhn.defaults profile.
 .B mhn
-is deprecated, so this support for this variable will
+is deprecated, so support for this variable will
 be removed from a future nmh release.
 .RE
 .PP
