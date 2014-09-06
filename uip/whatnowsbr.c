@@ -321,7 +321,9 @@ WhatNow (int argc, char **argv)
 		writesomecmd(buf, BUFSIZ, "cd", "pwd", argp);
 	    }
 	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
-		fgets(cwd, sizeof (cwd), f);
+		if (fgets(cwd, sizeof (cwd), f) == NULL) {
+		    advise (buf, "fgets");
+		}
 
 		if (strchr(cwd, '\n') != (char *)0)
 			*strchr(cwd, '\n') = '\0';
@@ -691,7 +693,9 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	if (atfile) {
 	    (void) m_unlink (linkpath);
 	    if (link (altpath, linkpath) == NOTOK) {
-		symlink (altpath, linkpath);
+		if (symlink (altpath, linkpath) < 0) {
+		    adios (linkpath, "symlink");
+		}
 		slinked = 1;
 	    } else {
 		slinked = 0;
@@ -709,8 +713,11 @@ editfile (char **ed, char **arg, char *file, int use, struct msgs *mp,
 	    break;
 
 	case OK:
-	    if (cwd)
-		chdir (cwd);
+	    if (cwd) {
+		if (chdir (cwd) < 0) {
+		    advise (cwd, "chdir");
+		}
+	    }
 	    if (altmsg) {
 		if (mp)
 		    m_putenv ("mhfolder", mp->foldpath);

@@ -498,13 +498,19 @@ alert (char *file, int out)
 		} else {
 		    lseek (out, (off_t) 0, SEEK_END);
 		    strncpy (buf, "\nMessage not delivered to anyone.\n", sizeof(buf));
-		    write (out, buf, strlen (buf));
+		    if (write (out, buf, strlen (buf)) < 0) {
+			advise (file, "write");
+		    }
 		    strncpy (buf, "\n------- Unsent Draft\n\n", sizeof(buf));
-		    write (out, buf, strlen (buf));
+		    if (write (out, buf, strlen (buf)) < 0) {
+			advise (file, "write");
+		    }
 		    cpydgst (in, out, file, "temporary file");
 		    close (in);
 		    strncpy (buf, "\n------- End of Unsent Draft\n", sizeof(buf));
-		    write (out, buf, strlen (buf));
+		    if (write (out, buf, strlen (buf)) < 0) {
+			advise (file, "write");
+		    }
 		    if (rename (file, strncpy (buf, m_backup (file), sizeof(buf))) == NOTOK)
 			admonish (buf, "unable to rename %s to", file);
 		}
@@ -597,7 +603,9 @@ anno (int fd, struct stat *st)
 	    /* reset the signal mask */
 	    sigprocmask (SIG_SETMASK, &oset, &set);
 
-	    chdir (cwd);
+	    if (chdir (cwd) < 0) {
+		advise (cwd, "chdir");
+	    }
 	    break;
 
 	default: 		/* no waiting... */

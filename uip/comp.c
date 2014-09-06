@@ -381,7 +381,10 @@ try_it_again:
 	dat[3] = outputlinelen;
 	dat[4] = 0;
 	fmt_scan(fmt, scanl, i, dat, NULL);
-	write(out, charstring_buffer (scanl), charstring_bytes (scanl));
+	if (write(out, charstring_buffer (scanl),
+		  charstring_bytes (scanl)) < 0) {
+	    advise (drft, "write");
+	}
 	charstring_free(scanl);
     } else {
 	cpydata (in, out, form, drft);

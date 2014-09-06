@@ -279,7 +279,9 @@ opnfolds (struct msgs *src_folder, struct st_fold *folders, int nfolders)
     register struct msgs *mp;
 
     for (fp = folders, ep = folders + nfolders; fp < ep; fp++) {
-	chdir (m_maildir (""));
+	if (chdir (m_maildir ("")) < 0) {
+	    advise (m_maildir (""), "chdir");
+	}
 	strncpy (nmaildir, m_maildir (fp->f_name), sizeof(nmaildir));
 
 	/*
@@ -302,7 +304,9 @@ opnfolds (struct msgs *src_folder, struct st_fold *folders, int nfolders)
 	    fp->f_mp = src_folder;
 	}
 
-	chdir (maildir);
+	if (maildir[0] != '\0'  &&  chdir (maildir) < 0) {
+	    advise (maildir, "chdir");
+	}
     }
 }
 

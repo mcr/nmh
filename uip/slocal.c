@@ -279,7 +279,9 @@ main (int argc, char **argv)
 	adios (NULL, "no such local user as %s", user);
 
     if (chdir (pw->pw_dir) == -1)
-	chdir ("/");
+	if (chdir ("/") < 0) {
+	    advise ("/", "chdir");
+	}
     umask (0077);
 
     if (geteuid() == 0) {
@@ -1067,8 +1069,12 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 	    /* child process */
 	    if (fd != 0)
 		dup2 (fd, 0);
-	    freopen ("/dev/null", "w", stdout);
-	    freopen ("/dev/null", "w", stderr);
+	    if (freopen ("/dev/null", "w", stdout) == NULL) {
+		advise ("stdout", "freopen");
+	    }
+	    if (freopen ("/dev/null", "w", stderr) == NULL) {
+		advise ("stderr", "freopen");
+	    }
 	    if (fd != 3)
 		dup2 (fd, 3);
 	    closefds (4);

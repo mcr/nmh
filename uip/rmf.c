@@ -193,7 +193,9 @@ rmf (char *folder)
      */
     rma (folder);
 
-    chdir ("..");
+    if (chdir ("..") < 0) {
+	advise ("..", "chdir");
+    }
     if (others == 0 && remdir (maildir))
 	return OK;
 

@@ -599,7 +599,9 @@ copy_draft (int out, char *digest, char *file, int volume, int issue, int dashst
 
 		strncpy (bp, "\n\n", buflen);
 	    }
-	    write (out, buffer, strlen (buffer));
+	    if (write (out, buffer, strlen (buffer)) < 0) {
+		advise (drft, "write");
+	    }
 
 	    if ((fd = open (msgnam = m_name (msgnum), O_RDONLY)) == NOTOK) {
 		admonish (msgnam, "unable to read message");
@@ -626,7 +628,9 @@ copy_draft (int out, char *digest, char *file, int volume, int issue, int dashst
 	snprintf (buffer, sizeof(buffer), "\n------- End of Forwarded Message%s\n",
 		mp->numsel > 1 ? "s" : "");
     }
-    write (out, buffer, strlen (buffer));
+    if (write (out, buffer, strlen (buffer)) < 0) {
+	advise (drft, "write");
+    }
 
     if (digest) {
 	snprintf (buffer, sizeof(buffer), "End of %s Digest [Volume %d Issue %d]\n",
@@ -636,7 +640,9 @@ copy_draft (int out, char *digest, char *file, int volume, int issue, int dashst
 	    *bp++ = '*';
 	*bp++ = '\n';
 	*bp = 0;
-	write (out, buffer, strlen (buffer));
+	if (write (out, buffer, strlen (buffer)) < 0) {
+	    advise (drft, "write");
+	}
     }
 }
 
@@ -653,11 +659,17 @@ copy_mime_draft (int out)
 
     snprintf (buffer, sizeof(buffer), "#forw [forwarded message%s] +%s",
 	mp->numsel == 1 ? "" : "s", mp->foldpath);
-    write (out, buffer, strlen (buffer));
+    if (write (out, buffer, strlen (buffer)) < 0) {
+	advise (drft, "write");
+    }
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)
 	if (is_selected (mp, msgnum)) {
 	    snprintf (buffer, sizeof(buffer), " %s", m_name (msgnum));
-	    write (out, buffer, strlen (buffer));
+	    if (write (out, buffer, strlen (buffer)) < 0) {
+		advise (drft, "write");
+	    }
 	}
-    write (out, "\n", 1);
+    if (write (out, "\n", 1) < 0) {
+	advise (drft, "write newline");
+    }
 }

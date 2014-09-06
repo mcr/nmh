@@ -469,11 +469,13 @@ replfilter (FILE *in, FILE *out, char *filter, int fmtproc)
 
 	    execvp (mhl, arglist);
 	    errstr = strerror(errno);
-	    write(2, "unable to exec ", 15);
-	    write(2, mhlproc, strlen(mhlproc));
-	    write(2, ": ", 2);
-	    write(2, errstr, strlen(errstr));
-	    write(2, "\n", 1);
+	    if (write(2, "unable to exec ", 15) < 0  ||
+		write(2, mhlproc, strlen(mhlproc)) < 0  ||
+		write(2, ": ", 2) < 0  ||
+		write(2, errstr, strlen(errstr)) < 0  ||
+		write(2, "\n", 1) < 0) {
+		advise ("stderr", "write");
+	    }
 	    _exit (-1);
 
 	default: 

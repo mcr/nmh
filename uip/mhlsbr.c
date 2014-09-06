@@ -973,7 +973,9 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 		    }
 		    fflush (stdout);
 		    buf[0] = 0;
-		    read (fileno (stdout), buf, sizeof(buf));
+		    if (read (fileno (stdout), buf, sizeof(buf)) < 0) {
+			advise ("stdout", "read");
+		    }
 		}
 		if (strchr(buf, '\n')) {
 		    if ((global.c_flags & CLEARSCR))
@@ -1487,7 +1489,9 @@ putch (char ch, long flags)
 		putchar ('\007');
 	    fflush (stdout);
 	    buf[0] = 0;
-	    read (fileno (stdout), buf, sizeof(buf));
+	    if (read (fileno (stdout), buf, sizeof(buf)) < 0) {
+		advise ("stdout", "read");
+	    }
 	    if (strchr(buf, '\n')) {
 		if (global.c_flags & CLEARSCR)
 		    nmh_clear_screen ();
@@ -1719,7 +1723,9 @@ filterbody (struct mcomp *c1, char *buf, int bufsz, int state, FILE *fp,
 
 	while (state == BODY) {
 	    int bufsz2 = bufsz;
-	    write(fdinput[1], buf, strlen(buf));
+	    if (write(fdinput[1], buf, strlen(buf)) < 0) {
+		advise ("pipe output", "write");
+	    }
 	    state = m_getfld (&gstate, name, buf, &bufsz2, fp);
 	}
 

@@ -261,7 +261,9 @@ check_folders(struct node **first, struct node **last,
     b.sequences = sequences;
 
     if (folders == NULL) {
-	chdir(m_maildir(""));
+	if (chdir(m_maildir("")) < 0) {
+	    advise (m_maildir(""), "chdir");
+	}
 	crawl_folders(".", crawl_callback, &b);
     } else {
 	fp = fopen(folders, "r");
@@ -386,7 +388,9 @@ doit(char *cur, char *folders, char *sequences[])
 	    /* TODO: Split enough of scan.c out so that we can call it here. */
 	    command = concat("scan +", node->n_name, " ", sequences_s,
 			     (void *)NULL);
-	    system(command);
+	    if (system(command) == NOTOK) {
+		adios (command, "system");
+	    }
 	    free(command);
         } else {
             if (node->n_field == NULL) {

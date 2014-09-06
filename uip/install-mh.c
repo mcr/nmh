@@ -166,7 +166,9 @@ query:
 	}
     }
 
-    chdir (mypath);
+    if (chdir (mypath) < 0) {
+	advise (mypath, "chdir");
+    }
     if (chdir (pathname) == NOTOK) {
 	cp = concat ("\"", pathname, "\" doesn't exist; Create it? ", NULL);
 	if (autof || gans (cp, anoyes))

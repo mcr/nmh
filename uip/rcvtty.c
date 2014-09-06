@@ -265,12 +265,20 @@ header_fd (void)
     nfs = new_fs (form, format, SCANFMT);
     scan (stdin, 0, 0, nfs, width, 0, 0, NULL, 0L, 0, &scanl);
     scan_finished ();
-    if (newline)
-        write (fd, "\n\r", 2);
-    write (fd, charstring_buffer (scanl), charstring_bytes (scanl));
+    if (newline) {
+	if (write (fd, "\n\r", 2) < 0) {
+	    advise (tfile, "write LF/CR");
+	}
+    }
+    if (write (fd, charstring_buffer (scanl), charstring_bytes (scanl)) < 0) {
+	advise (tfile, "write");
+    }
     charstring_free (scanl);
-    if (bell)
-        write (fd, "\007", 1);
+    if (bell) {
+        if (write (fd, "\007", 1) < 0) {
+	    advise (tfile, "write BEL");
+        }
+    }
 
     return fd;
 }

@@ -487,8 +487,12 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
        int inpipe[2];	  /* for reading from the server */
        int outpipe[2];    /* for sending to the server */
 
-       pipe(inpipe);
-       pipe(outpipe);
+       if (pipe(inpipe) < 0) {
+	   adios ("inpipe", "pipe");
+       }
+       if (pipe(outpipe) < 0) {
+	   adios ("outpipe", "pipe");
+       }
 
        pid=fork();
        if (pid==0) {

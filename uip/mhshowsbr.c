@@ -465,8 +465,11 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	    return NOTOK;
 
 	case OK:
-	    if (cracked)
-		chdir (cracked);
+	    if (cracked) {
+		if (chdir (cracked) < 0) {
+		    advise (cracked, "chdir");
+		}
+	    }
 	    if (!xstdin)
 		dup2 (fd, 0);
 	    close (fd);
@@ -1101,7 +1104,10 @@ iconv_start:
                     status = NOTOK;
                     break;
                 } else {
-                    write (fd, dest_buffer, outbytes_before - outbytes);
+                    if (write (fd, dest_buffer, outbytes_before - outbytes)
+                        < 0) {
+                        advise (dest, "write");
+                    }
                 }
             }
 

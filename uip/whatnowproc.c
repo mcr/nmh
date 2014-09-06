@@ -99,8 +99,11 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
     context_save ();	/* save the context file */
     fflush (stdout);
 
-    if (cwd)
-	chdir (cwd);
+    if (cwd) {
+	if (chdir (cwd) < 0) {
+	    advise (cwd, "chdir");
+	}
+    }
 
     /*
      * If the "whatnowproc" is the nmh command "whatnow",

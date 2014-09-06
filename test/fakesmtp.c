@@ -263,7 +263,9 @@ putsmtp(int socket, char *data)
 	iov[1].iov_base = "\r\n";
 	iov[1].iov_len = 2;
 
-	writev(socket, iov, 2);
+	if (writev(socket, iov, 2) < 0) {
+	    perror ("writev");
+	}
 }
 
 /*
