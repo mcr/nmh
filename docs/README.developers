@@ -111,8 +111,15 @@ sbr/
     file.  These functions are of general use and are called from throughout
     nmh.
 
+SPECS/
+    Contains files such as RPM specs.
+
 test/
     The num unit test suite.
+
+tools/
+    "tools" contains tools, scripts, and supporting files used by the
+    developers while writing, debugging, and testing the code.
 
 uip/
     "uip" stands for "User Interface Programs".  Most nmh commands have a file
@@ -156,6 +163,7 @@ to any new branches that you create:
 
     % git config branch.autosetuprebase always
 
+
 -------------------------------------------------------
 nmh-local functions to use in preference to OS versions
 -------------------------------------------------------
@@ -193,15 +201,20 @@ nmh test suite
 The nmh test suite is run through the Makefile, with "make check"
 or "make distcheck".
 
+In the nmh test suite, nmh programs to be tested should be invoked
+through the run_test or run_prog shell functions defined in
+test/common.sh.
+
 To enable the use of valgrind, where available, set the environment
 variable NMH_VALGRIND to a non-null value.  However, a separate
 environment variable, VALGRIND_ME, triggers the use of valgrind in
 test/inc/test-eom-align because it greatly extends the duration of
 that test.
 
-In the nmh test suite, nmh programs to be tested should be invoked
-through the run_test or run_prog shell functions defined in
-test/common.sh.
+If valgrind complains about "serious error when reading debuginfo"
+from a library, either update or remove the debuginfo package for
+the offending library.
+
 
 -------------
 releasing nmh
