@@ -161,7 +161,7 @@ charstring_last_char_len (const charstring_t s) {
     const char *sp = charstring_buffer (s);
     size_t remaining = charstring_bytes (s);
 
-    (void) mbtowc (NULL, NULL, 0); /* reset shift state */
+    if (mbtowc (NULL, NULL, 0)) {} /* reset shift state */
 
     while (*sp  &&  remaining > 0) {
         wchar_t wide_char;

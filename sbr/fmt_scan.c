@@ -144,7 +144,7 @@ cptrimmed(charstring_t dest, char *str, int wid, char fill, size_t max) {
 
     if ((sp = str)) {
 #ifdef MULTIBYTE_SUPPORT
-	mbtowc(NULL, NULL, 0); /* reset shift state */
+	if (mbtowc(NULL, NULL, 0)) {} /* reset shift state */
 #endif
 	end = strlen(str);
 	while (*sp && remaining > 0 && end > 0) {
@@ -252,7 +252,7 @@ cpstripped (charstring_t dest, size_t max, char *str)
     len = strlen(str);
 
 #ifdef MULTIBYTE_SUPPORT
-    mbtowc(NULL, NULL, 0);  /* Reset shift state */
+    if (mbtowc(NULL, NULL, 0)) {}  /* Reset shift state */
 #endif /* MULTIBYTE_SUPPORT */
 
     /*

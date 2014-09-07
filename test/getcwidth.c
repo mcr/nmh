@@ -114,7 +114,7 @@ getwidth(const char *string)
 	 * at a time.
 	 */
 
-	mbtowc(NULL, NULL, 0);
+	if (mbtowc(NULL, NULL, 0)) {}
 
 	while (charleft > 0) {
 		int clen;
