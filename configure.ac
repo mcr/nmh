@@ -111,22 +111,6 @@ if test -n "$auto_cflags"; then
        CFLAGS="$nmh_saved_cflags"])
     test "$nmh_cv_has_dash_ansi" = "yes"  &&  \
       CFLAGS="${CFLAGS:+$CFLAGS }-ansi -pedantic"
-
-    dnl For Ubuntu gcc 4.8.1, with -O2.  It would be better to fix all these,
-    dnl but until then, suppress the warning.
-    AC_CACHE_CHECK([whether compiler needs -Wno-unused-result],
-                   [nmh_cv_needs_wnur],
-                   [nmh_saved_cflags="$CFLAGS"
-                    CFLAGS="$CFLAGS -Werror -O2"
-                    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <unistd.h>],
-                                        [extern const char *path;
-                                         chdir (path);
-                                         return 0;])],
-                                       [nmh_cv_needs_wnur=no],
-                                       [nmh_cv_needs_wnur=yes])
-                    CFLAGS="$nmh_saved_cflags"])
-    AS_IF([test "$nmh_cv_needs_wnur" = yes],
-          [CFLAGS="${CFLAGS:+$CFLAGS }-Wno-unused-result"])
   else
     dnl Use -v and some other options with SunStudio cc.  lex produces
     dnl code that causes unreachable-statement warnings.  It might be
@@ -153,11 +137,23 @@ if test -n "$auto_cflags"; then
   test "$nmh_cv_has_wextra" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wextra"
 fi
 
+if test "$GCC" = yes; then
+  dnl Do this regardless of auto_cflags value.
+  dnl Enable _FORTIFY_SOURCE checking, which is supported by
+  dnl gcc 4.1 and later, but only when optimization is enabled.
+  dnl It shouldn't hurt with earlier versions because it's a cpp macro.
+  dnl If the user configures with a CFLAGS that contains a -O flag
+  dnl but then removes it a make time, they'll also have to remove
+  dnl -D_FORTIFY_SOURCE from CPPFLAGS because it requires optimization.
+  AS_CASE([$CFLAGS],
+          [-O*|*' -O'*],[CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_FORTIFY_SOURCE=2"])
+fi
+
 dnl FreeBSD needs a bit of magic to bring getline() into scope.
 dnl We do this here rather than in (say) h/mh.h because this macro must
 dnl be defined before <stdio.h> is pulled in.
 AS_IF([test `uname` = FreeBSD],
-	[CPPFLAGS="$CPPFLAGS -D_WITH_GETLINE"])
+	[CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_WITH_GETLINE"])
 
 dnl --------------
 dnl CUSTOMIZE LINK
@@ -331,8 +327,7 @@ dnl before system header files.
 AS_CASE(["$host_os"],
 	[linux*],
 	[# Like DEFS, but doesn't get stomped on by configure when using config.h:
-	  AS_IF([test -z "$CPPFLAGS"],[CPPFLAGS="-D_GNU_SOURCE"],
-                [CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"])])
+	CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_GNU_SOURCE"])
 
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([fcntl.h wchar.h wctype.h sys/param.h sys/time.h sys/stream.h])
