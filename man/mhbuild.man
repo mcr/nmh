@@ -432,7 +432,7 @@ will choose an appropriate Content\-Transfer\-Encoding based on the content
 and the MIME Content\-Type.  However, you can override that in an
 .B mhbuild
 directive by specifying \*(lq*\*(rq and the encoding.  Acceptable encoding
-values are \*(lq8bit\*(rq, \*(lqqp\(*rq (for quoted\-printable), and
+values are \*(lq8bit\*(rq, \*(lqqp\*(rq (for quoted\-printable), and
 \*(lqb64\*(rq (for base64 encoding).  It should be noted that undesired
 results may occur if 8bit or quoted\-printable is selected for binary
 content, due to the translation between Unix line endings and the line
