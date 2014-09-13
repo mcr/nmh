@@ -509,7 +509,6 @@ mhl_draft (int out, char *digest, int volume, int issue,
 	    dup2 (pd[1], 1);
 	    close (pd[1]);
 
-	    i = 1;
 	    app_msgarg(&vec, "-forwall");
 	    app_msgarg(&vec, "-form");
 	    app_msgarg(&vec, filter);

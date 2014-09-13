@@ -436,7 +436,7 @@ local_test: ;
 
 	if (mp->m_nohost)
 	    return 1;
-	if (np->m_host == NULL)
+	if (np->m_host == NULL || mp->m_host == NULL)
 	    continue;
 	if ((len = strlen (cp = np->m_host))
 		< (i = strlen (pp = mp->m_host)))

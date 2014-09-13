@@ -173,6 +173,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 		strcasecmp (name, ENCODING_FIELD) == 0) {
 		if (autobuild) {
 		    fclose(in);
+		    free (ct);
 		    return NULL;
 		} else {
 		    adios (NULL, "draft shouldn't contain %s: field", name);
@@ -398,7 +399,6 @@ finish_field:
 	if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
 	    adios (NULL, "out of memory");
 	*pp = part;
-	pp = &part->mp_next;
 	part->mp_part = p;
     }
 
@@ -780,7 +780,6 @@ use_forw:
 		adios (NULL, "out of memory");
 	    init_decoded_content(ct, infilename);
 	    *ctp = ct;
-	    ci = &ct->c_ctinfo;
 	    if (get_ctinfo (buffer, ct, 0) == NOTOK)
 		done (1);
 	    ct->c_type = CT_MESSAGE;

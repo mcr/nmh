@@ -243,6 +243,7 @@ parse (void)
 	    if ((o->n_R_child = parse ()))
 		return o;
 	    padvise (NULL, "missing disjunctive");
+	    free (o);
 	    return NULL;
 
 header: ;
@@ -263,6 +264,7 @@ nexp1 (void)
 
     if (*cp != '-') {
 	padvise (NULL, "%s unexpected", cp);
+	free (n);
 	return NULL;
     }
 
@@ -272,10 +274,12 @@ nexp1 (void)
 	case AMBIGSW: 
 	    ambigsw (cp, parswit);
 	    talked++;
+	    free (n);
 	    return NULL;
 	case UNKWNSW: 
 	    fprintf (stderr, "-%s unknown\n", cp);
 	    talked++;
+	    free (n);
 	    return NULL;
 
 	case PRAND: 
@@ -284,6 +288,7 @@ nexp1 (void)
 	    if ((o->n_R_child = nexp1 ()))
 		return o;
 	    padvise (NULL, "missing conjunctive");
+	    free (o);
 	    return NULL;
 
 header: ;
@@ -325,6 +330,7 @@ nexp2 (void)
 	    if ((n->n_L_child = nexp3 ()))
 		return n;
 	    padvise (NULL, "missing negation");
+	    free (n);
 	    return NULL;
 
 header: ;
@@ -406,12 +412,14 @@ nexp3 (void)
 	    n->n_header = 0;
 	    if (!(cp = nxtarg ())) {/* allow -xyz arguments */
 		padvise (NULL, "missing argument to %s", argp[-2]);
+		free (n);
 		return NULL;
 	    }
 	    dp = cp;
     pattern: ;
 	    if (!gcompile (n, dp)) {
 		padvise (NULL, "pattern error in %s %s", argp[-2], cp);
+		free (n);
 		return NULL;
 	    }
 	    n->n_patbuf = getcpy (dp);
@@ -438,6 +446,7 @@ nexp3 (void)
 	    n->n_datef = datesw;
 	    if (!tcompile (cp, &n->n_tws, n->n_after = i == PRAFTR)) {
 		padvise (NULL, "unable to parse %s %s", argp[-2], cp);
+		free (n);
 		return NULL;
 	    }
 	    return n;

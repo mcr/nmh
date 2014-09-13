@@ -398,6 +398,7 @@ get_folder_info_body (char *fold, char *msg, boolean *crawl_children)
 	 */
 	if (!(mp = folder_read (fold, 1))) {
 	    admonish (NULL, "unable to read folder %s", fold);
+	    *crawl_children = FALSE;
 	    return 0;
 	}
 
@@ -406,8 +407,10 @@ get_folder_info_body (char *fold, char *msg, boolean *crawl_children)
 	    retval = 0;
 
 	if (fpack) {
-	    if (folder_pack (&mp, fverb) == -1)
+	    if (folder_pack (&mp, fverb) == -1) {
+		*crawl_children = FALSE; /* to please clang static analyzer */
 		done (1);
+	    }
 	    seq_save (mp);		/* synchronize the sequences */
 	    context_save ();	/* save the context file     */
 	}

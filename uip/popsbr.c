@@ -899,7 +899,7 @@ sasl_getline (char *s, int n, FILE *iop)
     *p = 0;
     if (*--p == '\n')
 	*p = 0;
-    if (*--p == '\r')
+    if (p > s  &&  *--p == '\r')
 	*p = 0;
 
     return OK;

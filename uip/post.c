@@ -714,7 +714,7 @@ putfmt (char *name, char *str, FILE *out)
     if (hdr->flags & HFCC) {
 	if ((cp = strrchr(str, '\n')))
 	    *cp = 0;
-	for (cp = pp = str; (cp = strchr(pp, ',')); pp = cp) {
+	for (pp = str; (cp = strchr(pp, ',')); pp = cp) {
 	    *cp++ = 0;
 	    insert_fcc (hdr, pp);
 	}

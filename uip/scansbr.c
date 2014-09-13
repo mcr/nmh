@@ -220,7 +220,6 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 		break;
 
 	    case BODY: 
-		compnum = -1;
 		/*
 		 * A slight hack ... if we have less than rlwidth characters
 		 * in the buffer, call m_getfld again.

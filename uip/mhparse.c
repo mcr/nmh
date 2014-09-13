@@ -2341,6 +2341,7 @@ openExternal (CT ct, CT cb, CE ce, char **file, int *fd)
 	}
     }
 
+    *fd = fileno (ce->ce_fp);
     return OK;
 
 ready_already:

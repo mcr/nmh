@@ -52,8 +52,8 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/folder/test-create test/folder/test-packf \
 	test/folder/test-recurse test/folder/test-sortm \
 	test/folder/test-total \
-	test/format/test-curses \
-	test/format/test-dp test/format/test-fmtdump \
+	test/format/test-curses test/format/test-dp \
+	test/format/test-fmtdump test/format/test-functions \
 	test/format/test-localmbox test/format/test-myname \
 	test/format/test-myhost test/format/test-mymbox \
 	test/format/test-nullstr \

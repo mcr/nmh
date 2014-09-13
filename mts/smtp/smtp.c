@@ -1223,7 +1223,7 @@ sm_wstream (char *buffer, int len)
 	return (ferror (sm_wfp) ? sm_werror () : OK);
     }
 
-    for (bp = buffer; len > 0; bp++, len--) {
+    for (bp = buffer; bp && len > 0; bp++, len--) {
 	switch (*bp) {
 	    case '\n': 
 		sm_nl = TRUE;
@@ -1467,7 +1467,7 @@ smhear (void)
     int i, code, cont, bc = 0, rc, more;
     unsigned char *bp;
     char *rp;
-    char **ehlo = NULL, buffer[BUFSIZ];
+    char **ehlo = EHLOkeys, buffer[BUFSIZ];
 
     if (doingEHLO) {
 	static int at_least_once = 0;

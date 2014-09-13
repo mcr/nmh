@@ -969,9 +969,9 @@ pop_pack (char *s)
     char buffer[BUFSIZ];
 
     snprintf (buffer, sizeof(buffer), "%s\n", s);
-    for (j = 0; (j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
+    for ( ; (j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
 	continue;
-    for (j = 0; (j = stringdex (mmdlm2, buffer)) >= 0; buffer[j]++)
+    for ( ; (j = stringdex (mmdlm2, buffer)) >= 0; buffer[j]++)
 	continue;
     fputs (buffer, pf);
     size += strlen (buffer) + 1;

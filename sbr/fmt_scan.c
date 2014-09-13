@@ -499,6 +499,9 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		if (val < scale) {
 		    snprintf(buffer, sizeof(buffer), "%u", val);
 		} else {
+		    /* To prevent divide by 0, found by clang static
+		       analyzer. */
+		    if (scale == 0) { scale = 1; }
 
 		    /* find correct scale for size (Kilo/Mega/Giga/Tera) */
 		    for (unitcp = "KMGT"; val > (scale * scale); val /= scale) {
@@ -821,6 +824,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		default:
 		    value = -1; break;
 	    }
+	    break;
 	case FT_LV_ZONEF:
 	    if ((fmt->f_comp->c_tws->tw_flags & TW_SZONE) == TW_SZEXP)
 		    value = 1;
@@ -988,7 +992,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 
 	    lp = str;
 	    wid = value;
-	    len = strlen (str);
+	    len = str ? strlen (str) : 0;
 	    sp = fmt->f_text;
 	    indent = strlen (sp);
 	    wid -= indent;

@@ -117,7 +117,6 @@ annolist(char *file, char *comp, char *text, int number)
 	for (n = 0, cp = field; (c = getc(fp)) != EOF; *cp++ = c) {
 	    if (c == '\n' && (c = getc(fp)) != ' ' && c != '\t') {
 		(void)ungetc(c, fp);
-		c = '\n';
 		break;
 	    }
 

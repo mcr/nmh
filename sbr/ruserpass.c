@@ -152,7 +152,7 @@ ruserpass(char *host, char **aname, char **apass)
 	    advise ("tmp", "fgets");
 	}
 	tmp[strlen(tmp) - 1] = '\0';
-	if (*tmp != '\0') {
+	if (*tmp != '\0' || myname == NULL) {
 	    myname = tmp;
 	}
 

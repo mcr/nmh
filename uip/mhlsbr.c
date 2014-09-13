@@ -400,7 +400,8 @@ mhl (int argc, char **argv)
 		case SLEEPSW:
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    sleepsw = atoi (cp);/* ZERO ok! */
+		    else
+			sleepsw = atoi (cp);/* ZERO ok! */
 		    continue;
 
 		case PROGSW:
@@ -422,13 +423,13 @@ mhl (int argc, char **argv)
 		case LENSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    if ((length = atoi (cp)) < 1)
+		    else if ((length = atoi (cp)) < 1)
 			adios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 		case WIDTHSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    if ((width = atoi (cp)) < 1)
+		    else if ((width = atoi (cp)) < 1)
 			adios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 
@@ -439,13 +440,13 @@ mhl (int argc, char **argv)
 		case ISSUESW:
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    if ((issue = atoi (cp)) < 1)
+		    else if ((issue = atoi (cp)) < 1)
 			adios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 		case VOLUMSW:
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    if ((volume = atoi (cp)) < 1)
+		    else if ((volume = atoi (cp)) < 1)
 			adios (NULL, "bad argument %s %s", argp[-2], cp);
 		    continue;
 
@@ -591,7 +592,7 @@ mhl_format (char *file, int length, int width)
 	    *cp = 0;
 
 	if (*bp == ':') {
-	    c1 = add_queue (&fmthd, &fmttl, NULL, bp + 1, CLEARTEXT);
+	    (void) add_queue (&fmthd, &fmttl, NULL, bp + 1, CLEARTEXT);
 	    continue;
 	}
 
@@ -1182,15 +1183,16 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
     while ((cp = getname (ap))) {
 	if ((p = (struct pqpair *) calloc ((size_t) 1, sizeof(*p))) == NULL)
 	    adios (NULL, "unable to allocate pqpair memory");
-
-	if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
-	    p->pq_text = getcpy (cp);
-	    p->pq_error = getcpy (error);
-	} else {
-	    p->pq_text = getcpy (mp->m_text);
-	    mnfree (mp);
+	else {
+	    if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
+		p->pq_text = getcpy (cp);
+		p->pq_error = getcpy (error);
+	    } else {
+		p->pq_text = getcpy (mp->m_text);
+		mnfree (mp);
+	    }
+	    q = (q->pq_next = p);
 	}
-	q = (q->pq_next = p);
     }
 
     for (p = pq.pq_next; p; p = q) {
@@ -1237,19 +1239,20 @@ add_queue (struct mcomp **head, struct mcomp **tail, char *name, char *text, int
 
     if ((c1 = (struct mcomp *) calloc ((size_t) 1, sizeof(*c1))) == NULL)
 	adios (NULL, "unable to allocate comp memory");
-
-    c1->c_flags = flags & ~INIT;
-    if ((c1->c_name = name ? getcpy (name) : NULL))
-	c1->c_flags |= mcomp_flags (c1->c_name);
-    c1->c_text = text ? getcpy (text) : NULL;
-    if (flags & INIT) {
-	if (global.c_ovtxt)
-	    c1->c_ovtxt = getcpy (global.c_ovtxt);
-	c1->c_offset = global.c_offset;
-	c1->c_ovoff = global. c_ovoff;
-	c1->c_width = c1->c_length = 0;
-	c1->c_cwidth = global.c_cwidth;
-	c1->c_flags |= global.c_flags & GFLAGS;
+    else {
+	c1->c_flags = flags & ~INIT;
+	if ((c1->c_name = name ? getcpy (name) : NULL))
+	    c1->c_flags |= mcomp_flags (c1->c_name);
+	c1->c_text = text ? getcpy (text) : NULL;
+	if (flags & INIT) {
+	    if (global.c_ovtxt)
+		c1->c_ovtxt = getcpy (global.c_ovtxt);
+	    c1->c_offset = global.c_offset;
+	    c1->c_ovoff = global. c_ovoff;
+	    c1->c_width = c1->c_length = 0;
+	    c1->c_cwidth = global.c_cwidth;
+	    c1->c_flags |= global.c_flags & GFLAGS;
+	}
     }
     if (*head == NULL)
 	*head = c1;

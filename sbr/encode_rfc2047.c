@@ -281,16 +281,22 @@ field_encode_quoted(const char *name, char **value, const char *charset,
 	     * allow for the encoded output.
 	     */
 	    if (column + (utf8len(p) * 3) > ENCODELINELIMIT - 2) {
-	    	newline = 1;
+		newline = 1;
 	    }
 	}
     }
 
+    if (q == NULL) {
+	/* This should never happen, but just in case.  Found by
+	   clang static analyzer. */
+	admonish (NULL, "null output encoding for %s", *value);
+	return 1;
+    }
     *q++ = '?';
     *q++ = '=';
 
     if (prefixlen)
-    	*q++ = '\n';
+	*q++ = '\n';
 
     *q = '\0';
 

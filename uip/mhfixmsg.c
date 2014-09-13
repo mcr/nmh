@@ -484,9 +484,11 @@ fix_boundary (CT *ct, int *message_mods) {
                 if ((fixed = m_mktemp2 (NULL, invo_name, NULL, &(*ct)->c_fp))) {
                     if (replace_boundary (*ct, fixed, part_boundary) == OK) {
                         char *filename = add ((*ct)->c_file, NULL);
+                        CT fixed_ct;
 
                         free_content (*ct);
-                        if ((*ct = parse_mime (fixed))) {
+                        if ((fixed_ct = parse_mime (fixed))) {
+                            *ct = fixed_ct;
                             (*ct)->c_unlink = 1;
 
                             ++*message_mods;
@@ -494,6 +496,9 @@ fix_boundary (CT *ct, int *message_mods) {
                                 report (NULL, NULL, filename,
                                         "fix multipart boundary");
                             }
+                        } else {
+                            advise (NULL, "unable to parse fixed part");
+                            status = NOTOK;
                         }
                         free (filename);
                     } else {

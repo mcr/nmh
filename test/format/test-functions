@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# Test of various (well, start with one) function escapes.
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
+
+# check sday when day of week is specified
+echo 1 >"$expected"
+fmttest -raw -format '%(sday{text})' 'Fri Sep 12 20:02 2014' >"$actual"
+check "$expected" "$actual"
+
+# check sday when day of week is not specified
+echo 0 >"$expected"
+fmttest -raw -format '%(sday{text})' 'Sep 12 20:02 2014' >"$actual"
+check "$expected" "$actual"
+
+
+exit $failed

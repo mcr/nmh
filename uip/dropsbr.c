@@ -241,9 +241,9 @@ mbx_write(char *mailbox, int md, FILE *fp, int id, long last,
     fseek (fp, pos, SEEK_SET);
     while (fgets (buffer, sizeof(buffer), fp) && (pos < stop)) {
 	i = strlen (buffer);
-	for (j = 0; (j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
+	for ( ; (j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
 	    continue;
-	for (j = 0; (j = stringdex (mmdlm2, buffer)) >= 0; buffer[j]++)
+	for ( ; (j = stringdex (mmdlm2, buffer)) >= 0; buffer[j]++)
 	    continue;
 	if (write (md, buffer, i) != i)
 	    return NOTOK;
@@ -304,13 +304,9 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
                    termination. */
                 buffer[i] = '\0';
 
-		for (j = 0;
-			(j = stringdex (mmdlm1, buffer)) >= 0;
-			buffer[j]++)
+		for ( ;	(j = stringdex (mmdlm1, buffer)) >= 0; buffer[j]++)
 		    continue;
-		for (j = 0;
-			(j = stringdex (mmdlm2, buffer)) >= 0;
-			buffer[j]++)
+		for ( ;	(j = stringdex (mmdlm2, buffer)) >= 0; buffer[j]++)
 		    continue;
 		if (write (md, buffer, i) != i)
 		    return NOTOK;
