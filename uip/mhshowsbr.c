@@ -424,7 +424,9 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	}
 
 	while ((cc = read(fd, readbuf, sizeof(readbuf))) > 0) {
-	    fwrite(readbuf, sizeof(char), cc, stdout);
+	    if ((ssize_t) fwrite(readbuf, sizeof(char), cc, stdout) < cc) {
+		advise ("putline", "fwrite");
+	    }
 	    lastchar = readbuf[cc - 1];
 	}
 

@@ -936,7 +936,9 @@ putline (char *s, FILE *iop)
 	    return NOTOK;
 	}
 
-	fwrite(buf, buflen, 1, iop);
+	if (fwrite(buf, buflen, 1, iop) < 1) {
+	    advise ("putline", "fwrite");
+	}
     }
 #endif /* CYRUS_SASL */
 

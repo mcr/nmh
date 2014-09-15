@@ -2274,7 +2274,9 @@ open7Bit (CT ct, char **file)
 		cc = len;
 	    len -= cc;
 
-	    fwrite (buffer, sizeof(*buffer), cc, ce->ce_fp);
+	    if ((int) fwrite (buffer, sizeof(*buffer), cc, ce->ce_fp) < cc) {
+		advise ("open7Bit", "fwrite");
+	    }
 	    if (ferror (ce->ce_fp)) {
 		content_error (ce->ce_file, ct, "error writing to");
 		goto clean_up;
@@ -2409,7 +2411,9 @@ openFile (CT ct, char **file)
 
 	    while ((cc = fread (buffer, sizeof(*buffer), sizeof(buffer), gp))
 		       > 0)
-		fwrite (buffer, sizeof(*buffer), cc, fp);
+		if ((int) fwrite (buffer, sizeof(*buffer), cc, fp) < cc) {
+		    advise ("openFile", "fwrite");
+		}
 	    fflush (fp);
 
 	    if (ferror (gp)) {
@@ -2618,7 +2622,9 @@ openFTP (CT ct, char **file)
 
 		while ((cc= fread (buffer, sizeof(*buffer), sizeof(buffer), gp))
 		           > 0)
-		    fwrite (buffer, sizeof(*buffer), cc, fp);
+		    if ((int) fwrite (buffer, sizeof(*buffer), cc, fp) < cc) {
+			advise ("openFTP", "fwrite");
+		    }
 		fflush (fp);
 
 		if (ferror (gp)) {
@@ -2878,7 +2884,9 @@ openURL (CT ct, char **file)
 
 		while ((cc = fread(buffer, sizeof(*buffer),
 				   sizeof(buffer), gp)) > 0)
-		    fwrite(buffer, sizeof(*buffer), cc, fp);
+		    if ((int) fwrite(buffer, sizeof(*buffer), cc, fp) < cc) {
+			advise ("openURL", "fwrite");
+		    }
 
 		fflush(fp);
 

@@ -83,7 +83,10 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
 		outbuf[2] = '=';
 	}
 
-	fwrite (outbuf, sizeof(*outbuf), sizeof(outbuf), out);
+	if (fwrite (outbuf, sizeof(*outbuf), sizeof(outbuf), out) <
+            sizeof outbuf) {
+	    advise ("writeBase64aux", "fwrite");
+	}
 
 	if (cc < sizeof(inbuf)) {
 	    putc ('\n', out);

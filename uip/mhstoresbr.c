@@ -783,7 +783,9 @@ losing:
 		    break;
 
 		default:
-		    fwrite (buffer, sizeof(*buffer), cc, fp);
+		    if ((int) fwrite (buffer, sizeof(*buffer), cc, fp) < cc) {
+			advise ("output_content_file", "fwrite");
+		    }
 		    continue;
 	    }
 	    break;

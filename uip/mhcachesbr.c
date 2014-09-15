@@ -136,7 +136,9 @@ cache_content (CT ct)
 
 	    while ((cc = fread (buffer, sizeof(*buffer), sizeof(buffer), gp))
 		       > 0)
-		fwrite (buffer, sizeof(*buffer), cc, fp);
+		if ((int) fwrite (buffer, sizeof(*buffer), cc, fp) < cc) {
+		    advise ("cache_content", "fwrite");
+		}
 	    fflush (fp);
 
 	    if (ferror (gp)) {

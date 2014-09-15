@@ -594,7 +594,9 @@ go_to_it:
 		fseek (pf, 0L, SEEK_CUR);
 		pos = ftell (pf);
 		size = 0;
-		fwrite (mmdlm1, 1, strlen (mmdlm1), pf);
+		if (fwrite (mmdlm1, 1, strlen (mmdlm1), pf) < strlen (mmdlm1)) {
+		    advise (mmdlm1, "fwrite");
+		}
 		start = ftell (pf);
 
 		if (pop_retr (i, pop_pack) == NOTOK)
@@ -649,7 +651,9 @@ go_to_it:
 
 	    if (packfile) {
 		fseek (pf, stop, SEEK_SET);
-		fwrite (mmdlm2, 1, strlen (mmdlm2), pf);
+		if (fwrite (mmdlm2, 1, strlen (mmdlm2), pf) < strlen (mmdlm1)) {
+		    advise (mmdlm2, "fwrite");
+		}
 		if (fflush (pf) || ferror (pf)) {
 		    int e = errno;
 		    pop_quit ();

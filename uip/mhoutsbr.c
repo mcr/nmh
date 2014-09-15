@@ -317,7 +317,9 @@ write8Bit (CT ct, FILE *out)
     c = '\n';
     while ((inbytes = fread (buffer, 1, sizeof buffer, ce->ce_fp)) > 0) {
         c = buffer[inbytes - 1];
-        fwrite (buffer, 1, inbytes, out);
+        if (fwrite (buffer, 1, inbytes, out) < inbytes) {
+            advise ("write8Bit", "fwrite");
+        }
     }
     if (c != '\n')
 	putc ('\n', out);
