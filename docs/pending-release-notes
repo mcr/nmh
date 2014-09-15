@@ -10,6 +10,8 @@ NEW FEATURES
   fmttest(1), and mhl(1) now means as many characters as the format
   engine can produce [Bug #15274].  That amount is limited by internal
   buffers.
+- If a component has trailing whitespace, e.g., body:component="> ",
+  mhl now trims that whitespace off when filtering blank text lines.
 
 -----------------
 OBSOLETE FEATURES

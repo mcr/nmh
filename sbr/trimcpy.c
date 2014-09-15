@@ -72,3 +72,25 @@ cpytrim (const char *sp) {
 
     return dp;
 }
+
+
+/*
+ * rtrim() -- modify the argument to:
+ *         -- strip trailing whitespace
+ *
+ * This code is Copyright (c) 2014, by the authors of nmh.  See the
+ * COPYRIGHT file in the root directory of the nmh distribution for
+ * complete copyright information.
+ */
+char *
+rtrim (char *sp) {
+    char *cp;
+
+    /* start at the end and zap trailing whitespace */
+    for (cp = sp + strlen (sp) - 1;
+         cp >= sp  &&  isspace ((unsigned char) *cp);
+         --cp) { continue; }
+    *++cp = '\0';
+
+    return sp;
+}

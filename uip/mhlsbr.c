@@ -1293,6 +1293,12 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 {
     int count, cchdr;
     char *cp;
+    /*
+     * Create a copy of c1->c_text with trailing whitespace
+     * trimmed, for use with blank lines.
+     */
+    char *trimmed_prefix =
+	rtrim (add (c1->c_text ? c1->c_text : c1->c_name, NULL));
 
     cchdr = 0;
     lm = 0;
@@ -1388,15 +1394,25 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     while ((cp = oneline (c2->c_text, c1->c_flags))) {
 	lm = count;
 	if (flag == BODYCOMP
-		&& !(c1->c_flags & NOCOMPONENT))
-	    putstr (c1->c_text ? c1->c_text : c1->c_name, c1->c_flags);
-	if (*cp)
+		&& !(c1->c_flags & NOCOMPONENT)) {
+	    /* Output component, trimming trailing whitespace if there
+	       is no text on the line. */
+	    if (*cp) {
+		putstr (c1->c_text ? c1->c_text : c1->c_name, c1->c_flags);
+	    } else {
+		putstr (trimmed_prefix, c1->c_flags);
+	    }
+	}
+	if (*cp) {
 	    putstr (cp, c1->c_flags);
+        }
 	if (term == '\n')
 	    putstr ("\n", c1->c_flags);
     }
     if (flag == BODYCOMP && term == '\n')
 	c1->c_flags &= ~HDROUTPUT;		/* Buffer ended on a newline */
+
+    free (trimmed_prefix);
 }
 
 
