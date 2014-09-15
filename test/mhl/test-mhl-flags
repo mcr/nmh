@@ -30,7 +30,8 @@ And another trailing space:
 EOF
 
 
-# check that blank lines don't end with whitepace
+# check nortrim (default), and that trailing whitespace in a
+# component is trimmed when filtering blank lines
 cat >"$expected" <<EOF
 > There are two blank lines below.  And there is a trailing space: 
 > And another trailing space: 
@@ -40,6 +41,22 @@ EOF
 
 cat >"$MH_TEST_DIR/test.format" <<EOF
 body:component="> ",overflowtext=,overflowoffset=0
+EOF
+
+"$mhl" -nomoreproc -form "$MH_TEST_DIR/test.format" `mhpath last` >"$actual"
+check "$expected" "$actual"
+
+
+# check rtrim
+cat >"$expected" <<EOF
+> There are two blank lines below.  And there is a trailing space:
+> And another trailing space:
+>
+>
+EOF
+
+cat >"$MH_TEST_DIR/test.format" <<EOF
+body:component="> ",overflowtext=,overflowoffset=0,rtrim
 EOF
 
 "$mhl" -nomoreproc -form "$MH_TEST_DIR/test.format" `mhpath last` >"$actual"

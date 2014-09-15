@@ -12,6 +12,9 @@ NEW FEATURES
   buffers.
 - If a component has trailing whitespace, e.g., body:component="> ",
   mhl now trims that whitespace off when filtering blank text lines.
+- An "rtrim" flag has been added to mhl to remove any trailing
+  whitespace from filtered text lines.  A corresponding "nortrim" flag
+  has also been added.
 
 -----------------
 OBSOLETE FEATURES

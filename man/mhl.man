@@ -236,6 +236,8 @@ nocenter	flag	don't center
 leftadjust	flag	strip off leading whitespace on each
 		line of text
 noleftadjust	flag	don't leftadjust
+rtrim           flag    trim whitespace at end of text lines
+nortrim         flag    retain whitespace at end of text lines (default)
 compress	flag	change newlines in text to spaces
 nocompress	flag	don't compress
 wrap	flag	Wrap lines that exceed width (default)

@@ -88,11 +88,12 @@ DEFINE_SWITCH_ARRAY(MHL, mhlswitches);
 #define	DATEFMT     0x000800	/* contains dates                    */
 #define	FORMAT      0x001000	/* parse address/date/RFC-2047 field */
 #define	INIT        0x002000	/* initialize component              */
+#define RTRIM       0x004000	/* trim trailing whitespace          */
 #define	SPLIT       0x010000	/* split headers (don't concatenate) */
 #define	NONEWLINE   0x020000	/* don't write trailing newline      */
 #define NOWRAP      0x040000	/* Don't wrap lines ever             */
 #define FMTFILTER   0x080000	/* Filter through format filter      */
-#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER"
+#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017RTRIM\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER"
 #define	GFLAGS	(NOCOMPONENT | UPPERCASE | CENTER | LEFTADJUST | COMPRESS | SPLIT | NOWRAP)
 
 /*
@@ -221,6 +222,8 @@ static struct triple triples[] = {
     { "nocompress",    0,           COMPRESS },
     { "split",         SPLIT,       0 },
     { "nosplit",       0,           SPLIT },
+    { "rtrim",         RTRIM,       0 },
+    { "nortrim",       0,           RTRIM },
     { "addrfield",     ADDRFMT,     DATEFMT },
     { "bell",          BELL,        0 },
     { "nobell",        0,           BELL },
@@ -1314,7 +1317,8 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     onelp = NULL;
 
     if (c1->c_flags & CLEARTEXT) {
-	putstr (c1->c_text, c1->c_flags);
+	putstr (c1->c_flags & RTRIM ? rtrim (c1->c_text) : c1->c_text,
+		c1->c_flags);
 	putstr ("\n", c1->c_flags);
 	return;
     }
@@ -1388,7 +1392,8 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     count += c1->c_offset;
 
     if ((cp = oneline (c2->c_text, c1->c_flags)))
-       putstr(cp, c1->c_flags);
+	/* Output line, trimming trailing whitespace if requested. */
+	putstr (c1->c_flags & RTRIM ? rtrim (cp) : cp, c1->c_flags);
     if (term == '\n')
 	putstr ("\n", c1->c_flags);
     while ((cp = oneline (c2->c_text, c1->c_flags))) {
@@ -1404,7 +1409,8 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	    }
 	}
 	if (*cp) {
-	    putstr (cp, c1->c_flags);
+	    /* Output line, trimming trailing whitespace if requested. */
+	    putstr (c1->c_flags & RTRIM ? rtrim (cp) : cp, c1->c_flags);
         }
 	if (term == '\n')
 	    putstr ("\n", c1->c_flags);
