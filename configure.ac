@@ -152,8 +152,15 @@ fi
 dnl FreeBSD needs a bit of magic to bring getline() into scope.
 dnl We do this here rather than in (say) h/mh.h because this macro must
 dnl be defined before <stdio.h> is pulled in.
+dnl
+dnl And while we're here, add the ports tree to the cpp and ld search
+dnl paths.
 AS_IF([test `uname` = FreeBSD],
-	[CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_WITH_GETLINE"])
+	[CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_WITH_GETLINE"
+	 nmh_cv_freebsd_portsdir=`echo '.include <bsd.port.mk>' | make -f /dev/stdin -V PREFIX`
+	 CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-I$nmh_cv_freebsd_portsdir/include"
+	 LDFLAGS="${LDFLAGS:+$LDFLAGS }-L$nmh_cv_freebsd_portsdir/lib"
+])
 
 dnl --------------
 dnl CUSTOMIZE LINK
