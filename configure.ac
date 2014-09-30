@@ -153,13 +153,18 @@ dnl FreeBSD needs a bit of magic to bring getline() into scope.
 dnl We do this here rather than in (say) h/mh.h because this macro must
 dnl be defined before <stdio.h> is pulled in.
 dnl
-dnl And while we're here, add the ports tree to the cpp and ld search
-dnl paths.
+dnl And while we're here, add the packages tree to the cpp and ld search
+dnl paths.  Note that FreeBSD's pkg(8) seems to be hardwired to use /usr/local.
+dnl If /usr/ports is installed, we use its idea of where things are installed,
+dnl otherwise we assume /usr/local.
+
 AS_IF([test `uname` = FreeBSD],
 	[CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_WITH_GETLINE"
-	 nmh_cv_freebsd_portsdir=`echo '.include <bsd.port.mk>' | make -f /dev/stdin -V PREFIX`
-	 CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-I$nmh_cv_freebsd_portsdir/include"
-	 LDFLAGS="${LDFLAGS:+$LDFLAGS }-L$nmh_cv_freebsd_portsdir/lib"
+	 nmh_cv_freebsd_localbase=`echo '.include <bsd.port.mk>' \
+		| make -k -f /dev/stdin -V LOCALBASE 2>/dev/null | sed 1q`
+	 test -z "$nmh_cv_freebsd_localbase" && nmh_cv_freebsd_localbase=/usr/local
+	 CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-I$nmh_cv_freebsd_localbase/include"
+	 LDFLAGS="${LDFLAGS:+$LDFLAGS }-L$nmh_cv_freebsd_localbase/lib"
 ])
 
 dnl --------------
