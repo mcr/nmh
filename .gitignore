@@ -1,6 +1,9 @@
 # Not removed by any Makefile target:
 .DS_Store
+/atags
 /docs/doxygen/
+/etags
+/tags
 
 # Removed by superclean:
 /ChangeLog
