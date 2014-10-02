@@ -1,0 +1,9 @@
+# guide file for acme(1)
+
+make clean	make ctags 'CTAGS=atags'
+sh autogen.sh
+./configure  '--prefix=/usr/local'
+
+tags		grep -rn    .
+
+git diff	git status	git pull
