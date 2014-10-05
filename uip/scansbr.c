@@ -75,7 +75,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	    width = INT_MAX;
 	}
 	dat[3] = slwidth = width;
-	*scanl = charstring_create (width);
+	*scanl = charstring_create (width < NMH_BUFSIZ ? width : NMH_BUFSIZ);
 	if (outnum)
 	    umask(~m_gmprot());
 

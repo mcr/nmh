@@ -112,11 +112,11 @@ main (int argc, char **argv)
 	if ((width = sc_width ()) < WIDTH / 2) {
 	    /* Default:  width of the terminal, but at least WIDTH/2. */
 	    width = WIDTH / 2;
-	} else if (width == 0) {
-	    /* Unlimited width. */
-	    width = INT_MAX;
 	}
 	width -= 2;
+    } else if (width == 0) {
+	/* Unlimited width.  */
+	width = INT_MAX;
     }
     fmt_compile (nfs, &fmt, 1);
 
@@ -169,19 +169,20 @@ process (char *arg, int length)
     }
 
     for (p = pq.pq_next; p; p = q) {
-	charstring_t scanl = charstring_create (length);
+	charstring_t scanl =
+	    charstring_create (length < NMH_BUFSIZ ? length : NMH_BUFSIZ);
 
 	cptr = fmt_findcomp ("text");
 	if (cptr) {
 	    if (cptr->c_text)
-	    	free(cptr->c_text);
+		free(cptr->c_text);
 	    cptr->c_text = p->pq_text;
 	    p->pq_text = NULL;
 	}
 	cptr = fmt_findcomp ("error");
 	if (cptr) {
 	    if (cptr->c_text)
-	    	free(cptr->c_text);
+		free(cptr->c_text);
 	    cptr->c_text = p->pq_error;
 	    p->pq_error = NULL;
 	}

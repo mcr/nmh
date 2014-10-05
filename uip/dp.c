@@ -108,11 +108,11 @@ main (int argc, char **argv)
 	if ((width = sc_width ()) < WIDTH / 2) {
 	    /* Default:  width of the terminal, but at least WIDTH/2. */
 	    width = WIDTH / 2;
-	} else if (width == 0) {
-	    /* Unlimited width. */
-	    width = INT_MAX;
 	}
 	width -= 2;
+    } else if (width == 0) {
+	/* Unlimited width.  */
+	width = INT_MAX;
     }
     fmt_compile (nfs, &fmt, 1);
 
@@ -136,7 +136,8 @@ static int
 process (char *date, int length)
 {
     int status = 0;
-    charstring_t scanl = charstring_create (length);
+    charstring_t scanl =
+	charstring_create (length < NMH_BUFSIZ ? length : NMH_BUFSIZ);
     register struct comp *cptr;
 
     cptr = fmt_findcomp ("text");
