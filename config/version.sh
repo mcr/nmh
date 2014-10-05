@@ -38,5 +38,12 @@ done
 
 IFS=" "
 
-echo "char *version_str = \"nmh-$VERSION [compiled on $HOSTNAME at `date`]\";"
+if [ -d "${srcdir}/.git" ] ; then
+    branch=`(git branch | grep '^\*' | tr -d '* ') || true`
+fi
+if [ "${branch}" -a "${branch}" != "master" ] ; then
+    echo "char *version_str = \"nmh-$VERSION [branch ${branch}] [compiled on $HOSTNAME at `date`]\";"
+else
+    echo "char *version_str = \"nmh-$VERSION [compiled on $HOSTNAME at `date`]\";"
+fi
 echo "char *version_num = \"nmh-$VERSION\";"
