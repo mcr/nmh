@@ -20,7 +20,7 @@ cat >`mhpath new` <<EOF
 MIME-Version: 1.0
 From: sender@example.com
 To: recipient@example.com
-Subject: message with blank lines
+Subject: message with blank lines and trailing spaces
 Date: Mon, 29 Apr 2013 11:51:45 -0400
 
 There are two blank lines below.  And there is a trailing space: 
@@ -40,7 +40,7 @@ cat >"$expected" <<EOF
 EOF
 
 cat >"$MH_TEST_DIR/test.format" <<EOF
-body:component="> ",overflowtext=,overflowoffset=0
+body:component="> "
 EOF
 
 "$mhl" -nomoreproc -form "$MH_TEST_DIR/test.format" `mhpath last` >"$actual"
@@ -56,7 +56,7 @@ cat >"$expected" <<EOF
 EOF
 
 cat >"$MH_TEST_DIR/test.format" <<EOF
-body:component="> ",overflowtext=,overflowoffset=0,rtrim
+body:component="> ",rtrim
 EOF
 
 "$mhl" -nomoreproc -form "$MH_TEST_DIR/test.format" `mhpath last` >"$actual"
@@ -64,4 +64,5 @@ check "$expected" "$actual"
 
 
 rm -f "$MH_TEST_DIR/test.format"
+
 exit $failed
