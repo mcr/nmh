@@ -314,10 +314,17 @@ fi
 
 # This entry is used to retrieve external-body types that use a "url"
 # access-type.
-PGM=`$SEARCHPROG "$SEARCHPATH" curl`
-if [ ! -z "$PGM" ]; then
-	echo "nmh-access-url: $PGM -L" >> $TMP
-fi
+case "`uname`" in
+  FreeBSD)
+	echo "nmh-access-url: fetch -a" >> $TMP
+	;;
+  *)
+	PGM=`$SEARCHPROG "$SEARCHPATH" curl`
+	if [ ! -z "$PGM" ]; then
+		echo "nmh-access-url: $PGM -L" >> $TMP
+	fi
+	;;
+esac
 
 # output a sorted version of the file
 sort < $TMP
