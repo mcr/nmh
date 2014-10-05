@@ -17,7 +17,7 @@ fi
 setup_test
 
 # Use proper program, likely not the first one on PATH.
-rcvtty="${MH_LIB_DIR}/rcvtty"
+rcvtty="${MH_LIBEXEC_DIR}/rcvtty"
 
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"

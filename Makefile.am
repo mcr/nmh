@@ -25,18 +25,18 @@ MHNSEARCHPATH = "$(PATH)"
 MHNSEARCHPROG = $(srcdir)/etc/mhn.find.sh
 
 ##
-## Automake doesn't let us install programs in $(libdir), so we create our
-## own directory prefix to use in the primary variable.
+## Install config files and back-end programs in our own subdirecctories.
 ##
-auxexecdir = @libdir@
+nmhetcdir  = @sysconfdir@/nmh
+nmhlibexecdir = @libexecdir@/nmh
 
 ##
 ## nmh _does_ have a test suite!
 ##
 TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
 		    MH_TEST_DIR="@abs_builddir@/test/testdir" \
-		    auxexecdir="$(auxexecdir)" bindir="$(bindir)" \
-		    mandir="$(mandir)" sysconfdir="$(sysconfdir)" \
+		    nmhlibexecdir="$(nmhlibexecdir)" bindir="$(bindir)" \
+		    mandir="$(mandir)" nmhetcdir="$(nmhetcdir)" \
 		    supported_locks="$(supported_locks)" \
 		    default_locking="${default_locking}" \
 		    MULTIBYTE_ENABLED=$(MULTIBYTE_ENABLED) \
@@ -152,13 +152,13 @@ bin_PROGRAMS = uip/ali uip/anno uip/burst uip/comp uip/dist uip/flist \
 bin_SCRIPTS = uip/mhmail etc/sendfiles
 
 ##
-## This is all programs that get installed in the "lib" directory
+## This is all programs that get installed in the "libexec/nmh" directory
 ##
-auxexec_PROGRAMS = uip/ap uip/dp uip/fmtdump uip/mhl uip/mkstemp \
+nmhlibexec_PROGRAMS = uip/ap uip/dp uip/fmtdump uip/mhl uip/mkstemp \
 		   uip/post uip/rcvdist uip/rcvpack uip/rcvstore uip/rcvtty \
 		   uip/slocal uip/viamail
 
-auxexec_SCRIPTS = uip/spost
+nmhlibexec_SCRIPTS = uip/spost
 
 ##
 ## Programs that MAY need to get built at some point; we need to list them
@@ -187,7 +187,7 @@ noinst_HEADERS = h/addrsbr.h h/aliasbr.h h/crawl_folders.h h/dropsbr.h \
 ##
 ## Extra files we need to install in various places
 ##
-dist_sysconf_DATA = etc/MailAliases etc/components etc/digestcomps \
+dist_nmhetc_DATA = etc/MailAliases etc/components etc/digestcomps \
 		    etc/distcomps etc/forwcomps etc/mhl.body etc/mhl.digest \
 		    etc/mhl.format etc/mhl.forward etc/mhl.headers \
 		    etc/mhl.reply etc/mhshow.marker etc/rcvdistcomps \
@@ -202,7 +202,7 @@ dist_sysconf_DATA = etc/MailAliases etc/components etc/digestcomps \
 ## The same as above, but we don't include these in the distribution
 ## (because they're generated at compile time)
 ##
-sysconf_DATA = etc/mhn.defaults etc/mts.conf
+nmhetc_DATA = etc/mhn.defaults etc/mts.conf
 
 ##
 ## Documentation that gets installed in docdir
@@ -410,7 +410,7 @@ uip_whom_SOURCES = uip/whom.c uip/distsbr.c
 uip_whom_LDADD = $(LDADD) $(POSTLINK)
 
 ##
-## Programs definitions for all utilities that end up in $(libdir)
+## Programs definitions for all utilities that end up in $(nmhlibexecdir)
 ##
 
 uip_ap_SOURCES = uip/ap.c
@@ -596,10 +596,10 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 
 config/sbr_libmh_a-config.$(OBJEXT) sbr/sbr_libmh_a-mts.$(OBJEXT): Makefile
 
-sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(sysconfdir)"' \
+sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(nmhetcdir)"' \
 		-DMAILSPOOL='"$(mailspool)"' \
 		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
-		-DNMHLIBDIR='"$(libdir)"'
+		-DNMHLIBEXECDIR='"$(nmhlibexecdir)"'
 
 mts_libmts_a_SOURCES = mts/smtp/smtp.c
 
@@ -617,10 +617,10 @@ $(man_MANS): man/man.sed
 man/man.sed: Makefile
 	@echo 's,%nmhwarning%,THIS FILE HAS BEEN AUTOMATICALLY GENERATED.  DO NOT EDIT.,g' > $@
 	@echo 's,%nmhversion%,nmh-$(VERSION),g' >> $@
+	@echo 's,%nmhetcdir%,$(nmhetcdir),g' >> $@
+	@echo 's,%nmhlibexecdir%,$(nmhlibexecdir),g' >> $@
 	@echo 's,%bindir%,$(bindir),g' >> $@
 	@echo 's,%docdir%,$(docdir),g' >> $@
-	@echo 's,%etcdir%,$(sysconfdir),g' >> $@
-	@echo 's,%libdir%,$(libdir),g' >> $@
 	@echo 's,%mandir%,$(mandir),g' >> $@
 	@echo 's,%mailspool%,$(mailspool),g' >> $@
 	@echo 's,%sendmailpath%,$(sendmailpath),g' >> $@

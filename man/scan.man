@@ -193,7 +193,7 @@ scanning a draft folder, as message drafts usually aren't allowed
 to have dates in them.
 .PP
 The
-.B %etcdir%
+.B %nmhetcdir%
 directory contains several format files as examples of customized
 .B scan
 output.
@@ -210,7 +210,7 @@ purists hate this idea.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"

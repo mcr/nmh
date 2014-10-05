@@ -270,7 +270,7 @@ switch.
 $HOME/.mh_profile
 The user's profile.
 .TP
-%etcdir%/mts.conf
+%nmhetcdir%/mts.conf
 mts configuration file.
 .TP
 %mailspool%/$USER

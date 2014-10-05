@@ -17,7 +17,7 @@ fi
 setup_test
 
 # Use proper program, maybe not the first one on PATH.
-slocal="$MH_LIB_DIR"/slocal
+slocal="$MH_LIBEXEC_DIR"/slocal
 
 expected="$MH_TEST_DIR"/$$.expected
 actual="$MH_TEST_DIR"/$$.actual
@@ -145,7 +145,7 @@ check "$MH_TEST_DIR/Mail/inbox/5" "$actual2" 'keep first'
 
 # Use current login for address, user, etc., because it must be an
 # existing user on the host.
-me=`"$MH_LIB_DIR"/ap -format '%(me)' 0`
+me=`"$MH_LIBEXEC_DIR"/ap -format '%(me)' 0`
 
 # check -addr
 cat >"$md"  <<EOF

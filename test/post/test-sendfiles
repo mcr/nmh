@@ -18,7 +18,7 @@ setup_test
 
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
-localmbox=`$MH_LIB_DIR/ap -format "%(localmbox)" 0`
+localmbox=`$MH_LIBEXEC_DIR/ap -format "%(localmbox)" 0`
 #### Use this script itself for the test file.
 testfiledir="$srcdir/test/post"
 testfile=`basename $0`

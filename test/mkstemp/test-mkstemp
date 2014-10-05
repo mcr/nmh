@@ -19,7 +19,7 @@ setup_test
 expected="$MH_TEST_DIR"/$$.expected
 actual="$MH_TEST_DIR"/$$.actual
 
-mkstemp="${MH_LIB_DIR}/mkstemp"
+mkstemp="${MH_LIBEXEC_DIR}/mkstemp"
 $mkstemp -help | grep suffix >/dev/null  &&  has_mkstemps=1  ||  has_mkstemps=0
 
 cd "$MHTMPDIR"

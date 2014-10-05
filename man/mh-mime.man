@@ -49,7 +49,7 @@ will automatically decode MIME-encoded headers.  If you have a custom
 format, see the examples provided with the
 .B nmh
 distribution (found in the
-.RI \*(lq %etcdir% \*(rq
+.RI \*(lq %nmhetcdir% \*(rq
 directory) and
 .IR mh\-format (5)
 for details on how to make sure your MIME headers are properly

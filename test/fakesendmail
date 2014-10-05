@@ -15,7 +15,7 @@ if [ "$MH_TEST_DIR"x = x ]; then
 fi
 
 #### Puts message on stdin in a drop that the test knows about.
-deliver="$MH_LIB_DIR/rcvpack $MH_TEST_DIR/Mail/fakesendmail.mbox"
+deliver="$MH_LIBEXEC_DIR/rcvpack $MH_TEST_DIR/Mail/fakesendmail.mbox"
 
 found_dasht=0
 for arg in "$@"; do

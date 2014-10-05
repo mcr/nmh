@@ -587,7 +587,7 @@ need be present in this additional profile. Finally,
 will attempt to consult
 .PP
 .RS 5
-%etcdir%/mhn.defaults
+%nmhetcdir%/mhn.defaults
 .RE
 .PP
 which is created automatically during
@@ -644,17 +644,17 @@ absolute pathnames are accessed directly, tilde expansion is done on
 usernames, and files are searched for in the user's
 .I Mail
 directory as specified in their profile.  If not found there, the directory
-.RI \*(lq %etcdir% \*(rq
+.RI \*(lq %nmhetcdir% \*(rq
 is checked.
 .PP
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^$MHSHOW~^Additional profile entries
-^%etcdir%/mhn.defaults~^System default MIME profile entries
-^%etcdir%/mhl.headers~^The headers template
-^%etcdir%/mhshow.marker~^Example content marker
+^%nmhetcdir%/mhn.defaults~^System default MIME profile entries
+^%nmhetcdir%/mhl.headers~^The headers template
+^%nmhetcdir%/mhshow.marker~^Example content marker
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

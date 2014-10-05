@@ -65,7 +65,7 @@ switches.
 An example of a
 .I rmmproc
 script that saves a message based in its Message-ID is provided in
-%etcdir%/rmmproc.messageid.  To enable it, simply add a
+%nmhetcdir%/rmmproc.messageid.  To enable it, simply add a
 .I rmmproc
 component that names it to your profile.
 .PP
@@ -94,7 +94,7 @@ advance to the next message in the folder as expected.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"

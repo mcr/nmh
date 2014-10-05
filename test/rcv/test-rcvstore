@@ -17,7 +17,7 @@ fi
 setup_test
 
 # Use proper program, likely not the first one on PATH.
-rcvstore="${MH_LIB_DIR}/rcvstore"
+rcvstore="${MH_LIBEXEC_DIR}/rcvstore"
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err

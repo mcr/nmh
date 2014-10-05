@@ -18,18 +18,18 @@ setup_test
 unset SIGNATURE
 
 fullname=`${MH_OBJ_DIR}/test/getfullname`
-run_test "${MH_LIB_DIR}/ap -format %(myname) ignore" \
+run_test "${MH_LIBEXEC_DIR}/ap -format %(myname) ignore" \
          "$fullname" "GECOS field test"
 
 echo "Signature: Some Random Name 1" >> ${MH}
 
-run_test "${MH_LIB_DIR}/ap -format %(myname) ignore" \
+run_test "${MH_LIBEXEC_DIR}/ap -format %(myname) ignore" \
          "Some Random Name 1" "MH Profile Signature test"
 
 SIGNATURE="Some Random Name 2"
 export SIGNATURE
 
-run_test "${MH_LIB_DIR}/ap -format %(myname) ignore" \
+run_test "${MH_LIBEXEC_DIR}/ap -format %(myname) ignore" \
          "${SIGNATURE}" "SIGNATURE Environment test"
 
 #### Test escaping of display names.

@@ -309,7 +309,7 @@ for more information.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^%mailspool%/$USER~^Location of mail drop
 .fi
 .SH "SEE ALSO"

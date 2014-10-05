@@ -7,7 +7,7 @@ rcvdist \- asynchronously redistribute new mail
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/rcvdist
+.B %nmhlibexecdir%/rcvdist
 .RB [ \-form
 .IR formfile ]
 [switches\ for
@@ -66,12 +66,12 @@ profile component.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%etcdir%/rcvdistcomps~^Default message skeleton
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
+^%nmhetcdir%/rcvdistcomps~^Default message skeleton
 ^or <mh\-dir>/rcvdistcomps~^Rather than standard message skeleton
-^%etcdir%/mts.conf~^nmh mts configuration file
+^%nmhetcdir%/mts.conf~^nmh mts configuration file
 ^$HOME/\&.maildelivery~^The file controlling local delivery
-^%etcdir%/maildelivery~^Rather than the standard file
+^%nmhetcdir%/maildelivery~^Rather than the standard file
 .fi
 .SH "SEE ALSO"
 .IR rcvpack (1),

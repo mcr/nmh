@@ -7,7 +7,7 @@ rcvstore \- asynchronously incorporate mail into a folder
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/rcvstore
+.B %nmhlibexecdir%/rcvstore
 .RI [ +folder ]
 .RB [ \-create " | " \-nocreate ]
 .RB [ \-unseen " | " \-nounseen ]
@@ -112,7 +112,7 @@ entry.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"

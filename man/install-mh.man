@@ -7,7 +7,7 @@ install-mh \- initialize the nmh environment
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/install\-mh
+.B %nmhlibexecdir%/install\-mh
 .RB [ \-auto ]
 .RB [ \-check ]
 .RB [ \-version ]
@@ -58,7 +58,7 @@ When creating the users initial
 .IR \&.mh\(ruprofile ,
 .B install\-mh
 will check for the existence of a global profile
-.IR %etcdir%/mh.profile .
+.IR %nmhetcdir%/mh.profile .
 If found, this will be used to initialize the new
 .IR \&.mh\(ruprofile .
 .PP
@@ -72,7 +72,7 @@ been installed without their having to know the internals of nmh.
 $HOME/.mh_profile
 The user's profile.
 .TP
-%etcdir%/mh.profile
+%nmhetcdir%/mh.profile
 Used to initialize user's profile.
 .PD
 .SH "PROFILE COMPONENTS"

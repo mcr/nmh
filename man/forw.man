@@ -386,18 +386,18 @@ pathnames are accessed directly, tilde expansion is done on usernames,
 and files are searched for in the user's
 .I Mail
 directory as specified in their profile.  If not found there, the directory
-.RI \*(lq %etcdir% \*(rq
+.RI \*(lq %nmhetcdir% \*(rq
 is checked.
 .PP
 .PD 0
 .TP 25
-%etcdir%/forwcomps
+%nmhetcdir%/forwcomps
 The standard message skeleton.
 .TP
 <mh\-dir>/forwcomps
 Rather than the standard skeleton.
 .TP
-%etcdir%/digestcomps
+%nmhetcdir%/digestcomps
 The message skeleton if
 .B \-digest
 is given.
@@ -405,7 +405,7 @@ is given.
 <mh\-dir>/digestcomps
 Rather than the standard skeleton.
 .TP
-^%etcdir%/mhl.forward
+^%nmhetcdir%/mhl.forward
 The standard message filter.
 .TP
 <mh\-dir>/mhl.forward

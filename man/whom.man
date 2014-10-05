@@ -58,7 +58,7 @@ useful) feature.  Consult the
 man page for more information.
 .PP
 The mail transport system default is provided in
-.I %etcdir%/mts.conf
+.I %nmhetcdir%/mts.conf
 but can be overriiden here with the
 .B \-mts
 switch.
@@ -68,7 +68,7 @@ If nmh is using the SMTP MTA, the
 and the
 .B \-port
 switches can be used to override the default mail server (defined by the
-.I %etcdir%/mts.conf
+.I %nmhetcdir%/mts.conf
 .RI servers
 entry).  The
 .B \-snoop
@@ -133,7 +133,7 @@ for more information.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
@@ -154,7 +154,7 @@ for more information.
 .nf
 .RB ` file "' defaults to <mh\-dir>/draft"
 .RB ` \-nocheck '
-.RB ` \-alias "' defaults to  %etcdir%/MailAliases"
+.RB ` \-alias "' defaults to  %nmhetcdir%/MailAliases"
 .fi
 .SH CONTEXT
 None

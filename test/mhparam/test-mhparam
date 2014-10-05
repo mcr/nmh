@@ -85,19 +85,19 @@ $MH_INST_DIR$bindir/refile
 $bindir/inc
 more
 $bindir/mhmail
-$MH_INST_DIR$auxexecdir/mhl
+$MH_INST_DIR$nmhexecdir/mhl
 cat
 600
 $bindir/packf
-$MH_INST_DIR$auxexecdir/post
+$MH_INST_DIR$nmhexecdir/post
 $bindir/send
 $bindir/mhshow
-$MH_INST_DIR$auxexecdir/mhl
+$MH_INST_DIR$nmhexecdir/mhl
 nmh-`cat ${srcdir}/VERSION`
 $bindir/whatnow
 $bindir/whom
-$sysconfdir
-${MH_LIB_DIR}
+$nmhetcdir
+$MH_LIBEXEC_DIR
 fcntl
 ${default_locking}
 EOF
@@ -123,7 +123,7 @@ version \
 whatnowproc \
 whomproc \
 etcdir \
-libdir \
+libexecdir \
 datalocking \
 spoollocking >$actual 2>&1
 

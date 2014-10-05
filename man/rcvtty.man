@@ -7,7 +7,7 @@ rcvtty  \- report new mail
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/rcvtty
+.B %nmhlibexecdir%/rcvtty
 .RI [ command ]
 .RB [ \-form
 .IR formatfile ]
@@ -101,10 +101,10 @@ instead.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%etcdir%/mts.conf~^nmh mts configuration file
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
+^%nmhetcdir%/mts.conf~^nmh mts configuration file
 ^$HOME/\&.maildelivery~^The file controlling local delivery
-^%etcdir%/maildelivery~^Rather than the standard file
+^%nmhetcdir%/maildelivery~^Rather than the standard file
 .fi
 .SH CONTEXT
 None

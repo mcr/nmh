@@ -545,7 +545,7 @@ It is used to retrieve an external-body with access-type `mail-server'
 .RE
 .PP
 .BR mhlproc :
-%libdir%/mhl
+%nmhlibexecdir%/mhl
 .RS 5
 This is the program used to filter messages in various ways.  It
 is used by
@@ -597,7 +597,7 @@ Currently not used.
 .RE
 .PP
 .BR postproc :
-%libdir%/post
+%nmhlibexecdir%/post
 .RS 5
 This is the program used by
 .BR send ,
@@ -645,7 +645,7 @@ to process and display non-text (MIME) messages.
 .RE
 .PP
 .BR showproc :
-%libdir%/mhl
+%nmhlibexecdir%/mhl
 .RS 5
 This is the program used by
 .B show
@@ -675,7 +675,7 @@ to determine to whom a message would be sent.
 After consulting .mh_profile,
 some programs read an optional profile specified by a
 program-specific environment variable,
-and then the system-wide profile %etcdir%/mhn.defaults.
+and then the system-wide profile %nmhetcdir%/mhn.defaults.
 These programs are mhbuild, mhshow, mhstore, and mhn.
 mhfixmsg is similar, but has no optional profile.
 
@@ -1035,7 +1035,7 @@ if annotations are to occur.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^or $MH~^Rather than the standard profile
 ^<mh\-dir>/context~^The user context

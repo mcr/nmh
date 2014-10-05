@@ -244,7 +244,7 @@ No mail is actually sent.
 .SH FILES
 .PD 0
 .TP 20
-%etcdir%/components
+%nmhetcdir%/components
 The standard message skeleton.
 .TP
 <mh\-dir>/components

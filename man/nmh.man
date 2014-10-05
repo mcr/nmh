@@ -530,12 +530,12 @@ contains
 .B nmh
 commands
 .TP
-%etcdir%
+%nmhetcdir%
 contains
 .B nmh
 format files
 .TP
-%libdir%
+%nmhlibexecdir%
 contains
 .B nmh
 library commands

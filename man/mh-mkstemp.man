@@ -7,7 +7,7 @@ mkstemp \- create a temporary file
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/mkstemp
+.B %nmhlibexecdir%/mkstemp
 .RB [ \-directory
 .IR directory ]
 .RB [ \-prefix

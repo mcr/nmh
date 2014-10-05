@@ -69,7 +69,7 @@ rules: absolute pathnames are accessed directly, tilde expansion is
 done on usernames, and files are searched for in the user's
 .I Mail
 directory as specified in their profile.  If not found there, the directory
-.RI \*(lq %etcdir% \*(rq
+.RI \*(lq %nmhetcdir% \*(rq
 is checked.
 .SS MODE SELECTION AND COMPONENT SPECIFICATION
 .B Fmttest

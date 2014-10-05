@@ -57,7 +57,7 @@ run_test 'msgchk' "You don't have any mail waiting"
 
 # Use maildrop specified in mts.conf, i.e.,
 # ${MH_TEST_DIR}/Mail/maildrop, which should not yet exist.
-"${MH_LIB_DIR}"/rcvpack <"${MH_TEST_DIR}"/Mail/inbox/1 \
+"${MH_LIBEXEC_DIR}"/rcvpack <"${MH_TEST_DIR}"/Mail/inbox/1 \
   "${MH_TEST_DIR}"/Mail/maildrop
 
 # check with no arguments and mail waiting

@@ -74,10 +74,12 @@ AS_IF([test -n "$with_smtpservers"], [smtpservers="$with_smtpservers"],
       [smtpservers="localhost"])
 AC_SUBST([smtpservers])dnl
 
-dnl ----------------------------------------------------
-dnl Default location is /usr/local/nmh/{bin,etc,lib,man}
-dnl ----------------------------------------------------
+dnl -------------------------------------------------------------------
+dnl Default location is /usr/local/nmh/{bin,etc,libexec,man}, unless we
+dnl find an existing installation, in which case we use its location.
+dnl -------------------------------------------------------------------
 AC_PREFIX_DEFAULT([/usr/local/nmh])
+AC_PREFIX_PROGRAM([mhparam])
 
 dnl ------------------
 dnl CHECK THE COMPILER
@@ -563,7 +565,7 @@ dnl the final summary and should use them nowhere else (see the autoconf
 dnl docs for the rationale for bindir etc being unexpanded).
 eval "nmhbin=${bindir}";         eval "nmhbin=${nmhbin}"
 eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf=${nmhsysconf}"
-eval "nmhlib=${libdir}";         eval "nmhlib=${nmhlib}"
+eval "nmhlibexec=${libexecdir}"; eval "nmhlibexec=${nmhlibexec}"
 eval "nmhman=${mandir}";         eval "nmhman=${nmhman}"
 eval "nmhrpm=${nmhrpm}";
 
@@ -578,8 +580,8 @@ linker flags               : ${LDFLAGS}
 preprocessor flags         : ${CPPFLAGS}
 source code location       : ${srcdir}
 binary install path        : ${nmhbin}
-library install path       : ${nmhlib}
-config files install path  : ${nmhsysconf}
+libexec install path       : ${nmhlibexec}/nmh
+config files install path  : ${nmhsysconf}/nmh
 man page install path      : ${nmhman}
 RPM build root             : ${nmhrpm}
 backup prefix              : ${backup_prefix}

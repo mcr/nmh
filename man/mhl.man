@@ -7,7 +7,7 @@ mhl \- produce formatted listings of nmh messages
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/mhl
+.B %nmhlibexecdir%/mhl
 .RB [ \-bell " | " \-nobell ]
 .RB [ \-clear " | " \-noclear ]
 .RB [ \-folder
@@ -129,7 +129,7 @@ is called
 will first search for this file in the user's
 .B nmh
 directory, and will then search in the directory
-.IR %etcdir% .
+.IR %nmhetcdir% .
 This default
 can be changed by using the
 .B \-form
@@ -364,8 +364,8 @@ options can be used to build up multiple arguments to the format filter.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%etcdir%/mhl.format~^The message template
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
+^%nmhetcdir%/mhl.format~^The message template
 ^or <mh\-dir>/mhl.format~^Rather than the standard template
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi

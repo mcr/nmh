@@ -17,7 +17,7 @@ fi
 setup_test
 
 # Use proper program, likely not the first one on PATH.
-rcvdist="${MH_LIB_DIR}/rcvdist"
+rcvdist="${MH_LIBEXEC_DIR}/rcvdist"
 
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
@@ -81,7 +81,7 @@ To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
 Message-Id: 1@test.nmh
 Subject: Testing message 1
-Resent-From: `${MH_LIB_DIR}/ap -format '%(localmbox)' 0 | \
+Resent-From: `${MH_LIBEXEC_DIR}/ap -format '%(localmbox)' 0 | \
               sed 's/^<\(.*\)>$/\1/'`
 Resent-To: recipient@example.com
 Resent-Date:

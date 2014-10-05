@@ -184,11 +184,13 @@ Options for configure
 --bindir=DIR     (DEFAULT is ${prefix}/bin)
      nmh's binaries (show, inc, comp, ...) are installed here.
 
---libdir=DIR     (DEFAULT is ${prefix}/lib)
-     nmh's support binaries (post, slocal, mhl, ...) are installed here.
+--libexecdir=DIR     (DEFAULT is ${prefix}/libexec)
+     nmh's support binaries (post, slocal, mhl, ...) are installed
+     in ${libexecdir}/nmh.
 
 --sysconfdir=DIR     (DEFAULT is ${prefix}/etc)
-     nmh's config files (mts.conf, mhn.defaults, ...) are installed here.
+     nmh's config files (mts.conf, mhn.defaults, ...) are installed
+     in ${sysconfdir}/nmh.
 
 --mandir=DIR     (DEFAULT is ${prefix}/man)
      nmh's man pages are installed here.

@@ -120,7 +120,7 @@ uses its mhshow-show-text/subtype entries.  When
 .B nmh
 is installed, it searches for a conversion program for text/html
 content, and if one is found, inserts a mhfixmsg-format-text/html
-entry in %etcdir%/mhn.defaults.  An entry of the same name in the
+entry in %nmhetcdir%/mhn.defaults.  An entry of the same name in the
 user's profile takes precedence.  The user can add entries for
 other text subtypes to their profile.
 .PP
@@ -208,7 +208,7 @@ to add a single transformed message to a different folder, e.g.,
 .RS 5
 mhfixmsg -outfile - | \\
 .RS 0
-%libdir%/rcvstore +folder
+%nmhlibexecdir%/rcvstore +folder
 .RE
 .RE
 .SS Summary of Applicability
@@ -290,7 +290,7 @@ MAILDIR = `mhparam path`
 #### The Backups directory is relative to MAILDIR.
 MKSTEMP = 'mkstemp -directory Backups -prefix mhfixmsg'
 MHFIXMSG = 'mhfixmsg -noverbose -file - -outfile -'
-STORE = %libdir%/rcvstore
+STORE = %nmhlibexecdir%/rcvstore
 
 :0 w: nmh-workers/procmail.$LOCKEXT
 * ^TOnmh-workers@nongnu.org
@@ -305,14 +305,14 @@ accessed directly, tilde expansion is done on usernames, and files are
 searched for in the user's
 .I Mail
 directory as specified in their profile.  If not found there, the directory
-.RI \*(lq %etcdir% \*(rq
+.RI \*(lq %nmhetcdir% \*(rq
 is checked.
 .PP
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/mhn.defaults  'u
+.ta \w'%nmhetcdir%/mhn.defaults  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-^%etcdir%/mhn.defaults~^Default mhfixmsg conversion entries
+^%nmhetcdir%/mhn.defaults~^Default mhfixmsg conversion entries
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~

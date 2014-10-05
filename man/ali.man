@@ -62,7 +62,7 @@ then it's accessed directly; otherwise tilde expansion is done on
 usernames, then files are searched for in the user's
 .I Mail
 directory as specified in their profile.  If not found there, the directory
-.RI \*(lq %etcdir% \*(rq
+.RI \*(lq %nmhetcdir% \*(rq
 is checked.
 .PP
 .TP 20
@@ -84,7 +84,7 @@ For a default alias file
 .PD 0
 .TP 20
 aliasfile
-%etcdir%/MailAliases
+%nmhetcdir%/MailAliases
 .TP
 \-nolist
 .TP

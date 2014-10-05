@@ -123,9 +123,9 @@ switch.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
-^%etcdir%/mts.conf~^nmh mts configuration file
+^%nmhetcdir%/mts.conf~^nmh mts configuration file
 ^%mailspool%/$USER~^Location of mail drop
 .fi
 .SH "PROFILE COMPONENTS"

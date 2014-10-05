@@ -127,7 +127,7 @@ Example Alias File
 .PP
 .RS 5
 .nf
-<%etcdir%/BBoardAliases
+<%nmhetcdir%/BBoardAliases
 fred: frated@UCI.example
 sgroup: fred, fear, freida
 b-people: Blind List: bill, betty
@@ -140,7 +140,7 @@ news.*: news
 .PP
 The first line says that more aliases should immediately be read from
 the file
-.BR %etcdir%/BBoardAliases .
+.BR %nmhetcdir%/BBoardAliases .
 Following this, \*(lqfred\*(rq
 is defined as an alias for \*(lqfrated@UCI.example\*(rq, and \*(lqsgroup\*(rq
 is defined as an alias for the three names \*(lqfrated@UCI.example\*(rq,
@@ -173,7 +173,7 @@ Aliasfile:
 Default alias file.
 .SH FILES
 .TP 20
-%etcdir%/MailAliases
+%nmhetcdir%/MailAliases
 System-wide default alias file.
 .SH "SEE ALSO"
 .IR ali (1),

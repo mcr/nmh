@@ -17,14 +17,14 @@ setup_test
 #### Local-Mailbox profile component, which we don't use in the test
 #### suite, or the user's login name.  ap will escape (quote) it if
 #### needed.
-user=`run_prog ${MH_LIB_DIR}/ap -format '%(me)' 0`
+user=`run_prog ${MH_LIBEXEC_DIR}/ap -format '%(me)' 0`
 host=`${MH_OBJ_DIR}/test/getcanon`
 
-output=`run_prog ${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${user}"`
+output=`run_prog ${MH_LIBEXEC_DIR}/ap -format '%(mymbox{text})' "${user}"`
 run_test "echo $output" 1 "Basic user test"
-output=`run_prog ${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${user}@${host}"`
+output=`run_prog ${MH_LIBEXEC_DIR}/ap -format '%(mymbox{text})' "${user}@${host}"`
 run_test "echo $output" 1 "Basic user@host test"
-run_test "${MH_LIB_DIR}/ap -format %(mymbox{text}) nosuchuser@nosuchhost.blah" \
+run_test "${MH_LIBEXEC_DIR}/ap -format %(mymbox{text}) nosuchuser@nosuchhost.blah" \
          0 "Basic non-matching test"
 
 myname="Random User <random@user.something.com>"
@@ -36,10 +36,10 @@ mv -f ${MH}.new ${MH}
 echo "Local-Mailbox: ${myname}" >> ${MH}
 
 run_test "echo \
-         `run_prog ${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \
+         `run_prog ${MH_LIBEXEC_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \
          1 "Local-Mailbox test"
 
-output=`run_prog ${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${user}@${host}"`
+output=`run_prog ${MH_LIBEXEC_DIR}/ap -format '%(mymbox{text})' "${user}@${host}"`
 run_test "echo $output" 0 "Local-mailbox overriding user@host test"
 
 # Add an Alternate-Mailbox.  This caused ismymbox() to lose the
@@ -47,7 +47,7 @@ run_test "echo $output" 0 "Local-mailbox overriding user@host test"
 # Alternate-Mailboxes.
 printf 'Alternate-Mailboxes: user@example.com\n' >> $MH
 run_test "echo \
-         `run_prog ${MH_LIB_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \
+         `run_prog ${MH_LIBEXEC_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \
          1 "Local-Mailbox with Alternate-Mailbox test"
 
 exit $failed

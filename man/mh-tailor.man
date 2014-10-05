@@ -6,7 +6,7 @@
 mh-tailor, mts.conf \- mail transport configuration for nmh message handler
 .SH DESCRIPTION
 The file
-.I %etcdir%/mts.conf
+.I %nmhetcdir%/mts.conf
 defines run-time options for those
 .B nmh
 programs which interact (in some form) with the message transport system.
@@ -194,7 +194,7 @@ the following:
 .RE
 .PP
 .BR maildelivery :
-%libdir%/maildelivery
+%nmhlibexecdir%/maildelivery
 .RS 5
 The name of the system-wide default
 .I maildelivery
@@ -266,7 +266,7 @@ the named POP service host is consulted.
 .\"  .RE
 .\"  .PP
 .\"  .BR popbblist :
-.\"  %etcdir%/hosts.popbb
+.\"  %nmhetcdir%/hosts.popbb
 .\"  .RS 5
 .\"  A file containing of lists of hosts that are allowed to use the POP
 .\"  facility to access BBoards using the guest account.  If this file is not
@@ -315,8 +315,8 @@ your site, and set the appropriate values.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%etcdir%/mts.conf~^nmh mts configuration file
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
+^%nmhetcdir%/mts.conf~^nmh mts configuration file
 .fi
 .SH "PROFILE COMPONENTS"
 None

@@ -9,15 +9,15 @@ test -z "$MH_TEST_DIR"  &&  MH_TEST_DIR="$MH_OBJ_DIR/test/testdir"
 test -z "$prefix"  &&  prefix=@prefix@
 test -z "$datarootdir"  &&  datarootdir=@datarootdir@
 test -z "$exec_prefix"  &&  exec_prefix=@exec_prefix@
-test -z "$auxexecdir"  &&  auxexecdir="@libdir@"
+test -z "$nmhexecdir"  &&  nmhexecdir="@libexecdir@/nmh"
 test -z "$bindir"  &&  bindir="@bindir@"
 test -z "$mandir"  &&  mandir="@mandir@"
-test -z "$sysconfdir"  &&  sysconfdir="@sysconfdir@"
+test -z "$nmhetcdir"  &&  nmhetcdir="@sysconfdir@/nmh"
 test -z "$supported_locks"  &&  supported_locks="@supported_locks@"
 test -z "$default_locking"  &&  default_locking="@default_locking@"
 test -z "$MULTIBYTE_ENABLED"  &&  MULTIBYTE_ENABLED="@MULTIBYTE_ENABLED@"
 test -z "$ICONV_ENABLED"  &&  ICONV_ENABLED="@ICONV_ENABLED@"
-export MH_TEST_DIR auxexecdir bindir mandir sysconfdir
+export MH_TEST_DIR nmhexecdir bindir mandir nmhetcdir
 export MULTIBYTE_ENABLED ICONV_ENABLED
 
 test -z "$MH_INST_DIR"  &&  MH_INST_DIR="${MH_TEST_DIR}/inst"
@@ -246,9 +246,9 @@ run_test() {
 setup_test ()
 {
   MH="${MH_TEST_DIR}/Mail/.mh_profile"
-  MHMTSCONF="${MH_INST_DIR}${sysconfdir}/mts.conf"
-  MH_LIB_DIR="${MH_INST_DIR}${auxexecdir}"
-  export MH MHMTSCONF MH_LIB_DIR
+  MHMTSCONF="${MH_INST_DIR}${nmhetcdir}/mts.conf"
+  MH_LIBEXEC_DIR="${MH_INST_DIR}${nmhexecdir}"
+  export MH MHMTSCONF MH_LIBEXEC_DIR
 
   #
   # Only install once
@@ -285,12 +285,12 @@ setup_test ()
 Path: ${MH_TEST_DIR}/Mail
 buildmimeproc: ${MH_INST_DIR}${bindir}/mhbuild
 fileproc: ${MH_INST_DIR}${bindir}/refile
-libdir: ${MH_LIB_DIR}
+libexecdir: ${MH_LIBEXEC_DIR}
 mhbuild: -nocontentid
-mhlproc: ${MH_LIB_DIR}/mhl
+mhlproc: ${MH_LIBEXEC_DIR}/mhl
 moreproc: cat
-postproc: ${MH_LIB_DIR}/post
-showproc: ${MH_LIB_DIR}/mhl
+postproc: ${MH_LIBEXEC_DIR}/post
+showproc: ${MH_LIBEXEC_DIR}/mhl
 EOF
 
   for f in MailAliases components digestcomps distcomps forwcomps mhl.body \
@@ -299,7 +299,7 @@ EOF
            scan.YYYYMMDD scan.curses scan.default scan.highlighted scan.mailx \
 	   scan.nomime scan.size scan.time scan.timely scan.unseen
   do
-    cp "${MH_INST_DIR}${sysconfdir}/${f}" "${MH_TEST_DIR}/Mail" || exit 1
+    cp "${MH_INST_DIR}${nmhetcdir}/${f}" "${MH_TEST_DIR}/Mail" || exit 1
   done
 
   folder -create +inbox > /dev/null

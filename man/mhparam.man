@@ -44,13 +44,13 @@ If
 is specified, then all components in the nmh profile are
 displayed and other arguments are ignored.
 .PP
-.BR mhparam
+.B mhparam
 can provide other information, such as the
 .B nmh
 version identifier, the locations of the nmh
 .I etcdir
 and
-.I libdir
+.I libexecdir
 install directories, all
 .I proc
 settings, and the
@@ -80,6 +80,12 @@ The
 switch displays all such other information available from
 .BR mhparam .
 .PP
+Note that the internal
+.B libdir
+component has been replaced by
+.BR libexecdir .
+The old form is deprecated and will be removed in a future release.
+.PP
 Examples:
 .PP
 .RS 5
@@ -89,7 +95,7 @@ Examples:
 Mail
 
 % mhparam mhlproc
-%libdir%/mhl
+%nmhlibexecdir%/mhl
 
 % mhparam \-component Path
 Path: Mail
@@ -110,10 +116,10 @@ context: context
 %nmhversion%
 
 % mhparam etcdir
-%etcdir%
+%nmhetcdir%
 
-% mhparam libdir
-%libdir%
+% mhparam libexecdir
+%nmhlibexecdir%
 
 % mhparam spoollocking
 %default_locking%

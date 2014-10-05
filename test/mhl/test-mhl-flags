@@ -12,7 +12,7 @@ fi
 . "$MH_OBJ_DIR/test/common.sh"
 
 setup_test
-mhl="${MH_LIB_DIR}/mhl"
+mhl="${MH_LIBEXEC_DIR}/mhl"
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 

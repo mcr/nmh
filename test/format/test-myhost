@@ -14,7 +14,7 @@ fi
 setup_test
 
 host=`${MH_OBJ_DIR}/test/getcanon`
-run_test "${MH_LIB_DIR}/ap -format %(myhost) ignore" "$host" \
+run_test "${MH_LIBEXEC_DIR}/ap -format %(myhost) ignore" "$host" \
          "local hostname test"
 
 cp ${MHMTSCONF} ${MH_TEST_DIR}/Mail/mts.conf || exit 1
@@ -22,7 +22,7 @@ MHMTSCONF="${MH_TEST_DIR}/Mail/mts.conf"
 
 echo "localname: some.random.name" >> ${MHMTSCONF}
 
-run_test "${MH_LIB_DIR}/ap -format %(myhost) ignore" "some.random.name" \
+run_test "${MH_LIBEXEC_DIR}/ap -format %(myhost) ignore" "some.random.name" \
          "mts.conf localname test"
 
 exit $failed

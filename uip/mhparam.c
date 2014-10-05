@@ -29,8 +29,8 @@ DEFINE_SWITCH_ENUM(MHPARAM);
 DEFINE_SWITCH_ARRAY(MHPARAM, switches);
 #undef X
 
-extern char *mhlibdir;
 extern char *mhetcdir;
+extern char *mhlibexecdir;
 
 static char *sbackup = BACKUP_PREFIX;
 
@@ -105,7 +105,8 @@ static struct proc procs [] = {
      { "whatnowproc",      &whatnowproc },
      { "whomproc",         &whomproc },
      { "etcdir",           &mhetcdir },
-     { "libdir",           &mhlibdir },
+     { "libdir",           &mhlibexecdir },
+     { "libexecdir",       &mhlibexecdir },
      { "localmbox",	   &localmbox },
      { "sbackup",          &sbackup },
      { "datalocking",      &datalocking },

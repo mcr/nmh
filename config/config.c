@@ -12,7 +12,7 @@
 
 #define nmhbindir(file) NMHBINDIR#file
 #define nmhetcdir(file) NMHETCDIR#file
-#define nmhlibdir(file) NMHLIBDIR#file
+#define nmhlibexecdir(file) NMHLIBEXECDIR#file
 
 
 /*
@@ -143,7 +143,7 @@ char *nmhaccessftp = "nmh-access-ftp";
 /* profile entry for external url access command */
 char *nmhaccessurl = "nmh-access-url";
 
-char *mhlibdir = NMHLIBDIR;
+char *mhlibexecdir = NMHLIBEXECDIR;
 char *mhetcdir = NMHETCDIR;
 
 /* 
@@ -239,7 +239,7 @@ char *moreproc = NULL;
  * for "Bcc:" recipients.
  */
 
-char *mhlproc = nmhlibdir (/mhl);
+char *mhlproc = nmhlibexecdir (/mhl);
 
 /* 
  * This is the super handy BBoard reading program, which is
@@ -259,14 +259,14 @@ char *packproc = nmhbindir (/packf);
  * deliver mail to users.  This is the interface to the MTS.
  */
 
-char *postproc = nmhlibdir (/post);
+char *postproc = nmhlibexecdir (/post);
 
 /*
  * This is program is called by slocal to handle
  * the action `folder' or `+'.
  */
 
-char *rcvstoreproc = nmhlibdir (/rcvstore);
+char *rcvstoreproc = nmhlibexecdir (/rcvstore);
 
 /* 
  * This program is called to remove a message by rmm or refile -nolink.
@@ -296,7 +296,7 @@ char *showmimeproc = nmhbindir (/mhshow);
  * that such message not be filtered in any way.
  */
 
-char *showproc = nmhlibdir (/mhl);
+char *showproc = nmhlibexecdir (/mhl);
 
 /* 
  * This program is called by vmh as the back-end to the window management

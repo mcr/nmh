@@ -17,7 +17,7 @@ fi
 setup_test
 
 # Use proper program, likely not the first one on PATH.
-dp="${MH_LIB_DIR}/dp"
+dp="${MH_LIBEXEC_DIR}/dp"
 
 expected="$MH_TEST_DIR/$$.expected"
 expected_err="$MH_TEST_DIR/$$.expected_err"

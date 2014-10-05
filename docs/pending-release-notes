@@ -15,6 +15,15 @@ NEW FEATURES
 - An "rtrim" flag has been added to mhl to remove any trailing
   whitespace from filtered text lines.  A corresponding "nortrim" flag
   has also been added.
+- The default locations for configuration files and suppoooort binaries
+  have been changed.  Configuration files now install into ${sysconfdir}/nmh,
+  and support binaries are placed in ${libexecdir}/nmh.  If you are upgrading
+  an existing installation you should look for old configuration files in
+  ${sysconfdir} and merge any local customizations into the new files in
+  ${sysconfdir}/nmh, then remove the old files.  ${libdir} will also contain
+  obsolete support programs that should be removed.
+- When building from source, configure will derive ${prefix} from an existing
+  nmh installation if it finds one in your $PATH.
 
 -----------------
 OBSOLETE FEATURES
@@ -34,6 +43,9 @@ DEPRECATED FEATURES
 
 - Support for the MHPDEBUG environment variable is deprecated and will be
   removed from a future nmh release.  Instead, use the -debug switch to pick.
+- With the move of support binaries from ${libdir} to ${libexecdir}/nmh, the
+  mostly undocumented 'libdir' mhparam(1) component has been replaced by a
+  new 'libexecdir' component.  'libdir' will be removed in a future release.
 
 ---------
 BUG FIXES

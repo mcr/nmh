@@ -10,4 +10,4 @@
 
 prefix='@prefix@'
 exec_prefix="@exec_prefix@"
-exec "@libdir@/post" -mts sendmail/pipe "$@"
+exec "@libexecdir@/nmh/post" -mts sendmail/pipe "$@"

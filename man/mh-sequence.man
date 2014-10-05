@@ -322,7 +322,7 @@ one command's messages not appearing on the requested sequence.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 ^<mh\-dir>/context~^The user context
 ^<folder>/\&.mh\(rusequences~^File for public sequences

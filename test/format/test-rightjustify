@@ -12,7 +12,7 @@ fi
 
 setup_test
 
-actual=`run_prog ${MH_LIB_DIR}/ap -format "%-30(friendly{text})<<End of test" "No Such User <nosuch@user.com>"`
+actual=`run_prog ${MH_LIBEXEC_DIR}/ap -format "%-30(friendly{text})<<End of test" "No Such User <nosuch@user.com>"`
 expected="                  No Such User<<End of test"
 ##########123456789012345678901234567890
 

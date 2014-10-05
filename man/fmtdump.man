@@ -7,7 +7,7 @@ fmtdump \- decode nmh format files
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/fmtdump
+.B %nmhlibexecdir%/fmtdump
 .RB [ \-form
 .IR formatfile ]
 .RB [ \-format
@@ -41,7 +41,7 @@ for the details.
 $HOME/.mh_profile
 The user's profile.
 .TP
-%etcdir%/scan.default
+%nmhetcdir%/scan.default
 The default format file.
 .PD
 .SH "PROFILE COMPONENTS"

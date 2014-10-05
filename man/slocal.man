@@ -7,7 +7,7 @@ slocal \- asynchronously filter and deliver new mail
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/slocal
+.B %nmhlibexecdir%/slocal
 .RB [ \-addr
 .IR address ]
 .RB [ \-info
@@ -126,7 +126,7 @@ support a \&.forward file for directing incoming mail.
 You should include the line
 .PP
 .ce
-\*(lq|\ %libdir%/slocal\ \-user\ username\*(rq
+\*(lq|\ %nmhlibexecdir%/slocal\ \-user\ username\*(rq
 .PP
 in your \&.forward file in your home directory.  This will cause
 your MTA to invoke
@@ -286,7 +286,7 @@ file cannot be found, or does not
 perform an action which delivers the message, then
 .B slocal
 will check for a global delivery file at
-.IR %etcdir%/maildelivery .
+.IR %nmhetcdir%/maildelivery .
 This file is read according to the same rules.  This file must be
 owned by root and must be writable only by root.
 .PP
@@ -327,7 +327,7 @@ From      steve     destroy A       \-
 default   \-        file    ?       mailbox
 
 # always run rcvtty
-*         \-        pipe    R       %libdir%/rcvtty
+*         \-        pipe    R       %nmhlibexecdir%/rcvtty
 .fi
 .SS "Sub-process environment"
 When a process is invoked, its environment is: the user/group-ids are
@@ -364,10 +364,10 @@ quicker delivery into your maildrop.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%etcdir%/mts.conf~^nmh mts configuration file
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
+^%nmhetcdir%/mts.conf~^nmh mts configuration file
 ^$HOME/\&.maildelivery~^The file controlling local delivery
-^%etcdir%/maildelivery~^Rather than the standard file
+^%nmhetcdir%/maildelivery~^Rather than the standard file
 ^%mailspool%/$USER~^The default maildrop
 .fi
 .SH "SEE ALSO"

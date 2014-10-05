@@ -7,7 +7,7 @@ rcvpack \- append message to file
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/rcvpack
+.B %nmhlibexecdir%/rcvpack
 .I file
 .RB [ \-mbox ]
 .RB [ \-mmdf ]
@@ -46,8 +46,8 @@ shell scripts.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
-^%etcdir%/mts.conf~^nmh mts configuration file
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
+^%nmhetcdir%/mts.conf~^nmh mts configuration file
 .fi
 .SH "SEE ALSO"
 .IR rcvdist (1),

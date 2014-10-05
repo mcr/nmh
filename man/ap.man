@@ -7,7 +7,7 @@ ap \- parse addresses RFC 822-style
 .SH SYNOPSIS
 .HP 5
 .na
-.B %libdir%/ap
+.B %nmhlibexecdir%/ap
 .RB [ \-form
 .IR formatfile ]
 .RB [ \-format
@@ -75,7 +75,7 @@ the address.
 $HOME/\&.mh\(ruprofile
 The user's profile.
 .TP
-%etcdir%/mts.conf
+%nmhetcdir%/mts.conf
 The mts configuration file.
 .PD
 .SH "PROFILE COMPONENTS"

@@ -362,7 +362,7 @@ switch, the user can direct
 as to how long it should make header lines containing addresses.
 .PP
 The mail transport system default is provided in
-.I %etcdir%/mts.conf
+.I %nmhetcdir%/mts.conf
 but can be overriiden here with the
 .B \-mts
 switch.
@@ -372,7 +372,7 @@ If nmh is using the SMTP MTA, the
 and the
 .B \-port
 switches can be used to override the default mail server (defined by the
-.I %etcdir%/mts.conf
+.I %nmhetcdir%/mts.conf
 .RI servers
 entry).  The
 .B \-snoop
@@ -456,7 +456,7 @@ for more information.
 .SH FILES
 .fc ^ ~
 .nf
-.ta \w'%etcdir%/ExtraBigFileName  'u
+.ta \w'%nmhetcdir%/ExtraBigFileName  'u
 ^$HOME/\&.mh\(ruprofile~^The user profile
 .fi
 .SH "PROFILE COMPONENTS"
@@ -487,7 +487,7 @@ for more information.
 .SH DEFAULTS
 .nf
 .RB ` file "' defaults to <mh\-dir>/draft"
-.RB ` \-alias "' defaults to %etcdir%/MailAliases"
+.RB ` \-alias "' defaults to %nmhetcdir%/MailAliases"
 .RB ` \-nodraftfolder '
 .RB ` \-nofilter '
 .RB ` \-format '

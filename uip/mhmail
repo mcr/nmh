@@ -57,7 +57,7 @@ die() {
 
 bindir=`finddir $0`
 nmhbindir=`cd "$bindir" && pwd`
-nmhlibdir=`$nmhbindir/mhparam libdir`
+nmhlibexecdir=`$nmhbindir/mhparam libexecdir`
 case `printf 'OK\n' | tail -n 1 2>&1` in
   OK) tail='tail -n ' ;;
   *)  tail='tail -' ;;
@@ -189,7 +189,7 @@ if [ "$tolist"x = x ]; then
   die 'Usage: mhmail [-t(o)] addrs ... [switches]'
 fi
 if [ "$from"x = x ]; then
-  from=`${nmhlibdir}/ap -format '%(localmbox)' 0`
+  from=`${nmhlibexecdir}/ap -format '%(localmbox)' 0`
 fi
 
 #### Check for missing mandatory arguments.
@@ -215,7 +215,7 @@ fi
 #### .orig file, so it will remove them, too.
 umask 077
 tmpdir="${MHTMPDIR:-${TMPDIR:-`$nmhbindir/mhpath +`}}"
-tmpfilename=`cd "$tmpdir"  &&  "${nmhlibdir}/mkstemp" -p mhmail`
+tmpfilename=`cd "$tmpdir"  &&  "${nmhlibexecdir}/mkstemp" -p mhmail`
 [ $? -ne 0 ]  &&  die "mhmail: failed to create temporary file in $tmpdir"
 tmpfile="$tmpdir/$tmpfilename"
 backup_char=`"$nmhbindir"/mhparam sbackup`
@@ -236,7 +236,7 @@ else
     #### When resending with send, tmpfile will just contain the
     #### Resent- header fields.  "$tmpfileresent" will contain
     #### the message that is being resent.
-    tmpfileresent=`"${nmhlibdir}/mkstemp" -d "$tmpdir" -p mhmail-resent`
+    tmpfileresent=`"${nmhlibexecdir}/mkstemp" -d "$tmpdir" -p mhmail-resent`
     [ $? -ne 0 ]  &&  die "mhmail: failed to create temporary file in $tmpdir"
     mhdist=1; export mhdist
     mhaltmsg=$tmpfileresent; export mhaltmsg

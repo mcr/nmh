@@ -38,7 +38,7 @@ die() {
 
 bindir=`finddir $0`
 nmhbindir=`cd "$bindir" && pwd`
-nmhlibdir=`$nmhbindir/mhparam libdir`
+nmhlibexecdir=`$nmhbindir/mhparam libexecdir`
 
 
 #### Process switches.
@@ -67,7 +67,7 @@ for arg in "$@"; do
     -s|-su|-sub|-subj|-subje|-subjec|-subject) subjectarg=1 ;;
     -t|-to) toarg=1 ;;
     -v|-ve|-ver|-vers|-versi|-versio|-version)
-       "$nmhlibdir/viamail" -version | sed 's/viamail/sendfiles/'; exit ;;
+       "$nmhlibexecdir/viamail" -version | sed 's/viamail/sendfiles/'; exit ;;
     -*) die ;;
     *) if [ $compressarg -eq 1 ]; then
          compress="$arg"
@@ -136,7 +136,7 @@ checkforargs
 
 if [ x"$from" = x ]; then
   if [ x"$PERSON" = x ]; then
-    from=`"$nmhlibdir/ap" -format '%(localmbox)' 0`
+    from=`"$nmhlibexecdir/ap" -format '%(localmbox)' 0`
   else
     from="$PERSON"
   fi
@@ -170,7 +170,7 @@ esac
 
 #### Send using viamail.
 tar cvf - "$@" | $compress | \
-    "$nmhlibdir/viamail" -to "$to" -subject "$subject" \
+    "$nmhlibexecdir/viamail" -to "$to" -subject "$subject" \
         -from "$from" -parameters "type=tar$conversion" \
         -comment "extract with $uncompress | tar xvpf -" \
         -delay "$delay" -verbose
