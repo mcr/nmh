@@ -131,7 +131,7 @@ if install-mh -check >/dev/null 2>&1; then
 
   config_prefix=`cd $mhbin/.. && pwd`
 
-  mtsconf=`dirname "$mhbin"`/etc/mts.conf
+  mtsconf=`mhparam etcdir`/mts.conf
   if [ -f "$mtsconf" ]; then
     mts_entry=`grep '^mts:' "$mtsconf"`
     if [ "$mts_entry" ]; then
