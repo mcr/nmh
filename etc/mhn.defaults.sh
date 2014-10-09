@@ -316,7 +316,7 @@ fi
 # access-type.
 case "`uname`" in
   FreeBSD)
-	echo "nmh-access-url: fetch -a -o -" >> $TMP
+	echo "nmh-access-url: fetch -o -" >> $TMP
 	;;
   *)
 	PGM=`$SEARCHPROG "$SEARCHPATH" curl`

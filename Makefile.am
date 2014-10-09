@@ -119,7 +119,7 @@ clean-local:
 ##
 ## Stuff that should be cleaned via "make maintainer-clean"
 ##
-MAINTAINERCLEANFILES = cscope.files cscope.out cscope.in.out cscope.po.out *.plist
+MAINTAINERCLEANFILES = atags cscope.files cscope.out cscope.in.out cscope.po.out *.plist
 
 ##
 ## And our own superclean, to get everything left by maintainer-clean.
