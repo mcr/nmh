@@ -1,4 +1,3 @@
-
 /*
  * mh.h -- main header file for all of nmh
  */
