@@ -778,7 +778,7 @@ evalvar (struct mcomp *c1)
 	    return 1;
 	}
 
-	args = (struct arglist *) calloc((size_t) 1, sizeof(struct arglist));
+	args = (struct arglist *) mh_xcalloc ((size_t) 1, sizeof(struct arglist));
 
 	if (arglist_tail)
 	    arglist_tail->a_next = args;
@@ -1184,7 +1184,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 
     (q = &pq)->pq_next = NULL;
     while ((cp = getname (ap))) {
-	if ((p = (struct pqpair *) calloc ((size_t) 1, sizeof(*p))) == NULL)
+	if ((p = (struct pqpair *) mh_xcalloc ((size_t) 1, sizeof(*p))) == NULL)
 	    adios (NULL, "unable to allocate pqpair memory");
 	else {
 	    if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
@@ -1240,7 +1240,7 @@ add_queue (struct mcomp **head, struct mcomp **tail, char *name, char *text, int
 {
     struct mcomp *c1;
 
-    if ((c1 = (struct mcomp *) calloc ((size_t) 1, sizeof(*c1))) == NULL)
+    if ((c1 = (struct mcomp *) mh_xcalloc ((size_t) 1, sizeof(*c1))) == NULL)
 	adios (NULL, "unable to allocate comp memory");
     else {
 	c1->c_flags = flags & ~INIT;

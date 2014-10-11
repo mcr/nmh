@@ -65,6 +65,24 @@ mh_xrealloc(void *ptr, size_t size)
 }
 
 /*
+ * Safely call calloc
+ */
+void *
+mh_xcalloc(size_t nmemb, size_t size)
+{
+    void *memory;
+
+    if (nmemb == 0  ||  size == 0)
+        adios(NULL, "Tried to calloc 0 bytes");
+
+    if ((memory = calloc(nmemb, size))) {
+        return memory;
+    } else {
+        adios(NULL, "calloc failed");
+    }
+}
+
+/*
  * Return the present working directory, if the current directory does not
  * exist, or is too long, make / the pwd.
  */

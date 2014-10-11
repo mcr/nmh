@@ -253,7 +253,7 @@ main (int argc, char **argv)
 	 * the collection of messages with the same subj
 	 * given a message number.
 	 */
-	il = (struct smsg ***) calloc (mp->hghsel+1, sizeof(*il));
+	il = (struct smsg ***) mh_xcalloc (mp->hghsel+1, sizeof(*il));
 	if (! il)
 	    adios (NULL, "couldn't allocate msg list");
 	for (i = 0; i < nmsgs; i++)
@@ -318,7 +318,7 @@ read_hdrs (struct msgs *mp, char *datesw)
     twscopy (&tb, dlocaltimenow ());
 
     smsgs = (struct smsg *)
-	calloc ((size_t) (mp->hghsel - mp->lowsel + 2),
+	mh_xcalloc ((size_t) (mp->hghsel - mp->lowsel + 2),
 	    sizeof(*smsgs));
     if (smsgs == NULL)
 	adios (NULL, "unable to allocate sort storage");

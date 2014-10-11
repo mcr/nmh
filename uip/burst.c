@@ -165,7 +165,7 @@ main (int argc, char **argv)
     seq_setprev (mp);	/* set the previous-sequence */
 
     smsgs = (struct smsg *)
-	calloc ((size_t) (MAXFOLDER + 2), sizeof(*smsgs));
+	mh_xcalloc ((size_t) (MAXFOLDER + 2), sizeof(*smsgs));
     if (smsgs == NULL)
 	adios (NULL, "unable to allocate burst storage");
 

@@ -11,6 +11,7 @@
 #include <h/addrsbr.h>
 #include <h/mf.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 /* High level parsing of addresses:
 
@@ -138,7 +139,7 @@ getm (char *str, char *dfhost, int dftype, char *eresult, size_t eresultsize)
 	dftype = LOCALHOST;
     }
 
-    mp = (struct mailname *) calloc ((size_t) 1, sizeof(*mp));
+    mp = (struct mailname *) mh_xcalloc ((size_t) 1, sizeof(*mp));
     if (mp == NULL) {
 	if (eresult) {
 	    strncpy (eresult, "insufficient memory to represent address",

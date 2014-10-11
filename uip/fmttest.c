@@ -420,7 +420,7 @@ process_addresses(struct format *fmt, struct msgs_array *addrs,
     for (i = 0; i < addrs->size; i++) {
     	(q = &pq)->pq_next = NULL;
 	while ((cp = getname(addrs->msgs[i]))) {
-	    if ((p = (struct pqpair *) calloc ((size_t) 1, sizeof(*p))) == NULL)
+	    if ((p = (struct pqpair *) mh_xcalloc ((size_t) 1, sizeof(*p))) == NULL)
 	    	adios (NULL, "unable to allocate pqpair memory");
 	    if ((mp = getm(cp, NULL, 0, error, sizeof(error))) == NULL) {
 	    	p->pq_text = getcpy(cp);

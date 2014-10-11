@@ -284,7 +284,7 @@ static struct colormap colortable[] = {
 
 /* Add new component to the hash table */
 #define NEWCOMP(cm,name) do { \
-	cm = ((struct comp *) calloc(1, sizeof (struct comp)));\
+	cm = ((struct comp *) mh_xcalloc (1, sizeof (struct comp)));\
 	cm->c_name = getcpy(name);\
 	cm->c_refcount++;\
 	ncomp++;\
@@ -406,7 +406,7 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
      */
     i = strlen(fstring)/2 + 1;
 		if (i==1) i++;
-    next_fp = formatvec = (struct format *)calloc ((size_t) i,
+    next_fp = formatvec = (struct format *)mh_xcalloc ((size_t) i,
 						   sizeof(struct format));
     if (next_fp == NULL)
 	adios (NULL, "unable to allocate format storage");
@@ -563,7 +563,7 @@ do_name(char *sp, int preprocess)
 	    CERROR("component used as both date and address");
 	}
 	cm->c_tws = (struct tws *)
-	    calloc((size_t) 1, sizeof(*cm->c_tws));
+	    mh_xcalloc ((size_t) 1, sizeof(*cm->c_tws));
 	fp->f_type = preprocess;
 	PUTCOMP(sp);
 	cm->c_type |= CT_DATE;

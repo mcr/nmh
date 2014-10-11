@@ -459,7 +459,7 @@ newnexus (int (*action)())
 {
     register struct nexus *p;
 
-    if ((p = (struct nexus *) calloc ((size_t) 1, sizeof *p)) == NULL)
+    if ((p = (struct nexus *) mh_xcalloc ((size_t) 1, sizeof *p)) == NULL)
 	adios (NULL, "unable to allocate component storage");
 
     p->n_action = action;

@@ -145,7 +145,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
     /*
      * Allocate space for primary (outside) content
      */
-    if ((ct = (CT) calloc (1, sizeof(*ct))) == NULL)
+    if ((ct = (CT) mh_xcalloc (1, sizeof(*ct))) == NULL)
 	adios (NULL, "out of memory");
 
     /*
@@ -295,7 +295,7 @@ finish_field:
     ct->c_type = CT_MULTIPART;
     ct->c_subtype = MULTI_MIXED;
 
-    if ((m = (struct multipart *) calloc (1, sizeof(*m))) == NULL)
+    if ((m = (struct multipart *) mh_xcalloc (1, sizeof(*m))) == NULL)
 	adios (NULL, "out of memory");
     ct->c_ctparams = (void *) m;
     pp = &m->mp_parts;
@@ -315,7 +315,7 @@ finish_field:
 	if (!p)
 	    continue;
 
-	if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
+	if ((part = (struct part *) mh_xcalloc (1, sizeof(*part))) == NULL)
 	    adios (NULL, "out of memory");
 	*pp = part;
 	pp = &part->mp_next;
@@ -336,7 +336,7 @@ finish_field:
 	    adios("reading", "Unable to open %s for", at_entry->filename);
 	}
 
-	if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
+	if ((p = (CT) mh_xcalloc (1, sizeof(*p))) == NULL)
 	    adios(NULL, "out of memory");
 
 	init_decoded_content(p, infile);
@@ -349,7 +349,7 @@ finish_field:
 
 	setup_attach_content(p, at_entry->filename);
 
-	if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
+	if ((part = (struct part *) mh_xcalloc (1, sizeof(*part))) == NULL)
 	    adios (NULL, "out of memory");
 	*pp = part;
 	pp = &part->mp_next;
@@ -370,7 +370,7 @@ finish_field:
 	struct part *part;
 	struct text *t;
 
-	if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
+	if ((p = (CT) mh_xcalloc (1, sizeof(*p))) == NULL)
 	    adios(NULL, "out of memory");
 
 	init_decoded_content(p, infile);
@@ -390,13 +390,13 @@ finish_field:
 	p->c_begin = ftell(in);
 	p->c_end = ftell(in);
 
-	if ((t = (struct text *) calloc (1, sizeof (*t))) == NULL)
+	if ((t = (struct text *) mh_xcalloc (1, sizeof (*t))) == NULL)
 	    adios (NULL, "out of memory");
 
 	t->tx_charset = CHARSET_SPECIFIED;
 	p->c_ctparams = t;
 
-	if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
+	if ((part = (struct part *) mh_xcalloc (1, sizeof(*part))) == NULL)
 	    adios (NULL, "out of memory");
 	*pp = part;
 	part->mp_part = p;
@@ -544,7 +544,7 @@ user_content (FILE *in, char *buf, CT *ctp, const char *infilename)
     }
 
     /* allocate basic Content structure */
-    if ((ct = (CT) calloc (1, sizeof(*ct))) == NULL)
+    if ((ct = (CT) mh_xcalloc (1, sizeof(*ct))) == NULL)
 	adios (NULL, "out of memory");
     *ctp = ct;
 
@@ -776,7 +776,7 @@ use_forw:
 	     * reference, we need to create another Content structure
 	     * for the message/external-body to wrap it in.
 	     */
-	    if ((ct = (CT) calloc (1, sizeof(*ct))) == NULL)
+	    if ((ct = (CT) mh_xcalloc (1, sizeof(*ct))) == NULL)
 		adios (NULL, "out of memory");
 	    init_decoded_content(ct, infilename);
 	    *ctp = ct;
@@ -785,7 +785,7 @@ use_forw:
 	    ct->c_type = CT_MESSAGE;
 	    ct->c_subtype = MESSAGE_EXTERNAL;
 
-	    if ((e = (struct exbody *) calloc (1, sizeof(*e))) == NULL)
+	    if ((e = (struct exbody *) mh_xcalloc (1, sizeof(*e))) == NULL)
 		adios (NULL, "out of memory");
 	    ct->c_ctparams = (void *) e;
 
@@ -895,7 +895,7 @@ use_forw:
 	    ct->c_type = CT_MULTIPART;
 	    ct->c_subtype = MULTI_DIGEST;
 
-	    if ((m = (struct multipart *) calloc (1, sizeof(*m))) == NULL)
+	    if ((m = (struct multipart *) mh_xcalloc (1, sizeof(*m))) == NULL)
 		adios (NULL, "out of memory");
 	    ct->c_ctparams = (void *) m;
 	    pp = &m->mp_parts;
@@ -906,7 +906,7 @@ use_forw:
 		    CT p;
 		    CE pe;
 
-		    if ((p = (CT) calloc (1, sizeof(*p))) == NULL)
+		    if ((p = (CT) mh_xcalloc (1, sizeof(*p))) == NULL)
 			adios (NULL, "out of memory");
 		    init_decoded_content (p, infilename);
 		    pe = &p->c_cefile;
@@ -920,7 +920,7 @@ use_forw:
 		    if (listsw && stat (pe->ce_file, &st) != NOTOK)
 			p->c_end = (long) st.st_size;
 
-		    if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
+		    if ((part = (struct part *) mh_xcalloc (1, sizeof(*part))) == NULL)
 			adios (NULL, "out of memory");
 		    *pp = part;
 		    pp = &part->mp_next;
@@ -981,7 +981,7 @@ use_forw:
 	ct->c_type = CT_MULTIPART;
 	ct->c_subtype = vrsn;
 
-	if ((m = (struct multipart *) calloc (1, sizeof(*m))) == NULL)
+	if ((m = (struct multipart *) mh_xcalloc (1, sizeof(*m))) == NULL)
 	    adios (NULL, "out of memory");
 	ct->c_ctparams = (void *) m;
 
@@ -998,7 +998,7 @@ use_forw:
 	    if (!p)
 		continue;
 
-	    if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
+	    if ((part = (struct part *) mh_xcalloc (1, sizeof(*part))) == NULL)
 		adios (NULL, "out of memory");
 	    *pp = part;
 	    pp = &part->mp_next;

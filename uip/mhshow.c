@@ -314,7 +314,7 @@ do_cache:
      * check if message is coming from file
      */
     if (file) {
-	if (!(cts = (CT *) calloc ((size_t) 2, sizeof(*cts))))
+	if (!(cts = (CT *) mh_xcalloc ((size_t) 2, sizeof(*cts))))
 	    adios (NULL, "out of memory");
 	ctp = cts;
 
@@ -358,7 +358,7 @@ do_cache:
 	seq_setprev (mp);	/* set the Previous-Sequence */
 	seq_setunseen (mp, 1);	/* unset the Unseen-Sequence */
 
-	if (!(cts = (CT *) calloc ((size_t) (mp->numsel + 1), sizeof(*cts))))
+	if (!(cts = (CT *) mh_xcalloc ((size_t) (mp->numsel + 1), sizeof(*cts))))
 	    adios (NULL, "out of memory");
 	ctp = cts;
 

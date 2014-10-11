@@ -283,7 +283,7 @@ get_content (FILE *in, char *file, int toplevel)
     m_getfld_state_t gstate = 0;
 
     /* allocate the content structure */
-    if (!(ct = (CT) calloc (1, sizeof(*ct))))
+    if (!(ct = (CT) mh_xcalloc (1, sizeof(*ct))))
 	adios (NULL, "out of memory");
 
     ct->c_fp = in;
@@ -1018,7 +1018,7 @@ InitText (CT ct)
     ct->c_subtype = kv->kv_value;
 
     /* allocate text character set structure */
-    if ((t = (struct text *) calloc (1, sizeof(*t))) == NULL)
+    if ((t = (struct text *) mh_xcalloc (1, sizeof(*t))) == NULL)
 	adios (NULL, "out of memory");
     ct->c_ctparams = (void *) t;
 
@@ -1126,7 +1126,7 @@ InitMultiPart (CT ct)
     }
 
     /* allocate primary structure for multipart info */
-    if ((m = (struct multipart *) calloc (1, sizeof(*m))) == NULL)
+    if ((m = (struct multipart *) mh_xcalloc (1, sizeof(*m))) == NULL)
 	adios (NULL, "out of memory");
     ct->c_ctparams = (void *) m;
 
@@ -1171,7 +1171,7 @@ InitMultiPart (CT ct)
 	    if (strcmp (bufp + 2, m->mp_start))
 		continue;
 next_part:
-	    if ((part = (struct part *) calloc (1, sizeof(*part))) == NULL)
+	    if ((part = (struct part *) mh_xcalloc (1, sizeof(*part))) == NULL)
 		adios (NULL, "out of memory");
 	    *next = part;
 	    next = &part->mp_next;
@@ -1354,7 +1354,7 @@ InitMessage (CT ct)
 		PM pm;
 		struct partial *p;
 
-		if ((p = (struct partial *) calloc (1, sizeof(*p))) == NULL)
+		if ((p = (struct partial *) mh_xcalloc (1, sizeof(*p))) == NULL)
 		    adios (NULL, "out of memory");
 		ct->c_ctparams = (void *) p;
 
@@ -1403,7 +1403,7 @@ invalid_param:
 		CT p;
 		FILE *fp;
 
-		if ((e = (struct exbody *) calloc (1, sizeof(*e))) == NULL)
+		if ((e = (struct exbody *) mh_xcalloc (1, sizeof(*e))) == NULL)
 		    adios (NULL, "out of memory");
 		ct->c_ctparams = (void *) e;
 

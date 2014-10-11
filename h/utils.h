@@ -5,6 +5,7 @@
 
 void *mh_xmalloc(size_t);
 void *mh_xrealloc(void *, size_t);
+void *mh_xcalloc(size_t, size_t);
 char *pwd(void);
 char *add(const char *, char *);
 char *addlist(char *, const char *);

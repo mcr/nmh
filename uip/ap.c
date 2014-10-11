@@ -11,6 +11,7 @@
 #include <h/addrsbr.h>
 #include <h/fmt_scan.h>
 #include <h/mts.h>
+#include <h/utils.h>
 
 #define	NADDRS	100
 
@@ -154,7 +155,7 @@ process (char *arg, int length)
 
     (q = &pq)->pq_next = NULL;
     while ((cp = getname (arg))) {
-	if ((p = (struct pqpair *) calloc ((size_t) 1, sizeof(*p))) == NULL)
+	if ((p = (struct pqpair *) mh_xcalloc ((size_t) 1, sizeof(*p))) == NULL)
 	    adios (NULL, "unable to allocate pqpair memory");
 	if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
 	    p->pq_text = getcpy (cp);

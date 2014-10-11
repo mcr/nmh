@@ -164,7 +164,7 @@ mbx_read (FILE *fp, long pos, struct drop **drops, int noisy)
     char buffer[BUFSIZ];
     register struct drop *cp, *dp, *ep, *pp;
 
-    pp = (struct drop *) calloc ((size_t) (len = MAXFOLDER), sizeof(*dp));
+    pp = (struct drop *) mh_xcalloc ((size_t) (len = MAXFOLDER), sizeof(*dp));
     if (pp == NULL) {
 	if (noisy)
 	    admonish (NULL, "unable to allocate drop storage");
@@ -504,7 +504,7 @@ map_read (char *file, long pos, struct drop **drops, int noisy)
     }
 
     msgp = mp->d_id;
-    dp = (struct drop *) calloc ((size_t) (msgp + 1), sizeof(*dp));
+    dp = (struct drop *) mh_xcalloc ((size_t) (msgp + 1), sizeof(*dp));
     if (dp == NULL) {
 	close (md);
 	return 0;

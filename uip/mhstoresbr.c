@@ -352,7 +352,7 @@ store_partial (CT ct, mhstoreinfo_t info)
 	return NOTOK;
     }
 
-    if ((base = (CT *) calloc ((size_t) (i + 1), sizeof(*base))) == NULL)
+    if ((base = (CT *) mh_xcalloc ((size_t) (i + 1), sizeof(*base))) == NULL)
 	adios (NULL, "out of memory");
 
     ctq = base;

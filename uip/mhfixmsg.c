@@ -285,7 +285,7 @@ main (int argc, char **argv) {
             }
         }
 
-        if (! (cts = (CT *) calloc ((size_t) 2, sizeof *cts))) {
+        if (! (cts = (CT *) mh_xcalloc ((size_t) 2, sizeof *cts))) {
             adios (NULL, "out of memory");
         }
         ctp = cts;
@@ -320,7 +320,7 @@ main (int argc, char **argv) {
                 done (1);
         seq_setprev (mp);       /* set the previous-sequence */
 
-        if (! (cts = (CT *) calloc ((size_t) (mp->numsel + 1), sizeof *cts))) {
+        if (! (cts = (CT *) mh_xcalloc ((size_t) (mp->numsel + 1), sizeof *cts))) {
             adios (NULL, "out of memory");
         }
         ctp = cts;
@@ -996,7 +996,7 @@ static CT
 divide_part (CT ct) {
     CT new_part;
 
-    if ((new_part = (CT) calloc (1, sizeof *new_part)) == NULL)
+    if ((new_part = (CT) mh_xcalloc (1, sizeof *new_part)) == NULL)
         adios (NULL, "out of memory");
 
     /* Just copy over what is needed for decoding.  c_vrsn and
@@ -1148,11 +1148,11 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     struct multipart *m;
     const struct str2init *ctinit;
 
-    if ((ct = (CT) calloc (1, sizeof *ct)) == NULL)
+    if ((ct = (CT) mh_xcalloc (1, sizeof *ct)) == NULL)
         adios (NULL, "out of memory");
 
     /* Set up the multipart/alternative part.  These fields of *ct were
-       initialized to 0 by calloc():
+       initialized to 0 by mh_xcalloc():
        c_fp, c_unlink, c_begin, c_end,
        c_vrsn, c_ctline, c_celine,
        c_id, c_descr, c_dispo, c_partno,
@@ -1256,7 +1256,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     p->mp_next->mp_next = NULL;
     p->mp_next->mp_part = first_alt;
 
-    if ((m = (struct multipart *) calloc (1, sizeof (struct multipart))) ==
+    if ((m = (struct multipart *) mh_xcalloc (1, sizeof (struct multipart))) ==
         NULL)
         adios (NULL, "out of memory");
     m->mp_start = concat (boundary, "\n", NULL);
