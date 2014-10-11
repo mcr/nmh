@@ -366,7 +366,7 @@ mon	date	integer	month of the year
 month	date	string	month of the year (abbrev.)
 lmonth	date	string	month of the year
 year	date	integer	year (may be > 100)
-zone	date	integer	timezone in hours
+zone	date	integer	timezone in minutes
 tzone	date	string	timezone string
 szone	date	integer	timezone explicit?
 			(1=explicit,0=implicit,\-1=unknown)
