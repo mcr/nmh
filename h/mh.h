@@ -60,6 +60,7 @@ void charstring_push_back (charstring_t, const char);
 /* Append possibly multi-byte character(s): */
 void charstring_push_back_chars (charstring_t, const char [], size_t, size_t);
 void charstring_append (charstring_t, const charstring_t);
+void charstring_append_cstring (charstring_t, const char []);
 void charstring_clear (charstring_t);
 /* Don't store return value of charstring_buffer() and use later after
    intervening push_back's; use charstring_buffer_copy() instead. */

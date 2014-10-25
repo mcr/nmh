@@ -102,10 +102,22 @@ charstring_append (charstring_t dest, const charstring_t src) {
     const size_t num = src->cur - src->buffer;
 
     if (num > 0) {
-        charstring_reserve (dest, num + (dest->cur - dest->buffer));
+        charstring_reserve (dest, dest->cur - dest->buffer + num);
         memcpy (dest->cur, src->buffer, num);
         dest->cur += num;
         dest->chars += src->chars;
+    }
+}
+
+void
+charstring_append_cstring (charstring_t dest, const char src[]) {
+    const size_t num = strlen (src);
+
+    if (num > 0) {
+        charstring_reserve (dest, dest->cur - dest->buffer + num);
+        memcpy (dest->cur, src, num);  /* Exclude src's trailing newline. */
+        dest->cur += num;
+        dest->chars += num;
     }
 }
 
@@ -134,14 +146,12 @@ charstring_buffer (const charstring_t s) {
 
 char *
 charstring_buffer_copy (const charstring_t s) {
-    char *copy = strdup (charstring_buffer (s));
+    char *copy = mh_xmalloc (s->cur - s->buffer + 1);
 
-    if (copy) {
-        return copy;
-    } else {
-        advise ("strdup", "unable to copy charstring buffer");
-        return NULL;
-    }
+    /* Use charstring_buffer() to null terminate the buffer. */
+    memcpy (copy, charstring_buffer (s), s->cur - s->buffer + 1);
+
+    return copy;
 }
 
 size_t
