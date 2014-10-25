@@ -141,7 +141,6 @@ as a Content-MD5 header field), then
 will attempt to
 verify the integrity of the content.
 .SS "Storing the Contents"
-The
 .B mhstore
 will store the contents of the named messages in
 \*(lqnative\*(rq (decoded) format.  Two things must be determined:
