@@ -46,6 +46,7 @@ expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
 fi
 
 echo "mhstore-store-text: %m%P.txt" >> $TMP
+echo "mhstore-store-text/html: %m%P.html" >> $TMP
 echo "mhstore-store-text/richtext: %m%P.rt" >> $TMP
 echo "mhstore-store-video/mpeg: %m%P.mpg" >> $TMP
 echo "mhstore-store-application/PostScript: %m%P.ps" >> $TMP
