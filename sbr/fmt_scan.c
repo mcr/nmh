@@ -832,7 +832,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		    value = -1;
 	    break;
 	case FT_LV_DST:
-	    value = fmt->f_comp->c_tws->tw_flags & TW_DST;
+	    value = fmt->f_comp->c_tws->tw_flags & TW_DST ? 1 : 0;
 	    break;
 	case FT_LS_822DATE:
 	    str = dasctime (fmt->f_comp->c_tws , TW_ZONE);
