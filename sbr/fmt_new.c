@@ -58,6 +58,13 @@ new_fs (char *form, char *format, char *default_fs)
 }
 
 
+void
+free_fs (){
+    free (formats);
+    formats = 0;
+}
+
+
 /*
  * Expand escapes in format strings
  */
