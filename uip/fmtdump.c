@@ -210,6 +210,7 @@ dumpone(struct format *fmt)
 	case FT_LS_FRIENDLY:
 	case FT_PARSEADDR:
 	case FT_MYMBOX:
+	case FT_GETMYMBOX:
 		printf(", c_name ");
 		litputs(fmt->f_comp->c_name);
 		if (fmt->f_comp->c_type)
@@ -413,6 +414,7 @@ f_typestr(int t)
 	case FT_FORMATADDR: return("FORMATADDR");
 	case FT_CONCATADDR: return("CONCATADDR");
 	case FT_MYMBOX: return("MYMBOX");
+	case FT_GETMYMBOX: return("GETMYMBOX");
 	case FT_SAVESTR: return("SAVESTR");
 #ifdef	FT_PAUSE
 	case FT_PAUSE: return ("PAUSE");

@@ -31,9 +31,9 @@ myname="Random User <random@user.something.com>"
 
 #### Remove existing Local-Mailbox: profile component, if any.  Then
 #### add one.
-grep -v 'Local-Mailbox: ' ${MH} > ${MH}.new
-mv -f ${MH}.new ${MH}
-echo "Local-Mailbox: ${myname}" >> ${MH}
+grep -v 'Local-Mailbox: ' "$MH" > "$MH".new
+mv -f "$MH".new "$MH"
+echo "Local-Mailbox: ${myname}" >> "$MH"
 
 run_test "echo \
          `run_prog ${MH_LIBEXEC_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \
@@ -49,5 +49,18 @@ printf 'Alternate-Mailboxes: user@example.com\n' >> $MH
 run_test "echo \
          `run_prog ${MH_LIBEXEC_DIR}/ap -format '%(mymbox{text})' "${myname}"`" \
          1 "Local-Mailbox with Alternate-Mailbox test"
+
+# check getmymbox, without match
+run_test 'fmttest -message -format %(getmymbox{from}) first' ''
+
+grep -v 'Alternate-Mailboxes: ' "$MH" > "$MH".new
+mv -f "$MH".new "$MH"
+cat >>"$MH" <<EOF
+Alternate-Mailboxes: test1@example.com
+EOF
+
+# check getmymbox, with match
+run_test 'fmttest -message -format %(getmymbox{from}) first' \
+         'test1@example.com'
 
 exit $failed

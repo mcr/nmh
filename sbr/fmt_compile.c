@@ -223,6 +223,7 @@ static struct ftable functable[] = {
      { "friendly",   TF_COMP,	FT_LS_FRIENDLY,	FT_PARSEADDR,	TFL_PUTS },
 
      { "mymbox",     TF_COMP,	FT_LV_COMPFLAG,	FT_MYMBOX,	TFL_PUTN },
+     { "getmymbox",  TF_COMP,	FT_LS_ADDR,	FT_GETMYMBOX,	TFL_PUTS },
 
      { "unquote",    TF_EXPR, 	FT_LS_UNQUOTE,	0,		TFL_PUTS },
 
@@ -573,6 +574,7 @@ do_name(char *sp, int preprocess)
 	break;
 
     case FT_MYMBOX:
+    case FT_GETMYMBOX:
 	if (!primed) {
 	    ismymbox ((struct mailname *) 0);
 	    primed++;

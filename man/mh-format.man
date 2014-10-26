@@ -395,7 +395,9 @@ addr	addr	string	mbox@host or host!mbox rendering*
 pers	addr	string	the personal name*
 note	addr	string	commentary text*
 mbox	addr	string	the local mailbox*
-mymbox	addr	integer	List has the user's address? (0 or 1)
+mymbox	addr	integer	list has the user's address? (0 or 1)
+getmymbox	addr	string	the user's (first) address,
+			without personal name
 host	addr	string	the host domain*
 nohost	addr	integer	no host was present (0 or 1)*
 type	addr	integer	host type* (0=local,1=network,
