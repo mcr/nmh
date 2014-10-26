@@ -562,8 +562,11 @@ do_name(char *sp, int preprocess)
 	if (cm->c_type & CT_ADDR) {
 	    CERROR("component used as both date and address");
 	}
-	cm->c_tws = (struct tws *)
-	    mh_xcalloc ((size_t) 1, sizeof(*cm->c_tws));
+	if (cm->c_tws) {
+	    memset (cm->c_tws, 0, sizeof *cm->c_tws);
+	} else {
+	    cm->c_tws = mh_xcalloc (1, sizeof *cm->c_tws);
+	}
 	fp->f_type = preprocess;
 	PUTCOMP(sp);
 	cm->c_type |= CT_DATE;
