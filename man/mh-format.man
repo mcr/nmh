@@ -1,4 +1,4 @@
-.TH MH-FORMAT %manext5% "November 4, 2012" "%nmhversion%"
+.TH MH-FORMAT %manext5% "October 27, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -397,6 +397,8 @@ note	addr	string	commentary text*
 mbox	addr	string	the local mailbox*
 mymbox	addr	integer	list has the user's address? (0 or 1)
 getmymbox	addr	string	the user's (first) address,
+			with personal name
+getmyaddr	addr	string	the user's (first) address,
 			without personal name
 host	addr	string	the host domain*
 nohost	addr	integer	no host was present (0 or 1)*

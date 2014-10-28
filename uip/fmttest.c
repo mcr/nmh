@@ -847,6 +847,7 @@ dumpone(struct format *fmt)
 	case FT_PARSEADDR:
 	case FT_MYMBOX:
 	case FT_GETMYMBOX:
+	case FT_GETMYADDR:
 		printf(", c_name ");
 		litputs(fmt->f_comp->c_name);
 		if (fmt->f_comp->c_type)
@@ -1088,6 +1089,7 @@ f_typestr(int t)
 	case FT_CONCATADDR: return("CONCATADDR");
 	case FT_MYMBOX: return("MYMBOX");
 	case FT_GETMYMBOX: return("GETMYMBOX");
+	case FT_GETMYADDR: return("GETMYADDR");
 #ifdef	FT_ADDTOSEQ
 	case FT_ADDTOSEQ: return("ADDTOSEQ");
 #endif

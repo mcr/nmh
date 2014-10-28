@@ -53,6 +53,9 @@ run_test "echo \
 # check getmymbox, without match
 run_test 'fmttest -message -format %(getmymbox{from}) first' ''
 
+# check getmyaddr, without match
+run_test 'fmttest -message -format %(getmyaddr{from}) first' ''
+
 grep -v 'Alternate-Mailboxes: ' "$MH" > "$MH".new
 mv -f "$MH".new "$MH"
 cat >>"$MH" <<EOF
@@ -61,6 +64,10 @@ EOF
 
 # check getmymbox, with match
 run_test 'fmttest -message -format %(getmymbox{from}) first' \
+         'Test1 <test1@example.com>'
+
+# check getmyaddr, with match
+run_test 'fmttest -message -format %(getmyaddr{from}) first' \
          'test1@example.com'
 
 exit $failed

@@ -1063,6 +1063,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 
 	case FT_MYMBOX:
 	case FT_GETMYMBOX:
+	case FT_GETMYADDR:
 	    /*
 	     * if there's no component, we say true.  Otherwise we
 	     * say "true" only if we can parse the address and it
@@ -1076,13 +1077,14 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		comp->c_mn = mn;
 		if (ismymbox(mn)) {
 		    comp->c_flags |= CF_TRUE;
-		    /* Set str for use with FT_GETMYMBOX.  It will be
+		    /* Set str for use with FT_GETMYMBOX and
+		       FT_GETMYADDR.  With FT_GETMYADDR, it will be
 		       run through FT_LS_ADDR, which will strip off
 		       any pers name. */
-                    str = mn->m_text;
+		    str = mn->m_text;
 		} else {
 		    comp->c_flags &= ~CF_TRUE;
-                }
+		}
 		while ((sp = getname(sp)))
 		    if ((comp->c_flags & CF_TRUE) == 0 &&
 			(mn = getm (sp, NULL, 0, NULL, 0)))
@@ -1096,11 +1098,11 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		    comp->c_flags |= CF_TRUE;
 		else {
 		    comp->c_flags &= ~CF_TRUE;
-                }
+		}
 		comp->c_mn = &fmt_mnull;
 	    }
 	    if ((comp->c_flags & CF_TRUE) == 0  &&
-		fmt->f_type == FT_GETMYMBOX) {
+		(fmt->f_type == FT_GETMYMBOX || fmt->f_type == FT_GETMYADDR)) {
 		/* Fool FT_LS_ADDR into not producing an address. */
 		comp->c_mn = &fmt_mnull; comp->c_text = NULL;
 	    }
