@@ -208,6 +208,13 @@ query:
      */
     if ((out = fopen (defpath, "w")) == NULL)
 	adios (defpath, "unable to write");
+    /*
+     * The main purpose of this first line is to fool file(1).
+     * Without it, if the first line of the profile is Path:,
+     * file 5.19 reports its type as message/news.  With it,
+     * it reports the type as text/plain.
+     */
+    fprintf (out, "MH-Profile-Version: 1.0\n");
     for (np = m_defs; np; np = np->n_next) {
 	if (!np->n_context)
 	    fprintf (out, "%s: %s\n", np->n_name, np->n_field);
