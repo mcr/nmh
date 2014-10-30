@@ -276,7 +276,7 @@ do_cache:
 	if ((ct = parse_mime (file))) {
 	    *ctp++ = ct;
 	    if (outfile) {
-		ct->c_storage = outfile;
+		ct->c_storage = add (outfile, NULL);
 	    }
         }
     } else {

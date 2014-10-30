@@ -61,6 +61,7 @@ mhstoreinfo_create (CT *ct, char *pwd, const char *csw, int asw, int vsw) {
 void
 mhstoreinfo_free (mhstoreinfo_t info) {
     free (info->cwd);
+    free (info->dir);
     free (info);
 }
 
@@ -298,10 +299,9 @@ store_multi (CT ct, mhstoreinfo_t info)
 		/* Support mhstore -outfile.  The MIME parser doesn't
 		   load c_storage, so we know that p->c_storage is
 		   NULL here. */
-		p->c_storage = ct->c_storage;
+		p->c_storage = add (ct->c_storage, NULL);
 	    }
 	    result = store_switch (p, info);
-	    p->c_storage = NULL;
 
 	    if (result == OK && ct->c_subtype == MULTI_ALTERNATE)
 		break;
@@ -465,10 +465,9 @@ store_external (CT ct, mhstoreinfo_t info)
     if (ct->c_storage) {
 	/* Support mhstore -outfile.  The MIME parser doesn't load
 	   c_storage, so we know that p->c_storage is NULL here. */
-	p->c_storage = ct->c_storage;
+	p->c_storage = add (ct->c_storage, NULL);
     }
     result = store_switch (p, info);
-    p->c_storage = NULL;
 
     p->c_partno = NULL;
     return result;
@@ -625,7 +624,7 @@ store_content (CT ct, CT p, mhstoreinfo_t info)
 	}
     } else {
 	/* The output filename was explicitly specified, so use it. */
-	if ((ct->c_storage = clobber_check (add (ct->c_storage, NULL), info)) ==
+	if ((ct->c_storage = clobber_check (ct->c_storage, info)) ==
 	    NULL) {
 	    return NOTOK;
 	}
@@ -1240,6 +1239,10 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
   char *cwd = NULL;
   int check_again;
 
+  if (! strcmp (original_file, "-")) {
+      return original_file;
+  }
+
   if (info->clobber_policy == NMH_CLOBBER_ASK) {
     /* Save cwd for possible use in loop below. */
     char *slash;
@@ -1250,7 +1253,9 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
     if (slash) {
       *slash = '\0';
     } else {
-      /* original_file wasn't a full path, which shouldn't happen. */
+      /* original_file isn't a full path, which should only happen if
+         it is -. */
+      free (cwd);
       cwd = NULL;
     }
   }
@@ -1350,9 +1355,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
     original_file = file;
   } while (check_again);
 
-  if (cwd) {
-    free (cwd);
-  }
+  free (cwd);
 
   return file;
 }

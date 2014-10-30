@@ -212,7 +212,11 @@ check "$expected" 11.2.txt 'keep first'
 # check -nocheck, the default
 run_test 'mhstore last -part 2 -check -nocheck' \
          'storing message 11 part 2 as file 11.2.txt'
-check "$expected" 11.2.txt
+check "$expected" 11.2.txt 'keep first'
+
+# check -outfile - with -file
+run_prog mhstore -noverbose -file `mhpath 11` -part 2 -outfile - >"$actual" 2>&1
+check "$expected" "$actual"
 
 # check reassembly of message/partial messages (RFC 1521, 7.3.2)
 msgfile=`mhpath new`
