@@ -1338,8 +1338,8 @@ mlistfree(void)
 {
     struct mailname *mp, *mp2;
 
-    for (mp = mq.m_next; mp; mp = mp2->m_next) {
-    	mp2 = mp;
+    for (mp = mq.m_next; mp; mp = mp2) {
+	mp2 = mp->m_next;
 	mnfree(mp);
     }
 }
