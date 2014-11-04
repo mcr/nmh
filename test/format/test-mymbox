@@ -70,4 +70,22 @@ run_test 'fmttest -message -format %(getmymbox{from}) first' \
 run_test 'fmttest -message -format %(getmyaddr{from}) first' \
          'test1@example.com'
 
+# check getmymbox and getmyaddr, with match of other than first address in
+#   component
+cat >`mhpath new` <<'EOF'
+From: Test11 <test11@example.com>
+Cc: Test0 <test0@example.com>, Test3 <test3@example.com>,
+    Test1 <test1@example.com>, Test2 <test2@example.com>
+To: Some User <user@example.com>
+Date: Fri, 29 Sep 2006 00:00:00
+Message-Id: 11@test.nmh
+Subject: Testing message 11
+
+This is message number 11
+EOF
+run_test 'fmttest -message -format %(getmymbox{cc}) last' \
+         'Test1 <test1@example.com>'
+run_test 'fmttest -message -format %(getmyaddr{cc}) last' \
+         'test1@example.com'
+
 exit $failed

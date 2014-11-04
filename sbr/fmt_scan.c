@@ -1077,10 +1077,10 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		comp->c_mn = mn;
 		if (ismymbox(mn)) {
 		    comp->c_flags |= CF_TRUE;
-		    /* Set str for use with FT_GETMYMBOX and
-		       FT_GETMYADDR.  With FT_GETMYADDR, it will be
-		       run through FT_LS_ADDR, which will strip off
-		       any pers name. */
+		    /* Set str for use with FT_GETMYMBOX.  With
+		       FT_GETMYADDR, comp->c_mn will be run through
+		       FT_LS_ADDR, which will strip off any pers
+		       name. */
 		    str = mn->m_text;
 		} else {
 		    comp->c_flags &= ~CF_TRUE;
@@ -1088,8 +1088,17 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		while ((sp = getname(sp)))
 		    if ((comp->c_flags & CF_TRUE) == 0 &&
 			(mn = getm (sp, NULL, 0, NULL, 0)))
-			if (ismymbox(mn))
+			if (ismymbox(mn)) {
 			    comp->c_flags |= CF_TRUE;
+			    /* Set str and comp->c_text for use with
+			       FT_GETMYMBOX.  With FT_GETMYADDR,
+			       comp->c_mn will be run through
+			       FT_LS_ADDR, which will strip off any
+			       pers name. */
+			    free (comp->c_text);
+			    comp->c_text = str = strdup (mn->m_text);
+			    comp->c_mn = mn;
+			}
 		comp->c_flags |= CF_PARSED;
 	    } else {
 		while (getname(""))		/* XXX */
