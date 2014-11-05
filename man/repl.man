@@ -1,4 +1,4 @@
-.TH REPL %manext1% "April 18, 2014" "%nmhversion%"
+.TH REPL %manext1% "November 4, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -9,7 +9,7 @@ repl \- reply to a message
 .na
 .B repl
 .RI [ +folder ]
-.RI [ msgs ]
+.RI [ msg ]
 .RB [ \-annotate " | " \-noannotate ]
 .RB [ \-group " | " \-nogroup ]
 .RB [ \-cc
