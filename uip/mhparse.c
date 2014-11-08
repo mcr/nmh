@@ -3640,21 +3640,16 @@ bad_quote:
 }
 
 /*
- * Return the charset for a particular content type.  Return pointer is
- * only valid until the next call to content_charset().
+ * Return the charset for a particular content type.
  */
 
 char *
 content_charset (CT ct) {
-    static char *ret_charset = NULL;
-
-    if (ret_charset != NULL) {
-	free(ret_charset);
-    }
+    char *ret_charset = NULL;
 
     ret_charset = get_param(ct->c_ctinfo.ci_first_pm, "charset", '?', 0);
 
-    return ret_charset ? ret_charset : "US-ASCII";
+    return getcpy (ret_charset ? ret_charset : "US-ASCII");
 }
 
 

@@ -354,10 +354,12 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked, struct format *
             if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
                 return NOTOK;
         } else {
+            char *charset = content_charset (ct);
             admonish (NULL, "unable to convert character set%s%s to %s",
                       ct->c_partno  ?  " of part "  :  "",
                       ct->c_partno  ?  ct->c_partno  :  "",
-                      content_charset (ct));
+                      charset);
+            free (charset);
         }
     }
 
@@ -1037,6 +1039,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
         if ((conv_desc = iconv_open (dest_charset, src_charset)) ==
             (iconv_t) -1) {
             advise (NULL, "Can't convert %s to %s", src_charset, dest_charset);
+            free (src_charset);
             return NOTOK;
         }
 
@@ -1177,6 +1180,7 @@ iconv_start:
 #endif /* ! HAVE_ICONV */
     }
 
+    free (src_charset);
     return status;
 }
 
@@ -1201,9 +1205,8 @@ convert_content_charset (CT ct, char **file) {
         } else {
             status = NOTOK;
         }
-
-        free (charset);
     }
+    free (charset);
 #else  /* ! HAVE_ICONV */
     NMH_UNUSED (ct);
     NMH_UNUSED (file);
