@@ -320,7 +320,8 @@ main (int argc, char **argv) {
                 done (1);
         seq_setprev (mp);       /* set the previous-sequence */
 
-        if (! (cts = (CT *) mh_xcalloc ((size_t) (mp->numsel + 1), sizeof *cts))) {
+        if (! (cts =
+               (CT *) mh_xcalloc ((size_t) (mp->numsel + 1), sizeof *cts))) {
             adios (NULL, "out of memory");
         }
         ctp = cts;
@@ -946,9 +947,8 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
 
     case CT_MESSAGE:
         if ((*ct)->c_subtype == MESSAGE_EXTERNAL) {
-            struct exbody *e;
+            struct exbody *e = (struct exbody *) (*ct)->c_ctparams;
 
-            e = (struct exbody *) (*ct)->c_ctparams;
             status = ensure_text_plain (&e->eb_content, *ct, message_mods,
                                         replacetextplain);
         }
@@ -1130,8 +1130,10 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
 /* Identifies 7bit or 8bit content based on charset. */
 static int
 charset_encoding (CT ct) {
-    int encoding =
-        strcasecmp (content_charset (ct), "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
+    char *ct_charset = content_charset (ct);
+    int encoding = strcasecmp (ct_charset, "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
+
+    free (ct_charset);
 
     return encoding;
 }
@@ -1262,7 +1264,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     m->mp_start = concat (boundary, "\n", NULL);
     m->mp_stop = concat (boundary, "--\n", NULL);
     m->mp_parts = p;
-    ct->c_ctparams = (void *) m;
+    ct->c_ctparams = m;
 
     free (boundary);
 
@@ -1482,9 +1484,8 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
 
     case CT_MESSAGE:
         if (ct->c_subtype == MESSAGE_EXTERNAL) {
-            struct exbody *e;
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
 
-            e = (struct exbody *) ct->c_ctparams;
             status = decode_text_parts (e->eb_content, encoding, message_mods);
         }
         break;
@@ -1701,6 +1702,8 @@ strip_crs (CT ct, int *message_mods) {
         }
     }
 
+    free (charset);
+
     return status;
 }
 
@@ -1715,14 +1718,18 @@ convert_charsets (CT ct, char *dest_charset, int *message_mods) {
             status = convert_charset (ct, dest_charset, message_mods);
             if (status == OK) {
                 if (verbosw) {
+                    char *ct_charset = content_charset (ct);
+
                     report (NULL, ct->c_partno, ct->c_file,
-                            "convert %s to %s",
-                            content_charset(ct), dest_charset);
+                            "convert %s to %s", ct_charset, dest_charset);
+                    free (ct_charset);
                 }
             } else {
+                char *ct_charset = content_charset (ct);
+
                 report ("iconv", ct->c_partno, ct->c_file,
-                        "failed to convert %s to %s",
-                        content_charset(ct), dest_charset);
+                        "failed to convert %s to %s", ct_charset, dest_charset);
+                free (ct_charset);
             }
         }
         break;
@@ -1742,9 +1749,8 @@ convert_charsets (CT ct, char *dest_charset, int *message_mods) {
 
     case CT_MESSAGE:
         if (ct->c_subtype == MESSAGE_EXTERNAL) {
-            struct exbody *e;
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
 
-            e = (struct exbody *) ct->c_ctparams;
             status =
                 convert_charsets (e->eb_content, dest_charset, message_mods);
         }
