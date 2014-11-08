@@ -307,9 +307,10 @@ freects_done (int status)
 {
     CT *ctp;
 
-    if ((ctp = cts))
-	for (; *ctp; ctp++)
-	    free_content (*ctp);
+    for (ctp = cts; ctp && *ctp; ctp++)
+	free_content (*ctp);
+
+    free (cts);
 
     exit (status);
 }
