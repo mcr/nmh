@@ -528,3 +528,13 @@ int show_content_aux(CT ct, int alternate, char *cp, char *cracked,
 		     struct format *fmt);
 
 extern int checksw;	/* Add Content-MD5 field */
+
+/*
+ * mhstore
+ * Put it here because it uses the CT typedef.
+ */
+typedef struct mhstoreinfo *mhstoreinfo_t;
+mhstoreinfo_t mhstoreinfo_create(CT *, char *, const char *, int, int);
+int mhstoreinfo_files_not_clobbered(const mhstoreinfo_t);
+void mhstoreinfo_free(mhstoreinfo_t);
+void store_all_messages (mhstoreinfo_t);

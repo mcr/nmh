@@ -119,12 +119,6 @@ int part_ok (CT, int);
 int type_ok (CT, int);
 void flush_errors (void);
 
-/* mhstoresbr.c */
-typedef struct mhstoreinfo *mhstoreinfo_t;
-mhstoreinfo_t mhstoreinfo_create(CT *, char *, const char *, int, int);
-void mhstoreinfo_free(mhstoreinfo_t);
-void store_all_messages (mhstoreinfo_t);
-
 /* mhcachesbr.c */
 void cache_all_messages (CT *);
 

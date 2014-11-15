@@ -41,8 +41,6 @@ struct mhstoreinfo {
     enum clobber_policy_t clobber_policy;  /* -clobber selection */
 };
 
-typedef struct mhstoreinfo *mhstoreinfo_t;
-
 mhstoreinfo_t
 mhstoreinfo_create (CT *ct, char *pwd, const char *csw, int asw, int vsw) {
     mhstoreinfo_t info = mh_xmalloc (sizeof *info);
@@ -82,11 +80,6 @@ typedef int (*qsort_comp) (const void *, const void *);
 int part_ok (CT, int);
 int type_ok (CT, int);
 void flush_errors (void);
-
-/*
- * prototypes
- */
-void store_all_messages (mhstoreinfo_t);
 
 /*
  * static prototypes

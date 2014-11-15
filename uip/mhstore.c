@@ -51,12 +51,6 @@ extern int wcachesw;
 extern char *cache_public;
 extern char *cache_private;
 
-/* mhstoresbr.c */
-typedef struct mhstoreinfo *mhstoreinfo_t;
-mhstoreinfo_t mhstoreinfo_create(CT *, char *, const char *, int, int);
-int mhstoreinfo_files_not_clobbered(const mhstoreinfo_t);
-void mhstoreinfo_free(mhstoreinfo_t);
-
 /* mhmisc.c */
 extern int npart;
 extern int ntype;
@@ -74,9 +68,6 @@ CT parse_mime (char *);
 int part_ok (CT, int);
 int type_ok (CT, int);
 void flush_errors (void);
-
-/* mhstoresbr.c */
-void store_all_messages (mhstoreinfo_t);
 
 /* mhfree.c */
 extern CT *cts;
