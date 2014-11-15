@@ -1,4 +1,4 @@
-.TH MH-ALIAS %manext5% "Apr 18, 2014" "%nmhversion%"
+.TH MH-ALIAS %manext5% "November 15, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -105,8 +105,8 @@ An approximation of the way aliases are resolved at posting time is:
 Build a list of all addresses from the message to be delivered,
 eliminating duplicate addresses.
 .IP 2)
-If this draft originated on the local host, then for those addresses in
-the message that have no host specified, perform alias resolution.
+For those addresses in the message that have no host specified,
+perform alias resolution.
 .IP 3)
 For each line in the alias file, compare \*(lqalias\*(rq against all of
 the existing addresses.  If a match, remove the matched \*(lqalias\*(rq
