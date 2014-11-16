@@ -17,7 +17,7 @@
     X("annotate", 0, ANNOSW) \
     X("noannotate", 0, NANNOSW) \
     X("cc all|to|cc|me", 0, CCSW) \
-    X("nocc type", 0, NCCSW) \
+    X("nocc all|to|cc|me", 0, NCCSW) \
     X("draftfolder +folder", 0, DFOLDSW) \
     X("draftmessage msg", 0, DMSGSW) \
     X("nodraftfolder", 0, NDFLDSW) \
