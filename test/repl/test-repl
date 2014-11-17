@@ -29,8 +29,7 @@ Usage: repl: [+folder] [msg] [switches]
   switches are:
   -[no]group
   -[no]annotate
-  -cc all|to|cc|me
-  -nocc type
+  -[no]cc all|to|cc|me
   -draftfolder +folder
   -draftmessage msg
   -nodraftfolder
