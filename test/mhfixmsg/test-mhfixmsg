@@ -57,6 +57,7 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   -outfile file
   -rmmproc program
   -normmproc
+  -[no]changecur
   -[no]verbose
   -version
   -help
