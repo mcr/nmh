@@ -30,6 +30,8 @@
     X("outfile file", 0, OUTFILESW) \
     X("rmmproc program", 0, RPROCSW) \
     X("normmproc", 0, NRPRCSW) \
+    X("changecur", 0, CHGSW) \
+    X("nochangecur", 0, NCHGSW) \
     X("verbose", 0, VERBSW) \
     X("noverbose", 0, NVERBSW) \
     X("version", 0, VERSIONSW) \
@@ -114,6 +116,7 @@ main (int argc, char **argv) {
     CT *ctp;
     FILE *fp;
     int using_stdin = 0;
+    int chgflag = 1;
     int status = OK;
     fix_transformations fx;
     fx.reformat = fx.fixcte = fx.fixboundary = 1;
@@ -212,6 +215,12 @@ main (int argc, char **argv) {
             case NRPRCSW:
                 rmmproc = NULL;
                 continue;
+	    case CHGSW:
+		chgflag = 1;
+		continue;
+	    case NCHGSW:
+		chgflag = 0;
+		continue;
             case VERBSW:
                 verbosw = 1;
                 continue;
@@ -335,7 +344,9 @@ main (int argc, char **argv) {
             }
         }
 
-        seq_setcur (mp, mp->hghsel);      /* update current message */
+        if (chgflag) {
+            seq_setcur (mp, mp->hghsel);  /* update current message */
+        }
         seq_save (mp);                    /* synchronize sequences  */
         context_replace (pfolder, folder);/* update current folder  */
         context_save ();                  /* save the context file  */

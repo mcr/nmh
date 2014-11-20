@@ -25,6 +25,7 @@ NEW FEATURES
 - When building from source, configure will derive ${prefix} from an existing
   nmh installation if it finds one in your $PATH.
 - Added getmymbox and getmyaddr mh-format(5) function escapes.
+- The -changecur and -nochangecur switches have been added to mhfixmsg(1).
 
 -----------------
 OBSOLETE FEATURES

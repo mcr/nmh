@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "August 20, 2014" "%nmhversion%"
+.TH MHFIXMSG %manext1% "November 19, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -28,6 +28,7 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .RB [ \-rmmproc
 .IR program ]
 .RB [ \-normmproc ]
+.RB [ \-changecur " | " \-nochangecur ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -346,12 +347,15 @@ is checked.
 .RB ` \-noreplacetextplain '
 .RB ` \-fixboundary '
 .RB ` \-fixcte '
+.RB ` \-changecur '
 .RB ` \-noverbose '
 .fi
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
-message selected from a folder will become the current message.  If
+message selected from a folder will become the current message, unless
 the
+.B \-nochangecur
+switch is enabled.  If the
 .B \-file
 switch or an absolute pathname is used, the context will not be
 modified.
