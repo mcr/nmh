@@ -154,6 +154,14 @@ The
 switch directs
 .B mhfixmsg
 to output informational message for each transformation applied.
+The return status of
+.B mhfixmsg
+is 0 if all of the requested transformations are performed, or
+non-zero otherwise.
+.RB ( mhfixmsg
+will not decode to binary content, but a request to do so is
+not considered a failure, and is noted with
+.BR \-verbose .)
 .PP
 The
 .B \-file
@@ -262,12 +270,19 @@ call
 .B mhfixmsg
 immediately after a successful invocation of
 .BR inc .
-For example, with bash:
+One approach could be based on:
 .PP
 .RS 5
-alias inc='inc && mhfixmsg'
+msgs=`inc -format '%(msg)'`  &&  [ -n "$msgs" ]  &&  scan $msgs  &&  \
+mhfixmsg -nochangecur $msgs
 .RE
 .PP
+Another approach would rely on adding a sequence to Unseen-Sequence,
+which
+.B inc
+sets with the newly incorporated messages.  Those could then be
+supplied to
+.BR mhfixmsg .
 .SS "Integration with procmail"
 By way of example, here is an excerpt from a procmailrc file
 that filters messages through
