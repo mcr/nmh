@@ -569,7 +569,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     int	alternating, nowalternate, result;
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
-    int any_part_ok;
+    int request_matched;
     CT p;
 
     alternating = 0;
@@ -580,13 +580,13 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 	alternating  = 1;
     }
 
-/*
- * alternate   -> we are a part inside an multipart/alternative
- * alternating -> we are a multipart/alternative
- */
+    /*
+     * alternate   -> we are a part inside an multipart/alternative
+     * alternating -> we are a multipart/alternative
+     */
 
     result = alternate ? NOTOK : OK;
-    any_part_ok = 0;
+    request_matched = 0;
 
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
@@ -594,7 +594,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 	if (part_ok (p, 1) && type_ok (p, 1)) {
 	    int	inneresult;
 
-	    any_part_ok = 1;
+	    request_matched = 1;
 
 	    inneresult = show_switch (p, nowalternate, concatsw, textonly,
 				      inlineonly, fmt);
@@ -623,7 +623,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 	}
     }
 
-    if (alternating && !part && any_part_ok) {
+    if (alternating && !part && request_matched) {
 	if (!alternate)
 	    content_error (NULL, ct, "don't know how to display any of the contents");
 	result = NOTOK;
@@ -631,7 +631,9 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     }
 
 out:
-    return result;
+    /* if no parts matched what was requested, there can't have been
+     * any display errors, so we report OK. */
+    return request_matched ? result : OK;
 }
 
 
