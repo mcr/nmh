@@ -59,6 +59,7 @@ struct k2v SubMultiPart[] = {
     { "alternative", MULTI_ALTERNATE },
     { "digest",      MULTI_DIGEST },
     { "parallel",    MULTI_PARALLEL },
+    { "related",     MULTI_RELATED },
     { NULL,          MULTI_UNKNOWN }    /* this one must be last! */
 };
 
@@ -3149,6 +3150,8 @@ ct_subtype_str (int type, int subtype) {
             return "digest";
         case MULTI_PARALLEL:
             return "parallel";
+        case MULTI_RELATED:
+            return "related";
         default:
             return "unknown_multipart_subtype";
         }

@@ -205,6 +205,7 @@ struct text {
 #define	MULTI_ALTERNATE	0x02
 #define	MULTI_DIGEST	0x03
 #define	MULTI_PARALLEL	0x04
+#define	MULTI_RELATED	0x05
 
 /* Structure for subparts of a multipart content */
 struct part {
