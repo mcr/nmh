@@ -420,7 +420,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
         status = convert_charsets (*ctp, fx->textcharset, &message_mods);
     }
 
-    if (! (*ctp)->c_umask) {
+    if (status == OK  &&  ! (*ctp)->c_umask) {
         /* Set the umask for the contents file.  This currently
            isn't used but just in case it is in the future. */
         struct stat st;
@@ -474,7 +474,7 @@ fix_boundary (CT *ct, int *message_mods) {
     struct multipart *mp;
     int status = OK;
 
-    if (bogus_mp_content) {
+    if (ct  &&  (*ct)->c_type == CT_MULTIPART  &&  bogus_mp_content) {
         mp = (struct multipart *) (*ct)->c_ctparams;
 
         /*
@@ -509,6 +509,7 @@ fix_boundary (CT *ct, int *message_mods) {
                                         "fix multipart boundary");
                             }
                         } else {
+                            *ct = NULL;
                             advise (NULL, "unable to parse fixed part");
                             status = NOTOK;
                         }
@@ -996,7 +997,7 @@ build_text_plain_part (CT encoded_part) {
     }
 
     free_content (tp_part);
-    (void) m_unlink (tmp_plain_file);
+    if (tmp_plain_file) { (void) m_unlink (tmp_plain_file); }
     free (tmp_plain_file);
 
     return NULL;
