@@ -466,8 +466,7 @@ This is additional content before the first subpart of the multipart.
 
 ------- =_aaaaaaaaaa0
 Content-Type: multipart/related;
-    type="multipart/alternative";
-    boundary="subpart__1.1"
+    type="text/plain"; boundary="subpart__1.1"
 
 --subpart__1.1
 Content-Type: text/plain; charset="iso-8859-1"
@@ -516,8 +515,7 @@ This is additional content before the first subpart of the multipart.
 
 ------- =_aaaaaaaaaa0
 Content-Type: multipart/related;
-    type="multipart/alternative";
-    boundary="subpart__1.1"
+    type="text/plain"; boundary="subpart__1.1"
 
 --subpart__1.1
 Content-Type: text/plain; charset="iso-8859-1"
@@ -794,53 +792,14 @@ run_test 'mhfixmsg last -outfile '"$actual"' -verbose' \
 check "$expected" "$actual"
 
 
-# check that text/plain part is added to lone text/html in multipart/related
-prepare_space >"$expected" <<EOF
-MIME-Version: 1.0
-Date: Tue, 26 Feb 2013 18:07:20 -0600
-Subject: multipart/related, not /alternative
-Content-Type: multipart/related;
-        boundary="----=_Part_90310_101292502.1"
-
-------=_Part_90310_101292502.1
-Content-Type: multipart/alternative; boundary="----=_nmh-multipart1"
-
-------=_nmh-multipart1
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-This is the real content.
-
-------=_nmh-multipart1
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-<html><head>
-    <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-    <title>HTML Content</title>
-  </head>
-  <body>
-    This is the real content.
-  </body>
-</html>
-
-------=_nmh-multipart1--
-
-------=_Part_90310_101292502.1
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-Your email client does not support HTML messages
-
-------=_Part_90310_101292502.1--
-EOF
-
+# check that text/plain part is not added to text/html in multipart/related
+# when it shouldn't be
 cat >`mhpath new` <<EOF
 MIME-Version: 1.0
 Date: Tue, 26 Feb 2013 18:07:20 -0600
 Subject: multipart/related, not /alternative
 Content-Type: multipart/related;
-        boundary="----=_Part_90310_101292502.1"
+        type="text/html"; boundary="----=_Part_90310_101292502.1"
 
 ------=_Part_90310_101292502.1
 Content-Type: text/html; charset="us-ascii"
@@ -854,13 +813,17 @@ Content-Transfer-Encoding: 7bit
     This is the real content.
   </body>
 </html>
+
 ------=_Part_90310_101292502.1
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
 Your email client does not support HTML messages
+
 ------=_Part_90310_101292502.1--
 EOF
+
+cp -p `mhpath last` "$expected"
 
 if [ $can_reformat_texthtml -eq 1 ]; then
   #### lynx inserts multiple blank lines, so squeeze them.

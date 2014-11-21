@@ -85,6 +85,8 @@ static int replace_boundary (CT, char *, char *);
 static int fix_multipart_cte (CT, int *);
 static int set_ce (CT, int);
 static int ensure_text_plain (CT *, CT, int *, int);
+static int find_textplain_sibling (CT, int, int *);
+static int insert_new_text_plain_part (CT, int, CT);
 static CT build_text_plain_part (CT);
 static CT divide_part (CT);
 static void copy_ctinfo (CI, CI);
@@ -215,12 +217,12 @@ main (int argc, char **argv) {
             case NRPRCSW:
                 rmmproc = NULL;
                 continue;
-	    case CHGSW:
-		chgflag = 1;
-		continue;
-	    case NCHGSW:
-		chgflag = 0;
-		continue;
+            case CHGSW:
+                chgflag = 1;
+                continue;
+            case NCHGSW:
+                chgflag = 0;
+                continue;
             case VERBSW:
                 verbosw = 1;
                 continue;
@@ -842,70 +844,67 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
 
     switch ((*ct)->c_type) {
     case CT_TEXT: {
-        int has_text_plain = 0;
-
         /* Nothing to do for text/plain. */
         if ((*ct)->c_subtype == TEXT_PLAIN) { return OK; }
 
         if (parent  &&  parent->c_type == CT_MULTIPART  &&
             parent->c_subtype == MULTI_ALTERNATE) {
-            struct multipart *mp = (struct multipart *) parent->c_ctparams;
-            struct part *part, *prev;
             int new_subpart_number = 1;
-
-            /* See if there is a sibling text/plain. */
-            for (prev = part = mp->mp_parts; part; part = part->mp_next) {
-                ++new_subpart_number;
-                if (part->mp_part->c_type == CT_TEXT  &&
-                    part->mp_part->c_subtype == TEXT_PLAIN) {
-                    if (replacetextplain) {
-                        struct part *old_part;
-                        if (part == mp->mp_parts) {
-                            old_part = mp->mp_parts;
-                            mp->mp_parts = part->mp_next;
-                        } else {
-                            old_part = prev->mp_next;
-                            prev->mp_next = part->mp_next;
-                        }
-                        if (verbosw) {
-                            report (NULL, parent->c_partno, parent->c_file,
-                                    "remove text/plain part %s",
-                                    old_part->mp_part->c_partno);
-                        }
-                        free_content (old_part->mp_part);
-                        free (old_part);
-                    } else {
-                        has_text_plain = 1;
-                    }
-                    break;
-                }
-                prev = part;
-            }
+            int has_text_plain =
+                find_textplain_sibling (parent, replacetextplain,
+                                        &new_subpart_number);
 
             if (! has_text_plain) {
                 /* Parent is a multipart/alternative.  Insert a new
                    text/plain subpart. */
-                struct part *new_part = mh_xmalloc (sizeof *new_part);
-
-                if ((new_part->mp_part = build_text_plain_part (*ct))) {
-                    char buffer[16];
-                    snprintf (buffer, sizeof buffer, "%d", new_subpart_number);
-
-                    new_part->mp_next = mp->mp_parts;
-                    mp->mp_parts = new_part;
-                    new_part->mp_part->c_partno =
-                        concat (parent->c_partno ? parent->c_partno : "1", ".",
-                                buffer, NULL);
-
+                const int inserted =
+                    insert_new_text_plain_part (*ct, new_subpart_number,
+                                                parent);
+                if (inserted) {
                     ++*message_mods;
                     if (verbosw) {
                         report (NULL, parent->c_partno, parent->c_file,
                                 "insert text/plain part");
                     }
                 } else {
-                    free_content (new_part->mp_part);
-                    free (new_part);
                     status = NOTOK;
+                }
+            }
+        } else if (parent  &&  parent->c_type == CT_MULTIPART  &&
+            parent->c_subtype == MULTI_RELATED) {
+            char *type_subtype =
+                concat ((*ct)->c_ctinfo.ci_type, "/",
+                        (*ct)->c_ctinfo.ci_subtype, NULL);
+            const char *parent_type =
+                get_param (parent->c_ctinfo.ci_first_pm, "type", '?', 1);
+
+            /* Have to do string comparison, especially on the subtype
+               because we don't enumerate all of them in c_subtype
+               values. */
+            if (strcasecmp (type_subtype, parent_type) == 0) {
+                /* The type of this part matches the root type of the
+                   parent multipart/related.  Look to see if there's
+                   text/plain sibling. */
+                int new_subpart_number = 1;
+                int has_text_plain =
+                    find_textplain_sibling (parent, replacetextplain,
+                                            &new_subpart_number);
+
+                if (! has_text_plain) {
+                    /* Parent is a multipart/alternative.  Insert a new
+                       text/plain subpart. */
+                    const int inserted =
+                        insert_new_text_plain_part (*ct, new_subpart_number,
+                                                    parent);
+                    if (inserted) {
+                        ++*message_mods;
+                        if (verbosw) {
+                            report (NULL, parent->c_partno, parent->c_file,
+                                    "insert text/plain part");
+                        }
+                    } else {
+                        status = NOTOK;
+                    }
                 }
             }
         } else {
@@ -968,6 +967,71 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
     }
 
     return status;
+}
+
+
+/* See if there is a sibling text/plain. */
+static int
+find_textplain_sibling (CT parent, int replacetextplain,
+                        int *new_subpart_number) {
+    struct multipart *mp = (struct multipart *) parent->c_ctparams;
+    struct part *part, *prev;
+    int has_text_plain = 0;
+
+    for (prev = part = mp->mp_parts; part; part = part->mp_next) {
+        ++*new_subpart_number;
+        if (part->mp_part->c_type == CT_TEXT  &&
+            part->mp_part->c_subtype == TEXT_PLAIN) {
+            if (replacetextplain) {
+                struct part *old_part;
+                if (part == mp->mp_parts) {
+                    old_part = mp->mp_parts;
+                    mp->mp_parts = part->mp_next;
+                } else {
+                    old_part = prev->mp_next;
+                    prev->mp_next = part->mp_next;
+                }
+                if (verbosw) {
+                    report (NULL, parent->c_partno, parent->c_file,
+                            "remove text/plain part %s",
+                            old_part->mp_part->c_partno);
+                }
+                free_content (old_part->mp_part);
+                free (old_part);
+            } else {
+                has_text_plain = 1;
+            }
+            break;
+        }
+        prev = part;
+    }
+
+    return has_text_plain;
+}
+
+
+static int
+insert_new_text_plain_part (CT ct, int new_subpart_number, CT parent) {
+    struct multipart *mp = (struct multipart *) parent->c_ctparams;
+    struct part *new_part = mh_xmalloc (sizeof *new_part);
+
+    if ((new_part->mp_part = build_text_plain_part (ct))) {
+        char buffer[16];
+        snprintf (buffer, sizeof buffer, "%d", new_subpart_number);
+
+        new_part->mp_next = mp->mp_parts;
+        mp->mp_parts = new_part;
+        new_part->mp_part->c_partno =
+            concat (parent->c_partno ? parent->c_partno : "1", ".",
+                    buffer, NULL);
+
+        return 1;
+    } else {
+        free_content (new_part->mp_part);
+        free (new_part);
+
+        return 0;
+    }
 }
 
 
@@ -1263,7 +1327,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     }
 
     add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
-    	      "boundary", boundary, 0);
+              "boundary", boundary, 0);
 
     p = (struct part *) mh_xmalloc (sizeof *p);
     p->mp_next = (struct part *) mh_xmalloc (sizeof *p->mp_next);
