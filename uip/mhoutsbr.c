@@ -407,6 +407,7 @@ three_print:
     	putc ('\n', out);
 
     (*ct->c_ceclosefnx) (ct);
+    free (bufp);
     return OK;
 }
 

@@ -1179,7 +1179,6 @@ next_part:
 	    if (!(p = get_content (fp, ct->c_file,
 			ct->c_subtype == MULTI_DIGEST ? -1 : 0))) {
 		free(bufp);
-		fclose (ct->c_fp);
 		ct->c_fp = NULL;
 		return NOTOK;
 	    }
@@ -2127,6 +2126,7 @@ ready_to_go:
       fclose (ct->c_fp);
       ct->c_fp = NULL;
     }
+    free (bufp);
     return fileno (ce->ce_fp);
 
 clean_up:
@@ -2135,6 +2135,7 @@ clean_up:
       fclose (ct->c_fp);
       ct->c_fp = NULL;
     }
+    free (bufp);
     return NOTOK;
 }
 
@@ -3550,6 +3551,7 @@ bad_quote:
 				"%s's %s: field\n%*s(parameter %s)", sp->index,
 				filename, fieldname, strlen(invo_name) + 2, "",
 				nameptr);
+			free (nameptr);
 			return NOTOK;
 		    }
 		    if (sp2->index < sp->index &&
@@ -3565,6 +3567,7 @@ bad_quote:
 		    	   "param in message %s's %s: field\n%*s(parameter %s)",
 			   filename, fieldname, strlen(invo_name) + 2, "",
 			   nameptr);
+		    free (nameptr);
 		    return NOTOK;
 		}
 	    }
