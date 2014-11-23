@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "November 19, 2014" "%nmhversion%"
+.TH MHFIXMSG %manext1% "November 22, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -154,6 +154,7 @@ The
 switch directs
 .B mhfixmsg
 to output informational message for each transformation applied.
+.PP
 The return status of
 .B mhfixmsg
 is 0 if all of the requested transformations are performed, or
@@ -162,6 +163,9 @@ non-zero otherwise.
 will not decode to binary content, but a request to do so is
 not considered a failure, and is noted with
 .BR \-verbose .)
+If a problem is detected with any one of multiple messages such that
+the return status is non-zero, then none of the messages will be
+modified.
 .PP
 The
 .B \-file
