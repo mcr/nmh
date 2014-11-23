@@ -205,7 +205,8 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 	     * header; in that case, add it to our attach list
 	     */
 
-	    if (strcasecmp(ATTACH_FIELD, np) == 0) {
+	    if (strcasecmp(ATTACH_FIELD, np) == 0  ||
+		strcasecmp(ATTACH_FIELD_ALT, np) == 0) {
 		struct attach_list *entry;
 		char *s = vp, *e = vp + strlen(vp) - 1;
 		free(np);

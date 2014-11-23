@@ -12,7 +12,9 @@
 #define	DESCR_FIELD	"Content-Description"
 #define	DISPO_FIELD	"Content-Disposition"
 #define	MD5_FIELD	"Content-MD5"
-#define	ATTACH_FIELD	"Attach"
+#define PSEUDOHEADER_PREFIX		"Nmh-"
+#define	ATTACH_FIELD			PSEUDOHEADER_PREFIX "Attach"
+#define	ATTACH_FIELD_ALT		"Attach"
 
 #define	isatom(c)   (isascii((unsigned char) c) \
                      && !isspace ((unsigned char) c) \

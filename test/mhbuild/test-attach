@@ -1,7 +1,7 @@
 #!/bin/sh
 ######################################################
 #
-# Test the use of the Attach: header
+# Test the use of the Nmh-Attach: header
 #
 ######################################################
 
@@ -29,7 +29,7 @@ cat > "$draft" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
 Fcc: +outbox
-Attach: ${srcdir}/test/mhbuild/tiny.jpg
+Nmh-Attach: ${srcdir}/test/mhbuild/tiny.jpg
 ------
 EOF
 
@@ -59,8 +59,8 @@ cat > "$draft" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
 Fcc: +outbox
-Attach: ${srcdir}/test/mhbuild/tiny.jpg
-Attach: ${srcdir}/test/mhbuild/nulls
+Nmh-Attach: ${srcdir}/test/mhbuild/tiny.jpg
+Nmh-Attach: ${srcdir}/test/mhbuild/nulls
 ------
 This is a test
 EOF
@@ -108,7 +108,7 @@ cat > "$draft" <<EOF
 To: Mr Test <mrtest@example.com>
 cc:
 Fcc: +outbox
-Attach:
+Nmh-Attach:
 ------
 This is a test of an empty attach header.
 EOF
@@ -243,7 +243,7 @@ check "$draft" "$expected"
 
 #
 # Two parts, one attachment; make sure mixing of multiparts at different
-# levels works
+# levels works.  This also tests Attach: instead of Nmh-Attach:.
 #
 
 cat > "$draft" <<EOF
