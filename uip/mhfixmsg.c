@@ -877,34 +877,40 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
                         (*ct)->c_ctinfo.ci_subtype, NULL);
             const char *parent_type =
                 get_param (parent->c_ctinfo.ci_first_pm, "type", '?', 1);
+            int new_subpart_number = 1;
+            int has_text_plain = 0;
 
-            /* Have to do string comparison, especially on the subtype
-               because we don't enumerate all of them in c_subtype
-               values. */
-            if (strcasecmp (type_subtype, parent_type) == 0) {
+            /* Have to do string comparison on the subtype because we
+               don't enumerate all of them in c_subtype values.
+               parent_type will be NULL if the multipart/related part
+               doesn't have a type parameter.  The type parameter must
+               be specified according to RFC 2387 Sec. 3.1 but not all
+               messages comply. */
+            if (parent_type  &&  strcasecmp (type_subtype, parent_type) == 0) {
                 /* The type of this part matches the root type of the
                    parent multipart/related.  Look to see if there's
                    text/plain sibling. */
-                int new_subpart_number = 1;
-                int has_text_plain =
+                has_text_plain =
                     find_textplain_sibling (parent, replacetextplain,
                                             &new_subpart_number);
+            }
 
-                if (! has_text_plain) {
-                    /* Parent is a multipart/alternative.  Insert a new
-                       text/plain subpart. */
-                    const int inserted =
-                        insert_new_text_plain_part (*ct, new_subpart_number,
-                                                    parent);
-                    if (inserted) {
-                        ++*message_mods;
-                        if (verbosw) {
-                            report (NULL, parent->c_partno, parent->c_file,
-                                    "insert text/plain part");
-                        }
-                    } else {
-                        status = NOTOK;
+            free (type_subtype);
+
+            if (! has_text_plain) {
+                /* Parent is a multipart/alternative.  Insert a new
+                   text/plain subpart. */
+                const int inserted =
+                    insert_new_text_plain_part (*ct, new_subpart_number,
+                                                parent);
+                if (inserted) {
+                    ++*message_mods;
+                    if (verbosw) {
+                        report (NULL, parent->c_partno, parent->c_file,
+                                "insert text/plain part");
                     }
+                } else {
+                    status = NOTOK;
                 }
             }
         } else {
