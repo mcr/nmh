@@ -26,6 +26,8 @@ NEW FEATURES
   nmh installation if it finds one in your $PATH.
 - Added getmymbox and getmyaddr mh-format(5) function escapes.
 - The -changecur and -nochangecur switches have been added to mhfixmsg(1).
+- mhfixmsg now removes an extraneous trailing semicolon from header
+  parameter lists.
 
 -----------------
 OBSOLETE FEATURES

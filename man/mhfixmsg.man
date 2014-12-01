@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "November 22, 2014" "%nmhversion%"
+.TH MHFIXMSG %manext1% "November 30, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -148,6 +148,10 @@ Section 6.4.  That condition is indicated by a \*(lqmust be encoded in
 and other
 .B nmh
 programs that parse MIME messages.
+.PP
+.B mhfixmsg
+applies one transformation unconditionally:  it removes an extraneous
+trailing semicolon from the parameter lists of MIME header fields.
 .PP
 The
 .B \-verbose

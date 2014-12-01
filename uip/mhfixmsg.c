@@ -55,6 +55,9 @@ int debugsw; /* Needed by mhparse.c. */
 extern int skip_mp_cte_check;                 /* flag to InitMultiPart */
 extern int suppress_bogus_mp_content_warning; /* flag to InitMultiPart */
 extern int bogus_mp_content;                  /* flag from InitMultiPart */
+/* flags to/from parse_header_attrs */
+extern int suppress_extraneous_trailing_semicolon_warning;
+extern int extraneous_trailing_semicolon;
 
 /* mhoutsbr.c */
 int output_message (CT, char *);
@@ -101,6 +104,7 @@ static int decode_text_parts (CT, int, int *);
 static int content_encoding (CT, const char **);
 static int strip_crs (CT, int *);
 static int convert_charsets (CT, char *, int *);
+static int fix_always (CT, int *);
 static int write_content (CT, char *, char *, int, int);
 static int remove_file (char *);
 static void report (char *, char *, char *, char *, ...);
@@ -258,6 +262,7 @@ main (int argc, char **argv) {
     }
 
     suppress_bogus_mp_content_warning = skip_mp_cte_check = 1;
+    suppress_extraneous_trailing_semicolon_warning = 1;
 
     if (! context_find ("path"))
         free (path ("./", TFOLDER));
@@ -405,6 +410,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     }
 
     reverse_alternative_parts (*ctp);
+    status = fix_always (*ctp, &message_mods);
     if (status == OK  &&  fx->fixboundary) {
         status = fix_boundary (ctp, &message_mods);
     }
@@ -1841,6 +1847,69 @@ convert_charsets (CT ct, char *dest_charset, int *message_mods) {
     default:
         break;
     }
+
+    return status;
+}
+
+
+/*
+ * Fix various problems that aren't handled elsewhere.  These
+ * are fixed unconditionally:  there are no switches to disable
+ * them.  (Currently, "problems" is just one:  an extraneous
+ * semicolon at the end of a header parameter list.)
+ */
+static int
+fix_always (CT ct, int *message_mods) {
+    int status = OK;
+
+    switch (ct->c_type) {
+    case CT_MULTIPART: {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
+            status = fix_always (part->mp_part, message_mods);
+        }
+        break;
+    }
+
+    case CT_MESSAGE:
+        if (ct->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
+
+            status = fix_always (e->eb_content, message_mods);
+        }
+        break;
+
+    default: {
+        HF hf;
+
+        for (hf = ct->c_first_hf; hf; hf = hf->next) {
+            const size_t len = strlen (hf->value);
+
+            if (hf->value[len - 1] == '\n'  &&  hf->value[len - 2] == ';') {
+                /* Remove trailing ';' from parameter value. */
+                hf->value[len - 2] = '\n';
+                hf->value[len - 1] = '\0';
+
+                /* Also, if Content-Type parameter, remove trailing ';'
+                   from ct->c_ctline.  This probably isn't necessary
+                   but can't hurt. */
+                if (strcasecmp (hf->name, "Content-Type") == 0  &&
+                    ct->c_ctline  &&
+                    ct->c_ctline[strlen(ct->c_ctline) - 1] == ';') {
+                    ct->c_ctline[strlen(ct->c_ctline) - 1] = '\0';
+                }
+
+                ++*message_mods;
+                if (verbosw) {
+                    report (NULL, ct->c_partno, ct->c_file,
+                            "remove trailing ; from %s parameter value",
+                            hf->name);
+                }
+            }
+        }
+    }}
 
     return status;
 }

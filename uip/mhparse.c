@@ -34,10 +34,14 @@ int checksw = 0;	/* check Content-MD5 field */
  * 1) Instruct parser not to detect invalid Content-Transfer-Encoding
  *    in a multipart.
  * 2) Suppress the warning about bogus multipart content, and report it.
+ * 3) Suppress the warning about extraneous trailing ';' in header parameter
+ *    lists, and report it.
  */
 int skip_mp_cte_check;
 int suppress_bogus_mp_content_warning;
 int bogus_mp_content;
+int suppress_extraneous_trailing_semicolon_warning;
+int extraneous_trailing_semicolon;
 
 /*
  * Structures for TEXT messages
@@ -3276,10 +3280,13 @@ parse_header_attrs (const char *filename, const char *fieldname,
         }
 
 	if (*cp == 0) {
-	    advise (NULL,
-		    "extraneous trailing ';' in message %s's %s: "
-                    "parameter list",
-		    filename, fieldname);
+	    if (! suppress_extraneous_trailing_semicolon_warning) {
+		advise (NULL,
+			"extraneous trailing ';' in message %s's %s: "
+			"parameter list",
+			filename, fieldname);
+	    }
+	    extraneous_trailing_semicolon = 1;
 	    return DONE;
 	}
 

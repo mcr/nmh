@@ -1029,6 +1029,58 @@ run_prog mhfixmsg last -replacetextplain -noreplacetextplain -outfile "$actual"
 check "$expected" "$actual"
 
 
+# check removal of extraneous trailing semicolon from header parameter list
+cat >"$expected" <<EOF
+To: recipient@example.com
+Subject: test
+From: sender@example.com
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+
+test
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii";
+ name="DATE"
+Content-Description: check folded headers, with and without trailing semicolon
+Content-Disposition: attachment;
+ filename="DATE"
+
+14 April 2014
+
+------- =_aaaaaaaaaa0--
+EOF
+
+cat >`mhpath new` <<EOF
+To: recipient@example.com
+Subject: test
+From: sender@example.com
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii";
+
+test
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii";
+ name="DATE"
+Content-Description: check folded headers, with and without trailing semicolon
+Content-Disposition: attachment;
+ filename="DATE";
+
+14 April 2014
+
+------- =_aaaaaaaaaa0--
+EOF
+run_test 'mhfixmsg last -outfile '"$actual" ''
+check "$expected" "$actual"
+
+
 # check rmmproc
 cat >"$MH_TEST_DIR/Mail/rmmproc" <<'EOF'
 mv "$1" "$1.backup"
