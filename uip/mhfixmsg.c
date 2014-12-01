@@ -1885,9 +1885,13 @@ fix_always (CT ct, int *message_mods) {
         HF hf;
 
         for (hf = ct->c_first_hf; hf; hf = hf->next) {
-            const size_t len = strlen (hf->value);
+            size_t len = strlen (hf->value);
 
-            if (hf->value[len - 1] == '\n'  &&  hf->value[len - 2] == ';') {
+            /* whitespace following a trailing ';' will be nuked as well */
+            if (hf->value[len - 1] == '\n')
+                while (isspace(hf->value[len - 2])) len--;
+
+            if (hf->value[len - 2] == ';') {
                 /* Remove trailing ';' from parameter value. */
                 hf->value[len - 2] = '\n';
                 hf->value[len - 1] = '\0';
@@ -1895,10 +1899,10 @@ fix_always (CT ct, int *message_mods) {
                 /* Also, if Content-Type parameter, remove trailing ';'
                    from ct->c_ctline.  This probably isn't necessary
                    but can't hurt. */
-                if (strcasecmp (hf->name, "Content-Type") == 0  &&
-                    ct->c_ctline  &&
-                    ct->c_ctline[strlen(ct->c_ctline) - 1] == ';') {
-                    ct->c_ctline[strlen(ct->c_ctline) - 1] = '\0';
+                if (strcasecmp(hf->name, "Content-Type") == 0 && ct->c_ctline) {
+                    size_t l = strlen(ct->c_ctline) - 1;
+                    while (isspace(ct->c_ctline[l]) || ct->c_ctline[l] == ';')
+                        ct->c_ctline[l--] = '\0';
                 }
 
                 ++*message_mods;
