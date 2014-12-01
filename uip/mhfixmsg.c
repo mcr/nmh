@@ -1889,7 +1889,7 @@ fix_always (CT ct, int *message_mods) {
 
             /* whitespace following a trailing ';' will be nuked as well */
             if (hf->value[len - 1] == '\n')
-                while (isspace(hf->value[len - 2])) len--;
+                while (isspace((unsigned char)(hf->value[len - 2]))) len--;
 
             if (hf->value[len - 2] == ';') {
                 /* Remove trailing ';' from parameter value. */
@@ -1901,7 +1901,7 @@ fix_always (CT ct, int *message_mods) {
                    but can't hurt. */
                 if (strcasecmp(hf->name, "Content-Type") == 0 && ct->c_ctline) {
                     size_t l = strlen(ct->c_ctline) - 1;
-                    while (isspace(ct->c_ctline[l]) || ct->c_ctline[l] == ';')
+                    while (isspace((unsigned char)(ct->c_ctline[l])) || ct->c_ctline[l] == ';')
                         ct->c_ctline[l--] = '\0';
                 }
 
