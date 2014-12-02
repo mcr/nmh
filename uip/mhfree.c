@@ -30,7 +30,7 @@ static void free_text (CT);
 static void free_multi (CT);
 static void free_partial (CT);
 static void free_external (CT);
-static void free_pmlist (PM);
+static void free_pmlist (PM *);
 
 
 /*
@@ -48,14 +48,20 @@ free_content (CT ct)
      */
     free_header (ct);
 
-    if (ct->c_partno)
+    if (ct->c_partno) {
 	free (ct->c_partno);
+	ct->c_partno = NULL;
+    }
 
-    if (ct->c_vrsn)
+    if (ct->c_vrsn) {
 	free (ct->c_vrsn);
+	ct->c_vrsn = NULL;
+    }
 
-    if (ct->c_ctline)
+    if (ct->c_ctline) {
 	free (ct->c_ctline);
+	ct->c_ctline = NULL;
+    }
 
     free_ctinfo (ct);
 
@@ -85,41 +91,64 @@ free_content (CT ct)
 	    break;
     }
 
-    if (ct->c_showproc)
+    if (ct->c_showproc) {
 	free (ct->c_showproc);
-    if (ct->c_termproc)
+	ct->c_showproc = NULL;
+    }
+    if (ct->c_termproc) {
 	free (ct->c_termproc);
-    if (ct->c_storeproc)
+	ct->c_termproc = NULL;
+    }
+    if (ct->c_storeproc) {
 	free (ct->c_storeproc);
+	ct->c_storeproc = NULL;
+    }
 
-    if (ct->c_celine)
+    if (ct->c_celine) {
 	free (ct->c_celine);
+	ct->c_celine = NULL;
+    }
 
     /* free structures for content encodings */
     free_encoding (ct, 1);
 
-    if (ct->c_id)
+    if (ct->c_id) {
 	free (ct->c_id);
-    if (ct->c_descr)
+	ct->c_id = NULL;
+    }
+    if (ct->c_descr) {
 	free (ct->c_descr);
-    if (ct->c_dispo)
+	ct->c_descr = NULL;
+    }
+    if (ct->c_dispo) {
 	free (ct->c_dispo);
-    if (ct->c_dispo_type)
+	ct->c_dispo = NULL;
+    }
+    if (ct->c_dispo_type) {
 	free (ct->c_dispo_type);
-    free_pmlist (ct->c_dispo_first);
+	ct->c_dispo_type = NULL;
+    }
+    free_pmlist (&ct->c_dispo_first);
 
     if (ct->c_file) {
 	if (ct->c_unlink)
 	    (void) m_unlink (ct->c_file);
 	free (ct->c_file);
+	ct->c_file = NULL;
     }
-    if (ct->c_fp)
+    if (ct->c_fp) {
 	fclose (ct->c_fp);
+	ct->c_fp = NULL;
+    }
 
-    if (ct->c_storage)
+    if (ct->c_storage) {
 	free (ct->c_storage);
-    if (ct->c_folder)
+	ct->c_storage = NULL;
+    }
+    if (ct->c_folder) {
 	free (ct->c_folder);
+	ct->c_folder = NULL;
+    }
 
     free (ct);
 }
@@ -165,7 +194,7 @@ free_ctinfo (CT ct)
 	free (ci->ci_subtype);
 	ci->ci_subtype = NULL;
     }
-    free_pmlist(ci->ci_first_pm);
+    free_pmlist(&ci->ci_first_pm);
     if (ci->ci_comment) {
 	free (ci->ci_comment);
 	ci->ci_comment = NULL;
@@ -254,9 +283,9 @@ free_external (CT ct)
 
 
 static void
-free_pmlist (PM pm)
+free_pmlist (PM *p)
 {
-    PM pm2;
+    PM pm = *p, pm2;
 
     while (pm != NULL) {
     	if (pm->pm_name)
@@ -271,6 +300,9 @@ free_pmlist (PM pm)
 	free(pm);
 	pm = pm2;
     }
+
+    if (*p)
+	*p = NULL;
 }
 
 
