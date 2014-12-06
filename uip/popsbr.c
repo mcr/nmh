@@ -467,6 +467,7 @@ parse_proxy(char *proxy, char *host)
 	} else if (!isspace(*cur))
 	    *c++ = *cur;
     }
+    *c = '\0';
     *++p = NULL;
     return pargv;
 }
