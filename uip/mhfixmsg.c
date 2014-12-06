@@ -1887,9 +1887,20 @@ fix_always (CT ct, int *message_mods) {
         for (hf = ct->c_first_hf; hf; hf = hf->next) {
             size_t len = strlen (hf->value);
 
+            if (strcasecmp (hf->name, TYPE_FIELD) != 0  &&
+                strcasecmp (hf->name, DISPO_FIELD) != 0) {
+                /* Only do this for Content-Type and
+                   Content-Disposition fields because those are the
+                   only headers that parse_mime() warns about. */
+                continue;
+            }
+
             /* whitespace following a trailing ';' will be nuked as well */
-            if (hf->value[len - 1] == '\n')
-                while (isspace((unsigned char)(hf->value[len - 2]))) len--;
+            if (hf->value[len - 1] == '\n') {
+                while (isspace((unsigned char)(hf->value[len - 2]))) {
+                    if (len-- == 0) { break; }
+                }
+            }
 
             if (hf->value[len - 2] == ';') {
                 /* Remove trailing ';' from parameter value. */
@@ -1899,10 +1910,13 @@ fix_always (CT ct, int *message_mods) {
                 /* Also, if Content-Type parameter, remove trailing ';'
                    from ct->c_ctline.  This probably isn't necessary
                    but can't hurt. */
-                if (strcasecmp(hf->name, "Content-Type") == 0 && ct->c_ctline) {
+                if (strcasecmp(hf->name, TYPE_FIELD) == 0 && ct->c_ctline) {
                     size_t l = strlen(ct->c_ctline) - 1;
-                    while (isspace((unsigned char)(ct->c_ctline[l])) || ct->c_ctline[l] == ';')
+                    while (isspace((unsigned char)(ct->c_ctline[l])) ||
+                           ct->c_ctline[l] == ';') {
                         ct->c_ctline[l--] = '\0';
+                        if (l == 0) { break; }
+                    }
                 }
 
                 ++*message_mods;
