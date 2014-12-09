@@ -1,0 +1,358 @@
+#!/bin/sh
+#
+# Test the XOAUTH2 support in sen
+#
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "${srcdir}" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/oauth/common.sh"
+
+test_send_only_fakehttp() {
+    start_fakehttp
+    test_send_no_servers "$@"
+    check_http_req
+}
+
+#
+# success cases
+#
+
+export XOAUTH
+XOAUTH='dXNlcj1ub2JvZHlAZXhhbXBsZS5jb20BYXV0aD1CZWFyZXIgdGVzdC1hY2Nlc3MBAQ=='
+
+# TEST
+echo 'access token ready, smtp server accepts message'
+
+setup_draft
+
+fake_creds <<EOF
+access: test-access
+refresh: test-refresh
+expire: 2000000000
+EOF
+
+start_fakesmtp
+run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -oauth test -user nobody@example.com"
+
+# TEST
+echo 'expired access token, refresh works, smtp server accepts message'
+
+setup_draft
+
+fake_creds <<EOF
+access: old-access
+refresh: test-refresh
+expire: 1414303986
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+EOF
+
+expect_creds <<EOF
+access: test-access
+refresh: test-refresh
+expire:
+EOF
+
+test_send
+
+check_creds_private
+check_creds
+
+# TEST
+echo 'expired access token, refresh works and gets updated, smtp server accepts message'
+
+setup_draft
+
+fake_creds <<EOF
+access: old-access
+refresh: old-refresh
+expire: 1414303986
+EOF
+
+expect_http_post_old_refresh
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "refresh_token": "test-refresh",
+  "token_type": "Bearer"
+}
+EOF
+
+expect_creds <<EOF
+access: test-access
+refresh: test-refresh
+EOF
+
+test_send
+
+check_creds
+
+# TEST
+echo 'access token has no expiration, refresh works, smtp server accepts message'
+
+setup_draft
+
+fake_creds <<EOF
+access: old-access
+refresh: test-refresh
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "token_type": "Bearer"
+}
+EOF
+
+expect_creds <<EOF
+access: test-access
+refresh: test-refresh
+EOF
+
+test_send
+
+check_creds
+
+# TEST
+echo 'no access token, refresh works, smtp server accepts message'
+
+setup_draft
+
+fake_creds <<EOF
+refresh: test-refresh
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "token_type": "Bearer"
+}
+EOF
+
+expect_creds <<EOF
+access: test-access
+refresh: test-refresh
+EOF
+
+test_send
+
+check_creds
+
+#
+# fail cases
+#
+
+setup_draft
+
+# TEST
+echo 'no service definition'
+
+run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -oauth bogus -user nobody@example.com" 'send: incomplete OAuth2 service definition: scope is missing'
+
+# TEST
+echo 'no creds file -- should tell user to mhlogin'
+
+rm -f "${MHTMPDIR}/oauth-test"
+
+test_send_no_servers 'send: no credentials -- run mhlogin -oauth test'
+
+# TEST
+echo 'empty creds file -- should tell user to mhlogin'
+
+fake_creds < /dev/null
+
+test_send_no_servers 'send: no valid credentials -- run mhlogin -oauth test'
+
+# TEST
+echo 'garbage creds file'
+
+echo bork | fake_creds
+
+test_send_no_servers 'send: eof encountered in field "bork"
+send: error loading cred file'
+
+# TEST
+echo 'unexpected field in creds file'
+
+fake_creds <<EOF
+bork: bork
+access: test-access
+EOF
+
+test_send_no_servers 'send: error loading cred file: unexpected field'
+
+# TEST
+echo 'garbage expiration time'
+
+fake_creds <<EOF
+access: test-access
+expire: 99999999999999999999999999999999
+EOF
+
+test_send_no_servers 'send: error loading cred file: invalid expiration time'
+
+# TEST
+echo 'refresh response has no access token'
+
+fake_creds <<EOF
+refresh: test-refresh
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "refresh_token": "refresh-token",
+  "token_type": "Bearer"
+}
+EOF
+
+test_send_only_fakehttp 'send: error refreshing OAuth2 token
+send: invalid response: no access token'
+
+# TEST
+echo 'expired access token, no refresh token -- tell user to mhlogin'
+
+fake_creds <<EOF
+access: test-access
+expire: 1414303986
+EOF
+
+test_send_no_servers 'send: no valid credentials -- run mhlogin -oauth test'
+
+# TEST
+echo 'access token has no expiration, no refresh token -- tell user to mhlogin'
+
+fake_creds <<EOF
+access: test-access
+EOF
+
+test_send_no_servers 'send: no valid credentials -- run mhlogin -oauth test'
+
+# TEST
+echo 'refresh finds no http server'
+
+fake_creds <<EOF
+access: test-access
+refresh: test-refresh
+EOF
+
+cat > "${testname}.expected-send-output" <<EOF
+send: error refreshing OAuth2 token
+send: error making HTTP request to OAuth2 authorization endpoint: [details]
+EOF
+
+run_prog send -draft -server 127.0.0.1 -port ${smtp_port} \
+  -oauth test -user nobody@example.com > "${testname}.send-output" 2>&1 || true
+# Clear out an error message we get from libcurl on some systems (seen at least
+# 3 different versions of this error message, on FreeBSD 10.1, Ubuntu 12.04, and
+# Ubuntu 14.04).
+f="${testname}.send-output"
+sed 's/\(send: error making HTTP request to OAuth2 authorization endpoint:\).*/\1 [details]/' "$f" > "$f".clean
+check "$f".clean "${testname}.expected-send-output"
+rm "$f"
+
+# TEST
+echo 'refresh gets bogus 200 response from http server'
+
+expect_http_post_refresh
+
+fake_http_response '200 OK' <<EOF
+Content-Type: text/html
+
+<html>doh!</htmxl>
+EOF
+
+test_send_only_fakehttp 'send: error refreshing OAuth2 token
+send: invalid response'
+
+# TEST
+echo 'refresh gets 500 response from http server'
+
+expect_http_post_refresh
+
+fake_http_response '500 Server Error' <<EOF
+Content-Type: text/html
+
+<html>doh!</html>
+EOF
+
+test_send_only_fakehttp 'send: error refreshing OAuth2 token
+send: invalid response'
+
+# TEST
+echo 'refresh gets proper error from http'
+
+expect_http_post_refresh
+
+fake_http_response '400 Bad Request' <<EOF
+Content-Type: application/json
+
+{
+  "error": "invalid_grant"
+}
+EOF
+
+test_send_only_fakehttp 'send: credentials rejected -- run mhlogin -oath test'
+
+# TEST
+echo 'refresh gets response too big'
+
+fake_creds <<EOF
+refresh: test-refresh
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+EOF
+
+awk 'BEGIN { for (i = 0; i < 8192; i++) { print "." } }' \
+    >> "${testname}.http-res"
+
+test_send_only_fakehttp 'send: error refreshing OAuth2 token
+send: refusing to process response body larger than 8192 bytes'
+
+# TEST
+echo 'smtp server rejects token'
+
+XOAUTH='not-that-one'
+
+fake_creds <<EOF
+access: test-access
+expire: 2000000000
+EOF
+
+test_send_only_fakesmtp 'post: problem initializing server; [BHST] Not no way, not no how!
+send: message not delivered to anyone'
+
+# TEST
+echo "smtp server doesn't support oauth"
+
+unset XOAUTH
+
+test_send_only_fakesmtp 'post: problem initializing server; [BHST] SMTP server does not support SASL XOAUTH2
+send: message not delivered to anyone'
+
+exit ${failed:-0}

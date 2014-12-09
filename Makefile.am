@@ -34,6 +34,9 @@ nmhlibexecdir = @libexecdir@/nmh
 ## nmh _does_ have a test suite!
 ##
 TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
+		    MH_VERSION="$(VERSION)" \
+		    OAUTH_SUPPORT='@OAUTH_SUPPORT@' \
+		    CURL_USER_AGENT='@CURL_USER_AGENT@' \
 		    MH_TEST_DIR="@abs_builddir@/test/testdir" \
 		    nmhlibexecdir="$(nmhlibexecdir)" bindir="$(bindir)" \
 		    mandir="$(mandir)" nmhetcdir="$(nmhetcdir)" \
@@ -81,6 +84,8 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/mhshow/test-subpart test/mhshow/test-msg-buffer-boundaries \
 	test/mhstore/test-mhstore test/mkstemp/test-mkstemp \
 	test/new/test-basic test/pick/test-pick test/pick/test-stderr \
+	test/oauth/test-mhlogin test/oauth/test-send \
+	test/oauth/test-inc test/oauth/test-share \
 	test/post/test-post-aliases test/post/test-post-basic \
 	test/post/test-post-multiple test/post/test-post-bcc \
 	test/post/test-post-dcc test/post/test-post-fcc \
@@ -101,7 +106,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 
 check_SCRIPTS = test/common.sh
 check_PROGRAMS = test/getfullname test/getcanon test/fakepop test/fakesmtp \
-		 test/getcwidth
+		 test/getcwidth test/fakehttp
 DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 
 ##
@@ -147,7 +152,7 @@ bin_PROGRAMS = uip/ali uip/anno uip/burst uip/comp uip/dist uip/flist \
 	       uip/mhparam uip/mhpath uip/mhshow uip/mhstore uip/msgchk \
 	       uip/new uip/packf uip/pick uip/prompter uip/refile \
 	       uip/repl uip/rmf uip/rmm uip/scan uip/send uip/show uip/sortm \
-	       uip/whatnow uip/whom
+	       uip/whatnow uip/whom uip/mhlogin
 
 bin_SCRIPTS = uip/mhmail etc/sendfiles
 
@@ -182,7 +187,8 @@ noinst_HEADERS = h/addrsbr.h h/aliasbr.h h/crawl_folders.h h/dropsbr.h \
 		 h/mh.h h/mhcachesbr.h h/mhparse.h h/mime.h \
 		 h/mts.h h/nmh.h h/picksbr.h h/popsbr.h h/prototypes.h \
 		 h/rcvmail.h h/scansbr.h h/signals.h h/tws.h h/utils.h \
-		 mts/smtp/smtp.h sbr/ctype-checked.h
+		 mts/smtp/smtp.h sbr/ctype-checked.h h/oauth.h \
+		 thirdparty/jsmn/jsmn.h
 
 ##
 ## Extra files we need to install in various places
@@ -239,7 +245,7 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/prompter.1 man/rcvdist.1 man/rcvpack.1 man/rcvstore.1 \
 	   man/rcvtty.1 man/refile.1 man/repl.1 man/rmf.1 man/rmm.1 \
 	   man/scan.1 man/send.1 man/sendfiles.1 man/show.1 man/slocal.1 \
-	   man/sortm.1 man/unseen.1 man/whatnow.1 man/whom.1
+	   man/sortm.1 man/unseen.1 man/whatnow.1 man/whom.1 man/mhlogin.1
 
 ##
 ## Sources for our man pages
@@ -261,7 +267,7 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 	   man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
 	   man/rmf.man man/rmm.man man/scan.man man/send.man \
 	   man/sendfiles.man man/show.man man/slocal.man man/sortm.man \
-	   man/unseen.man man/whatnow.man man/whom.man
+	   man/unseen.man man/whatnow.man man/whom.man man/mhlogin.man
 
 ##
 ## Files we need to include in the distribution which aren't found by
@@ -278,7 +284,9 @@ EXTRA_DIST = autogen.sh config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
 	     test/mhbuild/somebinary \
 	     test/mhbuild/nulls \
 	     test/mhbuild/textplain \
-	     test/post/test-post-common.sh test/valgrind.supp uip/mhmail \
+	     test/post/test-post-common.sh test/valgrind.supp \
+	     test/oauth/common.sh \
+	     uip/mhmail \
 	     SPECS/nmh.spec SPECS/build-nmh-cygwin $(man_SRCS)
 
 ##
@@ -318,7 +326,7 @@ uip_forw_SOURCES = uip/forw.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 uip_forw_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/popsbr.c
-uip_inc_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(SASLLIB) $(POSTLINK)
+uip_inc_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(SASLLIB) $(POSTLINK) $(CURLLIB)
 
 uip_install_mh_SOURCES = uip/install-mh.c
 uip_install_mh_LDADD = $(LDADD) $(POSTLINK)
@@ -362,7 +370,7 @@ uip_mhstore_SOURCES = uip/mhstore.c uip/mhparse.c uip/mhcachesbr.c \
 uip_mhstore_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_msgchk_SOURCES = uip/msgchk.c uip/popsbr.c
-uip_msgchk_LDADD = $(LDADD) $(SASLLIB) $(POSTLINK)
+uip_msgchk_LDADD = $(LDADD) $(SASLLIB) $(POSTLINK) $(CURLLIB)
 
 uip_new_SOURCES = uip/new.c
 uip_new_LDADD = $(LDADD) $(POSTLINK)
@@ -394,7 +402,7 @@ uip_scan_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_send_SOURCES = uip/send.c uip/sendsbr.c uip/annosbr.c \
 		   uip/distsbr.c
-uip_send_LDADD = $(LDADD) $(POSTLINK)
+uip_send_LDADD = $(LDADD) $(POSTLINK) $(CURLLIB)
 
 uip_show_SOURCES = uip/show.c uip/mhlsbr.c
 uip_show_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
@@ -428,6 +436,9 @@ uip_fmttest_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 uip_mhl_SOURCES = uip/mhl.c uip/mhlsbr.c
 uip_mhl_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
+uip_mhlogin_SOURCES = uip/mhlogin.c
+uip_mhlogin_LDADD = mts/libmts.a $(LDADD) $(CURLLIB) $(POSTLINK)
+
 uip_mkstemp_SOURCES = uip/mkstemp.c
 uip_mkstemp_LDADD = $(LDADD) $(POSTLINK)
 
@@ -459,11 +470,14 @@ test_getfullname_LDADD = $(LDADD) $(POSTLINK)
 test_getcanon_SOURCES = test/getcanon.c
 test_getcanon_LDADD = $(POSTLINK)
 
-test_fakepop_SOURCES = test/fakepop.c
+test_fakepop_SOURCES = test/fakepop.c test/server.c
 test_fakepop_LDADD = $(POSTLINK)
 
-test_fakesmtp_SOURCES = test/fakesmtp.c
+test_fakesmtp_SOURCES = test/fakesmtp.c test/server.c
 test_fakesmtp_LDADD = $(POSTLINK)
+
+test_fakehttp_SOURCES = test/fakehttp.c test/server.c
+test_fakehttp_LDADD = $(POSTLINK)
 
 test_getcwidth_SOURCES = test/getcwidth.c
 test_getcwidth_LDADD = $(POSTLINK)
@@ -587,7 +601,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/uprf.c sbr/vfgets.c \
 		      sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
 		      sbr/m_mktemp.c sbr/getansreadline.c sbr/vector.c \
-		      config/config.c config/version.c
+		      config/config.c config/version.c sbr/oauth.c \
+		      thirdparty/jsmn/jsmn.c
 
 ##
 ## Because these files use the definitions in the libmh rule below,

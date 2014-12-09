@@ -31,7 +31,7 @@ advise (char *what, char *fmt, ...)
  * print out error message and exit
  */
 void
-adios (char *what, char *fmt, ...)
+adios (char *what, const char *fmt, ...)
 {
     va_list ap;
 
@@ -60,7 +60,7 @@ admonish (char *what, char *fmt, ...)
  * main routine for printing error messages.
  */
 void
-advertise (char *what, char *tail, char *fmt, va_list ap)
+advertise (char *what, char *tail, const char *fmt, va_list ap)
 {
     int	eindex = errno;
     char buffer[BUFSIZ], err[BUFSIZ];

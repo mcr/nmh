@@ -1,0 +1,139 @@
+#!/bin/sh
+#
+# Test that inc, msgchck, and send share tokens.
+#
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "${srcdir}" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/oauth/common.sh"
+
+setup_pop
+
+export XOAUTH
+XOAUTH='dXNlcj1ub2JvZHlAZXhhbXBsZS5jb20BYXV0aD1CZWFyZXIgdGVzdC1hY2Nlc3MBAQ=='
+
+# TEST
+echo 'mhlogin then all run with no refresh'
+
+expect_http_post_code
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+EOF
+
+expect_creds <<EOF
+access: test-access
+expire:
+EOF
+
+start_fakehttp
+run_test 'eval echo code | mhlogin -oauth test' \
+"Load the following URL in your browser and authorize nmh to access test:
+
+http://127.0.0.1:${http_port}/oauth/auth?response_type=code&client_id=test-id&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scope=test-scope
+
+Enter the authorization code: "
+
+start_pop_xoauth
+run_test "msgchk -host 127.0.0.1 -port ${pop_port} -oauth test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
+
+start_pop_xoauth
+test_inc_success
+
+setup_draft
+test_send_only_fakesmtp
+
+# TEST
+echo 'inc refreshes'
+
+fake_creds <<EOF
+access: old-access
+refresh: test-refresh
+expire: 1414303986
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+EOF
+
+start_fakehttp
+start_pop_xoauth
+test_inc_success
+
+start_pop_xoauth
+run_test "msgchk -host 127.0.0.1 -port ${pop_port} -oauth test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
+
+setup_draft
+test_send_only_fakesmtp
+
+# TEST
+echo 'msgchck refreshes'
+
+fake_creds <<EOF
+access: old-access
+refresh: test-refresh
+expire: 1414303986
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+EOF
+
+start_fakehttp
+start_pop_xoauth
+run_test "msgchk -host 127.0.0.1 -port ${pop_port} -oauth test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
+
+start_pop_xoauth
+test_inc_success
+
+setup_draft
+test_send_only_fakesmtp
+
+# TEST
+echo 'send refreshes'
+
+fake_creds <<EOF
+access: old-access
+refresh: test-refresh
+expire: 1414303986
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+EOF
+
+setup_draft
+test_send
+
+start_pop_xoauth
+run_test "msgchk -host 127.0.0.1 -port ${pop_port} -oauth test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
+
+start_pop_xoauth
+test_inc_success
+
+exit ${failed:-0}

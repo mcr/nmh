@@ -52,6 +52,7 @@
     X("form formatfile", 0, FORMSW) \
     X("format string", 5, FMTSW) \
     X("host hostname", 0, HOSTSW) \
+    X("oauth service", 0, OAUTHSW) \
     X("user username", 0, USERSW) \
     X("pack file", 0, PACKSW) \
     X("nopack", 0, NPACKSW) \
@@ -185,10 +186,10 @@ main (int argc, char **argv)
     FILE *aud = NULL;
     char b[PATH_MAX + 1];
     char *maildir_copy = NULL;	/* copy of mail directory because the static gets overwritten */
+    const char *oauth_svc = NULL;
 
     int nmsgs, nbytes;
     char *MAILHOST_env_variable;
-
     done=inc_done;
 
 /* absolutely the first thing we do is save our privileges,
@@ -313,6 +314,16 @@ main (int argc, char **argv)
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
 
+            case OAUTHSW:
+#ifdef OAUTH_SUPPORT
+                if (!(cp = *argp++) || *cp == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
+                oauth_svc = cp;
+#else
+                adios (NULL, "not built with OAuth support");
+#endif
+                continue;
+
 	    case USERSW:
 		if (!(user = *argp++) || *user == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
@@ -383,12 +394,20 @@ main (int argc, char **argv)
     if (inc_type == INC_POP) {
 	struct nmh_creds creds = { 0, 0, 0 };
 
+	if (oauth_svc == NULL) {
+	    nmh_get_credentials (host, user, sasl, &creds);
+	} else {
+	    if (user == NULL) {
+		adios (NULL, "must specify -user with -oauth");
+	    }
+	    creds.user = user;
+	}
+
 	/*
 	 * initialize POP connection
 	 */
-	nmh_get_credentials (host, user, sasl, &creds);
 	if (pop_init (host, port, creds.user, creds.password, proxy, snoop,
-		      sasl, saslmech) == NOTOK)
+		      sasl, saslmech, oauth_svc) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */

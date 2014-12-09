@@ -76,9 +76,7 @@
 #define	SM_DOT	600	/* see above */
 #define	SM_QUIT	 30
 #define	SM_CLOS	 10
-#ifdef CYRUS_SASL
 #define	SM_AUTH  45
-#endif /* CYRUS_SASL */
 
 static int sm_addrs = 0;
 static int sm_alarmed = 0;
@@ -153,7 +151,7 @@ static char *EHLOkeys[MAXEHLO + 1];
  * static prototypes
  */
 static int smtp_init (char *, char *, char *, int, int, int, int, int,
-		      char *, char *, int);
+		      char *, char *, const char *, int);
 static int sendmail_init (char *, char *, int, int, int, int, int,
                           char *, char *);
 
@@ -173,6 +171,7 @@ static int sm_fputs(char *);
 static int sm_fputc(int);
 static void sm_fflush(void);
 static int sm_fgets(char *, int, FILE *);
+static int sm_auth_xoauth2(const char *);
 
 #ifdef CYRUS_SASL
 /*
@@ -184,11 +183,13 @@ static int sm_auth_sasl(char *, int, char *, char *);
 
 int
 sm_init (char *client, char *server, char *port, int watch, int verbose,
-         int debug, int sasl, int saslssf, char *saslmech, char *user, int tls)
+         int debug, int sasl, int saslssf, char *saslmech, char *user,
+         const char *xoauth_client_res, int tls)
 {
     if (sm_mts == MTS_SMTP)
 	return smtp_init (client, server, port, watch, verbose,
-			  debug, sasl, saslssf, saslmech, user, tls);
+			  debug, sasl, saslssf, saslmech, user,
+                          xoauth_client_res, tls);
     else
 	return sendmail_init (client, server, watch, verbose,
                               debug, sasl, saslssf, saslmech, user);
@@ -197,12 +198,11 @@ sm_init (char *client, char *server, char *port, int watch, int verbose,
 static int
 smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	   int debug,
-           int sasl, int saslssf, char *saslmech, char *user, int tls)
+           int sasl, int saslssf, char *saslmech, char *user,
+           const char *xoauth_client_res, int tls)
 {
     int result, sd1, sd2;
-#ifdef CYRUS_SASL
-    char *server_mechs;
-#else  /* CYRUS_SASL */
+#ifndef CYRUS_SASL
     NMH_UNUSED (sasl);
     NMH_UNUSED (saslssf);
     NMH_UNUSED (saslmech);
@@ -362,6 +362,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
      */
 
     if (sasl) {
+        char *server_mechs;
 	if (! (server_mechs = EHLOset("AUTH"))) {
 	    sm_end(NOTOK);
 	    return sm_ierror("SMTP server does not support SASL");
@@ -381,6 +382,19 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	}
     }
 #endif /* CYRUS_SASL */
+
+    if (xoauth_client_res != NULL) {
+        char *server_mechs;
+	if ((server_mechs = EHLOset("AUTH")) == NULL
+            || stringdex("XOAUTH2", server_mechs) == -1) {
+	    sm_end(NOTOK);
+	    return sm_ierror("SMTP server does not support SASL XOAUTH2");
+	}
+	if (sm_auth_xoauth2(xoauth_client_res) != RP_OK) {
+	    sm_end(NOTOK);
+	    return NOTOK;
+	}
+    }
 
 send_options: ;
     if (watch && EHLOset ("XVRB"))
@@ -1131,6 +1145,36 @@ sm_get_pass(sasl_conn_t *conn, void *context, int id,
     return SASL_OK;
 }
 #endif /* CYRUS_SASL */
+
+/* https://developers.google.com/gmail/xoauth2_protocol */
+static int
+sm_auth_xoauth2(const char *client_res)
+{
+    int status = smtalk(SM_AUTH, "AUTH XOAUTH2 %s", client_res);
+    if (status == 235) {
+        /* It worked! */
+        return RP_OK;
+    }
+
+    /*
+     * Status is 334 and sm_reply.text contains base64-encoded JSON.  As far as
+     * epg can tell, no matter the error, the JSON is always the same:
+     * {"status":"400","schemes":"Bearer","scope":"https://mail.google.com/"}
+     * I tried these errors:
+     * - garbage token
+     * - expired token
+     * - wrong scope
+     * - wrong username
+     */
+    /* Then we're supposed to send an empty response ("\r\n"). */
+    smtalk(SM_AUTH, "");
+    /*
+     * And now we always get this, again, no matter the error:
+     * 535-5.7.8 Username and Password not accepted. Learn more at
+     * 535 5.7.8 http://support.google.com/mail/bin/answer.py?answer=14257
+     */
+    return RP_BHST;
+}
 
 static int
 sm_ierror (char *fmt, ...)

@@ -1,0 +1,116 @@
+#!/bin/sh
+#
+# Test the XOAUTH2 support in inc
+#
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "${srcdir}" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/oauth/common.sh"
+
+setup_pop
+
+#
+# success cases
+#
+
+# TEST
+echo 'access token ready, pop server accepts message'
+
+fake_creds <<EOF
+access: test-access
+expire: 2000000000
+EOF
+
+start_pop_xoauth
+
+test_inc_success
+
+# TEST
+echo 'expired access token, refresh works, pop server accepts message'
+
+fake_creds <<EOF
+access: old-access
+refresh: test-refresh
+expire: 1414303986
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "access_token": "test-access",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+EOF
+
+expect_creds <<EOF
+access: test-access
+refresh: test-refresh
+expire:
+EOF
+
+start_fakehttp
+start_pop_xoauth
+
+test_inc_success
+
+check_http_req
+
+#
+# fail cases
+#
+
+# TEST
+echo 'refresh gets proper error from http'
+
+fake_creds <<EOF
+access: test-access
+refresh: test-refresh
+EOF
+
+expect_http_post_refresh
+
+fake_http_response '400 Bad Request' <<EOF
+Content-Type: application/json
+
+{
+  "error": "invalid_request"
+}
+EOF
+
+start_fakehttp
+
+test_inc 'inc: error refreshing OAuth2 token
+inc: bad OAuth request; re-run with -snoop and send REDACTED output to nmh-workers'
+
+check_http_req
+
+# TEST
+echo 'pop server rejects token'
+
+fake_creds <<EOF
+access: wrong-access
+expire: 2000000000
+EOF
+
+start_pop_xoauth
+
+test_inc 'inc: -ERR [AUTH] Invalid credentials.'
+
+# TEST
+echo "pop server doesn't support oauth"
+
+fake_creds <<EOF
+access: test-access
+expire: 2000000000
+EOF
+
+start_pop testuser testpass
+
+test_inc 'inc: POP server does not support SASL'
+
+exit ${failed:-0}

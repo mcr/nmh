@@ -10,6 +10,8 @@
 #include <h/mh.h>
 #include <fcntl.h>
 
+#include <h/oauth.h>
+#include <h/utils.h>
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)
@@ -61,6 +63,7 @@
     X("nosasl", SASLminc(-6), NOSASLSW) \
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech mechanism", SASLminc(-5), SASLMECHSW) \
+    X("oauth service", 0, OAUTHSW) \
     X("user username", SASLminc(-4), USERSW) \
     X("attach", -6, ATTACHSW) \
     X("noattach", -8, NOATTACHSW) \
@@ -115,8 +118,10 @@ main (int argc, char **argv)
     char *cp, *dfolder = NULL, *maildir = NULL;
     char buf[BUFSIZ], **ap, **argp, **arguments, *program;
     char *msgs[MAXARGS], **vec;
+    const char *user = NULL, *oauth_svc = NULL;
     struct msgs *mp;
     struct stat st;
+    int snoop = 0;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -227,6 +232,11 @@ main (int argc, char **argv)
 		    vec[vecp++] = --cp;
 		    continue;
 
+		case SNOOPSW:
+                    snoop++;
+		    vec[vecp++] = --cp;
+		    continue;
+
 		case DEBUGSW: 
 		    debugsw++;	/* fall */
 		case NFILTSW: 
@@ -238,13 +248,31 @@ main (int argc, char **argv)
 		case NMSGDSW: 
 		case WATCSW: 
 		case NWATCSW: 
-		case SNOOPSW: 
 		case SASLSW:
 		case NOSASLSW:
 		case TLSSW:
 		case INITTLSSW:
 		case NTLSSW:
 		    vec[vecp++] = --cp;
+		    continue;
+
+                case OAUTHSW:
+#ifdef OAUTH_SUPPORT
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+                    oauth_svc = cp;
+#else
+                    NMH_UNUSED (oauth_svc);
+                    adios (NULL, "not built with OAuth support");
+#endif
+		    continue;
+
+		case USERSW:
+		    vec[vecp++] = --cp;
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    vec[vecp++] = cp;
+                    user = cp;
 		    continue;
 
 		case ALIASW: 
@@ -254,7 +282,6 @@ main (int argc, char **argv)
 		case SERVSW: 
 		case SASLMECHSW:
 		case SASLMXSSFSW:
-		case USERSW:
 		case PORTSW:
 		case MTSSW:
 		case MESSAGEIDSW:
@@ -415,6 +442,18 @@ go_to_it:
     } else {
 	distfile = NULL;
     }
+
+#ifdef OAUTH_SUPPORT
+    if (oauth_svc != NULL) {
+        if (user == NULL) {
+            adios (NULL, "must specify -user with -oauth");
+        }
+
+        vec[vecp++] = "-oauth";
+        vec[vecp++] = mh_oauth_do_xoauth (user, oauth_svc,
+					  snoop ? stderr : NULL);
+    }
+#endif /* OAUTH_SUPPORT */
 
     if (altmsg == NULL || stat (altmsg, &st) == NOTOK) {
 	st.st_mtime = 0;

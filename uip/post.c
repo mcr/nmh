@@ -80,6 +80,7 @@
     X("nosasl", SASLminc(-6), NOSASLSW) \
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech", SASLminc(-5), SASLMECHSW) \
+    X("oauth", -5, OAUTHSW) \
     X("user", SASLminc(-4), USERSW) \
     X("port server submission port name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
@@ -256,14 +257,14 @@ static void anno (void);
 static int annoaux (struct mailname *);
 static void insert_fcc (struct headers *, char *);
 static void make_bcc_file (int);
-static void verify_all_addresses (int, char *);
+static void verify_all_addresses (int, char *, const char *);
 static void chkadr (void);
 static void sigon (void);
 static void sigoff (void);
 static void p_refile (char *);
 static void fcc (char *, char *);
 static void die (char *, char *, ...);
-static void post (char *, int, int, char *);
+static void post (char *, int, int, char *, const char *);
 static void do_text (char *file, int fd);
 static void do_an_address (struct mailname *, int);
 static void do_addresses (int, int);
@@ -278,6 +279,7 @@ main (int argc, char **argv)
     char buf[BUFSIZ], name[NAMESZ];
     FILE *in, *out;
     m_getfld_state_t gstate = 0;
+    char *xoauth_client_res = NULL;
 
     if (nmh_init(argv[0], 0 /* use context_foil() */)) { return 1; }
 
@@ -438,7 +440,13 @@ main (int argc, char **argv)
 		    if (!(saslmech = *argp++) || *saslmech == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
-		
+
+		case OAUTHSW:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+                    xoauth_client_res = cp;
+		    continue;
+
 		case USERSW:
 		    if (!(user = *argp++) || *user == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -620,7 +628,7 @@ main (int argc, char **argv)
     /* If we are doing a "whom" check */
     if (whomsw) {
 	/* This won't work with MTS_SENDMAIL_PIPE. */
-	verify_all_addresses (1, envelope);
+        verify_all_addresses (1, envelope, xoauth_client_res);
 	done (0);
     }
 
@@ -632,14 +640,14 @@ main (int argc, char **argv)
 		   verify_all_addresses with MTS_SENDMAIL_PIPE, but
 		   that might require running sendmail as root.  Note
 		   that spost didn't verify addresses. */
-		verify_all_addresses (verbose, envelope);
+		verify_all_addresses (verbose, envelope, xoauth_client_res);
 	    }
-	    post (tmpfil, 0, verbose, envelope);
+	    post (tmpfil, 0, verbose, envelope, xoauth_client_res);
 	}
-	post (bccfil, 1, verbose, envelope);
+	post (bccfil, 1, verbose, envelope, xoauth_client_res);
 	(void) m_unlink (bccfil);
     } else {
-	post (tmpfil, 0, isatty (1), envelope);
+	post (tmpfil, 0, isatty (1), envelope, xoauth_client_res);
     }
 
     p_refile (tmpfil);
@@ -1486,7 +1494,8 @@ do_addresses (int bccque, int talk)
  */
 
 static void
-post (char *file, int bccque, int talk, char *envelope)
+post (char *file, int bccque, int talk, char *envelope,
+      const char *xoauth_client_res)
 {
     int fd;
     int	retval, i;
@@ -1536,8 +1545,8 @@ post (char *file, int bccque, int talk, char *envelope)
     } else {
         if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
                                         verbose, snoop, sasl, saslssf,
-					saslmech, user, tls))  ||
-            rp_isbad (retval = sm_winit (envelope)))
+					saslmech, user, xoauth_client_res, tls))
+            || rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
         do_addresses (bccque, talk && verbose);
@@ -1566,7 +1575,7 @@ post (char *file, int bccque, int talk, char *envelope)
 /* Address Verification */
 
 static void
-verify_all_addresses (int talk, char *envelope)
+verify_all_addresses (int talk, char *envelope, const char *xoauth_client_res)
 {
     int retval;
     struct mailname *lp;
@@ -1576,7 +1585,7 @@ verify_all_addresses (int talk, char *envelope)
     if (!whomsw || checksw)
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, sasl, saslssf,
-					saslmech, user, tls))
+					saslmech, user, xoauth_client_res, tls))
 		|| rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 

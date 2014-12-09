@@ -33,6 +33,7 @@
     X("snoop", -5, SNOOPSW) \
     X("sasl", SASLminc(-4), SASLSW) \
     X("saslmech", SASLminc(-5), SASLMECHSW) \
+    X("oauth service", 0, OAUTHSW) \
     X("proxy command", 0, PROXYSW) \
 
 #define X(sw, minchars, id) id,
@@ -71,7 +72,7 @@ DEFINE_SWITCH_ARRAY(MSGCHK, switches);
 static int donote (char *, int);
 static int checkmail (char *, char *, int, int, int);
 static int remotemail (char *, char *, char *, char *, int, int, int, int,
-		       char *);
+		       char *, const char *);
 
 
 int
@@ -84,6 +85,7 @@ main (int argc, char **argv)
     char buf[BUFSIZ], *saslmech = NULL; 
     char **argp, **arguments, *vec[MAXVEC];
     struct passwd *pw;
+    const char *oauth_svc = NULL;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -137,6 +139,16 @@ main (int argc, char **argv)
 		    if (!(port = *argp++) || *port == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
+
+            case OAUTHSW:
+#ifdef OAUTH_SUPPORT
+                if (!(cp = *argp++) || *cp == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
+                oauth_svc = cp;
+#else
+                adios (NULL, "not built with OAuth support");
+#endif
+                continue;
 
 		case USERSW: 
 		    if (!(cp = *argp++) || *cp == '-')
@@ -192,11 +204,11 @@ main (int argc, char **argv)
     if (host) {
 	if (vecp == 0) {
 	    status = remotemail (host, port, user, proxy, notifysw, 1,
-				 snoop, sasl, saslmech);
+				 snoop, sasl, saslmech, oauth_svc);
 	} else {
 	    for (vecp = 0; vec[vecp]; vecp++)
 		status += remotemail (host, port, vec[vecp], proxy, notifysw, 0,
-				      snoop, sasl, saslmech);
+				      snoop, sasl, saslmech, oauth_svc);
 	}
     } else {
 	if (user == NULL) user = getusername ();
@@ -320,15 +332,24 @@ extern char response[];
 
 static int
 remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
-	    int personal, int snoop, int sasl, char *saslmech)
+	    int personal, int snoop, int sasl, char *saslmech,
+	    const char *oauth_svc)
 {
     int nmsgs, nbytes, status;
     struct nmh_creds creds = { 0, 0, 0 };
 
+    if (oauth_svc == NULL) {
+	nmh_get_credentials (host, user, sasl, &creds);
+    } else {
+	if (user == NULL) {
+	    adios (NULL, "must specify -user with -oauth");
+	}
+	creds.user = user;
+    }
+
     /* open the POP connection */
-    nmh_get_credentials (host, user, sasl, &creds);
     if (pop_init (host, port, creds.user, creds.password, proxy, snoop, sasl,
-		  saslmech) == NOTOK
+		  saslmech, oauth_svc) == NOTOK
 	    || pop_stat (&nmsgs, &nbytes) == NOTOK     /* check for messages  */
 	    || pop_quit () == NOTOK) {                 /* quit POP connection */
 	advise (NULL, "%s", response);

@@ -80,6 +80,7 @@ a.out.dSYM/
 /uip/mhfixmsg
 /uip/mhl
 /uip/mhlist
+/uip/mhlogin
 /uip/mhn
 /uip/mhparam
 /uip/mhpath
@@ -110,6 +111,7 @@ a.out.dSYM/
 /uip/whatnow
 /uip/whom
 /uip/*.exe
+/test/fakehttp
 /test/fakepop
 /test/fakesmtp
 /test/getcanon

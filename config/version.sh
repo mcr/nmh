@@ -47,3 +47,4 @@ else
     echo "char *version_str = \"nmh-$VERSION [compiled on $HOSTNAME at `date`]\";"
 fi
 echo "char *version_num = \"nmh-$VERSION\";"
+echo "char *user_agent = \"nmh/$VERSION\";"

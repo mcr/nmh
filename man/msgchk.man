@@ -1,4 +1,4 @@
-.TH MSGCHK %manext1% "April 14, 2013" "%nmhversion%"
+.TH MSGCHK %manext1% "November 25, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -20,6 +20,8 @@ all/mail/nomail ]
 .RB [ \-sasl ]
 .RB [ \-saslmech
 .IR mechanism ]
+.RB [ \-oauth
+.IR service ]
 .RB [ \-snoop ]
 .RI [ users
 \&... ]
@@ -97,7 +99,9 @@ For debugging purposes, there is also a switch
 .BR \-snoop ,
 which will
 allow you to watch the POP transaction take place between you and the
-POP server.
+POP server.  If
+.B \-oauth
+is used, the HTTP transaction is also shown.
 .PP
 If
 .B nmh
@@ -113,13 +117,36 @@ mh-profile(5) man page).  The
 switch can be used to select a particular SASL mechanism.
 .PP
 If SASL authentication is successful,
-.B inc
+.B msgchk
 will attempt to negotiate
 a security layer for session encryption.  Encrypted traffic is labelled
 with `(encrypted)' and `(decrypted)' when viewing the POP transaction
 with the
 .B \-snoop
 switch.
+.PP
+If
+.B nmh
+has been compiled with OAuth support, the
+.B \-oauth
+switch will enable OAuth authentication.  The
+.B \-user
+switch must be used, and the
+.I user-name
+must be an email address the user has for that service.  Before using this,
+the user must authorize nmh by running
+.B mhlogin
+and grant authorization to that account.  Only
+.B -oauth
+.I gmail
+is supported.  See the
+.B mhlogin
+man page for more details.
+.PP
+Gmail only supports POP3 over TLS, but
+.B msgchk
+has no TLS support.  To work around this, use something like
+.B -proxy 'openssl s_client -connect %h:995 -CAfile /etc/ssl/certs/ca-certificates.crt -quiet'
 .SH FILES
 .fc ^ ~
 .nf

@@ -40,6 +40,15 @@ AS_IF([test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"],[
 	    AC_MSG_WARN([Please pass the appropriate arguments to CPPFLAGS/LDFLAGS])])
       sasl_support=yes], [sasl_support=no])
 
+dnl Do you want client-side support for using OAuth2 for SMTP authentication?
+AC_ARG_WITH([oauth], AS_HELP_STRING([--with-oauth],
+  [Enable OAuth2 support in SMTP auth]))
+AS_IF([test x"$with_oauth" != x -a x"$with_oauth" != x"no"],[
+      AC_DEFINE([OAUTH_SUPPORT], [1],
+		[Support OAuth2 in SMTP auth.])dnl
+      OAUTH_SUPPORT=1; oauth_support=yes], [OAUTH_SUPPORT=0; oauth_support=no])
+AC_SUBST(OAUTH_SUPPORT)
+
 dnl Do you want client-side support for encryption with TLS?
 AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
 AS_IF([test x"$with_tls" != x"no"],[
@@ -501,6 +510,22 @@ AS_IF([test x"$tls_support" = x"yes"],[
   [TLSLIB=])
 AC_SUBST([TLSLIB])
 
+dnl -----------------
+dnl CHECK FOR CURL
+dnl -----------------
+AS_IF([test x"$OAUTH_SUPPORT" = x"1"],[
+  AC_PATH_PROG([curl_config], [curl-config])
+  AC_CHECK_HEADER([curl/curl.h], [], [AC_MSG_ERROR([curl/curl.h not found])])
+  AC_CHECK_LIB([curl], [curl_easy_init], [CURLLIB="`$curl_config --libs`"],
+    [AC_MSG_ERROR([curl library not found])],[$CURLLIB])
+  CURL_USER_AGENT=`$curl_config --version | sed 's| |/|'`
+  ],
+  [CURLLIB=
+   CURL_USER_AGENT=
+])
+AC_SUBST([CURLLIB])
+AC_SUBST([CURL_USER_AGENT])
+
 dnl ----------------
 dnl CHECK FLEX FIXUP
 dnl ----------------
@@ -590,6 +615,7 @@ spool default locking type : ${with_locking}
 default smtp servers       : ${smtpservers}
 SASL support               : ${sasl_support}
 TLS support                : ${tls_support}
+OAuth support              : ${oauth_support}
 ])])dnl
 
 dnl ---------------
