@@ -22,6 +22,19 @@ int serve(const char *, const char *);
 void putcrlf(int, char *);
 
 static void
+strip_cr(char *buf, ssize_t *len)
+{
+    ssize_t src, dst;
+    for (src = dst = 0; src < *len; src++) {
+        buf[dst] = buf[src];
+        if (buf[src] != '\r') {
+            dst++;
+        }
+    }
+    *len -= src - dst;
+}
+
+static void
 save_req(int conn, FILE *req)
 {
     char buf[BUFSIZ];
@@ -66,7 +79,7 @@ save_req(int conn, FILE *req)
              * all done. */
             return;
         }
-        /* make tests simpler by eliding carriage-returns? */
+        strip_cr(buf, &r);
         fwrite(buf, 1, r, req);
     }
 }
