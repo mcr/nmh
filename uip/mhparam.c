@@ -75,6 +75,13 @@ static char *iconv =
     "";
 #endif
 
+static char *oauth =
+#ifdef OAUTH_SUPPORT
+    "oauth";
+#else
+    "";
+#endif
+
 struct proc {
     char *p_name;
     char **p_field;
@@ -112,6 +119,7 @@ static struct proc procs [] = {
      { "datalocking",      &datalocking },
      { "spoollocking",     &spoollocking },
      { "iconv",		   &iconv },
+     { "oauth",		   &oauth },
      { "sasl",             &sasl },
      { "tls",              &tls },
      { NULL,               NULL },
