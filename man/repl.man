@@ -1,4 +1,4 @@
-.TH REPL %manext1% "November 4, 2014" "%nmhversion%"
+.TH REPL %manext1% "December 13, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -260,7 +260,9 @@ which message filter file to use.
 .PP
 If the switch
 .B \-noformat
-is given (it is the default), then the message
+is given (it is the default) and the
+.B \-filter
+switch is not used, then the message
 to which you are replying is not included in the body of the draft.
 .PP
 If the switch
