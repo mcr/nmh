@@ -25,31 +25,13 @@ fi
 TMP=/tmp/nmh_temp.$$
 trap "rm -f $TMP" 0 1 2 3 13 15
 
-PGM=`$SEARCHPROG "$SEARCHPATH" w3m`
-if [ ! -z "$PGM" ]; then
-    echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
-$PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F' >> $TMP
-else
-    PGM=`$SEARCHPROG "$SEARCHPATH" lynx`
-    if [ ! -z "$PGM" ]; then
-        #### lynx indents with 3 spaces, remove them and any trailing spaces.
-        echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
-$PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} %F | '"\
-expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
-    else
-        PGM=`$SEARCHPROG "$SEARCHPATH" elinks`
-        if [ ! -z "$PGM" ]; then
-          echo "mhfixmsg-format-text/html: $PGM -dump -force-html \
--no-numbering -eval 'set document.browse.margin_width = 0' %F" >> $TMP
-    fi
-  fi
-fi
-
-echo "mhstore-store-text: %m%P.txt" >> $TMP
-echo "mhstore-store-text/html: %m%P.html" >> $TMP
-echo "mhstore-store-text/richtext: %m%P.rt" >> $TMP
-echo "mhstore-store-video/mpeg: %m%P.mpg" >> $TMP
-echo "mhstore-store-application/PostScript: %m%P.ps" >> $TMP
+cat >>"$TMP" <<'EOF'
+mhstore-store-text: %m%P.txt
+mhstore-store-text/html: %m%P.html
+mhstore-store-text/richtext: %m%P.rt
+mhstore-store-video/mpeg: %m%P.mpg
+mhstore-store-application/PostScript: %m%P.ps
+EOF
 
 PGM=`$SEARCHPROG "$SEARCHPATH" xwud`
 if [ ! -z "$PGM" ]; then
@@ -131,7 +113,7 @@ fi
 #### should be 'attachment' or 'inline'.  Only those values are
 #### supported.
 ####
-cat <<EOF >> ${TMP}
+cat <<EOF >>${TMP}
 mhbuild-disposition-text/calendar: inline
 mhbuild-disposition-message/rfc822: inline
 EOF
@@ -283,17 +265,25 @@ PGM=`$SEARCHPROG "$SEARCHPATH" w3m`
 if [ ! -z "$PGM" ]; then
     echo 'mhshow-show-text/html: charset=%{charset}; '"\
 %l$PGM"' -dump ${charset:+-I "$charset"} -T text/html %F' >> $TMP
+    echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
+$PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F' >> $TMP
 else
     PGM=`$SEARCHPROG "$SEARCHPATH" lynx`
     if [ ! -z "$PGM" ]; then
 	echo 'mhshow-show-text/html: charset=%{charset}; '"\
 %l$PGM"' -child -dump -force-html ${charset:+--assume_charset "$charset"} %F' >> $TMP
+        #### lynx indents with 3 spaces, remove them and any trailing spaces.
+        echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
+$PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} %F | '"\
+expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
     else
-      PGM=`$SEARCHPROG "$SEARCHPATH" elinks`
-      if [ ! -z "$PGM" ]; then
-          echo "mhshow-show-text/html: $PGM -dump -force-html \
+        PGM=`$SEARCHPROG "$SEARCHPATH" elinks`
+        if [ ! -z "$PGM" ]; then
+            echo "mhshow-show-text/html: $PGM -dump -force-html \
 -eval 'set document.browse.margin_width = 0' %F" >> $TMP
-      fi
+            echo "mhfixmsg-format-text/html: $PGM -dump -force-html \
+-no-numbering -eval 'set document.browse.margin_width = 0' %F" >> $TMP
+        fi
     fi
 fi
 
