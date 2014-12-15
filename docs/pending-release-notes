@@ -28,6 +28,9 @@ NEW FEATURES
 - The -changecur and -nochangecur switches have been added to mhfixmsg(1).
 - mhfixmsg now removes an extraneous trailing semicolon from header
   parameter lists.
+- Added -convertargs switch to repl(1), to pass arguments to programs
+  specified in the user's profile or mhn.defaults to convert message
+  content.
 
 -----------------
 OBSOLETE FEATURES

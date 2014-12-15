@@ -12,9 +12,11 @@
 #define	DESCR_FIELD	"Content-Description"
 #define	DISPO_FIELD	"Content-Disposition"
 #define	MD5_FIELD	"Content-MD5"
-#define PSEUDOHEADER_PREFIX		"Nmh-"
-#define	ATTACH_FIELD			PSEUDOHEADER_PREFIX "Attach"
-#define	ATTACH_FIELD_ALT		"Attach"
+#define	PSEUDOHEADER_PREFIX        "Nmh-"
+#define	ATTACH_FIELD               PSEUDOHEADER_PREFIX "Attach"
+#define	ATTACH_FIELD_ALT           "Attach"
+#define	MHBUILD_FILE_PSEUDOHEADER  PSEUDOHEADER_PREFIX "mhbuild-file-"
+#define	MHBUILD_ARGS_PSEUDOHEADER  PSEUDOHEADER_PREFIX "mhbuild-args-"
 
 #define	isatom(c)   (isascii((unsigned char) c) \
                      && !isspace ((unsigned char) c) \

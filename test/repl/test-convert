@@ -1,0 +1,123 @@
+#!/bin/sh
+######################################################
+#
+# Test repl -convertarg
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+expected="$MH_TEST_DIR/test-convert$$.expected"
+actual=`mhpath +`/draft
+
+printf 'Local-Mailbox: recipient@example.com' >>"$MH"
+
+
+# check -convertarg with multiple parts and no additional text in draft
+cat >"$expected" <<'EOF'
+From: recipient@example.com
+To: sender@example.com
+cc: 
+Fcc: +outbox
+Subject: Re: test
+Comments: In-reply-to sender@example.com
+   message dated "Thu, 11 Dec 2014 08:19:02 -0600."
+MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+
+> This is part 1.
+
+> This is part 2.
+EOF
+
+cat >`mhpath new` <<'EOF'
+From: sender@example.com
+To: recipient@example.com
+Subject: test
+Date: Thu, 11 Dec 2014 08:19:02 -0600
+Content-Type: multipart/mixed; boundary="_001_"
+MIME-Version: 1.0
+
+--_001_
+Content-Type: text/plain
+
+This is part 1.
+
+--_001_
+Content-Type: text/plain
+
+This is part 2.
+
+--_001_
+Content-Type: text/enriched
+
+This should not appear in the reply
+because the content type isn't matched.
+
+--_001_--
+EOF
+
+repl -noformat -convertarg text/plain '' -nowhatnowproc last
+mhbuild "$actual"
+check "$actual" "$expected"
+
+
+#### Make sure that this works with 8-bit encoding.
+require_locale en_US.utf-8 en_US.utf8
+LC_ALL=en_US.UTF-8; export LC_ALL
+
+
+# check -convertarg with multiple parts and additional text in draft
+cat >"$expected" <<'EOF'
+From: recipient@example.com
+To: sender@example.com
+cc: 
+Fcc: +outbox
+Subject: Re: test
+Comments: In-reply-to sender@example.com
+   message dated "Thu, 11 Dec 2014 08:19:02 -0600."
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+sender@example.com writes:
+
+> This is part 1.
+
+> This is part 2.
+EOF
+
+cat >`mhpath new` <<'EOF'
+From: sender@example.com
+To: recipient@example.com
+Subject: test
+Date: Thu, 11 Dec 2014 08:19:02 -0600
+Content-Type: multipart/mixed; boundary="_001_"
+MIME-Version: 1.0
+
+--_001_
+Content-Type: text/plain
+
+This is part 1.
+
+--_001_
+Content-Type: text/plain
+
+This is part 2.
+
+--_001_--
+EOF
+
+repl -filter mhl.replywithoutbody -convertarg text/plain '' -nowhatnowproc last
+mhbuild "$actual"
+check "$actual" "$expected"
+
+
+exit $failed

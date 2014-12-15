@@ -35,6 +35,7 @@ Usage: repl: [+folder] [msg] [switches]
   -nodraftfolder
   -editor editor
   -noedit
+  -convertargs type argstring
   -fcc folder
   -filter filterfile
   -form formfile

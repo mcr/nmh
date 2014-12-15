@@ -88,7 +88,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/post/test-post-group test/post/test-mts test/post/test-messageid \
 	test/post/test-sendfiles test/prompter/test-prompter \
 	test/rcv/test-rcvdist test/rcv/test-rcvpack test/rcv/test-rcvstore \
-	test/rcv/test-rcvtty test/refile/test-refile \
+	test/rcv/test-rcvtty test/refile/test-refile test/repl/test-convert \
 	test/repl/test-if-str test/repl/test-trailing-newline \
 	test/repl/test-multicomp test/repl/test-repl \
 	test/scan/test-scan test/scan/test-scan-multibyte \
@@ -109,7 +109,7 @@ DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
 ## automake 1.12.6 on FreeBSD 9 needs the sbr/dtimep.c.
 ##
 CLEANFILES = config/version.c sbr/sigmsg.h sbr/dtimep.c etc/mts.conf \
-	     etc/gen-ctype-checked sbr/ctype-checked.h sbr/ctype-checked.c \
+	     etc/gen-ctype-checked sbr/ctype-checked.[hc] \
 	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS) \
 	     *.plist
 clean-local:
@@ -188,15 +188,16 @@ noinst_HEADERS = h/addrsbr.h h/aliasbr.h h/crawl_folders.h h/dropsbr.h \
 ## Extra files we need to install in various places
 ##
 dist_nmhetc_DATA = etc/MailAliases etc/components etc/digestcomps \
-		    etc/distcomps etc/forwcomps etc/mhl.body etc/mhl.digest \
-		    etc/mhl.format etc/mhl.forward etc/mhl.headers \
-		    etc/mhl.reply etc/mhshow.marker etc/rcvdistcomps \
-		    etc/rcvdistcomps.outbox etc/replcomps etc/replgroupcomps \
-		    etc/scan.MMDDYY \
-		    etc/scan.YYYYMMDD etc/scan.curses etc/scan.default \
-		    etc/scan.highlighted \
-		    etc/scan.mailx etc/scan.nomime etc/scan.size etc/scan.time \
-		    etc/scan.timely etc/scan.unseen
+		   etc/distcomps etc/forwcomps etc/mhl.body etc/mhl.digest \
+		   etc/mhl.format etc/mhl.forward etc/mhl.headers \
+		   etc/mhl.reply etc/mhl.replywithoutbody \
+		   etc/mhshow.marker etc/rcvdistcomps etc/rcvdistcomps.outbox \
+		   etc/replcomps etc/replgroupcomps \
+		   etc/scan.MMDDYY \
+		   etc/scan.YYYYMMDD etc/scan.curses etc/scan.default \
+		   etc/scan.highlighted \
+		   etc/scan.mailx etc/scan.nomime etc/scan.size etc/scan.time \
+		   etc/scan.timely etc/scan.unseen
 
 ##
 ## The same as above, but we don't include these in the distribution
@@ -221,6 +222,7 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 contribdir = $(docdir)/contrib
 dist_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
 		       docs/contrib/ml docs/contrib/vpick
+dist_contrib_DATA = docs/contrib/replaliases
 
 ##
 ## Our man pages
@@ -328,7 +330,8 @@ uip_mark_LDADD = $(LDADD) $(POSTLINK)
 
 uip_mhbuild_SOURCES = uip/mhbuild.c uip/mhbuildsbr.c uip/mhcachesbr.c \
 		      uip/mhlistsbr.c uip/mhoutsbr.c uip/mhmisc.c  \
-		      uip/mhfree.c uip/mhparse.c uip/md5.c
+		      uip/mhfree.c uip/mhparse.c uip/md5.c \
+		      uip/mhstoresbr.c uip/mhshowsbr.c
 uip_mhbuild_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhfixmsg_SOURCES = uip/mhfixmsg.c uip/mhparse.c uip/mhcachesbr.c \

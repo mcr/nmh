@@ -1,0 +1,23 @@
+#### replaliases
+####
+#### convenience functions for various repl(1) commands
+
+#### If using par (see mhn.defaults), it really helps to have its
+#### PARINIT environment variable set.  If you really want it to be
+#### null, either comment this out or set it to, e.g., ' '.
+if [ -z "$PARINIT" ]; then
+    PARINIT='rTbgqR B=.,?_A_a Q=_s>|'
+    export PARINIT
+fi
+
+#### Reply, including text/html (converted to text/plain) and text/plain parts.
+#### To ease editing at the What now? prompt, add a line like this to your
+#### .mh_profile:
+####     mhbuild-next: $EDITOR
+#### assuming that your EDTIOR environment variable is set; if not, replace
+#### $EDITOR above with the name of your editor.  Without that profile entry,
+#### enter "e[dit] $EDITOR" at the What now? prompt.
+rt() {
+    repl -filter mhl.replywithoutbody -editor mhbuild \
+         -convertargs text/html '' -convertargs text/plain '' "$@"
+}
