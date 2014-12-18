@@ -93,12 +93,17 @@ cpnumber(charstring_t dest, int num, unsigned int wid, char fill, size_t max) {
 	    charstring_push_back (rev, '?');
 	} else if (num < 0  &&  wid > 0) {
 	    /* Shouldn't need the wid > 0 check, that's why the condition
-               at the top checks wid < max-1 when num < 0. */
-	    charstring_push_back (rev, '-');
+	       at the top checks wid < max-1 when num < 0. */
 	    --wid;
+	    if (fill == ' ') {
+		charstring_push_back (rev, '-');
+	    }
 	}
 	while (wid-- > 0  &&  fill != 0) {
 	    charstring_push_back (rev, fill);
+	}
+	if (num < 0  &&  fill == '0') {
+	    charstring_push_back (rev, '-');
 	}
 
 	{
