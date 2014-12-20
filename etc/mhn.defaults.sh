@@ -277,8 +277,6 @@ EOF
 # but only once I've added a new %-escape that makes more permanent temp files,
 # so netscape -remote can be used (without -remote you get a complaint dialog
 # that another netscape is already running and certain things can't be done).
-#
-# The widths here correspond to the replfmt width, with par, above.
 PGM=`$SEARCHPROG "$SEARCHPATH" w3m`
 if [ ! -z "$PGM" ]; then
     echo 'mhshow-show-text/html: charset=%{charset}; '"\
@@ -286,7 +284,7 @@ if [ ! -z "$PGM" ]; then
     echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
 $PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F' >> $TMP
     echo 'mhbuild-convert-text/html: charset=%{charset}; '"\
-$PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html -cols 62 %F '"\
+$PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F '"\
 ${replfmt}" >> $TMP
 else
     PGM=`$SEARCHPROG "$SEARCHPATH" lynx`
@@ -299,7 +297,7 @@ $PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} %F | '"\
 expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
         echo 'mhbuild-convert-text/html: charset=%{charset}; '"\
 $PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} '"\
--width=62 %F${replfmt}" >> $TMP
+%F${replfmt}" >> $TMP
     else
         PGM=`$SEARCHPROG "$SEARCHPATH" elinks`
         if [ ! -z "$PGM" ]; then
