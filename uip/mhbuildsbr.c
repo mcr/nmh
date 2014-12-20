@@ -83,7 +83,7 @@ static void set_disposition (CT);
 static void set_charset (CT, int);
 static void expand_pseudoheaders (CT, struct multipart *, const char *,
                                   const convert_list *);
-static void expand_pseudoheader (CT, struct multipart *, const char *,
+static void expand_pseudoheader (CT, CT *, struct multipart *, const char *,
                                  const char *, const char *);
 static char *fgetstr (char *, int, FILE *);
 static int user_content (FILE *, char *, CT *, const char *infilename);
@@ -2136,6 +2136,11 @@ set_charset (CT ct, int contains8bit) {
 void
 expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
                       const convert_list *convert_head) {
+    /* text_plain_ct is used to concatenate all of the text/plain
+       replies into one part, instead of having each one in a separate
+       part. */
+    CT text_plain_ct = NULL;
+
     switch (ct->c_type) {
     case CT_MULTIPART: {
         struct multipart *mp = (struct multipart *) ct->c_ctparams;
@@ -2162,7 +2167,8 @@ expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
 
                     for (c = convert_head; c; c = c->next) {
                         if (! strcasecmp (type_subtype, c->type)) {
-                            expand_pseudoheader (part->mp_part, m, infile,
+                            expand_pseudoheader (part->mp_part, &text_plain_ct,
+                                                 m, infile,
                                                  c->type, c->argstring);
                             matched = 1;
                             break;
@@ -2187,7 +2193,8 @@ expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
 
         for (c = convert_head; c; c = c->next) {
             if (! strcasecmp (type_subtype, c->type)) {
-                expand_pseudoheader (ct, m, infile, c->type, c->argstring);
+                expand_pseudoheader (ct, &text_plain_ct, m, infile, c->type,
+                                     c->argstring);
                 break;
             }
         }
@@ -2202,12 +2209,9 @@ expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
  * Expand a single pseudoheader.  It's for the specified type.
  */
 void
-expand_pseudoheader (CT ct, struct multipart *m, const char *infile,
-                     const char *type, const char *argstring) {
-    /* text_plain_ct is used to concatenate all of the text/plain
-       replies into one part, instead of having each one in a separate
-       part. */
-    CT text_plain_ct = NULL;
+expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
+                     const char *infile, const char *type,
+                     const char *argstring) {
     char *reply_file;
     FILE *reply_fp = NULL;
     char *convert, *type_p, *subtype_p;
@@ -2290,22 +2294,22 @@ expand_pseudoheader (CT ct, struct multipart *m, const char *infile,
     if (reply_ct->c_type == CT_TEXT  &&
         reply_ct->c_subtype == TEXT_PLAIN) {
 
-        if (m->mp_parts  &&  ! text_plain_ct) {
-            text_plain_ct = m->mp_parts->mp_part;
+        if (m->mp_parts  &&  ! *text_plain_ct) {
+            *text_plain_ct = m->mp_parts->mp_part;
             /* Make sure that the charset is set in the text/plain
                part. */
-            set_charset (text_plain_ct, -1);
-            if (text_plain_ct->c_reqencoding == CE_UNKNOWN  &&
+            set_charset (*text_plain_ct, -1);
+            if ((*text_plain_ct)->c_reqencoding == CE_UNKNOWN  &&
                 strcasecmp (charset, "US-ASCII")) {
                 /* Assume that 8bit is sufficient (for text). */
-                text_plain_ct->c_reqencoding = CE_8BIT;
+                (*text_plain_ct)->c_reqencoding = CE_8BIT;
             }
         }
 
-        if (text_plain_ct) {
+        if (*text_plain_ct) {
             /* Only concatenate if the charsets are identical. */
             char *text_plain_ct_charset =
-                get_param (text_plain_ct->c_ctinfo.ci_first_pm, "charset",
+                get_param ((*text_plain_ct)->c_ctinfo.ci_first_pm, "charset",
                            '?', 1);
 
             if (strcasecmp (text_plain_ct_charset, charset) == 0) {
@@ -2313,7 +2317,7 @@ expand_pseudoheader (CT ct, struct multipart *m, const char *infile,
                    If there's a problem anywhere along the way,
                    instead attach it is a separate part. */
                 int text_plain_reply =
-                    open (text_plain_ct->c_cefile.ce_file,
+                    open ((*text_plain_ct)->c_cefile.ce_file,
                           O_WRONLY | O_APPEND);
                 int addl_reply = open (reply_file, O_RDONLY);
 
@@ -2323,7 +2327,7 @@ expand_pseudoheader (CT ct, struct multipart *m, const char *infile,
                         /* Copy the text from the new reply and
                            then free its Content struct. */
                         cpydata (addl_reply, text_plain_reply,
-                                 text_plain_ct->c_cefile.ce_file,
+                                 (*text_plain_ct)->c_cefile.ce_file,
                                  reply_file);
                         if (close (text_plain_reply) == OK  &&
                             close (addl_reply) == OK) {
@@ -2336,7 +2340,7 @@ expand_pseudoheader (CT ct, struct multipart *m, const char *infile,
                 }
             }
         } else {
-            text_plain_ct = reply_ct;
+            *text_plain_ct = reply_ct;
         }
     }
 
