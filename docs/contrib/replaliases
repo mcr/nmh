@@ -2,11 +2,13 @@
 ####
 #### convenience functions for various repl(1) commands
 
-#### If using par (see mhn.defaults), it really helps to have its
-#### PARINIT environment variable set.  If you really want it to be
-#### null, either comment this out or set it to, e.g., ' '.
+#### If using par (see mhn.defaults), it helps to have its PARINIT
+#### environment variable set.  If you really want it to be null,
+#### either comment this out or set it to, e.g., ' '.
+#### Removed "R" from PARINIT recommendation in par(1) man page so
+#### that it doesn't consider words that are too long to be an error.
 if [ -z "$PARINIT" ]; then
-    PARINIT='rTbgqR B=.,?_A_a Q=_s>|'
+    PARINIT='rTbgq B=.,?_A_a Q=_s>|'
     export PARINIT
 fi
 
@@ -21,3 +23,8 @@ rt() {
     repl -filter mhl.replywithoutbody -editor mhbuild \
          -convertargs text/html '' -convertargs text/plain '' "$@"
 }
+
+
+# Local Variables:
+# mode: sh
+# End:

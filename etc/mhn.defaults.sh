@@ -26,11 +26,9 @@ TMP=/tmp/nmh_temp.$$
 trap "rm -f $TMP" 0 1 2 3 13 15
 
 if [ ! -z `$SEARCHPROG "$SEARCHPATH" par` ]; then
-    #### par fails on input lines that are too wide, so used fold(1)
-    #### to wrap them first.  The widths here correspond to those
-    #### for the text browsers below.
-    textfmt=' | fold -s -w 64 | par 64'
-    replfmt=" | fold -s -w 62 | sed 's/^\(.\)/> \1/; s/^$/>/;' | par 64"
+    #### The widths here correspond to those for the text browsers below.
+    textfmt=' | par 64'
+    replfmt=" | sed 's/^\(.\)/> \1/; s/^$/>/;' | par 64"
 elif [ ! -z `$SEARCHPROG "$SEARCHPATH" fmt` ]; then
     textfmt=' | fmt'
     replfmt=" | fmt | sed 's/^\(.\)/> \1/; s/^$/>/;'"
