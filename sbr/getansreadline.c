@@ -9,7 +9,6 @@
 
 #include <h/mh.h>
 #include <h/signals.h>
-#include <setjmp.h>
 
 #ifdef READLINE_SUPPORT
 #include <readline/readline.h>
