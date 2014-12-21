@@ -1,4 +1,4 @@
-.TH MH-PROFILE %manext5% "April 18, 2014" "%nmhversion%"
+.TH MH-PROFILE %manext5% "December 21, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -43,6 +43,15 @@ profile or
 context, and indicates what the default value is.  Note that a profile
 component can only appear once.  Multiple appearances with trigger a
 warning that all appearances after the first are ignored.
+.PP
+Some MH programs, including
+.BR mhbuild ,
+.BR mhshow ,
+and
+.BR mhstore ,
+have specific profile components that are described in their respective
+man pages.  Each component name begins with the name of the program and
+is followed by a dash.
 .PP
 .BR Path :
 Mail
@@ -1045,6 +1054,9 @@ if annotations are to occur.
 .SH "SEE ALSO"
 .IR environ (5),
 .IR mh-sequence (5),
+.IR mhbuild (1),
+.IR mhshow (1),
+.IR mhstore (1),
 .IR nmh (7)
 .SH HISTORY
 The
