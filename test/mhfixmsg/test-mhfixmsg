@@ -42,7 +42,6 @@ fi
 
 
 # check -help
-# Verified behavior consistent with compiled sendmail.
 cat >"$expected" <<EOF
 Usage: mhfixmsg [+folder] [msgs] [switches]
   switches are:
