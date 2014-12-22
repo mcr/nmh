@@ -67,7 +67,6 @@ check "$expected" "$actual"
 
 
 # check -version
-# Verified same behavior as compiled mhfixmsg.
 case `mhfixmsg -version` in
   mhfixmsg\ --*) ;;
   *) printf '%s: mhfixmsg -version generated unexpected output\n' "$0" >&2
