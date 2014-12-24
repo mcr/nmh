@@ -876,13 +876,16 @@ static void
 process (char *folder, char *fname, int ofilen, int ofilec)
 {
     /* static to prevent "might be clobbered" warning from gcc 4.9.2: */
-    static char *cp = NULL;
-    static FILE *fp = NULL;
+    static char *cp;
+    static FILE *fp;
     struct mcomp *c1;
     struct stat st;
     struct arglist *ap;
     /* volatile to prevent "might be clobbered" warning from gcc: */
     char *volatile fname2 = fname ? fname : "(stdin)";
+
+    cp = NULL;
+    fp = NULL;
 
     switch (setjmp (env)) {
 	case OK: 
