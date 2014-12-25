@@ -446,9 +446,6 @@ WhatNow (int argc, char **argv)
 		    annotate(drft, ATTACH_FIELD, file, 1, 0, -2, 1);
 		    if (verbose) {
 			ctype = mime_type(file);
-		    }
-
-		    if (verbose) {
 			printf ("Attaching %s as a %s\n", file, ctype);
 			free (ctype);
 		    }
