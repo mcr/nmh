@@ -338,6 +338,8 @@ void close_encoding (CT);
 void free_content (CT);
 char *ct_type_str (int);
 char *ct_subtype_str (int, int);
+int ct_str_type (const char *);
+int ct_str_subtype (int, const char *);
 const struct str2init *get_ct_init (int);
 const char *ce_str (int);
 const struct str2init *get_ce_method (const char *);
