@@ -26,6 +26,7 @@
     X("nofixboundary", 0, NFIXBOUNDARYSW) \
     X("fixcte", 0, FIXCTESW) \
     X("nofixcte", 0, NFIXCTESW) \
+    X("fixtype mimetype", 0, FIXTYPESW) \
     X("file file", 0, FILESW) \
     X("outfile file", 0, OUTFILESW) \
     X("rmmproc program", 0, RPROCSW) \
@@ -75,6 +76,7 @@ void freects_done (int) NORETURN;
 typedef struct fix_transformations {
     int fixboundary;
     int fixcte;
+    svector_t fixtypes;
     int reformat;
     int replacetextplain;
     int decodetext;
@@ -85,6 +87,8 @@ int mhfixmsgsbr (CT *, const fix_transformations *, char *);
 static int fix_boundary (CT *, int *);
 static int get_multipart_boundary (CT, char **);
 static int replace_boundary (CT, char *, char *);
+static int fix_types (CT, svector_t, int *);
+static char *replace_substring (char **, const char *, const char *);
 static int fix_multipart_cte (CT, int *);
 static int set_ce (CT, int);
 static int ensure_text_plain (CT *, CT, int *, int);
@@ -126,6 +130,7 @@ main (int argc, char **argv) {
     int status = OK;
     fix_transformations fx;
     fx.reformat = fx.fixcte = fx.fixboundary = 1;
+    fx.fixtypes = NULL;
     fx.replacetextplain = 0;
     fx.decodetext = CE_8BIT;
     fx.textcharset = NULL;
@@ -191,6 +196,18 @@ main (int argc, char **argv) {
                 continue;
             case NFIXCTESW:
                 fx.fixcte = 0;
+                continue;
+            case FIXTYPESW:
+                if (! (cp = *argp++) || (*cp == '-' && cp[1]))
+                    adios (NULL, "missing argument to %s", argp[-2]);
+                if (! strncasecmp (cp, "multipart/", 10)  ||
+                    ! strncasecmp (cp, "message/", 8)) {
+                    adios (NULL, "-fixtype %s not allowed", cp);
+                } else if (! strchr (cp, '/')) {
+                    adios (NULL, "-fixtype requires type/subtype");
+                }
+                if (fx.fixtypes == NULL) { fx.fixtypes = svector_create (10); }
+                svector_push_back (fx.fixtypes, cp);
                 continue;
             case REFORMATSW:
                 fx.reformat = 1;
@@ -376,6 +393,7 @@ main (int argc, char **argv) {
         status = 1;
     }
 
+    if (fx.fixtypes != NULL) { svector_free (fx.fixtypes); }
     free (outfile);
     free (file);
 
@@ -413,6 +431,9 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     status = fix_always (*ctp, &message_mods);
     if (status == OK  &&  fx->fixboundary) {
         status = fix_boundary (ctp, &message_mods);
+    }
+    if (status == OK  && fx->fixtypes != NULL) {
+        status = fix_types (*ctp, fx->fixtypes, &message_mods);
     }
     if (status == OK  &&  fx->fixcte) {
         status = fix_multipart_cte (*ctp, &message_mods);
@@ -724,6 +745,144 @@ replace_boundary (CT ct, char *file, char *boundary) {
     fclose (fpin);
 
     return status;
+}
+
+
+static int
+fix_types (CT ct, svector_t fixtypes, int *message_mods) {
+    int status = OK;
+
+    switch (ct->c_type) {
+    case CT_MULTIPART: {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
+            status = fix_types (part->mp_part, fixtypes, message_mods);
+        }
+        break;
+    }
+
+    case CT_MESSAGE:
+        if (ct->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
+
+            status = fix_types (e->eb_content, fixtypes, message_mods);
+        }
+        break;
+
+    default: {
+        char **typep, *type;
+
+        if (ct->c_ctinfo.ci_type  &&  ct->c_ctinfo.ci_subtype) {
+            for (typep = svector_strs (fixtypes);
+                 typep && (type = *typep);
+                 ++typep) {
+                char *type_subtype =
+                    concat (ct->c_ctinfo.ci_type, "/", ct->c_ctinfo.ci_subtype,
+                            NULL);
+
+                if (! strcasecmp (type, type_subtype)  &&
+                    decode_part (ct) == OK  &&
+                    ct->c_cefile.ce_file != NULL) {
+                    char *ct_type_subtype = mime_type (ct->c_cefile.ce_file);
+                    char *cp;
+
+                    if ((cp = strchr (ct_type_subtype, ';'))) {
+                        /* Truncate to remove any parameter list from
+                           mime_type () result. */
+                        *cp = '\0';
+                    }
+
+                    if (strcasecmp (type, ct_type_subtype)) {
+                        char *ct_type, *ct_subtype;
+                        HF hf;
+
+                        /* The Content-Type header does not match the
+                           content, so update these struct Content
+                           fields to match:
+                           * c_type, c_subtype
+                           * c_ctinfo.ci_type, c_ctinfo.ci_subtype
+                           * c_ctline
+                           */
+                        /* Extract type and subtype from type/subtype. */
+                        ct_type = getcpy (ct_type_subtype);
+                        if ((cp = strchr (ct_type, '/'))) {
+                            *cp = '\0';
+                            ct_subtype = getcpy (++cp);
+                        } else {
+                            advise (NULL, "missing / in MIME type of %s %s",
+                                    ct->c_file, ct->c_partno);
+                            free (ct_type);
+                            return NOTOK;
+                        }
+
+                        ct->c_type = ct_str_type (ct_type);
+                        ct->c_subtype = ct_str_subtype (ct->c_type, ct_subtype);
+
+                        free (ct->c_ctinfo.ci_type);
+                        ct->c_ctinfo.ci_type = ct_type;
+                        free (ct->c_ctinfo.ci_subtype);
+                        ct->c_ctinfo.ci_subtype = ct_subtype;
+                        if (! replace_substring (&ct->c_ctline, type,
+                                                 ct_type_subtype)) {
+                            advise (NULL, "did not find %s in %s",
+                                    type, ct->c_ctline);
+                        }
+
+                        /* Update Content-Type header field. */
+                        for (hf = ct->c_first_hf; hf; hf = hf->next) {
+                            if (! strcasecmp (TYPE_FIELD, hf->name)) {
+                                if (replace_substring (&hf->value, type,
+                                                       ct_type_subtype)) {
+                                    ++*message_mods;
+                                    if (verbosw) {
+                                        report (NULL, ct->c_partno, ct->c_file,
+                                                "change Content-Type in header "
+                                                "from %s to %s",
+                                                type, ct_type_subtype);
+                                    }
+                                    break;
+                                } else {
+                                    advise (NULL, "did not find %s in %s",
+                                            type, hf->value);
+                                }
+                            }
+                        }
+                    }
+                    free (ct_type_subtype);
+                }
+                free (type_subtype);
+            }
+        }
+    }}
+
+    return status;
+}
+
+char *
+replace_substring (char **str, const char *old, const char *new) {
+    char *cp;
+
+    if ((cp = strstr (*str, old))) {
+        char *remainder = cp + strlen (old);
+        char *prefix, *new_str;
+
+        if (cp - *str) {
+            prefix = getcpy (*str);
+            *(prefix + (cp - *str)) = '\0';
+            new_str = concat (prefix, new, remainder, NULL);
+            free (prefix);
+        } else {
+            new_str = concat (new, remainder, NULL);
+        }
+
+        free (*str);
+
+        return *str = new_str;
+    } else {
+        return NULL;
+    }
 }
 
 
@@ -1062,13 +1221,14 @@ build_text_plain_part (CT encoded_part) {
         if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
             advise (NULL, "unable to create temporary file in %s",
                     get_temp_dir());
-        }
-        tmp_plain_file = add (tempfile, NULL);
-        if (reformat_part (tp_part, tmp_plain_file,
-                           tp_part->c_ctinfo.ci_type,
-                           tp_part->c_ctinfo.ci_subtype,
-                           tp_part->c_type) == OK) {
-            return tp_part;
+        } else {
+            tmp_plain_file = add (tempfile, NULL);
+            if (reformat_part (tp_part, tmp_plain_file,
+                               tp_part->c_ctinfo.ci_type,
+                               tp_part->c_ctinfo.ci_subtype,
+                               tp_part->c_type) == OK) {
+                return tp_part;
+            }
         }
     }
 
