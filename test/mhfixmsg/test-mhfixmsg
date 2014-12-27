@@ -25,10 +25,12 @@ expected_err="$MH_TEST_DIR/test-mhfixmsg$$.expected_err"
 actual="$MH_TEST_DIR/test-mhfixmsg$$.actual"
 actual_err="$MH_TEST_DIR/test-mhfixmsg$$.actual_err"
 
-if grep mhfixmsg-format-text/html "${MH_TEST_DIR}/Mail/mhn.defaults" \
+mhn_defaults="$MH_INST_DIR${nmhetcdir}/mhn.defaults"
+
+if grep mhfixmsg-format-text/html "${mhn_defaults}" \
   >/dev/null; then
   can_reformat_texthtml=1
-  if grep 'mhfixmsg-format-text/html.*w3m' "${MH_TEST_DIR}/Mail/mhn.defaults" \
+  if grep 'mhfixmsg-format-text/html.*w3m' "${mhn_defaults}" \
     >/dev/null; then
     #### w3m uses $HOME/.w3m/, and creates it if it doesn't exist.  To
     #### support testing with non-writeable $HOME, and to not leave
