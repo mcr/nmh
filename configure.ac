@@ -515,13 +515,6 @@ AS_IF([test "$LEX" = flex],
 '; sed "s/\(	\)int i;/\1yy_size_t i;/" $@ >$@.tmp && mv -f $@.tmp $@'])
        AC_SUBST([LFLAGS])])
 
-dnl ------------------
-dnl FOR INTERNAL USE by the NMH test suite
-dnl ------------------
-AC_ARG_VAR([NMHETCDIRINST], [for internal use by nmh test suite])
-AS_IF([test -n "$NMHETCDIRINST"], [nmhetcdirinst=$NMHETCDIRINST]
-      AC_SUBST([nmhetcdirinst]))
-
 dnl ----------------
 dnl CHECK STRUCTURES
 dnl ----------------

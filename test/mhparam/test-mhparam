@@ -96,7 +96,7 @@ $MH_INST_DIR$nmhlibexecdir/mhl
 nmh-`cat ${srcdir}/VERSION`
 $bindir/whatnow
 $bindir/whom
-$nmhetcdirinst
+$nmhetcdir
 $MH_LIBEXEC_DIR
 fcntl
 ${default_locking}
