@@ -293,13 +293,12 @@ showproc: ${MH_LIBEXEC_DIR}/mhl
 EOF
 
   if test -z '@nmhetcdirinst@'; then
-    #### This isn't used with make distcheck.
-    #### posh doesn't like "${MH_INST_DIR}${nmhetcdir}"/*, so
-    #### cd to the directory.
-    (cd "${MH_INST_DIR}${nmhetcdir}/" &&
-     for f in *; do
-       cp "$f" "${MH_TEST_DIR}/Mail"
-     done)
+    #### This isn't used with make distcheck, so that we can use it to
+    #### be sure that etc files are not used from an existing nmh
+    #### installation.
+    #### posh doesn't like "${MH_INST_DIR}${nmhetcdir}"/*, so cd to
+    #### the directory and provide an argument without quotes to cp.
+    (cd "${MH_INST_DIR}${nmhetcdir}/"  &&  cp * "${MH_TEST_DIR}/Mail")
   fi
 
   folder -create +inbox > /dev/null
