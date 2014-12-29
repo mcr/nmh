@@ -1,6 +1,7 @@
 #### replaliases
 ####
 #### convenience functions for various repl(1) commands
+#### They're functions instead of aliases for portability.
 
 #### If using par (see mhn.defaults), it helps to have its PARINIT
 #### environment variable set.  If you really want it to be null,
@@ -12,16 +13,27 @@ if [ -z "$PARINIT" ]; then
     export PARINIT
 fi
 
-#### Reply, including text/html (converted to text/plain) and text/plain parts.
-#### To ease editing at the What now? prompt, add a line like this to your
-#### .mh_profile:
-####     mhbuild-next: $EDITOR
-#### assuming that your EDTIOR environment variable is set; if not, replace
-#### $EDITOR above with the name of your editor.  Without that profile entry,
-#### enter "e[dit] $EDITOR" at the What now? prompt.
+#### Reply, including text/html (converted to text/plain) and
+#### text/plain parts.
+####
+#### Optional arguments:
+####   -h to disable conversion of text/html parts
+####   -p to disable conversion of text/plain parts
+#### All other arguments are passed to repl.
+#### The -p argument can be useful with improperly structured
+#### messages, such as those that use multipart/related when they
+#### should have used multipart/alternative.
 rt() {
-    repl -filter mhl.replywithoutbody -editor mhbuild \
-         -convertargs text/html '' -convertargs text/plain '' "$@"
+    if [ "$1" = -h ]; then
+        shift
+        repl -filter mhl.replywithoutbody -convertargs text/plain '' "$@"
+    elif [ "$1" = -p ]; then
+        shift
+        repl -filter mhl.replywithoutbody -convertargs text/html '' "$@"
+    else
+        repl -filter mhl.replywithoutbody \
+             -convertargs text/html '' -convertargs text/plain '' "$@"
+    fi
 }
 
 
