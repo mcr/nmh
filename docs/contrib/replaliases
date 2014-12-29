@@ -37,6 +37,20 @@ rt() {
 }
 
 
+#### Add -editor mhbuild to above.  Useful only when attachments
+#### won't be added to the message.
+####
+#### To ease editing at the What now? prompt, add a line like this to
+#### your .mh_profile:
+####     mhbuild-next: $EDITOR
+#### assuming that your EDTIOR environment variable is set; if not,
+#### replace $EDITOR above with the name of your editor.  Without that
+#### profile entry, enter "e[dit] $EDITOR" at the What now? prompt.
+rtm() {
+    rt -editor mhbuild "$@"
+}
+
+
 # Local Variables:
 # mode: sh
 # End:
