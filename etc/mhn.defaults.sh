@@ -42,6 +42,7 @@ fi
 
 cat >>"$TMP" <<'EOF'
 mhstore-store-text: %m%P.txt
+mhstore-store-text/calendar: %m%P.ics
 mhstore-store-text/html: %m%P.html
 mhstore-store-text/richtext: %m%P.rt
 mhstore-store-video/mpeg: %m%P.mpg
@@ -129,6 +130,7 @@ fi
 #### supported.  mhbuild-convert-text/html is defined below.
 ####
 cat <<EOF >>${TMP}
+mhbuild-convert-text/calendar: mhical -infile %F -contenttype
 mhbuild-convert-text: charset=%{charset}; iconv -f \${charset:-us-ascii} -t utf-8 %F${replfmt}
 mhbuild-disposition-text/calendar: inline
 mhbuild-disposition-message/rfc822: inline
@@ -178,6 +180,9 @@ else
 	fi
     fi
 fi
+
+echo "mhshow-show-text/calendar: mhical -infile %F" >> $TMP
+echo "mhfixmsg-format-text/calendar: mhical %F" >> $TMP
 
 PGM=`$SEARCHPROG "$SEARCHPATH" ivs_replay`
 if [ ! -z "$PGM" ]; then

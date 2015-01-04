@@ -7,6 +7,8 @@
 ## We set this to get our autoconf macros in the m4 directory
 ACLOCAL_AMFLAGS = -I m4
 
+AM_YFLAGS = -d
+
 ##
 ## This is the default set of libraries all programs link against.  Some
 ## programs add extra libraries to this set, so they override this with
@@ -71,7 +73,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/mhbuild/test-ext-params \
 	test/mhbuild/test-forw test/mhbuild/test-header-encode \
 	test/mhbuild/test-utf8-body \
-	test/mhfixmsg/test-mhfixmsg \
+	test/mhfixmsg/test-mhfixmsg test/mhical/test-mhical \
 	test/mhl/test-mhl-flags \
 	test/mhlist/test-mhlist test/mhlist/test-ext-params \
 	test/mhmail/test-mhmail \
@@ -143,7 +145,7 @@ BUILT_SOURCES = sbr/sigmsg.h sbr/ctype-checked.c
 ##
 bin_PROGRAMS = uip/ali uip/anno uip/burst uip/comp uip/dist uip/flist \
 	       uip/fmttest uip/folder uip/forw uip/inc uip/install-mh \
-	       uip/mark uip/mhbuild uip/mhfixmsg uip/mhlist uip/mhn \
+	       uip/mark uip/mhbuild uip/mhfixmsg uip/mhical uip/mhlist uip/mhn \
 	       uip/mhparam uip/mhpath uip/mhshow uip/mhstore uip/msgchk \
 	       uip/new uip/packf uip/pick uip/prompter uip/refile \
 	       uip/repl uip/rmf uip/rmm uip/scan uip/send uip/show uip/sortm \
@@ -178,7 +180,7 @@ noinst_LIBRARIES = sbr/libmh.a mts/libmts.a
 ## them, but that might change in the future.
 ##
 noinst_HEADERS = h/addrsbr.h h/aliasbr.h h/crawl_folders.h h/dropsbr.h \
-		 h/fmt_compile.h h/fmt_scan.h h/md5.h h/mf.h \
+		 h/fmt_compile.h h/fmt_scan.h h/icalendar.h h/md5.h h/mf.h \
 		 h/mh.h h/mhcachesbr.h h/mhparse.h h/mime.h \
 		 h/mts.h h/nmh.h h/picksbr.h h/popsbr.h h/prototypes.h \
 		 h/rcvmail.h h/scansbr.h h/signals.h h/tws.h h/utils.h \
@@ -188,9 +190,10 @@ noinst_HEADERS = h/addrsbr.h h/aliasbr.h h/crawl_folders.h h/dropsbr.h \
 ## Extra files we need to install in various places
 ##
 dist_nmhetc_DATA = etc/MailAliases etc/components etc/digestcomps \
-		   etc/distcomps etc/forwcomps etc/mhl.body etc/mhl.digest \
-		   etc/mhl.format etc/mhl.forward etc/mhl.headers \
-		   etc/mhl.reply etc/mhl.replywithoutbody \
+		   etc/distcomps etc/forwcomps \
+		   etc/mhical.12hour etc/mhical.24hour \
+		   etc/mhl.body etc/mhl.digest etc/mhl.format etc/mhl.forward \
+		   etc/mhl.headers etc/mhl.reply etc/mhl.replywithoutbody \
 		   etc/mhshow.marker etc/rcvdistcomps etc/rcvdistcomps.outbox \
 		   etc/replcomps etc/replgroupcomps \
 		   etc/scan.MMDDYY \
@@ -214,7 +217,7 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 		docs/MAIL.FILTERING docs/MAILING-LISTS docs/README-ATTACHMENTS \
 		docs/README-HOOKS docs/README-components docs/README.about \
 		docs/README.SASL docs/README.developers docs/README.manpages \
-		docs/README-iCalendar docs/TODO
+		docs/TODO
 
 ##
 ## Contribs that get installed in docdir/contrib/
@@ -234,8 +237,8 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/mh-alias.5 man/mh-chart.7 man/mh-draft.5 man/mh-folders.5 \
 	   man/mh-format.5 man/mh-mail.5 man/mh-mime.7 man/mh-profile.5 \
 	   man/mh_profile.5 man/mh-sequence.5 man/mh-tailor.5 man/mhbuild.1 \
-	   man/mhfixmsg.1 man/mhl.1 man/mhlist.1 man/mhmail.1 man/mhn.1 \
-	   man/mhparam.1 man/mhpath.1 man/mhshow.1 man/mhstore.1 \
+	   man/mhfixmsg.1 man/mhical.1 man/mhl.1 man/mhlist.1 man/mhmail.1 \
+	   man/mhn.1 man/mhparam.1 man/mhpath.1 man/mhshow.1 man/mhstore.1 \
 	   man/mh-mkstemp.1 man/msgchk.1 man/mts.conf.5 man/new.1 \
 	   man/next.1 man/nmh.7 man/packf.1 man/pick.1 man/post.8 man/prev.1 \
 	   man/prompter.1 man/rcvdist.1 man/rcvpack.1 man/rcvstore.1 \
@@ -254,10 +257,10 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 	   man/mh-chart-gen.sh man/mh-draft.man man/mh-folders.man \
 	   man/mh-format.man man/mh-mail.man man/mh-mime.man \
 	   man/mh-profile.man man/mh_profile.man man/mh-sequence.man \
-	   man/mh-tailor.man man/mhbuild.man man/mhfixmsg.man man/mhl.man \
-	   man/mhlist.man man/mhmail.man man/mhn.man man/mhparam.man \
-	   man/mhpath.man man/mhshow.man man/mhstore.man man/mh-mkstemp.man \
-	   man/msgchk.man man/mts.conf.man man/new.man \
+	   man/mh-tailor.man man/mhbuild.man man/mhfixmsg.man man/mhical.man \
+	   man/mhl.man man/mhlist.man man/mhmail.man man/mhn.man \
+	   man/mhparam.man man/mhpath.man man/mhshow.man man/mhstore.man \
+	   man/mh-mkstemp.man man/msgchk.man man/mts.conf.man man/new.man \
 	   man/next.man man/nmh.man man/packf.man man/pick.man man/post.man \
 	   man/prev.man man/prompter.man man/rcvdist.man man/rcvpack.man \
 	   man/rcvstore.man man/rcvtty.man man/refile.man man/repl.man \
@@ -269,8 +272,9 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 ## Files we need to include in the distribution which aren't found by
 ## Automake using the automatic rules
 ##
-EXTRA_DIST = autogen.sh config/version.sh sbr/sigmsg.awk etc/mts.conf.in \
-	     etc/mhn.defaults.sh etc/sendfiles $(MHNSEARCHPROG) DATE MACHINES \
+EXTRA_DIST = autogen.sh config/version.sh sbr/sigmsg.awk sbr/icalparse.h \
+	     etc/mts.conf.in etc/mhn.defaults.sh etc/sendfiles \
+	     $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
 	     docs/ChangeLog_MH-6.7.0_to_MH-6.8.4.html \
 	     test/README test/fakesendmail $(TESTS) test/inc/deb359167.mbox \
@@ -338,6 +342,9 @@ uip_mhfixmsg_SOURCES = uip/mhfixmsg.c uip/mhparse.c uip/mhcachesbr.c \
 		       uip/mhoutsbr.c uip/mhmisc.c uip/mhfree.c \
 		       uip/mhshowsbr.c uip/mhlistsbr.c uip/md5.c
 uip_mhfixmsg_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
+
+uip_mhical_SOURCES = uip/mhical.c
+uip_mhical_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhlist_SOURCES = uip/mhlist.c uip/mhparse.c uip/mhcachesbr.c \
 		     uip/mhlistsbr.c uip/mhmisc.c uip/mhfree.c uip/md5.c
@@ -569,7 +576,9 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/getcpy.c sbr/geteditor.c sbr/getfolder.c \
 		      sbr/getpass.c \
 		      sbr/fmt_addr.c sbr/fmt_compile.c sbr/fmt_new.c \
-		      sbr/fmt_rfc2047.c sbr/fmt_scan.c sbr/lock_file.c \
+		      sbr/fmt_rfc2047.c sbr/fmt_scan.c \
+		      sbr/icalparse.y sbr/icalendar.l sbr/datetime.c \
+		      sbr/lock_file.c \
 		      sbr/m_atoi.c sbr/m_backup.c sbr/m_convert.c \
 		      sbr/m_draft.c sbr/m_getfld.c sbr/m_gmprot.c \
 		      sbr/m_maildir.c sbr/m_name.c sbr/m_popen.c sbr/m_rand.c \

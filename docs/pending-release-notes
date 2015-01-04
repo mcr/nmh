@@ -31,6 +31,8 @@ NEW FEATURES
 - Added -convertargs switch to repl(1), to pass arguments to programs
   specified in the user's profile or mhn.defaults to convert message
   content.
+- Added mhical(1), to display, reply to, and cancel iCalendar (RFC 5545)
+  event requests.
 
 -----------------
 OBSOLETE FEATURES

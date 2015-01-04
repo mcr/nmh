@@ -1,0 +1,49 @@
+%; mhical.12hour
+%; Form file for mhical that directs it to use 12-hour instead of 24-hour
+%; time format.
+%;
+%; See mhical.24hour for list of supported components.
+%;
+%; Here's what it does to the %{dtstart} special component:
+%;
+%; 1) Enable bold, and if the terminal supports color, green attributes.
+%; 2) If the time zone is explicit, coerce the date to the local time zone;
+%;    otherwise, assume that it's a floating time.
+%; 3) Output the date in "ddd DD MM YYYY" format.
+%; 4) Convert hours from 24- to 12-hour clock and output them as soon as
+%;    they are calculated.  Store AM or PM in the str register.
+%; 5) Output :minutes.
+%; 6) Output AM or PM.
+%; 7) If the time zone is explicit, output it.
+%; 8) Reset all terminal attributes.
+%; The timezone is not output for the dtend component because it is
+%; almost always (except across a daylight saving time transition)
+%; the same as for the dtstart component.
+%;
+%<(nonnull{method})Method: %(putstr{method})\n%>\
+%<(nonnull{organizer})Organizer: %(putstr{organizer})\n%>\
+%<(nonnull{summary})Summary: %(putstr{summary})\n%>\
+%<(nonnull{description})Description: %(putstr{description})\n%>\
+%<(nonnull{location})Location: %(putstr{location})\n%>\
+%<(nonnull{dtstart})At: \
+%<(hascolor)%(zputlit(fgcolor green))%>%(zputlit(bold))\
+%(void(szone{dtstart}))%<(gt 0)%(date2local{dtstart})%>\
+%(day{dtstart}), %02(mday{dtstart}) %(month{dtstart}) %(year{dtstart}) \
+%(void(hour{dtstart}))%<(eq 0)%(num 12)%(void(lit AM))\
+%?(eq 12)%(num 12)%(void(lit PM))\
+%?(gt 12)%2(modulo 12)%(void(lit PM))\
+%|%2(putnumf)%(void(lit AM))%>\
+:%02(min{dtstart}) \
+%(putlit)%; AM or PM
+%(void(szone{dtstart}))%<(gt 0) %(tzone{dtstart})%>\
+%(zputlit(resetterm))\n%>\
+%<(nonnull{dtstart})To: \
+%(void(szone{dtend}))%<(gt 0)%(date2local{dtend})%>\
+%(day{dtend}), %02(mday{dtend}) %(month{dtend}) %(year{dtend}) \
+%(void(hour{dtend}))%<(eq 0)%(num 12)%(void(lit AM))\
+%?(eq 12)%(num 12)%(void(lit PM))\
+%?(gt 12)%2(modulo 12)%(void(lit PM))\
+%|%2(putnumf)%(void(lit AM))%>\
+:%02(min{dtend}) \
+%(putlit)\n%>%; AM or PM
+%<(nonnull{attendees})%(putstr{attendees})\n%>\
