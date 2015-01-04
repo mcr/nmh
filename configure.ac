@@ -206,11 +206,12 @@ AC_HEADER_ASSERT
 dnl ------------------
 dnl CHECK FOR PROGRAMS
 dnl ------------------
-AC_PROG_MAKE_SET	dnl Does make define $MAKE
-AC_PROG_INSTALL		dnl Check for BSD compatible `install'
-AC_PROG_RANLIB		dnl Check for `ranlib'
+AC_PROG_MAKE_SET        dnl Does make define $MAKE
+AC_PROG_INSTALL         dnl Check for BSD compatible `install'
+AC_PROG_RANLIB          dnl Check for `ranlib'
 AC_PROG_AWK             dnl Check for mawk,gawk,nawk, then awk
-AC_PROG_SED		dnl Check for Posix-compliant sed
+AC_PROG_SED             dnl Check for Posix-compliant sed
+AC_PROG_YACC            dnl Check for yacc/bison
 AM_PROG_LEX             dnl Check for lex/flex
 
 AM_PROG_AR
