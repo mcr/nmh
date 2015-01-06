@@ -2323,6 +2323,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
 
                 if (text_plain_reply != NOTOK  &&  addl_reply != NOTOK) {
                     /* Insert blank line before each addl part. */
+                    /* It would be nice not to do this for the first one. */
                     if (write (text_plain_reply, "\n", 1) == 1) {
                         /* Copy the text from the new reply and
                            then free its Content struct. */
@@ -2386,12 +2387,15 @@ extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
     buffer[statbuf.st_size] = '\0';
 
     /* Look for a header in the convert reply. */
-    if ((end_of_header = strstr (buffer, "\r\n\r\n"))) {
-        end_of_header += 2;
-        found_header = 1;
-    } else if ((end_of_header = strstr (buffer, "\n\n"))) {
-        ++end_of_header;
-        found_header = 1;
+    if (strncasecmp (buffer, TYPE_FIELD, sizeof TYPE_FIELD) == 0  &&
+        buffer[sizeof TYPE_FIELD] == ':') {
+        if ((end_of_header = strstr (buffer, "\r\n\r\n"))) {
+            end_of_header += 2;
+            found_header = 1;
+        } else if ((end_of_header = strstr (buffer, "\n\n"))) {
+            ++end_of_header;
+            found_header = 1;
+        }
     }
 
     if (found_header) {
