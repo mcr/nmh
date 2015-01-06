@@ -120,4 +120,46 @@ mhbuild "$actual"
 check "$actual" "$expected"
 
 
+# check message with text part in multipart/related
+cat >"$expected" <<'EOF'
+From: recipient@example.com
+To: sender@example.com
+cc: 
+Fcc: +outbox
+Subject: Re: test with text part in multipart/related
+Comments: In-reply-to sender@example.com
+   message dated "."
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+sender@example.com writes:
+
+EOF
+
+cat >`mhpath new` <<'EOF'
+From: sender@example.com
+To: recipient@example.com
+Subject: test with text part in multipart/related
+Content-Type: multipart/alternative; boundary="_001_"
+MIME-Version: 1.0
+
+--_001_
+Content-Type: multipart/related; type="text/plain"; boundary="_002_"
+
+--_002_
+Content-Type: text/plain
+
+
+
+--_002_--
+
+--_001_--
+EOF
+
+repl -filter mhl.replywithoutbody -convertarg text/plain '' -nowhatnowproc last
+mhbuild "$actual"
+check "$actual" "$expected"
+
+
 exit $failed

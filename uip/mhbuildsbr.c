@@ -2293,8 +2293,8 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     /* Concatenate text/plain parts. */
     if (reply_ct->c_type == CT_TEXT  &&
         reply_ct->c_subtype == TEXT_PLAIN) {
-
-        if (m->mp_parts  &&  ! *text_plain_ct) {
+        if (! *text_plain_ct  &&  m->mp_parts  &&  m->mp_parts->mp_part  &&
+            m->mp_parts->mp_part->c_type == CT_TEXT) {
             *text_plain_ct = m->mp_parts->mp_part;
             /* Make sure that the charset is set in the text/plain
                part. */
