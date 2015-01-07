@@ -2160,7 +2160,7 @@ expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
                             part->mp_part->c_ctinfo.ci_subtype, NULL);
 
                 if (part->mp_part->c_type == CT_MULTIPART) {
-                    expand_pseudoheaders (part->mp_part, mp, infile,
+                    expand_pseudoheaders (part->mp_part, m, infile,
                                           convert_head);
                 } else {
                     const convert_list *c;
@@ -2294,7 +2294,8 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     if (reply_ct->c_type == CT_TEXT  &&
         reply_ct->c_subtype == TEXT_PLAIN) {
         if (! *text_plain_ct  &&  m->mp_parts  &&  m->mp_parts->mp_part  &&
-            m->mp_parts->mp_part->c_type == CT_TEXT) {
+            m->mp_parts->mp_part->c_type == CT_TEXT  &&
+            m->mp_parts->mp_part->c_subtype == TEXT_PLAIN) {
             *text_plain_ct = m->mp_parts->mp_part;
             /* Make sure that the charset is set in the text/plain
                part. */

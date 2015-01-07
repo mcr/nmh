@@ -20,7 +20,7 @@ actual=`mhpath +`/draft
 printf 'Local-Mailbox: recipient@example.com' >>"$MH"
 
 
-# check -convertarg with multiple parts and no additional text in draft
+# check -convertarg with multiple parts and additional text in draft
 cat >"$expected" <<'EOF'
 From: recipient@example.com
 To: sender@example.com
@@ -74,7 +74,7 @@ require_locale en_US.utf-8 en_US.utf8
 LC_ALL=en_US.UTF-8; export LC_ALL
 
 
-# check -convertarg with multiple parts and additional text in draft
+# check -convertarg with multiple parts and no additional text in draft
 cat >"$expected" <<'EOF'
 From: recipient@example.com
 To: sender@example.com
@@ -135,6 +135,7 @@ Content-Transfer-Encoding: 8bit
 
 sender@example.com writes:
 
+> This is a test.
 EOF
 
 cat >`mhpath new` <<'EOF'
@@ -150,7 +151,7 @@ Content-Type: multipart/related; type="text/plain"; boundary="_002_"
 --_002_
 Content-Type: text/plain
 
-
+This is a test.
 
 --_002_--
 
