@@ -2388,8 +2388,8 @@ extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
     buffer[statbuf.st_size] = '\0';
 
     /* Look for a header in the convert reply. */
-    if (strncasecmp (buffer, TYPE_FIELD, sizeof TYPE_FIELD) == 0  &&
-        buffer[sizeof TYPE_FIELD] == ':') {
+    if (strncasecmp (buffer, TYPE_FIELD, strlen (TYPE_FIELD)) == 0  &&
+        buffer[strlen (TYPE_FIELD)] == ':') {
         if ((end_of_header = strstr (buffer, "\r\n\r\n"))) {
             end_of_header += 2;
             found_header = 1;
