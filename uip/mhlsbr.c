@@ -875,13 +875,17 @@ parse (void)
 static void
 process (char *folder, char *fname, int ofilen, int ofilec)
 {
-    char *cp = NULL;
-    FILE *fp = NULL;
+    /* static to prevent "might be clobbered" warning from gcc 4.9.2: */
+    static char *cp;
+    static FILE *fp;
     struct mcomp *c1;
     struct stat st;
     struct arglist *ap;
     /* volatile to prevent "might be clobbered" warning from gcc: */
     char *volatile fname2 = fname ? fname : "(stdin)";
+
+    cp = NULL;
+    fp = NULL;
 
     switch (setjmp (env)) {
 	case OK: 
@@ -913,12 +917,12 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 	    if (arglist_head)
 	    	fmt_free(NULL, 1);
 
-	default: 
+	default:
 	    if (ontty != PITTY)
 		SIGNAL (SIGINT, SIG_IGN);
-	    if (mhl_action == NULL && fp != stdin)
+	    if (mhl_action == NULL && fp != stdin && fp != NULL)
 		fclose (fp);
-	    free (cp);
+		free (cp);
 	    if (holder.c_text) {
 		free (holder.c_text);
 		holder.c_text = NULL;

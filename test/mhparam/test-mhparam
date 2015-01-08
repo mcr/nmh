@@ -85,18 +85,18 @@ $MH_INST_DIR$bindir/refile
 $bindir/inc
 more
 $bindir/mhmail
-$MH_INST_DIR$nmhexecdir/mhl
+$MH_INST_DIR$nmhlibexecdir/mhl
 cat
 600
 $bindir/packf
-$MH_INST_DIR$nmhexecdir/post
+$MH_INST_DIR$nmhlibexecdir/post
 $bindir/send
 $bindir/mhshow
-$MH_INST_DIR$nmhexecdir/mhl
+$MH_INST_DIR$nmhlibexecdir/mhl
 nmh-`cat ${srcdir}/VERSION`
 $bindir/whatnow
 $bindir/whom
-$nmhetcdir
+$nmhetcdirinst
 $MH_LIBEXEC_DIR
 fcntl
 ${default_locking}

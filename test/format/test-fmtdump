@@ -110,7 +110,7 @@ run_prog $fmtdump >$actual 2>&1
 check $expected $actual 'keep first'
 
 # check -form
-run_prog $fmtdump -form "$MH_TEST_DIR/Mail/scan.default" >$actual 2>&1
+run_prog $fmtdump -form "$MH_INST_DIR${nmhetcdir}/scan.default" >$actual 2>&1
 check $expected $actual
 
 # check -format

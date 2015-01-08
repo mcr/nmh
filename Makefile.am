@@ -39,6 +39,7 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
 		    MH_TEST_DIR="@abs_builddir@/test/testdir" \
 		    nmhlibexecdir="$(nmhlibexecdir)" bindir="$(bindir)" \
 		    mandir="$(mandir)" nmhetcdir="$(nmhetcdir)" \
+		    nmhetcdirinst="@nmhetcdirinst@$(nmhetcdir)" \
 		    supported_locks="$(supported_locks)" \
 		    default_locking="${default_locking}" \
 		    MULTIBYTE_ENABLED=$(MULTIBYTE_ENABLED) \
@@ -104,7 +105,13 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 check_SCRIPTS = test/common.sh
 check_PROGRAMS = test/getfullname test/getcanon test/fakepop test/fakesmtp \
 		 test/getcwidth
-DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1
+
+## The location of installed nmhetcdir is, for all purposes except
+## distcheck, $nmhetcdir.  For distcheck, prepend $MH_INST_DIR (from
+## test/common.sh.in), which is based on $MH_TEST_DIR (from
+## $TESTS_ENVIRONMENT).
+DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1 \
+			    NMHETCDIRINST='$${abs_builddir}/test/testdir/inst'
 
 ##
 ## Stuff that should be cleaned via "make clean"
@@ -608,7 +615,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 
 config/sbr_libmh_a-config.$(OBJEXT) sbr/sbr_libmh_a-mts.$(OBJEXT): Makefile
 
-sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"$(nmhetcdir)"' \
+sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"@nmhetcdirinst@$(nmhetcdir)"' \
 		-DMAILSPOOL='"$(mailspool)"' \
 		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
 		-DNMHLIBEXECDIR='"$(nmhlibexecdir)"'

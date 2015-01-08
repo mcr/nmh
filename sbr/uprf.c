@@ -11,7 +11,7 @@
 
 
 int
-uprf (char *c1, char *c2)
+uprf (const char *c1, const char *c2)
 {
     int c, mask;
 

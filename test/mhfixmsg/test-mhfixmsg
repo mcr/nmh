@@ -12,7 +12,9 @@ if test -z "${MH_OBJ_DIR}"; then
     MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
 fi
 
-. "${srcdir}/test/post/test-post-common.sh"
+. "${MH_OBJ_DIR}/test/common.sh"
+
+setup_test
 
 #### Make sure that html-to-text conversion is what we expect.
 require_locale en_US.utf-8 en_US.utf8
@@ -23,10 +25,12 @@ expected_err="$MH_TEST_DIR/test-mhfixmsg$$.expected_err"
 actual="$MH_TEST_DIR/test-mhfixmsg$$.actual"
 actual_err="$MH_TEST_DIR/test-mhfixmsg$$.actual_err"
 
-if grep mhfixmsg-format-text/html "${MH_TEST_DIR}/Mail/mhn.defaults" \
+mhn_defaults="$MH_INST_DIR${nmhetcdir}/mhn.defaults"
+
+if grep mhfixmsg-format-text/html "${mhn_defaults}" \
   >/dev/null; then
   can_reformat_texthtml=1
-  if grep 'mhfixmsg-format-text/html.*w3m' "${MH_TEST_DIR}/Mail/mhn.defaults" \
+  if grep 'mhfixmsg-format-text/html.*w3m' "${mhn_defaults}" \
     >/dev/null; then
     #### w3m uses $HOME/.w3m/, and creates it if it doesn't exist.  To
     #### support testing with non-writeable $HOME, and to not leave
@@ -42,7 +46,6 @@ fi
 
 
 # check -help
-# Verified behavior consistent with compiled sendmail.
 cat >"$expected" <<EOF
 Usage: mhfixmsg [+folder] [msgs] [switches]
   switches are:
@@ -53,6 +56,7 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   -[no]replacetextplain
   -[no]fixboundary
   -[no]fixcte
+  -fixtype mimetype
   -file file
   -outfile file
   -rmmproc program
@@ -68,7 +72,6 @@ check "$expected" "$actual"
 
 
 # check -version
-# Verified same behavior as compiled mhfixmsg.
 case `mhfixmsg -version` in
   mhfixmsg\ --*) ;;
   *) printf '%s: mhfixmsg -version generated unexpected output\n' "$0" >&2
@@ -1108,6 +1111,41 @@ if test -f '${MH_TEST_DIR}/Mail/inbox/20.backup'; then
   echo check of mhfixmsg -rmmproc FAILED, should not have created backup file
   failed=`expr ${failed:-0} + 1`
 fi
+
+
+# check -fixtype
+cat >"$expected" <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg with incorrect Content-Type
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; name="plaintext.txt"
+
+this is plain text
+
+------- =_aaaaaaaaaa0--
+EOF
+
+cat >`mhpath new` <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg with incorrect Content-Type
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: application/octet-stream; name="plaintext.txt"
+
+this is plain text
+
+------- =_aaaaaaaaaa0--
+EOF
+
+mhfixmsg -fixtype application/octet-stream last
+check "$expected" `mhpath last`
 
 
 # make sure there are no tmp files left over

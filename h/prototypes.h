@@ -384,7 +384,7 @@ int unputenv (char *);
  *
  */
 void unquote_string(const char *input, char *output);
-int uprf (char *, char *);
+int uprf (const char *, const char *);
 int vfgets (FILE *, char **);
 
 /*

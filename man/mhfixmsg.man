@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "November 30, 2014" "%nmhversion%"
+.TH MHFIXMSG %manext1% "December 25, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -23,6 +23,8 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .RB [ \-replacetextplain " | " \-noreplacetextplain ]
 .RB [ \-fixboundary " | " \-nofixboundary ]
 .RB [ \-fixcte " | " \-nofixcte ]
+.RB [ \-fixtype
+.IR mimetype ]
 .RB [ \-outfile
 .IR outfile ]
 .RB [ \-rmmproc
@@ -149,6 +151,14 @@ and other
 .B nmh
 programs that parse MIME messages.
 .PP
+The
+.B \-fixtype
+switch ensures that each part of the message has the correct MIME type
+shown in its Content-Type header.  It may be repeated.  It is
+typically used to replace \*(lqapplication/octet-stream\*(rq with a
+more descriptive MIME type.  It may not be used for multipart and
+message types.
+.PP
 .B mhfixmsg
 applies one transformation unconditionally:  it removes an extraneous
 trailing semicolon from the parameter lists of MIME header fields.
@@ -240,6 +250,7 @@ content type and/or encoding as follows:
 \-reformat     text parts that are not text/plain
 \-fixboundary  outermost multipart part
 \-fixcte       multipart part
+\-fixtype      all except multipart and message parts
 .fi
 .RE
 .PP

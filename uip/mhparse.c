@@ -1008,7 +1008,6 @@ InitText (CT ct)
     char *chset = NULL;
     char *cp;
     PM pm;
-    struct k2v *kv;
     struct text *t;
     CI ci = &ct->c_ctinfo;
 
@@ -1017,10 +1016,7 @@ InitText (CT ct)
 	ci->ci_subtype = add ("plain", ci->ci_subtype);
 
     /* match subtype */
-    for (kv = SubText; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
-	    break;
-    ct->c_subtype = kv->kv_value;
+    ct->c_subtype = ct_str_subtype (CT_TEXT, ci->ci_subtype);
 
     /* allocate text character set structure */
     if ((t = (struct text *) mh_xcalloc (1, sizeof(*t))) == NULL)
@@ -1073,7 +1069,6 @@ InitMultiPart (CT ct)
     size_t buflen;
     ssize_t gotlen;
     struct multipart *m;
-    struct k2v *kv;
     struct part *part, **next;
     CI ci = &ct->c_ctinfo;
     CT p;
@@ -1105,10 +1100,7 @@ InitMultiPart (CT ct)
     }
 
     /* match subtype */
-    for (kv = SubMultiPart; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
-	    break;
-    ct->c_subtype = kv->kv_value;
+    ct->c_subtype = ct_str_subtype (CT_MULTIPART, ci->ci_subtype);
 
     /*
      * Check for "boundary" parameter, which is
@@ -1329,7 +1321,6 @@ reverse_alternative_parts (CT ct) {
 static int
 InitMessage (CT ct)
 {
-    struct k2v *kv;
     CI ci = &ct->c_ctinfo;
 
     if ((ct->c_encoding != CE_7BIT) && (ct->c_encoding != CE_8BIT)) {
@@ -1344,10 +1335,7 @@ InitMessage (CT ct)
 	ci->ci_subtype = add ("rfc822", ci->ci_subtype);
 
     /* match subtype */
-    for (kv = SubMessage; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
-	    break;
-    ct->c_subtype = kv->kv_value;
+    ct->c_subtype = ct_str_subtype (CT_MESSAGE, ci->ci_subtype);
 
     switch (ct->c_subtype) {
 	case MESSAGE_RFC822:
@@ -1597,14 +1585,10 @@ params_external (CT ct, int composing)
 static int
 InitApplication (CT ct)
 {
-    struct k2v *kv;
     CI ci = &ct->c_ctinfo;
 
     /* match subtype */
-    for (kv = SubApplication; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
-	    break;
-    ct->c_subtype = kv->kv_value;
+    ct->c_subtype = ct_str_subtype (CT_APPLICATION, ci->ci_subtype);
 
     return OK;
 }
@@ -3172,6 +3156,62 @@ ct_subtype_str (int type, int subtype) {
         }
     default:
         return "unknown_type";
+    }
+}
+
+
+int
+ct_str_type (const char *type) {
+    struct str2init *s2i;
+
+    for (s2i = str2cts; s2i->si_key; ++s2i) {
+        if (! strcasecmp (type, s2i->si_key)) {
+            break;
+        }
+    }
+    if (! s2i->si_key  &&  ! uprf (type, "X-")) {
+        ++s2i;
+    }
+
+    return s2i->si_val;
+}
+
+
+int
+ct_str_subtype (int type, const char *subtype) {
+    struct k2v *kv;
+
+    switch (type) {
+    case CT_APPLICATION:
+        for (kv = SubApplication; kv->kv_key; ++kv) {
+            if (! strcasecmp (subtype, kv->kv_key)) {
+                break;
+            }
+        }
+        return kv->kv_value;
+    case CT_MESSAGE:
+        for (kv = SubMessage; kv->kv_key; ++kv) {
+            if (! strcasecmp (subtype, kv->kv_key)) {
+                break;
+            }
+        }
+        return kv->kv_value;
+    case CT_MULTIPART:
+        for (kv = SubMultiPart; kv->kv_key; ++kv) {
+            if (! strcasecmp (subtype, kv->kv_key)) {
+                break;
+            }
+        }
+        return kv->kv_value;
+    case CT_TEXT:
+        for (kv = SubText; kv->kv_key; ++kv) {
+            if (! strcasecmp (subtype, kv->kv_key)) {
+                break;
+            }
+        }
+        return kv->kv_value;
+    default:
+        return 0;
     }
 }
 
