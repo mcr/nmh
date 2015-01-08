@@ -54,25 +54,25 @@ rtm() {
 #### accept a calendar request
 calaccept() {
     repl -noformat -editor mhbuild \
-         -convertargs text/calendar '-reply accept -contenttype'
+         -convertargs text/calendar '-reply accept -contenttype' "$@"
 }
 
 #### decline a calendar request
 caldecline() {
     repl -noformat -editor mhbuild \
-         -convertargs text/calendar '-reply decline -contenttype'
+         -convertargs text/calendar '-reply decline -contenttype' "$@"
 }
 
 #### reply as tentative to a calendar request
 caltentative() {
     repl -noformat -editor mhbuild \
-         -convertargs text/calendar '-reply tentative -contenttype'
+         -convertargs text/calendar '-reply tentative -contenttype' "$@"
 }
 
 #### cancel a calendar request
 calcancel() {
     repl -noformat -editor mhbuild \
-         -convertargs text/calendar '-cancel -contenttype'
+         -convertargs text/calendar '-cancel -contenttype' "$@"
 }
 
 
