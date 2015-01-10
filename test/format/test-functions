@@ -36,5 +36,9 @@ printf '%s\n' -042 >"$expected"
 fmttest -raw -format '%04(minus -42)' 0 >"$actual"
 check "$expected" "$actual"
 
+# check multiply
+printf '%s\n' 42 >"$expected"
+fmttest -raw -format '%(void(num 7))%(multiply 6)' 0 >"$actual"
+check "$expected" "$actual"
 
 exit $failed

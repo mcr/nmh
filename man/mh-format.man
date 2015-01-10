@@ -268,6 +268,7 @@ match	literal	boolean	\fIstr\fR contains \fIarg\fR
 amatch	literal	boolean	\fIstr\fR starts with \fIarg\fR
 plus	literal	integer	\fIarg\fR plus \fInum\fR
 minus	literal	integer	\fIarg\fR minus \fInum\fR
+multiply	literal	integer	\fInum\fR multiplie by \fIarg\fR
 divide	literal	integer	\fInum\fR divided by \fIarg\fR
 modulo	literal	integer	\fInum\fR modulo \fIarg\fR
 num	literal	integer	Set \fInum\fR to \fIarg\fR.

@@ -177,6 +177,7 @@ static struct ftable functable[] = {
      { "localmbox",  TF_LMBOX,	FT_LS_LIT,	0,		TFL_PUTS },
      { "plus",       TF_NUM,	FT_LV_PLUS_L,	0,		TFL_PUTN },
      { "minus",      TF_NUM,	FT_LV_MINUS_L,	0,		TFL_PUTN },
+     { "multiply",   TF_NUM,	FT_LV_MULTIPLY_L, 0,		TFL_PUTN },
      { "divide",     TF_NUM,	FT_LV_DIVIDE_L,	0,		TFL_PUTN },
      { "modulo",     TF_NUM,	FT_LV_MODULO_L,	0,		TFL_PUTN },
      { "charleft",   TF_NONE,	FT_LV_CHAR_LEFT, 0,		TFL_PUTN },

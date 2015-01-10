@@ -29,6 +29,7 @@ NEW FEATURES
   to mhfixmsg(1).
 - mhfixmsg now removes an extraneous trailing semicolon from header
   parameter lists.
+- added multiply format function
 
 -----------------
 OBSOLETE FEATURES
