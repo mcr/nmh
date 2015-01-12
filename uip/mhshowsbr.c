@@ -481,14 +481,17 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	    _exit (-1);
 	    /* NOTREACHED */
 
-	default:
+	default: {
+	    int status;
+
 	    arglist_free(file, vec);
 
-	    pidcheck (pidXwait (child_id, NULL));
+	    pidcheck ((status = pidXwait (child_id, NULL)));
 
 	    if (fd != NOTOK)
 		(*ct->c_ceclosefnx) (ct);
-	    return (alternate ? DONE : OK);
+	    return (alternate ? DONE : status);
+        }
     }
 }
 
