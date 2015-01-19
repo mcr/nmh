@@ -34,6 +34,7 @@ NEW FEATURES
   content.
 - Added mhical(1), to display, reply to, and cancel iCalendar (RFC 5545)
   event requests.
+- added multiply format function
 
 -----------------
 OBSOLETE FEATURES

@@ -745,6 +745,9 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	case FT_LV_MINUS_L:
 	    value = fmt->f_value - value;
 	    break;
+	case FT_LV_MULTIPLY_L:
+	    value *= fmt->f_value;
+	    break;
 	case FT_LV_DIVIDE_L:
 	    if (fmt->f_value)
 		value = value / fmt->f_value;
