@@ -251,7 +251,7 @@ must be non-empty while
 can be empty, e.g., '' in a shell command line.  The
 .B \-convertargs
 switch can be used multiple times.
-.RI %docdir%/contrib/replaliases
+.I %docdir%/contrib/replaliases
 shows the use of
 .BR "repl \-convertargs" .
 .PP

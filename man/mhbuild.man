@@ -266,7 +266,9 @@ switch is used.
 If using
 .BR repl ,
 source the Bourne-shell compatible functions in
-%docdir%/contrib/replaliases.  That script also sets the
+.IR %docdir%/contrib/replaliases .
+.br
+That script also sets the
 .B $PARINIT
 environment variable if it was not set.
 .RE
