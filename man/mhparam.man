@@ -48,6 +48,7 @@ displayed and other arguments are ignored.
 can provide other information, such as the
 .B nmh
 version identifier, the locations of the nmh
+.IR bindir ,
 .I etcdir
 and
 .I libexecdir
