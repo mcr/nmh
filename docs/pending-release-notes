@@ -30,6 +30,8 @@ NEW FEATURES
 - mhfixmsg now removes an extraneous trailing semicolon from header
   parameter lists.
 - added multiply format function
+- "mhparam bindir" prints the path to the directory containing the public
+  executables (${bindir}).
 
 -----------------
 OBSOLETE FEATURES
