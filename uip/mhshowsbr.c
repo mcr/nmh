@@ -22,6 +22,8 @@
 #endif /* ! HAVE_ICONV */
 
 extern int debugsw;
+extern int npart;
+extern int ntype;
 
 int nolist   = 0;
 
@@ -546,8 +548,9 @@ show_multi (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
     if ((cp = context_find_by_type ("show", ci->ci_type, ci->ci_subtype)))
 	return show_multi_aux (ct, alternate, cp, fmt);
 
-    if ((cp = ct->c_showproc))
+    if ((cp = ct->c_showproc)) {
 	return show_multi_aux (ct, alternate, cp, fmt);
+    }
 
     /*
      * Use default method to display this multipart content.  Even
@@ -572,6 +575,8 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
     int request_matched;
+    int display_success;
+    int ret;
     CT p;
 
     alternating = 0;
@@ -583,12 +588,13 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     }
 
     /*
-     * alternate   -> we are a part inside an multipart/alternative
+     * alternate   -> we are a part inside a multipart/alternative
      * alternating -> we are a multipart/alternative
      */
 
     result = alternate ? NOTOK : OK;
     request_matched = 0;
+    display_success = 0;
 
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
@@ -596,19 +602,24 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 	if (part_ok (p) && type_ok (p, 1)) {
 	    int	inneresult;
 
-	    request_matched = 1;
 
 	    inneresult = show_switch (p, nowalternate, concatsw, textonly,
 				      inlineonly, fmt);
 	    switch (inneresult) {
-		case NOTOK:
+		case NOTOK:  /* hard display error */
+		    request_matched = 1;
 		    if (alternate && !alternating) {
 			result = NOTOK;
 			goto out;
 		    }
 		    continue;
 
-		case OK:
+		case DONE:  /* found no match on content type */
+		    continue;
+
+		case OK:  /* display successful */
+		    request_matched = 1;
+		    display_success = 1;
 		    if (alternating) {
 			break;
 		    }
@@ -623,7 +634,12 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 	}
     }
 
-    if (alternating && !part && request_matched) {
+    /* we're supposed to be displaying at least something from a
+     * multipart.  if we've had parts to consider, and we've had no
+     * success, then we should complain.  we shouldn't complain if
+     * none of the parts matched any -part option or -type option.
+     */
+    if (alternating && request_matched && !display_success) {
 	if (!alternate)
 	    content_error (NULL, ct, "don't know how to display any of the contents");
 	result = NOTOK;
@@ -632,8 +648,9 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 
 out:
     /* if no parts matched what was requested, there can't have been
-     * any display errors, so we report OK. */
-    return request_matched ? result : OK;
+     * any display errors.  we report DONE rather than OK. */
+    ret = request_matched ? result : DONE;
+    return ret;
 }
 
 
