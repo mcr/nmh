@@ -33,7 +33,7 @@ char *formsw = NULL;
 
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
@@ -593,7 +593,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
 
-	if (part_ok (p, 1) && type_ok (p, 1)) {
+	if (part_ok (p) && type_ok (p, 1)) {
 	    int	inneresult;
 
 	    request_matched = 1;

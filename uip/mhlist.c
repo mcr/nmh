@@ -74,7 +74,7 @@ int debugsw = 0;
 CT parse_mime (char *);
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
 int type_ok (CT, int);
 void flush_errors (void);
 
