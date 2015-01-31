@@ -340,7 +340,7 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked, struct format *
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
 	return NOTOK;
     if (ct->c_showproc && !strcmp (ct->c_showproc, "true"))
-	return (alternate ? DONE : OK);
+	return OK;
 
     if (! strcmp(invo_name, "mhshow")  &&
         ct->c_type == CT_TEXT  &&  ct->c_subtype == TEXT_PLAIN) {
@@ -490,7 +490,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 
 	    if (fd != NOTOK)
 		(*ct->c_ceclosefnx) (ct);
-	    return (alternate ? DONE : status);
+	    return (alternate ? OK : status);
         }
     }
 }
@@ -609,9 +609,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 		    continue;
 
 		case OK:
-		case DONE:
 		    if (alternating) {
-			result = DONE;
 			break;
 		    }
 		    if (alternate) {
@@ -671,7 +669,7 @@ show_multi_aux (CT ct, int alternate, char *cp, struct format *fmt)
 	    p->c_storage = add (file, NULL);
 
 	    if (p->c_showproc && !strcmp (p->c_showproc, "true"))
-		return (alternate ? DONE : OK);
+		return OK;
 	    (*p->c_ceclosefnx) (p);
 	}
     }
