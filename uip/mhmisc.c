@@ -31,6 +31,7 @@ static char *errs = NULL;
  * prototypes
  */
 int part_ok (CT);
+int part_exact(CT ct);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
@@ -58,6 +59,23 @@ part_ok (CT ct)
         len = strlen(*ap);
         if (!strncmp (*ap, ct->c_partno, len) &&
                 (!ct->c_partno[len] || ct->c_partno[len] == '.' )) {
+            return 1;
+	}
+    }
+
+    return 0;
+}
+
+int
+part_exact(CT ct)
+{
+    char **ap;
+
+    if (!ct->c_partno)
+	return 0;
+
+    for (ap = parts; *ap; ap++) {
+        if (!strcmp (*ap, ct->c_partno)) {
             return 1;
 	}
     }

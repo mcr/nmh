@@ -36,6 +36,7 @@ char *formsw = NULL;
 
 /* mhmisc.c */
 int part_ok (CT);
+int part_exact (CT);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
@@ -576,6 +577,7 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     struct part *part;
     int request_matched;
     int display_success;
+    int mult_alt_done;
     int ret;
     CT p;
 
@@ -592,16 +594,25 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
      * alternating -> we are a multipart/alternative
      */
 
-    result = alternate ? NOTOK : OK;
+    result = NOTOK;
     request_matched = 0;
     display_success = 0;
+    mult_alt_done = 0;
 
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
 
-	if (part_ok (p) && type_ok (p, 1)) {
-	    int	inneresult;
+	/* while looking for the right displayable alternative, we
+	 * use a looser search criterion than we do after finding it.
+	 * specifically, while still looking, part_ok() will match
+	 * "parent" parts (e.g.  "-part 2" where 2 is a high-level
+	 * multipart).  after finding it, we use part_exact() to only
+	 * choose a part that was requested explicitly.
+	 */
+	if ((part_exact(p) && type_ok(p, 1)) ||
+		(!mult_alt_done && part_ok (p) && type_ok (p, 1))) {
 
+	    int	inneresult;
 
 	    inneresult = show_switch (p, nowalternate, concatsw, textonly,
 				      inlineonly, fmt);
@@ -620,13 +631,16 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 		case OK:  /* display successful */
 		    request_matched = 1;
 		    display_success = 1;
+		    result = OK;
+
+		    /* if we got success on a sub-part of
+		     * multipart/alternative, we're done, unless
+		     * there's a chance an explicit part should be
+		     * matched later in the alternatives.  */
 		    if (alternating) {
-			break;
-		    }
-		    if (alternate) {
+			mult_alt_done = 1;
+		    } else if (alternate) {
 			alternate = nowalternate = 0;
-			if (result == NOTOK)
-			    result = inneresult;
 		    }
 		    continue;
 	    }
@@ -635,15 +649,15 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     }
 
     /* we're supposed to be displaying at least something from a
-     * multipart.  if we've had parts to consider, and we've had no
-     * success, then we should complain.  we shouldn't complain if
-     * none of the parts matched any -part option or -type option.
+     * multipart/alternative.  if we've had parts to consider, and
+     * we've had no success, then we should complain.  we shouldn't
+     * complain if none of the parts matched any -part or -type option.
      */
     if (alternating && request_matched && !display_success) {
+	/* if we're ourselves an alternate.  don't complain yet. */
 	if (!alternate)
 	    content_error (NULL, ct, "don't know how to display any of the contents");
 	result = NOTOK;
-	goto out;
     }
 
 out:
