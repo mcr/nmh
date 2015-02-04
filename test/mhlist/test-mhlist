@@ -220,6 +220,7 @@ cat > $expected <<EOF
 EOF
 
 msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat > $msgfile <<EOF
 To: recipient@example.com, recipient@example.com, recipient@example.com,
     recipient@example.com, recipient@example.com, recipient@example.com,
@@ -362,6 +363,151 @@ EOF
 
 run_prog mhlist last > $actual 2>&1
 check $expected $actual
+
+##  now check mhlist output
+
+msgfile=`mhpath new`
+msgnum=`basename $msgfile`
+cat > $msgfile <<EOF
+To: example@example.org
+From: someone <someone@example.com>
+Subject: mhlist test
+Date: Thu, 29 Jan 2015 18:12:21 +0000 (GMT)
+Content-Type: multipart/mixed; boundary="BoundaryMixed"
+
+--BoundaryMixed
+Content-type: multipart/alternative;
+ boundary="BoundaryAlternative1"
+
+--BoundaryAlternative1
+Content-type: text/enriched; CHARSET=US-ASCII
+Content-transfer-encoding: 7bit
+
+This is supposedly enriched.
+
+--BoundaryAlternative1
+Content-type: text/plain; charset=ISO-8859-1; format=flowed
+Content-transfer-encoding: 8bit
+
+This is the body text/plain part.
+
+--BoundaryAlternative1
+Content-type: text/html; CHARSET=US-ASCII
+Content-transfer-encoding: 7bit
+
+<html><body><div><span style="line-height: 1.5;">
+This is the text/html body part.
+</span></div></body></html>
+
+--BoundaryAlternative1--
+
+--BoundaryMixed
+Content-type: multipart/alternative;
+ boundary="BoundaryAlternative2"
+
+--BoundaryAlternative2
+Content-type: audio/wav
+Content-transfer-encoding: 8bit
+
+pretend wav audio
+
+--BoundaryAlternative2
+Content-type: audio/mp3
+Content-transfer-encoding: 8bit
+
+pretend mp3 audio
+
+--BoundaryAlternative2
+Content-type: audio/basic
+Content-transfer-encoding: 8bit
+
+pretend basic audio
+
+--BoundaryAlternative2--
+
+--BoundaryMixed--
+EOF
+
+# Write the expected output.
+cat > $expected <<EOF
+ msg part  type/subtype              size description
+  13       multipart/mixed           1038
+     1     multipart/alternative      518
+     1.1   text/html                  111
+     1.2   text/plain                  34
+     1.3   text/enriched               29
+     2     multipart/alternative      326
+     2.1   audio/basic                 20
+     2.2   audio/mp3                   18
+     2.3   audio/wav                   18
+EOF
+
+# check it -- vanilla output
+run_prog mhlist $msgnum > $actual 2>&1
+check "$expected" "$actual"
+
+# Write the expected output.
+cat > $expected <<EOF
+ msg part  type/subtype              size description
+  13       multipart/mixed           1038
+     1     multipart/alternative      518
+     1.1   text/html                  111
+     1.2   text/plain                  34
+     1.3   text/enriched               29
+     2     multipart/alternative      326
+EOF
+
+# check it -- just part 1
+run_prog mhlist -part 1 $msgnum > $actual 2>&1
+check "$expected" "$actual"
+
+# Write the expected output.
+cat > $expected <<EOF
+ msg part  type/subtype              size description
+  13       multipart/mixed           1038
+     1     multipart/alternative      518
+     2     multipart/alternative      326
+EOF
+
+# check it -- ask for audio/basic in part 1, should get nothing
+run_prog mhlist -part 1 -type audio/basic $msgnum > $actual 2>&1
+check "$expected" "$actual"
+
+# Write the expected output.
+cat > $expected <<EOF
+ msg part  type/subtype              size description
+  13       multipart/mixed           1038
+     1     multipart/alternative      518
+     1.1   text/plain                  34
+     1.2   text/html                  111
+     1.3   text/enriched               29
+     2     multipart/alternative      326
+     2.1   audio/wav                   18
+     2.2   audio/basic                 20
+     2.3   audio/mp3                   18
+EOF
+
+# check it -- bump plain and wav to the top of their parts
+run_prog mhlist -prefer text/plain -prefer audio/wav $msgnum > $actual 2>&1
+check "$expected" "$actual"
+
+# Write the expected output.
+cat > $expected <<EOF
+ msg part  type/subtype              size description
+  13       multipart/mixed           1038
+     1     multipart/alternative      518
+     1.1   text/plain                  34
+     1.2   text/enriched               29
+     1.3   text/html                  111
+     2     multipart/alternative      326
+     2.1   audio/basic                 20
+     2.2   audio/mp3                   18
+     2.3   audio/wav                   18
+EOF
+
+# check it -- bump plain and enriched to the top.  add a bogus type as well.
+run_prog mhlist -prefer foo/bar -prefer text/plain -prefer text/enriched $msgnum > $actual 2>&1
+check "$expected" "$actual"
 
 
 exit $failed
