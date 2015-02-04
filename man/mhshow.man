@@ -99,17 +99,43 @@ mail drop format to a folder of
 messages, see
 .IR inc (1)).
 .PP
+The
+.B \-part
+switch can be used (one or more times) to restrict the
+set of subparts that will be displayed.  (Obviously with no
+.B \-part
+switches, all parts will be considered.)  If a
+.B \-part
+switch specifies a specific subpart (i.e., a "leaf" in the tree of
+MIME parts), then that part will always be displayed.  If a
+.B \-part
+switch references a multipart/alternative part, then (in
+the absence of a
+.B \-type
+switch) only the default subpart of that multipart will be displayed.
+.PP
 A part specification consists of a series of numbers separated by dots.
 For example, in a multipart content containing three parts, these
 would be named as 1, 2, and 3, respectively.  If part 2 was also a
 multipart content containing two parts, these would be named as 2.1 and
 2.2, respectively.  Note that the
 .B \-part
-switch is effective for only
+switch is effective only for
 messages containing a multipart content.  If a message has some other
 kind of content, or if the part is itself another multipart content, the
 .B \-part
 switch will not prevent the content from being acted upon.
+.PP
+The
+.B \-type
+switch can also be used to restrict (or, when used in conjunction with 
+.BR \-part ,
+to further restrict) the display of parts according to content type.
+One or more
+.B \-type
+switches part will only select the first match
+from a multipart/alternative, even if there is more than one
+subpart that matches (one of) the given content type(s).
 .PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes can
@@ -137,10 +163,16 @@ A legal MIME message must contain a subtype specification.
 To specify a content, regardless of its subtype, just use the
 name of the content, e.g., \*(lqaudio\*(rq.  To specify a specific
 subtype, separate the two with a slash, e.g., \*(lqaudio/basic\*(rq.
-Note that regardless of the values given to the `\-type' switch, a
+Note that regardless of the values given to the
+.B \-type
+switch, a
 multipart content (of any subtype listed above) is always acted upon.
-Further note that if the `\-type' switch is used, and it is desirable to
-act on a message/external-body content, then the `\-type' switch must
+Further note that if the
+.B \-type
+switch is used, and it is desirable to
+act on a message/external-body content, then the
+.B \-type
+switch must
 be used twice: once for message/external-body and once for the content
 externally referenced.
 .SS "Unseen Sequence"
