@@ -32,6 +32,10 @@ NEW FEATURES
 - added multiply format function
 - "mhparam bindir" prints the path to the directory containing the public
   executables (${bindir}).
+- new "-prefer" switch for mhshow (and mhlist and mhshow), to allow specifying
+  the preferred content types to show, if present in a multipart alternative.
+- mh-format now has %(kilo) and %(kibi) functions, to allow printing
+  numbers as, for example, "10K", or "2.3Mi"
 
 -----------------
 OBSOLETE FEATURES
