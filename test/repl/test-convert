@@ -20,6 +20,10 @@ actual=`mhpath +`/draft
 printf 'Local-Mailbox: recipient@example.com' >>"$MH"
 
 
+#### Make sure that this works with 7-bit encoding.
+LC_ALL=C; export LC_ALL
+
+
 # check -convertarg with multiple parts and additional text in draft
 cat >"$expected" <<'EOF'
 From: recipient@example.com
