@@ -95,6 +95,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/scan/test-scan test/scan/test-scan-multibyte \
 	test/sequences/test-flist test/sequences/test-mark \
 	test/sequences/test-out-of-range \
+	test/show/test-show \
 	test/slocal/test-slocal \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
 	test/whatnow/test-ls test/whom/test-whom \
