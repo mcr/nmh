@@ -1308,7 +1308,7 @@ static void
 move_preferred_part (CT ct, char *type, char *subtype)
 {
     struct multipart *m = (struct multipart *) ct->c_ctparams;
-    struct part *part, *next, *prev, *head, *nhead, *ntail;
+    struct part *part, *prev, *head, *nhead, *ntail;
     struct part h, n;
     CI ci;
 
