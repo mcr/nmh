@@ -143,8 +143,9 @@ char *nmhaccessftp = "nmh-access-ftp";
 /* profile entry for external url access command */
 char *nmhaccessurl = "nmh-access-url";
 
-char *mhlibexecdir = NMHLIBEXECDIR;
+char *mhbindir = NMHBINDIR;
 char *mhetcdir = NMHETCDIR;
+char *mhlibexecdir = NMHLIBEXECDIR;
 
 /* 
  * nmh not-so constants

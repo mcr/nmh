@@ -20,6 +20,9 @@ mhstore \- store contents of MIME messages into files
 .RB [ \-type
 .IR content ]
 \&...
+.RB [ \-prefer
+.IR content ]
+\&...
 .RB [ \-auto " | " \-noauto ]
 .RB [ \-clobber
 .IR always " | " auto " | " suffix " | " ask " | " never ]
@@ -129,6 +132,26 @@ desirable to act on a message/external-body content, then the
 .B \-type
 switch must be used twice: once for message/external-body
 and once for the content externally referenced.
+.PP
+The
+.B \-prefer
+switch will alter the part ordering of multipart/alternative MIME sections
+in order to override the sender-imposed default ordering.
+The
+.B \-prefer
+switch is functionally most important for
+.BR mhshow ,
+but is also implemented in
+.B mhlist
+and
+.B mhstore
+to make common part number ordering possible across all three programs.
+See
+.IR mhlist (1)
+and
+.IR mhshow (1)
+for more information on
+.BR \-prefer.
 .SS "Checking the Contents"
 The
 .B \-check

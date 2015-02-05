@@ -6,7 +6,7 @@
 
 #define	NPARTS	50
 #define	NTYPES	20
-#define	NPARMS	10
+#define	NPREFS	20
 
 /*
  * Abstract type for header fields

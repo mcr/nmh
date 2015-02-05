@@ -34,6 +34,7 @@
     X("markform formfile", 0, MARKFORMSW) \
     X("part number", 0, PARTSW) \
     X("type content", 0, TYPESW) \
+    X("prefer content", 0, PREFERSW) \
     X("rcache policy", 0, RCACHESW) \
     X("wcache policy", 0, WCACHESW) \
     X("version", 0, VERSIONSW) \
@@ -77,6 +78,11 @@ extern char *parts[NPARTS + 1];
 extern char *types[NTYPES + 1];
 extern int userrs;
 
+/* mhparse.c */
+extern char *preferred_types[];
+extern  char *preferred_subtypes[];
+extern int npreferred;
+
 int debugsw = 0;
 int verbosw = 0;
 
@@ -86,7 +92,7 @@ int verbosw = 0;
 CT parse_mime (char *);
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
 int type_ok (CT, int);
 void flush_errors (void);
 
@@ -201,6 +207,18 @@ do_cache:
 		    adios (NULL, "too many types (starting with %s), %d max",
 			   cp, NTYPES);
 		types[ntype++] = cp;
+		continue;
+
+	    case PREFERSW:
+		if (!(cp = *argp++) || *cp == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		if (npreferred >= NPREFS)
+		    adios (NULL, "too many preferred types (starting with %s), %d max",
+			   cp, NPREFS);
+		preferred_types[npreferred] = cp;
+		cp = strchr(cp, '/');
+		if (cp) *cp++ = '\0';
+		preferred_subtypes[npreferred++] = cp;
 		continue;
 
 	    case FILESW:

@@ -18,6 +18,9 @@ mhlist \- list information about MIME messages
 .RB [ \-type
 .IR content ]
 \&...
+.RB [ \-prefer
+.IR content ]
+\&...
 .RB [ \-headers " | " \-noheaders ]
 .RB [ \-realsize " | " \-norealsize ]
 .RB [ \-rcache
@@ -152,9 +155,29 @@ switch must
 be used twice: once for message/external-body and once for the content
 externally referenced.
 .PP
-The parts of a multipart/alternative part are listed in the reverse
-order of their placement in the message.  The listing therefore is
-in decreasing order of preference, as defined in RFC 2046.
+By default, the parts of a multipart/alternative part are listed in
+the reverse order of their placement in the message.  The listing
+therefore is in decreasing order of preference, as defined in RFC
+2046.  The
+.B \-prefer
+switch can be used (one or more times, in order of descending
+preference) to let MH know which content types from a
+multipart/alternative MIME part are preferred by the user, in order to
+override the default preference order.  Thus, when viewed by
+.BR mhlist ,
+the ordering of multipart/alternative parts will appear to change when
+invoked with or without various
+.B \-prefer
+switches.
+The
+.B \-prefer
+switch is functionally most important for
+.IR mhshow ,
+but is also implemented in
+.B mhlist
+and
+.B mhstore
+to make common part number ordering possible across all three programs.
 .SS "Checking the Contents"
 The
 .B \-check

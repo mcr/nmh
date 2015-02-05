@@ -18,6 +18,9 @@ mhshow \- display MIME messages
 .RB [ \-type
 .IR content ]
 \&...
+.RB [ \-prefer
+.IR content ]
+\&...
 .RB [ \-concat " | " \-noconcat ]
 .RB [ \-textonly " | " \-notextonly ]
 .RB [ \-inlineonly " | " \-noinlineonly ]
@@ -99,17 +102,43 @@ mail drop format to a folder of
 messages, see
 .IR inc (1)).
 .PP
+The
+.B \-part
+switch can be used (one or more times) to restrict the
+set of subparts that will be displayed.  (Obviously with no
+.B \-part
+switches, all parts will be considered.)  If a
+.B \-part
+switch specifies a specific subpart (i.e., a "leaf" in the tree of
+MIME parts), then that part will always be displayed.  If a
+.B \-part
+switch references a multipart/alternative part, then (in
+the absence of a
+.B \-type
+switch) only the default subpart of that multipart will be displayed.
+.PP
 A part specification consists of a series of numbers separated by dots.
 For example, in a multipart content containing three parts, these
 would be named as 1, 2, and 3, respectively.  If part 2 was also a
 multipart content containing two parts, these would be named as 2.1 and
 2.2, respectively.  Note that the
 .B \-part
-switch is effective for only
+switch is effective only for
 messages containing a multipart content.  If a message has some other
 kind of content, or if the part is itself another multipart content, the
 .B \-part
 switch will not prevent the content from being acted upon.
+.PP
+The
+.B \-type
+switch can also be used to restrict (or, when used in conjunction with
+.BR \-part ,
+to further restrict) the display of parts according to content type.
+One or more
+.B \-type
+switches part will only select the first match
+from a multipart/alternative, even if there is more than one
+subpart that matches (one of) the given content type(s).
 .PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes can
@@ -137,12 +166,50 @@ A legal MIME message must contain a subtype specification.
 To specify a content, regardless of its subtype, just use the
 name of the content, e.g., \*(lqaudio\*(rq.  To specify a specific
 subtype, separate the two with a slash, e.g., \*(lqaudio/basic\*(rq.
-Note that regardless of the values given to the `\-type' switch, a
+Note that regardless of the values given to the
+.B \-type
+switch, a
 multipart content (of any subtype listed above) is always acted upon.
-Further note that if the `\-type' switch is used, and it is desirable to
-act on a message/external-body content, then the `\-type' switch must
+Further note that if the
+.B \-type
+switch is used, and it is desirable to
+act on a message/external-body content, then the
+.B \-type
+switch must
 be used twice: once for message/external-body and once for the content
 externally referenced.
+.PP
+In the absence of
+.BR \-prefer ,
+.B mhshow
+will select the "best" displayable subpart from
+multipart/alternative content.  The
+.B \-prefer
+switch can be used (one or more times, in order of descending
+preference) to let MH know which content types from a
+multipart/alternative MIME part are preferred by the user, in order to
+override the default selection for display.  For example, mail is
+often sent containing both plaintext and HTML-formatted versions of
+the same content, and the HTML version is usually indicated to be the
+"best" format for viewing.  Using \*(lq-prefer text/plain\*(rq will
+cause the plaintext version to be displayed if possible, but still
+allow display of the HTML part if there is no plaintext subpart
+available.  Using \*(lq-prefer text/plain -prefer image/png\*(rq
+would add a preference for PNG images, which might or might not
+ever appear in the same multipart/alternative section with text/plain.
+Implementation note:  RFC 2046 requires that the subparts
+of a multipart/alternative be ordered according to "faithfulness to
+the original content", and MH by default selects the subpart ranked
+most "faithful" by that ordering.  The
+.B \-prefer
+switch reorders the alternative parts (only internally, never changing
+the message file) to move the user's preferred part(s) to the "most
+faithful" position.  Thus, when viewed by
+.BR mhlist ,
+the ordering of multipart/alternative parts will appear to change when
+invoked with or without various
+.B \-prefer
+switches.
 .SS "Unseen Sequence"
 If the profile entry \*(lqUnseen\-Sequence\*(rq is present and
 non\-empty, then
@@ -345,7 +412,7 @@ was built with
 .IR iconv (3),
 then all text/plain parts of the message(s) will be displayed using
 the character set of the current locale.  See the
-.BR mhparam (1)
+.IR mhparam (1)
 man page for how determine whether your
 .B nmh
 installation includes

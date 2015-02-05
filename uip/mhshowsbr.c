@@ -22,6 +22,8 @@
 #endif /* ! HAVE_ICONV */
 
 extern int debugsw;
+extern int npart;
+extern int ntype;
 
 int nolist   = 0;
 
@@ -33,7 +35,8 @@ char *formsw = NULL;
 
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
+int part_exact (CT);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
@@ -340,7 +343,7 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked, struct format *
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
 	return NOTOK;
     if (ct->c_showproc && !strcmp (ct->c_showproc, "true"))
-	return (alternate ? DONE : OK);
+	return OK;
 
     if (! strcmp(invo_name, "mhshow")  &&
         ct->c_type == CT_TEXT  &&  ct->c_subtype == TEXT_PLAIN) {
@@ -490,7 +493,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 
 	    if (fd != NOTOK)
 		(*ct->c_ceclosefnx) (ct);
-	    return (alternate ? DONE : status);
+	    return (alternate ? OK : status);
         }
     }
 }
@@ -546,8 +549,9 @@ show_multi (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
     if ((cp = context_find_by_type ("show", ci->ci_type, ci->ci_subtype)))
 	return show_multi_aux (ct, alternate, cp, fmt);
 
-    if ((cp = ct->c_showproc))
+    if ((cp = ct->c_showproc)) {
 	return show_multi_aux (ct, alternate, cp, fmt);
+    }
 
     /*
      * Use default method to display this multipart content.  Even
@@ -572,6 +576,9 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
     int request_matched;
+    int display_success;
+    int mult_alt_done;
+    int ret;
     CT p;
 
     alternating = 0;
@@ -583,41 +590,57 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     }
 
     /*
-     * alternate   -> we are a part inside an multipart/alternative
+     * alternate   -> we are a part inside a multipart/alternative
      * alternating -> we are a multipart/alternative
      */
 
-    result = alternate ? NOTOK : OK;
+    result = NOTOK;
     request_matched = 0;
+    display_success = 0;
+    mult_alt_done = 0;
 
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
 
-	if (part_ok (p, 1) && type_ok (p, 1)) {
-	    int	inneresult;
+	/* while looking for the right displayable alternative, we
+	 * use a looser search criterion than we do after finding it.
+	 * specifically, while still looking, part_ok() will match
+	 * "parent" parts (e.g.  "-part 2" where 2 is a high-level
+	 * multipart).  after finding it, we use part_exact() to only
+	 * choose a part that was requested explicitly.
+	 */
+	if ((part_exact(p) && type_ok(p, 1)) ||
+		(!mult_alt_done && part_ok (p) && type_ok (p, 1))) {
 
-	    request_matched = 1;
+	    int	inneresult;
 
 	    inneresult = show_switch (p, nowalternate, concatsw, textonly,
 				      inlineonly, fmt);
 	    switch (inneresult) {
-		case NOTOK:
+		case NOTOK:  /* hard display error */
+		    request_matched = 1;
 		    if (alternate && !alternating) {
 			result = NOTOK;
 			goto out;
 		    }
 		    continue;
 
-		case OK:
-		case DONE:
+		case DONE:  /* found no match on content type */
+		    continue;
+
+		case OK:  /* display successful */
+		    request_matched = 1;
+		    display_success = 1;
+		    result = OK;
+
+		    /* if we got success on a sub-part of
+		     * multipart/alternative, we're done, unless
+		     * there's a chance an explicit part should be
+		     * matched later in the alternatives.  */
 		    if (alternating) {
-			result = DONE;
-			break;
-		    }
-		    if (alternate) {
+			mult_alt_done = 1;
+		    } else if (alternate) {
 			alternate = nowalternate = 0;
-			if (result == NOTOK)
-			    result = inneresult;
 		    }
 		    continue;
 	    }
@@ -625,17 +648,23 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 	}
     }
 
-    if (alternating && !part && request_matched) {
+    /* we're supposed to be displaying at least something from a
+     * multipart/alternative.  if we've had parts to consider, and
+     * we've had no success, then we should complain.  we shouldn't
+     * complain if none of the parts matched any -part or -type option.
+     */
+    if (alternating && request_matched && !display_success) {
+	/* if we're ourselves an alternate.  don't complain yet. */
 	if (!alternate)
 	    content_error (NULL, ct, "don't know how to display any of the contents");
 	result = NOTOK;
-	goto out;
     }
 
 out:
     /* if no parts matched what was requested, there can't have been
-     * any display errors, so we report OK. */
-    return request_matched ? result : OK;
+     * any display errors.  we report DONE rather than OK. */
+    ret = request_matched ? result : DONE;
+    return ret;
 }
 
 
@@ -671,7 +700,7 @@ show_multi_aux (CT ct, int alternate, char *cp, struct format *fmt)
 	    p->c_storage = add (file, NULL);
 
 	    if (p->c_showproc && !strcmp (p->c_showproc, "true"))
-		return (alternate ? DONE : OK);
+		return OK;
 	    (*p->c_ceclosefnx) (p);
 	}
     }

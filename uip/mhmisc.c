@@ -30,26 +30,54 @@ static char *errs = NULL;
 /*
  * prototypes
  */
-int part_ok (CT, int);
+int part_ok (CT);
+int part_exact(CT ct);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
 
 
 int
-part_ok (CT ct, int sP)
+part_ok (CT ct)
 {
     char **ap;
     int len;
 
-    if (npart == 0 || (ct->c_type == CT_MULTIPART && (sP || ct->c_subtype)))
+    /* a part is "ok", i.e., should be processed, if:
+	- there were no -part arguments
+	- this part is a multipart
+     */
+    if (npart == 0 || ct->c_type == CT_MULTIPART) {
 	return 1;
+    }
 
+    /* or if:
+	- this part is a an exact match for any -part option
+	- this part is a sub-part of any -part option
+     */
     for (ap = parts; *ap; ap++) {
         len = strlen(*ap);
         if (!strncmp (*ap, ct->c_partno, len) &&
-                (!ct->c_partno[len] || ct->c_partno[len] == '.' ))
+                (!ct->c_partno[len] || ct->c_partno[len] == '.' )) {
             return 1;
+	}
+    }
+
+    return 0;
+}
+
+int
+part_exact(CT ct)
+{
+    char **ap;
+
+    if (!ct->c_partno)
+	return 0;
+
+    for (ap = parts; *ap; ap++) {
+        if (!strcmp (*ap, ct->c_partno)) {
+            return 1;
+	}
     }
 
     return 0;

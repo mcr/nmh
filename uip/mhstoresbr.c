@@ -77,7 +77,7 @@ typedef int (*qsort_comp) (const void *, const void *);
 
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
 int type_ok (CT, int);
 void flush_errors (void);
 
@@ -287,7 +287,7 @@ store_multi (CT ct, mhstoreinfo_t info)
     for (part = m->mp_parts; part; part = part->mp_next) {
 	CT  p = part->mp_part;
 
-	if (part_ok (p, 1) && type_ok (p, 1)) {
+	if (part_ok (p) && type_ok (p, 1)) {
 	    if (ct->c_storage) {
 		/* Support mhstore -outfile.  The MIME parser doesn't
 		   load c_storage, so we know that p->c_storage is
