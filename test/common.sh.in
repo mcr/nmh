@@ -155,23 +155,26 @@ prepare_space() {
 
 #### check() requires two arguments, each the name of a file to be
 #### diff'ed.
-#### If the contents are same, the second file is removed.  And the
-####   first file is removed unless there's an optional argument with
-####   a value of 'keep first'.
-#### If different, global variable "failed" is incremented.
-#### If there's an optional 'ignore space' argument, spacing differences
-####   will not be considered signficant, emulating GNU diff -w.  It
-####   is assumed that the first file has already been run through
-####   prepare_space.
+#### If the contents are same, the second file is removed.  If different,
+#### global variable "failed" is incremented.
+#### Optional arguments:
+####   'keep first' -- first file is removed unless this is present.
+####   'ignore space' -- spacing differences will not be considered
+####        signficant, emulating GNU diff -w.  It is assumed that the
+####        first file has already been run through prepare_space.
+####   ':' <test name> -- will print '<test name>' in the failure message,
+####        to make it easier to tell which of multiple tests has failed.
 check() {
     first=$1; shift
     second=$1; shift
     keepfirst=
     ignorespace=
+    label=test
     while [ $# -gt 0 ]; do
         case $1 in
             'keep first')   keepfirst=1 ;;
             'ignore space') ignorespace=1 ;;
+	    ':') shift; label=\'"$*"\'; break ;;
             *) echo "$0: invalid check() argument \"$1\" in test suite" >&2 ;;
         esac
         shift
@@ -193,7 +196,7 @@ check() {
         #### POSIX diff should support -c.
         diff -c "$first" "$second" || true
         echo
-        echo "$0: test failed, outputs are in $first and $second."
+        echo "$0: $label failed, outputs are in $first and $second."
         failed=`expr ${failed:-0} + 1`
         #### Set return status of the function.
         [ $failed -eq 0 ]
