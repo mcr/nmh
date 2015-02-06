@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "April 9, 2014" "%nmhversion%"
+.TH MHSHOW %manext1% "February 6, 2015" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -59,14 +59,13 @@ and
 .B \-noinlineonly
 switches.
 In addition, by using the
-.B \-part
+.BR \-part ,
+.BR \-type ,
 and
-.B \-type
-switches, you may
-further limit the scope of
-.B mhshow
-to particular subparts (of a
-multipart content) and/or particular content types.  The inclusion of any
+.B \-prefer
+switches, you may limit and reorder the set of parts to be displayed,
+based on part number and/or content type.
+The inclusion of any
 .B \-part
 or
 .B \-type
@@ -139,6 +138,16 @@ One or more
 switches part will only select the first match
 from a multipart/alternative, even if there is more than one
 subpart that matches (one of) the given content type(s).
+.PP
+Using either
+.B \-part
+or
+.B -type
+switches alone will cause either to select
+the part(s) they match.  Using them together will select only
+the part(s) matched by both (sets of) switches.  In other
+words, the result is the intersection, and not the union, of their
+separate match results.
 .PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes can
