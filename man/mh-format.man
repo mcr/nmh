@@ -137,7 +137,7 @@ For string valued functions or components, the condition is true
 if the function return or component value is 
 a non-empty string, and false for an empty string.
 .PP
-The `%?' control escape is optional, and may there may be more
+The `%?' control escape is optional, and there may be more
 than one `%?' control escape in a conditional block.
 The `%|' control escape
 is also optional, but may be included at most once.
