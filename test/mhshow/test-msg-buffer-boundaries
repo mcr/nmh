@@ -153,12 +153,13 @@ EOF
 
 # Write the expected output.
 cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 [ part 1.1 - text/plain -   29B  ]
 This is the text/plain part.
 EOF
 
 run_prog mhshow -part 1.1 -form mhl.null $msgnum >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check number 1
 
 # check a boundary condition in m_getfld():  its internal message
 # buffer holds exactly up to the end of a header field name in a
@@ -293,12 +294,13 @@ EOF
 
 # Write the expected output.
 cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 [ part 1.1 - text/plain -   29B  ]
 This is the text/plain part.
 EOF
 
 run_prog mhshow -part 1.1 -form mhl.null $msgnum >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check number 2
 
 # check a boundary condition in m_getfld():  its internal message
 # buffer holds exactly up to the end of a message part boundary
@@ -434,12 +436,13 @@ EOF
 
 # Write the expected output.
 cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 [ part 1.1 - text/plain - the text/plain part  29B  ]
 This is the text/plain part.
 EOF
 
 run_prog mhshow -part 1.1 -form mhl.null $msgnum >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check number 3
 
 
 exit $failed

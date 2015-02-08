@@ -28,6 +28,7 @@ actual="$MH_TEST_DIR"/$$.actual
 
 # check charset conversion
 msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
@@ -40,7 +41,8 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -53,7 +55,7 @@ MIME-Version: 1.0
 EOF
 
 run_prog mhshow last >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check charset conversion
 
 cat >>"$MH" <<'EOF'
 mhshow-show-text/plain: echo %{charset}
@@ -62,6 +64,7 @@ EOF
 
 # check expansion of %{charset} by itself
 msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
@@ -74,7 +77,8 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -86,11 +90,13 @@ UTF-8
 EOF
 
 run_prog mhshow last >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check %{charset} by itself
 
 
 # check expansion of empty %{charset} by itself
 msgfile=`mhpath new`
+omsgnum=$msgnum
+msgnum=`basename $msgfile`
 cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
@@ -103,7 +109,8 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -115,7 +122,7 @@ MIME-Version: 1.0
 EOF
 
 run_prog mhshow last >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check empty %{charset} by itself
 
 
 grep -v 'mhshow-show-text/plain:' "$MH" >"$MH.new"
@@ -125,7 +132,8 @@ mhshow-show-text/plain: charset=%{charset}; echo ${charset:+-I $charset}
 EOF
 
 # check expansion of embedded %{charset} with no text following
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$omsgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -136,12 +144,13 @@ MIME-Version: 1.0
 -I UTF-8
 EOF
 
-run_prog mhshow prev >"$actual" 2>&1
-check "$expected" "$actual"
+run_prog mhshow prev >"$actual" 2>&1   # NB:  "mhshow prev" !!!
+check "$expected" "$actual" : check embedded %{charset} with no text
 
 
 # check expansion of empty embedded %{charset} with no text following
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -153,14 +162,15 @@ MIME-Version: 1.0
 EOF
 
 run_prog mhshow last >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check empty embedded %{charset} with no text following
 
 
 sed -e 's%\(mhshow-show-text/plain:.*\)%\1 file%' "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
 
 # check expansion of embedded %{charset} with text following
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$omsgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -171,12 +181,13 @@ MIME-Version: 1.0
 -I UTF-8 file
 EOF
 
-run_prog mhshow prev >"$actual" 2>&1
-check "$expected" "$actual"
+run_prog mhshow prev >"$actual" 2>&1   # NB:  "mhshow prev" !!!
+check "$expected" "$actual" : check embedded %{charset} with text following
 
 
 # check expansion of empty embedded %{charset} with text following
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -188,7 +199,7 @@ file
 EOF
 
 run_prog mhshow last >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check empty embedded %{charset} with text following
 
 
 sed -e 's/charset/method/g' "$MH" >"$MH.new"
@@ -196,6 +207,7 @@ mv -f "$MH.new" "$MH"
 
 # check parameter value quoting
 msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
@@ -208,7 +220,10 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
+EOF
+cat >>"$expected" <<'EOF'
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -220,7 +235,7 @@ MIME-Version: 1.0
 EOF
 
 run_prog mhshow last >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check parameter value quoting
 
 
 sed -e 's/method/unknown/g' "$MH" >"$MH.new"
@@ -228,6 +243,7 @@ mv -f "$MH.new" "$MH"
 
 # check that unknown parameter is not expanded
 msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
@@ -240,7 +256,8 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 4 =F7 2 =3D 2
 EOF
 
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -252,7 +269,7 @@ file
 EOF
 
 run_prog mhshow last >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : check unknown parameter is not expanded
 
 
 grep -v '^mhshow-show-text/plain: ' "$MH" >>"$MH.new"
@@ -263,6 +280,7 @@ EOF
 
 # check parameter value quoting with text following
 msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
@@ -274,7 +292,8 @@ Date: Sun, 18 Dec 2005 00:52:39 +0100
 This is a test.
 EOF
 
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -285,7 +304,7 @@ MIME-Version: 1.0
 EOF
 
 run_prog mhshow last >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : parameter value quoting with text following
 
 #
 # test a large file that needs to be converted to UTF-8
@@ -294,6 +313,7 @@ check "$expected" "$actual"
 grep -v '^mhshow-show-text/plain: ' "$MH" >>"$MH.new"
 mv -f "$MH.new" "$MH"
 msgfile=`mhpath new`
+msgnum=`basename $msgfile`
 cat >"$msgfile" <<'EOF'
 From: foo@example.edu
 To: bar@example.edu
@@ -728,7 +748,8 @@ one of the glass buildings.
 =93How strange!=94 she exclaimed, drawing a long breath.
 EOF
 
-cat >"$expected" <<'EOF'
+cat >"$expected" <<EOF
+[ Message inbox:$msgnum ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -1155,6 +1176,6 @@ one of the glass buildings.
 EOF
 
 run_prog mhshow last >"$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : large file conversion to UTF-8
 
 exit $failed

@@ -77,7 +77,7 @@ check "$expected" "$actual" : show two non-mime
 # Format is different; why?
 
 cat > $expected <<EOF
-(Message inbox:$msgnum)
+[ Message inbox:$msgnum ]
 Date:    Thu, 19 May 2011 00:00:00 -0000
 To:      recipient@example.com
 From:    sender@example.com
@@ -97,9 +97,7 @@ check "$expected" "$actual" : show one MIME
 # Currently fails.
 
 cat > $expected <<EOF
->>> inbox:1
-
-
+[ Message inbox:1 ]
 Date:    Fri, 29 Sep 2006 00:00:00
 To:      Some User <user@example.com>
 From:    Test1 <test1@example.com>
@@ -108,10 +106,7 @@ Subject: Testing message 1
 
 [ part  - text/plain -   25B  ]
 This is message number 1
-
->>> inbox:$msgnum
-
-
+[ Message inbox:11 ]
 Date:    Thu, 19 May 2011 00:00:00 -0000
 To:      recipient@example.com
 From:    sender@example.com

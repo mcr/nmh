@@ -38,7 +38,7 @@ cat >"$expected" <<EOF
   11  12/18 foo@example.edu    test<<This is a multi-part message in MIME format
 EOF
 run_prog scan -width 80 last > "$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : scan with bogus header field
 
 # check show (mhl)
 cat >"$expected" <<EOF
@@ -55,10 +55,11 @@ This is a multi-part message in MIME format.
 I am a stupid spammer.
 EOF
 run_prog show last > "$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : "show (mhl) with bogus header field"
 
 # check mhshow
 cat >"$expected" <<EOF
+[ Message inbox:11 ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -72,7 +73,7 @@ This is a multi-part message in MIME format.
 I am a stupid spammer.
 EOF
 run_prog mhshow last > "$actual" 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : mhshow with bogus header field
 
 # check m_getfld() handling of empty header field
 msgfile="$MH_TEST_DIR/Mail/inbox/12"
@@ -86,8 +87,8 @@ scan: eof encountered in field "Received"
 EOF
 
 run_prog scan -width 13 last >"$actual" 2>"$actual_err"
-check "$expected" "$actual"
-check "$expected_err" "$actual_err"
+check "$expected" "$actual" : m_getfld, empty header output
+check "$expected_err" "$actual_err" : m_getfld, empty header error
 
 # check m_getfld() handling of excessively long header field name
 msgfile="$MH_TEST_DIR/Mail/inbox/13"
@@ -100,7 +101,7 @@ cat >"$expected" <<EOF
 EOF
 
 run_prog scan -width 13 last >"$actual" 2>"$actual_err"
-check "$expected" "$actual"
+check "$expected" "$actual" : m_getfld with excessively long header field name
 # Cygwin has a BUFSIZ of 1024 so the error message gets truncated.
 # Deal with that by grepping to verify that scan showed the proper error.
 verify_string_in_file() {
@@ -135,8 +136,8 @@ scan: eol encountered in field "If a header field name has at least 512 characte
 EOF
 
 run_prog scan -width 13 last >"$actual" 2>"$actual_err"
-check "$expected" "$actual"
-check "$expected_err" "$actual_err"
+check "$expected" "$actual" : m_getfld with long header, no colon output
+check "$expected_err" "$actual_err" : m_getfld with long header, no colon error
 
 
 exit $failed

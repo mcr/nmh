@@ -35,6 +35,7 @@ EOF
 
 # check it
 cat > $expected <<EOF
+[ Message inbox:11 ]
 Date:    Tue, 05 Mar 2002 18:20:35 +0000
 To:      bar@example.edu
 From:    foo@example.edu
@@ -47,7 +48,7 @@ Content-Disposition: inline
 This is a test; this is the body.
 EOF
 run_prog mhshow $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : C-T-E binary text
 
 exit $failed
 

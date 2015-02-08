@@ -51,18 +51,22 @@ EOF
 
 # Write the expected output.
 cat > $expected <<EOF
+[ Message inbox:11 ]
 [ part 1.1 - text/plain -   29B  ]
 This is the text/plain part.
 EOF
 
 # check it
 run_prog mhshow -part 1.1 -form mhl.null $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : part 1.1
+
+
+# tests of -part/-type/-prefer
 
 cat > $msgfile <<EOF
 To: example@example.org
 From: someone <someone@example.com>
-Subject: mhshow -part/-type/prefer test
+Subject: mhshow -part/-type/-prefer test
 Date: Thu, 29 Jan 2015 18:12:21 +0000 (GMT)
 Content-Type: multipart/mixed; boundary="BoundaryMixed"
 
@@ -105,36 +109,40 @@ EOF
 
 # Write the expected output.
 cat > $expected <<EOF
+[ Message inbox:11 ]
 [ part 1.1.1 - text/html -   111B  ]
 This is the text/html body part.
 EOF
 
 # check it
 run_prog mhshow -part 1.1.1 -form mhl.null $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : part 1.1.1
 
 # Write the expected output.
 cat > $expected <<EOF
+[ Message inbox:11 ]
 [ part 1.2 - text/plain -   33B  ]
 This is the body text/plain part.
 EOF
 
 # check it
 run_prog mhshow -part 1.2 -form mhl.null $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : part 1.2
 
 # Write the expected output.
 cat > $expected <<EOF
+[ Message inbox:11 ]
 [ part 1.1 - text/plain -   33B  ]
 This is the body text/plain part.
 EOF
 
 # check it
 run_prog mhshow -prefer text/plain -part 1 -form mhl.null $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : part conflicting text/plain, part 1 switches
 
 # Write the expected output.
 cat > $expected <<EOF
+[ Message inbox:11 ]
 [ part 2 - text/plain -   93B  ]
 _______________________________________________
 This is the final text/plain signature part.
@@ -142,10 +150,11 @@ EOF
 
 # check it
 run_prog mhshow -part 2 -form mhl.null $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : part 2
 
 # Write the expected output.
 cat > $expected <<EOF
+[ Message inbox:11 ]
 [ part 1.2 - text/plain -   33B  ]
 This is the body text/plain part.
 [ part 2 - text/plain -   93B  ]
@@ -155,10 +164,11 @@ EOF
 
 # check it
 run_prog mhshow -type text/plain -form mhl.null $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : type text/plain
 
 # Write the expected output.
 cat > $expected <<EOF
+[ Message inbox:11 ]
 [ part 1.1 - text/plain -   33B  ]
 This is the body text/plain part.
 [ part 2 - text/plain -   93B  ]
@@ -167,6 +177,6 @@ This is the final text/plain signature part.
 EOF
 
 run_prog mhshow -prefer text/plain -form mhl.null $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : prefer text/plain
 
 exit $failed

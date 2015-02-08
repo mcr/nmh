@@ -47,6 +47,7 @@ EOF
 
 # check it
 cat > $expected <<EOF
+[ Message inbox:11 ]
 Date:    Sun, 18 Dec 2005 00:52:39 +0100
 To:      bar@example.edu
 From:    foo@example.edu
@@ -69,6 +70,6 @@ just a newline
 = ^H (backspace) character, probably erased = in diff output
 EOF
 run_prog mhshow $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : bogus quoted-printable data
 
 exit $failed
