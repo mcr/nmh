@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "February 6, 2015" "%nmhversion%"
+.TH MHSHOW %manext1% "February 8, 2015" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -24,6 +24,7 @@ mhshow \- display MIME messages
 .RB [ \-concat " | " \-noconcat ]
 .RB [ \-textonly " | " \-notextonly ]
 .RB [ \-inlineonly " | " \-noinlineonly ]
+.RB [ \-header " | " \-noheader ]
 .RB [ \-form
 .IR formfile ]
 .RB [ \-markform
@@ -73,6 +74,22 @@ switches will override the default settings of
 .B \-textonly
 and
 .BR \-inlineonly.
+.PP
+The
+.B \-header
+switch control whether
+.B mhshow
+will print a message separator header before each message that it
+displays.  The header format can be controlled using
+.B \-headerform
+to specify a file containing
+.IR mh\-format (5)
+instructions.  A copy of the built-in default
+headerform can be found in %nmhetcdir%/mhshow.header, for reference.
+In addition to the normal set of
+.IR mh\-format (5)
+instructions, a "%{folder}" escape provides a
+string representing the current folder.
 .PP
 By default
 .B mhshow
@@ -680,8 +697,9 @@ next.  The default marker can be changed using the
 .B \-markform
 switch to specify a file containing
 .IR mh\-format (5)
-instructions to use when displaying the content marker.  In addition to
-the normal set of
+instructions to use when displaying the content marker.  A copy of the
+default markform can be found in %nmhetcdir%/mhshow.marker, for
+reference.  In addition to the normal set of
 .IR mh\-format (5)
 instructions, the following
 .I component
@@ -731,6 +749,7 @@ is checked.
 ^%nmhetcdir%/mhn.defaults~^System default MIME profile entries
 ^%nmhetcdir%/mhl.headers~^The headers template
 ^%nmhetcdir%/mhshow.marker~^Example content marker
+^%nmhetcdir%/mhshow.header~^Example message separator header
 .fi
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
