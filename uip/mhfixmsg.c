@@ -89,12 +89,14 @@ static int get_multipart_boundary (CT, char **);
 static int replace_boundary (CT, char *, char *);
 static int fix_types (CT, svector_t, int *);
 static char *replace_substring (char **, const char *, const char *);
+static char *remove_parameter (char *, const char *);
 static int fix_multipart_cte (CT, int *);
 static int set_ce (CT, int);
 static int ensure_text_plain (CT *, CT, int *, int);
 static int find_textplain_sibling (CT, int, int *);
 static int insert_new_text_plain_part (CT, int, CT);
 static CT build_text_plain_part (CT);
+static int insert_into_new_mp_alt (CT *, int *);
 static CT divide_part (CT);
 static void copy_ctinfo (CI, CI);
 static int decode_part (CT);
@@ -885,6 +887,51 @@ replace_substring (char **str, const char *old, const char *new) {
     }
 }
 
+/*
+ * Remove a name=value parameter, given just its name, from a header value.
+ */
+char *
+remove_parameter (char *str, const char *name) {
+    /* It looks to me, based on the BNF in RFC 2045, than there can't
+       be whitespace betwwen the parameter name and the "=", or
+       between the "=" and the parameter value. */
+    char *param_name = concat (name, "=", NULL);
+    char *cp;
+
+    if ((cp = strstr (str, param_name))) {
+        char *start, *end;
+        size_t count = 1;
+
+        /* Remove any leading spaces, before the parameter name. */
+        for (start = cp;
+             start > str && isspace ((unsigned char) *(start-1));
+             --start) {
+            continue;
+        }
+        /* Remove a leading semicolon. */
+        if (start > str  &&  *(start-1) == ';') { --start; }
+
+        end = cp + strlen (name) + 1;
+        if (*end == '"') {
+            /* Skip past the quoted value, and then the final quote. */
+            for (++end ; *end  &&  *end != '"'; ++end) { continue; }
+            ++end;
+        } else {
+            /* Skip past the value. */
+            for (++end ; *end  &&  ! isspace ((unsigned char) *end); ++end) {}
+        }
+
+        /* Count how many characters need to be moved.  Include
+           trailing null, which is accounted for by the
+           initialization of count to 1. */
+        for (cp = end; *cp; ++cp) { ++count; }
+        (void) memmove (start, end, count);
+    }
+
+    free (param_name);
+
+    return str;
+}
 
 static int
 fix_multipart_cte (CT ct, int *message_mods) {
@@ -1063,51 +1110,72 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
             free (type_subtype);
 
             if (! has_text_plain) {
-                /* Parent is a multipart/alternative.  Insert a new
-                   text/plain subpart. */
-                const int inserted =
-                    insert_new_text_plain_part (*ct, new_subpart_number,
-                                                parent);
-                if (inserted) {
-                    ++*message_mods;
-                    if (verbosw) {
-                        report (NULL, parent->c_partno, parent->c_file,
-                                "insert text/plain part");
+                struct multipart *mp = (struct multipart *) parent->c_ctparams;
+                struct part *part;
+                int siblings = 0;
+
+                for (part = mp->mp_parts; part; part = part->mp_next) {
+                    if (*ct != part->mp_part) {
+                        ++siblings;
+                    }
+                }
+
+                if (siblings) {
+                    /* Parent is a multipart/related.  Insert a new
+                       text/plain subpart in a new multipart/alternative. */
+                    if (insert_into_new_mp_alt (ct, message_mods)) {
+                        /* Not an error if text/plain couldn't be added. */
                     }
                 } else {
-                    status = NOTOK;
+                    /* There are no siblings, so insert a new text/plain
+                       subpart, and change the parent type from
+                       multipart/related to multipart/alternative. */
+                    const int inserted =
+                        insert_new_text_plain_part (*ct, new_subpart_number,
+                                                    parent);
+
+                    if (inserted) {
+                        HF hf;
+
+                        parent->c_subtype = MULTI_ALTERNATE;
+                        parent->c_ctinfo.ci_subtype = getcpy ("alternative");
+                        if (! replace_substring (&parent->c_ctline, "/related",
+                                                 "/alternative")) {
+                            advise (NULL,
+                                    "did not find multipart/related in %s",
+                                    parent->c_ctline);
+                        }
+
+                        /* Update Content-Type header field. */
+                        for (hf = parent->c_first_hf; hf; hf = hf->next) {
+                            if (! strcasecmp (TYPE_FIELD, hf->name)) {
+                                if (replace_substring (&hf->value, "/related",
+                                                       "/alternative")) {
+                                    ++*message_mods;
+                                    if (verbosw) {
+                                        report (NULL, parent->c_partno,
+                                                parent->c_file,
+                                                "insert text/plain part");
+                                    }
+
+                                    /* Remove, e.g., type="text/html" from
+                                       multipart/alternative. */
+                                    remove_parameter (hf->value, "type");
+                                    break;
+                                } else {
+                                    advise (NULL, "did not find multipart/"
+                                                  "related in header %s",
+                                            hf->value);
+                                }
+                            }
+                        }
+                    } else {
+                        /* Not an error if text/plain couldn't be inserted. */
+                    }
                 }
             }
         } else {
-            /* Slip new text/plain part into a new multipart/alternative. */
-            CT tp_part = build_text_plain_part (*ct);
-
-            if (tp_part) {
-                CT mp_alt = build_multipart_alt (*ct, tp_part, CT_MULTIPART,
-                                                 MULTI_ALTERNATE);
-                if (mp_alt) {
-                    struct multipart *mp =
-                        (struct multipart *) mp_alt->c_ctparams;
-
-                    if (mp  &&  mp->mp_parts) {
-                        mp->mp_parts->mp_part = tp_part;
-                        /* Make the new multipart/alternative the parent. */
-                        *ct = mp_alt;
-
-                        ++*message_mods;
-                        if (verbosw) {
-                            report (NULL, (*ct)->c_partno, (*ct)->c_file,
-                                    "insert text/plain part");
-                        }
-                    } else {
-                        free_content (tp_part);
-                        free_content (mp_alt);
-                        status = NOTOK;
-                    }
-                } else {
-                    status = NOTOK;
-                }
-            } else {
+            if (insert_into_new_mp_alt (ct, message_mods)) {
                 status = NOTOK;
             }
         }
@@ -1239,6 +1307,44 @@ build_text_plain_part (CT encoded_part) {
     return NULL;
 }
 
+
+/* Slip new text/plain part into a new multipart/alternative. */
+static int
+insert_into_new_mp_alt (CT *ct, int *message_mods) {
+    CT tp_part = build_text_plain_part (*ct);
+    int status = OK;
+
+    if (tp_part) {
+        CT mp_alt = build_multipart_alt (*ct, tp_part, CT_MULTIPART,
+                                         MULTI_ALTERNATE);
+        if (mp_alt) {
+            struct multipart *mp =
+                (struct multipart *) mp_alt->c_ctparams;
+
+            if (mp  &&  mp->mp_parts) {
+                mp->mp_parts->mp_part = tp_part;
+                /* Make the new multipart/alternative the parent. */
+                *ct = mp_alt;
+
+                ++*message_mods;
+                if (verbosw) {
+                    report (NULL, (*ct)->c_partno, (*ct)->c_file,
+                            "insert text/plain part");
+                }
+            } else {
+                free_content (tp_part);
+                free_content (mp_alt);
+                status = NOTOK;
+            }
+        } else {
+            status = NOTOK;
+        }
+    } else {
+        status = NOTOK;
+    }
+
+    return status;
+}
 
 static CT
 divide_part (CT ct) {
