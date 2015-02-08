@@ -837,6 +837,68 @@ else
 fi
 
 
+# check that text/plain part is added to text/html in multipart/related
+# when it should be
+cat >"$expected" <<EOF
+MIME-Version: 1.0
+Date: Tue, 26 Feb 2013 18:07:20 -0600
+Subject: multipart/related, not /alternative
+Content-Type: multipart/alternative; boundary="----=_Part_90310_101292502.1"
+
+------=_Part_90310_101292502.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+This is the real content.
+
+------=_Part_90310_101292502.1
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+<html><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+    <title>HTML Content</title>
+  </head>
+  <body>
+    This is the real content.
+  </body>
+</html>
+
+------=_Part_90310_101292502.1--
+EOF
+
+cat >`mhpath new` <<EOF
+MIME-Version: 1.0
+Date: Tue, 26 Feb 2013 18:07:20 -0600
+Subject: multipart/related, not /alternative
+Content-Type: multipart/related;
+        type="text/html"; boundary="----=_Part_90310_101292502.1"
+
+------=_Part_90310_101292502.1
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+<html><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+    <title>HTML Content</title>
+  </head>
+  <body>
+    This is the real content.
+  </body>
+</html>
+
+------=_Part_90310_101292502.1--
+EOF
+
+if [ $can_reformat_texthtml -eq 1 ]; then
+  #### lynx inserts multiple blank lines, so squeeze them.
+  run_prog mhfixmsg last -outfile - | squeeze_lines >"$actual"
+  check "$expected" "$actual" 'ignore space'
+else
+  rm -f "$expected"
+fi
+
+
 # check handling of rfc822 message type
 cat >"$expected" <<EOF
 From: Test <test@example.com>

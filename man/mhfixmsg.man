@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "December 25, 2014" "%nmhversion%"
+.TH MHFIXMSG %manext1% "February 8, 2015" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -103,6 +103,17 @@ successfully convert the part to text/plain,
 inserts that text/plain part at the beginning of the containing
 multipart/alternative part, if present.  If not, it creates a
 multipart/alternative part.
+.PP
+With the
+.B \-reformat
+switch, multipart/related parts are handled differently than
+multipart/alternative.  If the multipart/related has only a single
+part that is not text/plain and can be converted to text/plain, a
+text/plain part is added and the type of the part is changed to
+multipart/alternative.  If the multipart/related has more than one
+part but does not have a text/plain part,
+.B mhfixmsg
+tries to add one.
 .PP
 The
 .B \-replacetextplain
