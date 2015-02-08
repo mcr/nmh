@@ -31,6 +31,9 @@
     X("noinlineonly", 0, NINLINESW) \
     X("file file", 0, FILESW) \
     X("form formfile", 0, FORMSW) \
+    X("header", 0, HEADSW) \
+    X("noheader", 0, NHEADSW) \
+    X("headerform formfile", 0, HEADFORMSW) \
     X("markform formfile", 0, MARKFORMSW) \
     X("part number", 0, PARTSW) \
     X("type content", 0, TYPESW) \
@@ -70,6 +73,10 @@ extern char *cache_private;
 extern char *progsw;
 extern int nomore;	/* flags for moreproc/header display */
 extern char *formsw;
+extern char *folder;
+extern char *headerform;
+extern char *markerform;
+extern int headersw;
 
 /* mhmisc.c */
 extern int npart;
@@ -110,7 +117,7 @@ int
 main (int argc, char **argv)
 {
     int msgnum, *icachesw, concatsw = -1, textonly = -1, inlineonly = -1;
-    char *cp, *file = NULL, *folder = NULL, *markform = NULL;
+    char *cp, *file = NULL;
     char *maildir, buf[100], **argp;
     char **arguments;
     struct msgs_array msgs = { 0, 0, NULL };
@@ -131,13 +138,13 @@ main (int argc, char **argv)
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
-	    case AMBIGSW: 
+	    case AMBIGSW:
 		ambigsw (cp, switches);
 		done (1);
-	    case UNKWNSW: 
+	    case UNKWNSW:
 		adios (NULL, "-%s unknown", cp);
 
-	    case HELPSW: 
+	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [+folder] [msgs] [switches]",
 			invo_name);
 		print_help (buf, switches, 1);
@@ -235,8 +242,20 @@ do_cache:
 		formsw = getcpy (etcpath (cp));
 		continue;
 
+	    case HEADSW:
+		headersw = 1;
+		continue;
+	    case NHEADSW:
+		headersw = 0;
+		continue;
+
+	    case HEADFORMSW:
+		if (!(headerform = *argp++) || *headerform == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
+
 	    case MARKFORMSW:
-		if (!(markform = *argp++) || *markform == '-')
+		if (!(markerform = *argp++) || *markerform == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
 
@@ -257,10 +276,10 @@ do_cache:
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
 
-	    case VERBSW: 
+	    case VERBSW:
 		verbosw = 1;
 		continue;
-	    case NVERBSW: 
+	    case NVERBSW:
 		verbosw = 0;
 		continue;
 	    case DEBUGSW:
@@ -338,6 +357,8 @@ do_cache:
 
 	if ((ct = parse_mime (file)))
 	    *ctp++ = ct;
+
+	headersw = 0;
     } else {
 	/*
 	 * message(s) are coming from a folder
@@ -430,7 +451,7 @@ do_cache:
     /*
      * Show the message content
      */
-    show_all_messages (cts, concatsw, textonly, inlineonly, markform);
+    show_all_messages (cts, concatsw, textonly, inlineonly);
 
     /* Now free all the structures for the content */
     for (ctp = cts; *ctp; ctp++)

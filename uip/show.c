@@ -1,4 +1,3 @@
-
 /*
  * show.c -- show/list messages
  *
@@ -79,23 +78,29 @@ main (int argc, char **argv)
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
-		case AMBIGSW: 
+		case AMBIGSW:
 		    ambigsw (cp, switches);
 		    done (1);
 
+		case HEADSW:
+		    headersw = 1;
+		    goto non_mhl_switches;
+		case NHEADSW:
+		    headersw = 0;
 		case CONCATSW:
 		case NCONCATSW:
+non_mhl_switches:
 		    /* mhl can't handle these, so keep them separate. */
 		    app_msgarg(&non_mhl_vec, --cp);
 		    continue;
 
-		case UNKWNSW: 
+		case UNKWNSW:
 		case NPROGSW:
 		case NFMTPROCSW:
 		    app_msgarg(&vec, --cp);
 		    continue;
 
-		case HELPSW: 
+		case HELPSW:
 		    snprintf (buf, sizeof(buf),
 			"%s [+folder] %s[switches] [switches for showproc]",
 			invo_name, mode == SHOW ? "[msgs] ": "");
@@ -105,7 +110,7 @@ main (int argc, char **argv)
 		    print_version(invo_name);
 		    done (0);
 
-		case DRFTSW: 
+		case DRFTSW:
 		    if (file)
 			adios (NULL, "only one file at a time!");
 		    draftsw++;
@@ -115,7 +120,7 @@ usage:
 		    adios (NULL,
 			    "usage: %s [+folder] [switches] [switches for showproc]",
 			    invo_name);
-		case FILESW: 
+		case FILESW:
 		    if (mode != SHOW)
 			goto usage;
 		    if (draftsw || file)
@@ -123,13 +128,6 @@ usage:
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    file = path (cp, TFILE);
-		    continue;
-
-		case HEADSW: 
-		    headersw++;
-		    continue;
-		case NHEADSW: 
-		    headersw = 0;
 		    continue;
 
 		case FORMSW:
@@ -149,12 +147,12 @@ usage:
 		    app_msgarg(&vec, cp);
 		    continue;
 
-		case SHOWSW: 
+		case SHOWSW:
 		    if (!(showproc = *argp++) || *showproc == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    nshow = 0;
 		    continue;
-		case NSHOWSW: 
+		case NSHOWSW:
 		    nshow++;
 		    continue;
 
@@ -194,6 +192,7 @@ usage:
 	    app_msgarg(&vec, getcpy (m_draft (folder, NULL, 1, &isdf)));
 	else
 	    app_msgarg(&vec, file);
+	headersw = 0;
 	goto go_to_it;
     }
 
@@ -252,11 +251,7 @@ usage:
     context_replace (pfolder, folder);	/* update current folder   */
     context_save ();			/* save the context file   */
 
-    if (headersw && vec.size == 1)
-	printf ("(Message %s:%s)\n", folder, vec.msgs[0]);
-
 go_to_it: ;
-    fflush (stdout);
 
     /*
      * Decide which "proc" to use
@@ -290,12 +285,22 @@ go_to_it: ;
     if (folder && !draftsw && !file)
 	m_putenv ("mhfolder", folder);
 
-    if (strcmp (r1bindex (proc, '/'), "mhl") == 0) {
+    if (strcmp (r1bindex (proc, '/'), "cat") == 0) {
+
+	if (headersw && vec.size == 1)
+	    printf ("(Message %s:%s)\n", folder, vec.msgs[0]);
+
+    } else if (strcmp (r1bindex (proc, '/'), "mhl") == 0) {
+
+	if (headersw && vec.size == 1)
+	    printf ("(Message %s:%s)\n", folder, vec.msgs[0]);
+
 	/* If "mhl", then run it internally */
 	argsplit_insert(&vec, "mhl", &program);
 	app_msgarg(&vec, NULL);
 	mhl (vec.size, vec.msgs);
 	done (0);
+
     } else {
 	int i;
 	char **mp;
@@ -324,8 +329,13 @@ go_to_it: ;
 		app_msgarg(&vec, vec.msgs[vec.size - 1]);
 		vec.msgs[vec.size - 2] = "-file";
 	    }
+	} else {
+	    if (headersw && vec.size == 1)
+		printf ("(Message %s:%s)\n", folder, vec.msgs[0]);
 	}
     }
+
+    fflush (stdout);
 
     argsplit_insert(&vec, proc, &program);
     app_msgarg(&vec, NULL);

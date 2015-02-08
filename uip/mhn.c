@@ -554,7 +554,7 @@ do_cache:
      * Show the message content
      */
     if (showsw)
-	show_all_messages (cts, 0, 0, 0, NULL);
+	show_all_messages (cts, 0, 0, 0);
 
     /* Now free all the structures for the content */
     for (ctp = cts; *ctp; ctp++)

@@ -502,8 +502,7 @@ char *get_param_value(PM pm, char replace);
  * markerform	- The name of a file containg mh-format(5) code used to
  *		  display markers about non-displayed MIME parts.
  */
-void show_all_messages(CT *cts, int concat, int textonly, int inlineonly,
-		       char *markerform);
+void show_all_messages(CT *cts, int concat, int textonly, int inlineonly);
 
 /*
  * Display (or store) a single MIME part using the specified command

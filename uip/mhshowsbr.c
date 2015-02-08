@@ -33,6 +33,12 @@ char *progsw = NULL;
 int nomore   = 0;
 char *formsw = NULL;
 
+/* for output markerss and headers */
+char *folder = NULL;
+char *markerform;
+char *headerform;
+int headersw = -1;
+
 
 /* mhmisc.c */
 int part_ok (CT);
@@ -59,7 +65,9 @@ static int show_external (CT, int, int, int, int, struct format *);
 static int parse_display_string (CT, char *, int *, int *, char *, char *,
 				 size_t, int multipart);
 static int convert_content_charset (CT, char **);
+static struct format *compile_header(char *);
 static struct format *compile_marker(char *);
+static void output_header (CT, struct format *);
 static void output_marker (CT, struct format *, int);
 static void free_markercomps (void);
 static int pidcheck(int);
@@ -69,6 +77,7 @@ static int pidcheck(int);
  * content marker display.
  */
 
+static struct comp *folder_comp = NULL;
 static struct comp *part_comp = NULL;
 static struct comp *ctype_comp = NULL;
 static struct comp *description_comp = NULL;
@@ -89,11 +98,10 @@ static struct param_comp_list *dispo_pc_list = NULL;
  */
 
 void
-show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly,
-		   char *markerform)
+show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly)
 {
     CT ct, *ctp;
-    struct format *fmt;
+    struct format *hfmt, *mfmt;
 
     /*
      * If form is not specified, then get default form
@@ -103,9 +111,10 @@ show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly,
 	formsw = getcpy (etcpath ("mhl.headers"));
 
     /*
-     * Compile the content marker format line
+     * Compile the content marker and header format lines
      */
-    fmt = compile_marker(markerform);
+    mfmt = compile_marker(markerform);
+    hfmt = compile_header(headerform);
 
     /*
      * If form is "mhl.null", suppress display of header.
@@ -118,12 +127,15 @@ show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly,
 
 	/* if top-level type is ok, then display message */
 	if (type_ok (ct, 1))
+	    if (headersw) output_header(ct, hfmt);
+
 	    show_single_message (ct, formsw, concatsw, textonly, inlineonly,
-				 fmt);
+				 mfmt);
     }
 
     free_markercomps();
-    fmt_free(fmt, 1);
+    fmt_free(hfmt, 1);
+    fmt_free(mfmt, 1);
 }
 
 
@@ -1252,6 +1264,7 @@ convert_content_charset (CT ct, char **file) {
  * Compile our format string and save any parameters we care about.
  */
 
+#define DEFAULT_HEADER "[ Message %{folder}%<{folder}:%>%(msg) ]"
 #define DEFAULT_MARKER "[ part %{part} - %{content-type} - " \
 		       "%<{description}%{description}" \
 		         "%?{cdispo-filename}%{cdispo-filename}" \
@@ -1259,7 +1272,29 @@ convert_content_charset (CT ct, char **file) {
 		       "%(kilo(size))B %<(unseen)\\(suppressed\\)%> ]"
 
 static struct format *
-compile_marker(char *markerform)
+compile_header(char *form)
+{
+    struct format *fmt;
+    char *fmtstring;
+    struct comp *comp = NULL;
+    unsigned int bucket;
+
+    fmtstring = new_fs(form, NULL, DEFAULT_HEADER);
+
+    (void) fmt_compile(fmtstring, &fmt, 1);
+    free_fs();
+
+    while ((comp = fmt_nextcomp(comp, &bucket)) != NULL) {
+	if (strcasecmp(comp->c_name, "folder") == 0) {
+	    folder_comp = comp;
+	}
+    }
+
+    return fmt;
+}
+
+static struct format *
+compile_marker(char *form)
 {
     struct format *fmt;
     char *fmtstring;
@@ -1267,10 +1302,10 @@ compile_marker(char *markerform)
     unsigned int bucket;
     struct param_comp_list *pc_entry;
 
-    fmtstring = new_fs(markerform, NULL, DEFAULT_MARKER);
+    fmtstring = new_fs(form, NULL, DEFAULT_MARKER);
 
     (void) fmt_compile(fmtstring, &fmt, 1);
-    free(fmtstring);
+    free_fs();
 
     /*
      * Things we care about:
@@ -1317,12 +1352,49 @@ compile_marker(char *markerform)
  */
 
 static void
+output_header(CT ct, struct format *fmt)
+{
+    charstring_t outbuf = charstring_create (BUFSIZ);
+    int dat[5];
+    char *endp;
+    int message = 0;
+
+    dat[0] = dat[1] = dat[2] = dat[3] = dat[4] = dat[5] = 0;
+
+    if (folder_comp)
+	folder_comp->c_text = getcpy(folder);
+
+    if (ct->c_file && *ct->c_file) {
+	message = strtol(ct->c_file, &endp, 10);
+	if (*endp) message = 0;
+	dat[0] = message;
+    }
+
+    /* it would be nice to populate dat[2], for %(size) here,
+     * but it's not available.  it might also be nice to know
+     * if the message originally had any mime parts or not -- but
+     * there's also no record of that.  (except for MIME-version:)
+     */
+
+    fmt_scan(fmt, outbuf, BUFSIZ, dat, NULL);
+
+    fputs(charstring_buffer (outbuf), stdout);
+    charstring_free (outbuf);
+
+    fmt_freecomptext();
+}
+
+static void
 output_marker(CT ct, struct format *fmt, int hidden)
 {
     charstring_t outbuf = charstring_create (BUFSIZ);
     struct param_comp_list *pcentry;
     int partsize;
+    int message = 0;
+    char *endp;
     int dat[5];
+
+    dat[0] = dat[1] = dat[2] = dat[3] = dat[4] = dat[5] = 0;
 
     /*
      * Grab any items we care about.
@@ -1360,13 +1432,18 @@ output_marker(CT ct, struct format *fmt, int hidden)
     else
 	partsize = ct->c_end - ct->c_begin;
 
+    if (ct->c_file && *ct->c_file) {
+	message = strtol(ct->c_file, &endp, 10);
+	if (*endp) message = 0;
+	dat[0] = message;
+    }
+    dat[2] = partsize;
+
     /* make the part's hidden aspect available by overloading the
      * %(unseen) function.  make the part's size available via %(size).
      * see comments in h/fmt_scan.h.
      */
-    dat[2] = partsize;
     dat[4] = hidden;
-    dat[0] = dat[1] = dat[3] = 0;
 
     fmt_scan(fmt, outbuf, BUFSIZ, dat, NULL);
 
@@ -1385,6 +1462,7 @@ free_markercomps(void)
 {
     struct param_comp_list *pc_entry, *pc2;
 
+    folder_comp = NULL;
     part_comp = NULL;
     ctype_comp = NULL;
     description_comp = NULL;
