@@ -306,7 +306,7 @@ AS_IF([test x"$DISABLE_SETGID_MAIL" != x -a x"$DISABLE_SETGID_MAIL" != x0],
 
 dnl If mailspool is not world-writable and dotlockfile is not setgid,
 dnl we need to #define MAILGROUP to 1 and make inc setgid.
-if test x"$LOCKTYPE" = x"dot" -a x"$nmh_cv_mailspool_world_writable" = x"no" -a x"$nmh_cv_dotlockfile_setgid" != x"yes" ; then
+if test x"$with_locking" = x"dot" -a x"$nmh_cv_mailspool_world_writable" = x"no" -a x"$nmh_cv_dotlockfile_setgid" != x"yes" ; then
   dnl do we really need both of these?
   AC_DEFINE([MAILGROUP],[1],
     [Define to 1 if you need to make `inc' set-group-id because your mail spool is not world writable. There are no guarantees as to the safety of doing this, but this #define will add some extra security checks.])dnl
