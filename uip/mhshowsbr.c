@@ -1355,11 +1355,9 @@ static void
 output_header(CT ct, struct format *fmt)
 {
     charstring_t outbuf = charstring_create (BUFSIZ);
-    int dat[5];
+    int dat[5] = { 0 };
     char *endp;
     int message = 0;
-
-    dat[0] = dat[1] = dat[2] = dat[3] = dat[4] = dat[5] = 0;
 
     if (folder_comp)
 	folder_comp->c_text = getcpy(folder);
@@ -1392,9 +1390,7 @@ output_marker(CT ct, struct format *fmt, int hidden)
     int partsize;
     int message = 0;
     char *endp;
-    int dat[5];
-
-    dat[0] = dat[1] = dat[2] = dat[3] = dat[4] = dat[5] = 0;
+    int dat[5] = { 0 };
 
     /*
      * Grab any items we care about.
