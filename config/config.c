@@ -243,13 +243,6 @@ char *moreproc = NULL;
 char *mhlproc = nmhlibexecdir (/mhl);
 
 /* 
- * This is the super handy BBoard reading program, which is
- * really just the nmh shell program.
- */
-
-char *mshproc = nmhbindir (/msh);
-
-/* 
  * This program is called to pack a folder.  
  */
 
@@ -298,13 +291,6 @@ char *showmimeproc = nmhbindir (/mhshow);
  */
 
 char *showproc = nmhlibexecdir (/mhl);
-
-/* 
- * This program is called by vmh as the back-end to the window management
- * protocol
- */
-
-char *vmhproc = nmhbindir (/msh);
 
 /* 
  * This program is called after comp, et. al., have built a draft
