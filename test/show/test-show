@@ -19,7 +19,7 @@ cat > $msgfile <<EOF
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="NextPart_001"
 Content-class: urn:content-classes:message
-Date: Thu, 19 May 2011 00:00:00 -0000
+Date: Thu, 19 May 2011 00:00:00 +0000
 From: sender@example.com
 To: recipient@example.com
 
@@ -78,7 +78,7 @@ check "$expected" "$actual" : show two non-mime
 
 cat > $expected <<EOF
 [ Message inbox:$msgnum ]
-Date:    Thu, 19 May 2011 00:00:00 -0000
+Date:    Thu, 19 May 2011 00:00:00 +0000
 To:      recipient@example.com
 From:    sender@example.com
 
@@ -107,7 +107,7 @@ Subject: Testing message 1
 [ part  - text/plain -   25B  ]
 This is message number 1
 [ Message inbox:11 ]
-Date:    Thu, 19 May 2011 00:00:00 -0000
+Date:    Thu, 19 May 2011 00:00:00 +0000
 To:      recipient@example.com
 From:    sender@example.com
 
