@@ -292,7 +292,16 @@ mhbuild: -nocontentid
 mhlproc: ${MH_LIBEXEC_DIR}/mhl
 moreproc: cat
 postproc: ${MH_LIBEXEC_DIR}/post
+showmimeproc: ${MH_INST_DIR}${bindir}/mhshow
 showproc: ${MH_LIBEXEC_DIR}/mhl
+#: The following aren't currently used by the test suite, but are
+#: defined here in case they are in the future:
+mailproc: ${MH_INST_DIR}${bindir}/mhmail
+rcvstoreproc: ${MH_LIBEXEC_DIR}/rcvstore
+sendproc: ${MH_INST_DIR}${bindir}/send
+whatnowproc: ${MH_INST_DIR}${bindir}/whatnow
+whomproc: ${MH_INST_DIR}${bindir}/whom
+#: incproc and packproc are defined in config.c but not used by any code.
 EOF
 
   if test -z '@nmhetcdirinst@'; then
