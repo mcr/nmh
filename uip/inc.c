@@ -137,7 +137,7 @@ static gid_t return_gid;
 #define TRYDROPGROUPPRIVS() DROPGROUPPRIVS()
 #define DROPGROUPPRIVS() \
     if (setegid(getgid()) != 0) { \
-        adios ("setegid", "unable to set group to %ld", (long) getgid()); \
+        adios ("setegid", "unable to restore group to %ld", (long) getgid()); \
     }
 #define GETGROUPPRIVS() \
     if (setegid(return_gid) != 0) { \
@@ -959,6 +959,7 @@ skip:
 static void
 inc_done (int status)
 {
+    done = exit;
     if (packfile && pd != NOTOK)
 	mbx_close (packfile, pd);
     if (locked)
