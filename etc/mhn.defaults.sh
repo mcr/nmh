@@ -279,7 +279,7 @@ expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
     else
         PGM=`$SEARCHPROG "$SEARCHPATH" elinks`
         if [ ! -z "$PGM" ]; then
-            echo "mhshow-show-text/html: $PGM -dump -force-html \
+            echo "mhshow-show-text/html: %l$PGM -dump -force-html \
 -eval 'set document.browse.margin_width = 0' %F" >> $TMP
             echo "mhfixmsg-format-text/html: $PGM -dump -force-html \
 -no-numbering -eval 'set document.browse.margin_width = 0' %F" >> $TMP
