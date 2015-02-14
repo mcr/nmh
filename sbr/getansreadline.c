@@ -8,7 +8,6 @@
  */
 
 #include <h/mh.h>
-#include <h/signals.h>
 
 #ifdef READLINE_SUPPORT
 #include <readline/readline.h>
