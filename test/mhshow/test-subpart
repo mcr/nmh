@@ -75,7 +75,7 @@ Content-type: multipart/alternative;
  boundary="BoundaryAlternative1"
 
 --BoundaryAlternative1
-Content-type: text/plain; charset=ISO-8859-1; format=flowed
+Content-type: text/plain; charset=US-ASCII; format=flowed
 Content-transfer-encoding: 8bit
 
 This is the body text/plain part.
@@ -115,7 +115,9 @@ This is the text/html body part.
 EOF
 
 # check it
-run_prog mhshow -part 1.1.1 -form mhl.null $msgnum > $actual 2>&1
+# The sed command removes blank lines and leading space that lynx inserts.
+run_prog mhshow -part 1.1.1 -form mhl.null $msgnum |
+    sed '/^$/D; s/^ *//;' > $actual 2>&1
 check "$expected" "$actual" : part 1.1.1
 
 # Write the expected output.
