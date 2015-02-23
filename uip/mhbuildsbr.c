@@ -47,6 +47,13 @@ struct attach_list {
     struct attach_list *next;
 };
 
+typedef struct convert_list {
+    char *type;
+    char *filename;
+    char *argstring;
+    struct convert_list *next;
+} convert_list;
+
 /*
  * Maximum size of URL token in message/external-body
  */
@@ -61,6 +68,8 @@ void content_error (char *, CT, char *, ...);
 int find_cache (CT, int, int *, char *, char *, int);
 
 /* mhfree.c */
+extern CT *cts;
+void freects_done (int) NORETURN;
 void free_ctinfo (CT);
 void free_encoding (CT, int);
 
@@ -69,6 +78,12 @@ void free_encoding (CT, int);
  */
 static int init_decoded_content (CT, const char *);
 static void setup_attach_content(CT, char *);
+static void set_disposition (CT);
+static void set_charset (CT, int);
+static void expand_pseudoheaders (CT, struct multipart *, const char *,
+                                  const convert_list *);
+static void expand_pseudoheader (CT, CT *, struct multipart *, const char *,
+                                 const char *, const char *);
 static char *fgetstr (char *, int, FILE *);
 static int user_content (FILE *, char *, CT *, const char *infilename);
 static void set_id (CT, int);
@@ -76,6 +91,7 @@ static int compose_content (CT, int);
 static int scan_content (CT, size_t);
 static int build_headers (CT, int);
 static char *calculate_digest (CT, int);
+static int extract_headers (CT, char *, FILE **);
 
 
 static unsigned char directives_stack[32];
@@ -132,6 +148,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
     HF hp;
     m_getfld_state_t gstate = 0;
     struct attach_list *attach_head = NULL, *attach_tail = NULL, *at_entry;
+    convert_list *convert_head = NULL, *convert_tail = NULL, *convert;
 
     directive_init(directives);
 
@@ -238,6 +255,86 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 		} else {
 		    attach_head = attach_tail = entry;
 		}
+	    } else if (strncasecmp(MHBUILD_FILE_PSEUDOHEADER, np,
+                                   strlen (MHBUILD_FILE_PSEUDOHEADER)) == 0) {
+                /* E.g.,
+                 * Nmh-mhbuild-file-text/calendar: /home/user/Mail/inbox/9
+                 */
+                char *type = np + strlen (MHBUILD_FILE_PSEUDOHEADER);
+                char *filename = vp;
+
+                /* vp should begin with a space because m_getfld()
+                   includes the space after the colon in buf. */
+                while (isspace((unsigned char) *filename)) { ++filename; }
+                /* Trim trailing newline and any other whitespace. */
+                rtrim (filename);
+
+                for (convert = convert_head; convert; convert = convert->next) {
+                    if (strcasecmp (convert->type, type) == 0) { break; }
+                }
+                if (convert) {
+                    if (convert->filename  &&
+                        strcasecmp (convert->filename, filename)) {
+                        adios (NULL, "Multiple %s headers with different files"
+                               " not allowed", type);
+                    } else {
+                        convert->filename = getcpy (filename);
+                    }
+                } else {
+                    convert = mh_xcalloc (sizeof *convert, 1);
+                    convert->filename = getcpy (filename);
+                    convert->type = getcpy (type);
+
+                    if (convert_tail) {
+                        convert_tail->next = convert;
+                    } else {
+                        convert_head = convert;
+                    }
+                    convert_tail = convert;
+                }
+
+                free (vp);
+                free (np);
+            } else if (strncasecmp(MHBUILD_ARGS_PSEUDOHEADER, np,
+                                   strlen (MHBUILD_ARGS_PSEUDOHEADER)) == 0) {
+                /* E.g.,
+                 * Nmh-mhbuild-args-text/calendar: -reply accept
+                 */
+                char *type = np + strlen (MHBUILD_ARGS_PSEUDOHEADER);
+                char *argstring = vp;
+
+                /* vp should begin with a space because m_getfld()
+                   includes the space after the colon in buf. */
+                while (isspace((unsigned char) *argstring)) { ++argstring; }
+                /* Trim trailing newline and any other whitespace. */
+                rtrim (argstring);
+
+                for (convert = convert_head; convert; convert = convert->next) {
+                    if (strcasecmp (convert->type, type) == 0) { break; }
+                }
+                if (convert) {
+                    if (convert->argstring  &&
+                        strcasecmp (convert->argstring, argstring)) {
+                        adios (NULL, "Multiple %s headers with different "
+                               "argstrings not allowed", type);
+                    } else {
+                        convert->argstring = getcpy (argstring);
+                    }
+                } else {
+                    convert = mh_xcalloc (sizeof *convert, 1);
+                    convert->type = getcpy (type);
+                    convert->argstring = getcpy (argstring);
+
+                    if (convert_tail) {
+                        convert_tail->next = convert;
+                    } else {
+                        convert_head = convert;
+                    }
+                    convert_tail = convert;
+                }
+
+                free (vp);
+                free (np);
 	    } else {
 		add_header (ct, np, vp);
 	    }
@@ -358,6 +455,40 @@ finish_field:
 	at_entry = at_entry->next;
 	free(at_prev->filename);
 	free(at_prev);
+    }
+
+    /*
+     * Handle the mhbuild pseudoheaders, which deal with specific
+     * content types.
+     */
+    if (convert_head) {
+        CT *ctp;
+        convert_list *next;
+
+        done = freects_done;
+
+        /* In case there are multiple calls that land here, prevent leak. */
+        for (ctp = cts; ctp && *ctp; ++ctp) { free_content (*ctp); }
+        free (cts);
+
+        /* Extract the type part (as a CT) from filename. */
+        if (! (cts = (CT *) mh_xcalloc ((size_t) 2, sizeof *cts))) {
+            adios (NULL, "out of memory");
+        } else if (! (cts[0] = parse_mime (convert_head->filename))) {
+            adios (NULL, "failed to parse %s", convert_head->filename);
+        }
+
+        expand_pseudoheaders (cts[0], m, infile, convert_head);
+
+        /* Free the convert list. */
+        for (convert = convert_head; convert; convert = next) {
+            next = convert->next;
+            free (convert->type);
+            free (convert->filename);
+            free (convert->argstring);
+            free (convert);
+        }
+        convert_head = NULL;
     }
 
     /*
@@ -1470,24 +1601,7 @@ scan_content (CT ct, size_t maxunencoded)
      * If the content is text and didn't specify a character set,
      * we need to figure out which one was used.
      */
-
-    if (ct->c_type == CT_TEXT) {
-	t = (struct text *) ct->c_ctparams;
-	if (t->tx_charset == CHARSET_UNSPECIFIED) {
-	    CI ci = &ct->c_ctinfo;
-	    char *eightbitcharset = write_charset_8bit();
-
-	    if (contains8bit && strcasecmp(eightbitcharset, "US-ASCII") == 0) {
-		adios(NULL, "Text content contains 8 bit characters, but "
-		      "character set is US-ASCII");
-	    }
-
-	    add_param(&ci->ci_first_pm, &ci->ci_last_pm, "charset",
-			contains8bit ? eightbitcharset : "us-ascii", 0);
-
-	    t->tx_charset = CHARSET_SPECIFIED;
-	}
-    }
+    set_charset (ct, contains8bit);
 
     /*
      * Decide which transfer encoding to use.
@@ -1865,7 +1979,6 @@ setup_attach_content(CT ct, char *filename)
     char *type, *simplename = r1bindex(filename, '/');
     struct str2init *s2i;
     PM pm;
-    char *cp;
 
     if (! (type = mime_type(filename))) {
 	adios(NULL, "Unable to determine MIME type of \"%s\"", filename);
@@ -1938,17 +2051,26 @@ setup_attach_content(CT ct, char *filename)
     ct->c_descr = add("\n", ct->c_descr);
     ct->c_cefile.ce_file = getcpy(filename);
 
-    /*
-     * Look for mhbuild-disposition-<type>/<subtype> entry
-     * that specifies Content-Disposition type.  Only
-     * 'attachment' and 'inline' are allowed.  Default to
-     * 'attachment'.
-     */
+    set_disposition (ct);
 
-    cp = context_find_by_type ("disposition", ct->c_ctinfo.ci_type,
-                               ct->c_ctinfo.ci_subtype);
-    if (cp != NULL) {
-        if (strcasecmp (cp, "attachment")  &&  strcasecmp (cp, "inline")) {
+    add_param(&ct->c_dispo_first, &ct->c_dispo_last, "filename", simplename, 0);
+}
+
+/*
+ * If disposition type hasn't already been set in ct:
+ * Look for mhbuild-disposition-<type>/<subtype> entry
+ * that specifies Content-Disposition type.  Only
+ * 'attachment' and 'inline' are allowed.  Default to
+ * 'attachment'.
+ */
+void
+set_disposition (CT ct) {
+    if (ct->c_dispo_type == NULL) {
+        char *cp = context_find_by_type ("disposition", ct->c_ctinfo.ci_type,
+                                         ct->c_ctinfo.ci_subtype);
+
+        if (cp  &&  strcasecmp (cp, "attachment")  &&
+            strcasecmp (cp, "inline")) {
             admonish (NULL, "configuration problem: %s-disposition-%s%s%s "
                       "specifies '%s' but only 'attachment' and 'inline' are "
                       "allowed", invo_name,
@@ -1957,13 +2079,396 @@ setup_attach_content(CT ct, char *filename)
                       ct->c_ctinfo.ci_subtype ? ct->c_ctinfo.ci_subtype : "",
                       cp);
         }
+
+        ct->c_dispo_type = cp  ?  getcpy (cp)  :  getcpy ("attachment");
+    }
+}
+
+/*
+ * Set text content charset if it was unspecified.  contains8bit
+ * selctions:
+ * 0: content does not contain 8-bit characters
+ * 1: content contains 8-bit characters
+ * -1: ignore content and use user's locale to determine charset
+ */
+void
+set_charset (CT ct, int contains8bit) {
+    if (ct->c_type == CT_TEXT) {
+        struct text *t;
+
+        if (ct->c_ctparams == NULL) {
+            if ((t = ct->c_ctparams =
+                 (struct text *) mh_xcalloc (1, sizeof (struct text))) ==
+                NULL) {
+                adios (NULL, "out of memory");
+            }
+            t->tx_charset = CHARSET_UNSPECIFIED;
+        } else {
+            t = (struct text *) ct->c_ctparams;
+        }
+
+        if (t->tx_charset == CHARSET_UNSPECIFIED) {
+            CI ci = &ct->c_ctinfo;
+            char *eightbitcharset = write_charset_8bit();
+            char *charset = contains8bit ? eightbitcharset : "us-ascii";
+
+            if (contains8bit == 1  &&
+                strcasecmp (eightbitcharset, "US-ASCII") == 0) {
+                adios (NULL, "Text content contains 8 bit characters, but "
+                       "character set is US-ASCII");
+            }
+
+            add_param (&ci->ci_first_pm, &ci->ci_last_pm, "charset", charset,
+                       0);
+
+            t->tx_charset = CHARSET_SPECIFIED;
+        }
+    }
+}
+
+
+/*
+ * Look at all of the replied-to message parts and expand any that
+ * are matched by a pseudoheader.  Except don't descend into
+ * message parts.
+ */
+void
+expand_pseudoheaders (CT ct, struct multipart *m, const char *infile,
+                      const convert_list *convert_head) {
+    /* text_plain_ct is used to concatenate all of the text/plain
+       replies into one part, instead of having each one in a separate
+       part. */
+    CT text_plain_ct = NULL;
+
+    switch (ct->c_type) {
+    case CT_MULTIPART: {
+        struct multipart *mp = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        if (ct->c_subtype == MULTI_ALTERNATE) {
+            int matched = 0;
+
+            /* The parts are in descending priority order (defined by
+               RFC 2046 Sec. 5.1.4) because they were reversed by
+               parse_mime ().  So, stop looking for matches with
+               immediate subparts after the first match of an
+               alternative. */
+            for (part = mp->mp_parts; ! matched && part; part = part->mp_next) {
+                char *type_subtype =
+                    concat (part->mp_part->c_ctinfo.ci_type, "/",
+                            part->mp_part->c_ctinfo.ci_subtype, NULL);
+
+                if (part->mp_part->c_type == CT_MULTIPART) {
+                    expand_pseudoheaders (part->mp_part, m, infile,
+                                          convert_head);
+                } else {
+                    const convert_list *c;
+
+                    for (c = convert_head; c; c = c->next) {
+                        if (! strcasecmp (type_subtype, c->type)) {
+                            expand_pseudoheader (part->mp_part, &text_plain_ct,
+                                                 m, infile,
+                                                 c->type, c->argstring);
+                            matched = 1;
+                            break;
+                        }
+                    }
+                }
+                free (type_subtype);
+            }
+        } else {
+            for (part = mp->mp_parts; part; part = part->mp_next) {
+                expand_pseudoheaders (part->mp_part, m, infile, convert_head);
+            }
+        }
+        break;
     }
 
-    if (cp) {
-	ct->c_dispo_type = getcpy(cp);
+    default: {
+        char *type_subtype =
+            concat (ct->c_ctinfo.ci_type, "/", ct->c_ctinfo.ci_subtype,
+                    NULL);
+        const convert_list *c;
+
+        for (c = convert_head; c; c = c->next) {
+            if (! strcasecmp (type_subtype, c->type)) {
+                expand_pseudoheader (ct, &text_plain_ct, m, infile, c->type,
+                                     c->argstring);
+                break;
+            }
+        }
+        free (type_subtype);
+        break;
+    }
+    }
+}
+
+
+/*
+ * Expand a single pseudoheader.  It's for the specified type.
+ */
+void
+expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
+                     const char *infile, const char *type,
+                     const char *argstring) {
+    char *reply_file;
+    FILE *reply_fp = NULL;
+    char *convert, *type_p, *subtype_p;
+    char *convert_command;
+    char *charset = NULL;
+    char *cp;
+    struct str2init *s2i;
+    CT reply_ct;
+    struct part *part;
+    int status;
+
+    type_p = getcpy (type);
+    if ((subtype_p = strchr (type_p, '/'))) {
+        *subtype_p++ = '\0';
+        convert = context_find_by_type ("convert", type_p, subtype_p);
     } else {
-	ct->c_dispo_type = getcpy("attachment");
+        free (type_p);
+        type_p = concat ("mhbuild-convert-", type, NULL);
+        convert = context_find (type_p);
+    }
+    free (type_p);
+
+    if (! (convert)) {
+        /* No mhbuild-convert- entry in mhn.defaults or profile
+           for type. */
+        return;
+    }
+    /* reply_file is used to pass the output of the convert. */
+    reply_file = getcpy (m_mktemp2 (NULL, invo_name, NULL, NULL));
+    convert_command =
+        concat (convert, " ", argstring ? argstring : "", " >", reply_file,
+                NULL);
+
+    /* Convert here . . . */
+    ct->c_storeproc = getcpy (convert_command);
+    ct->c_umask = ~m_gmprot ();
+
+    if ((status = show_content_aux (ct, 0, convert_command, NULL, NULL)) !=
+        OK) {
+        admonish (NULL, "store of %s content failed", type);
+    }
+    free (convert_command);
+
+    /* Fill out the the new ct, reply_ct. */
+    reply_ct = (CT) mh_xcalloc (1, sizeof *reply_ct);
+    init_decoded_content (reply_ct, infile);
+
+    if (extract_headers (reply_ct, reply_file, &reply_fp) == NOTOK) {
+        free (reply_file);
+        admonish (NULL,
+                  "failed to extract headers from convert output in %s",
+                  reply_file);
+        return;
     }
 
-    add_param(&ct->c_dispo_first, &ct->c_dispo_last, "filename", simplename, 0);
+    /* This sets reply_ct->c_ctparams, and reply_ct->c_termproc if the
+       charset can't be handled natively. */
+    for (s2i = str2cts; s2i->si_key; s2i++) {
+        if (strcasecmp(reply_ct->c_ctinfo.ci_type, s2i->si_key) == 0) {
+            break;
+        }
+    }
+
+    if ((reply_ct->c_ctinitfnx = s2i->si_init)) {
+        (*reply_ct->c_ctinitfnx)(reply_ct);
+    }
+
+    if ((cp =
+         get_param (reply_ct->c_ctinfo.ci_first_pm, "charset", '?', 1))) {
+        /* The reply Content-Type had the charset. */
+        charset = cp;
+    } else {
+        set_charset (reply_ct, -1);
+        charset = get_param (reply_ct->c_ctinfo.ci_first_pm, "charset", '?', 1);
+        if (reply_ct->c_reqencoding == CE_UNKNOWN) {
+            /* Assume that 8bit is sufficient (for text). */
+            reply_ct->c_reqencoding =
+                strcasecmp (charset, "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
+        }
+    }
+
+    /* Concatenate text/plain parts. */
+    if (reply_ct->c_type == CT_TEXT  &&
+        reply_ct->c_subtype == TEXT_PLAIN) {
+        if (! *text_plain_ct  &&  m->mp_parts  &&  m->mp_parts->mp_part  &&
+            m->mp_parts->mp_part->c_type == CT_TEXT  &&
+            m->mp_parts->mp_part->c_subtype == TEXT_PLAIN) {
+            *text_plain_ct = m->mp_parts->mp_part;
+            /* Make sure that the charset is set in the text/plain
+               part. */
+            set_charset (*text_plain_ct, -1);
+            if ((*text_plain_ct)->c_reqencoding == CE_UNKNOWN) {
+                /* Assume that 8bit is sufficient (for text). */
+                (*text_plain_ct)->c_reqencoding =
+                    strcasecmp (charset, "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
+            }
+        }
+
+        if (*text_plain_ct) {
+            /* Only concatenate if the charsets are identical. */
+            char *text_plain_ct_charset =
+                get_param ((*text_plain_ct)->c_ctinfo.ci_first_pm, "charset",
+                           '?', 1);
+
+            if (strcasecmp (text_plain_ct_charset, charset) == 0) {
+                /* Append this text/plain reply to the first one.
+                   If there's a problem anywhere along the way,
+                   instead attach it is a separate part. */
+                int text_plain_reply =
+                    open ((*text_plain_ct)->c_cefile.ce_file,
+                          O_WRONLY | O_APPEND);
+                int addl_reply = open (reply_file, O_RDONLY);
+
+                if (text_plain_reply != NOTOK  &&  addl_reply != NOTOK) {
+                    /* Insert blank line before each addl part. */
+                    /* It would be nice not to do this for the first one. */
+                    if (write (text_plain_reply, "\n", 1) == 1) {
+                        /* Copy the text from the new reply and
+                           then free its Content struct. */
+                        cpydata (addl_reply, text_plain_reply,
+                                 (*text_plain_ct)->c_cefile.ce_file,
+                                 reply_file);
+                        if (close (text_plain_reply) == OK  &&
+                            close (addl_reply) == OK) {
+                            if (reply_fp) { fclose (reply_fp); }
+                            free (reply_file);
+                            free_content (reply_ct);
+                            return;
+                        }
+                    }
+                }
+            }
+        } else {
+            *text_plain_ct = reply_ct;
+        }
+    }
+
+    reply_ct->c_cefile.ce_file = reply_file;
+    reply_ct->c_cefile.ce_fp = reply_fp;
+    reply_ct->c_cefile.ce_unlink = 1;
+
+    /* Attach the new part to the parent mulitpart/mixed, "m". */
+    part = (struct part *) mh_xcalloc (1, sizeof *part);
+    part->mp_part = reply_ct;
+    if (m->mp_parts) {
+        struct part *p;
+
+        for (p = m->mp_parts; p && p->mp_next; p = p->mp_next) { continue; }
+        p->mp_next = part;
+    } else {
+        m->mp_parts = part;
+    }
+}
+
+
+/* Extract any Content-Type header from beginning of convert output. */
+int
+extract_headers (CT ct, char *reply_file, FILE **reply_fp) {
+    char *buffer = NULL, *cp, *end_of_header;
+    int found_header = 0;
+    struct stat statbuf;
+
+    /* Read the convert reply from the file to memory. */
+    if (stat (reply_file, &statbuf) == NOTOK) {
+        admonish (reply_file, "failed to stat");
+        goto failed_to_extract_ct;
+    }
+
+    buffer = mh_xmalloc (statbuf.st_size + 1);
+
+    if ((*reply_fp = fopen (reply_file, "r+")) == NULL  ||
+        fread (buffer, 1, (size_t) statbuf.st_size, *reply_fp) <
+            (size_t) statbuf.st_size) {
+        admonish (reply_file, "failed to read");
+        goto failed_to_extract_ct;
+    }
+    buffer[statbuf.st_size] = '\0';
+
+    /* Look for a header in the convert reply. */
+    if (strncasecmp (buffer, TYPE_FIELD, strlen (TYPE_FIELD)) == 0  &&
+        buffer[strlen (TYPE_FIELD)] == ':') {
+        if ((end_of_header = strstr (buffer, "\r\n\r\n"))) {
+            end_of_header += 2;
+            found_header = 1;
+        } else if ((end_of_header = strstr (buffer, "\n\n"))) {
+            ++end_of_header;
+            found_header = 1;
+        }
+    }
+
+    if (found_header) {
+        CT tmp_ct;
+        char *tmp_file;
+        FILE *tmp_f;
+        size_t n;
+
+        /* Truncate buffer to just the C-T. */
+        *end_of_header = '\0';
+        n = strlen (buffer);
+
+        if (get_ctinfo (buffer + 14, ct, 0) != OK) {
+            admonish (NULL, "unable to get content info for reply");
+            goto failed_to_extract_ct;
+        }
+
+        /* Hack.  Use parse_mime() to detect the type/subtype of the
+           reply, which we'll use below. */
+        tmp_file = getcpy (m_mktemp2 (NULL, invo_name, NULL, NULL));
+        if ((tmp_f = fopen (tmp_file, "w"))  &&
+            fwrite (buffer, 1, n, tmp_f) == n) {
+            fclose (tmp_f);
+        } else {
+            goto failed_to_extract_ct;
+        }
+        tmp_ct = parse_mime (tmp_file);
+
+        if (tmp_ct) {
+            /* The type and subtype were detected from the reply
+               using parse_mime() above. */
+            ct->c_type = tmp_ct->c_type;
+            ct->c_subtype = tmp_ct->c_subtype;
+            free_content (tmp_ct);
+        }
+
+        free (tmp_file);
+
+        /* Rewrite the content without the header. */
+        cp = end_of_header + 1;
+        rewind (*reply_fp);
+
+        if (fwrite (cp, 1, statbuf.st_size - (cp - buffer), *reply_fp) <
+            (size_t) (statbuf.st_size - (cp - buffer))) {
+            admonish (reply_file, "failed to write");
+            goto failed_to_extract_ct;
+        }
+
+        if (ftruncate (fileno (*reply_fp), statbuf.st_size - (cp - buffer)) !=
+            0) {
+            advise (reply_file, "ftruncate");
+            goto failed_to_extract_ct;
+        }
+    } else {
+        /* No header section, assume the reply is text/plain. */
+        ct->c_type = CT_TEXT;
+        ct->c_subtype = TEXT_PLAIN;
+        if (get_ctinfo ("text/plain", ct, 0) == NOTOK) {
+            /* This never should fail, but just in case. */
+            adios (NULL, "unable to get content info for reply");
+        }
+    }
+
+    /* free_encoding() will close reply_fp, which is passed through
+       ct->c_cefile.ce_fp. */
+    free (buffer);
+    return OK;
+
+failed_to_extract_ct:
+    if (*reply_fp) { fclose (*reply_fp); }
+    free (buffer);
+    return NOTOK;
 }

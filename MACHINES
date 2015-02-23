@@ -22,9 +22,10 @@ the exceptions noted below), using an ANSI C compiler, such as gcc:
 
 On all platforms, the following programs are required to build nmh from a
 snapshot of the source code repository:
-    autoconf
-    automake
-    flex
+    autoconf 2.68 or later
+    automake 1.12 or later
+    flex 2.5.4 or later
+    bison 2.3 or later,  Berkeley yacc 1.9 or later, or Solaris yacc 4.0
 They are not required if building from an nmh distribution (.tar.gz) file.
 
 Platform-specific notes follow.

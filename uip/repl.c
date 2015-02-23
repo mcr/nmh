@@ -8,8 +8,8 @@
  */
 
 #include <h/mh.h>
+#include <h/mime.h>
 #include <h/utils.h>
-
 
 #define REPL_SWITCHES \
     X("group", 0, GROUPSW) \
@@ -23,6 +23,7 @@
     X("nodraftfolder", 0, NDFLDSW) \
     X("editor editor", 0, EDITRSW) \
     X("noedit", 0, NEDITSW) \
+    X("convertargs type argstring", 0, CONVERTARGSW) \
     X("fcc folder", 0, FCCSW) \
     X("filter filterfile", 0, FILTSW) \
     X("form formfile", 0, FORMSW) \
@@ -109,6 +110,7 @@ static char *fcc    = NULL;		/* folders to add to Fcc: header */
  * prototypes
  */
 static void docc (char *, int);
+static void add_convert_header (const char *, char *, char *, char *);
 
 
 int
@@ -123,6 +125,9 @@ main (int argc, char **argv)
     char *folder = NULL, *msg = NULL, *dfolder = NULL;
     char *dmsg = NULL, *ed = NULL, drft[BUFSIZ], buf[BUFSIZ];
     char **argp, **arguments;
+    svector_t convert_types = svector_create (10);
+    svector_t convert_args = svector_create (10);
+    size_t n;
     struct msgs *mp = NULL;
     struct stat st;
     FILE *in;
@@ -186,6 +191,34 @@ main (int argc, char **argv)
 		    nedit++;
 		    continue;
 		    
+		case CONVERTARGSW: {
+                    char *type;
+                    size_t i;
+
+		    if (!(type = *argp++)) {
+			adios (NULL, "missing type argument to %s", argp[-2]);
+                    }
+		    if (!(cp = *argp++)) {
+			adios (NULL, "missing argstring argument to %s",
+			       argp[-3]);
+                    }
+
+                    for (i = 0; i < svector_size (convert_types); ++i) {
+                        if (! strcmp (svector_at (convert_types, i), type)) {
+                            /* Already saw this type, so just update
+                               its args. */
+                            svector_strs (convert_args)[i] = cp;
+                            break;
+                        }
+                    }
+
+                    if (i == svector_size (convert_types)) {
+                        svector_push_back (convert_types, type);
+                        svector_push_back (convert_args, cp);
+                    }
+		    continue;
+                }
+
 		case WHATSW: 
 		    if (!(whatnowproc = *argp++) || *whatnowproc == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -418,10 +451,25 @@ try_it_again:
     	     fcc, fmtproc);
     fclose (in);
 
+    {
+	char *filename = concat (mp->foldpath, "/", msg, NULL);
+
+        for (n = 0; n < svector_size (convert_types); ++n) {
+            add_convert_header (svector_at (convert_types, n),
+                                svector_at (convert_args, n),
+                                filename, drft);
+        }
+	free (filename);
+    }
+
     if (nwhat)
 	done (0);
     what_now (ed, nedit, NOUSE, drft, msg, 0, mp, anot ? "Replied" : NULL,
 	    inplace, cwd, atfile);
+
+    svector_free (convert_args);
+    svector_free (convert_types);
+
     done (1);
     return 1;
 }
@@ -452,4 +500,26 @@ docc (char *cp, int ccflag)
 	    ccto = cccc = ccme = ccflag;
 	    break;
     }
+}
+
+/*
+ * Add pseudoheaders that will pass the convert arguments to
+ * mhbuild.  They have the form:
+ *   MHBUILD_FILE_PSEUDOHEADER-text/calendar: /home/user/Mail/inbox/7
+ *   MHBUILD_ARGS_PSEUDOHEADER-text/calendar: reply -accept
+ * The ARGS pseudoheader is optional, but we always add it when
+ * -convertargs is used.
+ */
+void
+add_convert_header (const char *convert_type, char *convert_arg,
+                    char *filename, char *drft) {
+    char *field_name;
+
+    field_name = concat (MHBUILD_FILE_PSEUDOHEADER, convert_type, NULL);
+    annotate (drft, field_name, filename, 1, 0, -2, 1);
+    free (field_name);
+
+    field_name = concat (MHBUILD_ARGS_PSEUDOHEADER, convert_type, NULL);
+    annotate (drft, field_name, convert_arg, 1, 0, -2, 1);
+    free (field_name);
 }

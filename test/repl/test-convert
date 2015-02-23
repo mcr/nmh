@@ -1,0 +1,279 @@
+#!/bin/sh
+######################################################
+#
+# Test repl -convertarg
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname $0`/../..
+    MH_OBJ_DIR=`cd $srcdir && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+expected="$MH_TEST_DIR/test-convert$$.expected"
+actual=`mhpath +`/draft
+
+printf 'Local-Mailbox: recipient@example.com' >>"$MH"
+
+
+#### Make sure that this works with 7-bit encoding.
+LC_ALL=C; export LC_ALL
+
+
+# check -convertarg with multiple parts and additional text in draft
+cat >"$expected" <<'EOF'
+From: recipient@example.com
+To: sender@example.com
+cc: 
+Fcc: +outbox
+Subject: Re: test
+Comments: In-reply-to sender@example.com
+   message dated "Thu, 11 Dec 2014 08:19:02 -0600."
+MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+
+> This is part 1.
+
+> This is part 2.
+EOF
+
+cat >`mhpath new` <<'EOF'
+From: sender@example.com
+To: recipient@example.com
+Subject: test
+Date: Thu, 11 Dec 2014 08:19:02 -0600
+Content-Type: multipart/mixed; boundary="_001_"
+MIME-Version: 1.0
+
+--_001_
+Content-Type: text/plain
+
+This is part 1.
+
+--_001_
+Content-Type: text/plain
+
+This is part 2.
+
+--_001_
+Content-Type: text/enriched
+
+This should not appear in the reply
+because the content type isn't matched.
+
+--_001_--
+EOF
+
+repl -noformat -convertarg text/plain '' -nowhatnowproc last
+mhbuild "$actual"
+check "$actual" "$expected"
+
+
+#### Make sure that this works with 8-bit encoding.
+require_locale en_US.utf-8 en_US.utf8
+LC_ALL=en_US.UTF-8; export LC_ALL
+
+
+# check -convertarg with multiple parts and no additional text in draft
+cat >"$expected" <<'EOF'
+From: recipient@example.com
+To: sender@example.com
+cc: 
+Fcc: +outbox
+Subject: Re: test
+Comments: In-reply-to sender@example.com
+   message dated "Thu, 11 Dec 2014 08:19:02 -0600."
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+sender@example.com writes:
+
+> This is part 1.
+
+> This is part 2.
+EOF
+
+cat >`mhpath new` <<'EOF'
+From: sender@example.com
+To: recipient@example.com
+Subject: test
+Date: Thu, 11 Dec 2014 08:19:02 -0600
+Content-Type: multipart/mixed; boundary="_001_"
+MIME-Version: 1.0
+
+--_001_
+Content-Type: text/plain
+
+This is part 1.
+
+--_001_
+Content-Type: text/plain
+
+This is part 2.
+
+--_001_--
+EOF
+
+repl -filter mhl.replywithoutbody -convertarg text/plain '' -nowhatnowproc last
+mhbuild "$actual"
+check "$actual" "$expected"
+
+
+# check message with text part in multipart/related
+cat >"$expected" <<'EOF'
+From: recipient@example.com
+To: sender@example.com
+cc: 
+Fcc: +outbox
+Subject: Re: test with text part in multipart/related
+Comments: In-reply-to sender@example.com
+   message dated "."
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+sender@example.com writes:
+
+> This is a test.
+EOF
+
+cat >`mhpath new` <<'EOF'
+From: sender@example.com
+To: recipient@example.com
+Subject: test with text part in multipart/related
+Content-Type: multipart/alternative; boundary="_001_"
+MIME-Version: 1.0
+
+--_001_
+Content-Type: multipart/related; type="text/plain"; boundary="_002_"
+
+--_002_
+Content-Type: text/plain
+
+This is a test.
+
+--_002_--
+
+--_001_--
+EOF
+
+repl -filter mhl.replywithoutbody -convertarg text/plain '' -nowhatnowproc last
+mhbuild "$actual"
+check "$actual" "$expected"
+
+
+# check reply to calendar request
+cat >"$expected" <<'EOF'
+From: recipient@example.com
+To: sender@example.com
+cc: 
+Fcc: +outbox
+Subject: Re: test iCalendar reply
+Comments: In-reply-to sender@example.com
+   message dated "."
+MIME-Version: 1.0
+Content-Type: text/calendar; method="REPLY"; charset="UTF-8"
+
+BEGIN:VCALENDAR
+METHOD:REPLY
+PRODID:nmh mhical v0.1
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Eastern Standard Time
+BEGIN:STANDARD
+DTSTART:16010101T020000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=1SU;BYMONTH=11
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010101T020000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=2SU;BYMONTH=3
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+ORGANIZER;CN=Requester:MAILTO:requester@example.com
+ATTENDEE;PARTSTAT=ACCEPTED;CN=Recip:MAILTO:recipient@example.com
+SUMMARY;LANGUAGE=en-US:Accepted: test request
+DTSTART;TZID=Eastern Standard Time:20150105T090000
+DTEND;TZID=Eastern Standard Time:20150105T093000
+UID:0123456789
+CLASS:PUBLIC
+PRIORITY:5
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:0
+LOCATION;LANGUAGE=en-US:
+END:VEVENT
+END:VCALENDAR
+EOF
+
+cat >`mhpath new` <<'EOF'
+From: sender@example.com
+To: recipient@example.com
+Subject: test iCalendar reply
+Content-Type: text/calendar; charset="UTF-8"
+MIME-Version: 1.0
+
+BEGIN:VCALENDAR
+METHOD:REQUEST
+PRODID:test-convert
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Eastern Standard Time
+BEGIN:STANDARD
+DTSTART:16010101T020000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=1SU;BYMONTH=11
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010101T020000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=2SU;BYMONTH=3
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+ORGANIZER;CN=Requester:MAILTO:requester@example.com
+ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=Requestee1
+ :MAILTO:requestee1@example.com
+ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=Requestee2
+ :MAILTO:requestee2@example.com
+ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=Requestee3
+ :MAILTO:requestee3@example.com
+SUMMARY;LANGUAGE=en-US:test request
+DTSTART;TZID=Eastern Standard Time:20150105T090000
+DTEND;TZID=Eastern Standard Time:20150105T093000
+UID:0123456789
+CLASS:PUBLIC
+PRIORITY:5
+DTSTAMP:20150101T171600Z
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:0
+LOCATION;LANGUAGE=en-US:
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:REMINDER
+TRIGGER;RELATED=START:-PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR
+EOF
+
+actual="$MH_TEST_DIR/test-convert$$.actual"
+repl -noformat \
+     -convertargs text/calendar '-reply accept -contenttype' -nowhatnowproc last
+SIGNATURE=Recip mhbuild - <`mhpath +`/draft | egrep -v '^DTSTAMP:' >"$actual"
+check "$actual" "$expected"
+
+
+exit $failed

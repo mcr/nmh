@@ -29,6 +29,11 @@ NEW FEATURES
   to mhfixmsg(1).
 - mhfixmsg now removes an extraneous trailing semicolon from header
   parameter lists.
+- Added -convertargs switch to repl(1), to pass arguments to programs
+  specified in the user's profile or mhn.defaults to convert message
+  content.
+- Added mhical(1), to display, reply to, and cancel iCalendar (RFC 5545)
+  event requests.
 - added multiply format function
 - "mhparam bindir" prints the path to the directory containing the public
   executables (${bindir}).

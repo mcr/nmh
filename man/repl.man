@@ -1,4 +1,4 @@
-.TH REPL %manext1% "December 13, 2014" "%nmhversion%"
+.TH REPL %manext1% "December 14, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -36,6 +36,8 @@ all/to/cc/me]
 .RB [ \-editor
 .IR editor ]
 .RB [ \-noedit ]
+.RB [ \-convertargs
+.IR "type argstring" ]
 .RB [ \-whatnowproc
 .IR program ]
 .RB [ \-nowhatnowproc ]
@@ -233,6 +235,25 @@ The creation of the \*(lq@\*(rq file is controlled via the
 and
 .B \-noatfile
 options.
+.PP
+The
+.B \-convertargs
+switch directs
+.B repl
+to pass the arguments for
+.I type
+to
+.BR mhbuild .
+Both arguments are required;
+.I type
+must be non-empty while
+.I argstring
+can be empty, e.g., '' in a shell command line.  The
+.B \-convertargs
+switch can be used multiple times.
+.I %docdir%/contrib/replaliases
+shows the use of
+.BR "repl \-convertargs" .
 .PP
 Although
 .B repl
@@ -516,6 +537,8 @@ is checked.
 .IR send (1),
 .IR whatnow (1),
 .IR mh\-format (5)
+.PP
+.I %docdir%/contrib/replaliases
 .SH DEFAULTS
 .nf
 .RB ` +folder "' defaults to the current folder"

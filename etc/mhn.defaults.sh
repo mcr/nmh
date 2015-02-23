@@ -25,8 +25,24 @@ fi
 TMP=/tmp/nmh_temp.$$
 trap "rm -f $TMP" 0 1 2 3 13 15
 
+if [ ! -z `$SEARCHPROG "$SEARCHPATH" par` ]; then
+    #### The widths here correspond to those for the text browsers below.
+    textfmt=' | par 64'
+    replfmt=" | sed 's/^\(.\)/> \1/; s/^$/>/;' | par 64"
+elif [ ! -z `$SEARCHPROG "$SEARCHPATH" fmt` ]; then
+    textfmt=' | fmt'
+    replfmt=" | fmt | sed 's/^\(.\)/> \1/; s/^$/>/;'"
+else
+    textfmt=
+    replfmt=
+fi
+[ ! -z `$SEARCHPROG "$SEARCHPATH" iconv` ]  &&
+    charsetconv=' | iconv -f ${charset:-us-ascii} -t utf-8'"${textfmt}"  ||
+    charsetconv=
+
 cat >>"$TMP" <<'EOF'
 mhstore-store-text: %m%P.txt
+mhstore-store-text/calendar: %m%P.ics
 mhstore-store-text/html: %m%P.html
 mhstore-store-text/richtext: %m%P.rt
 mhstore-store-video/mpeg: %m%P.mpg
@@ -111,9 +127,11 @@ fi
 #### mhbuild-disposition-<type>[/<subtype>] entries are used by the
 #### WhatNow attach for deciding whether the Content-Disposition
 #### should be 'attachment' or 'inline'.  Only those values are
-#### supported.
+#### supported.  mhbuild-convert-text/html is defined below.
 ####
 cat <<EOF >>${TMP}
+mhbuild-convert-text/calendar: mhical -infile %F -contenttype
+mhbuild-convert-text: charset=%{charset}; iconv -f \${charset:-us-ascii} -t utf-8 %F${replfmt}
 mhbuild-disposition-text/calendar: inline
 mhbuild-disposition-message/rfc822: inline
 EOF
@@ -162,6 +180,9 @@ else
 	fi
     fi
 fi
+
+echo "mhshow-show-text/calendar: mhical -infile %F" >> $TMP
+echo "mhfixmsg-format-text/calendar: mhical %F" >> $TMP
 
 PGM=`$SEARCHPROG "$SEARCHPATH" ivs_replay`
 if [ ! -z "$PGM" ]; then
@@ -267,6 +288,9 @@ if [ ! -z "$PGM" ]; then
 %l$PGM"' -dump ${charset:+-I "$charset"} -T text/html %F' >> $TMP
     echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
 $PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F' >> $TMP
+    echo 'mhbuild-convert-text/html: charset=%{charset}; '"\
+$PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F '"\
+${replfmt}" >> $TMP
 else
     PGM=`$SEARCHPROG "$SEARCHPATH" lynx`
     if [ ! -z "$PGM" ]; then
@@ -276,6 +300,9 @@ else
         echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
 $PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} %F | '"\
 expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
+        echo 'mhbuild-convert-text/html: charset=%{charset}; '"\
+$PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} '"\
+%F${replfmt}" >> $TMP
     else
         PGM=`$SEARCHPROG "$SEARCHPATH" elinks`
         if [ ! -z "$PGM" ]; then
@@ -283,6 +310,10 @@ expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
 -eval 'set document.browse.margin_width = 0' %F" >> $TMP
             echo "mhfixmsg-format-text/html: $PGM -dump -force-html \
 -no-numbering -eval 'set document.browse.margin_width = 0' %F" >> $TMP
+            echo "mhbuild-convert-text/html: $PGM -dump -force-html \
+-no-numbering -eval 'set document.browse.margin_width = 0' %F${replfmt}" >> $TMP
+        else
+            echo 'mhbuild-convert-text/html: cat %F' >> $TMP
         fi
     fi
 fi
