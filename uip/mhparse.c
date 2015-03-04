@@ -41,6 +41,7 @@ int suppress_bogus_mp_content_warning;
 int bogus_mp_content;
 int suppress_extraneous_trailing_semicolon_warning;
 int extraneous_trailing_semicolon;
+int suppress_multiple_mime_version_warning = 1;
 
 /* list of preferred type/subtype pairs, for -prefer */
 char *preferred_types[NPREFS],
@@ -365,16 +366,12 @@ get_content (FILE *in, char *file, int toplevel)
 	if (!strcasecmp (hp->name, VRSN_FIELD)) {
 	    int ucmp;
 	    char c, *cp, *dp;
+	    char *vrsn;
 
-	    if (ct->c_vrsn) {
-		advise (NULL, "message %s has multiple %s: fields",
-			ct->c_file, VRSN_FIELD);
-		goto next_header;
-	    }
-	    ct->c_vrsn = add (hp->value, NULL);
+	    vrsn = add (hp->value, NULL);
 
 	    /* Now, cleanup this field */
-	    cp = ct->c_vrsn;
+	    cp = vrsn;
 
 	    while (isspace ((unsigned char) *cp))
 		cp++;
@@ -400,6 +397,14 @@ get_content (FILE *in, char *file, int toplevel)
 	    if (!ucmp) {
 		admonish (NULL, "message %s has unknown value for %s: field (%s)",
 		ct->c_file, VRSN_FIELD, cp);
+	    }
+	    if (!ct->c_vrsn) {
+		ct->c_vrsn = vrsn;
+	    } else {
+		if (! suppress_multiple_mime_version_warning)
+		    advise (NULL, "message %s has multiple %s: fields",
+			    ct->c_file, VRSN_FIELD);
+		free(vrsn);
 	    }
 	}
 	else if (!strcasecmp (hp->name, TYPE_FIELD)) {
