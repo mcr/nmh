@@ -292,7 +292,7 @@ else
     post_or_send="$nmhbindir/send"
   fi
 
-  if "$post_or_send" "$tmpfile" $postsendargs; then
+  if "$post_or_send" $postsendargs "$tmpfile"; then
     exit
   else
     status=$?

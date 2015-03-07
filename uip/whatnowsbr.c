@@ -1253,10 +1253,10 @@ whomfile (char **arg, char *file)
 
 	case OK:
 	    vec = argsplit(whomproc, &program, &vecp);
-	    vec[vecp++] = file;
 	    if (arg)
 		while (*arg)
 		    vec[vecp++] = *arg++;
+	    vec[vecp++] = file;
 	    vec[vecp] = NULL;
 
 	    execvp (program, vec);
