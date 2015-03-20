@@ -36,4 +36,4 @@ fi
 
 chmod 755 ${MH_INST_DIR}${bindir}/inc
 
-valgrind --error-exitcode=1 --quiet --suppressions="$MH_OBJ_DIR/test/valgrind.supp" inc -silent -file "$TESTMBOX"
+valgrind --error-exitcode=1 --quiet --suppressions="${srcdir}/test/valgrind.supp" inc -silent -file "$TESTMBOX"
