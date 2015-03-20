@@ -15,3 +15,20 @@
    fun:*sendmsg*
    fun:readline
 }
+
+{
+   Syscall param msgsnd(msgp->mtext) points to uninitialised byte(s) [under fakeroot]
+   Memcheck:Param
+   msgsnd(msgp->mtext)
+   ...
+   obj:*libfakeroot*.so
+}
+
+{
+ Syscall param stat(file_name) points to uninitialised byte(s) [under fakeroot]
+ Memcheck:Param
+ stat(file_name)
+ ...
+ obj:*libfakeroot*.so
+}
+
