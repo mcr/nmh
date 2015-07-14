@@ -107,9 +107,68 @@ L10:	CHAR '\n'
 EOF
 
 run_prog $fmtdump >$actual 2>&1
-check $expected $actual 'keep first'
+check $expected $actual
 
 # check -form
+cat >$expected <<EOF
+	LV_DAT, value dat[0]
+	NUMF, width 4, fill ' '
+	LV_DAT, value dat[1]
+	IF_V_NE 0 continue else goto L0
+	CHAR '+'
+	GOTO L1
+L0:	CHAR ' '
+L1:	LS_COMP, comp "replied"
+	IF_S continue else goto L2
+	CHAR '-'
+	GOTO L3
+L2:	LS_COMP, comp "encrypted"
+	IF_S continue else goto L4
+	CHAR 'E'
+L3:	GOTO L5
+L4:	CHAR ' '
+L5:	PARSEDATE, c_name "date", c_type <DATE>
+	LV_MON, c_name "date", c_type <DATE>
+	NUMF, width 2, fill '0'
+	CHAR '/'
+	PARSEDATE, c_name "date", c_type <DATE>
+	LV_MDAY, c_name "date", c_type <DATE>
+	NUMF, width 2, fill '0'
+	LS_COMP, comp "date", c_type <DATE>
+	IF_S continue else goto L6
+	CHAR ' '
+	GOTO L7
+L6:	CHAR '*'
+L7:	MYMBOX, c_name "from", c_type <ADDR>
+	LV_COMPFLAG, comp "from", c_type <ADDR>
+	IF_V_NE 0 continue else goto L8
+	LS_COMP, comp "to", c_type <ADDR>
+	IF_S continue else goto L8
+	LIT "To:"
+	PARSEADDR, c_name "to", c_type <ADDR>
+	LS_FRIENDLY, c_name "to", c_type <ADDR>
+	FT_LS_DECODE
+	
+	STRF, width 14, fill ' '
+L8:	IF_V_EQ 0 continue else goto L9
+	PARSEADDR, c_name "from", c_type <ADDR>
+	LS_FRIENDLY, c_name "from", c_type <ADDR>
+	FT_LS_DECODE
+	
+	STRF, width 17, fill ' '
+L9:	LIT "  "
+	LS_COMP, comp "subject"
+	FT_LS_DECODE
+	STR
+	LS_COMP, comp "body"
+	IF_S continue else goto L10
+	LIT "<<"
+	COMP, comp "body"
+	LIT ">>"
+L10:	CHAR '\n'
+	DONE
+EOF
+
 run_prog $fmtdump -form "$MH_INST_DIR${nmhetcdir}/scan.default" >$actual 2>&1
 check $expected $actual
 

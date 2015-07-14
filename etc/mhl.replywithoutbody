@@ -2,4 +2,4 @@
 ;
 ; message filter for `repl' (repl -format) that excludes the message body
 ;
-from:nocomponent,formatfield="%(decode(friendly{text})) writes:"
+from:nocomponent,formatfield="%(unquote(decode(friendly{text}))) writes:"
