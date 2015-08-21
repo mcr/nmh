@@ -69,6 +69,7 @@
     X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
+    X("sendmail program", 0, MTSSM) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
 
@@ -256,6 +257,7 @@ main (int argc, char **argv)
 		case SASLMXSSFSW:
 		case USERSW:
 		case PORTSW:
+		case MTSSM:
 		case MTSSW:
 		case MESSAGEIDSW:
 		    vec[vecp++] = --cp;

@@ -32,6 +32,8 @@ send \- send a message
 .RB [ \-watch " | " \-nowatch ]
 .RB [ \-mts
 .IR smtp " | " sendmail/smtp " | " sendmail/pipe ]
+.RB [ \-sendmail
+.IR program ]
 .RB [ \-server
 .IR servername ]
 .RB [ \-port
@@ -366,6 +368,14 @@ The mail transport system default is provided in
 but can be overriiden here with the
 .B \-mts
 switch.
+.PP
+If nmh is using as its mail transport system
+.BR sendmail/pipe ,
+the
+.B \-sendmail
+switch can be used to override the default
+.B sendmail
+program.
 .PP
 If nmh is using the SMTP MTA, the
 .B \-server

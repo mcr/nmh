@@ -41,6 +41,8 @@ NEW FEATURES
   the preferred content types to show, if present in a multipart alternative.
 - mh-format now has %(kilo) and %(kibi) functions, to allow printing
   numbers as, for example, "10K", or "2.3Mi"
+- Support for the -sendmail flag to send/post to change the sendmail
+  binary when using the sendmail/pipe MTS.
 
 -----------------
 OBSOLETE FEATURES

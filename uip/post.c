@@ -87,6 +87,7 @@
     X("notls", TLSminc(-5), NTLSSW) \
     X("fileproc", -4, FILEPROCSW) \
     X("mhlproc", -3, MHLPROCSW) \
+    X("sendmail program", 0, MTSSM) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("credentials legacy|file:filename", 0, CREDENTIALSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
@@ -471,6 +472,12 @@ main (int argc, char **argv)
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    mhlproc = cp;
+		    continue;
+
+		case MTSSM:
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+                    sendmail = cp;
 		    continue;
 
 		case MTSSW:
