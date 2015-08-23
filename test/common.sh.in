@@ -32,6 +32,10 @@ unset LANG LC_ALL LC_CTYPE
 MHTMPDIR=$MH_TEST_DIR/Mail
 export MHTMPDIR
 
+#### If you're reading this .... you can set MH_TEST_NOCLEANUP to prevent
+#### the test suite from cleaning up the results of a test run, if you need
+#### to do manual debugging on a test.
+
 output_md5()
 {
   #### Output just the checksum.  If the filename needs to appear on
@@ -280,7 +284,7 @@ setup_test ()
   export PATH
 
   # clean old test data
-  trap "cd $MH_TEST_DIR; rm -rf '$MH_TEST_DIR/Mail'" 0
+  trap "test -z $MH_TEST_NOCLEANUP && (cd $MH_TEST_DIR; rm -rf '$MH_TEST_DIR/Mail')" 0
   # setup test data
   mkdir -p "$MH_TEST_DIR/Mail" || exit 1
   cat > "$MH" <<EOF || exit 1
