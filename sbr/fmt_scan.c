@@ -696,7 +696,8 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    if (str) {
 		    char *xp;
 
-		    strncpy(buffer, str, sizeof(buffer));
+		    if (str != buffer)
+			strncpy(buffer, str, sizeof(buffer));
 		    buffer[sizeof(buffer)-1] = '\0';
 		    str = buffer;
 		    while (isspace((unsigned char) *str))
@@ -889,7 +890,8 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		goto unfriendly;
 	    if ((str = mn->m_pers) == NULL) {
 	        if ((str = mn->m_note)) {
-	            strncpy (buffer, str, sizeof(buffer));
+		    if (str != buffer)
+			strncpy (buffer, str, sizeof(buffer));
 		    buffer[sizeof(buffer)-1] = '\0';
 	            str = buffer;
 	            if (*str == '(')
@@ -933,7 +935,8 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		/* UNQUOTEs RFC-2822 quoted-string and quoted-pair */
 	case FT_LS_UNQUOTE:
 	    if (str) {	  	
-		strncpy(buffer, str, sizeof(buffer));
+		if (str != buffer)
+		    strncpy(buffer, str, sizeof(buffer));
 		/* strncpy doesn't NUL-terminate if it fills the buffer */
 		buffer[sizeof(buffer)-1] = '\0';
 		unquote_string(buffer, buffer2);
