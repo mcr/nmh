@@ -642,7 +642,7 @@ display (FILE *file, contentline *clines, char *nfs) {
                 } else if (! strcasecmp ("DTSTART", node->name)) {
                     /* Got it:  DTSTART outside of a VTIMEZONE section. */
                     char *datetime = format_datetime (timezones, node);
-                    c->c_text = datetime ? datetime : node->value;
+                    c->c_text = datetime ? datetime : strdup(node->value);
                 }
             }
         }
@@ -651,7 +651,7 @@ display (FILE *file, contentline *clines, char *nfs) {
     if ((c = fmt_findcomp ("dtend"))) {
         if ((node = find_contentline (clines, "DTEND", 0))  &&  node->value) {
             char *datetime = format_datetime (timezones, node);
-            c->c_text = datetime ? datetime : node->value;
+            c->c_text = datetime ? datetime : strdup(node->value);
         }
     }
 
