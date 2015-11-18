@@ -199,7 +199,11 @@ load_timezones (const contentline *clines) {
                 in_daylight = 1;
                 params = &timezone->daylight_params;
             } else if (! strcasecmp ("TZID", node->name)) {
-                timezone->tzid = strdup (node->value);
+                /* See comment below in format_datetime() about removing any enclosing quotes from a
+                   timezone identifier. */
+                char *buf = mh_xmalloc(strlen(node->value) + 1);
+                unquote_string(node->value, buf);
+                timezone->tzid = buf;
             }
         } else {
             if (! strcasecmp ("BEGIN", node->name)  &&
@@ -329,7 +333,15 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
     /* Extract the timezone, if specified (RFC 5545 Sec. 3.3.5 Form #3). */
     for (p = node->params; p && p->param_name; p = p->next) {
         if (! strcasecmp (p->param_name, "TZID")  &&  p->values) {
-            dt_timezone = p->values->value;
+            /* Remove any enclosing quotes from the timezone identifier.  I don't believe that it's
+               legal for it to be quoted, according to RFC 5545 § 3.2.19:
+                   tzidparam  = "TZID" "=" [tzidprefix] paramtext
+                   tzidprefix = "/"
+               where paramtext includes SAFE-CHAR, which specifically excludes DQUOTE.  But we'll
+               be generous and strip quotes. */
+            char *buf = mh_xmalloc(strlen(p->values->value) + 1);
+            unquote_string(p->values->value, buf);
+            dt_timezone = buf;
             break;
         }
     }
@@ -360,8 +372,11 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
         if (tz->tzid  &&  ! strcasecmp (dt_timezone, tz->tzid)) { break; }
     }
 
-    if (! tz) {
+    if (tz) {
+        free(dt_timezone);
+    } else {
         advise (NULL, "did not find VTIMEZONE section for %s", dt_timezone);
+        free(dt_timezone);
         return NULL;
     }
 

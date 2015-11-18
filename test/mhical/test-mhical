@@ -739,4 +739,40 @@ check "$expected" "$MH_TEST_DIR/test1.txt"
 rm -f "$MH_TEST_DIR/test1.ics"
 
 
+# Check TZID name wrapped with quotes, this used to cause a segfault.
+cat >"$expected" <<'EOF'
+Method: REQUEST
+Summary: Quoted timezone ID
+At: Wed, 01 Jan 2014 00:00
+To: Wed, 01 Jan 2014 01:00
+EOF
+
+cat >"$MH_TEST_DIR/test1.ics" <<'EOF'
+BEGIN:VCALENDAR
+PRODID:Zimbra-Calendar-Provider
+VERSION:2.0
+METHOD:REQUEST
+SUMMARY:Quoted timezone ID
+BEGIN:VTIMEZONE
+TZID:Etc/GMT
+BEGIN:STANDARD
+DTSTART:19710101T000000
+TZOFFSETTO:-0000
+TZOFFSETFROM:-0000
+TZNAME:GMT
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART:20140101T000000
+DTEND;TZID="Etc/GMT":20140101T010000
+SEQUENCE:0
+END:VEVENT
+END:VCALENDAR
+EOF
+
+TZ=UTC mhical <"$MH_TEST_DIR/test1.ics" >"$MH_TEST_DIR/test1.txt"
+check "$expected" "$MH_TEST_DIR/test1.txt"
+rm -f "$MH_TEST_DIR/test1.ics"
+
+
 exit $failed
