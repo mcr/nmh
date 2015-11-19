@@ -262,7 +262,8 @@ rrule_clock (const char *rrule, const char *starttime, const char *zone,
              unsigned int year) {
     time_t clock = 0;
 
-    if (nmh_strcasestr (rrule, "FREQ=YEARLY;INTERVAL=1")) {
+    if (nmh_strcasestr (rrule, "FREQ=YEARLY;INTERVAL=1")  ||
+        (nmh_strcasestr (rrule, "FREQ=YEARLY")  &&  nmh_strcasestr(rrule, "INTERVAL") == NULL)) {
         struct tws *tws;
         const char *cp;
         int wday = -1, month = -1;
