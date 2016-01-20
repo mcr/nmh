@@ -34,6 +34,15 @@
      */				\
     X("concat", -6, CONCATSW) \
     X("noconcat", -8, NCONCATSW) \
+    /*				\
+     * switches for mhshow	\
+     */				\
+    X("part number", 0, PARTSW) \
+    X("type content", 0, TYPESW) \
+    X("prefer content", 0, PREFERSW) \
+    X("markform file", 0, MARKFORMSW) \
+    X("rcache policy", 0, RCACHESW) \
+    X("wcache policy", 0, WCACHESW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(SHOW);
@@ -141,6 +150,12 @@ usage:
 		case LENSW:
 		case WIDTHSW:
 		case FMTPROCSW:
+		case PARTSW:
+		case TYPESW:
+		case PREFERSW:
+		case MARKFORMSW:
+		case RCACHESW:
+		case WCACHESW:
 		    app_msgarg(&vec, --cp);
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
