@@ -1101,8 +1101,9 @@ InitMultiPart (CT ct)
 
 	admonish (NULL,
 		  "\"%s/%s\" type in message %s must be encoded in\n"
-		  "7bit, 8bit, or binary, per RFC 2045 (6.4).  One workaround "
-		  "is to\nmanually edit the file and change the \"%s\"\n"
+		  "7bit, 8bit, or binary, per RFC 2045 (6.4).  "
+                  "mhfixmsg -fixcte can fix it, or\n"
+                  "manually edit the file and change the \"%s\"\n"
 		  "Content-Transfer-Encoding to one of those.  For now",
 		  ci->ci_type, ci->ci_subtype, ct->c_file, bp);
 	free (cte);
