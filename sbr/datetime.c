@@ -62,7 +62,10 @@ parse_datetime (const char *datetime, const char *zone, int dst,
                 struct tws *tws) {
     char utc_indicator;
     int form_1 = 0;
-    int items_matched =
+    int items_matched;
+
+    memset(tws, 0, sizeof *tws);
+    items_matched =
         sscanf (datetime, "%4d%2d%2dT%2d%2d%2d%c",
                 &tws->tw_year, &tws->tw_mon, &tws->tw_mday,
                 &tws->tw_hour, &tws->tw_min, &tws->tw_sec,
@@ -80,12 +83,16 @@ parse_datetime (const char *datetime, const char *zone, int dst,
         form_1 = 1;
     }
 
-    if (items_matched >= 6) {
+    /* items_matched of 3 is for, e.g., 20151230.  Assume that means
+       the entire day.  The time fields of the tws struct were
+       initialized to 0 by the memset() above. */
+    if (items_matched >= 6  ||  items_matched == 3) {
         int offset = atoi (zone ? zone : "0");
 
         /* struct tws defines tw_mon over [0, 11]. */
         --tws->tw_mon;
 
+        /* Fill out rest of tws, i.e., its tw_wday and tw_flags. */
         set_dotw (tws);
         /* set_dotw() sets TW_SIMP.  Replace that with TW_SEXP so that
            dasctime() outputs the dotw before the date instead of after. */

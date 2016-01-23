@@ -652,6 +652,25 @@ display (FILE *file, contentline *clines, char *nfs) {
         if ((node = find_contentline (clines, "DTEND", 0))  &&  node->value) {
             char *datetime = format_datetime (timezones, node);
             c->c_text = datetime ? datetime : strdup(node->value);
+        } else if ((node = find_contentline (clines, "DTSTART", 0))  &&
+                   node->value) {
+            /* There is no DTEND.  If there's a DTSTART, use it.  If it
+               doesn't have a time, assume that the event is for the
+               entire day and append 23:59:59 to it so that it signifies
+               the end of the day.  And assume local timezone. */
+            if (strchr(node->value, 'T')) {
+                char * datetime = format_datetime (timezones, node);
+                c->c_text = datetime ? datetime : strdup(node->value);
+            } else {
+                char *datetime;
+                contentline node_copy;
+
+                memcpy(&node_copy, node, sizeof node_copy);
+                node_copy.value = concat(node_copy.value, "T235959", NULL);
+                datetime = format_datetime (timezones, &node_copy);
+                c->c_text = datetime ? datetime : strdup(node_copy.value);
+                free(node_copy.value);
+            }
         }
     }
 

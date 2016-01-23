@@ -93,7 +93,6 @@ EOF
 
 TZ=UTC mhical <"$MH_TEST_DIR/test1.ics" >"$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 # check display with 24 hour time format and -outfile
@@ -120,7 +119,6 @@ EOF
 
 mhical -outfile "$MH_TEST_DIR/test1.txt" <"$MH_TEST_DIR/test1.ics"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 # check display with 12 hour time format and -infile
@@ -148,7 +146,6 @@ EOF
 mhical -form mhical.12hour -infile "$MH_TEST_DIR/test1.ics" \
        >"$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 # check display with DST
@@ -217,7 +214,6 @@ EOF
 
 TZ=EST mhical <"$MH_TEST_DIR/test1.ics" >"$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 # check timezone boundary at transition to daylight saving time
@@ -269,7 +265,6 @@ EOF
 TZ=EST5EDT mhical -format '%(pretty{dtend})' \
     -infile "$MH_TEST_DIR/test1.ics" -outfile "$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 # check timezone boundary at transition from daylight saving time
@@ -319,7 +314,6 @@ EOF
 TZ=EST5EDT mhical -format '%(pretty{dtend})' \
     -infile "$MH_TEST_DIR/test1.ics" -outfile "$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 printf 'Local-Mailbox: Requestee2 <requestee2@example.com>\n' >> "$MH"
@@ -413,7 +407,6 @@ EOF
 mhical -reply accept <"$MH_TEST_DIR/test1.ics" | egrep -v '^DTSTAMP:' \
        >"$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 # check accept of multiple vevent requests in single vcalendar
 cat >"$expected" <<'EOF'
@@ -546,7 +539,6 @@ EOF
 mhical -reply accept <"$MH_TEST_DIR/test1.ics" | egrep -v '^DTSTAMP:' \
        >"$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 # check decline of request
@@ -608,7 +600,6 @@ EOF
 mhical -reply decline <"$MH_TEST_DIR/test1.ics" | egrep -v '^DTSTAMP:' \
        >"$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 # check response of tentative to request, and -nocontenttype
@@ -671,7 +662,6 @@ mhical -reply tentative -contenttype -nocontenttype \
        -infile "$MH_TEST_DIR/test1.ics" | egrep -v '^DTSTAMP:' \
        >"$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 # check cancel request, and -contenttype
@@ -736,7 +726,6 @@ EOF
 mhical -cancel -contenttype <"$MH_TEST_DIR/test1.ics" | egrep -v '^DTSTAMP:' \
        >"$MH_TEST_DIR/test1.txt"
 check "$expected" "$MH_TEST_DIR/test1.txt"
-rm -f "$MH_TEST_DIR/test1.ics"
 
 
 # Check TZID name wrapped with quotes, this used to cause a segfault.
@@ -766,6 +755,39 @@ BEGIN:VEVENT
 DTSTART:20140101T000000
 DTEND;TZID="Etc/GMT":20140101T010000
 SEQUENCE:0
+END:VEVENT
+END:VCALENDAR
+EOF
+
+TZ=UTC mhical <"$MH_TEST_DIR/test1.ics" >"$MH_TEST_DIR/test1.txt"
+check "$expected" "$MH_TEST_DIR/test1.txt"
+
+
+# Check start datetime without a time, and missing end datetime.
+cat >"$expected" <<'EOF'
+Method: PUBLISH
+Summary: Test datetime without time
+At: Wed, 30 Dec 2015 00:00
+To: Wed, 30 Dec 2015 23:59
+EOF
+
+cat >"$MH_TEST_DIR/test1.ics" <<'EOF'
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:icalendar-ruby
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+DTSTAMP:20151208T204350Z
+UID:0123456789
+DTSTART;VALUE=DATE:20151230
+CLASS:PRIVATE
+SUMMARY:Test datetime without time
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:REMINDER
+TRIGGER;RELATED=START:-PT15M
+END:VALARM
 END:VEVENT
 END:VCALENDAR
 EOF
