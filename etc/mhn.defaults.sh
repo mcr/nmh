@@ -182,7 +182,7 @@ else
 fi
 
 echo "mhshow-show-text/calendar: mhical -infile %F" >> $TMP
-echo "mhfixmsg-format-text/calendar: mhical %F" >> $TMP
+echo "mhfixmsg-format-text/calendar: mhical -infile %F" >> $TMP
 
 PGM=`$SEARCHPROG "$SEARCHPATH" ivs_replay`
 if [ ! -z "$PGM" ]; then
