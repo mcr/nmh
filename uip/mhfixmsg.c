@@ -16,6 +16,7 @@
 #define MHFIXMSG_SWITCHES \
     X("decodetext 8bit|7bit", 0, DECODETEXTSW) \
     X("nodecodetext", 0, NDECODETEXTSW) \
+    X("decodetypes", 0, DECODETYPESW) \
     X("textcharset", 0, TEXTCHARSETSW) \
     X("notextcharset", 0, NTEXTCHARSETSW) \
     X("reformat", 0, REFORMATSW) \
@@ -80,6 +81,7 @@ typedef struct fix_transformations {
     int reformat;
     int replacetextplain;
     int decodetext;
+    char *decodetypes;
     char *textcharset;
 } fix_transformations;
 
@@ -106,7 +108,8 @@ static CT build_multipart_alt (CT, CT, int, int);
 static int boundary_in_content (FILE **, char *, const char *);
 static void transfer_noncontent_headers (CT, CT);
 static int set_ct_type (CT, int type, int subtype, int encoding);
-static int decode_text_parts (CT, int, int *);
+static int decode_text_parts (CT, int, const char *, int *);
+static int should_decode(const char *, const char *, const char *);
 static int content_encoding (CT, const char **);
 static int strip_crs (CT, int *);
 static int convert_charsets (CT, char *, int *);
@@ -135,6 +138,7 @@ main (int argc, char **argv) {
     fx.fixtypes = NULL;
     fx.replacetextplain = 0;
     fx.decodetext = CE_8BIT;
+    fx.decodetypes = "text";  /* Default to all text content. */
     fx.textcharset = NULL;
 
     if (nmh_init(argv[0], 1)) { return 1; }
@@ -178,6 +182,11 @@ main (int argc, char **argv) {
                 continue;
             case NDECODETEXTSW:
                 fx.decodetext = 0;
+                continue;
+            case DECODETYPESW:
+                if (! (cp = *argp++)  ||  *cp == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
+                fx.decodetypes = cp;
                 continue;
             case TEXTCHARSETSW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
@@ -445,7 +454,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
             ensure_text_plain (ctp, NULL, &message_mods, fx->replacetextplain);
     }
     if (status == OK  &&  fx->decodetext) {
-        status = decode_text_parts (*ctp, fx->decodetext, &message_mods);
+        status = decode_text_parts (*ctp, fx->decodetext, fx->decodetypes, &message_mods);
     }
     if (status == OK  &&  fx->textcharset != NULL) {
         status = convert_charsets (*ctp, fx->textcharset, &message_mods);
@@ -1748,11 +1757,15 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
 
 
 static int
-decode_text_parts (CT ct, int encoding, int *message_mods) {
+decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mods) {
     int status = OK;
 
     switch (ct->c_type) {
     case CT_TEXT:
+        if (! should_decode(decodetypes, ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype)) {
+            break;
+        }
+
         switch (ct->c_encoding) {
         case CE_BASE64:
         case CE_QUOTED: {
@@ -1831,7 +1844,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
         /* Should check to see if the body for this part is encoded?
            For now, it gets passed along as-is by InitMultiPart(). */
         for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
-            status = decode_text_parts (part->mp_part, encoding, message_mods);
+            status = decode_text_parts (part->mp_part, encoding, decodetypes, message_mods);
         }
         break;
     }
@@ -1840,7 +1853,7 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
         if (ct->c_subtype == MESSAGE_EXTERNAL) {
             struct exbody *e = (struct exbody *) ct->c_ctparams;
 
-            status = decode_text_parts (e->eb_content, encoding, message_mods);
+            status = decode_text_parts (e->eb_content, encoding, decodetypes, message_mods);
         }
         break;
 
@@ -1849,6 +1862,37 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
     }
 
     return status;
+}
+
+
+/* Determine if the part with type[/subtype] should be decoded, according to
+   decodetypes (which came from the -decodetypes switch). */
+static int
+should_decode(const char *decodetypes, const char *type, const char *subtype) {
+    /* Quick search for matching type[/subtype] in decodetypes:  bracket
+       decodetypes with commas, then search for ,type, and ,type/subtype, in
+       it. */
+
+    int found_match = 0;
+    char *delimited_decodetypes = concat(",", decodetypes, ",", NULL);
+    char *delimited_type = concat(",", type, ",", NULL);
+
+    if (nmh_strcasestr(delimited_decodetypes, delimited_type)) {
+        found_match = 1;
+    } else if (subtype != NULL) {
+        char *delimited_type_subtype =
+            concat(",", type, "/", subtype, ",", NULL);
+
+        if (nmh_strcasestr(delimited_decodetypes, delimited_type_subtype)) {
+            found_match = 1;
+        }
+        free(delimited_type_subtype);
+    }
+
+    free(delimited_type);
+    free(delimited_decodetypes);
+
+    return found_match;
 }
 
 

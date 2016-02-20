@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "February 8, 2015" "%nmhversion%"
+.TH MHFIXMSG %manext1% "February 20, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -16,6 +16,8 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .RB [ \-decodetext
 8bit/7bit |
 .BR \-nodecodetext ]
+.RB [ \-decodetypes
+.IR "type/[subtype][,...]" ]
 .RB [ \-textcharset
 .I charset
 .RB "| " \-notextcharset ]
@@ -70,6 +72,24 @@ When the
 switch is enabled, each carriage return character that precedes a
 linefeed character is removed from text parts encoded in ASCII,
 ISO-8859-x, UTF-8, or Windows-12xx.
+.PP
+The
+.B \-decodetypes
+switch specifies the message parts, by type and optionally subtype,
+to which
+.B \-decodetext
+applies.  Its argument is a comma-separated list of type/subtype
+elements.  If an element does not contain a subtype, then
+.B \-decodetext
+applies to all subtypes of the type.  The default is
+.B \-decodetypes
+.IR text ;
+it can be overridden, e.g., with
+.B \-decodetypes
+.I text/plain
+to restrict
+.B \-decodetext
+to just text/plain parts.
 .PP
 The
 .B \-textcharset
@@ -257,6 +277,7 @@ content type and/or encoding as follows:
 .nf
 .ta \w'\-fixboundary 'u
 \-decodetext   base64 and quoted-printable encoded text parts
+\-decodetypes  limits parts to which -decodetext applies
 \-textcharset  text/plain parts
 \-reformat     text parts that are not text/plain
 \-fixboundary  outermost multipart part
@@ -387,6 +408,7 @@ is checked.
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
 .RB ` "\-decodetext 8bit"'
+.RB ` "\-decodetypes text"'
 .RB ` \-notextcharset '
 .RB ` \-reformat '
 .RB ` \-noreplacetextplain '

@@ -51,6 +51,7 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   switches are:
   -decodetext 8bit|7bit
   -nodecodetext
+  -decodetypes
   -[no]textcharset
   -[no]reformat
   -[no]replacetextplain
@@ -418,11 +419,11 @@ else
 fi
 
 
-# check -decode (enabled by default)
+# check -decodetext (enabled by default)
 cat >"$expected" <<EOF
 To: recipient@example.com
 From: sender@example.com
-Subject: mhfixmsg decode test
+Subject: mhfixmsg decode test 1
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
 
@@ -439,7 +440,7 @@ EOF
 cat >`mhpath new` <<EOF
 To: recipient@example.com
 From: sender@example.com
-Subject: mhfixmsg decode test
+Subject: mhfixmsg decode test 1
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
 
@@ -457,7 +458,7 @@ run_prog mhfixmsg last -outfile "$actual"
 check "$expected" "$actual"
 
 
-# check -decode with more complicated content structure
+# check -decodetext with more complicated content structure
 cat >$expected <<EOF
 To: recipient@example.com
 From: sender@example.com
@@ -559,7 +560,7 @@ run_prog mhfixmsg last -outfile "$actual"
 check "$expected" "$actual"
 
 
-# check attempted -decode of binary text
+# check attempted -decodetext of binary text
 #### Generated the encoded text below with:
 ####   $ printf '\x0\xbd\xb2=\xbc\n' | base64
 cat >`mhpath new` <<EOF
@@ -583,7 +584,7 @@ run_prog mhfixmsg last
 check `mhpath last` "$expected" 'keep first'
 
 
-# check -decode of binary text
+# check -decodetext of binary text
 printf "%s\x0d\xbd\xb2=\xbc%s" "To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg binary decode test
@@ -1208,6 +1209,133 @@ EOF
 
 mhfixmsg -fixtype application/octet-stream last
 check "$expected" `mhpath last`
+
+
+# check default -decodetypes
+cat >$expected <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg decode test 3
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: attachment; filename="test1.txt"
+Content-MD5: kq+Hnc2SD/eKwAnkFBDuEA==
+Content-Transfer-Encoding: 8bit
+
+This is the text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"; name="test2.txt"
+Content-Disposition: attachment; filename="test2.txt"
+Content-Transfer-Encoding: 8bit
+
+<html>
+<head>
+    This is the text/html part.
+</head>
+</body>
+</html>
+
+------- =_aaaaaaaaaa0--
+EOF
+
+cat >`mhpath new` <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg decode test 3
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: attachment; filename="test1.txt"
+Content-MD5: kq+Hnc2SD/eKwAnkFBDuEA==
+Content-Transfer-Encoding: quoted-printable
+
+This is the text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"; name="test2.txt"
+Content-Disposition: attachment; filename="test2.txt"
+Content-Transfer-Encoding: base64
+
+PGh0bWw+CjxoZWFkPgogICAgVGhpcyBpcyB0aGUgdGV4dC9odG1sIHBhcnQuCjwvaGVhZD4KPC9i
+b2R5Pgo8L2h0bWw+Cg==
+
+------- =_aaaaaaaaaa0--
+EOF
+run_prog mhfixmsg last -outfile "$actual"
+check "$expected" "$actual"
+
+
+# check -decodetypes text/plain
+cat >$expected <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg decode test 4
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: attachment; filename="test1.txt"
+Content-MD5: kq+Hnc2SD/eKwAnkFBDuEA==
+Content-Transfer-Encoding: 8bit
+
+This is the text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: multipart/alternative; boundary="----=_nmh-multipart2"
+
+------=_nmh-multipart2
+Content-Type: text/plain; charset="iso-8859-1"; name="test2.txt"
+Content-Transfer-Encoding: 8bit
+
+This is the text/html part.
+
+------=_nmh-multipart2
+Content-Type: text/html; charset="iso-8859-1"; name="test2.txt"
+Content-Disposition: attachment; filename="test2.txt"
+Content-Transfer-Encoding: base64
+
+PGh0bWw+DQo8aGVhZD4NCiAgICBUaGlzIGlzIHRoZSB0ZXh0L2h0bWwgcGFydC4NCjwvaGVhZD4N
+CjwvYm9keT4NCjwvaHRtbD4NCg==
+
+------=_nmh-multipart2--
+
+------- =_aaaaaaaaaa0--
+EOF
+
+cat >`mhpath new` <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg decode test 4
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: attachment; filename="test1.txt"
+Content-MD5: kq+Hnc2SD/eKwAnkFBDuEA==
+Content-Transfer-Encoding: quoted-printable
+
+This is the text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: text/html; charset="iso-8859-1"; name="test2.txt"
+Content-Disposition: attachment; filename="test2.txt"
+Content-Transfer-Encoding: base64
+
+PGh0bWw+CjxoZWFkPgogICAgVGhpcyBpcyB0aGUgdGV4dC9odG1sIHBhcnQuCjwvaGVhZD4KPC9i
+b2R5Pgo8L2h0bWw+Cg==
+
+------- =_aaaaaaaaaa0--
+EOF
+run_prog mhfixmsg last -outfile "$actual" -decodetypes text/plain
+check "$expected" "$actual"
 
 
 # make sure there are no tmp files left over
