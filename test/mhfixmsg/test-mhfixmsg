@@ -584,6 +584,96 @@ run_prog mhfixmsg last
 check `mhpath last` "$expected" 'keep first'
 
 
+# check for successful decode of a different part with attempted -decodetext
+# of binary text
+#### Generated the encoded text below with:
+####   $ printf '\x0\xbd\xb2=\xbc\n' | base64
+cat >$expected <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg successful decode of text/plain with failed binary decode
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+
+This is a text plain part
+
+------- =_aaaaaaaaaa0
+Content-Type: text/html; charset="ascii"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+PGh0bWw+PGhlYWQ+PHRpdGxlPmxvbmcgbGluZTwvdGl0bGU+PC9oZWFkPjxib2R5PlRoaXMgbGlu
+ZSBpcyBncmVhdGVyIHRoYW4gOTk4IGNoYXJhY3RlcnMgaW4gbGVuZ3RoLCBzbyB0aGlzIHBhcnQg
+c2hvdWxkIG5vdCBiZSBkZWNvZGVkLiAgVGhpcyBsaW5lIGlzIGdyZWF0ZXIgdGhhbiA5OTggY2hh
+cmFjdGVycyBpbiBsZW5ndGgsIHNvIHRoaXMgcGFydCBzaG91bGQgbm90IGJlIGRlY29kZWQuICBU
+aGlzIGxpbmUgaXMgZ3JlYXRlciB0aGFuIDk5OCBjaGFyYWN0ZXJzIGluIGxlbmd0aCwgc28gdGhp
+cyBwYXJ0IHNob3VsZCBub3QgYmUgZGVjb2RlZC4gIFRoaXMgbGluZSBpcyBncmVhdGVyIHRoYW4g
+OTk4IGNoYXJhY3RlcnMgaW4gbGVuZ3RoLCBzbyB0aGlzIHBhcnQgc2hvdWxkIG5vdCBiZSBkZWNv
+ZGVkLiAgVGhpcyBsaW5lIGlzIGdyZWF0ZXIgdGhhbiA5OTggY2hhcmFjdGVycyBpbiBsZW5ndGgs
+IHNvIHRoaXMgcGFydCBzaG91bGQgbm90IGJlIGRlY29kZWQuICBUaGlzIGxpbmUgaXMgZ3JlYXRl
+ciB0aGFuIDk5OCBjaGFyYWN0ZXJzIGluIGxlbmd0aCwgc28gdGhpcyBwYXJ0IHNob3VsZCBub3Qg
+YmUgZGVjb2RlZC4gIFRoaXMgbGluZSBpcyBncmVhdGVyIHRoYW4gOTk4IGNoYXJhY3RlcnMgaW4g
+bGVuZ3RoLCBzbyB0aGlzIHBhcnQgc2hvdWxkIG5vdCBiZSBkZWNvZGVkLiAgVGhpcyBsaW5lIGlz
+IGdyZWF0ZXIgdGhhbiA5OTggY2hhcmFjdGVycyBpbiBsZW5ndGgsIHNvIHRoaXMgcGFydCBzaG91
+bGQgbm90IGJlIGRlY29kZWQuICBUaGlzIGxpbmUgaXMgZ3JlYXRlciB0aGFuIDk5OCBjaGFyYWN0
+ZXJzIGluIGxlbmd0aCwgc28gdGhpcyBwYXJ0IHNob3VsZCBub3QgYmUgZGVjb2RlZC4gIFRoaXMg
+bGluZSBpcyBncmVhdGVyIHRoYW4gOTk4IGNoYXJhY3RlcnMgaW4gbGVuZ3RoLCBzbyB0aGlzIHBh
+cnQgc2hvdWxkIG5vdCBiZSBkZWNvZGVkLiAgVGhpcyBsaW5lIGlzIGdyZWF0ZXIgdGhhbiA5OTgg
+Y2hhcmFjdGVycyBpbiBsZW5ndGgsIHNvIHRoaXMgcGFydCBzaG91bGQgbm90IGJlIGRlY29kZWQu
+ICA8L2JvZHk+PC9odG1sPg==
+
+------- =_aaaaaaaaaa0--
+EOF
+
+cat >`mhpath new` <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg successful decode of text/plain with failed binary decode
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhIHRleHQgcGxhaW4gcGFydAo=
+
+------- =_aaaaaaaaaa0
+Content-Type: text/html; charset="ascii"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+PGh0bWw+PGhlYWQ+PHRpdGxlPmxvbmcgbGluZTwvdGl0bGU+PC9oZWFkPjxib2R5PlRoaXMgbGlu
+ZSBpcyBncmVhdGVyIHRoYW4gOTk4IGNoYXJhY3RlcnMgaW4gbGVuZ3RoLCBzbyB0aGlzIHBhcnQg
+c2hvdWxkIG5vdCBiZSBkZWNvZGVkLiAgVGhpcyBsaW5lIGlzIGdyZWF0ZXIgdGhhbiA5OTggY2hh
+cmFjdGVycyBpbiBsZW5ndGgsIHNvIHRoaXMgcGFydCBzaG91bGQgbm90IGJlIGRlY29kZWQuICBU
+aGlzIGxpbmUgaXMgZ3JlYXRlciB0aGFuIDk5OCBjaGFyYWN0ZXJzIGluIGxlbmd0aCwgc28gdGhp
+cyBwYXJ0IHNob3VsZCBub3QgYmUgZGVjb2RlZC4gIFRoaXMgbGluZSBpcyBncmVhdGVyIHRoYW4g
+OTk4IGNoYXJhY3RlcnMgaW4gbGVuZ3RoLCBzbyB0aGlzIHBhcnQgc2hvdWxkIG5vdCBiZSBkZWNv
+ZGVkLiAgVGhpcyBsaW5lIGlzIGdyZWF0ZXIgdGhhbiA5OTggY2hhcmFjdGVycyBpbiBsZW5ndGgs
+IHNvIHRoaXMgcGFydCBzaG91bGQgbm90IGJlIGRlY29kZWQuICBUaGlzIGxpbmUgaXMgZ3JlYXRl
+ciB0aGFuIDk5OCBjaGFyYWN0ZXJzIGluIGxlbmd0aCwgc28gdGhpcyBwYXJ0IHNob3VsZCBub3Qg
+YmUgZGVjb2RlZC4gIFRoaXMgbGluZSBpcyBncmVhdGVyIHRoYW4gOTk4IGNoYXJhY3RlcnMgaW4g
+bGVuZ3RoLCBzbyB0aGlzIHBhcnQgc2hvdWxkIG5vdCBiZSBkZWNvZGVkLiAgVGhpcyBsaW5lIGlz
+IGdyZWF0ZXIgdGhhbiA5OTggY2hhcmFjdGVycyBpbiBsZW5ndGgsIHNvIHRoaXMgcGFydCBzaG91
+bGQgbm90IGJlIGRlY29kZWQuICBUaGlzIGxpbmUgaXMgZ3JlYXRlciB0aGFuIDk5OCBjaGFyYWN0
+ZXJzIGluIGxlbmd0aCwgc28gdGhpcyBwYXJ0IHNob3VsZCBub3QgYmUgZGVjb2RlZC4gIFRoaXMg
+bGluZSBpcyBncmVhdGVyIHRoYW4gOTk4IGNoYXJhY3RlcnMgaW4gbGVuZ3RoLCBzbyB0aGlzIHBh
+cnQgc2hvdWxkIG5vdCBiZSBkZWNvZGVkLiAgVGhpcyBsaW5lIGlzIGdyZWF0ZXIgdGhhbiA5OTgg
+Y2hhcmFjdGVycyBpbiBsZW5ndGgsIHNvIHRoaXMgcGFydCBzaG91bGQgbm90IGJlIGRlY29kZWQu
+ICA8L2JvZHk+PC9odG1sPg==
+
+------- =_aaaaaaaaaa0--
+EOF
+
+run_prog mhfixmsg -noreformat last
+check `mhpath last` "$expected"
+
+
 # check -decodetext of binary text
 printf "%s\x0d\xbd\xb2=\xbc%s" "To: recipient@example.com
 From: sender@example.com
