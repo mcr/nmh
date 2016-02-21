@@ -1349,7 +1349,7 @@ insert_into_new_mp_alt (CT *ct, int *message_mods) {
             status = NOTOK;
         }
     } else {
-        status = NOTOK;
+        /* Not an error if text/plain couldn't be built. */
     }
 
     return status;
