@@ -17,6 +17,8 @@
     X("decodetext 8bit|7bit", 0, DECODETEXTSW) \
     X("nodecodetext", 0, NDECODETEXTSW) \
     X("decodetypes", 0, DECODETYPESW) \
+    X("crlflinebreaks", 0, CRLFLINEBREAKSSW) \
+    X("nocrlflinebreaks", 0, NCRLFLINEBREAKSSW) \
     X("textcharset", 0, TEXTCHARSETSW) \
     X("notextcharset", 0, NTEXTCHARSETSW) \
     X("reformat", 0, REFORMATSW) \
@@ -82,6 +84,8 @@ typedef struct fix_transformations {
     int replacetextplain;
     int decodetext;
     char *decodetypes;
+    /* Whether to use CRLF linebreaks, per RFC 2046 Sec. 4.1.1, par.1. */
+    int lf_line_endings;
     char *textcharset;
 } fix_transformations;
 
@@ -139,6 +143,7 @@ main (int argc, char **argv) {
     fx.replacetextplain = 0;
     fx.decodetext = CE_8BIT;
     fx.decodetypes = "text";  /* Default to all text content. */
+    fx.lf_line_endings = 0;
     fx.textcharset = NULL;
 
     if (nmh_init(argv[0], 1)) { return 1; }
@@ -187,6 +192,12 @@ main (int argc, char **argv) {
                 if (! (cp = *argp++)  ||  *cp == '-')
                     adios (NULL, "missing argument to %s", argp[-2]);
                 fx.decodetypes = cp;
+                continue;
+            case CRLFLINEBREAKSSW:
+                fx.lf_line_endings = 0;
+                continue;
+            case NCRLFLINEBREAKSSW:
+                fx.lf_line_endings = 1;
                 continue;
             case TEXTCHARSETSW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
@@ -334,7 +345,18 @@ main (int argc, char **argv) {
         }
         ctp = cts;
 
-        if ((ct = parse_mime (file))) { *ctp++ = ct; }
+        if ((ct = parse_mime (file))) {
+            if (ct->c_type == CT_TEXT) {
+                /* parse_mime() does not set lf_line_endings in struct text, so set it here. */
+                if (ct->c_ctparams == NULL) {
+                    if ((ct->c_ctparams = (struct text *) mh_xcalloc (1, sizeof (struct text))) == NULL) {
+                        adios (NULL, "out of memory");
+                    }
+                }
+                ((struct text *) ct->c_ctparams)->lf_line_endings = fx.lf_line_endings;
+            }
+            *ctp++ = ct;
+        }
     } else {
         /*
          * message(s) are coming from a folder
@@ -375,7 +397,19 @@ main (int argc, char **argv) {
                 char *msgnam;
 
                 msgnam = m_name (msgnum);
-                if ((ct = parse_mime (msgnam))) { *ctp++ = ct; }
+                if ((ct = parse_mime (msgnam))) {
+                    if (ct->c_type == CT_TEXT) {
+                        /* parse_mime() does not set lf_line_endings in struct text, so set it here. */
+                        if (ct->c_ctparams == NULL) {
+                            if ((ct->c_ctparams = (struct text *) mh_xcalloc (1, sizeof (struct text))) ==
+                                NULL) {
+                                adios (NULL, "out of memory");
+                            }
+                        }
+                        ((struct text *) ct->c_ctparams)->lf_line_endings = fx.lf_line_endings;
+                    }
+                    *ctp++ = ct;
+                }
             }
         }
 
@@ -1327,8 +1361,7 @@ insert_into_new_mp_alt (CT *ct, int *message_mods) {
         CT mp_alt = build_multipart_alt (*ct, tp_part, CT_MULTIPART,
                                          MULTI_ALTERNATE);
         if (mp_alt) {
-            struct multipart *mp =
-                (struct multipart *) mp_alt->c_ctparams;
+            struct multipart *mp = (struct multipart *) mp_alt->c_ctparams;
 
             if (mp  &&  mp->mp_parts) {
                 mp->mp_parts->mp_part = tp_part;
@@ -1761,7 +1794,9 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
     int status = OK;
 
     switch (ct->c_type) {
-    case CT_TEXT:
+    case CT_TEXT: {
+        struct text *const text_content_info = (struct text *) ct->c_ctparams;
+
         if (! should_decode(decodetypes, ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype)) {
             break;
         }
@@ -1817,7 +1852,9 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
                             report (NULL, ct->c_partno, ct->c_file, "decode%s",
                                     ct->c_ctline ? ct->c_ctline : "");
                         }
-                        strip_crs (ct, message_mods);
+                        if (text_content_info  &&  text_content_info->lf_line_endings) {
+                            strip_crs (ct, message_mods);
+                        }
                     } else {
                         status = NOTOK;
                     }
@@ -1829,13 +1866,16 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
         }
         case CE_8BIT:
         case CE_7BIT:
-            strip_crs (ct, message_mods);
+            if (text_content_info  &&  text_content_info->lf_line_endings) {
+                strip_crs (ct, message_mods);
+            }
             break;
         default:
             break;
         }
 
         break;
+    }
 
     case CT_MULTIPART: {
         struct multipart *m = (struct multipart *) ct->c_ctparams;

@@ -52,6 +52,7 @@ Usage: mhfixmsg [+folder] [msgs] [switches]
   -decodetext 8bit|7bit
   -nodecodetext
   -decodetypes
+  -[no]crlflinebreaks
   -[no]textcharset
   -[no]reformat
   -[no]replacetextplain
@@ -1053,7 +1054,7 @@ run_test 'mhfixmsg last -outfile '"$actual" ''
 check "$expected" "$actual"
 
 
-# check stripping of CRs from ASCII text context
+# check not stripping of CRs from ASCII text context (default)
 cat >"$expected" <<EOF
 MIME-Version: 1.0
 From: sender@example.com
@@ -1077,6 +1078,33 @@ There are two CR-LF pairs at the end of this sentence.
 EOF
 
 run_prog mhfixmsg last -outfile "$actual"
+check "$expected" "$actual"
+
+
+# check stripping of CRs from ASCII text context
+cat >"$expected" <<EOF
+MIME-Version: 1.0
+From: sender@example.com
+To: recipient@example.com
+Subject: message with CR's
+Date: Mon, 29 Apr 2013 11:51:45 -0400
+
+There were two CR-LF pairs at the end of this sentence.
+
+EOF
+
+cat >`mhpath new` <<'EOF'
+MIME-Version: 1.0
+From: sender@example.com
+To: recipient@example.com
+Subject: message with CR's
+Date: Mon, 29 Apr 2013 11:51:45 -0400
+
+There were two CR-LF pairs at the end of this sentence.
+
+EOF
+
+run_prog mhfixmsg last -outfile "$actual" -nocrlflinebreaks
 check "$expected" "$actual"
 
 

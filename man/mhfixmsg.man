@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "February 20, 2016" "%nmhversion%"
+.TH MHFIXMSG %manext1% "February 24, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -18,6 +18,7 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .BR \-nodecodetext ]
 .RB [ \-decodetypes
 .IR "type/[subtype][,...]" ]
+.RB [ \-crlflinebreaks " | " \-nocrlflinebreaks ]
 .RB [ \-textcharset
 .I charset
 .RB "| " \-notextcharset ]
@@ -90,6 +91,16 @@ it can be overridden, e.g., with
 to restrict
 .B \-decodetext
 to just text/plain parts.
+.PP
+By default, carriage return characters are preserved or inserted at
+the end of each line of text content.  The
+.B \-crlflinebreaks
+switch selects this behavior and is enabled by default.  The
+.B \-nocrlflinebreaks
+switch causes carriage return characters to be stripped from, and not
+inserted in, text content when it is decoded and encoded.  Note that
+its use can cause the generation of MIME messages that do not conform
+with RFC 2046, §4.1.1, paragraph 1.
 .PP
 The
 .B \-textcharset
@@ -175,7 +186,7 @@ The
 switch enables a transformation to change the
 Content-Transfer-Encoding from an invalid value to 8bit in message
 parts with a Content-Type of multipart, as required by RFC 2045,
-Section 6.4.  That condition is indicated by a \*(lqmust be encoded in
+§6.4.  That condition is indicated by a \*(lqmust be encoded in
 7bit, 8bit, or binary\*(rq error message from
 .B mhlist
 and other
@@ -275,14 +286,15 @@ content type and/or encoding as follows:
 .PP
 .RS 5
 .nf
-.ta \w'\-fixboundary 'u
-\-decodetext   base64 and quoted-printable encoded text parts
-\-decodetypes  limits parts to which -decodetext applies
-\-textcharset  text/plain parts
-\-reformat     text parts that are not text/plain
-\-fixboundary  outermost multipart part
-\-fixcte       multipart part
-\-fixtype      all except multipart and message parts
+.ta \w'\-crlflinebreaks 'u
+\-decodetext         base64 and quoted-printable encoded text parts
+\-decodetypes        limits parts to which -decodetext applies
+\-crlflinebreaks text parts
+\-textcharset        text/plain parts
+\-reformat           text parts that are not text/plain
+\-fixboundary        outermost multipart part
+\-fixcte             multipart part
+\-fixtype            all except multipart and message parts
 .fi
 .RE
 .PP
@@ -409,6 +421,7 @@ is checked.
 .RB ` msgs "' defaults to cur"
 .RB ` "\-decodetext 8bit"'
 .RB ` "\-decodetypes text"'
+.RB ` \-crlflinebreaks '
 .RB ` \-notextcharset '
 .RB ` \-reformat '
 .RB ` \-noreplacetextplain '

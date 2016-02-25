@@ -193,6 +193,10 @@ struct Content {
 /* Structure for text content */
 struct text {
     int	tx_charset;		/* flag for character set */
+    int lf_line_endings;        /* Whether to use CR LF (0) or LF (1) line
+                                   endings.  The meaning of 0 was selected so
+                                   that CR LF is the default, in accordance
+                                   with RFC 2046, Sec. 4.1.1, Par. 1. */
 };
 
 /*
