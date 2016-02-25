@@ -153,6 +153,18 @@ platform, and it is for popular platforms.  That default should also
 be the same as used by the
 .B mail
 program, if provided on the platform.
+.PP
+.SS Naming
+.B nmh
+folders can be given arbitrary names, with one exception:
+folders should not be given all-numeric names.  This
+limitation results from
+.B nmh
+messages themselves being stored
+in numerically named files -- allowing folders to be named
+similarly would make
+.B nmh
+slower, and introduce usage ambiguities.
 .SH FILES
 .fc ^ ~
 .nf
