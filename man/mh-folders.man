@@ -1,4 +1,4 @@
-.TH MH-FOLDERS %manext5% "July 22, 2014" "%nmhversion%"
+.TH MH-FOLDERS %manext5% "February 25, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
