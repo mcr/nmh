@@ -1346,13 +1346,13 @@ Content-Transfer-Encoding: 8bit
 This is the text/plain part.
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; charset="iso-8859-1"; name="test2.txt"
+Content-Type: text/html; charset="iso-8859-1"; name="test2.txt"
 Content-Disposition: attachment; filename="test2.txt"
 Content-Transfer-Encoding: 8bit
 
 <html>
 <head>
-    This is the text/html part.
+    This was the text/html part.
 </head>
 </body>
 </html>
@@ -1376,16 +1376,16 @@ Content-Transfer-Encoding: quoted-printable
 This is the text/plain part.
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; charset="iso-8859-1"; name="test2.txt"
+Content-Type: text/html; charset="iso-8859-1"; name="test2.txt"
 Content-Disposition: attachment; filename="test2.txt"
 Content-Transfer-Encoding: base64
 
-PGh0bWw+CjxoZWFkPgogICAgVGhpcyBpcyB0aGUgdGV4dC9odG1sIHBhcnQuCjwvaGVhZD4KPC9i
-b2R5Pgo8L2h0bWw+Cg==
+PGh0bWw+CjxoZWFkPgogICAgVGhpcyB3YXMgdGhlIHRleHQvaHRtbCBwYXJ0Lgo8L2hlYWQ+Cjwv
+Ym9keT4KPC9odG1sPgo=
 
 ------- =_aaaaaaaaaa0--
 EOF
-run_prog mhfixmsg last -outfile "$actual"
+run_prog mhfixmsg last -outfile "$actual" -noreformat
 check "$expected" "$actual"
 
 
@@ -1406,23 +1406,12 @@ Content-Transfer-Encoding: 8bit
 This is the text/plain part.
 
 ------- =_aaaaaaaaaa0
-Content-Type: multipart/alternative; boundary="----=_nmh-multipart2"
-
-------=_nmh-multipart2
-Content-Type: text/plain; charset="iso-8859-1"; name="test2.txt"
-Content-Transfer-Encoding: 8bit
-
-This is the text/html part.
-
-------=_nmh-multipart2
 Content-Type: text/html; charset="iso-8859-1"; name="test2.txt"
 Content-Disposition: attachment; filename="test2.txt"
 Content-Transfer-Encoding: base64
 
 PGh0bWw+DQo8aGVhZD4NCiAgICBUaGlzIGlzIHRoZSB0ZXh0L2h0bWwgcGFydC4NCjwvaGVhZD4N
 CjwvYm9keT4NCjwvaHRtbD4NCg==
-
-------=_nmh-multipart2--
 
 ------- =_aaaaaaaaaa0--
 EOF
@@ -1447,12 +1436,80 @@ Content-Type: text/html; charset="iso-8859-1"; name="test2.txt"
 Content-Disposition: attachment; filename="test2.txt"
 Content-Transfer-Encoding: base64
 
-PGh0bWw+CjxoZWFkPgogICAgVGhpcyBpcyB0aGUgdGV4dC9odG1sIHBhcnQuCjwvaGVhZD4KPC9i
-b2R5Pgo8L2h0bWw+Cg==
+PGh0bWw+DQo8aGVhZD4NCiAgICBUaGlzIGlzIHRoZSB0ZXh0L2h0bWwgcGFydC4NCjwvaGVhZD4N
+CjwvYm9keT4NCjwvaHRtbD4NCg==
 
 ------- =_aaaaaaaaaa0--
 EOF
-run_prog mhfixmsg last -outfile "$actual" -decodetypes text/plain
+run_prog mhfixmsg last -outfile "$actual" -decodetypes text/plain -noreformat
+check "$expected" "$actual"
+
+
+# check -decodetypes attachment/ics
+# -nocrlflinebreaks won't with non-text content, so the carriage returns are
+# unavoidable.
+cat >$expected <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg decode test 5
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: attachment; filename="test1.txt"
+Content-MD5: kq+Hnc2SD/eKwAnkFBDuEA==
+Content-Transfer-Encoding: 8bit
+
+This is the text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: application/ics; charset="iso-8859-1"; name="invite.ics"
+Content-Disposition: attachment; filename="invite.ics"
+Content-Transfer-Encoding: 8bit
+
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:test-mhical
+BEGIN:VEVENT
+DTSTAMP:20150101T162400Z
+DTSTART:20150105T160000
+DTEND:20150105T163000
+SUMMARY:4 pm meeting
+END:VEVENT
+END:VCALENDAR
+
+------- =_aaaaaaaaaa0--
+EOF
+
+cat >`mhpath new` <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg decode test 5
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: attachment; filename="test1.txt"
+Content-MD5: kq+Hnc2SD/eKwAnkFBDuEA==
+Content-Transfer-Encoding: quoted-printable
+
+This is the text/plain part.
+
+------- =_aaaaaaaaaa0
+Content-Type: application/ics; charset="iso-8859-1"; name="invite.ics"
+Content-Disposition: attachment; filename="invite.ics"
+Content-Transfer-Encoding: base64
+
+QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOnRlc3QtbWhpY2FsDQpCRUdJTjpW
+RVZFTlQNCkRUU1RBTVA6MjAxNTAxMDFUMTYyNDAwWg0KRFRTVEFSVDoyMDE1MDEwNVQxNjAwMDAN
+CkRURU5EOjIwMTUwMTA1VDE2MzAwMA0KU1VNTUFSWTo0IHBtIG1lZXRpbmcNCkVORDpWRVZFTlQN
+CkVORDpWQ0FMRU5EQVINCg==
+
+------- =_aaaaaaaaaa0--
+EOF
+run_prog mhfixmsg last -outfile "$actual" -noreformat
 check "$expected" "$actual"
 
 

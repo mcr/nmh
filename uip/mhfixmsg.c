@@ -142,7 +142,7 @@ main (int argc, char **argv) {
     fx.fixtypes = NULL;
     fx.replacetextplain = 0;
     fx.decodetext = CE_8BIT;
-    fx.decodetypes = "text";  /* Default to all text content. */
+    fx.decodetypes = "text,application/ics";  /* Default, per man page. */
     fx.lf_line_endings = 0;
     fx.textcharset = NULL;
 
@@ -1792,14 +1792,37 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
 static int
 decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mods) {
     int status = OK;
+    int lf_line_endings = 0;
 
     switch (ct->c_type) {
-    case CT_TEXT: {
-        struct text *const text_content_info = (struct text *) ct->c_ctparams;
+    case CT_MULTIPART: {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
 
+        /* Should check to see if the body for this part is encoded?
+           For now, it gets passed along as-is by InitMultiPart(). */
+        for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
+            status = decode_text_parts (part->mp_part, encoding, decodetypes, message_mods);
+        }
+        break;
+    }
+
+    case CT_MESSAGE:
+        if (ct->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
+
+            status = decode_text_parts (e->eb_content, encoding, decodetypes, message_mods);
+        }
+        break;
+
+    default:
         if (! should_decode(decodetypes, ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype)) {
             break;
         }
+
+        lf_line_endings =
+            ct->c_type == CT_TEXT  &&  ct->c_ctparams  &&
+            ((struct text *) ct->c_ctparams)->lf_line_endings;
 
         switch (ct->c_encoding) {
         case CE_BASE64:
@@ -1852,7 +1875,7 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
                             report (NULL, ct->c_partno, ct->c_file, "decode%s",
                                     ct->c_ctline ? ct->c_ctline : "");
                         }
-                        if (text_content_info  &&  text_content_info->lf_line_endings) {
+                        if (lf_line_endings) {
                             strip_crs (ct, message_mods);
                         }
                     } else {
@@ -1866,7 +1889,7 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
         }
         case CE_8BIT:
         case CE_7BIT:
-            if (text_content_info  &&  text_content_info->lf_line_endings) {
+            if (lf_line_endings) {
                 strip_crs (ct, message_mods);
             }
             break;
@@ -1874,30 +1897,6 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
             break;
         }
 
-        break;
-    }
-
-    case CT_MULTIPART: {
-        struct multipart *m = (struct multipart *) ct->c_ctparams;
-        struct part *part;
-
-        /* Should check to see if the body for this part is encoded?
-           For now, it gets passed along as-is by InitMultiPart(). */
-        for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
-            status = decode_text_parts (part->mp_part, encoding, decodetypes, message_mods);
-        }
-        break;
-    }
-
-    case CT_MESSAGE:
-        if (ct->c_subtype == MESSAGE_EXTERNAL) {
-            struct exbody *e = (struct exbody *) ct->c_ctparams;
-
-            status = decode_text_parts (e->eb_content, encoding, decodetypes, message_mods);
-        }
-        break;
-
-    default:
         break;
     }
 

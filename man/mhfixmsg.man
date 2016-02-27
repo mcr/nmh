@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "February 24, 2016" "%nmhversion%"
+.TH MHFIXMSG %manext1% "February 27, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -420,7 +420,7 @@ is checked.
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
 .RB ` "\-decodetext 8bit"'
-.RB ` "\-decodetypes text"'
+.RB ` "\-decodetypes text,application/ics"'
 .RB ` \-crlflinebreaks '
 .RB ` \-notextcharset '
 .RB ` \-reformat '
