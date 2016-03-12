@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "February 27, 2016" "%nmhversion%"
+.TH MHFIXMSG %manext1% "March 12, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -54,7 +54,9 @@ messages.
 .B mhfixmsg
 passes non-MIME messages through without any transformations.  If no
 transformations apply to a MIME message, the original message or file
-is not modified or removed.
+is not modified or removed.  Thus,
+.B mhfixmsg
+can safely be run multiple times on a message.
 .PP
 The
 .B \-decodetext
@@ -297,7 +299,6 @@ content type and/or encoding as follows:
 \-fixtype            all except multipart and message parts
 .fi
 .RE
-.PP
 .SS "Backup of Original Message/File"
 If it applies any transformations to a message or file,
 and the
@@ -320,7 +321,6 @@ switch disables the use of any
 profile component and negates all prior
 .B \-rmmproc
 switches.
-.PP
 .SS "Integration with inc"
 .B mhfixmsg
 can be used as an add-hook, as described in %docdir%/README-HOOKS.
@@ -346,6 +346,7 @@ which
 sets with the newly incorporated messages.  Those could then be
 supplied to
 .BR mhfixmsg .
+An example is shown below.
 .SS "Integration with procmail"
 By way of example, here is an excerpt from a procmailrc file
 that filters messages through
@@ -376,7 +377,92 @@ STORE = %nmhlibexecdir%/rcvstore
 | tee `$MKSTEMP` | $MHFIXMSG | $STORE +nmh-workers
 .fi
 .RE
+.SH "EXAMPLES"
 .PP
+.SS Basic usage
+To run
+.B mhfixmsg
+on the current message in the current folder, with default transformations to
+fix MIME boundaries and Content-Transfer-Encoding, to decode text and
+application/ics content parts to 8 bit, and to add a corresponding text/plain
+part where lacking:
+.PP
+.RS
+.nf
+mhfixmsg -verbose
+.fi
+.RE
+.SS Specified folder and messages
+To run
+.B mhfixmsg
+on specified messages, without its informational output:
+.PP
+.RS
+.nf
+mhfixmsg +inbox last:4
+.fi
+.RE
+.SS View without modification
+By default,
+.B mhfixmsg
+transforms the message in place.  To view the MIME structure that would result from running
+.B mhfixmsg
+on the current message, without modifying the message:
+.PP
+.RS
+.nf
+mhfixmsg -outfile - | mhlist -file -
+.fi
+.RE
+.SS Search message without modification
+To search the current message, which possibly contains base64 or quoted printable encoded text parts,
+without modifiying it, use the -outfile switch:
+.PP
+.RS
+.nf
+mhfixmsg -outfile - | grep \fIpattern\fR
+.fi
+.RE
+.PP
+-outfile can be abbreviated in usual MH fashion, e.g., to -o.  The search will be
+on the entire message, not just text parts.
+.SS Translate text/plain parts to UTF-8
+To translate all text/plain parts in the current message to UTF-8, in addition
+to all of the default transformations:
+.PP
+.RS
+.nf
+mhfixmsg -textcharset utf-8
+.fi
+.RE
+.SS Fix all messages in a folder
+To run
+.B mhfixmsg
+on all of the messages in a folder, using a Bourne shell loop:
+.PP
+.RS
+.nf
+for msg in `pick +folder`; do mhfixmsg $msg; done
+.fi
+.RE
+.PP
+.B mhfixmsg
+can be run on more than one message, but on a large number of messages
+may attempt to open too many files.
+.SS Run on newly incorporated messages
+To run
+.B mhfixmsg
+on messages as they are incorporated:
+.PP
+.RS
+.nf
+inc  &&  mhfixmsg -nochangecur unseen
+.fi
+.RE
+.PP
+This assumes that the Unseen-Sequence profile entry is set to
+.BR unseen ,
+as shown in the mh\-profile(5) man page.
 .SH FILES
 .B mhfixmsg
 looks for mhn.defaults in multiple locations: absolute pathnames are
@@ -439,3 +525,17 @@ switch is enabled.  If the
 .B \-file
 switch or an absolute pathname is used, the context will not be
 modified.
+.SH BUGS
+.B mhfixmsg
+opens files internally for decoding and character set conversion, and apparently does not
+close them expeditiously.  Until that is resolved, it is recommended that
+.B mhfixmsg
+not be run on a large number of messages at once, as noted in the EXAMPLES above.
+.PP
+As noted in the DESCRIPTION above,
+.B mhfixmsg
+will not decode to binary content.  This restriction should be removed at some point.  It's
+not due to any issue in
+.BR mhfixmsg ,
+but rather an observation of incorrect behavior by other nmh tools on messages with binary
+content.
