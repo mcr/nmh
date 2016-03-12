@@ -291,7 +291,7 @@ content type and/or encoding as follows:
 .ta \w'\-crlflinebreaks 'u
 \-decodetext         base64 and quoted-printable encoded text parts
 \-decodetypes        limits parts to which -decodetext applies
-\-crlflinebreaks text parts
+\-crlflinebreaks     text parts
 \-textcharset        text/plain parts
 \-reformat           text parts that are not text/plain
 \-fixboundary        outermost multipart part

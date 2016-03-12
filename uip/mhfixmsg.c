@@ -119,6 +119,7 @@ static int strip_crs (CT, int *);
 static int convert_charsets (CT, char *, int *);
 static int fix_always (CT, int *);
 static int write_content (CT, char *, char *, int, int);
+static void set_text_ctparams(CT, char *, int);
 static int remove_file (char *);
 static void report (char *, char *, char *, char *, ...);
 static void pipeser (int);
@@ -346,15 +347,7 @@ main (int argc, char **argv) {
         ctp = cts;
 
         if ((ct = parse_mime (file))) {
-            if (ct->c_type == CT_TEXT) {
-                /* parse_mime() does not set lf_line_endings in struct text, so set it here. */
-                if (ct->c_ctparams == NULL) {
-                    if ((ct->c_ctparams = (struct text *) mh_xcalloc (1, sizeof (struct text))) == NULL) {
-                        adios (NULL, "out of memory");
-                    }
-                }
-                ((struct text *) ct->c_ctparams)->lf_line_endings = fx.lf_line_endings;
-            }
+            set_text_ctparams(ct, fx.decodetypes, fx.lf_line_endings);
             *ctp++ = ct;
         }
     } else {
@@ -398,16 +391,7 @@ main (int argc, char **argv) {
 
                 msgnam = m_name (msgnum);
                 if ((ct = parse_mime (msgnam))) {
-                    if (ct->c_type == CT_TEXT) {
-                        /* parse_mime() does not set lf_line_endings in struct text, so set it here. */
-                        if (ct->c_ctparams == NULL) {
-                            if ((ct->c_ctparams = (struct text *) mh_xcalloc (1, sizeof (struct text))) ==
-                                NULL) {
-                                adios (NULL, "out of memory");
-                            }
-                        }
-                        ((struct text *) ct->c_ctparams)->lf_line_endings = fx.lf_line_endings;
-                    }
+                    set_text_ctparams(ct, fx.decodetypes, fx.lf_line_endings);
                     *ctp++ = ct;
                 }
             }
@@ -1821,8 +1805,7 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
         }
 
         lf_line_endings =
-            ct->c_type == CT_TEXT  &&  ct->c_ctparams  &&
-            ((struct text *) ct->c_ctparams)->lf_line_endings;
+            ct->c_ctparams  &&  ((struct text *) ct->c_ctparams)->lf_line_endings;
 
         switch (ct->c_encoding) {
         case CE_BASE64:
@@ -2353,6 +2336,44 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
 
     flush_errors ();
     return status;
+}
+
+
+/*
+ * parse_mime() does not set lf_line_endings in struct text, so use this function to do it.
+ * It touches the parts the decodetypes identifies.
+ */
+static void
+set_text_ctparams(CT ct, char *decodetypes, int lf_line_endings) {
+    switch (ct->c_type) {
+    case CT_MULTIPART: {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        for (part = m->mp_parts; part; part = part->mp_next) {
+            set_text_ctparams(part->mp_part, decodetypes, lf_line_endings);
+        }
+        break;
+    }
+
+    case CT_MESSAGE:
+        if (ct->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
+
+            set_text_ctparams(e->eb_content, decodetypes, lf_line_endings);
+        }
+        break;
+
+    default:
+        if (should_decode(decodetypes, ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype)) {
+            if (ct->c_ctparams == NULL) {
+                if ((ct->c_ctparams = (struct text *) mh_xcalloc (1, sizeof (struct text))) == NULL) {
+                    adios (NULL, "out of memory");
+                }
+            }
+            ((struct text *) ct->c_ctparams)->lf_line_endings = lf_line_endings;
+        }
+    }
 }
 
 
