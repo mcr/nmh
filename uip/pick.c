@@ -13,6 +13,7 @@
 #include <h/utils.h>
 
 #define PICK_SWITCHES \
+    X("reverse", 0, REVSW) \
     X("and", 0, ANDSW) \
     X("or", 0, ORSW) \
     X("not", 0, NOTSW) \
@@ -67,6 +68,7 @@ main (int argc, char **argv)
     struct msgs *mp, *mp2;
     register FILE *fp;
     int debug = 0;
+    int reverse = 0;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -103,6 +105,10 @@ main (int argc, char **argv)
 		print_version(invo_name);
 		listsw = 0;	/* HACK */
 		done (0);
+
+            case REVSW:
+                reverse = 1;
+                continue;
 
 	    case CCSW: 
 	    case DATESW: 
@@ -231,7 +237,9 @@ main (int argc, char **argv)
      * match.  If there is NOT a match, then add it to a list to
      * remove from the final sequence (it will make sense later)
      */
-    for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
+    for (msgnum = reverse ? mp->hghsel : mp->lowsel;
+         reverse ? msgnum >= mp->lowsel : msgnum <= mp->hghsel;
+         msgnum += reverse ? -1 : 1) {
 	if (is_selected (mp, msgnum)) {
 	    if ((fp = fopen (cp = m_name (msgnum), "r")) == NULL)
 		admonish (cp, "unable to read message");

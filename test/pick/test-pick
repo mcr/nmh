@@ -49,6 +49,12 @@ run_test 'pick -not -subject message.8 last:5' '7
 10
 11'
 
+# Test -reverse.
+run_test 'pick -reverse -not -subject message.8 last:5' '11
+10
+9
+7'
+
 # Test -lbrace, -rbrace.
 run_test 'pick -subject message.12 -and -subject message.3 -or -from Test4' '4'
 run_test 'pick -subject message.12 -and -lbrace -subject message.3 -rbrace' \
