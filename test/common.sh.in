@@ -7,6 +7,7 @@
 #### outside of make.  Requires that MH_OBJ_DIR be set on entry.
 test -z "$MH_TEST_DIR"  &&  MH_TEST_DIR="$MH_OBJ_DIR/test/testdir"
 test -z "$MH_INST_DIR"  &&  MH_INST_DIR="${MH_TEST_DIR}/inst"
+test -z "$MH_VERSION"  &&  MH_VERSION="@VERSION@"
 test -z "$prefix"  &&  prefix=@prefix@
 test -z "$datarootdir"  &&  datarootdir=@datarootdir@
 test -z "$exec_prefix"  &&  exec_prefix=@exec_prefix@
@@ -21,6 +22,8 @@ test -z "$supported_locks"  &&  supported_locks="@supported_locks@"
 test -z "$default_locking"  &&  default_locking="@default_locking@"
 test -z "$MULTIBYTE_ENABLED"  &&  MULTIBYTE_ENABLED="@MULTIBYTE_ENABLED@"
 test -z "$ICONV_ENABLED"  &&  ICONV_ENABLED="@ICONV_ENABLED@"
+test -z "$OAUTH_SUPPORT"  &&  OAUTH_SUPPORT="@OAUTH_SUPPORT@"
+test -z "$CURL_USER_AGENT"  &&  CURL_USER_AGENT="@CURL_USER_AGENT@"
 
 unset MAILDROP MHBUILD MHCONTEXT MHMTSUSERCONF MHN MHSHOW MHSTORE
 unset MHLDEBUG MHPDEBUG MHWDEBUG PAGER
