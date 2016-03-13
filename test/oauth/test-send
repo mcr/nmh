@@ -355,4 +355,7 @@ unset XOAUTH
 test_send_only_fakesmtp 'post: problem initializing server; [BHST] SMTP server does not support SASL XOAUTH2
 send: message not delivered to anyone'
 
+clean_fakesmtp
+clean_fakehttp
+
 exit ${failed:-0}

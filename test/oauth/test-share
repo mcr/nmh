@@ -136,4 +136,7 @@ run_test "msgchk -host 127.0.0.1 -port ${pop_port} -oauth test -user nobody@exam
 start_pop_xoauth
 test_inc_success
 
+clean_fakesmtp
+clean_fakehttp
+
 exit ${failed:-0}

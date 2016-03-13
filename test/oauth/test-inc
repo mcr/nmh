@@ -47,12 +47,6 @@ fake_json_response <<EOF
 }
 EOF
 
-expect_creds <<EOF
-access: test-access
-refresh: test-refresh
-expire:
-EOF
-
 start_fakehttp
 start_pop_xoauth
 
@@ -112,5 +106,7 @@ EOF
 start_pop testuser testpass
 
 test_inc 'inc: POP server does not support SASL'
+
+clean_fakehttp
 
 exit ${failed:-0}

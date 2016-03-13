@@ -29,7 +29,7 @@ oauth-test-redirect_uri: urn:ietf:wg:oauth:2.0:oob
 EOF
 
 setup_pop() {
-    pop_message=${MH_TEST_DIR}/testmessage
+    pop_message=${MHTMPDIR}/testmessage
     cat > "${pop_message}" <<EOM
 Received: From somewhere
 From: No Such User <nosuch@example.com>
@@ -73,6 +73,10 @@ start_fakesmtp() {
         > /dev/null
 }
 
+clean_fakesmtp() {
+    rm "${testname}.smtp-req"
+}
+
 fake_creds() {
     cat > "${MHTMPDIR}/oauth-test"
 }
@@ -80,6 +84,10 @@ fake_creds() {
 fake_http_response() {
     echo "HTTP/1.1 $1" > "${testname}.http-res"
     cat >> "${testname}.http-res"
+}
+
+clean_fakehttp() {
+    rm -f "${testname}.http-res"
 }
 
 fake_json_response() {
@@ -91,9 +99,10 @@ fake_json_response() {
 # The format of the POST request is mostly dependent on curl, and could possibly
 # change with newer or older curl versions, or by configuration.  curl 7.39.0
 # makes POST requests like this on FreeBSD 10 and Ubuntu 14.04.  If you find
-# this failing, you'll need to make this a smarter comparison.
+# this failing, you'll need to make this a smarter comparison.  Note that it is
+# sorted, so that it doesn't depend on the JSON being in a specific order.
 expect_http_post() {
-    cat > "${testname}.expected-http-req" <<EOF
+    sort > "${testname}.expected-http-req" <<EOF
 POST /oauth/token HTTP/1.1
 User-Agent: nmh/${MH_VERSION} ${CURL_USER_AGENT}
 Host: 127.0.0.1:${http_port}
@@ -118,7 +127,7 @@ expect_http_post_old_refresh() {
 }
 
 expect_creds() {
-    cat > "${testname}.expected-creds"
+    cat > "${MHTMPDIR}/$$.expected-creds"
 }
 
 test_inc() {
@@ -144,11 +153,15 @@ test_send_only_fakesmtp() {
 test_send() {
     start_fakehttp
     test_send_only_fakesmtp "$@"
-    check "${testname}.http-req" "${testname}.expected-http-req"
+    sort -o "${testname}.http-req.sorted" "${testname}.http-req"
+    rm "${testname}.http-req"
+    check "${testname}.http-req.sorted" "${testname}.expected-http-req"
 }
 
 check_http_req() {
-    check "${testname}.http-req" "${testname}.expected-http-req"
+    sort -o "${testname}.http-req.sorted" "${testname}.http-req"
+    rm "${testname}.http-req"
+    check "${testname}.http-req.sorted" "${testname}.expected-http-req"
 }
 
 check_creds_private() {
@@ -168,6 +181,6 @@ check_creds() {
     f="${MHTMPDIR}/oauth-test"
 
     sed 's/^expire:.*/expire:/' "$f" > "$f".notime
-    check "$f".notime "${testname}.expected-creds"
+    check "$f".notime "${MHTMPDIR}/$$.expected-creds"
     rm "$f"
 }

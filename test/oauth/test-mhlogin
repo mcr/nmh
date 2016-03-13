@@ -11,7 +11,7 @@ fi
 . "${srcdir}/test/oauth/common.sh"
 
 expect_no_creds() {
-    cat /dev/null > "${testname}.expected-creds"
+    cat /dev/null > "${MHTMPDIR}/$$.expected-creds"
     cat /dev/null > "${MHTMPDIR}/oauth-test"
     chmod 600 "${MHTMPDIR}/oauth-test"
 }
@@ -253,5 +253,7 @@ expect_no_creds
 
 test_mhlogin 'mhlogin: error exchanging code for OAuth2 token
 mhlogin: bad OAuth request; re-run with -snoop and send REDACTED output to nmh-workers'
+
+clean_fakehttp
 
 exit ${failed:-0}
