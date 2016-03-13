@@ -6,7 +6,7 @@
 
 #define	NPARTS	50
 #define	NTYPES	20
-#define	NPARMS	10
+#define	NPREFS	20
 
 /*
  * Abstract type for header fields
@@ -193,6 +193,10 @@ struct Content {
 /* Structure for text content */
 struct text {
     int	tx_charset;		/* flag for character set */
+    int lf_line_endings;        /* Whether to use CR LF (0) or LF (1) line
+                                   endings.  The meaning of 0 was selected so
+                                   that CR LF is the default, in accordance
+                                   with RFC 2046, Sec. 4.1.1, Par. 1. */
 };
 
 /*
@@ -338,6 +342,8 @@ void close_encoding (CT);
 void free_content (CT);
 char *ct_type_str (int);
 char *ct_subtype_str (int, int);
+int ct_str_type (const char *);
+int ct_str_subtype (int, const char *);
 const struct str2init *get_ct_init (int);
 const char *ce_str (int);
 const struct str2init *get_ce_method (const char *);
@@ -500,8 +506,7 @@ char *get_param_value(PM pm, char replace);
  * markerform	- The name of a file containg mh-format(5) code used to
  *		  display markers about non-displayed MIME parts.
  */
-void show_all_messages(CT *cts, int concat, int textonly, int inlineonly,
-		       char *markerform);
+void show_all_messages(CT *cts, int concat, int textonly, int inlineonly);
 
 /*
  * Display (or store) a single MIME part using the specified command

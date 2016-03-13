@@ -9,7 +9,7 @@ ignores=msgid,message-id,received,content-type,content-transfer-encoding,content
 Date:formatfield="%<(nodate{text})%{text}%|%(pretty{text})%>"
 To:
 cc:
-From:decode
+From:formatfield="%(unquote(decode{text}))"
 Subject:decode
 :
 extras:nocomponent

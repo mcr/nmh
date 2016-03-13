@@ -1,27 +1,26 @@
-# Common helper routines for test shell scripts -- intended to be sourced by them
+# Common helper routines for test shell scripts -- to be sourced by them
 # @configure_input@
 
 
-#### The following exported variables are set by "make check".  Ensure
+#### The following variables are set by "make check".  Ensure
 #### that they are set here so that individual tests can be run
 #### outside of make.  Requires that MH_OBJ_DIR be set on entry.
 test -z "$MH_TEST_DIR"  &&  MH_TEST_DIR="$MH_OBJ_DIR/test/testdir"
+test -z "$MH_INST_DIR"  &&  MH_INST_DIR="${MH_TEST_DIR}/inst"
 test -z "$prefix"  &&  prefix=@prefix@
 test -z "$datarootdir"  &&  datarootdir=@datarootdir@
 test -z "$exec_prefix"  &&  exec_prefix=@exec_prefix@
-test -z "$nmhexecdir"  &&  nmhexecdir="@libexecdir@/nmh"
 test -z "$bindir"  &&  bindir="@bindir@"
 test -z "$mandir"  &&  mandir="@mandir@"
 test -z "$nmhetcdir"  &&  nmhetcdir="@sysconfdir@/nmh"
+#### The following doesn't support running the distcheck version of
+#### test-mhparam standalone, but only via make distcheck.
+test -z "$nmhetcdirinst"  &&  nmhetcdirinst="@nmhetcdirinst@$nmhetcdir"
+test -z "$nmhlibexecdir"  &&  nmhlibexecdir="@libexecdir@/nmh"
 test -z "$supported_locks"  &&  supported_locks="@supported_locks@"
 test -z "$default_locking"  &&  default_locking="@default_locking@"
 test -z "$MULTIBYTE_ENABLED"  &&  MULTIBYTE_ENABLED="@MULTIBYTE_ENABLED@"
 test -z "$ICONV_ENABLED"  &&  ICONV_ENABLED="@ICONV_ENABLED@"
-export MH_TEST_DIR nmhexecdir bindir mandir nmhetcdir
-export MULTIBYTE_ENABLED ICONV_ENABLED
-
-test -z "$MH_INST_DIR"  &&  MH_INST_DIR="${MH_TEST_DIR}/inst"
-export MH_INST_DIR
 
 unset MAILDROP MHBUILD MHCONTEXT MHMTSUSERCONF MHN MHSHOW MHSTORE
 unset MHLDEBUG MHPDEBUG MHWDEBUG PAGER
@@ -32,6 +31,10 @@ unset LANG LC_ALL LC_CTYPE
 #### Use a test dir for tmp files when MHTMPDIR applies.
 MHTMPDIR=$MH_TEST_DIR/Mail
 export MHTMPDIR
+
+#### If you're reading this .... you can set MH_TEST_NOCLEANUP to prevent
+#### the test suite from cleaning up the results of a test run, if you need
+#### to do manual debugging on a test.
 
 output_md5()
 {
@@ -156,23 +159,26 @@ prepare_space() {
 
 #### check() requires two arguments, each the name of a file to be
 #### diff'ed.
-#### If the contents are same, the second file is removed.  And the
-####   first file is removed unless there's an optional argument with
-####   a value of 'keep first'.
-#### If different, global variable "failed" is incremented.
-#### If there's an optional 'ignore space' argument, spacing differences
-####   will not be considered signficant, emulating GNU diff -w.  It
-####   is assumed that the first file has already been run through
-####   prepare_space.
+#### If the contents are same, the second file is removed.  If different,
+#### global variable "failed" is incremented.
+#### Optional arguments:
+####   'keep first' -- first file is removed unless this is present.
+####   'ignore space' -- spacing differences will not be considered
+####        signficant, emulating GNU diff -w.  It is assumed that the
+####        first file has already been run through prepare_space.
+####   ':' <test name> -- will print '<test name>' in the failure message,
+####        to make it easier to tell which of multiple tests has failed.
 check() {
     first=$1; shift
     second=$1; shift
     keepfirst=
     ignorespace=
+    label=test
     while [ $# -gt 0 ]; do
         case $1 in
             'keep first')   keepfirst=1 ;;
             'ignore space') ignorespace=1 ;;
+	    ':') shift; label=\'"$*"\'; break ;;
             *) echo "$0: invalid check() argument \"$1\" in test suite" >&2 ;;
         esac
         shift
@@ -194,7 +200,7 @@ check() {
         #### POSIX diff should support -c.
         diff -c "$first" "$second" || true
         echo
-        echo "$0: test failed, outputs are in $first and $second."
+        echo "$0: $label failed, outputs are in $first and $second."
         failed=`expr ${failed:-0} + 1`
         #### Set return status of the function.
         [ $failed -eq 0 ]
@@ -247,7 +253,7 @@ setup_test ()
 {
   MH="${MH_TEST_DIR}/Mail/.mh_profile"
   MHMTSCONF="${MH_INST_DIR}${nmhetcdir}/mts.conf"
-  MH_LIBEXEC_DIR="${MH_INST_DIR}${nmhexecdir}"
+  MH_LIBEXEC_DIR="${MH_INST_DIR}${nmhlibexecdir}"
   export MH MHMTSCONF MH_LIBEXEC_DIR
 
   #
@@ -278,7 +284,7 @@ setup_test ()
   export PATH
 
   # clean old test data
-  trap "cd $MH_TEST_DIR; rm -rf '$MH_TEST_DIR/Mail'" 0
+  trap "test -z $MH_TEST_NOCLEANUP && (cd $MH_TEST_DIR; rm -rf '$MH_TEST_DIR/Mail')" 0
   # setup test data
   mkdir -p "$MH_TEST_DIR/Mail" || exit 1
   cat > "$MH" <<EOF || exit 1
@@ -290,17 +296,26 @@ mhbuild: -nocontentid
 mhlproc: ${MH_LIBEXEC_DIR}/mhl
 moreproc: cat
 postproc: ${MH_LIBEXEC_DIR}/post
+showmimeproc: ${MH_INST_DIR}${bindir}/mhshow
 showproc: ${MH_LIBEXEC_DIR}/mhl
+#: The following aren't currently used by the test suite, but are
+#: defined here in case they are in the future:
+mailproc: ${MH_INST_DIR}${bindir}/mhmail
+rcvstoreproc: ${MH_LIBEXEC_DIR}/rcvstore
+sendproc: ${MH_INST_DIR}${bindir}/send
+whatnowproc: ${MH_INST_DIR}${bindir}/whatnow
+whomproc: ${MH_INST_DIR}${bindir}/whom
+#: incproc and packproc are defined in config.c but not used by any code.
 EOF
 
-  for f in MailAliases components digestcomps distcomps forwcomps mhl.body \
-           mhl.digest mhl.format mhl.forward mhl.headers mhl.reply \
-           mhn.defaults rcvdistcomps replcomps replgroupcomps scan.MMDDYY \
-           scan.YYYYMMDD scan.curses scan.default scan.highlighted scan.mailx \
-	   scan.nomime scan.size scan.time scan.timely scan.unseen
-  do
-    cp "${MH_INST_DIR}${nmhetcdir}/${f}" "${MH_TEST_DIR}/Mail" || exit 1
-  done
+  if test -z '@nmhetcdirinst@'; then
+    #### This isn't used with make distcheck, so that we can use it to
+    #### be sure that etc files are not used from an existing nmh
+    #### installation.
+    #### posh doesn't like "${MH_INST_DIR}${nmhetcdir}"/*, so cd to
+    #### the directory and provide an argument without quotes to cp.
+    (cd "${MH_INST_DIR}${nmhetcdir}/"  &&  cp * "${MH_TEST_DIR}/Mail")
+  fi
 
   folder -create +inbox > /dev/null
   # create 10 basic messages

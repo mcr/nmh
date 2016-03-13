@@ -331,8 +331,7 @@ getln (char *buffer, int n)
     char *cp;
     static int quoting = 0;
 
-    cp = buffer;
-    *cp = 0;
+    *buffer = 0;
 
     switch (setjmp (sigenv)) {
 	case OK: 
@@ -347,6 +346,9 @@ getln (char *buffer, int n)
 	    wtuser = 0;
 	    return NOTOK;
     }
+
+    cp = buffer;
+    *cp = 0;
 
     for (;;) {
 	switch (c = getchar ()) {

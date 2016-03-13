@@ -74,5 +74,3 @@
 
 #define DEFAULT_PAGER "more"
 #define DEFAULT_EDITOR "vi"
-
-#include <signal.h>

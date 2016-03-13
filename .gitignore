@@ -22,6 +22,8 @@
 /ylwrap
 /nmh-*.tar.gz
 /nmh-*.tar.gz.sig
+/sbr/icalendar.c
+/sbr/icalparse.[hc]
 
 # Removed by maintainer-clean:
 /autom4te.cache/
@@ -78,6 +80,7 @@ a.out.dSYM/
 /uip/mark
 /uip/mhbuild
 /uip/mhfixmsg
+/uip/mhical
 /uip/mhl
 /uip/mhlist
 /uip/mhlogin

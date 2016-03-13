@@ -1,0 +1,81 @@
+#### replaliases
+####
+#### convenience functions for various repl(1) commands
+#### They're functions instead of aliases for portability.
+
+#### If using par (see mhn.defaults), it helps to have its PARINIT
+#### environment variable set.  If you really want it to be null,
+#### either comment this out or set it to, e.g., ' '.
+#### Removed "R" from PARINIT recommendation in par(1) man page so
+#### that it doesn't consider words that are too long to be an error.
+if [ -z "$PARINIT" ]; then
+    PARINIT='rTbgq B=.,?_A_a Q=_s>|'
+    export PARINIT
+fi
+
+#### Reply, including text/html (converted to text/plain) and
+#### text/plain parts.
+####
+#### Optional arguments:
+####   -h to disable conversion of text/html parts
+####   -p to disable conversion of text/plain parts
+#### All other arguments are passed to repl.
+#### The -p argument can be useful with improperly structured
+#### messages, such as those that use multipart/related when they
+#### should have used multipart/alternative.
+rt() {
+    if [ "$1" = -h ]; then
+        shift
+        repl -filter mhl.replywithoutbody -convertargs text/plain '' "$@"
+    elif [ "$1" = -p ]; then
+        shift
+        repl -filter mhl.replywithoutbody -convertargs text/html '' "$@"
+    else
+        repl -filter mhl.replywithoutbody \
+             -convertargs text/html '' -convertargs text/plain '' "$@"
+    fi
+}
+
+
+#### Add -editor mhbuild to above.  Useful only when attachments
+#### won't be added to the message.
+####
+#### To ease editing at the What now? prompt, add a line like this to
+#### your .mh_profile:
+####     mhbuild-next: $EDITOR
+#### assuming that your EDTIOR environment variable is set; if not,
+#### replace $EDITOR above with the name of your editor.  Without that
+#### profile entry, enter "e[dit] $EDITOR" at the What now? prompt.
+rtm() {
+    rt -editor mhbuild "$@"
+}
+
+
+#### accept a calendar request
+calaccept() {
+    repl -noformat -editor mhbuild \
+         -convertargs text/calendar '-reply accept -contenttype' "$@"
+}
+
+#### decline a calendar request
+caldecline() {
+    repl -noformat -editor mhbuild \
+         -convertargs text/calendar '-reply decline -contenttype' "$@"
+}
+
+#### reply as tentative to a calendar request
+caltentative() {
+    repl -noformat -editor mhbuild \
+         -convertargs text/calendar '-reply tentative -contenttype' "$@"
+}
+
+#### cancel a calendar request
+calcancel() {
+    repl -noformat -editor mhbuild \
+         -convertargs text/calendar '-cancel -contenttype' "$@"
+}
+
+
+# Local Variables:
+# mode: sh
+# End:

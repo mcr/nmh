@@ -1,0 +1,171 @@
+.TH MHICAL %manext1% "January 4, 2015" "%nmhversion%"
+.\"
+.\" %nmhwarning%
+.\"
+.SH NAME
+mhical \- manipulates an iCalendar event request
+.SH SYNOPSIS
+.HP 5
+.na
+.B mhical
+.RB [ \-form
+.IR formatfile ]
+.RB [ \-format
+.IR formatstring ]
+.RB [[ \-reply
+.IR "accept" " | " "decline" " | " "tentative" "] |"
+.BR \-cancel ]
+.RB [ \-contenttype ]
+.RB [ \-infile
+.IR infile ]
+.RB [ \-outfile
+.IR outfile ]
+.RB [ \-unfold ]
+.RB [ \-debug ]
+.RB [ \-version ]
+.RB [ \-help ]
+.ad
+.SH DESCRIPTION
+.B mhical
+manipulates an iCalendar (.ics) event request, to display it, generate
+a reply to it, or cancel it.  iCalendar event requests and replies are
+defined by RFC 5545.
+.PP
+.SH DISPLAY
+The default operation is to display the iCalendar event request in a
+human-readable format.
+.SS "Format Program Selection"
+For the display operation, the
+.B \-format
+.I string
+and
+.B \-form
+.I formatfile
+switches may be used to specify a format string or a format file to read.
+If given a format string, it must be specified as a single argument to
+the
+.B \-format
+switch.  If given a format file name with
+.BR \-form ,
+the file is searched for using the normal
+.B nmh
+rules: absolute pathnames are accessed directly, tilde expansion is
+done on usernames, and files are searched for in the user's
+.I Mail
+directory as specified in their profile.  If not found there, the directory
+.RI \*(lq %nmhetcdir% \*(rq
+is checked.
+.B mhical
+defaults to using a format file named
+.BR mhical.24hour ,
+and will use the one installed in the
+.RI \*(lq %nmhetcdir% \*(rq
+directory if not found elsewhere.
+.PP
+The following format components are supported:
+.PP
+.RS 5
+.fc ^ ~
+.nf
+.ta \w'description 'u
+.BR ^method~^
+.BR ^organizer~^
+.BR ^summary~^
+.BR ^description~^
+.BR ^location~^
+.BR ^dtstart~^
+.BR ^dtend~^
+.BR ^attendees~^
+.fi
+.RE
+.PP
+Those format names are case-sensitive.  Each corresponds to the
+iCalendar property of the same name as defined in RFC 5545, with the
+exception of
+.BR attendees .
+That is a comma-delimited list of the common name (CN), if available,
+or email address of Attendee properties.  A maximum of 20 will be
+displayed.
+.SS Timezone
+.B mhical
+will display the event with times converted to the timezone specified
+by the
+.B TZ
+environment variable, if it is set, see tzset(3).  If not set, its
+behavior is implementation defined, but may use the user's local
+timezone.
+.SH REPLY
+The
+.B \-reply
+switch generates a reply from the event request.  The required
+action parameter must be one of
+.IR "accept" ,
+.IR "decline" ", or"
+.IR "tentative" .
+Delegation is not supported.
+.SH CANCEL
+The
+.B \-cancel
+switch generates an iCalendar event that can be used to cancel
+the event request.
+.SH INPUT/OUTPUT
+By default,
+.B mhical
+reads from standard input and writes to standard output.  The
+.B \-infile
+and
+.BR \-outfile ,
+respectively, switches can be used to override these defaults.
+.PP
+.SH MISCELLANEOUS SWITCHES
+The
+.B \-contenttype
+switch instructs
+.B mhical
+to insert a Content-Type header at the beginning of its output,
+for use by
+.BR mhbuild .
+It can only be used with
+.B \-reply
+and
+.BR \-cancel .
+.PP
+The
+.B \-unfold
+switch echoes the event request, but with all lines unfolded.
+.PP
+The
+.B \-debug
+switch reveals minute details of the parse process.
+.SH FILES
+.B mhical
+looks for format files in multiple locations:  absolute pathnames are
+accessed directly, tilde expansion is done on usernames, and files are
+searched for in the user's
+.I Mail
+directory as specified in their profile.  If not found there, the directory
+.RI \*(lq %nmhetcdir% \*(rq
+is checked.
+.PP
+.fc ^ ~
+.nf
+.ta \w'%nmhetcdir%/mhical.24hour  'u
+^%nmhetcdir%/mhical.24hour~^The default display template
+^%nmhetcdir%/mhical.12hour~^Display template that uses 12-hour clock
+.fi
+.fi
+.SH "SEE ALSO"
+.IR mhbuild (1),
+.IR mh\-format (5),
+.IR tzset (3),
+.IR repl (1)
+.SH DEFAULTS
+.nf
+.RB ` \-form "' defaults to mhical.24hour"
+.RB ` \-infile "' defaults to standard input"
+.RB ` \-outfile "' defaults to standard output"
+.fi
+.SH BUGS
+.B mhical
+supports only a very limited subset of RRULE formats.  Specifically,
+only a frequency of YEARLY and an interval of 1 are supported.

@@ -1,0 +1,5 @@
+%;
+%; This is provided as reference only; it shows the default content marker
+%; used by mhshow when it decides to not display content.
+%;
+[ Message %{folder}%<{folder}:%>%(msg) ]

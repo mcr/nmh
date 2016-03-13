@@ -446,9 +446,6 @@ WhatNow (int argc, char **argv)
 		    annotate(drft, ATTACH_FIELD, file, 1, 0, -2, 1);
 		    if (verbose) {
 			ctype = mime_type(file);
-		    }
-
-		    if (verbose) {
 			printf ("Attaching %s as a %s\n", file, ctype);
 			free (ctype);
 		    }
@@ -956,6 +953,7 @@ buildfile (char **argp, char *file)
     X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
+    X("sendmail program", 0, MTSSM) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
 
@@ -1145,6 +1143,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case SASLMECHSW:
 		case USERSW:
 		case PORTSW:
+		case MTSSM:
 		case MTSSW:
 		case MESSAGEIDSW:
 		    vec[vecp++] = --cp;
@@ -1256,10 +1255,10 @@ whomfile (char **arg, char *file)
 
 	case OK:
 	    vec = argsplit(whomproc, &program, &vecp);
-	    vec[vecp++] = file;
 	    if (arg)
 		while (*arg)
 		    vec[vecp++] = *arg++;
+	    vec[vecp++] = file;
 	    vec[vecp] = NULL;
 
 	    execvp (program, vec);

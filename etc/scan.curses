@@ -37,8 +37,8 @@
 %;
 %; If the message is from me, print out who the message was sent to.
 %; Otherwise, print out who it was from.
-%<(mymbox{from})%<{to}To:%14(decode(friendly{to}))%>%>\
-%<(zero)%17(decode(friendly{from}))%>  \
+%<(mymbox{from})%<{to}To:%14(unquote(decode(friendly{to})))%>%>\
+%<(zero)%17(unquote(decode(friendly{from})))%>  \
 %;
 %; Print out the subject and any of th mesage body that will fit on the
 %; rest of the line.  After that, print the terminal reset code to reset

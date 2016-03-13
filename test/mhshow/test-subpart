@@ -51,12 +51,134 @@ EOF
 
 # Write the expected output.
 cat > $expected <<EOF
+[ Message inbox:11 ]
 [ part 1.1 - text/plain -   29B  ]
 This is the text/plain part.
 EOF
 
 # check it
 run_prog mhshow -part 1.1 -form mhl.null $msgnum > $actual 2>&1
-check "$expected" "$actual"
+check "$expected" "$actual" : part 1.1
+
+
+# tests of -part/-type/-prefer
+
+cat > $msgfile <<EOF
+To: example@example.org
+From: someone <someone@example.com>
+Subject: mhshow -part/-type/-prefer test
+Date: Thu, 29 Jan 2015 18:12:21 +0000 (GMT)
+Content-Type: multipart/mixed; boundary="BoundaryMixed"
+
+--BoundaryMixed
+Content-type: multipart/alternative;
+ boundary="BoundaryAlternative1"
+
+--BoundaryAlternative1
+Content-type: text/plain; charset=US-ASCII; format=flowed
+Content-transfer-encoding: 8bit
+
+This is the body text/plain part.
+--BoundaryAlternative1
+Content-type: multipart/related;
+ boundary="BoundaryAlternative2"; type="text/html"
+
+--BoundaryAlternative2
+Content-type: text/html; CHARSET=US-ASCII
+Content-transfer-encoding: quoted-printable
+
+<html><body><div><span style=3D"line-height: 1.5;">
+This is the text/html body part.
+</span></div></body></html>
+
+--BoundaryAlternative2--
+
+--BoundaryAlternative1--
+
+--BoundaryMixed
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+This is the final text/plain signature part.
+
+--BoundaryMixed--
+EOF
+
+# Write the expected output.
+cat > $expected <<EOF
+[ Message inbox:11 ]
+[ part 1.1.1 - text/html -   111B  ]
+This is the text/html body part.
+EOF
+
+# check it
+# The sed command removes blank lines and leading space that lynx inserts.
+run_prog mhshow -part 1.1.1 -form mhl.null $msgnum |
+    sed '/^$/D; s/^ *//;' > $actual 2>&1
+check "$expected" "$actual" : part 1.1.1
+
+# Write the expected output.
+cat > $expected <<EOF
+[ Message inbox:11 ]
+[ part 1.2 - text/plain -   33B  ]
+This is the body text/plain part.
+EOF
+
+# check it
+run_prog mhshow -part 1.2 -form mhl.null $msgnum > $actual 2>&1
+check "$expected" "$actual" : part 1.2
+
+# Write the expected output.
+cat > $expected <<EOF
+[ Message inbox:11 ]
+[ part 1.1 - text/plain -   33B  ]
+This is the body text/plain part.
+EOF
+
+# check it
+run_prog mhshow -prefer text/plain -part 1 -form mhl.null $msgnum > $actual 2>&1
+check "$expected" "$actual" : part conflicting text/plain, part 1 switches
+
+# Write the expected output.
+cat > $expected <<EOF
+[ Message inbox:11 ]
+[ part 2 - text/plain -   93B  ]
+_______________________________________________
+This is the final text/plain signature part.
+EOF
+
+# check it
+run_prog mhshow -part 2 -form mhl.null $msgnum > $actual 2>&1
+check "$expected" "$actual" : part 2
+
+# Write the expected output.
+cat > $expected <<EOF
+[ Message inbox:11 ]
+[ part 1.2 - text/plain -   33B  ]
+This is the body text/plain part.
+[ part 2 - text/plain -   93B  ]
+_______________________________________________
+This is the final text/plain signature part.
+EOF
+
+# check it
+run_prog mhshow -type text/plain -form mhl.null $msgnum > $actual 2>&1
+check "$expected" "$actual" : type text/plain
+
+# Write the expected output.
+cat > $expected <<EOF
+[ Message inbox:11 ]
+[ part 1.1 - text/plain -   33B  ]
+This is the body text/plain part.
+[ part 2 - text/plain -   93B  ]
+_______________________________________________
+This is the final text/plain signature part.
+EOF
+
+run_prog mhshow -prefer text/plain -form mhl.null $msgnum > $actual 2>&1
+check "$expected" "$actual" : prefer text/plain
 
 exit $failed

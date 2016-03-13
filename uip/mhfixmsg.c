@@ -16,6 +16,9 @@
 #define MHFIXMSG_SWITCHES \
     X("decodetext 8bit|7bit", 0, DECODETEXTSW) \
     X("nodecodetext", 0, NDECODETEXTSW) \
+    X("decodetypes", 0, DECODETYPESW) \
+    X("crlflinebreaks", 0, CRLFLINEBREAKSSW) \
+    X("nocrlflinebreaks", 0, NCRLFLINEBREAKSSW) \
     X("textcharset", 0, TEXTCHARSETSW) \
     X("notextcharset", 0, NTEXTCHARSETSW) \
     X("reformat", 0, REFORMATSW) \
@@ -26,6 +29,7 @@
     X("nofixboundary", 0, NFIXBOUNDARYSW) \
     X("fixcte", 0, FIXCTESW) \
     X("nofixcte", 0, NFIXCTESW) \
+    X("fixtype mimetype", 0, FIXTYPESW) \
     X("file file", 0, FILESW) \
     X("outfile file", 0, OUTFILESW) \
     X("rmmproc program", 0, RPROCSW) \
@@ -75,9 +79,13 @@ void freects_done (int) NORETURN;
 typedef struct fix_transformations {
     int fixboundary;
     int fixcte;
+    svector_t fixtypes;
     int reformat;
     int replacetextplain;
     int decodetext;
+    char *decodetypes;
+    /* Whether to use CRLF linebreaks, per RFC 2046 Sec. 4.1.1, par.1. */
+    int lf_line_endings;
     char *textcharset;
 } fix_transformations;
 
@@ -85,12 +93,16 @@ int mhfixmsgsbr (CT *, const fix_transformations *, char *);
 static int fix_boundary (CT *, int *);
 static int get_multipart_boundary (CT, char **);
 static int replace_boundary (CT, char *, char *);
+static int fix_types (CT, svector_t, int *);
+static char *replace_substring (char **, const char *, const char *);
+static char *remove_parameter (char *, const char *);
 static int fix_multipart_cte (CT, int *);
 static int set_ce (CT, int);
 static int ensure_text_plain (CT *, CT, int *, int);
 static int find_textplain_sibling (CT, int, int *);
 static int insert_new_text_plain_part (CT, int, CT);
 static CT build_text_plain_part (CT);
+static int insert_into_new_mp_alt (CT *, int *);
 static CT divide_part (CT);
 static void copy_ctinfo (CI, CI);
 static int decode_part (CT);
@@ -100,12 +112,14 @@ static CT build_multipart_alt (CT, CT, int, int);
 static int boundary_in_content (FILE **, char *, const char *);
 static void transfer_noncontent_headers (CT, CT);
 static int set_ct_type (CT, int type, int subtype, int encoding);
-static int decode_text_parts (CT, int, int *);
+static int decode_text_parts (CT, int, const char *, int *);
+static int should_decode(const char *, const char *, const char *);
 static int content_encoding (CT, const char **);
 static int strip_crs (CT, int *);
 static int convert_charsets (CT, char *, int *);
 static int fix_always (CT, int *);
 static int write_content (CT, char *, char *, int, int);
+static void set_text_ctparams(CT, char *, int);
 static int remove_file (char *);
 static void report (char *, char *, char *, char *, ...);
 static void pipeser (int);
@@ -126,8 +140,11 @@ main (int argc, char **argv) {
     int status = OK;
     fix_transformations fx;
     fx.reformat = fx.fixcte = fx.fixboundary = 1;
+    fx.fixtypes = NULL;
     fx.replacetextplain = 0;
     fx.decodetext = CE_8BIT;
+    fx.decodetypes = "text,application/ics";  /* Default, per man page. */
+    fx.lf_line_endings = 0;
     fx.textcharset = NULL;
 
     if (nmh_init(argv[0], 1)) { return 1; }
@@ -172,6 +189,17 @@ main (int argc, char **argv) {
             case NDECODETEXTSW:
                 fx.decodetext = 0;
                 continue;
+            case DECODETYPESW:
+                if (! (cp = *argp++)  ||  *cp == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
+                fx.decodetypes = cp;
+                continue;
+            case CRLFLINEBREAKSSW:
+                fx.lf_line_endings = 0;
+                continue;
+            case NCRLFLINEBREAKSSW:
+                fx.lf_line_endings = 1;
+                continue;
             case TEXTCHARSETSW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1]))
                     adios (NULL, "missing argument to %s", argp[-2]);
@@ -191,6 +219,18 @@ main (int argc, char **argv) {
                 continue;
             case NFIXCTESW:
                 fx.fixcte = 0;
+                continue;
+            case FIXTYPESW:
+                if (! (cp = *argp++) || (*cp == '-' && cp[1]))
+                    adios (NULL, "missing argument to %s", argp[-2]);
+                if (! strncasecmp (cp, "multipart/", 10)  ||
+                    ! strncasecmp (cp, "message/", 8)) {
+                    adios (NULL, "-fixtype %s not allowed", cp);
+                } else if (! strchr (cp, '/')) {
+                    adios (NULL, "-fixtype requires type/subtype");
+                }
+                if (fx.fixtypes == NULL) { fx.fixtypes = svector_create (10); }
+                svector_push_back (fx.fixtypes, cp);
                 continue;
             case REFORMATSW:
                 fx.reformat = 1;
@@ -306,7 +346,10 @@ main (int argc, char **argv) {
         }
         ctp = cts;
 
-        if ((ct = parse_mime (file))) { *ctp++ = ct; }
+        if ((ct = parse_mime (file))) {
+            set_text_ctparams(ct, fx.decodetypes, fx.lf_line_endings);
+            *ctp++ = ct;
+        }
     } else {
         /*
          * message(s) are coming from a folder
@@ -347,7 +390,10 @@ main (int argc, char **argv) {
                 char *msgnam;
 
                 msgnam = m_name (msgnum);
-                if ((ct = parse_mime (msgnam))) { *ctp++ = ct; }
+                if ((ct = parse_mime (msgnam))) {
+                    set_text_ctparams(ct, fx.decodetypes, fx.lf_line_endings);
+                    *ctp++ = ct;
+                }
             }
         }
 
@@ -376,6 +422,7 @@ main (int argc, char **argv) {
         status = 1;
     }
 
+    if (fx.fixtypes != NULL) { svector_free (fx.fixtypes); }
     free (outfile);
     free (file);
 
@@ -414,6 +461,9 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     if (status == OK  &&  fx->fixboundary) {
         status = fix_boundary (ctp, &message_mods);
     }
+    if (status == OK  && fx->fixtypes != NULL) {
+        status = fix_types (*ctp, fx->fixtypes, &message_mods);
+    }
     if (status == OK  &&  fx->fixcte) {
         status = fix_multipart_cte (*ctp, &message_mods);
     }
@@ -422,7 +472,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
             ensure_text_plain (ctp, NULL, &message_mods, fx->replacetextplain);
     }
     if (status == OK  &&  fx->decodetext) {
-        status = decode_text_parts (*ctp, fx->decodetext, &message_mods);
+        status = decode_text_parts (*ctp, fx->decodetext, fx->decodetypes, &message_mods);
     }
     if (status == OK  &&  fx->textcharset != NULL) {
         status = convert_charsets (*ctp, fx->textcharset, &message_mods);
@@ -728,6 +778,189 @@ replace_boundary (CT ct, char *file, char *boundary) {
 
 
 static int
+fix_types (CT ct, svector_t fixtypes, int *message_mods) {
+    int status = OK;
+
+    switch (ct->c_type) {
+    case CT_MULTIPART: {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
+            status = fix_types (part->mp_part, fixtypes, message_mods);
+        }
+        break;
+    }
+
+    case CT_MESSAGE:
+        if (ct->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
+
+            status = fix_types (e->eb_content, fixtypes, message_mods);
+        }
+        break;
+
+    default: {
+        char **typep, *type;
+
+        if (ct->c_ctinfo.ci_type  &&  ct->c_ctinfo.ci_subtype) {
+            for (typep = svector_strs (fixtypes);
+                 typep && (type = *typep);
+                 ++typep) {
+                char *type_subtype =
+                    concat (ct->c_ctinfo.ci_type, "/", ct->c_ctinfo.ci_subtype,
+                            NULL);
+
+                if (! strcasecmp (type, type_subtype)  &&
+                    decode_part (ct) == OK  &&
+                    ct->c_cefile.ce_file != NULL) {
+                    char *ct_type_subtype = mime_type (ct->c_cefile.ce_file);
+                    char *cp;
+
+                    if ((cp = strchr (ct_type_subtype, ';'))) {
+                        /* Truncate to remove any parameter list from
+                           mime_type () result. */
+                        *cp = '\0';
+                    }
+
+                    if (strcasecmp (type, ct_type_subtype)) {
+                        char *ct_type, *ct_subtype;
+                        HF hf;
+
+                        /* The Content-Type header does not match the
+                           content, so update these struct Content
+                           fields to match:
+                           * c_type, c_subtype
+                           * c_ctinfo.ci_type, c_ctinfo.ci_subtype
+                           * c_ctline
+                           */
+                        /* Extract type and subtype from type/subtype. */
+                        ct_type = getcpy (ct_type_subtype);
+                        if ((cp = strchr (ct_type, '/'))) {
+                            *cp = '\0';
+                            ct_subtype = getcpy (++cp);
+                        } else {
+                            advise (NULL, "missing / in MIME type of %s %s",
+                                    ct->c_file, ct->c_partno);
+                            free (ct_type);
+                            return NOTOK;
+                        }
+
+                        ct->c_type = ct_str_type (ct_type);
+                        ct->c_subtype = ct_str_subtype (ct->c_type, ct_subtype);
+
+                        free (ct->c_ctinfo.ci_type);
+                        ct->c_ctinfo.ci_type = ct_type;
+                        free (ct->c_ctinfo.ci_subtype);
+                        ct->c_ctinfo.ci_subtype = ct_subtype;
+                        if (! replace_substring (&ct->c_ctline, type,
+                                                 ct_type_subtype)) {
+                            advise (NULL, "did not find %s in %s",
+                                    type, ct->c_ctline);
+                        }
+
+                        /* Update Content-Type header field. */
+                        for (hf = ct->c_first_hf; hf; hf = hf->next) {
+                            if (! strcasecmp (TYPE_FIELD, hf->name)) {
+                                if (replace_substring (&hf->value, type,
+                                                       ct_type_subtype)) {
+                                    ++*message_mods;
+                                    if (verbosw) {
+                                        report (NULL, ct->c_partno, ct->c_file,
+                                                "change Content-Type in header "
+                                                "from %s to %s",
+                                                type, ct_type_subtype);
+                                    }
+                                    break;
+                                } else {
+                                    advise (NULL, "did not find %s in %s",
+                                            type, hf->value);
+                                }
+                            }
+                        }
+                    }
+                    free (ct_type_subtype);
+                }
+                free (type_subtype);
+            }
+        }
+    }}
+
+    return status;
+}
+
+char *
+replace_substring (char **str, const char *old, const char *new) {
+    char *cp;
+
+    if ((cp = strstr (*str, old))) {
+        char *remainder = cp + strlen (old);
+        char *prefix, *new_str;
+
+        if (cp - *str) {
+            prefix = getcpy (*str);
+            *(prefix + (cp - *str)) = '\0';
+            new_str = concat (prefix, new, remainder, NULL);
+            free (prefix);
+        } else {
+            new_str = concat (new, remainder, NULL);
+        }
+
+        free (*str);
+
+        return *str = new_str;
+    } else {
+        return NULL;
+    }
+}
+
+/*
+ * Remove a name=value parameter, given just its name, from a header value.
+ */
+char *
+remove_parameter (char *str, const char *name) {
+    /* It looks to me, based on the BNF in RFC 2045, than there can't
+       be whitespace betwwen the parameter name and the "=", or
+       between the "=" and the parameter value. */
+    char *param_name = concat (name, "=", NULL);
+    char *cp;
+
+    if ((cp = strstr (str, param_name))) {
+        char *start, *end;
+        size_t count = 1;
+
+        /* Remove any leading spaces, before the parameter name. */
+        for (start = cp;
+             start > str && isspace ((unsigned char) *(start-1));
+             --start) {
+            continue;
+        }
+        /* Remove a leading semicolon. */
+        if (start > str  &&  *(start-1) == ';') { --start; }
+
+        end = cp + strlen (name) + 1;
+        if (*end == '"') {
+            /* Skip past the quoted value, and then the final quote. */
+            for (++end ; *end  &&  *end != '"'; ++end) { continue; }
+            ++end;
+        } else {
+            /* Skip past the value. */
+            for (++end ; *end  &&  ! isspace ((unsigned char) *end); ++end) {}
+        }
+
+        /* Count how many characters need to be moved.  Include
+           trailing null, which is accounted for by the
+           initialization of count to 1. */
+        for (cp = end; *cp; ++cp) { ++count; }
+        (void) memmove (start, end, count);
+    }
+
+    free (param_name);
+
+    return str;
+}
+
+static int
 fix_multipart_cte (CT ct, int *message_mods) {
     int status = OK;
 
@@ -904,51 +1137,72 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
             free (type_subtype);
 
             if (! has_text_plain) {
-                /* Parent is a multipart/alternative.  Insert a new
-                   text/plain subpart. */
-                const int inserted =
-                    insert_new_text_plain_part (*ct, new_subpart_number,
-                                                parent);
-                if (inserted) {
-                    ++*message_mods;
-                    if (verbosw) {
-                        report (NULL, parent->c_partno, parent->c_file,
-                                "insert text/plain part");
+                struct multipart *mp = (struct multipart *) parent->c_ctparams;
+                struct part *part;
+                int siblings = 0;
+
+                for (part = mp->mp_parts; part; part = part->mp_next) {
+                    if (*ct != part->mp_part) {
+                        ++siblings;
+                    }
+                }
+
+                if (siblings) {
+                    /* Parent is a multipart/related.  Insert a new
+                       text/plain subpart in a new multipart/alternative. */
+                    if (insert_into_new_mp_alt (ct, message_mods)) {
+                        /* Not an error if text/plain couldn't be added. */
                     }
                 } else {
-                    status = NOTOK;
+                    /* There are no siblings, so insert a new text/plain
+                       subpart, and change the parent type from
+                       multipart/related to multipart/alternative. */
+                    const int inserted =
+                        insert_new_text_plain_part (*ct, new_subpart_number,
+                                                    parent);
+
+                    if (inserted) {
+                        HF hf;
+
+                        parent->c_subtype = MULTI_ALTERNATE;
+                        parent->c_ctinfo.ci_subtype = getcpy ("alternative");
+                        if (! replace_substring (&parent->c_ctline, "/related",
+                                                 "/alternative")) {
+                            advise (NULL,
+                                    "did not find multipart/related in %s",
+                                    parent->c_ctline);
+                        }
+
+                        /* Update Content-Type header field. */
+                        for (hf = parent->c_first_hf; hf; hf = hf->next) {
+                            if (! strcasecmp (TYPE_FIELD, hf->name)) {
+                                if (replace_substring (&hf->value, "/related",
+                                                       "/alternative")) {
+                                    ++*message_mods;
+                                    if (verbosw) {
+                                        report (NULL, parent->c_partno,
+                                                parent->c_file,
+                                                "insert text/plain part");
+                                    }
+
+                                    /* Remove, e.g., type="text/html" from
+                                       multipart/alternative. */
+                                    remove_parameter (hf->value, "type");
+                                    break;
+                                } else {
+                                    advise (NULL, "did not find multipart/"
+                                                  "related in header %s",
+                                            hf->value);
+                                }
+                            }
+                        }
+                    } else {
+                        /* Not an error if text/plain couldn't be inserted. */
+                    }
                 }
             }
         } else {
-            /* Slip new text/plain part into a new multipart/alternative. */
-            CT tp_part = build_text_plain_part (*ct);
-
-            if (tp_part) {
-                CT mp_alt = build_multipart_alt (*ct, tp_part, CT_MULTIPART,
-                                                 MULTI_ALTERNATE);
-                if (mp_alt) {
-                    struct multipart *mp =
-                        (struct multipart *) mp_alt->c_ctparams;
-
-                    if (mp  &&  mp->mp_parts) {
-                        mp->mp_parts->mp_part = tp_part;
-                        /* Make the new multipart/alternative the parent. */
-                        *ct = mp_alt;
-
-                        ++*message_mods;
-                        if (verbosw) {
-                            report (NULL, (*ct)->c_partno, (*ct)->c_file,
-                                    "insert text/plain part");
-                        }
-                    } else {
-                        free_content (tp_part);
-                        free_content (mp_alt);
-                        status = NOTOK;
-                    }
-                } else {
-                    status = NOTOK;
-                }
-            } else {
+            if (insert_into_new_mp_alt (ct, message_mods)) {
                 status = NOTOK;
             }
         }
@@ -1062,13 +1316,14 @@ build_text_plain_part (CT encoded_part) {
         if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
             advise (NULL, "unable to create temporary file in %s",
                     get_temp_dir());
-        }
-        tmp_plain_file = add (tempfile, NULL);
-        if (reformat_part (tp_part, tmp_plain_file,
-                           tp_part->c_ctinfo.ci_type,
-                           tp_part->c_ctinfo.ci_subtype,
-                           tp_part->c_type) == OK) {
-            return tp_part;
+        } else {
+            tmp_plain_file = add (tempfile, NULL);
+            if (reformat_part (tp_part, tmp_plain_file,
+                               tp_part->c_ctinfo.ci_type,
+                               tp_part->c_ctinfo.ci_subtype,
+                               tp_part->c_type) == OK) {
+                return tp_part;
+            }
         }
     }
 
@@ -1079,6 +1334,43 @@ build_text_plain_part (CT encoded_part) {
     return NULL;
 }
 
+
+/* Slip new text/plain part into a new multipart/alternative. */
+static int
+insert_into_new_mp_alt (CT *ct, int *message_mods) {
+    CT tp_part = build_text_plain_part (*ct);
+    int status = OK;
+
+    if (tp_part) {
+        CT mp_alt = build_multipart_alt (*ct, tp_part, CT_MULTIPART,
+                                         MULTI_ALTERNATE);
+        if (mp_alt) {
+            struct multipart *mp = (struct multipart *) mp_alt->c_ctparams;
+
+            if (mp  &&  mp->mp_parts) {
+                mp->mp_parts->mp_part = tp_part;
+                /* Make the new multipart/alternative the parent. */
+                *ct = mp_alt;
+
+                ++*message_mods;
+                if (verbosw) {
+                    report (NULL, (*ct)->c_partno, (*ct)->c_file,
+                            "insert text/plain part");
+                }
+            } else {
+                free_content (tp_part);
+                free_content (mp_alt);
+                status = NOTOK;
+            }
+        } else {
+            status = NOTOK;
+        }
+    } else {
+        /* Not an error if text/plain couldn't be built. */
+    }
+
+    return status;
+}
 
 static CT
 divide_part (CT ct) {
@@ -1482,11 +1774,39 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
 
 
 static int
-decode_text_parts (CT ct, int encoding, int *message_mods) {
+decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mods) {
     int status = OK;
+    int lf_line_endings = 0;
 
     switch (ct->c_type) {
-    case CT_TEXT:
+    case CT_MULTIPART: {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        /* Should check to see if the body for this part is encoded?
+           For now, it gets passed along as-is by InitMultiPart(). */
+        for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
+            status = decode_text_parts (part->mp_part, encoding, decodetypes, message_mods);
+        }
+        break;
+    }
+
+    case CT_MESSAGE:
+        if (ct->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
+
+            status = decode_text_parts (e->eb_content, encoding, decodetypes, message_mods);
+        }
+        break;
+
+    default:
+        if (! should_decode(decodetypes, ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype)) {
+            break;
+        }
+
+        lf_line_endings =
+            ct->c_ctparams  &&  ((struct text *) ct->c_ctparams)->lf_line_endings;
+
         switch (ct->c_encoding) {
         case CE_BASE64:
         case CE_QUOTED: {
@@ -1538,7 +1858,9 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
                             report (NULL, ct->c_partno, ct->c_file, "decode%s",
                                     ct->c_ctline ? ct->c_ctline : "");
                         }
-                        strip_crs (ct, message_mods);
+                        if (lf_line_endings) {
+                            strip_crs (ct, message_mods);
+                        }
                     } else {
                         status = NOTOK;
                     }
@@ -1550,39 +1872,49 @@ decode_text_parts (CT ct, int encoding, int *message_mods) {
         }
         case CE_8BIT:
         case CE_7BIT:
-            strip_crs (ct, message_mods);
+            if (lf_line_endings) {
+                strip_crs (ct, message_mods);
+            }
             break;
         default:
             break;
         }
 
         break;
-
-    case CT_MULTIPART: {
-        struct multipart *m = (struct multipart *) ct->c_ctparams;
-        struct part *part;
-
-        /* Should check to see if the body for this part is encoded?
-           For now, it gets passed along as-is by InitMultiPart(). */
-        for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
-            status = decode_text_parts (part->mp_part, encoding, message_mods);
-        }
-        break;
-    }
-
-    case CT_MESSAGE:
-        if (ct->c_subtype == MESSAGE_EXTERNAL) {
-            struct exbody *e = (struct exbody *) ct->c_ctparams;
-
-            status = decode_text_parts (e->eb_content, encoding, message_mods);
-        }
-        break;
-
-    default:
-        break;
     }
 
     return status;
+}
+
+
+/* Determine if the part with type[/subtype] should be decoded, according to
+   decodetypes (which came from the -decodetypes switch). */
+static int
+should_decode(const char *decodetypes, const char *type, const char *subtype) {
+    /* Quick search for matching type[/subtype] in decodetypes:  bracket
+       decodetypes with commas, then search for ,type, and ,type/subtype, in
+       it. */
+
+    int found_match = 0;
+    char *delimited_decodetypes = concat(",", decodetypes, ",", NULL);
+    char *delimited_type = concat(",", type, ",", NULL);
+
+    if (nmh_strcasestr(delimited_decodetypes, delimited_type)) {
+        found_match = 1;
+    } else if (subtype != NULL) {
+        char *delimited_type_subtype =
+            concat(",", type, "/", subtype, ",", NULL);
+
+        if (nmh_strcasestr(delimited_decodetypes, delimited_type_subtype)) {
+            found_match = 1;
+        }
+        free(delimited_type_subtype);
+    }
+
+    free(delimited_type);
+    free(delimited_decodetypes);
+
+    return found_match;
 }
 
 
@@ -2004,6 +2336,44 @@ write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
 
     flush_errors ();
     return status;
+}
+
+
+/*
+ * parse_mime() does not set lf_line_endings in struct text, so use this function to do it.
+ * It touches the parts the decodetypes identifies.
+ */
+static void
+set_text_ctparams(CT ct, char *decodetypes, int lf_line_endings) {
+    switch (ct->c_type) {
+    case CT_MULTIPART: {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        for (part = m->mp_parts; part; part = part->mp_next) {
+            set_text_ctparams(part->mp_part, decodetypes, lf_line_endings);
+        }
+        break;
+    }
+
+    case CT_MESSAGE:
+        if (ct->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
+
+            set_text_ctparams(e->eb_content, decodetypes, lf_line_endings);
+        }
+        break;
+
+    default:
+        if (should_decode(decodetypes, ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype)) {
+            if (ct->c_ctparams == NULL) {
+                if ((ct->c_ctparams = (struct text *) mh_xcalloc (1, sizeof (struct text))) == NULL) {
+                    adios (NULL, "out of memory");
+                }
+            }
+            ((struct text *) ct->c_ctparams)->lf_line_endings = lf_line_endings;
+        }
+    }
 }
 
 

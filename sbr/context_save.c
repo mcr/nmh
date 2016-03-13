@@ -7,19 +7,18 @@
  * complete copyright information.
  */
 
+/*
+ * This function used to support setuid/setgid programs by writing
+ * the file as the user.  But that code, m_chkids(), was removed
+ * because there no longer are setuid/setgid programs in nmh.
+ */
+
 #include <h/mh.h>
 #include <h/signals.h>
-
-/*
- * static prototypes
- */
-static int m_chkids(void);
-
 
 void
 context_save (void)
 {
-    int action;
     register struct node *np;
     FILE *out;
     sigset_t set, oset;
@@ -32,9 +31,6 @@ context_save (void)
     if (!(ctxflags & CTXMOD))
 	return;
     ctxflags &= ~CTXMOD;
-
-    if ((action = m_chkids ()) > 0)
-	return;			/* child did it for us */
 
     /* block a few signals */
     sigemptyset (&set);
@@ -57,48 +53,4 @@ context_save (void)
     lkfclosedata (out, ctxpath);
 
     sigprocmask (SIG_SETMASK, &oset, &set); /* reset the signal mask */
-
-    if (action == 0)
-	/* This must be _exit(), not exit(), because the child didn't
-	   call unregister_for_removal() in m_chkids(). */
-	_exit (0);		/* we are child, time to die */
-}
-
-/*
- * This hack brought to you so we can handle set[ug]id MH programs.
- * If we return -1, then no fork is made, we update .mh_profile
- * normally, and return to the caller normally.  If we return 0,
- * then the child is executing, .mh_profile is modified after
- * we set our [ug]ids to the norm.  If we return > 0, then the
- * parent is executed and .mh_profile has already be modified.
- * We can just return to the caller immediately.
- */
-
-static int
-m_chkids (void)
-{
-    int i;
-    pid_t pid;
-
-    if (getuid () == geteuid ())
-	return (-1);
-
-    for (i = 0; (pid = fork ()) == -1 && i < 5; i++)
-	sleep (5);
-
-    switch (pid) {
-	case -1:
-	    break;
-
-	case 0:
-	    /* It's not necessary to call unregister_for_removal(0)
-               because the child calls _exit() in context_save(). */
-	    break;
-
-	default:
-	    pidwait (pid, -1);
-	    break;
-    }
-
-    return pid;
 }

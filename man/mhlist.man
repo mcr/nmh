@@ -1,4 +1,4 @@
-.TH MHLIST %manext1% "August 20, 2014" "%nmhversion%"
+.TH MHLIST %manext1% "February 6, 2015" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -16,6 +16,9 @@ mhlist \- list information about MIME messages
 .IR number ]
 \&...
 .RB [ \-type
+.IR content ]
+\&...
+.RB [ \-prefer
 .IR content ]
 \&...
 .RB [ \-headers " | " \-noheaders ]
@@ -95,23 +98,45 @@ By default,
 .B mhlist
 will list information about the entire
 message (all of its parts).  By using the
-.B \-part
+.BR \-part ,
+.BR \-type ,
 and
-.B \-type
-switches, you may limit the scope of this command to particular
-subparts (of a multipart content) and/or particular content types.
+.B \-prefer
+switches, you may limit and reorder the set of parts to be listed,
+based on part number and/or content type.
 .PP
-A part specification consists of a series of numbers separated by dots.
-For example, in a multipart content containing three parts, these
-would be named as 1, 2, and 3, respectively.  If part 2 was also a
-multipart content containing two parts, these would be named as 2.1 and
-2.2, respectively.  Note that the
+A part specification consists of a series of numbers separated by
+dots.  For example, in a multipart content containing three parts,
+these would be named as 1, 2, and 3, respectively.  If part 2 was also
+a multipart content containing two parts, these would be named as 2.1
+and 2.2, respectively.  Note that the
 .B \-part
-switch is effective for only
-messages containing a multipart content.  If a message has some other
-kind of content, or if the part is itself another multipart content, the
+switch is effective for only messages containing a multipart content. 
+If a message has some other kind of content, or if the part is itself
+another multipart content, the
 .B \-part
 switch will not prevent the content from being acted upon.
+.PP
+The
+.B \-type
+switch can also be used to restrict (or, when used in conjunction with
+.BR \-part ,
+to further restrict) the selection of parts according to content type.
+One or more
+.B \-type
+switches part will only select the first match
+from a multipart/alternative, even if there is more than one
+subpart that matches (one of) the given content type(s).
+.PP
+Using either
+.B \-part
+or
+.B -type
+switches alone will cause either to select
+the part(s) they match.  Using them together will select only
+the part(s) matched by both (sets of) switches.  In other
+words, the result is the intersection, and not the union, of their
+separate match results.
 .PP
 A content specification consists of a content type and a subtype.
 The initial list of \*(lqstandard\*(rq content types and subtypes can
@@ -152,9 +177,29 @@ switch must
 be used twice: once for message/external-body and once for the content
 externally referenced.
 .PP
-The parts of a multipart/alternative part are listed in the reverse
-order of their placement in the message.  The listing therefore is
-in decreasing order of preference, as defined in RFC 2046.
+By default, the parts of a multipart/alternative part are listed in
+the reverse order of their placement in the message.  The listing
+therefore is in decreasing order of preference, as defined in RFC
+2046.  The
+.B \-prefer
+switch can be used (one or more times, in order of descending
+preference) to let MH know which content types from a
+multipart/alternative MIME part are preferred by the user, in order to
+override the default preference order.  Thus, when viewed by
+.BR mhlist ,
+the ordering of multipart/alternative parts will appear to change when
+invoked with or without various
+.B \-prefer
+switches.
+The
+.B \-prefer
+switch is functionally most important for
+.IR mhshow ,
+but is also implemented in
+.B mhlist
+and
+.B mhstore
+to make common part numbering possible across all three programs.
 .SS "Checking the Contents"
 The
 .B \-check

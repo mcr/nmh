@@ -65,6 +65,8 @@ context_read (void)
     if ((cp = getenv("MH")) && *cp != '\0') {
 	defpath = path(cp, TFILE);
 
+        /* defpath is an absolute path; make sure that always MH is, too. */
+	setenv("MH", defpath, 1);
 	if (stat(defpath, &st) != -1 && (st.st_mode & S_IFREG) == 0)
 		adios((char *)0, "`%s' specified by your MH environment variable is not a normal file", cp);
 

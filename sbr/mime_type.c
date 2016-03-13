@@ -37,14 +37,15 @@ mime_type(const char *file_name) {
             if ((mimeencoding = get_file_info(MIMEENCODINGPROC, file_name))) {
                 content_type = concat(mimetype, "; charset=", mimeencoding,
                                       NULL);
+                free (mimetype);
             } else {
-                content_type = strdup(mimetype);
+                content_type = mimetype;
             }
         } else {
-            content_type = strdup(mimetype);
+            content_type = mimetype;
         }
 #else  /* MIMEENCODINGPROC */
-        content_type = strdup(mimetype);
+        content_type = mimetype;
 #endif /* MIMEENCODINGPROC */
     }
 #endif /* MIMETYPEPROC */

@@ -1,4 +1,4 @@
-.TH MHBUILD %manext1% "March 13, 2014" "%nmhversion%"
+.TH MHBUILD %manext1% "December 14, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -19,7 +19,7 @@ mhbuild \- translate MIME composition draft
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-disposition " | " \-nodisposition ]
 .RB [ \-check " | " \-nocheck ]
-.RB [ \-headerencoding 
+.RB [ \-headerencoding
 .IR encoding\-algorithm
 .RB " | " \-autoheaderencoding ]
 .RB [ \-maxunencoded
@@ -119,6 +119,160 @@ to supply the disposition value.  The only supported values are
 .I attachment
 and
 .IR inline.
+.SS "Convert Interface"
+.nr item 1 1
+The \*(lqconvert\*(rq interface is a powerful mechanism that supports
+replying to MIME messages.  These placeholders are used in the following
+description:
+.IP TYPE
+content type/subtype
+.IP CONVERTER
+external program, and any fixed arguments, to convert content, such as
+from a request to a reply
+.IP ARGSTRING
+arguments to pass from
+.B repl
+to
+.I CONVERTER
+.IP FILE
+full path of message being replied to
+.PP
+.RE
+The convert support is based on pseudoheaders of the form
+.PP
+.RS 5
+  Nmh-mhbuild-file-TYPE: FILE
+  Nmh-mhbuild-args-TYPE: ARGSTRING
+.RE
+.PP
+in the draft.  For each such pseudoheader, mhbuild looks in the
+profile and mhn.defaults for this corresponding TYPE entry to find the
+converter that supports it:
+.PP
+.RS 5
+.RI mhbuild-convert- TYPE :
+.I CONVERTER
+.RE
+.PP
+It's a fatal error if no such entry is found for TYPE.  An empty
+entry, e.g.,
+.PP
+.RS 5
+mhbuild-convert-text/html:
+.RE
+.PP
+excludes parts of that TYPE from the draft.  The mhn.defaults file
+contains default
+.B mhbuild-convert-text/html
+and
+.BR mhbuild-convert-text/plain
+entries.  Profile entries can be used to override corresponding
+mhn.defaults entries, as usual.
+.PP
+For each
+.I TYPE
+part in
+.IR FILE ,
+.B mhbuild
+runs
+.I CONVERTER ARGSTRING
+on the content of the part.
+.PP
+Each part in
+.I FILE
+that has no corresponding TYPE entry in the profile or mhn.defaults is
+excluded from the draft; the user can include them using mhbuild
+directives as usual.
+.PP
+.B repl
+inserts Nmh-mhbuild-text/html: and Nmh-mhbuild-text/plain:
+pseudoheaders in every draft.  The user can prevent insertion of
+content parts of either of those types by putting corresponding empty
+entries in their profile.
+.PP
+Only the highest precedence alternative with a supported
+.I TYPE
+of a multipart/alternative part is used.
+.PP
+mhn.defaults.sh selects the text/html-to-text/plain converter at
+install time.  It includes
+.BR iconv "(1),"
+and
+.BR par (1)
+or
+.BR fmt "(1),"
+in the pipeline only if found.
+.PP
+Some content types require the addition of parameters to the
+Content-Type header, such as
+.I method=REPLY
+for text/calendar.  mhbuild looks for a Content-Type header, followed
+by a blank line, at the beginning of the converter output.  If one is
+found, it is used for the corresponding part in the reply draft.
+.PP
+The \*(lqconvert\*(rq interface doesn't support different
+.IR ARGSTRING s
+or different converters for different parts of the same
+.IR  TYPE .
+That would require associating parts by part number with the
+.IR ARGSTRING s
+or converters.  Instead, that can be done (currently, without using
+the convert support), with
+.B mhbuild
+directives as described below, e.g.,
+.PP
+.RS 5
+#text/html; charset=utf-8 *8bit | mhstore -noverbose -part 42.7 -outfile - | w3m -dump -cols 64 -T text/html -O utf-8
+.RE
+.PP
+The only way to mix
+.B convert
+pseudoheaders and mhbuild directives is to insert the directives before
+.B mhbuild
+is run, which is typically done by entering
+.I mime
+at the \*(lqWhat now?\*(rq prompt, or with an
+.B \-editor mhbuild
+switch.
+.PP
+These (optional) setup steps can make the convert support
+easier to use:
+.IP \n[item]. 3
+If the
+.BR par (1)
+program is installed on your system, it will be set by default
+(in mhn.defaults) to filter the converter output.  It helps to
+set the
+.B $PARINIT
+environment variable, as described in its man page.
+.IP \n+[item]. 3
+Add this line to your profile:
+.PP
+.RS 5
+.nf
+mhbuild-next: $EDITOR
+.fi
+.RE
+.PP
+.RS 3
+assuming that your EDTIOR environment variable is set; if not, replace
+$EDITOR with the name of your editor.  Without that profile entry, a
+response of \*(lqe[dit]\*(rq at the What now? prompt will require
+specification of your editor if an
+.B \-editor mhbuild
+switch is used.
+.RE
+.IP \n+[item]. 3
+If using
+.BR repl ,
+source the Bourne-shell compatible functions in
+.IR %docdir%/contrib/replaliases .
+.br
+That script also sets the
+.B $PARINIT
+environment variable if it was not set.
+.RE
+.PP
 .SS "Translating the Composition File"
 .B mhbuild
 is essentially a filter to aid in the composition of MIME
@@ -180,7 +334,7 @@ errors:
 .nf
 #off
 #include <stdio.h>
-printf("Hello, World!);
+printf("Hello, World!");
 #pop
 .fi
 .RE
@@ -522,7 +676,7 @@ The
 switch will indicate which algorithm to use when encoding any message headers
 that contain 8\-bit characters.  The valid arguments are
 .I base64
-for based\-64 encoding and 
+for based\-64 encoding and
 .I quoted
 for quoted\-printable encoding.  The
 .B \-autoheaderencoding
@@ -610,7 +764,7 @@ to translate the composition file into MIME format.
 .PP
 Normally it is an error to invoke
 .B mhbuild
-on file that already in MIME format.  The 
+on file that already in MIME format.  The
 .B \-auto
 switch will cause
 .B mhbuild
@@ -770,7 +924,10 @@ is checked.
 .SH "SEE ALSO"
 .IR mhlist (1),
 .IR mhshow (1),
-.IR mhstore (1)
+.IR mhstore (1),
+.IR fmt (1),
+.IR iconv (1),
+.IR par (1)
 .PP
 .I "Proposed Standard for Message Encapsulation"
 (RFC 934),

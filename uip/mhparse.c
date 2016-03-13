@@ -9,7 +9,6 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
-#include <h/signals.h>
 #include <h/md5.h>
 #include <h/mts.h>
 #include <h/tws.h>
@@ -42,6 +41,13 @@ int suppress_bogus_mp_content_warning;
 int bogus_mp_content;
 int suppress_extraneous_trailing_semicolon_warning;
 int extraneous_trailing_semicolon;
+int suppress_multiple_mime_version_warning = 1;
+
+/* list of preferred type/subtype pairs, for -prefer */
+char *preferred_types[NPREFS],
+     *preferred_subtypes[NPREFS];
+int npreferred;
+
 
 /*
  * Structures for TEXT messages
@@ -104,7 +110,7 @@ static struct k2v EncodingType[] = {
 int find_cache (CT, int, int *, char *, char *, int);
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 
@@ -121,6 +127,7 @@ static int InitGeneric (CT);
 static int InitText (CT);
 static int InitMultiPart (CT);
 static void reverse_parts (CT);
+static void prefer_parts(CT ct);
 static int InitMessage (CT);
 static int InitApplication (CT);
 static int init_encoding (CT, OpenCEFunc);
@@ -359,16 +366,12 @@ get_content (FILE *in, char *file, int toplevel)
 	if (!strcasecmp (hp->name, VRSN_FIELD)) {
 	    int ucmp;
 	    char c, *cp, *dp;
+	    char *vrsn;
 
-	    if (ct->c_vrsn) {
-		advise (NULL, "message %s has multiple %s: fields",
-			ct->c_file, VRSN_FIELD);
-		goto next_header;
-	    }
-	    ct->c_vrsn = add (hp->value, NULL);
+	    vrsn = add (hp->value, NULL);
 
 	    /* Now, cleanup this field */
-	    cp = ct->c_vrsn;
+	    cp = vrsn;
 
 	    while (isspace ((unsigned char) *cp))
 		cp++;
@@ -394,6 +397,14 @@ get_content (FILE *in, char *file, int toplevel)
 	    if (!ucmp) {
 		admonish (NULL, "message %s has unknown value for %s: field (%s)",
 		ct->c_file, VRSN_FIELD, cp);
+	    }
+	    if (!ct->c_vrsn) {
+		ct->c_vrsn = vrsn;
+	    } else {
+		if (! suppress_multiple_mime_version_warning)
+		    advise (NULL, "message %s has multiple %s: fields",
+			    ct->c_file, VRSN_FIELD);
+		free(vrsn);
 	    }
 	}
 	else if (!strcasecmp (hp->name, TYPE_FIELD)) {
@@ -1008,7 +1019,6 @@ InitText (CT ct)
     char *chset = NULL;
     char *cp;
     PM pm;
-    struct k2v *kv;
     struct text *t;
     CI ci = &ct->c_ctinfo;
 
@@ -1017,10 +1027,7 @@ InitText (CT ct)
 	ci->ci_subtype = add ("plain", ci->ci_subtype);
 
     /* match subtype */
-    for (kv = SubText; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
-	    break;
-    ct->c_subtype = kv->kv_value;
+    ct->c_subtype = ct_str_subtype (CT_TEXT, ci->ci_subtype);
 
     /* allocate text character set structure */
     if ((t = (struct text *) mh_xcalloc (1, sizeof(*t))) == NULL)
@@ -1073,7 +1080,6 @@ InitMultiPart (CT ct)
     size_t buflen;
     ssize_t gotlen;
     struct multipart *m;
-    struct k2v *kv;
     struct part *part, **next;
     CI ci = &ct->c_ctinfo;
     CT p;
@@ -1095,8 +1101,9 @@ InitMultiPart (CT ct)
 
 	admonish (NULL,
 		  "\"%s/%s\" type in message %s must be encoded in\n"
-		  "7bit, 8bit, or binary, per RFC 2045 (6.4).  One workaround "
-		  "is to\nmanually edit the file and change the \"%s\"\n"
+		  "7bit, 8bit, or binary, per RFC 2045 (6.4).  "
+                  "mhfixmsg -fixcte can fix it, or\n"
+                  "manually edit the file and change the \"%s\"\n"
 		  "Content-Transfer-Encoding to one of those.  For now",
 		  ci->ci_type, ci->ci_subtype, ct->c_file, bp);
 	free (cte);
@@ -1105,10 +1112,7 @@ InitMultiPart (CT ct)
     }
 
     /* match subtype */
-    for (kv = SubMultiPart; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
-	    break;
-    ct->c_subtype = kv->kv_value;
+    ct->c_subtype = ct_str_subtype (CT_MULTIPART, ci->ci_subtype);
 
     /*
      * Check for "boundary" parameter, which is
@@ -1231,8 +1235,10 @@ end_part:
 
 last_part:
     /* reverse the order of the parts for multipart/alternative */
-    if (ct->c_subtype == MULTI_ALTERNATE)
+    if (ct->c_subtype == MULTI_ALTERNATE) {
 	reverse_parts (ct);
+	prefer_parts (ct);
+    }
 
     /*
      * label all subparts with part number, and
@@ -1278,9 +1284,15 @@ last_part:
 
 
 /*
- * reverse the order of the parts of a multipart/alternative
+ * reverse the order of the parts of a multipart/alternative,
+ * presumably to put the "most favored" alternative first, for
+ * ease of choosing/displaying it later on.  from a mail message on
+ * nmh-workers, from kenh:
+ *  "Stock" MH 6.8.5 did not have a reverse_parts() function, but I
+ *  see code in mhn that did the same thing...  Acccording to the RCS
+ *  logs, that code was around from the initial checkin of mhn.c by
+ *  John Romine in 1992, which is as far back as we have."
  */
-
 static void
 reverse_parts (CT ct)
 {
@@ -1297,6 +1309,60 @@ reverse_parts (CT ct)
     }
 }
 
+static void
+move_preferred_part (CT ct, char *type, char *subtype)
+{
+    struct multipart *m = (struct multipart *) ct->c_ctparams;
+    struct part *part, *prev, *head, *nhead, *ntail;
+    struct part h, n;
+    CI ci;
+
+    /* move the matching part(s) to the head of the list:  walk the
+     * list of parts, move matching parts to a new list (maintaining
+     * their order), and finally, concatenate the old list onto the
+     * new.
+     */
+
+    head = &h;
+    nhead = &n;
+
+    head->mp_next = m->mp_parts;
+    nhead->mp_next = NULL;
+    ntail = nhead;
+
+    prev = head;
+    part = head->mp_next;
+    while (part != NULL) {
+	ci = &part->mp_part->c_ctinfo;
+	if (!strcasecmp(ci->ci_type, type) &&
+		(!subtype || !strcasecmp(ci->ci_subtype, subtype))) {
+	    prev->mp_next = part->mp_next;
+	    part->mp_next = NULL;
+	    ntail->mp_next = part;
+	    ntail = part;
+	    part = prev->mp_next;
+	} else {
+	    prev = part;
+	    part = prev->mp_next;
+	}
+    }
+    ntail->mp_next = head->mp_next;
+    m->mp_parts = nhead->mp_next;
+
+}
+
+/*
+ * move parts that match the user's preferences (-prefer) to the head
+ * of the line.  process preferences in reverse so first one given
+ * ends up first in line
+ */
+static void
+prefer_parts(CT ct)
+{
+    int i;
+    for (i = npreferred-1; i >= 0; i--)
+	move_preferred_part(ct, preferred_types[i], preferred_subtypes[i]);
+}
 
 
 
@@ -1329,7 +1395,6 @@ reverse_alternative_parts (CT ct) {
 static int
 InitMessage (CT ct)
 {
-    struct k2v *kv;
     CI ci = &ct->c_ctinfo;
 
     if ((ct->c_encoding != CE_7BIT) && (ct->c_encoding != CE_8BIT)) {
@@ -1344,10 +1409,7 @@ InitMessage (CT ct)
 	ci->ci_subtype = add ("rfc822", ci->ci_subtype);
 
     /* match subtype */
-    for (kv = SubMessage; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
-	    break;
-    ct->c_subtype = kv->kv_value;
+    ct->c_subtype = ct_str_subtype (CT_MESSAGE, ci->ci_subtype);
 
     switch (ct->c_subtype) {
 	case MESSAGE_RFC822:
@@ -1597,14 +1659,10 @@ params_external (CT ct, int composing)
 static int
 InitApplication (CT ct)
 {
-    struct k2v *kv;
     CI ci = &ct->c_ctinfo;
 
     /* match subtype */
-    for (kv = SubApplication; kv->kv_key; kv++)
-	if (!strcasecmp (ci->ci_subtype, kv->kv_key))
-	    break;
-    ct->c_subtype = kv->kv_value;
+    ct->c_subtype = ct_str_subtype (CT_APPLICATION, ci->ci_subtype);
 
     return OK;
 }
@@ -3172,6 +3230,62 @@ ct_subtype_str (int type, int subtype) {
         }
     default:
         return "unknown_type";
+    }
+}
+
+
+int
+ct_str_type (const char *type) {
+    struct str2init *s2i;
+
+    for (s2i = str2cts; s2i->si_key; ++s2i) {
+        if (! strcasecmp (type, s2i->si_key)) {
+            break;
+        }
+    }
+    if (! s2i->si_key  &&  ! uprf (type, "X-")) {
+        ++s2i;
+    }
+
+    return s2i->si_val;
+}
+
+
+int
+ct_str_subtype (int type, const char *subtype) {
+    struct k2v *kv;
+
+    switch (type) {
+    case CT_APPLICATION:
+        for (kv = SubApplication; kv->kv_key; ++kv) {
+            if (! strcasecmp (subtype, kv->kv_key)) {
+                break;
+            }
+        }
+        return kv->kv_value;
+    case CT_MESSAGE:
+        for (kv = SubMessage; kv->kv_key; ++kv) {
+            if (! strcasecmp (subtype, kv->kv_key)) {
+                break;
+            }
+        }
+        return kv->kv_value;
+    case CT_MULTIPART:
+        for (kv = SubMultiPart; kv->kv_key; ++kv) {
+            if (! strcasecmp (subtype, kv->kv_key)) {
+                break;
+            }
+        }
+        return kv->kv_value;
+    case CT_TEXT:
+        for (kv = SubText; kv->kv_key; ++kv) {
+            if (! strcasecmp (subtype, kv->kv_key)) {
+                break;
+            }
+        }
+        return kv->kv_value;
+    default:
+        return 0;
     }
 }
 

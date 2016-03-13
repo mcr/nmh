@@ -1,4 +1,4 @@
-.TH SHOW %manext1% "June 6, 2012" "%nmhversion%"
+.TH SHOW %manext1% "February 8, 2015" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -43,7 +43,11 @@ manual page for the details about this
 command.  This default can be changed by defining the
 .I showproc
 profile component.  Any switches not recognized by
-.B show
+.BR show ,
+as well as
+.B \-header
+and
+.BR \-noheader ,
 are
 passed along to that program.  To override the default and the
 .I showproc

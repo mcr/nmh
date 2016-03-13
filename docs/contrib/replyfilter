@@ -163,7 +163,7 @@ exit 0;
 # or base64 to feed it into a formatting filter.
 #
 
-sub process_text (*$$;$)
+sub process_text
 {
 	my ($input, $encoding, $charset, $boundary) = @_;
 	my $text, $filterpid, $prefixpid, $finread, $finwrite;
@@ -347,7 +347,7 @@ sub process_text (*$$;$)
 # Filter HTML through a converter program
 #
 
-sub process_html (*$$;$)
+sub process_html
 {
 	my ($input, $encoding, $charset, $boundary) = @_;
 	my $filterpid, $prefixpid, $finread, $finwrite;
@@ -407,7 +407,7 @@ sub process_html (*$$;$)
 
 		my @conv = (@htmlconv, $charset);
 		exec (@conv) ||
-				die "Unable to exec $filterprogram: $!\n";
+				die "Unable to exec $htmlconv[0]: $!\n";
 	} else {
 		die "Fork for $htmlconv[0] failed: $!\n";
 	}
@@ -462,7 +462,7 @@ sub process_html (*$$;$)
 # Decide what to do, based on what kind of content it is.
 #
 
-sub process_part (*$$$$;$)
+sub process_part
 {
 	my ($input, $content_type, $encoding, $charset, $boundary, $name) = @_;
 	my ($type, $subtype) = (split('/', $content_type, -1), '');
@@ -508,7 +508,7 @@ sub process_part (*$$$$;$)
 # the content of this part
 #
 
-sub process_multipart ($$$)
+sub process_multipart
 {
 	my ($input, $subtype, $boundary) = @_;
 	my $altout;
@@ -607,7 +607,7 @@ sub process_multipart ($$$)
 # "Eat" a MIME part; consume content until we hit the boundary or EOF
 #
 
-sub eat_part ($$)
+sub eat_part
 {
 	my ($input, $boundary) = @_;
 	my $ret;
@@ -638,7 +638,7 @@ sub eat_part ($$)
 # Return the decoder subroutine to use
 #
 
-sub find_decoder ($)
+sub find_decoder
 {
 	my ($encoding) = @_;
 
@@ -654,7 +654,7 @@ sub find_decoder ($)
 	}
 }
 
-sub null_decoder ($)
+sub null_decoder
 {
 	my ($input) = @_;
 
@@ -665,7 +665,7 @@ sub null_decoder ($)
 # Match a line against the boundary string
 #
 
-sub match_boundary($$)
+sub match_boundary
 {
 	my ($line, $boundary) = @_;
 

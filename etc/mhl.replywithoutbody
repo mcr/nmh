@@ -1,0 +1,5 @@
+; mhl.replywithoutbody
+;
+; message filter for `repl' (repl -format) that excludes the message body
+;
+from:nocomponent,formatfield="%(unquote(decode(friendly{text}))) writes:"

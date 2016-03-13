@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "November 30, 2014" "%nmhversion%"
+.TH MHFIXMSG %manext1% "March 12, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -16,6 +16,9 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .RB [ \-decodetext
 8bit/7bit |
 .BR \-nodecodetext ]
+.RB [ \-decodetypes
+.IR "type/[subtype][,...]" ]
+.RB [ \-crlflinebreaks " | " \-nocrlflinebreaks ]
 .RB [ \-textcharset
 .I charset
 .RB "| " \-notextcharset ]
@@ -23,6 +26,8 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .RB [ \-replacetextplain " | " \-noreplacetextplain ]
 .RB [ \-fixboundary " | " \-nofixboundary ]
 .RB [ \-fixcte " | " \-nofixcte ]
+.RB [ \-fixtype
+.IR mimetype ]
 .RB [ \-outfile
 .IR outfile ]
 .RB [ \-rmmproc
@@ -49,7 +54,9 @@ messages.
 .B mhfixmsg
 passes non-MIME messages through without any transformations.  If no
 transformations apply to a MIME message, the original message or file
-is not modified or removed.
+is not modified or removed.  Thus,
+.B mhfixmsg
+can safely be run multiple times on a message.
 .PP
 The
 .B \-decodetext
@@ -68,6 +75,34 @@ When the
 switch is enabled, each carriage return character that precedes a
 linefeed character is removed from text parts encoded in ASCII,
 ISO-8859-x, UTF-8, or Windows-12xx.
+.PP
+The
+.B \-decodetypes
+switch specifies the message parts, by type and optionally subtype,
+to which
+.B \-decodetext
+applies.  Its argument is a comma-separated list of type/subtype
+elements.  If an element does not contain a subtype, then
+.B \-decodetext
+applies to all subtypes of the type.  The default is
+.B \-decodetypes
+.IR text ;
+it can be overridden, e.g., with
+.B \-decodetypes
+.I text/plain
+to restrict
+.B \-decodetext
+to just text/plain parts.
+.PP
+By default, carriage return characters are preserved or inserted at
+the end of each line of text content.  The
+.B \-crlflinebreaks
+switch selects this behavior and is enabled by default.  The
+.B \-nocrlflinebreaks
+switch causes carriage return characters to be stripped from, and not
+inserted in, text content when it is decoded and encoded.  Note that
+its use can cause the generation of MIME messages that do not conform
+with RFC 2046, §4.1.1, paragraph 1.
 .PP
 The
 .B \-textcharset
@@ -101,6 +136,17 @@ successfully convert the part to text/plain,
 inserts that text/plain part at the beginning of the containing
 multipart/alternative part, if present.  If not, it creates a
 multipart/alternative part.
+.PP
+With the
+.B \-reformat
+switch, multipart/related parts are handled differently than
+multipart/alternative.  If the multipart/related has only a single
+part that is not text/plain and can be converted to text/plain, a
+text/plain part is added and the type of the part is changed to
+multipart/alternative.  If the multipart/related has more than one
+part but does not have a text/plain part,
+.B mhfixmsg
+tries to add one.
 .PP
 The
 .B \-replacetextplain
@@ -142,12 +188,20 @@ The
 switch enables a transformation to change the
 Content-Transfer-Encoding from an invalid value to 8bit in message
 parts with a Content-Type of multipart, as required by RFC 2045,
-Section 6.4.  That condition is indicated by a \*(lqmust be encoded in
+§6.4.  That condition is indicated by a \*(lqmust be encoded in
 7bit, 8bit, or binary\*(rq error message from
 .B mhlist
 and other
 .B nmh
 programs that parse MIME messages.
+.PP
+The
+.B \-fixtype
+switch ensures that each part of the message has the correct MIME type
+shown in its Content-Type header.  It may be repeated.  It is
+typically used to replace \*(lqapplication/octet-stream\*(rq with a
+more descriptive MIME type.  It may not be used for multipart and
+message types.
 .PP
 .B mhfixmsg
 applies one transformation unconditionally:  it removes an extraneous
@@ -234,15 +288,17 @@ content type and/or encoding as follows:
 .PP
 .RS 5
 .nf
-.ta \w'\-fixboundary 'u
-\-decodetext   base64 and quoted-printable encoded text parts
-\-textcharset  text/plain parts
-\-reformat     text parts that are not text/plain
-\-fixboundary  outermost multipart part
-\-fixcte       multipart part
+.ta \w'\-crlflinebreaks 'u
+\-decodetext         base64 and quoted-printable encoded text parts
+\-decodetypes        limits parts to which -decodetext applies
+\-crlflinebreaks     text parts
+\-textcharset        text/plain parts
+\-reformat           text parts that are not text/plain
+\-fixboundary        outermost multipart part
+\-fixcte             multipart part
+\-fixtype            all except multipart and message parts
 .fi
 .RE
-.PP
 .SS "Backup of Original Message/File"
 If it applies any transformations to a message or file,
 and the
@@ -265,7 +321,6 @@ switch disables the use of any
 profile component and negates all prior
 .B \-rmmproc
 switches.
-.PP
 .SS "Integration with inc"
 .B mhfixmsg
 can be used as an add-hook, as described in %docdir%/README-HOOKS.
@@ -291,6 +346,7 @@ which
 sets with the newly incorporated messages.  Those could then be
 supplied to
 .BR mhfixmsg .
+An example is shown below.
 .SS "Integration with procmail"
 By way of example, here is an excerpt from a procmailrc file
 that filters messages through
@@ -321,7 +377,92 @@ STORE = %nmhlibexecdir%/rcvstore
 | tee `$MKSTEMP` | $MHFIXMSG | $STORE +nmh-workers
 .fi
 .RE
+.SH "EXAMPLES"
 .PP
+.SS Basic usage
+To run
+.B mhfixmsg
+on the current message in the current folder, with default transformations to
+fix MIME boundaries and Content-Transfer-Encoding, to decode text and
+application/ics content parts to 8 bit, and to add a corresponding text/plain
+part where lacking:
+.PP
+.RS
+.nf
+mhfixmsg -verbose
+.fi
+.RE
+.SS Specified folder and messages
+To run
+.B mhfixmsg
+on specified messages, without its informational output:
+.PP
+.RS
+.nf
+mhfixmsg +inbox last:4
+.fi
+.RE
+.SS View without modification
+By default,
+.B mhfixmsg
+transforms the message in place.  To view the MIME structure that would result from running
+.B mhfixmsg
+on the current message, without modifying the message:
+.PP
+.RS
+.nf
+mhfixmsg -outfile - | mhlist -file -
+.fi
+.RE
+.SS Search message without modification
+To search the current message, which possibly contains base64 or quoted printable encoded text parts,
+without modifiying it, use the -outfile switch:
+.PP
+.RS
+.nf
+mhfixmsg -outfile - | grep \fIpattern\fR
+.fi
+.RE
+.PP
+-outfile can be abbreviated in usual MH fashion, e.g., to -o.  The search will be
+on the entire message, not just text parts.
+.SS Translate text/plain parts to UTF-8
+To translate all text/plain parts in the current message to UTF-8, in addition
+to all of the default transformations:
+.PP
+.RS
+.nf
+mhfixmsg -textcharset utf-8
+.fi
+.RE
+.SS Fix all messages in a folder
+To run
+.B mhfixmsg
+on all of the messages in a folder, using a Bourne shell loop:
+.PP
+.RS
+.nf
+for msg in `pick +folder`; do mhfixmsg $msg; done
+.fi
+.RE
+.PP
+.B mhfixmsg
+can be run on more than one message, but on a large number of messages
+may attempt to open too many files.
+.SS Run on newly incorporated messages
+To run
+.B mhfixmsg
+on messages as they are incorporated:
+.PP
+.RS
+.nf
+inc  &&  mhfixmsg -nochangecur unseen
+.fi
+.RE
+.PP
+This assumes that the Unseen-Sequence profile entry is set to
+.BR unseen ,
+as shown in the mh\-profile(5) man page.
 .SH FILES
 .B mhfixmsg
 looks for mhn.defaults in multiple locations: absolute pathnames are
@@ -365,6 +506,8 @@ is checked.
 .RB ` +folder "' defaults to the current folder"
 .RB ` msgs "' defaults to cur"
 .RB ` "\-decodetext 8bit"'
+.RB ` "\-decodetypes text,application/ics"'
+.RB ` \-crlflinebreaks '
 .RB ` \-notextcharset '
 .RB ` \-reformat '
 .RB ` \-noreplacetextplain '
@@ -382,3 +525,17 @@ switch is enabled.  If the
 .B \-file
 switch or an absolute pathname is used, the context will not be
 modified.
+.SH BUGS
+.B mhfixmsg
+opens files internally for decoding and character set conversion, and apparently does not
+close them expeditiously.  Until that is resolved, it is recommended that
+.B mhfixmsg
+not be run on a large number of messages at once, as noted in the EXAMPLES above.
+.PP
+As noted in the DESCRIPTION above,
+.B mhfixmsg
+will not decode to binary content.  This restriction should be removed at some point.  It's
+not due to any issue in
+.BR mhfixmsg ,
+but rather an observation of incorrect behavior by other nmh tools on messages with binary
+content.

@@ -93,12 +93,17 @@ cpnumber(charstring_t dest, int num, unsigned int wid, char fill, size_t max) {
 	    charstring_push_back (rev, '?');
 	} else if (num < 0  &&  wid > 0) {
 	    /* Shouldn't need the wid > 0 check, that's why the condition
-               at the top checks wid < max-1 when num < 0. */
-	    charstring_push_back (rev, '-');
+	       at the top checks wid < max-1 when num < 0. */
 	    --wid;
+	    if (fill == ' ') {
+		charstring_push_back (rev, '-');
+	    }
 	}
 	while (wid-- > 0  &&  fill != 0) {
 	    charstring_push_back (rev, fill);
+	}
+	if (num < 0  &&  fill == '0') {
+	    charstring_push_back (rev, '-');
 	}
 
 	{
@@ -691,7 +696,8 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    if (str) {
 		    char *xp;
 
-		    strncpy(buffer, str, sizeof(buffer));
+		    if (str != buffer)
+			strncpy(buffer, str, sizeof(buffer));
 		    buffer[sizeof(buffer)-1] = '\0';
 		    str = buffer;
 		    while (isspace((unsigned char) *str))
@@ -739,6 +745,9 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 	    break;
 	case FT_LV_MINUS_L:
 	    value = fmt->f_value - value;
+	    break;
+	case FT_LV_MULTIPLY_L:
+	    value *= fmt->f_value;
 	    break;
 	case FT_LV_DIVIDE_L:
 	    if (fmt->f_value)
@@ -881,7 +890,8 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		goto unfriendly;
 	    if ((str = mn->m_pers) == NULL) {
 	        if ((str = mn->m_note)) {
-	            strncpy (buffer, str, sizeof(buffer));
+		    if (str != buffer)
+			strncpy (buffer, str, sizeof(buffer));
 		    buffer[sizeof(buffer)-1] = '\0';
 	            str = buffer;
 	            if (*str == '(')
@@ -925,7 +935,8 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 		/* UNQUOTEs RFC-2822 quoted-string and quoted-pair */
 	case FT_LS_UNQUOTE:
 	    if (str) {	  	
-		strncpy(buffer, str, sizeof(buffer));
+		if (str != buffer)
+		    strncpy(buffer, str, sizeof(buffer));
 		/* strncpy doesn't NUL-terminate if it fills the buffer */
 		buffer[sizeof(buffer)-1] = '\0';
 		unquote_string(buffer, buffer2);

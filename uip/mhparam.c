@@ -29,6 +29,7 @@ DEFINE_SWITCH_ENUM(MHPARAM);
 DEFINE_SWITCH_ARRAY(MHPARAM, switches);
 #undef X
 
+extern char *mhbindir;
 extern char *mhetcdir;
 extern char *mhlibexecdir;
 
@@ -111,6 +112,7 @@ static struct proc procs [] = {
      { "version",          &version_num },
      { "whatnowproc",      &whatnowproc },
      { "whomproc",         &whomproc },
+     { "bindir",           &mhbindir },
      { "etcdir",           &mhetcdir },
      { "libdir",           &mhlibexecdir },
      { "libexecdir",       &mhlibexecdir },

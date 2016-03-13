@@ -37,13 +37,17 @@ actual=$MH_TEST_DIR/$$.actual
 set +e
 whatnowtest=`echo cd | whatnow -prompt ''`
 set -e
-
 case ${whatnowtest} in
     cd) cat > "$expected" <<EOF
 cd ${MH_TEST_DIR}/foo\'s\ bar
 pwd
 $SPDIR
 EOF
+    # If path to $SPDIR is too long, readline will wrap and disturb
+    # the actual output.  It obeys COLUMNS, so set that to a value
+    # that should be longer that $SPDIR plus a bit more.
+    COLUMNS=`getconf PATH_MAX . 2>/dev/null`  ||  COLUMNS=8192
+    export COLUMNS
     ;;
     "") cat > "$expected" <<EOF
 $SPDIR

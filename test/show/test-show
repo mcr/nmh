@@ -1,0 +1,125 @@
+#!/bin/sh
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected=$MH_TEST_DIR/$$.expected
+actual=$MH_TEST_DIR/$$.actual
+
+# Write message with a text/plain subpart.
+msgfile=`mhpath new`
+msgnum=`basename $msgfile`
+cat > $msgfile <<EOF
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="NextPart_001"
+Content-class: urn:content-classes:message
+Date: Thu, 19 May 2011 00:00:00
+From: sender@example.com
+To: recipient@example.com
+
+This is a multi-part message in MIME format.
+
+--NextPart_001
+Content-Type: multipart/related;
+    type="multipart/alternative";
+    boundary="NextPart_002"
+
+--NextPart_002
+Content-Type: text/plain;
+    charset="utf-8"
+
+This is the text/plain part.
+
+--NextPart_002--
+
+--NextPart_001--
+EOF
+
+# Test showing multiple non-MIME messages shows message numbers.
+
+cat > $expected <<EOF
+>>> inbox:1
+
+
+Date:    Fri, 29 Sep 2006 00:00:00
+To:      Some User <user@example.com>
+From:    Test1 <test1@example.com>
+Subject: Testing message 1
+
+
+This is message number 1
+
+
+
+>>> inbox:2
+
+
+Date:    Fri, 29 Sep 2006 00:00:00
+To:      Some User <user@example.com>
+From:    Test2 <test2@example.com>
+Subject: Testing message 2
+
+
+This is message number 2
+EOF
+
+show +inbox 1 2 > $actual || exit 1
+
+check "$expected" "$actual" : show two non-mime
+
+# Test showing one MIME message shows message number.
+# Format is different; why?
+
+cat > $expected <<EOF
+[ Message inbox:$msgnum ]
+Date:    Thu, 19 May 2011 00:00:00
+To:      recipient@example.com
+From:    sender@example.com
+
+MIME-Version: 1.0
+Content-class: urn:content-classes:message
+
+[ part 1.1 - text/plain -   29B  ]
+This is the text/plain part.
+EOF
+
+show +inbox $msgnum > $actual || exit 1
+
+check "$expected" "$actual" : show one MIME
+
+# Test showing multiple MIME messages shows message numbers.
+# Currently fails.
+
+cat > $expected <<EOF
+[ Message inbox:1 ]
+Date:    Fri, 29 Sep 2006 00:00:00
+To:      Some User <user@example.com>
+From:    Test1 <test1@example.com>
+Subject: Testing message 1
+
+
+[ part  - text/plain -   25B  ]
+This is message number 1
+[ Message inbox:11 ]
+Date:    Thu, 19 May 2011 00:00:00
+To:      recipient@example.com
+From:    sender@example.com
+
+MIME-Version: 1.0
+Content-class: urn:content-classes:message
+
+[ part 1.1 - text/plain -   29B  ]
+This is the text/plain part.
+EOF
+
+show +inbox 1 $msgnum > $actual || exit 1
+
+check "$expected" "$actual" : show multiple mime
+
+exit $failed

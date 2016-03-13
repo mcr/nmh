@@ -84,9 +84,7 @@ if [ $# -gt 0 ]; then
 fi
 
 #### Check to see that we're in a nmh source directory.
-if grep 'the authors of nmh' COPYRIGHT >/dev/null; then
-  :
-else
+if ! grep 'the authors of nmh' COPYRIGHT >/dev/null; then
   echo "$0: not in nmh source directory"
   exit 1
 fi
@@ -250,9 +248,7 @@ if [ -f Makefile ]; then
 fi
 
 /bin/rm -f "$logfile"
-if [ -f configure  -a  -f Makefile.in ]; then
-  :
-else
+if [ ! -f configure  -o  ! -f Makefile.in ]; then
   [ $verbose -ge 1 ]  &&  echo autoconfiguring . . .
   ./autogen.sh >>"$logfile" 2>&1
 fi
@@ -263,7 +259,8 @@ fi
 ####
 [ $verbose -ge 1 ]  &&  echo configuring . . .
 echo ./configure $config_opts ${smtpservers:+"$smtpservers"} >>"$logfile" 2>&1
-./configure $config_opts ${smtpservers:+"$smtpservers"} >>"$logfile" 2>&1
+./configure CFLAGS="${CFLAGS:+$CFLAGS }-g -O2 -ansi -pedantic" \
+            $config_opts ${smtpservers:+"$smtpservers"} >>"$logfile" 2>&1
 status=$?
 
 if [ $status -eq 0 ]; then

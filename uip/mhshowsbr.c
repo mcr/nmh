@@ -11,7 +11,6 @@
 #include <fcntl.h>
 #include <h/signals.h>
 #include <h/md5.h>
-#include <setjmp.h>
 #include <h/mts.h>
 #include <h/tws.h>
 #include <h/mime.h>
@@ -23,6 +22,8 @@
 #endif /* ! HAVE_ICONV */
 
 extern int debugsw;
+extern int npart;
+extern int ntype;
 
 int nolist   = 0;
 
@@ -32,9 +33,16 @@ char *progsw = NULL;
 int nomore   = 0;
 char *formsw = NULL;
 
+/* for output markerss and headers */
+char *folder = NULL;
+char *markerform;
+char *headerform;
+int headersw = -1;
+
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
+int part_exact (CT);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);
@@ -57,7 +65,9 @@ static int show_external (CT, int, int, int, int, struct format *);
 static int parse_display_string (CT, char *, int *, int *, char *, char *,
 				 size_t, int multipart);
 static int convert_content_charset (CT, char **);
+static struct format *compile_header(char *);
 static struct format *compile_marker(char *);
+static void output_header (CT, struct format *);
 static void output_marker (CT, struct format *, int);
 static void free_markercomps (void);
 static int pidcheck(int);
@@ -67,6 +77,7 @@ static int pidcheck(int);
  * content marker display.
  */
 
+static struct comp *folder_comp = NULL;
 static struct comp *part_comp = NULL;
 static struct comp *ctype_comp = NULL;
 static struct comp *description_comp = NULL;
@@ -87,11 +98,10 @@ static struct param_comp_list *dispo_pc_list = NULL;
  */
 
 void
-show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly,
-		   char *markerform)
+show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly)
 {
     CT ct, *ctp;
-    struct format *fmt;
+    struct format *hfmt, *mfmt;
 
     /*
      * If form is not specified, then get default form
@@ -101,9 +111,10 @@ show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly,
 	formsw = getcpy (etcpath ("mhl.headers"));
 
     /*
-     * Compile the content marker format line
+     * Compile the content marker and header format lines
      */
-    fmt = compile_marker(markerform);
+    mfmt = compile_marker(markerform);
+    hfmt = compile_header(headerform);
 
     /*
      * If form is "mhl.null", suppress display of header.
@@ -116,12 +127,15 @@ show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly,
 
 	/* if top-level type is ok, then display message */
 	if (type_ok (ct, 1))
+	    if (headersw) output_header(ct, hfmt);
+
 	    show_single_message (ct, formsw, concatsw, textonly, inlineonly,
-				 fmt);
+				 mfmt);
     }
 
     free_markercomps();
-    fmt_free(fmt, 1);
+    fmt_free(hfmt, 1);
+    fmt_free(mfmt, 1);
 }
 
 
@@ -341,7 +355,7 @@ show_content_aux (CT ct, int alternate, char *cp, char *cracked, struct format *
     if ((fd = (*ct->c_ceopenfnx) (ct, &file)) == NOTOK)
 	return NOTOK;
     if (ct->c_showproc && !strcmp (ct->c_showproc, "true"))
-	return (alternate ? DONE : OK);
+	return OK;
 
     if (! strcmp(invo_name, "mhshow")  &&
         ct->c_type == CT_TEXT  &&  ct->c_subtype == TEXT_PLAIN) {
@@ -482,14 +496,17 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 	    _exit (-1);
 	    /* NOTREACHED */
 
-	default:
+	default: {
+	    int status;
+
 	    arglist_free(file, vec);
 
-	    pidcheck (pidXwait (child_id, NULL));
+	    pidcheck ((status = pidXwait (child_id, NULL)));
 
 	    if (fd != NOTOK)
 		(*ct->c_ceclosefnx) (ct);
-	    return (alternate ? DONE : OK);
+	    return (alternate ? OK : status);
+        }
     }
 }
 
@@ -544,8 +561,9 @@ show_multi (CT ct, int alternate, int concatsw, int textonly, int inlineonly,
     if ((cp = context_find_by_type ("show", ci->ci_type, ci->ci_subtype)))
 	return show_multi_aux (ct, alternate, cp, fmt);
 
-    if ((cp = ct->c_showproc))
+    if ((cp = ct->c_showproc)) {
 	return show_multi_aux (ct, alternate, cp, fmt);
+    }
 
     /*
      * Use default method to display this multipart content.  Even
@@ -570,6 +588,9 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     struct multipart *m = (struct multipart *) ct->c_ctparams;
     struct part *part;
     int request_matched;
+    int display_success;
+    int mult_alt_done;
+    int ret;
     CT p;
 
     alternating = 0;
@@ -581,41 +602,57 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
     }
 
     /*
-     * alternate   -> we are a part inside an multipart/alternative
+     * alternate   -> we are a part inside a multipart/alternative
      * alternating -> we are a multipart/alternative
      */
 
-    result = alternate ? NOTOK : OK;
+    result = NOTOK;
     request_matched = 0;
+    display_success = 0;
+    mult_alt_done = 0;
 
     for (part = m->mp_parts; part; part = part->mp_next) {
 	p = part->mp_part;
 
-	if (part_ok (p, 1) && type_ok (p, 1)) {
-	    int	inneresult;
+	/* while looking for the right displayable alternative, we
+	 * use a looser search criterion than we do after finding it.
+	 * specifically, while still looking, part_ok() will match
+	 * "parent" parts (e.g.  "-part 2" where 2 is a high-level
+	 * multipart).  after finding it, we use part_exact() to only
+	 * choose a part that was requested explicitly.
+	 */
+	if ((part_exact(p) && type_ok(p, 1)) ||
+		(!mult_alt_done && part_ok (p) && type_ok (p, 1))) {
 
-	    request_matched = 1;
+	    int	inneresult;
 
 	    inneresult = show_switch (p, nowalternate, concatsw, textonly,
 				      inlineonly, fmt);
 	    switch (inneresult) {
-		case NOTOK:
+		case NOTOK:  /* hard display error */
+		    request_matched = 1;
 		    if (alternate && !alternating) {
 			result = NOTOK;
 			goto out;
 		    }
 		    continue;
 
-		case OK:
-		case DONE:
+		case DONE:  /* found no match on content type */
+		    continue;
+
+		case OK:  /* display successful */
+		    request_matched = 1;
+		    display_success = 1;
+		    result = OK;
+
+		    /* if we got success on a sub-part of
+		     * multipart/alternative, we're done, unless
+		     * there's a chance an explicit part should be
+		     * matched later in the alternatives.  */
 		    if (alternating) {
-			result = DONE;
-			break;
-		    }
-		    if (alternate) {
+			mult_alt_done = 1;
+		    } else if (alternate) {
 			alternate = nowalternate = 0;
-			if (result == NOTOK)
-			    result = inneresult;
 		    }
 		    continue;
 	    }
@@ -623,17 +660,23 @@ show_multi_internal (CT ct, int alternate, int concatsw, int textonly,
 	}
     }
 
-    if (alternating && !part && request_matched) {
+    /* we're supposed to be displaying at least something from a
+     * multipart/alternative.  if we've had parts to consider, and
+     * we've had no success, then we should complain.  we shouldn't
+     * complain if none of the parts matched any -part or -type option.
+     */
+    if (alternating && request_matched && !display_success) {
+	/* if we're ourselves an alternate.  don't complain yet. */
 	if (!alternate)
 	    content_error (NULL, ct, "don't know how to display any of the contents");
 	result = NOTOK;
-	goto out;
     }
 
 out:
     /* if no parts matched what was requested, there can't have been
-     * any display errors, so we report OK. */
-    return request_matched ? result : OK;
+     * any display errors.  we report DONE rather than OK. */
+    ret = request_matched ? result : DONE;
+    return ret;
 }
 
 
@@ -669,7 +712,7 @@ show_multi_aux (CT ct, int alternate, char *cp, struct format *fmt)
 	    p->c_storage = add (file, NULL);
 
 	    if (p->c_showproc && !strcmp (p->c_showproc, "true"))
-		return (alternate ? DONE : OK);
+		return OK;
 	    (*p->c_ceclosefnx) (p);
 	}
     }
@@ -1221,6 +1264,7 @@ convert_content_charset (CT ct, char **file) {
  * Compile our format string and save any parameters we care about.
  */
 
+#define DEFAULT_HEADER "[ Message %{folder}%<{folder}:%>%(msg) ]"
 #define DEFAULT_MARKER "[ part %{part} - %{content-type} - " \
 		       "%<{description}%{description}" \
 		         "%?{cdispo-filename}%{cdispo-filename}" \
@@ -1228,7 +1272,29 @@ convert_content_charset (CT ct, char **file) {
 		       "%(kilo(size))B %<(unseen)\\(suppressed\\)%> ]"
 
 static struct format *
-compile_marker(char *markerform)
+compile_header(char *form)
+{
+    struct format *fmt;
+    char *fmtstring;
+    struct comp *comp = NULL;
+    unsigned int bucket;
+
+    fmtstring = new_fs(form, NULL, DEFAULT_HEADER);
+
+    (void) fmt_compile(fmtstring, &fmt, 1);
+    free_fs();
+
+    while ((comp = fmt_nextcomp(comp, &bucket)) != NULL) {
+	if (strcasecmp(comp->c_name, "folder") == 0) {
+	    folder_comp = comp;
+	}
+    }
+
+    return fmt;
+}
+
+static struct format *
+compile_marker(char *form)
 {
     struct format *fmt;
     char *fmtstring;
@@ -1236,10 +1302,10 @@ compile_marker(char *markerform)
     unsigned int bucket;
     struct param_comp_list *pc_entry;
 
-    fmtstring = new_fs(markerform, NULL, DEFAULT_MARKER);
+    fmtstring = new_fs(form, NULL, DEFAULT_MARKER);
 
     (void) fmt_compile(fmtstring, &fmt, 1);
-    free(fmtstring);
+    free_fs();
 
     /*
      * Things we care about:
@@ -1286,12 +1352,45 @@ compile_marker(char *markerform)
  */
 
 static void
+output_header(CT ct, struct format *fmt)
+{
+    charstring_t outbuf = charstring_create (BUFSIZ);
+    int dat[5] = { 0 };
+    char *endp;
+    int message = 0;
+
+    if (folder_comp)
+	folder_comp->c_text = getcpy(folder);
+
+    if (ct->c_file && *ct->c_file) {
+	message = strtol(ct->c_file, &endp, 10);
+	if (*endp) message = 0;
+	dat[0] = message;
+    }
+
+    /* it would be nice to populate dat[2], for %(size) here,
+     * but it's not available.  it might also be nice to know
+     * if the message originally had any mime parts or not -- but
+     * there's also no record of that.  (except for MIME-version:)
+     */
+
+    fmt_scan(fmt, outbuf, BUFSIZ, dat, NULL);
+
+    fputs(charstring_buffer (outbuf), stdout);
+    charstring_free (outbuf);
+
+    fmt_freecomptext();
+}
+
+static void
 output_marker(CT ct, struct format *fmt, int hidden)
 {
     charstring_t outbuf = charstring_create (BUFSIZ);
     struct param_comp_list *pcentry;
     int partsize;
-    int dat[5];
+    int message = 0;
+    char *endp;
+    int dat[5] = { 0 };
 
     /*
      * Grab any items we care about.
@@ -1329,13 +1428,18 @@ output_marker(CT ct, struct format *fmt, int hidden)
     else
 	partsize = ct->c_end - ct->c_begin;
 
+    if (ct->c_file && *ct->c_file) {
+	message = strtol(ct->c_file, &endp, 10);
+	if (*endp) message = 0;
+	dat[0] = message;
+    }
+    dat[2] = partsize;
+
     /* make the part's hidden aspect available by overloading the
      * %(unseen) function.  make the part's size available via %(size).
      * see comments in h/fmt_scan.h.
      */
-    dat[2] = partsize;
     dat[4] = hidden;
-    dat[0] = dat[1] = dat[3] = 0;
 
     fmt_scan(fmt, outbuf, BUFSIZ, dat, NULL);
 
@@ -1354,6 +1458,7 @@ free_markercomps(void)
 {
     struct param_comp_list *pc_entry, *pc2;
 
+    folder_comp = NULL;
     part_comp = NULL;
     ctype_comp = NULL;
     description_comp = NULL;

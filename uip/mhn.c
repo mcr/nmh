@@ -115,7 +115,7 @@ static int storesw = 0;
 CT parse_mime (char *);
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
 int type_ok (CT, int);
 void flush_errors (void);
 
@@ -554,7 +554,7 @@ do_cache:
      * Show the message content
      */
     if (showsw)
-	show_all_messages (cts, 0, 0, 0, NULL);
+	show_all_messages (cts, 0, 0, 0);
 
     /* Now free all the structures for the content */
     for (ctp = cts; *ctp; ctp++)

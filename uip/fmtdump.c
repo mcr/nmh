@@ -284,6 +284,7 @@ dumpone(struct format *fmt)
 	case FT_LV_LIT:
 	case FT_LV_PLUS_L:
 	case FT_LV_MINUS_L:
+	case FT_LV_MULTIPLY_L:
 	case FT_LV_DIVIDE_L:
 	case FT_LV_MODULO_L:
 		printf(" value %d", fmt->f_value);
@@ -370,6 +371,7 @@ f_typestr(int t)
 	case FT_LV_STRLEN: return("LV_STRLEN");
 	case FT_LV_PLUS_L: return("LV_PLUS_L");
 	case FT_LV_MINUS_L: return("LV_MINUS_L");
+	case FT_LV_MULTIPLY_L: return("LV_MULTIPLY_L");
 	case FT_LV_DIVIDE_L: return("LV_DIVIDE_L");
 	case FT_LV_MODULO_L: return("LV_MODULO_L");
 	case FT_LV_CHAR_LEFT: return("LV_CHAR_LEFT");

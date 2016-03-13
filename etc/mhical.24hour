@@ -1,0 +1,50 @@
+%; mhical.24hour
+%; Form file for mhical that directs it to use 24-hour time format.
+%;
+%; Default form file for mhical.  The following components
+%; are supported:
+%;     method
+%;     organizer
+%;     summary
+%;     description
+%;     location
+%;     dtstart
+%;     dtend
+%;     attendees
+%; Each corresponds to the iCalendar property of the same name as
+%; defined in RFC 5545, with the exception of "attendees".  That is a
+%; comma-delimited list of the common name (CN), if available, or
+%; email address of Attendee properties.
+%; The component names listed above are case-sensitive because
+%; fmt_findcomp() is case-sensitive.
+%;
+%; Here's what it does to the %{dtstart} special component for the
+%; event:
+%; 1) Enable bold, and if the terminal supports color, green attributes.
+%; 2) If the time zone is explicit, coerce the date to the local time zone;
+%;    otherwise, assume that it's a floating time.
+%; 3) Output the date in "ddd DD MM YYYY" format.
+%; 4) Output the time in "HH:MM" format.
+%; 5) If the time zone is explicit, output it.
+%; 6) Reset all terminal attributes.
+%; The timezone is not output for the dtend component because it is
+%; almost always (except across a daylight saving time transition)
+%; the same as for the dtstart component.
+%;
+%<(nonnull{method})Method: %(putstr{method})\n%>\
+%<(nonnull{organizer})Organizer: %(putstr{organizer})\n%>\
+%<(nonnull{summary})Summary: %(putstr{summary})\n%>\
+%<(nonnull{description})Description: %(putstr{description})\n%>\
+%<(nonnull{location})Location: %(putstr{location})\n%>\
+%<(nonnull{dtstart})At: \
+%<(hascolor)%(zputlit(fgcolor green))%>%(zputlit(bold))\
+%(void(szone{dtstart}))%<(gt 0)%(date2local{dtstart})%>\
+%(day{dtstart}), %02(mday{dtstart}) %(month{dtstart}) %(year{dtstart}) \
+%02(hour{dtstart}):%02(min{dtstart})\
+%(void(szone{dtstart}))%<(gt 0) %(tzone{dtstart})%>\
+%(zputlit(resetterm))\n%>\
+%<(nonnull{dtstart})To: \
+%(void(szone{dtend}))%<(gt 0)%(date2local{dtend})%>\
+%(day{dtend}), %02(mday{dtend}) %(month{dtend}) %(year{dtend}) \
+%02(hour{dtend}):%02(min{dtend})\n%>\
+%<(nonnull{attendees})%(putstr{attendees})\n%>\

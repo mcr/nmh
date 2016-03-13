@@ -12,18 +12,33 @@ fi
 . "$MH_OBJ_DIR/test/common.sh"
 
 setup_test
-expected="$MH_TEST_DIR/$$.expected"
-actual="$MH_TEST_DIR/$$.actual"
+expected="$MH_TEST_DIR/test-functions$$.expected"
+actual="$MH_TEST_DIR/test-functions$$.actual"
 
 # check sday when day of week is specified
-echo 1 >"$expected"
+printf '1\n' >"$expected"
 fmttest -raw -format '%(sday{text})' 'Fri Sep 12 20:02 2014' >"$actual"
 check "$expected" "$actual"
 
 # check sday when day of week is not specified
-echo 0 >"$expected"
+printf '0\n' >"$expected"
 fmttest -raw -format '%(sday{text})' 'Sep 12 20:02 2014' >"$actual"
 check "$expected" "$actual"
 
+# check negative number, without padding
+printf '%s\n' ' -42' >"$expected"
+fmttest -raw -format '%4(minus -42)' 0 >"$actual"
+check "$expected" "$actual"
+
+# check negative number, with padding
+# Output was "0-42" with nmh 1.6 and earlier.
+printf '%s\n' -042 >"$expected"
+fmttest -raw -format '%04(minus -42)' 0 >"$actual"
+check "$expected" "$actual"
+
+# check multiply
+printf '%s\n' 42 >"$expected"
+fmttest -raw -format '%(void(num 7))%(multiply 6)' 0 >"$actual"
+check "$expected" "$actual"
 
 exit $failed

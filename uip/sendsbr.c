@@ -389,7 +389,6 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
     fd = pushsw ? tmp_fd () : NOTOK;
     fd2 = NOTOK;
 
-    vec[vecp++] = drft;
     if (annotext) {
 	if ((fd2 = tmp_fd ()) != NOTOK) {
 	    vec[vecp++] = "-idanno";
@@ -400,6 +399,7 @@ sendaux (char **vec, int vecp, char *program, char *drft, struct stat *st)
                       "for annotation list", get_temp_dir());
 	}
     }
+    vec[vecp++] = drft;
     if (distfile && distout (drft, distfile, backup) == NOTOK)
 	done (1);
     vec[vecp] = NULL;

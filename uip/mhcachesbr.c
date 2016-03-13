@@ -9,7 +9,6 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
-#include <h/signals.h>
 #include <h/md5.h>
 #include <h/mts.h>
 #include <h/tws.h>
@@ -38,7 +37,7 @@ char *cache_private;
 
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
 int type_ok (CT, int);
 void content_error (char *, CT, char *, ...);
 void flush_errors (void);

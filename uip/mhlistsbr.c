@@ -10,7 +10,6 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
-#include <h/signals.h>
 #include <h/mts.h>
 #include <h/tws.h>
 #include <h/mime.h>
@@ -18,7 +17,7 @@
 #include <h/utils.h>
 
 /* mhmisc.c */
-int part_ok (CT, int);
+int part_ok (CT);
 int type_ok (CT, int);
 void flush_errors (void);
 
@@ -343,7 +342,7 @@ list_multi (CT ct, int toplevel, int realsize, int verbose, int debug,
     for (part = m->mp_parts; part; part = part->mp_next) {
 	CT p = part->mp_part;
 
-	if (part_ok (p, 1) && type_ok (p, 1))
+	if (part_ok (p) && type_ok (p, 1))
 	    list_switch (p, 0, realsize, verbose, debug, dispo);
     }
 

@@ -93,9 +93,6 @@ AC_PREFIX_PROGRAM([mhparam])
 dnl ------------------
 dnl CHECK THE COMPILER
 dnl ------------------
-dnl We want these before the checks,
-dnl so the checks can modify their values.
-test -z "$CFLAGS"  &&  auto_cflags=1
 
 AC_PROG_CC([cc gcc])
 AM_PROG_CC_C_O
@@ -103,50 +100,31 @@ AM_PROG_CC_C_O
 dnl ----------------
 dnl CUSTOMIZE CFLAGS
 dnl ----------------
-if test -n "$auto_cflags"; then
-  dnl The user didn't specify CFLAGS, so customize them.
-  if test "$GCC" = yes; then
-    dnl Can't use -ansi with gcc 4.5.3 on Cygwin, at least through setup
-    dnl version 2.763, because it disables some features in the system
-    dnl header files and warns about them with -Wall.  Try to test for
-    dnl that generally, with gcc.
-    AC_CACHE_CHECK([whether we can use -ansi with gcc], [nmh_cv_has_dash_ansi],
-      [nmh_saved_cppflags="$CPPFLAGS"
-       nmh_saved_cflags="$CFLAGS"
-       CPPFLAGS="-D_GNU_SOURCE"
-       CFLAGS="-ansi -Wall -Werror"
-       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <time.h>],[tzset();])],
-         [nmh_cv_has_dash_ansi=yes],
-         [nmh_cv_has_dash_ansi=no])
-       CPPFLAGS="$nmh_saved_cppflags"
-       CFLAGS="$nmh_saved_cflags"])
-    test "$nmh_cv_has_dash_ansi" = "yes"  &&  \
-      CFLAGS="${CFLAGS:+$CFLAGS }-ansi -pedantic"
-  else
-    dnl Use -v and some other options with SunStudio cc.  lex produces
-    dnl code that causes unreachable-statement warnings.  It might be
-    dnl better to use an autoconf test, except -v will probably succeed
-    dnl with many other compilers but have different meaning.
-    AS_CASE([`${CC} -V 2>&1`],
-            [cc:\ Sun\ C*], [CFLAGS=\
+dnl The user didn't specify CFLAGS, so customize them.
+if test "$GCC" != yes; then
+  dnl Use -v and some other options with SunStudio cc.  lex produces
+  dnl code that causes unreachable-statement warnings.  It might be
+  dnl better to use an autoconf test, except -v will probably succeed
+  dnl with many other compilers but have different meaning.
+  AS_CASE([`${CC} -V 2>&1`],
+          [cc:\ Sun\ C*], [CFLAGS=\
 "${CFLAGS:+$CFLAGS }-v -errtags=yes -erroff=E_STATEMENT_NOT_REACHED"])
-  fi
-
-  AC_CACHE_CHECK([whether compiler supports -Wall], [nmh_cv_has_wall],
-                 [nmh_saved_cflags="$CFLAGS"
-                 CFLAGS="$CFLAGS -Wall -Werror"
-                 AC_TRY_COMPILE([],[],nmh_cv_has_wall=yes,nmh_cv_has_wall=no)
-                 CFLAGS="$nmh_saved_cflags"])
-  test "$nmh_cv_has_wall" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wall"
-
-  AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
-                 [nmh_saved_cflags="$CFLAGS"
-                 CFLAGS="$CFLAGS -Wextra -Werror"
-                 AC_TRY_COMPILE([],[],nmh_cv_has_wextra=yes,
-                                nmh_cv_has_wextra=no)
-                 CFLAGS="$nmh_saved_cflags"])
-  test "$nmh_cv_has_wextra" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wextra"
 fi
+
+AC_CACHE_CHECK([whether compiler supports -Wall], [nmh_cv_has_wall],
+               [nmh_saved_cflags="$CFLAGS"
+               CFLAGS="$CFLAGS -Wall -Werror"
+               AC_TRY_COMPILE([],[],nmh_cv_has_wall=yes,nmh_cv_has_wall=no)
+               CFLAGS="$nmh_saved_cflags"])
+test "$nmh_cv_has_wall" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wall"
+
+AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
+               [nmh_saved_cflags="$CFLAGS"
+               CFLAGS="$CFLAGS -Wextra -Werror"
+               AC_TRY_COMPILE([],[],nmh_cv_has_wextra=yes,
+                              nmh_cv_has_wextra=no)
+               CFLAGS="$nmh_saved_cflags"])
+test "$nmh_cv_has_wextra" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wextra"
 
 if test "$GCC" = yes; then
   dnl Do this regardless of auto_cflags value.
@@ -215,11 +193,12 @@ AC_HEADER_ASSERT
 dnl ------------------
 dnl CHECK FOR PROGRAMS
 dnl ------------------
-AC_PROG_MAKE_SET	dnl Does make define $MAKE
-AC_PROG_INSTALL		dnl Check for BSD compatible `install'
-AC_PROG_RANLIB		dnl Check for `ranlib'
+AC_PROG_MAKE_SET        dnl Does make define $MAKE
+AC_PROG_INSTALL         dnl Check for BSD compatible `install'
+AC_PROG_RANLIB          dnl Check for `ranlib'
 AC_PROG_AWK             dnl Check for mawk,gawk,nawk, then awk
-AC_PROG_SED		dnl Check for Posix-compliant sed
+AC_PROG_SED             dnl Check for Posix-compliant sed
+AC_PROG_YACC            dnl Check for yacc/bison
 AM_PROG_LEX             dnl Check for lex/flex
 
 AM_PROG_AR
@@ -315,7 +294,7 @@ AS_IF([test x"$DISABLE_SETGID_MAIL" != x -a x"$DISABLE_SETGID_MAIL" != x0],
 
 dnl If mailspool is not world-writable and dotlockfile is not setgid,
 dnl we need to #define MAILGROUP to 1 and make inc setgid.
-if test x"$LOCKTYPE" = x"dot" -a x"$nmh_cv_mailspool_world_writable" = x"no" -a x"$nmh_cv_dotlockfile_setgid" != x"yes" ; then
+if test x"$with_locking" = x"dot" -a x"$nmh_cv_mailspool_world_writable" = x"no" -a x"$nmh_cv_dotlockfile_setgid" != x"yes" ; then
   dnl do we really need both of these?
   AC_DEFINE([MAILGROUP],[1],
     [Define to 1 if you need to make `inc' set-group-id because your mail spool is not world writable. There are no guarantees as to the safety of doing this, but this #define will add some extra security checks.])dnl
@@ -539,6 +518,13 @@ AS_IF([test "$LEX" = flex],
                [flex\ 2.5.3[[67]]], [LFLAGS=\
 '; sed "s/\(	\)int i;/\1yy_size_t i;/" $@ >$@.tmp && mv -f $@.tmp $@'])
        AC_SUBST([LFLAGS])])
+
+dnl ------------------
+dnl FOR INTERNAL USE by the NMH test suite
+dnl ------------------
+AC_ARG_VAR([NMHETCDIRINST], [for internal use by nmh test suite])
+AS_IF([test -n "$NMHETCDIRINST"], [nmhetcdirinst=$NMHETCDIRINST]
+      AC_SUBST([nmhetcdirinst]))
 
 dnl ----------------
 dnl CHECK STRUCTURES

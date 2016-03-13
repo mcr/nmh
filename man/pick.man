@@ -10,6 +10,8 @@ pick \- search for messages by content
 .B pick
 .RI [ +folder ]
 .RI [ msgs ]
+.RB [ \-reverse
+\&...]
 .RB [ \-and
 \&...]
 .RB [ \-or
@@ -176,6 +178,20 @@ Finally, in addition to these special specifications,
 will
 also honor a specification of the form \*(lq\-dd\*(rq, which means
 \*(lqdd days ago\*(rq.
+.PP
+Use the
+.BR \-reverse
+switch to make
+.B pick
+find matching messages in reverse order, working from the highest message
+number down to the lowest.  This can be useful in for searching recent
+messages in large folders, for example,
+.PP
+.RS 5
+.nf
+pick\0\-reverse\0\-from\0frated\0|\0xargs\0\-n1\0scan
+.fi
+.RE
 .PP
 .B Pick
 supports complex boolean operations on the searching primitives

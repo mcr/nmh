@@ -8,7 +8,13 @@
  */
 
 #ifdef MAILGROUP
-/* Revised: Sat Apr 14 17:08:17 PDT 1990 (marvit@hplabs)
+/*
+ * Thu Feb 12 21:00 CST 2015            Marcin Cieslak <saper@saper.info>
+ *    Replaced setgid() calls with setegid() so that it works with dot
+ *    locking on FreeBSD.  setegid() should be supported on modern POSIX
+ *    systems.
+ *
+ * Revised: Sat Apr 14 17:08:17 PDT 1990 (marvit@hplabs)
  *    Added hpux hacks to set and reset gid to be "mail" as needed. The reset
  *    is necessary so inc'ed mail is the group of the inc'er, rather than
  *    "mail". We setgid to egid only when [un]locking the mail file. This
@@ -128,10 +134,16 @@ static FILE *pf = NULL;
  * For setting and returning to "mail" gid
  */
 #ifdef MAILGROUP
-static int return_gid;
+static gid_t return_gid;
 #define TRYDROPGROUPPRIVS() DROPGROUPPRIVS()
-#define DROPGROUPPRIVS() setgid(getgid())
-#define GETGROUPPRIVS() setgid(return_gid)
+#define DROPGROUPPRIVS() \
+    if (setegid(getgid()) != 0) { \
+        adios ("setegid", "unable to restore group to %ld", (long) getgid()); \
+    }
+#define GETGROUPPRIVS() \
+    if (setegid(return_gid) != 0) { \
+        adios ("setegid", "unable to set group to %ld", (long) return_gid); \
+    }
 #define SAVEGROUPPRIVS() return_gid = getegid()
 #else
 /* define *GROUPPRIVS() as null; this avoids having lots of "#ifdef MAILGROUP"s */
@@ -966,6 +978,7 @@ skip:
 static void
 inc_done (int status)
 {
+    done = exit;
     if (packfile && pd != NOTOK)
 	mbx_close (packfile, pd);
     if (locked)

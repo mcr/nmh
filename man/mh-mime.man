@@ -1,4 +1,4 @@
-.TH MH\-MIME %manext7% "March 16, 2014" "%nmhversion%"
+.TH MH\-MIME %manext7% "December 14, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -141,8 +141,11 @@ command at the \*(lqWhat now?\*(rq prompt to process them.
 When replying to messages using
 .IR repl (1)
 the traditional MH method of including the original text in the reply does
-not interoperate with MIME messages.  As of this writing there is no
-native solution for addressing this issue, but the contrib directory
+not interoperate with MIME messages.  The
+.B \-convertargs
+switch to
+.IR repl (1)
+provides one solution.  Another solution:  the contrib directory
 .RI ( %docdir%/contrib )
 contains a Perl program called
 .B replyfilter

@@ -25,9 +25,24 @@ NEW FEATURES
 - When building from source, configure will derive ${prefix} from an existing
   nmh installation if it finds one in your $PATH.
 - Added getmymbox and getmyaddr mh-format(5) function escapes.
-- The -changecur and -nochangecur switches have been added to mhfixmsg(1).
+- New -[no]changecur, -fixtype, -decodetypes, and -[no]crlflinebreaks switches
+  have been added to mhfixmsg(1).
 - mhfixmsg now removes an extraneous trailing semicolon from header
   parameter lists.
+- Added -convertargs switch to repl(1), to pass arguments to programs
+  specified in the user's profile or mhn.defaults to convert message
+  content.
+- Added mhical(1), to display, reply to, and cancel iCalendar (RFC 5545)
+  event requests.
+- added multiply format function
+- "mhparam bindir" prints the path to the directory containing the public
+  executables (${bindir}).
+- new "-prefer" switch for mhshow (and mhlist and mhshow), to allow specifying
+  the preferred content types to show, if present in a multipart alternative.
+- mh-format now has %(kilo) and %(kibi) functions, to allow printing
+  numbers as, for example, "10K", or "2.3Mi"
+- Support for the -sendmail flag to send/post to change the sendmail
+  binary when using the sendmail/pipe MTS.
 
 -----------------
 OBSOLETE FEATURES
