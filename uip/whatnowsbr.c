@@ -956,6 +956,7 @@ buildfile (char **argp, char *file)
     X("sendmail program", 0, MTSSM) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
+    X("oauth service", 5, OAUTHSW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(SEND);
@@ -1146,6 +1147,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case MTSSM:
 		case MTSSW:
 		case MESSAGEIDSW:
+		case OAUTHSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-') {
 			advise (NULL, "missing argument to %s", argp[-2]);
