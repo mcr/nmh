@@ -263,6 +263,7 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
                     oauth_svc = cp;
 #else
+                    NMH_UNUSED (user);
                     NMH_UNUSED (oauth_svc);
                     adios (NULL, "not built with OAuth support");
 #endif
