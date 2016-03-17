@@ -9,9 +9,11 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
-
-#include <h/oauth.h>
 #include <h/utils.h>
+
+#ifdef OAUTH_SUPPORT
+# include <h/oauth.h>
+#endif
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)

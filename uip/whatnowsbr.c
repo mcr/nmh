@@ -44,6 +44,10 @@
 #include <h/mime.h>
 #include <h/utils.h>
 
+#ifdef OAUTH_SUPPORT
+# include <h/oauth.h>
+#endif
+
 #define WHATNOW_SWITCHES \
     X("draftfolder +folder", 0, DFOLDSW) \
     X("draftmessage msg", 0, DMSGSW) \
@@ -945,7 +949,8 @@ buildfile (char **argp, char *file)
     X("nosasl", SASLminc(-6), NOSASLSW) \
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech", SASLminc(-5), SASLMECHSW) \
-    X("user", SASLminc(-4), USERSW) \
+    X("oauth service", 5, OAUTHSW) \
+    X("user username", SASLminc(-4), USERSW) \
     X("attach fieldname", 6, SNDATTACHSW) \
     X("noattach", 0, SNDNOATTACHSW) \
     X("attachformat", 7, SNDATTACHFORMAT) \
@@ -956,7 +961,6 @@ buildfile (char **argp, char *file)
     X("sendmail program", 0, MTSSM) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
-    X("oauth service", 5, OAUTHSW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(SEND);
@@ -986,6 +990,8 @@ sendit (char *sp, char **arg, char *file, int pushed)
     int	vecp, n = 1;
     char *cp, buf[BUFSIZ], **argp, *program;
     char **arguments, *savearg[MAXARGS], **vec;
+    const char *user = NULL, *oauth_svc = NULL;
+    int snoop = 0;
     struct stat st;
 
 #ifndef	lint
@@ -1126,12 +1132,16 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case NMSGDSW:
 		case WATCSW:
 		case NWATCSW:
-		case SNOOPSW:
 		case SASLSW:
 		case NOSASLSW:
 		case TLSSW:
 		case INITTLSSW:
 		case NTLSSW:
+		    vec[vecp++] = --cp;
+		    continue;
+
+		case SNOOPSW:
+                    snoop++;
 		    vec[vecp++] = --cp;
 		    continue;
 
@@ -1147,13 +1157,25 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case MTSSM:
 		case MTSSW:
 		case MESSAGEIDSW:
-		case OAUTHSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-') {
 			advise (NULL, "missing argument to %s", argp[-2]);
 			return;
 		    }
 		    vec[vecp++] = cp;
+                    user = cp;
+		    continue;
+
+                case OAUTHSW:
+#ifdef OAUTH_SUPPORT
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+                    oauth_svc = cp;
+#else
+                    NMH_UNUSED (user);
+                    NMH_UNUSED (oauth_svc);
+                    adios (NULL, "not built with OAuth support");
+#endif
 		    continue;
 
 		case SDRFSW:
@@ -1221,6 +1243,18 @@ sendit (char *sp, char **arg, char *file, int pushed)
     } else {
 	distfile = NULL;
     }
+
+#ifdef OAUTH_SUPPORT
+    if (oauth_svc != NULL) {
+        if (user == NULL) {
+            adios (NULL, "must specify -user with -oauth");
+        }
+
+        vec[vecp++] = "-oauth";
+        vec[vecp++] = mh_oauth_do_xoauth (user, oauth_svc,
+					  snoop ? stderr : NULL);
+    }
+#endif /* OAUTH_SUPPORT */
 
     if (altmsg == NULL || stat (altmsg, &st) == NOTOK) {
 	st.st_mtime = 0;
