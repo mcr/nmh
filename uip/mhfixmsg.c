@@ -583,7 +583,16 @@ fix_boundary (CT *ct, int *message_mods) {
                 }
 
                 free (part_boundary);
+            } else {
+                /* Couldn't fix the boundary.  Report failure so that mhfixmsg
+                   doesn't modify the message. */
+                status = NOTOK;
             }
+        } else {
+            /* No multipart struct, even though the content type is
+               CT_MULTIPART.  Report failure so that mhfixmsg doesn't modify
+               the message. */
+            status = NOTOK;
         }
     }
 
