@@ -887,6 +887,33 @@ run_test 'mhfixmsg last -outfile '"$actual"' -verbose' \
 check "$expected" "$actual"
 
 
+# check that message is not modified when -fixboundary fails
+cat >`mhpath new` <<EOF
+Date: Fri, 13 May 2011 08:21:12 -0500
+Content-Type: multipart/alternative;
+        boundary="----=_ NextPart_000_1781A17_01CC1147.81E9467A"
+Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+From: <sender@example.com>
+To: <recipient@example.com>
+Subject: mhfixmsg bad boundary test
+
+This is a multi-part message in MIME format.
+
+------=_ NextPart_000_1781A1A_01CC1147.81EBA8D4
+Content-Type: text/plain
+
+The boundary below doesn't match the header boundary.
+
+------=_
+NextPart_000_1781A1A_01CC1147.81EBA8D4--
+EOF
+
+cp -p `mhpath last` "$expected"
+run_test "mhfixmsg last -outfile $actual" ''
+check "$expected" "$actual"
+
+
 # check that text/plain part is not added to text/html in multipart/related
 # when it shouldn't be
 cat >`mhpath new` <<EOF
@@ -1279,16 +1306,16 @@ check "${MH_TEST_DIR}/Mail/inbox/15.backup" \
 
 
 # check -normmproc
-cp "${MH_TEST_DIR}/Mail/inbox/19" "${MH_TEST_DIR}/Mail/inbox/20"
+cp "${MH_TEST_DIR}/Mail/inbox/20" "${MH_TEST_DIR}/Mail/inbox/21"
 
-run_test 'mhfixmsg 19 -normmproc'
-check "${MH_TEST_DIR}/Mail/inbox/20" \
-      "${MH_TEST_DIR}/Mail/inbox/,19" 'keep first'
+run_test 'mhfixmsg 20 -normmproc'
+check "${MH_TEST_DIR}/Mail/inbox/21" \
+      "${MH_TEST_DIR}/Mail/inbox/,20" 'keep first'
 
 
 # check -rmmproc
-run_test 'mhfixmsg 20 -rmmproc true'
-if test -f '${MH_TEST_DIR}/Mail/inbox/20.backup'; then
+run_test 'mhfixmsg 21 -rmmproc true'
+if test -f '${MH_TEST_DIR}/Mail/inbox/21.backup'; then
   echo check of mhfixmsg -rmmproc FAILED, should not have created backup file
   failed=`expr ${failed:-0} + 1`
 fi
