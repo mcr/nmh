@@ -1152,7 +1152,9 @@ iconv_start:
 		    }
 		    if (errno == EINVAL) {
 			/* middle of multi-byte sequence */
-			write (fd, dest_buffer, outbytes_before - outbytes);
+			if (write (fd, dest_buffer, outbytes_before - outbytes) < 0) {
+			    advise (dest, "write");
+			}
 			fseeko (*fp, -inbytes, SEEK_CUR);
 			if (end > 0) bytes_to_read += inbytes;
 			/* advise(NULL, "convert_charset: EINVAL"); */
