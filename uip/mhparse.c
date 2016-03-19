@@ -4334,7 +4334,7 @@ char *get_param_value(PM pm, char replace)
 	    }
 	    if (utf8) {
 		for (++p, --inbytes;
-		     inbytes > 0 && (((unsigned char) *q) & 0xc0) == 0x80;
+		     inbytes > 0 && (((unsigned char) *p) & 0xc0) == 0x80;
 		     ++p, --inbytes)
 		    continue;
 	    } else {
