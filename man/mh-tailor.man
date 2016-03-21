@@ -34,8 +34,8 @@ and
 .PP
 If you use
 .BR smtp ,
-this will enable a direct SMTP (simple mail transport
-protocol) interface in
+this will enable a direct SMTP
+interface in
 .BR nmh .
 When sending mail, instead of passing the
 message to the mail transport agent,
@@ -282,7 +282,7 @@ during updates.  These locking methods can be configured separately
 from each other.
 .PP
 For locking the mail spool, the
-.I spoollocking
+.B spoollocking
 entry in
 .IR mh\-tailor (5)
 will control the locking algorithm to use when
@@ -291,12 +291,12 @@ incorporates mail from the spool file.  If no entry is given, a default
 based on the operating system type will be chosen.
 .PP
 For locking all other files, the
-.I datalocking
+.B datalocking
 entry in
 .IR mh-profile (5)
 controls the locking algorithm used for all other file access.
 If no entry is given, the
-.I fcntl
+.B fcntl
 lock method will be chosen.
 .PP
 If you do not wish to use kernel\-based locking,
@@ -313,11 +313,9 @@ Prior to installing
 you should see how locking is done at
 your site, and set the appropriate values.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^%nmhetcdir%/mts.conf~^nmh mts configuration file
-.fi
+.TP 20
+%nmhetcdir%/mts.conf
+nmh mts configuration file
 .SH "PROFILE COMPONENTS"
 None
 .SH "SEE ALSO"
@@ -326,16 +324,17 @@ None
 .SH DEFAULTS
 As listed above.  The path of the mail transport configuration
 file can be changed with the
-.B MHMTSCONF
+MHMTSCONF
 environment variable and augmented with the
-.B MHMTSUSERCONF
-environment variable, see mh\-profile(5).
+MHMTSUSERCONF
+environment variable, see
+.IR mh\-profile (5).
 .SH BUGS
 Failure to open any mail transport configuration file is silently
 ignored.  Therefore, it's best to avoid dynamic creation of such
 a file with the intent of use via the
-.B MHMTSCONF
+MHMTSCONF
 or
-.B MHMTSUSERCONF
+MHMTSUSERCONF
 environment variables.  If such use is necessary, the ability
 to successfully open the file should first be verified.

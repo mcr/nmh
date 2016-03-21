@@ -8,7 +8,7 @@ mh-profile \- user profile customization for nmh message handler
 Each user of
 .B nmh
 is expected to have a file named
-.I \&.mh\(ruprofile
+.I \&.mh\-profile
 in his or her home directory.  This file contains
 a set of user parameters used by some or all of the
 .B nmh
@@ -28,9 +28,9 @@ This is a comment.
 .RE
 .PP
 Blank lines are not permitted in
-.IR \&.mh\(ruprofile.
+.IR \&.mh\-profile.
 The shell quoting conventions are not available in the
-.IR \&.mh\(ruprofile ;
+.IR \&.mh\-profile ;
 each token is separated by whitespace.
 .SS "Standard Profile Entries"
 The possible profile components are exemplified below.  The only mandatory
@@ -68,7 +68,7 @@ context
 Declares the location of the
 .B nmh
 context file.  This is overridden by the environment variable
-.BR $MHCONTEXT .
+MHCONTEXT.
 See the
 .B HISTORY
 section below.
@@ -133,11 +133,11 @@ man page for the details about this sequence.
 .RE
 .PP
 .BR mh\-sequences :
-\&.mh\(rusequences
+\&.mh\-sequences
 .RS 5
 The name of the file in each folder which defines public sequences.
 To disable the use of public sequences, leave the value portion of this
-entry blank.  (profile, default: \&.mh\(rusequences)
+entry blank.  (profile, default: \&.mh\-sequences)
 .RE
 .PP
 .BI atr\- seq \- folder :
@@ -346,7 +346,7 @@ Tells
 .B inc
 your maildrop, if different from the default.  This is
 superseded by the environment variable
-.BR $MAILDROP .
+MAILDROP.
 (profile, default: %mailspool%/$USER)
 .RE
 .PP
@@ -360,9 +360,9 @@ and
 .B repl
 your mail signature.  This is superseded by the
 environment variable
-.BR $SIGNATURE .
+SIGNATURE .
 If
-.B $SIGNATURE
+SIGNATURE
 is not set and this profile entry is not present, the \*(lqgcos\*(rq field of
 the \fI/etc/passwd\fP file will be used.
 Your signature will be added to the address
@@ -381,8 +381,9 @@ service.  The supported entry values are \*(lqlegacy\*(rq and
 .RI \*(lqfile: netrc \*(rq.
 With \*(lqlegacy\*(rq, or if there is no credentials entry, the
 username is the first of:
-.PP
 .RS 5
+.TP 5
+.PD 0
 1)
 .B \-user
 switch to
@@ -393,17 +394,23 @@ switch to
 or
 .B msgchk
 program
-.br
-2) the login name on the local machine
+.TP
+2)
+the login name on the local machine
+.PD
 .RE
 .PP
 The password for SMTP services is the first of:
-.PP
 .RS 5
-1) password value from matching entry in file named \*(lq.netrc\*(rq
+.TP 5
+.PD 0
+1)
+password value from matching entry in file named \*(lq.netrc\*(rq
 in the user's home directory
-.br
-2) password obtained by interactively prompting the user
+.TP
+2)
+password obtained by interactively prompting the user
+.PD
 .RE
 .PP
 The password for POP service when the
@@ -415,17 +422,21 @@ With a
 .RI \*(lqfile: netrc \*(rq
 .B credentials
 entry, the username is the first of:
-.PP
 .RS 5
+.PD 0
+.TP 5
 1)
 .B \-user
 switch to program
-.br
-2) login name from matching entry in
+.TP 5
+2)
+login name from matching entry in
 .I netrc
 file
-.br
-3) value provided by user in response to interactive query
+.TP 5
+3)
+value provided by user in response to interactive query
+.PD
 .RE
 .PP
 Similarly, the password is provided either in the
@@ -463,7 +474,7 @@ The following profile elements are used whenever an
 program invokes some other program such as
 .BR more .
 The
-.I \&.mh\(ruprofile
+.I \&.mh\-profile
 can be used to select alternate programs if the
 user wishes.  The default values are given in the examples.
 .PP
@@ -537,7 +548,7 @@ and
 .B repl
 to display the draft message.
 (Note that
-.B $PAGER
+the environment variable PAGER
 supersedes the default built-in pager command.)
 .RE
 .PP
@@ -595,7 +606,7 @@ program used by
 .B mhshow
 to display message bodies (or message parts) of type text/plain.
 (Note that
-.B $PAGER
+the vivironment variable PAGER
 supersedes the default built-in pager command.)
 .RE
 .PP
@@ -685,14 +696,48 @@ After consulting .mh_profile,
 some programs read an optional profile specified by a
 program-specific environment variable,
 and then the system-wide profile %nmhetcdir%/mhn.defaults.
-These programs are mhbuild, mhshow, mhstore, and mhn.
-mhfixmsg is similar, but has no optional profile.
-
+These programs are
+.BR mhbuild ,
+.BR mhshow ,
+.BR mhstore ,
+and
+.BR mhn .
+.B mhfixmsg
+is similar, but has no optional profile.
+.sp
 The first occurrence of a component is used,
 e.g.\& .mh_profile's trumps $MHSHOW's.
 A component with no value still stops further occurrences being used,
 but is considered absent.
-.SS "Environment Variables"
+.PP
+The
+.I \&.mh\-profile
+contains only static information, which
+.B nmh
+programs will
+.B NOT
+update.  Changes in context are made to the
+.I context
+file kept in the users
+.B nmh
+directory.
+This includes, but is not limited to: the \*(lqCurrent\-Folder\*(rq entry
+and all private sequence information.  Public sequence information is
+kept in each folder in the file determined by the \*(lqmh\-sequences\*(rq
+profile entry (default is
+.IR \&.mh\-sequences ).
+.PP
+The
+.I \&.mh\-profile
+may override the path of the
+.I context
+file, by specifying a \*(lqcontext\*(rq entry (this must be in
+lower-case).  If the entry is not absolute (does not start with a
+\*(lq/\*(rq), then it is interpreted relative to the user's
+.B nmh
+directory.  As a result, you can actually have more than one set of
+private sequences by using different context files.
+.SH ENVIRONMENT
 The operation of
 .B nmh
 and its commands it also controlled by the
@@ -707,7 +752,7 @@ user, isn't it?  The reason for all this is that the
 .B nmh
 user
 can select
-.B any
+any
 program as the
 .IR whatnowproc ,
 including
@@ -716,17 +761,28 @@ information via an argument list. The convention is that environment
 variables whose names are all upper-case are user-settable; those
 whose names are lower-case only are used internally by nmh and should
 not generally be set by the user.
-.PP
-.B $MH
-.RS 5
+.TP
+MAILDROP
+This variable tells
+.B inc
+the default maildrop. This supersedes the \*(lqMailDrop\*(rq profile entry.
+.TP
+MAILHOST
+This variable tells
+.B inc
+the POP host to query for mail to incorporate.  See the
+.IR inc (1)
+man page for more information.
+.TP
+MH
 With this environment variable, you can specify a profile
 other than
-.I \&.mh\(ruprofile
+.I \&.mh\-profile
 to be read by the
 .B nmh
 programs
 that you invoke.  If the value of
-.B $MH
+MH
 is not absolute, (i.e., does
 not begin with a \*(lq/\*(rq), it will be presumed to start from the current
 working directory.  This is one of the very few exceptions in
@@ -734,31 +790,45 @@ working directory.  This is one of the very few exceptions in
 where non-absolute pathnames are not considered relative to the user's
 .B nmh
 directory.
-.RE
-.PP
-.B $MHCONTEXT
-.RS 5
+.TP
+MHBUILD
+With this environment variable, you can specify an
+additional user profile (file) to be read by
+.BR mhbuild ,
+in addition to the mhn.defaults profile.
+.TP
+MHCONTEXT
 With this environment variable, you can specify a
 context other than the normal context file (as specified in
 the
 .B nmh
 profile).  As always, unless the value of
-.B $MHCONTEXT
+MHCONTEXT
 is absolute, it will be presumed to start from your
 .B nmh
 directory.
-.RE
-.PP
-.B $MHBUILD
-.RS 5
-With this environment variable, you can specify an
-additional user profile (file) to be read by
-.BR mhbuild ,
-in addition to the mhn.defaults profile.
-.RE
-.PP
-.B $MHN
-.RS 5
+.TP
+MHLDEBUG
+If this variable is set to a non-null value,
+.B mhl
+will emit debugging information.
+.TP
+MHMTSCONF
+If this variable is set to a non-null value, it specifies the
+name of the mail transport configuration file to use by
+.BR post ,
+.BR inc ,
+and other programs that interact with the mail transport system,
+instead of the default.  See
+.IR mh-tailor (5).
+.TP
+MHMTSUSERCONF
+If this variable is set to a non-null value, it specifies the name of
+a mail transport configuration file to be read in addition to the
+default.  See
+.IR mh-tailor (5).
+.TP
+MHN
 With this environment variable, you can specify an
 additional user profile (file) to be read by
 .BR mhn ,
@@ -766,156 +836,69 @@ in addition to the mhn.defaults profile.
 .B mhn
 is deprecated, so support for this variable will
 be removed from a future nmh release.
-.RE
-.PP
-.B $MHSHOW
-.RS 5
+.TP
+MHSHOW
 With this environment variable, you can specify an
 additional user profile (file) to be read by
 .BR mhshow ,
 in addition to the mhn.defaults profile.
-.RE
-.PP
-.B $MHSTORE
-.RS 5
+.TP
+MHSTORE
 With this environment variable, you can specify an
 additional user profile (file) to be read by
 .BR mhstore ,
 in addition to the mhn.defaults profile.
-.RE
-.PP
-.B $MAILDROP
-.RS 5
-This variable tells
-.B inc
-the default maildrop. This supersedes the \*(lqMailDrop\*(rq profile entry.
-.RE
-.PP
-.B $MAILHOST
-.RS 5
-This variable tells
-.B inc
-the POP host to query for mail to incorporate.  See the
-inc(1) man page for more information.
-.RE
-.PP
-.B $USERNAME_EXTENSION
-.RS 5
-This variable is for use with username_extension masquerading.  See the
-mh-tailor(5) man page.
-.RE
-.PP
-.B $SIGNATURE
-.RS 5
-This variable tells
-.B send
-and
-.B post
-your mail signature. This supersedes the \*(lqSignature\*(rq profile entry,
-and is not used when the \*(lqLocal\-Mailbox\*(rq profile component is set.
-.RE
-.PP
-.B $USER
-.RS 5
-This variable tells
-.B repl
-your user name and
-.B inc
-your default maildrop:  see the \*(lqMailDrop\*(rq profile entry.
-.RE
-.PP
-.B $HOME
-.RS 5
-This variable tells all
-.B nmh
-programs your home directory
-.RE
-.PP
-.B $TERM
-.RS 5
-This variable tells
-.B nmh
-your terminal type.
-.PP
-The environment variable
-.B $TERMCAP
-is also consulted.  In particular,
-these tell
-.B scan
-and
-.B mhl
-how to clear your terminal, and how
-many columns wide your terminal is.  They also tell
-.B mhl
-how many
-lines long your terminal screen is.
-.RE
-.PP
-.B $MHMTSCONF
-.RS 5
-If this variable is set to a non-null value, it specifies the
-name of the mail transport configuration file to use by
-.BR post ,
-.BR inc ,
-and other programs that interact with the mail transport system,
-instead of the default.  See mh-tailor(5).
-.RE
-.PP
-.B $MHMTSUSERCONF
-.RS 5
-If this variable is set to a non-null value, it specifies the name of
-a mail transport configuration file to be read in addition to the
-default.  See mh-tailor(5).
-.RE
-.PP
-.B $MHTMPDIR
-.B $TMPDIR
-.RS 5
-These variables are searched, in order, for the directory in which to
-create some temporary files.
-.RE
-.PP
-.B $MHLDEBUG
-.RS 5
-If this variable is set to a non-null value,
-.B mhl
-will emit debugging information.
-.RE
-.PP
-.B $MHPDEBUG
-.RS 5
+.TP
+MHPDEBUG
 If this variable is set to a non-null value,
 .B pick
 will emit a representation of the search pattern.
-.B $MHPDEBUG
+MHPDEBUG
 is deprecated, so support for this variable will
 be removed from a future nmh release.  Instead,
 .B pick
 now supports a
 .B \-debug
 switch.
-.RE
-.PP
-.B $MHWDEBUG
-.RS 5
+.TP
+MHTMPDIR, TMPDIR
+These variables are searched, in order, for the directory in which to
+create some temporary files.
+.TP
+MHWDEBUG
 If this variable is set to a non-null value,
 .B nmh
 commands that use the
-.BR Alternate\-Mailboxes
+.B Alternate\-Mailboxes
 profile entry will display debugging information
 about the values in that entry.
-.RE
-.PP
-.B $PAGER
-.RS 5
+.TP
+PAGER
 If set to a non-null value, this supersedes the value of
 the default built-in pager command.
-.RE
-.PP
-.B $editalt
-.RS 5
+.TP
+SIGNATURE
+This variable tells
+.B send
+and
+.B post
+your mail signature. This supersedes the \*(lqSignature\*(rq profile entry,
+and is not used when the \*(lqLocal\-Mailbox\*(rq profile component is set.
+.TP
+USER
+This variable tells
+.B repl
+your user name and
+.B inc
+your default maildrop:  see the \*(lqMailDrop\*(rq profile entry.
+.TP
+USERNAME_EXTENSION
+This variable is for use with username_extension masquerading.  See the
+.IR mh-tailor (5)
+man page.
+.TP
+editalt
 This is the alternate message.
-.PP
 This is set by
 .B dist
 and
@@ -929,13 +912,37 @@ through a link called \*(lq@\*(rq in the current directory if
 your current working directory and the folder the message lives in are
 on the same UNIX filesystem, and if your current working directory is
 writable.
-.RE
-.PP
-.B $mhdraft
-.RS 5
-This is the path to the working draft.
-.PP
+.TP
+mhaltmsg
+.B dist
+and
+.B repl
+set
+mhaltmsg
+to tell the
+.I whatnowproc
+about an alternate message associated with the
+draft (the message being distributed or replied to).
+.TP
+mhannotate
 This is set by
+.BR dist ,
+.BR forw ,
+and
+.B repl
+if annotations are to occur.
+.TP
+mhdist
+.B dist
+sets
+mhdist
+to tell the
+.I whatnowproc
+that message re-distribution is occurring.
+.TP
+mhdraft
+This is the path to the working draft.
+It is set by
 .BR comp ,
 .BR dist ,
 .BR forw ,
@@ -945,54 +952,8 @@ to tell the
 .I whatnowproc
 which file to ask \*(lqWhat now?\*(rq
 questions about.
-.RE
-.PP
-.B $mhaltmsg
-.RS 5
-.B dist
-and
-.B repl
-set
-.B $mhaltmsg
-to tell the
-.I whatnowproc
-about an alternate message associated with the
-draft (the message being distributed or replied to).
-.RE
-.PP
-.B $mhfolder
-.RS 5
-This is the folder containing the alternate message.
-.PP
-This is set by
-.B dist
-and
-.B repl
-during edit sessions so you
-can peruse other messages in the current folder besides the one being
-distributed or replied to.  The environment variable
-.B $mhfolder
-is also set by
-.BR show ,
-.BR prev ,
-and
-.B next
-for use by
-.BR mhl .
-.RE
-.PP
-.B $mhdist
-.RS 5
-.B dist
-sets
-.B $mhdist
-to tell the
-.I whatnowproc
-that message re-distribution is occurring.
-.RE
-.PP
-.B $mheditor
-.RS 5
+.TP
+mheditor
 This is set by
 .BR comp ,
 .BR repl ,
@@ -1004,88 +965,62 @@ to tell the
 the user's choice of
 editor (unless overridden by
 .BR \-noedit ).
-.RE
-.PP
-.B $mhuse
-.RS 5
+.TP
+mhfolder
+This is the folder containing the alternate message.
+It is set by
+.B dist
+and
+.B repl
+during edit sessions so you
+can peruse other messages in the current folder besides the one being
+distributed or replied to.  The environment variable
+mhfolder
+is also set by
+.BR show ,
+.BR prev ,
+and
+.B next
+for use by
+.BR mhl .
+.TP
+mhinplace
+This is set by
+.BR dist ,
+.BR forw ,
+and
+.B repl
+if annotations are to occur.
+.TP
+mhmessages
+This is set by
+.BR dist ,
+.BR forw ,
+and
+.B repl
+if annotations are to occur.
+.TP
+mhuse
 This may be set by
 .BR comp .
-.RE
-.PP
-.B $mhmessages
-.RS 5
-This is set by
-.BR dist ,
-.BR forw ,
-and
-.B repl
-if annotations are to occur.
-.RE
-.PP
-.B $mhannotate
-.RS 5
-This is set by
-.BR dist ,
-.BR forw ,
-and
-.B repl
-if annotations are to occur.
-.RE
-.PP
-.B $mhinplace
-.RS 5
-This is set by
-.BR dist ,
-.BR forw ,
-and
-.B repl
-if annotations are to occur.
-.RE
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-^or $MH~^Rather than the standard profile
-^<mh\-dir>/context~^The user context
-^or $MHCONTEXT~^Rather than the standard context
-^<folder>/\&.mh\(rusequences~^Public sequences for <folder>
-.fi
+.PD 0
+.TP 20
+$HOME/\&.mh\-profile
+The user's profile.
+.TP
+<mh\-dir>/context
+The user's context
+.TP
+<folder>/\&.mh\-sequences
+Public sequences for <folder>.
+.PD
 .SH "SEE ALSO"
-.IR environ (5),
-.IR mh-sequence (5),
 .IR mhbuild (1),
 .IR mhshow (1),
 .IR mhstore (1),
+.IR mh-sequence (5),
 .IR nmh (7)
-.SH HISTORY
-The
-.I \&.mh\(ruprofile
-contains only static information, which
-.B nmh
-programs will
-.B NOT
-update.  Changes in context are made to the
-.I context
-file kept in the users
-.B nmh
-directory.
-This includes, but is not limited to: the \*(lqCurrent\-Folder\*(rq entry
-and all private sequence information.  Public sequence information is
-kept in each folder in the file determined by the \*(lqmh\-sequences\*(rq
-profile entry (default is
-.IR \&.mh\(rusequences ).
-.PP
-The
-.I \&.mh\(ruprofile
-may override the path of the
-.I context
-file, by specifying a \*(lqcontext\*(rq entry (this must be in
-lower-case).  If the entry is not absolute (does not start with a
-\*(lq/\*(rq), then it is interpreted relative to the user's
-.B nmh
-directory.  As a result, you can actually have more than one set of
-private sequences by using different context files.
 .SH BUGS
 There is some question as to what kind of arguments should be placed
 in the profile as options.  In order to provide a clear answer, recall
