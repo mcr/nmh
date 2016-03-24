@@ -32,8 +32,8 @@
     /*				\
      * switches for mhlproc	\
      */				\
-    X("concat", -6, CONCATSW) \
-    X("noconcat", -8, NCONCATSW) \
+    X("concat", 0, CONCATSW) \
+    X("noconcat", 0, NCONCATSW) \
     /*				\
      * switches for mhshow	\
      */				\

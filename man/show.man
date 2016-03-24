@@ -1,4 +1,4 @@
-.TH SHOW %manext1% "February 8, 2015" "%nmhversion%"
+.TH SHOW %manext1% "March 24, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -17,6 +17,7 @@ show \- show (display) messages
 .IR program ]
 .RB [ \-header " | " \-noheader ]
 .RB [ \-checkmime " | " \-nocheckmime ]
+.RB [ \-concat " | " \-noconcat ]
 [switches\ for
 .I showproc
 or
@@ -142,6 +143,12 @@ to display a one\-line
 description of the message being shown.  This description includes
 the folder and the message number.
 .PP
+By default
+.B show
+will concatenate all content under one pager.  If you want each part to
+displayed separately, you can override the default behavior with
+.B \-noconcat.
+.PP
 If no `msgs' are specified, the current message is used.  Although
 it depends on the specific
 .I showproc
@@ -196,6 +203,7 @@ from each sequence named by the profile entry.
 .RB ` msgs "' defaults to cur"
 .RB ` \-checkmime '
 .RB ` \-header '
+.RB ` \-concat '
 .fi
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The last
