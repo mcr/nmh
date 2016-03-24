@@ -43,29 +43,37 @@ Consult the manual entry for
 for all the
 details.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-.fi
+.TP 20
+$HOME/\&.mh\(ruprofile
+The user profile
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Current\-Folder:~^To find the default current folder
-^showproc:~^Program to show non-MIME messages
-^showmimeproc:~^Program to show MIME messages
-.fi
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory
+.TP 20
+Current\-Folder:
+To find the default current folder
+.TP 20
+showproc:
+Program to show non-MIME messages
+.TP 20
+showmimeproc:
+Program to show MIME messages
+.PD
 .SH "SEE ALSO"
 .IR prev (1),
 .IR show (1)
 .SH DEFAULTS
-.nf
-.RB ` +folder "' defaults to the current folder"
-.RB ` \-checkmime '
-.RB ` \-header '
+.PD 0
+.TP 20
++folder
+The current folder.
+.TP 20
+\-checkmime
+.TP 20
+\-header
+.PD
 .SH CONTEXT
 If a folder is specified, it will become the current folder.  The message
 that is shown (i.e., the next message in sequence) will become the

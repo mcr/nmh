@@ -284,14 +284,20 @@ Disposition?
 The appropriate responses and their meanings are:
 .PP
 .RS 5
-.fc ^ ~
-.nf
-.ta \w'replace 'u
-.BR ^replace~^ "- deletes the draft and starts afresh"
-.BR ^list~^ "- lists the draft"
-.BR ^refile~^ "- files the draft into a folder and starts afresh"
-.BR ^quit~^ "- leaves the draft intact and exits"
-.fi
+.PD 0
+.TP 10
+.B replace
+deletes the draft and starts afresh
+.TP
+.B list
+lists the draft
+.TP
+.B refile
+files the draft into a folder and starts afresh
+.TP 10
+.B quit
+leaves the draft intact and exits
+.PD
 .RE
 .PP
 In addition, if you specified
@@ -300,11 +306,11 @@ In addition, if you specified
 to the command, then one other response will be accepted:
 .PP
 .RS 5
-.fc ^ ~
-.nf
-.ta \w'replace 'u
-.BR ^new~^ "- finds a new draft"
-.fi
+.PD 0
+.TP 10
+.B new
+finds a new draft
+.PD
 .RE
 .PP
 just as if
@@ -316,11 +322,11 @@ Finally, the
 command will accept one more response:
 .PP
 .RS 5
-.fc ^ ~
-.nf
-.ta \w'replace 'u
-.BR ^use~^ "- re-uses the draft"
-.fi
+.PD 0
+.TP 10
+.B use
+re-uses the draft
+.PD
 .RE
 .PP
 just as if

@@ -1,85 +1,222 @@
-NMH MANPAGE STYLE GUIDE
+                     NMH MANPAGE STYLE GUIDE
+                     =======================
 
-nmh manpages should be in this general form and section order:
-
-.TH COMP %manext1% "DATE" "%nmhversion%"
-.\"
-.\" %nmhwarning%
-.\"
-.SH NAME
-comp \- compose a message
-.\"
-.SH SYNOPSIS
-.HP 5
-.na
-.B comp 
-.RI [ +folder ]
-.RI [ msgs ]
-.RB [ \-form
-.IR formfile ]
-.RB [ \-use " | " \-nouse ]
-.RB [ \-version ]
-.RB [ \-help ]
-.ad
-.SH DESCRIPTION
-.B Comp
-is used to create a new message to be mailed.  It copies something.
-.\"
-.SH "PROFILE COMPONENTS"
-.TP
-Path
-Location of the user's MH folder directory
-.TP
-moreproc
-The pager command name
-.\"
-.SH DEFAULTS
-.TP
-.RI + folder
-defaults to the current folder
-.\"
-.SH CONTEXT
-None
-.\"
-.SH FILES
-.TP
-filename1
-description of filename1
-.TP
-filename2
-description of filename2
-.\"
-.SH "SEE ALSO"
-.BR dist (1),
-.BR forw (1),
-.BR repl (1),
-.BR send (1),
-.BR whatnow (1),
-.BR mh-profile (5)
-.\" Leave out the BUGS section if there are none worth describing.
-.SH BUGS
-None
-
----------------------------------------
-The DATE in the .TH macro should reflect the most recent non-trivial
-update to the content of the manpage; formatting changes don't count.
-Spell out the date (no abbreviations or shortcuts):
-
-  January 2, 1904
-
-not the unparseable
-
-  01/02/04
-
-Don't abbreviate the month.
+Nmh manpages generally follow the traditional Bell Labs formatting
+conventions.  We do adopt a few conventions from BSD (primarily,
+section ordering), and have a few of our own (mostly related to
+indentation).
 
 
-In the FILES section, prefer the default .TP indent. The pathnames are
-variable and long, so any indentation value that works for you won't
-work for someone using a different directory layout.
+Troff Considerations
+
+	Proper sentences end with a period followed by a newline:
+
+		This is a sentence.
+		It is followed by another, longer, sentence, but
+		which makes no more sense than the previous one.
+
+	not
+
+		This is a sentence.  It is followed by another,
+		longer, sentence, but which makes no more sense
+		than the previous one.
+
+	This allows troff to set the correct inter-sentence spacing
+	based on the output device.
+
+	When quoting, use \*(lq and \*(rq. This ensures correct
+	formatting on typesetter-like devices.
+
+	Don't use UTF-8 characters in the manpage source.  We still
+	build and run on systems that can't handle this.  And most
+	anything you would want to use has an internal troff character
+	escape sequence, anyway.
 
 
-Source files
+Section Ordering
+
+	Always present sections in the following order:
+
+		NAME [*]
+		SYNOPSIS [*]
+		DESCRIPTION [*]
+		PROFILE COMPONENTS
+		DEFAULTS
+		CONTEXT
+		ENVIRONMENT
+		FILES
+		EXAMPLES
+		DIAGNOSTICS [*]
+		SEE ALSO
+		HISTORY
+		BUGS 
+
+	Sections marked with a [*] are mandatory.  Only include
+	the others if they are specifically applicable.
+
+	DIAGNOSTICS must document any non-zero exit codes, and can
+	provide context to error messages.  Obviously it only applies
+	to section 1 and 8 manpages.
+
+
+Dates
+
+	The DATE in the .TH macro should reflect the most recent
+	*non-trivial* update to the *content* of the manpage;
+	formatting changes don't count.  Spell out the date (no
+	abbreviations or shortcuts):
+
+	  January 2, 1904
+
+	not the unparseable
+
+	  01/02/04
+
+	Don't abbreviate the month.
+
+
+Program Names
+
+	In running text, nmh program names should be set in bold,
+	unless you are explicitly referring to the command's
+	documentation, in which case use manpage cross-reference
+	style.
+
+		.B comp
+		.BR comp ,
+		.IR comp (1).
+
+	Be careful when referring to programs that are not part of
+	nmh itself.  For commands that are almost guaranteed to be
+	part of the base OS, use a manpage cross-reference (e.g.
+	".IR cat (1)").  For other third-party utilities, it might
+	be best to set the command name in double quotes. Use your
+	best judgement to make it clear when you're referring to
+	tools that might not be present.
+
+
+SYNPOSIS Section
+
+	Set literal text (such as flags) in bold.  Set parameters
+	in italic.  Mutually exclusive options (like "-foo" and
+	"-nofoo") should be grouped together and seperated by a
+	"|":
+
+		.RI [ +folder ]              <---- parameter
+		.RI [ msgs ]                 <---- parameter
+		.RB [ \-version ]            <---- flag
+		.RB [ \-editor               <---- flag with
+		.IR editor ]                       parameter
+		.RB [ \-use " | " \-nouse ]  <---- exclusive parameters
+
+	References to these flags or parameters in the body text of the
+	manpage should reflect these conventions:
+
+		You may not supply both a
+		.B \-form
+		.I formfile
+		and a
+		.I +folder
+		or
+		.I msg
+		argument.
+
+	In particular, don't enclose them in single quotes.
+
+	For "-flag param" situations, try to use a .B/.I combination
+	instead of a single .BI, since it allows more flexibility in
+	case of punctuation, and we get an automatic space between
+	flag and param for free, without having to manual force it.
+
+
+Subsections
+
+	Use ".SS" to denote a subsection
+
+
+Tables
+
+	The folder manpage has an example of a table.
+
+	.PP
+	.RS 5
+	.nf
+	.ta \w'/rnd/phyl/Mail/EP 'u +\w'has ddd messages 'u +\w'(ddd\-ddd); 'u
+	FOLDER  \0\0\0\0\0\0# MESSAGES  RANGE   CUR     (OTHERS)
+	ff      has \0no messages.
+	inbox+  has \016 messages       (\03\-\022);    cur=\05.
+	mh      has \076 messages       (15\-\076);     cur=70.
+	.fi
+	.RE
+	.PP
+
+
+Environment Variables
+
+	These are always set in roman text.  The surrounding text
+	should make clear you are referring to an environment
+	variable.  In some cases, like when dealing with all-lower-case
+	variable names, setting the name inside double quotes can
+	help clarify the context.
+
+	Never prepend a '$' character to an environment variable
+	name, unless you are directly referring to a variable
+	substitution in, say, a pathname.
+
+
+Other Italicized Text
+
+	Italicize file names, profile entries, and folder names:
+
+		If a file named
+		.RI \*(lq components \*(rq
+		exists in the user's nmh directory,
+
+		If the user's profile contains a
+		.RI \*(lq "Msg\-Protect: nnn" \*(rq
+		entry, it
+
+		The \*(lq+\*(rq after
+		.I inbox
+		indicates that it is the current folder.
+
+	Enclose the file names and profile entries in lq/rq
+	quotes, too.
+
+
+Relative Indentation
+
+	Use .RS 5 / .RE to indent paragraphs, etc. '.IP 5' can
+	be useful, too.  Try to use an offset of '5' as much as
+	possible to maintain visual consistency.
+
+
+Tagged Lists
+
+	In PROFILE COMPONENTS, DEFAULTS, ENVIRONMENT, and FILES,
+	use tagged paragraphs with an offset of 20.  Do not set
+	the tag in bold or italic, or wrap it in quotes, unless
+	this is absolutely necessary to make the context clear.
+
+		.SH DEFAULTS
+		.PD 0
+		.TP 20
+		+folder
+		defaults to the current folder
+		.TP
+		msgs
+		defaults to
+		.I cur
+		.TP
+		-decodetext 8bit
+		.TP
+		-decodetypes text,application/ics
+		.TP
+		-crlflinebreaks
+		.PD
+		.SH [...]
+
+Source Files
 
 	There should be no ".so" commands to source an external file,
 	since these break on Linux, where the man program does not
@@ -108,95 +245,8 @@ Source files
 	the manpage, but on the other hand, the manpage will show the
 	default configuration and not local modifications.
 
-Program names
 
-	All nmh program names should be bolded. If there is punctuation
-	after the name, use a .BR construct to avoid the automatic
-	space that's inserted with just a .B:
-
-		.B comp
-		.BR comp ,
-
-	The first reference to a documented command should be in the form of
-	a manpage reference:
-
-		.BR comp (1)
-
-SYNPOSIS section
-
-	Literal text (such as flags) should be in bold. Parameters
-	should be italicized. Mutually exclusive options (like
-	"-foo" and "-nofoo") should be grouped together and seperated
-	by a "|":
-
-		.RI [ +folder ]              <---- parameter
-		.RI [ msgs ]                 <---- parameter
-		.RB [ \-version ]            <---- flag
-		.RB [ \-editor               <---- flag with
-		.IR editor ]                       parameter
-		.RB [ \-use " | " \-nouse ]  <---- exclusive parameters
-
-	References to these flags or parameters in the body text of the
-	manpage should reflect these conventions:
-
-		You may not supply both a
-		.B \-form
-		.I formfile
-		and a
-		.I +folder
-		or
-		.I msg
-		argument.
-
-	In particular, don't enclose them in single quotes (except
-	in the DEFAULT section, which might be inconsistent, but
-	seems a little clearer.
-
-	For "-flag param" situations, try to use a .B/.I combination
-	instead of a single .BI, since it allows more flexibility in
-	case of punctuation, and we get an automatic space between
-	flag and param for free, without having to manual force it.
-
-Subsections
-
-	Use ".SS" to denote a subsection
-
-Tables
-
-	The folder manpage has an example of a table.
-
-	.PP
-	.RS 5
-	.nf
-	.ta \w'/rnd/phyl/Mail/EP 'u +\w'has ddd messages 'u +\w'(ddd\-ddd); 'u
-	FOLDER  \0\0\0\0\0\0# MESSAGES  RANGE   CUR     (OTHERS)
-	ff      has \0no messages.
-	inbox+  has \016 messages       (\03\-\022);    cur=\05.
-	mh      has \076 messages       (15\-\076);     cur=70.
-	.fi
-	.RE
-	.PP
-
-Other italicized text
-
-	Italicize file names, profile entries, and folder names:
-
-		If a file named
-		.RI \*(lq components \*(rq
-		exists in the user's nmh directory,
-
-		If the user's profile contains a
-		.RI \*(lq "Msg\-Protect: nnn" \*(rq
-		entry, it
-
-		The \*(lq+\*(rq after
-		.I inbox
-		indicates that it is the current folder.
-
-	Enclose the file names and profile entries in lq/rq
-	quotes, too.
-
-Pointer manpages
+Pointer Manpages
 
 	Certain manpages are shared between one or more programs
 	(such as folder/folders). The secondary program should
@@ -206,17 +256,76 @@ Pointer manpages
 
 	Also, add this manpage to the appropriate section in Makefile.in
 	
+AUTHOR and HISTORY Sections
 
-CONTEXT
-    Don't include a CONTEXT section when contexts are not
-    applicable.
+	These have no place in a manpage.  If you want everlasting
+	glory, try the release notes.  But note that a HISTORY
+	section might be appropriate for documenting incompatibility
+	with older versions of MH.
+
+------------------------------------------------------------------------------
+
+[ This template is a bit behind the times. I will bring it into
+  conformance with the notes above once the notes settle down.
+  --lyndon ]
 
 
-AUTHOR and HISTORY sections
+.TH COMP %manext1% "DATE" "%nmhversion%"
+.\"
+.\" %nmhwarning%
+.\"
+.SH NAME
+comp \- compose a message
+.\"
+.SH SYNOPSIS
+.HP 5
+.na
+.B comp 
+.RI [ +folder ]
+.RI [ msgs ]
+.RB [ \-form
+.IR formfile ]
+.RB [ \-use " | " \-nouse ]
+.RB [ \-version ]
+.RB [ \-help ]
+.ad
+.SH DESCRIPTION
+.B Comp
+is used to create a new message to be mailed.
+It copies something.
+.\"
+.SH "PROFILE COMPONENTS"
+.TP 20
+Path
+Location of the user's MH folder directory
+.TP
+moreproc
+The pager command name
+.\"
+.SH DEFAULTS
+.TP 20
+.RI + folder
+defaults to the current folder
+.\"
+.SH CONTEXT
+None
+.\"
+.SH FILES
+.TP 20
+filename1
+description of filename1
+.TP
+filename2
+description of filename2
+.\"
+.SH "SEE ALSO"
+.BR dist (1),
+.BR forw (1),
+.BR repl (1),
+.BR send (1),
+.BR whatnow (1),
+.BR mh-profile (5)
+.\" Leave out the BUGS section if there are none worth describing.
+.SH BUGS
+None
 
-    These have no place in a manpage.  If you want everlasting glory,
-    try the release notes.
-
-BUGS
-
-    The BUGS section goes last. 

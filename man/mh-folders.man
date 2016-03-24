@@ -166,13 +166,16 @@ similarly would make
 .B nmh
 slower, and introduce usage ambiguities.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'^<folder>/\&.mh\(rusequences~'u
-^<mh\-dir>/context~^The user context
-^or $MHCONTEXT~^Rather than the standard context
-^<folder>/\&.mh\(rusequences~^Public sequences for <folder>
-.fi
+.PD 0
+.TP 20
+<mh\-dir>/context
+The user's context.
+.TP 20
+$MHCONTEXT
+Overrides the above context.
+.TP 20
+<folder>/\&.mh\-sequences
+Public sequences for <folder>.
 .SH "SEE ALSO"
 .I
 .IR flist (1),

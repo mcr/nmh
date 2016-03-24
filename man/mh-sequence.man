@@ -20,16 +20,24 @@ To designate a message, you may use either its number (e.g., 1, 10, 234)
 or one of these \*(lqreserved\*(rq message names:
 .PP
 .RS 5
-.nf
-.ta +\w'\fIName\fP      'u
-.I "Name	Description"
-first	the first message in the folder
-last	the last message in the folder
-cur	the most recently accessed message
-prev	the message numerically preceding \*(lqcur\*(rq
-next	the message numerically following \*(lqcur\*(rq
-.fi
+.PD 0
+.TP
+.B first
+the first message in the folder
+.TP
+.B last
+the last message in the folder
+.TP
+.B cur
+the most recently accessed message
+.TP
+.B prev
+the message numerically preceding \*(lqcur\*(rq
+.TP
+.B next
+the message numerically following \*(lqcur\*(rq
 .RE
+.PD
 .PP
 In commands that take a `msg' argument, the default is \*(lqcur\*(rq.
 As a shorthand, \*(lq\&.\*(rq is equivalent to \*(lqcur\*(rq.
@@ -320,23 +328,32 @@ the possibility exists that two
 commands run simultaneously that add messages to a private sequence could result in
 one command's messages not appearing on the requested sequence.
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-^<mh\-dir>/context~^The user context
-^<folder>/\&.mh\(rusequences~^File for public sequences
-.fi
+.PD 0
+.TP 20
+$HOME/\&.mh\-profile
+The user's profile.
+.TP 20
+<mh\-dir>/context
+The user's context.
+.TP 20
+<folder>/\&.mh\-sequences
+File for public sequences.
+.PD
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^mh-sequences:~^Name of file to store public sequences
-^Sequence\-Negation:~^To designate messages not in a sequence
-^Previous\-Sequence:~^The last message specification given
-^Unseen\-Sequence:~^Those messages not yet seen by the user
-.fi
+.PD 0
+.TP 20
+mh-sequences:
+Name of file to store public sequences.
+.TP 20
+Sequence\-Negation:
+To designate messages not in a sequence.
+.TP 20
+Previous\-Sequence:
+The last message specification given.
+.TP 20
+Unseen\-Sequence:
+Those messages not yet seen by the user.
+.PD
 .SH "SEE ALSO"
 .IR flist (1),
 .IR mark (1),

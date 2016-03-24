@@ -1080,6 +1080,7 @@ convert_charset (CT ct, char *dest_charset, int *message_mods) {
 	char *dest_buffer = mh_xmalloc(dest_buffer_size);
         HF hf;
         char *tempfile;
+	int fromutf8 = !strcasecmp(src_charset, "UTF-8");
 
         if ((conv_desc = iconv_open (dest_charset, src_charset)) ==
             (iconv_t) -1) {
@@ -1149,6 +1150,32 @@ iconv_start:
 			outbytes_before += bumpup;
 			goto iconv_start;
 		    }
+		    if (errno == EINVAL) {
+			/* middle of multi-byte sequence */
+			if (write (fd, dest_buffer, outbytes_before - outbytes) < 0) {
+			    advise (dest, "write");
+			}
+			fseeko (*fp, -inbytes, SEEK_CUR);
+			if (end > 0) bytes_to_read += inbytes;
+			/* advise(NULL, "convert_charset: EINVAL"); */
+			continue;
+		    }
+		    if (errno == EILSEQ) {
+			/* invalid multi-byte sequence */
+			if (fromutf8) {
+			    for (++ib, --inbytes;
+				 inbytes > 0 &&
+					(((unsigned char) *ib) & 0xc0) == 0x80;
+				 ++ib, --inbytes)
+				continue;
+			} else {
+			    ib++; inbytes--; /* skip it */
+			}
+			(*ob++) = '?'; outbytes --;
+			/* advise(NULL, "convert_charset: EILSEQ"); */
+			goto iconv_start;
+		    }
+		    advise (NULL, "convert_charset: errno = %d", errno);
                     status = NOTOK;
                     break;
                 } else {

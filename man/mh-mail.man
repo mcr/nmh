@@ -307,11 +307,9 @@ to specify a filename to attach to this message.  See
 for more information.
 .RE
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^%mailspool%/$USER~^Location of mail drop
-.fi
+.TP 20
+%mailspool%/$USER
+Location of mail drop.
 .SH "SEE ALSO"
 .I
 Standard for the Format of ARPA Internet Text Messages

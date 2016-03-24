@@ -208,26 +208,41 @@ program which starts the initial edit.  Hence,
 .B \-nowhatnowproc
 will prevent any edit from occurring.)
 .SH FILES
-.fc ^ ~
-.nf
-.ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^%nmhetcdir%/distcomps~^The standard message skeleton
-^or <mh\-dir>/distcomps~^Rather than the standard skeleton
-^$HOME/\&.mh\(ruprofile~^The user profile
-^<mh\-dir>/draft~^The draft file
-.fi
+.PD 0
+.TP 20
+%nmhetcdir%/distcomps
+The standard message skeleton.
+.TP 20
+<mh\-dir>/distcomps
+An alternative to the standard skeleton.
+.TP 20
+$HOME/\&.mh\(ruprofile
+The user's profile.
+.TP 20
+<mh\-dir>/draft
+The draft file.
+.PD
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Current\-Folder:~^To find the default current folder
-^Draft\-Folder:~^To find the default draft\-folder
-^Editor:~^To override the default editor
-^fileproc:~^Program to refile the message
-^whatnowproc:~^Program to ask the \*(lqWhat now?\*(rq questions
-.fi
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory.
+.TP 20
+Current\-Folder:
+To find the default current folder.
+.TP 20
+Draft\-Folder:
+To find the default draft\-folder.
+.TP 20
+Editor:
+To override the default editor.
+.TP 20
+fileproc:
+Program to refile the message.
+.TP 20
+whatnowproc:
+Program to ask the \*(lqWhat now?\*(rq questions.
+.PD
 .SH "SEE ALSO"
 .IR comp (1),
 .IR forw (1),
@@ -236,14 +251,22 @@ will prevent any edit from occurring.)
 .IR send (1),
 .IR whatnow (1)
 .SH DEFAULTS
-.nf
-.RB ` +folder "' defaults to the current folder"
-.RB ` msg "' defaults to cur"
-.RB ` \-noannotate '
-.RB ` \-nodraftfolder '
-.RB ` \-inplace '
-.RB ` \-noatfile '
-.fi
+.PD 0
+.TP 20
++folder
+The current folder.
+.TP 20
+msg
+The current message.
+.TP 20
+\-noannotate
+.TP 20
+\-nodraftfolder
+.TP 20
+\-inplace
+.TP 20
+\-noatfile
+.PD
 .SH CONTEXT
 If a folder is given, it will become the current folder.  The message
 distributed will become the current message.

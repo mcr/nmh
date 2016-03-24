@@ -36,16 +36,19 @@ a valid MIME message.
 .PP
 .B mhbuild
 creates multi-media messages as specified in RFC 2045
-to RFC 2049.  This includes the encoding of message headers as specified
+through RFC 2049.
+This includes the encoding of message headers as specified
 by RFC 2047, and the encoding of MIME parameters as specified in RFC 2231.
 .PP
 If you specify the name of the composition file as \*(lq-\*(rq,
 then
 .B mhbuild
 will accept the composition draft on the standard
-input.  If the translation of this input is successful,
+input.
+If the translation of this input is successful,
 .B mhbuild
-will output the new MIME message to the standard output.  This argument
+will output the new MIME message to the standard output.
+This argument
 must be the last argument on the command line.
 .PP
 Otherwise if the file argument to
@@ -53,10 +56,12 @@ Otherwise if the file argument to
 is the name of a valid
 composition file, and the translation is successful,
 .B mhbuild
-will replace the original file with the new MIME message.  It will rename
+will replace the original file with the new MIME message.
+It will rename
 the original file to start with the \*(lq,\*(rq character and end with the
 string \*(lq.orig\*(rq, e.g., if you are editing the file \*(lqdraft\*(rq,
-it will be renamed to \*(lq,draft.orig\*(rq.  This allows you to easily
+it will be renamed to \*(lq,draft.orig\*(rq.
+This allows you to easily
 recover the
 .B mhbuild
 input file.
@@ -70,13 +75,16 @@ to list the table of contents associated with the MIME message that is created.
 The
 .B \-headers
 switch indicates
-that a one-line banner should be displayed above the listing.  The
+that a one-line banner should be displayed above the listing.
+The
 .B \-realsize
 switch tells
 .B mhbuild
 to evaluate the \*(lqnative\*(rq
-(decoded) format of each content prior to listing.  This provides an
-accurate count at the expense of a small delay.  If the
+(decoded) format of each content prior to listing.
+This provides an
+accurate count at the expense of a small delay.
+If the
 .B \-verbose
 switch
 is present, then the listing will show any \*(lqextra\*(rq information
@@ -90,84 +98,113 @@ the \*(lqContent-Disposition\*(rq header.
 .SS "Simplified Attachment Interface"
 For users who wish to simply attach files to text content,
 .B mhbuild
-will scan the composition file for \*(lqAttach\*(rq headers.  An
+will scan the composition file for \*(lqAttach\*(rq headers.
+An
 \*(lqAttach\*(rq header contains a filename that will be appended to the
-message using normal MIME encapsulation rules.  One filename is allowed
+message using normal MIME encapsulation rules.
+One filename is allowed
 per \*(lqAttach\*(rq header, but multiple \*(lqAttach\*(rq headers are
 allowed ber composition file.
 .PP
 These files will be appended after any other MIME content, including any
 content specified by
 .B mhbuild
-directives (see below).  See
+directives (see below).
+See
 .IR send (1)
 for more details.
 .PP
 By default, the Content-Disposition will be \*(lqattachment\*(rq.
 .B mhbuild
-looks for user profile and mhn.defaults entries of the form
+looks for user profile and
+.I mhn.defaults
+entries of the form
 .PP
 .RS 5
-mhbuild-disposition-<type>/<subtype>
+.BI mhbuild-disposition- type / subtype
 .RE
 or
 .RS 5
-mhbuild-disposition-<type>
+.BI mhbuild-disposition- type
 .RE
 .PP
-to supply the disposition value.  The only supported values are
-.I attachment
+to supply the disposition value.
+The only supported values are
+\*(lqattachment\*(rq
 and
-.IR inline.
+\*(lqinline\*(rq.
 .SS "Convert Interface"
-.nr item 1 1
-The \*(lqconvert\*(rq interface is a powerful mechanism that supports
-replying to MIME messages.  These placeholders are used in the following
+The convert interface is a powerful mechanism that supports
+replying to MIME messages.
+These placeholders are used in the following
 description:
-.IP TYPE
+.RS 5
+.TP 15
+.PD 0
+TYPE
 content type/subtype
-.IP CONVERTER
+.TP
+CONVERTER
 external program, and any fixed arguments, to convert content, such as
 from a request to a reply
-.IP ARGSTRING
+.TP
+ARGSTRING
 arguments to pass from
 .B repl
 to
 .I CONVERTER
-.IP FILE
+.TP
+FILE
 full path of message being replied to
+.PD
+.RE
 .PP
 .RE
 The convert support is based on pseudoheaders of the form
 .PP
 .RS 5
-  Nmh-mhbuild-file-TYPE: FILE
-  Nmh-mhbuild-args-TYPE: ARGSTRING
+.nf
+.BI Nmh-mhbuild-file- TYPE : \0FILE
+.BI Nmh-mhbuild-args- TYPE : \0ARGSTRING
+.fi
 .RE
 .PP
-in the draft.  For each such pseudoheader, mhbuild looks in the
-profile and mhn.defaults for this corresponding TYPE entry to find the
+in the draft.
+For each such pseudoheader, mhbuild looks in the
+profile and
+.I mhn.defaults
+for this corresponding
+.I TYPE
+entry to find the
 converter that supports it:
 .PP
 .RS 5
-.RI mhbuild-convert- TYPE :
-.I CONVERTER
+.BI mhbuild-convert- TYPE : \0CONVERTER
 .RE
 .PP
-It's a fatal error if no such entry is found for TYPE.  An empty
+It's a fatal error if no such entry is found for
+.IR TYPE .
+An empty
 entry, e.g.,
 .PP
 .RS 5
-mhbuild-convert-text/html:
+.B mhbuild-convert-text/html:
 .RE
 .PP
-excludes parts of that TYPE from the draft.  The mhn.defaults file
+excludes parts of that
+.I TYPE
+from the draft.
+The
+.I mhn.defaults
+file
 contains default
 .B mhbuild-convert-text/html
 and
 .BR mhbuild-convert-text/plain
-entries.  Profile entries can be used to override corresponding
-mhn.defaults entries, as usual.
+entries.
+Profile entries can be used to override corresponding
+.I mhn.defaults
+entries, as usual.
 .PP
 For each
 .I TYPE
@@ -180,13 +217,19 @@ on the content of the part.
 .PP
 Each part in
 .I FILE
-that has no corresponding TYPE entry in the profile or mhn.defaults is
+that has no corresponding TYPE entry in the profile or
+.I mhn.defaults
+is
 excluded from the draft; the user can include them using mhbuild
 directives as usual.
 .PP
 .B repl
-inserts Nmh-mhbuild-text/html: and Nmh-mhbuild-text/plain:
-pseudoheaders in every draft.  The user can prevent insertion of
+inserts
+.B Nmh-mhbuild-text/html:
+and
+.B Nmh-mhbuild-text/plain:
+pseudoheaders in every draft.
+The user can prevent insertion of
 content parts of either of those types by putting corresponding empty
 entries in their profile.
 .PP
@@ -195,28 +238,33 @@ Only the highest precedence alternative with a supported
 of a multipart/alternative part is used.
 .PP
 mhn.defaults.sh selects the text/html-to-text/plain converter at
-install time.  It includes
-.BR iconv "(1),"
+install time.
+It includes
+.B iconv
 and
-.BR par (1)
+.BR par ,
 or
-.BR fmt "(1),"
-in the pipeline only if found.
+.BR fmt ,
+in the pipeline only if they are found.
 .PP
 Some content types require the addition of parameters to the
 Content-Type header, such as
-.I method=REPLY
-for text/calendar.  mhbuild looks for a Content-Type header, followed
-by a blank line, at the beginning of the converter output.  If one is
+\*(lqmethod=REPLY\*(rq
+for text/calendar.
+.B mhbuild
+looks for a Content-Type header, followed
+by a blank line, at the beginning of the converter output.
+If one is
 found, it is used for the corresponding part in the reply draft.
 .PP
-The \*(lqconvert\*(rq interface doesn't support different
+The convert interface doesn't support different
 .IR ARGSTRING s
 or different converters for different parts of the same
 .IR  TYPE .
 That would require associating parts by part number with the
 .IR ARGSTRING s
-or converters.  Instead, that can be done (currently, without using
+or converters.
+Instead, that can be done (currently, without using
 the convert support), with
 .B mhbuild
 directives as described below, e.g.,
@@ -226,8 +274,10 @@ directives as described below, e.g.,
 .RE
 .PP
 The only way to mix
-.B convert
-pseudoheaders and mhbuild directives is to insert the directives before
+convert
+pseudoheaders and
+.B mhbuild
+directives is to insert the directives before
 .B mhbuild
 is run, which is typically done by entering
 .I mime
@@ -237,42 +287,43 @@ switch.
 .PP
 These (optional) setup steps can make the convert support
 easier to use:
-.IP \n[item]. 3
+.TP 5
+1)
 If the
-.BR par (1)
+.B par
 program is installed on your system, it will be set by default
-(in mhn.defaults) to filter the converter output.  It helps to
+(in
+.IR mhn.defaults )
+to filter the converter output.
+It helps to
 set the
-.B $PARINIT
+PARINIT
 environment variable, as described in its man page.
-.IP \n+[item]. 3
+.TP 5
+2)
 Add this line to your profile:
-.PP
-.RS 5
-.nf
+.IP "" 10
 mhbuild-next: $EDITOR
-.fi
-.RE
-.PP
-.RS 3
+.IP "" 5
 assuming that your EDTIOR environment variable is set; if not, replace
-$EDITOR with the name of your editor.  Without that profile entry, a
+EDITOR with the name of your editor.
+Without that profile entry, a
 response of \*(lqe[dit]\*(rq at the What now? prompt will require
 specification of your editor if an
 .B \-editor mhbuild
 switch is used.
 .RE
-.IP \n+[item]. 3
+.TP 5
+3)
 If using
 .BR repl ,
 source the Bourne-shell compatible functions in
 .IR %docdir%/contrib/replaliases .
 .br
 That script also sets the
-.B $PARINIT
+PARINIT
 environment variable if it was not set.
 .RE
-.PP
 .SS "Translating the Composition File"
 .B mhbuild
 is essentially a filter to aid in the composition of MIME
@@ -281,13 +332,15 @@ messages.
 will convert an
 .B mhbuild
 \*(lqcomposition file\*(rq
-into a valid MIME message.  A
+into a valid MIME message.
+A
 .B mhbuild
 \*(lqcomposition file\*(rq
 is just a file containing plain text that is interspersed
 with various
 .B mhbuild
-directives.  When this file is processed
+directives.
+When this file is processed
 by
 .BR mhbuild ,
 the various directives will be expanded to the
@@ -298,9 +351,11 @@ The formal syntax for a
 .B mhbuild
 composition file is defined at the
 end of this document, but the ideas behind this format are not complex.
-Basically, the body contains one or more contents.  A content consists of
+Basically, the body contains one or more contents.
+A content consists of
 either a directive, indicated with a \*(lq#\*(rq as the first character
-of a line; or, plaintext (one or more lines of text).  The continuation
+of a line; or, plaintext (one or more lines of text).
+The continuation
 character, \*(lq\\\*(lq, may be used to enter a single directive on more
 than one line, e.g.,
 .PP
@@ -323,9 +378,11 @@ directives are honored at all.
 The
 .B \-directives
 switch allows control over whether mhbuild will honor any of the
-\*(lq#\*(rq-directives.  This can also be affected with the #on or
+\*(lq#\*(rq-directives.
+This can also be affected with the #on or
 #off directives, and #pop, which restores the state of processing to
-that preceding the most recent #on or #off.  (The #on, #off, and #pop
+that preceding the most recent #on or #off.
+(The #on, #off, and #pop
 directives are always honored, of course.) This allows inclusion of
 plain text which looks like mhbuild directives, without causing
 errors:
@@ -342,10 +399,12 @@ printf("Hello, World!");
 Currently the stack depth for the #on/off/pop directives is 32.
 .PP
 The \*(lqtype\*(rq directive is used to directly specify the type and
-subtype of a content.  You may only specify discrete types in this manner
+subtype of a content.
+You may only specify discrete types in this manner
 (can't specify the types multipart or message with this directive).
 You may optionally specify the name of a file containing the contents
-in \*(lqnative\*(rq (decoded) format.  If this filename starts with the
+in \*(lqnative\*(rq (decoded) format.
+If this filename starts with the
 \*(lq|\*(rq character, then it represents a command to execute whose
 output is captured accordingly.
 For example,
@@ -373,14 +432,18 @@ will echo any commands that are used to create contents in this way.
 The composition string may contain the following escapes:
 .PP
 .RS 5
-.nf
-.ta \w'%P  'u
-%a	Insert parameters from directive
-%f	Insert filename containing content
-%F	%f, and stdout is not re-directed
-%s	Insert content subtype
-%%	Insert character %
-.fi
+.PD 0
+.IP %a
+Insert parameters from directive
+.IP %f
+Insert filename containing content
+.IP %F
+%f, and stdout is not re-directed
+.IP %s
+Insert content subtype
+.IP %%
+Insert character %
+.PD
 .RE
 .PP
 First,
@@ -388,19 +451,21 @@ First,
 will look for an entry of the form:
 .PP
 .RS 5
-mhbuild-compose-<type>/<subtype>
+.BI mhbuild-compose- type / subtype
 .RE
 .PP
-to determine the command to use to compose the content.  If this isn't
+to determine the command to use to compose the content.
+If this isn't
 found,
 .B mhbuild
 will look for an entry of the form:
 .PP
 .RS 5
-mhbuild-compose-<type>
+.BI mhbuild-compose- type
 .RE
 .PP
-to determine the composition command. If this isn't found,
+to determine the composition command.
+If this isn't found,
 .B mhbuild
 will complain.
 .PP
@@ -413,16 +478,19 @@ mhbuild-compose-audio/basic: record | raw2audio -F
 Because commands like these will vary, depending on the display
 environment used for login, composition strings for different
 contents should probably be put in the file specified by the
-.B $MHBUILD
+MHBUILD
 environment variable, instead of directly in your
 user profile.
 .PP
 The \*(lqexternal-type\*(rq directives are used to provide a MIME
 reference to a content, rather than enclosing the contents itself
-(for instance, by specifying an ftp site).  Hence, instead of
+(for instance, by specifying an ftp site).
+Hence, instead of
 providing a filename as with the type directives, external-parameters
-are supplied.  These look like regular parameters, so they must be
-separated accordingly.  For example,
+are supplied.
+These look like regular parameters, so they must be
+separated accordingly.
+For example,
 .PP
 .RS 5
 .nf
@@ -442,7 +510,8 @@ separated accordingly.  For example,
 You must give a description string to separate the content parameters
 from the external-parameters (although this string may be empty).
 This description string is specified by enclosing it within
-\*(lq[]\*(rq.  A disposition string, to appear in a
+\*(lq[]\*(rq.
+A disposition string, to appear in a
 \*(lqContent-Disposition\*(rq header, may appear in the optional
 \*(lq{}\*(rq.
 .PP
@@ -451,12 +520,12 @@ These parameters are of the form:
 .RS 5
 .nf
 .ta \w'access-type=  'u
-access-type=	usually \fIanon-ftp\fR, \fImail-server\fR, or \fIurl\fR
+access-type=	usually \*(lqanon-ftp\*(rq, \*(lqmail-server\*(rq, or \*(lqurl\*(rq
 name=	filename
 permission=	read-only or read-write
 site=	hostname
 directory=	directoryname (optional)
-mode=	usually \fIascii\fR or \fIimage\fR (optional)
+mode=	usually \*(lqascii\*(rq or \*(lqimage\*(rq (optional)
 size=	number of octets
 server=	mailbox
 subject=	subject to send
@@ -480,10 +549,14 @@ would be as follows:
 Any long URLs will be wrapped according to RFC 2231 rules.
 .PP
 The \*(lqmessage\*(rq directive (#forw) is used to specify a message or
-group of messages to include.  You may optionally specify the name of
-the folder and which messages are to be forwarded.  If a folder is not
-given, it defaults to the current folder.  Similarly, if a message is not
-given, it defaults to the current message.  Hence, the message directive
+group of messages to include.
+You may optionally specify the name of
+the folder and which messages are to be forwarded.
+If a folder is not
+given, it defaults to the current folder.
+Similarly, if a message is not
+given, it defaults to the current message.
+Hence, the message directive
 is similar to the
 .B forw
 command, except that the former uses
@@ -497,7 +570,8 @@ For example,
 .RE
 .PP
 If you include a single message, it will be included directly as a content
-of type \*(lqmessage/rfc822\*(rq.  If you include more than one message,
+of type \*(lqmessage/rfc822\*(rq.
+If you include more than one message,
 then
 .B mhbuild
 will add a content of type \*(lqmultipart/digest\*(rq
@@ -506,14 +580,16 @@ and include each message as a subpart of this content.
 If you are using this directive to include more than one message, you
 may use the
 .B \-rfc934mode
-switch.  This switch will indicate that
+switch.
+This switch will indicate that
 .B mhbuild
 should attempt to utilize the MIME encapsulation rules
 in such a way that the \*(lqmultipart/digest\*(rq that is created
 is (mostly) compatible with the encapsulation specified in RFC 934.
 If given, then RFC 934 compliant user-agents should be able to burst the
 message on reception\0--\0providing that the messages being encapsulated
-do not contain encapsulated messages themselves.  The drawback of this
+do not contain encapsulated messages themselves.
+The drawback of this
 approach is that the encapsulations are generated by placing an extra
 newline at the end of the body of each message.
 .PP
@@ -532,13 +608,15 @@ This will be a multipart with only one part.
 If you use multiple directives in a composition draft,
 .B mhbuild
 will
-automatically encapsulate them inside a multipart content.  Therefore the
+automatically encapsulate them inside a multipart content.
+Therefore the
 \*(lqbegin\*(rq directive is only necessary if you wish to use nested
 multiparts, or create a multipart message containing only one part.
 .PP
 For all of these directives, the user may include a brief description
 of the content between the \*(lq[\*(rq character and the \*(lq]\*(rq
-character.  This description will be copied into the
+character.
+This description will be copied into the
 \*(lqContent-Description\*(rq header when the directive is processed.
 .PP
 .RS 5
@@ -552,7 +630,8 @@ Similarly, a disposition string may optionally be provided between
 \*(lqContent-Disposition\*(rq header when the directive is processed.
 If a disposition string is provided that does not contain a filename
 parameter, and a filename is provided in the directive, it will be
-added to the \*(lqContent-Disposition\*(rq header.  For example, the
+added to the \*(lqContent-Disposition\*(rq header.
+For example, the
 following directive:
 .PP
 .RS 5
@@ -575,7 +654,8 @@ By default,
 will generate a unique \*(lqContent-ID:\*(rq for each directive,
 corresponding to each message part; however, the user may override
 this by defining the ID using the \*(lq<\*(rq and \*(lq>\*(rq
-characters.  The
+characters.
+The
 .B \-nocontentid
 switch suppresses creation of all \*(lqContent-ID:\*(rq headers,
 even in the top level of the message.
@@ -583,18 +663,22 @@ even in the top level of the message.
 Normally
 .B mhbuild
 will choose an appropriate Content\-Transfer\-Encoding based on the content
-and the MIME Content\-Type.  However, you can override that in an
+and the MIME Content\-Type.
+However, you can override that in an
 .B mhbuild
-directive by specifying \*(lq*\*(rq and the encoding.  Acceptable encoding
+directive by specifying \*(lq*\*(rq and the encoding.
+Acceptable encoding
 values are \*(lq8bit\*(rq, \*(lqqp\*(rq (for quoted\-printable), and
-\*(lqb64\*(rq (for base64 encoding).  It should be noted that undesired
+\*(lqb64\*(rq (for base64 encoding).
+It should be noted that undesired
 results may occur if 8bit or quoted\-printable is selected for binary
 content, due to the translation between Unix line endings and the line
 endings use by the mail transport system.
 .PP
 In addition to the various directives, plaintext can be present.
 Plaintext is gathered, until a directive is found or the draft is
-exhausted, and this is made to form a text content.  If the plaintext
+exhausted, and this is made to form a text content.
+If the plaintext
 must contain a \*(lq#\*(rq at the beginning of a line, simply double it,
 e.g.,
 .PP
@@ -624,9 +708,11 @@ then this will be used to describe the plaintext content.
 You MUST follow this line with a blank line before starting
 your text.
 .PP
-By default, plaintext is captured as a text/plain content.  You can
+By default, plaintext is captured as a text/plain content.
+You can
 override this by starting the plaintext with \*(lq#<\*(rq followed by
-a content-type specification.  For example, e.g.,
+a content-type specification.
+For example, e.g.,
 .PP
 .RS 5
 .nf
@@ -657,7 +743,8 @@ high bit set) and the character set is not specified as above, then
 will assume the character set is of the type given by the
 standard
 .IR locale (1)
-environment variables.  If these environment variables are not
+environment variables.
+If these environment variables are not
 set, then the character set will be labeled as \*(lqx-unknown\*(rq.
 .PP
 If a text content contains only 7\-bit characters and the character set
@@ -665,7 +752,8 @@ is not specified as above, then the character set will be labeled as
 \*(lqus-ascii\*(rq.
 .PP
 By default text content with the high bit set is encoded with a 8bit
-Content\-Transfer\-Encoding.  If the text has lines longer than the value
+Content\-Transfer\-Encoding.
+If the text has lines longer than the value
 of
 .B \-maxunencoded
 (which defaults to 78) then the text is encoded using the quoted\-printable
@@ -674,18 +762,21 @@ encoding.
 The
 .B \-headerencoding
 switch will indicate which algorithm to use when encoding any message headers
-that contain 8\-bit characters.  The valid arguments are
+that contain 8\-bit characters.
+The valid arguments are
 .I base64
 for based\-64 encoding and
 .I quoted
-for quoted\-printable encoding.  The
+for quoted\-printable encoding.
+The
 .B \-autoheaderencoding
 switch will instruct
 .B mhbuild
 to automatically pick the algorithm that results in a shorter encoded string.
 .PP
 Putting this all together,
-here is an example of a more complicated message draft.  The
+here is an example of a more complicated message draft.
+The
 following draft will expand into a multipart/mixed message
 containing five parts:
 .PP
@@ -712,17 +803,21 @@ If
 is given the
 .B \-check
 switch, then it will also associate an integrity check with each
-\*(lqleaf\*(rq content.  This will add a Content-MD5 header field to
+\*(lqleaf\*(rq content.
+This will add a Content-MD5 header field to
 the content, along with the md5 sum of the unencoded contents, per RFC
-1864.  This may be used by the receiver of the message to verify that
+1864.
+This may be used by the receiver of the message to verify that
 the contents of the message were not changed in transport.
 .SS "Transfer Encodings"
 After
 .B mhbuild
 constructs the new MIME message by parsing directives,
 including files, etc., it scans the contents of the message to determine
-which transfer encoding to use.  It will check for 8bit data, long lines,
-spaces at the end of lines, and clashes with multipart boundaries.  It will
+which transfer encoding to use.
+It will check for 8bit data, long lines,
+spaces at the end of lines, and clashes with multipart boundaries.
+It will
 then choose a transfer encoding appropriate for each content type.
 .PP
 If an integrity check is being associated with each content by using
@@ -731,7 +826,8 @@ the
 switch, then
 .B mhbuild
 will encode each content with
-a transfer encoding, even it the content contains only 7\-bit data.  This
+a transfer encoding, even it the content contains only 7\-bit data.
+This
 is to increase the likelihood that the content is not changed while in
 transport.
 .SS "Invoking mhbuild"
@@ -739,10 +835,12 @@ Typically,
 .B mhbuild
 is invoked by the
 .B whatnow
-program.  This
+program.
+This
 command will expect the body of the draft to be formatted as an
 .B mhbuild
-composition file.  Once you have composed this input file
+composition file.
+Once you have composed this input file
 using a command such as
 .BR comp ,
 .BR repl ,
@@ -756,7 +854,8 @@ at the \*(lqWhat now\*(rq prompt with
 What now? mime
 .RE
 .PP
-prior to sending the draft.  This will cause
+prior to sending the draft.
+This will cause
 .B whatnow
 to execute
 .B mhbuild
@@ -764,7 +863,8 @@ to translate the composition file into MIME format.
 .PP
 Normally it is an error to invoke
 .B mhbuild
-on file that already in MIME format.  The
+on file that already in MIME format.
+The
 .B \-auto
 switch will cause
 .B mhbuild
@@ -807,9 +907,10 @@ operates may vary for a
 user,
 .B mhbuild
 will look for the environment variable
-.BR $MHBUILD .
+MHBUILD .
 If present, this specifies the name of an additional user profile which
-should be read.  Hence, when a user logs in on a particular machine,
+should be read.
+Hence, when a user logs in on a particular machine,
 this environment variable should be set to refer to a file containing
 definitions useful for that machine.
 .PP
@@ -897,43 +998,44 @@ line         ::=     "##" text EOL
 .RE
 .SH FILES
 .B mhbuild
-looks for additional user profile files and mhn.defaults in multiple
+looks for additional user profile files and
+.I mhn.defaults
+in multiple
 locations: absolute pathnames are accessed directly, tilde expansion
 is done on usernames, and files are searched for in the user's
 .I Mail
-directory as specified in their profile.  If not found there, the directory
+directory as specified in their profile.
+If not found there, the directory
 .RI \*(lq %nmhetcdir% \*(rq
 is checked.
 .PP
-.fc ^ ~
-.nf
-.ta \w'%nmhetcdir%/ExtraBigFileName  'u
-^$HOME/\&.mh\(ruprofile~^The user profile
-^$MHBUILD~^Additional profile entries
-^%nmhetcdir%/mhn.defaults~^System default MIME profile entries
-.fi
+.PD 0
+.TP 20
+$HOME/\&.mh\(ruprofile
+The user's profile.
+.TP
+$MHBUILD
+Additional profile entries.
+.TP
+%nmhetcdir%/mhn.defaults
+System default MIME profile entries.
+.PD
 .SH "PROFILE COMPONENTS"
-.fc ^ ~
-.nf
-.ta 2.4i
-.ta \w'ExtraBigProfileName  'u
-^Path:~^To determine the user's nmh directory
-^Current\-Folder:~^To find the default current folder
-^mhbuild-compose-<type>*~^Template for composing contents
-.fi
+.PD 0
+.TP 20
+Path:
+To determine the user's nmh directory.
+.TP
+Current\-Folder:
+To find the default current folder.
+.TP
+.RI mhbuild-compose- type* :
+Template for composing contents.
+.PD
 .SH "SEE ALSO"
 .IR mhlist (1),
 .IR mhshow (1),
-.IR mhstore (1),
-.IR fmt (1),
-.IR iconv (1),
-.IR par (1)
-.PP
-.I "Proposed Standard for Message Encapsulation"
-(RFC 934),
-.PP
-.I "The Content-MD5 Header Field"
-(RFC 1864),
+.IR mhstore (1)
 .PP
 .I "Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies"
 (RFC 2045),
@@ -944,26 +1046,26 @@ is checked.
 .I "Multipurpose Internet Mail Extensions (MIME) Part Three: Message Header Extensions for Non-ASCII Text"
 (RFC 2047),
 .PP
-.I "Multipurpose Internet Mail Extensions (MIME) Part Four: Registration Procedures"
-(RFC 2048),
+.I "MIME Parameter Value and Encoded Word Extensions: Character Sets, Languages, and Continuations"
+(RFC 2231)
 .PP
-.I "Multipurpose Internet Mail Extensions (MIME) Part Five: Conformance Criteria and Examples"
-(RFC 2049),
+.I "Proposed Standard for Message Encapsulation"
+(RFC 934),
+.PP
+.I "The Content-MD5 Header Field"
+(RFC 1864),
 .PP
 .I "Definition of the URL MIME External-Body Access-Type"
 (RFC 2017),
-.PP
-.I "MIME Parameter Value and Encoded Word Extensions: Character Sets, Languages, and Continuations"
-(RFC 2231)
 .SH DEFAULTS
 .nf
-.RB ` \-headers '
-.RB ` \-realsize '
-.RB ` \-norfc934mode '
-.RB ` \-contentid '
-.RB ` \-nocheck '
-.RB ` \-noverbose '
-.RB ` \-nodisposition '
-.RB ` \-autoheaderencoding '
-.RB ` "\-maxunencoded\ 78"'
+\-autoheaderencoding
+\-contentid
+\-headers
+\-maxunencoded 78
+\-nocheck
+\-nodisposition
+\-norfc934mode
+\-noverbose
+\-realsize
 .fi
