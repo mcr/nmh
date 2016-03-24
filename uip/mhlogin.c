@@ -13,11 +13,11 @@
 #include <h/oauth.h>
 
 #define MHLOGIN_SWITCHES \
-    X("saslmech", 1, SASLMECHSW) \
-    X("authservice", -11, AUTHSERVICESW) \
-    X("snoop", 1, SNOOPSW) \
-    X("help", 1, HELPSW) \
-    X("version", 1, VERSIONSW) \
+    X("saslmech", 0, SASLMECHSW) \
+    X("authservice", 0, AUTHSERVICESW) \
+    X("snoop", 0, SNOOPSW) \
+    X("help", 0, HELPSW) \
+    X("version", 0, VERSIONSW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(MHLOGIN);

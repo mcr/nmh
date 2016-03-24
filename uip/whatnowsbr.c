@@ -945,12 +945,12 @@ buildfile (char **argp, char *file)
     X("draftfolder +folder", -6, SDRFSW) \
     X("draftmessage msg", -6, SDRMSW) \
     X("nodraftfolder", -3, SNDRFSW) \
-    X("sasl", SASLminc(-4), SASLSW) \
-    X("nosasl", SASLminc(-6), NOSASLSW) \
-    X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
-    X("saslmech", SASLminc(-5), SASLMECHSW) \
-    X("authservice", SASLminc(-11), AUTHSERVICESW) \
-    X("user username", SASLminc(-4), USERSW) \
+    X("sasl", SASLminc(4), SASLSW) \
+    X("nosasl", SASLminc(6), NOSASLSW) \
+    X("saslmaxssf", SASLminc(10), SASLMXSSFSW) \
+    X("saslmech", SASLminc(5), SASLMECHSW) \
+    X("authservice", SASLminc(0), AUTHSERVICESW) \
+    X("user username", SASLminc(4), USERSW) \
     X("attach fieldname", 6, SNDATTACHSW) \
     X("noattach", 0, SNDNOATTACHSW) \
     X("attachformat", 7, SNDATTACHFORMAT) \

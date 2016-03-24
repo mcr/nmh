@@ -76,11 +76,11 @@
     X("server host", 6, SERVSW) /* specify alternate SMTP server */ \
     X("snoop", -5, SNOOPSW) /* snoop the SMTP transaction */ \
     X("partno", -6, PARTSW) \
-    X("sasl", SASLminc(-4), SASLSW) \
-    X("nosasl", SASLminc(-6), NOSASLSW) \
-    X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
-    X("saslmech", SASLminc(-5), SASLMECHSW) \
-    X("authservice", SASLminc(-11), AUTHSERVICESW) \
+    X("sasl", SASLminc(4), SASLSW) \
+    X("nosasl", SASLminc(6), NOSASLSW) \
+    X("saslmaxssf", SASLminc(10), SASLMXSSFSW) \
+    X("saslmech", SASLminc(5), SASLMECHSW) \
+    X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("user", SASLminc(-4), USERSW) \
     X("port server submission port name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \

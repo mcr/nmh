@@ -70,10 +70,10 @@
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("snoop", -5, SNOOPSW) \
-    X("sasl", SASLminc(-4), SASLSW) \
-    X("nosasl", SASLminc(-6), NOSASLSW) \
-    X("saslmech", SASLminc(-8), SASLMECHSW) \
-    X("authservice", SASLminc(-11), AUTHSERVICESW) \
+    X("sasl", SASLminc(5), SASLSW) \
+    X("nosasl", SASLminc(3), NOSASLSW) \
+    X("saslmech", SASLminc(5), SASLMECHSW) \
+    X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("proxy command", 0, PROXYSW) \
 
 #define X(sw, minchars, id) id,

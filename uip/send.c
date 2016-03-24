@@ -62,10 +62,10 @@
     X("server host", 6, SERVSW) \
     X("snoop", 5, SNOOPSW) \
     X("sasl", SASLminc(4), SASLSW) \
-    X("nosasl", SASLminc(-6), NOSASLSW) \
-    X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
-    X("saslmech mechanism", SASLminc(-5), SASLMECHSW) \
-    X("authservice", SASLminc(-11), AUTHSERVICESW) \
+    X("nosasl", SASLminc(6), NOSASLSW) \
+    X("saslmaxssf", SASLminc(6), SASLMXSSFSW) \
+    X("saslmech mechanism", SASLminc(6), SASLMECHSW) \
+    X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("user username", SASLminc(-4), USERSW) \
     X("attach", -6, ATTACHSW) \
     X("noattach", -8, NOATTACHSW) \
