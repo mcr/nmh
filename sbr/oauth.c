@@ -184,7 +184,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, FILE *log)
     fp = lkfopendata(fn, "r+", &failed_to_lock);
     if (fp == NULL) {
         if (errno == ENOENT) {
-            adios(NULL, "no credentials -- run mhlogin -oauth %s", svc);
+            adios(NULL, "no credentials -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
         }
         adios(fn, "failed to open");
     }
@@ -199,12 +199,10 @@ mh_oauth_do_xoauth(const char *user, const char *svc, FILE *log)
     if (!mh_oauth_access_token_valid(time(NULL), cred)) {
         if (!mh_oauth_refresh(cred)) {
             if (mh_oauth_get_err_code(ctx) == MH_OAUTH_NO_REFRESH) {
-                adios(NULL, "no valid credentials -- run mhlogin -oauth %s",
-                      svc);
+                adios(NULL, "no valid credentials -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
             }
             if (mh_oauth_get_err_code(ctx) == MH_OAUTH_BAD_GRANT) {
-                adios(NULL, "credentials rejected -- run mhlogin -oath %s",
-                      svc);
+                adios(NULL, "credentials rejected -- run mhlogin -saslmech xoauth2 -authservice %s", svc);
             }
             advise(NULL, "error refreshing OAuth2 token");
             adios(NULL, mh_oauth_get_err_string(ctx));
@@ -329,7 +327,7 @@ update_svc_field(char **field, const char *base_name, const char *svc)
 static boolean
 update_svc(struct service_info *svc, const char *svc_name, mh_oauth_ctx *ctx)
 {
-#define update(name)                                                     \
+#define update(name)                                                    \
     update_svc_field(&svc->name, #name, svc_name);                       \
     if (svc->name == NULL) {                                             \
         set_err_details(ctx, MH_OAUTH_BAD_PROFILE, #name " is missing"); \

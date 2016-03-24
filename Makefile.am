@@ -87,7 +87,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/mhshow/test-subpart test/mhshow/test-msg-buffer-boundaries \
 	test/mhstore/test-mhstore test/mkstemp/test-mkstemp \
 	test/new/test-basic test/pick/test-pick test/pick/test-stderr \
-	test/oauth/test-mhlogin test/oauth/test-send \
+	test/oauth/test-mhlogin test/oauth/test-mhparam test/oauth/test-send \
 	test/oauth/test-inc test/oauth/test-share \
 	test/post/test-post-aliases test/post/test-post-basic \
 	test/post/test-post-multiple test/post/test-post-bcc \

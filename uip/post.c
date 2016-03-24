@@ -80,7 +80,7 @@
     X("nosasl", SASLminc(-6), NOSASLSW) \
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech", SASLminc(-5), SASLMECHSW) \
-    X("oauth", -5, OAUTHSW) \
+    X("authservice", SASLminc(-11), AUTHSERVICESW) \
     X("user", SASLminc(-4), USERSW) \
     X("port server submission port name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
@@ -442,10 +442,13 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 
-		case OAUTHSW:
-		    if (!(cp = *argp++) || *cp == '-')
+		case AUTHSERVICESW:
+#ifdef OAUTH_SUPPORT
+		    if (!(xoauth_client_res = *argp++) || *xoauth_client_res == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-                    xoauth_client_res = cp;
+#else
+		    adios (NULL, "not built with OAuth support");
+#endif
 		    continue;
 
 		case USERSW:

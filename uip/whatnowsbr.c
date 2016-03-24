@@ -949,7 +949,7 @@ buildfile (char **argp, char *file)
     X("nosasl", SASLminc(-6), NOSASLSW) \
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech", SASLminc(-5), SASLMECHSW) \
-    X("oauth service", 5, OAUTHSW) \
+    X("authservice", SASLminc(-11), AUTHSERVICESW) \
     X("user username", SASLminc(-4), USERSW) \
     X("attach fieldname", 6, SNDATTACHSW) \
     X("noattach", 0, SNDNOATTACHSW) \
@@ -990,7 +990,8 @@ sendit (char *sp, char **arg, char *file, int pushed)
     int	vecp, n = 1;
     char *cp, buf[BUFSIZ], **argp, *program;
     char **arguments, *savearg[MAXARGS], **vec;
-    const char *user = NULL, *oauth_svc = NULL;
+    const char *user = NULL, *saslmech = NULL;
+    char *auth_svc = NULL;
     int snoop = 0;
     struct stat st;
 
@@ -1145,13 +1146,26 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    vec[vecp++] = --cp;
 		    continue;
 
+		case AUTHSERVICESW:
+#ifdef OAUTH_SUPPORT
+		    if (!(auth_svc = *argp++) || *auth_svc == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+#else
+                    NMH_UNUSED (user);
+                    NMH_UNUSED (auth_svc);
+		    adios (NULL, "not built with OAuth support");
+#endif
+		    continue;
+
+		case SASLMECHSW:
+                    saslmech = *argp;
+		    /* fall thru */
 		case ALIASW:
 		case FILTSW:
 		case WIDTHSW:
 		case CLIESW:
 		case SERVSW:
 		case SASLMXSSFSW:
-		case SASLMECHSW:
 		case USERSW:
 		case PORTSW:
 		case MTSSM:
@@ -1164,18 +1178,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    }
 		    vec[vecp++] = cp;
                     user = cp;
-		    continue;
-
-                case OAUTHSW:
-#ifdef OAUTH_SUPPORT
-		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
-                    oauth_svc = cp;
-#else
-                    NMH_UNUSED (user);
-                    NMH_UNUSED (oauth_svc);
-                    adios (NULL, "not built with OAuth support");
-#endif
 		    continue;
 
 		case SDRFSW:
@@ -1245,15 +1247,24 @@ sendit (char *sp, char **arg, char *file, int pushed)
     }
 
 #ifdef OAUTH_SUPPORT
-    if (oauth_svc != NULL) {
+    if (auth_svc == NULL) {
+        if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
+            adios (NULL, "must specify -authservice with -saslmech xoauth2");
+        }
+    } else {
         if (user == NULL) {
-            adios (NULL, "must specify -user with -oauth");
+            adios (NULL, "must specify -user with -saslmech xoauth2");
         }
 
-        vec[vecp++] = "-oauth";
-        vec[vecp++] = mh_oauth_do_xoauth (user, oauth_svc,
-					  snoop ? stderr : NULL);
+        vec[vecp++] = "-authservice";
+        if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
+            vec[vecp++] = mh_oauth_do_xoauth (user, auth_svc, snoop ? stderr : NULL);
+        } else {
+            vec[vecp++] = auth_svc;
+        }
     }
+#else
+    NMH_UNUSED(saslmech);
 #endif /* OAUTH_SUPPORT */
 
     if (altmsg == NULL || stat (altmsg, &st) == NOTOK) {

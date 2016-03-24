@@ -1,15 +1,17 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "November 25, 2014" "%nmhversion%"
+.TH SEND %manext1% "March 23, 2016" "%nmhversion%"
 .SH NAME
 mhlogin \- login to external (OAuth) services
 .SH SYNOPSIS
 .HP 5
 .na
 .B mhlogin
-.RB \-oauth
-.IR service
+.RB [ \-saslmech
+.IR mechanism ]
+.RB [ \-authservice
+.IR service ]
 .RB [ \-snoop ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -18,7 +20,8 @@ mhlogin \- login to external (OAuth) services
 .B Mhlogin
 currently only supports OAuth for Gmail.  Run
 .B mhlogin
-.B -oauth
+.B \-saslmech xoauth2
+.B \-authservice
 .I gmail
 and load the printed URL in your browser.  Login to a Gmail account, grant
 authorization, and copy and paste the code into the
@@ -26,7 +29,7 @@ authorization, and copy and paste the code into the
 prompt.  Be sure to use the same account with the
 .B -user
 switch to
-.B send
+.BR send .
 .PP
 The
 .B \-snoop
@@ -35,11 +38,8 @@ switch can be used to view the HTTP transaction.
 All parameters configuring the service may be overridden by profile components,
 and even though only Gmail is supported out of the box, the user can define
 new services entirely in the profile.  Profile components are prefixed by
-.I
-oauth-
-.I
-service-
-for example
+.IR oauth-service- ,
+for example,
 .I oauth-gmail-credential-file
 which specifies where
 .B mhlogin

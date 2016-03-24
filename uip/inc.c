@@ -58,7 +58,6 @@
     X("form formatfile", 0, FORMSW) \
     X("format string", 5, FMTSW) \
     X("host hostname", 0, HOSTSW) \
-    X("oauth service", 0, OAUTHSW) \
     X("user username", 0, USERSW) \
     X("pack file", 0, PACKSW) \
     X("nopack", 0, NPACKSW) \
@@ -74,6 +73,7 @@
     X("sasl", SASLminc(-4), SASLSW) \
     X("nosasl", SASLminc(-6), NOSASLSW) \
     X("saslmech", SASLminc(-8), SASLMECHSW) \
+    X("authservice", SASLminc(-11), AUTHSERVICESW) \
     X("proxy command", 0, PROXYSW) \
 
 #define X(sw, minchars, id) id,
@@ -191,14 +191,13 @@ main (int argc, char **argv)
     char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
     char *host = NULL, *port = NULL, *user = NULL, *proxy = NULL;
-    char *audfile = NULL, *from = NULL, *saslmech = NULL;
+    char *audfile = NULL, *from = NULL, *saslmech = NULL, *auth_svc = NULL;
     char buf[BUFSIZ], **argp, *nfs, **arguments;
     struct msgs *mp = NULL;
     struct stat st, s1;
     FILE *aud = NULL;
     char b[PATH_MAX + 1];
     char *maildir_copy = NULL;	/* copy of mail directory because the static gets overwritten */
-    const char *oauth_svc = NULL;
 
     int nmsgs, nbytes;
     char *MAILHOST_env_variable;
@@ -326,16 +325,6 @@ main (int argc, char **argv)
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
 
-            case OAUTHSW:
-#ifdef OAUTH_SUPPORT
-                if (!(cp = *argp++) || *cp == '-')
-                    adios (NULL, "missing argument to %s", argp[-2]);
-                oauth_svc = cp;
-#else
-                adios (NULL, "not built with OAuth support");
-#endif
-                continue;
-
 	    case USERSW:
 		if (!(user = *argp++) || *user == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
@@ -364,6 +353,16 @@ main (int argc, char **argv)
 		if (!(saslmech = *argp++) || *saslmech == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
+
+	    case AUTHSERVICESW:
+#ifdef OAUTH_SUPPORT
+                if (!(auth_svc = *argp++) || *auth_svc == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
+#else
+                adios (NULL, "not built with OAuth support");
+#endif
+                continue;
+
 	    case PROXYSW:
 		if (!(proxy = *argp++) || *proxy == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
@@ -406,11 +405,14 @@ main (int argc, char **argv)
     if (inc_type == INC_POP) {
 	struct nmh_creds creds = { 0, 0, 0 };
 
-	if (oauth_svc == NULL) {
+	if (auth_svc == NULL) {
+	    if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
+		adios (NULL, "must specify -authservice with -saslmech xoauth2");
+	    }
 	    nmh_get_credentials (host, user, sasl, &creds);
 	} else {
 	    if (user == NULL) {
-		adios (NULL, "must specify -user with -oauth");
+		adios (NULL, "must specify -user with -saslmech xoauth2");
 	    }
 	    creds.user = user;
 	}
@@ -419,7 +421,7 @@ main (int argc, char **argv)
 	 * initialize POP connection
 	 */
 	if (pop_init (host, port, creds.user, creds.password, proxy, snoop,
-		      sasl, saslmech, oauth_svc) == NOTOK)
+		      sasl, saslmech, auth_svc) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */

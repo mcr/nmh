@@ -65,7 +65,7 @@
     X("nosasl", SASLminc(-6), NOSASLSW) \
     X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
     X("saslmech mechanism", SASLminc(-5), SASLMECHSW) \
-    X("oauth service", 0, OAUTHSW) \
+    X("authservice", SASLminc(-11), AUTHSERVICESW) \
     X("user username", SASLminc(-4), USERSW) \
     X("attach", -6, ATTACHSW) \
     X("noattach", -8, NOATTACHSW) \
@@ -121,10 +121,11 @@ main (int argc, char **argv)
     char *cp, *dfolder = NULL, *maildir = NULL;
     char buf[BUFSIZ], **ap, **argp, **arguments, *program;
     char *msgs[MAXARGS], **vec;
-    const char *user = NULL, *oauth_svc = NULL;
+    const char *user = NULL, *saslmech = NULL;
     struct msgs *mp;
     struct stat st;
     int snoop = 0;
+    char *auth_svc = NULL;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -259,18 +260,6 @@ main (int argc, char **argv)
 		    vec[vecp++] = --cp;
 		    continue;
 
-                case OAUTHSW:
-#ifdef OAUTH_SUPPORT
-		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
-                    oauth_svc = cp;
-#else
-                    NMH_UNUSED (user);
-                    NMH_UNUSED (oauth_svc);
-                    adios (NULL, "not built with OAuth support");
-#endif
-		    continue;
-
 		case USERSW:
 		    vec[vecp++] = --cp;
 		    if (!(cp = *argp++) || *cp == '-')
@@ -279,12 +268,25 @@ main (int argc, char **argv)
                     user = cp;
 		    continue;
 
+		case SASLMECHSW:
+		    if (!(saslmech = *argp++) || *saslmech == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    continue;
+
+		case AUTHSERVICESW:
+#ifdef OAUTH_SUPPORT
+		    if (!(auth_svc = *argp++) || *auth_svc == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+#else
+		    adios (NULL, "not built with OAuth support");
+#endif
+		    continue;
+
 		case ALIASW: 
 		case FILTSW: 
 		case WIDTHSW: 
 		case CLIESW: 
 		case SERVSW: 
-		case SASLMECHSW:
 		case SASLMXSSFSW:
 		case PORTSW:
 		case MTSSM:
@@ -449,15 +451,26 @@ go_to_it:
     }
 
 #ifdef OAUTH_SUPPORT
-    if (oauth_svc != NULL) {
+    if (auth_svc == NULL) {
+        if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
+            adios (NULL, "must specify -authservice with -saslmech xoauth2");
+        }
+    } else {
         if (user == NULL) {
-            adios (NULL, "must specify -user with -oauth");
+            adios (NULL, "must specify -user with -saslmech xoauth2");
         }
 
-        vec[vecp++] = "-oauth";
-        vec[vecp++] = mh_oauth_do_xoauth (user, oauth_svc,
-					  snoop ? stderr : NULL);
+        vec[vecp++] = "-authservice";
+        if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
+            vec[vecp++] = mh_oauth_do_xoauth (user, auth_svc, snoop ? stderr : NULL);
+        } else {
+            vec[vecp++] = auth_svc;
+        }
     }
+#else
+    NMH_UNUSED(auth_svc);
+    NMH_UNUSED(user);
+    NMH_UNUSED(saslmech);
 #endif /* OAUTH_SUPPORT */
 
     if (altmsg == NULL || stat (altmsg, &st) == NOTOK) {

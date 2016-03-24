@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "November 25, 2014" "%nmhversion%"
+.TH SEND %manext1% "March 23, 2016" "%nmhversion%"
 .SH NAME
 send \- send a message
 .SH SYNOPSIS
@@ -25,8 +25,6 @@ send \- send a message
 .RB [ \-msgid " | " \-nomsgid ]
 .RB [ \-messageid
 .IR localname " | " random ]
-.RB [ \-oauth
-.IR service ]
 .RB [ \-push " | " \-nopush ]
 .RB [ \-split
 .IR seconds ]
@@ -46,6 +44,8 @@ send \- send a message
 .IR ssf ]
 .RB [ \-saslmech
 .IR mechanism ]
+.RB [ \-authservice
+.IR service ]
 .RB [ \-snoop ]
 .RB [ \-user
 .IR username ]
@@ -391,7 +391,7 @@ entry).  The
 switch can be used to view the SMTP transaction.  (Beware that the
 SMTP transaction may contain authentication information either in
 plaintext or easily decoded base64.)  If
-.B \-oauth
+.B \-saslmech xoauth2
 is used, the HTTP transaction is also shown.
 .PP
 If
@@ -431,18 +431,18 @@ underlying SASL mechanism.  A value of 0 disables encryption.
 If
 .B nmh
 has been compiled with OAuth support, the
-.B \-oauth
+.B \-saslmech xoauth2
 switch will enable OAuth authentication.  The
 .B \-user
 switch must be used, and the
 .I user-name
-must be an email address the user has for that service.  Before using this,
-the user must authorize nmh by running
+must be an email address the user has for the service, which must
+be specified with the
+.B \-authservice
+.I service
+switch.  Before using this, the user must authorize nmh by running
 .B mhlogin
-and grant authorization to that account.  Only
-.B -oauth
-.I gmail
-is supported.  See the
+and grant authorization to that account.  See the
 .B mhlogin
 man page for more details.
 .PP

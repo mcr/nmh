@@ -131,7 +131,7 @@ expect_creds() {
 }
 
 test_inc() {
-    run_test "inc -host 127.0.0.1 -port ${pop_port} -oauth test -user nobody@example.com -width 80" "$@"
+    run_test "inc -host 127.0.0.1 -port ${pop_port} -saslmech xoauth2 -authservice test -user nobody@example.com -width 80" "$@"
 }
 
 test_inc_success() {
@@ -142,7 +142,7 @@ test_inc_success() {
 }
 
 test_send_no_servers() {
-    run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -oauth test -user nobody@example.com" "$@"
+    run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice test -user nobody@example.com" "$@"
 }
 
 test_send_only_fakesmtp() {

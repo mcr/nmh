@@ -35,7 +35,7 @@ expire: 2000000000
 EOF
 
 start_fakesmtp
-run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -oauth test -user nobody@example.com"
+run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice test -user nobody@example.com"
 
 # TEST
 echo 'expired access token, refresh works, smtp server accepts message'
@@ -163,21 +163,21 @@ setup_draft
 # TEST
 echo 'no service definition'
 
-run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -oauth bogus -user nobody@example.com" 'send: incomplete OAuth2 service definition: scope is missing'
+run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice bogus -user nobody@example.com" 'send: incomplete OAuth2 service definition: scope is missing'
 
 # TEST
 echo 'no creds file -- should tell user to mhlogin'
 
 rm -f "${MHTMPDIR}/oauth-test"
 
-test_send_no_servers 'send: no credentials -- run mhlogin -oauth test'
+test_send_no_servers 'send: no credentials -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
 echo 'empty creds file -- should tell user to mhlogin'
 
 fake_creds < /dev/null
 
-test_send_no_servers 'send: no valid credentials -- run mhlogin -oauth test'
+test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
 echo 'garbage creds file'
@@ -234,7 +234,7 @@ access: test-access
 expire: 1414303986
 EOF
 
-test_send_no_servers 'send: no valid credentials -- run mhlogin -oauth test'
+test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
 echo 'access token has no expiration, no refresh token -- tell user to mhlogin'
@@ -243,7 +243,7 @@ fake_creds <<EOF
 access: test-access
 EOF
 
-test_send_no_servers 'send: no valid credentials -- run mhlogin -oauth test'
+test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
 echo 'refresh finds no http server'
@@ -259,7 +259,7 @@ send: error making HTTP request to OAuth2 authorization endpoint: [details]
 EOF
 
 run_prog send -draft -server 127.0.0.1 -port ${smtp_port} \
-  -oauth test -user nobody@example.com > "${testname}.send-output" 2>&1 || true
+  -saslmech xoauth2 -authservice test -user nobody@example.com > "${testname}.send-output" 2>&1 || true
 # Clear out an error message we get from libcurl on some systems (seen at least
 # 3 different versions of this error message, on FreeBSD 10.1, Ubuntu 12.04, and
 # Ubuntu 14.04).
@@ -309,7 +309,7 @@ Content-Type: application/json
 }
 EOF
 
-test_send_only_fakehttp 'send: credentials rejected -- run mhlogin -oath test'
+test_send_only_fakehttp 'send: credentials rejected -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
 echo 'refresh gets response too big'

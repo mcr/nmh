@@ -1,4 +1,4 @@
-.TH INC %manext1% "November 25, 2014" "%nmhversion%"
+.TH INC %manext1% "March 23, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -37,7 +37,7 @@ inc \- incorporate new mail
 .RB [ \-sasl " | " \-nosasl ]
 .RB [ \-saslmech
 .IR mechanism ]
-.RB [ \-oauth
+.RB [ \-authservice
 .IR service ]
 .RB [ \-snoop ]
 .RB [ \-version ]
@@ -245,7 +245,7 @@ For debugging purposes, you may give the switch
 .BR \-snoop ,
 which will allow you to watch the POP transaction take place
 between you and the POP server.  If
-.B \-oauth
+.B \-saslmech xoauth2
 is used, the HTTP transaction is also shown.
 .PP
 If
@@ -272,18 +272,18 @@ switch.
 If
 .B nmh
 has been compiled with OAuth support, the
-.B \-oauth
+.B \-saslmech xoauth2
 switch will enable OAuth authentication.  The
 .B \-user
 switch must be used, and the
 .I user-name
-must be an email address the user has for that service.  Before using this,
-the user must authorize nmh by running
+must be an email address the user has for the service, which must
+be specified with the
+.B \-authservice
+.I service
+switch.  Before using this, the user must authorize nmh by running
 .B mhlogin
-and grant authorization to that account.  Only
-.B -oauth
-.I gmail
-is supported.  See the
+and grant authorization to that account.  See the
 .B mhlogin
 man page for more details.
 .PP

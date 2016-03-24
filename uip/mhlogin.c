@@ -13,7 +13,8 @@
 #include <h/oauth.h>
 
 #define MHLOGIN_SWITCHES \
-    X("oauth", 1, OAUTHSW) \
+    X("saslmech", 1, SASLMECHSW) \
+    X("authservice", -11, AUTHSERVICESW) \
     X("snoop", 1, SNOOPSW) \
     X("help", 1, HELPSW) \
     X("version", 1, VERSIONSW) \
@@ -52,7 +53,7 @@ do_login(const char *svc, int snoop)
     const char *url;
 
     if (svc == NULL) {
-        adios(NULL, "only support -oauth gmail");
+        adios(NULL, "missing -authservice switch");
     }
 
     if (!mh_oauth_new(&ctx, svc)) {
@@ -110,7 +111,7 @@ int
 main(int argc, char **argv)
 {
     char *cp, **argp, **arguments;
-    char *svc = NULL;
+    char *saslmech = NULL, *svc = NULL;
     int snoop = 0;
 
     if (nmh_init(argv[0], 1)) { return 1; }
@@ -129,7 +130,7 @@ main(int argc, char **argv)
 		adios (NULL, "-%s unknown", cp);
 
 	    case HELPSW:
-		snprintf(help, sizeof(help), "%s -oauth gmail [switches]",
+		snprintf(help, sizeof(help), "%s [switches]",
                          invo_name);
 		print_help (help, switches, 1);
 		done (0);
@@ -137,10 +138,14 @@ main(int argc, char **argv)
 		print_version(invo_name);
 		done (0);
 
-            case OAUTHSW:
-		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
-                    svc = cp;
+	    case SASLMECHSW:
+		if (!(saslmech = *argp++) || *saslmech == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
+
+	    case AUTHSERVICESW:
+                if (!(svc = *argp++) || *svc == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
                 continue;
 
             case SNOOPSW:
