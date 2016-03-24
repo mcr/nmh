@@ -370,6 +370,8 @@ doit(char *cur, char *folders, char *sequences[])
                 return prev;
             }
         } else if (run_mode == UNSEEN) {
+            int status;
+
             if (node->n_field == NULL) {
                 continue;
             }
@@ -388,7 +390,8 @@ doit(char *cur, char *folders, char *sequences[])
 	    /* TODO: Split enough of scan.c out so that we can call it here. */
 	    command = concat("scan +", node->n_name, " ", sequences_s,
 			     (void *)NULL);
-	    if (system(command) == NOTOK) {
+	    status = system(command);
+	    if (! WIFEXITED (status)) {
 		adios (command, "system");
 	    }
 	    free(command);
