@@ -1,4 +1,4 @@
-.TH MHSHOW %manext1% "February 8, 2015" "%nmhversion%"
+.TH MHSHOW %manext1% "March 24, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -93,7 +93,7 @@ string representing the current folder.
 .PP
 By default
 .B mhshow
-will concatenate all content under one pager.  If you which each part to
+will concatenate all content under one pager.  If you want each part to
 displayed separately, you can override the default behavior with
 .B \-noconcat.
 .PP
