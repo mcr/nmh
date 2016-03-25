@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "March 23, 2016" "%nmhversion%"
+.TH SEND %manext1% "March 24, 2016" "%nmhversion%"
 .SH NAME
 mhlogin \- login to external (OAuth) services
 .SH SYNOPSIS
@@ -12,6 +12,8 @@ mhlogin \- login to external (OAuth) services
 .IR mechanism ]
 .RB [ \-authservice
 .IR service ]
+.RB [ \-browser
+.IR command ]
 .RB [ \-snoop ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -30,6 +32,16 @@ prompt.  Be sure to use the same account with the
 .B -user
 switch to
 .BR send .
+.PP
+The
+.B \-browser
+switch causes
+.B mhlogin
+to load the URL directly into a new browser session.  The command argument
+must include the browser invocation name, and can include any browser arguments
+in the
+.B \-browser
+argument string, e.g., 'google-chrome --new-window'.
 .PP
 The
 .B \-snoop
@@ -61,3 +73,7 @@ should read them.
 .fi
 .SH "SEE ALSO"
 .IR send (1)
+.SH DEFAULTS
+.nf
+.RB ` \-saslmech "' xoauth2"
+.fi

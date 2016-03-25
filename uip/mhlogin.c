@@ -15,6 +15,7 @@
 #define MHLOGIN_SWITCHES \
     X("saslmech", 0, SASLMECHSW) \
     X("authservice", 0, AUTHSERVICESW) \
+    X("browser", 0, BROWSERSW) \
     X("snoop", 0, SNOOPSW) \
     X("help", 0, HELPSW) \
     X("version", 0, VERSIONSW) \
@@ -43,7 +44,7 @@ geta (void)
 }
 
 static int
-do_login(const char *svc, int snoop)
+do_login(const char *svc, const char *browser, int snoop)
 {
     char *fn, *code;
     mh_oauth_ctx *ctx;
@@ -70,11 +71,27 @@ do_login(const char *svc, int snoop)
       adios(NULL, mh_oauth_get_err_string(ctx));
     }
 
-    printf("Load the following URL in your browser and authorize nmh"
-           " to access %s:\n"
-           "\n%s\n\n"
-           "Enter the authorization code: ",
-           mh_oauth_svc_display_name(ctx), url);
+    if (browser) {
+        char *command = concat(browser, " '", url, "'", NULL);
+        int status = OK;
+
+        printf("Follow the prompts in your browser to authorize nmh"
+               " to access %s.\n",
+               mh_oauth_svc_display_name(ctx));
+        sleep(1);
+
+        status = system(command);
+        free(command);
+
+        if (status != OK) {
+            adios ((char *) browser, "SYSTEM");
+        }
+    } else {
+        printf("Load the following URL in your browser and authorize nmh"
+               " to access %s:\n\n%s\n\n",
+               mh_oauth_svc_display_name(ctx), url);
+    }
+    printf("Enter the authorization code: ");
     fflush(stdout);
     code = geta();
 
@@ -111,7 +128,7 @@ int
 main(int argc, char **argv)
 {
     char *cp, **argp, **arguments;
-    char *saslmech = NULL, *svc = NULL;
+    const char *saslmech = NULL, *svc = NULL, *browser = NULL;
     int snoop = 0;
 
     if (nmh_init(argv[0], 1)) { return 1; }
@@ -148,6 +165,11 @@ main(int argc, char **argv)
                     adios (NULL, "missing argument to %s", argp[-2]);
                 continue;
 
+	    case BROWSERSW:
+                if (!(browser = *argp++) || *browser == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
+                continue;
+
             case SNOOPSW:
                 snoop++;
                 continue;
@@ -156,10 +178,16 @@ main(int argc, char **argv)
         adios(NULL, "extraneous arguments");
     }
 
+    if (saslmech  &&  strcasecmp(saslmech, "xoauth2")) {
+        /* xoauth is assumed */
+        adios(NULL, "only -saslmech xoauth2 is supported");
+    }
+
 #ifdef OAUTH_SUPPORT
-    return do_login(svc, snoop);
+    return do_login(svc, browser, snoop);
 #else
     NMH_UNUSED(svc);
+    NMH_UNUSED(browser);
     NMH_UNUSED(snoop);
     adios(NULL, "not built with OAuth support");
     return 1;
