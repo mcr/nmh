@@ -24,7 +24,7 @@ export XOAUTH
 XOAUTH='dXNlcj1ub2JvZHlAZXhhbXBsZS5jb20BYXV0aD1CZWFyZXIgdGVzdC1hY2Nlc3MBAQ=='
 
 # TEST
-echo 'access token ready, smtp server accepts message'
+start_test 'access token ready, smtp server accepts message'
 
 setup_draft
 
@@ -38,7 +38,7 @@ start_fakesmtp
 run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice test -user nobody@example.com"
 
 # TEST
-echo 'expired access token, refresh works, smtp server accepts message'
+start_test 'expired access token, refresh works, smtp server accepts message'
 
 setup_draft
 
@@ -70,7 +70,7 @@ check_creds_private
 check_creds
 
 # TEST
-echo 'expired access token, refresh works and gets updated, smtp server accepts message'
+start_test 'expired access token, refresh works and gets updated, smtp server accepts message'
 
 setup_draft
 
@@ -100,7 +100,7 @@ test_send
 check_creds
 
 # TEST
-echo 'access token has no expiration, refresh works, smtp server accepts message'
+start_test 'access token has no expiration, refresh works, smtp server accepts message'
 
 setup_draft
 
@@ -128,7 +128,7 @@ test_send
 check_creds
 
 # TEST
-echo 'no access token, refresh works, smtp server accepts message'
+start_test 'no access token, refresh works, smtp server accepts message'
 
 setup_draft
 
@@ -161,26 +161,26 @@ check_creds
 setup_draft
 
 # TEST
-echo 'no service definition'
+start_test 'no service definition'
 
 run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice bogus -user nobody@example.com" 'send: incomplete OAuth2 service definition: scope is missing'
 
 # TEST
-echo 'no creds file -- should tell user to mhlogin'
+start_test 'no creds file -- should tell user to mhlogin'
 
 rm -f "${MHTMPDIR}/oauth-test"
 
 test_send_no_servers 'send: no credentials -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
-echo 'empty creds file -- should tell user to mhlogin'
+start_test 'empty creds file -- should tell user to mhlogin'
 
 fake_creds < /dev/null
 
 test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
-echo 'garbage creds file'
+start_test 'garbage creds file'
 
 echo bork | fake_creds
 
@@ -188,7 +188,7 @@ test_send_no_servers 'send: eof encountered in field "bork"
 send: error loading cred file'
 
 # TEST
-echo 'unexpected field in creds file'
+start_test 'unexpected field in creds file'
 
 fake_creds <<EOF
 bork: bork
@@ -198,7 +198,7 @@ EOF
 test_send_no_servers 'send: error loading cred file: unexpected field'
 
 # TEST
-echo 'garbage expiration time'
+start_test 'garbage expiration time'
 
 fake_creds <<EOF
 access: test-access
@@ -208,7 +208,7 @@ EOF
 test_send_no_servers 'send: error loading cred file: invalid expiration time'
 
 # TEST
-echo 'refresh response has no access token'
+start_test 'refresh response has no access token'
 
 fake_creds <<EOF
 refresh: test-refresh
@@ -227,7 +227,7 @@ test_send_only_fakehttp 'send: error refreshing OAuth2 token
 send: invalid response: no access token'
 
 # TEST
-echo 'expired access token, no refresh token -- tell user to mhlogin'
+start_test 'expired access token, no refresh token -- tell user to mhlogin'
 
 fake_creds <<EOF
 access: test-access
@@ -237,7 +237,7 @@ EOF
 test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
-echo 'access token has no expiration, no refresh token -- tell user to mhlogin'
+start_test 'access token has no expiration, no refresh token -- tell user to mhlogin'
 
 fake_creds <<EOF
 access: test-access
@@ -246,7 +246,7 @@ EOF
 test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
-echo 'refresh finds no http server'
+start_test 'refresh finds no http server'
 
 fake_creds <<EOF
 access: test-access
@@ -269,7 +269,7 @@ check "$f".clean "${testname}.expected-send-output"
 rm "$f"
 
 # TEST
-echo 'refresh gets bogus 200 response from http server'
+start_test 'refresh gets bogus 200 response from http server'
 
 expect_http_post_refresh
 
@@ -283,7 +283,7 @@ test_send_only_fakehttp 'send: error refreshing OAuth2 token
 send: invalid response'
 
 # TEST
-echo 'refresh gets 500 response from http server'
+start_test 'refresh gets 500 response from http server'
 
 expect_http_post_refresh
 
@@ -297,7 +297,7 @@ test_send_only_fakehttp 'send: error refreshing OAuth2 token
 send: invalid response'
 
 # TEST
-echo 'refresh gets proper error from http'
+start_test 'refresh gets proper error from http'
 
 expect_http_post_refresh
 
@@ -312,7 +312,7 @@ EOF
 test_send_only_fakehttp 'send: credentials rejected -- run mhlogin -saslmech xoauth2 -authservice test'
 
 # TEST
-echo 'refresh gets response too big'
+start_test 'refresh gets response too big'
 
 fake_creds <<EOF
 refresh: test-refresh
@@ -335,7 +335,7 @@ test_send_only_fakehttp 'send: error refreshing OAuth2 token
 send: refusing to process response body larger than 8192 bytes'
 
 # TEST
-echo 'smtp server rejects token'
+start_test 'smtp server rejects token'
 
 XOAUTH='not-that-one'
 
@@ -348,7 +348,7 @@ test_send_only_fakesmtp 'post: problem initializing server; [BHST] Not no way, n
 send: message not delivered to anyone'
 
 # TEST
-echo "smtp server doesn't support oauth"
+start_test "smtp server doesn't support oauth"
 
 unset XOAUTH
 
@@ -357,5 +357,6 @@ send: message not delivered to anyone'
 
 clean_fakesmtp
 clean_fakehttp
+finish_test
 
 exit ${failed:-0}

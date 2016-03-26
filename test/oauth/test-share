@@ -16,7 +16,7 @@ export XOAUTH
 XOAUTH='dXNlcj1ub2JvZHlAZXhhbXBsZS5jb20BYXV0aD1CZWFyZXIgdGVzdC1hY2Nlc3MBAQ=='
 
 # TEST
-echo 'mhlogin then all run with no refresh'
+start_test 'mhlogin then all run with no refresh'
 
 expect_http_post_code
 
@@ -51,7 +51,7 @@ setup_draft
 test_send_only_fakesmtp
 
 # TEST
-echo 'inc refreshes'
+start_test 'inc refreshes'
 
 fake_creds <<EOF
 access: old-access
@@ -80,7 +80,7 @@ setup_draft
 test_send_only_fakesmtp
 
 # TEST
-echo 'msgchck refreshes'
+start_test 'msgchck refreshes'
 
 fake_creds <<EOF
 access: old-access
@@ -109,7 +109,7 @@ setup_draft
 test_send_only_fakesmtp
 
 # TEST
-echo 'send refreshes'
+start_test 'send refreshes'
 
 fake_creds <<EOF
 access: old-access
@@ -138,5 +138,6 @@ test_inc_success
 
 clean_fakesmtp
 clean_fakehttp
+finish_test
 
 exit ${failed:-0}

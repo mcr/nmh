@@ -39,7 +39,7 @@ mhlogin: invalid response'
 #
 
 # TEST
-echo 'mhlogin receives access and expiration'
+start_test 'mhlogin receives access and expiration'
 
 expect_http_post_code
 
@@ -59,7 +59,7 @@ EOF
 test_mhlogin
 
 # TEST
-echo 'mhlogin receives access and refresh'
+start_test 'mhlogin receives access and refresh'
 
 expect_http_post_code
 
@@ -77,7 +77,7 @@ EOF
 test_mhlogin
 
 # TEST
-echo 'mhlogin receives access, expiration, and refresh'
+start_test 'mhlogin receives access, expiration, and refresh'
 
 expect_http_post_code
 
@@ -99,7 +99,7 @@ EOF
 test_mhlogin
 
 # TEST
-echo 'mhlogin receives refresh only'
+start_test 'mhlogin receives refresh only'
 
 expect_http_post_code
 
@@ -117,7 +117,7 @@ EOF
 test_mhlogin
 
 # TEST
-echo 'mhlogin receives token_type only'
+start_test 'mhlogin receives token_type only'
 
 expect_http_post_code
 
@@ -132,7 +132,7 @@ expect_no_creds
 test_mhlogin_invalid_response
 
 # TEST
-echo 'mhlogin ignores extra bits in successful response JSON'
+start_test 'mhlogin ignores extra bits in successful response JSON'
 
 expect_http_post_code
 
@@ -160,7 +160,7 @@ EOF
 test_mhlogin
 
 # TEST
-echo 'mhlogin user enters bad code'
+start_test 'mhlogin user enters bad code'
 
 expect_http_post_code
 
@@ -181,7 +181,7 @@ test_mhlogin 'Code rejected; try again? '
 #
 
 # TEST
-echo 'mhlogin response has no content-type'
+start_test 'mhlogin response has no content-type'
 
 expect_http_post_code
 
@@ -199,7 +199,7 @@ expect_no_creds
 test_mhlogin_invalid_response
 
 # TEST
-echo 'mhlogin JSON array'
+start_test 'mhlogin JSON array'
 
 expect_http_post_code
 
@@ -212,7 +212,7 @@ expect_no_creds
 test_mhlogin_invalid_response
 
 # TEST
-echo 'mhlogin JSON empty object'
+start_test 'mhlogin JSON empty object'
 
 expect_http_post_code
 
@@ -225,7 +225,7 @@ expect_no_creds
 test_mhlogin_invalid_response
 
 # TEST
-echo 'mhlogin empty response body'
+start_test 'mhlogin empty response body'
 
 expect_http_post_code
 
@@ -237,7 +237,7 @@ expect_no_creds
 test_mhlogin_invalid_response
 
 # TEST
-echo 'mhlogin gets proper error from http'
+start_test 'mhlogin gets proper error from http'
 
 expect_http_post_code
 
@@ -255,5 +255,6 @@ test_mhlogin 'mhlogin: error exchanging code for OAuth2 token
 mhlogin: bad OAuth request; re-run with -snoop and send REDACTED output to nmh-workers'
 
 clean_fakehttp
+finish_test
 
 exit ${failed:-0}

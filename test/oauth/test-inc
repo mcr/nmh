@@ -17,7 +17,7 @@ setup_pop
 #
 
 # TEST
-echo 'access token ready, pop server accepts message'
+start_test 'access token ready, pop server accepts message'
 
 fake_creds <<EOF
 access: test-access
@@ -29,7 +29,7 @@ start_pop_xoauth
 test_inc_success
 
 # TEST
-echo 'expired access token, refresh works, pop server accepts message'
+start_test 'expired access token, refresh works, pop server accepts message'
 
 fake_creds <<EOF
 access: old-access
@@ -59,7 +59,7 @@ check_http_req
 #
 
 # TEST
-echo 'refresh gets proper error from http'
+start_test 'refresh gets proper error from http'
 
 fake_creds <<EOF
 access: test-access
@@ -84,7 +84,7 @@ inc: bad OAuth request; re-run with -snoop and send REDACTED output to nmh-worke
 check_http_req
 
 # TEST
-echo 'pop server rejects token'
+start_test 'pop server rejects token'
 
 fake_creds <<EOF
 access: wrong-access
@@ -96,7 +96,7 @@ start_pop_xoauth
 test_inc 'inc: -ERR [AUTH] Invalid credentials.'
 
 # TEST
-echo "pop server doesn't support oauth"
+start_test "pop server doesn't support oauth"
 
 fake_creds <<EOF
 access: test-access
@@ -108,5 +108,6 @@ start_pop testuser testpass
 test_inc 'inc: POP server does not support SASL'
 
 clean_fakehttp
+finish_test
 
 exit ${failed:-0}
