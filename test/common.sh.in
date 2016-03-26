@@ -249,8 +249,51 @@ run_test() {
   fi
 }
 
+#### Function invoked by trap on exit.
+cleanup() {
+    #### Save exit status to use as status for this program.
+    status=$?
+
+    #### Clean up test mail space.
+    #### cd to $MH_TEST_DIR before trying to remove its Mail
+    #### subdirectory.  rm on Solaris won't remove it if it's in the
+    #### path of the current working directory.
+    test -z "$MH_TEST_NOCLEANUP" && (cd $MH_TEST_DIR; rm -rf "$MH_TEST_DIR"/Mail)
+
+    #### Report test name if set, which indicates failure.
+    #### Relies on set -e to invoke the trap which calls
+    #### this function on failure.
+    #### To use:
+    #### 1) Set test name before running the test, use start_test().
+    #### 2) Unset upon successful completion, use finish_test().
+    if test -n "$nmh_tests_testname"; then
+        echo $nmh_tests_testname failed
+    fi
+
+    #### Exit with non-zero status if failure.  Failure is defined as either
+    #### non-empty nmh_tests_testname or non-zero exit status on entry to the
+    #### function.
+    if test -n "$nmh_tests_testname"  -o  $status -ne 0; then
+        test $status -ne 0  &&  exit $status  ||  exit 1
+        test $status -ne 0  &&  exit 0  ||  exit 0
+    fi
+}
+
+#### Function to set the test name, and whatever the future brings.
+start_test() {
+    nmh_tests_testname="$1"
+}
+
+#### Corresponding function to indicate that the test has finished.  It need
+#### not be called after each test, just the last one in a file.
+finish_test() {
+    unset nmh_tests_testname
+}
+
 setup_test ()
 {
+  set -e
+
   MH="${MH_TEST_DIR}/Mail/.mh_profile"
   MHMTSCONF="${MH_INST_DIR}${nmhetcdir}/mts.conf"
   MH_LIBEXEC_DIR="${MH_INST_DIR}${nmhlibexecdir}"
@@ -283,8 +326,9 @@ setup_test ()
   PATH="${MH_INST_DIR}${bindir}:${PATH}"
   export PATH
 
-  # clean old test data
-  trap "test -z '$MH_TEST_NOCLEANUP' && (cd '$MH_TEST_DIR'; rm -rf '$MH_TEST_DIR/Mail')" 0
+  # clean old test data on exit
+  trap cleanup 0
+
   # setup test data
   mkdir -p "$MH_TEST_DIR/Mail" || exit 1
   cat > "$MH" <<EOF || exit 1

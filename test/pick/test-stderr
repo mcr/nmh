@@ -28,6 +28,6 @@ EOF
 # Nothing should to go stdout.
 cat /dev/null > $expected_out
 
-run_prog pick -a > $actual_out 2> $actual_err
+run_prog pick -a > $actual_out 2> $actual_err  ||  true
 check "$expected_err" "$actual_err"
 check "$expected_out" "$actual_out"
