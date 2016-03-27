@@ -375,7 +375,10 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 			     saslmech, server_mechs);
 	}
 
-	if (sm_auth_sasl(user, saslssf, saslmech ? saslmech : server_mechs,
+        /* Don't call sm_auth_sasl() for XAUTH2 with -sasl.  Instead, call
+           sm_auth_xoauth2() below. */
+	if (xoauth_client_res == NULL  &&
+            sm_auth_sasl(user, saslssf, saslmech ? saslmech : server_mechs,
 			 server) != RP_OK) {
 	    sm_end(NOTOK);
 	    return NOTOK;
