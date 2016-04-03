@@ -11,11 +11,11 @@
 
 
 int
-gans (char *prompt, struct swit *ansp)
+read_switch (const char *prompt, const struct swit *ansp)
 {
     register int i;
     register char *cp;
-    register struct swit *ap;
+    const register struct swit *ap;
     char ansbuf[BUFSIZ];
 
     for (;;) {

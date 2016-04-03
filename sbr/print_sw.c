@@ -11,7 +11,7 @@
 
 
 void
-print_sw (char *substr, struct swit *swp, char *prefix, FILE *fp)
+print_sw (const char *substr, const struct swit *swp, char *prefix, FILE *fp)
 {
     int len, optno;
     register int i;

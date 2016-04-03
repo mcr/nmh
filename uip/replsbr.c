@@ -402,7 +402,7 @@ insert (struct mailname *np)
 
     if (querysw) {
 	snprintf (buffer, sizeof(buffer), "Reply to %s? ", adrformat (np));
-	if (!gans (buffer, anoyes))
+	if (!read_switch (buffer, anoyes))
 	return 0;
     }
     mp->m_next = np;

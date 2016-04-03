@@ -11,12 +11,12 @@
 
 
 int
-getanswer (char *prompt)
+read_yes_or_no_if_tty (const char *prompt)
 {
     static int interactive = -1;
 
     if (interactive < 0)
 	interactive = isatty (fileno (stdin)) ? 1 : 0;
 
-    return (interactive ? gans (prompt, anoyes) : 1);
+    return (interactive ? read_switch (prompt, anoyes) : 1);
 }

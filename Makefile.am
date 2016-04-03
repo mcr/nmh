@@ -582,7 +582,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/folder_read.c sbr/folder_realloc.c sbr/gans.c \
 		      sbr/getans.c sbr/getanswer.c sbr/getarguments.c \
 		      sbr/getcpy.c sbr/geteditor.c sbr/getfolder.c \
-		      sbr/getpass.c \
+		      sbr/getpass.c sbr/read_line.c \
 		      sbr/fmt_addr.c sbr/fmt_compile.c sbr/fmt_new.c \
 		      sbr/fmt_rfc2047.c sbr/fmt_scan.c \
 		      sbr/icalparse.y sbr/icalendar.l sbr/datetime.c \

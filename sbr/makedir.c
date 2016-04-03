@@ -15,7 +15,7 @@
 #include <sys/file.h>
 
 int
-makedir (char *dir)
+makedir (const char *dir)
 {
     char            path[PATH_MAX];
     char*           folder_perms_ASCII;

@@ -17,7 +17,7 @@
  * print out error message
  */
 void
-advise (char *what, char *fmt, ...)
+advise (const char *what, char *fmt, ...)
 {
     va_list ap;
 
@@ -60,7 +60,7 @@ admonish (char *what, char *fmt, ...)
  * main routine for printing error messages.
  */
 void
-advertise (char *what, char *tail, char *fmt, va_list ap)
+advertise (const char *what, char *tail, char *fmt, va_list ap)
 {
     int	eindex = errno;
     char buffer[BUFSIZ], err[BUFSIZ];
@@ -85,7 +85,7 @@ advertise (char *what, char *tail, char *fmt, va_list ap)
 	if (*what) {
 	    iov->iov_len = strlen (iov->iov_base = " ");
 	    iov++;
-	    iov->iov_len = strlen (iov->iov_base = what);
+	    iov->iov_len = strlen (iov->iov_base = (void*)what);
 	    iov++;
 	    iov->iov_len = strlen (iov->iov_base = ": ");
 	    iov++;

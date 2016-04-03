@@ -313,7 +313,8 @@ try_it_again:
     if (!buildsw && stat (drft, &st) != NOTOK) {
 	printf ("Draft \"%s\" exists (%ld bytes).", drft, (long) st.st_size);
 	for (i = LISTDSW; i != YESW;) {
-	    if (!(argp = getans ("\nDisposition? ", isdf ? aqrnl : aqrl)))
+	    if (!(argp = read_switch_multiword ("\nDisposition? ",
+						isdf ? aqrnl : aqrl)))
 		done (1);
 	    switch (i = smatch (*argp, isdf ? aqrnl : aqrl)) {
 		case NOSW: 

@@ -146,7 +146,7 @@ losing_directory:
 	    }
 
 	    ep = concat ("Create directory \"", file, "\"? ", NULL);
-	    answer = getanswer (ep);
+	    answer = read_yes_or_no_if_tty (ep);
 	    free (ep);
 
 	    if (!answer)

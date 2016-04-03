@@ -301,7 +301,7 @@ main (int argc, char **argv)
 		adios (msgs[0], "unable to stat draft file");
 	    cp = concat ("Use \"", msgs[0], "\"? ", NULL);
 	    for (status = LISTDSW; status != YESW;) {
-		if (!(argp = getans (cp, anyl)))
+		if (!(argp = read_switch_multiword (cp, anyl)))
 		    done (1);
 		switch (status = smatch (*argp, anyl)) {
 		    case NOSW: 

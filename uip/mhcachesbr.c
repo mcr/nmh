@@ -258,7 +258,7 @@ got_it:
 	snprintf (bp, buflen, "\n    in file %s? ", buffer);
 
 	/* Now, check answer */
-	if (!getanswer (query))
+	if (!read_yes_or_no_if_tty (query))
 	    status = NOTOK;
     }
 

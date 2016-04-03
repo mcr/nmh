@@ -103,7 +103,7 @@ main (int argc, char **argv)
 
     if (interactive) {
 	cp = concat ("Remove folder \"", folder, "\"? ", NULL);
-	if (!getanswer (cp))
+	if (!read_yes_or_no_if_tty (cp))
 	    done (0);
 	free (cp);
     }

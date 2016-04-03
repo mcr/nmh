@@ -337,7 +337,8 @@ try_it_again:
 	    adios (drft, "unable to stat");
 	printf ("Draft \"%s\" exists (%ld bytes).", drft, (long) st.st_size);
 	for (i = LISTDSW; i != YESW;) {
-	    if (!(argp = getans ("\nDisposition? ", isdf ? aqrunl : aqrul)))
+	    if (!(argp = read_switch_multiword ("\nDisposition? ",
+						isdf ? aqrunl : aqrul)))
 		done (1);
 	    switch (i = smatch (*argp, isdf ? aqrunl : aqrul)) {
 		case NOSW: 

@@ -26,7 +26,7 @@ static char ansbuf[BUFSIZ];
  */
 
 char **
-getans_via_readline(char *prompt, struct swit *ansp)
+read_switch_multiword_via_readline(char *prompt, struct swit *ansp)
 {
     char *ans, **cpp;
 

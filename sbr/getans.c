@@ -21,7 +21,7 @@ static void intrser (int);
 
 
 char **
-getans (char *prompt, struct swit *ansp)
+read_switch_multiword (const char *prompt, const struct swit *ansp)
 {
     int i;
     SIGNAL_HANDLER istat = NULL;
