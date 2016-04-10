@@ -786,7 +786,7 @@ load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
     user_creds->creds = mh_xmalloc(user_creds->alloc * sizeof *user_creds->creds);
 
     for (;;) {
-	size_t size = sizeof value_buf;
+	int size = sizeof value_buf;
 	switch (state = m_getfld(&getfld_ctx, name, value_buf, &size, fp)) {
         case FLD:
         case FLDPLUS: {
