@@ -360,6 +360,50 @@ EOF
 
 check "$draft" "$expected"
 
+# check that blank line is inserted between header and content
+
+cat > "$MH_TEST_DIR/Mail/oneline" <<EOF
+There needs to be a blank line before this content line.
+EOF
+
+cat > "$draft" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: test blank line between header and content
+--------
+#text/plain {inline} $MH_TEST_DIR/Mail/oneline
+#application/octet-stream {inline} $MH_TEST_DIR/Mail/oneline
+EOF
+
+run_prog mhbuild "$draft"
+
+cat > "$expected" <<EOF
+To: Mr Test <mrtest@example.com>
+cc:
+Fcc: +outbox
+Subject: test blank line between header and content
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline; filename="oneline"
+
+There needs to be a blank line before this content line.
+
+------- =_aaaaaaaaaa0
+Content-Type: application/octet-stream
+Content-Disposition: inline; filename="oneline"
+
+There needs to be a blank line before this content line.
+
+------- =_aaaaaaaaaa0--
+EOF
+
+check "$draft" "$expected"
+
+
 [ ${failed:=0} -eq 0 ]  &&  rm -f ${backup}
 
 exit ${failed:-0}

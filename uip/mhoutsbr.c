@@ -164,7 +164,7 @@ output_content (CT ct, FILE *out)
 	       body, don't emit the newline that would appear between
 	       the headers and body.  In that case, the call to
 	       write8Bit() shouldn't be needed, but is harmless. */
-	    if (ct->c_ctinfo.ci_first_pm != NULL  ||
+	    if (ct->c_ctinfo.ci_first_pm != NULL  ||  ct->c_begin == 0  ||
 		ct->c_begin != ct->c_end) {
 		putc ('\n', out);
 	    }
