@@ -284,7 +284,7 @@ setup_test ()
   export PATH
 
   # clean old test data
-  trap "test -z $MH_TEST_NOCLEANUP && (cd $MH_TEST_DIR; rm -rf '$MH_TEST_DIR/Mail')" 0
+  trap "test -z '$MH_TEST_NOCLEANUP' && (cd '$MH_TEST_DIR'; rm -rf '$MH_TEST_DIR/Mail')" 0
   # setup test data
   mkdir -p "$MH_TEST_DIR/Mail" || exit 1
   cat > "$MH" <<EOF || exit 1
