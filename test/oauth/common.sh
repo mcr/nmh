@@ -180,7 +180,7 @@ check_creds() {
     # it against our "correct" output.
     f="${MHTMPDIR}/oauth-test"
 
-    sed 's/^expire:.*/expire:/' "$f" > "$f".notime
+    sed 's/^\(expire.*:\).*/\1/' "$f" > "$f".notime
     check "$f".notime "${MHTMPDIR}/$$.expected-creds"
     rm "$f"
 }

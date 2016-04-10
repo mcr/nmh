@@ -63,6 +63,10 @@ typedef enum {
     /* Attempting to refresh an access token without a refresh token. */
     MH_OAUTH_NO_REFRESH,
 
+
+    /* requested user not in cred file */
+    MH_OAUTH_CRED_USER_NOT_FOUND,
+
     /* error loading serialized credentials */
     MH_OAUTH_CRED_FILE
 } mh_oauth_err_code;
@@ -196,7 +200,7 @@ mh_oauth_cred_fn(mh_oauth_ctx *ctx);
  * On error, return FALSE.
  */
 boolean
-mh_oauth_cred_save(FILE *fp, mh_oauth_cred *cred);
+mh_oauth_cred_save(FILE *fp, mh_oauth_cred *cred, const char *user);
 
 /*
  * Load OAuth tokens from file.
@@ -206,7 +210,7 @@ mh_oauth_cred_save(FILE *fp, mh_oauth_cred *cred);
  * On error, return NULL.
  */
 mh_oauth_cred *
-mh_oauth_cred_load(FILE *fp, mh_oauth_ctx *ctx);
+mh_oauth_cred_load(FILE *fp, mh_oauth_ctx *ctx, const char *user);
 
 /*
  * Return null-terminated SASL client response for XOAUTH2 from access token.

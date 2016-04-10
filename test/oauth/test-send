@@ -29,9 +29,9 @@ start_test 'access token ready, smtp server accepts message'
 setup_draft
 
 fake_creds <<EOF
-access: test-access
-refresh: test-refresh
-expire: 2000000000
+access-nobody@example.com: test-access
+refresh-nobody@example.com: test-refresh
+expire-nobody@example.com: 2000000000
 EOF
 
 start_fakesmtp
@@ -43,9 +43,9 @@ start_test 'expired access token, refresh works, smtp server accepts message'
 setup_draft
 
 fake_creds <<EOF
-access: old-access
-refresh: test-refresh
-expire: 1414303986
+access-nobody@example.com: old-access
+refresh-nobody@example.com: test-refresh
+expire-nobody@example.com: 1414303986
 EOF
 
 expect_http_post_refresh
@@ -59,9 +59,9 @@ fake_json_response <<EOF
 EOF
 
 expect_creds <<EOF
-access: test-access
-refresh: test-refresh
-expire:
+access-nobody@example.com: test-access
+refresh-nobody@example.com: test-refresh
+expire-nobody@example.com:
 EOF
 
 test_send
@@ -75,9 +75,9 @@ start_test 'expired access token, refresh works and gets updated, smtp server ac
 setup_draft
 
 fake_creds <<EOF
-access: old-access
-refresh: old-refresh
-expire: 1414303986
+access-nobody@example.com: old-access
+refresh-nobody@example.com: old-refresh
+expire-nobody@example.com: 1414303986
 EOF
 
 expect_http_post_old_refresh
@@ -91,8 +91,8 @@ fake_json_response <<EOF
 EOF
 
 expect_creds <<EOF
-access: test-access
-refresh: test-refresh
+access-nobody@example.com: test-access
+refresh-nobody@example.com: test-refresh
 EOF
 
 test_send
@@ -105,8 +105,8 @@ start_test 'access token has no expiration, refresh works, smtp server accepts m
 setup_draft
 
 fake_creds <<EOF
-access: old-access
-refresh: test-refresh
+access-nobody@example.com: old-access
+refresh-nobody@example.com: test-refresh
 EOF
 
 expect_http_post_refresh
@@ -119,8 +119,8 @@ fake_json_response <<EOF
 EOF
 
 expect_creds <<EOF
-access: test-access
-refresh: test-refresh
+access-nobody@example.com: test-access
+refresh-nobody@example.com: test-refresh
 EOF
 
 test_send
@@ -133,7 +133,7 @@ start_test 'no access token, refresh works, smtp server accepts message'
 setup_draft
 
 fake_creds <<EOF
-refresh: test-refresh
+refresh-nobody@example.com: test-refresh
 EOF
 
 expect_http_post_refresh
@@ -146,8 +146,8 @@ fake_json_response <<EOF
 EOF
 
 expect_creds <<EOF
-access: test-access
-refresh: test-refresh
+access-nobody@example.com: test-access
+refresh-nobody@example.com: test-refresh
 EOF
 
 test_send
@@ -177,7 +177,7 @@ start_test 'empty creds file -- should tell user to mhlogin'
 
 fake_creds < /dev/null
 
-test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
+test_send_no_servers 'send: user not found in cred file: nobody@example.com'
 
 # TEST
 start_test 'garbage creds file'
@@ -192,7 +192,7 @@ start_test 'unexpected field in creds file'
 
 fake_creds <<EOF
 bork: bork
-access: test-access
+access-nobody@example.com: test-access
 EOF
 
 test_send_no_servers 'send: error loading cred file: unexpected field'
@@ -201,8 +201,8 @@ test_send_no_servers 'send: error loading cred file: unexpected field'
 start_test 'garbage expiration time'
 
 fake_creds <<EOF
-access: test-access
-expire: 99999999999999999999999999999999
+access-nobody@example.com: test-access
+expire-nobody@example.com: 99999999999999999999999999999999
 EOF
 
 test_send_no_servers 'send: error loading cred file: invalid expiration time'
@@ -211,7 +211,7 @@ test_send_no_servers 'send: error loading cred file: invalid expiration time'
 start_test 'refresh response has no access token'
 
 fake_creds <<EOF
-refresh: test-refresh
+refresh-nobody@example.com: test-refresh
 EOF
 
 expect_http_post_refresh
@@ -230,8 +230,8 @@ send: invalid response: no access token'
 start_test 'expired access token, no refresh token -- tell user to mhlogin'
 
 fake_creds <<EOF
-access: test-access
-expire: 1414303986
+access-nobody@example.com: test-access
+expire-nobody@example.com: 1414303986
 EOF
 
 test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
@@ -240,7 +240,7 @@ test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth
 start_test 'access token has no expiration, no refresh token -- tell user to mhlogin'
 
 fake_creds <<EOF
-access: test-access
+access-nobody@example.com: test-access
 EOF
 
 test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
@@ -249,8 +249,8 @@ test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth
 start_test 'refresh finds no http server'
 
 fake_creds <<EOF
-access: test-access
-refresh: test-refresh
+access-nobody@example.com: test-access
+refresh-nobody@example.com: test-refresh
 EOF
 
 cat > "${testname}.expected-send-output" <<EOF
@@ -315,7 +315,7 @@ test_send_only_fakehttp 'send: credentials rejected -- run mhlogin -saslmech xoa
 start_test 'refresh gets response too big'
 
 fake_creds <<EOF
-refresh: test-refresh
+refresh-nobody@example.com: test-refresh
 EOF
 
 expect_http_post_refresh
@@ -340,8 +340,8 @@ start_test 'smtp server rejects token'
 XOAUTH='not-that-one'
 
 fake_creds <<EOF
-access: test-access
-expire: 2000000000
+access-nobody@example.com: test-access
+expire-nobody@example.com: 2000000000
 EOF
 
 test_send_only_fakesmtp 'post: problem initializing server; [BHST] Not no way, not no how!

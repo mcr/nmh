@@ -20,8 +20,8 @@ setup_pop
 start_test 'access token ready, pop server accepts message'
 
 fake_creds <<EOF
-access: test-access
-expire: 2000000000
+access-nobody@example.com: test-access
+expire-nobody@example.com: 2000000000
 EOF
 
 start_pop_xoauth
@@ -32,9 +32,9 @@ test_inc_success
 start_test 'expired access token, refresh works, pop server accepts message'
 
 fake_creds <<EOF
-access: old-access
-refresh: test-refresh
-expire: 1414303986
+access-nobody@example.com: old-access
+refresh-nobody@example.com: test-refresh
+expire-nobody@example.com: 1414303986
 EOF
 
 expect_http_post_refresh
@@ -62,8 +62,8 @@ check_http_req
 start_test 'refresh gets proper error from http'
 
 fake_creds <<EOF
-access: test-access
-refresh: test-refresh
+access-nobody@example.com: test-access
+refresh-nobody@example.com: test-refresh
 EOF
 
 expect_http_post_refresh
@@ -87,8 +87,8 @@ check_http_req
 start_test 'pop server rejects token'
 
 fake_creds <<EOF
-access: wrong-access
-expire: 2000000000
+access-nobody@example.com: wrong-access
+expire-nobody@example.com: 2000000000
 EOF
 
 start_pop_xoauth
@@ -99,8 +99,8 @@ test_inc 'inc: -ERR [AUTH] Invalid credentials.'
 start_test "pop server doesn't support oauth"
 
 fake_creds <<EOF
-access: test-access
-expire: 2000000000
+access-nobody@example.com: test-access
+expire-nobody@example.com: 2000000000
 EOF
 
 start_pop testuser testpass

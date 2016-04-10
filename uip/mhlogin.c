@@ -6,6 +6,7 @@
  * complete copyright information.
  */
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -13,6 +14,7 @@
 #include <h/oauth.h>
 
 #define MHLOGIN_SWITCHES \
+    X("user username", 0, USERSW) \
     X("saslmech", 0, SASLMECHSW) \
     X("authservice", 0, AUTHSERVICESW) \
     X("browser", 0, BROWSERSW) \
@@ -44,7 +46,7 @@ geta (void)
 }
 
 static int
-do_login(const char *svc, const char *browser, int snoop)
+do_login(const char *svc, const char *user, const char *browser, int snoop)
 {
     char *fn, *code;
     mh_oauth_ctx *ctx;
@@ -55,6 +57,10 @@ do_login(const char *svc, const char *browser, int snoop)
 
     if (svc == NULL) {
         adios(NULL, "missing -authservice switch");
+    }
+
+    if (user == NULL) {
+        adios(NULL, "missing -user switch");
     }
 
     if (!mh_oauth_new(&ctx, svc)) {
@@ -106,11 +112,14 @@ do_login(const char *svc, const char *browser, int snoop)
       adios(NULL, mh_oauth_get_err_string(ctx));
     }
 
-    cred_file = lkfopendata(fn, "w", &failed_to_lock);
+    cred_file = lkfopendata(fn, "r+", &failed_to_lock);
+    if (cred_file == NULL && errno == ENOENT) {
+        cred_file = lkfopendata(fn, "w+", &failed_to_lock);
+    }
     if (cred_file == NULL || failed_to_lock) {
       adios(fn, "oops");
     }
-    if (!mh_oauth_cred_save(cred_file, cred)) {
+    if (!mh_oauth_cred_save(cred_file, cred, user)) {
       adios(NULL, mh_oauth_get_err_string(ctx));
     }
     if (lkfclosedata(cred_file, fn) != 0) {
@@ -129,7 +138,7 @@ int
 main(int argc, char **argv)
 {
     char *cp, **argp, **arguments;
-    const char *saslmech = NULL, *svc = NULL, *browser = NULL;
+    const char *user = NULL, *saslmech = NULL, *svc = NULL, *browser = NULL;
     int snoop = 0;
 
     if (nmh_init(argv[0], 1)) { return 1; }
@@ -155,6 +164,11 @@ main(int argc, char **argv)
 	    case VERSIONSW:
 		print_version(invo_name);
 		done (0);
+
+	    case USERSW:
+		if (!(user = *argp++) || *user == '-')
+		    adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
 
 	    case SASLMECHSW:
 		if (!(saslmech = *argp++) || *saslmech == '-')
@@ -186,7 +200,7 @@ main(int argc, char **argv)
     free(arguments);
 
 #ifdef OAUTH_SUPPORT
-    return do_login(svc, browser, snoop);
+    return do_login(svc, user, browser, snoop);
 #else
     NMH_UNUSED(svc);
     NMH_UNUSED(browser);
