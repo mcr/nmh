@@ -117,6 +117,7 @@ do_login(const char *svc, const char *browser, int snoop)
       adios (fn, "oops");
     }
 
+    free(fn);
     mh_oauth_cred_free(cred);
     mh_oauth_free(ctx);
 
@@ -182,6 +183,7 @@ main(int argc, char **argv)
         /* xoauth is assumed */
         adios(NULL, "only -saslmech xoauth2 is supported");
     }
+    free(arguments);
 
 #ifdef OAUTH_SUPPORT
     return do_login(svc, browser, snoop);

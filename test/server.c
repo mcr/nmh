@@ -116,6 +116,8 @@ serve(const char *pidfn, const char *port)
 		exit(1);
 	}
 
+	freeaddrinfo(res);
+
 	if (listen(l, 1) == -1) {
 		fprintf(stderr, "Unable to listen on socket: %s\n",
 			strerror(errno));
