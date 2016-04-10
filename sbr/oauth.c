@@ -265,7 +265,7 @@ set_err_http(mh_oauth_ctx *ctx, const struct curl_ctx *curl_ctx)
     /* 5.2. Error Response says error response should use status code 400 and
      * application/json body.  If Content-Type matches, try to parse the body
      * regardless of the status code. */
-    if (curl_ctx->res_body != NULL
+    if (curl_ctx->res_len > 0
         && is_json(curl_ctx->content_type)
         && get_json_strings(curl_ctx->res_body, curl_ctx->res_len, ctx->log,
                             "error", &error, (void *)NULL)
