@@ -264,7 +264,7 @@ Enter the authorization code: mhlogin: error exchanging code for OAuth2 token
 mhlogin: error making HTTP request to OAuth2 authorization endpoint: Failed to connect to 127.0.0.1 port ${http_port}: Connection refused"
 
 cat > "${MHTMPDIR}/$$.browser.expected" <<EOF
-http://127.0.0.1:64001/oauth/auth?response_type=code&client_id=test-id&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scope=test-scope
+http://127.0.0.1:${http_port}/oauth/auth?response_type=code&client_id=test-id&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scope=test-scope
 EOF
 check "${MHTMPDIR}/$$.browser" "${MHTMPDIR}/$$.browser.expected"
 
