@@ -1,13 +1,15 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "March 24, 2016" "%nmhversion%"
+.TH SEND %manext1% "April 10, 2016" "%nmhversion%"
 .SH NAME
 mhlogin \- login to external (OAuth) services
 .SH SYNOPSIS
 .HP 5
 .na
 .B mhlogin
+.RB [ \-user
+.IR username ]
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-authservice
@@ -22,6 +24,8 @@ mhlogin \- login to external (OAuth) services
 .B Mhlogin
 currently only supports OAuth for Gmail.  Run
 .B mhlogin
+.B \-user
+.I username
 .B \-saslmech xoauth2
 .B \-authservice
 .I gmail
