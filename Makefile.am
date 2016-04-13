@@ -579,8 +579,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/error.c sbr/ext_hook.c sbr/fdcompare.c \
 		      sbr/folder_addmsg.c sbr/folder_delmsgs.c \
 		      sbr/folder_free.c sbr/folder_pack.c \
-		      sbr/folder_read.c sbr/folder_realloc.c sbr/gans.c \
-		      sbr/getans.c sbr/getanswer.c sbr/getarguments.c \
+		      sbr/folder_read.c sbr/folder_realloc.c sbr/read_switch.c \
+		      sbr/read_switch_multiword.c sbr/read_yes_or_no_if_tty.c sbr/getarguments.c \
 		      sbr/getcpy.c sbr/geteditor.c sbr/getfolder.c \
 		      sbr/getpass.c sbr/read_line.c \
 		      sbr/fmt_addr.c sbr/fmt_compile.c sbr/fmt_new.c \
@@ -606,7 +606,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/trimcpy.c sbr/unquote.c \
 		      sbr/uprf.c sbr/vfgets.c \
 		      sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
-		      sbr/m_mktemp.c sbr/getansreadline.c sbr/vector.c \
+		      sbr/m_mktemp.c sbr/read_switch_multiword_via_readline.c sbr/vector.c \
 		      config/config.c config/version.c
 
 ##

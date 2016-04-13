@@ -1,6 +1,6 @@
 
 /*
- * getansreadline.c -- get an answer from the user, with readline
+ * read_switch_multiword_via_readline.c -- get an answer from the user, with readline
  *
  * This code is Copyright (c) 2012, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for

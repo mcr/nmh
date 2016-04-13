@@ -1,6 +1,6 @@
 
 /*
- * getans.c -- get an answer from the user and return a string array
+ * read_switch_multiword.c -- get an answer from the user and return a string array
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
