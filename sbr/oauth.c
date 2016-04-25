@@ -1169,7 +1169,7 @@ parse_json(jsmntok_t **tokens, size_t *tokens_len,
            of the response body. */
         *tokens = mh_xrealloc(*tokens, *tokens_len * sizeof **tokens);
     }
-    if (r == 0) {
+    if (r <= 0) {
         return FALSE;
     }
 
