@@ -101,9 +101,10 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
     fflush(stdout);
     code = geta();
 
-    while ((cred = mh_oauth_authorize(code, ctx)) == NULL
-           && mh_oauth_get_err_code(ctx) == MH_OAUTH_BAD_GRANT) {
-      printf("Code rejected; try again? ");
+    while (strlen(code) == 0 ||
+           ((cred = mh_oauth_authorize(code, ctx)) == NULL
+            && mh_oauth_get_err_code(ctx) == MH_OAUTH_BAD_GRANT)) {
+      printf(strlen(code) == 0  ?  "Empty code; try again? "  :  "Code rejected; try again? ");
       fflush(stdout);
       code = geta();
     }
