@@ -516,13 +516,14 @@ dnl By default (with_oauth=''), enable OAuth if curl is found.
 dnl If OAuth requested (--with-oauth with_oauth=yes), error if curl not found.
 dnl If OAuth disabled (--without-oauth with_oauth=no), don't enable it.
 oauth_support=no
+OAUTH_SUPPORT=0
+AC_SUBST([OAUTH_SUPPORT])
 AS_IF([test "x$with_oauth" = xyes && test "x$HAVE_CURL_H" = x],
       [AC_MSG_ERROR([OAuth requested but curl/curl.h not found])],
       [test "x$with_oauth" = xyes && test "x$CURLLIB" = x],
       [AC_MSG_ERROR([OAuth requested but curl library not found])],
       [test "x$with_oauth" != xno && test "x$HAVE_CURL_H" = x1 && test "x$CURLLIB" != x],
       [AC_DEFINE([OAUTH_SUPPORT], [1], [Support OAuth2 in SMTP auth.])
-       AC_SUBST(OAUTH_SUPPORT)
        oauth_support=yes])
 
 dnl ----------------
