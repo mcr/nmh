@@ -524,6 +524,7 @@ AS_IF([test "x$with_oauth" = xyes && test "x$HAVE_CURL_H" = x],
       [AC_MSG_ERROR([OAuth requested but curl library not found])],
       [test "x$with_oauth" != xno && test "x$HAVE_CURL_H" = x1 && test "x$CURLLIB" != x],
       [AC_DEFINE([OAUTH_SUPPORT], [1], [Support OAuth2 in SMTP auth.])
+       OAUTH_SUPPORT=1
        oauth_support=yes])
 
 dnl ----------------
