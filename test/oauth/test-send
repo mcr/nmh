@@ -355,6 +355,24 @@ unset XOAUTH
 test_send_only_fakesmtp 'post: problem initializing server; [BHST] SMTP server does not support SASL XOAUTH2
 send: message not delivered to anyone'
 
+# TEST
+start_test 'botched json response'
+
+fake_creds <<EOF
+refresh-nobody@example.com: test-refresh
+EOF
+
+expect_http_post_refresh
+
+fake_json_response <<EOF
+{
+  "refresh_token": "refresh-toke
+}
+EOF
+
+test_send_only_fakehttp 'send: error refreshing OAuth2 token
+send: invalid response'
+
 clean_fakesmtp
 clean_fakehttp
 finish_test
