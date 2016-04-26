@@ -314,6 +314,16 @@ http://127.0.0.1:${http_port}/oauth/auth?response_type=code&client_id=test-id&re
 EOF
 check "${MHTMPDIR}/$$.browser" "${MHTMPDIR}/$$.browser.expected"
 
+# TEST
+start_test 'empty authorization code'
+run_test 'eval echo '' | mhlogin -saslmech xoauth2 -authservice test -user nobody@example.com' \
+         "Load the following URL in your browser and authorize nmh to access test:
+
+http://127.0.0.1:${http_port}/oauth/auth?response_type=code&client_id=test-id&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scope=test-scope
+
+Enter the authorization code: Empty code; try again? "
+
+
 clean_fakehttp
 finish_test
 
