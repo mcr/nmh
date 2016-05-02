@@ -1,4 +1,4 @@
-.TH SLOCAL %manext1% "November 23, 2012" "%nmhversion%"
+.TH SLOCAL %manext1% "May 2, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -76,7 +76,7 @@ The
 switch tells
 .B slocal
 the name of the user for
-whom it is delivering mail.  The
+whom it is delivering mail.  It must exist on the local system.  The
 .B \-mailbox
 switch tells
 .B slocal
@@ -383,8 +383,14 @@ quicker delivery into your maildrop.
 .RB ` \-maildelivery "' defaults to $HOME/\&.maildelivery"
 .RB ` \-mailbox "' deaults to %mailspool%/$USER"
 .RB ` \-file "' defaults to stdin"
+.RB ` \-addr "' defaults to the current user"
 .RB ` \-user "' defaults to the current user"
 .fi
+.PP
+.B \-addr
+and
+.B \-user
+will be set the the user part of the Local-Mailbox profile entry, if set.
 .SH CONTEXT
 None
 .SH HISTORY

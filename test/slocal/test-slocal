@@ -143,17 +143,21 @@ run_prog $slocal -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/5
 check "$MH_TEST_DIR/Mail/inbox/5" "$actual" 'keep first'
 check "$MH_TEST_DIR/Mail/inbox/5" "$actual2" 'keep first'
 
-# Use current login for address, user, etc., because it must be an
-# existing user on the host.
-me=`"$MH_LIBEXEC_DIR"/ap -format '%(me)' 0`
-
 # check -addr
 cat >"$md"  <<EOF
-addr "$me" qpipe A "$tee $actual"
+addr someaddress qpipe A "$tee $actual"
 EOF
 
-run_prog $slocal -addr "$me" -maildelivery "$md" $mbox \
+run_prog $slocal -addr someaddress -maildelivery "$md" $mbox \
   <"$MH_TEST_DIR"/Mail/inbox/6
+check "$MH_TEST_DIR/Mail/inbox/6" "$actual" 'keep first'
+
+# check -addr with . in address
+cat >"$md"  <<EOF
+addr "first.last" qpipe A "$tee $actual"
+EOF
+run_prog $slocal -addr 'first.last' \
+  -maildelivery "$md" $mbox <"$MH_TEST_DIR"/Mail/inbox/6
 check "$MH_TEST_DIR/Mail/inbox/6" "$actual" 'keep first'
 
 # check -info
@@ -167,10 +171,10 @@ check "$MH_TEST_DIR/Mail/inbox/7" "$actual" 'keep first'
 
 # check -sender, which is compared with "source"
 cat >"$md"  <<EOF
-source "$me" qpipe A "$tee $actual"
+source somesender qpipe A "$tee $actual"
 EOF
 
-run_prog $slocal -sender "$me" -maildelivery "$md" $mbox \
+run_prog $slocal -sender somesender -maildelivery "$md" $mbox \
   <"$MH_TEST_DIR"/Mail/inbox/8
 check "$MH_TEST_DIR/Mail/inbox/8" "$actual" 'keep first'
 
@@ -179,9 +183,15 @@ cat >"$md"  <<EOF
 * - qpipe A "$tee $actual"
 EOF
 
+# Use current login for user because it must be an existing user on the host.
+me=`"$MH_LIBEXEC_DIR"/ap -format '%(me)' 0`
 run_prog $slocal -user "$me" -maildelivery "$md" $mbox \
   <"$MH_TEST_DIR"/Mail/inbox/9
 check "$MH_TEST_DIR/Mail/inbox/9" "$actual" 'keep first'
+
+# Can't check -user with . in address because the user must
+# have an account on the local system, and we can't guarantee
+# that there is one.
 
 # check -mailbox
 cat >"$md"  <<EOF
@@ -220,6 +230,5 @@ fi
 run_prog $slocal -suppress -nosuppressdup -maildelivery "$md" $mbox \
   <"$MH_TEST_DIR"/Mail/inbox/2
 check "$MH_TEST_DIR/Mail/inbox/2" "$actual" 'keep first'
-
 
 exit ${failed:-0}
