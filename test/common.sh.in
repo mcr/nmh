@@ -135,12 +135,18 @@ check_for_hard_links () {
   set +e
 
   printf '' > "${MH_TEST_DIR}/$$-1"
+  xdir_links_supported=0
   if link "${MH_TEST_DIR}/$$-1" "${MH_TEST_DIR}/$$-2" 2>/dev/null; then
     hard_links_supported=1
+    mkdir "${MH_TEST_DIR}/xlinkdir"
+    if link "${MH_TEST_DIR}/$$-1" "${MH_TEST_DIR}/xlinkdir/$$-2" 2>/dev/null; then
+	xdir_links_supported=1
+    fi
   else
     hard_links_supported=0
   fi
   rm -f "${MH_TEST_DIR}/$$-1" "${MH_TEST_DIR}/$$-2"
+  rm -rf "${MH_TEST_DIR}/xlinkdir"
 
   set -e
 }

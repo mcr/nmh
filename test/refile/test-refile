@@ -116,7 +116,7 @@ other+ has  1 message   (1- 1).
 TOTAL = 11 messages in 2 folders.'
 
 check_for_hard_links
-if [ $hard_links_supported -eq 1 ]; then
+if [ $xdir_links_supported -eq 1 ]; then
   # check -link
   run_test 'refile 7 -src +inbox +other -link' ''
   run_test 'folders -noheader' \
