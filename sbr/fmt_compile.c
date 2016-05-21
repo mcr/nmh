@@ -399,8 +399,6 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
 	comptable_initialized = 1;
     }
 
-    memset((char *) &fmt_mnull, 0, sizeof(fmt_mnull));
-
     /* it takes at least 4 char to generate one format so we
      * allocate a worst-case format array using 1/4 the length
      * of the format string.  We actually need twice this much
