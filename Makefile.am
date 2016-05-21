@@ -631,10 +631,13 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 
 config/sbr_libmh_a-config.$(OBJEXT) sbr/sbr_libmh_a-mts.$(OBJEXT): Makefile
 
-sbr_libmh_a_CPPFLAGS = -I./sbr -DNMHETCDIR='"@nmhetcdirinst@$(nmhetcdir)"' \
+sbr_libmh_a_CPPFLAGS = -I./sbr \
+		-DNMHBINDIR='"$(bindir)"' \
+		-DNMHLIBEXECDIR='"$(nmhlibexecdir)"' \
+		-DNMHETCDIR='"@nmhetcdirinst@$(nmhetcdir)"' \
+		-DNMHDOCDIR='"@docdir@"' \
 		-DMAILSPOOL='"$(mailspool)"' \
-		-DSENDMAILPATH='"$(sendmailpath)"' -DNMHBINDIR='"$(bindir)"' \
-		-DNMHLIBEXECDIR='"$(nmhlibexecdir)"'
+		-DSENDMAILPATH='"$(sendmailpath)"'
 
 mts_libmts_a_SOURCES = mts/smtp/smtp.c
 
