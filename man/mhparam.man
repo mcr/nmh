@@ -1,4 +1,4 @@
-.TH MHPARAM %manext1% "March 16, 2014" "%nmhversion%"
+.TH MHPARAM %manext1% "May 21, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -49,9 +49,10 @@ can provide other information, such as the
 .B nmh
 version identifier, the locations of the nmh
 .IR bindir ,
-.I etcdir
+.IR libexecdir ,
+.IR etcdir ,
 and
-.I libexecdir
+.I docdir
 install directories, all
 .I proc
 settings, and the

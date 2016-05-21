@@ -550,9 +550,10 @@ dnl We only use the expanded versions to print the install paths in
 dnl the final summary and should use them nowhere else (see the autoconf
 dnl docs for the rationale for bindir etc being unexpanded).
 eval "nmhbin=${bindir}";         eval "nmhbin=${nmhbin}"
-eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf=${nmhsysconf}"
 eval "nmhlibexec=${libexecdir}"; eval "nmhlibexec=${nmhlibexec}"
+eval "nmhsysconf=${sysconfdir}"; eval "nmhsysconf=${nmhsysconf}"
 eval "nmhman=${mandir}";         eval "nmhman=${nmhman}"
+eval "nmhdoc=${docdir}";         eval "nmhdoc=${nmhdoc}"
 eval "nmhrpm=${nmhrpm}";
 
 AC_MSG_NOTICE([
@@ -569,6 +570,7 @@ binary install path        : ${nmhbin}
 libexec install path       : ${nmhlibexec}/nmh
 config files install path  : ${nmhsysconf}/nmh
 man page install path      : ${nmhman}
+docs install path          : ${nmhdoc}
 RPM build root             : ${nmhrpm}
 backup prefix              : ${backup_prefix}
 transport system           : ${MTS}

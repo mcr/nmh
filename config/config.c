@@ -11,8 +11,9 @@
 #include <pwd.h>
 
 #define nmhbindir(file) NMHBINDIR#file
-#define nmhetcdir(file) NMHETCDIR#file
 #define nmhlibexecdir(file) NMHLIBEXECDIR#file
+#define nmhetcdir(file) NMHETCDIR#file
+#define nmhdocdir(file) NMHDOCDIR#file
 
 
 /*
@@ -144,8 +145,9 @@ char *nmhaccessftp = "nmh-access-ftp";
 char *nmhaccessurl = "nmh-access-url";
 
 char *mhbindir = NMHBINDIR;
-char *mhetcdir = NMHETCDIR;
 char *mhlibexecdir = NMHLIBEXECDIR;
+char *mhetcdir = NMHETCDIR;
+char *mhdocdir = NMHDOCDIR;
 
 /* 
  * nmh not-so constants
