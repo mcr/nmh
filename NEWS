@@ -52,7 +52,7 @@ The following are new features for the 1.6 release of nmh:
   message/rfc822 parts instead of messages formatted with RFC 934).
 - All proc entries (showproc, moreproc, etc) can now accept entries that
   contain spaces and shell metacharacters.  If found, such entries will
-  either be space-splitted or processed by /bin/sh.
+  either be space-split or processed by /bin/sh.
 - A new program, fmttest(1) is included to help debug format files.  See
   NOTABLE CHANGES below.
 - mhshow/mhstore now have support for RFC-2017 (access-type=url) for
@@ -96,7 +96,7 @@ The following are new features for the 1.6 release of nmh:
 - mh-mime(7) now provides an introduction to nmh's MIME handling.
 - mhshow(1) will now by default display all text content under one pager,
   and display markers for non-text and non-inline content.  The content
-  markers are changeable via mh-format(5).  See NOTABLE CHANGES bellow.
+  markers are changeable via mh-format(5).  See NOTABLE CHANGES below.
 
 -----------------
 OBSOLETE FEATURES
@@ -233,7 +233,7 @@ pagers for each part as was in the past.  Non-displayed parts will be
 indicated using a marker string, which can be customized by a new
 mh-format(5) string.
 
-All nmh utilites now understand RFC 2231-encoded MIME parameters and
+All nmh utilities now understand RFC 2231-encoded MIME parameters and
 will automatically convert the encoded parameters into the native
 character set, when appropriate (again, assuming nmh was built with
 iconv support).

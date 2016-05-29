@@ -1,6 +1,6 @@
 %; scan.curses
 %;
-%; This file shows how to use function escapes to enable hilighting
+%; This file shows how to use function escapes to enable highlighting
 %; sequences for terminals that have the appropriate entries in their
 %; termcap/terminfo files.  Also it goes into more detail on exactly
 %; what each line does.
@@ -40,7 +40,7 @@
 %<(mymbox{from})%<{to}To:%14(unquote(decode(friendly{to})))%>%>\
 %<(zero)%17(unquote(decode(friendly{from})))%>  \
 %;
-%; Print out the subject and any of th mesage body that will fit on the
+%; Print out the subject and any of the message body that will fit on the
 %; rest of the line.  After that, print the terminal reset code to reset
 %; all of the attributes to the next line.
 %;

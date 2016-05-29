@@ -49,7 +49,7 @@
 
    If an explicit host is not present, then MH checks for a bang to indicate
    an explicit UUCP-style address.  If so, this is noted.  If not, the host is
-   defaulted, typically to the local host.  The lack of an explict host is
+   defaulted, typically to the local host.  The lack of an explicit host is
    also noted.
 
    If an explicit 822-style host is present, then MH checks to see if it

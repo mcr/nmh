@@ -34,7 +34,7 @@
  *	option is specified, only the last path name component of each field
  *	body is output.  The entire field body is output if the -text option
  *	is used; the contents of the -text argument are ignored.  If the -list
- *	option is used in conjuction with the new -number option described
+ *	option is used in conjunction with the new -number option described
  *	below, each line is numbered starting with 1.  A tab separates the
  *	number from the field body.
  *

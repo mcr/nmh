@@ -90,7 +90,7 @@
    be parsed as well.  Unfortunately the speed issue finally caught up with
    us since this routine is at the very heart of MH.
 
-   To speed things up considerably, the routine Eom() was made an auxilary
+   To speed things up considerably, the routine Eom() was made an auxiliary
    function called by the macro eom().  Unless we are bursting a maildrop,
    the eom() macro returns FALSE saying we aren't at the end of the
    message.

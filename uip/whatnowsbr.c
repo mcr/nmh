@@ -1334,7 +1334,7 @@ removefile (char *drft)
 
 
 /*
- * Return 1 if we already have a MIME-Verson header, 0 otherwise.
+ * Return 1 if we already have a MIME-Version header, 0 otherwise.
  */
 
 static int

@@ -194,7 +194,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 		     * of message/partials.  For the "Subject" header
 		     * field, we also record it, so that a modified
 		     * version of it, can be copied to the header
-		     * of each messsage/partial in the collection.
+		     * of each message/partial in the collection.
 		     */
 		    if (!strcasecmp (name, "Subject")) {
 			size_t sublen;

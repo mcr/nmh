@@ -6,7 +6,7 @@
 /*
  * This structure describes an "interesting" component.  It holds
  * the name & text from the component (if found) and one piece of
- * auxilary info.  The structure for a particular component is located
+ * auxiliary info.  The structure for a particular component is located
  * by (open) hashing the name and using it as an index into the ptr array
  * "wantcomp".  All format entries that reference a particular component
  * point to its comp struct (so we only have to do component specific
@@ -129,7 +129,7 @@ void free_fs ();
  *		  format engine.
  * reset	- If set to true, the format compiler will reset the
  *		  component hash table.  The component hash table contains
- *		  all of the references to message components refered to in
+ *		  all of the references to message components referred to in
  *		  the format instructions.  If you have multiple format
  *		  strings that you want to compile and operate on the
  *		  same message, this should be set to false.
@@ -243,7 +243,7 @@ int fmt_addcompentry(char *component);
  *                component buffer is a newline, it will be separated
  *                from previous text by ",\n\t"; otherwise if the last
  *                character of the previous text is a newline it will
- *                simply be seperated by a "\t".  This unusual processing
+ *                simply be separated by a "\t".  This unusual processing
  *		  is designed to handle the case where you have multiple
  *		  headers with the same name (e.g.: multiple "cc:" headers,
  *		  even though that isn't technically allowed in the RFCs).

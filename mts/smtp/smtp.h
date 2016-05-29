@@ -257,7 +257,7 @@ char *rp_string (int);
 
 
 /*
- * The next three give the numeric value withing the field
+ * The next three give the numeric value within the field
  */
 
 /* get the basic part right-shifted */

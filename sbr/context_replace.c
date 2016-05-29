@@ -17,7 +17,7 @@ context_replace (char *key, char *value)
     register struct node *np;
 
     /*
-     * If list is emtpy, allocate head of profile/context list.
+     * If list is empty, allocate head of profile/context list.
      */
     if (!m_defs) {
 	m_defs = (struct node *) mh_xmalloc (sizeof(*np));

@@ -186,7 +186,7 @@ seq_init (struct msgs *mp, char *name, char *field)
      * Search for this sequence name to see if we've seen
      * it already.  If we've seen this sequence before,
      * then clear the bit for this sequence from all the
-     * mesages in this folder.
+     * messages in this folder.
      */
     for (i = 0; i < svector_size (mp->msgattrs); i++) {
 	if (!strcmp (svector_at (mp->msgattrs, i), name)) {
