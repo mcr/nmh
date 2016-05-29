@@ -236,10 +236,11 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 ##
 ## Contribs that get installed in docdir/contrib/
 ##
-contribdir = $(docdir)/contrib
-dist_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
-		       docs/contrib/ml docs/contrib/vpick
-dist_contrib_DATA = docs/contrib/replaliases
+docs_contribdir = $(docdir)/contrib
+dist_docs_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
+			    docs/contrib/ml docs/contrib/vpick
+dist_docs_contrib_DATA = docs/contrib/replaliases docs/contrib/sendfrom.c
+docs_contrib_PROGRAMS = docs/contrib/sendfrom
 
 ##
 ## Our man pages
@@ -436,7 +437,7 @@ uip_whom_SOURCES = uip/whom.c uip/distsbr.c
 uip_whom_LDADD = $(LDADD) $(POSTLINK)
 
 ##
-## Programs definitions for all utilities that end up in $(nmhlibexecdir)
+## Program definitions for all utilities that end up in $(nmhlibexecdir)
 ##
 
 uip_ap_SOURCES = uip/ap.c
@@ -482,6 +483,10 @@ uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
 uip_viamail_LDADD = $(LDADD) $(POSTLINK)
 
+##
+## Other program definitions
+##
+
 test_getfullname_SOURCES = test/getfullname.c
 test_getfullname_LDADD = $(LDADD) $(POSTLINK)
 
@@ -502,6 +507,9 @@ test_getcwidth_LDADD = $(POSTLINK)
 
 etc_gen_ctype_checked_SOURCES = etc/gen-ctype-checked.c
 etc_gen_ctype_checked_LDADD = $(POSTLINK)
+
+docs_contrib_sendfrom_SOURCES = docs/contrib/sendfrom.c
+docs_contrib_sendfrom_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(POSTLINK)
 
 ##
 ## Our rebuild rules for files that aren't built via the normal mechanisms
