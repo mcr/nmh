@@ -1,5 +1,5 @@
 As of the 1.5 release, nmh has made significant changes to the way most of
-the message composition utilites work, specifically with the way
+the message composition utilities work, specifically with the way
 the components templates are handled.  If you use the default
 components templates that come with nmh then everything should work
 with only minor changes, but if you have custom component templates
@@ -38,8 +38,8 @@ might need to adapt your component templates.
   %(putlit)	- Out the contents of the str register without space
 		  compression.
   %(concataddr) - Construct an address list like %(formataddr), except that
-		  it will NOT perform duplicate supression (currently
-		  duplicate supression only happens inside of
+		  it will NOT perform duplicate suppression (currently
+		  duplicate suppression only happens inside of
 		  "repl").  One possible use of this function is to
 		  construct an address list and use %(match) to decide
 		  which "From:" address to use.

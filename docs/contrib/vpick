@@ -345,7 +345,7 @@ Select the last message in the folder.
 
 Search message entries with a 'less'-like search system.
 A searchstring is entered and selection advances to the first match.
-After that the C<n> will search for the next occurance,
+After that the C<n> will search for the next occurrence,
 and C<N> the previous.
 
 =item * C<?>

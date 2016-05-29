@@ -271,7 +271,7 @@ and
 .B repl
 commands
 are invoked and the draft you indicated already exists, these programs
-will prompt the user for a reponse directing the program's action.
+will prompt the user for a response directing the program's action.
 The prompt is
 .PP
 .RS 5

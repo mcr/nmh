@@ -185,7 +185,7 @@ uses an encapsulation method for blind copies, see
 .RS 5
 Still more recipients.  However, the \*(lqDcc:\*(rq line is not
 copied onto the messages as delivered.  Recipients on the \*(lqDcc:\*(rq
-line receive the same messsage as recipients on the \*(lqTo:\*(rq and
+line receive the same message as recipients on the \*(lqTo:\*(rq and
 \*(lqcc:\*(rq lines.  See
 .IR send (1)
 for more details.

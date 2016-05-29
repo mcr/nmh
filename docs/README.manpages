@@ -99,7 +99,7 @@ SYNPOSIS Section
 
 	Set literal text (such as flags) in bold.  Set parameters
 	in italic.  Mutually exclusive options (like "-foo" and
-	"-nofoo") should be grouped together and seperated by a
+	"-nofoo") should be grouped together and separated by a
 	"|":
 
 		.RI [ +folder ]              <---- parameter

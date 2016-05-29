@@ -86,7 +86,7 @@ FORW
 INC
 ---
 * Add ability to do filtering (call filterproc) when incorporating mail
-* Change inc to use libary function folder_addmsg().
+* Change inc to use library function folder_addmsg().
 
 MHBUILD
 -------

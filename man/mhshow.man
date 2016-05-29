@@ -277,7 +277,7 @@ the file end in a specific suffix.  For example, the
 command (part of the StarOffice package) can be used to display
 Microsoft Word content, but it uses the suffix to determine how to display
 the file.  If no suffix is present, the file is not correctly loaded.
-Similarily, older versions of the
+Similarly, older versions of the
 .B gs
 command append a \*(lq.ps\*(rq suffix to
 the filename if one was missing.  As a result, these cannot be used to read

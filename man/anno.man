@@ -125,7 +125,7 @@ slash, the entire field body must match the text, otherwise just the
 last path name component of the field body must match.
 If the
 .B -number
-option is used in conjuction with the
+option is used in conjunction with the
 .B -delete
 option, header field
 .I num
