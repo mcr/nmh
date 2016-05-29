@@ -1,5 +1,5 @@
 /*
- * mhfixmsg.c -- rewrite a message with various tranformations
+ * mhfixmsg.c -- rewrite a message with various transformations
  *
  * This code is Copyright (c) 2002 and 2013, by the authors of nmh.
  * See the COPYRIGHT file in the root directory of the nmh

@@ -170,7 +170,7 @@ prepare_space() {
 #### Optional arguments:
 ####   'keep first' -- first file is removed unless this is present.
 ####   'ignore space' -- spacing differences will not be considered
-####        signficant, emulating GNU diff -w.  It is assumed that the
+####        significant, emulating GNU diff -w.  It is assumed that the
 ####        first file has already been run through prepare_space.
 ####   ':' <test name> -- will print '<test name>' in the failure message,
 ####        to make it easier to tell which of multiple tests has failed.

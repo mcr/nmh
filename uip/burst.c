@@ -287,7 +287,7 @@ find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
 	/*
 	 * Read in lines until we get to a message delimiter.
 	 *
-	 * Previously we checked to make sure the preceeding line and
+	 * Previously we checked to make sure the preceding line and
 	 * next line was a newline.  That actually does not comply with
 	 * RFC 934, so make sure we break on a message delimiter even
 	 * if the previous character was NOT a newline.
@@ -503,7 +503,7 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
 #define S4  3
 
 /*
- * Copy a mesage which is being burst out of a digest.
+ * Copy a message which is being burst out of a digest.
  * It will remove any "dashstuffing" in the message.
  */
 

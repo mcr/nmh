@@ -20,7 +20,7 @@
  *
  * COMMENT is a comment string, which is printable ASCII characters except
  * for '(', ')', and '\'.  Uses same quoting rules as QSTRING.  To make
- * the grammer slightly less conflict-happy, COMMENT must include any FWS
+ * the grammar slightly less conflict-happy, COMMENT must include any FWS
  * in front or behind of it (simply have it eaten in the lexer).
  *
  * Everything else is a SPECIAL, which is returned directly.  These are
@@ -184,7 +184,7 @@ atom:
 
 /*
  * Making dot-atom work was a little confusing; I finally handled it by
- * defining "dot_atom_text" as having two or more ATEXTs separted by
+ * defining "dot_atom_text" as having two or more ATEXTs separated by
  * '.', and defining dot_atom as allowing a single atom.
  */
 dot_atom:

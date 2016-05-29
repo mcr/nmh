@@ -68,7 +68,7 @@ argsplit(char *command, char **file, int *argp)
     }
 
     /*
-     * Spaces, but no shell metacharacters; space-split into seperate
+     * Spaces, but no shell metacharacters; space-split into separate
      * arguments
      */
 

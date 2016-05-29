@@ -65,7 +65,7 @@ isat (const char *p)
  * getadrx() implements a partial 822-style address parser.  The parser
  * is neither complete nor correct.  It does however recognize nearly all
  * of the 822 address syntax.  In addition it handles the majority of the
- * 733 syntax as well.  Most problems arise from trying to accomodate both.
+ * 733 syntax as well.  Most problems arise from trying to accommodate both.
  *
  * In terms of 822, the route-specification in 
  *

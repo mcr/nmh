@@ -160,7 +160,7 @@ extern struct swit anoyes[];	/* standard yes/no switches */
  * general folder attributes
  */
 #define READONLY   (1<<0)	/* No write access to folder    */
-#define	SEQMOD	   (1<<1)	/* folder's sequences modifed   */
+#define	SEQMOD	   (1<<1)	/* folder's sequences modified   */
 #define	ALLOW_NEW  (1<<2)	/* allow the "new" sequence     */
 #define	OTHERS	   (1<<3)	/* folder has other files	*/
 #define	MODIFIED   (1<<4)	/* msh in-core folder modified  */

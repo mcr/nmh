@@ -503,7 +503,7 @@ char *get_param_value(PM pm, char replace);
  * inlineonly	- If true, only display MIME parts that are marked with
  *		  a disposition of "inline" (includes parts that lack a
  *		  Content-Disposition header).
- * markerform	- The name of a file containg mh-format(5) code used to
+ * markerform	- The name of a file containing mh-format(5) code used to
  *		  display markers about non-displayed MIME parts.
  */
 void show_all_messages(CT *cts, int concat, int textonly, int inlineonly);

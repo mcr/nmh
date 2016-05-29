@@ -96,7 +96,7 @@ static FILE *sm_wfp = NULL;
  */
 
 static sasl_conn_t *conn = NULL;	/* SASL connection state */
-static int sasl_complete = 0;		/* Has authentication succeded? */
+static int sasl_complete = 0;		/* Has authentication succeeded? */
 static sasl_ssf_t sasl_ssf;		/* Our security strength factor */
 static int maxoutbuf;			/* Maximum crypto output buffer */
 static char *sasl_outbuffer;		/* SASL output buffer for encryption */
@@ -1402,7 +1402,7 @@ tls_negotiate(void)
 #endif /* TLS_SUPPORT */
 
 /*
- * Convenience functions to replace occurences of fputs() and fputc()
+ * Convenience functions to replace occurrences of fputs() and fputc()
  */
 
 static int

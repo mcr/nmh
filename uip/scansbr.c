@@ -242,7 +242,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
                  * The previous code here used to call m_getfld() using
                  * pointers to the underlying output stdio buffers to
                  * avoid the extra copy.  Tests by Markus Schnalke show
-                 * no noticable performance loss on larger mailboxes
+                 * no noticeable performance loss on larger mailboxes
                  * if we incur an extra copy, and messing around with
                  * internal stdio buffers is becoming more and more
                  * unportable as times go on.  So from now on just deal

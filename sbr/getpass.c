@@ -36,7 +36,7 @@
 
 /* We don't use MAX_PASS here because the maximum password length on a remote
    POP daemon will have nothing to do with the length on our OS.  256 is
-   arbitrary but hopefully big enough to accomodate everyone. */
+   arbitrary but hopefully big enough to accommodate everyone. */
 #define MAX_PASSWORD_LEN 256
 
 #ifndef TCSANOW
