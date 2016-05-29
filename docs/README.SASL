@@ -27,7 +27,7 @@ tested with the GSSAPI mechanism.
 
 If you are curious as to whether or not your communications are actually
 encrypted or not, you can use the -snoop flag to the POP or SMTP utilities.
-Communication that is encrypted is preceeded by an (encrypted) or
+Communication that is encrypted is preceded by an (encrypted) or
 (decrypted), depending on the direction of communication.
 
 If you would like to use the GSSAPI SASL mechanism (Kerberos V), you

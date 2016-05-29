@@ -108,7 +108,7 @@ the sequence file should be updated to remove the missing messages
 from the sequence.  If a sequence contains no messages, it should be
 removed from the sequence file.  The exception to this is the
 .B cur
-sequence, which can refer to a nonexistant message.
+sequence, which can refer to a nonexistent message.
 .RE
 .PP
 .SS Locking

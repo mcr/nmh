@@ -36,7 +36,7 @@ switch is enabled, then
 .B sortm
 reports that as an error and exits with non-zero status.
 .B \-noall
-is most useful in the user's profile, to avoid inadvertant sorting of
+is most useful in the user's profile, to avoid inadvertent sorting of
 an entire folder.  The
 .B \-all
 switch can then be used on the command line to disable it.  Of course,

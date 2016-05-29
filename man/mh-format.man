@@ -757,7 +757,7 @@ to have far more than 10000 messages.
 .\" process 200 messages a day and still get some real work
 .\" done."  The authors apparently only planned to get
 .\" real work done for about 50 days per folder.)
-Nontheless (as noted above)
+Nonetheless (as noted above)
 the various scan format strings are inherited
 from older MH versions, and are generally hard-coded to 4
 digits of message number before formatting problems

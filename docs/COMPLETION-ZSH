@@ -4,7 +4,7 @@
 # the Z Shell (zsh) for the nmh mail system.
 #
 # You may need to edit where it says EDIT ME.
-# These were orginally written for MH by Peter Stephenson
+# These were originally written for MH by Peter Stephenson
 
 # The following three functions are best autoloaded.
 #
