@@ -230,10 +230,11 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 ##
 ## Contribs that get installed in docdir/contrib/
 ##
-contribdir = $(docdir)/contrib
-dist_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
-		       docs/contrib/ml docs/contrib/vpick
-dist_contrib_DATA = docs/contrib/replaliases
+docs_contribdir = $(docdir)/contrib
+dist_docs_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
+			    docs/contrib/ml docs/contrib/vpick
+dist_docs_contrib_DATA = docs/contrib/replaliases docs/contrib/sendfrom.c
+docs_contrib_PROGRAMS = docs/contrib/sendfrom
 
 ##
 ## Our man pages
@@ -428,7 +429,7 @@ uip_whom_SOURCES = uip/whom.c uip/distsbr.c
 uip_whom_LDADD = $(LDADD) $(POSTLINK)
 
 ##
-## Programs definitions for all utilities that end up in $(nmhlibexecdir)
+## Program definitions for all utilities that end up in $(nmhlibexecdir)
 ##
 
 uip_ap_SOURCES = uip/ap.c
@@ -474,6 +475,10 @@ uip_viamail_LDADD = $(LDADD) $(POSTLINK)
 test_getfullname_SOURCES = test/getfullname.c
 test_getfullname_LDADD = $(LDADD) $(POSTLINK)
 
+##
+## Other program definitions
+##
+
 test_getcanon_SOURCES = test/getcanon.c
 test_getcanon_LDADD = $(POSTLINK)
 
@@ -495,6 +500,9 @@ etc_gen_ctype_checked_LDADD = $(POSTLINK)
 
 ## Hard-code the config/version.c target, instead of using $@, so this
 ## rule works for the distcheck target with Solaris (System V) make.
+docs_contrib_sendfrom_SOURCES = docs/contrib/sendfrom.c
+docs_contrib_sendfrom_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(POSTLINK)
+
 ## distcheck uses VPATH, causes that make to prepend the VPATH to $@.
 config/version.c: Makefile $(srcdir)/config/version.sh
 	env srcdir="$(srcdir)" sh $(srcdir)/config/version.sh $(VERSION) > ./config/version.c

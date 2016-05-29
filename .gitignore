@@ -48,6 +48,7 @@
 /RPM/
 a.out.dSYM/
 /config/version.c
+/docs/contrib/sendfrom
 /etc/gen-ctype-checked
 /etc/gen-ctype-checked.exe
 /etc/mhn.defaults
