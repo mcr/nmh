@@ -954,6 +954,9 @@ mh_oauth_cred_load(FILE *fp, mh_oauth_ctx *ctx, const char *user)
         free(creds[i].user);
     }
 
+    /* No longer need user_creds.  result just uses its creds member. */
+    free(user_creds);
+
     if (result == NULL) {
         set_err_details(ctx, MH_OAUTH_CRED_USER_NOT_FOUND, user);
         return NULL;
