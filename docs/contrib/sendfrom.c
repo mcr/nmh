@@ -298,6 +298,7 @@ get_message_header_info(FILE *in, char *format) {
     dat[3] = INT_MAX;
 
     (void) fmt_compile(new_fs(NULL, NULL, format), &fmt, 1);
+    free_fs();
 
     /*
      * Read in the message and process the header.
