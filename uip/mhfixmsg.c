@@ -91,6 +91,7 @@ typedef struct fix_transformations {
 
 int mhfixmsgsbr (CT *, const fix_transformations *, char *);
 static int fix_boundary (CT *, int *);
+static int copy_input_to_output (char *, char *);
 static int get_multipart_boundary (CT, char **);
 static int replace_boundary (CT, char *, char *);
 static int fix_types (CT, svector_t, int *);
@@ -349,6 +350,19 @@ main (int argc, char **argv) {
         if ((ct = parse_mime (file))) {
             set_text_ctparams(ct, fx.decodetypes, fx.lf_line_endings);
             *ctp++ = ct;
+        } else {
+            advise (NULL, "unable to parse message from file %s", file);
+            status = NOTOK;
+
+            /* If there's an outfile, pass the input message unchanged, so the message won't
+               get dropped from a pipeline. */
+            if (outfile) {
+                /* Something went wrong.  Output might be expected, such as if this were run
+                   as a filter.  Just copy the input to the output. */
+                if (copy_input_to_output (file, outfile) != OK) {
+                    advise (NULL, "unable to copy message to %s, it might be lost\n", outfile);
+                }
+            }
         }
     } else {
         /*
@@ -393,6 +407,21 @@ main (int argc, char **argv) {
                 if ((ct = parse_mime (msgnam))) {
                     set_text_ctparams(ct, fx.decodetypes, fx.lf_line_endings);
                     *ctp++ = ct;
+                } else {
+                    advise (NULL, "unable to parse message %s", msgnam);
+                    status = NOTOK;
+
+                    /* If there's an outfile, pass the input message unchanged, so the message won't
+                       get dropped from a pipeline. */
+                    if (outfile) {
+                        /* Something went wrong.  Output might be expected, such as if this were run
+                           as a filter.  Just copy the input to the output. */
+                        char *input_filename = path (msgnam, TFILE);
+
+                        if (copy_input_to_output (input_filename, outfile) != OK) {
+                            advise (NULL, "unable to copy message to %s, it might be lost\n", outfile);
+                        }
+                    }
                 }
             }
         }
@@ -500,19 +529,9 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
         /* Something went wrong.  Output might be expected, such
            as if this were run as a filter.  Just copy the input
            to the output. */
-        int in = open (input_filename, O_RDONLY);
-        int out = strcmp (outfile, "-")
-            ?  open (outfile, O_WRONLY | O_CREAT, m_gmprot ())
-            :  STDOUT_FILENO;
-
-        if (in != -1  &&  out != -1) {
-            cpydata (in, out, input_filename, outfile);
-        } else {
-            status = NOTOK;
+        if (copy_input_to_output (input_filename, outfile) != OK) {
+            advise (NULL, "unable to copy message to %s, it might be lost\n", outfile);
         }
-
-        close (out);
-        close (in);
     }
 
     if (modify_inplace) {
@@ -522,6 +541,29 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     }
 
     free (input_filename);
+
+    return status;
+}
+
+
+/* Copy input message to output.  Assumes not modifying in place, so this
+   might be running as part of a pipeline. */
+static int
+copy_input_to_output (char *input_filename, char *output_filename) {
+    int in = open (input_filename, O_RDONLY);
+    int out = strcmp (output_filename, "-")
+        ?  open (output_filename, O_WRONLY | O_CREAT, m_gmprot ())
+        :  STDOUT_FILENO;
+    int status = OK;
+
+    if (in != -1  &&  out != -1) {
+        cpydata (in, out, input_filename, output_filename);
+    } else {
+        status = NOTOK;
+    }
+
+    close (out);
+    close (in);
 
     return status;
 }
