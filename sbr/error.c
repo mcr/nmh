@@ -31,7 +31,7 @@ advise (const char *what, char *fmt, ...)
  * print out error message and exit
  */
 void
-adios (char *what, char *fmt, ...)
+adios (const char *what, char *fmt, ...)
 {
     va_list ap;
 

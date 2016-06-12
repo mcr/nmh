@@ -18,7 +18,7 @@ char *etcpath(char *);
 struct msgs_array;
 
 void add_profile_entry (const char *, const char *);
-void adios (char *, char *, ...) NORETURN;
+void adios (const char *, char *, ...) NORETURN;
 void admonish (char *, char *, ...);
 void advertise (const char *, char *, char *, va_list);
 void advise (const char *, char *, ...);
