@@ -1606,6 +1606,50 @@ run_prog mhfixmsg last -outfile "$actual" -nocrlflinebreaks -noreformat
 check "$expected" "$actual"
 
 
+# check that input is passed through to output when there's a parse error
+# (the charset string is missing its closing quote) with -outfile
+cat >"$expected.err" <<EOF
+mhfixmsg: invalid quoted-string in message 30's Content-Type: field
+          (parameter charset)
+mhfixmsg: unable to parse message 30
+EOF
+
+cat >`mhpath new` <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg pass through on parse error
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1
+Content-Disposition: attachment; filename="test1.txt"
+Content-Transfer-Encoding: quoted-printable
+
+This is the=
+ text/plain part.
+
+------- =_aaaaaaaaaa0--
+EOF
+set +e
+run_prog mhfixmsg last -outfile "$actual" 2>"$actual.err"
+set -e
+#### Expected output is identical to the input message.
+check `mhpath last` "$actual" 'keep first'
+check "$expected.err" "$actual.err"
+
+
+# check that input is passed through to output when there's a parse error
+# (the charset string is missing its closing quote) with -outfile, and
+# input from stdin.  Don't check err output, because it contains the name
+# of a tmp file.  It's similar to that of the previous check.
+set +e
+run_prog mhfixmsg -file - -outfile - <`mhpath last` >"$actual" 2>/dev/null
+set -e
+#### Expected output is identical to the input message.
+check `mhpath last` "$actual"
+
+
 # make sure there are no tmp files left over
 find "$MH_TEST_DIR/Mail" \( -name 'mhfix*' -o -name ',mhfix*' \) -print \
   >"$actual"
