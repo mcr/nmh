@@ -337,6 +337,7 @@ setup_test ()
 
   # clean old test data on exit
   trap cleanup 0
+
   # setup test data
   mkdir -p "$MH_TEST_DIR/Mail" || exit 1
   cat > "$MH" <<EOF || exit 1
