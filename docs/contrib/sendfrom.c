@@ -141,7 +141,7 @@ main(int argc, char **argv) {
 
             /* Extract address and host from From: header line in draft. */
             if (get_from_header_info(msg, &addr, &host, &message) != OK) {
-                adios(msg, (char *) message);
+                adios(msg, message);
             }
 
             /* Merge in any address or host specific switches to post(1) from profile. */
