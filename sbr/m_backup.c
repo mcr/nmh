@@ -11,12 +11,12 @@
 
 
 char *
-m_backup (char *file)
+m_backup (const char *file)
 {
-    char *cp;
+    const char *cp;
     static char buffer[BUFSIZ];
 
-    if ((cp = r1bindex(file, '/')) == file)
+    if ((cp = r1bindex((char *) file, '/')) == file)
 	snprintf(buffer, sizeof(buffer), "%s%s",
 		BACKUP_PREFIX, cp);
     else

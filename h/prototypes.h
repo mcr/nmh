@@ -244,7 +244,7 @@ int lkopendata(const char *, int, mode_t, int *);
 FILE *lkfopenspool(const char *, const char *);
 int lkopenspool(const char *, int, mode_t, int *);
 int m_atoi (char *);
-char *m_backup (char *);
+char *m_backup (const char *);
 int m_convert (struct msgs *, char *);
 char *m_draft (char *, char *, int, int *);
 void m_getfld_state_reset (m_getfld_state_t *);
