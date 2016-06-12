@@ -54,7 +54,7 @@ void context_replace (char *, char *);
 void context_save (void);
 char *copy (const char *, char *);
 char **copyip (char **, char **, int);
-void cpydata (int, int, char *, char *);
+void cpydata (int, int, const char *, const char *);
 void cpydgst (int, int, char *, char *);
 char *cpytrim (const char *);
 char *rtrim (char *);

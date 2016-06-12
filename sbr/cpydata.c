@@ -10,7 +10,7 @@
 #include <h/mh.h>
 
 void
-cpydata (int in, int out, char *ifile, char *ofile)
+cpydata (int in, int out, const char *ifile, const char *ofile)
 {
     int i;
     char buffer[BUFSIZ];

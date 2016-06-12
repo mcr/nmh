@@ -91,7 +91,7 @@ typedef struct fix_transformations {
 
 int mhfixmsgsbr (CT *, const fix_transformations *, char *);
 static int fix_boundary (CT *, int *);
-static int copy_input_to_output (char *, char *);
+static int copy_input_to_output (const char *, const char *);
 static int get_multipart_boundary (CT, char **);
 static int replace_boundary (CT, char *, char *);
 static int fix_types (CT, svector_t, int *);
@@ -119,9 +119,9 @@ static int content_encoding (CT, const char **);
 static int strip_crs (CT, int *);
 static int convert_charsets (CT, char *, int *);
 static int fix_always (CT, int *);
-static int write_content (CT, char *, char *, int, int);
+static int write_content (CT, const char *, char *, int, int);
 static void set_text_ctparams(CT, char *, int);
-static int remove_file (char *);
+static int remove_file (const char *);
 static void report (char *, char *, char *, char *, ...);
 static void pipeser (int);
 
@@ -416,7 +416,7 @@ main (int argc, char **argv) {
                     if (outfile) {
                         /* Something went wrong.  Output might be expected, such as if this were run
                            as a filter.  Just copy the input to the output. */
-                        char *input_filename = path (msgnam, TFILE);
+                        const char *input_filename = path (msgnam, TFILE);
 
                         if (copy_input_to_output (input_filename, outfile) != OK) {
                             advise (NULL, "unable to copy message to %s, it might be lost\n", outfile);
@@ -549,7 +549,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
 /* Copy input message to output.  Assumes not modifying in place, so this
    might be running as part of a pipeline. */
 static int
-copy_input_to_output (char *input_filename, char *output_filename) {
+copy_input_to_output (const char *input_filename, const char *output_filename) {
     int in = open (input_filename, O_RDONLY);
     int out = strcmp (output_filename, "-")
         ?  open (output_filename, O_WRONLY | O_CREAT, m_gmprot ())
@@ -2317,7 +2317,7 @@ fix_always (CT ct, int *message_mods) {
 
 
 static int
-write_content (CT ct, char *input_filename, char *outfile, int modify_inplace,
+write_content (CT ct, const char *input_filename, char *outfile, int modify_inplace,
                int message_mods) {
     int status = OK;
 
@@ -2433,7 +2433,7 @@ set_text_ctparams(CT ct, char *decodetypes, int lf_line_endings) {
  * use the standard MH backup file.
  */
 static int
-remove_file (char *file) {
+remove_file (const char *file) {
     if (rmmproc) {
         char *rmm_command = concat (rmmproc, " ", file, NULL);
         int status = system (rmm_command);
