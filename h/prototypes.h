@@ -18,10 +18,10 @@ char *etcpath(char *);
 struct msgs_array;
 
 void add_profile_entry (const char *, const char *);
-void adios (char *, const char *, ...) NORETURN;
+void adios (const char *, const char *, ...) NORETURN;
 void admonish (char *, char *, ...);
-void advertise (char *, char *, const char *, va_list);
-void advise (char *, char *, ...);
+void advertise (const char *, char *, const char *, va_list);
+void advise (const char *, const char *, ...);
 char **argsplit (char *, char **, int *);
 void argsplit_msgarg (struct msgs_array *, char *, char **);
 void argsplit_insert (struct msgs_array *, char *, char **);
