@@ -126,11 +126,12 @@ show_all_messages (CT *cts, int concatsw, int textonly, int inlineonly)
 	ct = *ctp;
 
 	/* if top-level type is ok, then display message */
-	if (type_ok (ct, 1))
+	if (type_ok (ct, 1)) {
 	    if (headersw) output_header(ct, hfmt);
 
 	    show_single_message (ct, formsw, concatsw, textonly, inlineonly,
 				 mfmt);
+	}
     }
 
     free_markercomps();
