@@ -908,6 +908,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 	    if (ontty != PITTY)
 		SIGNAL (SIGINT, intrser);
 	    mhlfile (fp, cp, ofilen, ofilec);  /* FALL THROUGH! */
+            free (cp);
 
 	    for (ap = arglist_head; ap; ap = ap->a_next) {
 	    	fmt_free(ap->a_fmt, 0);
@@ -922,7 +923,6 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 		SIGNAL (SIGINT, SIG_IGN);
 	    if (mhl_action == NULL && fp != stdin && fp != NULL)
 		fclose (fp);
-		free (cp);
 	    if (holder.c_text) {
 		free (holder.c_text);
 		holder.c_text = NULL;
