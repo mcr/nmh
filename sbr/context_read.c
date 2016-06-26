@@ -107,7 +107,7 @@ context_read (void)
 
 	cp = concat ("Your MH-directory \"", nd, "\" doesn't exist; Create it? ", NULL);
 
-	if (!getanswer(cp))
+	if (!read_yes_or_no_if_tty(cp))
 	    adios (NULL, "unable to access MH-directory \"%s\"", nd);
 
 	free (cp);

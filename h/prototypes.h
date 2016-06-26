@@ -26,7 +26,7 @@ char **argsplit (char *, char **, int *);
 void argsplit_msgarg (struct msgs_array *, char *, char **);
 void argsplit_insert (struct msgs_array *, char *, char **);
 void arglist_free (char *, char **);
-void ambigsw (char *, struct swit *);
+void ambigsw (const char *, const struct swit *);
 int atooi(char *);
 char **brkstring (char *, char *, char *);
 
@@ -118,12 +118,44 @@ int folder_pack (struct msgs **, int);
 struct msgs *folder_read (char *name, int lockflag);
 
 struct msgs *folder_realloc (struct msgs *, int, int);
-int gans (char *, struct swit *);
-char **getans (char *, struct swit *);
+
+/*
+ * Flush standard output, read a line from standard input into a static buffer,
+ * zero out the newline, and return a pointer to the buffer.
+ * On error, return NULL.
+ */
+const char *read_line(void);
+
+/*
+ * Print null-terminated PROMPT to and flush standard output.  Read answers from
+ * standard input until one matches an entry in SWITCHES.  When one matches,
+ * return its swret field.  Return 0 on EOF.
+ */
+int read_switch(const char *PROMPT, const struct swit *SWITCHES);
+
+/*
+ * If standard input is not a tty, return 1 without printing anything.  Else,
+ * print null-terminated PROMPT to and flush standard output.  Read answers from
+ * standard input until one is "yes" or "no", returning 1 for "yes" and 0 for
+ * "no".  Also return 0 on EOF.
+ */
+int read_yes_or_no_if_tty(const char *PROMPT);
+
+/*
+ * Print null-terminated PROMPT to and flush standard output.  Read multi-word
+ * answers from standard input until a first word matches an entry in SWITCHES.
+ * When one matches, return a pointer to an array of pointers to the words.
+ * Return NULL on EOF, interrupt, or other error.
+ */
+char **read_switch_multiword(const char *PROMPT, const struct swit *SWITCHES);
+
+/*
+ * Same as read_switch_multiword but using readline(3) for input.
+ */
 #ifdef READLINE_SUPPORT
-char **getans_via_readline (char *, struct swit *);
+char **read_switch_multiword_via_readline (char *, struct swit *);
 #endif /* READLINE_SUPPORT */
-int getanswer (char *);
+
 char **getarguments (char *, int, char **, int);
 
 /*
@@ -247,7 +279,7 @@ void m_popen(char *name, int savestdout);
 void m_pclose(void);
 
 void m_unknown(m_getfld_state_t *, FILE *);
-int makedir (char *);
+int makedir (const char *);
 char *message_id (time_t, int);
 
 /*
@@ -282,7 +314,7 @@ int pidwait (pid_t, int);
 int pidstatus (int, FILE *, char *);
 char *pluspath(char *);
 void print_help (char *, struct swit *, int);
-void print_sw (char *, struct swit *, char *, FILE *);
+void print_sw (const char *, const struct swit *, char *, FILE *);
 void print_version (char *);
 void push (void);
 char *pwd (void);
@@ -328,7 +360,7 @@ void seq_setcur (struct msgs *, int);
 void seq_setprev (struct msgs *);
 void seq_setunseen (struct msgs *, int);
 int showfile (char **, char *);
-int smatch(char *, struct swit *);
+int smatch(const char *, const struct swit *);
 
 /*
  * Convert a set of bit flags to printable format.
@@ -363,7 +395,7 @@ int smatch(char *, struct swit *);
  * from least significant bit to most significant.
  */
 char *snprintb (char *buffer, size_t size, unsigned flags, char *bitfield);
-int ssequal (char *, char *);
+int ssequal (const char *, const char *);
 int stringdex (char *, char *);
 char *trimcpy (char *);
 int unputenv (char *);

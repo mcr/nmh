@@ -200,7 +200,7 @@ void create_folder(char *folder, int autocreate, void (*done_callback)(int))
         if (autocreate == 0) {
             /* ask before creating folder */
             cp = concat ("Create folder \"", folder, "\"? ", NULL);
-            if (!getanswer (cp))
+            if (!read_yes_or_no_if_tty (cp))
                 done_callback (1);
             free (cp);
         } else if (autocreate == -1) {

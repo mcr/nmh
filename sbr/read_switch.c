@@ -1,6 +1,6 @@
 
 /*
- * gans.c -- get an answer from the user
+ * read_switch.c -- prompt the user for an answer from the list
  *
  * This code is Copyright (c) 2002, by the authors of nmh.  See the
  * COPYRIGHT file in the root directory of the nmh distribution for
@@ -11,11 +11,11 @@
 
 
 int
-gans (char *prompt, struct swit *ansp)
+read_switch (const char *prompt, const struct swit *ansp)
 {
     register int i;
     register char *cp;
-    register struct swit *ap;
+    register const struct swit *ap;
     char ansbuf[BUFSIZ];
 
     for (;;) {

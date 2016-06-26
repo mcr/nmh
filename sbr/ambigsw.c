@@ -11,7 +11,7 @@
 
 
 void
-ambigsw (char *arg, struct swit *swp)
+ambigsw (const char *arg, const struct swit *swp)
 {
     advise (NULL, "-%s ambiguous.  It matches", arg);
     print_sw (arg, swp, "-", stderr);

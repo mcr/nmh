@@ -11,11 +11,11 @@
 
 
 int
-smatch(char *string, struct swit *swp)
+smatch(const char *string, const struct swit *swp)
 {
-    char *sp, *tcp;
+    const char *sp, *tcp;
     int firstone, len;
-    struct swit *tp;
+    const struct swit *tp;
 
     firstone = UNKWNSW;
 

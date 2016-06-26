@@ -1285,7 +1285,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
           if (isatty (fileno (stdin))) {
             char *prompt =
               concat ("Overwrite \"", file, "\" [y/n/rename]? ", NULL);
-            ans = getans (prompt, answer);
+            ans = read_switch_multiword (prompt, answer);
             free (prompt);
           } else {
             /* Overwrite, that's what nmh used to do.  And warn. */

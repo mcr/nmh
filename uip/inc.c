@@ -605,7 +605,7 @@ go_to_it:
 		if (errno != ENOENT)
 		    adios (packfile, "error on file");
 		cp = concat ("Create file \"", packfile, "\"? ", NULL);
-		if (noisy && !getanswer (cp))
+		if (noisy && !read_yes_or_no_if_tty (cp))
 		    done (1);
 		free (cp);
 	    }

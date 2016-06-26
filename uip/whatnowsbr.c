@@ -237,9 +237,9 @@ WhatNow (int argc, char **argv)
     snprintf (prompt, sizeof(prompt), myprompt, invo_name);
     for (;;) {
 #ifdef READLINE_SUPPORT
-	if (!(argp = getans_via_readline (prompt, aleqs))) {
+	if (!(argp = read_switch_multiword_via_readline (prompt, aleqs))) {
 #else /* ! READLINE_SUPPORT */
-	if (!(argp = getans (prompt, aleqs))) {
+	if (!(argp = read_switch_multiword (prompt, aleqs))) {
 #endif /* READLINE_SUPPORT */
 	    (void) m_unlink (LINK);
 	    done (1);

@@ -24,17 +24,13 @@ DEFINE_SWITCH_ENUM(INSTALLMH);
 DEFINE_SWITCH_ARRAY(INSTALLMH, switches);
 #undef X
 
-/*
- * static prototypes
- */
-static char *geta(void);
-
 
 int
 main (int argc, char **argv)
 {
     int autof = 0;
-    char *cp, *pathname, buf[BUFSIZ];
+    char *cp, buf[BUFSIZ];
+    const char *pathname;
     char *dp, **arguments, **argp;
     struct node *np;
     struct passwd *pw;
@@ -122,7 +118,7 @@ main (int argc, char **argv)
 	done(1);
     }
 
-    if (!autof && gans ("Do you want help? ", anoyes)) {
+    if (!autof && read_switch ("Do you want help? ", anoyes)) {
 	(void)printf(
 	 "\n"
 	 "Prior to using nmh, it is necessary to have a file in your login\n"
@@ -138,7 +134,7 @@ main (int argc, char **argv)
 	if (S_ISDIR(st.st_mode)) {
 	    cp = concat ("You already have the standard nmh directory \"",
 		    cp, "\".\nDo you want to use it for nmh? ", NULL);
-	    if (gans (cp, anoyes))
+	    if (read_switch (cp, anoyes))
 		pathname = "Mail";
 	    else
 		goto query;
@@ -151,17 +147,20 @@ main (int argc, char **argv)
 	else
 	    cp = concat ("Do you want the standard nmh path \"",
 		    mypath, "/", "Mail\"? ", NULL);
-	if (autof || gans (cp, anoyes))
+	if (autof || read_switch (cp, anoyes))
 	    pathname = "Mail";
 	else {
 query:
-	    if (gans ("Do you want a path below your login directory? ",
+	    if (read_switch ("Do you want a path below your login directory? ",
 			anoyes)) {
 		printf ("What is the path?  %s/", mypath);
-		pathname = geta ();
+		pathname = read_line ();
+		if (pathname == NULL) done (1);
 	    } else {
 		printf ("What is the whole path?  /");
-		pathname = concat ("/", geta (), NULL);
+		pathname = read_line ();
+		if (pathname == NULL) done (1);
+		pathname = concat ("/", pathname, NULL);
 	    }
 	}
     }
@@ -171,7 +170,7 @@ query:
     }
     if (chdir (pathname) == NOTOK) {
 	cp = concat ("\"", pathname, "\" doesn't exist; Create it? ", NULL);
-	if (autof || gans (cp, anoyes))
+	if (autof || read_switch (cp, anoyes))
 	    if (makedir (pathname) == 0)
 		adios (NULL, "unable to create %s", pathname);
     } else {
@@ -222,19 +221,4 @@ query:
     fclose (out);
     done (0);
     return 1;
-}
-
-
-static char *
-geta (void)
-{
-    char *cp;
-    static char line[BUFSIZ];
-
-    fflush(stdout);
-    if (fgets(line, sizeof(line), stdin) == NULL)
-	done (1);
-    if ((cp = strchr(line, '\n')))
-	*cp = 0;
-    return line;
 }

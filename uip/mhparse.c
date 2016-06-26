@@ -2583,7 +2583,7 @@ openFTP (CT ct, char **file)
     /*
      * Now, check the answer
      */
-    if (!getanswer (buffer))
+    if (!read_yes_or_no_if_tty (buffer))
 	return NOTOK;
 
     if (e->eb_flags) {
@@ -2770,7 +2770,7 @@ openMail (CT ct, char **file)
 		    e->eb_subject ? e->eb_subject : e->eb_body);
 
     /* Now, check answer */
-    if (!getanswer (buffer))
+    if (!read_yes_or_no_if_tty (buffer))
 	return NOTOK;
 
     vecp = 0;

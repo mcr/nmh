@@ -273,8 +273,9 @@ main (int argc, char **argv)
 
     if (addr == NULL)
 	addr = getusername ();
-    if (user == NULL)
-	user = (cp = strchr(addr, '.')) ? ++cp : addr;
+    if (user == NULL) {
+	user = getusername ();
+    }
     if ((pw = getpwnam (user)) == NULL)
 	adios (NULL, "no such local user as %s", user);
 

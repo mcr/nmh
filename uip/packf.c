@@ -111,7 +111,7 @@ main (int argc, char **argv)
 	if (errno != ENOENT)
 	    adios (file, "error on file");
 	cp = concat ("Create file \"", file, "\"? ", NULL);
-	if (!getanswer (cp))
+	if (!read_yes_or_no_if_tty (cp))
 	    done (1);
 	free (cp);
     }

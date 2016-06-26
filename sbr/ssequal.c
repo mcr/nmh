@@ -23,7 +23,7 @@
  */
 
 int
-ssequal (char *s1, char *s2)
+ssequal (const char *s1, const char *s2)
 {
     if (!s1)
 	s1 = "";

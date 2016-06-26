@@ -490,6 +490,10 @@ uip_viamail_LDADD = $(LDADD) $(POSTLINK)
 test_getfullname_SOURCES = test/getfullname.c
 test_getfullname_LDADD = $(LDADD) $(POSTLINK)
 
+##
+## Other program definitions
+##
+
 test_getcanon_SOURCES = test/getcanon.c
 test_getcanon_LDADD = $(POSTLINK)
 
@@ -517,6 +521,7 @@ docs_contrib_sendfrom_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(POSTLINK)
 
 ## Hard-code the config/version.c target, instead of using $@, so this
 ## rule works for the distcheck target with Solaris (System V) make.
+
 ## distcheck uses VPATH, causes that make to prepend the VPATH to $@.
 config/version.c: Makefile $(srcdir)/config/version.sh
 	env srcdir="$(srcdir)" sh $(srcdir)/config/version.sh $(VERSION) > ./config/version.c
@@ -601,10 +606,11 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/error.c sbr/ext_hook.c sbr/fdcompare.c \
 		      sbr/folder_addmsg.c sbr/folder_delmsgs.c \
 		      sbr/folder_free.c sbr/folder_pack.c \
-		      sbr/folder_read.c sbr/folder_realloc.c sbr/gans.c \
-		      sbr/getans.c sbr/getanswer.c sbr/getarguments.c \
+		      sbr/folder_read.c sbr/folder_realloc.c sbr/read_switch.c \
+		      sbr/read_switch_multiword.c sbr/read_switch_multiword_via_readline.c \
+		      sbr/read_yes_or_no_if_tty.c sbr/getarguments.c \
 		      sbr/getcpy.c sbr/geteditor.c sbr/getfolder.c \
-		      sbr/getpass.c \
+		      sbr/getpass.c sbr/read_line.c \
 		      sbr/fmt_addr.c sbr/fmt_compile.c sbr/fmt_new.c \
 		      sbr/fmt_rfc2047.c sbr/fmt_scan.c \
 		      sbr/icalparse.y sbr/icalendar.l sbr/datetime.c \
@@ -628,8 +634,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/trimcpy.c sbr/unquote.c \
 		      sbr/uprf.c sbr/vfgets.c \
 		      sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
-		      sbr/m_mktemp.c sbr/getansreadline.c sbr/vector.c \
-		      config/config.c config/version.c sbr/oauth.c \
+		      sbr/m_mktemp.c sbr/vector.c sbr/oauth.c \
+		      config/config.c config/version.c \
 		      thirdparty/jsmn/jsmn.c
 
 ##
