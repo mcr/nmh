@@ -413,7 +413,8 @@ local_test: ;
     for (mp = &mq; mp->m_next;) {
 	mp = mp->m_next;
 	if (!np->m_mbox)
-	    continue; if ((len = strlen (cp = np->m_mbox))
+	    continue;
+        if ((len = strlen (cp = np->m_mbox))
 		< (i = strlen (pp = mp->m_mbox)))
 	    continue;
 	switch (mp->m_type & W_MBOX) {
