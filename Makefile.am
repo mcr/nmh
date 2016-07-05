@@ -97,6 +97,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/scan/test-scan test/scan/test-scan-multibyte \
 	test/sequences/test-flist test/sequences/test-mark \
 	test/sequences/test-out-of-range \
+	test/send/test-sendfrom \
 	test/show/test-show \
 	test/slocal/test-slocal \
 	test/whatnow/test-attach-detach test/whatnow/test-cd \
@@ -233,8 +234,7 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 docs_contribdir = $(docdir)/contrib
 dist_docs_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
 			    docs/contrib/ml docs/contrib/vpick
-dist_docs_contrib_DATA = docs/contrib/replaliases docs/contrib/sendfrom.c
-docs_contrib_PROGRAMS = docs/contrib/sendfrom
+dist_docs_contrib_DATA = docs/contrib/replaliases
 
 ##
 ## Our man pages
@@ -293,7 +293,8 @@ EXTRA_DIST = autogen.sh config/version.sh sbr/sigmsg.awk sbr/icalparse.h \
 	     test/mhbuild/somebinary \
 	     test/mhbuild/nulls \
 	     test/mhbuild/textplain \
-	     test/post/test-post-common.sh test/valgrind.supp uip/mhmail \
+	     test/post/test-post-common.sh test/send/README \
+	     test/valgrind.supp uip/mhmail \
 	     SPECS/nmh.spec SPECS/build-nmh-cygwin $(man_SRCS)
 
 ##
@@ -413,7 +414,7 @@ uip_scan_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_send_SOURCES = uip/send.c uip/sendsbr.c uip/annosbr.c \
 		   uip/distsbr.c
-uip_send_LDADD = $(LDADD) $(POSTLINK)
+uip_send_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
 
 uip_show_SOURCES = uip/show.c uip/mhlsbr.c
 uip_show_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
@@ -470,7 +471,7 @@ uip_slocal_LDADD = $(LDADD) $(NDBM_LIBS) $(POSTLINK)
 
 uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
-uip_viamail_LDADD = $(LDADD) $(POSTLINK)
+uip_viamail_LDADD = $(LDADD) $(TERMLIB) $(POSTLINK)
 
 test_getfullname_SOURCES = test/getfullname.c
 test_getfullname_LDADD = $(LDADD) $(POSTLINK)
@@ -500,9 +501,6 @@ etc_gen_ctype_checked_LDADD = $(POSTLINK)
 
 ## Hard-code the config/version.c target, instead of using $@, so this
 ## rule works for the distcheck target with Solaris (System V) make.
-docs_contrib_sendfrom_SOURCES = docs/contrib/sendfrom.c
-docs_contrib_sendfrom_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(POSTLINK)
-
 ## distcheck uses VPATH, causes that make to prepend the VPATH to $@.
 config/version.c: Makefile $(srcdir)/config/version.sh
 	env srcdir="$(srcdir)" sh $(srcdir)/config/version.sh $(VERSION) > ./config/version.c

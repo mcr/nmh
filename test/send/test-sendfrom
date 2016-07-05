@@ -1,0 +1,77 @@
+#!/bin/sh
+######################################################
+#
+# Test sendfrom
+#
+######################################################
+
+set -e
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/post/test-post-common.sh"
+
+
+# TEST
+start_test 'sendfrom, using -snoop'
+
+#### Set up profile to use sendfrom by adding a sendfrom-addr.  This one adds
+#### -snoop to the send switches.  The output from snoop is constant, and so
+#### is easily checked below.
+cat >> "$MH" <<EOF
+sendfrom-nobody@example.com: -snoop
+EOF
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+
+This is a test.
+EOF
+
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<nobody@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date:
+
+This is a test.
+.
+QUIT
+EOF
+
+cat > "${testname}.post-expected" <<EOF
+<= 220 Not really an ESMTP server
+=> EHLO nosuchhost.example.com
+<= 250 I'll buy that for a dollar!
+=> MAIL FROM:<nobody@example.com>
+<= 250 I'll buy that for a dollar!
+=> RCPT TO:<somebody@example.com>
+<= 250 I'll buy that for a dollar!
+=> DATA
+<= 354 Go ahead
+=> .
+<= 250 Thanks for the info!
+=> QUIT
+<= 221 Later alligator!
+EOF
+
+test_post "${testname}.actual" "${testname}.expected" \
+    > ${testname}.post 2>/dev/null
+
+check "${testname}.post-expected" "${testname}.post"
+
+
+finish_test
+
+exit ${failed:-0}

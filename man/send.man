@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "July 8, 2014" "%nmhversion%"
+.TH SEND %manext1% "July 5, 2016" "%nmhversion%"
 .SH NAME
 send \- send a message
 .SH SYNOPSIS
@@ -463,6 +463,96 @@ can be named).
 See
 .IR mh\-alias (5)
 for more information.
+.SS Selection based on From: address:  sendfrom
+One or more
+.I sendfrom
+profile components can be used to select a mail server address, mail server
+port, or any other switch that can be supplied to
+.BR post .
+It works by first looking at the address and domain name in the From: header
+line in the message draft.
+It then looks for a corresponding profile entry, which contains the
+.B post
+switches.
+To enable, add profile entries of the form:
+.PP
+.RS 5
+.RI sendfrom- "address/domain name" : " post switches"
+.RE
+.PP
+The email address is extracted from the From: header line of the message draft.
+Multiple profile entries, with different email addresses or domain names, are
+supported.
+This allows different switches to
+.BR post ,
+such as -user, to be associated with different email addresses.
+If a domain name is used, it matches all users in that domain.
+.PP
+Here is an example profile entry using OAuth for an account hosted by gmail:
+.PP
+.nf
+.RS 5
+sendfrom-gmail_address@example.com: -saslmech xoauth2
+.RS 5
+-authservice gmail -tls -server smtp.gmail.com
+-user gmail_login@example.com
+.RE
+.RE
+.fi
+.PP
+(Indentation indicates a continued line, as supported in MH profiles.)
+The username need not be the same as the sender address, which was extracted
+from the From: header line.
+.PP
+Here are example profile entries that use an nmh credentials file:
+.PP
+.nf
+.RS 5
+credentials: file:nmhcreds
+sendfrom-sendgrid_address@example.com: -sasl -tls
+.RS 5
+-server smtp.sendgrid.net
+.RE
+sendfrom-outbound.att.net: -sasl -initialtls
+.RS 5
+-server outbound.att.net -port 465
+.RE
+sendfrom-fastmail.com: -initialtls -sasl -saslmech LOGIN
+.RS 5
+-server smtps-proxy.messagingengine.com -port 80
+.RE
+.RE
+.fi
+.PP
+where nmhcreds is in the user's nmh directory (from the Path profile component)
+and contains:
+.PP
+.nf
+.RS 5
+machine smtp.sendgrid.net
+.RS 5
+login sendgrid_login@example.com
+password ********
+.RE
+machine outbound.att.net
+.RS 5
+login att_login@example.com
+password ********
+.RE
+machine smtps-proxy.messagingengine.com
+.RS 5
+login fastmail_login@example.com
+password ********
+.RE
+.RE
+.fi
+.PP
+For more information on authentication to mail servers, see the
+.IR mhlogin (1)
+man page for OAuth services, and
+.IR mh-profile (5)
+man page for login credentials.
+.PP
 .SH FILES
 .fc ^ ~
 .nf
@@ -480,6 +570,8 @@ for more information.
 ^Signature:~^To determine the user's mail signature
 ^mailproc:~^Program to post failure notices
 ^postproc:~^Program to post the message
+^sendfrom-address:~^Switches to post for From: address
+^sendfrom-domain:~^Switches to post for From: domain name
 .fi
 .SH "SEE ALSO"
 .IR comp (1),

@@ -1,0 +1,2 @@
+This directory is sparse, but that doesn't mean that send is lightly
+tested.  The tests in ../post/ rely on send.
