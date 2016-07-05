@@ -52,3 +52,21 @@ context_find_by_type (const char *string, const char *type,
 
     return value;
 }
+
+
+/*
+ * Helper function to search profile an entry with name beginning with prefix.
+ * The search is case insensitive.
+ */
+int
+context_find_prefix (const char *prefix) {
+    struct node *np;
+
+    for (np = m_defs; np; np = np->n_next) {
+	if (np->n_name  &&  ! strncasecmp (np->n_name, prefix, strlen(prefix))) {
+	    return 1;
+        }
+    }
+
+    return 0;
+}

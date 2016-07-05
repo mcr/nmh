@@ -48,6 +48,7 @@ char *concat (const char *, ...);
 int context_del (char *);
 char *context_find (const char *);
 char *context_find_by_type (const char *, const char *, const char *);
+int context_find_prefix(const char *);
 int context_foil (char *);
 void context_read (void);
 void context_replace (char *, char *);
