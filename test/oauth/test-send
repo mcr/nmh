@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Test the XOAUTH2 support in sen
+# Test the XOAUTH2 support in send
 #
 
 if test -z "${MH_OBJ_DIR}"; then
