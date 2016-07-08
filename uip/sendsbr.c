@@ -834,18 +834,34 @@ get_from_header_info(const char *filename, const char **addr, const char **host,
         return NOTOK;
     }
 
-    if ((in = fopen(filename, "r")) != NULL) {
-        char *addrformat = "%(addr{from})", *hostformat = "%(host{from})";
+    if ((in = fopen (filename, "r")) != NULL) {
+        /* There must be a non-blank Envelope-From or {Resent-}Sender or
+           {Resent-}From header. */
+        char *addrformat = "%(addr{Envelope-From})";
+        char *hostformat = "%(host{Envelope-From})";
 
-        if ((*addr = get_message_header_info(in, addrformat)) == NULL) {
-            *message = "unable to find From: address in";
-            return NOTOK;
+        if ((*addr = get_message_header_info (in, addrformat)) == NULL  ||
+            strlen (*addr) == 0) {
+            addrformat = distfile == NULL  ?  "%(addr{Sender})"  :  "%(addr{Resent-Sender})";
+            hostformat = distfile == NULL  ?  "%(host{Sender})"  :  "%(host{Resent-Sender})";
+
+            if ((*addr = get_message_header_info (in, addrformat)) == NULL) {
+                addrformat = distfile == NULL  ?  "%(addr{From})"  :  "%(addr{Resent-From})";
+                hostformat = distfile == NULL  ?  "%(host{From})"  :  "%(host{Resent-From})";
+
+                if ((*addr = get_message_header_info (in, addrformat)) == NULL) {
+                    *message = "unable to find sender address in";
+                    fclose(in);
+                    return NOTOK;
+                }
+            }
         }
-        rewind(in);
 
+        /* Use the hostformat that corresponds to the successful addrformat. */
         if ((*host = get_message_header_info(in, hostformat)) == NULL) {
             fclose(in);
-            *message = "unable to find From: host in";
+            *message = "unable to find sender host in";
+            fclose(in);
             return NOTOK;
         }
         fclose(in);
@@ -883,6 +899,7 @@ get_message_header_info(FILE *in, char *format) {
     /*
      * Read in the message and process the header.
      */
+    rewind (in);
     parsing_header = 1;
     do {
         char name[NAMESZ], rbuf[NMH_BUFSIZ];
@@ -920,8 +937,12 @@ get_message_header_info(FILE *in, char *format) {
     /* Trim trailing newline, if any. */
     retval = rtrim(charstring_buffer_copy((buffer)));
     charstring_free(buffer);
-
-    return retval;
+    if (strlen (retval) > 0) {
+        return retval;
+    } else {
+        free (retval);
+        return NULL;
+    }
 }
 
 
