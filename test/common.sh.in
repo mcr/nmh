@@ -6,6 +6,7 @@
 #### that they are set here so that individual tests can be run
 #### outside of make.  Requires that MH_OBJ_DIR be set on entry.
 test -z "$MH_TEST_DIR"  &&  MH_TEST_DIR="$MH_OBJ_DIR/test/testdir"
+export MH_TEST_DIR
 test -z "$MH_INST_DIR"  &&  MH_INST_DIR="${MH_TEST_DIR}/inst"
 test -z "$MH_VERSION"  &&  MH_VERSION="@VERSION@"
 test -z "$prefix"  &&  prefix=@prefix@

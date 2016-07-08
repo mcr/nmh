@@ -43,6 +43,8 @@ NEW FEATURES
   numbers as, for example, "10K", or "2.3Mi"
 - Support for the -sendmail flag to send/post to change the sendmail
   binary when using the sendmail/pipe MTS.
+- Added support to send(1) to specify switches to post(1) based on address or
+  domain name in From: header line in message draft.
 
 -----------------
 OBSOLETE FEATURES
