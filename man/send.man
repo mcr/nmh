@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "July 5, 2016" "%nmhversion%"
+.TH SEND %manext1% "July 8, 2016" "%nmhversion%"
 .SH NAME
 send \- send a message
 .SH SYNOPSIS
@@ -463,14 +463,14 @@ can be named).
 See
 .IR mh\-alias (5)
 for more information.
-.SS Selection based on From: address:  sendfrom
+.SS Selection based on sender address:  sendfrom
 One or more
 .I sendfrom
 profile components can be used to select a mail server address, mail server
 port, or any other switch that can be supplied to
 .BR post .
-It works by first looking at the address and domain name in the From: header
-line in the message draft.
+It works by first looking at the sender address and domain name in the
+message draft, as described below.
 It then looks for a corresponding profile entry, which contains the
 .B post
 switches.
@@ -480,7 +480,8 @@ To enable, add profile entries of the form:
 .RI sendfrom- "address/domain name" : " post switches"
 .RE
 .PP
-The email address is extracted from the From: header line of the message draft.
+The email address is extracted from the Envelope-From:  header, if not blank,
+the Sender: header, or the From: header line in the message draft.
 Multiple profile entries, with different email addresses or domain names, are
 supported.
 This allows different switches to
@@ -502,7 +503,7 @@ sendfrom-gmail_address@example.com: -saslmech xoauth2
 .PP
 (Indentation indicates a continued line, as supported in MH profiles.)
 The username need not be the same as the sender address, which was extracted
-from the From: header line.
+from the appropriate header line as noted above.
 .PP
 Here are example profile entries that use an nmh credentials file:
 .PP
@@ -570,8 +571,8 @@ man page for login credentials.
 ^Signature:~^To determine the user's mail signature
 ^mailproc:~^Program to post failure notices
 ^postproc:~^Program to post the message
-^sendfrom-address:~^Switches to post for From: address
-^sendfrom-domain:~^Switches to post for From: domain name
+^sendfrom-address:~^Switches to post for sender address
+^sendfrom-domain:~^Switches to post for sender domain name
 .fi
 .SH "SEE ALSO"
 .IR comp (1),
