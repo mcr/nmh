@@ -648,7 +648,7 @@ get_ctinfo (char *cp, CT ct, int magic)
     *dp = c, cp = dp;
 
     if (!*ci->ci_type) {
-	advise (NULL, "invalid %s: field in message %s (empty type)", 
+	advise (NULL, "invalid %s: field in message %s (empty type)",
 		TYPE_FIELD, ct->c_file);
 	return NOTOK;
     }
@@ -1494,14 +1494,14 @@ invalid_param:
 		        && p->c_ceopenfnx == openMail) {
 		    int	cc, size;
 		    char *bp;
-		    
+
 		    if ((size = ct->c_end - p->c_begin) <= 0) {
 			if (!e->eb_subject)
 			    content_error (NULL, ct,
 					   "empty body for access-type=mail-server");
 			goto no_body;
 		    }
-		    
+
 		    e->eb_body = bp = mh_xmalloc ((unsigned) size);
 		    fseek (p->c_fp, p->c_begin, SEEK_SET);
 		    while (size > 0)
@@ -1735,26 +1735,6 @@ size_encoding (CT ct)
  * BASE64
  */
 
-static unsigned char b642nib[0x80] = {
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0xff, 0xff, 0x3e, 0xff, 0xff, 0xff, 0x3f,
-    0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b,
-    0x3c, 0x3d, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 
-    0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
-    0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16,
-    0x17, 0x18, 0x19, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 
-    0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
-    0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30,
-    0x31, 0x32, 0x33, 0xff, 0xff, 0xff, 0xff, 0xff
-};
-
-
 static int
 InitBase64 (CT ct)
 {
@@ -1765,15 +1745,15 @@ InitBase64 (CT ct)
 static int
 openBase64 (CT ct, char **file)
 {
-    int	bitno, cc, digested;
-    int fd, len, skip, own_ct_fp = 0, text = ct->c_type == CT_TEXT;
-    uint32_t bits;
-    unsigned char value, b;
-    char *cp, *ep, buffer[BUFSIZ];
+    ssize_t cc, len;
+    int fd, own_ct_fp = 0;
+    char *cp, *buffer = NULL;
     /* sbeck -- handle suffixes */
     CI ci;
     CE ce = &ct->c_cefile;
-    MD5_CTX mdContext;
+    const char *decoded;
+    size_t decoded_len;
+    unsigned char digest[16];
 
     if (ce->ce_fp) {
 	fseek (ce->ce_fp, 0L, SEEK_SET);
@@ -1824,6 +1804,8 @@ openBase64 (CT ct, char **file)
     if ((len = ct->c_end - ct->c_begin) < 0)
 	adios (NULL, "internal error(1)");
 
+    buffer = mh_xmalloc (len + 1);
+
     if (! ct->c_fp) {
 	if ((ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
 	    content_error (ct->c_file, ct, "unable to open for reading");
@@ -1831,17 +1813,11 @@ openBase64 (CT ct, char **file)
 	}
 	own_ct_fp = 1;
     }
-    
-    if ((digested = ct->c_digested))
-	MD5Init (&mdContext);
-
-    bitno = 18;
-    bits = 0L;
-    skip = 0;
 
     lseek (fd = fileno (ct->c_fp), (off_t) ct->c_begin, SEEK_SET);
+    cp = buffer;
     while (len > 0) {
-	switch (cc = read (fd, buffer, sizeof(buffer) - 1)) {
+	switch (cc = read (fd, cp, len)) {
 	case NOTOK:
 	    content_error (ct->c_file, ct, "error reading from");
 	    goto clean_up;
@@ -1854,93 +1830,45 @@ openBase64 (CT ct, char **file)
 	    if (cc > len)
 		cc = len;
 	    len -= cc;
-
-	    for (ep = (cp = buffer) + cc; cp < ep; cp++) {
-		switch (*cp) {
-		default:
-		    if (isspace ((unsigned char) *cp))
-			break;
-		    if (skip || (((unsigned char) *cp) & 0x80)
-			|| (value = b642nib[((unsigned char) *cp) & 0x7f]) > 0x3f) {
-			if (debugsw) {
-			    fprintf (stderr, "*cp=0x%x pos=%ld skip=%d\n",
-				(unsigned char) *cp,
-				(long) (lseek (fd, (off_t) 0, SEEK_CUR) - (ep - cp)),
-				skip);
-			}
-			content_error (NULL, ct,
-				       "invalid BASE64 encoding -- continuing");
-			continue;
-		    }
-
-		    bits |= value << bitno;
-test_end:
-		    if ((bitno -= 6) < 0) {
-		    	b = (bits >> 16) & 0xff;
-			if (!text || b != '\r')
-			    putc ((char) b, ce->ce_fp);
-			if (digested)
-			    MD5Update (&mdContext, &b, 1);
-			if (skip < 2) {
-			    b = (bits >> 8) & 0xff;
-			    if (! text || b != '\r')
-				putc ((char) b, ce->ce_fp);
-			    if (digested)
-				MD5Update (&mdContext, &b, 1);
-			    if (skip < 1) {
-			    	b = bits & 0xff;
-				if (! text || b != '\r')
-				    putc ((char) b, ce->ce_fp);
-				if (digested)
-				    MD5Update (&mdContext, &b, 1);
-			    }
-			}
-
-			if (ferror (ce->ce_fp)) {
-			    content_error (ce->ce_file, ct,
-					   "error writing to");
-			    goto clean_up;
-			}
-			bitno = 18, bits = 0L, skip = 0;
-		    }
-		    break;
-
-		case '=':
-		    if (++skip > 3)
-			goto self_delimiting;
-		    goto test_end;
-		}
-	    }
-	}
+            cp += cc;
+        }
     }
 
-    if (bitno != 18) {
-	if (debugsw)
-	    fprintf (stderr, "premature ending (bitno %d)\n", bitno);
+    /* decodeBase64() requires null-terminated input. */
+    *cp = '\0';
 
-	content_error (NULL, ct, "invalid BASE64 encoding");
-	goto clean_up;
+    if (decodeBase64 (buffer, &decoded, &decoded_len, ct->c_type == CT_TEXT,
+                      ct->c_digested ? digest : NULL) == OK) {
+        size_t i;
+        const char *decoded_p = decoded;
+        for (i = 0; i < decoded_len; ++i) {
+            putc (*decoded_p++, ce->ce_fp);
+        }
+        if (ferror (ce->ce_fp)) {
+            content_error (ce->ce_file, ct, "error writing to");
+            goto clean_up;
+        }
+
+        if (ct->c_digested) {
+            if (memcmp(digest, ct->c_digest,
+                       sizeof(digest) / sizeof(digest[0]))) {
+                content_error (NULL, ct,
+                               "content integrity suspect (digest mismatch) -- continuing");
+            } else {
+                if (debugsw) {
+                    fprintf (stderr, "content integrity confirmed\n");
+                }
+            }
+        }
+    } else {
+        goto clean_up;
     }
 
-self_delimiting:
     fseek (ct->c_fp, 0L, SEEK_SET);
 
     if (fflush (ce->ce_fp)) {
 	content_error (ce->ce_file, ct, "error writing to");
 	goto clean_up;
-    }
-
-    if (digested) {
-	unsigned char digest[16];
-
-	MD5Final (digest, &mdContext);
-	if (memcmp((char *) digest, (char *) ct->c_digest,
-		   sizeof(digest) / sizeof(digest[0])))
-	    content_error (NULL, ct,
-			   "content integrity suspect (digest mismatch) -- continuing");
-	else
-	    if (debugsw)
-		fprintf (stderr, "content integrity confirmed\n");
     }
 
     fseek (ce->ce_fp, 0L, SEEK_SET);
@@ -1951,6 +1879,7 @@ ready_to_go:
       fclose (ct->c_fp);
       ct->c_fp = NULL;
     }
+    free (buffer);
     return fileno (ce->ce_fp);
 
 clean_up:
@@ -1959,6 +1888,7 @@ clean_up:
       ct->c_fp = NULL;
     }
     free_encoding (ct, 0);
+    free (buffer);
     return NOTOK;
 }
 
@@ -1976,18 +1906,18 @@ static char hex2nib[0x80] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00, 
+    0x00, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x00, 
+    0x00, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
 
-static int 
+static int
 InitQuoted (CT ct)
 {
     return init_encoding (ct, openQuoted);
@@ -2968,79 +2898,45 @@ openURL (CT ct, char **file)
     return fd;
 }
 
+
+/*
+ * Stores MD5 digest (in cp, from Content-MD5 header) in ct->c_digest.  It
+ * has to be base64 decoded.
+ */
 static int
 readDigest (CT ct, char *cp)
 {
-    int	bitno, skip;
-    uint32_t bits;
-    char *bp = cp;
-    unsigned char *dp, value, *ep;
+    const char *digest;
 
-    bitno = 18;
-    bits = 0L;
-    skip = 0;
+    size_t len;
+    if (decodeBase64 (cp, &digest, &len, 0, NULL) == OK) {
+        const size_t maxlen = sizeof ct->c_digest / sizeof ct->c_digest[0];
 
-    for (ep = (dp = ct->c_digest)
-	         + sizeof(ct->c_digest) / sizeof(ct->c_digest[0]); *cp; cp++)
-	switch (*cp) {
-	    default:
-	        if (skip
-		        || (*cp & 0x80)
-		        || (value = b642nib[*cp & 0x7f]) > 0x3f) {
-		    if (debugsw)
-			fprintf (stderr, "invalid BASE64 encoding\n");
-		    return NOTOK;
-		}
+        if (strlen (digest) <= maxlen) {
+            memcpy (ct->c_digest, digest, maxlen);
 
-		bits |= value << bitno;
-test_end:
-		if ((bitno -= 6) < 0) {
-		    if (dp + (3 - skip) > ep)
-			goto invalid_digest;
-		    *dp++ = (bits >> 16) & 0xff;
-		    if (skip < 2) {
-			*dp++ = (bits >> 8) & 0xff;
-			if (skip < 1)
-			    *dp++ = bits & 0xff;
-		    }
-		    bitno = 18;
-		    bits = 0L;
-		    skip = 0;
-		}
-		break;
+            if (debugsw) {
+                size_t i;
 
-	    case '=':
-		if (++skip > 3)
-		    goto self_delimiting;
-		goto test_end;
-	}
-    if (bitno != 18) {
-	if (debugsw)
-	    fprintf (stderr, "premature ending (bitno %d)\n", bitno);
+                fprintf (stderr, "MD5 digest=");
+                for (i = 0; i < maxlen; ++i) {
+                    fprintf (stderr, "%02x", ct->c_digest[i] & 0xff);
+                }
+                fprintf (stderr, "\n");
+            }
 
-	return NOTOK;
+            return OK;
+        } else {
+            if (debugsw) {
+                fprintf (stderr, "invalid MD5 digest (got %d octets)\n",
+                         (int) strlen (digest));
+            }
+
+            return NOTOK;
+        }
+    } else {
+        return NOTOK;
     }
-self_delimiting:
-    if (dp != ep) {
-invalid_digest:
-	if (debugsw) {
-	    while (*cp)
-		cp++;
-	    fprintf (stderr, "invalid MD5 digest (got %d octets)\n",
-		     (int)(cp - bp));
-	}
-
-	return NOTOK;
-    }
-
-    if (debugsw) {
-	fprintf (stderr, "MD5 digest=");
-	for (dp = ct->c_digest; dp < ep; dp++)
-	    fprintf (stderr, "%02x", *dp & 0xff);
-	fprintf (stderr, "\n");
-    }
-
-    return OK;
 }
 
 
