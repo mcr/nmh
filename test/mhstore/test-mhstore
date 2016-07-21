@@ -17,6 +17,7 @@ fi
 setup_test
 
 expected="$MH_TEST_DIR/test-mhstore$$.expected"
+expected2="$MH_TEST_DIR/test-mhstore$$.expected2"
 expected_err="$MH_TEST_DIR/test-mhmail$$.expected_err"
 actual="$MH_TEST_DIR/test-mhstore$$.actual"
 actual_err="$MH_TEST_DIR/test-mhmail$$.actual_err"
@@ -117,6 +118,7 @@ This is the third text/plain part.
 ------- =_aaaaaaaaaa0
 Content-Type: text/plain; charset="iso-8859-1"; name="test4.txt"
 Content-Disposition: attachment; filename="test4.txt"
+Content-MD5: cMI1lB/LZ4jgVl3EbhdyWA==
 Content-Transfer-Encoding: base64
 
 VGhpcyBpcyB0aGUgZm91cnRoIHRleHQvcGxhaW4gcGFydC4NClRoaXMgdGVzdCBoYXMgbXVsdGlw
@@ -199,6 +201,15 @@ EOF
 run_test 'mhstore last -part 2 -check' \
          'storing message 11 part 2 as file 11.2.txt'
 check "$expected" 11.2.txt 'keep first'
+
+# check with -check on base64 encoded part
+cat >"$expected2" <<'EOF'
+This is the fourth text/plain part.
+This test has multiple lines.
+EOF
+run_test 'mhstore last -part 4 -check' \
+         'storing message 11 part 4 as file 11.4.txt'
+check "$expected2" 11.4.txt
 
 # check -check with bad MD5 checksum
 sed 's/\(Content-MD5: \)kq+Hnc/\1BADBAD/' "$msgfile" >"$MH_TEST_DIR/$$.tmp"

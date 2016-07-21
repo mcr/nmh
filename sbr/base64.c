@@ -8,6 +8,8 @@
 
 #include <h/mh.h>
 #include <h/mime.h>
+#include <h/md5.h>
+#include <inttypes.h>
 
 static char nib2b64[0x40+1] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -160,7 +162,7 @@ writeBase64 (unsigned char *in, size_t length, unsigned char *out)
     return OK;
 }
 
-/* 
+/*
  * Essentially a duplicate of writeBase64, but without line wrapping or
  * newline termination (note: string IS NUL terminated)
  */
@@ -202,6 +204,123 @@ writeBase64raw (unsigned char *in, size_t length, unsigned char *out)
     }
 
     *out = '\0';
+
+    return OK;
+}
+
+
+static unsigned char b642nib[0x80] = {
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0x3e, 0xff, 0xff, 0xff, 0x3f,
+    0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b,
+    0x3c, 0x3d, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+    0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
+    0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16,
+    0x17, 0x18, 0x19, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20,
+    0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
+    0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30,
+    0x31, 0x32, 0x33, 0xff, 0xff, 0xff, 0xff, 0xff
+};
+
+/*
+ * Decode a base64 string.  The result, decoded, must be freed by the caller.
+ * See description of arguments with declaration in h/prototypes.h.
+ */
+int
+decodeBase64 (const char *encoded, const char **decoded, size_t *len, int skip_crs,
+              unsigned char *digest) {
+    const char *cp = encoded;
+    int self_delimiting = 0;
+    int bitno, skip;
+    uint32_t bits;
+    /* Size the decoded string very conservatively. */
+    charstring_t decoded_c = charstring_create (strlen (encoded));
+    MD5_CTX mdContext;
+
+    if (digest) { MD5Init (&mdContext); }
+
+    bitno = 18;
+    bits = 0L;
+    skip = 0;
+
+    for (; *cp; ++cp) {
+        switch (*cp) {
+            unsigned char value;
+
+            default:
+                if (isspace ((unsigned char) *cp)) {
+                    break;
+                }
+                if (skip  ||  (((unsigned char) *cp) & 0x80)  ||
+                    (value = b642nib[((unsigned char) *cp) & 0x7f]) > 0x3f) {
+                    advise (NULL, "invalid BASE64 encoding in %s", encoded);
+                    charstring_free (decoded_c);
+                    *decoded = NULL;
+
+                    return NOTOK;
+                }
+
+                bits |= value << bitno;
+test_end:
+                if ((bitno -= 6) < 0) {
+                    char b = (char) ((bits >> 16) & 0xff);
+
+                    if (! skip_crs  ||  b != '\r') {
+                        charstring_push_back (decoded_c, b);
+                    }
+                    if (digest) { MD5Update (&mdContext, (unsigned char *) &b, 1); }
+                    if (skip < 2) {
+                        b = (bits >> 8) & 0xff;
+                        if (! skip_crs  ||  b != '\r') {
+                            charstring_push_back (decoded_c, b);
+                        }
+                        if (digest) { MD5Update (&mdContext, (unsigned char *) &b, 1); }
+                        if (skip < 1) {
+                            b = bits & 0xff;
+                            if (! skip_crs  ||  b != '\r') {
+                                charstring_push_back (decoded_c, b);
+                            }
+                            if (digest) { MD5Update (&mdContext, (unsigned char *) &b, 1); }
+                        }
+                    }
+
+                    bitno = 18;
+                    bits = 0L;
+                    skip = 0;
+                }
+                break;
+
+            case '=':
+                if (++skip > 3) {
+                    self_delimiting = 1;
+                    break;
+                } else {
+                    goto test_end;
+                }
+        }
+    }
+
+    if (! self_delimiting  &&  bitno != 18) {
+        advise (NULL, "premature ending (bitno %d) in %s", bitno, encoded);
+        charstring_free (decoded_c);
+        *decoded = NULL;
+
+        return NOTOK;
+    }
+
+    *decoded = charstring_buffer_copy (decoded_c);
+    *len = charstring_bytes (decoded_c);
+    charstring_free (decoded_c);
+
+    if (digest) {
+        MD5Final (digest, &mdContext);
+    }
 
     return OK;
 }
