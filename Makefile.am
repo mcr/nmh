@@ -312,7 +312,7 @@ uip_anno_SOURCES = uip/anno.c uip/annosbr.c
 uip_anno_LDADD = $(LDADD) $(POSTLINK)
 
 uip_burst_SOURCES = uip/burst.c uip/mhparse.c uip/mhmisc.c uip/mhfree.c \
-		    uip/mhcachesbr.c uip/md5.c
+		    uip/mhcachesbr.c
 uip_burst_LDADD = $(LDADD) $(ICONVLIB) $(POSTLINK)
 
 uip_comp_SOURCES = uip/comp.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
@@ -344,25 +344,24 @@ uip_mark_LDADD = $(LDADD) $(POSTLINK)
 
 uip_mhbuild_SOURCES = uip/mhbuild.c uip/mhbuildsbr.c uip/mhcachesbr.c \
 		      uip/mhlistsbr.c uip/mhoutsbr.c uip/mhmisc.c  \
-		      uip/mhfree.c uip/mhparse.c uip/md5.c \
+		      uip/mhfree.c uip/mhparse.c \
 		      uip/mhstoresbr.c uip/mhshowsbr.c
 uip_mhbuild_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhfixmsg_SOURCES = uip/mhfixmsg.c uip/mhparse.c uip/mhcachesbr.c \
 		       uip/mhoutsbr.c uip/mhmisc.c uip/mhfree.c \
-		       uip/mhshowsbr.c uip/mhlistsbr.c uip/md5.c
+		       uip/mhshowsbr.c uip/mhlistsbr.c
 uip_mhfixmsg_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhical_SOURCES = uip/mhical.c
 uip_mhical_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhlist_SOURCES = uip/mhlist.c uip/mhparse.c uip/mhcachesbr.c \
-		     uip/mhlistsbr.c uip/mhmisc.c uip/mhfree.c uip/md5.c
+		     uip/mhlistsbr.c uip/mhmisc.c uip/mhfree.c
 uip_mhlist_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhn_SOURCES = uip/mhn.c uip/mhparse.c uip/mhcachesbr.c uip/mhshowsbr.c \
-		  uip/mhlistsbr.c uip/mhstoresbr.c uip/mhmisc.c uip/mhfree.c \
-		  uip/md5.c
+		  uip/mhlistsbr.c uip/mhstoresbr.c uip/mhmisc.c uip/mhfree.c
 uip_mhn_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhparam_SOURCES = uip/mhparam.c
@@ -373,12 +372,12 @@ uip_mhpath_LDADD = $(LDADD) $(POSTLINK)
 
 uip_mhshow_SOURCES = uip/mhshow.c uip/mhparse.c uip/mhcachesbr.c \
 		     uip/mhshowsbr.c uip/mhlistsbr.c uip/mhmisc.c \
-		     uip/mhfree.c uip/md5.c
+		     uip/mhfree.c
 uip_mhshow_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_mhstore_SOURCES = uip/mhstore.c uip/mhparse.c uip/mhcachesbr.c \
 		      uip/mhshowsbr.c uip/mhlistsbr.c uip/mhstoresbr.c \
-		      uip/mhmisc.c uip/mhfree.c uip/md5.c
+		      uip/mhmisc.c uip/mhfree.c
 uip_mhstore_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_msgchk_SOURCES = uip/msgchk.c uip/popsbr.c
@@ -596,8 +595,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/m_atoi.c sbr/m_backup.c sbr/m_convert.c \
 		      sbr/m_draft.c sbr/m_getfld.c sbr/m_gmprot.c \
 		      sbr/m_maildir.c sbr/m_name.c sbr/m_popen.c sbr/m_rand.c \
-		      sbr/makedir.c sbr/message_id.c sbr/mime_type.c sbr/mts.c \
-		      sbr/norm_charmap.c sbr/path.c \
+		      sbr/makedir.c sbr/md5.c sbr/message_id.c \
+		      sbr/mime_type.c sbr/mts.c sbr/norm_charmap.c sbr/path.c \
 		      sbr/peekc.c sbr/pidwait.c sbr/pidstatus.c \
 		      sbr/print_help.c sbr/print_sw.c sbr/print_version.c \
 		      sbr/push.c sbr/putenv.c sbr/refile.c sbr/remdir.c \
