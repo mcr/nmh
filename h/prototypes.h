@@ -476,8 +476,9 @@ int writeBase64raw (unsigned char *, size_t, unsigned char *);
 /*
  * first argument:  the string to be decoded
  * second argument:  the decoded bytes
- * third argument:   non-zero for text content, and for which CR's should be skipped
- * fourth argument:  for an MD5 digest, it can be null
+ * third argument:  number of decoded bytes
+ * fourth argument:   non-zero for text content, and for which CR's should be skipped
+ * fifth argument:  for an MD5 digest, it can be null
  */
 int decodeBase64 (const char *, const char **, size_t *, int, unsigned char *);
 
