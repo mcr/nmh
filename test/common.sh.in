@@ -5,7 +5,9 @@
 #### The following variables are set by "make check".  Ensure
 #### that they are set here so that individual tests can be run
 #### outside of make.  Requires that MH_OBJ_DIR be set on entry.
-test -z "$MH_TEST_DIR"  &&  MH_TEST_DIR="$MH_OBJ_DIR/test/testdir"
+#### Use the result of cd and pwd so that the result will agree
+#### with what getcwd(3) returns.
+test -z "$MH_TEST_DIR"  &&  MH_TEST_DIR=`cd "$MH_OBJ_DIR/test/testdir" && pwd`
 export MH_TEST_DIR
 test -z "$MH_INST_DIR"  &&  MH_INST_DIR="${MH_TEST_DIR}/inst"
 test -z "$prefix"  &&  prefix=@prefix@

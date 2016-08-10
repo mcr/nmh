@@ -312,7 +312,7 @@ check "$expected" 7.txt.2 'keep first'
 
 # check -clobber never.  Its exit status is the number of files not overwritten.
 run_test 'mhstore -clobber never' \
-         "mhstore: will not overwrite `pwd`/7.txt with -clobber never"
+         "mhstore: will not overwrite $MH_TEST_DIR/Mail/7.txt with -clobber never"
 set +e
 mhstore -clobber never >/dev/null 2>&1
 run_test "echo $?" 1
