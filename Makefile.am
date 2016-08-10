@@ -39,7 +39,7 @@ TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
 		    MH_VERSION="$(VERSION)" \
 		    OAUTH_SUPPORT='@OAUTH_SUPPORT@' \
 		    CURL_USER_AGENT='@CURL_USER_AGENT@' \
-		    MH_TEST_DIR="@abs_builddir@/test/testdir" \
+		    MH_TEST_DIR=`cd "@abs_builddir@" && pwd -P`/test/testdir \
 		    nmhlibexecdir="$(nmhlibexecdir)" bindir="$(bindir)" \
 		    mandir="$(mandir)" nmhetcdir="$(nmhetcdir)" \
 		    nmhetcdirinst="@nmhetcdirinst@$(nmhetcdir)" \
