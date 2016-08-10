@@ -36,7 +36,7 @@ nmhlibexecdir = @libexecdir@/nmh
 ## nmh _does_ have a test suite!
 ##
 TESTS_ENVIRONMENT = MH_OBJ_DIR="@abs_builddir@" \
-		    MH_TEST_DIR="@abs_builddir@/test/testdir" \
+		    MH_TEST_DIR=`cd "@abs_builddir@" && pwd -P`/test/testdir \
 		    nmhlibexecdir="$(nmhlibexecdir)" bindir="$(bindir)" \
 		    mandir="$(mandir)" nmhetcdir="$(nmhetcdir)" \
 		    nmhetcdirinst="@nmhetcdirinst@$(nmhetcdir)" \
