@@ -23,12 +23,6 @@ actual="$MH_TEST_DIR/test-mhstore$$.actual"
 actual_err="$MH_TEST_DIR/test-mhmail$$.actual_err"
 
 cd "$MH_TEST_DIR"
-# ???? debug
-echo MH_TEST_DIR=$MH_TEST_DIR
-echo 'PWD   ='$PWD
-echo 'pwd   ='`pwd`
-echo 'pwd -L='`pwd -L`
-echo 'pwd -P='`pwd -P`
 
 # check with no options and no current message
 run_test 'mhstore' 'mhstore: no cur message'
