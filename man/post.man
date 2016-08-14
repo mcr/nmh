@@ -233,7 +233,7 @@ Encrypted data is labelled with `(sasl-encrypted)' and `(sasl-decrypted)' when
 viewing the SMTP transaction with the
 .B \-snoop
 switch.
-Base64-encoded data is wrapped with ` b64<>'.
+Base64-encoded data is wrapped with `b64<>'.
 (Beware that the SMTP transaction may contain authentication information either
 in plaintext or easily decoded base64.)
 The
