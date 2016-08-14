@@ -1,4 +1,4 @@
-.TH WHOM %manext1% "April 14, 2013" "%nmhversion%"
+.TH WHOM %manext1% "August 14, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -102,7 +102,11 @@ will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(encrypted)' and `(decrypted)' when
 viewing the SMTP transaction with the
 .B \-snoop
-switch.  The
+switch; see the
+.B post
+man page description of
+.B \-snoop
+for its other features.  The
 .B \-saslmaxssf
 switch can be used to select the maximum value of the Security Strength Factor.
 This is an integer value and the exact meaning of this value depends on the
@@ -118,7 +122,11 @@ switches will require and disable the negotiation of TLS support when connecting
 SMTP MTA.  Encrypted data is labelled with `(tls-encrypted)' and
 `(tls-decrypted)' when viewing the SMTP transction with the
 .B \-snoop
-switch.
+switch; see the
+.B post
+man page description of
+.B \-snoop
+for its other features.
 .PP
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
 additional alias files given by the

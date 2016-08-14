@@ -482,6 +482,8 @@ int writeBase64raw (unsigned char *, size_t, unsigned char *);
  */
 int decodeBase64 (const char *, const char **, size_t *, int, unsigned char *);
 
+void hexify (const unsigned char *, size_t, char **);
+
 /*
  * credentials management
  */

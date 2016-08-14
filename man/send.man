@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "July 8, 2016" "%nmhversion%"
+.TH SEND %manext1% "August 14, 2016" "%nmhversion%"
 .SH NAME
 send \- send a message
 .SH SYNOPSIS
@@ -418,7 +418,12 @@ will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(encrypted)' and `(decrypted)' when
 viewing the SMTP transaction with the
 .B \-snoop
-switch.  The
+switch; see the
+.B post
+man page description of
+.B \-snoop
+for its other features.
+The
 .B \-saslmaxssf
 switch can be used to select the maximum value of the Security Strength Factor.
 This is an integer value and the exact meaning of this value depends on the
@@ -441,7 +446,11 @@ taken place, before any SMTP commands are sent or received.  Encrypted data
 is labelled with `(tls-encrypted)' and
 `(tls-decrypted)' when viewing the SMTP transction with the
 .B \-snoop
-switch.
+switch; see the
+.B post
+man page description of
+.B \-snoop
+for its other features.
 The
 .B \-notls
 switch will disable all attempts to negotiate TLS.

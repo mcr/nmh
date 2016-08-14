@@ -324,3 +324,35 @@ test_end:
 
     return OK;
 }
+
+
+/*
+ * Prepare an unsigned char array for display by replacing non-printable
+ * ASCII bytes with their hex representation.  Assumes ASCII input.  output
+ * is allocated by the function and must be freed by the caller.
+ */
+void
+hexify (const unsigned char *input, size_t len, char **output) {
+    /* Start with a charstring capacity that's arbitrarily larger than len. */
+    const charstring_t tmp = charstring_create (2 * len);
+    const unsigned char *cp = input;
+    size_t i;
+
+    for (i = 0; i < len; ++i, ++cp) {
+        if (isprint(*cp)) {
+            charstring_push_back (tmp, (const char) *cp);
+        } else {
+            char s[16];
+            const int num = snprintf(s, sizeof s, "[0x%02x]", *cp);
+
+            if (num <= 0  ||  (unsigned int) num >= sizeof s) {
+                advise (NULL, "hexify failed to write nonprintable character, needed %d bytes", num + 1);
+            } else {
+                charstring_append_cstring (tmp, s);
+            }
+        }
+    }
+
+    *output = charstring_buffer_copy (tmp);
+    charstring_free (tmp);
+}
