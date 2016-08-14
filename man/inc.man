@@ -1,4 +1,4 @@
-.TH INC %manext1% "March 23, 2016" "%nmhversion%"
+.TH INC %manext1% "August 14, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -267,7 +267,11 @@ will attempt to negotiate a security layer for session encryption.
 Encrypted traffic is labelled with `(encrypted)' and `(decrypted)'
 when viewing the POP transaction with the
 .B \-snoop
-switch.
+switch; see the
+.B post
+man page description of
+.B \-snoop
+for its other features.
 .PP
 If
 .B nmh

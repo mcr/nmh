@@ -1,4 +1,4 @@
-.TH MSGCHK %manext1% "March 23, 2016" "%nmhversion%"
+.TH MSGCHK %manext1% "August 14, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -123,7 +123,11 @@ a security layer for session encryption.  Encrypted traffic is labelled
 with `(encrypted)' and `(decrypted)' when viewing the POP transaction
 with the
 .B \-snoop
-switch.
+switch; see the
+.B post
+man page description of
+.B \-snoop
+for its other features.
 .PP
 If
 .B nmh
@@ -165,6 +169,7 @@ None
 .SH "SEE ALSO"
 .IR inc (1),
 .IR mh\-mail (5)
+.IR post (8)
 .SH DEFAULTS
 .nf
 .RB ` user "' defaults to the current user"

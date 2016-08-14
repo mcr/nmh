@@ -1,4 +1,4 @@
-.TH POST %manext8% "July 8, 2014" "%nmhversion%"
+.TH POST %manext8% "August 14, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -232,7 +232,12 @@ will attempt to negotiate a security layer for session encryption.
 Encrypted data is labelled with `(sasl-encrypted)' and `(sasl-decrypted)' when
 viewing the SMTP transaction with the
 .B \-snoop
-switch.  The
+qswitch.
+switch.
+Base64-encoded data is wrapped with `b64<>'.
+(Beware that the SMTP transaction may contain authentication information either
+in plaintext or easily decoded base64.)
+The
 .B \-saslmaxssf
 switch can be used to select the maximum value of the Security Strength Factor.
 This is an integer value and the exact meaning of this value depends on the
@@ -256,6 +261,9 @@ is labelled with `(tls-encrypted)' and
 `(tls-decrypted)' when viewing the SMTP transction with the
 .B \-snoop
 switch.
+Base64-encoded data is wrapped with `b64<>'.
+(Beware that the SMTP transaction may contain authentication information either
+in plaintext or easily decoded base64.)
 The
 .B \-notls
 switch will disable all attempts to negotiate TLS.

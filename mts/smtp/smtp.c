@@ -88,6 +88,8 @@ static int sm_verbose = 0;
 static FILE *sm_rfp = NULL;
 static FILE *sm_wfp = NULL;
 
+static int next_line_encoded = 0;
+
 #ifdef CYRUS_SASL
 /*
  * Some globals needed by SASL
@@ -166,6 +168,7 @@ static int sm_rrecord (char *, int *);
 static int sm_rerror (int);
 static void alrmser (int);
 static char *EHLOset (char *);
+static char *prepare_for_display (const char *, int *);
 static int sm_fwrite(char *, int);
 static int sm_fputs(char *);
 static int sm_fputc(int);
@@ -1216,11 +1219,15 @@ smtalk (int time, char *fmt, ...)
     }
 
     if (sm_debug) {
+	char *decoded_buffer =
+            prepare_for_display (buffer, &next_line_encoded);
+
 	if (sasl_ssf)
 		printf("(sasl-encrypted) ");
 	if (tls_active)
 		printf("(tls-encrypted) ");
-	printf ("=> %s\n", buffer);
+	printf ("=> %s\n", decoded_buffer);
+	free (decoded_buffer);
 	fflush (stdout);
     }
 
@@ -1551,11 +1558,15 @@ again: ;
     for (more = FALSE; sm_rrecord ((char *) (bp = (unsigned char *) buffer),
 				   &bc) != NOTOK ; ) {
 	if (sm_debug) {
+	    char *decoded_buffer =
+                prepare_for_display (buffer, &next_line_encoded);
+
 	    if (sasl_ssf > 0)
 		printf("(sasl-decrypted) ");
 	    if (tls_active)
 		printf("(tls-decrypted) ");
-	    printf ("<= %s\n", buffer);
+	    printf ("<= %s\n", decoded_buffer);
+	    free (decoded_buffer);
 	    fflush (stdout);
 	}
 
@@ -1896,4 +1907,76 @@ EHLOset (char *s)
     }
 
     return 0;
+}
+
+
+/*
+ * Detects, using heuristics, if an SMTP server or client response string
+ * contains a base64-encoded portion.  If it does, decodes it and replaces
+ * any non-printable characters with a hex representation.  Caller is
+ * responsible for free'ing return value.  If the decode fails, a copy of
+ * the input string is returned.
+ */
+static
+char *
+prepare_for_display (const char *string, int *next_line_encoded) {
+    const char *start = NULL;
+    const char *decoded;
+    size_t decoded_len;
+    int prefix_len = -1;
+
+    if (strncmp (string, "AUTH XOAUTH2 ", 13) == 0) {
+        /* Entire XOAUTH2 line. */
+        prefix_len = 13;
+        *next_line_encoded = 0;
+    } else if (strncmp (string, "AUTH LOGIN ", 11) == 0) {
+        /* AUTH LOGIN followed by login name.
+           For AUTH LOGIN not followed by the name, the response to the 334
+           server request will be handled by the code below. */
+        prefix_len = 11;
+        *next_line_encoded = 0;
+    } else if (strncmp (string, "AUTH PLAIN ", 11) == 0) {
+        /* AUTH PLAIN followed by authorization/authentication string, e.g.,
+           the display output will be:
+           AUTH PLAIN b64<test@example.com[0x00]test@example.com[0x00]my_password>
+           For AUTH PLAIN not followed by the string, the response to the 334
+           will be handled by the code below. */
+        prefix_len = 11;
+        *next_line_encoded = 0;
+    } else if (strncmp (string, "334 ", 4) == 0) {
+        /* 334 is the server's request for user or password. */
+        prefix_len = 4;
+        /* The next (client response) line must be base64 encoded. */
+        *next_line_encoded = 1;
+    } else if (*next_line_encoded) {
+        /* "next" line now refers to this line, which is a base64-encoded
+           client response. */
+        prefix_len = 0;
+        *next_line_encoded = 0;
+    } else {
+        *next_line_encoded = 0;
+    }
+
+    if (prefix_len > -1) {
+        start = string + prefix_len;
+    }
+
+    if (start  &&  decodeBase64 (start, &decoded, &decoded_len, 1, NULL) == OK) {
+        char *hexified;
+        char *prefix = mh_xmalloc(prefix_len + 1);
+        char *display_string;
+
+        /* prefix is the beginning portion, which isn't base64 encoded. */
+        snprintf (prefix, prefix_len + 1, "%*s", prefix_len, string);
+        hexify ((const unsigned char *) decoded, decoded_len, &hexified);
+        /* Wrap the decoded portion in "b64<>". */
+        display_string = concat (prefix, "b64<", hexified, ">", NULL);
+        free (hexified);
+        free (prefix);
+        free ((char *) decoded);
+
+        return display_string;
+    } else {
+        return getcpy (string);
+    }
 }
