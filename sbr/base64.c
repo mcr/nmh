@@ -339,7 +339,7 @@ hexify (const unsigned char *input, size_t len, char **output) {
     size_t i;
 
     for (i = 0; i < len; ++i, ++cp) {
-        if (isprint(*cp)) {
+        if (isascii(*cp) && isprint(*cp)) {
             charstring_push_back (tmp, (const char) *cp);
         } else {
             char s[16];
