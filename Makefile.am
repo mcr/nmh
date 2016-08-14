@@ -137,7 +137,8 @@ MAINTAINERCLEANFILES = atags cscope.files cscope.out cscope.in.out cscope.po.out
 ##
 SUPERCLEANFILES = ChangeLog Makefile.in aclocal.m4 compile config.guess \
 		  config.h.in config.h.in~ config.sub configure depcomp \
-		  install-sh missing ylwrap nmh-*.tar.gz nmh-*.tar.gz.sig
+		  install-sh missing test-driver ylwrap nmh-*.tar.gz \
+		  nmh-*.tar.gz.sig
 superclean: maintainer-clean
 	@rm -f $(SUPERCLEANFILES)
 .PHONY: superclean
