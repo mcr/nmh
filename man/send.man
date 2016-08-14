@@ -426,7 +426,8 @@ switch; see the
 .B post
 man page description of
 .B \-snoop
-for its other features.  The
+for its other features.
+The
 .B \-saslmaxssf
 switch can be used to select the maximum value of the Security Strength Factor.
 This is an integer value and the exact meaning of this value depends on the
