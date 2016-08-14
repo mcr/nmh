@@ -28,6 +28,13 @@ test -z "$ICONV_ENABLED"  &&  ICONV_ENABLED="@ICONV_ENABLED@"
 test -z "$OAUTH_SUPPORT"  &&  OAUTH_SUPPORT="@OAUTH_SUPPORT@"
 test -z "$CURL_USER_AGENT"  &&  CURL_USER_AGENT="@CURL_USER_AGENT@"
 
+#### If w3m is used, HOME needs to be set, assuming default w3m config.
+#### So make sure that HOME is set to avoid run-time warning about not
+#### being able to create config directory.
+test -z "$HOME"  &&  HOME=$MH_TEST_DIR
+HOME=$MH_TEST_DIR
+export HOME
+
 unset MAILDROP MHBUILD MHCONTEXT MHMTSUSERCONF MHN MHSHOW MHSTORE
 unset MHLDEBUG MHPDEBUG MHWDEBUG PAGER
 #### Set LC_ALL in individual tests as needed.  Unset these so
