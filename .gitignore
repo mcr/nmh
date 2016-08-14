@@ -19,6 +19,7 @@
 /depcomp
 /install-sh
 /missing
+/test-driver
 /ylwrap
 /nmh-*.tar.gz
 /nmh-*.tar.gz.sig
