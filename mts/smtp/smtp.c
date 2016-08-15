@@ -1925,23 +1925,14 @@ prepare_for_display (const char *string, int *next_line_encoded) {
     size_t decoded_len;
     int prefix_len = -1;
 
-    if (strncmp (string, "AUTH XOAUTH2 ", 13) == 0) {
-        /* Entire XOAUTH2 line. */
-        prefix_len = 13;
-        *next_line_encoded = 0;
-    } else if (strncmp (string, "AUTH LOGIN ", 11) == 0) {
-        /* AUTH LOGIN followed by login name.
-           For AUTH LOGIN not followed by the name, the response to the 334
-           server request will be handled by the code below. */
-        prefix_len = 11;
-        *next_line_encoded = 0;
-    } else if (strncmp (string, "AUTH PLAIN ", 11) == 0) {
-        /* AUTH PLAIN followed by authorization/authentication string, e.g.,
-           the display output will be:
-           AUTH PLAIN b64<test@example.com[0x00]test@example.com[0x00]my_password>
-           For AUTH PLAIN not followed by the string, the response to the 334
-           will be handled by the code below. */
-        prefix_len = 11;
+    if (strncmp (string, "AUTH ", 5) == 0) {
+        /* AUTH line:  the mechanism isn't encoded.  If there's an initial
+           response, it must be base64 encoded.. */
+        char *mechanism = strchr (string + 5, ' ');
+
+        if (mechanism != NULL) {
+            prefix_len = (int) (mechanism - string + 1);
+        } /* else no space following the mechanism, so no initial response */
         *next_line_encoded = 0;
     } else if (strncmp (string, "334 ", 4) == 0) {
         /* 334 is the server's request for user or password. */
@@ -1957,7 +1948,10 @@ prepare_for_display (const char *string, int *next_line_encoded) {
         *next_line_encoded = 0;
     }
 
-    if (prefix_len > -1) {
+    /* Don't attempt to decoded unencoded initial response ('=') or cancel
+       response ('*'). */
+    if (prefix_len > -1  &&
+        string[prefix_len] != '='  &&  string[prefix_len] != '*') {
         start = string + prefix_len;
     }
 
