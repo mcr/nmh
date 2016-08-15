@@ -421,7 +421,7 @@ uip_scan_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_send_SOURCES = uip/send.c uip/sendsbr.c uip/annosbr.c \
 		   uip/distsbr.c
-uip_send_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(POSTLINK)
+uip_send_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_show_SOURCES = uip/show.c uip/mhlsbr.c
 uip_show_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
@@ -431,7 +431,8 @@ uip_sortm_LDADD = $(LDADD) $(POSTLINK)
 
 uip_whatnow_SOURCES = uip/whatnow.c uip/whatnowsbr.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
-uip_whatnow_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(CURLLIB) $(POSTLINK)
+uip_whatnow_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(CURLLIB) $(ICONVLIB) \
+		    $(POSTLINK)
 
 uip_whom_SOURCES = uip/whom.c uip/distsbr.c
 uip_whom_LDADD = $(LDADD) $(POSTLINK)
@@ -481,7 +482,7 @@ uip_slocal_LDADD = $(LDADD) $(NDBM_LIBS) $(POSTLINK)
 
 uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
-uip_viamail_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(POSTLINK)
+uip_viamail_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(ICONVLIB) $(POSTLINK)
 
 ##
 ## Other program definitions
