@@ -177,8 +177,9 @@ main (int argc, char **argv) {
                 done (0);
 
             case DECODETEXTSW:
-                if (! (cp = *argp++)  ||  *cp == '-')
+                if (! (cp = *argp++)  ||  *cp == '-') {
                     adios (NULL, "missing argument to %s", argp[-2]);
+                }
                 if (! strcasecmp (cp, "8bit")) {
                     fx.decodetext = CE_8BIT;
                 } else if (! strcasecmp (cp, "7bit")) {
@@ -191,8 +192,9 @@ main (int argc, char **argv) {
                 fx.decodetext = 0;
                 continue;
             case DECODETYPESW:
-                if (! (cp = *argp++)  ||  *cp == '-')
+                if (! (cp = *argp++)  ||  *cp == '-') {
                     adios (NULL, "missing argument to %s", argp[-2]);
+                }
                 fx.decodetypes = cp;
                 continue;
             case CRLFLINEBREAKSSW:
@@ -202,8 +204,9 @@ main (int argc, char **argv) {
                 fx.lf_line_endings = 1;
                 continue;
             case TEXTCHARSETSW:
-                if (! (cp = *argp++) || (*cp == '-' && cp[1]))
+                if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
                     adios (NULL, "missing argument to %s", argp[-2]);
+                }
                 fx.textcharset = cp;
                 continue;
             case NTEXTCHARSETSW:
@@ -222,8 +225,9 @@ main (int argc, char **argv) {
                 fx.fixcte = 0;
                 continue;
             case FIXTYPESW:
-                if (! (cp = *argp++) || (*cp == '-' && cp[1]))
+                if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
                     adios (NULL, "missing argument to %s", argp[-2]);
+                }
                 if (! strncasecmp (cp, "multipart/", 10)  ||
                     ! strncasecmp (cp, "message/", 8)) {
                     adios (NULL, "-fixtype %s not allowed", cp);
@@ -246,18 +250,21 @@ main (int argc, char **argv) {
                 fx.replacetextplain = 0;
                 continue;
             case FILESW:
-                if (! (cp = *argp++) || (*cp == '-' && cp[1]))
+                if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
                     adios (NULL, "missing argument to %s", argp[-2]);
+                }
                 file = *cp == '-'  ?  add (cp, NULL)  :  path (cp, TFILE);
                 continue;
             case OUTFILESW:
-                if (! (cp = *argp++) || (*cp == '-' && cp[1]))
+                if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
                     adios (NULL, "missing argument to %s", argp[-2]);
+                }
                 outfile = *cp == '-'  ?  add (cp, NULL)  :  path (cp, TFILE);
                 continue;
             case RPROCSW:
-                if (!(rmmproc = *argp++) || *rmmproc == '-')
+                if (!(rmmproc = *argp++) || *rmmproc == '-') {
                     adios (NULL, "missing argument to %s", argp[-2]);
+                }
                 continue;
             case NRPRCSW:
                 rmmproc = NULL;
@@ -277,10 +284,11 @@ main (int argc, char **argv) {
             }
         }
         if (*cp == '+' || *cp == '@') {
-            if (folder)
+            if (folder) {
                 adios (NULL, "only one folder at a time!");
-            else
+            } else {
                 folder = pluspath (cp);
+            }
         } else {
             if (*cp == '/') {
                 /* Interpret a full path as a filename, not a message. */
@@ -305,11 +313,13 @@ main (int argc, char **argv) {
     suppress_bogus_mp_content_warning = skip_mp_cte_check = 1;
     suppress_extraneous_trailing_semicolon_warning = 1;
 
-    if (! context_find ("path"))
+    if (! context_find ("path")) {
         free (path ("./", TFOLDER));
+    }
 
-    if (file && msgs.size)
+    if (file && msgs.size) {
         adios (NULL, "cannot specify msg and file at same time!");
+    }
 
     /*
      * check if message is coming from file
@@ -370,27 +380,33 @@ main (int argc, char **argv) {
          */
         CT ct;
 
-        if (! msgs.size)
+        if (! msgs.size) {
             app_msgarg(&msgs, "cur");
-        if (! folder)
+        }
+        if (! folder) {
             folder = getfolder (1);
+        }
         maildir = m_maildir (folder);
 
-        if (chdir (maildir) == NOTOK)
+        if (chdir (maildir) == NOTOK) {
             adios (maildir, "unable to change directory to");
+        }
 
         /* read folder and create message structure */
-        if (! (mp = folder_read (folder, 1)))
+        if (! (mp = folder_read (folder, 1))) {
             adios (NULL, "unable to read folder %s", folder);
+        }
 
         /* check for empty folder */
-        if (mp->nummsg == 0)
+        if (mp->nummsg == 0) {
             adios (NULL, "no messages in %s", folder);
+        }
 
         /* parse all the message ranges/sequences and set SELECTED */
         for (msgnum = 0; msgnum < msgs.size; msgnum++)
-            if (! m_convert (mp, msgs.msgs[msgnum]))
+            if (! m_convert (mp, msgs.msgs[msgnum])) {
                 done (1);
+            }
         seq_setprev (mp);       /* set the previous-sequence */
 
         if (! (cts =
@@ -454,6 +470,8 @@ main (int argc, char **argv) {
     if (fx.fixtypes != NULL) { svector_free (fx.fixtypes); }
     free (outfile);
     free (file);
+    free (folder);
+    free (arguments);
 
     /* done is freects_done, which will clean up all of cts. */
     done (status);
@@ -785,8 +803,9 @@ replace_boundary (CT ct, char *file, char *boundary) {
                 fprintf (fpout, "%s:%s%s\n", np, new_ctline,
 			 new_params ? new_params : "");
 		free(new_ctline);
-		if (new_params)
+		if (new_params) {
 		    free(new_params);
+                }
             }
 
             free (vp);
@@ -1897,12 +1916,13 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
                     ct->c_cefile.ce_file = NULL;
                 } else {
                     int enc;
-                    if (ct_encoding == CE_BINARY)
+                    if (ct_encoding == CE_BINARY) {
                         enc = CE_BINARY;
-                    else if (ct_encoding == CE_8BIT  &&  encoding == CE_7BIT)
+                    } else if (ct_encoding == CE_8BIT  &&  encoding == CE_7BIT) {
                         enc = CE_QUOTED;
-                    else
+                    } else {
                         enc = charset_encoding (ct);
+                    }
                     if (set_ce (ct, enc) == OK) {
                         ++*message_mods;
                         if (verbosw) {
