@@ -37,6 +37,12 @@
 # define TLSminc(a)   0
 #endif /* TLS_SUPPORT */
 
+#ifndef OAUTH_SUPPORT
+# define OAUTHminc(a)	(a)
+#else /* OAUTH_SUPPORT */
+# define OAUTHmine(a)	0
+#endif /* OAUTH_SUPPORT */
+
 #define FCCS		10	/* max number of fccs allowed */
 
 /* In the following array of structures, the numeric second field of the
@@ -91,6 +97,13 @@
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("credentials legacy|file:filename", 0, CREDENTIALSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
+    X("oauthcredfile", OAUTHminc(-7), OAUTHCREDFILESW) \
+    X("oauthclientid", OAUTHminc(-12), OAUTHCLIDSW) \
+    X("oauthclientsecret", OAUTHminc(-12), OAUTHCLSECSW) \
+    X("oauthauthendpoint", OAUTHminc(-6), OAUTHAUTHENDSW) \
+    X("oauthredirect", OAUTHminc(-6), OAUTHREDIRSW) \
+    X("oauthtokenendpoint", OAUTHminc(-6), OAUTHTOKENDSW) \
+    X("oauthscope", OAUTHminc(-6), OAUTHSCOPESW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(POST);
