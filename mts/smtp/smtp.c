@@ -11,6 +11,7 @@
 #include <h/mts.h>
 #include <h/signals.h>
 #include <h/utils.h>
+#include <h/oauth.h>
 
 #ifdef CYRUS_SASL
 #include <sasl/sasl.h>
@@ -174,7 +175,7 @@ static int sm_fputs(char *);
 static int sm_fputc(int);
 static void sm_fflush(void);
 static int sm_fgets(char *, int, FILE *);
-static int sm_auth_xoauth2(const char *);
+static int sm_auth_xoauth2(const char *, const char *, int);
 
 #ifdef CYRUS_SASL
 /*
@@ -187,12 +188,12 @@ static int sm_auth_sasl(char *, int, char *, char *);
 int
 sm_init (char *client, char *server, char *port, int watch, int verbose,
          int debug, int sasl, int saslssf, char *saslmech, char *user,
-         const char *xoauth_client_res, int tls)
+         const char *oauth_svc, int tls)
 {
     if (sm_mts == MTS_SMTP)
 	return smtp_init (client, server, port, watch, verbose,
 			  debug, sasl, saslssf, saslmech, user,
-                          xoauth_client_res, tls);
+                          oauth_svc, tls);
     else
 	return sendmail_init (client, server, watch, verbose,
                               debug, sasl, saslssf, saslmech, user);
@@ -202,7 +203,7 @@ static int
 smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	   int debug,
            int sasl, int saslssf, char *saslmech, char *user,
-           const char *xoauth_client_res, int tls)
+           const char *oauth_svc, int tls)
 {
     int result, sd1, sd2;
 #ifndef CYRUS_SASL
@@ -380,7 +381,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 
         /* Don't call sm_auth_sasl() for XAUTH2 with -sasl.  Instead, call
            sm_auth_xoauth2() below. */
-	if (xoauth_client_res == NULL  &&
+	if (oauth_svc == NULL  &&
             sm_auth_sasl(user, saslssf, saslmech ? saslmech : server_mechs,
 			 server) != RP_OK) {
 	    sm_end(NOTOK);
@@ -389,14 +390,14 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     }
 #endif /* CYRUS_SASL */
 
-    if (xoauth_client_res != NULL) {
+    if (oauth_svc != NULL) {
         char *server_mechs;
 	if ((server_mechs = EHLOset("AUTH")) == NULL
             || stringdex("XOAUTH2", server_mechs) == -1) {
 	    sm_end(NOTOK);
 	    return sm_ierror("SMTP server does not support SASL XOAUTH2");
 	}
-	if (sm_auth_xoauth2(xoauth_client_res) != RP_OK) {
+	if (sm_auth_xoauth2(user, oauth_svc, debug) != RP_OK) {
 	    sm_end(NOTOK);
 	    return NOTOK;
 	}
@@ -1154,9 +1155,18 @@ sm_get_pass(sasl_conn_t *conn, void *context, int id,
 
 /* https://developers.google.com/gmail/xoauth2_protocol */
 static int
-sm_auth_xoauth2(const char *client_res)
+sm_auth_xoauth2(const char *user, const char *oauth_svc, int snoop)
 {
-    int status = smtalk(SM_AUTH, "AUTH XOAUTH2 %s", client_res);
+    const char *xoauth_client_res;
+    int status;
+
+    xoauth_client_res = mh_oauth_do_xoauth(user, oauth_svc,
+					   snoop ? stderr : NULL);
+
+    if (xoauth_client_res == NULL)
+    	return sm_ierror("Internal error: oauth_do_xoauth() returned NULL");
+
+    status = smtalk(SM_AUTH, "AUTH XOAUTH2 %s", xoauth_client_res);
     if (status == 235) {
         /* It worked! */
         return RP_OK;

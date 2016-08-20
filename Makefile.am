@@ -325,11 +325,11 @@ uip_burst_LDADD = $(LDADD) $(ICONVLIB) $(POSTLINK)
 
 uip_comp_SOURCES = uip/comp.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c
-uip_comp_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(CURLLIB) $(POSTLINK)
+uip_comp_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_dist_SOURCES = uip/dist.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c uip/forwsbr.c
-uip_dist_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(CURLLIB) $(POSTLINK)
+uip_dist_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_flist_SOURCES = uip/flist.c
 uip_flist_LDADD = $(LDADD) $(POSTLINK)
@@ -339,7 +339,7 @@ uip_folder_LDADD = $(LDADD) $(POSTLINK)
 
 uip_forw_SOURCES = uip/forw.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 		   uip/annosbr.c uip/distsbr.c uip/forwsbr.c
-uip_forw_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(CURLLIB) $(POSTLINK)
+uip_forw_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/popsbr.c
 uip_inc_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(SASLLIB) $(CURLLIB) $(POSTLINK)
@@ -408,7 +408,7 @@ uip_refile_LDADD = $(LDADD) $(POSTLINK)
 
 uip_repl_SOURCES = uip/repl.c uip/replsbr.c uip/whatnowproc.c uip/whatnowsbr.c \
 		   uip/sendsbr.c uip/annosbr.c uip/distsbr.c
-uip_repl_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(CURLLIB) $(POSTLINK)
+uip_repl_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_rmf_SOURCES = uip/rmf.c
 uip_rmf_LDADD = $(LDADD) $(POSTLINK)
@@ -421,7 +421,7 @@ uip_scan_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_send_SOURCES = uip/send.c uip/sendsbr.c uip/annosbr.c \
 		   uip/distsbr.c
-uip_send_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(ICONVLIB) $(POSTLINK)
+uip_send_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_show_SOURCES = uip/show.c uip/mhlsbr.c
 uip_show_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
@@ -431,7 +431,7 @@ uip_sortm_LDADD = $(LDADD) $(POSTLINK)
 
 uip_whatnow_SOURCES = uip/whatnow.c uip/whatnowsbr.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
-uip_whatnow_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(CURLLIB) $(ICONVLIB) \
+uip_whatnow_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) \
 		    $(POSTLINK)
 
 uip_whom_SOURCES = uip/whom.c uip/distsbr.c
@@ -463,7 +463,8 @@ uip_mkstemp_SOURCES = uip/mkstemp.c
 uip_mkstemp_LDADD = $(LDADD) $(POSTLINK)
 
 uip_post_SOURCES = uip/post.c uip/aliasbr.c
-uip_post_LDADD = mts/libmts.a $(LDADD) $(SASLLIB) $(TLSLIB) $(POSTLINK)
+uip_post_LDADD = mts/libmts.a $(LDADD) $(SASLLIB) $(CURLLIB) $(TLSLIB) \
+		 $(POSTLINK)
 
 uip_rcvdist_SOURCES = uip/rcvdist.c uip/distsbr.c
 uip_rcvdist_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
@@ -482,7 +483,7 @@ uip_slocal_LDADD = $(LDADD) $(NDBM_LIBS) $(POSTLINK)
 
 uip_viamail_SOURCES = uip/viamail.c uip/mhmisc.c uip/sendsbr.c \
 		      uip/annosbr.c uip/distsbr.c
-uip_viamail_LDADD = $(LDADD) $(TERMLIB) $(CURLLIB) $(ICONVLIB) $(POSTLINK)
+uip_viamail_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 ##
 ## Other program definitions
@@ -627,7 +628,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/trimcpy.c sbr/unquote.c \
 		      sbr/uprf.c sbr/vfgets.c \
 		      sbr/mf.c sbr/utils.c sbr/ctype-checked.c \
-		      sbr/m_mktemp.c sbr/vector.c sbr/oauth.c \
+		      sbr/m_mktemp.c sbr/vector.c sbr/oauth.c sbr/oauth_prof.c \
 		      config/config.c config/version.c \
 		      thirdparty/jsmn/jsmn.c
 

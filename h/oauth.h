@@ -75,6 +75,32 @@ typedef struct mh_oauth_ctx mh_oauth_ctx;
 
 typedef struct mh_oauth_cred mh_oauth_cred;
 
+typedef struct mh_oauth_service_info mh_oauth_service_info;
+
+struct mh_oauth_service_info {
+    /* Name of service, so we can search static internal services array
+     * and for determining default credential file name. */
+    char *name;
+
+    /* Human-readable name of the service; in mh_oauth_ctx::svc this is not
+     * another buffer to free, but a pointer to either static SERVICE data
+     * (below) or to the name field. */
+    char *display_name;
+
+    /* [1] 2.2 Client Identifier, 2.3.1 Client Password */
+    char *client_id;
+    /* [1] 2.3.1 Client Password */
+    char *client_secret;
+    /* [1] 3.1 Authorization Endpoint */
+    char *auth_endpoint;
+    /* [1] 3.1.2 Redirection Endpoint */
+    char *redirect_uri;
+    /* [1] 3.2 Token Endpoint */
+    char *token_endpoint;
+    /* [1] 3.3 Access Token Scope */
+    char *scope;
+};
+
 /*
  * Do the complete dance for XOAUTH2 as used by POP3 and SMTP.
  *
@@ -223,3 +249,14 @@ mh_oauth_cred_load(FILE *fp, mh_oauth_ctx *ctx, const char *user);
 const char *
 mh_oauth_sasl_client_response(size_t *res_len,
                               const char *user, const mh_oauth_cred *cred);
+
+/*
+ * Retrieve the various entries for the OAuth mechanism
+ */
+
+boolean 
+mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
+			  char *errbuf, size_t errbuflen);
+
+char *
+mh_oauth_node_name_for_svc(const char *entry, const char *svc_name);

@@ -26,7 +26,7 @@
 #ifdef OAUTH_SUPPORT
 #include <h/oauth.h>
 
-static int setup_oauth_params(char *[], int *, int, const char **);
+static int setup_oauth_params(char *[], int *, const char **);
 #endif /* OAUTH_SUPPORT */
 
 int debugsw = 0;		/* global */
@@ -749,17 +749,7 @@ handle_sendfrom(char **vec, int *vecp, char *draft) {
         for (vp = vec; *vp; ++vp) {
             if (strcmp(*vp, "xoauth2") == 0) {
 #ifdef OAUTH_SUPPORT
-                int snoop = 0;
-
-                /* -snoop will be in vec if it was enabled. */
-                for (vp = vec; vp && *vp; ++vp) {
-                    if (strcmp(*vp, "-snoop") == 0) {
-                        snoop = 1;
-                        break;
-                    }
-                }
-
-                if (setup_oauth_params(vec, vecp, snoop, &message) != OK) {
+                if (setup_oauth_params(vec, vecp, &message) != OK) {
                     adios(NULL, message);
                 }
                 break;
@@ -775,12 +765,13 @@ handle_sendfrom(char **vec, int *vecp, char *draft) {
 
 #ifdef OAUTH_SUPPORT
 /*
- * For XOAUTH2, append access token, from mh_oauth_do_xoauth(), for the user to vec.
+ * For XOAUTH2, append profile entries so post can do the heavy lifting
  */
-static
-int
-setup_oauth_params(char *vec[], int *vecp, int snoop, const char **message) {
+static int
+setup_oauth_params(char *vec[], int *vecp, const char **message) {
     const char *saslmech = NULL, *user = NULL, *auth_svc = NULL;
+    mh_oauth_service_info svc;
+    char errbuf[256];
     int i;
 
     /* Make sure we have all the information we need. */
@@ -807,6 +798,7 @@ setup_oauth_params(char *vec[], int *vecp, int snoop, const char **message) {
             return NOTOK;
         }
 
+	
         vec[(*vecp)++] = getcpy("-authservice");
         if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
             vec[(*vecp)++] = mh_oauth_do_xoauth(user, auth_svc, snoop ? stderr : NULL);

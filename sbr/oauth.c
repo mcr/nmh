@@ -54,46 +54,6 @@
  */
 #define URL_MAX 8192
 
-struct service_info {
-    /* Name of service, so we can search static SERVICES (below) and for
-     * determining default credential file name. */
-    char *name;
-
-    /* Human-readable name of the service; in mh_oauth_ctx::svc this is not
-     * another buffer to free, but a pointer to either static SERVICE data
-     * (below) or to the name field. */
-    char *display_name;
-
-    /* [1] 2.2 Client Identifier, 2.3.1 Client Password */
-    char *client_id;
-    /* [1] 2.3.1 Client Password */
-    char *client_secret;
-    /* [1] 3.1 Authorization Endpoint */
-    char *auth_endpoint;
-    /* [1] 3.1.2 Redirection Endpoint */
-    char *redirect_uri;
-    /* [1] 3.2 Token Endpoint */
-    char *token_endpoint;
-    /* [1] 3.3 Access Token Scope */
-    char *scope;
-};
-
-static const struct service_info SERVICES[] = {
-    /* https://developers.google.com/accounts/docs/OAuth2InstalledApp */
-    {
-        /* name */ "gmail",
-        /* display_name */ "Gmail",
-
-        /* client_id */ "91584523849-8lv9kgp1rvp8ahta6fa4b125tn2polcg.apps.googleusercontent.com",
-        /* client_secret */ "Ua8sX34xyv7hVrKM-U70dKI6",
-
-        /* auth_endpoint */ "https://accounts.google.com/o/oauth2/auth",
-        /* redirect_uri */ "urn:ietf:wg:oauth:2.0:oob",
-        /* token_endpoint */ "https://accounts.google.com/o/oauth2/token",
-        /* scope */ "https://mail.google.com/"
-    }
-};
-
 struct mh_oauth_cred {
     mh_oauth_ctx *ctx;
 
@@ -114,7 +74,7 @@ struct mh_oauth_cred {
 };
 
 struct mh_oauth_ctx {
-    struct service_info svc;
+    struct mh_oauth_service_info svc;
     CURL *curl;
     FILE *log;
 
@@ -283,78 +243,6 @@ set_err_http(mh_oauth_ctx *ctx, const struct curl_ctx *curl_ctx)
     free(error);
 }
 
-/* Copy service info so we don't have to free it only sometimes. */
-static void
-copy_svc(struct service_info *to, const struct service_info *from)
-{
-    to->display_name = from->display_name;
-#define copy(_field_) to->_field_ = getcpy(from->_field_)
-    copy(name);
-    copy(scope);
-    copy(client_id);
-    copy(client_secret);
-    copy(auth_endpoint);
-    copy(token_endpoint);
-    copy(redirect_uri);
-#undef copy
-}
-
-/* Return profile component node name for a service parameter. */
-static char *
-node_name_for_svc(const char *base_name, const char *svc)
-{
-    char *result = mh_xmalloc(sizeof "oauth-" - 1
-                              + strlen(svc)
-                              + 1            /* '-' */
-                              + strlen(base_name)
-                              + 1            /* '\0' */);
-    sprintf(result, "oauth-%s-%s", svc, base_name);
-    /* TODO: s/_/-/g ? */
-    return result;
-}
-
-/* Update one service_info field if overridden in profile. */
-static void
-update_svc_field(char **field, const char *base_name, const char *svc)
-{
-    char *name = node_name_for_svc(base_name, svc);
-    const char *value = context_find(name);
-    if (value != NULL) {
-        free(*field);
-        *field = getcpy(value);
-    }
-    free(name);
-}
-
-/* Update all service_info fields that are overridden in profile. */
-static boolean
-update_svc(struct service_info *svc, const char *svc_name, mh_oauth_ctx *ctx)
-{
-#define update(name)                                                    \
-    update_svc_field(&svc->name, #name, svc_name);                       \
-    if (svc->name == NULL) {                                             \
-        set_err_details(ctx, MH_OAUTH_BAD_PROFILE, #name " is missing"); \
-        return FALSE;                                                    \
-    }
-    update(scope);
-    update(client_id);
-    update(client_secret);
-    update(auth_endpoint);
-    update(token_endpoint);
-    update(redirect_uri);
-#undef update
-
-    if (svc->name == NULL) {
-        svc->name = getcpy(svc_name);
-    }
-
-    if (svc->display_name == NULL) {
-        svc->display_name = svc->name;
-    }
-
-    return TRUE;
-}
-
 static char *
 make_user_agent()
 {
@@ -373,26 +261,15 @@ boolean
 mh_oauth_new(mh_oauth_ctx **result, const char *svc_name)
 {
     mh_oauth_ctx *ctx = *result = mh_xmalloc(sizeof *ctx);
-    size_t i;
 
     ctx->curl = NULL;
 
     ctx->log = NULL;
     ctx->cred_fn = ctx->sasl_client_res = ctx->err_formatted = NULL;
 
-    ctx->svc.name = ctx->svc.display_name = NULL;
-    ctx->svc.scope = ctx->svc.client_id = NULL;
-    ctx->svc.client_secret = ctx->svc.auth_endpoint = NULL;
-    ctx->svc.token_endpoint = ctx->svc.redirect_uri = NULL;
-
-    for (i = 0; i < sizeof SERVICES / sizeof SERVICES[0]; i++) {
-        if (strcmp(SERVICES[i].name, svc_name) == 0) {
-            copy_svc(&ctx->svc, &SERVICES[i]);
-            break;
-        }
-    }
-
-    if (!update_svc(&ctx->svc, svc_name, ctx)) {
+    if (!mh_oauth_get_service_info(svc_name, &ctx->svc, ctx->err_buf,
+				   sizeof(ctx->err_buf))) {
+	set_err_details(ctx, MH_OAUTH_BAD_PROFILE, ctx->err_buf);
         return FALSE;
     }
 
@@ -698,7 +575,7 @@ mh_oauth_cred_fn(mh_oauth_ctx *ctx)
     char *result, *result_if_allocated;
     const char *svc = ctx->svc.name;
 
-    char *component = node_name_for_svc("credential-file", svc);
+    char *component = mh_oauth_node_name_for_svc("credential-file", svc);
     result = context_find(component);
     free(component);
 
