@@ -26,7 +26,7 @@
 #ifdef OAUTH_SUPPORT
 #include <h/oauth.h>
 
-static int setup_oauth_params(char *[], int *, const char **);
+static int setup_oauth_params(char *[], int *, const char *, const char **);
 #endif /* OAUTH_SUPPORT */
 
 int debugsw = 0;		/* global */
@@ -52,7 +52,7 @@ static void anno (int, struct stat *);
 static void annoaux (int);
 static int splitmsg (char **, int, char *, char *, struct stat *, int);
 static int sendaux (char **, int, char *, char *, struct stat *);
-static void handle_sendfrom(char **, int *, char *);
+static void handle_sendfrom(char **, int *, char *, const char *);
 static int get_from_header_info(const char *, const char **, const char **, const char **);
 static const char *get_message_header_info(FILE *, char *);
 static void merge_profile_entry(const char *, const char *, char *[], int *);
@@ -64,7 +64,7 @@ static void armed_done (int) NORETURN;
 
 int
 sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
-         int rename_drft)
+         int rename_drft, const char *auth_svc)
 {
     int status, i;
     pid_t child;
@@ -124,12 +124,22 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	    drft = file;
 	}
 
+	/*
+	 * Add in any necessary profile entries for xoauth
+	 */
+
+	if (auth_svc) {
+		const char *errmsg;
+		if (!setup_oauth_params(vec, nvecsp, auth_svc, &errmsg))
+			adios(NULL, "%s", errmsg);
+	}
+
         /*
          * Rework the vec based on From: header in draft, as specified
          * by sendfrom-address entries in profile.
          */
         if (context_find_prefix("sendfrom-")) {
-            handle_sendfrom(vec, nvecsp, draft);
+            handle_sendfrom(vec, nvecsp, draft, auth_svc);
         }
 
 	/*
@@ -727,7 +737,7 @@ oops:
 
 static
 void
-handle_sendfrom(char **vec, int *vecp, char *draft) {
+handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc) {
     const char *addr, *host;
     const char *message;
 
@@ -749,7 +759,7 @@ handle_sendfrom(char **vec, int *vecp, char *draft) {
         for (vp = vec; *vp; ++vp) {
             if (strcmp(*vp, "xoauth2") == 0) {
 #ifdef OAUTH_SUPPORT
-                if (setup_oauth_params(vec, vecp, &message) != OK) {
+                if (setup_oauth_params(vec, vecp, auth_svc, &message) != OK) {
                     adios(NULL, message);
                 }
                 break;
@@ -768,8 +778,9 @@ handle_sendfrom(char **vec, int *vecp, char *draft) {
  * For XOAUTH2, append profile entries so post can do the heavy lifting
  */
 static int
-setup_oauth_params(char *vec[], int *vecp, const char **message) {
-    const char *saslmech = NULL, *user = NULL, *auth_svc = NULL;
+setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
+		   const char **message) {
+    const char *saslmech = NULL, *user = NULL;
     mh_oauth_service_info svc;
     char errbuf[256];
     int i;
@@ -798,12 +809,26 @@ setup_oauth_params(char *vec[], int *vecp, const char **message) {
             return NOTOK;
         }
 
-	
-        vec[(*vecp)++] = getcpy("-authservice");
         if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
-            vec[(*vecp)++] = mh_oauth_do_xoauth(user, auth_svc, snoop ? stderr : NULL);
-        } else {
-            vec[(*vecp)++] = getcpy(auth_svc);
+	    if (! mh_oauth_get_service_info(auth_svc, &svc, errbuf,
+	    				    sizeof(errbuf)))
+		adios(NULL, "Unable to retrieve oauth profile entries: %s",
+		      errbuf);
+	    
+	    vec[(*vecp)++] = getcpy("-oauthcredfile");
+	    vec[(*vecp)++] = getcpy(mh_oauth_cred_fn(auth_svc));
+	    vec[(*vecp)++] = getcpy("-oauthclientid");
+	    vec[(*vecp)++] = getcpy(svc.client_id);
+	    vec[(*vecp)++] = getcpy("-oauthclientsecret");
+	    vec[(*vecp)++] = getcpy(svc.client_secret);
+	    vec[(*vecp)++] = getcpy("-oauthauthendpoint");
+	    vec[(*vecp)++] = getcpy(svc.auth_endpoint);
+	    vec[(*vecp)++] = getcpy("-oauthredirect");
+	    vec[(*vecp)++] = getcpy(svc.redirect_uri);
+	    vec[(*vecp)++] = getcpy("-oauthtokenendpoint");
+	    vec[(*vecp)++] = getcpy(svc.token_endpoint);
+	    vec[(*vecp)++] = getcpy("-oauthscope");
+	    vec[(*vecp)++] = getcpy(svc.scope);
         }
     }
 

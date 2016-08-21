@@ -143,7 +143,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, FILE *log)
 
     if (log != NULL) mh_oauth_log_to(stderr, ctx);
 
-    fn = getcpy(mh_oauth_cred_fn(ctx));
+    fn = getcpy(mh_oauth_cred_fn(svc));
     fp = lkfopendata(fn, "r+", &failed_to_lock);
     if (fp == NULL) {
         if (errno == ENOENT) {
@@ -567,36 +567,6 @@ mh_oauth_cred_free(mh_oauth_cred *cred)
     free(cred->refresh_token);
     free(cred->access_token);
     free(cred);
-}
-
-const char *
-mh_oauth_cred_fn(mh_oauth_ctx *ctx)
-{
-    char *result, *result_if_allocated;
-    const char *svc = ctx->svc.name;
-
-    char *component = mh_oauth_node_name_for_svc("credential-file", svc);
-    result = context_find(component);
-    free(component);
-
-    if (result == NULL) {
-        result = mh_xmalloc(sizeof "oauth-" - 1
-                            + strlen(svc)
-                            + 1 /* '\0' */);
-        sprintf(result, "oauth-%s", svc);
-        result_if_allocated = result;
-    } else {
-        result_if_allocated = NULL;
-    }
-
-    if (result[0] != '/') {
-        const char *tmp = m_maildir(result);
-        free(result_if_allocated);
-        result = getcpy(tmp);
-    }
-
-    free(ctx->cred_fn);
-    return ctx->cred_fn = result;
 }
 
 /* for loading multi-user cred files */
@@ -1165,5 +1135,4 @@ get_json_strings(const char *input, size_t input_len, FILE *log, ...)
     free(tokens);
     return result;
 }
-
 #endif

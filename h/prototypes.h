@@ -451,7 +451,7 @@ int sc_length(void);
 int sc_width(void);
 int build_form (char *, char *, int *, char *, char *, char *, char *,
 		char *, char *);
-int sendsbr (char **, int, char *, char *, struct stat *, int);
+int sendsbr (char **, int, char *, char *, struct stat *, int, const char *);
 int SOprintf (char *, ...);
 int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);

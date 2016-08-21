@@ -134,4 +134,32 @@ mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
 
     return TRUE;
 }
+
+const char *
+mh_oauth_cred_fn(const char *svc)
+{
+    char *result, *result_if_allocated;
+
+    char *component = mh_oauth_node_name_for_svc("credential-file", svc);
+    result = context_find(component);
+    free(component);
+
+    if (result == NULL) {
+        result = mh_xmalloc(sizeof "oauth-" - 1
+                            + strlen(svc)
+                            + 1 /* '\0' */);
+        sprintf(result, "oauth-%s", svc);
+        result_if_allocated = result;
+    } else {
+        result_if_allocated = NULL;
+    }
+
+    if (result[0] != '/') {
+        const char *tmp = m_maildir(result);
+        free(result_if_allocated);
+        result = getcpy(tmp);
+    }
+
+    return result;
+}
 #endif

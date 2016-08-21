@@ -218,7 +218,7 @@ mh_oauth_cred_free(mh_oauth_cred *cred);
  * Never returns NULL.
  */
 const char *
-mh_oauth_cred_fn(mh_oauth_ctx *ctx);
+mh_oauth_cred_fn(const char *svc_name);
 
 /*
  * Serialize OAuth tokens to file.
@@ -258,5 +258,5 @@ boolean
 mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
 			  char *errbuf, size_t errbuflen);
 
-char *
-mh_oauth_node_name_for_svc(const char *entry, const char *svc_name);
+char *mh_oauth_get_svc_name(mh_oauth_ctx *ctx);
+void mh_oauth_set_cred_fn(mh_oauth_ctx *ctx, char *filename);

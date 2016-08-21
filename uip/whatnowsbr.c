@@ -1255,13 +1255,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
         if (user == NULL) {
             adios (NULL, "must specify -user with -saslmech xoauth2");
         }
-
-        vec[vecp++] = "-authservice";
-        if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
-            vec[vecp++] = mh_oauth_do_xoauth (user, auth_svc, snoop ? stderr : NULL);
-        } else {
-            vec[vecp++] = auth_svc;
-        }
     }
 #else
     NMH_UNUSED(saslmech);
@@ -1277,7 +1270,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 
     closefds (3);
 
-    if (sendsbr (vec, vecp, program, file, &st, 1) == OK)
+    if (sendsbr (vec, vecp, program, file, &st, 1, auth_svc) == OK)
 	done (0);
 }
 

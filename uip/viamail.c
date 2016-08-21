@@ -213,7 +213,7 @@ via_mail (char *mailsw, char *subjsw, char *parmsw, char *descsw,
 	vec[vecp++] = cp;
     }
 
-    switch (sendsbr (vec, vecp, program, tmpfil, &st, 0)) {
+    switch (sendsbr (vec, vecp, program, tmpfil, &st, 0, NULL)) {
 	case DONE:
 	case NOTOK:
 	    status++;

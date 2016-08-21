@@ -459,13 +459,6 @@ go_to_it:
         if (user == NULL) {
             adios (NULL, "must specify -user with -saslmech xoauth2");
         }
-
-        vec[vecp++] = "-authservice";
-        if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
-            vec[vecp++] = mh_oauth_do_xoauth (user, auth_svc, snoop ? stderr : NULL);
-        } else {
-            vec[vecp++] = auth_svc;
-        }
     }
 #else
     NMH_UNUSED(auth_svc);
@@ -485,7 +478,7 @@ go_to_it:
     closefds (3);
 
     for (msgnum = 0; msgnum < msgp; msgnum++) {
-	switch (sendsbr (vec, vecp, program, msgs[msgnum], &st, 1)) {
+	switch (sendsbr (vec, vecp, program, msgs[msgnum], &st, 1, auth_svc)) {
 	    case DONE: 
 		done (++status);
 	    case NOTOK: 
