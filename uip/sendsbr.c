@@ -130,8 +130,9 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 
 	if (auth_svc) {
 		const char *errmsg;
-		if (!setup_oauth_params(vec, nvecsp, auth_svc, &errmsg))
-			adios(NULL, "%s", errmsg);
+		if (setup_oauth_params(vec, nvecsp, auth_svc, &errmsg) != OK) {
+			adios(NULL, errmsg);
+		}
 	}
 
         /*
