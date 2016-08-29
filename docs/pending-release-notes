@@ -46,6 +46,7 @@ NEW FEATURES
 - Added support to send(1) to specify switches to post(1) based on address or
   domain name in From: header line in message draft.
 - post(8) -snoop now attempts to decode base64-encoded SMTP traffic.
+- folder(1) -nocreate now prints a warning message for a non-existant folder.
 
 -----------------
 OBSOLETE FEATURES
