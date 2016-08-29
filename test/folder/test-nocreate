@@ -1,0 +1,26 @@
+#!/bin/sh
+######################################################
+#
+# Test -nocreate.
+#
+######################################################
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+set +e
+run_test 'run_prog folder -nocreate +testfolder 2>&1' \
+         'folder: folder testfolder does not exist'
+set -e
+if [ -d "$MH_TEST_DIR/Mail/testfolder" ]; then
+    printf %s "folder should not have been created"
+    exit 1
+fi
+
+exit ${failed:-0}

@@ -1,4 +1,4 @@
-.TH FOLDER %manext1% "January 1, 2001" "%nmhversion%"
+.TH FOLDER %manext1% "August 29, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -80,7 +80,7 @@ use later.)  Specifying
 .B \-nocreate
 will cause
 .B folder
-to exit
+to print an error message and exit
 without creating a non-existant folder.
 .\"
 .\" note - this doesn't work at present

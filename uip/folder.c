@@ -92,6 +92,16 @@ static void print_folders (void);
 static int sfold (struct msgs *, char *);
 static void readonly_folders (void);
 
+/*
+ * Function for printing error message if folder does not exist with
+ * -nocreate.
+ */
+void
+nonexistant_folder (int status) {
+    NMH_UNUSED (status);
+    adios (NULL, "folder %s does not exist", folder);
+}
+
 
 int
 main (int argc, char **argv)
@@ -349,7 +359,7 @@ main (int argc, char **argv)
 	 * Check if folder exists.  If not, then see if
 	 * we should create it, or just exit.
 	 */
-        create_folder (m_maildir (folder), fcreat, done);
+        create_folder (m_maildir (folder), fcreat, nonexistant_folder);
 
 	if (get_folder_info (folder, msg) && argfolder) {
 	    /* update current folder */
