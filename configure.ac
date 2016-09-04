@@ -519,6 +519,7 @@ AC_CACHE_CHECK(where signal.h is located, nmh_cv_path_signal_h,
                  /usr/include/asm/signum.h      dnl some versions of Linux/Alpha
                  /usr/include/linux/signal.h    dnl Linux up to 1.2.11
                  /usr/include/sys/signal.h      dnl Almost everybody else
+		 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include/sys/signal.h	dnl Newer version of MacOS X
                  /dev/null;                     dnl Just in case we fall through
 do
   test -f $SIGNAL_H && \
