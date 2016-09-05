@@ -146,7 +146,7 @@ superclean: maintainer-clean
 ##
 ## Files that need to be built before everything else
 ##
-BUILT_SOURCES = sbr/sigmsg.h sbr/ctype-checked.c
+BUILT_SOURCES = sbr/ctype-checked.c
 
 ##
 ## This is a list of all programs that get installed in the "bin" directory
@@ -282,7 +282,7 @@ man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
 ## Files we need to include in the distribution which aren't found by
 ## Automake using the automatic rules
 ##
-EXTRA_DIST = autogen.sh config/version.sh sbr/sigmsg.awk sbr/icalparse.h \
+EXTRA_DIST = autogen.sh config/version.sh sbr/icalparse.h \
 	     etc/mts.conf.in etc/mhn.defaults.sh etc/sendfiles \
 	     $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \
@@ -504,9 +504,6 @@ etc_gen_ctype_checked_LDADD = $(POSTLINK)
 ## distcheck uses VPATH, causes that make to prepend the VPATH to $@.
 config/version.c: Makefile $(srcdir)/config/version.sh
 	env srcdir="$(srcdir)" sh $(srcdir)/config/version.sh $(VERSION) > ./config/version.c
-
-sbr/sigmsg.h: $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H)
-	$(AWK) -f $(srcdir)/sbr/sigmsg.awk $(SIGNAL_H) > $@
 
 sbr/ctype-checked.h: etc/gen-ctype-checked
 	etc/gen-ctype-checked

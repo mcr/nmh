@@ -9,11 +9,6 @@
 
 #include <h/mh.h>
 
-/*
- * auto-generated header
- */
-#include <sigmsg.h>
-
 #ifndef WTERMSIG
 # define WTERMSIG(s) ((int)((s) & 0x7F))
 #endif
@@ -34,6 +29,7 @@ int
 pidstatus (int status, FILE *fp, char *cp)
 {
     int signum;
+    char *signame;
 
 /*
  * I have no idea what this is for (rc)
@@ -58,9 +54,12 @@ pidstatus (int status, FILE *fp, char *cp)
 	    if (cp)
 		fprintf (fp, "%s: ", cp);
 	    fprintf (fp, "signal %d", signum);
-	    if (signum >= 0 && signum < (int) sizeof(sigmsg) &&
-                  sigmsg[signum] != NULL)
-		fprintf (fp, " (%s%s)\n", sigmsg[signum],
+	    errno = 0;
+	    signame = strsignal(signum);
+	    if (errno)
+		signame = NULL;
+	    if (signame)
+		fprintf (fp, " (%s%s)\n", signame,
 			 WCOREDUMP(status) ? ", core dumped" : "");
 	    else
 		fprintf (fp, "%s\n", WCOREDUMP(status) ? " (core dumped)" : "");

@@ -512,25 +512,6 @@ AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[#include <time.h>])
 
 AC_STRUCT_DIRENT_D_TYPE
 
-dnl Where is <signal.h> located?  Needed as input for signames.awk
-AC_CACHE_CHECK(where signal.h is located, nmh_cv_path_signal_h,
-[for SIGNAL_H in /usr/include/bsd/sys/signal.h  dnl Next
-                 /usr/include/asm/signal.h      dnl Linux 1.3.0 and above
-                 /usr/include/asm/signum.h      dnl some versions of Linux/Alpha
-                 /usr/include/linux/signal.h    dnl Linux up to 1.2.11
-                 /usr/include/sys/signal.h      dnl Almost everybody else
-		 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include/sys/signal.h	dnl Newer version of MacOS X
-                 /dev/null;                     dnl Just in case we fall through
-do
-  test -f $SIGNAL_H && \
-  grep '#[ 	]*define[ 	][ 	]*SIG[0-9A-Z]*[ 	]*[0-9][0-9]*' $SIGNAL_H > /dev/null && \
-  break
-done
-nmh_cv_path_signal_h=$SIGNAL_H
-])
-SIGNAL_H=$nmh_cv_path_signal_h
-AC_SUBST(SIGNAL_H)dnl
-
 dnl
 dnl Sigh, this is required because under the new world order autoconf has
 dnl nothing to create in a few of the build directories when doing an object
