@@ -816,6 +816,8 @@ setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
 		adios(NULL, "Unable to retrieve oauth profile entries: %s",
 		      errbuf);
 	    
+	    vec[(*vecp)++] = getcpy("-authservice");
+	    vec[(*vecp)++] = getcpy(auth_svc);
 	    vec[(*vecp)++] = getcpy("-oauthcredfile");
 	    vec[(*vecp)++] = getcpy(mh_oauth_cred_fn(auth_svc));
 	    vec[(*vecp)++] = getcpy("-oauthclientid");

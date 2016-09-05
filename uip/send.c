@@ -268,11 +268,6 @@ main (int argc, char **argv)
                     user = cp;
 		    continue;
 
-		case SASLMECHSW:
-		    if (!(saslmech = *argp++) || *saslmech == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
-		    continue;
-
 		case AUTHSERVICESW:
 #ifdef OAUTH_SUPPORT
 		    if (!(auth_svc = *argp++) || *auth_svc == '-')
@@ -281,6 +276,11 @@ main (int argc, char **argv)
 		    adios (NULL, "not built with OAuth support");
 #endif
 		    continue;
+
+		case SASLMECHSW:
+		    if (!(saslmech = *argp) || *saslmech == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    /* Fall through */
 
 		case ALIASW: 
 		case FILTSW: 

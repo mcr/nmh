@@ -163,29 +163,32 @@ setup_draft
 # TEST
 start_test 'no service definition'
 
-run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice bogus -user nobody@example.com" 'send: incomplete OAuth2 service definition: scope is missing'
+run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice bogus -user nobody@example.com" 'send: Unable to retrieve oauth profile entries: scope is missing'
 
 # TEST
 start_test 'no creds file -- should tell user to mhlogin'
 
 rm -f "${MHTMPDIR}/oauth-test"
 
-test_send_no_servers 'send: no credentials -- run mhlogin -saslmech xoauth2 -authservice test'
+test_send_only_fakesmtp 'post: no credentials -- run mhlogin -saslmech xoauth2 -authservice test
+send: message not delivered to anyone'
 
 # TEST
 start_test 'empty creds file -- should tell user to mhlogin'
 
 fake_creds < /dev/null
 
-test_send_no_servers 'send: user not found in cred file: nobody@example.com'
+test_send_only_fakesmtp 'post: user not found in cred file: nobody@example.com
+send: message not delivered to anyone'
 
 # TEST
 start_test 'garbage creds file'
 
 echo bork | fake_creds
 
-test_send_no_servers 'send: eof encountered in field "bork"
-send: error loading cred file'
+test_send_only_fakesmtp 'post: eof encountered in field "bork"
+post: error loading cred file
+send: message not delivered to anyone'
 
 # TEST
 start_test 'unexpected field in creds file'
@@ -195,7 +198,8 @@ bork: bork
 access-nobody@example.com: test-access
 EOF
 
-test_send_no_servers 'send: error loading cred file: unexpected field'
+test_send_only_fakesmtp 'post: error loading cred file: unexpected field
+send: message not delivered to anyone'
 
 # TEST
 start_test 'garbage expiration time'
@@ -205,7 +209,8 @@ access-nobody@example.com: test-access
 expire-nobody@example.com: 99999999999999999999999999999999
 EOF
 
-test_send_no_servers 'send: error loading cred file: invalid expiration time'
+test_send_only_fakesmtp 'post: error loading cred file: invalid expiration time
+send: message not delivered to anyone'
 
 # TEST
 start_test 'refresh response has no access token'
@@ -223,8 +228,9 @@ fake_json_response <<EOF
 }
 EOF
 
-test_send_only_fakehttp 'send: error refreshing OAuth2 token
-send: invalid response: no access token'
+test_send 'post: error refreshing OAuth2 token
+post: invalid response: no access token
+send: message not delivered to anyone'
 
 # TEST
 start_test 'expired access token, no refresh token -- tell user to mhlogin'
@@ -234,7 +240,8 @@ access-nobody@example.com: test-access
 expire-nobody@example.com: 1414303986
 EOF
 
-test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
+test_send_only_fakesmtp 'post: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test
+send: message not delivered to anyone'
 
 # TEST
 start_test 'access token has no expiration, no refresh token -- tell user to mhlogin'
@@ -243,7 +250,8 @@ fake_creds <<EOF
 access-nobody@example.com: test-access
 EOF
 
-test_send_no_servers 'send: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test'
+test_send_only_fakesmtp 'post: no valid credentials -- run mhlogin -saslmech xoauth2 -authservice test
+send: message not delivered to anyone'
 
 # TEST
 start_test 'refresh finds no http server'
@@ -254,17 +262,19 @@ refresh-nobody@example.com: test-refresh
 EOF
 
 cat > "${testname}.expected-send-output" <<EOF
-send: error refreshing OAuth2 token
-send: error making HTTP request to OAuth2 authorization endpoint: [details]
+post: error refreshing OAuth2 token
+post: error making HTTP request to OAuth2 authorization endpoint: [details]
+send: message not delivered to anyone
 EOF
 
+start_fakesmtp
 run_prog send -draft -server 127.0.0.1 -port ${smtp_port} \
   -saslmech xoauth2 -authservice test -user nobody@example.com > "${testname}.send-output" 2>&1 || true
 # Clear out an error message we get from libcurl on some systems (seen at least
 # 3 different versions of this error message, on FreeBSD 10.1, Ubuntu 12.04, and
 # Ubuntu 14.04).
 f="${testname}.send-output"
-sed 's/\(send: error making HTTP request to OAuth2 authorization endpoint:\).*/\1 [details]/' "$f" > "$f".clean
+sed 's/\(post: error making HTTP request to OAuth2 authorization endpoint:\).*/\1 [details]/' "$f" > "$f".clean
 check "$f".clean "${testname}.expected-send-output"
 rm "$f"
 
@@ -279,8 +289,9 @@ Content-Type: text/html
 <html>doh!</htmxl>
 EOF
 
-test_send_only_fakehttp 'send: error refreshing OAuth2 token
-send: invalid response'
+test_send 'post: error refreshing OAuth2 token
+post: invalid response
+send: message not delivered to anyone'
 
 # TEST
 start_test 'refresh gets 500 response from http server'
@@ -293,8 +304,9 @@ Content-Type: text/html
 <html>doh!</html>
 EOF
 
-test_send_only_fakehttp 'send: error refreshing OAuth2 token
-send: invalid response'
+test_send 'post: error refreshing OAuth2 token
+post: invalid response
+send: message not delivered to anyone'
 
 # TEST
 start_test 'refresh gets proper error from http'
@@ -309,7 +321,8 @@ Content-Type: application/json
 }
 EOF
 
-test_send_only_fakehttp 'send: credentials rejected -- run mhlogin -saslmech xoauth2 -authservice test'
+test_send 'post: credentials rejected -- run mhlogin -saslmech xoauth2 -authservice test
+send: message not delivered to anyone'
 
 # TEST
 start_test 'refresh gets response too big'
@@ -331,8 +344,9 @@ EOF
 awk 'BEGIN { for (i = 0; i < 8192; i++) { print "." } }' \
     >> "${testname}.http-res"
 
-test_send_only_fakehttp 'send: error refreshing OAuth2 token
-send: refusing to process response body larger than 8192 bytes'
+test_send 'post: error refreshing OAuth2 token
+post: refusing to process response body larger than 8192 bytes
+send: message not delivered to anyone'
 
 # TEST
 start_test 'smtp server rejects token'
@@ -345,14 +359,6 @@ expire-nobody@example.com: 2000000000
 EOF
 
 test_send_only_fakesmtp 'post: problem initializing server; [BHST] Not no way, not no how!
-send: message not delivered to anyone'
-
-# TEST
-start_test "smtp server doesn't support oauth"
-
-unset XOAUTH
-
-test_send_only_fakesmtp 'post: problem initializing server; [BHST] SMTP server does not support SASL XOAUTH2
 send: message not delivered to anyone'
 
 # TEST
@@ -370,8 +376,17 @@ fake_json_response <<EOF
 }
 EOF
 
-test_send_only_fakehttp 'send: error refreshing OAuth2 token
-send: invalid response'
+test_send 'post: error refreshing OAuth2 token
+post: invalid response
+send: message not delivered to anyone'
+
+# TEST
+start_test "smtp server doesn't support oauth"
+
+unset XOAUTH
+
+test_send_only_fakesmtp 'post: problem initializing server; [BHST] SMTP server does not support SASL XOAUTH2
+send: message not delivered to anyone'
 
 clean_fakesmtp
 clean_fakehttp

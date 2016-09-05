@@ -97,13 +97,14 @@
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("credentials legacy|file:filename", 0, CREDENTIALSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
-    X("oauthcredfile", OAUTHminc(-7), OAUTHCREDFILESW) \
-    X("oauthclientid", OAUTHminc(-12), OAUTHCLIDSW) \
-    X("oauthclientsecret", OAUTHminc(-12), OAUTHCLSECSW) \
-    X("oauthauthendpoint", OAUTHminc(-6), OAUTHAUTHENDSW) \
-    X("oauthredirect", OAUTHminc(-6), OAUTHREDIRSW) \
-    X("oauthtokenendpoint", OAUTHminc(-6), OAUTHTOKENDSW) \
-    X("oauthscope", OAUTHminc(-6), OAUTHSCOPESW) \
+    X("authservice auth-service-name", OAUTHminc(-11), AUTHSERVICESW) \
+    X("oauthcredfile credential-file", OAUTHminc(-7), OAUTHCREDFILESW) \
+    X("oauthclientid client-id", OAUTHminc(-12), OAUTHCLIDSW) \
+    X("oauthclientsecret client-secret", OAUTHminc(-12), OAUTHCLSECSW) \
+    X("oauthauthendpoint authentication-endpoint", OAUTHminc(-6), OAUTHAUTHENDSW) \
+    X("oauthredirect redirect-uri", OAUTHminc(-6), OAUTHREDIRSW) \
+    X("oauthtokenendpoint token-endpoint", OAUTHminc(-6), OAUTHTOKENDSW) \
+    X("oauthscope scope", OAUTHminc(-6), OAUTHSCOPESW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(POST);
@@ -123,13 +124,13 @@ static struct oauth_profile {
     const char *profname;
     int switchnum;
 } oauthswitches[] = {
-    { "oauth-post-credential-file", OAUTHCREDFILESW },
-    { "oauth-post-client_id", OAUTHCLIDSW },
-    { "oauth-post-client_secret", OAUTHCLSECSW },
-    { "oauth-post-auth_endpoint", OAUTHAUTHENDSW },
-    { "oauth-post-redirect_url", OAUTHREDIRSW },
-    { "oauth-post-token_endpoint", OAUTHTOKENDSW },
-    { "oauth-post-scope", OAUTHSCOPESW },
+    { "oauth-%s-credential-file", OAUTHCREDFILESW },
+    { "oauth-%s-client_id", OAUTHCLIDSW },
+    { "oauth-%s-client_secret", OAUTHCLSECSW },
+    { "oauth-%s-auth_endpoint", OAUTHAUTHENDSW },
+    { "oauth-%s-redirect_uri", OAUTHREDIRSW },
+    { "oauth-%s-token_endpoint", OAUTHTOKENDSW },
+    { "oauth-%s-scope", OAUTHSCOPESW },
     { NULL, 0 }
 };
 
@@ -296,7 +297,7 @@ static void sigoff (void);
 static void p_refile (char *);
 static void fcc (char *, char *);
 static void die (char *, char *, ...);
-static void post (char *, int, int, char *, int);
+static void post (char *, int, int, char *, int, char *);
 static void do_text (char *file, int fd);
 static void do_an_address (struct mailname *, int);
 static void do_addresses (int, int);
@@ -308,7 +309,7 @@ main (int argc, char **argv)
 {
     int state, compnum, dashstuff = 0, swnum, oauth_flag = 0;
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
-    char buf[BUFSIZ], name[NAMESZ];
+    char buf[BUFSIZ], name[NAMESZ], *auth_svc = "post";
     FILE *in, *out;
     m_getfld_state_t gstate = 0;
 
@@ -472,6 +473,11 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 
+		case AUTHSERVICESW:
+		    if (!(auth_svc = *argp++) || *auth_svc == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    continue;
+
 		case OAUTHCREDFILESW:
 		case OAUTHCLIDSW:
 		case OAUTHCLSECSW:
@@ -481,13 +487,17 @@ main (int argc, char **argv)
 		case OAUTHSCOPESW:
 		{
 		    int i;
+		    char sbuf[128];
 
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 
 		    for (i = 0; oauthswitches[i].profname != NULL; i++) {
 			if (oauthswitches[i].switchnum == swnum) {
-			    add_profile_entry(oauthswitches[i].profname, cp);
+			    snprintf(sbuf, sizeof(sbuf),
+			    	     oauthswitches[i].profname, auth_svc);
+			    sbuf[sizeof(sbuf) - 1] = '\0';
+			    add_profile_entry(sbuf, cp);
 			    break;
 			}
 		    }
@@ -702,12 +712,12 @@ main (int argc, char **argv)
 		   that spost didn't verify addresses. */
 		verify_all_addresses (verbose, envelope, oauth_flag);
 	    }
-	    post (tmpfil, 0, verbose, envelope, oauth_flag);
+	    post (tmpfil, 0, verbose, envelope, oauth_flag, auth_svc);
 	}
-	post (bccfil, 1, verbose, envelope, oauth_flag);
+	post (bccfil, 1, verbose, envelope, oauth_flag, auth_svc);
 	(void) m_unlink (bccfil);
     } else {
-	post (tmpfil, 0, isatty (1), envelope, oauth_flag);
+	post (tmpfil, 0, isatty (1), envelope, oauth_flag, auth_svc);
     }
 
     p_refile (tmpfil);
@@ -1554,7 +1564,8 @@ do_addresses (int bccque, int talk)
  */
 
 static void
-post (char *file, int bccque, int talk, char *envelope, int oauth_flag)
+post (char *file, int bccque, int talk, char *envelope, int oauth_flag,
+      char *auth_svc)
 {
     int fd;
     int	retval, i;
@@ -1605,7 +1616,7 @@ post (char *file, int bccque, int talk, char *envelope, int oauth_flag)
         if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
                                         verbose, snoop, sasl, saslssf,
 					saslmech, user,
-					oauth_flag ? "post" : NULL, tls))
+					oauth_flag ? auth_svc : NULL, tls))
             || rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
