@@ -444,29 +444,21 @@ read_more (m_getfld_state_t s) {
    but EOF is typically 0xffffffff. */
 static int
 Getc (m_getfld_state_t s) {
-    if (s->end - s->readpos < 1) {
-	if (read_more (s) == 0) {
-	    /* Pretend that we read a character.  That's what stdio does. */
-	    ++s->readpos;
-	    return EOF;
-	}
+    if (s->end - s->readpos < 1  &&  read_more (s) == 0) {
+        return EOF;
+    } else {
+        ++s->bytes_read;
+        return s->readpos < s->end  ?  (unsigned char) *s->readpos++  :  EOF;
     }
-
-    ++s->bytes_read;
-    return s->readpos < s->end  ?  (unsigned char) *s->readpos++  :  EOF;
 }
 
 static int
 Peek (m_getfld_state_t s) {
-    if (s->end - s->readpos < 1) {
-	if (read_more (s) == 0) {
-	    /* Pretend that we read a character.  That's what stdio does. */
-	    ++s->readpos;
-	    return EOF;
-	}
+    if (s->end - s->readpos < 1  &&  read_more (s) == 0) {
+        return EOF;
+    } else {
+        return s->readpos < s->end  ?  (unsigned char) *s->readpos  :  EOF;
     }
-
-    return s->readpos < s->end  ?  (unsigned char) *s->readpos  :  EOF;
 }
 
 static int

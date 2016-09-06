@@ -433,5 +433,65 @@ run_test "inc -width 60 -file $MH_TEST_DIR/msgbox -truncate" \
   25+ 04/15 me@example.com     <<test >>'
 rm -f  "$MH_TEST_DIR/msgbox"
 
+# check inc (m_getfld, actually) of very, very, very short message
+cat >>"$MH_TEST_DIR/msgbox" <<EOF
+From 
+Date: Tue, 6 Sep 2016 08:52:32 -0400
+From: me@example.com
+
+a
+EOF
+
+run_test "inc -width 50 -file $MH_TEST_DIR/msgbox -truncate" \
+'Incorporating new mail into inbox...
+
+  26+ 09/06 me@example.com     <<a >>'
+rm -f  "$MH_TEST_DIR/msgbox"
+
+# check inc (m_getfld, actually) of very, very short message
+cat >>"$MH_TEST_DIR/msgbox" <<EOF
+From 
+Date: Tue, 6 Sep 2016 08:52:32 -0400
+From: me@example.com
+
+ab
+EOF
+
+run_test "inc -width 50 -file $MH_TEST_DIR/msgbox -truncate" \
+'Incorporating new mail into inbox...
+
+  27+ 09/06 me@example.com     <<ab >>'
+rm -f  "$MH_TEST_DIR/msgbox"
+
+# check inc (m_getfld, actually) of very short message
+cat >>"$MH_TEST_DIR/msgbox" <<EOF
+From 
+Date: Tue, 6 Sep 2016 08:52:32 -0400
+From: me@example.com
+
+abc
+EOF
+
+run_test "inc -width 50 -file $MH_TEST_DIR/msgbox -truncate" \
+'Incorporating new mail into inbox...
+
+  28+ 09/06 me@example.com     <<abc >>'
+rm -f  "$MH_TEST_DIR/msgbox"
+
+# check inc (m_getfld, actually) of short message
+cat >>"$MH_TEST_DIR/msgbox" <<EOF
+From 
+Date: Tue, 6 Sep 2016 08:52:32 -0400
+From: me@example.com
+
+abcd
+EOF
+
+run_test "inc -width 50 -file $MH_TEST_DIR/msgbox -truncate" \
+'Incorporating new mail into inbox...
+
+  29+ 09/06 me@example.com     <<abcd >>'
+rm -f  "$MH_TEST_DIR/msgbox"
+
 
 exit ${failed:-0}
