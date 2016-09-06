@@ -770,6 +770,7 @@ handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc) {
                 }
                 break;
 #else
+                NMH_UNUSED(auth_svc);
                 adios(NULL, "send built without OAUTH_SUPPORT, "
                       "so -saslmech xoauth2 is not supported");
 #endif /* OAUTH_SUPPORT */

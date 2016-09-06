@@ -1164,11 +1164,14 @@ sm_auth_xoauth2(const char *user, const char *oauth_svc, int snoop)
     xoauth_client_res = mh_oauth_do_xoauth(user, oauth_svc,
 					   snoop ? stderr : NULL);
 
-    if (xoauth_client_res == NULL)
+    if (xoauth_client_res == NULL) {
 	return sm_ierror("Internal error: mh_oauth_do_xoauth() returned NULL");
+    }
 #else
-                adios(NULL, "sendfrom built without OAUTH_SUPPORT, "
-                      "so oauth_svc %s is not supported", oauth_svc);
+    NMH_UNUSED(user);
+    NMH_UNUSED(snoop);
+    adios(NULL, "sendfrom built without OAUTH_SUPPORT, "
+          "so oauth_svc %s is not supported", oauth_svc);
 #endif /* OAUTH_SUPPORT */
 
     status = smtalk(SM_AUTH, "AUTH XOAUTH2 %s", xoauth_client_res);
