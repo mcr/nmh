@@ -129,10 +129,15 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	 */
 
 	if (auth_svc) {
+#ifdef OAUTH_SUPPORT
 		const char *errmsg;
 		if (setup_oauth_params(vec, nvecsp, auth_svc, &errmsg) != OK) {
 			adios(NULL, errmsg);
 		}
+#else
+                adios(NULL, "sendfrom built without OAUTH_SUPPORT, "
+                      "so auth_svc %s is not supported", auth_svc);
+#endif /* OAUTH_SUPPORT */
 	}
 
         /*
