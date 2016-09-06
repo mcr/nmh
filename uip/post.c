@@ -1,4 +1,3 @@
-
 /*
  * post.c -- enter messages into the mail transport system
  *
@@ -123,15 +122,16 @@ DEFINE_SWITCH_ARRAY(POST, switches);
 static struct oauth_profile {
     const char *profname;
     int switchnum;
+    const char *value;
 } oauthswitches[] = {
-    { "oauth-%s-credential-file", OAUTHCREDFILESW },
-    { "oauth-%s-client_id", OAUTHCLIDSW },
-    { "oauth-%s-client_secret", OAUTHCLSECSW },
-    { "oauth-%s-auth_endpoint", OAUTHAUTHENDSW },
-    { "oauth-%s-redirect_uri", OAUTHREDIRSW },
-    { "oauth-%s-token_endpoint", OAUTHTOKENDSW },
-    { "oauth-%s-scope", OAUTHSCOPESW },
-    { NULL, 0 }
+    { "oauth-%s-credential-file", OAUTHCREDFILESW, NULL },
+    { "oauth-%s-client_id", OAUTHCLIDSW, NULL },
+    { "oauth-%s-client_secret", OAUTHCLSECSW, NULL },
+    { "oauth-%s-auth_endpoint", OAUTHAUTHENDSW, NULL },
+    { "oauth-%s-redirect_uri", OAUTHREDIRSW, NULL },
+    { "oauth-%s-token_endpoint", OAUTHTOKENDSW, NULL },
+    { "oauth-%s-scope", OAUTHSCOPESW, NULL },
+    { NULL, 0, NULL }
 };
 
 struct headers {
@@ -290,7 +290,7 @@ static void anno (void);
 static int annoaux (struct mailname *);
 static void insert_fcc (struct headers *, char *);
 static void make_bcc_file (int);
-static void verify_all_addresses (int, char *, int);
+static void verify_all_addresses (int, char *, int, char *);
 static void chkadr (void);
 static void sigon (void);
 static void sigoff (void);
@@ -309,7 +309,7 @@ main (int argc, char **argv)
 {
     int state, compnum, dashstuff = 0, swnum, oauth_flag = 0;
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
-    char buf[BUFSIZ], name[NAMESZ], *auth_svc = "post";
+    char buf[BUFSIZ], name[NAMESZ], *auth_svc = NULL;
     FILE *in, *out;
     m_getfld_state_t gstate = 0;
 
@@ -476,6 +476,7 @@ main (int argc, char **argv)
 		case AUTHSERVICESW:
 		    if (!(auth_svc = *argp++) || *auth_svc == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
+		    oauth_flag++;
 		    continue;
 
 		case OAUTHCREDFILESW:
@@ -487,17 +488,13 @@ main (int argc, char **argv)
 		case OAUTHSCOPESW:
 		{
 		    int i;
-		    char sbuf[128];
 
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 
 		    for (i = 0; oauthswitches[i].profname != NULL; i++) {
 			if (oauthswitches[i].switchnum == swnum) {
-			    snprintf(sbuf, sizeof(sbuf),
-			    	     oauthswitches[i].profname, auth_svc);
-			    sbuf[sizeof(sbuf) - 1] = '\0';
-			    add_profile_entry(sbuf, cp);
+			    oauthswitches[i].value = cp;
 			    break;
 			}
 		    }
@@ -507,7 +504,6 @@ main (int argc, char **argv)
 			       "to profile entry", argp[-2]);
 
 		    oauth_flag++;
-
 		    continue;
 		}
 
@@ -695,10 +691,35 @@ main (int argc, char **argv)
 #endif /* ! TLS_SUPPORT */
     }
 
+    /*
+     * If we were given any oauth flags, store the appropriate profile
+     * entries and make sure an authservice was given (we have to do this
+     * here because we aren't guaranteed the authservice will be given on
+     * the command line before the other OAuth flags are given).
+     */
+
+    if (oauth_flag) {
+	int i;
+	char sbuf[128];
+
+	if (auth_svc == NULL) {
+	    adios(NULL, "No authentication service given with -authservice");
+	}
+
+	for (i = 0; oauthswitches[i].profname != NULL; i++) {
+		if (oauthswitches[i].value != NULL) {
+		    snprintf(sbuf, sizeof(sbuf),
+		    oauthswitches[i].profname, auth_svc);
+		    sbuf[sizeof(sbuf) - 1] = '\0';
+		    add_profile_entry(sbuf, oauthswitches[i].value);
+		}
+	}
+    }
+
     /* If we are doing a "whom" check */
     if (whomsw) {
 	/* This won't work with MTS_SENDMAIL_PIPE. */
-        verify_all_addresses (1, envelope, oauth_flag);
+        verify_all_addresses (1, envelope, oauth_flag, auth_svc);
 	done (0);
     }
 
@@ -710,7 +731,7 @@ main (int argc, char **argv)
 		   verify_all_addresses with MTS_SENDMAIL_PIPE, but
 		   that might require running sendmail as root.  Note
 		   that spost didn't verify addresses. */
-		verify_all_addresses (verbose, envelope, oauth_flag);
+		verify_all_addresses (verbose, envelope, oauth_flag, auth_svc);
 	    }
 	    post (tmpfil, 0, verbose, envelope, oauth_flag, auth_svc);
 	}
@@ -1646,7 +1667,7 @@ post (char *file, int bccque, int talk, char *envelope, int oauth_flag,
 /* Address Verification */
 
 static void
-verify_all_addresses (int talk, char *envelope, int oauth_flag)
+verify_all_addresses (int talk, char *envelope, int oauth_flag, char *auth_svc)
 {
     int retval;
     struct mailname *lp;
@@ -1657,7 +1678,7 @@ verify_all_addresses (int talk, char *envelope, int oauth_flag)
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, sasl, saslssf,
 					saslmech, user,
-					oauth_flag ? "post" : NULL, tls))
+					oauth_flag ? auth_svc : NULL, tls))
 		|| rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
