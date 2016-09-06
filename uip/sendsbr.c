@@ -135,7 +135,7 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 			adios(NULL, errmsg);
 		}
 #else
-                adios(NULL, "sendfrom built without OAUTH_SUPPORT, "
+                adios(NULL, "send built without OAUTH_SUPPORT, "
                       "so auth_svc %s is not supported", auth_svc);
 #endif /* OAUTH_SUPPORT */
 	}
@@ -770,7 +770,7 @@ handle_sendfrom(char **vec, int *vecp, char *draft, const char *auth_svc) {
                 }
                 break;
 #else
-                adios(NULL, "sendfrom built without OAUTH_SUPPORT, "
+                adios(NULL, "send built without OAUTH_SUPPORT, "
                       "so -saslmech xoauth2 is not supported");
 #endif /* OAUTH_SUPPORT */
             }
@@ -820,7 +820,7 @@ setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
 	    				    sizeof(errbuf)))
 		adios(NULL, "Unable to retrieve oauth profile entries: %s",
 		      errbuf);
-	    
+
 	    vec[(*vecp)++] = getcpy("-authservice");
 	    vec[(*vecp)++] = getcpy(auth_svc);
 	    vec[(*vecp)++] = getcpy("-oauthcredfile");
