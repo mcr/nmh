@@ -25,6 +25,10 @@ static const char *PIDFN = NULL;
 static void killpidfile(void);
 static void handleterm(int);
 
+#ifndef EPROTOTYPE
+#define EPROTOTYPE 0
+#endif
+
 static int
 try_bind(int socket, const struct sockaddr *address, socklen_t len)
 {
@@ -217,9 +221,11 @@ putcrlf(int socket, char *data)
 	iov[1].iov_len = 2;
 
 	/* ECONNRESET just means the client already closed its end */
+	/* MacOS X can also return EPROTOTYPE (!) here sometimes */
 	/* XXX is it useful to log errors here at all? */
-	if (writev(socket, iov, 2) < 0 && errno != ECONNRESET) {
-	    perror ("writev");
+	if (writev(socket, iov, 2) < 0 && errno != ECONNRESET &&
+	    errno != EPROTOTYPE) {
+	    perror ("server writev");
 	}
 }
 
