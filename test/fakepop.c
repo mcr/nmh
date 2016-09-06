@@ -10,36 +10,28 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <netdb.h>
 #include <errno.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <sys/types.h>
-#include <sys/select.h>
-#include <sys/stat.h>
-#include <sys/uio.h>
 #include <limits.h>
-#include <signal.h>
 
 #define PIDFILE "/tmp/fakepop.pid"
 #define LINESIZE 1024
 #define BUFALLOC 4096
 
 #define CHECKUSER()	if (!user) { \
-				putpop(s, "-ERR Aren't you forgetting " \
+				putcrlf(s, "-ERR Aren't you forgetting " \
 				       "something?  Like the USER command?"); \
 				continue; \
 			}
-#define CHECKUSERPASS()	CHECKUSER() \
-			if (! pass) { \
-				putpop(s, "-ERR Um, hello?  Forget to " \
+#define CHECKAUTH()	if (!auth) { \
+				putcrlf(s, "-ERR Um, hello?  Forget to " \
 				       "log in?"); \
 				continue; \
 			}
 
-static void killpidfile(void);
-static void handleterm(int);
-static void putpop(int, char *);
+void putcrlf(int, char *);
+int serve(const char *, const char *);
+
 static void putpopbulk(int, char *);
 static int getpop(int, char *, ssize_t);
 static char *readmessage(FILE *);
@@ -47,21 +39,23 @@ static char *readmessage(FILE *);
 int
 main(int argc, char *argv[])
 {
-	struct addrinfo hints, *res;
-	struct stat st;
-	FILE **mfiles, *pid;
+	FILE **mfiles;
 	char line[LINESIZE];
-	fd_set readfd;
-	struct timeval tv;
-	pid_t child;
-	int rc, l, s, on, user = 0, pass = 0, i, j;
+	int rc, s, user = 0, auth = 0, i, j;
 	int numfiles;
 	size_t *octets;
+	const char *xoauth;
 
 	if (argc < 5) {
 		fprintf(stderr, "Usage: %s port username "
 			"password mail-file [mail-file ...]\n", argv[0]);
 		exit(1);
+	}
+
+	if (strcmp(argv[2], "XOAUTH") == 0) {
+		xoauth = argv[3];
+	} else {
+		xoauth = NULL;
 	}
 
 	numfiles = argc - 4;
@@ -105,153 +99,13 @@ main(int argc, char *argv[])
 		rewind(mfiles[j]);
 	}
 
-	/*
-	 * If there is a pid file around, kill the previously running
-	 * fakepop process.
-	 */
-
-	if (stat(PIDFILE, &st) == 0) {
-		long oldpid;
-
-		if (!(pid = fopen(PIDFILE, "r"))) {
-			fprintf(stderr, "Cannot open " PIDFILE
-				" (%s), continuing ...\n", strerror(errno));
-		} else {
-			rc = fscanf(pid, "%ld", &oldpid);
-			fclose(pid);
-
-			if (rc != 1) {
-				fprintf(stderr, "Unable to parse pid in "
-					PIDFILE ", continuing ...\n");
-			} else {
-				kill((pid_t) oldpid, SIGTERM);
-			}
-		}
-
-		unlink(PIDFILE);
-	}
-
-	memset(&hints, 0, sizeof(hints));
-
-	hints.ai_family = PF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	hints.ai_flags = AI_PASSIVE;
-
-	rc = getaddrinfo("127.0.0.1", argv[1], &hints, &res);
-
-	if (rc) {
-		fprintf(stderr, "Unable to resolve localhost/%s: %s\n",
-			argv[1], gai_strerror(rc));
-		exit(1);
-	}
-
-	l = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-
-	if (l == -1) {
-		fprintf(stderr, "Unable to create listening socket: %s\n",
-			strerror(errno));
-		exit(1);
-	}
-
-	on = 1;
-
-	if (setsockopt(l, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1) {
-		fprintf(stderr, "Unable to set SO_REUSEADDR: %s\n",
-			strerror(errno));
-		exit(1);
-	}
-
-	if (bind(l, res->ai_addr, res->ai_addrlen) == -1) {
-		fprintf(stderr, "Unable to bind socket: %s\n", strerror(errno));
-		exit(1);
-	}
-
-	if (listen(l, 1) == -1) {
-		fprintf(stderr, "Unable to listen on socket: %s\n",
-			strerror(errno));
-		exit(1);
-	}
-
-	/*
-	 * Fork off a copy of ourselves, print out our child pid, then
-	 * exit.
-	 */
-
-	switch (child = fork()) {
-	case -1:
-		fprintf(stderr, "Unable to fork child: %s\n", strerror(errno));
-		exit(1);
-		break;
-	case 0:
-		/*
-		 * Close stdin and stdout so $() in the shell will get an
-		 * EOF.  For now leave stderr open.
-		 */
-		fclose(stdin);
-		fclose(stdout);
-		break;
-	default:
-		printf("%ld\n", (long) child);
-		exit(0);
-	}
-
-	/*
-	 * Now that our socket and files are set up, wait 30 seconds for
-	 * a connection.  If there isn't one, then exit.
-	 */
-
-	if (!(pid = fopen(PIDFILE, "w"))) {
-		fprintf(stderr, "Cannot open " PIDFILE ": %s\n",
-			strerror(errno));
-		exit(1);
-	}
-
-	fprintf(pid, "%ld\n", (long) getpid());
-	fclose(pid);
-
-	signal(SIGTERM, handleterm);
-	atexit(killpidfile);
-
-	FD_ZERO(&readfd);
-	FD_SET(l, &readfd);
-
-	tv.tv_sec = 30;
-	tv.tv_usec = 0;
-
-	rc = select(l + 1, &readfd, NULL, NULL, &tv);
-
-	if (rc < 0) {
-		fprintf(stderr, "select() failed: %s\n", strerror(errno));
-		exit(1);
-	}
-
-	/*
-	 * If we get a timeout, just silently exit
-	 */
-
-	if (rc == 0) {
-		exit(1);
-	}
-
-	/*
-	 * We got a connection; accept it.  Right after that close our
-	 * listening socket so we won't get any more connections on it.
-	 */
-
-	if ((s = accept(l, NULL, NULL)) == -1) {
-		fprintf(stderr, "Unable to accept connection: %s\n",
-			strerror(errno));
-		exit(1);
-	}
-
-	close(l);
+	s = serve(PIDFILE, argv[1]);
 
 	/*
 	 * Pretend to be a POP server
 	 */
 
-	putpop(s, "+OK Not really a POP server, but we play one on TV");
+	putcrlf(s, "+OK Not really a POP server, but we play one on TV");
 
 	for (;;) {
 		char linebuf[LINESIZE];
@@ -263,26 +117,42 @@ main(int argc, char *argv[])
 
 		if (strcasecmp(linebuf, "CAPA") == 0) {
 			putpopbulk(s, "+OK We have no capabilities, really\r\n"
-				   "FAKE-CAPABILITY\r\n.\r\n");
+				   "FAKE-CAPABILITY\r\n");
+			if (xoauth != NULL) {
+				putcrlf(s, "SASL XOAUTH2");
+			}
+			putcrlf(s, ".");
 		} else if (strncasecmp(linebuf, "USER ", 5) == 0) {
 			if (strcmp(linebuf + 5, argv[2]) == 0) {
-				putpop(s, "+OK Niiiice!");
+				putcrlf(s, "+OK Niiiice!");
 				user = 1;
 			} else {
-				putpop(s, "-ERR Don't play me, bro!");
+				putcrlf(s, "-ERR Don't play me, bro!");
 			}
 		} else if (strncasecmp(linebuf, "PASS ", 5) == 0) {
 			CHECKUSER();
 			if (strcmp(linebuf + 5, argv[3]) == 0) {
-				putpop(s, "+OK Aren't you a sight "
+				putcrlf(s, "+OK Aren't you a sight "
 				       "for sore eyes!");
-				pass = 1;
+				auth = 1;
 			} else {
-				putpop(s, "-ERR C'mon!");
+				putcrlf(s, "-ERR C'mon!");
 			}
+		} else if (xoauth != NULL
+			   && strncasecmp(linebuf, "AUTH XOAUTH2", 12) == 0) {
+			if (strstr(linebuf, xoauth) == NULL) {
+				putcrlf(s, "+ base64-json-err");
+				rc = getpop(s, linebuf, sizeof(linebuf));
+				if (rc != 0)
+					break;	/* Error or EOF */
+				putcrlf(s, "-ERR [AUTH] Invalid credentials.");
+				continue;
+			}
+			putcrlf(s, "+OK Welcome.");
+			auth = 1;
 		} else if (strcasecmp(linebuf, "STAT") == 0) {
 			size_t total = 0;
-			CHECKUSERPASS();
+			CHECKAUTH();
 			for (i = 0, j = 0; i < numfiles; i++) {
 				if (mfiles[i]) {
 					total += octets[i];
@@ -291,76 +161,57 @@ main(int argc, char *argv[])
 			}
 			snprintf(linebuf, sizeof(linebuf),
 					 "+OK %d %d", i, (int) total);
-			putpop(s, linebuf);
+			putcrlf(s, linebuf);
 		} else if (strncasecmp(linebuf, "RETR ", 5) == 0) {
-			CHECKUSERPASS();
+			CHECKAUTH();
 			rc = sscanf(linebuf + 5, "%d", &i);
 			if (rc != 1) {
-				putpop(s, "-ERR Whaaaa...?");
+				putcrlf(s, "-ERR Whaaaa...?");
 				continue;
 			}
 			if (i < 1 || i > numfiles) {
-				putpop(s, "-ERR That message number is "
+				putcrlf(s, "-ERR That message number is "
 				       "out of range, jerkface!");
 				continue;
 			}
 			if (mfiles[i - 1] == NULL) {
-				putpop(s, "-ERR Sorry, don't have it anymore");
+				putcrlf(s, "-ERR Sorry, don't have it anymore");
 			} else {
 				char *buf = readmessage(mfiles[i - 1]);
-				putpop(s, "+OK Here you go ...");
+				putcrlf(s, "+OK Here you go ...");
 				putpopbulk(s, buf);
 				free(buf);
 			}
 		} else if (strncasecmp(linebuf, "DELE ", 5) == 0) {
-			CHECKUSERPASS();
+			CHECKAUTH();
 			rc = sscanf(linebuf + 5, "%d", &i);
 			if (rc != 1) {
-				putpop(s, "-ERR Whaaaa...?");
+				putcrlf(s, "-ERR Whaaaa...?");
 				continue;
 			}
 			if (i < 1 || i > numfiles) {
-				putpop(s, "-ERR That message number is "
+				putcrlf(s, "-ERR That message number is "
 				       "out of range, jerkface!");
 				continue;
 			}
 			if (mfiles[i - 1] == NULL) {
-				putpop(s, "-ERR Um, didn't you tell me "
+				putcrlf(s, "-ERR Um, didn't you tell me "
 				       "to delete it already?");
 			} else {
 				fclose(mfiles[i - 1]);
 				mfiles[i - 1] = NULL;
-				putpop(s, "+OK Alright man, I got rid of it");
+				putcrlf(s, "+OK Alright man, I got rid of it");
 			}
 		} else if (strcasecmp(linebuf, "QUIT") == 0) {
-			putpop(s, "+OK See ya, wouldn't want to be ya!");
+			putcrlf(s, "+OK See ya, wouldn't want to be ya!");
 			close(s);
 			break;
 		} else {
-			putpop(s, "-ERR Um, what?");
+			putcrlf(s, "-ERR Um, what?");
 		}
 	}
 
 	exit(0);
-}
-
-/*
- * Send one line to the POP client
- */
-
-static void
-putpop(int socket, char *data)
-{
-	struct iovec iov[2];
-
-	iov[0].iov_base = data;
-	iov[0].iov_len = strlen(data);
-	iov[1].iov_base = "\r\n";
-	iov[1].iov_len = 2;
-
-	if (writev(socket, iov, 2) < 0) {
-	    perror ("writev");
-	}
 }
 
 /*
@@ -465,28 +316,4 @@ readmessage(FILE *file)
 	rewind(file);
 
 	return buffer;
-}
-
-/*
- * Handle a SIGTERM
- */
-
-static void
-handleterm(int signal)
-{
-	(void) signal;
-
-	killpidfile();
-	fflush(NULL);
-	_exit(1);
-}
-
-/*
- * Get rid of our pid file
- */
-
-static void
-killpidfile(void)
-{
-	unlink(PIDFILE);
 }

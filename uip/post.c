@@ -1,4 +1,3 @@
-
 /*
  * post.c -- enter messages into the mail transport system
  *
@@ -40,7 +39,7 @@
 #ifndef OAUTH_SUPPORT
 # define OAUTHminc(a)	(a)
 #else /* OAUTH_SUPPORT */
-# define OAUTHmine(a)	0
+# define OAUTHminc(a)	0
 #endif /* OAUTH_SUPPORT */
 
 #define FCCS		10	/* max number of fccs allowed */
@@ -82,10 +81,10 @@
     X("server host", 6, SERVSW) /* specify alternate SMTP server */ \
     X("snoop", -5, SNOOPSW) /* snoop the SMTP transaction */ \
     X("partno", -6, PARTSW) \
-    X("sasl", SASLminc(-4), SASLSW) \
-    X("nosasl", SASLminc(-6), NOSASLSW) \
-    X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
-    X("saslmech", SASLminc(-5), SASLMECHSW) \
+    X("sasl", SASLminc(4), SASLSW) \
+    X("nosasl", SASLminc(6), NOSASLSW) \
+    X("saslmaxssf", SASLminc(10), SASLMXSSFSW) \
+    X("saslmech", SASLminc(5), SASLMECHSW) \
     X("user", SASLminc(-4), USERSW) \
     X("port server submission port name/number", 4, PORTSW) \
     X("tls", TLSminc(-3), TLSSW) \
@@ -97,13 +96,14 @@
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("credentials legacy|file:filename", 0, CREDENTIALSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
-    X("oauthcredfile", OAUTHminc(-7), OAUTHCREDFILESW) \
-    X("oauthclientid", OAUTHminc(-12), OAUTHCLIDSW) \
-    X("oauthclientsecret", OAUTHminc(-12), OAUTHCLSECSW) \
-    X("oauthauthendpoint", OAUTHminc(-6), OAUTHAUTHENDSW) \
-    X("oauthredirect", OAUTHminc(-6), OAUTHREDIRSW) \
-    X("oauthtokenendpoint", OAUTHminc(-6), OAUTHTOKENDSW) \
-    X("oauthscope", OAUTHminc(-6), OAUTHSCOPESW) \
+    X("authservice auth-service-name", OAUTHminc(-11), AUTHSERVICESW) \
+    X("oauthcredfile credential-file", OAUTHminc(-7), OAUTHCREDFILESW) \
+    X("oauthclientid client-id", OAUTHminc(-12), OAUTHCLIDSW) \
+    X("oauthclientsecret client-secret", OAUTHminc(-12), OAUTHCLSECSW) \
+    X("oauthauthendpoint authentication-endpoint", OAUTHminc(-6), OAUTHAUTHENDSW) \
+    X("oauthredirect redirect-uri", OAUTHminc(-6), OAUTHREDIRSW) \
+    X("oauthtokenendpoint token-endpoint", OAUTHminc(-6), OAUTHTOKENDSW) \
+    X("oauthscope scope", OAUTHminc(-6), OAUTHSCOPESW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(POST);
@@ -113,6 +113,26 @@ DEFINE_SWITCH_ENUM(POST);
 DEFINE_SWITCH_ARRAY(POST, switches);
 #undef X
 
+
+/*
+ * Mapping between command-line switches and profile entries, communicated
+ * from 'send'.  We use a service name of 'post' internally.
+ */
+
+static struct oauth_profile {
+    const char *profname;
+    int switchnum;
+    const char *value;
+} oauthswitches[] = {
+    { "oauth-%s-credential-file", OAUTHCREDFILESW, NULL },
+    { "oauth-%s-client_id", OAUTHCLIDSW, NULL },
+    { "oauth-%s-client_secret", OAUTHCLSECSW, NULL },
+    { "oauth-%s-auth_endpoint", OAUTHAUTHENDSW, NULL },
+    { "oauth-%s-redirect_uri", OAUTHREDIRSW, NULL },
+    { "oauth-%s-token_endpoint", OAUTHTOKENDSW, NULL },
+    { "oauth-%s-scope", OAUTHSCOPESW, NULL },
+    { NULL, 0, NULL }
+};
 
 struct headers {
     char *value;
@@ -270,14 +290,14 @@ static void anno (void);
 static int annoaux (struct mailname *);
 static void insert_fcc (struct headers *, char *);
 static void make_bcc_file (int);
-static void verify_all_addresses (int, char *);
+static void verify_all_addresses (int, char *, int, char *);
 static void chkadr (void);
 static void sigon (void);
 static void sigoff (void);
 static void p_refile (char *);
 static void fcc (char *, char *);
 static void die (char *, char *, ...);
-static void post (char *, int, int, char *);
+static void post (char *, int, int, char *, int, char *);
 static void do_text (char *file, int fd);
 static void do_an_address (struct mailname *, int);
 static void do_addresses (int, int);
@@ -287,9 +307,9 @@ static int find_prefix (void);
 int
 main (int argc, char **argv)
 {
-    int state, compnum, dashstuff = 0;
+    int state, compnum, dashstuff = 0, swnum, oauth_flag = 0;
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
-    char buf[BUFSIZ], name[NAMESZ];
+    char buf[BUFSIZ], name[NAMESZ], *auth_svc = NULL;
     FILE *in, *out;
     m_getfld_state_t gstate = 0;
 
@@ -301,7 +321,7 @@ main (int argc, char **argv)
 
     while ((cp = *argp++)) {
 	if (*cp == '-') {
-	    switch (smatch (++cp, switches)) {
+	    switch ((swnum = smatch (++cp, switches))) {
 		case AMBIGSW: 
 		    ambigsw (cp, switches);
 		    done (1);
@@ -452,7 +472,41 @@ main (int argc, char **argv)
 		    if (!(saslmech = *argp++) || *saslmech == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
-		
+
+		case AUTHSERVICESW:
+		    if (!(auth_svc = *argp++) || *auth_svc == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    oauth_flag++;
+		    continue;
+
+		case OAUTHCREDFILESW:
+		case OAUTHCLIDSW:
+		case OAUTHCLSECSW:
+		case OAUTHAUTHENDSW:
+		case OAUTHREDIRSW:
+		case OAUTHTOKENDSW:
+		case OAUTHSCOPESW:
+		{
+		    int i;
+
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+
+		    for (i = 0; oauthswitches[i].profname != NULL; i++) {
+			if (oauthswitches[i].switchnum == swnum) {
+			    oauthswitches[i].value = cp;
+			    break;
+			}
+		    }
+
+		    if (oauthswitches[i].profname == NULL)
+			adios (NULL, "internal error: cannot map switch %s "
+			       "to profile entry", argp[-2]);
+
+		    oauth_flag++;
+		    continue;
+		}
+
 		case USERSW:
 		    if (!(user = *argp++) || *user == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -637,10 +691,35 @@ main (int argc, char **argv)
 #endif /* ! TLS_SUPPORT */
     }
 
+    /*
+     * If we were given any oauth flags, store the appropriate profile
+     * entries and make sure an authservice was given (we have to do this
+     * here because we aren't guaranteed the authservice will be given on
+     * the command line before the other OAuth flags are given).
+     */
+
+    if (oauth_flag) {
+	int i;
+	char sbuf[128];
+
+	if (auth_svc == NULL) {
+	    adios(NULL, "No authentication service given with -authservice");
+	}
+
+	for (i = 0; oauthswitches[i].profname != NULL; i++) {
+		if (oauthswitches[i].value != NULL) {
+		    snprintf(sbuf, sizeof(sbuf),
+		    oauthswitches[i].profname, auth_svc);
+		    sbuf[sizeof(sbuf) - 1] = '\0';
+		    add_profile_entry(sbuf, oauthswitches[i].value);
+		}
+	}
+    }
+
     /* If we are doing a "whom" check */
     if (whomsw) {
 	/* This won't work with MTS_SENDMAIL_PIPE. */
-	verify_all_addresses (1, envelope);
+        verify_all_addresses (1, envelope, oauth_flag, auth_svc);
 	done (0);
     }
 
@@ -652,14 +731,14 @@ main (int argc, char **argv)
 		   verify_all_addresses with MTS_SENDMAIL_PIPE, but
 		   that might require running sendmail as root.  Note
 		   that spost didn't verify addresses. */
-		verify_all_addresses (verbose, envelope);
+		verify_all_addresses (verbose, envelope, oauth_flag, auth_svc);
 	    }
-	    post (tmpfil, 0, verbose, envelope);
+	    post (tmpfil, 0, verbose, envelope, oauth_flag, auth_svc);
 	}
-	post (bccfil, 1, verbose, envelope);
+	post (bccfil, 1, verbose, envelope, oauth_flag, auth_svc);
 	(void) m_unlink (bccfil);
     } else {
-	post (tmpfil, 0, isatty (1), envelope);
+	post (tmpfil, 0, isatty (1), envelope, oauth_flag, auth_svc);
     }
 
     p_refile (tmpfil);
@@ -1506,7 +1585,8 @@ do_addresses (int bccque, int talk)
  */
 
 static void
-post (char *file, int bccque, int talk, char *envelope)
+post (char *file, int bccque, int talk, char *envelope, int oauth_flag,
+      char *auth_svc)
 {
     int fd;
     int	retval, i;
@@ -1556,8 +1636,9 @@ post (char *file, int bccque, int talk, char *envelope)
     } else {
         if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
                                         verbose, snoop, sasl, saslssf,
-					saslmech, user, tls))  ||
-            rp_isbad (retval = sm_winit (envelope)))
+					saslmech, user,
+					oauth_flag ? auth_svc : NULL, tls))
+            || rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 
         do_addresses (bccque, talk && verbose);
@@ -1586,7 +1667,7 @@ post (char *file, int bccque, int talk, char *envelope)
 /* Address Verification */
 
 static void
-verify_all_addresses (int talk, char *envelope)
+verify_all_addresses (int talk, char *envelope, int oauth_flag, char *auth_svc)
 {
     int retval;
     struct mailname *lp;
@@ -1596,7 +1677,8 @@ verify_all_addresses (int talk, char *envelope)
     if (!whomsw || checksw)
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, sasl, saslssf,
-					saslmech, user, tls))
+					saslmech, user,
+					oauth_flag ? auth_svc : NULL, tls))
 		|| rp_isbad (retval = sm_winit (envelope)))
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 

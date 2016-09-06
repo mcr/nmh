@@ -40,6 +40,10 @@ AS_IF([test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"],[
 	    AC_MSG_WARN([Please pass the appropriate arguments to CPPFLAGS/LDFLAGS])])
       sasl_support=yes], [sasl_support=no])
 
+dnl Do you want client-side support for using OAuth2 for SMTP authentication?
+AC_ARG_WITH([oauth], AS_HELP_STRING([--with-oauth],
+  [Enable OAuth2 support in SMTP auth]))
+
 dnl Do you want client-side support for encryption with TLS?
 AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
 AS_IF([test x"$with_tls" != x"no"],[
@@ -480,6 +484,49 @@ AS_IF([test x"$tls_support" = x"yes"],[
   [TLSLIB=])
 AC_SUBST([TLSLIB])
 
+dnl -----------------
+dnl CHECK FOR CURL
+dnl -----------------
+dnl Look for curl if oauth not disabled (--without-oauth).
+AC_PATH_PROG([curl_config], [curl-config])
+AS_IF([test "x$with_oauth" != xno && test -n "$curl_config"], [
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS `$curl_config --cflags`"
+    AC_CHECK_HEADER([curl/curl.h], [
+        HAVE_CURL_H=1
+        AC_CHECK_LIB([curl], [curl_easy_init], [
+            CURLLIB="`$curl_config --libs`"
+            AC_SUBST([CURLLIB])
+            CURL_USER_AGENT="`$curl_config --version | sed 's|^libcurl  *|libcurl/|; q'`"
+            AS_IF([test "x$CURL_USER_AGENT" != "x`echo $CURL_USER_AGENT | sed 's/ //'`"],
+                  [AC_MSG_WARN([unexpected curl-config --version: $CURL_USER_AGENT])
+                   CURL_USER_AGENT=libcurl/UNKNOWN])
+                   echo "HEYEPG ($CURL_USER_AGENT)"
+            AC_SUBST([CURL_USER_AGENT])
+          ])
+      ], [
+        CFLAGS="$save_CFLAGS"
+      ])
+  ])
+
+dnl -----------------
+dnl Enable OAuth?
+dnl -----------------
+dnl By default (with_oauth=''), enable OAuth if curl is found.
+dnl If OAuth requested (--with-oauth with_oauth=yes), error if curl not found.
+dnl If OAuth disabled (--without-oauth with_oauth=no), don't enable it.
+oauth_support=no
+OAUTH_SUPPORT=0
+AC_SUBST([OAUTH_SUPPORT])
+AS_IF([test "x$with_oauth" = xyes && test "x$HAVE_CURL_H" = x],
+      [AC_MSG_ERROR([OAuth requested but curl/curl.h not found])],
+      [test "x$with_oauth" = xyes && test "x$CURLLIB" = x],
+      [AC_MSG_ERROR([OAuth requested but curl library not found])],
+      [test "x$with_oauth" != xno && test "x$HAVE_CURL_H" = x1 && test "x$CURLLIB" != x],
+      [AC_DEFINE([OAUTH_SUPPORT], [1], [Support OAuth2 in SMTP auth.])
+       OAUTH_SUPPORT=1
+       oauth_support=yes])
+
 dnl ----------------
 dnl CHECK FLEX FIXUP
 dnl ----------------
@@ -560,6 +607,7 @@ spool default locking type : ${with_locking}
 default smtp servers       : ${smtpservers}
 SASL support               : ${sasl_support}
 TLS support                : ${tls_support}
+OAuth support              : ${oauth_support}
 ])])dnl
 
 dnl ---------------

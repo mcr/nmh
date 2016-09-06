@@ -44,6 +44,8 @@ send \- send a message
 .IR ssf ]
 .RB [ \-saslmech
 .IR mechanism ]
+.RB [ \-authservice
+.IR service ]
 .RB [ \-snoop ]
 .RB [ \-user
 .IR username ]
@@ -388,7 +390,9 @@ entry).  The
 .B \-snoop
 switch can be used to view the SMTP transaction.  (Beware that the
 SMTP transaction may contain authentication information either in
-plaintext or easily decoded base64.)
+plaintext or easily decoded base64.)  If
+.B \-saslmech xoauth2
+is used, the HTTP transaction is also shown.
 .PP
 If
 .B nmh
@@ -428,6 +432,24 @@ The
 switch can be used to select the maximum value of the Security Strength Factor.
 This is an integer value and the exact meaning of this value depends on the
 underlying SASL mechanism.  A value of 0 disables encryption.
+.PP
+If
+.B nmh
+has been compiled with OAuth support, the
+.B \-saslmech xoauth2
+switch will enable OAuth authentication.  The
+.B \-user
+switch must be used, and the
+.I user-name
+must be an email address the user has for the service, which must
+be specified with the
+.B \-authservice
+.I service
+switch.  Before using this, the user must authorize nmh by running
+.B mhlogin
+and grant authorization to that account.  See the
+.B mhlogin
+man page for more details.
 .PP
 If
 .B nmh
@@ -590,6 +612,7 @@ man page for login credentials.
 .IR forw (1),
 .IR mhbuild (1),
 .IR mhparam (1),
+.IR mhlogin (1),
 .IR repl (1),
 .IR whatnow (1),
 .IR mh\-alias (5),

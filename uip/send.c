@@ -9,7 +9,11 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
+#include <h/utils.h>
 
+#ifdef OAUTH_SUPPORT
+# include <h/oauth.h>
+#endif
 
 #ifndef CYRUS_SASL
 # define SASLminc(a) (a)
@@ -58,9 +62,10 @@
     X("server host", 6, SERVSW) \
     X("snoop", 5, SNOOPSW) \
     X("sasl", SASLminc(4), SASLSW) \
-    X("nosasl", SASLminc(-6), NOSASLSW) \
-    X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
-    X("saslmech mechanism", SASLminc(-5), SASLMECHSW) \
+    X("nosasl", SASLminc(6), NOSASLSW) \
+    X("saslmaxssf", SASLminc(6), SASLMXSSFSW) \
+    X("saslmech mechanism", SASLminc(6), SASLMECHSW) \
+    X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("user username", SASLminc(-4), USERSW) \
     X("attach", -6, ATTACHSW) \
     X("noattach", -8, NOATTACHSW) \
@@ -116,8 +121,11 @@ main (int argc, char **argv)
     char *cp, *dfolder = NULL, *maildir = NULL;
     char buf[BUFSIZ], **ap, **argp, **arguments, *program;
     char *msgs[MAXARGS], **vec;
+    const char *user = NULL, *saslmech = NULL;
     struct msgs *mp;
     struct stat st;
+    int snoop = 0;
+    char *auth_svc = NULL;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -228,6 +236,11 @@ main (int argc, char **argv)
 		    vec[vecp++] = --cp;
 		    continue;
 
+		case SNOOPSW:
+                    snoop++;
+		    vec[vecp++] = --cp;
+		    continue;
+
 		case DEBUGSW: 
 		    debugsw++;	/* fall */
 		case NFILTSW: 
@@ -239,7 +252,6 @@ main (int argc, char **argv)
 		case NMSGDSW: 
 		case WATCSW: 
 		case NWATCSW: 
-		case SNOOPSW: 
 		case SASLSW:
 		case NOSASLSW:
 		case TLSSW:
@@ -248,14 +260,34 @@ main (int argc, char **argv)
 		    vec[vecp++] = --cp;
 		    continue;
 
+		case USERSW:
+		    vec[vecp++] = --cp;
+		    if (!(cp = *argp++) || *cp == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    vec[vecp++] = cp;
+                    user = cp;
+		    continue;
+
+		case AUTHSERVICESW:
+#ifdef OAUTH_SUPPORT
+		    if (!(auth_svc = *argp++) || *auth_svc == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+#else
+		    adios (NULL, "not built with OAuth support");
+#endif
+		    continue;
+
+		case SASLMECHSW:
+		    if (!(saslmech = *argp) || *saslmech == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+		    /* Fall through */
+
 		case ALIASW: 
 		case FILTSW: 
 		case WIDTHSW: 
 		case CLIESW: 
 		case SERVSW: 
-		case SASLMECHSW:
 		case SASLMXSSFSW:
-		case USERSW:
 		case PORTSW:
 		case MTSSM:
 		case MTSSW:
@@ -418,6 +450,22 @@ go_to_it:
 	distfile = NULL;
     }
 
+#ifdef OAUTH_SUPPORT
+    if (auth_svc == NULL) {
+        if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
+            adios (NULL, "must specify -authservice with -saslmech xoauth2");
+        }
+    } else {
+        if (user == NULL) {
+            adios (NULL, "must specify -user with -saslmech xoauth2");
+        }
+    }
+#else
+    NMH_UNUSED(auth_svc);
+    NMH_UNUSED(user);
+    NMH_UNUSED(saslmech);
+#endif /* OAUTH_SUPPORT */
+
     if (altmsg == NULL || stat (altmsg, &st) == NOTOK) {
 	st.st_mtime = 0;
 	st.st_dev = 0;
@@ -430,7 +478,7 @@ go_to_it:
     closefds (3);
 
     for (msgnum = 0; msgnum < msgp; msgnum++) {
-	switch (sendsbr (vec, vecp, program, msgs[msgnum], &st, 1)) {
+	switch (sendsbr (vec, vecp, program, msgs[msgnum], &st, 1, auth_svc)) {
 	    case DONE: 
 		done (++status);
 	    case NOTOK: 

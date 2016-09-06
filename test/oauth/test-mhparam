@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Test mhparam oauth
+#
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "${srcdir}" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/oauth/common.sh"
+
+run_test "mhparam oauth" 'oauth'

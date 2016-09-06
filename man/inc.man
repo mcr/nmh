@@ -37,6 +37,8 @@ inc \- incorporate new mail
 .RB [ \-sasl " | " \-nosasl ]
 .RB [ \-saslmech
 .IR mechanism ]
+.RB [ \-authservice
+.IR service ]
 .RB [ \-snoop ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -242,7 +244,9 @@ the user's maildrop from the POP service host to the named file.
 For debugging purposes, you may give the switch
 .BR \-snoop ,
 which will allow you to watch the POP transaction take place
-between you and the POP server.
+between you and the POP server.  If
+.B \-saslmech xoauth2
+is used, the HTTP transaction is also shown.
 .PP
 If
 .B nmh
@@ -268,6 +272,29 @@ switch; see the
 man page description of
 .B \-snoop
 for its other features.
+.PP
+If
+.B nmh
+has been compiled with OAuth support, the
+.B \-saslmech xoauth2
+switch will enable OAuth authentication.  The
+.B \-user
+switch must be used, and the
+.I user-name
+must be an email address the user has for the service, which must
+be specified with the
+.B \-authservice
+.I service
+switch.  Before using this, the user must authorize nmh by running
+.B mhlogin
+and grant authorization to that account.  See the
+.B mhlogin
+man page for more details.
+.PP
+Gmail only supports POP3 over TLS, but
+.B inc
+has no TLS support.  To work around this, use something like
+.B -proxy 'openssl s_client -connect %h:995 -CAfile /etc/ssl/certs/ca-certificates.crt -quiet'
 .SH FILES
 .PD 0
 .TP 20
@@ -306,6 +333,7 @@ To name sequences denoting unseen messages.
 .IR scan (1),
 .IR mh\-mail (5),
 .IR mh\-profile (5),
+.IR mhlogin (1),
 .IR post (8),
 .IR rcvstore (1)
 .SH DEFAULTS

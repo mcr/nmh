@@ -8,6 +8,7 @@
 
 #include <h/mh.h>
 #include <h/utils.h>
+#include <h/oauth.h>
 
 #ifdef CYRUS_SASL
 # include <sasl/sasl.h>
@@ -80,34 +81,10 @@ static int sasl_getline (char *, int, FILE *);
 static int putline (char *, FILE *);
 
 
-#ifdef CYRUS_SASL
-/*
- * This function implements the AUTH command for various SASL mechanisms
- *
- * We do the whole SASL dialog here.  If this completes, then we've
- * authenticated successfully and have (possibly) negotiated a security
- * layer.
- */
-
-#define CHECKB64SIZE(insize, outbuf, outsize) \
-    { size_t wantout = (((insize + 2) / 3) * 4) + 32; \
-      if (wantout > outsize) { \
-          outbuf = mh_xrealloc(outbuf, outsize = wantout); \
-      } \
-    }
-
 int
-pop_auth_sasl(char *user, char *host, char *mech)
+check_mech(char *server_mechs, size_t server_mechs_size, char *mech)
 {
-    int result, status, sasl_capability = 0;
-    unsigned int buflen, outlen;
-    char server_mechs[256], *buf, *outbuf = NULL;
-    size_t outbufsize = 0;
-    const char *chosen_mech;
-    sasl_security_properties_t secprops;
-    struct pass_context p_context;
-    sasl_ssf_t *ssf;
-    int *moutbuf;
+  int status, sasl_capability = 0;
 
     /*
      * First off, we're going to send the CAPA command to see if we can
@@ -137,7 +114,7 @@ pop_auth_sasl(char *user, char *host, char *mech)
 		 * We've seen the SASL capability.  Grab the mech list
 		 */
 		sasl_capability++;
-		strncpy(server_mechs, response + 5, sizeof(server_mechs));
+		strncpy(server_mechs, response + 5, server_mechs_size);
 	    }
 	    break;
 	}
@@ -157,6 +134,42 @@ pop_auth_sasl(char *user, char *host, char *mech)
 		 "not in list of supported mechanisms:\n%s",
 		 mech, server_mechs);
 	return NOTOK;
+    }
+
+    return OK;
+}
+
+#ifdef CYRUS_SASL
+/*
+ * This function implements the AUTH command for various SASL mechanisms
+ *
+ * We do the whole SASL dialog here.  If this completes, then we've
+ * authenticated successfully and have (possibly) negotiated a security
+ * layer.
+ */
+
+#define CHECKB64SIZE(insize, outbuf, outsize) \
+    { size_t wantout = (((insize + 2) / 3) * 4) + 32; \
+      if (wantout > outsize) { \
+          outbuf = mh_xrealloc(outbuf, outsize = wantout); \
+      } \
+    }
+
+int
+pop_auth_sasl(char *user, char *host, char *mech)
+{
+    int result, status;
+    unsigned int buflen, outlen;
+    char server_mechs[256], *buf, *outbuf = NULL;
+    size_t outbufsize = 0;
+    const char *chosen_mech;
+    sasl_security_properties_t secprops;
+    struct pass_context p_context;
+    sasl_ssf_t *ssf;
+    int *moutbuf;
+
+    if ((status = check_mech(server_mechs, sizeof(server_mechs), mech)) != OK) {
+	return status;
     }
 
     /*
@@ -422,6 +435,26 @@ sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
 }
 #endif /* CYRUS_SASL */
 
+int
+pop_auth_xoauth(const char *client_res)
+{
+    char server_mechs[256];
+    int status = check_mech(server_mechs, sizeof(server_mechs), "XOAUTH");
+
+    if (status != OK) return status;
+
+    if ((status = command("AUTH XOAUTH2 %s", client_res)) != OK) {
+      return status;
+    }
+    if (strncmp(response, "+OK", 3) == 0) {
+	return OK;
+    }
+
+    /* response contains base64-encoded JSON, which is always the same.
+     * See mts/smtp/smtp.c for more notes on that. */
+    /* Then we're supposed to send an empty response ("\r\n"). */
+    return command("");
+}
 
 /*
  * Split string containing proxy command into an array of arguments
@@ -474,14 +507,25 @@ parse_proxy(char *proxy, char *host)
 
 int
 pop_init (char *host, char *port, char *user, char *pass, char *proxy,
-	  int snoop, int sasl, char *mech)
+	  int snoop, int sasl, char *mech, const char *oauth_svc)
 {
     int fd1, fd2;
     char buffer[BUFSIZ];
+    const char *xoauth_client_res = NULL;
 #ifndef CYRUS_SASL
     NMH_UNUSED (sasl);
     NMH_UNUSED (mech);
 #endif /* ! CYRUS_SASL */
+
+#ifdef OAUTH_SUPPORT
+    if (oauth_svc != NULL) {
+	xoauth_client_res = mh_oauth_do_xoauth(user, oauth_svc,
+					       snoop ? stderr : NULL);
+    }
+#else
+    NMH_UNUSED (oauth_svc);
+    NMH_UNUSED (xoauth_client_res);
+#endif /* OAUTH_SUPPORT */
 
     if (proxy && *proxy) {
        int pid;
@@ -566,6 +610,12 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 			return OK;
 		} else
 #  endif /* CYRUS_SASL */
+#  if OAUTH_SUPPORT
+		if (xoauth_client_res != NULL) {
+		    if (pop_auth_xoauth(xoauth_client_res) != NOTOK)
+			return OK;
+		} else
+#  endif /* OAUTH_SUPPORT */
 		if (command ("USER %s", user) != NOTOK
 		    && command ("%s %s", (pophack++, "PASS"),
 					pass) != NOTOK)

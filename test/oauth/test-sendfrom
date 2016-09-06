@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+# Test the XOAUTH2 support with sendfrom
+#
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "${srcdir}" && pwd`; export MH_OBJ_DIR
+fi
+
+. "${srcdir}/test/oauth/common.sh"
+
+# fakesmtp uses the XOAUTH environment variable
+export XOAUTH
+XOAUTH='dXNlcj11c2VyQGV4YW1wbGUuY29tAWF1dGg9QmVhcmVyIHRlc3QtYWNjZXNzAQE='
+
+# TEST
+start_test 'with sendfrom'
+
+setup_draft
+
+fake_creds <<EOF
+access-user@example.com: test-access
+refresh-user@example.com: test-refresh
+expire-user@example.com: 2000000000
+EOF
+
+#### Set up profile to use sendfrom by adding a sendfrom-addr.  This one adds
+#### the oauth switches, which are necessary for this test.
+sendfrom="$MH_INST_DIR${datarootdir}/doc/nmh/contrib/sendfrom"
+cat >> "$MH" <<EOF
+sendfrom-nobody@example.com: -server 127.0.0.1 -port ${smtp_port}
+  -client localhost -saslmech xoauth2 -authservice test -user user@example.com
+EOF
+
+cat > "${testname}.expected" <<EOF
+EHLO localhost
+AUTH XOAUTH2 dXNlcj11c2VyQGV4YW1wbGUuY29tAWF1dGg9QmVhcmVyIHRlc3QtYWNjZXNzAQE=
+MAIL FROM:<nobody@example.com>
+RCPT TO:<somebody@example.com>
+DATA
+From: Mr Nobody <nobody@example.com>
+To: Somebody Else <somebody@example.com>
+Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date:
+
+This is a test
+.
+QUIT
+EOF
+
+start_fakesmtp
+run_test "send -draft"
+sed 's/^Date:.*/Date:/' "${testname}.smtp-req" > "${testname}.smtp-req".clean
+check "${testname}.smtp-req".clean "${testname}.expected"
+
+
+clean_fakesmtp
+clean_fakehttp
+finish_test
+
+exit ${failed:-0}

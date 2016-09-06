@@ -42,7 +42,7 @@ static struct node **opp = NULL;
 
 
 void
-readconfig (struct node **npp, FILE *ib, char *file, int ctx)
+readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 {
     register int state;
     register char *cp;

@@ -1,0 +1,83 @@
+.\"
+.\" %nmhwarning%
+.\"
+.TH MHLOGIN %manext1% "April 10, 2016" "%nmhversion%"
+.SH NAME
+mhlogin \- login to external (OAuth) services
+.SH SYNOPSIS
+.HP 5
+.na
+.B mhlogin
+.RB [ \-user
+.IR username ]
+.RB [ \-saslmech
+.IR mechanism ]
+.RB [ \-authservice
+.IR service ]
+.RB [ \-browser
+.IR command ]
+.RB [ \-snoop ]
+.RB [ \-version ]
+.RB [ \-help ]
+.ad
+.SH DESCRIPTION
+.B Mhlogin
+currently only supports OAuth for Gmail.  Run
+.B mhlogin
+.B \-user
+.I username
+.B \-saslmech xoauth2
+.B \-authservice
+.I gmail
+and load the printed URL in your browser.  Login to a Gmail account, grant
+authorization, and copy and paste the code into the
+.B mhlogin
+prompt.  Be sure to use the same account with the
+.B -user
+switch to
+.BR send .
+.PP
+The
+.B \-browser
+switch causes
+.B mhlogin
+to load the URL directly into a new browser session.  The command argument
+must include the browser invocation name, and can include any browser arguments
+in the
+.B \-browser
+argument string, e.g., 'google-chrome --new-window'.
+.PP
+The
+.B \-snoop
+switch can be used to view the HTTP transaction.
+.PP
+All parameters configuring the service may be overridden by profile components,
+and even though only Gmail is supported out of the box, the user can define
+new services entirely in the profile.  Profile components are prefixed by
+.IR oauth-service- ,
+for example,
+.I oauth-gmail-credential-file
+which specifies where
+.B mhlogin
+should write credentials and where
+.B send
+should read them.
+.SH "PROFILE COMPONENTS"
+.fc ^ ~
+.nf
+.ta 2.4i
+.ta \w'ExtraBigProfileName          'u
+^oauth-gmail-credential-file:~^oauth-gmail
+^oauth-gmail-client_id:~^nmh project client_id
+^oauth-gmail-client_secret:~^nmh project client_secret
+^oauth-gmail-auth_endpoint:~^https://accounts.google.com/o/oauth2/auth
+^oauth-gmail-redirect_uri:~^urn:ietf:wg:oauth:2.0:oob
+^oauth-gmail-token_endpoint:~^https://accounts.google.com/o/oauth2/token
+^oauth-gmail-scope:~^https://mail.google.com/
+.fi
+.SH "SEE ALSO"
+.IR send (1)
+.SH DEFAULTS
+.nf
+.RB ` \-saslmech "' xoauth2"
+.fi

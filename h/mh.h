@@ -489,6 +489,7 @@ extern char *sendproc;
 extern char *showmimeproc;
 extern char *showproc;
 extern char *usequence;
+extern char *user_agent;
 extern char *version_num;
 extern char *version_str;
 extern char *whatnowproc;

@@ -70,9 +70,10 @@
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("snoop", -5, SNOOPSW) \
-    X("sasl", SASLminc(-4), SASLSW) \
-    X("nosasl", SASLminc(-6), NOSASLSW) \
-    X("saslmech", SASLminc(-8), SASLMECHSW) \
+    X("sasl", SASLminc(5), SASLSW) \
+    X("nosasl", SASLminc(3), NOSASLSW) \
+    X("saslmech", SASLminc(5), SASLMECHSW) \
+    X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("proxy command", 0, PROXYSW) \
 
 #define X(sw, minchars, id) id,
@@ -190,7 +191,7 @@ main (int argc, char **argv)
     char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
     char *host = NULL, *port = NULL, *user = NULL, *proxy = NULL;
-    char *audfile = NULL, *from = NULL, *saslmech = NULL;
+    char *audfile = NULL, *from = NULL, *saslmech = NULL, *auth_svc = NULL;
     char buf[BUFSIZ], **argp, *nfs, **arguments;
     struct msgs *mp = NULL;
     struct stat st, s1;
@@ -200,7 +201,6 @@ main (int argc, char **argv)
 
     int nmsgs, nbytes;
     char *MAILHOST_env_variable;
-
     done=inc_done;
 
 /* absolutely the first thing we do is save our privileges,
@@ -353,6 +353,16 @@ main (int argc, char **argv)
 		if (!(saslmech = *argp++) || *saslmech == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
+
+	    case AUTHSERVICESW:
+#ifdef OAUTH_SUPPORT
+                if (!(auth_svc = *argp++) || *auth_svc == '-')
+                    adios (NULL, "missing argument to %s", argp[-2]);
+#else
+                adios (NULL, "not built with OAuth support");
+#endif
+                continue;
+
 	    case PROXYSW:
 		if (!(proxy = *argp++) || *proxy == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
@@ -395,12 +405,23 @@ main (int argc, char **argv)
     if (inc_type == INC_POP) {
 	struct nmh_creds creds = { 0, 0, 0 };
 
+	if (auth_svc == NULL) {
+	    if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
+		adios (NULL, "must specify -authservice with -saslmech xoauth2");
+	    }
+	    nmh_get_credentials (host, user, sasl, &creds);
+	} else {
+	    if (user == NULL) {
+		adios (NULL, "must specify -user with -saslmech xoauth2");
+	    }
+	    creds.user = user;
+	}
+
 	/*
 	 * initialize POP connection
 	 */
-	nmh_get_credentials (host, user, sasl, &creds);
 	if (pop_init (host, port, creds.user, creds.password, proxy, snoop,
-		      sasl, saslmech) == NOTOK)
+		      sasl, saslmech, auth_svc) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */

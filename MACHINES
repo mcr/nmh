@@ -40,6 +40,7 @@ Run-time package requirements:
     readline (if you want readline support)
     cyrus-sasl-lib / libsasl2 (if configured with --with-cyrus-sasl)
     openssl-libs / libssl (if configured with --with-tls)
+    libcurl (if configured with --with-oauth)
 
 Additional build-time package requirements:
     ncurses-devel / libncurses5-devel
@@ -47,6 +48,7 @@ Additional build-time package requirements:
     readline-devel (if you want readline support)
     cyrus-sasl-devel / libsasl2-dev (if configuring with --with-cyrus-sasl)
     openssl-devel / libssl-dev (if configuring with --with-tls)
+    libcurl-devel / libcurl-dev (if configured with --with-oauth)
 
 Test suite package requirements:
     ncurses (tput is needed to run test/format/test-curses)
@@ -75,6 +77,7 @@ or in the shell environment before calling configure or build_nmh:
 
 Additional build-time package requirements:
     devel/autotools
+    ftp/curl (if configured with --with-oauth)
 
 ------------------------------------------------------------------------------
                                     Cygwin

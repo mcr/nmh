@@ -44,6 +44,10 @@
 #include <h/mime.h>
 #include <h/utils.h>
 
+#ifdef OAUTH_SUPPORT
+# include <h/oauth.h>
+#endif
+
 #define WHATNOW_SWITCHES \
     X("draftfolder +folder", 0, DFOLDSW) \
     X("draftmessage msg", 0, DMSGSW) \
@@ -941,11 +945,12 @@ buildfile (char **argp, char *file)
     X("draftfolder +folder", -6, SDRFSW) \
     X("draftmessage msg", -6, SDRMSW) \
     X("nodraftfolder", -3, SNDRFSW) \
-    X("sasl", SASLminc(-4), SASLSW) \
-    X("nosasl", SASLminc(-6), NOSASLSW) \
-    X("saslmaxssf", SASLminc(-10), SASLMXSSFSW) \
-    X("saslmech", SASLminc(-5), SASLMECHSW) \
-    X("user", SASLminc(-4), USERSW) \
+    X("sasl", SASLminc(4), SASLSW) \
+    X("nosasl", SASLminc(6), NOSASLSW) \
+    X("saslmaxssf", SASLminc(10), SASLMXSSFSW) \
+    X("saslmech", SASLminc(5), SASLMECHSW) \
+    X("authservice", SASLminc(0), AUTHSERVICESW) \
+    X("user username", SASLminc(4), USERSW) \
     X("attach fieldname", 6, SNDATTACHSW) \
     X("noattach", 0, SNDNOATTACHSW) \
     X("attachformat", 7, SNDATTACHFORMAT) \
@@ -985,6 +990,9 @@ sendit (char *sp, char **arg, char *file, int pushed)
     int	vecp, n = 1;
     char *cp, buf[BUFSIZ], **argp, *program;
     char **arguments, *savearg[MAXARGS], **vec;
+    const char *user = NULL, *saslmech = NULL;
+    char *auth_svc = NULL;
+    int snoop = 0;
     struct stat st;
 
 #ifndef	lint
@@ -1125,7 +1133,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case NMSGDSW:
 		case WATCSW:
 		case NWATCSW:
-		case SNOOPSW:
 		case SASLSW:
 		case NOSASLSW:
 		case TLSSW:
@@ -1134,13 +1141,31 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		    vec[vecp++] = --cp;
 		    continue;
 
+		case SNOOPSW:
+                    snoop++;
+		    vec[vecp++] = --cp;
+		    continue;
+
+		case AUTHSERVICESW:
+#ifdef OAUTH_SUPPORT
+		    if (!(auth_svc = *argp++) || *auth_svc == '-')
+			adios (NULL, "missing argument to %s", argp[-2]);
+#else
+                    NMH_UNUSED (user);
+                    NMH_UNUSED (auth_svc);
+		    adios (NULL, "not built with OAuth support");
+#endif
+		    continue;
+
+		case SASLMECHSW:
+                    saslmech = *argp;
+		    /* fall thru */
 		case ALIASW:
 		case FILTSW:
 		case WIDTHSW:
 		case CLIESW:
 		case SERVSW:
 		case SASLMXSSFSW:
-		case SASLMECHSW:
 		case USERSW:
 		case PORTSW:
 		case MTSSM:
@@ -1152,6 +1177,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 			return;
 		    }
 		    vec[vecp++] = cp;
+                    user = cp;
 		    continue;
 
 		case SDRFSW:
@@ -1220,6 +1246,20 @@ sendit (char *sp, char **arg, char *file, int pushed)
 	distfile = NULL;
     }
 
+#ifdef OAUTH_SUPPORT
+    if (auth_svc == NULL) {
+        if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
+            adios (NULL, "must specify -authservice with -saslmech xoauth2");
+        }
+    } else {
+        if (user == NULL) {
+            adios (NULL, "must specify -user with -saslmech xoauth2");
+        }
+    }
+#else
+    NMH_UNUSED(saslmech);
+#endif /* OAUTH_SUPPORT */
+
     if (altmsg == NULL || stat (altmsg, &st) == NOTOK) {
 	st.st_mtime = 0;
 	st.st_dev = 0;
@@ -1230,7 +1270,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 
     closefds (3);
 
-    if (sendsbr (vec, vecp, program, file, &st, 1) == OK)
+    if (sendsbr (vec, vecp, program, file, &st, 1, auth_svc) == OK)
 	done (0);
 }
 

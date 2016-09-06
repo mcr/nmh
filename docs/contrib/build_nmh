@@ -37,6 +37,7 @@
 #   ncurses-devel
 #   cyrus-sasl-devel, if using sasl
 #   openssl-devel, if using TLS
+#   libcurl-devel, if using oauth
 #   autoconf and automake, with -s (see docs/README.developers for versions)
 #   rpm-build, with -r
 
@@ -102,6 +103,7 @@ config_mts=smtp
 config_smtpservers=localhost
 config_sasl=n
 config_tls=n
+config_oauth=n
 config_debug=n
 
 
@@ -156,10 +158,14 @@ if install-mh -check >/dev/null 2>&1; then
       case `$mhbin/mhparam tls` in
         *tls*) config_tls=y ;;
       esac
+
+      case `$mhbin/mhparam oauth` in
+        *oauth*) config_oauth=y ;;
+      esac
     else
       tput smso
-      echo "$0: SASL and TLS detection not supported with current nmh"
-      [ $yes -eq 1 ]  &&  echo "will not configure either one in"
+      echo "$0: SASL, TLS, and OAuth2 detection not supported with current nmh"
+      [ $yes -eq 1 ]  &&  echo "will not configure them in"
       tput rmso
     fi
   fi
@@ -204,6 +210,14 @@ if [ $yes -eq 0 ]; then
     config_tls=n
   fi
 
+  printf 'OAuth2 support [%s]: ' $config_oauth
+  read response
+  if [ "$response" = y  -o  "$response" = Y ]; then
+    config_oauth=y
+  elif [ "$response" = n  -o  "$response" = N ]; then
+    config_oauth=n
+  fi
+
   #### Don't confirm debug here:  obey the -d option to this script.
 fi
 
@@ -220,9 +234,10 @@ config_opts="--prefix=$config_prefix"
   config_opts="$config_opts --with-cyrus-sasl"
 [ "$config_tls" = y ]  &&  \
   config_opts="$config_opts --with-tls"
+[ "$config_oauth" = y ]  &&  \
+  config_opts="$config_opts --with-oauth"
 [ $config_debug = y ]  &&  \
   config_opts="$config_opts --enable-debug --enable-assert"
-
 
 #### dotlocking, the usual default, requires chgrp and chmod of inc.
 installpriv=

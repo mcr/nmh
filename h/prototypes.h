@@ -320,7 +320,7 @@ void print_version (char *);
 void push (void);
 char *pwd (void);
 char *r1bindex(char *, int);
-void readconfig (struct node **, FILE *, char *, int);
+void readconfig (struct node **, FILE *, const char *, int);
 int refile (char **, char *);
 void ruserpass (char *, char **, char **);
 int remdir (char *);
@@ -451,7 +451,7 @@ int sc_length(void);
 int sc_width(void);
 int build_form (char *, char *, int *, char *, char *, char *, char *,
 		char *, char *);
-int sendsbr (char **, int, char *, char *, struct stat *, int);
+int sendsbr (char **, int, char *, char *, struct stat *, int, const char *);
 int SOprintf (char *, ...);
 int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);
