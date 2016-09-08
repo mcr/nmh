@@ -22,6 +22,11 @@
 # endif /* SASL_VERSION_FULL < 0x020125 */
 #endif /* CYRUS_SASL */
 
+#ifdef TLS_SUPPORT
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#endif /* TLS_SUPPORT */
+
 #include <h/popsbr.h>
 #include <h/signals.h>
 
@@ -59,8 +64,6 @@ static sasl_callback_t callbacks[] = {
 
 #define SASL_BUFFER_SIZE 262144
 };
-#else /* CYRUS_SASL */
-# define sasl_fgetc fgetc
 #endif /* CYRUS_SASL */
 
 /*
@@ -74,6 +77,18 @@ static int multiline(void);
 static int pop_auth_sasl(char *, char *, char *);
 static int sasl_fgetc(FILE *);
 #endif /* CYRUS_SASL */
+
+#ifdef TLS_SUPPORT
+static SSL_CTX *sslctx = NULL;
+static SSL *ssl = NULL;
+static BIO *sbior = NULL;
+static BIO *sbiow = NULL;
+static BIO *io = NULL;
+
+static int tls_negotiate(void);
+#endif /* TLS_SUPPORT */
+
+static int tls_active = 0;
 
 static int traverse (int (*)(char *), const char *, ...);
 static int vcommand(const char *, va_list);
@@ -507,7 +522,7 @@ parse_proxy(char *proxy, char *host)
 
 int
 pop_init (char *host, char *port, char *user, char *pass, char *proxy,
-	  int snoop, int sasl, char *mech, const char *oauth_svc)
+	  int snoop, int sasl, int tls, char *mech, const char *oauth_svc)
 {
     int fd1, fd2;
     char buffer[BUFSIZ];
@@ -598,6 +613,9 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	return NOTOK;
 
     SIGNAL (SIGPIPE, SIG_IGN);
+
+    if (tls && tls_negotiate())
+	return NOTOK;
 
     switch (sasl_getline (response, sizeof response, input)) {
 	case OK: 
@@ -1078,3 +1096,103 @@ sasl_fgetc(FILE *f)
     return (int) buffer[0];
 }
 #endif /* CYRUS_SASL */
+
+#ifdef TLS_SUPPORT
+/*
+ * Negotiate TLS at this point.  Will call pop_done() on failure.
+ */
+
+static int
+tls_negotiate(void)
+{
+    BIO *ssl_bio;
+
+    if (! sslctx) {
+	SSL_METHOD *method;
+
+	SSL_library_init();
+	SSL_load_error_strings();
+
+	method = TLS_client_method();
+
+	sslctx = SSL_CTX_new(method);
+
+	if (! sslctx()) {
+	    pop_done();
+	    advise(NULL, "Unable to initialize OpenSSL context: %s",
+		   ERR_error_string(ERR_get_error(), NULL));
+	    return NOTOK;
+	}
+    }
+
+    ssl = SSL_new(sslctx);
+
+    if (! ssl) {
+	pop_done();
+	advise(NULL, "Unable to create SSL connection: %s",
+	       ERR_error_string(ERR_get_error(), NULL));
+	return NOTOK;
+    }
+
+    sbior = BIO_new_socket(fileno(input), BIO_NOCLOSE);
+    sbiow = BIO_new_socket(fileno(output), BIO_NOCLOSE);
+
+    if (sbior == NULL || sbiow == NULL) {
+	pop_done();
+	advise(NULL, "Unable to create BIO endpoints: %s",
+	       ERR_error_string(ERR_get_error(), NULL);
+	return NOTOK;
+    }
+
+    SSL_set_bio(ssl, sbior, sbiow);
+    SSL_set_connect_state(ssl);
+
+    /*
+     * Set up a BIO to do buffering for us
+     */
+
+    io = BIO_new(BIO_f_buffer());
+
+    if (! io) {
+	pop_done();
+	advise(NULL, "Unable to create a buffer BIO: %s",
+	       ERR_error_string(ERR_get_error(), NULL);
+	return NOTOK;
+    }
+     
+    ssl_bio = BIO_new(BIO_f_ssl());
+
+    if (! ssl_bio) {
+	pop_done();
+	advise(NULL, "Unable to create a SSL BIO: %s",
+	       ERR_error_string(ERR_get_error(), NULL);
+	return NOTOK;
+    }
+
+    BIO_set_ssl(ssl_bio, ssl, BIO_CLOSE);
+    BIO_push(io, ssl_bio);
+
+    /*
+     * Try doing the handshake now
+     */
+
+    if (BIO_do_handshake(io) < 1) {
+	pop_done();
+	advise(NULL, "Unable to negotiate SSL connection: %s",
+	       ERR_error_string(ERR_get_error(), NULL);
+	return NOTOK;
+    }
+
+    if (popprint) {
+	const SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
+	printf("SSL negotiation successful: %s(%d) %s\n",
+	       SSL_CIPHER_get_name(cipher);
+	       SSL_CIPHER_get_bits(cipher, NULL);
+	       SSL_CIPHER_get_version(cipher);
+    }
+
+    tls_active = 1;
+
+    return OK;
+}
+#endif /* TLS_SUPPORT */
