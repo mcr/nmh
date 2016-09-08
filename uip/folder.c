@@ -406,7 +406,7 @@ get_folder_info_body (char *fold, char *msg, boolean *crawl_children)
 	/*
 	 * create message structure and get folder info
 	 */
-	if (!(mp = folder_read (fold, 1))) {
+	if (!(mp = folder_read (fold, fpack))) {
 	    admonish (NULL, "unable to read folder %s", fold);
 	    *crawl_children = FALSE;
 	    return 0;
