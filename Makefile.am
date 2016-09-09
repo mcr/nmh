@@ -342,7 +342,8 @@ uip_forw_SOURCES = uip/forw.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 uip_forw_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/popsbr.c
-uip_inc_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(SASLLIB) $(CURLLIB) $(POSTLINK)
+uip_inc_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(SASLLIB) $(CURLLIB) \
+		$(TLSLIB) $(POSTLINK)
 
 uip_install_mh_SOURCES = uip/install-mh.c
 uip_install_mh_LDADD = $(LDADD) $(POSTLINK)
@@ -389,7 +390,7 @@ uip_mhstore_SOURCES = uip/mhstore.c uip/mhparse.c uip/mhcachesbr.c \
 uip_mhstore_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_msgchk_SOURCES = uip/msgchk.c uip/popsbr.c
-uip_msgchk_LDADD = $(LDADD) $(SASLLIB) $(CURLLIB) $(POSTLINK)
+uip_msgchk_LDADD = $(LDADD) $(SASLLIB) $(CURLLIB) $(TLSLIB) $(POSTLINK)
 
 uip_new_SOURCES = uip/new.c
 uip_new_LDADD = $(LDADD) $(POSTLINK)

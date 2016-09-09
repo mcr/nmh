@@ -75,7 +75,6 @@ static int multiline(void);
 
 #ifdef CYRUS_SASL
 static int pop_auth_sasl(char *, char *, char *);
-static int sasl_fgetc(FILE *);
 #endif /* CYRUS_SASL */
 
 #ifdef TLS_SUPPORT
@@ -93,6 +92,7 @@ static int tls_active = 0;
 static int traverse (int (*)(char *), const char *, ...);
 static int vcommand(const char *, va_list);
 static int sasl_getline (char *, int, FILE *);
+static int sasl_fgetc(FILE *);
 static int putline (char *, FILE *);
 
 
@@ -218,7 +218,7 @@ pop_auth_sasl(char *user, char *host, char *mech)
 
     memset(&secprops, 0, sizeof(secprops));
     secprops.maxbufsize = SASL_BUFFER_SIZE;
-    secprops.max_ssf = UINT_MAX;
+    secprops.max_ssf = tls_active ? 0 : UINT_MAX;
 
     result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
 
@@ -522,7 +522,7 @@ parse_proxy(char *proxy, char *host)
 
 int
 pop_init (char *host, char *port, char *user, char *pass, char *proxy,
-	  int snoop, int sasl, int tls, char *mech, const char *oauth_svc)
+	  int snoop, int sasl, char *mech, int tls, const char *oauth_svc)
 {
     int fd1, fd2;
     char buffer[BUFSIZ];
@@ -873,8 +873,12 @@ vcommand (const char *fmt, va_list ap)
     if (poprint) {
 #ifdef CYRUS_SASL
 	if (sasl_ssf)
-	    fprintf(stderr, "(encrypted) ");
+	    fprintf(stderr, "(sasl-encrypted) ");
 #endif /* CYRUS_SASL */
+#ifdef TLS_SUPPORT
+	if (tls_active)
+	    fprintf(stderr, "(tls-encrypted) ");
+#endif /* TLS_SUPPORT */
 	if (pophack) {
 	    if ((cp = strchr (buffer, ' ')))
 		*cp = 0;
@@ -983,8 +987,23 @@ putline (char *s, FILE *iop)
     int result;
     unsigned int buflen;
 
-    if (!sasl_complete) {
+    if (sasl_complete == 0 || sasl_ssf == 0) {
 #endif /* CYRUS_SASL */
+#ifdef TLS_SUPPORT
+	if (tls_active) {
+	    int ret;
+
+	    BIO_printf(io, "%s\r\n");
+	    ret = BIO_flush(io);
+
+	    if (ret != 1) {
+		strncpy(response, "lost connection", sizeof(response));
+		return NOTOK;
+	    else {
+	    	return OK;
+	    }
+	} else
+#endif /* TLS_SUPPORT */
 	fprintf (iop, "%s\r\n", s);
 #ifdef CYRUS_SASL
     } else {
@@ -1050,6 +1069,9 @@ sasl_fgetc(FILE *f)
 
     while (retbufsize == 0) {
 
+#ifdef TLS_SUPPORT
+	if (tls_active) {
+
 	cc = read(fileno(f), tmpbuf, sizeof(tmpbuf));
 
 	if (cc == 0)
@@ -1108,21 +1130,20 @@ tls_negotiate(void)
     BIO *ssl_bio;
 
     if (! sslctx) {
-	SSL_METHOD *method;
-
 	SSL_library_init();
 	SSL_load_error_strings();
 
-	method = TLS_client_method();
+	sslctx = SSL_CTX_new(SSLv23_client_method());
 
-	sslctx = SSL_CTX_new(method);
-
-	if (! sslctx()) {
+	if (! sslctx) {
 	    pop_done();
 	    advise(NULL, "Unable to initialize OpenSSL context: %s",
 		   ERR_error_string(ERR_get_error(), NULL));
 	    return NOTOK;
 	}
+
+	SSL_CTX_set_options(sslctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 |
+			    SSL_OP_NO_TLSv1);
     }
 
     ssl = SSL_new(sslctx);
@@ -1140,7 +1161,7 @@ tls_negotiate(void)
     if (sbior == NULL || sbiow == NULL) {
 	pop_done();
 	advise(NULL, "Unable to create BIO endpoints: %s",
-	       ERR_error_string(ERR_get_error(), NULL);
+	       ERR_error_string(ERR_get_error(), NULL));
 	return NOTOK;
     }
 
@@ -1156,7 +1177,7 @@ tls_negotiate(void)
     if (! io) {
 	pop_done();
 	advise(NULL, "Unable to create a buffer BIO: %s",
-	       ERR_error_string(ERR_get_error(), NULL);
+	       ERR_error_string(ERR_get_error(), NULL));
 	return NOTOK;
     }
      
@@ -1165,7 +1186,7 @@ tls_negotiate(void)
     if (! ssl_bio) {
 	pop_done();
 	advise(NULL, "Unable to create a SSL BIO: %s",
-	       ERR_error_string(ERR_get_error(), NULL);
+	       ERR_error_string(ERR_get_error(), NULL));
 	return NOTOK;
     }
 
@@ -1179,16 +1200,16 @@ tls_negotiate(void)
     if (BIO_do_handshake(io) < 1) {
 	pop_done();
 	advise(NULL, "Unable to negotiate SSL connection: %s",
-	       ERR_error_string(ERR_get_error(), NULL);
+	       ERR_error_string(ERR_get_error(), NULL));
 	return NOTOK;
     }
 
-    if (popprint) {
+    if (poprint) {
 	const SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
 	printf("SSL negotiation successful: %s(%d) %s\n",
-	       SSL_CIPHER_get_name(cipher);
-	       SSL_CIPHER_get_bits(cipher, NULL);
-	       SSL_CIPHER_get_version(cipher);
+	       SSL_CIPHER_get_name(cipher),
+	       SSL_CIPHER_get_bits(cipher, NULL),
+	       SSL_CIPHER_get_version(cipher));
     }
 
     tls_active = 1;

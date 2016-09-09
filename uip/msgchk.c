@@ -350,7 +350,7 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 
     /* open the POP connection */
     if (pop_init (host, port, creds.user, creds.password, proxy, snoop, sasl,
-		  saslmech, auth_svc) == NOTOK
+		  0, saslmech, auth_svc) == NOTOK
 	    || pop_stat (&nmsgs, &nbytes) == NOTOK     /* check for messages  */
 	    || pop_quit () == NOTOK) {                 /* quit POP connection */
 	advise (NULL, "%s", response);

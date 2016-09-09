@@ -49,6 +49,12 @@
 # define SASLminc(a)  0
 #endif
 
+#ifndef TLS_SUPPORT
+# define TLSminc(a) (a)
+#else
+# define TLSminc(a)  0
+#endif
+
 #define INC_SWITCHES \
     X("audit audit-file", 0, AUDSW) \
     X("noaudit", 0, NAUDSW) \
@@ -73,6 +79,8 @@
     X("sasl", SASLminc(5), SASLSW) \
     X("nosasl", SASLminc(3), NOSASLSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \
+    X("initialtls", TLSminc(-10), INITTLSSW) \
+    X("noinitialtls", TLSminc(-12), NOINITTLSSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("proxy command", 0, PROXYSW) \
 
@@ -186,7 +194,7 @@ main (int argc, char **argv)
     int chgflag = 1, trnflag = 1;
     int noisy = 1, width = -1;
     int hghnum = 0, msgnum = 0;
-    int sasl = 0;
+    int sasl = 0, tls = 0;
     int incerr = 0; /* <0 if inc hits an error which means it should not truncate mailspool */
     char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
@@ -354,6 +362,14 @@ main (int argc, char **argv)
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		continue;
 
+	    case INITTLSSW:
+		tls++;
+		continue;
+
+	    case NOINITTLSSW:
+		tls = 0;
+		continue;
+
 	    case AUTHSERVICESW:
 #ifdef OAUTH_SUPPORT
                 if (!(auth_svc = *argp++) || *auth_svc == '-')
@@ -421,7 +437,7 @@ main (int argc, char **argv)
 	 * initialize POP connection
 	 */
 	if (pop_init (host, port, creds.user, creds.password, proxy, snoop,
-		      sasl, saslmech, auth_svc) == NOTOK)
+		      sasl, saslmech, tls, auth_svc) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */
