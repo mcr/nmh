@@ -37,7 +37,7 @@ extern char *mmdlm2;
 /*
  * Read mts.conf file
  */
-void mts_init (char *);
+void mts_init (void);
 
 /*
  * MTS specific variables

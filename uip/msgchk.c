@@ -88,7 +88,7 @@ main (int argc, char **argv)
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
-    mts_init (invo_name);
+    mts_init ();
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

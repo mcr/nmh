@@ -214,7 +214,7 @@ main(int argc, char **argv)
 	if ((cp = context_find("datalocking"))) { datalocking = cp; }
 
 	/* In case spoollocking was set in mts.conf. */
-	mts_init(invo_name);
+	mts_init();
 
 	/* Also set localmbox here */
 	if (! localmbox_primed) {
@@ -239,7 +239,7 @@ main(int argc, char **argv)
 
 	    if (! strcmp ("spoollocking", comps[i])) {
 		/* In case spoollocking was set in mts.conf. */
-		mts_init(invo_name);
+		mts_init();
             }
 
 	    value = context_find (comps[i]);

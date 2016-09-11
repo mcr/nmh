@@ -58,7 +58,7 @@ main (int argc, char **argv)
 
     done=unlink_done;
 
-    mts_init (invo_name);
+    mts_init ();
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 

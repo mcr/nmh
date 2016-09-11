@@ -135,12 +135,11 @@ save_mts_method (const char *value) {
  */
 
 void
-mts_init (char *name)
+mts_init (void)
 {
     const char *cp;
     FILE *fp;
     static int inited = 0;
-    NMH_UNUSED (name);
 
     if (inited++ || (fp = fopen (get_mtsconf_pathname(), "r")) == NULL)
 	return;
@@ -236,7 +235,7 @@ LocalName (int flag)
     if (buf[0])
 	return buf;
 
-    mts_init ("mts");
+    mts_init ();
 
     /* check if the mts.conf file specifies a "localname" */
     if (*localname && flag == 0) {
@@ -283,7 +282,7 @@ SystemName (void)
     if (buffer[0])
 	return buffer;
 
-    mts_init ("mts");
+    mts_init ();
 
     /* check if mts.conf file specifies a "systemname" */
     if (*systemname) {

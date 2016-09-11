@@ -59,7 +59,7 @@ main (int argc, char **argv)
 
     vec = argsplit(postproc, &program, &vecp);
 
-    mts_init (invo_name);
+    mts_init ();
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 
