@@ -62,7 +62,7 @@ static char localmbox[BUFSIZ];
  * MTS specific variables
  */
 static char *mts_method = "smtp";
-int  sm_mts    = MTS_SENDMAIL_SMTP;
+int  sm_mts    = MTS_SMTP;
 char *sendmail = SENDMAILPATH;
 
 /*
