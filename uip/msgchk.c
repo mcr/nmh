@@ -30,7 +30,7 @@
     X("port name/number", 0, PORTSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
-    X("snoop", -5, SNOOPSW) \
+    X("snoop", 0, SNOOPSW) \
     X("sasl", SASLminc(4), SASLSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \

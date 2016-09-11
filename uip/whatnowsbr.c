@@ -942,9 +942,9 @@ buildfile (char **argp, char *file)
     X("client host", -6, CLIESW) \
     X("server host", 6, SERVSW) \
     X("snoop", -5, SNOOPSW) \
-    X("draftfolder +folder", -6, SDRFSW) \
-    X("draftmessage msg", -6, SDRMSW) \
-    X("nodraftfolder", -3, SNDRFSW) \
+    X("draftfolder +folder", 0, SDRFSW) \
+    X("draftmessage msg", 0, SDRMSW) \
+    X("nodraftfolder", 0, SNDRFSW) \
     X("sasl", SASLminc(4), SASLSW) \
     X("nosasl", SASLminc(6), NOSASLSW) \
     X("saslmaxssf", SASLminc(10), SASLMXSSFSW) \

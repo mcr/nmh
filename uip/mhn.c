@@ -61,8 +61,8 @@
      */					\
     X("build", -5, BUILDSW) \
     X("nobuild", -7, NBUILDSW) \
-    X("rfc934mode", -10, RFC934SW) \
-    X("norfc934mode", -12, NRFC934SW) \
+    X("rfc934mode", 0, RFC934SW) \
+    X("norfc934mode", 0, NRFC934SW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(MHN);

@@ -46,7 +46,7 @@
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("debug", -5, DEBUGSW) \
-    X("dist", -4, DISTSW) \
+    X("dist", 0, DISTSW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(MHBUILD);

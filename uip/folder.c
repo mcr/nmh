@@ -33,7 +33,7 @@
     X("list", 0, LISTSW) \
     X("nolist", 0, NLISTSW) \
     X("print", 0, PRNTSW) \
-    X("noprint", -4, NPRNTSW) \
+    X("noprint", 0, NPRNTSW) \
     X("push", 0, PUSHSW) \
     X("pop", 0, POPSW) \
     X("version", 0, VERSIONSW) \

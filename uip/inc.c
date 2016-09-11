@@ -69,7 +69,7 @@
     X("width columns", 0, WIDTHSW) \
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
-    X("snoop", -5, SNOOPSW) \
+    X("snoop", 0, SNOOPSW) \
     X("sasl", SASLminc(5), SASLSW) \
     X("nosasl", SASLminc(3), NOSASLSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \

@@ -33,8 +33,8 @@
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("client host", -6, CLIESW) \
-    X("server host", -6, SERVSW) \
-    X("snoop", -5, SNOOPSW) \
+    X("server host", 0, SERVSW) \
+    X("snoop", 0, SNOOPSW) \
     X("sasl", SASLminc(4), SASLSW) \
     X("saslmech mechanism", SASLminc(-5), SASLMECHSW) \
     X("user username", SASLminc(-4), USERSW) \

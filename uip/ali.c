@@ -15,7 +15,7 @@
 
 #define ALI_SWITCHES \
     X("alias aliasfile", 0, ALIASW) \
-    X("noalias", -7, NALIASW) \
+    X("noalias", 0, NALIASW) \
     X("list", 0, LISTSW) \
     X("nolist", 0, NLISTSW) \
     X("user", 0, USERSW) \

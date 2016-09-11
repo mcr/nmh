@@ -30,6 +30,7 @@ cat >$expected <<EOF
 Usage: ali [switches] aliases ...
   switches are:
   -alias aliasfile
+  -noalias
   -[no]list
   -[no]user
   -version
