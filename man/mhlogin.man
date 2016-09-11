@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH MHLOGIN %manext1% "April 10, 2016" "%nmhversion%"
+.TH MHLOGIN %manext1% "September 11, 2016" "%nmhversion%"
 .SH NAME
 mhlogin \- login to external (OAuth) services
 .SH SYNOPSIS
@@ -62,6 +62,26 @@ which specifies where
 should write credentials and where
 .B send
 should read them.
+.SH "EXAMPLES"
+.PP
+.SS Gmail
+First, login to the Gmail account that you want to use, e.g, user@example.com,
+using a web browser.
+Then, enter a
+.B mhlogin
+command such as:
+.PP
+.RS
+.nf
+mhlogin -user user@example.com -saslmech xoauth2 -authservice gmail \
+-browser 'google-chrome --new-window'
+.fi
+.RE
+.PP
+Respond to the prompt in the browser window, then copy and paste the
+authorization code in response to the
+.B mhlogin
+prompt.
 .SH "PROFILE COMPONENTS"
 .fc ^ ~
 .nf
