@@ -17,9 +17,10 @@ init_credentials_file () {
             char *hdir = getenv ("HOME");
 
             credentials_file = concat (hdir ? hdir : ".", "/.netrc", NULL);
-        } else if (! strncasecmp (cred_style, "file:", 5)) {
+        } else if (! strncasecmp (cred_style, "file:", 5) ||
+		   ! strncasecmp (cred_style, "file-nopermcheck:", 17)) {
             struct stat st;
-            char *filename = cred_style + 5;
+            char *filename = strchr(cred_style, ':') + 1;
 
             while (*filename && isspace ((unsigned char) *filename)) ++filename;
 
@@ -36,6 +37,9 @@ init_credentials_file () {
                     }
                 }
             }
+
+	    if (! strncasecmp (cred_style, "file-nopermcheck:", 17))
+		credentials_no_perm_check = 1;
         }
     }
 }
@@ -55,7 +59,8 @@ nmh_get_credentials (char *host, char *user, int sasl, nmh_creds_t creds) {
             /* Only inc.c and msgchk.c do this.  smtp.c doesn't. */
             creds->password = getusername ();
         }
-    } else if (! strncasecmp (cred_style, "file:", 5)) {
+    } else if (! strncasecmp (cred_style, "file:", 5) ||
+	       ! strncasecmp (cred_style, "file-nopermcheck:", 17)) {
         /*
          * Determine user using the first of:
          * 1) -user switch

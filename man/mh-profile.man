@@ -377,8 +377,10 @@ supersedes all of this.  (profile, no default)
 .RS 5
 Indicates how the username and password credentials will be retrieved
 for access to external servers, such as those that provide SMTP or POP
-service.  The supported entry values are \*(lqlegacy\*(rq and
-.RI \*(lqfile: netrc \*(rq.
+service.  The supported entry values are \*(lqlegacy\*(rq,
+.RI \*(lqfile: netrc \*(rq,
+and
+.RI \*(lqfile\-nopermcheck: netrc \*(rq.
 With \*(lqlegacy\*(rq, or if there is no credentials entry, the
 username is the first of:
 .RS 5
@@ -466,6 +468,14 @@ with your own account information:
 This
 .I netrc
 file must be owned and readable only by you.
+.PP
+The
+.RI \*(lqfile\-nopermcheck: netrc \*(rq
+.B credentials
+entry is identical in behavior to the \*(lqfile\*(rq entry, with the
+exception that the permission checks done by
+\*(lqfile\*(rq are not performed.  This entry should be used with
+caution and only when absolutely necessary.
 (profile, default: legacy)
 .RE
 .SS "Process Profile Entries"

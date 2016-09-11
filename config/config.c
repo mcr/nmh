@@ -106,6 +106,9 @@ char *mh_profile = ".mh_profile";
 /* name of credentials file, defaults to .netrc in either Path or $HOME. */
 char *credentials_file;
 
+/* if set to 1, do not check permissions on credentials file */
+int credentials_no_perm_check = 0;
+
 /* name of current message "sequence" */
 char *current = "cur";
 

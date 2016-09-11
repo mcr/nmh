@@ -102,7 +102,8 @@ ruserpass(char *host, char **aname, char **apass)
 			break;
 
 		    case PASSWD:
-			if (fstat(fileno(cfile), &stb) >= 0 &&
+			if (!credentials_no_perm_check &&
+			    fstat(fileno(cfile), &stb) >= 0 &&
 			    (stb.st_mode & 077) != 0) {
 			    /* We make this a fatal error to force the
 			       user to correct it. */

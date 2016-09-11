@@ -449,6 +449,7 @@ extern char *components;
 extern char *context;
 extern char *current;
 extern char *credentials_file;
+extern int credentials_no_perm_check;
 extern char *defaultfolder;
 extern char *digestcomps;
 extern char *distcomps;
