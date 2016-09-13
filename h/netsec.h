@@ -105,13 +105,12 @@ enum sasl_message_type {
  * to generate a cancel message.
  */
 
-typedef int (*_netsec_sasl_callback)(sasl_message_type mtype,
-				     unsigned char *indata,
-				     unsigned int indatasize,
-				     unsigned char **outdata,
-				     unsigned int *outdatasize,
-				     int snoop, char **errstr)
-	netsec_sasl_callback;
+typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
+				    unsigned char *indata,
+				    unsigned int indatasize,
+				    unsigned char **outdata,
+				    unsigned int *outdatasize,
+				    int snoop, char **errstr);
 
 /*
  * Sets the SASL parameters for this connection.  If this function is
