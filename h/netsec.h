@@ -35,7 +35,19 @@ void netsec_free(netsec_context *ns_context);
  * fd		- File descriptor of network connection.
  */
 
-void netset_set_fd(netsec_context *, int fd);
+void netset_set_fd(netsec_context *ns_context, int fd);
+
+/*
+ * Sets "snoop" status; if snoop is set to a nonzero value, network traffic
+ * will be logged on standard error.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * snoop	- Integer value; set to nonzero to enable traffic logging
+ */
+
+void netsec_set_snoop(netsec_context *ns_context, int snoop);
 
 /*
  * Enumerated types for the type of message we are sending/receiving.
@@ -62,6 +74,7 @@ enum sasl_message_type {
  * indatasize	- The size of the input data in bytes
  * outdata	- Output data (freed by caller)
  * outdatasize	- Size of output data
+ * snoop	- If set to true, plugin should log SASL exchange to stderr.
  * errstr	- An error string to be returned (freed by caller).
  *
  * Parameter interpretation based on mtype value:
@@ -97,7 +110,8 @@ typedef int (*_netsec_sasl_callback)(sasl_message_type mtype,
 				     unsigned int indatasize,
 				     unsigned char **outdata,
 				     unsigned int *outdatasize,
-				     char **errstr) netsec_sasl_callback;
+				     int snoop, char **errstr)
+	netsec_sasl_callback;
 
 /*
  * Sets the SASL parameters for this connection.  If this function is
@@ -154,3 +168,16 @@ int netsec_set_oauth_service(netsec_context *ns_context, const char *service);
  */
 
 int netsec_set_tls(netsec_context *context, int tls);
+
+/*
+ * Start TLS negotiation on this protocol.  This connection should have
+ * netsec_set_tls() called on it.
+ *
+ * Arguments:
+ *
+ * errstr	- Error string upon failure.
+ *
+ * Returns OK on success, NOTOK on failure.
+ */
+
+int netsec_negotiate_tls(char **errstr);
