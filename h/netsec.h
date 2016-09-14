@@ -16,14 +16,15 @@ typedef struct _netsec_context netsec_context;
 netsec_context *netsec_init(void);
 
 /*
- * Free()s an allocated netsec context and all associated resources.
+ * Shuts down the security context for a connection and frees all
+ * associated resources.
  *
  * Arguments:
  *
  * ns_context	- Network security context
  */
 
-void netsec_free(netsec_context *ns_context);
+void netsec_shutdown(netsec_context *ns_context);
 
 /*
  * Sets the file descriptor for this connection.  This will be used by
@@ -48,6 +49,55 @@ void netset_set_fd(netsec_context *ns_context, int fd);
  */
 
 void netsec_set_snoop(netsec_context *ns_context, int snoop);
+
+/*
+ * Read a "line" from the network.  This reads one CR/LF terminated line.
+ * Returns a pointer to a NUL-terminated string.  This memory is valid
+ * until the next call to any read function.  Will return an error if
+ * the line does not terminated with CR/LF.  Note that this will not work
+ * if the data might have embedded NULs.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * errstr	- Error string
+ *
+ * Returns pointer to string, or NULL on error.
+ */
+
+char *netsec_readline(netsec_context *ns_context, char **errstr);
+
+/*
+ * Read bytes from the network.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * buffer	- Read buffer
+ * size		- Buffer size
+ * errstr	- Error size
+ *
+ * Returns number of bytes read, or -1 on error.
+ */
+
+ssize_t netsec_read(netsec_context *ns_context, void *buffer, size_t size,
+		    char **errstr);
+
+/*
+ * Write bytes using printf formatting
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * errstr	- Error string
+ * format	- Format string
+ * ...		- Arguments for format string
+ *
+ * Returns OK on success, NOTOK on error.
+ */
+
+int netsec_printf(netsec_context *ns_context, char **errstr,
+		  const char *format, ...);
 
 /*
  * Enumerated types for the type of message we are sending/receiving.
@@ -134,7 +184,7 @@ typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
 
 int netsec_set_sasl_params(netsec_context *ns_context, const char *service,
 			   const char *mechanism,
-			   netsec_sasl_callback *callback);
+			   netsec_sasl_callback callback);
 
 /*
  * Set the OAuth service name used to retrieve the OAuth parameters from
@@ -163,10 +213,10 @@ int netsec_set_oauth_service(netsec_context *ns_context, const char *service);
  * tls		- If nonzero, enable TLS. Otherwise disable TLS
  *		  negotiation.
  *
- * Returns NOTOK if TLS is not supported.
+ * Returns NOTOK if TLS is not supported or was unable to initialize.
  */
 
-int netsec_set_tls(netsec_context *context, int tls);
+int netsec_set_tls(netsec_context *context, int tls, char **errstr);
 
 /*
  * Start TLS negotiation on this protocol.  This connection should have
