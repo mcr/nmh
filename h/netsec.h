@@ -39,6 +39,27 @@ void netsec_shutdown(netsec_context *ns_context);
 void netset_set_fd(netsec_context *ns_context, int fd);
 
 /*
+ * Set the hostname of the server we're connecting to.
+ *
+ * Arguments:
+ * ns_context	- Network security context
+ * hostname	- Server hostname
+ */
+
+void netsec_set_hostname(netsec_context *ns_context, const char *hostname);
+
+/*
+ * Set the userid used to authenticate to this connection.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * userid	- Userid to be used for authentication.  Cannot be NULL.
+ */
+
+void netsec_set_userid(netsec_context *ns_context, const char *userid);
+
+/*
  * Sets "snoop" status; if snoop is set to a nonzero value, network traffic
  * will be logged on standard error.
  *
@@ -98,6 +119,19 @@ ssize_t netsec_read(netsec_context *ns_context, void *buffer, size_t size,
 
 int netsec_printf(netsec_context *ns_context, char **errstr,
 		  const char *format, ...);
+
+/*
+ * Flush any buffered bytes to the network.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * errstr	- Error string
+ *
+ * Returns OK on success, NOTOK on error.
+ */
+
+int netsec_flush(netsec_context *ns_context, char **errstr);
 
 /*
  * Enumerated types for the type of message we are sending/receiving.
@@ -173,18 +207,50 @@ typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
  * Arguments:
  *
  * ns_context	- Network security context
+ * hostname	- Fully qualified hostname of remote host.
  * service	- Service name (set to NULL to disable SASL).
  * mechlist	- A space-separated list of mechanisms supported by the server.
  * mechanism	- The mechanism desired by the user.  If NULL, the SASL
  *		  library will attempt to negotiate the best mechanism.
  * callback	- SASL protocol callbacks 
+ * errstr	- Error string.
  *
  * Returns NOTOK if SASL is not supported.
  */
 
-int netsec_set_sasl_params(netsec_context *ns_context, const char *service,
-			   const char *mechanism,
-			   netsec_sasl_callback callback);
+int netsec_set_sasl_params(netsec_context *ns_context, const char *hostname,
+			   const char *service, const char *mechanism,
+			   netsec_sasl_callback callback, char **errstr);
+
+/*
+ * Start SASL negotiation.  The Netsec library will use the callbacks
+ * supplied in netsec_set_sasl_params() to format and parse the protocol
+ * messages.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * mechlist	- Space-separated list of supported SASL mechanisms
+ * errstr	- An error string to be returned upon error.
+ *
+ * Returns OK on success, NOTOK on failure.
+ */
+
+int netsec_negotiate_sasl(netsec_context *ns_context, const char *mechlist,
+			  char **errstr);
+
+/*
+ * Returns the chosen SASL mechanism by the SASL library or netsec.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ *
+ * Returns a string containing the chosen mech, or NULL if SASL is not
+ * supported or in use.
+ */
+
+char *netsec_get_sasl_mechanism(netsec_context *ns_context);
 
 /*
  * Set the OAuth service name used to retrieve the OAuth parameters from
@@ -224,9 +290,10 @@ int netsec_set_tls(netsec_context *context, int tls, char **errstr);
  *
  * Arguments:
  *
+ * ns_context	- Network security context
  * errstr	- Error string upon failure.
  *
  * Returns OK on success, NOTOK on failure.
  */
 
-int netsec_negotiate_tls(char **errstr);
+int netsec_negotiate_tls(netsec_context *ns_context, char **errstr);
