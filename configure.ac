@@ -524,16 +524,16 @@ AS_IF([test "x$with_oauth" = xyes && test "x$HAVE_CURL_H" = x],
 dnl ----------------
 dnl CHECK FLEX FIXUP
 dnl ----------------
-dnl Use LFLAGS make variable setting to work around bugs in flex
+dnl Use AM_LFLAGS make variable setting to work around bugs in flex
 dnl 2.5.36-37 that cause signed/unsigned mismatch,
 dnl http://sourceforge.net/p/flex/bugs/140/
 AS_IF([test "$LEX" = flex],
       [AS_CASE([`$LEX -V`],
-               [flex\ 2.5.35], [LFLAGS=\
+               [flex\ 2.5.35], [AM_LFLAGS=\
 '; sed "s/	int n;/	size_t n;/" $@ >$@.tmp && mv -f $@.tmp $@'],
-               [flex\ 2.5.3[[67]]], [LFLAGS=\
+               [flex\ 2.5.3[[67]]], [AM_LFLAGS=\
 '; sed "s/\(	\)int i;/\1yy_size_t i;/" $@ >$@.tmp && mv -f $@.tmp $@'])
-       AC_SUBST([LFLAGS])])
+       AC_SUBST([AM_LFLAGS])])
 
 dnl ------------------
 dnl FOR INTERNAL USE by the NMH test suite
