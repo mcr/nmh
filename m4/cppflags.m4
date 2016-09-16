@@ -1,4 +1,8 @@
 dnl
+dnl This is intended to be extensible, by just adding candidate C preprocessor
+dnl options to be checked in the for loop.  The first candidate is empty, in
+dnl case none are needed.  Also, the test program can be readily augmented.
+dnl
 dnl On glibc we need to define at least the '_XOPEN_SOURCE' level of features,
 dnl or wchar.h doesn't declare a prototype for wcwidth(). But if we only define
 dnl that level then db.h won't compile. So we define _GNU_SOURCE which turns
@@ -11,10 +15,6 @@ dnl include config.h before system header files.
 dnl
 dnl Setting AM_CPPFLAGS directly is like DEFS, but doesn't get stomped on by
 dnl configure when using config.h.
-dnl
-dnl This is intended to be extensible, by just adding candidate C preprocessor
-dnl options to be checked in the for loop.  The first candidate is empty, in
-dnl case none are needed.  Also, the test program can be readily augmented.
 
 AC_DEFUN([NMH_ADDL_CPPFLAGS],
     [AC_CACHE_CHECK([platform-specific additional CPPFLAGS],
@@ -23,8 +23,11 @@ AC_DEFUN([NMH_ADDL_CPPFLAGS],
     AC_LANG_WERROR
 
     nmh_saved_cppflags="$CPPFLAGS"
+    dnl On successful compilation, break out of loop with the AM_CPPFLAGS.
     for nmh_cv_addl_cppflags in "" "-D_GNU_SOURCE"; do
+        dnl Reload initial CPPFLAGS so candidates aren't accumulated.
         CPPFLAGS="$nmh_saved_cppflags"
+        dnl Only add non-empty nmh_cv_addl_cppflags to CPPFLAGS.
         AS_IF([test x"${nmh_cv_addl_cppflags}" != x],
               [CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }$nmh_cv_addl_cppflags"])
         AS_IF([test ${MULTIBYTE_ENABLED} = 1],
@@ -42,7 +45,7 @@ AC_DEFUN([NMH_ADDL_CPPFLAGS],
 
     dnl autoconf doesn't currently provide a macro to disable AC_LANG_WERROR,
     dnl so do it this way:
-    ac_c_werror_flag=
+    AS_UNSET(ac_c_werror_flag)
 
     AC_SUBST([AM_CPPFLAGS])
 ])
