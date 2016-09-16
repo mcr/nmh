@@ -961,6 +961,14 @@ post(struct curl_ctx *ctx, const char *url, const char *req_body)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, ctx);
 
+    if (strncmp(url, "http://127.0.0.1:", 17) == 0) {
+        /* Hack:  on Cygwin, curl doesn't fail to connect with ECONNREFUSED.
+           Instead, it waits to timeout.  So set a really short timeout, but
+           just on localhost (for convenience of the user, and the test
+           suite). */
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 2L);
+    }
+
     status = curl_easy_perform(curl);
     /* first check for error from callback */
     if (ctx->too_big) {

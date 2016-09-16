@@ -303,11 +303,17 @@ mhlogin: bad OAuth request; re-run with -snoop and send REDACTED output to nmh-w
 # TEST
 start_test 'mhlogin -browser'
 
-run_test "eval echo code | mhlogin -saslmech xoauth2 -authservice test\
- -user nobody@example.com -browser 'echo \$@ > ${MHTMPDIR}/$$.browser'" \
-"Follow the prompts in your browser to authorize nmh to access test.
-Enter the authorization code: mhlogin: error exchanging code for OAuth2 token
-mhlogin: error making HTTP request to OAuth2 authorization endpoint: Failed to connect to 127.0.0.1 port ${http_port}: Connection refused"
+#### Strip off the error string because it can vary, e.g.,
+####   "Failed to connect to 127.0.0.1 port 64546: Connection refused", or
+####   "Connection timed out after 1004 milliseconds"
+echo code | mhlogin -saslmech xoauth2 -authservice test -user nobody@example.com \
+                    -browser "echo \$@ > ${MHTMPDIR}/$$.browser" 2>&1 1>/dev/null | \
+    sed 's/\( endpoint:\) .*/\1/' > "${MHTMPDIR}/$$.mhlogin.err"
+cat > "${MHTMPDIR}/$$.mhlogin.err.expected" <<EOF
+mhlogin: error exchanging code for OAuth2 token
+mhlogin: error making HTTP request to OAuth2 authorization endpoint:
+EOF
+check "${MHTMPDIR}/$$.mhlogin.err" "${MHTMPDIR}/$$.mhlogin.err.expected"
 
 cat > "${MHTMPDIR}/$$.browser.expected" <<EOF
 http://127.0.0.1:${http_port}/oauth/auth?response_type=code&client_id=test-id&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scope=test-scope
