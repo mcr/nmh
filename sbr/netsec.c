@@ -30,6 +30,8 @@ static int netsec_get_password(sasl_conn_t *conn, void *context, int id,
 			       sasl_secret_t **psecret);
 
 static int sasl_initialized = 0;
+
+#define SASL_MAXRECVBUF 65536
 #endif /* CYRUS_SASL */
 
 #ifdef TLS_SUPPORT
@@ -49,7 +51,6 @@ static SSL_CTX *sslctx = NULL;		/* SSL Context */
 struct _netsec_context {
     int ns_fd;			/* Descriptor for network connection */
     int ns_snoop;		/* If true, display network data */
-    char *ns_hostname;		/* Hostname we've connected to */
     char *ns_userid;		/* Userid for authentication */
     unsigned char *ns_inbuffer;	/* Our read input buffer */
     unsigned char *ns_inptr;	/* Our read buffer input pointer */
@@ -60,6 +61,7 @@ struct _netsec_context {
     unsigned int ns_outbuflen;	/* Output buffer data length */
     unsigned int ns_outbufsize;	/* Output buffer size */
 #ifdef CYRUS_SASL
+    char *sasl_hostname;	/* Hostname we've connected to */
     char *sasl_mech;		/* User-requested mechanism */
     sasl_conn_t *sasl_conn;	/* SASL connection context */
     sasl_ssf_t sasl_ssf;	/* SASL Security Strength Factor */
@@ -80,7 +82,7 @@ struct _netsec_context {
  * Function to allocate error message strings
  */
 
-static char *netsec_errstr(const char *format, ...);
+static void netsec_err(char **errstr, const char *format, ...);
 
 /*
  * How this code works, in general.
@@ -109,13 +111,14 @@ netsec_init(void)
 
     nsc->ns_fd = -1;
     nsc->ns_snoop = 0;
-    nsc->ns_userid = nsc->ns_hostname = NULL;
+    nsc->ns_userid = NULL;
     nsc->ns_inbuffer = nsc->ns_inptr = NULL;
     nsc->ns_inbuflen = nsc->ns_inbufsize = 0;
     nsc->ns_outbuffer = nsc->ns_outptr = NULL;
     nsc->ns_outbuflen = nsc->ns_outbufsize = 0;
 #ifdef CYRUS_SASL
     nsc->sasl_conn = NULL;
+    nsc->sasl_hostname = NULL;
     nsc->sasl_mech = NULL;
     nsc->sasl_cbs = NULL;
     nsc->sasl_creds = NULL;
@@ -137,8 +140,6 @@ netsec_init(void)
 void
 netsec_shutdown(netsec_context *nsc)
 {
-    if (nsc->ns_hostname)
-	free(nsc->ns_hostname);
     if (nsc->ns_userid)
 	free(nsc->ns_userid);
     if (nsc->ns_inbuffer)
@@ -148,6 +149,8 @@ netsec_shutdown(netsec_context *nsc)
 #ifdef CYRUS_SASL
     if (nsc->sasl_conn)
 	sasl_dispose(&nsc->sasl_conn);
+    if (nsc->sasl_hostname)
+	free(nsc->sasl_hostname);
     if (nsc->sasl_mech)
 	free(nsc->sasl_mech);
     if (nsc->sasl_cbs)
@@ -190,16 +193,6 @@ netsec_set_fd(netsec_context *nsc, int fd)
 }
 
 /*
- * Set the remote hostname we've connected to.
- */
-
-void
-netsec_set_hostname(netsec_context *nsc, const char *hostname)
-{
-    nsc->ns_hostname = getcpy(hostname);
-}
-
-/*
  * Set the userid used for authentication for this context
  */
 
@@ -235,8 +228,8 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
     if (! sasl_initialized) {
 	retval = sasl_client_init(NULL);
 	if (retval != SASL_OK) {
-	    *errstr = netsec_errstr("SASL client initialization failed: %s",
-				    sasl_errstring(retval, NULL, NULL));
+	    netsec_err(errstr, "SASL client initialization failed: %s",
+		       sasl_errstring(retval, NULL, NULL));
 	    return NOTOK;
 	}
 	sasl_initialized++;
@@ -271,17 +264,18 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
     			     &nsc->sasl_conn);
 
     if (retval) {
-	*errstr = netsec_errstr("SASL new client allocation failed: %s",
-				sasl_errstring(retval, NULL, NULL));
+	netsec_err(errstr, "SASL new client allocation failed: %s",
+		   sasl_errstring(retval, NULL, NULL));
 	return NOTOK;
     }
 
     nsc->sasl_mech = mechanism ? getcpy(mechanism) : NULL;
     nsc->sasl_proto_cb = callback;
+    nsc->sasl_hostname = getcpy(hostname);
 
     return OK;
 #else /* CYRUS_SASL */
-    *errstr = netsec_errstr("SASL is not supported");
+    netsec_err(errstr, "SASL is not supported");
 
     return NOTOK;
 #endif /* CYRUS_SASL */
@@ -316,7 +310,7 @@ int netsec_get_user(void *context, int id, const char **result,
 	    nsc->sasl_creds->password = NULL;
 	}
 
-	if (nmh_get_credentials(nsc->ns_hostname, nsc->ns_userid, 1,
+	if (nmh_get_credentials(nsc->sasl_hostname, nsc->ns_userid, 1,
 				nsc->sasl_creds) != OK)
 	    return SASL_BADPARAM;
 
@@ -364,7 +358,7 @@ netsec_get_password(sasl_conn_t *conn, void *context, int id,
 	 * switch to send(1)/post(8) wasn't used.
 	 */
 
-	if (nmh_get_credentials(nsc->ns_hostname, nsc->ns_userid, 0,
+	if (nmh_get_credentials(nsc->sasl_hostname, nsc->ns_userid, 0,
 				nsc->sasl_creds) != OK) {
 	    return SASL_BADPARAM;
 	}
@@ -400,13 +394,99 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 {
 #ifdef CYRUS_SASL
     sasl_security_properties_t secprops;
-    char *chosen_mech;
+    const char *chosen_mech;
+    const unsigned char *saslbuf;
+    unsigned char *outbuf;
+    unsigned int saslbuflen, outbuflen;
     sasl_ssf_t *ssf;
     int rc;
 
+    /*
+     * In netsec_set_sasl_params, we've already done all of our setup with
+     * sasl_client_init() and sasl_client_new().  So time to set security
+     * properties, call sasl_client_start(), and generate the protocol
+     * messages.
+     */
+
+    memset(&secprops, 0, sizeof(secprops));
+    secprops.maxbufsize = SASL_MAXRECVBUF;
+
+    /*
+     * If we're using TLS, do not negotiate a security layer
+     */
+
+    secprops.max_ssf = 
+#ifdef TLS_SUPPORT
+		nsc->tls_active ? 0 :
+#endif /* TLS_SUPPORT */
+		UINT_MAX;
+
+    rc = sasl_setprop(nsc->sasl_conn, SASL_SEC_PROPS, &secprops);
+
+    if (rc != SASL_OK) {
+	netsec_err(errstr, "SASL security property initialization failed: %s",
+		   sasl_errstring(rc, NULL, NULL));
+	return NOTOK;
+    }
+
+    /*
+     * Start the actual protocol negotiation, and go through the
+     * sasl_client_step() loop (after sasl_client_start, of course).
+     */
+
+    rc = sasl_client_start(nsc->sasl_conn, mechlist, NULL,
+			   (const unsigned char **) &saslbuf, &saslbuflen,
+			   &chosen_mech);
+
+    if (rc != SASL_OK && rc != SASL_CONTINUE) {
+	netsec_err(errstr, "SASL client start failed: %s",
+		   sasl_errdetail(nsc->sasl_conn));
+	return NOTOK;
+    }
+
+    nsc->sasl_chosen_mech = getcpy(chosen_mech);
+
+    if (nsc->sasl_proto_cb(NETSEC_SASL_START, saslbuf, saslbuflen, &outbuf,
+			   &outbuflen, nsc->ns_snoop, errstr) != OK)
+	return NOTOK;
+
+    if (netsec_write(nsc, outbuf, outbuflen, errstr) != OK) {
+    	free(outbuf);
+	return NOTOK;
+    }
+
+    free(outbuf);
+
+    if (netsec_flush(nsc, errstr) != OK)
+	return NOTOK;
+
+    /*
+     * We've written out our first message; enter in the step loop
+     */
+
+    while (rc == SASL_CONTINUE) {
+    	/*
+	 * Call our SASL callback, which will handle the details of
+	 * reading data from the network.
+	 */
+
+	if (nsc->sasl_proto_cb(NETSEC_SASL_READ, NULL, 0, &outbuf, &outbuflen,
+			       nsc->ns_snoop, errstr) != OK) {
+	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
+				   &outbuflen, nsc->ns_snoop, NULL) == OK) {
+		netsec_write(nsc, outbuf, outbuflen, NULL);
+		netsec_flush(nsc, NULL);
+	    }
+	    return NOTOK;
+	}
+
+	rc = sasl_client_step(nsc->sasl_conn, outbuf, outbuflen, NULL,
+			      &saslbuf, &saslbuflen);
+    }
+
     return OK;
 #else
-    *errstr = netsec_errstr("SASL not supported");
+    netsec_err(errstr, "SASL not supported");
 
     return NOTOK;
 #endif /* CYRUS_SASL */
@@ -451,9 +531,8 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	    sslctx = SSL_CTX_new(SSLv23_client_method());
 
 	    if (! sslctx) {
-		*errstr = netsec_errstr("Unable to initialize OpenSSL "
-					"context: %s",
-					ERR_error_string(ERR_get_error(), NULL));
+		netsec_err(errstr, "Unable to initialize OpenSSL context: %s",
+			   ERR_error_string(ERR_get_error(), NULL));
 		return NOTOK;
 	    }
 
@@ -464,8 +543,7 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	}
 
 	if (nsc->ns_fd == -1) {
-	    *errstr = netsec_errstr("Invalid file descriptor in netsec "
-	    			    "context");
+	    netsec_err(errstr, "Invalid file descriptor in netsec context");
 	    return NOTOK;
 	}
 
@@ -477,8 +555,8 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	ssl = SSL_new(sslctx);
 
 	if (! ssl) {
-	    *errstr = netsec_errstr("Unable to create SSL connection: %s",
-	    			    ERR_error_string(ERR_get_error(), NULL));
+	    netsec_err(errstr, "Unable to create SSL connection: %s",
+		       ERR_error_string(ERR_get_error(), NULL));
 	    return NOTOK;
 	}
 
@@ -501,8 +579,8 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	sbio = BIO_new_socket(nsc->ns_fd, BIO_NOCLOSE);
 
 	if (! sbio) {
-	    *errstr = netsec_errstr("Unable to create a socket BIO: %s",
-	    			    ERR_error_string(ERR_get_error(), NULL));
+	    netsec_err(errstr, "Unable to create a socket BIO: %s",
+		       ERR_error_string(ERR_get_error(), NULL));
 	    SSL_free(ssl);
 	    return NOTOK;
 	}
@@ -513,8 +591,8 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	nsc->ssl_io = BIO_new(BIO_f_buffer());
 
 	if (! nsc->ssl_io) {
-	    *errstr = netsec_errstr("Unable to create a buffer BIO: %s",
-	    			    ERR_error_string(ERR_get_error(), NULL));
+	    netsec_err(errstr, "Unable to create a buffer BIO: %s",
+		       ERR_error_string(ERR_get_error(), NULL));
 	    SSL_free(ssl);
 	    return NOTOK;
 	}
@@ -522,8 +600,8 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	ssl_bio = BIO_new(BIO_f_ssl());
 
 	if (! ssl_bio) {
-	    *errstr = netsec_errstr("Unable to create a SSL BIO: %s",
-	    			    ERR_error_string(ERR_get_error(), NULL));
+	    netsec_err(errstr, "Unable to create a SSL BIO: %s",
+	    	       ERR_error_string(ERR_get_error(), NULL));
 	    SSL_free(ssl);
 	    return NOTOK;
 	}
@@ -539,7 +617,7 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	return OK;
     }
 #else /* TLS_SUPPORT */
-	*errstr = netsec_errstr("TLS is not supported");
+	netsec_err(errstr, "TLS is not supported");
 
 	return NOTOK;
     }
@@ -555,14 +633,13 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 {
 #ifdef TLS_SUPPORT
     if (! nsc->ssl_io) {
-	*errstr = netsec_errstr("TLS has not been configured for this "
-				"connection");
+	netsec_err(errstr, "TLS has not been configured for this connection");
 	return NOTOK;
     }
 
     if (BIO_do_handshake(nsc->ssl_io) < 1) {
-	*errstr = netsec_errstr("TLS negotiation failed: %s",
-				ERR_error_string(ERR_get_error(), NULL));
+	netsec_err(errstr, "TLS negotiation failed: %s",
+		   ERR_error_string(ERR_get_error(), NULL));
 	return NOTOK;
     }
 
@@ -584,7 +661,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 
     return OK;
 #else /* TLS_SUPPORT */
-    *errstr = netsec_errstr("TLS not supported");
+    netsec_err(errstr, "TLS not supported");
 
     return NOTOK;
 #endif /* TLS_SUPPORT */
@@ -594,13 +671,16 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
  * Generate an (allocated) error string
  */
 
-static char *
-netsec_errstr(const char *fmt, ...)
+static void
+netsec_err(char **errstr, const char *fmt, ...)
 {
     va_list ap;
     size_t errbufsize;
     char *errbuf = NULL;
     int rc = 127;
+
+    if (! errstr)
+    	return;
 
     do {
 	errbufsize = rc + 1;
@@ -610,5 +690,5 @@ netsec_errstr(const char *fmt, ...)
 	va_end(ap);
     } while (rc >= (int) errbufsize);
 
-    return errbuf;
+    *errstr = errbuf;
 }

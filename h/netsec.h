@@ -39,16 +39,6 @@ void netsec_shutdown(netsec_context *ns_context);
 void netset_set_fd(netsec_context *ns_context, int fd);
 
 /*
- * Set the hostname of the server we're connecting to.
- *
- * Arguments:
- * ns_context	- Network security context
- * hostname	- Server hostname
- */
-
-void netsec_set_hostname(netsec_context *ns_context, const char *hostname);
-
-/*
  * Set the userid used to authenticate to this connection.
  *
  * Arguments:
@@ -105,6 +95,24 @@ ssize_t netsec_read(netsec_context *ns_context, void *buffer, size_t size,
 		    char **errstr);
 
 /*
+ * Write data to the network; if encryption is being performed, we will
+ * do it.  Data may be buffered; use netsec_flush() to flush any outstanding
+ * data to the network.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * buffer	- Output buffer to write to network
+ * size		- Size of data to write to network
+ * errstr	- Error string
+ *
+ * Returns OK on success, NOTOK otherwise.
+ */
+
+int netsec_write(netsec_context *ns_context, const void *buffer, size_t size,
+		 char **errstr);
+
+/*
  * Write bytes using printf formatting
  *
  * Arguments:
@@ -141,7 +149,7 @@ enum sasl_message_type {
 	NETSEC_SASL_START,	/* Start of SASL authentication */
 	NETSEC_SASL_READ,	/* Reading a message */
 	NETSEC_SASL_WRITE,	/* Writing a message */
-	NETSEC_CANCEL		/* Cancel a SASL exchange */
+	NETSEC_SASL_CANCEL	/* Cancel a SASL exchange */
 };
 
 /*
@@ -190,7 +198,7 @@ enum sasl_message_type {
  */
 
 typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
-				    unsigned char *indata,
+				    unsigned const char *indata,
 				    unsigned int indatasize,
 				    unsigned char **outdata,
 				    unsigned int *outdatasize,
