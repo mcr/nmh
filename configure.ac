@@ -180,11 +180,11 @@ dnl If /usr/ports is installed, we use its idea of where things are installed,
 dnl otherwise we assume /usr/local.
 
 AS_IF([test `uname` = FreeBSD],
-	[AM_CPPFLAGS="${AM_CPPFLAGS:+$AM_CPPFLAGS }-D_WITH_GETLINE"
+	[CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_WITH_GETLINE"
 	 nmh_cv_freebsd_localbase=`echo '.include <bsd.port.mk>' \
 		| make -k -f /dev/stdin -V LOCALBASE 2>/dev/null | sed 1q`
 	 test -z "$nmh_cv_freebsd_localbase" && nmh_cv_freebsd_localbase=/usr/local
-	 AM_CPPFLAGS="${AM_CPPFLAGS:+$AM_CPPFLAGS }-I$nmh_cv_freebsd_localbase/include"
+	 CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-I$nmh_cv_freebsd_localbase/include"
 	 LDFLAGS="${LDFLAGS:+$LDFLAGS }-L$nmh_cv_freebsd_localbase/lib"
 ])
 
