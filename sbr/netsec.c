@@ -43,6 +43,9 @@ static SSL_CTX *sslctx = NULL;		/* SSL Context */
 
 #endif /* TLS_SUPPORT */
 
+/* I'm going to hardcode this for now; maybe make it adjustable later? */
+#define NETSEC_BUFSIZE 65536
+
 /*
  * Our context structure, which holds all of the relevant information
  * about a connection.
@@ -70,7 +73,8 @@ struct _netsec_context {
     nmh_creds_t sasl_creds;	/* Credentials (username/password) */
     sasl_secret_t *sasl_secret;	/* SASL password structure */
     char *sasl_chosen_mech;	/* Mechanism chosen by SASL */
-    int sasl_enabled;		/* If true, SASL is enabled */
+    int sasl_seclayer;		/* If true, SASL security layer is enabled */
+    size_t sasl_maxoutsize;	/* Negotiated maximum size of output messages */
 #endif /* CYRUS_SASL */
 #ifdef TLS_SUPPORT
     BIO *ssl_io;		/* BIO used for connection I/O */
@@ -112,10 +116,14 @@ netsec_init(void)
     nsc->ns_fd = -1;
     nsc->ns_snoop = 0;
     nsc->ns_userid = NULL;
-    nsc->ns_inbuffer = nsc->ns_inptr = NULL;
-    nsc->ns_inbuflen = nsc->ns_inbufsize = 0;
-    nsc->ns_outbuffer = nsc->ns_outptr = NULL;
-    nsc->ns_outbuflen = nsc->ns_outbufsize = 0;
+    nsc->ns_inbufsize = NETSEC_BUFSIZE;
+    nsc->ns_inbuffer = mh_xmalloc(nsc->ns_inbufsize);
+    nsc->ns_inptr = nsc->ns_inbuffer;
+    nsc->ns_inbuflen = 0;
+    nsc->ns_outbufsize = NETSEC_BUFSIZE;
+    nsc->ns_outbuffer = mh_xmalloc(nsc->ns_outbufsize);
+    nsc->ns_outptr = nsc->ns_outbuffer;
+    nsc->ns_outbuflen = 0;
 #ifdef CYRUS_SASL
     nsc->sasl_conn = NULL;
     nsc->sasl_hostname = NULL;
@@ -124,6 +132,7 @@ netsec_init(void)
     nsc->sasl_creds = NULL;
     nsc->sasl_secret = NULL;
     nsc->sasl_chosen_mech = NULL;
+    nsc->sasl_maxoutsize = nsc->sasl_ssf = 0;
 #endif /* CYRUS_SASL */
 #ifdef TLS_SUPPORT
     nsc->ssl_io = NULL;
@@ -203,6 +212,16 @@ netsec_set_userid(netsec_context *nsc, const char *userid)
 }
 
 /*
+ * Get the snoop flag for this connection
+ */
+
+int
+netsec_get_snoop(netsec_context *nsc)
+{
+    return nsc->ns_snoop;
+}
+
+/*
  * Set the snoop flag for this connection
  */
 
@@ -211,6 +230,10 @@ netsec_set_snoop(netsec_context *nsc, int snoop)
 {
     nsc->ns_snoop = snoop;
 }
+
+/*
+ * Write data to our network connection
+ */
 
 /*
  * Set various SASL protocol parameters
@@ -399,7 +422,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
     unsigned char *outbuf;
     unsigned int saslbuflen, outbuflen;
     sasl_ssf_t *ssf;
-    int rc;
+    int rc, *outbufmax;
 
     /*
      * In netsec_set_sasl_params, we've already done all of our setup with
@@ -435,7 +458,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
      */
 
     rc = sasl_client_start(nsc->sasl_conn, mechlist, NULL,
-			   (const unsigned char **) &saslbuf, &saslbuflen,
+			   (const char **) &saslbuf, &saslbuflen,
 			   &chosen_mech);
 
     if (rc != SASL_OK && rc != SASL_CONTINUE) {
@@ -447,7 +470,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
     nsc->sasl_chosen_mech = getcpy(chosen_mech);
 
     if (nsc->sasl_proto_cb(NETSEC_SASL_START, saslbuf, saslbuflen, &outbuf,
-			   &outbuflen, nsc->ns_snoop, errstr) != OK)
+			   &outbuflen, errstr) != OK)
 	return NOTOK;
 
     if (netsec_write(nsc, outbuf, outbuflen, errstr) != OK) {
@@ -471,17 +494,102 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	 */
 
 	if (nsc->sasl_proto_cb(NETSEC_SASL_READ, NULL, 0, &outbuf, &outbuflen,
-			       nsc->ns_snoop, errstr) != OK) {
+			       errstr) != OK) {
 	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
-				   &outbuflen, nsc->ns_snoop, NULL) == OK) {
+				   &outbuflen, NULL) == OK) {
 		netsec_write(nsc, outbuf, outbuflen, NULL);
 		netsec_flush(nsc, NULL);
+		free(outbuf);
 	    }
 	    return NOTOK;
 	}
 
-	rc = sasl_client_step(nsc->sasl_conn, outbuf, outbuflen, NULL,
-			      &saslbuf, &saslbuflen);
+	rc = sasl_client_step(nsc->sasl_conn, (char *) outbuf, outbuflen, NULL,
+			      (const char **) &saslbuf, &saslbuflen);
+
+	free(outbuf);
+
+	if (rc != SASL_OK && rc != SASL_CONTINUE) {
+	    netsec_err(errstr, "SASL client negotiation failed: %s",
+		       sasl_errdetail(nsc->sasl_conn));
+	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
+				   &outbuflen, NULL) == OK) {
+		netsec_write(nsc, outbuf, outbuflen, NULL);
+		netsec_flush(nsc, NULL);
+		free(outbuf);
+	    }
+	    return NOTOK;
+	}
+
+	if (nsc->sasl_proto_cb(NETSEC_SASL_WRITE, saslbuf, saslbuflen,
+			       &outbuf, &outbuflen, errstr) != OK) {
+	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
+				   &outbuflen, NULL) == OK) {
+		netsec_write(nsc, outbuf, outbuflen, NULL);
+		netsec_flush(nsc, NULL);
+		free(outbuf);
+	    }
+	    return NOTOK;
+	}
+
+	if (netsec_write(nsc, outbuf, outbuflen, errstr) != OK) {
+	    free(outbuf);
+	    return NOTOK;
+	}
+
+	free(outbuf);
+
+	if (netsec_flush(nsc, errstr) != OK)
+	    return NOTOK;
+    }
+
+    /*
+     * SASL exchanges should be complete, process the final response message
+     * from the server.
+     */
+
+    if (nsc->sasl_proto_cb(NETSEC_SASL_FINISH, NULL, 0, NULL, 0,
+			   errstr) != OK) {
+	/*
+	 * At this point we can't really send an abort since the SASL dialog
+	 * has completed, so just bubble back up the error message.
+	 */
+
+	return NOTOK;
+    }
+
+    /*
+     * At this point, SASL should be complete.  Get a few properties
+     * from the authentication exchange.
+     */
+
+    rc = sasl_getprop(nsc->sasl_conn, SASL_SSF, (const void **) &ssf);
+
+    if (rc != SASL_OK) {
+	netsec_err(errstr, "Cannot retrieve SASL negotiated security "
+		  "strength factor: %s", sasl_errstring(rc, NULL, NULL));
+	return NOTOK;
+    }
+
+    nsc->sasl_ssf = *ssf;
+
+    if (nsc->sasl_ssf > 0) {
+	rc = sasl_getprop(nsc->sasl_conn, SASL_MAXOUTBUF,
+			  (const void **) &outbufmax);
+
+	if (rc != SASL_OK) {
+	    netsec_err(errstr, "Cannot retrieve SASL negotiated output "
+		       "buffer size: %s", sasl_errstring(rc, NULL, NULL));
+	    return NOTOK;
+	}
+
+	nsc->sasl_maxoutsize = *outbufmax;
+
+	if (nsc->sasl_maxoutsize > nsc->ns_outbufsize) {
+	    nsc->ns_outbufsize = nsc->sasl_maxoutsize;
+	    nsc->ns_outbuffer = mh_xrealloc(nsc->ns_outbuffer,
+					    nsc->ns_outbufsize);
+	}
     }
 
     return OK;

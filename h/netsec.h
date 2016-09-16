@@ -50,6 +50,18 @@ void netset_set_fd(netsec_context *ns_context, int fd);
 void netsec_set_userid(netsec_context *ns_context, const char *userid);
 
 /*
+ * Returns "snoop" status on current connection.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ *
+ * Returns "1" if snoop is enabled, 0 if it is not.
+ */
+
+int netsec_get_snoop(netsec_context *ns_context);
+
+/*
  * Sets "snoop" status; if snoop is set to a nonzero value, network traffic
  * will be logged on standard error.
  *
@@ -149,6 +161,7 @@ enum sasl_message_type {
 	NETSEC_SASL_START,	/* Start of SASL authentication */
 	NETSEC_SASL_READ,	/* Reading a message */
 	NETSEC_SASL_WRITE,	/* Writing a message */
+	NETSEC_SASL_FINISH,	/* Complete SASL exchange */
 	NETSEC_SASL_CANCEL	/* Cancel a SASL exchange */
 };
 
@@ -166,7 +179,6 @@ enum sasl_message_type {
  * indatasize	- The size of the input data in bytes
  * outdata	- Output data (freed by caller)
  * outdatasize	- Size of output data
- * snoop	- If set to true, plugin should log SASL exchange to stderr.
  * errstr	- An error string to be returned (freed by caller).
  *
  * Parameter interpretation based on mtype value:
@@ -188,6 +200,11 @@ enum sasl_message_type {
  *			  network.  indata/indatasize will contain the
  *			  SASL payload data.  outdata/outdatasize should
  *			  contain the complete protocol message.
+ * NETSEC_SASL_FINISH	- Process the final SASL message exchange; at
+ *			  this point SASL exchange should have completed
+ *			  and we should get a message back from the server
+ *			  telling us whether or not authentication is
+ *			  successful.  All buffer parameters are NULL.
  * NETSEC_SASL_CANCEL	- Generate a protocol message that cancels the
  *			  SASL protocol exchange; outdata/outdatasize
  *			  should contain this message.
@@ -201,8 +218,7 @@ typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
 				    unsigned const char *indata,
 				    unsigned int indatasize,
 				    unsigned char **outdata,
-				    unsigned int *outdatasize,
-				    int snoop, char **errstr);
+				    unsigned int *outdatasize, char **errstr);
 
 /*
  * Sets the SASL parameters for this connection.  If this function is
