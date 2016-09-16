@@ -154,7 +154,7 @@ AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
                CFLAGS="$nmh_saved_cflags"])
 test "$nmh_cv_has_wextra" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wextra"
 
-dnl Check for any platform-specific additional CPPFLAGS.  This depends on
+dnl Check for any platform-specific additional AM_CPPFLAGS.  This depends on
 dnl MULTIBYTE_ENABLED having already been set.
 NMH_ADDL_CPPFLAGS
 
@@ -165,9 +165,9 @@ if test "$GCC" = yes; then
   dnl It shouldn't hurt with earlier versions because it's a cpp macro.
   dnl If the user configures with a CFLAGS that contains a -O flag
   dnl but then removes it a make time, they'll also have to remove
-  dnl -D_FORTIFY_SOURCE from CPPFLAGS because it requires optimization.
+  dnl -D_FORTIFY_SOURCE from AM_CPPFLAGS because it requires optimization.
   AS_CASE([$CFLAGS],
-          [-O*|*' -O'*],[CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_FORTIFY_SOURCE=2"])
+          [-O*|*' -O'*],[AM_CPPFLAGS="${AM_CPPFLAGS:+$AM_CPPFLAGS }-D_FORTIFY_SOURCE=2"])
 fi
 
 dnl FreeBSD needs a bit of magic to bring getline() into scope.
@@ -180,11 +180,11 @@ dnl If /usr/ports is installed, we use its idea of where things are installed,
 dnl otherwise we assume /usr/local.
 
 AS_IF([test `uname` = FreeBSD],
-	[CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-D_WITH_GETLINE"
+	[AM_CPPFLAGS="${AM_CPPFLAGS:+$AM_CPPFLAGS }-D_WITH_GETLINE"
 	 nmh_cv_freebsd_localbase=`echo '.include <bsd.port.mk>' \
 		| make -k -f /dev/stdin -V LOCALBASE 2>/dev/null | sed 1q`
 	 test -z "$nmh_cv_freebsd_localbase" && nmh_cv_freebsd_localbase=/usr/local
-	 CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }-I$nmh_cv_freebsd_localbase/include"
+	 AM_CPPFLAGS="${AM_CPPFLAGS:+$AM_CPPFLAGS }-I$nmh_cv_freebsd_localbase/include"
 	 LDFLAGS="${LDFLAGS:+$LDFLAGS }-L$nmh_cv_freebsd_localbase/lib"
 ])
 
@@ -587,7 +587,7 @@ host os                    : ${host}
 compiler                   : ${CC}
 compiler flags             : ${CFLAGS}
 linker flags               : ${LDFLAGS}
-preprocessor flags         : ${CPPFLAGS}
+preprocessor flags         : ${AM_CPPFLAGS} ${CPPFLAGS}
 source code location       : ${srcdir}
 binary install path        : ${nmhbin}
 libexec install path       : ${nmhlibexec}/nmh
