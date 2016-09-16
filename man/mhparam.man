@@ -63,16 +63,17 @@ man page.  Information about the configuration of the
 .B nmh
 installation is also available, including the default mail spool
 locking method.  To test whether the configuration includes
-support for SASL, TLS, and
+support for SASL, TLS,
 .IR iconv (3),
-the following commands, respectively, will output a non-null string to
-indicate support:
+and oauth, the following commands, respectively, will output a non-null
+string to indicate support:
 .PP
 .RS 5
 .nf
 mhparam\0sasl
 mhparam\0tls
 mhparam\0iconv
+mhparam\0oauth
 .fi
 .RE
 .PP
@@ -137,6 +138,9 @@ tls
 
 % mhparam iconv
 iconv
+
+% mhparam oauth
+oauth
 .fi
 .RE
 .PP
