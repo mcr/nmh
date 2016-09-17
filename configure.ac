@@ -485,7 +485,7 @@ dnl Look for curl if oauth not disabled (--without-oauth).
 AC_PATH_PROG([curl_config], [curl-config])
 AS_IF([test "x$with_oauth" != xno && test -n "$curl_config"], [
     save_CFLAGS="$CFLAGS"
-    CFLAGS="$CFLAGS `$curl_config --cflags`"
+    CFLAGS="$AM_CPPFLAGS $AM_CFLAGS $CFLAGS `$curl_config --cflags`"
     AC_CHECK_HEADER([curl/curl.h], [
         HAVE_CURL_H=1
         AC_CHECK_LIB([curl], [curl_easy_init], [
