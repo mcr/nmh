@@ -1,6 +1,6 @@
 NAME="nmh"
-VERSION=1.6
-RELEASE=3
+VERSION=1.7
+RELEASE=1
 
 CATEGORY="Mail"
 SUMMARY="A capable mail handling system with a command line interface"
@@ -17,5 +17,5 @@ more and emacs, respectively."
 
 HOMEPAGE="http://savannah.nongnu.org/projects/nmh"
 SRC_URI="http://download.savannah.nongnu.org/releases/nmh/nmh-${VERSION}.tar.gz"
-CYGCONF_ARGS="--sysconfdir=${prefix}/etc/nmh --with-cyrus-sasl --with-tls"
+CYGCONF_ARGS="--with-cyrus-sasl --with-tls --with-oauth"
 
