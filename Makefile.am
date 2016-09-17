@@ -303,7 +303,7 @@ EXTRA_DIST = autogen.sh config/version.sh sbr/icalparse.h \
 	     test/post/test-post-common.sh test/send/README \
 	     test/oauth/common.sh \
 	     test/valgrind.supp uip/mhmail \
-	     SPECS/nmh.spec SPECS/build-nmh-cygwin $(man_SRCS)
+	     SPECS/nmh.spec SPECS/nmh.cygport $(man_SRCS)
 
 ##
 ## These are all of the definitions for each of the programs listed above.
