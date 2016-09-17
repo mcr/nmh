@@ -1,0 +1,21 @@
+NAME="nmh"
+VERSION=1.6
+RELEASE=3
+
+CATEGORY="Mail"
+SUMMARY="A capable mail handling system with a command line interface"
+DESCRIPTION="A capable mail handling system with a command line interface.
+Nmh isn't a single comprehensive program.  Instead, it consists of
+simple, single-purpose programs for sending, receiving, saving,
+retrieving, and otherwise manipulating email messages.  You can freely
+intersperse nmh commands with other shell commands or write custom
+scripts which utilize nmh commands.  If you want to use nmh as a true
+email user agent, you'll want to also install xmh to provide a user
+interface for it--nmh only has a command line interface.  nmh is
+configured to use less and vim by default but options allow use of
+more and emacs, respectively."
+
+HOMEPAGE="http://savannah.nongnu.org/projects/nmh"
+SRC_URI="http://download.savannah.nongnu.org/releases/nmh/nmh-${VERSION}.tar.gz"
+CYGCONF_ARGS="--sysconfdir=${prefix}/etc/nmh --with-cyrus-sasl --with-tls"
+
