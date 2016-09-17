@@ -91,6 +91,7 @@ Run-time package requirements:
     libreadline7 (if you want readline support)
     libsasl2_3 (if configured with --with-cyrus-sasl)
     openssl (if configured with --with-tls)
+    libcurl (if configured with --with-oauth)
 
 Additional build-time package requirements:
     libncurses-devel or libncursesw-devel
@@ -99,6 +100,7 @@ Additional build-time package requirements:
     libreadline-devel (if you want readline support)
     libsasl2-devel (if configuring with --with-cyrus-sasl)
     openssl-devel (if configuring with --with-tls)
+    libcurl-devel (if configured with --with-oauth)
 
     Older versions of libncurses-devel do not install /usr/include/curses.h,
     /usr/include/term.h, and /usr/include/termcap.h.  If yours does not,
