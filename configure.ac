@@ -2,7 +2,6 @@ dnl
 dnl configure.ac -- autoconf template for nmh
 dnl
 
-dnl Move this up a bit
 AC_PREREQ([2.68])
 
 AC_INIT([nmh], m4_normalize(m4_include([VERSION])), [nmh-workers@nongnu.org])
@@ -135,24 +134,26 @@ if test "$GCC" != yes; then
   dnl better to use an autoconf test, except -v will probably succeed
   dnl with many other compilers but have different meaning.
   AS_CASE([`${CC} -V 2>&1`],
-          [cc:\ Sun\ C*], [CFLAGS=\
-"${CFLAGS:+$CFLAGS }-v -errtags=yes -erroff=E_STATEMENT_NOT_REACHED"])
+          [cc:\ Sun\ C*], [AM_CFLAGS=\
+"${AM_CFLAGS:+$AM_CFLAGS }-v -errtags=yes -erroff=E_STATEMENT_NOT_REACHED"])
 fi
 
 AC_CACHE_CHECK([whether compiler supports -Wall], [nmh_cv_has_wall],
                [nmh_saved_cflags="$CFLAGS"
-               CFLAGS="$CFLAGS -Wall -Werror"
+               CFLAGS="$AM_CFLAGS $CFLAGS -Wall -Werror"
                AC_TRY_COMPILE([],[],nmh_cv_has_wall=yes,nmh_cv_has_wall=no)
                CFLAGS="$nmh_saved_cflags"])
-test "$nmh_cv_has_wall" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wall"
+test "$nmh_cv_has_wall" = "yes"  &&  AM_CFLAGS="${AM_CFLAGS:+$AM_CFLAGS }-Wall"
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
                [nmh_saved_cflags="$CFLAGS"
-               CFLAGS="$CFLAGS -Wextra -Werror"
+               CFLAGS="$AM_CFLAGS $CFLAGS -Wextra -Werror"
                AC_TRY_COMPILE([],[],nmh_cv_has_wextra=yes,
                               nmh_cv_has_wextra=no)
                CFLAGS="$nmh_saved_cflags"])
-test "$nmh_cv_has_wextra" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wextra"
+test "$nmh_cv_has_wextra" = "yes"  &&  AM_CFLAGS="${AM_CFLAGS:+$AM_CFLAGS }-Wextra"
+
+AC_SUBST([AM_CFLAGS])
 
 dnl Check for any platform-specific additional AM_CPPFLAGS.  This depends on
 dnl MULTIBYTE_ENABLED having already been set.
@@ -583,7 +584,7 @@ nmh configuration
 nmh version                : AC_PACKAGE_VERSION
 host os                    : ${host}
 compiler                   : ${CC}
-compiler flags             : ${CFLAGS}
+compiler flags             : ${AM_CFLAGS} ${CFLAGS}
 linker flags               : ${LDFLAGS}
 preprocessor flags         : ${AM_CPPFLAGS} ${CPPFLAGS}
 source code location       : ${srcdir}

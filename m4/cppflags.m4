@@ -23,6 +23,9 @@ AC_DEFUN([NMH_ADDL_CPPFLAGS],
     AC_LANG_WERROR
 
     nmh_saved_cppflags="$CPPFLAGS"
+    dnl autoconf doesn't look at AM_CFLAGS, so merge it into CFLAGS.
+    nmh_saved_cflags="$CFLAGS"
+    CFLAGS="$AM_CFLAGS $CFLAGS"
     dnl On successful compilation, break out of loop with the AM_CPPFLAGS.
     for nmh_cv_addl_cppflags in "" "-D_GNU_SOURCE"; do
         dnl Reload initial CPPFLAGS so candidates aren't accumulated.
@@ -41,6 +44,7 @@ AC_DEFUN([NMH_ADDL_CPPFLAGS],
                                    [return strdup("x") == 0])],
                   [AM_CPPFLAGS="${nmh_cv_addl_cppflags}"; break;])])
     done])
+    CFLAGS="$nmh_saved_cflags"
     CPPFLAGS="$nmh_saved_cppflags"
 
     dnl autoconf doesn't currently provide a macro to disable AC_LANG_WERROR,
