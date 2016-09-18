@@ -208,13 +208,13 @@ AC_CACHE_CHECK([whether linker supports -Qunused-arguments],
                [AS_IF([test "$GCC" = yes  &&  `${CC} --version 2>&1 | \
                        grep clang >/dev/null`],
                       [nmh_saved_ldflags="$LDFLAGS"
-                       LDFLAGS="$LDFLAGS -Qunused-arguments"
+                       LDFLAGS="$AM_LDFLAGS $LDFLAGS -Qunused-arguments"
                        AC_TRY_LINK([],[],nmh_cv_has_q_unused_arguments=yes,
                                          nmh_cv_has_q_unused_arguments=no)
                        LDFLAGS="$nmh_saved_ldflags"],
                        [nmh_cv_has_q_unused_arguments=no])])
 test "$nmh_cv_has_q_unused_arguments" = "yes"  &&  \
-  LDFLAGS="${LDFLAGS:+$LDFLAGS }-Qunused-arguments"
+  AM_LDFLAGS="${AM_LDFLAGS:+$AM_LDFLAGS }-Qunused-arguments"
 
 dnl This hack turns off assertions by default, assuming
 dnl that configure still uses this shell variable.  Without
@@ -585,7 +585,7 @@ nmh version                : AC_PACKAGE_VERSION
 host os                    : ${host}
 compiler                   : ${CC}
 compiler flags             : ${AM_CFLAGS} ${CFLAGS}
-linker flags               : ${LDFLAGS}
+linker flags               : ${AM_LDFLAGS} ${LDFLAGS}
 preprocessor flags         : ${AM_CPPFLAGS} ${CPPFLAGS}
 source code location       : ${srcdir}
 binary install path        : ${nmhbin}
