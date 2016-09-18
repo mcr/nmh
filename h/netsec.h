@@ -74,6 +74,17 @@ int netsec_get_snoop(netsec_context *ns_context);
 void netsec_set_snoop(netsec_context *ns_context, int snoop);
 
 /*
+ * Set the read timeout for this connection.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * timeout	- Read timeout, in seconds.
+ */
+
+void netsec_set_timeout(netsec_context *ns_context, int timeout);
+
+/*
  * Read a "line" from the network.  This reads one CR/LF terminated line.
  * Returns a pointer to a NUL-terminated string.  This memory is valid
  * until the next call to any read function.  Will return an error if
