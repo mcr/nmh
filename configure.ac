@@ -495,12 +495,10 @@ AS_IF([test "x$with_oauth" != xno && test -n "$curl_config"], [
             AS_IF([test "x$CURL_USER_AGENT" != "x`echo $CURL_USER_AGENT | sed 's/ //'`"],
                   [AC_MSG_WARN([unexpected curl-config --version: $CURL_USER_AGENT])
                    CURL_USER_AGENT=libcurl/UNKNOWN])
-                   echo "HEYEPG ($CURL_USER_AGENT)"
             AC_SUBST([CURL_USER_AGENT])
           ])
-      ], [
-        CFLAGS="$save_CFLAGS"
       ])
+    CFLAGS="$save_CFLAGS"
   ])
 
 dnl -----------------
