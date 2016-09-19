@@ -457,6 +457,10 @@ int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);
 int WhatNow(int, char **);
 
+/* Includes trailing NUL */
+
+#define BASE64SIZE(x) ((((x + 2) / 3) * 4) + 1)
+
 /*
  * Copy data from one file to another, converting to base64-encoding.
  *

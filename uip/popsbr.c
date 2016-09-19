@@ -32,13 +32,16 @@ static int multiline(void);
 
 static int traverse (int (*)(char *), const char *, ...);
 static int vcommand(const char *, va_list);
-static int getline (char *, int, FILE *);
+static int pop_getline (char *, int, netsec_context *);
 static int sasl_fgetc(FILE *);
 static int putline (char *, FILE *);
+static int pop_sasl_callback(enum sasl_message_type, unsigned const char *,
+			     unsigned int, unsigned char **, unsigned int *,
+			     char **);
 
 
-int
-check_mech(char *server_mechs, size_t server_mechs_size, char *mech)
+static int
+check_mech(char *server_mechs, size_t server_mechs_size)
 {
   int status, sasl_capability = 0;
 
@@ -81,17 +84,6 @@ check_mech(char *server_mechs, size_t server_mechs_size, char *mech)
 	return NOTOK;
     }
 
-    /*
-     * If we received a preferred mechanism, see if the server supports it.
-     */
-
-    if (mech && stringdex(mech, server_mechs) == -1) {
-	snprintf(response, sizeof(response), "Requested SASL mech \"%s\" is "
-		 "not in list of supported mechanisms:\n%s",
-		 mech, server_mechs);
-	return NOTOK;
-    }
-
     return OK;
 }
 
@@ -111,6 +103,7 @@ check_mech(char *server_mechs, size_t server_mechs_size, char *mech)
       } \
     }
 
+#if 0
 int
 pop_auth_sasl(char *user, char *host, char *mech)
 {
@@ -389,7 +382,6 @@ sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
 
     return SASL_OK;
 }
-#endif /* CYRUS_SASL */
 
 int
 pop_auth_xoauth(const char *client_res)
@@ -411,7 +403,7 @@ pop_auth_xoauth(const char *client_res)
     /* Then we're supposed to send an empty response ("\r\n"). */
     return command("");
 }
-
+#endif /* CYRUS_SASL */
 /*
  * Split string containing proxy command into an array of arguments
  * suitable for passing to exec. Returned array must be freed. Shouldn't
@@ -465,23 +457,9 @@ int
 pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	  int snoop, int sasl, char *mech, int tls, const char *oauth_svc)
 {
-    int fd1;
+    int fd1, fd2;
     char buffer[BUFSIZ];
     char *errstr;
-#ifndef CYRUS_SASL
-    NMH_UNUSED (sasl);
-    NMH_UNUSED (mech);
-#endif /* ! CYRUS_SASL */
-
-#ifdef OAUTH_SUPPORT
-    if (oauth_svc != NULL) {
-	xoauth_client_res = mh_oauth_do_xoauth(user, oauth_svc,
-					       snoop ? stderr : NULL);
-    }
-#else
-    NMH_UNUSED (oauth_svc);
-    NMH_UNUSED (xoauth_client_res);
-#endif /* OAUTH_SUPPORT */
 
     nsc = netsec_init();  
 
@@ -579,23 +557,24 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	}
     }
 
-    switch (getline (response, sizeof response, input)) {
+    switch (pop_getline (response, sizeof response, nsc)) {
 	case OK: 
 	    if (poprint)
 		fprintf (stderr, "<--- %s\n", response);
 	    if (*response == '+') {
-#  ifdef CYRUS_SASL
 		if (sasl) {
-		    if (pop_auth_sasl(user, host, mech) != NOTOK)
-			return OK;
+		    char server_mechs[256];
+		    if (check_mech(server_mechs, sizeof(server_mechs) != OK))
+			return NOTOK;
+		    if (netsec_negotiate_sasl(nsc, server_mechs,
+		    			      &errstr) != OK) {
+			strncpy(response, errstr, sizeof(response));
+			response[sizeof(response) - 1] = '\0';
+			free(errstr);
+			return NOTOK;
+		    }
+		    return OK;
 		} else
-#  endif /* CYRUS_SASL */
-#  if OAUTH_SUPPORT
-		if (xoauth_client_res != NULL) {
-		    if (pop_auth_xoauth(xoauth_client_res) != NOTOK)
-			return OK;
-		} else
-#  endif /* OAUTH_SUPPORT */
 		if (command ("USER %s", user) != NOTOK
 		    && command ("%s %s", (pophack++, "PASS"),
 					pass) != NOTOK)
@@ -610,14 +589,120 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	case DONE: 
 	    if (poprint)	    
 		fprintf (stderr, "%s\n", response);
-	    fclose (input);
-	    fclose (output);
+	    netsec_shutdown(nsc, 1);
+	    nsc = NULL;
 	    return NOTOK;
     }
 
     return NOTOK;	/* NOTREACHED */
 }
 
+
+/*
+ * Our SASL callback; we are given SASL tokens and then have to format
+ * them according to the protocol requirements, and then process incoming
+ * messages and feed them back into the SASL library.
+ */
+
+static int
+pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
+		  unsigned int indatasize, unsigned char **outdata,
+		  unsigned int *outdatasize, char **errstr)
+{
+    int rc;
+    char *mech, *line;
+    size_t len, b64len;
+
+    switch (mtype) {
+    case NETSEC_SASL_START:
+	/*
+	 * Generate our AUTH message, but there is a wrinkle.
+	 *
+	 * Technically, according to RFC 5034, if your command INCLUDING
+	 * an initial response exceeds 255 octets (including CRLF), you
+	 * can't issue this all in one go, but have to just issue the
+	 * AUTH command, wait for a blank initial response, and then
+	 * send your data.
+	 */
+
+	mech = netsec_get_sasl_mechanism(nsc);
+
+	if (indatasize) {
+	    char *b64data;
+	    b64data = mh_xmalloc(BASE64SIZE(indatasize));
+	    writeBase64raw(indata, indatasize, line);
+	    b64len = strlen(b64data);
+
+	    /* Formula here is AUTH + SP + mech + SP + out + CR + LF */
+	    len = b64len + 8 + strlen(mech);
+	    if (len > 255) {
+		rc = netsec_printf(nsc, errstr, "AUTH %s\r\n", mech);
+		if (rc)
+		    return NOTOK;
+		if (netsec_flush(nsc, errstr) != OK)
+		    return NOTOK;
+		line = netsec_readline(nsc, &len, errstr);
+		if (! line)
+		    return NOTOK;
+		/*
+		 * If the protocol is being followed correctly, should just
+		 * be a "+ ", nothing else.
+		 */
+		if (len != 2 || strcmp(line, "+ ") != 0) {
+		    netsec_err(errstr, "Did not get expected blank response "
+			       "for initial challenge response");
+		    return NOTOK;
+		}
+		rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
+		free(b64data);
+		if (rc != OK)
+		    return NOTOK;
+		if (netsec_flush(nsc, errstr) != OK)
+		    return NOTOK;
+	    } else {
+	        rc = netsec_printf(nsc, errstr, "AUTH %s %s\r\n", mech,
+				   b64data);
+		free(b64data);
+		if (rc != OK)
+		    return NOTOK;
+		if (netsec_flush(nsc, errstr) != OK)
+		    return NOTOK;
+	    }
+	} else {
+	    if (netsec_printf(nsc, errstr, "AUTH %s\r\n", mech) != OK)
+		return NOTOK;
+	    if (netsec_flush(nsc, errstr) != OK)
+		return NOTOK;
+	}
+
+	break;
+
+	/*
+	 * We should get one line back, with our base64 data.  Decode that
+	 * and feed it back in.
+	 */
+    case NETSEC_SASL_READ:
+	line = netsec_readline(nsc, &len, errstr);
+
+	if (line == NULL)
+	    return NOTOK;
+	if (len < 2 || (len == 2 && strcmp(line, "+ ") != 0) {
+	    netsec_err(errstr, "Invalid format for SASL response");
+	    return NOTOK;
+	}
+
+	if (len == 2) {
+	    *outdata = NULL;
+	    *outdatalen = 0;
+	} else {
+	    rc = decodeBase64(line + 2, &outdata, &outdatasize, 0, NULL);
+	    if (rc != OK)
+		return NOTOK;
+	}
+	break;
+
+    return OK;
+}
 
 /*
  * Find out number of messages available
@@ -820,7 +905,7 @@ vcommand (const char *fmt, va_list ap)
 	fprintf(stderr, "(decrypted) ");
 #endif /* CYRUS_SASL */
 
-    switch (sasl_getline (response, sizeof response, input)) {
+    switch (pop_getline (response, sizeof response, nsc)) {
 	case OK: 
 	    if (poprint)
 		fprintf (stderr, "<--- %s\n", response);
@@ -842,7 +927,7 @@ multiline (void)
 {
     char buffer[BUFSIZ + TRMLEN];
 
-    if (sasl_getline (buffer, sizeof buffer, input) != OK)
+    if (pop_getline (buffer, sizeof buffer, nsc) != OK)
 	return NOTOK;
 #ifdef DEBUG
     if (poprint) {
@@ -866,36 +951,43 @@ multiline (void)
 }
 
 /*
- * Note that these functions have been modified to deal with layer encryption
- * in the SASL case
+ * This is now just a thin wrapper around netsec_readline().
  */
 
 static int
-sasl_getline (char *s, int n, FILE *iop)
+pop_getline (char *s, int n, netsec_context *ns)
 {
     int c = -2;
     char *p;
+    size_t len, destlen;
+    int rc;
+    char *errstr;
 
-    p = s;
-    while (--n > 0 && (c = sasl_fgetc (iop)) != EOF && c != -2) 
-	if ((*p++ = c) == '\n')
-	    break;
-    if (c == -2)
-	return NOTOK;
-    if (ferror (iop) && c != EOF) {
-	strncpy (response, "error on connection", sizeof(response));
+    p = netsec_readline(ns, &len, &errstr);
+
+    if (p == NULL) {
+	strncpy(response, errstr, sizeof(response));
+	response[sizeof(response) - 1] = '\0';
+	free(errstr);
 	return NOTOK;
     }
-    if (c == EOF && p == s) {
-	strncpy (response, "connection closed by foreign host", sizeof(response));
-	return DONE;
-    }
-    *p = 0;
-    if (*--p == '\n')
-	*p = 0;
-    if (p > s  &&  *--p == '\r')
-	*p = 0;
 
+    /*
+     * If we had an error, it should have been returned already.  Since
+     * netsec_readline() strips off the CR-LF ending, just copy the existing
+     * buffer into response now.
+     *
+     * We get a length back from netsec_readline, but the rest of the POP
+     * code doesn't handle it; the assumptions are that everything from
+     * the network can be respresented as C strings.  That should get fixed
+     * someday.
+     */
+
+    destlen = len > n - 1 ? len : n - 1;
+
+    memcpy(s, p, destlen);
+    s[destlen] = '\0';
+    
     return OK;
 }
 

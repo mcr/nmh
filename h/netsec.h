@@ -37,7 +37,7 @@ void netsec_shutdown(netsec_context *ns_context, int closeflag);
  * fd		- File descriptor of network connection.
  */
 
-void netset_set_fd(netsec_context *ns_context, int fd);
+void netsec_set_fd(netsec_context *ns_context, int fd);
 
 /*
  * Set the userid used to authenticate to this connection.
@@ -89,18 +89,19 @@ void netsec_set_timeout(netsec_context *ns_context, int timeout);
  * Read a "line" from the network.  This reads one CR/LF terminated line.
  * Returns a pointer to a NUL-terminated string.  This memory is valid
  * until the next call to any read function.  Will return an error if
- * the line does not terminated with CR/LF.  Note that this will not work
- * if the data might have embedded NULs.
+ * the line does not terminate with a CR/LF.
  *
  * Arguments:
  *
  * ns_context	- Network security context
+ * length	- Returned length of string
  * errstr	- Error string
  *
  * Returns pointer to string, or NULL on error.
  */
 
-char *netsec_readline(netsec_context *ns_context, char **errstr);
+char *netsec_readline(netsec_context *ns_context, size_t *lenght,
+		      char **errstr);
 
 /*
  * Read bytes from the network.
@@ -217,7 +218,8 @@ enum sasl_message_type {
  *			  Otherwise they will be set to NULL and 0.
  *			  The complete protocol message should be
  *			  stored in outdata/outdatasize, to be free()d
- *			  by the caller.
+ *			  by the caller.  Alternatively, the plugin
+ *			  can choose to send the data on their own.
  * NETSEC_SASL_READ	- Parse and decode a protocol message and extract
  *			  out the SASL payload data.  indata will be set
  *			  to NULL; the callback must read in the necessary
@@ -227,7 +229,9 @@ enum sasl_message_type {
  * NETSEC_SASL_WRITE	- Generate a protocol message to send over the
  *			  network.  indata/indatasize will contain the
  *			  SASL payload data.  outdata/outdatasize should
- *			  contain the complete protocol message.
+ *			  contain the complete protocol message.  Alternatively
+ *			  the plugin can write the data to the network
+ *			  directly.
  * NETSEC_SASL_FINISH	- Process the final SASL message exchange; at
  *			  this point SASL exchange should have completed
  *			  and we should get a message back from the server
@@ -240,6 +244,11 @@ enum sasl_message_type {
  * The callback should return OK on success, NOTOK on failure.  Depending
  * at the point of the authentication exchange, the callback may be asked
  * to generate a cancel message.
+ *
+ * Some higher-level notes in terms of protocol management:
+ *
+ * Any data returned in outdata should consist of allocated data that
+ * the sasl routines is expected to free.
  */
 
 typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
@@ -348,3 +357,17 @@ int netsec_set_tls(netsec_context *context, int tls, char **errstr);
  */
 
 int netsec_negotiate_tls(netsec_context *ns_context, char **errstr);
+
+/*
+ * Allocate and format an error string; should be used by plugins
+ * to report errors.
+ *
+ * Arguments:
+ *
+ * errstr	- Error string to be returned
+ * format	- printf(3) format string
+ * ...		- Arguments to printf(3)
+ *
+ */
+
+void netsec_err(char **errstr, const char *format, ...);

@@ -90,12 +90,6 @@ struct _netsec_context {
 };
 
 /*
- * Function to allocate error message strings
- */
-
-static void netsec_err(char **errstr, const char *format, ...);
-
-/*
  * Function to read data from the actual network socket
  */
 
@@ -327,7 +321,7 @@ netsec_read(netsec_context *nsc, void *buffer, size_t size, char **errstr)
  */
 
 char *
-netsec_readline(netsec_context *nsc, char **errstr)
+netsec_readline(netsec_context *nsc, size_t *len, char **errstr)
 {
     unsigned char *ptr = nsc->ns_inptr;
     size_t count = 0, offset;
@@ -344,6 +338,8 @@ retry:
 	    if (count > 1 && *(ptr - 2) == '\r')
 		ptr--;
 	    *--ptr = '\0';
+	    if (len)
+		*len = ptr - nsc->ns_inptr;
 	    nsc->ns_inptr += count;
 	    nsc->ns_inbuflen -= count;
 	    return sptr;
@@ -567,6 +563,11 @@ netsec_write(netsec_context *nsc, const void *buffer, size_t size,
     const unsigned char *bufptr = buffer;
     int rc, remaining;
 
+    /* Just in case */
+
+    if (size == 0)
+	return OK;
+
     /*
      * If TLS is active, then bypass all of our buffering logic; just
      * write it directly to our BIO.  We have a buffering BIO first in
@@ -624,6 +625,7 @@ netsec_write(netsec_context *nsc, const void *buffer, size_t size,
 
 /*
  * Our network printf() routine, which really just calls netsec_vprintf().
+ */
 
 int
 netsec_printf(netsec_context *nsc, char **errstr, const char *format, ...)
@@ -631,7 +633,7 @@ netsec_printf(netsec_context *nsc, char **errstr, const char *format, ...)
     va_list ap;
     int rc;
 
-    va_start(format, ap);
+    va_start(ap, format);
     rc = netsec_vprintf(nsc, errstr, format, ap);
     va_end(ap);
 
@@ -744,6 +746,13 @@ netsec_flush(netsec_context *nsc, char **errstr)
 	return OK;
     }
 #endif /* TLS_SUPPORT */
+
+    /*
+     * Small optimization
+     */
+
+    if (netoutlen == 0)
+	return OK;
 
     /*
      * If SASL security layers are in effect, run the data through
@@ -1082,15 +1091,16 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 			   &outbuflen, errstr) != OK)
 	return NOTOK;
 
-    if (netsec_write(nsc, outbuf, outbuflen, errstr) != OK) {
-    	free(outbuf);
-	return NOTOK;
+    if (outbuflen > 0) {
+	if (netsec_write(nsc, outbuf, outbuflen, errstr) != OK) {
+	    free(outbuf);
+	    return NOTOK;
+	}
+	free(outbuf);
+	if (netsec_flush(nsc, errstr) != OK)
+	    return NOTOK;
     }
 
-    free(outbuf);
-
-    if (netsec_flush(nsc, errstr) != OK)
-	return NOTOK;
 
     /*
      * We've written out our first message; enter in the step loop
@@ -1106,9 +1116,11 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 			       errstr) != OK) {
 	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
 				   &outbuflen, NULL) == OK) {
-		netsec_write(nsc, outbuf, outbuflen, NULL);
-		netsec_flush(nsc, NULL);
-		free(outbuf);
+		if (outbuflen > 0) {
+		    netsec_write(nsc, outbuf, outbuflen, NULL);
+		    netsec_flush(nsc, NULL);
+		    free(outbuf);
+		}
 	    }
 	    return NOTOK;
 	}
@@ -1116,16 +1128,19 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	rc = sasl_client_step(nsc->sasl_conn, (char *) outbuf, outbuflen, NULL,
 			      (const char **) &saslbuf, &saslbuflen);
 
-	free(outbuf);
+	if (outbuf)
+	    free(outbuf);
 
 	if (rc != SASL_OK && rc != SASL_CONTINUE) {
 	    netsec_err(errstr, "SASL client negotiation failed: %s",
 		       sasl_errdetail(nsc->sasl_conn));
 	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
 				   &outbuflen, NULL) == OK) {
-		netsec_write(nsc, outbuf, outbuflen, NULL);
-		netsec_flush(nsc, NULL);
-		free(outbuf);
+		if (outbuflen > 0) {
+		    netsec_write(nsc, outbuf, outbuflen, NULL);
+		    netsec_flush(nsc, NULL);
+		    free(outbuf);
+		}
 	    }
 	    return NOTOK;
 	}
@@ -1134,22 +1149,24 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 			       &outbuf, &outbuflen, errstr) != OK) {
 	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
 				   &outbuflen, NULL) == OK) {
-		netsec_write(nsc, outbuf, outbuflen, NULL);
-		netsec_flush(nsc, NULL);
-		free(outbuf);
+		if (outbuflen > 0) {
+		    netsec_write(nsc, outbuf, outbuflen, NULL);
+		    netsec_flush(nsc, NULL);
+		    free(outbuf);
+		}
 	    }
 	    return NOTOK;
 	}
 
-	if (netsec_write(nsc, outbuf, outbuflen, errstr) != OK) {
+	if (outbuflen > 0) {
+	    if (netsec_write(nsc, outbuf, outbuflen, errstr) != OK) {
+		free(outbuf);
+		return NOTOK;
+	    }
 	    free(outbuf);
-	    return NOTOK;
+	    if (netsec_flush(nsc, errstr) != OK)
+		return NOTOK;
 	}
-
-	free(outbuf);
-
-	if (netsec_flush(nsc, errstr) != OK)
-	    return NOTOK;
     }
 
     /*
@@ -1455,7 +1472,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
  * Generate an (allocated) error string
  */
 
-static void
+void
 netsec_err(char **errstr, const char *fmt, ...)
 {
     va_list ap;
