@@ -9,23 +9,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/oauth.h>
-
-#ifdef CYRUS_SASL
-# include <sasl/sasl.h>
-# include <sasl/saslutil.h>
-# if SASL_VERSION_FULL < 0x020125
-    /* Cyrus SASL 2.1.25 introduced the sasl_callback_ft prototype,
-       which has an explicit void parameter list, according to best
-       practice.  So we need to cast to avoid compile warnings.
-       Provide this prototype for earlier versions. */
-    typedef int (*sasl_callback_ft)();
-# endif /* SASL_VERSION_FULL < 0x020125 */
-#endif /* CYRUS_SASL */
-
-#ifdef TLS_SUPPORT
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#endif /* TLS_SUPPORT */
+#include <h/netsec.h>
 
 #include <h/popsbr.h>
 #include <h/signals.h>
@@ -37,34 +21,7 @@ static int poprint = 0;
 static int pophack = 0;
 
 char response[BUFSIZ];
-
-static FILE *input;
-static FILE *output;
-
-#ifdef CYRUS_SASL
-static sasl_conn_t *conn;	/* SASL connection state */
-static int sasl_complete = 0;	/* Has sasl authentication succeeded? */
-static int maxoutbuf;		/* Maximum output buffer size */
-static sasl_ssf_t sasl_ssf = 0;	/* Security strength factor */
-static int sasl_get_user(void *, int, const char **, unsigned *);
-static int sasl_get_pass(sasl_conn_t *, void *, int, sasl_secret_t **);
-struct pass_context {
-    char *user;
-    char *password;
-    char *host;
-};
-
-static sasl_callback_t callbacks[] = {
-    { SASL_CB_USER, (sasl_callback_ft) sasl_get_user, NULL },
-#define POP_SASL_CB_N_USER 0
-    { SASL_CB_PASS, (sasl_callback_ft) sasl_get_pass, NULL },
-#define POP_SASL_CB_N_PASS 1
-    { SASL_CB_LOG, NULL, NULL },
-    { SASL_CB_LIST_END, NULL, NULL },
-
-#define SASL_BUFFER_SIZE 262144
-};
-#endif /* CYRUS_SASL */
+static netsec_context *nsc = NULL;
 
 /*
  * static prototypes
@@ -73,25 +30,9 @@ static sasl_callback_t callbacks[] = {
 static int command(const char *, ...);
 static int multiline(void);
 
-#ifdef CYRUS_SASL
-static int pop_auth_sasl(char *, char *, char *);
-#endif /* CYRUS_SASL */
-
-#ifdef TLS_SUPPORT
-static SSL_CTX *sslctx = NULL;
-static SSL *ssl = NULL;
-static BIO *sbior = NULL;
-static BIO *sbiow = NULL;
-static BIO *io = NULL;
-
-static int tls_negotiate(void);
-#endif /* TLS_SUPPORT */
-
-static int tls_active = 0;
-
 static int traverse (int (*)(char *), const char *, ...);
 static int vcommand(const char *, va_list);
-static int sasl_getline (char *, int, FILE *);
+static int getline (char *, int, FILE *);
 static int sasl_fgetc(FILE *);
 static int putline (char *, FILE *);
 
@@ -524,9 +465,9 @@ int
 pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	  int snoop, int sasl, char *mech, int tls, const char *oauth_svc)
 {
-    int fd1, fd2;
+    int fd1;
     char buffer[BUFSIZ];
-    const char *xoauth_client_res = NULL;
+    char *errstr;
 #ifndef CYRUS_SASL
     NMH_UNUSED (sasl);
     NMH_UNUSED (mech);
@@ -541,6 +482,26 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
     NMH_UNUSED (oauth_svc);
     NMH_UNUSED (xoauth_client_res);
 #endif /* OAUTH_SUPPORT */
+
+    nsc = netsec_init();  
+
+    if (user)
+	netsec_set_userid(nsc, user);
+
+    if (tls) {
+	if (netsec_set_tls(nsc, 1, &errstr) != OK) {
+	    snprintf(response, sizeof(response), "%s", errstr);
+	    free(errstr);
+	    return NOTOK;
+	}
+    }
+
+    if (oauth_svc != NULL) {
+	if (netsec_set_oauth_service(nsc, oauth_svc) != OK) {
+	    snprintf(response, sizeof(response), "OAuth2 not supported");
+	    return NOTOK;
+	}
+    }
 
     if (proxy && *proxy) {
        int pid;
@@ -590,34 +551,35 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
        fd2=outpipe[1];
 
     } else {
-
 	if ((fd1 = client (host, port ? port : "pop3", response,
 			   sizeof(response), snoop)) == NOTOK) {
 	    return NOTOK;
 	}
-
-	if ((fd2 = dup (fd1)) == NOTOK) {
-	    char *s;
-
-	    if ((s = strerror(errno)))
-		snprintf (response, sizeof(response),
-		    "unable to dup connection descriptor: %s", s);
-	    else
-		snprintf (response, sizeof(response),
-		    "unable to dup connection descriptor: unknown error");
-	    close (fd1);
-	    return NOTOK;
-	}
     }
-    if (pop_set (fd1, fd2, snoop) == NOTOK)
-	return NOTOK;
 
     SIGNAL (SIGPIPE, SIG_IGN);
 
-    if (tls && tls_negotiate())
-	return NOTOK;
+    netsec_set_fd(nsc, fd1);
+    netsec_set_snoop(nsc, snoop);
 
-    switch (sasl_getline (response, sizeof response, input)) {
+    if (tls) {
+	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
+	    snprintf(response, sizeof(response), "%s", errstr);
+	    free(errstr);
+	    return NOTOK;
+	}
+    }
+
+    if (sasl) {
+	if (netsec_set_sasl_params(nsc, host, "pop", mech,
+				   pop_sasl_callback, &errstr) != OK) {
+	    snprintf(response, sizeof(response), "%s", errstr);
+	    free(errstr);
+	    return NOTOK;
+	}
+    }
+
+    switch (getline (response, sizeof response, input)) {
 	case OK: 
 	    if (poprint)
 		fprintf (stderr, "<--- %s\n", response);
@@ -654,35 +616,6 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
     }
 
     return NOTOK;	/* NOTREACHED */
-}
-
-int
-pop_set (int in, int out, int snoop)
-{
-
-    if ((input = fdopen (in, "r")) == NULL
-	    || (output = fdopen (out, "w")) == NULL) {
-	strncpy (response, "fdopen failed on connection descriptor", sizeof(response));
-	if (input)
-	    fclose (input);
-	else
-	    close (in);
-	close (out);
-	return NOTOK;
-    }
-
-    poprint = snoop;
-
-    return OK;
-}
-
-
-int
-pop_fd (char *in, int inlen, char *out, int outlen)
-{
-    snprintf (in, inlen, "%d", fileno (input));
-    snprintf (out, outlen, "%d", fileno (output));
-    return OK;
 }
 
 
@@ -838,12 +771,8 @@ pop_quit (void)
 int
 pop_done (void)
 {
-#ifdef CYRUS_SASL
-    if (conn)
-	sasl_dispose(&conn);
-#endif /* CYRUS_SASL */
-    fclose (input);
-    fclose (output);
+    if (nsc)
+	netsec_shutdown(nsc, 1);
 
     return OK;
 }
@@ -871,14 +800,6 @@ vcommand (const char *fmt, va_list ap)
     vsnprintf (buffer, sizeof(buffer), fmt, ap);
 
     if (poprint) {
-#ifdef CYRUS_SASL
-	if (sasl_ssf)
-	    fprintf(stderr, "(sasl-encrypted) ");
-#endif /* CYRUS_SASL */
-#ifdef TLS_SUPPORT
-	if (tls_active)
-	    fprintf(stderr, "(tls-encrypted) ");
-#endif /* TLS_SUPPORT */
 	if (pophack) {
 	    if ((cp = strchr (buffer, ' ')))
 		*cp = 0;
@@ -1118,102 +1039,3 @@ sasl_fgetc(FILE *f)
     return (int) buffer[0];
 }
 #endif /* CYRUS_SASL */
-
-#ifdef TLS_SUPPORT
-/*
- * Negotiate TLS at this point.  Will call pop_done() on failure.
- */
-
-static int
-tls_negotiate(void)
-{
-    BIO *ssl_bio;
-
-    if (! sslctx) {
-	SSL_library_init();
-	SSL_load_error_strings();
-
-	sslctx = SSL_CTX_new(SSLv23_client_method());
-
-	if (! sslctx) {
-	    pop_done();
-	    advise(NULL, "Unable to initialize OpenSSL context: %s",
-		   ERR_error_string(ERR_get_error(), NULL));
-	    return NOTOK;
-	}
-
-	SSL_CTX_set_options(sslctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 |
-			    SSL_OP_NO_TLSv1);
-    }
-
-    ssl = SSL_new(sslctx);
-
-    if (! ssl) {
-	pop_done();
-	advise(NULL, "Unable to create SSL connection: %s",
-	       ERR_error_string(ERR_get_error(), NULL));
-	return NOTOK;
-    }
-
-    sbior = BIO_new_socket(fileno(input), BIO_NOCLOSE);
-    sbiow = BIO_new_socket(fileno(output), BIO_NOCLOSE);
-
-    if (sbior == NULL || sbiow == NULL) {
-	pop_done();
-	advise(NULL, "Unable to create BIO endpoints: %s",
-	       ERR_error_string(ERR_get_error(), NULL));
-	return NOTOK;
-    }
-
-    SSL_set_bio(ssl, sbior, sbiow);
-    SSL_set_connect_state(ssl);
-
-    /*
-     * Set up a BIO to do buffering for us
-     */
-
-    io = BIO_new(BIO_f_buffer());
-
-    if (! io) {
-	pop_done();
-	advise(NULL, "Unable to create a buffer BIO: %s",
-	       ERR_error_string(ERR_get_error(), NULL));
-	return NOTOK;
-    }
-     
-    ssl_bio = BIO_new(BIO_f_ssl());
-
-    if (! ssl_bio) {
-	pop_done();
-	advise(NULL, "Unable to create a SSL BIO: %s",
-	       ERR_error_string(ERR_get_error(), NULL));
-	return NOTOK;
-    }
-
-    BIO_set_ssl(ssl_bio, ssl, BIO_CLOSE);
-    BIO_push(io, ssl_bio);
-
-    /*
-     * Try doing the handshake now
-     */
-
-    if (BIO_do_handshake(io) < 1) {
-	pop_done();
-	advise(NULL, "Unable to negotiate SSL connection: %s",
-	       ERR_error_string(ERR_get_error(), NULL));
-	return NOTOK;
-    }
-
-    if (poprint) {
-	const SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
-	printf("SSL negotiation successful: %s(%d) %s\n",
-	       SSL_CIPHER_get_name(cipher),
-	       SSL_CIPHER_get_bits(cipher, NULL),
-	       SSL_CIPHER_get_version(cipher));
-    }
-
-    tls_active = 1;
-
-    return OK;
-}
-#endif /* TLS_SUPPORT */

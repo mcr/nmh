@@ -22,9 +22,10 @@ netsec_context *netsec_init(void);
  * Arguments:
  *
  * ns_context	- Network security context
+ * closeflag	- If set to 1, close the socket descriptor as well.
  */
 
-void netsec_shutdown(netsec_context *ns_context);
+void netsec_shutdown(netsec_context *ns_context, int closeflag);
 
 /*
  * Sets the file descriptor for this connection.  This will be used by
@@ -152,6 +153,22 @@ int netsec_printf(netsec_context *ns_context, char **errstr,
 		  const char *format, ...);
 
 /*
+ * Write bytes using a va_list argument.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * errstr	- Error string
+ * format	- Format string
+ * ap		- stdarg list.
+ *
+ * Returns OK on success, NOTOK on error.
+ */
+
+int netsec_vprintf(netsec_context *ns_context, char **errstr,
+		   const char *format, va_list ap);
+
+/*
  * Flush any buffered bytes to the network.
  *
  * Arguments:
@@ -244,7 +261,6 @@ typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
  * ns_context	- Network security context
  * hostname	- Fully qualified hostname of remote host.
  * service	- Service name (set to NULL to disable SASL).
- * mechlist	- A space-separated list of mechanisms supported by the server.
  * mechanism	- The mechanism desired by the user.  If NULL, the SASL
  *		  library will attempt to negotiate the best mechanism.
  * callback	- SASL protocol callbacks 

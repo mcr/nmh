@@ -11,6 +11,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/netsec.h>
+#include <h/oauth.h>
 #include <stdarg.h>
 #include <sys/select.h>
 
@@ -65,9 +66,12 @@ struct _netsec_context {
     unsigned char *ns_outptr;	/* Output buffer pointer */
     unsigned int ns_outbuflen;	/* Output buffer data length */
     unsigned int ns_outbufsize;	/* Output buffer size */
+    char *sasl_mech;		/* User-requested mechanism */
+#ifdef OAUTH_SUPPORT
+    char *oauth_service;	/* OAuth2 service name */
+#endif /* OAUTH_SUPPORT */
 #ifdef CYRUS_SASL
     char *sasl_hostname;	/* Hostname we've connected to */
-    char *sasl_mech;		/* User-requested mechanism */
     sasl_conn_t *sasl_conn;	/* SASL connection context */
     sasl_ssf_t sasl_ssf;	/* SASL Security Strength Factor */
     netsec_sasl_callback sasl_proto_cb; /* SASL callback we use */
@@ -134,10 +138,13 @@ netsec_init(void)
     nsc->ns_outbuffer = mh_xmalloc(nsc->ns_outbufsize);
     nsc->ns_outptr = nsc->ns_outbuffer;
     nsc->ns_outbuflen = 0;
+    nsc->sasl_mech = NULL;
+#ifdef OAUTH_SUPPORT
+    nsc->oauth_service = NULL;
+#endif /* OAUTH_SUPPORT */
 #ifdef CYRUS_SASL
     nsc->sasl_conn = NULL;
     nsc->sasl_hostname = NULL;
-    nsc->sasl_mech = NULL;
     nsc->sasl_cbs = NULL;
     nsc->sasl_creds = NULL;
     nsc->sasl_secret = NULL;
@@ -156,11 +163,11 @@ netsec_init(void)
 
 /*
  * Shutdown the connection completely and free all resources.
- * The connection is not closed, however.
+ * The connection is only closed if the flag is given.
  */
 
 void
-netsec_shutdown(netsec_context *nsc)
+netsec_shutdown(netsec_context *nsc, int closeflag)
 {
     if (nsc->ns_userid)
 	free(nsc->ns_userid);
@@ -168,13 +175,17 @@ netsec_shutdown(netsec_context *nsc)
 	free(nsc->ns_inbuffer);
     if (nsc->ns_outbuffer)
 	free(nsc->ns_outbuffer);
+    if (nsc->sasl_mech)
+	free(nsc->sasl_mech);
+#ifdef OAUTH_SERVICE
+    if (nsc->oauth_service)
+	free(nsc->oauth_service);
+#endif /* OAUTH_SERVICE */
 #ifdef CYRUS_SASL
     if (nsc->sasl_conn)
 	sasl_dispose(&nsc->sasl_conn);
     if (nsc->sasl_hostname)
 	free(nsc->sasl_hostname);
-    if (nsc->sasl_mech)
-	free(nsc->sasl_mech);
     if (nsc->sasl_cbs)
 	free(nsc->sasl_cbs);
     if (nsc->sasl_creds) {
@@ -202,6 +213,9 @@ netsec_shutdown(netsec_context *nsc)
 	 */
 	BIO_free_all(nsc->ssl_io);
 #endif /* TLS_SUPPORT */
+
+    if (closeflag && nsc->ns_fd != -1)
+	close(nsc->ns_fd);
 
     free(nsc);
 }
@@ -326,7 +340,7 @@ retry:
     while (count < nsc->ns_inbuflen) {
 	count++;
 	if (*ptr++ == '\n') {
-	    char *sptr = nsc->ns_inptr;
+	    char *sptr = (char *) nsc->ns_inptr;
 	    if (count > 1 && *(ptr - 2) == '\r')
 		ptr--;
 	    *--ptr = '\0';
@@ -355,7 +369,7 @@ retry:
     offset = ptr - nsc->ns_inptr;
 
     if (netsec_fillread(nsc, errstr) != OK)
-	return NOTOK;
+	return NULL;
 
     ptr = nsc->ns_inptr + offset;
 
@@ -609,11 +623,7 @@ netsec_write(netsec_context *nsc, const void *buffer, size_t size,
 }
 
 /*
- * Write bytes to the network using printf()-style formatting.
- *
- * Again, for the most part copy stuff into our buffer to be flushed
- * out later.
- */
+ * Our network printf() routine, which really just calls netsec_vprintf().
 
 int
 netsec_printf(netsec_context *nsc, char **errstr, const char *format, ...)
@@ -621,14 +631,32 @@ netsec_printf(netsec_context *nsc, char **errstr, const char *format, ...)
     va_list ap;
     int rc;
 
+    va_start(format, ap);
+    rc = netsec_vprintf(nsc, errstr, format, ap);
+    va_end(ap);
+
+    return rc;
+}
+
+/*
+ * Write bytes to the network using printf()-style formatting.
+ *
+ * Again, for the most part copy stuff into our buffer to be flushed
+ * out later.
+ */
+
+int
+netsec_vprintf(netsec_context *nsc, char **errstr, const char *format,
+	       va_list ap)
+{
+    int rc;
+
     /*
      * Again, if we're using TLS, then bypass our local buffering
      */
 #ifdef TLS_SUPPORT
     if (nsc->tls_active) {
-	va_start(ap, format);
 	rc = BIO_vprintf(nsc->ssl_io, format, ap);
-	va_end(ap);
 
 	if (rc <= 0) {
 	    netsec_err(errstr, "Error writing to TLS connection: %s",
@@ -646,10 +674,8 @@ netsec_printf(netsec_context *nsc, char **errstr, const char *format, ...)
      */
 
 retry:
-    va_start(ap, format);
     rc = vsnprintf((char *) nsc->ns_outptr,
 		   nsc->ns_outbufsize - nsc->ns_outbuflen, format, ap);
-    va_end(ap);
 
     if (rc >= (int) (nsc->ns_outbufsize - nsc->ns_outbuflen)) {
 	/*
@@ -936,8 +962,76 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
     unsigned char *outbuf;
     unsigned int saslbuflen, outbuflen;
     sasl_ssf_t *ssf;
-    int rc, *outbufmax;
+    int *outbufmax;
+#endif
+#ifdef OAUTH_SUPPORT
+    const char *xoauth_client_res;
+#endif /* OAUTH_SUPPORT */
+    int rc;
 
+    /*
+     * If we've been passed a requested mechanism, check our mechanism
+     * list from the protocol.  If it's not supported, return an error.
+     */
+
+    if (nsc->sasl_mech) {
+	char **str, *mlist = getcpy(mechlist);
+	int i;
+
+	str = brkstring(mlist, " ", NULL);
+
+	for (i = 0; str[i] != NULL; i++) {
+	    if (strcasecmp(nsc->sasl_mech, str[i]) == 0) {
+		break;
+	    }
+	}
+
+	i = (str[i] == NULL);
+
+	free(str);
+	free(mlist);
+
+	if (i) {
+	    netsec_err(errstr, "Chosen mechanism %s not supported by server",
+		       nsc->sasl_mech);
+	    return NOTOK;
+	}
+    }
+
+#ifdef OAUTH_SUPPORT
+    if (strcasecmp(nsc->sasl_mech, "XOAUTH2") == 0) {
+	/*
+	 * This should be relatively straightforward, but requires some
+	 * help from the plugin.  Basically, if XOAUTH2 is a success,
+	 * the plugin has to return success, but no output data.  If
+	 * there is output data, it will be assumed that it is the JSON
+	 * error message.
+	 */
+
+	if (! nsc->oauth_service) {
+	    netsec_err(errstr, "Internal error: OAuth2 service name not given");
+	    return NOTOK;
+	}
+
+	nsc->sasl_chosen_mech = getcpy(nsc->sasl_mech);
+
+	xoauth_client_res = mh_oauth_do_xoauth(nsc->ns_userid,
+					       nsc->oauth_service,
+					       nsc->ns_snoop ? stderr : NULL);
+
+	if (xoauth_client_res == NULL) {
+	    netsec_err(errstr, "Internal error: mh_oauth_do_xoauth() "
+		       "returned NULL");
+	    return NOTOK;
+	}
+
+#if 0
+	rc = nsc->sasl_proto_cb(NETSEC_SASL_START, 
+#endif
+    }
+#endif /* OAUTH_SUPPORT */
+
+#ifdef CYRUS_SASL
     /*
      * In netsec_set_sasl_params, we've already done all of our setup with
      * sasl_client_init() and sasl_client_new().  So time to set security
@@ -971,7 +1065,8 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
      * sasl_client_step() loop (after sasl_client_start, of course).
      */
 
-    rc = sasl_client_start(nsc->sasl_conn, mechlist, NULL,
+    rc = sasl_client_start(nsc->sasl_conn,
+    			   nsc->sasl_mech ? nsc->sasl_mech : mechlist, NULL,
 			   (const char **) &saslbuf, &saslbuflen,
 			   &chosen_mech);
 
@@ -1162,6 +1257,21 @@ netsec_get_sasl_mechanism(netsec_context *nsc)
 #else /* CYRUS_SASL */
     return NULL;
 #endif /* CYRUS_SASL */
+}
+
+/*
+ * Set an OAuth2 service name, if we support it.
+ */
+
+int
+netsec_set_oauth_service(netsec_context *nsc, const char *service)
+{
+#ifdef OAUTH_SUPPORT
+    nsc->oauth_service = getcpy(service);
+    return OK;
+#else /* OAUTH_SUPPORT */
+    return NOTOK;
+#endif /* OAUTH_SUPPORT */
 }
 
 /*
