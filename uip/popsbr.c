@@ -33,8 +33,10 @@ static int multiline(void);
 static int traverse (int (*)(char *), const char *, ...);
 static int vcommand(const char *, va_list);
 static int pop_getline (char *, int, netsec_context *);
+#if 0
 static int sasl_fgetc(FILE *);
 static int putline (char *, FILE *);
+#endif
 static int pop_sasl_callback(enum sasl_message_type, unsigned const char *,
 			     unsigned int, unsigned char **, unsigned int *,
 			     char **);
@@ -87,7 +89,7 @@ check_mech(char *server_mechs, size_t server_mechs_size)
     return OK;
 }
 
-#ifdef CYRUS_SASL
+#if 0
 /*
  * This function implements the AUTH command for various SASL mechanisms
  *
@@ -103,7 +105,6 @@ check_mech(char *server_mechs, size_t server_mechs_size)
       } \
     }
 
-#if 0
 int
 pop_auth_sasl(char *user, char *host, char *mech)
 {
@@ -117,7 +118,7 @@ pop_auth_sasl(char *user, char *host, char *mech)
     sasl_ssf_t *ssf;
     int *moutbuf;
 
-    if ((status = check_mech(server_mechs, sizeof(server_mechs), mech)) != OK) {
+    if ((status = check_mech(server_mechs, sizeof(server_mechs))) != OK) {
 	return status;
     }
 
@@ -564,7 +565,7 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	    if (*response == '+') {
 		if (sasl) {
 		    char server_mechs[256];
-		    if (check_mech(server_mechs, sizeof(server_mechs) != OK))
+		    if (check_mech(server_mechs, sizeof(server_mechs)) != OK)
 			return NOTOK;
 		    if (netsec_negotiate_sasl(nsc, server_mechs,
 		    			      &errstr) != OK) {
@@ -606,8 +607,8 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 
 static int
 pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
-		  unsigned int indatasize, unsigned char **outdata,
-		  unsigned int *outdatasize, char **errstr)
+		  unsigned int indatalen, unsigned char **outdata,
+		  unsigned int *outdatalen, char **errstr)
 {
     int rc;
     char *mech, *line;
@@ -627,10 +628,10 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 
 	mech = netsec_get_sasl_mechanism(nsc);
 
-	if (indatasize) {
+	if (indatalen) {
 	    char *b64data;
-	    b64data = mh_xmalloc(BASE64SIZE(indatasize));
-	    writeBase64raw(indata, indatasize, line);
+	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
+	    writeBase64raw(indata, indatalen, (unsigned char *) b64data);
 	    b64len = strlen(b64data);
 
 	    /* Formula here is AUTH + SP + mech + SP + out + CR + LF */
@@ -675,6 +676,8 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 		return NOTOK;
 	}
 
+	*outdatalen = 0;
+
 	break;
 
 	/*
@@ -686,7 +689,7 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 
 	if (line == NULL)
 	    return NOTOK;
-	if (len < 2 || (len == 2 && strcmp(line, "+ ") != 0) {
+	if (len < 2 || (len == 2 && strcmp(line, "+ ") != 0)) {
 	    netsec_err(errstr, "Invalid format for SASL response");
 	    return NOTOK;
 	}
@@ -695,11 +698,61 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    *outdata = NULL;
 	    *outdatalen = 0;
 	} else {
-	    rc = decodeBase64(line + 2, &outdata, &outdatasize, 0, NULL);
+	    rc = decodeBase64(line + 2, (const char **) outdata, &len, 0, NULL);
+	    *outdatalen = len;
 	    if (rc != OK)
 		return NOTOK;
 	}
 	break;
+
+    /*
+     * Our encoding is pretty simple, so this is easy.
+     */
+
+    case NETSEC_SASL_WRITE:
+	if (indatalen == 0) {
+	    *outdata = (unsigned char *) getcpy("\r\n");
+	    *outdatalen = strlen((char *) *outdata);
+	} else {
+	    unsigned char *b64data;
+	    b64data = mh_xmalloc(BASE64SIZE(indatalen) + 3);
+	    writeBase64raw(indata, indatalen, b64data);
+	    len = strlen((char *) b64data);
+	    b64data[len++] = '\r';
+	    b64data[len++] = '\n';
+	    b64data[len++] = '\0';
+	    *outdata = b64data;
+	    *outdatalen = len - 1;
+	}
+
+	return OK;
+	break;
+
+    /*
+     * Finish the protocol; we're looking for an +OK
+     */
+
+    case NETSEC_SASL_FINISH:
+	line = netsec_readline(nsc, &len, errstr);
+	if (line == NULL)
+	    return NOTOK;
+
+	if (strncmp(line, "+OK", 3) != 0) {
+	    netsec_err(errstr, "Authentication failed: %s", line);
+	    return NOTOK;
+	}
+	break;
+
+    /*
+     * Cancel the SASL exchange in the middle of the commands; for
+     * POP, that's a single "*".
+     */
+
+    case NETSEC_SASL_CANCEL:
+	*outdata = (unsigned char *) getcpy("*\r\n");
+	*outdatalen = strlen((char *) *outdata);
+	break;
+    }
 
     return OK;
 }
@@ -880,8 +933,31 @@ command(const char *fmt, ...)
 static int
 vcommand (const char *fmt, va_list ap)
 {
-    char *cp, buffer[65536];
+    /* char *cp; */
+    char *errstr;
 
+    if (netsec_vprintf(nsc, &errstr, fmt, ap) != OK) {
+	strncpy(response, errstr, sizeof(response));
+	response[sizeof(response) - 1] = '\0';
+	free(errstr);
+	return NOTOK;
+    }
+
+    if (netsec_printf(nsc, &errstr, "\r\n") != OK) {
+	strncpy(response, errstr, sizeof(response));
+	response[sizeof(response) - 1] = '\0';
+	free(errstr);
+	return NOTOK;
+    }
+
+    if (netsec_flush(nsc, &errstr) != OK) {
+	strncpy(response, errstr, sizeof(response));
+	response[sizeof(response) - 1] = '\0';
+	free(errstr);
+	return NOTOK;
+    }
+
+#if 0
     vsnprintf (buffer, sizeof(buffer), fmt, ap);
 
     if (poprint) {
@@ -897,13 +973,14 @@ vcommand (const char *fmt, va_list ap)
 	    fprintf (stderr, "---> %s\n", buffer);
     }
 
-    if (putline (buffer, output) == NOTOK)
+    if (netsec_printf(nsc, "%s\r\n"buffer, output) == NOTOK)
 	return NOTOK;
 
 #ifdef CYRUS_SASL
     if (poprint && sasl_ssf)
 	fprintf(stderr, "(decrypted) ");
 #endif /* CYRUS_SASL */
+#endif
 
     switch (pop_getline (response, sizeof response, nsc)) {
 	case OK: 
@@ -957,10 +1034,10 @@ multiline (void)
 static int
 pop_getline (char *s, int n, netsec_context *ns)
 {
-    int c = -2;
+    /* int c = -2; */
     char *p;
     size_t len, destlen;
-    int rc;
+    /* int rc; */
     char *errstr;
 
     p = netsec_readline(ns, &len, &errstr);
@@ -983,7 +1060,7 @@ pop_getline (char *s, int n, netsec_context *ns)
      * someday.
      */
 
-    destlen = len > n - 1 ? len : n - 1;
+    destlen = len < ((size_t) (n - 1)) ? len : n - 1;
 
     memcpy(s, p, destlen);
     s[destlen] = '\0';
@@ -992,6 +1069,7 @@ pop_getline (char *s, int n, netsec_context *ns)
 }
 
 
+#if 0
 static int
 putline (char *s, FILE *iop)
 {
@@ -1051,7 +1129,9 @@ putline (char *s, FILE *iop)
 
     return OK;
 }
+#endif 
 
+#if 0
 #ifdef CYRUS_SASL
 /*
  * Okay, our little fgetc replacement.  Hopefully this is a little more
@@ -1084,6 +1164,7 @@ sasl_fgetc(FILE *f)
 
 #ifdef TLS_SUPPORT
 	if (tls_active) {
+#endif
 
 	cc = read(fileno(f), tmpbuf, sizeof(tmpbuf));
 
@@ -1131,3 +1212,4 @@ sasl_fgetc(FILE *f)
     return (int) buffer[0];
 }
 #endif /* CYRUS_SASL */
+#endif

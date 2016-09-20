@@ -474,8 +474,8 @@ int WhatNow(int, char **);
  */
 int writeBase64aux(FILE *in, FILE *out, int crlf);
 
-int writeBase64 (unsigned char *, size_t, unsigned char *);
-int writeBase64raw (unsigned char *, size_t, unsigned char *);
+int writeBase64 (const unsigned char *, size_t, unsigned char *);
+int writeBase64raw (const unsigned char *, size_t, unsigned char *);
 
 /*
  * first argument:  the string to be decoded

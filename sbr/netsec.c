@@ -1008,7 +1008,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
     }
 
 #ifdef OAUTH_SUPPORT
-    if (strcasecmp(nsc->sasl_mech, "XOAUTH2") == 0) {
+    if (nsc->sasl_mech && strcasecmp(nsc->sasl_mech, "XOAUTH2") == 0) {
 	/*
 	 * This should be relatively straightforward, but requires some
 	 * help from the plugin.  Basically, if XOAUTH2 is a success,
