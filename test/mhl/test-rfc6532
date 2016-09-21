@@ -25,8 +25,8 @@ LC_ALL=en_US.UTF-8; export LC_ALL
 # check UTF-8 headers
 start_test 'UTF-8 headers'
 cat >"$MH_TEST_DIR"/Mail/inbox/11 <<EOF
-From: receiverø@example.com
-To: senderæ@example.com
+From: senderø@example.com
+To: recipientæ@example.com
 Subject: Blåbærsyltetøy
 Date: 20 May 2014 14:28:51 +0200
 MIME-Version: 1.0
@@ -46,9 +46,11 @@ EOF
 #### squashes the trailing blank lines from mhl.
 run_test "mhl -form mhl.headers `mhpath last`" \
 'Date:    20 May 2014 14:28:51 +0200
-To:      senderæ@example.com
-From:    receiverø@example.com
-Subject: Blåbærsyltetøy'
+To:      recipientæ@example.com
+From:    senderø@example.com
+Subject: Blåbærsyltetøy
+
+MIME-Version: 1.0'
 
 
 finish_test
