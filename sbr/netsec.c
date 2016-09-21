@@ -281,6 +281,7 @@ netsec_b64_snoop_decoder(netsec_context *nsc, const char *string, size_t len,
 {
     const char *decoded;
     size_t decodedlen;
+    NMH_UNUSED(nsc);
 
     int offset = context ? *((int *) context) : 0;
 
@@ -797,7 +798,7 @@ retry:
 #endif /* TLS_SUPPORT */
 	    fprintf(stderr, "=> ");
 	    if (nsc->ns_snoop_cb)
-		nsc->ns_snoop_cb(nsc, nsc->ns_outptr, outlen,
+		nsc->ns_snoop_cb(nsc, (char *) nsc->ns_outptr, outlen,
 				 nsc->ns_snoop_context);
 	    else
 		 fprintf(stderr, "%.*s\n", outlen, nsc->ns_outptr); 
@@ -1093,7 +1094,6 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 
 	i = (str[i] == NULL);
 
-	free(str);
 	free(mlist);
 
 	if (i) {
@@ -1150,7 +1150,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	     * we ignore it and send a blank message in response.  We should
 	     * then get either an +OK or -ERR
 	     */
-	    free(errstr);
+	    free(*errstr);
 	    nsc->sasl_proto_cb(NETSEC_SASL_WRITE, NULL, 0, NULL, 0, NULL);
 	    rc = nsc->sasl_proto_cb(NETSEC_SASL_FINISH, NULL, 0, NULL, 0,
 				    errstr);

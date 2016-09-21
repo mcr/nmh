@@ -131,7 +131,7 @@ expect_creds() {
 }
 
 test_inc() {
-    run_test "inc -host 127.0.0.1 -port ${pop_port} -saslmech xoauth2 -authservice test -user nobody@example.com -width 80" "$@"
+    run_test "inc -host 127.0.0.1 -port ${pop_port} -sasl -saslmech xoauth2 -authservice test -user nobody@example.com -width 80" "$@"
 }
 
 test_inc_success() {
