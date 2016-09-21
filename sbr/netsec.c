@@ -56,6 +56,8 @@ static SSL_CTX *sslctx = NULL;		/* SSL Context */
 struct _netsec_context {
     int ns_fd;			/* Descriptor for network connection */
     int ns_snoop;		/* If true, display network data */
+    int ns_snoop_noend;		/* If true, didn't get a CR/LF on last line */
+    netsec_snoop_callback ns_snoop_cb; /* Snoop output callback */
     int ns_timeout;		/* Network read timeout, in seconds */
     char *ns_userid;		/* Userid for authentication */
     unsigned char *ns_inbuffer;	/* Our read input buffer */
@@ -122,6 +124,8 @@ netsec_init(void)
 
     nsc->ns_fd = -1;
     nsc->ns_snoop = 0;
+    nsc->ns_snoop_noend = 0;
+    nsc->ns_snoop_cb = NULL;
     nsc->ns_userid = NULL;
     nsc->ns_timeout = 60;	/* Our default */
     nsc->ns_inbufsize = NETSEC_BUFSIZE;
@@ -342,6 +346,21 @@ retry:
 		*len = ptr - nsc->ns_inptr;
 	    nsc->ns_inptr += count;
 	    nsc->ns_inbuflen -= count;
+	    if (nsc->ns_snoop) {
+#ifdef CYRUS_SASL
+		if (nsc->sasl_seclayer)
+		    fprintf(stderr, "(sasl-encrypted) ");
+#endif /* CYRUS_SASL */
+#ifdef TLS_SUPPORT
+		if (nsc->tls_active)
+		    fprintf(stderr, "(tls-encrypted) ");
+#endif /* TLS_SUPPORT */
+		fprintf(stderr, "<= ");
+		if (nsc->ns_snoop_cb)
+		    nsc->ns_snoop_cb(nsc, sptr, strlen(sptr));
+		else
+		    fprintf(stderr, "%s\n", sptr);
+	    }
 	    return sptr;
 	}
     }
@@ -711,6 +730,34 @@ retry:
 	}
     }
 
+    if (nsc->ns_snoop) {
+	int outlen = rc;
+	if (outlen > 0 && nsc->ns_outptr[outlen - 1] == '\n') {
+	    outlen--;
+	    if (outlen > 0 && nsc->ns_outptr[outlen - 1] == '\r')
+		outlen--;
+	} else {
+	    nsc->ns_snoop_noend = 1;
+	}
+	if (outlen > 0 || nsc->ns_snoop_noend == 0) {
+#ifdef CYRUS_SASL
+	    if (nsc->sasl_seclayer)
+		fprintf(stderr, "(sasl-encrypted) ");
+#endif /* CYRUS_SASL */
+#ifdef TLS_SUPPORT
+	    if (nsc->tls_active)
+		fprintf(stderr, "(tls-encrypted) ");
+#endif /* TLS_SUPPORT */
+	    fprintf(stderr, "=> ");
+	    if (nsc->ns_snoop_cb)
+		nsc->ns_snoop_cb(nsc, nsc->ns_outptr, outlen);
+	    else
+		 fprintf(stderr, "%.*s\n", outlen, nsc->ns_outptr); 
+	} else {
+	    nsc->ns_snoop_noend = 0;
+	}
+    }
+
     nsc->ns_outptr += rc;
     nsc->ns_outbuflen += rc;
 
@@ -1064,6 +1111,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	    }
 	    return NOTOK;
 	}
+	return OK;
     }
 #endif /* OAUTH_SUPPORT */
 

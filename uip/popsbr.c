@@ -676,8 +676,6 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 		return NOTOK;
 	}
 
-	*outdatalen = 0;
-
 	break;
 
 	/*

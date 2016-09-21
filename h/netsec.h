@@ -75,6 +75,20 @@ int netsec_get_snoop(netsec_context *ns_context);
 void netsec_set_snoop(netsec_context *ns_context, int snoop);
 
 /*
+ * A callback designed to handle the snoop output; it can be used by
+ * a protocol to massage the data in a more user-friendly way.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * string	- String to output
+ * len		- Length of string
+ */
+
+typedef void (*netsec_snoop_callback)(netsec_context *ns_context,
+				     const char *string, size_t len);
+
+/*
  * Set the read timeout for this connection.
  *
  * Arguments:
