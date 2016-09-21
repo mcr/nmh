@@ -974,7 +974,8 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
     int *outbufmax;
 #endif
 #ifdef OAUTH_SUPPORT
-    const char *xoauth_client_res;
+    unsigned char *xoauth_client_res;
+    size_t xoauth_client_res_len;
 #endif /* OAUTH_SUPPORT */
     int rc;
 
@@ -1012,7 +1013,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	/*
 	 * This should be relatively straightforward, but requires some
 	 * help from the plugin.  Basically, if XOAUTH2 is a success,
-	 * the plugin has to return success, but no output data.  If
+	 * the callback has to return success, but no output data.  If
 	 * there is output data, it will be assumed that it is the JSON
 	 * error message.
 	 */
@@ -1024,19 +1025,45 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 
 	nsc->sasl_chosen_mech = getcpy(nsc->sasl_mech);
 
-	xoauth_client_res = mh_oauth_do_xoauth(nsc->ns_userid,
-					       nsc->oauth_service,
-					       nsc->ns_snoop ? stderr : NULL);
-
-	if (xoauth_client_res == NULL) {
-	    netsec_err(errstr, "Internal error: mh_oauth_do_xoauth() "
-		       "returned NULL");
+	if (mh_oauth_do_xoauth(nsc->ns_userid, nsc->oauth_service,
+			       &xoauth_client_res, &xoauth_client_res_len,
+			       nsc->ns_snoop ? stderr : NULL) != OK) {
+	    netsec_err(errstr, "Internal error: Unable to get OAuth2 "
+	    	       "bearer token");
 	    return NOTOK;
 	}
 
-#if 0
-	rc = nsc->sasl_proto_cb(NETSEC_SASL_START, 
-#endif
+	rc = nsc->sasl_proto_cb(NETSEC_SASL_START, xoauth_client_res,
+				xoauth_client_res_len, NULL, 0, errstr);
+	free(xoauth_client_res);
+
+	if (rc != OK)
+	    return NOTOK;
+
+	/*
+	 * Okay, we need to do a NETSEC_SASL_FINISH now.  If we return
+	 * success, we indicate that with no output data.  But if we
+	 * fail, then send a blank message and get the resulting
+	 * error.
+	 */
+
+	rc = nsc->sasl_proto_cb(NETSEC_SASL_FINISH, NULL, 0, NULL, 0, errstr);
+
+	if (rc != OK) {
+	    /*
+	     * We're going to assume the error here is a JSON response;
+	     * we ignore it and send a blank message in response.  We should
+	     * then get either an +OK or -ERR
+	     */
+	    free(errstr);
+	    nsc->sasl_proto_cb(NETSEC_SASL_WRITE, NULL, 0, NULL, 0, NULL);
+	    rc = nsc->sasl_proto_cb(NETSEC_SASL_FINISH, NULL, 0, NULL, 0,
+				    errstr);
+	    if (rc == 0) {
+		netsec_err(errstr, "Unexpected success after OAuth failure!");
+	    }
+	    return NOTOK;
+	}
     }
 #endif /* OAUTH_SUPPORT */
 
@@ -1087,20 +1114,9 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 
     nsc->sasl_chosen_mech = getcpy(chosen_mech);
 
-    if (nsc->sasl_proto_cb(NETSEC_SASL_START, saslbuf, saslbuflen, &outbuf,
-			   &outbuflen, errstr) != OK)
+    if (nsc->sasl_proto_cb(NETSEC_SASL_START, saslbuf, saslbuflen, NULL, 0,
+			   errstr) != OK)
 	return NOTOK;
-
-    if (outbuflen > 0) {
-	if (netsec_write(nsc, outbuf, outbuflen, errstr) != OK) {
-	    free(outbuf);
-	    return NOTOK;
-	}
-	free(outbuf);
-	if (netsec_flush(nsc, errstr) != OK)
-	    return NOTOK;
-    }
-
 
     /*
      * We've written out our first message; enter in the step loop
@@ -1114,14 +1130,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 
 	if (nsc->sasl_proto_cb(NETSEC_SASL_READ, NULL, 0, &outbuf, &outbuflen,
 			       errstr) != OK) {
-	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
-				   &outbuflen, NULL) == OK) {
-		if (outbuflen > 0) {
-		    netsec_write(nsc, outbuf, outbuflen, NULL);
-		    netsec_flush(nsc, NULL);
-		    free(outbuf);
-		}
-	    }
+	    nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, NULL, 0, NULL);
 	    return NOTOK;
 	}
 
@@ -1134,38 +1143,14 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	if (rc != SASL_OK && rc != SASL_CONTINUE) {
 	    netsec_err(errstr, "SASL client negotiation failed: %s",
 		       sasl_errdetail(nsc->sasl_conn));
-	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
-				   &outbuflen, NULL) == OK) {
-		if (outbuflen > 0) {
-		    netsec_write(nsc, outbuf, outbuflen, NULL);
-		    netsec_flush(nsc, NULL);
-		    free(outbuf);
-		}
-	    }
+	    nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, NULL, 0, NULL);
 	    return NOTOK;
 	}
 
 	if (nsc->sasl_proto_cb(NETSEC_SASL_WRITE, saslbuf, saslbuflen,
-			       &outbuf, &outbuflen, errstr) != OK) {
-	    if (nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, &outbuf,
-				   &outbuflen, NULL) == OK) {
-		if (outbuflen > 0) {
-		    netsec_write(nsc, outbuf, outbuflen, NULL);
-		    netsec_flush(nsc, NULL);
-		    free(outbuf);
-		}
-	    }
+			       NULL, 0, errstr) != OK) {
+	    nsc->sasl_proto_cb(NETSEC_SASL_CANCEL, NULL, 0, NULL, 0, NULL);
 	    return NOTOK;
-	}
-
-	if (outbuflen > 0) {
-	    if (netsec_write(nsc, outbuf, outbuflen, errstr) != OK) {
-		free(outbuf);
-		return NOTOK;
-	    }
-	    free(outbuf);
-	    if (netsec_flush(nsc, errstr) != OK)
-		return NOTOK;
 	}
     }
 

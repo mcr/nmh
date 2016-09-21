@@ -210,16 +210,17 @@ enum sasl_message_type {
  * outdatasize	- Size of output data
  * errstr	- An error string to be returned (freed by caller).
  *
+ * As a general note, plugins should perform their own I/O.  Buffers returned
+ * by NETSEC_SASL_READ should be allocated by the plugins and will be freed
+ * by the netsec package.  Error messages returned should be created by
+ * netsec_err().
+ *
  * Parameter interpretation based on mtype value:
  *
  * NETSEC_SASL_START	- Create a protocol message that starts SASL
  *			  authentication.  If an initial response is
  *			  supported, indata and indatasize will contain it.
  *			  Otherwise they will be set to NULL and 0.
- *			  The complete protocol message should be
- *			  stored in outdata/outdatasize, to be free()d
- *			  by the caller.  Alternatively, the plugin
- *			  can choose to send the data on their own.
  * NETSEC_SASL_READ	- Parse and decode a protocol message and extract
  *			  out the SASL payload data.  indata will be set
  *			  to NULL; the callback must read in the necessary
@@ -228,10 +229,7 @@ enum sasl_message_type {
  *			  SASL message (again, must be free()d by the caller).
  * NETSEC_SASL_WRITE	- Generate a protocol message to send over the
  *			  network.  indata/indatasize will contain the
- *			  SASL payload data.  outdata/outdatasize should
- *			  contain the complete protocol message.  Alternatively
- *			  the plugin can write the data to the network
- *			  directly.
+ *			  SASL payload data.
  * NETSEC_SASL_FINISH	- Process the final SASL message exchange; at
  *			  this point SASL exchange should have completed
  *			  and we should get a message back from the server
@@ -244,11 +242,6 @@ enum sasl_message_type {
  * The callback should return OK on success, NOTOK on failure.  Depending
  * at the point of the authentication exchange, the callback may be asked
  * to generate a cancel message.
- *
- * Some higher-level notes in terms of protocol management:
- *
- * Any data returned in outdata should consist of allocated data that
- * the sasl routines is expected to free.
  */
 
 typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,

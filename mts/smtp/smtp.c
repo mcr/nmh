@@ -1160,7 +1160,7 @@ sm_auth_xoauth2(const char *user, const char *oauth_svc, int snoop)
     const char *xoauth_client_res;
     int status;
 
-#ifdef OAUTH_SUPPORT
+#if 0
     xoauth_client_res = mh_oauth_do_xoauth(user, oauth_svc,
 					   snoop ? stderr : NULL);
 

@@ -105,14 +105,18 @@ struct mh_oauth_service_info {
  * Do the complete dance for XOAUTH2 as used by POP3 and SMTP.
  *
  * Load tokens for svc from disk, refresh if necessary, and return the
- * base64-encoded client response.
+ * client response in client_response and client_response_len.
  *
  * If refreshing, writes freshened tokens to disk.
  *
  * Exits via adios on any error.
+ *
+ * Always returns OK for now, but in the future could return NOTOK on error.
  */
-char *
-mh_oauth_do_xoauth(const char *user, const char *svc, FILE *log);
+
+int
+mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
+		   size_t *oauth_res_len, FILE *log);
 
 /*
  * Allocate and initialize a new OAuth context.

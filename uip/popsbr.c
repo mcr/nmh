@@ -682,7 +682,7 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 
 	/*
 	 * We should get one line back, with our base64 data.  Decode that
-	 * and feed it back in.
+	 * and feed it back into the SASL library.
 	 */
     case NETSEC_SASL_READ:
 	line = netsec_readline(nsc, &len, errstr);
@@ -711,19 +711,20 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 
     case NETSEC_SASL_WRITE:
 	if (indatalen == 0) {
-	    *outdata = (unsigned char *) getcpy("\r\n");
-	    *outdatalen = strlen((char *) *outdata);
+	    rc = netsec_printf(nsc, errstr, "\r\n");
 	} else {
 	    unsigned char *b64data;
-	    b64data = mh_xmalloc(BASE64SIZE(indatalen) + 3);
+	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
 	    writeBase64raw(indata, indatalen, b64data);
-	    len = strlen((char *) b64data);
-	    b64data[len++] = '\r';
-	    b64data[len++] = '\n';
-	    b64data[len++] = '\0';
-	    *outdata = b64data;
-	    *outdatalen = len - 1;
+	    rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
+	    free(b64data);
 	}
+
+	if (rc != OK)
+	    return NOTOK;
+
+	if (netsec_flush(nsc, errstr) != OK)
+	    return NOTOK;
 
 	return OK;
 	break;
@@ -746,11 +747,18 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
     /*
      * Cancel the SASL exchange in the middle of the commands; for
      * POP, that's a single "*".
+     *
+     * It's unclear to me if I should be returning errors up; I finally
+     * decided the answer should be "yes", and if the upper layer wants to
+     * ignore them that's their choice.
      */
 
     case NETSEC_SASL_CANCEL:
-	*outdata = (unsigned char *) getcpy("*\r\n");
-	*outdatalen = strlen((char *) *outdata);
+	rc = netsec_printf(nsc, errstr, "*\r\n");
+	if (rc == OK)
+	    rc = netsec_flush(nsc, errstr);
+	if (rc != OK)
+	    return NOTOK;
 	break;
     }
 
