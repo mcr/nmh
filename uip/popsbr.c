@@ -289,7 +289,7 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 		  unsigned int indatalen, unsigned char **outdata,
 		  unsigned int *outdatalen, char **errstr)
 {
-    int rc;
+    int rc, snoopoffset;
     char *mech, *line;
     size_t len, b64len;
 
@@ -333,13 +333,18 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 			       "for initial challenge response");
 		    return NOTOK;
 		}
+		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
 		rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
+		netsec_set_snoop_callback(nsc, NULL, NULL);
 		free(b64data);
 		if (rc != OK)
 		    return NOTOK;
 		if (netsec_flush(nsc, errstr) != OK)
 		    return NOTOK;
 	    } else {
+		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder,
+					  &snoopoffset);
+		snoopoffset = 6 + strlen(mech);
 	        rc = netsec_printf(nsc, errstr, "AUTH %s %s\r\n", mech,
 				   b64data);
 		free(b64data);
@@ -362,7 +367,10 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	 * and feed it back into the SASL library.
 	 */
     case NETSEC_SASL_READ:
+	netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, &snoopoffset);
+	snoopoffset = 2;
 	line = netsec_readline(nsc, &len, errstr);
+	netsec_set_snoop_callback(nsc, NULL, NULL);
 
 	if (line == NULL)
 	    return NOTOK;
@@ -393,7 +401,9 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    unsigned char *b64data;
 	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
 	    writeBase64raw(indata, indatalen, b64data);
+	    netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
 	    rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
+	    netsec_set_snoop_callback(nsc, NULL, NULL);
 	    free(b64data);
 	}
 
@@ -438,8 +448,7 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    return NOTOK;
 	break;
     }
-
-    return OK;
+return OK;
 }
 
 /*

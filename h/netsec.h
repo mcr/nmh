@@ -83,10 +83,34 @@ void netsec_set_snoop(netsec_context *ns_context, int snoop);
  * ns_context	- Network security context
  * string	- String to output
  * len		- Length of string
+ * context	- "Extra" context information to be used by callback.
  */
 
-typedef void (*netsec_snoop_callback)(netsec_context *ns_context,
-				     const char *string, size_t len);
+typedef void (netsec_snoop_callback)(netsec_context *ns_context,
+				     const char *string, size_t len,
+				     void *context);
+
+/*
+ * Set the snoop callback function; will be used to handle protocol-specific
+ * messages.  Set to NULL to disable.
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * callback	- Snoop callback
+ * context	- Extra context information to be passed to callback.
+ */
+
+void netsec_set_snoop_callback(netsec_context *ns_context,
+			       netsec_snoop_callback *callback, void *context);
+
+/*
+ * A sample callback protocols can utilize; decode base64 tokens in the
+ * output.  The context is a pointer to an int which contains an offset
+ * into the data to start decoding.
+ */
+
+extern netsec_snoop_callback netsec_b64_snoop_decoder;
 
 /*
  * Set the read timeout for this connection.

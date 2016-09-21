@@ -57,7 +57,8 @@ struct _netsec_context {
     int ns_fd;			/* Descriptor for network connection */
     int ns_snoop;		/* If true, display network data */
     int ns_snoop_noend;		/* If true, didn't get a CR/LF on last line */
-    netsec_snoop_callback ns_snoop_cb; /* Snoop output callback */
+    netsec_snoop_callback *ns_snoop_cb; /* Snoop output callback */
+    void *ns_snoop_context;	/* Context data for snoop function */
     int ns_timeout;		/* Network read timeout, in seconds */
     char *ns_userid;		/* Userid for authentication */
     unsigned char *ns_inbuffer;	/* Our read input buffer */
@@ -126,6 +127,7 @@ netsec_init(void)
     nsc->ns_snoop = 0;
     nsc->ns_snoop_noend = 0;
     nsc->ns_snoop_cb = NULL;
+    nsc->ns_snoop_context = NULL;
     nsc->ns_userid = NULL;
     nsc->ns_timeout = 60;	/* Our default */
     nsc->ns_inbufsize = NETSEC_BUFSIZE;
@@ -259,6 +261,50 @@ netsec_set_snoop(netsec_context *nsc, int snoop)
 }
 
 /*
+ * Set the snoop callback for this connection.
+ */
+
+void netsec_set_snoop_callback(netsec_context *nsc,
+			       netsec_snoop_callback callback, void *context)
+{
+    nsc->ns_snoop_cb = callback;
+    nsc->ns_snoop_context = context;
+}
+
+/*
+ * A base64-decoding snoop callback
+ */
+
+void
+netsec_b64_snoop_decoder(netsec_context *nsc, const char *string, size_t len,
+			 void *context)
+{
+    const char *decoded;
+    size_t decodedlen;
+
+    int offset = context ? *((int *) context) : 0;
+
+    if (offset > 0) {
+	/*
+	 * Output non-base64 data first.
+	 */
+	fprintf(stderr, "%.*s", offset, string);
+	string += offset;
+	len -= offset;
+    }
+
+    if (decodeBase64(string, &decoded, &decodedlen, 1, NULL) == OK) {
+	char *hexified;
+	hexify((const unsigned char *) decoded, decodedlen, &hexified);
+	fprintf(stderr, "b64<%s>\n", hexified);
+	free(hexified);
+	free((char *) decoded);
+    } else {
+	fprintf(stderr, "%.*s\n", (int) len, string);
+    }
+}
+
+/*
  * Set the read timeout for this connection
  */
 
@@ -357,7 +403,8 @@ retry:
 #endif /* TLS_SUPPORT */
 		fprintf(stderr, "<= ");
 		if (nsc->ns_snoop_cb)
-		    nsc->ns_snoop_cb(nsc, sptr, strlen(sptr));
+		    nsc->ns_snoop_cb(nsc, sptr, strlen(sptr),
+				     nsc->ns_snoop_context);
 		else
 		    fprintf(stderr, "%s\n", sptr);
 	    }
@@ -750,7 +797,8 @@ retry:
 #endif /* TLS_SUPPORT */
 	    fprintf(stderr, "=> ");
 	    if (nsc->ns_snoop_cb)
-		nsc->ns_snoop_cb(nsc, nsc->ns_outptr, outlen);
+		nsc->ns_snoop_cb(nsc, nsc->ns_outptr, outlen,
+				 nsc->ns_snoop_context);
 	    else
 		 fprintf(stderr, "%.*s\n", outlen, nsc->ns_outptr); 
 	} else {
