@@ -231,7 +231,7 @@ netsec_shutdown(netsec_context *nsc, int closeflag)
  */
 
 void
-netsec_set_fd(netsec_context *nsc, int readfd, writefd)
+netsec_set_fd(netsec_context *nsc, int readfd, int writefd)
 {
     nsc->ns_readfd = readfd;
     nsc->ns_writefd = writefd;
@@ -643,25 +643,6 @@ netsec_write(netsec_context *nsc, const void *buffer, size_t size,
 	return OK;
 
     /*
-     * If TLS is active, then bypass all of our buffering logic; just
-     * write it directly to our BIO.  We have a buffering BIO first in
-     * our stack, so buffering will take place there.
-     */
-#ifdef TLS_SUPPORT
-    if (nsc->tls_active) {
-	rc = BIO_write(nsc->ssl_io, buffer, size);
-
-	if (rc <= 0) {
-	    netsec_err(errstr, "Error writing to TLS connection: %s",
-		       ERR_error_string(ERR_get_error(), NULL));
-	    return NOTOK;
-	}
-
-	return OK;
-    }
-#endif /* TLS_SUPPORT */
-
-    /*
      * Run a loop copying in data to our local buffer; when we're done with
      * any buffer overflows then just copy any remaining data in.
      */
@@ -726,23 +707,6 @@ netsec_vprintf(netsec_context *nsc, char **errstr, const char *format,
 	       va_list ap)
 {
     int rc;
-
-    /*
-     * Again, if we're using TLS, then bypass our local buffering
-     */
-#ifdef TLS_SUPPORT
-    if (nsc->tls_active) {
-	rc = BIO_vprintf(nsc->ssl_io, format, ap);
-
-	if (rc <= 0) {
-	    netsec_err(errstr, "Error writing to TLS connection: %s",
-		       ERR_error_string(ERR_get_error(), NULL));
-	    return NOTOK;
-	}
-
-	return OK;
-    }
-#endif /* TLS_SUPPORT */
 
     /*
      * Cheat a little.  If we can fit the data into our outgoing buffer,
@@ -859,7 +823,7 @@ netsec_flush(netsec_context *nsc, char **errstr)
 
     /*
      * If SASL security layers are in effect, run the data through
-     * sasl_encode() first and then write it.
+     * sasl_encode() first.
      */
 #ifdef CYRUS_SASL
     if (nsc->sasl_seclayer) {
@@ -874,11 +838,27 @@ netsec_flush(netsec_context *nsc, char **errstr)
 
     }
 #endif /* CYRUS_SASL */
-    rc = write(nsc->ns_writefd, netoutbuf, netoutlen);
 
-    if (rc < 0) {
-	netsec_err(errstr, "write() failed: %s", strerror(errno));
-	return NOTOK;
+    /*
+     * If TLS is active, then use those functions to write out the
+     * data.
+     */
+#ifdef TLS_SUPPORT
+    if (nsc->tls_active) {
+	if (BIO_write(nsc->ssl_io, netoutbuf, netoutlen) <= 0) {
+	    netsec_err(errstr, "Error writing to TLS connection: %s",
+		       ERR_error_string(ERR_get_error(), NULL));
+	    return NOTOK;
+	}
+    } else
+#endif /* TLS_SUPPORT */
+    {
+	rc = write(nsc->ns_writefd, netoutbuf, netoutlen);
+
+	if (rc < 0) {
+	    netsec_err(errstr, "write() failed: %s", strerror(errno));
+	    return NOTOK;
+	}
     }
 
     nsc->ns_outptr = nsc->ns_outbuffer;
@@ -1477,6 +1457,7 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	SSL_set_bio(ssl, rbio, wbio);
 	SSL_set_connect_state(ssl);
 
+#if 0
 	nsc->ssl_io = BIO_new(BIO_f_buffer());
 
 	if (! nsc->ssl_io) {
@@ -1485,6 +1466,7 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	    SSL_free(ssl);
 	    return NOTOK;
 	}
+#endif
 
 	ssl_bio = BIO_new(BIO_f_ssl());
 
@@ -1496,7 +1478,10 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	}
 
 	BIO_set_ssl(ssl_bio, ssl, BIO_CLOSE);
+#if 0
 	BIO_push(nsc->ssl_io, ssl_bio);
+#endif
+	nsc->ssl_io = ssl_bio;
 
 	return OK;
     } else {

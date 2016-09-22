@@ -11,28 +11,7 @@
 #include <h/mts.h>
 #include <h/signals.h>
 #include <h/utils.h>
-#include <h/oauth.h>
-
-#ifdef CYRUS_SASL
-#include <sasl/sasl.h>
-#include <sasl/saslutil.h>
-# if SASL_VERSION_FULL < 0x020125
-    /* Cyrus SASL 2.1.25 introduced the sasl_callback_ft prototype,
-       which has an explicit void parameter list, according to best
-       practice.  So we need to cast to avoid compile warnings.
-       Provide this prototype for earlier versions. */
-    typedef int (*sasl_callback_ft)();
-# endif /* SASL_VERSION_FULL < 0x020125 */
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#endif /* CYRUS_SASL */
-
-#ifdef TLS_SUPPORT
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#endif /* TLS_SUPPORT */
+#include <h/netsec.h>
 
 /*
  * This module implements an interface to SendMail very similar
@@ -85,12 +64,11 @@ static int sm_child = NOTOK;
 static int sm_debug = 0;
 static int sm_nl = TRUE;
 static int sm_verbose = 0;
-
-static FILE *sm_rfp = NULL;
-static FILE *sm_wfp = NULL;
+static netsec_context *nsc = NULL;
 
 static int next_line_encoded = 0;
 
+#if 0
 #ifdef CYRUS_SASL
 /*
  * Some globals needed by SASL
@@ -118,7 +96,9 @@ static sasl_callback_t callbacks[] = {
 #else /* CYRUS_SASL */
 int sasl_ssf = 0;
 #endif /* CYRUS_SASL */
+#endif
 
+#if 0
 #ifdef TLS_SUPPORT
 static SSL_CTX *sslctx = NULL;
 static SSL *ssl = NULL;
@@ -128,7 +108,9 @@ static BIO *io = NULL;
 
 static int tls_negotiate(void);
 #endif /* TLS_SUPPORT */
+#endif
 
+#if 0
 #if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
 #define SASL_MAXRECVBUF 65536
 static int sm_fgetc(FILE *);
@@ -140,6 +122,7 @@ static int sasl_inbuflen;		/* Current length of data in inbuf */
 #endif
 
 static int tls_active = 0;
+#endif
 
 static char *sm_noreply = "No reply text given";
 static char *sm_moreply = "; ";
@@ -153,17 +136,16 @@ static char *EHLOkeys[MAXEHLO + 1];
 /*
  * static prototypes
  */
-static int smtp_init (char *, char *, char *, int, int, int, int, int,
-		      char *, char *, const char *, int);
-static int sendmail_init (char *, char *, int, int, int, int, int,
-                          char *, char *);
+static int smtp_init (char *, char *, char *, int, int, int, int, const char *,
+		      const char *, const char *, int);
+static int sendmail_init (char *, char *, int, int, int, int, const char *,
+			  const char *);
 
 static int rclient (char *, char *);
-static int sm_ierror (char *fmt, ...);
+static int sm_ierror (const char *fmt, ...);
+static int sm_nerror (char *);
 static int smtalk (int time, char *fmt, ...);
-static int sm_wrecord (char *, int);
 static int sm_wstream (char *, int);
-static int sm_werror (void);
 static int smhear (void);
 static int sm_rrecord (char *, int *);
 static int sm_rerror (int);
@@ -175,43 +157,30 @@ static int sm_fputs(char *);
 static int sm_fputc(int);
 static void sm_fflush(void);
 static int sm_fgets(char *, int, FILE *);
-static int sm_auth_xoauth2(const char *, const char *, int);
-
-#ifdef CYRUS_SASL
-/*
- * Function prototypes needed for SASL
- */
-
-static int sm_auth_sasl(char *, int, char *, char *);
-#endif /* CYRUS_SASL */
+static int sm_sasl_callback(enum sasl_message_type, unsigned const char *,
+			    unsigned int, unsigned char **, unsigned int *,
+			    char **);
 
 int
 sm_init (char *client, char *server, char *port, int watch, int verbose,
-         int debug, int sasl, int saslssf, char *saslmech, char *user,
+         int debug, int sasl, const char *saslmech, const char *user,
          const char *oauth_svc, int tls)
 {
     if (sm_mts == MTS_SMTP)
 	return smtp_init (client, server, port, watch, verbose,
-			  debug, sasl, saslssf, saslmech, user,
-                          oauth_svc, tls);
+			  debug, sasl, saslmech, user, oauth_svc, tls);
     else
 	return sendmail_init (client, server, watch, verbose,
-                              debug, sasl, saslssf, saslmech, user);
+                              debug, sasl, saslmech, user);
 }
 
 static int
 smtp_init (char *client, char *server, char *port, int watch, int verbose,
-	   int debug,
-           int sasl, int saslssf, char *saslmech, char *user,
+	   int debug, int sasl, const char *saslmech, const char *user,
            const char *oauth_svc, int tls)
 {
-    int result, sd1, sd2;
-#ifndef CYRUS_SASL
-    NMH_UNUSED (sasl);
-    NMH_UNUSED (saslssf);
-    NMH_UNUSED (saslmech);
-    NMH_UNUSED (user);
-#endif /* CYRUS_SASL */
+    int result, sd1;
+    char *errstr;
 
     if (watch)
 	verbose = TRUE;
@@ -219,7 +188,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     sm_verbose = verbose;
     sm_debug = debug;
 
-    if (sm_rfp != NULL && sm_wfp != NULL)
+    if (nsc != NULL)
 	goto send_options;
 
     if (client == NULL || *client == '\0') {
@@ -237,35 +206,38 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     if (client == NULL || *client == '\0')
 	client = "localhost";
 
-#if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
-    sasl_inbuffer = malloc(SASL_MAXRECVBUF);
-    if (!sasl_inbuffer)
-	return sm_ierror("Unable to allocate %d bytes for read buffer",
-			 SASL_MAXRECVBUF);
-#endif /* CYRUS_SASL || TLS_SUPPORT */
+    nsc = netsec_init();
+
+    if (user)
+	netsec_set_userid(nsc, user);
+
+    if (tls) {
+	if (netsec_set_tls(nsc, 1, &errstr) != OK)
+	    return sm_nerror(errstr);
+    }
+
+    if (sm_debug)
+	netsec_set_snoop(nsc, 1);
+
+    if (sasl) {
+	if (netsec_set_sasl_params(nsc, client, "smtp", saslmech,
+				   sm_sasl_callback, &errstr) != OK)
+	    return sm_nerror(errstr);
+    }
+
+    if (oauth_svc) {
+	if (netsec_set_oauth_service(nsc, oauth_svc) != OK)
+	    return sm_ierror("OAuth2 not supported");
+    }
 
     if ((sd1 = rclient (server, port)) == NOTOK)
 	return RP_BHST;
 
-    if ((sd2 = dup (sd1)) == NOTOK) {
-	close (sd1);
-	return sm_ierror ("unable to dup");
-    }
-
     SIGNAL (SIGALRM, alrmser);
     SIGNAL (SIGPIPE, SIG_IGN);
 
-    if ((sm_rfp = fdopen (sd1, "r")) == NULL
-	    || (sm_wfp = fdopen (sd2, "w")) == NULL) {
-	close (sd1);
-	close (sd2);
-	sm_rfp = sm_wfp = NULL;
-	return sm_ierror ("unable to fdopen");
-    }
+    netsec_set_fd(nsc, sd1, sd1);
 
-    tls_active = 0;
-
-#ifdef TLS_SUPPORT
     /*
      * If tls == 2, that means that the user requested "initial" TLS,
      * which happens right after the connection has opened.  Do that
@@ -273,21 +245,14 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
      */
 
     if (tls == 2) {
-    	result = tls_negotiate();
-
-	/*
-	 * Note: if tls_negotiate() fails it will call sm_end() for us,
-	 * which closes the connection.
-	 */
-	if (result != RP_OK)
-	    return result;
+    	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
+	    sm_end(NOTOK);
+	    return sm_nerror(errstr);
+	}
     }
-#endif /* TLS_SUPPORT */
 
-    sm_alarmed = 0;
-    alarm (SM_OPEN);
+    netsec_set_timeout(nsc, SM_OPEN);
     result = smhear ();
-    alarm (0);
 
     switch (result) {
 	case 220: 
@@ -314,7 +279,6 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	return RP_RPLY;
     }
 
-#ifdef TLS_SUPPORT
     /*
      * If the user requested TLS support, then try to do the STARTTLS command
      * as part of the initial dialog.  Assuming this works, we then need to
@@ -339,10 +303,10 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	 * negotiation.  Oblige them.
 	 */
 
-	result = tls_negotiate();
-
-	if (result != RP_OK)
-	    return result;
+	if (netsec_negotiate_tls(nsc, errstr) != OK) {
+	    sm_end(NOTOK);
+	    return sm_nerror(errstr);
+	}
 
 	doingEHLO = 1;
 	result = smtalk (SM_HELO, "EHLO %s", client);
@@ -353,11 +317,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	    return RP_RPLY;
 	}
     }
-#else  /* TLS_SUPPORT */
-    NMH_UNUSED (tls);
-#endif /* TLS_SUPPORT */
 
-#ifdef CYRUS_SASL
     /*
      * If the user asked for SASL, then check to see if the SMTP server
      * supports it.  Otherwise, error out (because the SMTP server
@@ -372,34 +332,9 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	    return sm_ierror("SMTP server does not support SASL");
 	}
 
-	if (saslmech && stringdex(saslmech, server_mechs) == -1) {
+	if (netsec_negotiate_sasl(nsc, server_mechs, &errstr) != OK) {
 	    sm_end(NOTOK);
-	    return sm_ierror("Requested SASL mech \"%s\" is not in the "
-			     "list of supported mechanisms:\n%s",
-			     saslmech, server_mechs);
-	}
-
-        /* Don't call sm_auth_sasl() for XAUTH2 with -sasl.  Instead, call
-           sm_auth_xoauth2() below. */
-	if (oauth_svc == NULL  &&
-            sm_auth_sasl(user, saslssf, saslmech ? saslmech : server_mechs,
-			 server) != RP_OK) {
-	    sm_end(NOTOK);
-	    return NOTOK;
-	}
-    }
-#endif /* CYRUS_SASL */
-
-    if (oauth_svc != NULL) {
-        char *server_mechs;
-	if ((server_mechs = EHLOset("AUTH")) == NULL
-            || stringdex("XOAUTH2", server_mechs) == -1) {
-	    sm_end(NOTOK);
-	    return sm_ierror("SMTP server does not support SASL XOAUTH2");
-	}
-	if (sm_auth_xoauth2(user, oauth_svc, debug) != RP_OK) {
-	    sm_end(NOTOK);
-	    return NOTOK;
+	    return sm_nerror(errstr);
 	}
     }
 
@@ -412,20 +347,11 @@ send_options: ;
 
 int
 sendmail_init (char *client, char *server, int watch, int verbose,
-               int debug, int sasl, int saslssf, char *saslmech, char *user)
+               int debug, int sasl, const char *saslmech, const char *user)
 {
     unsigned int i, result, vecp;
     int pdi[2], pdo[2];
     char *vec[15];
-#ifdef CYRUS_SASL
-    char *server_mechs;
-#else  /* CYRUS_SASL */
-    NMH_UNUSED (server);
-    NMH_UNUSED (sasl);
-    NMH_UNUSED (saslssf);
-    NMH_UNUSED (saslmech);
-    NMH_UNUSED (user);
-#endif /* CYRUS_SASL */
 
     if (watch)
 	verbose = TRUE;
@@ -733,7 +659,7 @@ sm_end (int type)
 	}
     }
 
-    if (sm_rfp == NULL && sm_wfp == NULL)
+    if (nsc == NULL)
 	return RP_OK;
 
     switch (type) {
@@ -773,36 +699,15 @@ sm_end (int type)
 	    break;
     }
 
-#ifdef TLS_SUPPORT
-    if (tls_active) {
-	BIO_ssl_shutdown(io);
-	BIO_free_all(io);
-    }
-#endif /* TLS_SUPPORT */
-
-    if (sm_rfp != NULL) {
+    if (nsc != NULL) {
 	alarm (SM_CLOS);
-	fclose (sm_rfp);
+	netsec_shutdown(nsc, 1);
 	alarm (0);
-    }
-    if (sm_wfp != NULL) {
-	alarm (SM_CLOS);
-	fclose (sm_wfp);
-	alarm (0);
+	nsc = NULL;
     }
 
     if (sm_mts == MTS_SMTP) {
 	status = 0;
-#ifdef CYRUS_SASL
-	if (conn) {
-	    sasl_dispose(&conn);
-	    if (sasl_outbuffer) {
-		free(sasl_outbuffer);
-	    }
-	}
-	if (sasl_inbuffer)
-	    free(sasl_inbuffer);
-#endif /* CYRUS_SASL */
     } else if (sm_child != NOTOK) {
 	status = pidwait (sm_child, OK);
 	sm_child = NOTOK;
@@ -810,7 +715,6 @@ sm_end (int type)
 	status = OK;
     }
 
-    sm_rfp = sm_wfp = NULL;
     return (status ? RP_BHST : RP_OK);
 }
 
@@ -1201,7 +1105,7 @@ sm_auth_xoauth2(const char *user, const char *oauth_svc, int snoop)
 }
 
 static int
-sm_ierror (char *fmt, ...)
+sm_ierror (const char *fmt, ...)
 {
     va_list ap;
 
@@ -1215,67 +1119,44 @@ sm_ierror (char *fmt, ...)
     return RP_BHST;
 }
 
+/*
+ * Like sm_ierror, but assume it's an allocated error string we need to free.
+ */
+
+static int
+sm_nerror (char *str)
+{
+    strncpy(sm_reply.text, str, sizeof(sm_reply.text));
+    sm_reply.text[sizeof(sm_reply.text) - 1] = '\0';
+    sm_reply.length = strlen(sm_reply.text);
+    sm_reply.code = NOTOK;
+    free(str);
+
+    return RP_BHST;
+}
+
 static int
 smtalk (int time, char *fmt, ...)
 {
     va_list ap;
     int result;
-    char *buffer;
-    size_t bufsize = BUFSIZ;
-
-    buffer = mh_xmalloc(bufsize);
 
     va_start(ap, fmt);
-    result = vsnprintf (buffer, bufsize, fmt, ap);
+    result = netsec_vprintf (nsc, &errstr, fmt, ap);
     va_end(ap);
 
-    if (result > (int) bufsize) {
-	buffer = mh_xrealloc(buffer, bufsize = result + 1);
-	va_start(ap, fmt);
-	vsnprintf (buffer, bufsize, fmt, ap);
-	va_end(ap);
-    }
+    if (result != OK)
+	return sm_nerror(errstr);
 
-    if (sm_debug) {
-	char *decoded_buffer =
-            prepare_for_display (buffer, &next_line_encoded);
+    if (netsec_printf (nsc, &errstr, "\r\n") != OK)
+	return sm_nerror(errstr);
 
-	if (sasl_ssf)
-		printf("(sasl-encrypted) ");
-	if (tls_active)
-		printf("(tls-encrypted) ");
-	printf ("=> %s\n", decoded_buffer);
-	free (decoded_buffer);
-	fflush (stdout);
-    }
+    if (netsec_flush (nsc, &errstr) != OK)
+	return sm_nerror(errstr);
 
-    sm_alarmed = 0;
-    alarm ((unsigned) time);
-    if ((result = sm_wrecord (buffer, strlen (buffer))) != NOTOK)
-	result = smhear ();
-    alarm (0);
+    netsec_set_timeout(nsc, time);
 
-    free(buffer);
-
-    return result;
-}
-
-
-/*
- * write the buffer to the open SMTP channel
- */
-
-static int
-sm_wrecord (char *buffer, int len)
-{
-    if (sm_wfp == NULL)
-	return sm_werror ();
-
-    sm_fwrite (buffer, len);
-    sm_fputs ("\r\n");
-    sm_fflush ();
-
-    return (ferror (sm_wfp) ? sm_werror () : OK);
+    return smhear ();
 }
 
 
@@ -1377,157 +1258,6 @@ sm_fwrite(char *buffer, int len)
     return ferror(sm_wfp) ? NOTOK : RP_OK;
 }
 
-#ifdef TLS_SUPPORT
-/*
- * Negotiate Transport Layer Security
- */
-
-static int
-tls_negotiate(void)
-{
-    BIO *ssl_bio;
-
-    if (! sslctx) {
-	const SSL_METHOD *method;
-
-	SSL_library_init();
-	SSL_load_error_strings();
-
-	method = TLSv1_client_method();	/* Not sure about this */
-
-	/* Older ssl takes a non-const arg. */
-	sslctx = SSL_CTX_new((SSL_METHOD *) method);
-
-	if (! sslctx) {
-	    sm_end(NOTOK);
-	    return sm_ierror("Unable to initialize OpenSSL context: %s",
-			     ERR_error_string(ERR_get_error(), NULL));
-	}
-    }
-
-    ssl = SSL_new(sslctx);
-
-    if (! ssl) {
-	sm_end(NOTOK);
-	return sm_ierror("Unable to create SSL connection: %s",
-			 ERR_error_string(ERR_get_error(), NULL));
-    }
-
-    sbior = BIO_new_socket(fileno(sm_rfp), BIO_NOCLOSE);
-    sbiow = BIO_new_socket(fileno(sm_wfp), BIO_NOCLOSE);
-
-    if (sbior == NULL || sbiow == NULL) {
-	sm_end(NOTOK);
-	return sm_ierror("Unable to create BIO endpoints: %s",
-			 ERR_error_string(ERR_get_error(), NULL));
-    }
-
-    SSL_set_bio(ssl, sbior, sbiow);
-    SSL_set_connect_state(ssl);
-
-    /*
-     * Set up a BIO to handle buffering for us
-     */
-
-    io = BIO_new(BIO_f_buffer());
-
-    if (! io) {
-	sm_end(NOTOK);
-	return sm_ierror("Unable to create a buffer BIO: %s",
-			 ERR_error_string(ERR_get_error(), NULL));
-    }
-
-    ssl_bio = BIO_new(BIO_f_ssl());
-
-    if (! ssl_bio) {
-	sm_end(NOTOK);
-	return sm_ierror("Unable to create a SSL BIO: %s",
-			 ERR_error_string(ERR_get_error(), NULL));
-    }
-
-    BIO_set_ssl(ssl_bio, ssl, BIO_CLOSE);
-    BIO_push(io, ssl_bio);
-
-    /*
-     * Try doing the handshake now
-     */
-
-    if (BIO_do_handshake(io) < 1) {
-	sm_end(NOTOK);
-	return sm_ierror("Unable to negotiate SSL connection: %s",
-			 ERR_error_string(ERR_get_error(), NULL));
-    }
-
-    if (sm_debug) {
-	const SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
-	printf("SSL negotiation successful: %s(%d) %s\n",
-	       SSL_CIPHER_get_name(cipher),
-	       SSL_CIPHER_get_bits(cipher, NULL),
-	       SSL_CIPHER_get_version(cipher));
-
-    }
-
-    tls_active = 1;
-
-    return RP_OK;
-}
-#endif /* TLS_SUPPORT */
-
-/*
- * Convenience functions to replace occurrences of fputs() and fputc()
- */
-
-static int
-sm_fputs(char *buffer)
-{
-    return sm_fwrite(buffer, strlen(buffer));
-}
-
-static int
-sm_fputc(int c)
-{
-    char h = c;
-
-    return sm_fwrite(&h, 1);
-}
-
-/*
- * Flush out any pending data on the connection
- */
-
-static void
-sm_fflush(void)
-{
-#ifdef CYRUS_SASL
-    const char *output;
-    unsigned int outputlen;
-    int result;
-
-    if (sasl_complete == 1 && sasl_ssf > 0 && sasl_outbuflen > 0) {
-	result = sasl_encode(conn, sasl_outbuffer, sasl_outbuflen,
-			     &output, &outputlen);
-	if (result != SASL_OK) {
-	    sm_ierror("Unable to SASL encode connection data: %s",
-		      sasl_errdetail(conn));
-	    return;
-	}
-
-	if (fwrite(output, sizeof(*output), outputlen, sm_wfp) < outputlen) {
-	    advise ("sm_fflush", "fwrite");
-	}
-	sasl_outbuflen = 0;
-    }
-#endif /* CYRUS_SASL */
-
-#ifdef TLS_SUPPORT
-    if (tls_active) {
-    	(void) BIO_flush(io);
-    }
-#endif /* TLS_SUPPORT */
-
-    fflush(sm_wfp);
-}
-
 static int
 sm_werror (void)
 {
@@ -1543,10 +1273,12 @@ sm_werror (void)
 static int
 smhear (void)
 {
-    int i, code, cont, bc = 0, rc, more;
+    int i, code, cont, rc, more;
+    size_t buflen;
     unsigned char *bp;
     char *rp;
-    char **ehlo = EHLOkeys, buffer[BUFSIZ];
+    char *errstr;
+    char **ehlo = EHLOkeys, *buffer;
 
     if (doingEHLO) {
 	static int at_least_once = 0;
@@ -1573,20 +1305,8 @@ again: ;
     rp = sm_reply.text;
     rc = sizeof(sm_reply.text) - 1;
 
-    for (more = FALSE; sm_rrecord ((char *) (bp = (unsigned char *) buffer),
-				   &bc) != NOTOK ; ) {
-	if (sm_debug) {
-	    char *decoded_buffer =
-                prepare_for_display (buffer, &next_line_encoded);
-
-	    if (sasl_ssf > 0)
-		printf("(sasl-decrypted) ");
-	    if (tls_active)
-		printf("(tls-decrypted) ");
-	    printf ("<= %s\n", decoded_buffer);
-	    free (decoded_buffer);
-	    fflush (stdout);
-	}
+    for (more = FALSE; (buffer = netsec_readline(nsc, &buflen,
+    						 &errstr)) != NULL ; ) {
 
 	if (doingEHLO
 	        && strncmp (buffer, "250", sizeof("250") - 1) == 0
@@ -1606,18 +1326,20 @@ again: ;
 		doingEHLO = 2;
 	}
 
-	for (; bc > 0 && (!isascii (*bp) || !isdigit (*bp)); bp++, bc--)
+	bp = (unsigned char *) buffer;
+
+	for (; buflen > 0 && (!isascii (*bp) || !isdigit (*bp)); bp++, buflen--)
 	    continue;
 
 	cont = FALSE;
 	code = atoi ((char *) bp);
-	bp += 3, bc -= 3;
-	for (; bc > 0 && isspace (*bp); bp++, bc--)
+	bp += 3, buflen -= 3;
+	for (; buflen > 0 && isspace (*bp); bp++, buflen--)
 	    continue;
-	if (bc > 0 && *bp == '-') {
+	if (buflen > 0 && *bp == '-') {
 	    cont = TRUE;
-	    bp++, bc--;
-	    for (; bc > 0 && isspace (*bp); bp++, bc--)
+	    bp++, buflen--;
+	    for (; buflen > 0 && isspace (*bp); bp++, buflen--)
 		continue;
 	}
 
@@ -1628,15 +1350,13 @@ again: ;
 	} else {
 	    sm_reply.code = code;
 	    more = cont;
-	    if (bc <= 0) {
-		/* can never fail to 0-terminate because of size of buffer vs fixed string */
-		strncpy (buffer, sm_noreply, sizeof(buffer));
-		bp = (unsigned char *) buffer;
-		bc = strlen (sm_noreply);
+	    if (buflen <= 0) {
+		bp = (unsigned char *) sm_noreply;
+		buflen = strlen (sm_noreply);
 	    }
 	}
 
-	if ((i = min (bc, rc)) > 0) {
+	if ((i = min (buflen, rc)) > 0) {
 	    memcpy (rp, bp, i);
 	    rp += i;
 	    rc -= i;
@@ -1661,6 +1381,8 @@ again: ;
 	sm_reply.text[sm_reply.length] = 0;
 	return sm_reply.code;
     }
+
+    sm_nerror(errstr);
     return NOTOK;
 }
 
@@ -1669,12 +1391,16 @@ static int
 sm_rrecord (char *buffer, int *len)
 {
     int retval;
+    size_t strlen;
+    char *str, *errstr;
 
-    if (sm_rfp == NULL)
-	return sm_rerror(0);
+    if (nsc == NULL)
+	return 
 
     buffer[*len = 0] = 0;
 
+    str = netsec_readline(nsc, &strlen, &errstr);
+    if ((retval = netsec_readline(nsc, 
     if ((retval = sm_fgets (buffer, BUFSIZ, sm_rfp)) != RP_OK)
 	return sm_rerror (retval);
     *len = strlen (buffer);
