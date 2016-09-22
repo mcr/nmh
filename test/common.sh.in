@@ -225,7 +225,11 @@ check() {
     else
         echo
         #### POSIX diff should support -c.
-        diff -c "$first" "$second" || true
+#        diff -c "$first" "$second" || true
+        if ! diff -c "$first" "$second"; then
+            echo "$first:"; od -t ax "$first"
+            echo "$second:"; od -t ax "$second"
+        fi
         echo
         echo "$0: $label failed, outputs are in $first and $second."
         failed=`expr ${failed:-0} + 1`
