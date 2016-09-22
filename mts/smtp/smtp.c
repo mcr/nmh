@@ -68,8 +68,6 @@ static int sm_nl = TRUE;
 static int sm_verbose = 0;
 static netsec_context *nsc = NULL;
 
-static int next_line_encoded = 0;
-
 #if 0
 #ifdef CYRUS_SASL
 /*
@@ -140,7 +138,7 @@ static char *EHLOkeys[MAXEHLO + 1];
  */
 static int smtp_init (char *, char *, char *, int, int, int, int, const char *,
 		      const char *, const char *, int);
-static int sendmail_init (char *, char *, int, int, int, int, const char *,
+static int sendmail_init (char *, int, int, int, int, const char *,
 			  const char *);
 
 static int rclient (char *, char *);
@@ -149,11 +147,8 @@ static int sm_nerror (char *);
 static int smtalk (int time, char *fmt, ...);
 static int sm_wstream (char *, int);
 static int smhear (void);
-static int sm_rrecord (char *, int *);
-static int sm_rerror (int);
 static void alrmser (int);
 static char *EHLOset (char *);
-static char *prepare_for_display (const char *, int *);
 #if 0
 static int sm_fwrite(char *, int);
 static int sm_fputs(char *);
@@ -174,8 +169,8 @@ sm_init (char *client, char *server, char *port, int watch, int verbose,
 	return smtp_init (client, server, port, watch, verbose,
 			  debug, sasl, saslmech, user, oauth_svc, tls);
     else
-	return sendmail_init (client, server, watch, verbose,
-                              debug, sasl, saslmech, user);
+	return sendmail_init (client, watch, verbose, debug, sasl,
+			      saslmech, user);
 }
 
 static int
@@ -352,8 +347,8 @@ send_options: ;
 }
 
 int
-sendmail_init (char *client, char *server, int watch, int verbose,
-               int debug, int sasl, const char *saslmech, const char *user)
+sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
+	       const char *saslmech, const char *user)
 {
     unsigned int i, result, vecp;
     int pdi[2], pdo[2];
@@ -619,10 +614,14 @@ sm_wtxt (char *buffer, int len)
 {
     int result;
 
+#if 0
     sm_alarmed = 0;
     alarm (SM_TEXT);
+#endif
     result = sm_wstream (buffer, len);
+#if 0
     alarm (0);
+#endif
 
     return (result == NOTOK ? RP_BHST : RP_OK);
 }
@@ -1390,7 +1389,7 @@ again: ;
 	    rp += i;
 	    rc -= i;
 	    i = strlen(sm_moreply);
-	    if (more && rc > i + 1) {
+	    if (more && (int) rc > i + 1) {
 		memcpy (rp, sm_moreply, i); /* safe because of check in if() */
 		rp += i;
 		rc -= i;
@@ -1684,68 +1683,143 @@ EHLOset (char *s)
     return 0;
 }
 
-
 /*
- * Detects, using heuristics, if an SMTP server or client response string
- * contains a base64-encoded portion.  If it does, decodes it and replaces
- * any non-printable characters with a hex representation.  Caller is
- * responsible for free'ing return value.  If the decode fails, a copy of
- * the input string is returned.
+ * Our SASL callback; we are either given SASL tokens to generate network
+ * protocols messages for, or we decode incoming protocol messages and
+ * convert them to binary SASL tokens to pass up into the SASL library.
  */
-static
-char *
-prepare_for_display (const char *string, int *next_line_encoded) {
-    const char *start = NULL;
-    const char *decoded;
-    size_t decoded_len;
-    int prefix_len = -1;
 
-    if (strncmp (string, "AUTH ", 5) == 0) {
-        /* AUTH line:  the mechanism isn't encoded.  If there's an initial
-           response, it must be base64 encoded.. */
-        char *mechanism = strchr (string + 5, ' ');
+static int
+sm_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
+		 unsigned int indatalen, unsigned char **outdata,
+		 unsigned int *outdatalen, char **errstr)
+{
+    int rc, snoopoffset;
+    char *mech, *line;
+    size_t len;
 
-        if (mechanism != NULL) {
-            prefix_len = (int) (mechanism - string + 1);
-        } /* else no space following the mechanism, so no initial response */
-        *next_line_encoded = 0;
-    } else if (strncmp (string, "334 ", 4) == 0) {
-        /* 334 is the server's request for user or password. */
-        prefix_len = 4;
-        /* The next (client response) line must be base64 encoded. */
-        *next_line_encoded = 1;
-    } else if (*next_line_encoded) {
-        /* "next" line now refers to this line, which is a base64-encoded
-           client response. */
-        prefix_len = 0;
-        *next_line_encoded = 0;
-    } else {
-        *next_line_encoded = 0;
+    switch (mtype) {
+    case NETSEC_SASL_START:
+	/*
+	 * Generate an AUTH message; if we were given an input token
+	 * then generate a an AUTH message that includes the initial
+	 * response.
+	 */
+
+	mech = netsec_get_sasl_mechanism(nsc);
+
+	if (indatalen) {
+	    char *b64data;
+
+	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
+	    writeBase64raw(indata, indatalen, (unsigned char *) b64data);
+
+	    netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder,
+				      &snoopoffset);
+	    snoopoffset = 6 + strlen(mech);
+	    rc = netsec_printf(nsc, errstr, "AUTH %s %s\r\n", mech, b64data);
+	    free(b64data);
+	    netsec_set_snoop_callback(nsc, NULL, NULL);
+	} else {
+	    rc = netsec_printf(nsc, errstr, "AUTH %s\r\n", mech);
+	}
+
+	if (rc != OK)
+	    return NOTOK;
+
+	if (netsec_flush(nsc, errstr) != OK)
+	    return NOTOK;
+
+	break;
+
+    case NETSEC_SASL_READ:
+	/*
+	 * Read in a line that should contain a 334 response code, followed
+	 * by base64 response data.
+	 */
+
+	netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, &snoopoffset);
+	snoopoffset = 4;
+	line = netsec_readline(nsc, &len, errstr);
+	netsec_set_snoop_callback(nsc, NULL, NULL);
+
+	if (line == NULL)
+	    return NOTOK;
+
+	if (len < 4) {
+	    netsec_err(errstr, "Invalid format for SASL response");
+	    return NOTOK;
+	}
+
+	if (strncmp(line, "334 ", 4) != 0) {
+	    netsec_err(errstr, "Improper SASL protocol response: %s", line);
+	    return NOTOK;
+	}
+
+	if (len == 4) {
+	    *outdata = NULL;
+	    *outdatalen = 0;
+	} else {
+	    rc = decodeBase64(line + 4, (const char **) outdata, &len, 0, NULL);
+	    if (rc != OK) {
+		netsec_err(errstr, "Unable to decode base64 response");
+		return NOTOK;
+	    }
+	    *outdatalen = len;
+	}
+	break;
+
+    case NETSEC_SASL_WRITE:
+	/*
+	 * The output encoding is pretty simple, so this is easy.
+	 */
+	if (indatalen == 0) {
+	    rc = netsec_printf(nsc, errstr, "\r\n");
+	} else {
+	    unsigned char *b64data;
+	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
+	    writeBase64raw(indata, indatalen, b64data);
+	    netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
+	    rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
+	    netsec_set_snoop_callback(nsc, NULL, NULL);
+	    free(b64data);
+	}
+
+	if (rc != OK)
+	    return NOTOK;
+
+	if (netsec_flush(nsc, errstr) != OK)
+	    return NOTOK;
+	break;
+
+    case NETSEC_SASL_FINISH:
+	/*
+	 * Finish the protocol; we're looking for a 235 message.
+	 */
+	line = netsec_readline(nsc, &len, errstr);
+	if (line == NULL)
+	    return NOTOK;
+
+	if (strncmp(line, "235 ", 4) != 0) {
+	    if (len > 4)
+		netsec_err(errstr, "Authentication failed: %s", line + 4);
+	    else
+		netsec_err(errstr, "Authentication failed: %s", line);
+	    return NOTOK;
+	}
+	break;
+
+    case NETSEC_SASL_CANCEL:
+	/*
+	 * Cancel the SASL exchange; this is done by sending a single "*".
+	 */
+	rc = netsec_printf(nsc, errstr, "*\r\n");
+	if (rc == OK)
+	    rc = netsec_flush(nsc, errstr);
+	if (rc != OK)
+	    return NOTOK;
+	break;
     }
 
-    /* Don't attempt to decoded unencoded initial response ('=') or cancel
-       response ('*'). */
-    if (prefix_len > -1  &&
-        string[prefix_len] != '='  &&  string[prefix_len] != '*') {
-        start = string + prefix_len;
-    }
-
-    if (start  &&  decodeBase64 (start, &decoded, &decoded_len, 1, NULL) == OK) {
-        char *hexified;
-        char *prefix = mh_xmalloc(prefix_len + 1);
-        char *display_string;
-
-        /* prefix is the beginning portion, which isn't base64 encoded. */
-        snprintf (prefix, prefix_len + 1, "%*s", prefix_len, string);
-        hexify ((const unsigned char *) decoded, decoded_len, &hexified);
-        /* Wrap the decoded portion in "b64<>". */
-        display_string = concat (prefix, "b64<", hexified, ">", NULL);
-        free (hexified);
-        free (prefix);
-        free ((char *) decoded);
-
-        return display_string;
-    } else {
-        return getcpy (string);
-    }
+    return OK;
 }
