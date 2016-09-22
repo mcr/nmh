@@ -384,8 +384,10 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	} else {
 	    rc = decodeBase64(line + 2, (const char **) outdata, &len, 0, NULL);
 	    *outdatalen = len;
-	    if (rc != OK)
+	    if (rc != OK) {
+		netsec_err(errstr, "Unable to decode base64 response");
 		return NOTOK;
+	    }
 	}
 	break;
 
@@ -411,8 +413,6 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 
 	if (netsec_flush(nsc, errstr) != OK)
 	    return NOTOK;
-
-	return OK;
 	break;
 
     /*
@@ -447,7 +447,8 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    return NOTOK;
 	break;
     }
-return OK;
+
+    return OK;
 }
 
 /*
