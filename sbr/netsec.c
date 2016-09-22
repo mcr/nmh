@@ -800,7 +800,7 @@ netsec_flush(netsec_context *nsc, char **errstr)
      * For TLS connections, just call BIO_flush(); we'll let TLS handle
      * all of our output buffering.
      */
-#ifdef TLS_SUPPORT
+#if 0
     if (nsc->tls_active) {
 	rc = BIO_flush(nsc->ssl_io);
 
@@ -924,7 +924,21 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
 	return NOTOK;
     }
 
-    nsc->sasl_mech = mechanism ? getcpy(mechanism) : NULL;
+    /*
+     * According to the RFC, mechanisms can only be uppercase letter, numbers,
+     * and a hypen or underscore.  So make sure we uppercase any letters
+     * in case the user passed in lowercase.
+     */
+
+    if (mechanism) {
+	char *p;
+	nsc->sasl_mech = getcpy(mechanism);
+
+	for (p = nsc->sasl_mech; *p; p++)
+	    if (isascii(*p))	/* Just in case */
+		*p = toupper(*p);
+    }
+
     nsc->sasl_proto_cb = callback;
     nsc->sasl_hostname = getcpy(hostname);
 
@@ -1533,6 +1547,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 
     nsc->tls_active = 1;
 
+#if 0
     /*
      * At this point, TLS has been activated; we're not going to use
      * the output buffer, so free it now to save a little bit of memory.
@@ -1542,6 +1557,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 	free(nsc->ns_outbuffer);
 	nsc->ns_outbuffer = NULL;
     }
+#endif
 
     return OK;
 #else /* TLS_SUPPORT */
