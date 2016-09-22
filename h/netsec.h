@@ -38,7 +38,7 @@ void netsec_shutdown(netsec_context *ns_context, int closeflag);
  * writefd	- Write file descriptor of remote connection
  */
 
-void netsec_set_fd(netsec_context *ns_context, int readfd, writefd);
+void netsec_set_fd(netsec_context *ns_context, int readfd, int writefd);
 
 /*
  * Set the userid used to authenticate to this connection.

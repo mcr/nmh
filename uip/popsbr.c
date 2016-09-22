@@ -213,11 +213,12 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 			   sizeof(response), snoop)) == NOTOK) {
 	    return NOTOK;
 	}
+	fd2 = fd1;
     }
 
     SIGNAL (SIGPIPE, SIG_IGN);
 
-    netsec_set_fd(nsc, fd1);
+    netsec_set_fd(nsc, fd1, fd2);
     netsec_set_snoop(nsc, snoop);
 
     if (tls) {

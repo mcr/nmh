@@ -13,6 +13,8 @@
 #include <h/utils.h>
 #include <h/netsec.h>
 
+#include <sys/socket.h>
+
 /*
  * This module implements an interface to SendMail very similar
  * to the MMDF mm_(3) routines.  The sm_() routines herein talk
@@ -152,11 +154,13 @@ static int sm_rerror (int);
 static void alrmser (int);
 static char *EHLOset (char *);
 static char *prepare_for_display (const char *, int *);
+#if 0
 static int sm_fwrite(char *, int);
 static int sm_fputs(char *);
 static int sm_fputc(int);
 static void sm_fflush(void);
 static int sm_fgets(char *, int, FILE *);
+#endif
 static int sm_sasl_callback(enum sasl_message_type, unsigned const char *,
 			    unsigned int, unsigned char **, unsigned int *,
 			    char **);
@@ -303,7 +307,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	 * negotiation.  Oblige them.
 	 */
 
-	if (netsec_negotiate_tls(nsc, errstr) != OK) {
+	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
 	    sm_end(NOTOK);
 	    return sm_nerror(errstr);
 	}
@@ -351,14 +355,14 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 {
     unsigned int i, result, vecp;
     int pdi[2], pdo[2];
-    char *vec[15];
+    char *vec[15], *errstr;
 
     if (watch)
 	verbose = TRUE;
 
     sm_verbose = verbose;
     sm_debug = debug;
-    if (sm_rfp != NULL && sm_wfp != NULL)
+    if (nsc)
 	return RP_OK;
 
     if (client == NULL || *client == '\0') {
@@ -375,12 +379,35 @@ sendmail_init (char *client, char *server, int watch, int verbose,
     if (client == NULL || *client == '\0')
 	client = "localhost";
 
+    nsc = netsec_init();
+
+    if (user)
+	netsec_set_userid(nsc, user);
+
+    if (sm_debug)
+	netsec_set_snoop(nsc, 1);
+
+    if (sasl) {
+	if (netsec_set_sasl_params(nsc, client, "smtp", saslmech,
+				   sm_sasl_callback, &errstr) != OK)
+	    return sm_nerror(errstr);
+    }
+
+#if 0
+    if (oauth_svc) {
+	if (netsec_set_oauth_service(nsc, oauth_svc) != OK)
+	    return sm_ierror("OAuth2 not supported");
+    }
+#endif
+
+#if 0
 #if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
     sasl_inbuffer = malloc(SASL_MAXRECVBUF);
     if (!sasl_inbuffer)
 	return sm_ierror("Unable to allocate %d bytes for read buffer",
 			 SASL_MAXRECVBUF);
 #endif /* CYRUS_SASL || TLS_SUPPORT */
+#endif
 
     if (pipe (pdi) == NOTOK)
 	return sm_ierror ("no pipes");
@@ -432,17 +459,10 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 
 	    close (pdi[1]);
 	    close (pdo[0]);
-	    if ((sm_rfp = fdopen (pdi[0], "r")) == NULL
-		    || (sm_wfp = fdopen (pdo[1], "w")) == NULL) {
-		close (pdi[0]);
-		close (pdo[1]);
-		sm_rfp = sm_wfp = NULL;
-		return sm_ierror ("unable to fdopen");
-	    }
-	    sm_alarmed = 0;
-	    alarm (SM_OPEN);
+
+	    netsec_set_fd(nsc, pdi[i], pdo[1]);
+	    netsec_set_timeout(nsc, SM_OPEN);
 	    result = smhear ();
-	    alarm (0);
 	    switch (result) {
 		case 220: 
 		    break;
@@ -468,34 +488,24 @@ sendmail_init (char *client, char *server, int watch, int verbose,
 		    return RP_RPLY;
 	    }
 
-#ifdef CYRUS_SASL
-    /*
-     * If the user asked for SASL, then check to see if the SMTP server
-     * supports it.  Otherwise, error out (because the SMTP server
-     * might have been spoofed; we don't want to just silently not
-     * do authentication
-     */
+	    /*
+	     * If the user asked for SASL, then check to see if the SMTP server
+	     * supports it.  Otherwise, error out (because the SMTP server
+	     * might have been spoofed; we don't want to just silently not
+	     * do authentication
+	     */
 
-    if (sasl) {
-	if (! (server_mechs = EHLOset("AUTH"))) {
-	    sm_end(NOTOK);
-	    return sm_ierror("SMTP server does not support SASL");
-	}
-
-	if (saslmech && stringdex(saslmech, server_mechs) == -1) {
-	    sm_end(NOTOK);
-	    return sm_ierror("Requested SASL mech \"%s\" is not in the "
-			     "list of supported mechanisms:\n%s",
-			     saslmech, server_mechs);
-	}
-
-	if (sm_auth_sasl(user, saslssf, saslmech ? saslmech : server_mechs,
-			 server) != RP_OK) {
-	    sm_end(NOTOK);
-	    return NOTOK;
-	}
-    }
-#endif /* CYRUS_SASL */
+	    if (sasl) {
+        	char *server_mechs;
+		if (! (server_mechs = EHLOset("AUTH"))) {
+		    sm_end(NOTOK);
+		    return sm_ierror("SMTP server does not support SASL");
+		}
+		if (netsec_negotiate_sasl(nsc, server_mechs, &errstr) != OK) {
+		    sm_end(NOTOK);
+		    return sm_nerror(errstr);
+		}
+	    }
 
 	    if (watch)
 		smtalk (SM_HELO, "VERB on");
@@ -718,7 +728,7 @@ sm_end (int type)
     return (status ? RP_BHST : RP_OK);
 }
 
-#ifdef CYRUS_SASL
+#if 0
 /*
  * This function implements SASL authentication for SMTP.  If this function
  * completes successfully, then authentication is successful and we've
@@ -1139,6 +1149,7 @@ static int
 smtalk (int time, char *fmt, ...)
 {
     va_list ap;
+    char *errstr;
     int result;
 
     va_start(ap, fmt);
@@ -1163,46 +1174,61 @@ smtalk (int time, char *fmt, ...)
 static int
 sm_wstream (char *buffer, int len)
 {
-    char  *bp;
+    char *bp, *errstr;
     static char lc = '\0';
+    int rc;
 
-    if (sm_wfp == NULL)
-	return sm_werror ();
+    if (nsc == NULL) {
+	sm_ierror("No socket opened");
+	return NOTOK;
+    }
 
     if (buffer == NULL && len == 0) {
+	rc = OK;
 	if (lc != '\n')
-	    sm_fputs ("\r\n");
+	    rc = netsec_write(nsc, "\r\n", 2, &errstr);
 	lc = '\0';
-	return (ferror (sm_wfp) ? sm_werror () : OK);
+	if (rc != OK)
+	    sm_nerror(errstr);
+	return rc;
     }
 
     for (bp = buffer; bp && len > 0; bp++, len--) {
 	switch (*bp) {
 	    case '\n': 
 		sm_nl = TRUE;
-		sm_fputc ('\r');
+		if (netsec_write(nsc, "\r", 1, &errstr) != OK) {
+		    sm_nerror(errstr);
+		    return NOTOK;
+		}
 		break;
 
 	    case '.': 
 		if (sm_nl)
-		    sm_fputc ('.');/* FALL THROUGH */
+		    if (netsec_write(nsc, ".", 1, &errstr) != OK) {
+		    sm_nerror(errstr);
+		    return NOTOK;
+		} /* FALL THROUGH */
+
 	    default: 
 		sm_nl = FALSE;
 	}
-	sm_fputc (*bp);
-	if (ferror (sm_wfp))
-	    return sm_werror ();
+	if (netsec_write(nsc, bp, 1, &errstr) != OK) {
+	    sm_nerror(errstr);
+	    return NOTOK;
+	}
     }
 
     if (bp > buffer)
 	lc = *--bp;
-    return (ferror (sm_wfp) ? sm_werror () : OK);
+    return OK;
 }
 
 /*
  * Write out to the network, but do buffering for SASL (if enabled)
  */
 
+#if 0
 static int
 sm_fwrite(char *buffer, int len)
 {
@@ -1268,13 +1294,14 @@ sm_werror (void)
 
     return (sm_reply.code = NOTOK);
 }
+#endif
 
 
 static int
 smhear (void)
 {
-    int i, code, cont, rc, more;
-    size_t buflen;
+    int i, code, cont, more;
+    size_t buflen, rc;
     unsigned char *bp;
     char *rp;
     char *errstr;
@@ -1387,6 +1414,7 @@ again: ;
 }
 
 
+#if 0
 static int
 sm_rrecord (char *buffer, int *len)
 {
@@ -1563,6 +1591,7 @@ sm_rerror (int rc)
 
     return (sm_reply.code = NOTOK);
 }
+#endif
 
 
 static void
