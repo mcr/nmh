@@ -797,24 +797,6 @@ netsec_flush(netsec_context *nsc, char **errstr)
     int rc;
 
     /*
-     * For TLS connections, just call BIO_flush(); we'll let TLS handle
-     * all of our output buffering.
-     */
-#if 0
-    if (nsc->tls_active) {
-	rc = BIO_flush(nsc->ssl_io);
-
-	if (rc <= 0) {
-	    netsec_err(errstr, "Error flushing TLS connection: %s",
-		       ERR_error_string(ERR_get_error(), NULL));
-	    return NOTOK;
-	}
-
-	return OK;
-    }
-#endif /* TLS_SUPPORT */
-
-    /*
      * Small optimization
      */
 
@@ -1471,17 +1453,6 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	SSL_set_bio(ssl, rbio, wbio);
 	SSL_set_connect_state(ssl);
 
-#if 0
-	nsc->ssl_io = BIO_new(BIO_f_buffer());
-
-	if (! nsc->ssl_io) {
-	    netsec_err(errstr, "Unable to create a buffer BIO: %s",
-		       ERR_error_string(ERR_get_error(), NULL));
-	    SSL_free(ssl);
-	    return NOTOK;
-	}
-#endif
-
 	ssl_bio = BIO_new(BIO_f_ssl());
 
 	if (! ssl_bio) {
@@ -1492,9 +1463,6 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	}
 
 	BIO_set_ssl(ssl_bio, ssl, BIO_CLOSE);
-#if 0
-	BIO_push(nsc->ssl_io, ssl_bio);
-#endif
 	nsc->ssl_io = ssl_bio;
 
 	return OK;
@@ -1546,18 +1514,6 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
     }
 
     nsc->tls_active = 1;
-
-#if 0
-    /*
-     * At this point, TLS has been activated; we're not going to use
-     * the output buffer, so free it now to save a little bit of memory.
-     */
-
-    if (nsc->ns_outbuffer) {
-	free(nsc->ns_outbuffer);
-	nsc->ns_outbuffer = NULL;
-    }
-#endif
 
     return OK;
 #else /* TLS_SUPPORT */
