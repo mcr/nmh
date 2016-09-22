@@ -71,6 +71,9 @@ in the test scripts.  In particular:
 - Avoid depending on the exact format of output from system (non-nmh)
   programs.
 
+- Use octal instead of hex (\x) bytes in printf(1) formats, because hex
+  is not supported by POSIX printf.
+
 The Heirloom Bourne Shell, http://heirloom.sourceforge.net/sh.html,
 catches many non-portable shell constructs, such as $(), $(()), !, and
 assignment in export statements.

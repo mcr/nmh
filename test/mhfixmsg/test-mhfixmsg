@@ -575,7 +575,7 @@ check "$expected" "$actual"
 
 # check attempted (default, 8 bit) -decodetext of binary text
 #### Generated the encoded text below with:
-####   $ printf '\xbd\xb2=\xbc\x00\n' | base64
+####   $ printf '\275\262=\274\000\n' | base64
 start_test "attempted (default, 8 bit) -decodetext of binary text"
 cat >`mhpath new` <<EOF
 To: recipient@example.com
@@ -719,7 +719,7 @@ check `mhpath last` "$expected"
 
 # check -decodetext of binary (containing ASCII NUL) text
 start_test "-decodetext of binary (containing ASCII NUL) text"
-printf "%s\xbd\xb2=\xbc\x00%s" "To: recipient@example.com
+printf "%s\275\262=\274\000%s" "To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg binary decode test
 MIME-Version: 1.0
@@ -832,7 +832,7 @@ Content-Transfer-Encoding: 8bit
 EOF
 
 #### Generated the encoded text below with:
-####   $ printf '\xbd\xb2=\xbc\n' | base64
+####   $ printf '\275\262=\274\n' | base64
 cat >`mhpath new` <<EOF
 To: recipient@example.com
 From: sender@example.com
