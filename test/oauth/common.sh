@@ -142,7 +142,7 @@ test_inc_success() {
 }
 
 test_send_no_servers() {
-    run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice test -user nobody@example.com" "$@"
+    run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -sasl -saslmech xoauth2 -authservice test -user nobody@example.com" "$@"
 }
 
 test_send_only_fakesmtp() {
