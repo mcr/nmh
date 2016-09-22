@@ -14,7 +14,7 @@
 #include <fcntl.h>
 
 #define MHFIXMSG_SWITCHES \
-    X("decodetext 8bit|7bit", 0, DECODETEXTSW) \
+    X("decodetext 8bit|7bit|binary", 0, DECODETEXTSW) \
     X("nodecodetext", 0, NDECODETEXTSW) \
     X("decodetypes", 0, DECODETYPESW) \
     X("crlflinebreaks", 0, CRLFLINEBREAKSSW) \
@@ -184,6 +184,8 @@ main (int argc, char **argv) {
                     fx.decodetext = CE_8BIT;
                 } else if (! strcasecmp (cp, "7bit")) {
                     fx.decodetext = CE_7BIT;
+                } else if (! strcasecmp (cp, "binary")) {
+                    fx.decodetext = CE_BINARY;
                 } else {
                     adios (NULL, "invalid argument to %s", argp[-2]);
                 }
@@ -1843,6 +1845,12 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
 }
 
 
+/*
+ * It's not necessary to update the charset parameter of a Content-Type
+ * header for a text part.  According to RFC 2045 Sec. 6.4, the body
+ * (content) was originally in the specified charset, "and will be in
+ * that character set again after decoding."
+ */
 static int
 decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mods) {
     int status = OK;

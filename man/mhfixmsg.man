@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "March 12, 2016" "%nmhversion%"
+.TH MHFIXMSG %manext1% "September 22, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -14,7 +14,7 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .RB \-file
 .IR file ]
 .RB [ \-decodetext
-8bit/7bit |
+8bit|7bit|binary |
 .BR \-nodecodetext ]
 .RB [ \-decodetypes
 .IR "type/[subtype][,...]" ]
@@ -61,14 +61,18 @@ can safely be run multiple times on a message.
 The
 .B \-decodetext
 switch enables a transformation to decode each base64 and
-quoted-printable text message part to the selected 8bit or 7bit
-encoding.  If 7bit is selected for a base64 part but it will only fit
+quoted-printable text message part to the selected 8bit, 7bit, or
+binary encoding.
+If 7bit is selected for a base64 part but it will only fit
 8bit, as defined by RFC 2045, then it will be decoded to 8bit
-quoted-printable.  Otherwise, if the decoded text would not fit the
-selected encoding, the part is not decoded (and a message will be
+quoted-printable.
+Similarly, with 8bit, if the decoded text would be binary,
+then the part is not decoded (and a message will be
 displayed if
 .B \-verbose
-is enabled).
+is enabled).  Note that
+.B \-decodetext
+binary can produce messages that are not RFC 2045 compliant.
 .PP
 When the
 .B \-decodetext
@@ -218,8 +222,10 @@ The return status of
 is 0 if all of the requested transformations are performed, or
 non-zero otherwise.
 .RB ( mhfixmsg
-will not decode to binary content, but a request to do so is
-not considered a failure, and is noted with
+will not decode to binary content with the default
+.B \-decodetext
+setting, but a request to do so is not considered a failure, and is noted
+with
 .BR \-verbose .)
 If a problem is detected with any one of multiple messages such that
 the return status is non-zero, then none of the messages will be
@@ -531,11 +537,3 @@ opens files internally for decoding and character set conversion, and apparently
 close them expeditiously.  Until that is resolved, it is recommended that
 .B mhfixmsg
 not be run on a large number of messages at once, as noted in the EXAMPLES above.
-.PP
-As noted in the DESCRIPTION above,
-.B mhfixmsg
-will not decode to binary content.  This restriction should be removed at some point.  It's
-not due to any issue in
-.BR mhfixmsg ,
-but rather an observation of incorrect behavior by other nmh tools on messages with binary
-content.

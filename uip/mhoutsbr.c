@@ -126,7 +126,7 @@ output_content (CT ct, FILE *out)
 	    if (output_content (p, out) == NOTOK) {
 		if (boundary && *boundary != '\0')
 		    free(boundary);
-		return NOTOK;
+                return NOTOK;
 	    }
 	}
 	fprintf (out, "\n--%s--\n", boundary);
@@ -187,8 +187,14 @@ output_content (CT ct, FILE *out)
 	    break;
 
 	case CE_BINARY:
-	    advise (NULL, "can't handle binary transfer encoding in content");
-	    result = NOTOK;
+	    if (ct->c_type == CT_TEXT) {
+		/* So that mhfixmsg can decode to binary text. */
+		putc ('\n', out);
+		result = write8Bit (ct, out);
+	    } else {
+		advise (NULL, "can't handle binary transfer encoding in content");
+		result = NOTOK;
+	    }
 	    break;
 
 	default:

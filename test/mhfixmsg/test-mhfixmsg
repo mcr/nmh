@@ -49,7 +49,7 @@ fi
 cat >"$expected" <<EOF
 Usage: mhfixmsg [+folder] [msgs] [switches]
   switches are:
-  -decodetext 8bit|7bit
+  -decodetext 8bit|7bit|binary
   -nodecodetext
   -decodetypes
   -[no]crlflinebreaks
@@ -561,21 +561,21 @@ run_prog mhfixmsg last -outfile "$actual"
 check "$expected" "$actual"
 
 
-# check attempted -decodetext of binary text
+# check attempted (default, 8 bit) -decodetext of binary text
 #### Generated the encoded text below with:
-####   $ printf '\x0\xbd\xb2=\xbc\n' | base64
+####   $ printf '\xbd\xb2=\xbc\x00\n' | base64
 cat >`mhpath new` <<EOF
 To: recipient@example.com
 From: sender@example.com
-Subject: mhfixmsg attempted binary decode test
+Subject: mhfixmsg binary decode test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; charset="iso-8859-1"; name="nul+square.txt"
+Content-Type: text/plain; charset=UTF-8; name="nul+square.txt"
 Content-Transfer-Encoding: base64
 
-AL2yPbwK
+vbI9vAAK
 
 ------- =_aaaaaaaaaa0--
 EOF
@@ -586,9 +586,7 @@ check `mhpath last` "$expected" 'keep first'
 
 
 # check for successful decode of a different part with attempted -decodetext
-# of binary text
-#### Generated the encoded text below with:
-####   $ printf '\x0\xbd\xb2=\xbc\n' | base64
+# of binary (>998 characters) text
 cat >$expected <<EOF
 To: recipient@example.com
 From: sender@example.com
@@ -672,29 +670,55 @@ ICA8L2JvZHk+PC9odG1sPg==
 EOF
 
 run_prog mhfixmsg -noreformat last
+check `mhpath last` "$expected" 'keep first'
+
+
+# check for successful decode of a different part with -decodetext of binary
+# (>998 characters) text
+cat >$expected <<EOF
+To: recipient@example.com
+From: sender@example.com
+Subject: mhfixmsg successful decode of text/plain with failed binary decode
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+
+This is a text plain part
+
+------- =_aaaaaaaaaa0
+Content-Type: text/html; charset="ascii"
+Content-Transfer-Encoding: binary
+Content-Disposition: inline
+
+<html><head><title>long line</title></head><body>This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  This line is greater than 998 characters in length, so this part should not be decoded.  </body></html>
+
+------- =_aaaaaaaaaa0--
+EOF
+
+run_prog mhfixmsg -noreformat -decodetext binary last
 check `mhpath last` "$expected"
 
 
-# check -decodetext of binary text
-printf "%s\x0d\xbd\xb2=\xbc%s" "To: recipient@example.com
+# check -decodetext of binary (containing ASCII NUL) text
+printf "%s\xbd\xb2=\xbc\x00%s" "To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg binary decode test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary=\"----- =_aaaaaaaaaa0\"
 
 ------- =_aaaaaaaaaa0
-Content-Type: text/plain; charset=\"iso-8859-1\"; name=\"nul+square.txt\"
+Content-Type: text/plain; charset=UTF-8; name=\"nul+square.txt\"
 Content-Transfer-Encoding: binary
 
 " "
 
 ------- =_aaaaaaaaaa0--
 " >"$expected"
-## output_content() in mhoutsbr.c can't handle binary content.
-## mhfixmsg last -decodetext binary -outfile "$actual"
-## check "$expected" "$actual"
-rm -f "$expected"
-rmm last
+mhfixmsg last -decodetext binary -outfile "$actual"
+check "$expected" "$actual"
 
 
 # check that -reformat succeeds when decode of binary text fails
@@ -844,7 +868,7 @@ EOF
 cp -p `mhpath last` `mhpath new`
 
 run_test 'mhfixmsg last -nofixboundary' ''
-check "$MH_TEST_DIR"/Mail/inbox/17 "$MH_TEST_DIR"/Mail/inbox/18 'keep first'
+check "$MH_TEST_DIR"/Mail/inbox/18 "$MH_TEST_DIR"/Mail/inbox/19 'keep first'
 
 
 # check that message is not output when fed through stdin
@@ -883,7 +907,7 @@ The boundaries of this part don't match the header boundary.
 EOF
 
 run_test 'mhfixmsg last -outfile '"$actual"' -verbose' \
-         "mhfixmsg: 17, fix multipart boundary"
+         "mhfixmsg: 18, fix multipart boundary"
 check "$expected" "$actual"
 
 
@@ -1298,24 +1322,24 @@ mv "$1" "$1.backup"
 EOF
 chmod a+x "${MH_TEST_DIR}/Mail/rmmproc"
 echo "rmmproc: ${MH_TEST_DIR}/Mail/rmmproc" >>"$MH"
-cp "${MH_TEST_DIR}/Mail/inbox/15" "${MH_TEST_DIR}/Mail/inbox/15.original"
+cp "${MH_TEST_DIR}/Mail/inbox/16" "${MH_TEST_DIR}/Mail/inbox/16.original"
 
-run_test 'mhfixmsg 15' ''
-check "${MH_TEST_DIR}/Mail/inbox/15.backup" \
-      "${MH_TEST_DIR}/Mail/inbox/15.original"
+run_test 'mhfixmsg 16' ''
+check "${MH_TEST_DIR}/Mail/inbox/16.backup" \
+      "${MH_TEST_DIR}/Mail/inbox/16.original"
 
 
 # check -normmproc
-cp "${MH_TEST_DIR}/Mail/inbox/20" "${MH_TEST_DIR}/Mail/inbox/21"
+cp "${MH_TEST_DIR}/Mail/inbox/21" "${MH_TEST_DIR}/Mail/inbox/22"
 
-run_test 'mhfixmsg 20 -normmproc'
-check "${MH_TEST_DIR}/Mail/inbox/21" \
-      "${MH_TEST_DIR}/Mail/inbox/,20" 'keep first'
+run_test 'mhfixmsg 21 -normmproc'
+check "${MH_TEST_DIR}/Mail/inbox/22" \
+      "${MH_TEST_DIR}/Mail/inbox/,21" 'keep first'
 
 
 # check -rmmproc
 run_test 'mhfixmsg 21 -rmmproc true'
-if test -f '${MH_TEST_DIR}/Mail/inbox/21.backup'; then
+if test -f '${MH_TEST_DIR}/Mail/inbox/22.backup'; then
   echo check of mhfixmsg -rmmproc FAILED, should not have created backup file
   failed=`expr ${failed:-0} + 1`
 fi
@@ -1609,9 +1633,9 @@ check "$expected" "$actual"
 # check that input is passed through to output when there's a parse error
 # (the charset string is missing its closing quote) with -outfile
 cat >"$expected.err" <<EOF
-mhfixmsg: invalid quoted-string in message 30's Content-Type: field
+mhfixmsg: invalid quoted-string in message 31's Content-Type: field
           (parameter charset)
-mhfixmsg: unable to parse message 30
+mhfixmsg: unable to parse message 31
 EOF
 
 cat >`mhpath new` <<EOF

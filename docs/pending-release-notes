@@ -47,6 +47,7 @@ NEW FEATURES
   domain name in From: header line in message draft.
 - post(8) -snoop now attempts to decode base64-encoded SMTP traffic.
 - folder(1) -nocreate now prints a warning message for a non-existant folder.
+- mhfixmsg(1) now allows -decodetext binary, though 8bit is still the default.
 
 -----------------
 OBSOLETE FEATURES
