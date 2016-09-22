@@ -54,7 +54,8 @@ static SSL_CTX *sslctx = NULL;		/* SSL Context */
  */
 
 struct _netsec_context {
-    int ns_fd;			/* Descriptor for network connection */
+    int ns_readfd;		/* Read descriptor for network connection */
+    int ns_writefd;		/* Write descriptor for network connection */
     int ns_snoop;		/* If true, display network data */
     int ns_snoop_noend;		/* If true, didn't get a CR/LF on last line */
     netsec_snoop_callback *ns_snoop_cb; /* Snoop output callback */
@@ -123,7 +124,8 @@ netsec_init(void)
 {
     netsec_context *nsc = mh_xmalloc(sizeof(*nsc));
 
-    nsc->ns_fd = -1;
+    nsc->ns_readfd = -1;
+    nsc->ns_writefd = -1;
     nsc->ns_snoop = 0;
     nsc->ns_snoop_noend = 0;
     nsc->ns_snoop_cb = NULL;
@@ -214,8 +216,12 @@ netsec_shutdown(netsec_context *nsc, int closeflag)
 	BIO_free_all(nsc->ssl_io);
 #endif /* TLS_SUPPORT */
 
-    if (closeflag && nsc->ns_fd != -1)
-	close(nsc->ns_fd);
+    if (closeflag) {
+	if (nsc->ns_readfd != -1)
+	    close(nsc->ns_readfd);
+	if (nsc->ns_writefd != -1 && nsc->ns_writefd != nsc->ns_readfd)
+	    close(nsc->ns_writefd);
+    }
 
     free(nsc);
 }
@@ -225,9 +231,10 @@ netsec_shutdown(netsec_context *nsc, int closeflag)
  */
 
 void
-netsec_set_fd(netsec_context *nsc, int fd)
+netsec_set_fd(netsec_context *nsc, int readfd, writefd)
 {
-    nsc->ns_fd = fd;
+    nsc->ns_readfd = readfd;
+    nsc->ns_writefd = writefd;
 }
 
 /*
@@ -474,12 +481,12 @@ retry:
 	fd_set rfds;
 
 	FD_ZERO(&rfds);
-	FD_SET(nsc->ns_fd, &rfds);
+	FD_SET(nsc->ns_readfd, &rfds);
 
 	tv.tv_sec = nsc->ns_timeout;
 	tv.tv_usec = 0;
 
-	rc = select(nsc->ns_fd + 1, &rfds, NULL, NULL, &tv);
+	rc = select(nsc->ns_readfd + 1, &rfds, NULL, NULL, &tv);
 
 	if (rc == -1) {
 	    netsec_err(errstr, "select() while reading failed: %s",
@@ -551,7 +558,7 @@ retry:
      * select() above) so this read SHOULDN'T block.  Hopefully.
      */
 
-    rc = read(nsc->ns_fd, readbuf, readbufsize);
+    rc = read(nsc->ns_readfd, readbuf, readbufsize);
 
     if (rc == 0) {
 	netsec_err(errstr, "Received EOF on network read");
@@ -866,7 +873,7 @@ netsec_flush(netsec_context *nsc, char **errstr)
 
     }
 #endif /* CYRUS_SASL */
-    rc = write(nsc->ns_fd, netoutbuf, netoutlen);
+    rc = write(nsc->ns_writefd, netoutbuf, netoutlen);
 
     if (rc < 0) {
 	netsec_err(errstr, "write() failed: %s", strerror(errno));
@@ -1382,7 +1389,7 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
     if (tls) {
 #ifdef TLS_SUPPORT
 	SSL *ssl;
-	BIO *sbio, *ssl_bio;;
+	BIO *rbio, *wbio, *ssl_bio;;
 
 	if (! tls_initialized) {
 	    SSL_library_init();
@@ -1408,7 +1415,7 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	    tls_initialized++;
 	}
 
-	if (nsc->ns_fd == -1) {
+	if (nsc->ns_readfd == -1 || nsc->ns_writefd == -1) {
 	    netsec_err(errstr, "Invalid file descriptor in netsec context");
 	    return NOTOK;
 	}
@@ -1448,16 +1455,26 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	 * So writes and reads are buffered (we mostly care about writes).
 	 */
 
-	sbio = BIO_new_socket(nsc->ns_fd, BIO_NOCLOSE);
+	rbio = BIO_new_socket(nsc->ns_readfd, BIO_NOCLOSE);
 
-	if (! sbio) {
-	    netsec_err(errstr, "Unable to create a socket BIO: %s",
+	if (! rbio) {
+	    netsec_err(errstr, "Unable to create a read socket BIO: %s",
 		       ERR_error_string(ERR_get_error(), NULL));
 	    SSL_free(ssl);
 	    return NOTOK;
 	}
 
-	SSL_set_bio(ssl, sbio, sbio);
+	wbio = BIO_new_socket(nsc->ns_writefd, BIO_NOCLOSE);
+
+	if (! wbio) {
+	    netsec_err(errstr, "Unable to create a write socket BIO: %s",
+		       ERR_error_string(ERR_get_error(), NULL));
+	    SSL_free(ssl);
+	    BIO_free(rbio);
+	    return NOTOK;
+	}
+
+	SSL_set_bio(ssl, rbio, wbio);
 	SSL_set_connect_state(ssl);
 
 	nsc->ssl_io = BIO_new(BIO_f_buffer());
