@@ -16,6 +16,7 @@ fi
 . "${MH_OBJ_DIR}/test/common.sh"
 
 setup_test
+mhl="${MH_LIBEXEC_DIR}/mhl"
 
 #### Make sure that html-to-text conversion is what we expect.
 require_locale en_US.utf-8 en_US.utf8
@@ -44,7 +45,7 @@ EOF
 
 #### Just check that the (UTF-8) headers are displayed unscathed.  run_test
 #### squashes the trailing blank lines from mhl.
-run_test "mhl -form mhl.headers `mhpath last`" \
+run_test "$mhl -form mhl.headers `mhpath last`" \
 'Date:    20 May 2014 14:28:51 +0200
 To:      recipientæ@example.com
 From:    senderø@example.com
