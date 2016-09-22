@@ -34,10 +34,11 @@ void netsec_shutdown(netsec_context *ns_context, int closeflag);
  * Arguments:
  *
  * ns_context	- Network security context
- * fd		- File descriptor of network connection.
+ * readfd	- Read file descriptor of remote connection.
+ * writefd	- Write file descriptor of remote connection
  */
 
-void netsec_set_fd(netsec_context *ns_context, int fd);
+void netsec_set_fd(netsec_context *ns_context, int readfd, writefd);
 
 /*
  * Set the userid used to authenticate to this connection.
@@ -138,7 +139,7 @@ void netsec_set_timeout(netsec_context *ns_context, int timeout);
  * Returns pointer to string, or NULL on error.
  */
 
-char *netsec_readline(netsec_context *ns_context, size_t *lenght,
+char *netsec_readline(netsec_context *ns_context, size_t *length,
 		      char **errstr);
 
 /*
