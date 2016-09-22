@@ -215,11 +215,6 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     if (user)
 	netsec_set_userid(nsc, user);
 
-    if (tls) {
-	if (netsec_set_tls(nsc, 1, &errstr) != OK)
-	    return sm_nerror(errstr);
-    }
-
     if (sm_debug)
 	netsec_set_snoop(nsc, 1);
 
@@ -237,10 +232,17 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     if ((sd1 = rclient (server, port)) == NOTOK)
 	return RP_BHST;
 
+#if 0
     SIGNAL (SIGALRM, alrmser);
+#endif
     SIGNAL (SIGPIPE, SIG_IGN);
 
     netsec_set_fd(nsc, sd1, sd1);
+
+    if (tls) {
+	if (netsec_set_tls(nsc, 1, &errstr) != OK)
+	    return sm_nerror(errstr);
+    }
 
     /*
      * If tls == 2, that means that the user requested "initial" TLS,
