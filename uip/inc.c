@@ -75,7 +75,7 @@
     X("saslmech", 0, SASLMECHSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NOTLSSW) \
-    X("authservice", SASLminc(0), AUTHSERVICESW) \
+    X("authservice", 0, AUTHSERVICESW) \
     X("proxy command", 0, PROXYSW) \
 
 #define X(sw, minchars, id) id,
