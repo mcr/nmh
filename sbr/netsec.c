@@ -1378,13 +1378,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 char *
 netsec_get_sasl_mechanism(netsec_context *nsc)
 {
-#ifdef CYRUS_SASL
     return nsc->sasl_chosen_mech;
-#else /* CYRUS_SASL */
-    NMH_UNUSED(nsc);
-
-    return NULL;
-#endif /* CYRUS_SASL */
 }
 
 /*
