@@ -100,6 +100,12 @@ struct _netsec_context {
 static int netsec_fillread(netsec_context *ns_context, char **errstr);
 
 /*
+ * Code to check the ASCII content of a byte array.
+ */
+
+static int checkascii(const unsigned char *byte, size_t len);
+
+/*
  * How this code works, in general.
  *
  * _If_ we are using no encryption or SASL encryption, then we buffer the
@@ -303,14 +309,46 @@ netsec_b64_snoop_decoder(netsec_context *nsc, const char *string, size_t len,
     }
 
     if (decodeBase64(string, &decoded, &decodedlen, 1, NULL) == OK) {
-	char *hexified;
-	hexify((const unsigned char *) decoded, decodedlen, &hexified);
-	fprintf(stderr, "b64<%s>\n", hexified);
-	free(hexified);
-	free((char *) decoded);
+	/*
+	 * Some mechanisms preoduce large binary tokens, which aren't really
+	 * readable.  So let's do a simple heuristic.  If the token is greater
+	 * than 100 characters _and_ the first 100 bytes are more than 50%
+	 * non-ASCII, then don't print the decoded buffer, just the
+	 * base64 text.
+	 */
+	if (decodedlen > 100 && !checkascii(decoded, 100)) {
+	    fprintf(stderr, "%.*s\n", (int) len, string);
+	} else {
+	    char *hexified;
+	    hexify(decoded, decodedlen, &hexified);
+	    fprintf(stderr, "b64<%s>\n", hexified);
+	    free(hexified);
+	}
+	free(decoded);
     } else {
 	fprintf(stderr, "%.*s\n", (int) len, string);
     }
+}
+
+/*
+ * If the ASCII content is > 50%, return 1
+ */
+
+static int
+checkascii(const unsigned char *bytes, size_t len)
+{
+    size_t count = 0, half = len / 2;
+
+    while (len-- > 0) {
+	if (isascii(*bytes) && isprint(*bytes) && ++count > half)
+	    return 1;
+	bytes++;
+	/* No chance by this point */
+	if (count + len < half)
+	    return 0;
+    }
+
+    return 0;
 }
 
 /*
