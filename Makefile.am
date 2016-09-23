@@ -117,8 +117,8 @@ check_PROGRAMS = test/getfullname test/getcanon test/fakepop test/fakesmtp \
 ## distcheck, $nmhetcdir.  For distcheck, prepend $MH_INST_DIR (from
 ## test/common.sh.in), which is based on $MH_TEST_DIR (from
 ## $TESTS_ENVIRONMENT).
-DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1 \
-			    NMHETCDIRINST='$${abs_builddir}/test/testdir/inst'
+AM_DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1 \
+			NMHETCDIRINST='$${abs_builddir}/test/testdir/inst'
 
 ##
 ## Stuff that should be cleaned via "make clean"
