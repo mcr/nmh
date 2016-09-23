@@ -533,7 +533,7 @@ pop_retr (int msgno, int (*action)(char *))
 static int
 traverse (int (*action)(char *), const char *fmt, ...)
 {
-    int result;
+    int result, snoopstate;
     va_list ap;
     char buffer[sizeof(response)];
 
@@ -545,13 +545,18 @@ traverse (int (*action)(char *), const char *fmt, ...)
 	return NOTOK;
     strncpy (buffer, response, sizeof(buffer));
 
+    if ((snoopstate = netsec_get_snoop(nsc)))
+	netsec_set_snoop(nsc, 0);
+
     for (;;)
 	switch (multiline ()) {
 	    case NOTOK: 
+		netsec_set_snoop(nsc, snoopstate);
 		return NOTOK;
 
 	    case DONE: 
 		strncpy (response, buffer, sizeof(response));
+		netsec_set_snoop(nsc, snoopstate);
 		return OK;
 
 	    case OK: 
