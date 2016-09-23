@@ -82,12 +82,13 @@ char *
 getname (const char *addrs)
 {
     struct adrx *ap;
-
+    const char *const eai = context_find ("eai");
     pers = mbox = host = route = grp = note = NULL;
     err[0] = '\0';
 
-    if ((ap = getadrx (addrs ? addrs : "")) == NULL)
+    if ((ap = getadrx (addrs ? addrs : "", eai && strncasecmp (eai, "8bit", 4) == 0)) == NULL) {
 	return NULL;
+    }
 
     strncpy (adr, ap->text, sizeof(adr));
     pers = ap->pers;

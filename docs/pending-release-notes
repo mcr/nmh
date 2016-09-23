@@ -48,6 +48,8 @@ NEW FEATURES
 - post(8) -snoop now attempts to decode base64-encoded SMTP traffic.
 - folder(1) -nocreate now prints a warning message for a non-existant folder.
 - mhfixmsg(1) now allows -decodetext binary, though 8bit is still the default.
+- Support for SMTPUTF8 (RFC 6531) has been added.  mhshow(1) already supported
+  RFC 6532, assuming all 8-bit message header field bodies are UTF-8.
 
 -----------------
 OBSOLETE FEATURES

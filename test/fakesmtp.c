@@ -101,7 +101,11 @@ main(int argc, char *argv[])
 			smtp_state = SMTP_DATA;
 			continue;
 		}
-		if (xoauth != NULL) {
+		if (xoauth == NULL) {
+			putcrlf(conn, "250-ready");
+			putcrlf(conn, "250-8BITMIME");
+			putcrlf(conn, "250-SMTPUTF8");
+		} else {
 			/* XOAUTH2 support enabled; handle EHLO and AUTH. */
 			if (strncmp(line, "EHLO", 4) == 0) {
 				putcrlf(conn, "250-ready");

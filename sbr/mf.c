@@ -174,8 +174,9 @@ static char adr[BUFSIZ];
 static struct adrx  adrxs2;
 
 
+/* eai = Email Address Internationalization */
 struct adrx *
-getadrx (const char *addrs)
+getadrx (const char *addrs, int eai)
 {
     register char *bp;
     register struct adrx *adrxp = &adrxs2;
@@ -230,13 +231,15 @@ getadrx (const char *addrs)
 	    break;
 	}
 
-    /*
-     * Reject the address if key fields contain 8bit characters
-     */
+    if (! eai) {
+        /*
+         * Reject the address if key fields contain 8bit characters
+         */
 
-    if (contains8bit(mbox, NULL) || contains8bit(host, NULL) ||
-	contains8bit(path, NULL) || contains8bit(grp, NULL)) {
-    	strcpy(err, "Address contains 8-bit characters");
+        if (contains8bit(mbox, NULL) || contains8bit(host, NULL) ||
+            contains8bit(path, NULL) || contains8bit(grp, NULL)) {
+            strcpy(err, "Address contains 8-bit characters");
+        }
     }
 
     if (err[0])

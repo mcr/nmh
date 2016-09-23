@@ -76,11 +76,21 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
        by longjmp. */
     volatile int nvecs = vecp;
     int *nvecsp = (int *) &nvecs;
+    int eai = 0;
 
     /*
      * Run the mimebuildproc (which is by default mhbuild) on the message
      * with the addition of the "-auto" flag
      */
+
+    /* Make sure that EAI support is set up before calling buildmimeproc. */
+    for (i = 0; i < vecp; ++i) {
+        if (strcasecmp (vec[i], "-eai") == 0) {
+            eai = 1;
+        } else if (strcasecmp (vec[i], "-noeai") == 0) {
+            eai = 0;
+        }
+    }
 
     switch (child = fork()) {
     case NOTOK:
@@ -88,11 +98,22 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	break;
 
     case OK:
-	buildvec = argsplit(buildmimeproc, &buildprogram, &i);
+        buildvec = argsplit(buildmimeproc, &buildprogram, &i);
 	buildvec[i++] = "-auto";
 	if (distfile)
 	    buildvec[i++] = "-dist";
 	buildvec[i++] = (char *) drft;
+	if (eai) {
+	    /* Add eai profile entry, to pass 8bit setting to
+	       getname()/getadrx().  This doesn't seem to be necessary
+               now, but it's here just in case the code changes
+               later. */
+	    add_profile_entry("eai", "8bit");
+
+	    /* Add mhbuild switch to enable 8bit headers. */
+	    buildvec[i++] = "-headerencoding";
+	    buildvec[i++] = "8bit";
+	}
 	buildvec[i] = NULL;
 	execvp(buildprogram, buildvec);
 	fprintf(stderr, "unable to exec ");

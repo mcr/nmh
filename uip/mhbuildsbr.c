@@ -360,15 +360,17 @@ finish_field:
     }
     m_getfld_state_destroy (&gstate);
 
-    /*
-     * Iterate through the list of headers and call the function to MIME-ify
-     * them if required.
-     */
+    if (header_encoding != CE_8BIT) {
+        /*
+         * Iterate through the list of headers and call the function to MIME-ify
+         * them if required.
+         */
 
-    for (hp = ct->c_first_hf; hp != NULL; hp = hp->next) {
-	if (encode_rfc2047(hp->name, &hp->value, header_encoding, NULL)) {
-	    adios(NULL, "Unable to encode header \"%s\"", hp->name);
-	}
+        for (hp = ct->c_first_hf; hp != NULL; hp = hp->next) {
+            if (encode_rfc2047(hp->name, &hp->value, header_encoding, NULL)) {
+                adios(NULL, "Unable to encode header \"%s\"", hp->name);
+            }
+        }
     }
 
     /*
@@ -1748,8 +1750,11 @@ build_headers (CT ct, int header_encoding)
     if (ct->c_descr) {
 	np = add (DESCR_FIELD, NULL);
 	vp = concat (" ", ct->c_descr, NULL);
-	if (encode_rfc2047(DESCR_FIELD, &vp, header_encoding, NULL))
-	    adios(NULL, "Unable to encode %s header", DESCR_FIELD);
+	if (header_encoding != CE_8BIT) {
+	    if (encode_rfc2047(DESCR_FIELD, &vp, header_encoding, NULL)) {
+		adios(NULL, "Unable to encode %s header", DESCR_FIELD);
+	    }
+	}
 	add_header (ct, np, vp);
     }
 

@@ -18,7 +18,7 @@ struct smtp {
 /* int client (); */
 int sm_init (char *, char *, char *, int, int, int, int, int, char *, char *,
              const char *, int);
-int sm_winit (char *);
+int sm_winit (char *, int);
 int sm_wadr (char *, char *, char *);
 int sm_waend (void);
 int sm_wtxt (char *, int);

@@ -94,7 +94,8 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/post/test-post-dcc test/post/test-post-fcc \
 	test/post/test-post-multifrom test/post/test-post-envelope \
 	test/post/test-post-group test/post/test-mts test/post/test-messageid \
-	test/post/test-sendfiles test/prompter/test-prompter \
+	test/post/test-rfc6531 test/post/test-sendfiles \
+	test/prompter/test-prompter \
 	test/rcv/test-rcvdist test/rcv/test-rcvpack test/rcv/test-rcvstore \
 	test/rcv/test-rcvtty test/refile/test-refile test/repl/test-convert \
 	test/repl/test-if-str test/repl/test-trailing-newline \

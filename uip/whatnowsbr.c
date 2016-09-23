@@ -923,6 +923,8 @@ buildfile (char **argp, char *file)
     X("noforward", 0, NFORWSW) \
     X("mime", 0, MIMESW) \
     X("nomime", 0, NMIMESW) \
+    X("eai", 0, EAISW) \
+    X("noeai", 0, NEAISW) \
     X("msgid", 0, MSGDSW) \
     X("nomsgid", 0, NMSGDSW) \
     X("push", 0, SPSHSW) \
@@ -1129,6 +1131,8 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case NBITSTUFFSW:
 		case MIMESW:
 		case NMIMESW:
+		case EAISW:
+		case NEAISW:
 		case MSGDSW:
 		case NMSGDSW:
 		case WATCSW:

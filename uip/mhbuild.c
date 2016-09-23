@@ -56,9 +56,11 @@ DEFINE_SWITCH_ENUM(MHBUILD);
 DEFINE_SWITCH_ARRAY(MHBUILD, switches);
 #undef X
 
+/* 8bit is Email Address Internationalization. */
 #define MIMEENCODING_SWITCHES \
     X("base64", 0, BASE64SW) \
     X("quoted-printable", 0, QUOTEDPRINTSW) \
+    X("8bit", 0, EIGHTBITSW) \
 
 #define X(sw, minchars, id) id,
 DEFINE_SWITCH_ENUM(MIMEENCODING);
@@ -243,6 +245,9 @@ main (int argc, char **argv)
 		    break;
 		case QUOTEDPRINTSW:
 		    header_encoding = CE_QUOTED;
+		    break;
+		case EIGHTBITSW:
+		    header_encoding = CE_8BIT;
 		    break;
 		default:
 		    adios (NULL, "Internal error: algorithm %s", cp);

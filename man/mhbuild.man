@@ -1,4 +1,4 @@
-.TH MHBUILD %manext1% "December 14, 2014" "%nmhversion%"
+.TH MHBUILD %manext1% "September 23, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -765,9 +765,13 @@ switch will indicate which algorithm to use when encoding any message headers
 that contain 8\-bit characters.
 The valid arguments are
 .I base64
-for based\-64 encoding and
+for based\-64 encoding,
 .I quoted
-for quoted\-printable encoding.
+for quoted\-printable encoding, and
+.I 8bit
+for raw 8-bit encoding, which requires that all header field bodies be
+encoded as UTF-8 (RFC 6530) and that the SMTP server support SMTPUTF8
+(RFC 6531).
 The
 .B \-autoheaderencoding
 switch will instruct
@@ -1038,25 +1042,31 @@ Template for composing contents.
 .IR mhstore (1)
 .PP
 .I "Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies"
-(RFC 2045),
+(RFC 2045)
 .PP
 .I "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types"
-(RFC 2046),
+(RFC 2046)
 .PP
 .I "Multipurpose Internet Mail Extensions (MIME) Part Three: Message Header Extensions for Non-ASCII Text"
-(RFC 2047),
+(RFC 2047)
 .PP
 .I "MIME Parameter Value and Encoded Word Extensions: Character Sets, Languages, and Continuations"
 (RFC 2231)
 .PP
 .I "Proposed Standard for Message Encapsulation"
-(RFC 934),
+(RFC 934)
 .PP
 .I "The Content-MD5 Header Field"
-(RFC 1864),
+(RFC 1864)
 .PP
 .I "Definition of the URL MIME External-Body Access-Type"
-(RFC 2017),
+(RFC 2017)
+.PP
+.I "Overview and Framework for Internationalized Email"
+(RFC 6530)
+.PP
+.I "SMTP Extension for Internationalized Email"
+(RFC 6531)
 .SH DEFAULTS
 .nf
 \-autoheaderencoding

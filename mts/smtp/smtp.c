@@ -593,9 +593,22 @@ rclient (char *server, char *service)
 }
 
 int
-sm_winit (char *from)
+sm_winit (char *from, int smtputf8)
 {
-    switch (smtalk (SM_MAIL, "MAIL FROM:<%s>", from)) {
+    const char *const mail_parameters = smtputf8
+        ? " BODY=8BITMIME SMTPUTF8"
+        : "";
+
+    /* Just for information, if an attempt is made to send to an 8-bit
+       address without specifying SMTPUTF8, Gmail responds with
+       555 5.5.2 Syntax error.
+       Gmail doesn't require the 8BITMIME, but RFC 6531 Sec. 1.2 does. */
+    if (smtputf8  &&  (! EHLOset("8BITMIME") || ! EHLOset("SMTPUTF8"))) {
+	sm_end (NOTOK);
+	return RP_UCMD;
+    }
+
+    switch (smtalk (SM_MAIL, "MAIL FROM:<%s>%s", from, mail_parameters)) {
 	case 250: 
 	    sm_addrs = 0;
 	    return RP_OK;

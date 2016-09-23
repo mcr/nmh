@@ -64,6 +64,8 @@
     X("library directory", -7, LIBSW) /* interface from send, whom */ \
     X("mime", 0, MIMESW) \
     X("nomime", 0, NMIMESW) \
+    X("eai", 0, EAISW) \
+    X("noeai", 0, NEAISW) \
     X("msgid", 0, MSGDSW) \
     X("nomsgid", 0, NMSGDSW) \
     X("verbose", 0, VERBSW) \
@@ -223,6 +225,7 @@ static int badmsg = 0;		/* message has bad semantics             */
 static int verbose = 0;		/* spell it out                          */
 static int format = 1;		/* format addresses                      */
 static int mime = 0;		/* use MIME-style encapsulations for Bcc */
+static int eai = 0;		/* use EAI (SMTPUTF8)                    */
 static int msgid = 0;		/* add msgid                             */
 static int debug = 0;		/* debugging post                        */
 static int watch = 0;		/* watch the delivery process            */
@@ -396,6 +399,13 @@ main (int argc, char **argv)
 		    continue;
 		case NMIMESW: 
 		    mime = 0;
+		    continue;
+
+		case EAISW:
+		    eai = 1;
+		    continue;
+		case NEAISW:
+		    eai = 0;
 		    continue;
 
 		case MSGDSW: 
@@ -584,6 +594,12 @@ main (int argc, char **argv)
 
     if ((in = fopen (msg, "r")) == NULL)
 	adios (msg, "unable to open");
+
+    /* Support EAI. */
+    if (eai) {
+        /* Add eai profile entry, to pass 8bit setting to getname()/getadrx(). */
+        add_profile_entry ("eai", "8bit");
+    }
 
     start_headers ();
     if (debug) {
@@ -1634,12 +1650,13 @@ post (char *file, int bccque, int talk, char *envelope, int oauth_flag,
 		break;
 	}
     } else {
-        if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
-                                        verbose, snoop, sasl, saslssf,
+	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
+					verbose, snoop, sasl, saslssf,
 					saslmech, user,
 					oauth_flag ? auth_svc : NULL, tls))
-            || rp_isbad (retval = sm_winit (envelope)))
+	     || rp_isbad (retval = sm_winit (envelope, eai))) {
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
+	}
 
         do_addresses (bccque, talk && verbose);
         if ((fd = open (file, O_RDONLY)) == NOTOK)
@@ -1674,13 +1691,15 @@ verify_all_addresses (int talk, char *envelope, int oauth_flag, char *auth_svc)
 
     sigon ();
 
-    if (!whomsw || checksw)
+    if (!whomsw || checksw) {
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, sasl, saslssf,
 					saslmech, user,
 					oauth_flag ? auth_svc : NULL, tls))
-		|| rp_isbad (retval = sm_winit (envelope)))
+		|| rp_isbad (retval = sm_winit (envelope, eai))) {
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
+	}
+    }
 
     if (talk && !whomsw)
 	printf (" -- Address Verification --\n");
