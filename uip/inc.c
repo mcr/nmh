@@ -43,12 +43,6 @@
 #include <h/tws.h>
 #include <h/mts.h>
 
-#ifndef CYRUS_SASL
-# define SASLminc(a) (a)
-#else
-# define SASLminc(a)  0
-#endif
-
 #ifndef TLS_SUPPORT
 # define TLSminc(a) (a)
 #else
@@ -76,11 +70,11 @@
     X("version", 0, VERSIONSW) \
     X("help", 0, HELPSW) \
     X("snoop", 0, SNOOPSW) \
-    X("sasl", SASLminc(5), SASLSW) \
-    X("nosasl", SASLminc(3), NOSASLSW) \
-    X("saslmech", SASLminc(5), SASLMECHSW) \
+    X("sasl", 0, SASLSW) \
+    X("nosasl", 0, NOSASLSW) \
+    X("saslmech", 0, SASLMECHSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
-    X("notls", TLSminc(-12), NOTLSSW) \
+    X("notls", TLSminc(-5), NOTLSSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("proxy command", 0, PROXYSW) \
 
