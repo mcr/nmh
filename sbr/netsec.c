@@ -948,6 +948,13 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
 	return NOTOK;
     }
 
+    nsc->sasl_hostname = getcpy(hostname);
+#else /* CYRUS_SASL */
+    NMH_UNUSED(hostname);
+    NMH_UNUSED(service);
+    NMH_UNUSED(errstr);
+#endif /* CYRUS_SASL */
+
     /*
      * According to the RFC, mechanisms can only be uppercase letter, numbers,
      * and a hypen or underscore.  So make sure we uppercase any letters
@@ -964,20 +971,8 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
     }
 
     nsc->sasl_proto_cb = callback;
-    nsc->sasl_hostname = getcpy(hostname);
 
     return OK;
-#else /* CYRUS_SASL */
-    NMH_UNUSED(nsc);
-    NMH_UNUSED(hostname);
-    NMH_UNUSED(service);
-    NMH_UNUSED(mechanism);
-    NMH_UNUSED(callback);
-
-    netsec_err(errstr, "SASL is not supported");
-
-    return NOTOK;
-#endif /* CYRUS_SASL */
 }
 
 #ifdef CYRUS_SASL
@@ -1386,6 +1381,8 @@ netsec_get_sasl_mechanism(netsec_context *nsc)
 #ifdef CYRUS_SASL
     return nsc->sasl_chosen_mech;
 #else /* CYRUS_SASL */
+    NMH_UNUSED(nsc);
+
     return NULL;
 #endif /* CYRUS_SASL */
 }
