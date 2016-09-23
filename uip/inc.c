@@ -80,7 +80,7 @@
     X("nosasl", SASLminc(3), NOSASLSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
-    X("noinitialtls", TLSminc(-12), NOINITTLSSW) \
+    X("notls", TLSminc(-12), NOTLSSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("proxy command", 0, PROXYSW) \
 
@@ -366,7 +366,7 @@ main (int argc, char **argv)
 		tls++;
 		continue;
 
-	    case NOINITTLSSW:
+	    case NOTTLSSW:
 		tls = 0;
 		continue;
 

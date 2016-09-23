@@ -947,7 +947,6 @@ buildfile (char **argp, char *file)
     X("nodraftfolder", -3, SNDRFSW) \
     X("sasl", SASLminc(4), SASLSW) \
     X("nosasl", SASLminc(6), NOSASLSW) \
-    X("saslmaxssf", SASLminc(10), SASLMXSSFSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("user username", SASLminc(4), USERSW) \
@@ -1165,7 +1164,6 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case WIDTHSW:
 		case CLIESW:
 		case SERVSW:
-		case SASLMXSSFSW:
 		case USERSW:
 		case PORTSW:
 		case MTSSM:

@@ -63,7 +63,6 @@
     X("snoop", 5, SNOOPSW) \
     X("sasl", SASLminc(4), SASLSW) \
     X("nosasl", SASLminc(6), NOSASLSW) \
-    X("saslmaxssf", SASLminc(6), SASLMXSSFSW) \
     X("saslmech mechanism", SASLminc(6), SASLMECHSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("user username", SASLminc(-4), USERSW) \
@@ -287,7 +286,6 @@ main (int argc, char **argv)
 		case WIDTHSW: 
 		case CLIESW: 
 		case SERVSW: 
-		case SASLMXSSFSW:
 		case PORTSW:
 		case MTSSM:
 		case MTSSW:
