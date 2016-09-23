@@ -149,7 +149,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	netsec_set_snoop(nsc, 1);
 
     if (sasl) {
-	if (netsec_set_sasl_params(nsc, client, "smtp", saslmech,
+	if (netsec_set_sasl_params(nsc, server, "smtp", saslmech,
 				   sm_sasl_callback, &errstr) != OK)
 	    return sm_nerror(errstr);
     }
