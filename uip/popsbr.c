@@ -720,7 +720,7 @@ pop_getline (char *s, int n, netsec_context *ns)
      * someday.
      */
 
-    destlen = len < ((size_t) (n - 1)) ? len : n - 1;
+    destlen = len < ((size_t) (n - 1)) ? len : (size_t) (n - 1);
 
     memcpy(s, p, destlen);
     s[destlen] = '\0';

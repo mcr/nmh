@@ -289,8 +289,9 @@ netsec_b64_snoop_decoder(netsec_context *nsc, const char *string, size_t len,
     const char *decoded;
     size_t decodedlen;
     NMH_UNUSED(nsc);
+    int offset;
 
-    int offset = context ? *((int *) context) : 0;
+    offset = context ? *((int *) context) : 0;
 
     if (offset > 0) {
 	/*
@@ -403,11 +404,11 @@ retry:
 	    if (nsc->ns_snoop) {
 #ifdef CYRUS_SASL
 		if (nsc->sasl_seclayer)
-		    fprintf(stderr, "(sasl-encrypted) ");
+		    fprintf(stderr, "(sasl-decrypted) ");
 #endif /* CYRUS_SASL */
 #ifdef TLS_SUPPORT
 		if (nsc->tls_active)
-		    fprintf(stderr, "(tls-encrypted) ");
+		    fprintf(stderr, "(tls-decrypted) ");
 #endif /* TLS_SUPPORT */
 		fprintf(stderr, "<= ");
 		if (nsc->ns_snoop_cb)
@@ -917,8 +918,8 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
 	nsc->sasl_mech = getcpy(mechanism);
 
 	for (p = nsc->sasl_mech; *p; p++)
-	    if (isascii(*p))	/* Just in case */
-		*p = toupper(*p);
+	    if (isascii((unsigned char) *p))	/* Just in case */
+		*p = toupper((unsigned char) *p);
     }
 
     nsc->sasl_proto_cb = callback;
@@ -1506,7 +1507,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 	    fprintf(stderr, "WARNING: cannot determine SSL ciphers\n");
 	} else {
 	    const SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
-	    fprintf(stderr, "TLS negotation successful: %s(%d) %s\n",
+	    fprintf(stderr, "TLS negotiation successful: %s(%d) %s\n",
 		    SSL_CIPHER_get_name(cipher),
 		    SSL_CIPHER_get_bits(cipher, NULL),
 		    SSL_CIPHER_get_version(cipher));
