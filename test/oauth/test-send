@@ -35,7 +35,7 @@ expire-nobody@example.com: 2000000000
 EOF
 
 start_fakesmtp
-run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice test -user nobody@example.com"
+run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -sasl -saslmech xoauth2 -authservice test -user nobody@example.com"
 
 # TEST
 start_test 'expired access token, refresh works, smtp server accepts message'
@@ -163,7 +163,7 @@ setup_draft
 # TEST
 start_test 'no service definition'
 
-run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -saslmech xoauth2 -authservice bogus -user nobody@example.com" 'send: Unable to retrieve oauth profile entries: scope is missing'
+run_test "send -draft -server 127.0.0.1 -port ${smtp_port} -sasl -saslmech xoauth2 -authservice bogus -user nobody@example.com" 'send: Unable to retrieve oauth profile entries: scope is missing'
 
 # TEST
 start_test 'no creds file -- should tell user to mhlogin'
@@ -269,7 +269,7 @@ EOF
 
 start_fakesmtp
 run_prog send -draft -server 127.0.0.1 -port ${smtp_port} \
-  -saslmech xoauth2 -authservice test -user nobody@example.com > "${testname}.send-output" 2>&1 || true
+  -sasl -saslmech xoauth2 -authservice test -user nobody@example.com > "${testname}.send-output" 2>&1 || true
 # Clear out an error message we get from libcurl on some systems (seen at least
 # 3 different versions of this error message, on FreeBSD 10.1, Ubuntu 12.04, and
 # Ubuntu 14.04).
@@ -358,7 +358,7 @@ access-nobody@example.com: test-access
 expire-nobody@example.com: 2000000000
 EOF
 
-test_send_only_fakesmtp 'post: problem initializing server; [BHST] Not no way, not no how!
+test_send_only_fakesmtp 'post: problem initializing server; [BHST] Authentication failed: Not no way, not no how!
 send: message not delivered to anyone'
 
 # TEST
@@ -385,7 +385,7 @@ start_test "smtp server doesn't support oauth"
 
 unset XOAUTH
 
-test_send_only_fakesmtp 'post: problem initializing server; [BHST] SMTP server does not support SASL XOAUTH2
+test_send_only_fakesmtp 'post: problem initializing server; [BHST] SMTP server does not support SASL
 send: message not delivered to anyone'
 
 clean_fakesmtp

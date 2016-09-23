@@ -39,6 +39,8 @@ inc \- incorporate new mail
 .IR mechanism ]
 .RB [ \-authservice
 .IR service ]
+.RB [ \-initialtls ]
+.RB [ \-notls ]
 .RB [ \-snoop ]
 .RB [ \-version ]
 .RB [ \-help ]
@@ -276,8 +278,10 @@ for its other features.
 If
 .B nmh
 has been compiled with OAuth support, the
+.B \-sasl
+and
 .B \-saslmech xoauth2
-switch will enable OAuth authentication.  The
+switches will enable OAuth authentication.  The
 .B \-user
 switch must be used, and the
 .I user-name
@@ -291,10 +295,21 @@ and grant authorization to that account.  See the
 .B mhlogin
 man page for more details.
 .PP
-Gmail only supports POP3 over TLS, but
-.B inc
-has no TLS support.  To work around this, use something like
-.B -proxy 'openssl s_client -connect %h:995 -CAfile /etc/ssl/certs/ca-certificates.crt -quiet'
+If
+.B nmh
+has been compiled with TLS support, the
+.B \-initialtls
+switch will require the negotiation of TLS when connecting
+to the remote POP server.  The
+.B \-initialtls
+switch will negotiate TLS immediately after the connection has taken place,
+before any POP commands are sent or received.  Data encrypted by TLS is
+labeled `(tls-encrypted)' and `(tls-decrypted)` with viewing the POP
+transaction with the
+.B \-snoop
+switch.  The
+.B \-notls
+switch will disable all attempts to negotiate TLS.
 .SH FILES
 .PD 0
 .TP 20

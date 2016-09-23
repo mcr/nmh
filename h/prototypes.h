@@ -457,6 +457,10 @@ int what_now (char *, int, int, char *, char *,
 	int, struct msgs *, char *, int, char *, int);
 int WhatNow(int, char **);
 
+/* Includes trailing NUL */
+
+#define BASE64SIZE(x) ((((x + 2) / 3) * 4) + 1)
+
 /*
  * Copy data from one file to another, converting to base64-encoding.
  *
@@ -470,8 +474,8 @@ int WhatNow(int, char **);
  */
 int writeBase64aux(FILE *in, FILE *out, int crlf);
 
-int writeBase64 (unsigned char *, size_t, unsigned char *);
-int writeBase64raw (unsigned char *, size_t, unsigned char *);
+int writeBase64 (const unsigned char *, size_t, unsigned char *);
+int writeBase64raw (const unsigned char *, size_t, unsigned char *);
 
 /*
  * first argument:  the string to be decoded
@@ -480,7 +484,8 @@ int writeBase64raw (unsigned char *, size_t, unsigned char *);
  * fourth argument:   non-zero for text content, and for which CR's should be skipped
  * fifth argument:  for an MD5 digest, it can be null
  */
-int decodeBase64 (const char *, const char **, size_t *, int, unsigned char *);
+int decodeBase64 (const char *, unsigned char **, size_t *, int,
+		  unsigned char *);
 
 void hexify (const unsigned char *, size_t, char **);
 

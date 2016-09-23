@@ -127,17 +127,16 @@ static boolean get_json_strings(const char *, size_t, FILE *, ...);
 static boolean make_query_url(char *, size_t, CURL *, const char *, ...);
 static boolean post(struct curl_ctx *, const char *, const char *);
 
-char *
-mh_oauth_do_xoauth(const char *user, const char *svc, FILE *log)
+int
+mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
+		   size_t *oauth_res_len, FILE *log)
 {
     mh_oauth_ctx *ctx;
     mh_oauth_cred *cred;
     char *fn;
     int failed_to_lock = 0;
     FILE *fp;
-    size_t client_res_len;
     char *client_res;
-    char *client_res_b64;
 
     if (!mh_oauth_new (&ctx, svc)) adios(NULL, mh_oauth_get_err_string(ctx));
 
@@ -183,18 +182,14 @@ mh_oauth_do_xoauth(const char *user, const char *svc, FILE *log)
     free(fn);
 
     /* XXX writeBase64raw modifies the source buffer!  make a copy */
-    client_res = getcpy(mh_oauth_sasl_client_response(&client_res_len, user,
+    client_res = getcpy(mh_oauth_sasl_client_response(oauth_res_len, user,
                                                       cred));
     mh_oauth_cred_free(cred);
     mh_oauth_free(ctx);
-    client_res_b64 = mh_xmalloc(((((client_res_len) + 2) / 3 ) * 4) + 1);
-    if (writeBase64raw((unsigned char *)client_res, client_res_len,
-                       (unsigned char *)client_res_b64) != OK) {
-        adios(NULL, "base64 encoding of XOAUTH2 client response failed");
-    }
-    free(client_res);
 
-    return client_res_b64;
+    *oauth_res = (unsigned char *) client_res;
+
+    return OK;
 }
 
 static boolean

@@ -113,7 +113,7 @@ writeBase64aux (FILE *in, FILE *out, int crlf)
      4 * [length/3]  +  length/57  +  2
    But double the length will certainly be sufficient. */
 int
-writeBase64 (unsigned char *in, size_t length, unsigned char *out)
+writeBase64 (const unsigned char *in, size_t length, unsigned char *out)
 {
     unsigned int n = BPERLIN;
 
@@ -121,7 +121,7 @@ writeBase64 (unsigned char *in, size_t length, unsigned char *out)
 	unsigned long bits;
 	unsigned char *bp;
 	unsigned int cc;
-	for (cc = 0, bp = in; length > 0 && cc < 3; ++cc, ++bp, --length)
+	for (cc = 0; length > 0 && cc < 3; ++cc, --length)
           /* empty */ ;
 
 	if (cc == 0) {
@@ -168,13 +168,13 @@ writeBase64 (unsigned char *in, size_t length, unsigned char *out)
  */
 
 int
-writeBase64raw (unsigned char *in, size_t length, unsigned char *out)
+writeBase64raw (const unsigned char *in, size_t length, unsigned char *out)
 {
     while (1) {
 	unsigned long bits;
 	unsigned char *bp;
 	unsigned int cc;
-	for (cc = 0, bp = in; length > 0 && cc < 3; ++cc, ++bp, --length)
+	for (cc = 0; length > 0 && cc < 3; ++cc, --length)
           /* empty */ ;
 
 	if (cc == 0) {
@@ -233,8 +233,8 @@ static unsigned char b642nib[0x80] = {
  * See description of arguments with declaration in h/prototypes.h.
  */
 int
-decodeBase64 (const char *encoded, const char **decoded, size_t *len, int skip_crs,
-              unsigned char *digest) {
+decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
+	      int skip_crs, unsigned char *digest) {
     const char *cp = encoded;
     int self_delimiting = 0;
     int bitno, skip;
@@ -314,7 +314,7 @@ test_end:
         return NOTOK;
     }
 
-    *decoded = charstring_buffer_copy (decoded_c);
+    *decoded = (unsigned char *) charstring_buffer_copy (decoded_c);
     *len = charstring_bytes (decoded_c);
     charstring_free (decoded_c);
 

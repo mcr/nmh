@@ -29,6 +29,7 @@ whom \- report to whom a message would go
 .RB [ \-user
 .IR username ]
 .RB [ \-tls ]
+.RB [ \-initialtls ]
 .RB [ \-notls ]
 .RI [ file ]
 .RB [ \-draft ]
@@ -106,16 +107,13 @@ switch; see the
 .B post
 man page description of
 .B \-snoop
-for its other features.  The
-.B \-saslmaxssf
-switch can be used to select the maximum value of the Security Strength Factor.
-This is an integer value and the exact meaning of this value depends on the
-underlying SASL mechanism.  A value of 0 disables encryption.
+for its other features.
 .PP
 If
 .B nmh
 has been compiled with TLS support, the
-.B \-tls
+.BR \-tls ,
+.BR \-initialtls ,
 and
 .B \-notls
 switches will require and disable the negotiation of TLS support when connecting to the
@@ -126,7 +124,7 @@ switch; see the
 .B post
 man page description of
 .B \-snoop
-for its other features.
+and the TLS flags for more details.
 .PP
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
 additional alias files given by the

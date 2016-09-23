@@ -49,6 +49,12 @@
 # define SASLminc(a)  0
 #endif
 
+#ifndef TLS_SUPPORT
+# define TLSminc(a) (a)
+#else
+# define TLSminc(a)  0
+#endif
+
 #define INC_SWITCHES \
     X("audit audit-file", 0, AUDSW) \
     X("noaudit", 0, NAUDSW) \
@@ -73,6 +79,8 @@
     X("sasl", SASLminc(5), SASLSW) \
     X("nosasl", SASLminc(3), NOSASLSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \
+    X("initialtls", TLSminc(-10), INITTLSSW) \
+    X("notls", TLSminc(-12), NOTLSSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("proxy command", 0, PROXYSW) \
 
@@ -186,7 +194,7 @@ main (int argc, char **argv)
     int chgflag = 1, trnflag = 1;
     int noisy = 1, width = -1;
     int hghnum = 0, msgnum = 0;
-    int sasl = 0;
+    int sasl = 0, tls = 0;
     int incerr = 0; /* <0 if inc hits an error which means it should not truncate mailspool */
     char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
@@ -234,13 +242,13 @@ main (int argc, char **argv)
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
-	    case AMBIGSW: 
+	    case AMBIGSW:
 		ambigsw (cp, switches);
 		done (1);
-	    case UNKWNSW: 
+	    case UNKWNSW:
 		adios (NULL, "-%s unknown", cp);
 
-	    case HELPSW: 
+	    case HELPSW:
 		snprintf (buf, sizeof(buf), "%s [+folder] [switches]", invo_name);
 		print_help (buf, switches, 1);
 		done (0);
@@ -248,19 +256,19 @@ main (int argc, char **argv)
 		print_version(invo_name);
 		done (0);
 
-	    case AUDSW: 
+	    case AUDSW:
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		audfile = getcpy (m_maildir (cp));
 		continue;
-	    case NAUDSW: 
+	    case NAUDSW:
 		audfile = NULL;
 		continue;
 
-	    case CHGSW: 
+	    case CHGSW:
 		chgflag++;
 		continue;
-	    case NCHGSW: 
+	    case NCHGSW:
 		chgflag = 0;
 		continue;
 
@@ -271,14 +279,14 @@ main (int argc, char **argv)
 	     * 1 by default (truncating is default)
 	     * 0 if -notruncate is given
 	     */
-	    case TRNCSW: 
+	    case TRNCSW:
 		trnflag = 2;
 		continue;
-	    case NTRNCSW: 
+	    case NTRNCSW:
 		trnflag = 0;
 		continue;
 
-	    case FILESW: 
+	    case FILESW:
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		from = path (cp, TFILE);
@@ -291,25 +299,25 @@ main (int argc, char **argv)
 		    trnflag = 0;
 		continue;
 
-	    case SILSW: 
+	    case SILSW:
 		noisy = 0;
 		continue;
-	    case NSILSW: 
+	    case NSILSW:
 		noisy++;
 		continue;
 
-	    case FORMSW: 
+	    case FORMSW:
 		if (!(form = *argp++) || *form == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		format = NULL;
 		continue;
-	    case FMTSW: 
+	    case FMTSW:
 		if (!(format = *argp++) || *format == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		form = NULL;
 		continue;
 
-	    case WIDTHSW: 
+	    case WIDTHSW:
 		if (!(cp = *argp++) || *cp == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
 		width = atoi (cp);
@@ -352,6 +360,14 @@ main (int argc, char **argv)
 	    case SASLMECHSW:
 		if (!(saslmech = *argp++) || *saslmech == '-')
 		    adios (NULL, "missing argument to %s", argp[-2]);
+		continue;
+
+	    case INITTLSSW:
+		tls++;
+		continue;
+
+	    case NOTLSSW:
+		tls = 0;
 		continue;
 
 	    case AUTHSERVICESW:
@@ -421,7 +437,7 @@ main (int argc, char **argv)
 	 * initialize POP connection
 	 */
 	if (pop_init (host, port, creds.user, creds.password, proxy, snoop,
-		      sasl, saslmech, auth_svc) == NOTOK)
+		      sasl, saslmech, tls, auth_svc) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */
@@ -657,7 +673,7 @@ go_to_it:
 	    switch (incerr = scan (pf, msgnum, 0, nfs, width,
 			      packfile ? 0 : msgnum == mp->hghmsg + 1 && chgflag,
 			      1, NULL, stop - start, noisy, &scanl)) {
-	    case SCNEOF: 
+	    case SCNEOF:
 		printf ("%*d  empty\n", DMAXFOLDER, msgnum);
 		break;
 
@@ -668,12 +684,12 @@ go_to_it:
 		/* fall thru */
 
 	    case SCNERR:
-	    case SCNNUM: 
+	    case SCNNUM:
 		break;
 
-	    case SCNMSG: 
+	    case SCNMSG:
 	    case SCNENC:
-	    default: 
+	    default:
 		if (aud)
 		    fputs (charstring_buffer (scanl), aud);
 		if (noisy)
@@ -733,7 +749,7 @@ go_to_it:
 			      msgnum == hghnum && chgflag, 1, NULL, 0L, noisy,
 			      &scanl)) {
 	    case SCNFAT:
-	    case SCNEOF: 
+	    case SCNEOF:
 		break;
 
 	    case SCNERR:
@@ -742,11 +758,11 @@ go_to_it:
 		advise (NULL, "aborted!");	/* doesn't clean up locks! */
 		break;
 
-	    case SCNNUM: 
+	    case SCNNUM:
 		advise (NULL, "BUG in %s, number out of range", invo_name);
 		break;
 
-	    default: 
+	    default:
 		advise (NULL, "BUG in %s, scan() botch (%d)", invo_name, incerr);
 		break;
 
@@ -807,7 +823,7 @@ go_to_it:
 		}
 		fclose (sf);
 		sf = NULL;
-	    } 
+	    }
 	    if (pf == NULL && (pf = fopen (cp, "r")) == NULL)
 	        adios (cp, "not available");
 	    chmod (cp, m_gmprot ());
@@ -816,7 +832,7 @@ go_to_it:
 	    switch (incerr = scan (pf, msgnum, 0, nfs, width,
 			      msgnum == mp->hghmsg + 1 && chgflag,
 			      1, NULL, stop - start, noisy, &scanl)) {
-	    case SCNEOF: 
+	    case SCNEOF:
 		printf ("%*d  empty\n", DMAXFOLDER, msgnum);
 		break;
 
@@ -827,12 +843,12 @@ go_to_it:
 		/* fall thru */
 
 	    case SCNERR:
-	    case SCNNUM: 
+	    case SCNNUM:
 		break;
 
-	    case SCNMSG: 
+	    case SCNMSG:
 	    case SCNENC:
-	    default: 
+	    default:
 		/*
 		 *  Run the external program hook on the message.
 		 */
