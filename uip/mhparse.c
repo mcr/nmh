@@ -1751,7 +1751,7 @@ openBase64 (CT ct, char **file)
     /* sbeck -- handle suffixes */
     CI ci;
     CE ce = &ct->c_cefile;
-    const char *decoded;
+    unsigned char *decoded;
     size_t decoded_len;
     unsigned char digest[16];
 
@@ -1840,7 +1840,7 @@ openBase64 (CT ct, char **file)
     if (decodeBase64 (buffer, &decoded, &decoded_len, ct->c_type == CT_TEXT,
                       ct->c_digested ? digest : NULL) == OK) {
         size_t i;
-        const char *decoded_p = decoded;
+        unsigned char *decoded_p = decoded;
         for (i = 0; i < decoded_len; ++i) {
             putc (*decoded_p++, ce->ce_fp);
         }
@@ -2906,13 +2906,13 @@ openURL (CT ct, char **file)
 static int
 readDigest (CT ct, char *cp)
 {
-    const char *digest;
+    unsigned char *digest;
 
     size_t len;
     if (decodeBase64 (cp, &digest, &len, 0, NULL) == OK) {
         const size_t maxlen = sizeof ct->c_digest / sizeof ct->c_digest[0];
 
-        if (strlen (digest) <= maxlen) {
+        if (strlen ((char *) digest) <= maxlen) {
             memcpy (ct->c_digest, digest, maxlen);
 
             if (debugsw) {
@@ -2929,7 +2929,7 @@ readDigest (CT ct, char *cp)
         } else {
             if (debugsw) {
                 fprintf (stderr, "invalid MD5 digest (got %d octets)\n",
-                         (int) strlen (digest));
+                         (int) strlen ((char *) digest));
             }
 
             return NOTOK;

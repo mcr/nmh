@@ -1012,7 +1012,7 @@ sm_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	    *outdata = NULL;
 	    *outdatalen = 0;
 	} else {
-	    rc = decodeBase64(line + 4, (const char **) outdata, &len, 0, NULL);
+	    rc = decodeBase64(line + 4, outdata, &len, 0, NULL);
 	    if (rc != OK) {
 		netsec_err(errstr, "Unable to decode base64 response");
 		return NOTOK;

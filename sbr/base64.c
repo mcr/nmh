@@ -233,8 +233,8 @@ static unsigned char b642nib[0x80] = {
  * See description of arguments with declaration in h/prototypes.h.
  */
 int
-decodeBase64 (const char *encoded, const char **decoded, size_t *len, int skip_crs,
-              unsigned char *digest) {
+decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
+	      int skip_crs, unsigned char *digest) {
     const char *cp = encoded;
     int self_delimiting = 0;
     int bitno, skip;
@@ -314,7 +314,7 @@ test_end:
         return NOTOK;
     }
 
-    *decoded = charstring_buffer_copy (decoded_c);
+    *decoded = (unsigned char *) charstring_buffer_copy (decoded_c);
     *len = charstring_bytes (decoded_c);
     charstring_free (decoded_c);
 

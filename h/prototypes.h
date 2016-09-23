@@ -484,7 +484,8 @@ int writeBase64raw (const unsigned char *, size_t, unsigned char *);
  * fourth argument:   non-zero for text content, and for which CR's should be skipped
  * fifth argument:  for an MD5 digest, it can be null
  */
-int decodeBase64 (const char *, const char **, size_t *, int, unsigned char *);
+int decodeBase64 (const char *, unsigned char **, size_t *, int,
+		  unsigned char *);
 
 void hexify (const unsigned char *, size_t, char **);
 

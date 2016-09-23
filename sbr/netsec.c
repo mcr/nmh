@@ -292,7 +292,7 @@ void
 netsec_b64_snoop_decoder(netsec_context *nsc, const char *string, size_t len,
 			 void *context)
 {
-    const char *decoded;
+    unsigned char *decoded;
     size_t decodedlen;
     int offset;
     NMH_UNUSED(nsc);
