@@ -347,6 +347,7 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	        rc = netsec_printf(nsc, errstr, "AUTH %s %s\r\n", mech,
 				   b64data);
 		free(b64data);
+		netsec_set_snoop_callback(nsc, NULL, NULL);
 		if (rc != OK)
 		    return NOTOK;
 		if (netsec_flush(nsc, errstr) != OK)
