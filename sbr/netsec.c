@@ -71,6 +71,8 @@ struct _netsec_context {
     unsigned int ns_outbuflen;	/* Output buffer data length */
     unsigned int ns_outbufsize;	/* Output buffer size */
     char *sasl_mech;		/* User-requested mechanism */
+    char *sasl_chosen_mech;	/* Mechanism chosen by SASL */
+    netsec_sasl_callback sasl_proto_cb; /* SASL callback we use */
 #ifdef OAUTH_SUPPORT
     char *oauth_service;	/* OAuth2 service name */
 #endif /* OAUTH_SUPPORT */
@@ -78,11 +80,9 @@ struct _netsec_context {
     char *sasl_hostname;	/* Hostname we've connected to */
     sasl_conn_t *sasl_conn;	/* SASL connection context */
     sasl_ssf_t sasl_ssf;	/* SASL Security Strength Factor */
-    netsec_sasl_callback sasl_proto_cb; /* SASL callback we use */
     sasl_callback_t *sasl_cbs;	/* Callbacks used by SASL */
     nmh_creds_t sasl_creds;	/* Credentials (username/password) */
     sasl_secret_t *sasl_secret;	/* SASL password structure */
-    char *sasl_chosen_mech;	/* Mechanism chosen by SASL */
     int sasl_seclayer;		/* If true, SASL security layer is enabled */
     char *sasl_tmpbuf;		/* Temporary read buffer for decodes */
     size_t sasl_maxbufsize;	/* Maximum negotiated SASL buffer size */
@@ -147,6 +147,8 @@ netsec_init(void)
     nsc->ns_outptr = nsc->ns_outbuffer;
     nsc->ns_outbuflen = 0;
     nsc->sasl_mech = NULL;
+    nsc->sasl_chosen_mech = NULL;
+    nsc->sasl_proto_cb = NULL;
 #ifdef OAUTH_SUPPORT
     nsc->oauth_service = NULL;
 #endif /* OAUTH_SUPPORT */
@@ -156,7 +158,6 @@ netsec_init(void)
     nsc->sasl_cbs = NULL;
     nsc->sasl_creds = NULL;
     nsc->sasl_secret = NULL;
-    nsc->sasl_chosen_mech = NULL;
     nsc->sasl_ssf = 0;
     nsc->sasl_seclayer = 0;
     nsc->sasl_tmpbuf = NULL;
@@ -185,6 +186,8 @@ netsec_shutdown(netsec_context *nsc, int closeflag)
 	free(nsc->ns_outbuffer);
     if (nsc->sasl_mech)
 	free(nsc->sasl_mech);
+    if (nsc->sasl_chosen_mech)
+	free(nsc->sasl_chosen_mech);
 #ifdef OAUTH_SERVICE
     if (nsc->oauth_service)
 	free(nsc->oauth_service);
@@ -208,8 +211,6 @@ netsec_shutdown(netsec_context *nsc, int closeflag)
 	}
 	free(nsc->sasl_secret);
     }
-    if (nsc->sasl_chosen_mech)
-	free(nsc->sasl_chosen_mech);
     if (nsc->sasl_tmpbuf)
 	free(nsc->sasl_tmpbuf);
 #endif /* CYRUS_SASL */
@@ -508,7 +509,9 @@ netsec_fillread(netsec_context *nsc, char **errstr)
 	nsc->ns_inptr = nsc->ns_inbuffer;
     }
 
+#ifdef CYRUS_SASL
 retry:
+#endif /* CYRUS_SASL */
     /*
      * If we are using TLS and there's anything pending, then skip the
      * select call
@@ -965,6 +968,12 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
 
     return OK;
 #else /* CYRUS_SASL */
+    NMH_UNUSED(nsc);
+    NMH_UNUSED(hostname);
+    NMH_UNUSED(service);
+    NMH_UNUSED(mechanism);
+    NMH_UNUSED(callback);
+
     netsec_err(errstr, "SASL is not supported");
 
     return NOTOK;
@@ -1359,6 +1368,8 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 
     return OK;
 #else
+    NMH_UNUSED(nsc);
+
     netsec_err(errstr, "SASL not supported");
 
     return NOTOK;
