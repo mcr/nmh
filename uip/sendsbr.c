@@ -104,15 +104,15 @@ sendsbr (char **vec, int vecp, char *program, char *draft, struct stat *st,
 	    buildvec[i++] = "-dist";
 	buildvec[i++] = (char *) drft;
 	if (eai) {
-	    /* Add eai profile entry, to pass 8bit setting to
+	    /* Add eai profile entry, to pass utf-8 setting to
 	       getname()/getadrx().  This doesn't seem to be necessary
-               now, but it's here just in case the code changes
-               later. */
-	    add_profile_entry("eai", "8bit");
+	       now, but it's here just in case the code changes
+	       later. */
+	    add_profile_entry("eai", "utf-8");
 
-	    /* Add mhbuild switch to enable 8bit headers. */
+	    /* Add mhbuild switch to enable UTF-8 headers. */
 	    buildvec[i++] = "-headerencoding";
-	    buildvec[i++] = "8bit";
+	    buildvec[i++] = "utf-8";
 	}
 	buildvec[i] = NULL;
 	execvp(buildprogram, buildvec);

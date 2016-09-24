@@ -768,10 +768,9 @@ The valid arguments are
 for based\-64 encoding,
 .I quoted
 for quoted\-printable encoding, and
-.I 8bit
-for raw 8-bit encoding, which requires that all header field bodies be
-encoded as UTF-8 (RFC 6530) and that the SMTP server support SMTPUTF8
-(RFC 6531).
+.I utf-8
+which requires that all 8-bit header field bodies be encoded as UTF-8
+(RFC 6530) and that the SMTP server support SMTPUTF8 (RFC 6531).
 The
 .B \-autoheaderencoding
 switch will instruct

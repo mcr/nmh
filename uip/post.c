@@ -597,8 +597,8 @@ main (int argc, char **argv)
 
     /* Support EAI. */
     if (eai) {
-        /* Add eai profile entry, to pass 8bit setting to getname()/getadrx(). */
-        add_profile_entry ("eai", "8bit");
+        /* Add eai profile entry, to pass utf-8 setting to getname()/getadrx(). */
+        add_profile_entry ("eai", "utf-8");
     }
 
     start_headers ();

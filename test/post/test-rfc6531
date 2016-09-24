@@ -22,7 +22,7 @@ require_locale en_US.utf-8 en_US.utf8
 LC_ALL=en_US.UTF-8; export LC_ALL
 
 #### Enable EAI in mhbuild, via the profile.
-sed "s%^\(mhbuild: .*\)%\1 -headerencoding 8bit%" "$MH" >"$MH.new"
+sed "s%^\(mhbuild: .*\)%\1 -headerencoding utf-8%" "$MH" >"$MH.new"
 mv -f "$MH.new" "$MH"
 
 # check SMTPUTF8 basic

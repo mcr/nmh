@@ -86,7 +86,7 @@ getname (const char *addrs)
     pers = mbox = host = route = grp = note = NULL;
     err[0] = '\0';
 
-    if ((ap = getadrx (addrs ? addrs : "", eai && strncasecmp (eai, "8bit", 4) == 0)) == NULL) {
+    if ((ap = getadrx (addrs ? addrs : "", eai && strncasecmp (eai, "utf-8", 5) == 0)) == NULL) {
 	return NULL;
     }
 
