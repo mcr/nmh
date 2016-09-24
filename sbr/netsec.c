@@ -1100,7 +1100,9 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
     unsigned char *xoauth_client_res;
     size_t xoauth_client_res_len;
 #endif /* OAUTH_SUPPORT */
+#if defined CYRUS_SASL || defined OAUTH_SUPPORT
     int rc;
+#endif /* CYRUS_SASL || OAUTH_SUPPORT */
 
     /*
      * If we've been passed a requested mechanism, check our mechanism
@@ -1403,6 +1405,8 @@ netsec_set_oauth_service(netsec_context *nsc, const char *service)
     nsc->oauth_service = getcpy(service);
     return OK;
 #else /* OAUTH_SUPPORT */
+    NMH_UNUSED(nsc);
+    NMH_UNUSED(service);
     return NOTOK;
 #endif /* OAUTH_SUPPORT */
 }
