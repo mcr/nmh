@@ -41,6 +41,12 @@ void mnfree(struct mailname *);
 int ismymbox(struct mailname *);
 
 /*
+ * Enable Email Address Internationalization, which requires
+ * support of 8-bit addresses.
+ */
+void enable_eai();
+
+/*
  * Parse an address header, and return a sequence of email addresses.
  * This function is the main entry point into the nmh address parser.
  * It is used in conjunction with getm() to parse an email header.

@@ -76,17 +76,22 @@ static char *grp = NULL;
 static char *note = NULL;
 static char err[BUFSIZ];
 static char adr[BUFSIZ];
+static int eai = 0;
+
+void
+enable_eai() {
+    eai = 1;
+}
 
 
 char *
 getname (const char *addrs)
 {
     struct adrx *ap;
-    const char *const eai = context_find ("eai");
     pers = mbox = host = route = grp = note = NULL;
     err[0] = '\0';
 
-    if ((ap = getadrx (addrs ? addrs : "", eai && strncasecmp (eai, "utf-8", 5) == 0)) == NULL) {
+    if ((ap = getadrx (addrs ? addrs : "", eai)) == NULL) {
 	return NULL;
     }
 

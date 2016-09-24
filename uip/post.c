@@ -791,9 +791,8 @@ putfmt (char *name, char *str, int *eai, FILE *out)
             /* Enable SMTPUTF8. */
             *eai = 1;
 
-            /* Add eai profile entry, to pass utf-8 setting to
-               getname()/getadrx(). */
-            add_profile_entry ("eai", "utf-8");
+            /* Enable passing of utf-8 setting to getname()/getadrx(). */
+            enable_eai();
         }
     }
 
