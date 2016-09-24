@@ -1,7 +1,13 @@
 #### replaliases
 ####
 #### convenience functions for various repl(1) commands
-#### They're functions instead of aliases for portability.
+####
+#### They're functions instead of aliases for portability.  This file
+#### is intended to be sourced from a Bourne-compatible shell, e.g.,
+####     source `mhparam docdir`/contrib/replaliases
+#### to declare the functions.
+####
+#### Author: David Levine <levinedl@acm.org>
 
 #### If using par (see mhn.defaults), it helps to have its PARINIT
 #### environment variable set.  If you really want it to be null,
