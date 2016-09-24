@@ -57,7 +57,7 @@ MIME-Version: 1.0'
 # check with incompatible locale
 # This is here as a place holder.  We should either try to run the (8-bit) text
 # through iconv, or refuse to display it if the locale is incompatible.  In the
-# cAse of EAI, that means not UTF-8.
+# case of EAI, that means not UTF-8.
 # start_test 'incompatible locale'
 # LC_ALL=C
 # run_test "$mhl -form mhl.headers `mhpath last`" \

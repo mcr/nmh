@@ -64,8 +64,6 @@
     X("library directory", -7, LIBSW) /* interface from send, whom */ \
     X("mime", 0, MIMESW) \
     X("nomime", 0, NMIMESW) \
-    X("eai", 0, EAISW) \
-    X("noeai", 0, NEAISW) \
     X("msgid", 0, MSGDSW) \
     X("nomsgid", 0, NMSGDSW) \
     X("verbose", 0, VERBSW) \
@@ -225,7 +223,6 @@ static int badmsg = 0;		/* message has bad semantics             */
 static int verbose = 0;		/* spell it out                          */
 static int format = 1;		/* format addresses                      */
 static int mime = 0;		/* use MIME-style encapsulations for Bcc */
-static int eai = 0;		/* use EAI (SMTPUTF8)                    */
 static int msgid = 0;		/* add msgid                             */
 static int debug = 0;		/* debugging post                        */
 static int watch = 0;		/* watch the delivery process            */
@@ -281,7 +278,7 @@ static char *partno = NULL;
 /*
  * static prototypes
  */
-static void putfmt (char *, char *, FILE *);
+static void putfmt (char *, char *, int *, FILE *);
 static void start_headers (void);
 static void finish_headers (FILE *);
 static int get_header (char *, struct headers *);
@@ -293,14 +290,14 @@ static void anno (void);
 static int annoaux (struct mailname *);
 static void insert_fcc (struct headers *, char *);
 static void make_bcc_file (int);
-static void verify_all_addresses (int, char *, int, char *);
+static void verify_all_addresses (int, int, char *, int, char *);
 static void chkadr (void);
 static void sigon (void);
 static void sigoff (void);
 static void p_refile (char *);
 static void fcc (char *, char *);
 static void die (char *, char *, ...);
-static void post (char *, int, int, char *, int, char *);
+static void post (char *, int, int, int, char *, int, char *);
 static void do_text (char *file, int fd);
 static void do_an_address (struct mailname *, int);
 static void do_addresses (int, int);
@@ -311,6 +308,7 @@ int
 main (int argc, char **argv)
 {
     int state, compnum, dashstuff = 0, swnum, oauth_flag = 0;
+    int eai = 0; /* use Email Address Internationalization (EAI) (SMTPUTF8) */
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
     char buf[BUFSIZ], name[NAMESZ], *auth_svc = NULL;
     FILE *in, *out;
@@ -399,13 +397,6 @@ main (int argc, char **argv)
 		    continue;
 		case NMIMESW: 
 		    mime = 0;
-		    continue;
-
-		case EAISW:
-		    eai = 1;
-		    continue;
-		case NEAISW:
-		    eai = 0;
 		    continue;
 
 		case MSGDSW: 
@@ -595,12 +586,6 @@ main (int argc, char **argv)
     if ((in = fopen (msg, "r")) == NULL)
 	adios (msg, "unable to open");
 
-    /* Support EAI. */
-    if (eai) {
-        /* Add eai profile entry, to pass utf-8 setting to getname()/getadrx(). */
-        add_profile_entry ("eai", "utf-8");
-    }
-
     start_headers ();
     if (debug) {
 	verbose++;
@@ -626,14 +611,14 @@ main (int argc, char **argv)
 	switch (state = m_getfld (&gstate, name, buf, &bufsz, in)) {
 	    case FLD: 
 	    case FLDPLUS: 
-		compnum++;
+                compnum++;
 		cp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
 		    state = m_getfld (&gstate, name, buf, &bufsz, in);
 		    cp = add (buf, cp);
 		}
-		putfmt (name, cp, out);
+		putfmt (name, cp, &eai, out);
 		free (cp);
 		continue;
 
@@ -735,7 +720,7 @@ main (int argc, char **argv)
     /* If we are doing a "whom" check */
     if (whomsw) {
 	/* This won't work with MTS_SENDMAIL_PIPE. */
-        verify_all_addresses (1, envelope, oauth_flag, auth_svc);
+        verify_all_addresses (1, eai, envelope, oauth_flag, auth_svc);
 	done (0);
     }
 
@@ -747,14 +732,15 @@ main (int argc, char **argv)
 		   verify_all_addresses with MTS_SENDMAIL_PIPE, but
 		   that might require running sendmail as root.  Note
 		   that spost didn't verify addresses. */
-		verify_all_addresses (verbose, envelope, oauth_flag, auth_svc);
+		verify_all_addresses (verbose, eai, envelope, oauth_flag,
+                                      auth_svc);
 	    }
-	    post (tmpfil, 0, verbose, envelope, oauth_flag, auth_svc);
+	    post (tmpfil, 0, verbose, eai, envelope, oauth_flag, auth_svc);
 	}
-	post (bccfil, 1, verbose, envelope, oauth_flag, auth_svc);
+	post (bccfil, 1, verbose, eai, envelope, oauth_flag, auth_svc);
 	(void) m_unlink (bccfil);
     } else {
-	post (tmpfil, 0, isatty (1), envelope, oauth_flag, auth_svc);
+	post (tmpfil, 0, isatty (1), eai, envelope, oauth_flag, auth_svc);
     }
 
     p_refile (tmpfil);
@@ -777,7 +763,7 @@ main (int argc, char **argv)
  */
 
 static void
-putfmt (char *name, char *str, FILE *out)
+putfmt (char *name, char *str, int *eai, FILE *out)
 {
     int count, grp, i, keep;
     char *cp, *pp, *qp;
@@ -794,8 +780,25 @@ putfmt (char *name, char *str, FILE *out)
 	return;
     }
 
+    if (! *eai) {
+        /* Check each header field value to see if it has any 8-bit characters.
+           If it does, enable EAI support. */
+        if (contains8bit(str, NULL)) {
+            if (verbose) {
+                printf ("EAI/SMTPUTF8 enabled\n");
+            }
+
+            /* Enable SMTPUTF8. */
+            *eai = 1;
+
+            /* Add eai profile entry, to pass utf-8 setting to
+               getname()/getadrx(). */
+            add_profile_entry ("eai", "utf-8");
+        }
+    }
+
     if ((i = get_header (name, hdrtab)) == NOTOK) {
-	if (strncasecmp (name, "nmh-", 4)) {
+        if (strncasecmp (name, "nmh-", 4)) {
 	    fprintf (out, "%s: %s", name, str);
 	} else {
 	    /* Filter out all Nmh-* headers, because Norm asked.  They
@@ -843,7 +846,8 @@ putfmt (char *name, char *str, FILE *out)
     }
 
     tmpaddrs.m_next = NULL;
-    for (count = 0; (cp = getname (str)); count++)
+
+    for (count = 0; (cp = getname (str)); count++) {
 	if ((mp = getm (cp, NULL, 0, error, sizeof(error)))) {
 	    if (tmpaddrs.m_next)
 		np->m_next = mp;
@@ -858,6 +862,7 @@ putfmt (char *name, char *str, FILE *out)
 	    else
 		badmsg++;
 	}
+    }
 
     if (count < 1) {
 	if (hdr->flags & HNIL)
@@ -1601,8 +1606,8 @@ do_addresses (int bccque, int talk)
  */
 
 static void
-post (char *file, int bccque, int talk, char *envelope, int oauth_flag,
-      char *auth_svc)
+post (char *file, int bccque, int talk, int eai, char *envelope,
+      int oauth_flag, char *auth_svc)
 {
     int fd;
     int	retval, i;
@@ -1684,7 +1689,8 @@ post (char *file, int bccque, int talk, char *envelope, int oauth_flag,
 /* Address Verification */
 
 static void
-verify_all_addresses (int talk, char *envelope, int oauth_flag, char *auth_svc)
+verify_all_addresses (int talk, int eai, char *envelope, int oauth_flag,
+                      char *auth_svc)
 {
     int retval;
     struct mailname *lp;

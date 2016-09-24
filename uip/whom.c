@@ -42,8 +42,6 @@
     X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
-    X("eai", 0, EAISW) \
-    X("noeai", 0, NEAISW) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 0, MTSSW) \
 
 #define X(sw, minchars, id) id,
@@ -102,8 +100,6 @@ main (int argc, char **argv)
 		case TLSSW:
 		case INITTLSSW:
 		case NTLSSW:
-                case EAISW:
-                case NEAISW:
 		    vec[vecp++] = --cp;
 		    continue;
 

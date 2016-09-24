@@ -42,8 +42,6 @@
     X("noforward", 0, NFORWSW) \
     X("mime", 0, MIMESW) \
     X("nomime", 0, NMIMESW) \
-    X("eai", 0, EAISW) \
-    X("noeai", 0, NEAISW) \
     X("msgid", 0, MSGDSW) \
     X("nomsgid", 0, NMSGDSW) \
     X("push", 0, PUSHSW) \
@@ -235,13 +233,6 @@ main (int argc, char **argv)
 		    continue;
 		case NMIMESW:
 		    mime = 0;
-		    vec[vecp++] = --cp;
-		    continue;
-
-		case EAISW:
-		    vec[vecp++] = --cp;
-		    continue;
-		case NEAISW:
 		    vec[vecp++] = --cp;
 		    continue;
 
