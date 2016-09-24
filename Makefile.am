@@ -240,7 +240,8 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 ##
 docs_contribdir = $(docdir)/contrib
 dist_docs_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
-			    docs/contrib/ml docs/contrib/vpick
+			    docs/contrib/localpostproc docs/contrib/ml \
+			    docs/contrib/vpick docs/contrib/replaliases
 dist_docs_contrib_DATA = docs/contrib/replaliases
 
 ##

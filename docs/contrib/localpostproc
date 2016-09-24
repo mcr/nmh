@@ -1,0 +1,89 @@
+#!/bin/sh
+#
+# localpostproc - A sample postproc which changes the submission email server
+#		  based on user-supplied criteria.
+#
+# The basic concept is that we change where we submit mail to based on the
+# message contents.  We use scan(1) to get out fields we care about.  But
+# really, you could use ANY criteria, such as environment variables,
+# recipients, etc etc.
+#
+
+#
+# Find out which message is the draft message; yes, this sucks.
+#
+# The case statement has to know about switches that take arguments;
+# add to this list as necessary.
+#
+
+whom=0
+
+find_draftmessage() {
+	while test $# -gt 0; do
+		case "$1" in
+		-al* | -filt* | -wi* | -client | -idanno | -server | \
+		-partno | -saslmech | -user | -por* | -width | \
+		-file* | -mhl* | -mt* | -cr* | -lib* | -auth* | -sendmail)
+			shift
+			;;
+		-whom)
+			whom=1
+			;;
+		-*)	;;
+		*)	
+			draftmessage="$1"
+			return 0
+			;;
+		esac
+		shift
+	done
+
+	echo "Cannot find draft message name in argument list"
+	exit 1
+}
+
+realpost="$(mhparam libdir)/post"
+
+if [ $# -eq 0 ]; then
+	echo "Usage: [post switches] filename"
+	exit 1
+fi
+
+find_draftmessage "$@"
+
+if [ $whom -eq 1 ]; then
+	exec "$realpost" "$@"
+fi
+
+fromhost=$(scan -format '%<{resent-from}%(host{resent-from})%|%(host{from})%>' -file "$draftmessage")
+
+if [ $? -ne 0 ]; then
+	echo "Unable to run scan on draft file $draftmessage, aborting"
+	exit 1
+fi
+
+if [ -z "$fromhost" ]; then
+	echo "Could not determine hostname of From: address"
+	exit 1;
+fi
+
+#
+# Here we use the hostname in the "from" address, but you could use anything
+#
+
+case "$fromhost" in
+	*host1.com)
+	postflags="-server smtp.host1.com -sasl -port submission"
+	;;
+
+	host2.com)
+	postflags="-server smtp.host2.com -sasl -tls -port submission"
+	;;
+
+	*)
+	echo "Don't know how to send email from $fromhost"
+	exit 1
+	;;
+esac
+
+exec "$realpost" $postflags "$@"
