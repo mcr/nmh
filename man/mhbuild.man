@@ -765,17 +765,19 @@ switch will indicate which algorithm to use when encoding any message headers
 that contain 8\-bit characters.
 The valid arguments are
 .I base64
-for based\-64 encoding,
+for base\-64 encoding,
 .I quoted
 for quoted\-printable encoding, and
-.I utf-8
-which requires that all 8-bit header field bodies be encoded as UTF-8
-(RFC 6530) and that the SMTP server support SMTPUTF8 (RFC 6531).
+.I utf\-8
+which requires that all 8\-bit header field bodies be encoded as UTF\-8
+(RFC 6530) and that the message be sent to a SMTP server that supports
+SMTPUTF8 (RFC 6531).
 The
 .B \-autoheaderencoding
-switch will instruct
+switch instructs
 .B mhbuild
-to automatically pick the algorithm that results in a shorter encoded string.
+to automatically pick the encoding, either base64 or quoted\-printable,
+that results in a shorter encoded string.
 .PP
 Putting this all together,
 here is an example of a more complicated message draft.
