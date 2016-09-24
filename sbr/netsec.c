@@ -411,11 +411,12 @@ netsec_read(netsec_context *nsc, void *buffer, size_t size, char **errstr)
  *
  * - Unlike every other function, we return a pointer to the
  *   existing buffer.  This pointer is valid until you call another
- *   read functiona again.
- * - We NUL-terminated the buffer right at the end, before the terminator.
+ *   read function again.
+ * - We NUL-terminate the buffer right at the end, before the CR-LF terminator.
  * - Technically we look for a LF; if we find a CR right before it, then
  *   we back up one.
- * - If your data may contain embedded NULs, this won't work.
+ * - If your data may contain embedded NULs, this won't work.  You should
+ *   be using netsec_read() in that case.
  */
 
 char *
@@ -1174,7 +1175,8 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	    /*
 	     * We're going to assume the error here is a JSON response;
 	     * we ignore it and send a blank message in response.  We should
-	     * then get either an +OK or -ERR
+	     * then get a failure messages with a useful error.  We should
+	     * NOT get a success message at this point.
 	     */
 	    free(*errstr);
 	    nsc->sasl_proto_cb(NETSEC_SASL_WRITE, NULL, 0, NULL, 0, NULL);
@@ -1363,9 +1365,18 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 
     return OK;
 #else
-    NMH_UNUSED(nsc);
+    /*
+     * If we're at this point, then either we have NEITHER OAuth2 or
+     * Cyrus-SASL compiled in, or have OAuth2 but didn't give the XOAUTH2
+     * mechanism on the command line.
+     */
 
-    netsec_err(errstr, "SASL not supported");
+    if (! nsc->sasl_mech)
+	netsec_err(errstr, "SASL library support not available; please "
+		   "specify a SASL mechanism to use");
+    else
+	netsec_err(errstr, "No support for the %s SASL mechanism",
+		   nsc->sasl_mech);
 
     return NOTOK;
 #endif /* CYRUS_SASL */
@@ -1464,12 +1475,11 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	 * supplied socket.
 	 *
 	 * Then we create an SSL BIO, and assign our current SSL connection
-	 * to it.  We then create a buffer BIO and push it in front of our
-	 * SSL BIO.  So the chain looks like:
+	 * to it.  This is done so our code stays simple if we want to use
+	 * any buffering BIOs (right now we do our own buffering).
+	 * So the chain looks like:
 	 *
-	 * buffer BIO -> SSL BIO -> socket BIO.
-	 *
-	 * So writes and reads are buffered (we mostly care about writes).
+	 * SSL BIO -> socket BIO.
 	 */
 
 	rbio = BIO_new_socket(nsc->ns_readfd, BIO_NOCLOSE);
