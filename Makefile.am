@@ -118,8 +118,8 @@ check_PROGRAMS = test/getfullname test/getcanon test/fakepop test/fakesmtp \
 ## distcheck, $nmhetcdir.  For distcheck, prepend $MH_INST_DIR (from
 ## test/common.sh.in), which is based on $MH_TEST_DIR (from
 ## $TESTS_ENVIRONMENT).
-DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1 \
-			    NMHETCDIRINST='$${abs_builddir}/test/testdir/inst'
+AM_DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1 \
+			NMHETCDIRINST='$${abs_builddir}/test/testdir/inst'
 
 ##
 ## Stuff that should be cleaned via "make clean"
@@ -198,9 +198,9 @@ noinst_LIBRARIES = sbr/libmh.a mts/libmts.a
 noinst_HEADERS = h/addrsbr.h h/aliasbr.h h/crawl_folders.h h/dropsbr.h \
 		 h/fmt_compile.h h/fmt_scan.h h/icalendar.h h/md5.h h/mf.h \
 		 h/mh.h h/mhcachesbr.h h/mhparse.h h/mime.h \
-		 h/mts.h h/nmh.h h/picksbr.h h/popsbr.h h/prototypes.h \
-		 h/rcvmail.h h/scansbr.h h/signals.h h/tws.h h/utils.h \
-		 mts/smtp/smtp.h sbr/ctype-checked.h h/oauth.h \
+		 h/mts.h h/nmh.h h/netsec.h h/picksbr.h h/popsbr.h \
+		 h/prototypes.h h/rcvmail.h h/scansbr.h h/signals.h h/tws.h \
+		 h/utils.h mts/smtp/smtp.h sbr/ctype-checked.h h/oauth.h \
 		 thirdparty/jsmn/jsmn.h
 
 ##
@@ -241,7 +241,8 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 ##
 docs_contribdir = $(docdir)/contrib
 dist_docs_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
-			    docs/contrib/ml docs/contrib/vpick
+			    docs/contrib/localpostproc docs/contrib/ml \
+			    docs/contrib/vpick docs/contrib/replaliases
 dist_docs_contrib_DATA = docs/contrib/replaliases
 
 ##
@@ -343,7 +344,8 @@ uip_forw_SOURCES = uip/forw.c uip/whatnowproc.c uip/whatnowsbr.c uip/sendsbr.c \
 uip_forw_LDADD = $(LDADD) $(READLINELIB) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_inc_SOURCES = uip/inc.c uip/scansbr.c uip/dropsbr.c uip/popsbr.c
-uip_inc_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(SASLLIB) $(CURLLIB) $(POSTLINK)
+uip_inc_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(SASLLIB) $(CURLLIB) \
+		$(TLSLIB) $(POSTLINK)
 
 uip_install_mh_SOURCES = uip/install-mh.c
 uip_install_mh_LDADD = $(LDADD) $(POSTLINK)
@@ -390,7 +392,7 @@ uip_mhstore_SOURCES = uip/mhstore.c uip/mhparse.c uip/mhcachesbr.c \
 uip_mhstore_LDADD = $(LDADD) $(TERMLIB) $(ICONVLIB) $(POSTLINK)
 
 uip_msgchk_SOURCES = uip/msgchk.c uip/popsbr.c
-uip_msgchk_LDADD = $(LDADD) $(SASLLIB) $(CURLLIB) $(POSTLINK)
+uip_msgchk_LDADD = $(LDADD) $(SASLLIB) $(CURLLIB) $(TLSLIB) $(POSTLINK)
 
 uip_new_SOURCES = uip/new.c
 uip_new_LDADD = $(LDADD) $(POSTLINK)
@@ -610,7 +612,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/m_draft.c sbr/m_getfld.c sbr/m_gmprot.c \
 		      sbr/m_maildir.c sbr/m_name.c sbr/m_popen.c sbr/m_rand.c \
 		      sbr/makedir.c sbr/md5.c sbr/message_id.c \
-		      sbr/mime_type.c sbr/mts.c sbr/norm_charmap.c sbr/path.c \
+		      sbr/mime_type.c sbr/mts.c sbr/netsec.c \
+		      sbr/norm_charmap.c sbr/path.c \
 		      sbr/peekc.c sbr/pidwait.c sbr/pidstatus.c \
 		      sbr/print_help.c sbr/print_sw.c sbr/print_version.c \
 		      sbr/push.c sbr/putenv.c sbr/refile.c sbr/remdir.c \

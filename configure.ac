@@ -469,12 +469,12 @@ dnl -----------------
 
 AS_IF([test x"$tls_support" = x"yes"],[
   dnl OpenBSD 5 needs the other-libraries (fourth argument) to the
-  dnl AC_CHECK_LIB for SSL_library_init, because it doesn't
+  dnl AC_CHECK_LIB for SSL_new, because it doesn't
   dnl automatically append -lcrypto when linking with -lssl.
   AC_CHECK_HEADER([openssl/ssl.h], , [AC_MSG_ERROR([openssl/ssl.h not found])])
   AC_CHECK_LIB([crypto], [BIO_write], [TLSLIB="-lcrypto"],
     [AC_MSG_ERROR([OpenSSL crypto library not found])])
-  AC_CHECK_LIB([ssl], [SSL_library_init], [TLSLIB="-lssl $TLSLIB"],
+  AC_CHECK_LIB([ssl], [SSL_new], [TLSLIB="-lssl $TLSLIB"],
     [AC_MSG_ERROR([OpenSSL library not found])],[$TLSLIB])],
   [TLSLIB=])
 AC_SUBST([TLSLIB])

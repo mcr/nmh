@@ -83,7 +83,6 @@
     X("partno", -6, PARTSW) \
     X("sasl", SASLminc(4), SASLSW) \
     X("nosasl", SASLminc(6), NOSASLSW) \
-    X("saslmaxssf", SASLminc(10), SASLMXSSFSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \
     X("user", SASLminc(-4), USERSW) \
     X("port server submission port name/number", 4, PORTSW) \
@@ -231,7 +230,6 @@ static int checksw = 0;		/* whom -check                           */
 static int linepos=0;		/* putadr()'s position on the line       */
 static int nameoutput=0;	/* putadr() has output header name       */
 static int sasl=0;		/* Use SASL auth for SMTP                */
-static int saslssf=-1;		/* Our maximum SSF for SASL              */
 static char *saslmech=NULL;	/* Force use of particular SASL mech     */
 static char *user=NULL;		/* Authenticate as this user             */
 static char *port="submission";	/* Name of server port for SMTP submission */
@@ -463,12 +461,6 @@ main (int argc, char **argv)
 		    sasl = 0;
 		    continue;
 
-		case SASLMXSSFSW:
-		    if (!(cp = *argp++) || *cp == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
-		    saslssf = atoi(cp);
-		    continue;
-		
 		case SASLMECHSW:
 		    if (!(saslmech = *argp++) || *saslmech == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -1655,8 +1647,7 @@ post (char *file, int bccque, int talk, int eai, char *envelope,
 	}
     } else {
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
-					verbose, snoop, sasl, saslssf,
-					saslmech, user,
+					verbose, snoop, sasl, saslmech, user,
 					oauth_flag ? auth_svc : NULL, tls))
 	     || rp_isbad (retval = sm_winit (envelope, eai))) {
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
@@ -1698,8 +1689,7 @@ verify_all_addresses (int talk, int eai, char *envelope, int oauth_flag,
 
     if (!whomsw || checksw) {
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
-					verbose, snoop, sasl, saslssf,
-					saslmech, user,
+					verbose, snoop, sasl, saslmech, user,
 					oauth_flag ? auth_svc : NULL, tls))
 		|| rp_isbad (retval = sm_winit (envelope, eai))) {
 	    die (NULL, "problem initializing server; %s", rp_string (retval));

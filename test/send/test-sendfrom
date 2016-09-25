@@ -51,6 +51,8 @@ QUIT
 EOF
 
 cat > "${testname}.post-expected" <<EOF
+Trying to connect to "127.0.0.1" ...
+Connecting to 127.0.0.1:${localport}...
 <= 220 Not really an ESMTP server
 => EHLO nosuchhost.example.com
 <= 250-ready
@@ -76,7 +78,7 @@ cat > "${testname}.post-expected" <<EOF
 EOF
 
 test_post "${testname}.actual" "${testname}.expected" \
-    > ${testname}.post 2>/dev/null
+    2> ${testname}.post
 
 check "${testname}.post-expected" "${testname}.post"
 

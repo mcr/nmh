@@ -42,7 +42,7 @@ http://127.0.0.1:${http_port}/oauth/auth?response_type=code&client_id=test-id&re
 Enter the authorization code: "
 
 start_pop_xoauth
-run_test "msgchk -host 127.0.0.1 -port ${pop_port} -saslmech xoauth2 -authservice test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
+run_test "msgchk -host 127.0.0.1 -port ${pop_port} -sasl -saslmech xoauth2 -authservice test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
 
 start_pop_xoauth
 test_inc_success
@@ -74,7 +74,7 @@ start_pop_xoauth
 test_inc_success
 
 start_pop_xoauth
-run_test "msgchk -host 127.0.0.1 -port ${pop_port} -saslmech oauth2 -authservice test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
+run_test "msgchk -host 127.0.0.1 -port ${pop_port} -sasl -saslmech xoauth2 -authservice test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
 
 setup_draft
 test_send_only_fakesmtp
@@ -100,7 +100,7 @@ EOF
 
 start_fakehttp
 start_pop_xoauth
-run_test "msgchk -host 127.0.0.1 -port ${pop_port} -saslmech xoauth2 -authservice test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
+run_test "msgchk -host 127.0.0.1 -port ${pop_port} -sasl -saslmech xoauth2 -authservice test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
 
 start_pop_xoauth
 test_inc_success
@@ -131,7 +131,7 @@ setup_draft
 test_send
 
 start_pop_xoauth
-run_test "msgchk -host 127.0.0.1 -port ${pop_port} -saslmech xoauth2 -authservice test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
+run_test "msgchk -host 127.0.0.1 -port ${pop_port} -sasl -saslmech xoauth2 -authservice test -user nobody@example.com" 'nobody@example.com has 1 message (178 bytes) on 127.0.0.1'
 
 start_pop_xoauth
 test_inc_success

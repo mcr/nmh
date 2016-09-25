@@ -32,8 +32,6 @@ post \- deliver a message
 .IR portname/number ]
 .RB [ \-sasl ]
 .RB [ \-nosasl ]
-.RB [ \-saslmaxssf
-.IR ssf ]
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-user
@@ -236,11 +234,6 @@ switch.
 Base64-encoded data is wrapped with `b64<>'.
 (Beware that the SMTP transaction may contain authentication information either
 in plaintext or easily decoded base64.)
-The
-.B \-saslmaxssf
-switch can be used to select the maximum value of the Security Strength Factor.
-This is an integer value and the exact meaning of this value depends on the
-underlying SASL mechanism.  A value of 0 disables encryption.
 .PP
 If
 .B nmh

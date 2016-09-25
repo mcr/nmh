@@ -30,7 +30,7 @@ EOF
 sendfrom="$MH_INST_DIR${datarootdir}/doc/nmh/contrib/sendfrom"
 cat >> "$MH" <<EOF
 sendfrom-nobody@example.com: -server 127.0.0.1 -port ${smtp_port}
-  -client localhost -saslmech xoauth2 -authservice test -user user@example.com
+  -client localhost -sasl -saslmech xoauth2 -authservice test -user user@example.com
 EOF
 
 cat > "${testname}.expected" <<EOF

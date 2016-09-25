@@ -9,18 +9,7 @@
 #include <h/mh.h>
 #include <h/utils.h>
 #include <h/oauth.h>
-
-#ifdef CYRUS_SASL
-# include <sasl/sasl.h>
-# include <sasl/saslutil.h>
-# if SASL_VERSION_FULL < 0x020125
-    /* Cyrus SASL 2.1.25 introduced the sasl_callback_ft prototype,
-       which has an explicit void parameter list, according to best
-       practice.  So we need to cast to avoid compile warnings.
-       Provide this prototype for earlier versions. */
-    typedef int (*sasl_callback_ft)();
-# endif /* SASL_VERSION_FULL < 0x020125 */
-#endif /* CYRUS_SASL */
+#include <h/netsec.h>
 
 #include <h/popsbr.h>
 #include <h/signals.h>
@@ -32,36 +21,7 @@ static int poprint = 0;
 static int pophack = 0;
 
 char response[BUFSIZ];
-
-static FILE *input;
-static FILE *output;
-
-#ifdef CYRUS_SASL
-static sasl_conn_t *conn;	/* SASL connection state */
-static int sasl_complete = 0;	/* Has sasl authentication succeeded? */
-static int maxoutbuf;		/* Maximum output buffer size */
-static sasl_ssf_t sasl_ssf = 0;	/* Security strength factor */
-static int sasl_get_user(void *, int, const char **, unsigned *);
-static int sasl_get_pass(sasl_conn_t *, void *, int, sasl_secret_t **);
-struct pass_context {
-    char *user;
-    char *password;
-    char *host;
-};
-
-static sasl_callback_t callbacks[] = {
-    { SASL_CB_USER, (sasl_callback_ft) sasl_get_user, NULL },
-#define POP_SASL_CB_N_USER 0
-    { SASL_CB_PASS, (sasl_callback_ft) sasl_get_pass, NULL },
-#define POP_SASL_CB_N_PASS 1
-    { SASL_CB_LOG, NULL, NULL },
-    { SASL_CB_LIST_END, NULL, NULL },
-
-#define SASL_BUFFER_SIZE 262144
-};
-#else /* CYRUS_SASL */
-# define sasl_fgetc fgetc
-#endif /* CYRUS_SASL */
+static netsec_context *nsc = NULL;
 
 /*
  * static prototypes
@@ -70,19 +30,15 @@ static sasl_callback_t callbacks[] = {
 static int command(const char *, ...);
 static int multiline(void);
 
-#ifdef CYRUS_SASL
-static int pop_auth_sasl(char *, char *, char *);
-static int sasl_fgetc(FILE *);
-#endif /* CYRUS_SASL */
-
 static int traverse (int (*)(char *), const char *, ...);
 static int vcommand(const char *, va_list);
-static int sasl_getline (char *, int, FILE *);
-static int putline (char *, FILE *);
+static int pop_getline (char *, int, netsec_context *);
+static int pop_sasl_callback(enum sasl_message_type, unsigned const char *,
+			     unsigned int, unsigned char **, unsigned int *,
+			     char **);
 
-
-int
-check_mech(char *server_mechs, size_t server_mechs_size, char *mech)
+static int
+check_mech(char *server_mechs, size_t server_mechs_size)
 {
   int status, sasl_capability = 0;
 
@@ -125,335 +81,7 @@ check_mech(char *server_mechs, size_t server_mechs_size, char *mech)
 	return NOTOK;
     }
 
-    /*
-     * If we received a preferred mechanism, see if the server supports it.
-     */
-
-    if (mech && stringdex(mech, server_mechs) == -1) {
-	snprintf(response, sizeof(response), "Requested SASL mech \"%s\" is "
-		 "not in list of supported mechanisms:\n%s",
-		 mech, server_mechs);
-	return NOTOK;
-    }
-
     return OK;
-}
-
-#ifdef CYRUS_SASL
-/*
- * This function implements the AUTH command for various SASL mechanisms
- *
- * We do the whole SASL dialog here.  If this completes, then we've
- * authenticated successfully and have (possibly) negotiated a security
- * layer.
- */
-
-#define CHECKB64SIZE(insize, outbuf, outsize) \
-    { size_t wantout = (((insize + 2) / 3) * 4) + 32; \
-      if (wantout > outsize) { \
-          outbuf = mh_xrealloc(outbuf, outsize = wantout); \
-      } \
-    }
-
-int
-pop_auth_sasl(char *user, char *host, char *mech)
-{
-    int result, status;
-    unsigned int buflen, outlen;
-    char server_mechs[256], *buf, *outbuf = NULL;
-    size_t outbufsize = 0;
-    const char *chosen_mech;
-    sasl_security_properties_t secprops;
-    struct pass_context p_context;
-    sasl_ssf_t *ssf;
-    int *moutbuf;
-
-    if ((status = check_mech(server_mechs, sizeof(server_mechs), mech)) != OK) {
-	return status;
-    }
-
-    /*
-     * Start the SASL process.  First off, initialize the SASL library.
-     */
-
-    callbacks[POP_SASL_CB_N_USER].context = user;
-    p_context.user = user;
-    p_context.host = host;
-    callbacks[POP_SASL_CB_N_PASS].context = &p_context;
-
-    result = sasl_client_init(callbacks);
-
-    if (result != SASL_OK) {
-	snprintf(response, sizeof(response), "SASL library initialization "
-		 "failed: %s", sasl_errstring(result, NULL, NULL));
-	return NOTOK;
-    }
-
-    result = sasl_client_new("pop", host, NULL, NULL, NULL, 0, &conn);
-
-    if (result != SASL_OK) {
-	snprintf(response, sizeof(response), "SASL client initialization "
-		 "failed: %s", sasl_errstring(result, NULL, NULL));
-	return NOTOK;
-    }
-
-    /*
-     * Initialize the security properties
-     */
-
-    memset(&secprops, 0, sizeof(secprops));
-    secprops.maxbufsize = SASL_BUFFER_SIZE;
-    secprops.max_ssf = UINT_MAX;
-
-    result = sasl_setprop(conn, SASL_SEC_PROPS, &secprops);
-
-    if (result != SASL_OK) {
-	snprintf(response, sizeof(response), "SASL security property "
-		 "initialization failed: %s", sasl_errdetail(conn));
-	return NOTOK;
-    }
-
-    /*
-     * Start the actual protocol.  Feed the mech list into the library
-     * and get out a possible initial challenge
-     */
-
-    result = sasl_client_start(conn,
-			       (const char *) (mech ? mech : server_mechs),
-			       NULL, (const char **) &buf,
-			       &buflen, &chosen_mech);
-
-    if (result != SASL_OK && result != SASL_CONTINUE) {
-	snprintf(response, sizeof(response), "SASL client start failed: %s",
-		 sasl_errdetail(conn));
-	return NOTOK;
-    }
-
-    if (buflen) {
-	CHECKB64SIZE(buflen, outbuf, outbufsize);
-	status = sasl_encode64(buf, buflen, outbuf, outbufsize, NULL);
-	if (status != SASL_OK) {
-	    snprintf(response, sizeof(response), "SASL base64 encode "
-		     "failed: %s", sasl_errstring(status, NULL, NULL));
-	    if (outbuf)
-		free(outbuf);
-	    return NOTOK;
-	}
-
-	status = command("AUTH %s %s", chosen_mech, outbuf);
-    } else
-	status = command("AUTH %s", chosen_mech);
-
-    while (result == SASL_CONTINUE) {
-	size_t inlen;
-
-	if (status == NOTOK) {
-	    if (outbuf)
-		free(outbuf);
-	    return NOTOK;
-	}
-	
-	/*
-	 * If we get a "+OK" prefix to our response, then we should
-	 * exit out of this exchange now (because authenticated should
-	 * have succeeded)
-	 */
-	
-	if (strncmp(response, "+OK", 3) == 0)
-	    break;
-	
-	/*
-	 * Otherwise, make sure the server challenge is correctly formatted
-	 */
-	
-	if (strncmp(response, "+ ", 2) != 0) {
-	    command("*");
-	    snprintf(response, sizeof(response),
-		     "Malformed authentication message from server");
-	    if (outbuf)
-		free(outbuf);
-	    return NOTOK;
-	}
-
-	/*
-	 * For decode, it will always be shorter, so just make sure
-	 * that outbuf is as at least as big as the encoded response.
-	 */
-
-	inlen = strlen(response + 2);
-
-	if (inlen > outbufsize) {
-	    outbuf = mh_xrealloc(outbuf, outbufsize = inlen);
-	}
-
-	result = sasl_decode64(response + 2, strlen(response + 2),
-			       outbuf, outbufsize, &outlen);
-	
-	if (result != SASL_OK) {
-	    command("*");
-	    snprintf(response, sizeof(response), "SASL base64 decode "
-		     "failed: %s", sasl_errstring(result, NULL, NULL));
-	    if (outbuf)
-		free(outbuf);
-	    return NOTOK;
-	}
-
-	result = sasl_client_step(conn, outbuf, outlen, NULL,
-				  (const char **) &buf, &buflen);
-
-	if (result != SASL_OK && result != SASL_CONTINUE) {
-	    command("*");
-	    snprintf(response, sizeof(response), "SASL client negotiaton "
-		     "failed: %s", sasl_errdetail(conn));
-	    if (outbuf)
-		free(outbuf);
-	    return NOTOK;
-	}
-
-	CHECKB64SIZE(buflen, outbuf, outbufsize);
-
-	status = sasl_encode64(buf, buflen, outbuf, outbufsize, NULL);
-
-	if (status != SASL_OK) {
-	    command("*");
-	    snprintf(response, sizeof(response), "SASL base64 encode "
-		     "failed: %s", sasl_errstring(status, NULL, NULL));
-	    if (outbuf)
-		free(outbuf);
-	    return NOTOK;
-	}
-
-	status = command(outbuf);
-    }
-
-    if (outbuf)
-	free(outbuf);
-
-    /*
-     * If we didn't get a positive final response, then error out
-     * (that probably means we failed an authorization check).
-     */
-
-    if (status != OK)
-	return NOTOK;
-
-    /*
-     * We _should_ be okay now.  Get a few properties now that negotiation
-     * has completed.
-     */
-
-    result = sasl_getprop(conn, SASL_MAXOUTBUF, (const void **) &moutbuf);
-
-    if (result != SASL_OK) {
-	snprintf(response, sizeof(response), "Cannot retrieve SASL negotiated "
-		 "output buffer size: %s", sasl_errdetail(conn));
-	return NOTOK;
-    }
-
-    maxoutbuf = *moutbuf;
-
-    result = sasl_getprop(conn, SASL_SSF, (const void **) &ssf);
-
-    sasl_ssf = *ssf;
-
-    if (result != SASL_OK) {
-	snprintf(response, sizeof(response), "Cannot retrieve SASL negotiated "
-		 "security strength factor: %s", sasl_errdetail(conn));
-	return NOTOK;
-    }
-
-    /*
-     * Limit this to what we can deal with.  Shouldn't matter much because
-     * this is only outgoing data (which should be small)
-     */
-
-    if (maxoutbuf == 0 || maxoutbuf > BUFSIZ)
-	maxoutbuf = BUFSIZ;
-
-    sasl_complete = 1;
-
-    return status;
-}
-
-/*
- * Callback to return the userid sent down via the user parameter
- */
-
-static int
-sasl_get_user(void *context, int id, const char **result, unsigned *len)
-{
-    char *user = (char *) context;
-
-    if (! result || id != SASL_CB_USER)
-	return SASL_BADPARAM;
-
-    *result = user;
-    if (len)
-	*len = strlen(user);
-
-    return SASL_OK;
-}
-
-/*
- * Callback to return the password (we call ruserpass, which can get it
- * out of the .netrc
- */
-
-static int
-sasl_get_pass(sasl_conn_t *conn, void *context, int id, sasl_secret_t **psecret)
-{
-    struct pass_context *p_context = (struct pass_context *) context;
-    struct nmh_creds creds = { 0, 0, 0 };
-    int len;
-
-    NMH_UNUSED (conn);
-
-    if (! psecret || id != SASL_CB_PASS)
-	return SASL_BADPARAM;
-
-    if (creds.password == NULL) {
-        /*
-         * Pass the 0 third argument to nmh_get_credentials() so
-         * that the default password isn't used.  With legacy/.netrc
-         * credentials support, we'll only get here if the -user
-         * switch to send(1)/post(8) wasn't used.
-         */
-        if (nmh_get_credentials (p_context->host, p_context->user, 0, &creds)
-            != OK) {
-            return SASL_BADPARAM;
-        }
-    }
-
-    len = strlen (creds.password);
-
-    *psecret = (sasl_secret_t *) mh_xmalloc(sizeof(sasl_secret_t) + len);
-
-    (*psecret)->len = len;
-    strcpy((char *) (*psecret)->data, creds.password);
-
-    return SASL_OK;
-}
-#endif /* CYRUS_SASL */
-
-int
-pop_auth_xoauth(const char *client_res)
-{
-    char server_mechs[256];
-    int status = check_mech(server_mechs, sizeof(server_mechs), "XOAUTH");
-
-    if (status != OK) return status;
-
-    if ((status = command("AUTH XOAUTH2 %s", client_res)) != OK) {
-      return status;
-    }
-    if (strncmp(response, "+OK", 3) == 0) {
-	return OK;
-    }
-
-    /* response contains base64-encoded JSON, which is always the same.
-     * See mts/smtp/smtp.c for more notes on that. */
-    /* Then we're supposed to send an empty response ("\r\n"). */
-    return command("");
 }
 
 /*
@@ -507,25 +135,23 @@ parse_proxy(char *proxy, char *host)
 
 int
 pop_init (char *host, char *port, char *user, char *pass, char *proxy,
-	  int snoop, int sasl, char *mech, const char *oauth_svc)
+	  int snoop, int sasl, char *mech, int tls, const char *oauth_svc)
 {
     int fd1, fd2;
     char buffer[BUFSIZ];
-    const char *xoauth_client_res = NULL;
-#ifndef CYRUS_SASL
-    NMH_UNUSED (sasl);
-    NMH_UNUSED (mech);
-#endif /* ! CYRUS_SASL */
+    char *errstr;
 
-#ifdef OAUTH_SUPPORT
+    nsc = netsec_init();  
+
+    if (user)
+	netsec_set_userid(nsc, user);
+
     if (oauth_svc != NULL) {
-	xoauth_client_res = mh_oauth_do_xoauth(user, oauth_svc,
-					       snoop ? stderr : NULL);
+	if (netsec_set_oauth_service(nsc, oauth_svc) != OK) {
+	    snprintf(response, sizeof(response), "OAuth2 not supported");
+	    return NOTOK;
+	}
     }
-#else
-    NMH_UNUSED (oauth_svc);
-    NMH_UNUSED (xoauth_client_res);
-#endif /* OAUTH_SUPPORT */
 
     if (proxy && *proxy) {
        int pid;
@@ -575,47 +201,59 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
        fd2=outpipe[1];
 
     } else {
-
 	if ((fd1 = client (host, port ? port : "pop3", response,
 			   sizeof(response), snoop)) == NOTOK) {
 	    return NOTOK;
 	}
-
-	if ((fd2 = dup (fd1)) == NOTOK) {
-	    char *s;
-
-	    if ((s = strerror(errno)))
-		snprintf (response, sizeof(response),
-		    "unable to dup connection descriptor: %s", s);
-	    else
-		snprintf (response, sizeof(response),
-		    "unable to dup connection descriptor: unknown error");
-	    close (fd1);
-	    return NOTOK;
-	}
+	fd2 = fd1;
     }
-    if (pop_set (fd1, fd2, snoop) == NOTOK)
-	return NOTOK;
 
     SIGNAL (SIGPIPE, SIG_IGN);
 
-    switch (sasl_getline (response, sizeof response, input)) {
+    netsec_set_fd(nsc, fd1, fd2);
+    netsec_set_snoop(nsc, snoop);
+
+    if (tls) {
+	if (netsec_set_tls(nsc, 1, &errstr) != OK) {
+	    snprintf(response, sizeof(response), "%s", errstr);
+	    free(errstr);
+	    return NOTOK;
+	}
+
+	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
+	    snprintf(response, sizeof(response), "%s", errstr);
+	    free(errstr);
+	    return NOTOK;
+	}
+    }
+
+    if (sasl) {
+	if (netsec_set_sasl_params(nsc, host, "pop", mech,
+				   pop_sasl_callback, &errstr) != OK) {
+	    snprintf(response, sizeof(response), "%s", errstr);
+	    free(errstr);
+	    return NOTOK;
+	}
+    }
+
+    switch (pop_getline (response, sizeof response, nsc)) {
 	case OK: 
 	    if (poprint)
 		fprintf (stderr, "<--- %s\n", response);
 	    if (*response == '+') {
-#  ifdef CYRUS_SASL
 		if (sasl) {
-		    if (pop_auth_sasl(user, host, mech) != NOTOK)
-			return OK;
+		    char server_mechs[256];
+		    if (check_mech(server_mechs, sizeof(server_mechs)) != OK)
+			return NOTOK;
+		    if (netsec_negotiate_sasl(nsc, server_mechs,
+		    			      &errstr) != OK) {
+			strncpy(response, errstr, sizeof(response));
+			response[sizeof(response) - 1] = '\0';
+			free(errstr);
+			return NOTOK;
+		    }
+		    return OK;
 		} else
-#  endif /* CYRUS_SASL */
-#  if OAUTH_SUPPORT
-		if (xoauth_client_res != NULL) {
-		    if (pop_auth_xoauth(xoauth_client_res) != NOTOK)
-			return OK;
-		} else
-#  endif /* OAUTH_SUPPORT */
 		if (command ("USER %s", user) != NOTOK
 		    && command ("%s %s", (pophack++, "PASS"),
 					pass) != NOTOK)
@@ -630,43 +268,189 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 	case DONE: 
 	    if (poprint)	    
 		fprintf (stderr, "%s\n", response);
-	    fclose (input);
-	    fclose (output);
+	    netsec_shutdown(nsc, 1);
+	    nsc = NULL;
 	    return NOTOK;
     }
 
     return NOTOK;	/* NOTREACHED */
 }
 
-int
-pop_set (int in, int out, int snoop)
-{
 
-    if ((input = fdopen (in, "r")) == NULL
-	    || (output = fdopen (out, "w")) == NULL) {
-	strncpy (response, "fdopen failed on connection descriptor", sizeof(response));
-	if (input)
-	    fclose (input);
-	else
-	    close (in);
-	close (out);
-	return NOTOK;
+/*
+ * Our SASL callback; we are given SASL tokens and then have to format
+ * them according to the protocol requirements, and then process incoming
+ * messages and feed them back into the SASL library.
+ */
+
+static int
+pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
+		  unsigned int indatalen, unsigned char **outdata,
+		  unsigned int *outdatalen, char **errstr)
+{
+    int rc, snoopoffset;
+    char *mech, *line;
+    size_t len, b64len;
+
+    switch (mtype) {
+    case NETSEC_SASL_START:
+	/*
+	 * Generate our AUTH message, but there is a wrinkle.
+	 *
+	 * Technically, according to RFC 5034, if your command INCLUDING
+	 * an initial response exceeds 255 octets (including CRLF), you
+	 * can't issue this all in one go, but have to just issue the
+	 * AUTH command, wait for a blank initial response, and then
+	 * send your data.
+	 */
+
+	mech = netsec_get_sasl_mechanism(nsc);
+
+	if (indatalen) {
+	    char *b64data;
+	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
+	    writeBase64raw(indata, indatalen, (unsigned char *) b64data);
+	    b64len = strlen(b64data);
+
+	    /* Formula here is AUTH + SP + mech + SP + out + CR + LF */
+	    len = b64len + 8 + strlen(mech);
+	    if (len > 255) {
+		rc = netsec_printf(nsc, errstr, "AUTH %s\r\n", mech);
+		if (rc)
+		    return NOTOK;
+		if (netsec_flush(nsc, errstr) != OK)
+		    return NOTOK;
+		line = netsec_readline(nsc, &len, errstr);
+		if (! line)
+		    return NOTOK;
+		/*
+		 * If the protocol is being followed correctly, should just
+		 * be a "+ ", nothing else.
+		 */
+		if (len != 2 || strcmp(line, "+ ") != 0) {
+		    netsec_err(errstr, "Did not get expected blank response "
+			       "for initial challenge response");
+		    return NOTOK;
+		}
+		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
+		rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
+		netsec_set_snoop_callback(nsc, NULL, NULL);
+		free(b64data);
+		if (rc != OK)
+		    return NOTOK;
+		if (netsec_flush(nsc, errstr) != OK)
+		    return NOTOK;
+	    } else {
+		netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder,
+					  &snoopoffset);
+		snoopoffset = 6 + strlen(mech);
+	        rc = netsec_printf(nsc, errstr, "AUTH %s %s\r\n", mech,
+				   b64data);
+		free(b64data);
+		netsec_set_snoop_callback(nsc, NULL, NULL);
+		if (rc != OK)
+		    return NOTOK;
+		if (netsec_flush(nsc, errstr) != OK)
+		    return NOTOK;
+	    }
+	} else {
+	    if (netsec_printf(nsc, errstr, "AUTH %s\r\n", mech) != OK)
+		return NOTOK;
+	    if (netsec_flush(nsc, errstr) != OK)
+		return NOTOK;
+	}
+
+	break;
+
+	/*
+	 * We should get one line back, with our base64 data.  Decode that
+	 * and feed it back into the SASL library.
+	 */
+    case NETSEC_SASL_READ:
+	netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, &snoopoffset);
+	snoopoffset = 2;
+	line = netsec_readline(nsc, &len, errstr);
+	netsec_set_snoop_callback(nsc, NULL, NULL);
+
+	if (line == NULL)
+	    return NOTOK;
+	if (len < 2 || (len == 2 && strcmp(line, "+ ") != 0)) {
+	    netsec_err(errstr, "Invalid format for SASL response");
+	    return NOTOK;
+	}
+
+	if (len == 2) {
+	    *outdata = NULL;
+	    *outdatalen = 0;
+	} else {
+	    rc = decodeBase64(line + 2, outdata, &len, 0, NULL);
+	    *outdatalen = len;
+	    if (rc != OK) {
+		netsec_err(errstr, "Unable to decode base64 response");
+		return NOTOK;
+	    }
+	}
+	break;
+
+    /*
+     * Our encoding is pretty simple, so this is easy.
+     */
+
+    case NETSEC_SASL_WRITE:
+	if (indatalen == 0) {
+	    rc = netsec_printf(nsc, errstr, "\r\n");
+	} else {
+	    unsigned char *b64data;
+	    b64data = mh_xmalloc(BASE64SIZE(indatalen));
+	    writeBase64raw(indata, indatalen, b64data);
+	    netsec_set_snoop_callback(nsc, netsec_b64_snoop_decoder, NULL);
+	    rc = netsec_printf(nsc, errstr, "%s\r\n", b64data);
+	    netsec_set_snoop_callback(nsc, NULL, NULL);
+	    free(b64data);
+	}
+
+	if (rc != OK)
+	    return NOTOK;
+
+	if (netsec_flush(nsc, errstr) != OK)
+	    return NOTOK;
+	break;
+
+    /*
+     * Finish the protocol; we're looking for an +OK
+     */
+
+    case NETSEC_SASL_FINISH:
+	line = netsec_readline(nsc, &len, errstr);
+	if (line == NULL)
+	    return NOTOK;
+
+	if (strncmp(line, "+OK", 3) != 0) {
+	    netsec_err(errstr, "Authentication failed: %s", line);
+	    return NOTOK;
+	}
+	break;
+
+    /*
+     * Cancel the SASL exchange in the middle of the commands; for
+     * POP, that's a single "*".
+     *
+     * It's unclear to me if I should be returning errors up; I finally
+     * decided the answer should be "yes", and if the upper layer wants to
+     * ignore them that's their choice.
+     */
+
+    case NETSEC_SASL_CANCEL:
+	rc = netsec_printf(nsc, errstr, "*\r\n");
+	if (rc == OK)
+	    rc = netsec_flush(nsc, errstr);
+	if (rc != OK)
+	    return NOTOK;
+	break;
     }
 
-    poprint = snoop;
-
     return OK;
 }
-
-
-int
-pop_fd (char *in, int inlen, char *out, int outlen)
-{
-    snprintf (in, inlen, "%d", fileno (input));
-    snprintf (out, outlen, "%d", fileno (output));
-    return OK;
-}
-
 
 /*
  * Find out number of messages available
@@ -749,7 +533,7 @@ pop_retr (int msgno, int (*action)(char *))
 static int
 traverse (int (*action)(char *), const char *fmt, ...)
 {
-    int result;
+    int result, snoopstate;
     va_list ap;
     char buffer[sizeof(response)];
 
@@ -761,13 +545,18 @@ traverse (int (*action)(char *), const char *fmt, ...)
 	return NOTOK;
     strncpy (buffer, response, sizeof(buffer));
 
+    if ((snoopstate = netsec_get_snoop(nsc)))
+	netsec_set_snoop(nsc, 0);
+
     for (;;)
 	switch (multiline ()) {
 	    case NOTOK: 
+		netsec_set_snoop(nsc, snoopstate);
 		return NOTOK;
 
 	    case DONE: 
 		strncpy (response, buffer, sizeof(response));
+		netsec_set_snoop(nsc, snoopstate);
 		return OK;
 
 	    case OK: 
@@ -820,12 +609,8 @@ pop_quit (void)
 int
 pop_done (void)
 {
-#ifdef CYRUS_SASL
-    if (conn)
-	sasl_dispose(&conn);
-#endif /* CYRUS_SASL */
-    fclose (input);
-    fclose (output);
+    if (nsc)
+	netsec_shutdown(nsc, 1);
 
     return OK;
 }
@@ -848,36 +633,31 @@ command(const char *fmt, ...)
 static int
 vcommand (const char *fmt, va_list ap)
 {
-    char *cp, buffer[65536];
+    /* char *cp; */
+    char *errstr;
 
-    vsnprintf (buffer, sizeof(buffer), fmt, ap);
-
-    if (poprint) {
-#ifdef CYRUS_SASL
-	if (sasl_ssf)
-	    fprintf(stderr, "(encrypted) ");
-#endif /* CYRUS_SASL */
-	if (pophack) {
-	    if ((cp = strchr (buffer, ' ')))
-		*cp = 0;
-	    fprintf (stderr, "---> %s ********\n", buffer);
-	    if (cp)
-		*cp = ' ';
-	    pophack = 0;
-	}
-	else
-	    fprintf (stderr, "---> %s\n", buffer);
+    if (netsec_vprintf(nsc, &errstr, fmt, ap) != OK) {
+	strncpy(response, errstr, sizeof(response));
+	response[sizeof(response) - 1] = '\0';
+	free(errstr);
+	return NOTOK;
     }
 
-    if (putline (buffer, output) == NOTOK)
+    if (netsec_printf(nsc, &errstr, "\r\n") != OK) {
+	strncpy(response, errstr, sizeof(response));
+	response[sizeof(response) - 1] = '\0';
+	free(errstr);
 	return NOTOK;
+    }
 
-#ifdef CYRUS_SASL
-    if (poprint && sasl_ssf)
-	fprintf(stderr, "(decrypted) ");
-#endif /* CYRUS_SASL */
+    if (netsec_flush(nsc, &errstr) != OK) {
+	strncpy(response, errstr, sizeof(response));
+	response[sizeof(response) - 1] = '\0';
+	free(errstr);
+	return NOTOK;
+    }
 
-    switch (sasl_getline (response, sizeof response, input)) {
+    switch (pop_getline (response, sizeof response, nsc)) {
 	case OK: 
 	    if (poprint)
 		fprintf (stderr, "<--- %s\n", response);
@@ -899,17 +679,8 @@ multiline (void)
 {
     char buffer[BUFSIZ + TRMLEN];
 
-    if (sasl_getline (buffer, sizeof buffer, input) != OK)
+    if (pop_getline (buffer, sizeof buffer, nsc) != OK)
 	return NOTOK;
-#ifdef DEBUG
-    if (poprint) {
-#ifdef CYRUS_SASL
-	if (sasl_ssf)
-	    fprintf(stderr, "(decrypted) ");
-#endif /* CYRUS_SASL */
-	fprintf (stderr, "<--- %s\n", response);
-    }
-#endif /* DEBUG */
     if (strncmp (buffer, TRM, TRMLEN) == 0) {
 	if (buffer[TRMLEN] == 0)
 	    return DONE;
@@ -923,158 +694,42 @@ multiline (void)
 }
 
 /*
- * Note that these functions have been modified to deal with layer encryption
- * in the SASL case
+ * This is now just a thin wrapper around netsec_readline().
  */
 
 static int
-sasl_getline (char *s, int n, FILE *iop)
+pop_getline (char *s, int n, netsec_context *ns)
 {
-    int c = -2;
+    /* int c = -2; */
     char *p;
+    size_t len, destlen;
+    /* int rc; */
+    char *errstr;
 
-    p = s;
-    while (--n > 0 && (c = sasl_fgetc (iop)) != EOF && c != -2) 
-	if ((*p++ = c) == '\n')
-	    break;
-    if (c == -2)
+    p = netsec_readline(ns, &len, &errstr);
+
+    if (p == NULL) {
+	strncpy(response, errstr, sizeof(response));
+	response[sizeof(response) - 1] = '\0';
+	free(errstr);
 	return NOTOK;
-    if (ferror (iop) && c != EOF) {
-	strncpy (response, "error on connection", sizeof(response));
-	return NOTOK;
-    }
-    if (c == EOF && p == s) {
-	strncpy (response, "connection closed by foreign host", sizeof(response));
-	return DONE;
-    }
-    *p = 0;
-    if (*--p == '\n')
-	*p = 0;
-    if (p > s  &&  *--p == '\r')
-	*p = 0;
-
-    return OK;
-}
-
-
-static int
-putline (char *s, FILE *iop)
-{
-#ifdef CYRUS_SASL
-    char outbuf[BUFSIZ], *buf;
-    int result;
-    unsigned int buflen;
-
-    if (!sasl_complete) {
-#endif /* CYRUS_SASL */
-	fprintf (iop, "%s\r\n", s);
-#ifdef CYRUS_SASL
-    } else {
-	/*
-	 * Build an output buffer, encrypt it using sasl_encode, and
-	 * squirt out the results.
-	 */
-	strncpy(outbuf, s, sizeof(outbuf) - 3);
-	outbuf[sizeof(outbuf) - 3] = '\0';   /* Just in case */
-	strcat(outbuf, "\r\n");
-
-	result = sasl_encode(conn, outbuf, strlen(outbuf),
-			     (const char **) &buf, &buflen);
-
-	if (result != SASL_OK) {
-	    snprintf(response, sizeof(response), "SASL encoding error: %s",
-		     sasl_errdetail(conn));
-	    return NOTOK;
-	}
-
-	if (fwrite(buf, buflen, 1, iop) < 1) {
-	    advise ("putline", "fwrite");
-	}
-    }
-#endif /* CYRUS_SASL */
-
-    fflush (iop);
-    if (ferror (iop)) {
-	strncpy (response, "lost connection", sizeof(response));
-	return NOTOK;
-    }
-
-    return OK;
-}
-
-#ifdef CYRUS_SASL
-/*
- * Okay, our little fgetc replacement.  Hopefully this is a little more
- * efficient than the last one.
- */
-static int
-sasl_fgetc(FILE *f)
-{
-    static unsigned char *buffer = NULL, *ptr;
-    static unsigned int size = 0;
-    static int cnt = 0;
-    unsigned int retbufsize = 0;
-    int cc, result;
-    char *retbuf, tmpbuf[SASL_BUFFER_SIZE];
-
-    /*
-     * If we have some leftover data, return that
-     */
-
-    if (cnt) {
-	cnt--;
-	return (int) *ptr++;
     }
 
     /*
-     * Otherwise, fill our buffer until we have some data to return.
+     * If we had an error, it should have been returned already.  Since
+     * netsec_readline() strips off the CR-LF ending, just copy the existing
+     * buffer into response now.
+     *
+     * We get a length back from netsec_readline, but the rest of the POP
+     * code doesn't handle it; the assumptions are that everything from
+     * the network can be respresented as C strings.  That should get fixed
+     * someday.
      */
 
-    while (retbufsize == 0) {
+    destlen = len < ((size_t) (n - 1)) ? len : (size_t) (n - 1);
 
-	cc = read(fileno(f), tmpbuf, sizeof(tmpbuf));
-
-	if (cc == 0)
-	    return EOF;
-
-	if (cc < 0) {
-	    snprintf(response, sizeof(response), "Error during read from "
-		     "network: %s", strerror(errno));
-	    return -2;
-	}
-
-	/*
-	 * We're not allowed to call sasl_decode until sasl_complete is
-	 * true, so we do these gyrations ...
-	 */
-	
-	if (!sasl_complete) {
-
-	    retbuf = tmpbuf;
-	    retbufsize = cc;
-
-	} else {
-
-	    result = sasl_decode(conn, tmpbuf, cc,
-				 (const char **) &retbuf, &retbufsize);
-
-	    if (result != SASL_OK) {
-		snprintf(response, sizeof(response), "Error during SASL "
-			 "decoding: %s", sasl_errdetail(conn));
-		return -2;
-	    }
-	}
-    }
-
-    if (retbufsize > size) {
-	buffer = mh_xrealloc(buffer, retbufsize);
-	size = retbufsize;
-    }
-
-    memcpy(buffer, retbuf, retbufsize);
-    ptr = buffer + 1;
-    cnt = retbufsize - 1;
-
-    return (int) buffer[0];
+    memcpy(s, p, destlen);
+    s[destlen] = '\0';
+    
+    return OK;
 }
-#endif /* CYRUS_SASL */

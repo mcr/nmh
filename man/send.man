@@ -40,8 +40,6 @@ send \- send a message
 .IR port-name/number ]
 .RB [ \-sasl ]
 .RB [ \-nosasl ]
-.RB [ \-saslmaxssf
-.IR ssf ]
 .RB [ \-saslmech
 .IR mechanism ]
 .RB [ \-authservice
@@ -427,17 +425,14 @@ switch; see the
 man page description of
 .B \-snoop
 for its other features.
-The
-.B \-saslmaxssf
-switch can be used to select the maximum value of the Security Strength Factor.
-This is an integer value and the exact meaning of this value depends on the
-underlying SASL mechanism.  A value of 0 disables encryption.
 .PP
 If
 .B nmh
 has been compiled with OAuth support, the
+.B \-sasl
+and
 .B \-saslmech xoauth2
-switch will enable OAuth authentication.  The
+switches will enable OAuth authentication.  The
 .B \-user
 switch must be used, and the
 .I user-name
@@ -448,7 +443,7 @@ be specified with the
 switch.  Before using this, the user must authorize nmh by running
 .B mhlogin
 and grant authorization to that account.  See the
-.B mhlogin
+.IR mhlogin (1)
 man page for more details.
 .PP
 If
