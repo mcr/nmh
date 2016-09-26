@@ -35,8 +35,9 @@ Usage: prompter [switches] file
   -help
 EOF
 
-run_prog prompter -help >$actual 2>&1
-check $expected $actual
+#### Skip nmh intro text.
+run_prog prompter -help | sed '/^$/Q' >"$actual" 2>&1
+check "$expected" "$actual"
 
 # check -version
 case `prompter -v` in

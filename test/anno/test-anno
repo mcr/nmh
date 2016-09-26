@@ -39,7 +39,8 @@ Usage: anno [+folder] [msgs] [switches]
   -([no]p)reserve
 EOF
 
-run_prog anno -help >"$actual" 2>&1
+#### Skip nmh intro text.
+run_prog anno -help | sed '/^$/Q' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

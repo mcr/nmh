@@ -36,7 +36,8 @@ Usage: dp [switches] dates ...
   -help
 EOF
 
-run_prog $dp -help >"$actual" 2>&1
+#### Skip nmh intro text.
+run_prog "$dp" -help | sed '/^$/Q' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

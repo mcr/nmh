@@ -46,7 +46,8 @@ Usage: mhical [switches]
   -help
 EOF
 
-run_prog mhical -help >"$actual" 2>&1
+#### Skip nmh intro text.
+run_prog mhical -help | sed '/^$/Q' >"$actual" 2>&1
 check "$expected" "$actual"
 
 

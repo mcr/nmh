@@ -55,8 +55,9 @@ Usage: repl: [+folder] [msg] [switches]
   -nofmtproc
 EOF
 
-run_prog repl -help >$actual 2>&1
-check $expected $actual
+#### Skip nmh intro text.
+run_prog repl -help | sed '/^$/Q' >"$actual" 2>&1
+check "$expected" "$actual"
 
 # check -version
 case `repl -v` in

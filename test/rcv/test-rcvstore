@@ -38,8 +38,9 @@ Usage: rcvstore [+folder] [switches]
   -help
 EOF
 
-run_prog $rcvstore -help >$actual 2>&1
-check $expected $actual
+#### Skip nmh intro text.
+run_prog "$rcvstore" -help | sed '/^$/Q' >"$actual" 2>&1
+check "$expected" "$actual"
 
 # check -version
 case `$rcvstore -v` in

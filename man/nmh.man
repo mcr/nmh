@@ -1,4 +1,4 @@
-.TH NMH %manext7% "April 21, 2014" "%nmhversion%"
+.TH NMH %manext7% "September 26, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -134,12 +134,12 @@ ambiguity with any switches that may be added in the future, it is
 recommended that full switch names be used in durable code such as
 shell scripts, functions, and aliases.
 .PP
-All the
+Each
 .B nmh
-commands may be run with the single switch
+command may be run with the single switch
 .BR \-help ,
-which causes them to print a list of the switches they may be invoked
-with and then exit.
+which causes it to print its available switches, along with any
+profile components that apply, and then exit.
 .PP
 All the
 .B nmh
@@ -550,14 +550,21 @@ The user's nmh profile
 .IR mh-mime (7)
 .ne 4
 .SH BUGS
+\" The contents of this section also appear in sbr/print_help.c .
+Send bug reports, questions, suggestions, and patches to
+.IR nmh-workers@nongnu.org .
+That mailing list is relatively quiet, so user questions are encouraged.
+Users are also encouraged to subscribe, and view the archives, at
+https://lists.gnu.org/mailman/listinfo/nmh-workers .
+.PP
 If problems are encountered with an
 .B nmh
-program, the problems should
+program, they should
 be reported to the local maintainers of
-.BR nmh .
-When doing this, the
-name of the program should be reported, along with the version information
-for the program.
+.BR nmh ,
+if any, or to the mailing list noted above.
+When doing this, the name of the program should be reported, along
+with the version information for the program.
 .PP
 To find out what version of an
 .B nmh
@@ -570,5 +577,4 @@ the version of
 the host it was compiled on, and the date the
 program was linked.
 .PP
-Send bug reports and suggestions to
-.IR nmh-workers@nongnu.org .
+New releases and other information of potential interest are announced at http://www.nongnu.org/nmh/ .

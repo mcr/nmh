@@ -32,8 +32,16 @@ finddir() {
   esac
 }
 
+help() {
+  printf '%s\n' "$usage"
+  #### Print the nmh intro text.
+  ${nmhbindir}/mhparam -help | sed -n -e '/^$/,$p'
+  exit
+}
+
 die() {
-  printf '%s\n' "$usage"; exit ${1:-1}
+  printf '%s\n' "$usage"
+  exit ${1:-1}
 }
 
 bindir=`finddir $0`
@@ -61,7 +69,7 @@ for arg in "$@"; do
     -f|-fr|-fro|-from) fromarg=1 ;;
     #### Support -gzip for backward compatibility.
     -gzip) compress=gzip ;;
-    -h|-he|-hel|-help) die 0 ;;
+    -h|-he|-hel|-help) help ;;
     #### Support -none for backward compatibility.
     -none) compress=none ;;
     -s|-su|-sub|-subj|-subje|-subjec|-subject) subjectarg=1 ;;

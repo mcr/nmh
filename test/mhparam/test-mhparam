@@ -33,8 +33,9 @@ Usage: mhparam [profile-components] [switches]
   -(debug)
 EOF
 
-mhparam -help >$actual 2>&1
-check $expected $actual
+#### Skip nmh intro text.
+mhparam -help | sed '/^$/Q' >"$actual" 2>&1
+check "$expected" "$actual"
 
 # check -version
 case `mhparam -v` in

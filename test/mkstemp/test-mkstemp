@@ -47,8 +47,9 @@ else
 	EOF
 fi
 
-$mkstemp -h >$actual 2>&1
-check $expected $actual
+#### Skip nmh intro text.
+run_prog $mkstemp -h | sed '/^$/Q' >"$actual" 2>&1
+check "$expected" "$actual"
 
 
 # check -version

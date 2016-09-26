@@ -88,8 +88,9 @@ Usage: mhmail [-t(o)] addrs ... [switches]
   mhmail with no arguments is equivalent to inc
 EOF
 
-mhmail -help >$actual 2>&1
-check $expected $actual
+#### Skip nmh intro text.
+mhmail -help | sed '/^$/Q' >"$actual" 2>&1
+check "$expected" "$actual"
 
 
 # check -version

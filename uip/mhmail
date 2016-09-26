@@ -48,6 +48,13 @@ finddir() {
   esac
 }
 
+help() {
+  printf '%s\n' "$usage"
+  #### Print the nmh intro text.
+  ${nmhbindir}/mhparam -help | sed -n -e '/^$/,$p'
+  exit
+}
+
 #### Convenience function to allow concise code below.
 die() {
     [ $# -gt 0 ]  &&  printf '%s\n' "$1" >&2
@@ -127,7 +134,7 @@ for arg in "$@"; do
     -f|-fr|-fro|-from) mhmailswitch=1; fromarg=1 ;;
     -hea|-head|-heade|-header|-headerf|-headerfi|-headerfie|-headerfiel|\
 -headerfield) mhmailswitch=1; headerfieldarg=1 ;;
-    -hel|-help) printf '%s\n' "$usage"; exit ;;
+    -hel|-help) help ;;
     -nose|-nosen|-nosend) mhmailswitch=1; sendsw=0 ;;
     -p|-pr|-pro|-prof|-profi|-profil|-profile) mhmailswitch=1; use_send=1 ;;
     -resend) die 'mhmail: did you mean -resent instead of -resend?' ;;

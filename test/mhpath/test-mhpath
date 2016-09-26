@@ -28,8 +28,9 @@ Usage: mhpath [+folder] [msgs] [switches]
   -help
 EOF
 
-run_prog mhpath -help > $actual 2>&1
-check $expected $actual
+#### Skip nmh intro text.
+run_prog mhpath -help | sed '/^$/Q' >"$actual" 2>&1
+check "$expected" "$actual"
 
 # check -version
 case `mhpath -v` in

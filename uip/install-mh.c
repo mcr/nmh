@@ -219,6 +219,10 @@ query:
 	    fprintf (out, "%s: %s\n", np->n_name, np->n_field);
     }
     fclose (out);
+
+    puts ("\nPlease see the nmh(7) man page for an introduction to nmh.\n");
+    print_intro (stdout, FALSE);
+
     done (0);
     return 1;
 }

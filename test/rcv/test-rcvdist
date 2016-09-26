@@ -32,7 +32,8 @@ Usage: rcvdist [switches] [switches for postproc] address ...
   -help
 EOF
 
-run_prog $rcvdist -help >"$actual" 2>&1
+#### Skip nmh intro text.
+run_prog "$rcvdist" -help | sed '/^$/Q' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

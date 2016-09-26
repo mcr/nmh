@@ -89,7 +89,8 @@ Usage: sendfiles [switches] -to recipient -subject subject file1 [file2 ...]
   Can use PERSON environment variable instead of -from switch.
 EOF
 
-run_prog sendfiles -help >"$actual" 2>&1
+#### Skip nmh intro text.
+run_prog sendfiles -help | sed '/^$/Q' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

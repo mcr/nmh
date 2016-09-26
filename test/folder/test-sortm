@@ -37,7 +37,8 @@ Usage: sortm [+folder] [msgs] [switches]
   -help
 EOF
 
-run_prog sortm -help >"$actual" 2>&1
+#### Skip nmh intro text.
+run_prog sortm -help | sed '/^$/Q' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

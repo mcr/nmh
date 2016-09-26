@@ -31,7 +31,8 @@ Usage: packf [+folder] [msgs] [switches]
   -help
 EOF
 
-packf -help >"$actual" 2>&1
+#### Skip nmh intro text.
+packf -help | sed '/^$/Q' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

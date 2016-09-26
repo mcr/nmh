@@ -42,7 +42,8 @@ Usage: slocal [switches]
   -help
 EOF
 
-run_prog $slocal -help >"$actual" 2>&1
+#### Skip nmh intro text.
+run_prog $slocal -help | sed '/^$/Q' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
