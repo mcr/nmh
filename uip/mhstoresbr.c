@@ -1055,6 +1055,7 @@ get_storeproc (CT ct)
 {
     char *cp;
     CI ci;
+    char storefile[PATH_MAX+1];
 
     /*
      * If the storeproc has already been defined,
@@ -1070,12 +1071,13 @@ get_storeproc (CT ct)
      */
     if (ct->c_dispo) {
 	if ((cp = get_param(ct->c_dispo_first, "filename", '_', 0))
-		&& *cp != '/'
-		&& *cp != '.'
-		&& *cp != '|'
-		&& *cp != '!'
-		&& !strchr (cp, '%')) {
-		ct->c_storeproc = add (cp, NULL);
+		&& decode_rfc2047(cp, storefile, PATH_MAX+1)
+		&& *storefile != '/'
+		&& *storefile != '.'
+		&& *storefile != '|'
+		&& *storefile != '!'
+		&& !strchr (storefile, '%')) {
+		ct->c_storeproc = add (storefile, NULL);
 		free(cp);
 		return;
 	}
@@ -1090,12 +1092,13 @@ get_storeproc (CT ct)
      */
     ci = &ct->c_ctinfo;
     if ((cp = get_param(ci->ci_first_pm, "name", '_', 0))
-	  && *cp != '/'
-	  && *cp != '.'
-	  && *cp != '|'
-	  && *cp != '!'
-	  && !strchr (cp, '%')) {
-	    ct->c_storeproc = add (cp, NULL);
+	  && decode_rfc2047(cp, storefile, PATH_MAX+1)
+	  && *storefile != '/'
+	  && *storefile != '.'
+	  && *storefile != '|'
+	  && *storefile != '!'
+	  && !strchr (storefile, '%')) {
+	    ct->c_storeproc = add (storefile, NULL);
 
     }
     if (cp)
