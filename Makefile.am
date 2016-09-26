@@ -248,7 +248,7 @@ dist_docs_contrib_DATA = docs/contrib/replaliases
 ##
 ## Our man pages
 ##
-man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
+man_MANS = man/MH.7 man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 	   man/dist.1 man/dp.8 man/flist.1 man/flists.1 \
 	   man/fmtdump.8 man/fmttest.1 man/fnext.1 man/folder.1 man/folders.1 \
 	   man/forw.1 man/fprev.1 man/inc.1 man/install-mh.1 man/mark.1 \
@@ -267,8 +267,8 @@ man_MANS = man/ali.1 man/anno.1 man/ap.8 man/burst.1 man/comp.1 \
 ##
 ## Sources for our man pages
 ##
-man_SRCS = man/ali.man man/anno.man man/ap.man man/burst.man man/comp.man \
-	   man/dist.man man/dp.man man/flist.man \
+man_SRCS = man/MH.man man/ali.man man/anno.man man/ap.man man/burst.man  \
+	   man/comp.man man/dist.man man/dp.man man/flist.man \
 	   man/flists.man man/fmtdump.man man/fmttest.man man/fnext.man \
 	   man/folder.man man/folders.man man/forw.man man/fprev.man \
 	   man/inc.man man/install-mh.man man/mark.man man/mh-alias.man \

@@ -1,4 +1,4 @@
-.TH MH\-MIME %manext7% "December 14, 2014" "%nmhversion%"
+.TH MH\-MIME %manext7% "September 25, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -176,8 +176,10 @@ boundary indicators and invalid Content-Transfer-Encoding values.
 .IR nmh (7),
 .IR repl (1),
 .IR whatnow (1),
-.PP
-.I %docdir%/contrib/replyfilter
+.br
+.IR %docdir%/contrib/replyfilter ,
+.br
+.I %docdir%/contrib/replaliases
 .SH BUGS
 MIME support should be more integrated into all of the
 .B nmh
