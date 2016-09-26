@@ -89,7 +89,7 @@ Usage: mhmail [-t(o)] addrs ... [switches]
 EOF
 
 #### Skip nmh intro text.
-mhmail -help | sed '/^$/Q' >"$actual" 2>&1
+mhmail -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 

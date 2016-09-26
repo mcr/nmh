@@ -38,7 +38,7 @@ Usage: ali [switches] aliases ...
 EOF
 
 #### Skip nmh intro text.
-ali -help | sed '/^$/Q' >"$actual" 2>&1
+ali -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

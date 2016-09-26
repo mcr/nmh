@@ -32,7 +32,7 @@ Usage: packf [+folder] [msgs] [switches]
 EOF
 
 #### Skip nmh intro text.
-packf -help | sed '/^$/Q' >"$actual" 2>&1
+packf -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

@@ -38,7 +38,7 @@ Usage: rcvtty [command ...]
 EOF
 
 #### Skip nmh intro text.
-run_prog "$rcvtty" -help | sed '/^$/Q' >"$actual" 2>&1
+run_prog "$rcvtty" -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

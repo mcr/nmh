@@ -39,7 +39,7 @@ Usage: rcvstore [+folder] [switches]
 EOF
 
 #### Skip nmh intro text.
-run_prog "$rcvstore" -help | sed '/^$/Q' >"$actual" 2>&1
+run_prog "$rcvstore" -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

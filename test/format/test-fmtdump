@@ -36,7 +36,7 @@ Usage: fmtdump [switches]
 EOF
 
 #### Skip nmh intro text.
-"$fmtdump" -help | sed '/^$/Q' >"$actual" 2>&1
+"$fmtdump" -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

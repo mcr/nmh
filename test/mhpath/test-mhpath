@@ -29,7 +29,7 @@ Usage: mhpath [+folder] [msgs] [switches]
 EOF
 
 #### Skip nmh intro text.
-run_prog mhpath -help | sed '/^$/Q' >"$actual" 2>&1
+run_prog mhpath -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

@@ -72,7 +72,7 @@ Usage: dist [+folder] [msg] [switches]
 EOF
 
 #### Skip nmh intro text.
-dist -help | sed '/^$/Q' >"$actual" 2>&1
+dist -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version

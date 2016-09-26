@@ -56,7 +56,7 @@ Usage: repl: [+folder] [msg] [switches]
 EOF
 
 #### Skip nmh intro text.
-run_prog repl -help | sed '/^$/Q' >"$actual" 2>&1
+run_prog repl -help | sed '/^$/,$d' >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check -version
