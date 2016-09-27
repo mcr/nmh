@@ -25,9 +25,11 @@ actual_err="$MH_TEST_DIR/test-mhmail$$.actual_err"
 cd "$MH_TEST_DIR"
 
 # check with no options and no current message
+start_test 'with no options and no current message'
 run_test 'mhstore' 'mhstore: no cur message'
 
 # check with no options and current message
+start_test 'with no options and current message'
 folder +inbox 5 >/dev/null
 cat >"$expected" <<'EOF'
 This is message number 5
@@ -36,38 +38,46 @@ run_test 'mhstore' 'storing message 5 as file 5.txt'
 check "$expected" 5.txt 'keep first'
 
 # check with folder and current message
+start_test 'with folder and current message'
 run_test 'mhstore +inbox' 'storing message 5 as file 5.txt'
 check "$expected" 5.txt 'keep first'
 
 # check with specified message
+start_test 'with specified message'
 run_test 'mhstore 5' 'storing message 5 as file 5.txt'
 check "$expected" 5.txt 'keep first'
 
 # check -file
+start_test '-file'
 run_test "mhstore -file $MH_TEST_DIR/Mail/inbox/5" \
   "storing message $MH_TEST_DIR/Mail/inbox/5 as file 5.txt"
 check "$expected" 5.txt 'keep first'
 
 # check -file -
+start_test '-file -'
 stored_contents=`run_prog mhstore -file - < $MH_TEST_DIR/Mail/inbox/5 2>&1 | \
   sed 's/.*as file //'`
 check "$expected" "$stored_contents" 'keep first'
 
 # check -outfile and -noverbose
+start_test '-outfile and -noverbose'
 run_prog mhstore 5 -noverbose -outfile "$actual" >"$actual_err" 2>&1
 printf '' >"$expected_err"
 check "$expected" "$actual" 'keep first'
 check "$expected_err" "$actual_err"
 
 # check -outfile -
+start_test '-outfile -'
 printf '%s\n' 'storing message 5 to stdout' >>"$expected"
 run_prog mhstore 5 -outfile - >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check message number greater than highest
+start_test 'message number greater than highest'
 run_test 'mhstore 11' "mhstore: message 11 doesn't exist"
 
 # check multiple messages
+start_test 'multiple messages'
 run_test 'mhstore 4 6' 'storing message 4 as file 4.txt
 storing message 6 as file 6.txt'
 cat >"$expected" <<'EOF'
@@ -128,6 +138,7 @@ bGUgbGluZXMuDQo=
 EOF
 
 # check -part
+start_test '-part'
 cat >"$expected" <<'EOF'
 This is the third text/plain part.
 EOF
@@ -135,6 +146,7 @@ run_test 'mhstore last -part 3' 'storing message 11 part 3 as file 11.3.txt'
 check "$expected" 11.3.txt
 
 # check -part of a subpart
+start_test '-part of a subpart'
 cat >"$expected" <<'EOF'
 This is the first text/plain part, in a subpart.
 EOF
@@ -143,6 +155,7 @@ run_test 'mhstore last -part 1.1' \
 check "$expected" 11.1.1.txt 'keep first'
 
 # check -type
+start_test '-type'
 run_test 'mhstore last -type text/plain' \
   'storing message 11 part 1.1 as file 11.1.1.txt
 storing message 11 part 2 as file 11.2.txt
@@ -164,6 +177,7 @@ EOF
 check "$expected" 11.4.txt
 
 # check -auto
+start_test '-auto'
 cat >"$expected" <<'EOF'
 This is the fourth text/plain part.
 This test has multiple lines.
@@ -173,20 +187,24 @@ run_test 'mhstore last -part 4 -auto' \
 check "$expected" test4.txt 'keep first'
 
 # check -noauto, the default
+start_test '-noauto, the default'
 run_test 'mhstore last -part 4 -auto -noauto' \
   'storing message 11 part 4 as file 11.4.txt'
 check "$expected" 11.4.txt 'keep first'
 
 # check -verbose, the default
+start_test '-verbose, the default'
 run_test 'mhstore last -part 4 -noverbose -verbose' \
   'storing message 11 part 4 as file 11.4.txt'
 check "$expected" 11.4.txt 'keep first'
 
 # check -noverbose
+start_test '-noverbose'
 run_test 'mhstore last -part 4 -noverbose' ''
 check "$expected" 11.4.txt
 
 # check that -auto obeys Content-Disposition header
+start_test 'that -auto obeys Content-Disposition header'
 cat >"$expected" <<'EOF'
 This is the first text/plain part, in a subpart.
 EOF
@@ -195,6 +213,7 @@ run_test 'mhstore last -part 1.1 -auto' \
 check "$expected" test1.txt
 
 # check -check
+start_test '-check'
 cat >"$expected" <<'EOF'
 This is the second text/plain part.
 EOF
@@ -203,6 +222,7 @@ run_test 'mhstore last -part 2 -check' \
 check "$expected" 11.2.txt 'keep first'
 
 # check with -check on base64 encoded part
+start_test 'with -check on base64 encoded part'
 cat >"$expected2" <<'EOF'
 This is the fourth text/plain part.
 This test has multiple lines.
@@ -212,6 +232,7 @@ run_test 'mhstore last -part 4 -check' \
 check "$expected2" 11.4.txt
 
 # check -check with bad MD5 checksum
+start_test '-check with bad MD5 checksum'
 sed 's/\(Content-MD5: \)kq+Hnc/\1BADBAD/' "$msgfile" >"$MH_TEST_DIR/$$.tmp"
 mv -f "$MH_TEST_DIR/$$.tmp" "$msgfile"
 run_test 'mhstore last -part 2 -check' \
@@ -221,15 +242,18 @@ mhstore: content integrity suspect (digest mismatch) -- continuing
 check "$expected" 11.2.txt 'keep first'
 
 # check -nocheck, the default
+start_test '-nocheck, the default'
 run_test 'mhstore last -part 2 -check -nocheck' \
          'storing message 11 part 2 as file 11.2.txt'
 check "$expected" 11.2.txt 'keep first'
 
 # check -outfile - with -file
+start_test '-outfile - with -file'
 run_prog mhstore -noverbose -file `mhpath 11` -part 2 -outfile - >"$actual" 2>&1
 check "$expected" "$actual"
 
 # check reassembly of message/partial messages (RFC 1521, 7.3.2)
+start_test 'reassembly of message/partial messages (RFC 1521, 7.3.2)'
 msgfile=`mhpath new`
 cat >"$msgfile" <<'EOF'
 To: recipient@example.com
@@ -281,6 +305,7 @@ check "$expected" 15.txt
 cd Mail
 
 # check -clobber always
+start_test '-clobber always'
 folder +inbox 7 >/dev/null
 touch 7.txt
 cat >"$expected" <<'EOF'
@@ -293,6 +318,7 @@ run_test 'mhstore -clobber ask -clobber always' \
 check "$expected" 7.txt 'keep first'
 
 # check -clobber auto
+start_test '-clobber auto'
 touch 7.txt
 run_test 'mhstore -clobber auto' 'storing message 7 as file 7-1.txt'
 check "$expected" 7-1.txt 'keep first'
@@ -301,6 +327,7 @@ run_test 'mhstore -clobber auto' 'storing message 7 as file 7-2.txt'
 check "$expected" 7-2.txt 'keep first'
 
 # check -clobber suffix
+start_test '-clobber suffix'
 run_test 'mhstore -clobber suffix' 'storing message 7 as file 7.txt.1'
 check "$expected" 7.txt.1 'keep first'
 touch 7.txt.1
@@ -311,6 +338,7 @@ check "$expected" 7.txt.2 'keep first'
 # terminal, and this test won't always be run with one.
 
 # check -clobber never.  Its exit status is the number of files not overwritten.
+start_test '-clobber never.  Its exit status is the number of files not overwritten.'
 run_test 'mhstore -clobber never' \
          "mhstore: will not overwrite $MH_TEST_DIR/Mail/7.txt with -clobber never"
 set +e
@@ -321,6 +349,7 @@ set -e
 cd ..
 
 # check with relative nmh-storage profile component
+start_test 'with relative nmh-storage profile component'
 storagedir=storagedir
 dir="$MH_TEST_DIR/Mail/inbox/$storagedir"
 mkdir "$dir"
@@ -334,11 +363,13 @@ run_test 'mhstore 11 -part 4' \
 check "$expected" "$dir/11.4.txt" 'keep first'
 
 # check with relative nmh-storage profile component and -auto
+start_test 'with relative nmh-storage profile component and -auto'
 run_test 'mhstore 11 -part 4 -auto' \
 "storing message 11 part 4 as file $storagedir/test4.txt"
 check "$expected" "$dir/test4.txt" 'keep first'
 
 # check with absolute nmh-storage profile component
+start_test 'with absolute nmh-storage profile component'
 absstoragedir="$MH_TEST_DIR/$storagedir"
 mkdir "$absstoragedir"
 sed "s%\(nmh-storage: \)storagedir%\1$absstoragedir%" "$MH" >"$MH.new"
@@ -348,10 +379,12 @@ run_test 'mhstore 11 -part 4' \
 check "$expected" "$absstoragedir/11.4.txt" 'keep first'
 
 # check with absolute nmh-storage profile component and -auto
+start_test 'with absolute nmh-storage profile component and -auto'
 run_test 'mhstore 11 -part 4 -auto' \
 "storing message 11 part 4 as file $storagedir/test4.txt"
 check "$expected" "$absstoragedir/test4.txt"
 rmdir "$absstoragedir"
 
 
+finish_test
 exit $failed
