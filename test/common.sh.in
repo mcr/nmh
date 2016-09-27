@@ -308,13 +308,18 @@ cleanup() {
 
 #### Function to set the test name, and whatever the future brings.
 start_test() {
-    nmh_tests_testname="$1"
+    #### run_test disables exit on non-zero status, but does increment
+    #### failed.  Don't overwrite nmh_tests_testname if there was a
+    #### failure; remember the first test that failed.
+    [ ${failed:-0} -eq 0 ]  &&  nmh_tests_testname="$1"
 }
 
 #### Corresponding function to indicate that the test has finished.  It need
 #### not be called after each test, just the last one in a file.
 finish_test() {
-    unset nmh_tests_testname
+    #### run_test disables exit on non-zero status, but does increment
+    #### failed.  Don't unset nmh_tests_testname if there was a failure.
+    [ ${failed:-0} -eq 0 ]  &&  unset nmh_tests_testname
 }
 
 setup_test ()
@@ -378,6 +383,8 @@ whatnowproc: ${MH_INST_DIR}${bindir}/whatnow
 whomproc: ${MH_INST_DIR}${bindir}/whom
 #: incproc and packproc are defined in config.c but not used by any code.
 EOF
+  #### Suppress warnings about a new version.
+  printf '%s\n' ${MH_VERSION} > ${MH_TEST_DIR}/Mail/VERSION
 
   if test -z '@nmhetcdirinst@'; then
     #### This isn't used with make distcheck, so that we can use it to
