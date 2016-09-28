@@ -392,16 +392,20 @@ nmh_init(const char *argv0, int read_context) {
             strcmp (invo_name, "whom")) {
 
             if (nmh_version_changed ()) {
-                fprintf (stderr, "==========================================="
-                        "============================\n");
-                fprintf (stderr, "Welcome to nmh version %s\n\n", VERSION);
-                fprintf (stderr, "See the release notes in %s/NEWS .\n\n",
+                printf ("==================================================="
+                        "====================\n");
+                printf ("Welcome to nmh version %s\n\n", VERSION);
+                printf ("See the release notes in %s/NEWS .\n\n",
                          mhdocdir);
-                print_intro (stderr, 1);
-                fprintf (stderr, "\nThis message will not be repeated until "
+                print_intro (stdout, 1);
+                printf ("\nThis message will not be repeated until "
                         "nmh is next updated.\n");
-                fprintf (stderr, "==========================================="
-                        "============================\n\n\n");
+                printf ("==================================================="
+                        "====================\n\n");
+
+                fputs ("Press enter to continue: ", stdout);
+                (void) read_line ();
+                putchar ('\n');
             }
         }
 
