@@ -69,7 +69,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/inc/test-deb359167 test/inc/test-eom-align \
 	test/inc/test-inc-scanout test/inc/test-msgchk \
 	test/inc/test-pop \
-	test/install-mh/test-install-mh \
+	test/install-mh/test-install-mh test/install-mh/test-version-check \
 	test/locking/test-datalocking test/locking/test-spoollocking \
 	test/manpages/test-manpages \
 	test/mhbuild/test-attach \

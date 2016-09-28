@@ -49,8 +49,9 @@ run_test 'mhparam -nonexistent' 'mhparam: -nonexistent unknown'
 
 # check -all
 cp "$MH" $expected
-# -all adds current folder
+# -all adds current folder and Version
 echo 'Current-Folder: '`folder -f` >>$expected
+echo "Version: nmh-$MH_VERSION" >>$expected
 run_prog mhparam -all >$actual
 check $expected $actual 'keep first'
 
@@ -94,7 +95,7 @@ $MH_INST_DIR$nmhlibexecdir/post
 $MH_INST_DIR$bindir/send
 $MH_INST_DIR$bindir/mhshow
 $MH_INST_DIR$nmhlibexecdir/mhl
-nmh-`cat ${srcdir}/VERSION`
+nmh-$MH_VERSION
 $MH_INST_DIR$bindir/whatnow
 $MH_INST_DIR$bindir/whom
 $nmhetcdirinst

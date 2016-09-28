@@ -52,6 +52,7 @@ NEW FEATURES
 - Support for SMTPUTF8 (RFC 6531) has been added.  mhshow(1) already supported
   RFC 6532, assuming all 8-bit message header field bodies are UTF-8 and use
   of a UTF-8 locale.
+- Added welcome message when nmh detects that its version changed.
 
 -----------------
 OBSOLETE FEATURES

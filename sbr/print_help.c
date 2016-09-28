@@ -42,8 +42,8 @@ print_help (char *str, struct swit *swp, int print_context)
  */
 
 static const char nmh_intro1[] = \
-"Send bug reports, questions, suggestions, and patches to nmh-\n"
-"workers@nongnu.org.  That mailing list is relatively quiet, so user\n"
+"Send bug reports, questions, suggestions, and patches to\n"
+"nmh-workers@nongnu.org.  That mailing list is relatively quiet, so user\n"
 "questions are encouraged.  Users are also encouraged to subscribe, and\n"
 "view the archives, at https://lists.gnu.org/mailman/listinfo/nmh-\n"
 "workers .\n";

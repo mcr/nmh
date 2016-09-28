@@ -383,8 +383,6 @@ whatnowproc: ${MH_INST_DIR}${bindir}/whatnow
 whomproc: ${MH_INST_DIR}${bindir}/whom
 #: incproc and packproc are defined in config.c but not used by any code.
 EOF
-  #### Suppress warnings about a new version.
-  printf '%s\n' ${MH_VERSION} > ${MH_TEST_DIR}/Mail/VERSION
 
   if test -z '@nmhetcdirinst@'; then
     #### This isn't used with make distcheck, so that we can use it to
@@ -396,6 +394,10 @@ EOF
   fi
 
   folder -create +inbox > /dev/null
+  #### Suppress warnings about a new version.
+  #### mhparam version includes the nmh- prefix, so be consistent with that.
+  printf 'Version: nmh-%s\n' "${MH_VERSION}" >> "${MH_TEST_DIR}"/Mail/context
+
   # create 10 basic messages
   for i in 1 2 3 4 5 6 7 8 9 10;
   do

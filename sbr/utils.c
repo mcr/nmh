@@ -17,6 +17,7 @@ extern int setup_signal_handlers();
 /* sbr/m_mktemp.c */
 extern void remove_registered_files_atexit();
 
+extern char *mhdocdir;
 
 /*
  * We allocate space for messages (msgs array)
@@ -364,8 +365,46 @@ nmh_init(const char *argv0, int read_context) {
         admonish("atexit", "unable to register atexit function");
     }
 
+    /* Read context, if supposed to. */
     if (read_context) {
         context_read();
+
+        /* Check to see if the user is running a different version of nmh
+           than they had last run, and notify them if so.  But only if
+           they seem to be running an interactive program. */
+        if (isatty (fileno (stdin))  &&  isatty (fileno (stdout))  &&
+            strcmp (invo_name, "ap")  &&
+            strcmp (invo_name, "dp")  &&
+            strcmp (invo_name, "fmtdump")  &&
+            strcmp (invo_name, "install-mh")  &&
+            strcmp (invo_name, "mhbuild")  &&
+            strcmp (invo_name, "mhfixmsg")  &&
+            strcmp (invo_name, "mhl")  &&
+            strcmp (invo_name, "mhparam")  &&
+            strcmp (invo_name, "mhpath")  &&
+            strcmp (invo_name, "mkstemp")  &&
+            strcmp (invo_name, "post")  &&
+            strcmp (invo_name, "prompter")  &&
+            strncmp (invo_name, "rcv", 3)  &&
+            strcmp (invo_name, "slocal")  &&
+            strcmp (invo_name, "viamail")  &&
+            strcmp (invo_name, "whatnow")  &&
+            strcmp (invo_name, "whom")) {
+
+            if (nmh_version_changed ()) {
+                fprintf (stderr, "==========================================="
+                        "============================\n");
+                fprintf (stderr, "Welcome to nmh version %s\n\n", VERSION);
+                fprintf (stderr, "See the release notes in %s/NEWS .\n\n",
+                         mhdocdir);
+                print_intro (stderr, 1);
+                fprintf (stderr, "\nThis message will not be repeated until "
+                        "nmh is next updated.\n");
+                fprintf (stderr, "==========================================="
+                        "============================\n\n\n");
+            }
+        }
+
         return OK;
     } else {
         int status = context_foil(NULL);
@@ -373,6 +412,25 @@ nmh_init(const char *argv0, int read_context) {
             advise("", "failed to create minimal profile/conext");
         }
         return status;
+    }
+}
+
+
+/*
+ * Check stored version, and if out-of-date or non-existent, notify the user
+ * and update.
+ */
+int
+nmh_version_changed () {
+    const char *const old_version = context_find("Version");
+
+    /* mhparam version includes the nmh- prefix, so be consistent with that. */
+    if (old_version == NULL  ||  strcmp(old_version, "nmh-" VERSION) != 0) {
+        context_replace ("Version", "nmh-" VERSION);
+
+        return 1;
+    } else {
+        return 0;
     }
 }
 

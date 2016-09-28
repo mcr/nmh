@@ -57,3 +57,11 @@ char *nmh_strcasestr (const char *, const char *);
  * Returns 1 if the string contains an 8-bit character, 0 if it does not.
  */
 int contains8bit(const char *start, const char *end);
+
+/*
+ * Check to see if the user is running a different version of nmh
+ * than they had last run, and notify them if so.  But only if
+ * they seem to be running an interactive program.
+ * Returns 1 if they are, 0 if they are not.
+ */
+int nmh_version_changed ();
