@@ -22,13 +22,22 @@ require_prog script
 actual="$MH_TEST_DIR/test-version-check$$.actual"
 context="${MH_TEST_DIR}"/Mail/context
 
-
-start_test 'with welcome message'
 # Removing Version will trigger the welcome message.
 grep -v Version "$context" > "$context.NEW"
 mv -f "$context.NEW" "$context"
-# The will command wait for the user to hit return.  script seems to do what
-# we want, continue, when run in the background.
+
+
+start_test 'mhparam skips the welcome message'
+# The command will wait for the user to hit return.  script seems to do what
+# we want by not waiting when run in the background.
+script -c 'mhparam path last' -f -q "$actual" >/dev/null &
+wait $!
+grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+rm "$actual"
+finish_test
+
+
+start_test 'with welcome message'
 script -c 'pick last' -f -q "$actual" >/dev/null &
 wait $!
 grep 'Welcome to nmh version ' "$actual" >/dev/null

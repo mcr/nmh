@@ -114,7 +114,7 @@ main (int argc, char **argv)
     int header_encoding = CE_UNKNOWN;
     size_t n;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], 2)) { return 1; }
 
     done=unlink_done;
 

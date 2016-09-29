@@ -497,8 +497,18 @@ void init_credentials_file ();
 int nmh_get_credentials (char *, char *, int, nmh_creds_t);
 
 /*
- * temporary file management
+ * program initialization
+ *
+ * argv0:        argv[0], presumably the program name
+ * read_context: 0: don't read context
+ *               1: read context, check nmh version, and issue warning message
+ *                  if non-existent or old
+ *               2: read context, don't check nmh version
  */
 int nmh_init(const char *argv0, int read_context);
+
+/*
+ * temporary file management
+ */
 int m_unlink(const char *);
 void unregister_for_removal(int remove_files);

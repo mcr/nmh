@@ -32,7 +32,7 @@ main(int argc, char **argv)
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], 2)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

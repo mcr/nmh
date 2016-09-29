@@ -150,7 +150,7 @@ process_args(int argc, char **argv, const char **directory,
     NMH_UNUSED(suffix);
 #   endif /* ! HAVE_MKSTEMPS */
 
-    if (nmh_init(argv[0], 1)) { done(NOTOK); }
+    if (nmh_init(argv[0], 2)) { done(NOTOK); }
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
 

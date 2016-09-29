@@ -371,27 +371,9 @@ nmh_init(const char *argv0, int read_context) {
 
         /* Check to see if the user is running a different version of nmh
            than they had last run, and notify them if so.  But only if
-           they seem to be running an interactive program. */
-        if (isatty (fileno (stdin))  &&  isatty (fileno (stdout))  &&
-            isatty (fileno (stderr))  &&
-            strcmp (invo_name, "ap")  &&
-            strcmp (invo_name, "dp")  &&
-            strcmp (invo_name, "fmtdump")  &&
-            strcmp (invo_name, "install-mh")  &&
-            strcmp (invo_name, "mhbuild")  &&
-            strcmp (invo_name, "mhfixmsg")  &&
-            strcmp (invo_name, "mhl")  &&
-            strcmp (invo_name, "mhparam")  &&
-            strcmp (invo_name, "mhpath")  &&
-            strcmp (invo_name, "mkstemp")  &&
-            strcmp (invo_name, "post")  &&
-            strcmp (invo_name, "prompter")  &&
-            strncmp (invo_name, "rcv", 3)  &&
-            strcmp (invo_name, "slocal")  &&
-            strcmp (invo_name, "viamail")  &&
-            strcmp (invo_name, "whatnow")  &&
-            strcmp (invo_name, "whom")) {
-
+           read_context was set to a value to enable this. */
+        if (read_context == 1  &&  isatty (fileno (stdin))  &&
+            isatty (fileno (stdout))  &&  isatty (fileno (stderr))) {
             if (nmh_version_changed ()) {
                 printf ("==================================================="
                         "====================\n");

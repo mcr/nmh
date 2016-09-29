@@ -78,7 +78,7 @@ main (int argc, char **argv)
     char *tmpfil;
     m_getfld_state_t gstate = 0;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], 2)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

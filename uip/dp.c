@@ -50,7 +50,7 @@ main (int argc, char **argv)
     char buf[BUFSIZ], **argp, **arguments;
     char *dates[NDATES];
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], 2)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

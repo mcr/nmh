@@ -56,7 +56,7 @@ main (int argc, char **argv)
     char *cp, buf[BUFSIZ];
     char **argp, **arguments;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], 2)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 0);
     argp = arguments;

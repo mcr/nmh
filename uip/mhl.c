@@ -13,7 +13,7 @@
 int
 main (int argc, char **argv)
 {
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], 2)) { return 1; }
 
     done (mhl (argc, argv));
     return 1;

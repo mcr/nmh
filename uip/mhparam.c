@@ -145,7 +145,7 @@ main(int argc, char **argv)
     char *cp, buf[BUFSIZ], **argp;
     char **arguments, *comps[MAXARGS];
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], 2)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
