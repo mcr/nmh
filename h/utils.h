@@ -59,9 +59,9 @@ char *nmh_strcasestr (const char *, const char *);
 int contains8bit(const char *start, const char *end);
 
 /*
- * Check to see if the user is running a different version of nmh
- * than they had last run, and notify them if so.  But only if
- * they seem to be running an interactive program.
- * Returns 1 if they are, 0 if they are not.
+ * Compares prior version of nmh with current version.  Returns 1
+ * if they compare the be the same, 0 if not.
+ *
+ * older        - 0 for difference comparison, 1 for only if older
  */
-int nmh_version_changed ();
+int nmh_version_changed (int older);

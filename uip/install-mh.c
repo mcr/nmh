@@ -225,7 +225,7 @@ query:
 
     /* Initialize the saved nmh version.  The Path profile entry was added
        above, that's all this needs. */
-    (void) nmh_version_changed ();
+    (void) nmh_version_changed (0);
 
     done (0);
     return 1;

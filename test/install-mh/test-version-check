@@ -21,8 +21,10 @@ require_prog script
 
 actual="$MH_TEST_DIR/test-version-check$$.actual"
 context="${MH_TEST_DIR}"/Mail/context
+version="Version: nmh-${MH_VERSION}"
 
-# Removing Version will trigger the welcome message.
+# Removing Version will trigger the welcome message.  (setup_test
+# inserted it so that other tests wouldn't show it.)
 grep -v Version "$context" > "$context.NEW"
 mv -f "$context.NEW" "$context"
 
@@ -34,6 +36,20 @@ script -c 'mhparam path last' -f -q "$actual" >/dev/null &
 wait $!
 grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
 rm "$actual"
+# Make sure that version wasn't added to context.
+grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null  &&  false
+finish_test
+
+
+start_test 'Welcome: disable in profile skips the welcome message'
+cp "${MH}" "${MH}-welcome"
+printf 'Welcome: disable\n' >> "${MH}-welcome"
+MH="${MH}-welcome" script -c 'pick last' -f -q "$actual" >/dev/null &
+wait $!
+grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+rm "$actual"
+# Make sure that version wasn't added to context.
+grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null  &&  false
 finish_test
 
 
@@ -42,6 +58,8 @@ script -c 'pick last' -f -q "$actual" >/dev/null &
 wait $!
 grep 'Welcome to nmh version ' "$actual" >/dev/null
 rm "$actual"
+# Make sure that version was added to context.
+grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
 finish_test
 
 
@@ -51,6 +69,42 @@ start_test 'without welcome message'
 script -c 'pick last' -f -q "$actual" >/dev/null &
 wait $!
 grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+rm "$actual"
+# Make sure that version is still in context.
+grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
+finish_test
+
+
+start_test 'with MHCONTEXT, welcome only if older'
+MHCONTEXT="${MH_TEST_DIR}/Mail/context2"; export MHCONTEXT
+printf 'Version: nmh-1.5\n' >"${MHCONTEXT}"
+script -c 'pick last' -f -q "$actual" >/dev/null &
+wait $!
+grep 'Welcome to nmh version ' "$actual" >/dev/null
+# And make sure that version did get updated in context.
+grep "^${version}$" "${MHCONTEXT}" >/dev/null
+rm "$actual"
+finish_test
+
+
+start_test "with MHCONTEXT doesn't welcome if newer"
+printf 'Version: nmh-10000.0\n' >"${MHCONTEXT}"
+script -c 'pick last' -f -q "$actual" >/dev/null &
+wait $!
+grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+rm "$actual"
+# And make sure that version didn't get updated in context.
+grep '^Version: nmh-10000.0$' "${MHCONTEXT}" >/dev/null
+finish_test
+
+
+start_test 'with MHCONTEXT but no version, no welcome and update'
+printf '' >"${MHCONTEXT}"
+script -c 'pick last' -f -q "$actual" >/dev/null &
+wait $!
+grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+# And make sure that version did get updated in context.
+grep "^${version}$" "${MHCONTEXT}" >/dev/null
 rm "$actual"
 finish_test
 
