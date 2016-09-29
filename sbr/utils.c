@@ -373,6 +373,7 @@ nmh_init(const char *argv0, int read_context) {
            than they had last run, and notify them if so.  But only if
            they seem to be running an interactive program. */
         if (isatty (fileno (stdin))  &&  isatty (fileno (stdout))  &&
+            isatty (fileno (stderr))  &&
             strcmp (invo_name, "ap")  &&
             strcmp (invo_name, "dp")  &&
             strcmp (invo_name, "fmtdump")  &&
