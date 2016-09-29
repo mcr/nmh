@@ -479,14 +479,15 @@ int writeBase64 (const unsigned char *, size_t, unsigned char *);
 int writeBase64raw (const unsigned char *, size_t, unsigned char *);
 
 /*
- * first argument:  the string to be decoded
- * second argument:  the decoded bytes
- * third argument:  number of decoded bytes
- * fourth argument:   non-zero for text content, and for which CR's should be skipped
- * fifth argument:  for an MD5 digest, it can be null
+ * encoded      - the string to be decoded
+ * decoded      - the decoded bytes
+ * len          - number of decoded bytes
+ * skip-crs     - non-zero for text content, and for which CR's should be
+ *                skipped
+ * digest       - for an MD5 digest, it can be null
  */
-int decodeBase64 (const char *, unsigned char **, size_t *, int,
-		  unsigned char *);
+int decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
+                  int skip_crs, unsigned char *digest);
 
 void hexify (const unsigned char *, size_t, char **);
 
@@ -499,11 +500,11 @@ int nmh_get_credentials (char *, char *, int, nmh_creds_t);
 /*
  * program initialization
  *
- * argv0:        argv[0], presumably the program name
- * read_context: 0: don't read context
- *               1: read context, check nmh version, and issue warning message
- *                  if non-existent or old
- *               2: read context, don't check nmh version
+ * argv0        - argv[0], presumably the program name
+ * read_context - 0: don't read context
+ *              - 1: read context, check nmh version, and issue warning message
+ *                   if non-existent or old
+ *              - 2: read context, don't check nmh version
  */
 int nmh_init(const char *argv0, int read_context);
 
