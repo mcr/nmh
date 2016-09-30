@@ -510,9 +510,9 @@ netsec_fillread(netsec_context *nsc, char **errstr)
 	nsc->ns_inptr = nsc->ns_inbuffer;
     }
 
-#ifdef CYRUS_SASL
+#if defined(CYRUS_SASL) || defined(TLS_SUPPORT)
 retry:
-#endif /* CYRUS_SASL */
+#endif /* CYRUS_SASL || TLS_SUPPORT */
     /*
      * If we are using TLS and there's anything pending, then skip the
      * select call
@@ -562,11 +562,34 @@ retry:
     if (nsc->tls_active) {
 	rc = BIO_read(nsc->ssl_io, end, remaining);
 	if (rc == 0) {
+	    SSL *ssl;
+	    int errcode;
+
 	    /*
-	     * Either EOF, or possibly an error.  Either way, it was probably
-	     * unexpected, so treat as error.
+	     * Check to see if we're supposed to retry; if so,
+	     * then go back and read again.
 	     */
-	    netsec_err(errstr, "TLS peer aborted connection");
+
+	    if (BIO_should_retry(nsc->ssl_io))
+		goto retry;
+
+	    /*
+	     * Okay, fine.  Get the real error out of the SSL context.
+	     */
+
+	    if (BIO_get_ssl(nsc->ssl_io, &ssl) < 1) {
+		netsec_err(errstr, "SSL_read() returned 0, but cannot "
+			   "retrieve SSL context");
+		return NOTOK;
+	    }
+
+	    errcode = SSL_get_error(ssl, rc);
+	    if (errcode == SSL_ERROR_ZERO_RETURN) {
+		netsec_err(errstr, "TLS peer closed remote connection");
+	    } else {
+		netsec_err(errstr, "TLS network read failed: %s",
+			   ERR_error_string(errcode, NULL));
+	    }
 	    return NOTOK;
 	} else if (rc < 0) {
 	    /* Definitely an error */
