@@ -311,7 +311,7 @@ netsec_b64_snoop_decoder(netsec_context *nsc, const char *string, size_t len,
 
     if (decodeBase64(string, &decoded, &decodedlen, 1, NULL) == OK) {
 	/*
-	 * Some mechanisms preoduce large binary tokens, which aren't really
+	 * Some mechanisms produce large binary tokens, which aren't really
 	 * readable.  So let's do a simple heuristic.  If the token is greater
 	 * than 100 characters _and_ the first 100 bytes are more than 50%
 	 * non-ASCII, then don't print the decoded buffer, just the
@@ -993,7 +993,7 @@ int netsec_get_user(void *context, int id, const char **result,
     if (nsc->ns_userid == NULL) {
 	/*
 	 * Pass the 1 third argument to nmh_get_credentials() so that
-	 * a defauly user if the -user switch wasn't supplied, and so
+	 * a default user if the -user switch wasn't supplied, and so
 	 * that a default password will be supplied.  That's used when
 	 * those values really don't matter, and only with legacy/.netrc,
 	 * i.e., with a credentials profile entry.

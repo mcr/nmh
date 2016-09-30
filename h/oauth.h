@@ -258,9 +258,6 @@ mh_oauth_sasl_client_response(size_t *res_len,
  * Retrieve the various entries for the OAuth mechanism
  */
 
-boolean 
+boolean
 mh_oauth_get_service_info(const char *svc_name, mh_oauth_service_info *svcinfo,
 			  char *errbuf, size_t errbuflen);
-
-char *mh_oauth_get_svc_name(mh_oauth_ctx *ctx);
-void mh_oauth_set_cred_fn(mh_oauth_ctx *ctx, char *filename);

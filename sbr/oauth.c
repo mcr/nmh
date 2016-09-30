@@ -26,13 +26,13 @@
 
 #define JSON_TYPE "application/json"
 
-/* We pretend access tokens expire 30 seconds earlier than they actually do to
+/* We pretend access tokens expire 60 seconds earlier than they actually do to
  * allow for separate processes to use and refresh access tokens.  The process
  * that uses the access token (post) has an error if the token is expired; the
  * process that refreshes the access token (send) must have already refreshed if
  * the expiration is close.
  *
- * 30s is arbitrary, and hopefully is enough to allow for clock skew.
+ * 60s is arbitrary, and hopefully is enough to allow for clock skew.
  * Currently only Gmail supports XOAUTH2, and seems to always use a token
  * life-time of 3600s, but that is not guaranteed.  It is possible for Gmail to
  * issue an access token with a life-time so short that even after send
@@ -44,7 +44,7 @@
  * (not counting header and not null-terminated) */
 #define RESPONSE_BODY_MAX 8192
 
-/* Maxium size for URLs and URI-encoded query strings, null-terminated.
+/* Maximum size for URLs and URI-encoded query strings, null-terminated.
  *
  * Actual maximum we need is based on the size of tokens (limited by
  * RESPONSE_BODY_MAX), code user copies from a web page (arbitrarily large), and
