@@ -15,7 +15,7 @@ interface for it--nmh only has a command line interface.  nmh is
 configured to use less and vim by default but options allow use of
 more and emacs, respectively."
 
-HOMEPAGE="http://savannah.nongnu.org/projects/nmh"
-SRC_URI="http://download.savannah.nongnu.org/releases/nmh/nmh-${VERSION}.tar.gz"
+HOMEPAGE="http://savannah.nongnu.org/projects/${PN}"
+SRC_URI="http://download.savannah.nongnu.org/releases/${PN}/${P}.tar.gz"
 CYGCONF_ARGS="--with-cyrus-sasl --with-tls --with-oauth"
 
