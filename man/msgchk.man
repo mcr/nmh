@@ -20,6 +20,8 @@ all/mail/nomail ]
 .RB [ \-sasl ]
 .RB [ \-saslmech
 .IR mechanism ]
+.RB [ \-initialtls ]
+.RB [ \-notls ]
 .RB [ \-authservice
 .IR service ]
 .RB [ \-snoop ]
@@ -147,10 +149,21 @@ and grant authorization to that account.  See the
 .B mhlogin
 man page for more details.
 .PP
-Gmail only supports POP3 over TLS, but
-.B msgchk
-has no TLS support.  To work around this, use something like
-.B -proxy 'openssl s_client -connect %h:995 -CAfile /etc/ssl/certs/ca-certificates.crt -quiet'
+If
+.B nmh
+has been compiled with TLS support, the
+.B \-initialtls
+switch will require the negotiation of TLS when connecting
+to the remote POP server.  The
+.B \-initialtls
+switch will negotiate TLS immediately after the connection has taken place,
+before any POP commands are sent or received.  Data encrypted by TLS is
+labeled `(tls-encrypted)' and `(tls-decrypted)` with viewing the POP
+transaction with the
+.B \-snoop
+switch.  The
+.B \-notls
+switch will disable all attempts to negotiate TLS.
 .SH FILES
 .fc ^ ~
 .nf

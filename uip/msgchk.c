@@ -20,6 +20,12 @@
 # define SASLminc(a)  0
 #endif
 
+#ifndef TLS_SUPPORT
+# define TLSminc(a) (a)
+#else
+# define TLSminc(a)  0
+#endif
+
 #define MSGCHK_SWITCHES \
     X("date", 0, DATESW) \
     X("nodate", 0, NDATESW) \
@@ -34,6 +40,8 @@
     X("sasl", SASLminc(4), SASLSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
+    X("initialtls", TLSminc(-10), INITTLSSW) \
+    X("notls", TLSminc(-5), NOTLSSW) \
     X("proxy command", 0, PROXYSW) \
 
 #define X(sw, minchars, id) id,
@@ -72,14 +80,14 @@ DEFINE_SWITCH_ARRAY(MSGCHK, switches);
 static int donote (char *, int);
 static int checkmail (char *, char *, int, int, int);
 static int remotemail (char *, char *, char *, char *, int, int, int, int,
-		       char *, const char *);
+		       char *, int, const char *);
 
 
 int
 main (int argc, char **argv)
 {
     int datesw = 1, notifysw = NT_ALL;
-    int status = 0, sasl = 0;
+    int status = 0, sasl = 0, tls = 0;
     int snoop = 0, vecp = 0;
     char *cp, *host = NULL, *port = NULL, *user = NULL, *proxy = NULL;
     char buf[BUFSIZ], *saslmech = NULL, *auth_svc = NULL;
@@ -161,6 +169,14 @@ main (int argc, char **argv)
 			adios (NULL, "missing argument to %s", argp[-2]);
 		    continue;
 
+		case INITTLSSW:
+		    tls++;
+		    continue;
+
+		case NOTLSSW:
+		    tls = 0;
+		    continue;
+
 		case AUTHSERVICESW:
 #ifdef OAUTH_SUPPORT
 		    if (!(auth_svc = *argp++) || *auth_svc == '-')
@@ -202,11 +218,11 @@ main (int argc, char **argv)
     if (host) {
 	if (vecp == 0) {
 	    status = remotemail (host, port, user, proxy, notifysw, 1,
-				 snoop, sasl, saslmech, auth_svc);
+				 snoop, sasl, saslmech, tls, auth_svc);
 	} else {
 	    for (vecp = 0; vec[vecp]; vecp++)
 		status += remotemail (host, port, vec[vecp], proxy, notifysw, 0,
-				      snoop, sasl, saslmech, auth_svc);
+				      snoop, sasl, saslmech, tls, auth_svc);
 	}
     } else {
 	if (user == NULL) user = getusername ();
@@ -330,7 +346,7 @@ extern char response[];
 
 static int
 remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
-	    int personal, int snoop, int sasl, char *saslmech,
+	    int personal, int snoop, int sasl, char *saslmech, int tls,
 	    const char *auth_svc)
 {
     int nmsgs, nbytes, status;
@@ -350,7 +366,7 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 
     /* open the POP connection */
     if (pop_init (host, port, creds.user, creds.password, proxy, snoop, sasl,
-		  saslmech, 0, auth_svc) == NOTOK
+		  saslmech, tls, auth_svc) == NOTOK
 	    || pop_stat (&nmsgs, &nbytes) == NOTOK     /* check for messages  */
 	    || pop_quit () == NOTOK) {                 /* quit POP connection */
 	advise (NULL, "%s", response);
