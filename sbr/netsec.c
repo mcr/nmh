@@ -588,7 +588,7 @@ retry:
 		netsec_err(errstr, "TLS peer closed remote connection");
 	    } else {
 		netsec_err(errstr, "TLS network read failed: %s",
-			   ERR_error_string(errcode, NULL));
+			   ERR_error_string(ERR_peek_last_error(), NULL));
 	    }
 	    if (nsc->ns_snoop)
 		ERR_print_errors_fp(stderr);
