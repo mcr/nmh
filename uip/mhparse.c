@@ -151,7 +151,6 @@ static int openURL (CT, char **);
 static int parse_header_attrs (const char *, const char *, char **, PM *,
 			       PM *, char **);
 static size_t param_len(PM, int, size_t, int *, int *, size_t *);
-static size_t encode_param(PM, char *, size_t, size_t, size_t, int);
 static size_t normal_param(PM, char *, size_t, size_t, size_t);
 static int get_dispo (char *, CT, int);
 
@@ -3981,7 +3980,7 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
  * Output an encoded parameter string.
  */
 
-static size_t
+size_t
 encode_param(PM pm, char *output, size_t len, size_t valuelen,
 	      size_t valueoff, int index)
 {

@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "September 22, 2016" "%nmhversion%"
+.TH MHFIXMSG %manext1% "October 1, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -208,8 +208,12 @@ more descriptive MIME type.  It may not be used for multipart and
 message types.
 .PP
 .B mhfixmsg
-applies one transformation unconditionally:  it removes an extraneous
-trailing semicolon from the parameter lists of MIME header fields.
+applies two transformations unconditionally.
+The first removes an extraneous trailing semicolon from the parameter
+lists of MIME header field values.
+The second replaces RFC 2047 encoding with RFC 2231 encoding of name
+and filename parameters in Content-Type and Content-Disposition header
+field values, respectively.
 .PP
 The
 .B \-verbose

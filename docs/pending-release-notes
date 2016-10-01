@@ -52,6 +52,10 @@ NEW FEATURES
 - Support for SMTPUTF8 (RFC 6531) has been added.  mhshow(1) already supported
   RFC 6532, assuming all 8-bit message header field bodies are UTF-8 and use
   of a UTF-8 locale.
+- mhfixmsg now replaces RFC 2047 encoding with RFC 2231 encoding of name and
+  filename parameters in Content-Type and Content-Disposition headers,
+  respectively.
+
 
 -----------------
 OBSOLETE FEATURES

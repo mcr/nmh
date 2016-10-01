@@ -428,6 +428,21 @@ char *output_params(size_t initialwidth, PM params, int *offsetout,
 		    int external);
 
 /*
+ * Encode a parameter value using RFC 2231 encode.
+ *
+ * Arguments are:
+ *
+ * pm           - PM containing the parameter value and related info.
+ * output       - Output buffer.
+ * len          - Size, in octets, of output buffer.
+ * valuelen     - Number of characters in the value
+ * valueoff     - Offset into value field (pm->pm_value).
+ * index        - If 0, output character set and language tag.
+ */
+size_t encode_param(PM pm, char *output, size_t len, size_t valuelen,
+                    size_t valueoff, int index);
+
+/*
  * Add a parameter to the parameter linked list.
  *
  * Arguments are:

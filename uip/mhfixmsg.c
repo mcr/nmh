@@ -119,6 +119,8 @@ static int content_encoding (CT, const char **);
 static int strip_crs (CT, int *);
 static int convert_charsets (CT, char *, int *);
 static int fix_always (CT, int *);
+static int fix_filename_param (char *, char *, PM *, PM *);
+static int fix_filename_encoding (CT);
 static int write_content (CT, const char *, char *, int, int);
 static void set_text_ctparams(CT, char *, int);
 static int remove_file (const char *);
@@ -2375,6 +2377,10 @@ fix_always (CT ct, int *message_mods) {
     default: {
         HF hf;
 
+        if (ct->c_first_hf) {
+            fix_filename_encoding (ct);
+        }
+
         for (hf = ct->c_first_hf; hf; hf = hf->next) {
             size_t len = strlen (hf->value);
 
@@ -2421,6 +2427,100 @@ fix_always (CT ct, int *message_mods) {
     }}
 
     return status;
+}
+
+
+/*
+ * Factor out common code for loops in fix_filename_encoding().
+ */
+static int
+fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm) {
+    size_t value_len;
+    int fixed = 0;
+
+    if (((value_len = strlen (value)) > 0)  &&
+        strncmp (value, "=?", 2) == 0  &&
+        strncmp (&value[value_len - 2], "?=", 2) == 0) {
+        /* Looks like an RFC 2047 encoded parameter. */
+        char decoded[PATH_MAX + 1];
+
+        if (decode_rfc2047 (value, decoded, sizeof decoded)) {
+            /* Encode using RFC 2231. */
+            replace_param (first_pm, last_pm, name, decoded, 0);
+            fixed = 1;
+        } else {
+            advise (NULL, "failed to decode %s parameter %s", name, value);
+        }
+    }
+
+    return fixed;
+}
+
+
+/*
+ * Replace RFC 2047 encoding with RFC 2231 encoding of name and
+ * filename parameters in Content-Type and Content-Disposition
+ * headers, respectively.
+ */
+static int
+fix_filename_encoding (CT ct) {
+    PM pm;
+    HF hf;
+    int fixed = 0;
+
+    for (pm = ct->c_ctinfo.ci_first_pm; pm; pm = pm->pm_next) {
+        if (pm->pm_name  &&  pm->pm_value  &&
+            strcasecmp (pm->pm_name, "name") == 0) {
+            fixed = fix_filename_param (pm->pm_name, pm->pm_value,
+                                        &ct->c_ctinfo.ci_first_pm,
+                                        &ct->c_ctinfo.ci_last_pm);
+        }
+    }
+
+    for (pm = ct->c_dispo_first; pm; pm = pm->pm_next) {
+        if (pm->pm_name  &&  pm->pm_value  &&
+            strcasecmp (pm->pm_name, "filename") == 0) {
+            fixed = fix_filename_param (pm->pm_name, pm->pm_value,
+                                        &ct->c_dispo_first,
+                                        &ct->c_dispo_last);
+        }
+    }
+
+    /* Fix hf values to correspond. */
+    for (hf = ct->c_first_hf; fixed && hf; hf = hf->next) {
+        enum { OTHER, TYPE_HEADER, DISPO_HEADER } field = OTHER;
+
+        if (strcasecmp (hf->name, TYPE_FIELD) == 0) {
+            field = TYPE_HEADER;
+        } else if (strcasecmp (hf->name, DISPO_FIELD) == 0) {
+            field = DISPO_HEADER;
+        }
+
+        if (field != OTHER) {
+            const char *const semicolon_loc = strchr (hf->value, ';');
+
+            if (semicolon_loc) {
+                const size_t len =
+                    strlen (hf->name) + 1 + semicolon_loc - hf->value;
+                const char *const params =
+                    output_params (len,
+                                   field == TYPE_HEADER
+                                   ? ct->c_ctinfo.ci_first_pm
+                                   : ct->c_dispo_first,
+                                   NULL, 0);
+                const char *const new_params = concat (params, "\n", NULL);
+
+                replace_substring (&hf->value, semicolon_loc, new_params);
+                free ((char *) new_params);
+                free ((char *) params);
+            } else {
+                advise (NULL, "did not find semicolon in %s:%s\n",
+                        hf->name, hf->value);
+            }
+        }
+    }
+
+    return OK;
 }
 
 
@@ -2502,8 +2602,8 @@ write_content (CT ct, const char *input_filename, char *outfile, int modify_inpl
 
 
 /*
- * parse_mime() does not set lf_line_endings in struct text, so use this function to do it.
- * It touches the parts the decodetypes identifies.
+ * parse_mime() does not set lf_line_endings in struct text, so use this
+ * function to do it.  It touches the parts the decodetypes identifies.
  */
 static void
 set_text_ctparams(CT ct, char *decodetypes, int lf_line_endings) {
