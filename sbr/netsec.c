@@ -590,6 +590,8 @@ retry:
 		netsec_err(errstr, "TLS network read failed: %s",
 			   ERR_error_string(errcode, NULL));
 	    }
+	    if (nsc->ns_snoop)
+		ERR_print_errors_fp(stderr);
 	    return NOTOK;
 	} else if (rc < 0) {
 	    /* Definitely an error */
