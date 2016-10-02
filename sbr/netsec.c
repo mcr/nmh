@@ -113,7 +113,7 @@ static int checkascii(const unsigned char *byte, size_t len);
  * relatively self-explanatory.
  *
  * If we are using SSL for encryption, then use a buffering BIO for output
- * (that just easier).  Still do buffering for reads; when we need more
+ * (that's just easier).  Still do buffering for reads; when we need more
  * data we call the BIO_read() function to fill our local buffer.
  *
  * For SASL, we make use of (for now) the Cyrus-SASL library.  For some
@@ -553,10 +553,10 @@ retry:
     /*
      * Some explanation:
      *
-     * startoffset is the offset from the beginning of the input buffer
-     * of data that has is in our input buffer, but has not yet been
-     * consumed.  This can be non-zero, if, functions like netsec_readline()
-     * leave leftover data.
+     * startoffset is the offset from the beginning of the input
+     * buffer to data that is in our input buffer, but has not yet
+     * been consumed.  This can be non-zero if functions like
+     * netsec_readline() leave leftover data.
      *
      * remaining is the remaining amount of unconsumed data in the input
      * buffer.
