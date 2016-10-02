@@ -550,9 +550,37 @@ retry:
 	 */
     }
 
+    /*
+     * Some explanation:
+     *
+     * startoffset is the offset from the beginning of the input buffer
+     * of data that has is in our input buffer, but has not yet been
+     * consumed.  This can be non-zero, if, functions like netsec_readline()
+     * leave leftover data.
+     *
+     * remaining is the remaining amount of unconsumed data in the input
+     * buffer.
+     *
+     * end is a pointer to the end of the valid data + 1; it's where
+     * the next read should go.
+     */
+
     startoffset = nsc->ns_inptr - nsc->ns_inbuffer;
     remaining = nsc->ns_inbufsize - (startoffset + nsc->ns_inbuflen);
     end = nsc->ns_inptr + nsc->ns_inbuflen;
+
+    /*
+     * If we're past the halfway point in our read buffers, shuffle everything
+     * back to the beginning.
+     */
+
+    if (startoffset > nsc->ns_inbufsize / 2) {
+	memmove(nsc->ns_inbuffer, nsc->ns_inptr, nsc->ns_inbuflen);
+	nsc->ns_inptr = nsc->ns_inbuffer;
+	startoffset = 0;
+	remaining = nsc->ns_inbufsize - nsc->ns_inbuflen;
+	end = nsc->ns_inptr + nsc->ns_inbuflen;
+    }
 
     /*
      * If we are using TLS, then just read via the BIO.  But we still
@@ -678,16 +706,6 @@ retry:
     } else
 #endif /* CYRUS_SASL */
 	nsc->ns_inbuflen += rc;
-
-    /*
-     * If we're past the halfway point in our read buffers, shuffle everything
-     * back to the beginning.
-     */
-
-    if (startoffset > nsc->ns_inbufsize / 2) {
-	memmove(nsc->ns_inbuffer, nsc->ns_inptr, nsc->ns_inbuflen);
-	nsc->ns_inptr = nsc->ns_inbuffer;
-    }
 
     return OK;
 }
