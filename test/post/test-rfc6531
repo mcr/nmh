@@ -16,6 +16,7 @@ fi
 
 setup_test
 mhl="${MH_LIBEXEC_DIR}/mhl"
+SMTPUTF8=1; export SMTPUTF8
 
 #### Make sure that html-to-text conversion is what we expect.
 require_locale en_US.utf-8 en_US.utf8
@@ -67,6 +68,25 @@ http://www.computer.org/cms/computing-edge/ce-jun15-final.pdf, p. 50.
 EOF
 
 test_post "${testname}.actual" "${testname}.expected"
+
+
+start_test "smtp server doesn't support SMTPUTF8"
+unset SMTPUTF8
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+RSET
+QUIT
+EOF
+cat > "${testname}.expected.err" <<EOF
+post: problem initializing server; [BHST] ready; I'll buy that for a dollar!
+send: message not delivered to anyone
+EOF
+mv -f "${MH_TEST_DIR}/Mail/,draft" "${MH_TEST_DIR}/Mail/draft"
+
+set +e
+test_post "${testname}.actual" "${testname}.expected" 2>"${testname}.err"
+set -e
+check "${testname}.err" "${testname}.expected.err"
 
 
 finish_test

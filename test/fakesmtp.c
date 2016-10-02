@@ -41,6 +41,7 @@ main(int argc, char *argv[])
 	int rc, conn, smtp_state;
 	FILE *f;
 	const char *xoauth = getenv("XOAUTH");
+	const char *smtputf8 = getenv("SMTPUTF8");
 
 	if (argc != 3) {
 		fprintf(stderr, "Usage: %s output-filename port\n", argv[0]);
@@ -101,17 +102,20 @@ main(int argc, char *argv[])
 			smtp_state = SMTP_DATA;
 			continue;
 		}
-		if (xoauth == NULL) {
+		if (strncmp(line, "EHLO", 4) == 0) {
 			putcrlf(conn, "250-ready");
-			putcrlf(conn, "250-8BITMIME");
-			putcrlf(conn, "250-SMTPUTF8");
-		} else {
-			/* XOAUTH2 support enabled; handle EHLO and AUTH. */
-			if (strncmp(line, "EHLO", 4) == 0) {
-				putcrlf(conn, "250-ready");
-				putcrlf(conn, "250 AUTH XOAUTH2");
-				continue;
+			if (smtputf8 != NULL) {
+				putcrlf(conn, "250-8BITMIME");
+				putcrlf(conn, "250-SMTPUTF8");
 			}
+			if (xoauth != NULL) {
+				putcrlf(conn, "250-AUTH XOAUTH2");
+			}
+			putcrlf(conn, "250 I'll buy that for a dollar!");
+			continue;
+		}
+		if (xoauth != NULL) {
+			/* XOAUTH2 support enabled; handle AUTH (and EHLO above). */
 			if (strncmp(line, "AUTH", 4) == 0) {
 				if (strncmp(line, "AUTH XOAUTH2", 12) == 0
 				    && strstr(line, xoauth) != NULL) {

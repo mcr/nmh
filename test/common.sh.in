@@ -44,7 +44,7 @@ HOME=$MH_TEST_DIR
 export HOME
 
 unset MAILDROP MHBUILD MHCONTEXT MHMTSUSERCONF MHN MHSHOW MHSTORE
-unset MHLDEBUG MHPDEBUG MHWDEBUG PAGER XOAUTH
+unset MHLDEBUG MHPDEBUG MHWDEBUG PAGER XOAUTH SMTPUTF8
 #### Set LC_ALL in individual tests as needed.  Unset these so
 #### that we don't depend on user's settings in other tests.
 unset LANG LC_ALL LC_CTYPE
