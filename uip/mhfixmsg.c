@@ -27,8 +27,8 @@
     X("noreplacetextplain", 0, NREPLACETEXTPLAINSW) \
     X("fixboundary", 0, FIXBOUNDARYSW) \
     X("nofixboundary", 0, NFIXBOUNDARYSW) \
-    X("fixcte", 0, FIXCTESW) \
-    X("nofixcte", 0, NFIXCTESW) \
+    X("fixcte", 0, FIXCOMPOSITECTESW) \
+    X("nofixcte", 0, NFIXCOMPOSITECTESW) \
     X("fixtype mimetype", 0, FIXTYPESW) \
     X("file file", 0, FILESW) \
     X("outfile file", 0, OUTFILESW) \
@@ -78,7 +78,7 @@ void freects_done (int) NORETURN;
  */
 typedef struct fix_transformations {
     int fixboundary;
-    int fixcte;
+    int fixcompositecte;
     svector_t fixtypes;
     int reformat;
     int replacetextplain;
@@ -97,7 +97,7 @@ static int replace_boundary (CT, char *, char *);
 static int fix_types (CT, svector_t, int *);
 static char *replace_substring (char **, const char *, const char *);
 static char *remove_parameter (char *, const char *);
-static int fix_multipart_cte (CT, int *);
+static int fix_composite_cte (CT, int *);
 static int set_ce (CT, int);
 static int ensure_text_plain (CT *, CT, int *, int);
 static int find_textplain_sibling (CT, int, int *);
@@ -142,7 +142,7 @@ main (int argc, char **argv) {
     int chgflag = 1;
     int status = OK;
     fix_transformations fx;
-    fx.reformat = fx.fixcte = fx.fixboundary = 1;
+    fx.reformat = fx.fixcompositecte = fx.fixboundary = 1;
     fx.fixtypes = NULL;
     fx.replacetextplain = 0;
     fx.decodetext = CE_8BIT;
@@ -222,11 +222,11 @@ main (int argc, char **argv) {
             case NFIXBOUNDARYSW:
                 fx.fixboundary = 0;
                 continue;
-            case FIXCTESW:
-                fx.fixcte = 1;
+            case FIXCOMPOSITECTESW:
+                fx.fixcompositecte = 1;
                 continue;
-            case NFIXCTESW:
-                fx.fixcte = 0;
+            case NFIXCOMPOSITECTESW:
+                fx.fixcompositecte = 0;
                 continue;
             case FIXTYPESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
@@ -518,8 +518,8 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     if (status == OK  && fx->fixtypes != NULL) {
         status = fix_types (*ctp, fx->fixtypes, &message_mods);
     }
-    if (status == OK  &&  fx->fixcte) {
-        status = fix_multipart_cte (*ctp, &message_mods);
+    if (status == OK  &&  fx->fixcompositecte) {
+        status = fix_composite_cte (*ctp, &message_mods);
     }
     if (status == OK  &&  fx->reformat) {
         status =
@@ -1057,16 +1057,15 @@ remove_parameter (char *str, const char *name) {
 
 
 /*
- * Fix Content-Transfer-Encoding.
+ * Fix Content-Transfer-Encoding of composite,, e.g., message or multipart, part.
+ * According to RFC 2045 Sec. 6.4, it must be 7bit, 8bit, or binary.  Set it to
+ * 8 bit.
  */
 static int
-fix_multipart_cte (CT ct, int *message_mods) {
+fix_composite_cte (CT ct, int *message_mods) {
     int status = OK;
 
-    if (ct->c_type == CT_MULTIPART) {
-        struct multipart *m;
-        struct part *part;
-
+    if (ct->c_type == CT_MESSAGE  ||  ct->c_type == CT_MULTIPART) {
         if (ct->c_encoding != CE_7BIT  &&  ct->c_encoding != CE_8BIT  &&
             ct->c_encoding != CE_BINARY) {
             HF hf;
@@ -1112,11 +1111,16 @@ fix_multipart_cte (CT ct, int *message_mods) {
             set_ce (ct, CE_8BIT);
         }
 
-        m = (struct multipart *) ct->c_ctparams;
-        for (part = m->mp_parts; part; part = part->mp_next) {
-            if (fix_multipart_cte (part->mp_part, message_mods) != OK) {
-                status = NOTOK;
-                break;
+        if (ct->c_type == CT_MULTIPART) {
+            struct multipart *m;
+            struct part *part;
+
+            m = (struct multipart *) ct->c_ctparams;
+            for (part = m->mp_parts; part; part = part->mp_next) {
+                if (fix_composite_cte (part->mp_part, message_mods) != OK) {
+                    status = NOTOK;
+                    break;
+                }
             }
         }
     }

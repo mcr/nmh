@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "October 1, 2016" "%nmhversion%"
+.TH MHFIXMSG %manext1% "October 3, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -191,9 +191,9 @@ The
 .B \-fixcte
 switch enables a transformation to change the
 Content-Transfer-Encoding from an invalid value to 8bit in message
-parts with a Content-Type of multipart, as required by RFC 2045,
-§6.4.  That condition is indicated by a \*(lqmust be encoded in
-7bit, 8bit, or binary\*(rq error message from
+parts with a Content-Type of multipart and message, as required by
+RFC 2045, §6.4.  That condition is indicated by a \*(lqmust be
+encoded in 7bit, 8bit, or binary\*(rq error message from
 .B mhlist
 and other
 .B nmh
@@ -305,7 +305,7 @@ content type and/or encoding as follows:
 \-textcharset        text/plain parts
 \-reformat           text parts that are not text/plain
 \-fixboundary        outermost multipart part
-\-fixcte             multipart part
+\-fixcte             multipart or message part
 \-fixtype            all except multipart and message parts
 .fi
 .RE
