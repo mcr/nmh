@@ -831,7 +831,7 @@ the
 switch, then
 .B mhbuild
 will encode each content with
-a transfer encoding, even it the content contains only 7\-bit data.
+a transfer encoding, even if the content contains only 7\-bit data.
 This
 is to increase the likelihood that the content is not changed while in
 transport.
