@@ -116,6 +116,9 @@ static int decode_text_parts (CT, int, const char *, int *);
 static int should_decode(const char *, const char *, const char *);
 static int content_encoding (CT, const char **);
 static int strip_crs (CT, int *);
+static void update_cte (CT);
+static int least_restrictive_encoding (CT);
+static int less_restrictive (int, int);
 static int convert_charsets (CT, char *, int *);
 static int fix_always (CT, int *);
 static int fix_filename_param (char *, char *, PM *, PM *);
@@ -527,6 +530,7 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
     if (status == OK  &&  fx->decodetext) {
         status = decode_text_parts (*ctp, fx->decodetext, fx->decodetypes,
                                     &message_mods);
+        update_cte (*ctp);
     }
     if (status == OK  &&  fx->textcharset != NULL) {
         status = convert_charsets (*ctp, fx->textcharset, &message_mods);
@@ -2275,6 +2279,103 @@ strip_crs (CT ct, int *message_mods) {
     free (charset);
 
     return status;
+}
+
+
+/*
+ * Add/update, if necessary, the message C-T-E, based on the least restrictive
+ * of the part C-T-E's.
+ */
+static void
+update_cte (CT ct) {
+    const int least_restrictive_enc = least_restrictive_encoding (ct);
+
+    if (least_restrictive_enc != CE_UNKNOWN  &&
+        least_restrictive_enc != CE_7BIT) {
+        char *cte = concat (" ", ce_str (least_restrictive_enc), "\n", NULL);
+        HF hf;
+        int found_cte = 0;
+
+        /* Update/add Content-Transfer-Encoding header field. */
+        for (hf = ct->c_first_hf; hf; hf = hf->next) {
+            if (! strcasecmp (ENCODING_FIELD, hf->name)) {
+                found_cte = 1;
+                free (hf->value);
+                hf->value = cte;
+            }
+        }
+        if (! found_cte) {
+            add_header (ct, add (ENCODING_FIELD, NULL), cte);
+        }
+    }
+}
+
+
+/*
+ * Find the least restrictive encoding (7bit, 8bit, binary) of the parts
+ * within a message.
+ */
+static int
+least_restrictive_encoding (CT ct) {
+    int encoding = CE_UNKNOWN;
+
+    switch (ct->c_type) {
+    case CT_MULTIPART: {
+        struct multipart *m = (struct multipart *) ct->c_ctparams;
+        struct part *part;
+
+        for (part = m->mp_parts; part; part = part->mp_next) {
+            const int part_encoding =
+                least_restrictive_encoding (part->mp_part);
+
+            if (less_restrictive (encoding, part_encoding)) {
+                encoding = part_encoding;
+            }
+        }
+        break;
+    }
+
+    case CT_MESSAGE:
+        if (ct->c_subtype == MESSAGE_EXTERNAL) {
+            struct exbody *e = (struct exbody *) ct->c_ctparams;
+            const int part_encoding =
+                least_restrictive_encoding (e->eb_content);
+
+            if (less_restrictive (encoding, part_encoding)) {
+                encoding = part_encoding;
+            }
+        }
+        break;
+
+    default: {
+        if (less_restrictive (encoding, ct->c_encoding)) {
+            encoding = ct->c_encoding;
+        }
+    }}
+
+    return encoding;
+}
+
+
+/*
+ * Return whether the second encoding is less restrictive than the first, where
+ * "less restrictive" is in the sense used by RFC 2045 Secs. 6.1 and 6.4.  So,
+ *   CE_BINARY is less restrictive than CE_8BIT and
+ *   CE_8BIT is less restrictive than CE_7BIT.
+ */
+static int
+less_restrictive (int encoding, int second_encoding) {
+    switch (second_encoding) {
+    case CE_BINARY:
+        return encoding != CE_BINARY;
+    case CE_8BIT:
+        return encoding != CE_BINARY  &&  encoding != CE_8BIT;
+    case CE_7BIT:
+        return encoding != CE_BINARY  &&  encoding != CE_8BIT  &&
+            encoding != CE_7BIT;
+    default :
+        return 0;
+    }
 }
 
 

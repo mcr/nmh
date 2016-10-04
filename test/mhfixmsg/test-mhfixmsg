@@ -697,6 +697,7 @@ From: sender@example.com
 Subject: mhfixmsg successful decode of text/plain with failed binary decode
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-Transfer-Encoding: binary
 
 ------- =_aaaaaaaaaa0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -725,6 +726,7 @@ From: sender@example.com
 Subject: mhfixmsg binary decode test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary=\"----- =_aaaaaaaaaa0\"
+Content-Transfer-Encoding: binary
 
 ------- =_aaaaaaaaaa0
 Content-Type: text/plain; charset=\"UTF-8\"; name=\"nul+square.txt\"
@@ -821,6 +823,7 @@ From: sender@example.com
 Subject: mhfixmsg textcharset test
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-Transfer-Encoding: 8bit
 
 ------- =_aaaaaaaaaa0
 Content-Type: text/plain; charset="utf-8"; name="square.txt"
@@ -1204,7 +1207,6 @@ Yes, the text/plain part really was empty.
 
 ------=_Part_876302
 Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
 
 <html><head>
@@ -1234,7 +1236,6 @@ Content-Disposition: inline
 
 ------=_Part_876302
 Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
 
 <html><head>
@@ -1276,7 +1277,6 @@ Content-Disposition: inline
 
 ------=_Part_876302
 Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
 
 <html><head>
@@ -1723,6 +1723,7 @@ Date: Wed, 28 Sep 2016 11:24:28 -0400
 Subject: invalid header parameter encoding
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary=001a114dd3e8fe9c56053d92f414
+Content-Transfer-Encoding: 8bit
 
 --001a114dd3e8fe9c56053d92f414
 Content-Type: text/plain; charset=UTF-8
