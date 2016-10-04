@@ -108,7 +108,6 @@ static CT divide_part (CT);
 static void copy_ctinfo (CI, CI);
 static int decode_part (CT);
 static int reformat_part (CT, char *, char *, char *, int);
-static int charset_encoding (CT);
 static CT build_multipart_alt (CT, CT, int, int);
 static int boundary_in_content (FILE **, char *, const char *);
 static void transfer_noncontent_headers (CT, CT);
@@ -526,7 +525,8 @@ mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
             ensure_text_plain (ctp, NULL, &message_mods, fx->replacetextplain);
     }
     if (status == OK  &&  fx->decodetext) {
-        status = decode_text_parts (*ctp, fx->decodetext, fx->decodetypes, &message_mods);
+        status = decode_text_parts (*ctp, fx->decodetext, fx->decodetypes,
+                                    &message_mods);
     }
     if (status == OK  &&  fx->textcharset != NULL) {
         status = convert_charsets (*ctp, fx->textcharset, &message_mods);
@@ -1581,6 +1581,7 @@ decode_part (CT ct) {
 static int
 reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
     int output_subtype, output_encoding;
+    const char *reason = NULL;
     char *cp, *cf;
     int status;
 
@@ -1626,8 +1627,8 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
         /* Set subtype to 0, which is always an UNKNOWN subtype. */
         output_subtype = 0;
     }
-    output_encoding = charset_encoding (ct);
 
+    output_encoding = content_encoding (ct, &reason);
     if (set_ct_type (ct, c_type, output_subtype, output_encoding) == OK) {
         ct->c_cefile.ce_file = file;
         ct->c_cefile.ce_unlink = 1;
@@ -1637,20 +1638,6 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
     }
 
     return status;
-}
-
-
-/*
- * Identifies 7bit or 8bit content based on charset.
- */
-static int
-charset_encoding (CT ct) {
-    char *ct_charset = content_charset (ct);
-    int encoding = strcasecmp (ct_charset, "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
-
-    free (ct_charset);
-
-    return encoding;
 }
 
 
@@ -1925,7 +1912,8 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
  * that character set again after decoding."
  */
 static int
-decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mods) {
+decode_text_parts (CT ct, int encoding, const char *decodetypes,
+                   int *message_mods) {
     int status = OK;
     int lf_line_endings = 0;
 
@@ -1937,7 +1925,8 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
         /* Should check to see if the body for this part is encoded?
            For now, it gets passed along as-is by InitMultiPart(). */
         for (part = m->mp_parts; status == OK  &&  part; part = part->mp_next) {
-            status = decode_text_parts (part->mp_part, encoding, decodetypes, message_mods);
+            status = decode_text_parts (part->mp_part, encoding, decodetypes,
+                                        message_mods);
         }
         break;
     }
@@ -1946,7 +1935,8 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
         if (ct->c_subtype == MESSAGE_EXTERNAL) {
             struct exbody *e = (struct exbody *) ct->c_ctparams;
 
-            status = decode_text_parts (e->eb_content, encoding, decodetypes, message_mods);
+            status = decode_text_parts (e->eb_content, encoding, decodetypes,
+                                        message_mods);
         }
         break;
 
@@ -1997,12 +1987,13 @@ decode_text_parts (CT ct, int encoding, const char *decodetypes, int *message_mo
                     ct->c_cefile.ce_file = NULL;
                 } else {
                     int enc;
+
                     if (ct_encoding == CE_BINARY) {
                         enc = CE_BINARY;
                     } else if (ct_encoding == CE_8BIT  &&  encoding == CE_7BIT) {
                         enc = CE_QUOTED;
                     } else {
-                        enc = charset_encoding (ct);
+                        enc = ct_encoding;
                     }
                     if (set_ce (ct, enc) == OK) {
                         ++*message_mods;
