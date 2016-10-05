@@ -108,17 +108,26 @@ static int checkascii(const unsigned char *byte, size_t len);
 /*
  * How this code works, in general.
  *
- * _If_ we are using no encryption or SASL encryption, then we buffer the
- * network data through ns_inbuffer and ns_outbuffer.  That should be
- * relatively self-explanatory.
+ * _If_ we are using no encryption then we buffer the network data
+ * through ns_inbuffer and ns_outbuffer.  That should be relatively
+ * self-explanatory.
  *
- * If we are using SSL for encryption, then use a buffering BIO for output
- * (that's just easier).  Still do buffering for reads; when we need more
- * data we call the BIO_read() function to fill our local buffer.
+ * If we use encryption, then ns_inbuffer and ns_outbuffer contain the
+ * cleartext data.  When it comes time to send the encrypted data on the
+ * (either from a flush or the buffer is full) we either use BIO_write()
+ * for TLS or sasl_encode() (followed by a write() for Cyrus-SASL.  For
+ * reads we either use BIO_read() (TLS) or do a network read into a
+ * temporary buffer and use sasl_decode() (Cyrus-SASL).  Note that if
+ * negotiate TLS then we disable SASL encryption.
  *
- * For SASL, we make use of (for now) the Cyrus-SASL library.  For some
- * mechanisms, we implement those mechanisms directly since the Cyrus SASL
- * library doesn't support them (like OAuth).
+ * We used to use a buffering BIO for the reads/writes for TLS, but it
+ * ended up being complicated to special-case the buffering for everything
+ * except TLS, so the buffering is now unified, no matter which encryption
+ * method is being used (even none).
+ *
+ * For SASL authentication, we make use of (for now) the Cyrus-SASL
+ * library.  For some mechanisms, we implement those mechanisms directly
+ * since the Cyrus SASL library doesn't support them (like OAuth).
  */
 
 /*
