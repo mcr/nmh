@@ -2292,11 +2292,6 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     } else {
         set_charset (reply_ct, -1);
         charset = get_param (reply_ct->c_ctinfo.ci_first_pm, "charset", '?', 1);
-        if (reply_ct->c_reqencoding == CE_UNKNOWN) {
-            /* Assume that 8bit is sufficient (for text). */
-            reply_ct->c_reqencoding =
-                strcasecmp (charset, "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
-        }
     }
 
     /* Concatenate text/plain parts. */
@@ -2309,11 +2304,6 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
             /* Make sure that the charset is set in the text/plain
                part. */
             set_charset (*text_plain_ct, -1);
-            if ((*text_plain_ct)->c_reqencoding == CE_UNKNOWN) {
-                /* Assume that 8bit is sufficient (for text). */
-                (*text_plain_ct)->c_reqencoding =
-                    strcasecmp (charset, "US-ASCII")  ?  CE_8BIT  :  CE_7BIT;
-            }
         }
 
         if (*text_plain_ct) {
