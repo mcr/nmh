@@ -1160,6 +1160,10 @@ set_ce (CT ct, int encoding) {
            ct->c_cefile.ce_file to the name of the file containing
            the contents. */
 
+        if (ct->c_ceclosefnx) {
+            (*ct->c_ceclosefnx) (ct);
+        }
+
         /* Restore the cefile. */
         ct->c_cefile = decoded_content_info;
 
