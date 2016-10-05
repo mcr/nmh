@@ -1453,15 +1453,17 @@ scan_content (CT ct, size_t maxunencoded)
      * Decide what to check while scanning this content.  Note that
      * for text content we always check for 8bit characters if the
      * charset is unspecified, because that controls whether or not the
-     * character set is us-ascii or retrieved from the locale.
+     * character set is us-ascii or retrieved from the locale.  And
+     * we check even if the charset is specified, to allow setting
+     * the proper Content-Transfer-Encoding.
      */
 
     if (ct->c_type == CT_TEXT) {
 	t = (struct text *) ct->c_ctparams;
 	if (t->tx_charset == CHARSET_UNSPECIFIED) {
-	    check8bit = 1;
 	    checknul = 1;
 	}
+	check8bit = 1;
     }
 
     switch (ct->c_reqencoding) {

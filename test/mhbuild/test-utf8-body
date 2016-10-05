@@ -49,7 +49,9 @@ test_attachment ()
   check "${testname}.actual" "$1"
 }
 
+
 # check that 7-bit body isn't encoded
+start_test "7-bit body isn't encoded"
 cat > "${MH_TEST_DIR}/attachment.txt" <<EOF
 this is an attachment
 EOF
@@ -88,9 +90,10 @@ EOF
 
 test_attachment "${testname}.expected"
 
+
 # check that 8-bit body is encoded as quoted-printable text/plain,
 # even with an attachment
-
+start_test '8-bit body is encoded as quoted-printable text/plain'
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody <somebody@example.com>
@@ -127,9 +130,41 @@ EOF
 
 test_attachment "${testname}.expected"
 
-# Repeat the previous test, but make sure that the locale is set to C, which 
-# should cause mhbuild to fail
 
+# check that 8-bit attachment gets C-T-E
+start_test '8-bit attachment gets C-T-E'
+rm -f "${MH_TEST_DIR}/attachment.txt"
+cat > "${MH_TEST_DIR}/attachment.txt" <<EOF
+8-bit attachment, ¡Ay, caramba!
+EOF
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody <somebody@example.com>
+Subject: Test
+Attach: $MH_TEST_DIR/attachment.txt
+EOF
+
+cat > "${testname}.expected" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody <somebody@example.com>
+Subject: Test
+MIME-Version: 1.0
+Content-Type: text/plain; name="attachment.txt"
+Content-Description: attachment.txt
+Content-Disposition: attachment; filename="attachment.txt"
+Content-Transfer-Encoding: 8bit
+Date:
+
+8-bit attachment, ¡Ay, caramba!
+EOF
+
+test_attachment "${testname}.expected"
+
+
+# check 8-bit body but make sure that the locale is set to C, which
+# should cause mhbuild to fail
+start_test '8-bit body with C locale'
 cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody <somebody@example.com>
@@ -152,8 +187,10 @@ EOF
 
 check "$expected" "$actual"
 
+
 rm -f ${MHMTSCONF} "${MH_TEST_DIR}/attachment.txt"
 
+finish_test
 exit ${failed:-0}
 
 # emacs hackage to ensure that it writes the inverted exclamation

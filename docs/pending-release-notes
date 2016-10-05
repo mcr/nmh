@@ -56,7 +56,6 @@ NEW FEATURES
   filename parameters in Content-Type and Content-Disposition headers,
   respectively.
 
-
 -----------------
 OBSOLETE FEATURES
 -----------------
@@ -88,3 +87,7 @@ BUG FIXES
   scan(1), inc(1), and the other programs that rely on the format scanner.
 - The first character of some very short (less than 4 characters) message
   bodies is no longer dropped.
+- mhfixmsg now adds a Content-Transfer-Encoding header at the message level,
+  if needed after decoding text parts.
+- mhbuild now checks whether all text parts need a Content-Transfer-Encoding
+  header, not just those with a character set not specified.
