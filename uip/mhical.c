@@ -76,7 +76,7 @@ main (int argc, char *argv[]) {
 
     icaldebug = 0;  /* Global provided by bison (with name-prefix "ical"). */
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], 2)) { return 1; }
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;

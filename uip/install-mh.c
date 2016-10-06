@@ -223,6 +223,10 @@ query:
     puts ("\nPlease see the nmh(7) man page for an introduction to nmh.\n");
     print_intro (stdout, FALSE);
 
+    /* Initialize the saved nmh version.  The Path profile entry was added
+       above, that's all this needs. */
+    (void) nmh_version_changed (0);
+
     done (0);
     return 1;
 }

@@ -1,4 +1,4 @@
-.TH MH-PROFILE %manext5% "December 21, 2014" "%nmhversion%"
+.TH MH-PROFILE %manext5% "September 29, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -477,6 +477,34 @@ exception that the permission checks done by
 \*(lqfile\*(rq are not performed.  This entry should be used with
 caution and only when absolutely necessary.
 (profile, default: legacy)
+.RE
+.PP
+.BR Welcome :
+disable
+.RS 5
+If the Welcome component is not present, or its value is not
+.RI \*(lq disable \*(rq,
+a welcome message will be displayed the first time that an interactive
+.B nmh
+program is run after updating the
+.B nmh
+installation.
+The user must press the Enter key to continue.
+.PP
+If the MHCONTEXT environment variable is set and non-empty (and
+the Welcome component is not
+.RI \*(lq disable \*(rq),
+the welcome message is only displayed if the context file contains a version
+reference, and that reference is older than the installed
+.B nmh
+version.  The version reference is of the form:
+.PP
+.RS 5
+.nf
+Version: %nmhversion%
+.fi
+.RE
+.PP
 .RE
 .SS "Process Profile Entries"
 The following profile elements are used whenever an

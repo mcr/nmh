@@ -17,6 +17,7 @@ extern int setup_signal_handlers();
 /* sbr/m_mktemp.c */
 extern void remove_registered_files_atexit();
 
+extern char *mhdocdir;
 
 /*
  * We allocate space for messages (msgs array)
@@ -364,8 +365,47 @@ nmh_init(const char *argv0, int read_context) {
         admonish("atexit", "unable to register atexit function");
     }
 
+    /* Read context, if supposed to. */
     if (read_context) {
+        int allow_version_check = 1;
+        int check_older_version = 0;
+        char *cp;
+
         context_read();
+
+        if (read_context != 1  ||
+            ((cp = context_find ("Welcome")) && strcasecmp (cp, "disable") == 0)) {
+            allow_version_check = 0;
+        } else if ((cp = getenv ("MHCONTEXT")) != NULL && *cp != '\0') {
+            /* Context file comes from $MHCONTEXT, so only print the message
+               if the context file has an older version.  If it does, or if it
+               doesn't have a version at all, update the version. */
+            check_older_version = 1;
+        }
+
+        /* Check to see if the user is running a different (or older, if
+           specified) version of nmh than they had run bfore, and notify them
+           if so.  But only if read_context was set to a value to enable. */
+        if (allow_version_check  &&  isatty (fileno (stdin))  &&
+            isatty (fileno (stdout))  &&  isatty (fileno (stderr))) {
+            if (nmh_version_changed (check_older_version)) {
+                printf ("==================================================="
+                        "====================\n");
+                printf ("Welcome to nmh version %s\n\n", VERSION);
+                printf ("See the release notes in %s/NEWS .\n\n",
+                         mhdocdir);
+                print_intro (stdout, 1);
+                printf ("\nThis message will not be repeated until "
+                        "nmh is next updated.\n");
+                printf ("==================================================="
+                        "====================\n\n");
+
+                fputs ("Press enter to continue: ", stdout);
+                (void) read_line ();
+                putchar ('\n');
+            }
+        }
+
         return OK;
     } else {
         int status = context_foil(NULL);
@@ -373,6 +413,41 @@ nmh_init(const char *argv0, int read_context) {
             advise("", "failed to create minimal profile/conext");
         }
         return status;
+    }
+}
+
+
+/*
+ * Check stored version, and return 1 if out-of-date or non-existent.
+ * Because the output of "mhparam version" is prefixed with "nmh-",
+ * use that prefix here.
+ */
+int
+nmh_version_changed (int older) {
+    const char *const context_version = context_find("Version");
+
+    if (older) {
+        /* Convert the version strings to floats and compare them.  This will
+           break for versions with multiple decimal points, etc. */
+        const float current_version = strtod (VERSION, NULL);
+        const float old_version =
+            context_version  &&  strncmp (context_version, "nmh-", 4) == 0
+            ?  strtof (context_version + 4, NULL)
+            :  99999999;
+
+        if (context_version == NULL  ||  old_version < current_version) {
+            context_replace ("Version", "nmh-" VERSION);
+        }
+
+        return old_version < current_version  ?  1  :  0;
+    } else {
+        if (context_version == NULL  ||  strcmp(context_version, "nmh-" VERSION) != 0) {
+            context_replace ("Version", "nmh-" VERSION);
+
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }
 

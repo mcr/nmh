@@ -58,6 +58,7 @@ NEW FEATURES
 - If a message body contains 8-bit bytes, post(8) uses SMTP 8BITMIME if the
   server supports it.  If not, post fails with a message to the user to
   encode the message for 7-bit transport.
+- Added welcome message when nmh detects that its version changed.
 
 -----------------
 OBSOLETE FEATURES

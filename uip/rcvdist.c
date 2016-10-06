@@ -48,7 +48,7 @@ main (int argc, char **argv)
     FILE *fp;
     char *tfile = NULL;
 
-    if (nmh_init(argv[0], 1)) { return 1; }
+    if (nmh_init(argv[0], 2)) { return 1; }
 
     done=unlink_done;
 
