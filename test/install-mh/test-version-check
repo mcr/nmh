@@ -29,6 +29,7 @@ fi
 #### Run a command but don't wait for user input.  script(1) seems to do
 #### what we want by not waiting when run in the background.
 run_without_input() {
+    echo MHCONTEXT = $MHCONTEXT # ????
     if [ "$script_command_opt" = -c ]; then
         #### -c takes single argument with command + arguments.
         script -q -f -c "$*" "$actual" >/dev/null &
@@ -70,7 +71,6 @@ rm "$actual"
 
 start_test 'with welcome message'
 run_without_input pick last
-cat "${MH_TEST_DIR}/Mail/context"; cat "$actual" # ???? debug
 grep 'Welcome to nmh version ' "$actual" >/dev/null
 # Make sure that version was added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
@@ -90,7 +90,9 @@ rm "$actual"
 start_test 'with MHCONTEXT, welcome only if older'
 MHCONTEXT="${MH_TEST_DIR}/Mail/context2"; export MHCONTEXT
 printf 'Version: nmh-1.5\n' >"${MHCONTEXT}"
+cat "$MHCONTEXT"
 run_without_input pick last
+cat "$actual" # ????
 grep 'Welcome to nmh version ' "$actual" >/dev/null
 # And make sure that version did get updated in context.
 grep "^${version}$" "${MHCONTEXT}" >/dev/null
