@@ -59,6 +59,20 @@ char *nmh_strcasestr (const char *, const char *);
 int contains8bit(const char *start, const char *end);
 
 /*
+ * See if file has any 8-bit bytes.
+ * Arguments include:
+ *
+ * fd    	- file descriptor
+ * eightbit	- address of result, will be set to 1 if the file contains
+ *                any 8-bit bytes, 0 otherwise.
+ *
+ * Returns OK on success, NOTOK on read failure.
+ *
+ */
+int scan_input (int fd, int *eightbit);
+
+
+/*
  * Compares prior version of nmh with current version.  Returns 1
  * if they compare the be the same, 0 if not.
  *

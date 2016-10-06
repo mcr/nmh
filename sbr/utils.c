@@ -484,3 +484,25 @@ contains8bit(const char *start, const char *end)
 
     return 0;
 }
+
+
+/*
+ * See if input has any 8-bit bytes.
+ */
+int
+scan_input (int fd, int *eightbit) {
+    int state;
+    char buf[BUFSIZ];
+
+    *eightbit = 0;
+    lseek (fd, (off_t) 0, SEEK_SET);
+
+    while ((state = read (fd, buf, sizeof buf)) > 0) {
+        if (contains8bit (buf, buf + state)) {
+            *eightbit = 1;
+            return OK;
+        }
+    }
+
+    return state == NOTOK  ?  NOTOK  :  OK;
+}

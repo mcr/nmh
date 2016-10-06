@@ -305,7 +305,6 @@ static void fcc (char *, char *);
 static void die (char *, char *, ...);
 static void post (char *, int, int, int, char *, int, char *);
 static void do_text (char *file, int fd);
-static int scan_input (int, int *);
 static void do_an_address (struct mailname *, int);
 static void do_addresses (int, int);
 static int find_prefix (void);
@@ -1852,27 +1851,6 @@ do_text (char *file, int fd)
 	default: 
 	    die (NULL, "unexpected response; %s", rp_string (retval));
     }
-}
-
-
-/*
- * See if input has any 8-bit bytes.
- */
-static int
-scan_input (int fd, int *eightbit) {
-    int state;
-    char buf[BUFSIZ];
-
-    lseek (fd, (off_t) 0, SEEK_SET);
-
-    while ((state = read (fd, buf, sizeof buf)) > 0) {
-        if (contains8bit (buf, buf + state)) {
-            *eightbit = 1;
-            return OK;
-        }
-    }
-
-    return state == NOTOK  ?  NOTOK  :  OK;
 }
 
 
