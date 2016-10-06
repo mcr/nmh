@@ -31,10 +31,10 @@ fi
 run_without_input() {
     if [ "$script_command_opt" = -c ]; then
         #### -c takes single argument with command + arguments.
-        script -c "$*" -f -q "$actual" >/dev/null &
+        script -q -f -c "$*" "$actual" >/dev/null &
     else
         #### E.g., FreeBSD.  Don't combine command arguments.
-        script -f -q "$actual" "$@" >/dev/null &
+        script -q -t 0 "$actual" "$@" >/dev/null &
     fi
 
     wait $!
@@ -70,6 +70,7 @@ rm "$actual"
 
 start_test 'with welcome message'
 run_without_input pick last
+cat "${MH_TEST_DIR}/Mail/context"; cat "$actual" # ???? debug
 grep 'Welcome to nmh version ' "$actual" >/dev/null
 # Make sure that version was added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
