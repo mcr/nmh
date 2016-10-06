@@ -55,6 +55,9 @@ NEW FEATURES
 - mhfixmsg now replaces RFC 2047 encoding with RFC 2231 encoding of name and
   filename parameters in Content-Type and Content-Disposition headers,
   respectively.
+- If a message body contains 8-bit bytes, post(8) uses SMTP 8BITMIME if the
+  server supports it.  If not, post fails with a message to the user to
+  encode the message for 7-bit transport.
 
 -----------------
 OBSOLETE FEATURES

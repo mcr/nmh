@@ -156,6 +156,8 @@ struct headers {
 #define	HDCC  0x0400	/* another undocumented feature			      */
 #define HONE  0x0800	/* Only (zero or) one address allowed		      */
 #define HEFM  0x1000	/* Envelope-From: header			      */
+#define HMIM  0x2000    /* MIME-Version: header                               */
+#define HCTE  0x4000    /* Content-Transfer-Encoding: header                  */
 
 /*
  * flags for headers->set
@@ -168,7 +170,7 @@ struct headers {
 #define MSND  0x0020	/* we've seen a Sender:      */
 #define MRSN  0x0040	/* We've seen a Resent-Sendr:*/
 #define MEFM  0x0080	/* We've seen Envelope-From: */
-
+#define MMIM  0x0100    /* We've seen Mime-Version:  */
 
 static struct headers NHeaders[] = {
     { "Return-Path",   HBAD,                0 },
@@ -185,6 +187,8 @@ static struct headers NHeaders[] = {
     { "Message-ID",    HBAD,                0 },
     { "Fcc",           HFCC,                0 },
     { "Envelope-From", HADR|HONE|HEFM,      MEFM },
+    { "MIME-Version",  HMIM,                MMIM },
+    { "Content-Transfer-Encoding",  HCTE,   0 },
     { NULL,            0,                   0 }
 };
 
@@ -208,6 +212,8 @@ static struct headers RHeaders[] = {
     { "Bcc",               HADR|HTRY|HBCC|HNIL, 0 },
     { "Fcc",               HIGN,                0 },
     { "Envelope-From",     HADR|HONE|HEFM,      MEFM },
+    { "MIME-Version",      HMIM,                MMIM },
+    { "Content-Transfer-Encoding",  HCTE,       0 },
     { NULL,                0,                   0 }
 };
 
@@ -257,6 +263,8 @@ static char fullfrom[BUFSIZ];	/* full contents of From header  */
 static char *filter = NULL;	/* the filter for BCC'ing        */
 static char *subject = NULL;	/* the subject field for BCC'ing */
 static char *fccfold[FCCS];	/* foldernames for FCC'ing       */
+enum encoding { UNKNOWN = 0, BINARY = 1, SEVENBIT = 7, EIGHTBIT = 8 };
+static enum encoding cte = UNKNOWN;
 
 static struct headers  *hdrtab;	/* table for the message we're doing */
 
@@ -297,6 +305,7 @@ static void fcc (char *, char *);
 static void die (char *, char *, ...);
 static void post (char *, int, int, int, char *, int, char *);
 static void do_text (char *file, int fd);
+static int scan_input (int, int *);
 static void do_an_address (struct mailname *, int);
 static void do_addresses (int, int);
 static int find_prefix (void);
@@ -830,7 +839,15 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	insert_fcc (hdr, pp);
 	return;
     }
-
+    if (hdr->flags & HCTE) {
+        if (strncasecmp (str, "7bit", 4) == 0) {
+            cte = SEVENBIT;
+        } else if (strncasecmp (str, "8bit", 4) == 0) {
+            cte = EIGHTBIT;
+        } else if (strncasecmp (str, "binary", 6) == 0) {
+            cte = BINARY;
+        }
+    }
     if (!(hdr->flags & HADR)) {
 	fprintf (out, "%s: %s", name, str);
 	return;
@@ -1600,7 +1617,6 @@ static void
 post (char *file, int bccque, int talk, int eai, char *envelope,
       int oauth_flag, char *auth_svc)
 {
-    int fd;
     int	retval, i;
     pid_t child_id;
 
@@ -1646,16 +1662,33 @@ post (char *file, int bccque, int talk, int eai, char *envelope,
 		break;
 	}
     } else {
+        const int fd = open (file, O_RDONLY);
+        int eightbit = 0;
+
+        if (fd == NOTOK) {
+          die (file, "unable to re-open");
+        }
+
+        if (msgflags & MMIM  &&  cte != UNKNOWN) {
+            /* MIME message with C-T-E header.  (BINARYMIME isn't
+               supported, use 8BITMIME instead for binary.) */
+            eightbit = cte != SEVENBIT;
+        } else {
+            if (scan_input (fd, &eightbit) == NOTOK) {
+                close (fd);
+                die (file, "problem reading from");
+            }
+        }
+
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, sasl, saslmech, user,
 					oauth_flag ? auth_svc : NULL, tls))
-	     || rp_isbad (retval = sm_winit (envelope, eai))) {
+		|| rp_isbad (retval = sm_winit (envelope, eai, eightbit))) {
+	    close (fd);
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 	}
 
         do_addresses (bccque, talk && verbose);
-        if ((fd = open (file, O_RDONLY)) == NOTOK)
-          die (file, "unable to re-open");
         do_text (file, fd);
         close (fd);
         fflush (stdout);
@@ -1688,10 +1721,13 @@ verify_all_addresses (int talk, int eai, char *envelope, int oauth_flag,
     sigon ();
 
     if (!whomsw || checksw) {
+        /* Not sending message body, so don't need to use 8BITMIME. */
+        const int eightbit = 0;
+
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, sasl, saslmech, user,
 					oauth_flag ? auth_svc : NULL, tls))
-		|| rp_isbad (retval = sm_winit (envelope, eai))) {
+		|| rp_isbad (retval = sm_winit (envelope, eai, eightbit))) {
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 	}
     }
@@ -1816,6 +1852,27 @@ do_text (char *file, int fd)
 	default: 
 	    die (NULL, "unexpected response; %s", rp_string (retval));
     }
+}
+
+
+/*
+ * See if input has any 8-bit bytes.
+ */
+static int
+scan_input (int fd, int *eightbit) {
+    int state;
+    char buf[BUFSIZ];
+
+    lseek (fd, (off_t) 0, SEEK_SET);
+
+    while ((state = read (fd, buf, sizeof buf)) > 0) {
+        if (contains8bit (buf, buf + state)) {
+            *eightbit = 1;
+            return OK;
+        }
+    }
+
+    return state == NOTOK  ?  NOTOK  :  OK;
 }
 
 

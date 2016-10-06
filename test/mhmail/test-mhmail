@@ -772,7 +772,7 @@ To: recipient@example.com
 From: sender27@example.com
 MIME-Version: 1.0
 Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Date:
 
 with added header fields
@@ -783,7 +783,7 @@ EOF
 test_mhmail "$expected" \
   "-from sender27@example.com -headerfield MIME-Version:1.0 \
 -headerfield Content-Type:text/plain;charset=utf-8 \
--headerfield Content-Transfer-Encoding:8bit" \
+-headerfield Content-Transfer-Encoding:7bit" \
   -b 'with added header fields'
 
 [ ${failed:-0} -eq 0 ] || exit ${failed:-0}

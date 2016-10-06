@@ -441,19 +441,33 @@ rclient (char *server, char *service)
 }
 
 int
-sm_winit (char *from, int smtputf8)
+sm_winit (char *from, int smtputf8, int eightbit)
 {
-    const char *const mail_parameters = smtputf8
-        ? " BODY=8BITMIME SMTPUTF8"
-        : "";
+    const char *mail_parameters = "";
 
-    /* Just for information, if an attempt is made to send to an 8-bit
-       address without specifying SMTPUTF8, Gmail responds with
-       555 5.5.2 Syntax error.
-       Gmail doesn't require the 8BITMIME, but RFC 6531 Sec. 1.2 does. */
-    if (smtputf8  &&  (! EHLOset("8BITMIME") || ! EHLOset("SMTPUTF8"))) {
-	sm_end (NOTOK);
-	return RP_UCMD;
+    if (smtputf8) {
+        /* Just for information, if an attempt is made to send to an 8-bit
+           address without specifying SMTPUTF8, Gmail responds with
+           555 5.5.2 Syntax error.
+           Gmail doesn't require the 8BITMIME, but RFC 6531 Sec. 1.2 does. */
+        if (EHLOset ("8BITMIME")  &&  EHLOset ("SMTPUTF8")) {
+            mail_parameters = " BODY=8BITMIME SMTPUTF8";
+        } else {
+            sm_end (NOTOK);
+            return RP_UCMD;
+        }
+    } else if (eightbit) {
+        /* Comply with RFC 6152, for messages that have any 8-bit characters
+           in their body. */
+        if (EHLOset ("8BITMIME")) {
+            mail_parameters = " BODY=8BITMIME";
+        } else {
+            advise (NULL, "SMTP server does not support 8BITMIME, not sending.\n"
+                    "Suggest encoding message for 7-bit transport by setting your\n"
+                    "locale to C, and/or specifying *b64 in mhbuild directives.\n");
+            sm_end (NOTOK);
+            return RP_UCMD;
+        }
     }
 
     switch (smtalk (SM_MAIL, "MAIL FROM:<%s>%s", from, mail_parameters)) {
