@@ -2227,6 +2227,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     struct str2init *s2i;
     CT reply_ct;
     struct part *part;
+    int eightbit = 0;
     int status;
 
     type_p = getcpy (type);
@@ -2273,6 +2274,20 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
         return;
     }
 
+    /* For text content only, see if it is 8-bit text. */
+    if (reply_ct->c_type == CT_TEXT) {
+        int fd;
+
+        if ((fd = open (reply_file, O_RDONLY)) == NOTOK  ||
+            scan_input (fd, &eightbit) == NOTOK) {
+            free (reply_file);
+            admonish (NULL, "failed to read %s", reply_file);
+            return;
+        } else {
+            (void) close (fd);
+        }
+    }
+
     /* This sets reply_ct->c_ctparams, and reply_ct->c_termproc if the
        charset can't be handled natively. */
     for (s2i = str2cts; s2i->si_key; s2i++) {
@@ -2292,6 +2307,13 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     } else {
         set_charset (reply_ct, -1);
         charset = get_param (reply_ct->c_ctinfo.ci_first_pm, "charset", '?', 1);
+        if (reply_ct->c_reqencoding == CE_UNKNOWN  &&
+            reply_ct->c_type == CT_TEXT) {
+            /* Assume that 8bit is sufficient (for text).  In other words,
+               don't allow it to be encoded as quoted printable if lines are
+               too long. */
+            reply_ct->c_reqencoding = eightbit  ?  CE_8BIT  :  CE_7BIT;
+        }
     }
 
     /* Concatenate text/plain parts. */
@@ -2304,6 +2326,13 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
             /* Make sure that the charset is set in the text/plain
                part. */
             set_charset (*text_plain_ct, -1);
+            if ((*text_plain_ct)->c_reqencoding == CE_UNKNOWN) {
+                /* Assume that 8bit is sufficient (for text).  In other words,
+                   don't allow it to be encoded as quoted printable if lines
+                   are too long. */
+                (*text_plain_ct)->c_reqencoding =
+                    eightbit  ?  CE_8BIT  :  CE_7BIT;
+            }
         }
 
         if (*text_plain_ct) {
@@ -2332,6 +2361,13 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
                                  reply_file);
                         if (close (text_plain_reply) == OK  &&
                             close (addl_reply) == OK) {
+                            /* If appended text needed 8-bit but first text didn't,
+                               propagate the 8-bit indication. */
+                            if ((*text_plain_ct)->c_reqencoding == CE_7BIT  &&
+                                reply_ct->c_reqencoding == CE_8BIT) {
+                                (*text_plain_ct)->c_reqencoding = CE_8BIT;
+                            }
+
                             if (reply_fp) { fclose (reply_fp); }
                             free (reply_file);
                             free_content (reply_ct);
@@ -2349,7 +2385,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     reply_ct->c_cefile.ce_fp = reply_fp;
     reply_ct->c_cefile.ce_unlink = 1;
 
-    /* Attach the new part to the parent mulitpart/mixed, "m". */
+    /* Attach the new part to the parent multipart/mixed, "m". */
     part = (struct part *) mh_xcalloc (1, sizeof *part);
     part->mp_part = reply_ct;
     if (m->mp_parts) {
