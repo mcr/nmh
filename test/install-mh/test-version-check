@@ -18,7 +18,7 @@ fi
 setup_test
 
 if test ! -t 0 || test ! -t 1 || test ! -t 2; then
-    test_skip 'Must be connected to terminal.'
+    test_skip 'must be connected to terminal'
 fi
 
 require_prog script
