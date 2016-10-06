@@ -6,9 +6,6 @@
 #
 ######################################################
 
-test -t 0 && echo stdin  # ????
-test -t 1 && echo stdout # ????
-test -t 2 && echo stderr # ????
 set -e
 
 if test -z "${MH_OBJ_DIR}"; then
@@ -19,6 +16,10 @@ fi
 . "${MH_OBJ_DIR}/test/common.sh"
 
 setup_test
+
+if ! test -t 0 || ! test -t 1 || ! test -t 2; then
+    test_skip 'Must be connected to terminal.'
+fi
 
 require_prog script
 #### FreeBSD script, e.g., doesn't use -c to identify a command to run.
