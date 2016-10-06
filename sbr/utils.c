@@ -429,7 +429,7 @@ nmh_version_changed (int older) {
     if (older) {
         /* Convert the version strings to floats and compare them.  This will
            break for versions with multiple decimal points, etc. */
-        const float current_version = strtod (VERSION, NULL);
+        const float current_version = strtof (VERSION, NULL);
         const float old_version =
             context_version  &&  strncmp (context_version, "nmh-", 4) == 0
             ?  strtof (context_version + 4, NULL)
