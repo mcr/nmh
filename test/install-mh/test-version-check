@@ -71,6 +71,7 @@ rm "$actual"
 
 start_test 'with welcome message'
 run_without_input pick last
+cat "${MH_TEST_DIR}/Mail/context"; cat "$actual" # ????
 grep 'Welcome to nmh version ' "$actual" >/dev/null
 # Make sure that version was added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
@@ -90,9 +91,8 @@ rm "$actual"
 start_test 'with MHCONTEXT, welcome only if older'
 MHCONTEXT="${MH_TEST_DIR}/Mail/context2"; export MHCONTEXT
 printf 'Version: nmh-1.5\n' >"${MHCONTEXT}"
-cat "$MHCONTEXT"
+cat "$MHCONTEXT" # ????
 run_without_input pick last
-cat "$actual" # ????
 grep 'Welcome to nmh version ' "$actual" >/dev/null
 # And make sure that version did get updated in context.
 grep "^${version}$" "${MHCONTEXT}" >/dev/null
