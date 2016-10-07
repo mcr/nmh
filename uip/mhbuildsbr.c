@@ -2310,8 +2310,11 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
         if (reply_ct->c_reqencoding == CE_UNKNOWN  &&
             reply_ct->c_type == CT_TEXT) {
             /* Assume that 8bit is sufficient (for text).  In other words,
-               don't allow it to be encoded as quoted printable if lines are
-               too long. */
+               don't allow it to be encoded as quoted printable if lines
+               are too long.  This also sidesteps the check for whether
+               it needs to be encoded as binary; instead, it relies on
+               the applicable mhbuild-convert-text directive to ensure
+               that the resultant text is not binary. */
             reply_ct->c_reqencoding = eightbit  ?  CE_8BIT  :  CE_7BIT;
         }
     }
@@ -2329,7 +2332,10 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
             if ((*text_plain_ct)->c_reqencoding == CE_UNKNOWN) {
                 /* Assume that 8bit is sufficient (for text).  In other words,
                    don't allow it to be encoded as quoted printable if lines
-                   are too long. */
+                   are too long.  This also sidesteps the check for whether
+                   it needs to be encoded as binary; instead, it relies on
+                   the applicable mhbuild-convert-text directive to ensure
+                   that the resultant text is not binary. */
                 (*text_plain_ct)->c_reqencoding =
                     eightbit  ?  CE_8BIT  :  CE_7BIT;
             }
