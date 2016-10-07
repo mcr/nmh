@@ -1716,6 +1716,7 @@ check `mhpath last` "$actual"
 
 
 start_test "fix RFC 2047 encoded header parameters"
+#### Also, add C-T-E:8bit to the message headers.
 cat >"$expected" <<EOF
 To: recipient@example.com
 From: sender@example.com

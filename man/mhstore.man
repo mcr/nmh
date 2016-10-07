@@ -1,4 +1,4 @@
-.TH MHSTORE %manext1% "February 6, 2015" "%nmhversion%"
+.TH MHSTORE %manext1% "October 7, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -86,7 +86,7 @@ these would be named as 1, 2, and 3, respectively.  If part 2 was also
 a multipart content containing two parts, these would be named as 2.1
 and 2.2, respectively.  Note that the
 .B \-part
-switch is effective for only messages containing a multipart content. 
+switch is effective for only messages containing a multipart content.
 If a message has some other kind of content, or if the part is itself
 another multipart content, the
 .B \-part
@@ -572,6 +572,23 @@ installation.
 See "Profile Lookup" in
 .IR mh-profile (5)
 for the profile search order, and for how duplicate entries are treated.
+.SH EXAMPLES
+.SS Decoding RFC 2047-encoded file names
+The improper RFC 2047 encoding of file name parameters can be replaced
+with correct RFC 2231 encoding using
+.BR mhfixmsg ,
+either permanently or ephemerally, e.g.,
+.PP
+.RS
+.nf
+mhfixmsg -outfile - | mhstore -auto -clobber ask -file -
+.fi
+.RE
+.PP
+The
+.BI \-clobber ask
+is not necessary, though recommended to avoid silently overwriting an existing
+file.
 .SH FILES
 .B mhstore
 looks for additional profile files in multiple locations: absolute
@@ -605,6 +622,7 @@ is checked.
 .fi
 .SH "SEE ALSO"
 .IR mhbuild (1),
+.IR mhfixmsg (1),
 .IR mhlist (1),
 .IR mhshow (1),
 .IR sendfiles (1)
