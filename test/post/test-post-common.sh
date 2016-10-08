@@ -9,7 +9,7 @@ set -e
 
 setup_test
 
-arith_eval 64000 + `id -u` % 1000
+arith_eval 64000 + $$ % 1000
 localport=$arith_val
 testname="${MH_TEST_DIR}/$$"
 

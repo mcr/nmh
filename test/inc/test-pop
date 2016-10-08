@@ -24,7 +24,7 @@ setup_test
 
 TESTUSER=testuser
 TESTPASS=testuserpass
-arith_eval 64001 + `id -u` % 1000
+arith_eval 64001 + $$ % 1000
 testport=$arith_val
 
 HOME="${MH_TEST_DIR}"; export HOME

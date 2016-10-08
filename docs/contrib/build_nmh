@@ -85,7 +85,9 @@ if [ $# -gt 0 ]; then
 fi
 
 #### Check to see that we're in a nmh source directory.
-if ! grep 'the authors of nmh' COPYRIGHT >/dev/null; then
+if grep 'the authors of nmh' COPYRIGHT >/dev/null; then
+  :
+else
   echo "$0: not in nmh source directory"
   exit 1
 fi
@@ -241,7 +243,7 @@ config_opts="--prefix=$config_prefix"
 
 #### dotlocking, the usual default, requires chgrp and chmod of inc.
 installpriv=
-if [ $install -ge 1  -a  `id -u` -ne 0 ]; then
+if [ $install -ge 1  -a  "$LOGNAME" != root ]; then
   if [ "$config_locking" = dot ]; then
     echo "$0: "'install requires chgrp and chmod 2755'
     echo 'so will sudo to install.  Terminate with Ctrl-C if unacceptable.'

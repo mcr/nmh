@@ -10,13 +10,13 @@ fi
 
 testname="${MH_TEST_DIR}/$$"
 
-arith_eval 64001 + `id -u` % 1000
+arith_eval 64001 + $$ % 1000
 http_port=${arith_val}
 
-arith_eval 64000 + `id -u` % 1000
+arith_eval ${http_port} + 1
 pop_port=${arith_val}
 
-arith_eval 64002 + `id -u` % 1000
+arith_eval ${pop_port} + 1
 smtp_port=${arith_val}
 
 cat >> ${MH} <<EOF
