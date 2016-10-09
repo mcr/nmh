@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "August 14, 2016" "%nmhversion%"
+.TH SEND %manext1% "October 9, 2016" "%nmhversion%"
 .SH NAME
 send \- send a message
 .SH SYNOPSIS
@@ -389,7 +389,7 @@ entry).  The
 switch can be used to view the SMTP transaction.  (Beware that the
 SMTP transaction may contain authentication information either in
 plaintext or easily decoded base64.)  If
-.B \-saslmech xoauth2
+.B \-sasl \-saslmech xoauth2
 is used, the HTTP transaction is also shown.
 .PP
 If
@@ -519,7 +519,7 @@ Here is an example profile entry using OAuth for an account hosted by gmail:
 .PP
 .nf
 .RS 5
-sendfrom-gmail_address@example.com: -saslmech xoauth2
+sendfrom-gmail_address@example.com: -sasl -saslmech xoauth2
 .RS 5
 -authservice gmail -tls -server smtp.gmail.com
 -user gmail_login@example.com

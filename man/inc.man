@@ -1,4 +1,4 @@
-.TH INC %manext1% "August 14, 2016" "%nmhversion%"
+.TH INC %manext1% "October 9, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -247,7 +247,7 @@ For debugging purposes, you may give the switch
 .BR \-snoop ,
 which will allow you to watch the POP transaction take place
 between you and the POP server.  If
-.B \-saslmech xoauth2
+.B \-sasl \-saslmech xoauth2
 is used, the HTTP transaction is also shown.
 .PP
 If

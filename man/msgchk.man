@@ -1,4 +1,4 @@
-.TH MSGCHK %manext1% "August 14, 2016" "%nmhversion%"
+.TH MSGCHK %manext1% "October 9, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -102,7 +102,7 @@ For debugging purposes, there is also a switch
 which will
 allow you to watch the POP transaction take place between you and the
 POP server.  If
-.B \-saslmech xoauth2
+.B \-sasl \-saslmech xoauth2
 is used, the HTTP transaction is also shown.
 .PP
 If
@@ -134,7 +134,7 @@ for its other features.
 If
 .B nmh
 has been compiled with OAuth support, the
-.B \-saslmech xoauth2
+.B \-sasl \-saslmech xoauth2
 switch will enable OAuth authentication.  The
 .B \-user
 switch must be used, and the
