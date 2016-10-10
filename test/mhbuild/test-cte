@@ -16,8 +16,7 @@ setup_test
 
 set -e
 
-require_locale en_US.utf-8 en_US.utf8
-LC_ALL=en_US.UTF-8; export LC_ALL
+require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
 draft="$MH_TEST_DIR/$$.draft"
 backup="${MH_TEST_DIR}/`mhparam sbackup`$$.draft.orig"

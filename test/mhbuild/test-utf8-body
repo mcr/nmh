@@ -19,8 +19,7 @@ testname="${MH_TEST_DIR}/$$"
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 
-require_locale en_US.utf-8 en_US.utf8
-LC_ALL=en_US.UTF-8; export LC_ALL
+require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
 #### Rely on sendmail/pipe below to override default mts.
 mts_fakesendmail="${MHMTSCONF}-fakesendmail"

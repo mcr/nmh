@@ -110,10 +110,15 @@ require_prog ()
 }
 
 # Skip test if none of the offered locales are supported.
+# As side effect, use the first locale that is found.  Note that
+# some platforms allow, by way of example, en_US.UTF-8 to be used
+# even though en_US.UTF8 is listed by locale -a.  But by setting
+# LC_ALL here, we don't rely on that.
 require_locale ()
 {
   for locale in "$@"; do
     if locale -a | grep -i "$locale" >/dev/null; then
+        LC_ALL="$locale"; export LC_ALL
         return
     fi
   done

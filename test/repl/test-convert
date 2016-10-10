@@ -76,8 +76,7 @@ check "$actual" "$expected"
 
 #### Make sure that this works with 8-bit encoding.
 finish_test
-require_locale en_US.utf-8 en_US.utf8
-LC_ALL=en_US.UTF-8; export LC_ALL
+require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
 
 # check -convertarg with multiple parts, 7 bit

@@ -20,8 +20,7 @@ if test "$ICONV_ENABLED" -eq 0; then
   test_skip 'test-textcharset requires that nmh have been built with iconv'
 fi
 
-require_locale en_US.utf-8 en_US.utf8
-LC_ALL=en_US.UTF-8; export LC_ALL
+require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
 expected="$MH_TEST_DIR"/$$.expected
 actual="$MH_TEST_DIR"/$$.actual

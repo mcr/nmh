@@ -19,8 +19,7 @@ mhl="${MH_LIBEXEC_DIR}/mhl"
 SMTPUTF8=1; export SMTPUTF8
 
 #### Make sure that html-to-text conversion is what we expect.
-require_locale en_US.utf-8 en_US.utf8
-LC_ALL=en_US.UTF-8; export LC_ALL
+require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
 #### Enable EAI in mhbuild, via the profile.
 sed "s%^\(mhbuild: .*\)%\1 -headerencoding utf-8%" "$MH" >"$MH.new"

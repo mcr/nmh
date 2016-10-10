@@ -1,0 +1,41 @@
+#!/bin/sh
+######################################################
+#
+# Test scan with Local-Mailbox set.
+#
+######################################################
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+# est1@example.com is a substring of test1@example.com; the latter
+# should not be considered a match for the former (causing 'To:Some
+# User' to be printed instead of 'Test1').
+echo 'Local-Mailbox: est1@example.com' >> "$MH"
+
+expected="$MH_TEST_DIR/$$.expected"
+actual="$MH_TEST_DIR/$$.actual"
+
+cat >"$expected" <<EOF
+   1  09/29 Test1              Testing message 1<<This is message number 1 >>
+   2  09/29 Test2              Testing message 2<<This is message number 2 >>
+   3  09/29 Test3              Testing message 3<<This is message number 3 >>
+   4  09/29 Test4              Testing message 4<<This is message number 4 >>
+   5  09/29 Test5              Testing message 5<<This is message number 5 >>
+   6  09/29 Test6              Testing message 6<<This is message number 6 >>
+   7  09/29 Test7              Testing message 7<<This is message number 7 >>
+   8  09/29 Test8              Testing message 8<<This is message number 8 >>
+   9  09/29 Test9              Testing message 9<<This is message number 9 >>
+  10  09/29 Test10             Testing message 10<<This is message number 10 >>
+EOF
+
+run_prog scan +inbox -width 80 >"$actual" || exit 1
+check "$expected" "$actual"
+
+exit $failed

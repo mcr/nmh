@@ -389,8 +389,7 @@ run_test 'scan +outbox -width 6 2' '   2  '
 # Check that dist encodes headers using RFC-2047 properly
 #
 
-require_locale en_US.utf-8 en_US.utf8
-LC_ALL=en_US.UTF-8; export LC_ALL
+require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
 cat >"$expected" <<EOF
 From: Test1 <test1@example.com>

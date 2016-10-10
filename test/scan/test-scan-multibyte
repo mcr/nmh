@@ -26,8 +26,7 @@ if test "${MULTIBYTE_ENABLED}" -ne 1; then
     test_skip "configure did not detect multibyte support"
 fi
 
-require_locale en_US.utf-8 en_US.utf8
-LC_ALL=en_US.UTF-8; export LC_ALL
+require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
 #
 # Create a test message with RFC 2047 headers we can scan
