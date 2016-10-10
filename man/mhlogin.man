@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH MHLOGIN %manext1% "September 11, 2016" "%nmhversion%"
+.TH MHLOGIN %manext1% "October 10, 2016" "%nmhversion%"
 .SH NAME
 mhlogin \- login to external (OAuth) services
 .SH SYNOPSIS
@@ -36,6 +36,7 @@ prompt.  Be sure to use the same account with the
 .B -user
 switch to
 .BR send .
+See the EXAMPLES section below for an example.
 .PP
 The
 .B \-browser
@@ -78,6 +79,9 @@ mhlogin -user user@example.com -saslmech xoauth2 -authservice gmail \
 .fi
 .RE
 .PP
+The
+.I username
+should be a complete email address.
 Respond to the prompt in the browser window, then copy and paste the
 authorization code in response to the
 .B mhlogin

@@ -1,7 +1,7 @@
 .\"
 .\" %nmhwarning%
 .\"
-.TH SEND %manext1% "October 9, 2016" "%nmhversion%"
+.TH SEND %manext1% "October 10, 2016" "%nmhversion%"
 .SH NAME
 send \- send a message
 .SH SYNOPSIS
@@ -435,12 +435,13 @@ and
 switches will enable OAuth authentication.  The
 .B \-user
 switch must be used, and the
-.I user-name
+.I username
 must be an email address the user has for the service, which must
 be specified with the
 .B \-authservice
 .I service
-switch.  Before using this, the user must authorize nmh by running
+switch.  Before using OAuth authentication, the user must authorize nmh by
+running
 .B mhlogin
 and grant authorization to that account.  See the
 .IR mhlogin (1)
