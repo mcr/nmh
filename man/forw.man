@@ -1,4 +1,4 @@
-.TH FORW %manext1% "April 18, 2014" "%nmhversion%"
+.TH FORW %manext1% "October 10, 2014" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -10,7 +10,7 @@ forw \- forward messages
 .B forw
 .RI [ +folder ]
 .RI [ msgs ]
-.RB [ \-annotate " | " \-noannotate ] 
+.RB [ \-annotate " | " \-noannotate ]
 .RB [ \-form
 .IR formfile ]
 .RB [ \-format " | " \-noformat ]
@@ -333,7 +333,7 @@ No mail is actually sent.
 The
 .B \-file
 .I msgfile
-switch specifies the message to be forwarded as an 
+switch specifies the message to be forwarded as an
 exact filename rather than as an
 .B nmh
 folder and message number.
@@ -374,11 +374,6 @@ function	msg	integer	Argument to `\-issue'
 .fi
 .RE
 .PP
-Consult the
-.I "Advanced Features"
-section of the
-.B nmh
-User's Manual for more information on making digests.
 .SH FILES
 .B forw
 looks for format and filter files in multiple locations: absolute
