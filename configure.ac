@@ -134,8 +134,8 @@ if test "$GCC" != yes; then
   dnl better to use an autoconf test, except -v will probably succeed
   dnl with many other compilers but have different meaning.
   AS_CASE([`${CC} -V 2>&1`],
-          [cc:\ Sun\ C*], [AM_CFLAGS=\
-"${AM_CFLAGS:+$AM_CFLAGS }-v -errtags=yes -erroff=E_STATEMENT_NOT_REACHED"])
+          [cc:\ Sun\ C*], [CFLAGS=\
+"${CFLAGS:+$CFLAGS }-v -errtags=yes -erroff=E_STATEMENT_NOT_REACHED"])
 fi
 
 AC_CACHE_CHECK([whether compiler supports -Wall], [nmh_cv_has_wall],
@@ -143,7 +143,7 @@ AC_CACHE_CHECK([whether compiler supports -Wall], [nmh_cv_has_wall],
                CFLAGS="$AM_CFLAGS $CFLAGS -Wall -Werror"
                AC_TRY_COMPILE([],[],nmh_cv_has_wall=yes,nmh_cv_has_wall=no)
                CFLAGS="$nmh_saved_cflags"])
-test "$nmh_cv_has_wall" = "yes"  &&  AM_CFLAGS="${AM_CFLAGS:+$AM_CFLAGS }-Wall"
+test "$nmh_cv_has_wall" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wall"
 
 AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
                [nmh_saved_cflags="$CFLAGS"
@@ -151,7 +151,7 @@ AC_CACHE_CHECK([whether compiler supports -Wextra], [nmh_cv_has_wextra],
                AC_TRY_COMPILE([],[],nmh_cv_has_wextra=yes,
                               nmh_cv_has_wextra=no)
                CFLAGS="$nmh_saved_cflags"])
-test "$nmh_cv_has_wextra" = "yes"  &&  AM_CFLAGS="${AM_CFLAGS:+$AM_CFLAGS }-Wextra"
+test "$nmh_cv_has_wextra" = "yes"  &&  CFLAGS="${CFLAGS:+$CFLAGS }-Wextra"
 
 AC_SUBST([AM_CFLAGS])
 
