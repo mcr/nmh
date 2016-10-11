@@ -275,8 +275,15 @@ fi
 #### Build.
 ####
 [ $verbose -ge 1 ]  &&  echo configuring . . .
+if [ -z "$CFLAGS" ]; then
+  #### Only use these flags with gcc.
+  if cc -dM -E - < /dev/null 2>&1 | egrep __GNUC__ >/dev/null; then
+    CFLAGS="-g -O2 -ansi -pedantic"
+  fi
+fi
+
 echo ./configure $config_opts ${smtpservers:+"$smtpservers"} >>"$logfile" 2>&1
-./configure CFLAGS="${CFLAGS:+$CFLAGS }-g -O2 -ansi -pedantic" \
+./configure CFLAGS="${CFLAGS}" \
             $config_opts ${smtpservers:+"$smtpservers"} >>"$logfile" 2>&1
 status=$?
 
