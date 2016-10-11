@@ -376,6 +376,7 @@ could be called on the message after it is stored.
 .nf
 .ta \w'\-fixboundary 'u
 PATH = %bindir%:$PATH
+LANG = en_US.utf8
 MAILDIR = `mhparam path`
 #### The Backups directory is relative to MAILDIR.
 MKSTEMP = 'mkstemp -directory Backups -prefix mhfixmsg'
