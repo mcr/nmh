@@ -504,7 +504,7 @@ test_fakesmtp_SOURCES = test/fakesmtp.c test/server.c
 test_fakesmtp_LDADD = $(POSTLINK)
 
 test_fakehttp_SOURCES = test/fakehttp.c test/server.c
-test_fakehttp_LDADD = $(POSTLINK)
+test_fakehttp_LDADD = $(LDADD) $(POSTLINK)
 
 test_getcwidth_SOURCES = test/getcwidth.c
 test_getcwidth_LDADD = $(POSTLINK)
@@ -631,6 +631,8 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/m_mktemp.c sbr/vector.c sbr/oauth.c sbr/oauth_prof.c \
 		      config/config.c config/version.c \
 		      thirdparty/jsmn/jsmn.c
+
+sbr_libmh_a_LIBADD = $(LIBOBJS)
 
 ##
 ## Because these files use the definitions in the libmh rule below,

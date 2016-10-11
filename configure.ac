@@ -111,6 +111,10 @@ dnl CHECK FUNCTIONS
 dnl ---------------
 AC_CHECK_FUNCS([wcwidth mbtowc getutxent arc4random mkstemps])
 
+dnl Use custom getline for platforms that don't have it.
+AC_CONFIG_LIBOBJ_DIR([sbr])
+AC_REPLACE_FUNCS([getline])
+
 dnl -----------------------
 dnl CHECK MULTIBYTE SUPPORT
 dnl -----------------------
@@ -135,7 +139,7 @@ if test "$GCC" != yes; then
   dnl better to use an autoconf test, except -v will probably succeed
   dnl with many other compilers but have different meaning.
   AS_CASE([`${CC} -V 2>&1`],
-          [cc:\ Sun\ C*], [CFLAGS=\
+          [cc:*\ Sun\ C*], [CFLAGS=\
 "${CFLAGS:+$CFLAGS }-v -errtags=yes -erroff=E_STATEMENT_NOT_REACHED"])
 fi
 
