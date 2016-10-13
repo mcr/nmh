@@ -17,6 +17,12 @@ fi
 
 setup_test
 
+# ???? debug
+test -t 0  &&  echo stdin connected  ||  echo stdin not connected
+test -t 1  &&  echo stdout connected  ||  echo stdout not connected
+test -t 2  &&  echo stderr connected  ||  echo stderr not connected
+# ???? debug
+
 require_prog script
 #### Use minimal arguments to script(1), i.e., just the file in
 #### which to save the output.  We do pipe input to script, which is
