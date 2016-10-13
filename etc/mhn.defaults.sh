@@ -285,23 +285,24 @@ EOF
 PGM=`$SEARCHPROG "$SEARCHPATH" w3m`
 if [ ! -z "$PGM" ]; then
     echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%l$PGM"' -dump ${charset:+-I "$charset"} -T text/html %F' >> $TMP
+%l$PGM"' -dump ${charset:+-I} ${charset:+"$charset"} -T text/html %F' >> $TMP
     echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
-$PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F' >> $TMP
+$PGM "'-dump ${charset:+-I} ${charset:+"$charset"} -O utf-8 -T text/html %F' \
+         >> $TMP
     echo 'mhbuild-convert-text/html: charset=%{charset}; '"\
-$PGM "'-dump ${charset:+-I "$charset"} -O utf-8 -T text/html %F '"\
+$PGM "'-dump ${charset:+-I} ${charset:+"$charset"} -O utf-8 -T text/html %F '"\
 ${replfmt}" >> $TMP
 else
     PGM=`$SEARCHPROG "$SEARCHPATH" lynx`
     if [ ! -z "$PGM" ]; then
 	echo 'mhshow-show-text/html: charset=%{charset}; '"\
-%l$PGM"' -child -dump -force-html ${charset:+--assume_charset "$charset"} %F' >> $TMP
+%l$PGM"' -child -dump -force-html ${charset:+--assume_charset} ${charset:+"$charset"} %F' >> $TMP
         #### lynx indents with 3 spaces, remove them and any trailing spaces.
         echo 'mhfixmsg-format-text/html: charset=%{charset}; '"\
-$PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} %F | '"\
+$PGM "'-child -dump -force_html ${charset:+--assume_charset} ${charset:+"$charset"} %F | '"\
 expand | sed -e 's/^   //' -e 's/  *$//'" >> $TMP
         echo 'mhbuild-convert-text/html: charset=%{charset}; '"\
-$PGM "'-child -dump -force_html ${charset:+--assume_charset "$charset"} '"\
+$PGM "'-child -dump -force_html ${charset:+--assume_charset} ${charset:+"$charset"} '"\
 %F${replfmt}" >> $TMP
     else
         PGM=`$SEARCHPROG "$SEARCHPATH" elinks`
