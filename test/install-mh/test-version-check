@@ -17,31 +17,11 @@ fi
 
 setup_test
 
-if test ! -t 0 || test ! -t 1 || test ! -t 2; then
-    test_skip 'must be connected to terminal'
-fi
-
 require_prog script
-#### FreeBSD script, e.g., doesn't use -c to identify a command to run.
-if script -c 'echo OK' /dev/null 2>&1 | egrep 'OK' >/dev/null; then
-    script_command_opt='-c'
-else
-    script_command_opt=''
-fi
-
-#### Run a command but don't wait for user input.  script(1) seems to do
-#### what we want by not waiting when run in the background.
-run_without_input() {
-    if [ "$script_command_opt" = -c ]; then
-        #### -c takes single argument with command + arguments.
-        script -q -f -c "$*" "$actual" >/dev/null &
-    else
-        #### E.g., FreeBSD.  Don't combine command arguments.
-        script -q -t 0 "$actual" "$@" >/dev/null &
-    fi
-
-    wait $!
-}
+#### Use minimal arguments to script(1), i.e., just the file in
+#### which to save the output.  We do pipe input to script, which is
+#### discouraged by the NOTES and BUGS sections of its man page.
+#### But that seems to work.
 
 actual="$MH_TEST_DIR/test-version-check$$.actual"
 context="${MH_TEST_DIR}"/Mail/context
@@ -54,7 +34,7 @@ mv -f "$context.NEW" "$context"
 
 
 start_test 'mhparam skips the welcome message'
-run_without_input mhparam path
+printf 'mhparam path\nexit\n' | script "$actual" >/dev/null
 grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
 # Make sure that version wasn't added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null  &&  false
@@ -64,7 +44,7 @@ rm "$actual"
 start_test 'Welcome: disable in profile skips the welcome message'
 cp "${MH}" "${MH}-welcome"
 printf 'Welcome: disable\n' >> "${MH}-welcome"
-(MH="${MH}-welcome" run_without_input pick last)
+(printf 'pick last\nexit\n' | MH="${MH}-welcome" script "$actual" >/dev/null)
 grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
 # Make sure that version wasn't added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null  &&  false
@@ -72,7 +52,7 @@ rm "$actual"
 
 
 start_test 'with welcome message'
-run_without_input pick last
+printf 'pick last\nexit\n' | script "$actual" >/dev/null
 grep 'Welcome to nmh version ' "$actual" >/dev/null
 # Make sure that version was added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
@@ -82,7 +62,7 @@ rm "$actual"
 start_test 'without welcome message'
 # After running the previous test, this one should not have
 # the welcome message.
-run_without_input pick last
+printf 'pick last\nexit\n' | script "$actual" >/dev/null
 grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
 # Make sure that version is still in context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
@@ -92,7 +72,7 @@ rm "$actual"
 start_test 'with MHCONTEXT, welcome only if older'
 MHCONTEXT="${MH_TEST_DIR}/Mail/context2"; export MHCONTEXT
 printf 'Version: nmh-1.5\n' >"${MHCONTEXT}"
-run_without_input pick last
+printf 'pick last\nexit\n' | script "$actual" >/dev/null
 grep 'Welcome to nmh version ' "$actual" >/dev/null
 # And make sure that version did get updated in context.
 grep "^${version}$" "${MHCONTEXT}" >/dev/null
@@ -101,7 +81,7 @@ rm "$actual"
 
 start_test "with MHCONTEXT doesn't welcome if newer"
 printf 'Version: nmh-10000.0\n' >"${MHCONTEXT}"
-run_without_input pick last
+printf 'pick last\nexit\n' | script "$actual" >/dev/null
 grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
 # And make sure that version didn't get updated in context.
 grep '^Version: nmh-10000.0$' "${MHCONTEXT}" >/dev/null
@@ -110,7 +90,7 @@ rm "$actual"
 
 start_test 'with MHCONTEXT but no version, no welcome and update'
 printf '' >"${MHCONTEXT}"
-run_without_input pick last
+printf 'pick last\nexit\n' | script "$actual" >/dev/null
 grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
 # And make sure that version did get updated in context.
 grep "^${version}$" "${MHCONTEXT}" >/dev/null
