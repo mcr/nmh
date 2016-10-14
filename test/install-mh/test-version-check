@@ -34,8 +34,8 @@ echo OK
 EOF
     chmod +x "${cmd}"
 
-    SHELL="${cmd}" script "${actual}" >/dev/null &
-    wait $!
+    (SHELL="${cmd}"; export SHELL; script "${actual}" >/dev/null &
+     wait $!)
     if grep OK "${actual}" >/dev/null; then
         #### script(1) supports SHELL environment variable.
         use_dash_S=0
