@@ -80,7 +80,9 @@ rm "$actual"
 
 
 start_test 'with welcome message'
+echo MH="${MH}" # ???? debug
 run_without_input pick last
+cat "$actual" # ???? debug
 grep 'Welcome to nmh version ' "$actual" >/dev/null
 # Make sure that version was added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
