@@ -18,6 +18,12 @@ fi
 setup_test
 
 require_prog script
+
+actual="${MH_TEST_DIR}/test-version-check$$.actual"
+context="${MH_TEST_DIR}"/Mail/context
+version="Version: nmh-${MH_VERSION}"
+cmd="${MH_TEST_DIR}/Mail/cmd"
+
 if script -S /bin/sh 'echo OK' /dev/null 2>&1 | egrep 'OK' >/dev/null; then
     #### script(1) uses -S to set the shell that it runs.
     use_dash_S=1
@@ -27,7 +33,8 @@ else
 fi
 
 #### Run a command but don't wait for user input.  script(1) seems to do
-#### what we want by not waiting when run in the background.
+#### what we want by not waiting when run in the background.  But check
+#### that it makes the command look like it's connected to a terminal below.
 run_without_input() {
     #### Create a command to use as a shell for script.
     cat >"${cmd}" <<EOF
@@ -37,31 +44,32 @@ EOF
     chmod +x "${cmd}"
 
     if [ ${use_dash_S} -eq 1 ]; then
-        script -S "${cmd}" "$actual" >/dev/null &
+        script -S "${cmd}" "${actual}" >/dev/null &
     else
-        SHELL="${cmd}" script "$actual" >/dev/null &
+        SHELL="${cmd}" script "${actual}" >/dev/null &
     fi
 
     wait $!
 }
 
-actual="$MH_TEST_DIR/test-version-check$$.actual"
-context="${MH_TEST_DIR}"/Mail/context
-version="Version: nmh-${MH_VERSION}"
-cmd="${MH_TEST_DIR}/Mail/cmd"
+#### Ensure that script(1) makes the program look like it's connected to a
+#### terminal.  The welcome message code in sbr/utils.c needs that.
+run_without_input 'if test -t 0  &&  test -t 1  &&  test -t 2; then echo tty; fi'
+grep tty "${actual}" >/dev/null || test_skip "(script(1) doesn't simulate tty)"
+
 
 # Removing Version will trigger the welcome message.  (setup_test
 # inserted it so that other tests wouldn't show it.)
-grep -v Version "$context" > "$context.NEW"
-mv -f "$context.NEW" "$context"
+grep -v Version "${context}" > "${context}.NEW"
+mv -f "${context}.NEW" "${context}"
 
 
 start_test 'mhparam skips the welcome message'
 run_without_input mhparam path
-grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+grep 'Welcome to nmh version ' "${actual}" >/dev/null  &&  false
 # Make sure that version wasn't added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null  &&  false
-rm "$actual"
+rm "${actual}"
 
 
 start_test 'Welcome: disable in profile skips the welcome message'
@@ -73,59 +81,57 @@ printf 'Welcome: disable\n' >> "${MH}-welcome"
 # on the user's shell.
 (MH="${MH}-welcome"; run_without_input pick last)
 rm "${MH}-welcome"
-grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+grep 'Welcome to nmh version ' "${actual}" >/dev/null  &&  false
 # Make sure that version wasn't added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null  &&  false
-rm "$actual"
+rm "${actual}"
 
 
 start_test 'with welcome message'
-echo MH="${MH}" # ???? debug
 run_without_input pick last
-cat "$actual" # ???? debug
-grep 'Welcome to nmh version ' "$actual" >/dev/null
+grep 'Welcome to nmh version ' "${actual}" >/dev/null
 # Make sure that version was added to context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
-rm "$actual"
+rm "${actual}"
 
 
 start_test 'without welcome message'
 # After running the previous test, this one should not have
 # the welcome message.
 run_without_input pick last
-grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+grep 'Welcome to nmh version ' "${actual}" >/dev/null  &&  false
 # Make sure that version is still in context.
 grep "^${version}$" "${MH_TEST_DIR}/Mail/context" >/dev/null
-rm "$actual"
+rm "${actual}"
 
 
 start_test 'with MHCONTEXT, welcome only if older'
 MHCONTEXT="${MH_TEST_DIR}/Mail/context2"; export MHCONTEXT
 printf 'Version: nmh-1.5\n' >"${MHCONTEXT}"
 run_without_input pick last
-grep 'Welcome to nmh version ' "$actual" >/dev/null
+grep 'Welcome to nmh version ' "${actual}" >/dev/null
 # And make sure that version did get updated in context.
 grep "^${version}$" "${MHCONTEXT}" >/dev/null
-rm "$actual"
+rm "${actual}"
 
 
 start_test "with MHCONTEXT doesn't welcome if newer"
 printf 'Version: nmh-10000.0\n' >"${MHCONTEXT}"
 run_without_input pick last
-grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+grep 'Welcome to nmh version ' "${actual}" >/dev/null  &&  false
 # And make sure that version didn't get updated in context.
 grep '^Version: nmh-10000.0$' "${MHCONTEXT}" >/dev/null
-rm "$actual"
+rm "${actual}"
 
 
 start_test 'with MHCONTEXT but no version, no welcome and update'
 printf '' >"${MHCONTEXT}"
 run_without_input pick last
-grep 'Welcome to nmh version ' "$actual" >/dev/null  &&  false
+grep 'Welcome to nmh version ' "${actual}" >/dev/null  &&  false
 # And make sure that version did get updated in context.
 grep "^${version}$" "${MHCONTEXT}" >/dev/null
-rm "$actual"
+rm "${actual}"
 
 
 finish_test
-exit $failed
+exit ${failed}
