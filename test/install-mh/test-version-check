@@ -28,8 +28,20 @@ if script -S /bin/sh 'echo OK' /dev/null 2>&1 | egrep 'OK' >/dev/null; then
     #### script(1) uses -S to set the shell that it runs.
     use_dash_S=1
 else
-    #### Assume that script(1) uses SHELL environment variable.
-    use_dash_S=0
+    cat >"${cmd}" <<EOF
+#! /bin/sh
+echo OK
+EOF
+    chmod +x "${cmd}"
+
+    SHELL="${cmd}" script "${actual}" >/dev/null &
+    wait $!
+    if grep OK "${actual}" >/dev/null; then
+        #### script(1) supports SHELL environment variable.
+        use_dash_S=0
+    else
+        test_skip "can't find mechanism to set SHELL for script(1)"
+    fi
 fi
 
 #### Run a command but don't wait for user input.  script(1) seems to do
@@ -54,8 +66,8 @@ EOF
 
 #### Ensure that script(1) makes the program look like it's connected to a
 #### terminal.  The welcome message code in sbr/utils.c needs that.
-run_without_input 'if test -t 0  &&  test -t 1  &&  test -t 2; then echo tty; fi'
-grep tty "${actual}" >/dev/null || test_skip "(script(1) doesn't simulate tty)"
+run_without_input 'if test -t 0  -a  -t 1  -a  -t 2; then echo tty; fi'
+grep tty "${actual}" >/dev/null || test_skip "script(1) doesn't simulate tty"
 
 
 # Removing Version will trigger the welcome message.  (setup_test
