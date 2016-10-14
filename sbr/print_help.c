@@ -45,8 +45,7 @@ static const char nmh_intro1[] = \
 "Send bug reports, questions, suggestions, and patches to\n"
 "nmh-workers@nongnu.org.  That mailing list is relatively quiet, so user\n"
 "questions are encouraged.  Users are also encouraged to subscribe, and\n"
-"view the archives, at https://lists.gnu.org/mailman/listinfo/nmh-\n"
-"workers .\n";
+"view the archives, at https://lists.gnu.org/mailman/listinfo/nmh-workers\n";
 
 /* The text below is split so that string constant length doesn't
    exceed the C90 minimum maximum length of 509 characters. */

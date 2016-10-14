@@ -390,15 +390,15 @@ nmh_init(const char *argv0, int read_context) {
             isatty (fileno (stdout))  &&  isatty (fileno (stderr))) {
             if (nmh_version_changed (check_older_version)) {
                 printf ("==================================================="
-                        "====================\n");
+                        "=====================\n");
                 printf ("Welcome to nmh version %s\n\n", VERSION);
-                printf ("See the release notes in %s/NEWS .\n\n",
+                printf ("See the release notes in %s/NEWS\n\n",
                          mhdocdir);
                 print_intro (stdout, 1);
                 printf ("\nThis message will not be repeated until "
                         "nmh is next updated.\n");
                 printf ("==================================================="
-                        "====================\n\n");
+                        "=====================\n\n");
 
                 fputs ("Press enter to continue: ", stdout);
                 (void) read_line ();
