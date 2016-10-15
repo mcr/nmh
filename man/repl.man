@@ -1,4 +1,4 @@
-.TH REPL %manext1% "December 14, 2014" "%nmhversion%"
+.TH REPL %manext1% "October 15, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -251,9 +251,11 @@ must be non-empty while
 can be empty, e.g., '' in a shell command line.  The
 .B \-convertargs
 switch can be used multiple times.
+See the Convert Interface section of the
+.B mhbuild
+man page for description of the convert mechanism, and
 .I %docdir%/contrib/replaliases
-shows the use of
-.BR "repl \-convertargs" .
+for examples of its use.
 .PP
 Although
 .B repl

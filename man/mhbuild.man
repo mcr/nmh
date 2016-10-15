@@ -1,4 +1,4 @@
-.TH MHBUILD %manext1% "September 23, 2016" "%nmhversion%"
+.TH MHBUILD %manext1% "October 15, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -194,6 +194,7 @@ entry, e.g.,
 excludes parts of that
 .I TYPE
 from the draft.
+.PP
 The
 .I mhn.defaults
 file
@@ -204,7 +205,9 @@ and
 entries.
 Profile entries can be used to override corresponding
 .I mhn.defaults
-entries, as usual.
+entries, as usual.  Text converters should limit text line lengths
+to a maximum of 78 characters, and must limit them to a maximum of 998
+characters, per RFC 5322 Sec. 2.1.1.
 .PP
 For each
 .I TYPE
@@ -214,14 +217,13 @@ part in
 runs
 .I CONVERTER ARGSTRING
 on the content of the part.
-.PP
 Each part in
 .I FILE
 that has no corresponding TYPE entry in the profile or
 .I mhn.defaults
 is
 excluded from the draft; the user can include them using mhbuild
-directives as usual.
+directives.
 .PP
 .B repl
 inserts
@@ -1050,6 +1052,9 @@ Template for composing contents.
 .PP
 .I "Multipurpose Internet Mail Extensions (MIME) Part Three: Message Header Extensions for Non-ASCII Text"
 (RFC 2047)
+.PP
+.I "Internet Message Format"
+(RFC 5322)
 .PP
 .I "MIME Parameter Value and Encoded Word Extensions: Character Sets, Languages, and Continuations"
 (RFC 2231)
