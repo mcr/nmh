@@ -56,7 +56,7 @@ mh_xrealloc(void *ptr, size_t size)
         return mh_xmalloc(size);
 
     if (size == 0)
-        adios(NULL, "Tried to realloc 0bytes");
+        adios(NULL, "Tried to realloc 0 bytes");
 
     memory = realloc(ptr, size);
     if (!memory)
