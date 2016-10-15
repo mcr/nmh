@@ -1266,20 +1266,22 @@ convert_content_charset (CT ct, char **file) {
     /* Using current locale, see if the content needs to be converted. */
 
     /* content_charset() cannot return NULL. */
-    char *charset = content_charset (ct);
+    char *src_charset = content_charset (ct);
 
-    if (! check_charset (charset, strlen (charset))) {
+    if (! check_charset (src_charset, strlen (src_charset))) {
         int unused = 0;
 
-        char *charset = getcpy (get_charset ());
+        char *dest_charset = getcpy (get_charset ());
 
-        if (convert_charset (ct, charset, &unused) == 0) {
+        if (convert_charset (ct, dest_charset, &unused) == 0) {
             *file = ct->c_cefile.ce_file;
         } else {
             status = NOTOK;
         }
+
+        free (dest_charset);
     }
-    free (charset);
+    free (src_charset);
 #else  /* ! HAVE_ICONV */
     NMH_UNUSED (ct);
     NMH_UNUSED (file);
