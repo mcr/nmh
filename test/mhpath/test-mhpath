@@ -128,7 +128,7 @@ EOF
 run_prog mhpath first:2 > $actual 2>&1
 check $expected $actual
 
-# check reference to non-existant messages
+# check reference to non-existent messages
 cat > $expected <<EOF
 $MH_TEST_DIR/Mail/inbox/1
 $MH_TEST_DIR/Mail/inbox/2

@@ -75,7 +75,7 @@ selects the 3 messages ending with `name', \*(lqname=-3\*(rq selects
 just the 2nd previous message.  It is an error if the requested
 message does not exist (i.e., there aren't enough messages in the
 folder).
-.PP 
+.PP
 In commands which accept a `msgs' argument, the default is either
 \*(lqcur\*(rq or \*(lqall\*(rq, depending on which makes more sense
 for each command (see the individual man pages for details).  Repeated
@@ -294,9 +294,9 @@ cur: 46
 .PP
 .B Nmh
 commands that modify the sequence file will silently remove sequences for
-nonexistant messages when the sequence file is updated.  The exception to 
+nonexistent messages when the sequence file is updated.  The exception to
 this is the \*(lqcur\*(rq sequence, which is allowed to point to a
-nonexistant message.
+nonexistent message.
 .SS Sequence File Locking
 The \*(lqdatalocking\*(rq profile entry controls the type of locking used
 when reading and writing sequence files.  The locking mechanisms supported

@@ -46,7 +46,7 @@ NEW FEATURES
 - Added support to send(1) to specify switches to post(1) based on address or
   domain name in From: header line in message draft.
 - post(8) -snoop now attempts to decode base64-encoded SMTP traffic.
-- folder(1) -nocreate now prints a warning message for a non-existant folder.
+- folder(1) -nocreate now prints a warning message for a non-existent folder.
 - mhfixmsg(1) now allows -decodetext binary, though 8bit is still the default.
 - inc(1) and msgchk(1) now support TLS encryption natively.
 - Support for SMTPUTF8 (RFC 6531) has been added.  mhshow(1) already supported

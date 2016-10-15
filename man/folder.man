@@ -81,7 +81,7 @@ use later.)  Specifying
 will cause
 .B folder
 to print an error message and exit
-without creating a non-existant folder.
+without creating a non-existent folder.
 .\"
 .\" note - this doesn't work at present
 .\" If `\-noprint' is specified, 
@@ -328,7 +328,7 @@ and/or
 are given, they will become the current folder and/or message.
 .SH BUGS
 There is no way to restore the default behavior 
-(to ask the user whether to create a non-existant folder)
+(to ask the user whether to create a non-existent folder)
 after
 .B \-create
 or
