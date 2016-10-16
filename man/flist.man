@@ -36,7 +36,7 @@ is used to search a list of folders and display the number
 of messages in these folders that are in a given sequence or set of
 sequences (for example the
 .RI \*(lq unseen \*(rq
-sequence). This is especially
+sequence).  This is especially
 useful if you use some mechanism such as
 .B slocal
 or
@@ -63,7 +63,7 @@ which to search for.  This option may be used multiple times to specify
 multiple sequences.  If this is not given, then the default is to search
 for all the sequences specified by the
 .RI \*(lq Unseen-Sequence \*(rq
-profile component. For more details about sequences, read the
+profile component.  For more details about sequences, read the
 .IR mh\-sequence (5)
 man page.
 .PP

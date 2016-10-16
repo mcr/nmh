@@ -133,7 +133,7 @@ additional alias files given by the
 switch will be
 read (more than one file, each preceded by
 .BR \-alias ,
-can be named). See
+can be named).  See
 .IR mh\-alias (5)
 for more information.
 .SH FILES

@@ -209,14 +209,14 @@ Commands that take a folder name
 .BR scan,
 \&...) accept the folder name in two formats:  \*(lq+folder\*(rq or
 \*(lq@folder\*(rq.  In both cases, \*(lqfolder\*(rq can be a
-\*(lq/\*(rq-separated path, e.g. \*(lqfoo/bar\*(rq.  \*(lq+folder\*(rq
+\*(lq/\*(rq-separated path, e.g.\& \*(lqfoo/bar\*(rq.  \*(lq+folder\*(rq
 specifies a directory path to a folder.  If \*(lqfolder\*(rq starts
 with \*(lq/\*(rq then it's an absolute path from the root directory.
 If it is \*(lq.\*(rq or \*(lq..\*(rq, or starts with \*(lq./\*(rq or
 \*(lq../\*(rq, then it's relative to the current working directory.
 Otherwise it's relative to mh-profile(5)'s
 .RI \*(lq Path \*(rq,
-i.e. as given by
+i.e.\& as given by
 .RB ` "mhpath +" `.
 \*(lq@folder\*(rq is a shorthand for \*(lq+curfolder/folder\*(rq; it's
 a relative path from the current folder.  \*(lqcurfolder\*(rq is given

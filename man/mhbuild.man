@@ -207,7 +207,7 @@ Profile entries can be used to override corresponding
 .I mhn.defaults
 entries, as usual.  Text converters should limit text line lengths
 to a maximum of 78 characters, and must limit them to a maximum of 998
-characters, per RFC 5322 Sec. 2.1.1.
+characters, per RFC 5322 Sec.\& 2.1.1.
 .PP
 For each
 .I TYPE

@@ -45,7 +45,7 @@ A format string consists of ordinary text, and special multi-character
 escape sequences which begin with `%'.  When specifying a format
 string, the usual C backslash characters are honored: `\\b', `\\f',
 `\\n', `\\r', and `\\t'.  Continuation lines in format files end with
-`\\' followed by the newline character. A literal `%' can be inserted into
+`\\' followed by the newline character.  A literal `%' can be inserted into
 a format file by using the sequence `%%'.
 .\" TALK ABOUT SYNTAX FIRST, THEN SEMANTICS
 .SS SYNTAX
@@ -451,7 +451,7 @@ output width.  It can therefore be used for outputting terminal escape
 sequences.
 .PP
 There are a limited number of function escapes to output terminal escape
-sequences. These sequences are retrieved from the
+sequences.  These sequences are retrieved from the
 .IR terminfo (5)
 database according to the current terminal setting.  The (\fIbold\fR\^),
 (\fIunderline\fR\^), and (\fIstandout\fR\^) escapes set bold mode,
@@ -583,7 +583,7 @@ a space should be printed.  Next:
 .RE
 .PP
 the month and date are printed in two digits (zero filled) separated by
-a slash. Next,
+a slash.  Next,
 .PP
 .RS 5
 .nf

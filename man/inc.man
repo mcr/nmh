@@ -228,7 +228,7 @@ If passed the
 switch,
 .B inc
 will use the specified command to establish the connection to the POP
-server. The string
+server.  The string
 .IR %h
 in the command will be substituted by the hostname to connect to.
 .PP
@@ -237,7 +237,7 @@ If
 uses POP, then the
 .B \-pack
 .I file
-switch is considered. If given, then
+switch is considered.  If given, then
 .B inc
 simply uses the POP to
 .B packf

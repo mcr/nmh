@@ -43,10 +43,10 @@ If
 is given,
 .B burst
 will try to determine if the message is formatted with MIME and contains MIME parts of
-type \*(lqmessage/rfc822\*(rq. If it does, it will burst the message using MIME
+type \*(lqmessage/rfc822\*(rq.  If it does, it will burst the message using MIME
 formatting rules.  The
 .B \-mime
-switch can be used to enforce the use of MIME formatting. The
+switch can be used to enforce the use of MIME formatting.  The
 .B \-nomime
 switch will force
 .B burst
@@ -123,7 +123,7 @@ This leaves the context ready for a
 of the table of contents
 of the digest, and a
 .B next
-to see the first message of the digest. If
+to see the first message of the digest.  If
 .B \-noinplace
 is given, then the first message extracted from the
 first digest burst becomes the current message.  This leaves the context

@@ -675,7 +675,7 @@ mhshow-show-<type>
 .fi
 .RE
 .PP
-need be present in this additional profile. Finally,
+need be present in this additional profile.  Finally,
 .B mhshow
 will attempt to consult
 .PP

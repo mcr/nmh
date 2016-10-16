@@ -112,7 +112,7 @@ will not send the message and return with status 1.  You can use the switch
 .PP
 Normally, addresses appearing as arguments are put in the \*(lqTo:\*(rq
 field.  At least one such address is required when sending a message,
-i.e., if any other switches are supplied. If the
+i.e., if any other switches are supplied.  If the
 .B \-cc
 switch is used, all addresses following it, even if there are
 intervening switches other than

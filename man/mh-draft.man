@@ -106,8 +106,8 @@ Both of these
 commands accept a `file' or `files' argument, and they will, if given
 .B \-draftfolder
 .I +folder
-treat these arguments as `msg' or `msgs'. (This may appear to be
-inconsistent, at first, but it saves a lot of typing) Hence,
+treat these arguments as `msg' or `msgs'.  (This may appear to be
+inconsistent, at first, but it saves a lot of typing.)  Hence,
 .PP
 .RS
 .nf
@@ -217,7 +217,7 @@ is not included in the profile entry for
 .BR send ,
 since when
 .BR comp ,
-et. al., invoke
+et al, invoke
 .B send
 directly, they supply
 .B send
@@ -226,7 +226,7 @@ with the UNIX pathname of the message draft, and
 a
 .B \-draftmessage
 .I msg
-argument. As far as
+argument.  As far as
 .B send
 is concerned, a draft folder is not being used.
 .PP

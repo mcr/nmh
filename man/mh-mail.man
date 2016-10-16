@@ -247,12 +247,12 @@ New recipients for a message resent by
 .PP
 .BR Resent\-cc :
 .RS 5
-Still more recipients. See \*(lqcc:\*(rq and \*(lqResent\-To:\*(rq.
+Still more recipients.  See \*(lqcc:\*(rq and \*(lqResent\-To:\*(rq.
 .RE
 .PP
 .BR Resent\-Bcc :
 .RS 5
-Even more recipients. See \*(lqBcc:\*(rq and \*(lqResent\-To:\*(rq.
+Even more recipients.  See \*(lqBcc:\*(rq and \*(lqResent\-To:\*(rq.
 .RE
 .PP
 .BR Resent\-Fcc :

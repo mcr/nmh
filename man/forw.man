@@ -267,11 +267,11 @@ before the forwarded messages.  (A major win!)
 .PP
 To use the MIME rules for encapsulation, specify the
 .B \-mime
-switch. This directs
+switch.  This directs
 .B forw
 to generate an
 .B mhbuild
-composition file. Note that
+composition file.  Note that
 .B nmh
 will not invoke
 .B mhbuild
@@ -503,7 +503,7 @@ instead of
 .BR send ,
 it's possible to confuse
 .B forw
-by re\-ordering the file (e.g. by using
+by re\-ordering the file (e.g.\& by using
 .RB \*(lq folder
 .BR \-pack \*(rq)
 before the message is successfully sent.

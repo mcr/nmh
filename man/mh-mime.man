@@ -37,7 +37,7 @@ installation includes
 support.
 .PP
 Depending on the source and target character set, it may not be possible
-to convert all characters to the local character set. In this case a
+to convert all characters to the local character set.  In this case a
 substitution character will be used for the characters that cannot be
 converted.
 .SS

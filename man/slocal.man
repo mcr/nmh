@@ -258,7 +258,7 @@ Perform the action.  If the action succeeds, then the message
 is considered delivered.
 .TP \w'Azzz'u
 .I R
-Perform the action. Regardless of the outcome of the action,
+Perform the action.  Regardless of the outcome of the action,
 the message is not considered delivered.
 .TP \w'Azzz'u
 .I ?

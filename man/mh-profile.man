@@ -100,7 +100,7 @@ no such sequences are defined.  Otherwise, for each name given, the
 sequence is first zero'd and then each message is added to the sequence.
 Read the
 .IR mh\-sequence (5)
-man page for the details about this sequence. (profile, no default)
+man page for the details about this sequence.  (profile, no default)
 .RE
 .PP
 .BR Sequence\-Negation :
@@ -316,7 +316,7 @@ and
 .BR repl .
 Read the
 .IR mh\-draft (5)
-man page for details. (profile, no default)
+man page for details.  (profile, no default)
 .RE
 .PP
 .BI digest\-issue\- list :
@@ -795,7 +795,7 @@ program as the
 .IR whatnowproc ,
 including
 one of the standard shells.  As a result, it's not possible to pass
-information via an argument list. The convention is that environment
+information via an argument list.  The convention is that environment
 variables whose names are all upper-case are user-settable; those
 whose names are lower-case only are used internally by nmh and should
 not generally be set by the user.
@@ -803,7 +803,7 @@ not generally be set by the user.
 MAILDROP
 This variable tells
 .B inc
-the default maildrop. This supersedes the \*(lqMailDrop\*(rq profile entry.
+the default maildrop.  This supersedes the \*(lqMailDrop\*(rq profile entry.
 .TP
 MAILHOST
 This variable tells
@@ -920,7 +920,7 @@ This variable tells
 .B send
 and
 .B post
-your mail signature. This supersedes the \*(lqSignature\*(rq profile entry,
+your mail signature.  This supersedes the \*(lqSignature\*(rq profile entry,
 and is not used when the \*(lqLocal\-Mailbox\*(rq profile component is set.
 .TP
 USER

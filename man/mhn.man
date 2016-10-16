@@ -46,7 +46,7 @@ mhn \- display/list/store/cache MIME messages
 .SH DESCRIPTION
 .B
 Mhn
-is deprecated. It is retained only
+is deprecated.  It is retained only
 for backwards compatibility.
 .PP
 You should migrate to using the

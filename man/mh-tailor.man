@@ -84,7 +84,7 @@ qualified hostname.  If this is not set, depending on the version of
 UNIX you're running,
 .B nmh
 will query the system for this value
-(e.g. uname, gethostname, etc.), and attempt to fully qualify this
+(e.g.\& uname, gethostname, etc.), and attempt to fully qualify this
 value.
 .PP
 If you are using POP to retrieve new messages, you may want to set this
@@ -100,7 +100,7 @@ hostname.
 This should only be needed, if for some reason
 .B nmh
 is not able to
-fully qualify the hostname returned by the system (e.g. uname,
+fully qualify the hostname returned by the system (e.g.\& uname,
 gethostname, etc.).
 .RE
 .PP
