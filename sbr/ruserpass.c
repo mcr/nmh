@@ -95,10 +95,8 @@ ruserpass(char *host, char **aname, char **apass)
 		while ((t = token(tokval)) && t != MACH && t != DEFAULT) {
 		    switch(t) {
 		    case LOGIN:
-			if (token(tokval) && *aname == 0) {
-			    *aname = mh_xmalloc((size_t) strlen(tokval) + 1);
-			    strcpy(*aname, tokval);
-			}
+			if (token(tokval) && *aname == 0)
+                            *aname = mh_xstrdup(tokval);
 			break;
 
 		    case PASSWD:
@@ -112,10 +110,8 @@ ruserpass(char *host, char **aname, char **apass)
 			    adios(NULL, "Remove password or correct file "
 				  "permissions.");
 			}
-			if (token(tokval) && *apass == 0) {
-			    *apass = mh_xmalloc((size_t) strlen(tokval) + 1);
-			    strcpy(*apass, tokval);
-			}
+			if (token(tokval) && *apass == 0)
+                            *apass = mh_xstrdup(tokval);
 			break;
 
 		    case ACCOUNT:
@@ -157,8 +153,7 @@ ruserpass(char *host, char **aname, char **apass)
 	    myname = tmp;
 	}
 
-	*aname = mh_xmalloc((size_t) strlen(myname) + 1);
-	strcpy (*aname, myname);
+        *aname = mh_xstrdup(myname);
     }
 
     if (!*apass) {
@@ -172,8 +167,7 @@ ruserpass(char *host, char **aname, char **apass)
 	    mypass = *aname;
 	}
 
-	*apass = mh_xmalloc((size_t) strlen(mypass) + 1);
-	strcpy (*apass, mypass);
+        *aname = mh_xstrdup(mypass);
     }
 
 }

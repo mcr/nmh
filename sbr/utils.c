@@ -76,6 +76,19 @@ void *mh_xcalloc(size_t nelem, size_t elsize)
     return p;
 }
 
+/* Duplicate a NUL-terminated string, exit on failure. */
+char *mh_xstrdup(char *src)
+{
+    size_t n;
+    char *dest;
+
+    n = strlen(src) + 1; /* Ignore possibility of overflow. */
+    dest = mh_xmalloc(n);
+    memcpy(dest, src, n);
+
+    return dest;
+}
+
 /* Call free(3), if ptr isn't NULL. */
 void mh_xfree(void *ptr)
 {

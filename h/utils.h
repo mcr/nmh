@@ -12,6 +12,9 @@ void *mh_xrealloc(void *ptr, size_t size);
 /* Call calloc(3), exiting on NULL return. */
 void *mh_xcalloc(size_t nelem, size_t elsize);
 
+/* Duplicate a NUL-terminated string, exit on failure. */
+char *mh_xstrdup(char *src);
+
 /* Call free(3), if ptr isn't NULL. */
 void mh_xfree(void *ptr);
 
