@@ -299,7 +299,7 @@ static struct colormap colortable[] = {
 	} while (0)
 
 #define NEWFMT (next_fp++)
-#define NEW(type,fill,wid) do {\
+#define NEW_FP(type,fill,wid) do {\
 	fp=NEWFMT; fp->f_type=(type); fp->f_fill=(fill); fp->f_width=(wid); \
 	} while (0)
 
@@ -314,12 +314,12 @@ static struct colormap colortable[] = {
 	cm->c_refcount++; \
 	} while (0)
 
-#define LV(type, value)		do { NEW(type,0,0); fp->f_value = (value); } while (0)
-#define LS(type, str)		do { NEW(type,0,0); fp->f_text = getcpy(str); fp->f_flags |= FF_STRALLOC; } while (0)
+#define LV(type, value)		do { NEW_FP(type,0,0); fp->f_value = (value); } while (0)
+#define LS(type, str)		do { NEW_FP(type,0,0); fp->f_text = getcpy(str); fp->f_flags |= FF_STRALLOC; } while (0)
 
-#define PUTCOMP(comp)		do { NEW(FT_COMP,0,0); ADDC(comp); } while (0)
-#define PUTLIT(str)		do { NEW(FT_LIT,0,0); fp->f_text = getcpy(str); fp->f_flags |= FF_STRALLOC; } while (0)
-#define PUTC(c)			do { NEW(FT_CHAR,0,0); fp->f_char = (c); } while (0)
+#define PUTCOMP(comp)		do { NEW_FP(FT_COMP,0,0); ADDC(comp); } while (0)
+#define PUTLIT(str)		do { NEW_FP(FT_LIT,0,0); fp->f_text = getcpy(str); fp->f_flags |= FF_STRALLOC; } while (0)
+#define PUTC(c)			do { NEW_FP(FT_CHAR,0,0); fp->f_char = (c); } while (0)
 
 static char *format_string;
 static char *usr_fstring;	/* for CERROR */
