@@ -69,6 +69,7 @@ main (int argc, char **argv)
     register FILE *fp;
     int debug = 0;
     int reverse = 0;
+    int start, end, inc;
 
     if (nmh_init(argv[0], 1)) { return 1; }
 
@@ -237,9 +238,16 @@ main (int argc, char **argv)
      * match.  If there is NOT a match, then add it to a list to
      * remove from the final sequence (it will make sense later)
      */
-    for (msgnum = reverse ? mp->hghsel : mp->lowsel;
-         reverse ? msgnum >= mp->lowsel : msgnum <= mp->hghsel;
-         msgnum += reverse ? -1 : 1) {
+    if (!reverse) { /* Overflow or underflow is fine. */
+        start = mp->lowsel;
+        end = mp->hghsel + 1;
+        inc = 1;
+    } else {
+        start = mp->hghsel;
+        end = mp->lowsel - 1;
+        inc = -1;
+    }
+    for (msgnum = start; msgnum != end; msgnum += inc) {
 	if (is_selected (mp, msgnum)) {
 	    if ((fp = fopen (cp = m_name (msgnum), "r")) == NULL)
 		admonish (cp, "unable to read message");
