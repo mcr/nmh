@@ -31,7 +31,13 @@ DEFINE_SWITCH_ENUM(NEW);
 DEFINE_SWITCH_ARRAY(NEW, switches);
 #undef X
 
-static enum { NEW, FNEXT, FPREV, UNSEEN } run_mode = NEW;
+/* What to do, based on argv[0]. */
+static enum {
+    RM_NEW,
+    RM_FNEXT,
+    RM_FPREV,
+    RM_UNSEEN
+} run_mode = RM_NEW;
 
 /* check_folders uses this to maintain state with both .folders list of
  * folders and with crawl_folders. */
@@ -310,8 +316,8 @@ join_sequences(char *sequences[])
 }
 
 /* Return a struct node for the folder to change to.  This is the next
- * (previous, if FPREV mode) folder with desired messages, or the current
- * folder if no folders have desired.  If NEW or UNSEEN mode, print the
+ * (previous, if RM_FPREV mode) folder with desired messages, or the current
+ * folder if no folders have desired.  If RM_NEW or RM_UNSEEN mode, print the
  * output but don't change folders.
  *
  * n_name is the folder to change to, and n_field is the string list of
@@ -332,7 +338,7 @@ doit(char *cur, char *folders, char *sequences[])
     check_folders(&first, &last, &cur_node, &folder_len, cur,
 		  folders, sequences);
 
-    if (run_mode == FNEXT || run_mode == FPREV) {
+    if (run_mode == RM_FNEXT || run_mode == RM_FPREV) {
 	if (first == NULL) {
 	    /* No folders at all... */
 	    return NULL;
@@ -347,20 +353,20 @@ doit(char *cur, char *folders, char *sequences[])
 	    /* Current folder is not listed in .folders, return first. */
 	    return first;
 	}
-    } else if (run_mode == UNSEEN) {
+    } else if (run_mode == RM_UNSEEN) {
 	sequences_s = join_sequences(sequences);
     }
 
     for (node = first, prev = NULL;
 	 node != NULL;
 	 prev = node, node = node->n_next) {
-        if (run_mode == FNEXT) {
+        if (run_mode == RM_FNEXT) {
             /* If we have a previous node and it is the current
              * folder, return this node. */
             if (prev != NULL && strcmp(prev->n_name, cur) == 0) {
                 return node;
             }
-        } else if (run_mode == FPREV) {
+        } else if (run_mode == RM_FPREV) {
             if (strcmp(node->n_name, cur) == 0) {
                 /* Found current folder in fprev mode; if we have a
                  * previous node in the list, return it; else return
@@ -370,7 +376,7 @@ doit(char *cur, char *folders, char *sequences[])
                 }
                 return prev;
             }
-        } else if (run_mode == UNSEEN) {
+        } else if (run_mode == RM_UNSEEN) {
             int status;
 
             if (node->n_field == NULL) {
@@ -414,14 +420,14 @@ doit(char *cur, char *folders, char *sequences[])
 
     /* If we're fnext, we haven't checked the last node yet.  If it's the
      * current folder, return the first node. */
-    if (run_mode == FNEXT) {
+    if (run_mode == RM_FNEXT) {
 	assert(last != NULL);
 	if (strcmp(last->n_name, cur) == 0) {
             return first;
 	}
     }
 
-    if (run_mode == NEW) {
+    if (run_mode == RM_NEW) {
         printf("%-*s %6d.\n", (int) folder_len, " total", total);
     }
 
@@ -484,11 +490,11 @@ main(int argc, char **argv)
     }
 
     if (strcmp(invo_name, "fnext") == 0) {
-        run_mode = FNEXT;
+        run_mode = RM_FNEXT;
     } else if (strcmp(invo_name, "fprev") == 0) {
-        run_mode = FPREV;
+        run_mode = RM_FPREV;
     } else if (strcmp(invo_name, "unseen") == 0) {
-        run_mode = UNSEEN;
+        run_mode = RM_UNSEEN;
     }
 
     if (folders == NULL) {
@@ -517,7 +523,7 @@ main(int argc, char **argv)
         return 1;
     }
 
-    if (run_mode == UNSEEN) {
+    if (run_mode == RM_UNSEEN) {
         /* All the scan(1)s it runs change the current folder, so we
          * need to put it back.  Unfortunately, context_replace lamely
          * ignores the new value you give it if it is the same one it
@@ -529,7 +535,7 @@ main(int argc, char **argv)
     /* update current folder */
     context_replace(pfolder, folder->n_name);
 
-    if (run_mode == FNEXT || run_mode == FPREV) {
+    if (run_mode == RM_FNEXT || run_mode == RM_FPREV) {
         printf("%s  %s\n", folder->n_name, folder->n_field);
     }
 
