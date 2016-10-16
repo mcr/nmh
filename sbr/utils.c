@@ -410,7 +410,7 @@ nmh_init(const char *argv0, int read_context) {
     } else {
         int status = context_foil(NULL);
         if (status != OK) {
-            advise("", "failed to create minimal profile/conext");
+            advise("", "failed to create minimal profile/context");
         }
         return status;
     }
