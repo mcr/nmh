@@ -39,26 +39,26 @@ void *mh_xmalloc(size_t size)
     return p;
 }
 
-/*
- * Safely call realloc
- */
-void *
-mh_xrealloc(void *ptr, size_t size)
+/* Call realloc(3), exiting on NULL return. */
+void *mh_xrealloc(void *ptr, size_t size)
 {
-    void *memory;
+    void *new;
 
-    /* Some non-POSIX realloc()s don't cope with realloc(NULL,sz) */
+    /* Copy POSIX behaviour, coping with non-POSIX systems. */
+    if (size == 0) {
+        if (ptr) {
+            free(ptr);
+        }
+        return mh_xmalloc(1); /* Get a unique pointer. */
+    }
     if (!ptr)
         return mh_xmalloc(size);
 
-    if (size == 0)
-        adios(NULL, "Tried to realloc 0 bytes");
+    new = realloc(ptr, size);
+    if (!new)
+        adios(NULL, "realloc failed, size wanted: %zu", size);
 
-    memory = realloc(ptr, size);
-    if (!memory)
-        adios(NULL, "Realloc failed");
-
-    return memory;
+    return new;
 }
 
 /*

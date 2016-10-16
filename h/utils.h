@@ -6,7 +6,9 @@
 /* Call malloc(3), exiting on NULL return. */
 void *mh_xmalloc(size_t);
 
+/* Call realloc(3), exiting on NULL return. */
 void *mh_xrealloc(void *, size_t);
+
 void *mh_xcalloc(size_t, size_t);
 char *pwd(void);
 char *add(const char *, char *);
