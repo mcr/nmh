@@ -59,6 +59,9 @@ NEW FEATURES
   server supports it.  If not, post fails with a message to the user to
   encode the message for 7-bit transport.
 - Added welcome message when nmh detects that its version changed.
+- Fewer lseek(2)s will be used when reading headers in the common case.
+- Single-character headers can be reliably formatted, etc., instead of
+  apparently being missing.
 
 -----------------
 OBSOLETE FEATURES
