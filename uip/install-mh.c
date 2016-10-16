@@ -182,7 +182,7 @@ query:
      */
     NEW(np);
     m_defs = np;
-    np->n_name = getcpy ("Path");
+    np->n_name = mh_xstrdup("Path");
     np->n_field = getcpy (pathname);
     np->n_context = 0;
     np->n_next = NULL;

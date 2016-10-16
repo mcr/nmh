@@ -66,7 +66,7 @@ add_children (char *name, struct crawl_context *crawl)
     }
 
     if (strcmp (name, ".") == 0) {
-	prefix = getcpy ("");
+	prefix = mh_xstrdup("");
     } else {
 	prefix = concat (name, "/", (void *)NULL);
     }

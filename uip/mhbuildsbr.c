@@ -510,7 +510,7 @@ finish_field:
 	 * So this seems like the best option available since we're going
 	 * to call scan_content() on this.
 	 */
-	p->c_cefile.ce_file = getcpy("/dev/null");
+	p->c_cefile.ce_file = mh_xstrdup("/dev/null");
 	p->c_begin = ftell(in);
 	p->c_end = ftell(in);
 
@@ -2067,7 +2067,7 @@ set_disposition (CT ct) {
                       cp);
         }
 
-        ct->c_dispo_type = cp  ?  getcpy (cp)  :  getcpy ("attachment");
+        ct->c_dispo_type = cp  ?  getcpy (cp) : mh_xstrdup("attachment");
     }
 }
 

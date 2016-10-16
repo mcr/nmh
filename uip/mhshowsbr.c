@@ -206,9 +206,9 @@ DisplayMsgHeader (CT ct, char *form, int concatsw)
     char *file;
 
     vec = argsplit(mhlproc, &file, &vecp);
-    vec[vecp++] = getcpy("-form");
+    vec[vecp++] = mh_xstrdup("-form");
     vec[vecp++] = getcpy(form);
-    vec[vecp++] = getcpy("-nobody");
+    vec[vecp++] = mh_xstrdup("-nobody");
     vec[vecp++] = getcpy(ct->c_file);
 
     /*
@@ -216,9 +216,9 @@ DisplayMsgHeader (CT ct, char *form, int concatsw)
      * then just pass that along.
      */
     if (nomore || concatsw) {
-	vec[vecp++] = getcpy("-nomoreproc");
+	vec[vecp++] = mh_xstrdup("-nomoreproc");
     } else if (progsw) {
-	vec[vecp++] = getcpy("-moreproc");
+	vec[vecp++] = mh_xstrdup("-moreproc");
 	vec[vecp++] = getcpy(progsw);
     }
     vec[vecp] = NULL;

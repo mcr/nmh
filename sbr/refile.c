@@ -9,6 +9,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 
 int
@@ -21,9 +22,9 @@ refile (char **arg, char *file)
 
     vec = argsplit(fileproc, &program, &vecp);
 
-    vec[vecp++] = getcpy("-nolink");	/* override bad .mh_profile defaults */
-    vec[vecp++] = getcpy("-nopreserve");
-    vec[vecp++] = getcpy("-file");
+    vec[vecp++] = mh_xstrdup("-nolink"); /* override bad .mh_profile defaults */
+    vec[vecp++] = mh_xstrdup("-nopreserve");
+    vec[vecp++] = mh_xstrdup("-file");
     vec[vecp++] = getcpy(file);
 
     if (arg) {

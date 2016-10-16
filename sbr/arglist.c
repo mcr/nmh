@@ -110,12 +110,12 @@ argsplit(char *command, char **file, int *argp)
      *   So we put in a dummy argument (we just use /bin/sh)
      */
 
-    *file = getcpy("/bin/sh");
-    argvarray[0] = getcpy("sh");
-    argvarray[1] = getcpy("-c");
+    *file = mh_xstrdup("/bin/sh");
+    argvarray[0] = mh_xstrdup("sh");
+    argvarray[1] = mh_xstrdup("-c");
     argvarray[2] = getcpy(command);
     argvarray[2] = add(" \"$@\"", argvarray[2]);
-    argvarray[3] = getcpy("/bin/sh");
+    argvarray[3] = mh_xstrdup("/bin/sh");
     argvarray[4] = NULL;
 
     if (argp)

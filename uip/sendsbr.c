@@ -822,21 +822,21 @@ setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
 		adios(NULL, "Unable to retrieve oauth profile entries: %s",
 		      errbuf);
 
-	    vec[(*vecp)++] = getcpy("-authservice");
+	    vec[(*vecp)++] = mh_xstrdup("-authservice");
 	    vec[(*vecp)++] = getcpy(auth_svc);
-	    vec[(*vecp)++] = getcpy("-oauthcredfile");
+	    vec[(*vecp)++] = mh_xstrdup("-oauthcredfile");
 	    vec[(*vecp)++] = getcpy(mh_oauth_cred_fn(auth_svc));
-	    vec[(*vecp)++] = getcpy("-oauthclientid");
+	    vec[(*vecp)++] = mh_xstrdup("-oauthclientid");
 	    vec[(*vecp)++] = getcpy(svc.client_id);
-	    vec[(*vecp)++] = getcpy("-oauthclientsecret");
+	    vec[(*vecp)++] = mh_xstrdup("-oauthclientsecret");
 	    vec[(*vecp)++] = getcpy(svc.client_secret);
-	    vec[(*vecp)++] = getcpy("-oauthauthendpoint");
+	    vec[(*vecp)++] = mh_xstrdup("-oauthauthendpoint");
 	    vec[(*vecp)++] = getcpy(svc.auth_endpoint);
-	    vec[(*vecp)++] = getcpy("-oauthredirect");
+	    vec[(*vecp)++] = mh_xstrdup("-oauthredirect");
 	    vec[(*vecp)++] = getcpy(svc.redirect_uri);
-	    vec[(*vecp)++] = getcpy("-oauthtokenendpoint");
+	    vec[(*vecp)++] = mh_xstrdup("-oauthtokenendpoint");
 	    vec[(*vecp)++] = getcpy(svc.token_endpoint);
-	    vec[(*vecp)++] = getcpy("-oauthscope");
+	    vec[(*vecp)++] = mh_xstrdup("-oauthscope");
 	    vec[(*vecp)++] = getcpy(svc.scope);
         }
     }

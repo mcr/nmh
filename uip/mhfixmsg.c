@@ -1277,7 +1277,7 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
                         HF hf;
 
                         parent->c_subtype = MULTI_ALTERNATE;
-                        parent->c_ctinfo.ci_subtype = getcpy ("alternative");
+                        parent->c_ctinfo.ci_subtype = mh_xstrdup("alternative");
                         if (! replace_substring (&parent->c_ctline, "/related",
                                                  "/alternative")) {
                             advise (NULL,

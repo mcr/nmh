@@ -3665,7 +3665,7 @@ content_charset (CT ct) {
 
     ret_charset = get_param(ct->c_ctinfo.ci_first_pm, "charset", '?', 0);
 
-    return ret_charset ? ret_charset : getcpy ("US-ASCII");
+    return ret_charset ? ret_charset : mh_xstrdup("US-ASCII");
 }
 
 

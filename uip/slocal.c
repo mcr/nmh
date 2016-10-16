@@ -1163,7 +1163,7 @@ get_sender (char *envelope, char **sender)
     char buffer[BUFSIZ];
 
     if (envelope == NULL) {
-	*sender = getcpy ("");
+	*sender = mh_xstrdup("");
 	return;
     }
 
