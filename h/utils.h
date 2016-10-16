@@ -9,7 +9,9 @@ void *mh_xmalloc(size_t);
 /* Call realloc(3), exiting on NULL return. */
 void *mh_xrealloc(void *, size_t);
 
+/* Call calloc(3), exiting on NULL return. */
 void *mh_xcalloc(size_t, size_t);
+
 char *pwd(void);
 char *add(const char *, char *);
 char *addlist(char *, const char *);

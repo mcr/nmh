@@ -61,22 +61,19 @@ void *mh_xrealloc(void *ptr, size_t size)
     return new;
 }
 
-/*
- * Safely call calloc
- */
-void *
-mh_xcalloc(size_t nmemb, size_t size)
+/* Call calloc(3), exiting on NULL return. */
+void *mh_xcalloc(size_t nelem, size_t elsize)
 {
-    void *memory;
+    void *p;
 
-    if (nmemb == 0  ||  size == 0)
-        adios(NULL, "Tried to calloc 0 bytes");
+    if (!nelem || !elsize)
+        return mh_xmalloc(1); /* Get a unique pointer. */
 
-    if ((memory = calloc(nmemb, size))) {
-        return memory;
-    } else {
-        adios(NULL, "calloc failed");
-    }
+    p = calloc(nelem, elsize);
+    if (!p)
+        adios(NULL, "calloc failed, size wanted: %zu * %zu", nelem, elsize);
+
+    return p;
 }
 
 /*
