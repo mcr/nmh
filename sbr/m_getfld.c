@@ -489,17 +489,17 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
     enter_getfld (gstate, iob);
     s = *gstate;
 
-    if ((c = Getc(s)) < 0) {
+    if ((c = Getc(s)) == EOF) {
 	*bufsz = *buf = 0;
 	leave_getfld (s);
 	return s->state = FILEEOF;
     }
     if (eom (c, s)) {
 	/* flush null messages */
-	while ((c = Getc(s)) >= 0 && eom (c, s))
+	while ((c = Getc(s)) != EOF && eom (c, s))
 	    ;
 
-	if (c >= 0)
+	if (c != EOF)
 	    Ungetc(c, s);
 	*bufsz = *buf = 0;
 	leave_getfld (s);
@@ -510,13 +510,14 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 	case FLD:
 	    if (c == '\n' || c == '-') {
 		/* we hit the header/body separator */
-		while (c != '\n' && (c = Getc(s)) >= 0) continue;
+		while (c != '\n' && (c = Getc(s)) != EOF)
+                    ;
 
-		if (c < 0 || (c = Getc(s)) < 0 || eom (c, s)) {
+		if (c == EOF || (c = Getc(s)) == EOF || eom (c, s)) {
 		    /* flush null messages */
-		    while ((c = Getc(s)) >= 0 && eom (c, s))
+		    while ((c = Getc(s)) != EOF && eom (c, s))
 			;
-		    if (c >= 0)
+		    if (c != EOF)
 			Ungetc(c, s);
 		    *bufsz = *buf = 0;
 		    leave_getfld (s);
@@ -797,7 +798,8 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
     if (i == sizeof from-1  &&  strncmp (text, "From ", sizeof from-1) == 0) {
 	s->msg_style = MS_MBOX;
 	delimstr = "\nFrom ";
-	while ((c = Getc (s)) != '\n' && c >= 0) continue;
+	while ((c = Getc(s)) != EOF && c != '\n')
+            ;
     } else {
 	/* not a Unix style maildrop */
 	s->readpos -= s->bytes_read;
@@ -830,9 +832,9 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
 
     if (s->msg_style == MS_MMDF) {
 	/* flush extra msg hdrs */
-	while ((c = Getc(s)) >= 0 && eom (c, s))
+	while ((c = Getc(s)) != EOF && eom (c, s))
 	    ;
-	if (c >= 0)
+	if (c != EOF)
 	    Ungetc(c, s);
     }
 
@@ -880,9 +882,8 @@ m_Eom (m_getfld_state_t s)
 
     if (s->msg_style == MS_MBOX) {
 	int c;
-	while ((c = Getc (s)) != '\n')
-	    if (c < 0)
-		break;
+	while ((c = Getc(s)) != EOF && c != '\n')
+            ;
     }
 
     return 1;
