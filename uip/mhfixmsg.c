@@ -1501,7 +1501,7 @@ static CT
 divide_part (CT ct) {
     CT new_part;
 
-    new_part = mh_xcalloc(1, sizeof *new_part);
+    NEW0(new_part);
     /* Just copy over what is needed for decoding.  c_vrsn and
        c_celine aren't necessary. */
     new_part->c_file = add (ct->c_file, NULL);
@@ -1656,7 +1656,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     struct multipart *m;
     const struct str2init *ctinit;
 
-    ct = mh_xcalloc(1, sizeof *ct);
+    NEW0(ct);
 
     /* Set up the multipart/alternative part.  These fields of *ct were
        initialized to 0 by mh_xcalloc():
@@ -1763,7 +1763,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     p->mp_next->mp_next = NULL;
     p->mp_next->mp_part = first_alt;
 
-    m = mh_xcalloc(1, sizeof *m);
+    NEW0(m);
     m->mp_start = concat (boundary, "\n", NULL);
     m->mp_stop = concat (boundary, "--\n", NULL);
     m->mp_parts = p;

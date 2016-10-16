@@ -459,7 +459,7 @@ newnexus (int (*action)())
 {
     register struct nexus *p;
 
-    p = mh_xcalloc(1, sizeof *p);
+    NEW0(p);
     p->n_action = action;
     return p;
 }

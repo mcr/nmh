@@ -778,7 +778,7 @@ evalvar (struct mcomp *c1)
 	    return 1;
 	}
 
-	args = (struct arglist *) mh_xcalloc ((size_t) 1, sizeof(struct arglist));
+	NEW0(args);
 
 	if (arglist_tail)
 	    arglist_tail->a_next = args;
@@ -1188,7 +1188,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 
     (q = &pq)->pq_next = NULL;
     while ((cp = getname (ap))) {
-	p = mh_xcalloc(1, sizeof *p);
+	NEW0(p);
         if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
             p->pq_text = getcpy (cp);
             p->pq_error = getcpy (error);
@@ -1241,7 +1241,7 @@ add_queue (struct mcomp **head, struct mcomp **tail, char *name, char *text, int
 {
     struct mcomp *c1;
 
-    c1 = mh_xcalloc(1, sizeof *c1);
+    NEW0(c1);
     c1->c_flags = flags & ~INIT;
     if ((c1->c_name = name ? getcpy (name) : NULL))
         c1->c_flags |= mcomp_flags (c1->c_name);

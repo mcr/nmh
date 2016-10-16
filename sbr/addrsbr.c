@@ -145,7 +145,7 @@ getm (char *str, char *dfhost, int dftype, char *eresult, size_t eresultsize)
 	dftype = LOCALHOST;
     }
 
-    mp = mh_xcalloc(1, sizeof *mp);
+    NEW0(mp);
     mp->m_next = NULL;
     mp->m_text = getcpy (str);
     if (pers)

@@ -217,7 +217,7 @@ load_timezones (const contentline *clines) {
                 ! strcasecmp ("VTIMEZONE", node->value)) {
 
                 in_vtimezone = 1;
-                timezone = mh_xcalloc (1, sizeof (struct tzdesc));
+                NEW0(timezone);
                 if (timezones) {
                     tzdesc_t t;
 

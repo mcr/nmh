@@ -289,7 +289,7 @@ static struct colormap colortable[] = {
 
 /* Add new component to the hash table */
 #define NEWCOMP(cm,name) do { \
-	cm = ((struct comp *) mh_xcalloc (1, sizeof (struct comp)));\
+	NEW0(cm);\
 	cm->c_name = getcpy(name);\
 	cm->c_refcount++;\
 	ncomp++;\
@@ -564,7 +564,7 @@ do_name(char *sp, int preprocess)
 	if (cm->c_tws) {
 	    memset (cm->c_tws, 0, sizeof *cm->c_tws);
 	} else {
-	    cm->c_tws = mh_xcalloc (1, sizeof *cm->c_tws);
+	    NEW0(cm->c_tws);
 	}
 	fp->f_type = preprocess;
 	PUTCOMP(sp);

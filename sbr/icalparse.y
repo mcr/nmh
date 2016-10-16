@@ -146,8 +146,9 @@ remove_contentline (contentline *node) {
 
 contentline *
 add_contentline (contentline *node, const char *name) {
-    contentline *new_node = mh_xcalloc (1, sizeof (contentline));
+    contentline *new_node;
 
+    NEW0(new_node);
     new_node->name  = strdup (name);
     new_node->next = node->next;
     node->next = new_node;
@@ -212,8 +213,9 @@ append (contentline *cline, const char *src, const size_t src_len) {
 
 static void
 new_input_line (contentline **cline) {
-    contentline *new_node = mh_xcalloc (1, sizeof (contentline));
+    contentline *new_node;
 
+    NEW0(new_node);
     if (*cline) {
         /* Append the new node to the end of the list. */
         (*cline)->last->next = new_node;
@@ -228,7 +230,9 @@ new_input_line (contentline **cline) {
 
 static void
 new_vevent (vevent *event) {
-    vevent *new_node = mh_xcalloc (1, sizeof (vevent)), *node;
+    vevent *new_node, *node;
+
+    NEW0(new_node);
 
     /* Append the new node to the end of the list. */
     for (node = event; node->next; node = node->next) { continue; }
@@ -237,9 +241,10 @@ new_vevent (vevent *event) {
 
 void
 add_param_name (contentline *cline, char *name) {
-    param_list *new_node = mh_xcalloc (1, sizeof (param_list));
+    param_list *new_node;
     param_list *p;
 
+    NEW0(new_node);
     new_node->param_name = name;
 
     if (cline->params) {
@@ -256,10 +261,11 @@ add_param_name (contentline *cline, char *name) {
  */
 void
 add_param_value (contentline *cline, char *value) {
-    value_list *new_node = mh_xcalloc (1, sizeof (value_list));
+    value_list *new_node;
     param_list *p;
     value_list *v;
 
+    NEW0(new_node);
     new_node->value = value;
 
     if (cline->params) {

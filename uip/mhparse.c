@@ -294,7 +294,7 @@ get_content (FILE *in, char *file, int toplevel)
     m_getfld_state_t gstate = 0;
 
     /* allocate the content structure */
-    ct = mh_xcalloc(1, sizeof *ct);
+    NEW0(ct);
     ct->c_fp = in;
     ct->c_file = add (file, NULL);
     ct->c_begin = ftell (ct->c_fp) + 1;
@@ -1027,7 +1027,7 @@ InitText (CT ct)
     ct->c_subtype = ct_str_subtype (CT_TEXT, ci->ci_subtype);
 
     /* allocate text character set structure */
-    t = mh_xcalloc(1, sizeof *t);
+    NEW0(t);
     ct->c_ctparams = (void *) t;
 
     /* scan for charset parameter */
@@ -1131,7 +1131,7 @@ InitMultiPart (CT ct)
     }
 
     /* allocate primary structure for multipart info */
-    m = mh_xcalloc(1, sizeof *m);
+    NEW0(m);
     ct->c_ctparams = (void *) m;
 
     /* check if boundary parameter contains only whitespace characters */
@@ -1175,7 +1175,7 @@ InitMultiPart (CT ct)
 	    if (strcmp (bufp + 2, m->mp_start))
 		continue;
 next_part:
-	    part = mh_xcalloc(1, sizeof *part);
+	    NEW0(part);
 	    *next = part;
 	    next = &part->mp_next;
 
@@ -1414,7 +1414,7 @@ InitMessage (CT ct)
 		PM pm;
 		struct partial *p;
 
-		p = mh_xcalloc(1, sizeof *p);
+		NEW0(p);
 		ct->c_ctparams = (void *) p;
 
 		/* scan for parameters "id", "number", and "total" */
@@ -1462,7 +1462,7 @@ invalid_param:
 		CT p;
 		FILE *fp;
 
-		e = mh_xcalloc(1, sizeof *e);
+		NEW0(e);
 		ct->c_ctparams = (void *) e;
 
 		if (!ct->c_fp

@@ -321,7 +321,7 @@ finished:
 	if (datecomp) {
 	    if (! datecomp->c_text) {
 		if (datecomp->c_tws == NULL)
-		    datecomp->c_tws = mh_xcalloc(1, sizeof *datecomp->c_tws);
+		    NEW0(datecomp->c_tws);
 		*datecomp->c_tws = *dlocaltime ((time_t *) &st.st_mtime);
 		datecomp->c_flags |= CF_DATEFAB|CF_TRUE;
 	    } else {

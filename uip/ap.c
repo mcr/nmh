@@ -155,7 +155,7 @@ process (char *arg, int length)
 
     (q = &pq)->pq_next = NULL;
     while ((cp = getname (arg))) {
-	p = mh_xcalloc(1, sizeof *p);
+	NEW0(p);
 	if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
 	    p->pq_text = getcpy (cp);
 	    p->pq_error = getcpy (error);

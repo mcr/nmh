@@ -161,7 +161,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
     /*
      * Allocate space for primary (outside) content
      */
-    ct = mh_xcalloc(1, sizeof *ct);
+    NEW0(ct);
 
     /*
      * Allocate structure for handling decoded content
@@ -280,7 +280,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
                         convert->filename = getcpy (filename);
                     }
                 } else {
-                    convert = mh_xcalloc (sizeof *convert, 1);
+                    NEW0(convert);
                     convert->filename = getcpy (filename);
                     convert->type = getcpy (type);
 
@@ -320,7 +320,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
                         convert->argstring = getcpy (argstring);
                     }
                 } else {
-                    convert = mh_xcalloc (sizeof *convert, 1);
+                    NEW0(convert);
                     convert->type = getcpy (type);
                     convert->argstring = getcpy (argstring);
 
@@ -393,7 +393,7 @@ finish_field:
     ct->c_type = CT_MULTIPART;
     ct->c_subtype = MULTI_MIXED;
 
-    m = mh_xcalloc(1, sizeof *m);
+    NEW0(m);
     ct->c_ctparams = (void *) m;
     pp = &m->mp_parts;
 
@@ -412,7 +412,7 @@ finish_field:
 	if (!p)
 	    continue;
 
-	part = mh_xcalloc(1, sizeof *part);
+	NEW0(part);
 	*pp = part;
 	pp = &part->mp_next;
 	part->mp_part = p;
@@ -432,7 +432,7 @@ finish_field:
 	    adios("reading", "Unable to open %s for", at_entry->filename);
 	}
 
-	p = mh_xcalloc(1, sizeof *p);
+	NEW0(p);
 	init_decoded_content(p, infile);
 
 	/*
@@ -443,7 +443,7 @@ finish_field:
 
 	setup_attach_content(p, at_entry->filename);
 
-	part = mh_xcalloc(1, sizeof *part);
+	NEW0(part);
 	*pp = part;
 	pp = &part->mp_next;
 	part->mp_part = p;
@@ -496,7 +496,7 @@ finish_field:
 	struct part *part;
 	struct text *t;
 
-	p = mh_xcalloc(1, sizeof *p);
+	NEW0(p);
 	init_decoded_content(p, infile);
 
 	if (get_ctinfo ("text/plain", p, 0) == NOTOK)
@@ -514,11 +514,11 @@ finish_field:
 	p->c_begin = ftell(in);
 	p->c_end = ftell(in);
 
-	t = mh_xcalloc(1, sizeof *t);
+	NEW0(t);
 	t->tx_charset = CHARSET_SPECIFIED;
 	p->c_ctparams = t;
 
-	part = mh_xcalloc(1, sizeof *part);
+	NEW0(part);
 	*pp = part;
 	part->mp_part = p;
     }
@@ -665,7 +665,7 @@ user_content (FILE *in, char *buf, CT *ctp, const char *infilename)
     }
 
     /* allocate basic Content structure */
-    ct = mh_xcalloc(1, sizeof *ct);
+    NEW0(ct);
     *ctp = ct;
 
     /* allocate basic structure for handling decoded content */
@@ -896,7 +896,7 @@ use_forw:
 	     * reference, we need to create another Content structure
 	     * for the message/external-body to wrap it in.
 	     */
-	    ct = mh_xcalloc(1, sizeof *ct);
+	    NEW0(ct);
 	    init_decoded_content(ct, infilename);
 	    *ctp = ct;
 	    if (get_ctinfo (buffer, ct, 0) == NOTOK)
@@ -904,7 +904,7 @@ use_forw:
 	    ct->c_type = CT_MESSAGE;
 	    ct->c_subtype = MESSAGE_EXTERNAL;
 
-	    e = mh_xcalloc(1, sizeof *e);
+	    NEW0(e);
 	    ct->c_ctparams = (void *) e;
 
 	    e->eb_parent = ct;
@@ -1013,7 +1013,7 @@ use_forw:
 	    ct->c_type = CT_MULTIPART;
 	    ct->c_subtype = MULTI_DIGEST;
 
-	    m = mh_xcalloc(1, sizeof *m);
+	    NEW0(m);
 	    ct->c_ctparams = (void *) m;
 	    pp = &m->mp_parts;
 
@@ -1023,7 +1023,7 @@ use_forw:
 		    CT p;
 		    CE pe;
 
-		    p = mh_xcalloc(1, sizeof *p);
+		    NEW0(p);
 		    init_decoded_content (p, infilename);
 		    pe = &p->c_cefile;
 		    if (get_ctinfo ("message/rfc822", p, 0) == NOTOK)
@@ -1036,7 +1036,7 @@ use_forw:
 		    if (listsw && stat (pe->ce_file, &st) != NOTOK)
 			p->c_end = (long) st.st_size;
 
-		    part = mh_xcalloc(1, sizeof *part);
+		    NEW0(part);
 		    *pp = part;
 		    pp = &part->mp_next;
 		    part->mp_part = p;
@@ -1096,7 +1096,7 @@ use_forw:
 	ct->c_type = CT_MULTIPART;
 	ct->c_subtype = vrsn;
 
-	m = mh_xcalloc(1, sizeof *m);
+	NEW0(m);
 	ct->c_ctparams = (void *) m;
 
 	pp = &m->mp_parts;
@@ -1112,7 +1112,7 @@ use_forw:
 	    if (!p)
 		continue;
 
-	    part = mh_xcalloc(1, sizeof *part);
+	    NEW0(part);
 	    *pp = part;
 	    pp = &part->mp_next;
 	    part->mp_part = p;
@@ -2084,7 +2084,8 @@ set_charset (CT ct, int contains8bit) {
         struct text *t;
 
         if (ct->c_ctparams == NULL) {
-            t = ct->c_ctparams = mh_xcalloc(1, sizeof *t);
+            NEW0(t);
+            ct->c_ctparams = t;
             t->tx_charset = CHARSET_UNSPECIFIED;
         } else {
             t = (struct text *) ct->c_ctparams;
@@ -2239,7 +2240,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     free (convert_command);
 
     /* Fill out the the new ct, reply_ct. */
-    reply_ct = (CT) mh_xcalloc (1, sizeof *reply_ct);
+    NEW0(reply_ct);
     init_decoded_content (reply_ct, infile);
 
     if (extract_headers (reply_ct, reply_file, &reply_fp) == NOTOK) {
@@ -2368,7 +2369,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
     reply_ct->c_cefile.ce_unlink = 1;
 
     /* Attach the new part to the parent multipart/mixed, "m". */
-    part = (struct part *) mh_xcalloc (1, sizeof *part);
+    NEW0(part);
     part->mp_part = reply_ct;
     if (m->mp_parts) {
         struct part *p;
