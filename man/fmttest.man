@@ -10,6 +10,8 @@ language
 .HP 5
 .na
 .B fmttest
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-form
 .IR formatfile ]
 .RB [ \-format
