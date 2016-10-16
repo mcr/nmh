@@ -8,14 +8,14 @@ mkstemp \- create a temporary file
 .HP 5
 .na
 .B %nmhlibexecdir%/mkstemp
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-directory
 .IR directory ]
 .RB [ \-prefix
 .IR prefix ]
 .RB [ \-suffix
 .IR suffix ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B mkstemp

@@ -8,6 +8,8 @@ mhshow \- display MIME messages
 .HP 5
 .na
 .B mhshow
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-file
@@ -34,8 +36,6 @@ mhshow \- display MIME messages
 .RB [ \-wcache
 .IR policy ]
 .RB [ \-check " | " \-nocheck ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 The

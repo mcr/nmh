@@ -8,6 +8,8 @@ post \- deliver a message
 .HP 5
 .na
 .B %nmhlibexecdir%/post 
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-alias
 .IR aliasfile ]
 .RB [ \-filter
@@ -40,8 +42,6 @@ post \- deliver a message
 .RB [ \-initialtls ]
 .RB [ \-notls ]
 .I file
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Post

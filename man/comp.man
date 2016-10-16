@@ -8,6 +8,8 @@ comp \- compose a message
 .HP 5
 .na
 .B comp 
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msg ]
 .RB [ \-form
@@ -39,8 +41,6 @@ comp \- compose a message
 .IR program ]
 .RB [ \-nowhatnowproc ]
 .RB [ \-build ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Comp

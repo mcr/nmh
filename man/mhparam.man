@@ -8,11 +8,11 @@ mhparam \- print nmh profile and context components
 .HP 5
 .na
 .B mhparam
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ components ]
 .RB [ \-all ]
 .RB [ \-component " | " \-nocomponent ]
-.RB [ \-version ]
-.RB [ \-help ]
 .RB [ \-debug ]
 .ad
 .SH DESCRIPTION

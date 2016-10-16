@@ -8,10 +8,10 @@ mhpath \- print full pathnames of nmh messages and folders
 .HP 5
 .na
 .B mhpath
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B mhpath

@@ -8,6 +8,8 @@ refile \- file message in other folders
 .HP 5
 .na
 .B refile
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ msgs ]
 .RB [ \-draft ]
 .RB [ \-link " | " \-nolink ]
@@ -23,8 +25,6 @@ refile \- file message in other folders
 .RB [ \-normmproc ]
 .I +folder1
 \&...
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Refile

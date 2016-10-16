@@ -8,6 +8,8 @@ inc \- incorporate new mail
 .HP 5
 .na
 .B inc
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RB [ \-audit
 .IR audit\-file ]
@@ -42,8 +44,6 @@ inc \- incorporate new mail
 .RB [ \-initialtls ]
 .RB [ \-notls ]
 .RB [ \-snoop ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Inc

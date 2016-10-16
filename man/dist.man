@@ -8,6 +8,8 @@ dist \- redistribute a message to additional addresses
 .HP 5
 .na
 .B dist
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msg ]
 .RB [ \-form
@@ -37,8 +39,6 @@ dist \- redistribute a message to additional addresses
 .RB [ \-nowhatnowproc ]
 .RB [ \-atfile ]
 .RB [ \-noatfile ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Dist

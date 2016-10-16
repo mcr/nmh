@@ -8,6 +8,8 @@ whom \- report to whom a message would go
 .HP 5
 .na
 .B whom
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-alias
 .IR aliasfile ]
 .RB [ \-check " | " \-nocheck ]
@@ -33,8 +35,6 @@ whom \- report to whom a message would go
 .RB [ \-notls ]
 .RI [ file ]
 .RB [ \-draft ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Whom

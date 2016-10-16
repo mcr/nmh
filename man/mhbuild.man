@@ -8,6 +8,8 @@ mhbuild \- translate MIME composition draft
 .na
 .HP 5
 .B mhbuild
+.RB [ \-help ]
+.RB [ \-version ]
 .I file
 .RB [ \-auto " | " \-noauto ]
 .RB [ \-list " | " \-nolist ]
@@ -25,8 +27,6 @@ mhbuild \- translate MIME composition draft
 .RB [ \-maxunencoded
 .IR line\-length ]
 .RB [ \-dist ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 The

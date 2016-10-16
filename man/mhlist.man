@@ -8,6 +8,8 @@ mhlist \- list information about MIME messages
 .HP 5
 .na
 .B mhlist
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-file
@@ -31,8 +33,6 @@ mhlist \- list information about MIME messages
 .RB [ \-changecur " | " \-nochangecur ]
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-disposition " | " \-nodisposition ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 The

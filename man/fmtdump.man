@@ -8,12 +8,12 @@ fmtdump \- decode nmh format files
 .HP 5
 .na
 .B %nmhlibexecdir%/fmtdump
+.RB [ \-help ] 
+.RB [ \-version ]
 .RB [ \-form
 .IR formatfile ]
 .RB [ \-format
 .IR string ]
-.RB [ \-version ]
-.RB [ \-help ] 
 .ad
 .SH DESCRIPTION
 .B Fmtdump

@@ -8,10 +8,10 @@ rmf \- remove an nmh folder
 .HP 5
 .na
 .B rmf 
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RB [ \-interactive " | " \-nointeractive ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Rmf

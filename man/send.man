@@ -8,6 +8,8 @@ send \- send a message
 .HP 5
 .na
 .B send
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-alias
 .IR aliasfile ]
 .RB [ \-draft ]
@@ -54,8 +56,6 @@ send \- send a message
 .IR columns ]
 .RB [ file
 \&...]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Send

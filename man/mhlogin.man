@@ -8,6 +8,8 @@ mhlogin \- login to external (OAuth) services
 .HP 5
 .na
 .B mhlogin
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-user
 .IR username ]
 .RB [ \-saslmech
@@ -17,8 +19,6 @@ mhlogin \- login to external (OAuth) services
 .RB [ \-browser
 .IR command ]
 .RB [ \-snoop ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Mhlogin

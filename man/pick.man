@@ -8,6 +8,8 @@ pick \- search for messages by content
 .HP 5
 .na
 .B pick
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-reverse
@@ -49,8 +51,6 @@ pick \- search for messages by content
 .RB [ \-zero " | " \-nozero ]
 .RB [ \-list " | " \-nolist ] 
 .RB [ \-debug ]
-.RB [ \-version ]
-.RB [ \-help ]
 .PP
 typical usage:
 .PP

@@ -8,10 +8,10 @@ install-mh \- initialize the nmh environment
 .HP 5
 .na
 .B %nmhlibexecdir%/install\-mh
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-auto ]
 .RB [ \-check ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Install\-mh

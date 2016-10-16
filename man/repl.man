@@ -8,6 +8,8 @@ repl \- reply to a message
 .HP 5
 .na
 .B repl
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msg ]
 .RB [ \-annotate " | " \-noannotate ]
@@ -49,8 +51,6 @@ all/to/cc/me]
 .RB [ \-build ]
 .RB [ \-file
 .IR msgfile ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Repl

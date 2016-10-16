@@ -14,13 +14,13 @@ unseen \- scan new messages in all folders with new messages
 .HP 5
 .na
 .B new
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ sequences ]
 .RB [ \-mode
 .IR mode ]
 .RB [ \-folders
 .IR foldersfile ]
-.RB [ \-version ]
-.RB [ \-help ]
 .PP
 .HP 5
 .B fnext

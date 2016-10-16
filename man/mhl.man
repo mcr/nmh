@@ -8,6 +8,8 @@ mhl \- produce formatted listings of nmh messages
 .HP 5
 .na
 .B %nmhlibexecdir%/mhl
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-bell " | " \-nobell ]
 .RB [ \-clear " | " \-noclear ]
 .RB [ \-folder
@@ -26,8 +28,6 @@ mhl \- produce formatted listings of nmh messages
 .RB [ \-nofmtproc ]
 .RI [ files
 .IR \&... ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Mhl

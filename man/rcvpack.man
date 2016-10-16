@@ -8,11 +8,11 @@ rcvpack \- append message to file
 .HP 5
 .na
 .B %nmhlibexecdir%/rcvpack
+.RB [ \-help ]
+.RB [ \-version ]
 .I file
 .RB [ \-mbox ]
 .RB [ \-mmdf ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 The

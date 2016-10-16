@@ -8,6 +8,8 @@ mhmail \- send or read mail
 .HP 5
 .na
 .B mhmail
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-to ]
 .RI addrs
 \&...
@@ -33,8 +35,6 @@ mhmail \- send or read mail
 .I send
 \&...]]
 .RB [ \-send " | " \-nosend ]
-.RB [ \-version ]
-.RB [ \-help ]
 .PP
 .HP 5
 .B mhmail

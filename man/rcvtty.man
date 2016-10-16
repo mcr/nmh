@@ -8,6 +8,8 @@ rcvtty  \- report new mail
 .HP 5
 .na
 .B %nmhlibexecdir%/rcvtty
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ command ]
 .RB [ \-form
 .IR formatfile ]
@@ -18,8 +20,6 @@ rcvtty  \- report new mail
 .RB [ \-bell " | " \-nobell ]
 .RB [ \-newline " | " \-nonewline ]
 .RB [ \-biff ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 The

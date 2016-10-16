@@ -8,6 +8,8 @@ prompter \- prompting editor front-end for nmh
 .HP 5
 .na
 .B prompter
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-erase
 .IR chr ]
 .RB [ \-kill
@@ -16,8 +18,6 @@ prompter \- prompting editor front-end for nmh
 .RB [ \-rapid " | " \-norapid ]
 .RB [ \-doteof " | " \-nodoteof ]
 .I file
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Prompter

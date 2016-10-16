@@ -8,6 +8,8 @@ rcvstore \- asynchronously incorporate mail into a folder
 .HP 5
 .na
 .B %nmhlibexecdir%/rcvstore
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RB [ \-create " | " \-nocreate ]
 .RB [ \-unseen " | " \-nounseen ]
@@ -16,8 +18,6 @@ rcvstore \- asynchronously incorporate mail into a folder
 .I name
 \&...]
 .RB [ \-public " | " \-nopublic ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Rcvstore

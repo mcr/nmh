@@ -8,6 +8,8 @@ whatnow \- prompting front-end for sending messages
 .HP 5
 .na
 .B whatnow
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-draftfolder
 .IR +folder ]
 .RB [ \-draftmessage
@@ -19,8 +21,6 @@ whatnow \- prompting front-end for sending messages
 .RB [ \-prompt
 .IR string ]
 .RI [ file ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Whatnow

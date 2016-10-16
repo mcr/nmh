@@ -8,6 +8,8 @@ mhn \- display/list/store/cache MIME messages
 .HP 5
 .na
 .B mhn
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-file
@@ -34,8 +36,6 @@ mhn \- display/list/store/cache MIME messages
 .RB [ \-wcache
 .IR policy ]
 .RB [ \-check " | " \-nocheck ]
-.RB [ \-version ]
-.RB [ \-help ]
 .PP
 .HP 5
 .B mhn

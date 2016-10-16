@@ -8,6 +8,8 @@ show \- show (display) messages
 .HP 5
 .na
 .B show
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-draft ]
@@ -22,8 +24,6 @@ show \- show (display) messages
 .I showproc
 or
 .IR showmimeproc ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Show

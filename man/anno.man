@@ -8,6 +8,8 @@ anno \- annotate messages
 .HP 5
 .na
 .B anno
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-component
@@ -21,8 +23,6 @@ anno \- annotate messages
 .RB [ \-number
 .IR [ num|all ]]
 .RB [ \-preserve " | " \-nopreserve ]
-.RB [ \-version ]
-.RB [ \-help ]
 .RB [ \-text
 .IR body ]
 .ad

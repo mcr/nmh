@@ -8,14 +8,14 @@ sendfiles \- send multiple files via a MIME message
 .HP 5
 .na
 .B sendfiles
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ -compress
 .IR bzip2 " | " compress " | " gzip " | " lzma " | " none ]
 .br
 .RB [ \-from
 .IR sender ]
 .RI [ "\-delay n" " | " \-n ]
-.RB [ \-version ]
-.RB [ \-help ]
 .br
 .B \-to
 .I recipient

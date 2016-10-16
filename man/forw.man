@@ -8,6 +8,8 @@ forw \- forward messages
 .HP 5
 .na
 .B forw
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-annotate " | " \-noannotate ]
@@ -45,11 +47,11 @@ forw \- forward messages
 .RB [ \-build ]
 .RB [ \-file
 .IR msgfile ]
-.RB [ \-version ]
-.RB [ \-help ]
 .PP
 .HP 5
 .B forw
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-digest
@@ -60,8 +62,6 @@ forw \- forward messages
 .IR number ]
 [other\ switches\ for\ 
 .BR forw ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Forw

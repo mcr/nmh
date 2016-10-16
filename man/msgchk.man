@@ -8,6 +8,8 @@ msgchk \- check for messages
 .HP 5
 .na
 .B msgchk
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-date " | " \-nodate ]
 .RB [ \-notify
 all/mail/nomail ]
@@ -27,8 +29,6 @@ all/mail/nomail ]
 .RB [ \-snoop ]
 .RI [ users
 \&... ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 The

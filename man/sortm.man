@@ -8,6 +8,8 @@ sortm \- sort messages
 .HP 5
 .na
 .B sortm
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-all " | " \-noall ]
@@ -21,8 +23,6 @@ sortm \- sort messages
 .RB [ \-nolimit ]
 .RB [ \-check " | " \-nocheck ]
 .RB [ \-verbose " | " \-noverbose ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Sortm

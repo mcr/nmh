@@ -8,6 +8,8 @@ slocal \- asynchronously filter and deliver new mail
 .HP 5
 .na
 .B %nmhlibexecdir%/slocal
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-addr
 .IR address ]
 .RB [ \-info
@@ -26,8 +28,6 @@ slocal \- asynchronously filter and deliver new mail
 .RB [ \-verbose " | " \-noverbose ]
 .RB [ \-suppressdup " | " \-nosuppressdup ]
 .RB [ \-debug ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Slocal

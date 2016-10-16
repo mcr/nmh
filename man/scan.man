@@ -8,6 +8,8 @@ scan \- produce a one line per message scan listing
 .HP 5
 .na
 .B scan
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-clear " | " \-noclear ]
@@ -21,8 +23,6 @@ scan \- produce a one line per message scan listing
 .RB [ \-reverse " | " \-noreverse ]
 .RB [ \-file
 .IR filename ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Scan

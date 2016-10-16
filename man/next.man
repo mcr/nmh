@@ -8,6 +8,8 @@ next \- show the next message
 .HP 5
 .na
 .B next 
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RB [\-showproc
 .IR program ]
@@ -19,8 +21,6 @@ next \- show the next message
 .I showproc
 or
 .IR showmimeproc ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Next

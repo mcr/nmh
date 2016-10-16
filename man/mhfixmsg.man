@@ -8,6 +8,8 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .HP 5
 .na
 .B mhfixmsg
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs " | "
 .IR "absolute pathname" " | "
@@ -35,8 +37,6 @@ mhfixmsg \- rewrite MIME messages with various transformations
 .RB [ \-normmproc ]
 .RB [ \-changecur " | " \-nochangecur ]
 .RB [ \-verbose " | " \-noverbose ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B mhfixmsg

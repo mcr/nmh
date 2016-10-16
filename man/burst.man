@@ -8,6 +8,8 @@ burst \- explode digests into messages
 .HP 5
 .na
 .B burst
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-inplace " | " \-noinplace ]
@@ -15,8 +17,6 @@ burst \- explode digests into messages
 .RB [ \-automime ]
 .RB [ \-quiet " | " \-noquiet ]
 .RB [ \-verbose " | " \-noverbose ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B Burst

@@ -8,12 +8,12 @@ ali \- list mail aliases
 .HP 5
 .na
 .B ali
+.RB [ \-help ] 
+.RB [ \-version ]
 .RB [ \-alias
 .IR aliasfile ]
 .RB [ \-list " | " \-nolist ]
 .RB [ \-user " | " \-nouser ]
-.RB [ \-version ]
-.RB [ \-help ] 
 .RI [ aliases " ...]"
 .ad
 .SH DESCRIPTION

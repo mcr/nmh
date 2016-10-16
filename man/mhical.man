@@ -8,6 +8,8 @@ mhical \- manipulates an iCalendar event request
 .HP 5
 .na
 .B mhical
+.RB [ \-help ]
+.RB [ \-version ]
 .RB [ \-form
 .IR formatfile ]
 .RB [ \-format
@@ -22,8 +24,6 @@ mhical \- manipulates an iCalendar event request
 .IR outfile ]
 .RB [ \-unfold ]
 .RB [ \-debug ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 .B mhical

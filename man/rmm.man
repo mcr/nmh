@@ -8,14 +8,14 @@ rmm \- remove messages
 .HP 5
 .na
 .B rmm
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-unlink " | " \-nounlink ]
 .RB [ \-rmmproc
 .IR program ]
 .RB [ \-normmproc ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 By default,

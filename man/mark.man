@@ -8,6 +8,8 @@ mark \- manipulate message sequences
 .HP 5
 .na
 .B mark
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msgs ]
 .RB [ \-sequence
@@ -17,8 +19,6 @@ mark \- manipulate message sequences
 .RB [ \-list ] 
 .RB [ \-public " | " \-nopublic ]
 .RB [ \-zero " | " \-nozero ]
-.RB [ \-version ]
-.RB [ \-help ]
 .ad
 .SH DESCRIPTION
 The

@@ -8,6 +8,8 @@ flist, flists \- list the number of messages in given sequence(s)
 .HP 5
 .na
 .B flist
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder1
 .RI [ +folder2
 \&...]]
@@ -21,8 +23,6 @@ flist, flists \- list the number of messages in given sequence(s)
 .RB [ \-recurse " | " \-norecurse ]
 .RB [ \-fast " | " \-nofast ]
 .RB [ \-alpha " | " \-noalpha ]
-.RB [ \-version ]
-.RB [ \-help ]
 .PP
 .HP 5
 .B flists

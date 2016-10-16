@@ -8,6 +8,8 @@ folder, folders \- set/list current folder/message
 .HP 5
 .na
 .B folder
+.RB [ \-help ]
+.RB [ \-version ]
 .RI [ +folder ]
 .RI [ msg ]
 .RB [ \-all " | " \-noall ]
@@ -21,8 +23,6 @@ folder, folders \- set/list current folder/message
 .RB [ \-pack " | " \-nopack ]
 .RB [ \-print ]
 .RB [ \-verbose " | " \-noverbose ]
-.RB [ \-version ]
-.RB [ \-help ]
 .PP
 .HP 5
 .B folders
