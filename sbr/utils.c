@@ -25,22 +25,18 @@ extern char *mhdocdir;
  */
 #define MAXMSGS 256
 
-/*
- * Safely call malloc
- */
-void *
-mh_xmalloc(size_t size)
+/* Call malloc(3), exiting on NULL return. */
+void *mh_xmalloc(size_t size)
 {
-    void *memory;
+    void *p;
 
     if (size == 0)
-        adios(NULL, "Tried to malloc 0 bytes");
+        size = 1; /* Some mallocs don't like 0. */
+    p = malloc(size);
+    if (!p)
+        adios(NULL, "malloc failed, size wanted: %zu", size);
 
-    memory = malloc(size);
-    if (!memory)
-        adios(NULL, "Malloc failed");
-
-    return memory;
+    return p;
 }
 
 /*

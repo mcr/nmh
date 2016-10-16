@@ -3,7 +3,9 @@
  * utils.h -- utility prototypes
  */
 
+/* Call malloc(3), exiting on NULL return. */
 void *mh_xmalloc(size_t);
+
 void *mh_xrealloc(void *, size_t);
 void *mh_xcalloc(size_t, size_t);
 char *pwd(void);
