@@ -4,13 +4,13 @@
  */
 
 /* Call malloc(3), exiting on NULL return. */
-void *mh_xmalloc(size_t);
+void *mh_xmalloc(size_t size);
 
 /* Call realloc(3), exiting on NULL return. */
-void *mh_xrealloc(void *, size_t);
+void *mh_xrealloc(void *ptr, size_t size);
 
 /* Call calloc(3), exiting on NULL return. */
-void *mh_xcalloc(size_t, size_t);
+void *mh_xcalloc(size_t nelem, size_t elsize);
 
 /* Call free(3), if ptr isn't NULL. */
 void mh_xfree(void *ptr);
