@@ -255,8 +255,10 @@ make_user_agent()
 boolean
 mh_oauth_new(mh_oauth_ctx **result, const char *svc_name)
 {
-    mh_oauth_ctx *ctx = *result = mh_xmalloc(sizeof *ctx);
+    mh_oauth_ctx *ctx;
 
+    NEW(ctx);
+    *result = ctx;
     ctx->curl = NULL;
 
     ctx->log = NULL;
@@ -507,7 +509,7 @@ mh_oauth_authorize(const char *code, mh_oauth_ctx *ctx)
         return NULL;
     }
 
-    result = mh_xmalloc(sizeof *result);
+    NEW(result);
     result->ctx = ctx;
     result->access_token = result->refresh_token = NULL;
 
@@ -622,7 +624,8 @@ load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
     int state;
     m_getfld_state_t getfld_ctx = 0;
 
-    struct user_creds *user_creds = mh_xmalloc(sizeof *user_creds);
+    struct user_creds *user_creds;
+    NEW(user_creds);
     user_creds->alloc = 4;
     user_creds->len = 0;
     user_creds->creds = mh_xmalloc(user_creds->alloc * sizeof *user_creds->creds);

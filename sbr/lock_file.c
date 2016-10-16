@@ -660,7 +660,7 @@ timerON (char *curlock, int fd)
     struct lock *lp;
     size_t len;
 
-    lp = (struct lock *) mh_xmalloc (sizeof(*lp));
+    NEW(lp);
 
     len = strlen(curlock) + 1;
     lp->l_fd = fd;

@@ -15,6 +15,9 @@ void *mh_xcalloc(size_t nelem, size_t elsize);
 /* Call free(3), if ptr isn't NULL. */
 void mh_xfree(void *ptr);
 
+/* Set p to point to newly allocated, uninitialised, memory. */
+#define NEW(p) ((p) = mh_xmalloc(sizeof *(p)))
+
 /* Set p to point to newly allocated, zeroed, memory. */
 #define NEW0(p) ((p) = mh_xcalloc(1, sizeof *(p)))
 

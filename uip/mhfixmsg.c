@@ -1078,8 +1078,9 @@ fix_composite_cte (CT ct, int *message_mods) {
                 if (! strncasecmp (name, ENCODING_FIELD,
                                    strlen (ENCODING_FIELD))) {
                     char *prefix = "Nmh-REPLACED-INVALID-";
-                    HF h = mh_xmalloc (sizeof *h);
+                    HF h;
 
+                    NEW(h);
                     h->name = add (hf->name, NULL);
                     h->hf_encoding = hf->hf_encoding;
                     h->next = hf->next;
@@ -1395,8 +1396,9 @@ find_textplain_sibling (CT parent, int replacetextplain,
 static int
 insert_new_text_plain_part (CT ct, int new_subpart_number, CT parent) {
     struct multipart *mp = (struct multipart *) parent->c_ctparams;
-    struct part *new_part = mh_xmalloc (sizeof *new_part);
+    struct part *new_part;
 
+    NEW(new_part);
     if ((new_part->mp_part = build_text_plain_part (ct))) {
         char buffer[16];
         snprintf (buffer, sizeof buffer, "%d", new_subpart_number);
@@ -1758,8 +1760,8 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
               "boundary", boundary, 0);
 
-    p = (struct part *) mh_xmalloc (sizeof *p);
-    p->mp_next = (struct part *) mh_xmalloc (sizeof *p->mp_next);
+    NEW(p);
+    NEW(p->mp_next);
     p->mp_next->mp_next = NULL;
     p->mp_next->mp_part = first_alt;
 

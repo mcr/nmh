@@ -46,8 +46,11 @@ static void bvector_resize (bvector_t, size_t);
 
 bvector_t
 bvector_create (size_t init_size) {
-    bvector_t vec = mh_xmalloc (sizeof *vec);
-    size_t bytes = BVEC_BYTES (vec, init_size  ?  init_size  :  VEC_INIT_SIZE);
+    bvector_t vec;
+    size_t bytes;
+
+    NEW(vec);
+    bytes = BVEC_BYTES (vec, init_size  ?  init_size  :  VEC_INIT_SIZE);
 
     vec->bits = mh_xmalloc (bytes);
     memset (vec->bits, 0, bytes);
@@ -144,9 +147,10 @@ static void svector_resize (svector_t, size_t);
 
 svector_t
 svector_create (size_t init_size) {
-    svector_t vec = mh_xmalloc (sizeof *vec);
+    svector_t vec;
     size_t bytes;
 
+    NEW(vec);
     vec->maxsize = init_size ? init_size : VEC_INIT_SIZE;
     bytes = vec->maxsize * sizeof (char *);
     vec->strs = mh_xmalloc (bytes);
@@ -223,9 +227,10 @@ static void ivector_resize (ivector_t, size_t);
 
 ivector_t
 ivector_create (size_t init_size) {
-    ivector_t vec = mh_xmalloc (sizeof *vec);
+    ivector_t vec;
     size_t bytes;
 
+    NEW(vec);
     vec->maxsize = init_size ? init_size : VEC_INIT_SIZE;
     bytes = vec->maxsize * sizeof (int);
     vec->ints = mh_xmalloc (bytes);

@@ -201,9 +201,10 @@ check_folder(char *folder, size_t len, struct list_state *b)
 
     if (is_cur || msgnums != NULL) {
 	if (*b->first == NULL) {
-	    *b->first = b->node = mh_xmalloc(sizeof(*b->node));
+	    NEW(b->node);
+	    *b->first = b->node;
 	} else {
-	    b->node->n_next = mh_xmalloc(sizeof(*b->node));
+	    NEW(b->node->n_next);
 	    b->node = b->node->n_next;
 	}
 	b->node->n_name = folder;

@@ -61,7 +61,7 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 	switch (state = m_getfld (&gstate, name, field, &fieldsz, ib)) {
 	    case FLD:
 	    case FLDPLUS:
-		np = (struct node *) mh_xmalloc (sizeof(*np));
+		NEW(np);
 		*npp = np;
 		*(npp = &np->n_next) = NULL;
 		np->n_name = getcpy (name);
@@ -157,11 +157,12 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 
 void
 add_profile_entry (const char *key, const char *value) {
-    struct node *newnode = (struct node *) mh_xmalloc (sizeof *newnode);
+    struct node *newnode;
 
     /* This inserts the new node at the beginning of m_defs because
        that doesn't require traversing it or checking to see if it's
        empty. */
+    NEW(newnode);
     newnode->n_name = getcpy (key);
     newnode->n_field = getcpy (value);
     newnode->n_context = 0;

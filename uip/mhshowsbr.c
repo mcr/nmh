@@ -1359,14 +1359,14 @@ compile_marker(char *form)
 	    dispo_comp = comp;
 	} else if (strncasecmp(comp->c_name, "ctype-", 6) == 0 &&
 		   strlen(comp->c_name) > 6) {
-	    pc_entry = mh_xmalloc(sizeof(*pc_entry));
+	    NEW(pc_entry);
 	    pc_entry->param = getcpy(comp->c_name + 6);
 	    pc_entry->comp = comp;
 	    pc_entry->next = ctype_pc_list;
 	    ctype_pc_list = pc_entry;
 	} else if (strncasecmp(comp->c_name, "cdispo-", 7) == 0 &&
 		   strlen(comp->c_name) > 7) {
-	    pc_entry = mh_xmalloc(sizeof(*pc_entry));
+	    NEW(pc_entry);
 	    pc_entry->param = getcpy(comp->c_name + 7);
 	    pc_entry->comp = comp;
 	    pc_entry->next = dispo_pc_list;

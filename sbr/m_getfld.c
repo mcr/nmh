@@ -268,7 +268,8 @@ void
 m_getfld_state_init (m_getfld_state_t *gstate, FILE *iob) {
     m_getfld_state_t s;
 
-    s = *gstate = (m_getfld_state_t) mh_xmalloc(sizeof (struct m_getfld_state));
+    NEW(s);
+    *gstate = s;
     s->readpos = s->end = s->msg_buf;
     s->bytes_read = s->total_bytes_read = 0;
     s->last_caller_pos = s->last_internal_pos = 0;

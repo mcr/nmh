@@ -581,7 +581,7 @@ add_header (CT ct, char *name, char *value)
     HF hp;
 
     /* allocate header field structure */
-    hp = mh_xmalloc (sizeof(*hp));
+    NEW(hp);
 
     /* link data into header structure */
     hp->name = name;
@@ -3537,7 +3537,7 @@ bad_quote:
 	    }
 
 	    if (pp == NULL) {
-		pp = mh_xmalloc(sizeof(*pp));
+		NEW(pp);
 		memset(pp, 0, sizeof(*pp));
 		pp->name = nameptr;
 		pp->next = phead;
@@ -3548,7 +3548,7 @@ bad_quote:
 	     * Insert this into the section linked list
 	     */
 
-	    sp = mh_xmalloc(sizeof(*sp));
+	    NEW(sp);
 	    memset(sp, 0, sizeof(*sp));
 	    sp->value = valptr;
 	    sp->index = index;
@@ -4082,10 +4082,10 @@ normal_param(PM pm, char *output, size_t len, size_t valuelen,
 PM
 add_param(PM *first, PM *last, char *name, char *value, int nocopy)
 {
-    PM pm = mh_xmalloc(sizeof(*pm));
+    PM pm;
 
+    NEW(pm);
     memset(pm, 0, sizeof(*pm));
-
     pm->pm_name = nocopy ? name : getcpy(name);
     pm->pm_value = nocopy ? value : getcpy(value);
 

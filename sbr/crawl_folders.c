@@ -135,7 +135,8 @@ crawl_folders_body (struct crawl_context *crawl,
 void
 crawl_folders (char *dir, crawl_callback_t *callback, void *baton)
 {
-    struct crawl_context *crawl = mh_xmalloc (sizeof(*crawl));
+    struct crawl_context *crawl;
+    NEW(crawl);
     crawl->max = CRAWL_NUMFOLDERS;
     crawl->total = crawl->start = crawl->foldp = 0;
     crawl->folders = mh_xmalloc (crawl->max * sizeof(*crawl->folders));

@@ -351,7 +351,7 @@ main (int argc, char **argv)
 	if (trace) {
 	    struct trace_context *ctx;
 
-	    ctx = mh_xmalloc(sizeof(*ctx));
+	    NEW(ctx);
 	    ctx->num = -1;
 	    ctx->str = dummy;
 	    ctx->outbuf = getcpy(NULL);

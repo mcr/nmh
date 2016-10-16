@@ -137,8 +137,9 @@ static int checkascii(const unsigned char *byte, size_t len);
 netsec_context *
 netsec_init(void)
 {
-    netsec_context *nsc = mh_xmalloc(sizeof(*nsc));
+    netsec_context *nsc;
 
+    NEW(nsc);
     nsc->ns_readfd = -1;
     nsc->ns_writefd = -1;
     nsc->ns_snoop = 0;
@@ -1052,7 +1053,7 @@ int netsec_get_user(void *context, int id, const char **result,
 	 */
 
 	if (nsc->sasl_creds == NULL) {
-	    nsc->sasl_creds = mh_xmalloc(sizeof(*nsc->sasl_creds));
+	    NEW(nsc->sasl_creds);
 	    nsc->sasl_creds->user = NULL;
 	    nsc->sasl_creds->password = NULL;
 	}
@@ -1092,7 +1093,7 @@ netsec_get_password(sasl_conn_t *conn, void *context, int id,
 	return SASL_BADPARAM;
 
     if (nsc->sasl_creds == NULL) {
-	nsc->sasl_creds = mh_xmalloc(sizeof(*nsc->sasl_creds));
+	NEW(nsc->sasl_creds);
 	nsc->sasl_creds->user = NULL;
 	nsc->sasl_creds->password = NULL;
     }

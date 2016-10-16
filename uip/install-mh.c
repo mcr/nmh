@@ -180,8 +180,8 @@ query:
     /*
      * Add some initial elements to the profile/context list
      */
-    m_defs = (struct node *) mh_xmalloc (sizeof *np);
-    np = m_defs;
+    NEW(np);
+    m_defs = np;
     np->n_name = getcpy ("Path");
     np->n_field = getcpy (pathname);
     np->n_context = 0;

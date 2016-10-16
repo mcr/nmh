@@ -478,7 +478,7 @@ add_aka (struct aka *ak, char *pp)
 	if (!strcmp (pp, ad->ad_text))
 	    return;
 
-    ad = (struct adr *) mh_xmalloc (sizeof(*ad));
+    NEW(ad);
     ad->ad_text = getcpy (pp);
     ad->ad_local = strchr(pp, '@') == NULL && strchr(pp, '!') == NULL;
     ad->ad_next = NULL;
@@ -519,8 +519,7 @@ akalloc (char *id)
 {
     register struct aka *p;
 
-    p = (struct aka *) mh_xmalloc (sizeof(*p));
-
+    NEW(p);
     p->ak_name = getcpy (id);
     p->ak_visible = 0;
     p->ak_addr = NULL;
@@ -540,8 +539,7 @@ hmalloc (struct passwd *pw)
 {
     register struct home *p;
 
-    p = (struct home *) mh_xmalloc (sizeof(*p));
-
+    NEW(p);
     p->h_name = getcpy (pw->pw_name);
     p->h_uid = pw->pw_uid;
     p->h_gid = pw->pw_gid;

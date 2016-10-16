@@ -516,10 +516,11 @@ fix_addresses (char *str) {
          * local part.
          */
         while ((cp = getname (str))) {
-            struct adr_node *adr_nodep = mh_xmalloc (sizeof *adr_nodep);
+            struct adr_node *adr_nodep;
             char error[BUFSIZ];
             struct mailname *mp;
 
+            NEW(adr_nodep);
             adr_nodep->adr = strdup (cp);
             adr_nodep->escape_local_part = 0;
             adr_nodep->fixed = 0;

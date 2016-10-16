@@ -42,8 +42,9 @@ struct mhstoreinfo {
 
 mhstoreinfo_t
 mhstoreinfo_create (CT *ct, char *pwd, const char *csw, int asw, int vsw) {
-    mhstoreinfo_t info = mh_xmalloc (sizeof *info);
+    mhstoreinfo_t info;
 
+    NEW(info);
     info->cts = ct;
     info->cwd = pwd;
     info->autosw = asw;

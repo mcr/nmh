@@ -42,8 +42,9 @@ charstring_reserve (charstring_t s, size_t need) {
  */
 charstring_t
 charstring_create (size_t max) {
-    charstring_t s = mh_xmalloc (sizeof *s);
+    charstring_t s;
 
+    NEW(s);
     s->max = NMH_MAX_CHARWIDTH * (max ? max : CHARSTRING_DEFAULT_SIZE);
     s->cur = s->buffer = mh_xmalloc (s->max);
     s->chars = 0;
@@ -54,8 +55,9 @@ charstring_create (size_t max) {
 charstring_t
 charstring_copy (const charstring_t src) {
     const size_t num = src->cur - src->buffer;
-    charstring_t s = mh_xmalloc (sizeof *s);
+    charstring_t s;
 
+    NEW(s);
     s->max = src->max;
     s->buffer = mh_xmalloc (s->max);
     memcpy (s->buffer, src->buffer, num);

@@ -44,9 +44,8 @@ context_foil (char *path)
      * If path is given, create a minimal profile/context list
      */
     if (path) {
-	m_defs = (struct node *) mh_xmalloc (sizeof(*np));
-
-	np = m_defs;
+	NEW(np);
+	m_defs = np;
 	if (!(np->n_name = strdup ("Path"))) {
 	    advise (NULL, "strdup failed");
 	    return -1;

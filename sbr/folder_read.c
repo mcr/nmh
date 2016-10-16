@@ -39,8 +39,7 @@ folder_read (char *name, int lockflag)
     }
 
     /* Allocate the main structure for folder information */
-    mp = (struct msgs *) mh_xmalloc ((size_t) sizeof(*mp));
-
+    NEW(mp);
     clear_folder_flags (mp);
     mp->foldpath = name;
     mp->lowmsg = 0;

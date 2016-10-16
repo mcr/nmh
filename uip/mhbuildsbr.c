@@ -243,7 +243,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 		    goto finish_field;
 		}
 
-		entry = mh_xmalloc(sizeof(*entry));
+		NEW(entry);
 		entry->filename = getcpy(s);
 		entry->next = NULL;
 		free(vp);

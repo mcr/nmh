@@ -20,9 +20,8 @@ context_replace (char *key, char *value)
      * If list is empty, allocate head of profile/context list.
      */
     if (!m_defs) {
-	m_defs = (struct node *) mh_xmalloc (sizeof(*np));
-
-	np = m_defs;
+	NEW(np);
+        m_defs = np;
 	np->n_name = getcpy (key);
 	np->n_field = getcpy (value);
 	np->n_context = 1;
@@ -54,8 +53,7 @@ context_replace (char *key, char *value)
     /*
      * Else add this new entry at the end
      */
-    np->n_next = (struct node *) mh_xmalloc (sizeof(*np));
-
+    NEW(np->n_next);
     np = np->n_next;
     np->n_name = getcpy (key);
     np->n_field = getcpy (value);
