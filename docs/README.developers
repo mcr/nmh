@@ -21,6 +21,11 @@ commit checklist
 7. update/close bug report (with commit id)?
 8. notify nmh-users?
 
+A buildbot at http://orthanc.ca:8010/waterfall polls for new commits and
+builds them on a few platforms.  Keep an eye on its progress in case
+you've committed something non-portable.  (If you can provide another
+platform, contact the nmh-workers list.)
+
 
 ---------------------------------
 C library/system call usage notes
