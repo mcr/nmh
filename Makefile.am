@@ -100,6 +100,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/rcv/test-rcvtty test/refile/test-refile test/repl/test-convert \
 	test/repl/test-if-str test/repl/test-trailing-newline \
 	test/repl/test-multicomp test/repl/test-repl \
+	test/scan/test-header-parsing \
 	test/scan/test-scan test/scan/test-scan-multibyte \
 	test/sequences/test-flist test/sequences/test-mark \
 	test/sequences/test-out-of-range \
