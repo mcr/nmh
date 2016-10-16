@@ -77,7 +77,7 @@ void *mh_xcalloc(size_t nelem, size_t elsize)
 }
 
 /* Duplicate a NUL-terminated string, exit on failure. */
-char *mh_xstrdup(char *src)
+char *mh_xstrdup(const char *src)
 {
     size_t n;
     char *dest;
