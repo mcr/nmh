@@ -25,7 +25,6 @@
 static char **client_brkstring (char *, char *, char *);
 static int client_brkany (char, char *);
 static char **client_copyip (char **, char **, int);
-static char *client_getcpy (char *);
 static void client_freelist(char **);
 
 
@@ -38,15 +37,15 @@ client (char *args, char *service, char *response, int len_response, int debug)
 
     ap = arguments;
     if (args != NULL && *args != 0) {
-	ap = client_copyip (client_brkstring (client_getcpy (args), " ", "\n"),
+	ap = client_copyip (client_brkstring (getcpy(args), " ", "\n"),
 		ap, MAXARGS);
     } else {
 	if (servers != NULL && *servers != 0)
-	    ap = client_copyip (client_brkstring (client_getcpy (servers), " ", "\n"),
+	    ap = client_copyip (client_brkstring (getcpy(servers), " ", "\n"),
 		ap, MAXARGS);
     }
     if (ap == arguments) {
-	*ap++ = client_getcpy ("localhost");
+	*ap++ = mh_xstrdup("localhost");
 	*ap = NULL;
     }
 
@@ -189,18 +188,4 @@ client_copyip (char **p, char **q, int len_q)
     *q = NULL;
 
     return q;
-}
-
-
-static char *
-client_getcpy (char *str)
-{
-    char *cp;
-    size_t len;
-
-    len = strlen(str) + 1;
-    cp = mh_xmalloc(len);
-
-    memcpy (cp, str, len);
-    return cp;
 }
