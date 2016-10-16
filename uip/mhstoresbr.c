@@ -344,9 +344,7 @@ store_partial (CT ct, mhstoreinfo_t info)
 	return NOTOK;
     }
 
-    if ((base = (CT *) mh_xcalloc ((size_t) (i + 1), sizeof(*base))) == NULL)
-	adios (NULL, "out of memory");
-
+    base = mh_xcalloc(i + 1, sizeof *base);
     ctq = base;
     for (ctp = info->cts; *ctp; ctp++) {
 	p = *ctp;

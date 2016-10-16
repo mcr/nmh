@@ -278,8 +278,7 @@ do_cache:
      * check if message is coming from file
      */
     if (file) {
-	if (!(cts = (CT *) mh_xcalloc ((size_t) 2, sizeof(*cts))))
-	    adios (NULL, "out of memory");
+	cts = mh_xcalloc(2, sizeof *cts);
 	ctp = cts;
 
 	if ((ct = parse_mime (file))) {
@@ -315,8 +314,7 @@ do_cache:
 		done (1);
 	seq_setprev (mp);	/* set the previous-sequence */
 
-	if (!(cts = (CT *) mh_xcalloc ((size_t) (mp->numsel + 1), sizeof(*cts))))
-	    adios (NULL, "out of memory");
+	cts = mh_xcalloc(mp->numsel + 1, sizeof *cts);
 	ctp = cts;
 
 	for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {

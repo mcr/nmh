@@ -145,16 +145,7 @@ getm (char *str, char *dfhost, int dftype, char *eresult, size_t eresultsize)
 	dftype = LOCALHOST;
     }
 
-    mp = (struct mailname *) mh_xcalloc ((size_t) 1, sizeof(*mp));
-    if (mp == NULL) {
-	if (eresult) {
-	    strncpy (eresult, "insufficient memory to represent address",
-	   	     eresultsize);
-	    eresult[eresultsize - 1] = '\0';
-	}
-	return NULL;
-    }
-
+    mp = mh_xcalloc(1, sizeof *mp);
     mp->m_next = NULL;
     mp->m_text = getcpy (str);
     if (pers)

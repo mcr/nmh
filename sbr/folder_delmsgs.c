@@ -57,11 +57,7 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 	 */
 
 	if (mp->numsel + vecp + 1 > MAXARGS)
-	    vec = (char **) mh_xrealloc (vec,
-                                         (size_t) ((mp->numsel + vecp + 1) *
-						     sizeof(*vec)));
-	if (vec == NULL)
-	    adios (NULL, "unable to allocate exec vector");
+	    vec = mh_xrealloc(vec, (mp->numsel + vecp + 1) * sizeof *vec);
 	for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	    if (is_selected (mp, msgnum) &&
 		!(vec[vecp++] = strdup (m_name (msgnum))))

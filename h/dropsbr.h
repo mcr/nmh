@@ -45,7 +45,7 @@ struct drop {
  * prototypes
  */
 int mbx_open (char *, int, uid_t, gid_t, mode_t);
-int mbx_read (FILE *, long, struct drop **, int);
+int mbx_read (FILE *, long, struct drop **);
 int mbx_write(char *, int, FILE *, int, long, long, off_t, int, int);
 int mbx_copy (char *, int, int, int, int, char *, int);
 int mbx_size (int, off_t, off_t);

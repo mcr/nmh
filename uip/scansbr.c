@@ -126,13 +126,8 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	 * and it's our responsibility to free it.
 	 */
 
-	nxtbuf = compbuffers = (char **) mh_xcalloc ((size_t) ncomps, sizeof(char *));
-	if (nxtbuf == NULL)
-	    adios (NULL, "unable to allocate component buffers");
-	used_buf = (struct comp **) mh_xcalloc ((size_t) (ncomps+1),
-	    sizeof(struct comp *));
-	if (used_buf == NULL)
-	    adios (NULL, "unable to allocate component buffer stack");
+	nxtbuf = compbuffers = mh_xcalloc(ncomps, sizeof *nxtbuf);
+	used_buf = mh_xcalloc(ncomps + 1, sizeof *used_buf);
 	used_buf += ncomps+1; *--used_buf = 0;
 	rlwidth = bodycomp && (width > SBUFSIZ)
 	    ? min (width, NMH_BUFSIZ)
@@ -326,10 +321,7 @@ finished:
 	if (datecomp) {
 	    if (! datecomp->c_text) {
 		if (datecomp->c_tws == NULL)
-		    datecomp->c_tws = (struct tws *)
-			mh_xcalloc ((size_t) 1, sizeof(*datecomp->c_tws));
-		if (datecomp->c_tws == NULL)
-		    adios (NULL, "unable to allocate tws buffer");
+		    datecomp->c_tws = mh_xcalloc(1, sizeof *datecomp->c_tws);
 		*datecomp->c_tws = *dlocaltime ((time_t *) &st.st_mtime);
 		datecomp->c_flags |= CF_DATEFAB|CF_TRUE;
 	    } else {

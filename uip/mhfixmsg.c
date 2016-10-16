@@ -358,9 +358,7 @@ main (int argc, char **argv) {
             }
         }
 
-        if (! (cts = (CT *) mh_xcalloc ((size_t) 2, sizeof *cts))) {
-            adios (NULL, "out of memory");
-        }
+        cts = mh_xcalloc(2, sizeof *cts);
         ctp = cts;
 
         if ((ct = parse_mime (file))) {
@@ -415,10 +413,7 @@ main (int argc, char **argv) {
             }
         seq_setprev (mp);       /* set the previous-sequence */
 
-        if (! (cts =
-               (CT *) mh_xcalloc ((size_t) (mp->numsel + 1), sizeof *cts))) {
-            adios (NULL, "out of memory");
-        }
+        cts = mh_xcalloc(mp->numsel + 1, sizeof *cts);
         ctp = cts;
 
         for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
@@ -1506,9 +1501,7 @@ static CT
 divide_part (CT ct) {
     CT new_part;
 
-    if ((new_part = (CT) mh_xcalloc (1, sizeof *new_part)) == NULL)
-        adios (NULL, "out of memory");
-
+    new_part = mh_xcalloc(1, sizeof *new_part);
     /* Just copy over what is needed for decoding.  c_vrsn and
        c_celine aren't necessary. */
     new_part->c_file = add (ct->c_file, NULL);
@@ -1663,8 +1656,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     struct multipart *m;
     const struct str2init *ctinit;
 
-    if ((ct = (CT) mh_xcalloc (1, sizeof *ct)) == NULL)
-        adios (NULL, "out of memory");
+    ct = mh_xcalloc(1, sizeof *ct);
 
     /* Set up the multipart/alternative part.  These fields of *ct were
        initialized to 0 by mh_xcalloc():
@@ -1771,9 +1763,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
     p->mp_next->mp_next = NULL;
     p->mp_next->mp_part = first_alt;
 
-    if ((m = (struct multipart *) mh_xcalloc (1, sizeof (struct multipart))) ==
-        NULL)
-        adios (NULL, "out of memory");
+    m = mh_xcalloc(1, sizeof *m);
     m->mp_start = concat (boundary, "\n", NULL);
     m->mp_stop = concat (boundary, "--\n", NULL);
     m->mp_parts = p;
@@ -2729,9 +2719,7 @@ set_text_ctparams(CT ct, char *decodetypes, int lf_line_endings) {
     default:
         if (should_decode(decodetypes, ct->c_ctinfo.ci_type, ct->c_ctinfo.ci_subtype)) {
             if (ct->c_ctparams == NULL) {
-                if ((ct->c_ctparams = (struct text *) mh_xcalloc (1, sizeof (struct text))) == NULL) {
-                    adios (NULL, "out of memory");
-                }
+                ct->c_ctparams = mh_xcalloc(1, sizeof (struct text));
             }
             ((struct text *) ct->c_ctparams)->lf_line_endings = lf_line_endings;
         }

@@ -409,11 +409,7 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
      */
     i = strlen(fstring)/2 + 1;
 		if (i==1) i++;
-    next_fp = formatvec = (struct format *)mh_xcalloc ((size_t) i,
-						   sizeof(struct format));
-    if (next_fp == NULL)
-	adios (NULL, "unable to allocate format storage");
-
+    next_fp = formatvec = mh_xcalloc(i, sizeof *next_fp);
     infunction = 0;
 
     cp = compile(format_string);
