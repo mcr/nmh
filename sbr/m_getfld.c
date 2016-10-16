@@ -228,7 +228,7 @@ struct m_getfld_state {
     char *end;  /* One past the last character read in. */
     /* The following support tracking of the read position in the
        input file stream so that callers can interleave m_getfld()
-       calls with ftell() and fseek().  ytes_read replaces the old
+       calls with ftell() and fseek().  bytes_read replaces the old
        m_getfld() msg_count global.  last_caller_pos is stored when
        leaving m_getfld()/m_unknown(), then checked on the next entry.
        last_internal_pos is used to remember the position used
@@ -245,10 +245,10 @@ struct m_getfld_state {
      * The "full" delimiter string for a packed maildrop consists
      * of a newline followed by the actual delimiter.  E.g., the
      * full string for a Unix maildrop would be: "\n\nFrom ".
-     * "Fdelim" points to the start of the full string and is used
+     * "fdelim" points to the start of the full string and is used
      * in the BODY case of the main routine to search the buffer for
      * a possible eom.  Msg_delim points to the first character of
-     * the actual delim. string (i.e., fdelim+1).  Edelim
+     * the actual delim. string (i.e., fdelim+1).  edelim
      * points to the 2nd character of actual delimiter string.  It
      * is used in m_Eom because the first character of the string
      * has been read and matched before m_Eom is called.
