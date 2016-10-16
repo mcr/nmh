@@ -62,8 +62,13 @@ Thus, it is
 .B post
 which parses the various header fields, appends a
 \*(lqDate:\*(rq line, and interacts with the mail transport system.
-.B Post
-will not normally be called directly by the user.
+.B post
+will not normally be called directly by the user,
+but can be replaced by the user with a
+.I postproc
+profile component that will have
+.I file
+as its final argument.
 .PP
 .B Post
 searches the \*(lqTo:\*(rq, \*(lqcc:\*(rq, \*(lqBcc:\*(rq,

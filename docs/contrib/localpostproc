@@ -10,7 +10,8 @@
 #
 
 #
-# Find out which message is the draft message; yes, this sucks.
+# Find the draft message, always the last argument, and whether we've
+# been called with -whom;  the latter sucks.
 #
 # The case statement has to know about switches that take arguments;
 # add to this list as necessary.
