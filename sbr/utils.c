@@ -76,6 +76,13 @@ void *mh_xcalloc(size_t nelem, size_t elsize)
     return p;
 }
 
+/* Call free(3), if ptr isn't NULL. */
+void mh_xfree(void *ptr)
+{
+    if (ptr)
+        free(ptr); /* Some very old platforms can't cope with NULL. */
+}
+
 /*
  * Return the present working directory, if the current directory does not
  * exist, or is too long, make / the pwd.
