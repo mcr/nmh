@@ -348,6 +348,7 @@ static void
 enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
     m_getfld_state_t s;
     off_t pos;
+    off_t pos_movement;
 
     if (! *gstate) {
 	m_getfld_state_init (gstate, iob);
@@ -367,46 +368,47 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
         return;
 
     pos = ftello(iob);
-    if (pos != 0  ||  s->last_internal_pos != 0) {
-	if (s->last_internal_pos == 0) {
-	    s->total_bytes_read = pos;
-	} else {
-	    off_t pos_movement = pos - s->last_caller_pos; /* Can be < 0. */
+    if (pos == 0 && s->last_internal_pos == 0)
+        return;
 
-	    if (pos_movement == 0) {
-		pos = s->last_internal_pos;
-	    } else {
-		/* The current file stream position differs from the
-		   last one, so caller must have called ftell/o().
-		   Or, this is the first call and the file position
-		   was not at 0. */
-
-		if (s->readpos + pos_movement >= s->msg_buf  &&
-		    s->readpos + pos_movement < s->end) {
-		    /* This is currently unused.  It could be used by
-		       parse_mime() if it was changed to use a global
-		       m_getfld_state. */
-		    /* We can shift readpos and remain within the
-		       bounds of msg_buf. */
-		    s->readpos += pos_movement;
-		    s->total_bytes_read += pos_movement;
-		    pos = s->last_internal_pos;
-		} else {
-		    size_t num_read;
-
-		    /* This seek skips past an integral number of
-		       chunks of size MSG_INPUT_SIZE. */
-		    fseeko (iob, pos/MSG_INPUT_SIZE * MSG_INPUT_SIZE, SEEK_SET);
-		    num_read = fread (s->msg_buf, 1, MSG_INPUT_SIZE, iob);
-		    s->readpos = s->msg_buf  +  pos % MSG_INPUT_SIZE;
-		    s->end = s->msg_buf + num_read;
-		    s->total_bytes_read = pos;
-		}
-	    }
-
-	    fseeko (iob, pos, SEEK_SET);
-	}
+    if (s->last_internal_pos == 0) {
+        s->total_bytes_read = pos;
+        return;
     }
+
+    pos_movement = pos - s->last_caller_pos; /* Can be < 0. */
+    if (pos_movement == 0) {
+        pos = s->last_internal_pos;
+    } else {
+        /* The current file stream position differs from the
+           last one, so caller must have called ftell/o().
+           Or, this is the first call and the file position
+           was not at 0. */
+
+        if (s->readpos + pos_movement >= s->msg_buf  &&
+            s->readpos + pos_movement < s->end) {
+            /* This is currently unused.  It could be used by
+               parse_mime() if it was changed to use a global
+               m_getfld_state. */
+            /* We can shift readpos and remain within the
+               bounds of msg_buf. */
+            s->readpos += pos_movement;
+            s->total_bytes_read += pos_movement;
+            pos = s->last_internal_pos;
+        } else {
+            size_t num_read;
+
+            /* This seek skips past an integral number of
+               chunks of size MSG_INPUT_SIZE. */
+            fseeko (iob, pos/MSG_INPUT_SIZE * MSG_INPUT_SIZE, SEEK_SET);
+            num_read = fread (s->msg_buf, 1, MSG_INPUT_SIZE, iob);
+            s->readpos = s->msg_buf  +  pos % MSG_INPUT_SIZE;
+            s->end = s->msg_buf + num_read;
+            s->total_bytes_read = pos;
+        }
+    }
+
+    fseeko (iob, pos, SEEK_SET);
 }
 
 static void
