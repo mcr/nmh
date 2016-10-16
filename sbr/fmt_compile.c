@@ -268,13 +268,15 @@ static struct colormap colortable[] = {
     { NULL,		0,	0 }
 };
 
-/* 
- * Hash function for component name.  The function should be
- * case independent and probably shouldn't involve a routine
- * call.  This function is pretty good but will not work on
- * single character component names.  
- */
-#define	CHASH(nm) (((((nm)[0]) - ((nm)[1])) & 0x1f) + (((nm)[2]) & 0x5f))
+/* Hash function for component name.  Deliberately avoids a function
+ * call.  Is case independent.  Covers interval [0, 126] so never uses
+ * the last element of wantcomp[]. This function is "pretty good". */
+#define CHASH(nm) ( \
+        (( \
+            ((nm)[0]) - ((nm)[0] ? ((nm)[1]) : 0) \
+        ) & 0x1f) + \
+        ((nm[1]) ? (((nm)[2]) & 0x5f) : 0) \
+    )
 
 /*
  * Find a component in the hash table.

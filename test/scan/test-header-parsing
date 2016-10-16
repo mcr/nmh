@@ -25,6 +25,6 @@ sed 's/.*://' "$mail" >"$expected"
 f="`sed 's/:.*/}/; s/^/%{/' "$mail"`"
 run_prog scan -forma "$f" -file "$mail" >"$actual" ||
 exit 1
-check "$expected" "$actual" expectfail
+check "$expected" "$actual"
 
 exit $failed
