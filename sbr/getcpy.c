@@ -14,20 +14,11 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-
-char *
-getcpy (const char *str)
+/* Return malloc'd copy of str, or of "" if NULL, exit on failure. */
+char *getcpy(const char *str)
 {
-    char *cp;
-    size_t len;
+    if (str)
+        return mh_xstrdup(str);
 
-    if (str) {
-	len = strlen(str) + 1;
-	cp = mh_xmalloc (len);
-	memcpy (cp, str, len);
-    } else {
-	cp = mh_xmalloc ((size_t) 1);
-	*cp = '\0';
-    }
-    return cp;
+    return mh_xcalloc(1, 1);
 }
