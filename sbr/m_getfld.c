@@ -347,7 +347,7 @@ void m_getfld_state_destroy (m_getfld_state_t *gstate) {
 static void
 enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
     m_getfld_state_t s;
-    off_t pos = ftello (iob);
+    off_t pos;
 
     if (! *gstate) {
 	m_getfld_state_init (gstate, iob);
@@ -363,7 +363,11 @@ enter_getfld (m_getfld_state_t *gstate, FILE *iob) {
        readpos shift code being currently unused. */
     s->iob = iob;
 
-    if (s->track_filepos  &&  (pos != 0  ||  s->last_internal_pos != 0)) {
+    if (!s->track_filepos)
+        return;
+
+    pos = ftello(iob);
+    if (pos != 0  ||  s->last_internal_pos != 0) {
 	if (s->last_internal_pos == 0) {
 	    s->total_bytes_read = pos;
 	} else {
