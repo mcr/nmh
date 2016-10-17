@@ -9,6 +9,9 @@
 # This script should *only* report basic information about the build
 # environment, and only that necessary to reproduce the build
 # environment.
+#
+# FIXME: Document meaning of script's exit status, if any.
+# It jumps through hoops with `|| true' despite not using `set -e'.
 
 offset () {
     sed -e '/./s/^/    /'
