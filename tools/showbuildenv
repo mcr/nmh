@@ -34,7 +34,7 @@ for f in \
     ; do
     test -f $f || continue
     header $f
-    cat $f
+    offset $f
     break
 done
 
