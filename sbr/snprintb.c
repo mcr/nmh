@@ -13,12 +13,14 @@
 char *
 snprintb (char *buffer, size_t n, unsigned v, char *bits)
 {
+    size_t len;
     register int i, j;
     register char c, *bp;
 
     snprintf (buffer, n, bits && *bits == 010 ? "0%o" : "0x%x", v);
-    bp = buffer + strlen(buffer);
-    n -= strlen(buffer);
+    len = strlen(buffer);
+    bp = buffer + len;
+    n -= len;
 
     if (bits && *++bits) {
 	j = 0;
