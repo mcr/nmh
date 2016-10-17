@@ -23,6 +23,21 @@ header () {
     echo
 }
 
+# os-release is the new s*stemd standard.  Then it's the more unique
+# ones with redhat-release bringing up the rear because other platforms
+# also use that to placate broken logic that use its prescence as a
+# use-RPM test.
+for f in \
+    /etc/os-release /etc/arch-release /etc/debian_version \
+    /etc/fedora-release /etc/gentoo-release /etc/redhat-release \
+    /etc/lsb-release \
+    ; do
+    test -f $f || continue
+    header $f
+    cat $f
+    break
+done
+
 os=`uname`
 
 for i in a m p r s v; do
