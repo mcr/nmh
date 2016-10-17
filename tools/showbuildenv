@@ -28,7 +28,6 @@ done
 header Shell Variables:
 set | sort -d -t= | offset
 
-
 case ${os} in
 
   Darwin)
@@ -49,4 +48,7 @@ case ${os} in
 	(pkg_info 2>/dev/null | offset) || true
 	;;
 
+    Linux)
+        header Linux distribution:
+        (lsb_release -a 2>&1 | offset) || true
 esac
