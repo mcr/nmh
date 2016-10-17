@@ -19,7 +19,7 @@ offset () {
 
 header () {
     echo
-    echo $*
+    echo "$@"
     echo
 }
 
