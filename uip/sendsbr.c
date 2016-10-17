@@ -867,7 +867,7 @@ get_from_header_info(const char *filename, const char **addr, const char **host,
         char *hostformat = "%(host{Envelope-From})";
 
         if ((*addr = get_message_header_info (in, addrformat)) == NULL  ||
-            strlen (*addr) == 0) {
+            !**addr) {
             addrformat = distfile == NULL  ?  "%(addr{Sender})"  :  "%(addr{Resent-Sender})";
             hostformat = distfile == NULL  ?  "%(host{Sender})"  :  "%(host{Resent-Sender})";
 
@@ -963,12 +963,11 @@ get_message_header_info(FILE *in, char *format) {
     /* Trim trailing newline, if any. */
     retval = rtrim(charstring_buffer_copy((buffer)));
     charstring_free(buffer);
-    if (strlen (retval) > 0) {
+    if (*retval)
         return retval;
-    } else {
-        free (retval);
-        return NULL;
-    }
+
+    free(retval);
+    return NULL;
 }
 
 
@@ -998,7 +997,7 @@ merge_profile_entry(const char *addr, const char *host, char *vec[], int *vecp) 
     }
 
     /* Use argsplit() to do the real work of splitting the args in the profile entry. */
-    if (profile_entry  &&  strlen(profile_entry) > 0) {
+    if (profile_entry && *profile_entry) {
         int profile_vecp;
         char *file;
         char **profile_vec = argsplit(profile_entry, &file, &profile_vecp);

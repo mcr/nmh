@@ -1214,7 +1214,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 
 	fmt_scan (c1->c_fmt, scanl, BUFSIZ - 1, dat, NULL);
 	buffer = charstring_buffer_copy (scanl);
-	if (strlen (buffer) > 0) {
+	if (*buffer) {
 	    if (c2->c_text)
 		c2->c_text = add (",\n", c2->c_text);
 	    if (*(cp = buffer + strlen (buffer) - 1) == '\n')

@@ -283,7 +283,7 @@ make_comp (char **ap)
 
     if ((cp = *ap + strlen (*ap) - 1) > *ap && *cp == ':')
 	*cp = 0;
-    if (strlen (*ap) == 0)
+    if (!**ap)
 	adios (NULL, "null component name");
     if (**ap == '-')
 	adios (NULL, "invalid component name %s", *ap);

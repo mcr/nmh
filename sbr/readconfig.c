@@ -138,7 +138,7 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 	for (np = m_defs; np; np = np->n_next) {
 	    /* Yes, this is O(N^2).  The profile should be small enough so
 	       that's not a performance problem. */
-	    if (strlen (np->n_name) > 0	 &&  strcmp ("#", np->n_name)) {
+	    if (*np->n_name && strcmp("#", np->n_name)) {
 		struct node *np2;
 		for (np2 = np->n_next; np2; np2 = np2->n_next) {
 		    if (! strcasecmp (np->n_name, np2->n_name)) {
