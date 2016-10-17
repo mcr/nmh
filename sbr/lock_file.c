@@ -658,14 +658,10 @@ static void
 timerON (char *curlock, int fd)
 {
     struct lock *lp;
-    size_t len;
 
     NEW(lp);
-
-    len = strlen(curlock) + 1;
+    lp->l_lock = mh_xstrdup(curlock);
     lp->l_fd = fd;
-    lp->l_lock = mh_xmalloc (len);
-    memcpy (lp->l_lock, curlock, len);
     lp->l_next = l_top;
 
     if (!l_top) {
@@ -673,7 +669,6 @@ timerON (char *curlock, int fd)
 	SIGNAL (SIGALRM, alrmser);
 	alarm (NSECS);
     }
-
     l_top = lp;
 }
 
