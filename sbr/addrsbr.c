@@ -286,9 +286,9 @@ int
 ismymbox (struct mailname *np)
 {
     int oops;
-    register int len, i;
-    register char *cp;
-    register char *pp;
+    int len, i;
+    char *cp;
+    char *pp;
     char buffer[BUFSIZ];
     struct mailname *mp;
     static char *am = NULL;

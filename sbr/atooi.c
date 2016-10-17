@@ -13,7 +13,7 @@
 int
 atooi(char *cp)
 {
-    register int i, base;
+    int i, base;
 
     i = 0;
     base = 8;

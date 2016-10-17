@@ -21,7 +21,7 @@ makedir (const char *dir)
     char*           folder_perms_ASCII;
     int             had_an_error = 0;
     mode_t          folder_perms, saved_umask;
-    register char*  c;
+    char*  c;
 
     context_save();     /* save the context file */
     fflush(stdout);

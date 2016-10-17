@@ -158,11 +158,11 @@ mbx_chk_mmdf (int fd)
 int
 mbx_read (FILE *fp, long pos, struct drop **drops)
 {
-    register int len, size;
-    register long ld1, ld2;
-    register char *bp;
+    int len, size;
+    long ld1, ld2;
+    char *bp;
     char buffer[BUFSIZ];
-    register struct drop *cp, *dp, *ep, *pp;
+    struct drop *cp, *dp, *ep, *pp;
 
     len = MAXFOLDER;
     pp = mh_xcalloc(len, sizeof *pp);
@@ -201,7 +201,7 @@ mbx_read (FILE *fp, long pos, struct drop **drops)
 	pos += ld2;
 
 	if (dp >= ep) {
-	    register int    curlen = dp - pp;
+	    int    curlen = dp - pp;
 
 	    cp = (struct drop *) mh_xrealloc ((char *) pp,
 		                    (size_t) (len += MAXFOLDER) * sizeof(*pp));
@@ -221,10 +221,10 @@ int
 mbx_write(char *mailbox, int md, FILE *fp, int id, long last,
            long pos, off_t stop, int mapping, int noisy)
 {
-    register int i, j, size;
+    int i, j, size;
     off_t start;
     long off;
-    register char *cp;
+    char *cp;
     char buffer[BUFSIZ];
 
     off = (long) lseek (md, (off_t) 0, SEEK_CUR);
@@ -428,9 +428,9 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 int
 mbx_size (int md, off_t start, off_t stop)
 {
-    register int i, fd;
-    register long pos;
-    register FILE *fp;
+    int i, fd;
+    long pos;
+    FILE *fp;
 
     if ((fd = dup (md)) == NOTOK || (fp = fdopen (fd, "r")) == NULL) {
 	if (fd != NOTOK)
@@ -469,7 +469,7 @@ mbx_close (char *mailbox, int md)
 char *
 map_name (char *file)
 {
-    register char *cp, *dp;
+    char *cp, *dp;
     static char buffer[BUFSIZ];
 
     if ((dp = strchr(cp = r1bindex (file, '/'), '.')) == NULL)
@@ -487,10 +487,10 @@ map_name (char *file)
 int
 map_read (char *file, long pos, struct drop **drops, int noisy)
 {
-    register int i, md, msgp;
-    register char *cp;
+    int i, md, msgp;
+    char *cp;
     struct drop d;
-    register struct drop *mp, *dp;
+    struct drop *mp, *dp;
 
     if ((md = open (cp = map_name (file), O_RDONLY)) == NOTOK
 	    || map_chk (cp, md, mp = &d, pos, noisy)) {
@@ -510,7 +510,7 @@ map_read (char *file, long pos, struct drop **drops, int noisy)
 	free ((char *) dp);
     } else {
 #ifdef NTOHLSWAP
-	register struct drop *tdp;
+	struct drop *tdp;
 	int j;
 
 	for (j = 0, tdp = dp; j < i / sizeof(*dp); j++, tdp++) {
@@ -533,12 +533,12 @@ int
 map_write (char *mailbox, int md, int id, long last, off_t start,
            off_t stop, long pos, int size, int noisy)
 {
-    register int i;
+    int i;
     int clear, fd, td;
     char *file;
-    register struct drop *dp;
+    struct drop *dp;
     struct drop d1, d2, *rp;
-    register FILE *fp;
+    FILE *fp;
     struct stat st;
 
     if ((fd = map_open (file = map_name (mailbox), md)) == NOTOK)
@@ -648,7 +648,7 @@ map_chk (char *file, int fd, struct drop *dp, long pos, int noisy)
 {
     ssize_t count;
     struct drop d, tmpd;
-    register struct drop *dl;
+    struct drop *dl;
 
     if (read (fd, (char *) &tmpd, sizeof(*dp)) != sizeof(*dp)) {
 #ifdef notdef

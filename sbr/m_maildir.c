@@ -27,7 +27,7 @@ static char *exmaildir (char *);
 char *
 m_maildir (char *folder)
 {
-    register char *cp, *ep;
+    char *cp, *ep;
 
     if ((cp = exmaildir (folder))
 	    && (ep = cp + strlen (cp) - 1) > cp
@@ -41,7 +41,7 @@ m_maildir (char *folder)
 char *
 m_mailpath (char *folder)
 {
-    register char *cp;
+    char *cp;
     char maildir[BUFSIZ];
 
     if (*folder != '/'
@@ -63,7 +63,7 @@ m_mailpath (char *folder)
 static char *
 exmaildir (char *folder)
 {
-    register char *cp, *pp;
+    char *cp, *pp;
 
     /* use current folder if none is specified */
     if (folder == NULL)

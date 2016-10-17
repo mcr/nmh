@@ -110,7 +110,7 @@ static void
 fmt_dump (struct format *fmth)
 {
 	int i;
-	register struct format *fmt, *addr;
+	struct format *fmt, *addr;
 
 	/* Assign labels */
 	for (fmt = fmth; fmt; ++fmt) {
@@ -142,7 +142,7 @@ fmt_dump (struct format *fmth)
 static void
 dumpone(struct format *fmt)
 {
-	register int i;
+	int i;
 
 	if ((i = findlabel(fmt)) >= 0)
 		printf("L%d:", i);
@@ -322,7 +322,7 @@ dumpone(struct format *fmt)
 static int
 findlabel(struct format *addr)
 {
-	register int i;
+	int i;
 
 	for (i = 0; i < lused; ++i)
 		if (addr == lvec[i])
@@ -454,7 +454,7 @@ f_typestr(int t)
 static char *
 c_typestr(int t)
 {
-	register int i;
+	int i;
 	static char buf[64];
 
 	buf[0] = '\0';
@@ -471,7 +471,7 @@ c_typestr(int t)
 static char *
 c_flagsstr(int t)
 {
-	register int i;
+	int i;
 	static char buf[64];
 
 	buf[0] = '\0';

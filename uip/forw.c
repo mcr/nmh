@@ -568,7 +568,7 @@ copy_draft (int out, char *digest, char *file, int volume, int issue, int dashst
 {
     int fd,i, msgcnt, msgnum;
     int len, buflen;
-    register char *bp, *msgnam;
+    char *bp, *msgnam;
     char buffer[BUFSIZ];
 
     msgcnt = 1;

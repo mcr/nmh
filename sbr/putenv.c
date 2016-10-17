@@ -23,8 +23,8 @@ static int nvmatch (char *, char *);
 int
 m_putenv (char *name, char *value)
 {
-    register int i;
-    register char **ep, **nep, *cp;
+    int i;
+    char **ep, **nep, *cp;
 
     cp = mh_xmalloc ((size_t) (strlen (name) + strlen (value) + 2));
 

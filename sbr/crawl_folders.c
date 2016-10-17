@@ -29,7 +29,7 @@ struct crawl_context {
 static void
 add_folder (char *fold, struct crawl_context *crawl)
 {
-    register int i, j;
+    int i, j;
 
     /* if necessary, reallocate the space for folder names */
     if (crawl->foldp >= crawl->max) {

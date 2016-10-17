@@ -51,7 +51,7 @@ static struct home *hmalloc (struct passwd *);
 char *
 akvalue (char *s)
 {
-    register char *v;
+    char *v;
 
     if (akahead == NULL)
 	alias (AliasFile);
@@ -74,8 +74,8 @@ akvisible (void)
 char *
 akresult (struct aka *ak)
 {
-    register char *cp = NULL, *dp, *pp;
-    register struct adr *ad;
+    char *cp = NULL, *dp, *pp;
+    struct adr *ad;
 
     for (ad = ak->ak_addr; ad; ad = ad->ad_next) {
 	pp = ad->ad_local ? akval (ak->ak_next, ad->ad_text)
@@ -156,7 +156,7 @@ akval (struct aka *ak, char *s)
 static int
 aleq (char *string, char *aliasent)
 {
-    register char c;
+    char c;
 
     while ((c = *string++))
 	if (*aliasent == '*')
@@ -175,10 +175,10 @@ int
 alias (char *file)
 {
     int i;
-    register char *bp, *cp, *pp;
+    char *bp, *cp, *pp;
     char lc, *ap;
-    register struct aka *ak = NULL;
-    register FILE *fp;
+    struct aka *ak = NULL;
+    FILE *fp;
 
     if (*file != '/'
 	    && (strncmp (file, "./", 2) && strncmp (file, "../", 3)))
@@ -355,9 +355,9 @@ seekp (char *p, char *c, char **a)
 static int
 addfile (struct aka *ak, char *file)
 {
-    register char *cp;
+    char *cp;
     char buffer[BUFSIZ];
-    register FILE *fp;
+    FILE *fp;
 
     if (!(fp = fopen (etcpath (file), "r"))) {
 	akerrst = file;
@@ -376,9 +376,9 @@ addfile (struct aka *ak, char *file)
 static int
 addgroup (struct aka *ak, char *grp)
 {
-    register char *gp;
-    register struct group *gr = getgrnam (grp);
-    register struct home *hm = NULL;
+    char *gp;
+    struct group *gr = getgrnam (grp);
+    struct home *hm = NULL;
 
     if (!gr)
 	gr = getgrgid (atoi (grp));
@@ -410,8 +410,8 @@ static int
 addmember (struct aka *ak, char *grp)
 {
     gid_t gid;
-    register struct group *gr = getgrnam (grp);
-    register struct home *hm = NULL;
+    struct group *gr = getgrnam (grp);
+    struct home *hm = NULL;
 
     if (gr)
 	gid = gr->gr_gid;
@@ -472,7 +472,7 @@ getalias (char *addrs)
 static void
 add_aka (struct aka *ak, char *pp)
 {
-    register struct adr *ad, *ld;
+    struct adr *ad, *ld;
 
     for (ad = ak->ak_addr, ld = NULL; ad; ld = ad, ad = ad->ad_next)
 	if (!strcmp (pp, ad->ad_text))
@@ -492,7 +492,7 @@ add_aka (struct aka *ak, char *pp)
 void
 init_pw (void)
 {
-    register struct passwd  *pw;
+    struct passwd  *pw;
     static int init;
   
     if (!init)
@@ -517,7 +517,7 @@ init_pw (void)
 static struct aka *
 akalloc (char *id)
 {
-    register struct aka *p;
+    struct aka *p;
 
     NEW(p);
     p->ak_name = getcpy (id);
@@ -537,7 +537,7 @@ akalloc (char *id)
 static struct home *
 hmalloc (struct passwd *pw)
 {
-    register struct home *p;
+    struct home *p;
 
     NEW(p);
     p->h_name = getcpy (pw->pw_name);

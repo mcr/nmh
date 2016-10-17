@@ -136,8 +136,8 @@ static char *broken[MAXARGS + 1];
 static char **
 client_brkstring (char *strg, char *brksep, char *brkterm)
 {
-    register int bi;
-    register char c, *sp;
+    int bi;
+    char c, *sp;
 
     sp = strg;
 
@@ -166,7 +166,7 @@ client_brkstring (char *strg, char *brksep, char *brkterm)
 static int
 client_brkany (char chr, char *strg)
 {
-    register char *sp;
+    char *sp;
 
     if (strg)
 	for (sp = strg; *sp; sp++)

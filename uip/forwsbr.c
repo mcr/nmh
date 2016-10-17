@@ -48,11 +48,11 @@ build_form (char *form, char *digest, int *dat, char *from, char *to,
     int	in;
     int fmtsize, state;
     int i;
-    register char *nfs;
+    char *nfs;
     char tmpfil[BUFSIZ], name[NAMESZ], **ap;
     charstring_t line;
     FILE *tmp;
-    register struct comp *cptr;
+    struct comp *cptr;
     struct format *fmt;
     char *cp = NULL;
     m_getfld_state_t gstate = 0;

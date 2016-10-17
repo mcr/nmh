@@ -173,11 +173,11 @@ static char *addrcomps[] = {
 static void
 rcvdistout (FILE *inb, char *form, char *addrs)
 {
-    register int char_read = 0, format_len, i, state;
-    register char **ap;
+    int char_read = 0, format_len, i, state;
+    char **ap;
     char *cp, name[NAMESZ], tmpbuf[SBUFSIZ];
     charstring_t scanl;
-    register struct comp *cptr;
+    struct comp *cptr;
     FILE *out;
     m_getfld_state_t gstate = 0;
 

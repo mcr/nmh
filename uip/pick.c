@@ -66,7 +66,7 @@ main (int argc, char **argv)
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgnum_array nums = { 0, 0, NULL };
     struct msgs *mp, *mp2;
-    register FILE *fp;
+    FILE *fp;
     int debug = 0;
     int reverse = 0;
     int start, end, inc;

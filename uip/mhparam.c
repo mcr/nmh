@@ -235,7 +235,7 @@ main(int argc, char **argv)
 	    components = compp > 1;
 
 	for (i = 0; i < compp; i++)  {
-	    register char *value;
+	    char *value;
 
 	    if (! strcmp ("spoollocking", comps[i])) {
 		/* In case spoollocking was set in mts.conf. */

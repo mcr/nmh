@@ -14,8 +14,8 @@
 char *
 m_draft (char *folder, char *msg, int use, int *isdf)
 {
-    register char *cp;
-    register struct msgs *mp;
+    char *cp;
+    struct msgs *mp;
     static char buffer[BUFSIZ];
 
     if (*isdf == -1 || folder == NULL || *folder == '\0') {

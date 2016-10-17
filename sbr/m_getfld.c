@@ -484,8 +484,8 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
           FILE *iob)
 {
     m_getfld_state_t s;
-    register char *cp;
-    register int max, n, c;
+    char *cp;
+    int max, n, c;
 
     enter_getfld (gstate, iob);
     s = *gstate;
@@ -762,11 +762,11 @@ void
 m_unknown(m_getfld_state_t *gstate, FILE *iob)
 {
     m_getfld_state_t s;
-    register int c;
+    int c;
     char text[MAX_DELIMITER_SIZE];
     char from[] = "From ";
-    register char *cp;
-    register char *delimstr;
+    char *cp;
+    char *delimstr;
     unsigned int i;
 
     enter_getfld (gstate, iob);
@@ -850,7 +850,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
 static int
 m_Eom (m_getfld_state_t s)
 {
-    register int i;
+    int i;
     char text[MAX_DELIMITER_SIZE];
     char *cp;
 
@@ -894,11 +894,11 @@ m_Eom (m_getfld_state_t s)
 static char *
 matchc(int patln, char *pat, int strln, char *str)
 {
-	register char *es = str + strln - patln;
-	register char *sp;
-	register char *pp;
-	register char *ep = pat + patln;
-	register char pc = *pat++;
+	char *es = str + strln - patln;
+	char *sp;
+	char *pp;
+	char *ep = pat + patln;
+	char pc = *pat++;
 
 	for(;;) {
 		while (pc != *str++)

@@ -28,7 +28,7 @@ char *
 new_fs (char *form, char *format, char *default_fs)
 {
     struct stat st;
-    register FILE *fp;
+    FILE *fp;
 
     if (formats)
 	free (formats);

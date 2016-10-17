@@ -35,9 +35,9 @@
 void
 cpydgst (int in, int out, char *ifile, char *ofile)
 {
-    register int i, j, state;
-    register char *cp, *ep;
-    register char *bp, *dp;
+    int i, j, state;
+    char *cp, *ep;
+    char *bp, *dp;
     char buffer[BUFSIZ], outbuf[BUFSIZ];
 
     dp = (bp = outbuf) + sizeof outbuf;

@@ -13,9 +13,9 @@
 int
 read_switch (const char *prompt, const struct swit *ansp)
 {
-    register int i;
-    register char *cp;
-    register const struct swit *ap;
+    int i;
+    char *cp;
+    const struct swit *ap;
     char ansbuf[BUFSIZ];
 
     for (;;) {

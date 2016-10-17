@@ -30,7 +30,7 @@ distout (char *drft, char *msgnam, char *backup)
     int state;
     char *dp, *resent;
     char name[NAMESZ], buffer[BUFSIZ];
-    register FILE *ifp, *ofp;
+    FILE *ifp, *ofp;
     m_getfld_state_t gstate = 0;
 
     if (rename (drft, strcpy (backup, m_backup (drft))) == NOTOK)
@@ -127,7 +127,7 @@ ready_msg (char *msgnam)
 {
     int state, out;
     char name[NAMESZ], buffer[BUFSIZ], tmpfil[BUFSIZ];
-    register FILE *ifp, *ofp;
+    FILE *ifp, *ofp;
     char *cp = NULL;
     m_getfld_state_t gstate = 0;
 

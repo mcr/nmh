@@ -178,8 +178,8 @@ static struct adrx  adrxs2;
 struct adrx *
 getadrx (const char *addrs, int eai)
 {
-    register char *bp;
-    register struct adrx *adrxp = &adrxs2;
+    char *bp;
+    struct adrx *adrxp = &adrxs2;
 
     if (pers)
 	free (pers);
@@ -449,7 +449,7 @@ phrase (char *buffer)
 static int
 route_addr (char *buffer)
 {
-    register char *pp = cp;
+    char *pp = cp;
 
     if (my_lex (buffer) == LX_AT) {
 	if (route (buffer) == NOTOK)
@@ -734,7 +734,7 @@ char *
 legal_person (const char *p)
 {
     int i;
-    register const char *cp;
+    const char *cp;
     static char buffer[BUFSIZ];
 
     if (*p == '"')
@@ -754,7 +754,7 @@ int
 mfgets (FILE *in, char **bp)
 {
     int i;
-    register char *cp, *dp, *ep;
+    char *cp, *dp, *ep;
     static int len = 0;
     static char *pp = NULL;
 

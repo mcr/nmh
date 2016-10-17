@@ -14,8 +14,8 @@ void
 print_sw (const char *substr, const struct swit *swp, char *prefix, FILE *fp)
 {
     int len, optno;
-    register int i;
-    register char *cp, *cp1, *sp;
+    int i;
+    char *cp, *cp1, *sp;
     char buf[128];
 
     len = strlen(substr);

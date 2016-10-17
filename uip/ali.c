@@ -199,9 +199,9 @@ print_aka (char *p, int list, int margin)
 static void
 print_usr (char *s, int list)
 {
-    register char *cp, *pp, *vp;
-    register struct aka *ak;
-    register struct mailname *mp, *np;
+    char *cp, *pp, *vp;
+    struct aka *ak;
+    struct mailname *mp, *np;
 
     if ((pp = getname (s)) == NULL)
 	adios (NULL, "no address in \"%s\"", s);

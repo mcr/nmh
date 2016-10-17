@@ -14,7 +14,7 @@
 void
 context_replace (char *key, char *value)
 {
-    register struct node *np;
+    struct node *np;
 
     /*
      * If list is empty, allocate head of profile/context list.

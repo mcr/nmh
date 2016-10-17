@@ -13,7 +13,7 @@
 char *
 getfolder(int wantcurrent)
 {
-    register char *folder;
+    char *folder;
 
     /*
      * If wantcurrent == 1, then try the current folder first

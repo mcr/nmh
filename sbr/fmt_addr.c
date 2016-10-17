@@ -51,12 +51,12 @@ static unsigned int bufsiz;	/* current size of buf         */
 char *
 formataddr (char *orig, char *str)
 {
-    register int len;
-    register int isgroup;
-    register char *dst;
-    register char *cp;
-    register char *sp;
-    register struct mailname *mp = NULL;
+    int len;
+    int isgroup;
+    char *dst;
+    char *cp;
+    char *sp;
+    struct mailname *mp = NULL;
 
     /* if we don't have a buffer yet, get one */
     if (bufsiz == 0) {

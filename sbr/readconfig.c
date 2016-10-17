@@ -44,11 +44,11 @@ static struct node **opp = NULL;
 void
 readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 {
-    register int state;
-    register char *cp;
+    int state;
+    char *cp;
     char name[NAMESZ], field[BUFSIZ];
-    register struct node *np;
-    register struct procstr *ps;
+    struct node *np;
+    struct procstr *ps;
     m_getfld_state_t gstate = 0;
 
     if (npp == NULL && (npp = opp) == NULL) {

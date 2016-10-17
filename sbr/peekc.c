@@ -13,7 +13,7 @@
 int
 peekc(FILE *fp)
 {
-    register int c;
+    int c;
 
     c = getc(fp);
     ungetc(c, fp);

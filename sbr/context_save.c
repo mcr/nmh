@@ -19,7 +19,7 @@
 void
 context_save (void)
 {
-    register struct node *np;
+    struct node *np;
     FILE *out;
     sigset_t set, oset;
     int failed_to_lock = 0;

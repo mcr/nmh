@@ -103,7 +103,7 @@ void mh_xfree(void *ptr)
 char *
 pwd(void)
 {
-    register char *cp;
+    char *cp;
     static char curwd[PATH_MAX];
 
     if (!getcwd (curwd, PATH_MAX)) {

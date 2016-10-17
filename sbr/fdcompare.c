@@ -13,8 +13,8 @@
 int
 fdcompare (int fd1, int fd2)
 {
-    register int i, n1, n2, resp;
-    register char *c1, *c2;
+    int i, n1, n2, resp;
+    char *c1, *c2;
     char b1[BUFSIZ], b2[BUFSIZ];
 
     resp = 1;

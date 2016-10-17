@@ -26,7 +26,7 @@ what_now (char *ed, int nedit, int use, char *file, char *altmsg, int dist,
 {
     int found, k, msgnum, vecp;
     int len, buflen;
-    register char *bp;
+    char *bp;
     char buffer[BUFSIZ], *vec[MAXARGS];
 
     vecp = 0;

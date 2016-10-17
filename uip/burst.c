@@ -507,7 +507,7 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
 static void
 cpybrst (FILE *in, FILE *out, char *ifile, char *ofile, int len, int mime)
 {
-    register int c, state;
+    int c, state;
 
     for (state = mime ? S4 : S1; (c = fgetc (in)) != EOF && len > 0; len--) {
 	if (c == 0)

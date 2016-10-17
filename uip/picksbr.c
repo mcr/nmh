@@ -214,8 +214,8 @@ pcompile (char **vec, char *date)
 static struct nexus *
 parse (void)
 {
-    register char  *cp;
-    register struct nexus *n, *o;
+    char  *cp;
+    struct nexus *n, *o;
 
     if ((n = nexp1 ()) == NULL || (cp = nxtarg ()) == NULL)
 	return n;
@@ -256,8 +256,8 @@ header: ;
 static struct nexus *
 nexp1 (void)
 {
-    register char *cp;
-    register struct nexus *n, *o;
+    char *cp;
+    struct nexus *n, *o;
 
     if ((n = nexp2 ()) == NULL || (cp = nxtarg ()) == NULL)
 	return n;
@@ -302,8 +302,8 @@ header: ;
 static struct nexus *
 nexp2 (void)
 {
-    register char *cp;
-    register struct nexus *n;
+    char *cp;
+    struct nexus *n;
 
     if ((cp = nxtarg ()) == NULL)
 	return NULL;
@@ -344,9 +344,9 @@ static struct nexus *
 nexp3 (void)
 {
     int i;
-    register char *cp, *dp;
+    char *cp, *dp;
     char buffer[BUFSIZ], temp[64];
-    register struct nexus *n;
+    struct nexus *n;
 
     if ((cp = nxtarg ()) == NULL)
 	return NULL;
@@ -457,7 +457,7 @@ nexp3 (void)
 static struct nexus *
 newnexus (int (*action)())
 {
-    register struct nexus *p;
+    struct nexus *p;
 
     NEW0(p);
     p->n_action = action;
@@ -468,8 +468,8 @@ newnexus (int (*action)())
 #define	args(a)	a, fp, msgnum, start, stop
 #define	params	args (n)
 #define	plist	\
-	    register struct nexus  *n; \
-	    register FILE *fp; \
+	    struct nexus  *n; \
+	    FILE *fp; \
 	    int	msgnum; \
 	    long    start, \
 		    stop;
@@ -490,7 +490,7 @@ pmatches (FILE *fp, int msgnum, long start, long stop, int debug)
 static void
 PRaction (struct nexus *n, int level)
 {
-    register int i;
+    int i;
 
     for (i = 0; i < level; i++)
 	fprintf (stderr, "| ");
@@ -559,9 +559,9 @@ plist
 static int
 gcompile (struct nexus *n, char *astr)
 {
-    register int c;
+    int c;
     int cclcnt;
-    register unsigned char *ep, *dp, *sp, *lastep = 0;
+    unsigned char *ep, *dp, *sp, *lastep = 0;
 
     dp = (ep = (unsigned char *) n->n_expbuf) + sizeof n->n_expbuf;
     sp = (unsigned char *) astr;
@@ -651,7 +651,7 @@ plist
 {
     int c, body, lf;
     long pos = start;
-    register char *p1, *p2, *ebp, *cbp;
+    char *p1, *p2, *ebp, *cbp;
     char ibuf[BUFSIZ];
     NMH_UNUSED (msgnum);
 
@@ -741,7 +741,7 @@ plist
 static int
 advance (char *alp, char *aep)
 {
-    register unsigned char *lp, *ep, *curlp;
+    unsigned char *lp, *ep, *curlp;
 
     lp = (unsigned char *)alp;
     ep = (unsigned char *)aep;
@@ -818,8 +818,8 @@ advance (char *alp, char *aep)
 static int
 cclass (unsigned char *aset, int ac, int af)
 {
-    register unsigned int    n;
-    register unsigned char   c, *set;
+    unsigned int    n;
+    unsigned char   c, *set;
 
     set = aset;
     if ((c = ac) == 0)
@@ -837,7 +837,7 @@ cclass (unsigned char *aset, int ac, int af)
 static int
 tcompile (char *ap, struct tws *tb, int isafter)
 {
-    register struct tws *tw;
+    struct tws *tw;
 
     if ((tw = tws_parse (ap, isafter)) == NULL)
 	return 0;
@@ -851,7 +851,7 @@ static struct tws *
 tws_parse (char *ap, int isafter)
 {
     char buffer[BUFSIZ];
-    register struct tws *tw, *ts;
+    struct tws *tw, *ts;
 
     if ((tw = tws_special (ap)) != NULL) {
 	tw->tw_sec = tw->tw_min = isafter ? 59 : 0;
@@ -893,7 +893,7 @@ tws_special (char *ap)
 {
     int i;
     time_t clock;
-    register struct tws *tw;
+    struct tws *tw;
 
     time (&clock);
     if (!strcasecmp (ap, "today"))
@@ -932,9 +932,9 @@ TWSaction (params)
 plist
 {
     int state;
-    register char *bp;
+    char *bp;
     char buf[BUFSIZ], name[NAMESZ];
-    register struct tws *tw;
+    struct tws *tw;
     m_getfld_state_t gstate = 0;
     NMH_UNUSED (stop);
 

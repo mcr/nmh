@@ -242,7 +242,7 @@ main (int argc, char **argv)
      */
     if (!submajor && subjsort) {	/* already date sorted */
 	struct smsg **slist, **flist;
-	register struct smsg ***il, **fp, **dp;
+	struct smsg ***il, **fp, **dp;
 
 	slist = (struct smsg **) mh_xmalloc ((nmsgs+1) * sizeof(*slist));
 	memcpy((char *)slist, (char *)dlist, (nmsgs+1)*sizeof(*slist));
@@ -263,7 +263,7 @@ main (int argc, char **argv)
 	flist = (struct smsg **) mh_xmalloc ((nmsgs+1) * sizeof(*flist));
 	fp = flist;
 	for (dp = dlist; *dp;) {
-	    register struct smsg **s = il[(*dp++)->s_msg];
+	    struct smsg **s = il[(*dp++)->s_msg];
 
 	    /* see if we already did this guy */
 	    if (! s)
@@ -311,7 +311,7 @@ read_hdrs (struct msgs *mp, char *datesw)
 {
     int msgnum;
     struct tws tb;
-    register struct smsg *s;
+    struct smsg *s;
 
     twscopy (&tb, dlocaltimenow ());
 
@@ -338,12 +338,12 @@ read_hdrs (struct msgs *mp, char *datesw)
 static int
 get_fields (char *datesw, int msg, struct smsg *smsg)
 {
-    register int state;
+    int state;
     int compnum;
     char *msgnam, buf[BUFSIZ], nam[NAMESZ];
-    register struct tws *tw;
-    register char *datecomp = NULL, *subjcomp = NULL;
-    register FILE *in;
+    struct tws *tw;
+    char *datecomp = NULL, *subjcomp = NULL;
+    FILE *in;
     m_getfld_state_t gstate = 0;
 
     if ((in = fopen (msgnam = m_name (msg), "r")) == NULL) {
@@ -433,7 +433,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	     * leading "re:", everything but letters & smash
 	     * letters to lower case.
 	     */
-	    register char  *cp, *cp2, c;
+	    char  *cp, *cp2, c;
 
 	    cp = subjcomp;
 	    cp2 = subjcomp;
@@ -491,7 +491,7 @@ dsort (struct smsg **a, struct smsg **b)
 static int
 subsort (struct smsg **a, struct smsg **b)
 {
-    register int i;
+    int i;
 
     if ((i = strcmp ((*a)->s_subj, (*b)->s_subj)))
 	return (i);
@@ -502,7 +502,7 @@ subsort (struct smsg **a, struct smsg **b)
 static int
 txtsort (struct smsg **a, struct smsg **b)
 {
-    register int i;
+    int i;
 
     if ((i = strcmp ((*a)->s_subj, (*b)->s_subj)))
 	return (i);

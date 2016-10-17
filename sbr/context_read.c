@@ -32,8 +32,8 @@ context_read (void)
     char			*cp;		/* miscellaneous pointer */
     char			*nd;		/* nmh directory pointer */
     struct	stat		st;		/* stat() results */
-    register	struct	passwd	*pw;		/* getpwuid() results */
-    register	FILE		*ib;		/* profile and context file pointer */
+    struct	passwd	        *pw;		/* getpwuid() results */
+    FILE        		*ib;		/* profile and context file pointer */
     int failed_to_lock = 0;
 
     /*

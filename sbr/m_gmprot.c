@@ -13,7 +13,7 @@
 int
 m_gmprot (void)
 {
-    register char *cp;
+    char *cp;
 
     return atooi ((cp = context_find ("msg-protect")) && *cp ? cp : msgprot);
 }

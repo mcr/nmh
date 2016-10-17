@@ -124,10 +124,10 @@ static int
 rmf (char *folder)
 {
     int i, j, others;
-    register char *maildir;
+    char *maildir;
     char cur[BUFSIZ];
-    register struct dirent *dp;
-    register DIR *dd;
+    struct dirent *dp;
+    DIR *dd;
 
     switch (i = chdir (maildir = m_maildir (folder))) {
 	case OK: 
@@ -212,9 +212,9 @@ rmf (char *folder)
 static void
 rma (char *folder)
 {
-    register int alen, j, plen;
-    register char *cp;
-    register struct node *np, *pp;
+    int alen, j, plen;
+    char *cp;
+    struct node *np, *pp;
 
     alen = strlen ("atr-");
     plen = strlen (cp = m_mailpath (folder)) + 1;

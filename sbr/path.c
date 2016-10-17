@@ -34,7 +34,7 @@ pluspath(char *name)
 char *
 path(char *name, int flag)
 {
-    register char *cp, *ep;
+    char *cp, *ep;
 
     if ((cp = expath (name, flag))
 	    && (ep = cp + strlen (cp) - 1) > cp
@@ -48,7 +48,7 @@ path(char *name, int flag)
 static char *
 expath (char *name, int flag)
 {
-    register char *cp, *ep;
+    char *cp, *ep;
     char buffer[BUFSIZ];
 
     if (flag == TSUBCWF) {
@@ -106,7 +106,7 @@ expath (char *name, int flag)
 static void
 compath (char *f)
 {
-    register char *cp, *dp;
+    char *cp, *dp;
 
     if (*f != '/')
 	return;

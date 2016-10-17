@@ -347,9 +347,9 @@ static void free_comptable(void);
 static struct ftable *
 lookup(char *name)
 {
-    register struct ftable *t = functable;
-    register char *nm;
-    register char c = *name;
+    struct ftable *t = functable;
+    char *nm;
+    char c = *name;
 
     while ((nm = t->name)) {
 	if (*nm == c && strcmp (nm, name) == 0)
@@ -389,7 +389,7 @@ compile_error(char *str, char *cp)
 int
 fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
 {
-    register char *cp;
+    char *cp;
     size_t i;
     static int comptable_initialized = 0;
 
@@ -426,8 +426,8 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
 static char *
 compile (char *sp)
 {
-    register char *cp = sp;
-    register int  c;
+    char *cp = sp;
+    int  c;
 
     for (;;) {
 	sp = cp;
@@ -487,13 +487,13 @@ compile (char *sp)
 static char *
 do_spec(char *sp)
 {
-    register char *cp = sp;
-    register int c;
+    char *cp = sp;
+    int c;
 #ifndef	lint
-    register int ljust = 0;
+    int ljust = 0;
 #endif	/* not lint */
-    register int wid = 0;
-    register char fill = ' ';
+    int wid = 0;
+    char fill = ' ';
 
     c = *cp++;
     if (c == '-') {
@@ -543,9 +543,9 @@ do_spec(char *sp)
 static char *
 do_name(char *sp, int preprocess)
 {
-    register char *cp = sp;
-    register int c;
-    register int i;
+    char *cp = sp;
+    int c;
+    int i;
     static int primed = 0;
 
     while (isalnum(c = *cp++) || c == '-' || c == '_')
@@ -606,10 +606,10 @@ do_name(char *sp, int preprocess)
 static char *
 do_func(char *sp)
 {
-    register char *cp = sp;
-    register int c;
-    register struct ftable *t;
-    register int n;
+    char *cp = sp;
+    int c;
+    struct ftable *t;
+    int n;
     int mflag;		/* minus sign in NUM */
 
     infunction++;
@@ -770,8 +770,8 @@ do_func(char *sp)
 static char *
 do_expr (char *sp, int preprocess)
 {
-    register char *cp = sp;
-    register int  c;
+    char *cp = sp;
+    int  c;
 
     if ((c = *cp++) == '{') {
 	cp = do_name (cp, preprocess);
@@ -831,7 +831,7 @@ do_expr (char *sp, int preprocess)
 static char *
 do_loop(char *sp)
 {
-    register char *cp = sp;
+    char *cp = sp;
     struct format *floop;
 
     floop = next_fp;
@@ -855,10 +855,10 @@ do_loop(char *sp)
 static char *
 do_if(char *sp)
 {
-    register char *cp = sp;
-    register struct format *fexpr,
+    char *cp = sp;
+    struct format *fexpr,
 			   *fif = (struct format *)NULL;
-    register int c = '<';
+    int c = '<';
 
     for (;;) {
 	if (c == '<') {			/* doing an IF */

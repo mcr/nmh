@@ -138,7 +138,7 @@ process (char *date, int length)
     int status = 0;
     charstring_t scanl =
 	charstring_create (length < NMH_BUFSIZ ? length : NMH_BUFSIZ);
-    register struct comp *cptr;
+    struct comp *cptr;
 
     cptr = fmt_findcomp ("text");
     if (cptr) {

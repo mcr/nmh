@@ -18,7 +18,7 @@
 int
 context_foil (char *path)
 {
-    register struct node *np;
+    struct node *np;
 
     /* In fact, nobody examines defpath in code paths where
      * it's been set by us -- the uses in the source tree are:

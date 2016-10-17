@@ -65,11 +65,11 @@ void
 replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
 	int mime, char *form, char *filter, char *fcc, int fmtproc)
 {
-    register int state, i;
-    register struct comp *cptr;
+    int state, i;
+    struct comp *cptr;
     char tmpbuf[SBUFSIZ];
     struct format *fmt;
-    register char **ap;
+    char **ap;
     int	char_read = 0, format_len, mask;
     char name[NAMESZ], *cp;
     charstring_t scanl;
@@ -187,7 +187,7 @@ finished:
      */
     cptr = fmt_findcomp ("subject");
     if (cptr && (cp = cptr->c_text)) {
-	register char *sp = cp;
+	char *sp = cp;
 
 	for (;;) {
 	    while (isspace((unsigned char) *cp))
@@ -285,13 +285,13 @@ static unsigned int bufsiz=0;	/* current size of buf */
 static char *
 replformataddr (char *orig, char *str)
 {
-    register int len;
+    int len;
     char baddr[BUFSIZ], error[BUFSIZ];
-    register int isgroup;
-    register char *dst;
-    register char *cp;
-    register char *sp;
-    register struct mailname *mp = NULL;
+    int isgroup;
+    char *dst;
+    char *cp;
+    char *sp;
+    struct mailname *mp = NULL;
     char *fixed_str = fix_addresses (str);
 
     /* if we don't have a buffer yet, get one */
@@ -382,7 +382,7 @@ static int
 insert (struct mailname *np)
 {
     char buffer[BUFSIZ];
-    register struct mailname *mp;
+    struct mailname *mp;
 
     if (nodupcheck)
 	return 1;

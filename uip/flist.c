@@ -668,7 +668,7 @@ do_readonly_folders (void)
 {
     int atrlen;
     char atrcur[BUFSIZ];
-    register struct node *np;
+    struct node *np;
 
     snprintf (atrcur, sizeof(atrcur), "atr-%s-", current);
     atrlen = strlen (atrcur);

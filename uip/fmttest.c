@@ -777,7 +777,7 @@ fmt_dump (char *nfs, struct format *fmth)
 static void
 dumpone(struct format *fmt)
 {
-	register int i;
+	int i;
 
 	if ((i = findlabel(fmt)) >= 0)
 		printf("L%d:", i);
@@ -989,7 +989,7 @@ initlabels(struct format *fmth)
 static int
 findlabel(struct format *addr)
 {
-	register int i;
+	int i;
 
 	for (i = 0; i < lused; ++i)
 		if (addr == lvec[i])
@@ -1223,13 +1223,13 @@ static unsigned int bufsiz=0;	/* current size of buf */
 static char *
 test_formataddr (char *orig, char *str)
 {
-    register int len;
+    int len;
     char error[BUFSIZ];
-    register int isgroup;
-    register char *dst;
-    register char *cp;
-    register char *sp;
-    register struct mailname *mp = NULL;
+    int isgroup;
+    char *dst;
+    char *cp;
+    char *sp;
+    struct mailname *mp = NULL;
 
     /* if we don't have a buffer yet, get one */
     if (bufsiz == 0) {

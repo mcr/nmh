@@ -146,12 +146,12 @@ static int
 process (char *arg, int length)
 {
     int	status = 0;
-    register char *cp;
+    char *cp;
     char error[BUFSIZ];
-    register struct comp *cptr;
-    register struct pqpair *p, *q;
+    struct comp *cptr;
+    struct pqpair *p, *q;
     struct pqpair pq;
-    register struct mailname *mp;
+    struct mailname *mp;
 
     (q = &pq)->pq_next = NULL;
     while ((cp = getname (arg))) {

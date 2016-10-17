@@ -275,8 +275,8 @@ static void
 opnfolds (struct msgs *src_folder, struct st_fold *folders, int nfolders)
 {
     char nmaildir[BUFSIZ];
-    register struct st_fold *fp, *ep;
-    register struct msgs *mp;
+    struct st_fold *fp, *ep;
+    struct msgs *mp;
 
     for (fp = folders, ep = folders + nfolders; fp < ep; fp++) {
 	if (chdir (m_maildir ("")) < 0) {
@@ -319,8 +319,8 @@ opnfolds (struct msgs *src_folder, struct st_fold *folders, int nfolders)
 static void
 clsfolds (struct st_fold *folders, int nfolders)
 {
-    register struct st_fold *fp, *ep;
-    register struct msgs *mp;
+    struct st_fold *fp, *ep;
+    struct msgs *mp;
 
     for (fp = folders, ep = folders + nfolders; fp < ep; fp++) {
 	mp = fp->f_mp;

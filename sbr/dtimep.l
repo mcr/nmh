@@ -168,7 +168,7 @@ static int day_map[] = {
 static void
 zonehack (struct tws *tw)
 {
-    register struct tm *tm;
+    struct tm *tm;
 
     if (dmktime (tw) == (time_t) -1)
 	return;
