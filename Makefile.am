@@ -111,6 +111,10 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/whatnow/test-ls test/whom/test-whom \
 	test/cleanup ## The "cleanup" test should always be last.
 
+XFAIL_TESTS = \
+    test/scan/test-header-parsing \
+    #
+
 check_SCRIPTS = test/common.sh
 check_PROGRAMS = test/getfullname test/getcanon test/fakepop test/fakesmtp \
 		 test/getcwidth test/fakehttp

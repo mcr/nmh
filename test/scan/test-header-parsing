@@ -23,7 +23,7 @@ for a in a: a:1 a:12 aa: aa:1 aa:12 aaa: aaa:1 aaa:12 aaaa: aaaa:1 aaaa:12; do
             f="`sed 's/:.*/}/; s/^/%{/' "$mail"`"
             run_prog scan -forma "$f" -file "$mail" >"$actual" ||
             exit 1
-            check "$expected" "$actual" expectfail
+            check "$expected" "$actual"
             break 3 # Fails on first iteration!
         done
     done

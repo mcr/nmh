@@ -198,8 +198,6 @@ prepare_space() {
 ####   'ignore space' -- spacing differences will not be considered
 ####        significant, emulating GNU diff -w.  It is assumed that the
 ####        first file has already been run through prepare_space.
-####   'expectfail' -- The test is expected to fail, e.g. due to a code
-####        bug, but the test should run as a placeholder for the fix.
 ####   ':' <test name> -- will print '<test name>' in the failure message,
 ####        to make it easier to tell which of multiple tests has failed.
 check() {
@@ -207,13 +205,11 @@ check() {
     second=$1; shift
     keepfirst=
     ignorespace=
-    expectfail=false
     label=test
     while [ $# -gt 0 ]; do
         case $1 in
             'keep first')   keepfirst=1 ;;
             'ignore space') ignorespace=1 ;;
-            expectfail) expectfail=true;;
 	    ':') shift; label=\'"$*"\'; break ;;
             *) echo "$0: invalid check() argument \"$1\" in test suite" >&2 ;;
         esac
@@ -231,25 +227,15 @@ check() {
     if [ "$success" ]; then
         [ "$keepfirst" ]  ||  rm -f "$first"
         rm -f "$second"
-        if $expectfail; then
-            echo "$0: expected test to fail, but it passed"
-            failed=`expr ${failed:-0} + 1`
-            #### Set return status of the function.
-            [ $failed -eq 0 ]
-        fi
     else
         echo
         #### POSIX diff should support -c.
         diff -c "$first" "$second" || true
         echo
         echo "$0: $label failed, outputs are in $first and $second."
-        if $expectfail; then
-            echo "$0: $label expected to fail, ignoring"
-        else
-            failed=`expr ${failed:-0} + 1`
-            #### Set return status of the function.
-            [ $failed -eq 0 ]
-        fi
+        failed=`expr ${failed:-0} + 1`
+        #### Set return status of the function.
+        [ $failed -eq 0 ]
     fi
 }
 
