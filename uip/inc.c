@@ -634,12 +634,14 @@ go_to_it:
 
 	    msgnum++;
 	    if (packfile) {
+                size_t len;
+
 		fseek (pf, 0L, SEEK_CUR);
 		pos = ftell (pf);
 		size = 0;
-		if (fwrite (mmdlm1, 1, strlen (mmdlm1), pf) < strlen (mmdlm1)) {
+                len = strlen(mmdlm1);
+		if (fwrite(mmdlm1, 1, len, pf) < len)
 		    advise (mmdlm1, "fwrite");
-		}
 		start = ftell (pf);
 
 		if (pop_retr (i, pop_pack) == NOTOK)
@@ -693,10 +695,12 @@ go_to_it:
 	    charstring_free (scanl);
 
 	    if (packfile) {
+                size_t len;
+
 		fseek (pf, stop, SEEK_SET);
-		if (fwrite (mmdlm2, 1, strlen (mmdlm2), pf) < strlen (mmdlm1)) {
+                len = strlen(mmdlm2);
+		if (fwrite(mmdlm2, 1, len, pf) < len)
 		    advise (mmdlm2, "fwrite");
-		}
 		if (fflush (pf) || ferror (pf)) {
 		    int e = errno;
 		    pop_quit ();
