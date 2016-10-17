@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 #define	CWD	"./"
 #define	NCWD	(sizeof(CWD) - 1)
@@ -57,7 +58,7 @@ expath (char *name, int flag)
 	snprintf (buffer, sizeof(buffer), "%s/", m_maildir (""));
 	if (ssequal (buffer, name)) {
 	    cp = name;
-	    name = getcpy (name + strlen (buffer));
+	    name = mh_xstrdup(name + strlen(buffer));
 	    free (cp);
 	}
 	flag = TFOLDER;
