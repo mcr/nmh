@@ -1,4 +1,4 @@
-.TH POST %manext8% "August 14, 2016" "%nmhversion%"
+.TH POST %manext8% "October 17, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -69,6 +69,7 @@ but can be replaced by the user with a
 profile component that will have
 .I file
 as its final argument.
+See the mh-profile(5) man page for more information on postproc.
 .PP
 .B Post
 searches the \*(lqTo:\*(rq, \*(lqcc:\*(rq, \*(lqBcc:\*(rq,
@@ -270,6 +271,13 @@ If port 465 is specified and none of the TLS switches were enabled,
 will be implied if TLS support was compiled in.  Though port 465 for
 SMTPS (SMTP over SSL) was deregistered by IANA in 1998, it is still
 used for that service.
+.PP
+.B post
+filters out header lines with names beginning with \*(lqNmh-\*(rq
+(case insensitive) from the message draft.
+Those lines are reserved for internal
+.B nmh
+use.
 .SH FILES
 .fc ^ ~
 .nf
