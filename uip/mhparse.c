@@ -3537,8 +3537,7 @@ bad_quote:
 	    }
 
 	    if (pp == NULL) {
-		NEW(pp);
-		memset(pp, 0, sizeof(*pp));
+		NEW0(pp);
 		pp->name = nameptr;
 		pp->next = phead;
 		phead = pp;
@@ -3548,8 +3547,7 @@ bad_quote:
 	     * Insert this into the section linked list
 	     */
 
-	    NEW(sp);
-	    memset(sp, 0, sizeof(*sp));
+	    NEW0(sp);
 	    sp->value = valptr;
 	    sp->index = index;
 	    sp->len = len;
@@ -4084,8 +4082,7 @@ add_param(PM *first, PM *last, char *name, char *value, int nocopy)
 {
     PM pm;
 
-    NEW(pm);
-    memset(pm, 0, sizeof(*pm));
+    NEW0(pm);
     pm->pm_name = nocopy ? name : getcpy(name);
     pm->pm_value = nocopy ? value : getcpy(value);
 
