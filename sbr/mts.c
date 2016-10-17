@@ -170,7 +170,6 @@ tailor_value (char *s)
     int i, r;
     char *bp;
     char buffer[BUFSIZ];
-    size_t len;
 
     for (bp = buffer; *s; bp++, s++) {
 	if (*s != QUOTE) {
@@ -203,11 +202,7 @@ tailor_value (char *s)
     }
     *bp = 0;
 
-    len = strlen (buffer) + 1;
-    bp = mh_xmalloc (len);
-    memcpy (bp, buffer, len);
-
-    return bp;
+    return mh_xstrdup(buffer);
 }
 
 /*
