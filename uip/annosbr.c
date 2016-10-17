@@ -395,10 +395,8 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
      *	copying routine uses the descriptor, not the pointer.
      */
 
-    if (append || delete >= -1) {
-	if (lseek(fd, (off_t)ftell(fp), SEEK_SET) == (off_t)-1)
-	    adios(NULL, "can't seek.");
-    }
+    if (fp && lseek(fd, (off_t)ftell(fp), SEEK_SET) == (off_t)-1)
+        adios(NULL, "can't seek.");
 
     cpydata (fd, fileno (tmp), file, tmpfil);
     fclose (tmp);
@@ -446,7 +444,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
      *	lkclose() fail, but that failure is ignored so it's not a problem.
      */
 
-    if (delete >= -1)
+    if (fp)
 	(void)fclose(fp);
 
     return 0;
