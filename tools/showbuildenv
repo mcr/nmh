@@ -11,8 +11,9 @@
 # environment.
 
 offset () {
-    sed -e 's/^/    /'
+    sed -e '/./s/^/    /'
 }
+
 header () {
     echo
     echo $*
