@@ -1002,7 +1002,7 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
 	return NOTOK;
     }
 
-    nsc->sasl_hostname = getcpy(hostname);
+    nsc->sasl_hostname = mh_xstrdup(hostname);
 #else /* CYRUS_SASL */
     NMH_UNUSED(hostname);
     NMH_UNUSED(service);
@@ -1017,7 +1017,7 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
 
     if (mechanism) {
 	char *p;
-	nsc->sasl_mech = getcpy(mechanism);
+	nsc->sasl_mech = mh_xstrdup(mechanism);
 
 	for (p = nsc->sasl_mech; *p; p++)
 	    if (isascii((unsigned char) *p))	/* Just in case */
@@ -1200,7 +1200,7 @@ netsec_negotiate_sasl(netsec_context *nsc, const char *mechlist, char **errstr)
 	    return NOTOK;
 	}
 
-	nsc->sasl_chosen_mech = getcpy(nsc->sasl_mech);
+	nsc->sasl_chosen_mech = mh_xstrdup(nsc->sasl_mech);
 
 	if (mh_oauth_do_xoauth(nsc->ns_userid, nsc->oauth_service,
 			       &xoauth_client_res, &xoauth_client_res_len,
