@@ -116,7 +116,7 @@ store_all_messages (mhstoreinfo_t info)
      * store any contents.
      */
     if ((cp = context_find (nmhstorage)) && *cp)
-	info->dir = getcpy (cp);
+	info->dir = mh_xstrdup(cp);
     else
 	info->dir = getcpy (info->cwd);
 
