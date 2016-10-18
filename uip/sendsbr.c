@@ -622,7 +622,7 @@ anno (int fd, struct stat *st)
 		advise (NULL,
 			    "unable to fork, so doing annotations by hand...");
 	    if (cwd == NULL)
-		cwd = getcpy (pwd ());
+		cwd = mh_xstrdup(pwd ());
 
 	case OK:
 	    /* block a few signals */
@@ -701,7 +701,7 @@ annoaux (int fd)
     }
     else
 	fd2 = NOTOK;
-    for (ap = brkstring (cp = getcpy (cp), " ", NULL); *ap; ap++)
+    for (ap = brkstring (cp = mh_xstrdup(cp), " ", NULL); *ap; ap++)
 	m_convert (mp, *ap);
     free (cp);
     if (fd2 != NOTOK)
@@ -823,9 +823,9 @@ setup_oauth_params(char *vec[], int *vecp, const char *auth_svc,
 		      errbuf);
 
 	    vec[(*vecp)++] = mh_xstrdup("-authservice");
-	    vec[(*vecp)++] = getcpy(auth_svc);
+	    vec[(*vecp)++] = mh_xstrdup(auth_svc);
 	    vec[(*vecp)++] = mh_xstrdup("-oauthcredfile");
-	    vec[(*vecp)++] = getcpy(mh_oauth_cred_fn(auth_svc));
+	    vec[(*vecp)++] = mh_xstrdup(mh_oauth_cred_fn(auth_svc));
 	    vec[(*vecp)++] = mh_xstrdup("-oauthclientid");
 	    vec[(*vecp)++] = getcpy(svc.client_id);
 	    vec[(*vecp)++] = mh_xstrdup("-oauthclientsecret");
