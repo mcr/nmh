@@ -653,7 +653,7 @@ go_to_it:
 		    adios (packfile, "write error on");
 		fseek (pf, start, SEEK_SET);
 	    } else {
-		cp = getcpy (m_name (msgnum));
+		cp = mh_xstrdup(m_name (msgnum));
 		if ((pf = fopen (cp, "w+")) == NULL)
 		    adios (cp, "unable to write");
 		chmod (cp, m_gmprot ());
@@ -800,7 +800,7 @@ go_to_it:
 	    msgnum++;
 
 	    sp = Maildir[i].filename;
-	    cp = getcpy (m_name (msgnum));
+	    cp = mh_xstrdup(m_name (msgnum));
 	    pf = NULL;
 	    if (!trnflag || link(sp, cp) == -1) {
 		static char buf[65536];
