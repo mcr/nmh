@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include <h/mh.h>
+#include <h/utils.h>
 #include <h/oauth.h>
 
 #define MHLOGIN_SWITCHES \
@@ -71,7 +72,7 @@ do_login(const char *svc, const char *user, const char *browser, int snoop)
         mh_oauth_log_to(stderr, ctx);
     }
 
-    fn = getcpy(mh_oauth_cred_fn(svc));
+    fn = mh_xstrdup(mh_oauth_cred_fn(svc));
 
     if ((url = mh_oauth_get_authorize_url(ctx)) == NULL) {
       adios(NULL, mh_oauth_get_err_string(ctx));
