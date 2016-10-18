@@ -840,7 +840,10 @@ make_query_url(char *s, size_t size, CURL *curl, const char *base_url, ...)
         len = 0;
         prefix = "";
     } else {
-        len = sprintf(s, "%s", base_url);
+        len = strlen(base_url);
+        if (len > size - 1) /* Less one for NUL. */
+            return FALSE;
+        strcpy(s, base_url);
         prefix = "?";
     }
 
