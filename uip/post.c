@@ -827,7 +827,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
     msgflags |= (hdr->set & ~(MVIS | MINV));
 
     if (hdr->flags & HSUB)
-	subject = subject ? add (str, add ("\t", subject)) : getcpy (str);
+	subject = subject ? add (str, add ("\t", subject)) : mh_xstrdup(str);
     if (hdr->flags & HFCC) {
 	if ((cp = strrchr(str, '\n')))
 	    *cp = 0;
@@ -1218,7 +1218,7 @@ putadr (char *name, char *aka, struct mailname *mp, FILE *out, unsigned int flag
     }
 
     if (*aka && mp->m_type != UUCPHOST && !mp->m_pers)
-	mp->m_pers = getcpy (aka);
+	mp->m_pers = mh_xstrdup(aka);
     if (format) {
 	if (mp->m_gname) {
 	    snprintf (buffer, sizeof(buffer), "%s;", mp->m_gname);
@@ -1390,7 +1390,7 @@ insert_fcc (struct headers *hdr, char *pp)
 
     if (fccind >= FCCS)
 	adios (NULL, "too many %ss", hdr->value);
-    fccfold[fccind++] = getcpy (cp);
+    fccfold[fccind++] = mh_xstrdup(cp);
 }
 
 /*
