@@ -280,7 +280,7 @@ check_folders(struct node **first, struct node **last,
 	while (vfgets(fp, &line) == OK) {
 	    len = strlen(line) - 1;
 	    line[len] = '\0';
-	    check_folder(getcpy(line), len, &b);
+	    check_folder(mh_xstrdup(line), len, &b);
 	}
 	fclose(fp);
     }
