@@ -290,7 +290,7 @@ static struct colormap colortable[] = {
 /* Add new component to the hash table */
 #define NEWCOMP(cm,name) do { \
 	NEW0(cm);\
-	cm->c_name = getcpy(name);\
+	cm->c_name = mh_xstrdup(name);\
 	cm->c_refcount++;\
 	ncomp++;\
 	i = CHASH(name);\
@@ -393,7 +393,7 @@ fmt_compile(char *fstring, struct format **fmt, int reset_comptable)
     size_t i;
     static int comptable_initialized = 0;
 
-    format_string = getcpy (fstring);
+    format_string = mh_xstrdup(fstring);
     usr_fstring = fstring;
 
     if (reset_comptable || !comptable_initialized) {
