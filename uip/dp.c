@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 #include <h/fmt_scan.h>
 #include <h/tws.h>
 
@@ -144,7 +145,7 @@ process (char *date, int length)
     if (cptr) {
     	if (cptr->c_text)
 	    free(cptr->c_text);
-	cptr->c_text = getcpy(date);
+	cptr->c_text = mh_xstrdup(date);
     }
     fmt_scan (fmt, scanl, length, dat, NULL);
     fputs (charstring_buffer (scanl), stdout);
