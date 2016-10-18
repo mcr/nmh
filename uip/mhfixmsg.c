@@ -924,10 +924,10 @@ fix_types (CT ct, svector_t fixtypes, int *message_mods) {
                            * c_ctline
                            */
                         /* Extract type and subtype from type/subtype. */
-                        ct_type = getcpy (ct_type_subtype);
+                        ct_type = mh_xstrdup(ct_type_subtype);
                         if ((cp = strchr (ct_type, '/'))) {
                             *cp = '\0';
-                            ct_subtype = getcpy (++cp);
+                            ct_subtype = mh_xstrdup(++cp);
                         } else {
                             advise (NULL, "missing / in MIME type of %s %s",
                                     ct->c_file, ct->c_partno);
@@ -991,7 +991,7 @@ replace_substring (char **str, const char *old, const char *new) {
         char *prefix, *new_str;
 
         if (cp - *str) {
-            prefix = getcpy (*str);
+            prefix = mh_xstrdup(*str);
             *(prefix + (cp - *str)) = '\0';
             new_str = concat (prefix, new, remainder, NULL);
             free (prefix);
@@ -1540,10 +1540,10 @@ copy_ctinfo (CI dest, CI src) {
     	d_pm = add_param(&dest->ci_first_pm, &dest->ci_last_pm, s_pm->pm_name,
 			 s_pm->pm_value, 0);
 	if (s_pm->pm_charset) {
-	    d_pm->pm_charset = getcpy(s_pm->pm_charset);
+	    d_pm->pm_charset = mh_xstrdup(s_pm->pm_charset);
         }
 	if (s_pm->pm_lang) {
-	    d_pm->pm_lang = getcpy(s_pm->pm_lang);
+	    d_pm->pm_lang = mh_xstrdup(s_pm->pm_lang);
         }
     }
 
