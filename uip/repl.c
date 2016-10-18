@@ -354,7 +354,7 @@ main (int argc, char **argv)
     if (ccme == -1)
 	ccme = groupreply;
 
-    cwd = getcpy (pwd ());
+    cwd = mh_xstrdup(pwd ());
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
@@ -435,7 +435,7 @@ try_it_again:
 	context_save ();			/* save the context file   */
     }
 
-    msg = file ? file : getcpy (m_name (mp->lowsel));
+    msg = file ? file : mh_xstrdup(m_name (mp->lowsel));
 
     if ((in = fopen (msg, "r")) == NULL)
 	adios (msg, "unable to open");
