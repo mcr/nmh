@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 #include <h/signals.h>
 
 #ifndef CYRUS_SASL
@@ -150,7 +151,7 @@ main (int argc, char **argv)
     if ((cp = context_find ("Aliasfile"))) {
 	char *dp = NULL;
 
-	for (ap = brkstring(dp = getcpy(cp), " ", "\n"); ap && *ap; ap++) {
+	for (ap = brkstring(dp = mh_xstrdup(cp), " ", "\n"); ap && *ap; ap++) {
 	    vec[vecp++] = "-alias";
 	    vec[vecp++] = *ap;
 	}
