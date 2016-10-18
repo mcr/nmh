@@ -70,13 +70,13 @@ expath (char *name, int flag)
 		    && strcmp (name, DOT)
 		    && strcmp (name, DOTDOT)
 		    && strncmp (name, PWD, NPWD))))
-	return getcpy (name);
+	return mh_xstrdup(name);
 
     if (pwds == NULL)
 	pwds = pwd ();
 
     if (strcmp (name, DOT) == 0 || strcmp (name, CWD) == 0)
-	return getcpy (pwds);
+	return mh_xstrdup(pwds);
 
     ep = pwds + strlen (pwds);
     if ((cp = strrchr(pwds, '/')) == NULL)
@@ -90,7 +90,7 @@ expath (char *name, int flag)
 
     if (strcmp (name, DOTDOT) == 0 || strcmp (name, PWD) == 0) {
 	snprintf (buffer, sizeof(buffer), "%.*s", (int)(cp - pwds), pwds);
-	return getcpy (buffer);
+	return mh_xstrdup(buffer);
     }
 
     if (strncmp (name, PWD, NPWD) == 0)
@@ -99,7 +99,7 @@ expath (char *name, int flag)
 	cp = ep;
 
     snprintf (buffer, sizeof(buffer), "%.*s/%s", (int)(cp - pwds), pwds, name);
-    return getcpy (buffer);
+    return mh_xstrdup(buffer);
 }
 
 
