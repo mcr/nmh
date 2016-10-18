@@ -61,7 +61,7 @@ argsplit(char *command, char **file, int *argp)
     if (!space && !metachar) {
     	argvarray[0] = getcpy(r1bindex(command, '/'));
 	argvarray[1] = NULL;
-	*file = getcpy(command);
+	*file = mh_xstrdup(command);
 	if (argp)
 	    *argp = 1;
 	return argvarray;
@@ -74,20 +74,20 @@ argsplit(char *command, char **file, int *argp)
 
     if (space && !metachar) {
     	char **split;
-	p = getcpy(command);
+	p = mh_xstrdup(command);
 	split = brkstring(p, " \t", NULL);
 	if (split[0] == NULL) {
 	    adios(NULL, "Invalid blank command found");
 	}
-	argvarray[0] = getcpy(r1bindex(split[0], '/'));
+	argvarray[0] = mh_xstrdup(r1bindex(split[0], '/'));
 	for (i = 1; split[i] != NULL; i++) {
 	    if (i > MAXARGS) {
 		adios(NULL, "Command exceeded argument limit");
 	    }
-	    argvarray[i] = getcpy(split[i]);
+	    argvarray[i] = mh_xstrdup(split[i]);
 	}
 	argvarray[i] = NULL;
-	*file = getcpy(split[0]);
+	*file = mh_xstrdup(split[0]);
 	if (argp)
 	    *argp = i;
 	free(p);
@@ -113,7 +113,7 @@ argsplit(char *command, char **file, int *argp)
     *file = mh_xstrdup("/bin/sh");
     argvarray[0] = mh_xstrdup("sh");
     argvarray[1] = mh_xstrdup("-c");
-    argvarray[2] = getcpy(command);
+    argvarray[2] = mh_xstrdup(command);
     argvarray[2] = add(" \"$@\"", argvarray[2]);
     argvarray[3] = mh_xstrdup("/bin/sh");
     argvarray[4] = NULL;

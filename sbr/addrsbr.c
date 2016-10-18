@@ -149,7 +149,7 @@ getm (char *str, char *dfhost, int dftype, char *eresult, size_t eresultsize)
     mp->m_next = NULL;
     mp->m_text = getcpy (str);
     if (pers)
-	mp->m_pers = getcpy (pers);
+	mp->m_pers = mh_xstrdup(pers);
 
     if (mbox == NULL) {
 	mp->m_type = BADHOST;
@@ -157,19 +157,19 @@ getm (char *str, char *dfhost, int dftype, char *eresult, size_t eresultsize)
 	mp->m_ingrp = ingrp;
 	mp->m_gname = getcpy (grp);
 	if (note)
-	    mp->m_note = getcpy (note);
+	    mp->m_note = mh_xstrdup(note);
 	return mp;
     }
 
     if (host) {
 	mp->m_mbox = getcpy (mbox);
-	mp->m_host = getcpy (host);
+	mp->m_host = mh_xstrdup(host);
 	mp->m_type =
 	    strcasecmp (LocalName(0), mp->m_host) ? NETHOST : LOCALHOST;
     } else {
 	if ((pp = strchr(mbox, '!'))) {
 	    *pp++ = '\0';
-	    mp->m_mbox = getcpy (pp);
+	    mp->m_mbox = mh_xstrdup(pp);
 	    mp->m_host = getcpy (mbox);
 	    mp->m_type = UUCPHOST;
 	} else {
@@ -189,12 +189,12 @@ getm (char *str, char *dfhost, int dftype, char *eresult, size_t eresultsize)
        to support wild-card matching. */
 
     if (route)
-	mp->m_path = getcpy (route);
+	mp->m_path = mh_xstrdup(route);
     mp->m_ingrp = ingrp;
     if (grp)
-	mp->m_gname = getcpy (grp);
+	mp->m_gname = mh_xstrdup(grp);
     if (note)
-	mp->m_note = getcpy (note);
+	mp->m_note = mh_xstrdup(note);
 
     return mp;
 }

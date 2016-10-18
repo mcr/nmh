@@ -366,7 +366,7 @@ mh_oauth_get_err_string(mh_oauth_ctx *ctx)
         base = "unknown error";
     }
     if (ctx->err_details == NULL) {
-        return ctx->err_formatted = getcpy(base);
+        return ctx->err_formatted = mh_xstrdup(base);
     }
 
     ctx->err_formatted = concat(base, ": ", ctx->err_details, NULL);
