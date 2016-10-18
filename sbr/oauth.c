@@ -142,7 +142,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
 
     if (log != NULL) mh_oauth_log_to(stderr, ctx);
 
-    fn = getcpy(mh_oauth_cred_fn(svc));
+    fn = mh_xstrdup(mh_oauth_cred_fn(svc));
     fp = lkfopendata(fn, "r+", &failed_to_lock);
     if (fp == NULL) {
         if (errno == ENOENT) {
@@ -182,7 +182,7 @@ mh_oauth_do_xoauth(const char *user, const char *svc, unsigned char **oauth_res,
     free(fn);
 
     /* XXX writeBase64raw modifies the source buffer!  make a copy */
-    client_res = getcpy(mh_oauth_sasl_client_response(oauth_res_len, user,
+    client_res = mh_xstrdup(mh_oauth_sasl_client_response(oauth_res_len, user,
                                                       cred));
     mh_oauth_cred_free(cred);
     mh_oauth_free(ctx);
