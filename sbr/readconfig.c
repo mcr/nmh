@@ -64,9 +64,9 @@ readconfig (struct node **npp, FILE *ib, const char *file, int ctx)
 		NEW(np);
 		*npp = np;
 		*(npp = &np->n_next) = NULL;
-		np->n_name = getcpy (name);
+		np->n_name = mh_xstrdup(name);
 		if (state == FLDPLUS) {
-		    cp = getcpy (field);
+		    cp = mh_xstrdup(field);
 		    while (state == FLDPLUS) {
 			fieldsz = sizeof field;
 			state = m_getfld (&gstate, name, field, &fieldsz, ib);
