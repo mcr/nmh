@@ -89,7 +89,7 @@ main (int argc, char **argv)
 		    continue;
 	    }
 	}
-	addrs = addrs ? add (cp, add (", ", addrs)) : getcpy (cp);
+	addrs = addrs ? add (cp, add (", ", addrs)) : mh_xstrdup(cp);
     }
 
     if (addrs == NULL)
