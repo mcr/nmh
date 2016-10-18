@@ -37,11 +37,11 @@ client (char *args, char *service, char *response, int len_response, int debug)
 
     ap = arguments;
     if (args != NULL && *args != 0) {
-	ap = client_copyip (client_brkstring (getcpy(args), " ", "\n"),
+	ap = client_copyip (client_brkstring (mh_xstrdup(args), " ", "\n"),
 		ap, MAXARGS);
     } else {
 	if (servers != NULL && *servers != 0)
-	    ap = client_copyip (client_brkstring (getcpy(servers), " ", "\n"),
+	    ap = client_copyip (client_brkstring (mh_xstrdup(servers), " ", "\n"),
 		ap, MAXARGS);
     }
     if (ap == arguments) {
