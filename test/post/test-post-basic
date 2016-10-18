@@ -132,7 +132,6 @@ cat > "${testname}.err.expected" <<EOF
 post: SMTP server does not support 8BITMIME, not sending.
 Suggest encoding message for 7-bit transport by setting your
 locale to C, and/or specifying *b64 in mhbuild directives.
-
 post: problem initializing server; [BHST] ready; I'll buy that for a dollar!
 send: message not delivered to anyone
 EOF

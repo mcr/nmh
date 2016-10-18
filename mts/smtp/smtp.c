@@ -453,6 +453,9 @@ sm_winit (char *from, int smtputf8, int eightbit)
         if (EHLOset ("8BITMIME")  &&  EHLOset ("SMTPUTF8")) {
             mail_parameters = " BODY=8BITMIME SMTPUTF8";
         } else {
+            advise (NULL, "SMTP server does not support %s, not sending.\n"
+                    "Rebuild message with 7-bit headers, WITHOUT -headerencoding utf-8.",
+                    EHLOset ("SMTPUTF8") ? "8BITMIME" : "SMTPUTF8");
             sm_end (NOTOK);
             return RP_UCMD;
         }
@@ -464,7 +467,7 @@ sm_winit (char *from, int smtputf8, int eightbit)
         } else {
             advise (NULL, "SMTP server does not support 8BITMIME, not sending.\n"
                     "Suggest encoding message for 7-bit transport by setting your\n"
-                    "locale to C, and/or specifying *b64 in mhbuild directives.\n");
+                    "locale to C, and/or specifying *b64 in mhbuild directives.");
             sm_end (NOTOK);
             return RP_UCMD;
         }

@@ -77,6 +77,8 @@ RSET
 QUIT
 EOF
 cat > "${testname}.expected.err" <<EOF
+post: SMTP server does not support SMTPUTF8, not sending.
+Rebuild message with 7-bit headers, WITHOUT -headerencoding utf-8.
 post: problem initializing server; [BHST] ready; I'll buy that for a dollar!
 send: message not delivered to anyone
 EOF
