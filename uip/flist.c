@@ -235,7 +235,7 @@ main(int argc, char **argv)
 	if ((cp = context_find(usequence)) && *cp) {
 	    char **ap, *dp;
 
-	    dp = getcpy(cp);
+	    dp = mh_xstrdup(cp);
 	    ap = brkstring (dp, " ", "\n");
 	    for (; ap && *ap; ap++)
 		svector_push_back (sequencesToDo, *ap);
@@ -457,7 +457,7 @@ AddFolder(char *name, int force)
 	/* Oops, error occurred.  Record it and continue. */
 	AllocFolders(&folders, &nFoldersAlloced, nFolders + 1);
 	f = &folders[nFolders++];
-	f->name = getcpy(name);
+	f->name = mh_xstrdup(name);
 	f->error = 1;
 	f->priority = AssignPriority(f->name);
 	return 0;
@@ -493,7 +493,7 @@ AddFolder(char *name, int force)
 	/* save general folder information */
 	AllocFolders(&folders, &nFoldersAlloced, nFolders + 1);
 	f = &folders[nFolders++];
-	f->name = getcpy(name);
+	f->name = mh_xstrdup(name);
 	f->nMsgs = mp->nummsg;
 	f->nSeq = ivector_create (0);
 	f->private = ivector_create (0);
