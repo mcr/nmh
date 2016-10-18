@@ -157,8 +157,8 @@ process (char *arg, int length)
     while ((cp = getname (arg))) {
 	NEW0(p);
 	if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
-	    p->pq_text = getcpy (cp);
-	    p->pq_error = getcpy (error);
+	    p->pq_text = mh_xstrdup(cp);
+	    p->pq_error = mh_xstrdup(error);
 	    status++;
 	}
 	else {
