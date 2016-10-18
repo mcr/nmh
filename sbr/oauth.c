@@ -242,14 +242,7 @@ static char *
 make_user_agent()
 {
     const char *curl = curl_version_info(CURLVERSION_NOW)->version;
-    char *s = mh_xmalloc(strlen(user_agent)
-                         + 1
-                         + sizeof "libcurl"
-                         + 1
-                         + strlen(curl)
-                         + 1);
-    sprintf(s, "%s libcurl/%s", user_agent, curl);
-    return s;
+    return concat(user_agent, " libcurl/", curl, NULL);
 }
 
 boolean
@@ -330,7 +323,6 @@ mh_oauth_get_err_code(const mh_oauth_ctx *ctx)
 const char *
 mh_oauth_get_err_string(mh_oauth_ctx *ctx)
 {
-    char *result;
     const char *base;
 
     free(ctx->err_formatted);
@@ -376,10 +368,9 @@ mh_oauth_get_err_string(mh_oauth_ctx *ctx)
     if (ctx->err_details == NULL) {
         return ctx->err_formatted = getcpy(base);
     }
-    /* length of the two strings plus ": " and '\0' */
-    result = mh_xmalloc(strlen(base) + strlen(ctx->err_details) + 3);
-    sprintf(result, "%s: %s", base, ctx->err_details);
-    return ctx->err_formatted = result;
+
+    ctx->err_formatted = concat(base, ": ", ctx->err_details, NULL);
+    return ctx->err_formatted;
 }
 
 const char *
@@ -817,17 +808,13 @@ const char *
 mh_oauth_sasl_client_response(size_t *res_len,
                               const char *user, const mh_oauth_cred *cred)
 {
-    size_t len = sizeof "user=" - 1
-        + strlen(user)
-        + sizeof "\1auth=Bearer " - 1
-        + strlen(cred->access_token)
-        + sizeof "\1\1" - 1;
-    free(cred->ctx->sasl_client_res);
-    cred->ctx->sasl_client_res = mh_xmalloc(len + 1);
-    *res_len = len;
-    sprintf(cred->ctx->sasl_client_res, "user=%s\1auth=Bearer %s\1\1",
-            user, cred->access_token);
-    return cred->ctx->sasl_client_res;
+    char **p;
+
+    p = &cred->ctx->sasl_client_res;
+    free(*p);
+    *p = concat("user=", user, "\1auth=Bearer ", cred->access_token, "\1\1", NULL);
+    *res_len = strlen(*p);
+    return *p;
 }
 
 /*******************************************************************************
