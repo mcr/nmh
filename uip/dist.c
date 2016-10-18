@@ -218,7 +218,7 @@ main (int argc, char **argv)
 	}
     }
 
-    cwd = getcpy (pwd ());
+    cwd = mh_xstrdup(pwd ());
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
@@ -292,7 +292,7 @@ try_it_again:
 	    adios (NULL, "only one message at a time!");
     }
 
-    msgnam = file ? file : getcpy (m_name (mp->lowsel));
+    msgnam = file ? file : mh_xstrdup(m_name (mp->lowsel));
 
     dat[0] = mp ? mp->lowsel : 0;
     dat[1] = 0;
