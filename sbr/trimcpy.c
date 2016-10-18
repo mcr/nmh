@@ -37,7 +37,7 @@ trimcpy (char *cp)
     }
 
     /* now return a copy */
-    return getcpy(cp);
+    return mh_xstrdup(cp);
 }
 
 
