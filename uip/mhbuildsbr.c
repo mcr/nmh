@@ -244,7 +244,7 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 		}
 
 		NEW(entry);
-		entry->filename = getcpy(s);
+		entry->filename = mh_xstrdup(s);
 		entry->next = NULL;
 		free(vp);
 
@@ -277,12 +277,12 @@ build_mime (char *infile, int autobuild, int dist, int directives,
                         adios (NULL, "Multiple %s headers with different files"
                                " not allowed", type);
                     } else {
-                        convert->filename = getcpy (filename);
+                        convert->filename = mh_xstrdup(filename);
                     }
                 } else {
                     NEW0(convert);
-                    convert->filename = getcpy (filename);
-                    convert->type = getcpy (type);
+                    convert->filename = mh_xstrdup(filename);
+                    convert->type = mh_xstrdup(type);
 
                     if (convert_tail) {
                         convert_tail->next = convert;
@@ -317,12 +317,12 @@ build_mime (char *infile, int autobuild, int dist, int directives,
                         adios (NULL, "Multiple %s headers with different "
                                "argstrings not allowed", type);
                     } else {
-                        convert->argstring = getcpy (argstring);
+                        convert->argstring = mh_xstrdup(argstring);
                     }
                 } else {
                     NEW0(convert);
-                    convert->type = getcpy (type);
-                    convert->argstring = getcpy (argstring);
+                    convert->type = mh_xstrdup(type);
+                    convert->argstring = mh_xstrdup(argstring);
 
                     if (convert_tail) {
                         convert_tail->next = convert;
@@ -1141,10 +1141,10 @@ set_id (CT ct, int top)
 	time (&clock);
 	snprintf (contentid, sizeof(contentid), "%s\n", message_id (clock, 1));
 	partno = 0;
-	msgfmt = getcpy(contentid);
+	msgfmt = mh_xstrdup(contentid);
     }
     snprintf (contentid, sizeof(contentid), msgfmt, top ? 0 : ++partno);
-    ct->c_id = getcpy (contentid);
+    ct->c_id = mh_xstrdup(contentid);
 }
 
 
@@ -1756,7 +1756,7 @@ build_headers (CT ct, int header_encoding)
 	vp = add("\n", vp);
 	if (np)
 	    free(np);
-	add_header (ct, getcpy(DISPO_FIELD), vp);
+	add_header (ct, mh_xstrdup(DISPO_FIELD), vp);
     }
 
 skip_headers:
@@ -2025,7 +2025,7 @@ setup_attach_content(CT ct, char *filename)
 	if (strcasecmp(pm->pm_name, "name") == 0) {
 	    if (pm->pm_value)
 		free(pm->pm_value);
-	    pm->pm_value = getcpy(simplename);
+	    pm->pm_value = mh_xstrdup(simplename);
 	    break;
 	}
     }
@@ -2034,9 +2034,9 @@ setup_attach_content(CT ct, char *filename)
 	add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
 		  "name", simplename, 0);
 
-    ct->c_descr = getcpy(simplename);
+    ct->c_descr = mh_xstrdup(simplename);
     ct->c_descr = add("\n", ct->c_descr);
-    ct->c_cefile.ce_file = getcpy(filename);
+    ct->c_cefile.ce_file = mh_xstrdup(filename);
 
     set_disposition (ct);
 
@@ -2067,7 +2067,9 @@ set_disposition (CT ct) {
                       cp);
         }
 
-        ct->c_dispo_type = cp  ?  getcpy (cp) : mh_xstrdup("attachment");
+        if (!cp)
+            cp = "attachment";
+        ct->c_dispo_type = mh_xstrdup(cp);
     }
 }
 
@@ -2230,7 +2232,7 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
                 NULL);
 
     /* Convert here . . . */
-    ct->c_storeproc = getcpy (convert_command);
+    ct->c_storeproc = mh_xstrdup(convert_command);
     ct->c_umask = ~m_gmprot ();
 
     if ((status = show_content_aux (ct, 0, convert_command, NULL, NULL)) !=
