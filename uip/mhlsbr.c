@@ -614,7 +614,7 @@ mhl_format (char *file, int length, int width)
 		    int n = 0;
 
 		    /* split the fields */
-		    tmparray = brkstring (getcpy (++parptr), ",", NULL);
+		    tmparray = brkstring (mh_xstrdup(++parptr), ",", NULL);
 
 		    /* count number of fields split */
 		    p = tmparray;
@@ -645,14 +645,14 @@ mhl_format (char *file, int length, int width)
 		if (!c1->c_nfs && global.c_nfs) {
 		    if (c1->c_flags & DATEFMT) {
 			if (global.c_flags & DATEFMT) {
-			    c1->c_nfs = getcpy (global.c_nfs);
+			    c1->c_nfs = mh_xstrdup(global.c_nfs);
 			    compile_formatfield(c1);
 			}
 		    }
 		    else
 			if (c1->c_flags & ADDRFMT) {
 			    if (global.c_flags & ADDRFMT) {
-				c1->c_nfs = getcpy (global.c_nfs);
+				c1->c_nfs = mh_xstrdup(global.c_nfs);
 				compile_formatfield(c1);
 			    }
 			}
@@ -836,7 +836,7 @@ ptos (char *name, char **s)
     }
     c = *parptr;
     *parptr = 0;
-    *s = getcpy (cp);
+    *s = mh_xstrdup(cp);
     if ((*parptr = c) == '"')
 	parptr++;
     return 0;
@@ -904,7 +904,7 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 	    } else {
 	    	filesize = 0;
 	    }
-	    cp = folder ? concat (folder, ":", fname2, NULL) : getcpy (fname2);
+	    cp = folder ? concat (folder, ":", fname2, NULL) : mh_xstrdup(fname2);
 	    if (ontty != PITTY)
 		SIGNAL (SIGINT, intrser);
 	    mhlfile (fp, cp, ofilen, ofilec);  /* FALL THROUGH! */
@@ -1190,8 +1190,8 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
     while ((cp = getname (ap))) {
 	NEW0(p);
         if ((mp = getm (cp, NULL, 0, error, sizeof(error))) == NULL) {
-            p->pq_text = getcpy (cp);
-            p->pq_error = getcpy (error);
+            p->pq_text = mh_xstrdup(cp);
+            p->pq_error = mh_xstrdup(error);
         } else {
             p->pq_text = getcpy (mp->m_text);
             mnfree (mp);
@@ -1243,12 +1243,12 @@ add_queue (struct mcomp **head, struct mcomp **tail, char *name, char *text, int
 
     NEW0(c1);
     c1->c_flags = flags & ~INIT;
-    if ((c1->c_name = name ? getcpy (name) : NULL))
+    if ((c1->c_name = name ? mh_xstrdup(name) : NULL))
         c1->c_flags |= mcomp_flags (c1->c_name);
-    c1->c_text = text ? getcpy (text) : NULL;
+    c1->c_text = text ? mh_xstrdup(text) : NULL;
     if (flags & INIT) {
         if (global.c_ovtxt)
-            c1->c_ovtxt = getcpy (global.c_ovtxt);
+            c1->c_ovtxt = mh_xstrdup(global.c_ovtxt);
         c1->c_offset = global.c_offset;
         c1->c_ovoff = global. c_ovoff;
         c1->c_width = c1->c_length = 0;
