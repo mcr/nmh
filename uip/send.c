@@ -318,7 +318,7 @@ main (int argc, char **argv)
     if ((cp = context_find ("Aliasfile"))) {
 	char *dp = NULL;
 
-	for (ap = brkstring(dp = getcpy(cp), " ", "\n"); ap && *ap; ap++) {
+	for (ap = brkstring(dp = mh_xstrdup(cp), " ", "\n"); ap && *ap; ap++) {
 	    vec[vecp++] = "-alias";
 	    vec[vecp++] = *ap;
 	}
@@ -377,7 +377,7 @@ main (int argc, char **argv)
 
 	for (msgp = 0, msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	    if (is_selected (mp, msgnum)) {
-		msgs[msgp++] = getcpy (m_name (msgnum));
+		msgs[msgp++] = mh_xstrdup(m_name (msgnum));
 		unset_exists (mp, msgnum);
 	    }
 	}
@@ -414,7 +414,7 @@ go_to_it:
 	    adios(NULL, "unable to create temporary file in %s",
 		  get_temp_dir());
 	}
-	distfile = getcpy (cp);
+	distfile = mh_xstrdup(cp);
 	(void) m_unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK) {
 	    /* Cygwin with FAT32 filesystem produces EPERM. */
@@ -429,7 +429,7 @@ go_to_it:
 		adios(NULL, "unable to create temporary file in %s",
 		      get_temp_dir());
 	    }
-	    distfile = getcpy (cp);
+	    distfile = mh_xstrdup(cp);
 	    {
 		int in, out;
 		struct stat st;
