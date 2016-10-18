@@ -41,7 +41,7 @@ context_replace (char *key, char *value)
 		    admonish (NULL, "bug: context_replace(key=\"%s\",value=\"%s\")", key, value);
 		if (np->n_field)
 		    free (np->n_field);
-		np->n_field = getcpy (value);
+		np->n_field = mh_xstrdup(value);
 		ctxflags |= CTXMOD;
 	    }
 	    return;
