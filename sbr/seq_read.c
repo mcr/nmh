@@ -88,16 +88,16 @@ seq_public (struct msgs *mp, int lockflag, int *failed_to_lock)
 	    case FLD: 
 	    case FLDPLUS:
 		if (state == FLDPLUS) {
-		    cp = getcpy (field);
+		    cp = mh_xstrdup(field);
 		    while (state == FLDPLUS) {
 			fieldsz = sizeof field;
 			state = m_getfld (&gstate, name, field, &fieldsz, fp);
 			cp = add (field, cp);
 		    }
-		    seq_init (mp, getcpy (name), trimcpy (cp));
+		    seq_init (mp, mh_xstrdup(name), trimcpy (cp));
 		    free (cp);
 		} else {
-		    seq_init (mp, getcpy (name), trimcpy (field));
+		    seq_init (mp, mh_xstrdup(name), trimcpy (field));
 		}
 		continue;
 
@@ -119,7 +119,7 @@ seq_public (struct msgs *mp, int lockflag, int *failed_to_lock)
 
     if (lockflag) {
 	mp->seqhandle = fp;
-	mp->seqname = getcpy(seqfile);
+	mp->seqname = mh_xstrdup(seqfile);
     } else {
 	lkfclosedata (fp, seqfile);
     }
@@ -150,7 +150,7 @@ seq_private (struct msgs *mp)
 		&& (j = strlen (np->n_name) - plen) > alen
 		&& *(np->n_name + j) == '-'
 		&& strcmp (mp->foldpath, np->n_name + j + 1) == 0) {
-	    cp = getcpy (np->n_name + alen);
+	    cp = mh_xstrdup(np->n_name + alen);
 	    *(cp + j - alen) = '\0';
 	    if ((i = seq_init (mp, cp, getcpy (np->n_field))) != -1)
 		make_seq_private (mp, i);
