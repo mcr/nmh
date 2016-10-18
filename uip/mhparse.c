@@ -1053,7 +1053,7 @@ InitText (CT ct)
     if (chset != NULL && !check_charset (chset, strlen (chset))) {
 	snprintf (buffer, sizeof(buffer), "%s-charset-%s", invo_name, chset);
 	if ((cp = context_find (buffer)))
-	    ct->c_termproc = getcpy (cp);
+	    ct->c_termproc = mh_xstrdup(cp);
     }
 
     return OK;
@@ -2322,7 +2322,7 @@ openExternal (CT ct, CT cb, CE ce, char **file, int *fd)
     if (find_cache (ct, rcachesw, (int *) 0, cb->c_id,
 		cachefile, sizeof(cachefile)) != NOTOK) {
 	if ((ce->ce_fp = fopen (cachefile, "r"))) {
-	    ce->ce_file = getcpy (cachefile);
+	    ce->ce_file = mh_xstrdup(cachefile);
 	    ce->ce_unlink = 0;
 	    goto ready_already;
 	} else {
@@ -2374,7 +2374,7 @@ openFile (CT ct, char **file)
 	return NOTOK;
     }
 
-    ce->ce_file = getcpy (e->eb_name);
+    ce->ce_file = mh_xstrdup(e->eb_name);
     ce->ce_unlink = 0;
 
     if ((ce->ce_fp = fopen (ce->ce_file, "r")) == NULL) {
@@ -3894,13 +3894,13 @@ param_len(PM pm, int index, size_t valueoff, int *encode, int *cont,
 	 */
 
 	if (! pm->pm_charset) {
-	    pm->pm_charset = getcpy(write_charset_8bit());
+	    pm->pm_charset = mh_xstrdup(write_charset_8bit());
 	    if (strcasecmp(pm->pm_charset, "US-ASCII") == 0)
 		adios(NULL, "8-bit characters in parameter \"%s\", but "
 		      "local character set is US-ASCII", pm->pm_name);
 	}
 	if (! pm->pm_lang)
-	    pm->pm_lang = getcpy(NULL);	/* Default to a blank lang tag */
+	    pm->pm_lang = mh_xstrdup("");	/* Default to a blank lang tag */
 
 	len++;		/* For the encoding marker */
 	maxfit--;
