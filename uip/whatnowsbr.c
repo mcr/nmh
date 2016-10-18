@@ -216,7 +216,7 @@ WhatNow (int argc, char **argv)
     if ((drft == NULL && (drft = getenv ("mhdraft")) == NULL) || *drft == 0)
 	drft = getcpy (m_draft (dfolder, dmsg, 1, &isdf));
 
-    msgnam = (cp = getenv ("mhaltmsg")) && *cp ? getcpy (cp) : NULL;
+    msgnam = (cp = getenv ("mhaltmsg")) && *cp ? mh_xstrdup(cp) : NULL;
 
     if ((cp = getenv ("mhatfile")) && *cp)
     	atfile = atoi(cp);
@@ -1207,7 +1207,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
     if ((cp = context_find ("Aliasfile"))) {
 	char **ap, *dp;
 
-	dp = getcpy (cp);
+	dp = mh_xstrdup(cp);
 	for (ap = brkstring (dp, " ", "\n"); ap && *ap; ap++) {
 	    vec[vecp++] = "-alias";
 	    vec[vecp++] = *ap;
@@ -1236,7 +1236,7 @@ sendit (char *sp, char **arg, char *file, int pushed)
 	    adios(NULL, "unable to create temporary file in %s",
 		  get_temp_dir());
 	}
-	distfile = getcpy (cp);
+	distfile = mh_xstrdup(cp);
 	(void) m_unlink(distfile);
 	if (link (altmsg, distfile) == NOTOK)
 	    adios (distfile, "unable to link %s to", altmsg);
