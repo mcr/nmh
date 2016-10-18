@@ -149,7 +149,7 @@ akval (struct aka *ak, char *s)
 	}
     }
 
-    return getcpy (s);
+    return mh_xstrdup(s);
 }
 
 
@@ -479,7 +479,7 @@ add_aka (struct aka *ak, char *pp)
 	    return;
 
     NEW(ad);
-    ad->ad_text = getcpy (pp);
+    ad->ad_text = mh_xstrdup(pp);
     ad->ad_local = strchr(pp, '@') == NULL && strchr(pp, '!') == NULL;
     ad->ad_next = NULL;
     if (ak->ak_addr)
