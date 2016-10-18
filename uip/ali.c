@@ -117,7 +117,7 @@ main (int argc, char **argv)
 	if ((cp = context_find ("Aliasfile"))) {
 	    char *dp = NULL;
 
-	    for (ap = brkstring(dp = getcpy(cp), " ", "\n"); ap && *ap; ap++)
+	    for (ap = brkstring(dp = mh_xstrdup(cp), " ", "\n"); ap && *ap; ap++)
 		if ((i = alias (*ap)) != AK_OK)
 		    adios (NULL, "aliasing error in %s - %s", *ap, akerror (i));
 	    if (dp)
