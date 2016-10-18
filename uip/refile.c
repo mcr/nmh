@@ -217,7 +217,7 @@ main (int argc, char **argv)
      */
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	if (is_selected (mp, msgnum)) {
-	    cp = getcpy (m_name (msgnum));
+	    cp = mh_xstrdup(m_name (msgnum));
 	    if (m_file (mp, cp, retainseqs ? msgnum : 0, folders, foldp,
                         preserve, !linkf))
 		done (1);
