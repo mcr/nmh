@@ -360,6 +360,19 @@ nmh_strcasestr (const char *s1, const char *s2) {
 }
 
 
+/* TrimSuffixC deletes c from the end of non-NULL string s if it's
+ * present, shortening s by 1.  Only one instance of c is removed. */
+void TrimSuffixC(char *s, int c)
+{
+    if (!*s)
+        return;
+
+    s += strlen(s) - 1;
+    if (*s == c)
+        *s = '\0';
+}
+
+
 int
 nmh_init(const char *argv0, int read_context) {
     if (! setlocale(LC_ALL, "")) {

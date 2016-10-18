@@ -63,6 +63,8 @@ char *find_str (const char [], size_t, const char *);
 char *rfind_str (const char [], size_t, const char *);
 char *nmh_strcasestr (const char *, const char *);
 
+void TrimSuffixC(char *s, int c);
+
 /*
  * See if a string contains 8 bit characters (use isascii() for the test).
  * Arguments include:
