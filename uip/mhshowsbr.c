@@ -207,7 +207,7 @@ DisplayMsgHeader (CT ct, char *form, int concatsw)
 
     vec = argsplit(mhlproc, &file, &vecp);
     vec[vecp++] = mh_xstrdup("-form");
-    vec[vecp++] = getcpy(form);
+    vec[vecp++] = mh_xstrdup(form);
     vec[vecp++] = mh_xstrdup("-nobody");
     vec[vecp++] = getcpy(ct->c_file);
 
@@ -219,7 +219,7 @@ DisplayMsgHeader (CT ct, char *form, int concatsw)
 	vec[vecp++] = mh_xstrdup("-nomoreproc");
     } else if (progsw) {
 	vec[vecp++] = mh_xstrdup("-moreproc");
-	vec[vecp++] = getcpy(progsw);
+	vec[vecp++] = mh_xstrdup(progsw);
     }
     vec[vecp] = NULL;
 
@@ -1360,14 +1360,14 @@ compile_marker(char *form)
 	} else if (strncasecmp(comp->c_name, "ctype-", 6) == 0 &&
 		   strlen(comp->c_name) > 6) {
 	    NEW(pc_entry);
-	    pc_entry->param = getcpy(comp->c_name + 6);
+	    pc_entry->param = mh_xstrdup(comp->c_name + 6);
 	    pc_entry->comp = comp;
 	    pc_entry->next = ctype_pc_list;
 	    ctype_pc_list = pc_entry;
 	} else if (strncasecmp(comp->c_name, "cdispo-", 7) == 0 &&
 		   strlen(comp->c_name) > 7) {
 	    NEW(pc_entry);
-	    pc_entry->param = getcpy(comp->c_name + 7);
+	    pc_entry->param = mh_xstrdup(comp->c_name + 7);
 	    pc_entry->comp = comp;
 	    pc_entry->next = dispo_pc_list;
 	    dispo_pc_list = pc_entry;
@@ -1432,15 +1432,15 @@ output_marker(CT ct, struct format *fmt, int hidden)
     }
 
     if (part_comp && ct->c_partno) {
-	part_comp->c_text = getcpy(ct->c_partno);
+	part_comp->c_text = mh_xstrdup(ct->c_partno);
     }
 
     if (description_comp && ct->c_descr) {
-	description_comp->c_text = getcpy(ct->c_descr);
+	description_comp->c_text = mh_xstrdup(ct->c_descr);
     }
 
     if (dispo_comp && ct->c_dispo_type) {
-	dispo_comp->c_text = getcpy(ct->c_dispo_type);
+	dispo_comp->c_text = mh_xstrdup(ct->c_dispo_type);
     }
 
     for (pcentry = ctype_pc_list; pcentry != NULL; pcentry = pcentry->next) {
