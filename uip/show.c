@@ -259,7 +259,7 @@ usage:
 
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++)
 	if (is_selected(mp, msgnum))
-	    app_msgarg(&vec, getcpy (m_name (msgnum)));
+	    app_msgarg(&vec, mh_xstrdup(m_name (msgnum)));
 
     seq_setcur (mp, mp->hghsel);	/* update current message  */
     seq_save (mp);			/* synchronize sequences   */
