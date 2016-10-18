@@ -223,7 +223,7 @@ main (int argc, char **argv)
 	}
     }
 
-    cwd = getcpy (pwd ());
+    cwd = mh_xstrdup(pwd ());
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
@@ -271,7 +271,7 @@ main (int argc, char **argv)
 	if (mp->numsel > 1)
 	    adios (NULL, "only one message at a time!");
 
-	if ((in = open (form = getcpy (m_name (mp->lowsel)), O_RDONLY)) == NOTOK)
+	if ((in = open (form = mh_xstrdup(m_name (mp->lowsel)), O_RDONLY)) == NOTOK)
 	    adios (form, "unable to open message");
     } else {
 	struct comp *cptr;
