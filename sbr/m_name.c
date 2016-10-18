@@ -7,17 +7,21 @@
  * complete copyright information.
  */
 
+#include <limits.h>
 #include <h/mh.h>
 
-static char name[BUFSIZ];
-
+#define STR(s) #s
+#define SIZE(n) (sizeof STR(n)) /* Includes NUL. */
 
 char *
 m_name (int num)
 {
+    static char name[SIZE(INT_MAX)];
+
     if (num <= 0)
 	return "?";
 
-    snprintf (name, sizeof(name), "%d", num);
+    sprintf(name, "%d", num);
+
     return name;
 }
