@@ -86,7 +86,7 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	datecomp = fmt_findcomp("date");
 	cptr = fmt_findcomp("folder");
 	if (cptr && folder)
-	    cptr->c_text = getcpy(folder);
+	    cptr->c_text = mh_xstrdup(folder);
 	if (fmt_addcompentry("encrypted")) {
 		ncomps++;
 	}
