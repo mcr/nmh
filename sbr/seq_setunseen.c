@@ -9,6 +9,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /*
  * We scan through the folder and act upon all messages
@@ -29,7 +30,7 @@ seq_setunseen (struct msgs *mp, int seen)
      * and split them.
      */
     if ((cp = context_find (usequence))) {
-	dp = getcpy (cp);
+	dp = mh_xstrdup(cp);
 	if (!(ap = brkstring (dp, " ", "\n")) || !*ap) {
 	    free (dp);
 	    return;
