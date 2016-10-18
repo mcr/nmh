@@ -211,7 +211,7 @@ main (int argc, char **argv)
 		case DGSTSW: 
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    digest = getcpy(cp);
+		    digest = mh_xstrdup(cp);
 		    mime = 0;
 		    continue;
 		case ISSUESW:
@@ -276,7 +276,7 @@ main (int argc, char **argv)
 		case SUBJECTSW:
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
-		    subject = getcpy(cp);
+		    subject = mh_xstrdup(cp);
 		    continue;
 
 		case WIDTHSW:
@@ -297,7 +297,7 @@ main (int argc, char **argv)
 	}
     }
 
-    cwd = getcpy (pwd ());
+    cwd = mh_xstrdup(pwd ());
 
     if (!context_find ("path"))
 	free (path ("./", TFOLDER));
@@ -455,10 +455,10 @@ try_it_again:
 	if (digest) {
 	    snprintf (buf, sizeof(buf), IFORMAT, digest);
 	    snprintf (value, sizeof(value), "%d", issue);
-	    context_replace (buf, getcpy (value));
+	    context_replace (buf, mh_xstrdup(value));
 	    snprintf (buf, sizeof(buf), VFORMAT, digest);
 	    snprintf (value, sizeof(value), "%d", volume);
-	    context_replace (buf, getcpy (value));
+	    context_replace (buf, mh_xstrdup(value));
 	}
 
 	context_replace (pfolder, folder);	/* update current folder   */
@@ -537,7 +537,7 @@ mhl_draft (int out, char *digest, int volume, int issue,
 
 	    for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 		if (is_selected (mp, msgnum))
-		    app_msgarg(&vec, getcpy (m_name (msgnum)));
+		    app_msgarg(&vec, mh_xstrdup(m_name (msgnum)));
 	    }
 
 	    app_msgarg(&vec, NULL);
