@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /*
  * Add all the messages currently SELECTED to
@@ -27,7 +28,7 @@ seq_setprev (struct msgs *mp)
      * and split them.
      */
     if ((cp = context_find (psequence))) {
-	dp = getcpy (cp);
+	dp = mh_xstrdup(cp);
 	if (!(ap = brkstring (dp, " ", "\n")) || !*ap) {
 	    free (dp);
 	    return;
