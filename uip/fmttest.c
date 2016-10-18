@@ -354,7 +354,7 @@ main (int argc, char **argv)
 	    NEW(ctx);
 	    ctx->num = -1;
 	    ctx->str = dummy;
-	    ctx->outbuf = getcpy(NULL);
+	    ctx->outbuf = mh_xstrdup("");
 
 	    cb.trace_func = test_trace;
 	    cb.trace_context = ctx;
@@ -422,8 +422,8 @@ process_addresses(struct format *fmt, struct msgs_array *addrs,
 	while ((cp = getname(addrs->msgs[i]))) {
 	    NEW0(p);
 	    if ((mp = getm(cp, NULL, 0, error, sizeof(error))) == NULL) {
-	    	p->pq_text = getcpy(cp);
-		p->pq_error = getcpy(error);
+	    	p->pq_text = mh_xstrdup(cp);
+		p->pq_error = mh_xstrdup(error);
 	    } else {
 	    	p->pq_text = getcpy(mp->m_text);
 		mnfree(mp);
@@ -529,7 +529,7 @@ process_messages(struct format *fmt, struct msgs_array *comps,
     	if ((cp = context_find(usequence)) && *cp) {
 	    char **ap, *dp;
 
-	    dp = getcpy(cp);
+	    dp = mh_xstrdup(cp);
 	    ap = brkstring(dp, " ", "\n");
 	    for (i = 0; ap && *ap; i++, ap++)
 		ivector_push_back (seqnum, seq_getnum(mp, *ap));
@@ -755,7 +755,7 @@ test_trace(void *context, struct format *fmt, int num, char *str,
 	litputs(outbuf);
 	putchar('\n');
     	free(ctx->outbuf);
-	ctx->outbuf = getcpy(outbuf);
+	ctx->outbuf = mh_xstrdup(outbuf);
     }
 }
 
