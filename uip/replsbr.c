@@ -111,23 +111,23 @@ replout (FILE *inb, char *msg, char *drft, struct msgs *mp, int outputlinelen,
     if (!ccto) {
 	cptr = fmt_findcomp ("to");
 	if (cptr)
-	    cptr->c_name = getcpy(NULL);
+	    cptr->c_name = mh_xstrdup("");
     }
     if (!cccc) {
 	 cptr = fmt_findcomp("cc");
 	if (cptr)
-	    cptr->c_name = getcpy(NULL);
+	    cptr->c_name = mh_xstrdup("");
     }
     /* set up the "fcc" pseudo-component */
     if (fcc) {
 	cptr = fmt_findcomp ("fcc");
 	if (cptr)
-	    cptr->c_text = getcpy (fcc);
+	    cptr->c_text = mh_xstrdup(fcc);
     }
     if ((cp = getenv("USER"))) {
 	cptr = fmt_findcomp ("user");
 	if (cptr)
-	    cptr->c_text = getcpy(cp);
+	    cptr->c_text = mh_xstrdup(cp);
     }
     if (!ccme)
 	ismymbox (NULL);
@@ -200,7 +200,7 @@ finished:
 	}
 	if (sp != cptr->c_text) {
 	    cp = cptr->c_text;
-	    cptr->c_text = getcpy (sp);
+	    cptr->c_text = mh_xstrdup(sp);
 	    free (cp);
 	}
     }
