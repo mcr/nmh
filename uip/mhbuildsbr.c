@@ -561,6 +561,13 @@ finish_field:
 	adios (NULL, "internal error(4)");
 
     /*
+     * If using EAI, force 8-bit charset.
+     */
+    if (header_encoding == CE_8BIT) {
+        set_charset (ct, 1);
+    }
+
+    /*
      * Scan the contents.  Choose a transfer encoding, and
      * check if prefix for multipart boundary clashes with
      * any of the contents.
@@ -1779,7 +1786,12 @@ skip_headers:
 
     /*
      * output the Content-Transfer-Encoding
+     * If using EAI and message body is 7-bit, force 8-bit C-T-E.
      */
+    if (header_encoding == CE_8BIT  &&  ct->c_encoding == CE_7BIT) {
+        ct->c_encoding = CE_8BIT;
+    }
+
     switch (ct->c_encoding) {
     case CE_7BIT:
 	/* Nothing to output */

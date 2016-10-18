@@ -69,6 +69,39 @@ EOF
 test_post "${testname}.actual" "${testname}.expected"
 
 
+# check SMTPUTF8 without 8-bit body
+start_test '8-bit headers with ASCII body'
+
+cat > "${testname}.expected" <<EOF
+EHLO nosuchhost.example.com
+MAIL FROM:<senderø@example.com> BODY=8BITMIME SMTPUTF8
+RCPT TO:<recipientæ@example.com>
+DATA
+From: senderø@example.com
+To: recipientæ@example.com
+Subject: Blåbærsyltetøy
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Date:
+
+This is a test.
+.
+QUIT
+EOF
+
+cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
+From: senderø@example.com
+To: recipientæ@example.com
+Subject: Blåbærsyltetøy
+--------
+This is a test.
+EOF
+
+test_post "${testname}.actual" "${testname}.expected"
+
+
+# check with smtp server that doesn't support SMTPUTF8
 start_test "smtp server doesn't support SMTPUTF8"
 unset SMTPUTF8
 cat > "${testname}.expected" <<EOF
