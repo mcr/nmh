@@ -20,7 +20,7 @@ getarguments (char *invo_name, int argc, char **argv, int check_context)
      * Check if profile/context specifies any arguments
      */
     if (check_context && (cp = context_find (invo_name))) {
-	cp = getcpy (cp);		/* make copy    */
+	cp = mh_xstrdup(cp);		/* make copy    */
 	ap = brkstring (cp, " ", "\n");	/* split string */
 
 	/* Count number of arguments split */
