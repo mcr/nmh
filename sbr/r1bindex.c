@@ -12,23 +12,17 @@
 
 #include <h/mh.h>
 
-
 char *
 r1bindex(char *str, int chr)
 {
-    char *cp;
+    char *r;
 
-    /* find null at the end of the string */
-    for (cp = str; *cp; cp++)
-	continue;
+    if (!chr)
+        return str; /* Match old behaviour, don't know if it's used. */
 
-    /* backup to the rightmost character */
-    --cp;
+    r = strrchr(str, chr);
+    if (r)
+        return r + 1;
 
-    /* now search for the rightmost occurrence of the character */
-    while (cp >= str && *cp != chr)
-	--cp;
-
-    /* now move one to the right */
-    return (++cp);
+    return str;
 }
