@@ -255,7 +255,7 @@ main (int argc, char **argv)
 	    /* If no folder is given, the current folder and */
 	    /* the top of the folder stack are swapped.      */
 	    if ((cp = context_find (stack))) {
-		dp = getcpy (cp);
+		dp = mh_xstrdup(cp);
 		ap = brkstring (dp, " ", "\n");
 		argfolder = getcpy(*ap++);
 	    } else {
@@ -279,7 +279,7 @@ main (int argc, char **argv)
 	if (argfolder)
 	    adios (NULL, "sorry, no folders allowed with -pop");
 	if ((cp = context_find (stack))) {
-	    dp = getcpy (cp);
+	    dp = mh_xstrdup(cp);
 	    ap = brkstring (dp, " ", "\n");
 	    argfolder = getcpy(*ap++);
 	} else {
@@ -309,7 +309,7 @@ main (int argc, char **argv)
     if (listsw) {
 	printf ("%s", argfolder ? argfolder : getfolder (1));
 	if ((cp = context_find (stack))) {
-	    dp = getcpy (cp);
+	    dp = mh_xstrdup(cp);
 	    for (ap = brkstring (dp, " ", "\n"); *ap; ap++)
 		printf (" %s", *ap);
 	    free (dp);
