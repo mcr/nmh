@@ -19,6 +19,8 @@ int m_putenv (char *, char *);
 int unputenv (char *);
 static int nvmatch (char *, char *);
 
+/* FIXME: These functions leak memory.  No easy fix since they might not
+ * be malloc'd.  Switch to setenv(3) and unsetenv(3). */
 
 int
 m_putenv (char *name, char *value)
@@ -26,9 +28,7 @@ m_putenv (char *name, char *value)
     int i;
     char **ep, **nep, *cp;
 
-    cp = mh_xmalloc ((size_t) (strlen (name) + strlen (value) + 2));
-
-    sprintf (cp, "%s=%s", name, value);
+    cp = concat(name, "=", value, NULL);
 
     for (ep = environ, i = 0; *ep; ep++, i++)
 	if (nvmatch (name, *ep)) {
