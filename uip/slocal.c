@@ -763,7 +763,7 @@ parse (int fd)
 		    }
 		}
 		if (p->p_name == NULL && i < NVEC) {
-		    p->p_name = getcpy (name);
+		    p->p_name = mh_xstrdup(name);
 		    p->p_value = lp;
 		    p->p_flags = P_NIL;
 		    p++, i++;
@@ -874,7 +874,7 @@ glob (int fd)
     if ((p = lookup (vars, "size"))) {
 	snprintf (buffer, sizeof(buffer), "%d",
 		fstat (fd, &st) != -1 ? (int) st.st_size : 0);
-	p->p_value = getcpy (buffer);
+	p->p_value = mh_xstrdup(buffer);
     }
     if ((p = lookup (vars, "info")))
 	p->p_value = getcpy (info);
@@ -1184,7 +1184,7 @@ get_sender (char *envelope, char **sender)
 	    *cp = 0;
 	else
 	    break;
-    *sender = getcpy (buffer);
+    *sender = mh_xstrdup(buffer);
 }
 
 
@@ -1259,7 +1259,7 @@ you_lose:
 	    first = 0;
 	    if (!strncmp (buffer, "From ", i)) {
 		/* get copy of envelope information ("From " line) */
-		envelope = getcpy (buffer);
+		envelope = mh_xstrdup(buffer);
 
 		/* Put the delivery date in message */
 		fputs (ddate, ffp);
@@ -1328,7 +1328,7 @@ trim (char *cp)
 	    *sp = ' ';
 
     /* now return a copy */
-    return getcpy(bp);
+    return mh_xstrdup(bp);
 }
 
 /*
