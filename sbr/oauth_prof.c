@@ -74,7 +74,7 @@ update_svc_field(char **field, const char *base_name, const char *svc)
     const char *value = context_find(name);
     if (value != NULL) {
         free(*field);
-        *field = getcpy(value);
+        *field = mh_xstrdup(value);
     }
     free(name);
 }
