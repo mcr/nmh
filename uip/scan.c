@@ -216,7 +216,7 @@ main (int argc, char **argv)
     if ((cp = context_find (usequence)) && *cp) {
 	char **ap, *dp;
 
-	dp = getcpy(cp);
+	dp = mh_xstrdup(cp);
 	ap = brkstring (dp, " ", "\n");
 	for (i = 0; ap && *ap; i++, ap++)
 	    ivector_push_back (seqnum, seq_getnum (mp, *ap));
