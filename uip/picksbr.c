@@ -422,7 +422,7 @@ nexp3 (void)
 		free (n);
 		return NULL;
 	    }
-	    n->n_patbuf = getcpy (dp);
+	    n->n_patbuf = mh_xstrdup(dp);
 	    return n;
 
 	case PROTHR: 
