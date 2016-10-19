@@ -139,10 +139,7 @@ mh_oauth_cred_fn(const char *svc)
     free(component);
 
     if (result == NULL) {
-        result = mh_xmalloc(sizeof "oauth-" - 1
-                            + strlen(svc)
-                            + 1 /* '\0' */);
-        sprintf(result, "oauth-%s", svc);
+        result = concat("oauth-", svc, NULL);
         result_if_allocated = result;
     } else {
         result_if_allocated = NULL;
