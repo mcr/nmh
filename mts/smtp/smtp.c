@@ -813,7 +813,7 @@ again: ;
     						 &errstr)) != NULL ; ) {
 
 	if (doingEHLO
-	        && strncmp (buffer, "250", sizeof("250") - 1) == 0
+	        && strncmp (buffer, "250", LEN("250")) == 0
 	        && (buffer[3] == '-' || doingEHLO == 2)
 	        && buffer[4]) {
 	    if (doingEHLO == 2) {
