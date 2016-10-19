@@ -360,6 +360,14 @@ nmh_strcasestr (const char *s1, const char *s2) {
 }
 
 
+/* EndsWithC returns true if non-NULL string s ends with a c before the
+ * terminating NUL. */
+bool EndsWithC(char *s, int c)
+{
+    return *s && s[strlen(s) - 1] == c;
+}
+
+
 /* TrimSuffixC deletes c from the end of non-NULL string s if it's
  * present, shortening s by 1.  Only one instance of c is removed. */
 void TrimSuffixC(char *s, int c)

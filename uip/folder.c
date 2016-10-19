@@ -118,8 +118,7 @@ main (int argc, char **argv)
      * If program was invoked with name ending
      * in `s', then add switch `-all'.
      */
-    if (argv[0][strlen (argv[0]) - 1] == 's')
-	all = 1;
+    all = EndsWithC(argv[0], 's');
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
