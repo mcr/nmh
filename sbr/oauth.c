@@ -897,7 +897,7 @@ debug_callback(const CURL *handle, curl_infotype type, const char *data,
     }
     fwrite(data, 1, size, fp);
     if (data[size - 1] != '\n') {
-        fputs("\n", fp);
+        putc('\n', fp);
     }
     fflush(fp);
     return 0;
