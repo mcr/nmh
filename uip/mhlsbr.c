@@ -545,7 +545,7 @@ static void
 mhl_format (char *file, int length, int width)
 {
     int i;
-    char *bp, *cp, **ip;
+    char *bp, **ip;
     char *ap, name[NAMESZ];
     struct mcomp *c1;
     struct stat st;
@@ -591,8 +591,7 @@ mhl_format (char *file, int length, int width)
 	if (*bp == ';')
 	    continue;
 
-	if ((cp = strchr(bp, '\n')))
-	    *cp = 0;
+        TrimSuffixC(bp, '\n');
 
 	if (*bp == ':') {
 	    (void) add_queue (&fmthd, &fmttl, NULL, bp + 1, CLEARTEXT);
