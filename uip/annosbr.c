@@ -88,7 +88,7 @@ annolist(char *file, char *comp, char *text, int number)
     int		n;		/* number of bytes written */
     char	*sp;		/* another miscellaneous character pointer */
 
-    if ((fp = fopen(file, "r")) == (FILE *)0)
+    if ((fp = fopen(file, "r")) == NULL)
 	adios(file, "unable to open");
 
     /*
@@ -140,7 +140,7 @@ annolist(char *file, char *comp, char *text, int number)
 	    if (number)
 		(void)printf("%d\t", ++count);
 
-	    if (text == (char *)0 && (sp = strrchr(cp, '/')) != (char *)0)
+	    if (text == NULL && (sp = strrchr(cp, '/')) != (char *)0)
 		cp = sp + 1;
 
 	    (void)printf("%s\n", cp);
@@ -203,7 +203,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
      */
 
     if (delete >= -1 || append != 0) {
-	if ((fp = fdopen(fd, "r")) == (FILE *)0)
+	if ((fp = fdopen(fd, "r")) == NULL)
 	    adios(NULL, "unable to fdopen file.");
 
 	field = (char *)mh_xmalloc(field_size = 256);
@@ -296,7 +296,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 
 	    if (strncasecmp(field, comp, length) == 0 && field[length] == ':') {
 		if (delete == 0) {
-		    if (text == (char *)0)
+		    if (text == NULL)
 			break;
 
 		    for (cp = field + length + 1; *cp == ' ' || *cp == '\t'; cp++)
@@ -307,7 +307,7 @@ annosbr (int fd, char *file, char *comp, char *text, int inplace, int datesw, in
 				break;
 		    }
 		    else {
-			if ((sp = strrchr(cp, '/')) != (char *)0)
+			if ((sp = strrchr(cp, '/')) != NULL)
 			    cp = sp + 1;
 
 			if (strcmp(cp, text) == 0)
