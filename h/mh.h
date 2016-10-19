@@ -43,6 +43,10 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define NMH_UNUSED(i) i
 #endif
 
+/* LEN gives the strlen() of string constant s, excluding the
+ * terminating NUL. */
+#define LEN(s) (sizeof (s) - 1)
+
 /*
  * char array that keeps track of size in both bytes and characters
  * Usage note:
