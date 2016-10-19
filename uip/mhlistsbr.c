@@ -201,7 +201,7 @@ list_content (CT ct, int toplevel, int realsize, int verbose, int debug,
 	free (dp);
     }
 
-    printf ("\n");
+    putchar('\n');
 
     if (verbose) {
 	CI ci = &ct->c_ctinfo;
