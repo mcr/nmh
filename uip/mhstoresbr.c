@@ -1308,10 +1308,7 @@ clobber_check (char *original_file, mhstoreinfo_t info) {
                 file = NULL;
                 ++info->files_not_clobbered;
               } else {
-                char *newline = strchr (buf, '\n');
-                if (newline) {
-                  *newline = '\0';
-                }
+                TrimSuffixC(buf, '\n');
               }
 
               free (file);
