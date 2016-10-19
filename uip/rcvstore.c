@@ -189,7 +189,7 @@ main (int argc, char **argv)
      * Link message into folder, and possibly add
      * to the Unseen-Sequence's.
      */
-    if ((msgnum = folder_addmsg (&mp, tmpfilenam, 0, unseensw, 0, 0, (char *)0)) == -1)
+    if ((msgnum = folder_addmsg (&mp, tmpfilenam, 0, unseensw, 0, 0, NULL)) == -1)
 	done (1);
 
     /*
