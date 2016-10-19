@@ -1165,7 +1165,7 @@ get_sender (char *envelope, char **sender)
 	return;
     }
 
-    i = strlen ("From ");
+    i = LEN("From ");
     strncpy (buffer, envelope + i, sizeof(buffer));
     if ((cp = strchr(buffer, '\n'))) {
 	*cp = 0;
@@ -1251,7 +1251,7 @@ you_lose:
      * and massage the headers.  Save
      * a copy of the "From " line for later.
      */
-    i = strlen ("From ");
+    i = LEN("From ");
     while (fgets (buffer, sizeof(buffer), qfp)) {
 	if (first) {
 	    first = 0;
