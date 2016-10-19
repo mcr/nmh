@@ -741,14 +741,14 @@ test_trace(void *context, struct format *fmt, int num, char *str,
 
     if (str != ctx->str) {
     	if (changed++)
-	    printf(" ");
+            putchar(' ');
 	printf("str=");
 	litputs(str);
 	ctx->str = str;
     }
 
     if (changed)
-    	printf("\n");
+        putchar('\n');
 
     if (strcmp(outbuf, ctx->outbuf) != 0) {
     	printf("outbuf=");
