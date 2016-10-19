@@ -447,7 +447,7 @@ invalid:
 		    if (*dp) {
 			if ((result = !uprf (dp, "charset")))
 			    goto out;
-			dp += sizeof("charset") - 1;
+			dp += LEN("charset");
 			while (isspace ((unsigned char) *dp))
 			    dp++;
 			if (*dp++ != '=')
