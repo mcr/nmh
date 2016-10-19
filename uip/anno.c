@@ -89,7 +89,7 @@ main (int argc, char **argv)
     struct msgs *mp;
     int		append = 0;		/* append annotations instead of default prepend */
     int		delete = -2;		/* delete header element if set */
-    char	*draft = (char *)0;	/* draft file name */
+    char	*draft = NULL;	/* draft file name */
     int		isdf = 0;		/* return needed for m_draft() */
     int		list = 0;		/* list header elements if set */
     int		number = 0;		/* delete specific number of like elements if set */
@@ -205,11 +205,11 @@ main (int argc, char **argv)
      *	message numbers below.
      */
 
-    if (draft != (char *)0) {
+    if (draft != NULL) {
 	if (msgs.size != 0)
 	    adios(NULL, "can only have message numbers or -draft.");
 
-	draft = getcpy(m_draft(folder, (char *)0, 1, &isdf));
+	draft = getcpy(m_draft(folder, NULL, 1, &isdf));
 
 	make_comp(&comp);
 
