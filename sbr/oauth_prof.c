@@ -56,14 +56,8 @@ copy_svc(mh_oauth_service_info *to, const mh_oauth_service_info *from)
 char *
 mh_oauth_node_name_for_svc(const char *base_name, const char *svc)
 {
-    char *result = mh_xmalloc(sizeof "oauth-" - 1
-                              + strlen(svc)
-                              + 1            /* '-' */
-                              + strlen(base_name)
-                              + 1            /* '\0' */);
-    sprintf(result, "oauth-%s-%s", svc, base_name);
     /* TODO: s/_/-/g ? */
-    return result;
+    return concat("oauth-", svc, "-", base_name, NULL);
 }
 
 /* Update one service_info field if overridden in profile. */
