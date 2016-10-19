@@ -134,7 +134,6 @@ AM_DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1 \
 ## automake 1.12.6 on FreeBSD 9 needs the sbr/dtimep.c.
 ##
 CLEANFILES = config/version.c sbr/sigmsg.h sbr/dtimep.c etc/mts.conf \
-	     sbr/ctype-checked.[hc] \
 	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS) \
 	     *.plist
 clean-local:
@@ -156,11 +155,6 @@ SUPERCLEANFILES = ChangeLog Makefile.in aclocal.m4 compile config.guess \
 superclean: maintainer-clean
 	@rm -f $(SUPERCLEANFILES)
 .PHONY: superclean
-
-##
-## Files that need to be built before everything else
-##
-BUILT_SOURCES = sbr/ctype-checked.c
 
 ##
 ## This is a list of all programs that get installed in the "bin" directory
