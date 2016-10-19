@@ -12,6 +12,11 @@
 #include <h/utils.h>
 
 
+/* concat returns a non-NULL malloc'd pointer to the catenation of the
+ * argument strings less their NUL terminators other than the last.  The
+ * arguments are terminated by a NULL.
+ *
+ * Example:  concat("abc", "def", "", "g", NULL) returns "abcdefg". */
 char *
 concat (const char *s1, ...)
 {
