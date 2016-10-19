@@ -336,7 +336,7 @@ checkmail (char *user, char *home, int datesw, int notifysw, int personal)
 	if (datesw && st.st_atime)
 	    printf ("; last read on %s", dtime (&st.st_atime, 1));
     if (notifysw)
-	printf ("\n");
+	putchar('\n');
 
     return status;
 }
