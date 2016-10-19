@@ -36,13 +36,12 @@ DEFINE_SWITCH_ARRAY(MHLOGIN, switches);
 static char *
 geta (void)
 {
-    char *cp;
     static char line[BUFSIZ];
 
     if (fgets(line, sizeof(line), stdin) == NULL)
 	done (1);
-    if ((cp = strchr(line, '\n')))
-	*cp = 0;
+    TrimSuffixC(line, '\n');
+
     return line;
 }
 
