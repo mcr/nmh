@@ -39,7 +39,7 @@ seq_list(struct msgs *mp, char *seqname)
      */
     if (!strcmp (current, seqname)) {
 	if (mp->curmsg) {	
-	    sprintf(buffer, "%s", m_name(mp->curmsg));
+	    snprintf(buffer, len, "%s", m_name(mp->curmsg));
 	    return (buffer);
 	} else
 	    return (NULL);
