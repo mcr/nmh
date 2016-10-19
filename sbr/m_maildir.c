@@ -81,7 +81,7 @@ exmaildir (char *folder)
     cp = mailfold;
     if ((pp = context_find ("path")) && *pp) {
 	if (*pp != '/') {
-	    sprintf (cp, "%s/", mypath);
+	    snprintf(cp, sizeof mailfold, "%s/", mypath);
 	    cp += strlen (cp);
 	}
 	cp = copy (pp, cp);
