@@ -216,7 +216,7 @@ rma (char *folder)
     char *cp;
     struct node *np, *pp;
 
-    alen = strlen ("atr-");
+    alen = LEN("atr-");
     plen = strlen (cp = m_mailpath (folder)) + 1;
 
     /*
