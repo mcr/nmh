@@ -377,7 +377,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 	fclose (out);
 
 	if (!pushsw && verbsw) {
-	    printf ("\n");
+	    putchar('\n');
 	    fflush (stdout);
 	}
 
