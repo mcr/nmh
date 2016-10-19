@@ -256,7 +256,7 @@ seq_printdebug (struct msgs *mp)
     int msgnum;
     char buf[BUFSIZ];
 
-    printf ("\n");
+    putchar('\n');
     for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
 	if (is_selected (mp, msgnum))
 	    printf ("%*d: %s\n", DMAXFOLDER, msgnum,
