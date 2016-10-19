@@ -80,8 +80,8 @@ main (int argc, char **argv)
      *	the home directory field in the password file if that's not found.
      */
 
-    if ((mypath = getenv("HOME")) == (char *)0) {
-	if ((pw = getpwuid(getuid())) == (struct passwd *)0 || *pw->pw_dir == '\0')
+    if ((mypath = getenv("HOME")) == NULL) {
+	if ((pw = getpwuid(getuid())) == NULL || *pw->pw_dir == '\0')
 	    adios(NULL, "cannot determine your home directory");
 	else
 	    mypath = pw->pw_dir;
