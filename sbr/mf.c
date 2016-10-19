@@ -258,7 +258,7 @@ getadrx (const char *addrs, int eai)
     while (isspace ((unsigned char) *ap))
 	ap++;
     if (cp)
-	sprintf (adr, "%.*s", (int)(cp - ap), ap);
+	snprintf(adr, sizeof adr, "%.*s", (int)(cp - ap), ap);
     else
 	strcpy (adr, ap);
     bp = adr + strlen (adr) - 1;
@@ -317,7 +317,7 @@ again: ;
 	    return OK;		/* why be choosy? */
 
 	default: 
-	    sprintf (err, "illegal address construct (%s)", buffer);
+	    snprintf(err, sizeof err, "illegal address construct (%s)", buffer);
 	    return NOTOK;
     }
 
@@ -336,13 +336,13 @@ again: ;
 			return NOTOK;
 		    if (last_lex == LX_RBRK)
 			return OK;
-		    sprintf (err, "missing right-bracket (%s)", buffer);
+		    snprintf(err, sizeof err, "missing right-bracket (%s)", buffer);
 		    return NOTOK;
 
 		case LX_COLN: 
 	    get_group: ;
 		    if (glevel++ > 0) {
-			sprintf (err, "nested groups not allowed (%s)", pers);
+			snprintf(err, sizeof err, "nested groups not allowed (%s)", pers);
 			return NOTOK;
 		    }
 		    grp = add (": ", pers);
@@ -371,7 +371,7 @@ again: ;
 		    goto more_phrase;
 
 		default: 
-		    sprintf (err, "no mailbox in address, only a phrase (%s%s)",
+		    snprintf(err, sizeof err, "no mailbox in address, only a phrase (%s%s)",
 			    pers, buffer);
 		    return NOTOK;
 	    }
@@ -407,7 +407,7 @@ again: ;
 		    return OK;
 
 		default: 
-		    sprintf (err, "junk after local@domain (%s)", buffer);
+		    snprintf(err, sizeof err, "junk after local@domain (%s)", buffer);
 		    return NOTOK;
 	    }
 
@@ -424,7 +424,7 @@ again: ;
 	    return OK;
 
 	default: 
-	    sprintf (err, "missing mailbox (%s)", buffer);
+	    snprintf(err, sizeof err, "missing mailbox (%s)", buffer);
 	    return NOTOK;
     }
 }
@@ -472,7 +472,7 @@ route_addr (char *buffer)
 	    return OK;
 
 	default: 
-	    sprintf (err, "no at-sign after local-part (%s)", buffer);
+	    snprintf(err, sizeof err, "no at-sign after local-part (%s)", buffer);
 	    return NOTOK;
     }
 }
@@ -491,7 +491,7 @@ local_part (char *buffer)
 		break;
 
 	    default: 
-		sprintf (err, "no mailbox in local-part (%s)", buffer);
+		snprintf(err, sizeof err, "no mailbox in local-part (%s)", buffer);
 		return NOTOK;
 	}
 
@@ -518,7 +518,7 @@ domain (char *buffer)
 		break;
 
 	    default: 
-		sprintf (err, "no sub-domain in domain-part of address (%s)", buffer);
+		snprintf(err, sizeof err, "no sub-domain in domain-part of address (%s)", buffer);
 		return NOTOK;
 	}
 
@@ -553,7 +553,7 @@ route (char *buffer)
 		break;
 
 	    default: 
-		sprintf (err, "no sub-domain in domain-part of address (%s)", buffer);
+		snprintf(err, sizeof err, "no sub-domain in domain-part of address (%s)", buffer);
 		return NOTOK;
 	}
 	switch (my_lex (buffer)) {
@@ -569,7 +569,7 @@ route (char *buffer)
 			    break;
 
 			default: 
-			    sprintf (err, "no at-sign found for next domain in route (%s)",
+			    snprintf(err, sizeof err, "no at-sign found for next domain in route (%s)",
 			             buffer);
 		    }
 		    break;
@@ -586,7 +586,7 @@ route (char *buffer)
 		return OK;
 
 	    default: 
-		sprintf (err, "no colon found to terminate route (%s)", buffer);
+		snprintf(err, sizeof err, "no colon found to terminate route (%s)", buffer);
 		return NOTOK;
 	}
     }
@@ -742,7 +742,7 @@ legal_person (const char *p)
     for (cp = p; *cp; cp++)
 	for (i = 0; special[i].lx_chr; i++)
 	    if (*cp == special[i].lx_chr) {
-		sprintf (buffer, "\"%s\"", p);
+		snprintf(buffer, sizeof buffer, "\"%s\"", p);
 		return buffer;
 	    }
 
