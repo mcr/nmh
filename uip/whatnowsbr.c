@@ -144,7 +144,7 @@ WhatNow (int argc, char **argv)
      *	Get the initial current working directory.
      */
 
-    if (getcwd(cwd, sizeof (cwd)) == (char *)0) {
+    if (getcwd(cwd, sizeof (cwd)) == NULL) {
 	adios("getcwd", "could not get working directory");
     }
 
@@ -318,13 +318,13 @@ WhatNow (int argc, char **argv)
 	     *	is accustomed to.  Read back the absolute path.
 	     */
 
-	    if (*(argp+1) == (char *)0) {
+	    if (*(argp+1) == NULL) {
 		strcpy(buf, "$SHELL -c \"cd&&pwd\"");
 	    }
 	    else {
 		writesomecmd(buf, BUFSIZ, "cd", "pwd", argp);
 	    }
-	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
+	    if ((f = popen_in_dir(cwd, buf, "r")) != NULL) {
 		if (fgets(cwd, sizeof (cwd), f) == NULL) {
 		    advise (buf, "fgets");
 		}
@@ -363,10 +363,10 @@ WhatNow (int argc, char **argv)
 	    if (checkmimeheader(drft))
 		break;
 
-	    l = (char *)0;
+	    l = NULL;
 	    n = 0;
 
-	    while (*++argp != (char *)0) {
+	    while (*++argp != NULL) {
 		if (strcmp(*argp, "-l") == 0)
 		    l = "/";
 
@@ -385,7 +385,7 @@ WhatNow (int argc, char **argv)
 	    }
 
 	    if (n == -1)
-		advise((char *)0, "usage is alist [-ln].");
+		advise(NULL, "usage is alist [-ln].");
 
 	    else
 		annolist(drft, ATTACH_FIELD, l, n);
@@ -412,7 +412,7 @@ WhatNow (int argc, char **argv)
 		}
 	    }
 
-	    if (*(argp+1) == (char *)0) {
+	    if (*(argp+1) == NULL) {
 		advise(NULL, "attach command requires file argument(s).");
 		break;
 	    }
@@ -431,8 +431,8 @@ WhatNow (int argc, char **argv)
 	     *	draft.
 	     */
 
-	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
-		while (fgets(shell, sizeof (shell), f) != (char *)0) {
+	    if ((f = popen_in_dir(cwd, buf, "r")) != NULL) {
+		while (fgets(shell, sizeof (shell), f) != NULL) {
 		    char *ctype;
 
                     TrimSuffixC(shell, '\n');
@@ -473,7 +473,7 @@ WhatNow (int argc, char **argv)
 	    if (checkmimeheader(drft))
 		break;
 
-	    for (n = 0, arguments = argp + 1; *arguments != (char *)0; arguments++) {
+	    for (n = 0, arguments = argp + 1; *arguments != NULL; arguments++) {
 		if (strcmp(*arguments, "-n") == 0) {
 			n = 1;
 			break;
@@ -488,15 +488,15 @@ WhatNow (int argc, char **argv)
 	     */
 
 	    if (n == 1) {
-		for (arguments = argp + 1; *arguments != (char *)0; arguments++) {
+		for (arguments = argp + 1; *arguments != NULL; arguments++) {
 		    if (strcmp(*arguments, "-n") == 0)
 			continue;
 
 		    if (**arguments != '\0') {
 			n = atoi(*arguments);
-			annotate(drft, ATTACH_FIELD, (char *)0, 1, 0, n, 1);
+			annotate(drft, ATTACH_FIELD, NULL, 1, 0, n, 1);
 
-			for (argp = arguments + 1; *argp != (char *)0; argp++) {
+			for (argp = arguments + 1; *argp != NULL; argp++) {
 			    if (atoi(*argp) > n) {
 				if (atoi(*argp) == 1)
 				    *argp = "";
@@ -518,8 +518,8 @@ WhatNow (int argc, char **argv)
 	     * provide a file name with a space in it.
 	     */
 	    writelscmd(buf, sizeof(buf), "-d --", argp);
-	    if ((f = popen_in_dir(cwd, buf, "r")) != (FILE *)0) {
-		while (fgets(shell, sizeof (shell), f) != (char *)0) {
+	    if ((f = popen_in_dir(cwd, buf, "r")) != NULL) {
+		while (fgets(shell, sizeof (shell), f) != NULL) {
                     TrimSuffixC(shell, '\n');
 		    annotate(drft, ATTACH_FIELD, shell, 1, 0, 0, 1);
 		}
@@ -562,7 +562,7 @@ writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
      */
     int trailln = strlen(trailcmd) + 4;
     if (ln < 0 || ln + trailln > bufsz)
-	adios((char *)0, "arguments too long");
+	adios(NULL, "arguments too long");
 
     cp = buf + ln;
 
@@ -570,7 +570,7 @@ writesomecmd(char *buf, int bufsz, char *cmd, char *trailcmd, char **argp)
 	ln = strlen(*argp);
 	/* +1 for leading space */
 	if (ln + trailln + 1 > bufsz - (cp-buf))
-	    adios((char *)0, "arguments too long");
+	    adios(NULL, "arguments too long");
 	*cp++ = ' ';
 	memcpy(cp, *argp, ln+1);
 	cp += ln;
