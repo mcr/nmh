@@ -1333,7 +1333,7 @@ pl (void)
     printf ("\n\t-- Folder Copies --\nfcc:\t");
     for (i = 0; i < fccind; i++)
 	printf ("%s%s", fccfold[i], i + 1 < fccind ? ",\n\t" : "");
-    printf ("\n");
+    putchar('\n');
 }
 
 
