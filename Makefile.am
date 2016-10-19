@@ -119,6 +119,9 @@ check_SCRIPTS = test/common.sh
 check_PROGRAMS = test/getfullname test/getcanon test/fakepop test/fakesmtp \
 		 test/getcwidth test/fakehttp
 
+## So they can be built without builing the `check' target.
+check-programs: $(check_PROGRAMS)
+
 ## The location of installed nmhetcdir is, for all purposes except
 ## distcheck, $nmhetcdir.  For distcheck, prepend $MH_INST_DIR (from
 ## test/common.sh.in), which is based on $MH_TEST_DIR (from
