@@ -154,7 +154,7 @@ rmf (char *folder)
      *	Run the external delete hook program.
      */
 
-    (void)ext_hook("del-hook", maildir, (char *)0);
+    (void)ext_hook("del-hook", maildir, NULL);
 
     j = strlen(BACKUP_PREFIX);
     while ((dp = readdir (dd))) {
