@@ -804,8 +804,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	       should never have reached this point.  Warn about any
 	       that are non-empty. */
 	    if (strcmp (str, "\n")) {
-		char *newline = strchr (str, '\n');
-		if (newline) *newline = '\0';
+                TrimSuffixC(str, '\n');
 		if (! whomsw) {
 		    advise (NULL, "ignoring header line -- %s: %s", name, str);
 		}
