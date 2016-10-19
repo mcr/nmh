@@ -107,6 +107,10 @@ advertise (const char *what, char *tail, const char *fmt, va_list ap)
     iov->iov_len = strlen (iov->iov_base = "\n");
     iov++;
     if (writev (fileno (stderr), iob, iov - iob) < 0) {
-	advise ("stderr", "writev");
+        snprintf(buffer, sizeof buffer, "%s: write stderr failed: %d\n",
+            invo_name && *invo_name ? invo_name : "nmh", errno);
+        if (write(2, buffer, strlen(buffer)) == -1) {
+            /* Ignore.  if-statement needed to shut up compiler. */
+        }
     }
 }
