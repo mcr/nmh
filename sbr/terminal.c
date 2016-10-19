@@ -120,7 +120,7 @@ nmh_clear_screen (void)
     if (ti_clear)
 	tputs (ti_clear, LI, outc);
     else {
-	printf ("\f");
+	putchar('\f');
     }
 
     fflush (stdout);
