@@ -142,7 +142,7 @@ seq_private (struct msgs *mp)
     char *cp;
     struct node *np;
 
-    alen = strlen ("atr-");
+    alen = LEN("atr-");
     plen = strlen (mp->foldpath) + 1;
 
     for (np = m_defs; np; np = np->n_next) {
