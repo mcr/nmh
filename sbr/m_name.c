@@ -21,7 +21,7 @@ m_name (int num)
     if (num <= 0)
 	return "?";
 
-    sprintf(name, "%d", num);
+    snprintf(name, sizeof name, "%d", num);
 
     return name;
 }
