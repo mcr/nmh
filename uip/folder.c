@@ -313,7 +313,7 @@ main (int argc, char **argv)
 		printf (" %s", *ap);
 	    free (dp);
 	}
-	printf ("\n");
+	putchar('\n');
 
 	if (!printsw)
 	    done (0);
@@ -591,7 +591,7 @@ print_folders (void)
      */
     if (ftotal > 0 || (all && !fshort && ftotal >= 0)) {
 	if (all)
-	    printf ("\n");
+	    putchar('\n');
 	printf ("TOTAL = %d message%c in %d folder%s.\n",
 		total_msgs, total_msgs != 1 ? 's' : ' ',
 		total_folders, total_folders != 1 ? "s" : "");
