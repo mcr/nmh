@@ -478,13 +478,13 @@ burst (struct msgs **mpp, int msgnum, struct smsg *smsgs, int numburst,
 		admonish (f3, "unable to rename %s to", f1);
 
 	    (void)snprintf(f3, sizeof (f3), "%s/%d", maildir, i);
-	    ext_hook("del-hook", f3, (char *)0);
+	    ext_hook("del-hook", f3, NULL);
 	}
 	if (rename (f2, f1) == NOTOK)
 	    admonish (f1, "unable to rename %s to", f2);
 
 	(void)snprintf(f3, sizeof (f3), "%s/%d", maildir, i);
-	ext_hook("add-hook", f3, (char *)0);
+	ext_hook("add-hook", f3, NULL);
 
 	copy_msg_flags (mp, i, msgnum);
 	mp->msgflags |= SEQMOD;
