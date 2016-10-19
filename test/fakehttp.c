@@ -68,7 +68,7 @@ save_req(int conn, FILE *req)
         }
         if (r < 0) {
             e = errno;
-            fputs("\n", req);   /* req body usually has no newline */
+            putc('\n', req);   /* req body usually has no newline */
             fclose(req);
             if (e != EAGAIN && e != EWOULDBLOCK) {
                 fprintf(stderr, "Unable to read socket: %s\n", strerror(e));
