@@ -1,4 +1,4 @@
-.TH MH-PROFILE %manext5% "September 29, 2016" "%nmhversion%"
+.TH MH-PROFILE %manext5% "October 19, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -60,6 +60,21 @@ Locates
 .B nmh
 transactions in directory \*(lqMail\*(rq.  This is the
 only mandatory profile entry.  (profile, no default)
+.RE
+.PP
+.BR locale :
+locale
+.RS 5
+Set the locale for all
+.B nmh
+programs except
+.BR post ,
+.BR install-mh ,
+and
+.BR slocal .
+See the LC_ALL, LC_CTYPE, and LANG variables in the "ENVIRONMENT"
+section below for a reference on how the locale is set if this profile
+component is not used.
 .RE
 .PP
 .BR context :
@@ -799,6 +814,10 @@ information via an argument list.  The convention is that environment
 variables whose names are all upper-case are user-settable; those
 whose names are lower-case only are used internally by nmh and should
 not generally be set by the user.
+.TP
+LC_ALL, LC_CTYPE, and LANG
+These variables are used to set the locale, see locale(1).
+The \*(lqlocale\*(rq profile entry supersedes these.
 .TP
 MAILDROP
 This variable tells

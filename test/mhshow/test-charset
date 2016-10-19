@@ -26,6 +26,7 @@ actual=$MH_TEST_DIR/$$.actual
 echo 'mhshow-charset-windows-1252: echo "This is a test"' >> "$MH"
 
 # Write message with bogus quoted-printable data.
+start_test 'Write message with bogus quoted-printable data'
 msgfile=`mhpath new`
 msgnum=`basename $msgfile`
 cat > $msgfile <<EOF
@@ -56,6 +57,17 @@ This is a test
 EOF
 
 run_prog mhshow $msgnum > $actual 2>&1
-check "$expected" "$actual" : bogus quoted-printable data
+check "$expected" "$actual" 'keep first' : bogus quoted-printable data
 
+
+start_test 'locale profile component'
+#### Used LC_ALL above, now use locale profile component instead.
+printf "locale: $LC_ALL\n" >> "${MH}"
+unset LC_ALL
+
+run_prog mhshow $msgnum > $actual 2>&1
+check "$expected" "$actual" : locale profile component
+
+
+finish_test
 exit $failed

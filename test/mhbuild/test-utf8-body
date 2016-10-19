@@ -40,7 +40,8 @@ test_attachment ()
   #
   # It's hard to calculate the exact Date: header post is going to
   # use, so we'll just use sed to remove the actual date so we can easily
-  # compare it against our "correct" output.  And same for charset.
+  # compare it against our "correct" output.  And same for charset,
+  # because mime_type() can rely on file(1) --mime-encoding.
   #
   sed -e 's/^Date:.*/Date:/' -e 's/; charset="[^;]*//' \
       "`mhpath cur`" > "${testname}.actual"
@@ -59,7 +60,7 @@ cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody <somebody@example.com>
 Subject: Test
-Attach: $MH_TEST_DIR/attachment.txt
+Nmh-Attach: $MH_TEST_DIR/attachment.txt
 
 This is a test.
 EOF
@@ -97,7 +98,7 @@ cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody <somebody@example.com>
 Subject: Test
-Attach: $MH_TEST_DIR/attachment.txt
+Nmh-Attach: $MH_TEST_DIR/attachment.txt
 
 ¡Ay, caramba!
 EOF
@@ -141,7 +142,7 @@ cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody <somebody@example.com>
 Subject: Test
-Attach: $MH_TEST_DIR/attachment.txt
+Nmh-Attach: $MH_TEST_DIR/attachment.txt
 EOF
 
 cat > "${testname}.expected" <<EOF
@@ -168,7 +169,7 @@ cat > "${MH_TEST_DIR}/Mail/draft" <<EOF
 From: Mr Nobody <nobody@example.com>
 To: Somebody <somebody@example.com>
 Subject: Test
-Attach: $MH_TEST_DIR/attachment.txt
+Nmh-Attach: $MH_TEST_DIR/attachment.txt
 
 ¡Ay, caramba!
 EOF
@@ -185,6 +186,40 @@ ${MH_INST_DIR}${bindir}/mhbuild: exit 1
 EOF
 
 check "$expected" "$actual"
+
+
+# previous test, but with locale profile entry
+start_test '8-bit body with C locale with locale profile entry'
+
+printf 'locale: en_US.UTF-8\n' >> "${MH}"
+
+cat > "${testname}.expected" <<EOF
+From: Mr Nobody <nobody@example.com>
+To: Somebody <somebody@example.com>
+Subject: Test
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaaa0"
+Content-Transfer-Encoding: 8bit
+Date:
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+
+¡Ay, caramba!
+
+------- =_aaaaaaaaaa0
+Content-Type: text/plain; name="attachment.txt"
+Content-Description: attachment.txt
+Content-Disposition: attachment; filename="attachment.txt"
+Content-Transfer-Encoding: 8bit
+
+8-bit attachment, ¡Ay, caramba!
+
+------- =_aaaaaaaaaa0--
+EOF
+
+test_attachment "${testname}.expected"
 
 
 rm -f ${MHMTSCONF} "${MH_TEST_DIR}/attachment.txt"

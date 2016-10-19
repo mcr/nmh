@@ -383,10 +383,8 @@ void TrimSuffixC(char *s, int c)
 
 int
 nmh_init(const char *argv0, int read_context) {
-    if (! setlocale(LC_ALL, "")) {
-        admonish(NULL, "setlocale failed, check your LC_ALL, LC_CTYPE, and "
-                 "LANG environment variables");
-    }
+    int status = OK;
+    char *locale;
 
     invo_name = r1bindex ((char *) argv0, '/');
 
@@ -439,15 +437,24 @@ nmh_init(const char *argv0, int read_context) {
                 putchar ('\n');
             }
         }
-
-        return OK;
     } else {
-        int status = context_foil(NULL);
-        if (status != OK) {
+        if ((status = context_foil(NULL)) != OK) {
             advise("", "failed to create minimal profile/context");
         }
-        return status;
     }
+
+    /* Allow the user to set a locale in their profile.  Otherwise, use the
+       "" string to pull it from their environment, see setlocale(3). */
+    if ((locale = context_find ("locale")) == NULL) {
+        locale = "";
+    }
+
+    if (! setlocale (LC_ALL, locale)) {
+        admonish (NULL, "setlocale failed, check your LC_ALL, LC_CTYPE, and "
+                 "LANG environment variables");
+    }
+
+    return status;
 }
 
 
