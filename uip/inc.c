@@ -511,7 +511,7 @@ main (int argc, char **argv)
  	    qsort (Maildir, num_maildir_entries, sizeof(*Maildir), maildir_srt);
  	}
 
-	if ((cp = strdup(newmail)) == (char *)0)
+	if ((cp = strdup(newmail)) == NULL)
 	    adios (NULL, "error allocating memory to copy newmail");
 
 	newmail = cp;
@@ -527,7 +527,7 @@ main (int argc, char **argv)
 	folder = getfolder (0);
     maildir = m_maildir (folder);
 
-    if ((maildir_copy = strdup(maildir)) == (char *)0)
+    if ((maildir_copy = strdup(maildir)) == NULL)
         adios (maildir, "error allocating memory to copy maildir");
 
     if (!folder_exists(maildir)) {
@@ -771,7 +771,7 @@ go_to_it:
 		 */
 
 		(void)snprintf(b, sizeof (b), "%s/%d", maildir_copy, msgnum + 1);
-		(void)ext_hook("add-hook", b, (char *)0);
+		(void)ext_hook("add-hook", b, NULL);
 
 		if (aud)
 		    fputs (charstring_buffer (scanl), aud);
@@ -852,7 +852,7 @@ go_to_it:
 		 */
 
 		(void)snprintf(b, sizeof (b), "%s/%d", maildir_copy, msgnum + 1);
-		(void)ext_hook("add-hook", b, (char *)0);
+		(void)ext_hook("add-hook", b, NULL);
 
 		if (aud)
 		    fputs (charstring_buffer (scanl), aud);
