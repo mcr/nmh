@@ -48,8 +48,8 @@ context_read (void)
      *	the home directory field in the password file if that's not found.
      */
 
-    if ((mypath = getenv("HOME")) == (char *)0) {
-	if ((pw = getpwuid(getuid())) == (struct passwd *)0 || *pw->pw_dir == '\0')
+    if ((mypath = getenv("HOME")) == NULL) {
+	if ((pw = getpwuid(getuid())) == NULL || *pw->pw_dir == '\0')
 	    adios(NULL, "cannot determine your home directory");
 	else
 	    mypath = pw->pw_dir;
@@ -68,16 +68,16 @@ context_read (void)
         /* defpath is an absolute path; make sure that always MH is, too. */
 	setenv("MH", defpath, 1);
 	if (stat(defpath, &st) != -1 && (st.st_mode & S_IFREG) == 0)
-		adios((char *)0, "`%s' specified by your MH environment variable is not a normal file", cp);
+		adios(NULL, "`%s' specified by your MH environment variable is not a normal file", cp);
 
-	if ((ib = fopen(defpath, "r")) == (FILE *)0)
-	    adios((char *)0, "unable to read the `%s' profile specified by your MH environment variable", defpath);
+	if ((ib = fopen(defpath, "r")) == NULL)
+	    adios(NULL, "unable to read the `%s' profile specified by your MH environment variable", defpath);
     }
     else {
 	defpath = concat(mypath, "/", mh_profile, NULL);
 
-	if ((ib = fopen(defpath, "r")) == (FILE *)0)
-	    adios((char *)0, "Doesn't look like nmh is installed.  Run install-mh to do so.");
+	if ((ib = fopen(defpath, "r")) == NULL)
+	    adios(NULL, "Doesn't look like nmh is installed.  Run install-mh to do so.");
 
 	cp = mh_profile;
     }
@@ -90,7 +90,7 @@ context_read (void)
      *	Convert a relative path name to an absolute one rooted in the home directory.
      */
 
-    if ((cp = context_find ("path")) == (char *)0)
+    if ((cp = context_find ("path")) == NULL)
 	adios(NULL, "Your %s file does not contain a path entry.", defpath);
 
     if (*cp == '\0')
@@ -117,14 +117,14 @@ context_read (void)
     }
 
     else if ((st.st_mode & S_IFDIR) == 0)
-	adios ((char *)0, "`%s' is not a directory", nd);
+	adios (NULL, "`%s' is not a directory", nd);
 
     /*
      *	Open and read user's context file.  The name of the context file comes from the
      *	profile unless overridden by the MHCONTEXT environment variable.
      */
 
-    if ((cp = getenv ("MHCONTEXT")) == (char *)0 || *cp == '\0')
+    if ((cp = getenv ("MHCONTEXT")) == NULL || *cp == '\0')
 	cp = context;
 
     /* context is NULL if context_foil() was called to disable use of context
