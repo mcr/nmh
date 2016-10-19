@@ -239,7 +239,7 @@ config_opts="--prefix=$config_prefix"
 [ "$config_oauth" = y ]  &&  \
   config_opts="$config_opts --with-oauth"
 [ $config_debug = y ]  &&  \
-  config_opts="$config_opts --enable-debug --enable-assert"
+  config_opts="$config_opts --enable-assert"
 
 #### dotlocking, the usual default, requires chgrp and chmod of inc.
 installpriv=

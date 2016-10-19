@@ -195,9 +195,6 @@ Options for configure
 --mandir=DIR     (DEFAULT is ${prefix}/man)
      nmh's man pages are installed here.
 
---enable-debug
-     Enable debugging support.
-
 --with-editor=EDITOR  (DEFAULT is vi)
      specify the full path of the default editor to use.  If this
      option is not given, then the configuration process will search

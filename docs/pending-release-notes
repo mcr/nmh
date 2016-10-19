@@ -62,6 +62,7 @@ NEW FEATURES
 - Fewer lseek(2)s will be used when reading headers in the common case.
 - Single-character headers can be reliably formatted, etc., instead of
   apparently being missing.
+- ./configure's --enable-debug has been removed;  it did nothing.
 
 -----------------
 OBSOLETE FEATURES

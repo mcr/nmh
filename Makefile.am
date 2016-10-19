@@ -744,9 +744,6 @@ rpm: dist
 ## targets because they will be used so infrequently, if at all.
 ##
 gcov:
-	@if ./config.status --config | grep -e --enable-debug >/dev/null; then \
-	   echo For best results with gcov, configure without --enable-debug; \
-	 fi
 	@echo rebuilding with AM_CFLAGS=--coverage . . .
 	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null  && \
 	  make check AM_CFLAGS=--coverage

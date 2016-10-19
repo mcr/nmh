@@ -23,10 +23,6 @@ dnl --------------------------
 dnl CHECK COMMAND LINE OPTIONS
 dnl --------------------------
 
-dnl Do you want to debug nmh?
-AC_ARG_ENABLE([debug],
-  AS_HELP_STRING([--enable-debug],[enable nmh code debugging]))
-
 dnl Do you want client-side support for using SASL for authentication?
 dnl Note that this code will be enabled for both POP and SMTP
 AC_ARG_WITH([cyrus-sasl], AS_HELP_STRING([--with-cyrus-sasl],
