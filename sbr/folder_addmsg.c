@@ -134,7 +134,7 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 		(void)ext_hook("ref-hook", oldmsg, newmsg);
 	    }
 	    else
-		(void)ext_hook("add-hook", newmsg, (char *)0);
+		(void)ext_hook("add-hook", newmsg, NULL);
 
 	    return msgnum;
 	} else {
@@ -191,7 +191,7 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 			(void)ext_hook("ref-hook", oldmsg, newmsg);
 		    }
 		    else
-		        (void)ext_hook("add-hook", newmsg, (char *)0);
+		        (void)ext_hook("add-hook", newmsg, NULL);
 
 		    return msgnum;
 		}
