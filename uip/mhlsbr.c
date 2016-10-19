@@ -989,7 +989,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 			nmh_clear_screen ();
 		}
 		else
-		    printf ("\n");
+		    putchar('\n');
 		break;
 
 	    default: 
