@@ -319,7 +319,7 @@ WhatNow (int argc, char **argv)
 	     */
 
 	    if (*(argp+1) == (char *)0) {
-		(void)sprintf(buf, "$SHELL -c \"cd&&pwd\"");
+		strcpy(buf, "$SHELL -c \"cd&&pwd\"");
 	    }
 	    else {
 		writesomecmd(buf, BUFSIZ, "cd", "pwd", argp);
