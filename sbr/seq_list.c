@@ -85,7 +85,7 @@ seq_list(struct msgs *mp, char *seqname)
 	if (bp > buffer)
 	    *bp++ = ' ';
 
-	sprintf(bp, "%s", m_name(i));
+	strcpy(bp, m_name(i));
 	bp += strlen(bp);
 	j = i;			/* Remember beginning of message range */
 
@@ -97,7 +97,8 @@ seq_list(struct msgs *mp, char *seqname)
 	    ;
 
 	if (i - j > 1) {
-	    sprintf(bp, "-%s", m_name(i - 1));
+            *bp++ = '-';
+	    strcpy(bp, m_name(i - 1));
 	    bp += strlen(bp);
 	}
     }
