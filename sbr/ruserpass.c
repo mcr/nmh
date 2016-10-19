@@ -148,7 +148,7 @@ ruserpass(char *host, char **aname, char **apass)
 	if (fgets(tmp, sizeof(tmp) - 1, stdin) == NULL) {
 	    advise ("tmp", "fgets");
 	}
-	tmp[strlen(tmp) - 1] = '\0';
+        TrimSuffixC(tmp, '\n');
 	if (*tmp != '\0' || myname == NULL) {
 	    myname = tmp;
 	}
