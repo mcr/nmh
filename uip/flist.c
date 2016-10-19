@@ -17,9 +17,6 @@
 #include <h/mh.h>
 #include <h/utils.h>
 
-#define FALSE   0
-#define TRUE    1
-
 /*
  * We allocate space to record the names of folders
  * (foldersToDo array), this number of elements at a time.

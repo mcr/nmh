@@ -15,6 +15,15 @@
 # include <sbr/ctype-checked.h>
 #endif
 #include <assert.h>
+
+#ifdef HAVE_STDBOOL_H
+# include <stdbool.h>
+#else
+# define bool int
+# define true 1
+# define false 0
+#endif
+
 #include <sys/stat.h>
 #include <sys/wait.h>
 

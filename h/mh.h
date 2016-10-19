@@ -25,10 +25,10 @@
 #define NMH_BUFSIZ  (BUFSIZ>=8192 ? BUFSIZ : 8192)
 
 #ifndef FALSE
-#define FALSE 0
+#define FALSE false
 #endif
 #ifndef TRUE
-#define TRUE 1
+#define TRUE true
 #endif
 typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 

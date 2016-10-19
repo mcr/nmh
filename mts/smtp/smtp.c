@@ -40,9 +40,6 @@
  */
 #endif
 
-#define	TRUE	1
-#define	FALSE	0
-
 #define	NBITS ((sizeof (int)) * 8)
 
 /*
