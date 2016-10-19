@@ -277,8 +277,10 @@ fi
 [ $verbose -ge 1 ]  &&  echo configuring . . .
 if [ -z "$CFLAGS" ]; then
   #### Only use these flags with gcc.
-  if cc -dM -E - < /dev/null 2>&1 | egrep __GNUC__ >/dev/null; then
-    CFLAGS="-g -O2 -ansi -pedantic"
+  if cc -dM -E - </dev/null 2>&1 | egrep __GNUC__ >/dev/null; then
+    #### configure will supply -g -O2 with gcc, but only if CFLAGS
+    #### isn't defined.
+    CFLAGS='-g -O2 -ansi -pedantic'
   fi
 fi
 
@@ -301,6 +303,13 @@ if [ $status -eq 0 ]; then
         TESTS_SHELL="$heirloom_shell"; export TESTS_SHELL
       fi
    fi
+
+    if [ -n "$CFLAGS" ]; then
+        #### Pass DISTCHECK_CONFIGURE_FLAGS through an environment
+        #### variable to avoid automake's quoting.
+        DISTCHECK_CONFIGURE_FLAGS="CFLAGS='${CFLAGS}'"
+        export DISTCHECK_CONFIGURE_FLAGS
+    fi
 
     [ $verbose -ge 1 ]  &&  echo testing . . .
     checkoutput=`make $check AM_COLOR_TESTS=always 2>>"$logfile"`
