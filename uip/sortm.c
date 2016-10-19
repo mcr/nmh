@@ -122,7 +122,7 @@ main (int argc, char **argv)
 		subjsort = "subject";
 		continue;
 	    case NSUBJSW:
-		subjsort = (char *)0;
+		subjsort = NULL;
 		continue;
 
 	    case LIMSW:
@@ -521,7 +521,7 @@ rename_chain (struct msgs *mp, struct smsg **mlist, int msg, int endmsg)
 
     for (;;) {
 	nxt = mlist[msg] - smsgs;	/* mlist[msg] is a ptr into smsgs */
-	mlist[msg] = (struct smsg *)0;
+	mlist[msg] = NULL;
 	old = smsgs[nxt].s_msg;
 	new = smsgs[msg].s_msg;
 	strncpy (oldname, m_name (old), sizeof(oldname));
