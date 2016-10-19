@@ -103,7 +103,7 @@ folder_delmsgs (struct msgs *mp, int unlink_msgs, int nohook)
 
 	    if (!nohook) {
 		    (void)snprintf(msgpath, sizeof (msgpath), "%s/%d", mp->foldpath, msgnum);
-		    (void)ext_hook("del-hook", msgpath, (char *)0);
+		    (void)ext_hook("del-hook", msgpath, NULL);
 		}
 
 	    dp = m_name (msgnum);
