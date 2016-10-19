@@ -60,7 +60,6 @@ a.out.dSYM/
 /man/mh-chart.man
 /mts/libmts.a
 /sbr/*.a
-/sbr/ctype-checked.*
 /sbr/addrparse.tab.c
 /sbr/addrparse.tab.h
 /sbr/addrparse.output

@@ -134,7 +134,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS = DISABLE_SETGID_MAIL=1 \
 ## automake 1.12.6 on FreeBSD 9 needs the sbr/dtimep.c.
 ##
 CLEANFILES = config/version.c sbr/sigmsg.h sbr/dtimep.c etc/mts.conf \
-	     etc/gen-ctype-checked sbr/ctype-checked.[hc] \
+	     sbr/ctype-checked.[hc] \
 	     etc/mhn.defaults man/man.sed man/mh-chart.man $(man_MANS) \
 	     *.plist
 clean-local:
@@ -185,13 +185,6 @@ nmhlibexec_PROGRAMS = uip/ap uip/dp uip/fmtdump uip/mhl uip/mkstemp \
 		   uip/slocal uip/viamail
 
 nmhlibexec_SCRIPTS = uip/spost
-
-##
-## Programs that MAY need to get built at some point; we need to list them
-## here if they don't appear in any other primary so Automake knows about
-## them and can properly record dependency information.
-##
-EXTRA_PROGRAMS = etc/gen-ctype-checked
 
 ##
 ## Internal libraries that we create as part of the build process
@@ -517,9 +510,6 @@ test_fakehttp_LDADD = $(LDADD) $(POSTLINK)
 test_getcwidth_SOURCES = test/getcwidth.c
 test_getcwidth_LDADD = $(POSTLINK)
 
-etc_gen_ctype_checked_SOURCES = etc/gen-ctype-checked.c
-etc_gen_ctype_checked_LDADD = $(POSTLINK)
-
 ##
 ## Our rebuild rules for files that aren't built via the normal mechanisms
 ##
@@ -529,11 +519,6 @@ etc_gen_ctype_checked_LDADD = $(POSTLINK)
 ## distcheck uses VPATH, causes that make to prepend the VPATH to $@.
 config/version.c: Makefile $(srcdir)/config/version.sh
 	env srcdir="$(srcdir)" sh $(srcdir)/config/version.sh $(VERSION) > ./config/version.c
-
-sbr/ctype-checked.h: etc/gen-ctype-checked
-	etc/gen-ctype-checked
-
-sbr/ctype-checked.c: etc/gen-ctype-checked sbr/ctype-checked.h
 
 etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 	@rm -f $@
@@ -545,6 +530,7 @@ etc/mts.conf: $(srcdir)/etc/mts.conf.in Makefile
 				< $(srcdir)/etc/mts.conf.in > $@
 
 etc/mhn.defaults: $(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPROG)
+	$(MKDIR_P) $(@D) # FIXME: A better way?
 	@rm -f $@
 	$(srcdir)/etc/mhn.defaults.sh $(MHNSEARCHPATH) $(MHNSEARCHPROG) > $@
 
