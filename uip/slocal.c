@@ -423,7 +423,7 @@ usr_delivery (int fd, char *delivery, int su)
     int i, accept, status=1, won, vecp, next;
     char *field, *pattern, *action, *result, *string;
     char buffer[BUFSIZ], tmpbuf[BUFSIZ];
-    char *cp, *vec[NVEC];
+    char *vec[NVEC];
     struct stat st;
     struct pair *p;
     FILE *fp;
@@ -452,9 +452,7 @@ usr_delivery (int fd, char *delivery, int su)
 	if (*buffer == '#' || *buffer == '\n')
 	    continue;
 
-	/* zap trailing newline */
-	if ((cp = strchr(buffer, '\n')))
-	    *cp = 0;
+        TrimSuffixC(buffer, '\n');
 
 	/* split buffer into fields */
 	vecp = split (buffer, vec);
