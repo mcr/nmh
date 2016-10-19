@@ -830,7 +830,7 @@ replace_boundary (CT ct, char *file, char *boundary) {
             continue;
 
         case BODY:
-            fputs ("\n", fpout);
+            putc('\n', fpout);
             /* buf will have a terminating NULL, skip it. */
             if ((int) fwrite (buf, 1, bufsz-1, fpout) < bufsz-1) {
                 advise (file, "fwrite");
