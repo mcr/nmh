@@ -192,8 +192,7 @@ usage:
 	} else {
 	    if (mode != SHOW)
 		goto usage;
-	    else
-		app_msgarg(&msgs, cp);
+            app_msgarg(&msgs, cp);
 	}
     }
 
