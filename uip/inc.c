@@ -176,10 +176,9 @@ maildir_srt(const void *va, const void *vb)
     const struct Maildir_entry *a = va, *b = vb;
     if (a->mtime > b->mtime)
       return 1;
-    else if (a->mtime < b->mtime)
+    if (a->mtime < b->mtime)
       return -1;
-    else
-      return 0;
+    return 0;
 }
 
 int
