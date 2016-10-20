@@ -2515,7 +2515,7 @@ openFTP (CT ct, char **file)
 		  LocalName (1));
 	pass = buffer;
     } else {
-	ruserpass (e->eb_site, &username, &password);
+	ruserpass (e->eb_site, &username, &password, 0);
 	user = username;
 	pass = password;
     }

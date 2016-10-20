@@ -18,7 +18,6 @@
 #define	TRMLEN	(sizeof TRM - 1)
 
 static int poprint = 0;
-static int pophack = 0;
 
 char response[BUFSIZ];
 static netsec_context *nsc = NULL;
@@ -134,8 +133,8 @@ parse_proxy(char *proxy, char *host)
 }
 
 int
-pop_init (char *host, char *port, char *user, char *pass, char *proxy,
-	  int snoop, int sasl, char *mech, int tls, const char *oauth_svc)
+pop_init (char *host, char *port, char *user, char *proxy, int snoop,
+	  int sasl, char *mech, int tls, const char *oauth_svc)
 {
     int fd1, fd2;
     char buffer[BUFSIZ];
@@ -253,11 +252,21 @@ pop_init (char *host, char *port, char *user, char *pass, char *proxy,
 			return NOTOK;
 		    }
 		    return OK;
-		} else
-		if (command ("USER %s", user) != NOTOK
-		    && command ("%s %s", (pophack++, "PASS"),
-					pass) != NOTOK)
-		return OK;
+		} else {
+		    nmh_creds_t creds;
+
+		    if (!(creds = nmh_get_credentials(host, user)))
+			return NOTOK;
+		    if (command ("USER %s", nmh_cred_get_user(creds))
+		    						!= NOTOK) {
+			if (command("PASS %s", nmh_cred_get_password(creds))
+								!= NOTOK) {
+			    nmh_credentials_free(creds);
+			    return OK;
+			}
+		    }
+		    nmh_credentials_free(creds);
+		}
 	    }
 	    strncpy (buffer, response, sizeof(buffer));
 	    command ("QUIT");

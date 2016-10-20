@@ -350,23 +350,20 @@ remotemail (char *host, char *port, char *user, char *proxy, int notifysw,
 	    const char *auth_svc)
 {
     int nmsgs, nbytes, status;
-    struct nmh_creds creds = { 0, 0, 0 };
 
     if (auth_svc == NULL) {
 	if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
 	    adios (NULL, "must specify -authservice with -saslmech xoauth2");
 	}
-	nmh_get_credentials (host, user, sasl, &creds);
     } else {
 	if (user == NULL) {
 	    adios (NULL, "must specify -user with -saslmech xoauth2");
 	}
-	creds.user = user;
     }
 
     /* open the POP connection */
-    if (pop_init (host, port, creds.user, creds.password, proxy, snoop, sasl,
-		  saslmech, tls, auth_svc) == NOTOK
+    if (pop_init (host, port, user, proxy, snoop, sasl, saslmech, tls,
+		  auth_svc) == NOTOK
 	    || pop_stat (&nmsgs, &nbytes) == NOTOK     /* check for messages  */
 	    || pop_quit () == NOTOK) {                 /* quit POP connection */
 	advise (NULL, "%s", response);

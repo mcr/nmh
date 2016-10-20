@@ -59,7 +59,7 @@ static int token(char *);
 
 
 void
-ruserpass(char *host, char **aname, char **apass)
+ruserpass(const char *host, char **aname, char **apass, int flags)
 {
     int t, usedefault = 0;
     struct stat stb;
@@ -133,7 +133,7 @@ ruserpass(char *host, char **aname, char **apass)
 	}
     }
 
-    if (!*aname) {
+    if (!*aname && ! (flags & RUSERPASS_NO_PROMPT_USER)) {
 	char tmp[80];
 	char *myname;
 
@@ -156,7 +156,7 @@ ruserpass(char *host, char **aname, char **apass)
         *aname = mh_xstrdup(myname);
     }
 
-    if (!*apass) {
+    if (!*apass && ! (flags & RUSERPASS_NO_PROMPT_PASSWORD)) {
 	char prompt[256];
 	char *mypass;
 

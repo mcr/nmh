@@ -8,6 +8,12 @@
 #include <h/utils.h>
 #include <h/mts.h>
 
+struct nmh_creds {
+    char *host;		/* Hostname corresponding to credentials */
+    char *user;		/* Username corresponding to credentials */
+    char *pass;		/* (Optional) password used by credentials */
+};
+
 void
 init_credentials_file () {
     if (credentials_file == NULL) {
@@ -44,21 +50,23 @@ init_credentials_file () {
     }
 }
 
-int
-nmh_get_credentials (char *host, char *user, int sasl, nmh_creds_t creds) {
+nmh_creds_t
+nmh_get_credentials (const char *host, const char *user)
+{
+    nmh_creds_t creds;
+
     char *cred_style = context_find ("credentials");
 
     init_credentials_file ();
-    creds->host = host;
+
+    creds = mh_xmalloc(sizeof(*creds));
+
+    creds->host = getcpy(host);
+    creds->user = NULL;
+    creds->pass = NULL;
 
     if (cred_style == NULL  ||  ! strcmp (cred_style, "legacy")) {
-	creds->user = user == NULL  ?  getusername ()  :  user;
-        if (sasl) {
-
-            /* This is what inc.c and msgchk.c used to contain. */
-            /* Only inc.c and msgchk.c do this.  smtp.c doesn't. */
-            creds->password = getusername ();
-        }
+	creds->user = user == NULL  ?  getcpy(getusername ())  :  getcpy(user);
     } else if (! strncasecmp (cred_style, "file:", 5) ||
 	       ! strncasecmp (cred_style, "file-nopermcheck:", 17)) {
         /*
@@ -69,12 +77,64 @@ nmh_get_credentials (char *host, char *user, int sasl, nmh_creds_t creds) {
          * 3) interactively request from user (as long as the
          *    credentials file didn't have a "default" token)
          */
-        creds->user = user;
+        creds->user = user == NULL ? NULL : getcpy(user);
     } else {
         admonish (NULL, "unknown credentials style %s", cred_style);
-        return NOTOK;
+        return NULL;
     }
 
-    ruserpass (host, &creds->user, &creds->password);
-    return OK;
+    ruserpass(creds->host, &creds->user, &creds->pass,
+	      RUSERPASS_NO_PROMPT_USER | RUSERPASS_NO_PROMPT_PASSWORD);
+
+    return creds;
+}
+
+/*
+ * Retrieve the username
+ */
+
+const char *
+nmh_cred_get_user(nmh_creds_t creds)
+{
+    if (! creds->user) {
+	ruserpass(creds->host, &creds->user, &creds->pass,
+		  RUSERPASS_NO_PROMPT_PASSWORD);
+    }
+
+    return creds->user;
+}
+
+/*
+ * Retrieve the password
+ */
+
+const char *
+nmh_cred_get_password(nmh_creds_t creds)
+{
+    if (! creds->pass) {
+	ruserpass(creds->host, &creds->user, &creds->pass, 0);
+    }
+
+    return creds->pass;
+}
+
+/*
+ * Free our credentials
+ */
+
+void
+nmh_credentials_free(nmh_creds_t creds)
+{
+    if (creds->host)
+	free(creds->host);
+
+    if (creds->user)
+	free(creds->user);
+
+    if (creds->pass) {
+	memset(creds->pass, 0, strlen(creds->pass));
+	free(creds->pass);
+    }
+
+    free(creds);
 }

@@ -209,12 +209,8 @@ netsec_shutdown(netsec_context *nsc, int closeflag)
 	free(nsc->sasl_hostname);
     if (nsc->sasl_cbs)
 	free(nsc->sasl_cbs);
-    if (nsc->sasl_creds) {
-	if (nsc->sasl_creds->password)
-	    memset(nsc->sasl_creds->password, 0,
-	    	   strlen(nsc->sasl_creds->password));
-	free(nsc->sasl_creds);
-    }
+    if (nsc->sasl_creds)
+	nmh_credentials_free(nsc->sasl_creds);
     if (nsc->sasl_secret) {
 	if (nsc->sasl_secret->len > 0) {
 	    memset(nsc->sasl_secret->data, 0, nsc->sasl_secret->len);
@@ -1003,6 +999,13 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
     }
 
     nsc->sasl_hostname = mh_xstrdup(hostname);
+
+    /*
+     * Set up our credentials
+     */
+
+    nsc->sasl_creds = nmh_get_credentials(nsc->sasl_hostname, nsc->ns_userid);
+
 #else /* CYRUS_SASL */
     NMH_UNUSED(hostname);
     NMH_UNUSED(service);
@@ -1043,35 +1046,10 @@ int netsec_get_user(void *context, int id, const char **result,
     if (! result || (id != SASL_CB_USER && id != SASL_CB_AUTHNAME))
 	return SASL_BADPARAM;
 
-    if (nsc->ns_userid == NULL) {
-	/*
-	 * Pass the 1 third argument to nmh_get_credentials() so that
-	 * a default user if the -user switch wasn't supplied, and so
-	 * that a default password will be supplied.  That's used when
-	 * those values really don't matter, and only with legacy/.netrc,
-	 * i.e., with a credentials profile entry.
-	 */
+    *result = nmh_cred_get_user(nsc->sasl_creds);
 
-	if (nsc->sasl_creds == NULL) {
-	    NEW(nsc->sasl_creds);
-	    nsc->sasl_creds->user = NULL;
-	    nsc->sasl_creds->password = NULL;
-	}
-
-	if (nmh_get_credentials(nsc->sasl_hostname, nsc->ns_userid, 1,
-				nsc->sasl_creds) != OK)
-	    return SASL_BADPARAM;
-
-	if (nsc->ns_userid != nsc->sasl_creds->user) {
-	    if (nsc->ns_userid)
-		free(nsc->ns_userid);
-	    nsc->ns_userid = getcpy(nsc->sasl_creds->user);
-	}
-    }
-
-    *result = nsc->ns_userid;
     if (len)
-	*len = strlen(nsc->ns_userid);
+	*len = strlen(*result);
 
     return SASL_OK;
 }
@@ -1085,6 +1063,7 @@ netsec_get_password(sasl_conn_t *conn, void *context, int id,
 		    sasl_secret_t **psecret)
 {
     netsec_context *nsc = (netsec_context *) context;
+    const char *password;
     int len;
 
     NMH_UNUSED(conn);
@@ -1092,27 +1071,9 @@ netsec_get_password(sasl_conn_t *conn, void *context, int id,
     if (! psecret || id != SASL_CB_PASS)
 	return SASL_BADPARAM;
 
-    if (nsc->sasl_creds == NULL) {
-	NEW(nsc->sasl_creds);
-	nsc->sasl_creds->user = NULL;
-	nsc->sasl_creds->password = NULL;
-    }
+    password = nmh_cred_get_password(nsc->sasl_creds);
 
-    if (nsc->sasl_creds->password == NULL) {
-	/*
-	 * Pass the 0 third argument to nmh_get_credentials() so
-	 * that the default password isn't used.  With legacy/.netrc
-	 * credentials support, we'll only get here if the -user
-	 * switch to send(1)/post(8) wasn't used.
-	 */
-
-	if (nmh_get_credentials(nsc->sasl_hostname, nsc->ns_userid, 0,
-				nsc->sasl_creds) != OK) {
-	    return SASL_BADPARAM;
-	}
-    }
-
-    len = strlen(nsc->sasl_creds->password);
+    len = strlen(password);
 
     /*
      * sasl_secret_t includes 1 bytes for "data" already, so that leaves
@@ -1125,7 +1086,7 @@ netsec_get_password(sasl_conn_t *conn, void *context, int id,
 	return SASL_NOMEM;
 
     (*psecret)->len = len;
-    strcpy((char *) (*psecret)->data, nsc->sasl_creds->password);
+    strcpy((char *) (*psecret)->data, password);
 
     nsc->sasl_secret = *psecret;
 

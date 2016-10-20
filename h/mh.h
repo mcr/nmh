@@ -396,12 +396,7 @@ typedef struct m_getfld_state *m_getfld_state_t;
 /*
  * credentials management
  */
-struct nmh_creds {
-    char *host;
-    char *user;
-    char *password;
-};
-
+struct nmh_creds;
 typedef struct nmh_creds *nmh_creds_t;
 
 /*

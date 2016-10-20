@@ -3,8 +3,8 @@
  * popsbr.h -- header for POP client subroutines
  */
 
-int pop_init (char *, char *, char *, char *, char *, int, int, char *, int,
-              const char *);
+int pop_init (char *, char *, char *, char *, int, int, char *, int,
+	      const char *);
 int pop_fd (char *, int, char *, int);
 int pop_stat (int *, int *);
 int pop_retr (int, int (*)(char *));

@@ -413,25 +413,21 @@ main (int argc, char **argv)
      * a POP server?
      */
     if (inc_type == INC_POP) {
-	struct nmh_creds creds = { 0, 0, 0 };
-
 	if (auth_svc == NULL) {
 	    if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
 		adios (NULL, "must specify -authservice with -saslmech xoauth2");
 	    }
-	    nmh_get_credentials (host, user, sasl, &creds);
 	} else {
 	    if (user == NULL) {
 		adios (NULL, "must specify -user with -saslmech xoauth2");
 	    }
-	    creds.user = user;
 	}
 
 	/*
 	 * initialize POP connection
 	 */
-	if (pop_init (host, port, creds.user, creds.password, proxy, snoop,
-		      sasl, saslmech, tls, auth_svc) == NOTOK)
+	if (pop_init (host, port, user, proxy, snoop, sasl, saslmech,
+		      tls, auth_svc) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */

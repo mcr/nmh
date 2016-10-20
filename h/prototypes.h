@@ -325,7 +325,23 @@ char *pwd (void);
 char *r1bindex(char *, int);
 void readconfig (struct node **, FILE *, const char *, int);
 int refile (char **, char *);
-void ruserpass (char *, char **, char **);
+
+/*
+ * Read our credentials file and (optionally) ask the user for anything
+ * missing.
+ *
+ * Arguments:
+ *
+ * host		- Hostname (to scan credentials file)
+ * aname	- Pointer to filled-in username
+ * apass	- Pointer to filled-in password
+ * flags	- One or more of RUSERPASS_NO_PROMPT_USER,
+ *                RUSERPASS_NO_PROMPT_PASSWORD
+ */
+void ruserpass (const char *host, char **aname, char **apass, int flags);
+#define RUSERPASS_NO_PROMPT_USER	0x01
+#define RUSERPASS_NO_PROMPT_PASSWORD	0x02
+
 int remdir (char *);
 void scan_detect_mbox_style (FILE *);
 void scan_finished ();
@@ -497,7 +513,46 @@ void hexify (const unsigned char *, size_t, char **);
  * credentials management
  */
 void init_credentials_file ();
-int nmh_get_credentials (char *, char *, int, nmh_creds_t);
+
+/*
+ * Allocate and return a credentials structure.  The credentials structure
+ * is now opaque; you need to use accessors to get inside of it.  The
+ * accessors will only prompt the user for missing fields if they are
+ * needed.
+ *
+ * Arguments:
+ *
+ * host	- Hostname we're connecting to (used to search credentials file)
+ * user	- Username we are logging in as; can be NULL.
+ *
+ * Returns NULL on error, otherwise an allocated nmh_creds structure.
+ */
+nmh_creds_t nmh_get_credentials (const char *host, const char *user);
+
+/*
+ * Retrieve the user from a nmh_creds structure.  May prompt the user
+ * if one is not defined.
+ *
+ * Arguments:
+ *
+ * creds	- Structure from previous nmh_get_credentials() call
+ *
+ * Returns NULL on error, otherwise a NUL-termined string containing
+ * the username.  Points to allocated memory in the credentials structure
+ * that is free()d by nmh_free_credentials().
+ */
+const char *nmh_cred_get_user(nmh_creds_t creds);
+
+/*
+ * Retrieve the password from an nmh_creds structure.  Otherwise identical
+ * to nmh_cred_get_user().
+ */
+const char *nmh_cred_get_password(nmh_creds_t creds);
+
+/*
+ * Free an allocated nmh_creds structure.
+ */
+void nmh_credentials_free(nmh_creds_t creds);
 
 /*
  * program initialization
