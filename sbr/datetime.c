@@ -143,9 +143,9 @@ parse_datetime (const char *datetime, const char *zone, int dst,
         }
 
         return OK;
-    } else {
-        return NOTOK;
     }
+
+    return NOTOK;
 }
 
 tzdesc_t
@@ -359,10 +359,9 @@ format_datetime (tzdesc_t timezones, const contentline *node) {
            Form #2: DATE WITH UTC TIME */
         if (parse_datetime (node->value, NULL, 0, &tws[0]) == OK) {
             return strdup (dasctime (&tws[0], 0));
-        } else {
-            advise (NULL, "unable to parse datetime %s", node->value);
-            return NULL;
         }
+        advise (NULL, "unable to parse datetime %s", node->value);
+        return NULL;
     }
 
     /*
