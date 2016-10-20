@@ -232,9 +232,9 @@ dtime (time_t *clock, int alpha_timezone)
     if (alpha_timezone)
 	/* use alpha-numeric timezones */
 	return dasctime (dlocaltime (clock), TW_NULL);
-    else
-	/* use numeric timezones */
-	return dasctime (dlocaltime (clock), TW_ZONE);
+
+    /* use numeric timezones */
+    return dasctime (dlocaltime (clock), TW_ZONE);
 }
 
 
