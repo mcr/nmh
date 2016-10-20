@@ -124,9 +124,8 @@ get_file_info(const char *proc, const char *file_name) {
             advise(NULL, "filenames containing both single and double quotes "
                    "are unsupported for attachment");
             return NULL;
-        } else {
-            quotec = "\"";
         }
+        quotec = "\"";
     }
 
     if ((cmd = concat(proc, " ", quotec, file_name, quotec, NULL))) {
