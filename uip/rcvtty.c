@@ -198,7 +198,8 @@ message_fd (char **vec)
 	/* fork error */
 	close (fd);
 	return header_fd ();
-    } else if (child_id) {
+    }
+    if (child_id) {
 	/* parent process */
 	if (!setjmp (myctx)) {
 	    SIGNAL (SIGALRM, alrmser);
