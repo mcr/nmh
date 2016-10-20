@@ -51,19 +51,17 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 	 * extend message status range to cover this message number.
          */
 	if (msgnum > mp->hghoff) {
-	    if ((mp = folder_realloc (mp, mp->lowoff, msgnum + 100)))
-		*mpp = mp;
-	    else {
+	    if (!(mp = folder_realloc (mp, mp->lowoff, msgnum + 100))) {
 		advise (NULL, "unable to allocate folder storage");
 		return -1;
-	    }
+            }
+            *mpp = mp;
 	} else if (msgnum < mp->lowoff) {
-	    if ((mp = folder_realloc (mp, msgnum, mp->hghoff)))
-		*mpp = mp;
-	    else {
+	    if (!(mp = folder_realloc (mp, msgnum, mp->hghoff))) {
 		advise (NULL, "unable to allocate folder storage");
 		return -1;
-	    }
+            }
+            *mpp = mp;
 	}
 
 	/*
@@ -128,7 +126,6 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 	 * Run the add hook if the message is getting copied or linked somewhere else.
 	 */
 	if (link (msgfile, newmsg) != -1) {
-
 	    if (deleting) {
 		(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", from_dir, msgfile);
 		(void)ext_hook("ref-hook", oldmsg, newmsg);
@@ -137,72 +134,70 @@ folder_addmsg (struct msgs **mpp, char *msgfile, int selected,
 		(void)ext_hook("add-hook", newmsg, NULL);
 
 	    return msgnum;
-	} else {
-	    linkerr = errno;
+	}
+        linkerr = errno;
 
 #ifdef EISREMOTE
-	    if (linkerr == EISREMOTE)
-		linkerr = EXDEV;
+        if (linkerr == EISREMOTE)
+            linkerr = EXDEV;
 #endif /* EISREMOTE */
 
-	    /*
-	     * Check if the file in our desired location is the same
-	     * as the source file.  If so, then just leave it alone
-	     * and return.  Otherwise, we will continue the main loop
-	     * and try again at another slot (hghmsg+1).
-	     */
-	    if (linkerr == EEXIST) {
-		if (stat (msgfile, &st2) == 0 && stat (newmsg, &st1) == 0
-		    && st2.st_ino == st1.st_ino) {
-		    return msgnum;
-		} else {
-		    continue;
-		}
-	    }
+        /*
+         * Check if the file in our desired location is the same
+         * as the source file.  If so, then just leave it alone
+         * and return.  Otherwise, we will continue the main loop
+         * and try again at another slot (hghmsg+1).
+         */
+        if (linkerr == EEXIST) {
+            if (stat (msgfile, &st2) == 0 && stat (newmsg, &st1) == 0
+                && st2.st_ino == st1.st_ino) {
+                return msgnum;
+            }
+            continue;
+        }
 
-	    /*
-	     * If link failed because we are trying to link
-	     * across devices, then check if there is a message
-	     * already in the desired location.  If so, then return
-	     * error, else just copy the message.
-	     * Cygwin with FAT32 filesystem produces EPERM.
-	     */
-	    if (linkerr == EXDEV  ||  linkerr == EPERM) {
-		if (stat (newmsg, &st1) == 0) {
-		    advise (NULL, "message %s:%s already exists", mp->foldpath, newmsg);
-		    return -1;
-		} else {
-		    if ((infd = open (msgfile, O_RDONLY)) == -1) {
-			advise (msgfile, "unable to open message %s", msgfile);
-			return -1;
-		    }
-		    fstat (infd, &st1);
-		    if ((outfd = creat (newmsg, (int) st1.st_mode & 0777)) == -1) {
-			advise (newmsg, "unable to create");
-			close (infd);
-			return -1;
-		    }
-		    cpydata (infd, outfd, msgfile, newmsg);
-		    close (infd);
-		    close (outfd);
+        /*
+         * If link failed because we are trying to link
+         * across devices, then check if there is a message
+         * already in the desired location.  If so, then return
+         * error, else just copy the message.
+         * Cygwin with FAT32 filesystem produces EPERM.
+         */
+        if (linkerr == EXDEV  ||  linkerr == EPERM) {
+            if (stat (newmsg, &st1) == 0) {
+                advise (NULL, "message %s:%s already exists", mp->foldpath, newmsg);
+                return -1;
+            }
 
-		    if (deleting) {
-			(void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", from_dir, msgfile);
-			(void)ext_hook("ref-hook", oldmsg, newmsg);
-		    }
-		    else
-		        (void)ext_hook("add-hook", newmsg, NULL);
+            if ((infd = open (msgfile, O_RDONLY)) == -1) {
+                advise (msgfile, "unable to open message %s", msgfile);
+                return -1;
+            }
+            fstat (infd, &st1);
+            if ((outfd = creat (newmsg, (int) st1.st_mode & 0777)) == -1) {
+                advise (newmsg, "unable to create");
+                close (infd);
+                return -1;
+            }
+            cpydata (infd, outfd, msgfile, newmsg);
+            close (infd);
+            close (outfd);
 
-		    return msgnum;
-		}
-	    }
+            if (deleting) {
+                (void)snprintf(oldmsg, sizeof (oldmsg), "%s/%s", from_dir, msgfile);
+                (void)ext_hook("ref-hook", oldmsg, newmsg);
+            }
+            else
+                (void)ext_hook("add-hook", newmsg, NULL);
 
-	    /*
-	     * Else, some other type of link error,
-	     * so just return error.
-	     */
-	    advise (newmsg, "error linking %s to", msgfile);
-	    return -1;
-	}
+            return msgnum;
+        }
+
+        /*
+         * Else, some other type of link error,
+         * so just return error.
+         */
+        advise (newmsg, "error linking %s to", msgfile);
+        return -1;
     }
 }
