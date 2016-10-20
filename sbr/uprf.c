@@ -26,8 +26,7 @@ uprf (const char *c1, const char *c2)
 	mask = (isalpha(mask) && isupper(mask)) ? tolower(mask) : mask;
 	if (c != mask)
 	    return 0;
-	else
-	    c1++;
+        c1++;
     }
     return 1;
 }
