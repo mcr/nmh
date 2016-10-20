@@ -1125,16 +1125,15 @@ usr_pipe (int fd_arg, char *cmd, char *pgm, char **vec, int suppress)
 			    pidstatus (status, stdout, ", failed");
 		}
 		return (status == 0 ? 0 : -1);
-	    } else {
-		/*
-		 * Ruthlessly kill the child and anything
-		 * else in its process group.
-		 */
-		killpg(child_id, SIGKILL);
-		if (verbose)
-		    verbose_printf (", timed-out; terminated\n");
-		return -1;
 	    }
+            /*
+             * Ruthlessly kill the child and anything
+             * else in its process group.
+             */
+            killpg(child_id, SIGKILL);
+            if (verbose)
+                verbose_printf (", timed-out; terminated\n");
+            return -1;
     }
 }
 
