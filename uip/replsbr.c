@@ -609,8 +609,7 @@ fix_addresses (char *str) {
 
     if (fixed_address) {
         return fixed_str;
-    } else {
-        free (fixed_str);
-        return str  ?  strdup (str)  :  NULL;
     }
+    free (fixed_str);
+    return str  ?  strdup (str)  :  NULL;
 }
