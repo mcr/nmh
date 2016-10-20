@@ -1201,10 +1201,9 @@ end_part:
 		if (inout)
 		    goto next_part;
 		goto last_part;
-	    } else {
-		if (strcmp (bufp + 2, m->mp_stop) == 0)
-		    goto end_part;
 	    }
+            if (strcmp (bufp + 2, m->mp_stop) == 0)
+                goto end_part;
 	}
     }
 
@@ -2324,9 +2323,8 @@ openExternal (CT ct, CT cb, CE ce, char **file, int *fd)
 	    ce->ce_file = mh_xstrdup(cachefile);
 	    ce->ce_unlink = 0;
 	    goto ready_already;
-	} else {
-	    admonish (cachefile, "unable to fopen for reading");
 	}
+        admonish (cachefile, "unable to fopen for reading");
     }
 
     *fd = fileno (ce->ce_fp);
