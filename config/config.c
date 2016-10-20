@@ -72,9 +72,8 @@ try_it:
 		/* Will leak because caller doesn't know cp was
 		   dynamically allocated. */
 		return cp;
-	    } else {
-		free (cp);
 	    }
+            free (cp);
     }
 
     /* Check nmh `etc' directory */
