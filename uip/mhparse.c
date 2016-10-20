@@ -1702,8 +1702,7 @@ size_encoding (CT ct)
     if (ce->ce_file) {
 	if (stat (ce->ce_file, &st) != NOTOK)
 	    return (long) st.st_size;
-	else
-	    return 0L;
+        return 0L;
     }
 
     if (ct->c_encoding == CE_EXTERNAL)
@@ -2919,17 +2918,16 @@ readDigest (CT ct, char *cp)
             }
 
             return OK;
-        } else {
-            if (debugsw) {
-                fprintf (stderr, "invalid MD5 digest (got %d octets)\n",
-                         (int) strlen ((char *) digest));
-            }
-
-            return NOTOK;
         }
-    } else {
+        if (debugsw) {
+            fprintf (stderr, "invalid MD5 digest (got %d octets)\n",
+                     (int) strlen ((char *) digest));
+        }
+
         return NOTOK;
     }
+
+    return NOTOK;
 }
 
 
@@ -4136,8 +4134,7 @@ get_param(PM first, const char *name, char replace, int fetchonly)
 	if (strcasecmp(name, first->pm_name) == 0) {
 	    if (fetchonly)
 	    	return first->pm_value;
-	    else
-	    	return getcpy(get_param_value(first, replace));
+            return getcpy(get_param_value(first, replace));
 	}
 	first = first->pm_next;
     }
