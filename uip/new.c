@@ -342,14 +342,15 @@ doit(char *cur, char *folders, char *sequences[])
 	if (first == NULL) {
 	    /* No folders at all... */
 	    return NULL;
-	} else if (first->n_next == NULL) {
+	}
+        if (first->n_next == NULL) {
 	    /* We have only one node; any desired messages in it? */
 	    if (first->n_field == NULL) {
 		return NULL;
-	    } else {
-		return first;
 	    }
-	} else if (cur_node == NULL) {
+            return first;
+	}
+        if (cur_node == NULL) {
 	    /* Current folder is not listed in .folders, return first. */
 	    return first;
 	}
