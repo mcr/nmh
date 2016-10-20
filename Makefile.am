@@ -82,6 +82,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/mhlist/test-mhlist test/mhlist/test-ext-params \
 	test/mhmail/test-mhmail \
 	test/mhparam/test-mhparam test/mhpath/test-mhpath \
+	test/mhshow/test-binary \
 	test/mhshow/test-charset test/mhshow/test-textcharset \
 	test/mhshow/test-cte-binary test/mhshow/test-qp \
 	test/mhshow/test-subpart test/mhshow/test-msg-buffer-boundaries \
@@ -112,6 +113,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/cleanup ## The "cleanup" test should always be last.
 
 XFAIL_TESTS = \
+    test/mhshow/test-binary \
     test/scan/test-header-parsing \
     #
 
