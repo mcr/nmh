@@ -22,10 +22,10 @@ m_draft (char *folder, char *msg, int use, int *isdf)
 	if (*isdf == -1 || (cp = context_find ("Draft-Folder")) == NULL) {
 	    *isdf = 0;
 	    return m_maildir (msg && *msg ? msg : draft);
-	} else {
-	    folder = path (*cp == '+' || *cp == '@' ? cp + 1 : cp,
-		    *cp != '@' ? TFOLDER : TSUBCWF);
 	}
+
+        folder = path (*cp == '+' || *cp == '@' ? cp + 1 : cp,
+                *cp != '@' ? TFOLDER : TSUBCWF);
     }
     *isdf = 1;
     
