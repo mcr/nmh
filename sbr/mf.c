@@ -34,17 +34,18 @@ isfrom(const char *string)
 int
 lequal (const char *a, const char *b)
 {
-    for (; *a; a++, b++)
+    char c1, c2;
+
+    for (; *a; a++, b++) {
 	if (*b == 0)
 	    return FALSE;
-	else {
-	    char c1 = islower ((unsigned char) *a) ?
-	    				toupper ((unsigned char) *a) : *a;
-	    char c2 = islower ((unsigned char) *b) ?
-	    				toupper ((unsigned char) *b) : *b;
-	    if (c1 != c2)
-		return FALSE;
-	}
+        c1 = islower ((unsigned char) *a) ?
+                                    toupper ((unsigned char) *a) : *a;
+        c2 = islower ((unsigned char) *b) ?
+                                    toupper ((unsigned char) *b) : *b;
+        if (c1 != c2)
+            return FALSE;
+    }
 
     return (*b == 0);
 }
