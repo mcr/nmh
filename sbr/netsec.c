@@ -627,7 +627,8 @@ retry:
 	    if (nsc->ns_snoop)
 		ERR_print_errors_fp(stderr);
 	    return NOTOK;
-	} else if (rc < 0) {
+	}
+        if (rc < 0) {
 	    /* Definitely an error */
 	    netsec_err(errstr, "Read on TLS connection failed: %s",
 		       ERR_error_string(ERR_get_error(), NULL));
@@ -826,19 +827,18 @@ retry:
 	    	       "%d bytes, but our buffer size was only %d bytes",
 		       rc, nsc->ns_outbufsize);
 	    return NOTOK;
-	} else {
-	    /*
-	     * Generate a flush (which may be inefficient, but hopefully
-	     * it isn't) and then try again.
-	     */
-	    if (netsec_flush(nsc, errstr) != OK)
-		return NOTOK;
-	    /*
-	     * After this, outbuffer should == outptr, so we shouldn't
-	     * hit this next time around.
-	     */
-	    goto retry;
 	}
+        /*
+         * Generate a flush (which may be inefficient, but hopefully
+         * it isn't) and then try again.
+         */
+        if (netsec_flush(nsc, errstr) != OK)
+            return NOTOK;
+        /*
+         * After this, outbuffer should == outptr, so we shouldn't
+         * hit this next time around.
+         */
+        goto retry;
     }
 
     if (nsc->ns_snoop) {
@@ -1535,12 +1535,11 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	nsc->ssl_io = ssl_bio;
 
 	return OK;
-    } else {
-	BIO_free_all(nsc->ssl_io);
-	nsc->ssl_io = NULL;
-
-	return OK;
     }
+    BIO_free_all(nsc->ssl_io);
+    nsc->ssl_io = NULL;
+
+    return OK;
 #else /* TLS_SUPPORT */
 	netsec_err(errstr, "TLS is not supported");
 
