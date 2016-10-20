@@ -560,8 +560,7 @@ mhl_format (char *file, int length, int width)
 		&& dev == st.st_dev
 		&& ino == st.st_ino)
 	    goto out;
-	else
-	    free_queue (&fmthd, &fmttl);
+        free_queue (&fmthd, &fmttl);
     }
 
     if ((fp = fopen (etcpath (file), "r")) == NULL)
