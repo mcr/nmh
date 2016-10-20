@@ -916,11 +916,12 @@ tws_special (char *ap)
 	if ((i -= tw->tw_wday) > 0)
 	    i -= 7;
     }
-    else
+    else {
 	if (*ap != '-')
 	    return NULL;
-	else			/* -ddd days ago */
-	    i = atoi (ap);	/* we should error check this */
+	/* -ddd days ago */
+	i = atoi (ap);	/* we should error check this */
+    }
 
     clock += (long) ((60 * 60 * 24) * i);
     return dlocaltime (&clock);
