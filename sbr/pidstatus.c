@@ -47,7 +47,9 @@ pidstatus (int status, FILE *fp, char *cp)
 	    fprintf (fp, "exit %d\n", signum);
 	}
 	return signum;
-    } else if (WIFSIGNALED(status)) {
+    }
+
+    if (WIFSIGNALED(status)) {
 	/* If child process terminated due to receipt of a signal */
 	signum = WTERMSIG(status);
 	if (signum != SIGINT) {
