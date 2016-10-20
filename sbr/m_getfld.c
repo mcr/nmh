@@ -463,19 +463,17 @@ static int
 Peek (m_getfld_state_t s) {
     if (s->end - s->readpos < 1  &&  read_more (s) == 0) {
         return EOF;
-    } else {
-        return s->readpos < s->end  ?  (unsigned char) *s->readpos  :  EOF;
     }
+    return s->readpos < s->end  ?  (unsigned char) *s->readpos  :  EOF;
 }
 
 static int
 Ungetc (int c, m_getfld_state_t s) {
     if (s->readpos == s->msg_buf) {
 	return EOF;
-    } else {
-	--s->bytes_read;
-	return *--s->readpos = (unsigned char) c;
     }
+    --s->bytes_read;
+    return *--s->readpos = (unsigned char) c;
 }
 
 
@@ -589,7 +587,8 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 		*bufsz = --s->bytes_read;  /* == n - 1 */
 		leave_getfld (s);
 		return s->state = BODY;
-	    } else if (max <= n) {
+	    }
+            if (max <= n) {
 		/* By design, the loop above discards the last character
                    it had read.  It's in c, use it. */
 		*cp++ = c;
