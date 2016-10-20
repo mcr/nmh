@@ -276,20 +276,19 @@ str2accbits(const char *mode)
 {
     if (strcmp (mode, "r") == 0)
 	return O_RDONLY;
-    else if (strcmp (mode, "r+") == 0)
+    if (strcmp (mode, "r+") == 0)
 	return O_RDWR;
-    else if (strcmp (mode, "w") == 0)
+    if (strcmp (mode, "w") == 0)
 	return O_WRONLY | O_CREAT | O_TRUNC;
-    else if (strcmp (mode, "w+") == 0)
+    if (strcmp (mode, "w+") == 0)
 	return O_RDWR | O_CREAT | O_TRUNC;
-    else if (strcmp (mode, "a") == 0)
+    if (strcmp (mode, "a") == 0)
 	return O_WRONLY | O_CREAT | O_APPEND;
-    else if (strcmp (mode, "a+") == 0)
+    if (strcmp (mode, "a+") == 0)
 	return O_RDWR | O_CREAT | O_APPEND;
-    else {
-	errno = EINVAL;
-	return -1;
-    }
+
+    errno = EINVAL;
+    return -1;
 }
 
 /*
@@ -501,29 +500,29 @@ lkopen_dot (const char *file, int access, mode_t mode, int *failed_to_lock)
 		/* if successful, turn on timer and return */
 		timerON (lkinfo.curlock, fd);
 		return fd;
-	    } else {
-		/*
-		 * Abort locking, if we fail to lock after 5 attempts
-		 * and are never able to stat the lock file.  Or, if
-		 * we can stat the lockfile but exceed LOCK_RETRIES
-		 * seconds waiting for it (by falling out of the loop).
-		 */
-		struct stat st;
-		if (stat (lkinfo.curlock, &st) == -1) {
-		    if (i++ > 5) break;
-		    sleep (1);
-		} else {
-		    time_t curtime;
-		    time (&curtime);
-		    
-		    /* check for stale lockfile, else sleep */
-		    if (curtime > st.st_ctime + RSECS)
-			(void) m_unlink (lkinfo.curlock);
-		    else
-			sleep (1);
-		}
-		lockname (file, &lkinfo, 1);
 	    }
+
+            /*
+             * Abort locking, if we fail to lock after 5 attempts
+             * and are never able to stat the lock file.  Or, if
+             * we can stat the lockfile but exceed LOCK_RETRIES
+             * seconds waiting for it (by falling out of the loop).
+             */
+            struct stat st;
+            if (stat (lkinfo.curlock, &st) == -1) {
+                if (i++ > 5) break;
+                sleep (1);
+            } else {
+                time_t curtime;
+                time (&curtime);
+                
+                /* check for stale lockfile, else sleep */
+                if (curtime > st.st_ctime + RSECS)
+                    (void) m_unlink (lkinfo.curlock);
+                else
+                    sleep (1);
+            }
+            lockname (file, &lkinfo, 1);
 	}
 
         *failed_to_lock = 1;
@@ -534,11 +533,10 @@ lkopen_dot (const char *file, int access, mode_t mode, int *failed_to_lock)
         timerON(lkinfo.curlock, fd);
         return fd;
     }
-    else {
-        close(fd);
-	*failed_to_lock = 1;
-        return -1;
-    }
+
+    close(fd);
+    *failed_to_lock = 1;
+    return -1;
 #endif /* HAVE_LIBLOCKFILE */
 }
 
@@ -747,23 +745,25 @@ init_locktype(const char *lockname)
 {
     if (strcasecmp(lockname, "fcntl") == 0) {
     	return FCNTL_LOCKING;
-    } else if (strcasecmp(lockname, "lockf") == 0) {
+    }
+    if (strcasecmp(lockname, "lockf") == 0) {
 #ifdef HAVE_LOCKF
 	return LOCKF_LOCKING;
 #else /* ! HAVE_LOCKF */
 	adios(NULL, "lockf not supported on this system");
 #endif /* HAVE_LOCKF */
-    } else if (strcasecmp(lockname, "flock") == 0) {
+    }
+    if (strcasecmp(lockname, "flock") == 0) {
 #ifdef HAVE_FLOCK
 	return FLOCK_LOCKING;
 #else /* ! HAVE_FLOCK */
 	adios(NULL, "flock not supported on this system");
 #endif /* HAVE_FLOCK */
-    } else if (strcasecmp(lockname, "dot") == 0) {
-    	return DOT_LOCKING;
-    } else {
-    	adios(NULL, "Unknown lock type: \"%s\"", lockname);
-	/* NOTREACHED */
-	return 0;
     }
+    if (strcasecmp(lockname, "dot") == 0) {
+    	return DOT_LOCKING;
+    }
+    adios(NULL, "Unknown lock type: \"%s\"", lockname);
+    /* NOTREACHED */
+    return 0;
 }
