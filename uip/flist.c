@@ -600,8 +600,7 @@ CompareFolders(struct Folder *f1, struct Folder *f2)
 {
     if (!alphaOrder && f1->priority != f2->priority)
 	return f1->priority - f2->priority;
-    else
-	return strcmp(f1->name, f2->name);
+    return strcmp(f1->name, f2->name);
 }
 
 /*
