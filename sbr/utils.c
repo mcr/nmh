@@ -481,15 +481,14 @@ nmh_version_changed (int older) {
         }
 
         return old_version < current_version  ?  1  :  0;
-    } else {
-        if (context_version == NULL  ||  strcmp(context_version, "nmh-" VERSION) != 0) {
-            context_replace ("Version", "nmh-" VERSION);
-
-            return 1;
-        } else {
-            return 0;
-        }
     }
+
+    if (context_version == NULL  ||  strcmp(context_version, "nmh-" VERSION) != 0) {
+        context_replace ("Version", "nmh-" VERSION);
+        return 1;
+    }
+
+    return 0;
 }
 
 
