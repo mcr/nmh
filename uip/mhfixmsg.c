@@ -1002,9 +1002,9 @@ replace_substring (char **str, const char *old, const char *new) {
         free (*str);
 
         return *str = new_str;
-    } else {
-        return NULL;
     }
+
+    return NULL;
 }
 
 
@@ -1180,9 +1180,9 @@ set_ce (CT ct, int encoding) {
         ct->c_celine = add (cte, NULL);
 
         return OK;
-    } else {
-        return NOTOK;
     }
+
+    return NOTOK;
 }
 
 
@@ -1410,12 +1410,12 @@ insert_new_text_plain_part (CT ct, int new_subpart_number, CT parent) {
                     buffer, NULL);
 
         return 1;
-    } else {
-        free_content (new_part->mp_part);
-        free (new_part);
-
-        return 0;
     }
+
+    free_content (new_part->mp_part);
+    free (new_part);
+
+    return 0;
 }
 
 
@@ -1601,14 +1601,13 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
                     ct->c_file, invo_name, type, subtype);
         }
         return NOTOK;
-    } else {
-        if (strchr (cf, '>')) {
-            advise (NULL, "'>' prohibited in \"%s\",\nplease fix your "
-                    "%s-format-%s/%s profile entry", cf, invo_name, type,
-                    subtype ? subtype : "");
+    }
+    if (strchr (cf, '>')) {
+        advise (NULL, "'>' prohibited in \"%s\",\nplease fix your "
+                "%s-format-%s/%s profile entry", cf, invo_name, type,
+                subtype ? subtype : "");
 
-            return NOTOK;
-        }
+        return NOTOK;
     }
 
     cp = concat (cf, " >", file, NULL);
@@ -2741,12 +2740,11 @@ remove_file (const char *file) {
 
         free (rmm_command);
         return WIFEXITED (status)  ?  WEXITSTATUS (status)  :  NOTOK;
-    } else {
-        /* This is OK for a non-message file, it still uses the
-           BACKUP_PREFIX form.  The backup file will be in the same
-           directory as file. */
-        return rename (file, m_backup (file));
     }
+    /* This is OK for a non-message file, it still uses the
+       BACKUP_PREFIX form.  The backup file will be in the same
+       directory as file. */
+    return rename (file, m_backup (file));
 }
 
 
