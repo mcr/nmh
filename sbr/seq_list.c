@@ -41,8 +41,8 @@ seq_list(struct msgs *mp, char *seqname)
 	if (mp->curmsg) {	
 	    snprintf(buffer, len, "%s", m_name(mp->curmsg));
 	    return (buffer);
-	} else
-	    return (NULL);
+	}
+        return (NULL);
     }
 
     /* If the folder is empty, just return NULL */
