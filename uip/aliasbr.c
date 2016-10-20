@@ -112,7 +112,9 @@ akval (struct aka *ak, char *s)
     for (; ak; ak = ak->ak_next) {
 	if (aleq (s, ak->ak_name)) {
 	    return akresult (ak);
-	} else if (strchr (s, ':')) {
+	}
+
+        if (strchr (s, ':')) {
 	    /* The first address in a blind list will contain the
 	       alias name, so try to match, but just with just the
 	       address (not including the list name).  If there's a
@@ -158,14 +160,13 @@ aleq (char *string, char *aliasent)
 {
     char c;
 
-    while ((c = *string++))
+    while ((c = *string++)) {
 	if (*aliasent == '*')
 	    return 1;
-	else
-	    if ((c | 040) != (*aliasent | 040))
-		return 0;
-	    else
-		aliasent++;
+        if ((c | 040) != (*aliasent | 040))
+            return 0;
+        aliasent++;
+    }
 
     return (*aliasent == 0 || *aliasent == '*');
 }
