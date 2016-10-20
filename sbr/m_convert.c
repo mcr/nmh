@@ -46,9 +46,9 @@ m_convert (struct msgs *mp, char *name)
 
     if (err == -1)
 	return 0;
-    else if (err < 0)
+    if (err < 0)
 	goto badmsg;
-    else if (err > 0)
+    if (err > 0)
 	return 1;
     /*
      * else err == 0, so continue
@@ -64,8 +64,7 @@ m_convert (struct msgs *mp, char *name)
     if ((mp->msgflags & ALLOW_NEW) && !strcmp (cp, "new")) {
 	if ((err = first = getnew (mp)) <= 0)
 	    goto badmsg;
-	else
-	    goto single;
+        goto single;
     }
 
     if (!strcmp (cp, "all"))
@@ -278,12 +277,11 @@ m_conv (struct msgs *mp, char *str, int call)
 
 	if (i <= mp->hghmsg)
 	    return i;
-	else if (*delimp || call == LAST)
+	if (*delimp || call == LAST)
 	    return mp->hghmsg + 1;
-	else if (mp->msgflags & ALLOW_NEW)
+	if (mp->msgflags & ALLOW_NEW)
 	    return BADRNG;
-	else
-	    return BADNUM;
+        return BADNUM;
     }
 
     /* doesn't enforce lower case */
