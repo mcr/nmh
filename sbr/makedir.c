@@ -73,6 +73,5 @@ makedir (const char *dir)
 
     if (had_an_error)
         return 0;  /* opposite of UNIX error return convention */
-    else
-        return 1;
+    return 1;
 }
