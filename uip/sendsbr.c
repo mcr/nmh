@@ -893,10 +893,10 @@ get_from_header_info(const char *filename, const char **addr, const char **host,
         fclose(in);
 
         return OK;
-    } else {
-        *message = "unable to open";
-        return NOTOK;
     }
+
+    *message = "unable to open";
+    return NOTOK;
 }
 
 
