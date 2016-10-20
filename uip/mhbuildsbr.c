@@ -190,9 +190,8 @@ build_mime (char *infile, int autobuild, int dist, int directives,
 		    fclose(in);
 		    free (ct);
 		    return NULL;
-		} else {
-		    adios (NULL, "draft shouldn't contain %s: field", name);
 		}
+                adios (NULL, "draft shouldn't contain %s: field", name);
 	    }
 
 	    /* ignore any Content-Type fields in the header */
@@ -2274,9 +2273,8 @@ expand_pseudoheader (CT ct, CT *text_plain_ct, struct multipart *m,
             free (reply_file);
             admonish (NULL, "failed to read %s", reply_file);
             return;
-        } else {
-            (void) close (fd);
-        }
+        } 
+        (void) close (fd);
     }
 
     /* This sets reply_ct->c_ctparams, and reply_ct->c_termproc if the
