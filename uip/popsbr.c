@@ -252,21 +252,20 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 			return NOTOK;
 		    }
 		    return OK;
-		} else {
-		    nmh_creds_t creds;
-
-		    if (!(creds = nmh_get_credentials(host, user)))
-			return NOTOK;
-		    if (command ("USER %s", nmh_cred_get_user(creds))
-		    						!= NOTOK) {
-			if (command("PASS %s", nmh_cred_get_password(creds))
-								!= NOTOK) {
-			    nmh_credentials_free(creds);
-			    return OK;
-			}
-		    }
-		    nmh_credentials_free(creds);
 		}
+                nmh_creds_t creds;
+
+                if (!(creds = nmh_get_credentials(host, user)))
+                    return NOTOK;
+                if (command ("USER %s", nmh_cred_get_user(creds))
+                                                            != NOTOK) {
+                    if (command("PASS %s", nmh_cred_get_password(creds))
+                                                            != NOTOK) {
+                        nmh_credentials_free(creds);
+                        return OK;
+                    }
+                }
+                nmh_credentials_free(creds);
 	    }
 	    strncpy (buffer, response, sizeof(buffer));
 	    command ("QUIT");
@@ -693,8 +692,7 @@ multiline (void)
     if (strncmp (buffer, TRM, TRMLEN) == 0) {
 	if (buffer[TRMLEN] == 0)
 	    return DONE;
-	else
-	    strncpy (response, buffer + TRMLEN, sizeof(response));
+        strncpy (response, buffer + TRMLEN, sizeof(response));
     }
     else
 	strncpy (response, buffer, sizeof(response));
