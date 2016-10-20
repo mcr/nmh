@@ -1138,19 +1138,22 @@ static
 enum clobber_policy_t
 clobber_policy (const char *value) {
   if (value == NULL  ||  ! strcasecmp (value, "always")) {
-  } else if (! strcasecmp (value, "auto")) {
+    return NMH_CLOBBER_ALWAYS;
+  }
+  if (! strcasecmp (value, "auto")) {
     return NMH_CLOBBER_AUTO;
-  } else if (! strcasecmp (value, "suffix")) {
+  }
+  if (! strcasecmp (value, "suffix")) {
     return NMH_CLOBBER_SUFFIX;
-  } else if (! strcasecmp (value, "ask")) {
+  }
+  if (! strcasecmp (value, "ask")) {
     return NMH_CLOBBER_ASK;
-  } else if (! strcasecmp (value, "never")) {
+  }
+  if (! strcasecmp (value, "never")) {
     return NMH_CLOBBER_NEVER;
-  } else {
-    adios (NULL, "invalid argument, %s, to clobber", value);
   }
 
-  return NMH_CLOBBER_ALWAYS;
+  adios (NULL, "invalid argument, %s, to clobber", value);
 }
 
 
