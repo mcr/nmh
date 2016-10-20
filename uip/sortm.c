@@ -477,12 +477,11 @@ dsort (struct smsg **a, struct smsg **b)
 {
     if ((*a)->s_clock < (*b)->s_clock)
 	return (-1);
-    else if ((*a)->s_clock > (*b)->s_clock)
+    if ((*a)->s_clock > (*b)->s_clock)
 	return (1);
-    else if ((*a)->s_msg < (*b)->s_msg)
+    if ((*a)->s_msg < (*b)->s_msg)
 	return (-1);
-    else
-	return (1);
+    return (1);
 }
 
 /*
@@ -506,10 +505,9 @@ txtsort (struct smsg **a, struct smsg **b)
 
     if ((i = strcmp ((*a)->s_subj, (*b)->s_subj)))
 	return (i);
-    else if ((*a)->s_msg < (*b)->s_msg)
+    if ((*a)->s_msg < (*b)->s_msg)
 	return (-1);
-    else
-	return (1);
+    return (1);
 }
 
 static void
