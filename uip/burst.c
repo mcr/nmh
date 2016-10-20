@@ -242,7 +242,7 @@ find_delim (int msgnum, struct smsg *smsgs, int *mimesw)
     	content = parse_mime(msgnam);
 	if (! content && *mimesw == 2)
 	    return 0;
-	else if (content) {
+	if (content) {
 	    smsgs[0].s_start = 0;
 	    smsgs[0].s_stop = content->c_begin - 1;
 	    msgp = 1;
