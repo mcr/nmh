@@ -157,9 +157,8 @@ scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
 	if (ferror(inb)) {
 	    advise("read", "unable to"); /* "read error" */
 	    return SCNFAT;
-	} else {
-	    return SCNEOF;
 	}
+        return SCNEOF;
     }
 
     if (outnum) {
