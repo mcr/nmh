@@ -122,8 +122,7 @@ is_inline(CT ct)
 
     if (! ct->c_dispo_type || strcasecmp(ct->c_dispo_type, "inline") == 0)
 	return 1;
-    else
-	return 0;
+    return 0;
 }
 
 int
