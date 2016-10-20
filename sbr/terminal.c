@@ -54,9 +54,8 @@ initialize_terminfo(void)
     if (rc != 0 || errret != 1) {
     	termstatus = -1;
 	return;
-    } else {
-    	termstatus = 1;
     }
+    termstatus = 1;
 
     if (!initCO && (CO = tigetnum ("cols")) <= 0)
 	CO = 80;
