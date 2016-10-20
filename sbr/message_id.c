@@ -24,12 +24,12 @@ save_message_id_style (const char *value) {
   if (! strcasecmp (value, "localname")) {
     message_id_style = NMH_MESSAGE_ID_LOCALNAME;
     return 0;
-  } else if (! strcasecmp (value, "random")) {
+  }
+  if (! strcasecmp (value, "random")) {
     message_id_style = NMH_MESSAGE_ID_RANDOM;
     return 0;
-  } else {
-    return 1;
   }
+  return 1;
 }
 
 
