@@ -109,10 +109,10 @@ build_template(const char *directory, const char *prefix, const char *suffix) {
         template[len-1] = '\0';
 
         return template;
-    } else {
-        perror("malloc");
-        return NULL;
     }
+
+    perror("malloc");
+    return NULL;
 }
 
 
