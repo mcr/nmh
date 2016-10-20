@@ -40,9 +40,8 @@ wrong_guess:
 	    if (*dp == '\n') {
 		*bp = pp;
 		return 0;
-	    } else {
-		cp = ++dp;
 	    }
+            cp = ++dp;
 	} else {
 	    for (fp = dp - 1, toggle = 0; fp >= cp; fp--) {
 		if (*fp != QUOTE)
