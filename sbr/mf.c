@@ -180,18 +180,12 @@ getadrx (const char *addrs, int eai)
     char *bp;
     struct adrx *adrxp = &adrxs2;
 
-    if (pers)
-	free (pers);
-    if (mbox)
-	free (mbox);
-    if (host)
-	free (host);
-    if (path)
-	free (path);
-    if (grp)
-	free (grp);
-    if (note)
-	free (note);
+    mh_xfree(pers);
+    mh_xfree(mbox);
+    mh_xfree(host);
+    mh_xfree(path);
+    mh_xfree(grp);
+    mh_xfree(note);
     pers = mbox = host = path = grp = note = NULL;
     err[0] = 0;
 
@@ -297,10 +291,8 @@ again: ;
 		return NOTOK;
 	    }
 	case LX_COMA: 
-	    if (note) {
-		free (note);
-		note = NULL;
-	    }
+            mh_xfree(note);
+            note = NULL;
 	    goto again;
 
 	case LX_END: 
