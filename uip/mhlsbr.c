@@ -1336,8 +1336,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     if (!(c1->c_flags & HDROUTPUT) && !(c1->c_flags & NOCOMPONENT)) {
         if (c1->c_flags & UPPERCASE)		/* uppercase component also */
 	    for (cp = (c1->c_text ? c1->c_text : c1->c_name); *cp; cp++)
-	        if (islower ((unsigned char) *cp))
-		    *cp = toupper ((unsigned char) *cp);
+                *cp = toupper ((unsigned char) *cp);
 	putstr (c1->c_text ? c1->c_text : c1->c_name, c1->c_flags);
 	if (flag != BODYCOMP) {
 	    putstr (": ", c1->c_flags);
@@ -1359,8 +1358,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	    && !(c2->c_flags & NOCOMPONENT)) {
         if (c1->c_flags & UPPERCASE)
 	    for (cp = c2->c_name; *cp; cp++)
-	        if (islower ((unsigned char) *cp))
-		    *cp = toupper ((unsigned char) *cp);
+                *cp = toupper ((unsigned char) *cp);
 	putstr (c2->c_name, c1->c_flags);
 	putstr (": ", c1->c_flags);
 	if (!(c1->c_flags & SPLIT))
@@ -1373,8 +1371,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     }
     if (c1->c_flags & UPPERCASE)
 	for (cp = c2->c_text; *cp; cp++)
-	    if (islower ((unsigned char) *cp))
-		*cp = toupper ((unsigned char) *cp);
+            *cp = toupper ((unsigned char) *cp);
 
     count = 0;
     if (cchdr) {
