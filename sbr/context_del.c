@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /*
  * Delete a key/value pair from the context/profile list.
@@ -28,8 +29,7 @@ context_del (char *key)
 	    else
 		m_defs = np->n_next;
 	    free (np->n_name);
-	    if (np->n_field)
-		free (np->n_field);
+            mh_xfree(np->n_field);
 	    free ((char *) np);
 	    ctxflags |= CTXMOD;
 	    return 0;
