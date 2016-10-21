@@ -969,11 +969,10 @@ fmt_freecomptext(void)
     struct comp *cm;
 
     for (i = 0; i < sizeof(wantcomp)/sizeof(wantcomp[0]); i++)
-    	for (cm = wantcomp[i]; cm; cm = cm->c_next)
-	    if (cm->c_text) {
-	    	free(cm->c_text);
-		cm->c_text = NULL;
-	    }
+        for (cm = wantcomp[i]; cm; cm = cm->c_next) {
+            mh_xfree(cm->c_text);
+            cm->c_text = NULL;
+        }
 }
 
 /*
@@ -1145,10 +1144,8 @@ free_component(struct comp *cm)
 {
     if (--cm->c_refcount <= 0) {
     	/* Shouldn't ever be NULL, but just in case ... */
-    	if (cm->c_name)
-	    free(cm->c_name);
-	if (cm->c_text)
-	    free(cm->c_text);
+        mh_xfree(cm->c_name);
+        mh_xfree(cm->c_text);
 	if (cm->c_type & CT_DATE)
 	    free(cm->c_tws);
 	if (cm->c_type & CT_ADDR && cm->c_mn && cm->c_mn != &fmt_mnull)
