@@ -451,8 +451,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 
 	    while ((c = *cp++)) {
 		if (isascii((unsigned char) c) && isalnum((unsigned char) c))
-		    *cp2++ = isupper((unsigned char) c) ?
-		    			tolower((unsigned char) c) : c;
+		    *cp2++ = tolower((unsigned char)c);
 	    }
 
 	    *cp2 = '\0';
