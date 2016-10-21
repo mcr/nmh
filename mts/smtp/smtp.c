@@ -128,14 +128,13 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 	} else {
 	    client = LocalName(1);	/* no clientname -> LocalName */
 	}
+
+        /*
+         * Last-ditch check just in case client still isn't set to anything
+         */
+        if (client == NULL || *client == '\0')
+            client = "localhost";
     }
-
-    /*
-     * Last-ditch check just in case client still isn't set to anything
-     */
-
-    if (client == NULL || *client == '\0')
-	client = "localhost";
 
     nsc = netsec_init();
 
