@@ -819,9 +819,7 @@ replace_boundary (CT ct, char *file, char *boundary) {
                 fprintf (fpout, "%s:%s%s\n", np, new_ctline,
 			 new_params ? new_params : "");
 		free(new_ctline);
-		if (new_params) {
-		    free(new_params);
-                }
+                mh_xfree(new_params);
             }
 
             free (vp);
@@ -2246,12 +2244,10 @@ strip_crs (CT ct, int *message_mods) {
                     status = NOTOK;
                 } else {
                     /* Replace the decoded file with the converted one. */
-                    if (ct->c_cefile.ce_file) {
-                        if (ct->c_cefile.ce_unlink) {
-                            (void) m_unlink (ct->c_cefile.ce_file);
-                        }
-                        free (ct->c_cefile.ce_file);
-                    }
+                    if (ct->c_cefile.ce_file && ct->c_cefile.ce_unlink)
+                        (void) m_unlink (ct->c_cefile.ce_file);
+
+                    mh_xfree(ct->c_cefile.ce_file);
                     ct->c_cefile.ce_file = stripped_content_file;
                     ct->c_cefile.ce_unlink = 1;
 
