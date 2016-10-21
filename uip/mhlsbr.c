@@ -921,10 +921,8 @@ process (char *folder, char *fname, int ofilen, int ofilec)
 		SIGNAL (SIGINT, SIG_IGN);
 	    if (mhl_action == NULL && fp != stdin && fp != NULL)
 		fclose (fp);
-	    if (holder.c_text) {
-		free (holder.c_text);
-		holder.c_text = NULL;
-	    }
+            mh_xfree(holder.c_text);
+            holder.c_text = NULL;
 	    free_queue (&msghd, &msgtl);
 	    for (c1 = fmthd; c1; c1 = c1->c_next)
 		c1->c_flags &= ~HDROUTPUT;
@@ -1221,10 +1219,8 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
 	}
 	charstring_free (scanl);
 
-	if (p->pq_text)
-	    free (p->pq_text);
-	if (p->pq_error)
-	    free (p->pq_error);
+        mh_xfree(p->pq_text);
+        mh_xfree(p->pq_error);
 	q = p->pq_next;
 	free ((char *) p);
     }
@@ -1270,14 +1266,10 @@ free_queue (struct mcomp **head, struct mcomp **tail)
 
     for (c1 = *head; c1; c1 = c2) {
 	c2 = c1->c_next;
-	if (c1->c_name)
-	    free (c1->c_name);
-	if (c1->c_text)
-	    free (c1->c_text);
-	if (c1->c_ovtxt)
-	    free (c1->c_ovtxt);
-	if (c1->c_nfs)
-	    free (c1->c_nfs);
+        mh_xfree(c1->c_name);
+        mh_xfree(c1->c_text);
+        mh_xfree(c1->c_ovtxt);
+        mh_xfree(c1->c_nfs);
 	if (c1->c_fmt)
 	    fmt_free (c1->c_fmt, 0);
 	free ((char *) c1);
