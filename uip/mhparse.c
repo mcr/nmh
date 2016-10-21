@@ -4248,6 +4248,10 @@ noiconv:
     q = buffer;
     bufsize = sizeof(buffer);
     for (p = pm->pm_value; *p != '\0' && bufsize > 1; p++, q++, bufsize--) {
+        /* FIXME: !iscntrl should perhaps be isprint as that allows all
+         * classes bar cntrl, whereas the cntrl class can include those
+         * in space and blank.
+         * http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap07.html */
 	if (isascii((unsigned char) *p) && !iscntrl((unsigned char) *p))
 	    *q = *p;
 	else
