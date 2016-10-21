@@ -945,8 +945,7 @@ plist
 	switch (state = m_getfld (&gstate, name, buf, &bufsz, fp)) {
 	    case FLD: 
 	    case FLDPLUS: 
-		if (bp != NULL)
-		    free (bp), bp = NULL;
+                mh_xfree(bp);
 		bp = add (buf, NULL);
 		while (state == FLDPLUS) {
 		    bufsz = sizeof buf;
@@ -963,8 +962,7 @@ plist
 	    case FMTERR: 
 		if (state == LENERR || state == FMTERR)
 		    advise (NULL, "format error in message %d", msgnum);
-		if (bp != NULL)
-		    free (bp);
+                mh_xfree(bp);
 		return 0;
 
 	    default: 
@@ -981,7 +979,6 @@ plist
 	state = n->n_after ? (twsort (tw, &n->n_tws) > 0)
 	    : (twsort (tw, &n->n_tws) < 0);
 
-    if (bp != NULL)
-	free (bp);
+    mh_xfree(bp);
     return state;
 }
