@@ -19,7 +19,7 @@
  */
 
 static char msgbuf[256];
-#define COMPFREE(c) if (c->c_text) free(c->c_text)
+#define COMPFREE(c) mh_xfree(c->c_text)
 
 /*
  * A list of components we treat as addresses
