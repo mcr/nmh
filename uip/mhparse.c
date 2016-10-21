@@ -660,8 +660,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 
     /* down case the content type string */
     for (dp = ci->ci_type; *dp; dp++)
-	if (isalpha((unsigned char) *dp) && isupper ((unsigned char) *dp))
-	    *dp = tolower ((unsigned char) *dp);
+        *dp = tolower ((unsigned char) *dp);
 
     while (isspace ((unsigned char) *cp))
 	cp++;
@@ -699,8 +698,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 
     /* down case the content subtype string */
     for (dp = ci->ci_subtype; *dp; dp++)
-	if (isalpha((unsigned char) *dp) && isupper ((unsigned char) *dp))
-	    *dp = tolower ((unsigned char) *dp);
+        *dp = tolower ((unsigned char) *dp);
 
 magic_skip:
     while (isspace ((unsigned char) *cp))
@@ -3299,8 +3297,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 
 	/* down case the attribute name */
 	for (dp = cp; istoken ((unsigned char) *dp); dp++)
-	    if (isalpha((unsigned char) *dp) && isupper ((unsigned char) *dp))
-		*dp = tolower ((unsigned char) *dp);
+            *dp = tolower ((unsigned char) *dp);
 
 	for (up = dp; isspace ((unsigned char) *dp);)
 	    dp++;
