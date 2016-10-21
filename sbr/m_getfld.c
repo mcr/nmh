@@ -581,6 +581,9 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 		memcpy (buf, name, n - 1);
 		buf[n - 1] = '\n';
 		buf[n] = '\0';
+                /* Indicate this wasn't a header field using a character
+                   that can't appear in a header field. */
+                name[0] = ':';
 		/* The last character read was '\n'.  s->bytes_read
 		   (and n) include that, but it was not put into the
 		   name array in the for loop above.  So subtract 1. */
