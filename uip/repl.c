@@ -239,8 +239,7 @@ main (int argc, char **argv)
 		    if (fcc)
 			fcc = add (", ", fcc);
 		    fcc = add (cp, fcc);
-		    if (dp)
-			free (dp);
+                    mh_xfree(dp);
 		    continue;
 
 		case FILESW: 
