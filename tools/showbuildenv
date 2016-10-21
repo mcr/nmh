@@ -14,7 +14,7 @@
 # It jumps through hoops with `|| true' despite not using `set -e'.
 
 offset () {
-    sed -e '/./s/^/    /'
+    sed -e '/./s/^/    /' "$@"
 }
 
 header () {
