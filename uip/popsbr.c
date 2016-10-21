@@ -240,6 +240,8 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 	    if (poprint)
 		fprintf (stderr, "<--- %s\n", response);
 	    if (*response == '+') {
+                nmh_creds_t creds;
+
 		if (sasl) {
 		    char server_mechs[256];
 		    if (check_mech(server_mechs, sizeof(server_mechs)) != OK)
@@ -253,7 +255,6 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
 		    }
 		    return OK;
 		}
-                nmh_creds_t creds;
 
                 if (!(creds = nmh_get_credentials(host, user)))
                     return NOTOK;

@@ -495,6 +495,8 @@ lkopen_dot (const char *file, int access, mode_t mode, int *failed_to_lock)
     {
 	int i;
 	for (i = 0; i < LOCK_RETRIES; ++i) {
+            struct stat st;
+
 	    /* attempt to create lock file */
 	    if (lockit (&lkinfo) == 0) {
 		/* if successful, turn on timer and return */
@@ -508,7 +510,6 @@ lkopen_dot (const char *file, int access, mode_t mode, int *failed_to_lock)
              * we can stat the lockfile but exceed LOCK_RETRIES
              * seconds waiting for it (by falling out of the loop).
              */
-            struct stat st;
             if (stat (lkinfo.curlock, &st) == -1) {
                 if (i++ > 5) break;
                 sleep (1);
