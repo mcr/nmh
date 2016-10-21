@@ -125,11 +125,8 @@ nmh_cred_get_password(nmh_creds_t creds)
 void
 nmh_credentials_free(nmh_creds_t creds)
 {
-    if (creds->host)
-	free(creds->host);
-
-    if (creds->user)
-	free(creds->user);
+    mh_xfree(creds->host);
+    mh_xfree(creds->user);
 
     if (creds->pass) {
 	memset(creds->pass, 0, strlen(creds->pass));
