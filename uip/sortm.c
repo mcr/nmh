@@ -394,10 +394,8 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 		      msg, compnum);
 		check_failed = 1;
 	    }
-	    if (datecomp)
-		free (datecomp);
-	    if (subjcomp)
-		free (subjcomp);
+            mh_xfree(datecomp);
+            mh_xfree(subjcomp);
 	    fclose (in);
 	    return (0);
 
@@ -462,8 +460,7 @@ get_fields (char *datesw, int msg, struct smsg *smsg)
 	smsg->s_subj = subjcomp;
     }
     fclose (in);
-    if (datecomp)
-	free (datecomp);
+    mh_xfree(datecomp);
 
     return (1);
 }
