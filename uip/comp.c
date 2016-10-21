@@ -192,8 +192,7 @@ main (int argc, char **argv)
 		    if (*cp == '@')
 			cp = dp = path(cp + 1, TSUBCWF);
 		    fcc = addlist(fcc, cp);
-		    if (dp)
-			free(dp);
+                    mh_xfree(dp);
 		    continue;
 
 		case WIDTHSW:
