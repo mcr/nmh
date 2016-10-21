@@ -39,10 +39,8 @@ lequal (const char *a, const char *b)
     for (; *a; a++, b++) {
 	if (*b == 0)
 	    return FALSE;
-        c1 = islower ((unsigned char) *a) ?
-                                    toupper ((unsigned char) *a) : *a;
-        c2 = islower ((unsigned char) *b) ?
-                                    toupper ((unsigned char) *b) : *b;
+        c1 = toupper((unsigned char)*a);
+        c2 = toupper((unsigned char)*b);
         if (c1 != c2)
             return FALSE;
     }
