@@ -9,6 +9,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 #include <h/mime.h>
 #include <h/mhparse.h>
 
@@ -48,20 +49,10 @@ free_content (CT ct)
      */
     free_header (ct);
 
-    if (ct->c_partno) {
-	free (ct->c_partno);
-	ct->c_partno = NULL;
-    }
-
-    if (ct->c_vrsn) {
-	free (ct->c_vrsn);
-	ct->c_vrsn = NULL;
-    }
-
-    if (ct->c_ctline) {
-	free (ct->c_ctline);
-	ct->c_ctline = NULL;
-    }
+    mh_xfree(ct->c_partno);
+    mh_xfree(ct->c_vrsn);
+    mh_xfree(ct->c_ctline);
+    ct->c_partno = ct->c_vrsn = ct->c_ctline = NULL;
 
     free_ctinfo (ct);
 
@@ -91,43 +82,22 @@ free_content (CT ct)
 	    break;
     }
 
-    if (ct->c_showproc) {
-	free (ct->c_showproc);
-	ct->c_showproc = NULL;
-    }
-    if (ct->c_termproc) {
-	free (ct->c_termproc);
-	ct->c_termproc = NULL;
-    }
-    if (ct->c_storeproc) {
-	free (ct->c_storeproc);
-	ct->c_storeproc = NULL;
-    }
+    mh_xfree(ct->c_showproc);
+    mh_xfree(ct->c_termproc);
+    mh_xfree(ct->c_storeproc);
+    ct->c_showproc = ct->c_termproc = ct->c_storeproc = NULL;
 
-    if (ct->c_celine) {
-	free (ct->c_celine);
-	ct->c_celine = NULL;
-    }
+    mh_xfree(ct->c_celine);
+    ct->c_celine = NULL;
 
     /* free structures for content encodings */
     free_encoding (ct, 1);
 
-    if (ct->c_id) {
-	free (ct->c_id);
-	ct->c_id = NULL;
-    }
-    if (ct->c_descr) {
-	free (ct->c_descr);
-	ct->c_descr = NULL;
-    }
-    if (ct->c_dispo) {
-	free (ct->c_dispo);
-	ct->c_dispo = NULL;
-    }
-    if (ct->c_dispo_type) {
-	free (ct->c_dispo_type);
-	ct->c_dispo_type = NULL;
-    }
+    mh_xfree(ct->c_id);
+    mh_xfree(ct->c_descr);
+    mh_xfree(ct->c_dispo);
+    mh_xfree(ct->c_dispo_type);
+    ct->c_id = ct->c_descr = ct->c_dispo = ct->c_dispo_type = NULL;
     free_pmlist (&ct->c_dispo_first);
 
     if (ct->c_file) {
