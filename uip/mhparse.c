@@ -718,10 +718,8 @@ magic_skip:
      * Get any <Content-Id> given in buffer
      */
     if (magic && *cp == '<') {
-	if (ct->c_id) {
-	    free (ct->c_id);
-	    ct->c_id = NULL;
-	}
+        mh_xfree(ct->c_id);
+        ct->c_id = NULL;
 	if (!(dp = strchr(ct->c_id = ++cp, '>'))) {
 	    advise (NULL, "invalid ID in message %s", ct->c_file);
 	    return NOTOK;
@@ -2748,8 +2746,7 @@ openMail (CT ct, char **file)
 
     /* showproc is for mhshow and mhstore, though mhlist -debug
      * prints it, too. */
-    if (ct->c_showproc)
-	free (ct->c_showproc);
+    mh_xfree(ct->c_showproc);
     ct->c_showproc = add ("true", NULL);
 
     fseek (ce->ce_fp, 0L, SEEK_SET);
@@ -3406,8 +3403,7 @@ parse_header_attrs (const char *filename, const char *fieldname,
 			   "field\n%*s(parameter %s)", filename, fieldname,
 			   strlen(invo_name) + 2, "", nameptr);
 		    free(nameptr);
-		    if (charset)
-			free(charset);
+                    mh_xfree(charset);
 		    return NOTOK;
 		}
 
@@ -3432,10 +3428,8 @@ parse_header_attrs (const char *filename, const char *fieldname,
 			       filename, fieldname, strlen(invo_name) + 2,
 			       "", nameptr);
 			free(nameptr);
-			if (charset)
-			    free(charset);
-			if (lang)
-			    free(lang);
+                        mh_xfree(charset);
+                        mh_xfree(lang);
 			return NOTOK;
 		    }
 		    vp += 2;
@@ -3478,10 +3472,8 @@ bad_quote:
 				filename, fieldname, strlen(invo_name) + 2, "",
 				nameptr);
 			free(nameptr);
-			if (charset)
-			    free(charset);
-			if (lang)
-			    free(lang);
+                        mh_xfree(charset);
+                        mh_xfree(lang);
 			return NOTOK;
 		    case '"':
 			break;
@@ -3589,11 +3581,9 @@ bad_quote:
 	     */
 
 	    if (index == 0 && encoded) {
-		if (pp->charset)
-		    free(pp->charset);
+                mh_xfree(pp->charset);
 	    	pp->charset = charset;
-		if (pp->lang)
-		    free(pp->lang);
+                mh_xfree(pp->lang);
 		pp->lang = lang;
 	    }
 	} else {
@@ -3693,8 +3683,7 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 
 	if (strlen(params->pm_name) > CPERLIN) {
 	    advise(NULL, "Parameter name \"%s\" is too long", params->pm_name);
-	    if (paramout)
-		free(paramout);
+            mh_xfree(paramout);
 	    return NULL;
 	}
 
@@ -3731,8 +3720,7 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 				 numchars, valoff);
 
 	    if (i == 0) {
-		if (paramout)
-		    free(paramout);
+                mh_xfree(paramout);
 		return NULL;
 	    }
 
@@ -3795,8 +3783,7 @@ output_params(size_t initialwidth, PM params, int *offsetout, int external)
 	    		     strlen(params->pm_value + valoff), valoff);
 
 	if (i == 0) {
-	    if (paramout)
-		free(paramout);
+            mh_xfree(paramout);
 	    return NULL;
 	}
 
