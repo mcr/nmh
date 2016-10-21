@@ -49,24 +49,14 @@ match (char *str, char *sub)
     char *s1, *s2;
 
     while ((c1 = *sub)) {
-	c1 = (isascii((unsigned char) c1) && isalpha((unsigned char) c1) &&
-	      isupper((unsigned char) c1)) ? tolower((unsigned char) c1) : c1;
-	while ((c2 = *str++) && c1 != ((isascii((unsigned char) c2) &&
-					isalpha((unsigned char) c2) &&
-					isupper((unsigned char) c2)) ?
-					    tolower((unsigned char) c2) : c2))
+	c1 = tolower((unsigned char)c1);
+	while ((c2 = *str++) && c1 != tolower((unsigned char)c2))
 	    ;
 	if (! c2)
 	    return 0;
 	s1 = sub + 1; s2 = str;
-	while ((c1 = *s1++) && ((isascii((unsigned char) c1) &&
-				 isalpha((unsigned char) c1) &&
-				 isupper((unsigned char) c1)) ?
-				 	tolower(c1) : c1) ==
-			((isascii((unsigned char) (c2 =*s2++)) &&
-			  isalpha((unsigned char) c2) &&
-			  isupper((unsigned char) c2)) ?
-			  	tolower((unsigned char) c2) : c2))
+	while ((c1 = *s1++) &&
+            tolower((unsigned char)c1) == tolower((unsigned char)(c2 = *s2++)))
 	    ;
 	if (! c1)
 	    return 1;
