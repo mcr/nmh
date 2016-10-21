@@ -111,14 +111,9 @@ free_content (CT ct)
 	ct->c_fp = NULL;
     }
 
-    if (ct->c_storage) {
-	free (ct->c_storage);
-	ct->c_storage = NULL;
-    }
-    if (ct->c_folder) {
-	free (ct->c_folder);
-	ct->c_folder = NULL;
-    }
+    mh_xfree(ct->c_storage);
+    mh_xfree(ct->c_folder);
+    ct->c_storage = ct->c_folder = NULL;
 
     free (ct);
 }
@@ -156,23 +151,13 @@ free_ctinfo (CT ct)
     CI ci;
 
     ci = &ct->c_ctinfo;
-    if (ci->ci_type) {
-	free (ci->ci_type);
-	ci->ci_type = NULL;
-    }
-    if (ci->ci_subtype) {
-	free (ci->ci_subtype);
-	ci->ci_subtype = NULL;
-    }
+    mh_xfree(ci->ci_type);
+    mh_xfree(ci->ci_subtype);
+    ci->ci_type = ci->ci_subtype = NULL;
     free_pmlist(&ci->ci_first_pm);
-    if (ci->ci_comment) {
-	free (ci->ci_comment);
-	ci->ci_comment = NULL;
-    }
-    if (ci->ci_magic) {
-	free (ci->ci_magic);
-	ci->ci_magic = NULL;
-    }
+    mh_xfree(ci->ci_comment);
+    mh_xfree(ci->ci_magic);
+    ci->ci_comment = ci->ci_magic = NULL;
 }
 
 
@@ -198,10 +183,8 @@ free_multi (CT ct)
     if (!(m = (struct multipart *) ct->c_ctparams))
 	return;
 
-    if (m->mp_start)
-	free (m->mp_start);
-    if (m->mp_stop)
-	free (m->mp_stop);
+    mh_xfree(m->mp_start);
+    mh_xfree(m->mp_stop);
     free (m->mp_content_before);
     free (m->mp_content_after);
 	
@@ -225,8 +208,7 @@ free_partial (CT ct)
     if (!(p = (struct partial *) ct->c_ctparams))
 	return;
 
-    if (p->pm_partid)
-	free (p->pm_partid);
+    mh_xfree(p->pm_partid);
 
     free ((char *) p);
     ct->c_ctparams = NULL;
@@ -242,11 +224,8 @@ free_external (CT ct)
 	return;
 
     free_content (e->eb_content);
-    if (e->eb_body)
-	free (e->eb_body);
-    if (e->eb_url)
-    	free (e->eb_url);
-
+    mh_xfree(e->eb_body);
+    mh_xfree(e->eb_url);
     free ((char *) e);
     ct->c_ctparams = NULL;
 }
@@ -258,14 +237,10 @@ free_pmlist (PM *p)
     PM pm = *p, pm2;
 
     while (pm != NULL) {
-    	if (pm->pm_name)
-	    free (pm->pm_name);
-    	if (pm->pm_value)
-	    free (pm->pm_value);
-    	if (pm->pm_charset)
-	    free (pm->pm_charset);
-    	if (pm->pm_lang)
-	    free (pm->pm_lang);
+        mh_xfree(pm->pm_name);
+        mh_xfree(pm->pm_value);
+        mh_xfree(pm->pm_charset);
+        mh_xfree(pm->pm_lang);
 	pm2 = pm->pm_next;
 	free(pm);
 	pm = pm2;
