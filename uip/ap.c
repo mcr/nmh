@@ -174,15 +174,13 @@ process (char *arg, int length)
 
 	cptr = fmt_findcomp ("text");
 	if (cptr) {
-	    if (cptr->c_text)
-		free(cptr->c_text);
+            mh_xfree(cptr->c_text);
 	    cptr->c_text = p->pq_text;
 	    p->pq_text = NULL;
 	}
 	cptr = fmt_findcomp ("error");
 	if (cptr) {
-	    if (cptr->c_text)
-		free(cptr->c_text);
+            mh_xfree(cptr->c_text);
 	    cptr->c_text = p->pq_error;
 	    p->pq_error = NULL;
 	}
@@ -191,10 +189,8 @@ process (char *arg, int length)
 	fputs (charstring_buffer (scanl), stdout);
 	charstring_free (scanl);
 
-	if (p->pq_text)
-	    free (p->pq_text);
-	if (p->pq_error)
-	    free (p->pq_error);
+        mh_xfree(p->pq_text);
+        mh_xfree(p->pq_error);
 	q = p->pq_next;
 	free ((char *) p);
     }
