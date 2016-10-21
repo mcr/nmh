@@ -295,14 +295,13 @@ sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
 	    client = clientname;
 	else
 	    client = LocalName(1);	/* no clientname -> LocalName */
+
+        /*
+         * Last-ditch check just in case client still isn't set to anything
+         */
+        if (client == NULL || *client == '\0')
+            client = "localhost";
     }
-
-    /*
-     * Last-ditch check just in case client still isn't set to anything
-     */
-
-    if (client == NULL || *client == '\0')
-	client = "localhost";
 
     nsc = netsec_init();
 
