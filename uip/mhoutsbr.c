@@ -96,7 +96,7 @@ output_content (CT ct, FILE *out)
      * headers (since it has no body).
      */
     if (ct->c_ctexbody) {
-	if (boundary && *boundary != '\0')
+	if (*boundary != '\0')
 	    free(boundary);
 	return OK;
     }
@@ -124,7 +124,7 @@ output_content (CT ct, FILE *out)
 
 	    fprintf (out, "\n--%s\n", boundary);
 	    if (output_content (p, out) == NOTOK) {
-		if (boundary && *boundary != '\0')
+		if (*boundary != '\0')
 		    free(boundary);
                 return NOTOK;
 	    }
@@ -205,7 +205,7 @@ output_content (CT ct, FILE *out)
 	break;
     }
 
-    if (boundary && *boundary != '\0')
+    if (*boundary != '\0')
 	free(boundary);
 
     return result;
