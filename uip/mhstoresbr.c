@@ -1078,8 +1078,7 @@ get_storeproc (CT ct)
 		free(cp);
 		return;
 	}
-	if (cp)
-	    free(cp);
+        mh_xfree(cp);
     }
 
     /*
@@ -1097,8 +1096,7 @@ get_storeproc (CT ct)
 	    ct->c_storeproc = add (cp, NULL);
 
     }
-    if (cp)
-	free(cp);
+    mh_xfree(cp);
 }
 
 
