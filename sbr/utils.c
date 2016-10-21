@@ -46,9 +46,7 @@ void *mh_xrealloc(void *ptr, size_t size)
 
     /* Copy POSIX behaviour, coping with non-POSIX systems. */
     if (size == 0) {
-        if (ptr) {
-            free(ptr);
-        }
+        mh_xfree(ptr);
         return mh_xmalloc(1); /* Get a unique pointer. */
     }
     if (!ptr)
