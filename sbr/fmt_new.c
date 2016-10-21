@@ -30,8 +30,7 @@ new_fs (char *form, char *format, char *default_fs)
     struct stat st;
     FILE *fp;
 
-    if (formats)
-	free (formats);
+    mh_xfree(formats);
 
     if (form) {
 	if ((fp = fopen (etcpath (form), "r")) == NULL)
