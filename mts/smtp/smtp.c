@@ -100,9 +100,9 @@ sm_init (char *client, char *server, char *port, int watch, int verbose,
     if (sm_mts == MTS_SMTP)
 	return smtp_init (client, server, port, watch, verbose,
 			  debug, sasl, saslmech, user, oauth_svc, tls);
-    else
-	return sendmail_init (client, watch, verbose, debug, sasl,
-			      saslmech, user);
+
+    return sendmail_init (client, watch, verbose, debug, sasl,
+                          saslmech, user);
 }
 
 static int
