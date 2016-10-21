@@ -113,7 +113,6 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/cleanup ## The "cleanup" test should always be last.
 
 XFAIL_TESTS = \
-    test/mhshow/test-binary \
     test/scan/test-header-parsing \
     #
 

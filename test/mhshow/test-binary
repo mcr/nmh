@@ -27,7 +27,7 @@ Subject: test binary content
 
 MIME-Version: 1.0
 
-[ part  - text/plain -   20B  ]
+[ part  - text/plain -   23B  ]
 Here's a null byte: " ".
 "
 

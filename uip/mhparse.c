@@ -330,7 +330,15 @@ get_content (FILE *in, char *file, int toplevel)
 	    continue;
 
 	case BODY:
-	    ct->c_begin = ftell (in) - strlen (buf);
+	    if (name[0] == ':') {
+		/* Special case:  no blank line between header and body.  The
+		   file position indicator is on the newline at the end of the
+		   line, but it needs to be one prior to the beginning of the
+		   line.  So subtract the length of the line, bufsz, plus 1. */
+		ct->c_begin = ftell (in) - (bufsz + 1);
+	    } else {
+		ct->c_begin = ftell (in) - (bufsz - 1);
+	    }
 	    break;
 
 	case FILEEOF:
