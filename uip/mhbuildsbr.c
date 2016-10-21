@@ -1759,8 +1759,7 @@ build_headers (CT ct, int header_encoding)
 	np = output_params(len, ct->c_dispo_first, NULL, 0);
 	vp = add(np, vp);
 	vp = add("\n", vp);
-	if (np)
-	    free(np);
+        mh_xfree(np);
 	add_header (ct, mh_xstrdup(DISPO_FIELD), vp);
     }
 
@@ -2033,8 +2032,7 @@ setup_attach_content(CT ct, char *filename)
 
     for (pm = ct->c_ctinfo.ci_first_pm; pm; pm = pm->pm_next) {
 	if (strcasecmp(pm->pm_name, "name") == 0) {
-	    if (pm->pm_value)
-		free(pm->pm_value);
+            mh_xfree(pm->pm_value);
 	    pm->pm_value = mh_xstrdup(simplename);
 	    break;
 	}
