@@ -798,11 +798,8 @@ do_reformat:
     output = NULL;
 
 out:
-
-    if (tmpbuf)
-    	free(tmpbuf);
-    if (output)
-    	free(output);
+    mh_xfree(tmpbuf);
+    mh_xfree(output);
 
     return errflag > 0;
 }
