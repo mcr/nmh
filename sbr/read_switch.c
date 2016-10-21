@@ -26,7 +26,7 @@ read_switch (const char *prompt, const struct swit *ansp)
 	    if (i == EOF)
 		return 0;
 	    if (cp < &ansbuf[sizeof ansbuf - 1]) {
-		i = (isalpha(i) && isupper(i)) ? tolower(i) : i;
+		i = tolower(i);
 		*cp++ = i;
 	    }
 	}
