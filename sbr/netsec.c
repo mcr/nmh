@@ -1023,7 +1023,7 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
 	nsc->sasl_mech = mh_xstrdup(mechanism);
 
 	for (p = nsc->sasl_mech; *p; p++)
-	    if (isascii((unsigned char) *p))	/* Just in case */
+	    if (isascii((unsigned char) *p)) /* Leave non-ASCII lower alone. */
 		*p = toupper((unsigned char) *p);
     }
 
