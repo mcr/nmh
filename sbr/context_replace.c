@@ -39,8 +39,7 @@ context_replace (char *key, char *value)
 	    if (strcmp (value, np->n_field)) {
 		if (!np->n_context)
 		    admonish (NULL, "bug: context_replace(key=\"%s\",value=\"%s\")", key, value);
-		if (np->n_field)
-		    free (np->n_field);
+                mh_xfree(np->n_field);
 		np->n_field = mh_xstrdup(value);
 		ctxflags |= CTXMOD;
 	    }
