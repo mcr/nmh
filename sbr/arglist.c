@@ -133,8 +133,7 @@ arglist_free(char *command, char **argvarray)
 {
     int i;
 
-    if (command != NULL)
-    	free(command);
+    mh_xfree(command);
 
     if (argvarray != NULL) {
     	for (i = 0; argvarray[i] != NULL; i++)
