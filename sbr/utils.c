@@ -515,9 +515,8 @@ nmh_version_changed (int older) {
 char *
 upcase (const char *str) {
     char *up = cpytrim (str);
-    char *cp;
 
-    for (cp = up; *cp; ++cp) { *cp = toupper ((unsigned char) *cp); }
+    ToUpper(up);
 
     return up;
 }
