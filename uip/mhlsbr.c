@@ -1222,7 +1222,7 @@ mcomp_format (struct mcomp *c1, struct mcomp *c2)
         mh_xfree(p->pq_text);
         mh_xfree(p->pq_error);
 	q = p->pq_next;
-	free ((char *) p);
+	free(p);
     }
 
     c2->c_text = add ("\n", c2->c_text);
@@ -1272,7 +1272,7 @@ free_queue (struct mcomp **head, struct mcomp **tail)
         mh_xfree(c1->c_nfs);
 	if (c1->c_fmt)
 	    fmt_free (c1->c_fmt, 0);
-	free ((char *) c1);
+	free(c1);
     }
 
     *head = *tail = NULL;
