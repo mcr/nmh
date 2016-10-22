@@ -13,9 +13,8 @@
 #include <sys/uio.h>
 
 
-/*
- * print out error message
- */
+/* advise calls advertise() with no tail to print fmt, and perhaps what,
+ * to stderr. */
 void
 advise (const char *what, const char *fmt, ...)
 {
@@ -27,9 +26,12 @@ advise (const char *what, const char *fmt, ...)
 }
 
 
-/*
- * print out error message and exit
- */
+/* adios calls advertise() with no tail to print fmt, and perhaps what,
+ * to stderr, and "ends" the program with an error exit status.  The
+ * route to exit is via the done function pointer and may not be
+ * straightforward.
+ * FIXME: Document if this function can ever return.  If not, perhaps an
+ * abort(3) at the end of the routine would make that more clear. */
 void
 adios (const char *what, const char *fmt, ...)
 {
@@ -42,9 +44,8 @@ adios (const char *what, const char *fmt, ...)
 }
 
 
-/*
- * admonish the user
- */
+/* admonish calls advertise() with a tail indicating the program
+ * continues. */
 void
 admonish (char *what, char *fmt, ...)
 {
@@ -56,9 +57,14 @@ admonish (char *what, char *fmt, ...)
 }
 
 
-/*
- * main routine for printing error messages.
- */
+/* advertise prints fmt and ap to stderr after flushing stdout.
+ * If invo_name isn't NULL or empty, it precedes the output seperated by ": ".
+ * If what isn't NULL, errno as a string is appended.
+ * A non-empty what separates fmt from errno, surrounded by " " and ": ".
+ * BUG: No space separator before errno if what is "".
+ * If tail isn't NULL or empty then ", " and tail are appended
+ * before the finishing "\n".
+ * In summary: "invo_name: fmt what: errno, tail\n". */
 void
 advertise (const char *what, char *tail, const char *fmt, va_list ap)
 {
