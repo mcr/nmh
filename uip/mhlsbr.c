@@ -1282,14 +1282,15 @@ free_queue (struct mcomp **head, struct mcomp **tail)
 static void
 putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 {
+    char *text; /* c1's text, or the name as a fallback. */
+    char *trimmed_prefix;
     int count, cchdr;
     char *cp;
-    /*
-     * Create a copy of c1->c_text with trailing whitespace
-     * trimmed, for use with blank lines.
-     */
-    char *trimmed_prefix =
-	rtrim (add (c1->c_text ? c1->c_text : c1->c_name, NULL));
+
+    text = c1->c_text ? c1->c_text : c1->c_name;
+    /* Create a copy with trailing whitespace trimmed, for use with
+     * blank lines. */
+    trimmed_prefix = rtrim(add(text, NULL));
 
     cchdr = 0;
     lm = 0;
@@ -1318,7 +1319,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	count = (c1->c_width ? c1->c_width : global.c_width)
 	    - c1->c_offset - strlen (c2->c_text);
 	if (!(c1->c_flags & HDROUTPUT) && !(c1->c_flags & NOCOMPONENT))
-	    count -= strlen (c1->c_text ? c1->c_text : c1->c_name) + 2;
+	    count -= strlen(text) + 2;
 	lm = c1->c_offset + (count / 2);
     } else {
 	if (c1->c_offset)
@@ -1327,17 +1328,16 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 
     if (!(c1->c_flags & HDROUTPUT) && !(c1->c_flags & NOCOMPONENT)) {
         if (c1->c_flags & UPPERCASE)		/* uppercase component also */
-	    for (cp = (c1->c_text ? c1->c_text : c1->c_name); *cp; cp++)
+	    for (cp = text; *cp; cp++)
                 *cp = toupper ((unsigned char) *cp);
-	putstr (c1->c_text ? c1->c_text : c1->c_name, c1->c_flags);
+	putstr(text, c1->c_flags);
 	if (flag != BODYCOMP) {
 	    putstr (": ", c1->c_flags);
 	    if (!(c1->c_flags & SPLIT))
 		c1->c_flags |= HDROUTPUT;
 
 	cchdr++;
-	if ((count = c1->c_cwidth -
-		strlen (c1->c_text ? c1->c_text : c1->c_name) - 2) > 0)
+	if ((count = c1->c_cwidth - strlen(text) - 2) > 0)
 	    while (count--)
 		putstr (" ", c1->c_flags);
 	}
@@ -1372,7 +1372,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 			: (int) strlen (c2->c_name) + 2;
 	else
 	    count = (c1->c_cwidth >= 0) ? (size_t) c1->c_cwidth
-			: strlen (c1->c_text ? c1->c_text : c1->c_name) + 2;
+			: strlen(text) + 2;
     }
     count += c1->c_offset;
 
@@ -1388,7 +1388,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 	    /* Output component, trimming trailing whitespace if there
 	       is no text on the line. */
 	    if (*cp) {
-		putstr (c1->c_text ? c1->c_text : c1->c_name, c1->c_flags);
+		putstr(text, c1->c_flags);
 	    } else {
 		putstr (trimmed_prefix, c1->c_flags);
 	    }
