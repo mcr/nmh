@@ -35,7 +35,7 @@ static FILE *cfile;
 #define	ID	10
 #define	MACH	11
 
-#define MAX_TOKVAL_SIZE 1024
+#define MAX_TOKVAL_SIZE 1024 /* Including terminating NUL. */
 
 struct toktab {
     char *tokstr;
@@ -177,44 +177,44 @@ ruserpass(const char *host, char **aname, char **apass, int flags)
 static int
 token(char *tokval)
 {
-    char *cp;
     int c;
+    const char normalStop[] = "\t\n ,"; /* Each breaks a word. */
+    const char *stop;
+    char *cp;
     struct toktab *t;
 
-    if (feof(cfile))
+    if (feof(cfile) || ferror(cfile))
 	return TOK_EOF;
-    while ((c = getc(cfile)) != EOF &&
-	   (c == '\n' || c == '\t' || c == ' ' || c == ','))
-	continue;
+
+    stop = normalStop;
+    while ((c = getc(cfile)) != EOF && c && strchr(stop, c))
+        ;
     if (c == EOF)
 	return TOK_EOF;
+
     cp = tokval;
-    if (c == '"') {
-	while ((c = getc(cfile)) != EOF && c != '"') {
-	    if (c == '\\')
-		c = getc(cfile);
-	    *cp++ = c;
-            if (cp - tokval > MAX_TOKVAL_SIZE-1) {
-                adios(NULL, "credential tokens restricted to length %d",
-                      MAX_TOKVAL_SIZE - 1);
-            }
-	}
-    } else {
-	*cp++ = c;
-	while ((c = getc(cfile)) != EOF
-	       && c != '\n' && c != '\t' && c != ' ' && c != ',') {
-	    if (c == '\\')
-		c = getc(cfile);
-	    *cp++ = c;
-            if (cp - tokval > MAX_TOKVAL_SIZE-1) {
-                adios(NULL, "credential tokens restricted to length %d",
-                      MAX_TOKVAL_SIZE - 1);
-            }
-	}
+    if (c == '"')
+        /* FIXME: Where is the quoted-string syntax of netrc documented?
+         * This code treats «"foo""bar"» as two tokens without further
+         * separators. */
+        stop = "\"";
+    else
+	*cp++ = c; /* BUG: If a backslash then it doesn't escape. */
+
+    while ((c = getc(cfile)) != EOF && c && !strchr(stop, c)) {
+        if (c == '\\')
+            c = getc(cfile); /* BUG: What if this is EOF. */
+        *cp++ = c;
+        if (cp - tokval > MAX_TOKVAL_SIZE-1) {
+            adios(NULL, "credential tokens restricted to length %d",
+                  MAX_TOKVAL_SIZE - 1);
+        }
     }
-    *cp = 0;
+    *cp = '\0';
+
     for (t = toktabs; t->tokstr; t++)
 	if (!strcmp(t->tokstr, tokval))
 	    return (t->tval);
+
     return (ID);
 }
