@@ -214,7 +214,7 @@ mnfree (struct mailname *mp)
     mh_xfree(mp->m_gname);
     mh_xfree(mp->m_note);
 
-    free ((char *) mp);
+    free(mp);
 }
 
 
