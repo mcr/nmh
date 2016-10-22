@@ -379,6 +379,26 @@ void TrimSuffixC(char *s, int c)
 }
 
 
+/* ToLower runs all of s through tolower(3). */
+void ToLower(char *s)
+{
+    unsigned char *b;
+
+    for (b = (unsigned char *)s; (*b = tolower(*b)); b++)
+        ;
+}
+
+
+/* ToUpper runs all of s through toupper(3). */
+void ToUpper(char *s)
+{
+    unsigned char *b;
+
+    for (b = (unsigned char *)s; (*b = toupper(*b)); b++)
+        ;
+}
+
+
 int
 nmh_init(const char *argv0, int read_context) {
     int status = OK;

@@ -65,6 +65,8 @@ char *nmh_strcasestr (const char *, const char *);
 
 bool EndsWithC(char *s, int c);
 void TrimSuffixC(char *s, int c);
+void ToLower(char *s);
+void ToUpper(char *s);
 
 /*
  * See if a string contains 8 bit characters (use isascii() for the test).
