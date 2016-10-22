@@ -159,7 +159,7 @@
    names are typically short (~8 char) and the loop that extracts them
    might terminate on a colon, newline or max width.  I considered
    using a Vax "scanc" to locate the end of the field followed by a
-   "bcopy" but the routine call overhead on a Vax is too large for this
+   "memmove" but the routine call overhead on a Vax is too large for this
    to work on short names.  If Berkeley ever makes "inline" part of the
    C optimiser (so things like "scanc" turn into inline instructions) a
    change here would be worthwhile.
@@ -175,7 +175,7 @@
    so message bodies average at least a few hundred characters.
    Assuming your system uses reasonably sized stdio buffers (1K or
    more), this routine should be able to remove the body in large
-   (>500 byte) chunks.  The makes the cost of a call to "bcopy"
+   (>500 byte) chunks.  The makes the cost of a call to "memmove"
    small but there is a premium on checking for the eom in packed
    maildrops.  The eom pattern is always a simple string so we can
    construct an efficient pattern matcher for it (e.g., a Vax "matchc"
