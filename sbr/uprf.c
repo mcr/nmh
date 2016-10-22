@@ -10,25 +10,22 @@
 #include <h/mh.h>
 
 
-/* uprf returns true if c1 starts with c2, ignoring case.
- * Otherwise false.  If c1 or c2 are NULL then false results. */
+/* uprf returns true if s starts with prefix, ignoring case.
+ * Otherwise false.  If s or prefix are NULL then false results. */
 int
-uprf (const char *c1, const char *c2)
+uprf(const char *s, const char *prefix)
 {
-    int c, mask;
+    unsigned char *us, *up;
 
-    if (!(c1 && c2))
+    if (!s || !prefix)
 	return 0;
+    us = (unsigned char *)s;
+    up = (unsigned char *)prefix;
 
-    while ((c = *c2++))
-    {
-	c &= 0xff;
-	mask = *c1 & 0xff;
-	c = tolower(c);
-	mask = tolower(mask);
-	if (c != mask)
-	    return 0;
-        c1++;
+    while (*us && tolower(*us) == tolower(*up)) {
+        us++;
+        up++;
     }
-    return 1;
+
+    return *up == '\0';
 }
