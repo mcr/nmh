@@ -26,6 +26,7 @@
 
 static FILE *cfile;
 
+#define TOK_EOF 0
 #define	DEFAULT	1
 #define	LOGIN	2
 #define	PASSWD	3
@@ -42,6 +43,7 @@ struct toktab {
 };
 
 static struct toktab toktabs[] = {
+    { "",         TOK_EOF },
     { "default",  DEFAULT },
     { "login",    LOGIN },
     { "password", PASSWD },
@@ -180,12 +182,12 @@ token(char *tokval)
     struct toktab *t;
 
     if (feof(cfile))
-	return (0);
+	return TOK_EOF;
     while ((c = getc(cfile)) != EOF &&
 	   (c == '\n' || c == '\t' || c == ' ' || c == ','))
 	continue;
     if (c == EOF)
-	return (0);
+	return TOK_EOF;
     cp = tokval;
     if (c == '"') {
 	while ((c = getc(cfile)) != EOF && c != '"') {
@@ -211,8 +213,6 @@ token(char *tokval)
 	}
     }
     *cp = 0;
-    if (tokval[0] == 0)
-	return (0);
     for (t = toktabs; t->tokstr; t++)
 	if (!strcmp(t->tokstr, tokval))
 	    return (t->tval);
