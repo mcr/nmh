@@ -70,7 +70,8 @@ advertise (const char *what, char *tail, const char *fmt, va_list ap)
 {
     int	eindex = errno;
     char buffer[BUFSIZ], errbuf[BUFSIZ], *err;
-    struct iovec iob[20], *iov;
+    struct iovec iob[10], *iov;
+    size_t niov;
 
     iov = iob;
 
@@ -112,9 +113,12 @@ advertise (const char *what, char *tail, const char *fmt, va_list ap)
 #undef ADD_LITERAL
 #undef ADD_VAR
 
+    niov = iov - iob;
+    assert(niov <= DIM(iob));
+
     fflush (stdout);
     fflush (stderr);
-    if (writev (fileno (stderr), iob, iov - iob) < 0) {
+    if (writev(fileno(stderr), iob, niov) == -1) {
         snprintf(buffer, sizeof buffer, "%s: write stderr failed: %d\n",
             invo_name && *invo_name ? invo_name : "nmh", errno);
         if (write(2, buffer, strlen(buffer)) == -1) {

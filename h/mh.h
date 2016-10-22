@@ -43,6 +43,9 @@ typedef unsigned char  boolean;  /* not int so we can pack in a structure */
 #define NMH_UNUSED(i) i
 #endif
 
+/* DIM gives the number of elements in the one-dimensional array a. */
+#define DIM(a) (sizeof (a) / sizeof (*(a)))
+
 /* LEN gives the strlen() of string constant s, excluding the
  * terminating NUL. */
 #define LEN(s) (sizeof (s) - 1)
