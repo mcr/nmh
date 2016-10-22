@@ -1226,7 +1226,7 @@ end_part:
 		continue;
 	    *next = NULL;
 	    free_content (p);
-	    free ((char *) part);
+	    free(part);
 	}
     }
 
@@ -1838,7 +1838,7 @@ openBase64 (CT ct, char **file)
         for (i = 0; i < decoded_len; ++i) {
             putc (*decoded_p++, ce->ce_fp);
         }
-        free ((char *) decoded);
+        free(decoded);
         if (ferror (ce->ce_fp)) {
             content_error (ce->ce_file, ct, "error writing to");
             goto clean_up;
