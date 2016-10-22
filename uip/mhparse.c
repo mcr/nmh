@@ -657,10 +657,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 		TYPE_FIELD, ct->c_file);
 	return NOTOK;
     }
-
-    /* down case the content type string */
-    for (dp = ci->ci_type; *dp; dp++)
-        *dp = tolower ((unsigned char) *dp);
+    ToLower(ci->ci_type);
 
     while (isspace ((unsigned char) *cp))
 	cp++;
@@ -695,10 +692,7 @@ get_ctinfo (char *cp, CT ct, int magic)
 		TYPE_FIELD, ct->c_file, ci->ci_type);
 	return NOTOK;
     }
-
-    /* down case the content subtype string */
-    for (dp = ci->ci_subtype; *dp; dp++)
-        *dp = tolower ((unsigned char) *dp);
+    ToLower(ci->ci_subtype);
 
 magic_skip:
     while (isspace ((unsigned char) *cp))
