@@ -199,7 +199,9 @@ token(char *tokval)
          * separators. */
         stop = "\"";
     else
-	*cp++ = c; /* BUG: If a backslash then it doesn't escape. */
+        /* Might be backslash.  Get it again later.  It's handled then. */
+        if (ungetc(c, cfile) == EOF)
+            return TOK_EOF;
 
     while ((c = getc(cfile)) != EOF && c && !strchr(stop, c)) {
         if (c == '\\')
