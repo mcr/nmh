@@ -10,6 +10,8 @@
 #include <h/mh.h>
 
 
+/* uprf returns true if c1 starts with c2, ignoring case.
+ * Otherwise false.  If c1 or c2 are NULL then false results. */
 int
 uprf (const char *c1, const char *c2)
 {
