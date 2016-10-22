@@ -210,7 +210,7 @@ mbx_read (FILE *fp, long pos, struct drop **drops)
     }
 
     if (dp == pp)
-	free ((char *) pp);
+	free(pp);
     else
 	*drops = pp;
     return (dp - pp);
@@ -507,7 +507,7 @@ map_read (char *file, long pos, struct drop **drops, int noisy)
     if ((i = read (md, (char *) (dp + 1), msgp * sizeof(*dp))) <
         (int) sizeof(*dp)) {
 	i = 0;
-	free ((char *) dp);
+	free(dp);
     } else {
 #ifdef NTOHLSWAP
 	struct drop *tdp;
@@ -591,7 +591,7 @@ map_write (char *mailbox, int md, int id, long last, off_t start,
 			return NOTOK;
 		    }
 		}
-		free ((char *) rp);
+		free(rp);
 		fclose (fp);
 		break;
 	}
