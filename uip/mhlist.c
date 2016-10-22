@@ -343,7 +343,7 @@ do_cache:
     for (ctp = cts; *ctp; ctp++)
 	free_content (*ctp);
 
-    free ((char *) cts);
+    free(cts);
     cts = NULL;
 
     /* If reading from a folder, do some updating */
