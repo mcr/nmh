@@ -69,49 +69,51 @@ void
 advertise (const char *what, char *tail, const char *fmt, va_list ap)
 {
     int	eindex = errno;
-    char buffer[BUFSIZ], err[BUFSIZ];
+    char buffer[BUFSIZ], errbuf[BUFSIZ], *err;
     struct iovec iob[20], *iov;
 
-    fflush (stdout);
-
-    fflush (stderr);
     iov = iob;
 
+#define APPEND_IOV(p, len) \
+    iov->iov_base = (p); \
+    iov->iov_len = (len); \
+    iov++
+
+#define ADD_LITERAL(s) APPEND_IOV((s), LEN(s))
+#define ADD_VAR(s) APPEND_IOV((s), strlen(s))
+
     if (invo_name && *invo_name) {
-	iov->iov_len = strlen (iov->iov_base = invo_name);
-	iov++;
-	iov->iov_len = strlen (iov->iov_base = ": ");
-	iov++;
+        ADD_VAR(invo_name);
+	ADD_LITERAL(": ");
     }
     
     vsnprintf (buffer, sizeof(buffer), fmt, ap);
-    iov->iov_len = strlen (iov->iov_base = buffer);
-    iov++;
+    ADD_VAR(buffer);
     if (what) {
 	if (*what) {
-	    iov->iov_len = strlen (iov->iov_base = " ");
-	    iov++;
-	    iov->iov_len = strlen (iov->iov_base = (void*)what);
-	    iov++;
-	    iov->iov_len = strlen (iov->iov_base = ": ");
-	    iov++;
+            ADD_LITERAL(" ");
+            ADD_VAR((void *)what);
+            ADD_LITERAL(": ");
 	}
-        if (!(iov->iov_base = strerror (eindex))) {
+        err = strerror(eindex);
+        if (!err) {
 	    /* this shouldn't happen, but we'll test for it just in case */
-	    snprintf (err, sizeof(err), "Error %d", eindex);
-	    iov->iov_base = err;
+	    snprintf(errbuf, sizeof(errbuf), "Error %d", eindex);
+            err = errbuf;
 	}
-	iov->iov_len = strlen (iov->iov_base);
-	iov++;
+        ADD_VAR(err);
     }
     if (tail && *tail) {
-	iov->iov_len = strlen (iov->iov_base = ", ");
-	iov++;
-	iov->iov_len = strlen (iov->iov_base = tail);
-	iov++;
+        ADD_LITERAL(", ");
+        ADD_VAR(tail);
     }
-    iov->iov_len = strlen (iov->iov_base = "\n");
-    iov++;
+    ADD_LITERAL("\n");
+
+#undef ADD_LITERAL
+#undef ADD_VAR
+
+    fflush (stdout);
+    fflush (stderr);
     if (writev (fileno (stderr), iob, iov - iob) < 0) {
         snprintf(buffer, sizeof buffer, "%s: write stderr failed: %d\n",
             invo_name && *invo_name ? invo_name : "nmh", errno);
