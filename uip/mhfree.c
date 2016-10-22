@@ -169,7 +169,7 @@ free_text (CT ct)
     if (!(t = (struct text *) ct->c_ctparams))
 	return;
 
-    free ((char *) t);
+    free(t);
     ct->c_ctparams = NULL;
 }
 
@@ -191,11 +191,11 @@ free_multi (CT ct)
     for (part = m->mp_parts; part; part = next) {
 	next = part->mp_next;
 	free_content (part->mp_part);
-	free ((char *) part);
+	free(part);
     }
     m->mp_parts = NULL;
 
-    free ((char *) m);
+    free(m);
     ct->c_ctparams = NULL;
 }
 
@@ -210,7 +210,7 @@ free_partial (CT ct)
 
     mh_xfree(p->pm_partid);
 
-    free ((char *) p);
+    free(p);
     ct->c_ctparams = NULL;
 }
 
@@ -226,7 +226,7 @@ free_external (CT ct)
     free_content (e->eb_content);
     mh_xfree(e->eb_body);
     mh_xfree(e->eb_url);
-    free ((char *) e);
+    free(e);
     ct->c_ctparams = NULL;
 }
 
