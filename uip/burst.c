@@ -189,7 +189,7 @@ main (int argc, char **argv)
 	}
     }
 
-    free ((char *) smsgs);
+    free(smsgs);
     context_replace (pfolder, folder);	/* update current folder */
 
     /*
