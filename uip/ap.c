@@ -192,7 +192,7 @@ process (char *arg, int length)
         mh_xfree(p->pq_text);
         mh_xfree(p->pq_error);
 	q = p->pq_next;
-	free ((char *) p);
+	free(p);
     }
 
     return status;
