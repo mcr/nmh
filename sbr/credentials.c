@@ -61,12 +61,12 @@ nmh_get_credentials (const char *host, const char *user)
 
     creds = mh_xmalloc(sizeof(*creds));
 
-    creds->host = getcpy(host);
+    creds->host = mh_xstrdup(host);
     creds->user = NULL;
     creds->pass = NULL;
 
     if (cred_style == NULL  ||  ! strcmp (cred_style, "legacy")) {
-	creds->user = user == NULL  ?  getcpy(getusername ())  :  getcpy(user);
+	creds->user = user == NULL  ?  mh_xstrdup(getusername ())  :  mh_xstrdup(user);
     } else if (! strncasecmp (cred_style, "file:", 5) ||
 	       ! strncasecmp (cred_style, "file-nopermcheck:", 17)) {
         /*
@@ -77,7 +77,7 @@ nmh_get_credentials (const char *host, const char *user)
          * 3) interactively request from user (as long as the
          *    credentials file didn't have a "default" token)
          */
-        creds->user = user == NULL ? NULL : getcpy(user);
+        creds->user = user == NULL ? NULL : mh_xstrdup(user);
     } else {
         admonish (NULL, "unknown credentials style %s", cred_style);
         return NULL;
