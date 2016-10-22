@@ -204,8 +204,9 @@ token(char *tokval)
             return TOK_EOF;
 
     while ((c = getc(cfile)) != EOF && c && !strchr(stop, c)) {
-        if (c == '\\')
-            c = getc(cfile); /* BUG: What if this is EOF. */
+        if (c == '\\' && (c = getc(cfile)) == EOF)
+            return TOK_EOF; /* Discard whole token. */
+
         *cp++ = c;
         if (cp - tokval > MAX_TOKVAL_SIZE-1) {
             adios(NULL, "credential tokens restricted to length %d",
