@@ -107,8 +107,8 @@ ruserpass(const char *host, char **aname, char **apass, int flags)
 			    (stb.st_mode & 077) != 0) {
 			    /* We make this a fatal error to force the
 			       user to correct it. */
-			    advise(NULL, "Error - file %s must not be world or "
-				   "group readable.", credentials_file);
+                            advise(NULL, "group or other permissions, %#o, "
+                                "forbidden: %s", stb.st_mode, credentials_file);
 			    adios(NULL, "Remove password or correct file "
 				  "permissions.");
 			}

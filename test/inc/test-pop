@@ -70,6 +70,14 @@ Date: Tuesday, 19 Dec 2006 4:15:16 -0500
 Dude, nmh is totally brutal.
 EOM
 
+# Check netrc's permissions test
+pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" '' '' "$testmessage"`
+chmod g=w,o=x $netrc
+run_test "inc -user ${TESTUSER} -host 127.0.0.1 -port $testport" \
+        "inc: group or other permissions, 0100621, forbidden: $netrc
+inc: Remove password or correct file permissions."
+chmod go= $netrc
+
 pid=`"${MH_OBJ_DIR}/test/fakepop" "$testport" \
 			"$TESTUSER" "$TESTPASS" "$testmessage"`
 

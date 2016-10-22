@@ -2008,8 +2008,8 @@ Date: Mon, 1 May 1995 00:00:00 -0800
 
     inc: -noaudit -norpop -noapop -host cuckoo
 
-  Add the following to ~/.netrc and ensure it is readable only by you
-  (e.g., chmod 600 .netrc):
+  Add the following to ~/.netrc and ensure it [grants no permissions to
+  group or other] (e.g., chmod 600 .netrc):
 
     machine cuckoo.domain.name login joeuser password secret
 
