@@ -2598,8 +2598,8 @@ fix_filename_encoding (CT ct) {
                 const char *const new_params = concat (params, "\n", NULL);
 
                 replace_substring (&hf->value, semicolon_loc, new_params);
-                free ((char *) new_params);
-                free ((char *) params);
+                free((void *)new_params); /* Cast away const.  Sigh. */
+                free((void *)params);
             } else {
                 advise (NULL, "did not find semicolon in %s:%s\n",
                         hf->name, hf->value);
