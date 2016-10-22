@@ -30,7 +30,7 @@ context_del (char *key)
 		m_defs = np->n_next;
 	    free (np->n_name);
             mh_xfree(np->n_field);
-	    free ((char *) np);
+	    free(np);
 	    ctxflags |= CTXMOD;
 	    return 0;
 	}
