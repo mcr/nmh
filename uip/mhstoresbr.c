@@ -395,7 +395,7 @@ missing_part:
     ct = *ctq++;
     if (store_content (ct, NULL, info) == NOTOK) {
 losing:
-	free ((char *) base);
+	free(base);
 	return NOTOK;
     }
 
@@ -405,7 +405,7 @@ losing:
 	    goto losing;
     }
 
-    free ((char *) base);
+    free(base);
     return OK;
 }
 
