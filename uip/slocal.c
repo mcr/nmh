@@ -1250,11 +1250,10 @@ you_lose:
      * and massage the headers.  Save
      * a copy of the "From " line for later.
      */
-    i = LEN("From ");
     while (fgets (buffer, sizeof(buffer), qfp)) {
 	if (first) {
 	    first = 0;
-	    if (!strncmp (buffer, "From ", i)) {
+	    if (HasPrefix(buffer, "From ")) {
 		/* get copy of envelope information ("From " line) */
 		envelope = mh_xstrdup(buffer);
 
