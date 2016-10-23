@@ -63,6 +63,7 @@ char *find_str (const char [], size_t, const char *);
 char *rfind_str (const char [], size_t, const char *);
 char *nmh_strcasestr (const char *, const char *);
 
+bool HasPrefix(const char *s, const char *prefix);
 bool HasSuffixC(char *s, int c);
 void TrimSuffixC(char *s, int c);
 void ToLower(char *s);

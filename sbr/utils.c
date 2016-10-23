@@ -358,6 +358,18 @@ nmh_strcasestr (const char *s1, const char *s2) {
 }
 
 
+/* HasPrefix returns true if non-NULL s starts with non-NULL prefix. */
+bool HasPrefix(const char *s, const char *prefix)
+{
+    while (*s && *s == *prefix) {
+        s++;
+        prefix++;
+    }
+
+    return *prefix == '\0';
+}
+
+
 /* HasSuffixC returns true if non-NULL string s ends with a c before the
  * terminating NUL. */
 bool HasSuffixC(char *s, int c)
