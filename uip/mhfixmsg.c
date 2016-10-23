@@ -2527,7 +2527,7 @@ fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm) {
 
     if (((value_len = strlen (value)) > 0)  &&
         HasPrefix(value, "=?") &&
-        strncmp (&value[value_len - 2], "?=", 2) == 0) {
+        HasSuffix(value, "?=")) {
         /* Looks like an RFC 2047 encoded parameter. */
         char decoded[PATH_MAX + 1];
 
