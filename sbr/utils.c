@@ -372,7 +372,7 @@ bool HasPrefix(const char *s, const char *prefix)
 
 /* HasSuffixC returns true if non-NULL string s ends with a c before the
  * terminating NUL. */
-bool HasSuffixC(char *s, int c)
+bool HasSuffixC(const char *s, int c)
 {
     return *s && s[strlen(s) - 1] == c;
 }
