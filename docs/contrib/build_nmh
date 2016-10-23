@@ -296,7 +296,7 @@ tools/showbuildenv | grep -Ev 'PID=|SHLVL'
 #### Set up with autoconfig if necessary.
 ####
 if [ -f Makefile ]; then
-  [ $verbose -ge 1 ]  &&  echo cleaning . . .
+  [ $verbose -ge 1 ]  &&  echo cleaning . . . >&3
   if [ $superclean -ge 1 ]; then
     make superclean >/dev/null
   else
@@ -305,7 +305,7 @@ if [ -f Makefile ]; then
 fi
 
 if [ ! -f configure  -o  ! -f Makefile.in ]; then
-  [ $verbose -ge 1 ]  &&  echo autoconfiguring . . .
+  [ $verbose -ge 1 ]  &&  echo autoconfiguring . . . >&3
   ./autogen.sh
   [ $? -ne 0 ]  &&
     die "autogen failed, see MACHINES file for autoconf,
@@ -316,7 +316,7 @@ fi
 ####
 #### Build.
 ####
-[ $verbose -ge 1 ]  &&  echo configuring . . .
+[ $verbose -ge 1 ]  &&  echo configuring . . . >&3
 if [ -z "$CFLAGS" ]; then
   #### Only use these flags with gcc.
   if cc -dM -E - </dev/null 2>&1 | grep __GNUC__ >/dev/null; then
@@ -331,7 +331,7 @@ printf '\n./configure %s\n' "$config_opts${smtpservers:+ $smtpservers}"
 status=$?
 
 if [ $status -eq 0 ]; then
-  [ $verbose -ge 1 ]  &&  echo building . . .
+  [ $verbose -ge 1 ]  &&  echo building . . . >&3
   make
   status=$?
 
@@ -352,7 +352,7 @@ if [ $status -eq 0 ]; then
         export DISTCHECK_CONFIGURE_FLAGS
     fi
 
-    [ $verbose -ge 1 ]  &&  echo testing . . .
+    [ $verbose -ge 1 ]  &&  echo testing . . . >&3
     checkoutput=`make $check AM_COLOR_TESTS=always`
     status=$?
 
@@ -372,13 +372,13 @@ if [ $status -eq 0 ]; then
 
     if [ $status -eq 0 ]; then
       if [ $install -ge 1 ]; then
-        [ $verbose -ge 1 ]  &&  echo installing . . .
+        [ $verbose -ge 1 ]  &&  echo installing . . . >&3
         ($installpriv make install) >/dev/null
         status=$?
       fi
 
       if [ $status -eq 0  -a  $build_rpm -ge 1 ]; then
-        [ $verbose -ge 1 ]  &&  echo building rpm . . .
+        [ $verbose -ge 1 ]  &&  echo building rpm . . . >&3
         make rpm >/dev/null
         status=$?
       fi
