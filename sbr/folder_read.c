@@ -25,7 +25,7 @@
 struct msgs *
 folder_read (char *name, int lockflag)
 {
-    int msgnum, prefix_len, len, *mi;
+    int msgnum, len, *mi;
     struct msgs *mp;
     struct dirent *dp;
     DIR *dd;
@@ -54,7 +54,6 @@ folder_read (char *name, int lockflag)
 
     if (access (name, W_OK) == -1)
 	set_readonly (mp);
-    prefix_len = strlen(BACKUP_PREFIX);
 
     /*
      * Allocate a temporary place to record the
@@ -100,7 +99,7 @@ folder_read (char *name, int lockflag)
 
 		default: 
 		    /* skip any files beginning with backup prefix */
-		    if (!strncmp (dp->d_name, BACKUP_PREFIX, prefix_len))
+		    if (HasPrefix(dp->d_name, BACKUP_PREFIX))
 			continue;
 
 		    /* skip the LINK file */
