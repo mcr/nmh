@@ -26,8 +26,8 @@ static int my_lex (char *);
 int
 isfrom(const char *string)
 {
-    return (strncmp (string, "From ", 5) == 0
-	    || strncmp (string, ">From ", 6) == 0);
+    return (HasPrefix(string, "From ")
+	    || HasPrefix(string, ">From "));
 }
 
 
@@ -52,10 +52,8 @@ lequal (const char *a, const char *b)
 static int
 isat (const char *p)
 {
-    return (strncmp (p, " AT ", 4)
-	    && strncmp (p, " At ", 4)
-	    && strncmp (p, " aT ", 4)
-	    && strncmp (p, " at ", 4) ? FALSE : TRUE);
+    return HasPrefix(p, " AT ") || HasPrefix(p, " At ") ||
+        HasPrefix(p, " aT ") || HasPrefix(p, " at ");
 }
 
 
