@@ -107,7 +107,7 @@ nmh_command_generator(const char *text, int state)
 	buf[sizeof(buf) - 1] = '\0';
 	p = *brkstring(buf, " ", NULL);
 	if (strncmp(p, text, len) == 0)
-	return strdup(p);
+            return strdup(p);
     }
 
     return NULL;
