@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 #define RMF_SWITCHES \
     X("interactive", 0, INTRSW) \
@@ -123,7 +124,7 @@ main (int argc, char **argv)
 static int
 rmf (char *folder)
 {
-    int i, j, others;
+    int i, others;
     char *maildir;
     char cur[BUFSIZ];
     struct dirent *dp;
@@ -156,7 +157,6 @@ rmf (char *folder)
 
     (void)ext_hook("del-hook", maildir, NULL);
 
-    j = strlen(BACKUP_PREFIX);
     while ((dp = readdir (dd))) {
 	switch (dp->d_name[0]) {
 	    case '.': 
@@ -171,7 +171,7 @@ rmf (char *folder)
 		if (m_atoi (dp->d_name))
 		    break;
 		if (strcmp (dp->d_name, LINK) == 0
-			|| strncmp (dp->d_name, BACKUP_PREFIX, j) == 0)
+			|| HasPrefix(dp->d_name, BACKUP_PREFIX))
 		    break;
 
 		admonish (NULL, "file \"%s/%s\" not deleted",
