@@ -2522,12 +2522,9 @@ fix_always (CT ct, int *message_mods) {
  */
 static int
 fix_filename_param (char *name, char *value, PM *first_pm, PM *last_pm) {
-    size_t value_len;
     int fixed = 0;
 
-    if (((value_len = strlen (value)) > 0)  &&
-        HasPrefix(value, "=?") &&
-        HasSuffix(value, "?=")) {
+    if (HasPrefix(value, "=?") && HasSuffix(value, "?=")) {
         /* Looks like an RFC 2047 encoded parameter. */
         char decoded[PATH_MAX + 1];
 
