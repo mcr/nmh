@@ -66,10 +66,10 @@ expath (char *name, int flag)
 
     if (*name == '/'
 	    || (flag == TFOLDER
-		&& (strncmp (name, CWD, NCWD)
+		&& (!HasPrefix(name, CWD)
 		    && strcmp (name, DOT)
 		    && strcmp (name, DOTDOT)
-		    && strncmp (name, PWD, NPWD))))
+		    && !HasPrefix(name, PWD))))
 	return mh_xstrdup(name);
 
     if (pwds == NULL)
@@ -85,7 +85,7 @@ expath (char *name, int flag)
 	if (cp == pwds)
 	    cp++;
 
-    if (strncmp (name, CWD, NCWD) == 0)
+    if (HasPrefix(name, CWD))
 	name += NCWD;
 
     if (strcmp (name, DOTDOT) == 0 || strcmp (name, PWD) == 0) {
@@ -93,7 +93,7 @@ expath (char *name, int flag)
 	return mh_xstrdup(buffer);
     }
 
-    if (strncmp (name, PWD, NPWD) == 0)
+    if (HasPrefix(name, PWD))
 	name += NPWD;
     else
 	cp = ep;
@@ -141,7 +141,7 @@ compath (char *f)
 			*cp = '\0';
 			break;
 		    }
-		    if (strncmp (cp, PWD, NPWD) == 0) {
+		    if (HasPrefix(cp, PWD)) {
 			for (dp = cp - 2; dp > f; dp--)
 			    if (*dp == '/')
 				break;
@@ -151,7 +151,7 @@ compath (char *f)
 			cp = dp;
 			continue;
 		    }
-		    if (strncmp (cp, CWD, NCWD) == 0) {
+		    if (HasPrefix(cp, CWD)) {
 			strcpy (cp - 1, cp + NCWD - 1);
 			cp--;
 			continue;
