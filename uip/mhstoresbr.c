@@ -674,7 +674,7 @@ got_filename:
                 int cwdlen = strlen (info->cwd);
 
                 fprintf (stderr, " as file %s\n",
-                         strncmp (ct->c_storage, info->cwd, cwdlen)
+                         !HasPrefix(ct->c_storage, info->cwd)
                          || ct->c_storage[cwdlen] != '/'
                          ? ct->c_storage : ct->c_storage + cwdlen + 1);
             }
