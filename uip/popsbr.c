@@ -15,7 +15,6 @@
 #include <h/signals.h>
 
 #define	TRM	"."
-#define	TRMLEN	(sizeof TRM - 1)
 
 static int poprint = 0;
 
@@ -686,14 +685,14 @@ vcommand (const char *fmt, va_list ap)
 int
 multiline (void)
 {
-    char buffer[BUFSIZ + TRMLEN];
+    char buffer[BUFSIZ + LEN(TRM)];
 
     if (pop_getline (buffer, sizeof buffer, nsc) != OK)
 	return NOTOK;
     if (HasPrefix(buffer, TRM)) {
-	if (buffer[TRMLEN] == 0)
+	if (buffer[LEN(TRM)] == 0)
 	    return DONE;
-        strncpy (response, buffer + TRMLEN, sizeof(response));
+        strncpy (response, buffer + LEN(TRM), sizeof(response));
     }
     else
 	strncpy (response, buffer, sizeof(response));
