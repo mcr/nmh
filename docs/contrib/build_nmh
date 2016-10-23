@@ -1,7 +1,8 @@
 #! /bin/sh
 #
 # Configures and builds nmh.
-# * This script must be invoked from an nmh source directory.
+# * If this script is not invoked from an nmh source directory, it
+#   will attempt to download the nmh sources.
 # * This script retrieves configuration from the first existing nmh
 #   installation on your $PATH, if any.
 # * Unless the -y option is provided, this script then interactively
@@ -19,12 +20,13 @@
 #
 # Option summary:
 #   First time use:
+#     -b <branch> to specify branch to check out, only if downloading sources
 #     -i to install nmh
 #     -v to display progress
 #   Subsequent uses, assuming installed nmh bin directory is on $PATH:
 #     -y to accept all configuration options without confirmation
 #   Output control:
-#     -l <logfile name>, default 'build_nmh.log'
+#     -l <logfile name>, default 'build_nmh.log', - for stdout/stderr
 #   Advanced/developer use:
 #     -c to run 'make distcheck' instead of 'make check'
 #     -d to build nmh with debug enabled
@@ -41,19 +43,8 @@
 #   autoconf and automake, with -s (see docs/README.developers for versions)
 #   rpm-build, with -r
 
-
-####
-#### Interpret command arguments.
-####
-check=check
-debug=0
-install=0
-logfile=build_nmh.log
-build_rpm=0
-superclean=0
-verbose=0
-yes=0
 usage="usage: $0
+  [-b <branch>, only if downloading]
   [-c to run 'make distcheck' instead of 'make check']
   [-d to build nmh with debug enabled]
   [-i to install nmh]
@@ -63,8 +54,45 @@ usage="usage: $0
   [-v to display progress]
   [-y to accept all configuration options without confirmation]"
 
-while getopts 'cdil:rsvy?' arg; do
+#### Exit with error message.
+die() {
+  echo "$0: $*" 1>&2
+  exit 1
+}
+
+#### Find location of a program.  Bourne shell just puts the name in
+#### $0 if it's found from the PATH, so search that if necessary.
+finddir() {
+  case $1 in
+    */*) dirname "$1" ;;
+    *  ) IFS=:
+         for d in $PATH; do
+           [ -f "${d:=.}/$1"  -a  -x "$d/$1" ]  &&  printf %s "$d"  &&  break
+         done ;;
+  esac
+}
+
+gitrepo=git.savannah.nongnu.org
+invocation="$0 $*"
+tmpfile=/tmp/build_nmh-$$.log
+trap 'rm -f "$tmpfile"' EXIT
+
+####
+#### Interpret command arguments.
+####
+branch=master
+check=check
+debug=0
+install=0
+logfile=build_nmh.log
+build_rpm=0
+superclean=0
+verbose=0
+yes=0
+
+while getopts 'cb:dil:rsvy?' arg; do
   case $arg in
+    b  ) branch="$OPTARG" ;;
     c  ) check=distcheck ;;
     d  ) debug=1 ;;
     i  ) install=1 ;;
@@ -78,18 +106,56 @@ while getopts 'cdil:rsvy?' arg; do
 done
 shift `expr $OPTIND - 1`
 
-#### No command line arguments are supported.
-if [ $# -gt 0 ]; then
-  echo "usage: $0"
-  exit 1
-fi
+#### Redirect all output to tmp file.  Then at end of script, copy
+#### it to either logfile or stdout.  Also, grep it for errors and
+#### warnings.
+exec 3>&1 >"$tmpfile" 2>&1
+
+echo "$invocation"
+
+#### No non-option command line arguments are supported.
+[ $# -gt 0 ]  &&  die "$usage"
 
 #### Check to see that we're in a nmh source directory.
-if grep 'the authors of nmh' COPYRIGHT >/dev/null; then
+if grep 'the authors of nmh' COPYRIGHT >/dev/null 2>&1; then
   :
 else
-  echo "$0: not in nmh source directory"
-  exit 1
+  #### Download sources from repo.
+  gitdir=`finddir git`
+  if [ "$gitdir" ]; then
+    #### Use git repo.
+    [ "$verbose" -eq 0 ]  &&  git_opts=--quiet
+    [ "$branch" == master ]  ||
+      git_opts="${git_opts:+$git_opts }--branch $branch"
+    if "$gitdir"/git clone $git_opts "git://$gitrepo/nmh.git"; then
+      cd nmh  ||  die "failed to clone nmh"
+      git log --max-count=1 --pretty-format:%H
+    else
+      die 'failed to clone git repo'
+    fi
+  else
+    [ -e nmh-"$branch" ]  &&  die "nmh-$branch exists, will not overrwrite"
+
+    #### Use snapshot.
+    tarball="nmh-$branch.tar.gz"
+    repo="http://$gitrepo/cgit/nmh.git/snapshot"
+    snapshot="$repo/$tarball"
+    if [ "`finddir wget`" ]; then
+      [ "$verbose" -eq 0 ] && wget_opts='--quiet'
+      wget --output-document - $wget_opts "$snapshot" | tar xzf -
+    elif [ "`finddir curl`" ]; then
+      [ "$verbose" -eq 0 ] && curl_opts=--silent
+      curl --location $curl_opts "$snapshot" | tar xzf -
+    else
+      die 'unable to find program to download nmh sources'
+    fi
+
+    if [ -d nmh-"$branch" ]; then
+      cd nmh-"$branch"  ||  die "failed to download and extract nmh-$branch"
+    else
+      die "failed to download nmh-$branch sources"
+    fi
+  fi
 fi
 
 ####
@@ -109,18 +175,6 @@ config_oauth=n
 config_debug=n
 
 
-#### Find location of a program.  Bourne shell just puts the name in
-#### $0 if it's found from the PATH, so search that if necessary.
-finddir() {
-  case $1 in
-    */*) dirname "$1" ;;
-    *  ) IFS=:
-         for d in $PATH; do
-           [ -f "${d:=.}/$1"  -a  -x "$d/$1" ]  &&  printf %s "$d"  &&  break
-         done ;;
-  esac
-}
-
 #### Figure out whether or not to use -n with tail.
 case `printf 'OK\n' | tail -n 1 2>&1` in
   OK) tail='tail -n ' ;;
@@ -128,7 +182,7 @@ case `printf 'OK\n' | tail -n 1 2>&1` in
 esac
 
 if install-mh -check >/dev/null 2>&1; then
-  # Determine config options from installed nmh.
+  #### Determine config options from installed nmh.
   mhbin=`finddir install-mh`
 
   config_prefix=`cd $mhbin/.. && pwd`
@@ -177,48 +231,36 @@ fi
 
 if [ $yes -eq 0 ]; then
   #### Confirm each config setting with user.
-  printf 'Install prefix [%s]: ' $config_prefix
+  printf 'Install prefix [%s]: ' $config_prefix >&3
   read prefix
   [ "$prefix" ]  &&  config_prefix="$prefix"
 
-  printf 'Locking type (dot|fcntl|flock|lockf) [determined by configure]: '
+  printf 'Locking type (dot|fcntl|flock|lockf) [determined by configure]: ' >&3
   read locking
   [ "$locking" ]  &&  config_locking="$locking"
 
-  printf 'MTS (smtp|sendmail/smtp|sendmail/pipe) [%s]: ' $config_mts
+  printf 'MTS (smtp|sendmail/smtp|sendmail/pipe) [%s]: ' $config_mts >&3
   read mts
   [ "$mts" ]  &&  config_mts="$mts"
 
   if [ "$config_mts" = smtp ]; then
-    printf 'SMTP server(s), space separated [%s]: ' $config_smtpservers
+    printf 'SMTP server(s), space separated [%s]: ' $config_smtpservers >&3
     read response
     servers=`echo $response | sed -e 's/ /\\\ /g'`
     [ "$servers" ]  &&  config_smtpservers="$servers"
   fi
 
-  printf 'Cyrus SASL support [%s]: ' $config_sasl
+  printf 'Cyrus SASL support [%s]: ' $config_sasl >&3
   read response
-  if [ "$response" = y  -o  "$response" = Y ]; then
-    config_sasl=y
-  elif [ "$response" = n  -o  "$response" = N ]; then
-    config_sasl=n
-  fi
+  [ "$response" = y  -o  "$response" = Y ]  &&  config_sasl=y
 
-  printf 'TLS support [%s]: ' $config_tls
+  printf 'TLS support [%s]: ' $config_tls >&3
   read response
-  if [ "$response" = y  -o  "$response" = Y ]; then
-    config_tls=y
-  elif [ "$response" = n  -o  "$response" = N ]; then
-    config_tls=n
-  fi
+  [ "$response" = y  -o  "$response" = Y ]  &&  config_tls=y
 
-  printf 'OAuth2 support [%s]: ' $config_oauth
+  printf 'OAuth2 support [%s]: ' $config_oauth >&3
   read response
-  if [ "$response" = y  -o  "$response" = Y ]; then
-    config_oauth=y
-  elif [ "$response" = n  -o  "$response" = N ]; then
-    config_oauth=n
-  fi
+  [ "$response" = y  -o  "$response" = Y ]  &&  config_oauth=y
 
   #### Don't confirm debug here:  obey the -d option to this script.
 fi
@@ -226,20 +268,16 @@ fi
 smtpservers=
 config_opts="--prefix=$config_prefix"
 
-[ "$config_locking" ]  &&  \
+[ "$config_locking" ]  &&
   config_opts="$config_opts --with-locking=$config_locking"
-[ "$config_mts"  -a  "$config_mts" != smtp ]  &&  \
+[ "$config_mts"  -a  "$config_mts" != smtp ]  &&
   config_opts="$config_opts --with-mts=$config_mts"
-[ "$config_smtpservers"  -a  "$config_smtpservers" != localhost ]  &&  \
+[ "$config_smtpservers"  -a  "$config_smtpservers" != localhost ]  &&
   smtpservers="--with-smtpservers=$config_smtpservers"
-[ "$config_sasl" = y ]  &&  \
-  config_opts="$config_opts --with-cyrus-sasl"
-[ "$config_tls" = y ]  &&  \
-  config_opts="$config_opts --with-tls"
-[ "$config_oauth" = y ]  &&  \
-  config_opts="$config_opts --with-oauth"
-[ $config_debug = y ]  &&  \
-  config_opts="$config_opts --enable-assert"
+[ "$config_sasl" = y ]  &&  config_opts="$config_opts --with-cyrus-sasl"
+[ "$config_tls" = y ]  &&  config_opts="$config_opts --with-tls"
+[ "$config_oauth" = y ]  &&  config_opts="$config_opts --with-oauth"
+[ $config_debug = y ]  &&  config_opts="$config_opts --enable-assert"
 
 #### dotlocking, the usual default, requires chgrp and chmod of inc.
 installpriv=
@@ -251,9 +289,11 @@ if [ $install -ge 1  -a  "$LOGNAME" != root ]; then
   fi
 fi
 
+tools/showbuildenv | grep -Ev 'PID=|SHLVL'
+
 
 ####
-#### Clean up, and set up with autoconfig if necessary.
+#### Set up with autoconfig if necessary.
 ####
 if [ -f Makefile ]; then
   [ $verbose -ge 1 ]  &&  echo cleaning . . .
@@ -264,10 +304,12 @@ if [ -f Makefile ]; then
   fi
 fi
 
-/bin/rm -f "$logfile"
 if [ ! -f configure  -o  ! -f Makefile.in ]; then
   [ $verbose -ge 1 ]  &&  echo autoconfiguring . . .
-  ./autogen.sh >>"$logfile" 2>&1
+  ./autogen.sh
+  [ $? -ne 0 ]  &&
+    die "autogen failed, see MACHINES file for autoconf,
+automake, flex, and bison requirements"
 fi
 
 
@@ -277,21 +319,20 @@ fi
 [ $verbose -ge 1 ]  &&  echo configuring . . .
 if [ -z "$CFLAGS" ]; then
   #### Only use these flags with gcc.
-  if cc -dM -E - </dev/null 2>&1 | egrep __GNUC__ >/dev/null; then
+  if cc -dM -E - </dev/null 2>&1 | grep __GNUC__ >/dev/null; then
     #### configure will supply -g -O2 with gcc, but only if CFLAGS
     #### isn't defined.
     CFLAGS='-g -O2 -ansi -pedantic'
   fi
 fi
 
-echo ./configure $config_opts ${smtpservers:+"$smtpservers"} >>"$logfile" 2>&1
-./configure CFLAGS="${CFLAGS}" \
-            $config_opts ${smtpservers:+"$smtpservers"} >>"$logfile" 2>&1
+printf '\n./configure %s\n' "$config_opts${smtpservers:+ $smtpservers}"
+./configure CFLAGS="${CFLAGS}" $config_opts${smtpservers:+" $smtpservers"}
 status=$?
 
 if [ $status -eq 0 ]; then
   [ $verbose -ge 1 ]  &&  echo building . . .
-  make >>"$logfile" 2>&1
+  make
   status=$?
 
   if [ $status -eq 0 ]; then
@@ -302,9 +343,9 @@ if [ $status -eq 0 ]; then
       if [ -x "$heirloom_shell" ]; then
         TESTS_SHELL="$heirloom_shell"; export TESTS_SHELL
       fi
-   fi
+    fi
 
-    if [ -n "$CFLAGS" ]; then
+    if [ "$CFLAGS" ]; then
         #### Pass DISTCHECK_CONFIGURE_FLAGS through an environment
         #### variable to avoid automake's quoting.
         DISTCHECK_CONFIGURE_FLAGS="CFLAGS='${CFLAGS}'"
@@ -312,7 +353,7 @@ if [ $status -eq 0 ]; then
     fi
 
     [ $verbose -ge 1 ]  &&  echo testing . . .
-    checkoutput=`make $check AM_COLOR_TESTS=always 2>>"$logfile"`
+    checkoutput=`make $check AM_COLOR_TESTS=always`
     status=$?
 
     tests_summary=`echo "$checkoutput" | grep tests`
@@ -321,39 +362,50 @@ if [ $status -eq 0 ]; then
     test_not_run=`echo "$checkoutput" | grep 'test was not run'`
     fails=`echo "$checkoutput" | grep FAIL`
     if [ "$tests_summary" ]; then
-      echo '===================' >>"$logfile"
-      [ "$test_not_run" ]  &&  echo "$test_not_run" >>"$logfile"
-      [ "$fails" ]  &&  echo "$fails" >>"$logfile"
-      echo "$tests_summary" >>"$logfile"
-      echo '===================' >>"$logfile"
-      [ "$check" = distcheck ]  &&  \
-        echo "$checkoutput" | ${tail}4 >>"$logfile"
+      echo '==================='
+      [ "$test_not_run" ]  &&  echo "$test_not_run"
+      [ "$fails" ]  &&  echo "$fails"
+      echo "$tests_summary"
+      echo '==================='
+      [ "$check" = distcheck ]  &&  echo "$checkoutput" | ${tail}4
     fi
 
     if [ $status -eq 0 ]; then
       if [ $install -ge 1 ]; then
         [ $verbose -ge 1 ]  &&  echo installing . . .
-        ($installpriv make install) >/dev/null 2>>"$logfile"
+        ($installpriv make install) >/dev/null
         status=$?
       fi
 
       if [ $status -eq 0  -a  $build_rpm -ge 1 ]; then
         [ $verbose -ge 1 ]  &&  echo building rpm . . .
-        make rpm >/dev/null 2>>"$logfile"
+        make rpm >/dev/null
         status=$?
       fi
     fi
   fi
 fi
 
-grep Error "$logfile"
-grep warn "$logfile"
+####
+#### Report results.
+####
+
+#### Disable output redirection (and flush) so that we can grep.
+exec 1>&3 3>&-
+
+if [ "$logfile" != - ]; then
+  rm -f "$logfile"
+  exec 3>&1 >"$logfile" 2>&1
+fi
+
+cat "$tmpfile"
+grep -E 'Error|warn' "$tmpfile"
 
 if [ $status -eq 0 ]; then
   [ $verbose -ge 1 ]  &&  echo build completed successfully
 else
   echo build failed!
-  echo build log is in "$logfile"
+  [ "$logfile" = - ]  ||  echo "build failed, build log is in $logfile" >&3
 fi
 
 exit $status
