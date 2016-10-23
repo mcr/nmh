@@ -10,6 +10,7 @@
 
 #include <h/mh.h>
 #include <fcntl.h>
+#include <h/utils.h>
 #include <h/md5.h>
 #include <h/mts.h>
 #include <h/tws.h>
@@ -365,7 +366,7 @@ writeQuoted (CT ct, FILE *out)
 	 * doesn't falsely match an mbox delimiter.
 	 */
 	cp = bufp;
-	if (gotlen >= 5 && strncmp (cp, "From ", 5) == 0) {
+	if (gotlen >= 5 && HasPrefix(cp, "From ")) {
 	    fprintf (out, "=%02X", 'F');
 	    cp++;
 	    n += 3;
