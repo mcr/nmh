@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 /*
  * error codes for sequence
@@ -359,7 +360,7 @@ attr (struct msgs *mp, char *cp)
     /* hack for "cur-name", "cur-n", etc. */
     if (!strcmp (cp, "cur"))
 	return 0;
-    if (strncmp ("cur", cp, 3) == 0) {
+    if (HasPrefix(cp, "cur")) {
 	if (cp[3] == ':' || cp[3] == '=')
 	    return 0;
     }
