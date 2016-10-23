@@ -370,6 +370,18 @@ bool HasPrefix(const char *s, const char *prefix)
 }
 
 
+/* HasSuffix returns true if non-NULL s ends with non-NULL suffix. */
+bool HasSuffix(const char *s, const char *suffix)
+{
+    size_t ls, lsuf;
+
+    ls = strlen(s);
+    lsuf = strlen(suffix);
+
+    return lsuf <= ls && !strcmp(s + ls - lsuf, suffix);
+}
+
+
 /* HasSuffixC returns true if non-NULL string s ends with a c before the
  * terminating NUL. */
 bool HasSuffixC(const char *s, int c)
