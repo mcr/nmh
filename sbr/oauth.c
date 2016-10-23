@@ -628,17 +628,17 @@ load_creds(struct user_creds **result, FILE *fp, mh_oauth_ctx *ctx)
         case FLDPLUS: {
             char **save, *expire;
             time_t *expires_at = NULL;
-            if (strncmp(name, "access-", 7) == 0) {
+            if (HasPrefix(name, "access-")) {
                 const char *user = name + 7;
                 mh_oauth_cred *creds = find_or_alloc_user_creds(user_creds,
                                                                 user);
                 save = &creds->access_token;
-            } else if (strncmp(name, "refresh-", 8) == 0) {
+            } else if (HasPrefix(name, "refresh-")) {
                 const char *user = name + 8;
                 mh_oauth_cred *creds = find_or_alloc_user_creds(user_creds,
                                                                 user);
                 save = &creds->refresh_token;
-            } else if (strncmp(name, "expire-", 7) == 0) {
+            } else if (HasPrefix(name, "expire-")) {
                 const char *user = name + 7;
                 mh_oauth_cred *creds = find_or_alloc_user_creds(user_creds,
                                                                 user);
@@ -949,7 +949,7 @@ post(struct curl_ctx *ctx, const char *url, const char *req_body)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, ctx);
 
-    if (strncmp(url, "http://127.0.0.1:", 17) == 0) {
+    if (HasPrefix(url, "http://127.0.0.1:")) {
         /* Hack:  on Cygwin, curl doesn't fail to connect with ECONNREFUSED.
            Instead, it waits to timeout.  So set a really short timeout, but
            just on localhost (for convenience of the user, and the test
