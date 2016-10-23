@@ -8,6 +8,10 @@
 # * Unless the -y option is provided, this script then interactively
 #   walks you through confirmation of common configuration settings.
 #
+# This file can be downloaded and immediately run using, e.g.,
+#   wget http://git.savannah.gnu.org/cgit/nmh.git/plain/docs/contrib/build_nmh
+#   sh build_nmh
+#
 # Typical usage:
 # The first time you invoke this script, use the -i option to install
 # nmh in the specified location.  The script will walk you through the
@@ -289,7 +293,7 @@ if [ $install -ge 1  -a  "$LOGNAME" != root ]; then
   fi
 fi
 
-tools/showbuildenv | grep -Ev 'PID=|SHLVL'
+[ -x tools/showbuildenv ]  &&  tools/showbuildenv | grep -Ev 'PID=|SHLVL'
 
 
 ####
@@ -402,7 +406,7 @@ cat "$tmpfile"
 grep -E 'Error|warn' "$tmpfile"
 
 if [ $status -eq 0 ]; then
-  [ $verbose -ge 1 ]  &&  echo build completed successfully
+  [ $verbose -ge 1 ]  &&  echo build completed successfully >&3
 else
   echo build failed!
   [ "$logfile" = - ]  ||  echo "build failed, build log is in $logfile" >&3
