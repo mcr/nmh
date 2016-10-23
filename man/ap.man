@@ -20,7 +20,7 @@ ap \- parse addresses RFC 822-style
 \&...
 .ad
 .SH DESCRIPTION
-.B Ap
+.B ap
 is a program that parses addresses according to the ARPA
 Internet standard.  It also understands many non\-standard formats.
 It is useful for seeing how

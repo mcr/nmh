@@ -30,7 +30,7 @@ mhl \- produce formatted listings of nmh messages
 .IR \&... ]
 .ad
 .SH DESCRIPTION
-.B Mhl
+.B mhl
 is an
 .B nmh
 command for filtering and/or displaying text
@@ -153,7 +153,7 @@ and
 .B prev
 initialize appropriately.
 .PP
-.B Mhl
+.B mhl
 operates in two phases: 1) read and parse the format file, and
 2) process each message (file).  During phase 1, an internal description
 of the format is produced as a structured list.  In phase 2, this list

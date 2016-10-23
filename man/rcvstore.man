@@ -20,7 +20,7 @@ rcvstore \- asynchronously incorporate mail into a folder
 .RB [ \-public " | " \-nopublic ]
 .ad
 .SH DESCRIPTION
-.B Rcvstore
+.B rcvstore
 incorporates a message from the standard input into an
 .B nmh
 folder.  This command is typically used in conjunction with
@@ -51,7 +51,7 @@ will exit if the specified folder does not exist.
 When the new message is incorporated into the folder, it is assigned
 the next highest number for that folder.
 .PP
-.B Rcvstore
+.B rcvstore
 will incorporate anything except zero length messages
 into the user's
 .B nmh

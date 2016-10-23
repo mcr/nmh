@@ -30,7 +30,7 @@ slocal \- asynchronously filter and deliver new mail
 .RB [ \-debug ]
 .ad
 .SH DESCRIPTION
-.B Slocal
+.B slocal
 is a program designed to allow you to have your inbound
 mail processed according to a complex set of selection criteria.
 You do not normally invoke
@@ -394,7 +394,7 @@ will be set the the user part of the Local-Mailbox profile entry, if set.
 .SH CONTEXT
 None
 .SH HISTORY
-.B Slocal
+.B slocal
 was originally designed to be backward-compatible with
 the
 .B maildelivery
@@ -424,7 +424,7 @@ value
 .SH BUGS
 Only two return codes are meaningful, others should be.
 .PP
-.B Slocal
+.B slocal
 was originally designed to be backwards-compatible with the
 .B maildelivery
 functionality provided by

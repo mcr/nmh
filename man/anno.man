@@ -27,7 +27,7 @@ anno \- annotate messages
 .IR body ]
 .ad
 .SH DESCRIPTION
-.B Anno
+.B anno
 manipulates header fields or
 .I annotations
 in messages.
@@ -142,7 +142,7 @@ By default,
 .B anno
 changes the last-accessed and last-modified times on annotate messages
 to the time at which the annotation occurs.
-.B Anno
+.B anno
 preserves the original times if the
 .B -preserve
 option is used.

@@ -46,7 +46,7 @@ inc \- incorporate new mail
 .RB [ \-snoop ]
 .ad
 .SH DESCRIPTION
-.B Inc
+.B inc
 incorporates mail from the user's incoming mail drop into
 an
 .B nmh
@@ -118,7 +118,7 @@ history.
 .RI \*(lq Audit\-file \*(rq
 will be in the user's nmh directory unless a full path is specified.
 .PP
-.B Inc
+.B inc
 will incorporate even improperly formatted messages into the
 user's nmh folder, inserting a blank line prior to the offending component
 and printing a comment identifying the bad message.
@@ -133,7 +133,7 @@ is present and non\-empty, then
 .B inc
 will add each of the newly incorporated messages to
 each sequence named by the profile entry.
-.B Inc
+.B inc
 will not zero each sequence prior to adding messages.
 .PP
 The interpretation of the

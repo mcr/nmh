@@ -23,7 +23,7 @@ whatnow \- prompting front-end for sending messages
 .RI [ file ]
 .ad
 .SH DESCRIPTION
-.B Whatnow
+.B whatnow
 is the default program that queries the user about
 the disposition of a composed draft.  It is normally automatically
 invoked by one of the

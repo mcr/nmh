@@ -53,7 +53,7 @@ all/to/cc/me]
 .IR msgfile ]
 .ad
 .SH DESCRIPTION
-.B Repl
+.B repl
 may be used to produce a reply to an existing message.
 .PP
 In its simplest form (with no arguments),

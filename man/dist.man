@@ -41,7 +41,7 @@ dist \- redistribute a message to additional addresses
 .RB [ \-noatfile ]
 .ad
 .SH DESCRIPTION
-.B Dist
+.B dist
 is similar to
 .BR forw .
 It prepares the specified message
@@ -271,7 +271,7 @@ The current message.
 If a folder is given, it will become the current folder.  The message
 distributed will become the current message.
 .SH HISTORY
-.B Dist
+.B dist
 originally used headers of the form
 .RI \*(lq Distribute\-xxx: \*(rq
 instead of
@@ -279,13 +279,13 @@ instead of
 In order to conform with the ARPA Internet standard, RFC 822, the
 .RI \*(lq Resent\-xxx: \*(rq
 form is now used.
-.B Dist
+.B dist
 will recognize
 .RI \*(lq Distribute\-xxx: \*(rq
 type headers and automatically convert them to
 .RI \*(lq Resent\-xxx: \*(rq.
 .SH BUGS
-.B Dist
+.B dist
 does not rigorously check the message being distributed
 for adherence to the transport standard, but
 .B post

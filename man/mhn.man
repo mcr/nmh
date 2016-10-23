@@ -44,8 +44,7 @@ mhn \- display/list/store/cache MIME messages
 .RB [ \-rfc934mode " | " \-norfc934mode ]
 .ad
 .SH DESCRIPTION
-.B
-Mhn
+.B mhn
 is deprecated.  It is retained only
 for backwards compatibility.
 .PP

@@ -17,7 +17,7 @@ ali \- list mail aliases
 .RI [ aliases " ...]"
 .ad
 .SH DESCRIPTION
-.B Ali
+.B ali
 searches the named mail alias files for each of the given
 .IR aliases .
 It creates a list of addresses for those

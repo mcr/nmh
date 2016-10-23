@@ -37,7 +37,7 @@ whom \- report to whom a message would go
 .RB [ \-draft ]
 .ad
 .SH DESCRIPTION
-.B Whom
+.B whom
 is used to expand the headers of a message into a set of
 addresses and optionally verify that those addresses are deliverable at
 that time (if

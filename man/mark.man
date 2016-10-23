@@ -129,7 +129,7 @@ switch tells
 .B mark
 to list both the sequences defined
 for the folder and the messages associated with those sequences.
-.B Mark
+.B mark
 will list the name of each sequence given by
 .B \-sequence
 .I name

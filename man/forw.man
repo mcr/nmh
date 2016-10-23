@@ -64,7 +64,7 @@ forw \- forward messages
 .BR forw ]
 .ad
 .SH DESCRIPTION
-.B Forw
+.B forw
 may be used to prepare a message containing other messages.
 .PP
 It constructs the new message from a forms (components) file, with a

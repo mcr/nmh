@@ -19,7 +19,7 @@ burst \- explode digests into messages
 .RB [ \-verbose " | " \-noverbose ]
 .ad
 .SH DESCRIPTION
-.B Burst
+.B burst
 considers the specified messages in the named folder to be
 Internet digests, and explodes them in that folder.
 .PP
@@ -27,7 +27,7 @@ If
 .B \-inplace
 is given, each digest is replaced by the \*(lqtable
 of contents\*(rq for the digest (the original digest is removed).
-.B Burst
+.B burst
 then renumbers all of the messages following the digest in the
 folder to make room for each of the messages contained within the digest.
 These messages are placed immediately after the digest.

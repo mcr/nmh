@@ -16,7 +16,7 @@ fmtdump \- decode nmh format files
 .IR string ]
 .ad
 .SH DESCRIPTION
-.B Fmtdump
+.B fmtdump
 is a program that parses an
 .B nmh
 format file and produces a pseudo-language listing of the how

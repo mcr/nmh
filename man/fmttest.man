@@ -40,7 +40,7 @@ language
 .RI [ msgs " | " strings ]
 .ad
 .SH DESCRIPTION
-.B Fmttest
+.B fmttest
 is used to test programs written for the
 .B nmh
 format language as specified by
@@ -74,7 +74,7 @@ directory as specified in their profile.  If not found there, the directory
 .RI \*(lq %nmhetcdir% \*(rq
 is checked.
 .SS MODE SELECTION AND COMPONENT SPECIFICATION
-.B Fmttest
+.B fmttest
 has four operating modes: address mode, raw mode, date mode, and message
 mode.  These modes are selected by the
 .BR \-address ,
@@ -131,7 +131,7 @@ Date mode is equivalent to
 In message mode the arguments to
 .B fmttest
 are interpreted as an optional folder and messages.
-.B Fmttest
+.B fmttest
 will read each specified message and make all of the components in the
 message available to the format program.  Also, the appropriate information
 for the

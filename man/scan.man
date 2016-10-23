@@ -25,7 +25,7 @@ scan \- produce a one line per message scan listing
 .IR filename ]
 .ad
 .SH DESCRIPTION
-.B Scan
+.B scan
 produces a one\-line\-per\-message listing of the specified
 folder or messages.  Each
 .B scan
@@ -61,7 +61,7 @@ If there is sufficient room left on the
 line after the
 subject, the line will be filled with text from the body, preceded by
 \*(lq<<\*(rq, and terminated by \*(lq>>\*(rq if the body is sufficiently short.
-.B Scan
+.B scan
 actually reads each of the specified messages and parses them to extract
 the desired fields.  During parsing, appropriate error messages will be
 produced if there are format errors in any of the messages.
@@ -70,7 +70,7 @@ By default,
 .B scan
 will decode RFC 2047 (MIME) encoding in
 these scan listings.
-.B Scan
+.B scan
 will only decode these fields if your
 terminal can natively display the character set used in the encoding.
 You should set the appropriate

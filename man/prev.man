@@ -23,7 +23,7 @@ or
 .IR showmimeproc ]
 .ad
 .SH DESCRIPTION
-.B Prev
+.B prev
 performs a
 .B show
 on the previous message in the specified

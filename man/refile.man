@@ -27,7 +27,7 @@ refile \- file message in other folders
 \&...
 .ad
 .SH DESCRIPTION
-.B Refile
+.B refile
 moves (see
 .IR mv (1))
 or links (see

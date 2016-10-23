@@ -63,7 +63,7 @@ show\0`pick\0\-before\0friday`
 .RE
 .ad
 .SH DESCRIPTION
-.B Pick
+.B pick
 searches within a folder for messages with the specified
 contents, and then identifies those messages.  Two types of search
 primitives are available: pattern matching and date constraint
@@ -156,7 +156,7 @@ and
 .B \-before
 switches take legal RFC 822\-style date
 specifications as arguments.
-.B Pick
+.B pick
 will default certain missing
 fields so that the entire date need not be specified.  These fields
 are (in order of defaulting): timezone, time and timezone, date, date
@@ -193,7 +193,7 @@ pick\0\-reverse\0\-from\0frated\0|\0xargs\0\-n1\0scan
 .fi
 .RE
 .PP
-.B Pick
+.B pick
 supports complex boolean operations on the searching primitives
 with the
 .BR \-and ,

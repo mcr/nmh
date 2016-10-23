@@ -21,7 +21,7 @@ mhlogin \- login to external (OAuth) services
 .RB [ \-snoop ]
 .ad
 .SH DESCRIPTION
-.B Mhlogin
+.B mhlogin
 currently only supports OAuth for Gmail.  Run
 .B mhlogin
 .B \-user

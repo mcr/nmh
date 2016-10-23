@@ -43,7 +43,7 @@ comp \- compose a message
 .RB [ \-build ]
 .ad
 .SH DESCRIPTION
-.B Comp
+.B comp
 is used to create a new message to be mailed.  It copies a
 message form to the draft being composed and then invokes an editor on
 the draft (unless

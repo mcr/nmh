@@ -31,7 +31,7 @@ is equivalent to
 .B \-all
 .ad
 .SH DESCRIPTION
-.B Flist
+.B flist
 is used to search a list of folders and display the number
 of messages in these folders that are in a given sequence or set of
 sequences (for example the
@@ -52,7 +52,7 @@ will search the current folder for the given sequence or sequences (usually
 If (possibly multiple) folders are specified on the command line with
 .IR +folder ,
 then all these folders are searched for the given sequence(s).
-.B Flist
+.B flist
 will display for each folder searched, the number of messages in each of the
 specified sequences, and the total number of messages.
 .PP

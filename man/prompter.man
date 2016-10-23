@@ -20,7 +20,7 @@ prompter \- prompting editor front-end for nmh
 .I file
 .ad
 .SH DESCRIPTION
-.B Prompter
+.B prompter
 is an editor front\-end for
 .B nmh
 which allows rapid
@@ -37,7 +37,7 @@ commands
 or
 .BR repl .
 .PP
-.B Prompter
+.B prompter
 is particularly useful when composing messages over slow
 network or modem lines.  It is an
 .B nmh program in that it can have
@@ -186,7 +186,7 @@ invoking prompter differently for different
 commands (e.g.,
 \*(lqforw: -editor rapid\*(rq).
 .SH BUGS
-.B Prompter
+.B prompter
 uses
 .IR stdio (3),
 so it will lose if you edit files with nulls in them.

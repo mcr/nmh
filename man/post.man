@@ -44,7 +44,7 @@ post \- deliver a message
 .I file
 .ad
 .SH DESCRIPTION
-.B Post
+.B post
 is the default program called by
 .B send
 to deliver
@@ -71,7 +71,7 @@ profile component that will have
 as its final argument.
 See the mh-profile(5) man page for more information on postproc.
 .PP
-.B Post
+.B post
 searches the \*(lqTo:\*(rq, \*(lqcc:\*(rq, \*(lqBcc:\*(rq,
 \*(lqFcc:\*(rq, and \*(lqResent\-xxx:\*(rq header lines of the specified
 message for destination addresses, checks these addresses for validity,

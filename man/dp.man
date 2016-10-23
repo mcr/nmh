@@ -20,7 +20,7 @@ dp \- parse dates RFC 822-style
 \&...
 .ad
 .SH DESCRIPTION
-.B Dp
+.B dp
 is a program that parses dates according to the ARPA Internet standard.
 It also understands many non\-standard formats,
 such as those produced by TOPS\-20 sites and some UNIX sites using

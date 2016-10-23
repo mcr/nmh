@@ -26,7 +26,7 @@ or
 .IR showmimeproc ]
 .ad
 .SH DESCRIPTION
-.B Show
+.B show
 lists each of the specified messages to the standard output
 (typically, the terminal).
 .PP
@@ -221,7 +221,7 @@ be circumvented by referencing the \*(lqmessagename\*(rq field in the
 .B mhl
 format file.
 .PP
-.B Show
+.B show
 updates the user's context before showing the message.
 Hence
 .B show

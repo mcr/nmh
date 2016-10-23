@@ -58,7 +58,7 @@ send \- send a message
 \&...]
 .ad
 .SH DESCRIPTION
-.B Send
+.B send
 will cause each of the specified files to be delivered
 to each of the destinations in the \*(lqTo:\*(rq, \*(lqcc:\*(rq,
 \*(lqBcc:\*(rq, \*(lqDcc:\*(rq, and \*(lqFcc:\*(rq fields of the message.  If
@@ -236,7 +236,7 @@ lot of partial messages.  The argument to
 tells it how long
 to pause between postings.
 .PP
-.B Send
+.B send
 with no
 .I file
 argument will query whether the draft

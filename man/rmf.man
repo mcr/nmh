@@ -14,7 +14,7 @@ rmf \- remove an nmh folder
 .RB [ \-interactive " | " \-nointeractive ]
 .ad
 .SH DESCRIPTION
-.B Rmf
+.B rmf
 removes all of the messages (files) within the specified
 (or default) folder, and then removes the folder (directory) itself.
 .PP
@@ -51,7 +51,7 @@ private sequences
 entries) for this folder
 from your context without affecting the folder itself.
 .PP
-.B Rmf
+.B rmf
 irreversibly deletes messages that don't have other links, so
 use it with caution.
 .SH FILES
@@ -78,7 +78,7 @@ use it with caution.
 .RB ` \-interactive "' if +folder' not given, `\-nointeractive' otherwise"
 .fi
 .SH CONTEXT
-.B Rmf
+.B rmf
 will set the current folder to the parent folder if a
 subfolder is removed; or if the current folder is removed, it will make
 \*(lqinbox\*(rq current.  Otherwise, it doesn't change the current folder

@@ -38,7 +38,7 @@ is equivalent to
 .B new \-mode unseen
 .ad
 .SH DESCRIPTION
-.B New
+.B new
 in its default mode produces a one\-line\-per\-folder listing of all
 folders containing messages in the listed
 .IR sequences
@@ -58,7 +58,7 @@ bar    380.  760\-772 824\-828
 The `*' on foo indicates that it is the current folder.  The last line shows
 the total number of messages in the desired sequences.
 .PP
-.B New
+.B new
 crawls the folder hierarchy recursively to find all folders, and prints them
 in lexicographic order.  Override this behavior by providing
 .IR foldersfile
