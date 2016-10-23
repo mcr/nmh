@@ -434,7 +434,7 @@ pop_sasl_callback(enum sasl_message_type mtype, unsigned const char *indata,
 	if (line == NULL)
 	    return NOTOK;
 
-	if (strncmp(line, "+OK", 3) != 0) {
+	if (!HasPrefix(line, "+OK")) {
 	    netsec_err(errstr, "Authentication failed: %s", line);
 	    return NOTOK;
 	}
@@ -690,7 +690,7 @@ multiline (void)
 
     if (pop_getline (buffer, sizeof buffer, nsc) != OK)
 	return NOTOK;
-    if (strncmp (buffer, TRM, TRMLEN) == 0) {
+    if (HasPrefix(buffer, TRM)) {
 	if (buffer[TRMLEN] == 0)
 	    return DONE;
         strncpy (response, buffer + TRMLEN, sizeof(response));
