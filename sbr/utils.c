@@ -502,7 +502,7 @@ nmh_version_changed (int older) {
            break for versions with multiple decimal points, etc. */
         const float current_version = strtof (VERSION, NULL);
         const float old_version =
-            context_version  &&  strncmp (context_version, "nmh-", 4) == 0
+            context_version  &&  HasPrefix(context_version, "nmh-")
             ?  strtof (context_version + 4, NULL)
             :  99999999;
 
