@@ -11,11 +11,9 @@
 #include <h/utils.h>
 
 #define	CWD	"./"
-#define	NCWD	(sizeof(CWD) - 1)
 #define	DOT	"."
 #define	DOTDOT	".."
 #define	PWD	"../"
-#define	NPWD	(sizeof(PWD) - 1)
 
 static char mailfold[BUFSIZ];
 
