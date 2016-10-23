@@ -182,7 +182,7 @@ alias (char *file)
     FILE *fp;
 
     if (*file != '/'
-	    && (strncmp (file, "./", 2) && strncmp (file, "../", 3)))
+            && !HasPrefix(file, "./") && !HasPrefix(file, "../"))
 	file = etcpath (file);
     if ((fp = fopen (file, "r")) == NULL) {
 	akerrst = file;
