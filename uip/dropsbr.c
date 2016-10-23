@@ -350,7 +350,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 		     * Change the "Return-Path:" field (if in first line)
 		     * back to "From ".
 		     */
-		    if (!strncmp (buffer, "Return-Path:", 12)) {
+                    if (HasPrefix(buffer, "Return-Path:")) {
 			char tmpbuffer[BUFSIZ];
 			char *tp, *ep, *fp;
 
@@ -361,7 +361,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 			tp = dctime(dlocaltimenow());
 			snprintf (buffer, sizeof(buffer), "From %.*s  %s",
 				(int)(fp - ep), ep, tp);
-		    } else if (!strncmp (buffer, "X-Envelope-From:", 16)) {
+		    } else if (HasPrefix(buffer, "X-Envelope-From:")) {
 			/*
 			 * Change the "X-Envelope-From:" field
 			 * (if first line) back to "From ".
@@ -372,7 +372,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 			strncpy(tmpbuffer, buffer, sizeof(tmpbuffer));
 			ep = tmpbuffer + 17;
 			snprintf (buffer, sizeof(buffer), "From %s", ep);
-		    } else if (strncmp (buffer, "From ", 5)) {
+		    } else if (!HasPrefix(buffer, "From ")) {
 			/*
 			 * If there is already a "From " line,
 			 * then leave it alone.  Else we add one.
@@ -391,7 +391,7 @@ mbx_copy (char *mailbox, int mbx_style, int md, int fd,
 		 * If this is not first line, and begins with
 		 * "From ", then prepend line with ">".
 		 */
-		if (j != 0 && strncmp (buffer, "From ", 5) == 0) {
+		if (j != 0 && HasPrefix(buffer, "From ")) {
 		    if (write (md, ">", 1) < 0) {
 			advise (mailbox, "write");
 		    }
