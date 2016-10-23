@@ -11,11 +11,9 @@
 #include <h/utils.h>
 
 #define	CWD	"./"
-#define	NCWD	(sizeof(CWD) - 1)
 #define	DOT	"."
 #define	DOTDOT	".."
 #define	PWD	"../"
-#define	NPWD	(sizeof(PWD) - 1)
 
 static char *pwds;
 
@@ -86,7 +84,7 @@ expath (char *name, int flag)
 	    cp++;
 
     if (HasPrefix(name, CWD))
-	name += NCWD;
+	name += LEN(CWD);
 
     if (strcmp (name, DOTDOT) == 0 || strcmp (name, PWD) == 0) {
 	snprintf (buffer, sizeof(buffer), "%.*s", (int)(cp - pwds), pwds);
@@ -94,7 +92,7 @@ expath (char *name, int flag)
     }
 
     if (HasPrefix(name, PWD))
-	name += NPWD;
+	name += LEN(PWD);
     else
 	cp = ep;
 
@@ -147,12 +145,12 @@ compath (char *f)
 				break;
 			if (dp <= f)
 			    dp = f;
-			strcpy (dp, cp + NPWD - 1);
+			strcpy (dp, cp + LEN(PWD) - 1);
 			cp = dp;
 			continue;
 		    }
 		    if (HasPrefix(cp, CWD)) {
-			strcpy (cp - 1, cp + NCWD - 1);
+			strcpy (cp - 1, cp + LEN(CWD) - 1);
 			cp--;
 			continue;
 		    }
