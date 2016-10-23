@@ -177,7 +177,6 @@ Overrides the above context.
 <folder>/\&.mh\-sequences
 Public sequences for <folder>.
 .SH "SEE ALSO"
-.I
 .IR flist (1),
 .IR folder (1),
 .IR mail (1),
