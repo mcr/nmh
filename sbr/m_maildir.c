@@ -8,6 +8,7 @@
  */
 
 #include <h/mh.h>
+#include <h/utils.h>
 
 #define	CWD	"./"
 #define	NCWD	(sizeof(CWD) - 1)
@@ -45,10 +46,10 @@ m_mailpath (char *folder)
     char maildir[BUFSIZ];
 
     if (*folder != '/'
-	    && strncmp (folder, CWD, NCWD)
+	    && !HasPrefix(folder, CWD)
 	    && strcmp (folder, DOT)
 	    && strcmp (folder, DOTDOT)
-	    && strncmp (folder, PWD, NPWD)) {
+	    && !HasPrefix(folder, PWD)) {
 	strncpy (maildir, mailfold, sizeof(maildir));	/* preserve... */
 	cp = getcpy (m_maildir (folder));
 	strncpy (mailfold, maildir, sizeof(mailfold));
@@ -70,10 +71,10 @@ exmaildir (char *folder)
 	folder = getfolder(1);
 
     if (!(*folder != '/'
-	    && strncmp (folder, CWD, NCWD)
+	    && !HasPrefix(folder, CWD)
 	    && strcmp (folder, DOT)
 	    && strcmp (folder, DOTDOT)
-	    && strncmp (folder, PWD, NPWD))) {
+	    && !HasPrefix(folder, PWD))) {
 	strncpy (mailfold, folder, sizeof(mailfold));
 	return mailfold;
     }
