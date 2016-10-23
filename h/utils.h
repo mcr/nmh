@@ -63,7 +63,7 @@ char *find_str (const char [], size_t, const char *);
 char *rfind_str (const char [], size_t, const char *);
 char *nmh_strcasestr (const char *, const char *);
 
-bool EndsWithC(char *s, int c);
+bool HasSuffixC(char *s, int c);
 void TrimSuffixC(char *s, int c);
 void ToLower(char *s);
 void ToUpper(char *s);

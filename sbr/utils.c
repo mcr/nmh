@@ -358,9 +358,9 @@ nmh_strcasestr (const char *s1, const char *s2) {
 }
 
 
-/* EndsWithC returns true if non-NULL string s ends with a c before the
+/* HasSuffixC returns true if non-NULL string s ends with a c before the
  * terminating NUL. */
-bool EndsWithC(char *s, int c)
+bool HasSuffixC(char *s, int c)
 {
     return *s && s[strlen(s) - 1] == c;
 }
