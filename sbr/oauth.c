@@ -196,7 +196,7 @@ static boolean
 is_json(const char *content_type)
 {
     return content_type != NULL
-        && strncasecmp(content_type, JSON_TYPE, sizeof JSON_TYPE - 1) == 0;
+        && strncasecmp(content_type, JSON_TYPE, LEN(JSON_TYPE)) == 0;
 }
 
 static void
