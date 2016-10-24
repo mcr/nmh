@@ -391,7 +391,7 @@ doit(char *cur, char *folders, char *sequences[])
             if (strcmp(node->n_name, cur) == 0) {
                 puts(" (*: current folder)");
             } else {
-                puts("");
+                putchar('\n');
             }
             fflush(stdout);
 
