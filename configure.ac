@@ -35,15 +35,12 @@ AS_IF([test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"],[
 	    AC_MSG_WARN([Please pass the appropriate arguments to CPPFLAGS/LDFLAGS])])
       sasl_support=yes], [sasl_support=no])
 
+dnl Do you want client-side support for encryption with TLS?
+AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
+
 dnl Do you want client-side support for using OAuth2 for SMTP authentication?
 AC_ARG_WITH([oauth], AS_HELP_STRING([--with-oauth],
   [Enable OAuth2 support in SMTP auth]))
-
-dnl Do you want client-side support for encryption with TLS?
-AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
-AS_IF([test x"$with_tls" != x"no"],[
-      AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])dnl
-      tls_support=yes],[tls_support=no])
 
 dnl Set the backup prefix
 AC_ARG_WITH([hash-backup],
@@ -468,17 +465,33 @@ dnl -----------------
 dnl CHECK FOR OPENSSL
 dnl -----------------
 
-AS_IF([test x"$tls_support" = x"yes"],[
-  dnl OpenBSD 5 needs the other-libraries (fourth argument) to the
+AS_IF([test x"$with_tls" != x"no"],[
+  dnl OpenBSD 5 needs the other-libraries (fifth argument) to the
   dnl AC_CHECK_LIB for SSL_new, because it doesn't
   dnl automatically append -lcrypto when linking with -lssl.
-  AC_CHECK_HEADER([openssl/ssl.h], , [AC_MSG_ERROR([openssl/ssl.h not found])])
-  AC_CHECK_LIB([crypto], [BIO_write], [TLSLIB="-lcrypto"],
-    [AC_MSG_ERROR([OpenSSL crypto library not found])])
-  AC_CHECK_LIB([ssl], [SSL_new], [TLSLIB="-lssl $TLSLIB"],
-    [AC_MSG_ERROR([OpenSSL library not found])],[$TLSLIB])],
-  [TLSLIB=])
+  AC_CHECK_HEADER([openssl/ssl.h], HAVE_SSL_H=1)
+  AC_CHECK_LIB([crypto], [BIO_write], [TLSLIB="-lcrypto"])
+  AC_CHECK_LIB([ssl], [SSL_new], [TLSLIB="-lssl $TLSLIB"], [TLSLIB=],
+               [$TLSLIB])])
 AC_SUBST([TLSLIB])
+
+dnl -----------------
+dnl Enable TLS?
+dnl -----------------
+dnl By default (with_tls=''), enable TLS if header and libs were found.
+dnl If TLS requested (--with-tls with_tls=yes), error if header/lib not found.
+dnl If TLS disabled (--without-tls with_tls=no), don't enable it.
+tls_support=no
+TLS_SUPPORT=0
+AC_SUBST([TLS_SUPPORT])
+AS_IF([test "x$with_tls" = xyes && test "x$HAVE_SSL_H" = x],
+      [AC_MSG_ERROR([TLS requested but openssl/ssl.h not found])],
+      [test "x$with_tls" = xyes && test "x$TLSLIB" = x],
+      [AC_MSG_ERROR([TLS requested but crypto or ssl library not found])],
+      [test "x$with_tls" != xno && test "x$HAVE_SSL_H" = x1 && test "x$TLSLIB" != x],
+      [AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])
+       TLS_SUPPORT=1
+       tls_support=yes])
 
 dnl -----------------
 dnl CHECK FOR CURL
