@@ -66,8 +66,4 @@ case ${os} in
 	(pkg info 2>/dev/null | offset) || true
 	(pkg_info 2>/dev/null | offset) || true
 	;;
-
-    Linux)
-        header Linux distribution:
-        (lsb_release -a 2>&1 | offset) || true
 esac
