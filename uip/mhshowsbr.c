@@ -461,7 +461,7 @@ show_content_aux2 (CT ct, int alternate, char *cracked, char *buffer,
 
 	if (strcmp(invo_name, "mhshow") == 0 && ct->c_type == CT_TEXT &&
 	    ct->c_subtype == TEXT_PLAIN && lastchar != '\n') {
-	    putc('\n', stdout);
+	    putchar('\n');
 	}
 
 	fflush(stdout);
