@@ -1530,6 +1530,8 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
     nsc->ssl_io = NULL;
 
 #else /* TLS_SUPPORT */
+    NMH_UNUSED(nsc);
+
     if (tls) {
 	netsec_err(errstr, "TLS is not supported");
 	return NOTOK;
@@ -1576,6 +1578,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 
     return OK;
 #else /* TLS_SUPPORT */
+    NMH_UNUSED(nsc);
     netsec_err(errstr, "TLS not supported");
 
     return NOTOK;
