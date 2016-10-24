@@ -1422,8 +1422,8 @@ netsec_set_oauth_service(netsec_context *nsc, const char *service)
 int
 netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 {
-    if (tls) {
 #ifdef TLS_SUPPORT
+    if (tls) {
 	SSL *ssl;
 	BIO *rbio, *wbio, *ssl_bio;;
 
@@ -1529,13 +1529,14 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
     BIO_free_all(nsc->ssl_io);
     nsc->ssl_io = NULL;
 
-    return OK;
 #else /* TLS_SUPPORT */
+    if (tls) {
 	netsec_err(errstr, "TLS is not supported");
-
 	return NOTOK;
     }
 #endif /* TLS_SUPPORT */
+
+    return OK;
 }
 
 /*
