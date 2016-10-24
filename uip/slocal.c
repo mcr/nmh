@@ -1372,7 +1372,7 @@ adorn (char *what, char *fmt, ...)
 	    fprintf (stdout, "Error %d", eindex);
     }
 
-    fputc ('\n', stdout);
+    putchar('\n');
     fflush (stdout);
 }
 
