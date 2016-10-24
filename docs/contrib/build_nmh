@@ -148,7 +148,7 @@ else
       [ "$verbose" -eq 0 ] && wget_opts='--quiet'
       wget --output-document - $wget_opts "$snapshot" | tar xzf -
     elif [ "`finddir curl`" ]; then
-      [ "$verbose" -eq 0 ] && curl_opts=--silent
+      [ "$verbose" -eq 0 ] && curl_opts='--silent --show-error'
       curl --location $curl_opts "$snapshot" | tar xzf -
     else
       die 'unable to find program to download nmh sources'
