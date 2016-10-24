@@ -524,15 +524,19 @@ AS_IF([test "x$with_oauth" = xyes && test "x$HAVE_CURL_H" = x],
 dnl ----------------
 dnl CHECK FLEX FIXUP
 dnl ----------------
+dnl BUG: This stops $(LFLAGS) working as it comes after $(AM_FLAGS).
 dnl Use AM_LFLAGS make variable setting to work around bugs in flex
 dnl 2.5.36-37 that cause signed/unsigned mismatch,
 dnl http://sourceforge.net/p/flex/bugs/140/
+dnl 2.6.1 bug: https://github.com/westes/flex/issues/97
 AS_IF([test "$LEX" = flex],
       [AS_CASE([`$LEX -V`],
                [flex\ 2.5.35], [AM_LFLAGS=\
 '; sed "s/	int n;/	size_t n;/" $@ >$@.tmp && mv -f $@.tmp $@'],
                [flex\ 2.5.3[[67]]], [AM_LFLAGS=\
-'; sed "s/\(	\)int i;/\1yy_size_t i;/" $@ >$@.tmp && mv -f $@.tmp $@'])
+'; sed "s/\(	\)int i;/\1yy_size_t i;/" $@ >$@.tmp && mv -f $@.tmp $@'],
+               [flex\ 2.6.1], [AM_LFLAGS=\
+'; sed '\''/\<int num_to_read\>/s/int/size_t/; s/\<yy_size_t i\>/int i/'\'' $@ >$@.tmp && mv -f $@.tmp $@'])
        AC_SUBST([AM_LFLAGS])])
 
 dnl ------------------
