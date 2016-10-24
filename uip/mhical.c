@@ -665,7 +665,7 @@ display (FILE *file, contentline *clines, char *nfs) {
                 char *datetime;
                 contentline node_copy;
 
-                memcpy(&node_copy, node, sizeof node_copy);
+                node_copy = *node;
                 node_copy.value = concat(node_copy.value, "T235959", NULL);
                 datetime = format_datetime (timezones, &node_copy);
                 c->c_text = datetime ? datetime : strdup(node_copy.value);
