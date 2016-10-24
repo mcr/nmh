@@ -1136,10 +1136,10 @@ static void
 litputs(const char *s)
 {
 	if (s) {
-		putc('"', stdout);
+		putchar('"');
 		while (*s)
 			litputc(*s++);
-		putc('"', stdout);
+		putchar('"');
 	} else
 		fputs("<nil>", stdout);
 }
@@ -1151,26 +1151,26 @@ litputc(char c)
 		printf("\\x%02x", (unsigned char) c);
 	} else if (c < 0x20 || c == 0177) {
 		if (c == '\b') {
-			putc('\\', stdout);
-			putc('b', stdout);
+			putchar('\\');
+			putchar('b');
 		} else if (c == '\f') {
-			putc('\\', stdout);
-			putc('f', stdout);
+			putchar('\\');
+			putchar('f');
 		} else if (c == '\n') {
-			putc('\\', stdout);
-			putc('n', stdout);
+			putchar('\\');
+			putchar('n');
 		} else if (c == '\r') {
-			putc('\\', stdout);
-			putc('r', stdout);
+			putchar('\\');
+			putchar('r');
 		} else if (c == '\t') {
-			putc('\\', stdout);
-			putc('t', stdout);
+			putchar('\\');
+			putchar('t');
 		} else {
-			putc('^', stdout);
-			putc(c ^ 0x40, stdout);	/* DEL to ?, others to alpha */
+			putchar('^');
+			putchar(c ^ 0x40);	/* DEL to ?, others to alpha */
 		}
 	} else
-		putc(c, stdout);
+		putchar(c);
 }
 
 /*
