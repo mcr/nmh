@@ -31,7 +31,7 @@ print_help (char *str, struct swit *swp, int print_context)
     }
 
     /* and for further info */
-    puts ("");
+    putchar('\n');
     print_intro (stdout, TRUE);
     puts ("\nSee the BUGS section of the nmh(7) man page for more information.");
 }
