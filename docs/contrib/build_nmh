@@ -38,14 +38,11 @@
 #        see docs/README.developers
 #     -r to build rpm
 #
-# On Fedora, at least these rpms must be installed:
-#   gdbm-devel
-#   ncurses-devel
-#   cyrus-sasl-devel, if using sasl
-#   openssl-devel, if using TLS
-#   libcurl-devel, if using oauth
-#   autoconf and automake, with -s (see docs/README.developers for versions)
-#   rpm-build, with -r
+# To disable colorization of the test summary, either unset the TERM
+# environment variable or set it to dumb, e.g., TERM=dumb build_nmh.
+#
+# See the nmh MACHINES file for build prerequisites.  In addition, the rpmbuild
+# is required to be available if the -r option is used.
 
 usage="usage: $0
   [-b <branch>, only if downloading]
@@ -60,6 +57,9 @@ usage="usage: $0
 
 #### Exit with error message.
 die() {
+  status=1
+  exec 1>&3 3>&- 2>&4 4>&-
+  cat "$tmpfile" 1>&2
   echo "$0: $*" 1>&2
   exit 1
 }
@@ -76,10 +76,22 @@ finddir() {
   esac
 }
 
+#### Make sure user sees error output even on early termination.  Assumes
+#### that called programs exit with non-zero status when terminated.
+cleanup() {
+  if [ $status -eq 0 ]; then
+    rm -f "$tmpfile"
+  else
+    [ $logfile = - ] && cat "$tmpfile" 1>&3 || mv "$tmpfile" "$logfile"
+  fi
+}
+trap cleanup EXIT
+
+directory=
 gitrepo=git.savannah.nongnu.org
 invocation="$0 $*"
 tmpfile=/tmp/build_nmh-$$.log
-trap 'rm -f "$tmpfile"' EXIT
+
 
 ####
 #### Interpret command arguments.
@@ -113,7 +125,7 @@ shift `expr $OPTIND - 1`
 #### Redirect all output to tmp file.  Then at end of script, copy
 #### it to either logfile or stdout.  Also, grep it for errors and
 #### warnings.
-exec 3>&1 >"$tmpfile" 2>&1
+exec 3>&1 4>&2 >"$tmpfile" 2>&1
 
 echo "$invocation"
 
@@ -125,14 +137,16 @@ if grep 'the authors of nmh' COPYRIGHT >/dev/null 2>&1; then
   :
 else
   #### Download sources from repo.
+  [ $verbose -ge 1 ]  &&  echo downloading . . . >&3
   gitdir=`finddir git`
   if [ "$gitdir" ]; then
     #### Use git repo.
     [ "$verbose" -eq 0 ]  &&  git_opts=--quiet
     [ "$branch" == master ]  ||
       git_opts="${git_opts:+$git_opts }--branch $branch"
-    if "$gitdir"/git clone --depth 1 $git_opts "git://$gitrepo/nmh.git"; then
-      cd nmh  ||  die "failed to clone nmh"
+    if "$gitdir"/git clone --depth 1 $git_opts "git://$gitrepo/nmh.git" >&3; then
+      directory=nmh
+      cd "$directory"  ||  die "failed to clone $directory"
       printf "commit %s\n" `git log --max-count=1 --pretty=format:%H`
     else
       die 'failed to clone git repo'
@@ -146,16 +160,17 @@ else
     snapshot="$repo/$tarball"
     if [ "`finddir wget`" ]; then
       [ "$verbose" -eq 0 ] && wget_opts='--quiet'
-      wget --output-document - $wget_opts "$snapshot" | gzip -d | tar xf -
+      wget --output-document - $wget_opts "$snapshot" 2>&3 | gzip -d | tar xf -
     elif [ "`finddir curl`" ]; then
       [ "$verbose" -eq 0 ] && curl_opts='--silent --show-error'
-      curl --location $curl_opts "$snapshot" | gzip -d | tar xf -
+      curl --location $curl_opts "$snapshot" 2>&3 | gzip -d | tar xf -
     else
       die 'unable to find program to download nmh sources'
     fi
 
     if [ -d nmh-"$branch" ]; then
-      cd nmh-"$branch"  ||  die "failed to download and extract nmh-$branch"
+      directory=nmh-"$branch"
+      cd "$directory"  ||  die "failed to download and extract $directory"
     else
       die "failed to download nmh-$branch sources"
     fi
@@ -293,8 +308,8 @@ if [ $install -ge 1  -a  "$LOGNAME" != root ]; then
   fi
 fi
 
-[ -x tools/showbuildenv ]  &&  tools/showbuildenv | grep -Ev 'PID=|SHLVL'
-
+printf '\n%s %s %s %s\n\n' "`uname -m`" "`uname -s`" "`uname -r`" "`uname -v`"
+[ -f /etc/os-release ]  &&  printf '%s\n\n' "`cat /etc/os-release`"
 
 ####
 #### Set up with autoconfig if necessary.
@@ -357,7 +372,8 @@ if [ $status -eq 0 ]; then
     fi
 
     [ $verbose -ge 1 ]  &&  echo testing . . . >&3
-    checkoutput=`make $check AM_COLOR_TESTS=always`
+    [ "${TERM:-dumb}" = dumb ]  &&  color=no  ||  color=always
+    checkoutput=`make $check AM_COLOR_TESTS=$color`
     status=$?
 
     tests_summary=`echo "$checkoutput" | grep tests`
@@ -388,6 +404,8 @@ if [ $status -eq 0 ]; then
       fi
     fi
   fi
+else
+  echo "see nmh MACHINES file for build dependences"
 fi
 
 ####
@@ -395,21 +413,22 @@ fi
 ####
 
 #### Disable output redirection (and flush) so that we can grep.
-exec 1>&3 3>&-
+exec 1>&3 3>&- 2>&4 4>&-
 
 if [ "$logfile" != - ]; then
   rm -f "$logfile"
   exec 3>&1 >"$logfile" 2>&1
 fi
 
-cat "$tmpfile"
-grep -E 'Error|warn' "$tmpfile"
+[ -f "$tmpfile" ]  &&  cat "$tmpfile"
+[ -f "$tmpfile" ]  &&  grep -E 'Error|warn' "$tmpfile"
 
-if [ $status -eq 0 ]; then
-  [ $verbose -ge 1 ]  &&  echo build completed successfully >&3
-else
-  echo build failed!
-  [ "$logfile" = - ]  ||  echo "build failed, build log is in $logfile" >&3
+#### Put message on stdout, and in log if different.
+if [ $status -ne 0  -o  $verbose -ge 1  -o  "$directory" ]; then
+  [ $status -eq 0 ]  &&  indication=succeeded  ||  indication=failed
+  message="build $indication, build log is in ${directory:+$directory/}$logfile"
+  echo "$message"
+  [ "$logfile" = - ]  ||  echo "$message" >&3
 fi
 
 exit $status
