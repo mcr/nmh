@@ -131,7 +131,7 @@ else
     [ "$verbose" -eq 0 ]  &&  git_opts=--quiet
     [ "$branch" == master ]  ||
       git_opts="${git_opts:+$git_opts }--branch $branch"
-    if "$gitdir"/git clone $git_opts "git://$gitrepo/nmh.git"; then
+    if "$gitdir"/git clone --depth 1 $git_opts "git://$gitrepo/nmh.git"; then
       cd nmh  ||  die "failed to clone nmh"
       printf "commit %s\n" `git log --max-count=1 --pretty=format:%H`
     else
