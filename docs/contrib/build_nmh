@@ -146,10 +146,10 @@ else
     snapshot="$repo/$tarball"
     if [ "`finddir wget`" ]; then
       [ "$verbose" -eq 0 ] && wget_opts='--quiet'
-      wget --output-document - $wget_opts "$snapshot" | tar xzf -
+      wget --output-document - $wget_opts "$snapshot" | gzip -d | tar xf -
     elif [ "`finddir curl`" ]; then
       [ "$verbose" -eq 0 ] && curl_opts='--silent --show-error'
-      curl --location $curl_opts "$snapshot" | tar xzf -
+      curl --location $curl_opts "$snapshot" | gzip -d | tar xf -
     else
       die 'unable to find program to download nmh sources'
     fi
