@@ -37,9 +37,6 @@ AS_IF([test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"],[
 
 dnl Do you want client-side support for encryption with TLS?
 AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
-AS_IF([test x"$with_tls" != x"no"],[
-      AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])dnl
-      tls_support=yes],[tls_support=no])
 
 dnl Do you want client-side support for using OAuth2 for SMTP authentication?
 AC_ARG_WITH([oauth], AS_HELP_STRING([--with-oauth],
