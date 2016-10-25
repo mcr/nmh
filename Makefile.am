@@ -729,7 +729,7 @@ gcov:
 	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null  && \
 	  make check AM_CFLAGS=--coverage
 	@for i in `find . -name '*.gcda'`; do \
-	   gcov -p -o `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
+	   gcov -pro `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
 	 done
 	@for i in `find . -name '*.gcno'`; do \
 	   if test -f `echo $$i | sed 's%\.gcno%.gcda%'`; then :; else \
