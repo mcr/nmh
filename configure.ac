@@ -27,13 +27,10 @@ dnl Do you want client-side support for using SASL for authentication?
 dnl Note that this code will be enabled for both POP and SMTP
 AC_ARG_WITH([cyrus-sasl], AS_HELP_STRING([--with-cyrus-sasl],
   [Enable SASL support via the Cyrus SASL library]))
-AS_IF([test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != x"no"],[
-      AC_DEFINE([CYRUS_SASL], [1],
-		[Define to use the Cyrus SASL library for authentication of POP and SMTP.])dnl
-      AS_IF([test x"$with_cyrus_sasl" != xyes],[
-	    AC_MSG_WARN([Arguments to --with-cyrus-sasl now ignored])
-	    AC_MSG_WARN([Please pass the appropriate arguments to CPPFLAGS/LDFLAGS])])
-      sasl_support=yes], [sasl_support=no])
+AS_IF([test x"$with_cyrus_sasl" != x -a x"$with_cyrus_sasl" != xyes -a \
+            x"$with_cyrus_sasl" != xno],[
+  AC_MSG_WARN([Arguments to --with-cyrus-sasl now ignored])
+  AC_MSG_WARN([Please pass the appropriate arguments to CPPFLAGS/LDFLAGS])])
 
 dnl Do you want client-side support for encryption with TLS?
 AC_ARG_WITH([tls], AS_HELP_STRING([--with-tls], [Enable TLS support]))
@@ -457,11 +454,30 @@ dnl --------------------
 dnl CHECK FOR CYRUS-SASL
 dnl --------------------
 
-AS_IF([test x"$sasl_support" = x"yes"],[
-  AC_CHECK_HEADER([sasl/sasl.h], , [AC_MSG_ERROR([sasl.h not found])])
-  AC_CHECK_LIB([sasl2], [sasl_client_new], [SASLLIB="-lsasl2"],
-    [AC_MSG_ERROR([Cyrus SASL library not found])])],[SASLLIB=""])
+AS_IF([test x"$with_cyrus_sasl" != x"no"],[
+  AC_CHECK_HEADER([sasl/sasl.h], HAVE_SASL_H=1)
+  AC_CHECK_LIB([sasl2], [sasl_client_new], [SASLLIB="-lsasl2"])])
 AC_SUBST([SASLLIB])
+
+dnl -----------------
+dnl Enable SASL?
+dnl -----------------
+dnl By default (with_cyrus_sasl=''), enable SASL if header and lib are found.
+dnl If SASL requested (--with-sasl with_cyrus_sasl=yes), error if header or lib not found.
+dnl If SASL disabled (--without-sasl with_cyrus_sasl=no), don't enable it.
+sasl_support=no
+CYRUS_SASL=0
+AC_SUBST([CYRUS_SASL])
+AS_IF([test "x$with_cyrus_sasl" = xyes && test "x$HAVE_SASL_H" = x],
+      [AC_MSG_ERROR([SASL requested but sasl.h not found])],
+      [test "x$with_cyrus_sasl" = xyes && test "x$SASLLIB" = x],
+      [AC_MSG_ERROR([SASL requested but Cyrus SASL library not found])],
+      [test "x$with_cyrus_sasl" != xno && test "x$HAVE_SASL_H" = x1 &&
+       test "x$SASLLIB" != x],
+      [AC_DEFINE([CYRUS_SASL], [1],
+        [Define to use the Cyrus SASL library for authentication of POP and SMTP.])
+       CYRUS_SASL=1
+       sasl_support=yes])
 
 dnl -----------------
 dnl CHECK FOR OPENSSL
