@@ -33,7 +33,7 @@
 #     -l <logfile name>, default 'build_nmh.log', - for stdout/stderr
 #   Advanced/developer use:
 #     -c to run 'make distcheck' instead of 'make check'
-#     -d to build nmh with debug enabled
+#     -d to build nmh with asserts enabled and optimization disabled
 #     -s to use 'make superclean': requires recent autoconf and automake,
 #        see docs/README.developers
 #     -r to build rpm
@@ -47,7 +47,7 @@
 usage="usage: $0
   [-b <branch>, only if downloading]
   [-c to run 'make distcheck' instead of 'make check']
-  [-d to build nmh with debug enabled]
+  [-d to build nmh with asserts enabled and optimization disabled]
   [-i to install nmh]
   [-l <logfile name>, default '$logfile']
   [-r to build rpm]
@@ -241,6 +241,7 @@ if install-mh -check >/dev/null 2>&1; then
   fi
 fi
 
+#### Don't confirm debug interactively below; obey the -d option to this script.
 [ $debug -ge 1 ]  &&  config_debug=y
 
 if [ $yes -eq 0 ]; then
@@ -271,8 +272,6 @@ if [ $yes -eq 0 ]; then
   printf 'TLS support [%s]: ' "$config_tls" >&3
   read response
   [ "$response" = y  -o  "$response" = Y ]  &&  config_tls=y
-
-  #### Don't confirm debug here:  obey the -d option to this script.
 fi
 
 smtpservers=
@@ -331,7 +330,12 @@ if [ -z "$CFLAGS" ]; then
   if cc -dM -E - </dev/null 2>&1 | grep __GNUC__ >/dev/null; then
     #### configure will supply -g -O2 with gcc, but only if CFLAGS
     #### isn't defined.
-    CFLAGS='-g -O2 -ansi -pedantic'
+    CFLAGS='-g -ansi -pedantic'
+    if [ "$config_debug" = n ]; then
+      CFLAGS="$CFLAGS -O2"
+    else
+      CFLAGS="$CFLAGS -O0"
+    fi
   fi
 fi
 
