@@ -9,7 +9,7 @@
 #   walks you through confirmation of common configuration settings.
 #
 # This file can be downloaded and immediately run using, e.g.,
-#   wget http://git.savannah.gnu.org/cgit/nmh.git/plain/docs/contrib/build_nmh
+#   wget http://git.savannah.gnu.org/cgit/nmh.git/plain/build_nmh
 #   sh build_nmh
 #
 # Typical usage:
@@ -44,7 +44,8 @@
 # See the nmh MACHINES file for build prerequisites.  In addition, the rpmbuild
 # is required to be available if the -r option is used.
 
-usage="usage: $0
+logfile=build_nmh.log
+usage="usage:
   [-b <branch>, only if downloading]
   [-c to run 'make distcheck' instead of 'make check']
   [-d to build nmh with asserts enabled and optimization disabled]
@@ -54,15 +55,6 @@ usage="usage: $0
   [-s to use 'make superclean': requires recent autoconf and automake]
   [-v to display progress]
   [-y to accept all configuration options without confirmation]"
-
-#### Exit with error message.
-die() {
-  status=1
-  exec 1>&3 3>&- 2>&4 4>&-
-  cat "$tmpfile" 1>&2
-  echo "$0: $*" 1>&2
-  exit 1
-}
 
 #### Find location of a program.  Bourne shell just puts the name in
 #### $0 if it's found from the PATH, so search that if necessary.
@@ -76,75 +68,62 @@ finddir() {
   esac
 }
 
-#### Make sure user sees error output even on early termination.  Assumes
-#### that called programs exit with non-zero status when terminated.
+#### Make sure user sees error output even on early termination.
 cleanup() {
-  if [ $status -eq 0 ]; then
-    rm -f "$tmpfile"
-  else
-    [ $logfile = - ] && cat "$tmpfile" 1>&3 || mv "$tmpfile" "$logfile"
+  if [ "$tmpfile" ]; then
+    #### Disable output redirection (and flush) so that we can grep.
+    #### If $tmpfile is null, don't need to do this because the
+    #### outputs weren't redirected, modulo a small race condition
+    #### between setting tmpfile and redirecting the outputs.
+    exec 1>&3 3>&- 2>&4 4>&-
+
+    if [ "$logfile" != - ]; then
+      exec 3>&1 >"$logfile" 2>&1
+    fi
+
+    if [ -f "$tmpfile" ]; then
+      cat "$tmpfile"
+      grep -E 'Error|warn' "$tmpfile"
+      rm "$tmpfile"
+    fi
   fi
+
+  #### Put info message on stdout, and in log if not stdout.
+  if [ $status -ne 0  -o  $verbose -ge 1  -o  "$directory" ]; then
+    [ $status -eq 0 ]  &&  result=succeeded  ||  result=failed
+    if [ "$logfile" = - ]; then
+      echo "build $result"
+    else
+      message="build $result, build log is in ${directory:+$directory/}$logfile"
+      echo "$message" >&3
+    fi
+  fi
+
+  #### Heirloom shell does not like "trap - signal".
+  trap '' EXIT
+  exit $status
 }
-trap cleanup EXIT
 
-directory=
-gitrepo=git.savannah.nongnu.org
-invocation="$0 $*"
-tmpfile=/tmp/build_nmh-$$.log
+#### Exit with error message.
+die() {
+  status=1 # It should already be, but just in case the code below changes.
+  echo "$0: $*" 1>&2
+  cleanup
+}
 
-
-####
-#### Interpret command arguments.
-####
-branch=master
-check=check
-debug=0
-install=0
-logfile=build_nmh.log
-build_rpm=0
-superclean=0
-verbose=0
-yes=0
-
-while getopts 'cb:dil:rsvy?' arg; do
-  case $arg in
-    b  ) branch="$OPTARG" ;;
-    c  ) check=distcheck ;;
-    d  ) debug=1 ;;
-    i  ) install=1 ;;
-    l  ) logfile=$OPTARG ;;
-    r  ) build_rpm=1 ;;
-    s  ) superclean=1 ;;
-    v  ) verbose=1 ;;
-    y  ) yes=1 ;;
-    '?') echo "$usage"; exit 0 ;;
-  esac
-done
-shift `expr $OPTIND - 1`
-
-#### Redirect all output to tmp file.  Then at end of script, copy
-#### it to either logfile or stdout.  Also, grep it for errors and
-#### warnings.
-exec 3>&1 4>&2 >"$tmpfile" 2>&1
-
-echo "$invocation"
-
-#### No non-option command line arguments are supported.
-[ $# -gt 0 ]  &&  die "$usage"
-
-#### Check to see that we're in a nmh source directory.
-if grep 'the authors of nmh' COPYRIGHT >/dev/null 2>&1; then
-  :
-else
-  #### Download sources from repo.
+#### Download sources from repo.  With git and on master, the
+#### directory will be nmh, but with snapshot, it will be
+#### nmh-master.
+download_sources() {
   [ $verbose -ge 1 ]  &&  echo downloading . . . >&3
   gitdir=`finddir git`
   if [ "$gitdir" ]; then
     #### Use git repo.
     [ "$verbose" -eq 0 ]  &&  git_opts=--quiet
-    [ "$branch" == master ]  ||
+    [ "$branch" = master ]  ||
       git_opts="${git_opts:+$git_opts }--branch $branch"
-    if "$gitdir"/git clone --depth 1 $git_opts "git://$gitrepo/nmh.git" >&3; then
+    if "$gitdir"/git clone --depth 1 $git_opts "git://$gitrepo/nmh.git" >&3
+    then
       directory=nmh
       cd "$directory"  ||  die "failed to clone $directory"
       printf "commit %s\n" `git log --max-count=1 --pretty=format:%H`
@@ -175,6 +154,63 @@ else
       die "failed to download nmh-$branch sources"
     fi
   fi
+}
+
+directory=
+download=0
+gitrepo=git.savannah.nongnu.org
+invocation="$0 $*"
+status=1
+tmpfile=/tmp/build_nmh-$$.log
+
+#### Redirect all output to tmp file.  Then on EXIT, copy it to either
+#### logfile or stdout.  Also, grep it for errors and warnings.  Set
+#### tmpfile just prior to this, see cleanup().
+exec 3>&1 4>&2 >"$tmpfile" 2>&1
+
+
+####
+#### Interpret command arguments.
+####
+branch=master
+check=check
+debug=0
+install=0
+build_rpm=0
+superclean=0
+verbose=0
+yes=0
+
+#### With dash, heirloom shell, and posh, need to catch INT and QUIT
+#### in order for cleanup to be call:  just EXIT isn't sufficient.
+trap cleanup EXIT INT QUIT
+
+while getopts 'cb:dil:rsvy?' arg; do
+  case $arg in
+    b  ) branch="$OPTARG" ;;
+    c  ) check=distcheck ;;
+    d  ) debug=1 ;;
+    i  ) install=1 ;;
+    l  ) logfile=$OPTARG ;;
+    r  ) build_rpm=1 ;;
+    s  ) superclean=1 ;;
+    v  ) verbose=1 ;;
+    y  ) yes=1 ;;
+    '?') echo "$0: $usage"; logfile=-; status=0; exit ;;
+  esac
+done
+shift `expr $OPTIND - 1`
+
+echo "$invocation"
+
+#### No non-option command line arguments are supported.
+[ $# -gt 0 ]  &&  die "$usage"
+
+#### Check to see that we're in a nmh source directory.
+if grep 'the authors of nmh' COPYRIGHT >/dev/null 2>&1; then
+  :
+else
+  download=1
 fi
 
 ####
@@ -241,7 +277,7 @@ if install-mh -check >/dev/null 2>&1; then
   fi
 fi
 
-#### Don't confirm debug interactively below; obey the -d option to this script.
+#### Don't confirm debug interactively below; obey the -d option.
 [ $debug -ge 1 ]  &&  config_debug=y
 
 if [ $yes -eq 0 ]; then
@@ -299,6 +335,8 @@ fi
 
 printf '\n%s %s %s %s\n\n' "`uname -m`" "`uname -s`" "`uname -r`" "`uname -v`"
 [ -f /etc/os-release ]  &&  printf '%s\n\n' "`cat /etc/os-release`"
+
+[ $download -eq 1 ]  &&  download_sources
 
 ####
 #### Set up with autoconfig if necessary.
@@ -402,27 +440,5 @@ else
   echo "see nmh MACHINES file for build dependences"
 fi
 
-####
-#### Report results.
-####
-
-#### Disable output redirection (and flush) so that we can grep.
-exec 1>&3 3>&- 2>&4 4>&-
-
-if [ "$logfile" != - ]; then
-  rm -f "$logfile"
-  exec 3>&1 >"$logfile" 2>&1
-fi
-
-[ -f "$tmpfile" ]  &&  cat "$tmpfile"
-[ -f "$tmpfile" ]  &&  grep -E 'Error|warn' "$tmpfile"
-
-#### Put message on stdout, and in log if different.
-if [ $status -ne 0  -o  $verbose -ge 1  -o  "$directory" ]; then
-  [ $status -eq 0 ]  &&  indication=succeeded  ||  indication=failed
-  message="build $indication, build log is in ${directory:+$directory/}$logfile"
-  echo "$message"
-  [ "$logfile" = - ]  ||  echo "$message" >&3
-fi
-
-exit $status
+#### Will call cleanup, which will exit with $status.
+exit
