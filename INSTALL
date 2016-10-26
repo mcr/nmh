@@ -5,10 +5,9 @@
 --------------------------------
 Installing nmh, guided by script
 --------------------------------
-For routine installation on popular platforms, the shell script in
-docs/contrib/build_nmh can be used to guide you through configuration.
-It will then build and optionally (with -i) install in the configured
-location.
+For routine installation on popular platforms, the build_nmh shell
+script can be used to guide you through configuration.  It will then
+build and optionally (with -i) install in the configured location.
 
 
 ------------------------

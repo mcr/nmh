@@ -236,7 +236,7 @@ dist_doc_DATA = COPYRIGHT INSTALL NEWS README VERSION \
 ## Contribs that get installed in docdir/contrib/
 ##
 docs_contribdir = $(docdir)/contrib
-dist_docs_contrib_SCRIPTS = docs/contrib/replyfilter docs/contrib/build_nmh \
+dist_docs_contrib_SCRIPTS = docs/contrib/replyfilter \
 			    docs/contrib/localpostproc docs/contrib/ml \
 			    docs/contrib/vpick docs/contrib/replaliases
 dist_docs_contrib_DATA = docs/contrib/replaliases
@@ -286,7 +286,7 @@ man_SRCS = man/MH.man man/ali.man man/anno.man man/ap.man man/burst.man  \
 ## Files we need to include in the distribution which aren't found by
 ## Automake using the automatic rules
 ##
-EXTRA_DIST = autogen.sh config/version.sh sbr/icalparse.h \
+EXTRA_DIST = autogen.sh build_nmh config/version.sh sbr/icalparse.h \
 	     etc/mts.conf.in etc/mhn.defaults.sh etc/sendfiles \
 	     $(MHNSEARCHPROG) DATE MACHINES \
 	     docs/ChangeLog_MH-3_to_MH-6.6 \

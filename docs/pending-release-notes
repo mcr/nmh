@@ -63,6 +63,9 @@ NEW FEATURES
 - Single-character headers can be reliably formatted, etc., instead of
   apparently being missing.
 - ./configure's --enable-debug has been removed;  it did nothing.
+- configure now defaults to enabling each of TLS and Cyrus SASL if the
+  necessary headers and libraries are found.
+- Moved build_nmh to top-level directory.
 
 -----------------
 OBSOLETE FEATURES
