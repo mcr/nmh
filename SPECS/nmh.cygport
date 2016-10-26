@@ -17,4 +17,4 @@ more and emacs, respectively."
 
 HOMEPAGE="http://savannah.nongnu.org/projects/${PN}"
 SRC_URI="http://download.savannah.nongnu.org/releases/${PN}/${P}.tar.gz"
-CYGCONF_ARGS="--sysconfdir=${prefix}/etc/${PN} --with-cyrus-sasl --with-tls --with-oauth"
+CYGCONF_ARGS="--sysconfdir=${prefix}/etc/${PN}"
