@@ -32,7 +32,7 @@ read_switch (const char *prompt, const struct swit *ansp)
 	}
 	*cp = '\0';
 	if (ansbuf[0] == '?' || cp == ansbuf) {
-	    printf ("Options are:\n");
+	    puts("Options are:");
 	    for (ap = ansp; ap->sw; ap++)
 		printf ("  %s\n", ap->sw);
 	    continue;

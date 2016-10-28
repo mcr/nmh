@@ -43,7 +43,7 @@ read_switch_multiword_via_readline(char *prompt, struct swit *ansp)
 	    return NULL;
 
 	if (ans[0] == '?' || ans[0] == '\0') {
-	    printf("Options are:\n");
+	    puts("Options are:");
 	    print_sw(ALL, ansp, "", stdout);
 	    free(ans);
 	    continue;

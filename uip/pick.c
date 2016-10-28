@@ -324,6 +324,6 @@ static void
 putzero_done (int status)
 {
     if (listsw && status && !isatty (fileno (stdout)))
-	printf ("0\n");
+	puts("0");
     exit (status);
 }

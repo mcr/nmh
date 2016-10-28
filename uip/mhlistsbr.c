@@ -365,7 +365,7 @@ list_partial (CT ct, int toplevel, int realsize, int verbose, int debug,
 	printf ("\t     [message %s, part %d", p->pm_partid, p->pm_partno);
 	if (p->pm_maxno)
 	    printf (" of %d", p->pm_maxno);
-	printf ("]\n");
+	puts("]");
     }
 
     return OK;
@@ -411,7 +411,7 @@ list_external (CT ct, int toplevel, int realsize, int verbose, int debug,
 	    printf ("\t     permission=\"%s\"\n", e->eb_permission);
 
 	if (e->eb_flags == NOTOK)
-	    printf ("\t     [service unavailable]\n");
+	    puts("\t     [service unavailable]");
 
     }
 

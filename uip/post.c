@@ -750,7 +750,7 @@ main (int argc, char **argv)
     	if (partno)
 	    printf ("Partial Message #%s Processed\n", partno);
 	else
-	    printf ("Message Processed\n");
+	    puts("Message Processed");
     }
 
     done (0);
@@ -785,7 +785,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
            If it does, enable EAI support. */
         if (contains8bit(str, NULL)) {
             if (verbose) {
-                printf ("EAI/SMTPUTF8 enabled\n");
+                puts("EAI/SMTPUTF8 enabled");
             }
 
             /* Enable SMTPUTF8. */
@@ -1572,7 +1572,7 @@ do_addresses (int bccque, int talk)
     for (lp = localaddrs.m_next; lp; lp = lp->m_next)
 	if (lp->m_bcc ? bccque : !bccque) {
 	    if (talk && !state)
-		printf ("  -- Local Recipients --\n");
+		puts("  -- Local Recipients --");
 	    do_an_address (lp, talk);
 	    state++;
 	}
@@ -1581,7 +1581,7 @@ do_addresses (int bccque, int talk)
     for (lp = uuaddrs.m_next; lp; lp = lp->m_next)
 	if (lp->m_bcc ? bccque : !bccque) {
 	    if (talk && !state)
-		printf ("  -- UUCP Recipients --\n");
+		puts("  -- UUCP Recipients --");
 	    do_an_address (lp, talk);
 	    state++;
 	}
@@ -1590,7 +1590,7 @@ do_addresses (int bccque, int talk)
     for (lp = netaddrs.m_next; lp; lp = lp->m_next)
 	if (lp->m_bcc ? bccque : !bccque) {
 	    if (talk && !state)
-		printf ("  -- Network Recipients --\n");
+		puts("  -- Network Recipients --");
 	    do_an_address (lp, talk);
 	    state++;
 	}
@@ -1623,7 +1623,7 @@ post (char *file, int bccque, int talk, int eai, char *envelope,
 	    printf (" -- Posting for %s Recipients --\n",
 		    bccque ? "Blind" : "Sighted");
 	else
-	    printf (" -- Posting for All Recipients --\n");
+	    puts(" -- Posting for All Recipients --");
     }
 
     sigon ();
@@ -1699,7 +1699,7 @@ post (char *file, int bccque, int talk, int eai, char *envelope,
 	        printf (" -- %s Recipient Copies Posted --\n",
 		        bccque ? "Blind" : "Sighted");
             else
-	        printf (" -- Recipient Copies Posted --\n");
+	        puts(" -- Recipient Copies Posted --");
         }
 
         fflush (stdout);
@@ -1731,25 +1731,25 @@ verify_all_addresses (int talk, int eai, char *envelope, int oauth_flag,
     }
 
     if (talk && !whomsw)
-	printf (" -- Address Verification --\n");
+	puts(" -- Address Verification --");
     if (talk && localaddrs.m_next)
-	printf ("  -- Local Recipients --\n");
+	puts("  -- Local Recipients --");
     for (lp = localaddrs.m_next; lp; lp = lp->m_next)
 	do_an_address (lp, talk);
 
     if (talk && uuaddrs.m_next)
-	printf ("  -- UUCP Recipients --\n");
+	puts("  -- UUCP Recipients --");
     for (lp = uuaddrs.m_next; lp; lp = lp->m_next)
 	do_an_address (lp, talk);
 
     if (talk && netaddrs.m_next)
-	printf ("  -- Network Recipients --\n");
+	puts("  -- Network Recipients --");
     for (lp = netaddrs.m_next; lp; lp = lp->m_next)
 	do_an_address (lp, talk);
 
     chkadr ();
     if (talk && !whomsw)
-	printf (" -- Address Verification Successful --\n");
+	puts(" -- Address Verification Successful --");
 
     if (!whomsw || checksw)
 	sm_end (DONE);
@@ -1801,7 +1801,7 @@ do_an_address (struct mailname *lp, int talk)
 			 lp->m_type != UUCPHOST ? lp->m_path : NULL)) {
 	case RP_OK: 
 	    if (talk)
-		printf ("address ok\n");
+		puts("address ok");
 	    break;
 
 	case RP_NO: 
@@ -1911,11 +1911,11 @@ p_refile (char *file)
 	return;
 
     if (verbose)
-	printf (" -- Filing Folder Copies --\n");
+	puts(" -- Filing Folder Copies --");
     for (i = 0; i < fccind; i++)
 	fcc (file, fccfold[i]);
     if (verbose)
-	printf (" -- Folder Copies Filed --\n");
+	puts(" -- Folder Copies Filed --");
 }
 
 
@@ -1970,7 +1970,7 @@ fcc (char *file, char *folder)
 		pidstatus (status, verbose ? stdout : stderr, NULL);
 	    } else {
 		if (verbose)
-		    printf ("folder ok\n");
+		    puts("folder ok");
 	    }
     }
 

@@ -161,7 +161,7 @@ print_aka (char *p, int list, int margin)
     char c;
 
     if (p == NULL) {
-	printf ("<empty>\n");
+	puts("<empty>");
 	return;
     }
 

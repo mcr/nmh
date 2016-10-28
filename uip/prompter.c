@@ -251,7 +251,7 @@ abort:
 	            break;
 		fprintf (out, "--------\n");
 		if (field[0] == 0 || !prepend)
-		    printf ("--------\n");
+		    puts("--------");
 		if (field[0]) {
 		    if (prepend && body) {
 			printf ("\n--------Enter initial text\n\n");
@@ -298,7 +298,7 @@ abort:
     m_getfld_state_destroy (&gstate);
 
     if (body)
-	printf ("--------\n");
+	puts("--------");
 
     fflush (stdout);
     fclose (in);

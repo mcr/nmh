@@ -20,7 +20,7 @@ print_help (char *str, struct swit *swp, int print_context)
     printf ("Usage: %s\n", str);
 
     /* print all the switches */
-    printf ("  switches are:\n");
+    puts("  switches are:");
     print_sw (ALL, swp, "-", stdout);
 
     /*

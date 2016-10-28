@@ -143,7 +143,7 @@ main (int argc, char **argv)
 	}
     } else {
 	if (autof)
-	    printf ("I'm going to create the standard nmh path for you.\n");
+	    puts("I'm going to create the standard nmh path for you.");
 	else
 	    cp = concat ("Do you want the standard nmh path \"",
 		    mypath, "/", "Mail\"? ", NULL);
@@ -174,7 +174,7 @@ query:
 	    if (makedir (pathname) == 0)
 		adios (NULL, "unable to create %s", pathname);
     } else {
-	printf ("[Using existing directory]\n");
+	puts("[Using existing directory]");
     }
 
     /*

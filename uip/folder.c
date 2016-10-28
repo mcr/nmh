@@ -582,7 +582,7 @@ print_folders (void)
 
 	    if (fi[i].others)
 		printf (";%*s (others)", curprinted ? 0 : curmsgdigits + 6, "");
-	    printf (".\n");
+	    puts(".");
 	}
     }
 
