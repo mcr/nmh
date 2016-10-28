@@ -1337,7 +1337,7 @@ verbose_printf (char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    vfprintf (stdout, fmt, ap);
+    vprintf(fmt, ap);
     va_end(ap);
 
     fflush (stdout);	/* now flush output */
@@ -1357,19 +1357,19 @@ adorn (char *what, char *fmt, ...)
     char *s;
 
     eindex = errno;	/* save the errno */
-    fprintf (stdout, ", ");
+    printf(", ");
 
     va_start(ap, fmt);
-    vfprintf (stdout, fmt, ap);
+    vprintf(fmt, ap);
     va_end(ap);
 
     if (what) {
 	if (*what)
-	    fprintf (stdout, " %s: ", what);
+	    printf(" %s: ", what);
 	if ((s = strerror (eindex)))
-	    fprintf (stdout, "%s", s);
+	    printf("%s", s);
 	else
-	    fprintf (stdout, "Error %d", eindex);
+	    printf("Error %d", eindex);
     }
 
     putchar('\n');
