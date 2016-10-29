@@ -179,21 +179,9 @@ addlist (char *list, const char *item)
 int folder_exists(const char *folder)
 {
     struct stat st;
-    int exists = 0;
 
-    if (stat (folder, &st) == -1) {
-        /* The folder either doesn't exist, or we hit an error.  Either way
-         * return a failure.
-         */
-        exists = 0;
-    } else {
-        /* We can see a folder with the right name */
-        exists = 1;
-    }
-
-    return exists;
+    return stat(folder, &st) != -1;
 }
-
 
 /*
  * create_folder
