@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Test short headers and short bodies.
+# One-character long headers used to sometimes be missed;  see commit
+# 41a82a7ecba04be5b27b3ffc813e2f34d2786a38.
+
 set -e
 
 if test -z "${MH_OBJ_DIR}"; then
@@ -14,17 +18,17 @@ setup_test
 mail="$MH_TEST_DIR/$$.mail"
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
+format="$MH_TEST_DIR/$$.format"
 
-for a in a: a:1 a:12 aa: aa:1 aa:12 aaa: aaa:1 aaa:12 aaaa: aaaa:1 aaaa:12; do
-    for b in b: b:1 b:12 bb: bb:1 bb:12 bbb: bbb:1 bbb:12 bbbb: bbbb:1 bbbb:12; do
-        for c in c: c:1 c:12 cc: cc:1 cc:12 ccc: ccc:1 ccc:12 cccc: cccc:1 cccc:12; do
+for a in a: a:1 aa: aa:1; do
+    for b in b: b:1 bb: bb:1; do
+        for c in c: c:1 cc: cc:1; do
             printf '%s\n%s\n%s\n' $a $b $c >"$mail"
             sed 's/.*://' "$mail" >"$expected"
-            f="`sed 's/:.*/}/; s/^/%{/' "$mail"`"
-            run_prog scan -forma "$f" -file "$mail" >"$actual" ||
+            sed 's/:.*/}/; s/^/%{/' "$mail" >"$format"
+            run_prog scan -form "$format" -file "$mail" >"$actual" ||
             exit 1
             check "$expected" "$actual"
-            break 3 # Fails on first iteration!
         done
     done
 done
