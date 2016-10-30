@@ -1527,7 +1527,7 @@ find_prefix (void)
     if ((in = fopen (tmpfil, "r")) == NULL)
 	adios (tmpfil, "unable to re-open");
 
-    while (fgets (buffer, sizeof(buffer) - 1, in))
+    while (fgets (buffer, sizeof buffer, in))
 	if (buffer[0] == '-' && buffer[1] == '-') {
 	    char *cp;
 

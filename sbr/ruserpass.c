@@ -147,7 +147,7 @@ ruserpass(const char *host, char **aname, char **apass, int flags)
 	}
 	printf("Name (%s:%s): ", host, myname);
 
-	if (fgets(tmp, sizeof(tmp) - 1, stdin) == NULL) {
+	if (fgets(tmp, sizeof tmp, stdin) == NULL) {
 	    advise ("tmp", "fgets");
 	}
         TrimSuffixC(tmp, '\n');

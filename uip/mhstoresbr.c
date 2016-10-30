@@ -835,7 +835,7 @@ losing:
 	}
     }
 
-    while (fgets (buffer, sizeof(buffer) - 1, ct->c_fp)) {
+    while (fgets (buffer, sizeof buffer, ct->c_fp)) {
 	if ((pos += strlen (buffer)) > last) {
 	    int diff;
 

@@ -286,7 +286,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 
     nparts = 1;
     pos = start;
-    while (fgets (buffer, sizeof(buffer) - 1, in)) {
+    while (fgets (buffer, sizeof buffer, in)) {
 	long len;
 
 	if ((pos += (len = strlen (buffer))) > CPERMSG) {
@@ -356,7 +356,7 @@ splitmsg (char **vec, int vecp, char *program, char *drft,
 	for (;;) {
 	    long len;
 
-	    if (!fgets (buffer, sizeof(buffer) - 1, in)) {
+	    if (!fgets (buffer, sizeof buffer, in)) {
 		if (partno == nparts)
 		    break;
 		adios (NULL, "premature eof");
