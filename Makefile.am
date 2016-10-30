@@ -723,13 +723,17 @@ rpm: dist
 ## These targets are not integrated into the other automake
 ## targets because they will be used so infrequently, if at all.
 ##
-gcov:
+gcov: gcov-rebuild gcov-run gcov-process gcov-report
+gcov-rebuild:
 	@echo rebuilding with AM_CFLAGS=--coverage . . .
-	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null  && \
-	  make check AM_CFLAGS=--coverage
+	@(make clean  &&  make AM_CFLAGS=--coverage) > /dev/null
+gcov-run:
+	make check AM_CFLAGS=--coverage
+gcov-process:
 	@for i in `find . -name '*.gcda'`; do \
 	   gcov -pro `echo $$i | $(SED) 's%\\(.*\\)/%\\1 %'`; \
 	 done
+gcov-report:
 	@for i in `find . -name '*.gcno'`; do \
 	   if test -f `echo $$i | sed 's%\.gcno%.gcda%'`; then :; else \
 	     echo untested: $$i; \
@@ -739,7 +743,8 @@ gcov-mostlyclean:
 	@find . -name '*.gcno' -o -name '*.gcda' | xargs rm
 gcov-clean: gcov-mostlyclean
 	@find . -name '*.gcov' | xargs rm
-.PHONY: gcov gcov-mostlyclean gcov-clean
+.PHONY: gcov gcov-rebuild gcov-run gcov-process gcov-report \
+    gcov-mostlyclean gcov-clean
 
 
 ##
