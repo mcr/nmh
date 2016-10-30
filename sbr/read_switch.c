@@ -19,7 +19,7 @@ read_switch (const char *prompt, const struct swit *ansp)
     char ansbuf[BUFSIZ];
 
     for (;;) {
-	printf ("%s", prompt);
+	fputs(prompt, stdout);
 	fflush (stdout);
 	cp = ansbuf;
 	while ((i = getchar ()) != '\n') {

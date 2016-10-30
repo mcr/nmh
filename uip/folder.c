@@ -306,7 +306,7 @@ main (int argc, char **argv)
 
     /* Listing the folder stack */
     if (listsw) {
-	printf ("%s", argfolder ? argfolder : getfolder (1));
+	fputs(argfolder ? argfolder : getfolder (1), stdout);
 	if ((cp = context_find (stack))) {
 	    dp = mh_xstrdup(cp);
 	    for (ap = brkstring (dp, " ", "\n"); *ap; ap++)

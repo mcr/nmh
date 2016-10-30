@@ -35,7 +35,7 @@ read_switch_multiword (const char *prompt, const struct swit *ansp)
     }
 
     for (;;) {
-	printf ("%s", prompt);
+	fputs(prompt, stdout);
 	fflush (stdout);
 	cp = ansbuf;
 	while ((i = getchar ()) != '\n') {
