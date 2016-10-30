@@ -63,6 +63,10 @@ char *find_str (const char [], size_t, const char *);
 char *rfind_str (const char [], size_t, const char *);
 char *nmh_strcasestr (const char *, const char *);
 
+void trunccpy(char *dst, const char *src, size_t size);
+/* A convenience for the common case of dst being an array. */
+#define TRUNCCPY(dst, src) trunccpy(dst, src, sizeof (dst))
+
 bool HasPrefix(const char *s, const char *prefix);
 bool HasSuffix(const char *s, const char *suffix);
 bool HasSuffixC(const char *s, int c);

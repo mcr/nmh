@@ -346,6 +346,31 @@ nmh_strcasestr (const char *s1, const char *s2) {
 }
 
 
+/* truncpy copies at most size - 1 chars from non-NULL src to non-NULL
+ * dst, and ensures dst is NUL terminated.  If size is zero then it
+ * aborts as dst cannot be NUL terminated.
+ *
+ * It's to be used when truncation is intended and correct, e.g.
+ * reporting a possibly very long external string back to the user.  One
+ * of its advantages over strncpy(3) is it doesn't pad in the common
+ * case of no truncation. */
+void trunccpy(char *dst, const char *src, size_t size)
+{
+    if (!size) {
+        advise(NULL, "trunccpy: zero-length destination: \"%.20s\"",
+            src ? src : "null");
+        abort();
+    }
+
+    if (strnlen(src, size) < size) {
+        strcpy(dst, src);
+    } else {
+        memcpy(dst, src, size - 1);
+        dst[size - 1] = '\0';
+    }
+}
+
+
 /* HasPrefix returns true if non-NULL s starts with non-NULL prefix. */
 bool HasPrefix(const char *s, const char *prefix)
 {
