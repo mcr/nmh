@@ -16,6 +16,8 @@ fi
 
 setup_test
 
+! install-mh - >/dev/null 2>&1 # gcov
+
 # check with no options, with nmh already installed
 run_test "install-mh" \
     'install-mh: You already have an nmh profile, use an editor to modify it'

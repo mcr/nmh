@@ -13,6 +13,8 @@ fi
 
 setup_test
 
+! comp - >/dev/null 2>&1 # gcov
+
 #
 # Create a test template file (we create one here just in case the master
 # one changes)

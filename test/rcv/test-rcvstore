@@ -19,6 +19,8 @@ setup_test
 # Use proper program, likely not the first one on PATH.
 rcvstore="${MH_LIBEXEC_DIR}/rcvstore"
 
+! $rcvstore - >/dev/null 2>&1 # gcov
+
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err
 actual=$MH_TEST_DIR/$$.actual

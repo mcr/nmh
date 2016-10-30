@@ -15,6 +15,9 @@ fi
 . "${MH_OBJ_DIR}/test/common.sh"
 
 setup_test
+
+! mhbuild -h >/dev/null 2>&1 # gcov
+
 testname="${MH_TEST_DIR}/$$"
 backupname="${MH_TEST_DIR}/`mhparam sbackup`$$"
 

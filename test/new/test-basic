@@ -14,6 +14,8 @@ fi
 
 setup_test
 
+! folder - >/dev/null 2>&1 # gcov
+
 folders=$MH_TEST_DIR/Mail/.folders
 
 expected=$MH_TEST_DIR/$$.expected

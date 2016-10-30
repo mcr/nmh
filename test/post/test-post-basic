@@ -12,6 +12,8 @@ fi
 
 . "${srcdir}/test/post/test-post-common.sh"
 
+! "${MH_LIBEXEC_DIR}/post" - >/dev/null 2>&1 # gcov
+
 #
 # Basic test - Simple message, single user, single recipient.  Note that
 # we test dot-stuffing here as well.

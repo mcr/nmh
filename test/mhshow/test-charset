@@ -16,6 +16,8 @@ fi
 
 setup_test
 
+! mhshow - >/dev/null 2>&1 # gcov
+
 require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
 test "$ICONV_ENABLED" -eq 0  &&  text_size=10  || text_size=11

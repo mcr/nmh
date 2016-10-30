@@ -16,6 +16,8 @@ fi
 
 setup_test
 
+! flist - >/dev/null 2>&1 # gcov
+
 run_test 'mark 1 3 5 7 9 +inbox -sequence odd' ''
 run_test 'mark -s odd -list' 'odd: 1 3 5 7 9'
 run_test 'mark +inbox -sequence unseen all' ''
