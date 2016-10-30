@@ -15,7 +15,7 @@ fi
 setup_test
 
 set +e
-run_test 'run_prog folder -nocreate +testfolder 2>&1' \
+run_test 'folder -nocreate +testfolder 2>&1' \
          'folder: folder testfolder does not exist'
 set -e
 if [ -d "$MH_TEST_DIR/Mail/testfolder" ]; then
