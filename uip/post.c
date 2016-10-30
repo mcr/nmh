@@ -1041,7 +1041,7 @@ putfmt (char *name, char *str, int *eai, FILE *out)
 	 * Strip off any trailing newlines
 	 */
 
-	while (strlen(fullfrom) > 0 && fullfrom[strlen(fullfrom) - 1] == '\n') {
+	while (*fullfrom && fullfrom[strlen(fullfrom) - 1] == '\n') {
 	    fullfrom[strlen(fullfrom) - 1] = '\0';
 	}
     }
