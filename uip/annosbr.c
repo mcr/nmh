@@ -143,7 +143,7 @@ annolist(char *file, char *comp, char *text, int number)
 	    if (text == NULL && (sp = strrchr(cp, '/')) != (char *)0)
 		cp = sp + 1;
 
-	    (void)printf("%s\n", cp);
+            puts(cp);
 	}
 
     } while (*field != '\0' && *field != '-');

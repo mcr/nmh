@@ -339,7 +339,7 @@ WhatNow (int argc, char **argv)
 
 	case PWDCMDSW:
 	    /* Print the working directory for attachments */
-	    printf("%s\n", cwd);
+	    puts(cwd);
 	    break;
 
 	case LSCMDSW:

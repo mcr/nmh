@@ -77,7 +77,7 @@ main(int argc, char **argv)
 
     /* If no messages are given, print folder pathname */
     if (!msgs.size) {
-	printf ("%s\n", maildir);
+	puts(maildir);
 	done (0);
     }
 

@@ -526,7 +526,7 @@ PrintFolders(void)
 
     if (!Total) {
 	for (i = 0; i < nFolders; i++)
-	    printf("%s\n", folders[i].name);
+	    puts(folders[i].name);
 	return;
     }
 

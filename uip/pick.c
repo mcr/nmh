@@ -253,7 +253,7 @@ main (int argc, char **argv)
 		admonish (cp, "unable to read message");
 	    if (fp && pmatches (fp, msgnum, 0L, 0L, debug)) {
 		if (listsw)
-		    printf ("%s\n", m_name (msgnum));
+		    puts(m_name (msgnum));
 	    } else {
 	    	app_msgnum(&nums, msgnum);
 	    }

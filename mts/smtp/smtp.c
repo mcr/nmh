@@ -873,7 +873,7 @@ again: ;
 	    continue;
 	if (sm_reply.code < 100) {
 	    if (sm_verbose) {
-		printf ("%s\n", sm_reply.text);
+		puts(sm_reply.text);
 		fflush (stdout);
 	    }
 	    goto again;

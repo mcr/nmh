@@ -546,7 +546,7 @@ print_folders (void)
     if (all || fshort || ftotal < 1) {
 	for (i = 0; i < total_folders; i++) {
 	    if (fshort) {
-		printf ("%s\n", fi[i].name);
+		puts(fi[i].name);
 		continue;
 	    }
 

@@ -249,7 +249,7 @@ main(int argc, char **argv)
 	        if (components)
 		    printf("%s: ", comps[i]);
 
-		printf("%s\n", value);
+		puts(value);
 	    } else
 	        missed++;
 	}
