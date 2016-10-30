@@ -602,7 +602,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/makedir.c sbr/md5.c sbr/message_id.c \
 		      sbr/mime_type.c sbr/mts.c sbr/netsec.c \
 		      sbr/norm_charmap.c sbr/path.c \
-		      sbr/peekc.c sbr/pidwait.c sbr/pidstatus.c \
+		      sbr/pidwait.c sbr/pidstatus.c \
 		      sbr/print_help.c sbr/print_sw.c sbr/print_version.c \
 		      sbr/push.c sbr/putenv.c sbr/refile.c sbr/remdir.c \
 		      sbr/r1bindex.c sbr/readconfig.c sbr/ruserpass.c \
