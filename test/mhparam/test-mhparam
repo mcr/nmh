@@ -17,6 +17,7 @@ fi
 setup_test
 
 ! mhparam - >/dev/null 2>&1 # gcov
+! mhparam localmbox >/dev/null 2>&1 # gcov
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err
