@@ -650,7 +650,7 @@ got_filename:
             if (first_partial)
                 fprintf (stderr, "reassembling partials ");
             if (last_partial)
-                fprintf (stderr, "%s", ct->c_file);
+                fputs(ct->c_file, stderr);
             else
                 fprintf (stderr, "%s,", ct->c_file);
         } else {

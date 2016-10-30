@@ -215,7 +215,7 @@ main (int argc, char **argv)
 			fieldsz = sizeof field;
 			state = m_getfld (&gstate, name, field, &fieldsz, in);
 			printf ("%s", field);
-			fprintf (out, "%s", field);
+			fputs(field, out);
 		    }
 		} else {
 		    /* Else, get value of header field */
@@ -235,7 +235,7 @@ abort:
 			do {
 			    if (field[0] != ' ' && field[0] != '\t')
 				putc (' ', out);
-			    fprintf (out, "%s", field);
+			    fputs(field, out);
 			} while (i == 1
 				    && (i = getln (field, sizeof(field))) >= 0);
 			if (i == -1)
@@ -262,12 +262,12 @@ abort:
 				break;
 			    if (buffer[0] == 0)
 				break;
-			    fprintf (out, "%s", buffer);
+			    fputs(buffer, out);
 			}
 		    }
 
 		    do {
-			fprintf (out, "%s", field);
+			fputs(field, out);
 			if (!rapid && !sigint)
 			    printf ("%s", field);
 		    } while (state == BODY &&
@@ -286,7 +286,7 @@ abort:
 			break;
 		    if (field[0] == 0)
 			break;
- 		    fprintf (out, "%s", field);
+		    fputs(field, out);
 		}
 		break;
 

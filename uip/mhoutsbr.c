@@ -117,7 +117,7 @@ output_content (CT ct, FILE *out)
 	m = (struct multipart *) ct->c_ctparams;
 
         if (m->mp_content_before) {
-           fprintf (out, "%s", m->mp_content_before);
+           fputs(m->mp_content_before, out);
         }
 
 	for (part = m->mp_parts; part; part = part->mp_next) {
@@ -133,7 +133,7 @@ output_content (CT ct, FILE *out)
 	fprintf (out, "\n--%s--\n", boundary);
 
         if (m->mp_content_after) {
-           fprintf (out, "%s", m->mp_content_after);
+           fputs(m->mp_content_after, out);
         }
     }
     break;

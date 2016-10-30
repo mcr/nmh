@@ -260,7 +260,7 @@ flush_errors (void)
 {
     if (errs) {
 	fflush (stdout);
-	fprintf (stderr, "%s", errs);
+	fputs(errs, stderr);
 	free (errs);
 	errs = NULL;
     }
