@@ -125,3 +125,10 @@ a.out.dSYM/
 
 # Removed by mostlyclean:
 *.o
+
+# Removed by gcov-mostlyclean:
+*.gcda
+*.gcno
+
+# Removed by gcov-clean:
+*.gcov
