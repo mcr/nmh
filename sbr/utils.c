@@ -346,9 +346,9 @@ nmh_strcasestr (const char *s1, const char *s2) {
 }
 
 
-/* truncpy copies at most size - 1 chars from non-NULL src to non-NULL
- * dst, and ensures dst is NUL terminated.  If size is zero then it
- * aborts as dst cannot be NUL terminated.
+/* truncpy copies at most size - 1 chars from non-NULL src to non-NULL,
+ * non-overlapping, dst, and ensures dst is NUL terminated.  If size is
+ * zero then it aborts as dst cannot be NUL terminated.
  *
  * It's to be used when truncation is intended and correct, e.g.
  * reporting a possibly very long external string back to the user.  One
