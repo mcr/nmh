@@ -301,11 +301,11 @@ if [ $yes -eq 0 ]; then
     [ "$servers" ]  &&  config_smtpservers="$servers"
   fi
 
-  printf 'Cyrus SASL support [%s]: ' "$config_sasl" >&3
+  printf 'Cyrus SASL support (y|n) [%s]: ' "$config_sasl" >&3
   read response
   [ "$response" = y  -o  "$response" = Y ]  &&  config_sasl=y
 
-  printf 'TLS support [%s]: ' "$config_tls" >&3
+  printf 'TLS support (y|n) [%s]: ' "$config_tls" >&3
   read response
   [ "$response" = y  -o  "$response" = Y ]  &&  config_tls=y
 fi
