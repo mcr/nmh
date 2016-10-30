@@ -507,7 +507,7 @@ mhl (int argc, char **argv)
 
     if (forwall) {
 	if (digest) {
-	    printf ("%s", delim4);
+	    fputs(delim4, stdout);
 	    if (volume == 0) {
 		snprintf (buf, sizeof(buf), "End of %s Digest\n", digest);
 	    } else {
@@ -519,7 +519,7 @@ mhl (int argc, char **argv)
 		*cp++ = '*';
 	    *cp++ = '\n';
 	    *cp = 0;
-	    printf ("%s", buf);
+	    fputs(buf, stdout);
 	}
 	else
 	    printf ("\n------- End of Forwarded Message%s\n",
@@ -944,7 +944,7 @@ mhlfile (FILE *fp, char *mname, int ofilen, int ofilec)
 
     if (forwall) {
 	if (digest)
-	    printf ("%s", ofilen == 1 ? delim3 : delim4);
+	    fputs(ofilen == 1 ? delim3 : delim4, stdout);
 	else {
 	    printf ("\n-------");
 	    if (ofilen == 1)

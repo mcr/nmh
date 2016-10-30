@@ -214,7 +214,7 @@ main (int argc, char **argv)
 		    while (state == FLDPLUS) {
 			fieldsz = sizeof field;
 			state = m_getfld (&gstate, name, field, &fieldsz, in);
-			printf ("%s", field);
+			fputs(field, stdout);
 			fputs(field, out);
 		    }
 		} else {
@@ -269,7 +269,7 @@ abort:
 		    do {
 			fputs(field, out);
 			if (!rapid && !sigint)
-			    printf ("%s", field);
+			    fputs(field, stdout);
 		    } while (state == BODY &&
 			    (fieldsz = sizeof field,
 			     state = m_getfld (&gstate, name, field, &fieldsz, in)));

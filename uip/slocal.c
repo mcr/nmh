@@ -1367,7 +1367,7 @@ adorn (char *what, char *fmt, ...)
 	if (*what)
 	    printf(" %s: ", what);
 	if ((s = strerror (eindex)))
-	    printf("%s", s);
+	    fputs(s, stdout);
 	else
 	    printf("Error %d", eindex);
     }
