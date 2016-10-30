@@ -661,6 +661,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 	     */
 	    char *bp;
 
+            name[0] = '\0';
 	    max = *bufsz-1;
 	    /* Back up and store the current position. */
 	    bp = --s->readpos;
