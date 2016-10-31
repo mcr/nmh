@@ -612,23 +612,26 @@ static char *
 fgetstr (char *s, int n, FILE *stream)
 {
     char *cp, *ep;
-    int o_n = n;
 
+    ep = s + n;
     while(1) {
-	for (ep = (cp = s) + o_n; cp < ep; ) {
-	    int i;
+	for (cp = s; cp < ep;) {
+	    int len;
 
 	    if (!fgets (cp, n, stream))
-		return (cp != s ? s : NULL);
+                return cp == s ? NULL : s; /* "\\\nEOF" ignored. */
 
 	    if (cp == s && *cp != '#')
-		return s;
+		return s; /* Plaintext line. */
 
-	    cp += (i = strlen (cp)) - 1;
-	    if (i <= 1 || *cp-- != '\n' || *cp != '\\')
+	    len = strlen(cp);
+	    if (len <= 1)
+		break; /* Can't contain "\\\n". */
+	    cp += len - 1; /* Just before NUL. */
+	    if (*cp-- != '\n' || *cp != '\\')
 		break;
-	    *cp = '\0';
-	    n -= (i - 2);
+	    *cp = '\0'; /* Erase the trailing "\\\n". */
+	    n -= (len - 2);
 	}
 
 	if (strcmp(s, "#on\n") == 0) {
@@ -638,11 +641,9 @@ fgetstr (char *s, int n, FILE *stream)
 	} else if (strcmp(s, "#pop\n") == 0) {
 	    directive_pop();
 	} else {
-	    break;
+	    return s;
 	}
     }
-
-    return s;
 }
 
 
