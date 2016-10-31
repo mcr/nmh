@@ -143,9 +143,13 @@ main (int argc, char **argv)
 	} else {
 	    /* print them all */
 	    for (ak = akahead; ak; ak = ak->ak_next) {
+                char *res;
+
 		printf ("%s: ", ak->ak_name);
 		pos += strlen (ak->ak_name) + 1;
-		print_aka (akresult (ak), list, pos);
+                res = akresult(ak);
+		print_aka(res, list, pos);
+                free(res);
 	    }
 	}
     }
