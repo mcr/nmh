@@ -19,7 +19,7 @@ fi
 
 setup_test
 
-ali - >/dev/null 2>&1 || true  # gcov
+check_exit '-eq 1' ali - # gcov
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err

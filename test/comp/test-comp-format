@@ -13,7 +13,7 @@ fi
 
 setup_test
 
-comp - >/dev/null 2>&1 || true  # gcov
+check_exit '-eq 1' comp - # gcov
 
 #
 # Create a test template file (we create one here just in case the master

@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-packf - >/dev/null 2>&1 || true  # gcov
+check_exit '-eq 1' packf - # gcov
 
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"

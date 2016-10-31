@@ -12,7 +12,7 @@ fi
 
 setup_test
 
-burst - >/dev/null 2>&1 || true  # gcov
+check_exit '-eq 1' burst - # gcov
 
 #
 # Create a test message that we can burst

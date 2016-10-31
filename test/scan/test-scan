@@ -14,7 +14,7 @@ fi
 
 setup_test
 
-scan - >/dev/null 2>&1 || true  # gcov
+check_exit '-eq 1' scan - # gcov
 
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"

@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-mark - >/dev/null 2>&1 || true  # gcov
+check_exit '-eq 1' mark - # gcov
 
 # Test sequence creation.
 run_test 'mark 1 3 5 7 +inbox -sequence odd' ''
