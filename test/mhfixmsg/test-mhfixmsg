@@ -1072,6 +1072,7 @@ fi
 
 
 # check handling of rfc822 message type
+# also, checks -fixboundary
 start_test "handling of rfc822 message type"
 cat >"$expected" <<EOF
 From: Test <test@example.com>
@@ -1109,7 +1110,7 @@ Date: Fri, 29 Sep 2006 00:00:00
 Message-Id: @test.nmh
 Subject: message with message/rfc822 attachment
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----- =_aaaaaaaaa0"
+Content-Type: multipart/mixed; boundary="----- =badboundary"
 
 and some garbage before the attachment
 

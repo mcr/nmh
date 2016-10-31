@@ -1629,7 +1629,8 @@ reformat_part (CT ct, char *file, char *type, char *subtype, int c_type) {
     }
 
     output_encoding = content_encoding (ct, &reason);
-    if (set_ct_type (ct, c_type, output_subtype, output_encoding) == OK) {
+    if (status == OK  &&
+        set_ct_type (ct, c_type, output_subtype, output_encoding) == OK) {
         ct->c_cefile.ce_file = file;
         ct->c_cefile.ce_unlink = 1;
     } else {
