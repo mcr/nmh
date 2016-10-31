@@ -507,7 +507,7 @@ by re\-ordering the file (e.g.\& by using
 .RB \*(lq folder
 .BR \-pack \*(rq)
 before the message is successfully sent.
-.B Dist
+.B dist
 and
 .B repl
 don't have this problem.

@@ -87,7 +87,7 @@ will automatically be processed by
 before being passed to
 .IR post (1)
 for message submission.
-.B Mhbuild
+.B mhbuild
 will use the locale settings to mark text content with the appropriate
 character set and apply any necessary encoding.  If you wish to include
 text in your message using a character set that does not match your
@@ -110,7 +110,7 @@ header in the message draft containing the name of the file you wish to
 attach to the message (it should be noted all that the
 .B attach
 command does is place an \*(lqAttach\*(rq header in the message draft).
-.B Mhbuild
+.B mhbuild
 will then automatically include the specified file(s) in the outgoing
 message.  See
 .IR send (1)

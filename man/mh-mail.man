@@ -17,7 +17,7 @@ can read message files in that antiquated format.
 Each user possesses a mail drop box which initially receives all messages
 processed by
 .BR post .
-.B Inc
+.B inc
 will read from that drop
 box and incorporate the new messages found there into the user's own
 mail folders (typically
