@@ -29,6 +29,7 @@ for a in a: a:1 aa: aa:1; do
             run_prog scan -form "$format" -file "$mail" >"$actual" ||
             exit 1
             check "$expected" "$actual"
+            rm -f "$mail" "$format"
         done
     done
 done
