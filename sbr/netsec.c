@@ -1571,6 +1571,7 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
 		    SSL_CIPHER_get_name(cipher),
 		    SSL_CIPHER_get_bits(cipher, NULL),
 		    SSL_CIPHER_get_version(cipher));
+	    SSL_SESSION_print_fp(stderr, SSL_get_session(ssl));
 	}
     }
 
