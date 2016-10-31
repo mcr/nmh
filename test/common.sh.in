@@ -281,6 +281,27 @@ run_test() {
   fi
 }
 
+#### check_exit() runs the command in $2..., capturing stdout and
+#### stderr, and then tests its exit status with the test(1) condition
+#### in $1.  If that fails, the captured stdout and stderr are
+#### displayed, and $failed incremented.
+check_exit() {
+    c="$1"; shift
+    t="$MH_TEST_DIR/.check_exit"
+    r=0
+    $NMH_TEST_PREFIX "$@" >"$t.1" 2>"$t.2" || r=$?
+    if test $r $c; then
+      rm "$t.1" "$t.2"
+    else
+      echo "$0: check_exit: $r $c failed: $*" >&2
+      echo "    stdout:" >&2
+      sed 's/^/        /' "$t.1" >&2
+      echo "    stderr:" >&2
+      sed 's/^/        /' "$t.2" >&2
+      failed=`expr ${failed:-0} + 1`
+    fi
+}
+
 #### Function invoked by trap on exit.
 cleanup() {
     #### Save exit status to use as status for this program.
