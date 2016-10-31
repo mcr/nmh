@@ -69,7 +69,7 @@ void
 advertise (const char *what, char *tail, const char *fmt, va_list ap)
 {
     int	eindex = errno;
-    char buffer[BUFSIZ], errbuf[BUFSIZ], *err;
+    char buffer[NMH_BUFSIZ], errbuf[NMH_BUFSIZ], *err;
     struct iovec iob[10], *iov;
     size_t niov;
 

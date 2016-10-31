@@ -364,7 +364,7 @@ fmt_scan (struct format *format, charstring_t scanlp, int width, int *dat,
 {
     char *sp;
     char *savestr, *str;
-    char buffer[BUFSIZ], buffer2[BUFSIZ];
+    char buffer[NMH_BUFSIZ], buffer2[NMH_BUFSIZ];
     int i, c, rjust;
     int value;
     time_t t;

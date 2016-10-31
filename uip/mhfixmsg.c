@@ -676,7 +676,7 @@ fix_boundary (CT *ct, int *message_mods) {
  */
 static int
 get_multipart_boundary (CT ct, char **part_boundary) {
-    char buffer[BUFSIZ];
+    char buffer[NMH_BUFSIZ];
     char *end_boundary = NULL;
     off_t begin = (off_t) ct->c_end > (off_t) (ct->c_begin + sizeof buffer)
         ?  (off_t) (ct->c_end - sizeof buffer)
@@ -684,7 +684,7 @@ get_multipart_boundary (CT ct, char **part_boundary) {
     size_t bytes_read;
     int status = OK;
 
-    /* This will fail if the boundary spans fread() calls.  BUFSIZ should
+    /* This will fail if the boundary spans fread() calls.  NMH_BUFSIZ should
        be big enough, even if it's just 1024, to make that unlikely. */
 
     /* free_content() will close ct->c_fp. */
@@ -762,7 +762,7 @@ static int
 replace_boundary (CT ct, char *file, char *boundary) {
     FILE *fpin, *fpout;
     int compnum, state;
-    char buf[BUFSIZ], name[NAMESZ];
+    char buf[NMH_BUFSIZ], name[NAMESZ];
     char *np, *vp;
     m_getfld_state_t gstate = 0;
     int status = OK;
@@ -1780,7 +1780,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
  */
 static int
 boundary_in_content (FILE **fp, char *file, const char *boundary) {
-    char buffer[BUFSIZ];
+    char buffer[NMH_BUFSIZ];
     size_t bytes_read;
     int found_boundary = 0;
 
@@ -2074,7 +2074,7 @@ content_encoding (CT ct, const char **reason) {
 
     if (ce->ce_file) {
         size_t line_len = 0;
-        char buffer[BUFSIZ];
+        char buffer[NMH_BUFSIZ];
         size_t inbytes;
 
         if (! ce->ce_fp  &&  (ce->ce_fp = fopen (ce->ce_file, "r")) == NULL) {
@@ -2169,7 +2169,7 @@ strip_crs (CT ct, int *message_mods) {
         }
 
         if (fp  &&  *fp) {
-            char buffer[BUFSIZ];
+            char buffer[NMH_BUFSIZ];
             size_t bytes_read;
             size_t bytes_to_read =
                 end > 0 && end > begin  ?  end - begin  :  sizeof buffer;
@@ -2635,7 +2635,7 @@ write_content (CT ct, const char *input_filename, char *outfile, int modify_inpl
                         int i = -1;
 
                         if (old != -1  &&  new != -1) {
-                            char buffer[BUFSIZ];
+                            char buffer[NMH_BUFSIZ];
 
                             while ((i = read (old, buffer, sizeof buffer)) >
                                    0) {
