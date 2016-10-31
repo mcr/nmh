@@ -14,7 +14,7 @@ fi
 
 setup_test
 
-! forw - >/dev/null 2>&1 # gcov
+forw - >/dev/null 2>&1 || true  # gcov
 
 # Make a draft file forwarding two messages.
 mkdraft() {

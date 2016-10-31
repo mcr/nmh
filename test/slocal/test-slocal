@@ -19,7 +19,7 @@ setup_test
 # Use proper program, maybe not the first one on PATH.
 slocal="$MH_LIBEXEC_DIR"/slocal
 
-! $slocal - >/dev/null 2>&1 # gcov
+$slocal - >/dev/null 2>&1 || true  # gcov
 
 expected="$MH_TEST_DIR"/$$.expected
 actual="$MH_TEST_DIR"/$$.actual

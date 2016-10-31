@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-! mhstore - >/dev/null 2>&1 # gcov
+mhstore - >/dev/null 2>&1 || true  # gcov
 
 expected="$MH_TEST_DIR/test-mhstore$$.expected"
 expected2="$MH_TEST_DIR/test-mhstore$$.expected2"

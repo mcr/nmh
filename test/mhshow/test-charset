@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-! mhshow - >/dev/null 2>&1 # gcov
+mhshow - >/dev/null 2>&1 || true  # gcov
 
 require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 

@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-! mhfixmsg - >/dev/null 2>&1 # gcov
+mhfixmsg - >/dev/null 2>&1 || true  # gcov
 
 #### Make sure that html-to-text conversion is what we expect.
 require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8

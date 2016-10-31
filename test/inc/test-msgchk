@@ -18,7 +18,7 @@ fi
 
 setup_test
 
-! msgchk - >/dev/null 2>&1 # gcov
+msgchk - >/dev/null 2>&1 || true  # gcov
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err

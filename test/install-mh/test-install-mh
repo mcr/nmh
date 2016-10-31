@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-! install-mh - >/dev/null 2>&1 # gcov
+install-mh - >/dev/null 2>&1 || true  # gcov
 
 # check with no options, with nmh already installed
 run_test "install-mh" \

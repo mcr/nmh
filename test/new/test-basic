@@ -14,7 +14,7 @@ fi
 
 setup_test
 
-! folder - >/dev/null 2>&1 # gcov
+folder - >/dev/null 2>&1 || true  # gcov
 
 folders=$MH_TEST_DIR/Mail/.folders
 

@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-! mhbuild -h >/dev/null 2>&1 # gcov
+mhbuild -h >/dev/null 2>&1 || true  # gcov
 
 testname="${MH_TEST_DIR}/$$"
 backupname="${MH_TEST_DIR}/`mhparam sbackup`$$"

@@ -21,7 +21,7 @@ actual="$MH_TEST_DIR"/$$.actual
 
 mkstemp="${MH_LIBEXEC_DIR}/mkstemp"
 
-! $mkstemp - >/dev/null 2>&1 # gcov
+$mkstemp - >/dev/null 2>&1 || true  # gcov
 
 $mkstemp -help | grep suffix >/dev/null  &&  has_mkstemps=1  ||  has_mkstemps=0
 

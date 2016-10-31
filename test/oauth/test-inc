@@ -10,7 +10,7 @@ fi
 
 . "${srcdir}/test/oauth/common.sh"
 
-! inc - >/dev/null 2>&1 # gcov
+inc - >/dev/null 2>&1 || true  # gcov
 
 setup_pop
 

@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-! fmtdump - >/dev/null 2>&1 # gcov
+fmtdump - >/dev/null 2>&1 || true  # gcov
 
 # Use proper program, likely not the first one on PATH.
 fmtdump="${MH_LIBEXEC_DIR}/fmtdump"
