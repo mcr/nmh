@@ -31,7 +31,7 @@
     X("cc address", 0, CCSW) \
     X("from address", 0, FROMSW) \
     X("fcc mailbox", 0, FCCSW) \
-    X("width colums", 0, WIDTHSW) \
+    X("width columns", 0, WIDTHSW) \
     X("subject text", 0, SUBJECTSW) \
 
 #define X(sw, minchars, id) id,

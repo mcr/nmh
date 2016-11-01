@@ -231,7 +231,7 @@ got_it:
 
 	/* Now, construct query */
 	if (writing) {
-	    snprintf (bp, buflen, "Make cached, publically-accessible copy");
+	    snprintf (bp, buflen, "Make cached, publicly-accessible copy");
 	} else {
 	    struct stat st;
 
