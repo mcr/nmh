@@ -300,7 +300,7 @@ LV_LIT	Load literal value into \fInum\fR register
 LV_DAT	Load value from \fIdat\fR array into \fInum\fR register (see note)
 LV_STRLEN	Set \fInum\fR to the length of \fIstr\fR
 LV_PLUS_L	Add value to \fInum\fR register
-LV_MINUS_L	Substract value from \fInum\fR register
+LV_MINUS_L	Subtract value from \fInum\fR register
 LV_DIVIDE_L	Divide \fInum\fR register by value
 LV_MODULO_L	\fInum\fR modulo value
 LV_CHAR_LEFT	Store remaining number of printable chars in \fInum\fR

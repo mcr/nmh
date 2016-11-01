@@ -104,7 +104,7 @@ An
 message using normal MIME encapsulation rules.
 One filename is allowed
 per \*(lqAttach\*(rq header, but multiple \*(lqAttach\*(rq headers are
-allowed ber composition file.
+allowed per composition file.
 .PP
 These files will be appended after any other MIME content, including any
 content specified by
@@ -536,7 +536,7 @@ url=	URL of content
 .fi
 .RE
 .PP
-A mimimum \*(lqexternal\-type\*(rq directive for the
+A minimum \*(lqexternal\-type\*(rq directive for the
 .B url
 .I access\-type
 would be as follows:

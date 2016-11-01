@@ -381,7 +381,7 @@ quicker delivery into your maildrop.
 .RB ` \-noverbose '
 .RB ` \-nosuppressdup '
 .RB ` \-maildelivery "' defaults to $HOME/\&.maildelivery"
-.RB ` \-mailbox "' deaults to %mailspool%/$USER"
+.RB ` \-mailbox "' defaults to %mailspool%/$USER"
 .RB ` \-file "' defaults to stdin"
 .RB ` \-addr "' defaults to the current user"
 .RB ` \-user "' defaults to the current user"

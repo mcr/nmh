@@ -659,7 +659,7 @@ program used by
 .B mhshow
 to display message bodies (or message parts) of type text/plain.
 (Note that
-the vivironment variable PAGER
+the environment variable PAGER
 supersedes the default built-in pager command.)
 .RE
 .PP

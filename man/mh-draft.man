@@ -236,7 +236,7 @@ treats the draft folder like a standard
 .B nmh
 folder in nearly all respects.  There are two exceptions:
 .PP
-First, under no circumstancs will the
+First, under no circumstances will the
 .B \-draftfolder
 .I folder
 switch cause the named folder to become the current folder.

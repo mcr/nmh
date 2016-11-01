@@ -500,7 +500,7 @@ the From: and Reply-To: headers:
 .fi
 .RE
 .PP
-Unfortuantely if the Reply-to: header is NOT present, the output line that is
+Unfortunately if the Reply-to: header is NOT present, the output line that is
 generated will be something like:
 .PP
 .RS 5

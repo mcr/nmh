@@ -29,7 +29,7 @@ forw \- forward messages
 .IR editor ]
 .RB [ \-noedit ]
 .RB [ \-width
-.IR colums ]
+.IR columns ]
 .RB [ \-from
 .IR address ]
 .RB [ \-to

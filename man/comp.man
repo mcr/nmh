@@ -126,7 +126,7 @@ for details.  Drafts constructed from another message or with the
 .B \-use
 or
 .B \-file
-switchs will NOT be processed with
+switches will NOT be processed with
 .IR mh\-format (5).
 .PP
 In addition to the standard

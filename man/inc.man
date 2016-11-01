@@ -210,7 +210,7 @@ will query this POP service host for mail to incorporate.  If
 .B $MAILHOST
 is set and
 .B \-host
-is specified as well, the commandline switch will override
+is specified as well, the command-line switch will override
 the environment variable.  The
 .B \-port
 switch specifies the port name or number used to connect to the POP

@@ -513,7 +513,7 @@ and writing to, the cache, respectively.  One of four policies may be
 specified: \*(lqpublic\*(rq, indicating that
 .B mhstore
 should make use
-of a publically-accessible content cache; \*(lqprivate\*(rq, indicating
+of a publicly-accessible content cache; \*(lqprivate\*(rq, indicating
 that
 .B mhstore
 should make use of the user's private content cache;

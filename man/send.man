@@ -365,7 +365,7 @@ as to how long it should make header lines containing addresses.
 .PP
 The mail transport system default is provided in
 .I %nmhetcdir%/mts.conf
-but can be overriiden here with the
+but can be overridden here with the
 .B \-mts
 switch.
 .PP
@@ -462,7 +462,7 @@ using the STARTTLS command.  The
 will negotiate TLS immediately after the connection has
 taken place, before any SMTP commands are sent or received.  Encrypted data
 is labelled with `(tls-encrypted)' and
-`(tls-decrypted)' when viewing the SMTP transction with the
+`(tls-decrypted)' when viewing the SMTP transaction with the
 .B \-snoop
 switch; see the
 .B post

@@ -427,7 +427,7 @@ mhfixmsg -outfile - | mhlist -file -
 .RE
 .SS Search message without modification
 To search the current message, which possibly contains base64 or quoted printable encoded text parts,
-without modifiying it, use the -outfile switch:
+without modifying it, use the -outfile switch:
 .PP
 .RS
 .nf

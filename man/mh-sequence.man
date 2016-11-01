@@ -123,7 +123,7 @@ Single messages (as opposed to ranges) may also be selected by
 substituting `=' for `:', as in \*(lqname=n\*(rq.  This will reduce
 the selection from being a range of up to `n' messages, to being a
 selection of just the `n'th message.  So while \*(lqseq:5\*(rq
-selects the first 5 messages of seqence `seq', \*(lqseq=5\*(rq
+selects the first 5 messages of sequence `seq', \*(lqseq=5\*(rq
 selects just the 5th message of the sequence.  It is
 an error if the requested message does not exist (i.e., there aren't
 at least `n' messages in the sequence).

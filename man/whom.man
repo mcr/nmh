@@ -60,7 +60,7 @@ man page for more information.
 .PP
 The mail transport system default is provided in
 .I %nmhetcdir%/mts.conf
-but can be overriiden here with the
+but can be overridden here with the
 .B \-mts
 switch.
 .PP
@@ -118,7 +118,7 @@ and
 .B \-notls
 switches will require and disable the negotiation of TLS support when connecting to the
 SMTP MTA.  Encrypted data is labelled with `(tls-encrypted)' and
-`(tls-decrypted)' when viewing the SMTP transction with the
+`(tls-decrypted)' when viewing the SMTP transaction with the
 .B \-snoop
 switch; see the
 .B post

@@ -135,7 +135,7 @@ should finish up and exit.
 The first non\-flag argument to
 .B prompter is taken as the name of
 the draft file, and subsequent non\-flag arguments are ignored.
-.\" (\fIRepl\fR invokes editors with two file arguments:
+.\" (\fIrepl\fR invokes editors with two file arguments:
 .\" the draft file name and the replied\-to message file name.)
 .SH FILES
 .fc ^ ~
