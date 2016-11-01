@@ -278,7 +278,7 @@ main (int argc, char **argv)
 
 		case SASLMECHSW:
 		    if (!(saslmech = *argp) || *saslmech == '-')
-			adios (NULL, "missing argument to %s", argp[-2]);
+			adios (NULL, "missing argument to %s", argp[-1]);
 		    /* Fall through */
 
 		case ALIASW: 
