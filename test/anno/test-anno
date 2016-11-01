@@ -17,6 +17,23 @@ fi
 setup_test
 
 check_exit '-eq 1' anno - # gcov
+check_exit '-eq 1' anno -comp # gcov
+check_exit '-eq 1' anno -comp foo -comp bar # gcov
+check_exit '-eq 1' anno -text # gcov
+check_exit '-eq 1' anno -text foo -text bar # gcov
+check_exit '-eq 1' anno -number 0 # gcov
+check_exit '-eq 1' anno -number -number # gcov
+check_exit '-eq 1' anno + @ # gcov
+check_exit '-eq 1' anno -draft 42 # gcov
+check_exit '-eq 1' anno -draft -list </dev/null # gcov
+check_exit '-eq 1' anno -draft -list -comp foo # gcov
+check_exit '-eq 1' anno -draft -comp f.o: # gcov
+check_exit '-eq 1' anno -draft -comp '' # gcov
+x=tendixzehn
+l=$x$x$x$x$x
+c=$l$l
+d=$c$c$c$c$c
+check_exit '-eq 1' anno -draft -comp $d$c$c$c$c$l$x$x$x${x}123456789 # gcov
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err
