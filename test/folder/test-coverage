@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# Tests for folder(1)'s coverage.
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+check_exit '-eq 1' folder -
+check_exit '-eq 1' folder -xyzzy
+check_exit '-eq 0' folder -help
+check_exit '-eq 0' folder -version
+check_exit '-eq 1' folder -all -noall -fast -nofast -header -noheader \
+    -pack -nopack -verbose -noverbose -recurse -norecurse \
+    -total -nototal -print -noprint -list -nolist -push -pop -
+check_exit '-eq 1' folder + @
+check_exit '-eq 1' folder 42 314
+check_exit '-eq 1' folder -push
+check_exit '-eq 0' folder -push +
+check_exit '-eq 0' folder -push +
+check_exit '-eq 0' folder -push +
+check_exit '-eq 0' folder -push
+check_exit '-eq 1' folder -pop +foo
+check_exit '-eq 0' folder -pop
+check_exit '-eq 0' folder -pop
+check_exit '-eq 0' folder -pop
+check_exit '-eq 1' folder -pop
+check_exit '-eq 1' folder -push +missing
+check_exit '-eq 1' folder -nocreate +missing
+check_exit '-eq 0' folder -all 1
+check_exit '-eq 0' folder -all -fast +
+check_exit '-eq 0' folder -pack
+
+finish_test
