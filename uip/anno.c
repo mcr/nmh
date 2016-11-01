@@ -169,7 +169,7 @@ main (int argc, char **argv)
 		    	    number = -1;
 
 		    	else if (!(number = atoi(*argp)))
-			    adios (NULL, "missing argument to %s", argp[-2]);
+			    adios (NULL, "missing argument to %s", argp[-1]);
 
 			argp++;
 		    }
