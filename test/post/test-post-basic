@@ -12,7 +12,7 @@ fi
 
 . "${srcdir}/test/post/test-post-common.sh"
 
-check_exit '-eq 1' "$MH_LIBEXEC_DIR/post" - # gcov
+check_exit '-eq 1' "$MH_LIBEXEC_DIR/post" -
 
 #
 # Basic test - Simple message, single user, single recipient.  Note that

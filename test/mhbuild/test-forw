@@ -14,7 +14,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' forw - # gcov
+check_exit '-eq 1' forw -
 
 # Make a draft file forwarding two messages.
 mkdraft() {

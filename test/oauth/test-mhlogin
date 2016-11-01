@@ -10,7 +10,7 @@ fi
 
 . "${srcdir}/test/oauth/common.sh"
 
-check_exit '-eq 1' mhlogin - # gcov
+check_exit '-eq 1' mhlogin -
 
 expect_no_creds() {
     cat /dev/null > "${MHTMPDIR}/$$.expected-creds"

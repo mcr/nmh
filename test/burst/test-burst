@@ -12,15 +12,15 @@ fi
 
 setup_test
 
-check_exit '-eq 1' burst - # gcov
-check_exit '-eq 0' burst -help # gcov
-check_exit '-eq 1' burst -xyzzy # gcov
-check_exit '-eq 0' burst -version # gcov
-check_exit '-eq 1' burst -inplace -noinplace # gcov
-check_exit '-eq 1' burst -mime -automime -nomime # gcov
-check_exit '-eq 1' burst -quiet -noquiet # gcov
-check_exit '-eq 1' burst -verbose -noverbose # gcov
-check_exit '-eq 1' burst + @ # gcov
+check_exit '-eq 1' burst -
+check_exit '-eq 0' burst -help
+check_exit '-eq 1' burst -xyzzy
+check_exit '-eq 0' burst -version
+check_exit '-eq 1' burst -inplace -noinplace
+check_exit '-eq 1' burst -mime -automime -nomime
+check_exit '-eq 1' burst -quiet -noquiet
+check_exit '-eq 1' burst -verbose -noverbose
+check_exit '-eq 1' burst + @
 
 #
 # Create a test message that we can burst

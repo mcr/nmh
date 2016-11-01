@@ -19,7 +19,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' repl - # gcov
+check_exit '-eq 1' repl -
 
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/Mail/draft

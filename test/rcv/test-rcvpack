@@ -19,7 +19,7 @@ setup_test
 # Use proper program, likely not the first one on PATH.
 rcvpack="${MH_LIBEXEC_DIR}/rcvpack"
 
-check_exit '-eq 1' $rcvpack - # gcov
+check_exit '-eq 1' $rcvpack -
 
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"

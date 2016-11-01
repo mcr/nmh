@@ -10,7 +10,7 @@ fi
 
 . "${srcdir}/test/oauth/common.sh"
 
-check_exit '-eq 1' inc - # gcov
+check_exit '-eq 1' inc -
 
 setup_pop
 

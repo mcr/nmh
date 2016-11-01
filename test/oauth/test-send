@@ -10,7 +10,7 @@ fi
 
 . "${srcdir}/test/oauth/common.sh"
 
-check_exit '-eq 1' send - # gcov
+check_exit '-eq 1' send -
 
 test_send_only_fakehttp() {
     start_fakehttp

@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' install-mh - # gcov
+check_exit '-eq 1' install-mh -
 
 # check with no options, with nmh already installed
 run_test "install-mh" \

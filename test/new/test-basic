@@ -14,7 +14,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' folder - # gcov
+check_exit '-eq 1' folder -
 
 folders=$MH_TEST_DIR/Mail/.folders
 

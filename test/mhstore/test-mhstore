@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' mhstore - # gcov
+check_exit '-eq 1' mhstore -
 
 expected="$MH_TEST_DIR/test-mhstore$$.expected"
 expected2="$MH_TEST_DIR/test-mhstore$$.expected2"

@@ -19,7 +19,7 @@ setup_test
 # Use proper program, likely not the first one on PATH.
 rcvdist="${MH_LIBEXEC_DIR}/rcvdist"
 
-check_exit '-eq 1' $rcvdist - # gcov
+check_exit '-eq 1' $rcvdist -
 
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual

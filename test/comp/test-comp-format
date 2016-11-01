@@ -13,33 +13,33 @@ fi
 
 setup_test
 
-check_exit '-eq 1' comp - # gcov
-check_exit '-eq 1' comp -xyzzy # gcov
-check_exit '-eq 0' comp -help # gcov
-check_exit '-eq 0' comp -version # gcov
-check_exit '-eq 1' comp -build -noedit -editor # gcov
-check_exit '-eq 1' comp -whatnowproc # gcov
-check_exit '-eq 1' comp -whatnowproc '' - # gcov
-check_exit '-eq 1' comp -use -nouse -form # gcov
-check_exit '-eq 1' comp -file # gcov
-check_exit '-eq 1' comp -file foo -file # gcov
-check_exit '-eq 1' comp -nodraftfolder -draftfolder # gcov
-check_exit '-eq 1' comp -draftfolder foo -draftfolder # gcov
-check_exit '-eq 1' comp -draftmessage # gcov
-check_exit '-eq 1' comp -draftmessage foo -draftmessage # gcov
-check_exit '-eq 1' comp -to # gcov
-check_exit '-eq 1' comp -cc # gcov
-check_exit '-eq 1' comp -from # gcov
-check_exit '-eq 1' comp -fcc # gcov
-check_exit '-eq 1' comp -fcc @ - # gcov
-check_exit '-eq 1' comp -width # gcov
-check_exit '-eq 1' comp -width 0 # gcov
-check_exit '-eq 1' comp -subject # gcov
-check_exit '-eq 1' comp + @ # gcov
-check_exit '-eq 1' comp 42 314 # gcov
-check_exit '-eq 1' comp -form foo 42 # gcov
-check_exit '-eq 1' comp + # gcov
-check_exit '-eq 1' comp 42 # gcov
+check_exit '-eq 1' comp -
+check_exit '-eq 1' comp -xyzzy
+check_exit '-eq 0' comp -help
+check_exit '-eq 0' comp -version
+check_exit '-eq 1' comp -build -noedit -editor
+check_exit '-eq 1' comp -whatnowproc
+check_exit '-eq 1' comp -whatnowproc '' -
+check_exit '-eq 1' comp -use -nouse -form
+check_exit '-eq 1' comp -file
+check_exit '-eq 1' comp -file foo -file
+check_exit '-eq 1' comp -nodraftfolder -draftfolder
+check_exit '-eq 1' comp -draftfolder foo -draftfolder
+check_exit '-eq 1' comp -draftmessage
+check_exit '-eq 1' comp -draftmessage foo -draftmessage
+check_exit '-eq 1' comp -to
+check_exit '-eq 1' comp -cc
+check_exit '-eq 1' comp -from
+check_exit '-eq 1' comp -fcc
+check_exit '-eq 1' comp -fcc @ -
+check_exit '-eq 1' comp -width
+check_exit '-eq 1' comp -width 0
+check_exit '-eq 1' comp -subject
+check_exit '-eq 1' comp + @
+check_exit '-eq 1' comp 42 314
+check_exit '-eq 1' comp -form foo 42
+check_exit '-eq 1' comp +
+check_exit '-eq 1' comp 42
 
 #
 # Create a test template file (we create one here just in case the master

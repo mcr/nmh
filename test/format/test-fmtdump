@@ -19,7 +19,7 @@ setup_test
 # Use proper program, likely not the first one on PATH.
 fmtdump="${MH_LIBEXEC_DIR}/fmtdump"
 
-check_exit '-eq 1' "$fmtdump" - # gcov
+check_exit '-eq 1' "$fmtdump" -
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err

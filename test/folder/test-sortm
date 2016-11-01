@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' sortm - # gcov
+check_exit '-eq 1' sortm -
 
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual

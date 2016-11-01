@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' dist - # gcov
+check_exit '-eq 1' dist -
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err

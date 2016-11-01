@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' mhbuild -h # gcov
+check_exit '-eq 1' mhbuild -h
 
 testname="${MH_TEST_DIR}/$$"
 backupname="${MH_TEST_DIR}/`mhparam sbackup`$$"

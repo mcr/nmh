@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' flist - # gcov
+check_exit '-eq 1' flist -
 
 run_test 'mark 1 3 5 7 9 +inbox -sequence odd' ''
 run_test 'mark -s odd -list' 'odd: 1 3 5 7 9'

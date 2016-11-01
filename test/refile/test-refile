@@ -16,7 +16,7 @@ fi
 
 setup_test
 
-check_exit '-eq 1' refile - # gcov
+check_exit '-eq 1' refile -
 
 expected=$MH_TEST_DIR/$$.expected
 actual=$MH_TEST_DIR/$$.actual
