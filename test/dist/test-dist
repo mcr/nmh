@@ -17,6 +17,26 @@ fi
 setup_test
 
 check_exit '-eq 1' dist -
+check_exit '-eq 1' dist -editor
+check_exit '-eq 1' dist -editor foo -editor
+check_exit '-eq 1' dist -nowhatnowproc -whatnowproc foo -whatnowproc
+check_exit '-eq 1' dist -file
+check_exit '-eq 1' dist -file foo -file bar
+check_exit '-eq 1' dist -form
+check_exit '-eq 1' dist -draftfolder
+check_exit '-eq 1' dist -draftfolder foo -draftfolder bar
+check_exit '-eq 1' dist -draftmessage
+check_exit '-eq 1' dist -draftmessage 42 -draftmessage 314
+check_exit '-eq 1' dist -from
+check_exit '-eq 1' dist -to
+check_exit '-eq 1' dist -cc
+check_exit '-eq 1' dist -fcc
+check_exit '-eq 1' dist -width
+check_exit '-eq 1' dist -width 42 -width 0
+check_exit '-eq 1' dist -atfile -noatfile -
+check_exit '-eq 1' dist + @
+check_exit '-eq 1' dist 42 314
+check_exit '-eq 1' dist -file foo 42
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err
