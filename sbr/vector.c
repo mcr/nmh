@@ -80,7 +80,8 @@ bvector_clear (bvector_t vec, size_t n) {
     size_t word = BVEC_WORD (vec,n);
     size_t offset = BVEC_OFFSET (vec, n);
 
-    if (n >= vec->maxsize) bvector_resize (vec, n);
+    if (n >= vec->maxsize)
+        bvector_resize (vec, n);
 
     assert (sizeof *vec->bits <= sizeof 1ul);
     vec->bits[word] &= ~(1ul << offset);
@@ -98,7 +99,8 @@ bvector_set (bvector_t vec, size_t n) {
     size_t word = BVEC_WORD (vec, n);
     size_t offset = BVEC_OFFSET (vec, n);
 
-    if (n >= vec->maxsize) bvector_resize (vec, n);
+    if (n >= vec->maxsize)
+        bvector_resize (vec, n);
     assert (sizeof *vec->bits <= sizeof 1ul);
     vec->bits[word] |= 1ul << offset;
 }
@@ -120,10 +122,12 @@ bvector_resize (bvector_t vec, size_t maxsize) {
     size_t bytes;
     size_t i;
 
-    while ((vec->maxsize *= 2) < maxsize) continue;
+    while ((vec->maxsize *= 2) < maxsize)
+        ;
     bytes = BVEC_BYTES (vec, vec->maxsize);
     vec->bits = mh_xrealloc (vec->bits, bytes);
-    for (i = old_maxsize; i < vec->maxsize; ++i) bvector_clear (vec, i);
+    for (i = old_maxsize; i < vec->maxsize; ++i)
+        bvector_clear (vec, i);
 }
 
 const unsigned long *
@@ -168,13 +172,15 @@ svector_free (svector_t vec) {
 
 char *
 svector_push_back (svector_t vec, char *s) {
-    if (++vec->size >= vec->maxsize) svector_resize (vec, vec->size);
+    if (++vec->size >= vec->maxsize)
+        svector_resize (vec, vec->size);
     return vec->strs[vec->size-1] = s;
 }
 
 char *
 svector_at (svector_t vec, size_t i) {
-    if (i >= vec->maxsize) svector_resize (vec, i);
+    if (i >= vec->maxsize)
+        svector_resize (vec, i);
     return vec->strs[i];
 }
 
@@ -211,9 +217,11 @@ svector_resize (svector_t vec, size_t maxsize) {
     size_t old_maxsize = vec->maxsize;
     size_t i;
 
-    while ((vec->maxsize *= 2) < maxsize) continue;
+    while ((vec->maxsize *= 2) < maxsize)
+        ;
     vec->strs = mh_xrealloc (vec->strs, vec->maxsize * sizeof (char *));
-    for (i = old_maxsize; i < vec->maxsize; ++i) vec->strs[i] = NULL;
+    for (i = old_maxsize; i < vec->maxsize; ++i)
+        vec->strs[i] = NULL;
 }
 
 
@@ -248,19 +256,22 @@ ivector_free (ivector_t vec) {
 
 int
 ivector_push_back (ivector_t vec, int n) {
-    if (++vec->size >= vec->maxsize) ivector_resize (vec, vec->size);
+    if (++vec->size >= vec->maxsize)
+        ivector_resize (vec, vec->size);
     return vec->ints[vec->size-1] = n;
 }
 
 int
 ivector_at (ivector_t vec, size_t i) {
-    if (i >= vec->maxsize) ivector_resize (vec, i);
+    if (i >= vec->maxsize)
+        ivector_resize (vec, i);
     return vec->ints[i];
 }
 
 int *
 ivector_atp (ivector_t vec, size_t i) {
-    if (i >= vec->maxsize) ivector_resize (vec, i);
+    if (i >= vec->maxsize)
+        ivector_resize (vec, i);
     return &vec->ints[i];
 }
 
@@ -274,7 +285,9 @@ ivector_resize (ivector_t vec, size_t maxsize) {
     size_t old_maxsize = vec->maxsize;
     size_t i;
 
-    while ((vec->maxsize *= 2) < maxsize) continue;
+    while ((vec->maxsize *= 2) < maxsize)
+        ;
     vec->ints = mh_xrealloc (vec->ints, vec->maxsize * sizeof (int));
-    for (i = old_maxsize; i < vec->maxsize; ++i) vec->ints[i] = 0;
+    for (i = old_maxsize; i < vec->maxsize; ++i)
+        vec->ints[i] = 0;
 }
