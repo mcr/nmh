@@ -25,7 +25,7 @@ static int initLI = 0;
 static int initCO = 0;
 
 static int LI = 40;                /* number of lines                        */
-static int CO = 80;                /* number of colums                       */
+static int CO = 80;                /* number of columns                      */
 static char *ti_clear = NULL;      /* terminfo string to clear screen        */
 static char *ti_standend = NULL;   /* terminfo string to end standout mode   */
 static char *ti_standbegin = NULL; /* terminfo string to begin standout mode */
