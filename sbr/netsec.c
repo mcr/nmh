@@ -1011,7 +1011,6 @@ netsec_set_sasl_params(netsec_context *nsc, const char *service,
     nsc->sasl_creds = nmh_get_credentials(nsc->ns_hostname, nsc->ns_userid);
 
 #else /* CYRUS_SASL */
-    NMH_UNUSED(hostname);
     NMH_UNUSED(service);
     NMH_UNUSED(errstr);
 #endif /* CYRUS_SASL */
