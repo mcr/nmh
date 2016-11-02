@@ -509,7 +509,11 @@ AS_IF([test "x$with_tls" = xyes && test "x$HAVE_SSL_H" = x],
       [test "x$with_tls" != xno && test "x$HAVE_SSL_H" = x1 && test "x$TLSLIB" != x],
       [AC_DEFINE([TLS_SUPPORT], [1], [Support TLS for session encryption.])
        TLS_SUPPORT=1
-       tls_support=yes])
+       tls_support=yes
+       save_LIBS="$LIBS"
+       LIBS="$LIBS $TLSLIB"
+       AC_CHECK_FUNCS([X509_VERIFY_PARAM_set1_host])
+       LIBS="$save_LIBS"])
 
 dnl -----------------
 dnl CHECK FOR CURL

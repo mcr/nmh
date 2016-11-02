@@ -1543,7 +1543,9 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 	 */
 
 	if (! noverify) {
+#ifdef HAVE_X509_VERIFY_PARAM_SET1_HOST
 	    X509_VERIFY_PARAM *param;
+#endif /* HAVE_X509_VERIFY_PARAM_SET1_HOST */
 
 	    SSL_set_verify(ssl, SSL_VERIFY_PEER, NULL);
 	    if (! nsc->ns_hostname) {
@@ -1553,6 +1555,7 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 		return NOTOK;
 	    }
 
+#ifdef HAVE_X509_VERIFY_PARAM_SET1_HOST
 	    param = SSL_get0_param(ssl);
 
 	    if (! X509_VERIFY_PARAM_set1_host(param, nsc->ns_hostname, 0)) {
@@ -1562,6 +1565,7 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 		SSL_free(ssl);
 		return NOTOK;
 	    }
+#endif /* HAVE_X509_VERIFY_PARAM_SET1_HOST */
 	}
 
 	ssl_bio = BIO_new(BIO_f_ssl());
