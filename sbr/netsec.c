@@ -1583,6 +1583,7 @@ netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 
 #else /* TLS_SUPPORT */
     NMH_UNUSED(nsc);
+    NMH_UNUSED(noverify);
 
     if (tls) {
 	netsec_err(errstr, "TLS is not supported");
