@@ -49,7 +49,7 @@ main (int argc, char **argv)
     int datep = 0, width = -1, status = 0;
     char *cp, *form = NULL, *format = NULL, *nfs;
     char buf[BUFSIZ], **argp, **arguments;
-    char *dates[NDATES];
+    char *dates[NDATES + 1]; /* Includes terminating NULL. */
 
     if (nmh_init(argv[0], 2)) { return 1; }
 
@@ -92,7 +92,7 @@ main (int argc, char **argv)
 		    continue;
 	    }
 	}
-	if (datep > NDATES)
+	if (datep == NDATES)
 	    adios (NULL, "more than %d dates", NDATES);
 	else
 	    dates[datep++] = cp;
