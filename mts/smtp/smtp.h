@@ -16,6 +16,11 @@ struct smtp {
  * prototypes
  */
 /* int client (); */
+/* TLS flags */
+#define S_STARTTLS 0x01
+#define S_INITTLS 0x02
+#define S_TLSENABLEMASK 0x03
+#define S_NOVERIFY 0x04
 int sm_init (char *, char *, char *, int, int, int, int, const char *,
              const char *, const char *, int);
 int sm_winit (char *, int, int);

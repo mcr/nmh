@@ -52,6 +52,19 @@ void netsec_set_fd(netsec_context *ns_context, int readfd, int writefd);
 void netsec_set_userid(netsec_context *ns_context, const char *userid);
 
 /*
+ * Set the hostname of the server we're connecting to.  This is used
+ * by the Cyrus-SASL library and by the TLS code.  This must be called
+ * before netsec_negotiate_tls() or netsec_set_sasl_params().
+ *
+ * Arguments:
+ *
+ * ns_context	- Network security context
+ * hostname	- FQDN of remote host.  Cannot be NULL.
+ */
+
+void netsec_set_hostname(netsec_context *ns_context, const char *hostname);
+
+/*
  * Returns "snoop" status on current connection.
  *
  * Arguments:
@@ -300,7 +313,6 @@ typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
  * Arguments:
  *
  * ns_context	- Network security context
- * hostname	- Fully qualified hostname of remote host.
  * service	- Service name (set to NULL to disable SASL).
  * mechanism	- The mechanism desired by the user.  If NULL, the SASL
  *		  library will attempt to negotiate the best mechanism.
@@ -310,8 +322,8 @@ typedef int (*netsec_sasl_callback)(enum sasl_message_type mtype,
  * Returns NOTOK if SASL is not supported.
  */
 
-int netsec_set_sasl_params(netsec_context *ns_context, const char *hostname,
-			   const char *service, const char *mechanism,
+int netsec_set_sasl_params(netsec_context *ns_context, const char *service,
+			   const char *mechanism,
 			   netsec_sasl_callback callback, char **errstr);
 
 /*
@@ -364,17 +376,23 @@ int netsec_set_oauth_service(netsec_context *ns_context, const char *service);
  * Controls whether or not TLS will be negotiated for this connection.
  *
  * Note: callers still have to call netsec_tls_negotiate() to start
- * TLS negotiation at the appropriate point in the protocol.
+ * TLS negotiation at the appropriate point in the protocol.  The
+ * remote hostname (controlled by netsec_set_hostname()) should have
+ * already been set before this function is called unless certificate
+ * verification is disabled.
  *
  * Arguments
  *
  * tls		- If nonzero, enable TLS. Otherwise disable TLS
  *		  negotiation.
+ * noverify	- If nonzero, disable server certificate and hostname
+ *		  validation.
  *
  * Returns NOTOK if TLS is not supported or was unable to initialize.
  */
 
-int netsec_set_tls(netsec_context *context, int tls, char **errstr);
+int netsec_set_tls(netsec_context *context, int tls, int noverify,
+		   char **errstr);
 
 /*
  * Start TLS negotiation on this protocol.  This connection should have

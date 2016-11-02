@@ -144,6 +144,8 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
     if (user)
 	netsec_set_userid(nsc, user);
 
+    netsec_set_hostname(nsc, host);
+
     if (oauth_svc != NULL) {
 	if (netsec_set_oauth_service(nsc, oauth_svc) != OK) {
 	    snprintf(response, sizeof(response), "OAuth2 not supported");
@@ -211,8 +213,8 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
     netsec_set_fd(nsc, fd1, fd2);
     netsec_set_snoop(nsc, snoop);
 
-    if (tls) {
-	if (netsec_set_tls(nsc, 1, &errstr) != OK) {
+    if (tls & P_INITTLS) {
+	if (netsec_set_tls(nsc, 1, tls & P_NOVERIFY, &errstr) != OK) {
 	    snprintf(response, sizeof(response), "%s", errstr);
 	    free(errstr);
 	    return NOTOK;
@@ -226,8 +228,8 @@ pop_init (char *host, char *port, char *user, char *proxy, int snoop,
     }
 
     if (sasl) {
-	if (netsec_set_sasl_params(nsc, host, "pop", mech,
-				   pop_sasl_callback, &errstr) != OK) {
+	if (netsec_set_sasl_params(nsc, "pop", mech, pop_sasl_callback,
+				   &errstr) != OK) {
 	    snprintf(response, sizeof(response), "%s", errstr);
 	    free(errstr);
 	    return NOTOK;

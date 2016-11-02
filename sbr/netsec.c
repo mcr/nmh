@@ -62,6 +62,7 @@ struct _netsec_context {
     void *ns_snoop_context;	/* Context data for snoop function */
     int ns_timeout;		/* Network read timeout, in seconds */
     char *ns_userid;		/* Userid for authentication */
+    char *ns_hostname;		/* Hostname we've connected to */
     unsigned char *ns_inbuffer;	/* Our read input buffer */
     unsigned char *ns_inptr;	/* Our read buffer input pointer */
     unsigned int ns_inbuflen;	/* Length of data in input buffer */
@@ -77,7 +78,6 @@ struct _netsec_context {
     char *oauth_service;	/* OAuth2 service name */
 #endif /* OAUTH_SUPPORT */
 #ifdef CYRUS_SASL
-    char *sasl_hostname;	/* Hostname we've connected to */
     sasl_conn_t *sasl_conn;	/* SASL connection context */
     sasl_ssf_t sasl_ssf;	/* SASL Security Strength Factor */
     sasl_callback_t *sasl_cbs;	/* Callbacks used by SASL */
@@ -147,6 +147,7 @@ netsec_init(void)
     nsc->ns_snoop_cb = NULL;
     nsc->ns_snoop_context = NULL;
     nsc->ns_userid = NULL;
+    nsc->ns_hostname = NULL;
     nsc->ns_timeout = 60;	/* Our default */
     nsc->ns_inbufsize = NETSEC_BUFSIZE;
     nsc->ns_inbuffer = mh_xmalloc(nsc->ns_inbufsize);
@@ -164,7 +165,6 @@ netsec_init(void)
 #endif /* OAUTH_SUPPORT */
 #ifdef CYRUS_SASL
     nsc->sasl_conn = NULL;
-    nsc->sasl_hostname = NULL;
     nsc->sasl_cbs = NULL;
     nsc->sasl_creds = NULL;
     nsc->sasl_secret = NULL;
@@ -189,6 +189,7 @@ void
 netsec_shutdown(netsec_context *nsc, int closeflag)
 {
     mh_xfree(nsc->ns_userid);
+    mh_xfree(nsc->ns_hostname);
     mh_xfree(nsc->ns_inbuffer);
     mh_xfree(nsc->ns_outbuffer);
     mh_xfree(nsc->sasl_mech);
@@ -199,7 +200,6 @@ netsec_shutdown(netsec_context *nsc, int closeflag)
 #ifdef CYRUS_SASL
     if (nsc->sasl_conn)
 	sasl_dispose(&nsc->sasl_conn);
-    mh_xfree(nsc->sasl_hostname);
     mh_xfree(nsc->sasl_cbs);
     if (nsc->sasl_creds)
 	nmh_credentials_free(nsc->sasl_creds);
@@ -249,6 +249,16 @@ void
 netsec_set_userid(netsec_context *nsc, const char *userid)
 {
     nsc->ns_userid = getcpy(userid);
+}
+
+/*
+ * Set the hostname of the remote host we're connecting to.
+ */
+
+void
+netsec_set_hostname(netsec_context *nsc, const char *hostname)
+{
+    nsc->ns_hostname = mh_xstrdup(hostname);
 }
 
 /*
@@ -937,13 +947,18 @@ netsec_flush(netsec_context *nsc, char **errstr)
  */
 
 int
-netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
-		       const char *service, const char *mechanism,
-		       netsec_sasl_callback callback, char **errstr)
+netsec_set_sasl_params(netsec_context *nsc, const char *service,
+		       const char *mechanism, netsec_sasl_callback callback,
+		       char **errstr)
 {
 #ifdef CYRUS_SASL
     sasl_callback_t *sasl_cbs;
     int retval;
+
+    if (!nsc->ns_hostname) {
+	netsec_err(errstr, "Internal error: ns_hostname is NULL");
+	return NOTOK;
+    }
 
     if (! sasl_initialized) {
 	retval = sasl_client_init(NULL);
@@ -980,8 +995,8 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
 
     nsc->sasl_cbs = sasl_cbs;
 
-    retval = sasl_client_new(service, hostname, NULL, NULL, nsc->sasl_cbs, 0,
-    			     &nsc->sasl_conn);
+    retval = sasl_client_new(service, nsc->ns_hostname, NULL, NULL,
+			     nsc->sasl_cbs, 0, &nsc->sasl_conn);
 
     if (retval) {
 	netsec_err(errstr, "SASL new client allocation failed: %s",
@@ -989,13 +1004,11 @@ netsec_set_sasl_params(netsec_context *nsc, const char *hostname,
 	return NOTOK;
     }
 
-    nsc->sasl_hostname = mh_xstrdup(hostname);
-
     /*
      * Set up our credentials
      */
 
-    nsc->sasl_creds = nmh_get_credentials(nsc->sasl_hostname, nsc->ns_userid);
+    nsc->sasl_creds = nmh_get_credentials(nsc->ns_hostname, nsc->ns_userid);
 
 #else /* CYRUS_SASL */
     NMH_UNUSED(hostname);
@@ -1420,7 +1433,7 @@ netsec_set_oauth_service(netsec_context *nsc, const char *service)
  */
 
 int
-netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
+netsec_set_tls(netsec_context *nsc, int tls, int noverify, char **errstr)
 {
 #ifdef TLS_SUPPORT
     if (tls) {
@@ -1447,6 +1460,13 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 
 	    SSL_CTX_set_options(sslctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 |
 				SSL_OP_NO_TLSv1);
+
+	    if (!SSL_CTX_set_default_verify_paths(sslctx)) {
+		netsec_err(errstr, "Unable to set default certificate "
+			   "verification paths: %s",
+			   ERR_error_string(ERR_get_error(), NULL));
+		return NOTOK;
+	    }
 
 	    tls_initialized++;
 	}
@@ -1512,6 +1532,38 @@ netsec_set_tls(netsec_context *nsc, int tls, char **errstr)
 	SSL_set_bio(ssl, rbio, wbio);
 	SSL_set_connect_state(ssl);
 
+	/*
+	 * If noverify is NOT set, then do certificate validation.
+	 * Turning on SSL_VERIFY_PEER will verify the certificate chain
+	 * against locally stored root certificates (the locations are
+	 * set using SSL_CTX_set_default_verify_paths()), and we put
+	 * the hostname in the X509 verification parameters so the OpenSSL
+	 * code will verify that the hostname appears in the server
+	 * certificate.
+	 */
+
+	if (! noverify) {
+	    X509_VERIFY_PARAM *param;
+
+	    SSL_set_verify(ssl, SSL_VERIFY_PEER, NULL);
+	    if (! nsc->ns_hostname) {
+		netsec_err(errstr, "Internal error: hostname not set and "
+			   "certification verification enabled");
+		SSL_free(ssl);
+		return NOTOK;
+	    }
+
+	    param = SSL_get0_param(ssl);
+
+	    if (! X509_VERIFY_PARAM_set1_host(param, nsc->ns_hostname, 0)) {
+		netsec_err(errstr, "Unable to add hostname %s to cert "
+			   "verification parameters: %s", nsc->ns_hostname,
+			   ERR_error_string(ERR_get_error(), NULL));
+		SSL_free(ssl);
+		return NOTOK;
+	    }
+	}
+
 	ssl_bio = BIO_new(BIO_f_ssl());
 
 	if (! ssl_bio) {
@@ -1555,8 +1607,42 @@ netsec_negotiate_tls(netsec_context *nsc, char **errstr)
     }
 
     if (BIO_do_handshake(nsc->ssl_io) < 1) {
-	netsec_err(errstr, "TLS negotiation failed: %s",
-		   ERR_error_string(ERR_get_error(), NULL));
+	unsigned long errcode = ERR_get_error();
+
+	/*
+	 * Print a more detailed message if it was certificate verification
+	 * failure.
+	 */
+
+	if (ERR_GET_LIB(errcode) == ERR_LIB_SSL &&
+		ERR_GET_REASON(errcode) == SSL_R_CERTIFICATE_VERIFY_FAILED) {
+	    SSL *ssl;
+
+	    if (BIO_get_ssl(nsc->ssl_io, &ssl) < 1) {
+		netsec_err(errstr, "Certificate verification failed, but "
+			   "cannot retrieve SSL handle: %s",
+			   ERR_error_string(ERR_get_error(), NULL));
+	    } else {
+		netsec_err(errstr, "Server certificate verification failed: %s",
+			   X509_verify_cert_error_string(
+						SSL_get_verify_result(ssl)));
+	    }
+	} else {
+	    netsec_err(errstr, "TLS negotiation failed: %s",
+		       ERR_error_string(ERR_get_error(), NULL));
+	}
+
+	/*
+	 * Because negotiation failed, shut down TLS so we don't get any
+	 * garbage on the connection.  Because of weirdness with SSL_shutdown,
+	 * we end up calling it twice: once explicitly, once as part of
+	 * BIO_free_all().
+	 */
+
+	BIO_ssl_shutdown(nsc->ssl_io);
+	BIO_free_all(nsc->ssl_io);
+	nsc->ssl_io = NULL;
+
 	return NOTOK;
     }
 

@@ -141,12 +141,14 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
     if (user)
 	netsec_set_userid(nsc, user);
 
+    netsec_set_hostname(nsc, server);
+
     if (sm_debug)
 	netsec_set_snoop(nsc, 1);
 
     if (sasl) {
-	if (netsec_set_sasl_params(nsc, server, "smtp", saslmech,
-				   sm_sasl_callback, &errstr) != OK)
+	if (netsec_set_sasl_params(nsc, "smtp", saslmech, sm_sasl_callback,
+				   &errstr) != OK)
 	    return sm_nerror(errstr);
     }
 
@@ -162,18 +164,18 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
 
     netsec_set_fd(nsc, sd1, sd1);
 
-    if (tls) {
-	if (netsec_set_tls(nsc, 1, &errstr) != OK)
+    if (tls & S_TLSENABLEMASK) {
+	if (netsec_set_tls(nsc, 1, tls & S_NOVERIFY, &errstr) != OK)
 	    return sm_nerror(errstr);
     }
 
     /*
-     * If tls == 2, that means that the user requested "initial" TLS,
-     * which happens right after the connection has opened.  Do that
-     * negotiation now
+     * If tls == S_INITTLS, that means that the user requested
+     * "initial" TLS, which happens right after the connection has
+     * opened.  Do that negotiation now
      */
 
-    if (tls == 2) {
+    if (tls & S_INITTLS) {
     	if (netsec_negotiate_tls(nsc, &errstr) != OK) {
 	    sm_end(NOTOK);
 	    return sm_nerror(errstr);
@@ -214,7 +216,7 @@ smtp_init (char *client, char *server, char *port, int watch, int verbose,
      * restart the EHLO dialog after TLS negotiation is complete.
      */
 
-    if (tls == 1) {
+    if (tls & S_STARTTLS) {
 	if (! EHLOset("STARTTLS")) {
 	    sm_end(NOTOK);
 	    return sm_ierror("SMTP server does not support TLS");
@@ -308,12 +310,14 @@ sendmail_init (char *client, int watch, int verbose, int debug, int sasl,
     if (user)
 	netsec_set_userid(nsc, user);
 
+    netsec_set_hostname(nsc, client);
+
     if (sm_debug)
 	netsec_set_snoop(nsc, 1);
 
     if (sasl) {
-	if (netsec_set_sasl_params(nsc, client, "smtp", saslmech,
-				   sm_sasl_callback, &errstr) != OK)
+	if (netsec_set_sasl_params(nsc, "smtp", saslmech, sm_sasl_callback,
+				   &errstr) != OK)
 	    return sm_nerror(errstr);
     }
 

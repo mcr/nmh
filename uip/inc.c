@@ -75,6 +75,8 @@
     X("saslmech", 0, SASLMECHSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NOTLSSW) \
+    X("certverify", TLSminc(-10), CERTVERSW) \
+    X("nocertverify", TLSminc(-12), NOCERTVERSW) \
     X("authservice", 0, AUTHSERVICESW) \
     X("proxy command", 0, PROXYSW) \
 
@@ -187,7 +189,7 @@ main (int argc, char **argv)
     int chgflag = 1, trnflag = 1;
     int noisy = 1, width = -1;
     int hghnum = 0, msgnum = 0;
-    int sasl = 0, tls = 0;
+    int sasl = 0, tls = 0, noverify = 1;
     int incerr = 0; /* <0 if inc hits an error which means it should not truncate mailspool */
     char *cp, *maildir = NULL, *folder = NULL;
     char *format = NULL, *form = NULL;
@@ -363,6 +365,14 @@ main (int argc, char **argv)
 		tls = 0;
 		continue;
 
+	    case CERTVERSW:
+		noverify = 0;
+		continue;
+
+	    case NOCERTVERSW:
+		noverify++;
+		continue;
+
 	    case AUTHSERVICESW:
 #ifdef OAUTH_SUPPORT
                 if (!(auth_svc = *argp++) || *auth_svc == '-')
@@ -412,6 +422,8 @@ main (int argc, char **argv)
      * a POP server?
      */
     if (inc_type == INC_POP) {
+	int tlsflag = 0;
+
 	if (auth_svc == NULL) {
 	    if (saslmech  &&  ! strcasecmp(saslmech, "xoauth2")) {
 		adios (NULL, "must specify -authservice with -saslmech xoauth2");
@@ -422,11 +434,17 @@ main (int argc, char **argv)
 	    }
 	}
 
+	if (tls)
+	    tlsflag |= P_INITTLS;
+
+	if (noverify)
+	    tlsflag |= P_NOVERIFY;
+
 	/*
 	 * initialize POP connection
 	 */
 	if (pop_init (host, port, user, proxy, snoop, sasl, saslmech,
-		      tls, auth_svc) == NOTOK)
+		      tlsflag, auth_svc) == NOTOK)
 	    adios (NULL, "%s", response);
 
 	/* Check if there are any messages */

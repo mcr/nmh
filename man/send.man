@@ -52,6 +52,8 @@ send \- send a message
 .RB [ \-tls ]
 .RB [ \-initialtls ]
 .RB [ \-notls ]
+.RB [ \-certverify ]
+.RB [ \-nocertverify ]
 .RB [ \-width
 .IR columns ]
 .RB [ file
@@ -479,6 +481,15 @@ will be implied if TLS support was compiled in.  Though port 465 for
 SMTPS (SMTP over SSL) was deregistered by IANA in 1998, it is still
 used for that service.
 .PP
+When using TLS the default is to verify the remote certificate and SubjectName
+against the local trusted certificate store.  This can be controlled by
+the
+.B \-certverify
+and
+.B \-nocertverify
+switches.  See your OpenSSL documentation for more information on certificate
+verification.
+.PP
 The files specified by the profile entry \*(lqAliasfile:\*(rq and any
 additional alias files given by the
 .B \-alias
@@ -630,6 +641,7 @@ man page for login credentials.
 .RB ` \-noverbose '
 .RB ` \-nowatch '
 .RB ` "\-width\ 72" '
+.RB ` \-certverify '
 .fi
 .SH CONTEXT
 None

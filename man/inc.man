@@ -43,6 +43,7 @@ inc \- incorporate new mail
 .IR service ]
 .RB [ \-initialtls ]
 .RB [ \-notls ]
+.RB [ \-certverify " | " \-nocertverify ]
 .RB [ \-snoop ]
 .ad
 .SH DESCRIPTION
@@ -310,6 +311,15 @@ transaction with the
 switch.  The
 .B \-notls
 switch will disable all attempts to negotiate TLS.
+.PP
+When using TLS the default is to verify the remote certificate and SubjectName
+against the local trusted certificate store.  This can be controlled by
+the
+.B \-certverify
+and
+.B \-nocertverify
+switches.  See your OpenSSL documentation for more information on certificate
+verification.
 .SH FILES
 .PD 0
 .TP 20

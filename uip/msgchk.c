@@ -38,10 +38,13 @@
     X("help", 0, HELPSW) \
     X("snoop", 0, SNOOPSW) \
     X("sasl", SASLminc(4), SASLSW) \
+    X("nosasl", SASLminc(6), NOSASLSW) \
     X("saslmech", SASLminc(5), SASLMECHSW) \
     X("authservice", SASLminc(0), AUTHSERVICESW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NOTLSSW) \
+    X("certverify", TLSminc(-10), CERTVERSW) \
+    X("nocertverify", TLSminc(-12), NOCERTVERSW) \
     X("proxy command", 0, PROXYSW) \
 
 #define X(sw, minchars, id) id,
@@ -87,7 +90,7 @@ int
 main (int argc, char **argv)
 {
     int datesw = 1, notifysw = NT_ALL;
-    int status = 0, sasl = 0, tls = 0;
+    int status = 0, sasl = 0, tls = 0, noverify = 0;
     int snoop = 0, vecp = 0;
     char *cp, *host = NULL, *port = NULL, *user = NULL, *proxy = NULL;
     char buf[BUFSIZ], *saslmech = NULL, *auth_svc = NULL;
@@ -164,6 +167,10 @@ main (int argc, char **argv)
 		    sasl++;
 		    continue;
 		
+		case NOSASLSW:
+		    sasl = 0;
+		    continue;
+
 		case SASLMECHSW:
 		    if (!(saslmech = *argp++) || *saslmech == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -175,6 +182,14 @@ main (int argc, char **argv)
 
 		case NOTLSSW:
 		    tls = 0;
+		    continue;
+
+		case CERTVERSW:
+		    noverify = 0;
+		    continue;
+
+		case NOCERTVERSW:
+		    noverify++;
 		    continue;
 
 		case AUTHSERVICESW:
@@ -216,13 +231,21 @@ main (int argc, char **argv)
 	vec[vecp] = NULL;
 
     if (host) {
+	int tlsflag = 0;
+
+	if (tls)
+	    tlsflag |= P_INITTLS;
+
+	if (noverify)
+	    tlsflag |= P_NOVERIFY;
+
 	if (vecp == 0) {
 	    status = remotemail (host, port, user, proxy, notifysw, 1,
-				 snoop, sasl, saslmech, tls, auth_svc);
+				 snoop, sasl, saslmech, tlsflag, auth_svc);
 	} else {
 	    for (vecp = 0; vec[vecp]; vecp++)
 		status += remotemail (host, port, vec[vecp], proxy, notifysw, 0,
-				      snoop, sasl, saslmech, tls, auth_svc);
+				      snoop, sasl, saslmech, tlsflag, auth_svc);
 	}
     } else {
 	if (user == NULL) user = getusername ();

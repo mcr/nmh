@@ -954,6 +954,8 @@ buildfile (char **argp, char *file)
     X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
+    X("certverify", TLSminc(-10), CERTVERSW) \
+    X("nocertverify", TLSminc(-12), NOCERTVERSW) \
     X("sendmail program", 0, MTSSM) \
     X("mts smtp|sendmail/smtp|sendmail/pipe", 2, MTSSW) \
     X("messageid localname|random", 2, MESSAGEIDSW) \
@@ -1134,6 +1136,8 @@ sendit (char *sp, char **arg, char *file, int pushed)
 		case TLSSW:
 		case INITTLSSW:
 		case NTLSSW:
+		case CERTVERSW:
+		case NOCERTVERSW:
 		    vec[vecp++] = --cp;
 		    continue;
 

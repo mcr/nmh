@@ -89,6 +89,8 @@
     X("tls", TLSminc(-3), TLSSW) \
     X("initialtls", TLSminc(-10), INITTLSSW) \
     X("notls", TLSminc(-5), NTLSSW) \
+    X("certverify", TLSminc(-10), CERTVERSW) \
+    X("nocertverify", TLSminc(-12), NOCERTVERSW) \
     X("fileproc", -4, FILEPROCSW) \
     X("mhlproc", -3, MHLPROCSW) \
     X("sendmail program", 0, MTSSM) \
@@ -239,7 +241,7 @@ static int sasl=0;		/* Use SASL auth for SMTP                */
 static char *saslmech=NULL;	/* Force use of particular SASL mech     */
 static char *user=NULL;		/* Authenticate as this user             */
 static char *port="submission";	/* Name of server port for SMTP submission */
-static int tls=-1;		/* Use TLS for encryption		 */
+static int tlsflag=0;		/* Flags to control TLS settings	 */
 static int fromcount=0;		/* Count of addresses on From: header	 */
 static int seensender=0;	/* Have we seen a Sender: header?	 */
 
@@ -313,7 +315,8 @@ static int find_prefix (void);
 int
 main (int argc, char **argv)
 {
-    int state, compnum, dashstuff = 0, swnum, oauth_flag = 0;
+    int state, compnum, dashstuff = 0, swnum, oauth_flag = 0, tls = -1;
+    int noverify = 0;
     int eai = 0; /* use Email Address Internationalization (EAI) (SMTPUTF8) */
     char *cp, *msg = NULL, **argp, **arguments, *envelope;
     char buf[BUFSIZ], name[NAMESZ], *auth_svc = NULL;
@@ -530,6 +533,14 @@ main (int argc, char **argv)
 		    tls = 0;
 		    continue;
 
+		case CERTVERSW:
+		    noverify = 0;
+		    continue;
+
+		case NOCERTVERSW:
+		    noverify++;
+		    continue;
+
 		case FILEPROCSW:
 		    if (!(cp = *argp++) || *cp == '-')
 			adios (NULL, "missing argument to %s", argp[-2]);
@@ -691,6 +702,16 @@ main (int argc, char **argv)
 	tls = 0;
 #endif /* ! TLS_SUPPORT */
     }
+
+    if (tls == 1)
+	tlsflag = S_STARTTLS;
+    else if (tls == 2)
+	tlsflag = S_INITTLS;
+    else
+	tlsflag = 0;
+
+    if (noverify)
+	tlsflag |= S_NOVERIFY;
 
     /*
      * If we were given any oauth flags, store the appropriate profile
@@ -1680,7 +1701,7 @@ post (char *file, int bccque, int talk, int eai, char *envelope,
 
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, sasl, saslmech, user,
-					oauth_flag ? auth_svc : NULL, tls))
+					oauth_flag ? auth_svc : NULL, tlsflag))
 		|| rp_isbad (retval = sm_winit (envelope, eai, eightbit))) {
 	    close (fd);
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
@@ -1724,7 +1745,7 @@ verify_all_addresses (int talk, int eai, char *envelope, int oauth_flag,
 
 	if (rp_isbad (retval = sm_init (clientsw, serversw, port, watch,
 					verbose, snoop, sasl, saslmech, user,
-					oauth_flag ? auth_svc : NULL, tls))
+					oauth_flag ? auth_svc : NULL, tlsflag))
 		|| rp_isbad (retval = sm_winit (envelope, eai, eightbit))) {
 	    die (NULL, "problem initializing server; %s", rp_string (retval));
 	}
