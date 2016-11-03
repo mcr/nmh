@@ -51,14 +51,13 @@ main (int argc, char **argv)
     int width = -1, status = 0;
     char *cp, *form = NULL, *format = NULL, *nfs;
     char buf[BUFSIZ], **argp;
-    char **arguments, *addrs[NADDRS + 1]; /* Includes terminating NULL. */
+    char *addrs[NADDRS + 1]; /* Includes terminating NULL. */
 
     if (nmh_init(argv[0], 2)) { return 1; }
 
     mts_init ();
-    arguments = getarguments (invo_name, argc, argv, 1);
-    argp = arguments;
 
+    argp = getarguments (invo_name, argc, argv, 1);
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {

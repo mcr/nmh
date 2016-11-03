@@ -48,14 +48,12 @@ main (int argc, char **argv)
 {
     int datep = 0, width = -1, status = 0;
     char *cp, *form = NULL, *format = NULL, *nfs;
-    char buf[BUFSIZ], **argp, **arguments;
+    char buf[BUFSIZ], **argp;
     char *dates[NDATES + 1]; /* Includes terminating NULL. */
 
     if (nmh_init(argv[0], 2)) { return 1; }
 
-    arguments = getarguments (invo_name, argc, argv, 1);
-    argp = arguments;
-
+    argp = getarguments (invo_name, argc, argv, 1);
     while ((cp = *argp++)) {
 	if (*cp == '-') {
 	    switch (smatch (++cp, switches)) {
