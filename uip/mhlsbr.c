@@ -163,7 +163,7 @@ struct mcomp {
     int c_width;		/* width of field          */
     int c_cwidth;		/* width of component      */
     int c_length;		/* length in lines         */
-    long c_flags;
+    unsigned long c_flags;
     struct mcomp *c_next;
 };
 
@@ -182,7 +182,7 @@ static struct mcomp holder = {
 
 struct pair {
     char *p_name;
-    long p_flags;
+    unsigned long p_flags;
 };
 
 static struct pair pairs[] = {
@@ -205,8 +205,8 @@ static struct pair pairs[] = {
 
 struct triple {
     char *t_name;
-    long t_on;
-    long t_off;
+    unsigned long t_on;
+    unsigned long t_off;
 };
 
 static struct triple triples[] = {
@@ -324,14 +324,14 @@ static char *parse (void);
 static void process (char *, char *, int, int);
 static void mhlfile (FILE *, char *, int, int);
 static int mcomp_flags (char *);
-static char *mcomp_add (long, char *, char *);
+static char *mcomp_add (unsigned long, char *, char *);
 static void mcomp_format (struct mcomp *, struct mcomp *);
 static struct mcomp *add_queue (struct mcomp **, struct mcomp **, char *, char *, int);
 static void free_queue (struct mcomp **, struct mcomp **);
 static void putcomp (struct mcomp *, struct mcomp *, int);
-static char *oneline (char *, long);
-static void putstr (char *, long);
-static void putch (char, long);
+static char *oneline (char *, unsigned long);
+static void putstr (char *, unsigned long);
+static void putch (char, unsigned long);
 static void intrser (int);
 static void pipeser (int);
 static void quitser (int);
@@ -1127,7 +1127,7 @@ mcomp_flags (char *name)
 
 
 static char *
-mcomp_add (long flags, char *s1, char *s2)
+mcomp_add (unsigned long flags, char *s1, char *s2)
 {
     char *dp;
 
@@ -1414,7 +1414,7 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
 
 
 static char *
-oneline (char *stuff, long flags)
+oneline (char *stuff, unsigned long flags)
 {
     int spc;
     char *cp, *ret;
@@ -1466,7 +1466,7 @@ oneline (char *stuff, long flags)
 
 
 static void
-putstr (char *string, long flags)
+putstr (char *string, unsigned long flags)
 {
     /* To not count, for the purpose of counting columns, all of
        the bytes of a multibyte character. */
@@ -1515,7 +1515,7 @@ putstr (char *string, long flags)
 
 
 static void
-putch (char ch, long flags)
+putch (char ch, unsigned long flags)
 {
     char buf[BUFSIZ];
 
