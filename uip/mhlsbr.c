@@ -1486,7 +1486,7 @@ putstr (char *string, unsigned long flags)
     lm = 0;
 
 #ifdef MULTIBYTE_SUPPORT
-    (void) mbtowc (NULL, NULL, 0); /* reset shift state */
+    if (mbtowc (NULL, NULL, 0)) {} /* reset shift state */
     char_len = 0;
 #else
     NMH_UNUSED (char_len);
