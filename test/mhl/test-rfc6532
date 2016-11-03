@@ -22,11 +22,14 @@ mhl="${MH_LIBEXEC_DIR}/mhl"
 require_locale en_US.UTF-8 en_US.UTF8 en_US.utf-8 en_US.utf8
 
 
-# check UTF-8 headers
 start_test 'UTF-8 headers'
-cat >"$MH_TEST_DIR"/Mail/inbox/11 <<EOF
-From: senderø@example.com
+#### The -- position the multibyte characters to check edge
+#### cases in the 'UTF-8 headers with narrow width' test below.
+cat >`mhpath new` <<EOF
+From: sender--ø@example.com
 To: recipientæ@example.com
+To: recipient2@example.com
+Cc: recip--æ@example.com
 Subject: Blåbærsyltetøy
 Date: 20 May 2014 14:28:51 +0200
 MIME-Version: 1.0
@@ -46,9 +49,34 @@ EOF
 #### squashes the trailing blank lines from mhl.
 run_test "$mhl -form mhl.headers `mhpath last`" \
 'Date:    20 May 2014 14:28:51 +0200
-To:      recipientæ@example.com
-From:    senderø@example.com
+To:      recipientæ@example.com,
+	 recipient2@example.com
+cc:      recip--æ@example.com
+From:    sender--ø@example.com
 Subject: Blåbærsyltetøy
+
+MIME-Version: 1.0'
+
+
+start_test 'UTF-8 headers with narrow width'
+run_test "$mhl -form mhl.headers -width 18 `mhpath last`" \
+'Date:    20 May 2
+     ***014 14:28
+     ***:51 +0200
+To:      recipien
+     ***tæ@exampl
+     ***e.com,
+	 recipien
+     ***t2@exampl
+     ***e.com
+cc:      recip--æ
+     ***@example.
+     ***com
+From:    sender--
+     ***ø@example
+     ***.com
+Subject: Blåbærsy
+     ***ltetøy
 
 MIME-Version: 1.0'
 

@@ -93,7 +93,8 @@ DEFINE_SWITCH_ARRAY(MHL, mhlswitches);
 #define	NONEWLINE   0x020000	/* don't write trailing newline      */
 #define NOWRAP      0x040000	/* Don't wrap lines ever             */
 #define FMTFILTER   0x080000	/* Filter through format filter      */
-#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017RTRIM\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER"
+#define INVISIBLE   0x100000	/* count byte in display columns?    */
+#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017RTRIM\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER\025INVISIBLE"
 #define	GFLAGS	(NOCOMPONENT | UPPERCASE | CENTER | LEFTADJUST | COMPRESS | SPLIT | NOWRAP)
 
 /*
@@ -1459,6 +1460,10 @@ oneline (char *stuff, long flags)
 static void
 putstr (char *string, long flags)
 {
+    /* To not count, for the purpose of counting columns, all of
+       the bytes of a multibyte character. */
+    int char_len;
+
     if (!column && lm > 0) {
 	while (lm > 0)
 	    if (lm >= 8) {
@@ -1471,8 +1476,33 @@ putstr (char *string, long flags)
 	    }
     }
     lm = 0;
-    while (*string)
-	putch (*string++, flags);
+
+#ifdef MULTIBYTE_SUPPORT
+    (void) mbtowc (NULL, NULL, 0); /* reset shift state */
+    char_len = 0;
+#else
+    NMH_UNUSED (char_len);
+#endif
+
+    while (*string) {
+        flags &= ~INVISIBLE;
+#ifdef MULTIBYTE_SUPPORT
+        /* mbtowc should never return 0, because *string is non-NULL. */
+        if (char_len <= 0) {
+            /* Find number of bytes in next character. */
+            if ((char_len =
+                 mbtowc (NULL, string, (size_t) MB_CUR_MAX)) == -1) {
+                char_len = 1;
+            }
+        } else {
+            /* Multibyte character, after the first byte. */
+            flags |= INVISIBLE;
+        }
+
+        --char_len;
+#endif
+        putch (*string++, flags);
+    }
 }
 
 
@@ -1531,8 +1561,10 @@ putch (char ch, long flags)
 		putchar ('-');
 		putchar (' ');
 	    }
-	    if (ch >= ' ')
-		column++;
+            if ((flags & INVISIBLE) == 0) {
+                /* If multibyte character, its first byte only. */
+                ++column;
+            }
 	    break;
     }
 
