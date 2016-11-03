@@ -94,7 +94,8 @@ DEFINE_SWITCH_ARRAY(MHL, mhlswitches);
 #define NOWRAP      0x040000	/* Don't wrap lines ever             */
 #define FMTFILTER   0x080000	/* Filter through format filter      */
 #define INVISIBLE   0x100000	/* count byte in display columns?    */
-#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017RTRIM\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER\025INVISIBLE"
+#define FORCE7BIT   0x200000	/* don't display 8-bit bytes	     */
+#define	LBITS	"\020\01NOCOMPONENT\02UPPERCASE\03CENTER\04CLEARTEXT\05EXTRA\06HDROUTPUT\07CLEARSCR\010LEFTADJUST\011COMPRESS\012ADDRFMT\013BELL\014DATEFMT\015FORMAT\016INIT\017RTRIM\021SPLIT\022NONEWLINE\023NOWRAP\024FMTFILTER\025INVISIBLE\026FORCE7BIT"
 #define	GFLAGS	(NOCOMPONENT | UPPERCASE | CENTER | LEFTADJUST | COMPRESS | SPLIT | NOWRAP)
 
 /*
@@ -1287,6 +1288,13 @@ putcomp (struct mcomp *c1, struct mcomp *c2, int flag)
     char *trimmed_prefix;
     int count, cchdr;
     char *cp;
+    const int utf8 = strcasecmp(get_charset(), "UTF-8") == 0;
+
+    if (! utf8  &&  flag != BODYCOMP) {
+        /* Don't print 8-bit bytes in header field values if not in a
+           UTF-8 locale, as required by RFC 6532. */
+	c1->c_flags |= FORCE7BIT;
+    }
 
     text = c1->c_text ? c1->c_text : c1->c_name;
     /* Create a copy with trailing whitespace trimmed, for use with
@@ -1561,9 +1569,24 @@ putch (char ch, long flags)
 		putchar ('-');
 		putchar (' ');
 	    }
-            if ((flags & INVISIBLE) == 0) {
-                /* If multibyte character, its first byte only. */
-                ++column;
+            /*
+             * Increment the character count, unless
+             * 1) In UTF-8 locale, this is other than the last byte of
+                  a multibyte character, or
+             * 2) In C locale, will print a non-printable character.
+             */
+            if ((flags & FORCE7BIT) == 0) {
+                /* UTF-8 locale */
+                if ((flags & INVISIBLE) == 0) {
+                    /* If multibyte character, its first byte only. */
+                    ++column;
+                }
+            } else {
+                /* If not an ASCII character, the replace character will be
+                   displayed.  Count it. */
+                if (! isascii((unsigned char) ch) || isprint((unsigned char) ch)) {
+                    ++column;
+                }
             }
 	    break;
     }
@@ -1577,7 +1600,11 @@ putch (char ch, long flags)
 	return;
     }
 
-    putchar (ch);
+    if (flags & FORCE7BIT  &&  ! isascii((unsigned char) ch)) {
+        putchar ('?');
+    } else {
+        putchar (ch);
+    }
 }
 
 

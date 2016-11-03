@@ -81,19 +81,30 @@ Subject: Blåbærsy
 MIME-Version: 1.0'
 
 
-# check with incompatible locale
-# This is here as a place holder.  We should either try to run the (8-bit) text
-# through iconv, or refuse to display it if the locale is incompatible.  In the
-# case of EAI, that means not UTF-8.
-# start_test 'incompatible locale'
-# LC_ALL=C
-# run_test "$mhl -form mhl.headers `mhpath last`" \
-# 'Date:    20 May 2014 14:28:51 +0200
-# To:      recipientæ@example.com
-# From:    sender??@example.com
-# Subject: Bl??b??rsyltet??y
-#
-# MIME-Version: 1.0'
+start_test 'incompatible locale'
+# Show that LC_CTYPE is sufficient, if LC_ALL is unset.
+unset LC_ALL
+LC_CTYPE=C
+cat >"$MH_TEST_DIR/test.format" <<EOF
+; Doesn't decode From: or Subject:, to be really sure
+; that character replacement works.
+overflowtext="***",overflowoffset=5
+leftadjust,compwidth=9
+Date:formatfield="%<(nodate{text})%{text}%|%(pretty{text})%>"
+To:
+cc:
+From:
+Subject:
+EOF
+
+run_test "$mhl -form "$MH_TEST_DIR/test.format" `mhpath last`" \
+'Date:    20 May 2014 14:28:51 +0200
+To:      recipient??@example.com,
+	 recipient2@example.com
+cc:      recip--??@example.com
+From:    sender--??@example.com
+Subject: Bl??b??rsyltet??y'
+rm -f "$MH_TEST_DIR/test.format"
 
 
 finish_test
