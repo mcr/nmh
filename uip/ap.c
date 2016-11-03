@@ -51,7 +51,7 @@ main (int argc, char **argv)
     int width = -1, status = 0;
     char *cp, *form = NULL, *format = NULL, *nfs;
     char buf[BUFSIZ], **argp;
-    char **arguments, *addrs[NADDRS];
+    char **arguments, *addrs[NADDRS + 1]; /* Includes terminating NULL. */
 
     if (nmh_init(argv[0], 2)) { return 1; }
 
@@ -96,7 +96,7 @@ main (int argc, char **argv)
 		    continue;
 	    }
 	}
-	if (addrp > NADDRS)
+	if (addrp == NADDRS)
 	    adios (NULL, "more than %d addresses", NADDRS);
 	else
 	    addrs[addrp++] = cp;
