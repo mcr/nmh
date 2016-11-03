@@ -19,6 +19,17 @@ setup_test
 # Use proper program, likely not the first one on PATH.
 dp="${MH_LIBEXEC_DIR}/dp"
 
+check_exit '-eq 1' $dp -
+check_exit '-eq 1' $dp -format foo -form
+check_exit '-eq 1' $dp -form foo -format
+check_exit '-eq 1' $dp -width
+x=tendixzehn
+l=$x$x$x$x$x
+c=$l$l
+check_exit '-eq 1' $dp `echo $c | sed 's/./ &/g'` 101
+COLUMNS=1 check_exit '-eq 0' $dp foo
+check_exit '-eq 0' $dp -width 0 foo
+
 expected="$MH_TEST_DIR/$$.expected"
 expected_err="$MH_TEST_DIR/$$.expected_err"
 actual="$MH_TEST_DIR/$$.actual"
