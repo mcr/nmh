@@ -84,7 +84,7 @@ MIME-Version: 1.0'
 start_test 'incompatible locale'
 # Show that LC_CTYPE is sufficient, if LC_ALL is unset.
 unset LC_ALL
-LC_CTYPE=C
+LC_CTYPE=C; export LC_CTYPE
 cat >"$MH_TEST_DIR/test.format" <<EOF
 ; Doesn't decode From: or Subject:, to be really sure
 ; that character replacement works.
