@@ -89,7 +89,7 @@ typedef struct fix_transformations {
     char *textcharset;
 } fix_transformations;
 
-int mhfixmsgsbr (CT *, const fix_transformations *, char *);
+int mhfixmsgsbr (CT *, char *, const fix_transformations *, char *);
 static int fix_boundary (CT *, int *);
 static int copy_input_to_output (const char *, const char *);
 static int get_multipart_boundary (CT, char **);
@@ -134,7 +134,7 @@ int
 main (int argc, char **argv) {
     int msgnum;
     char *cp, *file = NULL, *folder = NULL;
-    char *maildir, buf[100], *outfile = NULL;
+    char *maildir = NULL, buf[100], *outfile = NULL;
     char **argp, **arguments;
     struct msgs_array msgs = { 0, 0, NULL };
     struct msgs *mp = NULL;
@@ -392,6 +392,8 @@ main (int argc, char **argv) {
         }
         maildir = m_maildir (folder);
 
+        /* chdir so that error messages, esp. from MIME parser, just
+           refer to the message and not its path. */
         if (chdir (maildir) == NOTOK) {
             adios (maildir, "unable to change directory to");
         }
@@ -418,9 +420,8 @@ main (int argc, char **argv) {
 
         for (msgnum = mp->lowsel; msgnum <= mp->hghsel; msgnum++) {
             if (is_selected(mp, msgnum)) {
-                char *msgnam;
+                char *msgnam = m_name (msgnum);
 
-                msgnam = m_name (msgnum);
                 if ((ct = parse_mime (msgnam))) {
                     set_text_ctparams(ct, fx.decodetypes, fx.lf_line_endings);
                     *ctp++ = ct;
@@ -428,16 +429,25 @@ main (int argc, char **argv) {
                     advise (NULL, "unable to parse message %s", msgnam);
                     status = NOTOK;
 
-                    /* If there's an outfile, pass the input message unchanged, so the message won't
-                       get dropped from a pipeline. */
+                    /* If there's an outfile, pass the input message
+                       unchanged, so the message won't get dropped from a
+                       pipeline. */
                     if (outfile) {
-                        /* Something went wrong.  Output might be expected, such as if this were run
-                           as a filter.  Just copy the input to the output. */
-                        const char *input_filename = path (msgnam, TFILE);
+                        /* Something went wrong.  Output might be expected,
+                           such as if this were run as a filter.  Just copy
+                           the input to the output. */
+                        /* Can't use path() here because 1) it might have been
+                           called before and it caches the pwd, and 2) we call
+                           chdir() after that. */
+                        char *input_filename =
+                            concat (maildir, "/", msgnam, NULL);
 
                         if (copy_input_to_output (input_filename, outfile) != OK) {
-                            advise (NULL, "unable to copy message to %s, it might be lost\n", outfile);
+                            advise (NULL,
+                                    "unable to copy message to %s, it might be lost\n",
+                                    outfile);
                         }
+                        free (input_filename);
                     }
                 }
             }
@@ -453,7 +463,7 @@ main (int argc, char **argv) {
 
     if (*cts) {
         for (ctp = cts; *ctp; ++ctp) {
-            status += mhfixmsgsbr (ctp, &fx, outfile);
+            status += mhfixmsgsbr (ctp, maildir, &fx, outfile);
 
             if (using_stdin) {
                 (void) m_unlink (file);
@@ -484,10 +494,13 @@ main (int argc, char **argv) {
  * Apply transformations to one message.
  */
 int
-mhfixmsgsbr (CT *ctp, const fix_transformations *fx, char *outfile) {
+mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
+             char *outfile) {
     /* Store input filename in case one of the transformations, i.e.,
        fix_boundary(), rewrites to a tmp file. */
-    char *input_filename = add ((*ctp)->c_file, NULL);
+    char *input_filename = maildir
+        ?  concat (maildir, "/", (*ctp)->c_file, NULL)
+        :  add ((*ctp)->c_file, NULL);
     int modify_inplace = 0;
     int message_mods = 0;
     int status = OK;

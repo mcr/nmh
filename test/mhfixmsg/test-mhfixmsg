@@ -1714,6 +1714,17 @@ set +e
 run_prog mhfixmsg -file - -outfile - <`mhpath last` >"$actual" 2>/dev/null
 set -e
 #### Expected output is identical to the input message.
+check `mhpath last` "$actual" 'keep first'
+
+
+start_test "pass through message with relative folder path with parse error"
+#### Factor out leading portion of current folder path and make it relative.
+pwd=`pwd`
+set +e
+run_prog mhfixmsg +./`mhpath | sed "s%^$pwd/%%"` last -out - >"$actual" 2>/dev/null
+set -e
+folder -f +inbox >/dev/null
+#### Expected output is identical to the input message.
 check `mhpath last` "$actual"
 
 
