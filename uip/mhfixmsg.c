@@ -71,7 +71,6 @@ void flush_errors (void);
 
 /* mhfree.c */
 extern CT *cts;
-void freects_done (int) NORETURN;
 
 /*
  * static prototypes
@@ -153,8 +152,6 @@ main (int argc, char **argv) {
     fx.textcharset = NULL;
 
     if (nmh_init(argv[0], 2)) { return 1; }
-
-    done = freects_done;
 
     arguments = getarguments (invo_name, argc, argv, 1);
     argp = arguments;
@@ -464,6 +461,7 @@ main (int argc, char **argv) {
     if (*cts) {
         for (ctp = cts; *ctp; ++ctp) {
             status += mhfixmsgsbr (ctp, maildir, &fx, outfile);
+            free_content (*ctp);
 
             if (using_stdin) {
                 (void) m_unlink (file);
@@ -474,6 +472,8 @@ main (int argc, char **argv) {
                 }
             }
         }
+
+        free (cts);
     } else {
         status = 1;
     }
@@ -484,7 +484,6 @@ main (int argc, char **argv) {
     free (folder);
     free (arguments);
 
-    /* done is freects_done, which will clean up all of cts. */
     done (status);
     return NOTOK;
 }
@@ -700,7 +699,7 @@ get_multipart_boundary (CT ct, char **part_boundary) {
     /* This will fail if the boundary spans fread() calls.  NMH_BUFSIZ should
        be big enough, even if it's just 1024, to make that unlikely. */
 
-    /* free_content() will close ct->c_fp. */
+    /* free_content() will close ct->c_fp if bogus MP boundary is fixed. */
     if (! ct->c_fp  &&  (ct->c_fp = fopen (ct->c_file, "r")) == NULL) {
         advise (ct->c_file, "unable to open for reading");
         return NOTOK;
@@ -755,6 +754,11 @@ get_multipart_boundary (CT ct, char **part_boundary) {
         }
     } else {
         status = NOTOK;
+    }
+
+    if (ct->c_fp) {
+        fclose (ct->c_fp);
+        ct->c_fp = NULL;
     }
 
     if (status == OK) {
