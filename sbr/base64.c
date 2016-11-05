@@ -259,7 +259,7 @@ decodeBase64 (const char *encoded, unsigned char **decoded, size_t *len,
                 }
                 if (skip  ||  (((unsigned char) *cp) & 0x80)  ||
                     (value = b642nib[((unsigned char) *cp) & 0x7f]) > 0x3f) {
-                    advise (NULL, "invalid BASE64 encoding in %s", encoded);
+                    advise (NULL, "invalid BASE64 encoding in %s", cp);
                     charstring_free (decoded_c);
                     *decoded = NULL;
 
@@ -307,7 +307,12 @@ test_end:
     }
 
     if (! self_delimiting  &&  bitno != 18) {
-        advise (NULL, "premature ending (bitno %d) in %s", bitno, encoded);
+        int i;
+
+        /* Show some context for the error. */
+        for (i = 0; i < 20  &&  cp > encoded; ++i, --cp) {}
+        advise (NULL, "premature ending (bitno %d) near %s", bitno,
+                cp ? cp : encoded);
         charstring_free (decoded_c);
         *decoded = NULL;
 
