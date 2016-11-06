@@ -3519,8 +3519,11 @@ bad_quote:
 
 	if (partial) {
 	    for (pp = phead; pp != NULL; pp = pp->next) {
-		if (strcasecmp(nameptr, pp->name) == 0)
+		if (strcasecmp(nameptr, pp->name) == 0) {
+                    free (nameptr);
+                    nameptr = pp->name;
 		    break;
+                }
 	    }
 
 	    if (pp == NULL) {
@@ -3549,7 +3552,6 @@ bad_quote:
 				"%s's %s: field\n%*s(parameter %s)", sp->index,
 				filename, fieldname, strlen(invo_name) + 2, "",
 				nameptr);
-			free (nameptr);
 			return NOTOK;
 		    }
 		    if (sp2->index < sp->index &&
@@ -3565,7 +3567,6 @@ bad_quote:
 		    	   "param in message %s's %s: field\n%*s(parameter %s)",
 			   filename, fieldname, strlen(invo_name) + 2, "",
 			   nameptr);
-		    free (nameptr);
 		    return NOTOK;
 		}
 	    }
