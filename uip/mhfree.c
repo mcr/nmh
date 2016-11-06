@@ -77,7 +77,9 @@ free_content (CT ct)
 	    }
 	    break;
 
-	case CT_TEXT:
+	default:
+	    /* Assume that the ct is for text.	mhfixmsg(1) uses it for
+	       decoding application content. */
 	    free_text (ct);
 	    break;
     }
