@@ -472,11 +472,11 @@ main (int argc, char **argv) {
                 }
             }
         }
-
-        free (cts);
     } else {
         status = 1;
     }
+
+    free (cts);
 
     if (fx.fixtypes != NULL) { svector_free (fx.fixtypes); }
     free (outfile);
@@ -1292,6 +1292,7 @@ ensure_text_plain (CT *ct, CT parent, int *message_mods, int replacetextplain) {
                         HF hf;
 
                         parent->c_subtype = MULTI_ALTERNATE;
+                        free (parent->c_ctinfo.ci_subtype);
                         parent->c_ctinfo.ci_subtype = mh_xstrdup("alternative");
                         if (! replace_substring (&parent->c_ctline, "/related",
                                                  "/alternative")) {
@@ -1710,8 +1711,8 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
                 if ((found_boundary =
                      boundary_in_content (&new_part->c_cefile.ce_fp,
                                           new_part->c_cefile.ce_file,
-                                          boundary)) == -1) {
-                    free (ct);
+                                          boundary)) == NOTOK) {
+                    free_content (ct);
                     return NULL;
                 }
             }
@@ -1719,10 +1720,11 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
             /* Ensure that the boundary doesn't appear in the encoded
                content. */
             if (! found_boundary  &&  new_part->c_file) {
-                if ((found_boundary = boundary_in_content (&new_part->c_fp,
-                                                           new_part->c_file,
-                                                           boundary)) == -1) {
-                    free (ct);
+                if ((found_boundary =
+                     boundary_in_content (&new_part->c_fp,
+                                          new_part->c_file,
+                                          boundary)) == NOTOK) {
+                    free_content (ct);
                     return NULL;
                 }
             }
@@ -1743,7 +1745,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
 
         if (found_boundary) {
             advise (NULL, "giving up trying to find a unique boundary");
-            free (ct);
+            free_content (ct);
             return NULL;
         }
     }
