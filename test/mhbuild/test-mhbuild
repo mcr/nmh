@@ -1,0 +1,41 @@
+#!/bin/sh
+######################################################
+#
+# Basic mhbuild tests.
+#
+######################################################
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+expected="$MH_TEST_DIR/test-mhbuild$$.expected"
+
+start_test "-nodirectives"
+cat >"$expected" <<'EOF'
+Subject: test -nodirectives
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+
+#define line begins with # and ends with backslash-newline \
+        all characters should be preserved
+EOF
+
+cat >"`mhpath new`" <<'EOF'
+Subject: test -nodirectives
+--------
+#define line begins with # and ends with backslash-newline \
+        all characters should be preserved
+EOF
+
+run_test "mhbuild -nodirectives `mhpath last`"
+check "`mhpath last`" "$expected"
+
+
+finish_test
+exit $failed
