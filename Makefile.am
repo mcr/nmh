@@ -73,7 +73,7 @@ TESTS = test/ali/test-ali test/anno/test-anno \
 	test/install-mh/test-install-mh test/install-mh/test-version-check \
 	test/locking/test-datalocking test/locking/test-spoollocking \
 	test/manpages/test-manpages \
-	test/mhbuild/test-attach \
+	test/mhbuild/test-attach test/mhbuild/test-mhbuild \
 	test/mhbuild/test-cte \
 	test/mhbuild/test-ext-params \
 	test/mhbuild/test-forw test/mhbuild/test-header-encode \

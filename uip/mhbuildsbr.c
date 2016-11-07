@@ -621,7 +621,7 @@ fgetstr (char *s, int n, FILE *stream)
 	    if (!fgets (cp, n, stream))
                 return cp == s ? NULL : s; /* "\\\nEOF" ignored. */
 
-	    if (cp == s && *cp != '#')
+	    if (! do_direct()  ||  (cp == s && *cp != '#'))
 		return s; /* Plaintext line. */
 
 	    len = strlen(cp);

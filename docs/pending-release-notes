@@ -104,3 +104,5 @@ BUG FIXES
   if needed after decoding text parts.
 - mhbuild now checks whether all text parts need a Content-Transfer-Encoding
   header, not just those with a character set not specified.
+- mhbuild no longer parses lines that start with # as directives with
+  -nodirectives.
