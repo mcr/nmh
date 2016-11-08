@@ -207,6 +207,8 @@ parse_mime (char *file)
     CT ct;
     size_t n;
 
+    bogus_mp_content = 0;
+
     /*
      * Check if file is actually standard input
      */

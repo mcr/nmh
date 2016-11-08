@@ -87,15 +87,15 @@ esac
 
 # check that non-MIME messages aren't modified
 # check -outfile
-start_test "that non-MIME messages aren't modified, and -outfile"
+start_test "non-MIME messages aren't modified, and -outfile"
 run_test 'mhfixmsg first -outfile '"$actual" ''
 check "`mhpath first`" "$actual" 'keep first'
 
 
 # check that non-MIME messages with no bodies aren't modified
 # check -outfile
-start_test "that non-MIME messages with no bodies aren't modified, and -outfile"
-cat >`mhpath new` <<EOF
+start_test "non-MIME messages with no bodies aren't modified, and -outfile"
+cat >"`mhpath new`" <<EOF
 From: Test <test@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
@@ -109,7 +109,7 @@ check "`mhpath last`" "$actual"
 
 # check -nofixcte
 start_test "-nofixcte"
-cat >"$MH_TEST_DIR"/Mail/inbox/11 <<EOF
+cat >"`mhpath new`" <<EOF
 From: Anon
 To: Mailinglist
 Subject: =?ISO-8859-15?Q?Re=3A_H=E5lla_linuxsystem_uppdaterade?=
@@ -236,7 +236,7 @@ Content-Transfer-Encoding: 7bit
 ------=_nmh-multipart--
 EOF
 
-cat >"$MH_TEST_DIR"/Mail/inbox/12 <<EOF
+cat >"`mhpath new`" <<EOF
 MIME-Version: 1.0
 From: sender@example.com
 To: bonquiqui@example.com
@@ -318,7 +318,7 @@ Content-Transfer-Encoding: 7bit
 ------=_nmh-multipart-3--
 EOF
 
-cat >"$MH_TEST_DIR"/Mail/inbox/12 <<EOF
+cat >"`mhpath last`" <<EOF
 MIME-Version: 1.0
 From: sender@example.com
 To: bonquiqui@example.com
@@ -451,7 +451,7 @@ This is a text/plain part.
 ------- =_aaaaaaaaaa0--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg decode test 1
@@ -523,7 +523,7 @@ This is the fourth text/plain part.
 This is additional content after the last subpart of the multipart.
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg decode test 2
@@ -579,7 +579,7 @@ check "$expected" "$actual"
 #### Generated the encoded text below with:
 ####   $ printf '\275\262=\274\000\n' | base64
 start_test "attempted (default, 8 bit) -decodetext of binary text"
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg binary decode test
@@ -595,9 +595,9 @@ vbI9vAAK
 ------- =_aaaaaaaaaa0--
 EOF
 
-cp -p `mhpath last` "$expected"
+cp -p "`mhpath last`" "$expected"
 run_prog mhfixmsg last
-check `mhpath last` "$expected" 'keep first'
+check "`mhpath last`" "$expected" 'keep first'
 
 
 # check for successful decode of a different part with attempted -decodetext
@@ -644,7 +644,7 @@ ICA8L2JvZHk+PC9odG1sPg==
 ------- =_aaaaaaaaaa0--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg successful decode of text/plain with failed binary decode
@@ -686,7 +686,7 @@ ICA8L2JvZHk+PC9odG1sPg==
 EOF
 
 run_prog mhfixmsg -noreformat last
-check `mhpath last` "$expected" 'keep first'
+check "`mhpath last`" "$expected" 'keep first'
 
 
 # check for successful decode of a different part with -decodetext of binary
@@ -717,7 +717,7 @@ Content-Disposition: inline
 EOF
 
 run_prog mhfixmsg -noreformat -decodetext binary last
-check `mhpath last` "$expected"
+check "`mhpath last`" "$expected"
 
 
 # check -decodetext of binary (containing ASCII NUL) text
@@ -742,7 +742,7 @@ check "$expected" "$actual"
 
 
 # check that -reformat succeeds when decode of binary text fails
-start_test "that -reformat succeeds when decode of binary text fails"
+start_test "-reformat succeeds when decode of binary text fails"
 prepare_space >"$expected" <<'EOF'
 MIME-Version: 1.0
 Date: Thu, 11 Apr 2013 02:47:08 -0700
@@ -768,7 +768,7 @@ Content-Transfer-Encoding: quoted-printable
 <body>
 EOF
 
-cat >`mhpath new` <<'EOF'
+cat >"`mhpath new`" <<'EOF'
 MIME-Version: 1.0
 Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -838,7 +838,7 @@ EOF
 
 #### Generated the encoded text below with:
 ####   $ printf '\275\262=\274\n' | base64
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg textcharset test
@@ -869,7 +869,7 @@ start_test "-nofixboundary"
 cat >"$expected" <<EOF
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 Date: Fri, 13 May 2011 08:21:12 -0500
 Content-Type: multipart/alternative;
         boundary="----=_NextPart_000_1781A17_01CC1147.81E9467A"
@@ -889,14 +889,14 @@ The boundaries of this part don't match the header boundary.
 ------=_NextPart_000_1781A1A_01CC1147.81EBA8D4--
 EOF
 
-cp -p `mhpath last` `mhpath new`
+cp -p "`mhpath last`" "`mhpath new`"
 
 run_test 'mhfixmsg last -nofixboundary' ''
 check "$MH_TEST_DIR"/Mail/inbox/18 "$MH_TEST_DIR"/Mail/inbox/19 'keep first'
 
 
-# check that message is not output when fed through stdin
-start_test "that message is not output when fed through stdin"
+# check that message is not output when fed through stdin (without -outfile)
+start_test "message is not output when fed through stdin"
 run_prog mhfixmsg -file - -verbose <`mhpath last` >"$actual" 2>"$actual.err"
 check "$expected" "$actual"
 if grep "mhfixmsg: $MH_TEST_DIR/Mail/.*, fix multipart boundary" \
@@ -938,8 +938,8 @@ check "$expected" "$actual"
 
 
 # check that message is not modified when -fixboundary fails
-start_test "that message is not modified when -fixboundary fails"
-cat >`mhpath new` <<EOF
+start_test "message is not modified when -fixboundary fails"
+cat >"`mhpath new`" <<EOF
 Date: Fri, 13 May 2011 08:21:12 -0500
 Content-Type: multipart/alternative;
         boundary="----=_ NextPart_000_1781A17_01CC1147.81E9467A"
@@ -960,15 +960,15 @@ The boundary below doesn't match the header boundary.
 NextPart_000_1781A1A_01CC1147.81EBA8D4--
 EOF
 
-cp -p `mhpath last` "$expected"
+cp -p "`mhpath last`" "$expected"
 run_test "mhfixmsg last -outfile $actual" ''
 check "$expected" "$actual"
 
 
 # check that text/plain part is not added to text/html in multipart/related
 # when it shouldn't be
-start_test "that text/plain part is not added to text/html in multipart/related when it shouldn't be"
-cat >`mhpath new` <<EOF
+start_test "text/plain part is not added to text/html in multipart/related when it shouldn't be"
+cat >"`mhpath new`" <<EOF
 MIME-Version: 1.0
 Date: Tue, 26 Feb 2013 18:07:20 -0600
 Subject: multipart/related, not /alternative
@@ -997,7 +997,7 @@ Your email client does not support HTML messages
 ------=_Part_90310_101292502.1--
 EOF
 
-cp -p `mhpath last` "$expected"
+cp -p "`mhpath last`" "$expected"
 
 if [ $can_reformat_texthtml -eq 1 ]; then
   #### lynx inserts multiple blank lines, so squeeze them.
@@ -1010,7 +1010,7 @@ fi
 
 # check that text/plain part is added to text/html in multipart/related
 # when it should be
-start_test "that text/plain part is added to text/html in multipart/related when it should be"
+start_test "text/plain part is added to text/html in multipart/related when it should be"
 cat >"$expected" <<EOF
 MIME-Version: 1.0
 Date: Tue, 26 Feb 2013 18:07:20 -0600
@@ -1039,7 +1039,7 @@ Content-Transfer-Encoding: 7bit
 ------=_Part_90310_101292502.1--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 MIME-Version: 1.0
 Date: Tue, 26 Feb 2013 18:07:20 -0600
 Subject: multipart/related, not /alternative
@@ -1103,7 +1103,7 @@ This is an RFC-822 message.
 and some garbage at the end
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 From: Test <test@example.com>
 To: Some User <user@example.com>
 Date: Fri, 29 Sep 2006 00:00:00
@@ -1149,7 +1149,7 @@ There are two CR-LF pairs at the end of this sentence.
 
 EOF
 
-cat >`mhpath new` <<'EOF'
+cat >"`mhpath new`" <<'EOF'
 MIME-Version: 1.0
 From: sender@example.com
 To: recipient@example.com
@@ -1177,7 +1177,7 @@ There were two CR-LF pairs at the end of this sentence.
 
 EOF
 
-cat >`mhpath new` <<'EOF'
+cat >"`mhpath new`" <<'EOF'
 MIME-Version: 1.0
 From: sender@example.com
 To: recipient@example.com
@@ -1222,7 +1222,7 @@ Content-Disposition: inline
 ------=_Part_876302--
 EOF
 
-cat >`mhpath new` <<'EOF'
+cat >"`mhpath new`" <<'EOF'
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg replacement of bad text/plain part test
@@ -1322,7 +1322,7 @@ Content-Disposition: attachment;
 ------- =_aaaaaaaaaa0--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 Subject: test
 From: sender@example.com
@@ -1398,7 +1398,7 @@ this is plain text
 ------- =_aaaaaaaaaa0--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg with incorrect Content-Type
@@ -1414,7 +1414,7 @@ this is plain text
 EOF
 
 mhfixmsg -fixtype application/octet-stream last
-check "$expected" `mhpath last`
+check "$expected" "`mhpath last`"
 
 
 # check default -decodetypes
@@ -1449,7 +1449,7 @@ Content-Transfer-Encoding: 7bit
 ------- =_aaaaaaaaaa0--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg decode test 3
@@ -1506,7 +1506,7 @@ CjwvYm9keT4NCjwvaHRtbD4NCg==
 ------- =_aaaaaaaaaa0--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg decode test 4
@@ -1571,7 +1571,7 @@ END:VCALENDAR
 ------- =_aaaaaaaaaa0--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg decode test 5
@@ -1639,7 +1639,7 @@ END:VCALENDAR
 ------- =_aaaaaaaaaa0--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg decode test 5
@@ -1673,14 +1673,14 @@ check "$expected" "$actual"
 
 # check that input is passed through to output when there's a parse error
 # (the charset string is missing its closing quote) with -outfile
-start_test "that input is passed through to output when there's a parse error"
+start_test "input is passed through to output when there's a parse error"
 cat >"$expected.err" <<EOF
 mhfixmsg: invalid quoted-string in message 31's Content-Type: field
           (parameter charset)
 mhfixmsg: unable to parse message 31
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Subject: mhfixmsg pass through on parse error
@@ -1701,7 +1701,7 @@ set +e
 run_prog mhfixmsg last -outfile "$actual" 2>"$actual.err"
 set -e
 #### Expected output is identical to the input message.
-check `mhpath last` "$actual" 'keep first'
+check "`mhpath last`" "$actual" 'keep first'
 check "$expected.err" "$actual.err"
 
 
@@ -1709,12 +1709,12 @@ check "$expected.err" "$actual.err"
 # (the charset string is missing its closing quote) with -outfile, and
 # input from stdin.  Don't check err output, because it contains the name
 # of a tmp file.  It's similar to that of the previous check.
-start_test "that input is passed through to output when there's a parse error"
+start_test "input is passed through to output when there's a parse error"
 set +e
 run_prog mhfixmsg -file - -outfile - <`mhpath last` >"$actual" 2>/dev/null
 set -e
 #### Expected output is identical to the input message.
-check `mhpath last` "$actual" 'keep first'
+check "`mhpath last`" "$actual" 'keep first'
 
 
 start_test "pass through message with relative folder path with parse error"
@@ -1725,7 +1725,7 @@ run_prog mhfixmsg +./`mhpath | sed "s%^$pwd/%%"` last -out - >"$actual" 2>/dev/n
 set -e
 folder -f +inbox >/dev/null
 #### Expected output is identical to the input message.
-check `mhpath last` "$actual"
+check "`mhpath last`" "$actual"
 
 
 start_test "fix RFC 2047 encoded header parameters"
@@ -1755,7 +1755,7 @@ is testø.txt.
 --001a114dd3e8fe9c56053d92f414--
 EOF
 
-cat >`mhpath new` <<EOF
+cat >"`mhpath new`" <<EOF
 To: recipient@example.com
 From: sender@example.com
 Date: Wed, 28 Sep 2016 11:24:28 -0400

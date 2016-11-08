@@ -1,4 +1,4 @@
-.TH MHFIXMSG %manext1% "October 3, 2016" "%nmhversion%"
+.TH MHFIXMSG %manext1% "November 7, 2016" "%nmhversion%"
 .\"
 .\" %nmhwarning%
 .\"
@@ -449,17 +449,29 @@ mhfixmsg -textcharset utf-8
 .SS Fix all messages in a folder
 To run
 .B mhfixmsg
-on all of the messages in a folder, using a Bourne shell loop:
+on all of the messages in a folder:
 .PP
 .RS
 .nf
-for msg in `pick +folder`; do mhfixmsg $msg; done
+mhfixmsg +folder all
 .fi
 .RE
 .PP
+Alternatively,
 .B mhfixmsg
-can be run on more than one message, but on a large number of messages
-may attempt to open too many files.
+can be run on each message separately, e.g., using a Bourne shell loop:
+.PP
+.RS
+.nf
+for msg in `pick +folder`; do mhfixmsg +folder $msg; done
+.fi
+.RE
+.PP
+The two appearances of the
+.B +folder
+switch in that command protect against concurrent context changes by other
+.B nmh
+command invocations.
 .SS Run on newly incorporated messages
 To run
 .B mhfixmsg
@@ -536,9 +548,3 @@ switch is enabled.  If the
 .B \-file
 switch or an absolute pathname is used, the context will not be
 modified.
-.SH BUGS
-.B mhfixmsg
-opens files internally for decoding and character set conversion, and apparently does not
-close them expeditiously.  Until that is resolved, it is recommended that
-.B mhfixmsg
-not be run on a large number of messages at once, as noted in the EXAMPLES above.
