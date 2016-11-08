@@ -61,7 +61,6 @@ extern int suppress_bogus_mp_content_warning; /* flag to InitMultiPart */
 extern int bogus_mp_content;                  /* flag from InitMultiPart */
 /* flags to/from parse_header_attrs */
 extern int suppress_extraneous_trailing_semicolon_warning;
-extern int extraneous_trailing_semicolon;
 
 /* mhoutsbr.c */
 int output_message (CT, char *);

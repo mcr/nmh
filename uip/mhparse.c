@@ -34,13 +34,16 @@ int checksw = 0;	/* check Content-MD5 field */
  *    in a multipart.
  * 2) Suppress the warning about bogus multipart content, and report it.
  * 3) Suppress the warning about extraneous trailing ';' in header parameter
- *    lists, and report it.
+ *    lists.
  */
 int skip_mp_cte_check;
 int suppress_bogus_mp_content_warning;
 int bogus_mp_content;
 int suppress_extraneous_trailing_semicolon_warning;
-int extraneous_trailing_semicolon;
+
+/*
+ * By default, suppress warning about multiple MIME-Version header fields.
+ */
 int suppress_multiple_mime_version_warning = 1;
 
 /* list of preferred type/subtype pairs, for -prefer */
@@ -3284,7 +3287,6 @@ parse_header_attrs (const char *filename, const char *fieldname,
 			"parameter list",
 			filename, fieldname);
 	    }
-	    extraneous_trailing_semicolon = 1;
 	    return DONE;
 	}
 
