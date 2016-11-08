@@ -255,13 +255,13 @@ main (int argc, char **argv) {
                 if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
                     adios (NULL, "missing argument to %s", argp[-2]);
                 }
-                file = *cp == '-'  ?  add (cp, NULL)  :  path (cp, TFILE);
+                file = *cp == '-'  ?  mh_xstrdup (cp)  :  path (cp, TFILE);
                 continue;
             case OUTFILESW:
                 if (! (cp = *argp++) || (*cp == '-' && cp[1])) {
                     adios (NULL, "missing argument to %s", argp[-2]);
                 }
-                outfile = *cp == '-'  ?  add (cp, NULL)  :  path (cp, TFILE);
+                outfile = *cp == '-'  ?  mh_xstrdup (cp)  :  path (cp, TFILE);
                 continue;
             case RPROCSW:
                 if (!(rmmproc = *argp++) || *rmmproc == '-') {
@@ -294,7 +294,7 @@ main (int argc, char **argv) {
         } else {
             if (*cp == '/') {
                 /* Interpret a full path as a filename, not a message. */
-                file = add (cp, NULL);
+                file = mh_xstrdup (cp);
             } else {
                 app_msgarg (&msgs, cp);
             }
@@ -344,7 +344,7 @@ main (int argc, char **argv) {
                        get_temp_dir());
             } else {
                 free (file);
-                file = add (cp, NULL);
+                file = mh_xstrdup (cp);
                 cpydata (STDIN_FILENO, fd, "-", file);
             }
 
@@ -498,7 +498,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
        fix_boundary(), rewrites to a tmp file. */
     char *input_filename = maildir
         ?  concat (maildir, "/", (*ctp)->c_file, NULL)
-        :  add ((*ctp)->c_file, NULL);
+        :  mh_xstrdup ((*ctp)->c_file);
     int modify_inplace = 0;
     int message_mods = 0;
     int status = OK;
@@ -512,7 +512,7 @@ mhfixmsgsbr (CT *ctp, char *maildir, const fix_transformations *fx,
                 adios (NULL, "unable to create temporary file in %s",
                        get_temp_dir());
             }
-            outfile = add (tempfile, NULL);
+            outfile = mh_xstrdup (tempfile);
         } else {
             adios (NULL, "missing both input and output filenames\n");
         }
@@ -635,7 +635,7 @@ fix_boundary (CT *ct, int *message_mods) {
 
                 if ((fixed = m_mktemp2 (NULL, invo_name, NULL, &(*ct)->c_fp))) {
                     if (replace_boundary (*ct, fixed, part_boundary) == OK) {
-                        char *filename = add ((*ct)->c_file, NULL);
+                        char *filename = mh_xstrdup ((*ct)->c_file);
                         CT fixed_ct;
 
                         free_content (*ct);
@@ -718,7 +718,7 @@ get_multipart_boundary (CT ct, char **part_boundary) {
                 if ((end = rfind_str (buffer, cp - buffer, "\n"))) {
                     if (strlen (end) > 3  &&  *end++ == '\n'  &&
                         *end++ == '-'  &&  *end++ == '-') {
-                        end_boundary = add (end, NULL);
+                        end_boundary = mh_xstrdup (end);
                         break;
                     }
                 }
@@ -808,8 +808,8 @@ replace_boundary (CT ct, char *file, char *boundary) {
             compnum++;
 
             /* get copies of the buffers */
-            np = add (name, NULL);
-            vp = add (buf, NULL);
+            np = mh_xstrdup (name);
+            vp = mh_xstrdup (buf);
 
             /* if necessary, get rest of field */
             while (state == FLDPLUS) {
@@ -1095,7 +1095,7 @@ fix_composite_cte (CT ct, int *message_mods) {
                     HF h;
 
                     NEW(h);
-                    h->name = add (hf->name, NULL);
+                    h->name = mh_xstrdup (hf->name);
                     h->hf_encoding = hf->hf_encoding;
                     h->next = hf->next;
                     hf->next = h;
@@ -1113,7 +1113,7 @@ fix_composite_cte (CT ct, int *message_mods) {
                         free (encoding);
                     }
 
-                    h->value = add (" 8bit\n", NULL);
+                    h->value = mh_xstrdup (" 8bit\n");
 
                     /* Don't need to warn for multiple C-T-E header
                        fields, parse_mime() already does that.  But
@@ -1186,12 +1186,12 @@ set_ce (CT ct, int encoding) {
             }
         }
         if (! found_cte) {
-            add_header (ct, add (ENCODING_FIELD, NULL), cte);
+            add_header (ct, mh_xstrdup (ENCODING_FIELD), cte);
         }
 
         /* Update c_celine.  It's used only by mhlist -debug. */
         free (ct->c_celine);
-        ct->c_celine = add (cte, NULL);
+        ct->c_celine = mh_xstrdup (cte);
 
         return OK;
     }
@@ -1453,7 +1453,7 @@ build_text_plain_part (CT encoded_part) {
             advise (NULL, "unable to create temporary file in %s",
                     get_temp_dir());
         } else {
-            tmp_plain_file = add (tempfile, NULL);
+            tmp_plain_file = mh_xstrdup (tempfile);
             if (reformat_part (tp_part, tmp_plain_file,
                                tp_part->c_ctinfo.ci_type,
                                tp_part->c_ctinfo.ci_subtype,
@@ -1521,7 +1521,7 @@ divide_part (CT ct) {
     NEW0(new_part);
     /* Just copy over what is needed for decoding.  c_vrsn and
        c_celine aren't necessary. */
-    new_part->c_file = add (ct->c_file, NULL);
+    new_part->c_file = mh_xstrdup (ct->c_file);
     new_part->c_begin = ct->c_begin;
     new_part->c_end = ct->c_end;
     copy_ctinfo (&new_part->c_ctinfo, &ct->c_ctinfo);
@@ -1535,7 +1535,7 @@ divide_part (CT ct) {
 
     /* c_ctline is used by reformat__part(), so it can preserve
        anything after the type/subtype. */
-    new_part->c_ctline = add (ct->c_ctline, NULL);
+    new_part->c_ctline = mh_xstrdup (ct->c_ctline);
 
     return new_part;
 }
@@ -1548,8 +1548,8 @@ static void
 copy_ctinfo (CI dest, CI src) {
     PM s_pm, d_pm;
 
-    dest->ci_type = src->ci_type ? add (src->ci_type, NULL) : NULL;
-    dest->ci_subtype = src->ci_subtype ? add (src->ci_subtype, NULL) : NULL;
+    dest->ci_type = src->ci_type ? mh_xstrdup (src->ci_type) : NULL;
+    dest->ci_subtype = src->ci_subtype ? mh_xstrdup (src->ci_subtype) : NULL;
 
     for (s_pm = src->ci_first_pm; s_pm; s_pm = s_pm->pm_next) {
     	d_pm = add_param(&dest->ci_first_pm, &dest->ci_last_pm, s_pm->pm_name,
@@ -1562,8 +1562,8 @@ copy_ctinfo (CI dest, CI src) {
         }
     }
 
-    dest->ci_comment = src->ci_comment ? add (src->ci_comment, NULL) : NULL;
-    dest->ci_magic = src->ci_magic ? add (src->ci_magic, NULL) : NULL;
+    dest->ci_comment = src->ci_comment ? mh_xstrdup (src->ci_comment) : NULL;
+    dest->ci_magic = src->ci_magic ? mh_xstrdup (src->ci_magic) : NULL;
 }
 
 
@@ -1579,7 +1579,7 @@ decode_part (CT ct) {
     if ((tempfile = m_mktemp2 (NULL, invo_name, NULL, NULL)) == NULL) {
         adios (NULL, "unable to create temporary file in %s", get_temp_dir());
     }
-    tmp_decoded = add (tempfile, NULL);
+    tmp_decoded = mh_xstrdup (tempfile);
     /* The following call will load ct->c_cefile.ce_file with the tmp
        filename of the decoded content.  tmp_decoded will contain the
        encoded output, get rid of that. */
@@ -1688,7 +1688,7 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
        c_showproc, c_termproc, c_storeproc, c_storage, c_folder
     */
 
-    ct->c_file = add (first_alt->c_file, NULL);
+    ct->c_file = mh_xstrdup (first_alt->c_file);
     ct->c_type = type;
     ct->c_subtype = subtype;
 
@@ -1754,23 +1754,23 @@ build_multipart_alt (CT first_alt, CT new_part, int type, int subtype) {
 
     /* Load c_first_hf and c_last_hf. */
     transfer_noncontent_headers (first_alt, ct);
-    add_header (ct, add (TYPE_FIELD, NULL), concat (name, "\n", NULL));
+    add_header (ct, mh_xstrdup (TYPE_FIELD), concat (name, "\n", NULL));
     free (name);
 
     /* Load c_partno. */
     if (first_alt->c_partno) {
-        ct->c_partno = add (first_alt->c_partno, NULL);
+        ct->c_partno = mh_xstrdup (first_alt->c_partno);
         free (first_alt->c_partno);
         first_alt->c_partno = concat (ct->c_partno, ".1", NULL);
         new_part->c_partno = concat (ct->c_partno, ".2", NULL);
     } else {
-        first_alt->c_partno = add ("1", NULL);
-        new_part->c_partno = add ("2", NULL);
+        first_alt->c_partno = mh_xstrdup ("1");
+        new_part->c_partno = mh_xstrdup ("2");
     }
 
     if (ctinit) {
-        ct->c_ctinfo.ci_type = add (typename, NULL);
-        ct->c_ctinfo.ci_subtype = add (subtypename, NULL);
+        ct->c_ctinfo.ci_type = mh_xstrdup (typename);
+        ct->c_ctinfo.ci_subtype = mh_xstrdup (subtypename);
     }
 
     add_param(&ct->c_ctinfo.ci_first_pm, &ct->c_ctinfo.ci_last_pm,
@@ -1888,14 +1888,14 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
             free (hf->value);
             hf->value = (cp = strchr (ct->c_ctline, ';'))
                 ?  concat (type_subtypename, cp, "\n", NULL)
-                :  add (name_plus_nl, NULL);
+                :  mh_xstrdup (name_plus_nl);
         }
     }
     if (! found_content_type) {
-        add_header (ct, add (TYPE_FIELD, NULL),
+        add_header (ct, mh_xstrdup (TYPE_FIELD),
                     (cp = strchr (ct->c_ctline, ';'))
                     ?  concat (type_subtypename, cp, "\n", NULL)
-                    :  add (name_plus_nl, NULL));
+                    :  mh_xstrdup (name_plus_nl));
     }
 
     /* Some of these might not be used, but set them anyway. */
@@ -1906,9 +1906,9 @@ set_ct_type (CT ct, int type, int subtype, int encoding) {
     ct->c_ctline = ctline;
     /* Leave other ctinfo members as they were. */
     free (ct->c_ctinfo.ci_type);
-    ct->c_ctinfo.ci_type = add (typename, NULL);
+    ct->c_ctinfo.ci_type = mh_xstrdup (typename);
     free (ct->c_ctinfo.ci_subtype);
-    ct->c_ctinfo.ci_subtype = add (subtypename, NULL);
+    ct->c_ctinfo.ci_subtype = mh_xstrdup (subtypename);
     ct->c_type = type;
     ct->c_subtype = subtype;
 
@@ -2224,7 +2224,7 @@ strip_crs (CT ct, int *message_mods) {
                     adios (NULL, "unable to create temporary file in %s",
                            get_temp_dir());
                 }
-                stripped_content_file = add (tempfile, NULL);
+                stripped_content_file = mh_xstrdup (tempfile);
 
                 /* Strip each CR before a LF from the content. */
                 fseeko (*fp, begin, SEEK_SET);
@@ -2315,7 +2315,7 @@ update_cte (CT ct) {
             }
         }
         if (! found_cte) {
-            add_header (ct, add (ENCODING_FIELD, NULL), cte);
+            add_header (ct, mh_xstrdup (ENCODING_FIELD), cte);
         }
     }
 }
@@ -2639,8 +2639,8 @@ write_content (CT ct, const char *input_filename, char *outfile, int modify_inpl
         if (message_mods > 0) {
             if ((status = output_message (ct, outfile)) == OK) {
                 char *infile = input_filename
-                    ?  add (input_filename, NULL)
-                    :  add (ct->c_file ? ct->c_file : "-", NULL);
+                    ?  mh_xstrdup (input_filename)
+                    :  mh_xstrdup (ct->c_file ? ct->c_file : "-");
 
                 if (remove_file (infile) == OK) {
                     if (rename (outfile, infile)) {
