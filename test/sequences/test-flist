@@ -17,6 +17,16 @@ fi
 setup_test
 
 check_exit '-eq 1' flist -
+check_exit '-eq 1' flist -xyzzy
+check_exit '-eq 0' flist -help
+check_exit '-eq 0' flist -version
+check_exit '-eq 1' flist -sequence
+check_exit '-eq 1' flist -all -noall -showzero -noshowzero \
+    -recurse -norecurse -total -
+x=tendixzehn
+l=$x$x$x$x$x
+c=$l$l
+check_exit '-eq 1' flist `echo $c | sed 's/./& /g'` 101 -
 
 run_test 'mark 1 3 5 7 9 +inbox -sequence odd' ''
 run_test 'mark -s odd -list' 'odd: 1 3 5 7 9'
