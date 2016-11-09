@@ -13,6 +13,36 @@ fi
 
 setup_test
 mhl="${MH_LIBEXEC_DIR}/mhl"
+
+MHLDEBUG=foo check_exit '-eq 1' "$mhl" -
+unset MHLDEBUG
+check_exit '-eq 1' "$mhl" -xyzzy
+check_exit '-eq 0' "$mhl" -help
+check_exit '-eq 0' "$mhl" -version
+check_exit '-eq 1' "$mhl" -bell -nobell -clear -
+check_exit '-eq 1' "$mhl" -folder
+check_exit '-eq 1' "$mhl" -folder + -
+check_exit '-eq 1' "$mhl" -form
+check_exit '-eq 1' "$mhl" -sleep
+check_exit '-eq 1' "$mhl" -sleep 42 -
+check_exit '-eq 1' "$mhl" -moreproc foo -moreproc
+check_exit '-eq 1' "$mhl" -nofmtproc -fmtproc foo -fmtproc
+check_exit '-eq 1' "$mhl" -length 42 -length
+check_exit '-eq 1' "$mhl" -length 0
+check_exit '-eq 1' "$mhl" -width
+check_exit '-eq 1' "$mhl" -digest foo -width 0
+check_exit '-eq 1' "$mhl" -issue 42 -digest
+check_exit '-eq 1' "$mhl" -issue
+check_exit '-eq 1' "$mhl" -volume 42 -issue 0
+check_exit '-eq 1' "$mhl" -volume
+check_exit '-eq 1' "$mhl" -forwall -volume 0
+check_exit '-eq 0' "$mhl" -dashstuffing -nodashstuffing \
+    -forwall </dev/null
+check_exit '-eq 0' "$mhl" -forwall -digest foo \
+    -bell -length 1 -width 1 </dev/null
+check_exit '-eq 0' "$mhl" -forwall -digest foo \
+    -nobell -volume 1 -clear </dev/null
+
 expected="$MH_TEST_DIR/$$.expected"
 actual="$MH_TEST_DIR/$$.actual"
 
