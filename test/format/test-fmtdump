@@ -20,6 +20,27 @@ setup_test
 fmtdump="${MH_LIBEXEC_DIR}/fmtdump"
 
 check_exit '-eq 1' "$fmtdump" -
+check_exit '-eq 1' "$fmtdump" -form
+check_exit '-eq 1' "$fmtdump" -format
+check_exit '-eq 1' "$fmtdump" foo bar
+check_exit '-eq 0' "$fmtdump" -format '
+    %4{} %(eq) %(getenv) %(decodecomp{}) %(trim{}) %(putaddr)
+    %(putlit) %(zputlit) %(compval{}) %(num)
+    %(plus) %(minus) %(multiply) %(divide) %(modulo)
+    %(charleft) %(kilo) %(kibi)
+    %(month{}) %(tzone{}) %(day{}) %(weekday{}) %(tws{}) %(pretty{})
+    %(sec{}) %(min{}) %(hour{}) %(year{}) %(yday{}) %(wday{})
+    %(clock{}) %(rclock{}) %(sday{}) %(dst{}) %(szone{})
+    %(date2local{}) %(date2gmt{})
+'
+check_exit '-eq 0' "$fmtdump" -format '
+    %(addr{}) %(pers{}) %(mbox{}) %(host{}) %(path{}) %(gname{})
+    %(note{}) %(proper{}) %(type{}) %(ingrp{}) %(nohost{})
+    %(formataddr) %(concataddr) %(getmymbox{}) %(getmyaddr{})
+    %<(null)%> %<(gt)%> %<(match)%> %<(amatch)%>
+    %(null) %(nonnull) %(ne) %(gt) %(match) %(amatch)
+'
+check_exit '-eq 0' "$fmtdump" -format "`printf '\302\010\014\015\011\177'`"
 
 expected=$MH_TEST_DIR/$$.expected
 expected_err=$MH_TEST_DIR/$$.expected_err
