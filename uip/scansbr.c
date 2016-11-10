@@ -38,14 +38,9 @@ static m_getfld_state_t gstate;		/* for accessor functions below    */
 #define DIEWRERR() adios (scnmsg, "write error on")
 
 #define FPUTS(buf) {\
-		if (mh_fputs(buf,scnout) == EOF)\
+		if (fputs(buf,scnout) == EOF)\
 		    DIEWRERR();\
 		}
-
-/*
- * prototypes
- */
-static int mh_fputs(char *, FILE *);
 
 int
 scan (FILE *inb, int innum, int outnum, char *nfs, int width, int curflg,
@@ -351,17 +346,6 @@ finished:
     return (state != FILEEOF ? SCNERR : encrypted ? SCNENC : SCNMSG);
 }
 
-
-static int
-mh_fputs(char *s, FILE *stream)
-{
-    char c;
-
-    while ((c = *s++)) 
-	if (putc (c,stream) == EOF )
-	    return(EOF);
-    return (0);
-}
 
 /* The following two functions allow access to the global gstate above. */
 void
