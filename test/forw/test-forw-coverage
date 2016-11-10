@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Tests for forw(1)'s coverage.
+
+if test -z "${MH_OBJ_DIR}"; then
+    srcdir=`dirname "$0"`/../..
+    MH_OBJ_DIR=`cd "$srcdir" && pwd`; export MH_OBJ_DIR
+fi
+
+. "$MH_OBJ_DIR/test/common.sh"
+
+setup_test
+
+check_exit '-eq 1' forw -xyzzy
+check_exit '-eq 0' forw -help
+check_exit '-eq 0' forw -version
+check_exit '-eq 1' forw -anno -noanno -noedit -editor
+check_exit '-eq 1' forw -whatnowproc
+check_exit '-eq 1' forw -build -whatnowproc foo -
+check_exit '-eq 1' forw -file
+check_exit '-eq 1' forw -file foo -file bar
+check_exit '-eq 1' forw -filter
+check_exit '-eq 1' forw -filter foo -form
+check_exit '-eq 1' forw -format -noformat -inplace -noinplace \
+    -mime -nomime -digest
+check_exit '-eq 1' forw -issue
+check_exit '-eq 1' forw -issue 0
+check_exit '-eq 1' forw -volume
+check_exit '-eq 1' forw -volume 0
+check_exit '-eq 1' forw -nodraftfolder -draftfolder
+check_exit '-eq 1' forw -draftfolder foo -draftfolder bar
+check_exit '-eq 1' forw -draftmessage
+check_exit '-eq 1' forw -draftmessage foo -draftmessage bar
+check_exit '-eq 1' forw -dashstuffing -nodashstuffing -from
+check_exit '-eq 1' forw -to
+check_exit '-eq 1' forw -cc
+check_exit '-eq 1' forw -fcc
+check_exit '-eq 1' forw -subject
+check_exit '-eq 1' forw -width
+check_exit '-eq 1' forw -width 1
+check_exit '-eq 1' forw +foo +bar
+check_exit '-eq 1' forw -file foo +bar
+check_exit '-eq 1' forw @missing
+
+finish_test
