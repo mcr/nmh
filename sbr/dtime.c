@@ -108,7 +108,14 @@ dlocaltime (time_t *clock)
     if (tm->tm_isdst)			/* if DST is in effect */
 	tw.tw_zone -= 60;		/* reset to normal offset */
 #else
-    tzset();
+    {
+        static bool deja_vu;
+
+        if (!deja_vu) {
+            deja_vu = true;
+            tzset();
+        }
+    }
     tw.tw_zone = -(timezone / 60);
 #endif
 
