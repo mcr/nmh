@@ -585,6 +585,9 @@ dnl ----------------
 dnl CHECK STRUCTURES
 dnl ----------------
 
+dnl FIXME: This test could work on Linux if _BSD_SOURCE was #define'd
+dnl according to localtime(3).
+dnl
 dnl For platforms such as FreeBSD that have tm_gmtoff in struct tm.
 dnl (FreeBSD has a timezone() function but not a timezone global
 dnl variable that is visible).
