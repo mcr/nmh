@@ -810,18 +810,32 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
 	delimstr = mmdlm2;
 	s->msg_style = MS_MMDF;
     }
+
     c = strlen (delimstr);
-    s->fdelim = mh_xmalloc (c + 3);
+    s->fdelim = mh_xmalloc (c + 3); /* \0, \n, delimstr, \0 */
     *s->fdelim++ = '\0';
     *s->fdelim = '\n';
-    s->msg_delim = s->fdelim+1;
-    s->edelim = s->msg_delim+1;
     s->fdelimlen = c + 1;
-    s->edelimlen = c - 1; /* == strlen (delimstr) */
+    s->msg_delim = s->fdelim+1;
     strcpy (s->msg_delim, delimstr);
+    s->edelim = s->msg_delim+1;
+    s->edelimlen = c - 1;
     s->delimend = s->msg_delim + s->edelimlen;
     if (s->edelimlen <= 1)
 	adios (NULL, "maildrop delimiter must be at least 2 bytes");
+
+    /* Now malloc'd memory at s->fdelim-1 referenced several times:
+     *
+     *     delimstr         "\nFrom "      "\001\001\001\001\n"
+     *     c                6              5
+     *     s->fdelim      \0"\n\nFrom "  \0"\n\001\001\001\001\n"
+     *     s->fdelimlen     6              5
+     *     s->msg_delim     "\nFrom "      "\001\001\001\001\n"
+     *     s->edelim        "From "        "\001\001\001\n"
+     *     s->edelimlen     5              4
+     *     s->delimend      " "            "\n"
+     */
+
     /*
      * build a Boyer-Moore end-position map for the matcher in m_getfld.
      * N.B. - we don't match just the first char (since it's the newline
