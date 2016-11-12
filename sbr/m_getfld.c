@@ -204,7 +204,6 @@
  */
 struct m_getfld_state;
 static int m_Eom (m_getfld_state_t);
-static char *matchc(int, char *, int, char *);
 
 #define eom(c,s)	(s->msg_style != MS_DEFAULT && \
 			 ((c) == *s->msg_delim && m_Eom(s)))
@@ -681,7 +680,7 @@ m_getfld (m_getfld_state_t *gstate, char name[NAMESZ], char *buf, int *bufsz,
 		 */
 		char *ep;
 
-		if ((ep = matchc( s->fdelimlen, s->fdelim, c, bp )))
+                if ((ep = memmem(bp, c, s->fdelim, s->fdelimlen)))
 		    c = ep - bp + 1;
 		else {
 		    /*
@@ -891,26 +890,4 @@ m_Eom (m_getfld_state_t s)
     }
 
     return 1;
-}
-
-
-static char *
-matchc(int patln, char *pat, int strln, char *str)
-{
-	char *es = str + strln - patln;
-	char *sp;
-	char *pp;
-	char *ep = pat + patln;
-	char pc = *pat++;
-
-	for(;;) {
-		while (pc != *str++)
-			if (str > es)
-				return 0;
-		sp = str; pp = pat;
-		while (pp < ep && *sp++ == *pp)
-			pp++;
-		if (pp >= ep)
-			return --str;
-	}
 }
