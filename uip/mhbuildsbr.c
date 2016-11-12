@@ -377,7 +377,7 @@ finish_field:
      */
 
     if (! dist) {
-	np = add (VRSN_FIELD, NULL);
+	np = mh_xstrdup(VRSN_FIELD);
 	vp = concat (" ", VRSN_VALUE, "\n", NULL);
 	add_header (ct, np, vp);
     }
@@ -1679,7 +1679,7 @@ build_headers (CT ct, int header_encoding)
     /*
      * output the content type and subtype
      */
-    np = add (TYPE_FIELD, NULL);
+    np = mh_xstrdup(TYPE_FIELD);
     vp = concat (" ", ci->ci_type, "/", ci->ci_subtype, NULL);
 
     /* keep track of length of line */
@@ -1728,7 +1728,7 @@ build_headers (CT ct, int header_encoding)
      * output the Content-ID, unless disabled by -nocontentid
      */
     if (contentidsw && ct->c_id) {
-	np = add (ID_FIELD, NULL);
+	np = mh_xstrdup(ID_FIELD);
 	vp = concat (" ", ct->c_id, NULL);
 	add_header (ct, np, vp);
     }
@@ -1736,7 +1736,7 @@ build_headers (CT ct, int header_encoding)
      * output the Content-Description
      */
     if (ct->c_descr) {
-	np = add (DESCR_FIELD, NULL);
+	np = mh_xstrdup(DESCR_FIELD);
 	vp = concat (" ", ct->c_descr, NULL);
 	if (header_encoding != CE_8BIT) {
 	    if (encode_rfc2047(DESCR_FIELD, &vp, header_encoding, NULL)) {
@@ -1751,7 +1751,7 @@ build_headers (CT ct, int header_encoding)
      * set, then we need to build it.
      */
     if (ct->c_dispo) {
-	np = add (DISPO_FIELD, NULL);
+	np = mh_xstrdup(DISPO_FIELD);
 	vp = concat (" ", ct->c_dispo, NULL);
 	add_header (ct, np, vp);
     } else if (ct->c_dispo_type) {
@@ -1777,7 +1777,7 @@ skip_headers:
      * output the Content-MD5
      */
     if (checksw) {
-	np = add (MD5_FIELD, NULL);
+	np = mh_xstrdup(MD5_FIELD);
 	vp = calculate_digest (ct, (ct->c_encoding == CE_QUOTED) ? 1 : 0);
 	add_header (ct, np, vp);
     }
@@ -1796,7 +1796,7 @@ skip_headers:
 	break;
 
     case CE_8BIT:
-	np = add (ENCODING_FIELD, NULL);
+	np = mh_xstrdup(ENCODING_FIELD);
 	vp = concat (" ", "8bit", "\n", NULL);
 	add_header (ct, np, vp);
 	break;
@@ -1805,7 +1805,7 @@ skip_headers:
 	if (ct->c_type == CT_MESSAGE || ct->c_type == CT_MULTIPART)
 	    adios (NULL, "internal error, invalid encoding");
 
-	np = add (ENCODING_FIELD, NULL);
+	np = mh_xstrdup(ENCODING_FIELD);
 	vp = concat (" ", "quoted-printable", "\n", NULL);
 	add_header (ct, np, vp);
 	break;
@@ -1814,7 +1814,7 @@ skip_headers:
 	if (ct->c_type == CT_MESSAGE || ct->c_type == CT_MULTIPART)
 	    adios (NULL, "internal error, invalid encoding");
 
-	np = add (ENCODING_FIELD, NULL);
+	np = mh_xstrdup(ENCODING_FIELD);
 	vp = concat (" ", "base64", "\n", NULL);
 	add_header (ct, np, vp);
 	break;
@@ -1823,7 +1823,7 @@ skip_headers:
 	if (ct->c_type == CT_MESSAGE)
 	    adios (NULL, "internal error, invalid encoding");
 
-	np = add (ENCODING_FIELD, NULL);
+	np = mh_xstrdup(ENCODING_FIELD);
 	vp = concat (" ", "binary", "\n", NULL);
 	add_header (ct, np, vp);
 	break;
