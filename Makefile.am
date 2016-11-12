@@ -582,7 +582,7 @@ sbr_libmh_a_SOURCES = sbr/addrsbr.c sbr/ambigsw.c sbr/atooi.c sbr/arglist.c \
 		      sbr/closefds.c sbr/concat.c sbr/context_del.c \
 		      sbr/context_find.c sbr/context_foil.c sbr/context_read.c \
 		      sbr/context_replace.c sbr/context_save.c \
-		      sbr/copy.c sbr/copyip.c sbr/cpydata.c \
+		      sbr/copyip.c sbr/cpydata.c \
 		      sbr/cpydgst.c sbr/crawl_folders.c sbr/credentials.c \
 		      sbr/discard.c sbr/done.c sbr/dtimep.l sbr/dtime.c \
 		      sbr/encode_rfc2047.c \

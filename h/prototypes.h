@@ -53,7 +53,6 @@ int context_foil (char *);
 void context_read (void);
 void context_replace (char *, char *);
 void context_save (void);
-char *copy (const char *, char *);
 char **copyip (char **, char **, int);
 void cpydata (int, int, const char *, const char *);
 void cpydgst (int, int, char *, char *);

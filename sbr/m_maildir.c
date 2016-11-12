@@ -83,9 +83,9 @@ exmaildir (char *folder)
 	    snprintf(cp, sizeof mailfold, "%s/", mypath);
 	    cp += strlen (cp);
 	}
-	cp = copy (pp, cp);
+	cp = stpcpy(cp, pp);
     } else {
-	cp = copy (path ("./", TFOLDER), cp);
+	cp = stpcpy(cp, path("./", TFOLDER));
     }
     if (cp[-1] != '/')
 	*cp++ = '/';

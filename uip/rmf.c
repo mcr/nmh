@@ -92,7 +92,7 @@ main (int argc, char **argv)
 	interactive = defolder;
 
     if (strchr (folder, '/') && (*folder != '/') && (*folder != '.')) {
-	for (cp = copy (folder, newfolder); cp > newfolder && *cp != '/'; cp--)
+	for (cp = stpcpy(newfolder, folder); cp > newfolder && *cp != '/'; cp--)
 	    continue;
 	if (cp > newfolder)
 	    *cp = '\0';

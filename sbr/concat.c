@@ -32,11 +32,11 @@ concat (const char *s1, ...)
 
     dp = sp = mh_xmalloc(len);
 
-    sp = copy(s1, sp);
+    sp = stpcpy(sp, s1);
 
     va_start(list, s1); 
     while ((cp = va_arg (list, char *)))
-	sp = copy(cp, sp);
+	sp = stpcpy(sp, cp);
     va_end(list);
 
     return dp;
