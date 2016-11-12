@@ -816,7 +816,7 @@ m_unknown(m_getfld_state_t *gstate, FILE *iob)
     *s->fdelim = '\n';
     s->msg_delim = s->fdelim+1;
     s->edelim = s->msg_delim+1;
-    s->fdelimlen = c;
+    s->fdelimlen = c + 1;
     s->edelimlen = c - 1; /* == strlen (delimstr) */
     strcpy (s->msg_delim, delimstr);
     s->delimend = s->msg_delim + s->edelimlen;
