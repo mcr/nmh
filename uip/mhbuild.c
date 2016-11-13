@@ -94,7 +94,6 @@ static int unlink_outfile = 0;
 static void unlink_done (int) NORETURN;
 
 /* mhbuildsbr.c */
-int output_message (CT, char *);
 int output_message_fp (CT, FILE *, char*);
 
 
