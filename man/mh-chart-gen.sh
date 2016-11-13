@@ -2,6 +2,10 @@
 #
 # Generates mh-chart.man from other .man files that have a SYNOPSIS
 # section.
+#
+# This code is Copyright (c) 2012, by the authors of nmh.
+# See the COPYRIGHT file in the root directory of the nmh
+# distribution for complete copyright information.
 
 nmhmandir=`dirname $0`
 
