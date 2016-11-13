@@ -9,7 +9,7 @@
 mhchart=man/mh-chart.man
 
 #### Extract switches for nmh program.
-function switches() {
+switches() {
     local program=$1
 
     #### Extract lines from just after .B program-name to just before
